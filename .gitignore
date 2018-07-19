@@ -1,0 +1,11 @@
+# generated build files
+/build/
+
+# compiled binaries
+/distr/
+
+# created release
+/release-*/
+
+# Eclipse project files
+.project
