@@ -1,0 +1,115 @@
+<!--
+
+Ant build.xml for Zserio XML Extension.
+
+Zserio XML Extension is implemented as Java service which can be dynamically loaded by Zserio core during runtime.
+It generates XML files needed for Certification Bench and XML file which represents the Zserio structure.
+
+The following external properties can be set:
+
+zserio_xml.install_dir - Directory where to install Zserio XML Extension jar file. Default is
+                         "../../../distr/jar".
+zserio_xml.build_dir   - Directory where to put generated files. Default is
+                         "../../../build/compiler/extensions/xml".
+zserio_core.jar_file   - Zserio core jar file used for classpath. Default is
+                         "../../../build/compiler/core/jar/zserio_core.jar".
+findbugs.home_dir      - Location of the findbugs tool. If not set, findbugs is not run.
+
+-->
+<project name="zserio_xml" basedir="." default="jar">
+    <dirname property="zserio_xml.base_dir" file="${ant.file.zserio_xml}"/>
+
+    <property name="zserio_xml.zserio_root" value="${zserio_xml.base_dir}/../../.."/>
+
+    <property name="zserio_xml.src_dir" value="${zserio_xml.base_dir}/src"/>
+    <property name="zserio_xml.build_dir"
+        value="${zserio_xml.zserio_root}/build/compiler/extensions/xml"/>
+    <property name="zserio_xml.classes_dir" value="${zserio_xml.build_dir}/classes"/>
+    <property name="zserio_xml.findbugs.out_dir" value="${zserio_xml.build_dir}/findbugs"/>
+
+    <property name="zserio_xml.jar_dir" value="${zserio_xml.build_dir}/jar"/>
+    <property name="zserio_xml.jar_file" value="${zserio_xml.jar_dir}/zserio_xml.jar"/>
+
+    <property name="zserio_xml.install_dir" value="${zserio_xml.zserio_root}/distr/zserio_libs"/>
+
+    <!-- Zserio XML extension version. -->
+    <loadfile
+        encoding="UTF-8"
+        property="zserio_xml.version"
+        srcFile="${basedir}/src/zserio/emit/xml/XmlExtensionVersion.java">
+        <filterchain>
+            <striplinebreaks/>
+            <tokenfilter>
+                <replaceregex
+                    pattern='.*VERSION_STRING\s*=\s*"([0-9]+.[0-9]+)".*'
+                    replace="\1"/>
+            </tokenfilter>
+        </filterchain>
+    </loadfile>
+
+    <property name="zserio_core.jar_file"
+        value="${zserio_xml.zserio_root}/build/compiler/core/jar/zserio_core.jar"/>
+
+    <target name="clean">
+        <delete dir="${zserio_xml.build_dir}"/>
+    </target>
+
+    <target name="compile">
+        <mkdir dir="${zserio_xml.classes_dir}"/>
+        <depend srcDir="${zserio_xml.src_dir}" destDir="${zserio_xml.classes_dir}"
+            cache="${zserio_xml.build_dir}/depend-cache"/>
+
+        <path id="zserio_xml.classpath_zserio_core">
+            <pathelement location="${zserio_core.jar_file}"/>
+        </path>
+
+        <javac srcdir="${zserio_xml.src_dir}" destdir="${zserio_xml.classes_dir}" debug="on"
+            encoding="utf8" includeAntRuntime="false">
+            <classpath>
+                <path refid="zserio_xml.classpath_zserio_core"/>
+            </classpath>
+        </javac>
+    </target>
+
+    <target name="jar" depends="compile">
+        <mkdir dir="${zserio_xml.jar_dir}"/>
+        <jar destfile="${zserio_xml.jar_file}">
+            <fileset dir="${zserio_xml.classes_dir}">
+                <include name="zserio/**"/>
+            </fileset>
+            <manifest>
+                <attribute name="Implementation-Version" value="${zserio_xml.version}"/>
+            </manifest>
+            <metainf dir="${zserio_xml.base_dir}/metainf" includes="**/*"/>
+        </jar>
+    </target>
+
+    <target name="install" depends="jar">
+        <mkdir dir="${zserio_xml.install_dir}"/>
+        <copy file="${zserio_xml.jar_file}" todir="${zserio_xml.install_dir}" overwrite="true"/>
+    </target>
+
+    <target name="findbugs" depends="install" if="findbugs.home_dir">
+        <mkdir dir="${zserio_xml.findbugs.out_dir}"/>
+        <taskdef name="findbugs" classpath="${findbugs.home_dir}/lib/findbugs-ant.jar"
+            classname="edu.umd.cs.findbugs.anttask.FindBugsTask"/>
+        <findbugs home="${findbugs.home_dir}"
+            output="html"
+            outputFile="${zserio_xml.findbugs.out_dir}/findbugs.html"
+            reportLevel="low"
+            errorProperty="zserio_xml.is_failed"
+            warningsProperty="zserio_xml.is_failed">
+            <sourcePath>
+                <dirset dir="${zserio_xml.src_dir}"/>
+            </sourcePath>
+            <fileset dir="${zserio_xml.classes_dir}"/>
+            <auxClasspath>
+                <path refid="zserio_xml.classpath_zserio_core"/>
+            </auxClasspath>
+        </findbugs>
+        <fail message="FindBugs found some issues!" if="zserio_xml.is_failed"/>
+    </target>
+
+    <target name="test" depends="findbugs">
+    </target>
+</project>

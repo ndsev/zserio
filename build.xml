@@ -1,0 +1,79 @@
+<!--
+
+Ant build.xml for all Zserio projects.
+
+The following external properties can be set:
+
+zserio.build_dir        - Directory where to put generated bundled tool. Default is "../../build/zserio".
+zserio.install_dir      - Directory where to install bundled Zserio tool. Default is "../../distr".
+-->
+<project name="zserio" basedir="." default="jar" >
+    <property name="zserio.build_dir" value="${basedir}/build/zserio"/>
+    <property name="zserio.extensions_dir" value="${basedir}/compiler/extensions"/>
+    <property name="zserio.install_dir" value="${basedir}/distr"/>
+    <property name="zserio.jars_dir" value="${zserio.install_dir}/zserio_libs"/>
+    <property name="zserio.jar_file_name" value="zserio.jar"/>
+
+    <!-- Zserio release version. -->
+    <loadfile
+        encoding="UTF-8"
+        property="zserio.version"
+        srcFile="${basedir}/compiler/core/src/zserio/tools/ZserioVersion.java">
+        <filterchain>
+            <striplinebreaks/>
+            <tokenfilter>
+                <replaceregex
+                    pattern='.*VERSION_STRING\s*=\s*"([0-9]+.[0-9]+)".*'
+                    replace="\1"/>
+            </tokenfilter>
+        </filterchain>
+    </loadfile>
+
+    <include file="${basedir}/compiler/core/build.xml"/>
+    <include file="${basedir}/ant_task/build.xml"/>
+
+    <target name="clean" depends="zserio_core.clean, zserio_ant_task.clean"/>
+    <target name="compile" depends="zserio_core.compile, zserio_ant_task.compile"/>
+    <target name="jar" depends="zserio_core.jar, zserio_ant_task.jar"/>
+    <target name="install" depends="zserio_core.install, zserio_ant_task.install"/>
+    <target name="findbugs" depends="zserio_core.findbugs, zserio_ant_task.findbugs"/>
+    <target name="test" depends="zserio_core.test, zserio_ant_task.test"/>
+
+    <!-- Bundled ZSERIO -->
+    <target name="zserio.clean">
+        <delete dir="${zserio.build_dir}"/>
+    </target>
+
+    <target name="zserio.install">
+        <concat destfile="${zserio.build_dir}/metainf/services/zserio.tools.Extension">
+            <fileset dir="${zserio.extensions_dir}" includes="**/metainf/**/*"/>
+        </concat>
+        <jar destfile="${zserio.install_dir}/${zserio.jar_file_name}" duplicate="preserve">
+            <restrict>
+                <or>
+                    <name name="**/*.class"/>
+                    <name name="**/*.ftl"/>
+                    <name name="**/*.properties"/>
+                </or>
+                <archives>
+                    <zips>
+                        <fileset dir="${zserio.jars_dir}" includes="*.jar"
+                            excludes="${zserio.jar_file_name}"/>
+                    </zips>
+                </archives>
+            </restrict>
+            <zipfileset src="${zserio.jars_dir}/freemarker-2.3.28.jar" includes="META-INF/LICENSE"
+                fullpath="META-INF/LICENSE_FREEMARKER.txt"/>
+            <zipfileset src="${zserio.jars_dir}/commons-cli-1.4.jar" includes="META-INF/LICENSE.txt"
+                fullpath="META-INF/LICENSE_COMMONS_CLI.txt"/>
+            <manifest>
+                <attribute name="Main-Class" value="zserio.tools.ZserioTool"/>
+                <attribute name="Implementation-Version" value="${zserio.version}"/>
+            </manifest>
+            <metainf dir="${zserio.build_dir}/metainf" includes="**/*"/>
+        </jar>
+    </target>
+
+    <target name="zserio.test" depends="zserio.install">
+    </target>
+</project>

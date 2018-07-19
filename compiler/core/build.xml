@@ -1,0 +1,240 @@
+<!--
+
+Ant build.xml for Zserio core.
+
+Zserio core contains parser, AST nodes and common parts for all extensions.
+
+The following external properties can be set:
+
+zserio_core.install_dir - Directory where to install Zserio core jar file. Default is "../../distr/jar".
+zserio_core.build_dir   - Directory where to put generated files. Default is "../../build/compiler/core".
+zserio.version          - Zserio version to be used for Zserio core. Default is "unknown".
+3rdparty.root_dir       - Directory where 3rdparty libraries are located. Default is "../../3rdparty".
+findbugs.home_dir       - Location of the findbugs tool. If not set, findbugs is not run.
+
+-->
+<project name="zserio_core" basedir="." default="jar">
+    <dirname property="zserio_core.base_dir" file="${ant.file.zserio_core}"/>
+
+    <property name="zserio_core.zserio_root" value="${zserio_core.base_dir}/../.."/>
+
+    <property name="zserio_core.antlr_dir" value="${zserio_core.base_dir}/antlr"/>
+    <property name="zserio_core.src_dir" value="${zserio_core.base_dir}/src"/>
+
+    <property name="zserio_core.build_dir" value="${zserio_core.zserio_root}/build/compiler/core"/>
+    <property name="zserio_core.classes_dir" value="${zserio_core.build_dir}/classes"/>
+    <property name="zserio_core.findbugs.out_dir" value="${zserio_core.build_dir}/findbugs"/>
+    <property name="zserio_core.antlr.gen_dir" value="${zserio_core.build_dir}/gen"/>
+    <property name="zserio_core.antlr.out_dir" value="${zserio_core.antlr.gen_dir}/zserio/antlr"/>
+
+    <property name="zserio_core.test.src_dir" location="${zserio_core.base_dir}/test"/>
+    <property name="zserio_core.test.build_dir" value="${zserio_core.build_dir}/test"/>
+    <property name="zserio_core.test.classes_dir" value="${zserio_core.test.build_dir}/classes"/>
+    <property name="zserio_core.test.findbugs.out_dir" value="${zserio_core.test.build_dir}/findbugs"/>
+    <property name="zserio_core.test.results_dir" value="${zserio_core.test.build_dir}/results"/>
+
+    <property name="zserio_core.jar_dir" value="${zserio_core.build_dir}/jar"/>
+    <property name="zserio_core.jar_file" value="${zserio_core.jar_dir}/zserio_core.jar"/>
+    <property name="zserio_core.install_dir" value="${zserio_core.zserio_root}/distr/zserio_libs"/>
+
+    <condition property="zserio_core.version" value="${zserio.version}" else="unknown">
+        <isset property="zserio.version"/>
+    </condition>
+
+    <property name="3rdparty.root_dir" value="${zserio_core.zserio_root}/3rdparty"/>
+    <property name="3rdparty.jar_dir" value="${3rdparty.root_dir}/java"/>
+    <property name="3rdparty.antlr.jar_file_name" value="antlr.jar"/>
+    <property name="3rdparty.freemarker.jar_file_name" value="freemarker-2.3.28.jar"/>
+    <property name="3rdparty.commons-cli.jar_file_name" value="commons-cli-1.4.jar"/>
+    <property name="3rdparty.junit.jar_file" value="${3rdparty.jar_dir}/junit-4.10.jar"/>
+
+    <fileset dir="${3rdparty.jar_dir}" id="3rdparty.jar_files_ref">
+        <include name="${3rdparty.antlr.jar_file_name}"/>
+        <include name="${3rdparty.freemarker.jar_file_name}"/>
+        <include name="${3rdparty.commons-cli.jar_file_name}"/>
+    </fileset>
+
+    <target name="clean">
+        <delete dir="${zserio_core.build_dir}"/>
+    </target>
+
+    <target name="antlr.parser">
+        <mkdir dir="${zserio_core.antlr.out_dir}"/>
+        <antlr target="${zserio_core.antlr_dir}/ZserioParser.g" outputdirectory="${zserio_core.antlr.out_dir}">
+            <classpath>
+                <pathelement location="${3rdparty.jar_dir}/${3rdparty.antlr.jar_file_name}"/>
+            </classpath>
+        </antlr>
+    </target>
+
+    <target name="antlr.lexer">
+        <antlr target="${zserio_core.antlr_dir}/ZserioLexer.g" outputdirectory="${zserio_core.antlr.out_dir}">
+            <classpath>
+                <pathelement location="${3rdparty.jar_dir}/${3rdparty.antlr.jar_file_name}"/>
+            </classpath>
+        </antlr>
+    </target>
+
+    <target name="antlr.walkers">
+        <antlr target="${zserio_core.antlr_dir}/TypeEvaluator.g" outputdirectory="${zserio_core.antlr.out_dir}">
+            <classpath>
+                <pathelement location="${3rdparty.jar_dir}/${3rdparty.antlr.jar_file_name}"/>
+            </classpath>
+        </antlr>
+
+        <antlr target="${zserio_core.antlr_dir}/ExpressionEvaluator.g" outputdirectory="${zserio_core.antlr.out_dir}">
+            <classpath>
+                <pathelement location="${3rdparty.jar_dir}/${3rdparty.antlr.jar_file_name}"/>
+            </classpath>
+        </antlr>
+
+        <antlr target="${zserio_core.antlr_dir}/ZserioEmitter.g" outputdirectory="${zserio_core.antlr.out_dir}">
+            <classpath>
+                <pathelement location="${3rdparty.jar_dir}/${3rdparty.antlr.jar_file_name}"/>
+            </classpath>
+        </antlr>
+    </target>
+
+    <target name="antlr.comments">
+        <antlr target="${zserio_core.antlr_dir}/DocComment.g" outputdirectory="${zserio_core.antlr.out_dir}">
+            <classpath>
+                <pathelement location="${3rdparty.jar_dir}/${3rdparty.antlr.jar_file_name}"/>
+            </classpath>
+        </antlr>
+    </target>
+
+    <target name="antlr" depends="antlr.parser, antlr.lexer, antlr.walkers, antlr.comments">
+        <!-- ZserioParser.g must be compiled before lexer and walkers because lexer and walker grammars use
+             importVocab to ZserioParser. -->
+    </target>
+
+    <target name="compile" depends="antlr">
+        <mkdir dir="${zserio_core.classes_dir}"/>
+        <depend srcDir="${zserio_core.src_dir}:${zserio_core.antlr.gen_dir}" destDir="${zserio_core.classes_dir}"
+            cache="${zserio_core.build_dir}/depend-cache"/>
+
+        <javac srcdir="${zserio_core.src_dir}:${zserio_core.antlr.gen_dir}" destdir="${zserio_core.classes_dir}"
+            debug="on" encoding="utf8" includeAntRuntime="false">
+            <classpath>
+                <fileset refid="3rdparty.jar_files_ref"/>
+            </classpath>
+        </javac>
+    </target>
+
+    <target name="jar" depends="compile">
+        <mkdir dir="${zserio_core.jar_dir}"/>
+
+        <pathconvert pathsep=" " property="3rdparty.jar_files" refid="3rdparty.jar_files_ref">
+            <mapper type="flatten"/>
+        </pathconvert>
+
+        <jar destfile="${zserio_core.jar_file}">
+            <fileset dir="${zserio_core.classes_dir}">
+                <include name="zserio/**"/>
+            </fileset>
+            <manifest>
+                <attribute name="Main-Class" value="zserio.tools.ZserioTool"/>
+                <attribute name="Class-Path" value="${3rdparty.jar_files}"/>
+                <attribute name="Implementation-Version" value="${zserio_core.version}"/>
+            </manifest>
+        </jar>
+
+        <!-- Copying of 3rd party jar files are necessary because of extensions. Extension projects use
+        Zserio core build directory directly. -->
+        <copy todir="${zserio_core.jar_dir}">
+            <fileset refid="3rdparty.jar_files_ref"/>
+        </copy>
+    </target>
+
+    <target name="install" depends="jar">
+        <mkdir dir="${zserio_core.install_dir}"/>
+        <copy todir="${zserio_core.install_dir}" overwrite="true">
+            <fileset dir="${zserio_core.jar_dir}">
+                <include name="*.jar"/>
+            </fileset>
+        </copy>
+    </target>
+
+    <target name="findbugs" depends="install" if="findbugs.home_dir">
+        <mkdir dir="${zserio_core.findbugs.out_dir}"/>
+        <taskdef name="findbugs" classpath="${findbugs.home_dir}/lib/findbugs-ant.jar"
+            classname="edu.umd.cs.findbugs.anttask.FindBugsTask"/>
+        <findbugs home="${findbugs.home_dir}"
+            output="html"
+            outputFile="${zserio_core.findbugs.out_dir}/findbugs.html"
+            excludeFilter="${basedir}/findbugs_filter.xml"
+            reportLevel="low"
+            errorProperty="zserio_core.is_failed"
+            warningsProperty="zserio_core.is_failed">
+            <sourcePath>
+                <dirset dir="${zserio_core.src_dir}"/>
+            </sourcePath>
+            <fileset dir="${zserio_core.classes_dir}"/>
+            <auxClasspath>
+                <fileset refid="3rdparty.jar_files_ref"/>
+            </auxClasspath>
+        </findbugs>
+        <fail message="FindBugs found some issues!" if="zserio_core.is_failed"/>
+    </target>
+
+    <target name="test.clean">
+        <delete dir="${zserio_core.test.build_dir}"/>
+    </target>
+
+    <target name="test.compile" depends="jar">
+        <mkdir dir="${zserio_core.test.classes_dir}"/>
+        <depend srcDir="${zserio_core.test.src_dir}" destDir="${zserio_core.test.classes_dir}"
+            cache="${zserio_core.test.build_dir}/depend-cache"/>
+        <javac srcdir="${zserio_core.test.src_dir}" destdir="${zserio_core.test.classes_dir}" debug="on"
+            encoding="utf8" includeAntRuntime="false">
+            <classpath>
+                <pathelement path="${3rdparty.junit.jar_file}"/>
+                <pathelement path="${zserio_core.jar_file}"/>
+            </classpath>
+        </javac>
+    </target>
+
+    <target name="test.findbugs" depends="findbugs, test.compile" if="findbugs.home_dir">
+        <mkdir dir="${zserio_core.test.findbugs.out_dir}"/>
+        <taskdef name="findbugs" classpath="${findbugs.home_dir}/lib/findbugs-ant.jar"
+            classname="edu.umd.cs.findbugs.anttask.FindBugsTask"/>
+        <findbugs home="${findbugs.home_dir}"
+            output="html"
+            outputFile="${zserio_core.test.findbugs.out_dir}/findbugs.html"
+            excludeFilter="${zserio_core.base_dir}/findbugs_filter.xml"
+            reportLevel="low"
+            errorProperty="zserio_core.findbugs.is_failed"
+            warningsProperty="zserio_core.findbugs.is_failed">
+            <sourcePath>
+                <dirset dir="${zserio_core.test.src_dir}"/>
+            </sourcePath>
+            <fileset dir="${zserio_core.test.classes_dir}"/>
+            <auxClasspath>
+                <fileset file="${3rdparty.junit.jar_file}"/>
+                <fileset file="${zserio_core.jar_file}"/>
+            </auxClasspath>
+        </findbugs>
+        <fail message="FindBugs found some issues!" if="zserio_core.findbugs.is_failed"/>
+    </target>
+
+    <target name="test.run" depends="test.findbugs">
+        <mkdir dir="${zserio_core.test.results_dir}"/>
+        <junit printsummary="no" fork="yes" dir="${zserio_core.test.classes_dir}" haltonfailure="yes">
+            <classpath>
+                <pathelement path="${3rdparty.junit.jar_file}"/>
+                <pathelement path="${zserio_core.jar_file}"/>
+                <pathelement path="${zserio_core.test.classes_dir}"/>
+            </classpath>
+            <batchtest todir="${zserio_core.test.results_dir}">
+                <fileset dir="${zserio_core.test.src_dir}">
+                    <include name="**/*Test.java"/>
+                </fileset>
+                <formatter type="plain" usefile="false"/>
+                <formatter type="xml"/>
+            </batchtest>
+        </junit>
+    </target>
+
+    <target name="test" depends="test.run">
+    </target>
+</project>

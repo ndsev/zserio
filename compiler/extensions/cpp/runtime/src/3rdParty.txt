@@ -1,0 +1,9 @@
+List of 3rd party code in Zserio C++ Runtime Library
+-------------------------------------------------
+
+IEEE 754r Half Precision floating point converter
+-------------------------------------------------
+License: The 2-Clause BSD License - http://de.mathworks.com/matlabcentral/fileexchange/23173-ieee-754r-half-precision-floating-point-converter#license_modal
+Description: Converts MATLAB or C variables to/from IEEE 754r Half Precision floating point bit pattern.
+Version: 1.1
+Path: zserio/BitStreamReader.cpp, zserio/BitStreamWriter.cpp

@@ -1,0 +1,118 @@
+<!--
+
+Ant build.xml for Zserio Doc Extension.
+
+Zserio Doc Extension is implemented as Java service which can be dynamically loaded by Zserio core during runtime.
+It generates HTML documentation together with the database structure diagrams and type collaboration diagrams
+in DOT and SVG formats.
+
+The following external properties can be set:
+
+zserio_doc.install_dir      - Directory where to install Zserio Doc Extension jar file. Default is
+                              "../../../distr/jar".
+zserio_doc.build_dir        - Directory where to put generated files. Default is
+                              "../../../build/compiler/extensions/doc".
+zserio_core.jar_file        - Zserio core jar file used for classpath. Default is
+                              "../../../build/compiler/core/jar/zserio_core.jar".
+findbugs.home_dir           - Location of the findbugs tool. If not set, findbugs is not run.
+
+-->
+<project name="zserio_doc" basedir="." default="jar">
+    <dirname property="zserio_doc.base_dir" file="${ant.file.zserio_doc}"/>
+
+    <property name="zserio_doc.zserio_root" value="${zserio_doc.base_dir}/../../.."/>
+
+    <property name="zserio_doc.src_dir" value="${zserio_doc.base_dir}/src"/>
+    <property name="zserio_doc.build_dir"
+        value="${zserio_doc.zserio_root}/build/compiler/extensions/doc"/>
+    <property name="zserio_doc.classes_dir" value="${zserio_doc.build_dir}/classes"/>
+    <property name="zserio_doc.findbugs.out_dir" value="${zserio_doc.build_dir}/findbugs"/>
+
+    <property name="zserio_doc.jar_dir" value="${zserio_doc.build_dir}/jar"/>
+    <property name="zserio_doc.jar_file" value="${zserio_doc.jar_dir}/zserio_doc.jar"/>
+
+    <property name="zserio_doc.install_dir" value="${zserio_doc.zserio_root}/distr/zserio_libs"/>
+
+    <!-- Zserio Documentation extension version. -->
+    <loadfile
+        encoding="UTF-8"
+        property="zserio_doc.version"
+        srcFile="${basedir}/src/zserio/emit/doc/DocExtensionVersion.java">
+        <filterchain>
+            <striplinebreaks/>
+            <tokenfilter>
+                <replaceregex
+                    pattern='.*VERSION_STRING\s*=\s*"([0-9]+.[0-9]+)".*'
+                    replace="\1"/>
+            </tokenfilter>
+        </filterchain>
+    </loadfile>
+
+    <property name="zserio_core.jar_file"
+        value="${zserio_doc.zserio_root}/build/compiler/core/jar/zserio_core.jar"/>
+
+    <target name="clean">
+        <delete dir="${zserio_doc.build_dir}"/>
+    </target>
+
+    <target name="compile">
+        <mkdir dir="${zserio_doc.classes_dir}"/>
+        <depend srcDir="${zserio_doc.src_dir}" destDir="${zserio_doc.classes_dir}"
+            cache="${zserio_doc.build_dir}/depend-cache"/>
+
+        <path id="zserio_doc.classpath_zserio_core">
+            <pathelement location="${zserio_core.jar_file}"/>
+        </path>
+
+        <javac srcdir="${zserio_doc.src_dir}" destdir="${zserio_doc.classes_dir}" debug="on"
+            encoding="utf8" includeAntRuntime="false">
+            <classpath>
+                <path refid="zserio_doc.classpath_zserio_core"/>
+            </classpath>
+        </javac>
+    </target>
+
+    <target name="jar" depends="compile">
+        <mkdir dir="${zserio_doc.jar_dir}"/>
+        <jar destfile="${zserio_doc.jar_file}">
+            <fileset dir="${zserio_doc.classes_dir}">
+                <include name="zserio/**"/>
+            </fileset>
+            <zipfileset dir="${zserio_doc.base_dir}/freemarker" includes="*.ftl"
+                prefix="freemarker/doc"/>
+            <manifest>
+                <attribute name="Implementation-Version" value="${zserio_doc.version}"/>
+            </manifest>
+            <metainf dir="${zserio_doc.base_dir}/metainf" includes="**/*"/>
+        </jar>
+    </target>
+
+    <target name="install" depends="jar">
+        <mkdir dir="${zserio_doc.install_dir}"/>
+        <copy file="${zserio_doc.jar_file}" todir="${zserio_doc.install_dir}" overwrite="true"/>
+    </target>
+
+    <target name="findbugs" depends="install" if="findbugs.home_dir">
+        <mkdir dir="${zserio_doc.findbugs.out_dir}"/>
+        <taskdef name="findbugs" classpath="${findbugs.home_dir}/lib/findbugs-ant.jar"
+            classname="edu.umd.cs.findbugs.anttask.FindBugsTask"/>
+        <findbugs home="${findbugs.home_dir}"
+            output="html"
+            outputFile="${zserio_doc.findbugs.out_dir}/findbugs.html"
+            reportLevel="low"
+            errorProperty="zserio_doc.is_failed"
+            warningsProperty="zserio_doc.is_failed">
+            <sourcePath>
+                <dirset dir="${zserio_doc.src_dir}"/>
+            </sourcePath>
+            <fileset dir="${zserio_doc.classes_dir}"/>
+            <auxClasspath>
+                <path refid="zserio_doc.classpath_zserio_core"/>
+            </auxClasspath>
+        </findbugs>
+        <fail message="FindBugs found some issues!" if="zserio_doc.is_failed"/>
+    </target>
+
+    <target name="test" depends="findbugs">
+    </target>
+</project>
