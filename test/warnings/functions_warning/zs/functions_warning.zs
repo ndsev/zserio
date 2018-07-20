@@ -1,0 +1,4 @@
+package functions_warning;
+
+import functions_warning.unconditional_auto_optional_fields_warning.*;
+import functions_warning.unconditional_optional_fields_warning.*;

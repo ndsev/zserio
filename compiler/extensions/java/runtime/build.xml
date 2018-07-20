@@ -4,11 +4,11 @@ Ant build.xml for Zserio Java runtime library.
 
 The following external properties can be set:
 
-zserio_java_runtime.install_dir - Directory where to install library. Default is "../../distr/runtime_libs/java".
-zserio_java_runtime.build_dir   - Directory where to put generated files. Default is "../../build/runtime_libs/java".
+zserio_java_runtime.install_dir - Directory where to install library. Default is "../../../../distr/runtime_libs/java".
+zserio_java_runtime.build_dir   - Directory where to put generated files. Default is "../../../../build/runtime_libs/java".
 zserio.version                  - Zserio version used for Java runtime library version. Default is "unknown".
 relational.enable               - Flag whether the relational extension is included. Default is "no".
-relational.sqlite_dir           - Directory where SQLite JDBC jar file is located. Default is "../3rdparty".
+relational.sqlite_dir           - Directory where SQLite JDBC jar file is located. Default is "../../../../3rdparty/java".
 relational.validation           - Flag whether the support for low level validation is included. Default is "yes".
 findbugs.home_dir               - Location of the findbugs tool. If not set, findbugs is not run.
 
@@ -35,7 +35,7 @@ findbugs.home_dir               - Location of the findbugs tool. If not set, fin
     <property name="zserio_java_runtime.javadocs_jar_file" value="${zserio_java_runtime.jar_dir}/zserio_runtime_javadocs.jar"/>
     <property name="zserio_java_runtime.sources_jar_file" value="${zserio_java_runtime.jar_dir}/zserio_runtime_sources.jar"/>
 
-    <property name="zserio_java_runtime.3rdparty.root_dir" value="${zserio_java_runtime.base_dir}/../../../../3rdparty"/>
+    <property name="zserio_java_runtime.3rdparty.root_dir" value="${zserio_java_runtime.zserio_root}/3rdparty"/>
     <property name="zserio_java_runtime.3rdparty.jar_dir" value="${zserio_java_runtime.3rdparty.root_dir}/java"/>
     <property name="zserio_java_runtime.3rdparty.junit.jar_file" location="${zserio_java_runtime.3rdparty.jar_dir}/junit-4.10.jar"/>
     <property name="relational.enable" value="no"/>

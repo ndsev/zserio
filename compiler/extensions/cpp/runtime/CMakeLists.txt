@@ -17,14 +17,9 @@ set(CPPCHECK_HOME "" CACHE PATH "Home directory of cppcheck tool. If empty, cppc
 set(ZSERIO_PROJECT_ROOT "${CMAKE_CURRENT_SOURCE_DIR}/../../../..")
 set(CMAKE_MODULE_PATH "${ZSERIO_PROJECT_ROOT}/cmake")
 
-# compile custom SQLite3 for testing
-add_library(SQLite3 ${ZSERIO_PROJECT_ROOT}/3rdparty/cpp/sqlite/sqlite3.c)
-if (UNIX)
-    target_link_libraries(SQLite3 PUBLIC dl)
-endif ()
-
-set(ZSERIO_RUNTIME_SQLITE_LIBRARY SQLite3)
-set(ZSERIO_RUNTIME_SQLITE_INCLUDE_DIR ${ZSERIO_PROJECT_ROOT}/3rdparty/cpp/sqlite)
+# add SQLite3 library
+include(sqlite_utils)
+sqlite_add_library(${ZSERIO_PROJECT_ROOT})
 
 # cmake helpers
 include(cmake_utils)

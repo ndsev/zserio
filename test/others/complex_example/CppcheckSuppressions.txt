@@ -1,0 +1,3 @@
+// suppress "The scope of the variable '_treeFieldIndex' can be reduced."
+variableScope:*/compound/ct_structure/UseOfConst.cpp
+

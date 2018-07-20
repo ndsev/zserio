@@ -1,0 +1,100 @@
+<!--
+
+Ant build.xml for metamodel test example.
+
+The following properties can be set:
+
+zserio.release_dir      - Directory where to find Zserio release to test. Default is "../../../distr".
+test.build_dir          - Directory where to put generated files. Default is "../../../build/test".
+findbugs.home_dir       - Location of the findbugs tool. If not set, findbugs is not run.
+
+-->
+<project name="metamodel" basedir="." default="run">
+    <dirname property="metamodel.base_dir" file="${ant.file.metamodel}"/>
+
+    <property name="zserio.root_dir" location="${metamodel.base_dir}/../../.."/>
+    <property name="zserio.release_dir" location="${zserio.root_dir}/distr"/>
+    <property name="zserio.jar_dir" location="${zserio.release_dir}/zserio_libs"/>
+
+    <property name="test.build_dir" location="${zserio.root_dir}/build/test"/>
+    <property name="runtime.jar_dir" location="${zserio.release_dir}/runtime_libs/java"/>
+
+    <property name="metamodel.build_dir" location="${test.build_dir}/others/metamodel"/>
+    <property name="metamodel.zs.in_dir" location="${metamodel.base_dir}/zs"/>
+    <property name="metamodel.zs.out_dir" location="${metamodel.build_dir}/gen"/>
+
+    <property name="runtime.jar_file" location="${runtime.jar_dir}/zserio_runtime.jar"/>
+
+    <!-- Zserio Ant task -->
+    <taskdef name="zserio" classpath="${zserio.release_dir}/ant_task/zserio_ant.jar" classname="zserio.ant.ZserioTask"/>
+
+    <!-- classpath required for running the Zserio Tool -->
+    <path id="zserio.classpath">
+        <fileset dir="${zserio.jar_dir}">
+            <include name="*.jar"/>
+            <exclude name="zserio_ant.jar"/>
+        </fileset>
+    </path>
+
+    <target name="prepare">
+        <mkdir dir="${metamodel.build_dir}/classes"/>
+    </target>
+
+    <target name="gen" depends="prepare">
+        <zserio srcPath="${metamodel.zs.in_dir}" srcFile="metamodel.zs" java="${metamodel.zs.out_dir}">
+            <arg name="withWriterCode"/>
+            <dependencies>
+                <fileset dir="${metamodel.zs.in_dir}" includes="**/*.zs"/>
+                <fileset dir="${zserio.jar_dir}"/>
+                <fileset dir="${runtime.jar_dir}"/>
+                <fileset file="${ant.file.metamodel}"/>
+            </dependencies>
+            <output>
+                <fileset dir="${metamodel.zs.out_dir}" includes="**/*.java" erroronmissingdir="false"/>
+            </output>
+            <classpath>
+                <path refid="zserio.classpath"/>
+            </classpath>
+        </zserio>
+    </target>
+
+    <target name="compile" depends="gen">
+        <depend srcDir="${metamodel.zs.out_dir}" destDir="${metamodel.build_dir}/classes"
+            cache="${metamodel.build_dir}/depend-cache"/>
+        <javac destdir="${metamodel.build_dir}/classes" debug="on" encoding="utf8" includeAntRuntime="false">
+            <classpath>
+                <pathelement location="${runtime.jar_file}"/>
+            </classpath>
+            <src location="${metamodel.zs.out_dir}"/>
+        </javac>
+    </target>
+
+    <target name="findbugs" depends="compile" if="findbugs.home_dir" description="Run FindBugs">
+        <taskdef name="findbugs" classpath="${findbugs.home_dir}/lib/findbugs-ant.jar"
+            classname="edu.umd.cs.findbugs.anttask.FindBugsTask"/>
+        <findbugs home="${findbugs.home_dir}"
+            output="html"
+            outputFile="${metamodel.build_dir}/findbugs.html"
+            excludeFilter="${metamodel.base_dir}/findbugs_filter.xml"
+            reportLevel="low"
+            errorProperty="metamodel.is_failed"
+            warningsProperty="metamodel.is_failed">
+            <sourcePath>
+                <dirset dir="${metamodel.zs.out_dir}"/>
+            </sourcePath>
+            <fileset dir="${metamodel.build_dir}/classes"/>
+            <auxClasspath>
+                <fileset file="${runtime.jar_file}"/>
+            </auxClasspath>
+        </findbugs>
+        <fail message="FindBugs found some issues!" if="metamodel.is_failed"/>
+    </target>
+
+    <target name="run" depends="findbugs">
+        <!-- nothing to do -->
+    </target>
+
+    <target name="clean">
+        <delete dir="${metamodel.build_dir}"/>
+    </target>
+</project>

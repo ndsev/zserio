@@ -1,0 +1,121 @@
+<!--
+
+Ant build.xml for packages_error test example.
+
+The following properties can be set:
+
+zserio.release_dir      - Directory where to find Zserio release to test. Default is "../../../distr".
+test.build_dir          - Directory where to put generated files. Default is "../../../build/test".
+findbugs.home_dir       - Location of the findbugs tool. If not set, findbugs is not run.
+
+-->
+<project name="packages_error" basedir="." default="run">
+    <dirname property="packages_error.base_dir" file="${ant.file.packages_error}"/>
+
+    <property name="zserio.root_dir" location="${packages_error.base_dir}/../../.."/>
+    <property name="zserio.release_dir" location="${zserio.root_dir}/distr"/>
+    <property name="zserio.jar_dir" location="${zserio.release_dir}/zserio_libs"/>
+
+    <property name="test.build_dir" location="${zserio.root_dir}/build/test"/>
+    <property name="test_utils.jar_file" location="${test.build_dir}/utils/jar/test_utils.jar"/>
+    <property name="runtime.jar_dir" location="${zserio.release_dir}/runtime_libs/java"/>
+    <property name="3rdparty.jar_dir" location="${zserio.root_dir}/3rdparty/java"/>
+
+    <property name="packages_error.build_dir"
+        location="${test.build_dir}/errors/packages_error"/>
+    <property name="packages_error.zs.in_dir" location="${packages_error.base_dir}/zs"/>
+    <property name="packages_error.zs.out_dir" location="${packages_error.build_dir}/gen"/>
+    <property name="packages_error.zs.zserio_errors_file"
+        location="${packages_error.build_dir}/zserio_errors.txt"/>
+    <property name="packages_error.run_dir" location="${packages_error.build_dir}/run"/>
+
+    <property name="runtime.jar_file" location="${runtime.jar_dir}/zserio_runtime.jar"/>
+    <property name="3rdparty.junit.jar_file" location="${3rdparty.jar_dir}/junit-4.10.jar"/>
+
+    <!-- Zserio Ant task -->
+    <taskdef name="zserio" classpath="${zserio.release_dir}/ant_task/zserio_ant.jar" classname="zserio.ant.ZserioTask"/>
+
+    <!-- classpath required for running the Zserio Tool -->
+    <path id="zserio.classpath">
+        <fileset dir="${zserio.jar_dir}">
+            <include name="*.jar"/>
+            <exclude name="zserio_ant.jar"/>
+        </fileset>
+    </path>
+
+    <target name="prepare">
+        <mkdir dir="${packages_error.build_dir}/classes"/>
+    </target>
+
+    <target name="gen" depends="prepare">
+        <record name="${packages_error.zs.zserio_errors_file}" action="start" loglevel="warn"/>
+
+        <zserio srcPath="${packages_error.zs.in_dir}" srcFile="imported_unknown_single_type_error.zs"
+            java="${packages_error.zs.out_dir}" ignoreError="true">
+            <classpath>
+                <path refid="zserio.classpath"/>
+            </classpath>
+        </zserio>
+
+        <record name="${packages_error.zs.zserio_errors_file}" action="stop"/>
+    </target>
+
+    <target name="compile" depends="gen">
+        <depend srcDir="${packages_error.base_dir}/java"
+            destDir="${packages_error.build_dir}/classes"
+            cache="${packages_error.build_dir}/depend-cache"/>
+        <javac destdir="${packages_error.build_dir}/classes" debug="on" encoding="utf8"
+            includeAntRuntime="false">
+            <classpath>
+                <pathelement location="${runtime.jar_file}"/>
+                <pathelement location="${3rdparty.junit.jar_file}"/>
+                <pathelement location="${test_utils.jar_file}"/>
+            </classpath>
+            <src location="${packages_error.base_dir}/java"/>
+        </javac>
+    </target>
+
+    <target name="findbugs" depends="compile" if="findbugs.home_dir" description="Run FindBugs">
+        <taskdef name="findbugs" classpath="${findbugs.home_dir}/lib/findbugs-ant.jar"
+            classname="edu.umd.cs.findbugs.anttask.FindBugsTask"/>
+        <findbugs home="${findbugs.home_dir}"
+            output="html"
+            outputFile="${packages_error.build_dir}/findbugs.html"
+            reportLevel="low"
+            errorProperty="packages_error.is_failed"
+            warningsProperty="packages_error.is_failed">
+            <sourcePath>
+                <dirset dir="${packages_error.base_dir}/java"/>
+            </sourcePath>
+            <fileset dir="${packages_error.build_dir}/classes"/>
+            <auxClasspath>
+                <fileset file="${runtime.jar_file}"/>
+                <fileset file="${3rdparty.junit.jar_file}"/>
+                <fileset file="${test_utils.jar_file}"/>
+            </auxClasspath>
+        </findbugs>
+        <fail message="FindBugs found some issues!" if="packages_error.is_failed"/>
+    </target>
+
+    <target name="run" depends="findbugs">
+        <delete dir="${packages_error.run_dir}"/>
+        <mkdir dir="${packages_error.run_dir}"/>
+        <copy file="${packages_error.zs.zserio_errors_file}" todir="${packages_error.run_dir}"/>
+        <junit printsummary="no" fork="on" haltonfailure="on" dir="${packages_error.run_dir}">
+            <classpath>
+                <pathelement location="${packages_error.build_dir}/classes"/>
+                <pathelement location="${runtime.jar_file}"/>
+                <pathelement location="${3rdparty.junit.jar_file}"/>
+                <pathelement location="${test_utils.jar_file}"/>
+            </classpath>
+            <batchtest>
+                <fileset dir="${packages_error.base_dir}/java" includes="**/*Test.java"/>
+                <formatter type="plain" usefile="false"/>
+            </batchtest>
+        </junit>
+    </target>
+
+    <target name="clean">
+        <delete dir="${packages_error.build_dir}"/>
+    </target>
+</project>

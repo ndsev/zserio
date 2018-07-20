@@ -1,0 +1,249 @@
+#include <cstdio>
+#include <map>
+#include <string>
+
+#include "gtest/gtest.h"
+
+#include "sql_types/SqlTypesDb.h"
+
+namespace sql_types
+{
+
+class SqlTypesTest : public ::testing::Test
+{
+public:
+    SqlTypesTest() : m_database(DB_FILE_NAME)
+    {
+        m_database.createSchema();
+    }
+
+    ~SqlTypesTest()
+    {
+        m_database.close();
+        std::remove(DB_FILE_NAME);
+    }
+
+protected:
+    bool getSqlColumnTypes(std::map<std::string, std::string>& sqlColumnTypes)
+    {
+        // prepare SQL query
+        std::string checkTableName = "sqlTypesTable";
+        std::string sqlQuery = "PRAGMA table_info(" + checkTableName + ")";
+
+        // get table info
+        sqlite3_stmt* statement;
+        int result = sqlite3_prepare_v2(m_database.getConnection(), sqlQuery.c_str(), -1, &statement, NULL);
+        if (result != SQLITE_OK)
+            return false;
+
+        while ((result = sqlite3_step(statement)) != SQLITE_DONE)
+        {
+            if (result != SQLITE_ROW)
+            {
+                sqlite3_finalize(statement);
+                return false;
+            }
+
+            const unsigned char* columnName = sqlite3_column_text(statement, 1);
+            const unsigned char* columnType = sqlite3_column_text(statement, 2);
+            if (columnName == NULL || columnType == NULL)
+            {
+                sqlite3_finalize(statement);
+                return false;
+            }
+
+            sqlColumnTypes[std::string(reinterpret_cast<const char*>(columnName))] =
+                    std::string(reinterpret_cast<const char*>(columnType));
+        }
+
+        sqlite3_finalize(statement);
+
+        return true;
+    }
+
+    static const char DB_FILE_NAME[];
+
+    sql_types::SqlTypesDb  m_database;
+};
+
+const char SqlTypesTest::DB_FILE_NAME[] = "sql_types_test.sqlite";
+
+TEST_F(SqlTypesTest, unsignedIntegerTypes)
+{
+    std::map<std::string, std::string> sqlColumnTypes;
+    ASSERT_TRUE(getSqlColumnTypes(sqlColumnTypes));
+
+    std::map<std::string, std::string>::const_iterator it = sqlColumnTypes.find("uint8Type");
+    ASSERT_TRUE(it != sqlColumnTypes.end());
+    ASSERT_EQ("INTEGER", it->second);
+
+    it = sqlColumnTypes.find("uint16Type");
+    ASSERT_TRUE(it != sqlColumnTypes.end());
+    ASSERT_EQ("INTEGER", it->second);
+
+    it = sqlColumnTypes.find("uint32Type");
+    ASSERT_TRUE(it != sqlColumnTypes.end());
+    ASSERT_EQ("INTEGER", it->second);
+
+    it = sqlColumnTypes.find("uint64Type");
+    ASSERT_TRUE(it != sqlColumnTypes.end());
+    ASSERT_EQ("INTEGER", it->second);
+}
+
+TEST_F(SqlTypesTest, signedIntegerTypes)
+{
+    std::map<std::string, std::string> sqlColumnTypes;
+    ASSERT_TRUE(getSqlColumnTypes(sqlColumnTypes));
+
+    std::map<std::string, std::string>::const_iterator it = sqlColumnTypes.find("int8Type");
+    ASSERT_TRUE(it != sqlColumnTypes.end());
+    ASSERT_EQ("INTEGER", it->second);
+
+    it = sqlColumnTypes.find("int16Type");
+    ASSERT_TRUE(it != sqlColumnTypes.end());
+    ASSERT_EQ("INTEGER", it->second);
+
+    it = sqlColumnTypes.find("int32Type");
+    ASSERT_TRUE(it != sqlColumnTypes.end());
+    ASSERT_EQ("INTEGER", it->second);
+
+    it = sqlColumnTypes.find("int64Type");
+    ASSERT_TRUE(it != sqlColumnTypes.end());
+    ASSERT_EQ("INTEGER", it->second);
+}
+
+TEST_F(SqlTypesTest, unsignedBitfieldTypes)
+{
+    std::map<std::string, std::string> sqlColumnTypes;
+    ASSERT_TRUE(getSqlColumnTypes(sqlColumnTypes));
+
+    std::map<std::string, std::string>::const_iterator it = sqlColumnTypes.find("bitfield8Type");
+    ASSERT_TRUE(it != sqlColumnTypes.end());
+    ASSERT_EQ("INTEGER", it->second);
+
+    it = sqlColumnTypes.find("variableBitfieldType");
+    ASSERT_TRUE(it != sqlColumnTypes.end());
+    ASSERT_EQ("INTEGER", it->second);
+}
+
+TEST_F(SqlTypesTest, signedBitfieldTypes)
+{
+    std::map<std::string, std::string> sqlColumnTypes;
+    ASSERT_TRUE(getSqlColumnTypes(sqlColumnTypes));
+
+    std::map<std::string, std::string>::const_iterator it = sqlColumnTypes.find("intfield8Type");
+    ASSERT_TRUE(it != sqlColumnTypes.end());
+    ASSERT_EQ("INTEGER", it->second);
+
+    it = sqlColumnTypes.find("variableIntfieldType");
+    ASSERT_TRUE(it != sqlColumnTypes.end());
+    ASSERT_EQ("INTEGER", it->second);
+}
+
+TEST_F(SqlTypesTest, float16Type)
+{
+    std::map<std::string, std::string> sqlColumnTypes;
+    ASSERT_TRUE(getSqlColumnTypes(sqlColumnTypes));
+
+    std::map<std::string, std::string>::const_iterator it = sqlColumnTypes.find("float16Type");
+    ASSERT_TRUE(it != sqlColumnTypes.end());
+    ASSERT_EQ("REAL", it->second);
+}
+
+TEST_F(SqlTypesTest, variableUnsignedIntegerTypes)
+{
+    std::map<std::string, std::string> sqlColumnTypes;
+    ASSERT_TRUE(getSqlColumnTypes(sqlColumnTypes));
+
+    std::map<std::string, std::string>::const_iterator it = sqlColumnTypes.find("varuint16Type");
+    ASSERT_TRUE(it != sqlColumnTypes.end());
+    ASSERT_EQ("INTEGER", it->second);
+
+    it = sqlColumnTypes.find("varuint32Type");
+    ASSERT_TRUE(it != sqlColumnTypes.end());
+    ASSERT_EQ("INTEGER", it->second);
+
+    it = sqlColumnTypes.find("varuint64Type");
+    ASSERT_TRUE(it != sqlColumnTypes.end());
+    ASSERT_EQ("INTEGER", it->second);
+}
+
+TEST_F(SqlTypesTest, variableSignedIntegerTypes)
+{
+    std::map<std::string, std::string> sqlColumnTypes;
+    ASSERT_TRUE(getSqlColumnTypes(sqlColumnTypes));
+
+    std::map<std::string, std::string>::const_iterator it = sqlColumnTypes.find("varint16Type");
+    ASSERT_TRUE(it != sqlColumnTypes.end());
+    ASSERT_EQ("INTEGER", it->second);
+
+    it = sqlColumnTypes.find("varint32Type");
+    ASSERT_TRUE(it != sqlColumnTypes.end());
+    ASSERT_EQ("INTEGER", it->second);
+
+    it = sqlColumnTypes.find("varint64Type");
+    ASSERT_TRUE(it != sqlColumnTypes.end());
+    ASSERT_EQ("INTEGER", it->second);
+}
+
+TEST_F(SqlTypesTest, boolType)
+{
+    std::map<std::string, std::string> sqlColumnTypes;
+    ASSERT_TRUE(getSqlColumnTypes(sqlColumnTypes));
+
+    std::map<std::string, std::string>::const_iterator it = sqlColumnTypes.find("boolType");
+    ASSERT_TRUE(it != sqlColumnTypes.end());
+    ASSERT_EQ("INTEGER", it->second);
+}
+
+TEST_F(SqlTypesTest, stringTypes)
+{
+    std::map<std::string, std::string> sqlColumnTypes;
+    ASSERT_TRUE(getSqlColumnTypes(sqlColumnTypes));
+
+    std::map<std::string, std::string>::const_iterator it = sqlColumnTypes.find("stringType");
+    ASSERT_TRUE(it != sqlColumnTypes.end());
+    ASSERT_EQ("TEXT", it->second);
+}
+
+TEST_F(SqlTypesTest, enumType)
+{
+    std::map<std::string, std::string> sqlColumnTypes;
+    ASSERT_TRUE(getSqlColumnTypes(sqlColumnTypes));
+
+    std::map<std::string, std::string>::const_iterator it = sqlColumnTypes.find("enumType");
+    ASSERT_TRUE(it != sqlColumnTypes.end());
+    ASSERT_EQ("INTEGER", it->second);
+}
+
+TEST_F(SqlTypesTest, structureType)
+{
+    std::map<std::string, std::string> sqlColumnTypes;
+    ASSERT_TRUE(getSqlColumnTypes(sqlColumnTypes));
+
+    std::map<std::string, std::string>::const_iterator it = sqlColumnTypes.find("structureType");
+    ASSERT_TRUE(it != sqlColumnTypes.end());
+    ASSERT_EQ("BLOB", it->second);
+}
+
+TEST_F(SqlTypesTest, choiceType)
+{
+    std::map<std::string, std::string> sqlColumnTypes;
+    ASSERT_TRUE(getSqlColumnTypes(sqlColumnTypes));
+
+    std::map<std::string, std::string>::const_iterator it = sqlColumnTypes.find("choiceType");
+    ASSERT_TRUE(it != sqlColumnTypes.end());
+    ASSERT_EQ("BLOB", it->second);
+}
+
+TEST_F(SqlTypesTest, unionType)
+{
+    std::map<std::string, std::string> sqlColumnTypes;
+    ASSERT_TRUE(getSqlColumnTypes(sqlColumnTypes));
+
+    std::map<std::string, std::string>::const_iterator it = sqlColumnTypes.find("unionType");
+    ASSERT_TRUE(it != sqlColumnTypes.end());
+    ASSERT_EQ("BLOB", it->second);
+}
+
+} // namespace sql_types

@@ -30,7 +30,6 @@ function(zserio_add_runtime_library)
     set(ZSERIO_RUNTIME_INCLUDE_INSPECTOR ${VALUE_INCLUDE_INSPECTOR})
     set(ZSERIO_RUNTIME_INCLUDE_RELATIONAL ${VALUE_INCLUDE_RELATIONAL})
     add_subdirectory(${VALUE_RUNTIME_LIBRARY_DIR} ZserioCppRuntime)
-    set(SQLITE3_LIBRARIES_TO_INSTALL ${SQLITE3_LIBRARIES_TO_INSTALL} PARENT_SCOPE)
 endfunction()
 
 # A function to create a static library out of Zserio-generated sources.
@@ -130,13 +129,5 @@ function(zserio_add_library)
     if (NOT(SOURCE_FILE_POSITION EQUAL -1))
         include(cppcheck_utils)
         cppcheck_add_custom_command(TARGET ${VALUE_TARGET} SOURCE_DIR ${VALUE_OUT_DIR})
-    endif ()
-endfunction()
-
-# A function to copy all SQLite3 dependent shared libraries to the bin directory.
-function(zserio_copy_sqlite3_shared_libs_to_bin_dir)
-    if (NOT "${SQLITE3_LIBRARIES_TO_INSTALL}" STREQUAL "")
-        add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
-            COMMAND ${CMAKE_COMMAND} -E copy ${SQLITE3_LIBRARIES_TO_INSTALL} ${CMAKE_CURRENT_BINARY_DIR})
     endif ()
 endfunction()

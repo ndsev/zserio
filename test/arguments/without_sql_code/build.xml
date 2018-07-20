@@ -1,0 +1,126 @@
+<!--
+
+Ant build.xml for without_sql_code test example.
+
+The following properties can be set:
+
+zserio.release_dir      - Directory where to find Zserio release to test. Default is "../../../distr".
+test.build_dir          - Directory where to put generated files. Default is "../../../build/test/java".
+findbugs.home_dir       - Location of the findbugs tool. If not set, findbugs is not run.
+
+-->
+<project name="without_sql_code" basedir="." default="run">
+    <dirname property="without_sql_code.base_dir" file="${ant.file.without_sql_code}"/>
+
+    <property name="zserio.root_dir" location="${without_sql_code.base_dir}/../../.."/>
+    <property name="zserio.release_dir" location="${zserio.root_dir}/distr"/>
+    <property name="zserio.jar_dir" location="${zserio.release_dir}/java"/>
+
+    <property name="test.build_dir" location="${zserio.root_dir}/build/test/java"/>
+    <property name="runtime.jar_dir" location="${zserio.release_dir}/runtime_libs/java"/>
+    <property name="3rdparty.jar_dir" location="${zserio.root_dir}/3rdparty/java"/>
+
+    <property name="without_sql_code.build_dir" location="${test.build_dir}/arguments/without_sql_code"/>
+    <property name="without_sql_code.zs.in_dir" location="${without_sql_code.base_dir}/zs"/>
+    <property name="without_sql_code.zs.out_dir" location="${without_sql_code.build_dir}/gen"/>
+
+    <property name="runtime.jar_file" location="${runtime.jar_dir}/zserio_runtime.jar"/>
+    <property name="3rdparty.junit.jar_file" location="${3rdparty.jar_dir}/junit-4.10.jar"/>
+
+    <!-- Zserio Ant task -->
+    <taskdef name="zserio" classpath="${zserio.release_dir}/ant_task/zserio_ant.jar" classname="zserio.ant.ZserioTask"/>
+
+    <!-- classpath required for running the Zserio Tool -->
+    <path id="zserio.classpath">
+        <fileset dir="${zserio.jar_dir}">
+            <include name="*.jar"/>
+            <exclude name="zserio_ant.jar"/>
+        </fileset>
+    </path>
+
+    <target name="prepare">
+        <mkdir dir="${without_sql_code.build_dir}/classes"/>
+    </target>
+
+    <target name="gen" depends="prepare">
+        <zserio srcPath="${without_sql_code.zs.in_dir}" srcFile="without_sql_code.zs" java="${without_sql_code.zs.out_dir}">
+            <arg name="withoutSqlCode"/>
+            <arg name="withWriterCode"/>
+            <dependencies>
+                <fileset dir="${without_sql_code.zs.in_dir}" includes="**/*.zs"/>
+                <fileset dir="${zserio.jar_dir}"/>
+                <fileset dir="${runtime.jar_dir}"/>
+                <fileset file="${ant.file.without_sql_code}"/>
+            </dependencies>
+            <output>
+                <fileset dir="${without_sql_code.zs.out_dir}" includes="**/*.java" erroronmissingdir="false"/>
+            </output>
+            <classpath>
+                <path refid="zserio.classpath"/>
+            </classpath>
+        </zserio>
+
+        <available file="${without_sql_code.zs.out_dir}/without_sql_code/GeoMapTable.java"
+            property="without_sql_code.zs.out_geo_map_table.present"/>
+        <available file="${without_sql_code.zs.out_dir}/without_sql_code/GeoMapTableRow.java"
+            property="without_sql_code.zs.out_geo_map_table_row.present"/>
+        <available file="${without_sql_code.zs.out_dir}/without_sql_code/IParameterProvider.java"
+            property="without_sql_code.zs.out_iparameter_provider.present"/>
+        <available file="${without_sql_code.zs.out_dir}/without_sql_code/MasterDatabase.java"
+            property="without_sql_code.zs.out_master_database.present"/>
+        <available file="${without_sql_code.zs.out_dir}/without_sql_code/WorldDb.java"
+            property="without_sql_code.zs.out_world_db.present"/>
+    </target>
+
+    <target name="compile" depends="gen">
+        <depend srcDir="${without_sql_code.zs.out_dir}"
+            destDir="${without_sql_code.build_dir}/classes" cache="${without_sql_code.build_dir}/depend-cache"/>
+        <javac destdir="${without_sql_code.build_dir}/classes" debug="on" encoding="utf8" includeAntRuntime="false">
+            <classpath>
+                <pathelement location="${runtime.jar_file}"/>
+                <pathelement location="${3rdparty.junit.jar_file}"/>
+            </classpath>
+            <src location="${without_sql_code.zs.out_dir}"/>
+        </javac>
+    </target>
+
+    <target name="findbugs" depends="compile" if="findbugs.home_dir" description="Run FindBugs">
+        <taskdef name="findbugs" classpath="${findbugs.home_dir}/lib/findbugs-ant.jar"
+            classname="edu.umd.cs.findbugs.anttask.FindBugsTask"/>
+        <findbugs home="${findbugs.home_dir}"
+            output="html"
+            outputFile="${without_sql_code.build_dir}/findbugs.html"
+            reportLevel="low"
+            errorProperty="without_sql_code.is_failed"
+            warningsProperty="without_sql_code.is_failed">
+            <sourcePath>
+                <dirset dir="${without_sql_code.zs.out_dir}"/>
+            </sourcePath>
+            <fileset dir="${without_sql_code.build_dir}/classes"/>
+            <auxClasspath>
+                <fileset file="${runtime.jar_file}"/>
+                <fileset file="${3rdparty.junit.jar_file}"/>
+            </auxClasspath>
+        </findbugs>
+        <fail message="FindBugs found some issues!" if="without_sql_code.is_failed"/>
+    </target>
+
+    <target name="run" depends="findbugs">
+        <!-- only check that sources implementing SQL extension have not been generated -->
+        <fail message="Some of generated sources implementing SQL extension have been found!">
+            <condition>
+                <or>
+                    <isset property="without_sql_code.zs.out_geo_map_table.present"/>
+                    <isset property="without_sql_code.zs.out_geo_map_table_row.present"/>
+                    <isset property="without_sql_code.zs.out_iparameter_provider.present"/>
+                    <isset property="without_sql_code.zs.out_master_database.present"/>
+                    <isset property="without_sql_code.zs.out_world_db.present"/>
+                </or>
+            </condition>
+        </fail>
+    </target>
+
+    <target name="clean">
+        <delete dir="${without_sql_code.build_dir}"/>
+    </target>
+</project>

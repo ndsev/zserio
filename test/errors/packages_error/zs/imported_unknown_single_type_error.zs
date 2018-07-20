@@ -1,0 +1,3 @@
+package imported_unknown_single_type_error;
+
+import simple_database.UnknownTable;

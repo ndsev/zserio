@@ -1,0 +1,123 @@
+<!--
+
+Ant build.xml for parameterized_types test example.
+
+The following properties can be set:
+
+zserio.release_dir      - Directory where to find Zserio release to test. Default is "../../../distr".
+test.build_dir          - Directory where to put generated files. Default is "../../../build/test".
+findbugs.home_dir       - Location of the findbugs tool. If not set, findbugs is not run.
+
+-->
+<project name="parameterized_types" basedir="." default="run">
+    <dirname property="parameterized_types.base_dir" file="${ant.file.parameterized_types}"/>
+
+    <property name="zserio.root_dir" location="${parameterized_types.base_dir}/../../.."/>
+    <property name="zserio.release_dir" location="${zserio.root_dir}/distr"/>
+    <property name="zserio.jar_dir" location="${zserio.release_dir}/zserio_libs"/>
+
+    <property name="test.build_dir" location="${zserio.root_dir}/build/test"/>
+    <property name="runtime.jar_dir" location="${zserio.release_dir}/runtime_libs/java"/>
+    <property name="3rdparty.jar_dir" location="${zserio.root_dir}/3rdparty/java"/>
+
+    <property name="parameterized_types.build_dir"
+        location="${test.build_dir}/language/parameterized_types"/>
+    <property name="parameterized_types.zs.in_dir" location="${parameterized_types.base_dir}/zs"/>
+    <property name="parameterized_types.zs.out_dir" location="${parameterized_types.build_dir}/gen"/>
+    <property name="parameterized_types.run_dir" location="${parameterized_types.build_dir}/run"/>
+
+    <property name="runtime.jar_file" location="${runtime.jar_dir}/zserio_runtime.jar"/>
+    <property name="3rdparty.junit.jar_file" location="${3rdparty.jar_dir}/junit-4.10.jar"/>
+
+    <!-- Zserio Ant task -->
+    <taskdef name="zserio" classpath="${zserio.release_dir}/ant_task/zserio_ant.jar" classname="zserio.ant.ZserioTask"/>
+
+    <!-- classpath required for running the Zserio Tool -->
+    <path id="zserio.classpath">
+        <fileset dir="${zserio.jar_dir}">
+            <include name="*.jar"/>
+            <exclude name="zserio_ant.jar"/>
+        </fileset>
+    </path>
+
+    <target name="prepare">
+        <mkdir dir="${parameterized_types.build_dir}/classes"/>
+    </target>
+
+    <target name="gen" depends="prepare">
+        <zserio srcPath="${parameterized_types.zs.in_dir}" srcFile="parameterized_types.zs"
+            java="${parameterized_types.zs.out_dir}">
+            <arg name="withWriterCode"/>
+            <dependencies>
+                <fileset dir="${parameterized_types.zs.in_dir}" includes="**/*.zs"/>
+                <fileset dir="${zserio.jar_dir}"/>
+                <fileset dir="${runtime.jar_dir}"/>
+                <fileset file="${ant.file.parameterized_types}"/>
+            </dependencies>
+            <output>
+                <fileset dir="${parameterized_types.zs.out_dir}" includes="**/*.java"
+                    erroronmissingdir="false"/>
+            </output>
+            <classpath>
+                <path refid="zserio.classpath"/>
+            </classpath>
+        </zserio>
+    </target>
+
+    <target name="compile" depends="gen">
+        <depend srcDir="${parameterized_types.base_dir}/java:${parameterized_types.zs.out_dir}"
+            destDir="${parameterized_types.build_dir}/classes"
+            cache="${parameterized_types.build_dir}/depend-cache"/>
+        <javac destdir="${parameterized_types.build_dir}/classes" debug="on" encoding="utf8"
+            includeAntRuntime="false">
+            <classpath>
+                <pathelement location="${runtime.jar_file}"/>
+                <pathelement location="${3rdparty.junit.jar_file}"/>
+            </classpath>
+            <src location="${parameterized_types.base_dir}/java"/>
+            <src location="${parameterized_types.zs.out_dir}"/>
+        </javac>
+    </target>
+
+    <target name="findbugs" depends="compile" if="findbugs.home_dir" description="Run FindBugs">
+        <taskdef name="findbugs" classpath="${findbugs.home_dir}/lib/findbugs-ant.jar"
+            classname="edu.umd.cs.findbugs.anttask.FindBugsTask"/>
+        <findbugs home="${findbugs.home_dir}"
+            output="html"
+            outputFile="${parameterized_types.build_dir}/findbugs.html"
+            reportLevel="low"
+            errorProperty="parameterized_types.is_failed"
+            warningsProperty="parameterized_types.is_failed">
+            <sourcePath>
+                <dirset dir="${parameterized_types.base_dir}/java"/>
+                <dirset dir="${parameterized_types.zs.out_dir}"/>
+            </sourcePath>
+            <fileset dir="${parameterized_types.build_dir}/classes"/>
+            <auxClasspath>
+                <fileset file="${runtime.jar_file}"/>
+                <fileset file="${3rdparty.junit.jar_file}"/>
+            </auxClasspath>
+        </findbugs>
+        <fail message="FindBugs found some issues!" if="parameterized_types.is_failed"/>
+    </target>
+
+    <target name="run" depends="findbugs">
+        <delete dir="${parameterized_types.run_dir}"/>
+        <mkdir dir="${parameterized_types.run_dir}"/>
+        <junit printsummary="no" fork="on" haltonfailure="on" dir="${parameterized_types.run_dir}">
+            <classpath>
+                <pathelement location="${parameterized_types.build_dir}/classes"/>
+                <pathelement location="${runtime.jar_file}"/>
+                <pathelement location="${3rdparty.junit.jar_file}"/>
+            </classpath>
+            <batchtest>
+                <fileset dir="${parameterized_types.base_dir}/java" includes="**/*Test.java"/>
+                <formatter type="plain" usefile="false"/>
+            </batchtest>
+        </junit>
+    </target>
+
+    <target name="clean">
+        <delete dir="${parameterized_types.build_dir}"/>
+    </target>
+</project>

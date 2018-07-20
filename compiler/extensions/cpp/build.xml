@@ -8,7 +8,7 @@ It generates C++ API.
 The following external properties can be set:
 
 zserio_cpp.install_dir      - Directory where to install Zserio C++ Extension jar file. Default is
-                              "../../../distr/jar".
+                              "../../../distr/zserio_libs".
 zserio_cpp.build_dir        - Directory where to put generated files. Default is
                               "../../../build/compiler/extensions/cpp".
 zserio_core.jar_file        - Zserio core jar file used for classpath. Default is

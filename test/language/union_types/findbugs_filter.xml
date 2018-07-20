@@ -1,0 +1,14 @@
+<FindBugsFilter>
+    <Match>
+        <!-- Same code in different switch clauses. -->
+        <Or>
+            <Class name="~.*SimpleUnion.*"/>
+        </Or>
+        <Or>
+            <Method name="bitSizeOf"/>
+            <Method name="initializeOffsets"/>
+            <Method name="read"/>
+        </Or>
+        <Bug code="DB"/>
+    </Match>
+</FindBugsFilter>

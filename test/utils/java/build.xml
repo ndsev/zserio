@@ -1,0 +1,66 @@
+<!--
+
+Ant build.xml for Zserio Java utils library which is used by Java test examples.
+
+The following properties can be set:
+
+test_utils.build_dir    - Directory where to put generated files.
+                          Default is "../../../build/test/java/utils".
+findbugs.home_dir       - Location of the findbugs tool. If not set, findbugs is not run.
+
+-->
+<project name="test_utils" basedir="." default="jar">
+    <dirname property="test_utils.base_dir" file="${ant.file.test_utils}"/>
+
+    <property name="zserio.root_dir" location="${test_utils.base_dir}/../../.."/>
+
+    <property name="test_utils.build_dir" location="${zserio.root_dir}/build/test/java/utils"/>
+    <property name="test_utils.src_dir" location="${test_utils.base_dir}/src"/>
+    <property name="test_utils.classes_dir" location="${test_utils.build_dir}/classes"/>
+
+    <property name="test_utils.jar_file" value="${test_utils.build_dir}/jar/test_utils.jar"/>
+
+    <target name="prepare">
+        <mkdir dir="${test_utils.build_dir}/classes"/>
+    </target>
+
+    <target name="compile" depends="prepare">
+        <depend srcDir="${test_utils.src_dir}" destDir="${test_utils.classes_dir}"
+            cache="${test_utils.build_dir}/depend-cache"/>
+        <javac destdir="${test_utils.classes_dir}" debug="on" encoding="utf8" includeAntRuntime="false">
+            <src location="${test_utils.src_dir}"/>
+        </javac>
+    </target>
+
+    <target name="jar" depends="compile">
+        <jar destfile="${test_utils.jar_file}">
+            <fileset dir="${test_utils.classes_dir}">
+                <include name="test_utils/**"/>
+            </fileset>
+            <fileset dir="${test_utils.src_dir}">
+                <include name="test_utils/**"/>
+            </fileset>
+        </jar>
+    </target>
+
+    <target name="clean">
+        <delete dir="${test_utils.build_dir}"/>
+    </target>
+
+    <target name="findbugs" depends="jar" if="findbugs.home_dir" description="Run FindBugs">
+        <taskdef name="findbugs" classpath="${findbugs.home_dir}/lib/findbugs-ant.jar"
+            classname="edu.umd.cs.findbugs.anttask.FindBugsTask"/>
+        <findbugs home="${findbugs.home_dir}"
+            output="html"
+            outputFile="${test_utils.build_dir}/findbugs.html"
+            reportLevel="low"
+            errorProperty="test_utils.is_failed"
+            warningsProperty="test_utils.is_failed">
+            <sourcePath>
+                <dirset dir="${test_utils.src_dir}"/>
+            </sourcePath>
+            <fileset dir="${test_utils.classes_dir}"/>
+        </findbugs>
+        <fail message="FindBugs found some issues!" if="test_utils.is_failed"/>
+    </target>
+</project>

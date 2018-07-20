@@ -259,7 +259,7 @@ compile_java()
                    "-Dfindbugs.home_dir=${FINDBUGS_HOME}")
     fi
 
-    "${ANT}" ${ANT_EXTRA_ARGS} -f "${ANT_BUILD_FILE}" "${ANT_PROPS[@]}" "${ANT_TARGET}"
+    "${ANT}" ${ANT_EXTRA_ARGS} -f "${ANT_BUILD_FILE}" "${ANT_PROPS[@]}" ${ANT_TARGET}
     local ANT_RESULT=$?
     if [ ${ANT_RESULT} -ne 0 ] ; then
         stderr_echo "Running ant failed with return code ${ANT_RESULT}!"
