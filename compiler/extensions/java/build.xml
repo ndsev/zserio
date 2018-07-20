@@ -73,6 +73,9 @@ findbugs.home_dir            - Location of the findbugs tool. If not set, findbu
 
     <target name="jar" depends="compile">
         <mkdir dir="${zserio_java.jar_dir}"/>
+        <copy todir="${zserio_java.build_dir}/metainf" overwrite="true">
+            <fileset dir="${zserio_java.base_dir}/metainf"/>
+        </copy>
         <jar destfile="${zserio_java.jar_file}">
             <fileset dir="${zserio_java.classes_dir}">
                 <include name="zserio/**"/>
@@ -82,7 +85,7 @@ findbugs.home_dir            - Location of the findbugs tool. If not set, findbu
             <manifest>
                 <attribute name="Implementation-Version" value="${zserio_java.version}"/>
             </manifest>
-            <metainf dir="${zserio_java.base_dir}/metainf" includes="**/*"/>
+            <metainf dir="${zserio_java.build_dir}/metainf" includes="**/*"/>
         </jar>
     </target>
 

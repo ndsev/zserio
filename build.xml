@@ -9,12 +9,12 @@ zserio.install_dir      - Directory where to install bundled Zserio tool. Defaul
 -->
 <project name="zserio" basedir="." default="jar" >
     <property name="zserio.build_dir" value="${basedir}/build/zserio"/>
-    <property name="zserio.extensions_dir" value="${basedir}/compiler/extensions"/>
+    <property name="zserio.extensions_build_dir" value="${basedir}/build/compiler/extensions"/>
     <property name="zserio.install_dir" value="${basedir}/distr"/>
     <property name="zserio.jars_dir" value="${zserio.install_dir}/zserio_libs"/>
     <property name="zserio.jar_file_name" value="zserio.jar"/>
 
-    <!-- Zserio release version. -->
+    <!-- Zserio release version -->
     <loadfile
         encoding="UTF-8"
         property="zserio.version"
@@ -39,14 +39,14 @@ zserio.install_dir      - Directory where to install bundled Zserio tool. Defaul
     <target name="findbugs" depends="zserio_core.findbugs, zserio_ant_task.findbugs"/>
     <target name="test" depends="zserio_core.test, zserio_ant_task.test"/>
 
-    <!-- Bundled ZSERIO -->
+    <!-- Bundled Zserio -->
     <target name="zserio.clean">
         <delete dir="${zserio.build_dir}"/>
     </target>
 
     <target name="zserio.install">
         <concat destfile="${zserio.build_dir}/metainf/services/zserio.tools.Extension">
-            <fileset dir="${zserio.extensions_dir}" includes="**/metainf/**/*"/>
+            <fileset dir="${zserio.extensions_build_dir}" includes="**/metainf/**/*"/>
         </concat>
         <jar destfile="${zserio.install_dir}/${zserio.jar_file_name}" duplicate="preserve">
             <restrict>

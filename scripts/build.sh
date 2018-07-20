@@ -31,7 +31,7 @@ Package can be the combination of:
     java_rt          Zserio Java extension runtime library.
     xml              Zserio XML extension.
     doc              Zserio Documentation extension.
-    zserio           Zserio bundle (packs core with all generators).
+    zserio           Zserio bundle (Zserio Core packed together with all already built extensions).
 
 Examples:
     $0 ant_task core cpp cpp_rt-linux64 java java_rt xml doc
@@ -164,10 +164,6 @@ parse_arguments()
 
             "zserio")
                 eval ${PARAM_CORE_OUT}=1
-                eval ${PARAM_CPP_OUT}=1
-                eval ${PARAM_JAVA_OUT}=1
-                eval ${PARAM_XML_OUT}=1
-                eval ${PARAM_DOC_OUT}=1
                 eval ${PARAM_ZSERIO_OUT}=1
                 ;;
             *)
