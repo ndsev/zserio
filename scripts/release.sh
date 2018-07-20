@@ -81,7 +81,7 @@ make_release()
     pushd "${ZSERIO_RELEASE_SRC_DIR}" > /dev/null
 
     # create zip: jar
-    "${ZIP}" -rq "${ZSERIO_RELEASE_ZIP_DIR}/zserio-${ZSERIO_VERSION}-bin.zip" "jar"
+    "${ZIP}" -rq "${ZSERIO_RELEASE_ZIP_DIR}/zserio-${ZSERIO_VERSION}-bin.zip" "ant_task" "zserio_libs" "zserio.jar"
     if [ $? -ne 0 ] ; then
         stderr_echo "Can't zip Zserio release (bin)."
         return 1
