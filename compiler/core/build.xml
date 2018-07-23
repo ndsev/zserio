@@ -162,7 +162,7 @@ findbugs.home_dir       - Location of the findbugs tool. If not set, findbugs is
         <findbugs home="${findbugs.home_dir}"
             output="html"
             outputFile="${zserio_core.findbugs.out_dir}/findbugs.html"
-            excludeFilter="${basedir}/findbugs_filter.xml"
+            excludeFilter="${zserio_core.base_dir}/findbugs_filter.xml"
             reportLevel="low"
             errorProperty="zserio_core.is_failed"
             warningsProperty="zserio_core.is_failed">
