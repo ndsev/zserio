@@ -2,6 +2,12 @@
 
 In this folder you find a number of size and performance benchmarks with different data sets.
 
+## Overview
+
+- **Size benchmark zserio vs. protobuf**
+
+![size comparison](zserio-proto-size.PNG)
+
 ## zserio vs. Protocol Buffers
 
 Google's Protol Buffers are very popular and in wide-spread use. One of the many questions we always have to answer is: "Why don't you use protobuf? It is already there."
