@@ -22,6 +22,15 @@ Spoiler: The test data that we used for this benchmark is smallest when using a 
 
 We will encode 1000 address book entries which we mocked at Mockaroo (https://mockaroo.com/). The test data contains an ID, a name, optionally an email address and some phone numbers with different types (home, work, mobile). The mocked data does not include all fields for each entry.
 
+The CSV looks like this:
+
+id | name | email | phoneHome | phoneMobile | phoneWork
+----|-----|-----|-----|-----|-----
+1 |Florri Marousek | | 223-353-1881 | 112-972-3954 |
+...|...|...|...|...|...
+12|Angus Brandoni|abrandonib@elegantthemes.com|861-540-6138|838-999-6605|436-583-4303
+
+
 We encode the data in Protobuf and three different zserio schemas. After encoding the data, we also compress it using default values of zlib to demonstrate the importance of how your data is layed out when you want to squeeze the size.
 
 
