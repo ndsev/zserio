@@ -10,7 +10,7 @@ In this folder you find a number of size and performance benchmarks with differe
 
 ## zserio vs. Protocol Buffers
 
-Google's Protol Buffers are very popular and in wide-spread use. One of the many questions we always have to answer is: "Why don't you use protobuf? It is already there."
+Google's Protocol Buffers are very popular and in wide-spread use. One of the many questions we always have to answer is: "Why don't you use protobuf? It is already there."
 
 Fact is that it wasn't open sourced when we would have needed it. Maybe we would have used it back then. But even today we think we came along with something more tailored to our needs. This is also the reason why we open sourced zserio after such a long time.
 
