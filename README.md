@@ -2,6 +2,8 @@
 
 No time to read? Go to the [Quick Start](#quick-start)
 
+In for the numbers? Head over to [benchmarks](benchmarks/README.md)
+
 ------
 
 The zserio serialization framework allows you to serialize data in a compact and efficient way. It is
