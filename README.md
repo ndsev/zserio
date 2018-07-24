@@ -1,4 +1,5 @@
-![zserio](doc/long.png)
+<img src="doc/long.png" height="100">
+-----
 
 No time to read? Go to the [Quick Start](#quick-start)
 
@@ -66,8 +67,70 @@ Please note that in contrast to other serialization mechanisms zserio's variable
 
 ## Quick Start
 
-Quick start including installation, generation of code and example application should be put here!
-TODO
+To be able to serialize data with zserio, you have to follow these basic steps:
+
+1. write the schema definition
+2. compile the schema and generate code
+3. Set up your development environment with the zserio runtime
+4. serialize/deserialize using the generated code
+
+### Installation & Prerequisites
+
+Before we start, make sure you have the following components installed:
+
+- JAVA JRE
+- CMake (if you are generating C++ code)
+
+The easiest way of compiling the schema is to download the latest build of the zserio compiler from [Releases](https://github.com/welovemaps/zserio/releases).
+
+If you want to  build from source, please follow the [Build Instructions for zserio Compiler](doc/zserio-compiler.md).
+
+### Writing a schema
+
+Open up your favorite text editor and start writing your schema. We will use the example from above plus some additional structures to showcase some of zserio's features.
+
+```
+package tutorial;
+
+struct Employee
+{
+  uint8           age : age <= 65; // max age is 65
+  string          name;
+  uint16          salary;
+  optional uint16 bonus;
+  Title           title;
+
+  // if employee is a team lead, list the team members
+
+  Employee  teamMember[] if title == Title.TEAM_LEAD;
+}
+
+enum uint8 Title
+{
+  DEVELOPER = 0,
+  TEAM_LEAD = 1,
+  CTO       = 2,
+}
+```
+We have added some of zserio's features above. Let's quickly take a look:
+
+- **constraints**
+
+  Although the `uint8` of field `age` would allow values up to 255, we limit the use already in the schema definition by using a [Constraint](doc/zserioLanguageOverview#constraints)
+
+- **optional fields**
+
+  The `bonus` field is prefixed with the keyword `optional` which will add a 1-bit bool before that field which indicates whether the field exists. If it is not set then only one bit will be added to the byte stream.
+
+- **conditions**
+
+    We add a list of employees only if the employee is a team lead.
+
+For more details on the features of zserio head over to the [zserio language overview](doc/zserioLanguageOverview.md).
+
+
+We now save the file to disk as `tutorial.zs`. Please note that the filename has to be equivalent to the package name inside the zserio file and that the zserio compiler only accepts file extension *zs*.
+
 
 ## Features
 
