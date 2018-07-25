@@ -9,11 +9,15 @@ In for the numbers? Head over to [benchmarks](benchmarks/README.md)
 
 ## Serialization framework
 
-The zserio serialization framework allows you to serialize data in a compact and efficient way. It is
+The zserio serialization framework allows you to serialize data in a compact and efficient way.
 
-- compact (no wire format overhead)
+The key features include
+
+- compactness (smaller than most other serializers)
+- advanced schema definition options
 - cross-platform
-- cross-language
+- multiple programming languages
+
 
 It can be retrofitted on top of almost any other serialization language or model, since it gives the developer powerful low-level access.
 
@@ -69,17 +73,19 @@ Please note that in contrast to other serialization mechanisms zserio's variable
 
 To be able to serialize data with zserio, you have to follow these basic steps:
 
-1. write the schema definition
-2. compile the schema and generate code
+1. Write the schema definition
+2. Compile the schema and generate code
 3. Set up your development environment with the zserio runtime
-4. serialize/deserialize using the generated code
+4. Serialize/deserialize using the generated code
+
+This Quick Start tutorial features code generation in C++. Go to the [zserio JAVA tutorial](doc/JavaTutorial.md) if you are interested in hands-on JAVA with zserio.
 
 ### Installation & Prerequisites
 
 Before we start, make sure you have the following components installed:
 
 - JAVA JRE
-- CMake (if you are generating C++ code)
+- CMake
 
 The easiest way of compiling the schema is to download the latest build of the zserio compiler from [Releases](https://github.com/welovemaps/zserio/releases).
 
@@ -102,7 +108,7 @@ struct Employee
 
   // if employee is a team lead, list the team members
 
-  Employee  teamMember[] if title == Title.TEAM_LEAD;
+  Employee        teamMember[] if title == Title.TEAM_LEAD;
 }
 
 enum uint8 Title
@@ -131,6 +137,17 @@ For more details on the features of zserio head over to the [zserio language ove
 
 We now save the file to disk as `tutorial.zs`. Please note that the filename has to be equivalent to the package name inside the zserio file and that the zserio compiler only accepts file extension *zs*.
 
+### Compiling and generating code
+
+We now are ready to compile the schema with the zserio compiler. The zserio compiler checks the schema file and its [imported files](doc/zserioLanguageOverview##packages-and-imports) and reports errors and warnings.
+In addition the zserio compiler generates code for the supported languages and may generate HTML documentation. See the [zserio compiler User Guide](doc/zserioCompilerUserGuide.md) for details.
+
+So let's generate some C++ code:
+
+```
+java -jar zserio.jar -cpp src -withWriterCode
+```
+This command generates C++ code and puts it in the src folder. The -withWriterCode
 
 ## Features
 

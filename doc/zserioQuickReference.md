@@ -184,7 +184,10 @@ struct Block
     BlockData data;
 };
 ```
-**SQLite table**
+-------
+## SQLite extension 
+
+**SQLite Table**
 ```
 sql_table GeoMap
 {
