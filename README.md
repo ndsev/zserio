@@ -122,11 +122,12 @@ We have added some of zserio's features above. Let's quickly take a look:
 
 - **constraints**
 
-  Although the `uint8` of field `age` would allow values up to 255, we limit the use already in the schema definition by using a [Constraint](doc/ZserioLanguageOverview/CompoundTypes.md#constraints)
+  Although the `uint8` of field `age` would allow values up to 255, we limit the use already in the schema definition by using a [constraint](doc/ZserioLanguageOverview/CompoundTypes.md#constraints)
 
 - **optional fields**
 
-  The `bonus` field is prefixed with the keyword `optional` which will add a 1-bit bool before that field which indicates whether the field exists. If it is not set then only one bit will be added to the byte stream.
+  The `bonus` field is prefixed with the keyword `optional` which will add a invisible 1-bit bool before that field which indicates whether the field exists. If it is not set then only one bit will be added to the byte stream.
+  See [Zserio Invisibles](doc/ZserioInvisibles.md) for more information.
 
 - **conditions**
 
