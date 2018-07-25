@@ -1,4 +1,4 @@
-# zserio Language Quick Reference
+# Zserio Language Quick Reference
 
 **Signed Integers and Bitfields**
 ```
@@ -12,6 +12,7 @@ varint64
 int:n
 int<expr>
 ```
+
 **Unsigned Integers and Bitfields**
 ```
 uint8
@@ -24,22 +25,27 @@ varuint64
 bit:n
 bit<expr>
 ```
-**Floating Point**
+
+**Floating Points**
 ```
 float
 ```
-**Boolean**
+
+**Booleans**
 ```
 bool
 ```
+
 **Strings**
 ```
 string
 ```
+
 **Constants**
 ```
 const bit:1 FALSE = 0;
 ```
+
 **Enumerations**
 ```
 enum bit:3 Color
@@ -50,6 +56,7 @@ enum bit:3 Color
     BLACK = 111b
 };
 ```
+
 **Structures**
 ```
 struct MyStructure
@@ -59,7 +66,18 @@ struct MyStructure
     bit:4 c;
 };
 ```
-**Choice**
+
+**Unions**
+```
+union SimpleUnion
+{
+    bit:4   fieldBit4;
+    uint8   fieldUInt8;
+    uint16  fieldUInt16;
+};
+```
+
+**Choices**
 ```
 choice VarCoordXY(uint8 width) on width
 {
@@ -69,6 +87,7 @@ choice VarCoordXY(uint8 width) on width
     case 32: CoordXY32 coord32;
 };
 ```
+
 **Contraints**
 ```
 struct GraphicControlExtension
@@ -77,7 +96,8 @@ struct GraphicControlExtension
     uint8 terminator : terminator == 0;
 };
 ```
-**Optional Member**
+
+**Optional Members**
 ```
 struct ItemCount
 {
@@ -87,36 +107,36 @@ struct ItemCount
 
 struct Container
 {
-              int16 item1;
-    optional  int32 item2;
+    int16           item1;
+    optional int32  item2;
 };
 ```
+
 **Functions**
 ```
 struct ItemCount
 {
-    uint8 count8;
-    uint16 count16 if count8 == 0xFF;
+    uint8   count8;
+    uint16  count16 if count8 == 0xFF;
 
     function uint16 getValue()
     {
-        return (count8 == 0xFF) ? count16 :
-        count8;
+        return (count8 == 0xFF) ? count16 : count8;
     }
 };
 ```
+
 **Arrays**
 ```
 struct ClassicArrayExample
 {
-    uint8 header[256];
-    int16 numItems;
+    uint8   header[256];
+    int16   numItems;
     Element list[numItems];
 };
 
 struct AutoArrayExample
 {
-    uint8 header[256];
     Element list[];
 
     function uint32 getNumItems()
@@ -125,65 +145,74 @@ struct AutoArrayExample
     }
 }
 ```
-**Alignment**
+
+**Alignments**
 ```
 struct AlignmentExample
 {
     bit:11 a;
+    
 align(32):
     uint32 b;
 };
 ```
-**Offset**
+
+**Offsets**
 ```
 struct Tile
 {
-    TileHeader header;
-    uint32 stringOffset;
-    uint16 numFeatures;
+    TileHeader  header;
+    uint32      stringOffset;
+    uint16      numFeatures;
 
 stringOffset:
     StringTable stringTable;
 };
 ```
+
 **Indexed Offsets**
 ```
 struct IndexedInt32Array
 {
-    uint32 offsets[10];
-    bit:1 spacer;
+    uint32  offsets[10];
+    bit:1   spacer;
 offsets[@index]:
-    int32 data[10];
+    int32   data[10];
 };
 ```
-**Parametrized Type**
+
+**Parametrized Types**
 ```
 struct Header
 {
     uint32 version;
     uint16 numItems;
 };
+
 struct Message
 {
-    Header h;
-    Item(h) items[h.numItems];
+    Header  header;
+    Item(h) items[header.numItems];
 };
+
 struct Item(Header header)
 {
-    uint16 p;
-    uint32 q if header.version >= 10;
+    uint16  p;
+    uint32  q if header.version >= 10;
 };
 ```
-**Subtype**
+
+**Subtypes**
 ```
 subtype uint16 BlockIndex;
 
 struct Block
 {
-    BlockIndex index;
-    BlockData data;
+    BlockIndex  index;
+    BlockData   data;
 };
 ```
+
 -------
 ## SQLite extension 
 
@@ -191,16 +220,17 @@ struct Block
 ```
 sql_table GeoMap
 {
-    int32 tileId sql "PRIMARY KEY";
-    Tile tile;
+    int32   tileId sql "PRIMARY KEY";
+    Tile    tile;
 };
 
 sql_table Pages using fts5
 {
-    string title;
-    string body;
+    string  title;
+    string  body;
 };
 ```
+
 **SQLite Database**
 ```
 sql_database TheWorld

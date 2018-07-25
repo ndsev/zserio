@@ -161,6 +161,6 @@ This command generates C++ code and puts it in the src folder. The -withWriterCo
 
 ## Documentation
 
-Documentation of the schema language can be found in the [zserio Language Overview](doc/zserioLanguageOverview.md).
+Documentation of the schema language can be found in the [Zserio Language Overview](doc/ZserioLanguageOverview/ZserioLanguageOverview.md).
 
-Check out the [Quick Reference](doc/zserioQuickReference.md) and the mappings for JAVA and C++ in the doc folder.
+Check out the [Quick Reference](doc/ZserioLanguageOverview/ZserioQuickReference.md) and the mappings for JAVA and C++ in the doc folder.
