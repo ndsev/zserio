@@ -122,7 +122,7 @@ We have added some of zserio's features above. Let's quickly take a look:
 
 - **constraints**
 
-  Although the `uint8` of field `age` would allow values up to 255, we limit the use already in the schema definition by using a [Constraint](doc/zserioLanguageOverview#constraints)
+  Although the `uint8` of field `age` would allow values up to 255, we limit the use already in the schema definition by using a [Constraint](doc/ZserioLanguageOverview/CompoundTypes.md#constraints)
 
 - **optional fields**
 
@@ -132,14 +132,14 @@ We have added some of zserio's features above. Let's quickly take a look:
 
     We add a list of employees only if the employee is a team lead.
 
-For more details on the features of zserio head over to the [zserio language overview](doc/zserioLanguageOverview.md).
+For more details on the features of zserio head over to the [zserio language overview](doc/ZserioLanguageOverview/ZserioLanguageOverview.md).
 
 
 We now save the file to disk as `tutorial.zs`. Please note that the filename has to be equivalent to the package name inside the zserio file and that the zserio compiler only accepts file extension *zs*.
 
 ### Compiling and generating code
 
-We now are ready to compile the schema with the zserio compiler. The zserio compiler checks the schema file and its [imported files](doc/zserioLanguageOverview##packages-and-imports) and reports errors and warnings.
+We now are ready to compile the schema with the zserio compiler. The zserio compiler checks the schema file and its [imported files](doc/ZserioLanguageOverview/PackagesAndImports.md) and reports errors and warnings.
 In addition the zserio compiler generates code for the supported languages and may generate HTML documentation. See the [zserio compiler User Guide](doc/zserioCompilerUserGuide.md) for details.
 
 So let's generate some C++ code:
