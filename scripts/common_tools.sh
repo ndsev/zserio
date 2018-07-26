@@ -65,13 +65,6 @@ set_global_cpp_variables()
     # CMake generator to use, defaults to "Eclipse CDT4 - Unix Makefiles" if not set
     CMAKE_GENERATOR="${CMAKE_GENERATOR:-Eclipse CDT4 - Unix Makefiles}"
 
-    # make to use, default to "make" is not set
-    MAKE="${MAKE:-make}"
-    if [ ! -f "`which "${MAKE}"`" ] ; then
-        stderr_echo "Cannot find cmake! Set MAKE environment variable."
-        return 1
-    fi
-
     # make extra arguments are empty by default
     MAKE_EXTRA_ARGS="${MAKE_EXTRA_ARGS:-""}"
 
@@ -92,7 +85,6 @@ Uses the following environment variables for building:
     CMAKE_EXTRA_ARGS       Extra arguments to CMake. Default is empty string.
     CMAKE_GENERATOR        CMake generator to use. Default is
                            "Eclipse CDT4 - Unix Makefiles".
-    MAKE                   Make executable to use. Default is "make".
     MAKE_EXTRA_ARGS        Extra arguments to Make. Default is empty string.
     JAVAC_BIN              Java compiler executable to use. Default is "javac".
     JAVA_BIN               Java executable to use. Default is "java".
@@ -342,7 +334,7 @@ compile_cpp_for_target()
         return 1
     fi
 
-    "${MAKE}" ${MAKE_EXTRA_ARGS} ${MAKE_TARGET}
+    "${CMAKE}" --build . --target ${MAKE_TARGET} -- ${MAKE_EXTRA_ARGS}
     local MAKE_RESULT=$?
     if [ ${MAKE_RESULT} -ne 0 ] ; then
         stderr_echo "Make failed with return code ${MAKE_RESULT}!"
@@ -354,7 +346,7 @@ compile_cpp_for_target()
     can_run_tests "${TARGET}"
     local CAN_RUN_TESTS_RESULT=$?
     if [[ ${MAKE_TARGET} != "clean" && ${CAN_RUN_TESTS_RESULT} == 0 ]] ; then
-        CTEST_OUTPUT_ON_FAILURE=1 "${MAKE}" ${MAKE_EXTRA_ARGS} test
+        CTEST_OUTPUT_ON_FAILURE=1 "${CMAKE}" --build . --target test -- ${MAKE_EXTRA_ARGS}
         local MAKE_TEST_RESULT=$?
         if [ ${MAKE_TEST_RESULT} -ne 0 ] ; then
             stderr_echo "Make test on target ${TARGET} failed with return code ${MAKE_RESULT}."
