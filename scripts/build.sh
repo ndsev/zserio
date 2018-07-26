@@ -293,7 +293,10 @@ main()
     if [[ ${PARAM_ANT_TASK} == 1 ]] ; then
         echo "${ACTION_DESCRIPTION} Zserio Ant task."
         echo
-        local ANT_PROPS=()
+        local ANT_PROPS=(
+            -Dzserio_ant_task.build_dir="${BUILD_DIR}/ant_task"
+            -Dzserio_ant_task.install_dir="${ZSERIO_DISTR_DIR}/ant_task"
+        )
         compile_java "${ZSERIO_PROJECT_ROOT}/build.xml" ANT_PROPS[@] zserio_ant_task.${JAVA_TARGET}
         if [ $? -ne 0 ] ; then
             return 1
@@ -305,7 +308,10 @@ main()
     if [[ ${PARAM_CORE} == 1 ]] ; then
         echo "${ACTION_DESCRIPTION} Zserio compiler with all extensions."
         echo
-        local ANT_PROPS=()
+        local ANT_PROPS=(
+            -Dzserio_core.build_dir="${BUILD_DIR}"
+            -Dzserio_core.install_dir="${ZSERIO_DISTR_DIR}"
+        )
         compile_java "${ZSERIO_PROJECT_ROOT}/build.xml" ANT_PROPS[@] zserio_core.${JAVA_TARGET}
         if [ $? -ne 0 ] ; then
             return 1
@@ -317,7 +323,11 @@ main()
     if [[ ${PARAM_CPP} == 1 ]] ; then
         echo "${ACTION_DESCRIPTION} Zserio C++ extension."
         echo
-        local ANT_PROPS=()
+        local ANT_PROPS=(
+            -Dzserio_cpp.build_dir="${BUILD_DIR}/compiler/extensions/cpp"
+            -Dzserio_cpp.install_dir="${ZSERIO_DISTR_DIR}/zserio_libs"
+            -Dzserio_core.jar_file="${BUILD_DIR}/jar/zserio_core.jar"
+        )
         compile_java "${ZSERIO_PROJECT_ROOT}/compiler/extensions/cpp/build.xml" ANT_PROPS[@] ${JAVA_TARGET}
         if [ $? -ne 0 ] ; then
             return 1
@@ -347,7 +357,11 @@ main()
     if [[ ${PARAM_JAVA} == 1 ]] ; then
         echo "${ACTION_DESCRIPTION} Zserio Java extension."
         echo
-        local ANT_PROPS=()
+        local ANT_PROPS=(
+            -Dzserio_java.build_dir="${BUILD_DIR}/compiler/extensions/java"
+            -Dzserio_java.install_dir="${ZSERIO_DISTR_DIR}/zserio_libs"
+            -Dzserio_core.jar_file="${BUILD_DIR}/jar/zserio_core.jar"
+        )
         compile_java "${ZSERIO_PROJECT_ROOT}/compiler/extensions/java/build.xml" ANT_PROPS[@] ${JAVA_TARGET}
         if [ $? -ne 0 ] ; then
             return 1
@@ -359,7 +373,11 @@ main()
     if [[ ${PARAM_JAVA_RUNTIME} == 1 ]] ; then
         echo "${ACTION_DESCRIPTION} Zserio Java runtime library."
         echo
-        local ANT_PROPS=("-Drelational.enable=yes")
+        local ANT_PROPS=(
+            -Drelational.enable=yes
+            -Dzserio_java_runtime.install_dir="${ZSERIO_DISTR_DIR}/runtime_libs/java"
+            -Dzserio_java_runtime.build_dir="${BUILD_DIR}/runtime_libs/java"
+        )
         compile_java "${ZSERIO_PROJECT_ROOT}/compiler/extensions/java/runtime/build.xml" ANT_PROPS[@] ${JAVA_TARGET}
         if [ $? -ne 0 ] ; then
             return 1
@@ -371,7 +389,11 @@ main()
     if [[ ${PARAM_XML} == 1 ]] ; then
         echo "${ACTION_DESCRIPTION} Zserio XML extension."
         echo
-        local ANT_PROPS=()
+        local ANT_PROPS=(
+            -Dzserio_xml.build_dir="${BUILD_DIR}/compiler/extensions/xml"
+            -Dzserio_xml.install_dir="${ZSERIO_DISTR_DIR}/zserio_libs"
+            -Dzserio_core.jar_file="${BUILD_DIR}/jar/zserio_core.jar"
+        )
         compile_java "${ZSERIO_PROJECT_ROOT}/compiler/extensions/xml/build.xml" ANT_PROPS[@] ${JAVA_TARGET}
         if [ $? -ne 0 ] ; then
             return 1
@@ -383,7 +405,11 @@ main()
     if [[ ${PARAM_DOC} == 1 ]] ; then
         echo "${ACTION_DESCRIPTION} Zserio Documentation extension."
         echo
-        local ANT_PROPS=()
+        local ANT_PROPS=(
+            -Dzserio_doc.build_dir="${BUILD_DIR}/compiler/extensions/doc"
+            -Dzserio_doc.install_dir="${ZSERIO_DISTR_DIR}/zserio_libs"
+            -Dzserio_core.jar_file="${BUILD_DIR}/jar/zserio_core.jar"
+        )
         compile_java "${ZSERIO_PROJECT_ROOT}/compiler/extensions/doc/build.xml" ANT_PROPS[@] ${JAVA_TARGET}
         if [ $? -ne 0 ] ; then
             return 1
@@ -395,7 +421,10 @@ main()
     if [[ ${PARAM_ZSERIO} == 1 ]] ; then
         echo "${ACTION_DESCRIPTION} Zserio bundle."
         echo
-        local ANT_PROPS=()
+        local ANT_PROPS=(
+            -Dzserio.build_dir="${BUILD_DIR}"
+            -Dzserio.install_dir="${ZSERIO_DISTR_DIR}"
+        )
         compile_java ${ZSERIO_PROJECT_ROOT}/build.xml ANT_PROPS[@] zserio.${JAVA_TARGET}
         if [ $? -ne 0 ] ; then
             return 1
