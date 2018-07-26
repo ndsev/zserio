@@ -7,13 +7,17 @@ It generates C++ API.
 
 The following external properties can be set:
 
-zserio_cpp.install_dir      - Directory where to install Zserio C++ Extension jar file. Default is
-                              "../../../distr/zserio_libs".
-zserio_cpp.build_dir        - Directory where to put generated files. Default is
-                              "../../../build/compiler/extensions/cpp".
-zserio_core.jar_file        - Zserio core jar file used for classpath. Default is
-                              "../../../build/compiler/core/jar/zserio_core.jar".
-findbugs.home_dir           - Location of the findbugs tool. If not set, findbugs is not run.
+zserio_extensions.build_dir   - Zserio extensions build directory.
+                                Default is "../../../build/compiler/extensions".
+zserio_extensions.install_dir - Zserio extensions install directory.
+                                Default is "../../../distr/zserio_libs".
+zserio_cpp.build_dir          - Directory where to put generated files.
+                                Default is "${zserio_extensions.build_dir}/cpp".
+zserio_cpp.install_dir        - Directory where to install Zserio C++ Extension jar file.
+                                Default is "${zserio_extensions.install_dir}".
+zserio_core.jar_file          - Zserio core jar file used for classpath.
+                                Default is "${zserio_extensions.build_dir}/../core/jar/zserio_core.jar".
+findbugs.home_dir             - Location of the findbugs tool. If not set, findbugs is not run.
 
 -->
 <project name="zserio_cpp" basedir="." default="jar">
@@ -21,16 +25,18 @@ findbugs.home_dir           - Location of the findbugs tool. If not set, findbug
 
     <property name="zserio_cpp.zserio_root" value="${zserio_cpp.base_dir}/../../.."/>
 
+    <property name="zserio_extensions.build_dir" value="${zserio_cpp.zserio_root}/build"/>
+    <property name="zserio_extensions.install_dir" value="${zserio_cpp.zserio_root}/distr"/>
+    <property name="zserio_cpp.build_dir" value="${zserio_extensions.build_dir}/cpp"/>
+    <property name="zserio_cpp.install_dir" value="${zserio_extensions.install_dir}"/>
+    <property name="zserio_core.jar_file" value="${zserio_extensions.build_dir}/../core/jar/zserio_core.jar"/>
+
     <property name="zserio_cpp.src_dir" value="${zserio_cpp.base_dir}/src"/>
-    <property name="zserio_cpp.build_dir"
-        value="${zserio_cpp.zserio_root}/build/compiler/extensions/cpp"/>
     <property name="zserio_cpp.classes_dir" value="${zserio_cpp.build_dir}/classes"/>
     <property name="zserio_cpp.findbugs.out_dir" value="${zserio_cpp.build_dir}/findbugs"/>
 
     <property name="zserio_cpp.jar_dir" value="${zserio_cpp.build_dir}/jar"/>
     <property name="zserio_cpp.jar_file" value="${zserio_cpp.jar_dir}/zserio_cpp.jar"/>
-
-    <property name="zserio_cpp.install_dir" value="${zserio_cpp.zserio_root}/distr/zserio_libs"/>
 
     <!-- Zserio C++ extension version. -->
     <loadfile
@@ -46,9 +52,6 @@ findbugs.home_dir           - Location of the findbugs tool. If not set, findbug
             </tokenfilter>
         </filterchain>
     </loadfile>
-
-    <property name="zserio_core.jar_file"
-        value="${zserio_cpp.zserio_root}/build/compiler/core/jar/zserio_core.jar"/>
 
     <target name="clean">
         <delete dir="${zserio_cpp.build_dir}"/>

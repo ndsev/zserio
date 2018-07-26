@@ -4,15 +4,24 @@ Ant build.xml for all Zserio projects.
 
 The following external properties can be set:
 
-zserio.build_dir        - Directory where to put generated bundled tool. Default is "../../build/zserio".
-zserio.install_dir      - Directory where to install bundled Zserio tool. Default is "../../distr".
+zserio.build_dir            - Zserio build directory.
+zserio.install_dir          - Zserio install directory.
+zserio_bundle.build_dir     - Directory where to put generated bundled tool.
+                              Default is "${zserio.build_dir}/zserio".
+zserio_bundle.install_dir   - Directory where to install bundled Zserio tool.
+                              Default is "${zserio_install_dir}".
+zserio_extensions.build_dir - Zserio extensions build directory.
+                              Default is "${zserio.build_dir}/compiler/extensions".
 -->
 <project name="zserio" basedir="." default="jar" >
-    <property name="zserio.build_dir" value="${basedir}/build/zserio"/>
-    <property name="zserio.extensions_build_dir" value="${basedir}/build/compiler/extensions"/>
+    <property name="zserio.build_dir" value="${basedir}/build"/>
     <property name="zserio.install_dir" value="${basedir}/distr"/>
+    <property name="zserio_bundle.build_dir" value="${zserio.build_dir}/zserio"/>
+    <property name="zserio_bundle.install_dir" value="${zserio.install_dir}"/>
+
+    <property name="zserio_bundle.jar_file_name" value="zserio.jar"/>
+    <property name="zserio_extensions.build_dir" location="${zserio.build_dir}/compiler/extensions"/>
     <property name="zserio.jars_dir" value="${zserio.install_dir}/zserio_libs"/>
-    <property name="zserio.jar_file_name" value="zserio.jar"/>
 
     <!-- Zserio release version -->
     <loadfile
@@ -33,22 +42,29 @@ zserio.install_dir      - Directory where to install bundled Zserio tool. Defaul
     <include file="${basedir}/ant_task/build.xml"/>
 
     <target name="clean" depends="zserio_core.clean, zserio_ant_task.clean"/>
+
     <target name="compile" depends="zserio_core.compile, zserio_ant_task.compile"/>
+
     <target name="jar" depends="zserio_core.jar, zserio_ant_task.jar"/>
+
     <target name="install" depends="zserio_core.install, zserio_ant_task.install"/>
+
     <target name="findbugs" depends="zserio_core.findbugs, zserio_ant_task.findbugs"/>
+
     <target name="test" depends="zserio_core.test, zserio_ant_task.test"/>
 
     <!-- Bundled Zserio -->
-    <target name="zserio.clean">
-        <delete dir="${zserio.build_dir}"/>
+    <target name="zserio_bundle.clean">
+        <delete dir="${zserio_bundle.build_dir}/metainf"/>
+        <delete file="${zserio_bundle.build_dir}/${zserio_bundle.jar_file_name}"/>
     </target>
 
-    <target name="zserio.install">
-        <concat destfile="${zserio.build_dir}/metainf/services/zserio.tools.Extension">
-            <fileset dir="${zserio.extensions_build_dir}" includes="**/metainf/**/*"/>
+    <target name="zserio_bundle.jar">
+        <mkdir dir="${zserio_bundle.build_dir}"/>
+        <concat destfile="${zserio_bundle.build_dir}/metainf/services/zserio.tools.Extension">
+            <fileset dir="${zserio_extensions.build_dir}" includes="**/metainf/**/*"/>
         </concat>
-        <jar destfile="${zserio.install_dir}/${zserio.jar_file_name}" duplicate="preserve">
+        <jar destfile="${zserio_bundle.build_dir}/${zserio_bundle.jar_file_name}" duplicate="preserve">
             <restrict>
                 <or>
                     <name name="**/*.class"/>
@@ -58,7 +74,7 @@ zserio.install_dir      - Directory where to install bundled Zserio tool. Defaul
                 <archives>
                     <zips>
                         <fileset dir="${zserio.jars_dir}" includes="*.jar"
-                            excludes="${zserio.jar_file_name}"/>
+                            excludes="${zserio_bundle.jar_file_name}"/>
                     </zips>
                 </archives>
             </restrict>
@@ -70,10 +86,15 @@ zserio.install_dir      - Directory where to install bundled Zserio tool. Defaul
                 <attribute name="Main-Class" value="zserio.tools.ZserioTool"/>
                 <attribute name="Implementation-Version" value="${zserio.version}"/>
             </manifest>
-            <metainf dir="${zserio.build_dir}/metainf" includes="**/*"/>
+            <metainf dir="${zserio_bundle.build_dir}/metainf" includes="**/*"/>
         </jar>
     </target>
 
-    <target name="zserio.test" depends="zserio.install">
+    <target name="zserio_bundle.install" depends="zserio_bundle.jar">
+        <mkdir dir="${zserio_bundle.install_dir}"/>
+        <copy file="${zserio_bundle.build_dir}/${zserio_bundle.jar_file_name}" todir="${zserio_bundle.install_dir}"/>
+    </target>
+
+    <target name="zserio_bundle.test" depends="zserio_bundle.install">
     </target>
 </project>

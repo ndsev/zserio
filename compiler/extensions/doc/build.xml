@@ -8,13 +8,17 @@ in DOT and SVG formats.
 
 The following external properties can be set:
 
-zserio_doc.install_dir      - Directory where to install Zserio Doc Extension jar file. Default is
-                              "../../../distr/jar".
-zserio_doc.build_dir        - Directory where to put generated files. Default is
-                              "../../../build/compiler/extensions/doc".
-zserio_core.jar_file        - Zserio core jar file used for classpath. Default is
-                              "../../../build/compiler/core/jar/zserio_core.jar".
-findbugs.home_dir           - Location of the findbugs tool. If not set, findbugs is not run.
+zserio_extensions.build_dir   - Zserio extensions build directory.
+                                Default is "../../../build/compiler/extensions".
+zserio_extensions.install_dir - Zserio extensions install directory.
+                                Default is "../../../distr/zserio_libs".
+zserio_doc.build_dir          - Directory where to put generated files.
+                                Default is "${zserio_extensions.build_dir}/doc".
+zserio_doc.install_dir        - Directory where to install Zserio Doc Extension jar file.
+                                Default is "${zserio_extensions.install_dir}".
+zserio_core.jar_file          - Zserio core jar file used for classpath.
+                                Default is "${zserio_extensions.build_dir}/../core/jar/zserio_core.jar".
+findbugs.home_dir             - Location of the findbugs tool. If not set, findbugs is not run.
 
 -->
 <project name="zserio_doc" basedir="." default="jar">
@@ -22,16 +26,18 @@ findbugs.home_dir           - Location of the findbugs tool. If not set, findbug
 
     <property name="zserio_doc.zserio_root" value="${zserio_doc.base_dir}/../../.."/>
 
+    <property name="zserio_extensions.build_dir" value="${zserio_doc.zserio_root}/build"/>
+    <property name="zserio_extensions.install_dir" value="${zserio_doc.zserio_root}/distr"/>
+    <property name="zserio_doc.build_dir" value="${zserio_extensions.build_dir}/doc"/>
+    <property name="zserio_doc.install_dir" value="${zserio_extensions.install_dir}"/>
+    <property name="zserio_core.jar_file" value="${zserio_extensions.build_dir}/../core/jar/zserio_core.jar"/>
+
     <property name="zserio_doc.src_dir" value="${zserio_doc.base_dir}/src"/>
-    <property name="zserio_doc.build_dir"
-        value="${zserio_doc.zserio_root}/build/compiler/extensions/doc"/>
     <property name="zserio_doc.classes_dir" value="${zserio_doc.build_dir}/classes"/>
     <property name="zserio_doc.findbugs.out_dir" value="${zserio_doc.build_dir}/findbugs"/>
 
     <property name="zserio_doc.jar_dir" value="${zserio_doc.build_dir}/jar"/>
     <property name="zserio_doc.jar_file" value="${zserio_doc.jar_dir}/zserio_doc.jar"/>
-
-    <property name="zserio_doc.install_dir" value="${zserio_doc.zserio_root}/distr/zserio_libs"/>
 
     <!-- Zserio Documentation extension version. -->
     <loadfile
@@ -47,9 +53,6 @@ findbugs.home_dir           - Location of the findbugs tool. If not set, findbug
             </tokenfilter>
         </filterchain>
     </loadfile>
-
-    <property name="zserio_core.jar_file"
-        value="${zserio_doc.zserio_root}/build/compiler/core/jar/zserio_core.jar"/>
 
     <target name="clean">
         <delete dir="${zserio_doc.build_dir}"/>

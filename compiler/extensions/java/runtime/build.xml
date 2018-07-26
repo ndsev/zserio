@@ -4,11 +4,14 @@ Ant build.xml for Zserio Java runtime library.
 
 The following external properties can be set:
 
-zserio_java_runtime.install_dir - Directory where to install library. Default is "../../../../distr/runtime_libs/java".
-zserio_java_runtime.build_dir   - Directory where to put generated files. Default is "../../../../build/runtime_libs/java".
-zserio.version                  - Zserio version used for Java runtime library version. Default is "unknown".
+zserio_runtimes.build_dir       - Zserio extensions build directory.
+                                  Default is "../../../../build/runtime_libs".
+zserio_runtimes.install_dir     - Zserio extensions runtime install directory.
+                                  Default is "../../../../distr/runtime_libs"
+zserio_java_runtime.build_dir   - Directory where to put generated files. Default is "${zserio_runtimes.build_dir}/java".
+zserio_java_runtime.install_dir - Directory where to install library. Default is "${zserio_runtimes.install_dir}/java".
 relational.enable               - Flag whether the relational extension is included. Default is "no".
-relational.sqlite_dir           - Directory where SQLite JDBC jar file is located. Default is "../../../../3rdparty/java".
+relational.sqlite.jar_file      - SQLite JDBC jar file. Default is "../../../../3rdparty/java/sqlite-jdbc-3.23.1.jar".
 relational.validation           - Flag whether the support for low level validation is included. Default is "yes".
 findbugs.home_dir               - Location of the findbugs tool. If not set, findbugs is not run.
 
@@ -18,8 +21,15 @@ findbugs.home_dir               - Location of the findbugs tool. If not set, fin
 
     <property name="zserio_java_runtime.zserio_root" location="${zserio_java_runtime.base_dir}/../../../.."/>
 
+    <property name="zserio_runtimes.build_dir" value="${zserio_java_runtime.zserio_root}/build/runtime_libs"/>
+    <property name="zserio_runtimes.install_dir" value="${zserio_java_runtime.zserio_root}/distr/runtime_libs"/>
+    <property name="zserio_java_runtime.build_dir" value="${zserio_runtimes.build_dir}/java"/>
+    <property name="zserio_java_runtime.install_dir" value="${zserio_runtimes.install_dir}/java"/>
+    <property name="relational.enable" value="no"/>
+    <property name="relational.sqlite.jar_file" value="${zserio_java_runtime.zserio_root}/3rdparty/java/sqlite-jdbc-3.23.1.jar"/>
+    <property name="relational.validation" value="yes"/>
+
     <property name="zserio_java_runtime.src_dir" location="${zserio_java_runtime.base_dir}/src"/>
-    <property name="zserio_java_runtime.build_dir" value="${zserio_java_runtime.zserio_root}/build/compiler/extensions/java/runtime"/>
     <property name="zserio_java_runtime.classes_dir" value="${zserio_java_runtime.build_dir}/classes"/>
     <property name="zserio_java_runtime.javadocs_dir" value="${zserio_java_runtime.build_dir}/javadocs"/>
     <property name="zserio_java_runtime.findbugs.out_dir" value="${zserio_java_runtime.build_dir}/findbugs"/>
@@ -38,12 +48,6 @@ findbugs.home_dir               - Location of the findbugs tool. If not set, fin
     <property name="zserio_java_runtime.3rdparty.root_dir" value="${zserio_java_runtime.zserio_root}/3rdparty"/>
     <property name="zserio_java_runtime.3rdparty.jar_dir" value="${zserio_java_runtime.3rdparty.root_dir}/java"/>
     <property name="zserio_java_runtime.3rdparty.junit.jar_file" location="${zserio_java_runtime.3rdparty.jar_dir}/junit-4.10.jar"/>
-    <property name="relational.enable" value="no"/>
-    <property name="relational.sqlite.jar_dir" value="${zserio_java_runtime.3rdparty.root_dir}/java"/>
-    <property name="relational.sqlite.jar_file_name" value="sqlite-jdbc-3.23.1.jar"/>
-    <property name="relational.validation" value="yes"/>
-
-    <property name="zserio_java_runtime.install_dir" value="${zserio_java_runtime.zserio_root}/distr/runtime_libs/java"/>
 
     <!-- Zserio Java extension runtime version. -->
     <loadfile
@@ -222,9 +226,7 @@ findbugs.home_dir               - Location of the findbugs tool. If not set, fin
                 <pathelement path="${zserio_java_runtime.3rdparty.junit.jar_file}"/>
                 <pathelement path="${zserio_java_runtime.jar_file}"/>
                 <pathelement path="${zserio_java_runtime.test.classes_dir}"/>
-                <fileset dir="${relational.sqlite.jar_dir}">
-                    <include name="${relational.sqlite.jar_file_name}" if="relational.enabled"/>
-                </fileset>
+                <pathelement path="${relational.sqlite.jar_file}"/>
             </classpath>
             <batchtest todir="${zserio_java_runtime.test.results_dir}">
                 <fileset dir="${zserio_java_runtime.test.src_dir}">

@@ -6,10 +6,13 @@ Zserio core contains parser, AST nodes and common parts for all extensions.
 
 The following external properties can be set:
 
-zserio_core.install_dir - Directory where to install Zserio core jar file. Default is "../../distr/jar".
-zserio_core.build_dir   - Directory where to put generated files. Default is "../../build/compiler/core".
+zserio.build_dir        - Zserio build directory. Default is "../../build".
+zserio.install_dir      - Zserio install directory. Default is "../../distr".
+zserio_core.build_dir   - Directory where to put generated files.
+                          Default is "${zserio.build_dir}/compiler/core".
+zserio_core.install_dir - Directory where to install Zserio core jar file.
+                          Default is "${zserio.install_dir}/zserio_libs".
 zserio.version          - Zserio version to be used for Zserio core. Default is "unknown".
-3rdparty.root_dir       - Directory where 3rdparty libraries are located. Default is "../../3rdparty".
 findbugs.home_dir       - Location of the findbugs tool. If not set, findbugs is not run.
 
 -->
@@ -18,10 +21,17 @@ findbugs.home_dir       - Location of the findbugs tool. If not set, findbugs is
 
     <property name="zserio_core.zserio_root" value="${zserio_core.base_dir}/../.."/>
 
+    <property name="zserio.build_dir" value="${zserio_core.zserio_root}/build"/>
+    <property name="zserio.install_dir" value="${zserio_core.zserio_root}/distr"/>
+    <property name="zserio_core.build_dir" value="${zserio.build_dir}/compiler/core"/>
+    <property name="zserio_core.install_dir" value="${zserio.install_dir}/zserio_libs"/>
+    <condition property="zserio_core.version" value="${zserio.version}" else="unknown">
+        <isset property="zserio.version"/>
+    </condition>
+
     <property name="zserio_core.antlr_dir" value="${zserio_core.base_dir}/antlr"/>
     <property name="zserio_core.src_dir" value="${zserio_core.base_dir}/src"/>
 
-    <property name="zserio_core.build_dir" value="${zserio_core.zserio_root}/build/compiler/core"/>
     <property name="zserio_core.classes_dir" value="${zserio_core.build_dir}/classes"/>
     <property name="zserio_core.findbugs.out_dir" value="${zserio_core.build_dir}/findbugs"/>
     <property name="zserio_core.antlr.gen_dir" value="${zserio_core.build_dir}/gen"/>
@@ -34,12 +44,8 @@ findbugs.home_dir       - Location of the findbugs tool. If not set, findbugs is
     <property name="zserio_core.test.results_dir" value="${zserio_core.test.build_dir}/results"/>
 
     <property name="zserio_core.jar_dir" value="${zserio_core.build_dir}/jar"/>
-    <property name="zserio_core.jar_file" value="${zserio_core.jar_dir}/zserio_core.jar"/>
-    <property name="zserio_core.install_dir" value="${zserio_core.zserio_root}/distr/zserio_libs"/>
-
-    <condition property="zserio_core.version" value="${zserio.version}" else="unknown">
-        <isset property="zserio.version"/>
-    </condition>
+    <!-- use location to set absolute path, property zserio_core.jar_file is used by extensions -->
+    <property name="zserio_core.jar_file" location="${zserio_core.jar_dir}/zserio_core.jar"/>
 
     <property name="3rdparty.root_dir" value="${zserio_core.zserio_root}/3rdparty"/>
     <property name="3rdparty.jar_dir" value="${3rdparty.root_dir}/java"/>
