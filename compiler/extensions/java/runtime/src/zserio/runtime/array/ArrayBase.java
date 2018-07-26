@@ -6,7 +6,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.NoSuchElementException;
 
-import zserio.runtime.BitPositionUtil;
 import zserio.runtime.ZserioError;
 import zserio.runtime.VarUInt64Util;
 import zserio.runtime.io.BitStreamReader;
