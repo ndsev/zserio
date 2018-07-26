@@ -1,183 +1,36 @@
-<!--
-
-Ant build.xml for base_types_error test example.
-
-The following properties can be set:
-
-zserio.release_dir      - Directory where to find Zserio release to test. Default is "../../../distr".
-test.build_dir          - Directory where to put generated files. Default is "../../../build/test".
-findbugs.home_dir       - Location of the findbugs tool. If not set, findbugs is not run.
-
--->
 <project name="base_types_error" basedir="." default="run">
-    <dirname property="base_types_error.base_dir" file="${ant.file.base_types_error}"/>
-
-    <property name="zserio.root_dir" location="${base_types_error.base_dir}/../../.."/>
-    <property name="zserio.release_dir" location="${zserio.root_dir}/distr"/>
-    <property name="zserio.jar_dir" location="${zserio.release_dir}/zserio_libs"/>
-
-    <property name="test.build_dir" location="${zserio.root_dir}/build/test"/>
-    <property name="test_utils.jar_file" location="${test.build_dir}/utils/jar/test_utils.jar"/>
-    <property name="runtime.jar_dir" location="${zserio.release_dir}/runtime_libs/java"/>
-    <property name="3rdparty.jar_dir" location="${zserio.root_dir}/3rdparty/java"/>
-
-    <property name="base_types_error.build_dir"
-        location="${test.build_dir}/errors/base_types_error"/>
-    <property name="base_types_error.zs.in_dir" location="${base_types_error.base_dir}/zs"/>
-    <property name="base_types_error.zs.out_dir" location="${base_types_error.build_dir}/gen"/>
-    <property name="base_types_error.zs.zserio_errors_file"
-        location="${base_types_error.build_dir}/zserio_errors.txt"/>
-    <property name="base_types_error.run_dir" location="${base_types_error.build_dir}/run"/>
-
-    <property name="runtime.jar_file" location="${runtime.jar_dir}/zserio_runtime.jar"/>
-    <property name="3rdparty.junit.jar_file" location="${3rdparty.jar_dir}/junit-4.10.jar"/>
-
-    <!-- Zserio Ant task -->
-    <taskdef name="zserio" classpath="${zserio.release_dir}/ant_task/zserio_ant.jar" classname="zserio.ant.ZserioTask"/>
-
-    <!-- classpath required for running the Zserio Tool -->
-    <path id="zserio.classpath">
-        <fileset dir="${zserio.jar_dir}">
-            <include name="*.jar"/>
-            <exclude name="zserio_ant.jar"/>
-        </fileset>
-    </path>
+    <testProperties testPath="errors/base_types_error" testName="base_types_error"/>
 
     <target name="prepare">
-        <mkdir dir="${base_types_error.build_dir}/classes"/>
+        <testPrepare testName="base_types_error"/>
     </target>
 
     <target name="gen" depends="prepare">
-        <record name="${base_types_error.zs.zserio_errors_file}" action="start" loglevel="warn"/>
-
-        <zserio srcPath="${base_types_error.zs.in_dir}" srcFile="bitfield_cyclic_definition_error.zs"
-            java="${base_types_error.zs.out_dir}" ignoreError="true">
-            <classpath>
-                <path refid="zserio.classpath"/>
-            </classpath>
-        </zserio>
-
-        <zserio srcPath="${base_types_error.zs.in_dir}" srcFile="bitfield_int33_length_type_error.zs"
-            java="${base_types_error.zs.out_dir}" ignoreError="true">
-            <classpath>
-                <path refid="zserio.classpath"/>
-            </classpath>
-        </zserio>
-
-        <zserio srcPath="${base_types_error.zs.in_dir}" srcFile="bitfield_invalid_length_type_error.zs"
-            java="${base_types_error.zs.out_dir}" ignoreError="true">
-            <classpath>
-                <path refid="zserio.classpath"/>
-            </classpath>
-        </zserio>
-
-        <zserio srcPath="${base_types_error.zs.in_dir}" srcFile="bitfield_length_field_not_available_error.zs"
-            java="${base_types_error.zs.out_dir}" ignoreError="true">
-            <classpath>
-                <path refid="zserio.classpath"/>
-            </classpath>
-        </zserio>
-
-        <zserio srcPath="${base_types_error.zs.in_dir}" srcFile="bitfield_uint64_length_type_error.zs"
-            java="${base_types_error.zs.out_dir}" ignoreError="true">
-            <classpath>
-                <path refid="zserio.classpath"/>
-            </classpath>
-        </zserio>
-
-        <zserio srcPath="${base_types_error.zs.in_dir}" srcFile="bitfield_unknown_length_error.zs"
-            java="${base_types_error.zs.out_dir}" ignoreError="true">
-            <classpath>
-                <path refid="zserio.classpath"/>
-            </classpath>
-        </zserio>
-
-        <zserio srcPath="${base_types_error.zs.in_dir}" srcFile="bitfield0_error.zs"
-            java="${base_types_error.zs.out_dir}" ignoreError="true">
-            <classpath>
-                <path refid="zserio.classpath"/>
-            </classpath>
-        </zserio>
-
-        <zserio srcPath="${base_types_error.zs.in_dir}" srcFile="bitfield64_error.zs"
-            java="${base_types_error.zs.out_dir}" ignoreError="true">
-            <classpath>
-                <path refid="zserio.classpath"/>
-            </classpath>
-        </zserio>
-
-        <zserio srcPath="${base_types_error.zs.in_dir}" srcFile="intfield0_error.zs"
-            java="${base_types_error.zs.out_dir}" ignoreError="true">
-            <classpath>
-                <path refid="zserio.classpath"/>
-            </classpath>
-        </zserio>
-
-        <zserio srcPath="${base_types_error.zs.in_dir}" srcFile="intfield65_error.zs"
-            java="${base_types_error.zs.out_dir}" ignoreError="true">
-            <classpath>
-                <path refid="zserio.classpath"/>
-            </classpath>
-        </zserio>
-
-        <record name="${base_types_error.zs.zserio_errors_file}" action="stop"/>
+        <testGen testName="base_types_error" zsFile="bitfield_cyclic_definition_error.zs" ignoreError="true"/>
+        <testGen testName="base_types_error" zsFile="bitfield_int33_length_type_error.zs" ignoreError="true"/>
+        <testGen testName="base_types_error" zsFile="bitfield_invalid_length_type_error.zs" ignoreError="true"/>
+        <testGen testName="base_types_error" zsFile="bitfield_length_field_not_available_error.zs" ignoreError="true"/>
+        <testGen testName="base_types_error" zsFile="bitfield_uint64_length_type_error.zs" ignoreError="true"/>
+        <testGen testName="base_types_error" zsFile="bitfield_unknown_length_error.zs" ignoreError="true"/>
+        <testGen testName="base_types_error" zsFile="bitfield0_error.zs" ignoreError="true"/>
+        <testGen testName="base_types_error" zsFile="bitfield64_error.zs" ignoreError="true"/>
+        <testGen testName="base_types_error" zsFile="intfield0_error.zs" ignoreError="true"/>
+        <testGen testName="base_types_error" zsFile="intfield65_error.zs" ignoreError="true"/>
     </target>
 
     <target name="compile" depends="gen">
-        <depend srcDir="${base_types_error.base_dir}/java"
-            destDir="${base_types_error.build_dir}/classes" cache="${base_types_error.build_dir}/depend-cache"/>
-        <javac destdir="${base_types_error.build_dir}/classes" debug="on" encoding="utf8"
-            includeAntRuntime="false">
-            <classpath>
-                <pathelement location="${runtime.jar_file}"/>
-                <pathelement location="${3rdparty.junit.jar_file}"/>
-                <pathelement location="${test_utils.jar_file}"/>
-            </classpath>
-            <src location="${base_types_error.base_dir}/java"/>
-        </javac>
+        <testCompile testName="base_types_error" srcPath="${base_types_error.base_dir}/java"/>
     </target>
 
-    <target name="findbugs" depends="compile" if="findbugs.home_dir" description="Run FindBugs">
-        <taskdef name="findbugs" classpath="${findbugs.home_dir}/lib/findbugs-ant.jar"
-            classname="edu.umd.cs.findbugs.anttask.FindBugsTask"/>
-        <findbugs home="${findbugs.home_dir}"
-            output="html"
-            outputFile="${base_types_error.build_dir}/findbugs.html"
-            reportLevel="low"
-            errorProperty="base_types_error.is_failed"
-            warningsProperty="base_types_error.is_failed">
-            <sourcePath>
-                <dirset dir="${base_types_error.base_dir}/java"/>
-            </sourcePath>
-            <fileset dir="${base_types_error.build_dir}/classes"/>
-            <auxClasspath>
-                <fileset file="${runtime.jar_file}"/>
-                <fileset file="${3rdparty.junit.jar_file}"/>
-                <fileset file="${test_utils.jar_file}"/>
-            </auxClasspath>
-        </findbugs>
-        <fail message="FindBugs found some issues!" if="base_types_error.is_failed"/>
+    <target name="findbugs" depends="compile" if="findbugs.home_dir">
+        <testFindbugs testName="base_types_error" srcPath="${base_types_error.base_dir}/java"/>
     </target>
 
     <target name="run" depends="findbugs">
-        <delete dir="${base_types_error.run_dir}"/>
-        <mkdir dir="${base_types_error.run_dir}"/>
-        <copy file="${base_types_error.zs.zserio_errors_file}" todir="${base_types_error.run_dir}"/>
-        <junit printsummary="no" fork="on" haltonfailure="on" dir="${base_types_error.run_dir}">
-            <classpath>
-                <pathelement location="${base_types_error.build_dir}/classes"/>
-                <pathelement location="${runtime.jar_file}"/>
-                <pathelement location="${3rdparty.junit.jar_file}"/>
-                <pathelement location="${test_utils.jar_file}"/>
-            </classpath>
-            <batchtest>
-                <fileset dir="${base_types_error.base_dir}/java" includes="**/*Test.java"/>
-                <formatter type="plain" usefile="false"/>
-            </batchtest>
-        </junit>
+        <testRun testName="base_types_error"/>
     </target>
 
     <target name="clean">
-        <delete dir="${base_types_error.build_dir}"/>
+        <testClean testName="base_types_error"/>
     </target>
 </project>

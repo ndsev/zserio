@@ -1,126 +1,28 @@
-<!--
-
-Ant build.xml for with_writer_code test example.
-
-The following properties can be set:
-
-zserio.release_dir      - Directory where to find Zserio release to test. Default is "../../../distr".
-test.build_dir          - Directory where to put generated files. Default is "../../../build/test/java".
-findbugs.home_dir       - Location of the findbugs tool. If not set, findbugs is not run.
-
--->
 <project name="without_writer_code" basedir="." default="run">
-    <dirname property="without_writer_code.base_dir" file="${ant.file.without_writer_code}"/>
-
-    <property name="zserio.root_dir" location="${without_writer_code.base_dir}/../../.."/>
-    <property name="zserio.release_dir" location="${zserio.root_dir}/distr"/>
-    <property name="zserio.jar_dir" location="${zserio.release_dir}/java"/>
-
-    <property name="test.build_dir" location="${zserio.root_dir}/build/test/java"/>
-    <property name="runtime.jar_dir" location="${zserio.release_dir}/runtime_libs/java"/>
-    <property name="3rdparty.jar_dir" location="${zserio.root_dir}/3rdparty/java"/>
-
-    <property name="without_writer_code.build_dir"
-        location="${test.build_dir}/arguments/without_writer_code"/>
-    <property name="without_writer_code.zs.in_dir" location="${without_writer_code.base_dir}/zs"/>
-    <property name="without_writer_code.zs.out_dir" location="${without_writer_code.build_dir}/gen"/>
-    <property name="without_writer_code.run_dir" location="${without_writer_code.build_dir}/run"/>
-
-    <property name="runtime.jar_file" location="${runtime.jar_dir}/zserio_runtime.jar"/>
-    <property name="3rdparty.junit.jar_file" location="${3rdparty.jar_dir}/junit-4.10.jar"/>
-
-    <!-- Zserio Ant task -->
-    <taskdef name="zserio" classpath="${zserio.release_dir}/ant_task/zserio_ant.jar" classname="zserio.ant.ZserioTask"/>
-
-    <!-- classpath required for running the Zserio Tool -->
-    <path id="zserio.classpath">
-        <fileset dir="${zserio.jar_dir}">
-            <include name="*.jar"/>
-            <exclude name="zserio_ant.jar"/>
-        </fileset>
-    </path>
+    <testProperties testPath="arguments/without_writer_code" testName="without_writer_code"/>
 
     <target name="prepare">
-        <mkdir dir="${without_writer_code.build_dir}/classes"/>
+        <testPrepare testName="without_writer_code"/>
     </target>
 
-    <!-- Actually, we are using '-withWriterCode' everywhere but we don't check read part only (default
-         behavior). Therefore, this test checks surprisingly default behavior, so no '-withWriterCode' for
-         zserio ant task is ok. -->
     <target name="gen" depends="prepare">
-        <zserio srcPath="${without_writer_code.zs.in_dir}" srcFile="without_writer_code.zs"
-            java="${without_writer_code.zs.out_dir}">
-            <dependencies>
-                <fileset dir="${without_writer_code.zs.in_dir}" includes="**/*.zs"/>
-                <fileset dir="${zserio.jar_dir}"/>
-                <fileset dir="${runtime.jar_dir}"/>
-                <fileset file="${ant.file.without_writer_code}"/>
-            </dependencies>
-            <output>
-                <fileset dir="${without_writer_code.zs.out_dir}" includes="**/*.java"
-                    erroronmissingdir="false"/>
-            </output>
-            <classpath>
-                <path refid="zserio.classpath"/>
-            </classpath>
-        </zserio>
+        <testGen testName="without_writer_code" zsFile="without_writer_code.zs"
+            writerCodeOption="withoutWriterCode"/>
     </target>
 
     <target name="compile" depends="gen">
-        <depend srcDir="${without_writer_code.base_dir}/java:${without_writer_code.zs.out_dir}"
-            destDir="${without_writer_code.build_dir}/classes"
-            cache="${without_writer_code.build_dir}/depend-cache"/>
-        <javac destdir="${without_writer_code.build_dir}/classes" debug="on" encoding="utf8"
-            includeAntRuntime="false">
-            <classpath>
-                <pathelement location="${runtime.jar_file}"/>
-                <pathelement location="${3rdparty.junit.jar_file}"/>
-            </classpath>
-            <src location="${without_writer_code.base_dir}/java"/>
-            <src location="${without_writer_code.zs.out_dir}"/>
-        </javac>
+        <testCompile testName="without_writer_code"/>
     </target>
 
-    <target name="findbugs" depends="compile" if="findbugs.home_dir" description="Run FindBugs">
-        <taskdef name="findbugs" classpath="${findbugs.home_dir}/lib/findbugs-ant.jar"
-            classname="edu.umd.cs.findbugs.anttask.FindBugsTask"/>
-        <findbugs home="${findbugs.home_dir}"
-            output="html"
-            outputFile="${without_writer_code.build_dir}/findbugs.html"
-            excludeFilter="${without_writer_code.base_dir}/findbugs_filter.xml"
-            reportLevel="low"
-            errorProperty="without_writer_code.is_failed"
-            warningsProperty="without_writer_code.is_failed">
-            <sourcePath>
-                <dirset dir="${without_writer_code.base_dir}/java"/>
-                <dirset dir="${without_writer_code.zs.out_dir}"/>
-            </sourcePath>
-            <fileset dir="${without_writer_code.build_dir}/classes"/>
-            <auxClasspath>
-                <fileset file="${runtime.jar_file}"/>
-                <fileset file="${3rdparty.junit.jar_file}"/>
-            </auxClasspath>
-        </findbugs>
-        <fail message="FindBugs found some issues!" if="without_writer_code.is_failed"/>
+    <target name="findbugs" depends="compile" if="findbugs.home_dir">
+        <testFindbugs testName="without_writer_code"/>
     </target>
 
     <target name="run" depends="findbugs">
-        <delete dir="${without_writer_code.run_dir}"/>
-        <mkdir dir="${without_writer_code.run_dir}"/>
-        <junit printsummary="no" fork="on" haltonfailure="on" dir="${without_writer_code.run_dir}">
-            <classpath>
-                <pathelement location="${without_writer_code.build_dir}/classes"/>
-                <pathelement location="${runtime.jar_file}"/>
-                <pathelement location="${3rdparty.junit.jar_file}"/>
-            </classpath>
-            <batchtest>
-                <fileset dir="${without_writer_code.base_dir}/java" includes="**/*Test.java"/>
-                <formatter type="plain" usefile="false"/>
-            </batchtest>
-        </junit>
+        <testRun testName="without_writer_code"/>
     </target>
 
     <target name="clean">
-        <delete dir="${without_writer_code.build_dir}"/>
+        <testClean testName="without_writer_code"/>
     </target>
 </project>

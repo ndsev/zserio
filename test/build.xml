@@ -4,8 +4,9 @@ Ant build.xml for Zserio Tool test examples.
 
 The following properties can be set:
 
-zserio.release_dir      - Directory where to find Zserio release to test. Default is "../../distr".
-test.build_dir - Directory where to put generated files. Default is "../build/test".
+zserio.release_dir      - Directory where to find Zserio release to test. Default is "../distr".
+test.build_dir          - Directory where to put generated files. Default is "../build/test/java".
+test.filter             - Test filter (supports glob patterns). Default is "**".
 findbugs.home_dir       - Location of the findbugs tool. If not set, findbugs is not run.
 
 -->
@@ -13,235 +14,194 @@ findbugs.home_dir       - Location of the findbugs tool. If not set, findbugs is
     <dirname property="test.base_dir" file="${ant.file.test}"/>
 
     <property name="zserio.root_dir" location="${test.base_dir}/.."/>
-    <property name="test.build_dir" location="${zserio.root_dir}/build/test"/>
+    <property name="zserio.release_dir" location="${zserio.root_dir}/distr"/>
+    <property name="zserio.jar_dir" location="${zserio.release_dir}/zserio_libs"/>
+
+    <property name="runtime.jar_dir" location="${zserio.release_dir}/runtime_libs/java"/>
+    <property name="runtime.jar_file" location="${runtime.jar_dir}/zserio_runtime.jar"/>
+
+    <property name="3rdparty.jar_dir" location="${zserio.root_dir}/3rdparty/java"/>
+    <property name="3rdparty.junit.jar_file" location="${3rdparty.jar_dir}/junit-4.10.jar"/>
+    <property name="3rdparty.sqlitejdbc.jar_file" location="${3rdparty.jar_dir}/sqlite-jdbc-3.23.1.jar"/>
+
+    <property name="test.build_dir" location="${zserio.root_dir}/build/test/java"/>
+    <property name="test.filter" value="**"/>
+
+    <condition property="findbugs.classpath" value="${findbugs.home_dir}/lib/findbugs-ant.jar">
+        <isset property="findbugs.home_dir"/>
+    </condition>
+    <condition property="findbugs.classname" value="edu.umd.cs.findbugs.anttask.FindBugsTask">
+        <isset property="findbugs.home_dir"/>
+    </condition>
 
     <!-- Test common utilities needed for some tests. -->
     <include file="${test.base_dir}/utils/java/build.xml"/>
 
-    <!--
-        use "as" attribute to work around bug #54940 (fixed in ant 1.9.1)
-        (see https://issues.apache.org/bugzilla/show_bug.cgi?id=54940)
-    -->
-    <include file="${test.base_dir}/arguments/java_version8/build.xml"
-        as="arguments/java_version8"/>
-    <include file="${test.base_dir}/arguments/java_version9/build.xml"
-        as="arguments/java_version9"/>
-    <include file="${test.base_dir}/arguments/set_top_level_package/build.xml"
-        as="arguments/set_top_level_package"/>
-    <include file="${test.base_dir}/arguments/with_range_check_code/build.xml"
-        as="arguments/with_range_check_code"/>
-    <include file="${test.base_dir}/arguments/with_validation_code/build.xml"
-        as="arguments/with_validation_code"/>
-    <include file="${test.base_dir}/arguments/without_sql_code/build.xml"
-        as="arguments/without_sql_code"/>
-    <include file="${test.base_dir}/arguments/without_writer_code/build.xml"
-        as="arguments/without_writer_code"/>
+    <!-- Zserio ant task -->
+    <taskdef name="zserio" classpath="${zserio.release_dir}/ant_task/zserio_ant.jar" classname="zserio.ant.ZserioTask"/>
 
-    <include file="${test.base_dir}/errors/array_types_error/build.xml"
-        as="errors/array_types_error"/>
-    <include file="${test.base_dir}/errors/base_types_error/build.xml"
-        as="errors/base_types_error"/>
-    <include file="${test.base_dir}/errors/choice_types_error/build.xml"
-        as="errors/choice_types_error"/>
-    <include file="${test.base_dir}/errors/comments_error/build.xml"
-        as="errors/comments_error"/>
-    <include file="${test.base_dir}/errors/constants_error/build.xml"
-        as="errors/constants_error"/>
-    <include file="${test.base_dir}/errors/constraints_error/build.xml"
-        as="errors/constraints_error"/>
-    <include file="${test.base_dir}/errors/default_values_error/build.xml"
-        as="errors/default_values_error"/>
-    <include file="${test.base_dir}/errors/enumeration_types_error/build.xml"
-        as="errors/enumeration_types_error"/>
-    <include file="${test.base_dir}/errors/expressions_error/build.xml"
-        as="errors/expressions_error"/>
-    <include file="${test.base_dir}/errors/field_names_error/build.xml"
-        as="errors/field_names_error"/>
-    <include file="${test.base_dir}/errors/functions_error/build.xml"
-        as="errors/functions_error"/>
-    <include file="${test.base_dir}/errors/member_access_error/build.xml"
-        as="errors/member_access_error"/>
-    <include file="${test.base_dir}/errors/optional_members_error/build.xml"
-        as="errors/optional_members_error"/>
-    <include file="${test.base_dir}/errors/packages_error/build.xml"
-        as="errors/packages_error"/>
-    <include file="${test.base_dir}/errors/parametrized_types_error/build.xml"
-        as="errors/parametrized_types_error"/>
-    <include file="${test.base_dir}/errors/sql_databases_error/build.xml"
-        as="errors/sql_databases_error"/>
-    <include file="${test.base_dir}/errors/sql_tables_error/build.xml"
-        as="errors/sql_tables_error"/>
-    <include file="${test.base_dir}/errors/sql_virtual_tables_error/build.xml"
-        as="errors/sql_virtual_tables_error"/>
-    <include file="${test.base_dir}/errors/sql_without_rowid_tables_error/build.xml"
-        as="errors/sql_without_rowid_tables_error"/>
-    <include file="${test.base_dir}/errors/structure_types_error/build.xml"
-        as="errors/structure_types_error"/>
-    <include file="${test.base_dir}/errors/subtypes_error/build.xml"
-        as="errors/subtypes_error"/>
-    <include file="${test.base_dir}/errors/type_names_error/build.xml"
-        as="errors/type_names_error"/>
-    <include file="${test.base_dir}/errors/union_types_error/build.xml"
-        as="errors/union_types_error"/>
+    <!-- targets commons -->
+    <macrodef name="testProperties">
+        <attribute name="testPath"/>
+        <attribute name="testName"/>
+        <sequential>
+            <dirname property="@{testName}.base_dir" file="${ant.file.@{testName}}"/>
 
-    <include file="${test.base_dir}/language/alignment/build.xml"
-        as="language/alignment"/>
-    <include file="${test.base_dir}/language/array_types/build.xml"
-        as="language/array_types"/>
-    <include file="${test.base_dir}/language/base_types/build.xml"
-        as="language/base_types"/>
-    <include file="${test.base_dir}/language/choice_types/build.xml"
-        as="language/choice_types"/>
-    <include file="${test.base_dir}/language/comments/build.xml"
-        as="language/comments"/>
-    <include file="${test.base_dir}/language/constants/build.xml"
-        as="language/constants"/>
-    <include file="${test.base_dir}/language/constraints/build.xml"
-        as="language/constraints"/>
-    <include file="${test.base_dir}/language/default_values/build.xml"
-        as="language/default_values"/>
-    <include file="${test.base_dir}/language/enumeration_types/build.xml"
-        as="language/enumeration_types"/>
-    <include file="${test.base_dir}/language/explicit_parameters/build.xml"
-        as="language/explicit_parameters"/>
-    <include file="${test.base_dir}/language/expressions/build.xml"
-        as="language/expressions"/>
-    <include file="${test.base_dir}/language/functions/build.xml"
-        as="language/functions"/>
-    <include file="${test.base_dir}/language/indexed_offsets/build.xml"
-        as="language/indexed_offsets"/>
-    <include file="${test.base_dir}/language/literals/build.xml"
-        as="language/literals"/>
-    <include file="${test.base_dir}/language/member_access/build.xml"
-        as="language/member_access"/>
-    <include file="${test.base_dir}/language/offsets/build.xml"
-        as="language/offsets"/>
-    <include file="${test.base_dir}/language/optional_members/build.xml"
-        as="language/optional_members"/>
-    <include file="${test.base_dir}/language/packages/build.xml"
-        as="language/packages"/>
-    <include file="${test.base_dir}/language/parameterized_types/build.xml"
-        as="language/parameterized_types"/>
-    <include file="${test.base_dir}/language/sql_constraints/build.xml"
-        as="language/sql_constraints"/>
-    <include file="${test.base_dir}/language/sql_databases/build.xml"
-        as="language/sql_databases"/>
-    <include file="${test.base_dir}/language/sql_tables/build.xml"
-        as="language/sql_tables"/>
-    <include file="${test.base_dir}/language/sql_types/build.xml"
-        as="language/sql_types"/>
-    <include file="${test.base_dir}/language/sql_virtual_columns/build.xml"
-        as="language/sql_virtual_columns"/>
-    <include file="${test.base_dir}/language/sql_virtual_tables/build.xml"
-        as="language/sql_virtual_tables"/>
-    <include file="${test.base_dir}/language/sql_without_rowid_tables/build.xml"
-        as="language/sql_without_rowid_tables"/>
-    <include file="${test.base_dir}/language/structure_types/build.xml"
-        as="language/structure_types"/>
-    <include file="${test.base_dir}/language/subtypes/build.xml" as="language/subtypes"/>
-    <include file="${test.base_dir}/language/union_types/build.xml" as="language/union_types"/>
+            <property name="@{testName}.build_dir" location="${test.build_dir}/@{testPath}"/>
+            <property name="@{testName}.zs.in_dir" location="${@{testName}.base_dir}/zs"/>
+            <property name="@{testName}.zs.out_dir" location="${@{testName}.build_dir}/gen"/>
+            <property name="@{testName}.zs.log_file" location="${@{testName}.build_dir}/zserio_log.txt"/>
+            <property name="@{testName}.run_dir" location="${@{testName}.build_dir}/run"/>
+        </sequential>
+    </macrodef>
 
-    <include file="${test.base_dir}/others/complex_example/build.xml" as="others/complex_example"/>
-    <include file="${test.base_dir}/others/gif/build.xml" as="others/gif"/>
-    <include file="${test.base_dir}/others/metamodel/build.xml" as="others/metamodel"/>
+    <macrodef name="testPrepare">
+        <attribute name="testName"/>
+        <sequential>
+            <mkdir dir="${@{testName}.build_dir}/classes"/>
+        </sequential>
+    </macrodef>
 
-    <include file="${test.base_dir}/warnings/file_encoding_warning/build.xml"
-        as="warnings/file_encoding_warning"/>
-    <include file="${test.base_dir}/warnings/functions_warning/build.xml"
-        as="warnings/functions_warning"/>
-    <include file="${test.base_dir}/warnings/not_handled_warning/build.xml"
-        as="warnings/not_handled_warning"/>
-    <include file="${test.base_dir}/warnings/optional_members_warning/build.xml"
-        as="warnings/optional_members_warning"/>
-    <include file="${test.base_dir}/warnings/packages_warning/build.xml"
-        as="warnings/packages_warning"/>
-    <include file="${test.base_dir}/warnings/sql_tables_warning/build.xml"
-        as="warnings/sql_tables_warning"/>
-    <include file="${test.base_dir}/warnings/sql_without_rowid_tables_warning/build.xml"
-        as="warnings/sql_without_rowid_tables_warning"/>
-    <include file="${test.base_dir}/warnings/unused_type_warning/build.xml"
-        as="warnings/unused_type_warning"/>
+    <macrodef name="testGenCheck">
+        <attribute name="testName"/>
+        <sequential>
+            <dependset>
+                <srcfileset dir="${@{testName}.zs.in_dir}">
+                    <include name="**/*.zs"/>
+                </srcfileset>
+                <srcfileset dir="${zserio.jar_dir}">
+                    <include name="*.jar"/>
+                </srcfileset>
+                <srcfileset dir="${runtime.jar_dir}">
+                    <include name="*.jar"/>
+                </srcfileset>
+                <srcfileset file="${ant.file.@{testName}}"/>
+                <targetfileset file="${@{testName}.zs.log_file}"/>
+            </dependset>
+            <available file="${@{testName}.zs.log_file}"
+                property="@{testName}.zs.gen_is_uptodate"/>
+        </sequential>
+    </macrodef>
 
-    <target name="run" depends="
-        arguments/java_version8.run,
-        arguments/java_version9.run,
-        arguments/set_top_level_package.run,
-        arguments/with_range_check_code.run,
-        arguments/with_validation_code.run,
-        arguments/without_sql_code.run,
-        arguments/without_writer_code.run,
+    <macrodef name="testGen">
+        <attribute name="testName"/>
+        <attribute name="zsFile"/>
+        <attribute name="ignoreError" default="false"/>
+        <attribute name="logLevel" default="warn"/>
+        <attribute name="writerCodeOption" default="withWriterCode"/>
+        <element name="args" implicit="yes" optional="true"/>
+        <sequential>
+            <record name="${@{testName}.zs.log_file}" action="start" loglevel="@{logLevel}"/>
 
-        errors/array_types_error.run,
-        errors/base_types_error.run,
-        errors/choice_types_error.run,
-        errors/comments_error.run,
-        errors/constants_error.run,
-        errors/constraints_error.run,
-        errors/default_values_error.run,
-        errors/enumeration_types_error.run,
-        errors/expressions_error.run,
-        errors/field_names_error.run,
-        errors/functions_error.run,
-        errors/member_access_error.run,
-        errors/optional_members_error.run,
-        errors/packages_error.run,
-        errors/parametrized_types_error.run,
-        errors/sql_databases_error.run,
-        errors/sql_tables_error.run,
-        errors/sql_virtual_tables_error.run,
-        errors/sql_without_rowid_tables_error.run,
-        errors/structure_types_error.run,
-        errors/subtypes_error.run,
-        errors/type_names_error.run,
-        errors/union_types_error.run,
+            <zserio srcPath="${@{testName}.zs.in_dir}" srcFile="@{zsFile}"
+                java="${@{testName}.zs.out_dir}" ignoreError="@{ignoreError}">
+                <dependencies>
+                    <fileset dir="${@{testName}.zs.in_dir}" includes="**/*.zs"/>
+                    <fileset dir="${zserio.jar_dir}"/>
+                    <fileset dir="${runtime.jar_dir}"/>
+                    <fileset file="${ant.file.@{testName}}"/>
+                </dependencies>
+                <output>
+                    <fileset dir="${@{testName}.zs.out_dir}" includes="**/*.java" erroronmissingdir="false"/>
+                </output>
+                <classpath>
+                    <fileset dir="${zserio.jar_dir}">
+                        <include name="*.jar"/>
+                    </fileset>
+                </classpath>
+                <arg name="@{writerCodeOption}"/>
+                <args/>
+            </zserio>
 
-        language/alignment.run,
-        language/array_types.run,
-        language/base_types.run,
-        language/choice_types.run,
-        language/comments.run,
-        language/constants.run,
-        language/constraints.run,
-        language/default_values.run,
-        language/enumeration_types.run,
-        language/explicit_parameters.run,
-        language/expressions.run,
-        language/functions.run,
-        language/indexed_offsets.run,
-        language/literals.run,
-        language/member_access.run,
-        language/offsets.run,
-        language/optional_members.run,
-        language/packages.run,
-        language/parameterized_types.run,
-        language/sql_constraints.run,
-        language/sql_databases.run,
-        language/sql_tables.run,
-        language/sql_types.run,
-        language/sql_virtual_columns.run,
-        language/sql_virtual_tables.run,
-        language/sql_without_rowid_tables.run,
-        language/structure_types.run,
-        language/subtypes.run,
-        language/union_types.run,
+            <record name="${@{testName}.zs.log_file}" action="stop"/>
+        </sequential>
+    </macrodef>
 
-        others/complex_example.run,
-        others/gif.run,
-        others/metamodel.run,
+    <macrodef name="testCompile">
+        <attribute name="testName"/>
+        <attribute name="srcPath" default="${@{testName}.base_dir}/java:${@{testName}.zs.out_dir}"/>
+        <sequential>
+            <depend srcDir="@{srcDir}"
+                destDir="${@{testName}.build_dir}/classes"
+                cache="${@{testName}.build_dir}/depend-cache"/>
+            <javac destdir="${@{testName}.build_dir}/classes" debug="on" encoding="utf8"
+                includeAntRuntime="false">
+                <classpath>
+                    <pathelement location="${runtime.jar_file}"/>
+                    <pathelement location="${3rdparty.junit.jar_file}"/>
+                    <pathelement location="${test_utils.jar_file}"/>
+                </classpath>
+                <src path="@{srcPath}"/>
+            </javac>
+        </sequential>
+    </macrodef>
 
-        warnings/file_encoding_warning.run,
-        warnings/functions_warning.run,
-        warnings/not_handled_warning.run,
-        warnings/optional_members_warning.run,
-        warnings/packages_warning.run,
-        warnings/sql_tables_warning.run,
-        warnings/sql_without_rowid_tables_warning.run,
-        warnings/unused_type_warning.run
-    "/>
+    <macrodef name="testFindbugs">
+        <attribute name="testName"/>
+        <attribute name="srcPath" default="${@{testName}.base_dir}/java:${@{testName}.zs.out_dir}"/>
+        <sequential>
+            <taskdef name="findbugs" classpath="${findbugs.classpath}" classname="${findbugs.classname}"/>
+            <findbugs home="${findbugs.home_dir}"
+                output="html"
+                outputFile="${@{testName}.build_dir}/findbugs.html"
+                excludeFilter="${@{testName}.base_dir}/findbugs_filter.xml"
+                reportLevel="low"
+                errorProperty="@{testName}.is_failed"
+                warningsProperty="@{testName}.is_failed">
+                <sourcePath path="@{srcPath}"/>
+                <fileset dir="${@{testName}.build_dir}/classes"/>
+                <auxClasspath>
+                    <pathelement location="${runtime.jar_file}"/>
+                    <pathelement location="${3rdparty.junit.jar_file}"/>
+                    <pathelement location="${test_utils.jar_file}"/>
+                </auxClasspath>
+            </findbugs>
+            <fail message="FindBugs found some issues!" if="@{testName}.is_failed"/>
+        </sequential>
+    </macrodef>
 
-    <target name="clean" depends="test_utils.clean">
-        <delete dir="${test.build_dir}"/>
+    <macrodef name="testRun">
+        <attribute name="testName"/>
+        <element name="resources" optional="true"/>
+        <sequential>
+            <delete dir="${@{testName}.run_dir}"/>
+            <mkdir dir="${@{testName}.run_dir}"/>
+            <copy file="${@{testName}.zs.log_file}" todir="${@{testName}.run_dir}"/>
+            <resources/>
+            <junit printsummary="no" fork="on" haltonfailure="on" dir="${@{testName}.run_dir}">
+                <classpath>
+                    <pathelement location="${@{testName}.build_dir}/classes"/>
+                    <pathelement location="${runtime.jar_file}"/>
+                    <pathelement location="${3rdparty.junit.jar_file}"/>
+                    <pathelement location="${3rdparty.sqlitejdbc.jar_file}"/>
+                    <pathelement location="${test_utils.jar_file}"/>
+                </classpath>
+                <batchtest>
+                    <fileset dir="${@{testName}.base_dir}/java" includes="**/*Test.java"/>
+                    <formatter type="plain" usefile="false"/>
+                </batchtest>
+            </junit>
+        </sequential>
+    </macrodef>
+
+    <macrodef name="testClean">
+        <attribute name="testName"/>
+        <sequential>
+            <delete dir="${@{testName}.build_dir}"/>
+        </sequential>
+    </macrodef>
+
+    <target name="run" depends="test_utils.findbugs">
+        <subant inheritall="true">
+            <fileset dir="." includes="${test.filter}/build.xml" excludes="build.xml,utils/**"/>
+            <target name="run"/>
+        </subant>
     </target>
 
-    <target name="test" depends="test_utils.findbugs, run"/>
+    <target name="clean" depends="test_utils.clean">
+        <subant inheritall="true">
+            <fileset dir="." includes="${test.filter}/build.xml" excludes="build.xml,utils/**"/>
+            <target name="clean"/>
+        </subant>
+    </target>
 </project>

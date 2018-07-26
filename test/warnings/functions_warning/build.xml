@@ -1,142 +1,32 @@
-<!--
-
-Ant build.xml for functions_warning test example.
-
-The following properties can be set:
-
-zserio.release_dir      - Directory where to find Zserio release to test. Default is "../../../distr".
-test.build_dir          - Directory where to put generated files. Default is "../../../build/test".
-findbugs.home_dir       - Location of the findbugs tool. If not set, findbugs is not run.
-
--->
 <project name="functions_warning" basedir="." default="run">
-    <dirname property="functions_warning.base_dir" file="${ant.file.functions_warning}"/>
-
-    <property name="zserio.root_dir" location="${functions_warning.base_dir}/../../.."/>
-    <property name="zserio.release_dir" location="${zserio.root_dir}/distr"/>
-    <property name="zserio.jar_dir" location="${zserio.release_dir}/zserio_libs"/>
-
-    <property name="test.build_dir" location="${zserio.root_dir}/build/test"/>
-    <property name="test_utils.jar_file" location="${test.build_dir}/utils/jar/test_utils.jar"/>
-    <property name="runtime.jar_dir" location="${zserio.release_dir}/runtime_libs/java"/>
-    <property name="3rdparty.jar_dir" location="${zserio.root_dir}/3rdparty/java"/>
-
-    <property name="functions_warning.build_dir"
-        location="${test.build_dir}/warnings/functions_warning"/>
-    <property name="functions_warning.zs.in_dir" location="${functions_warning.base_dir}/zs"/>
-    <property name="functions_warning.zs.out_dir" location="${functions_warning.build_dir}/gen"/>
-    <property name="functions_warning.zs.zserio_warnings_file"
-        location="${functions_warning.build_dir}/zserio_warnings.txt"/>
-    <property name="functions_warning.run_dir" location="${functions_warning.build_dir}/run"/>
-
-    <property name="runtime.jar_file" location="${runtime.jar_dir}/zserio_runtime.jar"/>
-    <property name="3rdparty.junit.jar_file" location="${3rdparty.jar_dir}/junit-4.10.jar"/>
-
-    <!-- Zserio Ant task -->
-    <taskdef name="zserio" classpath="${zserio.release_dir}/ant_task/zserio_ant.jar" classname="zserio.ant.ZserioTask"/>
-
-    <!-- classpath required for running the Zserio Tool -->
-    <path id="zserio.classpath">
-        <fileset dir="${zserio.jar_dir}">
-            <include name="*.jar"/>
-            <exclude name="zserio_ant.jar"/>
-        </fileset>
-    </path>
+    <testProperties testPath="warnings/functions_warning" testName="functions_warning"/>
 
     <target name="prepare">
-        <mkdir dir="${functions_warning.build_dir}/classes"/>
+        <testPrepare testName="functions_warning"/>
     </target>
 
     <target name="gen.check" depends="prepare">
-        <dependset>
-            <srcfileset dir="${functions_warning.zs.in_dir}">
-                <include name="**/*.zs"/>
-            </srcfileset>
-            <srcfileset dir="${zserio.jar_dir}">
-                <include name="*.jar"/>
-            </srcfileset>
-            <srcfileset file="${ant.file.functions_warning}"/>
-            <targetfileset file="${functions_warning.zs.zserio_warnings_file}"/>
-        </dependset>
-        <available file="${functions_warning.zs.zserio_warnings_file}"
-            property="functions_warning.zs.gen_is_uptodate"/>
+        <testGenCheck testName="functions_warning"/>
     </target>
 
     <target name="gen" depends="gen.check" unless="functions_warning.zs.gen_is_uptodate">
-        <record name="${functions_warning.zs.zserio_warnings_file}" action="start" loglevel="warn"/>
-        <zserio srcPath="${functions_warning.zs.in_dir}" srcFile="functions_warning.zs"
-            java="${functions_warning.zs.out_dir}">
-            <output>
-                <fileset dir="${functions_warning.zs.out_dir}" includes="**/*.java"
-                    erroronmissingdir="false"/>
-            </output>
-            <classpath>
-                <path refid="zserio.classpath"/>
-            </classpath>
-        </zserio>
-        <record name="${functions_warning.zs.zserio_warnings_file}" action="stop"/>
+        <delete dir="${functions_warning.zs.out_dir}"/>
+        <testGen testName="functions_warning" zsFile="functions_warning.zs"/>
     </target>
 
     <target name="compile" depends="gen">
-        <depend srcDir="${functions_warning.base_dir}/java:${functions_warning.zs.out_dir}"
-            destDir="${functions_warning.build_dir}/classes"
-            cache="${functions_warning.build_dir}/depend-cache"/>
-        <javac destdir="${functions_warning.build_dir}/classes" debug="on" encoding="utf8"
-            includeAntRuntime="false">
-            <classpath>
-                <pathelement location="${runtime.jar_file}"/>
-                <pathelement location="${3rdparty.junit.jar_file}"/>
-                <pathelement location="${test_utils.jar_file}"/>
-            </classpath>
-            <src location="${functions_warning.base_dir}/java"/>
-            <src location="${functions_warning.zs.out_dir}"/>
-        </javac>
+        <testCompile testName="functions_warning"/>
     </target>
 
-    <target name="findbugs" depends="compile" if="findbugs.home_dir" description="Run FindBugs">
-        <taskdef name="findbugs" classpath="${findbugs.home_dir}/lib/findbugs-ant.jar"
-            classname="edu.umd.cs.findbugs.anttask.FindBugsTask"/>
-        <findbugs home="${findbugs.home_dir}"
-            output="html"
-            outputFile="${functions_warning.build_dir}/findbugs.html"
-            excludeFilter="${functions_warning.base_dir}/findbugs_filter.xml"
-            reportLevel="low"
-            errorProperty="functions_warning.is_failed"
-            warningsProperty="functions_warning.is_failed">
-            <sourcePath>
-                <dirset dir="${functions_warning.base_dir}/java"/>
-                <dirset dir="${functions_warning.zs.out_dir}"/>
-            </sourcePath>
-            <fileset dir="${functions_warning.build_dir}/classes"/>
-            <auxClasspath>
-                <fileset file="${runtime.jar_file}"/>
-                <fileset file="${3rdparty.junit.jar_file}"/>
-                <fileset file="${test_utils.jar_file}"/>
-            </auxClasspath>
-        </findbugs>
-        <fail message="FindBugs found some issues!" if="functions_warning.is_failed"/>
+    <target name="findbugs" depends="compile" if="findbugs.home_dir">
+        <testFindbugs testName="functions_warning"/>
     </target>
 
     <target name="run" depends="findbugs">
-        <delete dir="${functions_warning.run_dir}"/>
-        <mkdir dir="${functions_warning.run_dir}"/>
-        <copy file="${functions_warning.zs.zserio_warnings_file}"
-            todir="${functions_warning.run_dir}"/>
-        <junit printsummary="no" fork="on" haltonfailure="on" dir="${functions_warning.run_dir}">
-            <classpath>
-                <pathelement location="${functions_warning.build_dir}/classes"/>
-                <pathelement location="${runtime.jar_file}"/>
-                <pathelement location="${3rdparty.junit.jar_file}"/>
-                <pathelement location="${test_utils.jar_file}"/>
-            </classpath>
-            <batchtest>
-                <fileset dir="${functions_warning.base_dir}/java" includes="**/*Test.java"/>
-                <formatter type="plain" usefile="false"/>
-            </batchtest>
-        </junit>
+        <testRun testName="functions_warning"/>
     </target>
 
     <target name="clean">
-        <delete dir="${functions_warning.build_dir}"/>
+        <testClean testName="functions_warning"/>
     </target>
 </project>

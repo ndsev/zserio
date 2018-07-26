@@ -1,142 +1,32 @@
-<!--
-
-Ant build.xml for optional_members_warning test example.
-
-The following properties can be set:
-
-zserio.release_dir      - Directory where to find Zserio release to test. Default is "../../../distr".
-test.build_dir          - Directory where to put generated files. Default is "../../../build/test".
-findbugs.home_dir       - Location of the findbugs tool. If not set, findbugs is not run.
-
--->
 <project name="optional_members_warning" basedir="." default="run">
-    <dirname property="optional_members_warning.base_dir" file="${ant.file.optional_members_warning}"/>
-
-    <property name="zserio.root_dir" location="${optional_members_warning.base_dir}/../../.."/>
-    <property name="zserio.release_dir" location="${zserio.root_dir}/distr"/>
-    <property name="zserio.jar_dir" location="${zserio.release_dir}/zserio_libs"/>
-
-    <property name="test.build_dir" location="${zserio.root_dir}/build/test"/>
-    <property name="test_utils.jar_file" location="${test.build_dir}/utils/jar/test_utils.jar"/>
-    <property name="runtime.jar_dir" location="${zserio.release_dir}/runtime_libs/java"/>
-    <property name="3rdparty.jar_dir" location="${zserio.root_dir}/3rdparty/java"/>
-
-    <property name="optional_members_warning.build_dir"
-        location="${test.build_dir}/warnings/optional_members_warning"/>
-    <property name="optional_members_warning.zs.in_dir" location="${optional_members_warning.base_dir}/zs"/>
-    <property name="optional_members_warning.zs.out_dir" location="${optional_members_warning.build_dir}/gen"/>
-    <property name="optional_members_warning.zs.zserio_warnings_file"
-        location="${optional_members_warning.build_dir}/zserio_warnings.txt"/>
-    <property name="optional_members_warning.run_dir" location="${optional_members_warning.build_dir}/run"/>
-
-    <property name="runtime.jar_file" location="${runtime.jar_dir}/zserio_runtime.jar"/>
-    <property name="3rdparty.junit.jar_file" location="${3rdparty.jar_dir}/junit-4.10.jar"/>
-
-    <!-- Zserio Ant task -->
-    <taskdef name="zserio" classpath="${zserio.release_dir}/ant_task/zserio_ant.jar" classname="zserio.ant.ZserioTask"/>
-
-    <!-- classpath required for running the Zserio Tool -->
-    <path id="zserio.classpath">
-        <fileset dir="${zserio.jar_dir}">
-            <include name="*.jar"/>
-            <exclude name="zserio_ant.jar"/>
-        </fileset>
-    </path>
+    <testProperties testPath="warnings/optional_members_warning" testName="optional_members_warning"/>
 
     <target name="prepare">
-        <mkdir dir="${optional_members_warning.build_dir}/classes"/>
+        <testPrepare testName="optional_members_warning"/>
     </target>
 
     <target name="gen.check" depends="prepare">
-        <dependset>
-            <srcfileset dir="${optional_members_warning.zs.in_dir}">
-                <include name="**/*.zs"/>
-            </srcfileset>
-            <srcfileset dir="${zserio.jar_dir}">
-                <include name="*.jar"/>
-            </srcfileset>
-            <srcfileset file="${ant.file.optional_members_warning}"/>
-            <targetfileset file="${optional_members_warning.zs.zserio_warnings_file}"/>
-        </dependset>
-        <available file="${optional_members_warning.zs.zserio_warnings_file}"
-            property="optional_members_warning.zs.gen_is_uptodate"/>
+        <testGenCheck testName="optional_members_warning"/>
     </target>
 
     <target name="gen" depends="gen.check" unless="optional_members_warning.zs.gen_is_uptodate">
-        <record name="${optional_members_warning.zs.zserio_warnings_file}" action="start" loglevel="warn"/>
-        <zserio srcPath="${optional_members_warning.zs.in_dir}" srcFile="optional_members_warning.zs"
-            java="${optional_members_warning.zs.out_dir}">
-            <output>
-                <fileset dir="${optional_members_warning.zs.out_dir}" includes="**/*.java"
-                    erroronmissingdir="false"/>
-            </output>
-            <classpath>
-                <path refid="zserio.classpath"/>
-            </classpath>
-        </zserio>
-        <record name="${optional_members_warning.zs.zserio_warnings_file}" action="stop"/>
+        <delete dir="${optional_members_warning.zs.out_dir}"/>
+        <testGen testName="optional_members_warning" zsFile="optional_members_warning.zs"/>
     </target>
 
     <target name="compile" depends="gen">
-        <depend srcDir="${optional_members_warning.base_dir}/java:${optional_members_warning.zs.out_dir}"
-            destDir="${optional_members_warning.build_dir}/classes"
-            cache="${optional_members_warning.build_dir}/depend-cache"/>
-        <javac destdir="${optional_members_warning.build_dir}/classes" debug="on" encoding="utf8"
-            includeAntRuntime="false">
-            <classpath>
-                <pathelement location="${runtime.jar_file}"/>
-                <pathelement location="${3rdparty.junit.jar_file}"/>
-                <pathelement location="${test_utils.jar_file}"/>
-            </classpath>
-            <src location="${optional_members_warning.base_dir}/java"/>
-            <src location="${optional_members_warning.zs.out_dir}"/>
-        </javac>
+        <testCompile testName="optional_members_warning"/>
     </target>
 
-    <target name="findbugs" depends="compile" if="findbugs.home_dir" description="Run FindBugs">
-        <taskdef name="findbugs" classpath="${findbugs.home_dir}/lib/findbugs-ant.jar"
-            classname="edu.umd.cs.findbugs.anttask.FindBugsTask"/>
-        <findbugs home="${findbugs.home_dir}"
-            output="html"
-            outputFile="${optional_members_warning.build_dir}/findbugs.html"
-            excludeFilter="${optional_members_warning.base_dir}/findbugs_filter.xml"
-            reportLevel="low"
-            errorProperty="optional_members_warning.is_failed"
-            warningsProperty="optional_members_warning.is_failed">
-            <sourcePath>
-                <dirset dir="${optional_members_warning.base_dir}/java"/>
-                <dirset dir="${optional_members_warning.zs.out_dir}"/>
-            </sourcePath>
-            <fileset dir="${optional_members_warning.build_dir}/classes"/>
-            <auxClasspath>
-                <fileset file="${runtime.jar_file}"/>
-                <fileset file="${3rdparty.junit.jar_file}"/>
-                <fileset file="${test_utils.jar_file}"/>
-            </auxClasspath>
-        </findbugs>
-        <fail message="FindBugs found some issues!" if="optional_members_warning.is_failed"/>
+    <target name="findbugs" depends="compile" if="findbugs.home_dir">
+        <testFindbugs testName="optional_members_warning"/>
     </target>
 
     <target name="run" depends="findbugs">
-        <delete dir="${optional_members_warning.run_dir}"/>
-        <mkdir dir="${optional_members_warning.run_dir}"/>
-        <copy file="${optional_members_warning.zs.zserio_warnings_file}"
-            todir="${optional_members_warning.run_dir}"/>
-        <junit printsummary="no" fork="on" haltonfailure="on" dir="${optional_members_warning.run_dir}">
-            <classpath>
-                <pathelement location="${optional_members_warning.build_dir}/classes"/>
-                <pathelement location="${runtime.jar_file}"/>
-                <pathelement location="${3rdparty.junit.jar_file}"/>
-                <pathelement location="${test_utils.jar_file}"/>
-            </classpath>
-            <batchtest>
-                <fileset dir="${optional_members_warning.base_dir}/java" includes="**/*Test.java"/>
-                <formatter type="plain" usefile="false"/>
-            </batchtest>
-        </junit>
+        <testRun testName="optional_members_warning"/>
     </target>
 
     <target name="clean">
-        <delete dir="${optional_members_warning.build_dir}"/>
+        <testClean testName="optional_members_warning"/>
     </target>
 </project>

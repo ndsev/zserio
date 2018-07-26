@@ -1,95 +1,20 @@
-<!--
-
-Ant build.xml for comments test example.
-
-The following properties can be set:
-
-zserio.release_dir      - Directory where to find Zserio release to test. Default is "../../../distr".
-test.build_dir          - Directory where to put generated files. Default is "../../../build/test".
-findbugs.home_dir       - Location of the findbugs tool. If not set, findbugs is not run.
-
--->
 <project name="comments" basedir="." default="run">
-    <dirname property="comments.base_dir" file="${ant.file.comments}"/>
-
-    <property name="zserio.root_dir" location="${comments.base_dir}/../../.."/>
-    <property name="zserio.release_dir" location="${zserio.root_dir}/distr"/>
-    <property name="zserio.jar_dir" location="${zserio.release_dir}/zserio_libs"/>
-
-    <property name="test.build_dir" location="${zserio.root_dir}/build/test"/>
-    <property name="runtime.jar_dir" location="${zserio.release_dir}/runtime_libs/java"/>
-
-    <property name="comments.build_dir" location="${test.build_dir}/language/comments"/>
-    <property name="comments.zs.in_dir" location="${comments.base_dir}/zs"/>
-    <property name="comments.zs.out_dir" location="${comments.build_dir}/gen"/>
-    <property name="comments.zs.out_doc_dir" location="${comments.build_dir}/doc"/>
-    <property name="comments.run_dir" location="${comments.build_dir}/run"/>
-
-    <property name="runtime.jar_file" location="${runtime.jar_dir}/zserio_runtime.jar"/>
-
-    <!-- Zserio Ant task -->
-    <taskdef name="zserio" classpath="${zserio.release_dir}/ant_task/zserio_ant.jar" classname="zserio.ant.ZserioTask"/>
-
-    <!-- classpath required for running the Zserio Tool -->
-    <path id="zserio.classpath">
-        <fileset dir="${zserio.jar_dir}">
-            <include name="*.jar"/>
-            <exclude name="zserio_ant.jar"/>
-        </fileset>
-    </path>
+    <testProperties testPath="language/comments" testName="comments"/>
 
     <target name="prepare">
-        <mkdir dir="${comments.build_dir}/classes"/>
+        <testPrepare testName="comments"/>
     </target>
 
     <target name="gen" depends="prepare">
-        <zserio srcPath="${comments.zs.in_dir}" srcFile="comments.zs" java="${comments.zs.out_dir}"
-            doc="${comments.zs.out_doc_dir}">
-            <arg name="withWriterCode"/>
-            <dependencies>
-                <fileset dir="${comments.zs.in_dir}" includes="**/*.zs"/>
-                <fileset dir="${zserio.jar_dir}"/>
-                <fileset dir="${runtime.jar_dir}"/>
-                <fileset file="${ant.file.comments}"/>
-            </dependencies>
-            <output>
-                <fileset dir="${comments.zs.out_dir}" includes="**/*.java" erroronmissingdir="false"/>
-            </output>
-            <classpath>
-                <path refid="zserio.classpath"/>
-            </classpath>
-        </zserio>
+        <testGen testName="comments" zsFile="comments.zs"/>
     </target>
 
     <target name="compile" depends="gen">
-        <depend srcDir="${comments.base_dir}/java:${comments.zs.out_dir}"
-            destDir="${comments.build_dir}/classes" cache="${comments.build_dir}/depend-cache"/>
-        <javac destdir="${comments.build_dir}/classes" debug="on" encoding="utf8" includeAntRuntime="false">
-            <classpath>
-                <pathelement location="${runtime.jar_file}"/>
-            </classpath>
-            <src location="${comments.zs.out_dir}"/>
-        </javac>
+        <testCompile testName="comments" srcPath="${comments.zs.out_dir}"/>
     </target>
 
-    <target name="findbugs" depends="compile" if="findbugs.home_dir" description="Run FindBugs">
-        <taskdef name="findbugs" classpath="${findbugs.home_dir}/lib/findbugs-ant.jar"
-            classname="edu.umd.cs.findbugs.anttask.FindBugsTask"/>
-        <findbugs home="${findbugs.home_dir}"
-            output="html"
-            outputFile="${comments.build_dir}/findbugs.html"
-            reportLevel="low"
-            errorProperty="comments.is_failed"
-            warningsProperty="comments.is_failed">
-            <sourcePath>
-                <dirset dir="${comments.zs.out_dir}"/>
-            </sourcePath>
-            <fileset dir="${comments.build_dir}/classes"/>
-            <auxClasspath>
-                <fileset file="${runtime.jar_file}"/>
-            </auxClasspath>
-        </findbugs>
-        <fail message="FindBugs found some issues!" if="comments.is_failed"/>
+    <target name="findbugs" depends="compile" if="findbugs.home_dir">
+        <testFindbugs testName="comments" srcPath="${comments.zs.out_dir}"/>
     </target>
 
     <target name="run" depends="findbugs">
@@ -97,6 +22,6 @@ findbugs.home_dir       - Location of the findbugs tool. If not set, findbugs is
     </target>
 
     <target name="clean">
-        <delete dir="${comments.build_dir}"/>
+        <testClean testName="comments"/>
     </target>
 </project>

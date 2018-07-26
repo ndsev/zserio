@@ -55,7 +55,7 @@ public class ZserioWarnings
         return zserioWarnings.size();
     }
 
-    private static String ZSERIO_WARNINGS_FILE_NAME = "zserio_warnings.txt";
+    private static String ZSERIO_WARNINGS_FILE_NAME = "zserio_log.txt";
 
     private List<String> zserioWarnings;
 }

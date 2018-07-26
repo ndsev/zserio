@@ -1,120 +1,27 @@
-<!--
-
-Ant build.xml for alignment test example.
-
-The following properties can be set:
-
-zserio.release_dir      - Directory where to find Zserio release to test. Default is "../../../distr".
-test.build_dir          - Directory where to put generated files. Default is "../../../build/test".
-findbugs.home_dir       - Location of the findbugs tool. If not set, findbugs is not run.
-
--->
 <project name="alignment" basedir="." default="run">
-    <dirname property="alignment.base_dir" file="${ant.file.alignment}"/>
-
-    <property name="zserio.root_dir" location="${alignment.base_dir}/../../.."/>
-    <property name="zserio.release_dir" location="${zserio.root_dir}/distr"/>
-    <property name="zserio.jar_dir" location="${zserio.release_dir}/zserio_libs"/>
-
-    <property name="test.build_dir" location="${zserio.root_dir}/build/test"/>
-    <property name="runtime.jar_dir" location="${zserio.release_dir}/runtime_libs/java"/>
-    <property name="3rdparty.jar_dir" location="${zserio.root_dir}/3rdparty/java"/>
-
-    <property name="alignment.build_dir" location="${test.build_dir}/language/alignment"/>
-    <property name="alignment.zs.in_dir" location="${alignment.base_dir}/zs"/>
-    <property name="alignment.zs.out_dir" location="${alignment.build_dir}/gen"/>
-    <property name="alignment.run_dir" location="${alignment.build_dir}/run"/>
-
-    <property name="runtime.jar_file" location="${runtime.jar_dir}/zserio_runtime.jar"/>
-    <property name="3rdparty.junit.jar_file" location="${3rdparty.jar_dir}/junit-4.10.jar"/>
-
-    <!-- Zserio Ant task -->
-    <taskdef name="zserio" classpath="${zserio.release_dir}/ant_task/zserio_ant.jar" classname="zserio.ant.ZserioTask"/>
-
-    <!-- classpath required for running the Zserio Tool -->
-    <path id="zserio.classpath">
-        <fileset dir="${zserio.jar_dir}">
-            <include name="*.jar"/>
-            <exclude name="zserio_ant.jar"/>
-        </fileset>
-    </path>
+    <testProperties testPath="language/alignment" testName="alignment"/>
 
     <target name="prepare">
-        <mkdir dir="${alignment.build_dir}/classes"/>
+        <testPrepare testName="alignment"/>
     </target>
 
     <target name="gen" depends="prepare">
-        <zserio srcPath="${alignment.zs.in_dir}" srcFile="alignment.zs"
-            java="${alignment.zs.out_dir}">
-            <arg name="withWriterCode"/>
-            <dependencies>
-                <fileset dir="${alignment.zs.in_dir}" includes="**/*.zs"/>
-                <fileset dir="${zserio.jar_dir}"/>
-                <fileset dir="${runtime.jar_dir}"/>
-                <fileset file="${ant.file.alignment}"/>
-            </dependencies>
-            <output>
-                <fileset dir="${alignment.zs.out_dir}" includes="**/*.java" erroronmissingdir="false"/>
-            </output>
-            <classpath>
-                <path refid="zserio.classpath"/>
-            </classpath>
-        </zserio>
+        <testGen testName="alignment" zsFile="alignment.zs"/>
     </target>
 
     <target name="compile" depends="gen">
-        <depend srcDir="${alignment.base_dir}/java:${alignment.zs.out_dir}"
-            destDir="${alignment.build_dir}/classes" cache="${alignment.build_dir}/depend-cache"/>
-        <javac destdir="${alignment.build_dir}/classes" debug="on" encoding="utf8"
-            includeAntRuntime="false">
-            <classpath>
-                <pathelement location="${runtime.jar_file}"/>
-                <pathelement location="${3rdparty.junit.jar_file}"/>
-            </classpath>
-            <src location="${alignment.base_dir}/java"/>
-            <src location="${alignment.zs.out_dir}"/>
-        </javac>
+        <testCompile testName="alignment"/>
     </target>
 
-    <target name="findbugs" depends="compile" if="findbugs.home_dir" description="Run FindBugs">
-        <taskdef name="findbugs" classpath="${findbugs.home_dir}/lib/findbugs-ant.jar"
-            classname="edu.umd.cs.findbugs.anttask.FindBugsTask"/>
-        <findbugs home="${findbugs.home_dir}"
-            output="html"
-            outputFile="${alignment.build_dir}/findbugs.html"
-            reportLevel="low"
-            errorProperty="alignment.is_failed"
-            warningsProperty="alignment.is_failed">
-            <sourcePath>
-                <dirset dir="${alignment.base_dir}/java"/>
-                <dirset dir="${alignment.zs.out_dir}"/>
-            </sourcePath>
-            <fileset dir="${alignment.build_dir}/classes"/>
-            <auxClasspath>
-                <fileset file="${runtime.jar_file}"/>
-                <fileset file="${3rdparty.junit.jar_file}"/>
-            </auxClasspath>
-        </findbugs>
-        <fail message="FindBugs found some issues!" if="alignment.is_failed"/>
+    <target name="findbugs" depends="compile" if="findbugs.home_dir">
+        <testFindbugs testName="alignment"/>
     </target>
 
     <target name="run" depends="findbugs">
-        <delete dir="${alignment.run_dir}"/>
-        <mkdir dir="${alignment.run_dir}"/>
-        <junit printsummary="no" fork="on" haltonfailure="on" dir="${alignment.run_dir}">
-            <classpath>
-                <pathelement location="${alignment.build_dir}/classes"/>
-                <pathelement location="${runtime.jar_file}"/>
-                <pathelement location="${3rdparty.junit.jar_file}"/>
-            </classpath>
-            <batchtest>
-                <fileset dir="${alignment.base_dir}/java" includes="**/*Test.java"/>
-                <formatter type="plain" usefile="false"/>
-            </batchtest>
-        </junit>
+        <testRun testname="alignment"/>
     </target>
 
     <target name="clean">
-        <delete dir="${alignment.build_dir}"/>
+        <testClean testName="alignment"/>
     </target>
 </project>

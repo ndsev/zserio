@@ -1,163 +1,33 @@
-<!--
-
-Ant build.xml for default_values_error test example.
-
-The following properties can be set:
-
-zserio.release_dir      - Directory where to find Zserio release to test. Default is "../../../distr".
-test.build_dir          - Directory where to put generated files. Default is "../../../build/test".
-findbugs.home_dir       - Location of the findbugs tool. If not set, findbugs is not run.
-
--->
 <project name="default_values_error" basedir="." default="run">
-    <dirname property="default_values_error.base_dir" file="${ant.file.default_values_error}"/>
-
-    <property name="zserio.root_dir" location="${default_values_error.base_dir}/../../.."/>
-    <property name="zserio.release_dir" location="${zserio.root_dir}/distr"/>
-    <property name="zserio.jar_dir" location="${zserio.release_dir}/zserio_libs"/>
-
-    <property name="test.build_dir" location="${zserio.root_dir}/build/test"/>
-    <property name="test_utils.jar_file" location="${test.build_dir}/utils/jar/test_utils.jar"/>
-    <property name="runtime.jar_dir" location="${zserio.release_dir}/runtime_libs/java"/>
-    <property name="3rdparty.jar_dir" location="${zserio.root_dir}/3rdparty/java"/>
-
-    <property name="default_values_error.build_dir"
-        location="${test.build_dir}/errors/default_values_error"/>
-    <property name="default_values_error.zs.in_dir" location="${default_values_error.base_dir}/zs"/>
-    <property name="default_values_error.zs.out_dir" location="${default_values_error.build_dir}/gen"/>
-    <property name="default_values_error.zs.zserio_errors_file"
-        location="${default_values_error.build_dir}/zserio_errors.txt"/>
-    <property name="default_values_error.run_dir" location="${default_values_error.build_dir}/run"/>
-
-    <property name="runtime.jar_file" location="${runtime.jar_dir}/zserio_runtime.jar"/>
-    <property name="3rdparty.junit.jar_file" location="${3rdparty.jar_dir}/junit-4.10.jar"/>
-
-    <!-- Zserio Ant task -->
-    <taskdef name="zserio" classpath="${zserio.release_dir}/ant_task/zserio_ant.jar" classname="zserio.ant.ZserioTask"/>
-
-    <!-- classpath required for running the Zserio Tool -->
-    <path id="zserio.classpath">
-        <fileset dir="${zserio.jar_dir}">
-            <include name="*.jar"/>
-            <exclude name="zserio_ant.jar"/>
-        </fileset>
-    </path>
+    <testProperties testPath="errors/default_values_error" testName="default_values_error"/>
 
     <target name="prepare">
-        <mkdir dir="${default_values_error.build_dir}/classes"/>
+        <testPrepare testName="default_values_error"/>
     </target>
 
     <target name="gen" depends="prepare">
-        <record name="${default_values_error.zs.zserio_errors_file}" action="start" loglevel="warn"/>
-
-        <zserio srcPath="${default_values_error.zs.in_dir}" srcFile="array_initializer_error.zs"
-            java="${default_values_error.zs.out_dir}" ignoreError="true">
-            <classpath>
-                <path refid="zserio.classpath"/>
-            </classpath>
-        </zserio>
-
-        <zserio srcPath="${default_values_error.zs.in_dir}" srcFile="field_initializer_error.zs"
-            java="${default_values_error.zs.out_dir}" ignoreError="true">
-            <classpath>
-                <path refid="zserio.classpath"/>
-            </classpath>
-        </zserio>
-
-        <zserio srcPath="${default_values_error.zs.in_dir}" srcFile="range_decimal_initializer_error.zs"
-            java="${default_values_error.zs.out_dir}" ignoreError="true">
-            <classpath>
-                <path refid="zserio.classpath"/>
-            </classpath>
-        </zserio>
-
-        <zserio srcPath="${default_values_error.zs.in_dir}" srcFile="wrong_bool_initializer_error.zs"
-            java="${default_values_error.zs.out_dir}" ignoreError="true">
-            <classpath>
-                <path refid="zserio.classpath"/>
-            </classpath>
-        </zserio>
-
-        <zserio srcPath="${default_values_error.zs.in_dir}" srcFile="wrong_decimal_initializer_error.zs"
-            java="${default_values_error.zs.out_dir}" ignoreError="true">
-            <classpath>
-                <path refid="zserio.classpath"/>
-            </classpath>
-        </zserio>
-
-        <zserio srcPath="${default_values_error.zs.in_dir}" srcFile="wrong_float_initializer_error.zs"
-            java="${default_values_error.zs.out_dir}" ignoreError="true">
-            <classpath>
-                <path refid="zserio.classpath"/>
-            </classpath>
-        </zserio>
-
-        <zserio srcPath="${default_values_error.zs.in_dir}" srcFile="wrong_string_initializer_error.zs"
-            java="${default_values_error.zs.out_dir}" ignoreError="true">
-            <classpath>
-                <path refid="zserio.classpath"/>
-            </classpath>
-        </zserio>
-
-        <record name="${default_values_error.zs.zserio_errors_file}" action="stop"/>
+        <testGen testName="default_values_error" zsFile="array_initializer_error.zs" ignoreError="true"/>
+        <testGen testName="default_values_error" zsFile="field_initializer_error.zs" ignoreError="true"/>
+        <testGen testName="default_values_error" zsFile="range_decimal_initializer_error.zs" ignoreError="true"/>
+        <testGen testName="default_values_error" zsFile="wrong_bool_initializer_error.zs" ignoreError="true"/>
+        <testGen testName="default_values_error" zsFile="wrong_decimal_initializer_error.zs" ignoreError="true"/>
+        <testGen testName="default_values_error" zsFile="wrong_float_initializer_error.zs" ignoreError="true"/>
+        <testGen testName="default_values_error" zsFile="wrong_string_initializer_error.zs" ignoreError="true"/>
     </target>
 
     <target name="compile" depends="gen">
-        <depend srcDir="${default_values_error.base_dir}/java"
-            destDir="${default_values_error.build_dir}/classes"
-            cache="${default_values_error.build_dir}/depend-cache"/>
-        <javac destdir="${default_values_error.build_dir}/classes" debug="on" encoding="utf8"
-            includeAntRuntime="false">
-            <classpath>
-                <pathelement location="${runtime.jar_file}"/>
-                <pathelement location="${3rdparty.junit.jar_file}"/>
-                <pathelement location="${test_utils.jar_file}"/>
-            </classpath>
-            <src location="${default_values_error.base_dir}/java"/>
-        </javac>
+        <testCompile testName="default_values_error" srcPath="${default_values_error.base_dir}/java"/>
     </target>
 
-    <target name="findbugs" depends="compile" if="findbugs.home_dir" description="Run FindBugs">
-        <taskdef name="findbugs" classpath="${findbugs.home_dir}/lib/findbugs-ant.jar"
-            classname="edu.umd.cs.findbugs.anttask.FindBugsTask"/>
-        <findbugs home="${findbugs.home_dir}"
-            output="html"
-            outputFile="${default_values_error.build_dir}/findbugs.html"
-            reportLevel="low"
-            errorProperty="default_values_error.is_failed"
-            warningsProperty="default_values_error.is_failed">
-            <sourcePath>
-                <dirset dir="${default_values_error.base_dir}/java"/>
-            </sourcePath>
-            <fileset dir="${default_values_error.build_dir}/classes"/>
-            <auxClasspath>
-                <fileset file="${runtime.jar_file}"/>
-                <fileset file="${3rdparty.junit.jar_file}"/>
-                <fileset file="${test_utils.jar_file}"/>
-            </auxClasspath>
-        </findbugs>
-        <fail message="FindBugs found some issues!" if="default_values_error.is_failed"/>
+    <target name="findbugs" depends="compile" if="findbugs.home_dir">
+        <testFindbugs testName="default_values_error" srcPath="${default_values_error.base_dir}/java"/>
     </target>
 
     <target name="run" depends="findbugs">
-        <delete dir="${default_values_error.run_dir}"/>
-        <mkdir dir="${default_values_error.run_dir}"/>
-        <copy file="${default_values_error.zs.zserio_errors_file}" todir="${default_values_error.run_dir}"/>
-        <junit printsummary="no" fork="on" haltonfailure="on" dir="${default_values_error.run_dir}">
-            <classpath>
-                <pathelement location="${default_values_error.build_dir}/classes"/>
-                <pathelement location="${runtime.jar_file}"/>
-                <pathelement location="${3rdparty.junit.jar_file}"/>
-                <pathelement location="${test_utils.jar_file}"/>
-            </classpath>
-            <batchtest>
-                <fileset dir="${default_values_error.base_dir}/java" includes="**/*Test.java"/>
-                <formatter type="plain" usefile="false"/>
-            </batchtest>
-        </junit>
+        <testRun testName="default_values_error"/>
     </target>
 
     <target name="clean">
-        <delete dir="${default_values_error.build_dir}"/>
+        <testClean testName="default_values_error"/>
     </target>
 </project>

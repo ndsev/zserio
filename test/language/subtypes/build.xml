@@ -1,128 +1,27 @@
-<!--
-
-Ant build.xml for subtypes test example.
-
-The following properties can be set:
-
-zserio.release_dir      - Directory where to find Zserio release to test. Default is "../../../distr".
-test.build_dir          - Directory where to put generated files. Default is "../../../build/test".
-findbugs.home_dir       - Location of the findbugs tool. If not set, findbugs is not run.
-
--->
 <project name="subtypes" basedir="." default="run">
-    <dirname property="subtypes.base_dir" file="${ant.file.subtypes}"/>
-
-    <property name="zserio.root_dir" location="${subtypes.base_dir}/../../.."/>
-    <property name="zserio.release_dir" location="${zserio.root_dir}/distr"/>
-    <property name="zserio.jar_dir" location="${zserio.release_dir}/zserio_libs"/>
-
-    <property name="test.build_dir" location="${zserio.root_dir}/build/test"/>
-    <property name="test_utils.jar_file" location="${test.build_dir}/utils/jar/test_utils.jar"/>
-    <property name="runtime.jar_dir" location="${zserio.release_dir}/runtime_libs/java"/>
-    <property name="3rdparty.jar_dir" location="${zserio.root_dir}/3rdparty/java"/>
-
-    <property name="subtypes.build_dir"
-        location="${test.build_dir}/language/subtypes"/>
-    <property name="subtypes.zs.in_dir" location="${subtypes.base_dir}/zs"/>
-    <property name="subtypes.zs.out_dir" location="${subtypes.build_dir}/gen"/>
-    <property name="subtypes.run_dir" location="${subtypes.build_dir}/run"/>
-
-    <property name="runtime.jar_file" location="${runtime.jar_dir}/zserio_runtime.jar"/>
-    <property name="3rdparty.junit.jar_file" location="${3rdparty.jar_dir}/junit-4.10.jar"/>
-    <property name="3rdparty.sqlitejdbc.jar_file" location="${3rdparty.sqlite_dir}/sqlitejdbc.jar"/>
-
-    <!-- Zserio Ant task -->
-    <taskdef name="zserio" classpath="${zserio.release_dir}/ant_task/zserio_ant.jar" classname="zserio.ant.ZserioTask"/>
-
-    <!-- classpath required for running the Zserio Tool -->
-    <path id="zserio.classpath">
-        <fileset dir="${zserio.jar_dir}">
-            <include name="*.jar"/>
-            <exclude name="zserio_ant.jar"/>
-        </fileset>
-    </path>
+    <testProperties testPath="language/subtypes" testName="subtypes"/>
 
     <target name="prepare">
-        <mkdir dir="${subtypes.build_dir}/classes"/>
+        <testPrepare testName="subtypes"/>
     </target>
 
     <target name="gen" depends="prepare">
-        <zserio srcPath="${subtypes.zs.in_dir}" srcFile="subtypes.zs"
-            java="${subtypes.zs.out_dir}">
-            <arg name="withWriterCode"/>
-            <dependencies>
-                <fileset dir="${subtypes.zs.in_dir}" includes="**/*.zs"/>
-                <fileset dir="${zserio.jar_dir}"/>
-                <fileset dir="${runtime.jar_dir}"/>
-                <fileset file="${ant.file.subtypes}"/>
-            </dependencies>
-            <output>
-                <fileset dir="${subtypes.zs.out_dir}" includes="**/*.java" erroronmissingdir="false"/>
-            </output>
-            <classpath>
-                <path refid="zserio.classpath"/>
-            </classpath>
-        </zserio>
+        <testGen testName="subtypes" zsFile="subtypes.zs"/>
     </target>
 
     <target name="compile" depends="gen">
-        <depend srcDir="${subtypes.base_dir}/java:${subtypes.zs.out_dir}"
-            destDir="${subtypes.build_dir}/classes" cache="${subtypes.build_dir}/depend-cache"/>
-        <javac destdir="${subtypes.build_dir}/classes" debug="on" encoding="utf8"
-            includeAntRuntime="false">
-            <classpath>
-                <pathelement location="${runtime.jar_file}"/>
-                <pathelement location="${3rdparty.junit.jar_file}"/>
-                <pathelement location="${test_utils.jar_file}"/>
-            </classpath>
-            <src location="${subtypes.base_dir}/java"/>
-            <src location="${subtypes.zs.out_dir}"/>
-        </javac>
+        <testCompile testName="subtypes"/>
     </target>
 
-    <target name="findbugs" depends="compile" if="findbugs.home_dir" description="Run FindBugs">
-        <taskdef name="findbugs" classpath="${findbugs.home_dir}/lib/findbugs-ant.jar"
-            classname="edu.umd.cs.findbugs.anttask.FindBugsTask"/>
-        <findbugs home="${findbugs.home_dir}"
-            output="html"
-            outputFile="${subtypes.build_dir}/findbugs.html"
-            excludeFilter="${subtypes.base_dir}/findbugs_filter.xml"
-            reportLevel="low"
-            errorProperty="subtypes.is_failed"
-            warningsProperty="subtypes.is_failed">
-            <sourcePath>
-                <dirset dir="${subtypes.base_dir}/java"/>
-                <dirset dir="${subtypes.zs.out_dir}"/>
-            </sourcePath>
-            <fileset dir="${subtypes.build_dir}/classes"/>
-            <auxClasspath>
-                <fileset file="${runtime.jar_file}"/>
-                <fileset file="${3rdparty.junit.jar_file}"/>
-                <fileset file="${test_utils.jar_file}"/>
-            </auxClasspath>
-        </findbugs>
-        <fail message="FindBugs found some issues!" if="subtypes.is_failed"/>
+    <target name="findbugs" depends="compile" if="findbugs.home_dir">
+        <testFindbugs testName="subtypes"/>
     </target>
 
     <target name="run" depends="findbugs">
-        <delete dir="${subtypes.run_dir}"/>
-        <mkdir dir="${subtypes.run_dir}"/>
-        <junit printsummary="no" fork="on" haltonfailure="on" dir="${subtypes.run_dir}">
-            <classpath>
-                <pathelement location="${subtypes.build_dir}/classes"/>
-                <pathelement location="${runtime.jar_file}"/>
-                <pathelement location="${3rdparty.junit.jar_file}"/>
-                <pathelement location="${3rdparty.sqlitejdbc.jar_file}"/>
-                <pathelement location="${test_utils.jar_file}"/>
-            </classpath>
-            <batchtest>
-                <fileset dir="${subtypes.base_dir}/java" includes="**/*Test.java"/>
-                <formatter type="plain" usefile="false"/>
-            </batchtest>
-        </junit>
+        <testRun testname="subtypes"/>
     </target>
 
     <target name="clean">
-        <delete dir="${subtypes.build_dir}"/>
+        <testClean testName="subtypes"/>
     </target>
 </project>

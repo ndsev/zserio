@@ -1,128 +1,29 @@
-<!--
-
-Ant build.xml for set_top_level_package test example.
-
-The following properties can be set:
-
-zserio.release_dir      - Directory where to find Zserio release to test. Default is "../../../distr".
-test.build_dir          - Directory where to put generated files. Default is "../../../build/test/java".
-findbugs.home_dir       - Location of the findbugs tool. If not set, findbugs is not run.
-
--->
 <project name="set_top_level_package" basedir="." default="run">
-    <dirname property="set_top_level_package.base_dir" file="${ant.file.set_top_level_package}"/>
-
-    <property name="zserio.root_dir" location="${set_top_level_package.base_dir}/../../.."/>
-    <property name="zserio.release_dir" location="${zserio.root_dir}/distr"/>
-    <property name="zserio.jar_dir" location="${zserio.release_dir}/zserio_libs"/>
-
-    <property name="test.build_dir" location="${zserio.root_dir}/build/test/java"/>
-    <property name="runtime.jar_dir" location="${zserio.release_dir}/runtime_libs/java"/>
-    <property name="3rdparty.root_dir" location="${zserio.root_dir}/3rdparty"/>
-    <property name="3rdparty.jar_dir" location="${3rdparty.root_dir}/java"/>
-
-    <property name="set_top_level_package.build_dir"
-        location="${test.build_dir}/arguments/set_top_level_package"/>
-    <property name="set_top_level_package.zs.in_dir" location="${set_top_level_package.base_dir}/zs"/>
-    <property name="set_top_level_package.zs.out_dir" location="${set_top_level_package.build_dir}/gen"/>
-    <property name="set_top_level_package.run_dir" location="${set_top_level_package.build_dir}/run"/>
-
-    <property name="set_top_level_package.src_dir" location="${set_top_level_package.base_dir}/java"/>
-
-    <property name="runtime.jar_file" location="${runtime.jar_dir}/zserio_runtime.jar"/>
-    <property name="3rdparty.junit.jar_file" location="${3rdparty.jar_dir}/junit-4.10.jar"/>
-
-    <!-- Zserio Ant task -->
-    <taskdef name="zserio" classpath="${zserio.release_dir}/ant_task/zserio_ant.jar" classname="zserio.ant.ZserioTask"/>
-
-    <!-- classpath required for running the Zserio Tool -->
-    <path id="zserio.classpath">
-        <fileset dir="${zserio.jar_dir}">
-            <include name="*.jar"/>
-            <exclude name="zserio_ant.jar"/>
-        </fileset>
-    </path>
+    <testProperties testPath="arguments/set_top_level_package" testName="set_top_level_package"/>
 
     <target name="prepare">
-        <mkdir dir="${set_top_level_package.build_dir}/classes"/>
+        <testPrepare testName="set_top_level_package"/>
     </target>
 
     <target name="gen" depends="prepare">
-        <zserio srcPath="${set_top_level_package.zs.in_dir}" srcFile="set_top_level_package.zs"
-            java="${set_top_level_package.zs.out_dir}">
+        <testGen testName="set_top_level_package" zsFile="set_top_level_package.zs">
             <arg name="setTopLevelPackage" value="company.appl"/>
-            <arg name="withWriterCode"/>
-            <dependencies>
-                <fileset dir="${set_top_level_package.zs.in_dir}" includes="**/*.zs"/>
-                <fileset dir="${zserio.jar_dir}"/>
-                <fileset dir="${runtime.jar_dir}"/>
-                <fileset file="${ant.file.set_top_level_package}"/>
-            </dependencies>
-            <output>
-                <fileset dir="${set_top_level_package.zs.out_dir}" includes="**/*.java"
-                    erroronmissingdir="false"/>
-            </output>
-            <classpath>
-                <path refid="zserio.classpath"/>
-            </classpath>
-        </zserio>
+        </testGen>
     </target>
 
     <target name="compile" depends="gen">
-        <depend srcDir="${set_top_level_package.src_dir}:${set_top_level_package.zs.out_dir}"
-            destDir="${set_top_level_package.build_dir}/classes"
-            cache="${set_top_level_package.build_dir}/depend-cache"/>
-        <javac destdir="${set_top_level_package.build_dir}/classes" debug="on" encoding="utf8"
-            includeAntRuntime="false">
-            <classpath>
-                <pathelement location="${runtime.jar_file}"/>
-                <pathelement location="${3rdparty.junit.jar_file}"/>
-            </classpath>
-            <src location="${set_top_level_package.src_dir}"/>
-            <src location="${set_top_level_package.zs.out_dir}"/>
-        </javac>
+        <testCompile testName="set_top_level_package"/>
     </target>
 
-    <target name="findbugs" depends="compile" if="findbugs.home_dir" description="Run FindBugs">
-        <taskdef name="findbugs" classpath="${findbugs.home_dir}/lib/findbugs-ant.jar"
-            classname="edu.umd.cs.findbugs.anttask.FindBugsTask"/>
-        <findbugs home="${findbugs.home_dir}"
-            output="html"
-            outputFile="${set_top_level_package.build_dir}/findbugs.html"
-            reportLevel="low"
-            errorProperty="set_top_level_package.is_failed"
-            warningsProperty="set_top_level_package.is_failed">
-            <sourcePath>
-                <dirset dir="${set_top_level_package.base_dir}/java"/>
-                <dirset dir="${set_top_level_package.zs.out_dir}"/>
-            </sourcePath>
-            <fileset dir="${set_top_level_package.build_dir}/classes"/>
-            <auxClasspath>
-                <fileset file="${runtime.jar_file}"/>
-                <fileset file="${3rdparty.junit.jar_file}"/>
-            </auxClasspath>
-        </findbugs>
-        <fail message="FindBugs found some issues!" if="set_top_level_package.is_failed"/>
+    <target name="findbugs" depends="compile" if="findbugs.home_dir">
+        <testFindbugs testName="set_top_level_package"/>
     </target>
 
     <target name="run" depends="findbugs">
-        <delete dir="${set_top_level_package.run_dir}"/>
-        <mkdir dir="${set_top_level_package.run_dir}"/>
-        <junit printsummary="no" fork="on" haltonfailure="on" dir="${set_top_level_package.run_dir}">
-            <classpath>
-                <pathelement location="${set_top_level_package.build_dir}/classes"/>
-                <pathelement location="${runtime.jar_file}"/>
-                <pathelement location="${3rdparty.junit.jar_file}"/>
-                <pathelement location="${3rdparty.sqlitejdbc.jar_file}"/>
-            </classpath>
-            <batchtest>
-                <fileset dir="${set_top_level_package.base_dir}/java" includes="**/*Test.java"/>
-                <formatter type="plain" usefile="false"/>
-            </batchtest>
-        </junit>
+        <testRun testName="set_top_level_package"/>
     </target>
 
     <target name="clean">
-        <delete dir="${set_top_level_package.build_dir}"/>
+        <testClean testName="set_top_level_package"/>
     </target>
 </project>

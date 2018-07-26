@@ -47,7 +47,7 @@ findbugs.home_dir       - Location of the findbugs tool. If not set, findbugs is
         <delete dir="${test_utils.build_dir}"/>
     </target>
 
-    <target name="findbugs" depends="jar" if="findbugs.home_dir" description="Run FindBugs">
+    <target name="findbugs" depends="jar" if="findbugs.home_dir">
         <taskdef name="findbugs" classpath="${findbugs.home_dir}/lib/findbugs-ant.jar"
             classname="edu.umd.cs.findbugs.anttask.FindBugsTask"/>
         <findbugs home="${findbugs.home_dir}"

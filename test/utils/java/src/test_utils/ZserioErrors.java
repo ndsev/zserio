@@ -35,7 +35,7 @@ public class ZserioErrors
         return false;
     }
 
-    private static String ZSERIO_ERRORS_FILE_NAME = "zserio_errors.txt";
+    private static String ZSERIO_ERRORS_FILE_NAME = "zserio_log.txt";
 
     private List<String> zserioErrors;
 }

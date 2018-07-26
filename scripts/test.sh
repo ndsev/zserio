@@ -66,10 +66,9 @@ test()
         local ANT_ARGS=("-Dzserio.release_dir=${UNPACKED_ZSERIO_RELEASE_DIR}"
                         "-Dtest.build_dir=${TEST_OUT_DIR}/java")
         if [[ ${SWITCH_TEST_NAME} != "" ]] ; then
-            local BUILD_RULE="test_utils.findbugs ${SWITCH_TEST_NAME}.run"
-        else
-            local BUILD_RULE="test"
+            ANT_ARGS+=("-Dtest.filter=${SWITCH_TEST_NAME}")
         fi
+        local BUILD_RULE="run"
         compile_java "${TEST_SRC_DIR}/build.xml" ANT_ARGS[@] "${BUILD_RULE}"
         if [ $? -ne 0 ] ; then
             stderr_echo "${MESSAGE} failed!"
