@@ -187,8 +187,9 @@ public abstract class CompoundType extends TokenAST implements ZserioType, Compa
             if (fieldBaseType instanceof CompoundType)
             {
                 final CompoundType childCompoundType = (CompoundType)fieldBaseType;
+                // compound type can have itself as an optional field
                 if (!childCompoundType.getParameters().isEmpty() ||
-                        childCompoundType.needsChildrenInitialization())
+                        (childCompoundType != this && childCompoundType.needsChildrenInitialization()))
                     return true;
             }
         }
@@ -372,7 +373,7 @@ public abstract class CompoundType extends TokenAST implements ZserioType, Compa
     {
         for (Field field : compound.getFields())
         {
-            final ZserioType fieldType = TypeReference.resolveType(field.getFieldReferencedType());
+            final ZserioType fieldType = TypeReference.resolveBaseType(field.getFieldReferencedType());
             if (fieldType == searchedField)
                 return true;
 
