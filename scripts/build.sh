@@ -11,12 +11,14 @@ Description:
     Builds Zserio into the distr directory.
 
 Usage:
-    $0 [-h] [-c] [-p] package...
+    $0 [-h] [-c] [-p] [-C <dir>] package...
 
 Arguments:
     -h, --help       Show this help.
     -c, --clean      Clean package instead of build.
     -p, --purge      Purge build and distr directories before build.
+    -C <dir>, --directory <dir>
+                     Output directory for build and artifacts
     package          Specify the package to build or clean.
 
 Package can be the combination of:
@@ -51,8 +53,8 @@ EOF
 #
 # Parameters:
 # -----------
-# $1..$8 - The name of variable to set to 1 if an appropriate argument is present.
-# ${9}..${10} - The name of variable to set to 1 if an appropriate switch is present.
+# $1..$9 - The name of variable to set to 1 if an appropriate argument is present.
+# ${10}..${11} - The name of variable to set to 1 if an appropriate switch is present.
 # $@ - The command line arguments to parse.
 #
 # Usage:
@@ -71,7 +73,7 @@ EOF
 # 2 - Help switch is present. Arguments after help switch have not been checked.
 parse_arguments()
 {
-    local NUM_OF_ARGS=11
+    local NUM_OF_ARGS=12
     exit_if_argc_lt $# ${NUM_OF_ARGS}
     local PARAM_ANT_TASK_OUT="$1"; shift
     local PARAM_CORE_OUT="$1"; shift
@@ -82,6 +84,7 @@ parse_arguments()
     local PARAM_XML_OUT="$1"; shift
     local PARAM_DOC_OUT="$1"; shift
     local PARAM_ZSERIO_OUT="$1"; shift
+    local PARAM_OUT_DIR="$1"; shift
     local SWITCH_CLEAN_OUT="$1"; shift
     local SWITCH_PURGE_OUT="$1"; shift
 
@@ -93,6 +96,7 @@ parse_arguments()
     eval ${PARAM_XML_OUT}=0
     eval ${PARAM_DOC_OUT}=0
     eval ${PARAM_ZSERIO_OUT}=0
+    eval ${PARAM_OUT_DIR}="${SCRIPT_DIR}/.."
     eval ${SWITCH_CLEAN_OUT}=0
     eval ${SWITCH_PURGE_OUT}=0
 
@@ -112,6 +116,12 @@ parse_arguments()
 
             "-p" | "--purge")
                 eval ${SWITCH_PURGE_OUT}=1
+                shift
+                ;;
+
+            "-C" | "--directory")
+                eval ${PARAM_OUT_DIR}="$2"
+                shift
                 shift
                 ;;
 
@@ -234,7 +244,7 @@ main()
     local SWITCH_PURGE
     parse_arguments PARAM_ANT_TASK PARAM_CORE \
                     PARAM_CPP PARAM_CPP_TARGET_ARRAY PARAM_JAVA PARAM_JAVA_RUNTIME PARAM_XML PARAM_DOC PARAM_ZSERIO \
-                    SWITCH_CLEAN SWITCH_PURGE $@
+                    PARAM_OUTPUT_DIR SWITCH_CLEAN SWITCH_PURGE $@
     if [ $? -ne 0 ] ; then
         print_help
         return 1
@@ -257,8 +267,8 @@ main()
     fi
 
     # purge if requested and then create build and distr directories
-    local BUILD_DIR="${ZSERIO_PROJECT_ROOT}/build"
-    local ZSERIO_DISTR_DIR="${ZSERIO_PROJECT_ROOT}/distr"
+    local BUILD_DIR="${PARAM_OUTPUT_DIR}/build"
+    local ZSERIO_DISTR_DIR="${PARAM_OUTPUT_DIR}/distr"
     if [[ ${SWITCH_PURGE} == 1 ]] ; then
         echo "Purging build and distr directories."
         echo
