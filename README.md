@@ -62,19 +62,25 @@ enum uint8 Role
 So if we use the schema above and serialize one employee with
 
 - age = 32
-- name = John
+- name = Joe Smith
 - salary = 5000 $
 - role = DEVELOPER
 
 the resulting byte stream looks like this:
 
-Byte position |Bit position | content / value | comment
-----|-------|-------|-----|
-0|0 - 7 | 32 (age)| uint8 is of fixed size 8 bit
-1|8 - 15| 4 (string length)| string length is encoded in varuint64 field before actual string
-2-4|16 - 31| John | UTF-8 encoded string
-5-6|32 - 47| 5000 | `uint16` always uses 2 bytes
-7 | 48 - 55| 0| enum is of size `uint8` so it uses 1 byte
+```
+Offset(d) 00 01 02 03 04 05 06 07 08 09 10 11 12 13
+
+00000000  20 09 4A 6F 65 20 53 6D 69 74 68 13 88 00
+```
+
+Byte position |Bit position | value | value (hex)| comment
+----|-------|-------|-------|-----|
+0|0 - 7 | 32 (age)|20| uint8 is of fixed size 8 bit
+1|8 - 15| 9 (string length)|09| string length is encoded in varuint64 field before actual string
+2-10|16 - 31| Joe Smith | 4A 6F 65 20 53 6D 69 74 68| UTF-8 encoded string
+11-12|32 - 47| 5000 |13 88 | `uint16` always uses 2 bytes
+13 | 48 - 55| 0|00| enum is of size `uint8` so it uses 1 byte
 
 Please note that in contrast to other serialization mechanisms zserio's variable integers do not provide the full range of values but rather stick to the indicated size. Example: a *varuint64* will be using max 8 bytes whilst not providing the full range of a *uint64_t*.
 
@@ -272,7 +278,7 @@ Let's declare an employee Joe and fill in some data:
 
 ```cpp
 tutorial::Employee joe;
-joe.setAge(34);
+joe.setAge(32);
 joe.setName("Joe Smith");
 joe.setSalary(5000);
 joe.setRole(tutorial::Role::DEVELOPER);
