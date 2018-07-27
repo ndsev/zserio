@@ -74,13 +74,13 @@ Offset(d) 00 01 02 03 04 05 06 07 08 09 10 11 12 13
 00000000  20 09 4A 6F 65 20 53 6D 69 74 68 13 88 00
 ```
 
-Byte position |Bit position | value | value (hex)| comment
+Byte position| value | value (hex)| comment
 ----|-------|-------|-------|-----|
-0|0 - 7 | 32 (age)|20| uint8 is of fixed size 8 bit
-1|8 - 15| 9 (string length)|09| string length is encoded in varuint64 field before actual string
-2-10|16 - 31| Joe Smith | 4A 6F 65 20 53 6D 69 74 68| UTF-8 encoded string
-11-12|32 - 47| 5000 |13 88 | `uint16` always uses 2 bytes
-13 | 48 - 55| 0|00| enum is of size `uint8` so it uses 1 byte
+0| 32 (age)|20| uint8 is of fixed size 8 bit
+1| 9 (string length)|09| string length is encoded in varuint64 field before actual string
+2-10| Joe Smith | 4A 6F 65 20 53 6D 69 74 68| UTF-8 encoded string
+11-12| 5000 |13 88 | `uint16` always uses 2 bytes
+13 | 0|00| enum is of size `uint8` so it uses 1 byte
 
 Please note that in contrast to other serialization mechanisms zserio's variable integers do not provide the full range of values but rather stick to the indicated size. Example: a *varuint64* will be using max 8 bytes whilst not providing the full range of a *uint64_t*.
 
