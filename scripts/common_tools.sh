@@ -65,15 +65,15 @@ set_global_cpp_variables()
     # CMake generator to use, defaults to "Eclipse CDT4 - Unix Makefiles" if not set
     CMAKE_GENERATOR="${CMAKE_GENERATOR:-Eclipse CDT4 - Unix Makefiles}"
 
-    # make to use, default to "make" is not set
-    MAKE="${MAKE:-make}"
-    if [ ! -f "`which "${MAKE}"`" ] ; then
-        stderr_echo "Cannot find cmake! Set MAKE environment variable."
+    # CTest to use, defaults to "ctest" if not set
+    CTEST="${CTEST:-ctest}"
+    if [ ! -f "`which "${CTEST}"`" ] ; then
+        stderr_echo "Cannot find CTest! Set CTEST environment variable."
         return 1
     fi
 
-    # make extra arguments are empty by default
-    MAKE_EXTRA_ARGS="${MAKE_EXTRA_ARGS:-""}"
+    # Extra arguments to be passed by CMake to a native build tool
+    CMAKE_BUILD_OPTIONS="${CMAKE_BUILD_OPTIONS:-""}"
 
     # cppcheck home directoty is empty by default
     CPPCHECK_HOME="${CPPCHECK_HOME:-""}"
@@ -92,8 +92,8 @@ Uses the following environment variables for building:
     CMAKE_EXTRA_ARGS       Extra arguments to CMake. Default is empty string.
     CMAKE_GENERATOR        CMake generator to use. Default is
                            "Eclipse CDT4 - Unix Makefiles".
-    MAKE                   Make executable to use. Default is "make".
-    MAKE_EXTRA_ARGS        Extra arguments to Make. Default is empty string.
+    CMAKE_BUILD_OPTIONS    Arguments to be passed by CMake to a native build tool.
+    CTEST                  Ctest executable to use. Default is "ctest".
     JAVAC_BIN              Java compiler executable to use. Default is "javac".
     JAVA_BIN               Java executable to use. Default is "java".
     FINDBUGS_HOME          Home directory of findbugs tool where lib is located
@@ -276,10 +276,11 @@ compile_java()
 # $3 - Directory where CMakeLists.txt is located.
 # $4 - The name of variable which contains array of targets for which to compile.
 # $5 - The name of variable which contains array of CMake arguments to use.
-# $6 - Make target to run.
+# $6 - The name of variable which contains array of CTest arguments to use.
+# $7 - Make target to run.
 compile_cpp()
 {
-    exit_if_argc_ne $# 6
+    exit_if_argc_ne $# 7
     local ZSERIO_PROJECT_ROOT="$1"
     local BUILD_DIR="$2"
     local CMAKELISTS_DIR="$3"
@@ -287,12 +288,14 @@ compile_cpp()
     local TARGETS=("${MSYS_WORKAROUND_TEMP[@]}")
     local MSYS_WORKAROUND_TEMP=("${!5}")
     local CMAKE_ARGS=("${MSYS_WORKAROUND_TEMP[@]}")
-    local MAKE_TARGET="$6"
+    local MSYS_WORKAROUND_TEMP=("${!6}")
+    local CTEST_ARGS=("${MSYS_WORKAROUND_TEMP[@]}")
+    local MAKE_TARGET="$7"
 
     local TARGET
     for TARGET in "${TARGETS[@]}" ; do
-        compile_cpp_for_target "${ZSERIO_PROJECT_ROOT}" "${BUILD_DIR}/${TARGET}" "${CMAKELISTS_DIR}" "${TARGET}" \
-                               CMAKE_ARGS[@] "${MAKE_TARGET}"
+        compile_cpp_for_target "${ZSERIO_PROJECT_ROOT}" "${BUILD_DIR}/cpp-${TARGET}" "${CMAKELISTS_DIR}" "${TARGET}" \
+                               CMAKE_ARGS[@] CTEST_ARGS[@] "${MAKE_TARGET}"
         if [ $? -ne 0 ] ; then
             return 1
         fi
@@ -308,17 +311,20 @@ compile_cpp()
 # $3 - Directory where CMakeLists.txt is located.
 # $4 - Target for which to compile.
 # $5 - The name of variable which contains array of CMake arguments to use.
-# $6 - Make target to run.
+# $6 - The name of variable which contains array of CTest arguments to use.
+# $7 - Make target to run.
 compile_cpp_for_target()
 {
-    exit_if_argc_ne $# 6
+    exit_if_argc_ne $# 7
     local ZSERIO_PROJECT_ROOT="$1"
     local BUILD_DIR="$2"
     local CMAKELISTS_DIR="$3"
     local TARGET="$4"
     local MSYS_WORKAROUND_TEMP=("${!5}")
     local CMAKE_ARGS=("${MSYS_WORKAROUND_TEMP[@]}")
-    local MAKE_TARGET="$6"
+    local MSYS_WORKAROUND_TEMP=("${!6}")
+    local CTEST_ARGS=("${MSYS_WORKAROUND_TEMP[@]}")
+    local MAKE_TARGET="$7"
 
     local TOOLCHAIN_FILE="${ZSERIO_PROJECT_ROOT}/cmake/toolchain-${TARGET}.cmake"
     CMAKE_ARGS=(--no-warn-unused-cli
@@ -342,7 +348,7 @@ compile_cpp_for_target()
         return 1
     fi
 
-    "${MAKE}" ${MAKE_EXTRA_ARGS} ${MAKE_TARGET}
+    "${CMAKE}" --build . --target ${MAKE_TARGET} -- ${CMAKE_BUILD_OPTIONS}
     local MAKE_RESULT=$?
     if [ ${MAKE_RESULT} -ne 0 ] ; then
         stderr_echo "Make failed with return code ${MAKE_RESULT}!"
@@ -354,10 +360,10 @@ compile_cpp_for_target()
     can_run_tests "${TARGET}"
     local CAN_RUN_TESTS_RESULT=$?
     if [[ ${MAKE_TARGET} != "clean" && ${CAN_RUN_TESTS_RESULT} == 0 ]] ; then
-        CTEST_OUTPUT_ON_FAILURE=1 "${MAKE}" ${MAKE_EXTRA_ARGS} test
-        local MAKE_TEST_RESULT=$?
-        if [ ${MAKE_TEST_RESULT} -ne 0 ] ; then
-            stderr_echo "Make test on target ${TARGET} failed with return code ${MAKE_RESULT}."
+        CTEST_OUTPUT_ON_FAILURE=1 "${CTEST}" ${CTEST_ARGS[@]}
+        local CTEST_RESULT=$?
+        if [ ${CTEST_RESULT} -ne 0 ] ; then
+            stderr_echo "Tests on target ${TARGET} failed with return code ${CTEST_RESULT}."
             popd > /dev/null
             return 1
         fi

@@ -31,26 +31,24 @@ EOF
 # $2 - The Zserio release version to test.
 # $3 - The directory of Zserio project root.
 # $4 - The directory where to store test outputs.
-# $5 - The name of example test to run.
-# $6 - '1' to run Java tests.
-# $7 - The name of variable which contains the array of C++ targets for which to compile.
+# $5 - '1' to run Java tests.
+# $6 - The name of variable which contains the array of C++ targets for which to compile.
+# $7 - Whether to clean projects instead of run tests.
+# $8 - The name of example test to run.
 test()
 {
-    exit_if_argc_ne $# 7
+    exit_if_argc_ne $# 8
     local ZSERIO_RELEASE_DIR="$1"
     local ZSERIO_VERSION="$2"
     local ZSERIO_PROJECT_ROOT="$3"
     local TEST_OUT_DIR="$4"
-    local SWITCH_TEST_NAME="$5"
-    local PARAM_JAVA=$6
-    local MSYS_WORKAROUND_TEMP=("${!7}")
+    local PARAM_JAVA=$5
+    local MSYS_WORKAROUND_TEMP=("${!6}")
     local TARGETS=("${MSYS_WORKAROUND_TEMP[@]}")
+    local SWITCH_CLEAN="$7"
+    local SWITCH_TEST_NAME="$8"
 
     local TEST_SRC_DIR="${ZSERIO_PROJECT_ROOT}/test"
-
-    # create empty test output directory
-    rm -rf "${TEST_OUT_DIR}/"
-    mkdir -p "${TEST_OUT_DIR}"
 
     # unpack testing release
     local UNPACKED_ZSERIO_RELEASE_DIR
@@ -68,8 +66,12 @@ test()
         if [[ ${SWITCH_TEST_NAME} != "" ]] ; then
             ANT_ARGS+=("-Dtest.filter=${SWITCH_TEST_NAME}")
         fi
-        local BUILD_RULE="run"
-        compile_java "${TEST_SRC_DIR}/build.xml" ANT_ARGS[@] "${BUILD_RULE}"
+        if [[ ${SWITCH_CLEAN} == 1 ]] ; then
+            local JAVA_TARGET="clean"
+        else
+            local JAVA_TARGET="run"
+        fi
+        compile_java "${TEST_SRC_DIR}/build.xml" ANT_ARGS[@] "${JAVA_TARGET}"
         if [ $? -ne 0 ] ; then
             stderr_echo "${MESSAGE} failed!"
             return 1
@@ -89,10 +91,18 @@ test()
         fi
 
         local CMAKE_ARGS=("-DZSERIO_RUNTIME_INCLUDE_INSPECTOR=ON"
-                          "-DZSERIO_RELEASE_ROOT=${UNPACKED_ZSERIO_RELEASE_DIR}"
-                          "-DZSERIO_TEST_NAME=${SWITCH_TEST_NAME}")
+                          "-DZSERIO_RELEASE_ROOT=${UNPACKED_ZSERIO_RELEASE_DIR}")
+        local CTEST_ARGS=()
+        if [[ ${SWITCH_TEST_NAME} != "" ]]; then
+            CTEST_ARGS+=("-L ${SWITCH_TEST_NAME}")
+        fi
+        if [[ ${SWITCH_CLEAN} == 1 ]] ; then
+            local CPP_TARGET="clean"
+        else
+            local CPP_TARGET="all"
+        fi
         compile_cpp "${ZSERIO_PROJECT_ROOT}" "${TEST_OUT_DIR}" "${TEST_SRC_DIR}" TARGETS[@] \
-                    CMAKE_ARGS[@] "all"
+                    CMAKE_ARGS[@] CTEST_ARGS[@] ${CPP_TARGET}
         if [ $? -ne 0 ] ; then
             stderr_echo "${MESSAGE} failed!"
             return 1
@@ -118,6 +128,7 @@ unpack_release()
     local UNPACKED_ZSERIO_RELEASE_DIR_OUT="$4"
 
     local UNPACKED_ZSERIO_RELEASE_DIR_LOC="${TEST_OUT_DIR}/tested_release"
+    rm -rf "${UNPACKED_ZSERIO_RELEASE_DIR_LOC}" # always use fresh release
     mkdir -p "${UNPACKED_ZSERIO_RELEASE_DIR_LOC}"
 
     # bin
@@ -151,6 +162,8 @@ Usage:
 
 Arguments:
     -h, --help                Show this help.
+    -c, --clean               Clean package instead of build.
+    -p, --purge               Purge test build directory.
     -t, --test-name TEST_NAME Run only TEST_NAME test from examples test suite.
     package                   Specify the package to test.
 
@@ -203,15 +216,17 @@ EOF
 # 2 - Help switch is present. Arguments after help switch have not been checked.
 parse_arguments()
 {
-    local NUM_OF_ARGS=3
-    exit_if_argc_lt $# ${NUM_OF_ARGS}
-    local PARAM_JAVA_OUT="$1"
-    local PARAM_CPP_TARGET_ARRAY_OUT="$2"
-    local SWITCH_TEST_NAME_OUT="$3"
-    shift ${NUM_OF_ARGS}
+    exit_if_argc_lt $# 5
+    local PARAM_JAVA_OUT="$1"; shift
+    local PARAM_CPP_TARGET_ARRAY_OUT="$1"; shift
+    local SWITCH_CLEAN_OUT="$1"; shift
+    local SWITCH_PURGE_OUT="$1"; shift
+    local SWITCH_TEST_NAME_OUT="$1"; shift
 
     eval ${PARAM_JAVA_OUT}=0
     eval ${SWITCH_TEST_NAME_OUT}=""
+    eval ${SWITCH_CLEAN_OUT}=0
+    eval ${SWITCH_PURGE_OUT}=0
 
     local NUM_PARAMS=0
     local PARAM_ARRAY=();
@@ -220,6 +235,16 @@ parse_arguments()
         case "${ARG}" in
             "-h" | "--help")
                 return 2
+                ;;
+
+            "-c" | "--clean")
+                eval ${SWITCH_CLEAN_OUT}=1
+                shift
+                ;;
+
+            "-p" | "--purge")
+                eval ${SWITCH_PURGE_OUT}=1
+                shift
                 ;;
 
             "-t" | "--test-name")
@@ -283,7 +308,7 @@ parse_arguments()
         esac
     done
 
-    if [[ ${!PARAM_JAVA_OUT} == 0 && ${NUM_TARGETS} -eq 0 ]] ; then
+    if [[ ${!PARAM_JAVA_OUT} == 0 && ${NUM_TARGETS} -eq 0 && ${!SWITCH_PURGE_OUT} == 0 ]] ; then
         stderr_echo "Package to test is not specified!"
         echo
         return 1
@@ -300,8 +325,10 @@ main()
     # parse command line arguments
     local PARAM_JAVA
     local PARAM_CPP_TARGET_ARRAY
+    local SWITCH_CLEAN
+    local SWITCH_PURGE
     local SWITCH_TEST_NAME
-    parse_arguments PARAM_JAVA PARAM_CPP_TARGET_ARRAY SWITCH_TEST_NAME $@
+    parse_arguments PARAM_JAVA PARAM_CPP_TARGET_ARRAY SWITCH_CLEAN SWITCH_PURGE SWITCH_TEST_NAME $@
     if [ $? -ne 0 ] ; then
         print_help
         return 1
@@ -337,8 +364,13 @@ main()
         return 1
     fi
 
-    # create empty test output directory
+    # purge if requested and then create test output directory
     local TEST_OUT_DIR="${ZSERIO_PROJECT_ROOT}/build/test"
+    if [[ ${SWITCH_PURGE} == 1 ]] ; then
+        echo "Purging test directory."
+        echo
+        rm -rf "${TEST_OUT_DIR}/"
+    fi
     mkdir -p "${TEST_OUT_DIR}"
 
     # print information
@@ -348,7 +380,7 @@ main()
 
     # run test
     test "${ZSERIO_RELEASE_DIR}" "${ZSERIO_VERSION}" "${ZSERIO_PROJECT_ROOT}" "${TEST_OUT_DIR}" \
-         "${SWITCH_TEST_NAME}" ${PARAM_JAVA} PARAM_CPP_TARGET_ARRAY[@]
+         ${PARAM_JAVA} PARAM_CPP_TARGET_ARRAY[@] ${SWITCH_CLEAN} "${SWITCH_TEST_NAME}"
     if [ $? -ne 0 ] ; then
         return 1
     fi

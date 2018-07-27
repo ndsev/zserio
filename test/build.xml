@@ -193,14 +193,14 @@ findbugs.home_dir       - Location of the findbugs tool. If not set, findbugs is
 
     <target name="run" depends="test_utils.findbugs">
         <subant inheritall="true">
-            <fileset dir="." includes="${test.filter}/build.xml" excludes="build.xml,utils/**"/>
+            <fileset dir="." includes="${test.filter}/**/build.xml" excludes="build.xml,utils/**"/>
             <target name="run"/>
         </subant>
     </target>
 
     <target name="clean" depends="test_utils.clean">
         <subant inheritall="true">
-            <fileset dir="." includes="${test.filter}/build.xml" excludes="build.xml,utils/**"/>
+            <fileset dir="." includes="${test.filter}/**/build.xml" excludes="build.xml,utils/**"/>
             <target name="clean"/>
         </subant>
     </target>

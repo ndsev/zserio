@@ -325,8 +325,9 @@ main()
         local CMAKE_ARGS=("-DCMAKE_INSTALL_PREFIX=${ZSERIO_DISTR_DIR}"
                           "-DZSERIO_RUNTIME_INCLUDE_INSPECTOR=ON"
                           "-DZSERIO_RUNTIME_INCLUDE_RELATIONAL=ON")
+        local CTEST_ARGS=()
         compile_cpp "${ZSERIO_PROJECT_ROOT}" "${CPP_BUILD_DIR}" "${CMAKELISTS_DIR}" PARAM_CPP_TARGET_ARRAY[@] \
-                    CMAKE_ARGS[@] ${CPP_TARGET}
+                    CMAKE_ARGS[@] CTEST_ARGS[@] ${CPP_TARGET}
         if [ $? -ne 0 ] ; then
             return 1
         fi
