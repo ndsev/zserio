@@ -95,7 +95,7 @@ To be able to serialize data with zserio, you have to follow these basic steps:
 
 You can find the detailed quick start tutorial in their respective repositories:
 
-- [C++ Tutorial](https://github.com/welovemaps/zserio-cpp-tutorial)
+- [C++ Tutorial](https://github.com/welovemaps/zserio-tutorial-cpp#zserio-c-quick-start-tutorial)
 - [JAVA tutorial](https://)
 
 ## Features overview
