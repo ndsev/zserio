@@ -75,7 +75,7 @@ Offset(d) 00 01 02 03 04 05 06 07 08 09 10 11 12 13
 ```
 
 Byte position| value | value (hex)| comment
-----|-------|-------|-------|-----|
+----|-------|-------|-------|
 0| 32 (age)|20| uint8 is of fixed size 8 bit
 1| 9 (string length)|09| string length is encoded in varuint64 field before actual string
 2-10| Joe Smith | 4A 6F 65 20 53 6D 69 74 68| UTF-8 encoded string
