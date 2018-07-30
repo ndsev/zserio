@@ -88,7 +88,7 @@ choice VarCoordXY(uint8 width) on width
 };
 ```
 
-**Contraints**
+**Constraints**
 ```
 struct GraphicControlExtension
 {
