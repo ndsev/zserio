@@ -85,7 +85,7 @@ public interface BitStreamWriter extends BitStreamConsumer, DataOutput
     void writeBool(final boolean value) throws IOException;
 
     /**
-     * Writes a variable 16 bit integer value underlying storage.
+     * Writes a variable 16 bit integer value to the underlying storage.
      *
      * @param value Variable 17 bit integer value to write.
      *
@@ -94,7 +94,7 @@ public interface BitStreamWriter extends BitStreamConsumer, DataOutput
     void writeVarInt16(final short value) throws IOException;
 
     /**
-     * Writes a variable 16 bit unsigned integer value underlying storage.
+     * Writes a variable 16 bit unsigned integer value to the underlying storage.
      *
      * @param value Variable 16 bit unsigned integer value to write.
      *
@@ -103,7 +103,7 @@ public interface BitStreamWriter extends BitStreamConsumer, DataOutput
     void writeVarUInt16(final short value) throws IOException;
 
     /**
-     * Writes a variable 32 bit integer value underlying storage.
+     * Writes a variable 32 bit integer value to the underlying storage.
      *
      * @param value Variable 32 bit integer value to write.
      *
@@ -112,7 +112,7 @@ public interface BitStreamWriter extends BitStreamConsumer, DataOutput
     void writeVarInt32(final int value) throws IOException;
 
     /**
-     * Writes a variable 32 bit unsigned integer value underlying storage.
+     * Writes a variable 32 bit unsigned integer value to the underlying storage.
      *
      * @param value Variable 32 bit unsigned integer value to write.
      *
@@ -121,7 +121,7 @@ public interface BitStreamWriter extends BitStreamConsumer, DataOutput
     void writeVarUInt32(final int value) throws IOException;
 
     /**
-     * Writes a variable 64 bit integer value underlying storage.
+     * Writes a variable 64 bit integer value to the underlying storage.
      *
      * @param value Variable 64 bit integer value to write.
      *
@@ -130,13 +130,30 @@ public interface BitStreamWriter extends BitStreamConsumer, DataOutput
     void writeVarInt64(final long value) throws IOException;
 
     /**
-     * Writes a variable 64 bit unsigned integer value underlying storage.
+     * Writes a variable 64 bit unsigned integer value to the underlying storage.
      *
      * @param value Variable 64 bit unsigned integer value to write.
      *
      * @throws IOException If the writing failed.
      */
     void writeVarUInt64(final long value) throws IOException;
+
+    /**
+     * Writes a signed variable integer value to the underlying storage.
+     *
+     * @param value BigInteger value to write.
+     *
+     * @throws IOException
+     */
+    void writeVarInt(final long value) throws IOException;
+
+    /** Writes an unsigned variable integer value to the underlying storage.
+     *
+     * @param value BigInteger value to write.
+     *
+     * @throws IOException
+     */
+    void writeVarUInt(final BigInteger value) throws IOException;
 
     /**
      * Writes a Zserio string to the underlying storage in UTF-8 encoding.

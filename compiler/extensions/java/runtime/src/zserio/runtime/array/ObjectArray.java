@@ -17,9 +17,9 @@ import zserio.runtime.io.BitStreamWriter;
 import zserio.runtime.io.InitializeOffsetsWriter;
 
 /**
- * Implements Zserio zserio object arrays.
+ * Implements Zserio object arrays.
  *
- * Zserio zserio object arrays can be structure, choice or enum arrays. They are mapped to Java
+ * Zserio object arrays can be structure, choice or enum arrays. They are mapped to Java
  * List<E> type.
  *
  * @param <E> The type of elements (objects) maintained by this array.

@@ -8,7 +8,7 @@ import zserio.runtime.io.BitStreamReader;
 import zserio.runtime.io.BitStreamWriter;
 
 /**
- * Implements Zserio zserio int16 and int:9...int:16 arrays.
+ * Implements Zserio int16 and int:9...int:16 arrays.
  *
  * Zserio int16 and int:9...int:16 arrays are mapped to Java short[] type.
  */

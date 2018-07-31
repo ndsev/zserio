@@ -213,6 +213,23 @@ void BitStreamWriter::writeVarUInt16(uint16_t data)
             getBitSizeOfVarUInt16(data));
 }
 
+void BitStreamWriter::writeVarInt(int64_t data)
+{
+    static const uint8_t valBitsVarInt[] = { 6, 7, 7, 7, 7, 7, 7, 7, 8 };
+    if (data == INT64_MIN)
+        writeBits(0x80, 8); // INT64_MIN is encoded as -0
+    else
+        writeVarNum(data, valBitsVarInt, sizeof(valBitsVarInt) / sizeof(valBitsVarInt[0]),
+                getBitSizeOfVarInt(data));
+}
+
+void BitStreamWriter::writeVarUInt(uint64_t data)
+{
+    static const uint8_t valBitsVarUInt[] = { 7, 7, 7, 7, 7, 7, 7, 7, 8 };
+    writeVarAbsNum(data, false, valBitsVarUInt, sizeof(valBitsVarUInt) / sizeof(valBitsVarUInt[0]),
+            getBitSizeOfVarUInt(data));
+}
+
 void BitStreamWriter::writeFloat16(float data)
 {
     // Converts a 32 bit floating point number to a 16bit unsigned integer.
@@ -404,23 +421,28 @@ inline void BitStreamWriter::writeUnsignedBits64(uint64_t data, uint8_t numBits)
 inline void BitStreamWriter::writeVarNum(int64_t value, const uint8_t* valBits, size_t valBitsSize,
         size_t numVarBits)
 {
-    static const uint64_t bitMasks[8] = { 1, 3, 7, 15, 31, 63, 127, 255 };
-
     const uint64_t absValue = static_cast<uint64_t>(value < 0 ? -value : value);
+    writeVarAbsNum(absValue, value < 0, valBits, valBitsSize, numVarBits);
+}
+
+inline void BitStreamWriter::writeVarAbsNum(uint64_t value, bool sign, const uint8_t* valBits,
+        size_t valBitsSize, size_t numVarBits)
+{
+    static const uint64_t bitMasks[8] = { 1, 3, 7, 15, 31, 63, 127, 255 };
     const size_t numVarBytes = bitsToBytes(numVarBits);
     for (size_t i = numVarBytes; i > 0; i--)
     {
         const uint8_t numBits = valBits[numVarBytes - i];
         if (numBits < 7)
         {
-            writeBool(value < 0); // sign
+            writeBool(sign); // sign
         }
         if (numBits < 8)
         {
             writeBool(i > 1); // hasNextByte
         }
         const int shiftBits = (i - 1) * 7 + ((numVarBytes==valBitsSize && i > 1 ) ? 1 : 0);
-        writeBits(((absValue >> shiftBits) & bitMasks[numBits - 1]), numBits);
+        writeBits(((value >> shiftBits) & bitMasks[numBits - 1]), numBits);
     }
 }
 

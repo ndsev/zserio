@@ -333,6 +333,103 @@ public class ByteArrayBitStreamReader extends ByteArrayBitStreamBase implements 
     }
 
     @Override
+    public long readVarInt() throws IOException
+    {
+        long b = readBits(8); // byte 1
+        final boolean sign = (b & VARINT_SIGN_1) != 0;
+        long result = b & VARINT_BYTE_1;
+        if ((b & VARINT_HAS_NEXT_1) == 0)
+            return sign == true ? (result == 0 ? Long.MIN_VALUE : -result) : result;
+
+        b = readBits(8); // byte 2
+        result = result << 7 | (b & VARINT_BYTE_N);
+        if ((b & VARINT_HAS_NEXT_N) == 0)
+            return sign == true ? -result : result;
+
+        b = readBits(8); // byte 3
+        result = result << 7 | (b & VARINT_BYTE_N);
+        if ((b & VARINT_HAS_NEXT_N) == 0)
+            return sign == true ? -result : result;
+
+        b = readBits(8); // byte 4
+        result = result << 7 | (b & VARINT_BYTE_N);
+        if ((b & VARINT_HAS_NEXT_N) == 0)
+            return sign == true ? -result : result;
+
+        b = readBits(8); // byte 5
+        result = result << 7 | (b & VARINT_BYTE_N);
+        if ((b & VARINT_HAS_NEXT_N) == 0)
+            return sign == true ? -result : result;
+
+        b = readBits(8); // byte 6
+        result = result << 7 | (b & VARINT_BYTE_N);
+        if ((b & VARINT_HAS_NEXT_N) == 0)
+            return sign == true ? -result : result;
+
+        b = readBits(8); // byte 7
+        result = result << 7 | (b & VARINT_BYTE_N);
+        if ((b & VARINT_HAS_NEXT_N) == 0)
+            return sign == true ? -result : result;
+
+        b = readBits(8); // byte 8
+        result = result << 7 | (b & VARINT_BYTE_N);
+        if ((b & VARINT_HAS_NEXT_N) == 0)
+            return sign == true ? -result : result;
+
+        // byte 9
+        result = result << 8 | readBits(8);
+        return sign == true ? -result : result;
+    }
+
+    @Override
+    public BigInteger readVarUInt() throws IOException
+    {
+        long b = readBits(8); // byte 1
+        BigInteger result = BigInteger.valueOf(b & VARUINT_BYTE);
+        if ((b & VARUINT_HAS_NEXT) == 0)
+            return result;
+
+        b = readBits(8); // byte 2
+        result = result.shiftLeft(7).or(BigInteger.valueOf(b & VARUINT_BYTE));
+        if ((b & VARUINT_HAS_NEXT) == 0)
+            return result;
+
+        b = readBits(8); // byte 3
+        result = result.shiftLeft(7).or(BigInteger.valueOf(b & VARUINT_BYTE));
+        if ((b & VARUINT_HAS_NEXT) == 0)
+            return result;
+
+        b = readBits(8); // byte 4
+        result = result.shiftLeft(7).or(BigInteger.valueOf(b & VARUINT_BYTE));
+        if ((b & VARUINT_HAS_NEXT) == 0)
+            return result;
+
+        b = readBits(8); // byte 5
+        result = result.shiftLeft(7).or(BigInteger.valueOf(b & VARUINT_BYTE));
+        if ((b & VARUINT_HAS_NEXT) == 0)
+            return result;
+
+        b = readBits(8); // byte 6
+        result = result.shiftLeft(7).or(BigInteger.valueOf(b & VARUINT_BYTE));
+        if ((b & VARUINT_HAS_NEXT) == 0)
+            return result;
+
+        b = readBits(8); // byte 7
+        result = result.shiftLeft(7).or(BigInteger.valueOf(b & VARUINT_BYTE));
+        if ((b & VARUINT_HAS_NEXT) == 0)
+            return result;
+
+        b = readBits(8); // byte 8
+        result = result.shiftLeft(7).or(BigInteger.valueOf(b & VARUINT_BYTE));
+        if ((b & VARUINT_HAS_NEXT) == 0)
+            return result;
+
+        // byte 9
+        result = result.shiftLeft(8).or(BigInteger.valueOf(readBits(8) & 0xFF));
+        return result;
+    }
+
+    @Override
     public void skipBits(final int bitCnt) throws IOException
     {
         setBitPosition(getBitPosition() + bitCnt);
@@ -589,6 +686,22 @@ public class ByteArrayBitStreamReader extends ByteArrayBitStreamBase implements 
      * The number of bits per 7 bytes.
      */
     protected static final int BITS_PER_7_BYTES = 0x38;
+
+    /** Variable length integer sing bit mask for first byte. */
+    protected static final int VARINT_SIGN_1 = 0x80;
+    /** Variable length integer value bit mask for first byte. */
+    protected static final int VARINT_BYTE_1 = 0x3f;
+    /** Variable length integer value bit mask for intermediate bytes. */
+    protected static final int VARINT_BYTE_N = 0x7f;
+    /** Variable length integer 'has next' bit mask for first byte. */
+    protected static final int VARINT_HAS_NEXT_1 = 0x40;
+    /** Variable length integer 'has next' bit mask for intermediate bytes. */
+    protected static final int VARINT_HAS_NEXT_N = 0x80;
+
+    /** Variable length integer value bit mask. */
+    protected static final int VARUINT_BYTE = 0x7f;
+    /** Variable length integer 'has next' bit mask. */
+    protected static final int VARUINT_HAS_NEXT = 0x80;
 
     /**
      * The underlying byte array.

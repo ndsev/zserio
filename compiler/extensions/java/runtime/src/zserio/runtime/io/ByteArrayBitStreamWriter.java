@@ -5,7 +5,9 @@ import java.io.IOException;
 import java.math.BigInteger;
 import java.nio.ByteOrder;
 
+import zserio.runtime.BitSizeOfCalculator;
 import zserio.runtime.Util;
+import zserio.runtime.ZserioError;
 
 /**
  * A bit stream writer using byte array.
@@ -491,6 +493,64 @@ public class ByteArrayBitStreamWriter extends ByteArrayBitStreamBase implements 
     }
 
     @Override
+    public void writeVarInt(final long value) throws IOException
+    {
+        if (value == Long.MIN_VALUE)
+        {
+            writeByte(VARINT_MIN_VALUE);
+        }
+        else
+        {
+            writeVarNum(value, true, 9);
+        }
+    }
+
+    @Override
+    public void writeVarUInt(final BigInteger value) throws IOException
+    {
+        int numBytes = 0;
+        try
+        {
+            // contains validity check
+            numBytes = BitSizeOfCalculator.getBitSizeOfVarUInt(value) / BITS_PER_BYTE;
+        }
+        catch (ZserioError e)
+        {
+            throw new IOException(e.getMessage());
+        }
+
+        final int extraShift = numBytes == VARUINT_MAX_BYTES ? 1 : 0;
+        int shift = (numBytes - 1) * 7;
+
+        // first byte
+        writeBool(numBytes > 1); // has next byte
+        writeBits(value.shiftRight(shift + extraShift).and(VARUINT_BITMASK).longValue(), 7);
+
+        // middle bytes
+        for (int i = numBytes - 1; i > 1; i--)
+        {
+            shift = (i - 1) * 7;
+            writeBool(true); // has next byte
+            writeBits(value.shiftRight(shift + extraShift).and(VARUINT_BITMASK).longValue(), 7);
+        }
+
+        // last byte
+        if (numBytes > 1)
+        {
+            if (numBytes == VARUINT_MAX_BYTES)
+            {
+                // last possible byte of varuint doesn't have the "has next byte" bit
+                writeBits(value.and(VARUINT_9TH_BITMASK).longValue(), 8);
+            }
+            else
+            {
+                writeBool(false); // has next byte
+                writeBits(value.and(VARUINT_BITMASK).longValue(), 7);
+            }
+        }
+    }
+
+    @Override
     public void writeString(final String value) throws IOException
     {
         final byte[] bytes = value.getBytes(DEFAULT_CHARSET_NAME);
@@ -535,7 +595,7 @@ public class ByteArrayBitStreamWriter extends ByteArrayBitStreamBase implements 
      * If the bit offset is non-zero, forces the remaining bits in the current byte to 0 and advances the stream
      * position by one.
      *
-     * @exception IOException If some stream manipulation error occured.
+     * @exception IOException If some stream manipulation error occurred.
      */
     protected final void flushBits() throws IOException
     {
@@ -842,4 +902,15 @@ public class ByteArrayBitStreamWriter extends ByteArrayBitStreamBase implements 
      * array.
      */
     private static final int MAX_BUFFER_SIZE = Integer.MAX_VALUE - 8;
+
+    /** Minimum VarInt value is Long.MIN_VALUE but it is encoded as -0. */
+    private static final int VARINT_MIN_VALUE = 0x80;
+
+    /** Maximum number of bytes needed to encode VarUInt. */
+    private static final int VARUINT_MAX_BYTES = 9;
+
+    /** Bitmask for value in VarUInt byte (except of the 9th byte). */
+    private static final BigInteger VARUINT_BITMASK = BigInteger.valueOf(0x7F);
+    /** Bitmask for value in VarUInt's 9th byte. */
+    private static final BigInteger VARUINT_9TH_BITMASK = BigInteger.valueOf(0xFF);
 }

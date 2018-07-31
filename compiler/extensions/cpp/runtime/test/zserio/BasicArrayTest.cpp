@@ -430,6 +430,72 @@ TEST_F(BasicArrayTest, VarInt64ArrayBitSizeOf)
     ArrayTest(array, bitSize);
 }
 
+TEST_F(BasicArrayTest, VarIntArray)
+{
+    VarIntArray array;
+    // 1 byte
+    array.push_back(0);
+    array.push_back(-1);
+    array.push_back(1);
+    array.push_back(-(INT64_C(1) << 6) + 1);
+    array.push_back((INT64_C(1) << 6) - 1);
+    // 2 bytes
+    array.push_back(-(INT64_C(1) << 13) + 1);
+    array.push_back((INT64_C(1) << 13) - 1);
+    // 3 bytes
+    array.push_back(-(INT64_C(1) << 20) + 1);
+    array.push_back((INT64_C(1) << 20) - 1);
+    // 4 bytes
+    array.push_back(-(INT64_C(1) << 27) + 1);
+    array.push_back((INT64_C(1) << 27) - 1);
+    // 5 bytes
+    array.push_back(-(INT64_C(1) << 34) + 1);
+    array.push_back((INT64_C(1) << 34) - 1);
+    // 6 bytes
+    array.push_back(-(INT64_C(1) << 41) + 1);
+    array.push_back((INT64_C(1) << 41) - 1);
+    // 7 bytes
+    array.push_back(-(INT64_C(1) << 48) + 1);
+    array.push_back((INT64_C(1) << 48) - 1);
+    // 8 bytes
+    array.push_back(-(INT64_C(1) << 55) + 1);
+    array.push_back((INT64_C(1) << 55) - 1);
+    // 9 bytes
+    array.push_back(INT64_MIN + 1);
+    array.push_back(INT64_MAX);
+    // 1 byte - special case, INT64_MIN stored as -0
+    array.push_back(INT64_MIN);
+    const size_t bitSize = 8 * (3 + 2 * (1 + 2 + 3 + 4 + 5 + 6 + 7 + 8 + 9) + 1);
+    ArrayTest(array, bitSize);
+}
+
+TEST_F(BasicArrayTest, VarUIntArray)
+{
+    VarUIntArray array;
+    // 1 byte
+    array.push_back(0);
+    array.push_back(1);
+    array.push_back((UINT64_C(1) << 7) - 1);
+    // 2 bytes
+    array.push_back((UINT64_C(1) << 14) - 1);
+    // 3 bytes
+    array.push_back((UINT64_C(1) << 21) - 1);
+    // 4 bytes
+    array.push_back((UINT64_C(1) << 28) - 1);
+    // 5 bytes
+    array.push_back((UINT64_C(1) << 35) - 1);
+    // 6 bytes
+    array.push_back((UINT64_C(1) << 42) - 1);
+    // 7 bytes
+    array.push_back((UINT64_C(1) << 49) - 1);
+    // 8 bytes
+    array.push_back((UINT64_C(1) << 56) - 1);
+    // 9 bytes
+    array.push_back(UINT64_MAX);
+    const size_t bitSize = 8 * (2 + (1 + 2 + 3 + 4 + 5 + 6 + 7 + 8 + 9));
+    ArrayTest(array, bitSize);
+}
+
 TEST_F(BasicArrayTest, FloatArray)
 {
     const size_t elementBitSize = 16;

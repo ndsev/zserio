@@ -512,6 +512,99 @@ uint16_t BitStreamReader::readVarUInt16()
     return result;
 }
 
+int64_t BitStreamReader::readVarInt()
+{
+    uint8_t byte = readBitsImpl(m_context, 8); // byte 1
+    const bool sign = byte & VARINT_SIGN_1;
+    int64_t result = byte & VARINT_BYTE_1;
+    if (!(byte & VARINT_HAS_NEXT_1))
+        return sign ? (result == 0 ? INT64_MIN : -result) : result;
+
+    byte = readBitsImpl(m_context, 8); // byte 2
+    result = result << 7 | (byte & VARINT_BYTE_N);
+    if (!(byte & VARINT_HAS_NEXT_N))
+        return sign ? -result : result;
+
+    byte = readBitsImpl(m_context, 8); // byte 3
+    result = result << 7 | (byte & VARINT_BYTE_N);
+    if (!(byte & VARINT_HAS_NEXT_N))
+        return sign ? -result : result;
+
+    byte = readBitsImpl(m_context, 8); // byte 4
+    result = result << 7 | (byte & VARINT_BYTE_N);
+    if (!(byte & VARINT_HAS_NEXT_N))
+        return sign ? -result : result;
+
+    byte = readBitsImpl(m_context, 8); // byte 5
+    result = result << 7 | (byte & VARINT_BYTE_N);
+    if (!(byte & VARINT_HAS_NEXT_N))
+        return sign ? -result : result;
+
+    byte = readBitsImpl(m_context, 8); // byte 6
+    result = result << 7 | (byte & VARINT_BYTE_N);
+    if (!(byte & VARINT_HAS_NEXT_N))
+        return sign ? -result : result;
+
+    byte = readBitsImpl(m_context, 8); // byte 7
+    result = result << 7 | (byte & VARINT_BYTE_N);
+    if (!(byte & VARINT_HAS_NEXT_N))
+        return sign ? -result : result;
+
+    byte = readBitsImpl(m_context, 8); // byte 8
+    result = result << 7 | (byte & VARINT_BYTE_N);
+    if (!(byte & VARINT_HAS_NEXT_N))
+        return sign ? -result : result;
+
+    result = result << 8 | readBitsImpl(m_context, 8); // byte 9
+    return sign ? -result : result;
+}
+
+uint64_t BitStreamReader::readVarUInt()
+{
+    uint8_t byte = readBitsImpl(m_context, 8); // byte 1
+    uint64_t result = byte & VARUINT_BYTE;
+    if (!(byte & VARUINT_HAS_NEXT))
+        return result;
+
+    byte = readBitsImpl(m_context, 8); // byte 2
+    result = result << 7 | (byte & VARUINT_BYTE);
+    if (!(byte & VARUINT_HAS_NEXT))
+        return result;
+
+    byte = readBitsImpl(m_context, 8); // byte 3
+    result = result << 7 | (byte & VARUINT_BYTE);
+    if (!(byte & VARUINT_HAS_NEXT))
+        return result;
+
+    byte = readBitsImpl(m_context, 8); // byte 4
+    result = result << 7 | (byte & VARUINT_BYTE);
+    if (!(byte & VARUINT_HAS_NEXT))
+        return result;
+
+    byte = readBitsImpl(m_context, 8); // byte 5
+    result = result << 7 | (byte & VARUINT_BYTE);
+    if (!(byte & VARUINT_HAS_NEXT))
+        return result;
+
+    byte = readBitsImpl(m_context, 8); // byte 6
+    result = result << 7 | (byte & VARUINT_BYTE);
+    if (!(byte & VARUINT_HAS_NEXT))
+        return result;
+
+    byte = readBitsImpl(m_context, 8); // byte 7
+    result = result << 7 | (byte & VARUINT_BYTE);
+    if (!(byte & VARUINT_HAS_NEXT))
+        return result;
+
+    byte = readBitsImpl(m_context, 8); // byte 8
+    result = result << 7 | (byte & VARUINT_BYTE);
+    if (!(byte & VARUINT_HAS_NEXT))
+        return result;
+
+    result = result << 8 | readBitsImpl(m_context, 8); // byte 9
+    return result;
+}
+
 float BitStreamReader::readFloat16()
 {
     // Converts a 16bit unsigned integer to a 32 bit floating point number.

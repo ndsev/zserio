@@ -10,7 +10,7 @@ import zserio.runtime.io.BitStreamReader;
 import zserio.runtime.io.BitStreamWriter;
 
 /**
- * Implements Zserio zserio varuint64 arrays.
+ * Implements Zserio varuint64 arrays.
  *
  * Zserio varuint64 arrays are mapped to Java long[] type.
  * <p>

@@ -166,6 +166,70 @@ TEST(BitSizeOfCalculatorTest, GetBitSizeOfVarUInt64)
     ASSERT_THROW(getBitSizeOfVarUInt64(outOfRangeValue), CppRuntimeException);
 }
 
+TEST(BitSizeOfCalculatorTest, GetBitSizeOfVarInt)
+{
+    EXPECT_EQ(8, getBitSizeOfVarInt(INT64_C(0)));
+    EXPECT_EQ(8, getBitSizeOfVarInt(-(INT64_C(1) << 6) + 1));
+    EXPECT_EQ(8, getBitSizeOfVarInt((INT64_C(1) << 6) - 1));
+    EXPECT_EQ(16, getBitSizeOfVarInt(-(INT64_C(1) << 6)));
+    EXPECT_EQ(16, getBitSizeOfVarInt((INT64_C(1) << 6)));
+    EXPECT_EQ(16, getBitSizeOfVarInt(-(INT64_C(1) << 13) + 1));
+    EXPECT_EQ(16, getBitSizeOfVarInt((INT64_C(1) << 13) - 1));
+    EXPECT_EQ(24, getBitSizeOfVarInt(-(INT64_C(1) << 13)));
+    EXPECT_EQ(24, getBitSizeOfVarInt((INT64_C(1) << 13)));
+    EXPECT_EQ(24, getBitSizeOfVarInt(-(INT64_C(1) << 20) + 1));
+    EXPECT_EQ(24, getBitSizeOfVarInt((INT64_C(1) << 20) - 1));
+    EXPECT_EQ(32, getBitSizeOfVarInt(-(INT64_C(1) << 20)));
+    EXPECT_EQ(32, getBitSizeOfVarInt((INT64_C(1) << 20)));
+    EXPECT_EQ(32, getBitSizeOfVarInt(-(INT64_C(1) << 27) + 1));
+    EXPECT_EQ(32, getBitSizeOfVarInt((INT64_C(1) << 27) - 1));
+    EXPECT_EQ(40, getBitSizeOfVarInt(-(INT64_C(1) << 27)));
+    EXPECT_EQ(40, getBitSizeOfVarInt((INT64_C(1) << 27)));
+    EXPECT_EQ(40, getBitSizeOfVarInt(-(INT64_C(1) << 34) + 1));
+    EXPECT_EQ(40, getBitSizeOfVarInt((INT64_C(1) << 34) - 1));
+    EXPECT_EQ(48, getBitSizeOfVarInt(-(INT64_C(1) << 34)));
+    EXPECT_EQ(48, getBitSizeOfVarInt((INT64_C(1) << 34)));
+    EXPECT_EQ(48, getBitSizeOfVarInt(-(INT64_C(1) << 41) + 1));
+    EXPECT_EQ(48, getBitSizeOfVarInt((INT64_C(1) << 41) - 1));
+    EXPECT_EQ(56, getBitSizeOfVarInt(-(INT64_C(1) << 41)));
+    EXPECT_EQ(56, getBitSizeOfVarInt((INT64_C(1) << 41)));
+    EXPECT_EQ(56, getBitSizeOfVarInt(-(INT64_C(1) << 48) + 1));
+    EXPECT_EQ(56, getBitSizeOfVarInt((INT64_C(1) << 48) - 1));
+    EXPECT_EQ(64, getBitSizeOfVarInt(-(INT64_C(1) << 48)));
+    EXPECT_EQ(64, getBitSizeOfVarInt((INT64_C(1) << 48)));
+    EXPECT_EQ(64, getBitSizeOfVarInt(-(INT64_C(1) << 55) + 1));
+    EXPECT_EQ(64, getBitSizeOfVarInt((INT64_C(1) << 55) - 1));
+    EXPECT_EQ(72, getBitSizeOfVarInt(-(INT64_C(1) << 55)));
+    EXPECT_EQ(72, getBitSizeOfVarInt((INT64_C(1) << 55)));
+    EXPECT_EQ(72, getBitSizeOfVarInt(INT64_MIN + 1));
+    EXPECT_EQ(72, getBitSizeOfVarInt(INT64_MAX));
+
+    // special case, INT64_MIN is stored as -0
+    EXPECT_EQ(8, getBitSizeOfVarInt(INT64_MIN));
+}
+
+TEST(BitSizeOfCalculatorTest, GetBitSizeOfVarUInt)
+{
+    EXPECT_EQ(8, getBitSizeOfVarUInt(UINT64_C(0)));
+    EXPECT_EQ(8, getBitSizeOfVarUInt((UINT64_C(1) << 7) - 1 ));
+    EXPECT_EQ(16, getBitSizeOfVarUInt((UINT64_C(1) << 7)));
+    EXPECT_EQ(16, getBitSizeOfVarUInt((UINT64_C(1) << 14) - 1 ));
+    EXPECT_EQ(24, getBitSizeOfVarUInt((UINT64_C(1) << 14)));
+    EXPECT_EQ(24, getBitSizeOfVarUInt((UINT64_C(1) << 21) - 1 ));
+    EXPECT_EQ(32, getBitSizeOfVarUInt((UINT64_C(1) << 21)));
+    EXPECT_EQ(32, getBitSizeOfVarUInt((UINT64_C(1) << 28) - 1 ));
+    EXPECT_EQ(40, getBitSizeOfVarUInt((UINT64_C(1) << 28)));
+    EXPECT_EQ(40, getBitSizeOfVarUInt((UINT64_C(1) << 35) - 1 ));
+    EXPECT_EQ(48, getBitSizeOfVarUInt((UINT64_C(1) << 35)));
+    EXPECT_EQ(48, getBitSizeOfVarUInt((UINT64_C(1) << 42) - 1 ));
+    EXPECT_EQ(56, getBitSizeOfVarUInt((UINT64_C(1) << 42)));
+    EXPECT_EQ(56, getBitSizeOfVarUInt((UINT64_C(1) << 49) - 1 ));
+    EXPECT_EQ(64, getBitSizeOfVarUInt((UINT64_C(1) << 49)));
+    EXPECT_EQ(64, getBitSizeOfVarUInt((UINT64_C(1) << 56) - 1 ));
+    EXPECT_EQ(72, getBitSizeOfVarUInt((UINT64_C(1) << 56)));
+    EXPECT_EQ(72, getBitSizeOfVarUInt(UINT64_MAX));
+}
+
 TEST(BitSizeOfCalculatorTest, GetBitSizeOfString)
 {
     EXPECT_EQ((1 + 1) * 8, getBitSizeOfString("T"));

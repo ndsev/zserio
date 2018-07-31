@@ -224,10 +224,10 @@ namespace detail
 {
 
 template <typename T>
-struct var_int_array_traits;
+struct var_int_nn_array_traits;
 
 template <>
-struct var_int_array_traits<int16_t>
+struct var_int_nn_array_traits<int16_t>
 {
     typedef int16_t type;
 
@@ -272,7 +272,7 @@ struct var_int_array_traits<int16_t>
 };
 
 template <>
-struct var_int_array_traits<int32_t>
+struct var_int_nn_array_traits<int32_t>
 {
     typedef int32_t type;
 
@@ -317,7 +317,7 @@ struct var_int_array_traits<int32_t>
 };
 
 template <>
-struct var_int_array_traits<int64_t>
+struct var_int_nn_array_traits<int64_t>
 {
     typedef int64_t type;
 
@@ -362,7 +362,7 @@ struct var_int_array_traits<int64_t>
 };
 
 template <>
-struct var_int_array_traits<uint16_t>
+struct var_int_nn_array_traits<uint16_t>
 {
     typedef uint16_t type;
 
@@ -407,7 +407,7 @@ struct var_int_array_traits<uint16_t>
 };
 
 template <>
-struct var_int_array_traits<uint32_t>
+struct var_int_nn_array_traits<uint32_t>
 {
     typedef uint32_t type;
 
@@ -452,7 +452,7 @@ struct var_int_array_traits<uint32_t>
 };
 
 template <>
-struct var_int_array_traits<uint64_t>
+struct var_int_nn_array_traits<uint64_t>
 {
     typedef uint64_t type;
 
@@ -480,6 +480,94 @@ struct var_int_array_traits<uint64_t>
     static void write(BitStreamWriter& out, type value, uint8_t)
     {
         out.writeVarUInt64(value);
+    }
+
+#ifdef ZSERIO_RUNTIME_INCLUDE_INSPECTOR
+    template <typename BLOB_TREE_HANDLER>
+    static void write(BitStreamWriter& out, BLOB_TREE_HANDLER blobTreeHandler, type value, uint8_t numBits)
+    {
+        BlobInspectorNode& elementNode = blobTreeHandler.createElementNode(out);
+        write(out, value, numBits);
+        blobTreeHandler.fillElementNode(elementNode, out, value);
+    }
+#endif // ZSERIO_RUNTIME_INCLUDE_INSPECTOR
+
+    static const bool IS_BITSIZEOF_CONSTANT = false;
+    static const size_t BIT_SIZE = 0;
+};
+
+struct var_int_array_traits
+{
+    typedef int64_t type;
+
+    static size_t bitSizeOf(size_t , type value, uint8_t) { return getBitSizeOfVarInt(value); };
+
+    static size_t initializeOffsets(size_t bitPosition, type value, uint8_t numBits)
+    {
+        return bitPosition + bitSizeOf(bitPosition, value, numBits);
+    }
+
+    template <typename ELEMENT_FACTORY>
+    static void read(type* storage, BitStreamReader& in, size_t, ELEMENT_FACTORY, uint8_t)
+    {
+        *storage = in.readVarInt();
+    }
+
+#ifdef ZSERIO_RUNTIME_INCLUDE_INSPECTOR
+    template <typename ELEMENT_FACTORY>
+    static void read(type* storage, const zserio::BlobInspectorNode& node, size_t, ELEMENT_FACTORY, uint8_t)
+    {
+        node.getValue().get(*storage);
+    }
+#endif // ZSERIO_RUNTIME_INCLUDE_INSPECTOR
+
+    static void write(BitStreamWriter& out, type value, uint8_t)
+    {
+        out.writeVarInt(value);
+    }
+
+#ifdef ZSERIO_RUNTIME_INCLUDE_INSPECTOR
+    template <typename BLOB_TREE_HANDLER>
+    static void write(BitStreamWriter& out, BLOB_TREE_HANDLER blobTreeHandler, type value, uint8_t numBits)
+    {
+        BlobInspectorNode& elementNode = blobTreeHandler.createElementNode(out);
+        write(out, value, numBits);
+        blobTreeHandler.fillElementNode(elementNode, out, value);
+    }
+#endif // ZSERIO_RUNTIME_INCLUDE_INSPECTOR
+
+    static const bool IS_BITSIZEOF_CONSTANT = false;
+    static const size_t BIT_SIZE = 0;
+};
+
+struct var_uint_array_traits
+{
+    typedef uint64_t type;
+
+    static size_t bitSizeOf(size_t , type value, uint8_t) { return getBitSizeOfVarUInt(value); };
+
+    static size_t initializeOffsets(size_t bitPosition, type value, uint8_t numBits)
+    {
+        return bitPosition + bitSizeOf(bitPosition, value, numBits);
+    }
+
+    template <typename ELEMENT_FACTORY>
+    static void read(type* storage, BitStreamReader& in, size_t, ELEMENT_FACTORY, uint8_t)
+    {
+        *storage = in.readVarUInt();
+    }
+
+#ifdef ZSERIO_RUNTIME_INCLUDE_INSPECTOR
+    template <typename ELEMENT_FACTORY>
+    static void read(type* storage, const zserio::BlobInspectorNode& node, size_t, ELEMENT_FACTORY, uint8_t)
+    {
+        node.getValue().get(*storage);
+    }
+#endif // ZSERIO_RUNTIME_INCLUDE_INSPECTOR
+
+    static void write(BitStreamWriter& out, type value, uint8_t)
+    {
+        out.writeVarUInt(value);
     }
 
 #ifdef ZSERIO_RUNTIME_INCLUDE_INSPECTOR
@@ -632,13 +720,16 @@ struct string_array_traits
 
 } // namespace detail
 
-typedef BasicArray<detail::var_int_array_traits<uint16_t> > VarUInt16Array;
-typedef BasicArray<detail::var_int_array_traits<uint32_t> > VarUInt32Array;
-typedef BasicArray<detail::var_int_array_traits<uint64_t> > VarUInt64Array;
+typedef BasicArray<detail::var_int_nn_array_traits<uint16_t> > VarUInt16Array;
+typedef BasicArray<detail::var_int_nn_array_traits<uint32_t> > VarUInt32Array;
+typedef BasicArray<detail::var_int_nn_array_traits<uint64_t> > VarUInt64Array;
 
-typedef BasicArray<detail::var_int_array_traits<int16_t> >  VarInt16Array;
-typedef BasicArray<detail::var_int_array_traits<int32_t> >  VarInt32Array;
-typedef BasicArray<detail::var_int_array_traits<int64_t> >  VarInt64Array;
+typedef BasicArray<detail::var_int_nn_array_traits<int16_t> >  VarInt16Array;
+typedef BasicArray<detail::var_int_nn_array_traits<int32_t> >  VarInt32Array;
+typedef BasicArray<detail::var_int_nn_array_traits<int64_t> >  VarInt64Array;
+
+typedef BasicArray<detail::var_int_array_traits>            VarIntArray;
+typedef BasicArray<detail::var_uint_array_traits>           VarUIntArray;
 
 typedef BasicArray<detail::float_array_traits>              FloatArray;
 typedef BasicArray<detail::bool_array_traits>               BoolArray;

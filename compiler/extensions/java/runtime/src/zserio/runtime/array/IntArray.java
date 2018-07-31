@@ -8,7 +8,7 @@ import zserio.runtime.io.BitStreamReader;
 import zserio.runtime.io.BitStreamWriter;
 
 /**
- * Implements Zserio zserio int32 and int:17...int:32 arrays.
+ * Implements Zserio int32 and int:17...int:32 arrays.
  *
  * Zserio int32 and int:17...int:32 arrays are mapped to Java int[] type.
  */

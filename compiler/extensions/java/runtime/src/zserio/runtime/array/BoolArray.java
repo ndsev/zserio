@@ -11,7 +11,7 @@ import zserio.runtime.io.BitStreamReader;
 import zserio.runtime.io.BitStreamWriter;
 
 /**
- * Implements Zserio zserio bool array.
+ * Implements Zserio bool array.
  *
  * Zserio bool array is mapped to Java boolean[] type.
  */

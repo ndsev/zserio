@@ -8,7 +8,7 @@ import zserio.runtime.io.BitStreamReader;
 import zserio.runtime.io.BitStreamWriter;
 
 /**
- * Implements Zserio zserio int8 and int:1...int:8 arrays.
+ * Implements Zserio int8 and int:1...int:8 arrays.
  *
  * Zserio int8 and int:1...int:8 arrays are mapped to Java byte[] type.
  */

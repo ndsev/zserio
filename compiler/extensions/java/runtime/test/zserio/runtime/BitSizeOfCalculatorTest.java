@@ -2,6 +2,8 @@ package zserio.runtime;
 
 import static org.junit.Assert.assertEquals;
 
+import java.math.BigInteger;
+
 import org.junit.Test;
 
 public class BitSizeOfCalculatorTest
@@ -46,7 +48,8 @@ public class BitSizeOfCalculatorTest
         assertEquals(40, BitSizeOfCalculator.getBitSizeOfVarInt64(1L << 27));
         assertEquals(48, BitSizeOfCalculator.getBitSizeOfVarInt64(1L << 34));
         assertEquals(56, BitSizeOfCalculator.getBitSizeOfVarInt64(1L << 41));
-        assertEquals(64, BitSizeOfCalculator.getBitSizeOfVarInt64(1L << 47));
+        assertEquals(56, BitSizeOfCalculator.getBitSizeOfVarInt64((1L << 48) - 1));
+        assertEquals(64, BitSizeOfCalculator.getBitSizeOfVarInt64(1L << 48));
     }
 
     @Test(expected=ZserioError.class)
@@ -100,7 +103,95 @@ public class BitSizeOfCalculatorTest
         assertEquals(40, BitSizeOfCalculator.getBitSizeOfVarUInt64(1L << 28));
         assertEquals(48, BitSizeOfCalculator.getBitSizeOfVarUInt64(1L << 35));
         assertEquals(56, BitSizeOfCalculator.getBitSizeOfVarUInt64(1L << 42));
-        assertEquals(64, BitSizeOfCalculator.getBitSizeOfVarUInt64(1L << 48));
+        assertEquals(56, BitSizeOfCalculator.getBitSizeOfVarUInt64((1L << 49) - 1));
+        assertEquals(64, BitSizeOfCalculator.getBitSizeOfVarUInt64(1L << 49));
+    }
+
+    @Test
+    public void getBitSizeOfVarInt()
+    {
+        assertEquals(8, BitSizeOfCalculator.getBitSizeOfVarInt(0));
+        assertEquals(8, BitSizeOfCalculator.getBitSizeOfVarInt(-(1L << 6) + 1));
+        assertEquals(8, BitSizeOfCalculator.getBitSizeOfVarInt((1L << 6) - 1));
+        assertEquals(16, BitSizeOfCalculator.getBitSizeOfVarInt(-(1L << 6)));
+        assertEquals(16, BitSizeOfCalculator.getBitSizeOfVarInt((1L << 6)));
+        assertEquals(16, BitSizeOfCalculator.getBitSizeOfVarInt(-(1L << 13) + 1));
+        assertEquals(16, BitSizeOfCalculator.getBitSizeOfVarInt((1L << 13) - 1));
+        assertEquals(24, BitSizeOfCalculator.getBitSizeOfVarInt(-(1L << 13)));
+        assertEquals(24, BitSizeOfCalculator.getBitSizeOfVarInt((1L << 13)));
+        assertEquals(24, BitSizeOfCalculator.getBitSizeOfVarInt(-(1L << 20) + 1));
+        assertEquals(24, BitSizeOfCalculator.getBitSizeOfVarInt((1L << 20) - 1));
+        assertEquals(32, BitSizeOfCalculator.getBitSizeOfVarInt(-(1L << 20)));
+        assertEquals(32, BitSizeOfCalculator.getBitSizeOfVarInt((1L << 20)));
+        assertEquals(32, BitSizeOfCalculator.getBitSizeOfVarInt(-(1L << 27) + 1));
+        assertEquals(32, BitSizeOfCalculator.getBitSizeOfVarInt((1L << 27) - 1));
+        assertEquals(40, BitSizeOfCalculator.getBitSizeOfVarInt(-(1L << 27)));
+        assertEquals(40, BitSizeOfCalculator.getBitSizeOfVarInt((1L << 27)));
+        assertEquals(40, BitSizeOfCalculator.getBitSizeOfVarInt(-(1L << 34) + 1));
+        assertEquals(40, BitSizeOfCalculator.getBitSizeOfVarInt((1L << 34) - 1));
+        assertEquals(48, BitSizeOfCalculator.getBitSizeOfVarInt(-(1L << 34)));
+        assertEquals(48, BitSizeOfCalculator.getBitSizeOfVarInt((1L << 34)));
+        assertEquals(48, BitSizeOfCalculator.getBitSizeOfVarInt(-(1L << 41) + 1));
+        assertEquals(48, BitSizeOfCalculator.getBitSizeOfVarInt((1L << 41) - 1));
+        assertEquals(56, BitSizeOfCalculator.getBitSizeOfVarInt(-(1L << 41)));
+        assertEquals(56, BitSizeOfCalculator.getBitSizeOfVarInt((1L << 41)));
+        assertEquals(56, BitSizeOfCalculator.getBitSizeOfVarInt(-(1L << 48) + 1));
+        assertEquals(56, BitSizeOfCalculator.getBitSizeOfVarInt((1L << 48) - 1));
+        assertEquals(64, BitSizeOfCalculator.getBitSizeOfVarInt(-(1L << 48)));
+        assertEquals(64, BitSizeOfCalculator.getBitSizeOfVarInt((1L << 48)));
+        assertEquals(64, BitSizeOfCalculator.getBitSizeOfVarInt(-(1L << 55) + 1));
+        assertEquals(64, BitSizeOfCalculator.getBitSizeOfVarInt((1L << 55) - 1));
+        assertEquals(72, BitSizeOfCalculator.getBitSizeOfVarInt(-(1L << 55)));
+        assertEquals(72, BitSizeOfCalculator.getBitSizeOfVarInt((1L << 55)));
+        assertEquals(72, BitSizeOfCalculator.getBitSizeOfVarInt(Long.MIN_VALUE + 1));
+        assertEquals(72, BitSizeOfCalculator.getBitSizeOfVarInt(Long.MAX_VALUE - 1));
+
+        // special case, Long.MIN_VALUE is stored as -0
+        assertEquals(8, BitSizeOfCalculator.getBitSizeOfVarInt(Long.MIN_VALUE));
+    }
+
+    @Test
+    public void getBitSizeOfVarUInt()
+    {
+        assertEquals(8, BitSizeOfCalculator.getBitSizeOfVarUInt(BigInteger.ZERO));
+        assertEquals(8, BitSizeOfCalculator.getBitSizeOfVarUInt(
+                BigInteger.ONE.shiftLeft(7).subtract(BigInteger.ONE)));
+        assertEquals(16, BitSizeOfCalculator.getBitSizeOfVarUInt(BigInteger.ONE.shiftLeft(7)));
+        assertEquals(16, BitSizeOfCalculator.getBitSizeOfVarUInt(
+                BigInteger.ONE.shiftLeft(14).subtract(BigInteger.ONE)));
+        assertEquals(24, BitSizeOfCalculator.getBitSizeOfVarUInt(BigInteger.ONE.shiftLeft(14)));
+        assertEquals(24, BitSizeOfCalculator.getBitSizeOfVarUInt(
+                BigInteger.ONE.shiftLeft(21).subtract(BigInteger.ONE)));
+        assertEquals(32, BitSizeOfCalculator.getBitSizeOfVarUInt(BigInteger.ONE.shiftLeft(21)));
+        assertEquals(32, BitSizeOfCalculator.getBitSizeOfVarUInt(
+                BigInteger.ONE.shiftLeft(28).subtract(BigInteger.ONE)));
+        assertEquals(40, BitSizeOfCalculator.getBitSizeOfVarUInt(BigInteger.ONE.shiftLeft(28)));
+        assertEquals(40, BitSizeOfCalculator.getBitSizeOfVarUInt(
+                BigInteger.ONE.shiftLeft(35).subtract(BigInteger.ONE)));
+        assertEquals(48, BitSizeOfCalculator.getBitSizeOfVarUInt(BigInteger.ONE.shiftLeft(35)));
+        assertEquals(48, BitSizeOfCalculator.getBitSizeOfVarUInt(
+                BigInteger.ONE.shiftLeft(42).subtract(BigInteger.ONE)));
+        assertEquals(56, BitSizeOfCalculator.getBitSizeOfVarUInt(BigInteger.ONE.shiftLeft(42)));
+        assertEquals(56, BitSizeOfCalculator.getBitSizeOfVarUInt(
+                BigInteger.ONE.shiftLeft(49).subtract(BigInteger.ONE)));
+        assertEquals(64, BitSizeOfCalculator.getBitSizeOfVarUInt(BigInteger.ONE.shiftLeft(49)));
+        assertEquals(64, BitSizeOfCalculator.getBitSizeOfVarUInt(
+                BigInteger.ONE.shiftLeft(56).subtract(BigInteger.ONE)));
+        assertEquals(72, BitSizeOfCalculator.getBitSizeOfVarUInt(BigInteger.ONE.shiftLeft(56)));
+        assertEquals(72, BitSizeOfCalculator.getBitSizeOfVarUInt(
+                BigInteger.ONE.shiftLeft(64).subtract(BigInteger.ONE)));
+    }
+
+    @Test(expected = ZserioError.class)
+    public void getBitSizeOfVarUIntNegativeThrows()
+    {
+        BitSizeOfCalculator.getBitSizeOfVarUInt(BigInteger.ONE.negate());
+    }
+
+    @Test(expected = ZserioError.class)
+    public void getBitSizeOfVarUIntTooBigThrows()
+    {
+        BitSizeOfCalculator.getBitSizeOfVarUInt(BigInteger.ONE.shiftLeft(64));
     }
 
     @Test(expected=ZserioError.class)

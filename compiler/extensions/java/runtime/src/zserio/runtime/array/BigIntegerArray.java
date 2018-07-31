@@ -12,7 +12,7 @@ import zserio.runtime.io.BitStreamReader;
 import zserio.runtime.io.BitStreamWriter;
 
 /**
- * Implements Zserio zserio uint64 array.
+ * Implements Zserio uint64 array.
  *
  * Zserio uint64 array is mapped to Java BigInteger[] type because uint64 type is not supported directly by Java.
  */

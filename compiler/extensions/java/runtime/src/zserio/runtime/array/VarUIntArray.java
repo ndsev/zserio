@@ -1,6 +1,7 @@
 package zserio.runtime.array;
 
 import java.io.IOException;
+import java.math.BigInteger;
 import java.util.Arrays;
 import java.util.List;
 
@@ -8,28 +9,26 @@ import zserio.runtime.BitPositionUtil;
 import zserio.runtime.BitSizeOfCalculator;
 import zserio.runtime.ZserioError;
 import zserio.runtime.Mapping;
-import zserio.runtime.Util;
 import zserio.runtime.io.BitStreamReader;
 import zserio.runtime.io.BitStreamWriter;
 
 /**
- * Implements Zserio string arrays.
+ * Implements Zserio varuint arrays.
  *
- * Zserio string arrays are mapped to Java String[] type.
+ * Zserio varuint arrays are mapped to Java BigInteger[] type.
  */
-public class StringArray extends ArrayBase<String>
+public class VarUIntArray extends NumericArrayBase<BigInteger>
 {
     /**
      * Constructs array from bit stream.
      *
-     * @param reader  Bit stream reader to construct from.
-     * @param length  Number of elements to read from given bit stream or IMPLICIT_LENGTH for implicit-length
-     *                array or AUTO_LENGTH for auto length array.
+     * @param reader Bit stream reader to construct from.
+     * @param length Number of elements to read from given bit stream. "-1" specifies implicit-length array.
      *
      * @throws IOException     Failure during bit stream manipulation.
-     * @throws ZserioError Cannot occured because indexed offsets are not used.
+     * @throws ZserioError     Cannot occur because indexed offsets are not used.
      */
-    public StringArray(BitStreamReader reader, int length) throws IOException
+    public VarUIntArray(BitStreamReader reader, int length) throws IOException, ZserioError
     {
         this(reader, length, null);
     }
@@ -38,14 +37,14 @@ public class StringArray extends ArrayBase<String>
      * Constructs array from bit stream applying offset checking.
      *
      * @param reader  Bit stream reader to construct from.
-     * @param length  Number of elements to read from given bit stream or IMPLICIT_LENGTH for implicit-length
-     *                array or AUTO_LENGTH for auto length array.
+     * @param length  Number of elements to read from given bit stream. "-1" specifies implicit-length array.
      * @param checker Specifies offset checker for indexed offsets.
      *
      * @throws IOException     Failure during bit stream manipulation.
-     * @throws ZserioError Failure during offset checking.
+     * @throws ZserioError     Failure during offset checking.
      */
-    public StringArray(BitStreamReader reader, int length, OffsetChecker checker) throws IOException
+    public VarUIntArray(BitStreamReader reader, int length, OffsetChecker checker)
+            throws IOException, ZserioError
     {
         readImpl(reader, length, 0, checker);
     }
@@ -57,22 +56,22 @@ public class StringArray extends ArrayBase<String>
      *
      * @param length Number of elements for created object.
      */
-    public StringArray(int length)
+    public VarUIntArray(int length)
     {
-        data = new String[length];
+        data = new BigInteger[length];
     }
 
     /**
-     * Constructs array from String array.
+     * Constructs array from BigInteger array.
      *
-     * @param data   String array to construct from.
+     * @param data   BigInteger array to construct from.
      * @param offset Index to array <code>data</code> where the first element for construction is located.
      * @param length Number of elements in array <code>data</code> to use for construction.
      */
-    public StringArray(String[] data, int offset, int length)
+    public VarUIntArray(BigInteger[] data, int offset, int length)
     {
         if (offset + length > data.length)
-            throw new ArrayIndexOutOfBoundsException("StringArrayBase: Requested array sequence ends beyond " +
+            throw new ArrayIndexOutOfBoundsException("VarUIntArray: Requested array sequence ends beyond " +
                     "the end of the given array. Requested offset is " + offset + ", length is " + length +
                     "but array length is " + data.length + ".");
 
@@ -86,7 +85,7 @@ public class StringArray extends ArrayBase<String>
      *
      * @return Element at the given position.
      */
-    public String elementAt(int i)
+    public BigInteger elementAt(int i)
     {
         return data[i];
     }
@@ -97,25 +96,26 @@ public class StringArray extends ArrayBase<String>
      * @param value Element value to set.
      * @param i     Index of element to set.
      */
-    public void setElementAt(String value, int i)
+    public void setElementAt(BigInteger value, int i)
     {
         data[i] = value;
     }
 
     @Override
-    public Array<String> map(Mapping<String> mapping)
+    public Array<BigInteger> map(Mapping<BigInteger> mapping)
     {
-        StringArray result = new StringArray(data.length);
+        final VarUIntArray result = new VarUIntArray(data.length);
         for (int i = 0; i < data.length; i++)
+        {
             result.setElementAt(mapping.map(elementAt(i)), i);
-
+        }
         return result;
     }
 
     @Override
-    public Array<String> subRange(int offset, int length)
+    public Array<BigInteger> subRange(int offset, int length)
     {
-        return new StringArray(data, offset, length);
+        return new VarUIntArray(data, offset, length);
     }
 
     @Override
@@ -125,37 +125,11 @@ public class StringArray extends ArrayBase<String>
     }
 
     @Override
-    public int hashCode()
-    {
-        int result = Util.HASH_SEED;
-
-        for (String value : data)
-        {
-            result = result * Util.HASH_PRIME_NUMBER + value.hashCode();
-        }
-
-        return result;
-    }
-
-    @Override
     public boolean equals(Object obj)
     {
-        if (obj instanceof StringArray)
+        if (obj instanceof VarUIntArray)
         {
-            final StringArray that = (StringArray)obj;
-            if (that.data.length != data.length)
-            {
-                return false;
-            }
-
-            for (int i = 0; i < data.length; i++)
-            {
-                if (!this.elementAt(i).equals(that.elementAt(i)))
-                {
-                    return false;
-                }
-            }
-            return true;
+            return super.equals(obj);
         }
         return false;
     }
@@ -163,12 +137,10 @@ public class StringArray extends ArrayBase<String>
     /**
      * Writes array to bit stream.
      *
-     * This method can be called only for elements which implement InitializeOffsetsWriter interface.
-     *
      * @param writer Bit stream where to write.
      *
      * @throws IOException     Failure during bit stream manipulation.
-     * @throws ZserioError Calling on object with writing interface
+     * @throws ZserioError Cannot occurred because indexed offsets are not used.
      */
     public void write(BitStreamWriter writer) throws IOException, ZserioError
     {
@@ -178,12 +150,10 @@ public class StringArray extends ArrayBase<String>
     /**
      * Writes auto length array to bit stream.
      *
-     * This method can be called only for elements which implement InitializeOffsetsWriter interface.
-     *
-     * @param writer Bit stream where to write.
+     * @param writer  Bit stream where to write.
      *
      * @throws IOException     Failure during bit stream manipulation.
-     * @throws ZserioError Calling on object with writing interface
+     * @throws ZserioError Cannot occurred because indexed offsets are not used.
      */
     public void writeAuto(BitStreamWriter writer) throws IOException, ZserioError
     {
@@ -191,15 +161,13 @@ public class StringArray extends ArrayBase<String>
     }
 
     /**
-     * Writes array to bit stream.
-     *
-     * This method can be called only for elements which implement InitializeOffsetsWriter interface.
+     * Writes aligned auto length array to bit stream applying offset checking.
      *
      * @param writer  Bit stream where to write.
      * @param checker Offset checker to use.
      *
      * @throws IOException     Failure during bit stream manipulation.
-     * @throws ZserioError Calling on object with writing interface
+     * @throws ZserioError Failure during offset checking.
      */
     public void writeAlignedAuto(BitStreamWriter writer, OffsetChecker checker)
             throws IOException, ZserioError
@@ -209,22 +177,20 @@ public class StringArray extends ArrayBase<String>
     }
 
     /**
-     * Writes array to bit stream applying offset checking.
-     *
-     * This method can be called only for elements which implement InitializeOffsetsWriter interface.
+     * Writes aligned array to bit stream applying offset checking.
      *
      * @param writer  Bit stream where to write.
-     * @param checker Offset checker to use.
+     * @param checker offset checker to use.
      *
      * @throws IOException     Failure during bit stream manipulation.
-     * @throws ZserioError Failure during offset checking or calling on object with writing interface.
+     * @throws ZserioError Failure during offset checking.
      */
     public void writeAligned(BitStreamWriter writer, OffsetChecker checker) throws IOException, ZserioError
     {
         for (int index = 0; index < data.length; index++)
         {
             alignAndCheckOffset(index, writer, checker);
-            writer.writeString(data[index]);
+            writer.writeVarUInt(data[index]);
         }
     }
 
@@ -238,8 +204,8 @@ public class StringArray extends ArrayBase<String>
     public int bitSizeOf(long bitPosition)
     {
         long endBitPosition = bitPosition;
-        for (String value : data)
-            endBitPosition += BitSizeOfCalculator.getBitSizeOfString(value);
+        for (BigInteger value : data)
+            endBitPosition += BitSizeOfCalculator.getBitSizeOfVarUInt(value);
 
         return (int)(endBitPosition - bitPosition);
     }
@@ -253,7 +219,7 @@ public class StringArray extends ArrayBase<String>
      */
     public int bitSizeOfAuto(long bitPosition)
     {
-        return BitSizeOfCalculator.getBitSizeOfVarUInt64(length()) + bitSizeOf(bitPosition);
+        return BitSizeOfCalculator.getBitSizeOfVarUInt64(data.length) + bitSizeOf(bitPosition);
     }
 
     /**
@@ -265,11 +231,11 @@ public class StringArray extends ArrayBase<String>
      */
     public int bitSizeOfAlignedAuto(long bitPosition)
     {
-        return BitSizeOfCalculator.getBitSizeOfVarUInt64(length()) + bitSizeOfAligned(bitPosition);
+        return bitSizeOfAuto(bitPosition);
     }
 
     /**
-     * Returns length of array stored in bit stream in bits.
+     * Returns length of aligned array stored in bit stream in bits.
      *
      * @param bitPosition Current bit stream position.
      *
@@ -336,29 +302,28 @@ public class StringArray extends ArrayBase<String>
         {
             currentBitPosition = BitPositionUtil.alignTo(Byte.SIZE, currentBitPosition);
             setter.setOffset(index, BitPositionUtil.bitsToBytes(currentBitPosition));
-            currentBitPosition += BitSizeOfCalculator.getBitSizeOfString(data[index]);
+            currentBitPosition += BitSizeOfCalculator.getBitSizeOfVarUInt(data[index]);
         }
 
         return currentBitPosition;
     }
 
     @Override
-    protected String boxedElementAt(int index)
+    protected BigInteger boxedElementAt(int index)
     {
-        return elementAt(index);
+        return data[index];
     }
 
     @Override
-    protected String readBoxedElement(BitStreamReader reader, int numBits) throws IOException
+    protected BigInteger readBoxedElement(BitStreamReader reader, int numBits) throws IOException
     {
-        return reader.readString();
+        return reader.readVarUInt();
     }
 
     @Override
-    protected void setFromList(List<String> list)
+    protected void setFromList(List<BigInteger> list)
     {
-        data = new String[list.size()];
-
+        data = new BigInteger[list.size()];
         for (int i = 0; i < data.length; ++i)
         {
             data[i] = list.get(i);
@@ -369,14 +334,14 @@ public class StringArray extends ArrayBase<String>
     protected void readN(BitStreamReader reader, int length, int numBits, OffsetChecker checker)
             throws IOException, ZserioError
     {
-        data = new String[length];
+        data = new BigInteger[length];
 
         for (int index = 0; index < length; index++)
         {
             alignAndCheckOffset(index, reader, checker);
-            data[index] = readBoxedElement(reader, numBits);
+            data[index] = reader.readVarUInt();
         }
     }
 
-    protected String[] data;
+    private BigInteger[] data;
 }

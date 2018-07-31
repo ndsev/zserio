@@ -10,7 +10,7 @@ import zserio.runtime.io.BitStreamReader;
 import zserio.runtime.io.BitStreamWriter;
 
 /**
- * Implements Zserio zserio varuint32 arrays.
+ * Implements Zserio varuint32 arrays.
  *
  * Zserio varuint32 arrays are mapped to Java int[] type.
  * <p>

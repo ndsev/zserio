@@ -8,7 +8,7 @@ import zserio.runtime.io.BitStreamReader;
 import zserio.runtime.io.BitStreamWriter;
 
 /**
- * Implements Zserio zserio bit:33...bit:63 arrays.
+ * Implements Zserio bit:33...bit:63 arrays.
  *
  * Zserio bit:33...bit:63 arrays are mapped to Java long[] type.
  */

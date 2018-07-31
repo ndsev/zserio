@@ -150,6 +150,28 @@ public interface BitStreamReader extends BitStreamConsumer, DataInput
     long readVarUInt64() throws IOException;
 
     /**
+     * Reads a signed variable integer from the bit stream.
+     *
+     * The integer takes up to 9 bytes to cover range <-2^63, 2^63-1>.
+     *
+     * @return Read unsigned VarUInt value.
+     *
+     * @throws IOException If reading failed.
+     */
+    long readVarInt() throws IOException;
+
+    /**
+     * Reads an unsigned variable integer from the bit stream.
+     *
+     * The integer takes up to 9 bytes to cover range <0, 2^64-1>.
+     *
+     * @return Read unsigned VarUInt value.
+     *
+     * @throws IOException If reading failed.
+     */
+    BigInteger readVarUInt() throws IOException;
+
+    /**
      * Reads the next numBits as signed bit value.
      *
      * @param numBits Number of bits to read.

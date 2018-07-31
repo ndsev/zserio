@@ -1,6 +1,7 @@
 package zserio.runtime;
 
 import java.io.IOException;
+import java.math.BigInteger;
 
 /**
  * The class provides common methods to calculate bit size of an variable stored in the bit stream.
@@ -104,7 +105,7 @@ public class BitSizeOfCalculator
         {
             bitSize = 48;
         }
-        else if (absoluteValue < (1L << 47))
+        else if (absoluteValue < (1L << 48))
         {
             bitSize = 56;
         }
@@ -210,13 +211,108 @@ public class BitSizeOfCalculator
         {
             bitSize = 48;
         }
-        else if (value < (1L << 48))
+        else if (value < (1L << 49))
         {
             bitSize = 56;
         }
         else
         {
             bitSize = 64;
+        }
+
+        return bitSize;
+    }
+
+    public static int getBitSizeOfVarInt(long value)
+    {
+        if (value == Long.MIN_VALUE)
+            return 8; // Long.MIN_VALUE is stored as -0
+
+        long absoluteValue = Math.abs(value);
+
+        int bitSize = 0;
+        if (absoluteValue < (1L << 6))
+        {
+            bitSize = 8;
+        }
+        else if (absoluteValue < (1L << 13))
+        {
+            bitSize = 16;
+        }
+        else if (absoluteValue < (1L << 20))
+        {
+            bitSize = 24;
+        }
+        else if (absoluteValue < (1L << 27))
+        {
+            bitSize = 32;
+        }
+        else if (absoluteValue < (1L << 34))
+        {
+            bitSize = 40;
+        }
+        else if (absoluteValue < (1L << 41))
+        {
+            bitSize = 48;
+        }
+        else if (absoluteValue < (1L << 48))
+        {
+            bitSize = 56;
+        }
+        else if (absoluteValue < (1L << 55))
+        {
+            bitSize = 64;
+        }
+        else
+        {
+            bitSize = 72;
+        }
+
+        return bitSize;
+    }
+
+    public static int getBitSizeOfVarUInt(BigInteger value) throws ZserioError
+    {
+        if (value.compareTo(BigInteger.ZERO) == -1 || value.compareTo(VARUINT_MAX) == 1)
+            throw new ZserioError("getBitSizeOfVarUInt: Value " + value + " is out of range for " +
+                    "VarUInt.");
+
+        int bitSize = 0;
+        if (value.compareTo(BigInteger.valueOf(1L << 7)) == -1)
+        {
+            bitSize = 8;
+        }
+        else if (value.compareTo(BigInteger.valueOf(1L << 14)) == -1)
+        {
+            bitSize = 16;
+        }
+        else if (value.compareTo(BigInteger.valueOf(1L << 21)) == -1)
+        {
+            bitSize = 24;
+        }
+        else if (value.compareTo(BigInteger.valueOf(1L << 28)) == -1)
+        {
+            bitSize = 32;
+        }
+        else if (value.compareTo(BigInteger.valueOf(1L << 35)) == -1)
+        {
+            bitSize = 40;
+        }
+        else if (value.compareTo(BigInteger.valueOf(1L << 42)) == -1)
+        {
+            bitSize = 48;
+        }
+        else if (value.compareTo(BigInteger.valueOf(1L << 49)) == -1)
+        {
+            bitSize = 56;
+        }
+        else if (value.compareTo(BigInteger.valueOf(1L << 56)) == -1)
+        {
+            bitSize = 64;
+        }
+        else
+        {
+            bitSize = 72;
         }
 
         return bitSize;
@@ -254,4 +350,6 @@ public class BitSizeOfCalculator
 
         return size;
     }
+
+    private static final BigInteger VARUINT_MAX = BigInteger.ONE.shiftLeft(64).subtract(BigInteger.ONE);
 }

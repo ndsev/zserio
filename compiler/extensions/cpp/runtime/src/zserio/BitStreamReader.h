@@ -51,6 +51,9 @@ public:
     uint32_t readVarUInt32();
     uint16_t readVarUInt16();
 
+    int64_t readVarInt();
+    uint64_t readVarUInt();
+
     float readFloat16();
     std::string readString();
     bool readBool();

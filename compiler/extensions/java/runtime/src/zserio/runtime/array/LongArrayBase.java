@@ -8,7 +8,7 @@ import zserio.runtime.Mapping;
 import zserio.runtime.Util;
 
 /**
- * Implements base class for Zserio zserio int64 array and for int:33...int:64 arrays and for uint32 array
+ * Implements base class for Zserio int64 array and for int:33...int:64 arrays and for uint32 array
  * and for bit:17..bit:32 arrays.
  */
 abstract class LongArrayBase extends NumericArrayBase<Long>

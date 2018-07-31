@@ -11,7 +11,7 @@ import zserio.runtime.io.BitStreamReader;
 import zserio.runtime.io.BitStreamWriter;
 
 /**
- * Implements Zserio zserio float16 array.
+ * Implements Zserio float16 array.
  *
  * Zserio float16 array is mapped to Java float type.
  */

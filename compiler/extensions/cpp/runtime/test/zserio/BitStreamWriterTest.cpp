@@ -159,6 +159,18 @@ TEST_F(BitStreamWriterTest, WriteVarUInt16)
     ASSERT_THROW(m_writer.writeVarUInt16(outOfRangeValue), CppRuntimeException);
 }
 
+TEST_F(BitStreamWriterTest, WriteVarInt)
+{
+    ASSERT_NO_THROW(m_writer.writeVarInt(INT64_MIN));
+    ASSERT_NO_THROW(m_writer.writeVarInt(INT64_MAX));
+}
+
+TEST_F(BitStreamWriterTest, WriteVarUInt)
+{
+    ASSERT_NO_THROW(m_writer.writeVarUInt(0));
+    ASSERT_NO_THROW(m_writer.writeVarUInt(UINT64_MAX));
+}
+
 TEST_F(BitStreamWriterTest, hasWriteBuffer)
 {
     ASSERT_TRUE(m_writer.hasWriteBuffer());

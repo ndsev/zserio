@@ -10,7 +10,7 @@ import zserio.runtime.io.BitStreamReader;
 import zserio.runtime.io.BitStreamWriter;
 
 /**
- * Implements Zserio zserio varint16 arrays.
+ * Implements Zserio varint16 arrays.
  *
  * Zserio varint16 arrays are mapped to Java short[] type.
  */

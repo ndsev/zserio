@@ -8,7 +8,7 @@ import zserio.runtime.Mapping;
 import zserio.runtime.Util;
 
 /**
- * Implements base class for Zserio zserio int16 array and for int:9...int:16 arrays and for uint8 array
+ * Implements base class for Zserio int16 array and for int:9...int:16 arrays and for uint8 array
  * and for bit:1..bit:8 arrays.
  */
 abstract class ShortArrayBase extends NumericArrayBase<Short>

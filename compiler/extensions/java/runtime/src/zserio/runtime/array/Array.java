@@ -5,7 +5,7 @@ import zserio.runtime.Mapping;
 /**
  * Interface for the array classes.
  *
- * Array classes are classes to which Zserio zserio arrays are mapped in Java.
+ * Array classes are classes to which Zserio arrays are mapped in Java.
  *
  * @param <E> The type of elements maintained by this array.
  */

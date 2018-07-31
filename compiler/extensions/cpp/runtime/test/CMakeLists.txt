@@ -14,9 +14,6 @@ include(gtest_utils)
 gtest_add_library("${CMAKE_CURRENT_SOURCE_DIR}/../../../../../3rdparty/cpp/googletest")
 
 set(ZSERIO_CPP_RUNTIME_TEST_SRCS
-    zserio/inspector/BlobInspectorTreeTest.cpp
-    zserio/inspector/BlobInspectorTreeUtilTest.cpp
-    zserio/inspector/BlobInspectorValueTest.cpp
     zserio/AlignedStorageTest.cpp
     zserio/AnyHolderTest.cpp
     zserio/BasicArrayTest.cpp
@@ -36,6 +33,15 @@ set(ZSERIO_CPP_RUNTIME_TEST_SRCS
     zserio/StringHolderTest.cpp
     zserio/VarUInt64UtilTest.cpp
 )
+
+if (ZSERIO_RUNTIME_INCLUDE_INSPECTOR)
+    set(ZSERIO_CPP_RUNTIME_TEST_SRCS
+        ${ZSERIO_CPP_RUNTIME_TEST_SRCS}
+        zserio/inspector/BlobInspectorTreeTest.cpp
+        zserio/inspector/BlobInspectorTreeUtilTest.cpp
+        zserio/inspector/BlobInspectorValueTest.cpp
+    )
+endif ()
 
 if (ZSERIO_RUNTIME_INCLUDE_RELATIONAL)
     set(ZSERIO_CPP_RUNTIME_TEST_SRCS

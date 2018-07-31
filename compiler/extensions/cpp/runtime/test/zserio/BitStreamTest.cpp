@@ -267,6 +267,101 @@ TEST_F(BitStreamTest, VarUInt16)
     BitStreamValuesTest(values, &BitStreamWriter::writeVarUInt16, &BitStreamReader::readVarUInt16);
 }
 
+TEST_F(BitStreamTest, VarInt)
+{
+    int64_t values[] =
+    {
+        // 1 byte
+        0,
+        -1,
+        1,
+        -(INT64_C(1) << 6) + 1,
+        (INT64_C(1) << 6) - 1,
+        // 2 bytes
+        -(INT64_C(1) << 6),
+        (INT64_C(1) << 6),
+        -(INT64_C(1) << 13) + 1,
+        (INT64_C(1) << 13) - 1,
+        // 3 bytes
+        -(INT64_C(1) << 13),
+        (INT64_C(1) << 13),
+        -(INT64_C(1) << 20) + 1,
+        (INT64_C(1) << 20) - 1,
+        // 4 bytes
+        -(INT64_C(1) << 20),
+        (INT64_C(1) << 20),
+        -(INT64_C(1) << 27) + 1,
+        (INT64_C(1) << 27) - 1,
+        // 5 bytes
+        -(INT64_C(1) << 27),
+        (INT64_C(1) << 27),
+        -(INT64_C(1) << 34) + 1,
+        (INT64_C(1) << 34) - 1,
+        // 6 bytes
+        -(INT64_C(1) << 34),
+        (INT64_C(1) << 34),
+        -(INT64_C(1) << 41) + 1,
+        (INT64_C(1) << 41) - 1,
+        // 7 bytes
+        -(INT64_C(1) << 41),
+        (INT64_C(1) << 41),
+        -(INT64_C(1) << 48) + 1,
+        (INT64_C(1) << 48) - 1,
+        // 8 bytes
+        -(INT64_C(1) << 48),
+        (INT64_C(1) << 48),
+        -(INT64_C(1) << 55) + 1,
+        (INT64_C(1) << 55) - 1,
+        // 9 bytes
+        -(INT64_C(1) << 55),
+        (INT64_C(1) << 55),
+        INT64_MIN + 1,
+        INT64_MAX,
+
+        // special case - stored as -0 (1 byte)
+        INT64_MIN,
+    };
+
+    BitStreamValuesTest(values, &BitStreamWriter::writeVarInt, &BitStreamReader::readVarInt);
+}
+
+TEST_F(BitStreamTest, VarUInt)
+{
+    uint64_t values[] =
+    {
+        // 1 byte
+        0,
+        1,
+        (INT64_C(1) << 7) - 1,
+        // 2 bytes
+        (INT64_C(1) << 7),
+        (INT64_C(1) << 14) - 1,
+        // 3 bytes
+        (INT64_C(1) << 14),
+        (INT64_C(1) << 21) - 1,
+        // 4 bytes
+        (INT64_C(1) << 21),
+        (INT64_C(1) << 28) - 1,
+        // 5 bytes
+        (INT64_C(1) << 28),
+        (INT64_C(1) << 35) - 1,
+        // 6 bytes
+        (INT64_C(1) << 35),
+        (INT64_C(1) << 42) - 1,
+        // 7 bytes
+        (INT64_C(1) << 42),
+        (INT64_C(1) << 49) - 1,
+        // 8 bytes
+        (INT64_C(1) << 49),
+        (INT64_C(1) << 56) - 1,
+        // 9 bytes
+        (INT64_C(1) << 56),
+        UINT64_MAX
+    };
+
+    BitStreamValuesTest(values, &BitStreamWriter::writeVarUInt, &BitStreamReader::readVarUInt);
+}
+
 TEST_F(BitStreamTest, Float16)
 {
     float values[] = { 2.0, -2.0, 42.5 };
