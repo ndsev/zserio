@@ -60,4 +60,7 @@ public interface Emitter
     public void endSqlDatabase(AST s);
     public void beginSqlTable(AST s);
     public void endSqlTable(AST s);
+
+    public void beginRpc(AST r);
+    public void endRpc(AST r);
 }

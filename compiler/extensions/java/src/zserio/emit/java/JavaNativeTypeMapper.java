@@ -13,6 +13,7 @@ import zserio.ast.EnumType;
 import zserio.ast.FloatType;
 import zserio.ast.FunctionType;
 import zserio.ast.IntegerType;
+import zserio.ast.RpcType;
 import zserio.ast.StructureType;
 import zserio.ast.SignedBitFieldType;
 import zserio.ast.SqlDatabaseType;
@@ -256,6 +257,12 @@ final class JavaNativeTypeMapper
         public void visitStringType(StringType type)
         {
             javaNullableType = stdStringArrayType;
+        }
+
+        @Override
+        public void visitRpcType(RpcType type) throws ZserioEmitJavaException
+        {
+            mapObjectArray(type);
         }
 
         @Override
@@ -519,6 +526,12 @@ final class JavaNativeTypeMapper
                 throw new ZserioEmitJavaException("Unexpected bit size of float (" + type.getBitSize() + ")");
 
             }
+        }
+
+        @Override
+        public void visitRpcType(RpcType type)
+        {
+            mapCompoundType(type);
         }
 
         @Override

@@ -98,6 +98,7 @@ tokens
     SQL_WITHOUT_ROWID="sql_without_rowid";
     STRING="string"<AST=zserio.ast.StringType>;
     STRING_LITERAL<AST=zserio.ast.Expression>;
+    RPC="rpc"<AST=zserio.ast.RpcType>;
     STRUCTURE="struct"<AST=zserio.ast.StructureType>;
     SUBTYPE="subtype"<AST=zserio.ast.Subtype>;
     SUM="sum"<AST=zserio.ast.Expression>;
@@ -145,6 +146,7 @@ importDeclaration
 commandDeclaration
     :   constDeclaration SEMICOLON! |
         subtypeDeclaration SEMICOLON! |
+        rpcDeclaration SEMICOLON! |
         structureDeclaration SEMICOLON! |
         choiceDeclaration SEMICOLON! |
         unionDeclaration SEMICOLON! |
@@ -165,6 +167,15 @@ constDeclaration
  */
 subtypeDeclaration
     :   SUBTYPE^ definedType ID
+    ;
+
+rpcDeclaration
+    :   RPC^ ID
+	LPAREN!
+	definedType 
+	COMMA!
+	definedType
+	RPAREN!
     ;
 
 /**

@@ -90,5 +90,10 @@ public abstract class DefaultEmitter implements Emitter
     @Override
     public void endSqlTable(AST s) {}
 
+    @Override
+    public void beginRpc(AST r) {}
+    @Override
+    public void endRpc(AST r) {}
+
     /**** end implementation of interface methods ****/
 }

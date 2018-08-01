@@ -88,6 +88,7 @@ importDeclaration
 commandDeclaration
     :   constDeclaration |
         subtypeDeclaration |
+        rpcDeclaration |
         structureDeclaration |
         choiceDeclaration |
         unionDeclaration |
@@ -117,6 +118,16 @@ subtypeDeclaration
             ((Subtype)s).setPackage(pkg);
         }
     ;
+
+rpcDeclaration
+    : #(r:RPC i:ID a:definedType b:definedType
+          {
+              pkg.setType((BaseTokenAST)i, r);
+              ((RpcType)r).setPackage(pkg);
+          }
+      )
+    ;
+
 
 /**
  * structureDeclaration.

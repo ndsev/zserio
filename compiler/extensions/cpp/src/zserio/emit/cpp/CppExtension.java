@@ -74,6 +74,7 @@ public class CppExtension implements Extension
         emitters.add(new ConstEmitter(outputDir, parameters));
         emitters.add(new SubtypeEmitter(outputDir, parameters));
         emitters.add(new EnumerationEmitter(outputDir, parameters));
+        emitters.add(new RpcEmitter(outputDir, parameters));
         emitters.add(new StructureEmitter(outputDir, parameters));
         emitters.add(new ChoiceEmitter(outputDir, parameters));
         emitters.add(new UnionEmitter(outputDir, parameters));

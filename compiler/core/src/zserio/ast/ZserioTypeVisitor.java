@@ -67,6 +67,13 @@ public interface ZserioTypeVisitor
     void visitFunctionType(FunctionType type);
 
     /**
+     * Visitor called from RpcType class.
+     *
+     * @param type RpcType instance which calls this visitor.
+     */
+    void visitRpcType(RpcType type);
+
+    /**
      * Visitor called from StructureType class.
      *
      * @param type StructureType instance which calls this visitor.

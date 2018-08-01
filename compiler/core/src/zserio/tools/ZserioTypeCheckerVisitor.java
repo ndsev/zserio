@@ -17,6 +17,7 @@ import zserio.ast.ZserioTypeVisitor;
 import zserio.ast.EnumType;
 import zserio.ast.FloatType;
 import zserio.ast.FunctionType;
+import zserio.ast.RpcType;
 import zserio.ast.StructureType;
 import zserio.ast.SignedBitFieldType;
 import zserio.ast.SqlDatabaseType;
@@ -103,6 +104,13 @@ public class ZserioTypeCheckerVisitor implements ZserioTypeVisitor
     @Override
     public void visitFunctionType(FunctionType type)
     {
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public void visitRpcType(RpcType type)
+    {
+        visitCompoundType(type);
     }
 
     /** {@inheritDoc} */

@@ -51,6 +51,7 @@ importDeclaration
 commandDeclaration
     :   constDeclaration |
         subtypeDeclaration |
+        rpcDeclaration |
         structureDeclaration |
         choiceDeclaration |
         unionDeclaration |
@@ -71,6 +72,10 @@ constDeclaration
  */
 subtypeDeclaration
     :   #(SUBTYPE definedType ID)
+    ;
+
+rpcDeclaration
+    :   #(RPC ID definedType definedType)
     ;
 
 /**

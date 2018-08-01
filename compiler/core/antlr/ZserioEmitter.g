@@ -63,6 +63,7 @@ importDeclaration
 commandDeclaration
     :   constDeclaration |
         subtypeDeclaration |
+        rpcDeclaration |
         structureDeclaration |
         choiceDeclaration |
         unionDeclaration |
@@ -90,6 +91,14 @@ subtypeDeclaration
             definedType
             ID
         )                           { em.endSubtype(s); }
+    ;
+
+rpcDeclaration
+    :   #(r: RPC { em.beginRpc(r); }
+	ID
+	definedType
+	definedType
+        ) { em.endRpc(r); }
     ;
 
 /**

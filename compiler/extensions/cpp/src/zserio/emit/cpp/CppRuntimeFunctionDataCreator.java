@@ -11,6 +11,7 @@ import zserio.ast.ZserioTypeVisitor;
 import zserio.ast.EnumType;
 import zserio.ast.FloatType;
 import zserio.ast.FunctionType;
+import zserio.ast.RpcType;
 import zserio.ast.StructureType;
 import zserio.ast.SignedBitFieldType;
 import zserio.ast.SqlDatabaseType;
@@ -132,6 +133,12 @@ public class CppRuntimeFunctionDataCreator
 
         @Override
         public void visitFunctionType(FunctionType type)
+        {
+            // do nothing
+        }
+
+        @Override
+        public void visitRpcType(RpcType type)
         {
             // do nothing
         }
