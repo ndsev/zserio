@@ -26,7 +26,7 @@ findbugs.home_dir             - Location of the findbugs tool. If not set, findb
 
     <property name="zserio_doc.zserio_root" value="${zserio_doc.base_dir}/../../.."/>
 
-    <property name="zserio_extensions.build_dir" value="${zserio_doc.zserio_root}/build"/>
+    <property name="zserio_extensions.build_dir" value="${zserio_doc.zserio_root}/build/compiler/extensions"/>
     <property name="zserio_extensions.install_dir" value="${zserio_doc.zserio_root}/distr"/>
     <property name="zserio_doc.build_dir" value="${zserio_extensions.build_dir}/doc"/>
     <property name="zserio_doc.install_dir" value="${zserio_extensions.install_dir}"/>

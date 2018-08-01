@@ -160,15 +160,15 @@ public abstract class CompoundType extends TokenAST implements ZserioType, Compa
     }
 
     /**
-     * Checks if this compound type contains itself as optional field.
+     * Checks if this compound type contains itself as an optional none array field.
      *
      * This is called from C++ emitter during mapping of optional fields.
      *
-     * @return true if this compound type contains itself as optional field.
+     * @return true if this compound type contains optional recursion.
      */
-    public boolean isRecursive()
+    public boolean containsOptionalRecursion()
     {
-        return containsField(this, this);
+        return containsOptionalRecursion;
     }
 
     /**
@@ -321,6 +321,26 @@ public abstract class CompoundType extends TokenAST implements ZserioType, Compa
     @Override
     protected void check() throws ParserException
     {
+        // check recursive fields which are not arrays
+        containsOptionalRecursion = false;
+        for (Field field : fields)
+        {
+            ZserioType fieldType = field.getFieldType();
+            if (fieldType instanceof TypeInstantiation)
+                fieldType = ((TypeInstantiation)fieldType).getReferencedType();
+            fieldType = TypeReference.resolveBaseType(fieldType);
+
+            if (fieldType == this)
+            {
+                // this field is not array and it is recursive
+                if (field.getIsOptional())
+                    containsOptionalRecursion = true;
+                else
+                    throw new ParserException(field, "Field '" + field.getName() +
+                            "' is recursive and neither optional nor array!");
+            }
+        }
+
         // add use-by compound for subtypes needed for documentation emitter
         for (Field field : fields)
         {
@@ -369,34 +389,20 @@ public abstract class CompoundType extends TokenAST implements ZserioType, Compa
         return false;
     }
 
-    private boolean containsField(CompoundType compound, ZserioType searchedField)
-    {
-        for (Field field : compound.getFields())
-        {
-            final ZserioType fieldType = TypeReference.resolveBaseType(field.getFieldReferencedType());
-            if (fieldType == searchedField)
-                return true;
-
-            if (fieldType != compound && fieldType instanceof CompoundType)
-                if (containsField((CompoundType)fieldType, searchedField))
-                    return true;
-        }
-
-        return false;
-    }
-
     private Scope   scope;
     private Package pkg;
 
     private String  name;
 
-    private final List<Field>               fields;
-    private final List<Parameter>           parameters;
-    private final List<FunctionType>        functions;
+    private final List<Field> fields;
+    private final List<Parameter> parameters;
+    private final List<FunctionType> functions;
 
-    private final SortedSet<CompoundType>   usedByCompoundList;
+    private boolean containsOptionalRecursion;
 
-    private DocCommentToken                 docComment;
+    private final SortedSet<CompoundType> usedByCompoundList;
+
+    private DocCommentToken docComment;
 
     private static final long serialVersionUID = -3176164167667658185L;
 }

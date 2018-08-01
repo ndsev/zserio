@@ -87,7 +87,7 @@ public class CppNativeTypeMapper
     }
 
     public NativeOptionalHolderType getCppOptionalHolderType(ZserioType type, boolean isOptionalField,
-            boolean isRecursive) throws ZserioEmitCppException
+            boolean useHeapOptionalHolder) throws ZserioEmitCppException
     {
         CppNativeType rawType = getCppType(type);
 
@@ -95,7 +95,7 @@ public class CppNativeTypeMapper
         if (!isOptionalField || rawType.isSimpleType())
             nativeOptionalType = new NativeInPlaceOptionalHolderType(ZSERIO_RUNTIME_NAMESPACE_PATH,
                     ZSERIO_RUNTIME_INCLUDE_PREFIX, rawType);
-        else if (isRecursive)
+        else if (useHeapOptionalHolder)
             nativeOptionalType = new NativeHeapOptionalHolderType(ZSERIO_RUNTIME_NAMESPACE_PATH,
                     ZSERIO_RUNTIME_INCLUDE_PREFIX, rawType);
         else

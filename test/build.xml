@@ -1,19 +1,19 @@
 <!--
 
-Ant build.xml for Zserio Tool test examples.
+Ant build.xml for Zserio Java extension tests. 
 
 The following properties can be set:
 
-zserio.release_dir      - Directory where to find Zserio release to test. Default is "../distr".
-test.build_dir          - Directory where to put generated files. Default is "../build/test/java".
-test.filter             - Test filter (supports glob patterns). Default is "**".
-findbugs.home_dir       - Location of the findbugs tool. If not set, findbugs is not run.
+zserio.release_dir         - Directory where to find Zserio release to test. Default is "../distr".
+zserio_java_test.build_dir - Directory where to put generated files. Default is "../build/test/java".
+zserio_java_test.filter    - Test filter (supports glob patterns). Default is "**".
+findbugs.home_dir          - Location of the findbugs tool. If not set, findbugs is not run.
 
 -->
-<project name="test" basedir="." default="run">
-    <dirname property="test.base_dir" file="${ant.file.test}"/>
+<project name="zserio_java_test" basedir="." default="run">
+    <dirname property="zserio_java_test.base_dir" file="${ant.file.zserio_java_test}"/>
 
-    <property name="zserio.root_dir" location="${test.base_dir}/.."/>
+    <property name="zserio.root_dir" location="${zserio_java_test.base_dir}/.."/>
     <property name="zserio.release_dir" location="${zserio.root_dir}/distr"/>
     <property name="zserio.jar_dir" location="${zserio.release_dir}/zserio_libs"/>
 
@@ -24,8 +24,8 @@ findbugs.home_dir       - Location of the findbugs tool. If not set, findbugs is
     <property name="3rdparty.junit.jar_file" location="${3rdparty.jar_dir}/junit-4.10.jar"/>
     <property name="3rdparty.sqlitejdbc.jar_file" location="${3rdparty.jar_dir}/sqlite-jdbc-3.23.1.jar"/>
 
-    <property name="test.build_dir" location="${zserio.root_dir}/build/test/java"/>
-    <property name="test.filter" value="**"/>
+    <property name="zserio_java_test.build_dir" location="${zserio.root_dir}/build/test/java"/>
+    <property name="zserio_java_test.filter" value="**"/>
 
     <condition property="findbugs.classpath" value="${findbugs.home_dir}/lib/findbugs-ant.jar">
         <isset property="findbugs.home_dir"/>
@@ -35,10 +35,11 @@ findbugs.home_dir       - Location of the findbugs tool. If not set, findbugs is
     </condition>
 
     <!-- Test common utilities needed for some tests. -->
-    <include file="${test.base_dir}/utils/java/build.xml"/>
+    <include file="${zserio_java_test.base_dir}/utils/java/build.xml"/>
 
     <!-- Zserio ant task -->
-    <taskdef name="zserio" classpath="${zserio.release_dir}/ant_task/zserio_ant.jar" classname="zserio.ant.ZserioTask"/>
+    <taskdef name="zserio" classpath="${zserio.release_dir}/ant_task/zserio_ant.jar"
+    	classname="zserio.ant.ZserioTask"/>
 
     <!-- targets commons -->
     <macrodef name="testProperties">
@@ -47,7 +48,7 @@ findbugs.home_dir       - Location of the findbugs tool. If not set, findbugs is
         <sequential>
             <dirname property="@{testName}.base_dir" file="${ant.file.@{testName}}"/>
 
-            <property name="@{testName}.build_dir" location="${test.build_dir}/@{testPath}"/>
+            <property name="@{testName}.build_dir" location="${zserio_java_test.build_dir}/@{testPath}"/>
             <property name="@{testName}.zs.in_dir" location="${@{testName}.base_dir}/zs"/>
             <property name="@{testName}.zs.out_dir" location="${@{testName}.build_dir}/gen"/>
             <property name="@{testName}.zs.log_file" location="${@{testName}.build_dir}/zserio_log.txt"/>
@@ -193,14 +194,14 @@ findbugs.home_dir       - Location of the findbugs tool. If not set, findbugs is
 
     <target name="run" depends="test_utils.findbugs">
         <subant inheritall="true">
-            <fileset dir="." includes="${test.filter}/**/build.xml" excludes="build.xml,utils/**"/>
+            <fileset dir="." includes="${zserio_java_test.filter}/**/build.xml" excludes="build.xml,utils/**"/>
             <target name="run"/>
         </subant>
     </target>
 
     <target name="clean" depends="test_utils.clean">
         <subant inheritall="true">
-            <fileset dir="." includes="${test.filter}/**/build.xml" excludes="build.xml,utils/**"/>
+            <fileset dir="." includes="${zserio_java_test.filter}/**/build.xml" excludes="build.xml,utils/**"/>
             <target name="clean"/>
         </subant>
     </target>

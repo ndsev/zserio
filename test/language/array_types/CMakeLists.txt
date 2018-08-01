@@ -7,6 +7,9 @@ set(ZSERIO_GENERATED_SOURCES
     ${ZSERIO_GEN_DIR}/array_types/arrays_mapping/TestStructure.cpp
     ${ZSERIO_GEN_DIR}/array_types/arrays_mapping/TestStructure.h
 
+    ${ZSERIO_GEN_DIR}/array_types/auto_array_recursion/AutoArrayRecursion.cpp
+    ${ZSERIO_GEN_DIR}/array_types/auto_array_recursion/AutoArrayRecursion.h
+
     ${ZSERIO_GEN_DIR}/array_types/auto_array/AutoArray.cpp
     ${ZSERIO_GEN_DIR}/array_types/auto_array/AutoArray.h
 
@@ -33,6 +36,7 @@ zserio_add_library(TARGET array_types_zs
 
 add_test_sources(
     cpp/ArraysMappingTest.cpp
+    cpp/AutoArrayRecursionTest.cpp
     cpp/AutoArrayTest.cpp
     cpp/FixedArrayTest.cpp
     cpp/ImplicitArrayTest.cpp

@@ -9,3 +9,6 @@
 
 # Eclipse project files
 .project
+
+# temp
+/temp/

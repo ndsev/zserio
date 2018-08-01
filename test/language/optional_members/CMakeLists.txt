@@ -9,6 +9,11 @@ set(ZSERIO_GENERATED_SOURCES
     ${ZSERIO_GEN_DIR}/optional_members/optional_expression/BlackColor.h
     ${ZSERIO_GEN_DIR}/optional_members/optional_expression/Container.cpp
     ${ZSERIO_GEN_DIR}/optional_members/optional_expression/Container.h
+
+    ${ZSERIO_GEN_DIR}/optional_members/optional_recursion/Employee.cpp
+    ${ZSERIO_GEN_DIR}/optional_members/optional_recursion/Employee.h
+    ${ZSERIO_GEN_DIR}/optional_members/optional_recursion/Title.cpp
+    ${ZSERIO_GEN_DIR}/optional_members/optional_recursion/Title.h
 )
 
 zserio_add_library(TARGET optional_members_zs
@@ -23,6 +28,7 @@ zserio_add_library(TARGET optional_members_zs
 add_test_sources(
     cpp/AutoOptionalTest.cpp
     cpp/OptionalMembersTest.cpp
+    cpp/OptionalRecursionTest.cpp
 )
 
 add_test_dependencies(optional_members_zs)

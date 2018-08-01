@@ -612,10 +612,10 @@ public class CompoundFieldTemplateData
         if (!isOptionalField && !isCompoundField)
             return null;
 
-        final boolean isRecursive = (isCompoundField) ?
-                ((CompoundType)fieldInstantiatedType).isRecursive() : false;
+        final boolean useHeapOptionalHolder = (isCompoundField) ?
+                ((CompoundType)fieldInstantiatedType).containsOptionalRecursion() : false;
         final NativeOptionalHolderType nativeOptionalHolderType =
-                cppNativeTypeMapper.getCppOptionalHolderType(fieldType, isOptionalField, isRecursive);
+                cppNativeTypeMapper.getCppOptionalHolderType(fieldType, isOptionalField, useHeapOptionalHolder);
         includeCollector.addHeaderIncludesForType(nativeOptionalHolderType);
 
         return new OptionalHolder(nativeOptionalHolderType);

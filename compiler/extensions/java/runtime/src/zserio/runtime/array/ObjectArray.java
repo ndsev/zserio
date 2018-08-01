@@ -8,6 +8,7 @@ import java.util.List;
 
 import zserio.runtime.BitPositionUtil;
 import zserio.runtime.BitSizeOfCalculator;
+import zserio.runtime.VarUInt64Util;
 import zserio.runtime.ZserioError;
 import zserio.runtime.Mapping;
 import zserio.runtime.SizeOf;
@@ -404,7 +405,7 @@ public class ObjectArray<E extends SizeOf> implements Array<E>
     private void read(BitStreamReader reader, int length, ElementFactory<E> factory, OffsetChecker checker)
             throws IOException, ZserioError
     {
-        if (length < 0)
+        if (length == IMPLICIT_LENGTH)
         {
             // indexed offsets don't make sense for implicit-length arrays
             if (checker != null)
@@ -414,8 +415,10 @@ public class ObjectArray<E extends SizeOf> implements Array<E>
         }
         else
         {
+            final int realLength = (length != AUTO_LENGTH) ? length :
+                VarUInt64Util.convertVarUInt64ToArraySize(reader.readVarUInt64());
             // check offsets if checker != null
-            readN(reader, length, factory, checker);
+            readN(reader, realLength, factory, checker);
         }
     }
 

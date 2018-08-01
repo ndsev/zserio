@@ -31,7 +31,7 @@ public class VariableArrayTest
         }
         final VariableArray variableArray = new VariableArray(numElements, compoundArray);
         final int bitPosition = 2;
-        final int numOneNumberIndexes = (numElements > 9) ? 10 : numElements;
+        final int numOneNumberIndexes = 10;
         final int expectedBitSize = (1 + numElements * (4 + 7) - numOneNumberIndexes) * 8;
         assertEquals(expectedBitSize, variableArray.bitSizeOf(bitPosition));
     }
@@ -48,7 +48,7 @@ public class VariableArrayTest
         }
         final VariableArray variableArray = new VariableArray(numElements, compoundArray);
         final int bitPosition = 2;
-        final int numOneNumberIndexes = (numElements > 9) ? 10 : numElements;
+        final int numOneNumberIndexes = 10;
         final int expectedEndBitPosition = bitPosition + (1 + numElements * (4 + 7) - numOneNumberIndexes) * 8;
         assertEquals(expectedEndBitPosition, variableArray.initializeOffsets(bitPosition));
     }

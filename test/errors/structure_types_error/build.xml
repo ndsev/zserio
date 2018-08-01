@@ -10,6 +10,7 @@
         <testGen testName="structure_types_error" zsFile="constant_used_as_type_error.zs" ignoreError="true"/>
         <testGen testName="structure_types_error" zsFile="database_array_field_error.zs" ignoreError="true"/>
         <testGen testName="structure_types_error" zsFile="implicit_non_array_field_error.zs" ignoreError="true"/>
+        <testGen testName="structure_types_error" zsFile="recursive_error.zs" ignoreError="true"/>
         <testGen testName="structure_types_error" zsFile="database_field_error.zs" ignoreError="true"/>
         <testGen testName="structure_types_error" zsFile="subtyped_table_field_error.zs" ignoreError="true"/>
         <testGen testName="structure_types_error" zsFile="table_array_field_error.zs" ignoreError="true"/>

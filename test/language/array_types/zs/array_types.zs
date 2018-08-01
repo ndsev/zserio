@@ -1,6 +1,7 @@
 package array_types;
 
 import array_types.arrays_mapping.*;
+import array_types.auto_array_recursion.*;
 import array_types.auto_array.*;
 import array_types.fixed_array.*;
 import array_types.implicit_array.*;

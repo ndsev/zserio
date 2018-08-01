@@ -20,64 +20,76 @@ public class ChoiceTypesErrorTest
     @Test
     public void boolCaseError()
     {
-        final String error = ":8:10: Choice 'BoolCaseChoice' has incompatible case type!";
+        final String error = "bool_case_error.zs:8:10: Choice 'BoolCaseChoice' has incompatible case type!";
         assertTrue(zserioErrors.isPresent(error));
     }
 
     @Test
     public void enumCaseError()
     {
-        final String error =
-                ":24:23: Choice 'EnumParamChoice' has case with different enumeration type than selector!";
+        final String error = "enum_case_error.zs:24:23: Choice 'EnumParamChoice' has case with different " +
+                "enumeration type than selector!";
         assertTrue(zserioErrors.isPresent(error));
     }
 
     @Test
     public void floatSelectorError()
     {
-        final String error = ":3:1: Choice 'FloatSelectorChoice' uses forbidden float selector!";
+        final String error =
+                "float_selector_error.zs:3:1: Choice 'FloatSelectorChoice' uses forbidden float selector!";
         assertTrue(zserioErrors.isPresent(error));
     }
 
     @Test
     public void multipleCases()
     {
-        final String error = ":11:10: Choice 'MultipleCasesChoice' has duplicated case!";
+        final String error = "multiple_cases_error.zs:11:10: Choice 'MultipleCasesChoice' has duplicated case!";
         assertTrue(zserioErrors.isPresent(error));
     }
 
     @Test
     public void multipleDefaults()
     {
-        final String error = ":14:5: expecting RCURLY, found 'default'";
+        final String error = "multiple_defaults_error.zs:14:5: expecting RCURLY, found 'default'";
         assertTrue(zserioErrors.isPresent(error));
     }
 
     @Test
     public void nonConstantCase()
     {
-        final String error = ":23:10: Choice 'IntChoice' has non-constant case expression!";
+        final String error =
+                "non_constant_case_error.zs:23:10: Choice 'IntChoice' has non-constant case expression!";
         assertTrue(zserioErrors.isPresent(error));
     }
 
     @Test
     public void optionalMember()
     {
-        final String error = ":6:29: unexpected token: if";
+        final String error = "optional_member_error.zs:6:29: unexpected token: if";
+        assertTrue(zserioErrors.isPresent(error));
+    }
+
+    @Test
+    public void recursive()
+    {
+        final String error =
+                "recursive_error.zs:12:9: Field 'recursiveValue' is recursive and neither optional nor array!";
         assertTrue(zserioErrors.isPresent(error));
     }
 
     @Test
     public void stringSelectorError()
     {
-        final String error = ":3:1: Choice 'StringSelectorChoice' uses forbidden string selector!";
+        final String error =
+                "string_selector_error.zs:3:1: Choice 'StringSelectorChoice' uses forbidden string selector!";
         assertTrue(zserioErrors.isPresent(error));
     }
 
     @Test
     public void unreachableDefault()
     {
-        final String error = ":11:5: Choice 'UnreachableDefaultChoice' has unreachable default case!";
+        final String error = "unreachable_default_error.zs:11:5: Choice 'UnreachableDefaultChoice' has " +
+                "unreachable default case!";
         assertTrue(zserioErrors.isPresent(error));
     }
 

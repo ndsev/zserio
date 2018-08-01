@@ -20,49 +20,63 @@ public class StructureTypesErrorTest
     @Test
     public void circularContainment()
     {
-        final String error = ":3:1: Circular containment between 'Item' and 'ItemHolder'!";
+        final String error =
+                "circular_containment_error.zs:3:1: Circular containment between 'Item' and 'ItemHolder'!";
         assertTrue(zserioErrors.isPresent(error));
     }
 
     @Test
     public void constantUsedAsType()
     {
-        final String error = ":8:5: Invalid usage of constant 'ConstantUsedAsType' as a type!";
+        final String error =
+                "constant_used_as_type_error.zs:8:5: Invalid usage of constant 'ConstantUsedAsType' as a type!";
         assertTrue(zserioErrors.isPresent(error));
     }
 
     @Test
     public void databaseArrayField()
     {
-        final String error = ":20:5: Invalid use of SQL database 'TestDatabaseForArray' as a type!";
-        assertTrue(zserioErrors.isPresent(error));
-    }
-
-    @Test
-    public void databaseField()
-    {
-        final String error = ":20:5: Invalid use of SQL database 'TestDatabase' as a type!";
+        final String error = "database_array_field_error.zs:20:5: Invalid use of SQL database " +
+                "'TestDatabaseForArray' as a type!";
         assertTrue(zserioErrors.isPresent(error));
     }
 
     @Test
     public void implicitNonArray()
     {
-        final String error = ":6:27: unexpected token: ;";
+        final String error = "implicit_non_array_field_error.zs:6:27: unexpected token: ;";
         assertTrue(zserioErrors.isPresent(error));
     }
 
     @Test
+    public void recursive()
+    {
+        final String error =
+                "recursive_error.zs:7:5: Field 'item' is recursive and neither optional nor array!";
+        assertTrue(zserioErrors.isPresent(error));
+    }
+
+    @Test
+    public void databaseField()
+    {
+        final String error =
+                "database_field_error.zs:20:5: Invalid use of SQL database 'TestDatabase' as a type!";
+        assertTrue(zserioErrors.isPresent(error));
+    }
+
+
+    @Test
     public void subtypedTableField()
     {
-        final String error = ":17:5: Field 'subtypedTestTable' cannot be a sql table!";
+        final String error =
+                "subtyped_table_field_error.zs:17:5: Field 'subtypedTestTable' cannot be a sql table!";
         assertTrue(zserioErrors.isPresent(error));
     }
 
     @Test
     public void tableArrayField()
     {
-        final String error = ":15:5: Field 'testTableArray' cannot be a sql table!";
+        final String error = "table_array_field_error.zs:15:5: Field 'testTableArray' cannot be a sql table!";
         assertTrue(zserioErrors.isPresent(error));
     }
 

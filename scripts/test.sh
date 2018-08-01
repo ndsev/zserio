@@ -62,9 +62,9 @@ test()
         local MESSAGE="Zserio Java tests"
         echo "STARTING - ${MESSAGE}"
         local ANT_ARGS=("-Dzserio.release_dir=${UNPACKED_ZSERIO_RELEASE_DIR}"
-                        "-Dtest.build_dir=${TEST_OUT_DIR}/java")
+                        "-Dzserio_java_test.build_dir=${TEST_OUT_DIR}/java")
         if [[ ${SWITCH_TEST_NAME} != "" ]] ; then
-            ANT_ARGS+=("-Dtest.filter=${SWITCH_TEST_NAME}")
+            ANT_ARGS+=("-Dzserio_java_test.filter=${SWITCH_TEST_NAME}")
         fi
         if [[ ${SWITCH_CLEAN} == 1 ]] ; then
             local JAVA_TARGET="clean"
