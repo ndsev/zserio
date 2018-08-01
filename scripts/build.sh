@@ -38,7 +38,6 @@ Package can be the combination of:
     all-linux64      All available packages for linux64.
     all-windows32    All available packages for windows32.
     all-windows64    All available packages for windows64.
-    all              All available packages.
 
 Examples:
     $0 ant_task core cpp cpp_rt-linux64 java java_rt xml doc
@@ -180,20 +179,12 @@ parse_arguments()
                 eval ${PARAM_ZSERIO_OUT}=1
                 ;;
 
-            "all"*)
+            "all-linux32" | "all-linux64" | "all-windows32" | "all-windows64")
                 eval ${PARAM_ANT_TASK_OUT}=1
                 eval ${PARAM_CORE_OUT}=1
                 eval ${PARAM_CPP_OUT}=1
-                if [[ ${PARAM:3:1} == "-" ]] ; then
-                    eval ${PARAM_CPP_TARGET_ARRAY_OUT}[${NUM_TARGETS}]="${PARAM#all-}"
-                    NUM_TARGETS=$((NUM_TARGETS + 1))
-                else
-                    eval ${PARAM_CPP_TARGET_ARRAY_OUT}[0]="linux32"
-                    eval ${PARAM_CPP_TARGET_ARRAY_OUT}[1]="linux64"
-                    eval ${PARAM_CPP_TARGET_ARRAY_OUT}[2]="windows32"
-                    eval ${PARAM_CPP_TARGET_ARRAY_OUT}[3]="windows64"
-                    NUM_TARGETS=4
-                fi
+                eval ${PARAM_CPP_TARGET_ARRAY_OUT}[${NUM_TARGETS}]="${PARAM#all-}"
+                NUM_TARGETS=$((NUM_TARGETS + 1))
                 eval ${PARAM_JAVA_OUT}=1
                 eval ${PARAM_JAVA_RUNTIME_OUT}=1
                 eval ${PARAM_XML_OUT}=1

@@ -10,5 +10,8 @@
 # Eclipse project files
 .project
 
+# Eclipse classpath files
+.classpath
+
 # temp
 /temp/
