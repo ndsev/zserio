@@ -35,7 +35,7 @@ public class BitSizeOfCalculatorTest
     @Test(expected=ZserioError.class)
     public void getBitSizeOfVarInt32Exception()
     {
-        BitSizeOfCalculator.getBitSizeOfVarInt32((int) (1 << (6 + 7 + 7 + 8)));
+        BitSizeOfCalculator.getBitSizeOfVarInt32(1 << (6 + 7 + 7 + 8));
     }
 
     @Test

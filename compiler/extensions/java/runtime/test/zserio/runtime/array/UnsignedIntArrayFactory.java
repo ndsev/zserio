@@ -30,7 +30,7 @@ public class UnsignedIntArrayFactory implements ArrayFactory
     {
         long[] intData = new long[data.length];
         for (int i = 0; i < data.length; i++)
-            intData[i] = (long)data[i];
+            intData[i] = data[i];
 
         return intData;
     }

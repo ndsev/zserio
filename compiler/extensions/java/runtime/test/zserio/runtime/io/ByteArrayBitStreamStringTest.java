@@ -106,13 +106,13 @@ public class ByteArrayBitStreamStringTest
 
         final byte[] buffer = new String(charBuffer, 0, numChars).getBytes("UTF-8");
 
-        final byte b1 = (byte) buffer[0];
+        final byte b1 = buffer[0];
         final String ss1 = new String(buffer, 1, b1, "UTF-8");
         assertEquals(s1, ss1);
-        final byte b2 = (byte) buffer[1 + b1];
+        final byte b2 = buffer[1 + b1];
         final String ss2 = new String(buffer, 1 + b1 + 1, b2, "UTF-8");
         assertEquals(s2, ss2);
-        final byte b3 = (byte) buffer[1 + b1 + 1 + b2];
+        final byte b3 = buffer[1 + b1 + 1 + b2];
         final String ss3 = new String(buffer, 1 + b1 + 1 + b2 + 1, b3, "UTF-8");
         assertEquals(s3, ss3);
         assertEquals(b1 + b2 + b3 + 3, buffer.length);

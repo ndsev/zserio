@@ -49,6 +49,8 @@ findbugs.home_dir           - Location of the findbugs tool. If not set, findbug
             cache="${zserio_ant_task.build_dir}/depend-cache"/>
         <javac srcdir="${zserio_ant_task.src_dir}" destdir="${zserio_ant_task.classes_dir}" debug="on"
             encoding="utf8" includeAntRuntime="false">
+            <compilerarg value="-Xlint:all"/>
+            <compilerarg value="-Werror"/>
             <classpath>
                 <path refid="zserio_ant_task.classpath"/>
             </classpath>

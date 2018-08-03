@@ -119,8 +119,20 @@ findbugs.home_dir       - Location of the findbugs tool. If not set, findbugs is
         <depend srcDir="${zserio_core.src_dir}:${zserio_core.antlr.gen_dir}" destDir="${zserio_core.classes_dir}"
             cache="${zserio_core.build_dir}/depend-cache"/>
 
-        <javac srcdir="${zserio_core.src_dir}:${zserio_core.antlr.gen_dir}" destdir="${zserio_core.classes_dir}"
+        <!-- precompile generated sources without lint -->
+        <javac srcdir="${zserio_core.antlr.gen_dir}" destdir="${zserio_core.classes_dir}"
+            debug="on" encoding="utf8" includeAntRuntime="false" sourcepath="${zserio_core.src_dir}">
+            <classpath>
+                <fileset refid="3rdparty.jar_files_ref"/>
+            </classpath>
+        </javac>
+        <!-- compile the core sources and reuse preubild classes for generated code from previous steps -->
+        <javac srcdir="${zserio_core.src_dir}" destdir="${zserio_core.classes_dir}"
             debug="on" encoding="utf8" includeAntRuntime="false">
+            <compilerarg value="-Xlint:all"/>
+            <compilerarg value="-Werror"/>
+            <!-- recompile the core sources even if classes from previous step exist -->
+            <compilerarg value="-Xprefer:source"/>
             <classpath>
                 <fileset refid="3rdparty.jar_files_ref"/>
             </classpath>
@@ -193,6 +205,8 @@ findbugs.home_dir       - Location of the findbugs tool. If not set, findbugs is
             cache="${zserio_core.test.build_dir}/depend-cache"/>
         <javac srcdir="${zserio_core.test.src_dir}" destdir="${zserio_core.test.classes_dir}" debug="on"
             encoding="utf8" includeAntRuntime="false">
+            <compilerarg value="-Xlint:all"/>
+            <compilerarg value="-Werror"/>
             <classpath>
                 <pathelement path="${3rdparty.junit.jar_file}"/>
                 <pathelement path="${zserio_core.jar_file}"/>

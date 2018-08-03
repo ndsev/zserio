@@ -99,6 +99,8 @@ findbugs.home_dir               - Location of the findbugs tool. If not set, fin
         <depend srcDir="${zserio_java_runtime.src_dir}" destDir="${zserio_java_runtime.classes_dir}"
             cache="${zserio_java_runtime.build_dir}/depend-cache"/>
         <javac destdir="${zserio_java_runtime.classes_dir}" debug="on" encoding="utf8" includeAntRuntime="false">
+            <compilerarg value="-Xlint:all"/>
+            <compilerarg value="-Werror"/>
             <src path="${zserio_java_runtime.src_dir}"/>
             <patternset refid="zserio_java_runtime.sources_patterns"/>
         </javac>
@@ -187,6 +189,8 @@ findbugs.home_dir               - Location of the findbugs tool. If not set, fin
             cache="${zserio_java_runtime.test.build_dir}/depend-cache"/>
         <javac srcdir="${zserio_java_runtime.test.src_dir}" destdir="${zserio_java_runtime.test.classes_dir}" debug="on"
             encoding="utf8" includeAntRuntime="false">
+            <compilerarg value="-Xlint:all"/>
+            <compilerarg value="-Werror"/>
             <exclude name="zserio/runtime/validation/*.java"
                 unless="relational.validation_enabled"/>
             <classpath>

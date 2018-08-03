@@ -68,6 +68,8 @@ findbugs.home_dir             - Location of the findbugs tool. If not set, findb
 
         <javac srcdir="${zserio_cpp.src_dir}" destdir="${zserio_cpp.classes_dir}" debug="on"
             encoding="utf8" includeAntRuntime="false">
+            <compilerarg value="-Xlint:all"/>
+            <compilerarg value="-Werror"/>
             <classpath>
                 <path refid="zserio_cpp.classpath_zserio_core"/>
             </classpath>

@@ -88,7 +88,7 @@ public class ToolWrapper
             Class<?> clazz = Class.forName(className, true, classLoader);
 
             // and now this is java magic
-            Class<?> [] pTypes = new Class[1];
+            Class<?> [] pTypes = new Class<?>[1];
             pTypes[0] = String[].class;
             final Method main = clazz.getDeclaredMethod("runTool", pTypes);
 

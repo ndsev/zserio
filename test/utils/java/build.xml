@@ -28,6 +28,8 @@ findbugs.home_dir       - Location of the findbugs tool. If not set, findbugs is
         <depend srcDir="${test_utils.src_dir}" destDir="${test_utils.classes_dir}"
             cache="${test_utils.build_dir}/depend-cache"/>
         <javac destdir="${test_utils.classes_dir}" debug="on" encoding="utf8" includeAntRuntime="false">
+            <compilerarg value="-Xlint:all"/>
+            <compilerarg value="-Werror"/>
             <src location="${test_utils.src_dir}"/>
         </javac>
     </target>

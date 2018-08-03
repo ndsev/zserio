@@ -1,6 +1,6 @@
 <!--
 
-Ant build.xml for Zserio Java extension tests. 
+Ant build.xml for Zserio Java extension tests.
 
 The following properties can be set:
 
@@ -122,11 +122,14 @@ findbugs.home_dir          - Location of the findbugs tool. If not set, findbugs
         <attribute name="testName"/>
         <attribute name="srcPath" default="${@{testName}.base_dir}/java:${@{testName}.zs.out_dir}"/>
         <sequential>
-            <depend srcDir="@{srcDir}"
+            <depend srcDir="@{srcPath}"
                 destDir="${@{testName}.build_dir}/classes"
                 cache="${@{testName}.build_dir}/depend-cache"/>
             <javac destdir="${@{testName}.build_dir}/classes" debug="on" encoding="utf8"
                 includeAntRuntime="false">
+                <compilerarg value="-Xlint:all"/>
+                <compilerarg value="-Xlint:-cast"/>
+                <compilerarg value="-Werror"/>
                 <classpath>
                     <pathelement location="${runtime.jar_file}"/>
                     <pathelement location="${3rdparty.junit.jar_file}"/>
@@ -192,17 +195,21 @@ findbugs.home_dir          - Location of the findbugs tool. If not set, findbugs
         </sequential>
     </macrodef>
 
-    <target name="run" depends="test_utils.findbugs">
-        <subant inheritall="true">
+    <target name="clean" depends="test_utils.clean">
+        <subant target="clean" inheritall="true">
             <fileset dir="." includes="${zserio_java_test.filter}/**/build.xml" excludes="build.xml,utils/**"/>
-            <target name="run"/>
         </subant>
     </target>
 
-    <target name="clean" depends="test_utils.clean">
-        <subant inheritall="true">
+    <target name="gen">
+        <subant target="gen" inheritall="true">
             <fileset dir="." includes="${zserio_java_test.filter}/**/build.xml" excludes="build.xml,utils/**"/>
-            <target name="clean"/>
+        </subant>
+    </target>
+
+    <target name="run" depends="test_utils.findbugs">
+        <subant target="run" inheritall="true">
+            <fileset dir="." includes="${zserio_java_test.filter}/**/build.xml" excludes="build.xml,utils/**"/>
         </subant>
     </target>
 </project>
