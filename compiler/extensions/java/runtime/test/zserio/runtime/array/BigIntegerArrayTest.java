@@ -1,6 +1,9 @@
 package zserio.runtime.array;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotSame;
+import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
 import java.math.BigInteger;
@@ -98,6 +101,101 @@ public class BigIntegerArrayTest
         int expectedBitsize = DATA.length * NUM_BITS;
 
         assertEquals(expectedBitsize, array.bitSizeOf(0, NUM_BITS));
+    }
+
+    @Test
+    public void hashCodeMethod()
+    {
+        BigIntegerArray array1;
+        BigIntegerArray array2;
+
+        // empty arrays
+        array1 = new BigIntegerArray(0);
+        array2 = new BigIntegerArray(0);
+        assertEquals(array1.hashCode(), array2.hashCode());
+
+        // null elements, same length
+        array1 = new BigIntegerArray(LENGTH);
+        array2 = new BigIntegerArray(LENGTH);
+        assertEquals(array1.hashCode(), array2.hashCode());
+
+        // null elements, different length
+        array1 = new BigIntegerArray(LENGTH);
+        array2 = new BigIntegerArray(LENGTH+1);
+        assertNotSame(array1.hashCode(), array2.hashCode());
+
+        // same arrays
+        array1 = new BigIntegerArray(DATA, 0, DATA.length);
+        array2 = new BigIntegerArray(DATA, 0, DATA.length);
+        assertEquals(array1.hashCode(), array2.hashCode());
+
+        // different last element
+        array1 = new BigIntegerArray(DATA, 0, DATA.length);
+        array2 = new BigIntegerArray(DATA, 0, DATA.length);
+        array2.setElementAt(BigInteger.ONE, DATA.length - 1);
+        assertNotSame(array1.hashCode(), array2.hashCode());
+
+        // different length
+        array1 = new BigIntegerArray(DATA, 0, DATA.length);
+        array2 = new BigIntegerArray(DATA, 0, DATA.length - 1);
+        assertNotSame(array1.hashCode(), array2.hashCode());
+
+        // same length, last element null
+        array1 = new BigIntegerArray(DATA, 0, DATA.length);
+        array2 = new BigIntegerArray(DATA, 0, DATA.length);
+        array2.setElementAt(null, DATA.length - 1);
+        assertNotSame(array1.hashCode(), array2.hashCode());
+    }
+
+    @Test
+    public void equalsMethod()
+    {
+        BigIntegerArray array1;
+        BigIntegerArray array2;
+
+        // empty arrays
+        array1 = new BigIntegerArray(0);
+        array2 = new BigIntegerArray(0);
+        assertTrue(array1.equals(array2));
+        assertEquals(array1, array2);
+
+        // null elements, same length
+        array1 = new BigIntegerArray(LENGTH);
+        array2 = new BigIntegerArray(LENGTH);
+        assertTrue(array1.equals(array2));
+        assertEquals(array1, array2);
+
+        // null elements, different length
+        array1 = new BigIntegerArray(LENGTH);
+        array2 = new BigIntegerArray(LENGTH+1);
+        assertFalse(array1.equals(array2));
+        assertNotSame(array1, array2);
+
+        // same arrays
+        array1 = new BigIntegerArray(DATA, 0, DATA.length);
+        array2 = new BigIntegerArray(DATA, 0, DATA.length);
+        assertTrue(array1.equals(array2));
+        assertEquals(array1, array2);
+
+        // different last element
+        array1 = new BigIntegerArray(DATA, 0, DATA.length);
+        array2 = new BigIntegerArray(DATA, 0, DATA.length);
+        array2.setElementAt(BigInteger.ONE, DATA.length - 1);
+        assertFalse(array1.equals(array2));
+        assertNotSame(array1, array2);
+
+        // different length
+        array1 = new BigIntegerArray(DATA, 0, DATA.length);
+        array2 = new BigIntegerArray(DATA, 0, DATA.length - 1);
+        assertFalse(array1.equals(array2));
+        assertNotSame(array1, array2);
+
+        // same length, last element null
+        array1 = new BigIntegerArray(DATA, 0, DATA.length);
+        array2 = new BigIntegerArray(DATA, 0, DATA.length);
+        array2.setElementAt(null, DATA.length - 1);
+        assertFalse(array1.equals(array2));
+        assertNotSame(array1, array2);
     }
 
     private static final int NUM_BITS = Long.SIZE;

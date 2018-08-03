@@ -1,9 +1,11 @@
 package zserio.runtime.array;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotSame;
+import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
-
 import org.junit.Test;
 
 import zserio.runtime.BitSizeOfCalculator;
@@ -102,6 +104,88 @@ public class VarIntArrayTest
         }
 
         assertEquals(expectedBitsize, array.bitSizeOf(0));
+    }
+
+    @Test
+    public void hashCodeMethod()
+    {
+        VarIntArray array1;
+        VarIntArray array2;
+
+        // empty arrays
+        array1 = new VarIntArray(0);
+        array2 = new VarIntArray(0);
+        assertEquals(array1.hashCode(), array2.hashCode());
+
+        // null elements, same length
+        array1 = new VarIntArray(LENGTH);
+        array2 = new VarIntArray(LENGTH);
+        assertEquals(array1.hashCode(), array2.hashCode());
+
+        // null elements, different length
+        array1 = new VarIntArray(LENGTH);
+        array2 = new VarIntArray(LENGTH+1);
+        assertNotSame(array1.hashCode(), array2.hashCode());
+
+        // same arrays
+        array1 = new VarIntArray(DATA, 0, DATA.length);
+        array2 = new VarIntArray(DATA, 0, DATA.length);
+        assertEquals(array1.hashCode(), array2.hashCode());
+
+        // different last element
+        array1 = new VarIntArray(DATA, 0, DATA.length);
+        array2 = new VarIntArray(DATA, 0, DATA.length);
+        array2.setElementAt(1, DATA.length - 1);
+        assertNotSame(array1.hashCode(), array2.hashCode());
+
+        // different length
+        array1 = new VarIntArray(DATA, 0, DATA.length);
+        array2 = new VarIntArray(DATA, 0, DATA.length - 1);
+        assertNotSame(array1.hashCode(), array2.hashCode());
+    }
+
+    @Test
+    public void equalsMethod()
+    {
+        VarIntArray array1;
+        VarIntArray array2;
+
+        // empty arrays
+        array1 = new VarIntArray(0);
+        array2 = new VarIntArray(0);
+        assertTrue(array1.equals(array2));
+        assertEquals(array1, array2);
+
+        // null elements, same length
+        array1 = new VarIntArray(LENGTH);
+        array2 = new VarIntArray(LENGTH);
+        assertTrue(array1.equals(array2));
+        assertEquals(array1, array2);
+
+        // null elements, different length
+        array1 = new VarIntArray(LENGTH);
+        array2 = new VarIntArray(LENGTH+1);
+        assertFalse(array1.equals(array2));
+        assertNotSame(array1, array2);
+
+        // same arrays
+        array1 = new VarIntArray(DATA, 0, DATA.length);
+        array2 = new VarIntArray(DATA, 0, DATA.length);
+        assertTrue(array1.equals(array2));
+        assertEquals(array1, array2);
+
+        // different last element
+        array1 = new VarIntArray(DATA, 0, DATA.length);
+        array2 = new VarIntArray(DATA, 0, DATA.length);
+        array2.setElementAt(1, DATA.length - 1);
+        assertFalse(array1.equals(array2));
+        assertNotSame(array1, array2);
+
+        // different length
+        array1 = new VarIntArray(DATA, 0, DATA.length);
+        array2 = new VarIntArray(DATA, 0, DATA.length - 1);
+        assertFalse(array1.equals(array2));
+        assertNotSame(array1, array2);
     }
 
     private static final int LENGTH = 10;

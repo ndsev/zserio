@@ -7,7 +7,6 @@ import java.util.List;
 
 import zserio.runtime.ZserioError;
 import zserio.runtime.Mapping;
-import zserio.runtime.Util;
 import zserio.runtime.io.BitStreamReader;
 import zserio.runtime.io.BitStreamWriter;
 
@@ -131,14 +130,7 @@ public class BigIntegerArray extends NumericArrayBase<BigInteger>
     @Override
     public int hashCode()
     {
-        int result = Util.HASH_SEED;
-
-        for (BigInteger value : data)
-        {
-            result = result * Util.HASH_PRIME_NUMBER + value.hashCode();
-        }
-
-        return result;
+        return Arrays.hashCode(data);
     }
 
     @Override
@@ -148,16 +140,7 @@ public class BigIntegerArray extends NumericArrayBase<BigInteger>
         {
             final BigIntegerArray that = (BigIntegerArray)obj;
 
-            if (length() != that.length())
-                return false;
-
-            for (int index = 0; index < length(); ++index)
-            {
-                if (!data[index].equals(that.data[index]))
-                    return false;
-            }
-
-            return true;
+            return Arrays.equals(data, that.data);
         }
 
         return false;
