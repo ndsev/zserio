@@ -73,10 +73,10 @@ const char  OptionalRecursionTest::EMPLOYEE_TEAM_LEAD_NAME[] = "Nico";
 uint16_t    OptionalRecursionTest::EMPLOYEE_TEAM_LEAD_SALARY = 2000;
 
 const char  OptionalRecursionTest::EMPLOYEE_DEVELOPER1_NAME[] = "Mike";
-uint16_t 	OptionalRecursionTest::EMPLOYEE_DEVELOPER1_SALARY = 1000;
+uint16_t    OptionalRecursionTest::EMPLOYEE_DEVELOPER1_SALARY = 1000;
 
 const char  OptionalRecursionTest::EMPLOYEE_DEVELOPER2_NAME[] = "Luke";
-uint16_t 	OptionalRecursionTest::EMPLOYEE_DEVELOPER2_SALARY = 1800;
+uint16_t    OptionalRecursionTest::EMPLOYEE_DEVELOPER2_SALARY = 1800;
 
 const size_t OptionalRecursionTest::NUM_DEVELOPERS = 2;
 const size_t OptionalRecursionTest::EMPTY_EMPLOYEE_BIT_SIZE = 32;

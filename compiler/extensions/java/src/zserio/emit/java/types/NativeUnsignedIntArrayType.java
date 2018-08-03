@@ -2,9 +2,9 @@ package zserio.emit.java.types;
 
 public class NativeUnsignedIntArrayType extends NativeArrayType
 {
-    public NativeUnsignedIntArrayType(JavaNativeType elementType)
+    public NativeUnsignedIntArrayType()
     {
-        super("UnsignedIntArray", elementType);
+        super("UnsignedIntArray");
     }
 
     @Override

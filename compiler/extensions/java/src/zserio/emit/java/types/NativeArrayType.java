@@ -2,15 +2,9 @@ package zserio.emit.java.types;
 
 public class NativeArrayType extends JavaNativeType
 {
-    public NativeArrayType(String name, JavaNativeType elementType)
+    public NativeArrayType(String name)
     {
         super(RUNTIME_ARRAY_PACKAGE, name);
-        this.elementType = elementType;
-    }
-
-    public JavaNativeType getElementType()
-    {
-        return elementType;
     }
 
     @Override
@@ -28,8 +22,6 @@ public class NativeArrayType extends JavaNativeType
     {
         return false;
     }
-
-    private final JavaNativeType elementType;
 
     private final static String RUNTIME_ARRAY_PACKAGE = "zserio.runtime.array";
 }

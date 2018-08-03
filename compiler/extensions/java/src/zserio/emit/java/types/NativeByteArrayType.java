@@ -2,9 +2,9 @@ package zserio.emit.java.types;
 
 public class NativeByteArrayType extends NativeArrayType
 {
-    public NativeByteArrayType(JavaNativeType elementType)
+    public NativeByteArrayType()
     {
-        super("ByteArray", elementType);
+        super("ByteArray");
     }
 
     @Override

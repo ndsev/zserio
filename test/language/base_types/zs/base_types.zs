@@ -54,11 +54,13 @@ struct BaseTypes
     varuint16       varuint16Type;
     varuint32       varuint32Type;
     varuint64       varuint64Type;
+    varuint         varuintType;
 
     // variable signed integer types
     varint16        varint16Type;
     varint32        varint32Type;
     varint64        varint64Type;
+    varint          varintType;
 
     // string types
     string          stringType;

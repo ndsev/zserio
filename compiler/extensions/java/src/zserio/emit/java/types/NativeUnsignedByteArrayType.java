@@ -2,9 +2,9 @@ package zserio.emit.java.types;
 
 public class NativeUnsignedByteArrayType extends NativeArrayType
 {
-    public NativeUnsignedByteArrayType(JavaNativeType elementType)
+    public NativeUnsignedByteArrayType()
     {
-        super("UnsignedByteArray", elementType);
+        super("UnsignedByteArray");
     }
 
     @Override

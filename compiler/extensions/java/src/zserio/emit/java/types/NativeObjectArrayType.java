@@ -8,7 +8,7 @@ public class NativeObjectArrayType extends NativeArrayType
 {
     public NativeObjectArrayType(JavaNativeType elementType)
     {
-        super(formatGenericType(OBJECT_ARRAY_CLASS, elementType.getFullName()), elementType);
+        super(formatGenericType(OBJECT_ARRAY_CLASS, elementType.getFullName()));
     }
 
     private static String formatGenericType(String typeName, String... argumentTypes)

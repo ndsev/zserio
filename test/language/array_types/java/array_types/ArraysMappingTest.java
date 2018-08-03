@@ -27,6 +27,8 @@ import zserio.runtime.array.VarInt64Array;
 import zserio.runtime.array.VarUInt16Array;
 import zserio.runtime.array.VarUInt32Array;
 import zserio.runtime.array.VarUInt64Array;
+import zserio.runtime.array.VarIntArray;
+import zserio.runtime.array.VarUIntArray;
 
 public class ArraysMappingTest
 {
@@ -135,6 +137,30 @@ public class ArraysMappingTest
         final VarInt64Array varInt64Array = new VarInt64Array(FIXED_ARRAY_LENGTH);
         arraysMapping.setVarint64Array(varInt64Array);
         assertEquals(varInt64Array, arraysMapping.getVarint64Array());
+    }
+
+    @Test
+    public void varintArray()
+    {
+        ArraysMapping arraysMapping = new ArraysMapping();
+
+        final VarIntArray varIntArray = new VarIntArray(FIXED_ARRAY_LENGTH);
+        arraysMapping.setVarintArray(varIntArray);
+
+        // just do something with arraysMapping not to have FindBugs warning
+        assertEquals(varIntArray, arraysMapping.getVarintArray());
+    }
+
+    @Test
+    public void varuintArray()
+    {
+        ArraysMapping arraysMapping = new ArraysMapping();
+
+        final VarUIntArray varUIntArray = new VarUIntArray(EMPTY_ARRAY_LENGTH);
+        arraysMapping.setVaruintArray(varUIntArray);
+
+        // just do something with arraysMapping not to have FindBugs warning
+        assertEquals(varUIntArray, arraysMapping.getVaruintArray());
     }
 
     @Test

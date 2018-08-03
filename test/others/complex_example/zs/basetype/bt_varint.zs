@@ -22,6 +22,9 @@ subtype varuint32   VARUINT32_T;
 subtype varint64    VARINT64_T;
 subtype varuint64   VARUINT64_T;
 
+subtype varint      VARINT_T;
+subtype varuint     VARUINT_T;
+
 // enumerations
 enum varint16 EnumV16
 {
@@ -99,6 +102,9 @@ struct VarIntStructure
     VARINT64_T  arrVarInt64_T[ count ];
     VARUINT64_T arrVarUInt64_T[ count ];
 
+    VARINT_T    arrVarInt_T[ count ];
+    VARUINT_T   arrVarUInt_T[ count ];
+
 lastFieldOffset:
     uint32      lastField;
 };
@@ -118,50 +124,66 @@ choice VarIntChoice(varint16 type) on type
     case 5:
         varuint64   varUInt64;
     case 6:
-        VARINT16_T  varInt16_T;
+        varint      varInt;
     case 7:
-        VARUINT16_T varUInt16_T;
+        varuint     varUInt;
     case 8:
-        VARINT32_T  varInt32_T;
+        VARINT16_T  varInt16_T;
     case 9:
-        VARUINT32_T varUInt32_T;
+        VARUINT16_T varUInt16_T;
     case 10:
-        VARINT64_T  varInt64_T;
+        VARINT32_T  varInt32_T;
     case 11:
-        VARUINT64_T varUInt64_T;
-
+        VARUINT32_T varUInt32_T;
     case 12:
-        varint16    arrVarInt16[ 10 ];
+        VARINT64_T  varInt64_T;
     case 13:
-        varuint16   arrVarUInt16[ 10 ];
+        VARUINT64_T varUInt64_T;
     case 14:
-        varint32    arrVarInt32[ 10 ];
+        VARINT_T    varInt_T;
     case 15:
-        varuint32   arrVarUInt32[ 10 ];
-    case 16:
-        varint64    arrVarInt64[ 10 ];
-    case 17:
-        varuint64   arrVarUInt64[ 10 ];
-    case 18:
-        VARINT16_T  arrVarInt16_T[ 10 ];
-    case 19:
-        VARUINT16_T arrVarUInt16_T[ 10 ];
-    case 20:
-        VARINT32_T  arrVarInt32_T[ 10 ];
-    case 21:
-        VARUINT32_T arrVarUInt32_T[ 10 ];
-    case 22:
-        VARINT64_T  arrVarInt64_T[ 10 ];
-    case 23:
-        VARUINT64_T arrVarUInt64_T[ 10 ];
+        VARUINT_T   varUInt_T;
 
+    case 16:
+        varint16    arrVarInt16[ 10 ];
+    case 17:
+        varuint16   arrVarUInt16[ 10 ];
+    case 18:
+        varint32    arrVarInt32[ 10 ];
+    case 19:
+        varuint32   arrVarUInt32[ 10 ];
+    case 20:
+        varint64    arrVarInt64[ 10 ];
+    case 21:
+        varuint64   arrVarUInt64[ 10 ];
+    case 22:
+        varint      arrVarInt[ 10 ];
+    case 23:
+        varuint     arrVarUInt[ 10 ];
+    case 24:
+        VARINT16_T  arrVarInt16_T[ 10 ];
+    case 25:
+        VARUINT16_T arrVarUInt16_T[ 10 ];
+    case 26:
+        VARINT32_T  arrVarInt32_T[ 10 ];
+    case 27:
+        VARUINT32_T arrVarUInt32_T[ 10 ];
+    case 28:
+        VARINT64_T  arrVarInt64_T[ 10 ];
+    case 29:
+        VARUINT64_T arrVarUInt64_T[ 10 ];
     case 30:
-        EnumV16     varEnum16;
+        VARINT_T    arrVarInt_T[ 10 ];
     case 31:
-        EnumVU16    varEnumU16;
+        VARUINT_T   arrVarUInt_T[ 10 ];
+
     case 32:
-        EnumV32     varEnum32;
+        EnumV16     varEnum16;
     case 33:
+        EnumVU16    varEnumU16;
+    case 34:
+        EnumV32     varEnum32;
+    case 35:
         EnumVU32    varEnumU32;
 };
 
@@ -176,6 +198,9 @@ union VarIntUnion
     varint64    varInt64;
     varuint64   varUInt64;
 
+    varint      varInt;
+    varuint     varUInt;
+
     VARINT16_T  varInt16_T;
     VARUINT16_T varUInt16_T;
 
@@ -185,6 +210,8 @@ union VarIntUnion
     VARINT64_T  varInt64_T;
     VARUINT64_T varUInt64_T;
 
+    VARINT_T    varInt_T;
+    VARUINT_T   varUInt_T;
 
     varint16    arrVarInt16[ 10 ];
     varuint16   arrVarUInt16[ 10 ];
@@ -195,6 +222,9 @@ union VarIntUnion
     varint64    arrVarInt64[ 10 ];
     varuint64   arrVarUInt64[ 10 ];
 
+    varint      arrVarInt[ 10 ];
+    varuint     arrVarUInt[ 10 ];
+
     VARINT16_T  arrVarInt16_T[ 10 ];
     VARUINT16_T arrVarUInt16_T[ 10 ];
 
@@ -204,16 +234,19 @@ union VarIntUnion
     VARINT64_T  arrVarInt64_T[ 10 ];
     VARUINT64_T arrVarUInt64_T[ 10 ];
 
+    VARINT_T    arrVarInt_T[ 10 ];
+    VARUINT_T   arrVarUInt_T[ 10 ];
+
     EnumV16     varEnum16;
     EnumVU16    varEnumU16;
     EnumV32     varEnum32;
     EnumVU32    varEnumU32;
 };
 
-struct VarIntStructureParameter( varint16 a, varint32 b )
+struct VarIntStructureParameter( varint16 a, varint32 b, varint c )
 {
-    bit< a >    value1;
-    bit< b >    value2;
+    int< a >    value1;
+    int< b >    value2 : value2 < c;
 
     function varint16 returnParamA()
     {
@@ -224,12 +257,17 @@ struct VarIntStructureParameter( varint16 a, varint32 b )
     {
         return b;
     }
+
+    function varint returnParamC()
+    {
+        return c & 0x7fffffff;
+    }
 };
 
-struct VarUIntStructureParameter( varuint16 a, varuint32 b )
+struct VarUIntStructureParameter( varuint16 a, varuint32 b, varuint c )
 {
-    int< a >    value1;
-    int< b >    value2;
+    bit< a >    value1;
+    bit< b >    value2 : value2 < c;
 
     function varuint16 returnParamA()
     {
@@ -240,12 +278,17 @@ struct VarUIntStructureParameter( varuint16 a, varuint32 b )
     {
         return b;
     }
+
+    function varuint returnParamC()
+    {
+        return c & 0xffffffff;
+    }
 };
 
 struct VarIntStructureParameterTest
 {
-    VarIntStructureParameter( 1, 1024 )      varintAutoParams;
-    VarUIntStructureParameter( -1, -1024 )   varuintAutoParams;
+    VarIntStructureParameter( 2, 10, -12345678 ) varintAutoParams;
+    VarUIntStructureParameter( 8, 12, 12345678 ) varuintAutoParams;
 };
 
 subtype varuint16 VarBitValue;

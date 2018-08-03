@@ -235,6 +235,22 @@ TEST_F(BaseTypesTest, varuint64Type)
     ASSERT_EQ(maxVaruint64Type, varuint64Type);
 }
 
+TEST_F(BaseTypesTest, varuintTypeMin)
+{
+    const uint64_t maxVaruintType = 0;
+    m_baseTypes.setVaruintType(maxVaruintType);
+    const uint64_t varuintType = m_baseTypes.getVaruintType();
+    ASSERT_EQ(maxVaruintType, varuintType);
+}
+
+TEST_F(BaseTypesTest, varuintTypeMax)
+{
+    const uint64_t maxVaruintType = UINT64_MAX;
+    m_baseTypes.setVaruintType(maxVaruintType);
+    const uint64_t varuintType = m_baseTypes.getVaruintType();
+    ASSERT_EQ(maxVaruintType, varuintType);
+}
+
 TEST_F(BaseTypesTest, varint16Type)
 {
     const int16_t maxVarint16Type = (INT16_C(1) << 14) - 1;
@@ -257,6 +273,22 @@ TEST_F(BaseTypesTest, varint64Type)
     m_baseTypes.setVarint64Type(maxVarint64Type);
     const int64_t varint64Type = m_baseTypes.getVarint64Type();
     ASSERT_EQ(maxVarint64Type, varint64Type);
+}
+
+TEST_F(BaseTypesTest, varintTypeMin)
+{
+    const int64_t maxVarintType = INT64_MIN;
+    m_baseTypes.setVarintType(maxVarintType);
+    const int64_t varintType = m_baseTypes.getVarintType();
+    ASSERT_EQ(maxVarintType, varintType);
+}
+
+TEST_F(BaseTypesTest, varintTypeMax)
+{
+    const int64_t minVarintType = INT64_MAX;
+    m_baseTypes.setVarintType(minVarintType);
+    const int64_t varintType = m_baseTypes.getVarintType();
+    ASSERT_EQ(minVarintType, varintType);
 }
 
 TEST_F(BaseTypesTest, boolType)

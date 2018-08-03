@@ -10,8 +10,7 @@ import java.math.BigInteger;
  * The underlying type (BigInteger) is potentially unlimited.
  * As this class is to be used for storing Zserio values of type
  * uint64, the class claims the upper bound to be 2^64-1 as is true
- * for uint64_t. Lower bound is set to -1 to allow for an extra
- * value for __INVALID in enums.
+ * for uint64_t.
  */
 public class NativeUnsignedLongType extends NativeIntegralType
 {
@@ -50,7 +49,7 @@ public class NativeUnsignedLongType extends NativeIntegralType
         return false;
     }
 
-    // emulate uint64_t + one extra value for __INVALID
-    private static final BigInteger lowerBound = BigInteger.valueOf(-1);
+    // emulate uint64_t
+    private static final BigInteger lowerBound = BigInteger.ZERO;
     private static final BigInteger upperBound = new BigInteger("FFFFFFFFFFFFFFFF", 16);
 }

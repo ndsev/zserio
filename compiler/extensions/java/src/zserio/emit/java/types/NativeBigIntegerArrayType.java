@@ -2,9 +2,9 @@ package zserio.emit.java.types;
 
 public class NativeBigIntegerArrayType extends NativeArrayType
 {
-    public NativeBigIntegerArrayType(JavaNativeType elementType)
+    public NativeBigIntegerArrayType()
     {
-        super("BigIntegerArray", elementType);
+        super("BigIntegerArray");
     }
 
     @Override

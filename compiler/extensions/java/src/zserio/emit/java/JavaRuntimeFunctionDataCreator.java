@@ -62,7 +62,9 @@ public class JavaRuntimeFunctionDataCreator
             if (!type.isSigned())
                 suffix.append("U");
             suffix.append("Int");
-            suffix.append(type.getMaxBitSize());
+            final int maxBitSize = type.getMaxBitSize();
+            if (maxBitSize < 72) // Var(U)Int takes up to 9 bytes
+                suffix.append(maxBitSize);
 
             templateData = new RuntimeFunctionTemplateData(suffix.toString());
         }

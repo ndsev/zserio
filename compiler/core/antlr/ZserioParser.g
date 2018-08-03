@@ -109,9 +109,11 @@ tokens
     UNION="union"<AST=zserio.ast.UnionType>;
     UNUSED="unused";
     UPLUS<AST=zserio.ast.Expression>;
+    VARINT="varint"<AST=zserio.ast.VarIntegerType>;
     VARINT16="varint16"<AST=zserio.ast.VarIntegerType>;
     VARINT32="varint32"<AST=zserio.ast.VarIntegerType>;
     VARINT64="varint64"<AST=zserio.ast.VarIntegerType>;
+    VARUINT="varuint"<AST=zserio.ast.VarIntegerType>;
     VARUINT16="varuint16"<AST=zserio.ast.VarIntegerType>;
     VARUINT32="varuint32"<AST=zserio.ast.VarIntegerType>;
     VARUINT64="varuint64"<AST=zserio.ast.VarIntegerType>;
@@ -425,12 +427,14 @@ signedBitField
     ;
 
 varintType
-    :   VARUINT16 |
-        VARUINT32 |
-        VARUINT64 |
+    :   VARINT |
         VARINT16 |
         VARINT32 |
-        VARINT64
+        VARINT64 |
+        VARUINT |
+        VARUINT16 |
+        VARUINT32 |
+        VARUINT64
     ;
 
 boolType

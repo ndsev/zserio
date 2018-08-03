@@ -7,6 +7,7 @@ import java.util.List;
 
 import zserio.runtime.BitPositionUtil;
 import zserio.runtime.BitSizeOfCalculator;
+import zserio.runtime.Util;
 import zserio.runtime.ZserioError;
 import zserio.runtime.Mapping;
 import zserio.runtime.io.BitStreamReader;
@@ -125,12 +126,37 @@ public class VarUIntArray extends NumericArrayBase<BigInteger>
     }
 
     @Override
+    public int hashCode()
+    {
+        int result = Util.HASH_SEED;
+
+        for (BigInteger value : data)
+        {
+            result = result * Util.HASH_PRIME_NUMBER + value.hashCode();
+        }
+
+        return result;
+    }
+
+    @Override
     public boolean equals(Object obj)
     {
         if (obj instanceof VarUIntArray)
         {
-            return super.equals(obj);
+            final VarUIntArray that = (VarUIntArray)obj;
+
+            if (length() != that.length())
+                return false;
+
+            for (int index = 0; index < length(); ++index)
+            {
+                if (!data[index].equals(that.data[index]))
+                    return false;
+            }
+
+            return true;
         }
+
         return false;
     }
 

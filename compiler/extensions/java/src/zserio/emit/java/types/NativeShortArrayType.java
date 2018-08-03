@@ -2,9 +2,9 @@ package zserio.emit.java.types;
 
 public class NativeShortArrayType extends NativeArrayType
 {
-    public NativeShortArrayType(JavaNativeType elementType)
+    public NativeShortArrayType()
     {
-        super("ShortArray", elementType);
+        super("ShortArray");
     }
 
     @Override

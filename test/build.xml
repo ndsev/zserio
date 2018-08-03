@@ -39,7 +39,7 @@ findbugs.home_dir          - Location of the findbugs tool. If not set, findbugs
 
     <!-- Zserio ant task -->
     <taskdef name="zserio" classpath="${zserio.release_dir}/ant_task/zserio_ant.jar"
-    	classname="zserio.ant.ZserioTask"/>
+        classname="zserio.ant.ZserioTask"/>
 
     <!-- targets commons -->
     <macrodef name="testProperties">

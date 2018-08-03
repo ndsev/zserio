@@ -73,7 +73,9 @@ public class CppRuntimeFunctionDataCreator
             if (!type.isSigned())
                 sb.append("U");
             sb.append("Int");
-            sb.append(type.getMaxBitSize());
+            final int maxBitSize = type.getMaxBitSize();
+            if (maxBitSize < 72) // Var(U)Int takes up to 9 bytes
+                sb.append(maxBitSize);
 
             suffix = sb.toString();
         }

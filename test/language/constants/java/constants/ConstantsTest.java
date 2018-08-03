@@ -184,6 +184,18 @@ public class ConstantsTest
     }
 
     @Test
+    public void varuintMinConstant()
+    {
+        assertEquals(BigInteger.ZERO, __ConstType.VARUINT_MIN_CONSTANT);
+    }
+
+    @Test
+    public void varuintMaxConstant()
+    {
+        assertEquals(BigInteger.ONE.shiftLeft(64).subtract(BigInteger.ONE), __ConstType.VARUINT_MAX_CONSTANT);
+    }
+
+    @Test
     public void varint16MinConstant()
     {
         assertEquals((short)-16383, __ConstType.VARINT16_MIN_CONSTANT);
@@ -217,6 +229,18 @@ public class ConstantsTest
     public void varint64MaxConstant()
     {
         assertEquals(72057594037927935L, __ConstType.VARINT64_MAX_CONSTANT);
+    }
+
+    @Test
+    public void varintMinConstant()
+    {
+        assertEquals(Long.MIN_VALUE, __ConstType.VARINT_MIN_CONSTANT);
+    }
+
+    @Test
+    public void varintMaxConstant()
+    {
+        assertEquals(Long.MAX_VALUE, __ConstType.VARINT_MAX_CONSTANT);
     }
 
     @Test

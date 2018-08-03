@@ -19,8 +19,6 @@ import org.junit.Test;
 import test_utils.FileUtil;
 import test_utils.JdbcUtil;
 
-import zserio.runtime.SqlDatabase.Mode;
-
 public class SqlTypesTest
 {
     @BeforeClass
@@ -145,6 +143,10 @@ public class SqlTypesTest
         final String varuint64SqlType = sqlColumnTypes.get("varuint64Type");
         assertTrue(varuint64SqlType != null);
         assertTrue(varuint64SqlType.equalsIgnoreCase("INTEGER"));
+
+        final String varuintSqlType = sqlColumnTypes.get("varuintType");
+        assertTrue(varuintSqlType != null);
+        assertTrue(varuintSqlType.equalsIgnoreCase("INTEGER"));
     }
 
     @Test
@@ -163,6 +165,10 @@ public class SqlTypesTest
         final String varint64SqlType = sqlColumnTypes.get("varint64Type");
         assertTrue(varint64SqlType != null);
         assertTrue(varint64SqlType.equalsIgnoreCase("INTEGER"));
+
+        final String varintSqlType = sqlColumnTypes.get("varintType");
+        assertTrue(varintSqlType != null);
+        assertTrue(varintSqlType.equalsIgnoreCase("INTEGER"));
     }
 
     @Test

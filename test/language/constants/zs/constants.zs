@@ -40,6 +40,8 @@ const varuint32     VARUINT32_MIN_CONSTANT = 0x00000000;
 const varuint32     VARUINT32_MAX_CONSTANT = 0x1FFFFFFF;
 const varuint64     VARUINT64_MIN_CONSTANT = 0x0000000000000000;
 const varuint64     VARUINT64_MAX_CONSTANT = 0x01FFFFFFFFFFFFFF;
+const varuint       VARUINT_MIN_CONSTANT   = 0x0000000000000000;
+const varuint       VARUINT_MAX_CONSTANT   = 0xFFFFFFFFFFFFFFFF;
 
 // variable signed integer types
 const varint16      VARINT16_MIN_CONSTANT = -16383;
@@ -48,6 +50,8 @@ const varint32      VARINT32_MIN_CONSTANT = -268435455;
 const varint32      VARINT32_MAX_CONSTANT = 268435455;
 const varint64      VARINT64_MIN_CONSTANT = -72057594037927935;
 const varint64      VARINT64_MAX_CONSTANT = 72057594037927935;
+const varint        VARINT_MIN_CONSTANT   = -9223372036854775808;
+const varint        VARINT_MAX_CONSTANT   = 9223372036854775807;
 
 // boolean type
 const bool          BOOL_TRUE_CONSTANT = true;

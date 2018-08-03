@@ -76,6 +76,18 @@ TEST_F(ArraysMappingTest, variableUnsignedIntegerArrays)
     arraysMapping.setVaruint64Array(zserio::VarUInt64Array(fixedArrayLength));
 }
 
+TEST_F(ArraysMappingTest, varintArray)
+{
+    ArraysMapping arraysMapping;
+    arraysMapping.setVarintArray(zserio::VarIntArray(fixedArrayLength));
+}
+
+TEST_F(ArraysMappingTest, varuintArray)
+{
+    ArraysMapping arraysMapping;
+    arraysMapping.setVaruintArray(zserio::VarUIntArray(fixedArrayLength));
+}
+
 TEST_F(ArraysMappingTest, variableSignedIntegerArrays)
 {
     ArraysMapping arraysMapping;

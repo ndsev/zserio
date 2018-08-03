@@ -322,6 +322,10 @@ final class JavaNativeTypeMapper
                 {
                     javaNullableType = varInt64ArrayType;
                 }
+                else if (nBits == 72)
+                {
+                    javaNullableType = varIntArrayType;
+                }
                 else
                 {
                     throw new ZserioEmitJavaException("unexpected size of variable integer (" +
@@ -365,6 +369,10 @@ final class JavaNativeTypeMapper
                 else if (nBits == 64)
                 {
                     javaNullableType = varUInt64ArrayType;
+                }
+                else if (nBits == 72)
+                {
+                    javaNullableType = varUIntArrayType;
                 }
                 else
                 {
@@ -528,7 +536,7 @@ final class JavaNativeTypeMapper
         {
             if (variable)
             {
-                mapVariableInteger(nBits);
+                mapVariableInteger(nBits, true);
             }
             else
             {
@@ -560,7 +568,7 @@ final class JavaNativeTypeMapper
         {
             if (variable)
             {
-                mapVariableInteger(nBits);
+                mapVariableInteger(nBits, false);
             }
             else
             {
@@ -592,7 +600,7 @@ final class JavaNativeTypeMapper
             }
         }
 
-        private void mapVariableInteger(int nBits) throws ZserioEmitJavaException
+        private void mapVariableInteger(int nBits, boolean signed) throws ZserioEmitJavaException
         {
             /*
              * In Java, varintN and varuintN always fit in the same native type.
@@ -613,6 +621,18 @@ final class JavaNativeTypeMapper
             {
                 javaType = longType;
                 javaNullableType = longNullableType;
+            }
+            else if (nBits == 72)
+            {
+                if (signed)
+                {
+                    javaType = longType;
+                    javaNullableType = longNullableType;
+                }
+                else
+                {
+                    javaNullableType = unsignedLongType;
+                }
             }
             else
             {
@@ -653,39 +673,38 @@ final class JavaNativeTypeMapper
 
     // zserio.runtime arrays
 
-    private final static NativeByteArrayType byteArrayType = new NativeByteArrayType(byteType);
-    private final static NativeUnsignedByteArrayType unsignedByteArrayType =
-            new NativeUnsignedByteArrayType(byteType);
+    private final static NativeByteArrayType byteArrayType = new NativeByteArrayType();
+    private final static NativeUnsignedByteArrayType unsignedByteArrayType = new NativeUnsignedByteArrayType();
 
-    private final static NativeShortArrayType shortArrayType = new NativeShortArrayType(shortType);
+    private final static NativeShortArrayType shortArrayType = new NativeShortArrayType();
     private final static NativeUnsignedShortArrayType unsignedShortArrayType =
-            new NativeUnsignedShortArrayType(shortType);
+            new NativeUnsignedShortArrayType();
 
-    private final static NativeIntArrayType intArrayType = new NativeIntArrayType(intType);
-    private final static NativeUnsignedIntArrayType unsignedIntArrayType =
-            new NativeUnsignedIntArrayType(intType);
+    private final static NativeIntArrayType intArrayType = new NativeIntArrayType();
+    private final static NativeUnsignedIntArrayType unsignedIntArrayType = new NativeUnsignedIntArrayType();
 
-    private final static NativeLongArrayType longArrayType = new NativeLongArrayType(longType);
-    private final static NativeUnsignedLongArrayType unsignedLongArrayType =
-            new NativeUnsignedLongArrayType(longType);
+    private final static NativeLongArrayType longArrayType = new NativeLongArrayType();
+    private final static NativeUnsignedLongArrayType unsignedLongArrayType = new NativeUnsignedLongArrayType();
 
-    private final static NativeBigIntegerArrayType bigIntegerArrayType =
-            new NativeBigIntegerArrayType(unsignedLongType);
+    private final static NativeBigIntegerArrayType bigIntegerArrayType = new NativeBigIntegerArrayType();
 
-    private final static NativeArrayType varInt16ArrayType = new NativeArrayType("VarInt16Array", shortType);
-    private final static NativeArrayType varUInt16ArrayType = new NativeArrayType("VarUInt16Array", shortType);
+    private final static NativeArrayType varInt16ArrayType = new NativeArrayType("VarInt16Array");
+    private final static NativeArrayType varUInt16ArrayType = new NativeArrayType("VarUInt16Array");
 
-    private final static NativeArrayType varInt32ArrayType = new NativeArrayType("VarInt32Array", intType);
-    private final static NativeArrayType varUInt32ArrayType = new NativeArrayType("VarUInt32Array", intType);
+    private final static NativeArrayType varInt32ArrayType = new NativeArrayType("VarInt32Array");
+    private final static NativeArrayType varUInt32ArrayType = new NativeArrayType("VarUInt32Array");
 
-    private final static NativeArrayType varInt64ArrayType = new NativeArrayType("VarInt64Array", longType);
-    private final static NativeArrayType varUInt64ArrayType = new NativeArrayType("VarUInt64Array", longType);
+    private final static NativeArrayType varInt64ArrayType = new NativeArrayType("VarInt64Array");
+    private final static NativeArrayType varUInt64ArrayType = new NativeArrayType("VarUInt64Array");
 
-    private final static NativeArrayType boolArrayType = new NativeArrayType("BoolArray", booleanType);
+    private final static NativeArrayType varIntArrayType = new NativeArrayType("VarIntArray");
+    private final static NativeArrayType varUIntArrayType = new NativeArrayType("VarUIntArray");
 
-    private final static NativeArrayType stdStringArrayType = new NativeArrayType("StringArray", stringType);
+    private final static NativeArrayType boolArrayType = new NativeArrayType("BoolArray");
 
-    private final static NativeArrayType floatArrayType = new NativeArrayType("FloatArray", floatType);
+    private final static NativeArrayType stdStringArrayType = new NativeArrayType("StringArray");
+
+    private final static NativeArrayType floatArrayType = new NativeArrayType("FloatArray");
 
     private final PackageMapper javaPackageMapper;
 }

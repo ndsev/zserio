@@ -168,7 +168,7 @@ public class HtmlModuleNameSuffixVisitor implements ZserioTypeVisitor
      */
     public String getSuffix() throws ZserioEmitHtmlException
     {
-    	if (htmlModuleNameSuffix == null)
+        if (htmlModuleNameSuffix == null)
             throw new ZserioEmitHtmlException("Bad usage of HtmlModuleNameSuffixVisitor!");
 
         return htmlModuleNameSuffix;

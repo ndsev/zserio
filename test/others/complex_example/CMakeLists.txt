@@ -158,6 +158,7 @@ set(ZSERIO_GENERATED_SOURCES
     ${ZSERIO_GEN_DIR}/basetype/bt_varint/VARINT16_T.h
     ${ZSERIO_GEN_DIR}/basetype/bt_varint/VARINT32_T.h
     ${ZSERIO_GEN_DIR}/basetype/bt_varint/VARINT64_T.h
+    ${ZSERIO_GEN_DIR}/basetype/bt_varint/VARINT_T.h
     ${ZSERIO_GEN_DIR}/basetype/bt_varint/VarIntChoice.cpp
     ${ZSERIO_GEN_DIR}/basetype/bt_varint/VarIntChoice.h
     ${ZSERIO_GEN_DIR}/basetype/bt_varint/VarIntStructure.cpp
@@ -171,6 +172,7 @@ set(ZSERIO_GENERATED_SOURCES
     ${ZSERIO_GEN_DIR}/basetype/bt_varint/VARUINT16_T.h
     ${ZSERIO_GEN_DIR}/basetype/bt_varint/VARUINT32_T.h
     ${ZSERIO_GEN_DIR}/basetype/bt_varint/VARUINT64_T.h
+    ${ZSERIO_GEN_DIR}/basetype/bt_varint/VARUINT_T.h
     ${ZSERIO_GEN_DIR}/basetype/bt_varint/VarUIntStructureParameter.cpp
     ${ZSERIO_GEN_DIR}/basetype/bt_varint/VarUIntStructureParameter.h
     ${ZSERIO_GEN_DIR}/compound/ct_choice/ChoiceOnB1.cpp

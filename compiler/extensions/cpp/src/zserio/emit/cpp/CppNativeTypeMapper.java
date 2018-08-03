@@ -337,6 +337,9 @@ public class CppNativeTypeMapper
                 case 64:
                     cppType = varInt64ArrayType;
                     break;
+                case 72:
+                    cppType = varIntArrayType;
+                    break;
                 default:
                     throw new ZserioEmitCppException("unexpected size of variable integer (" +
                             Integer.toString(nBits) + ")");
@@ -370,6 +373,9 @@ public class CppNativeTypeMapper
                     break;
                 case 64:
                     cppType = varUInt64ArrayType;
+                    break;
+                case 72:
+                    cppType = varUIntArrayType;
                     break;
                 default:
                     throw new ZserioEmitCppException("unexpected size of variable integer (" +
@@ -543,6 +549,7 @@ public class CppNativeTypeMapper
                     cppType = int32Type;
                     break;
                 case 64:
+                case 72:
                     cppType = int64Type;
                     break;
                 default:
@@ -577,6 +584,7 @@ public class CppNativeTypeMapper
                     cppType = uint32Type;
                     break;
                 case 64:
+                case 72:
                     cppType = uint64Type;
                     break;
                 default:
@@ -674,6 +682,11 @@ public class CppNativeTypeMapper
         new NativeArrayType(ZSERIO_RUNTIME_NAMESPACE_PATH, "VarInt64Array", BASIC_ARRAY_H, int64Type);
     private final static NativeArrayType varUInt64ArrayType =
         new NativeArrayType(ZSERIO_RUNTIME_NAMESPACE_PATH, "VarUInt64Array", BASIC_ARRAY_H, uint64Type);
+
+    private final static NativeArrayType varIntArrayType =
+        new NativeArrayType(ZSERIO_RUNTIME_NAMESPACE_PATH, "VarIntArray", BASIC_ARRAY_H, int64Type);
+    private final static NativeArrayType varUIntArrayType =
+        new NativeArrayType(ZSERIO_RUNTIME_NAMESPACE_PATH, "VarUIntArray", BASIC_ARRAY_H, uint64Type);
 
     private final static String CONST_TYPE_NAME = "ConstType";
 }

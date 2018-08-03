@@ -155,6 +155,16 @@ TEST(ConstantsTest, varuint64MaxConstant)
     ASSERT_EQ(static_cast<uint64_t>(0x01FFFFFFFFFFFFFFULL), ConstType::VARUINT64_MAX_CONSTANT);
 }
 
+TEST(ConstantsTest, varuintMinConstant)
+{
+    ASSERT_EQ(std::numeric_limits<uint64_t>::min(), ConstType::VARUINT_MIN_CONSTANT);
+}
+
+TEST(ConstantsTest, varuintMaxConstant)
+{
+    ASSERT_EQ(std::numeric_limits<uint64_t>::max(), ConstType::VARUINT_MAX_CONSTANT);
+}
+
 TEST(ConstantsTest, varint16MinConstant)
 {
     ASSERT_EQ(static_cast<int16_t>(-16383), ConstType::VARINT16_MIN_CONSTANT);
@@ -183,6 +193,16 @@ TEST(ConstantsTest, varint64MinConstant)
 TEST(ConstantsTest, varint64MaxConstant)
 {
     ASSERT_EQ(static_cast<int64_t>(72057594037927935LL), ConstType::VARINT64_MAX_CONSTANT);
+}
+
+TEST(ConstantsTest, varintMinConstant)
+{
+    ASSERT_EQ(std::numeric_limits<int64_t>::min(), ConstType::VARINT_MIN_CONSTANT);
+}
+
+TEST(ConstantsTest, varintMaxConstant)
+{
+    ASSERT_EQ(std::numeric_limits<int64_t>::max(), ConstType::VARINT_MAX_CONSTANT);
 }
 
 TEST(ConstantsTest, boolTrueConstant)

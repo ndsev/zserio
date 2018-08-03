@@ -93,6 +93,20 @@ public class VarIntegerType extends IntegerType
             maxBitSize = 64;
             break;
 
+        case ZserioParserTokenTypes.VARUINT:
+            upperBound = BigInteger.ONE.shiftLeft(64).subtract(BigInteger.ONE);
+            lowerBound = BigInteger.ZERO;
+            isSigned = false;
+            maxBitSize = 72;
+            break;
+
+        case ZserioParserTokenTypes.VARINT:
+            upperBound = BigInteger.valueOf(Long.MAX_VALUE);
+            lowerBound = BigInteger.valueOf(Long.MIN_VALUE);
+            isSigned = true;
+            maxBitSize = 72;
+            break;
+
         default:
             throw new ParserException(this, "Unexpected AST node type in VarIntegerType!");
         }

@@ -2,9 +2,9 @@ package zserio.emit.java.types;
 
 public class NativeLongArrayType extends NativeArrayType
 {
-    public NativeLongArrayType(JavaNativeType elementType)
+    public NativeLongArrayType()
     {
-        super("LongArray", elementType);
+        super("LongArray");
     }
 
     @Override

@@ -63,6 +63,9 @@ struct ArraysMapping
     varint32                    varint32Array[5];
     varint64                    varint64Array[5];
 
+    varint                      varintArray[5];
+    varuint                     varuintArray[5];
+
     // boolean array
     bool                        boolArray[5];
 

@@ -241,6 +241,24 @@ public class BaseTypesTest
     }
 
     @Test
+    public void varuintTypeMin()
+    {
+        final BigInteger minVaruintType = BigInteger.ZERO;
+        baseTypes.setVaruintType(minVaruintType);
+        final BigInteger varuintType = baseTypes.getVaruintType();
+        assertEquals(minVaruintType, varuintType);
+    }
+
+    @Test
+    public void varuintTypeMax()
+    {
+        final BigInteger maxVaruintType = BigInteger.ONE.shiftLeft(64).subtract(BigInteger.ONE);
+        baseTypes.setVaruintType(maxVaruintType);
+        final BigInteger varuintType = baseTypes.getVaruintType();
+        assertEquals(maxVaruintType, varuintType);
+    }
+
+    @Test
     public void varint16Type()
     {
         final short maxVarint16Type = ((short)1 << 14) - 1;
@@ -265,6 +283,24 @@ public class BaseTypesTest
         baseTypes.setVarint64Type(maxVarint64Type);
         final long varint64Type = baseTypes.getVarint64Type();
         assertEquals(maxVarint64Type, varint64Type);
+    }
+
+    @Test
+    public void varintTypeMin()
+    {
+        final long minVarintType = Long.MIN_VALUE;
+        baseTypes.setVarintType(minVarintType);
+        final long varuintType = baseTypes.getVarintType();
+        assertEquals(minVarintType, varuintType);
+    }
+
+    @Test
+    public void varintTypeMax()
+    {
+        final long maxVarintType = Long.MAX_VALUE;
+        baseTypes.setVarintType(maxVarintType);
+        final long varintType = baseTypes.getVarintType();
+        assertEquals(maxVarintType, varintType);
     }
 
     @Test

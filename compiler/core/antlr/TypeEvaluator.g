@@ -390,12 +390,14 @@ signedBitField
     ;
 
 varintType
-    :   VARUINT16 |
-        VARUINT32 |
-        VARUINT64 |
+    :   VARINT |
         VARINT16 |
         VARINT32 |
-        VARINT64
+        VARINT64 |
+        VARUINT |
+        VARUINT16 |
+        VARUINT32 |
+        VARUINT64
     ;
 
 boolType

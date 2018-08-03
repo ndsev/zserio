@@ -2,9 +2,9 @@ package zserio.emit.java.types;
 
 public class NativeIntArrayType extends NativeArrayType
 {
-    public NativeIntArrayType(JavaNativeType elementType)
+    public NativeIntArrayType()
     {
-        super("IntArray", elementType);
+        super("IntArray");
     }
 
     @Override
