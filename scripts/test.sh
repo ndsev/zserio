@@ -177,12 +177,11 @@ Package can be a combination of:
     all-linux64    Zserio tests - all available linux64 packages.
     all-windows32  Zserio tests - all available windows32 packages.
     all-windows64  Zserio tests - all available windows64 packages.
-    all            Zserio tests - all available packages.
 
 Examples:
     $0 java cpp-linux64
     $0 -t language/sql_tables cpp-linux64
-    $0 all
+    $0 all-linux64
 
 EOF
 
@@ -287,18 +286,10 @@ parse_arguments()
                 NUM_TARGETS=$((NUM_TARGETS + 1))
                 ;;
 
-            "all"*)
+            "all-linux32" | "all-linux64" | "all-windows32" | "all-windows64")
                 eval ${PARAM_JAVA_OUT}=1
-                if [[ ${PARAM:3:1} == "-" ]] ; then
-                    eval ${PARAM_CPP_TARGET_ARRAY_OUT}[${NUM_TARGETS}]="${PARAM#all-}"
-                    NUM_TARGETS=$((NUM_TARGETS + 1))
-                else
-                    eval ${PARAM_CPP_TARGET_ARRAY_OUT}[0]="linux32"
-                    eval ${PARAM_CPP_TARGET_ARRAY_OUT}[1]="linux64"
-                    eval ${PARAM_CPP_TARGET_ARRAY_OUT}[2]="windows32"
-                    eval ${PARAM_CPP_TARGET_ARRAY_OUT}[3]="windows64"
-                    NUM_TARGETS=4
-                fi
+                eval ${PARAM_CPP_TARGET_ARRAY_OUT}[${NUM_TARGETS}]="${PARAM#all-}"
+                NUM_TARGETS=$((NUM_TARGETS + 1))
                 ;;
 
             *)
