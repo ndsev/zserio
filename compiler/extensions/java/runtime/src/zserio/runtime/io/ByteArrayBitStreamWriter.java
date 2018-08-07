@@ -443,7 +443,7 @@ public class ByteArrayBitStreamWriter extends ByteArrayBitStreamBase implements 
         for (byte b : bytes)
         {
             if (bitsToWrite != 0)
-                writeBits(((long)b) & 0xffL, bitsToWrite);
+                writeBitsImpl(((long)b) & 0xffL, bitsToWrite);
 
             bitsToWrite = BITS_PER_BYTE;
         }

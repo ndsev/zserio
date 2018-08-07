@@ -53,33 +53,40 @@ public class ByteArrayBitStreamReader extends ByteArrayBitStreamBase implements 
     @Override
     public long readBits(final int numBits) throws IOException
     {
-        /*
-         * If unaligned, we can only read 7 bytes at a time.
-         * Maybe we should adapt the range check to deal with this.
-         */
         checkRange(numBits);
 
         int bitsToRead = bitOffset + numBits;
         final int nextBitOffset = bitsToRead & BYTE_MOD_MASK;
 
-        long accum = 0L;
-        while (bitsToRead > 0)
+        long accum = nextUnsignedByte() & BIT_MASKS[bitOffset];
+        bitsToRead -= BITS_PER_BYTE;
+
+        if (bitsToRead < 0)
         {
-            accum = (accum << BITS_PER_BYTE) | nextUnsignedByte();
-            bitsToRead -= BITS_PER_BYTE;
+            // less than a byte needed
+            accum = accum >>> -bitsToRead;
+            bytePosition--; // consumed only few bits
+        }
+        else
+        {
+            // full bytes
+            while (bitsToRead >= BITS_PER_BYTE)
+            {
+                accum = (accum << BITS_PER_BYTE) | nextUnsignedByte();
+                bitsToRead -= BITS_PER_BYTE;
+            }
+
+            // last few bits
+            if (bitsToRead > 0)
+            {
+                accum = (accum << bitsToRead) | (nextUnsignedByte() >>> (BITS_PER_BYTE - bitsToRead));
+                bytePosition--; // consumed only few bits
+            }
         }
 
         bitOffset = nextBitOffset;
-        if (nextBitOffset != 0)
-        {
-            bytePosition--;
-        }
 
-        /*
-         * Shift away unwanted bits on the right and mask out unwanted bits on
-         * the left.
-         */
-        return (accum >>> -bitsToRead) & (-1L >>> (BITS_PER_LONG - numBits));
+        return accum;
     }
 
     /**
@@ -686,6 +693,11 @@ public class ByteArrayBitStreamReader extends ByteArrayBitStreamBase implements 
      * The number of bits per 7 bytes.
      */
     protected static final int BITS_PER_7_BYTES = 0x38;
+
+    /**
+     * Bit masks to mask appropriate bits during unaligned reading.
+     */
+    final int BIT_MASKS[] = { 0xff, 0x7f, 0x3f, 0x1f, 0x0f, 0x07, 0x03, 0x01 };
 
     /** Variable length integer sing bit mask for first byte. */
     protected static final int VARINT_SIGN_1 = 0x80;

@@ -142,42 +142,6 @@ public class ByteArrayBitStreamWriterTest
         assertEquals(b.length * 8L, 32);
     }
 
-/*
-    FIXME: fails because ByteArrayBitStreamWriter.writeBoolean() does 8bit padding
-    while ByteArrayBitStreamReader does not do any padding.
-
-    @Test
-    public void writeBoolean() throws IOException
-    {
-        writeReadTest(new WriteReadTestable(){
-            @Override
-            public void write(ByteArrayBitStreamWriter writer) throws IOException
-            {
-                for (boolean value : DATA)
-                {
-                    writer.writeBoolean(value);
-                }
-            }
-
-            @Override
-            public void read(ImageInputStream reader) throws IOException
-            {
-                for (boolean value : DATA)
-                {
-                    assertEquals(value, reader.readBoolean());
-                }
-                assertEquals(8 * DATA.length, getBitOffset(reader));
-            }
-
-            private final boolean[] DATA =
-            {
-                true,
-                false
-            };
-        });
-    }
-*/
-
     @Test
     public void writeBit() throws IOException
     {

@@ -34,10 +34,7 @@ public class UnsignedLongArrayTest extends UnsignedFixedIntegerArrayTestBase
     @Override
     protected int getReadWriteTestNumBits()
     {
-        // FIXME: ByteArrayBitStreamReader.readBits() doesn't read more than 56 bits reliably
-        // so work around the issue...
-        return 56;
-        //return Long.SIZE - 1; // use the maximal number of bits the array allows
+        return Long.SIZE - 1; // use the maximal number of bits the array allows
     }
 
     @Override
@@ -45,15 +42,12 @@ public class UnsignedLongArrayTest extends UnsignedFixedIntegerArrayTestBase
     {
         final long[] data =
         {
-            // FIXME: ByteArrayBitStreamReader.readBits() doesn't read more than 56 bits reliably
-            // so work around the issue...
-        /*
             0x7111111111111111L,
             0x7222222222222222L,
             0x7333333333333333L,
             0x7444444444444444L,
-            0x7555555555555555L
-        */
+            0x7555555555555555L,
+
             0x71111111111111L,
             0x72222222222222L,
             0x73333333333333L,

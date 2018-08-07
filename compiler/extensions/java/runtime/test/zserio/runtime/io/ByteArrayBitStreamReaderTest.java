@@ -877,8 +877,6 @@ public class ByteArrayBitStreamReaderTest
         });
     }
 
-    /*
-    FIXME: this test fails
     @Test
     public void readUnaligned63Bits() throws IOException
     {
@@ -894,7 +892,6 @@ public class ByteArrayBitStreamReaderTest
         assertEquals(0x7FFFFFFFFFFFFFFFL, reader.readBits(63));
         assertEquals(0, reader.readBits(5));
     }
-    */
 
     private interface WriteReadTestable
     {
