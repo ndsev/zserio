@@ -156,7 +156,7 @@ public class ByteArrayBitStreamVarUIntTest
         ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter();
         writer.writeVarUInt(value);
         assertEquals(0, writer.getBitPosition() % 8);
-        assertEquals(expectedNumBytes, writer.getBitPosition() / 8);
+        assertEquals(expectedNumBytes, writer.getBytePosition());
         byte[] buffer = writer.toByteArray();
         ByteArrayBitStreamReader reader = new ByteArrayBitStreamReader(buffer);
         BigInteger readValue = reader.readVarUInt();

@@ -4,14 +4,11 @@
 package zserio.runtime.io;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.math.BigInteger;
-import java.nio.ByteOrder;
-
 import javax.imageio.stream.ImageOutputStream;
 import javax.imageio.stream.MemoryCacheImageOutputStream;
 
@@ -19,18 +16,6 @@ import org.junit.Test;
 
 public class ByteArrayBitStreamReaderTest
 {
-    /**
-     * Test the get byte order method.
-     */
-    @Test
-    public void getByteOrder()
-    {
-        final ByteOrder expected = ByteOrder.BIG_ENDIAN;
-
-        final ByteArrayBitStreamReader reader = new ByteArrayBitStreamReader(new byte[] {});
-        assertEquals(expected, reader.getByteOrder());
-    }
-
     /**
      * Test the exception in the protected readRange method.
      *
@@ -152,7 +137,7 @@ public class ByteArrayBitStreamReaderTest
             @Override
             public void read(ByteArrayBitStreamReader reader) throws IOException
             {
-                final short uint8 = (short)reader.readUnsignedByte();
+                final short uint8 = reader.readUnsignedByte();
                 assertEquals(uint8, 0x67);
                 final long uint32 = reader.readUnsignedInt();
                 assertEquals(uint32, 0x891234CDL);
@@ -167,7 +152,7 @@ public class ByteArrayBitStreamReaderTest
             @Override
             public void read(ByteArrayBitStreamReader reader) throws IOException
             {
-                final short uint8 = (short)reader.readUnsignedByte();
+                final short uint8 = reader.readUnsignedByte();
                 assertEquals(uint8, 0x67);
                 final int uint16 = reader.readUnsignedShort();
                 assertEquals(uint16, 0x8912);
@@ -307,100 +292,11 @@ public class ByteArrayBitStreamReaderTest
         });
     }
 
-    @Test(expected = UnsupportedOperationException.class)
-    public void readLine() throws IOException
-    {
-        writeReadTest(new SampleWriteReadTest(){
-            @Override
-            public void read(ByteArrayBitStreamReader reader) throws IOException
-            {
-                reader.readLine();
-            }
-        });
-    }
-
-    @Test(expected = UnsupportedOperationException.class)
-    public void readUTF() throws IOException
-    {
-        writeReadTest(new SampleWriteReadTest(){
-            @Override
-            public void read(ByteArrayBitStreamReader reader) throws IOException
-            {
-                reader.readUTF();
-            }
-        });
-    }
-
-    /**
-     * Test the skipBytes() method.
-     *
-     * @throws IOException if the skipping fails
-     */
-    @Test
-    public void skipBytes() throws IOException
-    {
-        writeReadTest(new SampleWriteReadTest(){
-            @Override
-            public void read(ByteArrayBitStreamReader reader) throws IOException
-            {
-                assertEquals(0, reader.getBytePosition());
-                assertEquals(1, reader.skipBytes(1)); // mostly to silent FindBugs
-                assertEquals(1, reader.getBytePosition());
-                assertEquals(3, reader.skipBytes(3)); // mostly to silent FindBugs
-                assertEquals(4, reader.getBytePosition());
-            }
-        });
-    }
-
-    /**
-     * Test the seek method.
-     *
-     * @throws IOException
-     */
-    @Test
-    public void seek() throws IOException
-    {
-        writeReadTest(new SampleWriteReadTest(){
-            @Override
-            public void read(ByteArrayBitStreamReader reader) throws IOException
-            {
-                reader.seek(1);
-                assertEquals(-119, reader.readByte());
-                reader.seek(0);
-                assertEquals(103, reader.readByte());
-                reader.seek(1);
-                assertEquals(-119, reader.readByte());
-                reader.seek(100);
-            }
-        });
-    }
-
-    /**
-     * Test the rewind method.
-     *
-     * @throws IOException if the reader method calls fails
-     */
-    @Test
-    public void rewind() throws IOException
-    {
-        writeReadTest(new SampleWriteReadTest(){
-            @Override
-            public void read(ByteArrayBitStreamReader reader) throws IOException
-            {
-                reader.readByte();
-                reader.readByte();
-                assertEquals(2, reader.getBytePosition());
-                reader.rewind();
-                assertEquals(0, reader.getBytePosition());
-            }
-        });
-    }
-
     @Test
     public void signedBitfield2() throws IOException
     {
         final ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter();
-        writer.writeShort(-10000);
+        writer.writeShort((short)-10000);
         writer.close();
         final byte[] blob = writer.toByteArray();
         assertEquals(2, blob.length);
@@ -463,7 +359,7 @@ public class ByteArrayBitStreamReaderTest
             {
                 reader.alignTo(10);
                 assertEquals(0, reader.getBitPosition());
-                reader.skipBits(1);
+                reader.setBitPosition(reader.getBitPosition() + 1);
                 reader.alignTo(10);
                 assertEquals(10, reader.getBitPosition());
             }
@@ -478,28 +374,8 @@ public class ByteArrayBitStreamReaderTest
             public void read(ByteArrayBitStreamReader reader) throws IOException
             {
                 assertEquals(0, reader.getBitPosition());
-                reader.skipBits(10);
+                reader.setBitPosition(reader.getBitPosition() + 10);
                 assertEquals(10, reader.getBitPosition());
-            }
-        });
-    }
-
-    @Test
-    public void readBoolean() throws IOException
-    {
-        writeReadTest(new WriteReadTestable(){
-            @Override
-            public void write(ImageOutputStream writer) throws IOException
-            {
-                writer.writeBoolean(true);
-                writer.writeBoolean(false);
-            }
-
-            @Override
-            public void read(ByteArrayBitStreamReader reader) throws IOException
-            {
-                assertTrue(reader.readBoolean());
-                assertFalse(reader.readBoolean());
             }
         });
     }
@@ -540,48 +416,6 @@ public class ByteArrayBitStreamReaderTest
             {
                 assertEquals(Integer.MAX_VALUE, reader.readInt());
                 assertEquals(Integer.MIN_VALUE, reader.readInt());
-            }
-        });
-    }
-
-    @Test
-    public void readDouble() throws IOException
-    {
-        writeReadTest(new WriteReadTestable(){
-            @Override
-            public void write(ImageOutputStream writer) throws IOException
-            {
-                writer.writeDouble(Double.MAX_VALUE);
-                writer.writeDouble(1.0d);
-            }
-
-            @Override
-            public void read(ByteArrayBitStreamReader reader) throws IOException
-            {
-                assertEquals(Double.MAX_VALUE, reader.readDouble(), 0);
-                assertEquals(1.0d, reader.readDouble(), 0);
-            }
-        });
-    }
-
-    @Test
-    public void readChar() throws IOException
-    {
-        writeReadTest(new WriteReadTestable(){
-            @Override
-            public void write(ImageOutputStream writer) throws IOException
-            {
-                writer.writeChar('c');
-                writer.writeChars("abc");
-            }
-
-            @Override
-            public void read(ByteArrayBitStreamReader reader) throws IOException
-            {
-                assertEquals('c', reader.readChar());
-                assertEquals('a', reader.readChar());
-                assertEquals('b', reader.readChar());
-                assertEquals('c', reader.readChar());
             }
         });
     }
@@ -711,90 +545,6 @@ public class ByteArrayBitStreamReaderTest
     }
 
     @Test
-    public void readFully() throws IOException
-    {
-        final byte[] data = new byte[] { (byte)0, (byte)1 };
-
-        writeReadTest(new WriteReadTestable(){
-            @Override
-            public void write(ImageOutputStream writer) throws IOException
-            {
-                for (byte value: data)
-                {
-                    writer.writeByte(value);
-                }
-            }
-
-            @Override
-            public void read(ByteArrayBitStreamReader reader) throws IOException
-            {
-                byte[] received = new byte[data.length];
-                reader.readFully(received);
-
-                for (int i = 0; i < received.length; i++)
-                {
-                    assertEquals(data[i], received[i]);
-                }
-            }
-        });
-    }
-
-    @Test
-    public void readFully2() throws IOException
-    {
-        final byte[] data = new byte[] { (byte)0, (byte)1 };
-
-        writeReadTest(new WriteReadTestable(){
-            @Override
-            public void write(ImageOutputStream writer) throws IOException
-            {
-                for (byte value: data)
-                {
-                    writer.writeByte(value);
-                }
-            }
-
-            @Override
-            public void read(ByteArrayBitStreamReader reader) throws IOException
-            {
-                byte[] received = new byte[data.length];
-                reader.readFully(received, 0, data.length);
-            }
-        });
-    }
-
-    @Test
-    public void read() throws IOException
-    {
-        writeReadTest(new WriteReadTestable(){
-            @Override
-            public void write(ImageOutputStream writer) throws IOException
-            {
-                writer.writeByte((byte)1);
-                writer.writeByte((byte)1);
-            }
-
-            @Override
-            public void read(ByteArrayBitStreamReader reader) throws IOException
-            {
-                assertEquals(1, reader.read());
-                assertEquals(1, reader.read());
-                assertEquals(0, reader.getBitOffset());
-            }
-        });
-
-        final ByteArrayBitStreamWriter babsw = new ByteArrayBitStreamWriter();
-
-        babsw.writeUnsignedByte((short)1);
-        babsw.writeUnsignedByte((short)1);
-        final ByteArrayBitStreamReader in = new ByteArrayBitStreamReader(babsw.toByteArray());
-        assertEquals(1, in.read());
-        assertEquals(1, in.read());
-        assertEquals(0, in.getBitOffset());
-
-    }
-
-    @Test
     public void readFloat16() throws IOException
     {
         final ByteArrayBitStreamWriter babsw = new ByteArrayBitStreamWriter();
@@ -804,45 +554,6 @@ public class ByteArrayBitStreamReaderTest
         in.close();
     }
 
-    @Test
-    public void readFloat() throws IOException
-    {
-        writeReadTest(new WriteReadTestable(){
-            @Override
-            public void write(ImageOutputStream writer) throws IOException
-            {
-                writer.writeFloat(1.0f);
-            }
-
-            @Override
-            public void read(ByteArrayBitStreamReader reader) throws IOException
-            {
-                assertEquals(1.0f, reader.readFloat(), 0);
-            }
-        });
-    }
-
-    @Test
-    public void readBit() throws IOException
-    {
-        writeReadTest(new WriteReadTestable(){
-            @Override
-            public void write(ImageOutputStream writer) throws IOException
-            {
-                writer.writeBits(2 /*0b0010*/, 4);
-            }
-
-            @Override
-            public void read(ByteArrayBitStreamReader reader) throws IOException
-            {
-                assertEquals(0, reader.readBit());
-                assertEquals(0, reader.readBit());
-                assertEquals(1, reader.readBit());
-                assertEquals(0, reader.readBit());
-            }
-        });
-    }
-
     @Test(expected = IOException.class)
     public void readTooMuch() throws IOException
     {
@@ -850,31 +561,6 @@ public class ByteArrayBitStreamReaderTest
         final ByteArrayBitStreamReader in = new ByteArrayBitStreamReader(new byte[] {0x33});
         in.readBits(5); // 5 out of 8 bits are attempted to read. expected to just go fine
         in.readBits(4); // 9 out of 8 bits are attempted to read. expected to throw documented exception
-    }
-
-    @Test
-    public void littleEndian() throws IOException
-    {
-        writeReadTest(new WriteReadTestable(){
-            @Override
-            public void write(ImageOutputStream writer) throws IOException
-            {
-                writer.writeShort(12);
-                writer.writeInt(13);
-                writer.writeLong(11111110111L);
-                writer.writeBits(2 /*0b10*/, 2);
-            }
-
-            @Override
-            public void read(ByteArrayBitStreamReader reader) throws IOException
-            {
-                assertEquals(12, reader.readShort());
-                assertEquals(13, reader.readInt());
-                assertEquals(11111110111L, reader.readLong());
-                assertEquals(1, reader.readBit());
-                assertEquals(0, reader.readBit());
-            }
-        });
     }
 
     @Test

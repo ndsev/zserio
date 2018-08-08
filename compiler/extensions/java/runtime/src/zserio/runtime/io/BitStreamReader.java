@@ -1,30 +1,23 @@
 package zserio.runtime.io;
 
-import java.io.DataInput;
 import java.io.IOException;
 import java.math.BigInteger;
-import java.nio.ByteOrder;
 
 /**
  * An interface for a bit stream reader implementation.
  */
-public interface BitStreamReader extends BitStreamConsumer, DataInput
+public interface BitStreamReader extends BitStreamCloseable
 {
     /**
-     * Gets the byte order.
+     * Reads the next numBits as signed bit value.
      *
-     * @return Used byte order.
+     * @param numBits Number of bits to read.
+     *
+     * @return Read signed bit value.
+     *
+     * @throws IOException If reading failed.
      */
-    ByteOrder getByteOrder();
-
-    /**
-     * Reads the next bit of the bit stream as long value.
-     *
-     * @return Read bit value.
-     *
-     * @throws IOException if the reading fails
-     */
-    long readBit() throws IOException;
+    long readSignedBits(final int numBits) throws IOException;
 
     /**
      * Reads the next numBits of the bit stream as long value.
@@ -37,14 +30,68 @@ public interface BitStreamReader extends BitStreamConsumer, DataInput
      */
     long readBits(final int numBits) throws IOException;
 
+    /** Reads the next signed byte (8 bits).
+     *
+     * @return Read signed byte value.
+     *
+     * @throws IOException If reading failed.
+     */
+    byte readByte() throws IOException;
+
     /**
-     * Reads the next unsigned integer as long value.
+     * Reads the next unsigned byte (8 bits) as short value.
+     *
+     * @return Read unsigned byte value.
+     *
+     * @throws IOException If reading failed.
+     */
+    short readUnsignedByte() throws IOException;
+
+    /**
+     * Reads the next signed short (16 bits).
+     *
+     * @return Read signed short value.
+     *
+     * @throws IOException
+     */
+    short readShort() throws IOException;
+
+    /**
+     * Read the next unsigned short (16 bits) as int value.
+     *
+     * @return Read unsigned short value.
+     *
+     * @throws IOException
+     */
+    int readUnsignedShort() throws IOException;
+
+
+    /**
+     * Reads the next signed integer (32 bits).
+     *
+     * @return Read signed integer value.
+     *
+     * @throws IOException If reading failed.
+     */
+    int readInt() throws IOException;
+
+    /**
+     * Reads the next unsigned integer (32 bits) as long value.
      *
      * @return Read unsigned integer value.
      *
      * @throws IOException If reading failed.
      */
     long readUnsignedInt() throws IOException;
+
+    /**
+     * Reads the next signed long (64 bits).
+     *
+     * @return Read signed long value.
+     *
+     * @throws IOException If reading failed.
+     */
+    long readLong() throws IOException;
 
     /**
      * Reads the next unsigned Big Integer value with containing numBits bits.
@@ -172,24 +219,34 @@ public interface BitStreamReader extends BitStreamConsumer, DataInput
     BigInteger readVarUInt() throws IOException;
 
     /**
-     * Reads the next numBits as signed bit value.
+     * Gets the current bit position.
      *
-     * @param numBits Number of bits to read.
-     *
-     * @return Read signed bit value.
-     *
-     * @throws IOException If reading failed.
+     * @return Current bit position counted from zero.
      */
-    long readSignedBits(final int numBits) throws IOException;
+    long getBitPosition();
 
     /**
-     * Reads given number of bytes to given byte array.
+     * Gets the current byte position.
      *
-     * @param dest   Byte array where to store read bytes.
-     * @param offset Offset to byte array <code>dest</code> where to start storing of read bytes.
-     * @param length Number of bytes to read from bit stream.
-     *
-     * @return Number of successfully read bytes.
+     * @return Current byte position counted from zero.
      */
-    int read(final byte[] dest, final int offset, final int length);
+    int getBytePosition();
+
+    /**
+     * Sets the bit position to the given value.
+     *
+     * @param position Bit position counted from zero to set.
+     *
+     * @throws IOException If the position cannot be set.
+     */
+    void setBitPosition(long position) throws IOException;
+
+    /**
+     * Aligns the bit position according to the aligning value.
+     *
+     * @param alignVal An aligning value to use.
+     *
+     * @throws IOException If the alignment failed.
+     */
+    void alignTo(final int alignVal) throws IOException;
 }

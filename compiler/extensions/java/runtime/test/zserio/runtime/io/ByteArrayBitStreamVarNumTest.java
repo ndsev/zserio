@@ -439,9 +439,9 @@ public class ByteArrayBitStreamVarNumTest
 
     private static void writeSentinel(BitStreamWriter writer) throws IOException
     {
-        writer.writeByte(0x00);
-        writer.writeByte(0xFF);
-        writer.writeByte(0x00);
+        writer.writeByte((byte)0x00);
+        writer.writeByte((byte)0xFF);
+        writer.writeByte((byte)0x00);
     }
 
     private static void readSentinel(BitStreamReader reader) throws IOException

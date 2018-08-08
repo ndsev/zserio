@@ -1,8 +1,6 @@
 package zserio.runtime.validation;
 
 import java.io.IOException;
-import java.nio.ByteOrder;
-
 import zserio.runtime.io.ByteArrayBitStreamReader;
 
 /**
@@ -21,24 +19,13 @@ import zserio.runtime.io.ByteArrayBitStreamReader;
 public class ValidationBitStreamReader extends ByteArrayBitStreamReader
 {
     /**
-     * Constructs a new ValidationBitStreamReader containing the bytes of the byte Array.
+     * Constructs a new ValidationBitStreamReader.
      *
-     * @param bytes Array of bytes to costruct from.
+     * @param bytes     Array of bytes to construct from.
      */
     public ValidationBitStreamReader(final byte[] bytes)
     {
-        this(bytes, DEFAULT_BYTE_ORDER);
-    }
-
-    /**
-     * Constructs a new ValidationBitStreamReader containing a little or big endian byte order.
-     *
-     * @param bytes     Array of bytes to costruct from.
-     * @param byteOrder Little endian or big endian byte order to use.
-     */
-    public ValidationBitStreamReader(final byte[] bytes, final ByteOrder byteOrder)
-    {
-        super(bytes, byteOrder);
+        super(bytes);
         invalidMaskBuffer = new byte[bytes.length];
         invalidMaskBufferEraser = new MaskBufferEraser(invalidMaskBuffer);
         invalidMaskBufferSetter = new MaskBufferSetter(invalidMaskBuffer);
@@ -59,7 +46,7 @@ public class ValidationBitStreamReader extends ByteArrayBitStreamReader
         final byte[] maskedByteArray = new byte[invalidMaskBuffer.length];
         final int endBytePosition = getBytePosition();
         for (int i = 0; i < endBytePosition; ++i)
-            maskedByteArray[i] = (byte)(buffer[i] & ~invalidMaskBuffer[i] | nanMaskBuffer[i]);
+            maskedByteArray[i] = (byte)(getBuffer()[i] & ~invalidMaskBuffer[i] | nanMaskBuffer[i]);
 
         final int endBitOffset = getBitOffset();
         if (endBitOffset > 0)
@@ -69,7 +56,7 @@ public class ValidationBitStreamReader extends ByteArrayBitStreamReader
             // mask         | 0x7F | 0x3F | 0x1F | 0x0F | 0x07 | 0x03 | 0x01 |
             final int mask = (1 << (BITS_PER_BYTE - endBitOffset)) - 1;
             final int invalidMask = invalidMaskBuffer[endBytePosition] | mask;
-            maskedByteArray[endBytePosition] = (byte)(buffer[endBytePosition] & ~invalidMask |
+            maskedByteArray[endBytePosition] = (byte)(getBuffer()[endBytePosition] & ~invalidMask |
                     nanMaskBuffer[endBytePosition]);
         }
 

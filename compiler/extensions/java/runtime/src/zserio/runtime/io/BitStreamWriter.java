@@ -1,23 +1,13 @@
 package zserio.runtime.io;
 
-import java.io.DataOutput;
 import java.io.IOException;
 import java.math.BigInteger;
 
 /**
  * An interface for a bit stream writer implementation.
  */
-public interface BitStreamWriter extends BitStreamConsumer, DataOutput
+public interface BitStreamWriter extends BitStreamCloseable
 {
-    /**
-     * Writes the given bit to the underlying storage.
-     *
-     * @param bit A bit value to write.
-     *
-     * @throws IOException If the writing failed.
-     */
-    void writeBit(final int bit) throws IOException;
-
     /**
      * Writes the given value with the given number of signed bits to the underlying storage.
      *
@@ -39,6 +29,15 @@ public interface BitStreamWriter extends BitStreamConsumer, DataOutput
     void writeBits(final long value, final int numBits) throws IOException;
 
     /**
+     * Writes a signed byte to the underlying storage.
+     *
+     * @param value Signed byte value to write.
+     *
+     * @throws IOException If the writing failed.
+     */
+    void writeByte(final byte value) throws IOException;
+
+    /**
      * Writes an unsigned byte to the underlying storage.
      *
      * @param value Unsigned byte value to write.
@@ -46,6 +45,15 @@ public interface BitStreamWriter extends BitStreamConsumer, DataOutput
      * @throws IOException If the writing failed.
      */
     void writeUnsignedByte(final short value) throws IOException;
+
+    /**
+     * Writes a signed short to the underlying storage.
+     *
+     * @param value Signed short value to write.
+     *
+     * @throws IOException If the writing failed.
+     */
+    void writeShort(final short value) throws IOException;
 
     /**
      * Writes an unsigned short to the underlying storage.
@@ -57,6 +65,15 @@ public interface BitStreamWriter extends BitStreamConsumer, DataOutput
     void writeUnsignedShort(final int value) throws IOException;
 
     /**
+     * Writes a signed integer to the underlying storage.
+     *
+     * @param value Signed integer value to write.
+     *
+     * @throws IOException If the writing failed.
+     */
+    void writeInt(final int value) throws IOException;
+
+    /**
      * Writes an unsigned integer to the underlying storage.
      *
      * @param value Unsigned integer value to write.
@@ -64,6 +81,15 @@ public interface BitStreamWriter extends BitStreamConsumer, DataOutput
      * @throws IOException If the writing failed.
      */
     void writeUnsignedInt(final long value) throws IOException;
+
+    /**
+     * Writes a signed long to the underlying storage.
+     *
+     * @param value Signed integer value to write.
+     *
+     * @throws IOException If the writing failed.
+     */
+    void writeLong(final long value) throws IOException;
 
     /**
      * Writes a given big integer value with the given number of bits to the underlying storage.
@@ -74,6 +100,24 @@ public interface BitStreamWriter extends BitStreamConsumer, DataOutput
      * @throws IOException If the writing failed.
      */
     void writeBigInteger(final BigInteger value, final int numBits) throws IOException;
+
+    /**
+     * Writes a 16 bit float value to the underlying storage.
+     *
+     * @param value 16 bit float value to write.
+     *
+     * @throws IOException If the writing failed.
+     */
+    void writeFloat16(final float value) throws IOException;
+
+    /**
+     * Writes a Zserio string to the underlying storage in UTF-8 encoding.
+     *
+     * @param value Zserio string to write.
+     *
+     * @throws IOException If the writing failed.
+     */
+    void writeString(final String value) throws IOException;
 
     /**
      * Writes a boolean value to the underlying storage.
@@ -156,20 +200,34 @@ public interface BitStreamWriter extends BitStreamConsumer, DataOutput
     void writeVarUInt(final BigInteger value) throws IOException;
 
     /**
-     * Writes a Zserio string to the underlying storage in UTF-8 encoding.
+     * Gets the current bit position.
      *
-     * @param value Zserio string to write.
-     *
-     * @throws IOException If the writing failed.
+     * @return Current bit position counted from zero.
      */
-    void writeString(final String value) throws IOException;
+    long getBitPosition();
 
     /**
-     * Writes a 16 bit float value to the underlying storage.
+     * Gets the current byte position.
      *
-     * @param value 16 bit float value to write.
-     *
-     * @throws IOException If the writing failed.
+     * @return Current byte position counted from zero.
      */
-    void writeFloat16(final float value) throws IOException;
+    int getBytePosition();
+
+    /**
+     * Sets the bit position to the given value.
+     *
+     * @param position Bit position counted from zero to set.
+     *
+     * @throws IOException If the position cannot be set.
+     */
+    void setBitPosition(long position) throws IOException;
+
+    /**
+     * Aligns the bit position according to the aligning value.
+     *
+     * @param alignVal An aligning value to use.
+     *
+     * @throws IOException If the alignment failed.
+     */
+    void alignTo(final int alignVal) throws IOException;
 }

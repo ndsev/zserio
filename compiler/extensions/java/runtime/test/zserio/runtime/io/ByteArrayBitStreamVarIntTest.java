@@ -248,7 +248,7 @@ public class ByteArrayBitStreamVarIntTest
         ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter();
         writer.writeVarInt(value);
         assertEquals(0, writer.getBitPosition() % 8);
-        assertEquals(expectedNumBytes, writer.getBitPosition() / 8);
+        assertEquals(expectedNumBytes, writer.getBytePosition());
         byte[] buffer = writer.toByteArray();
         ByteArrayBitStreamReader reader = new ByteArrayBitStreamReader(buffer);
         long readValue = reader.readVarInt();

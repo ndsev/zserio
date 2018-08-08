@@ -31,9 +31,14 @@ public class FileBitStreamReader extends ByteArrayBitStreamReader
      */
     public FileBitStreamReader(final File file) throws IOException
     {
-        super(DEFAULT_BYTE_ORDER);
+        super(initBuffer(file));
+    }
+
+    private static byte[] initBuffer(final File file) throws IOException
+    {
         final InputStream is = new FileInputStream(file);
 
+        byte[] buffer;
         try
         {
             final long length = file.length();
@@ -42,7 +47,7 @@ public class FileBitStreamReader extends ByteArrayBitStreamReader
                         " is too large.");
 
             // Create the byte array to hold the data
-            this.buffer = new byte[(int) length];
+            buffer = new byte[(int) length];
 
             // Read in the bytes
             int offset = 0;
@@ -62,5 +67,7 @@ public class FileBitStreamReader extends ByteArrayBitStreamReader
             // Close the input stream and return bytes
             is.close();
         }
+
+        return buffer;
     }
 }

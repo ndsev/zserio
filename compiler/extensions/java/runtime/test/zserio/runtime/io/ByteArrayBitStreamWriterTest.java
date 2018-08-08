@@ -10,8 +10,6 @@ import static org.junit.Assert.fail;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.math.BigInteger;
-import java.nio.ByteOrder;
-
 import javax.imageio.stream.ImageInputStream;
 import javax.imageio.stream.MemoryCacheImageInputStream;
 import org.junit.Test;
@@ -65,11 +63,11 @@ public class ByteArrayBitStreamWriterTest
             public void write(ByteArrayBitStreamWriter writer) throws IOException
             {
                 writer.writeBits(6, 4);
-                writer.writeByte(0x78);
-                writer.writeByte(0x91);
-                writer.writeByte(0x23);
-                writer.writeByte(0x4c);
-                writer.writeByte(0xde);
+                writer.writeBits(0x78, 8);
+                writer.writeBits(0x91, 8);
+                writer.writeBits(0x23, 8);
+                writer.writeBits(0x4c, 8);
+                writer.writeBits(0xde, 8);
                 writer.writeBits(0xf, 4);
             }
 
@@ -102,10 +100,10 @@ public class ByteArrayBitStreamWriterTest
             public void write(ByteArrayBitStreamWriter writer) throws IOException
             {
                 writer.writeBits(6, 4);
-                writer.writeShort(0x7891);
-                writer.writeShort(0x234c);
+                writer.writeShort((short)0x7891);
+                writer.writeShort((short)0x234c);
                 writer.writeBits(0xd, 4);
-                writer.writeByte(0xef);
+                writer.writeBits(0xef, 8);
             }
 
             @Override
@@ -133,108 +131,13 @@ public class ByteArrayBitStreamWriterTest
     public void test4() throws Exception
     {
         final ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter();
-        writer.writeShort(0x234c);
-        writer.writeByte(0xef);
+        writer.writeShort((short)0x234c);
+        writer.writeBits(0xef, 8);
         writer.alignTo(32);
         writer.close();
 
         final byte[] b = writer.toByteArray();
         assertEquals(b.length * 8L, 32);
-    }
-
-    @Test
-    public void writeBit() throws IOException
-    {
-        writeReadTest(new WriteReadTestable(){
-            @Override
-            public void write(ByteArrayBitStreamWriter writer) throws IOException
-            {
-                final int initialOffset = writer.getBitOffset();
-                for (int value : DATA)
-                {
-                    writer.writeBit(value);
-                }
-                assertEquals(initialOffset + DATA.length, writer.getBitOffset());
-            }
-
-            @Override
-            public void read(ImageInputStream reader) throws IOException
-            {
-                for (int value : DATA)
-                {
-                    assertEquals(value, reader.readBit());
-                }
-            }
-
-            private final int[] DATA =
-            {
-                0,
-                1,
-                0
-            };
-        });
-    }
-
-    @Test
-    public void writeBytes() throws IOException
-    {
-        writeReadTest(new WriteReadTestable(){
-            @Override
-            public void write(ByteArrayBitStreamWriter writer) throws IOException
-            {
-                writer.writeBytes("Test");
-            }
-
-            @Override
-            public void read(ImageInputStream reader) throws IOException
-            {
-                assertEquals(84, reader.readByte());
-            }
-        });
-    }
-
-    @Test
-    public void writeChar() throws IOException
-    {
-        writeReadTest(new WriteReadTestable(){
-            @Override
-            public void write(ByteArrayBitStreamWriter writer) throws IOException
-            {
-                writer.writeChar(TEST_CHARACTER);
-            }
-
-            @Override
-            public void read(ImageInputStream reader) throws IOException
-            {
-                assertEquals(TEST_CHARACTER, reader.readChar());
-            }
-
-            private final static char TEST_CHARACTER = 'c';
-        });
-    }
-
-    @Test
-    public void writeChars() throws IOException
-    {
-        writeReadTest(new WriteReadTestable(){
-            @Override
-            public void write(ByteArrayBitStreamWriter writer) throws IOException
-            {
-                writer.writeChars(TEST_STRING);
-            }
-
-            @Override
-            public void read(ImageInputStream reader) throws IOException
-            {
-                for (int i = 0; i < TEST_STRING.length(); ++i)
-                {
-                    char c = TEST_STRING.charAt(i);
-                    assertEquals(c, reader.readChar());
-                }
-            }
-
-            private final static String TEST_STRING = "cd";
-        });
     }
 
     @Test
@@ -468,66 +371,6 @@ public class ByteArrayBitStreamWriterTest
     }
 
     @Test
-    public void writeDouble() throws IOException
-    {
-        writeReadTest(new WriteReadTestable(){
-            @Override
-            public void write(ByteArrayBitStreamWriter writer) throws IOException
-            {
-                for (double value : DATA)
-                {
-                    writer.writeDouble(value);
-                }
-            }
-
-            @Override
-            public void read(ImageInputStream reader) throws IOException
-            {
-                for (double value : DATA)
-                {
-                    assertEquals(value, reader.readDouble(), 0.0d);
-                }
-            }
-
-            private final double[] DATA =
-            {
-                1.0d,
-                2.0d
-            };
-        });
-    }
-
-    @Test
-    public void writeFloat() throws IOException
-    {
-        writeReadTest(new WriteReadTestable(){
-            @Override
-            public void write(ByteArrayBitStreamWriter writer) throws IOException
-            {
-                for (float value : DATA)
-                {
-                    writer.writeFloat(value);
-                }
-            }
-
-            @Override
-            public void read(ImageInputStream reader) throws IOException
-            {
-                for (float value : DATA)
-                {
-                    assertEquals(value, reader.readFloat(), 0.0f);
-                }
-            }
-
-            private final float[] DATA =
-            {
-                1.0f,
-                2.0f
-            };
-        });
-    }
-
-    @Test
     public void writeFloat16() throws IOException
     {
         writeReadTest(new WriteReadTestable(){
@@ -564,13 +407,13 @@ public class ByteArrayBitStreamWriterTest
         assertEquals(10, reader.readLong());
 
         writer = new ByteArrayBitStreamWriter(1234);
-        writer.write(127);
+        writer.writeByte((byte)127);
         writer.writeBits(7, 4);
         writer.writeInt(123);
         writer.writeLong(12345678910L);
 
         reader = new ByteArrayBitStreamReader(writer.toByteArray());
-        assertEquals(127, reader.read());
+        assertEquals((byte)127, reader.readByte());
         assertEquals(7, reader.readBits(4));
         assertEquals(123, reader.readInt());
         assertEquals(12345678910L, reader.readLong());
@@ -587,7 +430,7 @@ public class ByteArrayBitStreamWriterTest
 
         try
         {
-            writer = new ByteArrayBitStreamWriter(-1, ByteOrder.BIG_ENDIAN);
+            writer = new ByteArrayBitStreamWriter(-1);
             fail();
         }
         catch (final Exception e)
@@ -635,42 +478,6 @@ public class ByteArrayBitStreamWriterTest
     }
 
     /**
-     * Test the skip Bits method.
-     *
-     * @throws IOException if the ByteArrayBitStreamWriter cannot be closed
-     */
-    @Test
-    public void skipBits() throws IOException
-    {
-        final ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter();
-        assertEquals(0, writer.getBitPosition());
-        writer.skipBits(5);
-        assertEquals(5, writer.getBitPosition());
-        writer.close();
-    }
-
-    /**
-     * Test the writeUTF method which is not supported at this moment.
-     *
-     * @throws IOException if the string cannot be written
-     */
-    @Test
-    public void writeUTF() throws IOException
-    {
-        final ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter();
-        try
-        {
-            writer.writeUTF("test");
-            assertTrue(false);
-        }
-        catch (final Exception e)
-        {
-            assertTrue(true);
-        }
-        writer.close();
-    }
-
-    /**
      * Test the growBuffer method.
      *
      * @throws IOException if the ByteArrayBitStreamWriter cannot be closed
@@ -681,51 +488,10 @@ public class ByteArrayBitStreamWriterTest
         final ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter();
         for (int i = 0; i < 8191; i++)
         {
-            writer.writeByte(1);
+            writer.writeByte((byte)1);
         }
         assertEquals(8191, writer.getBytePosition());
         writer.close();
-    }
-
-    /**
-     * Test the write methods of the ByteArrayBitStreamWriter in little endian mode.
-     *
-     * @throws IOException if the writing fails
-     */
-    @Test
-    public void littleEndian() throws IOException
-    {
-        for (final TestMethod method : TestMethod.values())
-        {
-            final ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter(ByteOrder.LITTLE_ENDIAN);
-            if (method == TestMethod.UNALIGNED)
-            {
-                /*
-                 * Write prolog bit to force test values to be unaligned.
-                 */
-                writer.writeBit(PROLOG_BIT);
-            }
-            writer.writeInt(5);
-            writer.writeLong(3685477580L);
-            writer.writeShort(5);
-            writer.writeUnsignedShort(5);
-            writer.writeUnsignedInt(4294967295L);
-            final ByteArrayBitStreamReader reader = new ByteArrayBitStreamReader(writer.toByteArray(),
-                    ByteOrder.LITTLE_ENDIAN);
-            if (method == TestMethod.UNALIGNED)
-            {
-                /*
-                 * Read dummy bit.
-                 */
-                assertEquals("Failed to read prolog bit", PROLOG_BIT, reader.readBits(1));
-            }
-            assertEquals(5, reader.readInt());
-            assertEquals(3685477580L, reader.readLong());
-            assertEquals((short) 5, reader.readShort());
-            assertEquals((short) 5, reader.readUnsignedShort());
-            assertEquals(4294967295L, reader.readUnsignedInt());
-            reader.close();
-        }
     }
 
     @Test
@@ -896,47 +662,6 @@ public class ByteArrayBitStreamWriterTest
         {
             assertTrue(true);
         }
-    }
-
-    @Test
-    public void writeZeros() throws IOException
-    {
-        writeReadTest(new WriteReadTestable(){
-            @Override
-            public void write(ByteArrayBitStreamWriter writer) throws IOException
-            {
-                writer.writeBits(0, Short.SIZE);
-                writer.writeBits(1, 1);
-                writer.writeZeros(Short.SIZE - 2);
-                writer.writeBits(1, 1);
-            }
-
-            @Override
-            public void read(ImageInputStream reader) throws IOException
-            {
-                assertEquals(0x8001, reader.readInt());
-            }
-        });
-    }
-
-    @Test
-    public void writeOnes() throws IOException
-    {
-        writeReadTest(new WriteReadTestable(){
-            @Override
-            public void write(ByteArrayBitStreamWriter writer) throws IOException
-            {
-                writer.writeBits(0, 1);
-                writer.writeOnes(Short.SIZE - 2);
-                writer.writeBits(0, 1);
-            }
-
-            @Override
-            public void read(ImageInputStream reader) throws IOException
-            {
-                assertEquals(0x7ffe, reader.readShort());
-            }
-        });
     }
 
     @Test
@@ -1143,7 +868,7 @@ public class ByteArrayBitStreamWriterTest
 
             if (method == TestMethod.UNALIGNED)
             {
-                writer.writeBit(1);
+                writer.writeBits(1, 1);
             }
             writeReadTest.write(writer);
             writer.close();
@@ -1182,9 +907,4 @@ public class ByteArrayBitStreamWriterTest
     {
         return 8 * inputStream.getStreamPosition() + inputStream.getBitOffset();
     }
-
-    /**
-     * Dummy bit used to force values to be written unaligned.
-     */
-    private static final int PROLOG_BIT = 1;
 }

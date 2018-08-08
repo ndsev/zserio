@@ -35,7 +35,7 @@
 <@imports [
         "zserio.runtime.validation.ValidationBitStreamReader",
         "zserio.runtime.io.ByteArrayBitStreamWriter",
-        "zserio.runtime.io.BitStreamConsumer"
+        "zserio.runtime.io.BitStreamCloseable"
 ]/>
     </#if>
 </#if>
@@ -625,7 +625,7 @@ ${I}    (${parameter.javaTypeName})(${parameter.expression})<#rt>
     }
         <#if hasBlobField>
 
-    private static void closeStream(BitStreamConsumer stream)
+    private static void closeStream(BitStreamCloseable stream)
     {
         try
         {

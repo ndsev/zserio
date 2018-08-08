@@ -4,7 +4,6 @@ import java.io.ByteArrayOutputStream;
 import java.io.EOFException;
 import java.io.IOException;
 import java.math.BigInteger;
-import java.nio.ByteOrder;
 
 /**
  * A bit stream reader using byte array.
@@ -12,42 +11,31 @@ import java.nio.ByteOrder;
 public class ByteArrayBitStreamReader extends ByteArrayBitStreamBase implements BitStreamReader
 {
     /**
-     * Constructs object containing given bytes.
-     *
-     * @param bytes Array of bytes to construct from.
-     */
-    public ByteArrayBitStreamReader(final byte[] bytes)
-    {
-        this(bytes, DEFAULT_BYTE_ORDER);
-    }
-
-    /**
      * Constructs object containing given bytes with a given byte order.
      *
      * @param bytes     Array of bytes to construct from.
-     * @param byteOrder Little endian or big endian byte order.
      */
-    public ByteArrayBitStreamReader(final byte[] bytes, final ByteOrder byteOrder)
+    public ByteArrayBitStreamReader(final byte[] bytes)
     {
-        super(byteOrder);
         this.buffer = new byte[bytes.length];
         System.arraycopy(bytes, 0, this.buffer, 0, bytes.length);
     }
 
-    /**
-     * Constructs object containing given byte order.
-     *
-     * @param byteOrder Little endian or big endian byte order.
-     */
-    protected ByteArrayBitStreamReader(ByteOrder byteOrder)
-    {
-        super(byteOrder);
-    }
-
     @Override
-    public ByteOrder getByteOrder()
+    public long readSignedBits(final int numBits) throws IOException
     {
-        return byteOrder;
+        long result = readBits(numBits);
+
+        /*
+         * Perform a sign extension if needed.
+         * 1L << 64 in Java is not 0L, but 1L, so treat numBits == 64 as a special case
+         * (numBits == 64 does not need sign extension anyway)
+         */
+        if (numBits < 64 && (result & (1L << (numBits - 1))) != 0)
+        {
+            result |= (-1L << numBits);
+        }
+        return result;
     }
 
     @Override
@@ -89,19 +77,6 @@ public class ByteArrayBitStreamReader extends ByteArrayBitStreamBase implements 
         return accum;
     }
 
-    /**
-     * Resets the bit offset and returns the next unsigned byte.
-     *
-     * @return Read next unsigned byte.
-     *
-     * @throws IOException If the reading failed.
-     */
-    public int read() throws IOException
-    {
-        bitOffset = 0;
-        return nextUnsignedByte();
-    }
-
     @Override
     public byte readByte() throws IOException
     {
@@ -118,9 +93,9 @@ public class ByteArrayBitStreamReader extends ByteArrayBitStreamBase implements 
     }
 
     @Override
-    public int readUnsignedByte() throws IOException
+    public short readUnsignedByte() throws IOException
     {
-        return readByte() & 0xff;
+        return (short)(readByte() & 0xff);
     }
 
     @Override
@@ -131,25 +106,11 @@ public class ByteArrayBitStreamReader extends ByteArrayBitStreamBase implements 
         {
             final byte b0 = nextByte();
             final byte b1 = nextByte();
-            if (byteOrder == ByteOrder.BIG_ENDIAN)
-            {
-                result = makeShort(b0, b1);
-            }
-            else
-            {
-                result = makeShort(b1, b0);
-            }
+            result = makeShort(b0, b1);
         }
         else
         {
-            if (byteOrder == ByteOrder.BIG_ENDIAN)
-            {
-                result = (short) readBits(BITS_PER_SHORT);
-            }
-            else
-            {
-                result = Short.reverseBytes((short)readBits(BITS_PER_SHORT));
-            }
+            result = (short) readBits(BITS_PER_SHORT);
         }
         return result;
     }
@@ -170,25 +131,11 @@ public class ByteArrayBitStreamReader extends ByteArrayBitStreamBase implements 
             final byte b1 = nextByte();
             final byte b2 = nextByte();
             final byte b3 = nextByte();
-            if (byteOrder == ByteOrder.BIG_ENDIAN)
-            {
-                result = makeInt(b0, b1, b2, b3);
-            }
-            else
-            {
-                result = makeInt(b3, b2, b1, b0);
-            }
+            result = makeInt(b0, b1, b2, b3);
         }
         else
         {
-            if (byteOrder == ByteOrder.BIG_ENDIAN)
-            {
-                result = (int)readBits(BITS_PER_INT);
-            }
-            else
-            {
-                result = Integer.reverseBytes((int)readBits(BITS_PER_INT));
-            }
+            result = (int)readBits(BITS_PER_INT);
         }
         return result;
     }
@@ -213,23 +160,11 @@ public class ByteArrayBitStreamReader extends ByteArrayBitStreamBase implements 
             final byte b5 = nextByte();
             final byte b6 = nextByte();
             final byte b7 = nextByte();
-            if (byteOrder == ByteOrder.BIG_ENDIAN)
-            {
-                result = makeLong(b0, b1, b2, b3, b4, b5, b6, b7);
-            }
-            else
-            {
-                result = makeLong(b7, b6, b5, b4, b3, b2, b1, b0);
-            }
+            result = makeLong(b0, b1, b2, b3, b4, b5, b6, b7);
         }
         else
         {
-            result = readBits(BITS_PER_BYTE) << BITS_PER_7_BYTES;
-            result |= readBits(BITS_PER_7_BYTES);
-            if (byteOrder == ByteOrder.LITTLE_ENDIAN)
-            {
-                result = Long.reverseBytes(result);
-            }
+            result = readBits(BITS_PER_LONG);
         }
         return result;
     }
@@ -437,12 +372,6 @@ public class ByteArrayBitStreamReader extends ByteArrayBitStreamBase implements 
     }
 
     @Override
-    public void skipBits(final int bitCnt) throws IOException
-    {
-        setBitPosition(getBitPosition() + bitCnt);
-    }
-
-    @Override
     public void alignTo(final int alignVal) throws IOException
     {
         final long offset = getBitPosition() % alignVal;
@@ -454,54 +383,22 @@ public class ByteArrayBitStreamReader extends ByteArrayBitStreamBase implements 
     }
 
     @Override
-    public long readSignedBits(final int numBits) throws IOException
+    public void close() throws IOException
     {
-        long result = readBits(numBits);
-
-        /*
-         * Perform a sign extension if needed.
-         * 1L << 64 in Java is not 0L, but 1L, so treat numBits == 64 as a special case
-         * (numBits == 64 does not need sign extension anyway)
-         */
-        if (numBits < 64 && (result & (1L << (numBits - 1))) != 0)
-        {
-            result |= (-1L << numBits);
-        }
-        return result;
+        // nothing to do
     }
 
-    @Override
-    public boolean readBoolean() throws IOException
+    protected byte[] getBuffer()
     {
-        return readUnsignedByte() > 0;
+        return buffer;
     }
 
-    @Override
-    public char readChar() throws IOException
-    {
-        return (char)readShort();
-    }
-
-    @Override
-    public double readDouble() throws IOException
-    {
-        return Double.longBitsToDouble(readLong());
-    }
-
-    @Override
-    public float readFloat() throws IOException
-    {
-        return Float.intBitsToFloat(readInt());
-    }
-
-    @Override
-    public void readFully(final byte[] b) throws IOException
+    private void readFully(final byte[] b) throws IOException
     {
         readFully(b, 0, b.length);
     }
 
-    @Override
-    public void readFully(final byte[] dest, final int offset, final int length) throws IOException
+    private void readFully(final byte[] dest, final int offset, final int length) throws IOException
     {
         int count = read(dest, offset, length);
         if (count != length)
@@ -509,45 +406,16 @@ public class ByteArrayBitStreamReader extends ByteArrayBitStreamBase implements 
                     " but requested was " + length + ".");
     }
 
-    @Override
-    public int read(final byte[] dest, final int offset, final int length)
+    private int read(final byte[] dest, final int offset, final int length)
     {
         System.arraycopy(buffer, bytePosition, dest, offset, length);
         bytePosition += length;
         return length;
     }
 
-    @Override
-    public String readLine() throws IOException
+    private void skipBits(final int bitCnt) throws IOException
     {
-        throw new UnsupportedOperationException("ByteArrayBitStreamReader: readLine() is unsupported.");
-    }
-
-    @Override
-    public String readUTF() throws IOException
-    {
-        throw new UnsupportedOperationException("ByteArrayBitStreamReader: readUTF() is unsupported.");
-    }
-
-    @Override
-    public int skipBytes(final int n) throws IOException
-    {
-        setBitPosition(getBitPosition() + (long)n * BITS_PER_BYTE);
-        return n;
-    }
-
-    @Override
-    public void close() throws IOException
-    {
-        /*
-         * Silent method call.
-         */
-    }
-
-    @Override
-    public long readBit() throws IOException
-    {
-        return readBits(1);
+        setBitPosition(getBitPosition() + bitCnt);
     }
 
     /**
@@ -690,33 +558,28 @@ public class ByteArrayBitStreamReader extends ByteArrayBitStreamBase implements 
     }
 
     /**
-     * The number of bits per 7 bytes.
-     */
-    protected static final int BITS_PER_7_BYTES = 0x38;
-
-    /**
      * Bit masks to mask appropriate bits during unaligned reading.
      */
-    final int BIT_MASKS[] = { 0xff, 0x7f, 0x3f, 0x1f, 0x0f, 0x07, 0x03, 0x01 };
+    private static final int BIT_MASKS[] = { 0xff, 0x7f, 0x3f, 0x1f, 0x0f, 0x07, 0x03, 0x01 };
 
     /** Variable length integer sing bit mask for first byte. */
-    protected static final int VARINT_SIGN_1 = 0x80;
+    private static final int VARINT_SIGN_1 = 0x80;
     /** Variable length integer value bit mask for first byte. */
-    protected static final int VARINT_BYTE_1 = 0x3f;
+    private static final int VARINT_BYTE_1 = 0x3f;
     /** Variable length integer value bit mask for intermediate bytes. */
-    protected static final int VARINT_BYTE_N = 0x7f;
+    private static final int VARINT_BYTE_N = 0x7f;
     /** Variable length integer 'has next' bit mask for first byte. */
-    protected static final int VARINT_HAS_NEXT_1 = 0x40;
+    private static final int VARINT_HAS_NEXT_1 = 0x40;
     /** Variable length integer 'has next' bit mask for intermediate bytes. */
-    protected static final int VARINT_HAS_NEXT_N = 0x80;
+    private static final int VARINT_HAS_NEXT_N = 0x80;
 
     /** Variable length integer value bit mask. */
-    protected static final int VARUINT_BYTE = 0x7f;
+    private static final int VARUINT_BYTE = 0x7f;
     /** Variable length integer 'has next' bit mask. */
-    protected static final int VARUINT_HAS_NEXT = 0x80;
+    private static final int VARUINT_HAS_NEXT = 0x80;
 
     /**
      * The underlying byte array.
      */
-    protected byte[] buffer;
+    private byte[] buffer;
 }

@@ -85,15 +85,15 @@ public class ValidationBitStreamReaderTest
     {
         final ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter();
         writer.writeBits(1, 1);
-        writer.skipBits(1);
+        writer.writeBits(0, 1); // skip
         writer.writeBits(2, 2);
-        writer.skipBits(2);
+        writer.writeBits(0, 2); // skip
         writer.writeBits(7, 3);
-        writer.skipBits(3);
+        writer.writeBits(0, 3); // skip
         writer.writeBits(9, 4);
-        writer.skipBits(4);
+        writer.writeBits(0, 4); // skip
         writer.writeBits(10, 5);
-        writer.skipBits(5);
+        writer.writeBits(0, 5); // skip
 
         final byte[] originalStream = writer.toByteArray();
 
@@ -109,15 +109,15 @@ public class ValidationBitStreamReaderTest
 
         final ValidationBitStreamReader reader = new ValidationBitStreamReader(changedStream);
         assertEquals(1, reader.readBits(1));
-        reader.skipBits(1);
+        reader.setBitPosition(reader.getBitPosition() + 1);
         assertEquals(2, reader.readBits(2));
-        reader.skipBits(2);
+        reader.setBitPosition(reader.getBitPosition() + 2);
         assertEquals(7, reader.readBits(3));
-        reader.skipBits(3);
+        reader.setBitPosition(reader.getBitPosition() + 3);
         assertEquals(9, reader.readBits(4));
-        reader.skipBits(4);
+        reader.setBitPosition(reader.getBitPosition() + 4);
         assertEquals(10, reader.readBits(5));
-        reader.skipBits(5);
+        reader.setBitPosition(reader.getBitPosition() + 5);
 
         final byte[] maskedStream = reader.toMaskedByteArray();
         assertTrue(Arrays.equals(originalStream, maskedStream));
@@ -128,9 +128,9 @@ public class ValidationBitStreamReaderTest
     {
         final ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter();
         writer.writeBits(1, 1);
-        writer.skipBits(8);
+        writer.writeBits(0, 8); // skip
         writer.writeBits(2, 2);
-        writer.skipBits(8);
+        writer.writeBits(0, 8); // skip
         writer.writeBits(7, 3);
 
         final byte[] originalStream = writer.toByteArray();
@@ -146,9 +146,9 @@ public class ValidationBitStreamReaderTest
 
         final ValidationBitStreamReader reader = new ValidationBitStreamReader(changedStream);
         assertEquals(1, reader.readBits(1));
-        assertEquals(1, reader.skipBytes(1));
+        reader.setBitPosition(reader.getBitPosition() + 8);
         assertEquals(2, reader.readBits(2));
-        assertEquals(1, reader.skipBytes(1));
+        reader.setBitPosition(reader.getBitPosition() + 8);
         assertEquals(7, reader.readBits(3));
 
         final byte[] maskedStream = reader.toMaskedByteArray();

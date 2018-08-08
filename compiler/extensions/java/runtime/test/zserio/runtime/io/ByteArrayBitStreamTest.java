@@ -3,6 +3,7 @@ package zserio.runtime.io;
 import static org.junit.Assert.*;
 import org.junit.Test;
 
+import java.io.IOException;
 import java.lang.reflect.*;
 import java.math.BigInteger;
 
@@ -90,7 +91,7 @@ public class ByteArrayBitStreamTest
 
         Method writeMethod = ByteArrayBitStreamWriter.class.getMethod("writeUnsignedInt", long.class);
         Method readMethod = ByteArrayBitStreamReader.class.getMethod("readUnsignedInt");
-        testImpl(writeMethod, readMethod, values, 32);
+        testImpl(writeMethod, readMethod, values, 31);
     }
 
     @Test
@@ -125,7 +126,7 @@ public class ByteArrayBitStreamTest
 
         Method writeMethod = ByteArrayBitStreamWriter.class.getMethod("writeInt", int.class);
         Method readMethod = ByteArrayBitStreamReader.class.getMethod("readInt");
-        testImpl(writeMethod, readMethod, values, 32);
+        testImpl(writeMethod, readMethod, values, 31);
     }
 
     @Test
@@ -145,7 +146,7 @@ public class ByteArrayBitStreamTest
 
         Method writeMethod = ByteArrayBitStreamWriter.class.getMethod("writeUnsignedShort", int.class);
         Method readMethod = ByteArrayBitStreamReader.class.getMethod("readUnsignedShort");
-        testImpl(writeMethod, readMethod, values, 16);
+        testImpl(writeMethod, readMethod, values, 15);
     }
 
     @Test
@@ -170,9 +171,9 @@ public class ByteArrayBitStreamTest
             minValue
         };
 
-        Method writeMethod = ByteArrayBitStreamWriter.class.getMethod("writeShort", int.class);
+        Method writeMethod = ByteArrayBitStreamWriter.class.getMethod("writeShort", short.class);
         Method readMethod = ByteArrayBitStreamReader.class.getMethod("readShort");
-        testImpl(writeMethod, readMethod, values, 16);
+        testImpl(writeMethod, readMethod, values, 15);
     }
 
     @Test
@@ -192,7 +193,7 @@ public class ByteArrayBitStreamTest
 
         Method writeMethod = ByteArrayBitStreamWriter.class.getMethod("writeUnsignedByte", short.class);
         Method readMethod = ByteArrayBitStreamReader.class.getMethod("readUnsignedByte");
-        testImpl(writeMethod, readMethod, values, 8);
+        testImpl(writeMethod, readMethod, values, 7);
     }
 
     @Test
@@ -217,14 +218,15 @@ public class ByteArrayBitStreamTest
             minValue
         };
 
-        Method writeMethod = ByteArrayBitStreamWriter.class.getMethod("writeByte", int.class);
+        Method writeMethod = ByteArrayBitStreamWriter.class.getMethod("writeByte", byte.class);
         Method readMethod = ByteArrayBitStreamReader.class.getMethod("readByte");
-        testImpl(writeMethod, readMethod, values, 8);
+        testImpl(writeMethod, readMethod, values, 7);
     }
 
     @Test
     public void bigInteger() throws Exception
     {
+        // single method for both signed and unsigned writing
         Method writeMethod = ByteArrayBitStreamWriter.class.getMethod(
                 "writeBigInteger", BigInteger.class, int.class);
         Method readMethod = ByteArrayBitStreamReader.class.getMethod("readBigInteger", int.class);
@@ -262,6 +264,7 @@ public class ByteArrayBitStreamTest
     @Test
     public void signedBigInteger() throws Exception
     {
+        // single method for both signed and unsigned writing
         Method writeMethod = ByteArrayBitStreamWriter.class.getMethod(
                 "writeBigInteger", BigInteger.class, int.class);
         Method readMethod = ByteArrayBitStreamReader.class.getMethod("readSignedBigInteger", int.class);
@@ -324,7 +327,7 @@ public class ByteArrayBitStreamTest
 
         Method writeMethod = ByteArrayBitStreamWriter.class.getMethod("writeFloat16", float.class);
         Method readMethod = ByteArrayBitStreamReader.class.getMethod("readFloat16");
-        testImpl(writeMethod, readMethod, values, 16);
+        testImpl(writeMethod, readMethod, values, 15);
     }
 
     @Test
@@ -342,7 +345,7 @@ public class ByteArrayBitStreamTest
 
         Method writeMethod = ByteArrayBitStreamWriter.class.getMethod("writeString", String.class);
         Method readMethod = ByteArrayBitStreamReader.class.getMethod("readString");
-        testImpl(writeMethod, readMethod, values, 8);
+        testImpl(writeMethod, readMethod, values, 7);
     }
 
     @Test
@@ -367,7 +370,7 @@ public class ByteArrayBitStreamTest
 
         Method writeMethod = ByteArrayBitStreamWriter.class.getMethod("writeBool", boolean.class);
         Method readMethod = ByteArrayBitStreamReader.class.getMethod("readBool");
-        testImpl(writeMethod, readMethod, values, 2);
+        testImpl(writeMethod, readMethod, values, 1);
     }
 
     @Test
@@ -390,7 +393,7 @@ public class ByteArrayBitStreamTest
 
         Method writeMethod = ByteArrayBitStreamWriter.class.getMethod("writeVarInt16", short.class);
         Method readMethod = ByteArrayBitStreamReader.class.getMethod("readVarInt16");
-        testImpl(writeMethod, readMethod, values, 16);
+        testImpl(writeMethod, readMethod, values, 15);
     }
 
     @Test
@@ -423,7 +426,7 @@ public class ByteArrayBitStreamTest
 
         Method writeMethod = ByteArrayBitStreamWriter.class.getMethod("writeVarInt32", int.class);
         Method readMethod = ByteArrayBitStreamReader.class.getMethod("readVarInt32");
-        testImpl(writeMethod, readMethod, values, 32);
+        testImpl(writeMethod, readMethod, values, 31);
     }
 
     @Test
@@ -476,7 +479,7 @@ public class ByteArrayBitStreamTest
 
         Method writeMethod = ByteArrayBitStreamWriter.class.getMethod("writeVarInt64", long.class);
         Method readMethod = ByteArrayBitStreamReader.class.getMethod("readVarInt64");
-        testImpl(writeMethod, readMethod, values, 64);
+        testImpl(writeMethod, readMethod, values, 63);
     }
 
     @Test
@@ -495,7 +498,7 @@ public class ByteArrayBitStreamTest
 
         Method writeMethod = ByteArrayBitStreamWriter.class.getMethod("writeVarUInt16", short.class);
         Method readMethod = ByteArrayBitStreamReader.class.getMethod("readVarUInt16");
-        testImpl(writeMethod, readMethod, values, 16);
+        testImpl(writeMethod, readMethod, values, 15);
     }
 
     @Test
@@ -520,7 +523,7 @@ public class ByteArrayBitStreamTest
 
         Method writeMethod = ByteArrayBitStreamWriter.class.getMethod("writeVarUInt32", int.class);
         Method readMethod = ByteArrayBitStreamReader.class.getMethod("readVarUInt32");
-        testImpl(writeMethod, readMethod, values, 32);
+        testImpl(writeMethod, readMethod, values, 31);
     }
 
     @Test
@@ -557,7 +560,7 @@ public class ByteArrayBitStreamTest
 
         Method writeMethod = ByteArrayBitStreamWriter.class.getMethod("writeVarUInt64", long.class);
         Method readMethod = ByteArrayBitStreamReader.class.getMethod("readVarUInt64");
-        testImpl(writeMethod, readMethod, values, 64);
+        testImpl(writeMethod, readMethod, values, 63);
     }
 
     public void varint() throws Exception
@@ -616,7 +619,7 @@ public class ByteArrayBitStreamTest
 
         Method writeMethod = ByteArrayBitStreamWriter.class.getMethod("writeVarInt", long.class);
         Method readMethod = ByteArrayBitStreamReader.class.getMethod("readVarInt");
-        testImpl(writeMethod, readMethod, values, 64);
+        testImpl(writeMethod, readMethod, values, 63);
     }
 
     public void varuint() throws Exception
@@ -655,77 +658,182 @@ public class ByteArrayBitStreamTest
 
         Method writeMethod = ByteArrayBitStreamWriter.class.getMethod("writeVarUInt", BigInteger.class);
         Method readMethod = ByteArrayBitStreamReader.class.getMethod("readVarUInt");
-        testImpl(writeMethod, readMethod, values, 64);
+        testImpl(writeMethod, readMethod, values, 63);
     }
 
-    private void testImpl(Method writeMethod, Method readMethod, Object[] values, int numBits) throws Exception
+    @Test
+    public void bitPosition() throws IOException
     {
-        // all possible start bit positions
-        for (int bitPos = 0; bitPos < numBits; ++bitPos)
+        ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter();
+        try
         {
-            try
-            {
-                ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter();
-                if (bitPos > 0)
-                    writer.writeBits(0, bitPos);
-                for (int i = 0; i < values.length; ++i)
-                {
-                    writeMethod.invoke(writer, values[i]);
-                }
+            writer.writeBits(0xaaaa, 16);
+            assertEquals(16, writer.getBitPosition());
+            writer.setBitPosition(8);
+            assertEquals(8, writer.getBitPosition());
+            writer.writeBits(0xff, 8);
+            assertEquals(16, writer.getBitPosition());
+            writer.setBitPosition(13);
+            assertEquals(13, writer.getBitPosition());
+            writer.writeBits(0, 2);
+            assertEquals(15, writer.getBitPosition());
+            writer.setBitPosition(16);
+            assertEquals(16, writer.getBitPosition());
+        }
+        finally
+        {
+            writer.close();
+        }
 
-                byte[] buffer = writer.toByteArray();
-                ByteArrayBitStreamReader reader = new ByteArrayBitStreamReader(buffer);
-                if (bitPos > 0)
-                    reader.readBits(bitPos);
-                for (int i = 0; i < values.length; ++i)
-                    ensureEquals(values[i], readMethod.invoke(reader));
-            }
-            catch (AssertionError e)
+        final byte[] buffer = writer.toByteArray();
+
+        ByteArrayBitStreamReader reader = new ByteArrayBitStreamReader(buffer);
+        try
+        {
+            assertEquals(0xaaf9, reader.readBits(16));
+            assertEquals(16, reader.getBitPosition());
+            reader.setBitPosition(8);
+            assertEquals(8, reader.getBitPosition());
+            assertEquals(0xf9, reader.readBits(8));
+            assertEquals(16, reader.getBitPosition());
+            reader.setBitPosition(13);
+            assertEquals(13, reader.getBitPosition());
+            assertEquals(0, reader.readBits(2));
+            assertEquals(15, reader.getBitPosition());
+            assertEquals(1, reader.readBits(1));
+            assertEquals(16, reader.getBitPosition());
+        }
+        finally
+        {
+            reader.close();
+        }
+    }
+
+    @Test
+    public void alignTo() throws IOException
+    {
+        ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter();
+        try
+        {
+            writer.writeBits(5, 3);
+            writer.alignTo(8);
+            assertEquals(8, writer.getBitPosition());
+            writer.writeBits(0, 1);
+            writer.alignTo(16);
+            assertEquals(16, writer.getBitPosition());
+            writer.writeBits(0xAA, 9);
+            writer.alignTo(32);
+            assertEquals(32, writer.getBitPosition());
+            writer.writeBits(0xACA, 13);
+            writer.alignTo(64);
+            assertEquals(64, writer.getBitPosition());
+            writer.writeBits(0xCAFE, 16);
+        }
+        finally
+        {
+            writer.close();
+        }
+
+        final byte[] buffer = writer.toByteArray();
+
+        ByteArrayBitStreamReader reader = new ByteArrayBitStreamReader(buffer);
+        try
+        {
+            assertEquals(5, reader.readBits(3));
+            reader.alignTo(8);
+            assertEquals(8, reader.getBitPosition());
+            assertEquals(0, reader.readBits(1));
+            reader.alignTo(16);
+            assertEquals(16, reader.getBitPosition());
+            assertEquals(0xAA, reader.readBits(9));
+            reader.alignTo(32);
+            assertEquals(32, reader.getBitPosition());
+            assertEquals(0xACA, reader.readBits(13));
+            reader.alignTo(64);
+            assertEquals(64, reader.getBitPosition());
+            assertEquals(0xCAFE, reader.readBits(16));
+        }
+        finally
+        {
+            reader.close();
+        }
+    }
+
+    private void testImpl(Method writeMethod, Method readMethod, Object[] values,
+            int maxStartBitPos) throws Exception
+    {
+        try
+        {
+            // all possible start bit positions
+            for (int bitPos = 0; bitPos <= maxStartBitPos; ++bitPos)
             {
-                throw new AssertionError(
-                        "[bitPos=" + bitPos + "]: " + e.getMessage());
+                try
+                {
+                    ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter();
+                    if (bitPos > 0)
+                        writer.writeBits(0, bitPos);
+                    for (int i = 0; i < values.length; ++i)
+                    {
+                        writeMethod.invoke(writer, values[i]);
+                    }
+
+                    byte[] buffer = writer.toByteArray();
+                    writer.close();
+                    ByteArrayBitStreamReader reader = new ByteArrayBitStreamReader(buffer);
+                    if (bitPos > 0)
+                        reader.readBits(bitPos);
+                    for (int i = 0; i < values.length; ++i)
+                        assertEquals(values[i], readMethod.invoke(reader));
+                    reader.close();
+                }
+                catch (AssertionError e)
+                {
+                    throw new AssertionError(
+                            "[bitPos=" + bitPos + "]: " + e.getMessage());
+                }
             }
+        }
+        catch (InvocationTargetException e)
+        {
+            fail(e.getTargetException().toString());
         }
     }
 
     private void testBitsImpl(Method writeMethod, Method readMethod,
             Object[] values, int numBits) throws Exception
     {
-        // all possible start bit positions
-        for (int bitPos = 0; bitPos < numBits; ++bitPos)
+        try
         {
-            try
+            // all possible start bit positions
+            for (int bitPos = 0; bitPos < numBits; ++bitPos)
             {
-                ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter();
-                if (bitPos > 0)
-                    writer.writeBits(0, bitPos);
-                for (int i = 0; i < values.length; ++i)
-                    writeMethod.invoke(writer, values[i], numBits);
+                try
+                {
+                    ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter();
+                    if (bitPos > 0)
+                        writer.writeBits(0, bitPos);
+                    for (int i = 0; i < values.length; ++i)
+                        writeMethod.invoke(writer, values[i], numBits);
 
-                byte[] buffer = writer.toByteArray();
-                ByteArrayBitStreamReader reader = new ByteArrayBitStreamReader(buffer);
-                if (bitPos > 0)
-                    reader.readBits(bitPos);
-                for (int i = 0; i < values.length; ++i)
-                    ensureEquals(values[i], readMethod.invoke(reader, numBits));
-            }
-            catch (AssertionError e)
-            {
-                throw new AssertionError(
-                        "[numBits=" + numBits + ", bitPos=" + bitPos + "]: " + e.getMessage());
+                    byte[] buffer = writer.toByteArray();
+                    writer.close();
+                    ByteArrayBitStreamReader reader = new ByteArrayBitStreamReader(buffer);
+                    if (bitPos > 0)
+                        reader.readBits(bitPos);
+                    for (int i = 0; i < values.length; ++i)
+                        assertEquals(values[i], readMethod.invoke(reader, numBits));
+                    reader.close();
+                }
+                catch (AssertionError e)
+                {
+                    throw new AssertionError(
+                            "[numBits=" + numBits + ", bitPos=" + bitPos + "]: " + e.getMessage());
+                }
             }
         }
-    }
-
-    private void ensureEquals(Object lhs, Object rhs)
-    {
-        if (lhs instanceof BigInteger)
-            assertEquals((BigInteger)lhs, (BigInteger)rhs);
-        else if (lhs instanceof Float)
-            assertEquals((Float)lhs, (Float)rhs);
-        else if (lhs instanceof Number)
-            assertEquals(((Number)lhs).longValue(), ((Number)rhs).longValue());
-        else
-            assertEquals(lhs, rhs);
+        catch (InvocationTargetException e)
+        {
+            fail(e.getTargetException().toString());
+        }
     }
 }

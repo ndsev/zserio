@@ -3,8 +3,6 @@ package zserio.runtime.io;
 import java.io.EOFException;
 import java.io.IOException;
 import java.math.BigInteger;
-import java.nio.ByteOrder;
-
 import zserio.runtime.BitSizeOfCalculator;
 import zserio.runtime.Util;
 import zserio.runtime.ZserioError;
@@ -19,49 +17,21 @@ public class ByteArrayBitStreamWriter extends ByteArrayBitStreamBase implements 
      */
     public ByteArrayBitStreamWriter()
     {
-        this(DEFAULT_INITIAL_CAPACITY, DEFAULT_BYTE_ORDER);
+        this(DEFAULT_INITIAL_CAPACITY);
     }
 
     /**
-     * Constructs a new byte array bit stream writer with the default capacity and the given byte order.
-     *
-     * @param byteOrder The little endian or big endian byte order.
-     */
-    public ByteArrayBitStreamWriter(final ByteOrder byteOrder)
-    {
-        this(DEFAULT_INITIAL_CAPACITY, byteOrder);
-    }
-
-    /**
-     * Constructs a new byte array bit stream writer with the given capacity and the default endian byte order.
+     * Constructs a new byte array bit stream writer with the given buffer capacity.
      *
      * @param initialCapacity Underlying byte array capacity in bytes.
      */
     public ByteArrayBitStreamWriter(final int initialCapacity)
     {
-        this(initialCapacity, DEFAULT_BYTE_ORDER);
-    }
-
-    /**
-     * Constructs a new byte array bit stream writer with the given buffer capacity and the given byte order.
-     *
-     * @param initialCapacity Underlying byte array capacity in bytes.
-     * @param byteOrder       The little endian or big endian byte order.
-     */
-    public ByteArrayBitStreamWriter(final int initialCapacity, final ByteOrder byteOrder)
-    {
-        super(byteOrder);
         if (initialCapacity < 0 || initialCapacity > MAX_BUFFER_SIZE)
             throw new IllegalArgumentException("ByteArrayBitStreamWriter: Requested initial capacity " +
                     initialCapacity + " of underlying array is out of bounds [1, " + MAX_BUFFER_SIZE + "].");
 
         this.buffer = new byte[initialCapacity];
-    }
-
-    @Override
-    public void writeBit(final int bit) throws IOException
-    {
-        writeBits(bit, 1);
     }
 
     @Override
@@ -102,86 +72,32 @@ public class ByteArrayBitStreamWriter extends ByteArrayBitStreamBase implements 
     }
 
     @Override
-    public void write(final int b) throws IOException
-    {
-        flushBits();
-        ensureCapacity(BITS_PER_BYTE);
-        buffer[bytePosition++] = (byte)b;
-    }
-
-    @Override
-    public void write(final byte[] src) throws IOException
-    {
-        write(src, 0, src.length);
-    }
-
-    @Override
-    public void write(final byte[] src, final int offset, final int length) throws IOException
-    {
-        flushBits();
-        ensureCapacity(BITS_PER_BYTE * length);
-        System.arraycopy(src, offset, buffer, bytePosition, length);
-        this.bytePosition += length;
-    }
-
-    @Override
-    public void writeBoolean(final boolean v) throws IOException
-    {
-        write(v ? 1 : 0);
-    }
-
-    @Override
-    public void writeByte(final int v) throws IOException
+    public void writeByte(final byte v) throws IOException
     {
         if (bitOffset == 0)
         {
-            write((byte)v);
+            write(v);
         }
         else
         {
-            writeSignedBits((byte)v, BITS_PER_BYTE);
+            writeSignedBits(v, BITS_PER_BYTE);
         }
     }
 
+
+
     @Override
-    public void writeBytes(final String s) throws IOException
+    public void writeUnsignedByte(final short value) throws IOException
     {
-        final byte[] bytes = s.getBytes(DEFAULT_CHARSET_NAME);
-        for (final byte b : bytes)
-        {
-            writeByte(b);
-        }
+        if (value < 0)
+            throw new IllegalArgumentException("ByteArrayBitStreamWriter: Can't write unsigned byte. Value " +
+                    value + " is negative.");
+
+        writeBits(value, BITS_PER_BYTE);
     }
 
     @Override
-    public void writeChar(final int v) throws IOException
-    {
-        writeShort((char)v);
-    }
-
-    @Override
-    public void writeChars(final String s) throws IOException
-    {
-        for (int i = 0; i < s.length(); i++)
-        {
-            writeChar(s.charAt(i));
-        }
-    }
-
-    @Override
-    public void writeDouble(final double v) throws IOException
-    {
-        writeLong(Double.doubleToLongBits(v));
-    }
-
-    @Override
-    public void writeFloat(final float v) throws IOException
-    {
-        writeInt(Float.floatToIntBits(v));
-    }
-
-    @Override
-    public void writeShort(final int v) throws IOException
+    public void writeShort(final short v) throws IOException
     {
         if (bitOffset == 0)
         {
@@ -189,28 +105,24 @@ public class ByteArrayBitStreamWriter extends ByteArrayBitStreamBase implements 
             final byte b1 = (byte)(v >> 8);
 
             ensureCapacity(BITS_PER_SHORT);
-            if (byteOrder == ByteOrder.BIG_ENDIAN)
-            {
-                buffer[bytePosition++] = b1;
-                buffer[bytePosition++] = b0;
-            }
-            else
-            {
-                buffer[bytePosition++] = b0;
-                buffer[bytePosition++] = b1;
-            }
+
+            buffer[bytePosition++] = b1;
+            buffer[bytePosition++] = b0;
         }
         else
         {
-            if (byteOrder == ByteOrder.BIG_ENDIAN)
-            {
-                writeSignedBits((short)v, BITS_PER_SHORT);
-            }
-            else
-            {
-                writeSignedBits(Short.reverseBytes((short)v), BITS_PER_SHORT);
-            }
+            writeSignedBits(v, BITS_PER_SHORT);
         }
+    }
+
+    @Override
+    public void writeUnsignedShort(final int value) throws IOException
+    {
+        if (value < 0)
+            throw new IllegalArgumentException("ByteArrayBitStreamWriter: Can't write unsigned short. Value " +
+                    value + " is negative.");
+
+        writeBits(value, BITS_PER_SHORT);
     }
 
     @Override
@@ -224,32 +136,26 @@ public class ByteArrayBitStreamWriter extends ByteArrayBitStreamBase implements 
             final byte b3 = (byte)(v >> 24);
 
             ensureCapacity(BITS_PER_INT);
-            if (byteOrder == ByteOrder.BIG_ENDIAN)
-            {
-                buffer[bytePosition++] = b3;
-                buffer[bytePosition++] = b2;
-                buffer[bytePosition++] = b1;
-                buffer[bytePosition++] = b0;
-            }
-            else
-            {
-                buffer[bytePosition++] = b0;
-                buffer[bytePosition++] = b1;
-                buffer[bytePosition++] = b2;
-                buffer[bytePosition++] = b3;
-            }
+
+            buffer[bytePosition++] = b3;
+            buffer[bytePosition++] = b2;
+            buffer[bytePosition++] = b1;
+            buffer[bytePosition++] = b0;
         }
         else
         {
-            if (byteOrder == ByteOrder.BIG_ENDIAN)
-            {
-                writeSignedBits(v, BITS_PER_INT);
-            }
-            else
-            {
-                writeSignedBits(Integer.reverseBytes(v), BITS_PER_INT);
-            }
+            writeSignedBits(v, BITS_PER_INT);
         }
+    }
+
+    @Override
+    public void writeUnsignedInt(final long value) throws IOException
+    {
+        if (value < 0)
+            throw new IllegalArgumentException("ByteArrayBitStreamWriter: Can't write unsigned integer. " +
+                    "Value " + value + " is negative.");
+
+        writeBits(value, BITS_PER_INT);
     }
 
     @Override
@@ -267,151 +173,19 @@ public class ByteArrayBitStreamWriter extends ByteArrayBitStreamBase implements 
             final byte b7 = (byte)(v >> 56);
 
             ensureCapacity(BITS_PER_LONG);
-            if (byteOrder == ByteOrder.BIG_ENDIAN)
-            {
-                buffer[bytePosition++] = b7;
-                buffer[bytePosition++] = b6;
-                buffer[bytePosition++] = b5;
-                buffer[bytePosition++] = b4;
-                buffer[bytePosition++] = b3;
-                buffer[bytePosition++] = b2;
-                buffer[bytePosition++] = b1;
-                buffer[bytePosition++] = b0;
-            }
-            else
-            {
-                buffer[bytePosition++] = b0;
-                buffer[bytePosition++] = b1;
-                buffer[bytePosition++] = b2;
-                buffer[bytePosition++] = b3;
-                buffer[bytePosition++] = b4;
-                buffer[bytePosition++] = b5;
-                buffer[bytePosition++] = b6;
-                buffer[bytePosition++] = b7;
-            }
+
+            buffer[bytePosition++] = b7;
+            buffer[bytePosition++] = b6;
+            buffer[bytePosition++] = b5;
+            buffer[bytePosition++] = b4;
+            buffer[bytePosition++] = b3;
+            buffer[bytePosition++] = b2;
+            buffer[bytePosition++] = b1;
+            buffer[bytePosition++] = b0;
         }
         else
         {
-            if (byteOrder == ByteOrder.BIG_ENDIAN)
-            {
-                writeSignedBits(v, BITS_PER_LONG);
-            }
-            else
-            {
-                writeSignedBits(Long.reverseBytes(v), BITS_PER_LONG);
-            }
-        }
-    }
-
-    @Override
-    public void writeUTF(final String s) throws IOException
-    {
-        throw new UnsupportedOperationException("ByteArrayBitStreamWriter: writeUTF() is unsupported.");
-    }
-
-    @Override
-    public void close() throws IOException
-    {
-        /*
-         * Silent method call.
-         */
-    }
-
-    /**
-     * Returns the underlying buffer content as byte array.
-     *
-     * @return A byte array containing the buffer values.
-     *
-     * @throws IOException If stream manipulation failed.
-     */
-    public byte[] toByteArray() throws IOException
-    {
-        final long bitPos = getBitPosition();
-        flushBits();
-        final byte[] dest = new byte[bytePosition];
-        System.arraycopy(buffer, 0, dest, 0, dest.length);
-        setBitPosition(bitPos);
-        return dest;
-    }
-
-    @Override
-    public void writeUnsignedByte(final short value) throws IOException
-    {
-        if (value < 0)
-            throw new IllegalArgumentException("ByteArrayBitStreamWriter: Can't write unsigned byte. Value " +
-                    value + " is negative.");
-
-        writeBits(value, BITS_PER_BYTE);
-    }
-
-    @Override
-    public void writeUnsignedShort(final int value) throws IOException
-    {
-        if (value < 0)
-            throw new IllegalArgumentException("ByteArrayBitStreamWriter: Can't write unsigned short. Value " +
-                    value + " is negative.");
-
-        if (byteOrder == ByteOrder.BIG_ENDIAN)
-        {
-            writeBits(value, BITS_PER_SHORT);
-        }
-        else
-        {
-            writeBits(Short.reverseBytes((short)value), BITS_PER_SHORT);
-        }
-    }
-
-    @Override
-    public void writeUnsignedInt(final long value) throws IOException
-    {
-        if (value < 0)
-            throw new IllegalArgumentException("ByteArrayBitStreamWriter: Can't write unsigned integer. " +
-                    "Value " + value + " is negative.");
-
-        if (byteOrder == ByteOrder.BIG_ENDIAN)
-        {
-            writeBits(value, BITS_PER_INT);
-        }
-        else
-        {
-            writeBits(Integer.reverseBytes((int)value) & 0xffffffffL, BITS_PER_INT);
-        }
-    }
-
-    /**
-     * Writes given number of zero bits to the bit stream.
-     *
-     * @param count Number of zeros to write.
-     *
-     * @throws IOException If the bits cannot be written.
-     */
-    void writeZeros(int count) throws IOException
-    {
-        while (count > 0)
-        {
-            // write in BITS_PER_LONG - 1 chunks (maximum allowed by writeBits())
-            final int bitsToWrite = Math.min(BITS_PER_LONG - 1, count);
-            writeBits(0, bitsToWrite);
-            count -= bitsToWrite;
-        }
-    }
-
-    /**
-     * Writes given number of one bits to the bit stream.
-     *
-     * @param count Number of ones to write.
-     *
-     * @throws IOException If the bits cannot be written.
-     */
-    void writeOnes(int count) throws IOException
-    {
-        while (count > 0)
-        {
-            // write in BITS_PER_LONG - 2 chunks to avoid overflow ( 1L << bitsToWrite must stay positive)
-            final int bitsToWrite = Math.min(BITS_PER_LONG - 2, count);
-            final long valueToWrite = (1L << bitsToWrite) - 1L;
-            writeBits(valueToWrite, bitsToWrite);
-            count -= bitsToWrite;
+            writeSignedBits(v, BITS_PER_LONG);
         }
     }
 
@@ -447,7 +221,30 @@ public class ByteArrayBitStreamWriter extends ByteArrayBitStreamBase implements 
 
             bitsToWrite = BITS_PER_BYTE;
         }
+    }
 
+    @Override
+    public void writeFloat16(final float value) throws IOException
+    {
+        writeUnsignedShort(floatToUInt16(value));
+    }
+
+    @Override
+    public void writeString(final String value) throws IOException
+    {
+        final byte[] bytes = value.getBytes(DEFAULT_CHARSET_NAME);
+        writeVarUInt64((long)bytes.length);
+        if (bitOffset == 0)
+        {
+            write(bytes);
+        }
+        else
+        {
+            for (final byte b : bytes)
+            {
+                writeByte(b);
+            }
+        }
     }
 
     @Override
@@ -551,36 +348,6 @@ public class ByteArrayBitStreamWriter extends ByteArrayBitStreamBase implements 
     }
 
     @Override
-    public void writeString(final String value) throws IOException
-    {
-        final byte[] bytes = value.getBytes(DEFAULT_CHARSET_NAME);
-        writeVarUInt64((long)bytes.length);
-        if (bitOffset == 0)
-        {
-            write(bytes);
-        }
-        else
-        {
-            for (final byte b : bytes)
-            {
-                writeByte(b);
-            }
-        }
-    }
-
-    @Override
-    public void writeFloat16(final float value) throws IOException
-    {
-        writeUnsignedShort(floatToUInt16(value));
-    }
-
-    @Override
-    public void skipBits(final int bitCnt) throws IOException
-    {
-        writeBits(0, bitCnt);
-    }
-
-    @Override
     public void alignTo(final int alignVal) throws IOException
     {
         final long offset = getBitPosition() % alignVal;
@@ -591,13 +358,98 @@ public class ByteArrayBitStreamWriter extends ByteArrayBitStreamBase implements 
         }
     }
 
+    @Override
+    public void close() throws IOException
+    {
+        // nothing to do
+    }
+
+    /**
+     * Returns the underlying buffer content as byte array.
+     *
+     * @return A byte array containing the buffer values.
+     *
+     * @throws IOException If stream manipulation failed.
+     */
+    public byte[] toByteArray() throws IOException
+    {
+        final long bitPos = getBitPosition();
+        flushBits();
+        final byte[] dest = new byte[bytePosition];
+        System.arraycopy(buffer, 0, dest, 0, dest.length);
+        setBitPosition(bitPos);
+        return dest;
+    }
+
+    private void skipBits(final int bitCnt) throws IOException
+    {
+        writeBits(0, bitCnt);
+    }
+
+    private void write(final int b) throws IOException
+    {
+        flushBits();
+        ensureCapacity(BITS_PER_BYTE);
+        buffer[bytePosition++] = (byte)b;
+    }
+
+    private void write(final byte[] src) throws IOException
+    {
+        write(src, 0, src.length);
+    }
+
+    private void write(final byte[] src, final int offset, final int length) throws IOException
+    {
+        flushBits();
+        ensureCapacity(BITS_PER_BYTE * length);
+        System.arraycopy(src, offset, buffer, bytePosition, length);
+        this.bytePosition += length;
+    }
+
+    /**
+     * Writes given number of zero bits to the bit stream.
+     *
+     * @param count Number of zeros to write.
+     *
+     * @throws IOException If the bits cannot be written.
+     */
+    private void writeZeros(int count) throws IOException
+    {
+        while (count > 0)
+        {
+            // write in BITS_PER_LONG - 1 chunks (maximum allowed by writeBits())
+            final int bitsToWrite = Math.min(BITS_PER_LONG - 1, count);
+            writeBits(0, bitsToWrite);
+            count -= bitsToWrite;
+        }
+    }
+
+    /**
+     * Writes given number of one bits to the bit stream.
+     *
+     * @param count Number of ones to write.
+     *
+     * @throws IOException If the bits cannot be written.
+     */
+    private void writeOnes(int count) throws IOException
+    {
+        while (count > 0)
+        {
+            // write in BITS_PER_LONG - 2 chunks to avoid overflow ( 1L << bitsToWrite must stay positive)
+            final int bitsToWrite = Math.min(BITS_PER_LONG - 2, count);
+            final long valueToWrite = (1L << bitsToWrite) - 1L;
+            writeBits(valueToWrite, bitsToWrite);
+            count -= bitsToWrite;
+        }
+    }
+
     /**
      * If the bit offset is non-zero, forces the remaining bits in the current byte to 0 and advances the stream
      * position by one.
      *
      * @exception IOException If some stream manipulation error occurred.
      */
-    protected final void flushBits() throws IOException
+    private final void flushBits() throws IOException
     {
         if (bitOffset != 0)
         {
@@ -674,7 +526,7 @@ public class ByteArrayBitStreamWriter extends ByteArrayBitStreamBase implements 
         }
         else
         {
-            writeByte(0);
+            writeByte((byte) 0);
         }
     }
 
@@ -904,7 +756,7 @@ public class ByteArrayBitStreamWriter extends ByteArrayBitStreamBase implements 
     private static final int MAX_BUFFER_SIZE = Integer.MAX_VALUE - 8;
 
     /** Minimum VarInt value is Long.MIN_VALUE but it is encoded as -0. */
-    private static final int VARINT_MIN_VALUE = 0x80;
+    private static final byte VARINT_MIN_VALUE = (byte)0x80;
 
     /** Maximum number of bytes needed to encode VarUInt. */
     private static final int VARUINT_MAX_BYTES = 9;

@@ -1,26 +1,20 @@
 package zserio.runtime.io;
 
 import java.io.IOException;
-import java.nio.ByteOrder;
 
 /**
  * Common abstract class for bit stream reader and writer.
  */
 abstract class ByteArrayBitStreamBase
 {
-    /**
-     * Constructs object from given byte ordering.
-     *
-     * @param byteOrder Byte order to construct from (BIG_ENDIAN or LITTLE_ENDIAN).
-     */
-    public ByteArrayBitStreamBase(ByteOrder byteOrder)
-    {
-        this.byteOrder = byteOrder;
-    }
-
     public long getBitPosition()
     {
         return BITS_PER_BYTE * bytePosition + bitOffset;
+    }
+
+    public int getBytePosition()
+    {
+        return bytePosition;
     }
 
     public void setBitPosition(final long bitPosition) throws IOException
@@ -29,25 +23,9 @@ abstract class ByteArrayBitStreamBase
         bytePosition = (int)(bitPosition / BITS_PER_BYTE);
     }
 
-    public int getBytePosition()
-    {
-        return bytePosition;
-    }
-
-    public void seek(final int bytePosition)
-    {
-        this.bytePosition = bytePosition;
-        this.bitOffset = 0;
-    }
-
     public int getBitOffset()
     {
         return bitOffset;
-    }
-
-    public void rewind() throws IOException
-    {
-        setBitPosition(0);
     }
 
     /**
@@ -73,16 +51,6 @@ abstract class ByteArrayBitStreamBase
      * The current bit offset.
      */
     protected int bitOffset;
-
-    /**
-     * The byte order.
-     */
-    protected final ByteOrder byteOrder;
-
-    /**
-     * The default byte order.
-     */
-    protected static final ByteOrder DEFAULT_BYTE_ORDER = ByteOrder.BIG_ENDIAN;
 
     /**
      * The default character set.
