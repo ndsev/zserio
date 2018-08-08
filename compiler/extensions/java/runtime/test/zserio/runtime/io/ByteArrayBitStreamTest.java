@@ -374,7 +374,7 @@ public class ByteArrayBitStreamTest
     }
 
     @Test
-    public void varint16() throws Exception
+    public void varInt16() throws Exception
     {
         Short values[] =
         {
@@ -397,7 +397,7 @@ public class ByteArrayBitStreamTest
     }
 
     @Test
-    public void varint32() throws Exception
+    public void varInt32() throws Exception
     {
         Integer values[] =
         {
@@ -430,7 +430,7 @@ public class ByteArrayBitStreamTest
     }
 
     @Test
-    public void varint64() throws Exception
+    public void varInt64() throws Exception
     {
         Long values[] =
         {
@@ -483,7 +483,7 @@ public class ByteArrayBitStreamTest
     }
 
     @Test
-    public void varuint16() throws Exception
+    public void varUInt16() throws Exception
     {
         Short values[] =
         {
@@ -502,7 +502,7 @@ public class ByteArrayBitStreamTest
     }
 
     @Test
-    public void varuint32() throws Exception
+    public void varUInt32() throws Exception
     {
         Integer values[] =
         {
@@ -527,7 +527,7 @@ public class ByteArrayBitStreamTest
     }
 
     @Test
-    public void varuint64() throws Exception
+    public void varUInt64() throws Exception
     {
         Long values[] =
         {
@@ -563,7 +563,7 @@ public class ByteArrayBitStreamTest
         testImpl(writeMethod, readMethod, values, 63);
     }
 
-    public void varint() throws Exception
+    public void varInt() throws Exception
     {
         Long values[] =
         {
@@ -622,7 +622,7 @@ public class ByteArrayBitStreamTest
         testImpl(writeMethod, readMethod, values, 63);
     }
 
-    public void varuint() throws Exception
+    public void varUInt() throws Exception
     {
         BigInteger values[] =
         {
