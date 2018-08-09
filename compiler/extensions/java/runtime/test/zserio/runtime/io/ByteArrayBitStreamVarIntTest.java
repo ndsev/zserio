@@ -4,7 +4,6 @@ import static org.junit.Assert.*;
 import org.junit.Test;
 
 import java.io.IOException;
-import java.math.BigInteger;
 
 
 public class ByteArrayBitStreamVarIntTest
@@ -240,7 +239,7 @@ public class ByteArrayBitStreamVarIntTest
     @Test
     public void readWriteByte9PositiveMax() throws IOException
     {
-        readWriteTest(BigInteger.ONE.shiftLeft(63).subtract(BigInteger.ONE).longValue(), 9);
+        readWriteTest((1L << 63) - 1, 9);
     }
 
     private void readWriteTest(long value, int expectedNumBytes) throws IOException

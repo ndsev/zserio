@@ -563,6 +563,7 @@ public class ByteArrayBitStreamTest
         testImpl(writeMethod, readMethod, values, 63);
     }
 
+    @Test
     public void varInt() throws Exception
     {
         Long values[] =
@@ -622,6 +623,7 @@ public class ByteArrayBitStreamTest
         testImpl(writeMethod, readMethod, values, 63);
     }
 
+    @Test
     public void varUInt() throws Exception
     {
         BigInteger values[] =
