@@ -1,4 +1,4 @@
-# zserio Benchmarks
+# Zserio Benchmarks
 
 In this folder you find a number of size and performance benchmarks with different data sets.
 
@@ -8,7 +8,7 @@ In this folder you find a number of size and performance benchmarks with differe
 
 ![size comparison](zserio-proto-size.PNG)
 
-## zserio vs. Protocol Buffers
+## Zserio vs. Protocol Buffers
 
 Google's Protocol Buffers are very popular and in wide-spread use. One of the many questions we always have to answer is: "Why don't you use protobuf? It is already there."
 
@@ -68,7 +68,7 @@ message AddressBook {
 }
 
 ```
-#### zserio schema: "plain"
+#### Zserio schema: "plain"
 
 In a first step we transcode this schema without any further thought to zserio. This results in the following zserio schema (which actually looks very similar to protobuf):
 
@@ -104,7 +104,7 @@ Please note the following in comparison to Protobuf v3:
 - ```int32``` is of fixed size in zserio whereas Protobuf uses variable encoding
 - the ```PhoneType``` enum is quite optimized in the schema above to demonstrate the abilities in zserio. We will see later that it might not always be the best idea to use the smallest available bit size when you later compress the encoded stream.
 
-#### zserio schema: "optimized"
+#### Zserio schema: "optimized"
 
 Taking into account that Protobuf internally always uses variable integer encoding in v3 and that also each and every element is optional, we adapt the zserio schema to be more like the Protobuf schema under its hood.
 
@@ -127,7 +127,7 @@ struct PhoneNumber {
   PhoneType type;
 };
 
-enum bit:2 PhoneType {  
+enum bit:2 PhoneType {
   MOBILE = 0,
   HOME = 1,
   WORK = 2,
@@ -137,7 +137,7 @@ enum bit:2 PhoneType {
 We refer to this schema as *zserio optimized*.
 Please note that introducing the ```optional``` keyword in zserio adds 1 bit in the byte stream before the actual value. So instead of an empty string which would consume 1 byte for the size=0 information, we only store 1 bit. One has to keep in mind that with this the byte stream gets "unaligned", meaning that e.g. the strings get shifted by one bit. This is important to keep in mind when dealing with compression of the byte stream after encoding it. Compressors usually perform better with aligned data.
 
-#### zserio schema: "aligned"
+#### Zserio schema: "aligned"
 
 The aligned schema takes into account the fact that we later want to compress the encoded stream. Therefore we change the type of the enumeration to `uint8` and rather store empty strings than using the ```optional``` keyword to keep everything aligned.
 We still keep the varint32 from the previous optimization.
@@ -177,7 +177,7 @@ Data size [byte] | raw csv | protobuf | zserio plain | zserio optimized | zserio
 uncompressed | 63,271  | **73,567**  | 63,958 | **62,020** | 63,469
 zlib compressed | 33,860  | **38,964**  | 45,370 | 50,316 | **36,029**
 
-zserio beats Protobuf in all uncompressed cases. When adding compression on top, we have to take care about the alignments of e.g. strings. Unaligned strings just don't compress well. But once we did take this into account, zserio compresses as good as protobuf does.
+Zserio beats Protobuf in all uncompressed cases. When adding compression on top, we have to take care about the alignments of e.g. strings. Unaligned strings just don't compress well. But once we did take this into account, zserio compresses as good as protobuf does.
 
 ### Note
 
@@ -195,7 +195,7 @@ align(8):
 and keep the enum at 2 bit:
 
 ```
-enum bit:2 PhoneType {   
+enum bit:2 PhoneType {
   MOBILE = 0,
   HOME = 1,
   WORK = 2,
