@@ -89,6 +89,7 @@ public class RpcType extends CompoundType
 
     private Package pkg;
     private String name;
+    private ServiceType service;
     private ZserioType requestType;
     private ZserioType responseType;
 }

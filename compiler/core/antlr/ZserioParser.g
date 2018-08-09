@@ -89,7 +89,9 @@ tokens
     QUESTIONMARK<AST=zserio.ast.Expression>;
     RETURN="return";
     ROOT;
+    RPC="rpc"<AST=zserio.ast.RpcType>;
     RSHIFT<AST=zserio.ast.Expression>;
+    SERVICE="service"<AST=zserio.ast.ServiceType>;
     SQL="sql"<AST=zserio.ast.SqlConstraint>;
     SQL_DATABASE="sql_database"<AST=zserio.ast.SqlDatabaseType>;
     SQL_TABLE="sql_table"<AST=zserio.ast.SqlTableType>;
@@ -98,7 +100,6 @@ tokens
     SQL_WITHOUT_ROWID="sql_without_rowid";
     STRING="string"<AST=zserio.ast.StringType>;
     STRING_LITERAL<AST=zserio.ast.Expression>;
-    RPC="rpc"<AST=zserio.ast.RpcType>;
     STRUCTURE="struct"<AST=zserio.ast.StructureType>;
     SUBTYPE="subtype"<AST=zserio.ast.Subtype>;
     SUM="sum"<AST=zserio.ast.Expression>;
@@ -146,7 +147,7 @@ importDeclaration
 commandDeclaration
     :   constDeclaration SEMICOLON! |
         subtypeDeclaration SEMICOLON! |
-        rpcDeclaration SEMICOLON! |
+        serviceDeclaration SEMICOLON! |
         structureDeclaration SEMICOLON! |
         choiceDeclaration SEMICOLON! |
         unionDeclaration SEMICOLON! |
@@ -169,13 +170,20 @@ subtypeDeclaration
     :   SUBTYPE^ definedType ID
     ;
 
+serviceDeclaration
+    :   SERVICE^ ID
+        LCURLY!
+        (rpcDeclaration SEMICOLON!)*
+        RCURLY!
+    ;
+
 rpcDeclaration
     :   RPC^ ID
-	LPAREN!
-	definedType 
-	COMMA!
-	definedType
-	RPAREN!
+        LPAREN!
+        definedType
+        COMMA!
+        definedType
+        RPAREN!
     ;
 
 /**

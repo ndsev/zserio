@@ -4,25 +4,17 @@ import zserio.ast.RpcType;
 import zserio.ast.ZserioType;
 import zserio.emit.cpp.types.CppNativeType;
 
-public class RpcEmitterTemplateData extends CompoundTypeTemplateData
+public class RpcEmitterTemplateData
 {
-    public RpcEmitterTemplateData(TemplateDataContext context, RpcType type)
+    public RpcEmitterTemplateData(CppNativeTypeMapper typeMapper, RpcType type)
     {
-        super(context, type);
+        rpcType = type;
+        final CppNativeTypeMapper cppNativeTypeMapper = typeMapper;
 
-	rpcType = type;
-	requestType = type.getRequestType();
-	responseType = type.getResponseType();
-
-	final CppNativeTypeMapper cppNativeTypeMapper = context.getCppNativeTypeMapper();
-
-	final CppNativeType nativeRequestType = cppNativeTypeMapper.getCppType(requestType);
-	requestTypeFullName = nativeRequestType.getFullName();
-	addHeaderIncludesForType(nativeRequestType);
-
-	final CppNativeType nativeResponseType = cppNativeTypeMapper.getCppType(responseType);
-	responseTypeFullName = nativeResponseType.getFullName();
-	addHeaderIncludesForType(nativeResponseType);
+        final ZserioType requestType = type.getRequestType();
+        requestTypeFullName = cppNativeTypeMapper.getCppType(requestType).getFullName();
+        final ZserioType responseType = type.getResponseType();
+        responseTypeFullName = cppNativeTypeMapper.getCppType(responseType).getFullName();
     }
 
     public String getRequestTypeFullName()
@@ -35,9 +27,12 @@ public class RpcEmitterTemplateData extends CompoundTypeTemplateData
         return responseTypeFullName;
     }
 
+    public String getName()
+    {
+        return rpcType.getName();
+    }
+
     final private RpcType rpcType;
-    final private ZserioType requestType;
-    final private ZserioType responseType;
     final private String requestTypeFullName;
     final private String responseTypeFullName;
 }

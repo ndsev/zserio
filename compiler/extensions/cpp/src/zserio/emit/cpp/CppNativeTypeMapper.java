@@ -20,6 +20,7 @@ import zserio.ast.FloatType;
 import zserio.ast.FunctionType;
 import zserio.ast.IntegerType;
 import zserio.ast.RpcType;
+import zserio.ast.ServiceType;
 import zserio.ast.StructureType;
 import zserio.ast.SignedBitFieldType;
 import zserio.ast.SqlDatabaseType;
@@ -276,6 +277,12 @@ public class CppNativeTypeMapper
         }
 
         @Override
+        public void visitServiceType(ServiceType type)
+        {
+            mapObjectArray();
+        }
+
+        @Override
         public void visitRpcType(RpcType type)
         {
             mapObjectArray();
@@ -515,6 +522,12 @@ public class CppNativeTypeMapper
         public void visitStringType(StringType type)
         {
             cppType = stringType;
+        }
+
+        @Override
+        public void visitServiceType(ServiceType type)
+        {
+            mapCompoundType(type);
         }
 
         @Override

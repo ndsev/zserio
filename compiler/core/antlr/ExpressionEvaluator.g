@@ -51,7 +51,7 @@ importDeclaration
 commandDeclaration
     :   constDeclaration |
         subtypeDeclaration |
-        rpcDeclaration |
+        serviceDeclaration |
         structureDeclaration |
         choiceDeclaration |
         unionDeclaration |
@@ -72,6 +72,10 @@ constDeclaration
  */
 subtypeDeclaration
     :   #(SUBTYPE definedType ID)
+    ;
+
+serviceDeclaration
+    :   #(SERVICE ID (rpcDeclaration)*)
     ;
 
 rpcDeclaration

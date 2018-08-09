@@ -88,7 +88,7 @@ importDeclaration
 commandDeclaration
     :   constDeclaration |
         subtypeDeclaration |
-        rpcDeclaration |
+        serviceDeclaration |
         structureDeclaration |
         choiceDeclaration |
         unionDeclaration |
@@ -119,15 +119,25 @@ subtypeDeclaration
         }
     ;
 
+serviceDeclaration
+    : #(s:SERVICE i:ID
+          {
+              pkg.setType((BaseTokenAST)i, s);
+              beginScope((CompoundType)s);
+              ((CompoundType)s).setScope(scope, pkg);
+          }
+        (rpcDeclaration)*
+      ) { endScope(); }
+    ;
+
 rpcDeclaration
     : #(r:RPC i:ID a:definedType b:definedType
           {
               pkg.setType((BaseTokenAST)i, r);
-              ((RpcType)r).setPackage(pkg);
+              scope.setSymbol((BaseTokenAST)i, r);
           }
       )
     ;
-
 
 /**
  * structureDeclaration.

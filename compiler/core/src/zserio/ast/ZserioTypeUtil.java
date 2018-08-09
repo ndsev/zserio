@@ -20,6 +20,9 @@ public class ZserioTypeUtil
         if (ZserioTypeUtil.isBuiltIn(type))
             return type.getName();
 
+        if (type.getPackage() == null)
+            return type.getName();
+
         return StringJoinUtil.joinStrings(
                 type.getPackage().getPackageName(), type.getName(), Package.SEPARATOR);
     }
