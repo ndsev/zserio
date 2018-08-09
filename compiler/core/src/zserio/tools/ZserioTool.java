@@ -451,10 +451,13 @@ public class ZserioTool
 
     private static String getErrorMessage(String message, Token token)
     {
-        if (token != null && TokenAST.isKeyword(token.getType()))
-            return message + " (reserved keyword)";
-        if (token.getType() == ZserioParserTokenTypes.EOF)
-            return "Unexpected end of file: " + message;
+        if (token != null)
+        {
+            if (TokenAST.isKeyword(token.getType()))
+                return message + " (reserved keyword)";
+            if (token.getType() == ZserioParserTokenTypes.EOF)
+                return "Unexpected end of file: " + message;
+        }
         return message;
     }
 
