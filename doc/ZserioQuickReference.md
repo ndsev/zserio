@@ -9,6 +9,7 @@ int64
 varint16
 varint32
 varint64
+varint
 int:n
 int<expr>
 ```
@@ -22,6 +23,7 @@ uint64
 varuint16
 varuint32
 varuint64
+varuint
 bit:n
 bit<expr>
 ```
@@ -151,7 +153,7 @@ struct AutoArrayExample
 struct AlignmentExample
 {
     bit:11 a;
-    
+
 align(32):
     uint32 b;
 };
@@ -214,7 +216,7 @@ struct Block
 ```
 
 -------
-## SQLite extension 
+## SQLite extension
 
 **SQLite Table**
 ```

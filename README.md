@@ -110,6 +110,6 @@ You can find the detailed quick start tutorial in their respective repositories:
 
 ## Documentation
 
-Documentation of the schema language can be found in the [Zserio Language Overview](doc/ZserioLanguageOverview/ZserioLanguageOverview.md).
+Documentation of the schema language can be found in the [Zserio Language Overview](doc/ZserioLanguageOverview.md).
 
-Check out the [Quick Reference](doc/ZserioLanguageOverview/ZserioQuickReference.md) and the mappings for JAVA and C++ in the doc folder.
+Check out the [Quick Reference](doc/ZserioQuickReference.md) and the [mappings](doc/ZserioTypesMapping.md) for JAVA and C++ in the doc folder.
