@@ -46,9 +46,9 @@ described in zserio, giving the developer overall control of the data schema use
 
 [SQLite Extension](#sqlite-extension)
 
-[Background & History](#background-&-history)
+[Background & History](#background--history)
 
-[License & Copyright](#license-&-copyright)
+[License & Copyright](#license--copyright)
 
 [*Quick Reference*](ZserioQuickReference.md)
 
