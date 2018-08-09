@@ -225,7 +225,11 @@ fieldTypeId!
     ;
     exception
     catch [NoViableAltException e]
-    {} // let a following rule to fail with proper message
+    { 
+        if (LA(2) != ZserioParserTokenTypes.EOF)
+            throw e;
+        // let a following rule to fail with proper message for unexpected EOF
+    } 
 
 fieldArrayRange
     :   LBRACKET! (expression)? RBRACKET!
