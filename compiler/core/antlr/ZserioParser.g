@@ -223,6 +223,9 @@ fieldTypeId!
             #fieldTypeId = #(null, t, i);
         }
     ;
+    exception
+    catch [NoViableAltException e]
+    {} // let a following rule to fail with proper message
 
 fieldArrayRange
     :   LBRACKET! (expression)? RBRACKET!

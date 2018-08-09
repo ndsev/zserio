@@ -1,0 +1,3 @@
+package unexpected_eof_in_const_definition_error;
+
+const

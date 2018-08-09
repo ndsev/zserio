@@ -1,0 +1,32 @@
+<project name="syntax_error" basedir="." default="run">
+    <testProperties testPath="errors/syntax_error" testName="syntax_error"/>
+
+    <target name="prepare">
+        <testPrepare testName="syntax_error"/>
+    </target>
+
+    <target name="gen" depends="prepare">
+        <testGen testName="syntax_error" zsFile="unexpected_eof_in_array_length_error.zs" ignoreError="true"/>
+        <testGen testName="syntax_error" zsFile="unexpected_eof_in_const_definition_error.zs" ignoreError="true"/>
+        <testGen testName="syntax_error" zsFile="unexpected_eof_in_field_definition_error.zs" ignoreError="true"/>
+        <testGen testName="syntax_error" zsFile="unexpected_eof_in_parameterized_field_definition_error.zs" ignoreError="true"/>
+        <testGen testName="syntax_error" zsFile="unexpected_eof_in_struct_definition_error.zs" ignoreError="true"/>
+        <testGen testName="syntax_error" zsFile="unexpected_eof_missing_semicolon_error.zs" ignoreError="true"/>
+    </target>
+
+    <target name="compile" depends="gen">
+        <testCompile testName="syntax_error" srcPath="${syntax_error.base_dir}/java"/>
+    </target>
+
+    <target name="findbugs" depends="compile" if="findbugs.home_dir">
+        <testFindbugs testName="syntax_error" srcPath="${syntax_error.base_dir}/java"/>
+    </target>
+
+    <target name="run" depends="findbugs">
+        <testRun testName="syntax_error"/>
+    </target>
+
+    <target name="clean">
+        <testClean testName="syntax_error"/>
+    </target>
+</project>

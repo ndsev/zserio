@@ -453,6 +453,8 @@ public class ZserioTool
     {
         if (token != null && TokenAST.isKeyword(token.getType()))
             return message + " (reserved keyword)";
+        if (token.getType() == ZserioParserTokenTypes.EOF)
+            return "Unexpected end of file: " + message;
         return message;
     }
 
