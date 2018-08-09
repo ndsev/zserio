@@ -149,7 +149,7 @@ varuint32    | `0 to 536870911`                              | `4`
 varuint64    | `0 to 144115188075855871`                     | `8`
 varuint      | `0 to 18446744073709551615`                   | `9`
 
-*Note that `varint` and `varuint` can handle all `int64` and `uint64` value respectively.*
+>Note that `varint` and `varuint` can handle all `int64` and `uint64` values respectively.
 
 The internal layout of the variable integer types is:
 
