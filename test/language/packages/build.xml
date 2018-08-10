@@ -6,19 +6,21 @@
     </target>
 
     <target name="gen" depends="prepare">
+        <testGen testName="packages" zsFile="empty_file.zs"/>
+        <testGen testName="packages" zsFile="default_package.zs"/>
         <testGen testName="packages" zsFile="packages.zs"/>
     </target>
 
     <target name="compile" depends="gen">
-        <testCompile testName="packages" srcPath="${packages.zs.out_dir}"/>
+        <testCompile testName="packages"/>
     </target>
 
     <target name="findbugs" depends="compile" if="findbugs.home_dir">
-        <testFindbugs testName="packages" srcPath="${packages.zs.out_dir}"/>
+        <testFindbugs testName="packages"/>
     </target>
 
     <target name="run" depends="findbugs">
-        <!-- nothing to do -->
+        <testRun testname="packages"/>
     </target>
 
     <target name="clean">

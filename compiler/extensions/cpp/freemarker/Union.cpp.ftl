@@ -37,7 +37,7 @@
     <#if field.array?? && field.array.requiresElementFactory>
         <#if !hasAnonymousNamespace>
             <#assign hasAnonymousNamespace=true/>
-<@namespace_begin/>
+<@anonymous_namespace_begin/>
 
         </#if>
 <@define_element_factory name, field/>
@@ -54,7 +54,7 @@
     </#if>
 </#list>
 <#if hasAnonymousNamespace>
-<@namespace_end/>
+<@anonymous_namespace_end/>
 
 </#if>
 <#if withWriterCode>

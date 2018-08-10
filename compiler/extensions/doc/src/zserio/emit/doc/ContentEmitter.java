@@ -5,11 +5,11 @@ import antlr.collections.AST;
 import zserio.ast.CompoundType;
 import zserio.ast.ConstType;
 import zserio.ast.EnumType;
+import zserio.ast.Package;
 import zserio.ast.Subtype;
-import zserio.ast.ZserioType;
 import zserio.ast.TokenAST;
-
-
+import zserio.ast.ZserioType;
+import zserio.tools.PackageManager;
 
 public class ContentEmitter extends DefaultHtmlEmitter
 {
@@ -36,13 +36,23 @@ public class ContentEmitter extends DefaultHtmlEmitter
         setCurrentFolder(CONTENT_FOLDER);
     }
 
+    @Override
+    public void endRoot()
+    {
+        emitPackage(PackageManager.get().defaultPackage);
+    }
 
     @Override
     public void endPackage(AST p)
     {
-        for (String typeName : currentPackage.getLocalTypeNames())
+        emitPackage(currentPackage);
+    }
+
+    private void emitPackage(Package pkg)
+    {
+        for (String typeName : pkg.getLocalTypeNames())
         {
-            ZserioType t = currentPackage.getLocalType(typeName);
+            ZserioType t = pkg.getLocalType(typeName);
             TokenAST type = (TokenAST) t;
             if (type instanceof CompoundType)
             {
@@ -66,5 +76,4 @@ public class ContentEmitter extends DefaultHtmlEmitter
             }
         }
     }
-
 }

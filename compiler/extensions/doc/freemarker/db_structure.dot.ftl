@@ -30,9 +30,11 @@ digraph Zserio
                     <TR>
                         <TD WIDTH="565" BGCOLOR="gray" ALIGN="LEFT">
                             <TABLE BORDER="0">
+    <#if table.packageName?has_content>
                                 <TR>
                                     <TD><FONT FACE="monospace">${table.packageName}</FONT></TD>
                                 </TR>
+    </#if>
                                 <TR>
                                     <TD><FONT FACE="monospace" COLOR="blue">${table.typeName} ${table.name}</FONT></TD>
                                 </TR>

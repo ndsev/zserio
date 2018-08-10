@@ -1,4 +1,5 @@
 set(ZSERIO_GEN_DIR_PACKAGES ${CMAKE_CURRENT_BINARY_DIR}/gen_packages)
+set(ZSERIO_GEN_DIR_EMPTY_FILE ${CMAKE_CURRENT_BINARY_DIR}/gen_empty_file)
 set(ZSERIO_GEN_DIR_DEFAULT_PACKAGE ${CMAKE_CURRENT_BINARY_DIR}/gen_default_package)
 
 set(ZSERIO_GENERATED_SOURCES_PACKAGES
@@ -44,6 +45,14 @@ zserio_add_library(TARGET packages_zs
     ZSERIO_OPTIONS -withoutSourcesAmalgamation -withWriterCode
 )
 
+zserio_add_library(TARGET empty_file_zs
+    SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/zs
+    MAIN_SOURCE empty_file.zs
+    OUT_DIR ${ZSERIO_GEN_DIR_EMPTY_FILE}
+    OUT_FILES EMPTY
+    ZSERIO_CORE_DIR ${ZSERIO_JAR_DIR}
+)
+
 zserio_add_library(TARGET default_package_zs
     SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/zs
     MAIN_SOURCE default_package.zs
@@ -54,6 +63,7 @@ zserio_add_library(TARGET default_package_zs
 )
 
 add_test_sources(
+    cpp/DefaultPackageTest.cpp
 )
 
 add_test_dependencies(packages_zs)

@@ -45,8 +45,9 @@ endfunction()
 #   ZSERIO_OPTIONS ... (optional)
 #
 # Only the files mentioned in OUT_FILES will be added to the static library target.
-# Glob is not used because using GLOB for sources is frowned upon in CMake world. (CMake doesn't pick up
-# changes in the glob, e.g. added files.)
+# OUT_FILES can be EMPTY if no output should be generated.
+# Glob is not used because using GLOB for sources is frowned upon in CMake world.
+# (CMake doesn't pick up changes in the glob, e.g. added files.)
 #
 # The actual Zserio generation target is added to the top-level target "gen".
 function(zserio_add_library)
@@ -96,10 +97,16 @@ function(zserio_add_library)
         endif ()
     endif ()
 
+    # handle special EMPTY case
+    if ("${VALUE_OUT_FILES}" STREQUAL "EMPTY")
+        set(TOUCH_EMPTY_COMMAND COMMAND ${CMAKE_COMMAND} -E touch EMPTY)
+    endif ()
+
     add_custom_command(OUTPUT ${VALUE_OUT_FILES}
         COMMAND ${CMAKE_COMMAND} -E remove_directory ${VALUE_OUT_DIR}
         COMMAND ${JAVA_BIN} -Djava.ext.dirs="${VALUE_ZSERIO_CORE_DIR}" -jar ${VALUE_ZSERIO_CORE_DIR}/zserio_core.jar -cpp ${VALUE_OUT_DIR}
             ${VALUE_ZSERIO_OPTIONS} -src ${VALUE_SOURCE_DIR} ${VALUE_MAIN_SOURCE}
+        ${TOUCH_EMPTY_COMMAND}
         DEPENDS ${ALL_SOURCES} ${VALUE_ZSERIO_CORE_DIR}/zserio_core.jar
         COMMENT "Generating sources with Zserio")
 
@@ -120,6 +127,7 @@ function(zserio_add_library)
         set_property(SOURCE ${VALUE_OUT_FILES}
                      APPEND PROPERTY COMPILE_DEFINITIONS ZSERIO_RUNTIME_INCLUDE_INSPECTOR)
     endif ()
+
     add_library(${VALUE_TARGET} STATIC ${VALUE_OUT_FILES})
     target_include_directories(${VALUE_TARGET} PUBLIC ${VALUE_OUT_DIR})
     target_link_libraries(${VALUE_TARGET} PUBLIC ZserioCppRuntime)

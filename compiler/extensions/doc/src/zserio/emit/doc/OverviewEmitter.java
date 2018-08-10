@@ -39,11 +39,10 @@ public class OverviewEmitter extends DefaultHtmlEmitter
                 Package pkg = PackageManager.get().lookup(pkgName);
                 for (String typeName : pkg.getLocalTypeNames())
                 {
-                    boolean isDoubleDefinedType = doubleTypeNames.get(typeName);
+                    boolean isDoubleDefinedType = Boolean.TRUE.equals(doubleTypeNames.get(typeName));
                     ZserioType t = pkg.getLocalType(typeName);
                     LinkedType linkedType = new LinkedType(t, isDoubleDefinedType);
-                    String fullTypeName = typeName + "." + pkg.getReversePackageName();
-                    typeMap.put(fullTypeName, linkedType);
+                    typeMap.put(getFullTypeName(typeName, pkg), linkedType);
                 }
             }
 
@@ -85,6 +84,14 @@ public class OverviewEmitter extends DefaultHtmlEmitter
     public Collection<LinkedType> getTypes()
     {
         return typeMap.values();
+    }
+
+    private String getFullTypeName(String typeName, Package pkg)
+    {
+        if (pkg == PackageManager.get().defaultPackage)
+            return typeName;
+
+        return typeName + "." + pkg.getReversePackageName();
     }
 
     private final Map<String, LinkedType> typeMap = new TreeMap<String, LinkedType>();

@@ -2,6 +2,7 @@ package zserio.ast;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -375,9 +376,7 @@ public class Package implements Serializable
     public List<String> getPackagePath()
     {
         if (packagePath == null)
-        {
-            packagePath = java.util.Arrays.asList(getPackageName().split(SEPARATOR_REGEX));
-        }
+            evaluatePackagePaths();
         return packagePath;
     }
 
@@ -389,18 +388,25 @@ public class Package implements Serializable
     public List<String> getReversePackagePath()
     {
         if (reversePackagePath == null)
-        {
-            reversePackagePath = new ArrayList<String>();
-            generateReversePath(reversePackagePath, node.getFirstChild());
-        }
+            evaluatePackagePaths();
         return reversePackagePath;
     }
 
-    private static void generateReversePath(List<String> reversePkgPath, AST child)
+    private void evaluatePackagePaths()
     {
-        for (; child != null; child = child.getNextSibling())
+        if (packagePath == null)
         {
-            reversePkgPath.add(0, child.getText());
+            if (this == PackageManager.get().defaultPackage)
+            {
+                packagePath = new ArrayList<String>();
+                reversePackagePath = new ArrayList<String>();
+            }
+            else
+            {
+                packagePath = java.util.Arrays.asList(getPackageName().split(SEPARATOR_REGEX));
+                reversePackagePath = new ArrayList<String>(packagePath);
+                Collections.reverse(reversePackagePath);
+            }
         }
     }
 

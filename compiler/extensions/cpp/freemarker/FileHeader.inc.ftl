@@ -17,7 +17,7 @@
 
 <#macro include_path packagePath typeName>
     <#list packagePath as namespace>
-        <#t><#if namespace != "">${namespace}/</#if><#rt>
+        <#t>${namespace}/<#rt>
     </#list>
     <#t>${typeName}
 </#macro>
@@ -49,24 +49,24 @@
 #endif // <@include_guard_name packagePath, typeName/>
 </#macro>
 
-<#macro namespace_begin packagePath=[]>
-    <#if packagePath?has_content>
-        <#list packagePath as namespace>
+<#macro namespace_begin packagePath>
+    <#list packagePath as namespace>
 namespace ${namespace}
 {
-        </#list>
-    <#else>
-namespace
-{
-    </#if>
+    </#list>
 </#macro>
 
-<#macro namespace_end packagePath=[]>
-    <#if packagePath?has_content>
-        <#list packagePath?reverse as namespace>
+<#macro namespace_end packagePath>
+    <#list packagePath?reverse as namespace>
 } // namespace ${namespace}
-        </#list>
-    <#else>
+    </#list>
+</#macro>
+
+<#macro anonymous_namespace_begin>
+namespace
+{
+</#macro>
+
+<#macro anonymous_namespace_end>
 } // namespace
-    </#if>
 </#macro>
