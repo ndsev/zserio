@@ -333,7 +333,8 @@ public class ZserioTool
             throws ParserException
     {
         final TokenAST node = (TokenAST)packageRoot.getFirstChild();
-        if (node.getType() != ZserioParserTokenTypes.PACKAGE)
+        // node is null only for empty input file
+        if (node == null || node.getType() != ZserioParserTokenTypes.PACKAGE)
         {
             // no package name specified
             if (initialFile)
@@ -358,7 +359,8 @@ public class ZserioTool
 
         // files that start with import are wrong (this implies they don't contain 'package' specification
         // but files without package can't use imports)
-        if (node.getType() == ZserioParserTokenTypes.IMPORT)
+        // node is null only for empty input file
+        if (node != null && node.getType() == ZserioParserTokenTypes.IMPORT)
         {
             throw new ParserException(node,
                     "ZserioParser: input file without 'package' specification can't use imports!");
