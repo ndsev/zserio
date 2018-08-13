@@ -5,7 +5,7 @@ import org.junit.Test;
 public class DefaultPackageTest
 {
     @Test
-    public void DefaultPackageStructure() throws Exception
+    public void defaultPackageStructure() throws Exception
     {
         // just test that DefaultPackageStructure is available in default package
         DefaultPackageStructure structure = new DefaultPackageStructure((short)4);
