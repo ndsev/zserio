@@ -19,15 +19,13 @@ set(ZSERIO_GENERATED_SOURCES
     ${ZSERIO_GEN_DIR}/without_writer_code/WorldDb.h
 )
 
-# Actually, we are using '-withWriterCode' everywhere but we don't check read part only (default behavior).
-# Therefore, this test checks surprisingly default behavior, so no '-withWriterCode' for ZSERIO_OPTIONS is ok.
 zserio_add_library(TARGET without_writer_code_zs
     SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/zs
     MAIN_SOURCE without_writer_code.zs
     OUT_DIR ${ZSERIO_GEN_DIR}
     OUT_FILES ${ZSERIO_GENERATED_SOURCES}
     ZSERIO_CORE_DIR ${ZSERIO_JAR_DIR}
-    ZSERIO_OPTIONS -withoutSourcesAmalgamation
+    ZSERIO_OPTIONS -withoutWriterCode -withoutSourcesAmalgamation
 )
 
 add_test_sources(

@@ -6,8 +6,9 @@
     </target>
 
     <target name="gen" depends="prepare">
-        <testGen testName="without_writer_code" zsFile="without_writer_code.zs"
-            writerCodeOption="withoutWriterCode"/>
+        <testGen testName="without_writer_code" zsFile="without_writer_code.zs">
+            <arg name="withoutWriterCode"/>
+        </testGen>
     </target>
 
     <target name="compile" depends="gen">

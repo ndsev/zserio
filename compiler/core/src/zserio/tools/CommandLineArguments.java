@@ -277,10 +277,10 @@ public class CommandLineArguments
 
         final OptionGroup writerCodeGroup = new OptionGroup();
         option = new Option(OptionNameWithWriterCode, false,
-                "enable writing interface code");
+                "enable writing interface code (default)");
         writerCodeGroup.addOption(option);
         option = new Option(OptionNameWithoutWriterCode, false,
-                "disable writing interface code (default)");
+                "disable writing interface code");
         writerCodeGroup.addOption(option);
         writerCodeGroup.setRequired(false);
         options.addOptionGroup(writerCodeGroup);
@@ -318,9 +318,7 @@ public class CommandLineArguments
         withSourcesAmalgamationOption = !hasOption(OptionNameWithoutSourcesAmalgamation);
         withSqlCodeOption = !hasOption(OptionNameWithoutSqlCode);
         withValidationCodeOption = hasOption(OptionNameWithValidationCode);
-        withWriterCodeOption = hasOption(OptionNameWithWriterCode) ||
-                // auto-enable when one of the previous is enabled:
-                withInspectorCodeOption || withRangeCheckCodeOption || withValidationCodeOption;
+        withWriterCodeOption = !hasOption(OptionNameWithoutWriterCode);
     }
 
     private void validateOptions() throws ParseException

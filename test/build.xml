@@ -89,7 +89,6 @@ findbugs.home_dir          - Location of the findbugs tool. If not set, findbugs
         <attribute name="zsFile"/>
         <attribute name="ignoreError" default="false"/>
         <attribute name="logLevel" default="warn"/>
-        <attribute name="writerCodeOption" default="withWriterCode"/>
         <element name="args" implicit="yes" optional="true"/>
         <sequential>
             <record name="${@{testName}.zs.log_file}" action="start" loglevel="@{logLevel}"/>
@@ -110,7 +109,6 @@ findbugs.home_dir          - Location of the findbugs tool. If not set, findbugs
                         <include name="*.jar"/>
                     </fileset>
                 </classpath>
-                <arg name="@{writerCodeOption}"/>
                 <args/>
             </zserio>
 

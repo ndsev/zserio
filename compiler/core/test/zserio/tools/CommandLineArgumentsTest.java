@@ -185,7 +185,7 @@ public class CommandLineArgumentsTest
     public void withWriterCodeDefault() throws ParseException
     {
         String[] args = {};
-        assertFalse(parse(args).getWithWriterCode());
+        assertTrue(parse(args).getWithWriterCode());
     }
 
     @Test(expected=ParseException.class)
