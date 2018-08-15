@@ -3,6 +3,7 @@
 #include "BitStreamException.h"
 #include "CppRuntimeException.h"
 #include "StringConvertUtil.h"
+#include "FloatUtil.h"
 #include "BitStreamReader.h"
 
 namespace zserio
@@ -607,68 +608,27 @@ uint64_t BitStreamReader::readVarUInt()
 
 float BitStreamReader::readFloat16()
 {
-    // Converts a 16bit unsigned integer to a 32 bit floating point number.
-    // The original code comes from:
-    // http://www.mathworks.com/matlabcentral/fileexchange/23173-ieee-754r-half-precision-floating-point-converter
+    const uint16_t halfPrecisionFloatValue = static_cast<uint16_t>(readBitsImpl(m_context, 16));
 
-    const uint16_t half = static_cast<uint16_t>(readBitsImpl(m_context, 16));
+    return convertUInt16ToFloat(halfPrecisionFloatValue);
+}
 
-    uint32_t result;
-    if ((half & UINT16_C(0x7FFF)) == 0)
-    {
-        // Signed zero
-        result = static_cast<uint32_t>(half) << 16;  // Return the signed zero
-    }
-    else
-    {
-        uint32_t xs, xe, xm;
-        int32_t xes;
+float BitStreamReader::readFloat32()
+{
+    const uint32_t singlePrecisionFloatValue = static_cast<uint32_t>(readBitsImpl(m_context, 32));
 
-        // Not zero
-        uint16_t hs = half & UINT16_C(0x8000);  // Pick off sign bit
-        uint16_t he = half & UINT16_C(0x7C00);  // Pick off exponent bits
-        uint16_t hm = half & UINT16_C(0x03FF);  // Pick off mantissa bits
-        if (he == 0)
-        {
-            // Denormal will convert to normalized
-            int e = -1; // The following loop figures out how much extra to adjust the exponent
-            do
-            {
-                e++;
-                hm <<= 1;
-            } while ((hm & UINT16_C(0x0400)) == 0); // Shift until leading bit overflows into exponent bit
-            xs = static_cast<uint32_t>(hs) << 16; // Sign bit
-            xes = static_cast<int32_t>(he >> 10) - 15 + 127 - e; // Exponent unbias the halfp, then bias the single
-            xe = static_cast<uint32_t>(xes << 23); // Exponent
-            xm = static_cast<uint32_t>(hm & UINT16_C(0x03FF)) << 13; // Mantissa
-            result = xs | xe | xm; // Combine sign bit, exponent bits, and mantissa bits
-        }
-        else if (he == UINT16_C(0x7C00))
-        {
-            // Inf or NaN (all the exponent bits are set)
-            if (hm == 0)
-            {
-                // If mantissa is zero ...
-                result = (static_cast<uint32_t>(hs) << 16) | UINT32_C(0x7F800000); // Signed Inf
-            }
-            else
-            {
-                result = UINT32_C(0xFFC00000); // NaN, only 1st mantissa bit set
-            }
-        }
-        else
-        {
-            // Normalized number
-            xs = static_cast<uint32_t>(hs) << 16; // Sign bit
-            xes = static_cast<int32_t>(he >> 10) - 15 + 127; // Exponent unbias the halfp, then bias the single
-            xe = static_cast<uint32_t>(xes << 23); // Exponent
-            xm = static_cast<uint32_t>(hm) << 13; // Mantissa
-            result = xs | xe | xm; // Combine sign bit, exponent bits, and mantissa bits
-        }
-    }
+    return convertUInt32ToFloat(singlePrecisionFloatValue);
+}
 
-    float const* floatData = reinterpret_cast<float*>(&result);
-    return *floatData;
+double BitStreamReader::readFloat64()
+{
+#ifdef ZSERIO_RUNTIME_64BIT
+    const uint64_t doublePrecisionFloatValue = static_cast<uint64_t>(readBitsImpl(m_context, 64));
+#else
+    const uint64_t doublePrecisionFloatValue = readBits64Impl(m_context, 64);
+#endif
+
+    return convertUInt64ToDouble(doublePrecisionFloatValue);
 }
 
 std::string BitStreamReader::readString()

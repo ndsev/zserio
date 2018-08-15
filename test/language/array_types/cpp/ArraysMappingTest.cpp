@@ -64,7 +64,19 @@ TEST_F(ArraysMappingTest, signedBitfieldArrays)
 TEST_F(ArraysMappingTest, float16Array)
 {
     ArraysMapping arraysMapping;
-    arraysMapping.setFloat16Array(zserio::FloatArray(fixedArrayLength));
+    arraysMapping.setFloat16Array(zserio::Float16Array(fixedArrayLength));
+}
+
+TEST_F(ArraysMappingTest, float32Array)
+{
+    ArraysMapping arraysMapping;
+    arraysMapping.setFloat32Array(zserio::Float32Array(fixedArrayLength));
+}
+
+TEST_F(ArraysMappingTest, float64Array)
+{
+    ArraysMapping arraysMapping;
+    arraysMapping.setFloat64Array(zserio::Float64Array(fixedArrayLength));
 }
 
 TEST_F(ArraysMappingTest, variableUnsignedIntegerArrays)

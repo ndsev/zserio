@@ -26,6 +26,7 @@ set(ZSERIO_CPP_RUNTIME_TEST_SRCS
     zserio/BitStreamWriterTest.cpp
     zserio/BuildInOperatorsTest.cpp
     zserio/ContainerTest.cpp
+    zserio/FloatUtilTest.cpp
     zserio/HashCodeUtilTest.cpp
     zserio/ObjectArrayTest.cpp
     zserio/OptionalHolderTest.cpp

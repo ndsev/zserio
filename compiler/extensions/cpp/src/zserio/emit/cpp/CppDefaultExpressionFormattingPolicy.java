@@ -87,8 +87,15 @@ public abstract class CppDefaultExpressionFormattingPolicy extends DefaultExpres
     @Override
     public String getFloatLiteral(Expression expr, boolean isNegative)
     {
-        // float literals in C++ must have postfix "f"
-        return expr.getText() + CPP_FLOAT_LITERAL_SUFFIX;
+        // float literals in C++ are the same (with postfix "f")
+        return expr.getText();
+    }
+
+    @Override
+    public String getDoubleLiteral(Expression expr, boolean isNegative)
+    {
+        // double literals in C++ are the same (without postfix)
+        return expr.getText();
     }
 
     @Override
@@ -321,7 +328,6 @@ public abstract class CppDefaultExpressionFormattingPolicy extends DefaultExpres
     private final static String CPP_SIGNED_LONG_LONG_LITERAL_SUFFIX = "LL";
     private final static String CPP_UNSIGNED_LONG_LONG_LITERAL_SUFFIX = "ULL";
     private final static String CPP_HEXADECIMAL_LITERAL_PREFIX = "0x";
-    private final static String CPP_FLOAT_LITERAL_SUFFIX = "f";
 
     private final static String DECIMAL_LITERAL_ABS_INT64_MIN = "9223372036854775808";
     private final static String DECIMAL_LITERAL_ABS_INT32_MIN = "2147483648";

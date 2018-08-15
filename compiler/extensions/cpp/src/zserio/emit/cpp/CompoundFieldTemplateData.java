@@ -11,7 +11,6 @@ import zserio.ast.ChoiceType;
 import zserio.ast.CompoundType;
 import zserio.ast.ZserioType;
 import zserio.ast.ZserioTypeUtil;
-import zserio.ast.EnumType;
 import zserio.ast.Expression;
 import zserio.ast.Field;
 import zserio.ast.FixedSizeType;
@@ -22,6 +21,7 @@ import zserio.ast.TypeReference;
 import zserio.emit.common.ExpressionFormatter;
 import zserio.emit.cpp.types.CppNativeType;
 import zserio.emit.cpp.types.NativeArrayType;
+import zserio.emit.cpp.types.NativeEnumType;
 import zserio.emit.cpp.types.NativeIntegralType;
 import zserio.emit.cpp.types.NativeOptionalHolderType;
 
@@ -57,7 +57,7 @@ public class CompoundFieldTemplateData
         usesAnyHolder = (parentType instanceof ChoiceType) || (parentType instanceof UnionType);
 
         isSimpleType = fieldNativeType.isSimpleType();
-        isEnumType = baseFieldType instanceof EnumType;
+        isEnum = fieldNativeType instanceof NativeEnumType;
 
         constraint = createConstraint(field, cppExpressionFormatter);
 
@@ -138,9 +138,9 @@ public class CompoundFieldTemplateData
         return isSimpleType;
     }
 
-    public boolean getIsEnumType()
+    public boolean getIsEnum()
     {
-        return isEnumType;
+        return isEnum;
     }
 
     public String getConstraint()
@@ -634,7 +634,7 @@ public class CompoundFieldTemplateData
     private final String                        initializer;
     private final boolean                       usesAnyHolder;
     private final boolean                       isSimpleType;
-    private final boolean                       isEnumType;
+    private final boolean                       isEnum;
     private final String                        constraint;
     private final Offset                        offset;
     private final Array                         array;

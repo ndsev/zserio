@@ -8,8 +8,8 @@ on the zserio language it is possible to automatically generate encoders and dec
 in various target languages (e.g. JAVA, C++).
 
 Zserio is similar to other serialization mechanism like
-[*Google's Protocol Buffers*](https://github.com/google/protobuf) but does not use what is called a "wire-format".
-Zserio therefore gives full control to the developers and comes with no serialization overhead.
+[*Google's Protocol Buffers*](https://github.com/google/protobuf) but does not use what is called
+a "wire-format". Zserio therefore gives full control to the developers and comes with no serialization overhead.
 It is a WYSIWYG serialization mechanism.
 
 Zserio also features an extension for SQLite databases. With that extension it is possible to use SQLite
@@ -65,11 +65,13 @@ Decimal     | `100`, `4711`, `255`, `-3`, `+2`
 Hexadecimal | `0xCAFEBABE`, `0Xff`, `-0xEF`
 Octal       | `044`, `0377`, `-010`
 Binary      | `111b`, `110b`, `001B`, `-1010b`
-Float       | `3.14`
+Float16     | `3.14f`
+Float32     | `3.14f`
+Float64     | `3.14`
 String      | `"You"`
 
-Hexadecimal digits and the `x` prefix as well as the `b` suffix for binary types are case-insensitive.
-Signing literals by using `-` or `+` prefix. Signs are not applicable for string-literals.
+Hexadecimal digits and the `x` prefix as well as the `b` and 'f' suffixes are case-insensitive.
+Signing literals can be defined by `-` or `+` prefix. Signs are not applicable for string literals.
 
 [[top]](#language-guide)
 
@@ -125,9 +127,16 @@ an expression of integer type to be evaluated at run-time and should not exceed 
 
 #### Floating Point Types
 
-Floating point types are modeled after the IEEE 754-2008 specification. The only supported type is `float16`.
-This is a 16bit wide floating point number using 1 bit for the sign, 5 bits for the exponent and 10 bits for
-the mantissa.
+Floating point types are modeled after the IEEE 754 specification. The following types are supported:
+
+* `float16` - Half-precision floating-point format stored in 16 bits using 1 bit for the sign,
+5 bits for the exponent and 10 bits for the significand.
+
+* `float32` - Single-precision floating-point format stored in 32 bits using 1 bit for the sign,
+8 bits for the exponent and 23 bits for the significand.
+
+* `float64` - Double-precision floating-point format stored in 64 bits using 1 bit for the sign,
+11 bits for the exponent and 52 bits for the significand.
 
 #### Variable Integer Types
 
@@ -490,7 +499,9 @@ struct StructureDefaultValues
     bool        boolValue = true;
     bit:4       bit4Value = 0x0F if boolValue == true;
     int16       int16Value = 0x0BEE;
-    float16     float16Value = 1.23;
+    float16     float16Value = 1.23f;
+    float32     float32Value = 1.234f;
+    float64     float64Value = 1.2345;
     string      stringValue = "string";
     BasicColor  enumValue = BasicColor.BLACK;
 };
@@ -1034,9 +1045,9 @@ The documentation comments can contain special tags which is shown by the follow
 */
 ```
 The content of a documentation comment, excluding its delimiters, is parsed line by line. Each line is stripped
-of leading whitespace, a sequence of asterisks (`*`), and more whitespace, if present. After stripping, a comment
-is composed of one or more paragraphs, followed by zero or more tag blocks. Paragraphs are separated by blank
-lines. The text in paragraphs can contain HTML formatting tags like `<ul>`, `<li>` or `</br>` directly.
+of leading whitespace, a sequence of asterisks (`*`), and more whitespace, if present. After stripping,
+a comment is composed of one or more paragraphs, followed by zero or more tag blocks. Paragraphs are separated
+by blank lines. The text in paragraphs can contain HTML formatting tags like `<ul>`, `<li>` or `</br>` directly.
 
 A line starting with whitespace and a keyword preceded by an at-sign (`@`) is the beginning of a tag.
 
@@ -1474,7 +1485,7 @@ uint8, uint16, uint32, uint64            | `INTEGER`
 int8, int16, int32, int64                | `INTEGER`
 bit:n (n < 64)                           | `INTEGER`
 int:n (n <= 64)                          | `INTEGER`
-float16                                  | `REAL`
+float16, float32, float64                | `REAL`
 varuint16, varuint32, varuint64, varuint | `INTEGER`
 varint16, varint32, varint64, varint     | `INTEGER`
 bool                                     | `INTEGER`

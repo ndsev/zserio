@@ -24,7 +24,7 @@ ${I}}
     <#elseif field.array??>
         <#local constructorArguments>_in<@array_read_length field.array/><@array_element_factory compoundName, field/><#rt>
             <#lt><@array_offset_checker field/><@array_element_bit_size field.array/></#local>
-    <#elseif field.isEnumType>
+    <#elseif field.isEnum>
         <#local constructorArguments>_in</#local>
     <#else>
         <#-- compound -->
@@ -259,7 +259,7 @@ ${I}const zserio::BlobInspectorNode ${nodeName} = zserio::getBlobInspectorNode(_
 ${I}    _treeFieldIndex, zserio::BlobInspectorNode::NT_ARRAY);
         <@compound_read_set_field field, arrayArguments, indent/>
         <@compound_read_tree_field_array_epilog field, compoundName, indent/>
-    <#elseif field.isEnumType>
+    <#elseif field.isEnum>
         <#local enumValueName>_${field.name}Value</#local>
         <#local enumSymbolName>_${field.name}Symbol</#local>
         <#local enumName>_${field.name}Enum</#local>
@@ -333,7 +333,7 @@ ${I}    ${zserioName});
         <#local elementZserioTypeName>${rootPackageName}::InspectorZserioTypeNames::${inspectorElementZserioTypeName}</#local>
 ${I}<@compound_get_field field/>.write(_out, ${nodeName},
 ${I}    ${elementZserioTypeName}<@array_offset_checker field/><@array_element_bit_size field.array/>);
-    <#elseif field.isEnumType>
+    <#elseif field.isEnum>
 ${I}zserio::BlobInspectorNode& ${nodeName} = _tree.createChild(zserio::BlobInspectorNode::NT_VALUE,
 ${I}    ${zserioTypeName},
 ${I}    ${zserioName});

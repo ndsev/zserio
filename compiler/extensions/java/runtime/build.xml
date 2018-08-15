@@ -110,7 +110,8 @@ findbugs.home_dir               - Location of the findbugs tool. If not set, fin
         <tstamp>
             <format property="timestamp" pattern="yyyy-MM-dd HH:mm:ss"/>
         </tstamp>
-        <javadoc packagenames="zserio.runtime.*" destdir="${zserio_java_runtime.javadocs_dir}">
+        <javadoc packagenames="zserio.runtime.*" destdir="${zserio_java_runtime.javadocs_dir}"
+            failonerror="true" failonwarning="true">
             <fileset refid="zserio_java_runtime.sources"/>
             <doctitle>
                 <![CDATA[<h1>Zserio Java Runtime Library</h1><h2>Version ${zserio_java_runtime.version}</h2]]>

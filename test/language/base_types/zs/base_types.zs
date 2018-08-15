@@ -47,8 +47,10 @@ struct BaseTypes
     // bitfield type which has length defined by constant
     int<NUM_BITS>   variableIntfield8Type;
 
-    // float type
+    // float types
     float16         float16Type;
+    float32         float32Type;
+    float64         float64Type;
 
     // variable unsigned integer types
     varuint16       varuint16Type;

@@ -4,10 +4,13 @@ import java.io.IOException;
 
 /**
  * A closeable interface for a bit stream reader and writer.
- *
- * @throws IOException If the bit stream cannot be closed.
  */
 public interface BitStreamCloseable
 {
+    /**
+     * Closes the bit stream.
+     *
+     * @throws IOException If the bit stream cannot be closed.
+     */
     void close() throws IOException;
 }

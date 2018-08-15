@@ -214,6 +214,22 @@ public class BaseTypesTest
     }
 
     @Test
+    public void float32Type()
+    {
+        baseTypes.setFloat32Type(Float.MAX_VALUE);
+        final float float32Type = baseTypes.getFloat32Type();
+        assertTrue(float32Type - Float.MAX_VALUE <= Float.MIN_VALUE);
+    }
+
+    @Test
+    public void float64Type()
+    {
+        baseTypes.setFloat64Type(Double.MAX_VALUE);
+        final double float64Type = baseTypes.getFloat16Type();
+        assertTrue(float64Type - Double.MAX_VALUE <= Double.MIN_VALUE);
+    }
+
+    @Test
     public void varuint16Type()
     {
         final short maxVaruint16Type = ((short)1 << 15) - 1;
@@ -241,21 +257,17 @@ public class BaseTypesTest
     }
 
     @Test
-    public void varuintTypeMin()
+    public void varuintType()
     {
         final BigInteger minVaruintType = BigInteger.ZERO;
         baseTypes.setVaruintType(minVaruintType);
-        final BigInteger varuintType = baseTypes.getVaruintType();
-        assertEquals(minVaruintType, varuintType);
-    }
+        final BigInteger readMinVaruintType = baseTypes.getVaruintType();
+        assertEquals(minVaruintType, readMinVaruintType);
 
-    @Test
-    public void varuintTypeMax()
-    {
         final BigInteger maxVaruintType = BigInteger.ONE.shiftLeft(64).subtract(BigInteger.ONE);
         baseTypes.setVaruintType(maxVaruintType);
-        final BigInteger varuintType = baseTypes.getVaruintType();
-        assertEquals(maxVaruintType, varuintType);
+        final BigInteger readMaxVaruintType = baseTypes.getVaruintType();
+        assertEquals(maxVaruintType, readMaxVaruintType);
     }
 
     @Test
@@ -286,21 +298,17 @@ public class BaseTypesTest
     }
 
     @Test
-    public void varintTypeMin()
+    public void varintType()
     {
         final long minVarintType = Long.MIN_VALUE;
         baseTypes.setVarintType(minVarintType);
-        final long varuintType = baseTypes.getVarintType();
-        assertEquals(minVarintType, varuintType);
-    }
+        final long readMinVarintType = baseTypes.getVarintType();
+        assertEquals(minVarintType, readMinVarintType);
 
-    @Test
-    public void varintTypeMax()
-    {
         final long maxVarintType = Long.MAX_VALUE;
         baseTypes.setVarintType(maxVarintType);
-        final long varintType = baseTypes.getVarintType();
-        assertEquals(maxVarintType, varintType);
+        final long readMaxVarintType = baseTypes.getVarintType();
+        assertEquals(maxVarintType, readMaxVarintType);
     }
 
     @Test

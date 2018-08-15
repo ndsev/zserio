@@ -291,7 +291,9 @@ stringType
     ;
 
 floatType
-    :   FLOAT16
+    :   FLOAT16 |
+        FLOAT32 |
+        FLOAT64
     ;
 
 /**
@@ -355,6 +357,7 @@ atom
         DECIMAL_LITERAL |
         BINARY_LITERAL |
         FLOAT_LITERAL |
+        DOUBLE_LITERAL |
         HEXADECIMAL_LITERAL |
         OCTAL_LITERAL |
         BOOL_LITERAL |

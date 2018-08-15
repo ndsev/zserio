@@ -18,6 +18,7 @@ public:
     virtual void onValue(int64_t value) = 0;
     virtual void onValue(uint64_t value) = 0;
     virtual void onValue(float value) = 0;
+    virtual void onValue(double value) = 0;
     virtual void onValue(const std::string& value) = 0;
     virtual void onValue(int64_t enumValue, const std::string& enumSymbol) = 0;
     virtual void onValue(uint64_t enumValue, const std::string& enumSymbol) = 0;

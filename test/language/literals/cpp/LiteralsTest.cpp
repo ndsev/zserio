@@ -44,12 +44,28 @@ TEST(LiteralsTest, Binary)
     ASSERT_EQ(static_cast<int32_t>(-255), ConstType::BINARY_NEGATIVE);
 }
 
-TEST(LiteralsTest, floatLiteral)
+TEST(LiteralsTest, float16Literal)
 {
-    float diff = 15.2f - ConstType::FLOAT;
+    float diff = 15.2f - ConstType::FLOAT16;
     if (diff < 0.0f)
         diff = -diff;
     ASSERT_TRUE(diff <= std::numeric_limits<float>::epsilon());
+}
+
+TEST(LiteralsTest, float32Literal)
+{
+    float diff = 15.23f - ConstType::FLOAT32;
+    if (diff < 0.0f)
+        diff = -diff;
+    ASSERT_TRUE(diff <= std::numeric_limits<float>::epsilon());
+}
+
+TEST(LiteralsTest, float64Literal)
+{
+    float diff = 15.234 - ConstType::FLOAT64;
+    if (diff < 0.0)
+        diff = -diff;
+    ASSERT_TRUE(diff <= std::numeric_limits<double>::epsilon());
 }
 
 TEST(LiteralsTest, String)

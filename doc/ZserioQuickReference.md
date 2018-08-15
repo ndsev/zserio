@@ -30,7 +30,9 @@ bit<expr>
 
 **Floating Points**
 ```
-float
+float16
+float32
+float64
 ```
 
 **Booleans**

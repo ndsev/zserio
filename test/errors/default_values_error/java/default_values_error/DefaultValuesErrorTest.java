@@ -60,7 +60,7 @@ public class DefaultValuesErrorTest
     public void wrongFloatInitializer()
     {
         final String error = "wrong_float_initializer_error.zs:5:37: Wrong type of value expression " +
-                "(string cannot be assigned to float16)!";
+                "(string cannot be assigned to float64)!";
         assertTrue(zserioErrors.isPresent(error));
     }
 

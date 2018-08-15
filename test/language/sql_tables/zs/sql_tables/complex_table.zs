@@ -26,6 +26,7 @@ sql_table ComplexTable
     string                      name;
     bool                        isValid;
     float16                     salary;
+    float64                     bonus;
     bit:5                       value       sql "NULL";
     TestEnum                    color;
     TestBlob(explicit count)    blob;

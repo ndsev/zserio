@@ -11,7 +11,9 @@ import array_types.arrays_mapping.TestEnum;
 import zserio.runtime.array.BigIntegerArray;
 import zserio.runtime.array.BoolArray;
 import zserio.runtime.array.ByteArray;
-import zserio.runtime.array.FloatArray;
+import zserio.runtime.array.Float16Array;
+import zserio.runtime.array.Float32Array;
+import zserio.runtime.array.Float64Array;
 import zserio.runtime.array.IntArray;
 import zserio.runtime.array.LongArray;
 import zserio.runtime.array.ObjectArray;
@@ -101,14 +103,36 @@ public class ArraysMappingTest
     }
 
     @Test
-    public void floatArray()
+    public void float16Array()
     {
         ArraysMapping arraysMapping = new ArraysMapping();
 
         // just do something with arraysMapping not to have FindBugs warning
-        final FloatArray floatArray = new FloatArray(FIXED_ARRAY_LENGTH);
-        arraysMapping.setFloat16Array(floatArray);
-        assertEquals(floatArray, arraysMapping.getFloat16Array());
+        final Float16Array float16Array = new Float16Array(FIXED_ARRAY_LENGTH);
+        arraysMapping.setFloat16Array(float16Array);
+        assertEquals(float16Array, arraysMapping.getFloat16Array());
+    }
+
+    @Test
+    public void float32Array()
+    {
+        ArraysMapping arraysMapping = new ArraysMapping();
+
+        // just do something with arraysMapping not to have FindBugs warning
+        final Float32Array float32Array = new Float32Array(FIXED_ARRAY_LENGTH);
+        arraysMapping.setFloat32Array(float32Array);
+        assertEquals(float32Array, arraysMapping.getFloat32Array());
+    }
+
+    @Test
+    public void float64Array()
+    {
+        ArraysMapping arraysMapping = new ArraysMapping();
+
+        // just do something with arraysMapping not to have FindBugs warning
+        final Float64Array float64Array = new Float64Array(FIXED_ARRAY_LENGTH);
+        arraysMapping.setFloat64Array(float64Array);
+        assertEquals(float64Array, arraysMapping.getFloat64Array());
     }
 
     @Test

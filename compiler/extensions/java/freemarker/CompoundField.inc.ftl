@@ -143,8 +143,11 @@ ${I}    throw new ConstraintError("Constraint violated at ${compoundName}.${fiel
 <#macro compound_compare_field field>
     <#if field.isSimpleType>
         <#if field.isFloat>
-            <#-- float type: compare by floatToIntBits() -->
+            <#-- float type: compare by floatToIntBits() to get rid of FindBugs -->
 Float.floatToIntBits(this.${field.name}) == Float.floatToIntBits(__that.${field.name})<#rt>
+        <#elseif field.isDouble>
+            <#-- double type: compare by doubleToLongBits() to get rid of FindBugs -->
+Double.doubleToLongBits(this.${field.name}) == Double.doubleToLongBits(__that.${field.name})<#rt>
         <#else>
             <#-- simple type: compare by == -->
 this.${field.name} == __that.${field.name}<#rt>
@@ -215,6 +218,10 @@ ${I}__result = Util.HASH_PRIME_NUMBER * __result + (int) (${field.name} ^ (${fie
         <#elseif field.isFloat>
             <#-- float type: use floatToIntBits() -->
 ${I}__result = Util.HASH_PRIME_NUMBER * __result + Float.floatToIntBits(${field.name});
+        <#elseif field.isDouble>
+            <#-- double type: use doubleToLongBits() -->
+${I}__result = Util.HASH_PRIME_NUMBER * __result + (int) (Double.doubleToLongBits(${field.name}) ^
+${I}        (Double.doubleToLongBits(${field.name}) >>> 32));
         <#elseif field.isBool>
             <#-- bool type: convert it to int -->
 ${I}__result = Util.HASH_PRIME_NUMBER * __result + (${field.name} ? 1 : 0);

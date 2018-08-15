@@ -50,8 +50,10 @@ struct ArraysMapping
     int<getNumBitsForShort()>   variableIntfieldShortArray[5];
     int<getNumBitsForByte()>    variableIntfieldByteArray[5];
 
-    // float array
+    // float arrays
     float16                     float16Array[5];
+    float32                     float32Array[5];
+    float64                     float64Array[5];
 
     // variable unsigned integer arrays
     varuint16                   varuint16Array[5];

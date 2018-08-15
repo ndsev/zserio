@@ -160,6 +160,10 @@ public class ExpressionFormatter
                 buffer.append(policy.getFloatLiteral(expr, isNegativeLiteral));
                 break;
 
+            case ZserioParserTokenTypes.DOUBLE_LITERAL:
+                buffer.append(policy.getDoubleLiteral(expr, isNegativeLiteral));
+                break;
+
             case ZserioParserTokenTypes.BOOL_LITERAL:
                 buffer.append(policy.getBoolLiteral(expr));
                 break;

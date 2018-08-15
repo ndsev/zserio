@@ -30,8 +30,10 @@ const int:8         INTFIELD8_MIN_CONSTANT = -128;
 const int:8         INTFIELD8_MAX_CONSTANT = 127;
 const int<8>        VARIABLE_INTFIELD_CONSTANT = 0x12;
 
-// float type
-const float16       FLOAT16_CONSTANT = 3.13;
+// float types
+const float16       FLOAT16_CONSTANT = 3.13f;
+const float32       FLOAT32_CONSTANT = 3.131f;
+const float64       FLOAT64_CONSTANT = 3.1314;
 
 // variable unsigned integer types
 const varuint16     VARUINT16_MIN_CONSTANT = 0x0000;

@@ -1,3 +1,3 @@
 package wrong_float_constant_error;
 
-const float16 WRONG_FLOAT_CONSTANT = "wrong";
+const float32 WRONG_FLOAT_CONSTANT = "wrong";

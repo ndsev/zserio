@@ -118,11 +118,29 @@ public interface BitStreamReader extends BitStreamCloseable
     /**
      * Reads the a float16 value from the bit stream.
      *
-     * @return Read Float16 value.
+     * @return Read half precision float value.
      *
      * @throws IOException If reading failed.
      */
     float readFloat16() throws IOException;
+
+    /**
+     * Reads the a float32 value from the bit stream.
+     *
+     * @return Read single precision float value.
+     *
+     * @throws IOException If reading failed.
+     */
+    float readFloat32() throws IOException;
+
+    /**
+     * Reads the a float64 value from the bit stream.
+     *
+     * @return Read double precision float value.
+     *
+     * @throws IOException If reading failed.
+     */
+    double readFloat64() throws IOException;
 
     /**
      * Reads a Zserio string from the bit stream assuming it is encoded in UTF-8.

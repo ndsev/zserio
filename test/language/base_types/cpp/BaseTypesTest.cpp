@@ -211,6 +211,22 @@ TEST_F(BaseTypesTest, float16Type)
     ASSERT_TRUE(maxFloat16Type - float16Type <= std::numeric_limits<float>::epsilon());
 }
 
+TEST_F(BaseTypesTest, float32Type)
+{
+    const float maxFloat32Type = std::numeric_limits<float>::max();
+    m_baseTypes.setFloat32Type(maxFloat32Type);
+    const float float32Type = m_baseTypes.getFloat32Type();
+    ASSERT_TRUE(maxFloat32Type - float32Type <= std::numeric_limits<float>::epsilon());
+}
+
+TEST_F(BaseTypesTest, float64Type)
+{
+    const double maxFloat64Type = std::numeric_limits<double>::max();
+    m_baseTypes.setFloat64Type(maxFloat64Type);
+    const double float64Type = m_baseTypes.getFloat64Type();
+    ASSERT_TRUE(maxFloat64Type - float64Type <= std::numeric_limits<double>::epsilon());
+}
+
 TEST_F(BaseTypesTest, varuint16Type)
 {
     const uint16_t maxVaruint16Type = (UINT16_C(1) << 15) - 1;
@@ -237,18 +253,15 @@ TEST_F(BaseTypesTest, varuint64Type)
 
 TEST_F(BaseTypesTest, varuintTypeMin)
 {
-    const uint64_t maxVaruintType = 0;
-    m_baseTypes.setVaruintType(maxVaruintType);
-    const uint64_t varuintType = m_baseTypes.getVaruintType();
-    ASSERT_EQ(maxVaruintType, varuintType);
-}
+    const uint64_t minVaruintType = 0;
+    m_baseTypes.setVaruintType(minVaruintType);
+    const uint64_t readMinVaruintType = m_baseTypes.getVaruintType();
+    ASSERT_EQ(minVaruintType, readMinVaruintType);
 
-TEST_F(BaseTypesTest, varuintTypeMax)
-{
     const uint64_t maxVaruintType = UINT64_MAX;
     m_baseTypes.setVaruintType(maxVaruintType);
-    const uint64_t varuintType = m_baseTypes.getVaruintType();
-    ASSERT_EQ(maxVaruintType, varuintType);
+    const uint64_t readMaxVaruintType = m_baseTypes.getVaruintType();
+    ASSERT_EQ(maxVaruintType, readMaxVaruintType);
 }
 
 TEST_F(BaseTypesTest, varint16Type)
@@ -277,18 +290,15 @@ TEST_F(BaseTypesTest, varint64Type)
 
 TEST_F(BaseTypesTest, varintTypeMin)
 {
-    const int64_t maxVarintType = INT64_MIN;
-    m_baseTypes.setVarintType(maxVarintType);
-    const int64_t varintType = m_baseTypes.getVarintType();
-    ASSERT_EQ(maxVarintType, varintType);
-}
-
-TEST_F(BaseTypesTest, varintTypeMax)
-{
-    const int64_t minVarintType = INT64_MAX;
+    const int64_t minVarintType = INT64_MIN;
     m_baseTypes.setVarintType(minVarintType);
-    const int64_t varintType = m_baseTypes.getVarintType();
-    ASSERT_EQ(minVarintType, varintType);
+    const int64_t readMinVarintType = m_baseTypes.getVarintType();
+    ASSERT_EQ(minVarintType, readMinVarintType);
+
+    const int64_t maxVarintType = INT64_MAX;
+    m_baseTypes.setVarintType(maxVarintType);
+    const int64_t readMaxVarintType = m_baseTypes.getVarintType();
+    ASSERT_EQ(maxVarintType, readMaxVarintType);
 }
 
 TEST_F(BaseTypesTest, boolType)

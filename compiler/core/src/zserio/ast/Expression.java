@@ -548,6 +548,7 @@ public class Expression extends TokenAST
                     break;
 
                 case ZserioParserTokenTypes.FLOAT_LITERAL:
+                case ZserioParserTokenTypes.DOUBLE_LITERAL:
                     expressionType = ExpressionType.FLOAT;
                     break;
 

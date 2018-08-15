@@ -117,12 +117,28 @@ TEST(ConstantsTest, variableIntfield8Constant)
     ASSERT_EQ(static_cast<int8_t>(0x12), ConstType::VARIABLE_INTFIELD_CONSTANT);
 }
 
-TEST(ConstantsTest, floatConstant)
+TEST(ConstantsTest, float16Constant)
 {
     float diff = 3.13f - ConstType::FLOAT16_CONSTANT;
     if (diff < 0.0f)
         diff = -diff;
     ASSERT_TRUE(diff <= std::numeric_limits<float>::epsilon());
+}
+
+TEST(ConstantsTest, float32Constant)
+{
+    float diff = 3.131f - ConstType::FLOAT32_CONSTANT;
+    if (diff < 0.0f)
+        diff = -diff;
+    ASSERT_TRUE(diff <= std::numeric_limits<float>::epsilon());
+}
+
+TEST(ConstantsTest, float64Constant)
+{
+    float diff = 3.1314 - ConstType::FLOAT64_CONSTANT;
+    if (diff < 0.0)
+        diff = -diff;
+    ASSERT_TRUE(diff <= std::numeric_limits<double>::epsilon());
 }
 
 TEST(ConstantsTest, varuint16MinConstant)

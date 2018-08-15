@@ -2,5 +2,5 @@ package wrong_float_initializer_error;
 
 struct WrongFloatInitializer
 {
-    float16 wrongFloatInitializer = "wrong";
+    float64 wrongFloatInitializer = "wrong";
 };

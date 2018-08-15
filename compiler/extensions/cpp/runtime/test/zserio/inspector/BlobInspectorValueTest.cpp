@@ -32,6 +32,11 @@ public:
     {
     }
 
+    explicit BlobInspectorValueListener(double expectedDouble) : m_expectedValueType(EVT_DOUBLE),
+            m_expectedValue(expectedDouble)
+    {
+    }
+
     explicit BlobInspectorValueListener(const std::string& expectedString) : m_expectedValueType(EVT_STRING),
             m_expectedString(expectedString)
     {
@@ -73,6 +78,12 @@ public:
         EXPECT_EQ(m_expectedValue.floatValue, value);
     }
 
+    virtual void onValue(double value)
+    {
+        EXPECT_EQ(EVT_DOUBLE, m_expectedValueType);
+        EXPECT_EQ(m_expectedValue.doubleValue, value);
+    }
+
     virtual void onValue(const std::string& value)
     {
         EXPECT_EQ(EVT_STRING, m_expectedValueType);
@@ -101,6 +112,7 @@ private:
         EVT_INT64,
         EVT_UINT64,
         EVT_FLOAT,
+        EVT_DOUBLE,
         EVT_STRING,
         EVT_INT64_ENUM,
         EVT_UINT64_ENUM
@@ -113,11 +125,13 @@ private:
         explicit ExpectedValue(int64_t expectedInt64) : int64Value(expectedInt64) {}
         explicit ExpectedValue(uint64_t expectedUInt64) : uint64Value(expectedUInt64) {}
         explicit ExpectedValue(float expectedFloat) : floatValue(expectedFloat) {}
+        explicit ExpectedValue(double expectedDouble) : doubleValue(expectedDouble) {}
 
         bool        boolValue;
         int64_t     int64Value;
         uint64_t    uint64Value;
         float       floatValue;
+        double      doubleValue;
     };
 
     ExpectedValueType   m_expectedValueType;
@@ -308,6 +322,22 @@ TEST(BlobInspectorValueTest, FloatType)
     EXPECT_THROW(blobValue.get(readBoolValue), zserio::CppRuntimeException);
 
     BlobInspectorValueListener valueListener(floatValue);
+    blobValue.get(valueListener);
+}
+
+TEST(BlobInspectorValueTest, DoubleType)
+{
+    const double doubleValue = 3.1415;
+    BlobInspectorValue blobValue(doubleValue);
+
+    double readDoubleValue;
+    blobValue.get(readDoubleValue);
+    EXPECT_EQ(doubleValue, readDoubleValue);
+
+    bool readBoolValue;
+    EXPECT_THROW(blobValue.get(readBoolValue), zserio::CppRuntimeException);
+
+    BlobInspectorValueListener valueListener(doubleValue);
     blobValue.get(valueListener);
 }
 
@@ -526,6 +556,9 @@ TEST(BlobInspectorValueTest, EqualityOperator)
 
     BlobInspectorValue blobValue4(3.14f);
     EXPECT_FALSE(blobValue1 == blobValue4);
+
+    BlobInspectorValue blobValue5(3.1415);
+    EXPECT_FALSE(blobValue1 == blobValue5);
 }
 
 TEST(BlobInspectorValueTest, ToString)
@@ -542,8 +575,11 @@ TEST(BlobInspectorValueTest, ToString)
     BlobInspectorValue blobValue4(3.14f);
     EXPECT_EQ("3.14", blobValue4.toString());
 
-    BlobInspectorValue blobValue5(2, "RED");
-    EXPECT_EQ("RED (2)", blobValue5.toString());
+    BlobInspectorValue blobValue5(3.1415);
+    EXPECT_EQ("3.1415", blobValue5.toString());
+
+    BlobInspectorValue blobValue6(2, "RED");
+    EXPECT_EQ("RED (2)", blobValue6.toString());
 }
 
 } // namespace zserio

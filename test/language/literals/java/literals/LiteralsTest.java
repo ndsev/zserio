@@ -48,9 +48,21 @@ public class LiteralsTest
     }
 
     @Test
-    public void floatType()
+    public void float16Type()
     {
-        assertEquals(15.2f, __ConstType.FLOAT, Float.MIN_VALUE);
+        assertEquals(15.2f, __ConstType.FLOAT16, 0.00001f);
+    }
+
+    @Test
+    public void float32Type()
+    {
+        assertEquals(15.23f, __ConstType.FLOAT32, 0.00001f);
+    }
+
+    @Test
+    public void float64Type()
+    {
+        assertEquals(15.234, __ConstType.FLOAT64, 0.000000001);
     }
 
     @Test

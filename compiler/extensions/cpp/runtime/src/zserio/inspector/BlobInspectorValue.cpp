@@ -61,6 +61,11 @@ BlobInspectorValue::BlobInspectorValue(float floatValue)
     set(floatValue);
 }
 
+BlobInspectorValue::BlobInspectorValue(double doubleValue)
+{
+    set(doubleValue);
+}
+
 BlobInspectorValue::BlobInspectorValue(const std::string& stringValue)
 {
     set(stringValue);
@@ -164,6 +169,12 @@ void BlobInspectorValue::set(float floatValue)
 {
     m_type = VT_FLOAT;
     m_value.floatValue = floatValue;
+}
+
+void BlobInspectorValue::set(double doubleValue)
+{
+    m_type = VT_DOUBLE;
+    m_value.doubleValue = doubleValue;
 }
 
 void BlobInspectorValue::set(const std::string& stringValue)
@@ -285,6 +296,11 @@ bool BlobInspectorValue::operator==(const BlobInspectorValue& other) const
             return false;
         break;
 
+    case VT_DOUBLE:
+        if (m_value.doubleValue != other.m_value.doubleValue)
+            return false;
+        break;
+
     case VT_STRING:
         if (m_stringValue != other.m_stringValue)
             return false;
@@ -403,6 +419,12 @@ void BlobInspectorValue::get(float& floatValue) const
     floatValue = m_value.floatValue;
 }
 
+void BlobInspectorValue::get(double& doubleValue) const
+{
+    checkValueType(VT_DOUBLE);
+    doubleValue = m_value.doubleValue;
+}
+
 void BlobInspectorValue::get(std::string& stringValue) const
 {
     checkValueType(VT_STRING);
@@ -507,6 +529,10 @@ void BlobInspectorValue::get(IBlobInspectorValueListener& listener) const
 
     case VT_FLOAT:
         listener.onValue(m_value.floatValue);
+        break;
+
+    case VT_DOUBLE:
+        listener.onValue(m_value.doubleValue);
         break;
 
     case VT_STRING:
@@ -697,6 +723,9 @@ std::string BlobInspectorValue::toString() const
     case VT_FLOAT:
         return convertToString(m_value.floatValue);
 
+    case VT_DOUBLE:
+        return convertToString(m_value.doubleValue);
+
     case VT_STRING:
         return m_stringValue;
 
@@ -774,6 +803,9 @@ const char* BlobInspectorValue::convertValueTypeToString(ValueType valueType)
 
     case VT_FLOAT:
         return "VT_FLOAT";
+
+    case VT_DOUBLE:
+        return "VT_DOUBLE";
 
     case VT_STRING:
         return "VT_STRING";

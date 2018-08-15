@@ -35,6 +35,7 @@ import zserio.emit.java.types.NativeByteArrayType;
 import zserio.emit.java.types.NativeByteType;
 import zserio.emit.java.types.NativeCompoundType;
 import zserio.emit.java.types.NativeConstType;
+import zserio.emit.java.types.NativeDoubleType;
 import zserio.emit.java.types.NativeEnumType;
 import zserio.emit.java.types.NativeFloatType;
 import zserio.emit.java.types.NativeIntArrayType;
@@ -231,7 +232,24 @@ final class JavaNativeTypeMapper
         @Override
         public void visitFloatType(FloatType type)
         {
-            javaNullableType = floatArrayType;
+            switch (type.getBitSize())
+            {
+            case 16:
+                javaNullableType = float16ArrayType;
+                break;
+
+            case 32:
+                javaNullableType = float32ArrayType;
+                break;
+
+            case 64:
+                javaNullableType = float64ArrayType;
+                break;
+
+            default:
+                throw new ZserioEmitJavaException("Unexpected bit size of float (" + type.getBitSize() + ")");
+
+            }
         }
 
         @Override
@@ -310,26 +328,26 @@ final class JavaNativeTypeMapper
         {
             if (variable)
             {
-                if (nBits == 16)
+                switch (nBits)
                 {
+                case 16:
                     javaNullableType = varInt16ArrayType;
-                }
-                else if (nBits == 32)
-                {
+                    break;
+
+                case 32:
                     javaNullableType = varInt32ArrayType;
-                }
-                else if (nBits == 64)
-                {
+                    break;
+
+                case 64:
                     javaNullableType = varInt64ArrayType;
-                }
-                else if (nBits == 72)
-                {
+                    break;
+
+                case 72:
                     javaNullableType = varIntArrayType;
-                }
-                else
-                {
-                    throw new ZserioEmitJavaException("unexpected size of variable integer (" +
-                            Integer.toString(nBits) + ")");
+                    break;
+
+                default:
+                    throw new ZserioEmitJavaException("Unexpected size of variable integer (" + nBits + ")");
                 }
             }
             else
@@ -358,26 +376,26 @@ final class JavaNativeTypeMapper
         {
             if (variable)
             {
-                if (nBits == 16)
+                switch (nBits)
                 {
+                case 16:
                     javaNullableType = varUInt16ArrayType;
-                }
-                else if (nBits == 32)
-                {
+                    break;
+
+                case 32:
                     javaNullableType = varUInt32ArrayType;
-                }
-                else if (nBits == 64)
-                {
+                    break;
+
+                case 64:
                     javaNullableType = varUInt64ArrayType;
-                }
-                else if (nBits == 72)
-                {
+                    break;
+
+                case 72:
                     javaNullableType = varUIntArrayType;
-                }
-                else
-                {
-                    throw new ZserioEmitJavaException("unexpected size of variable integer (" +
-                            Integer.toString(nBits) + ")");
+                    break;
+
+                default:
+                    throw new ZserioEmitJavaException("Unexpected size of variable integer (" + nBits + ")");
                 }
             }
             else
@@ -484,8 +502,23 @@ final class JavaNativeTypeMapper
         @Override
         public void visitFloatType(FloatType type)
         {
-            javaType = floatType;
-            javaNullableType = floatNullableType;
+            switch (type.getBitSize())
+            {
+            case 16:
+            case 32:
+                javaType = floatType;
+                javaNullableType = floatNullableType;
+                break;
+
+            case 64:
+                javaType = doubleType;
+                javaNullableType = doubleNullableType;
+                break;
+
+            default:
+                throw new ZserioEmitJavaException("Unexpected bit size of float (" + type.getBitSize() + ")");
+
+            }
         }
 
         @Override
@@ -607,23 +640,24 @@ final class JavaNativeTypeMapper
              * (varuintN always uses less than N bits, so it fits w/o setting the MSB, and neither of varuintN
              * and varintN fits in the next smaller native type.)
              */
-            if (nBits == 16)
+            switch (nBits)
             {
+            case 16:
                 javaType = shortType;
                 javaNullableType = shortNullableType;
-            }
-            else if (nBits == 32)
-            {
+                break;
+
+            case 32:
                 javaType = intType;
                 javaNullableType = intNullableType;
-            }
-            else if (nBits == 64)
-            {
+                break;
+
+            case 64:
                 javaType = longType;
                 javaNullableType = longNullableType;
-            }
-            else if (nBits == 72)
-            {
+                break;
+
+            case 72:
                 if (signed)
                 {
                     javaType = longType;
@@ -633,11 +667,10 @@ final class JavaNativeTypeMapper
                 {
                     javaNullableType = unsignedLongType;
                 }
-            }
-            else
-            {
-                throw new ZserioEmitJavaException("unexpected size of variable integer (" +
-                        Integer.toString(nBits) + ")");
+                break;
+
+            default:
+                throw new ZserioEmitJavaException("Unexpected size of variable integer (" + nBits + ")");
             }
         }
 
@@ -651,14 +684,18 @@ final class JavaNativeTypeMapper
         private JavaNativeType javaType;
         private JavaNativeType javaNullableType;
 
-        private PackageMapper javaPackageMapper;
+        private final PackageMapper javaPackageMapper;
     }
 
-    private final static NativeStringType stringType = new NativeStringType();
-    private final static NativeFloatType floatType = new NativeFloatType(false);
-    private final static NativeFloatType floatNullableType = new NativeFloatType(true);
     private final static NativeBooleanType booleanType = new NativeBooleanType(false);
     private final static NativeBooleanType booleanNullableType = new NativeBooleanType(true);
+
+    private final static NativeStringType stringType = new NativeStringType();
+
+    private final static NativeFloatType floatType = new NativeFloatType(false);
+    private final static NativeFloatType floatNullableType = new NativeFloatType(true);
+    private final static NativeDoubleType doubleType = new NativeDoubleType(false);
+    private final static NativeDoubleType doubleNullableType = new NativeDoubleType(true);
 
     // integral types
     private final static NativeByteType byteType = new NativeByteType(false);
@@ -672,6 +709,14 @@ final class JavaNativeTypeMapper
     private final static NativeUnsignedLongType unsignedLongType = new NativeUnsignedLongType();
 
     // zserio.runtime arrays
+
+    private final static NativeArrayType boolArrayType = new NativeArrayType("BoolArray");
+
+    private final static NativeArrayType stdStringArrayType = new NativeArrayType("StringArray");
+
+    private final static NativeArrayType float16ArrayType = new NativeArrayType("Float16Array");
+    private final static NativeArrayType float32ArrayType = new NativeArrayType("Float32Array");
+    private final static NativeArrayType float64ArrayType = new NativeArrayType("Float64Array");
 
     private final static NativeByteArrayType byteArrayType = new NativeByteArrayType();
     private final static NativeUnsignedByteArrayType unsignedByteArrayType = new NativeUnsignedByteArrayType();
@@ -699,12 +744,6 @@ final class JavaNativeTypeMapper
 
     private final static NativeArrayType varIntArrayType = new NativeArrayType("VarIntArray");
     private final static NativeArrayType varUIntArrayType = new NativeArrayType("VarUIntArray");
-
-    private final static NativeArrayType boolArrayType = new NativeArrayType("BoolArray");
-
-    private final static NativeArrayType stdStringArrayType = new NativeArrayType("StringArray");
-
-    private final static NativeArrayType floatArrayType = new NativeArrayType("FloatArray");
 
     private final PackageMapper javaPackageMapper;
 }

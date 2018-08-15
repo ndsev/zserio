@@ -128,6 +128,26 @@ public class SqlTypesTest
     }
 
     @Test
+    public void float32Type() throws SQLException
+    {
+        final Map<String, String> sqlColumnTypes = getSqlColumnTypes();
+
+        final String float32SqlType = sqlColumnTypes.get("float32Type");
+        assertTrue(float32SqlType != null);
+        assertTrue(float32SqlType.equalsIgnoreCase("REAL"));
+    }
+
+    @Test
+    public void float64Type() throws SQLException
+    {
+        final Map<String, String> sqlColumnTypes = getSqlColumnTypes();
+
+        final String float64SqlType = sqlColumnTypes.get("float64Type");
+        assertTrue(float64SqlType != null);
+        assertTrue(float64SqlType.equalsIgnoreCase("REAL"));
+    }
+
+    @Test
     public void variableUnsignedIntegerTypes() throws SQLException
     {
         final Map<String, String> sqlColumnTypes = getSqlColumnTypes();

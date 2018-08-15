@@ -113,8 +113,15 @@ public abstract class JavaDefaultExpressionFormattingPolicy extends DefaultExpre
     @Override
     public String getFloatLiteral(Expression expr, boolean isNegative)
     {
-        // float literals in Java must have postfix "f"
-        return expr.getText() + JAVA_FLOAT_LITERAL_SUFFIX;
+        // float literals in Java are the same (with postfix "f")
+        return expr.getText();
+    }
+
+    @Override
+    public String getDoubleLiteral(Expression expr, boolean isNegative)
+    {
+        // double literals in Java are the same (without postfix)
+        return expr.getText();
     }
 
     @Override
@@ -517,7 +524,6 @@ public abstract class JavaDefaultExpressionFormattingPolicy extends DefaultExpre
 
     private final static String JAVA_LONG_LITERAL_SUFFIX = "L";
     private final static String JAVA_HEXADECIMAL_LITERAL_PREFIX = "0x";
-    private final static String JAVA_FLOAT_LITERAL_SUFFIX = "f";
 
     private final static String DECIMAL_LITERAL_ABS_INT64_MIN = "9223372036854775808";
     private final static String BIG_INTEGER = "java.math.BigInteger";

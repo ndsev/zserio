@@ -109,7 +109,7 @@ public class CppRuntimeFunctionDataCreator
         @Override
         public void visitFloatType(FloatType type)
         {
-            suffix = "Float16";
+            suffix = "Float" + type.getBitSize();
         }
 
         @Override

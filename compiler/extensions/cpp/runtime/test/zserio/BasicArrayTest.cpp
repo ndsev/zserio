@@ -496,10 +496,30 @@ TEST_F(BasicArrayTest, VarUIntArray)
     ArrayTest(array, bitSize);
 }
 
-TEST_F(BasicArrayTest, FloatArray)
+TEST_F(BasicArrayTest, Float16Array)
 {
     const size_t elementBitSize = 16;
-    FloatArray array;
+    Float16Array array;
+    array.push_back(-9.0);
+    array.push_back(0.0);
+    array.push_back(10.0);
+    ArrayTest(array, elementBitSize * array.size());
+}
+
+TEST_F(BasicArrayTest, Float32Array)
+{
+    const size_t elementBitSize = 32;
+    Float32Array array;
+    array.push_back(-9.0);
+    array.push_back(0.0);
+    array.push_back(10.0);
+    ArrayTest(array, elementBitSize * array.size());
+}
+
+TEST_F(BasicArrayTest, Float64Array)
+{
+    const size_t elementBitSize = 64;
+    Float64Array array;
     array.push_back(-9.0);
     array.push_back(0.0);
     array.push_back(10.0);

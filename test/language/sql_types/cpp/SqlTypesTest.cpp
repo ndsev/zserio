@@ -150,6 +150,26 @@ TEST_F(SqlTypesTest, float16Type)
     ASSERT_EQ("REAL", it->second);
 }
 
+TEST_F(SqlTypesTest, float32Type)
+{
+    std::map<std::string, std::string> sqlColumnTypes;
+    ASSERT_TRUE(getSqlColumnTypes(sqlColumnTypes));
+
+    std::map<std::string, std::string>::const_iterator it = sqlColumnTypes.find("float32Type");
+    ASSERT_TRUE(it != sqlColumnTypes.end());
+    ASSERT_EQ("REAL", it->second);
+}
+
+TEST_F(SqlTypesTest, float64Type)
+{
+    std::map<std::string, std::string> sqlColumnTypes;
+    ASSERT_TRUE(getSqlColumnTypes(sqlColumnTypes));
+
+    std::map<std::string, std::string>::const_iterator it = sqlColumnTypes.find("float64Type");
+    ASSERT_TRUE(it != sqlColumnTypes.end());
+    ASSERT_EQ("REAL", it->second);
+}
+
 TEST_F(SqlTypesTest, variableUnsignedIntegerTypes)
 {
     std::map<std::string, std::string> sqlColumnTypes;

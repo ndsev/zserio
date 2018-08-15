@@ -4,6 +4,7 @@ import java.io.EOFException;
 import java.io.IOException;
 import java.math.BigInteger;
 import zserio.runtime.BitSizeOfCalculator;
+import zserio.runtime.FloatUtil;
 import zserio.runtime.Util;
 import zserio.runtime.ZserioError;
 
@@ -226,7 +227,19 @@ public class ByteArrayBitStreamWriter extends ByteArrayBitStreamBase implements 
     @Override
     public void writeFloat16(final float value) throws IOException
     {
-        writeUnsignedShort(floatToUInt16(value));
+        writeShort(FloatUtil.convertFloatToShort(value));
+    }
+
+    @Override
+    public void writeFloat32(final float value) throws IOException
+    {
+        writeInt(FloatUtil.convertFloatToInt(value));
+    }
+
+    @Override
+    public void writeFloat64(final double value) throws IOException
+    {
+        writeLong(FloatUtil.convertDoubleToLong(value));
     }
 
     @Override
@@ -601,53 +614,6 @@ public class ByteArrayBitStreamWriter extends ByteArrayBitStreamBase implements 
             buffer[--bytePosition] = (byte)partialByte;
             bitOffset = nBits;
         }
-    }
-
-    /**
-     * Converts a given float value to an 16 bit unsigned integer value.
-     *
-     * @param value A float value to convert.
-     *
-     * @return Converted float value.
-     */
-    private static int floatToUInt16(final float value)
-    {
-        final int int32 = Float.floatToIntBits(value);
-        final int sign = Math.abs((int32 & 0x80000000) >> 31);
-        final int exp32 = (int32 & 0x7f800000) >> 23;
-        final int m32 = int32 & 0x7fffff;
-        int exp16 = 0;
-        if (exp32 != 0)
-        {
-            if (exp32 == 0xff)
-            {
-                exp16 = 0x1f;
-            }
-            else
-            {
-                exp16 = exp32 - 127 + 15;
-            }
-        }
-        int m16 = 0;
-        if (exp16 < 0)
-        {
-            /*
-             * +/- 0
-             */
-            exp16 = 0;
-        }
-        else if (exp16 > 0x1f)
-        {
-            /*
-             * +/- Infinity
-             */
-            exp16 = 0x1f;
-        }
-        else
-        {
-            m16 = m32 >> 13;
-        }
-        return (sign << 15) | (exp16 << 10) | m16;
     }
 
     /**

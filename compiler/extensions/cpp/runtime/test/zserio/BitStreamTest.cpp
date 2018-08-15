@@ -364,8 +364,20 @@ TEST_F(BitStreamTest, VarUInt)
 
 TEST_F(BitStreamTest, Float16)
 {
-    float values[] = { 2.0, -2.0, 42.5 };
+    float values[] = { 2.0, -2.0, 0.6171875, 0.875, 9.875, 42.5 };
     BitStreamValuesTest(values, &BitStreamWriter::writeFloat16, &BitStreamReader::readFloat16);
+}
+
+TEST_F(BitStreamTest, Float32)
+{
+    float values[] = { 2.0, -2.0, 0.6171875, 0.875, 9.875, 42.5 };
+    BitStreamValuesTest(values, &BitStreamWriter::writeFloat32, &BitStreamReader::readFloat32);
+}
+
+TEST_F(BitStreamTest, Float64)
+{
+    double values[] = { 2.0, -2.0, 0.6171875, 0.875, 9.875, 42.5 };
+    BitStreamValuesTest(values, &BitStreamWriter::writeFloat64, &BitStreamReader::readFloat64);
 }
 
 TEST_F(BitStreamTest, String)

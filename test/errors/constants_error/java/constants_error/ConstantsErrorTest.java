@@ -84,28 +84,32 @@ public class ConstantsErrorTest
     @Test
     public void wrongBoolConstant()
     {
-        final String error = "wrong_bool_constant_error.zs:3:34: Wrong type of value expression (integer cannot be assigned to bool)!";
+        final String error = "wrong_bool_constant_error.zs:3:34: Wrong type of value expression " +
+                "(integer cannot be assigned to bool)!";
         assertTrue(zserioErrors.isPresent(error));
     }
 
     @Test
     public void wrongDecimalConstant()
     {
-        final String error = "wrong_decimal_constant_error.zs:3:38: Wrong type of value expression (boolean cannot be assigned to int32)!";
+        final String error = "wrong_decimal_constant_error.zs:3:38: Wrong type of value expression " +
+                "(boolean cannot be assigned to int32)!";
         assertTrue(zserioErrors.isPresent(error));
     }
 
     @Test
     public void wrongFloatConstant()
     {
-        final String error = "wrong_float_constant_error.zs:3:38: Wrong type of value expression (string cannot be assigned to float16)!";
+        final String error = "wrong_float_constant_error.zs:3:38: Wrong type of value expression " +
+                "(string cannot be assigned to float32)!";
         assertTrue(zserioErrors.isPresent(error));
     }
 
     @Test
     public void wrongStringConstant()
     {
-        final String error = "wrong_string_constant_error.zs:3:38: Wrong type of value expression (boolean cannot be assigned to string)!";
+        final String error = "wrong_string_constant_error.zs:3:38: Wrong type of value expression " +
+                "(boolean cannot be assigned to string)!";
         assertTrue(zserioErrors.isPresent(error));
     }
 

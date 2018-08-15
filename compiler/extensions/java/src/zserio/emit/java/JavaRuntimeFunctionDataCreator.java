@@ -152,7 +152,7 @@ public class JavaRuntimeFunctionDataCreator
         @Override
         public void visitFloatType(FloatType type)
         {
-            templateData = new RuntimeFunctionTemplateData("Float16");
+            templateData = new RuntimeFunctionTemplateData("Float" + type.getBitSize());
         }
 
         @Override

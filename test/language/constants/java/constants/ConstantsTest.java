@@ -143,9 +143,21 @@ public class ConstantsTest
     }
 
     @Test
-    public void floatConstant()
+    public void float16Constant()
     {
-        assertEquals(3.13f, __ConstType.FLOAT16_CONSTANT, Float.MIN_VALUE);
+        assertEquals(3.13f, __ConstType.FLOAT16_CONSTANT, 0.00001f);
+    }
+
+    @Test
+    public void float32Constant()
+    {
+        assertEquals(3.131f, __ConstType.FLOAT32_CONSTANT, 0.00001f);
+    }
+
+    @Test
+    public void float64Constant()
+    {
+        assertEquals(3.1314, __ConstType.FLOAT64_CONSTANT, 0.000000001);
     }
 
     @Test

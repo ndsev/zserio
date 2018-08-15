@@ -38,12 +38,15 @@ tokens
     DIVIDE<AST=zserio.ast.Expression>;
     DOC_COMMENT;
     DOT<AST=zserio.ast.Expression>;
+    DOUBLE_LITERAL<AST=zserio.ast.Expression>;
     ENUM="enum"<AST=zserio.ast.EnumType>;
     EQ<AST=zserio.ast.Expression>;
     EXPLICIT="explicit"<AST=zserio.ast.Expression>;
     FIELD<AST=zserio.ast.Field>;
     FLOAT_LITERAL<AST=zserio.ast.Expression>;
     FLOAT16="float16"<AST=zserio.ast.FloatType>;
+    FLOAT32="float32"<AST=zserio.ast.FloatType>;
+    FLOAT64="float64"<AST=zserio.ast.FloatType>;
     FUNCTION="function"<AST=zserio.ast.FunctionType>;
     FUNCTIONCALL<AST=zserio.ast.Expression>;
     GE<AST=zserio.ast.Expression>;
@@ -453,7 +456,9 @@ stringType
     ;
 
 floatType
-    :   FLOAT16
+    :   FLOAT16 |
+        FLOAT32 |
+        FLOAT64
     ;
 
 /**
@@ -547,6 +552,7 @@ constant
     :   DECIMAL_LITERAL |
         BINARY_LITERAL |
         FLOAT_LITERAL |
+        DOUBLE_LITERAL |
         HEXADECIMAL_LITERAL |
         OCTAL_LITERAL |
         BOOL_LITERAL |

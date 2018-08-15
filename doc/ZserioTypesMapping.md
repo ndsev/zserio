@@ -30,6 +30,8 @@ int:9...int:16  | `short`                | `int16_t`
 int:17...int:32 | `int`                  | `int32_t`
 int:33...int:64 | `long`                 | `int64_t`
 float16         | `float`                | `float`
+float32         | `float`                | `float`
+float64         | `double`               | `double`
 varint16        | `short`                | `int16_t`
 varint32        | `int`                  | `int32_t`
 varint64        | `long`                 | `int64_t`
@@ -61,7 +63,9 @@ int:1...int:8       | `zserio.runtime.array.ByteArray`          | `zserio::ByteA
 int:9...int:16      | `zserio.runtime.array.ShortArray`         | `zserio::ShortArray`
 int:17...int:32     | `zserio.runtime.array.IntArray`           | `zserio::IntArray`
 int:33...int:64     | `zserio.runtime.array.LongArray`          | `zserio::LongArray`
-float16             | `zserio.runtime.array.FloatArray`         | `zserio::FloatArray`
+float16             | `zserio.runtime.array.Float16Array`       | `zserio::Float16Array`
+float32             | `zserio.runtime.array.Float32Array`       | `zserio::Float32Array`
+float64             | `zserio.runtime.array.Float64Array`       | `zserio::Float64Array`
 varint16            | `zserio.runtime.array.VarInt16Array`      | `zserio::VarInt16Array`
 varint32            | `zserio.runtime.array.VarInt32Array`      | `zserio::VarInt32Array`
 varint64            | `zserio.runtime.array.VarInt64Array`      | `zserio::VarInt64Array`

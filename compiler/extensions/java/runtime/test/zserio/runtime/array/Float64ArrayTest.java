@@ -16,37 +16,37 @@ import org.junit.Test;
 import zserio.runtime.io.ByteArrayBitStreamReader;
 import zserio.runtime.io.ByteArrayBitStreamWriter;
 
-public class StringArrayTest
+public class Float64ArrayTest
 {
     @Before
     public void setUp()
     {
-        stringArray = new StringArray(1024);
+        float64Array = new Float64Array(1024);
         for (int i = 0; i < 1024; i++)
         {
-            stringArray.setElementAt(Integer.toString(i), i);
+            float64Array.setElementAt(1.0f, i);
         }
     }
 
     @Test
-    public void testStringArrayInt()
+    public void testFloat64ArrayInt()
     {
-        assertEquals(1024, stringArray.length());
-        stringArray = new StringArray(0);
-        assertEquals(0, stringArray.length());
-        stringArray = new StringArray(1023);
-        assertEquals(1023, stringArray.length());
+        assertEquals(1024, float64Array.length());
+        float64Array = new Float64Array(5);
+        assertEquals(5, float64Array.length());
+        float64Array = new Float64Array(20);
+        assertEquals(20, float64Array.length());
     }
 
     @Test
-    public void testStringArrayStringArrayIntInt()
+    public void testFloat64ArrayFloat64ArrayIntInt()
     {
-        final String[] data = new String[] {"1", "2", "3", "4", "5"};
-        stringArray = new StringArray(data, 0, 5);
-        assertEquals(5, stringArray.length());
+        final double[] data = new double[] {2.0, 2.0, 2.0, 2.0, 2.0};
+        float64Array = new Float64Array(data, 0, 5);
+        assertEquals(5, float64Array.length());
         for (int i = 0; i < 5; i++)
         {
-            assertEquals(Integer.toString(i + 1), stringArray.elementAt(i));
+            assertEquals(2.0, float64Array.elementAt(i), 0);
         }
     }
 
@@ -55,15 +55,15 @@ public class StringArrayTest
     {
         for (int i = 0; i < 1024; i++)
         {
-            assertEquals(Integer.toString(i), stringArray.elementAt(i));
+            assertEquals(1.0, float64Array.elementAt(i), 0);
         }
         for (int i = 0; i < 1024; i++)
         {
-            stringArray.setElementAt(Integer.toString(1), i);
+            float64Array.setElementAt(2.0f, i);
         }
         for (int i = 0; i < 1024; i++)
         {
-            assertEquals(Integer.toString(1), stringArray.elementAt(i));
+            assertEquals(2.0, float64Array.elementAt(i), 0);
         }
     }
 
@@ -72,72 +72,80 @@ public class StringArrayTest
     {
         for (int i = 0; i < 1024; i++)
         {
-            stringArray.setElementAt("1", i);
+            float64Array.setElementAt(2.0, i);
         }
         for (int i = 0; i < 1024; i++)
         {
-            assertEquals("1", stringArray.elementAt(i));
+            assertEquals(2.0, float64Array.elementAt(i), 0);
         }
     }
 
     @Test
     public void testLength()
     {
-        assertEquals(1024, stringArray.length());
-        assertEquals(0, new StringArray(0).length());
-        assertEquals(1023, new StringArray(1023).length());
+        assertEquals(1024, float64Array.length());
+        assertEquals(0, new Float64Array(0).length());
+        float64Array = new Float64Array(1023);
+        assertEquals(1023, float64Array.length());
+    }
 
+    @Test
+    public void sum() throws Exception
+    {
+        final float expectedSum = 1024 * 1.0f;
+        assertEquals(expectedSum, float64Array.sum(), Float.MIN_VALUE);
     }
 
     @Test
     public void testBitsizeof()
     {
-        assertEquals(32080, stringArray.bitSizeOf(0));
-        assertEquals(0, new StringArray(0).bitSizeOf(0));
+        assertEquals(65536, float64Array.bitSizeOf(0));
+        assertEquals(64, new Float64Array(1).bitSizeOf(0));
+        assertEquals(0, new Float64Array(0).bitSizeOf(0));
     }
 
     @Test
     public void testSubRange()
     {
-        final StringArray tmp = (StringArray)stringArray.subRange(1000, 24);
-        assertEquals(24, tmp.length());
+        final Float64Array tmpArray = (Float64Array)float64Array.subRange(1000, 24);
+        assertEquals(24, tmpArray.length());
         for (int i = 0; i < 24; i++)
         {
-            assertEquals(Integer.toString(i + 1000), tmp.elementAt(i));
+            assertEquals(1.0, tmpArray.elementAt(i), 0);
         }
     }
 
     @Test(expected = ArrayIndexOutOfBoundsException.class)
     public void testSubRangeExceptionBegin1()
     {
-        stringArray.subRange(-1, 24);
+        float64Array.subRange(-1, 24);
     }
 
     @Test(expected = ArrayIndexOutOfBoundsException.class)
     public void testSubRangeExceptionBegin2()
     {
-        stringArray.subRange(1025, 24);
+        float64Array.subRange(1025, 24);
     }
 
     @Test(expected = ArrayIndexOutOfBoundsException.class)
     public void testSubRangeExceptionBeginLength()
     {
-        stringArray.subRange(1000, 25);
+        float64Array.subRange(1000, 25);
     }
 
     @Test
     public void testIterator()
     {
-        final Iterator<String> iter = stringArray.iterator();
+        final Iterator<Double> iter = float64Array.iterator();
         int count1 = 0;
         while (iter.hasNext())
         {
-            assertEquals(Integer.toString(count1), iter.next());
+            assertEquals(1.0, iter.next(), 0);
             count1++;
         }
         assertEquals(1024, count1);
 
-        final Iterator<String> iter2 = new StringArray(0).iterator();
+        final Iterator<Double> iter2 = new Float64Array(0).iterator();
         int count2 = 0;
         while (iter2.hasNext())
         {
@@ -150,7 +158,7 @@ public class StringArrayTest
     @Test(expected = UnsupportedOperationException.class)
     public void testExceptionIterator()
     {
-        final Iterator<String> iter = stringArray.iterator();
+        final Iterator<Double> iter = float64Array.iterator();
         iter.remove();
     }
 
@@ -158,11 +166,11 @@ public class StringArrayTest
     public void testWrite() throws IOException
     {
         final ByteArrayBitStreamWriter out = new ByteArrayBitStreamWriter();
-        stringArray.write(out);
+        float64Array.write(out);
         final ByteArrayBitStreamReader in = new ByteArrayBitStreamReader(out.toByteArray());
         for (int i = 0; i < 1024; i++)
         {
-            assertEquals(Integer.toString(i), in.readString());
+            assertEquals(1.0, in.readFloat64(), 0);
         }
     }
 
@@ -171,37 +179,36 @@ public class StringArrayTest
     {
         final ByteArrayOutputStream baos = new ByteArrayOutputStream();
         final MemoryCacheImageOutputStream os = new MemoryCacheImageOutputStream(baos);
-        os.writeUTF("");
+        os.writeDouble(1.0);
         os.close();
         baos.close();
         final ByteArrayBitStreamReader in = new ByteArrayBitStreamReader(baos.toByteArray());
-        stringArray = new StringArray(in, 1);
-        assertEquals(1, stringArray.length());
-        assertEquals("", stringArray.elementAt(0));
+        float64Array = new Float64Array(in, 1);
+        assertEquals(1, float64Array.length());
+        assertEquals(1.0, float64Array.elementAt(0), 0);
     }
 
     @Test
     public void testHashCode()
     {
-        assertEquals(-1995349915, stringArray.hashCode());
-        assertEquals(new StringArray(0).hashCode(), new StringArray(0).hashCode());
-        assertTrue((new StringArray(0).equals(new StringArray(0))));
+        assertEquals(new Float64Array(0).hashCode(), new Float64Array(0).hashCode());
+        assertTrue((new Float64Array(0).equals(new Float64Array(0))));
     }
 
     @Test
     public void testEquals()
     {
-        final StringArray tmpStringArray = new StringArray(1024);
+        final Float64Array tmpFloat64Array = new Float64Array(1024);
         for (int i = 0; i < 1024; i++)
         {
-            tmpStringArray.setElementAt(Integer.toString(i), i);
+            tmpFloat64Array.setElementAt(1.0, i);
         }
-        assertTrue(stringArray.equals(stringArray));
-        assertTrue(stringArray.equals(tmpStringArray));
-        assertFalse(stringArray.equals(new StringArray(0)));
-        assertFalse(stringArray.equals(null));
-        assertFalse(stringArray.equals(Integer.valueOf(1)));
+        assertTrue(float64Array.equals(float64Array));
+        assertTrue(float64Array.equals(tmpFloat64Array));
+        assertFalse(float64Array.equals(new Float64Array(0)));
+        assertFalse(float64Array.equals(null));
+        assertFalse(float64Array.equals(Integer.valueOf(1)));
     }
 
-    private StringArray stringArray;
+    private Float64Array float64Array;
 }

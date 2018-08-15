@@ -9,6 +9,7 @@ import zserio.ast.Parameter;
 import zserio.emit.common.ExpressionFormatter;
 import zserio.emit.java.types.JavaNativeType;
 import zserio.emit.java.types.NativeBooleanType;
+import zserio.emit.java.types.NativeDoubleType;
 import zserio.emit.java.types.NativeEnumType;
 import zserio.emit.java.types.NativeFloatType;
 import zserio.emit.java.types.NativeLongType;
@@ -60,6 +61,7 @@ public final class CompoundParameterTemplateData
             isBool = nativeType instanceof NativeBooleanType;
             isLong = nativeType instanceof NativeLongType;
             isFloat = nativeType instanceof NativeFloatType;
+            isDouble = nativeType instanceof NativeDoubleType;
             isEnum = nativeType instanceof NativeEnumType;
             isSimpleType = nativeType.isSimple();
         }
@@ -104,6 +106,11 @@ public final class CompoundParameterTemplateData
             return isFloat;
         }
 
+        public boolean getIsDouble()
+        {
+            return isDouble;
+        }
+
         public boolean getIsEnum()
         {
             return isEnum;
@@ -122,6 +129,7 @@ public final class CompoundParameterTemplateData
         private final boolean                   isBool;
         private final boolean                   isLong;
         private final boolean                   isFloat;
+        private final boolean                   isDouble;
         private final boolean                   isEnum;
         private final boolean                   isSimpleType;
     }

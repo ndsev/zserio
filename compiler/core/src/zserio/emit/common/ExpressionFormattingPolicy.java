@@ -148,6 +148,7 @@ public interface ExpressionFormattingPolicy
     public String getHexadecimalLiteral(Expression expr, boolean isNegative);
     public String getOctalLiteral(Expression expr, boolean isNegative);
     public String getFloatLiteral(Expression expr, boolean isNegative);
+    public String getDoubleLiteral(Expression expr, boolean isNegative);
     public String getBoolLiteral(Expression expr);
     public String getStringLiteral(Expression expr);
     public String getIndex(Expression expr);

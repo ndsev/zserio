@@ -18,8 +18,11 @@
 <#macro compound_compare_parameter parameter>
     <#if parameter.isSimpleType>
         <#if parameter.isFloat>
-            <#-- float type: compare by floatToIntBits() -->
+            <#-- float type: compare by floatToIntBits() to get rid of FindBugs -->
 Float.floatToIntBits(this.${parameter.name}) == Float.floatToIntBits(__that.${parameter.name})<#rt>
+        <#elseif parameter.isDouble>
+            <#-- double type: compare by doubleToLongBits() to get rid of FindBugs -->
+Double.doubleToLongBits(this.${parameter.name}) == Double.doubleToLongBits(__that.${parameter.name})<#rt>
         <#else>
             <#-- simple type: compare by == -->
 this.${parameter.name} == __that.${parameter.name}<#rt>
@@ -41,6 +44,10 @@ this.${parameter.name} == __that.${parameter.name}<#rt>
         <#elseif parameter.isFloat>
             <#-- float type: use floatToIntBits() -->
         __result = Util.HASH_PRIME_NUMBER * __result + Float.floatToIntBits(${parameter.name});
+        <#elseif parameter.isDouble>
+            <#-- double type: use doubleToLongBits() -->
+        __result = Util.HASH_PRIME_NUMBER * __result + (int) (Double.doubleToLongBits(${parameter.name}) ^
+                (Double.doubleToLongBits(${parameter.name}) >>> 32));
         <#elseif parameter.isBool>
             <#-- bool type: convert it to int -->
         __result = Util.HASH_PRIME_NUMBER * __result + (${parameter.name} ? 1 : 0);

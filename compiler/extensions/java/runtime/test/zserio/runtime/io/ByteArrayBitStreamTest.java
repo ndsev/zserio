@@ -321,12 +321,55 @@ public class ByteArrayBitStreamTest
             -42.5f,
             -2.0f,
             0.0f,
+            0.6171875f,
+            0.875f,
             2.0f,
+            9.875f,
             42.5f
         };
 
         Method writeMethod = ByteArrayBitStreamWriter.class.getMethod("writeFloat16", float.class);
         Method readMethod = ByteArrayBitStreamReader.class.getMethod("readFloat16");
+        testImpl(writeMethod, readMethod, values, 15);
+    }
+
+    @Test
+    public void float32() throws Exception
+    {
+        Float values[] =
+        {
+            -42.5f,
+            -2.0f,
+            0.0f,
+            0.6171875f,
+            0.875f,
+            2.0f,
+            9.875f,
+            42.5f
+        };
+
+        Method writeMethod = ByteArrayBitStreamWriter.class.getMethod("writeFloat32", float.class);
+        Method readMethod = ByteArrayBitStreamReader.class.getMethod("readFloat32");
+        testImpl(writeMethod, readMethod, values, 15);
+    }
+
+    @Test
+    public void float64() throws Exception
+    {
+        Double values[] =
+        {
+            -42.5,
+            -2.0,
+            0.0,
+            0.6171875,
+            0.875,
+            2.0,
+            9.875,
+            42.5
+        };
+
+        Method writeMethod = ByteArrayBitStreamWriter.class.getMethod("writeFloat64", double.class);
+        Method readMethod = ByteArrayBitStreamReader.class.getMethod("readFloat64");
         testImpl(writeMethod, readMethod, values, 15);
     }
 

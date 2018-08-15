@@ -20,6 +20,7 @@ import zserio.emit.common.ExpressionFormatter;
 import zserio.emit.java.types.JavaNativeType;
 import zserio.emit.java.types.NativeArrayType;
 import zserio.emit.java.types.NativeBooleanType;
+import zserio.emit.java.types.NativeDoubleType;
 import zserio.emit.java.types.NativeEnumType;
 import zserio.emit.java.types.NativeFloatType;
 import zserio.emit.java.types.NativeLongType;
@@ -57,6 +58,7 @@ public final class CompoundFieldTemplateData
         isBool = nativeType instanceof NativeBooleanType;
         isLong = nativeType instanceof NativeLongType;
         isFloat = nativeType instanceof NativeFloatType;
+        isDouble = nativeType instanceof NativeDoubleType;
         isEnum = nativeType instanceof NativeEnumType;
         isSimpleType = nativeType.isSimple();
 
@@ -135,6 +137,11 @@ public final class CompoundFieldTemplateData
     public boolean getIsFloat()
     {
         return isFloat;
+    }
+
+    public boolean getIsDouble()
+    {
+        return isDouble;
     }
 
     public boolean getIsEnum()
@@ -553,6 +560,7 @@ public final class CompoundFieldTemplateData
     private final boolean                       isBool;
     private final boolean                       isLong;
     private final boolean                       isFloat;
+    private final boolean                       isDouble;
     private final boolean                       isEnum;
     private final boolean                       isSimpleType;
     private final String                        constraint;

@@ -34,6 +34,7 @@ public:
         VT_UINT32_ENUM,
         VT_UINT64_ENUM,
         VT_FLOAT,
+        VT_DOUBLE,
         VT_STRING
     };
 
@@ -48,6 +49,7 @@ public:
     explicit BlobInspectorValue(uint32_t uint32Value);
     explicit BlobInspectorValue(uint64_t uint64Value);
     explicit BlobInspectorValue(float floatValue);
+    explicit BlobInspectorValue(double floatValue);
     explicit BlobInspectorValue(const std::string& stringValue);
     BlobInspectorValue(int8_t enumValue, const std::string& enumSymbol);
     BlobInspectorValue(int16_t enumValue, const std::string& enumSymbol);
@@ -70,6 +72,7 @@ public:
     void set(uint32_t uint32Value);
     void set(uint64_t uint64Value);
     void set(float floatValue);
+    void set(double doubleValue);
     void set(const std::string& stringValue);
     void set(int8_t enumValue, const std::string& enumSymbol);
     void set(int16_t enumValue, const std::string& enumSymbol);
@@ -94,6 +97,7 @@ public:
     void get(uint32_t& uint32Value) const;
     void get(uint64_t& uint64Value) const;
     void get(float& floatValue) const;
+    void get(double& doubleValue) const;
     void get(std::string& stringValue) const;
     void get(int8_t& enumValue, std::string& enumSymbol) const;
     void get(int16_t& enumValue, std::string& enumSymbol) const;
@@ -126,6 +130,7 @@ private:
         uint32_t    uint32Value;
         uint64_t    uint64Value;
         float       floatValue;
+        double      doubleValue;
     };
 
     void checkValueType(ValueType expectedValueType) const;

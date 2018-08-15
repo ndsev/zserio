@@ -1,4 +1,5 @@
 #include "zserio/HashCodeUtil.h"
+#include "zserio/FloatUtil.h"
 
 #include "gtest/gtest.h"
 
@@ -40,7 +41,12 @@ TEST(HashCodeUtilTest, SimpleTypes)
     EXPECT_EQ(HASH_PRIME_NUMBER + 10, calcHashCode(hashSeed, int64Value));
 
     const float floatValue = 10.0;
-    EXPECT_EQ(HASH_PRIME_NUMBER + 10, calcHashCode(hashSeed, floatValue));
+    EXPECT_EQ(HASH_PRIME_NUMBER + convertFloatToUInt32(floatValue), calcHashCode(hashSeed, floatValue));
+
+    const double doubleValue = 10.0;
+    const uint64_t uint64DoubleValue = convertDoubleToUInt64(doubleValue);
+    EXPECT_EQ(HASH_PRIME_NUMBER + static_cast<int>(uint64DoubleValue ^ (uint64DoubleValue >> 32)),
+            calcHashCode(hashSeed, doubleValue));
 }
 
 TEST(HashCodeUtilTest, StringType)

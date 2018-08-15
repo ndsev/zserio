@@ -75,7 +75,8 @@ if (ZSERIO_RUNTIME_INCLUDE_RELATIONAL)
     endif ()
 
     if (NOT IS_DIRECTORY ${ZSERIO_RUNTIME_SQLITE_INCLUDE_DIR})
-        message(FATAL_ERROR "SQLite3 include directory not found. Please set ZSERIO_RUNTIME_SQLITE_INCLUDE_DIR correctly.")
+        message(FATAL_ERROR
+                "SQLite3 include directory not found. Please set ZSERIO_RUNTIME_SQLITE_INCLUDE_DIR correctly.")
     endif ()
 endif ()
 
@@ -101,6 +102,8 @@ set(ZSERIO_CPP_RUNTIME_LIB_SRCS
     zserio/ConstraintException.h
     zserio/Container.h
     zserio/CppRuntimeException.h
+    zserio/FloatUtil.cpp
+    zserio/FloatUtil.h
     zserio/HashCodeUtil.h
     zserio/ObjectArray.h
     zserio/OptionalHolder.h

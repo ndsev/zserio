@@ -35,7 +35,21 @@ public class StructureDefaultValuesTest
     public void checkDefaultFloat16Value()
     {
         final StructureDefaultValues structureDefaultValues = new StructureDefaultValues();
-        assertEquals(1.23f, structureDefaultValues.getFloat16Value(), Float.MIN_VALUE);
+        assertEquals(1.23f, structureDefaultValues.getFloat16Value(), 0.00001f);
+    }
+
+    @Test
+    public void checkDefaultFloat32Value()
+    {
+        final StructureDefaultValues structureDefaultValues = new StructureDefaultValues();
+        assertEquals(1.234f, structureDefaultValues.getFloat32Value(), 0.00001f);
+    }
+
+    @Test
+    public void checkDefaultFloat64Value()
+    {
+        final StructureDefaultValues structureDefaultValues = new StructureDefaultValues();
+        assertEquals(1.2345, structureDefaultValues.getFloat64Value(), 0.000000001);
     }
 
     @Test

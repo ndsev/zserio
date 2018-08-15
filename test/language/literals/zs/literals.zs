@@ -21,6 +21,8 @@ const int32 BINARY_POSITIVE_WITH_CAPITAL_B = 11111111B;
 const int32 BINARY_POSITIVE_WITH_SIGN = +11111111b;
 const int32 BINARY_NEGATIVE = -11111111b;
 
-const float16 FLOAT = 15.2;
+const float16 FLOAT16 = 15.2f;
+const float32 FLOAT32 = 15.23f;
+const float64 FLOAT64 = 15.234;
 
 const string STRING = "String";

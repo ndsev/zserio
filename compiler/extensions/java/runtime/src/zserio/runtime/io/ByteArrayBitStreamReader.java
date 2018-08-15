@@ -5,6 +5,8 @@ import java.io.EOFException;
 import java.io.IOException;
 import java.math.BigInteger;
 
+import zserio.runtime.FloatUtil;
+
 /**
  * A bit stream reader using byte array.
  */
@@ -215,8 +217,25 @@ public class ByteArrayBitStreamReader extends ByteArrayBitStreamBase implements 
     @Override
     public float readFloat16() throws IOException
     {
-        final int uint16 = readUnsignedShort();
-        return uint16ToFloat(uint16);
+        final short halfPrecisionFloatValue = readShort();
+
+        return FloatUtil.convertShortToFloat(halfPrecisionFloatValue);
+    }
+
+    @Override
+    public float readFloat32() throws IOException
+    {
+        final int singlePrecisionFloatValue = readInt();
+
+        return FloatUtil.convertIntToFloat(singlePrecisionFloatValue);
+    }
+
+    @Override
+    public double readFloat64() throws IOException
+    {
+        final long doublePrecisionFloatValue = readLong();
+
+        return FloatUtil.convertLongToDouble(doublePrecisionFloatValue);
     }
 
     @Override
@@ -497,30 +516,6 @@ public class ByteArrayBitStreamReader extends ByteArrayBitStreamBase implements 
     }
 
     /**
-     * Converts a 16 bit unsigned integer into an 16 bit unsigned float value
-     *
-     * @param uint16 An 16 bit unsigned integer value.
-     *
-     * @return An 16 bit unsigned float value.
-     */
-    private static float uint16ToFloat(final int uint16)
-    {
-        final int sign = (uint16 & 0x8000) >> 15;
-        final int exp16 = (uint16 & 0x7c00) >> 10;
-        final int m16 = uint16 & 0x3ff;
-        int exp32 = 0;
-        if (exp16 != 0) {
-            if (exp16 == 0x1f) {
-                exp32 = 0xff;
-            } else {
-                exp32 = exp16 - 15 + 127;
-            }
-        }
-        final int bits = (sign << 31) | (exp32 << 23) | (m16 << 13);
-        return Float.intBitsToFloat(bits);
-    }
-
-    /**
      * Reads the next variable number depending on the given signed flag and the maximum variable byte size.
      *
      * @param signed      A flag indicating if the number is signed or unsigned.
@@ -581,5 +576,5 @@ public class ByteArrayBitStreamReader extends ByteArrayBitStreamBase implements 
     /**
      * The underlying byte array.
      */
-    private byte[] buffer;
+    private final byte[] buffer;
 }

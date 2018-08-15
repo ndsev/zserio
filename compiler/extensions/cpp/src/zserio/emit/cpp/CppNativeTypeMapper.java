@@ -36,6 +36,7 @@ import zserio.emit.cpp.types.NativeArrayType;
 import zserio.emit.cpp.types.NativeBooleanType;
 import zserio.emit.cpp.types.NativeCompoundType;
 import zserio.emit.cpp.types.NativeConstType;
+import zserio.emit.cpp.types.NativeDoubleType;
 import zserio.emit.cpp.types.NativeEnumType;
 import zserio.emit.cpp.types.NativeFloatType;
 import zserio.emit.cpp.types.NativeHeapOptionalHolderType;
@@ -81,7 +82,7 @@ public class CppNativeTypeMapper
         final CppNativeType nativeType = visitor.getCppType();
 
         if (nativeType == null)
-            throw new ZserioEmitCppException("unhandled type: " + type.getClass().getName());
+            throw new ZserioEmitCppException("Unhandled type: " + type.getClass().getName());
 
         return nativeType;
     }
@@ -203,7 +204,7 @@ public class CppNativeTypeMapper
 
         protected void unexpected(ZserioType type) throws ZserioEmitCppException
         {
-            throw new ZserioEmitCppException("internal error: unexpected element " +
+            throw new ZserioEmitCppException("Internal error: unexpected element " +
                     ZserioTypeUtil.getFullName(type) +  " of type " + type.getClass());
         }
     }
@@ -248,7 +249,23 @@ public class CppNativeTypeMapper
         @Override
         public void visitFloatType(FloatType type)
         {
-            cppType = floatArrayType;
+            switch (type.getBitSize())
+            {
+            case 16:
+                cppType = float16ArrayType;
+                break;
+
+            case 32:
+                cppType = float32ArrayType;
+                break;
+
+            case 64:
+                cppType = float64ArrayType;
+                break;
+
+            default:
+                throw new ZserioEmitCppException("Unexpected bit size of float (" + type.getBitSize() + ")");
+            }
         }
 
         @Override
@@ -331,18 +348,21 @@ public class CppNativeTypeMapper
                 case 16:
                     cppType = varInt16ArrayType;
                     break;
+
                 case 32:
                     cppType = varInt32ArrayType;
                     break;
+
                 case 64:
                     cppType = varInt64ArrayType;
                     break;
+
                 case 72:
                     cppType = varIntArrayType;
                     break;
+
                 default:
-                    throw new ZserioEmitCppException("unexpected size of variable integer (" +
-                            Integer.toString(nBits) + ")");
+                    throw new ZserioEmitCppException("Unexpected size of variable integer (" + nBits + ")");
                 }
             }
             else
@@ -368,18 +388,21 @@ public class CppNativeTypeMapper
                 case 16:
                     cppType = varUInt16ArrayType;
                     break;
+
                 case 32:
                     cppType = varUInt32ArrayType;
                     break;
+
                 case 64:
                     cppType = varUInt64ArrayType;
                     break;
+
                 case 72:
                     cppType = varUIntArrayType;
                     break;
+
                 default:
-                    throw new ZserioEmitCppException("unexpected size of variable integer (" +
-                            Integer.toString(nBits) + ")");
+                    throw new ZserioEmitCppException("Unexpected size of variable integer (" + nBits + ")");
                 }
             }
             else
@@ -443,8 +466,7 @@ public class CppNativeTypeMapper
             cppType = arrayVisitor.getCppType();
 
             if (cppType == null)
-                throw new ZserioEmitCppException("unhandled array element type: "
-                        + type.getClass().getName());
+                throw new ZserioEmitCppException("Unhandled array element type: " + type.getClass().getName());
         }
 
         @Override
@@ -466,7 +488,20 @@ public class CppNativeTypeMapper
         @Override
         public void visitFloatType(FloatType type)
         {
-            cppType = floatType;
+            switch (type.getBitSize())
+            {
+            case 16:
+            case 32:
+                cppType = floatType;
+                break;
+
+            case 64:
+                cppType = doubleType;
+                break;
+
+            default:
+                throw new ZserioEmitCppException("Unexpected bit size of float (" + type.getBitSize() + ")");
+            }
         }
 
         @Override
@@ -545,16 +580,18 @@ public class CppNativeTypeMapper
                 case 16:
                     cppType = int16Type;
                     break;
+
                 case 32:
                     cppType = int32Type;
                     break;
+
                 case 64:
                 case 72:
                     cppType = int64Type;
                     break;
+
                 default:
-                    throw new ZserioEmitCppException("unexpected size of variable integer (" +
-                            Integer.toString(nBits) + ")");
+                    throw new ZserioEmitCppException("Unexpected size of variable integer (" + nBits + ")");
                 }
             }
             else
@@ -580,13 +617,16 @@ public class CppNativeTypeMapper
                 case 16:
                     cppType = uint16Type;
                     break;
+
                 case 32:
                     cppType = uint32Type;
                     break;
+
                 case 64:
                 case 72:
                     cppType = uint64Type;
                     break;
+
                 default:
                     throw new ZserioEmitCppException("unexpected size of variable integer (" +
                             Integer.toString(nBits) + ")");
@@ -625,10 +665,15 @@ public class CppNativeTypeMapper
 
     private final static List<String> ZSERIO_RUNTIME_NAMESPACE_PATH = Arrays.asList("zserio");
     private final static String ZSERIO_RUNTIME_INCLUDE_PREFIX = "zserio" + INCLUDE_DIR_SEPARATOR;
-    private final static String BIT_FIELD_ARRAY_H = ZSERIO_RUNTIME_INCLUDE_PREFIX + "BitFieldArray" + HEADER_SUFFIX;
+    private final static String BIT_FIELD_ARRAY_H = ZSERIO_RUNTIME_INCLUDE_PREFIX + "BitFieldArray" +
+            HEADER_SUFFIX;
     private final static String BASIC_ARRAY_H = ZSERIO_RUNTIME_INCLUDE_PREFIX + "BasicArray" + HEADER_SUFFIX;
 
     private final static NativeBooleanType booleanType = new NativeBooleanType();
+    private final static NativeStringType stringType = new NativeStringType();
+
+    private final static NativeFloatType floatType = new NativeFloatType();
+    private final static NativeDoubleType doubleType = new NativeDoubleType();
 
     private final static NativeStdIntType uint8Type = new NativeStdIntType(8, false);
     private final static NativeStdIntType uint16Type = new NativeStdIntType(16, false);
@@ -640,15 +685,17 @@ public class CppNativeTypeMapper
     private final static NativeStdIntType int32Type = new NativeStdIntType(32, true);
     private final static NativeStdIntType int64Type = new NativeStdIntType(64, true);
 
-    private final static NativeFloatType floatType = new NativeFloatType();
-    private final static NativeStringType stringType = new NativeStringType();
-
     private final static NativeArrayType booleanArrayType =
         new NativeArrayType(ZSERIO_RUNTIME_NAMESPACE_PATH, "BoolArray", BASIC_ARRAY_H, booleanType);
     private final static NativeArrayType stdStringArrayType =
         new NativeArrayType(ZSERIO_RUNTIME_NAMESPACE_PATH, "StringArray", BASIC_ARRAY_H, stringType);
-    private final static NativeArrayType floatArrayType =
-        new NativeArrayType(ZSERIO_RUNTIME_NAMESPACE_PATH, "FloatArray", BASIC_ARRAY_H, floatType);
+
+    private final static NativeArrayType float16ArrayType =
+        new NativeArrayType(ZSERIO_RUNTIME_NAMESPACE_PATH, "Float16Array", BASIC_ARRAY_H, floatType);
+    private final static NativeArrayType float32ArrayType =
+            new NativeArrayType(ZSERIO_RUNTIME_NAMESPACE_PATH, "Float32Array", BASIC_ARRAY_H, floatType);
+    private final static NativeArrayType float64ArrayType =
+            new NativeArrayType(ZSERIO_RUNTIME_NAMESPACE_PATH, "Float64Array", BASIC_ARRAY_H, doubleType);
 
     private final static NativeArrayType int8ArrayType =
         new NativeIntegralArrayType(ZSERIO_RUNTIME_NAMESPACE_PATH, "Int8Array", BIT_FIELD_ARRAY_H, int8Type);

@@ -4,6 +4,7 @@
 #include <string>
 
 #include "Types.h"
+#include "FloatUtil.h"
 
 namespace zserio
 {
@@ -62,7 +63,12 @@ namespace zserio
 
     inline int calcHashCode(int seedValue, float value)
     {
-        return calcHashCode(seedValue, static_cast<int>(value));
+        return calcHashCode(seedValue, convertFloatToUInt32(value));
+    }
+
+    inline int calcHashCode(int seedValue, double value)
+    {
+        return calcHashCode(seedValue, convertDoubleToUInt64(value));
     }
 
     inline int calcHashCode(int seedValue, const std::string& value)

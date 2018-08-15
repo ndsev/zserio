@@ -1,5 +1,8 @@
 package zserio.ast;
 
+import zserio.antlr.ZserioParserTokenTypes;
+import zserio.antlr.util.ParserException;
+
 /**
  * AST node for float types.
  *
@@ -16,8 +19,32 @@ public class FloatType extends BuiltInType implements FixedSizeType
     @Override
     public int getBitSize()
     {
-        return 16;
+        return bitSize;
+    }
+
+    @Override
+    protected void evaluate() throws ParserException
+    {
+        switch (getType())
+        {
+        case ZserioParserTokenTypes.FLOAT16:
+            bitSize = 16;
+            break;
+
+        case ZserioParserTokenTypes.FLOAT32:
+            bitSize = 32;
+            break;
+
+        case ZserioParserTokenTypes.FLOAT64:
+            bitSize = 64;
+            break;
+
+        default:
+            throw new ParserException(this, "Unexpected AST node type in FloatType!");
+        }
     }
 
     private static final long serialVersionUID = 125193189598509024L;
+
+    private int bitSize;
 }

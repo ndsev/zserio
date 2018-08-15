@@ -35,7 +35,8 @@ protected:
         row.setAge(std::numeric_limits<int64_t>::max());
         row.setName(name);
         row.setIsValid(true);
-        row.setSalary(9.9);
+        row.setSalary(9.9f);
+        row.setBonus(5.5);
         row.setValue(0x34);
         row.setColor(TestEnum::RED);
 
@@ -68,6 +69,7 @@ protected:
         ASSERT_EQ(row1.getName(), row2.getName());
         ASSERT_EQ(row1.getIsValid(), row2.getIsValid());
         ASSERT_EQ(row1.getSalary(), row2.getSalary());
+        ASSERT_EQ(row1.getBonus(), row2.getBonus());
         ASSERT_EQ(row1.getValue(), row2.getValue());
         ASSERT_EQ(row1.getColor(), row2.getColor());
         ASSERT_EQ(row1.getBlob(), row2.getBlob());

@@ -308,7 +308,7 @@ void ${name}::readRow(${rootPackage.name}::IParameterProvider&<#if isUsedParamet
         </#if>
     <#elseif field.sqlTypeData.isReal>
         const double doubleValue = sqlite3_column_double(&statement, ${field_index});
-        row.set${field.name?cap_first}(static_cast<float>(doubleValue));
+        row.set${field.name?cap_first}(static_cast<${field.cppTypeName}>(doubleValue));
     <#else>
         const unsigned char* textValue = sqlite3_column_text(&statement, ${field_index});
         row.set${field.name?cap_first}(reinterpret_cast<const char*>(textValue));
@@ -344,8 +344,8 @@ void ${name}::writeRow(const ${rowName}&<#if fields?has_content> row</#if>, sqli
         const int64_t intValue = static_cast<int64_t>(row.get${field.name?cap_first}()<#if field.enumData??>.getValue()</#if>);
         result = sqlite3_bind_int64(&statement, ${field_index + 1}, intValue);
         <#elseif field.sqlTypeData.isReal>
-        const float floatValue = row.get${field.name?cap_first}();
-        result = sqlite3_bind_double(&statement, ${field_index + 1}, static_cast<double>(floatValue));
+        const ${field.cppTypeName} realValue = row.get${field.name?cap_first}();
+        result = sqlite3_bind_double(&statement, ${field_index + 1}, static_cast<double>(realValue));
         <#else>
         const ${field.cppTypeName}& stringValue = row.get${field.name?cap_first}();
         result = sqlite3_bind_text(&statement, ${field_index + 1}, stringValue.c_str(), -1, SQLITE_TRANSIENT);

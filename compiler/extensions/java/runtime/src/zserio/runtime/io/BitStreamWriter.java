@@ -102,13 +102,31 @@ public interface BitStreamWriter extends BitStreamCloseable
     void writeBigInteger(final BigInteger value, final int numBits) throws IOException;
 
     /**
-     * Writes a 16 bit float value to the underlying storage.
+     * Writes a 16-bit float value to the underlying storage.
      *
-     * @param value 16 bit float value to write.
+     * @param value Half precision float value to write.
      *
      * @throws IOException If the writing failed.
      */
     void writeFloat16(final float value) throws IOException;
+
+    /**
+     * Writes a 32-bit float value to the underlying storage.
+     *
+     * @param value Single precision float value to write.
+     *
+     * @throws IOException If the writing failed.
+     */
+    void writeFloat32(final float value) throws IOException;
+
+    /**
+     * Writes a 64-bit float value to the underlying storage.
+     *
+     * @param value Double precision float value to write.
+     *
+     * @throws IOException If the writing failed.
+     */
+    void writeFloat64(final double value) throws IOException;
 
     /**
      * Writes a Zserio string to the underlying storage in UTF-8 encoding.

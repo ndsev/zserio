@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 
+import zserio.runtime.FloatUtil;
 import zserio.runtime.ZserioError;
 import zserio.runtime.Mapping;
 import zserio.runtime.Util;
@@ -11,11 +12,11 @@ import zserio.runtime.io.BitStreamReader;
 import zserio.runtime.io.BitStreamWriter;
 
 /**
- * Implements Zserio float16 array.
+ * Implements Zserio float64 array.
  *
- * Zserio float16 array is mapped to Java float type.
+ * Zserio float64 array is mapped to Java double type.
  */
-public class FloatArray extends NumericArrayBase<Float>
+public class Float64Array extends NumericArrayBase<Double>
 {
     /**
      * Constructs array from bit stream.
@@ -27,7 +28,7 @@ public class FloatArray extends NumericArrayBase<Float>
      * @throws IOException     Failure during bit stream manipulation.
      * @throws ZserioError Cannot occurred because indexed offsets are not used.
      */
-    public FloatArray(BitStreamReader reader, int length) throws IOException, ZserioError
+    public Float64Array(BitStreamReader reader, int length) throws IOException, ZserioError
     {
         this(reader, length, null);
     }
@@ -43,7 +44,7 @@ public class FloatArray extends NumericArrayBase<Float>
      * @throws IOException     Failure during bit stream manipulation.
      * @throws ZserioError Failure during offset checking.
      */
-    public FloatArray(BitStreamReader reader, int length, OffsetChecker checker)
+    public Float64Array(BitStreamReader reader, int length, OffsetChecker checker)
             throws IOException, ZserioError
     {
         readImpl(reader, length, 0, checker);
@@ -56,22 +57,22 @@ public class FloatArray extends NumericArrayBase<Float>
      *
      * @param length Number of elements for created object.
      */
-    public FloatArray(int length)
+    public Float64Array(int length)
     {
-        data = new float[length];
+        data = new double[length];
     }
 
     /**
-     * Constructs array from float array.
+     * Constructs array from double array.
      *
-     * @param data   float array to construct from.
+     * @param data   double array to construct from.
      * @param offset Index to array <code>data</code> where the first element for construction is located.
      * @param length Number of elements in array <code>data</code> to use for construction.
      */
-    public FloatArray(float[] data, int offset, int length)
+    public Float64Array(double[] data, int offset, int length)
     {
         if (offset + length > data.length)
-            throw new ArrayIndexOutOfBoundsException("FloatArray: Requested array sequence ends beyond " +
+            throw new ArrayIndexOutOfBoundsException("Float64Array: Requested array sequence ends beyond " +
                     "the end of the given array. Requested offset is " + offset + ", length is " + length +
                     "but array length is " + data.length + ".");
 
@@ -85,7 +86,7 @@ public class FloatArray extends NumericArrayBase<Float>
      *
      * @return Element at the given position.
      */
-    public float elementAt(int i)
+    public double elementAt(int i)
     {
         return data[i];
     }
@@ -96,26 +97,25 @@ public class FloatArray extends NumericArrayBase<Float>
      * @param value Element value to set.
      * @param i     Index of element to set.
      */
-    public void setElementAt(float value, int i)
+    public void setElementAt(double value, int i)
     {
         data[i] = value;
     }
 
     @Override
-    public Array<Float> map(Mapping<Float> mapping)
+    public Array<Double> map(Mapping<Double> mapping)
     {
-        final FloatArray result = new FloatArray(data.length);
+        final Float64Array result = new Float64Array(data.length);
         for (int index = 0; index < data.length; index++)
-        {
             result.setElementAt(mapping.map(elementAt(index)), index);
-        }
+
         return result;
     }
 
     @Override
-    public Array<Float> subRange(int offset, int length)
+    public Array<Double> subRange(int offset, int length)
     {
-        return new FloatArray(data, offset, length);
+        return new Float64Array(data, offset, length);
     }
 
     @Override
@@ -131,7 +131,8 @@ public class FloatArray extends NumericArrayBase<Float>
 
         for (int index = 0; index < data.length; index++)
         {
-            result = result * Util.HASH_PRIME_NUMBER + Float.floatToIntBits(elementAt(index));
+            final long elementValue = FloatUtil.convertDoubleToLong(elementAt(index));
+            result = result * Util.HASH_PRIME_NUMBER + (int) (elementValue ^ (elementValue >>> 32));
         }
 
         return result;
@@ -140,24 +141,21 @@ public class FloatArray extends NumericArrayBase<Float>
     @Override
     public boolean equals(Object obj)
     {
-        if (obj instanceof FloatArray)
-        {
-            final FloatArray that = (FloatArray)obj;
-            if (data.length != that.data.length)
-            {
-                return false;
-            }
+        if (!(obj instanceof Float64Array))
+            return false;
 
-            for (int index = 0; index < data.length; index++)
-            {
-                if (Math.abs(this.elementAt(index) - that.elementAt(index)) > EQUALITY_TRESHOLD)
-                {
-                    return false;
-                }
-            }
-            return true;
+        final Float64Array that = (Float64Array)obj;
+        if (data.length != that.data.length)
+            return false;
+
+        for (int index = 0; index < data.length; index++)
+        {
+            if (FloatUtil.convertDoubleToLong(this.elementAt(index)) !=
+                    FloatUtil.convertDoubleToLong(that.elementAt(index)))
+                return false;
         }
-        return false;
+
+        return true;
     }
 
     /**
@@ -165,10 +163,10 @@ public class FloatArray extends NumericArrayBase<Float>
      *
      * @return Sum of all array values.
      */
-    public float sum()
+    public double sum()
     {
-        float sumValue = 0.0f;
-        for (final float value : data)
+        double sumValue = 0.0f;
+        for (final double value : data)
             sumValue += value;
 
         return sumValue;
@@ -230,7 +228,7 @@ public class FloatArray extends NumericArrayBase<Float>
         for (int index = 0; index < data.length; index++)
         {
             alignAndCheckOffset(index, writer, checker);
-            writer.writeFloat16(data[index]);
+            writer.writeFloat64(data[index]);
         }
     }
 
@@ -333,41 +331,38 @@ public class FloatArray extends NumericArrayBase<Float>
     }
 
     @Override
-    protected Float boxedElementAt(int index)
+    protected Double boxedElementAt(int index)
     {
         return elementAt(index);
     }
 
     @Override
-    protected Float readBoxedElement(BitStreamReader reader, int numBits) throws IOException
+    protected Double readBoxedElement(BitStreamReader reader, int numBits) throws IOException
     {
-        return reader.readFloat16();
+        return reader.readFloat64();
     }
 
     @Override
-    protected void setFromList(List<Float> list)
+    protected void setFromList(List<Double> list)
     {
-        data = new float[list.size()];
+        data = new double[list.size()];
         for (int index = 0; index < data.length; ++index)
-        {
             data[index] = list.get(index);
-        }
     }
 
     @Override
     protected void readN(BitStreamReader reader, int length, int numBits, OffsetChecker checker)
             throws IOException, ZserioError
     {
-        data = new float[length];
+        data = new double[length];
         for (int index = 0; index < length; index++)
         {
             alignAndCheckOffset(index, reader, checker);
-            data[index] = reader.readFloat16();
+            data[index] = reader.readFloat64();
         }
     }
 
-    private static final int FLOAT_BIT_SIZE = 16;
-    private static final float EQUALITY_TRESHOLD = 0.0000001f;
+    private static final int FLOAT_BIT_SIZE = 64;
 
-    private float[] data;
+    private double[] data;
 }

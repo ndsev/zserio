@@ -39,6 +39,24 @@ TEST(StructureDefaultValuesTest, checkDefaultFloat16Value)
     ASSERT_TRUE(diff <= std::numeric_limits<float>::epsilon());
 }
 
+TEST(StructureDefaultValuesTest, checkDefaultFloat32Value)
+{
+    StructureDefaultValues structureDefaultValues;
+    float diff = 1.234f - structureDefaultValues.getFloat32Value();
+    if (diff < 0.0f)
+        diff = -diff;
+    ASSERT_TRUE(diff <= std::numeric_limits<float>::epsilon());
+}
+
+TEST(StructureDefaultValuesTest, checkDefaultFloat64Value)
+{
+    StructureDefaultValues structureDefaultValues;
+    float diff = 1.2345 - structureDefaultValues.getFloat64Value();
+    if (diff < 0.0)
+        diff = -diff;
+    ASSERT_TRUE(diff <= std::numeric_limits<double>::epsilon());
+}
+
 TEST(StructureDefaultValuesTest, checkDefaultStringValue)
 {
     StructureDefaultValues structureDefaultValues;

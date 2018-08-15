@@ -37,6 +37,9 @@ public:
     void writeVarUInt(uint64_t data);
 
     void writeFloat16(float data);
+    void writeFloat32(float data);
+    void writeFloat64(double data);
+
     void writeString(const std::string& data);
     void writeBool(bool data);
 

@@ -41,6 +41,12 @@ public class DocExpressionFormattingPolicy extends DefaultExpressionFormattingPo
     }
 
     @Override
+    public String getDoubleLiteral(Expression expr, boolean isNegative)
+    {
+        return expr.getText();
+    }
+
+    @Override
     public String getBoolLiteral(Expression expr)
     {
         return expr.getText();

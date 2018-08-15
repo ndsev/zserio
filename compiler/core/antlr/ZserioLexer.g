@@ -165,7 +165,8 @@ HEX_DIGIT
 // numeric literals (solves others literals as well)
 DECIMAL_LITERAL
     :   ( ('0'..'1')+ ('b'|'B') ) => ('0'..'1')+ ('b'|'B') { $setType(BINARY_LITERAL); } // binary
-        | ( ('0'..'9')+ '.' ('0'..'9')* ) => ('0'..'9')+ '.' ('0'..'9')* { $setType(FLOAT_LITERAL); } // float
+        | ( ('0'..'9')+ '.' ('0'..'9')* ('f'|'F')? ) => ('0'..'9')+ '.' ('0'..'9')* // float or double
+            ('f' { $setType(FLOAT_LITERAL); } | 'F'{ $setType(FLOAT_LITERAL); } | { $setType(DOUBLE_LITERAL); })
         | (
               '0'
               (
