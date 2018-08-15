@@ -1,4 +1,5 @@
 #include <cstring>
+#include <fstream>
 
 #include "BitStreamException.h"
 #include "CppRuntimeException.h"
@@ -289,6 +290,17 @@ const uint8_t* BitStreamWriter::getWriteBuffer(size_t& writeBufferByteSize) cons
     writeBufferByteSize = m_bufferBitSize / 8;
 
     return m_buffer;
+}
+
+void BitStreamWriter::writeBufferToFile(const std::string& filename) const
+{
+    std::ofstream os(filename.c_str(), std::ofstream::binary);
+    if (!os)
+        throw CppRuntimeException("WriteBitStreamToFile: Failed to open '" + filename +"' for writing!");
+
+    os.write(reinterpret_cast<const char*>(m_buffer), m_bufferBitSize / 8);
+    if (!os)
+        throw CppRuntimeException("WriteBitStreamToFile: Failed to write '" + filename +"'!");
 }
 
 inline void BitStreamWriter::writeUnsignedBits(uint32_t data, uint8_t numBits)

@@ -21,8 +21,7 @@ protected:
 
 private:
     static const size_t bufferSize = 16;
-
-    uint8_t             m_byteBuffer[bufferSize];
+    uint8_t m_byteBuffer[bufferSize];
 };
 
 TEST_F(BitStreamReaderTest, ReadBits)

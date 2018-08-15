@@ -1,4 +1,5 @@
 #include <limits>
+#include <fstream>
 
 #include "BitStreamException.h"
 #include "CppRuntimeException.h"
@@ -288,11 +289,49 @@ namespace
 #endif
 } // namespace
 
-BitStreamReader::ReaderContext::ReaderContext(const uint8_t* data, size_t bufferByteSize)
-:   buffer(data),
+BitStreamReader::ReaderContext::ReaderContext(const uint8_t* buffer, size_t bufferByteSize)
+:   buffer(const_cast<uint8_t*>(buffer)),
     bufferBitSize(bufferByteSize * 8),
+    hasInternalBuffer(false),
     cacheNumBits(0),
     bitIndex(0)
+{
+    Init(bufferByteSize);
+}
+
+BitStreamReader::ReaderContext::ReaderContext(const std::string& filename)
+:   hasInternalBuffer(true),
+    cacheNumBits(0),
+    bitIndex(0)
+{
+    std::ifstream is(filename.c_str(), std::ifstream::binary);
+    if (!is)
+        throw CppRuntimeException("BitStreamReader: Cannot open '" + filename + "' for reading!");
+
+    is.seekg(0, is.end);
+    const size_t bufferByteSize = is.tellg();
+    is.seekg(0);
+
+    // throws an exception
+    Init(bufferByteSize);
+
+    buffer = new uint8_t[bufferByteSize];
+    bufferBitSize = bufferByteSize * 8;
+    is.read(reinterpret_cast<char*>(&buffer[0]), bufferByteSize);
+    if (!is)
+    {
+        delete[] buffer;
+        throw CppRuntimeException("BitStreamReader: Failed to read '" + filename + "'!");
+    }
+}
+
+BitStreamReader::ReaderContext::~ReaderContext()
+{
+    if (hasInternalBuffer)
+        delete[] buffer;
+}
+
+void BitStreamReader::ReaderContext::Init(size_t bufferByteSize)
 {
 #ifdef ZSERIO_RUNTIME_64BIT
     cache.buffer64 = 0;
@@ -305,8 +344,12 @@ BitStreamReader::ReaderContext::ReaderContext(const uint8_t* data, size_t buffer
                 convertToString(MAX_BUFFER_SIZE) + "' bytes!");
 }
 
-BitStreamReader::BitStreamReader(const uint8_t* data, size_t bufferByteSize)
-:   m_context(data, bufferByteSize)
+BitStreamReader::BitStreamReader(const uint8_t* buffer, size_t bufferByteSize)
+:   m_context(buffer, bufferByteSize)
+{}
+
+BitStreamReader::BitStreamReader(const std::string& filename)
+:   m_context(filename)
 {}
 
 BitStreamReader::~BitStreamReader()

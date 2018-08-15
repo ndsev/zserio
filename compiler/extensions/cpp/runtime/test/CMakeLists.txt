@@ -23,6 +23,7 @@ set(ZSERIO_CPP_RUNTIME_TEST_SRCS
     zserio/BitSizeOfCalculatorTest.cpp
     zserio/BitStreamReaderTest.cpp
     zserio/BitStreamTest.cpp
+    zserio/BitStreamToFileTest.cpp
     zserio/BitStreamWriterTest.cpp
     zserio/BuildInOperatorsTest.cpp
     zserio/ContainerTest.cpp

@@ -16,7 +16,9 @@ public:
 
     struct ReaderContext
     {
-        ReaderContext(const uint8_t* data, size_t bufferByteSize);
+        ReaderContext(const uint8_t* buffer, size_t bufferByteSize);
+        explicit ReaderContext(const std::string& filename);
+        ~ReaderContext();
 
         /** Cache buffer union to cover both 32bit and 64bit implementations. */
         union BitCache
@@ -25,16 +27,25 @@ public:
             uint64_t buffer64; /**< Cache buffer used on 64bit platforms. */
         };
 
-        const uint8_t*  buffer;
-        const size_t    bufferBitSize;
+        uint8_t* buffer;
+        BitPosType bufferBitSize;
+        bool hasInternalBuffer;
 
-        BitCache        cache;
-        uint8_t         cacheNumBits;
+        BitCache cache;
+        uint8_t cacheNumBits;
 
-        BitPosType      bitIndex;
+        BitPosType bitIndex;
+
+    private:
+        // disable copy constructor and assignment operator
+        ReaderContext(const ReaderContext& other);
+        void operator=(const ReaderContext& other);
+
+        void Init(size_t bufferByteSize);
     };
 
-    BitStreamReader(const uint8_t* data, size_t bufferByteSize);
+    BitStreamReader(const uint8_t* buffer, size_t bufferByteSize);
+    explicit BitStreamReader(const std::string& filename);
     ~BitStreamReader();
 
     uint32_t readBits(uint8_t numBits = 32);
