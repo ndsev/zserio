@@ -383,7 +383,7 @@ public class Field extends TokenAST
     private static final long serialVersionUID = 4009186108710189367L;
 
     private CompoundType    compoundType = null;
-    private ZserioType  fieldType = null;
+    private ZserioType      fieldType = null;
     private String          name = null;
     private boolean         isAutoOptional = false;
     private Expression      initializerExpr = null;

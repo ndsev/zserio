@@ -14,7 +14,6 @@ import zserio.ast.FloatType;
 import zserio.ast.FunctionType;
 import zserio.ast.IntegerType;
 import zserio.ast.ServiceType;
-import zserio.ast.RpcType;
 import zserio.ast.StructureType;
 import zserio.ast.SignedBitFieldType;
 import zserio.ast.SqlDatabaseType;
@@ -263,13 +262,7 @@ final class JavaNativeTypeMapper
         @Override
         public void visitServiceType(ServiceType type) throws ZserioEmitJavaException
         {
-            mapObjectArray(type);
-        }
-
-        @Override
-        public void visitRpcType(RpcType type) throws ZserioEmitJavaException
-        {
-            mapObjectArray(type);
+            unexpected(type);
         }
 
         @Override
@@ -538,13 +531,7 @@ final class JavaNativeTypeMapper
         @Override
         public void visitServiceType(ServiceType type)
         {
-            mapCompoundType(type);
-        }
-
-        @Override
-        public void visitRpcType(RpcType type)
-        {
-            mapCompoundType(type);
+            // TODO: not implemented
         }
 
         @Override

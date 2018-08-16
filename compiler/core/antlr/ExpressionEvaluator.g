@@ -51,13 +51,13 @@ importDeclaration
 commandDeclaration
     :   constDeclaration |
         subtypeDeclaration |
-        serviceDeclaration |
         structureDeclaration |
         choiceDeclaration |
         unionDeclaration |
         enumDeclaration |
         sqlTableDeclaration |
-        sqlDatabaseDefinition
+        sqlDatabaseDefinition |
+        serviceDeclaration
     ;
 
 /**
@@ -72,14 +72,6 @@ constDeclaration
  */
 subtypeDeclaration
     :   #(SUBTYPE definedType ID)
-    ;
-
-serviceDeclaration
-    :   #(SERVICE ID (rpcDeclaration)*)
-    ;
-
-rpcDeclaration
-    :   #(RPC ID definedType definedType)
     ;
 
 /**
@@ -229,6 +221,17 @@ sqlTableDefinition
 
 sqlTableReference
     :   #(TYPEREF ID)
+    ;
+
+/**
+ * serviceDeclaration.
+ */
+serviceDeclaration
+    :   #(SERVICE ID (rpcDeclaration)*)
+    ;
+
+rpcDeclaration
+    :   #(RPC typeSymbol ID typeSymbol)
     ;
 
 /**

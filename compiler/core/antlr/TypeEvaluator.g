@@ -88,13 +88,13 @@ importDeclaration
 commandDeclaration
     :   constDeclaration |
         subtypeDeclaration |
-        serviceDeclaration |
         structureDeclaration |
         choiceDeclaration |
         unionDeclaration |
         enumDeclaration |
         sqlTableDeclaration |
-        sqlDatabaseDefinition
+        sqlDatabaseDefinition |
+        serviceDeclaration
     ;
 
 /**
@@ -117,26 +117,6 @@ subtypeDeclaration
             pkg.setType((BaseTokenAST)i, s);
             ((Subtype)s).setPackage(pkg);
         }
-    ;
-
-serviceDeclaration
-    : #(s:SERVICE i:ID
-          {
-              pkg.setType((BaseTokenAST)i, s);
-              beginScope((CompoundType)s);
-              ((CompoundType)s).setScope(scope, pkg);
-          }
-        (rpcDeclaration)*
-      ) { endScope(); }
-    ;
-
-rpcDeclaration
-    : #(r:RPC i:ID a:definedType b:definedType
-          {
-              pkg.setType((BaseTokenAST)i, r);
-              scope.setSymbol((BaseTokenAST)i, r);
-          }
-      )
     ;
 
 /**
@@ -364,6 +344,28 @@ sqlTableReference
         {
             scope.postLinkAction((TypeReference)t);
         }
+    ;
+
+/**
+ * serviceDeclaration.
+ */
+serviceDeclaration
+    : #(s:SERVICE i:ID
+          {
+              pkg.setType((BaseTokenAST)i, s);
+              beginScope((ServiceType)s);
+              ((ServiceType)s).setScope(scope, pkg);
+          }
+        (rpcDeclaration)*
+      ) { endScope(); }
+    ;
+
+rpcDeclaration
+    : #(r:RPC typeSymbol i:ID typeSymbol
+          {
+              scope.setSymbol((BaseTokenAST)i, r);
+          }
+      )
     ;
 
 /**

@@ -63,13 +63,13 @@ importDeclaration
 commandDeclaration
     :   constDeclaration |
         subtypeDeclaration |
-        serviceDeclaration |
         structureDeclaration |
         choiceDeclaration |
         unionDeclaration |
         enumDeclaration |
         sqlTableDeclaration |
-        sqlDatabaseDefinition
+        sqlDatabaseDefinition |
+        serviceDeclaration
     ;
 
 /**
@@ -91,21 +91,6 @@ subtypeDeclaration
             definedType
             ID
         )                           { em.endSubtype(s); }
-    ;
-
-serviceDeclaration
-    :   #(s: SERVICE                { em.beginService(s); }
-            ID
-            (rpcDeclaration)*
-        )                           { em.endService(s); }
-    ;
-
-rpcDeclaration
-    :   #(r: RPC { em.beginRpc(r); }
-        ID
-        definedType
-        definedType
-        ) { em.endRpc(r); }
     ;
 
 /**
@@ -296,6 +281,24 @@ sqlTableDefinition
 
 sqlTableReference
     :   #(TYPEREF ID)
+    ;
+
+/**
+ * serviceDeclaration.
+ */
+serviceDeclaration
+    :   #(s: SERVICE                { em.beginService(s); }
+            ID
+            (rpcDeclaration)*
+        )                           { em.endService(s); }
+    ;
+
+rpcDeclaration
+    :   #(r: RPC                    { em.beginRpc(r); }
+        typeSymbol
+        ID
+        typeSymbol
+        )                           { em.endRpc(r); }
     ;
 
 /**

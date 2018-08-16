@@ -11,7 +11,6 @@ import zserio.ast.EnumType;
 import zserio.ast.FloatType;
 import zserio.ast.FunctionType;
 import zserio.ast.ServiceType;
-import zserio.ast.RpcType;
 import zserio.ast.StructureType;
 import zserio.ast.SignedBitFieldType;
 import zserio.ast.SqlDatabaseType;
@@ -108,13 +107,7 @@ public class SqlNativeTypeMapper
         @Override
         public void visitServiceType(ServiceType type)
         {
-            sqlType = blobType;
-        }
-
-        @Override
-        public void visitRpcType(RpcType type)
-        {
-            sqlType = blobType;
+            unexpected(type);
         }
 
         @Override

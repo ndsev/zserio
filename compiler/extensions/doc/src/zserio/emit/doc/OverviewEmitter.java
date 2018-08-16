@@ -9,6 +9,7 @@ import java.util.Set;
 import java.util.TreeMap;
 
 import antlr.collections.AST;
+import zserio.ast.ServiceType;
 import zserio.ast.ZserioException;
 import zserio.ast.Package;
 import zserio.ast.ZserioType;
@@ -41,8 +42,11 @@ public class OverviewEmitter extends DefaultHtmlEmitter
                 {
                     boolean isDoubleDefinedType = Boolean.TRUE.equals(doubleTypeNames.get(typeName));
                     ZserioType t = pkg.getLocalType(typeName);
-                    LinkedType linkedType = new LinkedType(t, isDoubleDefinedType);
-                    typeMap.put(getFullTypeName(typeName, pkg), linkedType);
+                    if (!(t instanceof ServiceType)) // TODO: not implemented for ServiceType
+                    {
+                        LinkedType linkedType = new LinkedType(t, isDoubleDefinedType);
+                        typeMap.put(getFullTypeName(typeName, pkg), linkedType);
+                    }
                 }
             }
 

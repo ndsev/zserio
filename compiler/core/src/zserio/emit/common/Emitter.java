@@ -61,9 +61,9 @@ public interface Emitter
     public void beginSqlTable(AST s);
     public void endSqlTable(AST s);
 
-    public void beginService(AST s);
-    public void endService(AST s);
-
     public void beginRpc(AST r);
     public void endRpc(AST r);
+
+    public void beginService(AST s);
+    public void endService(AST s);
 }

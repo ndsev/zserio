@@ -2,55 +2,65 @@ package zserio.emit.cpp;
 
 import java.util.List;
 import java.util.ArrayList;
-import java.util.Set;
-import java.util.HashSet;
-
 import zserio.ast.ServiceType;
-import zserio.ast.RpcType;
+import zserio.ast.Rpc;
 import zserio.ast.ZserioType;
-import zserio.emit.cpp.types.CppNativeType;
 
-public class ServiceEmitterTemplateData extends CompoundTypeTemplateData
+public class ServiceEmitterTemplateData extends UserTypeTemplateData
 {
-    public ServiceEmitterTemplateData(TemplateDataContext context, ServiceType type)
+    public ServiceEmitterTemplateData(TemplateDataContext context, ServiceType serviceType)
     {
-        super(context, type);
+        super(context, serviceType);
 
-        serviceType = type;
-        cppNativeTypeMapper = context.getCppNativeTypeMapper();
+        final CppNativeTypeMapper cppTypeMapper = context.getCppNativeTypeMapper();
+        Iterable<Rpc> rpcList = serviceType.getRpcList();
+        for (Rpc rpc : rpcList)
+        {
+            addHeaderIncludesForType(cppTypeMapper.getCppType(rpc.getResponseType()));
+            addHeaderIncludesForType(cppTypeMapper.getCppType(rpc.getRequestType()));
+            this.rpcList.add(new RpcTemplateData(cppTypeMapper, rpc));
+        }
     }
 
-    @Override
-    public Iterable<String> getHeaderUserIncludes()
+    public Iterable<RpcTemplateData> getRpcList()
     {
-        serviceType.getParameterTypes().forEach((p) -> {
-            addHeaderIncludesForType(cppNativeTypeMapper.getCppType(p));
-        });
-
-        return super.getHeaderUserIncludes();
+        return rpcList;
     }
 
-    public Iterable<RpcEmitterTemplateData> getRpcList()
+    public static class RpcTemplateData
     {
-        List<RpcEmitterTemplateData> rpcs = new ArrayList<RpcEmitterTemplateData>();
+        public RpcTemplateData(CppNativeTypeMapper typeMapper, Rpc rpc)
+        {
+            final CppNativeTypeMapper cppNativeTypeMapper = typeMapper;
 
-        serviceType.getRpcList().forEach((r) -> {
-            rpcs.add(new RpcEmitterTemplateData(cppNativeTypeMapper, r));
-        });
+            name = rpc.getName();
 
-        return rpcs;
+            final ZserioType responseType = rpc.getResponseType();
+            responseTypeFullName = cppNativeTypeMapper.getCppType(responseType).getFullName();
+
+            final ZserioType requestType = rpc.getRequestType();
+            requestTypeFullName = cppNativeTypeMapper.getCppType(requestType).getFullName();
+        }
+
+        public String getName()
+        {
+            return name;
+        }
+
+        public String getResponseTypeFullName()
+        {
+            return responseTypeFullName;
+        }
+
+        public String getRequestTypeFullName()
+        {
+            return requestTypeFullName;
+        }
+
+        final private String name;
+        final private String responseTypeFullName;
+        final private String requestTypeFullName;
     }
 
-    public Iterable<String> getParameterTypeNames()
-    {
-        Set<String> typeNames = new HashSet<String>();
-        serviceType.getParameterTypes().forEach((p) -> {
-            typeNames.add(
-                cppNativeTypeMapper.getCppType(p).getFullName());
-        });
-        return typeNames;
-    }
-
-    public final ServiceType serviceType;
-    private final CppNativeTypeMapper cppNativeTypeMapper;
+    private final List<RpcTemplateData> rpcList = new ArrayList<RpcTemplateData>();
 }

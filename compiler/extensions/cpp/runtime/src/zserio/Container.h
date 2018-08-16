@@ -27,7 +27,7 @@ public:
         resize(size);
     }
 
-    // copy constuctor
+    // copy constructor
     Container(const Container<ELEMENT_TYPE>& other) : m_data(NULL), m_size(0), m_capacity(0)
     {
         assign(other.begin(), other.end());

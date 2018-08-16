@@ -18,13 +18,6 @@ public interface ZserioTypeVisitor
     void visitArrayType(ArrayType type);
 
     /**
-     * Visitor called from BitFieldType class.
-     *
-     * @param type BitFieldType instance which calls this visitor.
-     */
-    void visitUnsignedBitFieldType(UnsignedBitFieldType type);
-
-    /**
      * Visitor called from BooleanType class.
      *
      * @param type BooleanType instance which calls this visitor.
@@ -72,13 +65,6 @@ public interface ZserioTypeVisitor
      * @param type ServiceType instance which calls this visitor.
      */
     void visitServiceType(ServiceType type);
-
-    /**
-     * Visitor called from RpcType class.
-     *
-     * @param type RpcType instance which calls this visitor.
-     */
-    void visitRpcType(RpcType type);
 
     /**
      * Visitor called from StructureType class.
@@ -149,6 +135,14 @@ public interface ZserioTypeVisitor
      * @param type UnionType instance which calls this visitor.
      */
     void visitUnionType(UnionType type);
+
+
+    /**
+     * Visitor called from BitFieldType class.
+     *
+     * @param type BitFieldType instance which calls this visitor.
+     */
+    void visitUnsignedBitFieldType(UnsignedBitFieldType type);
 
     /**
      * Visitor called from VarIntegerType class.

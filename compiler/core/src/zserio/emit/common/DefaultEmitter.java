@@ -91,14 +91,14 @@ public abstract class DefaultEmitter implements Emitter
     public void endSqlTable(AST s) {}
 
     @Override
-    public void beginService(AST s) {}
-    @Override
-    public void endService(AST s) {}
-
-    @Override
     public void beginRpc(AST r) {}
     @Override
     public void endRpc(AST r) {}
+
+    @Override
+    public void beginService(AST s) {}
+    @Override
+    public void endService(AST s) {}
 
     /**** end implementation of interface methods ****/
 }

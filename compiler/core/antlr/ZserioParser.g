@@ -89,7 +89,7 @@ tokens
     QUESTIONMARK<AST=zserio.ast.Expression>;
     RETURN="return";
     ROOT;
-    RPC="rpc"<AST=zserio.ast.RpcType>;
+    RPC="rpc"<AST=zserio.ast.Rpc>;
     RSHIFT<AST=zserio.ast.Expression>;
     SERVICE="service"<AST=zserio.ast.ServiceType>;
     SQL="sql"<AST=zserio.ast.SqlConstraint>;
@@ -147,13 +147,13 @@ importDeclaration
 commandDeclaration
     :   constDeclaration SEMICOLON! |
         subtypeDeclaration SEMICOLON! |
-        serviceDeclaration SEMICOLON! |
         structureDeclaration SEMICOLON! |
         choiceDeclaration SEMICOLON! |
         unionDeclaration SEMICOLON! |
         enumDeclaration SEMICOLON! |
         sqlTableDeclaration SEMICOLON! |
-        sqlDatabaseDefinition SEMICOLON!
+        sqlDatabaseDefinition SEMICOLON! |
+        serviceDefinition SEMICOLON!
     ;
 
 /**
@@ -168,22 +168,6 @@ constDeclaration
  */
 subtypeDeclaration
     :   SUBTYPE^ definedType ID
-    ;
-
-serviceDeclaration
-    :   SERVICE^ ID
-        LCURLY!
-        (rpcDeclaration SEMICOLON!)*
-        RCURLY!
-    ;
-
-rpcDeclaration
-    :   RPC^ ID
-        LPAREN!
-        definedType
-        COMMA!
-        definedType
-        RPAREN!
     ;
 
 /**
@@ -251,7 +235,7 @@ fieldTypeId!
         if (LA(2) != ZserioParserTokenTypes.EOF)
             throw e;
         // let a following rule to fail with proper message for unexpected EOF
-    } 
+    }
 
 fieldArrayRange
     :   LBRACKET! (expression)? RBRACKET!
@@ -270,7 +254,9 @@ fieldConstraint
     ;
 
 functionDefinition
-    :   FUNCTION^ definedType ID functionParamList functionBody
+    :   FUNCTION^
+        definedType // function doesn't need to specify parameters of parameterized types
+        ID functionParamList functionBody
     ;
 
 functionParamList
@@ -409,6 +395,25 @@ sqlTableReference
         {
             #sqlTableReference = #([TYPEREF], #sqlTableReference);
         }
+    ;
+
+/**
+ * serviceDefinition.
+ */
+serviceDefinition
+    :   SERVICE^ ID
+        LCURLY!
+        (rpcDeclaration SEMICOLON!)*
+        RCURLY!
+    ;
+
+rpcDeclaration
+    :   RPC^
+        typeSymbol // rpc doesn't need to specify parameters of parameterized types and forbids built-in types
+        ID
+        LPAREN!
+        typeSymbol
+        RPAREN!
     ;
 
 /**

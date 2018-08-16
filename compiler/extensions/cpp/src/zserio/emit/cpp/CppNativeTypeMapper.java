@@ -19,7 +19,6 @@ import zserio.ast.EnumType;
 import zserio.ast.FloatType;
 import zserio.ast.FunctionType;
 import zserio.ast.IntegerType;
-import zserio.ast.RpcType;
 import zserio.ast.ServiceType;
 import zserio.ast.StructureType;
 import zserio.ast.SignedBitFieldType;
@@ -48,6 +47,7 @@ import zserio.emit.cpp.types.NativeIntegralType;
 import zserio.emit.cpp.types.NativeObjectArrayType;
 import zserio.emit.cpp.types.NativeOptimizedOptionalHolderType;
 import zserio.emit.cpp.types.NativeOptionalHolderType;
+import zserio.emit.cpp.types.NativeServiceType;
 import zserio.emit.cpp.types.NativeStdIntType;
 import zserio.emit.cpp.types.NativeStringType;
 import zserio.emit.cpp.types.NativeSubType;
@@ -71,7 +71,7 @@ public class CppNativeTypeMapper
     /**
      * Returns a C++ type that can hold an instance of given Zserio type.
      *
-     * @param t Zserio type.
+     * @param type Zserio type.
      * @return C++ type.
      */
     public CppNativeType getCppType(ZserioType type) throws ZserioEmitCppException
@@ -279,13 +279,7 @@ public class CppNativeTypeMapper
         @Override
         public void visitServiceType(ServiceType type)
         {
-            mapObjectArray();
-        }
-
-        @Override
-        public void visitRpcType(RpcType type)
-        {
-            mapObjectArray();
+            unexpected(type);
         }
 
         @Override
@@ -527,13 +521,10 @@ public class CppNativeTypeMapper
         @Override
         public void visitServiceType(ServiceType type)
         {
-            mapCompoundType(type);
-        }
-
-        @Override
-        public void visitRpcType(RpcType type)
-        {
-            mapCompoundType(type);
+            final List<String> namespacePath = cppPackageMapper.getPackagePath(type);
+            final String name = type.getName();
+            final String includeFileName = getIncludePathForUserDefinedType(type);
+            cppType = new NativeServiceType(namespacePath, name, includeFileName);
         }
 
         @Override

@@ -264,15 +264,15 @@ public class EnumType extends TokenAST implements ZserioType
 
     private static final long serialVersionUID = -7849005190109895313L;
 
-    private Scope           scope;
-    private Package         pkg;
+    private Scope scope;
+    private Package pkg;
 
-    private ZserioType  enumType = null;
-    private String          name;
-    private List<EnumItem>  enumItems;
+    private ZserioType enumType = null;
+    private String name;
+    private List<EnumItem> enumItems;
 
-    private boolean                 areItemValuesEvaluated = false;
-    private List<ZserioType>    usedTypeList;
-    private IntegerType             integerBaseType;
+    private boolean areItemValuesEvaluated = false;
+    private List<ZserioType> usedTypeList;
+    private IntegerType integerBaseType;
     private SortedSet<CompoundType> usedByCompoundList;
 }

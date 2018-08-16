@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import zserio.ast.ArrayType;
+import zserio.ast.Rpc;
 import zserio.ast.UnionType;
 import zserio.ast.BooleanType;
 import zserio.ast.ChoiceType;
@@ -17,7 +18,6 @@ import zserio.ast.ZserioTypeVisitor;
 import zserio.ast.EnumType;
 import zserio.ast.FloatType;
 import zserio.ast.FunctionType;
-import zserio.ast.RpcType;
 import zserio.ast.ServiceType;
 import zserio.ast.StructureType;
 import zserio.ast.SignedBitFieldType;
@@ -109,16 +109,13 @@ public class ZserioTypeCheckerVisitor implements ZserioTypeVisitor
 
     /** {@inheritDoc} */
     @Override
-    public void visitRpcType(RpcType type)
-    {
-        visitCompoundType(type);
-    }
-
-    /** {@inheritDoc} */
-    @Override
     public void visitServiceType(ServiceType type)
     {
-        visitCompoundType(type);
+        for (Rpc rpc : type.getRpcList())
+        {
+            addUsedType(rpc.getResponseType());
+            addUsedType(rpc.getRequestType());
+        }
     }
 
     /** {@inheritDoc} */
@@ -220,6 +217,6 @@ public class ZserioTypeCheckerVisitor implements ZserioTypeVisitor
             usedTypeNames.add(ZserioTypeUtil.getFullName(usedType));
     }
 
-    private Set<String>          usedTypeNames;
+    private Set<String> usedTypeNames;
     private List<ZserioType> definedTypes;
 }

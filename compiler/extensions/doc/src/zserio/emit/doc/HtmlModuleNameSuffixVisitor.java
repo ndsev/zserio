@@ -4,6 +4,7 @@ import zserio.ast.ArrayType;
 import zserio.ast.BooleanType;
 import zserio.ast.ChoiceType;
 import zserio.ast.ConstType;
+import zserio.ast.ServiceType;
 import zserio.ast.ZserioTypeVisitor;
 import zserio.ast.EnumType;
 import zserio.ast.FloatType;
@@ -159,6 +160,12 @@ public class HtmlModuleNameSuffixVisitor implements ZserioTypeVisitor
     {
         htmlModuleNameSuffix = "VAR_INTEGER";
 
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public void visitServiceType(ServiceType type) {
+        htmlModuleNameSuffix = "SERVICE";
     }
 
     /**

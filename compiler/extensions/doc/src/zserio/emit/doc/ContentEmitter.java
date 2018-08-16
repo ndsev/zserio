@@ -6,6 +6,7 @@ import zserio.ast.CompoundType;
 import zserio.ast.ConstType;
 import zserio.ast.EnumType;
 import zserio.ast.Package;
+import zserio.ast.ServiceType;
 import zserio.ast.Subtype;
 import zserio.ast.TokenAST;
 import zserio.ast.ZserioType;
@@ -69,6 +70,10 @@ public class ContentEmitter extends DefaultHtmlEmitter
             else if (type instanceof ConstType)
             {
                 cte.emit((ConstType) type);
+            }
+            else if (type instanceof ServiceType)
+            {
+                // TODO: not implemented for ServiceType
             }
             else
             {
