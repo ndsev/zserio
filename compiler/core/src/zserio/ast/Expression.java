@@ -525,17 +525,12 @@ public class Expression extends TokenAST
 
                 case ZserioParserTokenTypes.BINARY_LITERAL:
                     expressionType = ExpressionType.INTEGER;
-                    final String binaryLiteral = getText();
-                    final String strippedBinaryLiteral = binaryLiteral.substring(0, binaryLiteral.length() - 1);
-                    expressionIntegerValue =
-                            new ExpressionIntegerValue(new BigInteger(strippedBinaryLiteral, 2));
+                    expressionIntegerValue = new ExpressionIntegerValue(new BigInteger(getText(), 2));
                     break;
 
                 case ZserioParserTokenTypes.HEXADECIMAL_LITERAL:
                     expressionType = ExpressionType.INTEGER;
-                    final String hexLiteral = getText();
-                    final String strippedHexLiteral = hexLiteral.substring(2, hexLiteral.length());
-                    expressionIntegerValue = new ExpressionIntegerValue(new BigInteger(strippedHexLiteral, 16));
+                    expressionIntegerValue = new ExpressionIntegerValue(new BigInteger(getText(), 16));
                     break;
 
                 case ZserioParserTokenTypes.OCTAL_LITERAL:

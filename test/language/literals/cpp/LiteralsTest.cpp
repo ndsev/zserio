@@ -19,6 +19,7 @@ TEST(LiteralsTest, Decimal)
     ASSERT_EQ(static_cast<int32_t>(255), ConstType::DECIMAL_POSITIVE);
     ASSERT_EQ(static_cast<int32_t>(255), ConstType::DECIMAL_POSITIVE_WITH_SIGN);
     ASSERT_EQ(static_cast<int32_t>(-255), ConstType::DECIMAL_NEGATIVE);
+    ASSERT_EQ(static_cast<int32_t>(0), ConstType::DECIMAL_ZERO);
 }
 
 TEST(LiteralsTest, Hexadecimal)
@@ -34,6 +35,7 @@ TEST(LiteralsTest, Octal)
     ASSERT_EQ(static_cast<int32_t>(255), ConstType::OCTAL_POSITIVE);
     ASSERT_EQ(static_cast<int32_t>(255), ConstType::OCTAL_POSITIVE_WITH_SIGN);
     ASSERT_EQ(static_cast<int32_t>(-255), ConstType::OCTAL_NEGATIVE);
+    ASSERT_EQ(static_cast<int32_t>(0), ConstType::OCTAL_ZERO);
 }
 
 TEST(LiteralsTest, Binary)

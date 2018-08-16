@@ -1,0 +1,27 @@
+<project name="literals_error" basedir="." default="run">
+    <testProperties testPath="errors/literals_error" testName="literals_error"/>
+
+    <target name="prepare">
+        <testPrepare testName="literals_error"/>
+    </target>
+
+    <target name="gen" depends="prepare">
+        <testGen testName="literals_error" zsFile="wrong_octal_literal_error.zs" ignoreError="true"/>
+    </target>
+
+    <target name="compile" depends="gen">
+        <testCompile testName="literals_error" srcPath="${literals_error.base_dir}/java"/>
+    </target>
+
+    <target name="findbugs" depends="compile" if="findbugs.home_dir">
+        <testFindbugs testName="literals_error" srcPath="${literals_error.base_dir}/java"/>
+    </target>
+
+    <target name="run" depends="findbugs">
+        <testRun testName="literals_error"/>
+    </target>
+
+    <target name="clean">
+        <testClean testName="literals_error"/>
+    </target>
+</project>

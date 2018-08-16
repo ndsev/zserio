@@ -2,7 +2,7 @@ package basetype.bt_float;
 
 const float16 FLOAT16_CONST1 = 0.f;
 const float32 FLOAT32_CONST1 = -12.f;
-const float64 FLOAT64_CONST1 = 3.14;
+const float64 FLOAT64_CONST1 = 314e-2;
 
 subtype float16 half;
 

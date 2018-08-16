@@ -32,7 +32,7 @@ const int<8>        VARIABLE_INTFIELD_CONSTANT = 0x12;
 
 // float types
 const float16       FLOAT16_CONSTANT = 3.13f;
-const float32       FLOAT32_CONSTANT = 3.131f;
+const float32       FLOAT32_CONSTANT = 3131e-3f;
 const float64       FLOAT64_CONSTANT = 3.1314;
 
 // variable unsigned integer types

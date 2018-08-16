@@ -53,12 +53,8 @@ public abstract class CppDefaultExpressionFormattingPolicy extends DefaultExpres
     {
         // binary literals are not supported by C++ => use hexadecimal instead of it
         String binaryLiteral = expr.getText();
-        if (!binaryLiteral.isEmpty())
-        {
-            final String strippedBinaryLiteral = binaryLiteral.substring(0, binaryLiteral.length() - 1);
-            final BigInteger binaryInBigInteger = new BigInteger(strippedBinaryLiteral, 2);
-            binaryLiteral = CPP_HEXADECIMAL_LITERAL_PREFIX + binaryInBigInteger.toString(16);
-        }
+        final BigInteger binaryInBigInteger = new BigInteger(binaryLiteral, 2);
+        binaryLiteral = CPP_HEXADECIMAL_LITERAL_PREFIX + binaryInBigInteger.toString(16);
 
         return binaryLiteral;
     }
@@ -66,13 +62,12 @@ public abstract class CppDefaultExpressionFormattingPolicy extends DefaultExpres
     @Override
     public String getHexadecimalLiteral(Expression expr, boolean isNegative)
     {
-        // hexadecimal literals in C++ are the same but append "(U)L(L)" for (unsigned) long (long) values
+        // hexadecimal literals in C++ are the same (with prefix "0x") but append "(U)L(L)" for
+        // (unsigned) long (long) values
         String hexLiteral = expr.getText();
-        if (hexLiteral.length() > 2)
-        {
-            final BigInteger hexInBigInteger = new BigInteger(hexLiteral.substring(2, hexLiteral.length()), 16);
-            hexLiteral += getIntegerLiteralSuffix(hexInBigInteger, isNegative);
-        }
+        final BigInteger hexInBigInteger = new BigInteger(hexLiteral, 16);
+        hexLiteral = CPP_HEXADECIMAL_LITERAL_PREFIX + hexLiteral +
+                getIntegerLiteralSuffix(hexInBigInteger, isNegative);
 
         return hexLiteral;
     }
@@ -80,21 +75,21 @@ public abstract class CppDefaultExpressionFormattingPolicy extends DefaultExpres
     @Override
     public String getOctalLiteral(Expression expr, boolean isNegative)
     {
-        // octal literals in C++ are the same
-        return expr.getText();
+        // octal literals in C++ are the same (with prefix '0')
+        return CPP_OCTAL_LITERAL_PREFIX + expr.getText();
     }
 
     @Override
     public String getFloatLiteral(Expression expr, boolean isNegative)
     {
-        // float literals in C++ are the same (with postfix "f")
-        return expr.getText();
+        // float literals in C++ are the same (with suffix 'f')
+        return expr.getText() + CPP_FLOAT_LITERAL_SUFFIX;
     }
 
     @Override
     public String getDoubleLiteral(Expression expr, boolean isNegative)
     {
-        // double literals in C++ are the same (without postfix)
+        // double literals in C++ are the same (without suffix)
         return expr.getText();
     }
 
@@ -328,6 +323,8 @@ public abstract class CppDefaultExpressionFormattingPolicy extends DefaultExpres
     private final static String CPP_SIGNED_LONG_LONG_LITERAL_SUFFIX = "LL";
     private final static String CPP_UNSIGNED_LONG_LONG_LITERAL_SUFFIX = "ULL";
     private final static String CPP_HEXADECIMAL_LITERAL_PREFIX = "0x";
+    private final static String CPP_OCTAL_LITERAL_PREFIX = "0";
+    private final static String CPP_FLOAT_LITERAL_SUFFIX = "f";
 
     private final static String DECIMAL_LITERAL_ABS_INT64_MIN = "9223372036854775808";
     private final static String DECIMAL_LITERAL_ABS_INT32_MIN = "2147483648";

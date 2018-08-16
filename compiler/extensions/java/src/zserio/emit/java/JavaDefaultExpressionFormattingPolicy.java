@@ -55,16 +55,15 @@ public abstract class JavaDefaultExpressionFormattingPolicy extends DefaultExpre
         String binaryLiteral = expr.getText();
         if (!binaryLiteral.isEmpty())
         {
-            final String strippedBinaryLiteral = binaryLiteral.substring(0, binaryLiteral.length() - 1);
             if (expr.needsBigInteger())
             {
                 // special handling for uint64 type
-                binaryLiteral = getBigIntegerLiteral(strippedBinaryLiteral, 2);
+                binaryLiteral = getBigIntegerLiteral(binaryLiteral, 2);
             }
             else
             {
                 // binary literals are in Java only from version 1.7 => use hexadecimal instead of it
-                final BigInteger binaryInBigInteger = new BigInteger(strippedBinaryLiteral, 2);
+                final BigInteger binaryInBigInteger = new BigInteger(binaryLiteral, 2);
                 binaryLiteral = JAVA_HEXADECIMAL_LITERAL_PREFIX + binaryInBigInteger.toString(16);
             }
         }
@@ -75,22 +74,17 @@ public abstract class JavaDefaultExpressionFormattingPolicy extends DefaultExpre
     @Override
     public String getHexadecimalLiteral(Expression expr, boolean isNegative)
     {
-        // hexadecimal literals in Java are the same but append "L" for long values
-        String hexLiteral = expr.getText();
-        if (hexLiteral.length() > 2)
+        // hexadecimal literals in Java are the same (with prefix "0x") but append "L" for long values
+        if (expr.needsBigInteger())
         {
-            final String strippedHexLiteral = hexLiteral.substring(2, hexLiteral.length());
-            if (expr.needsBigInteger())
-            {
-                // special handling for uint64 type
-                hexLiteral = getBigIntegerLiteral(strippedHexLiteral, 16);
-            }
-            else
-            {
-                final BigInteger hexInBigInteger = new BigInteger(strippedHexLiteral, 16);
-                hexLiteral += getIntegerLiteralSuffix(hexInBigInteger, isNegative);
-            }
+            // special handling for uint64 type
+            return getBigIntegerLiteral(expr.getText(), 16);
         }
+
+        String hexLiteral = expr.getText();
+        final BigInteger hexInBigInteger = new BigInteger(hexLiteral, 16);
+        hexLiteral = JAVA_HEXADECIMAL_LITERAL_PREFIX + hexLiteral +
+                getIntegerLiteralSuffix(hexInBigInteger, isNegative);
 
         return hexLiteral;
     }
@@ -98,23 +92,21 @@ public abstract class JavaDefaultExpressionFormattingPolicy extends DefaultExpre
     @Override
     public String getOctalLiteral(Expression expr, boolean isNegative)
     {
-        String octalLiteral = expr.getText();
-        if (!octalLiteral.isEmpty() && expr.needsBigInteger())
+        // octal literals in Java are the same (with prefix '0')
+        if (expr.needsBigInteger())
         {
             // special handling for uint64 type
-            final String strippedOctalLiteral = octalLiteral.substring(0, octalLiteral.length() - 1);
-            octalLiteral = getBigIntegerLiteral(strippedOctalLiteral, 8);
+            return getBigIntegerLiteral(expr.getText(), 8);
         }
 
-        // octal literals in Java are the same
-        return octalLiteral;
+        return JAVA_OCTAL_LITERAL_PREFIX + expr.getText();
     }
 
     @Override
     public String getFloatLiteral(Expression expr, boolean isNegative)
     {
         // float literals in Java are the same (with postfix "f")
-        return expr.getText();
+        return expr.getText() + JAVA_FLOAT_LITERAL_SUFFIX;
     }
 
     @Override
@@ -524,6 +516,8 @@ public abstract class JavaDefaultExpressionFormattingPolicy extends DefaultExpre
 
     private final static String JAVA_LONG_LITERAL_SUFFIX = "L";
     private final static String JAVA_HEXADECIMAL_LITERAL_PREFIX = "0x";
+    private final static String JAVA_OCTAL_LITERAL_PREFIX = "0";
+    private final static String JAVA_FLOAT_LITERAL_SUFFIX = "f";
 
     private final static String DECIMAL_LITERAL_ABS_INT64_MIN = "9223372036854775808";
     private final static String BIG_INTEGER = "java.math.BigInteger";

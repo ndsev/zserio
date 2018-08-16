@@ -19,6 +19,7 @@ public class LiteralsTest
         assertEquals((int)(255), __ConstType.DECIMAL_POSITIVE);
         assertEquals((int)(255), __ConstType.DECIMAL_POSITIVE_WITH_SIGN);
         assertEquals((int)(-255), __ConstType.DECIMAL_NEGATIVE);
+        assertEquals((int)(0), __ConstType.DECIMAL_ZERO);
     }
 
     @Test
@@ -36,6 +37,7 @@ public class LiteralsTest
         assertEquals((int)(255), __ConstType.OCTAL_POSITIVE);
         assertEquals((int)(255), __ConstType.OCTAL_POSITIVE_WITH_SIGN);
         assertEquals((int)(-255), __ConstType.OCTAL_NEGATIVE);
+        assertEquals((int)(0), __ConstType.OCTAL_ZERO);
     }
 
     @Test

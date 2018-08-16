@@ -162,18 +162,24 @@ HEX_DIGIT
     :   ('0'..'9'|'A'..'F'|'a'..'f')
     ;
 
+// exponent in float or double literals
+protected
+FLOAT_EXPONENT
+    :   ("E+"|"e+"|"E-"|"e-"|'E'|'e') ('0'..'9')+
+    ;
+
 // numeric literals (solves others literals as well)
 DECIMAL_LITERAL
-    :   ( ('0'..'1')+ ('b'|'B') ) => ('0'..'1')+ ('b'|'B') { $setType(BINARY_LITERAL); } // binary
-        | ( ('0'..'9')+ '.' ('0'..'9')* ('f'|'F')? ) => ('0'..'9')+ '.' ('0'..'9')* // float or double
-            ('f' { $setType(FLOAT_LITERAL); } | 'F'{ $setType(FLOAT_LITERAL); } | { $setType(DOUBLE_LITERAL); })
-        | (
-              '0'
-              (
-                  ('x'|'X') (HEX_DIGIT)+ { $setType(HEXADECIMAL_LITERAL); } // hex
-                  | ('0'..'7')+ { $setType(OCTAL_LITERAL); }                // octal
-              )?
-              |
-              ('1'..'9') ('0'..'9')* // decimal
-          )
+    :   ( ('0'..'1')+ ('b'|'B') ) => ('0'..'1')+ ('b'!|'B'!) { $setType(BINARY_LITERAL); } // binary
+        | ( ('0'..'9')+ '.' ('0'..'9')* (FLOAT_EXPONENT)? ('f'|'F')? ) => // float or double
+            ('0'..'9')+ '.' ('0'..'9')* (FLOAT_EXPONENT)? (('f'!|'F'!) { $setType(FLOAT_LITERAL); } |
+            { $setType(DOUBLE_LITERAL); })
+        | ( ('0'..'9')+ FLOAT_EXPONENT ('f'|'F')? ) => // float or double
+            ('0'..'9')+ FLOAT_EXPONENT (('f'!|'F'!) { $setType(FLOAT_LITERAL); } |
+            { $setType(DOUBLE_LITERAL); })
+        | ( '0' ('x'|'X') (HEX_DIGIT)+ ) => // hex
+            '0'! ('x'!|'X'!) (HEX_DIGIT)+ { $setType(HEXADECIMAL_LITERAL); } 
+        | ( '0' ('0'..'7')+ ) => '0'! ('0'..'7')+ { $setType(OCTAL_LITERAL); } // octal
+        | ('1'..'9') ('0'..'9')* // decimal (without single zero)
+        | '0' // decimal (special case)
     ;

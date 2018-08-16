@@ -65,12 +65,12 @@ Decimal     | `100`, `4711`, `255`, `-3`, `+2`
 Hexadecimal | `0xCAFEBABE`, `0Xff`, `-0xEF`
 Octal       | `044`, `0377`, `-010`
 Binary      | `111b`, `110b`, `001B`, `-1010b`
-Float16     | `3.14f`
-Float32     | `3.14f`
-Float64     | `3.14`
+Float16     | `3.14f`, `31.4e-1f`, `314e-2f`
+Float32     | `3.14f`, `31.4e-1f`, `314e-2f`
+Float64     | `3.14`, `0.314e+1`, `0.0314e2`
 String      | `"You"`
 
-Hexadecimal digits and the `x` prefix as well as the `b` and 'f' suffixes are case-insensitive.
+Hexadecimal digits and the `x` prefix as well as the `b`, `e` and 'f' suffixes are case-insensitive.
 Signing literals can be defined by `-` or `+` prefix. Signs are not applicable for string literals.
 
 [[top]](#language-guide)

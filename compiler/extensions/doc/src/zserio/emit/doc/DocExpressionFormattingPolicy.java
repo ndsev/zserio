@@ -19,25 +19,25 @@ public class DocExpressionFormattingPolicy extends DefaultExpressionFormattingPo
     @Override
     public String getBinaryLiteral(Expression expr, boolean isNegative)
     {
-        return expr.getText();
+        return expr.getText() + DOC_BINARY_LITERAL_SUFFIX;
     }
 
     @Override
     public String getHexadecimalLiteral(Expression expr, boolean isNegative)
     {
-        return expr.getText();
+        return DOC_HEXADECIMAL_LITERAL_PREFIX + expr.getText();
     }
 
     @Override
     public String getOctalLiteral(Expression expr, boolean isNegative)
     {
-        return expr.getText();
+        return DOC_OCTAL_LITERAL_PREFIX + expr.getText();
     }
 
     @Override
     public String getFloatLiteral(Expression expr, boolean isNegative)
     {
-        return expr.getText();
+        return expr.getText() + DOC_FLOAT_LITERAL_SUFFIX;
     }
 
     @Override
@@ -146,4 +146,9 @@ public class DocExpressionFormattingPolicy extends DefaultExpressionFormattingPo
     {
         return new BinaryExpressionFormatting(".");
     }
+
+    private final static String DOC_BINARY_LITERAL_SUFFIX = "b";
+    private final static String DOC_HEXADECIMAL_LITERAL_PREFIX = "0x";
+    private final static String DOC_OCTAL_LITERAL_PREFIX = "0";
+    private final static String DOC_FLOAT_LITERAL_SUFFIX = "f";
 }
