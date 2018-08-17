@@ -146,7 +146,6 @@ ${name} ${name}::toEnum(${baseCppTypeName} rawValue)
 <#list items as item>
     case ${item.value}:
         return ${item.name};
-
 </#list>
     default:
         throw zserio::CppRuntimeException("Unknown value for enumeration ${name}: " +
