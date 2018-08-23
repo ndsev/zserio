@@ -67,6 +67,12 @@ public class ExtensionParameters implements Parameters
     }
 
     @Override
+    public boolean getWithGrpcCode()
+    {
+        return commandLineArguments.getWithGrpcCode();
+    }
+
+    @Override
     public boolean getWithValidationCode()
     {
         return commandLineArguments.getWithValidationCode();

@@ -131,6 +131,16 @@ public class CommandLineArguments
     }
 
     /**
+     * Gets whether the GRPC code option is enabled.
+     *
+     * @returns True if command line arguments enable SQL code option.
+     */
+    public boolean getWithGrpcCode()
+    {
+        return withGrpcCodeOption;
+    }
+
+    /**
      * Gets whether the validation code option is enabled.
      *
      * @returns True if command line arguments enable validation code option.
@@ -267,6 +277,14 @@ public class CommandLineArguments
         sqlCodeGroup.setRequired(false);
         options.addOptionGroup(sqlCodeGroup);
 
+        final OptionGroup grpcCodeGroup = new OptionGroup();
+        option = new Option(OptionNameWithGrpcCode, false, "enable code for GRPC services (default)");
+        grpcCodeGroup.addOption(option);
+        option = new Option(OptionNameWithoutGrpcCode, false, "disable code for GRPC services");
+        grpcCodeGroup.addOption(option);
+        grpcCodeGroup.setRequired(false);
+        options.addOptionGroup(grpcCodeGroup);
+
         final OptionGroup validationCodeGroup = new OptionGroup();
         option = new Option(OptionNameWithValidationCode, false, "enable validation code");
         validationCodeGroup.addOption(option);
@@ -317,6 +335,7 @@ public class CommandLineArguments
         withRangeCheckCodeOption = hasOption(OptionNameWithRangeCheckCode);
         withSourcesAmalgamationOption = !hasOption(OptionNameWithoutSourcesAmalgamation);
         withSqlCodeOption = !hasOption(OptionNameWithoutSqlCode);
+        withGrpcCodeOption = !hasOption(OptionNameWithoutGrpcCode) && !hasOption(OptionNameWithoutWriterCode);
         withValidationCodeOption = hasOption(OptionNameWithValidationCode);
         withWriterCodeOption = !hasOption(OptionNameWithoutWriterCode);
     }
@@ -343,6 +362,12 @@ public class CommandLineArguments
                 throw new ParseException(
                         "The specified option 'withValidationCode' conflicts with another option: " +
                         "'withtoutWriterCode'");
+            }
+            if (hasOption(OptionNameWithGrpcCode))
+            {
+                throw new ParseException(
+                        "The specified option 'withGrpcCoce' conflicts with another option: " +
+                        "'withoutWriterCode'");
             }
         }
     }
@@ -381,6 +406,8 @@ public class CommandLineArguments
     private static final String OptionNameWithoutSourcesAmalgamation = "withoutSourcesAmalgamation";
     private static final String OptionNameWithSqlCode = "withSqlCode";
     private static final String OptionNameWithoutSqlCode = "withoutSqlCode";
+    private static final String OptionNameWithGrpcCode = "withGrpcCode";
+    private static final String OptionNameWithoutGrpcCode = "withoutGrpcCode";
     private static final String OptionNameWithValidationCode = "withValidationCode";
     private static final String OptionNameWithoutValidationCode = "withoutValidationCode";
     private static final String OptionNameWithWriterCode = "withWriterCode";
@@ -400,6 +427,7 @@ public class CommandLineArguments
     private boolean withRangeCheckCodeOption;
     private boolean withSourcesAmalgamationOption;
     private boolean withSqlCodeOption;
+    private boolean withGrpcCodeOption;
     private boolean withValidationCodeOption;
     private boolean withWriterCodeOption;
 }

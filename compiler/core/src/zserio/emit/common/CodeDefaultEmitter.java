@@ -16,6 +16,7 @@ public abstract class CodeDefaultEmitter extends DefaultEmitter
         withRangeCheckCode = extensionParameters.getWithRangeCheckCode();
         withSourcesAmalgamation = extensionParameters.getWithSourcesAmalgamation();
         withSqlCode = extensionParameters.getWithSqlCode();
+        withGrpcCode = extensionParameters.getWithGrpcCode();
         withValidationCode = extensionParameters.getWithValidationCode();
         withWriterCode= extensionParameters.getWithWriterCode();
 
@@ -37,6 +38,11 @@ public abstract class CodeDefaultEmitter extends DefaultEmitter
     protected boolean getWithSqlCode()
     {
         return withSqlCode;
+    }
+
+    protected boolean getWithGrpcCode()
+    {
+        return withGrpcCode;
     }
 
     protected boolean getWithValidationCode()
@@ -103,15 +109,16 @@ public abstract class CodeDefaultEmitter extends DefaultEmitter
         return builder.toString();
     }
 
-    private final String    outPathName;
+    private final String outPathName;
 
-    private final boolean   withInspectorCode;
-    private final boolean   withRangeCheckCode;
-    private final boolean   withValidationCode;
-    private final boolean   withSourcesAmalgamation;
-    private final boolean   withSqlCode;
-    private final boolean   withWriterCode;
+    private final boolean withInspectorCode;
+    private final boolean withRangeCheckCode;
+    private final boolean withValidationCode;
+    private final boolean withSourcesAmalgamation;
+    private final boolean withSqlCode;
+    private final boolean withGrpcCode;
+    private final boolean withWriterCode;
 
-    private final String        codeTemplateLocation;
+    private final String codeTemplateLocation;
     private final PackageMapper packageMapper;
 }

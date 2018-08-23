@@ -8,7 +8,7 @@ import zserio.ast.SqlTableType;
 import zserio.ast.TypeInstantiation;
 import zserio.emit.common.ExpressionFormatter;
 import zserio.emit.cpp.types.CppNativeType;
-import zserio.emit.cpp.types.NativeCompoundType;
+import zserio.emit.cpp.types.NativeUserType;
 import zserio.emit.cpp.types.NativeEnumType;
 import zserio.tools.HashUtil;
 
@@ -32,7 +32,7 @@ public class SqlTableParameterTemplateData implements Comparable<SqlTableParamet
         cppTypeName = parameterNativeType.getFullName();
         expression = cppSqlIndirectExpressionFormatter.formatGetter(argumentExpression);
 
-        isCompoundType = parameterNativeType instanceof NativeCompoundType;
+        isCompoundType = parameterNativeType instanceof NativeUserType;
         isEnumType = parameterNativeType instanceof NativeEnumType;
     }
 

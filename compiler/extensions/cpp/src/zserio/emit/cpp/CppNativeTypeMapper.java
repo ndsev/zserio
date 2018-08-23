@@ -35,7 +35,7 @@ import zserio.emit.common.PackageMapper;
 import zserio.emit.cpp.types.CppNativeType;
 import zserio.emit.cpp.types.NativeArrayType;
 import zserio.emit.cpp.types.NativeBooleanType;
-import zserio.emit.cpp.types.NativeCompoundType;
+import zserio.emit.cpp.types.NativeUserType;
 import zserio.emit.cpp.types.NativeConstType;
 import zserio.emit.cpp.types.NativeDoubleType;
 import zserio.emit.cpp.types.NativeEnumType;
@@ -47,7 +47,6 @@ import zserio.emit.cpp.types.NativeIntegralType;
 import zserio.emit.cpp.types.NativeObjectArrayType;
 import zserio.emit.cpp.types.NativeOptimizedOptionalHolderType;
 import zserio.emit.cpp.types.NativeOptionalHolderType;
-import zserio.emit.cpp.types.NativeServiceType;
 import zserio.emit.cpp.types.NativeStdIntType;
 import zserio.emit.cpp.types.NativeStringType;
 import zserio.emit.cpp.types.NativeSubType;
@@ -524,7 +523,7 @@ public class CppNativeTypeMapper
             final List<String> namespacePath = cppPackageMapper.getPackagePath(type);
             final String name = type.getName();
             final String includeFileName = getIncludePathForUserDefinedType(type);
-            cppType = new NativeServiceType(namespacePath, name, includeFileName);
+            cppType = new NativeUserType(namespacePath, name, includeFileName);
         }
 
         @Override
@@ -671,7 +670,7 @@ public class CppNativeTypeMapper
             final List<String> namespacePath = cppPackageMapper.getPackagePath(type);
             final String name = type.getName();
             final String includeFileName = getIncludePathForUserDefinedType(type);
-            cppType = new NativeCompoundType(namespacePath, name, includeFileName);
+            cppType = new NativeUserType(namespacePath, name, includeFileName);
         }
 
         private CppNativeType cppType;

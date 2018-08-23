@@ -23,6 +23,9 @@ public class ServiceEmitter extends CppDefaultEmitter
 
     public void endRoot() throws ZserioEmitCppException
     {
+        if (!getWithGrpcCode())
+            return;
+
         final TemplateDataContext templateDataContext = getTemplateDataContext();
         for (ServiceType serviceType : serviceTypeList)
         {

@@ -73,6 +73,11 @@ public interface Parameters
     public boolean getWithSqlCode();
 
     /**
+     * Gets the GRPC code flag.
+     */
+    public boolean getWithGrpcCode();
+
+    /**
      * Gets the include validation flag.
      *
      * @returns True if validation is enabled.
