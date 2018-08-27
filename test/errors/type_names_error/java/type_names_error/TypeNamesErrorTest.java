@@ -50,6 +50,14 @@ public class TypeNamesErrorTest
     }
 
     @Test
+    public void constServiceNameConflict()
+    {
+        final String error =
+                "const_service_name_conflict_error.zs:15:9: 'Math' is already defined in this package!";
+        assertTrue(zserioErrors.isPresent(error));
+    }
+
+    @Test
     public void constStructureNameConflict()
     {
         final String error =
@@ -62,6 +70,30 @@ public class TypeNamesErrorTest
     {
         final String error =
                 "const_subtype_name_conflict_error.zs:5:16: 'Test' is already defined in this package!";
+        assertTrue(zserioErrors.isPresent(error));
+    }
+
+    @Test
+    public void serviceServiceNameConflict()
+    {
+        final String error =
+                "service_service_name_conflict_error.zs:18:9: 'Math' is already defined in this package!";
+        assertTrue(zserioErrors.isPresent(error));
+    }
+
+    @Test
+    public void structureEnumNameConflict()
+    {
+        final String error =
+                "structure_enum_name_conflict_error.zs:8:12: 'Test' is already defined in this package!";
+        assertTrue(zserioErrors.isPresent(error));
+    }
+
+    @Test
+    public void structureServiceNameConflict()
+    {
+        final String error =
+                "structure_service_name_conflict_error.zs:19:9: 'Math' is already defined in this package!";
         assertTrue(zserioErrors.isPresent(error));
     }
 

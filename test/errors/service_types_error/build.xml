@@ -1,0 +1,33 @@
+<project name="service_types_error" basedir="." default="run">
+    <testProperties testPath="errors/service_types_error" testName="service_types_error"/>
+
+    <target name="prepare">
+        <testPrepare testName="service_types_error"/>
+    </target>
+
+    <target name="gen" depends="prepare">
+        <testGen testName="service_types_error" zsFile="builtin_type_error.zs" ignoreError="true"/>
+        <testGen testName="service_types_error" zsFile="choice_type_error.zs" ignoreError="true"/>
+        <testGen testName="service_types_error" zsFile="duplicated_rpc_error.zs" ignoreError="true"/>
+        <testGen testName="service_types_error" zsFile="non_compound_subtype_error.zs" ignoreError="true"/>
+        <testGen testName="service_types_error" zsFile="parameterized_struct_error.zs" ignoreError="true"/>
+        <testGen testName="service_types_error" zsFile="sql_database_type_error.zs" ignoreError="true"/>
+        <testGen testName="service_types_error" zsFile="sql_table_type_error.zs" ignoreError="true"/>
+    </target>
+
+    <target name="compile" depends="gen">
+        <testCompile testName="service_types_error" srcPath="${service_types_error.base_dir}/java"/>
+    </target>
+
+    <target name="findbugs" depends="compile" if="findbugs.home_dir">
+        <testFindbugs testName="service_types_error" srcPath="${service_types_error.base_dir}/java"/>
+    </target>
+
+    <target name="run" depends="findbugs">
+        <testRun testName="service_types_error"/>
+    </target>
+
+    <target name="clean">
+        <testClean testName="service_types_error"/>
+    </target>
+</project>

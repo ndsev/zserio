@@ -3,6 +3,8 @@
 
 <@include_guard_begin rootPackage.path, "GrpcSerializationTraits"/>
 
+#include <vector>
+
 #include <grpcpp/impl/codegen/status.h>
 #include <grpcpp/impl/codegen/byte_buffer.h>
 
@@ -13,17 +15,22 @@
 <@namespace_begin rootPackage.path/>
 
 template <class T>
-::grpc::Status SerializeGrpcMessage(const T& msg, ::grpc::ByteBuffer* buffer, bool* own_buffer)
+::grpc::Status SerializeGrpcMessage(const T& const_msg, ::grpc::ByteBuffer* buffer, bool* own_buffer)
 {
-    zserio::BitStreamWriter writer;
-    auto& m = const_cast<T&>(msg);
-    m.write(writer);
+    T& msg = const_cast<T&>(const_msg);
 
-    size_t size;
-    auto *writeBuffer = writer.getWriteBuffer(size);
-    ::grpc::Slice slice(writeBuffer, size);
+    const size_t msgBitSize = msg.bitSizeOf();
+    size_t msgByteSize = msgBitSize / 8 + (msgBitSize % 8 != 0 ? 1 : 0);
+
+    ::grpc::Slice slice(msgByteSize); // allocates memory
+    uint8_t* writeBuffer = const_cast<uint8_t*>(slice.begin());
+
+    zserio::BitStreamWriter writer(writeBuffer, msgByteSize);
+    msg.write(writer);
+
     *buffer = ::grpc::ByteBuffer(&slice, 1);
-    *own_buffer = true;
+    *own_buffer = true; // the caller owns the buffer - i.e. doesn't need to copy data again
+
     return ::grpc::Status::OK;
 }
 
@@ -33,24 +40,24 @@ template <class T>
     std::vector<::grpc::Slice> slices;
     buffer->Dump(&slices);
 
-    size_t size = 0;
-    for (auto &slice : slices)
-        size += slice.size();
-
-    uint8_t *tmp = new uint8_t[size];
-    if (!tmp)
-        return ::grpc::Status(::grpc::StatusCode::DATA_LOSS, "Unable to allocate memory");
-
-    auto pos = tmp;
-    for (auto &slice : slices)
+    if (slices.size() == 1)
     {
-        memcpy(pos, slice.begin(), slice.size());
-        pos += slice.size();
+        // optimization without need to copy data
+        const ::grpc::Slice& slice = slices.at(0);
+        zserio::BitStreamReader reader(slice.begin(), slice.size());
+
+        msg->read(reader);
+
+        return ::grpc::Status::OK;
     }
 
-    zserio::BitStreamReader reader(tmp, size);
+    std::vector<uint8_t> joinedBuffer;
+    for (std::vector<::grpc::Slice>::const_iterator it = slices.begin(); it != slices.end(); ++it)
+        joinedBuffer.insert(joinedBuffer.end(), it->begin(), it->end());
+
+    zserio::BitStreamReader reader(&joinedBuffer[0], joinedBuffer.size());
+
     msg->read(reader);
-    delete [] tmp;
 
     return ::grpc::Status::OK;
 }

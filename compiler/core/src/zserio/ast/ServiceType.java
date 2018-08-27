@@ -13,6 +13,9 @@ import zserio.antlr.util.ParserException;
  */
 public class ServiceType extends TokenAST implements ZserioType
 {
+    /**
+     * Default constructor.
+     */
     public ServiceType()
     {
         ZserioTypeContainer.add(this);
@@ -66,9 +69,14 @@ public class ServiceType extends TokenAST implements ZserioType
         this.pkg = pkg;
     }
 
+    /**
+     * Gets rpc methods list.
+     *
+     * @return List of RPC methods.
+     */
     public Iterable<Rpc> getRpcList()
     {
-            return rpcs;
+        return rpcs;
     }
 
     @Override
@@ -104,7 +112,6 @@ public class ServiceType extends TokenAST implements ZserioType
     }
 
     private static final long serialVersionUID = -6520580190710341443L;
-
 
     private Scope scope;
     private Package pkg;

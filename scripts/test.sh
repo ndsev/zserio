@@ -13,6 +13,9 @@ set_test_global_variables()
         return 1
     fi
 
+    # GRPC setup
+    GRPC_ROOT="${GRPC_ROOT:-""}"
+
     return 0
 }
 
@@ -21,7 +24,10 @@ print_test_help_env()
 {
     cat << EOF
 Uses the following environment variables for releasing:
-    UNZIP Unzip executable to use. Default is "unzip".
+    UNZIP       Unzip executable to use. Default is "unzip".
+
+Uses the following environment variables for buidling:
+    GRPC_ROOT   Root path to GRPC repository. GRPC is disabled by default.
 EOF
 }
 
@@ -91,7 +97,8 @@ test()
         fi
 
         local CMAKE_ARGS=("-DZSERIO_RUNTIME_INCLUDE_INSPECTOR=ON"
-                          "-DZSERIO_RELEASE_ROOT=${UNPACKED_ZSERIO_RELEASE_DIR}")
+                          "-DZSERIO_RELEASE_ROOT=${UNPACKED_ZSERIO_RELEASE_DIR}"
+                          "-DGRPC_ROOT=${GRPC_ROOT}")
         local CTEST_ARGS=()
         if [[ ${SWITCH_TEST_NAME} != "" ]]; then
             CTEST_ARGS+=("-L ${SWITCH_TEST_NAME}")

@@ -102,10 +102,11 @@ public class Rpc extends TokenAST
     {
         final ZserioType resolvedBaseType = TypeReference.resolveBaseType(type);
         if (!(resolvedBaseType instanceof CompoundType))
-            throw new ParserException(this, "Only compound types can be used in RPC call, '" +
-                    type.getName() + "' is not a compound type!");
-        if (resolvedBaseType instanceof SqlDatabaseType)
-            throw new ParserException(this, "SQL database '" + type.getName() + "' cannot be used in RPC call");
+            throw new ParserException(this, "Only non-parameterized compound types can be used in RPC calls, " +
+                    "'" + type.getName() + "' is not a compound type!");
+        if (((CompoundType)resolvedBaseType).getParameters().size() > 0)
+            throw new ParserException(this, "Only non-parameterized compound types can be used in RPC calls, " +
+                    "'" + type.getName() + "' is a parameterized type!");
         if (resolvedBaseType instanceof SqlTableType)
             throw new ParserException(this, "SQL table '" + type.getName() + "' cannot be used in RPC call");
     }

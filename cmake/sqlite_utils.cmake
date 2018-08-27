@@ -1,5 +1,6 @@
 include(gcc_utils)
 
+# A function to add SQLite library target
 function(sqlite_add_library ${ZSERIO_PROJECT_ROOT})
     set(SQLITE_ROOT ${ZSERIO_PROJECT_ROOT}/3rdparty/cpp/sqlite)
 

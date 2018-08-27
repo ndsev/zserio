@@ -10,9 +10,13 @@
         <testGen testName="type_names_error" zsFile="choice_structure_name_conflict_error.zs" ignoreError="true"/>
         <testGen testName="type_names_error" zsFile="choice_union_name_conflict_error.zs" ignoreError="true"/>
         <testGen testName="type_names_error" zsFile="const_const_name_conflict_error.zs" ignoreError="true"/>
+        <testGen testName="type_names_error" zsFile="const_service_name_conflict_error.zs" ignoreError="true"/>
         <testGen testName="type_names_error" zsFile="const_structure_name_conflict_error.zs" ignoreError="true"/>
         <testGen testName="type_names_error" zsFile="const_subtype_name_conflict_error.zs" ignoreError="true"/>
+        <testGen testName="type_names_error" zsFile="service_service_name_conflict_error.zs" ignoreError="true"/>
+        <testGen testName="type_names_error" zsFile="structure_enum_name_conflict_error.zs" ignoreError="true"/>
         <testGen testName="type_names_error" zsFile="structure_param_structure_name_conflict_error.zs" ignoreError="true"/>
+        <testGen testName="type_names_error" zsFile="structure_service_name_conflict_error.zs" ignoreError="true"/>
         <testGen testName="type_names_error" zsFile="structure_structure_name_conflict_error.zs" ignoreError="true"/>
         <testGen testName="type_names_error" zsFile="structure_union_name_conflict_error.zs" ignoreError="true"/>
         <testGen testName="type_names_error" zsFile="subtype_structure_name_conflict_error.zs" ignoreError="true"/>
