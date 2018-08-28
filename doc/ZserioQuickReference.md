@@ -246,3 +246,24 @@ sql_database TheWorld
     GeoMap australia;
 };
 ```
+
+-------
+## GRPC extension
+
+**Service Type**
+```
+struct Request
+{
+    int16 value;
+};
+
+struct Response
+{
+    uint32 value;
+};
+
+service Users
+{
+    rpc Response powerOfTwo(Request);
+};
+```
