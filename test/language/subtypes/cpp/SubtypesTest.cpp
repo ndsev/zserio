@@ -1,11 +1,13 @@
 #include <cstdio>
 #include <string>
+#include <fstream>
 
 #include "gtest/gtest.h"
 
 #include "subtypes/TestStructure.h"
 #include "subtypes/SubtypeStructure.h"
 #include "subtypes/Database.h"
+#include "subtypes/ParameterizedSubtypeStruct.h"
 
 namespace subtypes
 {
@@ -64,6 +66,59 @@ TEST(SubtypesTest, TestSubtypedTable)
     TestTable& studentsAsTestTable = database.getStudents();
     SubtypedTable& studentsAsSubtypedTable = database.getStudents();
     ASSERT_EQ(&studentsAsTestTable, &studentsAsSubtypedTable);
+}
+
+namespace
+{
+    bool isCodeInFilePresent(const char* fileName, const char* code)
+    {
+        std::ifstream file(fileName);
+        bool isPresent = false;
+        std::string line;
+        while (std::getline(file, line))
+        {
+            if (line.find(code) != std::string::npos)
+            {
+                isPresent = true;
+                break;
+            }
+        }
+        file.close();
+
+        return isPresent;
+    }
+}
+
+TEST(SubtypesTest, TestParamaterizedSubtype)
+{
+    // just check that ParameterizedSubtype is defined and that it's same as the ParameterizedStruct
+    ParameterizedSubtypeStruct s;
+    ParameterizedSubtype& parameterizedSubtype = s.getParameterizedSubtype();
+    ParameterizedStruct& parameterizedStruct = s.getParameterizedSubtype();
+    zserio::ObjectArray<ParameterizedSubtype>& parameterizedSubtypeArray = s.getParameterizedSubtypeArray();
+    zserio::ObjectArray<ParameterizedStruct>& parameterizedStructArray = s.getParameterizedSubtypeArray();
+    ASSERT_EQ(&parameterizedSubtype, &parameterizedStruct);
+    ASSERT_EQ(&parameterizedSubtypeArray, &parameterizedStructArray);
+
+    // ensure that include to the subtype is present and that the subtype is used in
+    // ParameterizedSubtypeStruct's accessors
+    ASSERT_TRUE(isCodeInFilePresent("language/subtypes/gen/subtypes/ParameterizedSubtypeStruct.h",
+            "#include \"subtypes/ParameterizedSubtype.h\""));
+
+    ASSERT_TRUE(isCodeInFilePresent("language/subtypes/gen/subtypes/ParameterizedSubtypeStruct.h",
+            "subtypes::ParameterizedSubtype& getParameterizedSubtype()"));
+    ASSERT_TRUE(isCodeInFilePresent("language/subtypes/gen/subtypes/ParameterizedSubtypeStruct.h",
+            "const subtypes::ParameterizedSubtype& getParameterizedSubtype() const"));
+    ASSERT_TRUE(isCodeInFilePresent("language/subtypes/gen/subtypes/ParameterizedSubtypeStruct.h",
+            "void setParameterizedSubtype(const subtypes::ParameterizedSubtype& parameterizedSubtype)"));
+
+    ASSERT_TRUE(isCodeInFilePresent("language/subtypes/gen/subtypes/ParameterizedSubtypeStruct.h",
+            "zserio::ObjectArray<subtypes::ParameterizedSubtype>& getParameterizedSubtypeArray()"));
+    ASSERT_TRUE(isCodeInFilePresent("language/subtypes/gen/subtypes/ParameterizedSubtypeStruct.h",
+            "const zserio::ObjectArray<subtypes::ParameterizedSubtype>& getParameterizedSubtypeArray() const"));
+    ASSERT_TRUE(isCodeInFilePresent("language/subtypes/gen/subtypes/ParameterizedSubtypeStruct.h",
+            "void setParameterizedSubtypeArray"
+                    "(const zserio::ObjectArray<subtypes::ParameterizedSubtype>& parameterizedSubtypeArray)"));
 }
 
 } // namespace subtypes

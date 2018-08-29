@@ -542,7 +542,11 @@ public class CppNativeTypeMapper
         @Override
         public void visitTypeInstantiation(TypeInstantiation type) throws ZserioEmitCppException
         {
-            mapCompoundType(type.getBaseType());
+            final ZserioType resolvedReferencedType = TypeReference.resolveType(type.getReferencedType());
+            if (resolvedReferencedType instanceof Subtype)
+                visitSubtype((Subtype)resolvedReferencedType);
+            else
+                mapCompoundType(type.getBaseType());
         }
 
         @Override

@@ -129,9 +129,10 @@ public class TypeReference extends TokenAST implements ZserioType, LinkAction
     @Override
     protected void check() throws ParserException
     {
-        if (checkNonParametrizedType && referencedType instanceof CompoundType)
+        final ZserioType referencedBaseType = resolveBaseType(referencedType);
+        if (checkNonParametrizedType && referencedBaseType instanceof CompoundType)
         {
-            final CompoundType referencedCompoundType = (CompoundType)referencedType;
+            final CompoundType referencedCompoundType = (CompoundType)referencedBaseType;
             if (referencedCompoundType.getParameters().size() > 0)
                 throw new ParserException(this, "Referenced type '" + name +
                         "' is defined as parameterized type!");
@@ -195,7 +196,7 @@ public class TypeReference extends TokenAST implements ZserioType, LinkAction
 
     private static final long serialVersionUID = 8158308333230987942L;
 
-    private ZserioType          referencedType;
+    private ZserioType              referencedType;
     private String                  name;
     private boolean                 checkNonParametrizedType;
     private List<String>            referencedIds;

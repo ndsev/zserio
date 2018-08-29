@@ -14,6 +14,12 @@ set(ZSERIO_GENERATED_SOURCES
     ${ZSERIO_GEN_DIR}/subtypes/TestTable.cpp
     ${ZSERIO_GEN_DIR}/subtypes/TestTableRow.h
     ${ZSERIO_GEN_DIR}/subtypes/TestTableRow.cpp
+
+    ${ZSERIO_GEN_DIR}/subtypes/ParameterizedStruct.cpp
+    ${ZSERIO_GEN_DIR}/subtypes/ParameterizedStruct.h
+    ${ZSERIO_GEN_DIR}/subtypes/ParameterizedSubtype.h
+    ${ZSERIO_GEN_DIR}/subtypes/ParameterizedSubtypeStruct.cpp
+    ${ZSERIO_GEN_DIR}/subtypes/ParameterizedSubtypeStruct.h
 )
 
 zserio_add_library(TARGET subtypes_zs

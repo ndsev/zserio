@@ -10,7 +10,7 @@ zserio_java_test.filter    - Test filter (supports glob patterns). Default is "*
 findbugs.home_dir          - Location of the findbugs tool. If not set, findbugs is not run.
 
 -->
-<project name="zserio_java_test" basedir="." default="run">
+<project name="zserio_java_test" basedir="." default="run" xmlns:if="ant:if" xmlns:unless="ant:unless">
     <dirname property="zserio_java_test.base_dir" file="${ant.file.zserio_java_test}"/>
 
     <property name="zserio.root_dir" location="${zserio_java_test.base_dir}/.."/>
@@ -95,7 +95,7 @@ findbugs.home_dir          - Location of the findbugs tool. If not set, findbugs
 
             <zserio srcPath="${@{testName}.zs.in_dir}" srcFile="@{zsFile}"
                 java="${@{testName}.zs.out_dir}" ignoreError="@{ignoreError}">
-                <dependencies>
+                <dependencies unless:true="@{ignoreError}">
                     <fileset dir="${@{testName}.zs.in_dir}" includes="**/*.zs"/>
                     <fileset dir="${zserio.jar_dir}"/>
                     <fileset dir="${runtime.jar_dir}"/>
