@@ -45,7 +45,7 @@ float convertUInt16ToFloat(uint16_t float16Value)
         if (significand32 != 0)
         {
             // subnormal (denormal) number will be normalized
-            exponent32 = 1 - FLOAT16_EXPONENT_BIAS + FLOAT32_EXPONENT_BIAS; // exp is initialized by -14
+            exponent32 = 1 + FLOAT32_EXPONENT_BIAS - FLOAT16_EXPONENT_BIAS; // exp is initialized by -14
             // shift significand until leading bit overflows into exponent bit
             while ((significand32 & (FLOAT32_SIGNIFICAND_MASK + 1)) == 0)
             {

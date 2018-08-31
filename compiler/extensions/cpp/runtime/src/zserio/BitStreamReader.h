@@ -41,7 +41,7 @@ public:
         ReaderContext(const ReaderContext& other);
         void operator=(const ReaderContext& other);
 
-        void Init(size_t bufferByteSize);
+        void Init();
     };
 
     BitStreamReader(const uint8_t* buffer, size_t bufferByteSize);

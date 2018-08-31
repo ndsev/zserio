@@ -252,9 +252,9 @@ void BitStreamWriter::writeFloat64(double data)
 
 void BitStreamWriter::writeString(const std::string& data)
 {
-    const uint64_t len = static_cast<uint64_t>(data.size());
+    const size_t len = data.size();
     BitStreamWriter::writeVarUInt64(len);
-    for (uint64_t i = 0; i < len; ++i)
+    for (size_t i = 0; i < len; ++i)
     {
         BitStreamWriter::writeBits(static_cast<uint8_t>(data[i]), 8);
     }
@@ -391,7 +391,7 @@ inline void BitStreamWriter::writeVarAbsNum(uint64_t value, bool sign, const uin
             writeBool(i > 1); // hasNextByte
         }
         const int shiftBits = (i - 1) * 7 + ((numVarBytes==valBitsSize && i > 1 ) ? 1 : 0);
-        writeBits(((value >> shiftBits) & bitMasks[numBits - 1]), numBits);
+        writeBits(static_cast<uint8_t>((value >> shiftBits) & bitMasks[numBits - 1]), numBits);
     }
 }
 

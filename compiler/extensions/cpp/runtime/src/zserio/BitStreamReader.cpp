@@ -6,6 +6,7 @@
 #include "StringConvertUtil.h"
 #include "FloatUtil.h"
 #include "BitStreamReader.h"
+#include "VarUInt64Util.h"
 
 namespace zserio
 {
@@ -296,7 +297,11 @@ BitStreamReader::ReaderContext::ReaderContext(const uint8_t* buffer, size_t buff
     cacheNumBits(0),
     bitIndex(0)
 {
-    Init(bufferByteSize);
+    Init();
+
+    if (bufferByteSize > MAX_BUFFER_SIZE)
+        throw CppRuntimeException("BitStreamReader: Buffer size exceeded limit '" +
+            convertToString(MAX_BUFFER_SIZE) + "' bytes!");
 }
 
 BitStreamReader::ReaderContext::ReaderContext(const std::string& filename)
@@ -304,17 +309,21 @@ BitStreamReader::ReaderContext::ReaderContext(const std::string& filename)
     cacheNumBits(0),
     bitIndex(0)
 {
+    Init();
+
     std::ifstream is(filename.c_str(), std::ifstream::binary);
     if (!is)
         throw CppRuntimeException("BitStreamReader: Cannot open '" + filename + "' for reading!");
 
     is.seekg(0, is.end);
-    const size_t bufferByteSize = is.tellg();
+    const std::streampos fileSize = is.tellg();
     is.seekg(0);
 
-    // throws an exception
-    Init(bufferByteSize);
+    if (static_cast<uint64_t>(fileSize) > MAX_BUFFER_SIZE)
+        throw CppRuntimeException("BitStreamReader: File size exceeded limit of '" +
+            convertToString(MAX_BUFFER_SIZE) + "' bytes!");
 
+    const size_t bufferByteSize = static_cast<size_t>(fileSize);
     buffer = new uint8_t[bufferByteSize];
     bufferBitSize = bufferByteSize * 8;
     is.read(reinterpret_cast<char*>(&buffer[0]), bufferByteSize);
@@ -331,17 +340,13 @@ BitStreamReader::ReaderContext::~ReaderContext()
         delete[] buffer;
 }
 
-void BitStreamReader::ReaderContext::Init(size_t bufferByteSize)
+void BitStreamReader::ReaderContext::Init()
 {
 #ifdef ZSERIO_RUNTIME_64BIT
     cache.buffer64 = 0;
 #else
     cache.buffer32 = 0;
 #endif
-
-    if (bufferByteSize > MAX_BUFFER_SIZE)
-        throw CppRuntimeException("BitStreamReader: Buffer size exceeded limit '" +
-                convertToString(MAX_BUFFER_SIZE) + "' bytes!");
 }
 
 BitStreamReader::BitStreamReader(const uint8_t* buffer, size_t bufferByteSize)
@@ -410,7 +415,7 @@ int32_t BitStreamReader::readSignedBits(uint8_t numBits)
 int64_t BitStreamReader::readVarInt64()
 {
     uint8_t byte = readBitsImpl(m_context, 8); // byte 1
-    const bool sign = byte & VARINT_SIGN_1;
+    const uint8_t sign = byte & VARINT_SIGN_1;
     int64_t result = byte & VARINT_BYTE_1;
     if (!(byte & VARINT_HAS_NEXT_1))
         return sign ? -result : result;
@@ -452,7 +457,7 @@ int64_t BitStreamReader::readVarInt64()
 int32_t BitStreamReader::readVarInt32()
 {
     uint8_t byte = readBitsImpl(m_context, 8); // byte 1
-    const bool sign = byte & VARINT_SIGN_1;
+    const uint8_t sign = byte & VARINT_SIGN_1;
     int32_t result = byte & VARINT_BYTE_1;
     if ((byte & VARINT_HAS_NEXT_1) == 0)
         return sign ? -result : result;
@@ -474,7 +479,7 @@ int32_t BitStreamReader::readVarInt32()
 int16_t BitStreamReader::readVarInt16()
 {
     uint8_t byte = readBitsImpl(m_context, 8); // byte 1
-    const bool sign = byte & VARINT_SIGN_1;
+    const uint8_t sign = byte & VARINT_SIGN_1;
     int16_t result = byte & VARINT_BYTE_1;
     if (!(byte & VARINT_HAS_NEXT_1))
         return sign ? -result : result;
@@ -559,7 +564,7 @@ uint16_t BitStreamReader::readVarUInt16()
 int64_t BitStreamReader::readVarInt()
 {
     uint8_t byte = readBitsImpl(m_context, 8); // byte 1
-    const bool sign = byte & VARINT_SIGN_1;
+    const uint8_t sign = byte & VARINT_SIGN_1;
     int64_t result = byte & VARINT_BYTE_1;
     if (!(byte & VARINT_HAS_NEXT_1))
         return sign ? (result == 0 ? INT64_MIN : -result) : result;
@@ -677,9 +682,9 @@ double BitStreamReader::readFloat64()
 std::string BitStreamReader::readString()
 {
     std::string value;
-    uint64_t len = readVarUInt64();
+    const size_t len = convertVarUInt64ToArraySize(readVarUInt64());
     value.reserve(len);
-    for (uint64_t i = 0; i < len; ++i)
+    for (size_t i = 0; i < len; ++i)
     {
         value.push_back(static_cast<uint8_t>(readBitsImpl(m_context, 8)));
     }
