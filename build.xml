@@ -54,15 +54,15 @@ zserio_extensions.build_dir - Zserio extensions build directory.
     <target name="test" depends="zserio_core.test, zserio_ant_task.test"/>
 
     <!-- Bundled Zserio -->
-    <target name="zserio_bundle.clean">
+    <target name="zserio_bundle.clean" depends="clean">
         <delete dir="${zserio_bundle.build_dir}/metainf"/>
         <delete file="${zserio_bundle.build_dir}/${zserio_bundle.jar_file_name}"/>
     </target>
 
-    <target name="zserio_bundle.jar">
+    <target name="zserio_bundle.jar" depends="install">
         <mkdir dir="${zserio_bundle.build_dir}"/>
         <concat destfile="${zserio_bundle.build_dir}/metainf/services/zserio.tools.Extension">
-            <fileset dir="${zserio_extensions.build_dir}" includes="**/metainf/**/*"/>
+            <fileset dir="${zserio_extensions.build_dir}" includes="**/metainf/**/*" erroronmissingdir="false"/>
         </concat>
         <jar destfile="${zserio_bundle.build_dir}/${zserio_bundle.jar_file_name}" duplicate="preserve">
             <restrict>
@@ -86,13 +86,14 @@ zserio_extensions.build_dir - Zserio extensions build directory.
                 <attribute name="Main-Class" value="zserio.tools.ZserioTool"/>
                 <attribute name="Implementation-Version" value="${zserio.version}"/>
             </manifest>
-            <metainf dir="${zserio_bundle.build_dir}/metainf" includes="**/*"/>
+            <metainf dir="${zserio_bundle.build_dir}/metainf" includes="**/*" erroronmissingdir="false"/>
         </jar>
     </target>
 
     <target name="zserio_bundle.install" depends="zserio_bundle.jar">
         <mkdir dir="${zserio_bundle.install_dir}"/>
-        <copy file="${zserio_bundle.build_dir}/${zserio_bundle.jar_file_name}" todir="${zserio_bundle.install_dir}"/>
+        <copy file="${zserio_bundle.build_dir}/${zserio_bundle.jar_file_name}"
+            todir="${zserio_bundle.install_dir}"/>
     </target>
 
     <target name="zserio_bundle.test" depends="zserio_bundle.install">
