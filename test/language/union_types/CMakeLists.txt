@@ -3,10 +3,10 @@ set(ZSERIO_GENERATED_SOURCES
     ${ZSERIO_GEN_DIR}/union_types/simple_union/SimpleUnion.h
     ${ZSERIO_GEN_DIR}/union_types/simple_union/SimpleUnion.cpp
 
-    ${ZSERIO_GEN_DIR}/choice_types/choice_with_array/TestUnion.cpp
-    ${ZSERIO_GEN_DIR}/choice_types/choice_with_array/TestUnion.h
-    ${ZSERIO_GEN_DIR}/choice_types/choice_with_array/Data8.cpp
-    ${ZSERIO_GEN_DIR}/choice_types/choice_with_array/Data8.h
+    ${ZSERIO_GEN_DIR}/union_types/union_with_array/TestUnion.cpp
+    ${ZSERIO_GEN_DIR}/union_types/union_with_array/TestUnion.h
+    ${ZSERIO_GEN_DIR}/union_types/union_with_array/Data8.cpp
+    ${ZSERIO_GEN_DIR}/union_types/union_with_array/Data8.h
 
     ${ZSERIO_GEN_DIR}/union_types/union_with_parameter/TestUnion.h
     ${ZSERIO_GEN_DIR}/union_types/union_with_parameter/TestUnion.cpp
