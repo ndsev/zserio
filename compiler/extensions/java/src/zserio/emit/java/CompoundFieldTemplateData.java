@@ -24,6 +24,7 @@ import zserio.emit.java.types.NativeDoubleType;
 import zserio.emit.java.types.NativeEnumType;
 import zserio.emit.java.types.NativeFloatType;
 import zserio.emit.java.types.NativeLongType;
+import zserio.emit.java.types.NativeObjectArrayType;
 
 public final class CompoundFieldTemplateData
 {
@@ -61,6 +62,7 @@ public final class CompoundFieldTemplateData
         isDouble = nativeType instanceof NativeDoubleType;
         isEnum = nativeType instanceof NativeEnumType;
         isSimpleType = nativeType.isSimple();
+        isObjectArray = nativeType instanceof NativeObjectArrayType;
 
         constraint = createConstraint(fieldType, javaExpressionFormatter);
 
@@ -152,6 +154,11 @@ public final class CompoundFieldTemplateData
     public boolean getIsSimpleType()
     {
         return isSimpleType;
+    }
+
+    public boolean getIsObjectArray()
+    {
+        return isObjectArray;
     }
 
     public String getConstraint()
@@ -563,6 +570,7 @@ public final class CompoundFieldTemplateData
     private final boolean                       isDouble;
     private final boolean                       isEnum;
     private final boolean                       isSimpleType;
+    private final boolean                       isObjectArray;
     private final String                        constraint;
 
     private final BitSize                       bitSize;

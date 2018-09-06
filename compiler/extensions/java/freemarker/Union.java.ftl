@@ -70,6 +70,7 @@ public class ${name} implements <#if withWriterCode>InitializeOffsetsWriter, </#
 
 <@compound_parameter_accessors compoundParametersData, name/>
 <#list fieldList as field>
+    <#if field.isObjectArray>@java.lang.SuppressWarnings("unchecked")</#if>
     public ${field.javaTypeName} ${field.getterName}() throws ZserioError
     {
         if (__choiceTag != <@choice_tag_name field/>)

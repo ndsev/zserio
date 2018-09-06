@@ -3,6 +3,11 @@ set(ZSERIO_GENERATED_SOURCES
     ${ZSERIO_GEN_DIR}/optional_members/auto_optional/Container.cpp
     ${ZSERIO_GEN_DIR}/optional_members/auto_optional/Container.h
 
+    ${ZSERIO_GEN_DIR}/optional_members/optional_array/TestStruct.cpp
+    ${ZSERIO_GEN_DIR}/optional_members/optional_array/TestStruct.h
+    ${ZSERIO_GEN_DIR}/optional_members/optional_array/Data8.cpp
+    ${ZSERIO_GEN_DIR}/optional_members/optional_array/Data8.h
+
     ${ZSERIO_GEN_DIR}/optional_members/optional_expression/BasicColor.cpp
     ${ZSERIO_GEN_DIR}/optional_members/optional_expression/BasicColor.h
     ${ZSERIO_GEN_DIR}/optional_members/optional_expression/BlackColor.cpp
@@ -27,6 +32,7 @@ zserio_add_library(TARGET optional_members_zs
 
 add_test_sources(
     cpp/AutoOptionalTest.cpp
+    cpp/OptionalArrayTest.cpp
     cpp/OptionalMembersTest.cpp
     cpp/OptionalRecursionTest.cpp
 )

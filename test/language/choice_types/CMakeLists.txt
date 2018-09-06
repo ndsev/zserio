@@ -5,6 +5,11 @@ set(ZSERIO_GENERATED_SOURCES
     ${ZSERIO_GEN_DIR}/choice_types/bool_param_choice/BoolParamChoice.h
     ${ZSERIO_GEN_DIR}/choice_types/bool_param_choice/Grey.h
 
+    ${ZSERIO_GEN_DIR}/choice_types/choice_with_array/TestChoice.cpp
+    ${ZSERIO_GEN_DIR}/choice_types/choice_with_array/TestChoice.h
+    ${ZSERIO_GEN_DIR}/choice_types/choice_with_array/Data8.cpp
+    ${ZSERIO_GEN_DIR}/choice_types/choice_with_array/Data8.h
+
     ${ZSERIO_GEN_DIR}/choice_types/enum_param_choice/Black.h
     ${ZSERIO_GEN_DIR}/choice_types/enum_param_choice/EnumParamChoice.cpp
     ${ZSERIO_GEN_DIR}/choice_types/enum_param_choice/EnumParamChoice.h
@@ -37,6 +42,7 @@ zserio_add_library(TARGET choice_types_zs
 
 add_test_sources(
     cpp/BoolParamChoiceTest.cpp
+    cpp/ChoiceWithArrayTest.cpp
     cpp/EnumParamChoiceTest.cpp
     cpp/IntChoiceTest.cpp
     cpp/UInt64ParamChoiceTest.cpp

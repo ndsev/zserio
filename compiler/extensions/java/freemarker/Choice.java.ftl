@@ -125,6 +125,7 @@ ${I}}
 
 <@compound_parameter_accessors compoundParametersData, name/>
 <#list fieldList as field>
+    <#if field.isObjectArray>@java.lang.SuppressWarnings("unchecked")</#if>
     public ${field.javaTypeName} ${field.getterName}()
     {
         return (${field.javaNullableTypeName}) this.__objectChoice;
