@@ -1,0 +1,27 @@
+<project name="service_types" basedir="." default="run">
+    <testProperties testPath="language/service_types" testName="service_types"/>
+
+    <target name="prepare">
+        <testPrepare testName="service_types"/>
+    </target>
+
+    <target name="gen" depends="prepare">
+        <testGen testName="service_types" zsFile="service_types.zs"/>
+    </target>
+
+    <target name="compile" depends="gen">
+        <testCompile testName="service_types" grpc="true"/>
+    </target>
+
+    <target name="findbugs" depends="compile" if="findbugs.home_dir">
+        <testFindbugs testName="service_types" grpc="true"/>
+    </target>
+
+    <target name="run" depends="findbugs">
+        <testRun testname="service_types" grpc="true"/>
+    </target>
+
+    <target name="clean">
+        <testClean testName="service_types"/>
+    </target>
+</project>

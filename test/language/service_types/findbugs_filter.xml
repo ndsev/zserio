@@ -1,0 +1,7 @@
+<FindBugsFilter>
+    <Match>
+        <!-- Anonymous inner class could be refactored into a named __static__ inner class. -->
+        <Class name="~.*SimpleServiceClient.*"/>
+        <Bug code="SIC"/>
+    </Match>
+</FindBugsFilter>

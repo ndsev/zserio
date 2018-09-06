@@ -1,0 +1,29 @@
+<project name="without_grpc_code" basedir="." default="run">
+    <testProperties testPath="arguments/without_grpc_code" testName="without_grpc_code"/>
+
+    <target name="prepare">
+        <testPrepare testName="without_grpc_code"/>
+    </target>
+
+    <target name="gen" depends="prepare">
+        <testGen testName="without_grpc_code" zsFile="without_grpc_code.zs">
+            <arg name="withoutGrpcCode"/>
+        </testGen>
+    </target>
+
+    <target name="compile" depends="gen">
+        <testCompile testName="without_grpc_code"/>
+    </target>
+
+    <target name="findbugs" depends="compile" if="findbugs.home_dir">
+        <testFindbugs testName="without_grpc_code"/>
+    </target>
+
+    <target name="run" depends="findbugs">
+        <testRun testName="without_grpc_code"/>
+    </target>
+
+    <target name="clean">
+        <testClean testName="without_grpc_code"/>
+    </target>
+</project>

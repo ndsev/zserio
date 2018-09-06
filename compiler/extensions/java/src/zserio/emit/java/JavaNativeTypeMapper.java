@@ -6,6 +6,7 @@ import zserio.ast.BooleanType;
 import zserio.ast.ChoiceType;
 import zserio.ast.CompoundType;
 import zserio.ast.ConstType;
+import zserio.ast.ServiceType;
 import zserio.ast.ZserioType;
 import zserio.ast.ZserioTypeUtil;
 import zserio.ast.ZserioTypeVisitor;
@@ -13,7 +14,6 @@ import zserio.ast.EnumType;
 import zserio.ast.FloatType;
 import zserio.ast.FunctionType;
 import zserio.ast.IntegerType;
-import zserio.ast.ServiceType;
 import zserio.ast.StructureType;
 import zserio.ast.SignedBitFieldType;
 import zserio.ast.SqlDatabaseType;
@@ -45,6 +45,7 @@ import zserio.emit.java.types.NativeIntegralType;
 import zserio.emit.java.types.NativeLongArrayType;
 import zserio.emit.java.types.NativeLongType;
 import zserio.emit.java.types.NativeObjectArrayType;
+import zserio.emit.java.types.NativeServiceType;
 import zserio.emit.java.types.NativeShortArrayType;
 import zserio.emit.java.types.NativeShortType;
 import zserio.emit.java.types.NativeStringType;
@@ -531,7 +532,9 @@ final class JavaNativeTypeMapper
         @Override
         public void visitServiceType(ServiceType type)
         {
-            // TODO: not implemented
+            final String packageName = javaPackageMapper.getPackageName(type);
+            final String name = type.getName();
+            javaNullableType = new NativeServiceType(packageName, name);
         }
 
         @Override

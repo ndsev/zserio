@@ -40,6 +40,34 @@ public:
         }
     }
 
+    uint64_t powerOfTwoAsync(int32_t value)
+    {
+        Request request;
+        request.setValue(value);
+
+        Response response;
+
+        grpc::ClientContext context;
+        grpc::CompletionQueue cq;
+        grpc::Status status;
+        std::unique_ptr<grpc::ClientAsyncResponseReader<Response> > rpc(
+                m_stub->PrepareAsyncpowerOfTwo(&context, request, &cq));
+
+        rpc->StartCall();
+        rpc->Finish(&response, &status, (void*)1);
+        bool ok = false;
+        void* tag;
+        cq.Next(&tag, &ok);
+
+        if (ok && tag == (void*)1 && status.ok())
+            return response.getValue();
+        else
+        {
+            std::cerr << status.error_message() << std::endl;
+            return 0;
+        }
+    }
+
     std::unique_ptr<SimpleService::Stub> m_stub;
 };
 
@@ -80,12 +108,20 @@ protected:
     Client client;
 };
 
-TEST_F(SimpleServiceTest, localClientAndServer)
+TEST_F(SimpleServiceTest, powerOfTwo)
 {
     ASSERT_EQ(169, client.powerOfTwo(13));
     ASSERT_EQ(169, client.powerOfTwo(-13));
     ASSERT_EQ(4, client.powerOfTwo(2));
     ASSERT_EQ(4, client.powerOfTwo(-2));
+}
+
+TEST_F(SimpleServiceTest, powerOfTwoAsync)
+{
+    ASSERT_EQ(169, client.powerOfTwoAsync(13));
+    ASSERT_EQ(169, client.powerOfTwoAsync(-13));
+    ASSERT_EQ(4, client.powerOfTwoAsync(2));
+    ASSERT_EQ(4, client.powerOfTwoAsync(-2));
 }
 
 } // namespace simple_service

@@ -23,6 +23,7 @@ findbugs.home_dir          - Location of the findbugs tool. If not set, findbugs
     <property name="3rdparty.jar_dir" location="${zserio.root_dir}/3rdparty/java"/>
     <property name="3rdparty.junit.jar_file" location="${3rdparty.jar_dir}/junit-4.10.jar"/>
     <property name="3rdparty.sqlitejdbc.jar_file" location="${3rdparty.jar_dir}/sqlite-jdbc-3.23.1.jar"/>
+    <property name="3rdparty.grpc.jar_dir" location="${3rdparty.jar_dir}/grpc"/>
 
     <property name="zserio_java_test.build_dir" location="${zserio.root_dir}/build/test/java"/>
     <property name="zserio_java_test.filter" value="**"/>
@@ -120,6 +121,7 @@ findbugs.home_dir          - Location of the findbugs tool. If not set, findbugs
     <macrodef name="testCompile">
         <attribute name="testName"/>
         <attribute name="srcPath" default="${@{testName}.base_dir}/java:${@{testName}.zs.out_dir}"/>
+        <attribute name="grpc" default="false"/>
         <sequential>
             <depend srcDir="@{srcPath}"
                 destDir="${@{testName}.build_dir}/classes"
@@ -133,6 +135,9 @@ findbugs.home_dir          - Location of the findbugs tool. If not set, findbugs
                     <pathelement location="${runtime.jar_file}"/>
                     <pathelement location="${3rdparty.junit.jar_file}"/>
                     <pathelement location="${test_utils.jar_file}"/>
+                    <fileset dir="${3rdparty.grpc.jar_dir}" if:true="@{grpc}">
+                        <include name="*.jar"/>
+                    </fileset>
                 </classpath>
                 <src path="@{srcPath}"/>
             </javac>
@@ -142,6 +147,7 @@ findbugs.home_dir          - Location of the findbugs tool. If not set, findbugs
     <macrodef name="testFindbugs">
         <attribute name="testName"/>
         <attribute name="srcPath" default="${@{testName}.base_dir}/java:${@{testName}.zs.out_dir}"/>
+        <attribute name="grpc" default="false"/>
         <sequential>
             <taskdef name="findbugs" classpath="${findbugs.classpath}" classname="${findbugs.classname}"/>
             <findbugs home="${findbugs.home_dir}"
@@ -157,6 +163,9 @@ findbugs.home_dir          - Location of the findbugs tool. If not set, findbugs
                     <pathelement location="${runtime.jar_file}"/>
                     <pathelement location="${3rdparty.junit.jar_file}"/>
                     <pathelement location="${test_utils.jar_file}"/>
+                    <fileset dir="${3rdparty.grpc.jar_dir}" if:true="@{grpc}">
+                        <include name="*.jar"/>
+                    </fileset>
                 </auxClasspath>
             </findbugs>
             <fail message="FindBugs found some issues!" if="@{testName}.is_failed"/>
@@ -165,6 +174,7 @@ findbugs.home_dir          - Location of the findbugs tool. If not set, findbugs
 
     <macrodef name="testRun">
         <attribute name="testName"/>
+        <attribute name="grpc" default="false"/>
         <element name="resources" optional="true"/>
         <sequential>
             <delete dir="${@{testName}.run_dir}"/>
@@ -178,6 +188,9 @@ findbugs.home_dir          - Location of the findbugs tool. If not set, findbugs
                     <pathelement location="${3rdparty.junit.jar_file}"/>
                     <pathelement location="${3rdparty.sqlitejdbc.jar_file}"/>
                     <pathelement location="${test_utils.jar_file}"/>
+                    <fileset dir="${3rdparty.grpc.jar_dir}" if:true="@{grpc}">
+                        <include name="*.jar"/>
+                    </fileset>
                 </classpath>
                 <batchtest>
                     <fileset dir="${@{testName}.base_dir}/java" includes="**/*Test.java"/>

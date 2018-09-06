@@ -87,6 +87,7 @@ public class JavaExtension implements Extension
     {
         final List<Emitter> emitters = new ArrayList<Emitter>();
         emitters.add(new EnumerationEmitter(extensionParameters, javaParameters));
+        emitters.add(new ServiceEmitter(extensionParameters, javaParameters));
         emitters.add(new StructureEmitter(extensionParameters, javaParameters));
         emitters.add(new ChoiceEmitter(extensionParameters, javaParameters));
         emitters.add(new UnionEmitter(extensionParameters, javaParameters));

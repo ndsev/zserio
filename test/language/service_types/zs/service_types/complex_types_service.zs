@@ -4,7 +4,7 @@ subtype ColorModelChoice Color;
 
 struct RequestData(ColorModel model)
 {
-    uint64          offsets[];
+    uint32          offsets[];
 offsets[@index]:
     Color(model)    data[];
 };

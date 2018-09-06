@@ -49,19 +49,19 @@ public:
 namespace
 {
     void convertRgbToCmyk(uint8_t r, uint8_t g, uint8_t b,
-            double& c, double &m, double &y, double& k)
+            uint8_t& c, uint8_t &m, uint8_t &y, uint8_t& k)
     {
         // see https://www.rapidtables.com/convert/color/rgb-to-cmyk.html
         const double rr = r / 255. * 100;
         const double gg = g / 255. * 100;
         const double bb = b / 255. * 100;
 
-        k = 100. - std::max(std::max(rr, gg), bb);
+        double kk = 100. - std::max(std::max(rr, gg), bb);
 
-        c = std::round((100. - rr - k) / (100. - k) * 100);
-        m = std::round((100. - gg - k) / (100. - k) * 100);
-        y = std::round((100. - bb - k) / (100. - k) * 100);
-        k = std::round(k);
+        c = std::round((100. - rr - kk) / (100. - kk) * 100);
+        m = std::round((100. - gg - kk) / (100. - kk) * 100);
+        y = std::round((100. - bb - kk) / (100. - kk) * 100);
+        k = std::round(kk);
     }
 
     void convertCmykToRgb(uint8_t c, uint8_t m, uint8_t y, uint8_t k,
@@ -109,7 +109,7 @@ private:
         for (uint32_t i = 0; i < response.getLength(); ++i)
         {
             const RGBModel& rgb = data.at(i).getRgb();
-            double c, m, y, k;
+            uint8_t c, m, y, k;
             convertRgbToCmyk(rgb.getRed(), rgb.getGreen(), rgb.getBlue(), c, m, y, k);
             cmykData[i].setCyan(c);
             cmykData[i].setMagneta(m);
@@ -144,7 +144,7 @@ public:
     {
         for (size_t i = 0; i < 3; ++i)
         {
-            double c, m, y, k;
+            uint8_t c, m, y, k;
             convertRgbToCmyk(rgbValues[i][0], rgbValues[i][1], rgbValues[i][2], c, m, y, k);
             cmykValues[i][0] = c;
             cmykValues[i][1] = m;
@@ -203,10 +203,11 @@ TEST_F(ComplexTypesServiceTest, rgbToCmyk)
     const auto& cmykData = response.getData().getCmykData();
     for (size_t i = 0; i < cmykData.size(); ++i)
     {
-        ASSERT_EQ(cmykValues[i % 3][0], cmykData.at(i).getCyan());
-        ASSERT_EQ(cmykValues[i % 3][1], cmykData.at(i).getMagneta());
-        ASSERT_EQ(cmykValues[i % 3][2], cmykData.at(i).getYellow());
-        ASSERT_EQ(cmykValues[i % 3][3], cmykData.at(i).getKey());
+        const CMYKModel& cmyk = cmykData.at(i);
+        ASSERT_EQ(cmykValues[i % 3][0], cmyk.getCyan());
+        ASSERT_EQ(cmykValues[i % 3][1], cmyk.getMagneta());
+        ASSERT_EQ(cmykValues[i % 3][2], cmyk.getYellow());
+        ASSERT_EQ(cmykValues[i % 3][3], cmyk.getKey());
     }
 }
 
@@ -239,9 +240,10 @@ TEST_F(ComplexTypesServiceTest, cmykToRgb)
     const auto& rgbData = response.getData().getRgbData();
     for (size_t i = 0; i < rgbData.size(); ++i)
     {
-        ASSERT_EQ(rgbValues[i % 3][0], rgbData.at(i).getRed());
-        ASSERT_EQ(rgbValues[i % 3][1], rgbData.at(i).getGreen());
-        ASSERT_EQ(rgbValues[i % 3][2], rgbData.at(i).getBlue());
+        const RGBModel& rgb = rgbData.at(i);
+        ASSERT_EQ(rgbValues[i % 3][0], rgb.getRed());
+        ASSERT_EQ(rgbValues[i % 3][1], rgb.getGreen());
+        ASSERT_EQ(rgbValues[i % 3][2], rgb.getBlue());
     }
 }
 
