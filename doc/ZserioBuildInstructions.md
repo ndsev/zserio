@@ -1,4 +1,4 @@
-# Build Instructions for Zserio Compiler
+# Zserio Compiler Build Instructions
 
 This section describes zserio build instructions for developers. If you are users, it should be normally
 enough just to download the latest build of the zserio compiler and runtime libraries from
