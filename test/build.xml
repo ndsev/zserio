@@ -8,6 +8,7 @@ zserio.release_dir         - Directory where to find Zserio release to test. Def
 zserio_java_test.build_dir - Directory where to put generated files. Default is "../build/test/java".
 zserio_java_test.filter    - Test filter (supports glob patterns). Default is "**".
 findbugs.home_dir          - Location of the findbugs tool. If not set, findbugs is not run.
+zserio_java_test.grpc      - Whether the GRPC tests are enabled (default is "no").
 
 -->
 <project name="zserio_java_test" basedir="." default="run" xmlns:if="ant:if" xmlns:unless="ant:unless">
@@ -27,6 +28,7 @@ findbugs.home_dir          - Location of the findbugs tool. If not set, findbugs
 
     <property name="zserio_java_test.build_dir" location="${zserio.root_dir}/build/test/java"/>
     <property name="zserio_java_test.filter" value="**"/>
+    <property name="zserio_java_test.grpc" value="no"/>
 
     <condition property="findbugs.classpath" value="${findbugs.home_dir}/lib/findbugs-ant.jar">
         <isset property="findbugs.home_dir"/>

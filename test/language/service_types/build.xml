@@ -1,27 +1,34 @@
 <project name="service_types" basedir="." default="run">
     <testProperties testPath="language/service_types" testName="service_types"/>
 
-    <target name="prepare">
+    <condition property="service_types.findbugs" value="yes" else="no">
+        <and>
+            <isset property="findbugs.home_dir"/>
+            <istrue value="${zserio_java_test.grpc}"/>
+        </and>
+    </condition>
+
+    <target name="prepare" if="${zserio_java_test.grpc}">
         <testPrepare testName="service_types"/>
     </target>
 
-    <target name="gen" depends="prepare">
+    <target name="gen" depends="prepare" if="${zserio_java_test.grpc}">
         <testGen testName="service_types" zsFile="service_types.zs"/>
     </target>
 
-    <target name="compile" depends="gen">
+    <target name="compile" depends="gen" if="${zserio_java_test.grpc}">
         <testCompile testName="service_types" grpc="true"/>
     </target>
 
-    <target name="findbugs" depends="compile" if="findbugs.home_dir">
+    <target name="findbugs" depends="compile" if="${service_types.findbugs}">
         <testFindbugs testName="service_types" grpc="true"/>
     </target>
 
-    <target name="run" depends="findbugs">
+    <target name="run" depends="findbugs" if="${zserio_java_test.grpc}">
         <testRun testname="service_types" grpc="true"/>
     </target>
 
-    <target name="clean">
+    <target name="clean" if="${zserio_java_test.grpc}">
         <testClean testName="service_types"/>
     </target>
 </project>

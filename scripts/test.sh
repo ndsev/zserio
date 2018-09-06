@@ -69,6 +69,9 @@ test()
         echo "STARTING - ${MESSAGE}"
         local ANT_ARGS=("-Dzserio.release_dir=${UNPACKED_ZSERIO_RELEASE_DIR}"
                         "-Dzserio_java_test.build_dir=${TEST_OUT_DIR}/java")
+        if [[ ${SWITCH_GRPC} == 1 ]]; then
+            ANT_ARGS+=("-Dzserio_java_test.grpc=yes")
+        fi
         if [[ ${SWITCH_TEST_NAME} != "" ]] ; then
             ANT_ARGS+=("-Dzserio_java_test.filter=${SWITCH_TEST_NAME}")
         fi
@@ -98,6 +101,7 @@ test()
 
         local CMAKE_ARGS=("-DZSERIO_RUNTIME_INCLUDE_INSPECTOR=ON"
                           "-DZSERIO_RELEASE_ROOT=${UNPACKED_ZSERIO_RELEASE_DIR}"
+                          "-DGRPC_ENABLED=${SWITCH_GRPC}"
                           "-DGRPC_ROOT=${GRPC_ROOT}")
         local CTEST_ARGS=()
         if [[ ${SWITCH_TEST_NAME} != "" ]]; then
@@ -171,6 +175,7 @@ Arguments:
     -h, --help                Show this help.
     -c, --clean               Clean package instead of build.
     -p, --purge               Purge test build directory.
+    -g, --grpc                Enable gRPC tests (disabled by default).
     -t, --test-name TEST_NAME Run only TEST_NAME test from examples test suite.
     package                   Specify the package to test.
 
@@ -222,16 +227,18 @@ EOF
 # 2 - Help switch is present. Arguments after help switch have not been checked.
 parse_arguments()
 {
-    exit_if_argc_lt $# 5
+    exit_if_argc_lt $# 6
     local PARAM_JAVA_OUT="$1"; shift
     local PARAM_CPP_TARGET_ARRAY_OUT="$1"; shift
     local SWITCH_CLEAN_OUT="$1"; shift
     local SWITCH_PURGE_OUT="$1"; shift
+    local SWITCH_GRPC_OUT="$1"; shift
     local SWITCH_TEST_NAME_OUT="$1"; shift
 
     eval ${PARAM_JAVA_OUT}=0
     eval ${SWITCH_TEST_NAME_OUT}=""
     eval ${SWITCH_CLEAN_OUT}=0
+    eval ${SWITCH_GRPC_OUT}=0
     eval ${SWITCH_PURGE_OUT}=0
 
     local NUM_PARAMS=0
@@ -250,6 +257,11 @@ parse_arguments()
 
             "-p" | "--purge")
                 eval ${SWITCH_PURGE_OUT}=1
+                shift
+                ;;
+
+            "-g" | "--grpc")
+                eval ${SWITCH_GRPC_OUT}=1
                 shift
                 ;;
 
@@ -325,8 +337,9 @@ main()
     local PARAM_CPP_TARGET_ARRAY
     local SWITCH_CLEAN
     local SWITCH_PURGE
+    local SWITCH_GRPC
     local SWITCH_TEST_NAME
-    parse_arguments PARAM_JAVA PARAM_CPP_TARGET_ARRAY SWITCH_CLEAN SWITCH_PURGE SWITCH_TEST_NAME $@
+    parse_arguments PARAM_JAVA PARAM_CPP_TARGET_ARRAY SWITCH_CLEAN SWITCH_PURGE SWITCH_GRPC SWITCH_TEST_NAME $@
     if [ $? -ne 0 ] ; then
         print_help
         return 1

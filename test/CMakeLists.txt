@@ -84,6 +84,3 @@ gtest_add_tests(${PROJECT_NAME} "--gtest_output=xml" ${TEST_SOURCES_LIST})
 # add cppcheck custom command
 include(cppcheck_utils)
 cppcheck_add_custom_command(TARGET ${PROJECT_NAME} SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR})
-
-# we just need to rerun CMake everytime because we are using GLOB for subdirectories
-add_custom_target(TouchCMakeLists ALL ${CMAKE_COMMAND} -E touch_nocreate ${CMAKE_CURRENT_SOURCE_DIR}/CMakeLists.txt)

@@ -8,18 +8,7 @@
 # GRPC_LIBRARIES - GRPC libraries to link with
 function(find_grpc_libraries)
     set(GRPC_ROOT "" CACHE PATH "GRPC root directory")
-
-    if ("${GRPC_ROOT}" STREQUAL "")
-        set(GRPC_ENABLED OFF)
-        message(STATUS "GRPC is disabled")
-    else()
-        set(GRPC_ENABLED ON)
-        if (NOT IS_DIRECTORY "${GRPC_ROOT}")
-            message(FATAL_ERROR
-                "GRPC_ROOT '${GRPC_ROOT}' is not a valid directory! Please set GRPC_ROOT correctly.")
-        endif ()
-        message(STATUS "GRPC is enabled, GRPC_ROOT=${GRPC_ROOT}")
-    endif()
+    set(GRPC_ENABLED OFF CACHE BOOL "Enable GRPC tests")
 
     if (GRPC_ENABLED)
         set(GRPC_LIBDIR ${GRPC_ROOT}/libs/opt CACHE PATH "GRCP libraries directory")
@@ -36,6 +25,4 @@ function(find_grpc_libraries)
         endforeach()
         set(GRPC_LIBRARIES ${libs} CACHE STRING "GRPC libraries to link with")
     endif ()
-
-    set(GRPC_ENABLED ${GRPC_ENABLED} PARENT_SCOPE)
 endfunction()
