@@ -130,7 +130,7 @@ Schema language reference can be found in [Quick Reference](doc/ZserioQuickRefer
 
 User Guide can be found in the [Zserio Compiler User Guide](doc/ZserioUserGuide.md).
 
-Build instructions can be found in the [Zserio Compiler Build Instructions](doc/ZserioBuildInstructions).
+Build instructions can be found in the [Zserio Compiler Build Instructions](doc/ZserioBuildInstructions.md).
 
 C++ users can find more information in the
 [C++ Tutorial](https://github.com/ndsev/zserio-tutorial-cpp#zserio-c-quick-start-tutorial).
