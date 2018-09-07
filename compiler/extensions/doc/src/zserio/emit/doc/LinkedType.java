@@ -3,6 +3,7 @@ package zserio.emit.doc;
 import zserio.ast.ArrayType;
 import zserio.ast.ChoiceType;
 import zserio.ast.ConstType;
+import zserio.ast.ServiceType;
 import zserio.ast.ZserioTypeUtil;
 import zserio.ast.EnumType;
 import zserio.ast.StructureType;
@@ -92,6 +93,11 @@ public class LinkedType
             {
                 style = "sqlDBLink";
                 category += createTitle("SQL Database");
+            }
+            else if (type instanceof ServiceType)
+            {
+                style = "serviceLink";
+                category += createTitle("Service");
             }
             else if (type instanceof TypeInstantiation)
             {

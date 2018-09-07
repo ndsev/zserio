@@ -5,6 +5,7 @@ import zserio.ast.ArrayType;
 import zserio.ast.BitFieldType;
 import zserio.ast.CompoundType;
 import zserio.ast.ConstType;
+import zserio.ast.ServiceType;
 import zserio.ast.ZserioType;
 import zserio.ast.EnumType;
 import zserio.ast.Expression;
@@ -132,6 +133,10 @@ public class TypeNameEmitter
         {
             ConstType consttype = (ConstType) t;
             result = consttype.getName();
+        }
+        else if (t instanceof ServiceType)
+        {
+            result = ((ServiceType)t).getName();
         }
         else if (t instanceof TypeInstantiation)
         {

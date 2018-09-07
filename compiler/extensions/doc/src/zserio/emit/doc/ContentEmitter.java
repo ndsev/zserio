@@ -14,22 +14,22 @@ import zserio.tools.PackageManager;
 
 public class ContentEmitter extends DefaultHtmlEmitter
 {
-    private final CompoundEmitter ce;
-    private final EnumerationEmitter ee;
-    private final SubtypeEmitter se;
-    private final ConstTypeEmitter cte;
-
+    private final CompoundEmitter compoundEmitter;
+    private final EnumerationEmitter enumerationEmitter;
+    private final SubtypeEmitter subtypeEmitter;
+    private final ConstTypeEmitter constTypeEmitter;
+    private final ServiceEmitter serviceEmitter;
 
     public ContentEmitter(String outputPath, boolean withSvgDiagrams)
     {
         super(outputPath);
 
-        ce = new CompoundEmitter(outputPath, withSvgDiagrams);
-        ee = new EnumerationEmitter(outputPath, withSvgDiagrams);
-        se = new SubtypeEmitter(outputPath, withSvgDiagrams);
-        cte = new ConstTypeEmitter(outputPath, withSvgDiagrams);
+        compoundEmitter = new CompoundEmitter(outputPath, withSvgDiagrams);
+        enumerationEmitter = new EnumerationEmitter(outputPath, withSvgDiagrams);
+        subtypeEmitter = new SubtypeEmitter(outputPath, withSvgDiagrams);
+        constTypeEmitter = new ConstTypeEmitter(outputPath, withSvgDiagrams);
+        serviceEmitter = new ServiceEmitter(outputPath, withSvgDiagrams);
     }
-
 
     @Override
     public void beginRoot(AST root)
@@ -57,23 +57,23 @@ public class ContentEmitter extends DefaultHtmlEmitter
             TokenAST type = (TokenAST) t;
             if (type instanceof CompoundType)
             {
-                ce.emit((CompoundType) type);
+                compoundEmitter.emit((CompoundType)type);
             }
             else if (type instanceof EnumType)
             {
-                ee.emit((EnumType) type);
+                enumerationEmitter.emit((EnumType)type);
             }
             else if (type instanceof Subtype)
             {
-                se.emit((Subtype) type);
+                subtypeEmitter.emit((Subtype)type);
             }
             else if (type instanceof ConstType)
             {
-                cte.emit((ConstType) type);
+                constTypeEmitter.emit((ConstType)type);
             }
             else if (type instanceof ServiceType)
             {
-                // TODO: not implemented for ServiceType
+                serviceEmitter.emit((ServiceType)type);
             }
             else
             {

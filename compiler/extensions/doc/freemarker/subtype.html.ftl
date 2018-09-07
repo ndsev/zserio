@@ -44,7 +44,7 @@
     <table>
     <tr><td class="docuCode">
       <table>
-      <tbody id="tabIdent">
+      <tbody id="tabIndent">
 <#assign numOfConstInstances = constInstances?size>
 <#if (numOfConstInstances > 0)>
     <#list constInstances as constInstance>

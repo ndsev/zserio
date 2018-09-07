@@ -33,14 +33,14 @@
     <table>
     <tr><td class="docuCode">
       <table style="empty-cells:show">
-      <tbody id="tabIdent">
+      <tbody id="tabIndent">
         <tr><td colspan=4>${categoryKeyword} ${type.name}<@parameterlist type/> on ${choiceData.selector}</td></tr>
         <tr><td colspan=2>{</td>
             <td rowspan="${rowspanNumber}">&nbsp;</td>
             <td></td></tr>
 <#list choiceData.caseMemberList as caseMember>
         <tr>
-          <td valign="top" id="tabIdent">
+          <td valign="top" id="tabIndent">
         <#list caseMember.caseList as case>
             <a name="casedef_${case.expression}"></a>
             <a href="#case_${case.expression}" class="fieldLink">case ${case.expression}</a>:<br/>
@@ -68,7 +68,7 @@
 </#list>
 <#if choiceData.defaultMember??>
         <tr>
-          <td valign="top" id="tabIdent">
+          <td valign="top" id="tabIndent">
             <a href="#case_default" class="fieldLink">default</a>:<br/>
           </td>
           <td colspan=3></td>
@@ -95,17 +95,17 @@
       </tbody>
       </table>
       <table>
-      <tbody id="tabIdent">
+      <tbody id="tabIndent">
   <#list functions as function>
-        <tr><td colspan=4 id="tabIdent">&nbsp;</td></tr>
+        <tr><td colspan=4 id="tabIndent">&nbsp;</td></tr>
         <tr>
-          <td colspan=4 valign="top" id="tabIdent">function ${function.returnTypeName} ${function.funtionType.name}()</td>
+          <td colspan=4 valign="top" id="tabIndent">function ${function.returnTypeName} ${function.funtionType.name}()</td>
         </tr>
-        <tr><td colspan=4 id="tabIdent">{</td></tr>
+        <tr><td colspan=4 id="tabIndent">{</td></tr>
         <tr>
-          <td valign="top" id="tabIdent2">return</td>
+          <td valign="top" id="tabIndent2">return</td>
           <td colspan=3>${function.result};</td></tr>
-        <tr><td colspan=4 id="tabIdent">}</td></tr>
+        <tr><td colspan=4 id="tabIndent">}</td></tr>
   </#list>
 </#if>
         <tr><td colspan=4>};</td></tr>

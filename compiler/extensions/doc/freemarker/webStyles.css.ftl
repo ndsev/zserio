@@ -78,6 +78,12 @@ a.referenceLink
     text-decoration:underline;
 }
 
+a.serviceLink
+{
+    text-decoration:underline;
+    color:brown;
+}
+
 .detailedDocu
 {
     width:100%;
@@ -180,18 +186,18 @@ th
     padding:0px;
 }
 
-.docuCode table tbody#tabIdent tr.codeMember td
+.docuCode table tbody#tabIndent tr.codeMember td
 {
     padding-top:.25em;
     padding-bottom:.25em;
 }
 
-#tabIdent
+#tabIndent
 {
     padding-left:5.5ex;
 }
 
-#tabIdent2
+#tabIndent2
 {
     padding-left:11ex;
 }

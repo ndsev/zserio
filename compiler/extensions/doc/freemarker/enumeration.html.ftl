@@ -32,7 +32,7 @@
       <tr><td>{</td><td rowspan="${type.items?size+1}">&nbsp;</td><td></td></tr>
 <#list items as item>
           <tr>
-            <td id="tabIdent"><a name="casedef_${item.name}"></a><a href="#${item.name}" class="fieldLink">${item.name}</a></td>
+            <td id="tabIndent"><a href="#${item.name}" class="fieldLink">${item.name}</a></td>
             <td>= ${item.value}<#if item_has_next>,</#if></td>
       </tr>
 </#list>

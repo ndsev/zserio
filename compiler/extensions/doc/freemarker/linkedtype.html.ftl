@@ -3,9 +3,7 @@
     <a class  = "${type.style}"
        href   = "../${type.packageName}/${type.hyperlinkName}.html"
        title  = "Type: ${type.category}"
-       target = "detailedDocu" >
-       ${type.name}
-    </a>
+       target = "detailedDocu">${type.name}</a><#rt>
   <#else>
     ${type.name}<#t>
   </#if>
@@ -18,9 +16,7 @@
     <a  class   = "fieldLink"
         href    = "../${linkedType.packageName}/${linkedType.hyperlinkName}.html"
         title   = "Type: ${linkedType.category}"
-        target  = "detailedDocu" >
-        ${field.name}
-    </a>
+        target  = "detailedDocu">${field.name}</a><#rt>
   <#else>
     ${field.name}<#t>
   </#if>

@@ -34,7 +34,7 @@
     <table>
     <tr><td class="docuCode">
       <table>
-      <tbody id="tabIdent">
+      <tbody id="tabIndent">
         <tr><td colspan=4>${categoryKeyword} ${type.name}<@parameterlist type/></td></tr>
         <tr><td colspan=4>{</td></tr>
 <#list fields as field>
@@ -54,14 +54,14 @@
   <#if field.hasAlignment>
         <tr class="codeMember">
           <td></td>
-          <td valign="top" id="tabIdent"><i>align(${field.alignmentValue});</i></td>
+          <td valign="top" id="tabIndent"><i>align(${field.alignmentValue});</i></td>
           <td valign="bottom"></td>
           <td></td>
         </tr>
   </#if>
         <tr class="codeMember">
           <td></td>
-          <td valign="top" id="tabIdent"><@linkedtype field.type/><@arglist field/></td>
+          <td valign="top" id="tabIndent"><@linkedtype field.type/><@arglist field/></td>
           <td valign="bottom">
             <a href="#${fname}" class="fieldLink">${fname}</a>${array}${opt}${c};</td>
           <td valign="bottom"><i>${sqlc}</i></td>
@@ -80,18 +80,18 @@
       </table>
 
       <table>
-      <tbody id="tabIdent">
+      <tbody id="tabIndent">
   <#list functions as function>
-        <tr><td colspan=3 id="tabIdent">&nbsp;</td></tr>
+        <tr><td colspan=3 id="tabIndent">&nbsp;</td></tr>
         <tr>
-          <td colspan=3 valign="top" id="tabIdent">function ${function.returnTypeName} ${function.funtionType.name}()</td>
+          <td colspan=3 valign="top" id="tabIndent">function ${function.returnTypeName} ${function.funtionType.name}()</td>
         </tr>
-        <tr><td colspan=3 id="tabIdent">{</td></tr>
+        <tr><td colspan=3 id="tabIndent">{</td></tr>
         <tr>
           <td></td>
-          <td valign="top" id="tabIdent2">return</td>
+          <td valign="top" id="tabIndent2">return</td>
           <td>${function.result};</td></tr>
-        <tr><td colspan=3 id="tabIdent">}</td></tr>
+        <tr><td colspan=3 id="tabIndent">}</td></tr>
   </#list>
 </#if>
         <tr><td colspan=3>};</td></tr>
