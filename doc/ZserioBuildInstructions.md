@@ -56,7 +56,7 @@ The script `build.sh` has the following usage:
 
 The following table describes all supported switches:
 
-Switch   | Switch long name     | Desription
+Switch   | Switch long name     | Description
 :------: | -------------------- | -------------------------------
 `-h`     | `--help`             | Show help.
 `-c`     | `--clean`            | Clean package instead of build.
@@ -65,7 +65,7 @@ Switch   | Switch long name     | Desription
 
 The argument `package` can be the arbitrary combination of the following packages:
 
-Package            | Desription
+Package            | Description
 ------------------ | -------------------------------
 `ant_task`         | Zserio Ant task.
 `core`             | Zserio core.
@@ -84,7 +84,7 @@ Package            | Desription
 `all-windows32`    | All available packages for windows32.
 `all-windows64`    | All available packages for windows64.
 
-### Example
+### Examples
 
 The following command creates Zserio bundle jar with Java extension together with Java runtime library jar
 in `distr` directory:
@@ -125,7 +125,7 @@ cmake --build .
 > Please don't forget about dependencies. Zserio core must be build before all extensions and Zserio bundle
 > must be built as the last one.
 
-### Example
+### Examples
 
 The following command creates Zserio bundle jar with Java extension together with Java runtime library jar
 in `distr` directory:

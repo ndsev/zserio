@@ -73,7 +73,7 @@ String      | `"You"`
 Hexadecimal digits and the `x` prefix as well as the `b`, `e` and 'f' suffixes are case-insensitive.
 Signing literals can be defined by `-` or `+` prefix. Signs are not applicable for string literals.
 
-[[top]](#language-guide)
+[top](#language-guide)
 
 ## Base Types
 
@@ -239,7 +239,7 @@ struct TestStructure
 };
 ```
 
-[[top]](#language-guide)
+[top](#language-guide)
 
 ## Constants
 
@@ -259,7 +259,7 @@ const int16 i = 1234;
 const int32 j = -5678;
 ```
 
-[[top]](#language-guide)
+[top](#language-guide)
 
 ## Enumeration Types
 
@@ -290,7 +290,7 @@ Referring to the example, any other enumeration type `Foo` may also contain a me
 In expressions outside of the defining type, enumeration members must always be prefixed by the type name
 and a dot, e.g. `Color.NONE`.
 
-[[top]](#language-guide)
+[top](#language-guide)
 
 ## Compound Types
 
@@ -512,7 +512,7 @@ be always a value written to the stream. This is in contrast to other serializat
 the decoders would generate the default value. Reason for this is the missing "wire format" in zserio which
 would add additional information in the stream for identifying fields and whether they are set or not.
 
-[[top]](#language-guide)
+[top](#language-guide)
 
 ## Array Types
 
@@ -584,7 +584,7 @@ struct AutoArrayCandidate
 };
 ```
 
-[[top]](#language-guide)
+[top](#language-guide)
 
 ## Alignment and Offsets
 
@@ -722,7 +722,7 @@ offsets[@index]: // implies align(8) before each data[i]
 The size of the `IndexedBit5Array` type will be 64+1+7+5+3+5=85 bits. The size of offset array `data` will be
 5+3+5=13 bits.
 
-[[top]](#language-guide)
+[top](#language-guide)
 
 ## Expressions
 
@@ -863,7 +863,7 @@ and are evaluated left to right, except assignment operators which are evaluated
 - `lengthof` `sum` `numbits`
 - `[]` `()` `.`
 
-[[top]](#language-guide)
+[top](#language-guide)
 
 ## Member Access
 
@@ -895,7 +895,7 @@ struct Message
 Within the scope of the `Message` type, `header` refers to the field of type `Header`, and
 `header.numSentences` is a member of that type.
 
-[[top]](#language-guide)
+[top](#language-guide)
 
 ## Parameterized Types
 
@@ -957,7 +957,7 @@ The `@index` denotes the current index of the `blocks` array. The use of this ex
 for the `Block` reference indicates that the `i`-th element of the `blocks` array is of type `Block`
 instantiated with the `i`-th header `headers[i]`.
 
-[[top]](#language-guide)
+[top](#language-guide)
 
 ## Subtypes
 
@@ -974,7 +974,7 @@ struct Block
 };
 ```
 
-[[top]](#language-guide)
+[top](#language-guide)
 
 ## Comments
 
@@ -1136,7 +1136,7 @@ future versions of the schema. It has the following format:
 @deprecated
 ```
 
-[[top]](#language-guide)
+[top](#language-guide)
 
 ## Packages and Imports
 
@@ -1199,7 +1199,7 @@ and parse source files `common/geometry.zs` and `common/featuretypes.zs`.
 Imported files may again contain import declarations. Cyclic import relations between packages are supported
 but should be avoided. The zserio parser takes care to parse each source file just once.
 
-[[top]](#language-guide)
+[top](#language-guide)
 
 ## SQLite Extension
 
@@ -1495,7 +1495,7 @@ struct                                   | `BLOB`
 choice                                   | `BLOB`
 enum                                     | `BLOB`
 
-[[top]](#language-guide)
+[top](#language-guide)
 
 ## Background & History
 
@@ -1523,7 +1523,7 @@ Since the name DataScript already was used by other projects for different purpo
 never really been a script language anyhow, a new name needed to be found: zserio. An acronym for zero
 serialization overhead and pronounced with a silent "s".
 
-[[top]](#language-guide)
+[top](#language-guide)
 
 ## License & Copyright
 
@@ -1533,4 +1533,4 @@ in root directory of this repo).
 
 Copyright remains at Godmar Back and Navigation Data Standard e.V.
 
-[[top]](#language-guide)
+[top](#language-guide)

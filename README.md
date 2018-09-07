@@ -8,6 +8,8 @@ In for the numbers? Head over to [benchmarks](benchmarks/README.md).
 
 Questions? Check the [FAQs](doc/FAQ.md).
 
+More documentation? Go to the [Documentation](#documentation).
+
 ------
 
 ## Serialization framework
@@ -121,5 +123,19 @@ You can find the detailed quick start tutorial in their respective repositories:
 Documentation of the schema language can be found in the
 [Zserio Language Overview](doc/ZserioLanguageOverview.md).
 
-Check out as well the [Quick Reference](doc/ZserioQuickReference.md) and the
-[Zserio Types Mapping](doc/ZserioTypesMapping.md) for JAVA and C++ in the doc folder.
+Explanation of more hidden schema language features can be found in the
+[Zserio Invisibles](doc/ZserioInvisibles.md).
+
+Schema language reference can be found in [Quick Reference](doc/ZserioQuickReference.md).
+
+User Guide can be found in the [Zserio Compiler User Guide](doc/ZserioUserGuide.md).
+
+Build instructions can be found in the [Zserio Compiler Build Instructions](doc/ZserioBuildInstructions).
+
+C++ users can find more information in the
+[C++ Tutorial](https://github.com/ndsev/zserio-tutorial-cpp#zserio-c-quick-start-tutorial).
+
+Java users can find more information in the
+[JAVA tutorial](https://github.com/ndsev/zserio-tutorial-java#zserio-java-quick-start-tutorial).
+
+Check out as well the [Zserio Types Mapping](doc/ZserioTypesMapping.md) for JAVA and C++ types mapping.
