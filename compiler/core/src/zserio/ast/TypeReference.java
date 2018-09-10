@@ -108,6 +108,13 @@ public class TypeReference extends TokenAST implements ZserioType, LinkAction
             else if (referencedType instanceof EnumType)
                 ((EnumType)referencedType).setUsedByCompoundType(ownerType);
         }
+        else if (owner instanceof ServiceType)
+        {
+            if (referencedType instanceof CompoundType)
+                ((CompoundType)referencedType).setUsedByServiceType((ServiceType)owner);
+            else if (referencedType instanceof Subtype)
+                ((Subtype)referencedType).setUsedByServiceType((ServiceType)owner);
+        }
     }
 
     @Override

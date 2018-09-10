@@ -11,6 +11,7 @@ import zserio.ast.ChoiceCase;
 import zserio.ast.ChoiceDefault;
 import zserio.ast.ChoiceType;
 import zserio.ast.CompoundType;
+import zserio.ast.ServiceType;
 import zserio.ast.ZserioException;
 import zserio.ast.ZserioType;
 import zserio.ast.EnumItem;
@@ -275,6 +276,11 @@ public class CompoundEmitter extends DefaultHtmlEmitter
         {
             CompoundEmitter ce = new CompoundEmitter(compound);
             containers.add(ce);
+        }
+        services.clear();
+        for (ServiceType service : compnd.getUsedByServiceList())
+        {
+            services.add(new LinkedType(service));
         }
 
         if (compnd instanceof ChoiceType)

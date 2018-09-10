@@ -26,6 +26,7 @@ public abstract class CompoundType extends TokenAST implements ZserioType, Compa
         parameters = new ArrayList<Parameter>();
         functions = new ArrayList<FunctionType>();
         usedByCompoundList = new TreeSet<CompoundType>();
+        usedByServiceList = new TreeSet<ServiceType>();
         ZserioTypeContainer.add(this);
     }
 
@@ -121,6 +122,16 @@ public abstract class CompoundType extends TokenAST implements ZserioType, Compa
                                       "' and '" + compoundType.getName() + "'!");
 
         usedByCompoundList.add(compoundType);
+    }
+
+    /**
+     * Sets service type which uses this compound type.
+     *
+     * @param serviceType Service type to set.
+     */
+    public void setUsedByServiceType(ServiceType serviceType)
+    {
+        usedByServiceList.add(serviceType);
     }
 
     /**
@@ -230,6 +241,16 @@ public abstract class CompoundType extends TokenAST implements ZserioType, Compa
     public Iterable<CompoundType> getUsedByCompoundList()
     {
         return usedByCompoundList;
+    }
+
+    /**
+     * Gets list of service types which use this compound type.
+     *
+     * @return List of service types using this compound type.
+     */
+    public Iterable<ServiceType> getUsedByServiceList()
+    {
+        return usedByServiceList;
     }
 
     /**
@@ -401,6 +422,7 @@ public abstract class CompoundType extends TokenAST implements ZserioType, Compa
     private boolean containsOptionalRecursion;
 
     private final SortedSet<CompoundType> usedByCompoundList;
+    private final SortedSet<ServiceType> usedByServiceList;
 
     private DocCommentToken docComment;
 

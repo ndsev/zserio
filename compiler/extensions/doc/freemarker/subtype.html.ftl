@@ -34,7 +34,7 @@
     </td></tr>
     </table>
 
-<@usedby containers/>
+<@usedby containers services/>
 <#if collaborationDiagramSvgFileName??>
 
     <@collaboration_diagram collaborationDiagramSvgFileName/>

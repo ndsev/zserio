@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import zserio.ast.CompoundType;
+import zserio.ast.ServiceType;
 import zserio.ast.ZserioException;
 import zserio.ast.Subtype;
 import zserio.ast.ZserioType;
@@ -36,6 +37,11 @@ public class SubtypeEmitter extends DefaultHtmlEmitter
         {
             CompoundEmitter ce = new CompoundEmitter(compound);
             containers.add(ce);
+        }
+        services.clear();
+        for (ServiceType service : subtype.getUsedByServiceList())
+        {
+            services.add(new LinkedType(service));
         }
 
         try

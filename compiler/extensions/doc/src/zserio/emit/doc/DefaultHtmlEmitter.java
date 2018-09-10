@@ -76,6 +76,11 @@ abstract public class DefaultHtmlEmitter extends DefaultDocEmitter
         return containers;
     }
 
+    public List<LinkedType> getServices()
+    {
+        return services;
+    }
+
     @Override
     public void beginPackage(AST p)
     {
@@ -135,6 +140,7 @@ abstract public class DefaultHtmlEmitter extends DefaultDocEmitter
     static volatile Configuration cfg;
 
     protected List<CompoundEmitter> containers = new ArrayList<CompoundEmitter>();
+    protected List<LinkedType> services = new ArrayList<LinkedType>();
 
     protected File directory;
 

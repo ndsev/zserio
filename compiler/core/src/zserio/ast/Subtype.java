@@ -24,6 +24,7 @@ public class Subtype extends TokenAST implements ZserioType
     {
         usedByConstList = new ArrayList<ConstType>();
         usedByCompoundList = new TreeSet<CompoundType>();
+        usedByServiceList = new TreeSet<ServiceType>();
         usedTypeList = new ArrayList<ZserioType>();
         ZserioTypeContainer.add(this);
     }
@@ -85,6 +86,16 @@ public class Subtype extends TokenAST implements ZserioType
     }
 
     /**
+     * Sets service type which uses this compound type.
+     *
+     * @param serviceType Service type to set.
+     */
+    public void setUsedByServiceType(ServiceType serviceType)
+    {
+        usedByServiceList.add(serviceType);
+    }
+
+    /**
      * Gets the target type.
      *
      * @return Type referenced by this subtype.
@@ -122,6 +133,16 @@ public class Subtype extends TokenAST implements ZserioType
     public Iterable<CompoundType> getUsedByCompoundList()
     {
         return usedByCompoundList;
+    }
+
+    /**
+     * Gets list of service types which use this compound type.
+     *
+     * @return List of service types using this compound type.
+     */
+    public Iterable<ServiceType> getUsedByServiceList()
+    {
+        return usedByServiceList;
     }
 
     /**
@@ -217,5 +238,6 @@ public class Subtype extends TokenAST implements ZserioType
 
     private List<ConstType> usedByConstList;
     private SortedSet<CompoundType> usedByCompoundList;
+    private SortedSet<ServiceType> usedByServiceList;
     private List<ZserioType> usedTypeList;
 }

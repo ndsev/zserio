@@ -50,6 +50,7 @@ public class EnumerationEmitter extends DefaultHtmlEmitter
             CompoundEmitter ce = new CompoundEmitter(compound);
             containers.add(ce);
         }
+        services.clear();
 
         try
         {

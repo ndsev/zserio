@@ -1,17 +1,21 @@
 package zserio.ast;
 
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.ArrayList;
+import java.util.Set;
+
 import zserio.antlr.ZserioParserTokenTypes;
 import zserio.antlr.util.BaseTokenAST;
 import zserio.antlr.util.ParserException;
+import zserio.tools.HashUtil;
 
 /**
  * AST node for service types.
  *
  * Service types are Zserio types as well.
  */
-public class ServiceType extends TokenAST implements ZserioType
+public class ServiceType extends TokenAST implements ZserioType, Comparable<ServiceType>
 {
     /**
      * Default constructor.
@@ -19,6 +23,38 @@ public class ServiceType extends TokenAST implements ZserioType
     public ServiceType()
     {
         ZserioTypeContainer.add(this);
+    }
+
+    @Override
+    public int compareTo(ServiceType other)
+    {
+        final int result = getName().compareTo(other.getName());
+        if (result != 0)
+            return result;
+
+        return getPackage().getPackageName().compareTo(other.getPackage().getPackageName());
+    }
+
+    @Override
+    public boolean equals(Object other)
+    {
+        if (this == other)
+            return true;
+
+        if (other instanceof ServiceType)
+            return compareTo((ServiceType)other) == 0;
+
+        return false;
+    }
+
+    @Override
+    public int hashCode()
+    {
+        int hash = HashUtil.HASH_SEED;
+        hash = HashUtil.hash(hash, getName());
+        hash = HashUtil.hash(hash, getPackage().getPackageName());
+
+        return hash;
     }
 
     @Override
@@ -36,7 +72,7 @@ public class ServiceType extends TokenAST implements ZserioType
     @Override
     public Iterable<ZserioType> getUsedTypeList()
     {
-        throw new InternalError("ServiceType.getUsedTypeList() is not implemented!");
+        return usedTypeList;
     }
 
     @Override
@@ -111,6 +147,15 @@ public class ServiceType extends TokenAST implements ZserioType
         evaluateHiddenDocComment(this);
     }
 
+    @Override
+    protected void check() throws ParserException
+    {
+        for (Rpc rpc : rpcs)
+        {
+            usedTypeList.addAll(rpc.getUsedTypeList());
+        }
+    }
+
     private static final long serialVersionUID = -6520580190710341443L;
 
     private Scope scope;
@@ -118,4 +163,5 @@ public class ServiceType extends TokenAST implements ZserioType
 
     private String name;
     private List<Rpc> rpcs = new ArrayList<Rpc>();
+    private Set<ZserioType> usedTypeList = new LinkedHashSet<ZserioType>();
 }

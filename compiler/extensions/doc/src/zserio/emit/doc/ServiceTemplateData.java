@@ -8,7 +8,7 @@ import zserio.ast.ServiceType;
 
 public class ServiceTemplateData
 {
-    public ServiceTemplateData(ServiceType serviceType)
+    public ServiceTemplateData(ServiceType serviceType, String outputPath, boolean withSvgDiagrams)
     {
         name = serviceType.getName();
         packageName = serviceType.getPackage().getPackageName();
@@ -17,6 +17,8 @@ public class ServiceTemplateData
         {
             rpcList.add(new RpcTemplateData(rpc));
         }
+        collaborationDiagramSvgFileName = (withSvgDiagrams)
+                ? DocEmitterTools.getTypeCollaborationSvgUrl(outputPath, serviceType) : null;
     }
 
     public String getName()
@@ -37,6 +39,11 @@ public class ServiceTemplateData
     public Iterable<RpcTemplateData> getRpcList()
     {
         return rpcList;
+    }
+
+    public String getCollaborationDiagramSvgFileName()
+    {
+        return collaborationDiagramSvgFileName;
     }
 
     public static class RpcTemplateData
@@ -79,4 +86,5 @@ public class ServiceTemplateData
     private String packageName;
     private DocCommentTemplateData docComment;
     private List<RpcTemplateData> rpcList = new ArrayList<RpcTemplateData>();
+    private String collaborationDiagramSvgFileName;
 }

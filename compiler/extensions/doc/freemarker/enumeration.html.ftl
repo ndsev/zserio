@@ -57,7 +57,7 @@
 </#list>
     </dl>
 
-<@usedby containers/>
+<@usedby containers services/>
 <#if collaborationDiagramSvgFileName??>
 
     <@collaboration_diagram collaborationDiagramSvgFileName/>

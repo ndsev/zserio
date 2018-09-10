@@ -93,6 +93,14 @@ public class TypeCollaborationDotEmitter extends DefaultDocEmitter
     }
 
     @Override
+    public void beginService(AST s)
+    {
+        if (!(s instanceof ZserioType))
+            throw new ZserioEmitHtmlException("Unexpected token type in beginServiceType");
+        storeType((ZserioType)s);
+    }
+
+    @Override
     public void beginSqlDatabase(AST s)
     {
         if (!(s instanceof ZserioType))
@@ -176,9 +184,9 @@ public class TypeCollaborationDotEmitter extends DefaultDocEmitter
         return usedByTypeSet;
     }
 
-    private final Map<ZserioType, Set<ZserioType>>  usedByTypeMap;
-    private final String                                    docPath;
-    private final String                                    dotLinksPrefix;
-    private final boolean                                   withSvgDiagrams;
-    private final String                                    dotExecutable;
+    private final Map<ZserioType, Set<ZserioType> > usedByTypeMap;
+    private final String docPath;
+    private final String dotLinksPrefix;
+    private final boolean withSvgDiagrams;
+    private final String dotExecutable;
 }

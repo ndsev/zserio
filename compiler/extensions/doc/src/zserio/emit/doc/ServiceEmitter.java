@@ -12,6 +12,8 @@ public class ServiceEmitter extends DefaultHtmlEmitter
     {
         super(outputPath);
         directory = new File(directory, CONTENT_FOLDER);
+        this.outputPath = outputPath;
+        this.withSvgDiagrams = withSvgDiagrams;
     }
 
     public void emit(ServiceType serviceType)
@@ -21,7 +23,7 @@ public class ServiceEmitter extends DefaultHtmlEmitter
             Template tpl = cfg.getTemplate("doc/service.html.ftl");
             setCurrentFolder(CONTENT_FOLDER);
             openOutputFileFromType(serviceType);
-            tpl.process(new ServiceTemplateData(serviceType), writer);
+            tpl.process(new ServiceTemplateData(serviceType, outputPath, withSvgDiagrams), writer);
         }
         catch (Throwable e)
         {
@@ -33,4 +35,7 @@ public class ServiceEmitter extends DefaultHtmlEmitter
                 writer.close();
         }
     }
+
+    private String outputPath;
+    private boolean withSvgDiagrams;
 }

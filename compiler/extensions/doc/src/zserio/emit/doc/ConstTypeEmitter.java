@@ -37,6 +37,7 @@ public class ConstTypeEmitter extends DefaultHtmlEmitter
             CompoundEmitter ce = new CompoundEmitter(compound);
             containers.add(ce);
         }
+        services.clear();
 
         try
         {

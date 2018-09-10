@@ -1,5 +1,6 @@
 <#include "doc_comment.html.ftl">
 <#include "linkedtype.html.ftl">
+<#include "collaboration_diagram.html.ftl">
 <html>
     <head>
         <title>service ${packageName}.${name}</title>
@@ -38,9 +39,9 @@
             </table>
         </td></tr>
         </table>
-        
+
         <h2>RPC methods</h2>
-        
+
         <dl>
 <#list rpcList as rpc>
             <dt class="memberItem"><a name="${rpc.name}">${rpc.name}:</a></dt>
@@ -49,5 +50,9 @@
             </dd>
 </#list>
         </dl>
+<#if collaborationDiagramSvgFileName??>
+
+    <@collaboration_diagram collaborationDiagramSvgFileName/>
+</#if>
     </body>
 </html>

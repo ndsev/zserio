@@ -1,5 +1,8 @@
 package zserio.ast;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import zserio.antlr.ZserioParserTokenTypes;
 import zserio.antlr.util.BaseTokenAST;
 import zserio.antlr.util.ParserException;
@@ -48,6 +51,16 @@ public class Rpc extends TokenAST
     public DocCommentToken getDocComment()
     {
         return getHiddenDocComment();
+    }
+
+    /**
+     * Gets the list of Zserio types used by this rpc method.
+     *
+     * @return List of Zserio types used by this rpc method.
+     */
+    public List<ZserioType> getUsedTypeList()
+    {
+        return usedTypeList;
     }
 
     @Override
@@ -104,11 +117,17 @@ public class Rpc extends TokenAST
         if (!(resolvedBaseType instanceof CompoundType))
             throw new ParserException(this, "Only non-parameterized compound types can be used in RPC calls, " +
                     "'" + type.getName() + "' is not a compound type!");
-        if (((CompoundType)resolvedBaseType).getParameters().size() > 0)
+
+        final CompoundType compoundType = (CompoundType)resolvedBaseType;
+        if (compoundType.getParameters().size() > 0)
             throw new ParserException(this, "Only non-parameterized compound types can be used in RPC calls, " +
                     "'" + type.getName() + "' is a parameterized type!");
         if (resolvedBaseType instanceof SqlTableType)
             throw new ParserException(this, "SQL table '" + type.getName() + "' cannot be used in RPC call");
+
+        compoundType.setUsedByServiceType(serviceType);
+
+        usedTypeList.add(TypeReference.resolveType(type));
     }
 
     private static final long serialVersionUID = -5025876957933812510L;
@@ -117,4 +136,5 @@ public class Rpc extends TokenAST
     private ZserioType responseType;
     private ZserioType requestType;
     private ServiceType serviceType;
+    private List<ZserioType> usedTypeList = new ArrayList<ZserioType>();
 }

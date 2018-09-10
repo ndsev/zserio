@@ -26,5 +26,5 @@ class ServiceEmitter extends JavaDefaultEmitter
         }
     }
 
-    private static final String TEMPLATE_NAME = "ServiceType.java.ftl";
+    private static final String TEMPLATE_NAME = "Service.java.ftl";
 }
