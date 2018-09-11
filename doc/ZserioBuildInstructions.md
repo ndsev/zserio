@@ -52,16 +52,7 @@ This script builds Zserio projects and installs them in folder `distr` (located 
 
 The script `build.sh` has the following usage:
 
-`build.sh [-h] [-c] [-p] [-o <dir>] package...`
-
-The following table describes all supported switches:
-
-Switch   | Switch long name     | Description
-:------: | -------------------- | -------------------------------
-`-h`     | `--help`             | Show help.
-`-c`     | `--clean`            | Clean package instead of build.
-`-p`     | `--purge`            | Purge `build` and `distr` directories before build.
-`-o`     | `--output-directory` | Output directory where `build` and `distr` will be located.
+`build.sh [-h,--help] package...`
 
 The argument `package` can be the arbitrary combination of the following packages:
 
@@ -107,11 +98,11 @@ If you don't like Bash script, you can build Zserio by hand.
 
 All Java projects use Ant and can be built by the command:
 
-`ant -f build.xml install`
+`ant install`
 
 There is one exception for Zserio bundle jar which is built by the command:
 
-`ant -f build.xml zserio_bundle.install`
+`ant zserio_bundle.install`
 
 All C++ projects use CMake and can be build by commands:
 
