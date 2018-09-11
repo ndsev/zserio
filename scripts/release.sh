@@ -4,27 +4,13 @@ SCRIPT_DIR=`dirname $0`
 source "${SCRIPT_DIR}/common_tools.sh"
 
 # Set and check release global variables.
-#
-# $1 - Set to 1 if "-t" argument is present.
 set_release_global_variables()
 {
-    exit_if_argc_ne $# 1
-    local SWITCH_TAG_ONLY="$1"
-
-    if [[ ${SWITCH_TAG_ONLY} == 1 ]] ; then
-        # GIT to use, defaults to "git" if not set
-        GIT="${GIT:-git}"
-        if [ ! -f "`which "${GIT}"`" ] ; then
-            stderr_echo "Cannot find git! Set GIT environment variable."
-            return 1
-        fi
-    else
-        # ZIP to use, defaults to "zip" if not set
-        ZIP="${ZIP:-zip}"
-        if [ ! -f "`which "${ZIP}"`" ] ; then
-            stderr_echo "Cannot find zip! Set ZIP environment variable."
-            return 1
-        fi
+    # ZIP to use, defaults to "zip" if not set
+    ZIP="${ZIP:-zip}"
+    if [ ! -f "`which "${ZIP}"`" ] ; then
+        stderr_echo "Cannot find zip! Set ZIP environment variable."
+        return 1
     fi
 
     return 0
@@ -36,27 +22,7 @@ print_release_help_env()
     cat << EOF
 Uses the following environment variables for releasing:
     ZIP Zip executable to use. Default is "zip".
-    GIT Git executable to use. Default is "git".
 EOF
-}
-
-# Tag release in Git.
-#
-# $1 - The release version.
-make_git_tag()
-{
-    exit_if_argc_ne $# 1
-    local RELEASE_VERSION="$1"
-
-    echo -ne "Tagging release in Git..."
-    "${GIT}" tag -a -m "Release Zserio-${RELEASE_VERSION}." Zserio-${RELEASE_VERSION}
-    if [ $? -ne 0 ] ; then
-        stderr_echo "Git tagging failure!"
-        return 1
-    fi
-    echo "Done"
-
-    return 0
 }
 
 # Assemble Zserio release ZIP file.
@@ -109,11 +75,10 @@ Description:
     Releases Zserio to release-ver directory.
 
 Usage:
-    $0 [-h] [-t]
+    $0 [-h]
 
 Arguments:
     -h, --help     Show this help.
-    -t, --tag-only Don't release just tag Zserio trunk in Git.
 
 Examples:
     $0
@@ -127,7 +92,6 @@ EOF
 #
 # Parameters:
 # -----------
-# $1 - The name of variable to set to 1 if "-t" argument is present.
 # $@ - The command line arguments to parse.
 #
 # Usage:
@@ -146,24 +110,12 @@ EOF
 # 2 - Help switch is present. Arguments after help switch have not been checked.
 parse_arguments()
 {
-    local NUM_OF_ARGS=1
-    exit_if_argc_lt $# ${NUM_OF_ARGS}
-    local SWITCH_TAG_ONLY_OUT="$1"
-    shift ${NUM_OF_ARGS}
-
-    eval ${SWITCH_TAG_ONLY_OUT}=0
-
     local NUM_PARAMS=0
     local ARG="$1"
     while [ -n "${ARG}" ] ; do
         case "${ARG}" in
             "-h" | "--help")
                 return 2
-                ;;
-
-            "-t" | "--tag-only")
-                eval ${SWITCH_TAG_ONLY_OUT}=1
-                shift
                 ;;
 
             "-"*)
@@ -191,8 +143,7 @@ main()
     echo
 
     # parse command line arguments
-    local SWITCH_TAG_ONLY
-    parse_arguments SWITCH_TAG_ONLY $@
+    parse_arguments $@
     if [ $? -ne 0 ] ; then
         print_help
         return 1
@@ -203,7 +154,7 @@ main()
     convert_to_absolute_path "${SCRIPT_DIR}/.." ZSERIO_PROJECT_ROOT
 
     # set global variables
-    set_release_global_variables ${SWITCH_TAG_ONLY}
+    set_release_global_variables
     if [ $? -ne 0 ] ; then
         return 1
     fi
@@ -216,27 +167,18 @@ main()
         return 1
     fi
 
-    if [[ ${SWITCH_TAG_ONLY} == 1 ]] ; then
-        echo "The release version: ${ZSERIO_VERSION}"
-        echo
-        make_git_tag "${ZSERIO_VERSION}"
-        if [ $? -ne 0 ] ; then
-            return 1
-        fi
-    else
-        local ZSERIO_DISTR_DIR="${ZSERIO_PROJECT_ROOT}/distr"
+    local ZSERIO_DISTR_DIR="${ZSERIO_PROJECT_ROOT}/distr"
 
-        # create empty release directory
-        rm -rf "${ZSERIO_RELEASE_DIR}"
-        mkdir -p "${ZSERIO_RELEASE_DIR}"
+    # create empty release directory
+    rm -rf "${ZSERIO_RELEASE_DIR}"
+    mkdir -p "${ZSERIO_RELEASE_DIR}"
 
-        echo "The release source directory: ${ZSERIO_DISTR_DIR}"
-        echo "The release target directory: ${ZSERIO_RELEASE_DIR}"
-        echo
-        make_release "${ZSERIO_VERSION}" "${ZSERIO_DISTR_DIR}" "${ZSERIO_RELEASE_DIR}"
-        if [ $? -ne 0 ] ; then
-            return 1
-        fi
+    echo "The release source directory: ${ZSERIO_DISTR_DIR}"
+    echo "The release target directory: ${ZSERIO_RELEASE_DIR}"
+    echo
+    make_release "${ZSERIO_VERSION}" "${ZSERIO_DISTR_DIR}" "${ZSERIO_RELEASE_DIR}"
+    if [ $? -ne 0 ] ; then
+        return 1
     fi
 
     return 0
