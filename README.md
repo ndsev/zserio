@@ -1,8 +1,7 @@
 <img src="doc/Zserio.png" height="100">
 
 --------
-
-No time to read? Go to the [Quick Start](#quick-start).
+No time to read? Go to the [Quick Start](#quick-start) or [download latest release](https://github.com/ndsev/zserio/releases/latest).
 
 In for the numbers? Head over to [benchmarks](benchmarks/README.md).
 
@@ -98,15 +97,17 @@ using max 8 bytes whilst not providing the full range of a *uint64_t* but a *var
 
 To be able to serialize data with zserio, you have to follow these basic steps:
 
-1. Set up your development environment with the zserio runtime
-2. Write the schema definition
-3. Compile the schema and generate code
-4. Serialize/deserialize using the generated code
+1. Download the runtimes and the zserio compiler from [Github Releases](https://github.com/ndsev/zserio/releases/latest)
+2. Set up your development environment with the zserio runtime
+3. Write the schema definition
+4. Compile the schema and generate code
+5. Serialize/deserialize using the generated code
 
 You can find the detailed quick start tutorial in their respective repositories:
 
 - [C++ Tutorial](https://github.com/ndsev/zserio-tutorial-cpp#zserio-c-quick-start-tutorial)
 - [JAVA tutorial](https://github.com/ndsev/zserio-tutorial-java#zserio-java-quick-start-tutorial)
+
 
 ## Features overview
 
