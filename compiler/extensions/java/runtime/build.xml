@@ -8,11 +8,15 @@ zserio_runtimes.build_dir       - Zserio extensions build directory.
                                   Default is "../../../../build/runtime_libs".
 zserio_runtimes.install_dir     - Zserio extensions runtime install directory.
                                   Default is "../../../../distr/runtime_libs"
-zserio_java_runtime.build_dir   - Directory where to put generated files. Default is "${zserio_runtimes.build_dir}/java".
-zserio_java_runtime.install_dir - Directory where to install library. Default is "${zserio_runtimes.install_dir}/java".
+zserio_java_runtime.build_dir   - Directory where to put generated files.
+                                  Default is "${zserio_runtimes.build_dir}/java".
+zserio_java_runtime.install_dir - Directory where to install library.
+                                  Default is "${zserio_runtimes.install_dir}/java".
 relational.enable               - Flag whether the relational extension is included. Default is "no".
-relational.sqlite.jar_file      - SQLite JDBC jar file. Default is "../../../../3rdparty/java/sqlite-jdbc-3.23.1.jar".
-relational.validation           - Flag whether the support for low level validation is included. Default is "yes".
+relational.sqlite.jar_file      - SQLite JDBC jar file.
+                                  Default is "../../../../3rdparty/java/sqlite-jdbc-3.23.1.jar".
+relational.validation           - Flag whether the support for low level validation is included.
+                                  Default is "yes".
 findbugs.home_dir               - Location of the findbugs tool. If not set, findbugs is not run.
 
 -->
@@ -26,7 +30,8 @@ findbugs.home_dir               - Location of the findbugs tool. If not set, fin
     <property name="zserio_java_runtime.build_dir" value="${zserio_runtimes.build_dir}/java"/>
     <property name="zserio_java_runtime.install_dir" value="${zserio_runtimes.install_dir}/java"/>
     <property name="relational.enable" value="no"/>
-    <property name="relational.sqlite.jar_file" value="${zserio_java_runtime.zserio_root}/3rdparty/java/sqlite-jdbc-3.23.1.jar"/>
+    <property name="relational.sqlite.jar_file"
+        value="${zserio_java_runtime.zserio_root}/3rdparty/java/sqlite-jdbc-3.23.1.jar"/>
     <property name="relational.validation" value="yes"/>
 
     <property name="zserio_java_runtime.src_dir" location="${zserio_java_runtime.base_dir}/src"/>
@@ -36,18 +41,25 @@ findbugs.home_dir               - Location of the findbugs tool. If not set, fin
 
     <property name="zserio_java_runtime.test.src_dir" location="${zserio_java_runtime.base_dir}/test"/>
     <property name="zserio_java_runtime.test.build_dir" value="${zserio_java_runtime.build_dir}/test"/>
-    <property name="zserio_java_runtime.test.classes_dir" value="${zserio_java_runtime.test.build_dir}/classes"/>
-    <property name="zserio_java_runtime.test.findbugs.out_dir" value="${zserio_java_runtime.test.build_dir}/findbugs"/>
-    <property name="zserio_java_runtime.test.results_dir" value="${zserio_java_runtime.test.build_dir}/results"/>
+    <property name="zserio_java_runtime.test.classes_dir"
+        value="${zserio_java_runtime.test.build_dir}/classes"/>
+    <property name="zserio_java_runtime.test.findbugs.out_dir"
+        value="${zserio_java_runtime.test.build_dir}/findbugs"/>
+    <property name="zserio_java_runtime.test.results_dir"
+        value="${zserio_java_runtime.test.build_dir}/results"/>
 
     <property name="zserio_java_runtime.jar_dir" value="${zserio_java_runtime.build_dir}/jar"/>
     <property name="zserio_java_runtime.jar_file" value="${zserio_java_runtime.jar_dir}/zserio_runtime.jar"/>
-    <property name="zserio_java_runtime.javadocs_jar_file" value="${zserio_java_runtime.jar_dir}/zserio_runtime_javadocs.jar"/>
-    <property name="zserio_java_runtime.sources_jar_file" value="${zserio_java_runtime.jar_dir}/zserio_runtime_sources.jar"/>
+    <property name="zserio_java_runtime.javadocs_jar_file"
+        value="${zserio_java_runtime.jar_dir}/zserio_runtime_javadocs.jar"/>
+    <property name="zserio_java_runtime.sources_jar_file"
+        value="${zserio_java_runtime.jar_dir}/zserio_runtime_sources.jar"/>
 
     <property name="zserio_java_runtime.3rdparty.root_dir" value="${zserio_java_runtime.zserio_root}/3rdparty"/>
-    <property name="zserio_java_runtime.3rdparty.jar_dir" value="${zserio_java_runtime.3rdparty.root_dir}/java"/>
-    <property name="zserio_java_runtime.3rdparty.junit.jar_file" location="${zserio_java_runtime.3rdparty.jar_dir}/junit-4.10.jar"/>
+    <property name="zserio_java_runtime.3rdparty.jar_dir"
+        value="${zserio_java_runtime.3rdparty.root_dir}/java"/>
+    <property name="zserio_java_runtime.3rdparty.junit.jar_file"
+        location="${zserio_java_runtime.3rdparty.jar_dir}/junit-4.10.jar"/>
 
     <!-- Zserio Java extension runtime version. -->
     <loadfile
@@ -58,7 +70,7 @@ findbugs.home_dir               - Location of the findbugs tool. If not set, fin
             <striplinebreaks/>
             <tokenfilter>
                 <replaceregex
-                    pattern='.*VERSION_STRING\s*=\s*"([0-9]+.[0-9]+)".*'
+                    pattern='.*VERSION_STRING\s*=\s*"([0-9]+.[0-9]+.[0-9]+)".*'
                     replace="\1"/>
             </tokenfilter>
         </filterchain>
@@ -98,7 +110,8 @@ findbugs.home_dir               - Location of the findbugs tool. If not set, fin
         <mkdir dir="${zserio_java_runtime.classes_dir}"/>
         <depend srcDir="${zserio_java_runtime.src_dir}" destDir="${zserio_java_runtime.classes_dir}"
             cache="${zserio_java_runtime.build_dir}/depend-cache"/>
-        <javac destdir="${zserio_java_runtime.classes_dir}" debug="on" encoding="utf8" includeAntRuntime="false">
+        <javac destdir="${zserio_java_runtime.classes_dir}" debug="on" encoding="utf8"
+            includeAntRuntime="false">
             <compilerarg value="-Xlint:all"/>
             <compilerarg value="-Werror"/>
             <src path="${zserio_java_runtime.src_dir}"/>
@@ -151,9 +164,12 @@ findbugs.home_dir               - Location of the findbugs tool. If not set, fin
 
     <target name="install" depends="jar">
         <mkdir dir="${zserio_java_runtime.install_dir}"/>
-        <copy file="${zserio_java_runtime.jar_file}" todir="${zserio_java_runtime.install_dir}" overwrite="true"/>
-        <copy file="${zserio_java_runtime.javadocs_jar_file}" todir="${zserio_java_runtime.install_dir}" overwrite="true"/>
-        <copy file="${zserio_java_runtime.sources_jar_file}" todir="${zserio_java_runtime.install_dir}" overwrite="true"/>
+        <copy file="${zserio_java_runtime.jar_file}" todir="${zserio_java_runtime.install_dir}"
+            overwrite="true"/>
+        <copy file="${zserio_java_runtime.javadocs_jar_file}" todir="${zserio_java_runtime.install_dir}"
+            overwrite="true"/>
+        <copy file="${zserio_java_runtime.sources_jar_file}" todir="${zserio_java_runtime.install_dir}"
+            overwrite="true"/>
     </target>
 
     <target name="findbugs" depends="install" if="findbugs.home_dir">
@@ -188,8 +204,8 @@ findbugs.home_dir               - Location of the findbugs tool. If not set, fin
         <mkdir dir="${zserio_java_runtime.test.classes_dir}"/>
         <depend srcDir="${zserio_java_runtime.test.src_dir}" destDir="${zserio_java_runtime.test.classes_dir}"
             cache="${zserio_java_runtime.test.build_dir}/depend-cache"/>
-        <javac srcdir="${zserio_java_runtime.test.src_dir}" destdir="${zserio_java_runtime.test.classes_dir}" debug="on"
-            encoding="utf8" includeAntRuntime="false">
+        <javac srcdir="${zserio_java_runtime.test.src_dir}" destdir="${zserio_java_runtime.test.classes_dir}"
+            debug="on" encoding="utf8" includeAntRuntime="false">
             <compilerarg value="-Xlint:all"/>
             <compilerarg value="-Werror"/>
             <exclude name="zserio/runtime/validation/*.java"
