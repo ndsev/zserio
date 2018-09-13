@@ -88,6 +88,7 @@ findbugs.home_dir          - Location of the findbugs tool. If not set, findbugs
         <attribute name="testName"/>
         <attribute name="zsFile"/>
         <attribute name="ignoreError" default="false"/>
+        <attribute name="ignoreDependencies" default="@{ignoreError}"/>
         <attribute name="logLevel" default="warn"/>
         <element name="args" implicit="yes" optional="true"/>
         <sequential>
@@ -95,7 +96,7 @@ findbugs.home_dir          - Location of the findbugs tool. If not set, findbugs
 
             <zserio srcPath="${@{testName}.zs.in_dir}" srcFile="@{zsFile}"
                 java="${@{testName}.zs.out_dir}" ignoreError="@{ignoreError}">
-                <dependencies unless:true="@{ignoreError}">
+                <dependencies unless:true="@{ignoreDependencies}">
                     <fileset dir="${@{testName}.zs.in_dir}" includes="**/*.zs"/>
                     <fileset dir="${zserio.jar_dir}"/>
                     <fileset dir="${runtime.jar_dir}"/>
