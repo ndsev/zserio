@@ -37,6 +37,7 @@ java -jar zserio.jar
     [-v,--version]
     [-withInspectorCode|-withoutInspectorCode]
     [-withRangeCheckCode|-withoutRangeCheckCode]
+    [-withGrpcCode|-withoutGrpcCode]
     [-withSourcesAmalgamation|-withoutSourcesAmalgamation]
     [-withSqlCode|-withoutSqlCode]
     [-withSvgDiagrams|-withoutSvgDiagrams]
@@ -131,6 +132,12 @@ extension for Zserio data inspection is not supported by Java API. By default is
 **`-withRangeCheckCode|-withoutRangeCheckCode`**
 
 Enables/disables code for range checking for fields and parameters (integer types only). By default is disabled.
+
+**`-withGrpcCode|-withoutGrpcCode`**
+
+Enables/disables generation of code for [GPRC](https://grpc.io/) services.
+Java is based on release [v1.14.0](https://github.com/grpc/grpc-java/releases/tag/v1.14.0).
+C++ is based on release [v1.14.1](https://github.com/grpc/grpc/releases/tag/v1.14.1).
 
 **`-withSourcesAmalgamation|-withoutSourcesAmalgamation`**
 
