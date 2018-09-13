@@ -231,7 +231,7 @@ serviceDeclaration
     ;
 
 rpcDeclaration
-    :   #(RPC typeSymbol ID typeSymbol)
+    :   #(RPC (STREAM)? typeSymbol ID (STREAM)? typeSymbol)
     ;
 
 /**

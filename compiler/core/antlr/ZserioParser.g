@@ -98,6 +98,7 @@ tokens
     SQL_VIRTUAL="sql_virtual";
     SQL_USING="using";
     SQL_WITHOUT_ROWID="sql_without_rowid";
+    STREAM="stream";
     STRING="string"<AST=zserio.ast.StringType>;
     STRING_LITERAL<AST=zserio.ast.Expression>;
     STRUCTURE="struct"<AST=zserio.ast.StructureType>;
@@ -409,9 +410,11 @@ serviceDefinition
 
 rpcDeclaration
     :   RPC^
+        (STREAM)?
         typeSymbol // rpc doesn't need to specify parameters of parameterized types and forbids built-in types
         ID
         LPAREN!
+        (STREAM)?
         typeSymbol
         RPAREN!
     ;

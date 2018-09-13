@@ -5,10 +5,6 @@
 
 #include "gtest/gtest.h"
 
-#include "zserio/BitStreamWriter.h"
-#include "zserio/BitStreamReader.h"
-#include "zserio/CppRuntimeException.h"
-
 #include "service_types/complex_types_service/ComplexTypesService.h"
 
 namespace service_types

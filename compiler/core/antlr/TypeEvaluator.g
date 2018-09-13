@@ -361,7 +361,7 @@ serviceDeclaration
     ;
 
 rpcDeclaration
-    : #(r:RPC typeSymbol i:ID typeSymbol
+    : #(r:RPC (STREAM)? typeSymbol i:ID (STREAM)? typeSymbol
           {
               scope.setSymbol((BaseTokenAST)i, r);
           }

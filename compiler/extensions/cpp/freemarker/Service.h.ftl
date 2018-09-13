@@ -1,7 +1,10 @@
 <#include "FileHeader.inc.ftl">
+<#include "Service.h.inc.ftl">
 <@file_header generatorDescription/>
 
 <@include_guard_begin package.path, name/>
+
+#include "<@include_path rootPackage.path, "GrpcSerializationTraits.h"/>"
 
 <@user_includes headerUserIncludes, true/>
 #include <grpcpp/impl/codegen/async_generic_service.h>
@@ -41,33 +44,12 @@ public:
         virtual ~StubInterface() {}
 
 <#list rpcList as rpc>
-        virtual ::grpc::Status ${rpc.name}(::grpc::ClientContext* context,
-                const ${rpc.requestTypeFullName}& request, ${rpc.responseTypeFullName}* response) = 0;
-
-        typedef ::grpc::ClientAsyncResponseReaderInterface<${rpc.responseTypeFullName}>
-                IClientAsync${rpc.name}Reader;
-        typedef std::unique_ptr<IClientAsync${rpc.name}Reader> IClientAsync${rpc.name}ReaderPtr;
-
-        IClientAsync${rpc.name}ReaderPtr Async${rpc.name}(::grpc::ClientContext* context,
-                const ${rpc.requestTypeFullName}& request, ::grpc::CompletionQueue* cq)
-        {
-            return IClientAsync${rpc.name}ReaderPtr(Async${rpc.name}Raw(context, request, cq));
-        }
-
-        IClientAsync${rpc.name}ReaderPtr PrepareAsync${rpc.name}(::grpc::ClientContext* context,
-                const ${rpc.requestTypeFullName}& request, ::grpc::CompletionQueue* cq)
-        {
-            return IClientAsync${rpc.name}ReaderPtr(PrepareAsync${rpc.name}Raw(context, request, cq));
-        }
+        <@stub_interface_header_public rpc/>
 
 </#list>
     private:
 <#list rpcList as rpc>
-        virtual IClientAsync${rpc.name}Reader* Async${rpc.name}Raw(::grpc::ClientContext* context,
-                const ${rpc.requestTypeFullName}& request, ::grpc::CompletionQueue* cq) = 0;
-        virtual IClientAsync${rpc.name}Reader* PrepareAsync${rpc.name}Raw(
-                ::grpc::ClientContext* context, const ${rpc.requestTypeFullName}& request,
-                ::grpc::CompletionQueue* cq) = 0;
+        <@stub_interface_header_private rpc/>
     <#if rpc?has_next>
 
     </#if>
@@ -80,51 +62,37 @@ public:
         Stub(const std::shared_ptr<::grpc::ChannelInterface>& channel);
 
 <#list rpcList as rpc>
-        ::grpc::Status ${rpc.name}(::grpc::ClientContext* context,
-                const ${rpc.requestTypeFullName}& request, ${rpc.responseTypeFullName}* response) override;
-
-        typedef ::grpc::ClientAsyncResponseReader<${rpc.responseTypeFullName}> ClientAsync${rpc.name}Reader;
-        typedef std::unique_ptr<ClientAsync${rpc.name}Reader> ClientAsync${rpc.name}ReaderPtr;
-
-        ClientAsync${rpc.name}ReaderPtr Async${rpc.name}(::grpc::ClientContext* context,
-                const ${rpc.requestTypeFullName}& request, ::grpc::CompletionQueue* cq)
-        {
-            return ClientAsync${rpc.name}ReaderPtr(Async${rpc.name}Raw(context, request, cq));
-        }
-
-        ClientAsync${rpc.name}ReaderPtr PrepareAsync${rpc.name}(::grpc::ClientContext* context,
-                const ${rpc.requestTypeFullName}& request, ::grpc::CompletionQueue* cq)
-        {
-            return ClientAsync${rpc.name}ReaderPtr(PrepareAsync${rpc.name}Raw(context, request, cq));
-        }
+        <@stub_header_public rpc/>
 
 </#list>
     private:
         std::shared_ptr<::grpc::ChannelInterface> channel_;
 <#list rpcList as rpc>
 
-        ClientAsync${rpc.name}Reader* Async${rpc.name}Raw(::grpc::ClientContext* context,
-                const ${rpc.requestTypeFullName}& request, ::grpc::CompletionQueue* cq) override;
-        ClientAsync${rpc.name}Reader* PrepareAsync${rpc.name}Raw(::grpc::ClientContext* context,
-                const ${rpc.requestTypeFullName}& request, ::grpc::CompletionQueue* cq) override;
-        const ::grpc::internal::RpcMethod rpcmethod_${rpc.name};
+        <@stub_header_private rpc/>
+</#list>
+
+<#list rpcList as rpc>
+        const ::grpc::internal::RpcMethod rpcmethod_${rpc.name}_;
 </#list>
     };
+
     static std::unique_ptr<Stub> NewStub(const std::shared_ptr<::grpc::ChannelInterface>& channel,
             const ::grpc::StubOptions& options = ::grpc::StubOptions());
 
+    <#-- Server side - base -->
     class Service : public ::grpc::Service
     {
     public:
         Service();
         virtual ~Service();
 <#list rpcList as rpc>
-        virtual ::grpc::Status ${rpc.name}(::grpc::ServerContext* context,
-                const ${rpc.requestTypeFullName}* request, ${rpc.responseTypeFullName}* response);
+        <@service_header_public rpc/>
 </#list>
     };
 
 <#list rpcList as rpc>
+    <#-- Server side - Asynchronous -->
     template <class BaseClass>
     class WithAsyncMethod_${rpc.name} : public BaseClass
     {
@@ -139,27 +107,17 @@ public:
             BaseClassMustBeDerivedFromService(this);
         }
 
-        // disable synchronous version of this method
-        ::grpc::Status ${rpc.name}(::grpc::ServerContext* context,
-                const ${rpc.requestTypeFullName}* request, ${rpc.responseTypeFullName}* response) final override
-        {
-            abort();
-            return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
-        }
-
-        void Request${rpc.name}(::grpc::ServerContext* context,
-                ${rpc.requestTypeFullName}* request,
-                ::grpc::ServerAsyncResponseWriter<${rpc.responseTypeFullName}>* response,
-                ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag)
-        {
-            ::grpc::Service::RequestAsyncUnary(
-                    ${rpc?index}, context, request, response, new_call_cq, notification_cq, tag);
-        }
+        <@with_async_method_impl rpc, rpc?index/>
 
     private:
         void BaseClassMustBeDerivedFromService(const Service* service) {}
     };
 
+</#list>
+    <@typedef_async_service rpcList/>
+
+<#list rpcList as rpc>
+    <#-- Server side - Generic -->
     template <class BaseClass>
     class WithGenericMethod_${rpc.name} : public BaseClass
     {
@@ -174,17 +132,15 @@ public:
             BaseClassMustBeDerivedFromService(this);
         }
 
-        // disable synchronous version of this method
-        ::grpc::Status ${rpc.name}(::grpc::ServerContext* context,
-                const ${rpc.requestTypeFullName}* request, ${rpc.responseTypeFullName}* response) final override
-        {
-            abort();
-            return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
-        }
+        <@with_generic_method_impl rpc/>
+
     private:
         void BaseClassMustBeDerivedFromService(const Service* service) {}
     };
 
+</#list>
+<#list rpcList as rpc>
+    <#-- Server side - Raw -->
     template <class BaseClass>
     class WithRawMethod_${rpc.name} : public BaseClass
     {
@@ -199,26 +155,15 @@ public:
             BaseClassMustBeDerivedFromService(this);
         }
 
-        // disable synchronous version of this method
-        ::grpc::Status ${rpc.name}(::grpc::ServerContext* context,
-                const ${rpc.requestTypeFullName}* request, ${rpc.responseTypeFullName}* response) final override
-        {
-            abort();
-            return grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
-        }
-
-        void Request${rpc.name}(::grpc::ServerContext* context,
-                ::grpc::ByteBuffer* request, ::grpc::ServerAsyncResponseWriter<::grpc::ByteBuffer>* response,
-                ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag)
-        {
-            ::grpc::Service::RequestAsyncUnary(
-                    ${rpc?index}, context, request, response, new_call_cq, notification_cq, tag);
-        }
-
+        <@with_raw_method_impl rpc, rpc?index/>
     private:
         void BaseClassMustBeDerivedFromService(const Service* service) {}
     };
 
+</#list>
+<#list rpcList as rpc>
+    <#-- Server side - Streamed Unary -->
+    <#if rpc.noStreaming>
     template <class BaseClass>
     class WithStreamedUnaryMethod_${rpc.name} : public BaseClass
     {
@@ -256,32 +201,55 @@ public:
         void BaseClassMustBeDerivedFromService(const Service* service) {}
     };
 
+    </#if>
 </#list>
-<#macro typedef_with_method methodName rpcList serviceName>
-    <#list rpcList as rpc>
-        <#if rpc?is_first>
-    typedef <#rt>
-            <#if rpc?has_next>
-                <#lt>With${methodName}Method_${rpc.name}<
-            <#else>
-                <#lt>With${methodName}Method_${rpc.name}<<#rt>
-            </#if>
-        <#elseif rpc?is_last>
-            With${methodName}Method_${rpc.name}<<#rt>
-        <#else>
-            With${methodName}Method_${rpc.name}<
-        </#if>
-    </#list>
-        Service<#t>
-    <#list rpcList as rpc>
-        <#lt><#if rpc?index != 0> </#if>><#rt>
-    </#list>
-        <#lt> ${serviceName}Service;
-</#macro>
-    <@typedef_with_method "Async" rpcList "Async"/>
-    <@typedef_with_method "StreamedUnary" rpcList "StreamedUnary"/>
-    <@typedef_with_method "StreamedUnary" rpcList "Streamed"/>
-    typedef Service SplitStreamedService;
+    <@typedef_streamed_unary_service noStreamingRpcList/>
+
+<#list rpcList as rpc>
+    <#-- Server side - controlled server-side streaming -->
+    <#if rpc.responseOnlyStreaming>
+    template <class BaseClass>
+    class WithSplitStreamingMethod_${rpc.name} : public BaseClass
+    {
+    public:
+        WithSplitStreamingMethod_${rpc.name}()
+        {
+            typedef ::grpc::internal::SplitServerStreamingHandler<
+                    ${rpc.requestTypeFullName}, ${rpc.responseTypeFullName}> SplitServerStreamingHandler;
+
+            ::grpc::Service::MarkMethodStreamed(${rpc?index},
+                    new SplitServerStreamingHandler(std::bind(
+                            &WithSplitStreamingMethod_${rpc.name}<BaseClass>::Streamed${rpc.name},
+                            this, std::placeholders::_1, std::placeholders::_2)));
+        }
+
+        ~WithSplitStreamingMethod_${rpc.name}() override
+        {
+            BaseClassMustBeDerivedFromService(this);
+        }
+
+        // disable regular version of this method
+        ::grpc::Status ${rpc.name}(::grpc::ServerContext* context, const ${rpc.requestTypeFullName}* request,
+                ::grpc::ServerWriter< ${rpc.responseTypeFullName}>* writer) override
+        {
+            abort();
+            return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+        }
+
+        // replace default version of method with split streamed
+        virtual ::grpc::Status Streamed${rpc.name}(::grpc::ServerContext* context, ::grpc::ServerSplitStreamer<
+                ${rpc.requestTypeFullName}, ${rpc.responseTypeFullName}>* server_split_streamer) = 0;
+
+    private:
+            void BaseClassMustBeDerivedFromService(const Service *service) {}
+    };
+
+    </#if>
+</#list>
+    <@typedef_split_streamed_service responseOnlyStreamingRpcList/>
+
+    <#-- Server side - typedef for controlled both unary and server-side streaming -->
+    <@typedef_streamed_service noOrResponseOnlyStreamingRpcList/>
 };
 
 <@namespace_end package.path/>

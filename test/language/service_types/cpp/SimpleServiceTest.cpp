@@ -3,10 +3,6 @@
 
 #include "gtest/gtest.h"
 
-#include "zserio/BitStreamWriter.h"
-#include "zserio/BitStreamReader.h"
-#include "zserio/CppRuntimeException.h"
-
 #include "service_types/simple_service/SimpleService.h"
 
 namespace service_types

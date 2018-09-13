@@ -34,6 +34,15 @@ public class Rpc extends TokenAST
     }
 
     /**
+     * Returns whether the request is defined as a stream.
+     * @return True when request is defined as a stream.
+     */
+    public boolean hasRequestStreaming()
+    {
+        return requestStreaming;
+    }
+
+    /**
      * Gets response type of the RPC method.
      *
      * @return Response type of this RPC method.
@@ -41,6 +50,15 @@ public class Rpc extends TokenAST
     public ZserioType getResponseType()
     {
         return responseType;
+    }
+
+    /**
+     * Returns whether the response is defined as a stream.
+     * @return True when response is defined as a stream.
+     */
+    public boolean hasResponseStreaming()
+    {
+        return responseStreaming;
     }
 
     /**
@@ -72,6 +90,15 @@ public class Rpc extends TokenAST
             if (!(child instanceof IdToken))
                 return false;
             name = child.getText();
+            break;
+
+        case ZserioParserTokenTypes.STREAM:
+            if (responseType == null)
+                responseStreaming = true;
+            else if (requestType == null)
+                requestStreaming = true;
+            else
+                return false;
             break;
 
         default:
@@ -134,7 +161,9 @@ public class Rpc extends TokenAST
 
     private String name;
     private ZserioType responseType;
+    private boolean responseStreaming = false;
     private ZserioType requestType;
+    private boolean requestStreaming = false;
     private ServiceType serviceType;
     private List<ZserioType> usedTypeList = new ArrayList<ZserioType>();
 }

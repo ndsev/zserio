@@ -295,9 +295,9 @@ serviceDeclaration
 
 rpcDeclaration
     :   #(r: RPC                    { em.beginRpc(r); }
-        typeSymbol
+        (STREAM)? typeSymbol
         ID
-        typeSymbol
+        (STREAM)? typeSymbol
         )                           { em.endRpc(r); }
     ;
 

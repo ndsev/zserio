@@ -20,7 +20,7 @@ public class ServiceTypesErrorTest
     @Test
     public void builtinType()
     {
-        final String error = "builtin_type_error.zs:10:29: expecting ID, found 'int32' (reserved keyword)";
+        final String error = "builtin_type_error.zs:10:29: unexpected token: int32 (reserved keyword)";
         assertTrue(zserioErrors.isPresent(error));
     }
 

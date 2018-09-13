@@ -1,9 +1,8 @@
 <#include "FileHeader.inc.ftl">
+<#include "Service.cpp.inc.ftl">
 <@file_header generatorDescription/>
 
 #include "<@include_path package.path, "${name}.h"/>"
-
-#include "<@include_path rootPackage.path, "GrpcSerializationTraits.h"/>"
 
 <@user_includes cppUserIncludes, true/>
 #include <grpcpp/impl/codegen/async_stream.h>
@@ -28,15 +27,15 @@ std::unique_ptr<${name}::Stub> ${name}::NewStub(const std::shared_ptr<::grpc::Ch
         const ::grpc::StubOptions& options)
 {
     (void) options;
-    std::unique_ptr< ${name}::Stub> stub(new ${name}::Stub(channel));
+    std::unique_ptr<${name}::Stub> stub(new ${name}::Stub(channel));
     return stub;
 }
 
-${name}::Stub::Stub(const std::shared_ptr< ::grpc::ChannelInterface>& channel) :
+${name}::Stub::Stub(const std::shared_ptr<::grpc::ChannelInterface>& channel) :
         channel_(channel)<#if rpcList?has_content>,</#if>
 <#list rpcList as rpc>
-        rpcmethod_${rpc.name}(${name}_method_names[${rpc?index}],
-                ::grpc::internal::RpcMethod::NORMAL_RPC, channel)<#rt>
+        rpcmethod_${rpc.name}_(${name}_method_names[${rpc?index}],
+                <@rpc_method_type rpc/>, channel)<#rt>
         <#if rpc?is_last>
 
         <#else>
@@ -47,34 +46,15 @@ ${name}::Stub::Stub(const std::shared_ptr< ::grpc::ChannelInterface>& channel) :
 }
 
 <#list rpcList as rpc>
-::grpc::Status ${name}::Stub::${rpc.name}(::grpc::ClientContext* context,
-        const ${rpc.requestTypeFullName}& request, ${rpc.responseTypeFullName}* response)
-{
-    return ::grpc::internal::BlockingUnaryCall(channel_.get(),
-            rpcmethod_${rpc.name}, context, request, response);
-}
-
-${name}::Stub::ClientAsync${rpc.name}Reader* ${name}::Stub::Async${rpc.name}Raw(
-        ::grpc::ClientContext* context, const ${rpc.requestTypeFullName}& request, ::grpc::CompletionQueue* cq)
-{
-    return ::grpc::internal::ClientAsyncResponseReaderFactory<${rpc.responseTypeFullName}>::Create(
-            channel_.get(), cq, rpcmethod_${rpc.name}, context, request, true);
-}
-
-${name}::Stub::ClientAsync${rpc.name}Reader* ${name}::Stub::PrepareAsync${rpc.name}Raw(
-        ::grpc::ClientContext* context, const ${rpc.requestTypeFullName}& request, ::grpc::CompletionQueue* cq)
-{
-    return ::grpc::internal::ClientAsyncResponseReaderFactory<${rpc.responseTypeFullName}>::Create(
-            channel_.get(), cq, rpcmethod_${rpc.name}, context, request, false);
-}
+<@stub_source_public name, rpc/>
 
 </#list>
 ${name}::Service::Service()
 {
 <#list rpcList as rpc>
     AddMethod(new ::grpc::internal::RpcServiceMethod(
-            ${name}_method_names[${rpc?index}], ::grpc::internal::RpcMethod::NORMAL_RPC,
-            new ::grpc::internal::RpcMethodHandler<
+            ${name}_method_names[${rpc?index}], <@rpc_method_type rpc/>,
+            new <@rpc_method_handler rpc/><
                     ${name}::Service, ${rpc.requestTypeFullName}, ${rpc.responseTypeFullName}>(
                             std::mem_fn(&${name}::Service::${rpc.name}), this)));
 </#list>
@@ -85,14 +65,7 @@ ${name}::Service::~Service()
 }
 
 <#list rpcList as rpc>
-::grpc::Status ${name}::Service::${rpc.name}(::grpc::ServerContext* context,
-        const ${rpc.requestTypeFullName}* request, ${rpc.responseTypeFullName} * response)
-{
-    (void) context;
-    (void) request;
-    (void) response;
-    return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
-}
+<@service_unimplemented_method name, rpc/>
 </#list>
 
 <@namespace_end package.path/>

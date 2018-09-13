@@ -7,6 +7,20 @@ if (GRPC_ENABLED)
         ${ZSERIO_GEN_DIR}/service_types/simple_service/Response.cpp
         ${ZSERIO_GEN_DIR}/service_types/simple_service/Request.h
         ${ZSERIO_GEN_DIR}/service_types/simple_service/Request.cpp
+
+        ${ZSERIO_GEN_DIR}/service_types/streaming_service/Age.cpp
+        ${ZSERIO_GEN_DIR}/service_types/streaming_service/Age.h
+        ${ZSERIO_GEN_DIR}/service_types/streaming_service/Empty.cpp
+        ${ZSERIO_GEN_DIR}/service_types/streaming_service/Empty.h
+        ${ZSERIO_GEN_DIR}/service_types/streaming_service/Name.cpp
+        ${ZSERIO_GEN_DIR}/service_types/streaming_service/Name.h
+        ${ZSERIO_GEN_DIR}/service_types/streaming_service/Num.cpp
+        ${ZSERIO_GEN_DIR}/service_types/streaming_service/Num.h
+        ${ZSERIO_GEN_DIR}/service_types/streaming_service/User.cpp
+        ${ZSERIO_GEN_DIR}/service_types/streaming_service/User.h
+        ${ZSERIO_GEN_DIR}/service_types/streaming_service/UserDB.cpp
+        ${ZSERIO_GEN_DIR}/service_types/streaming_service/UserDB.h
+
         ${ZSERIO_GEN_DIR}/service_types/complex_types_service/CMYKModel.cpp
         ${ZSERIO_GEN_DIR}/service_types/complex_types_service/CMYKModel.h
         ${ZSERIO_GEN_DIR}/service_types/complex_types_service/Color.h
@@ -43,6 +57,7 @@ if (GRPC_ENABLED)
 
     add_test_sources(
         cpp/SimpleServiceTest.cpp
+        cpp/StreamingServiceTest.cpp
         cpp/ComplexTypesServiceTest.cpp
     )
 
