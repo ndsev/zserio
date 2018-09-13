@@ -11,6 +11,10 @@ function(find_grpc_libraries)
     set(GRPC_ENABLED OFF CACHE BOOL "Enable GRPC tests")
 
     if (GRPC_ENABLED)
+        if ("${GRPC_LIBRARIES}" STREQUAL "")
+            unset(GRPC_LIBDIR CACHE)
+            unset(GRPC_INCDIR CACHE)
+        endif ()
         set(GRPC_LIBDIR ${GRPC_ROOT}/libs/opt CACHE PATH "GRCP libraries directory")
         set(GRPC_INCDIR ${GRPC_ROOT}/include CACHE PATH "GRPC include directory")
 

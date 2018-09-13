@@ -43,16 +43,17 @@ EOF
 # $8 - The name of example test to run.
 test()
 {
-    exit_if_argc_ne $# 8
-    local ZSERIO_RELEASE_DIR="$1"
-    local ZSERIO_VERSION="$2"
-    local ZSERIO_PROJECT_ROOT="$3"
-    local TEST_OUT_DIR="$4"
-    local PARAM_JAVA=$5
-    local MSYS_WORKAROUND_TEMP=("${!6}")
+    exit_if_argc_ne $# 9
+    local ZSERIO_RELEASE_DIR="$1"; shift
+    local ZSERIO_VERSION="$1"; shift
+    local ZSERIO_PROJECT_ROOT="$1"; shift
+    local TEST_OUT_DIR="$1"; shift
+    local PARAM_JAVA="$1"; shift
+    local MSYS_WORKAROUND_TEMP=("${!1}"); shift
     local TARGETS=("${MSYS_WORKAROUND_TEMP[@]}")
-    local SWITCH_CLEAN="$7"
-    local SWITCH_TEST_NAME="$8"
+    local SWITCH_CLEAN="$1"; shift
+    local SWITCH_GRPC="$1"; shift
+    local SWITCH_TEST_NAME="$1"; shift
 
     local TEST_SRC_DIR="${ZSERIO_PROJECT_ROOT}/test"
 
@@ -101,12 +102,10 @@ test()
 
         local CMAKE_ARGS=("-DZSERIO_RUNTIME_INCLUDE_INSPECTOR=ON"
                           "-DZSERIO_RELEASE_ROOT=${UNPACKED_ZSERIO_RELEASE_DIR}"
+                          "-DZSERIO_TEST_NAME=${SWITCH_TEST_NAME}"
                           "-DGRPC_ENABLED=${SWITCH_GRPC}"
                           "-DGRPC_ROOT=${GRPC_ROOT}")
         local CTEST_ARGS=()
-        if [[ ${SWITCH_TEST_NAME} != "" ]]; then
-            CTEST_ARGS+=("-L ${SWITCH_TEST_NAME}")
-        fi
         if [[ ${SWITCH_CLEAN} == 1 ]] ; then
             local CPP_TARGET="clean"
         else
@@ -176,7 +175,7 @@ Arguments:
     -c, --clean               Clean package instead of build.
     -p, --purge               Purge test build directory.
     -g, --grpc                Enable gRPC tests (disabled by default).
-    -t, --test-name TEST_NAME Run only TEST_NAME test from examples test suite.
+    -t, --test-name TEST_NAME Run only TEST_NAME test.
     package                   Specify the package to test.
 
 Package can be a combination of:
@@ -236,10 +235,10 @@ parse_arguments()
     local SWITCH_TEST_NAME_OUT="$1"; shift
 
     eval ${PARAM_JAVA_OUT}=0
-    eval ${SWITCH_TEST_NAME_OUT}=""
     eval ${SWITCH_CLEAN_OUT}=0
-    eval ${SWITCH_GRPC_OUT}=0
     eval ${SWITCH_PURGE_OUT}=0
+    eval ${SWITCH_GRPC_OUT}=0
+    eval ${SWITCH_TEST_NAME_OUT}="*"
 
     local NUM_PARAMS=0
     local PARAM_ARRAY=();
@@ -391,7 +390,7 @@ main()
 
     # run test
     test "${ZSERIO_RELEASE_DIR}" "${ZSERIO_VERSION}" "${ZSERIO_PROJECT_ROOT}" "${TEST_OUT_DIR}" \
-         ${PARAM_JAVA} PARAM_CPP_TARGET_ARRAY[@] ${SWITCH_CLEAN} "${SWITCH_TEST_NAME}"
+         ${PARAM_JAVA} PARAM_CPP_TARGET_ARRAY[@] ${SWITCH_CLEAN} ${SWITCH_GRPC} "${SWITCH_TEST_NAME}"
     if [ $? -ne 0 ] ; then
         return 1
     fi

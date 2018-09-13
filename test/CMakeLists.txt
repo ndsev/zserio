@@ -14,6 +14,7 @@ enable_testing()
 # input parameters
 set(ZSERIO_PROJECT_ROOT "${CMAKE_CURRENT_SOURCE_DIR}/..")
 set(ZSERIO_RELEASE_ROOT "${ZSERIO_PROJECT_ROOT}/distr" CACHE PATH "Root directory of Zserio release binaries.")
+set(ZSERIO_TEST_NAME "*" CACHE STRING "Example test name to run. Empty means all example tests.")
 
 # add gtest library
 set(CMAKE_MODULE_PATH ${ZSERIO_PROJECT_ROOT}/cmake)
@@ -37,7 +38,9 @@ sqlite_add_library(${ZSERIO_PROJECT_ROOT})
 include(grpc_utils)
 find_grpc_libraries()
 
-set(CMAKE_CXX_STANDARD 11) # needed due to GRPC
+if (GRPC_ENABLED)
+    set(CMAKE_CXX_STANDARD 11) # needed due to GRPC
+endif ()
 
 # add zserio runtime library
 include(zserio_utils)
@@ -48,14 +51,14 @@ zserio_add_runtime_library(RUNTIME_LIBRARY_DIR "${ZSERIO_RUNTIME_LIBRARY_DIR}"
                            INCLUDE_RELATIONAL ON)
 
 # functions to set globals called by included CMake lists
-set(TEST_SOURCES_LIST "" CACHE INTERNAL "Test sources") # clean list to allow cmake reconfigure
+set(TEST_SOURCES_LIST "" CACHE INTERNAL "Test sources")
 function(add_test_sources)
     foreach (SRC_FILE ${ARGV})
         set(TEST_SOURCES_LIST "${TEST_SOURCES_LIST};${CMAKE_CURRENT_SOURCE_DIR}/${SRC_FILE}" CACHE INTERNAL "")
     endforeach ()
 endfunction()
 
-set(TEST_DEPENDENCIES_LIST "" CACHE INTERNAL "Test dependencies") # clean list to allow cmake reconfigure
+set(TEST_DEPENDENCIES_LIST "" CACHE INTERNAL "Test dependencies")
 function(add_test_dependencies)
     foreach (DEPENDENCY ${ARGV})
         set(TEST_DEPENDENCIES_LIST "${TEST_DEPENDENCIES_LIST};${DEPENDENCY}" CACHE INTERNAL "")
@@ -63,7 +66,7 @@ function(add_test_dependencies)
 endfunction()
 
 # add all test cases
-file(GLOB_RECURSE SUBPROJECTS RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} "*/CMakeLists.txt")
+file(GLOB_RECURSE SUBPROJECTS RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} "${ZSERIO_TEST_NAME}/CMakeLists.txt")
 foreach(subproject ${SUBPROJECTS})
     get_filename_component(subdirectory ${subproject} DIRECTORY)
     add_subdirectory(${subdirectory})
