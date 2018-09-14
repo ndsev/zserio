@@ -265,5 +265,6 @@ struct Response
 service Users
 {
     rpc Response powerOfTwo(Request);
+    rpc stream Response powerOfTwoStreamed(stream Request);
 };
 ```
