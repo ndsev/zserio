@@ -1,4 +1,5 @@
 <#include "FileHeader.inc.ftl">
+<#include "Service.inc.ftl">
 <@standard_header generatorDescription, packageName, javaMajorVersion, [
         "java.io.ByteArrayInputStream",
         "java.io.InputStream",
@@ -6,67 +7,52 @@
         "io.grpc.MethodDescriptor.Marshaller",
         "io.grpc.Status",
         "io.grpc.StatusRuntimeException",
-        "static io.grpc.MethodDescriptor.generateFullMethodName",
+        "com.google.common.io.ByteStreams",
+        "zserio.runtime.io.ByteArrayBitStreamReader",
+        "zserio.runtime.io.ByteArrayBitStreamWriter",
+        "static io.grpc.MethodDescriptor.generateFullMethodName"
+]/>
+
+<#if hasNoStreamingRpc>
+<@imports [
         "static io.grpc.stub.ClientCalls.asyncUnaryCall",
         "static io.grpc.stub.ClientCalls.blockingUnaryCall",
         "static io.grpc.stub.ClientCalls.futureUnaryCall",
-        "static io.grpc.stub.ServerCalls.asyncUnaryCall",
-        "static io.grpc.stub.ServerCalls.asyncUnimplementedUnaryCall",
-        "com.google.common.io.ByteStreams",
-        "com.google.common.util.concurrent.ListenableFuture",
-        "zserio.runtime.io.ByteArrayBitStreamReader",
-        "zserio.runtime.io.ByteArrayBitStreamWriter"
+        "static io.grpc.stub.ServerCalls.asyncUnaryCall"
 ]/>
+</#if>
+<#if hasRequestOnlyStreamingRpc>
+<@imports [
+        "static io.grpc.stub.ClientCalls.asyncClientStreamingCall",
+        "static io.grpc.stub.ServerCalls.asyncClientStreamingCall"
+]/>
+</#if>
+<#if hasResponseOnlyStreamingRpc>
+<@imports [
+        "static io.grpc.stub.ClientCalls.blockingServerStreamingCall",
+        "static io.grpc.stub.ClientCalls.asyncServerStreamingCall",
+        "static io.grpc.stub.ServerCalls.asyncServerStreamingCall"
+]/>
+</#if>
+<#if hasBidiStreamingRpc>
+<@imports [
+        "static io.grpc.stub.ClientCalls.asyncBidiStreamingCall",
+        "static io.grpc.stub.ServerCalls.asyncBidiStreamingCall"
+]/>
+</#if>
+<#if hasNoStreamingRpc || hasResponseOnlyStreamingRpc>
+<@imports [
+        "static io.grpc.stub.ServerCalls.asyncUnimplementedUnaryCall"
+]/>
+</#if>
+<#if hasRequestOnlyStreamingRpc || hasBidiStreamingRpc>
+<@imports [
+        "static io.grpc.stub.ServerCalls.asyncUnimplementedStreamingCall"
+]/>
+</#if>
 <#assign packagePrefix>
     <#if packageName?has_content>${packageName}.</#if><#t>
 </#assign>
-<#macro getRpcMethod rpc>
-    get${rpc.name?cap_first}Method<#t>
-</#macro>
-<#macro rpcTypeParams rpc>
-    <${rpc.requestTypeFullName}, ${rpc.responseTypeFullName}><#t>
-</#macro>
-<#macro methodDescriptor rpc>
-    io.grpc.MethodDescriptor<@rpcTypeParams rpc/><#t>
-</#macro>
-<#macro methodDescriptorBuilder rpc>
-    io.grpc.MethodDescriptor.<@rpcTypeParams rpc/>newBuilder()<#t>
-</#macro>
-<#macro marshaller typeFullName indent>
-    <#local I>${""?left_pad(indent * 4)}</#local>
-${I}new Marshaller<${typeFullName}>()
-${I}{
-${I}    @Override
-${I}    public ${typeFullName} parse(InputStream is)
-${I}    {
-${I}        try
-${I}        {
-${I}            byte[] bytes = ByteStreams.toByteArray(is);
-${I}            ByteArrayBitStreamReader reader = new ByteArrayBitStreamReader(bytes);
-${I}            return new ${typeFullName}(reader);
-${I}        }
-${I}        catch (IOException e)
-${I}        {
-${I}            throw new StatusRuntimeException(Status.DATA_LOSS);
-${I}        }
-${I}    }
-${I}    @Override
-${I}    public InputStream stream(${typeFullName} request)
-${I}    {
-${I}        try
-${I}        {
-${I}            ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter();
-${I}            request.write(writer);
-${I}            byte[] bytes = writer.toByteArray();
-${I}            return new ByteArrayInputStream(bytes);
-${I}        }
-${I}        catch (IOException e)
-${I}        {
-${I}            throw new StatusRuntimeException(Status.DATA_LOSS);
-${I}        }
-${I}    }
-${I}}<#rt>
-</#macro>
 
 <@class_header generatorDescription/>
 public final class ${className}
@@ -78,21 +64,21 @@ public final class ${className}
     public static final String SERVICE_NAME = "${packagePrefix}${name}";
 
 <#list rpcList as rpc>
-    private static volatile <@methodDescriptor rpc/> <@getRpcMethod rpc/>;
+    private static volatile <@method_descriptor rpc/> <@get_rpc_method rpc/>;
 
     @io.grpc.stub.annotations.RpcMethod(
             fullMethodName = SERVICE_NAME + '/' + "${rpc.name}",
             requestType = ${rpc.requestTypeFullName}.class,
             responseType = ${rpc.responseTypeFullName}.class,
-            methodType = io.grpc.MethodDescriptor.MethodType.UNARY)
-    public static <@methodDescriptor rpc/> <@getRpcMethod rpc/>()
+            methodType = <@rpc_method_type rpc/>)
+    public static <@method_descriptor rpc/> <@get_rpc_method rpc/>()
     {
-        <@methodDescriptor rpc/> <@getRpcMethod rpc/>;
-        if ((<@getRpcMethod rpc/> = ${className}.<@getRpcMethod rpc/>) == null)
+        <@method_descriptor rpc/> <@get_rpc_method rpc/>;
+        if ((<@get_rpc_method rpc/> = ${className}.<@get_rpc_method rpc/>) == null)
         {
             synchronized (${className}.class)
             {
-                if ((<@getRpcMethod rpc/> = ${className}.<@getRpcMethod rpc/>) == null)
+                if ((<@get_rpc_method rpc/> = ${className}.<@get_rpc_method rpc/>) == null)
                 {
                     Marshaller<${rpc.requestTypeFullName}> requestMarshaller =
                             <#lt><@marshaller rpc.requestTypeFullName, 7/>;
@@ -100,19 +86,13 @@ public final class ${className}
                     Marshaller<${rpc.responseTypeFullName}> responseMarshaller =
                             <#lt><@marshaller rpc.responseTypeFullName, 7/>;
 
-                    ${className}.<@getRpcMethod rpc/> = <@getRpcMethod rpc/> = <@methodDescriptorBuilder rpc/>
-                            .setType(io.grpc.MethodDescriptor.MethodType.UNARY)
-                            .setFullMethodName(generateFullMethodName(
-                                    "${packagePrefix}${name}", "${rpc.name}"))
-                            .setSampledToLocalTracing(true)
-                            .setRequestMarshaller(requestMarshaller)
-                            .setResponseMarshaller(responseMarshaller)
-                            .build();
+                    ${className}.<@get_rpc_method rpc/> = <@get_rpc_method rpc/> =
+                            <#lt><@method_descriptor_builder packagePrefix, name, rpc, 7/>;
                 }
             }
         }
 
-        return <@getRpcMethod rpc/>;
+        return <@get_rpc_method rpc/>;
     }
 
 </#list>
@@ -143,11 +123,7 @@ public final class ${className}
     public static abstract class ${name}ImplBase implements io.grpc.BindableService
     {
 <#list rpcList as rpc>
-        public void ${rpc.name}(${rpc.requestTypeFullName} request,
-                io.grpc.stub.StreamObserver<${rpc.responseTypeFullName}> responseObserver)
-        {
-            asyncUnimplementedUnaryCall(<@getRpcMethod rpc/>(), responseObserver);
-        }
+        <@service_rpc_method rpc/>
 
 </#list>
         @java.lang.Override
@@ -155,8 +131,9 @@ public final class ${className}
         {
             return io.grpc.ServerServiceDefinition.builder(getServiceDescriptor())
 <#list rpcList as rpc>
-                    .addMethod(<@getRpcMethod rpc/>(), asyncUnaryCall(new MethodHandlers<@rpcTypeParams rpc/>(
-                            this, METHODID_${rpc.name?upper_case})))
+                    .addMethod(<@get_rpc_method rpc/>(), <@async_call_name rpc/>(
+                            new MethodHandlers<@rpc_type_params rpc/>(
+                                    this, METHODID_${rpc.name?upper_case})))
 </#list>
                     .build();
         }
@@ -181,12 +158,7 @@ public final class ${className}
         }
 <#list rpcList as rpc>
 
-        public void ${rpc.name}(${rpc.requestTypeFullName} request,
-                io.grpc.stub.StreamObserver<${rpc.responseTypeFullName}> responseObserver)
-        {
-            asyncUnaryCall(getChannel().newCall(<@getRpcMethod rpc/>(), getCallOptions()),
-                    request, responseObserver);
-        }
+        <@stub_rpc_method rpc/>
 </#list>
     }
 
@@ -208,11 +180,7 @@ public final class ${className}
             return new ${name}BlockingStub(channel, callOptions);
         }
 <#list rpcList as rpc>
-
-        public ${rpc.responseTypeFullName} ${rpc.name}(${rpc.requestTypeFullName} request)
-        {
-            return blockingUnaryCall(getChannel(), <@getRpcMethod rpc/>(), getCallOptions(), request);
-        }
+        <@blocking_stub_rpc_method rpc/>
 </#list>
     }
 
@@ -234,11 +202,7 @@ public final class ${className}
             return new ${name}FutureStub(channel, callOptions);
         }
 <#list rpcList as rpc>
-
-        public ListenableFuture<${rpc.responseTypeFullName}> ${rpc.name}(${rpc.requestTypeFullName} request)
-        {
-            return futureUnaryCall(getChannel().newCall(<@getRpcMethod rpc/>(), getCallOptions()), request);
-        }
+        <@future_stub_rpc_method rpc/>
 </#list>
     }
 <#list rpcList as rpc>
@@ -262,16 +226,20 @@ public final class ${className}
         }
 
         @java.lang.Override
+<#if hasNoStreamingRpc || hasResponseOnlyStreamingRpc>
         @java.lang.SuppressWarnings("unchecked")
+</#if>
         public void invoke(Req request, io.grpc.stub.StreamObserver<Resp> responseObserver)
         {
             switch (methodId)
             {
 <#list rpcList as rpc>
+    <#if rpc.noStreaming || rpc.responseOnlyStreaming>
             case METHODID_${rpc.name?upper_case}:
                 serviceImpl.${rpc.name}((${rpc.requestTypeFullName}) request,
                     (io.grpc.stub.StreamObserver<${rpc.responseTypeFullName}>)responseObserver);
                 break;
+    </#if>
 </#list>
             default:
                 throw new AssertionError();
@@ -279,10 +247,20 @@ public final class ${className}
         }
 
         @java.lang.Override
+<#if hasRequestOnlyStreamingRpc || hasBidiStreamingRpc>
+        @java.lang.SuppressWarnings("unchecked")
+</#if>
         public io.grpc.stub.StreamObserver<Req> invoke(io.grpc.stub.StreamObserver<Resp> responseObserver)
         {
             switch (methodId)
             {
+<#list rpcList as rpc>
+    <#if rpc.requestOnlyStreaming || rpc.bidiStreaming>
+            case METHODID_${rpc.name?upper_case}:
+                return (io.grpc.stub.StreamObserver<Req>) serviceImpl.${rpc.name}(
+                        (io.grpc.stub.StreamObserver<${rpc.responseTypeFullName}>) responseObserver);
+    </#if>
+</#list>
             default:
                 throw new AssertionError();
             }
@@ -303,7 +281,7 @@ public final class ${className}
                 {
                     serviceDescriptor = result = io.grpc.ServiceDescriptor.newBuilder(SERVICE_NAME)
 <#list rpcList as rpc>
-                            .addMethod(<@getRpcMethod rpc/>())
+                            .addMethod(<@get_rpc_method rpc/>())
 </#list>
                             .build();
                 }

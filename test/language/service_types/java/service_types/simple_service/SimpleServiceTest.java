@@ -89,7 +89,8 @@ public class SimpleServiceTest
             final BigInteger[] result = new BigInteger[1];
 
             final CountDownLatch finishLatch = new CountDownLatch(1);
-            StreamObserver<Response> responseObserver = new StreamObserver<Response>() {
+            StreamObserver<Response> responseObserver = new StreamObserver<Response>()
+            {
                 @Override
                 public void onCompleted()
                 {

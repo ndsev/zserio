@@ -20,7 +20,16 @@ public final class ServiceEmitterTemplateData extends UserTypeTemplateData
         Iterable<Rpc> rpcList = serviceType.getRpcList();
         for (Rpc rpc : rpcList)
         {
-            this.rpcList.add(new RpcTemplateData(javaTypeMapper, rpc));
+            RpcTemplateData templateData = new RpcTemplateData(javaTypeMapper, rpc);
+            this.rpcList.add(templateData);
+            if (templateData.getNoStreaming())
+                hasNoStreamingRpc = true;
+            else if (templateData.getRequestOnlyStreaming())
+                hasRequestOnlyStreamingRpc = true;
+            else if (templateData.getResponseOnlyStreaming())
+                hasResponseOnlyStreamingRpc = true;
+            else if (templateData.getBidiStreaming())
+                hasBidiStreamingRpc = true;
         }
     }
 
@@ -34,6 +43,26 @@ public final class ServiceEmitterTemplateData extends UserTypeTemplateData
         return className;
     }
 
+    public boolean getHasNoStreamingRpc()
+    {
+        return hasNoStreamingRpc;
+    }
+
+    public boolean getHasRequestOnlyStreamingRpc()
+    {
+        return hasRequestOnlyStreamingRpc;
+    }
+
+    public boolean getHasResponseOnlyStreamingRpc()
+    {
+        return hasResponseOnlyStreamingRpc;
+    }
+
+    public boolean getHasBidiStreamingRpc()
+    {
+        return hasBidiStreamingRpc;
+    }
+
     public static class RpcTemplateData
     {
         public RpcTemplateData(JavaNativeTypeMapper typeMapper, Rpc rpc)
@@ -42,9 +71,11 @@ public final class ServiceEmitterTemplateData extends UserTypeTemplateData
 
             final ZserioType responseType = rpc.getResponseType();
             responseTypeFullName = typeMapper.getJavaType(responseType).getFullName();
+            hasResponseStreaming = rpc.hasResponseStreaming();
 
             final ZserioType requestType = rpc.getRequestType();
             requestTypeFullName = typeMapper.getJavaType(requestType).getFullName();
+            hasRequestStreaming = rpc.hasRequestStreaming();
         }
 
         public String getName()
@@ -62,11 +93,37 @@ public final class ServiceEmitterTemplateData extends UserTypeTemplateData
             return requestTypeFullName;
         }
 
+        public boolean getNoStreaming()
+        {
+            return !hasRequestStreaming && !hasResponseStreaming;
+        }
+
+        public boolean getRequestOnlyStreaming()
+        {
+            return hasRequestStreaming && !hasResponseStreaming;
+        }
+
+        public boolean getResponseOnlyStreaming()
+        {
+            return !hasRequestStreaming && hasResponseStreaming;
+        }
+
+        public boolean getBidiStreaming()
+        {
+            return hasRequestStreaming && hasResponseStreaming;
+        }
+
         private final String name;
         private final String responseTypeFullName;
+        final private boolean hasResponseStreaming;
         private final String requestTypeFullName;
+        final private boolean hasRequestStreaming;
     }
 
     private final String className;
     private final List<RpcTemplateData> rpcList = new ArrayList<RpcTemplateData>();
+    private boolean hasNoStreamingRpc;
+    private boolean hasRequestOnlyStreamingRpc;
+    private boolean hasResponseOnlyStreamingRpc;
+    private boolean hasBidiStreamingRpc;
 }

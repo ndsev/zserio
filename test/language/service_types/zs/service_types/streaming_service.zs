@@ -35,7 +35,7 @@ service UserDB
     /** Adds the user and returns the number of users. Normal RPC. */
     rpc Num addUser(User);
 
-    /** Adds stream of users, returns number of added users. Client streaming RPC. */
+    /** Adds stream of users, returns number of users. Client streaming RPC. */
     rpc Num addUsers(stream User);
 
     /** Returns stream of users. Server streaming RPC. */

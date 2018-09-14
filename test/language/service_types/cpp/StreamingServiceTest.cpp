@@ -114,14 +114,12 @@ public:
             ::grpc::ServerReader<service_types::streaming_service::User>* reader,
             service_types::streaming_service::Num* response) override
     {
-        uint32_t num = 0;
         User user;
         while (reader->Read(&user))
         {
-            num++;
             m_users[user.getName()] = user;
         }
-        response->setNum(num);
+        response->setNum(m_users.size());
         return ::grpc::Status::OK;
     }
 
@@ -185,7 +183,7 @@ TEST_F(StreamingServiceTest, userDatabase)
     Client::Users usersToAdd;
     usersToAdd.emplace_back("B", 15);
     usersToAdd.emplace_back("C", 20);
-    ASSERT_EQ(2, client.addUsers(usersToAdd));
+    ASSERT_EQ(3, client.addUsers(usersToAdd));
 
     // no streaming
     ASSERT_EQ(4, client.addUser("D", 25));
