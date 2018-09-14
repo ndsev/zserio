@@ -52,7 +52,9 @@ public class ServiceTemplateData
         {
             name = rpc.getName();
             requestType = new LinkedType(rpc.getRequestType());
+            hasRequestStreaming = rpc.hasRequestStreaming();
             responseType = new LinkedType(rpc.getResponseType());
+            hasResponseStreaming = rpc.hasResponseStreaming();
             docComment = new DocCommentTemplateData(rpc.getHiddenDocComment());
         }
 
@@ -71,6 +73,16 @@ public class ServiceTemplateData
             return responseType;
         }
 
+        public boolean getHasRequestStreaming()
+        {
+            return hasRequestStreaming;
+        }
+
+        public boolean getHasResponseStreaming()
+        {
+            return hasResponseStreaming;
+        }
+
         public DocCommentTemplateData getDocComment()
         {
             return docComment;
@@ -78,7 +90,9 @@ public class ServiceTemplateData
 
         private String name;
         private LinkedType requestType;
+        private boolean hasRequestStreaming;
         private LinkedType responseType;
+        private boolean hasResponseStreaming;
         private DocCommentTemplateData docComment;
     }
 
