@@ -5,6 +5,7 @@
 
 #include <vector>
 
+#include <grpcpp/impl/codegen/serialization_traits.h>
 #include <grpcpp/impl/codegen/status.h>
 #include <grpcpp/impl/codegen/byte_buffer.h>
 
