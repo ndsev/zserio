@@ -174,7 +174,7 @@ Arguments:
     -h, --help                Show this help.
     -c, --clean               Clean package instead of build.
     -p, --purge               Purge test build directory.
-    -g, --grpc                Enable gRPC tests (disabled by default).
+    -g, --grpc                Enable gRPC language tests (disabled by default).
     -t, --test-name TEST_NAME Run only TEST_NAME test.
     package                   Specify the package to test.
 

@@ -1,21 +1,17 @@
 # A function to find GRPC libraries
 #
-# The following variables in the parent scope are set:
+# The following variables are set in cache:
 #
 # GRPC_ENABLED - Whether the GRPC is enabled at all (GRPC_ROOT is a valid directory)
 # GRPC_LIBDIR - Directory where the GRPC libraries are located
 # GRPC_INCDIR - Directory where the GRPC includes are located
 # GRPC_LIBRARIES - GRPC libraries to link with
 function(find_grpc_libraries)
-    set(GRPC_ROOT "" CACHE PATH "GRPC root directory")
+    set(GRPC_ROOT "/usr" CACHE PATH "GRPC root directory")
     set(GRPC_ENABLED OFF CACHE BOOL "Enable GRPC tests")
 
     if (GRPC_ENABLED)
-        if ("${GRPC_LIBRARIES}" STREQUAL "")
-            unset(GRPC_LIBDIR CACHE)
-            unset(GRPC_INCDIR CACHE)
-        endif ()
-        set(GRPC_LIBDIR ${GRPC_ROOT}/libs/opt CACHE PATH "GRCP libraries directory")
+        set(GRPC_LIBDIR ${GRPC_ROOT}/lib CACHE PATH "GRCP libraries directory")
         set(GRPC_INCDIR ${GRPC_ROOT}/include CACHE PATH "GRPC include directory")
 
         set(GRPC_LIB_NAMES "grpc++_unsecure" "grpc_unsecure" "gpr")
