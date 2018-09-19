@@ -34,14 +34,14 @@ protected:
         TestBlob testBlob1;
         testBlob1.initialize(TEST_TABLE_COUNT1);
         zserio::UInt8Array& values1 = testBlob1.getValues();
-        for (size_t i = 0; i < TEST_TABLE_COUNT1; ++i)
+        for (uint32_t i = 0; i < TEST_TABLE_COUNT1; ++i)
             values1.push_back(static_cast<uint8_t>(id));
         row.setBlob1(testBlob1);
 
         TestBlob testBlob2;
         testBlob2.initialize(TEST_TABLE_COUNT2);
         zserio::UInt8Array& values2 = testBlob2.getValues();
-        for (size_t i = 0; i < TEST_TABLE_COUNT2; ++i)
+        for (uint32_t i = 0; i < TEST_TABLE_COUNT2; ++i)
             values2.push_back(static_cast<uint8_t>(id + 1));
         row.setBlob2(testBlob2);
     }
@@ -49,7 +49,7 @@ protected:
     static void fillTestTableRows(std::vector<TestTableRow>& rows)
     {
         rows.clear();
-        for (uint64_t id = 0; id < NUM_TEST_TABLE_ROWS; ++id)
+        for (uint32_t id = 0; id < NUM_TEST_TABLE_ROWS; ++id)
         {
             const std::string name = "Name" + zserio::convertToString(id);
             TestTableRow row;
@@ -91,16 +91,16 @@ protected:
 
     static const char DB_FILE_NAME[];
 
-    static const size_t NUM_TEST_TABLE_ROWS;
-    static const size_t TEST_TABLE_COUNT1;
-    static const size_t TEST_TABLE_COUNT2;
+    static const uint32_t NUM_TEST_TABLE_ROWS;
+    static const uint32_t TEST_TABLE_COUNT1;
+    static const uint32_t TEST_TABLE_COUNT2;
 };
 
 const char ExplicitParametersTest::DB_FILE_NAME[] = "explicit_parameters.sqlite";
 
-const size_t ExplicitParametersTest::NUM_TEST_TABLE_ROWS = 5;
-const size_t ExplicitParametersTest::TEST_TABLE_COUNT1 = 10;
-const size_t ExplicitParametersTest::TEST_TABLE_COUNT2 = 11;
+const uint32_t ExplicitParametersTest::NUM_TEST_TABLE_ROWS = 5;
+const uint32_t ExplicitParametersTest::TEST_TABLE_COUNT1 = 10;
+const uint32_t ExplicitParametersTest::TEST_TABLE_COUNT2 = 11;
 
 TEST_F(ExplicitParametersTest, readWithoutCondition)
 {

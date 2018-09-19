@@ -326,7 +326,7 @@ inline void BitStreamWriter::writeUnsignedBits(uint32_t data, uint8_t numBits)
 
     const uint8_t org_numBits = numBits;
     uint8_t bits_free = 8 - (m_bitIndex & 0x07);
-    uint32_t byte_index = m_bitIndex / 8;
+    size_t byte_index = m_bitIndex / 8;
 
     if (numBits > bits_free)
     {
@@ -390,7 +390,7 @@ inline void BitStreamWriter::writeVarAbsNum(uint64_t value, bool sign, const uin
         {
             writeBool(i > 1); // hasNextByte
         }
-        const int shiftBits = (i - 1) * 7 + ((numVarBytes==valBitsSize && i > 1 ) ? 1 : 0);
+        const size_t shiftBits = (i - 1) * 7 + ((numVarBytes == valBitsSize && i > 1 ) ? 1 : 0);
         writeBits(static_cast<uint8_t>((value >> shiftBits) & bitMasks[numBits - 1]), numBits);
     }
 }

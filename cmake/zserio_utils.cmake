@@ -110,6 +110,9 @@ function(zserio_add_library)
         DEPENDS ${ALL_SOURCES} ${VALUE_ZSERIO_CORE_DIR}/zserio_core.jar
         COMMENT "Generating sources with Zserio")
 
+    # check if the library is header only
+    string(FIND "${VALUE_OUT_FILES}" ".cpp" SOURCE_FILE_POSITION)
+
     # add a custom target for the generation step
     add_custom_target(${VALUE_TARGET}_generate DEPENDS ${VALUE_OUT_FILES})
 
@@ -122,18 +125,30 @@ function(zserio_add_library)
     # delete whole directory even if Zserio generated a file that's not listed in ZSERIO_GENERATED_SOURCES
     set_directory_properties(PROPERTIES ADDITIONAL_MAKE_CLEAN_FILES ${VALUE_OUT_DIR})
 
+    if (MSVC)
+        compiler_reset_warnings_as_errors()
+        # needed to take effect since we are in the function
+        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}" PARENT_SCOPE)
+    endif ()
+
     # add a static library
     if (VALUE_ZSERIO_OPTIONS MATCHES "withInspectorCode")
         set_property(SOURCE ${VALUE_OUT_FILES}
                      APPEND PROPERTY COMPILE_DEFINITIONS ZSERIO_RUNTIME_INCLUDE_INSPECTOR)
     endif ()
 
-    add_library(${VALUE_TARGET} STATIC ${VALUE_OUT_FILES})
-    target_include_directories(${VALUE_TARGET} PUBLIC ${VALUE_OUT_DIR})
-    target_link_libraries(${VALUE_TARGET} PUBLIC ZserioCppRuntime)
+    if (MSVC AND SOURCE_FILE_POSITION EQUAL -1)
+        add_library(${VALUE_TARGET} INTERFACE)
+        add_dependencies(${VALUE_TARGET} ${VALUE_TARGET}_generate)
+        target_include_directories(${VALUE_TARGET} INTERFACE ${VALUE_OUT_DIR})
+        target_link_libraries(${VALUE_TARGET} INTERFACE ZserioCppRuntime)
+    else ()
+        add_library(${VALUE_TARGET} STATIC ${VALUE_OUT_FILES})
+        target_include_directories(${VALUE_TARGET} PUBLIC ${VALUE_OUT_DIR})
+        target_link_libraries(${VALUE_TARGET} PUBLIC ZserioCppRuntime)
+    endif ()
 
     # add cppcheck custom command (cppcheck fails if no sources to check are available)
-    string(FIND "${VALUE_OUT_FILES}" ".cpp" SOURCE_FILE_POSITION)
     if (NOT(SOURCE_FILE_POSITION EQUAL -1))
         include(cppcheck_utils)
         cppcheck_add_custom_command(TARGET ${VALUE_TARGET} SOURCE_DIR ${VALUE_OUT_DIR})

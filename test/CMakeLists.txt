@@ -24,11 +24,12 @@ gtest_add_library(${ZSERIO_PROJECT_ROOT}/3rdparty/cpp/googletest)
 # cmake helpers
 include(cmake_utils)
 
-# set gcc paramaters
-include(gcc_utils)
-gcc_set_pthread()
-gcc_set_warnings()
-gcc_set_static_clibs()
+# setup compiler
+include(compiler_utils)
+compiler_set_pthread()
+compiler_set_static_clibs()
+compiler_set_warnings()
+compiler_set_warnings_as_errors()
 
 # add SQLite3 for testing
 include(sqlite_utils)

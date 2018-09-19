@@ -16,7 +16,7 @@ protected:
     void writeImplicitArrayToByteArray(zserio::BitStreamWriter& writer, size_t numElements)
     {
         for (size_t i = 0; i < numElements; ++i)
-            writer.writeBits(i, 8);
+            writer.writeBits(static_cast<uint32_t>(i), 8);
     }
 };
 
@@ -26,7 +26,7 @@ TEST_F(ImplicitArrayTest, bitSizeOf)
     zserio::UInt8Array uint8Array;
     uint8Array.reserve(numElements);
     for (size_t i = 0; i < numElements; ++i)
-        uint8Array.push_back(i);
+        uint8Array.push_back(static_cast<uint8_t>(i));
     ImplicitArray implicitArray;
     implicitArray.setUint8Array(uint8Array);
 
@@ -40,7 +40,7 @@ TEST_F(ImplicitArrayTest, initializeOffsets)
     zserio::UInt8Array uint8Array;
     uint8Array.reserve(numElements);
     for (size_t i = 0; i < numElements; ++i)
-        uint8Array.push_back(i);
+        uint8Array.push_back(static_cast<uint8_t>(i));
     ImplicitArray implicitArray;
     implicitArray.setUint8Array(uint8Array);
 
@@ -70,7 +70,7 @@ TEST_F(ImplicitArrayTest, write)
     zserio::UInt8Array uint8Array;
     uint8Array.reserve(numElements);
     for (size_t i = 0; i < numElements; ++i)
-        uint8Array.push_back(i);
+        uint8Array.push_back(static_cast<uint8_t>(i));
     ImplicitArray implicitArray;
     implicitArray.setUint8Array(uint8Array);
 

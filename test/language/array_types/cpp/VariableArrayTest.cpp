@@ -19,7 +19,7 @@ protected:
         writer.writeSignedBits(static_cast<int8_t>(numElements), 8);
         for (size_t i = 0; i < numElements; ++i)
         {
-            writer.writeBits(i, 32);
+            writer.writeBits(static_cast<uint32_t>(i), 32);
             writer.writeString(std::string("Name") + zserio::convertToString(i));
         }
     }
@@ -33,7 +33,7 @@ TEST_F(VariableArrayTest, bitSizeOf)
     for (size_t i = 0; i < numElements; ++i)
     {
         TestStructure testStructure;
-        testStructure.setId(i);
+        testStructure.setId(static_cast<uint32_t>(i));
         testStructure.setName(std::string("Name") + zserio::convertToString(i));
         compoundArray.push_back(testStructure);
     }
@@ -55,7 +55,7 @@ TEST_F(VariableArrayTest, initializeOffsets)
     for (size_t i = 0; i < numElements; ++i)
     {
         TestStructure testStructure;
-        testStructure.setId(i);
+        testStructure.setId(static_cast<uint32_t>(i));
         testStructure.setName(std::string("Name") + zserio::convertToString(i));
         compoundArray.push_back(testStructure);
     }
@@ -97,7 +97,7 @@ TEST_F(VariableArrayTest, write)
     for (size_t i = 0; i < numElements; ++i)
     {
         TestStructure testStructure;
-        testStructure.setId(i);
+        testStructure.setId(static_cast<uint32_t>(i));
         testStructure.setName(std::string("Name") + zserio::convertToString(i));
         compoundArray.push_back(testStructure);
     }
@@ -129,7 +129,7 @@ TEST_F(VariableArrayTest, writeWrongArray)
     for (size_t i = 0; i < numElements; ++i)
     {
         TestStructure testStructure;
-        testStructure.setId(i);
+        testStructure.setId(static_cast<uint32_t>(i));
         testStructure.setName(std::string("Name") + zserio::convertToString(i));
         compoundArray.push_back(testStructure);
     }

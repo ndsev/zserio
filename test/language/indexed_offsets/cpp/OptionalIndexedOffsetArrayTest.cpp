@@ -31,7 +31,7 @@ protected:
                 writer.writeBits(wrongOffset, 32);
             else
                 writer.writeBits(currentOffset, 32);
-            currentOffset += zserio::getBitSizeOfString(m_data[i]) / 8;
+            currentOffset += static_cast<uint32_t>(zserio::getBitSizeOfString(m_data[i]) / 8);
         }
 
         writer.writeBool(hasOptional);
@@ -55,7 +55,7 @@ protected:
         for (uint8_t i = 0; i < NUM_ELEMENTS; ++i)
         {
             ASSERT_EQ(expectedOffset, offsets[i]);
-            expectedOffset += zserio::getBitSizeOfString(m_data[i]) / 8;
+            expectedOffset += static_cast<uint32_t>(zserio::getBitSizeOfString(m_data[i]) / 8);
         }
     }
 
@@ -93,7 +93,7 @@ protected:
                 offsets.push_back(wrongOffset);
             else
                 offsets.push_back(currentOffset);
-            currentOffset += zserio::getBitSizeOfString(m_data[i]) / 8;
+            currentOffset += static_cast<uint32_t>(zserio::getBitSizeOfString(m_data[i]) / 8);
         }
         optionalIndexedOffsetArray.setHasOptional(hasOptional);
 
@@ -105,7 +105,7 @@ protected:
 
     size_t getOptionalIndexedOffsetArrayBitSize(bool hasOptional)
     {
-        long bitSize = NUM_ELEMENTS * sizeof(uint32_t) * 8 + 1;
+        size_t bitSize = NUM_ELEMENTS * sizeof(uint32_t) * 8 + 1;
         if (hasOptional)
         {
             bitSize += 7;

@@ -42,10 +42,10 @@ TEST_F(BitStreamWriterTest, WriteBits)
     for (int i = 1; i < 32; ++i)
     {
         const int maxUnsigned = (1L << i) - 1;
-        m_writer.writeBits(maxUnsigned, i);
+        m_writer.writeBits(maxUnsigned, static_cast<uint8_t>(i));
 
         const int maxUnsignedViolation = maxUnsigned + 1;
-        ASSERT_THROW(m_writer.writeBits(maxUnsignedViolation, i), CppRuntimeException);
+        ASSERT_THROW(m_writer.writeBits(maxUnsignedViolation, static_cast<uint8_t>(i)), CppRuntimeException);
     }
 }
 
@@ -62,10 +62,10 @@ TEST_F(BitStreamWriterTest, WriteBits64)
     for (int i = 1; i < 64; ++i)
     {
         const int64_t maxUnsigned = (((int64_t) 1) << i) - 1;
-        m_writer.writeBits64(maxUnsigned, i);
+        m_writer.writeBits64(maxUnsigned, static_cast<uint8_t>(i));
 
         const int64_t maxUnsignedViolation = maxUnsigned + 1;
-        ASSERT_THROW(m_writer.writeBits64(maxUnsignedViolation, i), CppRuntimeException);
+        ASSERT_THROW(m_writer.writeBits64(maxUnsignedViolation, static_cast<uint8_t>(i)), CppRuntimeException);
     }
 }
 
@@ -83,13 +83,15 @@ TEST_F(BitStreamWriterTest, WriteSignedBits)
     {
         const int32_t minSigned = -( 1L << ( i - 1 ) );
         const int32_t maxSigned =  ( 1L << ( i - 1 ) ) - 1;
-        m_writer.writeSignedBits(minSigned, i);
-        m_writer.writeSignedBits(maxSigned, i);
+        m_writer.writeSignedBits(minSigned, static_cast<uint8_t>(i));
+        m_writer.writeSignedBits(maxSigned, static_cast<uint8_t>(i));
 
         const int32_t minSignedViolation = minSigned - 1;
         const int32_t maxSignedViolation = maxSigned + 1;
-        ASSERT_THROW(m_writer.writeSignedBits(minSignedViolation, i), CppRuntimeException);
-        ASSERT_THROW(m_writer.writeSignedBits(maxSignedViolation, i), CppRuntimeException);
+        ASSERT_THROW(m_writer.writeSignedBits(minSignedViolation, static_cast<uint8_t>(i)),
+                CppRuntimeException);
+        ASSERT_THROW(m_writer.writeSignedBits(maxSignedViolation, static_cast<uint8_t>(i)),
+                CppRuntimeException);
     }
 }
 
@@ -107,13 +109,15 @@ TEST_F(BitStreamWriterTest, WriteSignedBits64)
     {
         const int64_t minSigned = -( ((int64_t) 1) << ( i - 1 ) );
         const int64_t maxSigned =  ( ((int64_t) 1) << ( i - 1 ) ) - 1;
-        m_writer.writeSignedBits64(minSigned, i);
-        m_writer.writeSignedBits64(maxSigned, i);
+        m_writer.writeSignedBits64(minSigned, static_cast<uint8_t>(i));
+        m_writer.writeSignedBits64(maxSigned, static_cast<uint8_t>(i));
 
         const int64_t minSignedViolation = minSigned - 1;
         const int64_t maxSignedViolation = maxSigned + 1;
-        ASSERT_THROW(m_writer.writeSignedBits64(minSignedViolation, i), CppRuntimeException);
-        ASSERT_THROW(m_writer.writeSignedBits64(maxSignedViolation, i), CppRuntimeException);
+        ASSERT_THROW(m_writer.writeSignedBits64(minSignedViolation, static_cast<uint8_t>(i)),
+                CppRuntimeException);
+        ASSERT_THROW(m_writer.writeSignedBits64(maxSignedViolation, static_cast<uint8_t>(i)),
+                CppRuntimeException);
     }
 }
 

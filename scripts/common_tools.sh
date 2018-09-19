@@ -62,15 +62,15 @@ set_global_cpp_variables()
     # CMake extra arguments are empty by default
     CMAKE_EXTRA_ARGS="${CMAKE_EXTRA_ARGS:-""}"
 
-    # CMake generator to use, defaults to "Eclipse CDT4 - Unix Makefiles" if not set
-    CMAKE_GENERATOR="${CMAKE_GENERATOR:-Eclipse CDT4 - Unix Makefiles}"
-
     # CTest to use, defaults to "ctest" if not set
     CTEST="${CTEST:-ctest}"
     if [ ! -f "`which "${CTEST}"`" ] ; then
         stderr_echo "Cannot find CTest! Set CTEST environment variable."
         return 1
     fi
+
+    GCC_CMAKE_GENERATOR="${GCC_CMAKE_GENERATOR:-Eclipse CDT4 - Unix Makefiles}"
+    MSVC_CMAKE_GENERATOR="${MSVC_CMAKE_GENERATOR:-Visual Studio 12 2013}"
 
     # Extra arguments to be passed by CMake to a native build tool
     CMAKE_BUILD_OPTIONS="${CMAKE_BUILD_OPTIONS:-""}"
@@ -89,9 +89,12 @@ Uses the following environment variables for building:
     ANT                    Ant executable to use. Default is "ant".
     ANT_EXTRA_ARGS         Extra arguments to Ant. Default is empty string.
     CMAKE                  CMake executable to use. Default is "cmake".
-    CMAKE_EXTRA_ARGS       Extra arguments to CMake. Default is empty string.
-    CMAKE_GENERATOR        CMake generator to use. Default is
+    GCC_CMAKE_GENERATOR    CMake generator to use with GCC compiler. Default is
                            "Eclipse CDT4 - Unix Makefiles".
+    MSVC_CMAKE_GENERATOR   CMake generator to use with MSVC compiler. Default is
+                           "Visual Studio 12 2013". Note that "Win64" suffix is
+                           added automatically for windows64-mscv target.
+    CMAKE_EXTRA_ARGS       Extra arguments to CMake. Default is empty string.
     CMAKE_BUILD_OPTIONS    Arguments to be passed by CMake to a native build tool.
     CTEST                  Ctest executable to use. Default is "ctest".
     JAVAC_BIN              Java compiler executable to use. Default is "javac".
@@ -327,7 +330,7 @@ compile_cpp_for_target()
     local MAKE_TARGET="$7"
 
     local TOOLCHAIN_FILE="${ZSERIO_PROJECT_ROOT}/cmake/toolchain-${TARGET}.cmake"
-    CMAKE_ARGS=(--no-warn-unused-cli
+    CMAKE_ARGS=("--no-warn-unused-cli"
                 "${CMAKE_ARGS[@]}"
                 "-DCMAKE_TOOLCHAIN_FILE=${TOOLCHAIN_FILE}"
                 "-DCMAKE_PREFIX_PATH=${SQLITE_RELEASE_ROOT}/${TARGET}")
@@ -340,6 +343,25 @@ compile_cpp_for_target()
     mkdir -p "${BUILD_DIR}"
     pushd "${BUILD_DIR}" > /dev/null
 
+    local CMAKE_BUILD_TARGET=${MAKE_TARGET}
+
+    # resolve CMake generator
+    if [[ ${TARGET} == *"-msvc" ]]; then
+        local CMAKE_BUILD_CONFIG="--config Release"
+        CTEST_ARGS+=("-C Release")
+        if [[ ${MAKE_TARGET} == "all" ]]; then
+            CMAKE_BUILD_TARGET="ALL_BUILD" # all target doesn't exist in MSVC solution
+        fi
+        if [[ ${TARGET} == "windows32-msvc" ]]; then
+            local CMAKE_GENERATOR="${MSVC_CMAKE_GENERATOR}";
+        else
+            local CMAKE_GENERATOR="${MSVC_CMAKE_GENERATOR} Win64";
+        fi
+    else
+        local CMAKE_GENERATOR="${GCC_CMAKE_GENERATOR}"
+        local CMAKE_BUILD_CONFIG=""
+    fi
+
     "${CMAKE}" ${CMAKE_EXTRA_ARGS} -G "${CMAKE_GENERATOR}" "${CMAKE_ARGS[@]}" "${CMAKELISTS_DIR}"
     local CMAKE_RESULT=$?
     if [ ${CMAKE_RESULT} -ne 0 ] ; then
@@ -348,7 +370,7 @@ compile_cpp_for_target()
         return 1
     fi
 
-    "${CMAKE}" --build . --target ${MAKE_TARGET} -- ${CMAKE_BUILD_OPTIONS}
+    "${CMAKE}" --build . --target ${CMAKE_BUILD_TARGET} ${CMAKE_BUILD_CONFIG} -- ${CMAKE_BUILD_OPTIONS}
     local MAKE_RESULT=$?
     if [ ${MAKE_RESULT} -ne 0 ] ; then
         stderr_echo "Make failed with return code ${MAKE_RESULT}!"
@@ -391,16 +413,16 @@ can_run_tests()
     # assume on 64bit both 32bit and 64bit executables can be run
     case "${HOST_PLATFORM}" in
     ubuntu32)
-        [ "${TARGET}" = "linux32" ]
+        [[ "${TARGET}" == "linux32" ]]
         ;;
     ubuntu64)
-        [ "${TARGET}" = "linux32" -o "${TARGET}" = "linux64" ]
+        [[ "${TARGET}" == "linux32" || "${TARGET}" = "linux64" ]]
         ;;
     windows32)
-        [ "${TARGET}" = "windows32" ]
+        [[ "${TARGET}" == "windows32-"* ]]
         ;;
     windows64)
-        [ "${TARGET}" = "windows32" -o "${TARGET}" = "windows64" ]
+        [[ "${TARGET}" == "windows32-"* || "${TARGET}" == "windows64-"* ]]
         ;;
     *)
         stderr_echo "can_run_tests: unknown current platform ${HOST_PLATFORM}!"

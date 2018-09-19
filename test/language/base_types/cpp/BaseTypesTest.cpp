@@ -187,13 +187,6 @@ TEST_F(BaseTypesTest, variableIntfieldType)
     m_baseTypes.setVariableIntfieldType(maxVariableIntfieldType);
     const int16_t variableIntfieldType = m_baseTypes.getVariableIntfieldType();
     ASSERT_EQ(maxVariableIntfieldType, variableIntfieldType);
-
-    // this is necessary to check mapping error to int64_t type (must be int16_t)
-    // outOfRangeValue cannot be const because of C++11 fires an overflow warning
-    int64_t outOfRangeValue = static_cast<int64_t>(maxVariableIntfieldType) + 1;
-    m_baseTypes.setVariableIntfieldType(outOfRangeValue);
-    const int64_t readOutOfRangeValue = m_baseTypes.getVariableIntfieldType();
-    ASSERT_NE(outOfRangeValue, readOutOfRangeValue);
 }
 
 TEST_F(BaseTypesTest, variableIntfield8Type)

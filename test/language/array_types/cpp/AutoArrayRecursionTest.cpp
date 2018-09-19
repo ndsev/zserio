@@ -21,7 +21,7 @@ protected:
         for (size_t i = 1; i <= numElements; ++i)
         {
             AutoArrayRecursion element;
-            element.setId(i);
+            element.setId(static_cast<uint8_t>(i));
             autoArray.push_back(element);
         }
     }
@@ -37,7 +37,7 @@ protected:
         writer.writeVarUInt64(static_cast<uint64_t>(numElements));
         for (size_t i = 1; i <= numElements; ++i)
         {
-            writer.writeBits(i, 8);
+            writer.writeBits(static_cast<uint32_t>(i), 8);
             writer.writeVarUInt64(0);
         }
     }

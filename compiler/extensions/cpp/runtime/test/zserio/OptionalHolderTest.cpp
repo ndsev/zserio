@@ -76,7 +76,7 @@ protected:
 
         OPTIONAL_HOLDER<float> optionalFloat;
         EXPECT_THROW(optionalFloat.get(), CppRuntimeException);
-        const float floatValue = 3.14;
+        const float floatValue = 3.14f;
         optionalFloat.set(floatValue);
         EXPECT_EQ(floatValue, optionalFloat.get());
 
@@ -102,7 +102,7 @@ protected:
 
         OPTIONAL_HOLDER<float> optionalFloat;
         EXPECT_THROW(optionalFloat.get(), CppRuntimeException);
-        const float floatValue = 3.14;
+        const float floatValue = 3.14f;
         optionalFloat.reset(new (optionalFloat.getResetStorage()) float(floatValue));
         EXPECT_EQ(floatValue, optionalFloat.get());
 

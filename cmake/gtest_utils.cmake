@@ -1,4 +1,4 @@
-include(gcc_utils)
+include(compiler_utils)
 
 # A function to create gtest static library.
 function(gtest_add_library GTEST_ROOT)
@@ -12,7 +12,7 @@ function(gtest_add_library GTEST_ROOT)
     endif ()
 
     # remove strict warnings
-    gcc_reset_warnings()
+    compiler_reset_warnings()
 
     # include google test framework
     add_subdirectory(${GTEST_ROOT} googletest)

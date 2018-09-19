@@ -17,6 +17,7 @@ import zserio.emit.common.sql.types.NativeIntegerType;
 import zserio.emit.common.sql.types.NativeRealType;
 import zserio.emit.common.sql.types.SqlNativeType;
 import zserio.emit.cpp.types.CppNativeType;
+import zserio.emit.cpp.types.NativeBooleanType;
 import zserio.emit.cpp.types.NativeEnumType;
 
 public class SqlTableEmitterTemplateData extends UserTypeTemplateData
@@ -108,6 +109,7 @@ public class SqlTableEmitterTemplateData extends UserTypeTemplateData
                         includeCollector));
             }
 
+            isBoolean = nativeFieldType instanceof NativeBooleanType;
             enumData = createEnumTemplateData(nativeFieldType);
             sqlTypeData = new SqlTypeTemplateData(sqlNativeTypeMapper, field);
         }
@@ -140,6 +142,11 @@ public class SqlTableEmitterTemplateData extends UserTypeTemplateData
         public Iterable<SqlTableParameterTemplateData> getTypeParameters()
         {
             return typeParameters;
+        }
+
+        public boolean getIsBoolean()
+        {
+            return isBoolean;
         }
 
         public EnumTemplateData getEnumData()
@@ -218,6 +225,7 @@ public class SqlTableEmitterTemplateData extends UserTypeTemplateData
         private final String                sqlConstraint;
         private final boolean               isVirtual;
         private final List<SqlTableParameterTemplateData>   typeParameters;
+        private final boolean               isBoolean;
         private final EnumTemplateData      enumData;
         private final SqlTypeTemplateData   sqlTypeData;
     }

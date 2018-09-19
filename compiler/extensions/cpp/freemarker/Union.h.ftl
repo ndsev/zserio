@@ -3,7 +3,6 @@
 <#include "CompoundParameter.inc.ftl">
 <#include "CompoundField.inc.ftl">
 <#include "CompoundFunction.inc.ftl">
-<#include "CompoundParent.inc.ftl">
 <#include "InstantiateTemplate.inc.ftl">
 <@file_header generatorDescription/>
 

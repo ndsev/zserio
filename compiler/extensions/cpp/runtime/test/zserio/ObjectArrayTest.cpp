@@ -64,7 +64,7 @@ public:
 
     void read(BitStreamReader& in)
     {
-        m_value = in.readBits(bitSizeOf());
+        m_value = in.readBits(static_cast<uint8_t>(bitSizeOf()));
     }
 
 private:

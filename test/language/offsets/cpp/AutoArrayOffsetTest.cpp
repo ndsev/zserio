@@ -24,13 +24,13 @@ protected:
 
         writer.writeVarUInt64(static_cast<uint64_t>(AUTO_ARRAY_LENGTH));
         for (size_t i = 0; i < AUTO_ARRAY_LENGTH; ++i)
-            writer.writeBits(i, 7);
+            writer.writeBits(static_cast<uint32_t>(i), 7);
     }
 
     void checkAutoArrayHolder(const AutoArrayHolder& autoArrayHolder, size_t bitPosition = 0)
     {
-        const uint32_t expectedAutoArrayOffset = (bitPosition == 0) ? AUTO_ARRAY_OFFSET :
-                AUTO_ARRAY_OFFSET + (bitPosition / 8);
+        const uint32_t expectedAutoArrayOffset = static_cast<uint32_t>(
+                (bitPosition == 0) ? AUTO_ARRAY_OFFSET : AUTO_ARRAY_OFFSET + (bitPosition / 8));
         ASSERT_EQ(expectedAutoArrayOffset, autoArrayHolder.getAutoArrayOffset());
 
         ASSERT_EQ(FORCED_ALIGNMENT_VALUE, autoArrayHolder.getForceAlignment());
@@ -53,7 +53,7 @@ protected:
         zserio::Int8Array autoArray;
         autoArray.reserve(AUTO_ARRAY_LENGTH);
         for (size_t i = 0; i < AUTO_ARRAY_LENGTH; ++i)
-            autoArray.push_back(i);
+            autoArray.push_back(static_cast<int8_t>(i));
         autoArrayHolder.setAutoArray(autoArray);
     }
 

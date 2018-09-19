@@ -22,7 +22,7 @@ protected:
         writer.writeBits(NUM_CHILDREN, 8);
 
         for (uint8_t i = 0; i < NUM_CHILDREN; ++i)
-            writer.writeBits(VALUES[i], CHILD_BIT_SIZE);
+            writer.writeBits(static_cast<uint32_t>(VALUES[i]), CHILD_BIT_SIZE);
     }
 
     void createParentStructure(ParentStructure& parentStructure)

@@ -179,15 +179,19 @@ Arguments:
     package                   Specify the package to test.
 
 Package can be a combination of:
-    java           Zserio Java tests.
-    cpp-linux32    Zserio C++ tests for linux32 target using gcc compiler.
-    cpp-linux64    Zserio C++ tests for linux64 target using gcc compiler.
-    cpp-windows32  Zserio C++ tests for windows32 target using MinGW 4.5.4 compiler.
-    cpp-windows64  Zserio C++ tests for windows64 target using MinGW64 4.5.4 compiler.
-    all-linux32    Zserio tests - all available linux32 packages.
-    all-linux64    Zserio tests - all available linux64 packages.
-    all-windows32  Zserio tests - all available windows32 packages.
-    all-windows64  Zserio tests - all available windows64 packages.
+    java                Zserio Java tests.
+    cpp-linux32         Zserio C++ tests for linux32 target using gcc compiler.
+    cpp-linux64         Zserio C++ tests for linux64 target using gcc compiler.
+    cpp-windows32-mingw Zserio C++ tests for windows32 target (MinGW).
+    cpp-windows64-mingw Zserio C++ tests for windows64 target (MinGW64).
+    cpp-windows32-msvc  Zserio C++ tests for windows32 target (MSVC).
+    cpp-windows64-msvc  Zserio C++ tests for windows64 target (MSVC).
+    all-linux32         Zserio tests - all available linux32 packages.
+    all-linux64         Zserio tests - all available linux64 packages.
+    all-windows32-mingw Zserio tests - all available windows32 packages (MinGW).
+    all-windows64-mingw Zserio tests - all available windows64 packages (MinGW64).
+    all-windows32-msvc  Zserio tests - all available windows32 packages (MSVC).
+    all-windows64-msvc  Zserio tests - all available windows64 packages (MSVC).
 
 Examples:
     $0 java cpp-linux64
@@ -299,12 +303,12 @@ parse_arguments()
                 eval ${PARAM_JAVA_OUT}=1
                 ;;
 
-            "cpp-linux32" | "cpp-linux64" | "cpp-windows32" | "cpp-windows64")
+            "cpp-linux32" | "cpp-linux64" | "cpp-windows32-"* | "cpp-windows64-"*)
                 eval ${PARAM_CPP_TARGET_ARRAY_OUT}[${NUM_TARGETS}]="${PARAM#cpp-}"
                 NUM_TARGETS=$((NUM_TARGETS + 1))
                 ;;
 
-            "all-linux32" | "all-linux64" | "all-windows32" | "all-windows64")
+            "all-linux32" | "all-linux64" | "all-windows32-"* | "all-windows64-"*)
                 eval ${PARAM_JAVA_OUT}=1
                 eval ${PARAM_CPP_TARGET_ARRAY_OUT}[${NUM_TARGETS}]="${PARAM#all-}"
                 NUM_TARGETS=$((NUM_TARGETS + 1))

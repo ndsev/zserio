@@ -19,7 +19,7 @@ protected:
             return false;
 
         inputStream.seekg(0, inputStream.end);
-        const size_t fileSize = inputStream.tellg();
+        const size_t fileSize = static_cast<size_t>(inputStream.tellg());
         inputStream.seekg(0, inputStream.beg);
         buffer.resize(fileSize);
         inputStream.read(reinterpret_cast<char*>(&buffer[0]), buffer.size());

@@ -31,7 +31,7 @@ TEST(StringConvertUtilTest, SimpleTypes)
     const std::string longValueInString = convertToString(longValue);
     EXPECT_EQ("123456789", longValueInString);
 
-    const float floatValue = 9.9;
+    const float floatValue = 9.9f;
     const std::string floatValueInString = convertToString(floatValue);
     EXPECT_EQ("9.9", floatValueInString);
 

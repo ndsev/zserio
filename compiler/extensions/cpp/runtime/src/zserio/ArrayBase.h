@@ -139,21 +139,23 @@ protected:
     {
         container_type::clear();
         BitStreamReader::BitPosType bitPosition;
-        try
+        // we must read until end of the stream because we don't know element sizes
+        while (true)
         {
-            while (true)
+            bitPosition = in.getBitPosition();
+            const size_t index = container_type::size();
+            element_type* storage = reinterpret_cast<element_type*>(container_type::get_next_storage());
+            try
             {
-                bitPosition = in.getBitPosition();
-                const size_t index = container_type::size();
-                element_type* storage = reinterpret_cast<element_type*>(container_type::get_next_storage());
                 ARRAY_TRAITS::read(storage, in, index, elementFactory, numBits);
-                container_type::commit_storage(storage);
             }
-        }
-        catch (BitStreamException&)
-        {
-            // implicit length arrays can be only at the end of stream, so walker is not confused
-            in.setBitPosition(bitPosition);
+            catch (BitStreamException&)
+            {
+                // set exact end bit position in the stream avoiding padding at the end
+                in.setBitPosition(bitPosition);
+                break;
+            }
+            container_type::commit_storage(storage);
         }
     }
 

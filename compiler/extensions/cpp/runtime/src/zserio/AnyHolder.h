@@ -235,7 +235,8 @@ private:
         }
 
         Holder<T>* holder;
-        if (sizeof(Holder<T>) <= sizeof(UntypedHolder::MaxInPlaceType))
+        static const bool fitsInPlace = sizeof(Holder<T>) <= sizeof(UntypedHolder::MaxInPlaceType);
+        if (fitsInPlace)
         {
             holder = new (&m_untypedHolder.inPlace) Holder<T>();
             m_isInPlace = true;

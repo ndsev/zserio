@@ -86,7 +86,7 @@ TEST(AnyHolderTest, SetGet)
     EXPECT_EQ(intValue, any.get<int>());
     EXPECT_THROW(any.get<float>(), CppRuntimeException);
 
-    const float floatValue = 3.14;
+    const float floatValue = 3.14f;
     any.set(floatValue);
     EXPECT_THROW(any.get<int>(), CppRuntimeException);
     EXPECT_EQ(floatValue, any.get<float>());
@@ -110,7 +110,7 @@ TEST(AnyHolderTest, PointerSetGet)
     EXPECT_EQ(intValue, any.get<int>());
     EXPECT_THROW(any.get<float>(), CppRuntimeException);
 
-    const float floatValue = 3.14;
+    const float floatValue = 3.14f;
     any.reset(new (any.getResetStorage<float>()) float(floatValue));
     EXPECT_THROW(any.get<int>(), CppRuntimeException);
     EXPECT_EQ(floatValue, any.get<float>());
@@ -134,7 +134,7 @@ TEST(AnyHolderTest, IsType)
     any.set(intValue);
     EXPECT_TRUE(any.isType<int>());
 
-    const float floatValue = 3.14;
+    const float floatValue = 3.14f;
     any.set(floatValue);
     EXPECT_TRUE(any.isType<float>());
     EXPECT_FALSE(any.isType<int>());

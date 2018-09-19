@@ -64,9 +64,9 @@ private:
 
     static const size_t NumDummyElements = 8;
 
-    int     m_dummyContainer[NumDummyElements];
-    int     m_number;
-    int*    m_pointer;
+    int  m_dummyContainer[NumDummyElements];
+    int  m_number;
+    int* m_pointer;
 };
 
 template <typename T>
@@ -227,7 +227,7 @@ TEST_F(ContainerTest, Begin)
     const size_t numElements = 2;
     Container<Element> container;
     for (size_t i = 0; i < numElements; ++i)
-        container.push_back(Element(i + 1));
+        container.push_back(Element(static_cast<int>(i + 1)));
     EXPECT_EQ(1, container.begin()->getNumber());
 
     const Container<Element>& constContainer = container;
@@ -262,13 +262,13 @@ TEST_F(ContainerTest, Clear)
     EXPECT_EQ(0, container.size());
     EXPECT_EQ(0, container.capacity());
     for (size_t i = 0; i < numElements; ++i)
-        container.push_back(Element(i + 1));
+        container.push_back(Element(static_cast<int>(i + 1)));
 
     container.clear();
     EXPECT_EQ(0, container.size());
     EXPECT_EQ(14, container.capacity());
 
-    container.push_back(Element(numElements));
+    container.push_back(Element(static_cast<int>(numElements)));
     EXPECT_EQ(numElements, container.back().getNumber());
     EXPECT_EQ(1, container.size());
     EXPECT_EQ(14, container.capacity());
@@ -291,7 +291,7 @@ TEST_F(ContainerTest, End)
     const size_t numElements = 2;
     Container<Element> container;
     for (size_t i = 0; i < numElements; ++i)
-        container.push_back(Element(i + 1));
+        container.push_back(Element(static_cast<int>(i + 1)));
     EXPECT_EQ(numElements, (container.end() - 1)->getNumber());
 
     const Container<Element>& constContainer = container;
@@ -353,10 +353,11 @@ TEST_F(ContainerTest, Insert)
         container.push_back(Element(static_cast<int>(i + 1)));
     EXPECT_THROW(container.erase(container.end()), std::range_error);
 
-    EXPECT_THROW(container.insert(container.end() + 1, Element(numElements)), std::range_error);
+    EXPECT_THROW(container.insert(container.end() + 1,
+            Element(static_cast<int>(numElements))), std::range_error);
     const size_t insertedElementIndex = 2;
     Container<Element>::iterator it = container.insert(container.begin() + insertedElementIndex,
-            Element(numElements));
+            Element(static_cast<int>(numElements)));
     EXPECT_EQ(numElements, it->getNumber());
     EXPECT_EQ(numElements + 1, container.size());
     for (size_t i = 0; i < numElements + 1; ++i)
@@ -368,9 +369,10 @@ TEST_F(ContainerTest, Insert)
 
     container.erase(container.begin() + insertedElementIndex);
     const size_t numInsertedElements = 3;
-    EXPECT_THROW(container.insert(container.end() + 1, numInsertedElements, Element(numElements)),
-            std::range_error);
-    container.insert(container.begin() + insertedElementIndex, numInsertedElements, Element(numElements));
+    EXPECT_THROW(container.insert(container.end() + 1, numInsertedElements,
+            Element(static_cast<int>(numElements))), std::range_error);
+    container.insert(container.begin() + insertedElementIndex, numInsertedElements,
+            Element(static_cast<int>(numElements)));
     EXPECT_EQ(numElements + numInsertedElements, container.size());
     for (size_t i = 0; i < numElements + numInsertedElements; ++i)
     {
@@ -404,14 +406,14 @@ TEST_F(ContainerTest, ContainerOperator)
     const size_t numElements = 10;
     Container<Element> container;
     for (size_t i = 0; i < numElements; ++i)
-        container.push_back(Element(i + 1));
+        container.push_back(Element(static_cast<int>(i + 1)));
 
     for (size_t i = 0; i < numElements; ++i)
-        EXPECT_EQ(Element(i + 1), container[i]);
+        EXPECT_EQ(Element(static_cast<int>(i + 1)), container[i]);
 
     const Container<Element>& constContainer = container;
     for (size_t i = 0; i < numElements; ++i)
-        EXPECT_EQ(Element(i + 1), constContainer[i]);
+        EXPECT_EQ(Element(static_cast<int>(i + 1)), constContainer[i]);
 }
 
 TEST_F(ContainerTest, PopBack)
@@ -419,7 +421,7 @@ TEST_F(ContainerTest, PopBack)
     const size_t numElements = 10;
     Container<Element> container;
     for (size_t i = 0; i < numElements; ++i)
-        container.push_back(Element(i + 1));
+        container.push_back(Element(static_cast<int>(i + 1)));
 
     for (size_t i = 0; i < numElements; ++i)
     {
@@ -434,7 +436,7 @@ TEST_F(ContainerTest, PushBack)
     Container<Element> container;
     for (size_t i = 0; i < numElements; ++i)
     {
-        container.push_back(Element(i + 1));
+        container.push_back(Element(static_cast<int>(i + 1)));
         EXPECT_EQ(i + 1, container.size());
         EXPECT_EQ(i + 1, container[i].getNumber());
     }
@@ -477,7 +479,7 @@ TEST_F(ContainerTest, Size)
 
     const size_t numElements = 10;
     for (size_t i = 0; i < numElements; ++i)
-        container.push_back(Element(i + 1));
+        container.push_back(Element(static_cast<int>(i + 1)));
     EXPECT_EQ(numElements, container.size());
 
     container.clear();
@@ -489,7 +491,7 @@ TEST_F(ContainerTest, Swap)
     const size_t numElements = 10;
     Container<Element> container1;
     for (size_t i = 0; i < numElements; ++i)
-        container1.push_back(Element(i + 1));
+        container1.push_back(Element(static_cast<int>(i + 1)));
 
     Container<Element> container2;
     container1.swap(container2);
@@ -519,7 +521,7 @@ TEST_F(ContainerTest, CommitStorage)
     for (size_t i = 0; i < numElements; ++i)
     {
         void* storage = container.get_next_storage();
-        container.commit_storage(new (storage) Element(i + 1));
+        container.commit_storage(new (storage) Element(static_cast<int>(i + 1)));
         EXPECT_EQ(i + 1, container.size());
         EXPECT_EQ(i + 1, container[i].getNumber());
     }

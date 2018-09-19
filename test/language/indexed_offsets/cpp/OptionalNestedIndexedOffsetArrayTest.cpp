@@ -36,7 +36,7 @@ protected:
                     writer.writeBits(wrongOffset, 32);
                 else
                     writer.writeBits(currentOffset, 32);
-                currentOffset += zserio::getBitSizeOfString(m_data[i]) / 8;
+                currentOffset += static_cast<uint32_t>(zserio::getBitSizeOfString(m_data[i]) / 8);
             }
 
             // already aligned
@@ -56,7 +56,7 @@ protected:
         for (uint8_t i = 0; i < length; ++i)
         {
             ASSERT_EQ(expectedOffset, offsets[i]);
-            expectedOffset += zserio::getBitSizeOfString(m_data[i]) / 8;
+            expectedOffset += static_cast<uint32_t>(zserio::getBitSizeOfString(m_data[i]) / 8);
         }
     }
 
@@ -95,7 +95,7 @@ protected:
                 offsets.push_back(wrongOffset);
             else
                 offsets.push_back(currentOffset);
-            currentOffset += zserio::getBitSizeOfString(m_data[i]) / 8;
+            currentOffset += static_cast<uint32_t>(zserio::getBitSizeOfString(m_data[i]) / 8);
         }
 
         if (length > 0)
@@ -106,7 +106,7 @@ protected:
 
     size_t getOptionalNestedIndexedOffsetArrayBitSize(int16_t length)
     {
-        long bitSize = sizeof(int16_t) * 8  + length * sizeof(uint32_t) * 8;
+        size_t bitSize = sizeof(int16_t) * 8  + length * sizeof(uint32_t) * 8;
         if (length > 0)
         {
             // already aligned

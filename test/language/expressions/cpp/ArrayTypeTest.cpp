@@ -28,7 +28,7 @@ TEST(ArrayTypeTest, bitSizeOfWithoutOptional)
     zserio::Int8Array array;
     array.reserve(arrayLength);
     for (size_t i = 1; i <= arrayLength; ++i)
-        array.push_back(i);
+        array.push_back(static_cast<int8_t>(i));
     arrayTypeExpression.setArray(array);
 
     const size_t arrayTypeExpressionBitSizeWithoutOptional = 16;

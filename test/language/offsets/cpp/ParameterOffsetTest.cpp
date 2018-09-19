@@ -28,8 +28,8 @@ protected:
         const uint16_t expectedSchoolId = SCHOOL_ID;
         ASSERT_EQ(expectedSchoolId, school.getSchoolId());
 
-        const uint32_t expectedRoomOffset = (bitPosition == 0) ? ROOM_OFFSET :
-                ROOM_OFFSET + (bitPosition / 8) + 1;
+        const uint32_t expectedRoomOffset = static_cast<uint32_t>(
+                (bitPosition == 0) ? ROOM_OFFSET : ROOM_OFFSET + (bitPosition / 8) + 1);
         ASSERT_EQ(expectedRoomOffset, school.getOffsetHolder().getRoomOffset());
 
         const uint16_t expectedRoomId = ROOM_ID;

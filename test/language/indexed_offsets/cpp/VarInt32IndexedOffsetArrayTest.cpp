@@ -23,7 +23,7 @@ protected:
                 writer.writeBits(wrongOffset, 32);
             else
                 writer.writeBits(currentOffset, 32);
-            currentOffset += zserio::getBitSizeOfVarInt32(i) / 8;
+            currentOffset += static_cast<uint32_t>(zserio::getBitSizeOfVarInt32(i) / 8);
         }
 
         writer.writeBits(SPACER_VALUE, 1);
@@ -43,7 +43,7 @@ protected:
         {
             const int offset = offsets[i];
             ASSERT_EQ(expectedOffset, offset);
-            expectedOffset += zserio::getBitSizeOfVarInt32(offset) / 8;
+            expectedOffset += static_cast<uint32_t>(zserio::getBitSizeOfVarInt32(offset) / 8);
         }
     }
 
@@ -75,7 +75,7 @@ protected:
                 offsets.push_back(wrongOffset);
             else
                 offsets.push_back(currentOffset);
-            currentOffset += zserio::getBitSizeOfVarInt32(i);
+            currentOffset += static_cast<uint32_t>(zserio::getBitSizeOfVarInt32(i));
         }
         varint32IndexedOffsetArray.setSpacer(SPACER_VALUE);
 

@@ -311,7 +311,7 @@ TEST(BlobInspectorValueTest, GenericUInt64Type)
 
 TEST(BlobInspectorValueTest, FloatType)
 {
-    const float floatValue = 3.14;
+    const float floatValue = 3.14f;
     BlobInspectorValue blobValue(floatValue);
 
     float readFloatValue;

@@ -303,6 +303,8 @@ void ${name}::readRow(${rootPackage.name}::IParameterProvider&<#if isUsedParamet
         <#if field.enumData??>
         const ${field.cppTypeName} enumValue = ${field.cppTypeName}::toEnum(static_cast<${field.enumData.baseCppTypeName}>(intValue));
         row.set${field.name?cap_first}(enumValue);
+        <#elseif field.isBoolean>
+        row.set${field.name?cap_first}(intValue != 0);
         <#else>
         row.set${field.name?cap_first}(static_cast<${field.cppTypeName}>(intValue));
         </#if>

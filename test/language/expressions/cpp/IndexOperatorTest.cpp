@@ -31,7 +31,7 @@ protected:
                 element.setField16(ELEMENTS[i]);
             elements.push_back(element);
         }
-        list.setLength(elements.size());
+        list.setLength(static_cast<uint16_t>(elements.size()));
         list.initializeChildren();
         return list;
     }

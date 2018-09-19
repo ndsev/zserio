@@ -44,7 +44,7 @@ protected:
         zserio::UInt8Array& values = testBlob.getValues();
         for (size_t i = 0; i < COMPLEX_TABLE_COUNT; ++i)
             values.push_back(static_cast<uint8_t>(id));
-        testBlob.initialize(values.size());
+        testBlob.initialize(static_cast<uint32_t>(values.size()));
         testBlob.setOffsetEnd(TEST_BLOB_OFFSET_END);
         testBlob.setEnd(true);
         row.setBlob(testBlob);
@@ -116,7 +116,7 @@ protected:
     {
         virtual uint32_t getComplexTable_count(sqlite3_stmt&)
         {
-            return COMPLEX_TABLE_COUNT;
+            return static_cast<uint32_t>(COMPLEX_TABLE_COUNT);
         }
     };
 

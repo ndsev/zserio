@@ -1,11 +1,12 @@
-include(gcc_utils)
+include(compiler_utils)
 
 # A function to add SQLite library target
 function(sqlite_add_library ${ZSERIO_PROJECT_ROOT})
     set(SQLITE_ROOT ${ZSERIO_PROJECT_ROOT}/3rdparty/cpp/sqlite)
 
     # remove strict warning
-    gcc_reset_warnings()
+    compiler_reset_warnings()
+    compiler_reset_warnings_as_errors()
 
     # add sqlite library
     add_library(SQLite3 ${SQLITE_ROOT}/sqlite3.c)

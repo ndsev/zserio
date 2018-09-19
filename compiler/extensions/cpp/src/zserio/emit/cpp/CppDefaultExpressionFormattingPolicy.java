@@ -39,11 +39,9 @@ public abstract class CppDefaultExpressionFormattingPolicy extends DefaultExpres
         String decLiteral = expr.getText();
         final BigInteger decInBigInteger = new BigInteger(decLiteral);
 
-        // special work around for INT64_MIN for INT32_MIN on 32-bit machines; these decimal literals can't be
-        // written as a single decimal number without a warning (at least with gcc 4.4.3)
-        if (isNegative && (decLiteral.equals(DECIMAL_LITERAL_ABS_INT64_MIN) ||
-                decLiteral.equals(DECIMAL_LITERAL_ABS_INT32_MIN)))
-            decLiteral = CPP_HEXADECIMAL_LITERAL_PREFIX + decInBigInteger.toString(16);
+        String minIntWorkaround = getMinIntWorkaround(isNegative, decInBigInteger);
+        if (minIntWorkaround != null)
+            return minIntWorkaround;
 
         return decLiteral + getIntegerLiteralSuffix(decInBigInteger, isNegative);
     }
@@ -54,6 +52,11 @@ public abstract class CppDefaultExpressionFormattingPolicy extends DefaultExpres
         // binary literals are not supported by C++ => use hexadecimal instead of it
         String binaryLiteral = expr.getText();
         final BigInteger binaryInBigInteger = new BigInteger(binaryLiteral, 2);
+
+        String minIntWorkaround = getMinIntWorkaround(isNegative, binaryInBigInteger);
+        if (minIntWorkaround != null)
+            return minIntWorkaround;
+
         binaryLiteral = CPP_HEXADECIMAL_LITERAL_PREFIX + binaryInBigInteger.toString(16);
 
         return binaryLiteral;
@@ -66,6 +69,11 @@ public abstract class CppDefaultExpressionFormattingPolicy extends DefaultExpres
         // (unsigned) long (long) values
         String hexLiteral = expr.getText();
         final BigInteger hexInBigInteger = new BigInteger(hexLiteral, 16);
+
+        String minIntWorkaround = getMinIntWorkaround(isNegative, hexInBigInteger);
+        if (minIntWorkaround != null)
+            return minIntWorkaround;
+
         hexLiteral = CPP_HEXADECIMAL_LITERAL_PREFIX + hexLiteral +
                 getIntegerLiteralSuffix(hexInBigInteger, isNegative);
 
@@ -75,6 +83,13 @@ public abstract class CppDefaultExpressionFormattingPolicy extends DefaultExpres
     @Override
     public String getOctalLiteral(Expression expr, boolean isNegative)
     {
+        String octalLiteral = expr.getText();
+        final BigInteger octalInBigInteger = new BigInteger(octalLiteral, 8);
+
+        String minIntWorkaround = getMinIntWorkaround(isNegative, octalInBigInteger);
+        if (minIntWorkaround != null)
+            return minIntWorkaround;
+
         // octal literals in C++ are the same (with prefix '0')
         return CPP_OCTAL_LITERAL_PREFIX + expr.getText();
     }
@@ -158,8 +173,7 @@ public abstract class CppDefaultExpressionFormattingPolicy extends DefaultExpres
     @Override
     public UnaryExpressionFormatting getNumBits(Expression expr)
     {
-        final List<String> systemIncludes = Arrays.asList(BUILD_IN_OPERATORS_HEADER);
-        includeCollector.addCppSystemIncludes(systemIncludes);
+        includeCollector.addCppSystemIncludes(BUILD_IN_OPERATORS_INCLUDE);
 
         return new UnaryExpressionFormatting("zserio::getNumBits(", ")");
     }
@@ -310,13 +324,27 @@ public abstract class CppDefaultExpressionFormattingPolicy extends DefaultExpres
         }
     }
 
+    private String getMinIntWorkaround(boolean isNegative, BigInteger literalValue)
+    {
+        String workaround = null;
+        if (isNegative)
+        {
+            if (literalValue.equals(ABS_INT32_MIN))
+                workaround = CPP_INT32_MIN_WORKAROUND;
+            else if (literalValue.equals(ABS_INT64_MIN))
+                workaround = CPP_INT64_MIN_WORKAROUND;
+        }
+
+        return workaround;
+    }
+
     private final CppNativeTypeMapper cppNativeTypeMapper;
     private final IncludeCollector includeCollector;
 
     private final static String CPP_GETTER_FUNCTION_CALL = "()";
     private final static String CPP_SETTER_FUNCTION_CALL = "(_value)";
 
-    private final static String BUILD_IN_OPERATORS_HEADER = "zserio/BuildInOperators.h";
+    private final static List<String> BUILD_IN_OPERATORS_INCLUDE = Arrays.asList("zserio/BuildInOperators.h");
 
     private final static String CPP_SIGNED_LONG_LITERAL_SUFFIX = "L";
     private final static String CPP_UNSIGNED_LONG_LITERAL_SUFFIX = "UL";
@@ -326,6 +354,8 @@ public abstract class CppDefaultExpressionFormattingPolicy extends DefaultExpres
     private final static String CPP_OCTAL_LITERAL_PREFIX = "0";
     private final static String CPP_FLOAT_LITERAL_SUFFIX = "f";
 
-    private final static String DECIMAL_LITERAL_ABS_INT64_MIN = "9223372036854775808";
-    private final static String DECIMAL_LITERAL_ABS_INT32_MIN = "2147483648";
+    private final static BigInteger ABS_INT32_MIN = BigInteger.ONE.shiftLeft(31);
+    private final static BigInteger ABS_INT64_MIN = BigInteger.ONE.shiftLeft(63);
+    private final static String CPP_INT32_MIN_WORKAROUND = "2147483647L - 1";
+    private final static String CPP_INT64_MIN_WORKAROUND = "9223372036854775807LL - 1";
 }

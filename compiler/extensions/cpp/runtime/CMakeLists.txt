@@ -17,17 +17,18 @@ set(CPPCHECK_HOME "" CACHE PATH "Home directory of cppcheck tool. If empty, cppc
 set(ZSERIO_PROJECT_ROOT "${CMAKE_CURRENT_SOURCE_DIR}/../../../..")
 set(CMAKE_MODULE_PATH "${ZSERIO_PROJECT_ROOT}/cmake")
 
+# setup compiler
+include(compiler_utils)
+compiler_set_static_clibs()
+compiler_set_warnings()
+compiler_set_warnings_as_errors()
+
 # add SQLite3 library
 include(sqlite_utils)
 sqlite_add_library(${ZSERIO_PROJECT_ROOT})
 
 # cmake helpers
 include(cmake_utils)
-
-# set gcc paramaters
-include(gcc_utils)
-gcc_set_warnings()
-gcc_set_static_clibs()
 
 add_subdirectory(src)
 add_subdirectory(test)

@@ -47,7 +47,7 @@ protected:
         uint32_t expectedOffset = FIRST_BYTE_OFFSET;
         for (uint16_t i = 0; i < numBlocks; ++i)
         {
-            const uint16_t numItems = reader.readBits(16);
+            const uint16_t numItems = static_cast<uint16_t>(reader.readBits(16));
             ASSERT_EQ(headers.at(i).getNumItems(), numItems);
             ASSERT_EQ(expectedOffset, reader.readBits(32));
             expectedOffset += 8 * numItems;

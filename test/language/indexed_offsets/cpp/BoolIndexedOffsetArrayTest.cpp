@@ -62,7 +62,7 @@ protected:
         const size_t expectedNumElements = NUM_ELEMENTS;
         ASSERT_EQ(expectedNumElements, data.size());
         for (uint8_t i = 0; i < NUM_ELEMENTS; ++i)
-            ASSERT_EQ((i & 0x01) ? true : false, data[i]);
+            ASSERT_EQ((i & 0x01) ? true : false, data[i] != 0);
     }
 
     void fillBoolIndexedOffsetArray(BoolIndexedOffsetArray& boolIndexedOffsetArray, bool createWrongOffsets)

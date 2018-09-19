@@ -16,7 +16,7 @@ protected:
     void writeFixedArrayToByteArray(zserio::BitStreamWriter& writer)
     {
         for (size_t i = 0; i < FIXED_ARRAY_LENGTH; ++i)
-            writer.writeBits(i, 8);
+            writer.writeBits(static_cast<uint32_t>(i), 8);
     }
 
     static const size_t FIXED_ARRAY_LENGTH = 5;
@@ -27,7 +27,7 @@ TEST_F(FixedArrayTest, bitSizeOf)
     zserio::UInt8Array uint8Array;
     uint8Array.reserve(FIXED_ARRAY_LENGTH);
     for (size_t i = 0; i < FIXED_ARRAY_LENGTH; ++i)
-        uint8Array.push_back(i);
+        uint8Array.push_back(static_cast<uint8_t>(i));
     FixedArray fixedArray;
     fixedArray.setUint8Array(uint8Array);
 
@@ -40,7 +40,7 @@ TEST_F(FixedArrayTest, initializeOffsets)
     zserio::UInt8Array uint8Array;
     uint8Array.reserve(FIXED_ARRAY_LENGTH);
     for (size_t i = 0; i < FIXED_ARRAY_LENGTH; ++i)
-        uint8Array.push_back(i);
+        uint8Array.push_back(static_cast<uint8_t>(i));
     FixedArray fixedArray;
     fixedArray.setUint8Array(uint8Array);
 
@@ -69,7 +69,7 @@ TEST_F(FixedArrayTest, write)
     zserio::UInt8Array uint8Array;
     uint8Array.reserve(FIXED_ARRAY_LENGTH);
     for (size_t i = 0; i < FIXED_ARRAY_LENGTH; ++i)
-        uint8Array.push_back(i);
+        uint8Array.push_back(static_cast<uint8_t>(i));
     FixedArray fixedArray;
     fixedArray.setUint8Array(uint8Array);
 
@@ -93,7 +93,7 @@ TEST_F(FixedArrayTest, writeWrongArray)
     const size_t wrongArrayLength = FIXED_ARRAY_LENGTH + 1;
     uint8Array.reserve(wrongArrayLength);
     for (size_t i = 0; i < wrongArrayLength; ++i)
-        uint8Array.push_back(i);
+        uint8Array.push_back(static_cast<uint8_t>(i));
     FixedArray fixedArray;
     fixedArray.setUint8Array(uint8Array);
 
