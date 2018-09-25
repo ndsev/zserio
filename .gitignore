@@ -7,6 +7,9 @@
 # created release
 /release-*/
 
+# local environment setup
+/scripts/build-env.sh
+
 # Eclipse project files
 .project
 
