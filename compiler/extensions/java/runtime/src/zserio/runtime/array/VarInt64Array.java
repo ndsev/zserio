@@ -22,7 +22,7 @@ public class VarInt64Array extends LongArrayBase
      * @param reader Bit stream reader to construct from.
      * @param length Number of elements to read from given bit stream. "-1" specifies implicit-length array.
      *
-     * @throws IOException     Failure during bit stream manipulation.
+     * @throws IOException Failure during bit stream manipulation.
      * @throws ZserioError Cannot occured because indexed offsets are not used.
      */
     public VarInt64Array(BitStreamReader reader, int length) throws IOException, ZserioError
@@ -37,7 +37,7 @@ public class VarInt64Array extends LongArrayBase
      * @param length  Number of elements to read from given bit stream. "-1" specifies implicit-length array.
      * @param checker Specifies offset checker for indexed offsets.
      *
-     * @throws IOException     Failure during bit stream manipulation.
+     * @throws IOException Failure during bit stream manipulation.
      * @throws ZserioError Failure during offset checking.
      */
     public VarInt64Array(BitStreamReader reader, int length, OffsetChecker checker)
@@ -99,7 +99,7 @@ public class VarInt64Array extends LongArrayBase
      *
      * @param writer Bit stream where to write.
      *
-     * @throws IOException     Failure during bit stream manipulation.
+     * @throws IOException Failure during bit stream manipulation.
      * @throws ZserioError Cannot occurred because indexed offsets are not used.
      */
     public void write(BitStreamWriter writer) throws IOException, ZserioError
@@ -112,7 +112,7 @@ public class VarInt64Array extends LongArrayBase
      *
      * @param writer  Bit stream where to write.
      *
-     * @throws IOException     Failure during bit stream manipulation.
+     * @throws IOException Failure during bit stream manipulation.
      * @throws ZserioError Cannot occurred because indexed offsets are not used.
      */
     public void writeAuto(BitStreamWriter writer) throws IOException, ZserioError
@@ -126,7 +126,7 @@ public class VarInt64Array extends LongArrayBase
      * @param writer  Bit stream where to write.
      * @param checker Offset checker to use.
      *
-     * @throws IOException     Failure during bit stream manipulation.
+     * @throws IOException Failure during bit stream manipulation.
      * @throws ZserioError Failure during offset checking.
      */
     public void writeAlignedAuto(BitStreamWriter writer, OffsetChecker checker)
@@ -142,7 +142,7 @@ public class VarInt64Array extends LongArrayBase
      * @param writer  Bit stream where to write.
      * @param checker offset checker to use.
      *
-     * @throws IOException     Failure during bit stream manipulation.
+     * @throws IOException Failure during bit stream manipulation.
      * @throws ZserioError Failure during offset checking.
      */
     public void writeAligned(BitStreamWriter writer, OffsetChecker checker) throws IOException, ZserioError

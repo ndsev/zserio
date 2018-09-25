@@ -26,7 +26,7 @@ public class BigIntegerArray extends NumericArrayBase<BigInteger>
      * @param numBits Length of element in bits. Must be always 64. It is used only to avoid special handling
      *                for this array in Zserio code generator.
      *
-     * @throws IOException     Failure during bit stream manipulation.
+     * @throws IOException Failure during bit stream manipulation.
      * @throws ZserioError Cannot occurred because indexed offsets are not used.
      */
     public BigIntegerArray(BitStreamReader reader, int length, int numBits) throws IOException, ZserioError
@@ -43,7 +43,7 @@ public class BigIntegerArray extends NumericArrayBase<BigInteger>
      * @param numBits Length of element in bits.
      * @param checker Specifies offset checker for indexed offsets.
      *
-     * @throws IOException     Failure during bit stream manipulation.
+     * @throws IOException Failure during bit stream manipulation.
      * @throws ZserioError Failure during offset checking.
      */
     public BigIntegerArray(BitStreamReader reader, int length, int numBits, OffsetChecker checker)
@@ -152,7 +152,7 @@ public class BigIntegerArray extends NumericArrayBase<BigInteger>
      * @param writer  Bit stream where to write.
      * @param numBits Length of element in bits.
      *
-     * @throws IOException     Failure during bit stream manipulation.
+     * @throws IOException Failure during bit stream manipulation.
      * @throws ZserioError Cannot occurred because indexed offsets are not used.
      */
     public void write(BitStreamWriter writer, int numBits) throws IOException, ZserioError
@@ -166,7 +166,7 @@ public class BigIntegerArray extends NumericArrayBase<BigInteger>
      * @param writer  Bit stream where to write.
      * @param numBits Length of element in bits.
      *
-     * @throws IOException     Failure during bit stream manipulation.
+     * @throws IOException Failure during bit stream manipulation.
      * @throws ZserioError Cannot occurred because indexed offsets are not used.
      */
     public void writeAuto(BitStreamWriter writer, int numBits) throws IOException, ZserioError
@@ -181,7 +181,7 @@ public class BigIntegerArray extends NumericArrayBase<BigInteger>
      * @param numBits Length of element in bits.
      * @param checker Offset checker to use.
      *
-     * @throws IOException     Failure during bit stream manipulation.
+     * @throws IOException Failure during bit stream manipulation.
      * @throws ZserioError Failure during offset checking.
      */
     public void writeAlignedAuto(BitStreamWriter writer, int numBits, OffsetChecker checker)
@@ -198,7 +198,7 @@ public class BigIntegerArray extends NumericArrayBase<BigInteger>
      * @param numBits Length of element in bits.
      * @param checker Offset checker to use.
      *
-     * @throws IOException     Failure during bit stream manipulation.
+     * @throws IOException Failure during bit stream manipulation.
      * @throws ZserioError Failure during offset checking.
      */
     public void writeAligned(BitStreamWriter writer, int numBits, OffsetChecker checker)

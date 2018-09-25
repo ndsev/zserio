@@ -25,7 +25,7 @@ public class Float32Array extends NumericArrayBase<Float>
      * @param length  Number of elements to read from given bit stream or IMPLICIT_LENGTH for implicit-length
      *                array or AUTO_LENGTH for auto length array.
      *
-     * @throws IOException     Failure during bit stream manipulation.
+     * @throws IOException Failure during bit stream manipulation.
      * @throws ZserioError Cannot occurred because indexed offsets are not used.
      */
     public Float32Array(BitStreamReader reader, int length) throws IOException, ZserioError
@@ -41,7 +41,7 @@ public class Float32Array extends NumericArrayBase<Float>
      *                array or AUTO_LENGTH for auto length array.
      * @param checker Specifies offset checker for indexed offsets.
      *
-     * @throws IOException     Failure during bit stream manipulation.
+     * @throws IOException Failure during bit stream manipulation.
      * @throws ZserioError Failure during offset checking.
      */
     public Float32Array(BitStreamReader reader, int length, OffsetChecker checker)
@@ -175,7 +175,7 @@ public class Float32Array extends NumericArrayBase<Float>
      *
      * @param writer Bit stream where to write.
      *
-     * @throws IOException     Failure during bit stream manipulation.
+     * @throws IOException Failure during bit stream manipulation.
      * @throws ZserioError Cannot occurred because indexed offsets are not used.
      */
     public void write(BitStreamWriter writer) throws IOException, ZserioError
@@ -188,7 +188,7 @@ public class Float32Array extends NumericArrayBase<Float>
      *
      * @param writer  Bit stream where to write.
      *
-     * @throws IOException     Failure during bit stream manipulation.
+     * @throws IOException Failure during bit stream manipulation.
      * @throws ZserioError Cannot occurred because indexed offsets are not used.
      */
     public void writeAuto(BitStreamWriter writer) throws IOException, ZserioError
@@ -202,7 +202,7 @@ public class Float32Array extends NumericArrayBase<Float>
      * @param writer  Bit stream where to write.
      * @param checker Offset checker to use.
      *
-     * @throws IOException     Failure during bit stream manipulation.
+     * @throws IOException Failure during bit stream manipulation.
      * @throws ZserioError Failure during offset checking.
      */
     public void writeAlignedAuto(BitStreamWriter writer, OffsetChecker checker)
@@ -218,7 +218,7 @@ public class Float32Array extends NumericArrayBase<Float>
      * @param writer  Bit stream where to write.
      * @param checker offset checker to use.
      *
-     * @throws IOException     Failure during bit stream manipulation.
+     * @throws IOException Failure during bit stream manipulation.
      * @throws ZserioError Failure during offset checking.
      */
     public void writeAligned(BitStreamWriter writer, OffsetChecker checker) throws IOException, ZserioError

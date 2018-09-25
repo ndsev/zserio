@@ -58,8 +58,9 @@ abstract class ArrayBase<E> implements Array<E>
      * @param reader  Bit stream to read from.
      * @param length  Number of element to read (it is always non-negative).
      * @param numBits Length of element in bits.
+     * @param checker Specifies offset checker for indexed offsets.
      *
-     * @throws IOException     Failure during bit stream manipulation.
+     * @throws IOException Failure during bit stream manipulation.
      * @throws ZserioError Failure during offset checking.
      */
     protected abstract void readN(BitStreamReader reader, int length, int numBits, OffsetChecker checker)
@@ -74,7 +75,7 @@ abstract class ArrayBase<E> implements Array<E>
      * @param numBits Length of element in bits.
      * @param checker Specifies offset checker for indexed offsets.
      *
-     * @throws IOException     Failure during bit stream manipulation.
+     * @throws IOException Failure during bit stream manipulation.
      * @throws ZserioError Failure during offset checking.
      */
     protected void readImpl(BitStreamReader reader, int length, int numBits, OffsetChecker checker)
@@ -103,7 +104,7 @@ abstract class ArrayBase<E> implements Array<E>
      * @param writer  Bit stream writer to use.
      * @param checker Offset checker to use.
      *
-     * @throws IOException     Failure during bit stream manipulation.
+     * @throws IOException Failure during bit stream manipulation.
      * @throws ZserioError Failure during offset checking.
      */
     protected void alignAndCheckOffset(int index, BitStreamWriter writer, OffsetChecker checker)
@@ -124,7 +125,7 @@ abstract class ArrayBase<E> implements Array<E>
      * @param reader  Bit stream reader to use.
      * @param checker Offset checker to use.
      *
-     * @throws IOException     Failure during bit stream manipulation.
+     * @throws IOException Failure during bit stream manipulation.
      * @throws ZserioError Failure during offset checking.
      */
     protected void alignAndCheckOffset(int index, BitStreamReader reader, OffsetChecker checker)

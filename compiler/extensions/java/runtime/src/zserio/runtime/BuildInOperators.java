@@ -22,7 +22,7 @@ public class BuildInOperators
      * <code>numbits(3) = 2</code><br>
      * <code>numbits(4) = 2</code><br>
      * <code>numbits(8) = 3</code><br>
-     * <code>numbits(16) = 4</code></p>
+     * <code>numbits(16) = 4</code>
      *
      * @param value The value from which to calculate number of bits.
      *
@@ -58,7 +58,7 @@ public class BuildInOperators
      * <code>numbits(3) = 2</code><br>
      * <code>numbits(4) = 2</code><br>
      * <code>numbits(8) = 3</code><br>
-     * <code>numbits(16) = 4</code></p>
+     * <code>numbits(16) = 4</code>
      *
      * @param value The value from which to calculate number of bits.
      *

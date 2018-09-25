@@ -20,7 +20,7 @@ import zserio.runtime.io.InitializeOffsetsWriter;
  * Implements Zserio object arrays.
  *
  * Zserio object arrays can be structure, choice or enum arrays. They are mapped to Java
- * List<E> type.
+ * {@code List<E>} type.
  *
  * @param <E> The type of elements (objects) maintained by this array.
  */
@@ -34,7 +34,7 @@ public class ObjectArray<E extends SizeOf> implements Array<E>
      *                array or AUTO_LENGTH for auto length array.
      * @param factory Element factory to create elements.
      *
-     * @throws IOException     Failure during bit stream manipulation.
+     * @throws IOException Failure during bit stream manipulation.
      * @throws ZserioError Cannot occurred because indexed offsets are not used.
      */
     public ObjectArray(BitStreamReader reader, int length, ElementFactory<E> factory)
@@ -52,7 +52,7 @@ public class ObjectArray<E extends SizeOf> implements Array<E>
      * @param factory Element factory to create elements.
      * @param checker Specifies offset checker for indexed offsets.
      *
-     * @throws IOException     Failure during bit stream manipulation.
+     * @throws IOException Failure during bit stream manipulation.
      * @throws ZserioError Failure during offset checking.
      */
     public ObjectArray(BitStreamReader reader, int length, ElementFactory<E> factory,
@@ -166,7 +166,7 @@ public class ObjectArray<E extends SizeOf> implements Array<E>
      *
      * @param writer Bit stream where to write.
      *
-     * @throws IOException     Failure during bit stream manipulation.
+     * @throws IOException Failure during bit stream manipulation.
      * @throws ZserioError Calling on object with writing interface
      */
     public void write(BitStreamWriter writer) throws IOException, ZserioError
@@ -181,7 +181,7 @@ public class ObjectArray<E extends SizeOf> implements Array<E>
      *
      * @param writer Bit stream where to write.
      *
-     * @throws IOException     Failure during bit stream manipulation.
+     * @throws IOException Failure during bit stream manipulation.
      * @throws ZserioError Calling on object with writing interface
      */
     public void writeAuto(BitStreamWriter writer) throws IOException, ZserioError
@@ -197,7 +197,7 @@ public class ObjectArray<E extends SizeOf> implements Array<E>
      * @param writer  Bit stream where to write.
      * @param checker Offset checker to use.
      *
-     * @throws IOException     Failure during bit stream manipulation.
+     * @throws IOException Failure during bit stream manipulation.
      * @throws ZserioError Calling on object with writing interface
      */
     public void writeAlignedAuto(BitStreamWriter writer, OffsetChecker checker)
@@ -215,7 +215,7 @@ public class ObjectArray<E extends SizeOf> implements Array<E>
      * @param writer  Bit stream where to write.
      * @param checker Offset checker to use.
      *
-     * @throws IOException     Failure during bit stream manipulation.
+     * @throws IOException Failure during bit stream manipulation.
      * @throws ZserioError Failure during offset checking or calling on object with writing interface.
      */
     public void writeAligned(BitStreamWriter writer, OffsetChecker checker) throws IOException, ZserioError

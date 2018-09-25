@@ -205,7 +205,7 @@ public interface BitStreamWriter extends BitStreamCloseable
      *
      * @param value BigInteger value to write.
      *
-     * @throws IOException
+     * @throws IOException If the writing failed.
      */
     void writeVarInt(final long value) throws IOException;
 
@@ -213,7 +213,7 @@ public interface BitStreamWriter extends BitStreamCloseable
      *
      * @param value BigInteger value to write.
      *
-     * @throws IOException
+     * @throws IOException If the writing failed.
      */
     void writeVarUInt(final BigInteger value) throws IOException;
 

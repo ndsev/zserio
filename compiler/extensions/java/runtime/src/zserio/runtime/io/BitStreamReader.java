@@ -52,7 +52,7 @@ public interface BitStreamReader extends BitStreamCloseable
      *
      * @return Read signed short value.
      *
-     * @throws IOException
+     * @throws IOException If reading failed.
      */
     short readShort() throws IOException;
 
@@ -61,7 +61,7 @@ public interface BitStreamReader extends BitStreamCloseable
      *
      * @return Read unsigned short value.
      *
-     * @throws IOException
+     * @throws IOException If reading failed.
      */
     int readUnsignedShort() throws IOException;
 
@@ -217,7 +217,7 @@ public interface BitStreamReader extends BitStreamCloseable
     /**
      * Reads a signed variable integer from the bit stream.
      *
-     * The integer takes up to 9 bytes to cover range <-2^63, 2^63-1>.
+     * The integer takes up to 9 bytes to cover range &lt;-2^63, 2^63-1&gt;.
      *
      * @return Read unsigned VarUInt value.
      *
@@ -228,7 +228,7 @@ public interface BitStreamReader extends BitStreamCloseable
     /**
      * Reads an unsigned variable integer from the bit stream.
      *
-     * The integer takes up to 9 bytes to cover range <0, 2^64-1>.
+     * The integer takes up to 9 bytes to cover range &lt;0, 2^64-1&gt;.
      *
      * @return Read unsigned VarUInt value.
      *

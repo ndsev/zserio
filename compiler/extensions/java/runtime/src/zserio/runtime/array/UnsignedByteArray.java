@@ -22,7 +22,7 @@ public class UnsignedByteArray extends ShortArrayBase
      *                array or AUTO_LENGTH for auto length array.
      * @param numBits Length of element in bits.
      *
-     * @throws IOException     Failure during bit stream manipulation.
+     * @throws IOException Failure during bit stream manipulation.
      * @throws ZserioError Cannot occurred because indexed offsets are not used.
      */
     public UnsignedByteArray(BitStreamReader reader, int length, int numBits)
@@ -40,7 +40,7 @@ public class UnsignedByteArray extends ShortArrayBase
      * @param numBits Length of element in bits.
      * @param checker Specifies offset checker for indexed offsets.
      *
-     * @throws IOException     Failure during bit stream manipulation.
+     * @throws IOException Failure during bit stream manipulation.
      * @throws ZserioError Failure during offset checking.
      */
     public UnsignedByteArray(BitStreamReader reader, int length, int numBits, OffsetChecker checker)
@@ -103,7 +103,7 @@ public class UnsignedByteArray extends ShortArrayBase
      * @param writer  Bit stream where to write.
      * @param numBits Length of element in bits.
      *
-     * @throws IOException     Failure during bit stream manipulation.
+     * @throws IOException Failure during bit stream manipulation.
      * @throws ZserioError Cannot occurred because indexed offsets are not used.
      */
     public void write(BitStreamWriter writer, int numBits) throws IOException, ZserioError
@@ -117,7 +117,7 @@ public class UnsignedByteArray extends ShortArrayBase
      * @param writer  Bit stream where to write.
      * @param numBits Length of element in bits.
      *
-     * @throws IOException     Failure during bit stream manipulation.
+     * @throws IOException Failure during bit stream manipulation.
      * @throws ZserioError Cannot occurred because indexed offsets are not used.
      */
     public void writeAuto(BitStreamWriter writer, int numBits) throws IOException, ZserioError
@@ -132,7 +132,7 @@ public class UnsignedByteArray extends ShortArrayBase
      * @param numBits Length of element in bits.
      * @param checker Offset checker to use.
      *
-     * @throws IOException     Failure during bit stream manipulation.
+     * @throws IOException Failure during bit stream manipulation.
      * @throws ZserioError Failure during offset checking.
      */
     public void writeAlignedAuto(BitStreamWriter writer, int numBits, OffsetChecker checker)
@@ -149,7 +149,7 @@ public class UnsignedByteArray extends ShortArrayBase
      * @param numBits Length of element in bits.
      * @param checker offset checker to use.
      *
-     * @throws IOException     Failure during bit stream manipulation.
+     * @throws IOException Failure during bit stream manipulation.
      * @throws ZserioError Failure during offset checking.
      */
     public void writeAligned(BitStreamWriter writer, int numBits, OffsetChecker checker)
