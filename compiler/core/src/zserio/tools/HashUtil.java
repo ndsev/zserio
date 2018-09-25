@@ -1,184 +1,134 @@
 package zserio.tools;
 
-import java.lang.reflect.Array;
+/**
+ * Collected methods which allow easy implementation of <code>hashCode</code> method.
+ *
+ * Only native types and Object types are supported so far.
+ *
+ * Usage:
+ * <pre>
+ * public int hashCode()
+ * {
+ *     int result = Util.HASH_SEED;
+ *
+ *     // collect the contributions of various fields
+ *     result = Util.hash(result, nativeType);
+ *     result = Util.hash(result, objectType);
 
+ *     return result;
+ * }
+ * </pre>
+ */
 public class HashUtil
 {
     /**
-     * Collected methods which allow easy implementation of <code>hashCode</code>. Taken from:
-     * http://www.javapractices.com/topic/TopicAction.do?Id=28 Example use case:
-     *
-     * <pre>
-     * public int hashCode()
-     * {
-     *     int result = Util.HASH_SEED;
-     *     //collect the contributions of various fields
-     *     result = Util.hash(result, fPrimitive);
-     *     result = Util.hash(result, fObject);
-     *     result = Util.hash(result, fArray);
-     *     return result;
-     * }
-     * </pre>
-     */
-    public static final int HASH_SEED = 23;
-
-    /**
      * Creates a hash value of the given seed value and the given boolean value.
      *
-     * @param aSeed a seed value
-     * @param aBoolean a boolean value
-     * @return the calculated hash value
+     * @param seedValue    The seed value to use for calculation.
+     * @param booleanValue The boolean value to use for calculation.
+     *
+     * @return The calculated hash value.
      */
-    public static int hash(final int aSeed, final boolean aBoolean)
+    public static int hash(int seedValue, boolean booleanValue)
     {
-        return firstTerm(aSeed) + (aBoolean ? 1 : 0);
+        return firstTerm(seedValue) + (booleanValue ? 1 : 0);
     }
 
     /**
      * Creates a hash value of the given seed value and the given char value.
      *
-     * @param aSeed a seed value
-     * @param aChar a char value
-     * @return the calculated hash value
+     * @param seedValue The seed value to use for calculation.
+     * @param charValue The char value to use for calculation.
+     *
+     * @return The calculated hash value.
      */
-    public static int hash(final int aSeed, final char aChar)
+    public static int hash(int seedValue, char charValue)
     {
-        return firstTerm(aSeed) + aChar;
+        return firstTerm(seedValue) + charValue;
     }
 
     /**
      * Creates a hash value of the given seed value and the given integer value.
      *
-     * @param aSeed a seed value
-     * @param aInt a integer value
-     * @return the calculated hash value
+     * @param seedValue The seed value to use for calculation.
+     * @param intValue  The integer value to use for calculation.
+     *
+     * @return The calculated hash value.
      */
-    public static int hash(final int aSeed, final int aInt)
+    public static int hash(int seedValue, int intValue)
     {
-        /*
-         * Implementation Note
-         * Note that byte and short are handled by this method, through
-         * implicit conversion.
-         */
-        return firstTerm(aSeed) + aInt;
+        // note that byte and short are handled by this method, through implicit conversion
+        return firstTerm(seedValue) + intValue;
     }
 
     /**
      * Creates a hash value of the given seed value and the given long value.
      *
-     * @param aSeed a seed value
-     * @param aLong a long value
-     * @return the calculated hash value
+     * @param seedValue The seed value to use for calculation.
+     * @param longValue The long value to use for calculation.
+     *
+     * @return The calculated hash value.
      */
-    public static int hash(final int aSeed, final long aLong)
+    public static int hash(int seedValue, long longValue)
     {
-        return firstTerm(aSeed) + (int) (aLong ^ (aLong >>> 32));
+        return firstTerm(seedValue) + (int) (longValue ^ (longValue >>> 32));
     }
 
     /**
      * Creates a hash value of the given seed value and the given float value.
      *
-     * @param aSeed a seed value
-     * @param aFloat a float value
-     * @return the calculated hash value
+     * @param seedValue  The seed value to use for calculation.
+     * @param floatValue The float value to use for calculation.
+     *
+     * @return The calculated hash value.
      */
-    public static int hash(final int aSeed, final float aFloat)
+    public static int hash(int seedValue, float floatValue)
     {
-        return hash(aSeed, Float.floatToIntBits(aFloat));
+        return hash(seedValue, Float.floatToIntBits(floatValue));
     }
 
     /**
      * Creates a hash value of the given seed value and the given double value.
      *
-     * @param aSeed a seed value
-     * @param aDouble a double value
-     * @return the calculated hash value
+     * @param seedValue   The seed value to use for calculation.
+     * @param doubleValue The double value to use for calculation.
+     *
+     * @return The calculated hash value.
      */
-    public static int hash(final int aSeed, final double aDouble)
+    public static int hash(int seedValue, double doubleValue)
     {
-        return hash(aSeed, Double.doubleToLongBits(aDouble));
+        return hash(seedValue, Double.doubleToLongBits(doubleValue));
     }
 
     /**
      * Creates a hash value of the given seed value and the given object.
      *
-     * @param aSeed a seed value
-     * @param aObject an object
-     * @return the calculated hash value
+     * @param seedValue  The seed value to use for calculation.
+     * @param objectType The object to use for calculation.
+     *
+     * @return The calculated hash value.
      */
-    public static int hash(final int aSeed, final Object aObject)
+    public static int hash(int seedValue, Object objectType)
     {
-        int result = aSeed;
+        int result = seedValue;
 
-        if (aObject == null)
-        {
+        if (objectType == null)
             result = hash(result, 0);
-        }
-        else if (isEnum(aObject))
-        {
-            result = hash(result, ((Enum<?>) aObject).ordinal());
-        }
-        else if (!isArray(aObject))
-        {
-            result = hash(result, aObject.hashCode());
-        }
         else
-        {
-            final int length = Array.getLength(aObject);
-            for (int idx = 0; idx < length; ++idx)
-            {
-                final Object item = Array.get(aObject, idx);
-                //recursive call!
-                result = hash(result, item);
-            }
-        }
+            result = hash(result, objectType.hashCode());
+
         return result;
     }
 
     /**
-     * A prime number.
+     * Hash seed number to be used for initialization.
      */
+    public static final int HASH_SEED = 23;
+
+    private static int firstTerm(int seedValue)
+    {
+        return FODD_PRIME_NUMBER * seedValue;
+    }
+
     private static final int FODD_PRIME_NUMBER = 37;
-
-    /**
-     * Multiplies the given seed value with the prime number FODD_PRIME_NUMBER.
-     *
-     * @param aSeed a seed value
-     * @return the result of the multiplication
-     */
-    private static int firstTerm(final int aSeed)
-    {
-        return FODD_PRIME_NUMBER * aSeed;
-    }
-
-    /**
-     * Checks if the given object is an array class. True is returned if this is the case.
-     *
-     * @param aObject an object
-     * @return the result of the check
-     */
-    private static boolean isArray(final Object obj)
-    {
-       return
-               obj instanceof Object[] ||
-               obj instanceof boolean[] ||
-               obj instanceof byte[] ||
-               obj instanceof short[] ||
-               obj instanceof char[] ||
-               obj instanceof int[] ||
-               obj instanceof long[] ||
-               obj instanceof float[] ||
-               obj instanceof double[];
-    }
-
-    /**
-     * Checks if the given object is an enumeration. True is returned if this is the case.
-     *
-     * @param aObject an object
-     * @return the result of the check
-     */
-    private static boolean isEnum(final Object obj)
-    {
-        return obj instanceof Enum;
-    }
 }

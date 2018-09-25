@@ -170,13 +170,14 @@ public class StringJoinUtil
         /**
          * Gets the result in string format.
          */
+        @Override
         public String toString()
         {
             return stringBuilder.toString();
         }
 
-        private final String  separator;
-        private boolean       first;
-        private StringBuilder stringBuilder;
+        private final String separator;
+        private boolean first;
+        private final StringBuilder stringBuilder;
     }
 }

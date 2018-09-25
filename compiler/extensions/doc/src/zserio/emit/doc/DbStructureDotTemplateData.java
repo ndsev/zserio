@@ -9,7 +9,6 @@ import zserio.ast.Field;
 import zserio.ast.SqlDatabaseType;
 import zserio.ast.SqlTableType;
 import zserio.ast.TypeReference;
-import zserio.tools.StringHtmlUtil;
 
 /**
  * The database structure data used for FreeMarker template during DOT generation.
@@ -127,7 +126,7 @@ public class DbStructureDotTemplateData
         {
             this.name = name;
             typeName = tableType.getName();
-            packageName = tableType.getPackage().getPackageName();
+            packageName = tableType.getPackage().getPackageName().toString();
             this.docUrl = docUrl;
 
             fieldList = new ArrayList<TableFieldTemplateData>();
@@ -208,5 +207,5 @@ public class DbStructureDotTemplateData
         private final boolean   isNullAllowed;
     }
 
-    private Database            database;
+    private final Database            database;
 }

@@ -7,7 +7,6 @@ import java.util.List;
 
 import zserio.ast.ZserioType;
 import zserio.ast.Package;
-import zserio.tools.PackageManager;
 import zserio.tools.StringJoinUtil;
 
 /**
@@ -24,7 +23,8 @@ final public class PackageMapper
      * @param topLevelPackageNameList The list of top level package names defined in the command line.
      * @param codePackageSeparator    The language package separator to use.
      */
-    public PackageMapper(Iterable<String> topLevelPackageNameList, String codePackageSeparator)
+    public PackageMapper(Package rootPackage, Iterable<String> topLevelPackageNameList,
+            String codePackageSeparator)
     {
         this.codePackageSeparator = codePackageSeparator;
 
@@ -33,7 +33,6 @@ final public class PackageMapper
             topLevelPath.add(component);
         topLevelPackageNamePath = Collections.unmodifiableList(topLevelPath);
 
-        final Package rootPackage = PackageManager.get().getRoot();
         mappedRootPackagePath = Collections.unmodifiableList(getMappedPackagePath(rootPackage));
         mappedRootPackageName = getMappedPackageName(rootPackage);
         mappedRootPackageFilePath = getMappedPackageFilePath(rootPackage);
@@ -93,25 +92,27 @@ final public class PackageMapper
         return getMappedPackagePath(type.getPackage());
     }
 
+    // TODO rename Path, to use PackageName somehow and get rid of getIdList()
     private List<String> getMappedPackagePath(Package zserioPackage)
     {
-        final List<String> packagePath = zserioPackage.getPackagePath();
+        final List<String> packagePath = zserioPackage.getPackageName().getIdList();
         final List<String> path = new ArrayList<String>(topLevelPackageNamePath.size() + packagePath.size());
         path.addAll(topLevelPackageNamePath);
         path.addAll(packagePath);
+
         return path;
     }
 
     private String getMappedPackageName(Package zserioPackage)
     {
-        return StringJoinUtil.joinStrings(topLevelPackageNamePath, zserioPackage.getPackagePath(),
-                codePackageSeparator);
+        return StringJoinUtil.joinStrings(topLevelPackageNamePath,
+                zserioPackage.getPackageName().getIdList(), codePackageSeparator);
     }
 
     private String getMappedPackageFilePath(Package zserioPackage)
     {
-        return StringJoinUtil.joinStrings(topLevelPackageNamePath, zserioPackage.getPackagePath(),
-                File.separator);
+        return StringJoinUtil.joinStrings(topLevelPackageNamePath,
+                zserioPackage.getPackageName().getIdList(), File.separator);
     }
 
     private final List<String>      topLevelPackageNamePath;

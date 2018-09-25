@@ -6,7 +6,6 @@ import org.apache.commons.cli.OptionGroup;
 import antlr.RecognitionException;
 
 import zserio.antlr.ZserioEmitter;
-import zserio.ast.ZserioException;
 import zserio.ast.TokenAST;
 import zserio.tools.Extension;
 import zserio.tools.Parameters;
@@ -31,11 +30,11 @@ public class DocExtension implements Extension
      * @see zserio.tools.Extension#generate(zserio.antlr.ZserioEmitter, zserio.ast.TokenAST)
      */
     @Override
-    public void generate(Parameters parameters, ZserioEmitter emitter, TokenAST rootNode) throws ZserioException
+    public void generate(Parameters parameters, ZserioEmitter emitter, TokenAST rootNode) throws ZserioEmitDocException
     {
         if (parameters == null)
         {
-            throw new ZserioException("No parameters set for HtmlBackend!");
+            throw new ZserioEmitDocException("No parameters set for HtmlBackend!");
         }
 
         if (!parameters.argumentExists(OptionDoc))
@@ -57,7 +56,7 @@ public class DocExtension implements Extension
             dotExecutable = parameters.getCommandLineArg(OptionSetDotExecutable);
 
         if (withSvgDiagrams && !DotFileConvertor.isDotExecAvailable(dotExecutable))
-            throw new ZserioException("The dot executable '" + dotExecutable + "' not found!");
+            throw new ZserioEmitDocException("The dot executable '" + dotExecutable + "' not found!");
 
         final String docPath = parameters.getCommandLineArg(OptionDoc);
 
@@ -110,7 +109,7 @@ public class DocExtension implements Extension
         catch (RecognitionException exc)
         {
             System.out.println("DocExtension.generate: exception:" + exc);
-            throw new ZserioException(exc);
+            throw new ZserioEmitDocException(exc);
         }
     }
 

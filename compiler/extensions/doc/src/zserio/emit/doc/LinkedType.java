@@ -18,7 +18,7 @@ import zserio.ast.UnionType;
 public class LinkedType
 {
     private ZserioType type;
-    private boolean isDoubleDefinedType;
+    private final boolean isDoubleDefinedType;
     private String style;
     private String category = "";
 
@@ -173,7 +173,7 @@ public class LinkedType
         String result = "";
         if( type.getPackage()!=null )
         {
-            result = type.getPackage().getPackageName();
+            result = type.getPackage().getPackageName().toString();
         }
         return result;
     }

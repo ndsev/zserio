@@ -18,16 +18,6 @@ import zserio.antlr.util.ParserException;
  */
 public class TypeInstantiation extends TokenAST implements ZserioType
 {
-    /**
-     * Default constructor.
-     */
-    public TypeInstantiation()
-    {
-        arguments = new ArrayList<Expression>();
-        instantiatedParameters = new ArrayList<InstantiatedParameter>();
-        ZserioTypeContainer.add(this);
-    }
-
     @Override
     public Package getPackage()
     {
@@ -206,9 +196,9 @@ public class TypeInstantiation extends TokenAST implements ZserioType
 
     private static final long serialVersionUID = -7316936170722028250L;
 
-    private TypeReference               referencedType;
-    private List<Expression>            arguments;
+    private TypeReference referencedType;
+    private final List<Expression> arguments = new ArrayList<Expression>();
 
-    private CompoundType                baseType;
-    private List<InstantiatedParameter> instantiatedParameters;
+    private CompoundType baseType;
+    private final List<InstantiatedParameter> instantiatedParameters = new ArrayList<InstantiatedParameter>();
 }

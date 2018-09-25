@@ -171,12 +171,12 @@ public class HtmlModuleNameSuffixVisitor implements ZserioTypeVisitor
     /**
      * Returns the resolved suffix for HMTL module name.
      *
-     * @throws ZserioEmitHtmlException Throws if called without visiting ZserioType.
+     * @throws ZserioEmitDocException Throws if called without visiting ZserioType.
      */
-    public String getSuffix() throws ZserioEmitHtmlException
+    public String getSuffix() throws ZserioEmitDocException
     {
         if (htmlModuleNameSuffix == null)
-            throw new ZserioEmitHtmlException("Bad usage of HtmlModuleNameSuffixVisitor!");
+            throw new ZserioEmitDocException("Bad usage of HtmlModuleNameSuffixVisitor!");
 
         return htmlModuleNameSuffix;
     }

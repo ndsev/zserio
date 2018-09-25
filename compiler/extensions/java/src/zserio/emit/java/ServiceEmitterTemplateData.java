@@ -17,7 +17,7 @@ public final class ServiceEmitterTemplateData extends UserTypeTemplateData
         className = serviceType.getName() + "Grpc";
 
         final JavaNativeTypeMapper javaTypeMapper = context.getJavaNativeTypeMapper();
-        Iterable<Rpc> rpcList = serviceType.getRpcList();
+        final Iterable<Rpc> rpcList = serviceType.getRpcList();
         for (Rpc rpc : rpcList)
         {
             RpcTemplateData templateData = new RpcTemplateData(javaTypeMapper, rpc);
@@ -115,9 +115,9 @@ public final class ServiceEmitterTemplateData extends UserTypeTemplateData
 
         private final String name;
         private final String responseTypeFullName;
-        final private boolean hasResponseStreaming;
+        private final boolean hasResponseStreaming;
         private final String requestTypeFullName;
-        final private boolean hasRequestStreaming;
+        private final boolean hasRequestStreaming;
     }
 
     private final String className;

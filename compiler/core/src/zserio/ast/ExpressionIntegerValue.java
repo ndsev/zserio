@@ -486,10 +486,10 @@ class ExpressionIntegerValue implements Serializable
         private BigInteger maxValue;
     }
 
-    private final BigInteger  value;
-    private final BigInteger  lowerBound;
-    private final BigInteger  upperBound;
-    private final boolean     needsBigInteger;
+    private final BigInteger value;
+    private final BigInteger lowerBound;
+    private final BigInteger upperBound;
+    private final boolean needsBigInteger;
 
     private static final long serialVersionUID = 8311435023436275517L;
 }

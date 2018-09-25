@@ -12,10 +12,7 @@ abstract class CppDefaultEmitter extends CodeDefaultEmitter
         super(outPathName, extensionParameters, CPP_TEMPLATE_LOCATION,
                 CppFullNameFormatter.CPP_NAMESPACE_SEPARATOR);
 
-        final CppNativeTypeMapper cppNativeTypeMapper = new CppNativeTypeMapper(getPackageMapper());
-        templateDataContext = new TemplateDataContext(cppNativeTypeMapper,
-                getPackageMapper(), getWithWriterCode(), getWithInspectorCode(), getWithValidationCode(),
-                getWithRangeCheckCode());
+        this.extensionParameters = extensionParameters;
     }
 
     protected void processSourceTemplate(String templateName, Object templateData, ZserioType zserioType)
@@ -57,12 +54,12 @@ abstract class CppDefaultEmitter extends CodeDefaultEmitter
 
     protected TemplateDataContext getTemplateDataContext()
     {
-        return templateDataContext;
+        return new TemplateDataContext(extensionParameters, getPackageMapper());
     }
-
-    private final TemplateDataContext templateDataContext;
 
     private static final String CPP_SOURCE_EXTENSION = ".cpp";
     private static final String CPP_HEADER_EXTENSION = ".h";
     private static final String CPP_TEMPLATE_LOCATION = "cpp/";
+
+    private final Parameters extensionParameters;
 }

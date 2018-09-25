@@ -18,7 +18,7 @@ class ChoiceEmitter extends JavaDefaultEmitter
         if (!(token instanceof ChoiceType))
             throw new ZserioEmitJavaException("Unexpected token type in beginChoice!");
 
-        final ChoiceType choiceType = (ChoiceType) token;
+        final ChoiceType choiceType = (ChoiceType)token;
         final Object templateData = new ChoiceEmitterTemplateData(getTemplateDataContext(), choiceType);
         processTemplate(TEMPLATE_NAME, templateData, choiceType);
     }

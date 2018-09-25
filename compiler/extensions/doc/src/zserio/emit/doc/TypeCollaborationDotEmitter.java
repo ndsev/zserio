@@ -48,7 +48,7 @@ public class TypeCollaborationDotEmitter extends DefaultDocEmitter
     public void beginConst(AST c)
     {
         if (!(c instanceof ZserioType))
-            throw new ZserioEmitHtmlException("Unexpected token type in beginConst!");
+            throw new ZserioEmitDocException("Unexpected token type in beginConst!");
         storeType((ZserioType)c);
     }
 
@@ -56,7 +56,7 @@ public class TypeCollaborationDotEmitter extends DefaultDocEmitter
     public void beginStructure(AST s)
     {
         if (!(s instanceof ZserioType))
-            throw new ZserioEmitHtmlException("Unexpected token type in beginStructure!");
+            throw new ZserioEmitDocException("Unexpected token type in beginStructure!");
         storeType((ZserioType)s);
     }
 
@@ -64,7 +64,7 @@ public class TypeCollaborationDotEmitter extends DefaultDocEmitter
     public void beginChoice(AST c)
     {
         if (!(c instanceof ZserioType))
-            throw new ZserioEmitHtmlException("Unexpected token type in beginChoice!");
+            throw new ZserioEmitDocException("Unexpected token type in beginChoice!");
         storeType((ZserioType)c);
     }
 
@@ -72,7 +72,7 @@ public class TypeCollaborationDotEmitter extends DefaultDocEmitter
     public void beginUnion(AST u)
     {
         if (!(u instanceof ZserioType))
-            throw new ZserioEmitHtmlException("Unexpected token type in beginUnion!");
+            throw new ZserioEmitDocException("Unexpected token type in beginUnion!");
         storeType((ZserioType)u);
     }
 
@@ -80,7 +80,7 @@ public class TypeCollaborationDotEmitter extends DefaultDocEmitter
     public void beginEnumeration(AST e)
     {
         if (!(e instanceof ZserioType))
-            throw new ZserioEmitHtmlException("Unexpected token type in beginEnumeration!");
+            throw new ZserioEmitDocException("Unexpected token type in beginEnumeration!");
         storeType((ZserioType)e);
     }
 
@@ -88,7 +88,7 @@ public class TypeCollaborationDotEmitter extends DefaultDocEmitter
     public void beginSubtype(AST s)
     {
         if (!(s instanceof ZserioType))
-            throw new ZserioEmitHtmlException("Unexpected token type in beginSubtype!");
+            throw new ZserioEmitDocException("Unexpected token type in beginSubtype!");
         storeType((ZserioType)s);
     }
 
@@ -96,7 +96,7 @@ public class TypeCollaborationDotEmitter extends DefaultDocEmitter
     public void beginService(AST s)
     {
         if (!(s instanceof ZserioType))
-            throw new ZserioEmitHtmlException("Unexpected token type in beginServiceType");
+            throw new ZserioEmitDocException("Unexpected token type in beginServiceType");
         storeType((ZserioType)s);
     }
 
@@ -104,7 +104,7 @@ public class TypeCollaborationDotEmitter extends DefaultDocEmitter
     public void beginSqlDatabase(AST s)
     {
         if (!(s instanceof ZserioType))
-            throw new ZserioEmitHtmlException("Unexpected token type in beginSqlDatabase!");
+            throw new ZserioEmitDocException("Unexpected token type in beginSqlDatabase!");
         storeType((ZserioType)s);
     }
 
@@ -112,7 +112,7 @@ public class TypeCollaborationDotEmitter extends DefaultDocEmitter
     public void beginSqlTable(AST s)
     {
         if (!(s instanceof ZserioType))
-            throw new ZserioEmitHtmlException("Unexpected token type in beginSqlTable!");
+            throw new ZserioEmitDocException("Unexpected token type in beginSqlTable!");
         storeType((ZserioType)s);
     }
 
@@ -129,13 +129,13 @@ public class TypeCollaborationDotEmitter extends DefaultDocEmitter
             if (withSvgDiagrams)
                 if (!DotFileConvertor.convertToSvg(dotExecutable, outputFile,
                                       DocEmitterTools.getTypeCollaborationSvgFile(docPath, type)))
-                    throw new ZserioEmitHtmlException("Failure to convert '" + outputFile +
+                    throw new ZserioEmitDocException("Failure to convert '" + outputFile +
                             "' to SVG format!");
         }
     }
 
     private void emit(File outputFile, String templateFileName, Object templateData)
-                 throws ZserioEmitHtmlException
+                 throws ZserioEmitDocException
     {
         try
         {
@@ -150,11 +150,11 @@ public class TypeCollaborationDotEmitter extends DefaultDocEmitter
         }
         catch (IOException exc)
         {
-            throw new ZserioEmitHtmlException(exc);
+            throw new ZserioEmitDocException(exc);
         }
         catch (TemplateException exc)
         {
-            throw new ZserioEmitHtmlException(exc);
+            throw new ZserioEmitDocException(exc);
         }
     }
 

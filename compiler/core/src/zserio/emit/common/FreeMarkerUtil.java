@@ -8,7 +8,6 @@ import java.io.OutputStreamWriter;
 import java.util.HashSet;
 import java.util.Set;
 
-import zserio.freemarker.MethodRegistrator;
 import freemarker.template.Configuration;
 import freemarker.template.Template;
 import freemarker.template.TemplateException;
@@ -35,7 +34,6 @@ public class FreeMarkerUtil
         {
             final Configuration newFreeMarkerConfig = new Configuration(Configuration.VERSION_2_3_28);
             newFreeMarkerConfig.setClassForTemplateLoading(FreeMarkerUtil.class, "/freemarker/");
-            MethodRegistrator.register(newFreeMarkerConfig);
             freeMarkerConfig = newFreeMarkerConfig;
             amalgamatedDirectories = new HashSet<String>();
         }

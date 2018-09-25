@@ -13,14 +13,6 @@ import zserio.antlr.util.ParserException;
 public class DocTagTodoToken extends DocTokenAST
 {
     /**
-     * Empty constructor.
-     */
-    public DocTagTodoToken()
-    {
-        todoTextList = new ArrayList<String>();
-    }
-
-    /**
      * Gets list of text rows which describes the todo tag.
      *
      * @return List of text rows which describes the todo tag.
@@ -48,5 +40,5 @@ public class DocTagTodoToken extends DocTokenAST
 
     private static final long serialVersionUID = 1L;
 
-    private List<String>    todoTextList;
+    private final List<String> todoTextList = new ArrayList<String>();
 }

@@ -17,14 +17,6 @@ import zserio.tools.HashUtil;
  */
 public class ServiceType extends TokenAST implements ZserioType, Comparable<ServiceType>
 {
-    /**
-     * Default constructor.
-     */
-    public ServiceType()
-    {
-        ZserioTypeContainer.add(this);
-    }
-
     @Override
     public int compareTo(ServiceType other)
     {
@@ -162,6 +154,6 @@ public class ServiceType extends TokenAST implements ZserioType, Comparable<Serv
     private Package pkg;
 
     private String name;
-    private List<Rpc> rpcs = new ArrayList<Rpc>();
-    private Set<ZserioType> usedTypeList = new LinkedHashSet<ZserioType>();
+    private final List<Rpc> rpcs = new ArrayList<Rpc>();
+    private final Set<ZserioType> usedTypeList = new LinkedHashSet<ZserioType>();
 }

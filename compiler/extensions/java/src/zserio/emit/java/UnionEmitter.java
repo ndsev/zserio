@@ -18,7 +18,7 @@ class UnionEmitter extends JavaDefaultEmitter
         if (!(token instanceof UnionType))
             throw new ZserioEmitJavaException("Unexpected token type in beginUnion!");
 
-        final UnionType unionType = (UnionType) token;
+        final UnionType unionType = (UnionType)token;
         Object templateData = new UnionEmitterTemplateData(getTemplateDataContext(), unionType);
         processTemplate(TEMPLATE_NAME, templateData, unionType);
     }

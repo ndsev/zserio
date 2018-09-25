@@ -1,13 +1,12 @@
 package zserio.tools;
 
 import java.io.BufferedReader;
-import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
+
 import org.apache.commons.cli.ParseException;
 
-import antlr.CommonHiddenStreamToken;
 import antlr.MismatchedTokenException;
 import antlr.NoViableAltException;
 import antlr.Token;
@@ -25,15 +24,17 @@ import zserio.antlr.ExpressionEvaluator;
 import zserio.antlr.TypeEvaluator;
 import zserio.antlr.util.FileNameLexerToken;
 import zserio.antlr.util.ParserException;
-import zserio.ast.ZserioException;
-import zserio.ast.ZserioTypeContainer;
+import zserio.ast.PackageName;
+import zserio.ast.Root;
+import zserio.ast.TranslationUnit;
 import zserio.ast.DefaultToken;
 import zserio.ast.Import;
-import zserio.ast.Package;
+
 import zserio.ast.TokenAST;
+import zserio.emit.common.ZserioEmitException;
 
 /**
- * The main class for Relational Zserio (Zserio) tool.
+ * The main class for Zserio tool.
  */
 public class ZserioTool
 {
@@ -70,7 +71,7 @@ public class ZserioTool
             ZserioToolPrinter.printError(exception.getMessage());
             return false;
         }
-        catch (ZserioException exception)
+        catch (ZserioEmitException exception)
         {
             ZserioToolPrinter.printError(exception.getMessage());
             return false;
@@ -117,14 +118,9 @@ public class ZserioTool
 
     private ZserioTool()
     {
-        emitter = new ZserioEmitter();
-
-        inputFileManager = new InputFileManager();
         commandLineArguments = new CommandLineArguments();
-        extensionManager = new ExtensionManager(commandLineArguments.getOptions());
-
-        final Token token = new FileNameLexerToken(ZserioParserTokenTypes.ROOT, "ROOT");
-        rootNode = new DefaultToken(token);
+        inputFileManager = new InputFileManager(commandLineArguments);
+        extensionManager = new ExtensionManager(commandLineArguments);
     }
 
     private void execute(String[] args) throws Exception
@@ -148,7 +144,7 @@ public class ZserioTool
         }
         else if (commandLineArguments.getInputFileName() == null)
         {
-            throw new ParseException("Missing input file name");
+            throw new ParseException("Missing input file name!");
         }
         else
         {
@@ -158,110 +154,47 @@ public class ZserioTool
 
     private void process() throws Exception
     {
-        parse();
+        final Root rootNode = Root.create();
+
+        parse(rootNode);
 
         if (commandLineArguments.hasShowAstOption())
             showAstTree(rootNode);
 
-        check();
-        emit();
+        check(rootNode);
+        emit(rootNode);
 
         ZserioToolPrinter.printMessage("Done");
     }
 
-    /** @todo redesign */
-    private void parse() throws Exception
+    private void parse(Root rootNode) throws Exception
     {
         final String inputFileName = commandLineArguments.getInputFileName();
-        detectInputFileExtension(inputFileName);
-        final String inputFileFullName = getInputFileFullName(inputFileName);
-        inputFileManager.registerFile(inputFileFullName);
-        AST unitRoot = parsePackage(inputFileName, inputFileFullName, true);
-        rootNode.addChild(unitRoot);
-        parseImportedPackages(unitRoot);
+        final String inputFileFullName = inputFileManager.getFileFullName(inputFileName);
+        final TranslationUnit translationUnit = parsePackage(rootNode, inputFileFullName);
+        parseImportedPackages(rootNode, translationUnit);
 
-        // create name scopes and resolve references
-        TypeEvaluator typeEval = new TypeEvaluator();
+        // create name scopes
+        final TypeEvaluator typeEval = new TypeEvaluator();
         typeEval.root(rootNode);
 
-        setRootPackage(unitRoot);
-        PackageManager.get().linkAll();
+        // resolve references
+        rootNode.resolveReferences();
 
         // check expression types and evaluate constant expressions
-        ExpressionEvaluator exprEval = new ExpressionEvaluator();
+        final ExpressionEvaluator exprEval = new ExpressionEvaluator();
         exprEval.root(rootNode);
     }
 
-    private void check() throws Exception
-    {
-        ZserioToolPrinter.printMessage("Checking");
-
-        rootNode.checkAll();
-
-        ZserioTypeContainer.check();
-
-        ZserioTypeCheckerVisitor zserioCheckerVisitor = new ZserioTypeCheckerVisitor();
-        ZserioTypeContainer.walk(zserioCheckerVisitor);
-        zserioCheckerVisitor.printWarnings();
-
-        inputFileManager.checkFiles();
-    }
-
-    private void emit() throws Exception
-    {
-        ExtensionParameters parameters = new ExtensionParameters(commandLineArguments);
-        extensionManager.callExtensions(parameters, emitter, rootNode);
-    }
-
-    private void setRootPackage(AST unitNode) throws ZserioException, IllegalArgumentException
-    {
-        AST node = unitNode.getFirstChild();
-        if (node != null && node.getType() == ZserioParserTokenTypes.PACKAGE)
-        {
-            PackageManager packageManager = PackageManager.get();
-            packageManager.setRoot(packageManager.lookup(node));
-        }
-    }
-
-    private void parseImportedPackages(AST unitNode) throws Exception
-    {
-        AST node = unitNode.getFirstChild();
-
-        // skip over optional "package"
-        if (node != null && node.getType() == ZserioParserTokenTypes.PACKAGE)
-            node = node.getNextSibling();
-
-        while (node != null && node.getType() == ZserioParserTokenTypes.IMPORT)
-        {
-            Import importNode = (Import)node;
-            final String inputFileName = getPackageFile(importNode);
-            final String inputFileFullName = getInputFileFullName(inputFileName);
-            if (!inputFileManager.isFileRegistered(inputFileFullName))
-            {
-                inputFileManager.registerFile(inputFileFullName);
-                AST unitRoot = parsePackage(inputFileName, inputFileFullName, false);
-                rootNode.addChild(unitRoot);
-                parseImportedPackages(unitRoot);
-            }
-            node = node.getNextSibling();
-        }
-    }
-
-    private String getPackageFile(Import importNode)
-    {
-        final String pkgFileName = StringJoinUtil.joinStrings(importNode.getPackagePath(), File.separator);
-        return pkgFileName + inputFileExtension;
-    }
-
-    private AST parsePackage(String inputFileName, String inputFileFullName, boolean initialFile)
-            throws Exception
+    private TranslationUnit parsePackage(Root rootNode, String inputFileFullName) throws Exception
     {
         ZserioToolPrinter.printMessage("Parsing " + inputFileFullName);
+        inputFileManager.registerFile(inputFileFullName);
 
         // set up lexer, parser and token buffer
         FileInputStream stream = null;
         InputStreamReader reader = null;
-        TokenAST retVal = null;
+        TranslationUnit translationUnit = null;
         try
         {
             stream = new FileInputStream(inputFileFullName);
@@ -280,8 +213,8 @@ public class ZserioTool
             parser.setASTNodeClass(DefaultToken.class.getCanonicalName());
 
             // parse file and get root node of syntax tree
-            parser.translationUnit();
-            retVal = (TokenAST)parser.getAST();
+            parser.translationUnit(inputFileManager);
+            translationUnit = (TranslationUnit)parser.getAST();
         }
         finally
         {
@@ -297,106 +230,54 @@ public class ZserioTool
             }
         }
 
-        if (retVal == null)
-            throw new ParserException(inputFileFullName, "ZserioParser: Parser errors.");
+        // evaluates all children (we will need all import nodes immediately)
+        translationUnit.evaluateAll();
 
-        checkPackageName(retVal, inputFileName, initialFile);
-        checkImports(retVal);
+        rootNode.addTranslationUnit(translationUnit);
 
-        // call new AST nodes evaluator
-        retVal.evaluateAll();
-
-        return retVal;
+        return translationUnit;
     }
 
-    private String getExpectedPackageName(String inputFileName)
+    private void parseImportedPackages(Root rootNode, TranslationUnit parentTranslationUnit)
+            throws Exception
     {
-        String expectedPkgName = inputFileName;
-        expectedPkgName = expectedPkgName.substring(0, expectedPkgName.lastIndexOf(inputFileExtension));
-        expectedPkgName = expectedPkgName.replace(File.separatorChar, '.');
-
-        return expectedPkgName;
-    }
-
-    // FIXME: This should be replaced by a smart Package AST class, but the current design is quite different.
-    private String getPackageNameFromNode(AST importNode)
-    {
-        StringJoinUtil.Joiner sb = new StringJoinUtil.Joiner(Package.SEPARATOR);
-        for (AST child = importNode.getFirstChild(); child != null; child = child.getNextSibling())
-            sb.append(child.getText());
-
-        return sb.toString();
-    }
-
-    // FIXME: This should be replaced by a smart Package AST class, but the current design is quite different.
-    private void checkPackageName(AST packageRoot, String inputFileName, boolean initialFile)
-            throws ParserException
-    {
-        final TokenAST node = (TokenAST)packageRoot.getFirstChild();
-        // node is null only for empty input file
-        if (node == null || node.getType() != ZserioParserTokenTypes.PACKAGE)
+        final Iterable<Import> imports = parentTranslationUnit.getImports();
+        for (Import importNode : imports)
         {
-            // no package name specified
-            if (initialFile)
-                return; // it's ok for the initial (first) zserio file
-
-            // imported files must include "package ..."
-            throw new ParserException(node, "ZserioParser: Package declaration missing in imported file.");
-        }
-
-        final String expectedPkgName = getExpectedPackageName(inputFileName);
-        final String actualPkgName = getPackageNameFromNode(node);
-        if (!actualPkgName.equals(expectedPkgName))
-        {
-            // file name and package name differ - this is a fatal error as it breaks imports badly
-            throw new ParserException(node, "ZserioParser: File name and package name do not match!");
+            final PackageName importedPackageName = importNode.getImportedPackageName();
+            final String inputFileFullName = inputFileManager.getFileFullName(importedPackageName);
+            if (!inputFileManager.isFileRegistered(inputFileFullName))
+            {
+                final TranslationUnit translationUnit = parsePackage(rootNode, inputFileFullName);
+                parseImportedPackages(rootNode, translationUnit);
+            }
         }
     }
 
-    private void checkImports(AST packageRoot) throws ParserException
+    private void check(Root rootNode) throws Exception
     {
-        final TokenAST node = (TokenAST)packageRoot.getFirstChild();
+        ZserioToolPrinter.printMessage("Checking");
 
-        // files that start with import are wrong (this implies they don't contain 'package' specification
-        // but files without package can't use imports)
-        // node is null only for empty input file
-        if (node != null && node.getType() == ZserioParserTokenTypes.IMPORT)
-        {
-            throw new ParserException(node,
-                    "ZserioParser: input file without 'package' specification can't use imports!");
-        }
+        // check all nodes
+        rootNode.checkAll();
     }
 
-    private void detectInputFileExtension(String inputFileName)
+    private void emit(Root rootNode) throws Exception
     {
-        String fileName = (new File(inputFileName)).getName();
-        final int i = fileName.lastIndexOf(".");
-        if (i > 0)
-            inputFileExtension = fileName.substring(i);
+        final ExtensionParameters parameters = new ExtensionParameters(commandLineArguments);
+        final ZserioEmitter emitter = new ZserioEmitter();
+
+        extensionManager.callExtensions(parameters, emitter, rootNode);
     }
 
-    private String getInputFileFullName(String inputFileName)
-    {
-        final String srcPathName = commandLineArguments.getSrcPathName();
-
-        return (srcPathName == null) ? inputFileName : new File(srcPathName, inputFileName).toString();
-    }
-
-    private static TokenAST createRootToken(CommonHiddenStreamToken hiddenTokenBefore)
-    {
-        final Token token = new FileNameLexerToken(ZserioParserTokenTypes.ROOT, "ROOT", hiddenTokenBefore);
-
-        return new DefaultToken(token);
-    }
-
-    private static TokenAST parseComment(String commentFileName, int commentTokenType)
+    private static Root parseComment(String commentFileName, int commentTokenType)
             throws IOException, ParserException
     {
         ZserioToolPrinter.printMessage("Parsing " + commentFileName);
 
         final String docComment = readFileToString(commentFileName);
         final FileNameLexerToken commentLexerToken = new FileNameLexerToken(commentTokenType, docComment);
-        final TokenAST rootToken = createRootToken(commentLexerToken);
+        final Root rootToken = Root.create(commentLexerToken);
 
         return rootToken;
     }
@@ -455,7 +336,7 @@ public class ZserioTool
     {
         if (token != null)
         {
-            if (TokenAST.isKeyword(token.getType()))
+            if (Root.isKeyword(token.getType()))
                 return message + " (reserved keyword)";
             if (token.getType() == ZserioParserTokenTypes.EOF)
                 return "Unexpected end of file: " + message;
@@ -480,12 +361,7 @@ public class ZserioTool
         }
     }
 
-    private final ZserioEmitter emitter;
-
     private final InputFileManager inputFileManager;
-    private String inputFileExtension = "";
     private final CommandLineArguments commandLineArguments;
     private final ExtensionManager extensionManager;
-
-    private final TokenAST rootNode;
 }

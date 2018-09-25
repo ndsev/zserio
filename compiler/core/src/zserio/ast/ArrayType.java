@@ -11,18 +11,10 @@ import zserio.antlr.util.ParserException;
  */
 public class ArrayType extends TokenAST implements ZserioType
 {
-    /**
-     * Default constructor.
-     */
-    public ArrayType()
-    {
-        ZserioTypeContainer.add(this);
-    }
-
     @Override
     public Package getPackage()
     {
-        return pkg;
+        return elementType.getPackage();
     }
 
     @Override
@@ -103,10 +95,8 @@ public class ArrayType extends TokenAST implements ZserioType
     @Override
     protected void check() throws ParserException
     {
-        // fill members which depend on element base type
-        final ZserioType elementBaseType = TypeReference.resolveBaseType(elementType);
-        pkg = elementBaseType.getPackage();
-        name = elementBaseType.getName() + "[]";
+        // fill member which depend on element type
+        name = elementType.getName() + "[]";
 
         // check length expression
         if (lengthExpression != null)
@@ -123,10 +113,9 @@ public class ArrayType extends TokenAST implements ZserioType
 
     private static final long serialVersionUID = 6231540349926054424L;
 
-    private ZserioType  elementType = null;
-    private Expression      lengthExpression = null;
-    private boolean         isImplicit = false;
+    private ZserioType elementType = null;
+    private Expression lengthExpression = null;
+    private boolean isImplicit = false;
 
-    private Package         pkg;
-    private String          name;
+    private String name;
 }

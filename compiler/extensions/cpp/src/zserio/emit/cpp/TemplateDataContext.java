@@ -3,19 +3,18 @@ package zserio.emit.cpp;
 import zserio.emit.common.ExpressionFormatter;
 import zserio.emit.common.ExpressionFormattingPolicy;
 import zserio.emit.common.PackageMapper;
+import zserio.tools.Parameters;
 
 final class TemplateDataContext
 {
-    public TemplateDataContext(CppNativeTypeMapper cppNativeTypeMapper,
-            PackageMapper cppPackageMapper, boolean withWriterCode, boolean withInspectorCode,
-            boolean withValidationCode, boolean withRangeCheckCode)
+    public TemplateDataContext(Parameters extensionParameters, PackageMapper cppPackageMapper)
     {
-        this.cppNativeTypeMapper = cppNativeTypeMapper;
+        cppNativeTypeMapper = new CppNativeTypeMapper(cppPackageMapper);
         this.cppPackageMapper = cppPackageMapper;
-        this.withWriterCode = withWriterCode;
-        this.withInspectorCode = withInspectorCode;
-        this.withValidationCode = withValidationCode;
-        this.withRangeCheckCode = withRangeCheckCode;
+        withWriterCode = extensionParameters.getWithWriterCode();
+        withInspectorCode = extensionParameters.getWithInspectorCode();
+        withValidationCode = extensionParameters.getWithValidationCode();
+        withRangeCheckCode = extensionParameters.getWithRangeCheckCode();
     }
 
     public CppNativeTypeMapper getCppNativeTypeMapper()
@@ -72,8 +71,8 @@ final class TemplateDataContext
         return withRangeCheckCode;
     }
 
-    private final CppNativeTypeMapper   cppNativeTypeMapper;
-    private final PackageMapper         cppPackageMapper;
+    private final CppNativeTypeMapper cppNativeTypeMapper;
+    private final PackageMapper cppPackageMapper;
 
     private final boolean withWriterCode;
     private final boolean withInspectorCode;

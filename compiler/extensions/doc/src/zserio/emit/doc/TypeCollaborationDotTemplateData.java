@@ -180,7 +180,7 @@ public class TypeCollaborationDotTemplateData
 
     private void addType(ZserioType zserioType, PackageList packageList, String docRootPath)
     {
-        final String packageName = zserioType.getPackage().getPackageName();
+        final String packageName = zserioType.getPackage().getPackageName().toString();
         Package packageInst = packageList.add(packageName);
 
         final String name = zserioType.getName();

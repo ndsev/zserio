@@ -14,14 +14,6 @@ import zserio.ast.ZserioType;
 public class DocCommentToken extends DocTokenAST
 {
     /**
-     * Empty constructor.
-     */
-    public DocCommentToken()
-    {
-        paragraphList = new ArrayList<DocParagraphToken>();
-    }
-
-    /**
      * Gets list of documentation paragraph tokens.
      *
      * @return List of documentation paragraph tokens.
@@ -49,7 +41,7 @@ public class DocCommentToken extends DocTokenAST
         case DocCommentParserTokenTypes.DOC_PARAGRAPH:
             if (!(child instanceof DocParagraphToken))
                 return false;
-            paragraphList.add((DocParagraphToken) child);
+            paragraphList.add((DocParagraphToken)child);
             break;
 
         default:
@@ -69,6 +61,6 @@ public class DocCommentToken extends DocTokenAST
 
     private static final long serialVersionUID = 1L;
 
-    private List<DocParagraphToken> paragraphList;
-    private boolean                 isDeprecated;
+    private final List<DocParagraphToken> paragraphList = new ArrayList<DocParagraphToken>();
+    private boolean isDeprecated;
 }

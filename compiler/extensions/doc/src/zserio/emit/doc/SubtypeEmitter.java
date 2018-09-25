@@ -7,7 +7,6 @@ import java.util.List;
 
 import zserio.ast.CompoundType;
 import zserio.ast.ServiceType;
-import zserio.ast.ZserioException;
 import zserio.ast.Subtype;
 import zserio.ast.ZserioType;
 import freemarker.template.Template;
@@ -17,8 +16,8 @@ public class SubtypeEmitter extends DefaultHtmlEmitter
 {
     private Subtype subtype;
     private DocCommentTemplateData docCommentTemplateData;
-    private String docPath;
-    private boolean withSvgDiagrams;
+    private final String docPath;
+    private final boolean withSvgDiagrams;
 
     public SubtypeEmitter(String outputPath, boolean withSvgDiagrams)
     {
@@ -54,11 +53,11 @@ public class SubtypeEmitter extends DefaultHtmlEmitter
         }
         catch (IOException exc)
         {
-            throw new ZserioException(exc);
+            throw new ZserioEmitDocException(exc);
         }
         catch (TemplateException exc)
         {
-            throw new ZserioException(exc);
+            throw new ZserioEmitDocException(exc);
         }
         finally
         {
@@ -73,7 +72,7 @@ public class SubtypeEmitter extends DefaultHtmlEmitter
         if (subtype == null)
             throw new RuntimeException("getPackageName() called before emit()!");
 
-        return subtype.getPackage().getPackageName();
+        return subtype.getPackage().getPackageName().toString();
     }
 
     public LinkedType getTargetType()

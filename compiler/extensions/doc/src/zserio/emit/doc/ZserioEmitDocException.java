@@ -8,13 +8,13 @@ import zserio.emit.common.ZserioEmitException;
  * Exception that can be thrown while emitting zserio to Html.
  */
 @SuppressWarnings("serial")
-public class ZserioEmitHtmlException extends ZserioEmitException
+public class ZserioEmitDocException extends ZserioEmitException
 {
 
     /**
      * Constructs a new ZserioEmitHtmlException with null as it detail message.
      */
-    public ZserioEmitHtmlException()
+    public ZserioEmitDocException()
     {
         // super(); // Super-constructor allready is automatically called here.
     }
@@ -24,7 +24,7 @@ public class ZserioEmitHtmlException extends ZserioEmitException
      *
      * @param text detail message
      */
-    public ZserioEmitHtmlException( String text )
+    public ZserioEmitDocException( String text )
     {
         super(text);
     }
@@ -36,7 +36,7 @@ public class ZserioEmitHtmlException extends ZserioEmitException
      *
      * @param exc
      */
-    public ZserioEmitHtmlException( Throwable exc )
+    public ZserioEmitDocException( Throwable exc )
     {
         super(exc);
     }
@@ -47,7 +47,7 @@ public class ZserioEmitHtmlException extends ZserioEmitException
      *
      * @param t type which is not supported
      */
-    public ZserioEmitHtmlException( ZserioType t )
+    public ZserioEmitDocException( ZserioType t )
     {
         super(t);
     }
@@ -58,7 +58,7 @@ public class ZserioEmitHtmlException extends ZserioEmitException
      *
      * @param ex expression which is not supported
      */
-    public ZserioEmitHtmlException( Expression ex )
+    public ZserioEmitDocException( Expression ex )
     {
         super(ex);
     }

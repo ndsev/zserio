@@ -9,7 +9,6 @@ import java.util.TreeSet;
 
 import zserio.ast.ChoiceType;
 import zserio.ast.CompoundType;
-import zserio.ast.ZserioException;
 import zserio.ast.EnumItem;
 import zserio.ast.EnumType;
 import zserio.ast.Expression;
@@ -24,8 +23,8 @@ public class EnumerationEmitter extends DefaultHtmlEmitter
     private EnumType enumeration;
     private DocCommentTemplateData docCommentData;
     private final List<EnumItemTemplateData> items = new ArrayList<EnumItemTemplateData>();
-    private String docPath;
-    private boolean withSvgDiagrams;
+    private final String docPath;
+    private final boolean withSvgDiagrams;
 
     public EnumerationEmitter(String outputPath, boolean withSvgDiagrams)
     {
@@ -61,11 +60,11 @@ public class EnumerationEmitter extends DefaultHtmlEmitter
         }
         catch (IOException exc)
         {
-            throw new ZserioException(exc);
+            throw new ZserioEmitDocException(exc);
         }
         catch (TemplateException exc)
         {
-            throw new ZserioException(exc);
+            throw new ZserioEmitDocException(exc);
         }
         finally
         {
@@ -80,7 +79,7 @@ public class EnumerationEmitter extends DefaultHtmlEmitter
         if (enumeration == null)
             throw new RuntimeException("getPackageName() called before emit()!");
 
-        return enumeration.getScope().getPackage().getPackageName();
+        return enumeration.getScope().getPackage().getPackageName().toString();
     }
 
     public EnumType getType()
@@ -105,8 +104,8 @@ public class EnumerationEmitter extends DefaultHtmlEmitter
 
     public static class UsageInfoEmitter implements Comparable<UsageInfoEmitter>
     {
-        private EnumItem enumItem;
-        private Expression usedByExpression;
+        private final EnumItem enumItem;
+        private final Expression usedByExpression;
 
         public UsageInfoEmitter( EnumItem   enumItem,
                                  Expression usedByExpression )

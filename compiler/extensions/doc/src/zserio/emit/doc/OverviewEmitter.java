@@ -1,18 +1,19 @@
 package zserio.emit.doc;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
 
 import antlr.collections.AST;
-import zserio.ast.ZserioException;
 import zserio.ast.Package;
 import zserio.ast.ZserioType;
-import zserio.tools.PackageManager;
+import zserio.tools.StringJoinUtil;
 import freemarker.template.Template;
 import freemarker.template.TemplateException;
 
@@ -34,14 +35,13 @@ public class OverviewEmitter extends DefaultHtmlEmitter
     {
         try
         {
-            for (String pkgName: PackageManager.get().getPackageNames())
+            for (Package pkg : packages)
             {
-                Package pkg = PackageManager.get().lookup(pkgName);
-                for (String typeName : pkg.getLocalTypeNames())
+                for (ZserioType type : pkg.getLocalTypes())
                 {
+                    final String typeName = type.getName();
                     boolean isDoubleDefinedType = Boolean.TRUE.equals(doubleTypeNames.get(typeName));
-                    ZserioType t = pkg.getLocalType(typeName);
-                    LinkedType linkedType = new LinkedType(t, isDoubleDefinedType);
+                    LinkedType linkedType = new LinkedType(type, isDoubleDefinedType);
                     typeMap.put(getFullTypeName(typeName, pkg), linkedType);
                 }
             }
@@ -53,11 +53,11 @@ public class OverviewEmitter extends DefaultHtmlEmitter
         }
         catch (IOException exc)
         {
-            throw new ZserioException(exc);
+            throw new ZserioEmitDocException(exc);
         }
         catch (TemplateException exc)
         {
-            throw new ZserioException(exc);
+            throw new ZserioEmitDocException(exc);
         }
         finally
         {
@@ -69,16 +69,18 @@ public class OverviewEmitter extends DefaultHtmlEmitter
     @Override
     public void endPackage(AST p)
     {
-        for (String typeName : currentPackage.getLocalTypeNames())
+        for (ZserioType type : currentPackage.getLocalTypes())
         {
+            final String typeName = type.getName();
             if (doubleTypeNames.containsKey(typeName))
                 doubleTypeNames.put(typeName, true);
             else
                 doubleTypeNames.put(typeName, false);
         }
-        String pkgName = currentPackage.getPackageName();
+        String pkgName = currentPackage.getPackageName().toString();
         pkgName = pkgName.replace('.', '_');
         packageNames.add(pkgName);
+        packages.add(currentPackage);
     }
 
     public Collection<LinkedType> getTypes()
@@ -88,13 +90,24 @@ public class OverviewEmitter extends DefaultHtmlEmitter
 
     private String getFullTypeName(String typeName, Package pkg)
     {
-        if (pkg == PackageManager.get().defaultPackage)
+        if (pkg.getPackageName().isEmpty())
             return typeName;
 
-        return typeName + "." + pkg.getReversePackageName();
+        return typeName + "." + getReversePackageName(pkg);
+    }
+
+    private static String getReversePackageName(Package pkg)
+    {
+        final List<String> packageIds = pkg.getPackageName().getIdList();
+        final List<String> reversePackageIds = new ArrayList<String>();
+        for (int i = packageIds.size() - 1; i >= 0; i--)
+            reversePackageIds.add(packageIds.get(i));
+
+        return StringJoinUtil.joinStrings(reversePackageIds, ".");
     }
 
     private final Map<String, LinkedType> typeMap = new TreeMap<String, LinkedType>();
     private final Map<String, Boolean> doubleTypeNames = new HashMap<String, Boolean>();
     private final HashSet<String> packageNames = new HashSet<String>();
+    private final Set<Package> packages = new HashSet<Package>();
 }

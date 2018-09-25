@@ -16,13 +16,6 @@ import zserio.tools.ZserioToolPrinter;
  */
 public class SqlTableType extends CompoundType
 {
-    public SqlTableType()
-    {
-        ZserioTypeContainer.addSqlTable(this);
-        sqlPrimaryKeyFields = new HashSet<Field>();
-        sqlWithoutRowId = false;
-    }
-
     @Override
     public void callVisitor(ZserioTypeVisitor visitor)
     {
@@ -111,6 +104,7 @@ public class SqlTableType extends CompoundType
             if (!(child instanceof SqlConstraint))
                 return false;
             sqlConstraint = (SqlConstraint)child;
+            sqlConstraint.setCompoundType(this);
             break;
 
         case ZserioParserTokenTypes.SQL_WITHOUT_ROWID:
@@ -308,8 +302,8 @@ public class SqlTableType extends CompoundType
 
     private static final long   serialVersionUID = -4079404455157794418L;
 
-    private String                          sqlUsingId;
-    private SqlConstraint                   sqlConstraint;
-    private Set<Field>                      sqlPrimaryKeyFields;
-    private boolean                         sqlWithoutRowId;
+    private String sqlUsingId;
+    private SqlConstraint sqlConstraint;
+    private final Set<Field> sqlPrimaryKeyFields = new HashSet<Field>();
+    private boolean sqlWithoutRowId = false;
 }

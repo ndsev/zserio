@@ -17,7 +17,6 @@ import zserio.ast.TypeInstantiation;
 import zserio.ast.TypeReference;
 import zserio.ast.VarIntegerType;
 import zserio.emit.common.ExpressionFormatter;
-import zserio.tools.StringHtmlUtil;
 
 public class TypeNameEmitter
 {

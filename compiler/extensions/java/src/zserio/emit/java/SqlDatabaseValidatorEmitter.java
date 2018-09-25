@@ -9,7 +9,6 @@ final class SqlDatabaseValidatorEmitter extends JavaDefaultEmitter
     public SqlDatabaseValidatorEmitter(Parameters extensionParameters, JavaExtensionParameters javaParameters)
     {
         super(extensionParameters, javaParameters);
-        generateValidatableSqlDatabase = false;
     }
 
     /** {@inheritDoc} */
@@ -38,5 +37,5 @@ final class SqlDatabaseValidatorEmitter extends JavaDefaultEmitter
     private static final String TEMPLATE_NAME = "SqlDatabaseValidator.java.ftl";
     private static final String OUTPUT_FILE_NAME = "SqlDatabaseValidator";
 
-    private boolean generateValidatableSqlDatabase;
+    private boolean generateValidatableSqlDatabase = false;
 }

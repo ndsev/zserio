@@ -1,8 +1,5 @@
 package zserio.ast;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import zserio.antlr.ZserioParserTokenTypes;
 import zserio.antlr.util.BaseTokenAST;
 import zserio.antlr.util.ParserException;
@@ -13,22 +10,13 @@ import zserio.antlr.util.ParserException;
 public class Import extends TokenAST
 {
     /**
-     * Empty constructor.
-     */
-    public Import()
-    {
-        packagePath = new ArrayList<String>();
-        typeName = null;
-    }
-
-    /**
-     * Gets the package path specified by the import.
+     * Gets the imported package name.
      *
-     * @return List of subpackage names specified by the import.
+     * @return Package name specified by the import.
      */
-    public List<String> getPackagePath()
+    public PackageName getImportedPackageName()
     {
-        return packagePath;
+        return importedPackageName;
     }
 
     /**
@@ -36,9 +24,9 @@ public class Import extends TokenAST
      *
      * @return Type name for single type import or null for package type import.
      */
-    public String getTypeName()
+    public String getImportedTypeName()
     {
-        return typeName;
+        return importedTypeName;
     }
 
     @Override
@@ -47,15 +35,15 @@ public class Import extends TokenAST
         switch (child.getType())
         {
         case ZserioParserTokenTypes.ID:
-            if (typeName != null)
-                packagePath.add(typeName);
-            typeName = child.getText();
+            if (importedTypeName != null)
+                importedPackageName.addId(importedTypeName);
+            importedTypeName = child.getText();
             break;
 
         case ZserioParserTokenTypes.MULTIPLY:
-            if (typeName != null)
-                packagePath.add(typeName);
-            typeName = null;
+            if (importedTypeName != null)
+                importedPackageName.addId(importedTypeName);
+            importedTypeName = null;
             break;
 
         default:
@@ -67,6 +55,6 @@ public class Import extends TokenAST
 
     private static final long serialVersionUID = 1L;
 
-    private final List<String>  packagePath;
-    private String              typeName;
+    private final PackageName importedPackageName = new PackageName();
+    private String importedTypeName = null;
 }

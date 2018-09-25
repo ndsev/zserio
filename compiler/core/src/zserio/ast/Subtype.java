@@ -17,18 +17,6 @@ import zserio.ast.doc.DocCommentToken;
  */
 public class Subtype extends TokenAST implements ZserioType
 {
-    /**
-     * Default constructor.
-     */
-    public Subtype()
-    {
-        usedByConstList = new ArrayList<ConstType>();
-        usedByCompoundList = new TreeSet<CompoundType>();
-        usedByServiceList = new TreeSet<ServiceType>();
-        usedTypeList = new ArrayList<ZserioType>();
-        ZserioTypeContainer.add(this);
-    }
-
     @Override
     public Package getPackage()
     {
@@ -63,36 +51,6 @@ public class Subtype extends TokenAST implements ZserioType
     public void setPackage(Package pkg)
     {
         this.pkg = pkg;
-    }
-
-    /**
-     * Sets const type which uses this subtype.
-     *
-     * @param usedByConst Const type to set.
-     */
-    public void setUsedByConst(ConstType usedByConst)
-    {
-        usedByConstList.add(usedByConst);
-    }
-
-    /**
-     * Sets compound type which uses this subtype.
-     *
-     * @param usedByCompound Compound type to set.
-     */
-    public void setUsedByCompound(CompoundType usedByCompound)
-    {
-        usedByCompoundList.add(usedByCompound);
-    }
-
-    /**
-     * Sets service type which uses this compound type.
-     *
-     * @param serviceType Service type to set.
-     */
-    public void setUsedByServiceType(ServiceType serviceType)
-    {
-        usedByServiceList.add(serviceType);
     }
 
     /**
@@ -190,8 +148,7 @@ public class Subtype extends TokenAST implements ZserioType
     }
 
     /**
-     * Resolves the subtype to a defined type.
-     * Called at the end of linking phase.
+     * Resolves the subtype to a defined type called at the end of linking phase.
      *
      * @return Resolved base type of this subtype.
      *
@@ -211,13 +168,41 @@ public class Subtype extends TokenAST implements ZserioType
 
         // base type can be only type reference or a defined type.
         if (targetType instanceof TypeReference)
-            targetBaseType = ((TypeReference)targetType).resolve();
+        {
+            final ZserioType referencedTargetType = ((TypeReference)targetType).getReferencedType();
+            if (referencedTargetType instanceof Subtype)
+                targetBaseType = ((Subtype)referencedTargetType).resolve();
+            else
+                targetBaseType = referencedTargetType;
+        }
         else // built-in type
+        {
             targetBaseType = targetType;
+        }
 
         resolvingState = ResolvingState.RESOLVED;
 
         return targetBaseType;
+    }
+
+    /**
+     * Sets const type which uses this subtype.
+     *
+     * @param usedByConst Const type to set.
+     */
+    protected void setUsedByConst(ConstType usedByConst)
+    {
+        usedByConstList.add(usedByConst);
+    }
+
+    /**
+     * Sets compound type which uses this subtype.
+     *
+     * @param usedByCompound Compound type to set.
+     */
+    protected void setUsedByCompound(CompoundType usedByCompound)
+    {
+        usedByCompoundList.add(usedByCompound);
     }
 
     private static final long serialVersionUID = -1039702375311967109L;
@@ -236,8 +221,8 @@ public class Subtype extends TokenAST implements ZserioType
     private ZserioType targetBaseType;
     private String name;
 
-    private List<ConstType> usedByConstList;
-    private SortedSet<CompoundType> usedByCompoundList;
-    private SortedSet<ServiceType> usedByServiceList;
-    private List<ZserioType> usedTypeList;
+    private final List<ConstType> usedByConstList = new ArrayList<ConstType>();
+    private final SortedSet<CompoundType> usedByCompoundList = new TreeSet<CompoundType>();
+    private final SortedSet<ServiceType> usedByServiceList = new TreeSet<ServiceType>();
+    private final List<ZserioType> usedTypeList = new ArrayList<ZserioType>();
 }

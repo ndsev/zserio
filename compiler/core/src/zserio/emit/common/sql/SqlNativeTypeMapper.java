@@ -37,9 +37,15 @@ import zserio.emit.common.sql.types.SqlNativeType;
  */
 public class SqlNativeTypeMapper
 {
-    public SqlNativeTypeMapper()
-    {}
-
+    /**
+     * Gets SQLite3 native type from Zserio type.
+     *
+     * @param type Zserio type to map to SQLite3 native type.
+     *
+     * @return Mapped Zserio type to SQLite3 native type.
+     *
+     * @throws ZserioEmitException Throws in case of internal error.
+     */
     public SqlNativeType getSqlType(ZserioType type) throws ZserioEmitException
     {
         // resolve all the way through subtypes to the base type
@@ -137,7 +143,6 @@ public class SqlNativeTypeMapper
         @Override
         public void visitVarIntegerType(VarIntegerType type)
         {
-            // FIXME: does this work now?
             sqlType = integerType;
         }
 

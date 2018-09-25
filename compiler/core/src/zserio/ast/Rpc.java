@@ -35,6 +35,7 @@ public class Rpc extends TokenAST
 
     /**
      * Returns whether the request is defined as a stream.
+     *
      * @return True when request is defined as a stream.
      */
     public boolean hasRequestStreaming()
@@ -54,6 +55,7 @@ public class Rpc extends TokenAST
 
     /**
      * Returns whether the response is defined as a stream.
+     *
      * @return True when response is defined as a stream.
      */
     public boolean hasResponseStreaming()
@@ -165,5 +167,5 @@ public class Rpc extends TokenAST
     private ZserioType requestType;
     private boolean requestStreaming = false;
     private ServiceType serviceType;
-    private List<ZserioType> usedTypeList = new ArrayList<ZserioType>();
+    private final List<ZserioType> usedTypeList = new ArrayList<ZserioType>();
 }

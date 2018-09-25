@@ -5,7 +5,6 @@ import java.io.IOException;
 
 import zserio.ast.CompoundType;
 import zserio.ast.ConstType;
-import zserio.ast.ZserioException;
 import zserio.ast.ZserioType;
 import zserio.ast.Expression;
 import zserio.emit.common.ExpressionFormatter;
@@ -16,8 +15,8 @@ public class ConstTypeEmitter extends DefaultHtmlEmitter
 {
     private ConstType consttype;
     private DocCommentTemplateData docCommentTemplateData;
-    private String docPath;
-    private boolean withSvgDiagrams;
+    private final String docPath;
+    private final boolean withSvgDiagrams;
 
     public ConstTypeEmitter(String outputPath, boolean withSvgDiagrams)
     {
@@ -49,11 +48,11 @@ public class ConstTypeEmitter extends DefaultHtmlEmitter
         }
         catch (IOException exc)
         {
-            throw new ZserioException(exc);
+            throw new ZserioEmitDocException(exc);
         }
         catch (TemplateException exc)
         {
-            throw new ZserioException(exc);
+            throw new ZserioEmitDocException(exc);
         }
         finally
         {
@@ -67,7 +66,7 @@ public class ConstTypeEmitter extends DefaultHtmlEmitter
     {
         if( consttype != null )
         {
-            return consttype.getPackage().getPackageName();
+            return consttype.getPackage().getPackageName().toString();
         }
 
         return "";

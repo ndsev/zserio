@@ -118,8 +118,8 @@ public abstract class BitFieldType extends FixedSizeIntegerType
 
     private static final long serialVersionUID = 455171445493550712L;
 
-    private Expression  lengthExpression = null;
-    private Integer     bitSize;
-    private int         maxBitSize;
-    private boolean     areBitSizesEvaluated = false;
+    private Expression lengthExpression = null;
+    private Integer bitSize;
+    private int maxBitSize;
+    private boolean areBitSizesEvaluated = false;
 }

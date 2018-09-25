@@ -1,5 +1,6 @@
 package zserio.emit.cpp;
 
+import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -9,28 +10,23 @@ import zserio.ast.FunctionType;
 
 public class InspectorZserioNamesTemplateData extends CppTemplateData
 {
-    public InspectorZserioNamesTemplateData(TemplateDataContext context)
+    public InspectorZserioNamesTemplateData(TemplateDataContext context, List<Field> fields,
+            List<FunctionType> functionTypes, List<EnumType> enumTypes)
     {
         super(context);
+
         zserioNames = new TreeSet<String>();
-    }
+        for (Field field : fields)
+            zserioNames.add(field.getName());
 
-    public void add(Field field)
-    {
-        zserioNames.add(field.getName());
-    }
+        for (FunctionType functionType : functionTypes)
+            zserioNames.add(functionType.getName());
 
-    public void add(FunctionType functionType)
-    {
-        zserioNames.add(functionType.getName());
-    }
-
-    public void add(EnumType enumType)
-    {
         // This is needed because all enumerations have theirs own 'tree' write method which needs Zserio
         // name regardless if the enumeration is used by compound field or not. The 'tree' write method
         // for enumeration types is necessary for enumeration arrays.
-        zserioNames.add(enumType.getName());
+        for (EnumType enumType : enumTypes)
+            zserioNames.add(enumType.getName());
     }
 
     public Iterable<String> getZserioNames()

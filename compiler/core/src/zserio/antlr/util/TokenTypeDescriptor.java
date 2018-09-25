@@ -56,7 +56,7 @@ public final class TokenTypeDescriptor implements Serializable
         try
         {
             final Field _tokenNamesField = parserClass.getField("_tokenNames");
-            processTokenNames((String[]) _tokenNamesField.get(parserClass));
+            processTokenNames((String[])_tokenNamesField.get(parserClass));
         }
         catch (NoSuchFieldException exception)
         {}

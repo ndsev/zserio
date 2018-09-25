@@ -48,7 +48,7 @@ public class DocTokenAST extends BaseTokenAST
     {
     }
 
-    private static final long                serialVersionUID = -1L;
+    private static final long serialVersionUID = -1L;
     private static final TokenTypeDescriptor tokenTypeDescriptor =
             new TokenTypeDescriptor(DocCommentParser.class);
 }

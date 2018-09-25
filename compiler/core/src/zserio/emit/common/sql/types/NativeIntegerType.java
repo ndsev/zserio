@@ -4,9 +4,6 @@ import java.math.BigInteger;
 
 public class NativeIntegerType implements SqlNativeType
 {
-    public NativeIntegerType()
-    {}
-
     @Override
     public String getFullName()
     {
@@ -25,6 +22,13 @@ public class NativeIntegerType implements SqlNativeType
         return NAME;
     }
 
+    /**
+     * Formats integer value for SQLite.
+     *
+     * @param value BigInteger value to format.
+     *
+     * @return Integer value in string formatted for SQLite.
+     */
     public static String formatLiteral(BigInteger value)
     {
         // decimal integers are supported by SQLite in the same format

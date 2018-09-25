@@ -1,113 +1,91 @@
 package zserio.tools;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-
-import java.nio.ByteBuffer;
-import java.nio.charset.CharacterCodingException;
-import java.nio.charset.Charset;
-import java.nio.charset.CharsetDecoder;
+import java.io.Serializable;
 
 import java.util.HashSet;
 import java.util.Set;
 
+import zserio.ast.PackageName;
+
 /**
  * The manager which holds all Zserio input file names.
  */
-public class InputFileManager
+public class InputFileManager implements Serializable
 {
     /**
-     * Empty constructor.
+     * Constructor from command line arguments.
+     *
+     * @param commandLineArguments Command line arguments to construct from.
      */
-    public InputFileManager()
+    public InputFileManager(CommandLineArguments commandLineArguments)
     {
-        inputFiles = new HashSet<String>();
+        this.commandLineArguments = commandLineArguments;
     }
 
     /**
-     * Registers Zserio input file name.
+     * Gets the input file full name.
      *
-     * @param fileName Input file name to register.
+     * @param fileName Relative Input file name without source path.
+     *
+     * @return Input file full name constructed from given relative file name.
      */
-    public void registerFile(String fileName)
+    public String getFileFullName(String fileName)
     {
-        inputFiles.add(fileName);
+        final int lastDotIndex = fileName.lastIndexOf(".");
+        if (lastDotIndex > 0)
+            inputFileExtension = fileName.substring(lastDotIndex);
+
+        final String fileFullName = getInputFileFullName(fileName);
+
+        return fileFullName;
     }
 
     /**
-     * Returns true if Zserio input file name has been already registered.
+     * Gets the input file full name.
      *
-     * @param fileName Zserio input file name to check.
+     * @param importedPackageName Package name from which to construct input file full name.
+     *
+     * @return Input file full name constructed from given import node.
      */
-    public boolean isFileRegistered(String fileName)
+    public String getFileFullName(PackageName importedPackageName)
     {
-        return inputFiles.contains(fileName);
+        final String fileName = importedPackageName.toString(File.separator) + inputFileExtension;
+        final String fileFullName = getInputFileFullName(fileName);
+
+        return fileFullName;
     }
 
     /**
-     * Checks the content of Zserio input files.
+     * Registers the input file.
      *
-     * It fires warning if Zserio input file contains
-     * - non UTF-8 encoding characters
-     * - TAB characters
-     *
-     * @throws FileNotFoundException Throws if input file was not found.
-     * @throws IOException Throws in case of input file read error.
+     * @param fileFullName Input file full name to register.
      */
-    public void checkFiles() throws FileNotFoundException, IOException
+    public void registerFile(String fileFullName)
     {
-        for (String fileName : inputFiles)
-        {
-            final File file = new File(fileName);
-            final FileInputStream inputStream = new FileInputStream(file);
-            final byte fileContent[] = new byte[(int) file.length()];
-            try
-            {
-                if (inputStream.read(fileContent) == -1)
-                    throw new IOException("Error during reading of file " + fileName + "!");
-            }
-            finally
-            {
-                inputStream.close();
-            }
-
-            checkUtf8Encoding(fileName, fileContent);
-            checkNonPrintableCharacters(fileName, fileContent);
-        }
+        inputFiles.add(fileFullName);
     }
 
-    private void checkUtf8Encoding(String fileName, byte[] fileContent)
+    /**
+     * Returns true if the input file has been already registered.
+     *
+     * @param fileName Input file full name name to check.
+     */
+    public boolean isFileRegistered(String fileFullName)
     {
-        try
-        {
-            final CharsetDecoder decoder = Charset.forName("UTF-8").newDecoder();
-            decoder.decode(ByteBuffer.wrap(fileContent));
-        }
-        catch (CharacterCodingException exception)
-        {
-            ZserioToolPrinter.printWarning(fileName, "Found non-UTF8 encoded characters.");
-        }
+        return inputFiles.contains(fileFullName);
     }
 
-    private void checkNonPrintableCharacters(String fileName, byte[] fileContent)
+    private String getInputFileFullName(String inputFileName)
     {
-        final String content = new String(fileContent, Charset.forName("UTF-8"));
+        final String srcPathName = commandLineArguments.getSrcPathName();
 
-        if (content.indexOf('\t') >= 0)
-            ZserioToolPrinter.printWarning(fileName, "Found tab characters.");
-
-        for (int i = 0; i < content.length(); ++i)
-        {
-            final char character = content.charAt(i);
-            if (character < '\u0020' && character != '\r' && character != '\n' && character != '\t')
-            {
-                ZserioToolPrinter.printWarning(fileName, "Found non-printable ASCII characters.");
-                break;
-            }
-        }
+        return (srcPathName == null) ? inputFileName : new File(srcPathName, inputFileName).toString();
     }
 
-    private final Set<String> inputFiles;
+    private static final long serialVersionUID = -1L;
+
+    private final CommandLineArguments commandLineArguments;
+    private final Set<String> inputFiles = new HashSet<String>();
+    private String inputFileExtension = "";
 }

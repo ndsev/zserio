@@ -20,29 +20,29 @@ public class PackagesWarningTest
     @Test
     public void duplicatedPackageImport()
     {
-        final String warning = ":6:1: Duplicated import of package packages_warning.simple_database.";
+        final String warning = ":6:1: Duplicated import of package 'packages_warning.simple_database'.";
         assertTrue(zserioWarnings.isPresent(warning));
     }
 
     @Test
     public void duplicatedSingleTypeImport()
     {
-        final String warning = ":6:1: Duplicated import of type packages_warning.simple_database.SimpleTable.";
+        final String warning = ":6:1: Duplicated import of type 'SimpleTable'.";
         assertTrue(zserioWarnings.isPresent(warning));
     }
 
     @Test
     public void packageImportOverwrite()
     {
-        final String warning =
-                ":6:1: Import of package packages_warning.simple_database overwrites some single type imports.";
+        final String warning = ":6:1: Import of package 'packages_warning.simple_database' overwrites single " +
+                "type import 'SimpleTable'.";
         assertTrue(zserioWarnings.isPresent(warning));
     }
 
     @Test
     public void singleTypeAlreadyImported()
     {
-        final String warning = ":6:1: Single type SimpleTable imported already by package import.";
+        final String warning = ":6:1: Single type 'SimpleTable' imported already by package import.";
         assertTrue(zserioWarnings.isPresent(warning));
     }
 

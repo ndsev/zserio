@@ -12,7 +12,6 @@ import zserio.antlr.ZserioParserTokenTypes;
 import zserio.antlr.ExpressionEvaluator;
 import zserio.antlr.util.ParserException;
 import zserio.tools.HashUtil;
-import zserio.tools.StringJoinUtil;
 
 public class Expression extends TokenAST
 {
@@ -137,6 +136,11 @@ public class Expression extends TokenAST
         }
     }
 
+    /**
+     * Sets flag if keyword 'index' is allowed for this expression.
+     *
+     * @param allowIndex true if keyword 'index' is allowed
+     */
     public void setAllowIndex(boolean allowIndex)
     {
         this.allowIndex = allowIndex;
@@ -264,7 +268,7 @@ public class Expression extends TokenAST
      */
     public Expression op1()
     {
-        return (Expression) getFirstChild();
+        return (Expression)getFirstChild();
     }
 
     /**
@@ -276,7 +280,7 @@ public class Expression extends TokenAST
      */
     public Expression op2()
     {
-        return (Expression) op1().getNextSibling();
+        return (Expression)op1().getNextSibling();
     }
 
     /**
@@ -288,7 +292,7 @@ public class Expression extends TokenAST
      */
     public Expression op3()
     {
-        return (Expression) op2().getNextSibling();
+        return (Expression)op2().getNextSibling();
     }
 
     /**
@@ -618,7 +622,7 @@ public class Expression extends TokenAST
      * Sets needs BigInteger casting flag.
      *
      * Method is necessary because Java expression formatter needs to know if expression which uses BigInteger
-     * is assigned to the native type. In this case, casting to long native type is neccessary.
+     * is assigned to the native type. In this case, casting to long native type is necessary.
      *
      * Example:
      *
@@ -632,7 +636,7 @@ public class Expression extends TokenAST
      *     }
      * };
      */
-    public void setNeedsBigIntegerCastingNative()
+    protected void setNeedsBigIntegerCastingNative()
     {
         needsBigIntegerCastingToNative = true;
     }
@@ -692,7 +696,8 @@ public class Expression extends TokenAST
         if (identifierSymbol == null)
         {
             // it still can be a type
-            final ZserioType identifierType = scope.getPackage().getType(identifier);
+            final ZserioType identifierType = scope.getPackage().getVisibleType(this, new PackageName(),
+                    identifier);
             symbolObject = identifierType;
             if (identifierType == null)
             {
@@ -745,14 +750,13 @@ public class Expression extends TokenAST
             }
             else if (identifierSymbol instanceof EnumItem)
             {
-                // enumeration item (this can happened for enum choices where enum is visible or for enum itself)
+                // enumeration item (this can happen for enum choices where enum is visible or for enum itself)
                 final EnumItem enumItem = (EnumItem)identifierSymbol;
                 final EnumType enumType = enumItem.getEnumType();
-                ZserioType owner = scope.getOwner();
 
                 // if this enumeration item is in own enum, leave it unresolved (we have problem with it because
                 // such enumeration items cannot be evaluated yet)
-                if (owner != enumType)
+                if (scope.getOwner() != enumType)
                     evaluateExpressionType(enumType);
             }
             else
@@ -871,22 +875,20 @@ public class Expression extends TokenAST
             // left operand is package and right operand in enum or compound
             final ZserioType op2ZserioType = op2.zserioType;
             final Package op2Package = op2ZserioType.getPackage();
-            final List<String> packagePath = op2Package.getPackagePath();
+            final PackageName op2PackageName = op2Package.getPackageName();
+            final PackageName op1UnresolvedPackageName = new PackageName();
 
-            final List<String> op1UnresolvedIdentifiersPath =
-                    new ArrayList<String>(op1.unresolvedIdentifiers.size());
             for (Expression unresolvedIdentifier : op1.unresolvedIdentifiers)
             {
-                op1UnresolvedIdentifiersPath.add(unresolvedIdentifier.getText());
+                op1UnresolvedPackageName.addId(unresolvedIdentifier.getText());
                 unresolvedIdentifier.symbolObject = op2Package;
             }
 
-            if (!packagePath.equals(op1UnresolvedIdentifiersPath))
+            if (!op2PackageName.equals(op1UnresolvedPackageName))
             {
                 // specified package is wrong
-                final String wrongPackage = StringJoinUtil.joinStrings(op1UnresolvedIdentifiersPath, getText());
-                throw new ParserException(op1, "Wrong package '" + wrongPackage + "' for type '" +
-                        op2ZserioType.getName() + "'.");
+                throw new ParserException(op1, "Wrong package '" + op1UnresolvedPackageName.toString() +
+                        "' for type '" + op2ZserioType.getName() + "'.");
             }
 
             zserioType = op2ZserioType;

@@ -13,21 +13,14 @@ import zserio.tools.HashUtil;
 
 public class MasterDatabaseTemplateData extends CppTemplateData
 {
-    public MasterDatabaseTemplateData(TemplateDataContext context)
+    public MasterDatabaseTemplateData(TemplateDataContext context, List<SqlDatabaseType> sqlDatabaseTypes)
     {
         super(context);
-        cppNativeTypeMapper = context.getCppNativeTypeMapper();
+
+        final CppNativeTypeMapper cppNativeTypeMapper = context.getCppNativeTypeMapper();
         databases = new ArrayList<DatabaseItemData>();
-    }
-
-    public boolean isEmpty()
-    {
-        return databases.isEmpty();
-    }
-
-    public void add(SqlDatabaseType databaseType)
-    {
-        databases.add(new DatabaseItemData(cppNativeTypeMapper, databaseType, this));
+        for (SqlDatabaseType sqlDatabaseType : sqlDatabaseTypes)
+            databases.add(new DatabaseItemData(cppNativeTypeMapper, sqlDatabaseType, this));
     }
 
     public Iterable<DatabaseItemData> getDatabases()
@@ -73,6 +66,7 @@ public class MasterDatabaseTemplateData extends CppTemplateData
         /**
          * Compare entries by their (short) name.
          */
+        @Override
         public int compareTo(DatabaseItemData other)
         {
             return name.compareTo(other.name);
@@ -107,6 +101,5 @@ public class MasterDatabaseTemplateData extends CppTemplateData
         private final SortedSet<String> tableNames;
     }
 
-    private final CppNativeTypeMapper cppNativeTypeMapper;
     private final List<DatabaseItemData> databases;
 }

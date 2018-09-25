@@ -18,7 +18,7 @@ public class DocEmitterTools
      */
     public static String getDirectoryNameFromType(ZserioType type)
     {
-        return type.getPackage().getPackageName();
+        return type.getPackage().getPackageName().toString();
     }
 
     /**

@@ -2,16 +2,16 @@ package zserio.emit.java;
 
 import zserio.emit.common.ExpressionFormatter;
 import zserio.emit.common.PackageMapper;
+import zserio.tools.Parameters;
 
 final class TemplateDataContext
 {
-    public TemplateDataContext(JavaNativeTypeMapper javaNativeTypeMapper,
-            PackageMapper javaPackageMapper, boolean withWriterCode, boolean withValidationCode,
-            boolean withRangeCheckCode, String javaMajorVersion)
+    public TemplateDataContext(Parameters extensionParameters, JavaExtensionParameters javaParameters,
+            PackageMapper javaPackageMapper)
     {
-        this.javaMajorVersion = javaMajorVersion;
-        this.javaNativeTypeMapper = javaNativeTypeMapper;
-        this.javaRootPackageName = javaPackageMapper.getRootPackageName();
+        javaMajorVersion = javaParameters.getJavaMajorVersion();
+        javaNativeTypeMapper = new JavaNativeTypeMapper(javaPackageMapper);
+        javaRootPackageName = javaPackageMapper.getRootPackageName();
 
         final JavaExpressionFormattingPolicy policy = new JavaExpressionFormattingPolicy(javaNativeTypeMapper);
         javaExpressionFormatter = new ExpressionFormatter(policy);
@@ -24,9 +24,9 @@ final class TemplateDataContext
                 new JavaSqlIndirectExpressionFormattingPolicy(javaNativeTypeMapper);
         javaSqlIndirectExpressionFormatter = new ExpressionFormatter(sqlIndirectPolicy);
 
-        this.withWriterCode = withWriterCode;
-        this.withValidationCode = withValidationCode;
-        this.withRangeCheckCode = withRangeCheckCode;
+        withWriterCode = extensionParameters.getWithWriterCode();
+        withValidationCode = extensionParameters.getWithValidationCode();
+        withRangeCheckCode = extensionParameters.getWithRangeCheckCode();
     }
 
     public String getJavaMajorVersion()
@@ -74,13 +74,13 @@ final class TemplateDataContext
         return withRangeCheckCode;
     }
 
-    private final String                javaMajorVersion;
-    private final JavaNativeTypeMapper  javaNativeTypeMapper;
-    private final String                javaRootPackageName;
+    private final String javaMajorVersion;
+    private final JavaNativeTypeMapper javaNativeTypeMapper;
+    private final String javaRootPackageName;
 
-    private final ExpressionFormatter   javaExpressionFormatter;
-    private final ExpressionFormatter   javaCaseExpressionFormatter;
-    private final ExpressionFormatter   javaSqlIndirectExpressionFormatter;
+    private final ExpressionFormatter javaExpressionFormatter;
+    private final ExpressionFormatter javaCaseExpressionFormatter;
+    private final ExpressionFormatter javaSqlIndirectExpressionFormatter;
 
     private final boolean withValidationCode;
     private final boolean withRangeCheckCode;

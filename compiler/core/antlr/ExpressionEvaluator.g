@@ -41,7 +41,7 @@ translationUnit
     ;
 
 packageDeclaration
-    :   #(PACKAGE (ID)+)
+    :   #(PACKAGE (ID)*) // default package does not have IDs
     ;
 
 importDeclaration
@@ -220,7 +220,7 @@ sqlTableDefinition
     ;
 
 sqlTableReference
-    :   #(TYPEREF ID)
+    :   typeSymbol
     ;
 
 /**

@@ -1,10 +1,8 @@
 package zserio.ast;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -12,8 +10,13 @@ import zserio.antlr.util.BaseTokenAST;
 import zserio.antlr.util.ParserException;
 
 /**
- * A Scope is a lexical scope which maps names to objects. A name must be unique in its scope. Each scope
- * belongs to the one package.
+ * This class represents a lexical scope which maps symbol names to objects.
+ *
+ * A symbol name must be unique in its scope. Each scope belongs to the one package. Scopes are used for
+ * types (called owner) which contains fields (Compound Types, SQL Table, SQL Database...). Then, field name
+ * is a symbol name and object represents this field.
+ *
+ * Scopes are filled by ANTLR2 TypeEvaluator walker.
  */
 public class Scope implements Serializable
 {
@@ -21,30 +24,12 @@ public class Scope implements Serializable
      * Constructs scope within given package and sets owner to the given Zserio type.
      *
      * @param parentPackage Package of the current scope.
-     * @param owner         DataScrip type which owns the current scope.
+     * @param owner         Zserio type which owns the current scope.
      */
     public Scope(Package parentPackage, ZserioType owner)
     {
         this.parentPackage = parentPackage;
         this.owner = owner;
-
-        if (parentPackage != null)  // TODO this should be moved to package
-            parentPackage.addScopeToLink(this);
-    }
-
-    /**
-     * Constructs scope which contains symbols from both main scope and extending scope.
-     *
-     * @param mainScope      Main scope for the mixed scope creation.
-     * @param extendingScope Another scope whose symbol table is to be merged into the current one.
-     */
-    public static Scope createMixedScope(Scope mainScope, Scope extendingScope)
-    {
-        Scope scope = new Scope(mainScope.parentPackage, mainScope.owner);
-        scope.symbolTable.putAll(mainScope.symbolTable);
-        scope.symbolTable.putAll(extendingScope.symbolTable);
-
-        return scope;
     }
 
     /**
@@ -75,7 +60,10 @@ public class Scope implements Serializable
     /**
      * Gets the Zserio type in which is defined this lexical scope.
      *
-     * @return Zserio type which owns this lexical scope.
+     * The scope always has an owner except of expressions defined directly in the package (like const).
+     * The scope is 'null' in this case.
+     *
+     * @return Zserio type which owns this lexical scope or null.
      */
     public ZserioType getOwner()
     {
@@ -105,35 +93,21 @@ public class Scope implements Serializable
     }
 
     /**
-     * Registers a link action to be resolved in this scope at a later stage. A
-     * link action is posted for each type reference. The reference will be
-     * resolved to the type object of that name.
+     * Constructs scope which contains symbols from both main scope and extending scope.
      *
-     * Note that for a field definition {@code Foo myFoo;}, the name {@code
-     * myFoo} maps to a type reference, whereas the defining occurrence of the
-     * name {@code Foo} maps to the type object for {@code Foo}.
+     * This is used by Choice Types which use enumeration types (enumeration type scope must be inside
+     * choice types scope).
      *
-     * TODO This should be moved to Package
-     *
-     * @param act
-     *            link action
+     * @param mainScope      Main scope for the mixed scope creation.
+     * @param extendingScope Another scope whose symbol table is to be merged into the current one.
      */
-    public void postLinkAction(LinkAction act)
+    public static Scope createMixedScope(Scope mainScope, Scope extendingScope)
     {
-        linkActions.add(act);
-    }
+        final Scope scope = new Scope(mainScope.parentPackage, mainScope.owner);
+        scope.symbolTable.putAll(mainScope.symbolTable);
+        scope.symbolTable.putAll(extendingScope.symbolTable);
 
-    /**
-     * Executes all link actions in the given scope.
-     *
-     * TODO This should be moved to Package
-     *
-     * @throws ParserException
-     */
-    public void link() throws ParserException
-    {
-        for (LinkAction l : linkActions)
-            l.link(this);
+        return scope;
     }
 
     private static final long serialVersionUID = -5373010074297029934L;
@@ -145,12 +119,5 @@ public class Scope implements Serializable
      * Symbol table containing local symbols defined within the current scope. Each symbol is mapped to
      * an Object.
      */
-    private Map<String, Object> symbolTable = new HashMap<String, Object>();
-
-    /**
-     * List of link actions to be executed within this scope. All children of
-     * this scope post a link action for themselves on creation. Thus when
-     * linking this scope, all subscopes will be linked automatically.
-     */
-    private List<LinkAction> linkActions = new ArrayList<LinkAction>();
+    private final Map<String, Object> symbolTable = new HashMap<String, Object>();
 }

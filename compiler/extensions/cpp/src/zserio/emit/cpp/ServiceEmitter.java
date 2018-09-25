@@ -18,16 +18,17 @@ public class ServiceEmitter extends CppDefaultEmitter
     {
         if (!(token instanceof ServiceType))
             throw new ZserioEmitCppException("Unexpected token type in beginService!");
-        serviceTypeList.add((ServiceType)token);
+        serviceTypes.add((ServiceType)token);
     }
 
+    @Override
     public void endRoot() throws ZserioEmitCppException
     {
-        if (!getWithGrpcCode() || serviceTypeList.isEmpty())
+        if (!getWithGrpcCode() || serviceTypes.isEmpty())
             return;
 
         final TemplateDataContext templateDataContext = getTemplateDataContext();
-        for (ServiceType serviceType : serviceTypeList)
+        for (ServiceType serviceType : serviceTypes)
         {
             final ServiceEmitterTemplateData templateData =
                     new ServiceEmitterTemplateData(templateDataContext, serviceType);
@@ -36,16 +37,16 @@ public class ServiceEmitter extends CppDefaultEmitter
         }
 
         final GrpcSerializationTraitsTemplateData traitsTemplateData =
-                new GrpcSerializationTraitsTemplateData(templateDataContext, serviceTypeList);
+                new GrpcSerializationTraitsTemplateData(templateDataContext, serviceTypes);
         processHeaderTemplateToRootDir(TRAITS_TEMPLATE_HEADER_NAME, traitsTemplateData,
                 TRAITS_OUTPUT_FILE_NAME_ROOT);
     }
-
-    private List<ServiceType> serviceTypeList = new ArrayList<ServiceType>();
 
     private static final String TEMPLATE_SOURCE_NAME = "Service.cpp.ftl";
     private static final String TEMPLATE_HEADER_NAME = "Service.h.ftl";
 
     private static final String TRAITS_TEMPLATE_HEADER_NAME = "GrpcSerializationTraits.h.ftl";
     private static final String TRAITS_OUTPUT_FILE_NAME_ROOT = "GrpcSerializationTraits";
+
+    private final List<ServiceType> serviceTypes = new ArrayList<ServiceType>();
 }

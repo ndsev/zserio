@@ -5,8 +5,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.ServiceLoader;
 
-import org.apache.commons.cli.Options;
-
 import zserio.antlr.ZserioEmitter;
 import zserio.ast.TokenAST;
 
@@ -16,11 +14,11 @@ import zserio.ast.TokenAST;
 public class ExtensionManager
 {
     /**
-     * Constructor from command line parameters.
+     * Constructor from command line arguments.
      *
-     * @param commandLineOptions Command line parameters to construct from.
+     * @param commandLineArguments Command line arguments to construct from.
      */
-    public ExtensionManager(Options commandLineOptions)
+    public ExtensionManager(CommandLineArguments commandLineArguments)
     {
         extensions = new ArrayList<Extension>();
         ServiceLoader<Extension> loader = ServiceLoader.load(Extension.class, getClass().getClassLoader());
@@ -31,7 +29,7 @@ public class ExtensionManager
             if (ZserioVersion.VERSION_STRING.equals(extension.getVersion()))
             {
                 extensions.add(extension);
-                extension.registerOptions(commandLineOptions);
+                extension.registerOptions(commandLineArguments.getOptions());
             }
             else
             {

@@ -136,7 +136,6 @@ public interface ZserioTypeVisitor
      */
     void visitUnionType(UnionType type);
 
-
     /**
      * Visitor called from BitFieldType class.
      *

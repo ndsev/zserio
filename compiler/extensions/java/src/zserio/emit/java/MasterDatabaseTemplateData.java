@@ -10,25 +10,17 @@ import zserio.tools.HashUtil;
 
 public final class MasterDatabaseTemplateData extends JavaTemplateData
 {
-    public MasterDatabaseTemplateData(TemplateDataContext context)
+    public MasterDatabaseTemplateData(TemplateDataContext context, List<SqlDatabaseType> sqlDatabaseTypes)
     {
         super(context);
 
         rootPackageName = context.getJavaRootPackageName();
-        this.javaNativeTypeMapper = context.getJavaNativeTypeMapper();
+        final JavaNativeTypeMapper javaNativeTypeMapper = context.getJavaNativeTypeMapper();
         this.withWriterCode = context.getWithWriterCode();
         this.withValidationCode = context.getWithValidationCode();
         databases = new ArrayList<DatabaseItemData>();
-    }
-
-    public boolean isEmpty()
-    {
-        return databases.isEmpty();
-    }
-
-    public void add(SqlDatabaseType databaseType)
-    {
-        databases.add(new DatabaseItemData(javaNativeTypeMapper, databaseType));
+        for (SqlDatabaseType sqlDatabaseType : sqlDatabaseTypes)
+            databases.add(new DatabaseItemData(javaNativeTypeMapper, sqlDatabaseType));
     }
 
     public String getRootPackageName()
@@ -72,6 +64,7 @@ public final class MasterDatabaseTemplateData extends JavaTemplateData
          * This mimics the original behavior of the MasterDatabase emitter. This then
          * affects the order of the databases in the output file.
          */
+        @Override
         public int compareTo(DatabaseItemData other)
         {
             return name.compareTo(other.name);
@@ -106,7 +99,6 @@ public final class MasterDatabaseTemplateData extends JavaTemplateData
     }
 
     private final String                    rootPackageName;
-    private final JavaNativeTypeMapper      javaNativeTypeMapper;
     private final boolean                   withWriterCode;
     private final boolean                   withValidationCode;
     private final List<DatabaseItemData>    databases;

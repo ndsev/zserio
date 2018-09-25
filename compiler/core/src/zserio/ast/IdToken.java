@@ -12,14 +12,6 @@ import zserio.antlr.util.ParserException;
 public class IdToken extends TokenAST
 {
     /**
-     * Empty constructor.
-     */
-    public IdToken()
-    {
-        reservedKeywordsList = new HashSet<String>(Arrays.asList(reservedKeywords));
-    }
-
-    /**
      * Checks if ID token differ from reserved keywords of C++ or Java.
      *
      * If ID token matches to some reserved keyword, it is considered as Zserio compilation error.
@@ -69,5 +61,5 @@ public class IdToken extends TokenAST
 
     private static final long serialVersionUID = -1L;
 
-    private final Set<String> reservedKeywordsList;
+    private final Set<String> reservedKeywordsList = new HashSet<String>(Arrays.asList(reservedKeywords));
 }

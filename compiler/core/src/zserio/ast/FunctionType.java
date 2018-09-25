@@ -18,15 +18,6 @@ import antlr.collections.AST;
  */
 public class FunctionType extends TokenAST implements ZserioType
 {
-    /**
-     * Default constructor.
-     */
-    public FunctionType()
-    {
-        usedTypeList = new ArrayList<ZserioType>();
-        ZserioTypeContainer.add(this);
-    }
-
     @Override
     public Package getPackage()
     {
@@ -137,11 +128,11 @@ public class FunctionType extends TokenAST implements ZserioType
 
     private static final long serialVersionUID = -4573983414474344933L;
 
-    private Package                 pkg;
+    private Package pkg;
 
-    private ZserioType          returnType;
-    private String                  name;
-    private Expression              resultExpression;
+    private ZserioType returnType;
+    private String name;
+    private Expression resultExpression;
 
-    private List<ZserioType>    usedTypeList;
+    private final List<ZserioType> usedTypeList = new ArrayList<ZserioType>();
 }

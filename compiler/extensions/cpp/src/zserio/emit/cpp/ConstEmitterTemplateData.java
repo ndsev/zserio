@@ -11,33 +11,28 @@ import zserio.emit.cpp.types.NativeConstType;
 
 public class ConstEmitterTemplateData extends CppTemplateData
 {
-    public ConstEmitterTemplateData(TemplateDataContext context)
+    public ConstEmitterTemplateData(TemplateDataContext context, List<ConstType> constTypes)
     {
         super(context);
+
         cppNativeTypeMapper = context.getCppNativeTypeMapper();
         cppExpressionFormatter = context.getExpressionFormatter(this);
         items = new ArrayList<Item>();
-    }
+        for (ConstType constType : constTypes)
+        {
+            final CppNativeType nativeType = cppNativeTypeMapper.getCppType(constType);
+            if (!(nativeType instanceof NativeConstType))
+                throw new InternalError("A const type mapped to something else than NativeConstType!");
 
-    public void add(ConstType constType)
-    {
-        final CppNativeType nativeType = cppNativeTypeMapper.getCppType(constType);
-        if (!(nativeType instanceof NativeConstType))
-            throw new InternalError("A const type mapped to something else than NativeConstType!");
+            final NativeConstType nativeConstType = (NativeConstType)nativeType;
+            items.add(new Item(constType, nativeConstType, cppExpressionFormatter));
 
-        final NativeConstType nativeConstType = (NativeConstType)nativeType;
-        items.add(new Item(constType, nativeConstType, cppExpressionFormatter));
-
-        /*
-         * don't use nativeConstType here to avoid adding "ConstType.h" into the list here,
-         * add the target type instead
-         */
-        addHeaderIncludesForType(nativeConstType.getTargetType());
-    }
-
-    public boolean isEmpty()
-    {
-        return items.isEmpty();
+            /*
+             * don't use nativeConstType here to avoid adding "ConstType.h" into the list here,
+             * add the target type instead
+             */
+            addHeaderIncludesForType(nativeConstType.getTargetType());
+        }
     }
 
     public Iterable<Item> getItems()

@@ -1,6 +1,5 @@
 package zserio.emit.common;
 
-import zserio.ast.ZserioException;
 import zserio.ast.Expression;
 import zserio.ast.ZserioType;
 
@@ -11,7 +10,7 @@ import zserio.ast.ZserioType;
  * exceptions are acceptable.
  */
 @SuppressWarnings("serial")
-public class ZserioEmitException extends ZserioException
+public class ZserioEmitException extends RuntimeException
 {
 
     /**

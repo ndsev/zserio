@@ -99,11 +99,11 @@ public class ServiceEmitterTemplateData extends UserTypeTemplateData
             return !hasRequestStreaming && hasResponseStreaming;
         }
 
-        final private String name;
-        final private String responseTypeFullName;
-        final private boolean hasResponseStreaming;
-        final private String requestTypeFullName;
-        final private boolean hasRequestStreaming;
+        private final String name;
+        private final String responseTypeFullName;
+        private final boolean hasResponseStreaming;
+        private final String requestTypeFullName;
+        private final boolean hasRequestStreaming;
     }
 
     private final List<RpcTemplateData> rpcList = new ArrayList<RpcTemplateData>();

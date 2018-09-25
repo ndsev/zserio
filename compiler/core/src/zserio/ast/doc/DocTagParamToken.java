@@ -12,14 +12,6 @@ import zserio.antlr.util.ParserException;
  */
 public class DocTagParamToken extends DocTokenAST
 {
-    /**
-     * Empty constructor.
-     */
-    public DocTagParamToken()
-    {
-        paramDescriptionList = new ArrayList<String>();
-    }
-
     @Override
     public void evaluate() throws ParserException
     {
@@ -64,6 +56,6 @@ public class DocTagParamToken extends DocTokenAST
 
     private static final long serialVersionUID = 1L;
 
-    private String          paramName;
-    private List<String>    paramDescriptionList;
+    private String paramName;
+    private final List<String> paramDescriptionList = new ArrayList<String>();
 }

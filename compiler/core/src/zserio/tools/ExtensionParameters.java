@@ -1,7 +1,6 @@
 package zserio.tools;
 
 import java.util.ArrayList;
-import zserio.ast.Package;
 
 /**
  * The class which handles all parameters for extensions.
@@ -91,8 +90,10 @@ public class ExtensionParameters implements Parameters
         if (topLevelPackageName == null)
             return new ArrayList<String>();
 
-        return java.util.Arrays.asList(topLevelPackageName.split(Package.SEPARATOR_REGEX));
+        return java.util.Arrays.asList(topLevelPackageName.split("\\" + TOP_LEVEL_PACKAGE_NAME_SEPARATOR));
     }
+
+    private static final String TOP_LEVEL_PACKAGE_NAME_SEPARATOR = ".";
 
     private final CommandLineArguments  commandLineArguments;
 }

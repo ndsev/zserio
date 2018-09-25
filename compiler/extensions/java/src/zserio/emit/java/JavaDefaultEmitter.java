@@ -3,7 +3,6 @@ package zserio.emit.java;
 import zserio.ast.ZserioType;
 import zserio.emit.common.CodeDefaultEmitter;
 import zserio.emit.common.ZserioEmitException;
-import zserio.emit.common.PackageMapper;
 import zserio.tools.Parameters;
 
 abstract class JavaDefaultEmitter extends CodeDefaultEmitter
@@ -13,11 +12,8 @@ abstract class JavaDefaultEmitter extends CodeDefaultEmitter
         super(javaParameters.getJavaOutputDir(), extensionParameters, JAVA_TEMPLATE_LOCATION,
                 JavaFullNameFormatter.JAVA_PACKAGE_SEPARATOR);
 
-        final PackageMapper javaPackageMapper = getPackageMapper();
-        final JavaNativeTypeMapper javaNativeTypeMapper = new JavaNativeTypeMapper(javaPackageMapper);
-        templateDataContext = new TemplateDataContext(javaNativeTypeMapper,
-                javaPackageMapper, getWithWriterCode(), getWithValidationCode(), getWithRangeCheckCode(),
-                javaParameters.getJavaMajorVersion());
+        this.extensionParameters = extensionParameters;
+        this.javaParameters = javaParameters;
     }
 
     protected void processTemplate(String templateName, Object templateData, ZserioType zserioType)
@@ -29,7 +25,8 @@ abstract class JavaDefaultEmitter extends CodeDefaultEmitter
     protected void processTemplate(String templateName, Object templateData, ZserioType zserioType,
             String outFileName) throws ZserioEmitException
     {
-        super.processTemplate(templateName, templateData, zserioType, outFileName, JAVA_SOURCE_EXTENSION, false);
+        super.processTemplate(templateName, templateData, zserioType, outFileName, JAVA_SOURCE_EXTENSION,
+                false);
     }
 
     protected void processTemplateToRootDir(String templateName, Object templateData, String outFileName)
@@ -40,11 +37,12 @@ abstract class JavaDefaultEmitter extends CodeDefaultEmitter
 
     protected TemplateDataContext getTemplateDataContext()
     {
-        return templateDataContext;
+        return new TemplateDataContext(extensionParameters, javaParameters, getPackageMapper());
     }
-
-    private final TemplateDataContext templateDataContext;
 
     private static final String JAVA_SOURCE_EXTENSION = ".java";
     private static final String JAVA_TEMPLATE_LOCATION = "java/";
+
+    private final Parameters extensionParameters;
+    private final JavaExtensionParameters javaParameters;
 }

@@ -6,11 +6,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 import antlr.collections.AST;
-import zserio.ast.ZserioException;
+import zserio.ast.TranslationUnit;
 import zserio.ast.ZserioType;
 import zserio.ast.Package;
 import zserio.emit.common.ExpressionFormatter;
-import zserio.tools.PackageManager;
 import freemarker.template.Configuration;
 import freemarker.template.Template;
 import freemarker.template.TemplateException;
@@ -63,12 +62,22 @@ abstract public class DefaultHtmlEmitter extends DefaultDocEmitter
 
     public String getPackageName()
     {
-        return currentPackage.getPackageName();
+        return currentPackage.getPackageName().toString();
+    }
+
+    @Override
+    public void beginTranslationUnit(AST root, AST translationUnit)
+    {
+        if (!(translationUnit instanceof TranslationUnit))
+            throw new ZserioEmitDocException("Unexpected token type in beginTranslationUnit!");
+
+        if (currentRootPackage == null)
+            currentRootPackage = ((TranslationUnit)translationUnit).getPackage();
     }
 
     public String getRootPackageName()
     {
-        return PackageManager.get().getRoot().getPackageName();
+        return currentRootPackage.getPackageName().toString();
     }
 
     public List<CompoundEmitter> getContainers()
@@ -84,7 +93,10 @@ abstract public class DefaultHtmlEmitter extends DefaultDocEmitter
     @Override
     public void beginPackage(AST p)
     {
-        currentPackage = PackageManager.get().lookup(p);
+        if (!(p instanceof Package))
+            throw new ZserioEmitDocException("Unexpected token type in beginPackage!");
+
+        currentPackage = (Package)p;
     }
 
     public void emitStylesheet()
@@ -120,11 +132,11 @@ abstract public class DefaultHtmlEmitter extends DefaultDocEmitter
         }
         catch (IOException exc)
         {
-            throw new ZserioException(exc);
+            throw new ZserioEmitDocException(exc);
         }
         catch (TemplateException exc)
         {
-            throw new ZserioException(exc);
+            throw new ZserioEmitDocException(exc);
         }
         finally
         {
@@ -147,6 +159,7 @@ abstract public class DefaultHtmlEmitter extends DefaultDocEmitter
     protected ZserioType currentType;
 
     protected Package currentPackage;
+    protected Package currentRootPackage;
 
     private String currentFolder = "/";
 

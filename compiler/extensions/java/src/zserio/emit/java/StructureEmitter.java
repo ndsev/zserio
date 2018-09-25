@@ -18,7 +18,7 @@ class StructureEmitter extends JavaDefaultEmitter
         if (!(token instanceof StructureType))
             throw new ZserioEmitJavaException("Unexpected token type in beginStructure!");
 
-        final StructureType structureType = (StructureType) token;
+        final StructureType structureType = (StructureType)token;
         Object templateData = new StructureEmitterTemplateData(getTemplateDataContext(), structureType);
         processTemplate(TEMPLATE_NAME, templateData, structureType);
     }

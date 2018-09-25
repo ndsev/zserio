@@ -1,4 +1,4 @@
-package zserio.tools;
+package zserio.ast;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -6,7 +6,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import zserio.ast.ArrayType;
-import zserio.ast.Rpc;
 import zserio.ast.UnionType;
 import zserio.ast.BooleanType;
 import zserio.ast.ChoiceType;
@@ -18,7 +17,6 @@ import zserio.ast.ZserioTypeVisitor;
 import zserio.ast.EnumType;
 import zserio.ast.FloatType;
 import zserio.ast.FunctionType;
-import zserio.ast.ServiceType;
 import zserio.ast.StructureType;
 import zserio.ast.SignedBitFieldType;
 import zserio.ast.SqlDatabaseType;
@@ -31,6 +29,7 @@ import zserio.ast.TypeInstantiation;
 import zserio.ast.TypeReference;
 import zserio.ast.UnsignedBitFieldType;
 import zserio.ast.VarIntegerType;
+import zserio.tools.ZserioToolPrinter;
 
 /**
  * The ZserioType visitor which checks:
@@ -39,15 +38,6 @@ import zserio.ast.VarIntegerType;
  */
 public class ZserioTypeCheckerVisitor implements ZserioTypeVisitor
 {
-    /**
-     * Empty constructor.
-     */
-    public ZserioTypeCheckerVisitor()
-    {
-        usedTypeNames = new HashSet<String>();
-        definedTypes = new ArrayList<ZserioType>();
-    }
-
     /** {@inheritDoc} */
     @Override
     public void visitArrayType(ArrayType type)
@@ -111,7 +101,8 @@ public class ZserioTypeCheckerVisitor implements ZserioTypeVisitor
     @Override
     public void visitServiceType(ServiceType type)
     {
-        for (Rpc rpc : type.getRpcList())
+        final Iterable<Rpc> rpcList = type.getRpcList();
+        for (Rpc rpc : rpcList)
         {
             addUsedType(rpc.getResponseType());
             addUsedType(rpc.getRequestType());
@@ -181,7 +172,6 @@ public class ZserioTypeCheckerVisitor implements ZserioTypeVisitor
     @Override
     public void visitVarIntegerType(VarIntegerType type)
     {
-
     }
 
     /**
@@ -217,6 +207,6 @@ public class ZserioTypeCheckerVisitor implements ZserioTypeVisitor
             usedTypeNames.add(ZserioTypeUtil.getFullName(usedType));
     }
 
-    private Set<String> usedTypeNames;
-    private List<ZserioType> definedTypes;
+    private final Set<String> usedTypeNames = new HashSet<String>();
+    private final List<ZserioType> definedTypes = new ArrayList<ZserioType>();
 }

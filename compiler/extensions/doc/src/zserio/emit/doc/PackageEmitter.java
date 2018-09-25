@@ -6,7 +6,6 @@ import java.util.Set;
 import java.util.TreeSet;
 
 import antlr.collections.AST;
-import zserio.ast.ZserioException;
 import freemarker.template.Template;
 import freemarker.template.TemplateException;
 
@@ -36,11 +35,11 @@ public class PackageEmitter extends DefaultHtmlEmitter
         }
         catch (IOException exc)
         {
-            throw new ZserioException(exc);
+            throw new ZserioEmitDocException(exc);
         }
         catch (TemplateException exc)
         {
-            throw new ZserioException(exc);
+            throw new ZserioEmitDocException(exc);
         }
         finally
         {

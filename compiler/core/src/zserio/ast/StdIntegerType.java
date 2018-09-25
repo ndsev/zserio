@@ -105,8 +105,8 @@ public class StdIntegerType extends FixedSizeIntegerType implements FixedSizeTyp
 
     private static final long serialVersionUID = 1419392195242487062L;
 
-    private BigInteger  upperBound;
-    private BigInteger  lowerBound;
-    private boolean     isSigned;
-    private int         bitSize;
+    private BigInteger upperBound;
+    private BigInteger lowerBound;
+    private boolean isSigned;
+    private int bitSize;
 }

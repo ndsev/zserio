@@ -1,5 +1,8 @@
 package zserio.emit.cpp;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import antlr.collections.AST;
 import zserio.ast.EnumType;
 import zserio.ast.Field;
@@ -11,9 +14,6 @@ public class InspectorZserioNamesEmitter extends CppDefaultEmitter
     public InspectorZserioNamesEmitter(String outPathName, Parameters extensionParameters)
     {
         super(outPathName, extensionParameters);
-
-        templateData = (getWithInspectorCode()) ? new InspectorZserioNamesTemplateData(getTemplateDataContext()) :
-            null;
     }
 
     @Override
@@ -22,8 +22,8 @@ public class InspectorZserioNamesEmitter extends CppDefaultEmitter
         if (!(token instanceof Field))
             throw new ZserioEmitCppException("Unexpected token type in beginField!");
 
-        if (templateData != null)
-            templateData.add((Field)token);
+        if (getWithInspectorCode())
+            fields.add((Field)token);
     }
 
     @Override
@@ -32,8 +32,8 @@ public class InspectorZserioNamesEmitter extends CppDefaultEmitter
         if (!(token instanceof FunctionType))
             throw new ZserioEmitCppException("Unexpected token type in beginFunction!");
 
-        if (templateData != null)
-            templateData.add((FunctionType)token);
+        if (getWithInspectorCode())
+            functionTypes.add((FunctionType)token);
     }
 
     @Override
@@ -42,23 +42,28 @@ public class InspectorZserioNamesEmitter extends CppDefaultEmitter
         if (!(token instanceof EnumType))
             throw new ZserioEmitCppException("Unexpected token type in beginEnumeration!");
 
-        if (templateData != null)
-            templateData.add((EnumType)token);
+        if (getWithInspectorCode())
+            enumTypes.add((EnumType)token);
     }
 
     @Override
     public void endRoot() throws ZserioEmitCppException
     {
-        if (templateData != null)
+        if (!fields.isEmpty() || !functionTypes.isEmpty() || !enumTypes.isEmpty())
         {
+            final InspectorZserioNamesTemplateData templateData =
+                    new InspectorZserioNamesTemplateData(getTemplateDataContext(), fields, functionTypes,
+                            enumTypes);
             processHeaderTemplateToRootDir(TEMPLATE_HEADER_NAME, templateData, OUTPUT_FILE_NAME_ROOT);
             processSourceTemplateToRootDir(TEMPLATE_SOURCE_NAME, templateData, OUTPUT_FILE_NAME_ROOT);
         }
     }
 
-    private final InspectorZserioNamesTemplateData templateData;
-
     private static final String TEMPLATE_HEADER_NAME = "InspectorZserioNames.h.ftl";
     private static final String TEMPLATE_SOURCE_NAME = "InspectorZserioNames.cpp.ftl";
     private static final String OUTPUT_FILE_NAME_ROOT = "InspectorZserioNames";
+
+    private final List<Field> fields = new ArrayList<Field>();
+    private final List<FunctionType> functionTypes = new ArrayList<FunctionType>();
+    private final List<EnumType> enumTypes = new ArrayList<EnumType>();
 }

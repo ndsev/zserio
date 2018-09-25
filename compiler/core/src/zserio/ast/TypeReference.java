@@ -1,12 +1,8 @@
 package zserio.ast;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import zserio.antlr.ZserioParserTokenTypes;
 import zserio.antlr.util.BaseTokenAST;
 import zserio.antlr.util.ParserException;
-import zserio.tools.StringJoinUtil;
 
 /**
  * AST node for type references.
@@ -16,17 +12,8 @@ import zserio.tools.StringJoinUtil;
  *
  * Type references are Zserio types as well.
  */
-public class TypeReference extends TokenAST implements ZserioType, LinkAction
+public class TypeReference extends TokenAST implements ZserioType
 {
-    /**
-     * Default constructor.
-     */
-    public TypeReference()
-    {
-        referencedIds = new ArrayList<String>();
-        ZserioTypeContainer.add(this);
-    }
-
     @Override
     public Package getPackage()
     {
@@ -36,7 +23,7 @@ public class TypeReference extends TokenAST implements ZserioType, LinkAction
     @Override
     public String getName()
     {
-        return name;
+        return referencedTypeName;
     }
 
     @Override
@@ -71,59 +58,15 @@ public class TypeReference extends TokenAST implements ZserioType, LinkAction
         checkNonParametrizedType = true;
     }
 
-    /**
-     * Links this reference to the corresponding referenced type.
-     *
-     * @param scope Lexical scope to use for referenced type resolving.
-     *
-     * @throws ParserException Throws if the referenced type is unresolvable.
-     */
-    public void link(Scope scope) throws ParserException
-    {
-        // create reference name
-        final StringJoinUtil.Joiner idJoiner = new StringJoinUtil.Joiner(Package.SEPARATOR);
-        for (String referencedId : referencedIds)
-            idJoiner.append(referencedId);
-        name = idJoiner.toString();
-
-        // resolve referenced type
-        referencedType = scope.getPackage().getType(name);
-        if (referencedType == null)
-            throw new ParserException(this, "Unresolved referenced type '" + name + "'!");
-        if (referencedType instanceof ConstType)
-            throw new ParserException(this, "Invalid usage of constant '" +
-                    referencedType.getName() + "' as a type!");
-        if (referencedType instanceof SqlDatabaseType)
-            throw new ParserException(this, "Invalid use of SQL database '" +
-                    referencedType.getName() + "' as a type!");
-
-
-        // call 'setUsedBy' method needed for documentation emitter
-        final ZserioType owner = scope.getOwner();
-        if (owner instanceof CompoundType)
-        {
-            final CompoundType ownerType = (CompoundType)owner;
-            if (referencedType instanceof CompoundType)
-                ((CompoundType)referencedType).setUsedByCompoundType(ownerType);
-            else if (referencedType instanceof EnumType)
-                ((EnumType)referencedType).setUsedByCompoundType(ownerType);
-        }
-        else if (owner instanceof ServiceType)
-        {
-            if (referencedType instanceof CompoundType)
-                ((CompoundType)referencedType).setUsedByServiceType((ServiceType)owner);
-            else if (referencedType instanceof Subtype)
-                ((Subtype)referencedType).setUsedByServiceType((ServiceType)owner);
-        }
-    }
-
     @Override
     protected boolean evaluateChild(BaseTokenAST child) throws ParserException
     {
         switch (child.getType())
         {
         case ZserioParserTokenTypes.ID:
-            referencedIds.add(child.getText());
+            if (referencedTypeName != null)
+                referencedPackageName.addId(referencedTypeName);
+            referencedTypeName = child.getText();
             break;
 
         default:
@@ -141,24 +84,43 @@ public class TypeReference extends TokenAST implements ZserioType, LinkAction
         {
             final CompoundType referencedCompoundType = (CompoundType)referencedBaseType;
             if (referencedCompoundType.getParameters().size() > 0)
-                throw new ParserException(this, "Referenced type '" + name +
+                throw new ParserException(this, "Referenced type '" + referencedTypeName +
                         "' is defined as parameterized type!");
         }
     }
 
     /**
-     * Resolves referencedType (processes all subtypes in the definition chain).
-     * Called at the end of linking phase.
+     * Resolves this reference to the corresponding referenced type.
      *
-     * @return Resolved referenced type.
+     * @param pkg   Package to use for referenced type resolving.
+     * @param owner ZserioType which owns the type reference.
      *
-     * @throws ParserException When cyclic definition is detected.
+     * @throws ParserException Throws if the referenced type is unresolvable.
      */
-    protected ZserioType resolve() throws ParserException
+    protected void resolve(Package pkg, ZserioType owner) throws ParserException
     {
-        if (referencedType instanceof Subtype)
-            return ((Subtype)referencedType).resolve();
-        return referencedType;
+        // resolve referenced type
+        referencedType = pkg.getVisibleType(this, referencedPackageName, referencedTypeName);
+        if (referencedType == null)
+            throw new ParserException(this, "Unresolved referenced type '" + referencedTypeName + "'!");
+
+        // check referenced type
+        if (referencedType instanceof ConstType)
+            throw new ParserException(this, "Invalid usage of constant '" +
+                    referencedType.getName() + "' as a type!");
+        if (referencedType instanceof SqlDatabaseType)
+            throw new ParserException(this, "Invalid use of SQL database '" +
+                    referencedType.getName() + "' as a type!");
+
+        // call 'setUsedBy' method needed for documentation emitter
+        if (owner instanceof CompoundType)
+        {
+            final CompoundType ownerType = (CompoundType)owner;
+            if (referencedType instanceof CompoundType)
+                ((CompoundType)referencedType).setUsedByCompoundType(ownerType);
+            else if (referencedType instanceof EnumType)
+                ((EnumType)referencedType).setUsedByCompoundType(ownerType);
+        }
     }
 
     /**
@@ -203,8 +165,9 @@ public class TypeReference extends TokenAST implements ZserioType, LinkAction
 
     private static final long serialVersionUID = 8158308333230987942L;
 
-    private ZserioType              referencedType;
-    private String                  name;
-    private boolean                 checkNonParametrizedType;
-    private List<String>            referencedIds;
+    private final PackageName referencedPackageName = new PackageName();
+    private String referencedTypeName = null;
+    private ZserioType referencedType;
+
+    private boolean checkNonParametrizedType;
 }

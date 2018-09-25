@@ -44,13 +44,9 @@ public class SubtypesErrorTest
     @Test
     public void transitiveCyclicDependency()
     {
-        // concrete error depends on current HashSet implementation
-        final String sourceFile = "transitive_cyclic_dependency_error.zs";
-        final String errorVariant1 = sourceFile + ":3:1: Cyclic dependency detected in subtype 'Y' definition!";
-        final String errorVariant2 = sourceFile + ":4:1: Cyclic dependency detected in subtype 'Z' definition!";
-        final String errorVariant3 = sourceFile + ":5:1: Cyclic dependency detected in subtype 'X' definition!";
-        assertTrue(zserioErrors.isPresent(errorVariant1) || zserioErrors.isPresent(errorVariant2) ||
-                zserioErrors.isPresent(errorVariant3));
+        final String error = "transitive_cyclic_dependency_error.zs:5:1: Cyclic dependency detected in " +
+                "subtype 'X' definition!";
+        assertTrue(zserioErrors.isPresent(error));
     }
 
     private static ZserioErrors zserioErrors;

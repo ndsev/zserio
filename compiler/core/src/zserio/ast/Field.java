@@ -18,16 +18,6 @@ import zserio.ast.doc.DocCommentToken;
 public class Field extends TokenAST
 {
     /**
-     * Sets the compound type which is owner of the choice case.
-     *
-     * @param compoundType Owner to set.
-     */
-    public void setCompoundType(CompoundType compoundType)
-    {
-        this.compoundType = compoundType;
-    }
-
-    /**
      * Gets Zserio type associated with the field.
      *
      * @return Zserio type associated with the field as has been specified in Zserio.
@@ -298,6 +288,7 @@ public class Field extends TokenAST
             if (!(child instanceof SqlConstraint))
                 return false;
             sqlConstraint = (SqlConstraint)child;
+            sqlConstraint.setCompoundType(compoundType);
             break;
 
         case ZserioParserTokenTypes.SQL_VIRTUAL:
@@ -328,8 +319,8 @@ public class Field extends TokenAST
     protected void check() throws ParserException
     {
         // check field name
-        if (compoundType.getPackage().getLocalType(getName()) != null)
-            throw new ParserException(this, "'" + getName() + "' is a defined type in this scope!");
+        if (compoundType.getPackage().getVisibleType(this, new PackageName(), getName()) != null)
+            throw new ParserException(this, "'" + getName() + "' is a defined type in this package!");
 
         // check initializer expression type
         if (initializerExpr != null)
@@ -378,20 +369,30 @@ public class Field extends TokenAST
         }
     }
 
+    /**
+     * Sets the compound type which is owner of the field.
+     *
+     * @param compoundType Owner to set.
+     */
+    protected void setCompoundType(CompoundType compoundType)
+    {
+        this.compoundType = compoundType;
+    }
+
     public static final String SEPARATOR = ".";
 
     private static final long serialVersionUID = 4009186108710189367L;
 
-    private CompoundType    compoundType = null;
-    private ZserioType      fieldType = null;
-    private String          name = null;
-    private boolean         isAutoOptional = false;
-    private Expression      initializerExpr = null;
-    private Expression      optionalClauseExpr = null;
-    private Expression      constraintExpr = null;
-    private Expression      offsetExpr = null;
-    private Expression      alignmentExpr = null;
-    private SqlConstraint   sqlConstraint = SqlConstraint.createDefaultFieldConstraint();
-    private boolean         isVirtual = false;
-    private TokenAST        tokenWithDoc = null;
+    private CompoundType compoundType = null;
+    private ZserioType fieldType = null;
+    private String name = null;
+    private boolean isAutoOptional = false;
+    private Expression initializerExpr = null;
+    private Expression optionalClauseExpr = null;
+    private Expression constraintExpr = null;
+    private Expression offsetExpr = null;
+    private Expression alignmentExpr = null;
+    private SqlConstraint sqlConstraint = SqlConstraint.createDefaultFieldConstraint();
+    private boolean isVirtual = false;
+    private TokenAST tokenWithDoc = null;
 }

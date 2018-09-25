@@ -2,9 +2,6 @@ package zserio.emit.common.sql.types;
 
 public class NativeTextType implements SqlNativeType
 {
-    public NativeTextType()
-    {}
-
     @Override
     public String getFullName()
     {
@@ -23,6 +20,13 @@ public class NativeTextType implements SqlNativeType
         return TRADITIONAL_NAME;
     }
 
+    /**
+     * Formats string value to format for SQLite.
+     *
+     * @param value String value to format.
+     *
+     * @return String value formatted for SQLite.
+     */
     public static String formatLiteral(String value)
     {
         final StringBuilder textLiteral = new StringBuilder();

@@ -1,6 +1,8 @@
 package zserio.tools;
 
-/** Version of Zserio Tool. */
+/**
+ * Version of Zserio compiler tool.
+ */
 public final class ZserioVersion
 {
     /** ZserioTool version string. */

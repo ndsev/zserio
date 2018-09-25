@@ -15,24 +15,6 @@ import zserio.ast.doc.DocCommentToken;
 public class ChoiceCase extends TokenAST
 {
     /**
-     * Default constructor.
-     */
-    public ChoiceCase()
-    {
-        caseExpressions = new ArrayList<CaseExpression>();
-    }
-
-    /**
-     * Sets the choice type which is owner of the choice case.
-     *
-     * @param choiceType Owner to set.
-     */
-    public void setChoiceType(ChoiceType choiceType)
-    {
-        this.choiceType = choiceType;
-    }
-
-    /**
      * Gets expressions defined by the choice case.
      *
      * @return Choice case expression list.
@@ -111,10 +93,20 @@ public class ChoiceCase extends TokenAST
         return true;
     }
 
+    /**
+     * Sets the choice type which is owner of the choice case.
+     *
+     * @param choiceType Owner to set.
+     */
+    protected void setChoiceType(ChoiceType choiceType)
+    {
+        this.choiceType = choiceType;
+    }
+
     private static final long serialVersionUID = 703521218397552828L;
 
-    private ChoiceType                  choiceType;
-    private final List<CaseExpression>  caseExpressions;
-    private Field                       caseField;
-    private ChoiceCase                  lastCaseToken;
+    private ChoiceType choiceType;
+    private final List<CaseExpression> caseExpressions = new ArrayList<CaseExpression>();
+    private Field caseField;
+    private ChoiceCase lastCaseToken;
 };

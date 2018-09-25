@@ -3,13 +3,13 @@ package zserio.emit.doc;
 import java.util.ArrayList;
 import java.util.List;
 
+import zserio.ast.SymbolReference;
 import zserio.ast.doc.DocCommentToken;
 import zserio.ast.doc.DocParagraphToken;
 import zserio.ast.doc.DocParagraphToken.DocParagraphTokenText;
 import zserio.ast.doc.DocTagParamToken;
 import zserio.ast.doc.DocTagSeeToken;
 import zserio.ast.doc.DocTagTodoToken;
-import zserio.tools.StringHtmlUtil;
 
 /**
  * The documentation comment data used for FreeMarker template during documentation generation.
@@ -134,9 +134,11 @@ public class DocCommentTemplateData
         {
             public DocTagSee(DocTagSeeToken tagSeeToken)
             {
-                alias = tagSeeToken.getLinkAlias();
-                url = DocEmitterTools.getUrlNameFromTypeAndFieldName(tagSeeToken.getLinkType(),
-                                                                     tagSeeToken.getLinkTypeFieldName());
+                final String linkAlias = tagSeeToken.getLinkAlias();
+                alias = (linkAlias == null) ? "" : linkAlias;
+                final SymbolReference linkSymbolReference = tagSeeToken.getLinkSymbolReference();
+                url = DocEmitterTools.getUrlNameFromTypeAndFieldName(linkSymbolReference.getReferencedType(),
+                        linkSymbolReference.getReferencedSymbolName());
             }
 
             public String getUrl()

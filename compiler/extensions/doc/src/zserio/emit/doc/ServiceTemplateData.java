@@ -11,7 +11,7 @@ public class ServiceTemplateData
     public ServiceTemplateData(ServiceType serviceType, String outputPath, boolean withSvgDiagrams)
     {
         name = serviceType.getName();
-        packageName = serviceType.getPackage().getPackageName();
+        packageName = serviceType.getPackage().getPackageName().toString();
         docComment = new DocCommentTemplateData(serviceType.getHiddenDocComment());
         for (Rpc rpc : serviceType.getRpcList())
         {
@@ -88,17 +88,17 @@ public class ServiceTemplateData
             return docComment;
         }
 
-        private String name;
-        private LinkedType requestType;
-        private boolean hasRequestStreaming;
-        private LinkedType responseType;
-        private boolean hasResponseStreaming;
-        private DocCommentTemplateData docComment;
+        private final String name;
+        private final LinkedType requestType;
+        private final boolean hasRequestStreaming;
+        private final LinkedType responseType;
+        private final boolean hasResponseStreaming;
+        private final DocCommentTemplateData docComment;
     }
 
-    private String name;
-    private String packageName;
-    private DocCommentTemplateData docComment;
-    private List<RpcTemplateData> rpcList = new ArrayList<RpcTemplateData>();
-    private String collaborationDiagramSvgFileName;
+    private final String name;
+    private final String packageName;
+    private final DocCommentTemplateData docComment;
+    private final List<RpcTemplateData> rpcList = new ArrayList<RpcTemplateData>();
+    private final String collaborationDiagramSvgFileName;
 }

@@ -14,26 +14,6 @@ import zserio.ast.doc.DocCommentToken;
 public class EnumItem extends TokenAST
 {
     /**
-     * Default constructor.
-     */
-    public EnumItem()
-    {
-        // TODO the problem is in doc emitter which tries to get owner as Choice type from these expressions.
-        // don't store this to HashSet because the same expressions can be in different scopes!
-        usedByExpressionList = new ArrayList<Expression>();
-    }
-
-    /**
-     * Sets the enumeration type which is owner of the enumeration item.
-     *
-     * @param enumType Owner to set.
-     */
-    public void setEnumType(EnumType enumType)
-    {
-        this.enumType = enumType;
-    }
-
-    /**
      * Evaluates enumeration item value.
      *
      * @param defaultValue Enumeration item value to use if value expression has not been specified.
@@ -153,15 +133,26 @@ public class EnumItem extends TokenAST
         return true;
     }
 
+    /**
+     * Sets the enumeration type which is owner of the enumeration item.
+     *
+     * @param enumType Owner to set.
+     */
+    protected void setEnumType(EnumType enumType)
+    {
+        this.enumType = enumType;
+    }
+
     private static final long serialVersionUID = -2577973642614324740L;
 
-    private String                  name = null;
-    private Expression              valueExpression = null;
+    private String name = null;
+    private Expression valueExpression = null;
 
-    private EnumType                enumType;
-    private BigInteger              value;
+    private EnumType enumType;
+    private BigInteger value;
 
-    private List<Expression>        usedByExpressionList;
-
-    private TokenAST                tokenWithDoc;
+    // TODO the problem is in doc emitter which tries to get owner as Choice type from these expressions.
+    // don't store this to HashSet because the same expressions can be in different scopes!
+    private final List<Expression> usedByExpressionList = new ArrayList<Expression>();
+    private TokenAST tokenWithDoc;
 }

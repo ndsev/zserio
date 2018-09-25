@@ -11,14 +11,6 @@ import zserio.antlr.util.ParserException;
  */
 public class SqlDatabaseType extends CompoundType
 {
-    /**
-     * Empty constructor.
-     */
-    public SqlDatabaseType()
-    {
-        ZserioTypeContainer.addSqlDatabase(this);
-    }
-
     @Override
     public void callVisitor(ZserioTypeVisitor visitor)
     {

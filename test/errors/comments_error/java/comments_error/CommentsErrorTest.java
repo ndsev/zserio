@@ -20,7 +20,7 @@ public class CommentsErrorTest
     @Test
     public void see_tag_error()
     {
-        final String error = "see_tag_error.zs:6:4: Type Unexisting not found!";
+        final String error = "see_tag_error.zs:6:4: Unresolved referenced symbol 'Unexisting' for type 'Test'!";
         assertTrue(zserioErrors.isPresent(error));
     }
 

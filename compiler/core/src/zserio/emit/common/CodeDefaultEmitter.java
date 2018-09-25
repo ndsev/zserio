@@ -3,7 +3,11 @@ package zserio.emit.common;
 import java.io.File;
 import java.util.Locale;
 
+import antlr.collections.AST;
+
 import zserio.ast.ZserioType;
+import zserio.ast.TranslationUnit;
+import zserio.ast.Package;
 import zserio.tools.Parameters;
 
 public abstract class CodeDefaultEmitter extends DefaultEmitter
@@ -21,8 +25,28 @@ public abstract class CodeDefaultEmitter extends DefaultEmitter
         withWriterCode= extensionParameters.getWithWriterCode();
 
         this.codeTemplateLocation = codeTemplateLocation;
-        packageMapper = new PackageMapper(extensionParameters.getTopLevelPackageNameList(),
-                codePackageSeparator);
+
+        topLevelPackageNameList = extensionParameters.getTopLevelPackageNameList();
+        this.codePackageSeparator = codePackageSeparator;
+        packageMapper = null;
+    }
+
+    @Override
+    public void beginTranslationUnit(AST root, AST translationUnit)
+    {
+        if (packageMapper == null)
+        {
+            if (translationUnit instanceof TranslationUnit)
+            {
+                final Package rootPackage = ((TranslationUnit)translationUnit).getPackage();
+                if (rootPackage != null)
+                {
+                    // root package can be null for empty files
+                    packageMapper = new PackageMapper(rootPackage, topLevelPackageNameList,
+                            codePackageSeparator);
+                }
+            }
+        }
     }
 
     protected boolean getWithInspectorCode()
@@ -120,5 +144,7 @@ public abstract class CodeDefaultEmitter extends DefaultEmitter
     private final boolean withWriterCode;
 
     private final String codeTemplateLocation;
-    private final PackageMapper packageMapper;
+    private final Iterable<String> topLevelPackageNameList;
+    private final String codePackageSeparator;
+    private PackageMapper packageMapper;
 }

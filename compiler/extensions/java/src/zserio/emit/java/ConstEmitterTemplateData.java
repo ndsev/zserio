@@ -11,30 +11,24 @@ import zserio.emit.java.types.NativeConstType;
 
 public final class ConstEmitterTemplateData extends JavaTemplateData
 {
-    public ConstEmitterTemplateData(TemplateDataContext context)
+    public ConstEmitterTemplateData(TemplateDataContext context, List<ConstType> constTypes)
     {
         super(context);
 
-        this.javaNativeTypeMapper = context.getJavaNativeTypeMapper();
+        final JavaNativeTypeMapper javaNativeTypeMapper = context.getJavaNativeTypeMapper();
         packageName = context.getJavaRootPackageName();
-        this.javaExpressionFormatter = context.getJavaExpressionFormatter();
+        final ExpressionFormatter javaExpressionFormatter = context.getJavaExpressionFormatter();
         name = NativeConstType.getClassName();
         items = new ArrayList<ConstItemData>();
-    }
+        for (ConstType constType : constTypes)
+        {
+            final JavaNativeType nativeType = javaNativeTypeMapper.getJavaType(constType);
+            if (!(nativeType instanceof NativeConstType))
+                throw new InternalError("A const type mapped to something else than NativeConstType!");
 
-    public void add(ConstType constType) throws ZserioEmitJavaException
-    {
-        final JavaNativeType nativeType = javaNativeTypeMapper.getJavaType(constType);
-        if (!(nativeType instanceof NativeConstType))
-            throw new InternalError("A const type mapped to something else than NativeConstType!");
-
-        final NativeConstType nativeConstType = (NativeConstType)nativeType;
-        items.add(new ConstItemData(constType, nativeConstType, packageName, javaExpressionFormatter));
-    }
-
-    public boolean isEmpty()
-    {
-        return items.isEmpty();
+            final NativeConstType nativeConstType = (NativeConstType)nativeType;
+            items.add(new ConstItemData(constType, nativeConstType, packageName, javaExpressionFormatter));
+        }
     }
 
     public String getPackageName()
@@ -88,9 +82,7 @@ public final class ConstEmitterTemplateData extends JavaTemplateData
         private final String value;
     }
 
-    private final JavaNativeTypeMapper  javaNativeTypeMapper;
     private final String                packageName;
-    private final ExpressionFormatter   javaExpressionFormatter;
     private final String                name;
     private final List<ConstItemData>   items;
 }

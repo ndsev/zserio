@@ -11,10 +11,6 @@ import zserio.antlr.util.ParserException;
  */
 public class UnionType extends CompoundType
 {
-    /** Constructor. */
-    public UnionType()
-    {}
-
     @Override
     protected boolean evaluateChild(BaseTokenAST child) throws ParserException
     {

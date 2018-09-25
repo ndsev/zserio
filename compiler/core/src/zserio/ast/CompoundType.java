@@ -20,16 +20,6 @@ import zserio.tools.HashUtil;
  */
 public abstract class CompoundType extends TokenAST implements ZserioType, Comparable<CompoundType>
 {
-    protected CompoundType()
-    {
-        fields = new ArrayList<Field>();
-        parameters = new ArrayList<Parameter>();
-        functions = new ArrayList<FunctionType>();
-        usedByCompoundList = new TreeSet<CompoundType>();
-        usedByServiceList = new TreeSet<ServiceType>();
-        ZserioTypeContainer.add(this);
-    }
-
     @Override
     public int compareTo(CompoundType other)
     {
@@ -105,33 +95,6 @@ public abstract class CompoundType extends TokenAST implements ZserioType, Compa
     {
         this.scope = scope;
         this.pkg = pkg;
-    }
-
-    /**
-     * Sets compound type which uses this compound type.
-     *
-     * @param compoundType Compound type to set.
-     *
-     * @throws Throws if circular containment occures.
-     */
-    public void setUsedByCompoundType(CompoundType compoundType) throws ParserException
-    {
-        // check for circular containment  TODO This is used by expressions
-        if (compoundType.isContainedIn(this))
-            throw new ParserException(this, "Circular containment between '" + getName() +
-                                      "' and '" + compoundType.getName() + "'!");
-
-        usedByCompoundList.add(compoundType);
-    }
-
-    /**
-     * Sets service type which uses this compound type.
-     *
-     * @param serviceType Service type to set.
-     */
-    public void setUsedByServiceType(ServiceType serviceType)
-    {
-        usedByServiceList.add(serviceType);
     }
 
     /**
@@ -385,6 +348,33 @@ public abstract class CompoundType extends TokenAST implements ZserioType, Compa
     }
 
     /**
+     * Sets compound type which uses this compound type.
+     *
+     * @param compoundType Compound type to set.
+     *
+     * @throws Throws if circular containment occurs.
+     */
+    protected void setUsedByCompoundType(CompoundType compoundType) throws ParserException
+    {
+        // check for circular containment  TODO This is used by expressions
+        if (compoundType.isContainedIn(this))
+            throw new ParserException(this, "Circular containment between '" + getName() +
+                                      "' and '" + compoundType.getName() + "'!");
+
+        usedByCompoundList.add(compoundType);
+    }
+
+    /**
+     * Sets service type which uses this compound type.
+     *
+     * @param serviceType Service type to set.
+     */
+    protected void setUsedByServiceType(ServiceType serviceType)
+    {
+        usedByServiceList.add(serviceType);
+    }
+
+    /**
      * The "is contained" relationship may contain cycles use a stack to avoid them. This is a simple DFS path
      * finding algorithm that finds a path from 'this' to 'outer'.
      */
@@ -410,19 +400,19 @@ public abstract class CompoundType extends TokenAST implements ZserioType, Compa
         return false;
     }
 
-    private Scope   scope;
+    private Scope scope;
     private Package pkg;
 
-    private String  name;
+    private String name;
 
-    private final List<Field> fields;
-    private final List<Parameter> parameters;
-    private final List<FunctionType> functions;
+    private final List<Field> fields = new ArrayList<Field>();
+    private final List<Parameter> parameters = new ArrayList<Parameter>();
+    private final List<FunctionType> functions = new ArrayList<FunctionType>();
 
     private boolean containsOptionalRecursion;
 
-    private final SortedSet<CompoundType> usedByCompoundList;
-    private final SortedSet<ServiceType> usedByServiceList;
+    private final SortedSet<CompoundType> usedByCompoundList = new TreeSet<CompoundType>();
+    private final SortedSet<ServiceType> usedByServiceList = new TreeSet<ServiceType>();
 
     private DocCommentToken docComment;
 

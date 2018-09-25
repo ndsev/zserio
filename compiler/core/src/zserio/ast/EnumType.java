@@ -21,17 +21,6 @@ import zserio.ast.doc.DocCommentToken;
  */
 public class EnumType extends TokenAST implements ZserioType
 {
-    /**
-     * Default constructor.
-     */
-    public EnumType()
-    {
-        enumItems = new ArrayList<EnumItem>();
-        usedTypeList = new ArrayList<ZserioType>();
-        usedByCompoundList = new TreeSet<CompoundType>();
-        ZserioTypeContainer.add(this);
-    }
-
     @Override
     public Package getPackage()
     {
@@ -78,16 +67,6 @@ public class EnumType extends TokenAST implements ZserioType
     {
         this.scope = scope;
         this.pkg = pkg;
-    }
-
-    /**
-     * Sets compound type which uses this enumeration type.
-     *
-     * @param compoundType Compound type to set.
-     */
-    public void setUsedByCompoundType(CompoundType compoundType)
-    {
-        usedByCompoundList.add(compoundType);
     }
 
     /**
@@ -238,6 +217,16 @@ public class EnumType extends TokenAST implements ZserioType
         checkEnumerationItems();
     }
 
+    /**
+     * Sets compound type which uses this enumeration type.
+     *
+     * @param compoundType Compound type to set.
+     */
+    protected void setUsedByCompoundType(CompoundType compoundType)
+    {
+        usedByCompoundList.add(compoundType);
+    }
+
     private void checkEnumerationItems() throws ParserException
     {
         final Set<BigInteger> enumItemValues = new HashSet<BigInteger>();
@@ -269,10 +258,10 @@ public class EnumType extends TokenAST implements ZserioType
 
     private ZserioType enumType = null;
     private String name;
-    private List<EnumItem> enumItems;
+    private final List<EnumItem> enumItems = new ArrayList<EnumItem>();
 
     private boolean areItemValuesEvaluated = false;
-    private List<ZserioType> usedTypeList;
+    private final List<ZserioType> usedTypeList = new ArrayList<ZserioType>();
     private IntegerType integerBaseType;
-    private SortedSet<CompoundType> usedByCompoundList;
+    private final SortedSet<CompoundType> usedByCompoundList = new TreeSet<CompoundType>();
 }

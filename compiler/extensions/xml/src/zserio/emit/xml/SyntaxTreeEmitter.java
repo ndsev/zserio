@@ -19,9 +19,9 @@ import javax.xml.transform.stream.StreamResult;
 
 import org.xml.sax.InputSource;
 
-import zserio.ast.ZserioException;
 import zserio.ast.TokenAST;
 import zserio.emit.common.FileUtil;
+import zserio.emit.common.ZserioEmitException;
 
 public class SyntaxTreeEmitter
 {
@@ -60,11 +60,11 @@ public class SyntaxTreeEmitter
         }
         catch (TransformerConfigurationException exc)
         {
-            throw new ZserioException(exc);
+            throw new ZserioEmitException(exc);
         }
         catch (TransformerException exc)
         {
-            throw new ZserioException(exc);
+            throw new ZserioEmitException(exc);
         }
         catch (UnsupportedEncodingException exc)
         {
@@ -75,13 +75,13 @@ public class SyntaxTreeEmitter
             catch (IOException e)
             {
             }
-            throw new ZserioException(exc);
+            throw new ZserioEmitException(exc);
         }
         catch (FileNotFoundException exc)
         {
-            throw new ZserioException(exc);
+            throw new ZserioEmitException(exc);
         }
     }
 
-    private String              outputDir;
+    private String outputDir;
 }

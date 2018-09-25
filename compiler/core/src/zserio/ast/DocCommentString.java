@@ -115,11 +115,11 @@ public class DocCommentString extends TokenAST
             return token;
         }
 
-        private int baseLineNumber;
+        private final int baseLineNumber;
     }
 
     private static final long serialVersionUID = -1L;
 
-    private final ZserioType    owner;
-    private DocCommentToken         docCommentToken = null;
+    private final ZserioType owner;
+    private DocCommentToken docCommentToken = null;
 }

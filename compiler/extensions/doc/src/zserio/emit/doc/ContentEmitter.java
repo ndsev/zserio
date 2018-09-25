@@ -8,9 +8,7 @@ import zserio.ast.EnumType;
 import zserio.ast.Package;
 import zserio.ast.ServiceType;
 import zserio.ast.Subtype;
-import zserio.ast.TokenAST;
 import zserio.ast.ZserioType;
-import zserio.tools.PackageManager;
 
 public class ContentEmitter extends DefaultHtmlEmitter
 {
@@ -40,7 +38,6 @@ public class ContentEmitter extends DefaultHtmlEmitter
     @Override
     public void endRoot()
     {
-        emitPackage(PackageManager.get().defaultPackage);
     }
 
     @Override
@@ -51,10 +48,8 @@ public class ContentEmitter extends DefaultHtmlEmitter
 
     private void emitPackage(Package pkg)
     {
-        for (String typeName : pkg.getLocalTypeNames())
+        for (ZserioType type : pkg.getLocalTypes())
         {
-            ZserioType t = pkg.getLocalType(typeName);
-            TokenAST type = (TokenAST) t;
             if (type instanceof CompoundType)
             {
                 compoundEmitter.emit((CompoundType)type);

@@ -7,7 +7,6 @@ package zserio.antlr;
 
 import zserio.ast.*;
 import zserio.ast.Package; // explicit to override java.lang.Package
-import zserio.tools.PackageManager;
 import zserio.antlr.util.BaseTokenAST;
 import zserio.antlr.util.ParserException;
 }
@@ -22,7 +21,6 @@ options
 
 {
     private Package pkg = null;
-    private Scope pkgScope = null;  // TODO this is not necessary if postLinkAction is moved to Package
     private Scope scope = null;
     private boolean allowIndex = false;
 
@@ -38,7 +36,7 @@ options
 
     private void endScope()
     {
-        scope = pkgScope;
+        scope = null;
     }
 
     private void setupExpression(Expression e)
@@ -54,12 +52,6 @@ options
  */
 root
     :   #(ROOT
-            {
-                // used in case that no package is specified
-                pkg = PackageManager.get().defaultPackage;
-                pkgScope = new Scope(pkg, null);
-                scope = pkgScope;
-            }
             (translationUnit)+
         )
     ;
@@ -69,20 +61,14 @@ translationUnit
     ;
 
 packageDeclaration
-    :   #(p:PACKAGE (ID)+)
+    :   #(p:PACKAGE (ID)*) // default package does not have IDs
         {
-            // replace the default package that has been pushed in root rule with this package
-            pkg = PackageManager.get().createPackageFromAstNode((TokenAST)p);
-            pkgScope = new Scope(pkg, null);
-            scope = pkgScope;
+            pkg = (Package)p;
         }
     ;
 
 importDeclaration
     :   #(i:IMPORT (ID)+ (MULTIPLY)?)
-        {
-            pkg.addImport((Import)i);
-        }
     ;
 
 commandDeclaration
@@ -101,22 +87,34 @@ commandDeclaration
  * constDeclaration.
  */
 constDeclaration
-    :   #(c:CONST definedType i:ID e:expression)
-        {
-            pkg.setType((BaseTokenAST)i, c);
-            ((ConstType)c).setPackage(pkg);
-        }
+    :   #(c:CONST                   {
+                                        final ConstType constType = (ConstType)c;
+                                        beginScope(constType); // needed for expressions only
+                                        constType.setPackage(pkg);
+                                    }
+            definedType
+            i:ID                    {
+                                        pkg.setLocalType((BaseTokenAST)i, (ConstType)c);
+                                    }
+            e:expression
+        )                           { endScope(); }
     ;
 
 /**
  * subtypeDeclaration.
  */
 subtypeDeclaration
-    :   #(s:SUBTYPE definedType i:ID)
-        {
-            pkg.setType((BaseTokenAST)i, s);
-            ((Subtype)s).setPackage(pkg);
-        }
+    :   #(s:SUBTYPE                 {
+                                        final Subtype subtype = (Subtype)s;
+                                        beginScope(subtype); // needed for expressions only
+                                        subtype.setPackage(pkg);
+                                    }
+    
+            definedType
+            i:ID                    {
+                                        pkg.setLocalType((BaseTokenAST)i, subtype);
+                                    }
+        )                           { endScope(); }
     ;
 
 /**
@@ -125,9 +123,10 @@ subtypeDeclaration
 structureDeclaration
     :   #(s:STRUCTURE
             i:ID                    {
-                                        pkg.setType((BaseTokenAST)i, s);
-                                        beginScope((CompoundType)s);
-                                        ((CompoundType)s).setScope(scope, pkg);
+                                        final StructureType structureType = (StructureType)s;
+                                        pkg.setLocalType((BaseTokenAST)i, structureType);
+                                        beginScope(structureType);
+                                        structureType.setScope(scope, pkg);
                                     }
             (parameterList)?
             (structureFieldDefinition)*
@@ -203,9 +202,10 @@ functionBody
 choiceDeclaration
     :   #(c:CHOICE
             i:ID                    {
-                                        pkg.setType((BaseTokenAST)i, c);
-                                        beginScope((CompoundType)c);
-                                        ((CompoundType)c).setScope(scope, pkg);
+                                        final ChoiceType choiceType = (ChoiceType)c;
+                                        pkg.setLocalType((BaseTokenAST)i, choiceType);
+                                        beginScope(choiceType);
+                                        choiceType.setScope(scope, pkg);
                                     }
             parameterList
             expression
@@ -237,9 +237,10 @@ defaultChoice
 unionDeclaration
     :   #(u:UNION
             i:ID                    {
-                                        pkg.setType((BaseTokenAST)i, u);
-                                        beginScope((CompoundType)u);
-                                        ((CompoundType)u).setScope(scope, pkg);
+                                        final UnionType unionType = (UnionType)u;
+                                        pkg.setLocalType((BaseTokenAST)i, unionType);
+                                        beginScope(unionType);
+                                        unionType.setScope(scope, pkg);
                                     }
             (parameterList)?
             (unionFieldDefinition)+
@@ -255,12 +256,14 @@ unionFieldDefinition
  * enumDeclaration.
  */
 enumDeclaration
-    :   #(e:ENUM definedType
-            i:ID
-                                    {
-                                        pkg.setType((BaseTokenAST)i, e);
-                                        beginScope((EnumType)e);
-                                        ((EnumType)e).setScope(scope, pkg);
+    :   #(e:ENUM                    {
+                                        final EnumType enumType = (EnumType)e;
+                                        beginScope(enumType);
+                                        enumType.setScope(scope, pkg);
+                                    }
+            definedType
+            i:ID                    {
+                                        pkg.setLocalType((BaseTokenAST)i, (EnumType)e);
                                     }
             (enumItem)+
         )                           { endScope(); }
@@ -279,9 +282,10 @@ enumItem
 sqlTableDeclaration
     :   #(s:SQL_TABLE
             i:ID                    {
-                                        pkg.setType((BaseTokenAST)i, s);
-                                        beginScope((CompoundType)s);
-                                        ((CompoundType)s).setScope(scope, pkg);
+                                        final SqlTableType sqlTableType = (SqlTableType)s;
+                                        pkg.setLocalType((BaseTokenAST)i, sqlTableType);
+                                        beginScope(sqlTableType);
+                                        sqlTableType.setScope(scope, pkg);
                                     }
             (ID)?
             (sqlTableFieldDefinition | sqlTableVirtualFieldDefinition)*
@@ -321,9 +325,10 @@ sqlWithoutRowId
 sqlDatabaseDefinition
     :   #(s:SQL_DATABASE
             i:ID                    {
-                                        pkg.setType((BaseTokenAST)i, s);
-                                        beginScope((CompoundType)s);
-                                        ((CompoundType)s).setScope(scope, pkg);
+                                        final SqlDatabaseType sqlDatabaseType = (SqlDatabaseType)s;
+                                        pkg.setLocalType((BaseTokenAST)i, sqlDatabaseType);
+                                        beginScope(sqlDatabaseType);
+                                        sqlDatabaseType.setScope(scope, pkg);
                                     }
             (sqlDatabaseFieldDefinition)+
         )                           { endScope(); }
@@ -333,38 +338,35 @@ sqlDatabaseFieldDefinition
     :   #(f:FIELD sqlTableDefinition[f])
     ;
 
-sqlTableDefinition[AST astField]    { Field f = (Field)#astField; }
-    :   t:sqlTableReference i:ID   {
+sqlTableDefinition[AST astField]    { Field f = (Field) #astField; }
+    :   sqlTableReference i:ID      {
                                         scope.setSymbol((BaseTokenAST)i, f);
                                     }
     ;
 
 sqlTableReference
-    :   #(t:TYPEREF ID)
-        {
-            scope.postLinkAction((TypeReference)t);
-        }
+    :   typeSymbol
     ;
 
 /**
  * serviceDeclaration.
  */
 serviceDeclaration
-    : #(s:SERVICE i:ID
-          {
-              pkg.setType((BaseTokenAST)i, s);
-              beginScope((ServiceType)s);
-              ((ServiceType)s).setScope(scope, pkg);
-          }
+    : #(s:SERVICE i:ID              {
+                                        final ServiceType serviceType = (ServiceType)s;
+                                        pkg.setLocalType((BaseTokenAST)i, serviceType);
+                                        beginScope(serviceType);
+                                        serviceType.setScope(scope, pkg);
+                                    }
         (rpcDeclaration)*
       ) { endScope(); }
     ;
 
 rpcDeclaration
     : #(r:RPC (STREAM)? typeSymbol i:ID (STREAM)? typeSymbol
-          {
-              scope.setSymbol((BaseTokenAST)i, r);
-          }
+                                    {
+                                        scope.setSymbol((BaseTokenAST)i, r);
+                                    }
       )
     ;
 
@@ -379,7 +381,7 @@ definedType
 typeSymbol
     :   #(t:TYPEREF ID (DOT ID)*)
         {
-            scope.postLinkAction((TypeReference)t);
+            pkg.addTypeReferenceToResolve((TypeReference)t, scope);
         }
     ;
 
@@ -476,7 +478,7 @@ expression
             opExpression
         )
         {
-            setupExpression((Expression)#expression);
+            setupExpression((Expression) #expression);
         }
     ;
 

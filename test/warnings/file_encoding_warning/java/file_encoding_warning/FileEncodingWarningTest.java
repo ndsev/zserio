@@ -20,21 +20,21 @@ public class FileEncodingWarningTest
     @Test
     public void nonUtf8Characters()
     {
-        final String warning = "Found non-UTF8 encoded characters.";
+        final String warning = "file_encoding_warning.zs:1:1: Found non-UTF8 encoded characters.";
         assertTrue(zserioWarnings.isPresent(warning));
     }
 
     @Test
     public void tabCharacters()
     {
-        final String warning = "Found tab characters.";
+        final String warning = "file_encoding_warning.zs:1:1: Found tab characters.";
         assertTrue(zserioWarnings.isPresent(warning));
     }
 
     @Test
     public void nonPrintableAsciiCharacters()
     {
-        final String warning = "Found non-printable ASCII characters.";
+        final String warning = "file_encoding_warning.zs:1:1: Found non-printable ASCII characters.";
         assertTrue(zserioWarnings.isPresent(warning));
     }
 

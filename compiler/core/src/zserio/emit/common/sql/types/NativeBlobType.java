@@ -2,9 +2,6 @@ package zserio.emit.common.sql.types;
 
 public class NativeBlobType implements SqlNativeType
 {
-    public NativeBlobType()
-    {}
-
     @Override
     public String getFullName()
     {

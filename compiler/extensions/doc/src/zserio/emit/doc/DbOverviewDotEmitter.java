@@ -39,7 +39,7 @@ public class DbOverviewDotEmitter extends DefaultDocEmitter
     public void beginSqlDatabase(AST s)
     {
         if (!(s instanceof SqlDatabaseType))
-            throw new ZserioEmitHtmlException("Unexpected token type in beginSqlDatabase!");
+            throw new ZserioEmitDocException("Unexpected token type in beginSqlDatabase!");
         databases.add((SqlDatabaseType)s);
     }
 
@@ -52,11 +52,11 @@ public class DbOverviewDotEmitter extends DefaultDocEmitter
         {
             if (!DotFileConvertor.convertToSvg(dotExecutable, outputFile,
                                                DocEmitterTools.getDbOverviewSvgFile(docPath)))
-                throw new ZserioEmitHtmlException("Failure to convert '" + outputFile + "' to SVG format!");
+                throw new ZserioEmitDocException("Failure to convert '" + outputFile + "' to SVG format!");
         }
     }
 
-    private void emit(File outputFile) throws ZserioEmitHtmlException
+    private void emit(File outputFile) throws ZserioEmitDocException
     {
         try
         {
@@ -71,11 +71,11 @@ public class DbOverviewDotEmitter extends DefaultDocEmitter
         }
         catch (IOException exc)
         {
-            throw new ZserioEmitHtmlException(exc);
+            throw new ZserioEmitDocException(exc);
         }
         catch (TemplateException exc)
         {
-            throw new ZserioEmitHtmlException(exc);
+            throw new ZserioEmitDocException(exc);
         }
     }
 

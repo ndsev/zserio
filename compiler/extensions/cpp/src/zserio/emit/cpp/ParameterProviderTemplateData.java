@@ -10,25 +10,28 @@ import zserio.emit.common.ExpressionFormatter;
 
 public class ParameterProviderTemplateData extends CppTemplateData
 {
-    public ParameterProviderTemplateData(TemplateDataContext context)
+    public ParameterProviderTemplateData(TemplateDataContext context, List<SqlTableType> sqlTableTypes)
     {
         super(context);
-        cppNativeTypeMapper = context.getCppNativeTypeMapper();
-        cppExpressionFormatter = context.getExpressionFormatter(this);
-        cppSqlIndirectExpressionFormatter = context.getSqlIndirectExpressionFormatter(this);
-        sqlTableParameters = new TreeSet<SqlTableParameterTemplateData>();
-    }
 
-    public void add(SqlTableType tableType)
-    {
-        for (Field field : tableType.getFields())
+        final CppNativeTypeMapper cppNativeTypeMapper = context.getCppNativeTypeMapper();
+        final ExpressionFormatter cppExpressionFormatter = context.getExpressionFormatter(this);
+        final ExpressionFormatter cppSqlIndirectExpressionFormatter =
+                context.getSqlIndirectExpressionFormatter(this);
+        sqlTableParameters = new TreeSet<SqlTableParameterTemplateData>();
+
+        for (SqlTableType sqlTableType : sqlTableTypes)
         {
-            final List<TypeInstantiation.InstantiatedParameter> parameters = field.getInstantiatedParameters();
-            for (TypeInstantiation.InstantiatedParameter parameter : parameters)
+            for (Field field : sqlTableType.getFields())
             {
-                sqlTableParameters.add(new SqlTableParameterTemplateData(cppNativeTypeMapper,
-                        cppExpressionFormatter, cppSqlIndirectExpressionFormatter, tableType, field, parameter,
-                        this));
+                final List<TypeInstantiation.InstantiatedParameter> parameters =
+                        field.getInstantiatedParameters();
+                for (TypeInstantiation.InstantiatedParameter parameter : parameters)
+                {
+                    sqlTableParameters.add(new SqlTableParameterTemplateData(cppNativeTypeMapper,
+                            cppExpressionFormatter, cppSqlIndirectExpressionFormatter, sqlTableType, field,
+                            parameter, this));
+                }
             }
         }
     }
@@ -38,8 +41,5 @@ public class ParameterProviderTemplateData extends CppTemplateData
         return sqlTableParameters;
     }
 
-    private final CppNativeTypeMapper cppNativeTypeMapper;
-    private final ExpressionFormatter cppExpressionFormatter;
-    private final ExpressionFormatter cppSqlIndirectExpressionFormatter;
     private final TreeSet<SqlTableParameterTemplateData> sqlTableParameters;
 }

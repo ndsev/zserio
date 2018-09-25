@@ -1,5 +1,8 @@
 package zserio.emit.java;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import antlr.collections.AST;
 import zserio.ast.SqlTableType;
 import zserio.tools.Parameters;
@@ -9,9 +12,6 @@ class ParameterProviderEmitter extends JavaDefaultEmitter
     public ParameterProviderEmitter(Parameters extensionParameters, JavaExtensionParameters javaParameters)
     {
         super(extensionParameters, javaParameters);
-        parameterTemplateData = (getWithSqlCode()) ?
-                new ParameterProviderTemplateData(getTemplateDataContext()) : null;
-        generateParameterProvider = false;
     }
 
     /** {@inheritDoc} */
@@ -22,18 +22,15 @@ class ParameterProviderEmitter extends JavaDefaultEmitter
             throw new ZserioEmitJavaException("Unexpected token type in beginSqlTable!");
 
         if (getWithSqlCode())
-        {
-            final SqlTableType tableType = (SqlTableType)token;
-            parameterTemplateData.add(tableType);
-            generateParameterProvider = true;
-        }
+            sqlTableTypes.add((SqlTableType)token);
     }
 
     @Override
     public void endRoot() throws ZserioEmitJavaException
     {
-        if (generateParameterProvider)
+        if (!sqlTableTypes.isEmpty())
         {
+            parameterTemplateData = new ParameterProviderTemplateData(getTemplateDataContext(), sqlTableTypes);
             processTemplateToRootDir(PARAMETER_TEMPLATE_NAME, parameterTemplateData,
                     PARAMETER_OUTPUT_FILE_NAME);
         }
@@ -42,6 +39,6 @@ class ParameterProviderEmitter extends JavaDefaultEmitter
     private static final String PARAMETER_TEMPLATE_NAME = "IParameterProvider.java.ftl";
     private static final String PARAMETER_OUTPUT_FILE_NAME = "IParameterProvider";
 
-    private final ParameterProviderTemplateData parameterTemplateData;
-    private boolean generateParameterProvider;
+    private final List<SqlTableType> sqlTableTypes = new ArrayList<SqlTableType>();
+    private ParameterProviderTemplateData parameterTemplateData;
 }

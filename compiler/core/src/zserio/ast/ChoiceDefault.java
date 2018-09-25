@@ -10,16 +10,6 @@ import zserio.antlr.util.ParserException;
 public class ChoiceDefault extends TokenAST
 {
     /**
-     * Sets the choice type which is owner of the default case.
-     *
-     * @param choiceType Owner to set.
-     */
-    public void setChoiceType(ChoiceType choiceType)
-    {
-        this.choiceType = choiceType;
-    }
-
-    /**
      * Gets field defined by the default choice case.
      *
      * @return Field defined by the default choice case or null if the default case is not defined.
@@ -48,8 +38,18 @@ public class ChoiceDefault extends TokenAST
         return true;
     }
 
+    /**
+     * Sets the choice type which is owner of the default case.
+     *
+     * @param choiceType Owner to set.
+     */
+    protected void setChoiceType(ChoiceType choiceType)
+    {
+        this.choiceType = choiceType;
+    }
+
     private static final long serialVersionUID = 5346352027746617282L;
 
-    private ChoiceType  choiceType;
-    private Field       defaultField;
+    private ChoiceType choiceType;
+    private Field defaultField;
 }

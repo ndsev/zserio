@@ -12,7 +12,6 @@ import zserio.ast.ChoiceDefault;
 import zserio.ast.ChoiceType;
 import zserio.ast.CompoundType;
 import zserio.ast.ServiceType;
-import zserio.ast.ZserioException;
 import zserio.ast.ZserioType;
 import zserio.ast.EnumItem;
 import zserio.ast.EnumType;
@@ -119,9 +118,9 @@ public class CompoundEmitter extends DefaultHtmlEmitter
 
     public static class FieldEmitter
     {
-        private TypeNameEmitter tne;
+        private final TypeNameEmitter tne;
         private final Field field;
-        private DocCommentTemplateData docCommentTemplateData;
+        private final DocCommentTemplateData docCommentTemplateData;
 
         public FieldEmitter(Field f, ExpressionFormatter expressionFormatter)
         {
@@ -300,11 +299,11 @@ public class CompoundEmitter extends DefaultHtmlEmitter
         }
         catch (IOException exc)
         {
-            throw new ZserioException(exc);
+            throw new ZserioEmitDocException(exc);
         }
         catch (TemplateException exc)
         {
-            throw new ZserioException(exc);
+            throw new ZserioEmitDocException(exc);
         }
         finally
         {
@@ -332,11 +331,11 @@ public class CompoundEmitter extends DefaultHtmlEmitter
         }
         catch (IOException exc)
         {
-            throw new ZserioException(exc);
+            throw new ZserioEmitDocException(exc);
         }
         catch (TemplateException exc)
         {
-            throw new ZserioException(exc);
+            throw new ZserioEmitDocException(exc);
         }
         finally
         {
@@ -407,7 +406,7 @@ public class CompoundEmitter extends DefaultHtmlEmitter
     @Override
     public String getPackageName()
     {
-        return compound.getScope().getPackage().getPackageName();
+        return compound.getScope().getPackage().getPackageName().toString();
     }
 
     public CompoundType getType()

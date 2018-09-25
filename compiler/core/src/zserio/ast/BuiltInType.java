@@ -1,7 +1,5 @@
 package zserio.ast;
 
-import zserio.tools.PackageManager;
-
 /**
  * AST abstract node for all built-in types.
  *
@@ -9,18 +7,11 @@ import zserio.tools.PackageManager;
  */
 public abstract class BuiltInType extends TokenAST implements ZserioType
 {
-    /**
-     * Default constructor.
-     */
-    protected BuiltInType()
-    {
-        ZserioTypeContainer.add(this);
-    }
-
     @Override
     public Package getPackage()
     {
-        return PackageManager.get().builtInPackage;
+        // built-in types do not have any package
+        throw new InternalError("BuiltInType.getPackage() is not implemented!");
     }
 
     @Override

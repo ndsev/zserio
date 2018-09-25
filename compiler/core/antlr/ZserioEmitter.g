@@ -49,7 +49,7 @@ translationUnit[AST r]
 
 packageDeclaration
     :   #(p:PACKAGE                 { em.beginPackage(p); }
-            (ID)+
+            (ID)* // default package does not have IDs
         )                           { em.endPackage(p); }
     ;
 
@@ -280,7 +280,7 @@ sqlTableDefinition
     ;
 
 sqlTableReference
-    :   #(TYPEREF ID)
+    :   typeSymbol
     ;
 
 /**

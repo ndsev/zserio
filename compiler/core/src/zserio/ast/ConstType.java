@@ -18,16 +18,6 @@ import zserio.tools.HashUtil;
  */
 public class ConstType extends TokenAST implements ZserioType, Comparable<ConstType>
 {
-    /**
-     * Empty constuctor.
-     */
-    public ConstType()
-    {
-        usedByCompoundList = new TreeSet<CompoundType>();
-        usedTypeList = new ArrayList<ZserioType>();
-        ZserioTypeContainer.add(this);
-    }
-
     @Override
     public String getName()
     {
@@ -85,18 +75,6 @@ public class ConstType extends TokenAST implements ZserioType, Comparable<ConstT
     public void setPackage(Package pkg)
     {
         this.pkg = pkg;
-    }
-
-    /**
-     * Sets expression which uses this constant type.
-     *
-     * @param expression Expression to set.
-     */
-    public void setUsedByExpression(Expression expression)
-    {
-        final ZserioType ownerType = expression.getScope().getOwner();
-        if (ownerType != null && ownerType instanceof CompoundType)
-            usedByCompoundList.add((CompoundType)ownerType);
     }
 
     /**
@@ -196,14 +174,26 @@ public class ConstType extends TokenAST implements ZserioType, Comparable<ConstT
         ExpressionUtil.checkIntegerExpressionRange(valueExpression, baseType, name);
     }
 
+    /**
+     * Sets expression which uses this constant type.
+     *
+     * @param expression Expression to set.
+     */
+    protected void setUsedByExpression(Expression expression)
+    {
+        final ZserioType ownerType = expression.getScope().getOwner();
+        if (ownerType != null && ownerType instanceof CompoundType)
+            usedByCompoundList.add((CompoundType)ownerType);
+    }
+
     private Package pkg;
 
     private ZserioType constType;
     private String name;
     private Expression valueExpression;
 
-    private SortedSet<CompoundType> usedByCompoundList;
-    private List<ZserioType> usedTypeList;
+    private final SortedSet<CompoundType> usedByCompoundList = new TreeSet<CompoundType>();
+    private final List<ZserioType> usedTypeList = new ArrayList<ZserioType>();
 
     private static final long serialVersionUID = -3110481568764967859L;
 }

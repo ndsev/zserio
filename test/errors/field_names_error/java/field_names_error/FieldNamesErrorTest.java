@@ -20,7 +20,7 @@ public class FieldNamesErrorTest
     @Test
     public void definedType()
     {
-        final String error = ":9:5: 'Defined' is a defined type in this scope!";
+        final String error = ":9:5: 'Defined' is a defined type in this package!";
         assertTrue(zserioErrors.isPresent(error));
     }
 

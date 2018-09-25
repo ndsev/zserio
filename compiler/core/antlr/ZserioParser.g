@@ -5,6 +5,7 @@ header
 {
 package zserio.antlr;
 
+import zserio.tools.InputFileManager;
 import zserio.antlr.util.FileNameLexerToken;
 import zserio.ast.*;
 }
@@ -83,12 +84,12 @@ tokens
     ON="on";
     OPTIONAL="optional";
     OR<AST=zserio.ast.Expression>;
-    PACKAGE="package"<AST=zserio.ast.PackageToken>;
+    PACKAGE="package"<AST=zserio.ast.Package>;
     PARAM<AST=zserio.ast.Parameter>;
     PLUS<AST=zserio.ast.Expression>;
     QUESTIONMARK<AST=zserio.ast.Expression>;
     RETURN="return";
-    ROOT;
+    ROOT<AST=zserio.ast.Root>;
     RPC="rpc"<AST=zserio.ast.Rpc>;
     RSHIFT<AST=zserio.ast.Expression>;
     SERVICE="service"<AST=zserio.ast.ServiceType>;
@@ -105,7 +106,7 @@ tokens
     SUBTYPE="subtype"<AST=zserio.ast.Subtype>;
     SUM="sum"<AST=zserio.ast.Expression>;
     TILDE<AST=zserio.ast.Expression>;
-    TRANSLATION_UNIT;
+    TRANSLATION_UNIT<AST=zserio.ast.TranslationUnit>;
     TYPEREF<AST=zserio.ast.TypeReference>;
     UINT16="uint16"<AST=zserio.ast.StdIntegerType>;
     UINT32="uint32"<AST=zserio.ast.StdIntegerType>;
@@ -130,10 +131,31 @@ tokens
 /**
  * translationUnit.
  */
-translationUnit
-    :   (packageDeclaration)? (importDeclaration)* (commandDeclaration)* EOF!
+translationUnit[InputFileManager inputFileManager]
+    :   (p:packageDeclaration)? (importDeclaration)* (commandDeclaration)* EOF!
         {
-            #translationUnit = #([TRANSLATION_UNIT, getFilename()], translationUnit);
+            if (#translationUnit == null)
+            {
+                // file is empty
+                #translationUnit = #([TRANSLATION_UNIT, getFilename()]);
+            }
+            else
+            {
+                if (#p == null)
+                {
+                    // file is not empty but there is no package, we must create the default package explicitly 
+                    #p = #([PACKAGE, ""]);
+                    ((TokenAST)#p).setImaginaryTokenPosition((TokenAST)#translationUnit);
+                    #translationUnit = #([TRANSLATION_UNIT, getFilename()], p, translationUnit);
+                }
+                else
+                {
+                    // file is not empty and there is a package
+                    #translationUnit = #([TRANSLATION_UNIT, getFilename()], translationUnit);
+                }
+                ((TokenAST)#translationUnit).setImaginaryTokenPosition((TokenAST)#p);
+            }
+            ((TranslationUnit)#translationUnit).setInputFileManager(inputFileManager);
         }
     ;
 
@@ -392,10 +414,7 @@ sqlDatabaseFieldDefinition
     ;
 
 sqlTableReference
-    :   ID
-        {
-            #sqlTableReference = #([TYPEREF], #sqlTableReference);
-        }
+    :   typeSymbol
     ;
 
 /**

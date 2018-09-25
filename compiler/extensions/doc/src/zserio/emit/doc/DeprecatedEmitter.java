@@ -23,7 +23,7 @@ import freemarker.template.TemplateException;
 
 public class DeprecatedEmitter extends DefaultHtmlEmitter
 {
-    private List<Item> items = new ArrayList<Item>();
+    private final List<Item> items = new ArrayList<Item>();
 
     public DeprecatedEmitter(String outputPath)
     {
@@ -146,7 +146,7 @@ public class DeprecatedEmitter extends DefaultHtmlEmitter
     public void endConst(AST c)
     {
         if (!(c instanceof ConstType))
-            throw new ZserioEmitHtmlException("Unexpected token type in endConst!");
+            throw new ZserioEmitDocException("Unexpected token type in endConst!");
         ConstType ct = (ConstType)c;
 
         if( getIsDeprecated(ct.getDocComment()) )
@@ -160,7 +160,7 @@ public class DeprecatedEmitter extends DefaultHtmlEmitter
     public void endStructure(AST s)
     {
         if (!(s instanceof StructureType))
-            throw new ZserioEmitHtmlException("Unexpected token type in endStructure!");
+            throw new ZserioEmitDocException("Unexpected token type in endStructure!");
         StructureType st = (StructureType)s;
 
         if( getIsDeprecated(st.getDocComment()) )
@@ -176,7 +176,7 @@ public class DeprecatedEmitter extends DefaultHtmlEmitter
     public void endChoice(AST c)
     {
         if (!(c instanceof ChoiceType))
-            throw new ZserioEmitHtmlException("Unexpected token type in endChoice!");
+            throw new ZserioEmitDocException("Unexpected token type in endChoice!");
         ChoiceType ct = (ChoiceType)c;
 
         if( getIsDeprecated(ct.getDocComment()) )
@@ -193,7 +193,7 @@ public class DeprecatedEmitter extends DefaultHtmlEmitter
     public void endUnion(AST u)
     {
         if (!(u instanceof UnionType))
-            throw new ZserioEmitHtmlException("Unexpected token type in endUnion!");
+            throw new ZserioEmitDocException("Unexpected token type in endUnion!");
         UnionType ut = (UnionType)u;
 
         if( getIsDeprecated(ut.getDocComment()) )
@@ -221,7 +221,7 @@ public class DeprecatedEmitter extends DefaultHtmlEmitter
     public void endEnumeration(AST e)
     {
         if (!(e instanceof EnumType))
-            throw new ZserioEmitHtmlException("Unexpected token type in endEnumeration!");
+            throw new ZserioEmitDocException("Unexpected token type in endEnumeration!");
         EnumType et = (EnumType)e;
 
         if( getIsDeprecated(et.getDocComment()) )
@@ -233,7 +233,6 @@ public class DeprecatedEmitter extends DefaultHtmlEmitter
         // handleEnumItems( EnumType et )
         for( EnumItem ei : et.getItems() )
         {
-            ei.setEnumType( et );
             if( getIsDeprecated( ei.getDocComment()) )
             {
                 Item item = new Item( ei, et );
@@ -246,7 +245,7 @@ public class DeprecatedEmitter extends DefaultHtmlEmitter
     public void endSubtype(AST s)
     {
         if (!(s instanceof Subtype))
-            throw new ZserioEmitHtmlException("Unexpected token type in endSubtype!");
+            throw new ZserioEmitDocException("Unexpected token type in endSubtype!");
         Subtype st = (Subtype)s;
 
         if( getIsDeprecated(st.getDocComment()) )
@@ -260,7 +259,7 @@ public class DeprecatedEmitter extends DefaultHtmlEmitter
     public void endSqlDatabase(AST s)
     {
         if (!(s instanceof SqlDatabaseType))
-            throw new ZserioEmitHtmlException("Unexpected token type in endSqlDatabase!");
+            throw new ZserioEmitDocException("Unexpected token type in endSqlDatabase!");
         SqlDatabaseType sd = (SqlDatabaseType)s;
 
         if( getIsDeprecated(sd.getDocComment()) )
@@ -276,7 +275,7 @@ public class DeprecatedEmitter extends DefaultHtmlEmitter
     public void endSqlTable(AST s)
     {
         if (!(s instanceof SqlTableType))
-            throw new ZserioEmitHtmlException("Unexpected token type in endSqlTable!");
+            throw new ZserioEmitDocException("Unexpected token type in endSqlTable!");
         SqlTableType st = (SqlTableType)s;
 
         if( getIsDeprecated(st.getDocComment()) )
@@ -308,11 +307,11 @@ public class DeprecatedEmitter extends DefaultHtmlEmitter
         }
         catch (IOException exc)
         {
-            throw new ZserioEmitHtmlException(exc);
+            throw new ZserioEmitDocException(exc);
         }
         catch (TemplateException exc)
         {
-            throw new ZserioEmitHtmlException(exc);
+            throw new ZserioEmitDocException(exc);
         }
         finally
         {

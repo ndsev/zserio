@@ -116,9 +116,9 @@ public class TokenAST extends BaseTokenAST
     {
     }
 
-    private static final long                serialVersionUID = -5714491131044639444L;
+    private static final long serialVersionUID = -5714491131044639444L;
     private static final TokenTypeDescriptor tokenTypeDescriptor =
             new TokenTypeDescriptor(ZserioParser.class);
 
-    private DocCommentString    hiddenDocCommentString;
+    private DocCommentString hiddenDocCommentString;
 }

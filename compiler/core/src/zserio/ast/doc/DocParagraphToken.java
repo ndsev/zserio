@@ -14,18 +14,6 @@ import zserio.antlr.util.ParserException;
 public class DocParagraphToken extends DocTokenAST
 {
     /**
-     * Empty constructor.
-     */
-    public DocParagraphToken()
-    {
-        docParagraphTextList = new ArrayList<DocParagraphTokenText>();
-        docTagSeeList = new ArrayList<DocTagSeeToken>();
-        docTagParamList = new ArrayList<DocTagParamToken>();
-        docTagTodoList = new ArrayList<DocTagTodoToken>();
-        wasText = false;
-    }
-
-    /**
      * Gets the list of paragraph texts stored in paragraph.
      *
      * @return The list of paragraph texts stored in paragraph.
@@ -174,7 +162,7 @@ public class DocParagraphToken extends DocTokenAST
             if (!(child instanceof DocTagSeeToken))
                 return false;
 
-            final DocTagSeeToken seeToken = (DocTagSeeToken) child;
+            final DocTagSeeToken seeToken = (DocTagSeeToken)child;
             if (wasText)
             {
                 final DocParagraphTokenText last = docParagraphTextList.get(docParagraphTextList.size() - 1);
@@ -189,14 +177,14 @@ public class DocParagraphToken extends DocTokenAST
         case DocCommentParserTokenTypes.DOC_TAG_PARAM:
             if (!(child instanceof DocTagParamToken))
                 return false;
-            docTagParamList.add((DocTagParamToken) child);
+            docTagParamList.add((DocTagParamToken)child);
             wasText = false;
             break;
 
         case DocCommentParserTokenTypes.DOC_TAG_TODO:
             if (!(child instanceof DocTagTodoToken))
                 return false;
-            docTagTodoList.add((DocTagTodoToken) child);
+            docTagTodoList.add((DocTagTodoToken)child);
             wasText = false;
             break;
 
@@ -214,10 +202,10 @@ public class DocParagraphToken extends DocTokenAST
 
     private static final long serialVersionUID = 1L;
 
-    private List<DocParagraphTokenText> docParagraphTextList;
-    private List<DocTagSeeToken>        docTagSeeList;
-    private List<DocTagParamToken>      docTagParamList;
-    private List<DocTagTodoToken>       docTagTodoList;
-    private boolean                     isDeprecated;
-    private boolean                     wasText;
+    private final List<DocParagraphTokenText> docParagraphTextList = new ArrayList<DocParagraphTokenText>();
+    private final List<DocTagSeeToken> docTagSeeList = new ArrayList<DocTagSeeToken>();
+    private final List<DocTagParamToken> docTagParamList = new ArrayList<DocTagParamToken>();
+    private final List<DocTagTodoToken> docTagTodoList = new ArrayList<DocTagTodoToken>();
+    private boolean isDeprecated;
+    private boolean wasText = false;
 }

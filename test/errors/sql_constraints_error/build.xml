@@ -1,0 +1,36 @@
+<project name="sql_constraints_error" basedir="." default="run">
+    <testProperties testPath="errors/sql_constraints_error" testName="sql_constraints_error"/>
+
+    <target name="prepare">
+        <testPrepare testName="sql_constraints_error"/>
+    </target>
+
+    <target name="gen" depends="prepare">
+        <testGen testName="sql_constraints_error" zsFile="invalid_type_reference_error.zs"
+            ignoreError="true"/>
+        <testGen testName="sql_constraints_error" zsFile="non_integer_constant_reference_error.zs"
+            ignoreError="true"/>
+        <testGen testName="sql_constraints_error" zsFile="unresolved_reference_error.zs"
+            ignoreError="true"/>
+        <testGen testName="sql_constraints_error" zsFile="unresolved_symbol_error.zs"
+            ignoreError="true"/>
+        <testGen testName="sql_constraints_error" zsFile="wrong_type_reference_error.zs"
+            ignoreError="true"/>
+    </target>
+
+    <target name="compile" depends="gen">
+        <testCompile testName="sql_constraints_error" srcPath="${sql_constraints_error.base_dir}/java"/>
+    </target>
+
+    <target name="findbugs" depends="compile" if="findbugs.home_dir">
+        <testFindbugs testName="sql_constraints_error" srcPath="${sql_constraints_error.base_dir}/java"/>
+    </target>
+
+    <target name="run" depends="findbugs">
+        <testRun testName="sql_constraints_error"/>
+    </target>
+
+    <target name="clean">
+        <testClean testName="sql_constraints_error"/>
+    </target>
+</project>

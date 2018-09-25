@@ -1,6 +1,5 @@
 package zserio.ast;
 
-import zserio.tools.PackageManager;
 import zserio.tools.StringJoinUtil;
 
 /**
@@ -20,12 +19,12 @@ public class ZserioTypeUtil
         if (ZserioTypeUtil.isBuiltIn(type))
             return type.getName();
 
-        return StringJoinUtil.joinStrings(
-                type.getPackage().getPackageName(), type.getName(), Package.SEPARATOR);
+        return StringJoinUtil.joinStrings(type.getPackage().getPackageName().toString(), type.getName(),
+                FULL_NAME_SEPARATOR);
     }
 
     /**
-     * Checks if given type is build-in type (int8, int16, int<4>, etc...).
+     * Checks if given type is build-in type (int8, int8[], int16, int16[], etc...).
      *
      * @param type Zserio type to check.
      *
@@ -33,6 +32,9 @@ public class ZserioTypeUtil
      */
     public static boolean isBuiltIn(ZserioType type)
     {
-        return type.getPackage() == PackageManager.get().builtInPackage;
+        return type instanceof BuiltInType ||
+                (type instanceof ArrayType && ((ArrayType)type).getElementType() instanceof BuiltInType);
     }
+
+    private static final String FULL_NAME_SEPARATOR = ".";
 }

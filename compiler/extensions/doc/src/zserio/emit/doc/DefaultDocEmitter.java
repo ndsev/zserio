@@ -3,24 +3,23 @@ package zserio.emit.doc;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
-import zserio.ast.ZserioException;
 import zserio.emit.common.DefaultEmitter;
 
 abstract public class DefaultDocEmitter extends DefaultEmitter
 {
-    protected void openOutputFile(File directory, String fileName) throws ZserioException
+    protected void openOutputFile(File directory, String fileName) throws ZserioEmitDocException
     {
         openOutputFile(new File(directory, fileName));
     }
 
-    protected void openOutputFile(File file) throws ZserioException
+    protected void openOutputFile(File file) throws ZserioEmitDocException
     {
         File parentDir = file.getParentFile();
         if (!parentDir.exists())
         {
             if (!parentDir.mkdirs())
             {
-                throw new ZserioException( "Can't create directory: " + parentDir.toString() );
+                throw new ZserioEmitDocException( "Can't create directory: " + parentDir.toString() );
             }
         }
 
@@ -30,7 +29,7 @@ abstract public class DefaultDocEmitter extends DefaultEmitter
         }
         catch (IOException exc)
         {
-            throw new ZserioException( exc );
+            throw new ZserioEmitDocException( exc );
         }
     }
 

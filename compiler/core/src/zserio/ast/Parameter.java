@@ -10,11 +10,21 @@ import zserio.ast.ZserioType;
  */
 public class Parameter extends TokenAST
 {
+    /**
+     * Gets parameter Zserio type.
+     *
+     * @return Parameter type.
+     */
     public ZserioType getParameterType()
     {
         return parameterType;
     }
 
+    /**
+     * Gets parameter name.
+     *
+     * @return Parameter name.
+     */
     public String getName()
     {
         return name;
@@ -41,6 +51,6 @@ public class Parameter extends TokenAST
 
     private static final long serialVersionUID = 8311434055636275517L;
 
-    private ZserioType  parameterType;
-    private String          name;
+    private ZserioType parameterType;
+    private String name;
 }
