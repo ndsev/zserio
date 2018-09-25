@@ -342,7 +342,9 @@ public class Package extends TokenAST
     private static final long serialVersionUID = -1L;
 
     private final PackageName packageName = new PackageName();
-    private final Map<String, ZserioType> localTypes = new HashMap<String, ZserioType>();
+
+    // this must be a LinkedHashMap because of 'Cyclic dependency' error checked in resolveSubtypes()
+    private final Map<String, ZserioType> localTypes = new LinkedHashMap<String, ZserioType>();
 
     private final List<Import> importedNodes = new ArrayList<Import>();
     private final Set<Package> importedPackages = new HashSet<Package>();
@@ -350,7 +352,6 @@ public class Package extends TokenAST
     // this must be a TreeSet because of 'Ambiguous type reference' error checked in getVisibleType()
     private final Set<SingleTypeName> importedSingleTypes = new TreeSet<SingleTypeName>();
 
-    // this must be a LinkedHashMap because of 'Circular containment' error checked during resolving of all
-    // type references
+    // this must be a LinkedHashMap because of 'Circular containment' error checked in resolveTypeReferences()
     private final Map<TypeReference, Scope> typeReferencesToResolve = new LinkedHashMap<TypeReference, Scope>();
 }
