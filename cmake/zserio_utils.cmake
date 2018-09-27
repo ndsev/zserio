@@ -90,8 +90,8 @@ function(zserio_add_library)
     list(APPEND ALL_SOURCES ${VALUE_SOURCE_DIR}/${VALUE_MAIN_SOURCE})
 
     # Java is required, so search for it already here at file-scope
-    if (NOT DEFINED JAVA_BIN)
-        find_program(JAVA_BIN java PATHS $ENV{JAVA_HOME}/bin)
+    if (NOT DEFINED JAVA_BIN OR JAVA_BIN STREQUAL "JAVA_BIN-NOTFOUND")
+        find_program(JAVA_BIN java PATHS $ENV{JAVA_HOME}/bin ENV PATH NO_DEFAULT_PATH)
         if (JAVA_BIN STREQUAL "JAVA_BIN-NOTFOUND")
             message(FATAL_ERROR "Java not found, define JAVA_BIN in CMake or JAVA_HOME in environment!")
         endif ()
