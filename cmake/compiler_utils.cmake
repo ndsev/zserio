@@ -33,7 +33,6 @@ endfunction()
 
 # A function to enable treating warnings as errors.
 function(compiler_set_warnings_as_errors)
-    compiler_reset_warnings_as_errors()
     compiler_get_warnings_as_errors_setup(WARNINGS_SETUP)
     set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${WARNINGS_SETUP}" PARENT_SCOPE)
 endfunction()
@@ -47,7 +46,6 @@ endfunction()
 
 # A function to set warnings levels.
 function(compiler_set_warnings)
-    compiler_reset_warnings()
     compiler_get_warnings_setup(WARNINGS_SETUP)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${WARNINGS_SETUP}" PARENT_SCOPE)
 endfunction()
