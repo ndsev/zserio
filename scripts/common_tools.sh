@@ -70,7 +70,7 @@ set_global_cpp_variables()
     fi
 
     GCC_CMAKE_GENERATOR="${GCC_CMAKE_GENERATOR:-Eclipse CDT4 - Unix Makefiles}"
-    MSVC_CMAKE_GENERATOR="${MSVC_CMAKE_GENERATOR:-Visual Studio 12 2013}"
+    MSVC_CMAKE_GENERATOR="${MSVC_CMAKE_GENERATOR:-Visual Studio 14 2015}"
 
     # Extra arguments to be passed by CMake to a native build tool
     CMAKE_BUILD_OPTIONS="${CMAKE_BUILD_OPTIONS:-""}"
@@ -92,7 +92,7 @@ Uses the following environment variables for building:
     GCC_CMAKE_GENERATOR    CMake generator to use with GCC compiler. Default is
                            "Eclipse CDT4 - Unix Makefiles".
     MSVC_CMAKE_GENERATOR   CMake generator to use with MSVC compiler. Default is
-                           "Visual Studio 12 2013". Note that "Win64" suffix is
+                           "Visual Studio 14 2015". Note that "Win64" suffix is
                            added automatically for windows64-mscv target.
     CMAKE_EXTRA_ARGS       Extra arguments to CMake. Default is empty string.
     CMAKE_BUILD_OPTIONS    Arguments to be passed by CMake to a native build tool.
