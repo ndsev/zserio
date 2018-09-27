@@ -54,19 +54,19 @@ namespace
 
         double kk = 100. - std::max(std::max(rr, gg), bb);
 
-        c = std::round((100. - rr - kk) / (100. - kk) * 100);
-        m = std::round((100. - gg - kk) / (100. - kk) * 100);
-        y = std::round((100. - bb - kk) / (100. - kk) * 100);
-        k = std::round(kk);
+        c = static_cast<uint8_t>(std::round((100. - rr - kk) / (100. - kk) * 100));
+        m = static_cast<uint8_t>(std::round((100. - gg - kk) / (100. - kk) * 100));
+        y = static_cast<uint8_t>(std::round((100. - bb - kk) / (100. - kk) * 100));
+        k = static_cast<uint8_t>(std::round(kk));
     }
 
     void convertCmykToRgb(uint8_t c, uint8_t m, uint8_t y, uint8_t k,
             uint8_t& r, uint8_t& g, uint8_t& b)
     {
         // see https://www.rapidtables.com/convert/color/cmyk-to-rgb.html
-        r = std::round(255 * (1 - c / 100.) * (1 - k / 100.));
-        g = std::round(255 * (1 - m / 100.) * (1 - k / 100.));
-        b = std::round(255 * (1 - y / 100.) * (1 - k / 100.));
+        r = static_cast<uint8_t>(std::round(255 * (1 - c / 100.) * (1 - k / 100.)));
+        g = static_cast<uint8_t>(std::round(255 * (1 - m / 100.) * (1 - k / 100.)));
+        b = static_cast<uint8_t>(std::round(255 * (1 - y / 100.) * (1 - k / 100.)));
     }
 }
 
@@ -78,7 +78,7 @@ public:
         const RequestData& requestData = request->getData();
         const auto& data = requestData.getData();
 
-        response->setLength(data.size());
+        response->setLength(static_cast<uint32_t>(data.size()));
 
         if (requestData.getModel() == ColorModel::RGB)
             rgbToCmyk(data, *response);
@@ -92,7 +92,7 @@ public:
     ::grpc::Status getLength(grpc::ServerContext*, const Request* request, LengthResponse* response)
     {
         const RequestData& requestData = request->getData();
-        response->setLength(requestData.getData().size());
+        response->setLength(static_cast<uint32_t>(requestData.getData().size()));
         return grpc::Status::OK;
     }
 

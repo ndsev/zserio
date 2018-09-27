@@ -106,7 +106,7 @@ public:
             service_types::streaming_service::Num* response) override
     {
         m_users[request->getName()] = *request;
-        response->setNum(m_users.size());
+        response->setNum(static_cast<uint32_t>(m_users.size()));
         return ::grpc::Status::OK;
     }
 
@@ -119,7 +119,7 @@ public:
         {
             m_users[user.getName()] = user;
         }
-        response->setNum(m_users.size());
+        response->setNum(static_cast<uint32_t>(m_users.size()));
         return ::grpc::Status::OK;
     }
 

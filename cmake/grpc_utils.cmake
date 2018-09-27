@@ -15,14 +15,18 @@ function(find_grpc_libraries)
         set(GRPC_INCDIR ${GRPC_ROOT}/include CACHE PATH "GRPC include directory")
 
         set(GRPC_LIB_NAMES "grpc++_unsecure" "grpc_unsecure" "gpr")
+        if (MSVC)
+            list(APPEND GRPC_LIB_NAMES "zlibstatic") # precompiled in grpc installation
+            set(LIBS "ws2_32.lib") # dependency on system library
+        endif ()
         foreach(lib_name ${GRPC_LIB_NAMES})
             find_library("${lib_name}" ${lib_name} PATHS ${GRPC_LIBDIR} NO_DEFAULT_PATH)
             if (${${lib_name}} STREQUAL "${lib_name}-NOTFOUND")
                 message(FATAL_ERROR "GRPC: Missing ${lib_name} library!")
             endif ()
-            set(libs "${libs};${${lib_name}}")
+            set(LIBS "${LIBS};${${lib_name}}")
             unset(${lib_name} CACHE) # do not mess cache
         endforeach()
-        set(GRPC_LIBRARIES ${libs} CACHE STRING "GRPC libraries to link with")
+        set(GRPC_LIBRARIES ${LIBS} CACHE STRING "GRPC libraries to link with")
     endif ()
 endfunction()
