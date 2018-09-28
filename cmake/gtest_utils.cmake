@@ -13,6 +13,7 @@ function(gtest_add_library GTEST_ROOT)
 
     # remove strict warnings
     compiler_reset_warnings()
+    compiler_reset_warnings_as_errors()
 
     # include google test framework
     add_subdirectory(${GTEST_ROOT} googletest)
