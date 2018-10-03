@@ -6,15 +6,18 @@
     </target>
 
     <target name="gen" depends="prepare">
-        <testGen testName="sql_without_rowid_tables_error" zsFile="no_primary_key_column_error.zs" ignoreError="true"/>
+        <testGen testName="sql_without_rowid_tables_error" zsFile="no_primary_key_column_error.zs"
+            ignoreErrors="true"/>
     </target>
 
     <target name="compile" depends="gen">
-        <testCompile testName="sql_without_rowid_tables_error" srcPath="${sql_without_rowid_tables_error.base_dir}/java"/>
+        <testCompile testName="sql_without_rowid_tables_error"
+            srcPath="${sql_without_rowid_tables_error.base_dir}/java"/>
     </target>
 
     <target name="findbugs" depends="compile" if="findbugs.home_dir">
-        <testFindbugs testName="sql_without_rowid_tables_error" srcPath="${sql_without_rowid_tables_error.base_dir}/java"/>
+        <testFindbugs testName="sql_without_rowid_tables_error"
+            srcPath="${sql_without_rowid_tables_error.base_dir}/java"/>
     </target>
 
     <target name="run" depends="findbugs">

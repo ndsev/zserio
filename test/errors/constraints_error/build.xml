@@ -6,9 +6,10 @@
     </target>
 
     <target name="gen" depends="prepare">
-        <testGen testName="constraints_error" zsFile="field_in_function_not_available_error.zs" ignoreError="true"/>
-        <testGen testName="constraints_error" zsFile="field_not_available_error.zs" ignoreError="true"/>
-        <testGen testName="constraints_error" zsFile="none_boolean_expression_error.zs" ignoreError="true"/>
+        <testGen testName="constraints_error" zsFile="field_in_function_not_available_error.zs"
+            ignoreErrors="true"/>
+        <testGen testName="constraints_error" zsFile="field_not_available_error.zs" ignoreErrors="true"/>
+        <testGen testName="constraints_error" zsFile="none_boolean_expression_error.zs" ignoreErrors="true"/>
     </target>
 
     <target name="compile" depends="gen">

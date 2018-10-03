@@ -36,13 +36,14 @@ java -jar zserio.jar
     [-src <source directory>]
     [-v,--version]
     [-withInspectorCode|-withoutInspectorCode]
-    [-withRangeCheckCode|-withoutRangeCheckCode]
     [-withGrpcCode|-withoutGrpcCode]
+    [-withRangeCheckCode|-withoutRangeCheckCode]
     [-withSourcesAmalgamation|-withoutSourcesAmalgamation]
     [-withSqlCode|-withoutSqlCode]
     [-withSvgDiagrams|-withoutSvgDiagrams]
     [-withValidationCode|-withoutValidationCode]
     [-withWriterCode|-withoutWriterCode]
+    [-withUnusedWarnings|-withoutUnusedWarnings]
     [-xml <output directory>]
     <input file>
 ```
@@ -129,15 +130,15 @@ Shows the version of the Zserio tool.
 Enables/disables generation of the C++ API extension which can be used for Zserio data inspection. Currently,
 extension for Zserio data inspection is not supported by Java API. By default is disabled.
 
-**`-withRangeCheckCode|-withoutRangeCheckCode`**
-
-Enables/disables code for range checking for fields and parameters (integer types only). By default is disabled.
-
 **`-withGrpcCode|-withoutGrpcCode`**
 
 Enables/disables generation of code for [GPRC](https://grpc.io/) services.
 Java is based on release [v1.14.0](https://github.com/grpc/grpc-java/releases/tag/v1.14.0).
 C++ is based on release [v1.14.1](https://github.com/grpc/grpc/releases/tag/v1.14.1).
+
+**`-withRangeCheckCode|-withoutRangeCheckCode`**
+
+Enables/disables code for range checking for fields and parameters (integer types only). By default is disabled.
 
 **`-withSourcesAmalgamation|-withoutSourcesAmalgamation`**
 
@@ -168,6 +169,10 @@ database validation is not supported by C++ API. By default is disabled.
 
 Enables/disables generation of the C++ and Java API writing interface extension. This extension allows
 writing data to the bit stream or to the SQLite database. By default is enabled.
+
+**`-withUnusedWarnings|-withoutUnusedWarnings`**
+
+Enables/disables warnings for unused types. By default is disabled.
 
 **`-xml`**
 

@@ -6,14 +6,21 @@
     </target>
 
     <target name="gen" depends="prepare">
-        <testGen testName="expressions_error" zsFile="index_operator/alignment_expression_error.zs" ignoreError="true"/>
-        <testGen testName="expressions_error" zsFile="index_operator/constant_expression_error.zs" ignoreError="true"/>
-        <testGen testName="expressions_error" zsFile="index_operator/constraint_expression_error.zs" ignoreError="true"/>
-        <testGen testName="expressions_error" zsFile="index_operator/default_value_expression_error.zs" ignoreError="true"/>
-        <testGen testName="expressions_error" zsFile="index_operator/enum_value_expression_error.zs" ignoreError="true"/>
-        <testGen testName="expressions_error" zsFile="index_operator/no_array_error.zs" ignoreError="true"/>
-        <testGen testName="expressions_error" zsFile="index_operator/optional_expression_error.zs" ignoreError="true"/>
-        <testGen testName="expressions_error" zsFile="index_operator/parameter_no_array_error.zs" ignoreError="true"/>
+        <testGen testName="expressions_error" zsFile="index_operator/alignment_expression_error.zs"
+            ignoreErrors="true"/>
+        <testGen testName="expressions_error" zsFile="index_operator/constant_expression_error.zs"
+            ignoreErrors="true"/>
+        <testGen testName="expressions_error" zsFile="index_operator/constraint_expression_error.zs"
+            ignoreErrors="true"/>
+        <testGen testName="expressions_error" zsFile="index_operator/default_value_expression_error.zs"
+            ignoreErrors="true"/>
+        <testGen testName="expressions_error" zsFile="index_operator/enum_value_expression_error.zs"
+            ignoreErrors="true"/>
+        <testGen testName="expressions_error" zsFile="index_operator/no_array_error.zs" ignoreErrors="true"/>
+        <testGen testName="expressions_error" zsFile="index_operator/optional_expression_error.zs"
+            ignoreErrors="true"/>
+        <testGen testName="expressions_error" zsFile="index_operator/parameter_no_array_error.zs"
+            ignoreErrors="true"/>
     </target>
 
     <target name="compile" depends="gen">

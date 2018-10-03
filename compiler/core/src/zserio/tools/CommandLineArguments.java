@@ -92,6 +92,16 @@ public class CommandLineArguments implements Serializable
     }
 
     /**
+     * Gets whether the GRPC code option is enabled.
+     *
+     * @returns True if command line arguments enable SQL code option.
+     */
+    public boolean getWithGrpcCode()
+    {
+        return withGrpcCodeOption;
+    }
+
+    /**
      * Gets whether the inspector code option is enabled.
      *
      * @returns True if command line arguments enable inspector code option.
@@ -132,16 +142,6 @@ public class CommandLineArguments implements Serializable
     }
 
     /**
-     * Gets whether the GRPC code option is enabled.
-     *
-     * @returns True if command line arguments enable SQL code option.
-     */
-    public boolean getWithGrpcCode()
-    {
-        return withGrpcCodeOption;
-    }
-
-    /**
      * Gets whether the validation code option is enabled.
      *
      * @returns True if command line arguments enable validation code option.
@@ -159,6 +159,16 @@ public class CommandLineArguments implements Serializable
     public boolean getWithWriterCode()
     {
         return withWriterCodeOption;
+    }
+
+    /**
+     * Gets whether warnings for unused types are enabled.
+     *
+     * @returns True if command line arguments enable unused warnings option.
+     */
+    public boolean getWithUnusedWarnings()
+    {
+        return withUnusedWarningsOption;
     }
 
     /**
@@ -242,6 +252,14 @@ public class CommandLineArguments implements Serializable
         option.setRequired(false);
         options.addOption(option);
 
+        final OptionGroup grpcCodeGroup = new OptionGroup();
+        option = new Option(OptionNameWithGrpcCode, false, "enable code for GRPC services (default)");
+        grpcCodeGroup.addOption(option);
+        option = new Option(OptionNameWithoutGrpcCode, false, "disable code for GRPC services");
+        grpcCodeGroup.addOption(option);
+        grpcCodeGroup.setRequired(false);
+        options.addOptionGroup(grpcCodeGroup);
+
         final OptionGroup inspectorCodeGroup = new OptionGroup();
         option = new Option(OptionNameWithInspectorCode, false, "enable code for Blob Inspector");
         inspectorCodeGroup.addOption(option);
@@ -278,14 +296,6 @@ public class CommandLineArguments implements Serializable
         sqlCodeGroup.setRequired(false);
         options.addOptionGroup(sqlCodeGroup);
 
-        final OptionGroup grpcCodeGroup = new OptionGroup();
-        option = new Option(OptionNameWithGrpcCode, false, "enable code for GRPC services (default)");
-        grpcCodeGroup.addOption(option);
-        option = new Option(OptionNameWithoutGrpcCode, false, "disable code for GRPC services");
-        grpcCodeGroup.addOption(option);
-        grpcCodeGroup.setRequired(false);
-        options.addOptionGroup(grpcCodeGroup);
-
         final OptionGroup validationCodeGroup = new OptionGroup();
         option = new Option(OptionNameWithValidationCode, false, "enable validation code");
         validationCodeGroup.addOption(option);
@@ -303,6 +313,14 @@ public class CommandLineArguments implements Serializable
         writerCodeGroup.addOption(option);
         writerCodeGroup.setRequired(false);
         options.addOptionGroup(writerCodeGroup);
+
+        final OptionGroup unusedWarningsGroup = new OptionGroup();
+        option = new Option(OptionNameWithUnusedWarnings, false, "enable unused warnings");
+        unusedWarningsGroup.addOption(option);
+        option = new Option(OptionNameWithoutUnusedWarnings, false, "disable unused warnings (default)");
+        unusedWarningsGroup.addOption(option);
+        unusedWarningsGroup.setRequired(false);
+        options.addOptionGroup(unusedWarningsGroup);
 
         option = new Option(OptionNameShowAST, false, "show syntax tree of zserio");
         option.setRequired(false);
@@ -332,13 +350,15 @@ public class CommandLineArguments implements Serializable
         docCommentFileName = getOptionValue(OptionNameShowDocAST);
         topLevelPackageName = getOptionValue(OptionNameSetTopLevelPackage);
 
+        withGrpcCodeOption = !hasOption(OptionNameWithoutGrpcCode) && !hasOption(OptionNameWithoutWriterCode);
         withInspectorCodeOption = hasOption(OptionNameWithInspectorCode);
         withRangeCheckCodeOption = hasOption(OptionNameWithRangeCheckCode);
         withSourcesAmalgamationOption = !hasOption(OptionNameWithoutSourcesAmalgamation);
         withSqlCodeOption = !hasOption(OptionNameWithoutSqlCode);
-        withGrpcCodeOption = !hasOption(OptionNameWithoutGrpcCode) && !hasOption(OptionNameWithoutWriterCode);
         withValidationCodeOption = hasOption(OptionNameWithValidationCode);
         withWriterCodeOption = !hasOption(OptionNameWithoutWriterCode);
+
+        withUnusedWarningsOption = hasOption(OptionNameWithUnusedWarnings);
     }
 
     private void validateOptions() throws ParseException
@@ -401,6 +421,8 @@ public class CommandLineArguments implements Serializable
     private static final String OptionNameShowDocAST = "showDocAst";
     private static final String OptionNameVersionShort = "v";
     private static final String OptionNameSetTopLevelPackage = "setTopLevelPackage";
+    private static final String OptionNameWithGrpcCode = "withGrpcCode";
+    private static final String OptionNameWithoutGrpcCode = "withoutGrpcCode";
     private static final String OptionNameWithInspectorCode = "withInspectorCode";
     private static final String OptionNameWithoutInspectorCode = "withoutInspectorCode";
     private static final String OptionNameWithRangeCheckCode = "withRangeCheckCode";
@@ -409,12 +431,12 @@ public class CommandLineArguments implements Serializable
     private static final String OptionNameWithoutSourcesAmalgamation = "withoutSourcesAmalgamation";
     private static final String OptionNameWithSqlCode = "withSqlCode";
     private static final String OptionNameWithoutSqlCode = "withoutSqlCode";
-    private static final String OptionNameWithGrpcCode = "withGrpcCode";
-    private static final String OptionNameWithoutGrpcCode = "withoutGrpcCode";
     private static final String OptionNameWithValidationCode = "withValidationCode";
     private static final String OptionNameWithoutValidationCode = "withoutValidationCode";
     private static final String OptionNameWithWriterCode = "withWriterCode";
     private static final String OptionNameWithoutWriterCode = "withoutWriterCode";
+    private static final String OptionNameWithUnusedWarnings = "withUnusedWarnings";
+    private static final String OptionNameWithoutUnusedWarnings = "withoutUnusedWarnings";
 
     private final Options options;
     private CommandLine parsedCommandLine;
@@ -426,11 +448,12 @@ public class CommandLineArguments implements Serializable
     private String  srcPathName;
     private String  topLevelPackageName;
     private boolean versionOption;
+    private boolean withGrpcCodeOption;
     private boolean withInspectorCodeOption;
     private boolean withRangeCheckCodeOption;
     private boolean withSourcesAmalgamationOption;
     private boolean withSqlCodeOption;
-    private boolean withGrpcCodeOption;
     private boolean withValidationCodeOption;
     private boolean withWriterCodeOption;
+    private boolean withUnusedWarningsOption;
 }

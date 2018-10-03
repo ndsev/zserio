@@ -6,13 +6,16 @@
     </target>
 
     <target name="gen" depends="prepare">
-        <testGen testName="default_values_error" zsFile="array_initializer_error.zs" ignoreError="true"/>
-        <testGen testName="default_values_error" zsFile="field_initializer_error.zs" ignoreError="true"/>
-        <testGen testName="default_values_error" zsFile="range_decimal_initializer_error.zs" ignoreError="true"/>
-        <testGen testName="default_values_error" zsFile="wrong_bool_initializer_error.zs" ignoreError="true"/>
-        <testGen testName="default_values_error" zsFile="wrong_decimal_initializer_error.zs" ignoreError="true"/>
-        <testGen testName="default_values_error" zsFile="wrong_float_initializer_error.zs" ignoreError="true"/>
-        <testGen testName="default_values_error" zsFile="wrong_string_initializer_error.zs" ignoreError="true"/>
+        <testGen testName="default_values_error" zsFile="array_initializer_error.zs" ignoreErrors="true"/>
+        <testGen testName="default_values_error" zsFile="field_initializer_error.zs" ignoreErrors="true"/>
+        <testGen testName="default_values_error" zsFile="range_decimal_initializer_error.zs"
+            ignoreErrors="true"/>
+        <testGen testName="default_values_error" zsFile="wrong_bool_initializer_error.zs" ignoreErrors="true"/>
+        <testGen testName="default_values_error" zsFile="wrong_decimal_initializer_error.zs"
+            ignoreErrors="true"/>
+        <testGen testName="default_values_error" zsFile="wrong_float_initializer_error.zs" ignoreErrors="true"/>
+        <testGen testName="default_values_error" zsFile="wrong_string_initializer_error.zs"
+            ignoreErrors="true"/>
     </target>
 
     <target name="compile" depends="gen">

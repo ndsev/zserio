@@ -88,7 +88,8 @@ findbugs.home_dir       - Location of the findbugs tool. If not set, findbugs is
             </classpath>
         </antlr>
 
-        <antlr target="${zserio_core.antlr_dir}/ExpressionEvaluator.g" outputdirectory="${zserio_core.antlr.out_dir}">
+        <antlr target="${zserio_core.antlr_dir}/ExpressionEvaluator.g"
+            outputdirectory="${zserio_core.antlr.out_dir}">
             <classpath>
                 <pathelement location="${3rdparty.jar_dir}/${3rdparty.antlr.jar_file_name}"/>
             </classpath>
@@ -116,8 +117,8 @@ findbugs.home_dir       - Location of the findbugs tool. If not set, findbugs is
 
     <target name="compile" depends="antlr">
         <mkdir dir="${zserio_core.classes_dir}"/>
-        <depend srcDir="${zserio_core.src_dir}:${zserio_core.antlr.gen_dir}" destDir="${zserio_core.classes_dir}"
-            cache="${zserio_core.build_dir}/depend-cache"/>
+        <depend srcDir="${zserio_core.src_dir}:${zserio_core.antlr.gen_dir}"
+            destDir="${zserio_core.classes_dir}" cache="${zserio_core.build_dir}/depend-cache"/>
 
         <!-- precompile generated sources without lint -->
         <javac srcdir="${zserio_core.antlr.gen_dir}" destdir="${zserio_core.classes_dir}"

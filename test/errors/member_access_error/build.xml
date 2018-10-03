@@ -6,8 +6,8 @@
     </target>
 
     <target name="gen" depends="prepare">
-        <testGen testName="member_access_error" zsFile="wrong_field_name_error.zs" ignoreError="true"/>
-        <testGen testName="member_access_error" zsFile="wrong_field_usage_error.zs" ignoreError="true"/>
+        <testGen testName="member_access_error" zsFile="wrong_field_name_error.zs" ignoreErrors="true"/>
+        <testGen testName="member_access_error" zsFile="wrong_field_usage_error.zs" ignoreErrors="true"/>
     </target>
 
     <target name="compile" depends="gen">

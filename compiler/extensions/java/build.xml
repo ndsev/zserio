@@ -2,8 +2,8 @@
 
 Ant build.xml for Zserio Java Extension.
 
-Zserio Java Extension is implemented as Java service which can be dynamically loaded by Zserio core during runtime.
-It generates Java API.
+Zserio Java Extension is implemented as Java service which can be dynamically loaded by Zserio core during
+runtime. It generates Java API.
 
 The following external properties can be set:
 

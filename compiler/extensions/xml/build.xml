@@ -2,8 +2,9 @@
 
 Ant build.xml for Zserio XML Extension.
 
-Zserio XML Extension is implemented as Java service which can be dynamically loaded by Zserio core during runtime.
-It generates XML files needed for Certification Bench and XML file which represents the Zserio structure.
+Zserio XML Extension is implemented as Java service which can be dynamically loaded by Zserio core during
+runtime. It generates XML files needed for Certification Bench and XML file which represents the Zserio
+structure.
 
 The following external properties can be set:
 

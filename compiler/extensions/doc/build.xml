@@ -2,9 +2,9 @@
 
 Ant build.xml for Zserio Doc Extension.
 
-Zserio Doc Extension is implemented as Java service which can be dynamically loaded by Zserio core during runtime.
-It generates HTML documentation together with the database structure diagrams and type collaboration diagrams
-in DOT and SVG formats.
+Zserio Doc Extension is implemented as Java service which can be dynamically loaded by Zserio core during
+runtime. It generates HTML documentation together with the database structure diagrams and type collaboration
+diagrams in DOT and SVG formats.
 
 The following external properties can be set:
 

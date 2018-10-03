@@ -6,12 +6,18 @@
     </target>
 
     <target name="gen" depends="prepare">
-        <testGen testName="parameterized_types_error" zsFile="referenced_non_compound_type_error.zs" ignoreError="true"/>
-        <testGen testName="parameterized_types_error" zsFile="referenced_non_parametrized_type_error.zs" ignoreError="true"/>
-        <testGen testName="parameterized_types_error" zsFile="referenced_parametrized_type_error.zs" ignoreError="true"/>
-        <testGen testName="parameterized_types_error" zsFile="referenced_unknown_parametrized_type_error.zs" ignoreError="true"/>
-        <testGen testName="parameterized_types_error" zsFile="wrong_number_of_arguments_error.zs" ignoreError="true"/>
-        <testGen testName="parameterized_types_error" zsFile="wrong_argument_type_error.zs" ignoreError="true"/>
+        <testGen testName="parameterized_types_error" zsFile="referenced_non_compound_type_error.zs"
+            ignoreErrors="true"/>
+        <testGen testName="parameterized_types_error" zsFile="referenced_non_parametrized_type_error.zs"
+            ignoreErrors="true"/>
+        <testGen testName="parameterized_types_error" zsFile="referenced_parametrized_type_error.zs"
+            ignoreErrors="true"/>
+        <testGen testName="parameterized_types_error" zsFile="referenced_unknown_parametrized_type_error.zs"
+            ignoreErrors="true"/>
+        <testGen testName="parameterized_types_error" zsFile="wrong_number_of_arguments_error.zs"
+            ignoreErrors="true"/>
+        <testGen testName="parameterized_types_error" zsFile="wrong_argument_type_error.zs"
+            ignoreErrors="true"/>
     </target>
 
     <target name="compile" depends="gen">
@@ -19,7 +25,8 @@
     </target>
 
     <target name="findbugs" depends="compile" if="findbugs.home_dir">
-        <testFindbugs testName="parameterized_types_error" srcPath="${parameterized_types_error.base_dir}/java"/>
+        <testFindbugs testName="parameterized_types_error"
+            srcPath="${parameterized_types_error.base_dir}/java"/>
     </target>
 
     <target name="run" depends="findbugs">

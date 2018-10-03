@@ -2,8 +2,8 @@
 
 Ant build.xml for Zserio C++ Extension.
 
-Zserio C++ Extension is implemented as Java service which can be dynamically loaded by Zserio core during runtime.
-It generates C++ API.
+Zserio C++ Extension is implemented as Java service which can be dynamically loaded by Zserio core during
+runtime. It generates C++ API.
 
 The following external properties can be set:
 

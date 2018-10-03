@@ -6,7 +6,7 @@
     </target>
 
     <target name="gen" depends="prepare">
-        <testGen testName="sql_virtual_tables_error" zsFile="without_rowid_error.zs" ignoreError="true"/>
+        <testGen testName="sql_virtual_tables_error" zsFile="without_rowid_error.zs" ignoreErrors="true"/>
     </target>
 
     <target name="compile" depends="gen">

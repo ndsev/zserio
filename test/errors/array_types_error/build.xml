@@ -6,10 +6,11 @@
     </target>
 
     <target name="gen" depends="prepare">
-        <testGen testName="array_types_error" zsFile="array_length_field_not_available_error.zs" ignoreError="true"/>
-        <testGen testName="array_types_error" zsFile="implicit_array_not_last_error.zs" ignoreError="true"/>
-        <testGen testName="array_types_error" zsFile="implicit_array_with_length_error.zs" ignoreError="true"/>
-        <testGen testName="array_types_error" zsFile="wrong_array_length_type_error.zs" ignoreError="true"/>
+        <testGen testName="array_types_error" zsFile="array_length_field_not_available_error.zs"
+            ignoreErrors="true"/>
+        <testGen testName="array_types_error" zsFile="implicit_array_not_last_error.zs" ignoreErrors="true"/>
+        <testGen testName="array_types_error" zsFile="implicit_array_with_length_error.zs" ignoreErrors="true"/>
+        <testGen testName="array_types_error" zsFile="wrong_array_length_type_error.zs" ignoreErrors="true"/>
     </target>
 
     <target name="compile" depends="gen">

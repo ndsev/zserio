@@ -11,7 +11,7 @@
 
     <target name="gen" depends="gen.check" unless="file_encoding_warning.zs.gen_is_uptodate">
         <delete dir="${file_encoding_warning.zs.out_dir}"/>
-        <testGen testName="file_encoding_warning" zsFile="file_encoding_warning.zs"/>
+        <testGen testName="file_encoding_warning" zsFile="file_encoding_warning.zs" ignoreWarnings="true"/>
     </target>
 
     <target name="compile" depends="gen">

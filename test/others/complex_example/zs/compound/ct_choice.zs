@@ -79,6 +79,10 @@ choice ChoiceOnEnumNoDefault(Color color) on color
         int16   a;
     case BLUE:
         int32   b;
+    case NONE:
+        int32   c;
+    case BLACK:
+        int32   d;
 };
 
 // signed integers

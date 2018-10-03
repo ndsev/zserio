@@ -6,13 +6,18 @@
     </target>
 
     <target name="gen" depends="prepare">
-        <testGen testName="enumeration_types_error" zsFile="cyclic_definition_using_constant_error.zs" ignoreError="true"/>
-        <testGen testName="enumeration_types_error" zsFile="cyclic_definition_using_enum_value_error.zs" ignoreError="true"/>
-        <testGen testName="enumeration_types_error" zsFile="duplicated_enum_item_error.zs" ignoreError="true"/>
-        <testGen testName="enumeration_types_error" zsFile="duplicated_enum_value_error.zs" ignoreError="true"/>
-        <testGen testName="enumeration_types_error" zsFile="non_integer_enum_value_error.zs" ignoreError="true"/>
-        <testGen testName="enumeration_types_error" zsFile="out_of_range_enum_value_error.zs" ignoreError="true"/>
-        <testGen testName="enumeration_types_error" zsFile="string_enum_error.zs"  ignoreError="true"/>
+        <testGen testName="enumeration_types_error" zsFile="cyclic_definition_using_constant_error.zs"
+            ignoreErrors="true"/>
+        <testGen testName="enumeration_types_error" zsFile="cyclic_definition_using_enum_value_error.zs"
+            ignoreErrors="true"/>
+        <testGen testName="enumeration_types_error" zsFile="duplicated_enum_item_error.zs" ignoreErrors="true"/>
+        <testGen testName="enumeration_types_error" zsFile="duplicated_enum_value_error.zs"
+            ignoreErrors="true"/>
+        <testGen testName="enumeration_types_error" zsFile="non_integer_enum_value_error.zs"
+            ignoreErrors="true"/>
+        <testGen testName="enumeration_types_error" zsFile="out_of_range_enum_value_error.zs"
+            ignoreErrors="true"/>
+        <testGen testName="enumeration_types_error" zsFile="string_enum_error.zs"  ignoreErrors="true"/>
     </target>
 
     <target name="compile" depends="gen">

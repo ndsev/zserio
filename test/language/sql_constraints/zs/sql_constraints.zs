@@ -10,6 +10,7 @@ const uint16 ConstraintsConstant = 123;
 
 sql_table ConstraintsTable
 {
+    int32           primaryKey              sql "PRIMARY KEY";
     int32           withoutSql;
     int32           sqlNotNull              sql "NOT NULL";
     int32           sqlDefaultNull          sql "DEFAULT NULL";

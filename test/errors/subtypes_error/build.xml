@@ -6,10 +6,10 @@
     </target>
 
     <target name="gen" depends="prepare">
-        <testGen testName="subtypes_error" zsFile="database_subtype_error.zs" ignoreError="true"/>
-        <testGen testName="subtypes_error" zsFile="parameterized_subtype_error.zs" ignoreError="true"/>
-        <testGen testName="subtypes_error" zsFile="simple_cyclic_dependency_error.zs" ignoreError="true"/>
-        <testGen testName="subtypes_error" zsFile="transitive_cyclic_dependency_error.zs" ignoreError="true"/>
+        <testGen testName="subtypes_error" zsFile="database_subtype_error.zs" ignoreErrors="true"/>
+        <testGen testName="subtypes_error" zsFile="parameterized_subtype_error.zs" ignoreErrors="true"/>
+        <testGen testName="subtypes_error" zsFile="simple_cyclic_dependency_error.zs" ignoreErrors="true"/>
+        <testGen testName="subtypes_error" zsFile="transitive_cyclic_dependency_error.zs" ignoreErrors="true"/>
     </target>
 
     <target name="compile" depends="gen">

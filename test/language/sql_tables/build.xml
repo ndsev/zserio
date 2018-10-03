@@ -6,7 +6,7 @@
     </target>
 
     <target name="gen" depends="prepare">
-        <testGen testName="sql_tables" zsFile="sql_tables.zs"/>
+        <testGen testName="sql_tables" zsFile="sql_tables.zs" ignoreWarnings="true"/>
     </target>
 
     <target name="compile" depends="gen">

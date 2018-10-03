@@ -6,8 +6,6 @@ import java.util.List;
 import java.util.Map;
 
 import antlr.CommonHiddenStreamToken;
-import antlr.Token;
-
 import zserio.antlr.ZserioParserTokenTypes;
 import zserio.antlr.util.FileNameLexerToken;
 import zserio.antlr.util.ParserException;
@@ -20,13 +18,25 @@ import zserio.antlr.util.ParserException;
 public class Root extends TokenAST
 {
     /**
-     * Private constructor from ANTLR token.
+     * Constructor.
      *
-     * @param token ANTLR token to construct from.
+     * @param checkUnusedTypes Whether to print warnings for unused types.
      */
-    private Root(Token token)
+    public Root(boolean checkUnusedTypes)
     {
-        super(token);
+        this(null, checkUnusedTypes);
+    }
+
+    /**
+     * Creates root node with hidden token. Needed for comment parser.
+     *
+     * @param hiddenTokenBefore Hidden token which should be stored before created root node.
+     *
+     * @return Created root node.
+     */
+    public Root(CommonHiddenStreamToken hiddenTokenBefore)
+    {
+        this(hiddenTokenBefore, false);
     }
 
     /**
@@ -61,30 +71,6 @@ public class Root extends TokenAST
         }
     }
 
-    /**
-     * Creates root node without hidden token.
-     *
-     * @return Created root node.
-     */
-    public static Root create()
-    {
-        return create(null);
-    }
-
-    /**
-     * Creates root node with hidden token.
-     *
-     * @param hiddenTokenBefore Hidden token which should be stored before created root node.
-     *
-     * @return Created root node.
-     */
-    public static Root create(CommonHiddenStreamToken hiddenTokenBefore)
-    {
-        final Token token = new FileNameLexerToken(ZserioParserTokenTypes.ROOT, "ROOT", hiddenTokenBefore);
-
-        return new Root(token);
-    }
-
     @Override
     protected void check() throws ParserException
     {
@@ -93,15 +79,23 @@ public class Root extends TokenAST
         for (TranslationUnit translationUnit : translationUnits)
             checkedTypes.addAll(translationUnit.getTypes());
 
-        // call visitor for all checked type
-        final ZserioTypeCheckerVisitor zserioCheckerVisitor = new ZserioTypeCheckerVisitor();
+        // call visitor for all checked types
+        final ZserioTypeCheckerVisitor zserioCheckerVisitor =
+                new ZserioTypeCheckerVisitor(printUnusedWarnings);
         for (ZserioType checkedType : checkedTypes)
             checkedType.callVisitor(zserioCheckerVisitor);
         zserioCheckerVisitor.printWarnings();
+    }
+
+    private Root(CommonHiddenStreamToken hiddenTokenBefore, boolean printUnusedWarnings)
+    {
+        super(new FileNameLexerToken(ZserioParserTokenTypes.ROOT, "ROOT", hiddenTokenBefore));
+        this.printUnusedWarnings = printUnusedWarnings;
     }
 
     private static final long serialVersionUID = -1L;
 
     private final List<TranslationUnit> translationUnits = new ArrayList<TranslationUnit>();
     private final Map<PackageName, Package> packageNameMap = new LinkedHashMap<PackageName, Package>();
+    private final boolean printUnusedWarnings;
 }

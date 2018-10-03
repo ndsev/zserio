@@ -6,18 +6,18 @@
     </target>
 
     <target name="gen" depends="prepare">
-        <testGen testName="sql_tables_error" zsFile="database_array_field_error.zs" ignoreError="true"/>
-        <testGen testName="sql_tables_error" zsFile="database_field_error.zs" ignoreError="true"/>
-        <testGen testName="sql_tables_error" zsFile="duplicated_field_name_error.zs" ignoreError="true"/>
-        <testGen testName="sql_tables_error" zsFile="no_fields_error.zs" ignoreError="true"/>
-        <testGen testName="sql_tables_error" zsFile="parametrized_table_error.zs" ignoreError="true"/>
-        <testGen testName="sql_tables_error" zsFile="table_field_constraint_error.zs" ignoreError="true"/>
-        <testGen testName="sql_tables_error" zsFile="subtyped_table_field_error.zs" ignoreError="true"/>
-        <testGen testName="sql_tables_error" zsFile="table_array_field_error.zs" ignoreError="true"/>
-        <testGen testName="sql_tables_error" zsFile="table_field_error.zs" ignoreError="true"/>
-        <testGen testName="sql_tables_error" zsFile="unknown_primary_key_column_error.zs" ignoreError="true"/>
-        <testGen testName="sql_tables_error" zsFile="unknown_unique_column_error.zs" ignoreError="true"/>
-        <testGen testName="sql_tables_error" zsFile="virtual_column_error.zs" ignoreError="true"/>
+        <testGen testName="sql_tables_error" zsFile="database_array_field_error.zs" ignoreErrors="true"/>
+        <testGen testName="sql_tables_error" zsFile="database_field_error.zs" ignoreErrors="true"/>
+        <testGen testName="sql_tables_error" zsFile="duplicated_field_name_error.zs" ignoreErrors="true"/>
+        <testGen testName="sql_tables_error" zsFile="no_fields_error.zs" ignoreErrors="true"/>
+        <testGen testName="sql_tables_error" zsFile="parametrized_table_error.zs" ignoreErrors="true"/>
+        <testGen testName="sql_tables_error" zsFile="table_field_constraint_error.zs" ignoreErrors="true"/>
+        <testGen testName="sql_tables_error" zsFile="subtyped_table_field_error.zs" ignoreErrors="true"/>
+        <testGen testName="sql_tables_error" zsFile="table_array_field_error.zs" ignoreErrors="true"/>
+        <testGen testName="sql_tables_error" zsFile="table_field_error.zs" ignoreErrors="true"/>
+        <testGen testName="sql_tables_error" zsFile="unknown_primary_key_column_error.zs" ignoreErrors="true"/>
+        <testGen testName="sql_tables_error" zsFile="unknown_unique_column_error.zs" ignoreErrors="true"/>
+        <testGen testName="sql_tables_error" zsFile="virtual_column_error.zs" ignoreErrors="true"/>
     </target>
 
     <target name="compile" depends="gen">

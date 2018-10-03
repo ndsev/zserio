@@ -6,11 +6,11 @@
     </target>
 
     <target name="gen" depends="prepare">
-        <testGen testName="packages_error" zsFile="ambiguous_single_type_error.zs" ignoreError="true"/>
-        <testGen testName="packages_error" zsFile="imported_default_package_error.zs" ignoreError="true"/>
-        <testGen testName="packages_error" zsFile="imported_unknown_single_type_error.zs" ignoreError="true"/>
-        <testGen testName="packages_error" zsFile="transitive_import_error.zs" ignoreError="true"/>
-        <testGen testName="packages_error" zsFile="wrong_package_name_error.zs" ignoreError="true"/>
+        <testGen testName="packages_error" zsFile="ambiguous_single_type_error.zs" ignoreErrors="true"/>
+        <testGen testName="packages_error" zsFile="imported_default_package_error.zs" ignoreErrors="true"/>
+        <testGen testName="packages_error" zsFile="imported_unknown_single_type_error.zs" ignoreErrors="true"/>
+        <testGen testName="packages_error" zsFile="transitive_import_error.zs" ignoreErrors="true"/>
+        <testGen testName="packages_error" zsFile="wrong_package_name_error.zs" ignoreErrors="true"/>
     </target>
 
     <target name="compile" depends="gen">

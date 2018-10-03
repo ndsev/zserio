@@ -11,7 +11,9 @@
 
     <target name="gen" depends="gen.check" unless="unused_type_warning.zs.gen_is_uptodate">
         <delete dir="${unused_type_warning.zs.out_dir}"/>
-        <testGen testName="unused_type_warning" zsFile="unused_type_warning.zs"/>
+        <testGen testName="unused_type_warning" zsFile="unused_type_warning.zs" ignoreWarnings="true">
+            <arg name="withUnusedWarnings"/>
+        </testGen>
     </target>
 
     <target name="compile" depends="gen">

@@ -6,9 +6,9 @@
     </target>
 
     <target name="gen" depends="prepare">
-        <testGen testName="comments_error" zsFile="see_tag_error.zs" ignoreError="true"/>
-        <testGen testName="comments_error" zsFile="unknown_tag_error.zs" ignoreError="true"/>
-        <testGen testName="comments_error" zsFile="unknown_tag_matching_prefix_error.zs" ignoreError="true"/>
+        <testGen testName="comments_error" zsFile="see_tag_error.zs" ignoreErrors="true"/>
+        <testGen testName="comments_error" zsFile="unknown_tag_error.zs" ignoreErrors="true"/>
+        <testGen testName="comments_error" zsFile="unknown_tag_matching_prefix_error.zs" ignoreErrors="true"/>
     </target>
 
     <target name="compile" depends="gen">

@@ -6,14 +6,21 @@
     </target>
 
     <target name="gen" depends="prepare">
-        <testGen testName="optional_members_error" zsFile="auto_optional_with_expression_error.zs" ignoreError="true"/>
-        <testGen testName="optional_members_error" zsFile="compound_field_in_function_not_available_error.zs" ignoreError="true"/>
-        <testGen testName="optional_members_error" zsFile="compound_field_not_available_error.zs" ignoreError="true"/>
-        <testGen testName="optional_members_error" zsFile="field_in_function_not_available_error.zs" ignoreError="true"/>
-        <testGen testName="optional_members_error" zsFile="field_not_available_error.zs" ignoreError="true"/>
-        <testGen testName="optional_members_error" zsFile="none_boolean_expression_error.zs" ignoreError="true"/>
-        <testGen testName="optional_members_error" zsFile="none_optional_with_auto_optional_params_error.zs" ignoreError="true"/>
-        <testGen testName="optional_members_error" zsFile="none_optional_with_optional_params_error.zs" ignoreError="true"/>
+        <testGen testName="optional_members_error" zsFile="auto_optional_with_expression_error.zs"
+            ignoreErrors="true"/>
+        <testGen testName="optional_members_error" zsFile="compound_field_in_function_not_available_error.zs"
+            ignoreErrors="true"/>
+        <testGen testName="optional_members_error" zsFile="compound_field_not_available_error.zs"
+            ignoreErrors="true"/>
+        <testGen testName="optional_members_error" zsFile="field_in_function_not_available_error.zs"
+            ignoreErrors="true"/>
+        <testGen testName="optional_members_error" zsFile="field_not_available_error.zs" ignoreErrors="true"/>
+        <testGen testName="optional_members_error" zsFile="none_boolean_expression_error.zs"
+            ignoreErrors="true"/>
+        <testGen testName="optional_members_error" zsFile="none_optional_with_auto_optional_params_error.zs"
+            ignoreErrors="true"/>
+        <testGen testName="optional_members_error" zsFile="none_optional_with_optional_params_error.zs"
+            ignoreErrors="true"/>
     </target>
 
     <target name="compile" depends="gen">

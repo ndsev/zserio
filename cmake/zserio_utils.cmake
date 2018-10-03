@@ -43,6 +43,7 @@ endfunction()
 #   OUT_FILES out_files...
 #   ZSERIO_CORE_DIR zserio_core_dir
 #   ZSERIO_OPTIONS ... (optional)
+#   IGNORE_WARNINGS ON|OFF (optional, default OFF)
 #
 # Only the files mentioned in OUT_FILES will be added to the static library target.
 # OUT_FILES can be EMPTY if no output should be generated.
@@ -60,7 +61,8 @@ function(zserio_add_library)
             (ARG STREQUAL OUT_DIR) OR
             (ARG STREQUAL OUT_FILES) OR
             (ARG STREQUAL ZSERIO_CORE_DIR) OR
-            (ARG STREQUAL ZSERIO_OPTIONS))
+            (ARG STREQUAL ZSERIO_OPTIONS) OR
+            (ARG STREQUAL IGNORE_WARNINGS))
             if (DEFINED VALUE_${ARG})
                 message(FATAL_ERROR "Option ${ARG} used multiple times!")
             endif ()
@@ -104,8 +106,11 @@ function(zserio_add_library)
 
     add_custom_command(OUTPUT ${VALUE_OUT_FILES}
         COMMAND ${CMAKE_COMMAND} -E remove_directory ${VALUE_OUT_DIR}
-        COMMAND ${JAVA_BIN} -Djava.ext.dirs="${VALUE_ZSERIO_CORE_DIR}" -jar ${VALUE_ZSERIO_CORE_DIR}/zserio_core.jar -cpp ${VALUE_OUT_DIR}
-            ${VALUE_ZSERIO_OPTIONS} -src ${VALUE_SOURCE_DIR} ${VALUE_MAIN_SOURCE}
+        COMMAND ${CMAKE_COMMAND} -DJAVA_BIN=${JAVA_BIN}
+            -DCORE_DIR=${VALUE_ZSERIO_CORE_DIR} -DOUT_DIR=${VALUE_OUT_DIR}
+            -DSOURCE_DIR=${VALUE_SOURCE_DIR} -DMAIN_SOURCE=${VALUE_MAIN_SOURCE}
+            -DOPTIONS="${VALUE_ZSERIO_OPTIONS}" -DIGNORE_WARNINGS=${VALUE_IGNORE_WARNINGS}
+            -P ${CMAKE_MODULE_PATH}/zserio_tool.cmake
         ${TOUCH_EMPTY_COMMAND}
         DEPENDS ${ALL_SOURCES} ${VALUE_ZSERIO_CORE_DIR}/zserio_core.jar
         COMMENT "Generating sources with Zserio")
@@ -114,7 +119,8 @@ function(zserio_add_library)
     string(FIND "${VALUE_OUT_FILES}" ".cpp" SOURCE_FILE_POSITION)
 
     # add a custom target for the generation step
-    add_custom_target(${VALUE_TARGET}_generate DEPENDS ${VALUE_OUT_FILES})
+    add_custom_target(${VALUE_TARGET}_generate
+        DEPENDS ${VALUE_OUT_FILES})
 
     # add to custom "gen" target
     if (NOT TARGET gen)

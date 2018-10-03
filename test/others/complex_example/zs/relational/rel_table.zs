@@ -88,7 +88,7 @@ align(16):
 
 sql_table PoiDataTable
 {
-    PoiId   poiId;
+    PoiId   poiId sql "PRIMARY KEY";
 
     PoiData(explicit level, explicit width) data;
 };

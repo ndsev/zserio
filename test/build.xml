@@ -90,16 +90,25 @@ zserio_java_test.grpc      - Whether the GRPC tests are enabled (default is "no"
     <macrodef name="testGen">
         <attribute name="testName"/>
         <attribute name="zsFile"/>
-        <attribute name="ignoreError" default="false"/>
-        <attribute name="ignoreDependencies" default="@{ignoreError}"/>
+        <attribute name="ignoreErrors" default="false"/>
+        <attribute name="ignoreWarnings" default="@{ignoreErrors}"/>
+        <attribute name="ignoreDependencies" default="@{ignoreErrors}"/>
         <attribute name="logLevel" default="warn"/>
         <element name="args" implicit="yes" optional="true"/>
         <sequential>
+            <condition property="@{testName}.needsRecompile">
+                <and>
+                    <isfalse value="@{ignoreWarnings}"/>
+                    <length file="${@{testName}.zs.log_file}" when="ne" length="0"/>
+                </and>
+            </condition>
+            <delete dir="${@{testName}.zs.out_dir}" if:true="${@{testName}.needsRecompile}"/>
+
             <record name="${@{testName}.zs.log_file}" action="start" loglevel="@{logLevel}"/>
 
             <zserio srcPath="${@{testName}.zs.in_dir}" srcFile="@{zsFile}"
-                java="${@{testName}.zs.out_dir}" ignoreError="@{ignoreError}">
-                <dependencies unless:true="@{ignoreDependencies}">
+                java="${@{testName}.zs.out_dir}" ignoreError="@{ignoreErrors}">
+                <dependencies unless:true="${@{testName}.ignoreDependencies}">
                     <fileset dir="${@{testName}.zs.in_dir}" includes="**/*.zs"/>
                     <fileset dir="${zserio.jar_dir}"/>
                     <fileset dir="${runtime.jar_dir}"/>
@@ -117,6 +126,15 @@ zserio_java_test.grpc      - Whether the GRPC tests are enabled (default is "no"
             </zserio>
 
             <record name="${@{testName}.zs.log_file}" action="stop"/>
+
+            <fail message="Zserio produced some warnings. See ${@{testName}.zs.log_file}!">
+                <condition>
+                    <and>
+                        <isfalse value="@{ignoreWarnings}"/>
+                        <length file="${@{testName}.zs.log_file}" when="ne" length="0"/>
+                    </and>
+                </condition>
+            </fail>
         </sequential>
     </macrodef>
 

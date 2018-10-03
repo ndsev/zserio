@@ -3,8 +3,8 @@
 Ant build.xml for Zserio Ant task.
 
 Zserio Ant task does not depend zserio in terms of class dependency. Hence it might be created without even
-the knowledge of Zserio. Zserio itself is invoked via reflection, this allows compilation of Zserio related classes
-and calling of Zserio in the same Ant file.
+the knowledge of Zserio. Zserio itself is invoked via reflection, this allows compilation of Zserio related
+classes and calling of Zserio in the same Ant file.
 
 The following external properties can be set:
 

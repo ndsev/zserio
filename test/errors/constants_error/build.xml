@@ -6,18 +6,21 @@
     </target>
 
     <target name="gen" depends="prepare">
-        <testGen testName="constants_error" zsFile="choice_type_constant_error.zs" ignoreError="true"/>
-        <testGen testName="constants_error" zsFile="constant_0x8000_error.zs" ignoreError="true"/>
-        <testGen testName="constants_error" zsFile="constant_0xffff_error.zs" ignoreError="true"/>
-        <testGen testName="constants_error" zsFile="cyclic_definition_using_constant_error.zs" ignoreError="true"/>
-        <testGen testName="constants_error" zsFile="cyclic_definition_using_enum_value_error.zs" ignoreError="true"/>
-        <testGen testName="constants_error" zsFile="invalid_constant_name_error.zs" ignoreError="true"/>
-        <testGen testName="constants_error" zsFile="structure_type_constant_error.zs" ignoreError="true"/>
-        <testGen testName="constants_error" zsFile="subtyped_compound_type_constant_error.zs" ignoreError="true"/>
-        <testGen testName="constants_error" zsFile="wrong_bool_constant_error.zs" ignoreError="true"/>
-        <testGen testName="constants_error" zsFile="wrong_decimal_constant_error.zs" ignoreError="true"/>
-        <testGen testName="constants_error" zsFile="wrong_float_constant_error.zs" ignoreError="true"/>
-        <testGen testName="constants_error" zsFile="wrong_string_constant_error.zs" ignoreError="true"/>
+        <testGen testName="constants_error" zsFile="choice_type_constant_error.zs" ignoreErrors="true"/>
+        <testGen testName="constants_error" zsFile="constant_0x8000_error.zs" ignoreErrors="true"/>
+        <testGen testName="constants_error" zsFile="constant_0xffff_error.zs" ignoreErrors="true"/>
+        <testGen testName="constants_error" zsFile="cyclic_definition_using_constant_error.zs"
+            ignoreErrors="true"/>
+        <testGen testName="constants_error" zsFile="cyclic_definition_using_enum_value_error.zs"
+            ignoreErrors="true"/>
+        <testGen testName="constants_error" zsFile="invalid_constant_name_error.zs" ignoreErrors="true"/>
+        <testGen testName="constants_error" zsFile="structure_type_constant_error.zs" ignoreErrors="true"/>
+        <testGen testName="constants_error" zsFile="subtyped_compound_type_constant_error.zs"
+            ignoreErrors="true"/>
+        <testGen testName="constants_error" zsFile="wrong_bool_constant_error.zs" ignoreErrors="true"/>
+        <testGen testName="constants_error" zsFile="wrong_decimal_constant_error.zs" ignoreErrors="true"/>
+        <testGen testName="constants_error" zsFile="wrong_float_constant_error.zs" ignoreErrors="true"/>
+        <testGen testName="constants_error" zsFile="wrong_string_constant_error.zs" ignoreErrors="true"/>
     </target>
 
     <target name="compile" depends="gen">

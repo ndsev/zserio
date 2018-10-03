@@ -6,8 +6,8 @@
     </target>
 
     <target name="gen" depends="prepare">
-        <testGen testName="union_types_error" zsFile="optional_field_error.zs" ignoreError="true"/>
-        <testGen testName="union_types_error" zsFile="recursive_error.zs" ignoreError="true"/>
+        <testGen testName="union_types_error" zsFile="optional_field_error.zs" ignoreErrors="true"/>
+        <testGen testName="union_types_error" zsFile="recursive_error.zs" ignoreErrors="true"/>
     </target>
 
     <target name="compile" depends="gen">

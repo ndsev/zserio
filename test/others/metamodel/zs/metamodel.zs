@@ -66,6 +66,8 @@ choice TypeInfo (Category category) on category
         BitfieldInfo       bitfieldInfo;
     case Category.ENUM:
         EnumInfo           enumInfo;
+    case Category.SUBTYPE:
+        string             subtypeInfo;
     case Category.STRUCTURE:
         StructureInfo      structureInfo;
     case Category.ARRAY:

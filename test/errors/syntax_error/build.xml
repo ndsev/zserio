@@ -6,12 +6,17 @@
     </target>
 
     <target name="gen" depends="prepare">
-        <testGen testName="syntax_error" zsFile="unexpected_eof_in_array_length_error.zs" ignoreError="true"/>
-        <testGen testName="syntax_error" zsFile="unexpected_eof_in_const_definition_error.zs" ignoreError="true"/>
-        <testGen testName="syntax_error" zsFile="unexpected_eof_in_field_definition_error.zs" ignoreError="true"/>
-        <testGen testName="syntax_error" zsFile="unexpected_eof_in_parameterized_field_definition_error.zs" ignoreError="true"/>
-        <testGen testName="syntax_error" zsFile="unexpected_eof_in_struct_definition_error.zs" ignoreError="true"/>
-        <testGen testName="syntax_error" zsFile="unexpected_eof_missing_semicolon_error.zs" ignoreError="true"/>
+        <testGen testName="syntax_error" zsFile="unexpected_eof_in_array_length_error.zs" ignoreErrors="true"/>
+        <testGen testName="syntax_error" zsFile="unexpected_eof_in_const_definition_error.zs"
+            ignoreErrors="true"/>
+        <testGen testName="syntax_error" zsFile="unexpected_eof_in_field_definition_error.zs"
+            ignoreErrors="true"/>
+        <testGen testName="syntax_error" zsFile="unexpected_eof_in_parameterized_field_definition_error.zs"
+            ignoreErrors="true"/>
+        <testGen testName="syntax_error" zsFile="unexpected_eof_in_struct_definition_error.zs"
+            ignoreErrors="true"/>
+        <testGen testName="syntax_error" zsFile="unexpected_eof_missing_semicolon_error.zs"
+            ignoreErrors="true"/>
     </target>
 
     <target name="compile" depends="gen">

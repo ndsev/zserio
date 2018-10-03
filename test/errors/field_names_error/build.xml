@@ -6,9 +6,9 @@
     </target>
 
     <target name="gen" depends="prepare">
-        <testGen testName="field_names_error" zsFile="defined_type_error.zs" ignoreError="true"/>
-        <testGen testName="field_names_error" zsFile="reserved_zserio_keyword_error.zs" ignoreError="true"/>
-        <testGen testName="field_names_error" zsFile="reserved_generated_keyword_error.zs" ignoreError="true"/>
+        <testGen testName="field_names_error" zsFile="defined_type_error.zs" ignoreErrors="true"/>
+        <testGen testName="field_names_error" zsFile="reserved_zserio_keyword_error.zs" ignoreErrors="true"/>
+        <testGen testName="field_names_error" zsFile="reserved_generated_keyword_error.zs" ignoreErrors="true"/>
     </target>
 
     <target name="compile" depends="gen">

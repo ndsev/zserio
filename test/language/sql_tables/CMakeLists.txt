@@ -47,6 +47,7 @@ zserio_add_library(TARGET sql_tables_zs
     OUT_FILES ${ZSERIO_GENERATED_SOURCES}
     ZSERIO_CORE_DIR ${ZSERIO_JAR_DIR}
     ZSERIO_OPTIONS -withoutSourcesAmalgamation
+    IGNORE_WARNINGS ON
 )
 
 add_test_sources(

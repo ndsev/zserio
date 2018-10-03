@@ -6,7 +6,7 @@
     </target>
 
     <target name="gen" depends="prepare">
-        <testGen testName="literals_error" zsFile="wrong_octal_literal_error.zs" ignoreError="true"/>
+        <testGen testName="literals_error" zsFile="wrong_octal_literal_error.zs" ignoreErrors="true"/>
     </target>
 
     <target name="compile" depends="gen">

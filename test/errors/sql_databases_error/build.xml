@@ -6,9 +6,9 @@
     </target>
 
     <target name="gen" depends="prepare">
-        <testGen testName="sql_databases_error" zsFile="database_field_error.zs" ignoreError="true"/>
-        <testGen testName="sql_databases_error" zsFile="subtyped_structure_field_error.zs" ignoreError="true"/>
-        <testGen testName="sql_databases_error" zsFile="structure_field_error.zs" ignoreError="true"/>
+        <testGen testName="sql_databases_error" zsFile="database_field_error.zs" ignoreErrors="true"/>
+        <testGen testName="sql_databases_error" zsFile="subtyped_structure_field_error.zs" ignoreErrors="true"/>
+        <testGen testName="sql_databases_error" zsFile="structure_field_error.zs" ignoreErrors="true"/>
     </target>
 
     <target name="compile" depends="gen">

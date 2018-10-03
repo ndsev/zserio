@@ -7,15 +7,15 @@
 
     <target name="gen" depends="prepare">
         <testGen testName="sql_constraints_error" zsFile="invalid_type_reference_error.zs"
-            ignoreError="true"/>
+            ignoreErrors="true"/>
         <testGen testName="sql_constraints_error" zsFile="non_integer_constant_reference_error.zs"
-            ignoreError="true"/>
+            ignoreErrors="true"/>
         <testGen testName="sql_constraints_error" zsFile="unresolved_reference_error.zs"
-            ignoreError="true"/>
+            ignoreErrors="true"/>
         <testGen testName="sql_constraints_error" zsFile="unresolved_symbol_error.zs"
-            ignoreError="true"/>
+            ignoreErrors="true"/>
         <testGen testName="sql_constraints_error" zsFile="wrong_type_reference_error.zs"
-            ignoreError="true"/>
+            ignoreErrors="true"/>
     </target>
 
     <target name="compile" depends="gen">

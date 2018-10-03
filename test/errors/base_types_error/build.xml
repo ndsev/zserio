@@ -6,16 +6,18 @@
     </target>
 
     <target name="gen" depends="prepare">
-        <testGen testName="base_types_error" zsFile="bitfield_cyclic_definition_error.zs" ignoreError="true"/>
-        <testGen testName="base_types_error" zsFile="bitfield_int33_length_type_error.zs" ignoreError="true"/>
-        <testGen testName="base_types_error" zsFile="bitfield_invalid_length_type_error.zs" ignoreError="true"/>
-        <testGen testName="base_types_error" zsFile="bitfield_length_field_not_available_error.zs" ignoreError="true"/>
-        <testGen testName="base_types_error" zsFile="bitfield_uint64_length_type_error.zs" ignoreError="true"/>
-        <testGen testName="base_types_error" zsFile="bitfield_unknown_length_error.zs" ignoreError="true"/>
-        <testGen testName="base_types_error" zsFile="bitfield0_error.zs" ignoreError="true"/>
-        <testGen testName="base_types_error" zsFile="bitfield64_error.zs" ignoreError="true"/>
-        <testGen testName="base_types_error" zsFile="intfield0_error.zs" ignoreError="true"/>
-        <testGen testName="base_types_error" zsFile="intfield65_error.zs" ignoreError="true"/>
+        <testGen testName="base_types_error" zsFile="bitfield_cyclic_definition_error.zs" ignoreErrors="true"/>
+        <testGen testName="base_types_error" zsFile="bitfield_int33_length_type_error.zs" ignoreErrors="true"/>
+        <testGen testName="base_types_error" zsFile="bitfield_invalid_length_type_error.zs"
+            ignoreErrors="true"/>
+        <testGen testName="base_types_error" zsFile="bitfield_length_field_not_available_error.zs"
+            ignoreErrors="true"/>
+        <testGen testName="base_types_error" zsFile="bitfield_uint64_length_type_error.zs" ignoreErrors="true"/>
+        <testGen testName="base_types_error" zsFile="bitfield_unknown_length_error.zs" ignoreErrors="true"/>
+        <testGen testName="base_types_error" zsFile="bitfield0_error.zs" ignoreErrors="true"/>
+        <testGen testName="base_types_error" zsFile="bitfield64_error.zs" ignoreErrors="true"/>
+        <testGen testName="base_types_error" zsFile="intfield0_error.zs" ignoreErrors="true"/>
+        <testGen testName="base_types_error" zsFile="intfield65_error.zs" ignoreErrors="true"/>
     </target>
 
     <target name="compile" depends="gen">

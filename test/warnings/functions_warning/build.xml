@@ -11,7 +11,7 @@
 
     <target name="gen" depends="gen.check" unless="functions_warning.zs.gen_is_uptodate">
         <delete dir="${functions_warning.zs.out_dir}"/>
-        <testGen testName="functions_warning" zsFile="functions_warning.zs"/>
+        <testGen testName="functions_warning" zsFile="functions_warning.zs" ignoreWarnings="true"/>
     </target>
 
     <target name="compile" depends="gen">

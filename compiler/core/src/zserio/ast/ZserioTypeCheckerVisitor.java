@@ -38,6 +38,16 @@ import zserio.tools.ZserioToolPrinter;
  */
 public class ZserioTypeCheckerVisitor implements ZserioTypeVisitor
 {
+    /**
+     * Constructor.
+     *
+     * @param printUnusedWarnings Whether to print unused warnings.
+     */
+    ZserioTypeCheckerVisitor(boolean printUnusedWarnings)
+    {
+        this.printUnusedWarnings = printUnusedWarnings;
+    }
+
     /** {@inheritDoc} */
     @Override
     public void visitArrayType(ArrayType type)
@@ -175,16 +185,19 @@ public class ZserioTypeCheckerVisitor implements ZserioTypeVisitor
     }
 
     /**
-     * Prints warnings if some Zserio type in unused.
+     * Prints warnings.
      */
     public void printWarnings()
     {
-        for (ZserioType definedType : definedTypes)
+        if (printUnusedWarnings)
         {
-            final String definedTypeName = ZserioTypeUtil.getFullName(definedType);
-            if (!usedTypeNames.contains(definedTypeName))
-                ZserioToolPrinter.printWarning((TokenAST)definedType, "Type " + definedTypeName +
-                        " is not used.");
+            for (ZserioType definedType : definedTypes)
+            {
+                final String definedTypeName = ZserioTypeUtil.getFullName(definedType);
+                if (!usedTypeNames.contains(definedTypeName))
+                    ZserioToolPrinter.printWarning((TokenAST)definedType, "Type " + definedTypeName +
+                            " is not used.");
+            }
         }
     }
 
@@ -209,4 +222,5 @@ public class ZserioTypeCheckerVisitor implements ZserioTypeVisitor
 
     private final Set<String> usedTypeNames = new HashSet<String>();
     private final List<ZserioType> definedTypes = new ArrayList<ZserioType>();
+    private final boolean printUnusedWarnings;
 }

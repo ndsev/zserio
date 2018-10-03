@@ -154,7 +154,7 @@ public class ZserioTool
 
     private void process() throws Exception
     {
-        final Root rootNode = Root.create();
+        final Root rootNode = new Root(commandLineArguments.getWithUnusedWarnings());
 
         parse(rootNode);
 
@@ -162,6 +162,7 @@ public class ZserioTool
             showAstTree(rootNode);
 
         check(rootNode);
+
         emit(rootNode);
 
         ZserioToolPrinter.printMessage("Done");
@@ -277,7 +278,7 @@ public class ZserioTool
 
         final String docComment = readFileToString(commentFileName);
         final FileNameLexerToken commentLexerToken = new FileNameLexerToken(commentTokenType, docComment);
-        final Root rootToken = Root.create(commentLexerToken);
+        final Root rootToken = new Root(commentLexerToken);
 
         return rootToken;
     }

@@ -250,6 +250,35 @@ public class CommandLineArgumentsTest
         parse(args);
     }
 
+    @Test
+    public void withUnusedWarnings() throws ParseException
+    {
+        String[] args = { "-withUnusedWarnings" };
+        assertTrue(parse(args).getWithUnusedWarnings());
+    }
+
+    @Test
+    public void withoutUnusedWarnings() throws ParseException
+    {
+        String[] args = { "-withoutUnusedWarnings" };
+        CommandLineArguments parsedArgs = parse(args);
+        assertFalse(parsedArgs.getWithUnusedWarnings());
+    }
+
+    @Test
+    public void withUnusedWarningsDefault() throws ParseException
+    {
+        String[] args = {};
+        assertFalse(parse(args).getWithUnusedWarnings());
+    }
+
+    @Test(expected=ParseException.class)
+    public void unusedWarningsConflict() throws ParseException
+    {
+        String[] args = { "-withUnusedWarnings", "-withoutUnusedWarnings" };
+        parse(args);
+    }
+
     private static CommandLineArguments parse(String[] args) throws ParseException
     {
         CommandLineArguments commandLineArgs = new CommandLineArguments();
