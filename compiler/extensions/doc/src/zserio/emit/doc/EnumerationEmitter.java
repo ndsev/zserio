@@ -79,7 +79,7 @@ public class EnumerationEmitter extends DefaultHtmlEmitter
         if (enumeration == null)
             throw new RuntimeException("getPackageName() called before emit()!");
 
-        return enumeration.getScope().getPackage().getPackageName().toString();
+        return enumeration.getPackage().getPackageName().toString();
     }
 
     public EnumType getType()

@@ -2,9 +2,7 @@ package zserio.ast;
 
 import java.io.Serializable;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
-import java.util.Set;
 
 import zserio.antlr.util.BaseTokenAST;
 import zserio.antlr.util.ParserException;
@@ -23,13 +21,22 @@ public class Scope implements Serializable
     /**
      * Constructs scope within given package and sets owner to the given Zserio type.
      *
-     * @param parentPackage Package of the current scope.
-     * @param owner         Zserio type which owns the current scope.
+     * @param owner Zserio scoped type which owns the current scope.
      */
-    public Scope(Package parentPackage, ZserioType owner)
+    public Scope(ZserioScopedType owner)
     {
-        this.parentPackage = parentPackage;
         this.owner = owner;
+    }
+
+    /**
+     * Copy constructor.
+     *
+     * @param scope Scope to construct from.
+     */
+    public Scope(Scope scope)
+    {
+        owner = scope.owner;
+        add(scope);
     }
 
     /**
@@ -48,13 +55,13 @@ public class Scope implements Serializable
     }
 
     /**
-     * Returns the package containing this scope.
+     * Adds another scope to the scope.
      *
-     * @return Enclosing package.
+     * @param scope Scope to be added.
      */
-    public Package getPackage()
+    public void add(Scope addedScope)
     {
-        return parentPackage;
+        symbolTable.putAll(addedScope.symbolTable);
     }
 
     /**
@@ -82,37 +89,8 @@ public class Scope implements Serializable
         return symbolTable.get(name);
     }
 
-    /**
-     * Returns symbols available in the current state of this scope.
-     *
-     * @return New set of currently visible symbols.
-     */
-    public Set<String> copyAvailableSymbols()
-    {
-        return new HashSet<String>(symbolTable.keySet());
-    }
-
-    /**
-     * Constructs scope which contains symbols from both main scope and extending scope.
-     *
-     * This is used by Choice Types which use enumeration types (enumeration type scope must be inside
-     * choice types scope).
-     *
-     * @param mainScope      Main scope for the mixed scope creation.
-     * @param extendingScope Another scope whose symbol table is to be merged into the current one.
-     */
-    public static Scope createMixedScope(Scope mainScope, Scope extendingScope)
-    {
-        final Scope scope = new Scope(mainScope.parentPackage, mainScope.owner);
-        scope.symbolTable.putAll(mainScope.symbolTable);
-        scope.symbolTable.putAll(extendingScope.symbolTable);
-
-        return scope;
-    }
-
     private static final long serialVersionUID = -5373010074297029934L;
 
-    private final Package parentPackage;
     private final ZserioType owner;
 
     /**

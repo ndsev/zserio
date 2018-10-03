@@ -14,7 +14,8 @@ public class MemberAccessErrorTest
     public void wrongFieldName() throws IOException
     {
         final ZserioErrors zserioErrors = new ZserioErrors();
-        final String error = ":6:48: Unresolved symbol in '.' expression!";
+        final String error = "wrong_field_name_error.zs:6:48: Unresolved symbol " +
+                "'wrongFieldName.useExtraData' within expression scope!";
         assertTrue(zserioErrors.isPresent(error));
     }
 
@@ -22,7 +23,8 @@ public class MemberAccessErrorTest
     public void wrongFieldUsage() throws IOException
     {
         final ZserioErrors zserioErrors = new ZserioErrors();
-        final String error = ":5:34: Field 'data' is not available!";
+        final String error =
+                "wrong_field_usage_error.zs:5:34: Unresolved symbol 'data' within expression scope!";
         assertTrue(zserioErrors.isPresent(error));
     }
 }

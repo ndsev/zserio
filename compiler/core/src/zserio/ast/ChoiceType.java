@@ -83,7 +83,7 @@ public class ChoiceType extends CompoundType
             for (ChoiceCase.CaseExpression caseExpression : caseExpressions)
             {
                 final Expression expression = caseExpression.getExpression();
-                expression.setScope(Scope.createMixedScope(expression.getScope(), scope));
+                expression.addScope(scope);
             }
         }
     }

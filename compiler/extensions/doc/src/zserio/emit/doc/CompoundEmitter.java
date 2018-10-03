@@ -406,7 +406,7 @@ public class CompoundEmitter extends DefaultHtmlEmitter
     @Override
     public String getPackageName()
     {
-        return compound.getScope().getPackage().getPackageName().toString();
+        return compound.getPackage().getPackageName().toString();
     }
 
     public CompoundType getType()

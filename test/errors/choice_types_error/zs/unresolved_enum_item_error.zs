@@ -1,4 +1,4 @@
-package enum_case_error;
+package unresolved_enum_item_error;
 
 enum uint8 Selector
 {
@@ -7,25 +7,16 @@ enum uint8 Selector
     RED
 };
 
-enum uint16 OtherSelector
-{
-    LIGHT_GREY,
-    LIGHT_RED
-};
-
 choice EnumParamChoice(Selector selector) on selector
 {
-    case enum_case_error.Selector.BLACK:
+    case unresolved_enum_item_error.Selector.BLACK:
         int8 black;
 
     case Selector.GREY:
         int16 grey;
 
     case RED:
-        int32 red;
-
-    case OtherSelector.LIGHT_RED:
-        int32 lightRed;
+        Selector foo : foo == RED; // RED is not available here without 'Selector.' prefix
 
     default:
         int64 other;

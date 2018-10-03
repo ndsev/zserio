@@ -28,30 +28,41 @@ public class OptionalMembersErrorTest
     @Test
     public void compoundFieldInFunctionNotAvailable()
     {
-        final String error = "compound_field_in_function_not_available_error.zs:17:23: Field 'header2' is " +
-                "not available! In function 'hasOptional2' called from here:";
+        final String error = "compound_field_in_function_not_available_error.zs:17:23: Unresolved symbol " +
+                "'header2.hasOptional' within expression scope! Found in function 'hasOptional2' called " +
+                "from here:";
         assertTrue(zserioErrors.isPresent(error));
     }
 
     @Test
     public void compoundFieldNotAvailable()
     {
-        final String error = "compound_field_not_available_error.zs:7:23: Field 'header2' is not available!";
-        assertTrue(zserioErrors.isPresent(error)); //
+        final String error = "compound_field_not_available_error.zs:7:30: Unresolved symbol " +
+                "'header2.hasOptional' within expression scope!";
+        assertTrue(zserioErrors.isPresent(error));
     }
 
     @Test
     public void fieldInFunctionNotAvailable()
     {
-        final String error = "field_in_function_not_available_error.zs:17:16: Field 'hasSpecialData' is not " +
-                "available! In function 'hasSpecial' called from here:";
+        final String error = "field_in_function_not_available_error.zs:17:16: Unresolved symbol " +
+                "'hasSpecialData' within expression scope! Found in function 'hasSpecial' called from here:";
+        assertTrue(zserioErrors.isPresent(error));
+    }
+
+    @Test
+    public void fieldItselfNotAvailable()
+    {
+        final String error = "field_itself_not_available_error.zs:6:26: Unresolved symbol 'extraData' within " +
+                "expression scope!";
         assertTrue(zserioErrors.isPresent(error));
     }
 
     @Test
     public void fieldNotAvailable()
     {
-        final String error = "field_not_available_error.zs:7:28: Field 'hasSpecialData' is not available!";
+        final String error = "field_not_available_error.zs:7:28: Unresolved symbol 'hasSpecialData' within " +
+                "expression scope!";
         assertTrue(zserioErrors.isPresent(error));
     }
 

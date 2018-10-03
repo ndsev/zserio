@@ -84,6 +84,7 @@ public class Root extends TokenAST
                 new ZserioTypeCheckerVisitor(printUnusedWarnings);
         for (ZserioType checkedType : checkedTypes)
             checkedType.callVisitor(zserioCheckerVisitor);
+        zserioCheckerVisitor.throwErrors();
         zserioCheckerVisitor.printWarnings();
     }
 

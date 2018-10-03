@@ -70,7 +70,7 @@ public abstract class BitFieldType extends FixedSizeIntegerType
         if (!areBitSizesEvaluated)
         {
             // evaluate length expression
-            lengthExpression.evaluateTree(false);
+            lengthExpression.evaluateTree();
 
             // check length expression
             if (lengthExpression.getExprType() != Expression.ExpressionType.INTEGER)

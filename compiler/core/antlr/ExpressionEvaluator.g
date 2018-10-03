@@ -16,16 +16,16 @@ options
 }
 
 {
-    private boolean forceEvaluation = false;
+    private Scope evaluationScope = null;
 
-    public void setForceEvaluation(boolean forceEvaluation)
+    public void setEvaluationScope(Scope evaluationScope)
     {
-        this.forceEvaluation = forceEvaluation;
+        this.evaluationScope = evaluationScope;
     }
 
     private void evaluateOne(Expression e) throws RecognitionException
     {
-        e.evaluateOne(forceEvaluation);
+        e.evaluateOne((evaluationScope == null) ? e.getScope() : evaluationScope);
     }
 }
 
@@ -347,7 +347,7 @@ expression
     :   nestedExpression
         {
             // check evaluation of top level expression because package without type cannot be detected
-            ((Expression)#expression).checkEvaluation();
+            ((Expression)#expression).checkUnresolvedIdentifiers();
         }
     ;
 

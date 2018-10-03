@@ -27,7 +27,7 @@ public class ChoiceTypesErrorTest
     @Test
     public void enumCaseError()
     {
-        final String error = "enum_case_error.zs:24:23: Choice 'EnumParamChoice' has case with different " +
+        final String error = "enum_case_error.zs:27:23: Choice 'EnumParamChoice' has case with different " +
                 "enumeration type than selector!";
         assertTrue(zserioErrors.isPresent(error));
     }
@@ -90,6 +90,14 @@ public class ChoiceTypesErrorTest
     {
         final String error = "unreachable_default_error.zs:11:5: Choice 'UnreachableDefaultChoice' has " +
                 "unreachable default case!";
+        assertTrue(zserioErrors.isPresent(error));
+    }
+
+    @Test
+    public void unresolvedEnumItem()
+    {
+        final String error = "unresolved_enum_item_error.zs:19:31: Unresolved symbol 'RED' within " +
+                "expression scope!";
         assertTrue(zserioErrors.isPresent(error));
     }
 

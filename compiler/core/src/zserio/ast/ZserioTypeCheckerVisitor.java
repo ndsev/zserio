@@ -5,6 +5,7 @@ import java.util.Set;
 import java.util.ArrayList;
 import java.util.List;
 
+import zserio.antlr.util.ParserException;
 import zserio.ast.ArrayType;
 import zserio.ast.UnionType;
 import zserio.ast.BooleanType;
@@ -48,46 +49,39 @@ public class ZserioTypeCheckerVisitor implements ZserioTypeVisitor
         this.printUnusedWarnings = printUnusedWarnings;
     }
 
-    /** {@inheritDoc} */
     @Override
     public void visitArrayType(ArrayType type)
     {
     }
 
-    /** {@inheritDoc} */
     @Override
     public void visitUnionType(UnionType type)
     {
         visitCompoundType(type);
     }
 
-    /** {@inheritDoc} */
     @Override
     public void visitUnsignedBitFieldType(UnsignedBitFieldType type)
     {
     }
 
-    /** {@inheritDoc} */
     @Override
     public void visitBooleanType(BooleanType type)
     {
     }
 
-    /** {@inheritDoc} */
     @Override
     public void visitChoiceType(ChoiceType type)
     {
         visitCompoundType(type);
     }
 
-    /** {@inheritDoc} */
     @Override
     public void visitConstType(ConstType type)
     {
         addUsedType(type.getConstType());
     }
 
-    /** {@inheritDoc} */
     @Override
     public void visitEnumType(EnumType type)
     {
@@ -95,19 +89,16 @@ public class ZserioTypeCheckerVisitor implements ZserioTypeVisitor
         definedTypes.add(type);
     }
 
-    /** {@inheritDoc} */
     @Override
     public void visitFloatType(FloatType type)
     {
     }
 
-    /** {@inheritDoc} */
     @Override
     public void visitFunctionType(FunctionType type)
     {
     }
 
-    /** {@inheritDoc} */
     @Override
     public void visitServiceType(ServiceType type)
     {
@@ -119,46 +110,39 @@ public class ZserioTypeCheckerVisitor implements ZserioTypeVisitor
         }
     }
 
-    /** {@inheritDoc} */
     @Override
     public void visitStructureType(StructureType type)
     {
         visitCompoundType(type);
     }
 
-    /** {@inheritDoc} */
     @Override
     public void visitSignedBitFieldType(SignedBitFieldType type)
     {
     }
 
-    /** {@inheritDoc} */
     @Override
     public void visitSqlDatabaseType(SqlDatabaseType type)
     {
         visitCompoundTypeFields(type);
     }
 
-    /** {@inheritDoc} */
     @Override
     public void visitSqlTableType(SqlTableType type)
     {
         visitCompoundType(type);
     }
 
-    /** {@inheritDoc} */
     @Override
     public void visitStdIntegerType(StdIntegerType type)
     {
     }
 
-    /** {@inheritDoc} */
     @Override
     public void visitStringType(StringType type)
     {
     }
 
-    /** {@inheritDoc} */
     @Override
     public void visitSubtype(Subtype type)
     {
@@ -166,22 +150,30 @@ public class ZserioTypeCheckerVisitor implements ZserioTypeVisitor
         definedTypes.add(type);
     }
 
-    /** {@inheritDoc} */
     @Override
     public void visitTypeInstantiation(TypeInstantiation type)
     {
     }
 
-    /** {@inheritDoc} */
     @Override
     public void visitTypeReference(TypeReference type)
     {
     }
 
-    /** {@inheritDoc} */
     @Override
     public void visitVarIntegerType(VarIntegerType type)
     {
+    }
+
+    /**
+     * Throws if any error occurred.
+     *
+     * @throws ParserException If any parser error occurred.
+     */
+    public void throwErrors() throws ParserException
+    {
+        if (parserException != null)
+            throw parserException;
     }
 
     /**
@@ -211,7 +203,24 @@ public class ZserioTypeCheckerVisitor implements ZserioTypeVisitor
     {
         final Iterable<ZserioType> usedTypeList = type.getUsedTypeList();
         for (ZserioType usedType : usedTypeList)
+        {
             addUsedType(usedType);
+
+            // TODO this is necessary for doc emitter, should be redesigned
+            try
+            {
+                if (usedType instanceof CompoundType)
+                    ((CompoundType)usedType).setUsedByCompoundType(type);
+                else if (usedType instanceof EnumType)
+                    ((EnumType)usedType).setUsedByCompoundType(type);
+            }
+            catch (ParserException exception)
+            {
+                // remember the first exception only
+                if (parserException == null)
+                    parserException = exception;
+            }
+        }
     }
 
     private void addUsedType(ZserioType usedType)
@@ -223,4 +232,5 @@ public class ZserioTypeCheckerVisitor implements ZserioTypeVisitor
     private final Set<String> usedTypeNames = new HashSet<String>();
     private final List<ZserioType> definedTypes = new ArrayList<ZserioType>();
     private final boolean printUnusedWarnings;
+    private ParserException parserException = null;
 }

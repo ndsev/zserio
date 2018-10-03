@@ -4,10 +4,8 @@ import java.io.Serializable;
 
 import zserio.antlr.util.BaseTokenAST;
 import zserio.antlr.util.ParserException;
-import zserio.ast.CompoundType;
 import zserio.ast.PackageName;
 import zserio.ast.ZserioType;
-import zserio.ast.EnumType;
 import zserio.ast.Package;
 
 /**
@@ -115,26 +113,11 @@ public class SymbolReference implements Serializable
 
     private void resolveSymbol(String referencedSymbolName) throws ParserException
     {
-        // TODO introduce some new interface, ScopedType for example
-        Scope referencedScope;
-        if (referencedType instanceof EnumType)
-        {
-            referencedScope = ((EnumType)referencedType).getScope();
-        }
-        else if (referencedType instanceof CompoundType)
-        {
-            referencedScope = ((CompoundType)referencedType).getScope();
-        }
-        else if (referencedType instanceof ServiceType)
-        {
-            referencedScope = ((ServiceType)referencedType).getScope();
-        }
-        else
-        {
+        if (!(referencedType instanceof ZserioScopedType))
             throw new ParserException(ownerToken, "Referenced symbol type '" + referencedType.getName() +
                     "' can't refer to '" + referencedSymbolName + "'!");
-        }
 
+        final Scope referencedScope = ((ZserioScopedType)referencedType).getScope();
         referencedSymbol = referencedScope.getSymbol(referencedSymbolName);
         if (referencedSymbol == null)
             throw new ParserException(ownerToken, "Unresolved referenced symbol '" + referencedSymbolName +

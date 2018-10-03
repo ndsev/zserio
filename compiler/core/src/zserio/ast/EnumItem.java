@@ -25,7 +25,7 @@ public class EnumItem extends TokenAST
         if (valueExpression != null)
         {
             // there is a value for this enumeration item => evaluate and check value expression
-            valueExpression.evaluateTree(false);
+            valueExpression.evaluateTree();
 
             value = valueExpression.getIntegerValue();
             if (value == null)

@@ -18,51 +18,73 @@ public class EnumerationTypesErrorTest
     }
 
     @Test
+    public void cyclicDefinition()
+    {
+        final String error =
+                "cyclic_definition_error.zs:6:18: Unresolved symbol 'DARK_RED' within expression scope!";
+        assertTrue(zserioErrors.isPresent(error));
+    }
+
+    @Test
     public void cyclicDefinitionUsingConstant()
     {
-        final String error = ":11:34: Cyclic dependency detected in expression evaluation!";
+        final String error = "cyclic_definition_using_constant_error.zs:11:34: Cyclic dependency detected in " +
+                "expression evaluation!";
         assertTrue(zserioErrors.isPresent(error));
     }
 
     @Test
     public void cyclicDefinitionUsingEnumValue()
     {
-        final String error = ":12:17: Cyclic dependency detected in expression evaluation!";
+        final String error = "cyclic_definition_using_enum_value_error.zs:12:21: Cyclic dependency detected " +
+                "in expression evaluation!";
         assertTrue(zserioErrors.isPresent(error));
     }
 
     @Test
     public void duplicatedEnumItem()
     {
-        final String error = ":7:5: 'DARK_RED' is already defined in this scope!";
+        final String error = "duplicated_enum_item_error.zs:7:5: 'DARK_RED' is already defined in this scope!";
         assertTrue(zserioErrors.isPresent(error));
     }
 
     @Test
     public void duplicatedEnumValue()
     {
-        final String error = ":7:18: Enumeration item 'DARK_BLUE' has duplicated value (1)!";
+        final String error =
+                "duplicated_enum_value_error.zs:7:18: Enumeration item 'DARK_BLUE' has duplicated value (1)!";
         assertTrue(zserioErrors.isPresent(error));
     }
 
     @Test
     public void nonIntegerEnumValue()
     {
-        final String error = ":7:18: Enumeration item 'DARK_BLUE' has non-integer value!";
+        final String error =
+                "non_integer_enum_value_error.zs:7:18: Enumeration item 'DARK_BLUE' has non-integer value!";
+        assertTrue(zserioErrors.isPresent(error));
+    }
+
+    @Test
+    public void notAvailableEnumItem()
+    {
+        final String error = "not_available_enum_item_error.zs:6:18: Unresolved symbol 'DARK_BLACK' within " +
+                "expression scope!";
         assertTrue(zserioErrors.isPresent(error));
     }
 
     @Test
     public void outOfRangeEnumValue()
     {
-        final String error = ":7:18: Enumeration item 'DARK_BLUE' has value (256) out of range <0,255>!";
+        final String error = "out_of_range_enum_value_error.zs:7:18: Enumeration item 'DARK_BLUE' has value " +
+                "(256) out of range <0,255>!";
         assertTrue(zserioErrors.isPresent(error));
     }
 
     @Test
     public void stringEnumError()
     {
-        final String error = ":3:1: Enumeration 'WrongStringEnum' has forbidden type string!";
+        final String error =
+                "string_enum_error.zs:3:1: Enumeration 'WrongStringEnum' has forbidden type string!";
         assertTrue(zserioErrors.isPresent(error));
     }
 

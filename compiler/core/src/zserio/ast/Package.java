@@ -2,7 +2,6 @@ package zserio.ast;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -44,12 +43,10 @@ public class Package extends TokenAST
      * This method is called from ANTLR TypeEvaluator walker.
      *
      * @param typeReference Type reference to resolve.
-     * @param scope         Scope which contains type reference to resolve or null if type reference is
-     *                      directly in this package.
      */
-    public void addTypeReferenceToResolve(TypeReference typeReference, Scope scope)
+    public void addTypeReferenceToResolve(TypeReference typeReference)
     {
-        typeReferencesToResolve.put(typeReference, scope);
+        typeReferencesToResolve.add(typeReference);
     }
 
     /**
@@ -204,12 +201,8 @@ public class Package extends TokenAST
 
     private void resolveTypeReferences() throws ParserException
     {
-        for (Map.Entry<TypeReference, Scope> entry : typeReferencesToResolve.entrySet())
-        {
-            final Scope typeScope = entry.getValue();
-            final ZserioType owner = (typeScope == null) ? null : typeScope.getOwner();
-            entry.getKey().resolve(this, owner);
-        }
+        for (TypeReference typeReference : typeReferencesToResolve)
+            typeReference.resolve(this);
     }
 
     private void resolveSubtypes() throws ParserException
@@ -352,6 +345,5 @@ public class Package extends TokenAST
     // this must be a TreeSet because of 'Ambiguous type reference' error checked in getVisibleType()
     private final Set<SingleTypeName> importedSingleTypes = new TreeSet<SingleTypeName>();
 
-    // this must be a LinkedHashMap because of 'Circular containment' error checked in resolveTypeReferences()
-    private final Map<TypeReference, Scope> typeReferencesToResolve = new LinkedHashMap<TypeReference, Scope>();
+    private final List<TypeReference> typeReferencesToResolve = new ArrayList<TypeReference>();
 }

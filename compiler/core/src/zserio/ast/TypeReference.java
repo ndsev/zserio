@@ -92,12 +92,11 @@ public class TypeReference extends TokenAST implements ZserioType
     /**
      * Resolves this reference to the corresponding referenced type.
      *
-     * @param pkg   Package to use for referenced type resolving.
-     * @param owner ZserioType which owns the type reference.
+     * @param pkg Package to use for referenced type resolving.
      *
      * @throws ParserException Throws if the referenced type is unresolvable.
      */
-    protected void resolve(Package pkg, ZserioType owner) throws ParserException
+    protected void resolve(Package pkg) throws ParserException
     {
         // resolve referenced type
         referencedType = pkg.getVisibleType(this, referencedPackageName, referencedTypeName);
@@ -106,21 +105,11 @@ public class TypeReference extends TokenAST implements ZserioType
 
         // check referenced type
         if (referencedType instanceof ConstType)
-            throw new ParserException(this, "Invalid usage of constant '" +
-                    referencedType.getName() + "' as a type!");
+            throw new ParserException(this, "Invalid usage of constant '" + referencedType.getName() +
+                    "' as a type!");
         if (referencedType instanceof SqlDatabaseType)
-            throw new ParserException(this, "Invalid use of SQL database '" +
-                    referencedType.getName() + "' as a type!");
-
-        // call 'setUsedBy' method needed for documentation emitter
-        if (owner instanceof CompoundType)
-        {
-            final CompoundType ownerType = (CompoundType)owner;
-            if (referencedType instanceof CompoundType)
-                ((CompoundType)referencedType).setUsedByCompoundType(ownerType);
-            else if (referencedType instanceof EnumType)
-                ((EnumType)referencedType).setUsedByCompoundType(ownerType);
-        }
+            throw new ParserException(this, "Invalid use of SQL database '" + referencedType.getName() +
+                    "' as a type!");
     }
 
     /**

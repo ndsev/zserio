@@ -5,6 +5,9 @@ header
 {
 package zserio.antlr;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import zserio.ast.*;
 import zserio.ast.Package; // explicit to override java.lang.Package
 import zserio.antlr.util.BaseTokenAST;
@@ -20,8 +23,11 @@ options
 }
 
 {
-    private Package pkg = null;
-    private Scope scope = null;
+    private Package currentPackage = null;
+    private Scope defaultScope = new Scope((ZserioScopedType)null);
+    private Scope currentScope = defaultScope;
+    private List<Scope> expressionScopes = new ArrayList<Scope>();
+    private boolean fillExpressionScopes = false;
     private boolean allowIndex = false;
 
     public void reportError(RecognitionException ex)
@@ -29,20 +35,13 @@ options
         System.out.println(ex.toString());
     }
 
-    private void beginScope(ZserioType owner)
-    {
-        scope = new Scope(pkg, owner);
-    }
-
-    private void endScope()
-    {
-        scope = null;
-    }
-
     private void setupExpression(Expression e)
     {
-        e.setScope(scope);
-        e.setAvailableSymbols(scope.copyAvailableSymbols());
+        final Scope expressionScope = new Scope(currentScope);
+        if (fillExpressionScopes)
+            expressionScopes.add(expressionScope);
+        e.setPackage(currentPackage);
+        e.setScope(expressionScope);
         e.setAllowIndex(allowIndex);
     }
 }
@@ -63,7 +62,7 @@ translationUnit
 packageDeclaration
     :   #(p:PACKAGE (ID)*) // default package does not have IDs
         {
-            pkg = (Package)p;
+            currentPackage = (Package)p;
         }
     ;
 
@@ -89,15 +88,14 @@ commandDeclaration
 constDeclaration
     :   #(c:CONST                   {
                                         final ConstType constType = (ConstType)c;
-                                        beginScope(constType); // needed for expressions only
-                                        constType.setPackage(pkg);
+                                        constType.setPackage(currentPackage);
                                     }
             definedType
             i:ID                    {
-                                        pkg.setLocalType((BaseTokenAST)i, (ConstType)c);
+                                        currentPackage.setLocalType((BaseTokenAST)i, (ConstType)c);
                                     }
             e:expression
-        )                           { endScope(); }
+        ) 
     ;
 
 /**
@@ -106,15 +104,14 @@ constDeclaration
 subtypeDeclaration
     :   #(s:SUBTYPE                 {
                                         final Subtype subtype = (Subtype)s;
-                                        beginScope(subtype); // needed for expressions only
-                                        subtype.setPackage(pkg);
+                                        subtype.setPackage(currentPackage);
                                     }
     
             definedType
             i:ID                    {
-                                        pkg.setLocalType((BaseTokenAST)i, subtype);
+                                        currentPackage.setLocalType((BaseTokenAST)i, subtype);
                                     }
-        )                           { endScope(); }
+        )
     ;
 
 /**
@@ -124,23 +121,28 @@ structureDeclaration
     :   #(s:STRUCTURE
             i:ID                    {
                                         final StructureType structureType = (StructureType)s;
-                                        pkg.setLocalType((BaseTokenAST)i, structureType);
-                                        beginScope(structureType);
-                                        structureType.setScope(scope, pkg);
+                                        currentPackage.setLocalType((BaseTokenAST)i, structureType);
+                                        structureType.setPackage(currentPackage);
+                                        currentScope = structureType.getScope();
+                                        fillExpressionScopes = true;
                                     }
             (parameterList)?
             (structureFieldDefinition)*
             (functionDefinition)*
-        )                           { endScope(); }
+        )                           {   
+                                        currentScope = defaultScope;
+                                        expressionScopes.clear();
+                                        fillExpressionScopes = false;
+                                    }
     ;
 
 structureFieldDefinition
     :   #(f:FIELD
             (typeReference | a:fieldArrayType)
-            i:ID                    { scope.setSymbol((BaseTokenAST)i, f); }
+            i:ID                    
             (OPTIONAL)?
             (fieldInitializer)?
-            (fieldOptionalClause)?
+            (fieldOptionalClause)?  { currentScope.setSymbol((BaseTokenAST)i, f); }
             (fieldConstraint)?
             (
                                     { if (a != null) allowIndex = true; } // only for array type
@@ -187,8 +189,10 @@ fieldAlignment
 functionDefinition
     :   #(f:FUNCTION definedType i:ID functionBody)
         {
-            scope.setSymbol((BaseTokenAST)i, f);
-            ((FunctionType)f).setPackage(pkg);
+            currentScope.setSymbol((BaseTokenAST)i, f);
+            ((FunctionType)f).setPackage(currentPackage);
+            for (Scope expressionScope : expressionScopes)
+                expressionScope.setSymbol((BaseTokenAST)i, f);
         }
     ;
 
@@ -203,16 +207,21 @@ choiceDeclaration
     :   #(c:CHOICE
             i:ID                    {
                                         final ChoiceType choiceType = (ChoiceType)c;
-                                        pkg.setLocalType((BaseTokenAST)i, choiceType);
-                                        beginScope(choiceType);
-                                        choiceType.setScope(scope, pkg);
+                                        currentPackage.setLocalType((BaseTokenAST)i, choiceType);
+                                        choiceType.setPackage(currentPackage);
+                                        currentScope = choiceType.getScope();
+                                        fillExpressionScopes = true;
                                     }
             parameterList
             expression
             (choiceCases)+
             (defaultChoice)?
             (functionDefinition)*
-        )                           { endScope(); }
+        )                           {   
+                                        currentScope = defaultScope;
+                                        expressionScopes.clear();
+                                        fillExpressionScopes = false;
+                                    }
     ;
 
 choiceCases
@@ -222,7 +231,7 @@ choiceCases
 choiceFieldDefinition
     :   #(f:FIELD
             (typeReference | fieldArrayType)
-            i:ID                    { scope.setSymbol((BaseTokenAST)i, f); }
+            i:ID                    { currentScope.setSymbol((BaseTokenAST)i, f); }
             (fieldConstraint)?
         )
     ;
@@ -238,14 +247,19 @@ unionDeclaration
     :   #(u:UNION
             i:ID                    {
                                         final UnionType unionType = (UnionType)u;
-                                        pkg.setLocalType((BaseTokenAST)i, unionType);
-                                        beginScope(unionType);
-                                        unionType.setScope(scope, pkg);
+                                        currentPackage.setLocalType((BaseTokenAST)i, unionType);
+                                        unionType.setPackage(currentPackage);
+                                        currentScope = unionType.getScope();
+                                        fillExpressionScopes = true;
                                     }
             (parameterList)?
             (unionFieldDefinition)+
             (functionDefinition)*
-        )                           { endScope(); }
+        )                           {   
+                                        currentScope = defaultScope;
+                                        expressionScopes.clear();
+                                        fillExpressionScopes = false;
+                                    }
     ;
 
 unionFieldDefinition
@@ -258,21 +272,21 @@ unionFieldDefinition
 enumDeclaration
     :   #(e:ENUM                    {
                                         final EnumType enumType = (EnumType)e;
-                                        beginScope(enumType);
-                                        enumType.setScope(scope, pkg);
+                                        enumType.setPackage(currentPackage);
+                                        currentScope = enumType.getScope();
                                     }
             definedType
             i:ID                    {
-                                        pkg.setLocalType((BaseTokenAST)i, (EnumType)e);
+                                        currentPackage.setLocalType((BaseTokenAST)i, (EnumType)e);
                                     }
             (enumItem)+
-        )                           { endScope(); }
+        )                           { currentScope = defaultScope; }
     ;
 
 enumItem
     :   #(f:ITEM i:ID (expression)?)
         {
-            scope.setSymbol((BaseTokenAST)i, f);
+            currentScope.setSymbol((BaseTokenAST)i, f);
         }
     ;
 
@@ -283,21 +297,21 @@ sqlTableDeclaration
     :   #(s:SQL_TABLE
             i:ID                    {
                                         final SqlTableType sqlTableType = (SqlTableType)s;
-                                        pkg.setLocalType((BaseTokenAST)i, sqlTableType);
-                                        beginScope(sqlTableType);
-                                        sqlTableType.setScope(scope, pkg);
+                                        currentPackage.setLocalType((BaseTokenAST)i, sqlTableType);
+                                        sqlTableType.setPackage(currentPackage);
+                                        currentScope = sqlTableType.getScope();
                                     }
             (ID)?
             (sqlTableFieldDefinition | sqlTableVirtualFieldDefinition)*
             (sqlConstraint)?
             (sqlWithoutRowId)?
-        )                           { endScope(); }
+        )                           { currentScope = defaultScope; }
     ;
 
 sqlTableFieldDefinition
     :   #(f:FIELD
             typeReference
-            i:ID                    { scope.setSymbol((BaseTokenAST)i, f); }
+            i:ID                    { currentScope.setSymbol((BaseTokenAST)i, f); }
             (sqlConstraint)?
         )
     ;
@@ -309,7 +323,7 @@ sqlConstraint
 sqlTableVirtualFieldDefinition
     :   #(f:VFIELD
             typeReference
-            i:ID                    { scope.setSymbol((BaseTokenAST)i, f); }
+            i:ID
             (sqlConstraint)?
             SQL_VIRTUAL
         )
@@ -326,12 +340,12 @@ sqlDatabaseDefinition
     :   #(s:SQL_DATABASE
             i:ID                    {
                                         final SqlDatabaseType sqlDatabaseType = (SqlDatabaseType)s;
-                                        pkg.setLocalType((BaseTokenAST)i, sqlDatabaseType);
-                                        beginScope(sqlDatabaseType);
-                                        sqlDatabaseType.setScope(scope, pkg);
+                                        currentPackage.setLocalType((BaseTokenAST)i, sqlDatabaseType);
+                                        sqlDatabaseType.setPackage(currentPackage);
+                                        currentScope = sqlDatabaseType.getScope();
                                     }
             (sqlDatabaseFieldDefinition)+
-        )                           { endScope(); }
+        )                           { currentScope = defaultScope; }
     ;
 
 sqlDatabaseFieldDefinition
@@ -340,7 +354,7 @@ sqlDatabaseFieldDefinition
 
 sqlTableDefinition[AST astField]    { Field f = (Field) #astField; }
     :   sqlTableReference i:ID      {
-                                        scope.setSymbol((BaseTokenAST)i, f);
+                                        currentScope.setSymbol((BaseTokenAST)i, f);
                                     }
     ;
 
@@ -352,20 +366,20 @@ sqlTableReference
  * serviceDeclaration.
  */
 serviceDeclaration
-    : #(s:SERVICE i:ID              {
+    :   #(s:SERVICE i:ID            {
                                         final ServiceType serviceType = (ServiceType)s;
-                                        pkg.setLocalType((BaseTokenAST)i, serviceType);
-                                        beginScope(serviceType);
-                                        serviceType.setScope(scope, pkg);
+                                        currentPackage.setLocalType((BaseTokenAST)i, serviceType);
+                                        serviceType.setPackage(currentPackage);
+                                        currentScope = serviceType.getScope();
                                     }
-        (rpcDeclaration)*
-      ) { endScope(); }
+            (rpcDeclaration)*
+        )                           { currentScope = defaultScope; }
     ;
 
 rpcDeclaration
     : #(r:RPC (STREAM)? typeSymbol i:ID (STREAM)? typeSymbol
                                     {
-                                        scope.setSymbol((BaseTokenAST)i, r);
+                                        currentScope.setSymbol((BaseTokenAST)i, r);
                                     }
       )
     ;
@@ -381,7 +395,7 @@ definedType
 typeSymbol
     :   #(t:TYPEREF ID (DOT ID)*)
         {
-            pkg.addTypeReferenceToResolve((TypeReference)t, scope);
+            currentPackage.addTypeReferenceToResolve((TypeReference)t);
         }
     ;
 
@@ -449,7 +463,7 @@ parameterList
 parameterDefinition
     :   #(p:PARAM definedType i:ID)
         {
-            scope.setSymbol((BaseTokenAST)i, p);
+            currentScope.setSymbol((BaseTokenAST)i, p);
         }
     ;
 
