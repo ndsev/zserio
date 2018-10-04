@@ -1,4 +1,4 @@
-package index_operator.alignment_expression_error;
+package index_operators.alignment_expression_error;
 
 struct AlignmentExpressionError
 {

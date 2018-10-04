@@ -6,21 +6,27 @@
     </target>
 
     <target name="gen" depends="prepare">
-        <testGen testName="expressions_error" zsFile="index_operator/alignment_expression_error.zs"
+        <testGen testName="expressions_error" zsFile="index_operators/alignment_expression_error.zs"
             ignoreErrors="true"/>
-        <testGen testName="expressions_error" zsFile="index_operator/constant_expression_error.zs"
+        <testGen testName="expressions_error" zsFile="index_operators/constant_expression_error.zs"
             ignoreErrors="true"/>
-        <testGen testName="expressions_error" zsFile="index_operator/constraint_expression_error.zs"
+        <testGen testName="expressions_error" zsFile="index_operators/constraint_expression_error.zs"
             ignoreErrors="true"/>
-        <testGen testName="expressions_error" zsFile="index_operator/default_value_expression_error.zs"
+        <testGen testName="expressions_error" zsFile="index_operators/default_value_expression_error.zs"
             ignoreErrors="true"/>
-        <testGen testName="expressions_error" zsFile="index_operator/enum_value_expression_error.zs"
+        <testGen testName="expressions_error" zsFile="index_operators/enum_value_expression_error.zs"
             ignoreErrors="true"/>
-        <testGen testName="expressions_error" zsFile="index_operator/no_array_error.zs" ignoreErrors="true"/>
-        <testGen testName="expressions_error" zsFile="index_operator/optional_expression_error.zs"
+        <testGen testName="expressions_error" zsFile="index_operators/no_array_error.zs" ignoreErrors="true"/>
+        <testGen testName="expressions_error" zsFile="index_operators/optional_expression_error.zs"
             ignoreErrors="true"/>
-        <testGen testName="expressions_error" zsFile="index_operator/parameter_no_array_error.zs"
+        <testGen testName="expressions_error" zsFile="index_operators/parameter_no_array_error.zs"
             ignoreErrors="true"/>
+        <testGen testName="expressions_error" zsFile="offsets/array_no_index_error.zs" ignoreErrors="true"/>
+        <testGen testName="expressions_error" zsFile="offsets/float_error.zs" ignoreErrors="true"/>
+        <testGen testName="expressions_error" zsFile="offsets/signed_bitfield_error.zs" ignoreErrors="true"/>
+        <testGen testName="expressions_error" zsFile="offsets/signed_integer_error.zs" ignoreErrors="true"/>
+        <testGen testName="expressions_error" zsFile="offsets/signed_varint_error.zs" ignoreErrors="true"/>
+        <testGen testName="expressions_error" zsFile="offsets/string_error.zs" ignoreErrors="true"/>
     </target>
 
     <target name="compile" depends="gen">

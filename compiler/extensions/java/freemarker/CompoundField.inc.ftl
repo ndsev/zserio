@@ -1,10 +1,18 @@
+<#macro compound_field_get_offset field>
+    <#if field.offset.requiresBigInt>
+        ${field.offset.getter}.longValue()<#t>
+    <#else>
+        ${field.offset.getter}<#t>
+    </#if>
+</#macro>
+
 <#macro compound_read_field_offset_check field compoundName indent>
     <#local I>${""?left_pad(indent * 4)}</#local>
 ${I}__in.alignTo(Byte.SIZE);
-${I}if (__in.getBitPosition() != BitPositionUtil.bytesToBits(${field.offset.getter}))
+${I}if (__in.getBytePosition() != <@compound_field_get_offset field/>)
 ${I}{
 ${I}    throw new ZserioError("Read: Wrong offset for field ${compoundName}.${field.name}: " +
-${I}            __in.getBitPosition() + " != " + BitPositionUtil.bytesToBits(${field.offset.getter}) + "!");
+${I}            __in.getBytePosition() + " != " + <@compound_field_get_offset field/> + "!");
 ${I}}
 </#macro>
 
@@ -72,9 +80,9 @@ ${I}}
 <#macro compound_write_field_offset_check field compoundName indent>
     <#local I>${""?left_pad(indent * 4)}</#local>
 ${I}__out.alignTo(Byte.SIZE);
-${I}if (__out.getBytePosition() != ${field.offset.getter})
+${I}if (__out.getBytePosition() != <@compound_field_get_offset field/>)
 ${I}    throw new ZserioError("Write: Wrong offset for field ${compoundName}.${field.name}: " +
-${I}            __out.getBytePosition() + " != " + ${field.offset.getter} + "!");
+${I}            __out.getBytePosition() + " != " + <@compound_field_get_offset field/> + "!");
 </#macro>
 
 <#macro compound_write_field_inner field compoundName indent>
@@ -245,10 +253,10 @@ ${I}__result = Util.HASH_PRIME_NUMBER * __result + ((${field.name} == null) ? 0 
         @Override
         public void checkOffset(int __index, long __byteOffset) throws ZserioError
         {
-            if (__byteOffset != ${field.offset.getter})
+            if (__byteOffset != <@compound_field_get_offset field/>)
             {
                 throw new ZserioError("Write: Wrong offset for field ${compoundName}.${field.name}: " +
-                        __byteOffset + " != " + ${field.offset.getter} + "!");
+                        __byteOffset + " != " + <@compound_field_get_offset field/> + "!");
             }
         }
     }
@@ -264,7 +272,12 @@ ${I}__result = Util.HASH_PRIME_NUMBER * __result + ((${field.name} == null) ? 0 
         @Override
         public void setOffset(int __index, long __byteOffset)
         {
-            final ${field.offset.typeName} __value = (${field.offset.typeName})__byteOffset;
+            final ${field.offset.typeName} __value = <#rt>
+    <#if field.offset.requiresBigInt>
+                    <#lt>java.math.BigInteger.valueOf(__byteOffset);
+    <#else>
+                    <#lt>(${field.offset.typeName})__byteOffset;
+    </#if>
             ${field.offset.setter};
         }
     }

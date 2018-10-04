@@ -214,7 +214,12 @@ ${I}__endBitPosition = BitPositionUtil.alignTo(Byte.SIZE, __endBitPosition);
         <#if field.offset?? && !field.offset.containsIndex>
             <#local I>${""?left_pad(indent * 4)}</#local>
 ${I}{
-${I}    final ${field.offset.typeName} __value = (${field.offset.typeName})BitPositionUtil.bitsToBytes(__endBitPosition);
+${I}    final ${field.offset.typeName} __value = <#rt>
+            <#if field.offset.requiresBigInt>
+                <#lt>java.math.BigInteger.valueOf(BitPositionUtil.bitsToBytes(__endBitPosition));
+            <#else>
+                <#lt>(${field.offset.typeName})BitPositionUtil.bitsToBytes(__endBitPosition);
+            </#if>
 ${I}    ${field.offset.setter};
 ${I}}
         </#if>

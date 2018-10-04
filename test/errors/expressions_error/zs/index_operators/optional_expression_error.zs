@@ -1,4 +1,4 @@
-package index_operator.optional_expression_error;
+package index_operators.optional_expression_error;
 
 struct OptionalExpressionError
 {

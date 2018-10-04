@@ -355,9 +355,13 @@ public class Field extends TokenAST
                     getName() + "' is not boolean!");
 
         // check offset expression type
-        if (offsetExpr != null && offsetExpr.getExprType() != Expression.ExpressionType.INTEGER)
-            throw new ParserException(offsetExpr, "Offset expression for field '" + getName() +
-                    "' is not integer!");
+        if (offsetExpr != null)
+        {
+            final ZserioType exprZserioType = offsetExpr.getExprZserioType();
+            if (!(exprZserioType instanceof IntegerType) || ((IntegerType)exprZserioType).isSigned())
+                throw new ParserException(offsetExpr, "Offset expression for field '" + getName() +
+                        "' is not an unsigned integer type!");
+        }
 
         // check alignment expression type
         if (alignmentExpr != null)

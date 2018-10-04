@@ -26,7 +26,6 @@ import with_validation_code.simple_table_validation.SimpleTableValidationDb;
 import with_validation_code.simple_table_validation.TestEnum;
 
 import zserio.runtime.ZserioError;
-import zserio.runtime.SqlDatabase.Mode;
 import zserio.runtime.array.UnsignedByteArray;
 import zserio.runtime.io.ZserioIO;
 import zserio.runtime.validation.ValidationError;
@@ -91,7 +90,7 @@ public class SimpleTableValidationTest
         assertEquals("simpleTable", error.getTableName());
         assertEquals("fieldBlob", error.getFieldName());
         assertEquals(ValidationError.Type.BLOB_PARSE_FAILED, error.getType());
-        assertEquals("Read: Wrong offset for field RootStruct.end: 112 != 34225520752!",
+        assertEquals("Read: Wrong offset for field RootStruct.end: 14 != 4278190094!",
                 error.getMessage());
 
         final StackTraceElement[] stackTrace = error.getStackTrace();

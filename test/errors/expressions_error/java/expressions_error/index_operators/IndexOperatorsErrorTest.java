@@ -1,4 +1,4 @@
-package expressions_error.index_operator;
+package expressions_error.index_operators;
 
 import static org.junit.Assert.*;
 
@@ -18,14 +18,14 @@ public class IndexOperatorsErrorTest
     }
 
     @Test
-    public void alignmentExpressionError()
+    public void alignmentExpression()
     {
         final String error = "alignment_expression_error.zs:5:7: expecting DECIMAL_LITERAL, found '@'";
         assertTrue(zserioErrors.isPresent(error));
     }
 
     @Test
-    public void constantExpressionError()
+    public void constantExpression()
     {
         final String error =
                 "constant_expression_error.zs:3:29: Index operator is not allowed in this context!";
@@ -33,7 +33,7 @@ public class IndexOperatorsErrorTest
     }
 
     @Test
-    public void constraintExpressionError()
+    public void constraintExpression()
     {
         final String error =
                 "constraint_expression_error.zs:5:32: Index operator is not allowed in this context!";
@@ -41,7 +41,7 @@ public class IndexOperatorsErrorTest
     }
 
     @Test
-    public void defaultValueExpressionError()
+    public void defaultValueExpression()
     {
         final String error =
                 "default_value_expression_error.zs:5:24: Index operator is not allowed in this context!";
@@ -49,7 +49,7 @@ public class IndexOperatorsErrorTest
     }
 
     @Test
-    public void enumValueExpressionError()
+    public void enumValueExpression()
     {
         final String error =
                 "enum_value_expression_error.zs:5:15: Index operator is not allowed in this context!";

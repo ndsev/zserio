@@ -26,6 +26,12 @@ set(ZSERIO_GENERATED_SOURCES
     ${ZSERIO_GEN_DIR}/offsets/parameter_offset/Room.h
     ${ZSERIO_GEN_DIR}/offsets/parameter_offset/School.cpp
     ${ZSERIO_GEN_DIR}/offsets/parameter_offset/School.h
+
+    ${ZSERIO_GEN_DIR}/offsets/uint64_array_offset/UInt64ArrayOffset.cpp
+    ${ZSERIO_GEN_DIR}/offsets/uint64_array_offset/UInt64ArrayOffset.h
+
+    ${ZSERIO_GEN_DIR}/offsets/uint64_offset/UInt64Offset.cpp
+    ${ZSERIO_GEN_DIR}/offsets/uint64_offset/UInt64Offset.h
 )
 
 zserio_add_library(TARGET offsets_zs
@@ -43,6 +49,8 @@ add_test_sources(
     cpp/NestedOffsetTest.cpp
     cpp/OptionalMemberOffsetTest.cpp
     cpp/ParameterOffsetTest.cpp
+    cpp/UInt64ArrayOffsetTest.cpp
+    cpp/UInt64OffsetTest.cpp
 )
 
 add_test_dependencies(offsets_zs)
