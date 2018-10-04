@@ -11,9 +11,8 @@
     </target>
 
     <target name="gen" depends="gen.check" unless="sql_without_rowid_tables_warning.zs.gen_is_uptodate">
-        <delete dir="${sql_without_rowid_tables_warning.zs.out_dir}"/>
-        <testGen testName="sql_without_rowid_tables_warning" zsFile="sql_without_rowid_tables_warning.zs"
-            ignoreWarnings="true"/>
+        <testGenClean testName="sql_without_rowid_tables_warning"/>
+        <testGen testName="sql_without_rowid_tables_warning" zsFile="sql_without_rowid_tables_warning.zs"/>
     </target>
 
     <target name="compile" depends="gen">

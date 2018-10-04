@@ -5,7 +5,12 @@
         <testPrepare testName="sql_constraints_error"/>
     </target>
 
-    <target name="gen" depends="prepare">
+    <target name="gen.check" depends="prepare">
+        <testGenCheck testName="sql_constraints_error"/>
+    </target>
+
+    <target name="gen" depends="gen.check" unless="sql_constraints_error.zs.gen_is_uptodate">
+        <testGenClean testName="sql_constraints_error"/>
         <testGen testName="sql_constraints_error" zsFile="invalid_type_reference_error.zs"
             ignoreErrors="true"/>
         <testGen testName="sql_constraints_error" zsFile="non_integer_constant_reference_error.zs"

@@ -5,11 +5,21 @@
         <testPrepare testName="sql_tables"/>
     </target>
 
-    <target name="gen" depends="prepare">
-        <testGen testName="sql_tables" zsFile="sql_tables.zs" ignoreWarnings="true"/>
+    <target name="gen.check" depends="prepare">
+        <testGenCheck testName="sql_tables"/>
     </target>
 
-    <target name="compile" depends="gen">
+    <target name="gen" depends="gen.check" unless="sql_tables.zs.gen_is_uptodate">
+        <testGenClean testName="sql_tables"/>
+        <testGen testName="sql_tables" zsFile="sql_tables.zs"/>
+    </target>
+
+    <target name="gen.checkWarnings" depends="gen">
+        <!-- without_pk_table.zs fires a valid warning -->
+        <testGenCheckWarnings testName="sql_tables" maxWarnings="1"/>
+    </target>
+
+    <target name="compile" depends="gen.checkWarnings">
         <testCompile testName="sql_tables"/>
     </target>
 

@@ -5,7 +5,12 @@
         <testPrepare testName="array_types_error"/>
     </target>
 
-    <target name="gen" depends="prepare">
+    <target name="gen.check" depends="prepare">
+        <testGenCheck testName="array_types_error"/>
+    </target>
+
+    <target name="gen" depends="gen.check" unless="array_types_error.zs.gen_is_uptodate">
+        <testGenClean testName="array_types_error"/>
         <testGen testName="array_types_error" zsFile="array_length_field_not_available_error.zs"
             ignoreErrors="true"/>
         <testGen testName="array_types_error" zsFile="implicit_array_not_last_error.zs" ignoreErrors="true"/>

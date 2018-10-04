@@ -5,7 +5,12 @@
         <testPrepare testName="optional_members_error"/>
     </target>
 
-    <target name="gen" depends="prepare">
+    <target name="gen.check" depends="prepare">
+        <testGenCheck testName="optional_members_error"/>
+    </target>
+
+    <target name="gen" depends="gen.check" unless="optional_members_error.zs.gen_is_uptodate">
+        <testGenClean testName="optional_members_error"/>
         <testGen testName="optional_members_error" zsFile="auto_optional_with_expression_error.zs"
             ignoreErrors="true"/>
         <testGen testName="optional_members_error" zsFile="compound_field_in_function_not_available_error.zs"

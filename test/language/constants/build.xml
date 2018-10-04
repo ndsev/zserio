@@ -5,11 +5,20 @@
         <testPrepare testName="constants"/>
     </target>
 
-    <target name="gen" depends="prepare">
+    <target name="gen.check" depends="prepare">
+        <testGenCheck testName="constants"/>
+    </target>
+
+    <target name="gen" depends="gen.check" unless="constants.zs.gen_is_uptodate">
+        <testGenClean testName="constants"/>
         <testGen testName="constants" zsFile="constants.zs"/>
     </target>
 
-    <target name="compile" depends="gen">
+    <target name="gen.checkWarnings" depends="gen">
+        <testGenCheckWarnings testName="constants"/>
+    </target>
+
+    <target name="compile" depends="gen.checkWarnings">
         <testCompile testName="constants"/>
     </target>
 

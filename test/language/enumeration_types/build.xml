@@ -5,11 +5,20 @@
         <testPrepare testName="enumeration_types"/>
     </target>
 
-    <target name="gen" depends="prepare">
+    <target name="gen.check" depends="prepare">
+        <testGenCheck testName="enumeration_types"/>
+    </target>
+
+    <target name="gen" depends="gen.check" unless="enumeration_types.zs.gen_is_uptodate">
+        <testGenClean testName="enumeration_types"/>
         <testGen testName="enumeration_types" zsFile="enumeration_types.zs"/>
     </target>
 
-    <target name="compile" depends="gen">
+    <target name="gen.checkWarnings" depends="gen">
+        <testGenCheckWarnings testName="enumeration_types"/>
+    </target>
+
+    <target name="compile" depends="gen.checkWarnings">
         <testCompile testName="enumeration_types"/>
     </target>
 

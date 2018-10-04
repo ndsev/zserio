@@ -5,13 +5,22 @@
         <testPrepare testName="java_version9"/>
     </target>
 
-    <target name="gen" depends="prepare">
+    <target name="gen.check" depends="prepare">
+        <testGenCheck testName="java_version9"/>
+    </target>
+
+    <target name="gen" depends="gen.check" unless="java_version9.zs.gen_is_uptodate">
+        <testGenClean testName="java_version9"/>
         <testGen testName="java_version9" zsFile="java_version9.zs">
             <arg name="javaVersion" value="9"/>
         </testGen>
     </target>
 
-    <target name="compile" depends="gen">
+    <target name="gen.checkWarnings" depends="gen">
+        <testGenCheckWarnings testName="java_version9"/>
+    </target>
+
+    <target name="compile" depends="gen.checkWarnings">
         <testCompile testName="java_version9" srcPath="${java_version9.base_dir}/java"/>
     </target>
 

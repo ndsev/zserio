@@ -5,11 +5,20 @@
         <testPrepare testName="gif"/>
     </target>
 
-    <target name="gen" depends="prepare">
+    <target name="gen.check" depends="prepare">
+        <testGenCheck testName="gif"/>
+    </target>
+
+    <target name="gen" depends="gen.check" unless="gif.zs.gen_is_uptodate">
+        <testGenClean testName="gif"/>
         <testGen testName="gif" zsFile="gif.zs"/>
     </target>
 
-    <target name="compile" depends="gen">
+    <target name="gen.checkWarnings" depends="gen">
+        <testGenCheckWarnings testName="gif"/>
+    </target>
+
+    <target name="compile" depends="gen.checkWarnings">
         <testCompile testName="gif"/>
     </target>
 

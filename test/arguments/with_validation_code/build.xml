@@ -5,13 +5,22 @@
         <testPrepare testName="with_validation_code"/>
     </target>
 
-    <target name="gen" depends="prepare">
+    <target name="gen.check" depends="prepare">
+        <testGenCheck testName="with_validation_code"/>
+    </target>
+
+    <target name="gen" depends="gen.check" unless="with_validation_code.zs.gen_is_uptodate">
+        <testGenClean testName="with_validation_code"/>
         <testGen testName="with_validation_code" zsFile="with_validation_code.zs">
             <arg name="withValidationCode"/>
         </testGen>
     </target>
 
-    <target name="compile" depends="gen">
+    <target name="gen.checkWarnings" depends="gen">
+        <testGenCheckWarnings testName="with_validation_code"/>
+    </target>
+
+    <target name="compile" depends="gen.checkWarnings">
         <testCompile testName="with_validation_code"/>
     </target>
 

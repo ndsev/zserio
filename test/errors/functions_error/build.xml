@@ -5,7 +5,12 @@
         <testPrepare testName="functions_error"/>
     </target>
 
-    <target name="gen" depends="prepare">
+    <target name="gen.check" depends="prepare">
+        <testGenCheck testName="functions_error"/>
+    </target>
+
+    <target name="gen" depends="gen.check" unless="functions_error.zs.gen_is_uptodate">
+        <testGenClean testName="functions_error"/>
         <testGen testName="functions_error" zsFile="wrong_return_type_error.zs" ignoreErrors="true"/>
     </target>
 

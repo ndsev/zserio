@@ -5,13 +5,22 @@
         <testPrepare testName="set_top_level_package"/>
     </target>
 
-    <target name="gen" depends="prepare">
+    <target name="gen.check" depends="prepare">
+        <testGenCheck testName="set_top_level_package"/>
+    </target>
+
+    <target name="gen" depends="gen.check" unless="set_top_level_package.zs.gen_is_uptodate">
+        <testGenClean testName="set_top_level_package"/>
         <testGen testName="set_top_level_package" zsFile="set_top_level_package.zs">
             <arg name="setTopLevelPackage" value="company.appl"/>
         </testGen>
     </target>
 
-    <target name="compile" depends="gen">
+    <target name="gen.checkWarnings" depends="gen">
+        <testGenCheckWarnings testName="set_top_level_package"/>
+    </target>
+
+    <target name="compile" depends="gen.checkWarnings">
         <testCompile testName="set_top_level_package"/>
     </target>
 

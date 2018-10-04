@@ -5,11 +5,20 @@
         <testPrepare testName="comments"/>
     </target>
 
-    <target name="gen" depends="prepare">
+    <target name="gen.check" depends="prepare">
+        <testGenCheck testName="comments"/>
+    </target>
+
+    <target name="gen" depends="gen.check" unless="comments.zs.gen_is_uptodate">
+        <testGenClean testName="comments"/>
         <testGen testName="comments" zsFile="comments.zs"/>
     </target>
 
-    <target name="compile" depends="gen">
+    <target name="gen.checkWarnings" depends="gen">
+        <testGenCheckWarnings testName="comments"/>
+    </target>
+
+    <target name="compile" depends="gen.checkWarnings">
         <testCompile testName="comments" srcPath="${comments.zs.out_dir}"/>
     </target>
 

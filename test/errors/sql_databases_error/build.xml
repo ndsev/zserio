@@ -5,7 +5,12 @@
         <testPrepare testName="sql_databases_error"/>
     </target>
 
-    <target name="gen" depends="prepare">
+    <target name="gen.check" depends="prepare">
+        <testGenCheck testName="sql_databases_error"/>
+    </target>
+
+    <target name="gen" depends="gen.check" unless="sql_databases_error.zs.gen_is_uptodate">
+        <testGenClean testName="sql_databases_error"/>
         <testGen testName="sql_databases_error" zsFile="database_field_error.zs" ignoreErrors="true"/>
         <testGen testName="sql_databases_error" zsFile="subtyped_structure_field_error.zs" ignoreErrors="true"/>
         <testGen testName="sql_databases_error" zsFile="structure_field_error.zs" ignoreErrors="true"/>

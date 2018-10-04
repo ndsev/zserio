@@ -5,11 +5,20 @@
         <testPrepare testName="offsets"/>
     </target>
 
-    <target name="gen" depends="prepare">
+    <target name="gen.check" depends="prepare">
+        <testGenCheck testName="offsets"/>
+    </target>
+
+    <target name="gen" depends="gen.check" unless="offsets.zs.gen_is_uptodate">
+        <testGenClean testName="offsets"/>
         <testGen testName="offsets" zsFile="offsets.zs"/>
     </target>
 
-    <target name="compile" depends="gen">
+    <target name="gen.checkWarnings" depends="gen">
+        <testGenCheckWarnings testName="offsets"/>
+    </target>
+
+    <target name="compile" depends="gen.checkWarnings">
         <testCompile testName="offsets"/>
     </target>
 

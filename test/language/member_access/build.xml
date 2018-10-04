@@ -5,11 +5,20 @@
         <testPrepare testName="member_access"/>
     </target>
 
-    <target name="gen" depends="prepare">
+    <target name="gen.check" depends="prepare">
+        <testGenCheck testName="member_access"/>
+    </target>
+
+    <target name="gen" depends="gen.check" unless="member_access.zs.gen_is_uptodate">
+        <testGenClean testName="member_access"/>
         <testGen testName="member_access" zsFile="member_access.zs"/>
     </target>
 
-    <target name="compile" depends="gen">
+    <target name="gen.checkWarnings" depends="gen">
+        <testGenCheckWarnings testName="member_access"/>
+    </target>
+
+    <target name="compile" depends="gen.checkWarnings">
         <testCompile testName="member_access"/>
     </target>
 

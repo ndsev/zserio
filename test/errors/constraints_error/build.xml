@@ -5,7 +5,12 @@
         <testPrepare testName="constraints_error"/>
     </target>
 
-    <target name="gen" depends="prepare">
+    <target name="gen.check" depends="prepare">
+        <testGenCheck testName="constraints_error"/>
+    </target>
+
+    <target name="gen" depends="gen.check" unless="constraints_error.zs.gen_is_uptodate">
+        <testGenClean testName="constraints_error"/>
         <testGen testName="constraints_error" zsFile="field_in_function_not_available_error.zs"
             ignoreErrors="true"/>
         <testGen testName="constraints_error" zsFile="field_not_available_error.zs" ignoreErrors="true"/>

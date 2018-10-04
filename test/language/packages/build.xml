@@ -5,13 +5,22 @@
         <testPrepare testName="packages"/>
     </target>
 
-    <target name="gen" depends="prepare">
-        <testGen testName="packages" zsFile="empty_file.zs" ignoreDependencies="true"/>
-        <testGen testName="packages" zsFile="default_package.zs"/>
-        <testGen testName="packages" zsFile="packages.zs" ignoreDependencies="true"/>
+    <target name="gen.check" depends="prepare">
+        <testGenCheck testName="packages"/>
     </target>
 
-    <target name="compile" depends="gen">
+    <target name="gen" depends="gen.check" unless="packages.zs.gen_is_uptodate">
+        <testGenClean testName="packages"/>
+        <testGen testName="packages" zsFile="empty_file.zs"/>
+        <testGen testName="packages" zsFile="default_package.zs"/>
+        <testGen testName="packages" zsFile="packages.zs"/>
+    </target>
+
+    <target name="gen.checkWarnings" depends="gen">
+        <testGenCheckWarnings testName="packages"/>
+    </target>
+
+    <target name="compile" depends="gen.checkWarnings">
         <testCompile testName="packages"/>
     </target>
 

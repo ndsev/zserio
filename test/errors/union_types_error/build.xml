@@ -5,7 +5,12 @@
         <testPrepare testName="union_types_error"/>
     </target>
 
-    <target name="gen" depends="prepare">
+    <target name="gen.check" depends="prepare">
+        <testGenCheck testName="union_types_error"/>
+    </target>
+
+    <target name="gen" depends="gen.check" unless="union_types_error.zs.gen_is_uptodate">
+        <testGenClean testName="union_types_error"/>
         <testGen testName="union_types_error" zsFile="optional_field_error.zs" ignoreErrors="true"/>
         <testGen testName="union_types_error" zsFile="recursive_error.zs" ignoreErrors="true"/>
         <testGen testName="union_types_error" zsFile="unresolved_field_in_constraint_error.zs"

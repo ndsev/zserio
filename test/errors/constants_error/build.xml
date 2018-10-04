@@ -5,7 +5,12 @@
         <testPrepare testName="constants_error"/>
     </target>
 
-    <target name="gen" depends="prepare">
+    <target name="gen.check" depends="prepare">
+        <testGenCheck testName="constants_error"/>
+    </target>
+
+    <target name="gen" depends="gen.check" unless="constants_error.zs.gen_is_uptodate">
+        <testGenClean testName="constants_error"/>
         <testGen testName="constants_error" zsFile="choice_type_constant_error.zs" ignoreErrors="true"/>
         <testGen testName="constants_error" zsFile="constant_0x8000_error.zs" ignoreErrors="true"/>
         <testGen testName="constants_error" zsFile="constant_0xffff_error.zs" ignoreErrors="true"/>

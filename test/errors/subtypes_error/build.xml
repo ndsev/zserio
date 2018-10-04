@@ -5,7 +5,12 @@
         <testPrepare testName="subtypes_error"/>
     </target>
 
-    <target name="gen" depends="prepare">
+    <target name="gen.check" depends="prepare">
+        <testGenCheck testName="subtypes_error"/>
+    </target>
+
+    <target name="gen" depends="gen.check" unless="subtypes_error.zs.gen_is_uptodate">
+        <testGenClean testName="subtypes_error"/>
         <testGen testName="subtypes_error" zsFile="database_subtype_error.zs" ignoreErrors="true"/>
         <testGen testName="subtypes_error" zsFile="parameterized_subtype_error.zs" ignoreErrors="true"/>
         <testGen testName="subtypes_error" zsFile="simple_cyclic_dependency_error.zs" ignoreErrors="true"/>

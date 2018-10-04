@@ -10,8 +10,8 @@
     </target>
 
     <target name="gen" depends="gen.check" unless="not_handled_warning.zs.gen_is_uptodate">
-        <delete dir="${not_handled_warning.zs.out_dir}"/>
-        <testGen testName="not_handled_warning" zsFile="not_handled_warning.zs" ignoreWarnings="true"/>
+        <testGenClean testName="not_handled_warning"/>
+        <testGen testName="not_handled_warning" zsFile="not_handled_warning.zs"/>
     </target>
 
     <target name="compile" depends="gen">

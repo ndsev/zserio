@@ -5,7 +5,12 @@
         <testPrepare testName="parameterized_types_error"/>
     </target>
 
-    <target name="gen" depends="prepare">
+    <target name="gen.check" depends="prepare">
+        <testGenCheck testName="parameterized_types_error"/>
+    </target>
+
+    <target name="gen" depends="gen.check" unless="parameterized_types_error.zs.gen_is_uptodate">
+        <testGenClean testName="parameterized_types_error"/>
         <testGen testName="parameterized_types_error" zsFile="referenced_non_compound_type_error.zs"
             ignoreErrors="true"/>
         <testGen testName="parameterized_types_error" zsFile="referenced_non_parametrized_type_error.zs"

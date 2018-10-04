@@ -5,13 +5,22 @@
         <testPrepare testName="sql_databases"/>
     </target>
 
-    <target name="gen" depends="prepare">
+    <target name="gen.check" depends="prepare">
+        <testGenCheck testName="sql_databases"/>
+    </target>
+
+    <target name="gen" depends="gen.check" unless="sql_databases.zs.gen_is_uptodate">
+        <testGenClean testName="sql_databases"/>
         <testGen testName="sql_databases" zsFile="sql_databases.zs">
             <arg name="withValidationCode"/>
         </testGen>
     </target>
 
-    <target name="compile" depends="gen">
+    <target name="gen.checkWarnings" depends="gen">
+        <testGenCheckWarnings testName="sql_databases"/>
+    </target>
+
+    <target name="compile" depends="gen.checkWarnings">
         <testCompile testName="sql_databases"/>
     </target>
 

@@ -5,7 +5,12 @@
         <testPrepare testName="enumeration_types_error"/>
     </target>
 
-    <target name="gen" depends="prepare">
+    <target name="gen.check" depends="prepare">
+        <testGenCheck testName="enumeration_types_error"/>
+    </target>
+
+    <target name="gen" depends="gen.check" unless="enumeration_types_error.zs.gen_is_uptodate">
+        <testGenClean testName="enumeration_types_error"/>
         <testGen testName="enumeration_types_error" zsFile="cyclic_definition_error.zs" ignoreErrors="true"/>
         <testGen testName="enumeration_types_error" zsFile="cyclic_definition_using_constant_error.zs"
             ignoreErrors="true"/>

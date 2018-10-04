@@ -5,7 +5,12 @@
         <testPrepare testName="sql_without_rowid_tables_error"/>
     </target>
 
-    <target name="gen" depends="prepare">
+    <target name="gen.check" depends="prepare">
+        <testGenCheck testName="sql_without_rowid_tables_error"/>
+    </target>
+
+    <target name="gen" depends="gen.check" unless="sql_without_rowid_tables_error.zs.gen_is_uptodate">
+        <testGenClean testName="sql_without_rowid_tables_error"/>
         <testGen testName="sql_without_rowid_tables_error" zsFile="no_primary_key_column_error.zs"
             ignoreErrors="true"/>
     </target>

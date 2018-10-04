@@ -5,13 +5,22 @@
         <testPrepare testName="without_grpc_code"/>
     </target>
 
-    <target name="gen" depends="prepare">
+    <target name="gen.check" depends="prepare">
+        <testGenCheck testName="without_grpc_code"/>
+    </target>
+
+    <target name="gen" depends="gen.check" unless="without_grpc_code.zs.gen_is_uptodate">
+        <testGenClean testName="without_grpc_code"/>
         <testGen testName="without_grpc_code" zsFile="without_grpc_code.zs">
             <arg name="withoutGrpcCode"/>
         </testGen>
     </target>
 
-    <target name="compile" depends="gen">
+    <target name="gen.checkWarnings" depends="gen">
+        <testGenCheckWarnings testName="without_grpc_code"/>
+    </target>
+
+    <target name="compile" depends="gen.checkWarnings">
         <testCompile testName="without_grpc_code"/>
     </target>
 

@@ -10,9 +10,8 @@
     </target>
 
     <target name="gen" depends="gen.check" unless="optional_members_warning.zs.gen_is_uptodate">
-        <delete dir="${optional_members_warning.zs.out_dir}"/>
-        <testGen testName="optional_members_warning" zsFile="optional_members_warning.zs"
-            ignoreWarnings="true"/>
+        <testGenClean testName="optional_members_warning"/>
+        <testGen testName="optional_members_warning" zsFile="optional_members_warning.zs"/>
     </target>
 
     <target name="compile" depends="gen">

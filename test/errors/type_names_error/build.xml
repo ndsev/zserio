@@ -5,7 +5,12 @@
         <testPrepare testName="type_names_error"/>
     </target>
 
-    <target name="gen" depends="prepare">
+    <target name="gen.check" depends="prepare">
+        <testGenCheck testName="type_names_error"/>
+    </target>
+
+    <target name="gen" depends="gen.check" unless="type_names_error.zs.gen_is_uptodate">
+        <testGenClean testName="type_names_error"/>
         <testGen testName="type_names_error" zsFile="choice_choice_name_conflict_error.zs" ignoreErrors="true"/>
         <testGen testName="type_names_error" zsFile="choice_structure_name_conflict_error.zs"
             ignoreErrors="true"/>

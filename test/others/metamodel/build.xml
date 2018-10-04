@@ -5,11 +5,20 @@
         <testPrepare testName="metamodel"/>
     </target>
 
-    <target name="gen" depends="prepare">
+    <target name="gen.check" depends="prepare">
+        <testGenCheck testName="metamodel"/>
+    </target>
+
+    <target name="gen" depends="gen.check" unless="metamodel.zs.gen_is_uptodate">
+        <testGenClean testName="metamodel"/>
         <testGen testName="metamodel" zsFile="metamodel.zs"/>
     </target>
 
-    <target name="compile" depends="gen">
+    <target name="gen.checkWarnings" depends="gen">
+        <testGenCheckWarnings testName="metamodel"/>
+    </target>
+
+    <target name="compile" depends="gen.checkWarnings">
         <testCompile testName="metamodel" srcPath="${metamodel.zs.out_dir}"/>
     </target>
 

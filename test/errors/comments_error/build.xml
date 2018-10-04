@@ -5,7 +5,12 @@
         <testPrepare testName="comments_error"/>
     </target>
 
-    <target name="gen" depends="prepare">
+    <target name="gen.check" depends="prepare">
+        <testGenCheck testName="comments_error"/>
+    </target>
+
+    <target name="gen" depends="gen.check" unless="comments_error.zs.gen_is_uptodate">
+        <testGenClean testName="comments_error"/>
         <testGen testName="comments_error" zsFile="see_tag_error.zs" ignoreErrors="true"/>
         <testGen testName="comments_error" zsFile="unknown_tag_error.zs" ignoreErrors="true"/>
         <testGen testName="comments_error" zsFile="unknown_tag_matching_prefix_error.zs" ignoreErrors="true"/>

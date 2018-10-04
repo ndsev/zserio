@@ -5,7 +5,12 @@
         <testPrepare testName="syntax_error"/>
     </target>
 
-    <target name="gen" depends="prepare">
+    <target name="gen.check" depends="prepare">
+        <testGenCheck testName="syntax_error"/>
+    </target>
+
+    <target name="gen" depends="gen.check" unless="syntax_error.zs.gen_is_uptodate">
+        <testGenClean testName="syntax_error"/>
         <testGen testName="syntax_error" zsFile="unexpected_eof_in_array_length_error.zs" ignoreErrors="true"/>
         <testGen testName="syntax_error" zsFile="unexpected_eof_in_const_definition_error.zs"
             ignoreErrors="true"/>

@@ -5,7 +5,12 @@
         <testPrepare testName="base_types_error"/>
     </target>
 
-    <target name="gen" depends="prepare">
+    <target name="gen.check" depends="prepare">
+        <testGenCheck testName="base_types_error"/>
+    </target>
+
+    <target name="gen" depends="gen.check" unless="base_types_error.zs.gen_is_uptodate">
+        <testGenClean testName="base_types_error"/>
         <testGen testName="base_types_error" zsFile="bitfield_cyclic_definition_error.zs" ignoreErrors="true"/>
         <testGen testName="base_types_error" zsFile="bitfield_int33_length_type_error.zs" ignoreErrors="true"/>
         <testGen testName="base_types_error" zsFile="bitfield_invalid_length_type_error.zs"

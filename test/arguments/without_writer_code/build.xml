@@ -5,13 +5,22 @@
         <testPrepare testName="without_writer_code"/>
     </target>
 
-    <target name="gen" depends="prepare">
+    <target name="gen.check" depends="prepare">
+        <testGenCheck testName="without_writer_code"/>
+    </target>
+
+    <target name="gen" depends="gen.check" unless="without_writer_code.zs.gen_is_uptodate">
+        <testGenClean testName="without_writer_code"/>
         <testGen testName="without_writer_code" zsFile="without_writer_code.zs">
             <arg name="withoutWriterCode"/>
         </testGen>
     </target>
 
-    <target name="compile" depends="gen">
+    <target name="gen.checkWarnings" depends="gen">
+        <testGenCheckWarnings testName="without_writer_code"/>
+    </target>
+
+    <target name="compile" depends="gen.checkWarnings">
         <testCompile testName="without_writer_code"/>
     </target>
 

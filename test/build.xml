@@ -37,6 +37,13 @@ zserio_java_test.grpc      - Whether the GRPC tests are enabled (default is "no"
         <isset property="findbugs.home_dir"/>
     </condition>
 
+    <!-- check Ant version, minimum is 1.9.1 due to xmlns:if and xmlns:unless -->
+    <fail message="[ERROR] Ant 1.9.1+ required! Current ant is ${ant.version}.">
+        <condition>
+            <not><antversion atleast="1.9.1"/></not>
+        </condition>
+    </fail>
+
     <!-- Test common utilities needed for some tests. -->
     <include file="${zserio_java_test.base_dir}/utils/java/build.xml"/>
 
@@ -79,7 +86,8 @@ zserio_java_test.grpc      - Whether the GRPC tests are enabled (default is "no"
                 <srcfileset dir="${runtime.jar_dir}">
                     <include name="*.jar"/>
                 </srcfileset>
-                <srcfileset file="${ant.file.@{testName}}"/>
+                <srcfileset file="${ant.file.@{testName}}"/> <!-- current test ant file -->
+                <srcfileset file="${ant.file.zserio_java_test}"/> <!-- main test ant file -->
                 <targetfileset file="${@{testName}.zs.log_file}"/>
             </dependset>
             <available file="${@{testName}.zs.log_file}"
@@ -87,33 +95,23 @@ zserio_java_test.grpc      - Whether the GRPC tests are enabled (default is "no"
         </sequential>
     </macrodef>
 
+    <macrodef name="testGenClean">
+        <attribute name="testName"/>
+        <sequential>
+            <delete dir="${@{testName}.zs.out_dir}"/>
+        </sequential>
+    </macrodef>
+
     <macrodef name="testGen">
         <attribute name="testName"/>
         <attribute name="zsFile"/>
         <attribute name="ignoreErrors" default="false"/>
-        <attribute name="ignoreWarnings" default="@{ignoreErrors}"/>
-        <attribute name="ignoreDependencies" default="@{ignoreErrors}"/>
-        <attribute name="logLevel" default="warn"/>
         <element name="args" implicit="yes" optional="true"/>
         <sequential>
-            <condition property="@{testName}.needsRecompile">
-                <and>
-                    <isfalse value="@{ignoreWarnings}"/>
-                    <length file="${@{testName}.zs.log_file}" when="ne" length="0"/>
-                </and>
-            </condition>
-            <delete dir="${@{testName}.zs.out_dir}" if:true="${@{testName}.needsRecompile}"/>
-
-            <record name="${@{testName}.zs.log_file}" action="start" loglevel="@{logLevel}"/>
+            <record name="${@{testName}.zs.log_file}" action="start" loglevel="warn"/>
 
             <zserio srcPath="${@{testName}.zs.in_dir}" srcFile="@{zsFile}"
                 java="${@{testName}.zs.out_dir}" ignoreError="@{ignoreErrors}">
-                <dependencies unless:true="${@{testName}.ignoreDependencies}">
-                    <fileset dir="${@{testName}.zs.in_dir}" includes="**/*.zs"/>
-                    <fileset dir="${zserio.jar_dir}"/>
-                    <fileset dir="${runtime.jar_dir}"/>
-                    <fileset file="${ant.file.@{testName}}"/>
-                </dependencies>
                 <output>
                     <fileset dir="${@{testName}.zs.out_dir}" includes="**/*.java" erroronmissingdir="false"/>
                 </output>
@@ -126,13 +124,28 @@ zserio_java_test.grpc      - Whether the GRPC tests are enabled (default is "no"
             </zserio>
 
             <record name="${@{testName}.zs.log_file}" action="stop"/>
+        </sequential>
+    </macrodef>
 
-            <fail message="Zserio produced some warnings. See ${@{testName}.zs.log_file}!">
+    <macrodef name="testGenCheckWarnings">
+        <attribute name="testName"/>
+        <attribute name="maxWarnings" default="0"/>
+        <sequential>
+            <fail message="[ERROR] Zserio tool produced some warnings. See ${@{testName}.zs.log_file}!">
                 <condition>
-                    <and>
-                        <isfalse value="@{ignoreWarnings}"/>
-                        <length file="${@{testName}.zs.log_file}" when="ne" length="0"/>
-                    </and>
+                    <!-- get number of warnings in the log file -->
+                    <resourcecount when="greater" count="@{maxWarnings}">
+                        <tokens>
+                            <concat>
+                                <filterchain>
+                                    <linecontainsregexp>
+                                        <regexp pattern="\[WARNING\]"/>
+                                    </linecontainsregexp>
+                                </filterchain>
+                                <fileset file="${@{testName}.zs.log_file}"/>
+                            </concat>
+                        </tokens>
+                    </resourcecount>
                 </condition>
             </fail>
         </sequential>
@@ -142,6 +155,7 @@ zserio_java_test.grpc      - Whether the GRPC tests are enabled (default is "no"
         <attribute name="testName"/>
         <attribute name="srcPath" default="${@{testName}.base_dir}/java:${@{testName}.zs.out_dir}"/>
         <attribute name="grpc" default="false"/>
+        <attribute name="ignoreZserioWarnings" default="false"/>
         <sequential>
             <depend srcDir="@{srcPath}"
                 destDir="${@{testName}.build_dir}/classes"

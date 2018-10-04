@@ -5,13 +5,22 @@
         <testPrepare testName="with_range_check_code"/>
     </target>
 
-    <target name="gen" depends="prepare">
+    <target name="gen.check" depends="prepare">
+        <testGenCheck testName="with_range_check_code"/>
+    </target>
+
+    <target name="gen" depends="gen.check" unless="with_range_check_code.zs.gen_is_uptodate">
+        <testGenClean testName="with_range_check_code"/>
         <testGen testName="with_range_check_code" zsFile="with_range_check_code.zs">
             <arg name="withRangeCheckCode"/>
         </testGen>
     </target>
 
-    <target name="compile" depends="gen">
+    <target name="gen.checkWarnings" depends="gen">
+        <testGenCheckWarnings testName="with_range_check_code"/>
+    </target>
+
+    <target name="compile" depends="gen.checkWarnings">
         <testCompile testName="with_range_check_code"/>
     </target>
 

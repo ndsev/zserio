@@ -5,7 +5,12 @@
         <testPrepare testName="member_access_error"/>
     </target>
 
-    <target name="gen" depends="prepare">
+    <target name="gen.check" depends="prepare">
+        <testGenCheck testName="member_access_error"/>
+    </target>
+
+    <target name="gen" depends="gen.check" unless="member_access_error.zs.gen_is_uptodate">
+        <testGenClean testName="member_access_error"/>
         <testGen testName="member_access_error" zsFile="wrong_field_name_error.zs" ignoreErrors="true"/>
         <testGen testName="member_access_error" zsFile="wrong_field_usage_error.zs" ignoreErrors="true"/>
     </target>
