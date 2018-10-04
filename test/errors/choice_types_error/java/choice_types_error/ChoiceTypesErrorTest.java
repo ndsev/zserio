@@ -33,6 +33,13 @@ public class ChoiceTypesErrorTest
     }
 
     @Test
+    public void fieldCaseError()
+    {
+        final String error = "field_case_error.zs:23:10: Unresolved symbol 'b' within expression scope!";
+        assertTrue(zserioErrors.isPresent(error));
+    }
+
+    @Test
     public void floatSelectorError()
     {
         final String error =
@@ -98,6 +105,14 @@ public class ChoiceTypesErrorTest
     {
         final String error = "unresolved_enum_item_error.zs:19:31: Unresolved symbol 'RED' within " +
                 "expression scope!";
+        assertTrue(zserioErrors.isPresent(error));
+    }
+
+    @Test
+    public void unresolvedFieldInConstraint()
+    {
+        final String error = "unresolved_field_in_constraint_error.zs:9:47: Unresolved symbol 'uint16Value' " +
+                "within expression scope!";
         assertTrue(zserioErrors.isPresent(error));
     }
 

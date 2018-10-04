@@ -55,6 +55,18 @@ public class Scope implements Serializable
     }
 
     /**
+     * Removes the symbol object for the given name.
+     *
+     * @param name Name of the symbol to be removed.
+     *
+     * @return Removed symbol object or null if no such symbol is available.
+     */
+    public Object removeSymbol(BaseTokenAST name)
+    {
+        return symbolTable.remove(name.getText());
+    }
+
+    /**
      * Adds another scope to the scope.
      *
      * @param scope Scope to be added.

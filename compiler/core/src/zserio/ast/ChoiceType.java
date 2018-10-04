@@ -228,7 +228,7 @@ public class ChoiceType extends CompoundType
                     throw new ParserException(expression, "Choice '" + getName() +
                             "' has incompatible case type!");
 
-                if (!expression.getReferencedSymbolObjects(Field.class).isEmpty())
+                if (!expression.getReferencedSymbolObjects(Parameter.class).isEmpty())
                     throw new ParserException(expression, "Choice '" + getName() +
                             "' has non-constant case expression!");
             }

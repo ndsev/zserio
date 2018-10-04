@@ -8,6 +8,8 @@
     <target name="gen" depends="prepare">
         <testGen testName="union_types_error" zsFile="optional_field_error.zs" ignoreErrors="true"/>
         <testGen testName="union_types_error" zsFile="recursive_error.zs" ignoreErrors="true"/>
+        <testGen testName="union_types_error" zsFile="unresolved_field_in_constraint_error.zs"
+            ignoreErrors="true"/>
     </target>
 
     <target name="compile" depends="gen">

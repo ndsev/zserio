@@ -32,5 +32,13 @@ public class UnionTypesErrorTest
         assertTrue(zserioErrors.isPresent(error));
     }
 
+    @Test
+    public void unresolvedFieldInConstraint()
+    {
+        final String error = "unresolved_field_in_constraint_error.zs:6:35: Unresolved symbol 'field1' " +
+                "within expression scope!";
+        assertTrue(zserioErrors.isPresent(error));
+    }
+
     private static ZserioErrors zserioErrors;
 }

@@ -26,6 +26,7 @@ options
     private Package currentPackage = null;
     private Scope defaultScope = new Scope((ZserioScopedType)null);
     private Scope currentScope = defaultScope;
+    private Scope currentChoiceOrUnionScope = null;
     private List<Scope> expressionScopes = new ArrayList<Scope>();
     private boolean fillExpressionScopes = false;
     private boolean allowIndex = false;
@@ -212,10 +213,16 @@ choiceDeclaration
                                         currentScope = choiceType.getScope();
                                         fillExpressionScopes = true;
                                     }
-            parameterList
+            parameterList           {
+                                        currentChoiceOrUnionScope = currentScope;
+                                        currentScope = new Scope(currentChoiceOrUnionScope);
+                                    }
             expression
             (choiceCases)+
-            (defaultChoice)?
+            (defaultChoice)?        {
+                                        currentScope = currentChoiceOrUnionScope;
+                                        currentChoiceOrUnionScope = null;
+                                    }
             (functionDefinition)*
         )                           {   
                                         currentScope = defaultScope;
@@ -231,9 +238,12 @@ choiceCases
 choiceFieldDefinition
     :   #(f:FIELD
             (typeReference | fieldArrayType)
-            i:ID                    { currentScope.setSymbol((BaseTokenAST)i, f); }
+            i:ID                    {
+                                        currentScope.setSymbol((BaseTokenAST)i, f);
+                                        currentChoiceOrUnionScope.setSymbol((BaseTokenAST)i, f);
+                                    }
             (fieldConstraint)?
-        )
+        )                           { currentScope.removeSymbol((BaseTokenAST)i); }
     ;
 
 defaultChoice
@@ -249,11 +259,18 @@ unionDeclaration
                                         final UnionType unionType = (UnionType)u;
                                         currentPackage.setLocalType((BaseTokenAST)i, unionType);
                                         unionType.setPackage(currentPackage);
-                                        currentScope = unionType.getScope();
+                                        currentChoiceOrUnionScope = unionType.getScope();
+                                        currentScope = new Scope(currentChoiceOrUnionScope);
                                         fillExpressionScopes = true;
                                     }
-            (parameterList)?
-            (unionFieldDefinition)+
+            (parameterList)?        {
+                                        currentChoiceOrUnionScope = currentScope;
+                                        currentScope = new Scope(currentChoiceOrUnionScope);
+                                    }
+            (unionFieldDefinition)+ {
+                                        currentScope = currentChoiceOrUnionScope;
+                                        currentChoiceOrUnionScope = null;
+                                    }
             (functionDefinition)*
         )                           {   
                                         currentScope = defaultScope;

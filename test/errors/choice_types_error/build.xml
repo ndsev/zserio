@@ -8,6 +8,7 @@
     <target name="gen" depends="prepare">
         <testGen testName="choice_types_error" zsFile="bool_case_error.zs" ignoreErrors="true"/>
         <testGen testName="choice_types_error" zsFile="enum_case_error.zs" ignoreErrors="true"/>
+        <testGen testName="choice_types_error" zsFile="field_case_error.zs" ignoreErrors="true"/>
         <testGen testName="choice_types_error" zsFile="float_selector_error.zs" ignoreErrors="true"/>
         <testGen testName="choice_types_error" zsFile="multiple_cases_error.zs" ignoreErrors="true"/>
         <testGen testName="choice_types_error" zsFile="multiple_defaults_error.zs" ignoreErrors="true"/>
@@ -17,6 +18,8 @@
         <testGen testName="choice_types_error" zsFile="string_selector_error.zs" ignoreErrors="true"/>
         <testGen testName="choice_types_error" zsFile="unreachable_default_error.zs" ignoreErrors="true"/>
         <testGen testName="choice_types_error" zsFile="unresolved_enum_item_error.zs" ignoreErrors="true"/>
+        <testGen testName="choice_types_error" zsFile="unresolved_field_in_constraint_error.zs"
+            ignoreErrors="true"/>
     </target>
 
     <target name="compile" depends="gen">
