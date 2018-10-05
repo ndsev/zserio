@@ -27,6 +27,7 @@ zserio_java_test.grpc      - Whether the GRPC tests are enabled (default is "no"
     <property name="3rdparty.grpc.jar_dir" location="${3rdparty.jar_dir}/grpc"/>
 
     <property name="zserio_java_test.build_dir" location="${zserio.root_dir}/build/test/java"/>
+    <property name="zserio_java_test.log_file" location="${zserio_java_test.build_dir}/test_log.txt"/>
     <property name="zserio_java_test.filter" value="**"/>
     <property name="zserio_java_test.grpc" value="no"/>
 
@@ -254,8 +255,27 @@ zserio_java_test.grpc      - Whether the GRPC tests are enabled (default is "no"
     </target>
 
     <target name="run" depends="test_utils.findbugs">
+        <record name="${zserio_java_test.log_file}" action="start"/>
+
         <subant target="run" inheritall="true">
             <fileset dir="." includes="${zserio_java_test.filter}/**/build.xml" excludes="build.xml,utils/**"/>
         </subant>
+
+        <record name="${zserio_java_test.log_file}" action="stop"/>
+
+        <resourcecount property="num_tests">
+            <tokens>
+                <concat>
+                    <filterchain>
+                        <linecontainsregexp>
+                            <regexp pattern="Testcase"/>
+                        </linecontainsregexp>
+                    </filterchain>
+                    <fileset file="${zserio_java_test.log_file}"/>
+                </concat>
+            </tokens>
+        </resourcecount>
+
+        <echo message="Total number of testcases: ${num_tests}"/>
     </target>
 </project>
