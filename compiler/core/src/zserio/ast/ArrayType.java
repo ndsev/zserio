@@ -14,13 +14,13 @@ public class ArrayType extends TokenAST implements ZserioType
     @Override
     public Package getPackage()
     {
-        return elementType.getPackage();
+        return elementBaseType.getPackage();
     }
 
     @Override
     public String getName()
     {
-        return name;
+        return elementBaseType.getName() + "[]";
     }
 
     @Override
@@ -95,8 +95,8 @@ public class ArrayType extends TokenAST implements ZserioType
     @Override
     protected void check() throws ParserException
     {
-        // fill member which depend on element type
-        name = elementType.getName() + "[]";
+        // resolve element base type
+        elementBaseType = TypeReference.resolveBaseType(elementType);
 
         // check length expression
         if (lengthExpression != null)
@@ -114,8 +114,7 @@ public class ArrayType extends TokenAST implements ZserioType
     private static final long serialVersionUID = 6231540349926054424L;
 
     private ZserioType elementType = null;
+    private ZserioType elementBaseType = null;
     private Expression lengthExpression = null;
     private boolean isImplicit = false;
-
-    private String name;
 }
