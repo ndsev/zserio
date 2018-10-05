@@ -4,6 +4,6 @@
 /**
  * C++ extension runtime version string.
  */
-#define CPP_EXTENSION_RUNTIME_VERSION_STRING "1.0.0"
+#define CPP_EXTENSION_RUNTIME_VERSION_STRING "1.1.0"
 
 #endif // ifndef ZSERIO_CPP_RUNTIME_VERSION_H_INC
