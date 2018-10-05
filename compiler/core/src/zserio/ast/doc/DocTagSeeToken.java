@@ -20,8 +20,9 @@ public class DocTagSeeToken extends DocTokenAST
         {
             if (!parameter.isEmpty())
             {
-                if (linkName != null)
-                    linkAlias = linkName;
+                // link alias is the same as a link name if no alias is available
+                if (linkAlias == null)
+                    linkAlias = parameter;
                 linkName = parameter;
             }
         }
@@ -30,9 +31,9 @@ public class DocTagSeeToken extends DocTokenAST
     }
 
     /**
-     * Gets string which represent tag see alias name.
+     * Gets string which represents tag see alias name.
      *
-     * @return String which represent tag see alias name or null if no alias name is available.
+     * @return Tag see alias name or referenced symbol name if no alias name is available.
      */
     public String getLinkAlias()
     {

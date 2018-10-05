@@ -134,8 +134,7 @@ public class DocCommentTemplateData
         {
             public DocTagSee(DocTagSeeToken tagSeeToken)
             {
-                final String linkAlias = tagSeeToken.getLinkAlias();
-                alias = (linkAlias == null) ? "" : linkAlias;
+                alias = tagSeeToken.getLinkAlias();
                 final SymbolReference linkSymbolReference = tagSeeToken.getLinkSymbolReference();
                 url = DocEmitterTools.getUrlNameFromTypeAndFieldName(linkSymbolReference.getReferencedType(),
                         linkSymbolReference.getReferencedSymbolName());
