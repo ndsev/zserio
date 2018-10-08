@@ -54,21 +54,6 @@ EOF
 
 # Parse all command line arguments.
 #
-# Parameters:
-# -----------
-# $1..$9 - The name of variable to set to 1 if an appropriate argument is present.
-# ${10}..${11} - The name of variable to set to 1 if an appropriate switch is present.
-# $@ - The command line arguments to parse.
-#
-# Usage:
-# ------
-# local PARAM
-# local SWITCH
-# parse_arguments PARAM SWITCH $@
-# if [[ ${SWITCH} == 1 ]] ; then
-#     SWITCH has been present, do something
-# fi
-#
 # Return codes:
 # -------------
 # 0 - Success. Arguments have been successfully parsed.

@@ -7,12 +7,10 @@ if [ -e "${SCRIPT_DIR}/build-env.sh" ] ; then
 fi
 
 # Set and check global variables for Java projets.
-#
-# $1 - Zserio project root.
 set_global_java_variables()
 {
     exit_if_argc_ne $# 1
-    local ZSERIO_PROJECT_ROOT="$1"
+    local ZSERIO_PROJECT_ROOT="$1"; shift
 
     # ANT to use, defaults to "ant" if not set
     ANT="${ANT:-ant}"
@@ -50,7 +48,7 @@ set_global_java_variables()
 set_global_cpp_variables()
 {
     exit_if_argc_ne $# 1
-    local ZSERIO_PROJECT_ROOT="$1"
+    local ZSERIO_PROJECT_ROOT="$1"; shift
 
     # CMake to use, defaults to "cmake" if not set
     CMAKE="${CMAKE:-cmake}"
@@ -115,15 +113,10 @@ EOF
 # Print a message to stderr.
 stderr_echo()
 {
-    echo "FATAL ERROR - $@" 2>&1
+    echo "FATAL ERROR - $@" 1>&2
 }
 
 # Exit if number of input arguments is not equal to number required by function.
-#
-# Parameters:
-# -----------
-# $1 - Number of input arguments to check.
-# $2 - Required number of input arguments.
 #
 # Usage:
 # ------
@@ -140,8 +133,8 @@ exit_if_argc_ne()
         exit 3
     fi
 
-    local NUM_OF_CALLER_ARGS=$1
-    local REQUIRED_NUM_OF_CALLED_ARGS=$2
+    local NUM_OF_CALLER_ARGS=$1; shift
+    local REQUIRED_NUM_OF_CALLED_ARGS=$1; shift
     if [ ${NUM_OF_CALLER_ARGS} -ne ${REQUIRED_NUM_OF_CALLED_ARGS} ] ; then
         stderr_echo "${FUNCNAME[1]}() called with ${NUM_OF_CALLER_ARGS} arguments but ${REQUIRED_NUM_OF_CALLED_ARGS} is required."
         exit 3
@@ -149,11 +142,6 @@ exit_if_argc_ne()
 }
 
 # Exit if number of input arguments is less than number required by function.
-#
-# Parameters:
-# -----------
-# $1 - Number of input arguments to check.
-# $2 - Required number of input arguments.
 #
 # Usage:
 # ------
@@ -170,8 +158,8 @@ exit_if_argc_lt()
         exit 3
     fi
 
-    local NUM_OF_CALLER_ARGS=$1
-    local REQUIRED_NUM_OF_CALLED_ARGS=$2
+    local NUM_OF_CALLER_ARGS=$1; shift
+    local REQUIRED_NUM_OF_CALLED_ARGS=$1; shift
     if [ ${NUM_OF_CALLER_ARGS} -lt ${REQUIRED_NUM_OF_CALLED_ARGS} ] ; then
         stderr_echo "${FUNCNAME[1]}() called with ${NUM_OF_CALLER_ARGS} arguments but ${REQUIRED_NUM_OF_CALLED_ARGS} is required."
         exit 3
@@ -179,16 +167,13 @@ exit_if_argc_lt()
 }
 
 # Convert input argument to absolute path.
-#
-# $1 - The path which must exist and it must be a directory.
-# $2 - The variable name to fill with converted absolute path.
 convert_to_absolute_path()
 {
     exit_if_argc_ne $# 2
-    local PATH_TO_CONVERT="$1"
-    local ABSOLUTE_PATH_OUT="$2"
+    local PATH_TO_CONVERT="$1"; shift
+    local ABSOLUTE_PATH_OUT="$1"; shift
 
-    if [ ! -d "${PATH_TO_CONVERT}" ]; then
+    if [ ! -d "${PATH_TO_CONVERT}" ] ; then
         stderr_echo "${FUNCNAME[0]}() called with a non-directory ${PATH_TO_CONVERT}!"
         return 1
     fi
@@ -201,14 +186,11 @@ convert_to_absolute_path()
 }
 
 # Get Zserio version from Zserio sources.
-#
-# $1 - Zserio project root.
-# $2 - The name of variable to fill with the Zserio version.
 get_zserio_version()
 {
     exit_if_argc_ne $# 2
-    local ZSERIO_PROJECT_ROOT="$1"
-    local ZSERIO_VERSION_OUT="$2"
+    local ZSERIO_PROJECT_ROOT="$1"; shift
+    local ZSERIO_VERSION_OUT="$1"; shift
 
     local ZSERIO_VERSION_FILE="${ZSERIO_PROJECT_ROOT}/compiler/core/src/zserio/tools/ZserioVersion.java"
     local ZSERIO_VERSION_GET_ZSERIO_VERSION=`
@@ -224,16 +206,12 @@ get_zserio_version()
 }
 
 # Get Zserio release directory and version from Zserio sources.
-#
-# $1 - Zserio project root.
-# $2 - The name of variable to fill with the release directory.
-# $3 - The name of variable to fill with the Zserio version.
 get_release_dir()
 {
     exit_if_argc_ne $# 3
-    local ZSERIO_PROJECT_ROOT="$1"
-    local ZSERIO_RELEASE_DIR_OUT="$2"
-    local ZSERIO_VERSION_OUT="$3"
+    local ZSERIO_PROJECT_ROOT="$1"; shift
+    local ZSERIO_RELEASE_DIR_OUT="$1"; shift
+    local ZSERIO_VERSION_OUT="$1"; shift
 
     local ZSERIO_VERSION_GET_RELEASE_DIR
     get_zserio_version "${ZSERIO_PROJECT_ROOT}" ZSERIO_VERSION_GET_RELEASE_DIR
@@ -245,21 +223,16 @@ get_release_dir()
 }
 
 # Compile Java by running Ant target.
-#
-# $1 - The Ant XML file to use.
-# $2 - The name of variable which contains array of Ant properties to use.
-# $3 - The Ant target to run.
 compile_java()
 {
     exit_if_argc_ne $# 3
-    local ANT_BUILD_FILE="$1"
-    local MSYS_WORKAROUND_TEMP=("${!2}")
+    local ANT_BUILD_FILE="$1"; shift
+    local MSYS_WORKAROUND_TEMP=("${!1}"); shift
     local ANT_PROPS=("${MSYS_WORKAROUND_TEMP[@]}")
-    local ANT_TARGET="$3"
+    local ANT_TARGET="$1"; shift
 
     if [ -n "${FINDBUGS_HOME}" ] ; then
-        ANT_PROPS=("${ANT_PROPS[@]}"
-                   "-Dfindbugs.home_dir=${FINDBUGS_HOME}")
+        ANT_PROPS+=("-Dfindbugs.home_dir=${FINDBUGS_HOME}")
     fi
 
     "${ANT}" ${ANT_EXTRA_ARGS} -f "${ANT_BUILD_FILE}" "${ANT_PROPS[@]}" ${ANT_TARGET}
@@ -273,27 +246,19 @@ compile_java()
 }
 
 # Compile and test C++ code running cmake and make for all targets.
-#
-# $1 - The directory of Zserio project root.
-# $2 - Directory where to build.
-# $3 - Directory where CMakeLists.txt is located.
-# $4 - The name of variable which contains array of targets for which to compile.
-# $5 - The name of variable which contains array of CMake arguments to use.
-# $6 - The name of variable which contains array of CTest arguments to use.
-# $7 - Make target to run.
 compile_cpp()
 {
-    exit_if_argc_ne $# 7
-    local ZSERIO_PROJECT_ROOT="$1"
-    local BUILD_DIR="$2"
-    local CMAKELISTS_DIR="$3"
-    local MSYS_WORKAROUND_TEMP=("${!4}")
+    exit_if_argc_ne $# 7;
+    local ZSERIO_PROJECT_ROOT="$1"; shift
+    local BUILD_DIR="$1"; shift
+    local CMAKELISTS_DIR="$1"; shift
+    local MSYS_WORKAROUND_TEMP=("${!1}"); shift
     local TARGETS=("${MSYS_WORKAROUND_TEMP[@]}")
-    local MSYS_WORKAROUND_TEMP=("${!5}")
+    local MSYS_WORKAROUND_TEMP=("${!1}"); shift
     local CMAKE_ARGS=("${MSYS_WORKAROUND_TEMP[@]}")
-    local MSYS_WORKAROUND_TEMP=("${!6}")
+    local MSYS_WORKAROUND_TEMP=("${!1}"); shift
     local CTEST_ARGS=("${MSYS_WORKAROUND_TEMP[@]}")
-    local MAKE_TARGET="$7"
+    local MAKE_TARGET="$1"; shift
 
     local TARGET
     for TARGET in "${TARGETS[@]}" ; do
@@ -308,26 +273,18 @@ compile_cpp()
 }
 
 # Compile and test C++ code running cmake and make for one target.
-#
-# $1 - The directory of Zserio project root.
-# $2 - Directory where to build.
-# $3 - Directory where CMakeLists.txt is located.
-# $4 - Target for which to compile.
-# $5 - The name of variable which contains array of CMake arguments to use.
-# $6 - The name of variable which contains array of CTest arguments to use.
-# $7 - Make target to run.
 compile_cpp_for_target()
 {
     exit_if_argc_ne $# 7
-    local ZSERIO_PROJECT_ROOT="$1"
-    local BUILD_DIR="$2"
-    local CMAKELISTS_DIR="$3"
-    local TARGET="$4"
-    local MSYS_WORKAROUND_TEMP=("${!5}")
+    local ZSERIO_PROJECT_ROOT="$1"; shift
+    local BUILD_DIR="$1"; shift
+    local CMAKELISTS_DIR="$1"; shift
+    local TARGET="$1"; shift
+    local MSYS_WORKAROUND_TEMP=("${!1}"); shift
     local CMAKE_ARGS=("${MSYS_WORKAROUND_TEMP[@]}")
-    local MSYS_WORKAROUND_TEMP=("${!6}")
+    local MSYS_WORKAROUND_TEMP=("${!1}"); shift
     local CTEST_ARGS=("${MSYS_WORKAROUND_TEMP[@]}")
-    local MAKE_TARGET="$7"
+    local MAKE_TARGET="$1"; shift
 
     local TOOLCHAIN_FILE="${ZSERIO_PROJECT_ROOT}/cmake/toolchain-${TARGET}.cmake"
     CMAKE_ARGS=("--no-warn-unused-cli"
@@ -346,13 +303,13 @@ compile_cpp_for_target()
     local CMAKE_BUILD_TARGET=${MAKE_TARGET}
 
     # resolve CMake generator
-    if [[ ${TARGET} == *"-msvc" ]]; then
+    if [[ ${TARGET} == *"-msvc" ]] ; then
         local CMAKE_BUILD_CONFIG="--config Release"
         CTEST_ARGS+=("-C Release")
-        if [[ ${MAKE_TARGET} == "all" ]]; then
+        if [[ ${MAKE_TARGET} == "all" ]] ; then
             CMAKE_BUILD_TARGET="ALL_BUILD" # all target doesn't exist in MSVC solution
         fi
-        if [[ ${TARGET} == "windows32-msvc" ]]; then
+        if [[ ${TARGET} == "windows32-msvc" ]] ; then
             local CMAKE_GENERATOR="${MSVC_CMAKE_GENERATOR}";
         else
             local CMAKE_GENERATOR="${MSVC_CMAKE_GENERATOR} Win64";
@@ -397,32 +354,30 @@ compile_cpp_for_target()
 }
 
 # Tests if it's possible to run tests for given target on current host.
-#
-# $1 - Platform name.
 can_run_tests()
 {
     exit_if_argc_ne $# 1
-    local TARGET="$1"
+    local TARGET_PLATFORM="$1"; shift
 
     local HOST_PLATFORM
     get_host_platform HOST_PLATFORM
-    if [ $? -ne 0 ]; then
+    if [ $? -ne 0 ] ; then
         return 1
     fi
 
     # assume on 64bit both 32bit and 64bit executables can be run
     case "${HOST_PLATFORM}" in
     ubuntu32)
-        [[ "${TARGET}" == "linux32" ]]
+        [[ "${TARGET_PLATFORM}" == "linux32" ]]
         ;;
     ubuntu64)
-        [[ "${TARGET}" == "linux32" || "${TARGET}" = "linux64" ]]
+        [[ "${TARGET_PLATFORM}" == "linux32" || "${TARGET_PLATFORM}" = "linux64" ]]
         ;;
     windows32)
-        [[ "${TARGET}" == "windows32-"* ]]
+        [[ "${TARGET_PLATFORM}" == "windows32-"* ]]
         ;;
     windows64)
-        [[ "${TARGET}" == "windows32-"* || "${TARGET}" == "windows64-"* ]]
+        [[ "${TARGET_PLATFORM}" == "windows32-"* || "${TARGET_PLATFORM}" == "windows64-"* ]]
         ;;
     *)
         stderr_echo "can_run_tests: unknown current platform ${HOST_PLATFORM}!"
@@ -434,12 +389,10 @@ can_run_tests()
 #
 # Returns one of the supported platforms:
 # ubuntu32, ubuntu64, windows32, windows64
-#
-# $1 - The variable name to fill with the current host platform.
 get_host_platform()
 {
     exit_if_argc_ne $# 1
-    local HOST_PLATFORM_OUT="$1"
+    local HOST_PLATFORM_OUT="$1"; shift
 
     local OS=`uname -s`
     local HOST=""
@@ -460,7 +413,7 @@ get_host_platform()
         # can't use uname on windows - MSYS always says it's i686
         local CURRENT_ARCH
         CURRENT_ARCH=`wmic OS get OSArchitecture 2> /dev/null`
-        if [ $? -ne 0 ]; then
+        if [ $? -ne 0 ] ; then
             # wmic failed, assume it's Windows XP 32bit
             NATIVE_TARGET="windows32"
         else

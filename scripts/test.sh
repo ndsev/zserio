@@ -23,24 +23,13 @@ set_test_global_variables()
 print_test_help_env()
 {
     cat << EOF
-Uses the following environment variables for releasing:
+Uses the following environment variables for testing:
     UNZIP       Unzip executable to use. Default is "unzip".
-
-Uses the following environment variables for buidling:
     GRPC_ROOT   Root path to GRPC repository. GRPC is disabled by default.
 EOF
 }
 
-# Run Zserio tests.
-#
-# $1 - The directory where Zserio release is located.
-# $2 - The Zserio release version to test.
-# $3 - The directory of Zserio project root.
-# $4 - The directory where to store test outputs.
-# $5 - '1' to run Java tests.
-# $6 - The name of variable which contains the array of C++ targets for which to compile.
-# $7 - Whether to clean projects instead of run tests.
-# $8 - The name of example test to run.
+# Run zserio tests.
 test()
 {
     exit_if_argc_ne $# 9
@@ -50,7 +39,7 @@ test()
     local TEST_OUT_DIR="$1"; shift
     local PARAM_JAVA="$1"; shift
     local MSYS_WORKAROUND_TEMP=("${!1}"); shift
-    local TARGETS=("${MSYS_WORKAROUND_TEMP[@]}")
+    local CPP_TARGETS=("${MSYS_WORKAROUND_TEMP[@]}")
     local SWITCH_CLEAN="$1"; shift
     local SWITCH_GRPC="$1"; shift
     local SWITCH_TEST_NAME="$1"; shift
@@ -64,13 +53,13 @@ test()
         return 1
     fi
 
-    # run Java Zserio tests
+    # run Java zserio tests
     if [[ ${PARAM_JAVA} == 1 ]] ; then
-        local MESSAGE="Zserio Java tests"
+        local MESSAGE="zserio Java tests"
         echo "STARTING - ${MESSAGE}"
         local ANT_ARGS=("-Dzserio.release_dir=${UNPACKED_ZSERIO_RELEASE_DIR}"
                         "-Dzserio_java_test.build_dir=${TEST_OUT_DIR}/java")
-        if [[ ${SWITCH_GRPC} == 1 ]]; then
+        if [[ ${SWITCH_GRPC} == 1 ]] ; then
             ANT_ARGS+=("-Dzserio_java_test.grpc=yes")
         fi
         if [[ ${SWITCH_TEST_NAME} != "" ]] ; then
@@ -89,14 +78,14 @@ test()
         echo -e "FINISHED - ${MESSAGE}\n"
     fi
 
-    # run C++ Zserio tests
-    if [[ ${#TARGETS[@]} != 0 ]] ; then
-        local MESSAGE="Zserio C++ tests"
+    # run C++ zserio tests
+    if [[ ${#CPP_TARGETS[@]} != 0 ]] ; then
+        local MESSAGE="zserio C++ tests"
         echo "STARTING - ${MESSAGE}"
 
         local HOST_PLATFORM
         get_host_platform HOST_PLATFORM
-        if [ $? -ne 0 ]; then
+        if [ $? -ne 0 ] ; then
             return 1
         fi
 
@@ -111,7 +100,7 @@ test()
         else
             local CPP_TARGET="all"
         fi
-        compile_cpp "${ZSERIO_PROJECT_ROOT}" "${TEST_OUT_DIR}" "${TEST_SRC_DIR}" TARGETS[@] \
+        compile_cpp "${ZSERIO_PROJECT_ROOT}" "${TEST_OUT_DIR}" "${TEST_SRC_DIR}" CPP_TARGETS[@] \
                     CMAKE_ARGS[@] CTEST_ARGS[@] ${CPP_TARGET}
         if [ $? -ne 0 ] ; then
             stderr_echo "${MESSAGE} failed!"
@@ -123,35 +112,32 @@ test()
     return 0
 }
 
-# Unpack Zserio release zips.
-#
-# $1 - Zserio tests output directory.
-# $2 - Directory of Zserio release to unpack.
-# $3 - Zserio release version.
-# $4 - The name of variable to fill with the directory of unpacked Zserio release.
+# Unpack zserio release zips.
 unpack_release()
 {
     exit_if_argc_ne $# 4
-    local TEST_OUT_DIR="$1"
-    local ZSERIO_RELEASE_DIR="$2"
-    local ZSERIO_VERSION="$3"
-    local UNPACKED_ZSERIO_RELEASE_DIR_OUT="$4"
+    local TEST_OUT_DIR="$1"; shift
+    local ZSERIO_RELEASE_DIR="$1"; shift
+    local ZSERIO_VERSION="$1"; shift
+    local UNPACKED_ZSERIO_RELEASE_DIR_OUT="$1"; shift
 
     local UNPACKED_ZSERIO_RELEASE_DIR_LOC="${TEST_OUT_DIR}/tested_release"
     rm -rf "${UNPACKED_ZSERIO_RELEASE_DIR_LOC}" # always use fresh release
     mkdir -p "${UNPACKED_ZSERIO_RELEASE_DIR_LOC}"
 
     # bin
-    "${UNZIP}" -q "${ZSERIO_RELEASE_DIR}/zserio-${ZSERIO_VERSION}-bin.zip" -d "${UNPACKED_ZSERIO_RELEASE_DIR_LOC}"
+    "${UNZIP}" -q "${ZSERIO_RELEASE_DIR}/zserio-${ZSERIO_VERSION}-bin.zip" \
+        -d "${UNPACKED_ZSERIO_RELEASE_DIR_LOC}"
     if [ $? -ne 0 ] ; then
-        stderr_echo "Cannot unzip Zserio binaries to ${UNPACKED_ZSERIO_RELEASE_DIR_LOC}!"
+        stderr_echo "Cannot unzip zserio binaries to ${UNPACKED_ZSERIO_RELEASE_DIR_LOC}!"
         return 1
     fi
 
     # runtime-libs
-    "${UNZIP}" -q "${ZSERIO_RELEASE_DIR}/zserio-${ZSERIO_VERSION}-runtime-libs.zip" -d "${UNPACKED_ZSERIO_RELEASE_DIR_LOC}"
+    "${UNZIP}" -q "${ZSERIO_RELEASE_DIR}/zserio-${ZSERIO_VERSION}-runtime-libs.zip" \
+        -d "${UNPACKED_ZSERIO_RELEASE_DIR_LOC}"
     if [ $? -ne 0 ] ; then
-        stderr_echo "Cannot unzip Zserio runtime libraries to ${UNPACKED_ZSERIO_RELEASE_DIR_LOC}!"
+        stderr_echo "Cannot unzip zserio runtime libraries to ${UNPACKED_ZSERIO_RELEASE_DIR_LOC}!"
         return 1
     fi
 
@@ -165,7 +151,7 @@ print_help()
 {
     cat << EOF
 Description:
-    Runs Zserio tests on Zserio release compiled in release-ver directory.
+    Runs zserio tests on zserio release compiled in release-ver directory.
 
 Usage:
     $0 [-h] [-t TEST_NAME] package...
@@ -206,22 +192,6 @@ EOF
 }
 
 # Parse all command line arguments.
-#
-# Parameters:
-# -----------
-# $1 - The name of variable to set to 1 if "java" argument is present.
-# $2 - The name of variable to fill with array of targets given as arguments.
-# $3 - The name of variable to fill with example test name given by switch '-t'.
-# $@ - The command line arguments to parse.
-#
-# Usage:
-# ------
-# local PARAM
-# local SWITCH
-# parse_arguments PARAM SWITCH $@
-# if [[ ${SWITCH} == 1 ]] ; then
-#     SWITCH has been present, do something
-# fi
 #
 # Return codes:
 # -------------
@@ -332,7 +302,7 @@ parse_arguments()
 
 main()
 {
-    echo "Compilation and testing of Zserio sources."
+    echo "Compilation and testing of zserio sources."
     echo
 
     # parse command line arguments
@@ -353,7 +323,7 @@ main()
     convert_to_absolute_path "${SCRIPT_DIR}/.." ZSERIO_PROJECT_ROOT
 
     # set global variables
-    set_test_global_variables "${PARAM_NDS_ZSERIO}"
+    set_test_global_variables
     if [ $? -ne 0 ] ; then
         return 1
     fi
@@ -370,7 +340,7 @@ main()
         fi
     fi
 
-    # get Zserio release directory
+    # get zserio release directory
     local ZSERIO_RELEASE_DIR
     local ZSERIO_VERSION
     get_release_dir "${ZSERIO_PROJECT_ROOT}" ZSERIO_RELEASE_DIR ZSERIO_VERSION

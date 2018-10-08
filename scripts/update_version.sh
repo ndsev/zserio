@@ -4,15 +4,12 @@ SCRIPT_DIR=`dirname $0`
 source "${SCRIPT_DIR}/common_tools.sh"
 
 # Update Zserio version in local copy of Git repository.
-#
-# $1 - The zserio compiler source directory.
-# $2 - The new version to use for updating.
 update_version()
 {
     exit_if_argc_ne $# 2
-    local ZSERIO_SOURCE_DIR="$1"
-    local NEW_VERSION_STRING="$2"
-    
+    local ZSERIO_SOURCE_DIR="$1"; shift
+    local NEW_VERSION_STRING="$1"; shift
+
     # find all files with version
     local VERSION_FILES=`find ${ZSERIO_SOURCE_DIR} -iname "*Version*"`
     for VERSION_FILE in ${VERSION_FILES}
@@ -52,20 +49,6 @@ EOF
 
 # Parse all command line arguments.
 #
-# Parameters:
-# -----------
-# $1 - The name of variable to fill with new version string.
-# $@ - The command line arguments to parse.
-#
-# Usage:
-# ------
-# local PARAM
-# local SWITCH
-# parse_arguments PARAM SWITCH $@
-# if [[ ${SWITCH} == 1 ]] ; then
-#     SWITCH has been present, do something
-# fi
-#
 # Return codes:
 # -------------
 # 0 - Success. Arguments have been successfully parsed.
@@ -73,10 +56,8 @@ EOF
 # 2 - Help switch is present. Arguments after help switch have not been checked.
 parse_arguments()
 {
-    local NUM_OF_ARGS=1
-    exit_if_argc_lt $# ${NUM_OF_ARGS}
-    local NEW_VERSION_STRING_OUT="$1"
-    shift ${NUM_OF_ARGS}
+    exit_if_argc_lt $# 1
+    local NEW_VERSION_STRING_OUT="$1"; shift
 
     local NUM_PARAMS=0
     local PARAM_ARRAY=();

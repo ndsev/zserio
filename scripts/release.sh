@@ -28,16 +28,12 @@ EOF
 # Assemble Zserio release ZIP file.
 #
 # This requires the Zserio tool to be already built (by build.sh).
-#
-# $1 - The name of the release.
-# $2 - The release directory.
-# $3 - Name of the directory where the release is to be created.
 make_release()
 {
     exit_if_argc_ne $# 3
-    local ZSERIO_VERSION="$1"
-    local ZSERIO_RELEASE_SRC_DIR="$2"
-    local ZSERIO_RELEASE_ZIP_DIR="$3"
+    local ZSERIO_VERSION="$1"; shift
+    local ZSERIO_RELEASE_SRC_DIR="$1"; shift
+    local ZSERIO_RELEASE_ZIP_DIR="$1"; shift
 
     echo -ne "Creating release ${ZSERIO_VERSION}..."
     rm -rf "${ZSERIO_RELEASE_ZIP_DIR}"
@@ -89,19 +85,6 @@ EOF
 }
 
 # Parse all command line arguments.
-#
-# Parameters:
-# -----------
-# $@ - The command line arguments to parse.
-#
-# Usage:
-# ------
-# local PARAM
-# local SWITCH
-# parse_arguments PARAM SWITCH $@
-# if [[ ${SWITCH} == 1 ]] ; then
-#     SWITCH has been present, do something
-# fi
 #
 # Return codes:
 # -------------
