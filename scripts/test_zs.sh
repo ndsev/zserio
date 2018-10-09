@@ -83,6 +83,11 @@ generate_ant_file()
     local NEEDS_SQLITE="$1"; shift
     local NEEDS_GRPC="$1"; shift
 
+    # use host paths in generated files
+    posix_to_host_path "${ZSERIO_RELEASE}" HOST_ZSERIO_RELEASE
+    posix_to_host_path "${ZSERIO_ROOT}" HOST_ZSERIO_ROOT
+    posix_to_host_path "${BUILD_DIR}" HOST_BUILD_DIR
+
     local FINDBUGS_FILTER_SQLITE
     if [ ${NEEDS_SQLITE} -ne 0 ] ; then
         FINDBUGS_FILTER_SQLITE="
@@ -100,24 +105,28 @@ generate_ant_file()
         </Match>"
     fi
 
+    local GRPC_JAR_DIR
     local GRPC_CLASSPATH
     if [ ${NEEDS_GRPC} -ne 0 ] ; then
+        GRPC_JAR_DIR="
+
+    <property name=\"3rdparty.grpc.jar_dir\" location=\"${HOST_ZSERIO_ROOT}/3rdparty/java/grpc\"/>"
         GRPC_CLASSPATH="
-                <fileset dir=\"${ZSERIO_ROOT}/3rdparty/java/grpc\">
+                <fileset dir=\"\${3rdparty.grpc.jar_dir}\">
                     <include name=\"*.jar\"/>
                 </fileset>"
     fi
 
     cat > ${BUILD_DIR}/build.xml << EOF
 <project name="${TEST_NAME}" basedir="." default="run">
-    <property name="zserio.release_dir" location="${ZSERIO_RELEASE}"/>
+    <property name="zserio.release_dir" location="${HOST_ZSERIO_RELEASE}"/>
 
     <property name="runtime.jar_dir" location="\${zserio.release_dir}/runtime_libs/java"/>
     <property name="runtime.jar_file" location="\${runtime.jar_dir}/zserio_runtime.jar"/>
 
-    <property name="test_zs.build_dir" location="${BUILD_DIR}"/>
+    <property name="test_zs.build_dir" location="${HOST_BUILD_DIR}"/>
     <property name="test_zs.classes_dir" location="\${test_zs.build_dir}/classes"/>
-    <property name="test_zs.src_dir" location="\${test_zs.build_dir}/gen"/>
+    <property name="test_zs.src_dir" location="\${test_zs.build_dir}/gen"/>${GRPC_JAR_DIR}
 
     <condition property="findbugs.classpath" value="\${findbugs.home_dir}/lib/findbugs-ant.jar">
         <isset property="findbugs.home_dir"/>
@@ -201,6 +210,12 @@ generate_cmake_lists()
     local NEEDS_INSPECTOR="$1"; shift
     local NEEDS_GRPC="$1"; shift
 
+    # use host paths in generated files
+    local DISABLE_SLASHES_CONVERSION=1
+    posix_to_host_path "${ZSERIO_RELEASE}" HOST_ZSERIO_RELEASE ${DISABLE_SLASHES_CONVERSION}
+    posix_to_host_path "${ZSERIO_ROOT}" HOST_ZSERIO_ROOT ${DISABLE_SLASHES_CONVERSION}
+    posix_to_host_path "${BUILD_DIR}" HOST_BUILD_DIR ${DISABLE_SLASHES_CONVERSION}
+
     local SQLITE_SETUP
     local SQLITE_USE="OFF"
     if [ ${NEEDS_SQLITE} -ne 0 ] ; then
@@ -240,7 +255,8 @@ project(test_zs_${TEST_NAME})
 
 enable_testing()
 
-set(ZSERIO_ROOT "${ZSERIO_ROOT}")
+set(ZSERIO_ROOT "${HOST_ZSERIO_ROOT}" CACHE PATH "")
+set(ZSERIO_RELEASE "${HOST_ZSERIO_RELEASE}" CACHE PATH "")
 set(CMAKE_MODULE_PATH "\${ZSERIO_ROOT}/cmake")
 
 # cmake helpers
@@ -255,7 +271,7 @@ compiler_set_warnings_as_errors()${SQLITE_SETUP}${GRPC_SETUP}
 
 # add zserio runtime library
 include(zserio_utils)
-set(ZSERIO_RUNTIME_LIBRARY_DIR "${ZSERIO_RELEASE}/runtime_libs/cpp")
+set(ZSERIO_RUNTIME_LIBRARY_DIR "\${ZSERIO_RELEASE}/runtime_libs/cpp")
 zserio_add_runtime_library(RUNTIME_LIBRARY_DIR "\${ZSERIO_RUNTIME_LIBRARY_DIR}"
                            INCLUDE_INSPECTOR ${INSPECTOR_USE}
                            INCLUDE_RELATIONAL ${SQLITE_USE})${INSPECTOR_SETUP}
@@ -351,7 +367,6 @@ test()
             "${TEST_OUT_DIR}/cpp" "${SWITCH_TEST_NAME}" \
             ${CPP_NEEDS_SQLITE} ${CPP_NEEDS_INSPECTOR} ${CPP_NEEDS_GRPC}
         local CTEST_ARGS=()
-        local CMAKE_ARGS=()
         if [ ${CPP_NEEDS_GRPC} -ne 0 ] ; then
             CMAKE_ARGS+=("-DGRPC_ROOT=${GRPC_ROOT}" "-DGRPC_ENABLED=ON")
         fi

@@ -449,3 +449,34 @@ get_host_platform()
     return 0
 }
 
+# Returns path according to the current host.
+# On Linux the given path is unchanged, on Windows the path is converted to windows path.
+posix_to_host_path()
+{
+    exit_if_argc_lt $# 2
+    local POSIX_PATH="$1"; shift
+    local HOST_PATH_OUT="$1"; shift
+    local DISABLE_SLASHES_CONVERSION=0
+    if [ $# -ne 0 ] ; then
+        DISABLE_SLASHES_CONVERSION="$1"; shift # optional, default is false
+    fi
+
+    local HOST_PLATFORM
+    get_host_platform HOST_PLATFORM
+    if [[ "${HOST_PLATFORM}" == "windows"* ]] ; then
+        # change drive specification in case of full path, e.g. '/d/...' to 'd:/...'
+        local SEARCH_PATTERN="/?/"
+        if [ "${POSIX_PATH}" != "${POSIX_PATH/${SEARCH_PATTERN}/}" ] ; then
+            POSIX_PATH="${POSIX_PATH:1:1}:${POSIX_PATH:2}"
+        fi
+
+        if [ ${DISABLE_SLASHES_CONVERSION} -ne 1 ] ; then
+            # replace all Posix '/' to Windows '\'
+            local SEARCH_PATTERN="/"
+            local REPLACE_PATTERN="\\"
+            POSIX_PATH="${POSIX_PATH//${SEARCH_PATTERN}/${REPLACE_PATTERN}}"
+        fi
+    fi
+
+    eval ${HOST_PATH_OUT}="'${POSIX_PATH}'"
+}
