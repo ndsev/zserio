@@ -5,7 +5,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import antlr.collections.AST;
+import zserio.ast.Root;
 import zserio.ast.SqlDatabaseType;
 import freemarker.template.Configuration;
 import freemarker.template.Template;
@@ -34,17 +34,14 @@ public class DbOverviewDotEmitter extends DefaultDocEmitter
         this.dotExecutable = dotExecutable;
     }
 
-    // implementation of Emitter interface (used to gather all the data for the emitter)
     @Override
-    public void beginSqlDatabase(AST s)
+    public void beginSqlDatabase(SqlDatabaseType sqlDatabaseType)
     {
-        if (!(s instanceof SqlDatabaseType))
-            throw new ZserioEmitDocException("Unexpected token type in beginSqlDatabase!");
-        databases.add((SqlDatabaseType)s);
+        databases.add(sqlDatabaseType);
     }
 
     @Override
-    public void endRoot()
+    public void endRoot(Root root)
     {
         final File outputFile = DocEmitterTools.getDbOverviewDotFile(docPath);
         emit(outputFile);

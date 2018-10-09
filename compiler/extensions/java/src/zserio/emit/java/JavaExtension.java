@@ -6,8 +6,8 @@ import java.util.List;
 import org.apache.commons.cli.Option;
 
 import antlr.RecognitionException;
-import zserio.antlr.ZserioEmitter;
-import zserio.ast.TokenAST;
+import zserio.antlr.ZserioTreeWalker;
+import zserio.ast.Root;
 import zserio.emit.common.ZserioEmitException;
 import zserio.emit.common.Emitter;
 import zserio.tools.Extension;
@@ -18,21 +18,18 @@ import zserio.tools.Parameters;
  */
 public class JavaExtension implements Extension
 {
-    /** {@inheritDoc} */
     @Override
     public String getName()
     {
         return "Java Generator";
     }
 
-    /** {@inheritDoc} */
     @Override
     public String getVersion()
     {
         return JavaExtensionVersion.VERSION_STRING;
     }
 
-    /** {@inheritDoc} */
     @Override
     public void registerOptions(org.apache.commons.cli.Options options)
     {
@@ -48,9 +45,8 @@ public class JavaExtension implements Extension
         options.addOption(option);
     }
 
-    /** {@inheritDoc} */
     @Override
-    public void generate(Parameters extensionParameters, ZserioEmitter emitter, TokenAST rootNode)
+    public void generate(Parameters extensionParameters, ZserioTreeWalker walker, Root rootNode)
         throws ZserioEmitException
     {
         if (!extensionParameters.argumentExists(OptionJava))
@@ -79,11 +75,11 @@ public class JavaExtension implements Extension
 
         final String outputDir = extensionParameters.getCommandLineArg(OptionJava);
         final JavaExtensionParameters javaParameters = new JavaExtensionParameters(outputDir, javaMajorVersion);
-        generateJavaSources(extensionParameters, javaParameters, emitter, rootNode);
+        generateJavaSources(extensionParameters, javaParameters, walker, rootNode);
     }
 
     private void generateJavaSources(Parameters extensionParameters, JavaExtensionParameters javaParameters,
-            ZserioEmitter emitter, TokenAST rootNode) throws ZserioEmitException
+            ZserioTreeWalker walker, Root rootNode) throws ZserioEmitException
     {
         final List<Emitter> emitters = new ArrayList<Emitter>();
         emitters.add(new EnumerationEmitter(extensionParameters, javaParameters));
@@ -103,8 +99,8 @@ public class JavaExtension implements Extension
             // emit Java code for decoders
             for (Emitter javaEmitter: emitters)
             {
-                emitter.setEmitter(javaEmitter);
-                emitter.root(rootNode);
+                walker.setEmitter(javaEmitter);
+                walker.root(rootNode);
             }
         }
         catch (RecognitionException exception)

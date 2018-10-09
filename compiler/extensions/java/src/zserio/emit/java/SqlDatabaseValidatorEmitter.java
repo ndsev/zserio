@@ -1,6 +1,6 @@
 package zserio.emit.java;
 
-import antlr.collections.AST;
+import zserio.ast.Root;
 import zserio.ast.SqlTableType;
 import zserio.tools.Parameters;
 
@@ -11,19 +11,15 @@ final class SqlDatabaseValidatorEmitter extends JavaDefaultEmitter
         super(extensionParameters, javaParameters);
     }
 
-    /** {@inheritDoc} */
     @Override
-    public void beginSqlTable(AST token) throws ZserioEmitJavaException
+    public void beginSqlTable(SqlTableType sqlTableType) throws ZserioEmitJavaException
     {
-        if (!(token instanceof SqlTableType))
-            throw new ZserioEmitJavaException("Unexpected token type in beginSqlTable!");
-
         if (getWithSqlCode() && getWithValidationCode())
             generateValidatableSqlDatabase = true;
     }
 
     @Override
-    public void endRoot() throws ZserioEmitJavaException
+    public void endRoot(Root root) throws ZserioEmitJavaException
     {
         if (generateValidatableSqlDatabase)
         {

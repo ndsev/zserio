@@ -3,15 +3,24 @@ package zserio.emit.common;
 import java.io.File;
 import java.util.Locale;
 
-import antlr.collections.AST;
-
 import zserio.ast.ZserioType;
 import zserio.ast.TranslationUnit;
 import zserio.ast.Package;
 import zserio.tools.Parameters;
 
+/**
+ * Implements default emitter common for C++ and Java.
+ */
 public abstract class CodeDefaultEmitter extends DefaultEmitter
 {
+    /**
+     * Constructor.
+     *
+     * @param outPathName          Path where to store all generated outputs.
+     * @param extensionParameters  Command line parameter for the extension.
+     * @param codeTemplateLocation Path where are all FreeMarker templates.
+     * @param codePackageSeparator Separator which must be used in package names.
+     */
     public CodeDefaultEmitter(String outPathName, Parameters extensionParameters, String codeTemplateLocation,
             String codePackageSeparator)
     {
@@ -22,7 +31,7 @@ public abstract class CodeDefaultEmitter extends DefaultEmitter
         withSqlCode = extensionParameters.getWithSqlCode();
         withGrpcCode = extensionParameters.getWithGrpcCode();
         withValidationCode = extensionParameters.getWithValidationCode();
-        withWriterCode= extensionParameters.getWithWriterCode();
+        withWriterCode = extensionParameters.getWithWriterCode();
 
         this.codeTemplateLocation = codeTemplateLocation;
 
@@ -32,19 +41,15 @@ public abstract class CodeDefaultEmitter extends DefaultEmitter
     }
 
     @Override
-    public void beginTranslationUnit(AST root, AST translationUnit)
+    public void beginTranslationUnit(TranslationUnit translationUnit)
     {
         if (packageMapper == null)
         {
-            if (translationUnit instanceof TranslationUnit)
+            final Package rootPackage = translationUnit.getPackage();
+            if (rootPackage != null)
             {
-                final Package rootPackage = ((TranslationUnit)translationUnit).getPackage();
-                if (rootPackage != null)
-                {
-                    // root package can be null for empty files
-                    packageMapper = new PackageMapper(rootPackage, topLevelPackageNameList,
-                            codePackageSeparator);
-                }
+                // root package can be null for empty files
+                packageMapper = new PackageMapper(rootPackage, topLevelPackageNameList, codePackageSeparator);
             }
         }
     }

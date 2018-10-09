@@ -6,8 +6,8 @@ import java.util.List;
 import org.apache.commons.cli.Option;
 
 import antlr.RecognitionException;
-import zserio.antlr.ZserioEmitter;
-import zserio.ast.TokenAST;
+import zserio.antlr.ZserioTreeWalker;
+import zserio.ast.Root;
 import zserio.emit.common.ZserioEmitException;
 import zserio.emit.common.Emitter;
 import zserio.tools.Extension;
@@ -18,21 +18,18 @@ import zserio.tools.Parameters;
  */
 public class CppExtension implements Extension
 {
-    /** {@inheritDoc} */
     @Override
     public String getName()
     {
         return "C++ Generator";
     }
 
-    /** {@inheritDoc} */
     @Override
     public String getVersion()
     {
         return CppExtensionVersion.VERSION_STRING;
     }
 
-    /** {@inheritDoc} */
     @Override
     public void registerOptions(org.apache.commons.cli.Options options)
     {
@@ -42,9 +39,8 @@ public class CppExtension implements Extension
         options.addOption(option);
     }
 
-    /** {@inheritDoc} */
     @Override
-    public void generate(Parameters parameters, ZserioEmitter emitter, TokenAST rootNode)
+    public void generate(Parameters parameters, ZserioTreeWalker walker, Root rootNode)
         throws ZserioEmitException
     {
         if (!parameters.argumentExists(OptionCpp))
@@ -54,10 +50,10 @@ public class CppExtension implements Extension
         }
 
         System.out.println("Emitting C++ code");
-        generateCppSources(parameters, emitter, rootNode);
+        generateCppSources(parameters, walker, rootNode);
     }
 
-    private void generateCppSources(Parameters parameters, ZserioEmitter emitter, TokenAST rootNode)
+    private void generateCppSources(Parameters parameters, ZserioTreeWalker walker, Root rootNode)
             throws ZserioEmitException
     {
         final String outputDir = parameters.getCommandLineArg(OptionCpp);
@@ -70,7 +66,6 @@ public class CppExtension implements Extension
         emitters.add(new SqlTableInspectorEmitter(outputDir, parameters));
         emitters.add(new InspectorParameterProviderEmitter(outputDir, parameters));
         emitters.add(new InspectorZserioNamesEmitter(outputDir, parameters));
-        emitters.add(new InspectorZserioTypeNamesEmitter(outputDir, parameters));
         emitters.add(new ConstEmitter(outputDir, parameters));
         emitters.add(new SubtypeEmitter(outputDir, parameters));
         emitters.add(new EnumerationEmitter(outputDir, parameters));
@@ -84,8 +79,8 @@ public class CppExtension implements Extension
             // emit C++ code for decoders
             for (Emitter cppEmitter: emitters)
             {
-                emitter.setEmitter(cppEmitter);
-                emitter.root(rootNode);
+                walker.setEmitter(cppEmitter);
+                walker.root(rootNode);
             }
         }
         catch (RecognitionException exception)

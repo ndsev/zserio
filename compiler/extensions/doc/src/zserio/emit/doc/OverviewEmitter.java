@@ -10,13 +10,12 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
 
-import antlr.collections.AST;
 import zserio.ast.Package;
+import zserio.ast.Root;
 import zserio.ast.ZserioType;
 import zserio.tools.StringJoinUtil;
 import freemarker.template.Template;
 import freemarker.template.TemplateException;
-
 
 public class OverviewEmitter extends DefaultHtmlEmitter
 {
@@ -31,7 +30,7 @@ public class OverviewEmitter extends DefaultHtmlEmitter
     }
 
     @Override
-    public void endRoot()
+    public void endRoot(Root root)
     {
         try
         {
@@ -67,8 +66,9 @@ public class OverviewEmitter extends DefaultHtmlEmitter
     }
 
     @Override
-    public void endPackage(AST p)
+    public void beginPackage(Package packageToken)
     {
+        super.beginPackage(packageToken);
         for (ZserioType type : currentPackage.getLocalTypes())
         {
             final String typeName = type.getName();

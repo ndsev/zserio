@@ -1,6 +1,5 @@
 package zserio.emit.cpp;
 
-import antlr.collections.AST;
 import zserio.ast.SqlTableType;
 import zserio.tools.Parameters;
 
@@ -12,25 +11,21 @@ public class SqlTableEmitter extends CppDefaultEmitter
     }
 
     @Override
-    public void beginSqlTable(AST token) throws ZserioEmitCppException
+    public void beginSqlTable(SqlTableType sqlTableType) throws ZserioEmitCppException
     {
-        if (!(token instanceof SqlTableType))
-            throw new ZserioEmitCppException("Unexpected token type in beginSqlTable!");
-
         if (getWithSqlCode())
         {
-            final SqlTableType tableType = (SqlTableType)token;
-            final String tableRowName = tableType.getName() + TABLE_ROW_SUFFIX_NAME;
+            final String tableRowName = sqlTableType.getName() + TABLE_ROW_SUFFIX_NAME;
             final Object tableTemplateData = new SqlTableEmitterTemplateData(getTemplateDataContext(),
-                    tableType, tableRowName);
-            processHeaderTemplate(TABLE_TEMPLATE_HEADER_NAME, tableTemplateData, tableType);
-            processSourceTemplate(TABLE_TEMPLATE_SOURCE_NAME, tableTemplateData, tableType);
+                    sqlTableType, tableRowName);
+            processHeaderTemplate(TABLE_TEMPLATE_HEADER_NAME, tableTemplateData, sqlTableType);
+            processSourceTemplate(TABLE_TEMPLATE_SOURCE_NAME, tableTemplateData, sqlTableType);
 
             final Object tableRowTemplateData = new SqlTableRowEmitterTemplateData(getTemplateDataContext(),
-                    tableType, tableRowName);
-            processHeaderTemplate(TABLE_ROW_TEMPLATE_HEADER_NAME, tableRowTemplateData, tableType,
+                    sqlTableType, tableRowName);
+            processHeaderTemplate(TABLE_ROW_TEMPLATE_HEADER_NAME, tableRowTemplateData, sqlTableType,
                     tableRowName);
-            processSourceTemplate(TABLE_ROW_TEMPLATE_SOURCE_NAME, tableRowTemplateData, tableType,
+            processSourceTemplate(TABLE_ROW_TEMPLATE_SOURCE_NAME, tableRowTemplateData, sqlTableType,
                     tableRowName);
         }
     }

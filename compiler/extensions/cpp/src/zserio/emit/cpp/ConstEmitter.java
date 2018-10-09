@@ -3,8 +3,8 @@ package zserio.emit.cpp;
 import java.util.ArrayList;
 import java.util.List;
 
-import antlr.collections.AST;
 import zserio.ast.ConstType;
+import zserio.ast.Root;
 import zserio.tools.Parameters;
 
 public class ConstEmitter extends CppDefaultEmitter
@@ -15,16 +15,13 @@ public class ConstEmitter extends CppDefaultEmitter
     }
 
     @Override
-    public void beginConst(AST token) throws ZserioEmitCppException
+    public void beginConst(ConstType constType) throws ZserioEmitCppException
     {
-        if (!(token instanceof ConstType))
-            throw new ZserioEmitCppException("Unexpected token type in beginConst!");
-
-        constTypes.add((ConstType)token);
+        constTypes.add(constType);
     }
 
     @Override
-    public void endRoot() throws ZserioEmitCppException
+    public void endRoot(Root root) throws ZserioEmitCppException
     {
         if (!constTypes.isEmpty())
         {

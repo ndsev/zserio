@@ -1,6 +1,5 @@
 package zserio.emit.cpp;
 
-import antlr.collections.AST;
 import zserio.ast.StructureType;
 import zserio.tools.Parameters;
 
@@ -12,12 +11,8 @@ public class StructureEmitter extends CppDefaultEmitter
     }
 
     @Override
-    public void beginStructure(AST token) throws ZserioEmitCppException
+    public void beginStructure(StructureType structureType) throws ZserioEmitCppException
     {
-        if (!(token instanceof StructureType))
-            throw new ZserioEmitCppException("Unexpected token type in beginStructure!");
-
-        final StructureType structureType = (StructureType)token;
         final Object templateData = new StructureEmitterTemplateData(getTemplateDataContext(), structureType);
 
         processHeaderTemplate(TEMPLATE_HEADER_NAME, templateData, structureType);

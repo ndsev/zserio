@@ -5,32 +5,28 @@ import org.apache.commons.cli.OptionGroup;
 
 import antlr.RecognitionException;
 
-import zserio.antlr.ZserioEmitter;
-import zserio.ast.TokenAST;
+import zserio.antlr.ZserioTreeWalker;
+import zserio.ast.Root;
 import zserio.tools.Extension;
 import zserio.tools.Parameters;
 
 public class DocExtension implements Extension
 {
-    /** {@inheritDoc} */
     @Override
     public String getName()
     {
         return "Doc Generator";
     }
 
-    /** {@inheritDoc} */
     @Override
     public String getVersion()
     {
         return DocExtensionVersion.VERSION_STRING;
     }
 
-    /* (non-Javadoc)
-     * @see zserio.tools.Extension#generate(zserio.antlr.ZserioEmitter, zserio.ast.TokenAST)
-     */
     @Override
-    public void generate(Parameters parameters, ZserioEmitter emitter, TokenAST rootNode) throws ZserioEmitDocException
+    public void generate(Parameters parameters, ZserioTreeWalker walker, Root rootNode)
+            throws ZserioEmitDocException
     {
         if (parameters == null)
         {
@@ -65,20 +61,20 @@ public class DocExtension implements Extension
             // emit DB overview dot file
             DbOverviewDotEmitter dbOverviewDotEmitter = new DbOverviewDotEmitter(docPath, dotLinksPrefix,
                                                             withSvgDiagrams, dotExecutable);
-            emitter.setEmitter(dbOverviewDotEmitter);
-            emitter.root(rootNode);
+            walker.setEmitter(dbOverviewDotEmitter);
+            walker.root(rootNode);
 
             // emit DB structure dot files
             DbStructureDotEmitter dbStructureDotEmitter = new DbStructureDotEmitter(docPath, dotLinksPrefix,
                                                               withSvgDiagrams, dotExecutable);
-            emitter.setEmitter(dbStructureDotEmitter);
-            emitter.root(rootNode);
+            walker.setEmitter(dbStructureDotEmitter);
+            walker.root(rootNode);
 
             // emit type collaboration diagram files (must be before HTML documentation)
             TypeCollaborationDotEmitter typeCollaborationDotEmitter = new TypeCollaborationDotEmitter(docPath,
                                                             dotLinksPrefix, withSvgDiagrams, dotExecutable);
-            emitter.setEmitter(typeCollaborationDotEmitter);
-            emitter.root(rootNode);
+            walker.setEmitter(typeCollaborationDotEmitter);
+            walker.root(rootNode);
 
             // emit frameset
             ContentEmitter docEmitter = new ContentEmitter(docPath, withSvgDiagrams);
@@ -88,23 +84,23 @@ public class DocExtension implements Extension
             docEmitter.emitStylesheet();
 
             // emit HTML documentation
-            emitter.setEmitter(docEmitter);
-            emitter.root(rootNode);
+            walker.setEmitter(docEmitter);
+            walker.root(rootNode);
 
             // emit list of packages
             PackageEmitter packageEmitter = new PackageEmitter(docPath);
-            emitter.setEmitter(packageEmitter);
-            emitter.root(rootNode);
+            walker.setEmitter(packageEmitter);
+            walker.root(rootNode);
 
             // emit list of classes
             OverviewEmitter overviewEmitter = new OverviewEmitter(docPath);
-            emitter.setEmitter(overviewEmitter);
-            emitter.root(rootNode);
+            walker.setEmitter(overviewEmitter);
+            walker.root(rootNode);
 
             // emit list of deprecated elements
             DeprecatedEmitter deprecatedEmitter = new DeprecatedEmitter(docPath);
-            emitter.setEmitter(deprecatedEmitter);
-            emitter.root(rootNode);
+            walker.setEmitter(deprecatedEmitter);
+            walker.root(rootNode);
         }
         catch (RecognitionException exc)
         {

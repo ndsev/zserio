@@ -2,7 +2,7 @@ package zserio.emit.cpp;
 
 import java.util.ArrayList;
 import java.util.List;
-import antlr.collections.AST;
+import zserio.ast.Root;
 import zserio.ast.ServiceType;
 import zserio.tools.Parameters;
 
@@ -14,15 +14,13 @@ public class ServiceEmitter extends CppDefaultEmitter
     }
 
     @Override
-    public void beginService(AST token) throws ZserioEmitCppException
+    public void beginService(ServiceType serviceType) throws ZserioEmitCppException
     {
-        if (!(token instanceof ServiceType))
-            throw new ZserioEmitCppException("Unexpected token type in beginService!");
-        serviceTypes.add((ServiceType)token);
+        serviceTypes.add(serviceType);
     }
 
     @Override
-    public void endRoot() throws ZserioEmitCppException
+    public void endRoot(Root root) throws ZserioEmitCppException
     {
         if (!getWithGrpcCode() || serviceTypes.isEmpty())
             return;

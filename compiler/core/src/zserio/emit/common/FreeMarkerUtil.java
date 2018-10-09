@@ -25,7 +25,7 @@ public class FreeMarkerUtil
      * @param outputFile        The output to be generated.
      * @param amalgamate        True if the generated output will be amalgamated to the output file.
      *
-     * @throws ZserioEmitException
+     * @throws ZserioEmitException In case of any template error.
      */
     public static void processTemplate(String templateName, Object templateDataModel, File outputFile,
             boolean amalgamate) throws ZserioEmitException
@@ -88,6 +88,6 @@ public class FreeMarkerUtil
         }
     }
 
-    private static volatile Configuration   freeMarkerConfig;
-    private static Set<String>              amalgamatedDirectories;
+    private static volatile Configuration freeMarkerConfig;
+    private static Set<String> amalgamatedDirectories;
 }

@@ -7,7 +7,16 @@ import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
 
-import antlr.collections.AST;
+import zserio.ast.ChoiceType;
+import zserio.ast.ConstType;
+import zserio.ast.EnumType;
+import zserio.ast.Root;
+import zserio.ast.ServiceType;
+import zserio.ast.SqlDatabaseType;
+import zserio.ast.SqlTableType;
+import zserio.ast.StructureType;
+import zserio.ast.Subtype;
+import zserio.ast.UnionType;
 import zserio.ast.ZserioType;
 import freemarker.template.Configuration;
 import freemarker.template.Template;
@@ -36,84 +45,64 @@ public class TypeCollaborationDotEmitter extends DefaultDocEmitter
         this.dotExecutable = dotExecutable;
     }
 
-    // implementation of Emitter interface (used to gather all the data for the emitter)
-
     @Override
-    public void endRoot()
+    public void endRoot(Root root)
     {
         emitDotDiagrams();
     }
 
     @Override
-    public void beginConst(AST c)
+    public void beginConst(ConstType constType)
     {
-        if (!(c instanceof ZserioType))
-            throw new ZserioEmitDocException("Unexpected token type in beginConst!");
-        storeType((ZserioType)c);
+        storeType(constType);
     }
 
     @Override
-    public void beginStructure(AST s)
+    public void beginStructure(StructureType structureType)
     {
-        if (!(s instanceof ZserioType))
-            throw new ZserioEmitDocException("Unexpected token type in beginStructure!");
-        storeType((ZserioType)s);
+        storeType(structureType);
     }
 
     @Override
-    public void beginChoice(AST c)
+    public void beginChoice(ChoiceType choiceType)
     {
-        if (!(c instanceof ZserioType))
-            throw new ZserioEmitDocException("Unexpected token type in beginChoice!");
-        storeType((ZserioType)c);
+        storeType(choiceType);
     }
 
     @Override
-    public void beginUnion(AST u)
+    public void beginUnion(UnionType unionType)
     {
-        if (!(u instanceof ZserioType))
-            throw new ZserioEmitDocException("Unexpected token type in beginUnion!");
-        storeType((ZserioType)u);
+        storeType(unionType);
     }
 
     @Override
-    public void beginEnumeration(AST e)
+    public void beginEnumeration(EnumType enumType)
     {
-        if (!(e instanceof ZserioType))
-            throw new ZserioEmitDocException("Unexpected token type in beginEnumeration!");
-        storeType((ZserioType)e);
+        storeType(enumType);
     }
 
     @Override
-    public void beginSubtype(AST s)
+    public void beginSubtype(Subtype subtype)
     {
-        if (!(s instanceof ZserioType))
-            throw new ZserioEmitDocException("Unexpected token type in beginSubtype!");
-        storeType((ZserioType)s);
+        storeType(subtype);
     }
 
     @Override
-    public void beginService(AST s)
+    public void beginSqlTable(SqlTableType sqlTableType)
     {
-        if (!(s instanceof ZserioType))
-            throw new ZserioEmitDocException("Unexpected token type in beginServiceType");
-        storeType((ZserioType)s);
+        storeType(sqlTableType);
     }
 
     @Override
-    public void beginSqlDatabase(AST s)
+    public void beginSqlDatabase(SqlDatabaseType sqlDatabaseType)
     {
-        if (!(s instanceof ZserioType))
-            throw new ZserioEmitDocException("Unexpected token type in beginSqlDatabase!");
-        storeType((ZserioType)s);
+        storeType(sqlDatabaseType);
     }
 
     @Override
-    public void beginSqlTable(AST s)
+    public void beginService(ServiceType serviceType)
     {
-        if (!(s instanceof ZserioType))
-            throw new ZserioEmitDocException("Unexpected token type in beginSqlTable!");
-        storeType((ZserioType)s);
+        storeType(serviceType);
     }
 
     private void emitDotDiagrams()

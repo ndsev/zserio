@@ -1,6 +1,5 @@
 package zserio.emit.cpp;
 
-import antlr.collections.AST;
 import zserio.ast.Subtype;
 import zserio.tools.Parameters;
 
@@ -12,15 +11,11 @@ public class SubtypeEmitter extends CppDefaultEmitter
     }
 
     @Override
-    public void beginSubtype(AST token) throws ZserioEmitCppException
+    public void beginSubtype(Subtype subtype) throws ZserioEmitCppException
     {
-        if (!(token instanceof Subtype))
-            throw new ZserioEmitCppException("Unexpected token type in beginSubtype!");
+        Object templateData = new SubtypeEmitterTemplateData(getTemplateDataContext(), subtype);
 
-        final Subtype subType = (Subtype)token;
-        Object templateData = new SubtypeEmitterTemplateData(getTemplateDataContext(), subType);
-
-        processHeaderTemplate(TEMPLATE_HEADER_NAME, templateData, subType);
+        processHeaderTemplate(TEMPLATE_HEADER_NAME, templateData, subtype);
     }
 
     private static final String TEMPLATE_HEADER_NAME = "Subtype.h.ftl";

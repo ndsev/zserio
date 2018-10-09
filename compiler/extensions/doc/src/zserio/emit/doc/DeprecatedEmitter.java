@@ -4,13 +4,13 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import antlr.collections.AST;
 import zserio.ast.ChoiceType;
 import zserio.ast.CompoundType;
 import zserio.ast.ConstType;
 import zserio.ast.EnumItem;
 import zserio.ast.EnumType;
 import zserio.ast.Field;
+import zserio.ast.Root;
 import zserio.ast.StructureType;
 import zserio.ast.SqlDatabaseType;
 import zserio.ast.SqlTableType;
@@ -143,66 +143,50 @@ public class DeprecatedEmitter extends DefaultHtmlEmitter
     }
 
     @Override
-    public void endConst(AST c)
+    public void beginConst(ConstType constType)
     {
-        if (!(c instanceof ConstType))
-            throw new ZserioEmitDocException("Unexpected token type in endConst!");
-        ConstType ct = (ConstType)c;
-
-        if( getIsDeprecated(ct.getDocComment()) )
+        if (getIsDeprecated(constType.getDocComment()))
         {
-            Item item = new Item( ct );
-            items.add( item );
+            Item item = new Item(constType);
+            items.add(item);
         }
     }
 
     @Override
-    public void endStructure(AST s)
+    public void beginStructure(StructureType structureType)
     {
-        if (!(s instanceof StructureType))
-            throw new ZserioEmitDocException("Unexpected token type in endStructure!");
-        StructureType st = (StructureType)s;
-
-        if( getIsDeprecated(st.getDocComment()) )
+        if (getIsDeprecated(structureType.getDocComment()))
         {
-            Item item = new Item( st );
-            items.add( item );
+            Item item = new Item(structureType);
+            items.add(item);
         }
 
-        handleFields( st );
+        handleFields(structureType);
     }
 
     @Override
-    public void endChoice(AST c)
+    public void beginChoice(ChoiceType choiceType)
     {
-        if (!(c instanceof ChoiceType))
-            throw new ZserioEmitDocException("Unexpected token type in endChoice!");
-        ChoiceType ct = (ChoiceType)c;
-
-        if( getIsDeprecated(ct.getDocComment()) )
+        if (getIsDeprecated(choiceType.getDocComment()))
         {
-            Item item = new Item( ct );
-            items.add( item );
+            Item item = new Item(choiceType);
+            items.add(item);
         }
 
-        handleFields( ct );
+        handleFields(choiceType);
     }
 
 
     @Override
-    public void endUnion(AST u)
+    public void beginUnion(UnionType unionType)
     {
-        if (!(u instanceof UnionType))
-            throw new ZserioEmitDocException("Unexpected token type in endUnion!");
-        UnionType ut = (UnionType)u;
-
-        if( getIsDeprecated(ut.getDocComment()) )
+        if (getIsDeprecated(unionType.getDocComment()))
         {
-            Item item = new Item( ut );
-            items.add( item );
+            Item item = new Item(unionType);
+            items.add(item);
         }
 
-        handleFields( ut );
+        handleFields(unionType);
     }
 
     public void handleFields( CompoundType ct )
@@ -218,73 +202,57 @@ public class DeprecatedEmitter extends DefaultHtmlEmitter
     }
 
     @Override
-    public void endEnumeration(AST e)
+    public void beginEnumeration(EnumType enumType)
     {
-        if (!(e instanceof EnumType))
-            throw new ZserioEmitDocException("Unexpected token type in endEnumeration!");
-        EnumType et = (EnumType)e;
-
-        if( getIsDeprecated(et.getDocComment()) )
+        if (getIsDeprecated(enumType.getDocComment()))
         {
-            Item item = new Item( et );
-            items.add( item );
+            Item item = new Item(enumType);
+            items.add(item);
         }
 
         // handleEnumItems( EnumType et )
-        for( EnumItem ei : et.getItems() )
+        for (EnumItem ei : enumType.getItems())
         {
-            if( getIsDeprecated( ei.getDocComment()) )
+            if (getIsDeprecated(ei.getDocComment()))
             {
-                Item item = new Item( ei, et );
-                items.add( item );
+                Item item = new Item(ei, enumType);
+                items.add(item);
             }
         }
     }
 
     @Override
-    public void endSubtype(AST s)
+    public void beginSubtype(Subtype subtype)
     {
-        if (!(s instanceof Subtype))
-            throw new ZserioEmitDocException("Unexpected token type in endSubtype!");
-        Subtype st = (Subtype)s;
-
-        if( getIsDeprecated(st.getDocComment()) )
+        if (getIsDeprecated(subtype.getDocComment()))
         {
-            Item item = new Item( st );
-            items.add( item );
+            Item item = new Item(subtype);
+            items.add(item);
         }
     }
 
     @Override
-    public void endSqlDatabase(AST s)
+    public void beginSqlDatabase(SqlDatabaseType sqlDatabaseType)
     {
-        if (!(s instanceof SqlDatabaseType))
-            throw new ZserioEmitDocException("Unexpected token type in endSqlDatabase!");
-        SqlDatabaseType sd = (SqlDatabaseType)s;
-
-        if( getIsDeprecated(sd.getDocComment()) )
+        if (getIsDeprecated(sqlDatabaseType.getDocComment()))
         {
-            Item item = new Item( sd );
-            items.add( item );
+            Item item = new Item(sqlDatabaseType);
+            items.add(item);
         }
 
-        handleFields( sd );
+        handleFields(sqlDatabaseType);
     }
 
     @Override
-    public void endSqlTable(AST s)
+    public void beginSqlTable(SqlTableType sqlTableType)
     {
-        if (!(s instanceof SqlTableType))
-            throw new ZserioEmitDocException("Unexpected token type in endSqlTable!");
-        SqlTableType st = (SqlTableType)s;
-
-        if( getIsDeprecated(st.getDocComment()) )
+        if (getIsDeprecated(sqlTableType.getDocComment()))
         {
-            Item item = new Item( st );
-            items.add( item );
+            Item item = new Item(sqlTableType);
+            items.add(item);
         }
 
-        handleFields( st );
+        handleFields(sqlTableType);
     }
 
     public boolean getIsDeprecated(DocCommentToken docCommentToken)
@@ -297,7 +265,7 @@ public class DeprecatedEmitter extends DefaultHtmlEmitter
     };
 
     @Override
-    public void endRoot()
+    public void endRoot(Root root)
     {
         try
         {

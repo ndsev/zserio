@@ -115,10 +115,10 @@ final public class PackageMapper
                 zserioPackage.getPackageName().getIdList(), File.separator);
     }
 
-    private final List<String>      topLevelPackageNamePath;
-    private final List<String>      mappedRootPackagePath;
+    private final List<String> topLevelPackageNamePath;
+    private final List<String> mappedRootPackagePath;
 
-    private final String            codePackageSeparator;
-    private final String            mappedRootPackageName;
-    private final String            mappedRootPackageFilePath;
+    private final String codePackageSeparator;
+    private final String mappedRootPackageName;
+    private final String mappedRootPackageFilePath;
 }

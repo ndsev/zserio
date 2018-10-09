@@ -5,7 +5,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import antlr.collections.AST;
 import zserio.ast.TranslationUnit;
 import zserio.ast.ZserioType;
 import zserio.ast.Package;
@@ -66,13 +65,11 @@ abstract public class DefaultHtmlEmitter extends DefaultDocEmitter
     }
 
     @Override
-    public void beginTranslationUnit(AST root, AST translationUnit)
+    public void beginTranslationUnit(TranslationUnit translationUnit)
     {
-        if (!(translationUnit instanceof TranslationUnit))
-            throw new ZserioEmitDocException("Unexpected token type in beginTranslationUnit!");
-
+        // first translation unit has root package
         if (currentRootPackage == null)
-            currentRootPackage = ((TranslationUnit)translationUnit).getPackage();
+            currentRootPackage = translationUnit.getPackage();
     }
 
     public String getRootPackageName()
@@ -91,12 +88,9 @@ abstract public class DefaultHtmlEmitter extends DefaultDocEmitter
     }
 
     @Override
-    public void beginPackage(AST p)
+    public void beginPackage(Package packageToken)
     {
-        if (!(p instanceof Package))
-            throw new ZserioEmitDocException("Unexpected token type in beginPackage!");
-
-        currentPackage = (Package)p;
+        currentPackage = packageToken;
     }
 
     public void emitStylesheet()

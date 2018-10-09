@@ -3,7 +3,7 @@ package zserio.emit.java;
 import java.util.ArrayList;
 import java.util.List;
 
-import antlr.collections.AST;
+import zserio.ast.Root;
 import zserio.ast.SqlDatabaseType;
 import zserio.tools.Parameters;
 
@@ -15,17 +15,14 @@ class MasterDatabaseEmitter extends JavaDefaultEmitter
     }
 
     @Override
-    public void beginSqlDatabase(AST token) throws ZserioEmitJavaException
+    public void beginSqlDatabase(SqlDatabaseType sqlDatabaseType) throws ZserioEmitJavaException
     {
-        if (!(token instanceof SqlDatabaseType))
-            throw new ZserioEmitJavaException("Unexpected token type in beginSqlDatabase!");
-
         if (getWithSqlCode())
-            sqlDatabaseTypes.add((SqlDatabaseType)token);
+            sqlDatabaseTypes.add(sqlDatabaseType);
     }
 
     @Override
-    public void endRoot() throws ZserioEmitJavaException
+    public void endRoot(Root root) throws ZserioEmitJavaException
     {
         if (!sqlDatabaseTypes.isEmpty())
         {

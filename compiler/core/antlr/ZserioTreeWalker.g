@@ -4,10 +4,25 @@
 header
 {
 package zserio.antlr;
+
+import zserio.ast.ChoiceType;
+import zserio.ast.ConstType;
+import zserio.ast.EnumType;
+import zserio.ast.Import;
+import zserio.ast.Package;
+import zserio.ast.Root;
+import zserio.ast.ServiceType;
+import zserio.ast.SqlDatabaseType;
+import zserio.ast.SqlTableType;
+import zserio.ast.StructureType;
+import zserio.ast.Subtype;
+import zserio.ast.TranslationUnit;
+import zserio.ast.UnionType;
+
 import zserio.emit.common.Emitter;
 }
 
-class ZserioEmitter extends TreeParser;
+class ZserioTreeWalker extends TreeParser;
 
 options
 {
@@ -34,30 +49,30 @@ options
  * Root.
  */
 root
-    :   #(r:ROOT                    { em.beginRoot(r); }
-            (translationUnit[#r])+
-        )                           { em.endRoot(); }
+    :   #(r:ROOT                    { em.beginRoot((Root)r); }
+            (translationUnit)+
+        )                           { em.endRoot((Root)r); }
     ;
 
-translationUnit[AST r]
-    :   #(u:TRANSLATION_UNIT        { em.beginTranslationUnit(r, u); }
+translationUnit
+    :   #(u:TRANSLATION_UNIT        { em.beginTranslationUnit((TranslationUnit)u); }
             (packageDeclaration)?
             (importDeclaration)*
             (commandDeclaration)*
-        )                           { em.endTranslationUnit(); }
+        )                           { em.endTranslationUnit((TranslationUnit)u); }
     ;
 
 packageDeclaration
-    :   #(p:PACKAGE                 { em.beginPackage(p); }
+    :   #(p:PACKAGE                 { em.beginPackage((Package)p); }
             (ID)* // default package does not have IDs
-        )                           { em.endPackage(p); }
+        )
     ;
 
 importDeclaration
-    :   #(i:IMPORT                  { em.beginImport(i); }
+    :   #(i:IMPORT                  { em.beginImport((Import)i); }
             (ID)+
             (MULTIPLY)?
-        )                           { em.endImport(); }
+        )
     ;
 
 commandDeclaration
@@ -76,33 +91,33 @@ commandDeclaration
  * constDeclaration.
  */
 constDeclaration
-    :   #(c:CONST                   { em.beginConst(c); }
+    :   #(c:CONST                   { em.beginConst((ConstType)c); }
             definedType
             ID
             expression
-        )                           { em.endConst(c); }
+        )
     ;
 
 /**
  * subtypeDeclaration.
  */
 subtypeDeclaration
-    :   #(s:SUBTYPE                 { em.beginSubtype(s); }
+    :   #(s:SUBTYPE                 { em.beginSubtype((Subtype)s); }
             definedType
             ID
-        )                           { em.endSubtype(s); }
+        )
     ;
 
 /**
  * structureDeclaration.
  */
 structureDeclaration
-    :   #(s:STRUCTURE               { em.beginStructure(s); }
+    :   #(s:STRUCTURE               { em.beginStructure((StructureType)s); }
             ID
             (parameterList)?
             (structureFieldDefinition)*
             (functionDefinition)*
-        )                           { em.endStructure(s); }
+        )
     ;
 
 structureMemberList
@@ -110,7 +125,7 @@ structureMemberList
     ;
 
 structureFieldDefinition
-    :   #(f:FIELD                   { em.beginField(f); }
+    :   #(f:FIELD
             (typeReference | fieldArrayType)
             ID
             (OPTIONAL)?
@@ -119,7 +134,7 @@ structureFieldDefinition
             (fieldConstraint)?
             (fieldOffset)?
             (fieldAlignment)?
-        )                           { em.endField(f); }
+        )
     ;
 
 fieldArrayType
@@ -151,11 +166,11 @@ fieldAlignment
     ;
 
 functionDefinition
-    :   #(f:FUNCTION                { em.beginFunction(f); }
+    :   #(f:FUNCTION
             definedType
             ID
             functionBody
-        )                           { em.endFunction(f); }
+        )
     ;
 
 functionBody
@@ -166,14 +181,14 @@ functionBody
  * choiceDeclaration.
  */
 choiceDeclaration
-    :   #(c:CHOICE                  { em.beginChoice(c); }
+    :   #(c:CHOICE                  { em.beginChoice((ChoiceType)c); }
             ID
             parameterList
             expression
             (choiceCases)+
             (defaultChoice)?
             (functionDefinition)*
-        )                           { em.endChoice(c); }
+        )
     ;
 
 choiceCases
@@ -183,9 +198,9 @@ choiceCases
 choiceFieldDefinition
     :   #(f:FIELD
             (typeReference | fieldArrayType)
-            ID                      { em.beginField(f); }
+            ID
             (fieldConstraint)?
-        )                           { em.endField(f); }
+        )
     ;
 
 defaultChoice
@@ -196,9 +211,9 @@ defaultChoice
  * unionDeclaration.
  */
 unionDeclaration
-    :   #(u:UNION                   { em.beginUnion(u); }
+    :   #(u:UNION                   { em.beginUnion((UnionType)u); }
             i:ID (parameterList)? (unionFieldDefinition)+ (functionDefinition)*
-         )                          { em.endUnion(u); }
+         )
     ;
 
 unionFieldDefinition
@@ -209,39 +224,39 @@ unionFieldDefinition
  * enumDeclaration.
  */
 enumDeclaration
-    :   #(e:ENUM                    { em.beginEnumeration(e); }
+    :   #(e:ENUM                    { em.beginEnumeration((EnumType)e); }
             definedType
             ID
             (enumItem)+
-        )                           { em.endEnumeration(e); }
+        )
     ;
 
 enumItem
-    :   #(i:ITEM                    { em.beginEnumItem(i); }
+    :   #(i:ITEM 
             ID
             (expression)?
-        )                           { em.endEnumItem(i); }
+        )
     ;
 
 /**
  * sqlTableDeclaration.
  */
 sqlTableDeclaration
-    :   #(t:SQL_TABLE               { em.beginSqlTable(t); }
+    :   #(t:SQL_TABLE               { em.beginSqlTable((SqlTableType)t); }
             ID
             (ID)?
             (sqlTableFieldDefinition | sqlTableVirtualFieldDefinition)*
             (sqlConstraint)?
             (sqlWithoutRowId)?
-        )                           { em.endSqlTable(t); }
+        )
     ;
 
 sqlTableFieldDefinition
-    :   #(f:FIELD                   { em.beginField(f); }
+    :   #(f:FIELD 
             typeReference
             ID
             (sqlConstraint)?
-        )                           { em.endField(f); }
+        )
     ;
 
 sqlConstraint
@@ -249,12 +264,12 @@ sqlConstraint
     ;
 
 sqlTableVirtualFieldDefinition
-    :   #(f:VFIELD                  { em.beginField(f); }
+    :   #(f:VFIELD
             typeReference
             ID
             (sqlConstraint)?
             SQL_VIRTUAL
-        )                           { em.beginField(f); }
+        )
     ;
 
 sqlWithoutRowId
@@ -265,10 +280,10 @@ sqlWithoutRowId
  * sqlDatabaseDefinition.
  */
 sqlDatabaseDefinition
-    :   #(d:SQL_DATABASE            { em.beginSqlDatabase(d); }
+    :   #(d:SQL_DATABASE            { em.beginSqlDatabase((SqlDatabaseType)d); }
             ID
             (sqlDatabaseFieldDefinition)+
-        )                           { em.endSqlDatabase(d); }
+        )
     ;
 
 sqlDatabaseFieldDefinition
@@ -287,18 +302,18 @@ sqlTableReference
  * serviceDeclaration.
  */
 serviceDeclaration
-    :   #(s: SERVICE                { em.beginService(s); }
+    :   #(s:SERVICE                 { em.beginService((ServiceType)s); }
             ID
             (rpcDeclaration)*
-        )                           { em.endService(s); }
+        )
     ;
 
 rpcDeclaration
-    :   #(r: RPC                    { em.beginRpc(r); }
+    :   #(r: RPC
         (STREAM)? typeSymbol
         ID
         (STREAM)? typeSymbol
-        )                           { em.endRpc(r); }
+        )
     ;
 
 /**

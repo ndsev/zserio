@@ -1,5 +1,6 @@
 package zserio.emit.cpp;
 
+import zserio.ast.Root;
 import zserio.tools.Parameters;
 
 public class SqlDatabaseInspectorEmitter extends CppDefaultEmitter
@@ -10,7 +11,7 @@ public class SqlDatabaseInspectorEmitter extends CppDefaultEmitter
     }
 
     @Override
-    public void endRoot() throws ZserioEmitCppException
+    public void endRoot(Root root) throws ZserioEmitCppException
     {
         if (getWithSqlCode() && getWithInspectorCode())
         {

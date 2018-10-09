@@ -3,7 +3,7 @@ package zserio.emit.cpp;
 import java.util.ArrayList;
 import java.util.List;
 
-import antlr.collections.AST;
+import zserio.ast.Root;
 import zserio.ast.SqlTableType;
 import zserio.tools.Parameters;
 
@@ -15,19 +15,15 @@ public class InspectorParameterProviderEmitter extends CppDefaultEmitter
     }
 
     @Override
-    public void beginSqlTable(AST token) throws ZserioEmitCppException
+    public void beginSqlTable(SqlTableType sqlTableType) throws ZserioEmitCppException
     {
-        if (!(token instanceof SqlTableType))
-            throw new ZserioEmitCppException("Unexpected token type in beginSqlTable!");
-
         if (getWithSqlCode() && getWithInspectorCode())
-            sqlTableTypes.add((SqlTableType)token);
+            sqlTableTypes.add(sqlTableType);
     }
 
     @Override
-    public void endRoot() throws ZserioEmitCppException
+    public void endRoot(Root root) throws ZserioEmitCppException
     {
-
         if (!sqlTableTypes.isEmpty())
         {
             final ParameterProviderTemplateData templateData =

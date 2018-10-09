@@ -16,7 +16,7 @@ import antlr.collections.AST;
 import antlr.debug.misc.ASTFrame;
 import antlr.RecognitionException;
 
-import zserio.antlr.ZserioEmitter;
+import zserio.antlr.ZserioTreeWalker;
 import zserio.antlr.ZserioLexer;
 import zserio.antlr.ZserioParser;
 import zserio.antlr.ZserioParserTokenTypes;
@@ -266,9 +266,9 @@ public class ZserioTool
     private void emit(Root rootNode) throws Exception
     {
         final ExtensionParameters parameters = new ExtensionParameters(commandLineArguments);
-        final ZserioEmitter emitter = new ZserioEmitter();
+        final ZserioTreeWalker walker = new ZserioTreeWalker();
 
-        extensionManager.callExtensions(parameters, emitter, rootNode);
+        extensionManager.callExtensions(parameters, walker, rootNode);
     }
 
     private static Root parseComment(String commentFileName, int commentTokenType)

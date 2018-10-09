@@ -2,8 +2,8 @@ package zserio.tools;
 
 import org.apache.commons.cli.Options;
 
-import zserio.antlr.ZserioEmitter;
-import zserio.ast.TokenAST;
+import zserio.antlr.ZserioTreeWalker;
+import zserio.ast.Root;
 
 /**
  * The basic interface for all Zserio extensions.
@@ -35,8 +35,8 @@ public interface Extension
      * Calls the extension to generate their output.
      *
      * @param params   The parameters to pass to extension.
-     * @param emitter  The initialized zserio emitter to use.
+     * @param walker   The Zserio tree walker to use for emitting.
      * @param rootNode The root node of AST tree.
      */
-    public void generate(Parameters parameters, ZserioEmitter emitter, TokenAST rootNode);
+    public void generate(Parameters parameters, ZserioTreeWalker walker, Root rootNode);
 }

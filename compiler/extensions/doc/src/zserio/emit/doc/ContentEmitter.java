@@ -1,11 +1,10 @@
 package zserio.emit.doc;
 
-
-import antlr.collections.AST;
 import zserio.ast.CompoundType;
 import zserio.ast.ConstType;
 import zserio.ast.EnumType;
 import zserio.ast.Package;
+import zserio.ast.Root;
 import zserio.ast.ServiceType;
 import zserio.ast.Subtype;
 import zserio.ast.ZserioType;
@@ -30,20 +29,16 @@ public class ContentEmitter extends DefaultHtmlEmitter
     }
 
     @Override
-    public void beginRoot(AST root)
+    public void beginRoot(Root root)
     {
         setCurrentFolder(CONTENT_FOLDER);
     }
 
     @Override
-    public void endRoot()
+    public void beginPackage(Package packageToken)
     {
-    }
-
-    @Override
-    public void endPackage(AST p)
-    {
-        emitPackage(currentPackage);
+        super.beginPackage(packageToken);
+        emitPackage(packageToken);
     }
 
     private void emitPackage(Package pkg)

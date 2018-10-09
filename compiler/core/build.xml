@@ -95,7 +95,8 @@ findbugs.home_dir       - Location of the findbugs tool. If not set, findbugs is
             </classpath>
         </antlr>
 
-        <antlr target="${zserio_core.antlr_dir}/ZserioEmitter.g" outputdirectory="${zserio_core.antlr.out_dir}">
+        <antlr target="${zserio_core.antlr_dir}/ZserioTreeWalker.g"
+            outputdirectory="${zserio_core.antlr.out_dir}">
             <classpath>
                 <pathelement location="${3rdparty.jar_dir}/${3rdparty.antlr.jar_file_name}"/>
             </classpath>

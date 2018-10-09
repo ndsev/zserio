@@ -1,6 +1,5 @@
 package zserio.emit.cpp;
 
-import antlr.collections.AST;
 import zserio.ast.SqlDatabaseType;
 import zserio.tools.Parameters;
 
@@ -12,19 +11,15 @@ public class SqlDatabaseEmitter extends CppDefaultEmitter
     }
 
     @Override
-    public void beginSqlDatabase(AST token) throws ZserioEmitCppException
+    public void beginSqlDatabase(SqlDatabaseType sqlDatabaseType) throws ZserioEmitCppException
     {
-        if (!(token instanceof SqlDatabaseType))
-            throw new ZserioEmitCppException("Unexpected token type in beginSqlDatabase!");
-
         if (getWithSqlCode())
         {
-            final SqlDatabaseType databaseType = (SqlDatabaseType)token;
             final Object templateData = new SqlDatabaseEmitterTemplateData(getTemplateDataContext(),
-                    databaseType);
+                    sqlDatabaseType);
 
-            processHeaderTemplate(TEMPLATE_HEADER_NAME, templateData, databaseType);
-            processSourceTemplate(TEMPLATE_SOURCE_NAME, templateData, databaseType);
+            processHeaderTemplate(TEMPLATE_HEADER_NAME, templateData, sqlDatabaseType);
+            processSourceTemplate(TEMPLATE_SOURCE_NAME, templateData, sqlDatabaseType);
         }
     }
 

@@ -5,7 +5,9 @@ import java.io.IOException;
 import java.util.Set;
 import java.util.TreeSet;
 
-import antlr.collections.AST;
+import zserio.ast.Package;
+import zserio.ast.Root;
+
 import freemarker.template.Template;
 import freemarker.template.TemplateException;
 
@@ -23,7 +25,7 @@ public class PackageEmitter extends DefaultHtmlEmitter
 
 
     @Override
-    public void endRoot()
+    public void endRoot(Root root)
     {
         try
         {
@@ -50,8 +52,9 @@ public class PackageEmitter extends DefaultHtmlEmitter
 
 
     @Override
-    public void endPackage(AST p)
+    public void beginPackage(Package packageToken)
     {
+        super.beginPackage(packageToken);
         packages.add(getPackageName());
     }
 

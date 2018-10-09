@@ -1,6 +1,5 @@
 package zserio.emit.cpp;
 
-import antlr.collections.AST;
 import zserio.ast.EnumType;
 import zserio.tools.Parameters;
 
@@ -12,12 +11,8 @@ public class EnumerationEmitter extends CppDefaultEmitter
     }
 
     @Override
-    public void beginEnumeration(AST token) throws ZserioEmitCppException
+    public void beginEnumeration(EnumType enumType) throws ZserioEmitCppException
     {
-        if (!(token instanceof EnumType))
-            throw new ZserioEmitCppException("Unexpected token type in beginEnumeration!");
-
-        final EnumType enumType = (EnumType)token;
         final Object templateData = new EnumerationEmitterTemplateData(getTemplateDataContext(), enumType);
 
         processHeaderTemplate(TEMPLATE_HEADER_NAME, templateData, enumType);

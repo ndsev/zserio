@@ -3,7 +3,7 @@ package zserio.emit.java;
 import java.util.ArrayList;
 import java.util.List;
 
-import antlr.collections.AST;
+import zserio.ast.Root;
 import zserio.ast.SqlTableType;
 import zserio.tools.Parameters;
 
@@ -14,19 +14,15 @@ class ParameterProviderEmitter extends JavaDefaultEmitter
         super(extensionParameters, javaParameters);
     }
 
-    /** {@inheritDoc} */
     @Override
-    public void beginSqlTable(AST token) throws ZserioEmitJavaException
+    public void beginSqlTable(SqlTableType sqlTableType) throws ZserioEmitJavaException
     {
-        if (!(token instanceof SqlTableType))
-            throw new ZserioEmitJavaException("Unexpected token type in beginSqlTable!");
-
         if (getWithSqlCode())
-            sqlTableTypes.add((SqlTableType)token);
+            sqlTableTypes.add(sqlTableType);
     }
 
     @Override
-    public void endRoot() throws ZserioEmitJavaException
+    public void endRoot(Root root) throws ZserioEmitJavaException
     {
         if (!sqlTableTypes.isEmpty())
         {

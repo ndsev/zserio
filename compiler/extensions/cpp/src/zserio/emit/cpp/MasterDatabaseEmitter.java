@@ -3,7 +3,7 @@ package zserio.emit.cpp;
 import java.util.ArrayList;
 import java.util.List;
 
-import antlr.collections.AST;
+import zserio.ast.Root;
 import zserio.ast.SqlDatabaseType;
 import zserio.tools.Parameters;
 
@@ -15,17 +15,14 @@ public class MasterDatabaseEmitter extends CppDefaultEmitter
     }
 
     @Override
-    public void beginSqlDatabase(AST token) throws ZserioEmitCppException
+    public void beginSqlDatabase(SqlDatabaseType sqlDatabaseType) throws ZserioEmitCppException
     {
-        if (!(token instanceof SqlDatabaseType))
-            throw new ZserioEmitCppException("Unexpected token type in beginSqlDatabase!");
-
         if (getWithSqlCode())
-            sqlDatabaseTypes.add((SqlDatabaseType)token);
+            sqlDatabaseTypes.add(sqlDatabaseType);
     }
 
     @Override
-    public void endRoot() throws ZserioEmitCppException
+    public void endRoot(Root root) throws ZserioEmitCppException
     {
         if (!sqlDatabaseTypes.isEmpty())
         {

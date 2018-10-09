@@ -1,104 +1,65 @@
 package zserio.emit.common;
 
-import antlr.collections.AST;
+import zserio.ast.ChoiceType;
+import zserio.ast.ConstType;
+import zserio.ast.EnumType;
+import zserio.ast.Import;
+import zserio.ast.Package;
+import zserio.ast.Root;
+import zserio.ast.ServiceType;
+import zserio.ast.SqlDatabaseType;
+import zserio.ast.SqlTableType;
+import zserio.ast.StructureType;
+import zserio.ast.Subtype;
+import zserio.ast.TranslationUnit;
+import zserio.ast.UnionType;
 
 /**
- * Implements the Emitter interface and does nothing. Saves some typing for
- * derived classes that only need to implement a few of the emitter actions.
+ * Implements the Emitter interface and does nothing. Saves some typing for derived classes that only need to
+ * implement a few of the emitter actions.
  */
 public abstract class DefaultEmitter implements Emitter
 {
-    /**** implementation of interface methods ****/
+    @Override
+    public void beginRoot(Root root) {}
+    @Override
+    public void endRoot(Root root) {}
 
     @Override
-    public void beginRoot(AST r) {}
+    public void beginTranslationUnit(TranslationUnit translationUnit) {}
     @Override
-    public void endRoot() {}
+    public void endTranslationUnit(TranslationUnit translationUnit) {}
 
     @Override
-    public void beginTranslationUnit(AST r, AST u) {}
-    @Override
-    public void endTranslationUnit() {}
+    public void beginPackage(Package packageToken) {}
 
     @Override
-    public void beginPackage(AST p) {}
-    @Override
-    public void endPackage(AST p) {}
+    public void beginImport(Import importNode) {}
 
     @Override
-    public void beginImport(AST i) {}
-    @Override
-    public void endImport() {}
+    public void beginConst(ConstType constType) {}
 
     @Override
-    public void beginConst(AST c) {}
-    @Override
-    public void endConst(AST c) {}
+    public void beginSubtype(Subtype subType) {}
 
     @Override
-    public void beginMembers() {}
-    @Override
-    public void endMembers() {}
+    public void beginStructure(StructureType structureType) {}
 
     @Override
-    public void beginStructure(AST s) {}
-    @Override
-    public void endStructure(AST s) {}
+    public void beginChoice(ChoiceType choiceType) {}
 
     @Override
-    public void beginChoice(AST c) {}
-    @Override
-    public void endChoice(AST c) {}
+    public void beginUnion(UnionType unionType) {}
 
     @Override
-    public void beginUnion(AST u) {}
-    @Override
-    public void endUnion(AST u) {}
+    public void beginEnumeration(EnumType enumType) {}
 
     @Override
-    public void beginField(AST f) {}
-    @Override
-    public void endField(AST f) {}
+    public void beginSqlTable(SqlTableType sqlTableType) {}
 
     @Override
-    public void beginFunction(AST f) {}
-    @Override
-    public void endFunction(AST f) {}
+    public void beginSqlDatabase(SqlDatabaseType sqlDatabaseType) {}
 
     @Override
-    public void beginEnumeration(AST e) {}
-    @Override
-    public void endEnumeration(AST e) {}
-
-    @Override
-    public void beginEnumItem(AST e) {}
-    @Override
-    public void endEnumItem(AST e) {}
-
-    @Override
-    public void beginSubtype(AST s) {}
-    @Override
-    public void endSubtype(AST s) {}
-
-    @Override
-    public void beginSqlDatabase(AST s) {}
-    @Override
-    public void endSqlDatabase(AST s) {}
-
-    @Override
-    public void beginSqlTable(AST s) {}
-    @Override
-    public void endSqlTable(AST s) {}
-
-    @Override
-    public void beginRpc(AST r) {}
-    @Override
-    public void endRpc(AST r) {}
-
-    @Override
-    public void beginService(AST s) {}
-    @Override
-    public void endService(AST s) {}
-
-    /**** end implementation of interface methods ****/
+    public void beginService(ServiceType service) {}
 }
