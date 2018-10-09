@@ -5,7 +5,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.ServiceLoader;
 
-import zserio.antlr.ZserioTreeWalker;
 import zserio.ast.Root;
 
 /**
@@ -63,10 +62,9 @@ public class ExtensionManager
      * Calls all available Zserio extensions to generate their output.
      *
      * @param parameters Parameters to pass to extensions.
-     * @param walker     The Zserio tree walker to use for emitting.
-     * @param rootNode   The root node of AST tree to use for emitting.
+     * @param rootNode   The root node of Zserio types tree to use for emitting.
      */
-    public void callExtensions(ExtensionParameters parameters, ZserioTreeWalker walker, Root rootNode)
+    public void callExtensions(ExtensionParameters parameters, Root rootNode)
     {
         if (extensions.isEmpty())
         {
@@ -75,9 +73,7 @@ public class ExtensionManager
         else
         {
             for (Extension extension : extensions)
-            {
-                extension.generate(parameters, walker, rootNode);
-            }
+                extension.generate(parameters, rootNode);
         }
     }
 

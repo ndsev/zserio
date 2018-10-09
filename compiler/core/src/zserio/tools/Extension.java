@@ -2,7 +2,6 @@ package zserio.tools;
 
 import org.apache.commons.cli.Options;
 
-import zserio.antlr.ZserioTreeWalker;
 import zserio.ast.Root;
 
 /**
@@ -34,9 +33,8 @@ public interface Extension
     /**
      * Calls the extension to generate their output.
      *
-     * @param params   The parameters to pass to extension.
-     * @param walker   The Zserio tree walker to use for emitting.
-     * @param rootNode The root node of AST tree.
+     * @param parameters The parameters to pass to extension.
+     * @param rootNode   The root node of Zserio types tree to use for emitting.
      */
-    public void generate(Parameters parameters, ZserioTreeWalker walker, Root rootNode);
+    public void generate(Parameters parameters, Root rootNode);
 }

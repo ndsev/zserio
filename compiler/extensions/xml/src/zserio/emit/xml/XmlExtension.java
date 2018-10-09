@@ -3,7 +3,6 @@ package zserio.emit.xml;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 
-import zserio.antlr.ZserioTreeWalker;
 import zserio.ast.Root;
 import zserio.tools.Extension;
 import zserio.tools.Parameters;
@@ -32,7 +31,7 @@ public class XmlExtension implements Extension
     }
 
     @Override
-    public void generate(Parameters parameters, ZserioTreeWalker walker, Root rootNode)
+    public void generate(Parameters parameters, Root rootNode)
     {
         if (!parameters.argumentExists(OptionXml))
         {

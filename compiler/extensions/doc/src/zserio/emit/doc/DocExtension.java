@@ -3,9 +3,6 @@ package zserio.emit.doc;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.OptionGroup;
 
-import antlr.RecognitionException;
-
-import zserio.antlr.ZserioTreeWalker;
 import zserio.ast.Root;
 import zserio.tools.Extension;
 import zserio.tools.Parameters;
@@ -25,8 +22,7 @@ public class DocExtension implements Extension
     }
 
     @Override
-    public void generate(Parameters parameters, ZserioTreeWalker walker, Root rootNode)
-            throws ZserioEmitDocException
+    public void generate(Parameters parameters, Root rootNode) throws ZserioEmitDocException
     {
         if (parameters == null)
         {
@@ -56,57 +52,42 @@ public class DocExtension implements Extension
 
         final String docPath = parameters.getCommandLineArg(OptionDoc);
 
-        try
-        {
-            // emit DB overview dot file
-            DbOverviewDotEmitter dbOverviewDotEmitter = new DbOverviewDotEmitter(docPath, dotLinksPrefix,
-                                                            withSvgDiagrams, dotExecutable);
-            walker.setEmitter(dbOverviewDotEmitter);
-            walker.root(rootNode);
+        // emit DB overview dot file
+        DbOverviewDotEmitter dbOverviewDotEmitter = new DbOverviewDotEmitter(docPath, dotLinksPrefix,
+                                                        withSvgDiagrams, dotExecutable);
+        rootNode.walk(dbOverviewDotEmitter);
 
-            // emit DB structure dot files
-            DbStructureDotEmitter dbStructureDotEmitter = new DbStructureDotEmitter(docPath, dotLinksPrefix,
-                                                              withSvgDiagrams, dotExecutable);
-            walker.setEmitter(dbStructureDotEmitter);
-            walker.root(rootNode);
+        // emit DB structure dot files
+        DbStructureDotEmitter dbStructureDotEmitter = new DbStructureDotEmitter(docPath, dotLinksPrefix,
+                                                          withSvgDiagrams, dotExecutable);
+        rootNode.walk(dbStructureDotEmitter);
 
-            // emit type collaboration diagram files (must be before HTML documentation)
-            TypeCollaborationDotEmitter typeCollaborationDotEmitter = new TypeCollaborationDotEmitter(docPath,
-                                                            dotLinksPrefix, withSvgDiagrams, dotExecutable);
-            walker.setEmitter(typeCollaborationDotEmitter);
-            walker.root(rootNode);
+        // emit type collaboration diagram files (must be before HTML documentation)
+        TypeCollaborationDotEmitter typeCollaborationDotEmitter = new TypeCollaborationDotEmitter(docPath,
+                                                        dotLinksPrefix, withSvgDiagrams, dotExecutable);
+        rootNode.walk(typeCollaborationDotEmitter);
 
-            // emit frameset
-            ContentEmitter docEmitter = new ContentEmitter(docPath, withSvgDiagrams);
-            docEmitter.emitFrameset();
+        // emit frameset
+        ContentEmitter docEmitter = new ContentEmitter(docPath, withSvgDiagrams);
+        docEmitter.emitFrameset();
 
-            // emit stylesheets
-            docEmitter.emitStylesheet();
+        // emit stylesheets
+        docEmitter.emitStylesheet();
 
-            // emit HTML documentation
-            walker.setEmitter(docEmitter);
-            walker.root(rootNode);
+        // emit HTML documentation
+        rootNode.walk(docEmitter);
 
-            // emit list of packages
-            PackageEmitter packageEmitter = new PackageEmitter(docPath);
-            walker.setEmitter(packageEmitter);
-            walker.root(rootNode);
+        // emit list of packages
+        PackageEmitter packageEmitter = new PackageEmitter(docPath);
+        rootNode.walk(packageEmitter);
 
-            // emit list of classes
-            OverviewEmitter overviewEmitter = new OverviewEmitter(docPath);
-            walker.setEmitter(overviewEmitter);
-            walker.root(rootNode);
+        // emit list of classes
+        OverviewEmitter overviewEmitter = new OverviewEmitter(docPath);
+        rootNode.walk(overviewEmitter);
 
-            // emit list of deprecated elements
-            DeprecatedEmitter deprecatedEmitter = new DeprecatedEmitter(docPath);
-            walker.setEmitter(deprecatedEmitter);
-            walker.root(rootNode);
-        }
-        catch (RecognitionException exc)
-        {
-            System.out.println("DocExtension.generate: exception:" + exc);
-            throw new ZserioEmitDocException(exc);
-        }
+        // emit list of deprecated elements
+        DeprecatedEmitter deprecatedEmitter = new DeprecatedEmitter(docPath);
+        rootNode.walk(deprecatedEmitter);
     }
 
     @Override

@@ -5,8 +5,6 @@ import java.util.List;
 
 import org.apache.commons.cli.Option;
 
-import antlr.RecognitionException;
-import zserio.antlr.ZserioTreeWalker;
 import zserio.ast.Root;
 import zserio.emit.common.ZserioEmitException;
 import zserio.emit.common.Emitter;
@@ -46,8 +44,7 @@ public class JavaExtension implements Extension
     }
 
     @Override
-    public void generate(Parameters extensionParameters, ZserioTreeWalker walker, Root rootNode)
-        throws ZserioEmitException
+    public void generate(Parameters extensionParameters, Root rootNode) throws ZserioEmitException
     {
         if (!extensionParameters.argumentExists(OptionJava))
         {
@@ -75,11 +72,11 @@ public class JavaExtension implements Extension
 
         final String outputDir = extensionParameters.getCommandLineArg(OptionJava);
         final JavaExtensionParameters javaParameters = new JavaExtensionParameters(outputDir, javaMajorVersion);
-        generateJavaSources(extensionParameters, javaParameters, walker, rootNode);
+        generateJavaSources(extensionParameters, javaParameters, rootNode);
     }
 
     private void generateJavaSources(Parameters extensionParameters, JavaExtensionParameters javaParameters,
-            ZserioTreeWalker walker, Root rootNode) throws ZserioEmitException
+            Root rootNode) throws ZserioEmitException
     {
         final List<Emitter> emitters = new ArrayList<Emitter>();
         emitters.add(new EnumerationEmitter(extensionParameters, javaParameters));
@@ -94,20 +91,9 @@ public class JavaExtension implements Extension
         emitters.add(new ConstEmitter(extensionParameters, javaParameters));
         emitters.add(new MasterDatabaseEmitter(extensionParameters, javaParameters));
 
-        try
-        {
-            // emit Java code for decoders
-            for (Emitter javaEmitter: emitters)
-            {
-                walker.setEmitter(javaEmitter);
-                walker.root(rootNode);
-            }
-        }
-        catch (RecognitionException exception)
-        {
-            System.out.println("JavaExtension exception:" + exception);
-            throw new ZserioEmitException(exception);
-        }
+        // emit Java code for decoders
+        for (Emitter javaEmitter: emitters)
+            rootNode.walk(javaEmitter);
     }
 
     private static String getMajorVersion(String javaVersionOption)

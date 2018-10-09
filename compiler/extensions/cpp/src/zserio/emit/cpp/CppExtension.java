@@ -5,8 +5,6 @@ import java.util.List;
 
 import org.apache.commons.cli.Option;
 
-import antlr.RecognitionException;
-import zserio.antlr.ZserioTreeWalker;
 import zserio.ast.Root;
 import zserio.emit.common.ZserioEmitException;
 import zserio.emit.common.Emitter;
@@ -40,8 +38,7 @@ public class CppExtension implements Extension
     }
 
     @Override
-    public void generate(Parameters parameters, ZserioTreeWalker walker, Root rootNode)
-        throws ZserioEmitException
+    public void generate(Parameters parameters, Root rootNode) throws ZserioEmitException
     {
         if (!parameters.argumentExists(OptionCpp))
         {
@@ -50,11 +47,10 @@ public class CppExtension implements Extension
         }
 
         System.out.println("Emitting C++ code");
-        generateCppSources(parameters, walker, rootNode);
+        generateCppSources(parameters, rootNode);
     }
 
-    private void generateCppSources(Parameters parameters, ZserioTreeWalker walker, Root rootNode)
-            throws ZserioEmitException
+    private void generateCppSources(Parameters parameters, Root rootNode) throws ZserioEmitException
     {
         final String outputDir = parameters.getCommandLineArg(OptionCpp);
         final List<Emitter> emitters = new ArrayList<Emitter>();
@@ -74,20 +70,9 @@ public class CppExtension implements Extension
         emitters.add(new ChoiceEmitter(outputDir, parameters));
         emitters.add(new UnionEmitter(outputDir, parameters));
 
-        try
-        {
-            // emit C++ code for decoders
-            for (Emitter cppEmitter: emitters)
-            {
-                walker.setEmitter(cppEmitter);
-                walker.root(rootNode);
-            }
-        }
-        catch (RecognitionException exception)
-        {
-            System.out.println("CppExtension exception:" + exception);
-            throw new ZserioEmitException(exception);
-        }
+        // emit C++ code for decoders
+        for (Emitter cppEmitter: emitters)
+            rootNode.walk(cppEmitter);
     }
 
     private final static String OptionCpp = "cpp";
