@@ -126,6 +126,8 @@ generate_ant_file()
 
     <property name="test_zs.build_dir" location="${HOST_BUILD_DIR}"/>
     <property name="test_zs.classes_dir" location="\${test_zs.build_dir}/classes"/>
+    <property name="test_zs.jar_dir" location="\${test_zs.build_dir}/jar"/>
+    <property name="test_zs.jar_file" location="\${test_zs.jar_dir}/${TEST_NAME}.jar"/>
     <property name="test_zs.src_dir" location="\${test_zs.build_dir}/gen"/>${GRPC_JAR_DIR}
 
     <condition property="findbugs.classpath" value="\${findbugs.home_dir}/lib/findbugs-ant.jar">
@@ -154,7 +156,11 @@ generate_ant_file()
         </javac>
     </target>
 
-    <target name="findbugs" depends="compile" if="findbugs.home_dir">
+    <target name="jar" depends="compile">
+        <jar destfile="\${test_zs.jar_file}" basedir="\${test_zs.classes_dir}"/>
+    </target>
+
+    <target name="findbugs" depends="jar" if="findbugs.home_dir">
         <taskdef name="findbugs" classpath="\${findbugs.classpath}" classname="\${findbugs.classname}"/>
         <findbugs home="\${findbugs.home_dir}"
             output="html"
@@ -164,7 +170,7 @@ generate_ant_file()
             errorProperty="test_zs.findbugs.is_failed"
             warningsProperty="test_zs.findbugs.is_failed">
             <sourcePath path="\${test_zs.src_dir}"/>
-            <fileset dir="\${test_zs.classes_dir}"/>
+            <class location="\${test_zs.jar_file}"/>
             <auxClasspath>
                 <pathelement location="\${runtime.jar_file}"/>${GRPC_CLASSPATH}
             </auxClasspath>
@@ -177,6 +183,9 @@ generate_ant_file()
 
     <target name="clean">
         <delete dir="\${test_zs.classes_dir}"/>
+        <delete dir="\${test_zs.jar_dir}"/>
+        <delete dir="\${test_zs.build_dir}/depend-cache"/>
+        <delete file="\${test_zs.build_dir}/findbugs.html"/>
     </target>
 </project>
 EOF
