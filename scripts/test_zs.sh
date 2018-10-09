@@ -13,12 +13,6 @@ set_test_global_variables()
         return 1
     fi
 
-    GREP="${GREP:-grep}"
-    if [ ! -f "`which "${GREP}"`" ] ; then
-        stderr_echo "Cannot find grep! Set GREP environment variable."
-        return 1
-    fi
-
     # GRPC setup
     GRPC_ROOT="${GRPC_ROOT:-""}"
 
@@ -34,7 +28,6 @@ print_test_help_env()
     cat << EOF
 Uses the following environment variables for testing:
     UNZIP               Unzip executable to use. Default is "unzip".
-    GREP                Grep tool. Default is "grep".
     GRPC_ROOT           Root path to GRPC repository. GRPC is disabled by default.
     ZSERIO_EXTRA_ARGS   Extra arguments to zserio tool. Default is empty.
 
@@ -44,8 +37,9 @@ EOF
 # Run zserio tool with specified sources and arguments
 run_zserio_tool()
 {
-    exit_if_argc_ne $# 5
+    exit_if_argc_ne $# 6
     local ZSERIO_RELEASE_ROOT="$1"; shift
+    local BUILD_DIR="$1"; shift # for logging
     local ZSERIO_DIRECTORY="$1"; shift
     local ZSERIO_SOURCE="$1"; shift
     local WERROR="$1"; shift
@@ -53,28 +47,24 @@ run_zserio_tool()
     local ZSERIO_ARGS=("${MSYS_WORKAROUND_TEMP[@]}")
 
     local ZSERIO="${ZSERIO_RELEASE_ROOT}/zserio.jar"
+    local ZSERIO_LOG="${BUILD_DIR}/zserio_log.txt"
     local MESSAGE="Compilation of zserio '${ZSERIO_DIRECTORY}/${ZSERIO_SOURCE}'"
     echo "STARTING - ${MESSAGE}"
 
-    local WARNINGS=0
-    local RESULT=1
-    while read -r LINE || { RESULT=$LINE && break ; } do # last line is the RESULT
-        echo "${LINE}"
-        if [[ "${LINE}" == *"[WARNING]"* ]] ; then
-            WARNINGS=1
-        fi
-    done < <(
-        "${JAVA_BIN}" -jar "${ZSERIO}" ${ZSERIO_EXTRA_ARGS} "-src" "${ZSERIO_DIRECTORY}" "${ZSERIO_SOURCE}" \
-            "${ZSERIO_ARGS[@]}" 2>&1
-        echo -n $? # print RESULT without newline to be able to detect last line in the while above
-    )
-    if [ ${RESULT} -ne 0 ] ; then
+    "${JAVA_BIN}" -jar "${ZSERIO}" ${ZSERIO_EXTRA_ARGS} "-src" "${ZSERIO_DIRECTORY}" "${ZSERIO_SOURCE}" \
+            "${ZSERIO_ARGS[@]}" 2>&1 | tee ${ZSERIO_LOG}
+
+    if [ ${PIPESTATUS[0]} -ne 0 ] ; then
         stderr_echo "${MESSAGE} failed!"
         return 1
     fi
-    if [[ ${WERROR} -ne 0 && ${WARNINGS} -ne 0 ]] ; then
-        stderr_echo "${MESSAGE} failed because warnings are treated as errors! "
-        return 1
+
+    if [ ${WERROR} -ne 0 ] ; then
+        grep -q "\[WARNING\]" ${ZSERIO_LOG}
+        if [ $? -eq 0 ] ; then
+            stderr_echo "${MESSAGE} failed because warnings are treated as errors! "
+            return 1
+        fi
     fi
 
     echo -e "FINISHED - ${MESSAGE}\n"
@@ -326,8 +316,8 @@ test()
         ZSERIO_ARGS+=("-cpp" "${TEST_OUT_DIR}/cpp/gen")
     fi
 
-    run_zserio_tool "${UNPACKED_ZSERIO_RELEASE_DIR}" "${SWITCH_DIRECTORY}" "${SWITCH_SOURCE}" ${SWITCH_WERROR} \
-        ZSERIO_ARGS[@]
+    run_zserio_tool "${UNPACKED_ZSERIO_RELEASE_DIR}" "${TEST_OUT_DIR}" \
+        "${SWITCH_DIRECTORY}" "${SWITCH_SOURCE}" ${SWITCH_WERROR} ZSERIO_ARGS[@]
     if [ $? -ne 0 ] ; then
         return 1
     fi
@@ -335,9 +325,9 @@ test()
     # compile generated Java sources
     if [[ ${PARAM_JAVA} == 1 ]] ; then
         echo "Compile generated Java sources"
-        ! ${GREP} "import static io.grpc" -qr ${TEST_OUT_DIR}/java/gen
+        ! grep "import static io.grpc" -qr ${TEST_OUT_DIR}/java/gen
         local JAVA_NEEDS_GRPC=$?
-        ! ${GREP} "import java.sql.Connection" -qr ${TEST_OUT_DIR}/java/gen
+        ! grep "import java.sql.Connection" -qr ${TEST_OUT_DIR}/java/gen
         local JAVA_NEEDS_SQLITE=$?
         generate_ant_file "${UNPACKED_ZSERIO_RELEASE_DIR}" "${ZSERIO_PROJECT_ROOT}" \
             "${TEST_OUT_DIR}/java" "${SWITCH_TEST_NAME}" ${JAVA_NEEDS_SQLITE} ${JAVA_NEEDS_GRPC}
@@ -351,11 +341,11 @@ test()
     # run generated C++ sources
     if [[ ${#CPP_TARGETS[@]} != 0 ]] ; then
         echo "Compile generated C++ sources"
-        ! ${GREP} "#include <grpcpp/impl/codegen" -qr ${TEST_OUT_DIR}/cpp/gen
+        ! grep "#include <grpcpp/impl/codegen" -qr ${TEST_OUT_DIR}/cpp/gen
         local CPP_NEEDS_GRPC=$?
-        ! ${GREP} "#include <sqlite3.h>" -qr ${TEST_OUT_DIR}/cpp/gen
+        ! grep "#include <sqlite3.h>" -qr ${TEST_OUT_DIR}/cpp/gen
         local CPP_NEEDS_SQLITE=$?
-        ! ${GREP} "#include <zserio/inspector/BlobInspectorTree.h>" -qr ${TEST_OUT_DIR}/cpp/gen
+        ! grep "#include <zserio/inspector/BlobInspectorTree.h>" -qr ${TEST_OUT_DIR}/cpp/gen
         local CPP_NEEDS_INSPECTOR=$?
         generate_cmake_lists "${UNPACKED_ZSERIO_RELEASE_DIR}" "${ZSERIO_PROJECT_ROOT}" \
             "${TEST_OUT_DIR}/cpp" "${SWITCH_TEST_NAME}" \
@@ -422,9 +412,9 @@ Usage:
 Arguments:
     -h, --help                Show this help.
     -p, --purge               Purge test build directory.
-    -d, --source-dir DIR      Directory with zserio sources.
+    -d, --source-dir DIR      Directory with zserio sources. Default is ".".
     -s, --source SOURCE       Main zserio source.
-    -t, --test-name NAME      Test name. Defaults to SOURCE without extension.
+    -t, --test-name NAME      Test name. Optional.
     -w, --werror              Treat zserio warnings as errors.
     generator                 Specify the generator to test.
 
