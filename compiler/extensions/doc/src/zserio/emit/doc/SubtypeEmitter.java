@@ -9,6 +9,7 @@ import zserio.ast.CompoundType;
 import zserio.ast.ServiceType;
 import zserio.ast.Subtype;
 import zserio.ast.ZserioType;
+import zserio.emit.common.ZserioEmitException;
 import freemarker.template.Template;
 import freemarker.template.TemplateException;
 
@@ -27,7 +28,7 @@ public class SubtypeEmitter extends DefaultHtmlEmitter
         this.withSvgDiagrams = withSvgDiagrams;
     }
 
-    public void emit(Subtype s)
+    public void emit(Subtype s) throws ZserioEmitException
     {
         this.subtype = s;
         docCommentTemplateData = new DocCommentTemplateData(subtype.getDocComment());
@@ -51,13 +52,13 @@ public class SubtypeEmitter extends DefaultHtmlEmitter
             tpl.process(this, writer);
             writer.close();
         }
-        catch (IOException exc)
+        catch (IOException exception)
         {
-            throw new ZserioEmitDocException(exc);
+            throw new ZserioEmitException(exception.getMessage());
         }
-        catch (TemplateException exc)
+        catch (TemplateException exception)
         {
-            throw new ZserioEmitDocException(exc);
+            throw new ZserioEmitException(exception.getMessage());
         }
         finally
         {
@@ -116,7 +117,7 @@ public class SubtypeEmitter extends DefaultHtmlEmitter
         return subtype;
     }
 
-    public String getCollaborationDiagramSvgFileName()
+    public String getCollaborationDiagramSvgFileName() throws ZserioEmitException
     {
         return (withSvgDiagrams) ? DocEmitterTools.getTypeCollaborationSvgUrl(docPath, subtype) : null;
     }

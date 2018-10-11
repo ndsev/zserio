@@ -1,6 +1,7 @@
 package zserio.emit.java;
 
 import zserio.ast.UnionType;
+import zserio.emit.common.ZserioEmitException;
 import zserio.tools.Parameters;
 
 class UnionEmitter extends JavaDefaultEmitter
@@ -11,7 +12,7 @@ class UnionEmitter extends JavaDefaultEmitter
     }
 
     @Override
-    public void beginUnion(UnionType unionType) throws ZserioEmitJavaException
+    public void beginUnion(UnionType unionType) throws ZserioEmitException
     {
         Object templateData = new UnionEmitterTemplateData(getTemplateDataContext(), unionType);
         processTemplate(TEMPLATE_NAME, templateData, unionType);

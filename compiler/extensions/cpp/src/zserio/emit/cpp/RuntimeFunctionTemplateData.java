@@ -2,6 +2,11 @@ package zserio.emit.cpp;
 
 public class RuntimeFunctionTemplateData
 {
+    RuntimeFunctionTemplateData(String suffix)
+    {
+        this(suffix, null);
+    }
+
     RuntimeFunctionTemplateData(String suffix, String arg)
     {
         this.suffix = suffix;

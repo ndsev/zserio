@@ -3,6 +3,7 @@ package zserio.emit.doc;
 import java.io.File;
 
 import zserio.ast.ServiceType;
+import zserio.emit.common.ZserioEmitException;
 import freemarker.template.Template;
 
 public class ServiceEmitter extends DefaultHtmlEmitter
@@ -15,7 +16,7 @@ public class ServiceEmitter extends DefaultHtmlEmitter
         this.withSvgDiagrams = withSvgDiagrams;
     }
 
-    public void emit(ServiceType serviceType)
+    public void emit(ServiceType serviceType) throws ZserioEmitException
     {
         try
         {
@@ -24,9 +25,9 @@ public class ServiceEmitter extends DefaultHtmlEmitter
             openOutputFileFromType(serviceType);
             tpl.process(new ServiceTemplateData(serviceType, outputPath, withSvgDiagrams), writer);
         }
-        catch (Throwable e)
+        catch (Throwable exception)
         {
-            throw new ZserioEmitDocException(e);
+            throw new ZserioEmitException(exception.getMessage());
         }
         finally
         {

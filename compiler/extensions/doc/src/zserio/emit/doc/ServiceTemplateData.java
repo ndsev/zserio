@@ -5,10 +5,12 @@ import java.util.List;
 
 import zserio.ast.Rpc;
 import zserio.ast.ServiceType;
+import zserio.emit.common.ZserioEmitException;
 
 public class ServiceTemplateData
 {
     public ServiceTemplateData(ServiceType serviceType, String outputPath, boolean withSvgDiagrams)
+            throws ZserioEmitException
     {
         name = serviceType.getName();
         packageName = serviceType.getPackage().getPackageName().toString();
@@ -48,7 +50,7 @@ public class ServiceTemplateData
 
     public static class RpcTemplateData
     {
-        public RpcTemplateData(Rpc rpc)
+        public RpcTemplateData(Rpc rpc) throws ZserioEmitException
         {
             name = rpc.getName();
             requestType = new LinkedType(rpc.getRequestType());

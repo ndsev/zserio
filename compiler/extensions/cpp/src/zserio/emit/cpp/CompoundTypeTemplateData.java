@@ -7,11 +7,13 @@ import zserio.ast.CompoundType;
 import zserio.ast.ConstType;
 import zserio.ast.Field;
 import zserio.emit.common.ExpressionFormatter;
+import zserio.emit.common.ZserioEmitException;
 import zserio.emit.cpp.types.CppNativeType;
 
 public class CompoundTypeTemplateData extends UserTypeTemplateData
 {
     public CompoundTypeTemplateData(TemplateDataContext context, CompoundType compoundType)
+            throws ZserioEmitException
     {
         super(context, compoundType);
 

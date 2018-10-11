@@ -5,6 +5,7 @@ import java.util.List;
 
 import zserio.ast.Root;
 import zserio.ast.SqlTableType;
+import zserio.emit.common.ZserioEmitException;
 import zserio.tools.Parameters;
 
 class ParameterProviderEmitter extends JavaDefaultEmitter
@@ -15,14 +16,14 @@ class ParameterProviderEmitter extends JavaDefaultEmitter
     }
 
     @Override
-    public void beginSqlTable(SqlTableType sqlTableType) throws ZserioEmitJavaException
+    public void beginSqlTable(SqlTableType sqlTableType) throws ZserioEmitException
     {
         if (getWithSqlCode())
             sqlTableTypes.add(sqlTableType);
     }
 
     @Override
-    public void endRoot(Root root) throws ZserioEmitJavaException
+    public void endRoot(Root root) throws ZserioEmitException
     {
         if (!sqlTableTypes.isEmpty())
         {

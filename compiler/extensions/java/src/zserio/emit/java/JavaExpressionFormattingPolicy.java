@@ -2,6 +2,7 @@ package zserio.emit.java;
 
 import zserio.ast.EnumItem;
 import zserio.ast.EnumType;
+import zserio.emit.common.ZserioEmitException;
 import zserio.emit.java.types.JavaNativeType;
 
 /**
@@ -18,8 +19,10 @@ public class JavaExpressionFormattingPolicy extends JavaDefaultExpressionFormatt
 
     @Override
     protected String getIdentifierForTypeEnum(EnumType resolvedType, JavaNativeTypeMapper javaNativeTypeMapper)
+            throws ZserioEmitException
     {
         final JavaNativeType javaType = javaNativeTypeMapper.getJavaType(resolvedType);
+
         return javaType.getFullName();
     }
 

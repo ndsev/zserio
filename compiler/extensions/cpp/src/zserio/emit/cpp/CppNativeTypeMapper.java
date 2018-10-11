@@ -13,7 +13,6 @@ import zserio.ast.ChoiceType;
 import zserio.ast.CompoundType;
 import zserio.ast.ConstType;
 import zserio.ast.ZserioType;
-import zserio.ast.ZserioTypeUtil;
 import zserio.ast.ZserioTypeVisitor;
 import zserio.ast.EnumType;
 import zserio.ast.FloatType;
@@ -32,6 +31,7 @@ import zserio.ast.TypeReference;
 import zserio.ast.UnsignedBitFieldType;
 import zserio.ast.VarIntegerType;
 import zserio.emit.common.PackageMapper;
+import zserio.emit.common.ZserioEmitException;
 import zserio.emit.cpp.types.CppNativeType;
 import zserio.emit.cpp.types.NativeArrayType;
 import zserio.emit.cpp.types.NativeBooleanType;
@@ -55,6 +55,11 @@ import zserio.tools.StringJoinUtil;
 
 public class CppNativeTypeMapper
 {
+    /**
+     * Constructor from package mapper.
+     *
+     * @param cppPackageMapper Package mapper to construct from.
+     */
     public CppNativeTypeMapper(PackageMapper cppPackageMapper)
     {
         this.cppPackageMapper = cppPackageMapper;
@@ -71,28 +76,47 @@ public class CppNativeTypeMapper
     /**
      * Returns a C++ type that can hold an instance of given Zserio type.
      *
-     * @param type Zserio type.
-     * @return C++ type.
+     * @param type Zserio type for mapping to C++ type.
+     *
+     * @return C++ type which can hold a Zserio type.
+     *
+     * @throws ZserioEmitException If the Zserio type cannot be mapped to any C++ type.
      */
-    public CppNativeType getCppType(ZserioType type) throws ZserioEmitCppException
+    public CppNativeType getCppType(ZserioType type) throws ZserioEmitException
     {
         // don't resolve subtypes so that the subtype name (C++ typedef) will be used
-        type = TypeReference.resolveType(type);
+        final ZserioType resolvedType = TypeReference.resolveType(type);
 
         final ZserioTypeMapperVisitor visitor = new ZserioTypeMapperVisitor();
-        type.callVisitor(visitor);
-        final CppNativeType nativeType = visitor.getCppType();
+        resolvedType.callVisitor(visitor);
 
+        final ZserioEmitException thrownException = visitor.getThrownException();
+        if (thrownException != null)
+            throw thrownException;
+
+        final CppNativeType nativeType = visitor.getCppType();
         if (nativeType == null)
-            throw new ZserioEmitCppException("Unhandled type: " + type.getClass().getName());
+            throw new ZserioEmitException("Unhandled type '" + resolvedType.getClass().getName() +
+                    "' in CppNativeTypeMapper!");
 
         return nativeType;
     }
 
+    /**
+     * Returns a C++ type that can hold an instance of given optional Zserio type or Zserio compound type.
+     *
+     * @param type                  Zserio type for mapping to C++ type.
+     * @param isOptionalField       true if the given Zserio type is optional.
+     * @param useHeapOptionalHolder true to force mapping to the heap optional holder.
+     *
+     * @return C++ optional holder type which can hold a given Zserio type.
+     *
+     * @throws ZserioEmitException If the Zserio type cannot be mapped to C++ optional holder type.
+     */
     public NativeOptionalHolderType getCppOptionalHolderType(ZserioType type, boolean isOptionalField,
-            boolean useHeapOptionalHolder) throws ZserioEmitCppException
+            boolean useHeapOptionalHolder) throws ZserioEmitException
     {
-        CppNativeType rawType = getCppType(type);
+        final CppNativeType rawType = getCppType(type);
 
         NativeOptionalHolderType nativeOptionalType;
         if (!isOptionalField || rawType.isSimpleType())
@@ -108,26 +132,44 @@ public class CppNativeTypeMapper
         return nativeOptionalType;
     }
 
-    public NativeIntegralType getCppIntegralType(IntegerType type) throws ZserioEmitCppException
+    /**
+     * Returns a C++ integer type that can hold an instance of given Zserio integer type.
+     *
+     * @param type Zserio integer type for mapping to C++ integer type.
+     *
+     * @return C++ integer type which can hold a Zserio integer type.
+     *
+     * @throws ZserioEmitException If the Zserio integer type cannot be mapped to any C++ integer type.
+     */
+    public NativeIntegralType getCppIntegralType(IntegerType type) throws ZserioEmitException
     {
-        CppNativeType nativeType = getCppType(type);
+        final CppNativeType nativeType = getCppType(type);
 
-        if (nativeType instanceof NativeIntegralType)
-            return (NativeIntegralType)nativeType;
+        if (!(nativeType instanceof NativeIntegralType))
+            throw new ZserioEmitException("Unhandled integral type '" + type.getClass().getName() +
+                    "' in CppNativeTypeMapper!");
 
-        throw new ZserioEmitCppException("Internal error: CppNativeTypeMapper returned " +
-                "a non-integral native type for integral Zserio type");
+        return (NativeIntegralType)nativeType;
     }
 
-    public NativeSubType getCppSubType(Subtype type)
+    /**
+     * Returns a C++ subtype that can hold an instance of given Zserio subtype.
+     *
+     * @param type Zserio subtype for mapping to C++ subtype.
+     *
+     * @return C++ subtype which can hold a Zserio subtype.
+     *
+     * @throws ZserioEmitException If the Zserio subtype cannot be mapped to any C++ subtype.
+     */
+    public NativeSubType getCppSubType(Subtype type) throws ZserioEmitException
     {
-        CppNativeType nativeType = getCppType(type);
+        final CppNativeType nativeType = getCppType(type);
 
-        if (nativeType instanceof NativeSubType)
-            return (NativeSubType)nativeType;
+        if (!(nativeType instanceof NativeSubType))
+            throw new ZserioEmitException("Unhandled subtype '" + type.getClass().getName() +
+                    "' in CppNativeTypeMapper!");
 
-        throw new ZserioEmitCppException("Internal error: CppNativeTypeMapper returned " +
-                "a non-subtype native type for Zserio subtype");
+        return (NativeSubType)nativeType;
     }
 
     private List<String> getPathForUserDefinedType(ZserioType type)
@@ -136,6 +178,7 @@ public class CppNativeTypeMapper
         for (String component: cppPackageMapper.getPackagePath(type))
             path.add(component);
         path.add(type.getName());
+
         return path;
     }
 
@@ -154,15 +197,9 @@ public class CppNativeTypeMapper
     private static abstract class TypeMapperVisitor implements ZserioTypeVisitor
     {
         @Override
-        public void visitStdIntegerType(StdIntegerType type) throws ZserioEmitCppException
+        public void visitFunctionType(FunctionType type)
         {
-            mapIntegralType(type.getBitSize(), type.isSigned(), false);
-        }
-
-        @Override
-        public void visitUnsignedBitFieldType(UnsignedBitFieldType type)
-        {
-            mapBitfieldType(type);
+            // not supported
         }
 
         @Override
@@ -172,25 +209,30 @@ public class CppNativeTypeMapper
         }
 
         @Override
-        public void visitVarIntegerType(VarIntegerType type) throws ZserioEmitCppException
+        public void visitStdIntegerType(StdIntegerType type)
+        {
+            mapIntegralType(type.getBitSize(), type.isSigned(), false);
+        }
+
+        @Override
+        public void visitTypeReference(TypeReference type)
+        {
+            // not supported
+        }
+
+        @Override
+        public void visitUnsignedBitFieldType(UnsignedBitFieldType type)
+        {
+            mapBitfieldType(type);
+        }
+
+        @Override
+        public void visitVarIntegerType(VarIntegerType type)
         {
             mapIntegralType(type.getMaxBitSize(), type.isSigned(), true);
         }
 
-        @Override
-        public void visitTypeReference(TypeReference type) throws ZserioEmitCppException
-        {
-            unexpected(type);
-        }
-
-        @Override
-        public void visitFunctionType(FunctionType type) throws ZserioEmitCppException
-        {
-            unexpected(type);
-        }
-
         protected void mapIntegralType(int nBits, boolean signed, boolean variable)
-                throws ZserioEmitCppException
         {
             if (signed)
                 mapSignedIntegralType(nBits, variable);
@@ -199,25 +241,12 @@ public class CppNativeTypeMapper
         }
 
         protected abstract void mapBitfieldType(BitFieldType type);
-        protected abstract void mapSignedIntegralType(int nBits, boolean variable)
-                throws ZserioEmitCppException;
-        protected abstract void mapUnsignedIntegralType(int nBits, boolean variable)
-                throws ZserioEmitCppException;
-
-        protected void unexpected(ZserioType type) throws ZserioEmitCppException
-        {
-            throw new ZserioEmitCppException("Internal error: unexpected element " +
-                    ZserioTypeUtil.getFullName(type) +  " of type " + type.getClass());
-        }
+        protected abstract void mapSignedIntegralType(int nBits, boolean variable);
+        protected abstract void mapUnsignedIntegralType(int nBits, boolean variable);
     }
 
     private class ArrayElementTypeMapperVisitor extends TypeMapperVisitor
     {
-        /**
-         * Create a new instance of the array element mapper visitor.
-         *
-         * @param originalType The original, unresolved, type. This is used to handle subtypes (typedefs).
-         */
         public ArrayElementTypeMapperVisitor(ZserioType originalType)
         {
             // resolve instantiations, but don't resolve subtype
@@ -229,17 +258,33 @@ public class CppNativeTypeMapper
             return cppType;
         }
 
-        @Override
-        public void visitArrayType(ArrayType type) throws ZserioEmitCppException
+        public ZserioEmitException getThrownException()
         {
-            // array of arrays is not supported
-            unexpected(type);
+            return thrownException;
+        }
+
+        @Override
+        public void visitArrayType(ArrayType type)
+        {
+            // not supported
         }
 
         @Override
         public void visitBooleanType(BooleanType type)
         {
             cppType = booleanArrayType;
+        }
+
+        @Override
+        public void visitChoiceType(ChoiceType type)
+        {
+            mapObjectArray();
+        }
+
+        @Override
+        public void visitConstType(ConstType type)
+        {
+            // not supported
         }
 
         @Override
@@ -266,8 +311,26 @@ public class CppNativeTypeMapper
                 break;
 
             default:
-                throw new ZserioEmitCppException("Unexpected bit size of float (" + type.getBitSize() + ")");
+                break;
             }
+        }
+
+        @Override
+        public void visitServiceType(ServiceType type)
+        {
+            // not supported
+        }
+
+        @Override
+        public void visitSqlDatabaseType(SqlDatabaseType type)
+        {
+            // not supported
+        }
+
+        @Override
+        public void visitSqlTableType(SqlTableType type)
+        {
+            // not supported
         }
 
         @Override
@@ -277,19 +340,19 @@ public class CppNativeTypeMapper
         }
 
         @Override
-        public void visitServiceType(ServiceType type)
-        {
-            unexpected(type);
-        }
-
-        @Override
         public void visitStructureType(StructureType type)
         {
             mapObjectArray();
         }
 
         @Override
-        public void visitChoiceType(ChoiceType type)
+        public void visitSubtype(Subtype type)
+        {
+            // not supported
+        }
+
+        @Override
+        public void visitTypeInstantiation(TypeInstantiation type)
         {
             mapObjectArray();
         }
@@ -301,53 +364,13 @@ public class CppNativeTypeMapper
         }
 
         @Override
-        public void visitSubtype(Subtype type) throws ZserioEmitCppException
-        {
-            // should be resolved by whoever creates an instance of this visitor
-            unexpected(type);
-        }
-
-        @Override
-        public void visitTypeInstantiation(TypeInstantiation type) throws ZserioEmitCppException
-        {
-            mapObjectArray();
-        }
-
-        @Override
-        public void visitSqlTableType(SqlTableType type) throws ZserioEmitCppException
-        {
-            // array of sql_tables is not supported
-            unexpected(type);
-        }
-
-        @Override
-        public void visitSqlDatabaseType(SqlDatabaseType type) throws ZserioEmitCppException
-        {
-            // array of sql_databases is not supported
-            unexpected(type);
-        }
-
-        @Override
-        public void visitConstType(ConstType type) throws ZserioEmitCppException
-        {
-            unexpected(type);
-        }
-
-        private void mapObjectArray()
-        {
-            // use the original type so that subtype is kept
-            cppType = new NativeObjectArrayType(ZSERIO_RUNTIME_NAMESPACE_PATH, ZSERIO_RUNTIME_INCLUDE_PREFIX,
-                    CppNativeTypeMapper.this.getCppType(originalType));
-        }
-
-        @Override
         protected void mapBitfieldType(BitFieldType type)
         {
             mapIntegralType(type.getMaxBitSize(), type.isSigned(), false);
         }
 
         @Override
-        protected void mapSignedIntegralType(int nBits, boolean variable) throws ZserioEmitCppException
+        protected void mapSignedIntegralType(int nBits, boolean variable)
         {
             if (variable)
             {
@@ -370,7 +393,7 @@ public class CppNativeTypeMapper
                     break;
 
                 default:
-                    throw new ZserioEmitCppException("Unexpected size of variable integer (" + nBits + ")");
+                    break;
                 }
             }
             else
@@ -387,7 +410,7 @@ public class CppNativeTypeMapper
         }
 
         @Override
-        protected void mapUnsignedIntegralType(int nBits, boolean variable) throws ZserioEmitCppException
+        protected void mapUnsignedIntegralType(int nBits, boolean variable)
         {
             if (variable)
             {
@@ -410,7 +433,7 @@ public class CppNativeTypeMapper
                     break;
 
                 default:
-                    throw new ZserioEmitCppException("Unexpected size of variable integer (" + nBits + ")");
+                    break;
                 }
             }
             else
@@ -426,8 +449,24 @@ public class CppNativeTypeMapper
             }
         }
 
+        private void mapObjectArray()
+        {
+            // use the original type so that subtype is kept
+            try
+            {
+                cppType = new NativeObjectArrayType(ZSERIO_RUNTIME_NAMESPACE_PATH,
+                        ZSERIO_RUNTIME_INCLUDE_PREFIX, CppNativeTypeMapper.this.getCppType(originalType));
+            }
+            catch (ZserioEmitException exception)
+            {
+                thrownException = exception;
+            }
+        }
+
         private final ZserioType originalType;
-        private CppNativeType cppType;
+
+        private CppNativeType cppType = null;
+        private ZserioEmitException thrownException = null;
     }
 
     private class ZserioTypeMapperVisitor extends TypeMapperVisitor
@@ -437,8 +476,13 @@ public class CppNativeTypeMapper
             return cppType;
         }
 
+        public ZserioEmitException getThrownException()
+        {
+            return thrownException;
+        }
+
         @Override
-        public void visitArrayType(ArrayType type) throws ZserioEmitCppException
+        public void visitArrayType(ArrayType type)
         {
             // don't resolve subtype yet so that the element mapper visitor is given the original type
             final ZserioType elementType = TypeReference.resolveType(type.getElementType());
@@ -472,9 +516,7 @@ public class CppNativeTypeMapper
              */
             TypeReference.resolveBaseType(elementType).callVisitor(arrayVisitor);
             cppType = arrayVisitor.getCppType();
-
-            if (cppType == null)
-                throw new ZserioEmitCppException("Unhandled array element type: " + type.getClass().getName());
+            thrownException = arrayVisitor.getThrownException();
         }
 
         @Override
@@ -484,13 +526,41 @@ public class CppNativeTypeMapper
         }
 
         @Override
+        public void visitChoiceType(ChoiceType type)
+        {
+            mapCompoundType(type);
+        }
+
+        @Override
+        public void visitConstType(ConstType type)
+        {
+            try
+            {
+                final CppNativeType nativeTargetType = CppNativeTypeMapper.this.getCppType(type.getConstType());
+                cppType = new NativeConstType(constPackagePath, type.getName(), constIncludeFile,
+                        nativeTargetType);
+            }
+            catch (ZserioEmitException exception)
+            {
+                thrownException = exception;
+            }
+        }
+
+        @Override
         public void visitEnumType(EnumType type)
         {
-            final NativeIntegralType nativeBaseType = getCppIntegralType(type.getIntegerBaseType());
-            final List<String> namespacePath = cppPackageMapper.getPackagePath(type);
-            final String name = type.getName();
-            final String includeFileName = getIncludePathForUserDefinedType(type);
-            cppType = new NativeEnumType(namespacePath, name, includeFileName, nativeBaseType);
+            try
+            {
+                final NativeIntegralType nativeBaseType = getCppIntegralType(type.getIntegerBaseType());
+                final List<String> namespacePath = cppPackageMapper.getPackagePath(type);
+                final String name = type.getName();
+                final String includeFileName = getIncludePathForUserDefinedType(type);
+                cppType = new NativeEnumType(namespacePath, name, includeFileName, nativeBaseType);
+            }
+            catch (ZserioEmitException exception)
+            {
+                thrownException = exception;
+            }
         }
 
         @Override
@@ -508,14 +578,8 @@ public class CppNativeTypeMapper
                 break;
 
             default:
-                throw new ZserioEmitCppException("Unexpected bit size of float (" + type.getBitSize() + ")");
+                break;
             }
-        }
-
-        @Override
-        public void visitStringType(StringType type)
-        {
-            cppType = stringType;
         }
 
         @Override
@@ -528,19 +592,25 @@ public class CppNativeTypeMapper
         }
 
         @Override
+        public void visitSqlDatabaseType(SqlDatabaseType type)
+        {
+            mapCompoundType(type);
+        }
+
+        @Override
+        public void visitSqlTableType(SqlTableType type)
+        {
+            mapCompoundType(type);
+        }
+
+        @Override
+        public void visitStringType(StringType type)
+        {
+            cppType = stringType;
+        }
+
+        @Override
         public void visitStructureType(StructureType type)
-        {
-            mapCompoundType(type);
-        }
-
-        @Override
-        public void visitChoiceType(ChoiceType type)
-        {
-            mapCompoundType(type);
-        }
-
-        @Override
-        public void visitUnionType(UnionType type)
         {
             mapCompoundType(type);
         }
@@ -549,15 +619,22 @@ public class CppNativeTypeMapper
         public void visitSubtype(Subtype type)
         {
             final ZserioType targetType = type.getTargetType();
-            final CppNativeType nativeTargetType = CppNativeTypeMapper.this.getCppType(targetType);
-            final List<String> namespacePath = cppPackageMapper.getPackagePath(type);
-            final String name = type.getName();
-            final String includeFileName = getIncludePathForUserDefinedType(type);
-            cppType = new NativeSubType(namespacePath, name, includeFileName, nativeTargetType);
+            try
+            {
+                final CppNativeType nativeTargetType = CppNativeTypeMapper.this.getCppType(targetType);
+                final List<String> namespacePath = cppPackageMapper.getPackagePath(type);
+                final String name = type.getName();
+                final String includeFileName = getIncludePathForUserDefinedType(type);
+                cppType = new NativeSubType(namespacePath, name, includeFileName, nativeTargetType);
+            }
+            catch (ZserioEmitException exception)
+            {
+                thrownException = exception;
+            }
         }
 
         @Override
-        public void visitTypeInstantiation(TypeInstantiation type) throws ZserioEmitCppException
+        public void visitTypeInstantiation(TypeInstantiation type)
         {
             final ZserioType resolvedReferencedType = TypeReference.resolveType(type.getReferencedType());
             if (resolvedReferencedType instanceof Subtype)
@@ -567,22 +644,9 @@ public class CppNativeTypeMapper
         }
 
         @Override
-        public void visitSqlDatabaseType(SqlDatabaseType type) throws ZserioEmitCppException
+        public void visitUnionType(UnionType type)
         {
             mapCompoundType(type);
-        }
-
-        @Override
-        public void visitSqlTableType(SqlTableType type) throws ZserioEmitCppException
-        {
-            mapCompoundType(type);
-        }
-
-        @Override
-        public void visitConstType(ConstType type) throws ZserioEmitCppException
-        {
-            final CppNativeType nativeTargetType = CppNativeTypeMapper.this.getCppType(type.getConstType());
-            cppType = new NativeConstType(constPackagePath, type.getName(), constIncludeFile, nativeTargetType);
         }
 
         @Override
@@ -612,7 +676,7 @@ public class CppNativeTypeMapper
                     break;
 
                 default:
-                    throw new ZserioEmitCppException("Unexpected size of variable integer (" + nBits + ")");
+                    break;
                 }
             }
             else
@@ -649,8 +713,7 @@ public class CppNativeTypeMapper
                     break;
 
                 default:
-                    throw new ZserioEmitCppException("unexpected size of variable integer (" +
-                            Integer.toString(nBits) + ")");
+                    break;
                 }
             }
             else
@@ -674,7 +737,8 @@ public class CppNativeTypeMapper
             cppType = new NativeCompoundType(namespacePath, name, includeFileName);
         }
 
-        private CppNativeType cppType;
+        private CppNativeType cppType = null;
+        private ZserioEmitException thrownException = null;
     }
 
     private final PackageMapper cppPackageMapper;

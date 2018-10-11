@@ -7,13 +7,14 @@ import zserio.ast.ZserioType;
 import zserio.ast.Field;
 import zserio.ast.SqlTableType;
 import zserio.ast.TypeReference;
+import zserio.emit.common.ZserioEmitException;
 import zserio.emit.java.types.JavaNativeType;
 import zserio.emit.java.types.NativeBooleanType;
 
 public final class SqlTableRowEmitterTemplateData extends JavaTemplateData
 {
     public SqlTableRowEmitterTemplateData(TemplateDataContext context, SqlTableType tableType,
-            String tableRowName)
+            String tableRowName) throws ZserioEmitException
     {
         super(context);
 
@@ -48,6 +49,7 @@ public final class SqlTableRowEmitterTemplateData extends JavaTemplateData
     public static class FieldTemplateData
     {
         public FieldTemplateData(JavaNativeTypeMapper javaNativeTypeMapper, Field field)
+                throws ZserioEmitException
         {
             final ZserioType baseType = TypeReference.resolveBaseType(field.getFieldType());
             name = field.getName();

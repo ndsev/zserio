@@ -4,6 +4,7 @@ import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 
 import zserio.ast.Root;
+import zserio.emit.common.ZserioEmitException;
 import zserio.tools.Extension;
 import zserio.tools.Parameters;
 
@@ -31,15 +32,14 @@ public class XmlExtension implements Extension
     }
 
     @Override
-    public void generate(Parameters parameters, Root rootNode)
+    public boolean isEnabled(Parameters parameters)
     {
-        if (!parameters.argumentExists(OptionXml))
-        {
-            System.out.println("Emitting XML Syntax Tree is disabled");
-            return;
-        }
+        return parameters.argumentExists(OptionXml);
+    }
 
-        System.out.println("Emitting XML Syntax Tree");
+    @Override
+    public void generate(Parameters parameters, Root rootNode) throws ZserioEmitException
+    {
         final String outputDir = parameters.getCommandLineArg(OptionXml);
         final SyntaxTreeEmitter syntaxTreeEmitter = new SyntaxTreeEmitter(outputDir);
         syntaxTreeEmitter.emit(rootNode);

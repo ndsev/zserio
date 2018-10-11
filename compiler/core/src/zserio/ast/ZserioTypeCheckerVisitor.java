@@ -52,22 +52,13 @@ public class ZserioTypeCheckerVisitor implements ZserioTypeVisitor
     @Override
     public void visitArrayType(ArrayType type)
     {
-    }
-
-    @Override
-    public void visitUnionType(UnionType type)
-    {
-        visitCompoundType(type);
-    }
-
-    @Override
-    public void visitUnsignedBitFieldType(UnsignedBitFieldType type)
-    {
+        // not supported
     }
 
     @Override
     public void visitBooleanType(BooleanType type)
     {
+        // not supported
     }
 
     @Override
@@ -97,6 +88,7 @@ public class ZserioTypeCheckerVisitor implements ZserioTypeVisitor
     @Override
     public void visitFunctionType(FunctionType type)
     {
+        // not supported
     }
 
     @Override
@@ -111,14 +103,9 @@ public class ZserioTypeCheckerVisitor implements ZserioTypeVisitor
     }
 
     @Override
-    public void visitStructureType(StructureType type)
-    {
-        visitCompoundType(type);
-    }
-
-    @Override
     public void visitSignedBitFieldType(SignedBitFieldType type)
     {
+        // not supported
     }
 
     @Override
@@ -136,11 +123,19 @@ public class ZserioTypeCheckerVisitor implements ZserioTypeVisitor
     @Override
     public void visitStdIntegerType(StdIntegerType type)
     {
+        // not supported
     }
 
     @Override
     public void visitStringType(StringType type)
     {
+        // not supported
+    }
+
+    @Override
+    public void visitStructureType(StructureType type)
+    {
+        visitCompoundType(type);
     }
 
     @Override
@@ -153,6 +148,7 @@ public class ZserioTypeCheckerVisitor implements ZserioTypeVisitor
     @Override
     public void visitTypeInstantiation(TypeInstantiation type)
     {
+        // not supported
     }
 
     @Override
@@ -161,8 +157,21 @@ public class ZserioTypeCheckerVisitor implements ZserioTypeVisitor
     }
 
     @Override
+    public void visitUnionType(UnionType type)
+    {
+        visitCompoundType(type);
+    }
+
+    @Override
+    public void visitUnsignedBitFieldType(UnsignedBitFieldType type)
+    {
+        // not supported
+    }
+
+    @Override
     public void visitVarIntegerType(VarIntegerType type)
     {
+        // not supported
     }
 
     /**
@@ -172,8 +181,8 @@ public class ZserioTypeCheckerVisitor implements ZserioTypeVisitor
      */
     public void throwErrors() throws ParserException
     {
-        if (parserException != null)
-            throw parserException;
+        if (thrownException != null)
+            throw thrownException;
     }
 
     /**
@@ -217,8 +226,8 @@ public class ZserioTypeCheckerVisitor implements ZserioTypeVisitor
             catch (ParserException exception)
             {
                 // remember the first exception only
-                if (parserException == null)
-                    parserException = exception;
+                if (thrownException == null)
+                    thrownException = exception;
             }
         }
     }
@@ -232,5 +241,5 @@ public class ZserioTypeCheckerVisitor implements ZserioTypeVisitor
     private final Set<String> usedTypeNames = new HashSet<String>();
     private final List<ZserioType> definedTypes = new ArrayList<ZserioType>();
     private final boolean printUnusedWarnings;
-    private ParserException parserException = null;
+    private ParserException thrownException = null;
 }

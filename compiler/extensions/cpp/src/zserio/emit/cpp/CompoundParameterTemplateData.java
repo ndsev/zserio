@@ -6,12 +6,13 @@ import java.util.List;
 import zserio.ast.CompoundType;
 import zserio.ast.ZserioType;
 import zserio.ast.Parameter;
+import zserio.emit.common.ZserioEmitException;
 import zserio.emit.cpp.types.CppNativeType;
 
 public class CompoundParameterTemplateData
 {
     public CompoundParameterTemplateData(CppNativeTypeMapper cppNativeTypeMapper, CompoundType compoundType,
-            IncludeCollector includeCollector, boolean withWriterCode)
+            IncludeCollector includeCollector, boolean withWriterCode) throws ZserioEmitException
     {
         final List<Parameter> compoundParameterTypeList = compoundType.getParameters();
         compoundParameterList = new ArrayList<CompoundParameter>(compoundParameterTypeList.size());
@@ -38,7 +39,7 @@ public class CompoundParameterTemplateData
     public static class CompoundParameter
     {
         public CompoundParameter(CppNativeTypeMapper cppNativeTypeMapper, Parameter parameter,
-                IncludeCollector includeCollector)
+                IncludeCollector includeCollector) throws ZserioEmitException
         {
             final ZserioType type = parameter.getParameterType();
             final CppNativeType cppNativeType = cppNativeTypeMapper.getCppType(type);

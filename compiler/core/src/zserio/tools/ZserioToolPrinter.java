@@ -55,7 +55,7 @@ public class ZserioToolPrinter
      */
     public static void printError(String fileName, int line, int column, String text)
     {
-        printWarningOrError("[ERROR] ", fileName, line, column, text);
+        printError(fileName, line, column, text, false);
     }
 
     /**
@@ -80,6 +80,16 @@ public class ZserioToolPrinter
     }
 
     /**
+     * Prints error prefix without new line character.
+     *
+     * @param text Text of the error prefix to print.
+     */
+    public static void printErrorPrefix(String text)
+    {
+        printError(null, 0, 0, text, true);
+    }
+
+    /**
      * Prints general message.
      *
      * @param message Message to print.
@@ -89,7 +99,18 @@ public class ZserioToolPrinter
         System.out.println(message);
     }
 
+    private static void printError(String fileName, int line, int column, String text, boolean withoutNewLine)
+    {
+        printWarningOrError("[ERROR] ", fileName, line, column, text, withoutNewLine);
+    }
+
     private static void printWarningOrError(String prefix, String fileName, int line, int column, String text)
+    {
+        printWarningOrError(prefix, fileName, line, column, text, false);
+    }
+
+    private static void printWarningOrError(String prefix, String fileName, int line, int column, String text,
+            boolean withoutNewLine)
     {
         StringBuffer textBuffer = new StringBuffer();
         textBuffer.append(prefix);
@@ -107,6 +128,9 @@ public class ZserioToolPrinter
         }
         textBuffer.append(text);
 
-        System.err.println(textBuffer);
+        if (withoutNewLine)
+            System.err.print(textBuffer);
+        else
+            System.err.println(textBuffer);
     }
 }

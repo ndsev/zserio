@@ -9,11 +9,13 @@ import zserio.ast.ChoiceType;
 import zserio.ast.Expression;
 import zserio.ast.Field;
 import zserio.emit.common.ExpressionFormatter;
+import zserio.emit.common.ZserioEmitException;
 import zserio.emit.cpp.types.CppNativeType;
 
 public class ChoiceEmitterTemplateData extends CompoundTypeTemplateData
 {
     public ChoiceEmitterTemplateData(TemplateDataContext context, ChoiceType choiceType)
+            throws ZserioEmitException
     {
         super(context, choiceType);
 
@@ -82,7 +84,7 @@ public class ChoiceEmitterTemplateData extends CompoundTypeTemplateData
         public CaseMember(CppNativeTypeMapper cppNativeTypeMapper, ChoiceType choiceType,
                 ChoiceCase choiceCaseType, ExpressionFormatter cppExpressionFormatter,
                 ExpressionFormatter cppIndirectExpressionFormatter, IncludeCollector includeCollector,
-                boolean withWriterCode)
+                boolean withWriterCode) throws ZserioEmitException
         {
             expressionList = new ArrayList<String>();
             final Iterable<ChoiceCase.CaseExpression> caseExpressions = choiceCaseType.getExpressions();
@@ -114,7 +116,7 @@ public class ChoiceEmitterTemplateData extends CompoundTypeTemplateData
         public DefaultMember(CppNativeTypeMapper cppNativeTypeMapper,
                 ChoiceType choiceType, ChoiceDefault choiceDefaultType,
                 ExpressionFormatter cppExpressionFormatter, ExpressionFormatter cppIndirectExpressionFormatter,
-                IncludeCollector includeCollector, boolean withWriterCode)
+                IncludeCollector includeCollector, boolean withWriterCode) throws ZserioEmitException
         {
             final Field fieldType = choiceDefaultType.getField();
             compoundField = (fieldType != null) ? new CompoundFieldTemplateData(

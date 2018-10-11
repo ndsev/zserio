@@ -8,6 +8,7 @@ import zserio.ast.EnumItem;
 import zserio.ast.EnumType;
 import zserio.ast.IntegerType;
 import zserio.ast.StdIntegerType;
+import zserio.emit.common.ZserioEmitException;
 import zserio.emit.java.types.NativeIntegralType;
 
 /**
@@ -16,7 +17,7 @@ import zserio.emit.java.types.NativeIntegralType;
 public final class EnumerationEmitterTemplateData extends UserTypeTemplateData
 {
     public EnumerationEmitterTemplateData(TemplateDataContext context, EnumType enumType)
-            throws ZserioEmitJavaException
+            throws ZserioEmitException
     {
         super(context, enumType);
 
@@ -55,7 +56,7 @@ public final class EnumerationEmitterTemplateData extends UserTypeTemplateData
         return items;
     }
 
-    private static String createBitSize(EnumType enumType)
+    private static String createBitSize(EnumType enumType) throws ZserioEmitException
     {
         final IntegerType integerBaseType = enumType.getIntegerBaseType();
         Integer bitSize = null;
@@ -74,6 +75,7 @@ public final class EnumerationEmitterTemplateData extends UserTypeTemplateData
     public static class EnumItemData
     {
         public EnumItemData(JavaNativeTypeMapper javaNativeTypeMapper, EnumType enumType, EnumItem enumItem)
+                throws ZserioEmitException
         {
             name = enumItem.getName();
 

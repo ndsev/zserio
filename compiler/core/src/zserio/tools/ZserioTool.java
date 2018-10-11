@@ -104,10 +104,7 @@ public class ZserioTool
         }
         catch (Throwable exception)
         {
-            String message = exception.getMessage();
-            if (message == null)
-                message = "Internal error";
-            ZserioToolPrinter.printError(message);
+            ZserioToolPrinter.printErrorPrefix("Internal error: ");
             exception.printStackTrace();
             return false;
         }

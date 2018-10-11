@@ -1,6 +1,7 @@
 package zserio.emit.cpp;
 
 import zserio.ast.EnumType;
+import zserio.emit.common.ZserioEmitException;
 import zserio.tools.Parameters;
 
 public class EnumerationEmitter extends CppDefaultEmitter
@@ -11,7 +12,7 @@ public class EnumerationEmitter extends CppDefaultEmitter
     }
 
     @Override
-    public void beginEnumeration(EnumType enumType) throws ZserioEmitCppException
+    public void beginEnumeration(EnumType enumType) throws ZserioEmitException
     {
         final Object templateData = new EnumerationEmitterTemplateData(getTemplateDataContext(), enumType);
 

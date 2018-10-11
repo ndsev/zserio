@@ -11,6 +11,7 @@ import zserio.ast.SqlConstraint;
 import zserio.ast.SqlTableType;
 import zserio.ast.TypeInstantiation;
 import zserio.emit.common.ExpressionFormatter;
+import zserio.emit.common.ZserioEmitException;
 import zserio.emit.common.sql.SqlNativeTypeMapper;
 import zserio.emit.common.sql.types.NativeBlobType;
 import zserio.emit.common.sql.types.NativeIntegerType;
@@ -23,6 +24,7 @@ import zserio.emit.cpp.types.NativeEnumType;
 public class SqlTableEmitterTemplateData extends UserTypeTemplateData
 {
     public SqlTableEmitterTemplateData(TemplateDataContext context, SqlTableType tableType, String tableRowName)
+            throws ZserioEmitException
     {
         super(context, tableType);
 
@@ -85,7 +87,7 @@ public class SqlTableEmitterTemplateData extends UserTypeTemplateData
         public FieldTemplateData(CppNativeTypeMapper cppNativeTypeMapper,
                 ExpressionFormatter cppExpressionFormatter,
                 ExpressionFormatter cppSqlIndirectExpressionFormatter, SqlNativeTypeMapper sqlNativeTypeMapper,
-                SqlTableType table, Field field, IncludeCollector includeCollector)
+                SqlTableType table, Field field, IncludeCollector includeCollector) throws ZserioEmitException
         {
             final ZserioType fieldType = field.getFieldType();
             final CppNativeType nativeFieldType = cppNativeTypeMapper.getCppType(fieldType);
@@ -177,6 +179,7 @@ public class SqlTableEmitterTemplateData extends UserTypeTemplateData
         public static class SqlTypeTemplateData
         {
             public SqlTypeTemplateData(SqlNativeTypeMapper sqlNativeTypeMapper, Field field)
+                    throws ZserioEmitException
             {
                 final SqlNativeType sqlNativeType = sqlNativeTypeMapper.getSqlType(field.getFieldType());
                 name = sqlNativeType.getFullName();

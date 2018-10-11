@@ -7,6 +7,7 @@ import java.util.TreeSet;
 
 import zserio.ast.Package;
 import zserio.ast.Root;
+import zserio.emit.common.ZserioEmitException;
 
 import freemarker.template.Template;
 import freemarker.template.TemplateException;
@@ -25,7 +26,7 @@ public class PackageEmitter extends DefaultHtmlEmitter
 
 
     @Override
-    public void endRoot(Root root)
+    public void endRoot(Root root) throws ZserioEmitException
     {
         try
         {
@@ -35,13 +36,13 @@ public class PackageEmitter extends DefaultHtmlEmitter
             tpl.process(this, writer);
             writer.close();
         }
-        catch (IOException exc)
+        catch (IOException exception)
         {
-            throw new ZserioEmitDocException(exc);
+            throw new ZserioEmitException(exception.getMessage());
         }
-        catch (TemplateException exc)
+        catch (TemplateException exception)
         {
-            throw new ZserioEmitDocException(exc);
+            throw new ZserioEmitException(exception.getMessage());
         }
         finally
         {
@@ -52,7 +53,7 @@ public class PackageEmitter extends DefaultHtmlEmitter
 
 
     @Override
-    public void beginPackage(Package packageToken)
+    public void beginPackage(Package packageToken) throws ZserioEmitException
     {
         super.beginPackage(packageToken);
         packages.add(getPackageName());

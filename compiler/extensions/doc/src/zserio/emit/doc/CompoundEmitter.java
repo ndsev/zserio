@@ -27,6 +27,7 @@ import zserio.ast.TypeReference;
 import zserio.ast.UnionType;
 import zserio.ast.doc.DocCommentToken;
 import zserio.emit.common.ExpressionFormatter;
+import zserio.emit.common.ZserioEmitException;
 import freemarker.template.Template;
 import freemarker.template.TemplateException;
 
@@ -70,7 +71,7 @@ public class CompoundEmitter extends DefaultHtmlEmitter
         return linkedType;
     }
 
-    public String getSqlConstraint()
+    public String getSqlConstraint() throws ZserioEmitException
     {
         String result = "";
         if (compound instanceof SqlTableType)
@@ -96,13 +97,13 @@ public class CompoundEmitter extends DefaultHtmlEmitter
             return function;
         }
 
-        public String getReturnTypeName()
+        public String getReturnTypeName() throws ZserioEmitException
         {
             String returnTypeName = TypeNameEmitter.getTypeName(function.getReturnType());
             return returnTypeName;
         }
 
-        public String getResult()
+        public String getResult() throws ZserioEmitException
         {
             return expressionFormatter.formatGetter(function.getResultExpression());
         }
@@ -111,7 +112,7 @@ public class CompoundEmitter extends DefaultHtmlEmitter
         private final FunctionType function;
     }
 
-    public FieldEmitter getFieldEmitter( Field f )
+    public FieldEmitter getFieldEmitter( Field f ) throws ZserioEmitException
     {
         return new FieldEmitter(f, getExpressionFormatter());
     }
@@ -122,7 +123,7 @@ public class CompoundEmitter extends DefaultHtmlEmitter
         private final Field field;
         private final DocCommentTemplateData docCommentTemplateData;
 
-        public FieldEmitter(Field f, ExpressionFormatter expressionFormatter)
+        public FieldEmitter(Field f, ExpressionFormatter expressionFormatter) throws ZserioEmitException
         {
             this.field = f;
             tne = new TypeNameEmitter(expressionFormatter);
@@ -162,27 +163,27 @@ public class CompoundEmitter extends DefaultHtmlEmitter
             return linkedType;
         }
 
-        public String getConstraint()
+        public String getConstraint() throws ZserioEmitException
         {
             return tne.getConstraint(field);
         }
 
-        public String getArrayRange()
+        public String getArrayRange() throws ZserioEmitException
         {
             return tne.getArrayRange(field);
         }
 
-        public String getOptionalClause()
+        public String getOptionalClause() throws ZserioEmitException
         {
             return tne.getOptionalClause(field);
         }
 
-        public String getOffset()
+        public String getOffset() throws ZserioEmitException
         {
             return tne.getOffset(field);
         }
 
-        public String getSqlConstraint()
+        public String getSqlConstraint() throws ZserioEmitException
         {
           return tne.getSqlConstraint(field);
         }
@@ -260,7 +261,7 @@ public class CompoundEmitter extends DefaultHtmlEmitter
 
     }; // class FieldLinkedType
 
-    public void emit(CompoundType compnd)
+    public void emit(CompoundType compnd) throws ZserioEmitException
     {
         this.compound = compnd;
         docCommentTemplateData = new DocCommentTemplateData(compnd.getDocComment());
@@ -288,7 +289,7 @@ public class CompoundEmitter extends DefaultHtmlEmitter
             emitCompoundType();
     }
 
-    private void emitChoiceType()
+    private void emitChoiceType() throws ZserioEmitException
     {
         try
         {
@@ -297,13 +298,13 @@ public class CompoundEmitter extends DefaultHtmlEmitter
             openOutputFileFromType(compound);
             tpl.process(this, writer);
         }
-        catch (IOException exc)
+        catch (IOException exception)
         {
-            throw new ZserioEmitDocException(exc);
+            throw new ZserioEmitException(exception.getMessage());
         }
-        catch (TemplateException exc)
+        catch (TemplateException exception)
         {
-            throw new ZserioEmitDocException(exc);
+            throw new ZserioEmitException(exception.getMessage());
         }
         finally
         {
@@ -312,7 +313,7 @@ public class CompoundEmitter extends DefaultHtmlEmitter
         }
     }
 
-    private void emitCompoundType()
+    private void emitCompoundType() throws ZserioEmitException
     {
         fields.clear();
         for (Field field : compound.getFields())
@@ -329,13 +330,13 @@ public class CompoundEmitter extends DefaultHtmlEmitter
             tpl.process(this, writer);
             writer.close();
         }
-        catch (IOException exc)
+        catch (IOException exception)
         {
-            throw new ZserioEmitDocException(exc);
+            throw new ZserioEmitException(exception.getMessage());
         }
-        catch (TemplateException exc)
+        catch (TemplateException exception)
         {
-            throw new ZserioEmitDocException(exc);
+            throw new ZserioEmitException(exception.getMessage());
         }
         finally
         {
@@ -421,9 +422,10 @@ public class CompoundEmitter extends DefaultHtmlEmitter
      * Section for choice-types
      * since there is no separate choice-emitter
      *--------------------------------------------------------------------------
+     * @throws ZserioEmitException
      */
 
-    public ChoiceData getChoiceData()
+    public ChoiceData getChoiceData() throws ZserioEmitException
     {
         return new ChoiceData((ChoiceType)compound);
     }
@@ -458,29 +460,29 @@ public class CompoundEmitter extends DefaultHtmlEmitter
         return linkedType;
     }
 
-    public DocCommentTemplateData getFieldDocComment(Field f)
+    public DocCommentTemplateData getFieldDocComment(Field f) throws ZserioEmitException
     {
         return new DocCommentTemplateData(f.getDocComment());
     }
 
-    public DocCommentTemplateData getCaseDocComment(DocCommentToken token)
+    public DocCommentTemplateData getCaseDocComment(DocCommentToken token) throws ZserioEmitException
     {
         return new DocCommentTemplateData(token);
     }
 
-    public String emitExpression(Expression expr)
+    public String emitExpression(Expression expr) throws ZserioEmitException
     {
         return getExpressionFormatter().formatGetter(expr);
     }
 
-    public String getCollaborationDiagramSvgFileName()
+    public String getCollaborationDiagramSvgFileName() throws ZserioEmitException
     {
         return (withSvgDiagrams) ? DocEmitterTools.getTypeCollaborationSvgUrl(docPath, compound) : null;
     }
 
     public class ChoiceData
     {
-        public ChoiceData(ChoiceType choiceType)
+        public ChoiceData(ChoiceType choiceType) throws ZserioEmitException
         {
             final Expression selectorExpression = choiceType.getSelectorExpression();
             selector = getExpressionFormatter().formatGetter(selectorExpression);
@@ -511,7 +513,7 @@ public class CompoundEmitter extends DefaultHtmlEmitter
 
         public class CaseMember
         {
-            public CaseMember(ChoiceCase choiceCase)
+            public CaseMember(ChoiceCase choiceCase) throws ZserioEmitException
             {
                 caseList = new ArrayList<Case>();
                 final Iterable<ChoiceCase.CaseExpression> caseExpressions = choiceCase.getExpressions();
@@ -537,7 +539,7 @@ public class CompoundEmitter extends DefaultHtmlEmitter
 
         public class Case
         {
-            public Case(Expression caseExpression, DocCommentToken docCommentToken)
+            public Case(Expression caseExpression, DocCommentToken docCommentToken) throws ZserioEmitException
             {
                 expression = getExpressionFormatter().formatGetter(caseExpression);
                 docComment = new DocCommentTemplateData(docCommentToken);
@@ -572,7 +574,7 @@ public class CompoundEmitter extends DefaultHtmlEmitter
 
         public class CaseSeeLink
         {
-            public CaseSeeLink(EnumItem caseType)
+            public CaseSeeLink(EnumItem caseType) throws ZserioEmitException
             {
                 final EnumType caseTypeOwner = caseType.getEnumType();
                 text = caseTypeOwner.getName() + "." + caseType.getName();

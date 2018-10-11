@@ -7,10 +7,12 @@ import zserio.ast.Field;
 import zserio.ast.SqlTableType;
 import zserio.ast.TypeInstantiation;
 import zserio.emit.common.ExpressionFormatter;
+import zserio.emit.common.ZserioEmitException;
 
 public class ParameterProviderTemplateData extends CppTemplateData
 {
     public ParameterProviderTemplateData(TemplateDataContext context, List<SqlTableType> sqlTableTypes)
+            throws ZserioEmitException
     {
         super(context);
 

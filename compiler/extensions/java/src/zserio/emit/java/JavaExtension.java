@@ -44,14 +44,14 @@ public class JavaExtension implements Extension
     }
 
     @Override
+    public boolean isEnabled(Parameters parameters)
+    {
+        return parameters.argumentExists(OptionJava);
+    }
+
+    @Override
     public void generate(Parameters extensionParameters, Root rootNode) throws ZserioEmitException
     {
-        if (!extensionParameters.argumentExists(OptionJava))
-        {
-            System.out.println("Emitting Java files is disabled");
-            return;
-        }
-
         final String javaVersionOption = (!extensionParameters.argumentExists(OptionJavaVersion)) ? null :
             extensionParameters.getCommandLineArg(OptionJavaVersion);
         final String javaMajorVersion = getMajorVersion(javaVersionOption);
@@ -67,8 +67,6 @@ public class JavaExtension implements Extension
         {
             throw new ZserioEmitException("Invalid Java version " + javaMajorVersion + "!");
         }
-
-        System.out.println("Emitting Java" + javaMajorVersion + " code");
 
         final String outputDir = extensionParameters.getCommandLineArg(OptionJava);
         final JavaExtensionParameters javaParameters = new JavaExtensionParameters(outputDir, javaMajorVersion);

@@ -1,11 +1,15 @@
 package zserio.tools;
 
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.ServiceLoader;
 
 import zserio.ast.Root;
+import zserio.emit.common.ZserioEmitException;
 
 /**
  * The manager to handle all Zserio extensions.
@@ -63,8 +67,10 @@ public class ExtensionManager
      *
      * @param parameters Parameters to pass to extensions.
      * @param rootNode   The root node of Zserio types tree to use for emitting.
+     *
+     * @throws ZserioEmitException Throws in case of any error in any extension.
      */
-    public void callExtensions(ExtensionParameters parameters, Root rootNode)
+    public void callExtensions(ExtensionParameters parameters, Root rootNode) throws ZserioEmitException
     {
         if (extensions.isEmpty())
         {
@@ -73,8 +79,49 @@ public class ExtensionManager
         else
         {
             for (Extension extension : extensions)
-                extension.generate(parameters, rootNode);
+            {
+                if (extension.isEnabled(parameters))
+                {
+                    try
+                    {
+                        ZserioToolPrinter.printMessage("Emitting " + extension.getName() + " code");
+                        extension.generate(parameters, rootNode);
+                    }
+                    catch (ZserioEmitException exception)
+                    {
+                        throw new ZserioEmitException(extension.getName() + ": " + exception.getMessage());
+                    }
+                    catch (Throwable exception)
+                    {
+                        throw new ZserioEmitException(extension.getName() + ": " +
+                                getThrowableExceptionMessage(exception));
+                    }
+                }
+                else
+                {
+                    ZserioToolPrinter.printMessage("Emitting " + extension.getName() + " code is disabled");
+                }
+            }
         }
+    }
+
+    private static String getThrowableExceptionMessage(Throwable throwableException)
+    {
+        final StringWriter stringWriter = new StringWriter();
+        final PrintWriter printWriter = new PrintWriter(stringWriter);
+        throwableException.printStackTrace(printWriter);
+        final String message = stringWriter.toString();
+        printWriter.close();
+        try
+        {
+            stringWriter.close();
+        }
+        catch (IOException exception)
+        {
+            // just ignore it
+        }
+
+        return message;
     }
 
     private final List<Extension> extensions;

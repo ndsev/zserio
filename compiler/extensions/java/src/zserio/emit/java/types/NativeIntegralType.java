@@ -2,7 +2,7 @@ package zserio.emit.java.types;
 
 import java.math.BigInteger;
 
-import zserio.emit.java.ZserioEmitJavaException;
+import zserio.emit.common.ZserioEmitException;
 
 abstract public class NativeIntegralType extends JavaNativeType
 {
@@ -25,9 +25,12 @@ abstract public class NativeIntegralType extends JavaNativeType
      * A simplified version of formatLiteral() that accepts a BigInteger value.
      *
      * @param value Value to format.
+     *
      * @return String representing a native literal for the value.
+     *
+     * @throws ZserioEmitException In case of out of range error.
      */
-    public String formatLiteral(BigInteger value) throws ZserioEmitJavaException
+    public String formatLiteral(BigInteger value) throws ZserioEmitException
     {
         checkRange(value);
         return formatLiteral(value.toString());
@@ -48,18 +51,20 @@ abstract public class NativeIntegralType extends JavaNativeType
      * Currently binary literals ("0b101") can't be used as they are present only in Java 1.7+.
      *
      * @param rawValue The formatted number.
+     *
      * @return Valid Java literal for the value.
-     * @throws ZserioEmitJavaException
+     *
+     * @throws ZserioEmitException In case of out of range error.
      */
-    protected abstract String formatLiteral(String rawValue) throws ZserioEmitJavaException;
+    protected abstract String formatLiteral(String rawValue) throws ZserioEmitException;
 
-    private void checkRange(BigInteger value) throws ZserioEmitJavaException
+    private void checkRange(BigInteger value) throws ZserioEmitException
     {
 
         final BigInteger lowerBound = getLowerBound();
         final BigInteger upperBound = getUpperBound();
         if ((value.compareTo(getLowerBound()) < 0) || (value.compareTo(getUpperBound()) > 0))
-            throw new ZserioEmitJavaException("Literal " + value + " out of range for native type: " +
+            throw new ZserioEmitException("Literal " + value + " out of range for native type: " +
                     lowerBound + ".." + upperBound);
     }
 }

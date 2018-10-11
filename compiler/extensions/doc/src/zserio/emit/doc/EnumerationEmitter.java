@@ -14,6 +14,7 @@ import zserio.ast.EnumType;
 import zserio.ast.Expression;
 import zserio.ast.ZserioType;
 import zserio.emit.common.ExpressionFormatter;
+import zserio.emit.common.ZserioEmitException;
 import zserio.tools.HashUtil;
 import freemarker.template.Template;
 import freemarker.template.TemplateException;
@@ -34,7 +35,7 @@ public class EnumerationEmitter extends DefaultHtmlEmitter
         this.withSvgDiagrams = withSvgDiagrams;
     }
 
-    public void emit(EnumType e)
+    public void emit(EnumType e) throws ZserioEmitException
     {
         this.enumeration = e;
         docCommentData = new DocCommentTemplateData(e.getDocComment());
@@ -58,13 +59,13 @@ public class EnumerationEmitter extends DefaultHtmlEmitter
             openOutputFileFromType(e);
             tpl.process(this, writer);
         }
-        catch (IOException exc)
+        catch (IOException exception)
         {
-            throw new ZserioEmitDocException(exc);
+            throw new ZserioEmitException(exception.getMessage());
         }
-        catch (TemplateException exc)
+        catch (TemplateException exception)
         {
-            throw new ZserioEmitDocException(exc);
+            throw new ZserioEmitException(exception.getMessage());
         }
         finally
         {
@@ -87,7 +88,7 @@ public class EnumerationEmitter extends DefaultHtmlEmitter
         return enumeration;
     }
 
-    public String getEnumType()
+    public String getEnumType() throws ZserioEmitException
     {
         if (enumeration == null)
             throw new RuntimeException("getEnumType() called before emit()!");
@@ -169,7 +170,7 @@ public class EnumerationEmitter extends DefaultHtmlEmitter
             );
         }
 
-        public String getChoiceCaseLink()
+        public String getChoiceCaseLink() throws ZserioEmitException
         {
             ChoiceType ct = getChoiceType();
             return DocEmitterTools.getUrlNameFromType(ct) + "#casedef_" + getEnumItem().getName();
@@ -181,7 +182,7 @@ public class EnumerationEmitter extends DefaultHtmlEmitter
         return items;
     }
 
-    public String getCollaborationDiagramSvgFileName()
+    public String getCollaborationDiagramSvgFileName() throws ZserioEmitException
     {
         return (withSvgDiagrams) ? DocEmitterTools.getTypeCollaborationSvgUrl(docPath, enumeration)
                                       : null;
@@ -189,7 +190,7 @@ public class EnumerationEmitter extends DefaultHtmlEmitter
 
     public static class EnumItemTemplateData
     {
-        public EnumItemTemplateData(EnumItem enumItem)
+        public EnumItemTemplateData(EnumItem enumItem) throws ZserioEmitException
         {
             name = enumItem.getName();
 

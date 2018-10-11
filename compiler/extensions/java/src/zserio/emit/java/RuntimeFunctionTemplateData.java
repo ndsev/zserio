@@ -7,6 +7,11 @@ public class RuntimeFunctionTemplateData
         this(suffix, null, null);
     }
 
+    RuntimeFunctionTemplateData(String suffix, String arg)
+    {
+        this(suffix, arg, null);
+    }
+
     RuntimeFunctionTemplateData(String suffix, String arg, String javaReadTypeName)
     {
         this.suffix = suffix;
@@ -29,7 +34,7 @@ public class RuntimeFunctionTemplateData
         return javaReadTypeName;
     }
 
-    private final String    suffix;
-    private final String    arg;
-    private final String    javaReadTypeName;
+    private final String suffix;
+    private final String arg;
+    private final String javaReadTypeName;
 }

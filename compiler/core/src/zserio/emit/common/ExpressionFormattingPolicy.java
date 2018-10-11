@@ -152,7 +152,7 @@ public interface ExpressionFormattingPolicy
     public String getBoolLiteral(Expression expr);
     public String getStringLiteral(Expression expr);
     public String getIndex(Expression expr);
-    public String getIdentifier(Expression expr, boolean isLast, boolean isSetter);
+    public String getIdentifier(Expression expr, boolean isLast, boolean isSetter) throws ZserioEmitException;
 
     // unary expressions formatting
     public UnaryExpressionFormatting getBigIntegerCastingToNative(Expression expr);

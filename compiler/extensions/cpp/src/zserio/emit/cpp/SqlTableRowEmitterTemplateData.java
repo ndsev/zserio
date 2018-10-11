@@ -6,12 +6,13 @@ import java.util.List;
 import zserio.ast.ZserioType;
 import zserio.ast.Field;
 import zserio.ast.SqlTableType;
+import zserio.emit.common.ZserioEmitException;
 import zserio.emit.cpp.types.CppNativeType;
 
 public class SqlTableRowEmitterTemplateData extends CppTemplateData
 {
     public SqlTableRowEmitterTemplateData(TemplateDataContext context, SqlTableType tableType,
-            String tableRowName)
+            String tableRowName) throws ZserioEmitException
     {
         super(context);
 
@@ -48,7 +49,7 @@ public class SqlTableRowEmitterTemplateData extends CppTemplateData
     public static class FieldTemplateData
     {
         public FieldTemplateData(CppNativeTypeMapper cppNativeTypeMapper, Field field,
-                IncludeCollector includeCollector)
+                IncludeCollector includeCollector) throws ZserioEmitException
         {
             final ZserioType fieldType = field.getFieldType();
             final CppNativeType nativeFieldType = cppNativeTypeMapper.getCppType(fieldType);

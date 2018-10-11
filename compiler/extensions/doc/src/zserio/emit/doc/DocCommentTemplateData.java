@@ -10,6 +10,7 @@ import zserio.ast.doc.DocParagraphToken.DocParagraphTokenText;
 import zserio.ast.doc.DocTagParamToken;
 import zserio.ast.doc.DocTagSeeToken;
 import zserio.ast.doc.DocTagTodoToken;
+import zserio.emit.common.ZserioEmitException;
 
 /**
  * The documentation comment data used for FreeMarker template during documentation generation.
@@ -20,8 +21,10 @@ public class DocCommentTemplateData
      * Constructor.
      *
      * @param docComment Documentation comment token to construct from or null in case of no comment.
+     *
+     * @throws ZserioEmitException Throws in case of any internal error.
      */
-    public DocCommentTemplateData(DocCommentToken docComment)
+    public DocCommentTemplateData(DocCommentToken docComment) throws ZserioEmitException
     {
         docParagraphList = new ArrayList<DocParagraph>();
         if (docComment != null)
@@ -58,7 +61,7 @@ public class DocCommentTemplateData
      */
     public static class DocParagraph
     {
-        public DocParagraph(DocParagraphToken docParagraphToken)
+        public DocParagraph(DocParagraphToken docParagraphToken) throws ZserioEmitException
         {
             docParagraphTextList = new ArrayList<DocParagraphText>();
             for (DocParagraphTokenText paragraphText : docParagraphToken.getParagraphTextList())
@@ -102,7 +105,7 @@ public class DocCommentTemplateData
          */
         public static class DocParagraphText
         {
-            public DocParagraphText(DocParagraphTokenText docParagraphToken)
+            public DocParagraphText(DocParagraphTokenText docParagraphToken) throws ZserioEmitException
             {
                 textList = new ArrayList<String>();
                 for (String paragraphText : docParagraphToken.getTextList())
@@ -132,7 +135,7 @@ public class DocCommentTemplateData
          */
         public static class DocTagSee
         {
-            public DocTagSee(DocTagSeeToken tagSeeToken)
+            public DocTagSee(DocTagSeeToken tagSeeToken) throws ZserioEmitException
             {
                 alias = tagSeeToken.getLinkAlias();
                 final SymbolReference linkSymbolReference = tagSeeToken.getLinkSymbolReference();

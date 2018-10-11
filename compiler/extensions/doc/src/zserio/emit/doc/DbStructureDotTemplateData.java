@@ -9,6 +9,7 @@ import zserio.ast.Field;
 import zserio.ast.SqlDatabaseType;
 import zserio.ast.SqlTableType;
 import zserio.ast.TypeReference;
+import zserio.emit.common.ZserioEmitException;
 
 /**
  * The database structure data used for FreeMarker template during DOT generation.
@@ -22,9 +23,11 @@ public class DbStructureDotTemplateData
      * @param databaseIndex          The index of the database in list of all SQL database zserio types.
      * @param docRootPath            The root path of the generated documentation for links or null if links
      *                               are not required.
+     *
+     * @throws ZserioEmitException Throws in case of any internal error.
      */
-    public DbStructureDotTemplateData(SqlDatabaseType databaseType,
-                                      String databaseColor, String docRootPath)
+    public DbStructureDotTemplateData(SqlDatabaseType databaseType, String databaseColor, String docRootPath)
+            throws ZserioEmitException
     {
         // create database with proper color
         database = new Database(databaseType, docRootPath, databaseColor);
@@ -56,6 +59,7 @@ public class DbStructureDotTemplateData
     public static class Database
     {
         public Database(SqlDatabaseType databaseType, String docRootPath, String colorName)
+                throws ZserioEmitException
         {
             name = databaseType.getName();
             docUrl = DocEmitterTools.getDocUrlFromType(docRootPath, databaseType);
@@ -75,7 +79,7 @@ public class DbStructureDotTemplateData
             this.docRootPath = docRootPath;
         }
 
-        public Table addTable(String tableName)
+        public Table addTable(String tableName) throws ZserioEmitException
         {
             Table table = nameToTableMap.get(tableName);
             if (table == null)

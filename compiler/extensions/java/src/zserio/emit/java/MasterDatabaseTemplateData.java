@@ -5,12 +5,14 @@ import java.util.Collections;
 import java.util.List;
 
 import zserio.ast.SqlDatabaseType;
+import zserio.emit.common.ZserioEmitException;
 import zserio.emit.java.types.JavaNativeType;
 import zserio.tools.HashUtil;
 
 public final class MasterDatabaseTemplateData extends JavaTemplateData
 {
     public MasterDatabaseTemplateData(TemplateDataContext context, List<SqlDatabaseType> sqlDatabaseTypes)
+            throws ZserioEmitException
     {
         super(context);
 
@@ -47,6 +49,7 @@ public final class MasterDatabaseTemplateData extends JavaTemplateData
     public static class DatabaseItemData implements Comparable<DatabaseItemData>
     {
         public DatabaseItemData(JavaNativeTypeMapper javaNativeTypeMapper, SqlDatabaseType databaseType)
+                throws ZserioEmitException
         {
             final JavaNativeType javaType = javaNativeTypeMapper.getJavaType(databaseType);
             name = javaType.getName();

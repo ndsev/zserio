@@ -2,7 +2,7 @@ package zserio.emit.java.types;
 
 import java.math.BigInteger;
 
-import zserio.emit.java.ZserioEmitJavaException;
+import zserio.emit.common.ZserioEmitException;
 
 public class NativeBooleanType extends NativeIntegralType
 {
@@ -42,7 +42,7 @@ public class NativeBooleanType extends NativeIntegralType
     }
 
     @Override
-    protected String formatLiteral(String rawValue) throws ZserioEmitJavaException
+    protected String formatLiteral(String rawValue) throws ZserioEmitException
     {
         return formatLiteral(!rawValue.equals("0"));
     }

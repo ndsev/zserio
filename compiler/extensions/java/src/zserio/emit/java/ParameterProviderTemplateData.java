@@ -8,10 +8,12 @@ import zserio.ast.Field;
 import zserio.ast.SqlTableType;
 import zserio.ast.TypeInstantiation;
 import zserio.emit.common.ExpressionFormatter;
+import zserio.emit.common.ZserioEmitException;
 
 public final class ParameterProviderTemplateData extends JavaTemplateData
 {
     public ParameterProviderTemplateData(TemplateDataContext context, List<SqlTableType> sqlTableTypes)
+            throws ZserioEmitException
     {
         super(context);
 

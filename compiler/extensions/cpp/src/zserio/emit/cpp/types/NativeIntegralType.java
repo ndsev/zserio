@@ -2,7 +2,8 @@ package zserio.emit.cpp.types;
 
 import java.math.BigInteger;
 import java.util.List;
-import zserio.emit.cpp.ZserioEmitCppException;
+
+import zserio.emit.common.ZserioEmitException;
 
 public abstract class NativeIntegralType extends CppNativeType
 {
@@ -24,7 +25,7 @@ public abstract class NativeIntegralType extends CppNativeType
      * @param value Value to format.
      * @return String representing a native literal for the value.
      */
-    public String formatLiteral(BigInteger value) throws ZserioEmitCppException
+    public String formatLiteral(BigInteger value) throws ZserioEmitException
     {
         checkRange(value);
         return formatLiteral(value.toString());
@@ -43,16 +44,16 @@ public abstract class NativeIntegralType extends CppNativeType
      *
      * @param rawValue The formatted number.
      * @return Valid Java literal for the value.
-     * @throws ZserioEmitCppException
+     * @throws ZserioEmitException
      */
-    protected abstract String formatLiteral(String rawValue) throws ZserioEmitCppException;
+    protected abstract String formatLiteral(String rawValue) throws ZserioEmitException;
 
-    private void checkRange(BigInteger value) throws ZserioEmitCppException
+    private void checkRange(BigInteger value) throws ZserioEmitException
     {
         final BigInteger lowerBound = getLowerBound();
         final BigInteger upperBound = getUpperBound();
         if ((value.compareTo(getLowerBound()) < 0) || (value.compareTo(getUpperBound()) > 0))
-            throw new ZserioEmitCppException("Literal " + value + " out of range for native type: " +
+            throw new ZserioEmitException("Literal " + value + " out of range for native type: " +
                     lowerBound + ".." + upperBound);
     }
 }

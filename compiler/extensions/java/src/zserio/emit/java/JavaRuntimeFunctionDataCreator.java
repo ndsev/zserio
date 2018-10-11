@@ -24,15 +24,22 @@ import zserio.ast.UnionType;
 import zserio.ast.UnsignedBitFieldType;
 import zserio.ast.VarIntegerType;
 import zserio.emit.common.ExpressionFormatter;
+import zserio.emit.common.ZserioEmitException;
 
 public class JavaRuntimeFunctionDataCreator
 {
     public static RuntimeFunctionTemplateData createData(ZserioType type,
             ExpressionFormatter javaExpressionFormatter, JavaNativeTypeMapper javaNativeTypeMapper)
+                    throws ZserioEmitException
     {
         final Visitor visitor = new Visitor(javaExpressionFormatter, javaNativeTypeMapper);
         type.callVisitor(visitor);
 
+        final ZserioEmitException thrownException = visitor.getThrownException();
+        if (thrownException != null)
+            throw thrownException;
+
+        // template data can be null, this need to be handled specially in template
         return visitor.getTemplateData();
     }
 
@@ -49,117 +56,27 @@ public class JavaRuntimeFunctionDataCreator
             return templateData;
         }
 
-        @Override
-        public void visitStringType(StringType type)
+        public ZserioEmitException getThrownException()
         {
-            templateData = new RuntimeFunctionTemplateData("String");
-        }
-
-        @Override
-        public void visitVarIntegerType(VarIntegerType type)
-        {
-            final StringBuilder suffix = new StringBuilder();
-            suffix.append("Var");
-            if (!type.isSigned())
-                suffix.append("U");
-            suffix.append("Int");
-            final int maxBitSize = type.getMaxBitSize();
-            if (maxBitSize < 72) // Var(U)Int takes up to 9 bytes
-                suffix.append(maxBitSize);
-
-            templateData = new RuntimeFunctionTemplateData(suffix.toString());
-        }
-
-        @Override
-        public void visitUnsignedBitFieldType(UnsignedBitFieldType type)
-        {
-            handleBitFieldType(type);
-        }
-
-        @Override
-        public void visitSignedBitFieldType(SignedBitFieldType type)
-        {
-            handleBitFieldType(type);
-        }
-
-        @Override
-        public void visitStdIntegerType(StdIntegerType type)
-        {
-            final int bitCount = type.getBitSize();
-            String javaReadTypeName = null;
-            String arg = null;
-            String suffix = null;
-            if (type.isSigned())
-            {
-                switch (bitCount)
-                {
-                case 8:
-                    suffix = "Byte";
-                    break;
-
-                case 16:
-                    suffix = "Short";
-                    break;
-
-                case 32:
-                    suffix = "Int";
-                    break;
-
-                case 64:
-                    suffix = "Long";
-                    break;
-
-                default:
-                    break;
-                }
-            }
-            else
-            {
-                switch (bitCount)
-                {
-                case 8:
-                    suffix =  "UnsignedByte";
-                    javaReadTypeName = getJavaReadTypeName(type);
-                    break;
-
-                case 16:
-                    suffix =  "UnsignedShort";
-                    break;
-
-                case 32:
-                    suffix =  "UnsignedInt";
-                    break;
-
-                case 64:
-                    suffix =  "BigInteger";
-                    arg = JavaLiteralFormatter.formatIntegerLiteral(bitCount);
-                    break;
-
-                default:
-                    break;
-                }
-            }
-
-            if (suffix != null)
-                templateData = new RuntimeFunctionTemplateData(suffix, arg, javaReadTypeName);
-        }
-
-        @Override
-        public void visitBooleanType(BooleanType type)
-        {
-            handleBool();
-        }
-
-        @Override
-        public void visitFloatType(FloatType type)
-        {
-            templateData = new RuntimeFunctionTemplateData("Float" + type.getBitSize());
+            return thrownException;
         }
 
         @Override
         public void visitArrayType(ArrayType type)
         {
-            // arrays need to be handled specially in template
+            // do nothing
+        }
+
+        @Override
+        public void visitBooleanType(BooleanType type)
+        {
+            templateData = new RuntimeFunctionTemplateData("Bool");
+        }
+
+        @Override
+        public void visitChoiceType(ChoiceType type)
+        {
+            // do nothing
         }
 
         @Override
@@ -175,6 +92,12 @@ public class JavaRuntimeFunctionDataCreator
         }
 
         @Override
+        public void visitFloatType(FloatType type)
+        {
+            templateData = new RuntimeFunctionTemplateData("Float" + type.getBitSize());
+        }
+
+        @Override
         public void visitFunctionType(FunctionType type)
         {
             // do nothing
@@ -187,21 +110,9 @@ public class JavaRuntimeFunctionDataCreator
         }
 
         @Override
-        public void visitStructureType(StructureType type)
+        public void visitSignedBitFieldType(SignedBitFieldType type)
         {
-            // do nothing
-        }
-
-        @Override
-        public void visitChoiceType(ChoiceType type)
-        {
-            // do nothing
-        }
-
-        @Override
-        public void visitUnionType(UnionType type)
-        {
-            // do nothing
+            handleBitFieldType(type);
         }
 
         @Override
@@ -212,6 +123,88 @@ public class JavaRuntimeFunctionDataCreator
 
         @Override
         public void visitSqlTableType(SqlTableType type)
+        {
+            // do nothing
+        }
+
+        @Override
+        public void visitStdIntegerType(StdIntegerType type)
+        {
+            final int bitCount = type.getBitSize();
+            if (type.isSigned())
+            {
+                switch (bitCount)
+                {
+                case 8:
+                    templateData = new RuntimeFunctionTemplateData("Byte");
+                    break;
+
+                case 16:
+                    templateData = new RuntimeFunctionTemplateData("Short");
+                    break;
+
+                case 32:
+                    templateData = new RuntimeFunctionTemplateData("Int");
+                    break;
+
+                case 64:
+                    templateData = new RuntimeFunctionTemplateData("Long");
+                    break;
+
+                default:
+                    break;
+                }
+            }
+            else
+            {
+                switch (bitCount)
+                {
+                case 8:
+                    try
+                    {
+                        templateData = new RuntimeFunctionTemplateData("UnsignedByte", null,
+                                getJavaReadTypeName(type));
+                    }
+                    catch (ZserioEmitException exception)
+                    {
+                        thrownException = exception;
+                    }
+                    break;
+
+                case 16:
+                    templateData = new RuntimeFunctionTemplateData("UnsignedShort");
+                    break;
+
+                case 32:
+                    templateData = new RuntimeFunctionTemplateData("UnsignedInt");
+                    break;
+
+                case 64:
+                    try
+                    {
+                        templateData = new RuntimeFunctionTemplateData("BigInteger",
+                                JavaLiteralFormatter.formatIntegerLiteral(bitCount));
+                    }
+                    catch (ZserioEmitException exception)
+                    {
+                        thrownException = exception;
+                    }
+                    break;
+
+                default:
+                    break;
+                }
+            }
+        }
+
+        @Override
+        public void visitStringType(StringType type)
+        {
+            templateData = new RuntimeFunctionTemplateData("String");
+        }
+
+        @Override
+        public void visitStructureType(StructureType type)
         {
             // do nothing
         }
@@ -234,26 +227,56 @@ public class JavaRuntimeFunctionDataCreator
             // do nothing
         }
 
-        private void handleBool()
+        @Override
+        public void visitUnionType(UnionType type)
         {
-            templateData = new RuntimeFunctionTemplateData("Bool");
+            // do nothing
+        }
+
+        @Override
+        public void visitUnsignedBitFieldType(UnsignedBitFieldType type)
+        {
+            handleBitFieldType(type);
+        }
+
+        @Override
+        public void visitVarIntegerType(VarIntegerType type)
+        {
+            final StringBuilder suffix = new StringBuilder();
+            suffix.append("Var");
+            if (!type.isSigned())
+                suffix.append("U");
+            suffix.append("Int");
+            final int maxBitSize = type.getMaxBitSize();
+            if (maxBitSize < 72) // Var(U)Int takes up to 9 bytes
+                suffix.append(maxBitSize);
+
+            templateData = new RuntimeFunctionTemplateData(suffix.toString());
         }
 
         private void handleBitFieldType(BitFieldType type)
         {
-            final String suffix = type.isSigned() ? "SignedBits" : "Bits";
-            final String arg = javaExpressionFormatter.formatGetter(type.getLengthExpression());
-            templateData = new RuntimeFunctionTemplateData(suffix, arg, getJavaReadTypeName(type));
+            try
+            {
+                final String suffix = type.isSigned() ? "SignedBits" : "Bits";
+                final String arg = javaExpressionFormatter.formatGetter(type.getLengthExpression());
+                templateData = new RuntimeFunctionTemplateData(suffix, arg, getJavaReadTypeName(type));
+            }
+            catch (ZserioEmitException exception)
+            {
+                thrownException = exception;
+            }
         }
 
-        private String getJavaReadTypeName(ZserioType type)
+        private String getJavaReadTypeName(ZserioType type) throws ZserioEmitException
         {
             return javaNativeTypeMapper.getJavaType(type).getFullName();
         }
 
-        private final ExpressionFormatter   javaExpressionFormatter;
-        private final JavaNativeTypeMapper  javaNativeTypeMapper;
+        private final ExpressionFormatter javaExpressionFormatter;
+        private final JavaNativeTypeMapper javaNativeTypeMapper;
 
-        private RuntimeFunctionTemplateData templateData;
+        private RuntimeFunctionTemplateData templateData = null;
+        private ZserioEmitException thrownException = null;
     }
 }

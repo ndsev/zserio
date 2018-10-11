@@ -8,6 +8,7 @@ import zserio.ast.Root;
 import zserio.ast.ServiceType;
 import zserio.ast.Subtype;
 import zserio.ast.ZserioType;
+import zserio.emit.common.ZserioEmitException;
 
 public class ContentEmitter extends DefaultHtmlEmitter
 {
@@ -35,13 +36,13 @@ public class ContentEmitter extends DefaultHtmlEmitter
     }
 
     @Override
-    public void beginPackage(Package packageToken)
+    public void beginPackage(Package packageToken) throws ZserioEmitException
     {
         super.beginPackage(packageToken);
         emitPackage(packageToken);
     }
 
-    private void emitPackage(Package pkg)
+    private void emitPackage(Package pkg) throws ZserioEmitException
     {
         for (ZserioType type : pkg.getLocalTypes())
         {

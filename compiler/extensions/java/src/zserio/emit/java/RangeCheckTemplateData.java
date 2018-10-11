@@ -9,13 +9,14 @@ import zserio.ast.Expression;
 import zserio.ast.IntegerType;
 import zserio.ast.StdIntegerType;
 import zserio.emit.common.ExpressionFormatter;
+import zserio.emit.common.ZserioEmitException;
 import zserio.emit.java.types.NativeIntegralType;
 
 public final class RangeCheckTemplateData
 {
     public RangeCheckTemplateData(JavaNativeTypeMapper javaNativeTypeMapper, boolean withRangeCheckCode,
             String valueNameToCheck, ZserioType typeToCheck, boolean isTypeNullable,
-            ExpressionFormatter javaExpressionFormatter)
+            ExpressionFormatter javaExpressionFormatter) throws ZserioEmitException
     {
         if (withRangeCheckCode)
         {
@@ -41,7 +42,7 @@ public final class RangeCheckTemplateData
     }
 
     public RangeCheckTemplateData(JavaNativeTypeMapper javaNativeTypeMapper, ZserioType typeToCheck,
-            ExpressionFormatter javaExpressionFormatter)
+            ExpressionFormatter javaExpressionFormatter) throws ZserioEmitException
     {
         setterRangeData = null;
         final CommonRangeData commonRangeData = createCommonRangeData(javaNativeTypeMapper, typeToCheck,
@@ -160,7 +161,7 @@ public final class RangeCheckTemplateData
     public static class BitFieldWithExpression
     {
         public BitFieldWithExpression(BitFieldType bitFieldType,
-                ExpressionFormatter javaExpressionFormatter)
+                ExpressionFormatter javaExpressionFormatter) throws ZserioEmitException
         {
             isSignedBitFieldStr = JavaLiteralFormatter.formatBooleanLiteral(bitFieldType.isSigned());
             lengthExpression = createBitFieldLengthExpression(bitFieldType, javaExpressionFormatter);
@@ -177,7 +178,7 @@ public final class RangeCheckTemplateData
         }
 
         private static String createBitFieldLengthExpression(BitFieldType bitFieldType,
-                ExpressionFormatter javaExpressionFormatter)
+                ExpressionFormatter javaExpressionFormatter) throws ZserioEmitException
         {
             final Expression lengthExpression = bitFieldType.getLengthExpression();
             return javaExpressionFormatter.formatGetter(lengthExpression);
@@ -214,7 +215,7 @@ public final class RangeCheckTemplateData
     }
 
     private static CommonRangeData createCommonRangeData(JavaNativeTypeMapper javaNativeTypeMapper,
-            ZserioType typeToCheck, ExpressionFormatter javaExpressionFormatter)
+            ZserioType typeToCheck, ExpressionFormatter javaExpressionFormatter) throws ZserioEmitException
     {
         // don't do range check for non-integer type
         IntegerType integerType = null;
@@ -256,7 +257,7 @@ public final class RangeCheckTemplateData
     }
 
     private static BitFieldWithExpression createBitFieldWithExpression(ZserioType typeToCheck,
-            ExpressionFormatter javaExpressionFormatter)
+            ExpressionFormatter javaExpressionFormatter) throws ZserioEmitException
     {
         if (typeToCheck instanceof BitFieldType)
         {

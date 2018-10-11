@@ -2,11 +2,13 @@ package zserio.emit.java;
 
 import zserio.ast.CompoundType;
 import zserio.emit.common.ExpressionFormatter;
+import zserio.emit.common.ZserioEmitException;
 
 public final class CompoundConstructorTemplateData
 {
     public CompoundConstructorTemplateData(JavaNativeTypeMapper javaNativeTypeMapper, boolean withRangeCheckCode,
             boolean withWriterCode, CompoundType compoundType, ExpressionFormatter javaExpressionFormatter)
+                    throws ZserioEmitException
     {
         compoundName = compoundType.getName();
         this.withWriterCode = withWriterCode;

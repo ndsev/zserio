@@ -3,7 +3,7 @@ package zserio.emit.cpp.types;
 import java.math.BigInteger;
 import java.util.ArrayList;
 
-import zserio.emit.cpp.ZserioEmitCppException;
+import zserio.emit.common.ZserioEmitException;
 
 public class NativeStdIntType extends NativeIntegralType
 {
@@ -50,7 +50,7 @@ public class NativeStdIntType extends NativeIntegralType
     }
 
     @Override
-    protected String formatLiteral(String rawValue) throws ZserioEmitCppException
+    protected String formatLiteral(String rawValue) throws ZserioEmitException
     {
         // Special work around for INT64_MIN: this literal can't be written as a single number without a warning
         if (rawValue.equals(INT64_MIN))

@@ -1,6 +1,7 @@
 package zserio.emit.java;
 
 import zserio.ast.ServiceType;
+import zserio.emit.common.ZserioEmitException;
 import zserio.tools.Parameters;
 
 class ServiceEmitter extends JavaDefaultEmitter
@@ -11,7 +12,7 @@ class ServiceEmitter extends JavaDefaultEmitter
     }
 
     @Override
-    public void beginService(ServiceType serviceType) throws ZserioEmitJavaException
+    public void beginService(ServiceType serviceType) throws ZserioEmitException
     {
         if (getWithGrpcCode())
         {

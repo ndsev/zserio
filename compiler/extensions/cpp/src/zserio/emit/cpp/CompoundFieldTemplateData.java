@@ -19,6 +19,7 @@ import zserio.ast.TypeInstantiation;
 import zserio.ast.TypeInstantiation.InstantiatedParameter;
 import zserio.ast.TypeReference;
 import zserio.emit.common.ExpressionFormatter;
+import zserio.emit.common.ZserioEmitException;
 import zserio.emit.cpp.types.CppNativeType;
 import zserio.emit.cpp.types.NativeArrayType;
 import zserio.emit.cpp.types.NativeEnumType;
@@ -30,7 +31,7 @@ public class CompoundFieldTemplateData
     public CompoundFieldTemplateData(CppNativeTypeMapper cppNativeTypeMapper,
             CompoundType parentType, Field field,
             ExpressionFormatter cppExpressionFormatter, ExpressionFormatter cppIndirectExpressionFormatter,
-            IncludeCollector includeCollector, boolean withWriterCode)
+            IncludeCollector includeCollector, boolean withWriterCode) throws ZserioEmitException
     {
         final ZserioType fieldType = TypeReference.resolveType(field.getFieldType());
         final ZserioType baseFieldType = TypeReference.resolveBaseType(fieldType);
@@ -181,7 +182,7 @@ public class CompoundFieldTemplateData
     public static class Optional
     {
         public Optional(Expression optionalClauseExpression, String indicatorName,
-                ExpressionFormatter cppExpressionFormatter)
+                ExpressionFormatter cppExpressionFormatter) throws ZserioEmitException
         {
             clause = (optionalClauseExpression == null) ? null :
                 cppExpressionFormatter.formatGetter(optionalClauseExpression);
@@ -213,7 +214,7 @@ public class CompoundFieldTemplateData
 
         public Compound(CppNativeTypeMapper cppNativeTypeMapper, ExpressionFormatter cppExpressionFormatter,
                 ExpressionFormatter cppIndirectExpressionFormatter, CompoundType owner,
-                TypeInstantiation compoundFieldType, boolean withWriterCode)
+                TypeInstantiation compoundFieldType, boolean withWriterCode) throws ZserioEmitException
         {
             final CompoundType baseType = compoundFieldType.getBaseType();
             final List<InstantiatedParameter> parameters = compoundFieldType.getInstantiatedParameters();
@@ -241,7 +242,7 @@ public class CompoundFieldTemplateData
         {
             public InstantiatedParameterData(ExpressionFormatter cppExpressionFormatter,
                     ExpressionFormatter cppIndirectExpressionFormatter,
-                    InstantiatedParameter instantiatedParameter)
+                    InstantiatedParameter instantiatedParameter) throws ZserioEmitException
             {
                 final Expression argumentExpression = instantiatedParameter.getArgumentExpression();
                 expression = cppExpressionFormatter.formatGetter(argumentExpression);
@@ -270,6 +271,7 @@ public class CompoundFieldTemplateData
     {
         public Offset(Expression offsetExpression, CppNativeTypeMapper cppNativeTypeMapper,
                 ExpressionFormatter cppExpressionFormatter, ExpressionFormatter cppIndirectExpressionFormatter)
+                        throws ZserioEmitException
         {
             getter = cppExpressionFormatter.formatGetter(offsetExpression);
             indirectGetter = cppIndirectExpressionFormatter.formatGetter(offsetExpression);
@@ -320,7 +322,7 @@ public class CompoundFieldTemplateData
     public static class IntegerRange
     {
         public IntegerRange(CppNativeTypeMapper cppNativeTypeMapper, IntegerType typeToCheck,
-                ExpressionFormatter cppExpressionFormatter)
+                ExpressionFormatter cppExpressionFormatter) throws ZserioEmitException
         {
             bitFieldLength = !(typeToCheck instanceof BitFieldType) ? null :
                     cppExpressionFormatter.formatGetter(((BitFieldType)typeToCheck).getLengthExpression());
@@ -379,6 +381,7 @@ public class CompoundFieldTemplateData
         public Array(NativeArrayType nativeType, ArrayType baseType, CompoundType parentType,
                 CppNativeTypeMapper cppNativeTypeMapper, ExpressionFormatter cppExpressionFormatter,
                 ExpressionFormatter cppIndirectExpressionFormatter, boolean withWriterCode)
+                        throws ZserioEmitException
         {
             final ZserioType elementType = TypeReference.resolveBaseType(baseType.getElementType());
 
@@ -446,6 +449,7 @@ public class CompoundFieldTemplateData
         }
 
         private static String createLength(ArrayType arrayType, ExpressionFormatter cppExpressionFormatter)
+                throws ZserioEmitException
         {
             final Expression lengthExpression = arrayType.getLengthExpression();
             if (lengthExpression == null)
@@ -489,6 +493,7 @@ public class CompoundFieldTemplateData
     }
 
     private static Optional createOptional(Field field, ExpressionFormatter cppExpressionFormatter)
+            throws ZserioEmitException
     {
         if (!field.getIsOptional())
             return null;
@@ -500,7 +505,7 @@ public class CompoundFieldTemplateData
     }
 
     private static IntegerRange createIntegerRange(CppNativeTypeMapper cppNativeTypeMapper,
-            ZserioType typeToCheck, ExpressionFormatter cppExpressionFormatter)
+            ZserioType typeToCheck, ExpressionFormatter cppExpressionFormatter) throws ZserioEmitException
     {
         if (!(typeToCheck instanceof IntegerType))
             return null;
@@ -509,6 +514,7 @@ public class CompoundFieldTemplateData
     }
 
     private static String createAlignmentValue(Field field, ExpressionFormatter cppExpressionFormatter)
+            throws ZserioEmitException
     {
         final Expression alignmentExpression = field.getAlignmentExpr();
         if (alignmentExpression == null)
@@ -518,6 +524,7 @@ public class CompoundFieldTemplateData
     }
 
     private static String createInitializer(Field field, ExpressionFormatter cppExpressionFormatter)
+            throws ZserioEmitException
     {
         final Expression initializerExpression = field.getInitializerExpr();
         if (initializerExpression == null)
@@ -527,6 +534,7 @@ public class CompoundFieldTemplateData
     }
 
     private static String createConstraint(Field field, ExpressionFormatter cppExpressionFormatter)
+            throws ZserioEmitException
     {
         final Expression constraintExpression = field.getConstraintExpr();
         if (constraintExpression == null)
@@ -537,6 +545,7 @@ public class CompoundFieldTemplateData
 
     private static Offset createOffset(Field field, CppNativeTypeMapper cppNativeTypeMapper,
             ExpressionFormatter cppExpressionFormatter, ExpressionFormatter cppIndirectExpressionFormatter)
+                    throws ZserioEmitException
     {
         final Expression offsetExpression = field.getOffsetExpr();
         if (offsetExpression == null)
@@ -549,7 +558,7 @@ public class CompoundFieldTemplateData
     private static Array createArray(CppNativeType cppNativeType, ZserioType baseType,
             CompoundType parentType, CppNativeTypeMapper cppNativeTypeMapper,
             ExpressionFormatter cppExpressionFormatter, ExpressionFormatter cppIndirectExpressionFormatter,
-            boolean withWriterCode)
+            boolean withWriterCode) throws ZserioEmitException
     {
         if (!(baseType instanceof ArrayType))
             return null;
@@ -558,13 +567,15 @@ public class CompoundFieldTemplateData
             cppNativeType = ((NativeOptionalHolderType)cppNativeType).getWrappedType();
 
         if (!(cppNativeType instanceof NativeArrayType))
-            throw new RuntimeException("inconsistent base type and native type");
+            throw new ZserioEmitException("Inconsistent base type '" + baseType.getClass() +
+                    "' and native type '" + cppNativeType.getClass() + "'!");
 
         return new Array((NativeArrayType)cppNativeType, (ArrayType)baseType, parentType, cppNativeTypeMapper,
                 cppExpressionFormatter, cppIndirectExpressionFormatter, withWriterCode);
     }
 
     static String createBitSizeValue(ZserioType baseFieldType, ExpressionFormatter cppExpressionFormatter)
+            throws ZserioEmitException
     {
         String value;
         if (baseFieldType instanceof FixedSizeType)
@@ -590,7 +601,7 @@ public class CompoundFieldTemplateData
 
     private static Compound createCompound(CppNativeTypeMapper cppNativeTypeMapper,
             ExpressionFormatter cppExpressionFormatter, ExpressionFormatter cppIndirectExpressionFormatter,
-            CompoundType owner, ZserioType baseFieldType, boolean withWriterCode)
+            CompoundType owner, ZserioType baseFieldType, boolean withWriterCode) throws ZserioEmitException
     {
         if (baseFieldType instanceof CompoundType)
             return new Compound(cppNativeTypeMapper, owner, (CompoundType)baseFieldType, withWriterCode);
@@ -603,6 +614,7 @@ public class CompoundFieldTemplateData
 
     private static OptionalHolder createOptionalHolder(ZserioType fieldType, ZserioType baseFieldType,
             boolean isOptionalField, CppNativeTypeMapper cppNativeTypeMapper, IncludeCollector includeCollector)
+                    throws ZserioEmitException
     {
         ZserioType fieldInstantiatedType = baseFieldType;
         if (baseFieldType instanceof TypeInstantiation)

@@ -38,19 +38,13 @@ public class CppExtension implements Extension
     }
 
     @Override
-    public void generate(Parameters parameters, Root rootNode) throws ZserioEmitException
+    public boolean isEnabled(Parameters parameters)
     {
-        if (!parameters.argumentExists(OptionCpp))
-        {
-            System.out.println("Emitting C++ files is disabled");
-            return;
-        }
-
-        System.out.println("Emitting C++ code");
-        generateCppSources(parameters, rootNode);
+        return parameters.argumentExists(OptionCpp);
     }
 
-    private void generateCppSources(Parameters parameters, Root rootNode) throws ZserioEmitException
+    @Override
+    public void generate(Parameters parameters, Root rootNode) throws ZserioEmitException
     {
         final String outputDir = parameters.getCommandLineArg(OptionCpp);
         final List<Emitter> emitters = new ArrayList<Emitter>();

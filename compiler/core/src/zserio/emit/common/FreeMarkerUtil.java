@@ -65,11 +65,11 @@ public class FreeMarkerUtil
         }
         catch (IOException exception)
         {
-            throw new ZserioEmitException(exception);
+            throw new ZserioEmitException(exception.getMessage());
         }
         catch (TemplateException exception)
         {
-            throw new ZserioEmitException(exception);
+            throw new ZserioEmitException(exception.getMessage());
         }
         finally
         {

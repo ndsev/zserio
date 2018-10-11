@@ -2,6 +2,7 @@ package zserio.emit.java;
 
 import zserio.ast.Root;
 import zserio.ast.SqlTableType;
+import zserio.emit.common.ZserioEmitException;
 import zserio.tools.Parameters;
 
 final class SqlDatabaseValidatorEmitter extends JavaDefaultEmitter
@@ -12,14 +13,14 @@ final class SqlDatabaseValidatorEmitter extends JavaDefaultEmitter
     }
 
     @Override
-    public void beginSqlTable(SqlTableType sqlTableType) throws ZserioEmitJavaException
+    public void beginSqlTable(SqlTableType sqlTableType) throws ZserioEmitException
     {
         if (getWithSqlCode() && getWithValidationCode())
             generateValidatableSqlDatabase = true;
     }
 
     @Override
-    public void endRoot(Root root) throws ZserioEmitJavaException
+    public void endRoot(Root root) throws ZserioEmitException
     {
         if (generateValidatableSqlDatabase)
         {

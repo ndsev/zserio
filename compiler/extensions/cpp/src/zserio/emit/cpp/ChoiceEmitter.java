@@ -1,6 +1,7 @@
 package zserio.emit.cpp;
 
 import zserio.ast.ChoiceType;
+import zserio.emit.common.ZserioEmitException;
 import zserio.tools.Parameters;
 
 public class ChoiceEmitter extends CppDefaultEmitter
@@ -11,7 +12,7 @@ public class ChoiceEmitter extends CppDefaultEmitter
     }
 
     @Override
-    public void beginChoice(ChoiceType choiceType) throws ZserioEmitCppException
+    public void beginChoice(ChoiceType choiceType) throws ZserioEmitException
     {
         final Object templateData = new ChoiceEmitterTemplateData(getTemplateDataContext(), choiceType);
         processHeaderTemplate(TEMPLATE_HEADER_NAME, templateData, choiceType);

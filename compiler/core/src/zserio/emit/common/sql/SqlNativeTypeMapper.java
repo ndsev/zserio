@@ -56,7 +56,8 @@ public class SqlNativeTypeMapper
         final SqlNativeType nativeType = visitor.getSqlType();
 
         if (nativeType == null)
-            throw new ZserioEmitException("unhandled type: " + type.getClass().getName());
+            throw new ZserioEmitException("Unexpected element '" + ZserioTypeUtil.getFullName(type) +
+                    "' of type '" + type.getClass() + "' in SqlNativeTypeMapper!");
 
         return nativeType;
     }
@@ -69,15 +70,9 @@ public class SqlNativeTypeMapper
         }
 
         @Override
-        public void visitUnsignedBitFieldType(UnsignedBitFieldType type)
+        public void visitArrayType(ArrayType type)
         {
-            sqlType = integerType;
-        }
-
-        @Override
-        public void visitSignedBitFieldType(SignedBitFieldType type)
-        {
-            sqlType = integerType;
+            // not supported
         }
 
         @Override
@@ -93,9 +88,9 @@ public class SqlNativeTypeMapper
         }
 
         @Override
-        public void visitUnionType(UnionType type)
+        public void visitConstType(ConstType type)
         {
-            sqlType = blobType;
+            // not supported
         }
 
         @Override
@@ -111,15 +106,33 @@ public class SqlNativeTypeMapper
         }
 
         @Override
-        public void visitServiceType(ServiceType type)
+        public void visitFunctionType(FunctionType type)
         {
-            unexpected(type);
+            // not supported
         }
 
         @Override
-        public void visitStructureType(StructureType type)
+        public void visitServiceType(ServiceType type)
         {
-            sqlType = blobType;
+            // not supported
+        }
+
+        @Override
+        public void visitSignedBitFieldType(SignedBitFieldType type)
+        {
+            sqlType = integerType;
+        }
+
+        @Override
+        public void visitSqlDatabaseType(SqlDatabaseType type)
+        {
+            // not supported
+        }
+
+        @Override
+        public void visitSqlTableType(SqlTableType type)
+        {
+            // not supported
         }
 
         @Override
@@ -135,9 +148,39 @@ public class SqlNativeTypeMapper
         }
 
         @Override
+        public void visitStructureType(StructureType type)
+        {
+            sqlType = blobType;
+        }
+
+        @Override
+        public void visitSubtype(Subtype type)
+        {
+            // not supported
+        }
+
+        @Override
         public void visitTypeInstantiation(TypeInstantiation type)
         {
             sqlType = blobType;
+        }
+
+        @Override
+        public void visitTypeReference(TypeReference type)
+        {
+            // not supported
+        }
+
+        @Override
+        public void visitUnionType(UnionType type)
+        {
+            sqlType = blobType;
+        }
+
+        @Override
+        public void visitUnsignedBitFieldType(UnsignedBitFieldType type)
+        {
+            sqlType = integerType;
         }
 
         @Override
@@ -146,58 +189,7 @@ public class SqlNativeTypeMapper
             sqlType = integerType;
         }
 
-        @Override
-        public void visitArrayType(ArrayType type) throws ZserioEmitException
-        {
-            // arrays are not allowed in a sql_table
-            unexpected(type);
-        }
-
-        @Override
-        public void visitConstType(ConstType type) throws ZserioEmitException
-        {
-            unexpected(type);
-        }
-
-        @Override
-        public void visitFunctionType(FunctionType type) throws ZserioEmitException
-        {
-            unexpected(type);
-        }
-
-        @Override
-        public void visitSqlDatabaseType(SqlDatabaseType type) throws ZserioEmitException
-        {
-            unexpected(type);
-        }
-
-        @Override
-        public void visitSqlTableType(SqlTableType type) throws ZserioEmitException
-        {
-            unexpected(type);
-        }
-
-        @Override
-        public void visitSubtype(Subtype type) throws ZserioEmitException
-        {
-            // subtypes should have been resolved by the owner of this instance
-            unexpected(type);
-        }
-
-        @Override
-        public void visitTypeReference(TypeReference type) throws ZserioEmitException
-        {
-            // type references should have been resolved by the owner of this instance
-            unexpected(type);
-        }
-
-        private void unexpected(ZserioType type) throws ZserioEmitException
-        {
-            throw new ZserioEmitException("internal error: unexpected element " +
-                    ZserioTypeUtil.getFullName(type) +  " of type " + type.getClass());
-        }
-
-        private SqlNativeType sqlType;
+        private SqlNativeType sqlType = null;
     }
 
     private final static NativeIntegerType integerType = new NativeIntegerType();

@@ -18,6 +18,7 @@ import zserio.ast.Subtype;
 import zserio.ast.ZserioType;
 import zserio.ast.UnionType;
 import zserio.ast.doc.DocCommentToken;
+import zserio.emit.common.ZserioEmitException;
 import freemarker.template.Template;
 import freemarker.template.TemplateException;
 
@@ -265,7 +266,7 @@ public class DeprecatedEmitter extends DefaultHtmlEmitter
     };
 
     @Override
-    public void endRoot(Root root)
+    public void endRoot(Root root) throws ZserioEmitException
     {
         try
         {
@@ -273,13 +274,13 @@ public class DeprecatedEmitter extends DefaultHtmlEmitter
             openOutputFile(directory, "deprecated" + HTML_EXT);
             tpl.process( this, writer );
         }
-        catch (IOException exc)
+        catch (IOException exception)
         {
-            throw new ZserioEmitDocException(exc);
+            throw new ZserioEmitException(exception.getMessage());
         }
-        catch (TemplateException exc)
+        catch (TemplateException exception)
         {
-            throw new ZserioEmitDocException(exc);
+            throw new ZserioEmitException(exception.getMessage());
         }
         finally
         {

@@ -8,6 +8,7 @@ import zserio.ast.ConstType;
 import zserio.ast.ZserioType;
 import zserio.ast.Expression;
 import zserio.emit.common.ExpressionFormatter;
+import zserio.emit.common.ZserioEmitException;
 import freemarker.template.Template;
 import freemarker.template.TemplateException;
 
@@ -26,7 +27,7 @@ public class ConstTypeEmitter extends DefaultHtmlEmitter
         this.withSvgDiagrams = withSvgDiagrams;
     }
 
-    public void emit(ConstType constType)
+    public void emit(ConstType constType) throws ZserioEmitException
     {
         this.consttype = constType;
         docCommentTemplateData = new DocCommentTemplateData(consttype.getDocComment());
@@ -46,13 +47,13 @@ public class ConstTypeEmitter extends DefaultHtmlEmitter
             tpl.process(this, writer);
             writer.close();
         }
-        catch (IOException exc)
+        catch (IOException exception)
         {
-            throw new ZserioEmitDocException(exc);
+            throw new ZserioEmitException(exception.getMessage());
         }
-        catch (TemplateException exc)
+        catch (TemplateException exception)
         {
-            throw new ZserioEmitDocException(exc);
+            throw new ZserioEmitException(exception.getMessage());
         }
         finally
         {
@@ -82,7 +83,7 @@ public class ConstTypeEmitter extends DefaultHtmlEmitter
         return "";
     }
 
-    public String getTypeValue()
+    public String getTypeValue() throws ZserioEmitException
     {
         if( consttype != null )
         {
@@ -119,7 +120,7 @@ public class ConstTypeEmitter extends DefaultHtmlEmitter
         return linkedType;
     }
 
-    public String getCollaborationDiagramSvgFileName()
+    public String getCollaborationDiagramSvgFileName() throws ZserioEmitException
     {
         return (withSvgDiagrams) ? DocEmitterTools.getTypeCollaborationSvgUrl(docPath, consttype) : null;
     }

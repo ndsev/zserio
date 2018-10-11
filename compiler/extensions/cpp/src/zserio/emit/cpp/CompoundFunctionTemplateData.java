@@ -8,12 +8,14 @@ import zserio.ast.ZserioType;
 import zserio.ast.ZserioTypeUtil;
 import zserio.ast.FunctionType;
 import zserio.emit.common.ExpressionFormatter;
+import zserio.emit.common.ZserioEmitException;
 import zserio.emit.cpp.types.CppNativeType;
 
 public class CompoundFunctionTemplateData
 {
     public CompoundFunctionTemplateData(CppNativeTypeMapper cppNativeTypeMapper, CompoundType compoundType,
             ExpressionFormatter cppExpressionFormatter, IncludeCollector includeCollector)
+                    throws ZserioEmitException
     {
         compoundFunctionList = new ArrayList<CompoundFunction>();
         final Iterable<FunctionType> compoundFunctionTypeList = compoundType.getFunctions();
@@ -31,6 +33,7 @@ public class CompoundFunctionTemplateData
     {
         public CompoundFunction(FunctionType functionType, CppNativeTypeMapper cppNativeTypeMapper,
                 ExpressionFormatter cppExpressionFormatter, IncludeCollector includeCollector)
+                        throws ZserioEmitException
         {
             final ZserioType returnZserioType = functionType.getReturnType();
             final CppNativeType returnNativeType = cppNativeTypeMapper.getCppType(returnZserioType);

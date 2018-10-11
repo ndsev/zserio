@@ -5,10 +5,12 @@ import java.util.ArrayList;
 import zserio.ast.ServiceType;
 import zserio.ast.Rpc;
 import zserio.ast.ZserioType;
+import zserio.emit.common.ZserioEmitException;
 
 public class ServiceEmitterTemplateData extends UserTypeTemplateData
 {
     public ServiceEmitterTemplateData(TemplateDataContext context, ServiceType serviceType)
+            throws ZserioEmitException
     {
         super(context, serviceType);
 
@@ -56,7 +58,7 @@ public class ServiceEmitterTemplateData extends UserTypeTemplateData
 
     public static class RpcTemplateData
     {
-        public RpcTemplateData(CppNativeTypeMapper typeMapper, Rpc rpc)
+        public RpcTemplateData(CppNativeTypeMapper typeMapper, Rpc rpc) throws ZserioEmitException
         {
             name = rpc.getName();
 

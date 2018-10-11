@@ -1,6 +1,7 @@
 package zserio.emit.java;
 
 import zserio.ast.SqlDatabaseType;
+import zserio.emit.common.ZserioEmitException;
 import zserio.tools.Parameters;
 
 class SqlDatabaseEmitter extends JavaDefaultEmitter
@@ -11,7 +12,7 @@ class SqlDatabaseEmitter extends JavaDefaultEmitter
     }
 
     @Override
-    public void beginSqlDatabase(SqlDatabaseType sqlDatabaseType) throws ZserioEmitJavaException
+    public void beginSqlDatabase(SqlDatabaseType sqlDatabaseType) throws ZserioEmitException
     {
         if (getWithSqlCode())
         {

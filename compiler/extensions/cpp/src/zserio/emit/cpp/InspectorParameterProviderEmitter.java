@@ -5,6 +5,7 @@ import java.util.List;
 
 import zserio.ast.Root;
 import zserio.ast.SqlTableType;
+import zserio.emit.common.ZserioEmitException;
 import zserio.tools.Parameters;
 
 public class InspectorParameterProviderEmitter extends CppDefaultEmitter
@@ -15,14 +16,14 @@ public class InspectorParameterProviderEmitter extends CppDefaultEmitter
     }
 
     @Override
-    public void beginSqlTable(SqlTableType sqlTableType) throws ZserioEmitCppException
+    public void beginSqlTable(SqlTableType sqlTableType) throws ZserioEmitException
     {
         if (getWithSqlCode() && getWithInspectorCode())
             sqlTableTypes.add(sqlTableType);
     }
 
     @Override
-    public void endRoot(Root root) throws ZserioEmitCppException
+    public void endRoot(Root root) throws ZserioEmitException
     {
         if (!sqlTableTypes.isEmpty())
         {

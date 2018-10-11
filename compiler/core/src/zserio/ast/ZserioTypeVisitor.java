@@ -67,13 +67,6 @@ public interface ZserioTypeVisitor
     void visitServiceType(ServiceType type);
 
     /**
-     * Visitor called from StructureType class.
-     *
-     * @param type StructureType instance which calls this visitor.
-     */
-    void visitStructureType(StructureType type);
-
-    /**
      * Visitor called from SignedBitFieldType class.
      *
      * @param type SignedBitFieldType instance which calls this visitor.
@@ -107,6 +100,13 @@ public interface ZserioTypeVisitor
      * @param type StringType instance which calls this visitor.
      */
     void visitStringType(StringType type);
+
+    /**
+     * Visitor called from StructureType class.
+     *
+     * @param type StructureType instance which calls this visitor.
+     */
+    void visitStructureType(StructureType type);
 
     /**
      * Visitor called from Subtype class.

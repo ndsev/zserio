@@ -6,12 +6,14 @@ import java.util.List;
 import zserio.ast.ConstType;
 import zserio.ast.Expression;
 import zserio.emit.common.ExpressionFormatter;
+import zserio.emit.common.ZserioEmitException;
 import zserio.emit.cpp.types.CppNativeType;
 import zserio.emit.cpp.types.NativeConstType;
 
 public class ConstEmitterTemplateData extends CppTemplateData
 {
     public ConstEmitterTemplateData(TemplateDataContext context, List<ConstType> constTypes)
+            throws ZserioEmitException
     {
         super(context);
 
@@ -43,7 +45,7 @@ public class ConstEmitterTemplateData extends CppTemplateData
     public static class Item
     {
         public Item(ConstType constType, NativeConstType nativeConstType,
-                ExpressionFormatter cppExpressionFormatter)
+                ExpressionFormatter cppExpressionFormatter) throws ZserioEmitException
         {
             name = nativeConstType.getName();
 

@@ -11,12 +11,14 @@ import zserio.ast.EnumType;
 import zserio.ast.IntegerType;
 import zserio.ast.StdIntegerType;
 import zserio.emit.common.ExpressionFormatter;
+import zserio.emit.common.ZserioEmitException;
 import zserio.emit.cpp.types.CppNativeType;
 import zserio.emit.cpp.types.NativeIntegralType;
 
 public class EnumerationEmitterTemplateData extends UserTypeTemplateData
 {
     public EnumerationEmitterTemplateData(TemplateDataContext context, EnumType enumType)
+            throws ZserioEmitException
     {
         super(context, enumType);
 
@@ -73,6 +75,7 @@ public class EnumerationEmitterTemplateData extends UserTypeTemplateData
     public static class EnumItemData
     {
         public EnumItemData(NativeIntegralType nativeBaseType, EnumType enumType, EnumItem enumItem)
+                throws ZserioEmitException
         {
             name = enumItem.getName();
             value = nativeBaseType.formatLiteral(enumItem.getValue());
@@ -92,7 +95,7 @@ public class EnumerationEmitterTemplateData extends UserTypeTemplateData
         private final String value;
     };
 
-    private static String createBitSize(EnumType enumType)
+    private static String createBitSize(EnumType enumType) throws ZserioEmitException
     {
         final IntegerType integerBaseType = enumType.getIntegerBaseType();
         Integer bitSize = null;

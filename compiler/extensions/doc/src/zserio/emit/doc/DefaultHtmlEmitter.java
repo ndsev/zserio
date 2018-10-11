@@ -9,6 +9,7 @@ import zserio.ast.TranslationUnit;
 import zserio.ast.ZserioType;
 import zserio.ast.Package;
 import zserio.emit.common.ExpressionFormatter;
+import zserio.emit.common.ZserioEmitException;
 import freemarker.template.Configuration;
 import freemarker.template.Template;
 import freemarker.template.TemplateException;
@@ -88,22 +89,22 @@ abstract public class DefaultHtmlEmitter extends DefaultDocEmitter
     }
 
     @Override
-    public void beginPackage(Package packageToken)
+    public void beginPackage(Package packageToken) throws ZserioEmitException
     {
         currentPackage = packageToken;
     }
 
-    public void emitStylesheet()
+    public void emitStylesheet() throws ZserioEmitException
     {
         emit("doc/webStyles.css.ftl", "webStyles.css");
     }
 
-    public void emitFrameset()
+    public void emitFrameset() throws ZserioEmitException
     {
         emit("doc/index.html.ftl", "index.html");
     }
 
-    public void openOutputFileFromType(ZserioType type)
+    public void openOutputFileFromType(ZserioType type) throws ZserioEmitException
     {
         File outputDir = new File(directory, DocEmitterTools.getDirectoryNameFromType(type));
         openOutputFile(outputDir, DocEmitterTools.getHtmlFileNameFromType(type));
@@ -114,7 +115,7 @@ abstract public class DefaultHtmlEmitter extends DefaultDocEmitter
         return expressionFormatter;
     }
 
-    private void emit(String template, String outputName)
+    private void emit(String template, String outputName) throws ZserioEmitException
     {
         try
         {
@@ -124,13 +125,13 @@ abstract public class DefaultHtmlEmitter extends DefaultDocEmitter
             tpl.process(this, writer);
             writer.close();
         }
-        catch (IOException exc)
+        catch (IOException exception)
         {
-            throw new ZserioEmitDocException(exc);
+            throw new ZserioEmitException(exception.getMessage());
         }
-        catch (TemplateException exc)
+        catch (TemplateException exception)
         {
-            throw new ZserioEmitDocException(exc);
+            throw new ZserioEmitException(exception.getMessage());
         }
         finally
         {

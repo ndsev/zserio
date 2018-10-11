@@ -6,10 +6,12 @@ import java.util.List;
 import zserio.ast.CompoundType;
 import zserio.ast.Field;
 import zserio.emit.common.ExpressionFormatter;
+import zserio.emit.common.ZserioEmitException;
 
 public class CompoundTypeTemplateData extends UserTypeTemplateData
 {
     public CompoundTypeTemplateData(TemplateDataContext context, CompoundType compoundType)
+            throws ZserioEmitException
     {
         super(context, compoundType);
 

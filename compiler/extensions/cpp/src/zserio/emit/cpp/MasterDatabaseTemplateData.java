@@ -8,12 +8,14 @@ import java.util.TreeSet;
 
 import zserio.ast.Field;
 import zserio.ast.SqlDatabaseType;
+import zserio.emit.common.ZserioEmitException;
 import zserio.emit.cpp.types.CppNativeType;
 import zserio.tools.HashUtil;
 
 public class MasterDatabaseTemplateData extends CppTemplateData
 {
     public MasterDatabaseTemplateData(TemplateDataContext context, List<SqlDatabaseType> sqlDatabaseTypes)
+            throws ZserioEmitException
     {
         super(context);
 
@@ -32,7 +34,7 @@ public class MasterDatabaseTemplateData extends CppTemplateData
     public static class DatabaseItemData implements Comparable<DatabaseItemData>
     {
         public DatabaseItemData(CppNativeTypeMapper cppNativeTypeMapper, SqlDatabaseType databaseType,
-                IncludeCollector includeCollector)
+                IncludeCollector includeCollector) throws ZserioEmitException
         {
             final CppNativeType nativeDatabaseType = cppNativeTypeMapper.getCppType(databaseType);
             includeCollector.addHeaderIncludesForType(nativeDatabaseType);

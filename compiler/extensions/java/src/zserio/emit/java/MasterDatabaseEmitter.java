@@ -5,6 +5,7 @@ import java.util.List;
 
 import zserio.ast.Root;
 import zserio.ast.SqlDatabaseType;
+import zserio.emit.common.ZserioEmitException;
 import zserio.tools.Parameters;
 
 class MasterDatabaseEmitter extends JavaDefaultEmitter
@@ -15,14 +16,14 @@ class MasterDatabaseEmitter extends JavaDefaultEmitter
     }
 
     @Override
-    public void beginSqlDatabase(SqlDatabaseType sqlDatabaseType) throws ZserioEmitJavaException
+    public void beginSqlDatabase(SqlDatabaseType sqlDatabaseType) throws ZserioEmitException
     {
         if (getWithSqlCode())
             sqlDatabaseTypes.add(sqlDatabaseType);
     }
 
     @Override
-    public void endRoot(Root root) throws ZserioEmitJavaException
+    public void endRoot(Root root) throws ZserioEmitException
     {
         if (!sqlDatabaseTypes.isEmpty())
         {

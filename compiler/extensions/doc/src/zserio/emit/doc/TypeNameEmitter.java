@@ -17,6 +17,7 @@ import zserio.ast.TypeInstantiation;
 import zserio.ast.TypeReference;
 import zserio.ast.VarIntegerType;
 import zserio.emit.common.ExpressionFormatter;
+import zserio.emit.common.ZserioEmitException;
 
 public class TypeNameEmitter
 {
@@ -25,7 +26,7 @@ public class TypeNameEmitter
         this.expressionFormatter = expressionFormatter;
     }
 
-    public String getOffset(Field f)
+    public String getOffset(Field f) throws ZserioEmitException
     {
         String result = "";
         Expression offset = f.getOffsetExpr();
@@ -36,7 +37,7 @@ public class TypeNameEmitter
         return result;
     }
 
-    public String getArrayRange(Field f)
+    public String getArrayRange(Field f) throws ZserioEmitException
     {
         String result = null;
         ZserioType type = f.getFieldType();
@@ -56,7 +57,7 @@ public class TypeNameEmitter
         return result;
     }
 
-    public String getOptionalClause(Field field)
+    public String getOptionalClause(Field field) throws ZserioEmitException
     {
         String result = "";
         Expression expr = field.getOptionalClauseExpr();
@@ -68,7 +69,7 @@ public class TypeNameEmitter
         return StringHtmlUtil.escapeForHtml(result);
     }
 
-    public String getConstraint(Field field)
+    public String getConstraint(Field field) throws ZserioEmitException
     {
       String result = "";
       Expression expr = field.getConstraintExpr();
@@ -80,7 +81,7 @@ public class TypeNameEmitter
       return StringHtmlUtil.escapeForHtml(result);
     }
 
-    public String getSqlConstraint(Field field)
+    public String getSqlConstraint(Field field) throws ZserioEmitException
     {
         final Expression sqlConstraintExpr = field.getSqlConstraint().getConstraintExpr();
         if (sqlConstraintExpr == null)
@@ -96,7 +97,7 @@ public class TypeNameEmitter
       return field.getIsVirtual();
     }
 
-    public static String getTypeName(ZserioType t)
+    public static String getTypeName(ZserioType t) throws ZserioEmitException
     {
         String result = null;
 
@@ -175,7 +176,7 @@ public class TypeNameEmitter
         return t.getName();
     }
 
-    private static String getTypeName(BitFieldType t)
+    private static String getTypeName(BitFieldType t) throws ZserioEmitException
     {
         String rawName = "", parameterizedName = "";
 

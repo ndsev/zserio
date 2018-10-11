@@ -14,6 +14,7 @@ import zserio.ast.Package;
 import zserio.ast.Parameter;
 import zserio.emit.common.DefaultExpressionFormattingPolicy;
 import zserio.emit.common.StringEscapeConverter;
+import zserio.emit.common.ZserioEmitException;
 import zserio.emit.cpp.types.CppNativeType;
 
 /**
@@ -129,7 +130,7 @@ public abstract class CppDefaultExpressionFormattingPolicy extends DefaultExpres
     }
 
     @Override
-    public String getIdentifier(Expression expr, boolean isLast, boolean isSetter)
+    public String getIdentifier(Expression expr, boolean isLast, boolean isSetter) throws ZserioEmitException
     {
         // first try Zserio types then try identifier symbol objects
         final StringBuilder result = new StringBuilder();
@@ -201,7 +202,7 @@ public abstract class CppDefaultExpressionFormattingPolicy extends DefaultExpres
     protected abstract String getAccessPrefixForCompoundType();
 
     private void formatIdentifierForType(StringBuilder result, String symbol, boolean isFirst,
-            ZserioType resolvedType)
+            ZserioType resolvedType) throws ZserioEmitException
     {
         if (resolvedType instanceof EnumType)
         {
@@ -225,7 +226,7 @@ public abstract class CppDefaultExpressionFormattingPolicy extends DefaultExpres
     }
 
     private void formatIdentifierForSymbol(StringBuilder result, String symbol, boolean isFirst,
-            Object resolvedSymbol, boolean isSetter)
+            Object resolvedSymbol, boolean isSetter) throws ZserioEmitException
     {
         if (resolvedSymbol instanceof Parameter)
         {

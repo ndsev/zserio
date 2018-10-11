@@ -8,10 +8,12 @@ import zserio.ast.Field;
 import zserio.ast.SqlDatabaseType;
 import zserio.ast.SqlTableType;
 import zserio.ast.TypeReference;
+import zserio.emit.common.ZserioEmitException;
 
 public final  class SqlDatabaseEmitterTemplateData extends UserTypeTemplateData
 {
     public SqlDatabaseEmitterTemplateData(TemplateDataContext context, SqlDatabaseType databaseType)
+            throws ZserioEmitException
     {
         super(context, databaseType);
 
@@ -42,6 +44,7 @@ public final  class SqlDatabaseEmitterTemplateData extends UserTypeTemplateData
     public static class DatabaseFieldData
     {
         public DatabaseFieldData(JavaNativeTypeMapper javaNativeTypeMapper, Field field)
+                throws ZserioEmitException
         {
             name = field.getName();
             javaTypeName = javaNativeTypeMapper.getJavaType(field.getFieldType()).getFullName();

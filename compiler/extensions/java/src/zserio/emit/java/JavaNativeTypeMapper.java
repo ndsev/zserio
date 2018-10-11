@@ -8,7 +8,6 @@ import zserio.ast.CompoundType;
 import zserio.ast.ConstType;
 import zserio.ast.ServiceType;
 import zserio.ast.ZserioType;
-import zserio.ast.ZserioTypeUtil;
 import zserio.ast.ZserioTypeVisitor;
 import zserio.ast.EnumType;
 import zserio.ast.FloatType;
@@ -28,6 +27,7 @@ import zserio.ast.UnsignedBitFieldType;
 import zserio.ast.VarIntegerType;
 import zserio.emit.common.NativeType;
 import zserio.emit.common.PackageMapper;
+import zserio.emit.common.ZserioEmitException;
 import zserio.emit.java.types.JavaNativeType;
 import zserio.emit.java.types.NativeArrayType;
 import zserio.emit.java.types.NativeBigIntegerArrayType;
@@ -76,14 +76,17 @@ final class JavaNativeTypeMapper
      * @param type              Zserio type.
      *
      * @return JavaNativeType that can hold values of the given Zserio type.
+     *
+     * @throws ZserioEmitException If the Zserio type cannot be mapped to any Java type.
      */
-    public JavaNativeType getJavaType(ZserioType type) throws ZserioEmitJavaException
+    public JavaNativeType getJavaType(ZserioType type) throws ZserioEmitException
     {
         final ZserioTypeMapperVisitor visitor = visitType(javaPackageMapper, type);
 
         final JavaNativeType nativeType = visitor.getJavaType();
         if (nativeType == null)
-            throw new ZserioEmitJavaException("unhandled type: " + type.getClass().getName());
+            throw new ZserioEmitException("Unhandled type '" + type.getClass().getName() +
+                    "' in JavaNativeTypeMapper!");
 
         return nativeType;
     }
@@ -98,14 +101,17 @@ final class JavaNativeTypeMapper
      * @param type              Zserio type.
      *
      * @return JavaNativeType that is derived from Object and can hold values of the given Zserio type.
+     *
+     * @throws ZserioEmitException If the Zserio type cannot be mapped to any Java type.
      */
-    public JavaNativeType getNullableJavaType(ZserioType type) throws ZserioEmitJavaException
+    public JavaNativeType getNullableJavaType(ZserioType type) throws ZserioEmitException
     {
         final ZserioTypeMapperVisitor visitor = visitType(javaPackageMapper, type);
 
         final JavaNativeType nativeNullableType = visitor.getJavaNullableType();
         if (nativeNullableType == null)
-            throw new ZserioEmitJavaException("unhandled type: " + type.getClass().getName());
+            throw new ZserioEmitException("Unhandled type '" + type.getClass().getName() +
+                    "' in JavaNativeTypeMapper!");
 
         return nativeNullableType;
     }
@@ -120,33 +126,49 @@ final class JavaNativeTypeMapper
      * @param javaPackageMapper Package mapper to use for Java package mapping.
      * @param type              Zserio IntegerType to map.
      *
-     * @return                  NativeIntegralType that can hold values of the given Zserio type.
-     * @throws ZserioEmitJavaException
+     * @return NativeIntegralType that can hold values of the given Zserio type.
+     *
+     * @throws ZserioEmitException If the Zserio type cannot be mapped to any Java type.
      */
-    public NativeIntegralType getJavaIntegralType(IntegerType type) throws ZserioEmitJavaException
+    public NativeIntegralType getJavaIntegralType(IntegerType type) throws ZserioEmitException
     {
         final NativeType javaType = getJavaType(type);
 
         if (!(javaType instanceof NativeIntegralType))
-        {
-            throw new ZserioEmitJavaException("Internal error: JavaNativeTypeMapper returned " +
-                    "a non-integral native type for integral Zserio type");
-        }
+            throw new ZserioEmitException("Unhandled integral type '" + type.getClass().getName() +
+                    "' in JavaNativeTypeMapper!");
 
         return (NativeIntegralType)javaType;
     }
 
     private ZserioTypeMapperVisitor visitType(PackageMapper javaPackageMapper, ZserioType type)
-            throws ZserioEmitJavaException
+            throws ZserioEmitException
     {
         type = TypeReference.resolveBaseType(type);
         final ZserioTypeMapperVisitor visitor = new ZserioTypeMapperVisitor(javaPackageMapper);
         type.callVisitor(visitor);
+
+        final ZserioEmitException thrownException = visitor.getThrownException();
+        if (thrownException != null)
+            throw thrownException;
+
         return visitor;
     }
 
     private abstract class TypeMapperVisitor implements ZserioTypeVisitor
     {
+        @Override
+        public void visitFunctionType(FunctionType type)
+        {
+            // not supported
+        }
+
+        @Override
+        public void visitSignedBitFieldType(SignedBitFieldType type)
+        {
+            mapBitfieldType(type);
+        }
+
         @Override
         public void visitStdIntegerType(StdIntegerType type)
         {
@@ -154,13 +176,19 @@ final class JavaNativeTypeMapper
         }
 
         @Override
-        public void visitUnsignedBitFieldType(UnsignedBitFieldType type)
+        public void visitSubtype(Subtype type)
         {
-            mapBitfieldType(type);
+            // not supported
         }
 
         @Override
-        public void visitSignedBitFieldType(SignedBitFieldType type)
+        public void visitTypeReference(TypeReference type)
+        {
+            // not supported
+        }
+
+        @Override
+        public void visitUnsignedBitFieldType(UnsignedBitFieldType type)
         {
             mapBitfieldType(type);
         }
@@ -171,20 +199,7 @@ final class JavaNativeTypeMapper
             mapIntegralType(type.getMaxBitSize(), type.isSigned(), true);
         }
 
-        @Override
-        public void visitTypeReference(TypeReference type) throws ZserioEmitJavaException
-        {
-            unexpected(type);
-        }
-
-        @Override
-        public void visitFunctionType(FunctionType type) throws ZserioEmitJavaException
-        {
-            unexpected(type);
-        }
-
         protected void mapIntegralType(int nBits, boolean signed, boolean variable)
-                throws ZserioEmitJavaException
         {
             if (signed)
                 mapSignedIntegralType(nBits, variable);
@@ -192,17 +207,9 @@ final class JavaNativeTypeMapper
                 mapUnsignedIntegralType(nBits, variable);
         }
 
-        protected abstract void mapBitfieldType(BitFieldType type) throws ZserioEmitJavaException;
-        protected abstract void mapSignedIntegralType(int nBits, boolean variable)
-                throws ZserioEmitJavaException;
-        protected abstract void mapUnsignedIntegralType(int nBits, boolean variable)
-                throws ZserioEmitJavaException;
-
-        protected void unexpected(ZserioType type) throws ZserioEmitJavaException
-        {
-            throw new ZserioEmitJavaException("internal error: unexpected element " +
-                    ZserioTypeUtil.getFullName(type) +  " of type " + type.getClass());
-        }
+        protected abstract void mapBitfieldType(BitFieldType type);
+        protected abstract void mapSignedIntegralType(int nBits, boolean variable);
+        protected abstract void mapUnsignedIntegralType(int nBits, boolean variable);
     }
 
     private class ArrayElementTypeMapperVisitor extends TypeMapperVisitor
@@ -212,11 +219,15 @@ final class JavaNativeTypeMapper
             return javaNullableType;
         }
 
-        @Override
-        public void visitArrayType(ArrayType type) throws ZserioEmitJavaException
+        public ZserioEmitException getThrownException()
         {
-            // array of arrays is not supported
-            unexpected(type);
+            return thrownException;
+        }
+
+        @Override
+        public void visitArrayType(ArrayType type)
+        {
+            // not supported
         }
 
         @Override
@@ -226,7 +237,19 @@ final class JavaNativeTypeMapper
         }
 
         @Override
-        public void visitEnumType(EnumType type) throws ZserioEmitJavaException
+        public void visitChoiceType(ChoiceType type)
+        {
+            mapObjectArray(type);
+        }
+
+        @Override
+        public void visitConstType(ConstType type)
+        {
+            // not supported
+        }
+
+        @Override
+        public void visitEnumType(EnumType type)
         {
             mapObjectArray(type);
         }
@@ -249,9 +272,26 @@ final class JavaNativeTypeMapper
                 break;
 
             default:
-                throw new ZserioEmitJavaException("Unexpected bit size of float (" + type.getBitSize() + ")");
-
+                break;
             }
+        }
+
+        @Override
+        public void visitServiceType(ServiceType type)
+        {
+            // not supported
+        }
+
+        @Override
+        public void visitSqlDatabaseType(SqlDatabaseType type)
+        {
+            // not supported
+        }
+
+        @Override
+        public void visitSqlTableType(SqlTableType type)
+        {
+            // not supported
         }
 
         @Override
@@ -261,78 +301,32 @@ final class JavaNativeTypeMapper
         }
 
         @Override
-        public void visitServiceType(ServiceType type) throws ZserioEmitJavaException
-        {
-            unexpected(type);
-        }
-
-        @Override
-        public void visitStructureType(StructureType type) throws ZserioEmitJavaException
+        public void visitStructureType(StructureType type)
         {
             mapObjectArray(type);
         }
 
         @Override
-        public void visitChoiceType(ChoiceType type) throws ZserioEmitJavaException
-        {
-            mapObjectArray(type);
-        }
-
-        @Override
-        public void visitUnionType(UnionType type) throws ZserioEmitJavaException
-        {
-            mapObjectArray(type);
-        }
-
-        @Override
-        public void visitConstType(ConstType type) throws ZserioEmitJavaException
-        {
-            // array of consts are not supported at the moment
-            unexpected(type);
-        }
-
-        @Override
-        public void visitSubtype(Subtype type) throws ZserioEmitJavaException
-        {
-            // should be resolved by whoever creates an instance of this visitor
-            unexpected(type);
-        }
-
-        @Override
-        public void visitTypeInstantiation(TypeInstantiation type) throws ZserioEmitJavaException
+        public void visitTypeInstantiation(TypeInstantiation type)
         {
             final CompoundType baseType = type.getBaseType();
             mapObjectArray(baseType);
         }
 
         @Override
-        public void visitSqlTableType(SqlTableType type) throws ZserioEmitJavaException
+        public void visitUnionType(UnionType type)
         {
-            // array of sql_tables is not supported
-            unexpected(type);
+            mapObjectArray(type);
         }
 
         @Override
-        public void visitSqlDatabaseType(SqlDatabaseType type) throws ZserioEmitJavaException
-        {
-            // array of sql_databases is not supported
-            unexpected(type);
-        }
-
-        private void mapObjectArray(ZserioType type) throws ZserioEmitJavaException
-        {
-            final JavaNativeType nativeElementType = getJavaType(type);
-            javaNullableType = new NativeObjectArrayType(nativeElementType);
-        }
-
-        @Override
-        protected void mapBitfieldType(BitFieldType type) throws ZserioEmitJavaException
+        protected void mapBitfieldType(BitFieldType type)
         {
             mapIntegralType(type.getMaxBitSize(), type.isSigned(), false);
         }
 
         @Override
-        protected void mapSignedIntegralType(int nBits, boolean variable) throws ZserioEmitJavaException
+        protected void mapSignedIntegralType(int nBits, boolean variable)
         {
             if (variable)
             {
@@ -355,7 +349,7 @@ final class JavaNativeTypeMapper
                     break;
 
                 default:
-                    throw new ZserioEmitJavaException("Unexpected size of variable integer (" + nBits + ")");
+                    break;
                 }
             }
             else
@@ -380,7 +374,7 @@ final class JavaNativeTypeMapper
         }
 
         @Override
-        protected void mapUnsignedIntegralType(int nBits, boolean variable) throws ZserioEmitJavaException
+        protected void mapUnsignedIntegralType(int nBits, boolean variable)
         {
             if (variable)
             {
@@ -403,7 +397,7 @@ final class JavaNativeTypeMapper
                     break;
 
                 default:
-                    throw new ZserioEmitJavaException("Unexpected size of variable integer (" + nBits + ")");
+                    break;
                 }
             }
             else
@@ -432,7 +426,21 @@ final class JavaNativeTypeMapper
             }
         }
 
-        private JavaNativeType javaNullableType;
+        private void mapObjectArray(ZserioType type)
+        {
+            try
+            {
+                final JavaNativeType nativeElementType = getJavaType(type);
+                javaNullableType = new NativeObjectArrayType(nativeElementType);
+            }
+            catch (ZserioEmitException exception)
+            {
+                thrownException = exception;
+            }
+        }
+
+        private JavaNativeType javaNullableType = null;
+        private ZserioEmitException thrownException = null;
     }
 
     private class ZserioTypeMapperVisitor extends TypeMapperVisitor
@@ -444,10 +452,7 @@ final class JavaNativeTypeMapper
 
         public JavaNativeType getJavaType()
         {
-            if (javaType != null)
-                return javaType;
-            else
-                return javaNullableType;
+            return javaType;
         }
 
         public JavaNativeType getJavaNullableType()
@@ -455,19 +460,21 @@ final class JavaNativeTypeMapper
             return javaNullableType;
         }
 
+        public ZserioEmitException getThrownException()
+        {
+            return thrownException;
+        }
+
         @Override
-        public void visitArrayType(ArrayType type) throws ZserioEmitJavaException
+        public void visitArrayType(ArrayType type)
         {
             final ZserioType elementType = TypeReference.resolveBaseType(type.getElementType());
             final ArrayElementTypeMapperVisitor arrayVisitor = new ArrayElementTypeMapperVisitor();
 
             TypeReference.resolveBaseType(elementType).callVisitor(arrayVisitor);
-            javaNullableType = arrayVisitor.getJavaNullableType();
-
-            if (javaNullableType == null)
-                throw new ZserioEmitJavaException("unhandled array element type: "
-                        + type.getClass().getName());
-
+            javaType = arrayVisitor.getJavaNullableType();
+            javaNullableType = javaType;
+            thrownException = arrayVisitor.getThrownException();
         }
 
         @Override
@@ -484,27 +491,38 @@ final class JavaNativeTypeMapper
         }
 
         @Override
-        public void visitUnionType(UnionType type)
-        {
-            mapCompoundType(type);
-        }
-
-        @Override
         public void visitConstType(ConstType type)
         {
             final String packageName = javaPackageMapper.getRootPackageName();
             final String name = type.getName();
-            final JavaNativeType nativeTargetType = JavaNativeTypeMapper.this.getJavaType(type.getConstType());
-            javaNullableType = new NativeConstType(packageName, name, nativeTargetType);
+            try
+            {
+                final JavaNativeType nativeTargetType =
+                        JavaNativeTypeMapper.this.getJavaType(type.getConstType());
+                javaType = new NativeConstType(packageName, name, nativeTargetType);
+                javaNullableType = javaType;
+            }
+            catch (ZserioEmitException exception)
+            {
+                thrownException = exception;
+            }
         }
 
         @Override
         public void visitEnumType(EnumType type)
         {
-            final NativeIntegralType nativeBaseType = getJavaIntegralType(type.getIntegerBaseType());
-            final String packageName = javaPackageMapper.getPackageName(type);
-            final String name = type.getName();
-            javaNullableType = new NativeEnumType(packageName, name, nativeBaseType);
+            try
+            {
+                final NativeIntegralType nativeBaseType = getJavaIntegralType(type.getIntegerBaseType());
+                final String packageName = javaPackageMapper.getPackageName(type);
+                final String name = type.getName();
+                javaType = new NativeEnumType(packageName, name, nativeBaseType);
+                javaNullableType = javaType;
+            }
+            catch (ZserioEmitException exception)
+            {
+                thrownException = exception;
+            }
         }
 
         @Override
@@ -524,8 +542,7 @@ final class JavaNativeTypeMapper
                 break;
 
             default:
-                throw new ZserioEmitJavaException("Unexpected bit size of float (" + type.getBitSize() + ")");
-
+                break;
             }
         }
 
@@ -534,38 +551,8 @@ final class JavaNativeTypeMapper
         {
             final String packageName = javaPackageMapper.getPackageName(type);
             final String name = type.getName();
-            javaNullableType = new NativeServiceType(packageName, name);
-        }
-
-        @Override
-        public void visitStructureType(StructureType type)
-        {
-            mapCompoundType(type);
-        }
-
-        @Override
-        public void visitStringType(StringType type)
-        {
-            javaNullableType = stringType;
-        }
-
-        @Override
-        public void visitSubtype(Subtype type) throws ZserioEmitJavaException
-        {
-            // should be resolved by whoever creates this visitor
-            unexpected(type);
-        }
-
-        @Override
-        public void visitTypeInstantiation(TypeInstantiation type)
-        {
-            mapCompoundType(type.getBaseType());
-        }
-
-        @Override
-        public void visitSqlTableType(SqlTableType type)
-        {
-            mapCompoundType(type);
+            javaType = new NativeServiceType(packageName, name);
+            javaNullableType = javaType;
         }
 
         @Override
@@ -575,13 +562,44 @@ final class JavaNativeTypeMapper
         }
 
         @Override
-        protected void mapBitfieldType(BitFieldType type) throws ZserioEmitJavaException
+        public void visitSqlTableType(SqlTableType type)
+        {
+            mapCompoundType(type);
+        }
+
+        @Override
+        public void visitStringType(StringType type)
+        {
+            javaType = stringType;
+            javaNullableType = stringType;
+        }
+
+        @Override
+        public void visitStructureType(StructureType type)
+        {
+            mapCompoundType(type);
+        }
+
+        @Override
+        public void visitTypeInstantiation(TypeInstantiation type)
+        {
+            mapCompoundType(type.getBaseType());
+        }
+
+        @Override
+        public void visitUnionType(UnionType type)
+        {
+            mapCompoundType(type);
+        }
+
+        @Override
+        protected void mapBitfieldType(BitFieldType type)
         {
             mapIntegralType(type.getMaxBitSize(), type.isSigned(), false);
         }
 
         @Override
-        protected void mapSignedIntegralType(int nBits, boolean variable) throws ZserioEmitJavaException
+        protected void mapSignedIntegralType(int nBits, boolean variable)
         {
             if (variable)
             {
@@ -613,7 +631,7 @@ final class JavaNativeTypeMapper
         }
 
         @Override
-        protected void mapUnsignedIntegralType(int nBits, boolean variable) throws ZserioEmitJavaException
+        protected void mapUnsignedIntegralType(int nBits, boolean variable)
         {
             if (variable)
             {
@@ -644,12 +662,13 @@ final class JavaNativeTypeMapper
                 }
                 else // this could be >= 64 (int8 foo; bit<foo> a;) but if we're above 64, we explode at runtime
                 {
+                    javaType = unsignedLongType;
                     javaNullableType = unsignedLongType;
                 }
             }
         }
 
-        private void mapVariableInteger(int nBits, boolean signed) throws ZserioEmitJavaException
+        private void mapVariableInteger(int nBits, boolean signed)
         {
             /*
              * In Java, varintN and varuintN always fit in the same native type.
@@ -681,12 +700,13 @@ final class JavaNativeTypeMapper
                 }
                 else
                 {
+                    javaType = unsignedLongType;
                     javaNullableType = unsignedLongType;
                 }
                 break;
 
             default:
-                throw new ZserioEmitJavaException("Unexpected size of variable integer (" + nBits + ")");
+                break;
             }
         }
 
@@ -694,13 +714,15 @@ final class JavaNativeTypeMapper
         {
             final String packageName = javaPackageMapper.getPackageName(compoundType);
             final String name = compoundType.getName();
-            javaNullableType = new NativeCompoundType(packageName, name);
+            javaType = new NativeCompoundType(packageName, name);
+            javaNullableType = javaType;
         }
 
-        private JavaNativeType javaType;
-        private JavaNativeType javaNullableType;
-
         private final PackageMapper javaPackageMapper;
+
+        private JavaNativeType javaType = null;
+        private JavaNativeType javaNullableType = null;
+        private ZserioEmitException thrownException = null;
     }
 
     private final static NativeBooleanType booleanType = new NativeBooleanType(false);

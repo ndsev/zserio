@@ -7,6 +7,7 @@ import java.util.List;
 
 import zserio.ast.Root;
 import zserio.ast.SqlDatabaseType;
+import zserio.emit.common.ZserioEmitException;
 import freemarker.template.Configuration;
 import freemarker.template.Template;
 import freemarker.template.TemplateException;
@@ -41,7 +42,7 @@ public class DbOverviewDotEmitter extends DefaultDocEmitter
     }
 
     @Override
-    public void endRoot(Root root)
+    public void endRoot(Root root) throws ZserioEmitException
     {
         final File outputFile = DocEmitterTools.getDbOverviewDotFile(docPath);
         emit(outputFile);
@@ -49,11 +50,11 @@ public class DbOverviewDotEmitter extends DefaultDocEmitter
         {
             if (!DotFileConvertor.convertToSvg(dotExecutable, outputFile,
                                                DocEmitterTools.getDbOverviewSvgFile(docPath)))
-                throw new ZserioEmitDocException("Failure to convert '" + outputFile + "' to SVG format!");
+                throw new ZserioEmitException("Failure to convert '" + outputFile + "' to SVG format!");
         }
     }
 
-    private void emit(File outputFile) throws ZserioEmitDocException
+    private void emit(File outputFile) throws ZserioEmitException
     {
         try
         {
@@ -66,13 +67,13 @@ public class DbOverviewDotEmitter extends DefaultDocEmitter
             fmTemplate.process(new DbOverviewDotTemplateData(databases, dotLinksPrefix), writer);
             writer.close();
         }
-        catch (IOException exc)
+        catch (IOException exception)
         {
-            throw new ZserioEmitDocException(exc);
+            throw new ZserioEmitException(exception.getMessage());
         }
-        catch (TemplateException exc)
+        catch (TemplateException exception)
         {
-            throw new ZserioEmitDocException(exc);
+            throw new ZserioEmitException(exception.getMessage());
         }
     }
 

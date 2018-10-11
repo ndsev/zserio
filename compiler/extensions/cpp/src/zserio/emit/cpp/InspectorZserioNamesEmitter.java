@@ -13,6 +13,7 @@ import zserio.ast.SqlTableType;
 import zserio.ast.StructureType;
 import zserio.ast.TypeReference;
 import zserio.ast.UnionType;
+import zserio.emit.common.ZserioEmitException;
 import zserio.tools.Parameters;
 
 public class InspectorZserioNamesEmitter extends CppDefaultEmitter
@@ -23,32 +24,32 @@ public class InspectorZserioNamesEmitter extends CppDefaultEmitter
     }
 
     @Override
-    public void beginStructure(StructureType structureType) throws ZserioEmitCppException
+    public void beginStructure(StructureType structureType) throws ZserioEmitException
     {
         beginCompoundType(structureType);
     }
 
     @Override
-    public void beginChoice(ChoiceType choiceType) throws ZserioEmitCppException
+    public void beginChoice(ChoiceType choiceType) throws ZserioEmitException
     {
         beginCompoundType(choiceType);
     }
 
     @Override
-    public void beginUnion(UnionType unionType) throws ZserioEmitCppException
+    public void beginUnion(UnionType unionType) throws ZserioEmitException
     {
         beginCompoundType(unionType);
     }
 
     @Override
-    public void beginEnumeration(EnumType enumType) throws ZserioEmitCppException
+    public void beginEnumeration(EnumType enumType) throws ZserioEmitException
     {
         if (getWithInspectorCode())
             enumTypes.add(enumType);
     }
 
     @Override
-    public void beginSqlTable(SqlTableType sqlTableType) throws ZserioEmitCppException
+    public void beginSqlTable(SqlTableType sqlTableType) throws ZserioEmitException
     {
         if (getWithInspectorCode())
         {
@@ -62,7 +63,7 @@ public class InspectorZserioNamesEmitter extends CppDefaultEmitter
     }
 
     @Override
-    public void endRoot(Root root) throws ZserioEmitCppException
+    public void endRoot(Root root) throws ZserioEmitException
     {
         if (!fields.isEmpty() || !functionTypes.isEmpty() || !enumTypes.isEmpty())
         {

@@ -19,7 +19,7 @@ import javax.xml.transform.stream.StreamResult;
 
 import org.xml.sax.InputSource;
 
-import zserio.ast.TokenAST;
+import zserio.ast.Root;
 import zserio.emit.common.FileUtil;
 import zserio.emit.common.ZserioEmitException;
 
@@ -30,58 +30,64 @@ public class SyntaxTreeEmitter
         this.outputDir = outputDir;
     }
 
-    public void emit(TokenAST rootNode)
+    public void emit(Root rootNode) throws ZserioEmitException
     {
         final File outputFile = new File(outputDir, "syntax_tree.xml");
         FileUtil.createOutputDirectory(outputFile);
 
         final SyntaxTreeXmlFilter filter = new SyntaxTreeXmlFilter(rootNode);
-        FileOutputStream os = null;
+        FileOutputStream outputStream = null;
         try
         {
-            os = new FileOutputStream(outputFile);
+            outputStream = new FileOutputStream(outputFile);
 
-            TransformerFactory tf = TransformerFactory.newInstance();
+            TransformerFactory transformerFactory = TransformerFactory.newInstance();
             try
             {
-                tf.setAttribute("indent-number", Integer.valueOf(2));
+                transformerFactory.setAttribute("indent-number", Integer.valueOf(2));
             }
-            catch (IllegalArgumentException e)
+            catch (IllegalArgumentException exception)
             {
                 // unsupported attribute - silently ignore
             }
 
-            final Transformer transformer = tf.newTransformer();
+            final Transformer transformer = transformerFactory.newTransformer();
             transformer.setOutputProperty(OutputKeys.INDENT, "yes");
             transformer.setOutputProperty(OutputKeys.METHOD, "xml");
             final Source source = new SAXSource(filter, new InputSource());
-            final Result result = new StreamResult(new OutputStreamWriter(os, "UTF-8"));
+            final Result result = new StreamResult(new OutputStreamWriter(outputStream, "UTF-8"));
             transformer.transform(source, result);
         }
-        catch (TransformerConfigurationException exc)
+        catch (TransformerConfigurationException exception)
         {
-            throw new ZserioEmitException(exc);
+            throw new ZserioEmitException(exception.getMessage());
         }
-        catch (TransformerException exc)
+        catch (TransformerException exception)
         {
-            throw new ZserioEmitException(exc);
+            throw new ZserioEmitException(exception.getMessage());
         }
-        catch (UnsupportedEncodingException exc)
+        catch (UnsupportedEncodingException exception)
         {
-            try
+            throw new ZserioEmitException(exception.getMessage());
+        }
+        catch (FileNotFoundException exception)
+        {
+            throw new ZserioEmitException(exception.getMessage());
+        }
+        finally
+        {
+            if (outputStream != null)
             {
-                os.close();
+                try
+                {
+                    outputStream.close();
+                }
+                catch (IOException exception)
+                {
+                }
             }
-            catch (IOException e)
-            {
-            }
-            throw new ZserioEmitException(exc);
-        }
-        catch (FileNotFoundException exc)
-        {
-            throw new ZserioEmitException(exc);
         }
     }
 
-    private String outputDir;
+    private final String outputDir;
 }

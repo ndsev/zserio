@@ -13,6 +13,7 @@ import zserio.ast.SqlTableType;
 import zserio.ast.TypeInstantiation;
 import zserio.ast.TypeReference;
 import zserio.emit.common.ExpressionFormatter;
+import zserio.emit.common.ZserioEmitException;
 import zserio.emit.common.sql.SqlNativeTypeMapper;
 import zserio.emit.common.sql.types.NativeBlobType;
 import zserio.emit.common.sql.types.SqlNativeType;
@@ -23,6 +24,7 @@ import zserio.emit.java.types.NativeIntegralType;
 public final class SqlTableEmitterTemplateData extends UserTypeTemplateData
 {
     public SqlTableEmitterTemplateData(TemplateDataContext context, SqlTableType tableType, String tableRowName)
+            throws ZserioEmitException
     {
         super(context, tableType);
 
@@ -94,7 +96,7 @@ public final class SqlTableEmitterTemplateData extends UserTypeTemplateData
         public FieldTemplateData(JavaNativeTypeMapper javaNativeTypeMapper,
                 ExpressionFormatter javaExpressionFormatter,
                 ExpressionFormatter javaSqlIndirectExpressionFormatter, SqlNativeTypeMapper sqlNativeTypeMapper,
-                SqlTableType parentType, Field field)
+                SqlTableType parentType, Field field) throws ZserioEmitException
         {
             final ZserioType baseType = TypeReference.resolveBaseType(field.getFieldType());
             final JavaNativeType nativeType = javaNativeTypeMapper.getJavaType(baseType);
@@ -192,7 +194,7 @@ public final class SqlTableEmitterTemplateData extends UserTypeTemplateData
         {
             public ParameterTemplateData(JavaNativeTypeMapper javaNativeTypeMapper,
                     ExpressionFormatter javaExpressionFormatter, Parameter parameter, Expression argument,
-                    SqlTableType tableType)
+                    SqlTableType tableType) throws ZserioEmitException
             {
                 name = parameter.getName();
                 instantiationName = (!argument.isExplicitVariable()) ? null :
@@ -247,6 +249,7 @@ public final class SqlTableEmitterTemplateData extends UserTypeTemplateData
         public static class SqlTypeTemplateData
         {
             public SqlTypeTemplateData(SqlNativeTypeMapper sqlNativeTypeMapper, Field field)
+                    throws ZserioEmitException
             {
                 final SqlNativeType sqlNativeType = sqlNativeTypeMapper.getSqlType(field.getFieldType());
                 name = sqlNativeType.getFullName();

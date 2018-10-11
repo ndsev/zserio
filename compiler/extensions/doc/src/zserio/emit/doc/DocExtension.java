@@ -4,6 +4,7 @@ import org.apache.commons.cli.Option;
 import org.apache.commons.cli.OptionGroup;
 
 import zserio.ast.Root;
+import zserio.emit.common.ZserioEmitException;
 import zserio.tools.Extension;
 import zserio.tools.Parameters;
 
@@ -22,21 +23,14 @@ public class DocExtension implements Extension
     }
 
     @Override
-    public void generate(Parameters parameters, Root rootNode) throws ZserioEmitDocException
+    public boolean isEnabled(Parameters parameters)
     {
-        if (parameters == null)
-        {
-            throw new ZserioEmitDocException("No parameters set for HtmlBackend!");
-        }
+        return parameters.argumentExists(OptionDoc);
+    }
 
-        if (!parameters.argumentExists(OptionDoc))
-        {
-            System.out.println("Emitting HTML documentation is disabled");
-            return;
-        }
-
-        System.out.println("Emitting HTML documentation");
-
+    @Override
+    public void generate(Parameters parameters, Root rootNode) throws ZserioEmitException
+    {
         String dotLinksPrefix = null;
         if (parameters.argumentExists(OptionSetDotLinksPrefix))
             dotLinksPrefix = parameters.getCommandLineArg(OptionSetDotLinksPrefix);
@@ -48,7 +42,7 @@ public class DocExtension implements Extension
             dotExecutable = parameters.getCommandLineArg(OptionSetDotExecutable);
 
         if (withSvgDiagrams && !DotFileConvertor.isDotExecAvailable(dotExecutable))
-            throw new ZserioEmitDocException("The dot executable '" + dotExecutable + "' not found!");
+            throw new ZserioEmitException("The dot executable '" + dotExecutable + "' not found!");
 
         final String docPath = parameters.getCommandLineArg(OptionDoc);
 

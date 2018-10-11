@@ -1,6 +1,7 @@
 package zserio.emit.cpp;
 
 import zserio.ast.SqlTableType;
+import zserio.emit.common.ZserioEmitException;
 import zserio.tools.Parameters;
 
 public class SqlTableEmitter extends CppDefaultEmitter
@@ -11,7 +12,7 @@ public class SqlTableEmitter extends CppDefaultEmitter
     }
 
     @Override
-    public void beginSqlTable(SqlTableType sqlTableType) throws ZserioEmitCppException
+    public void beginSqlTable(SqlTableType sqlTableType) throws ZserioEmitException
     {
         if (getWithSqlCode())
         {

@@ -3,6 +3,7 @@ package zserio.tools;
 import org.apache.commons.cli.Options;
 
 import zserio.ast.Root;
+import zserio.emit.common.ZserioEmitException;
 
 /**
  * The basic interface for all Zserio extensions.
@@ -31,10 +32,21 @@ public interface Extension
     public void registerOptions(Options options);
 
     /**
+     * Calls to check if the extension is enabled or not.
+     *
+     * @param parameters The parameters to pass to extension.
+     *
+     * @return true if the extension is enabled, otherwise false.
+     */
+    public boolean isEnabled(Parameters parameters);
+
+    /**
      * Calls the extension to generate their output.
      *
      * @param parameters The parameters to pass to extension.
      * @param rootNode   The root node of Zserio types tree to use for emitting.
+     *
+     * @throws ZserioEmitException In case of any error in extension.
      */
-    public void generate(Parameters parameters, Root rootNode);
+    public void generate(Parameters parameters, Root rootNode) throws ZserioEmitException;
 }

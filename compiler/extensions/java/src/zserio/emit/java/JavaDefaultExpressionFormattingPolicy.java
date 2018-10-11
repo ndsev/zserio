@@ -12,6 +12,7 @@ import zserio.ast.Package;
 import zserio.ast.Parameter;
 import zserio.emit.common.DefaultExpressionFormattingPolicy;
 import zserio.emit.common.StringEscapeConverter;
+import zserio.emit.common.ZserioEmitException;
 import zserio.emit.java.types.JavaNativeType;
 
 /**
@@ -137,7 +138,7 @@ public abstract class JavaDefaultExpressionFormattingPolicy extends DefaultExpre
     }
 
     @Override
-    public String getIdentifier(Expression expr, boolean isLast, boolean isSetter)
+    public String getIdentifier(Expression expr, boolean isLast, boolean isSetter) throws ZserioEmitException
     {
         // check if casting to BigInteger is necessary
         final String symbol = expr.getText();
@@ -419,7 +420,7 @@ public abstract class JavaDefaultExpressionFormattingPolicy extends DefaultExpre
     // getQuestionMark() is ok from the base class
 
     protected abstract String getIdentifierForTypeEnum(EnumType resolvedType,
-            JavaNativeTypeMapper javaNativeTypeMapper);
+            JavaNativeTypeMapper javaNativeTypeMapper) throws ZserioEmitException;
     protected abstract String getIdentifierForEnumItem(EnumItem enumItem);
     protected abstract String getDotSeparatorForEnumItem();
     protected abstract String getAccessPrefixForCompoundType();
@@ -434,7 +435,7 @@ public abstract class JavaDefaultExpressionFormattingPolicy extends DefaultExpre
     }
 
     private void formatTypeIdentifier(StringBuilder result, String symbol, boolean isFirst,
-            ZserioType resolvedType)
+            ZserioType resolvedType) throws ZserioEmitException
     {
         if (resolvedType instanceof EnumType)
         {

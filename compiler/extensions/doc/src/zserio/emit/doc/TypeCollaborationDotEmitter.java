@@ -18,6 +18,7 @@ import zserio.ast.StructureType;
 import zserio.ast.Subtype;
 import zserio.ast.UnionType;
 import zserio.ast.ZserioType;
+import zserio.emit.common.ZserioEmitException;
 import freemarker.template.Configuration;
 import freemarker.template.Template;
 import freemarker.template.TemplateException;
@@ -46,7 +47,7 @@ public class TypeCollaborationDotEmitter extends DefaultDocEmitter
     }
 
     @Override
-    public void endRoot(Root root)
+    public void endRoot(Root root) throws ZserioEmitException
     {
         emitDotDiagrams();
     }
@@ -105,7 +106,7 @@ public class TypeCollaborationDotEmitter extends DefaultDocEmitter
         storeType(serviceType);
     }
 
-    private void emitDotDiagrams()
+    private void emitDotDiagrams() throws ZserioEmitException
     {
         for (Map.Entry<ZserioType, Set<ZserioType> > entry : usedByTypeMap.entrySet())
         {
@@ -118,13 +119,13 @@ public class TypeCollaborationDotEmitter extends DefaultDocEmitter
             if (withSvgDiagrams)
                 if (!DotFileConvertor.convertToSvg(dotExecutable, outputFile,
                                       DocEmitterTools.getTypeCollaborationSvgFile(docPath, type)))
-                    throw new ZserioEmitDocException("Failure to convert '" + outputFile +
+                    throw new ZserioEmitException("Failure to convert '" + outputFile +
                             "' to SVG format!");
         }
     }
 
     private void emit(File outputFile, String templateFileName, Object templateData)
-                 throws ZserioEmitDocException
+                 throws ZserioEmitException
     {
         try
         {
@@ -137,13 +138,13 @@ public class TypeCollaborationDotEmitter extends DefaultDocEmitter
             fmTemplate.process(templateData, writer);
             writer.close();
         }
-        catch (IOException exc)
+        catch (IOException exception)
         {
-            throw new ZserioEmitDocException(exc);
+            throw new ZserioEmitException(exception.getMessage());
         }
-        catch (TemplateException exc)
+        catch (TemplateException exception)
         {
-            throw new ZserioEmitDocException(exc);
+            throw new ZserioEmitException(exception.getMessage());
         }
     }
 

@@ -6,11 +6,13 @@ import java.util.List;
 import zserio.ast.Rpc;
 import zserio.ast.ServiceType;
 import zserio.ast.ZserioType;
+import zserio.emit.common.ZserioEmitException;
 import zserio.emit.java.JavaNativeTypeMapper;
 
 public final class ServiceEmitterTemplateData extends UserTypeTemplateData
 {
     public ServiceEmitterTemplateData(TemplateDataContext context, ServiceType serviceType)
+            throws ZserioEmitException
     {
         super(context, serviceType);
 
@@ -65,7 +67,7 @@ public final class ServiceEmitterTemplateData extends UserTypeTemplateData
 
     public static class RpcTemplateData
     {
-        public RpcTemplateData(JavaNativeTypeMapper typeMapper, Rpc rpc)
+        public RpcTemplateData(JavaNativeTypeMapper typeMapper, Rpc rpc) throws ZserioEmitException
         {
             name = rpc.getName();
 

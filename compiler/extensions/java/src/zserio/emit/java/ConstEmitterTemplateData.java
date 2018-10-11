@@ -6,12 +6,14 @@ import java.util.List;
 import zserio.ast.ConstType;
 import zserio.ast.Expression;
 import zserio.emit.common.ExpressionFormatter;
+import zserio.emit.common.ZserioEmitException;
 import zserio.emit.java.types.JavaNativeType;
 import zserio.emit.java.types.NativeConstType;
 
 public final class ConstEmitterTemplateData extends JavaTemplateData
 {
     public ConstEmitterTemplateData(TemplateDataContext context, List<ConstType> constTypes)
+            throws ZserioEmitException
     {
         super(context);
 
@@ -27,7 +29,7 @@ public final class ConstEmitterTemplateData extends JavaTemplateData
                 throw new InternalError("A const type mapped to something else than NativeConstType!");
 
             final NativeConstType nativeConstType = (NativeConstType)nativeType;
-            items.add(new ConstItemData(constType, nativeConstType, packageName, javaExpressionFormatter));
+            items.add(new ConstItemData(constType, nativeConstType, javaExpressionFormatter));
         }
     }
 
@@ -48,12 +50,10 @@ public final class ConstEmitterTemplateData extends JavaTemplateData
 
     public static class ConstItemData
     {
-        public ConstItemData(ConstType constType, NativeConstType nativeConstType, String packageName,
-                ExpressionFormatter javaExpressionFormatter) throws ZserioEmitJavaException
+        public ConstItemData(ConstType constType, NativeConstType nativeConstType,
+                ExpressionFormatter javaExpressionFormatter) throws ZserioEmitException
         {
             name = constType.getName();
-            if (!packageName.equals(nativeConstType.getPackageName()))
-                throw new ZserioEmitJavaException(constType);
 
             // subtype is already resolved by the native type mapper - there are not native subtypes in java
             final JavaNativeType nativeTargetType = nativeConstType.getTargetType();

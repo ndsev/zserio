@@ -30,104 +30,134 @@ public interface Emitter
      * Called when ROOT AST node begins.
      *
      * @param root Current ROOT AST node.
+     *
+     * @throws In case of any internal error of the extension.
      */
-    public void beginRoot(Root root);
+    public void beginRoot(Root root) throws ZserioEmitException;
 
     /**
      * Called when ROOT AST node ends.
      *
      * @param root Current ROOT AST node.
+     *
+     * @throws In case of any internal error of the extension.
      */
-    public void endRoot(Root root);
+    public void endRoot(Root root) throws ZserioEmitException;
 
     /**
      * Called when TRANSLATION_UNIT AST node begins.
      *
      * @param translationUnit Current TRANSLATION_UNIT AST node.
+     *
+     * @throws In case of any internal error of the extension.
      */
-    public void beginTranslationUnit(TranslationUnit translationUnit);
+    public void beginTranslationUnit(TranslationUnit translationUnit) throws ZserioEmitException;
 
     /**
      * Called when TRANSLATION_UNIT AST node ends.
      *
      * @param translationUnit Current TRANSLATION_UNIT AST node.
+     *
+     * @throws In case of any internal error of the extension.
      */
-    public void endTranslationUnit(TranslationUnit translationUnit);
+    public void endTranslationUnit(TranslationUnit translationUnit) throws ZserioEmitException;
 
     /**
      * Called when PACKAGE AST node begins.
      *
      * @param packageToken Current PACKAGE AST node.
+     *
+     * @throws In case of any internal error of the extension.
      */
-    public void beginPackage(Package packageToken);
+    public void beginPackage(Package packageToken) throws ZserioEmitException;
 
     /**
      * Called when IMPORT AST node begins.
      *
      * @param importNode Current IMPORT AST node.
+     *
+     * @throws In case of any internal error of the extension.
      */
-    public void beginImport(Import importNode);
+    public void beginImport(Import importNode) throws ZserioEmitException;
 
     /**
      * Called when CONST AST node begins.
      *
      * @param constType Current CONST AST node.
+     *
+     * @throws In case of any internal error of the extension.
      */
-    public void beginConst(ConstType constType);
+    public void beginConst(ConstType constType) throws ZserioEmitException;
 
     /**
      * Called when SUBTYPE AST node begins.
      *
      * @param subType Current SUBTYPE AST node.
+     *
+     * @throws In case of any internal error of the extension.
      */
-    public void beginSubtype(Subtype subType);
+    public void beginSubtype(Subtype subType) throws ZserioEmitException;
 
     /**
      * Called when STRUCTURE AST node begins.
      *
      * @param structureType Current STRUCTURE AST node.
+     *
+     * @throws In case of any internal error of the extension.
      */
-    public void beginStructure(StructureType structureType);
+    public void beginStructure(StructureType structureType) throws ZserioEmitException;
 
     /**
      * Called when CHOICE AST node begins.
      *
      * @param choiceType Current CHOICE AST node.
+     *
+     * @throws In case of any internal error of the extension.
      */
-    public void beginChoice(ChoiceType choiceType);
+    public void beginChoice(ChoiceType choiceType) throws ZserioEmitException;
 
     /**
      * Called when UNION AST node begins.
      *
      * @param unionType Current UNION AST node.
+     *
+     * @throws In case of any internal error of the extension.
      */
-    public void beginUnion(UnionType unionType);
+    public void beginUnion(UnionType unionType) throws ZserioEmitException;
 
     /**
      * Called when ENUM AST node begins.
      *
      * @param enumType Current FUNCTION AST node.
+     *
+     * @throws In case of any internal error of the extension.
      */
-    public void beginEnumeration(EnumType enumType);
+    public void beginEnumeration(EnumType enumType) throws ZserioEmitException;
 
     /**
      * Called when SQL_TABLE AST node begins.
      *
      * @param sqlTableType Current SQL_TABLE AST node.
+     *
+     * @throws In case of any internal error of the extension.
      */
-    public void beginSqlTable(SqlTableType sqlTableType);
+    public void beginSqlTable(SqlTableType sqlTableType) throws ZserioEmitException;
 
     /**
      * Called when SQL_DATABASE AST node begins.
      *
      * @param sqlDatabaseType Current SQL_DATABASE AST node.
+     *
+     * @throws In case of any internal error of the extension.
      */
-    public void beginSqlDatabase(SqlDatabaseType sqlDatabaseType);
+    public void beginSqlDatabase(SqlDatabaseType sqlDatabaseType) throws ZserioEmitException;
 
     /**
      * Called when SERVICE AST node begins.
      *
      * @param service Current SERVICE AST node.
+     *
+     * @throws In case of any internal error of the extension.
      */
-    public void beginService(ServiceType service);
+    public void beginService(ServiceType service) throws ZserioEmitException;
 }

@@ -1,11 +1,12 @@
 package zserio.emit.java;
 
 import zserio.ast.ZserioType;
+import zserio.emit.common.ZserioEmitException;
 import zserio.emit.java.types.JavaNativeType;
 
 public class UserTypeTemplateData extends JavaTemplateData
 {
-    public UserTypeTemplateData(TemplateDataContext context, ZserioType type)
+    public UserTypeTemplateData(TemplateDataContext context, ZserioType type) throws ZserioEmitException
     {
         super(context);
 

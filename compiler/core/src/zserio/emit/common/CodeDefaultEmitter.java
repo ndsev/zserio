@@ -41,7 +41,7 @@ public abstract class CodeDefaultEmitter extends DefaultEmitter
     }
 
     @Override
-    public void beginTranslationUnit(TranslationUnit translationUnit)
+    public void beginTranslationUnit(TranslationUnit translationUnit) throws ZserioEmitException
     {
         if (packageMapper == null)
         {

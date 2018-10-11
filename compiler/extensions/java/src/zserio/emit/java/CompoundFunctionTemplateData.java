@@ -7,11 +7,12 @@ import zserio.ast.CompoundType;
 import zserio.ast.ZserioType;
 import zserio.ast.FunctionType;
 import zserio.emit.common.ExpressionFormatter;
+import zserio.emit.common.ZserioEmitException;
 
 public final class CompoundFunctionTemplateData
 {
     public CompoundFunctionTemplateData(JavaNativeTypeMapper javaNativeTypeMapper, CompoundType compoundType,
-                                        ExpressionFormatter javaExpressionFormatter)
+            ExpressionFormatter javaExpressionFormatter) throws ZserioEmitException
     {
         compoundFunctionList = new ArrayList<CompoundFunction>();
         final Iterable<FunctionType> compoundFunctionTypeList = compoundType.getFunctions();
@@ -28,7 +29,7 @@ public final class CompoundFunctionTemplateData
     public static class CompoundFunction
     {
         public CompoundFunction(JavaNativeTypeMapper javaNativeTypeMapper, FunctionType functionType,
-                                ExpressionFormatter javaExpressionFormatter)
+                ExpressionFormatter javaExpressionFormatter) throws ZserioEmitException
         {
             final ZserioType returnZserioType = functionType.getReturnType();
             returnTypeName = javaNativeTypeMapper.getJavaType(returnZserioType).getFullName();

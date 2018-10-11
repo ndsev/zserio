@@ -42,7 +42,7 @@ public class DbStructureDotEmitter extends DefaultDocEmitter
     }
 
     @Override
-    public void endRoot(Root root)
+    public void endRoot(Root root) throws ZserioEmitException
     {
         int databaseIndex = 0;
         for (SqlDatabaseType database : databaseList)
@@ -55,7 +55,7 @@ public class DbStructureDotEmitter extends DefaultDocEmitter
                 if (!DotFileConvertor.convertToSvg(dotExecutable, outputFile,
                         DocEmitterTools.getDbStructureSvgFile(docPath, database)))
                 {
-                    throw new ZserioEmitDocException("Failure to convert '" + outputFile +
+                    throw new ZserioEmitException("Failure to convert '" + outputFile +
                             "' to SVG format!");
                 }
             }
@@ -64,7 +64,8 @@ public class DbStructureDotEmitter extends DefaultDocEmitter
         }
     }
 
-    private void emit(SqlDatabaseType database, String databaseColor, File outputFile) throws ZserioEmitException
+    private void emit(SqlDatabaseType database, String databaseColor, File outputFile)
+            throws ZserioEmitException
     {
         try
         {
@@ -77,13 +78,13 @@ public class DbStructureDotEmitter extends DefaultDocEmitter
             fmTemplate.process(new DbStructureDotTemplateData(database, databaseColor, dotLinksPrefix), writer);
             writer.close();
         }
-        catch (IOException exc)
+        catch (IOException exception)
         {
-            throw new ZserioEmitDocException(exc);
+            throw new ZserioEmitException(exception.getMessage());
         }
-        catch (TemplateException exc)
+        catch (TemplateException exception)
         {
-            throw new ZserioEmitDocException(exc);
+            throw new ZserioEmitException(exception.getMessage());
         }
     }
 

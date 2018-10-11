@@ -2,6 +2,7 @@ package zserio.emit.cpp;
 
 import java.math.BigInteger;
 
+import zserio.emit.common.ZserioEmitException;
 import zserio.emit.cpp.types.NativeBooleanType;
 import zserio.emit.cpp.types.NativeStdIntType;
 
@@ -24,8 +25,10 @@ final class CppLiteralFormatter
 
     /**
      * Formats an integral value as uint8_t literal.
+     *
+     * @throws ZserioEmitException Throws if integral value is out of range.
      */
-    public static String formatUInt8Literal(int value)
+    public static String formatUInt8Literal(int value) throws ZserioEmitException
     {
         return uint8Type.formatLiteral(BigInteger.valueOf(value));
     }

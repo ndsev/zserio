@@ -9,12 +9,13 @@ import zserio.ast.ChoiceType;
 import zserio.ast.Expression;
 import zserio.ast.Field;
 import zserio.emit.common.ExpressionFormatter;
+import zserio.emit.common.ZserioEmitException;
 import zserio.emit.java.types.JavaNativeType;
 
 public final class ChoiceEmitterTemplateData extends CompoundTypeTemplateData
 {
     public ChoiceEmitterTemplateData(TemplateDataContext context, ChoiceType choiceType)
-            throws ZserioEmitJavaException
+            throws ZserioEmitException
     {
         super(context, choiceType);
 
@@ -82,6 +83,7 @@ public final class ChoiceEmitterTemplateData extends CompoundTypeTemplateData
         public CaseMember(JavaNativeTypeMapper javaNativeTypeMapper, boolean withWriterCode,
                 boolean withRangeCheckCode, ChoiceType choiceType, ChoiceCase choiceCaseType,
                 ExpressionFormatter javaExpressionFormatter, ExpressionFormatter javaCaseExpressionFormatter)
+                        throws ZserioEmitException
         {
             caseList = new ArrayList<Case>();
             final Iterable<ChoiceCase.CaseExpression> caseExpressions = choiceCaseType.getExpressions();
@@ -109,6 +111,7 @@ public final class ChoiceEmitterTemplateData extends CompoundTypeTemplateData
         {
             public Case(ExpressionFormatter javaExpressionFormatter,
                     ExpressionFormatter javaCaseExpressionFormatter, Expression choiceExpression)
+                            throws ZserioEmitException
             {
                 expressionForIf = javaExpressionFormatter.formatGetter(choiceExpression);
                 expressionForCase = javaCaseExpressionFormatter.formatGetter(choiceExpression);
@@ -136,7 +139,7 @@ public final class ChoiceEmitterTemplateData extends CompoundTypeTemplateData
     {
         public DefaultMember(JavaNativeTypeMapper javaNativeTypeMapper, boolean withWriterCode,
                 boolean withRangeCheckCode, ChoiceType choiceType, ChoiceDefault choiceDefaultType,
-                ExpressionFormatter javaExpressionFormatter)
+                ExpressionFormatter javaExpressionFormatter) throws ZserioEmitException
         {
             final Field fieldType = choiceDefaultType.getField();
             compoundField = (fieldType != null) ? new CompoundFieldTemplateData(javaNativeTypeMapper,

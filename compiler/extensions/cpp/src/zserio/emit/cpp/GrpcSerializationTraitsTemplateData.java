@@ -5,11 +5,13 @@ import java.util.TreeSet;
 
 import zserio.ast.Rpc;
 import zserio.ast.ServiceType;
+import zserio.emit.common.ZserioEmitException;
 import zserio.emit.cpp.types.CppNativeType;
 
 public class GrpcSerializationTraitsTemplateData extends CppTemplateData
 {
     public GrpcSerializationTraitsTemplateData(TemplateDataContext context, Iterable<ServiceType> serviceTypes)
+            throws ZserioEmitException
     {
         super(context);
 
@@ -36,5 +38,5 @@ public class GrpcSerializationTraitsTemplateData extends CppTemplateData
         rpcTypeNames.add(rpcNativeType.getFullName());
     }
 
-    private SortedSet<String> rpcTypeNames = new TreeSet<String>();
+    private final SortedSet<String> rpcTypeNames = new TreeSet<String>();
 }

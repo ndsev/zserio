@@ -7,6 +7,7 @@ import zserio.ast.CompoundType;
 import zserio.ast.ZserioType;
 import zserio.ast.Parameter;
 import zserio.emit.common.ExpressionFormatter;
+import zserio.emit.common.ZserioEmitException;
 import zserio.emit.java.types.JavaNativeType;
 import zserio.emit.java.types.NativeBooleanType;
 import zserio.emit.java.types.NativeDoubleType;
@@ -18,6 +19,7 @@ public final class CompoundParameterTemplateData
 {
     public CompoundParameterTemplateData(JavaNativeTypeMapper javaNativeTypeMapper, boolean withRangeCheckCode,
             boolean withWriterCode, CompoundType compoundType, ExpressionFormatter javaExpressionFormatter)
+                    throws ZserioEmitException
     {
         compoundName = compoundType.getName();
         this.withWriterCode = withWriterCode;
@@ -47,7 +49,7 @@ public final class CompoundParameterTemplateData
     public static class CompoundParameter
     {
         public CompoundParameter(JavaNativeTypeMapper javaNativeTypeMapper, boolean withRangeCheckCode,
-                Parameter parameter, ExpressionFormatter javaExpressionFormatter)
+                Parameter parameter, ExpressionFormatter javaExpressionFormatter) throws ZserioEmitException
         {
             name = parameter.getName();
             final ZserioType type = parameter.getParameterType();

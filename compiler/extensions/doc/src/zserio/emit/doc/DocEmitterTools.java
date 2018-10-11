@@ -4,6 +4,7 @@ import java.io.File;
 
 import zserio.ast.ZserioType;
 import zserio.ast.SqlDatabaseType;
+import zserio.emit.common.ZserioEmitException;
 import zserio.tools.StringJoinUtil;
 
 /**
@@ -25,8 +26,10 @@ public class DocEmitterTools
      * Returns the HTML file name.
      *
      * @param type The ZserioType from which to generate the HTML file name.
+     *
+     * @throws ZserioEmitException Throws in case of any internal error.
      */
-    public static String getHtmlFileNameFromType(ZserioType type)
+    public static String getHtmlFileNameFromType(ZserioType type) throws ZserioEmitException
     {
         return getFileNameFromType(type, "html");
     }
@@ -35,8 +38,10 @@ public class DocEmitterTools
      * Returns the DOT file name.
      *
      * @param type The ZserioType for which to generate the DOT file name.
+     *
+     * @throws ZserioEmitException Throws in case of any internal error.
      */
-    public static String getDotFileNameFromType(ZserioType type)
+    public static String getDotFileNameFromType(ZserioType type) throws ZserioEmitException
     {
         return getFileNameFromType(type, "dot");
     }
@@ -45,8 +50,10 @@ public class DocEmitterTools
      * Returns the SVG file name.
      *
      * @param type The ZserioType for which to generate the SVG file name.
+     *
+     * @throws ZserioEmitException Throws in case of any internal error.
      */
-    public static String getSvgFileNameFromType(ZserioType type)
+    public static String getSvgFileNameFromType(ZserioType type) throws ZserioEmitException
     {
         return getFileNameFromType(type, "svg");
     }
@@ -55,8 +62,10 @@ public class DocEmitterTools
      * Returns the URL name of HTML file.
      *
      * @param type The ZserioType from which to generate the URL name.
+     *
+     * @throws ZserioEmitException Throws in case of any internal error.
      */
-    public static String getUrlNameFromType(ZserioType type)
+    public static String getUrlNameFromType(ZserioType type) throws ZserioEmitException
     {
         return ".." + URLDirSeparator + getDirectoryNameFromType(type) +
                 URLDirSeparator + getHtmlFileNameFromType(type);
@@ -67,8 +76,11 @@ public class DocEmitterTools
      *
      * @param type      The ZserioType from which to generate the URL name.
      * @param fieldName The field name from which to generate the URL name or null if no field name is present.
+     *
+     * @throws ZserioEmitException Throws in case of any internal error.
      */
     public static String getUrlNameFromTypeAndFieldName(ZserioType type, String fieldName)
+            throws ZserioEmitException
     {
         String urlName = getUrlNameFromType(type);
         if (fieldName != null)
@@ -84,8 +96,10 @@ public class DocEmitterTools
      * @param type        Zserio type for which to get the documentation URL.
      *
      * @return The string which represents the URL to the documentation or null if docRootPath was null.
+     *
+     * @throws ZserioEmitException Throws in case of any internal error.
      */
-    public static String getDocUrlFromType(String docRootPath, ZserioType type)
+    public static String getDocUrlFromType(String docRootPath, ZserioType type) throws ZserioEmitException
     {
         if (docRootPath == null)
             return null;
@@ -156,8 +170,11 @@ public class DocEmitterTools
      * @param type        Zserio type for which to get the type collaboration dot file name.
      *
      * @return The file which represents the dot file name for type collaboration.
+     *
+     * @throws ZserioEmitException Throws in case of any internal error.
      */
     public static File getTypeCollaborationDotFile(String docRootPath, ZserioType type)
+            throws ZserioEmitException
     {
         return new File(StringJoinUtil.joinStrings(docRootPath, typeCollaborationDirectory,
                                           DocEmitterTools.getDirectoryNameFromType(type),
@@ -171,8 +188,11 @@ public class DocEmitterTools
      * @param type        Zserio type for which to get the type collaboration svg file name.
      *
      * @return The file which represents the svg file name for type collaboration.
+     *
+     * @throws ZserioEmitException Throws in case of any internal error.
      */
     public static File getTypeCollaborationSvgFile(String docRootPath, ZserioType type)
+            throws ZserioEmitException
     {
         return new File(StringJoinUtil.joinStrings(docRootPath, typeCollaborationDirectory,
                                           DocEmitterTools.getDirectoryNameFromType(type),
@@ -186,8 +206,11 @@ public class DocEmitterTools
      * @param type        Zserio type for which to get the URL.
      *
      * @return The string which represents the URL for type collaboration svg file or null if not exists.
+     *
+     * @throws ZserioEmitException Throws in case of any internal error.
      */
     public static String getTypeCollaborationSvgUrl(String docRootPath, ZserioType type)
+            throws ZserioEmitException
     {
         final String svgFileNameBase = StringJoinUtil.joinStrings(typeCollaborationDirectory,
                                           DocEmitterTools.getDirectoryNameFromType(type),
@@ -213,7 +236,7 @@ public class DocEmitterTools
         return databaseColorList[databaseIndex % databaseColorList.length];
     }
 
-    private static String getFileNameFromType(ZserioType type, String extensionName)
+    private static String getFileNameFromType(ZserioType type, String extensionName) throws ZserioEmitException
     {
         HtmlModuleNameSuffixVisitor suffixVisitor = new HtmlModuleNameSuffixVisitor();
         type.callVisitor(suffixVisitor);

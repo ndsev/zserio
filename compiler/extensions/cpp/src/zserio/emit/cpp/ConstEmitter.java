@@ -5,6 +5,7 @@ import java.util.List;
 
 import zserio.ast.ConstType;
 import zserio.ast.Root;
+import zserio.emit.common.ZserioEmitException;
 import zserio.tools.Parameters;
 
 public class ConstEmitter extends CppDefaultEmitter
@@ -15,13 +16,13 @@ public class ConstEmitter extends CppDefaultEmitter
     }
 
     @Override
-    public void beginConst(ConstType constType) throws ZserioEmitCppException
+    public void beginConst(ConstType constType) throws ZserioEmitException
     {
         constTypes.add(constType);
     }
 
     @Override
-    public void endRoot(Root root) throws ZserioEmitCppException
+    public void endRoot(Root root) throws ZserioEmitException
     {
         if (!constTypes.isEmpty())
         {

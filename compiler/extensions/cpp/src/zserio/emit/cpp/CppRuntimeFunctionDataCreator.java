@@ -24,22 +24,27 @@ import zserio.ast.TypeReference;
 import zserio.ast.UnsignedBitFieldType;
 import zserio.ast.VarIntegerType;
 import zserio.emit.common.ExpressionFormatter;
+import zserio.emit.common.ZserioEmitException;
 
 public class CppRuntimeFunctionDataCreator
 {
     /**
      * This function generates the suffix for Zserio C++ runtime functions based on the actual type passed.
+     *
+     * @throws ZserioEmitException Throws in case of wrong passed Zserio type.
      */
     public static RuntimeFunctionTemplateData createData(ZserioType type,
-            ExpressionFormatter cppExpressionFormatter)
+            ExpressionFormatter cppExpressionFormatter) throws ZserioEmitException
     {
         final Visitor visitor = new Visitor(cppExpressionFormatter);
         type.callVisitor(visitor);
 
-        final String suffix = visitor.getSuffix();
-        final String arg = visitor.getArg();
+        final ZserioEmitException thrownException = visitor.getThrownException();
+        if (thrownException != null)
+            throw thrownException;
 
-        return (suffix != null) ? new RuntimeFunctionTemplateData(suffix, arg) : null;
+        // template data can be null, this need to be handled specially in template
+        return visitor.getTemplateData();
     }
 
     private static class Visitor implements ZserioTypeVisitor
@@ -49,74 +54,32 @@ public class CppRuntimeFunctionDataCreator
             this.cppExpressionFormatter = cppExpressionFormatter;
         }
 
-        public String getSuffix()
+        public RuntimeFunctionTemplateData getTemplateData()
         {
-            return suffix;
+            return templateData;
         }
 
-        public String getArg()
+        public ZserioEmitException getThrownException()
         {
-            return arg;
-        }
-
-        @Override
-        public void visitStringType(StringType type)
-        {
-            suffix = "String";
-        }
-
-        @Override
-        public void visitVarIntegerType(VarIntegerType type)
-        {
-            final StringBuilder sb = new StringBuilder();
-
-            sb.append("Var");
-            if (!type.isSigned())
-                sb.append("U");
-            sb.append("Int");
-            final int maxBitSize = type.getMaxBitSize();
-            if (maxBitSize < 72) // Var(U)Int takes up to 9 bytes
-                sb.append(maxBitSize);
-
-            suffix = sb.toString();
-        }
-
-        @Override
-        public void visitUnsignedBitFieldType(UnsignedBitFieldType type)
-        {
-            handleBitFieldType(type);
-        }
-
-        @Override
-        public void visitSignedBitFieldType(SignedBitFieldType type)
-        {
-            handleBitFieldType(type);
-        }
-
-        @Override
-        public void visitStdIntegerType(StdIntegerType type) throws ZserioEmitCppException
-        {
-            final int bitCount = type.getBitSize();
-            suffix = getSuffixForIntegralType(bitCount, type.isSigned());
-            arg = CppLiteralFormatter.formatUInt8Literal(bitCount);
-        }
-
-        @Override
-        public void visitBooleanType(BooleanType type)
-        {
-            handleBool();
-        }
-
-        @Override
-        public void visitFloatType(FloatType type)
-        {
-            suffix = "Float" + type.getBitSize();
+            return thrownException;
         }
 
         @Override
         public void visitArrayType(ArrayType type)
         {
-            // arrays need to be handled specially in template
+            // do nothing
+        }
+
+        @Override
+        public void visitBooleanType(BooleanType type)
+        {
+            templateData = new RuntimeFunctionTemplateData("Bool");
+        }
+
+        @Override
+        public void visitChoiceType(ChoiceType type)
+        {
+            // do nothing
         }
 
         @Override
@@ -132,6 +95,12 @@ public class CppRuntimeFunctionDataCreator
         }
 
         @Override
+        public void visitFloatType(FloatType type)
+        {
+            templateData = new RuntimeFunctionTemplateData("Float" + type.getBitSize());
+        }
+
+        @Override
         public void visitFunctionType(FunctionType type)
         {
             // do nothing
@@ -144,21 +113,9 @@ public class CppRuntimeFunctionDataCreator
         }
 
         @Override
-        public void visitStructureType(StructureType type)
+        public void visitSignedBitFieldType(SignedBitFieldType type)
         {
-            // do nothing
-        }
-
-        @Override
-        public void visitChoiceType(ChoiceType type)
-        {
-            // do nothing
-        }
-
-        @Override
-        public void visitUnionType(UnionType type)
-        {
-            // do nothing
+            handleBitFieldType(type);
         }
 
         @Override
@@ -169,6 +126,34 @@ public class CppRuntimeFunctionDataCreator
 
         @Override
         public void visitSqlTableType(SqlTableType type)
+        {
+            // do nothing
+        }
+
+        @Override
+        public void visitStdIntegerType(StdIntegerType type)
+        {
+            final int bitCount = type.getBitSize();
+            final String suffix = getSuffixForIntegralType(bitCount, type.isSigned());
+            try
+            {
+                final String arg = CppLiteralFormatter.formatUInt8Literal(bitCount);
+                templateData = new RuntimeFunctionTemplateData(suffix, arg);
+            }
+            catch (ZserioEmitException exception)
+            {
+                thrownException = exception;
+            }
+        }
+
+        @Override
+        public void visitStringType(StringType type)
+        {
+            templateData = new RuntimeFunctionTemplateData("String");
+        }
+
+        @Override
+        public void visitStructureType(StructureType type)
         {
             // do nothing
         }
@@ -191,15 +176,46 @@ public class CppRuntimeFunctionDataCreator
             // do nothing
         }
 
-        private void handleBool()
+        @Override
+        public void visitUnionType(UnionType type)
         {
-            suffix = "Bool";
+            // do nothing
+        }
+
+        @Override
+        public void visitUnsignedBitFieldType(UnsignedBitFieldType type)
+        {
+            handleBitFieldType(type);
+        }
+
+        @Override
+        public void visitVarIntegerType(VarIntegerType type)
+        {
+            final StringBuilder sb = new StringBuilder();
+
+            sb.append("Var");
+            if (!type.isSigned())
+                sb.append("U");
+            sb.append("Int");
+            final int maxBitSize = type.getMaxBitSize();
+            if (maxBitSize < 72) // Var(U)Int takes up to 9 bytes
+                sb.append(maxBitSize);
+
+            templateData = new RuntimeFunctionTemplateData(sb.toString());
         }
 
         private void handleBitFieldType(BitFieldType type)
         {
-            suffix = getSuffixForIntegralType(type.getMaxBitSize(), type.isSigned());
-            arg = cppExpressionFormatter.formatGetter(type.getLengthExpression());
+            final String suffix = getSuffixForIntegralType(type.getMaxBitSize(), type.isSigned());
+            try
+            {
+                final String arg = cppExpressionFormatter.formatGetter(type.getLengthExpression());
+                templateData = new RuntimeFunctionTemplateData(suffix, arg);
+            }
+            catch (ZserioEmitException exception)
+            {
+                thrownException = exception;
+            }
         }
 
         private static String getSuffixForIntegralType(int maxBitCount, boolean signed)
@@ -216,7 +232,7 @@ public class CppRuntimeFunctionDataCreator
 
         private final ExpressionFormatter cppExpressionFormatter;
 
-        private String suffix;
-        private String arg;
+        private RuntimeFunctionTemplateData templateData = null;
+        private ZserioEmitException thrownException = null;
     }
 }

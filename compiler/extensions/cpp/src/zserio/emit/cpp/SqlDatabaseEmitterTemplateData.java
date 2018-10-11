@@ -8,11 +8,13 @@ import zserio.ast.Field;
 import zserio.ast.SqlDatabaseType;
 import zserio.ast.SqlTableType;
 import zserio.ast.TypeReference;
+import zserio.emit.common.ZserioEmitException;
 import zserio.emit.cpp.types.CppNativeType;
 
 public class SqlDatabaseEmitterTemplateData extends UserTypeTemplateData
 {
     public SqlDatabaseEmitterTemplateData(TemplateDataContext context, SqlDatabaseType databaseType)
+            throws ZserioEmitException
     {
         super(context, databaseType);
 
@@ -31,7 +33,7 @@ public class SqlDatabaseEmitterTemplateData extends UserTypeTemplateData
     public static class DatabaseField
     {
         public DatabaseField(CppNativeTypeMapper cppNativeTypeMapper, Field field,
-                IncludeCollector includeCollector)
+                IncludeCollector includeCollector) throws ZserioEmitException
         {
             final CppNativeType nativeFieldType = cppNativeTypeMapper.getCppType(field.getFieldType());
             includeCollector.addHeaderIncludesForType(nativeFieldType);

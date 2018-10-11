@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 import zserio.ast.ZserioType;
+import zserio.emit.common.ZserioEmitException;
 
 /**
  * The type collaboration diagram data used for FreeMarker template during DOT generation.
@@ -19,10 +20,11 @@ public class TypeCollaborationDotTemplateData
      * @param usedByZserioTypeList The list of zserio types which uses the zserioType.
      * @param docRootPath              The root path of the generated documentation for links or null
      *                                 if links are not required.
+     *
+     * @throws ZserioEmitException Throws in case of any internal error.
      */
-    public TypeCollaborationDotTemplateData(ZserioType zserioType,
-                                            Iterable<ZserioType> usedByZserioTypeList,
-                                            String docRootPath)
+    public TypeCollaborationDotTemplateData(ZserioType zserioType, Iterable<ZserioType> usedByZserioTypeList,
+            String docRootPath) throws ZserioEmitException
     {
         typeName = zserioType.getName();
         packageList = new PackageList();
@@ -179,6 +181,7 @@ public class TypeCollaborationDotTemplateData
     }
 
     private void addType(ZserioType zserioType, PackageList packageList, String docRootPath)
+            throws ZserioEmitException
     {
         final String packageName = zserioType.getPackage().getPackageName().toString();
         Package packageInst = packageList.add(packageName);

@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import zserio.ast.Root;
 import zserio.ast.ServiceType;
+import zserio.emit.common.ZserioEmitException;
 import zserio.tools.Parameters;
 
 public class ServiceEmitter extends CppDefaultEmitter
@@ -14,13 +15,13 @@ public class ServiceEmitter extends CppDefaultEmitter
     }
 
     @Override
-    public void beginService(ServiceType serviceType) throws ZserioEmitCppException
+    public void beginService(ServiceType serviceType) throws ZserioEmitException
     {
         serviceTypes.add(serviceType);
     }
 
     @Override
-    public void endRoot(Root root) throws ZserioEmitCppException
+    public void endRoot(Root root) throws ZserioEmitException
     {
         if (!getWithGrpcCode() || serviceTypes.isEmpty())
             return;

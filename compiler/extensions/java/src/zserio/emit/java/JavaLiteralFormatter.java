@@ -2,6 +2,7 @@ package zserio.emit.java;
 
 import java.math.BigInteger;
 
+import zserio.emit.common.ZserioEmitException;
 import zserio.emit.java.types.NativeBooleanType;
 import zserio.emit.java.types.NativeIntType;
 
@@ -28,8 +29,10 @@ final class JavaLiteralFormatter
      * @param value Integer value to format.
      *
      * @return The integer value in Java format.
+     *
+     * @throws ZserioEmitException Throws in case of any range error.
      */
-    public static String formatIntegerLiteral(int value)
+    public static String formatIntegerLiteral(int value) throws ZserioEmitException
     {
         return intType.formatLiteral(BigInteger.valueOf(value));
     }

@@ -1,6 +1,7 @@
 package zserio.emit.java;
 
 import zserio.ast.EnumType;
+import zserio.emit.common.ZserioEmitException;
 import zserio.tools.Parameters;
 
 class EnumerationEmitter extends JavaDefaultEmitter
@@ -11,7 +12,7 @@ class EnumerationEmitter extends JavaDefaultEmitter
     }
 
     @Override
-    public void beginEnumeration(EnumType enumType) throws ZserioEmitJavaException
+    public void beginEnumeration(EnumType enumType) throws ZserioEmitException
     {
         Object templateData = new EnumerationEmitterTemplateData(getTemplateDataContext(), enumType);
         processTemplate(TEMPLATE_NAME, templateData, enumType);

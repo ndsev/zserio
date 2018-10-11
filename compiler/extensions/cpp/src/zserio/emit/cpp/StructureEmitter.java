@@ -1,6 +1,7 @@
 package zserio.emit.cpp;
 
 import zserio.ast.StructureType;
+import zserio.emit.common.ZserioEmitException;
 import zserio.tools.Parameters;
 
 public class StructureEmitter extends CppDefaultEmitter
@@ -11,7 +12,7 @@ public class StructureEmitter extends CppDefaultEmitter
     }
 
     @Override
-    public void beginStructure(StructureType structureType) throws ZserioEmitCppException
+    public void beginStructure(StructureType structureType) throws ZserioEmitException
     {
         final Object templateData = new StructureEmitterTemplateData(getTemplateDataContext(), structureType);
 

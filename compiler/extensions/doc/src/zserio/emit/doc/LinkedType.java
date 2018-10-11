@@ -14,6 +14,7 @@ import zserio.ast.TypeInstantiation;
 import zserio.ast.ZserioType;
 import zserio.ast.TypeReference;
 import zserio.ast.UnionType;
+import zserio.emit.common.ZserioEmitException;
 
 public class LinkedType
 {
@@ -126,13 +127,13 @@ public class LinkedType
         return cat + packageName;
     }
 
-    public String getName()
+    public String getName() throws ZserioEmitException
     {
         String typeName = TypeNameEmitter.getTypeName(type);
         return typeName;
     }
 
-    public String getHyperlinkName()
+    public String getHyperlinkName() throws ZserioEmitException
     {
         String hyperlinkName = TypeNameEmitter.getTypeName(type) + "_";
 

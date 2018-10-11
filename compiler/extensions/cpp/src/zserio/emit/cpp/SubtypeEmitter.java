@@ -1,6 +1,7 @@
 package zserio.emit.cpp;
 
 import zserio.ast.Subtype;
+import zserio.emit.common.ZserioEmitException;
 import zserio.tools.Parameters;
 
 public class SubtypeEmitter extends CppDefaultEmitter
@@ -11,7 +12,7 @@ public class SubtypeEmitter extends CppDefaultEmitter
     }
 
     @Override
-    public void beginSubtype(Subtype subtype) throws ZserioEmitCppException
+    public void beginSubtype(Subtype subtype) throws ZserioEmitException
     {
         Object templateData = new SubtypeEmitterTemplateData(getTemplateDataContext(), subtype);
 

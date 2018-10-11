@@ -1,12 +1,13 @@
 package zserio.emit.cpp;
 
 import zserio.ast.Subtype;
+import zserio.emit.common.ZserioEmitException;
 import zserio.emit.cpp.types.CppNativeType;
 import zserio.emit.cpp.types.NativeSubType;
 
 public class SubtypeEmitterTemplateData extends UserTypeTemplateData
 {
-    public SubtypeEmitterTemplateData(TemplateDataContext context, Subtype type)
+    public SubtypeEmitterTemplateData(TemplateDataContext context, Subtype type) throws ZserioEmitException
     {
         super(context, type);
 

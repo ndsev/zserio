@@ -5,13 +5,14 @@ import zserio.ast.Parameter;
 import zserio.ast.SqlTableType;
 import zserio.ast.TypeInstantiation;
 import zserio.emit.common.ExpressionFormatter;
+import zserio.emit.common.ZserioEmitException;
 import zserio.tools.HashUtil;
 
 public class SqlTableParameterTemplateData implements Comparable<SqlTableParameterTemplateData>
 {
     public SqlTableParameterTemplateData(JavaNativeTypeMapper javaNativeTypeMapper,
             ExpressionFormatter javaSqlIndirectExpressionFormatter, SqlTableType tableType,
-            TypeInstantiation.InstantiatedParameter instantiatedParameter)
+            TypeInstantiation.InstantiatedParameter instantiatedParameter) throws ZserioEmitException
     {
         tableName = tableType.getName();
         final Expression argumentExpression = instantiatedParameter.getArgumentExpression();
