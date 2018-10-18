@@ -267,7 +267,7 @@ namespace
         // Skip the signed overflow correction if numBits == 32.
         // In that case, the value that comes out the readBits function
         // is already correct.
-        if ((numBits < typeSize) && (value >= (static_cast<BaseType>(1) << (numBits - 1))))
+        if (numBits != 0 && numBits < typeSize && (value >= (static_cast<BaseType>(1) << (numBits - 1))))
             value -= static_cast<BaseType>(1) << numBits;
 
         return static_cast<BaseSignedType>(value);
