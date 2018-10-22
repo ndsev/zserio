@@ -1,8 +1,12 @@
 import unittest
 
 from zserio import BitStreamWriter, PythonRuntimeException
+from zserio.bitstream.writer import (VARINT16_NUM_BITS, VARINT32_NUM_BITS, VARINT64_NUM_BITS, VARINT_NUM_BITS,
+                                     VARUINT16_NUM_BITS, VARUINT32_NUM_BITS, VARUINT64_NUM_BITS,
+                                     VARUINT_NUM_BITS)
 
 class BitStreamWriterTest(unittest.TestCase):
+
     def testWriteBits(self):
         writer = BitStreamWriter()
         writer.writeBits(0, 8)
@@ -60,3 +64,142 @@ class BitStreamWriterTest(unittest.TestCase):
 
         with self.assertRaises(PythonRuntimeException):
             writer.writeSignedBits(-129, 8) # below the lower bound
+
+    def testWriteVarInt16(self):
+        writer = BitStreamWriter()
+        writer.writeVarInt16(0)
+        self.assertEqual(8, writer.getBitPosition())
+        self.assertEqual(b'\x00', writer.getByteArray())
+        with self.assertRaises(PythonRuntimeException):
+            writer.writeVarInt16(-1 << sum(VARINT16_NUM_BITS))
+        with self.assertRaises(PythonRuntimeException):
+            writer.writeVarInt16(1 << sum(VARINT16_NUM_BITS))
+
+    def testWriteVarInt32(self):
+        writer = BitStreamWriter()
+        writer.writeVarInt32(0)
+        self.assertEqual(8, writer.getBitPosition())
+        self.assertEqual(b'\x00', writer.getByteArray())
+        with self.assertRaises(PythonRuntimeException):
+            writer.writeVarInt32(-1 << sum(VARINT32_NUM_BITS))
+        with self.assertRaises(PythonRuntimeException):
+            writer.writeVarInt32(1 << sum(VARINT32_NUM_BITS))
+
+    def testWriteVarInt64(self):
+        writer = BitStreamWriter()
+        writer.writeVarInt64(0)
+        self.assertEqual(8, writer.getBitPosition())
+        self.assertEqual(b'\x00', writer.getByteArray())
+        with self.assertRaises(PythonRuntimeException):
+            writer.writeVarInt64(-1 << sum(VARINT64_NUM_BITS))
+        with self.assertRaises(PythonRuntimeException):
+            writer.writeVarInt64(1 << sum(VARINT64_NUM_BITS))
+
+    def testWriteVarInt(self):
+        writer = BitStreamWriter()
+        writer.writeVarInt(0)
+        self.assertEqual(b'\x00', writer.getByteArray())
+        self.assertEqual(8, writer.getBitPosition())
+        writer.writeVarInt(-1 << sum(VARINT_NUM_BITS))
+        self.assertEqual(16, writer.getBitPosition())
+        self.assertEqual(b'\x00\x80', writer.getByteArray()) # INT64_MIN is encoded as -0
+        with self.assertRaises(PythonRuntimeException):
+            writer.writeVarInt((-1 << sum(VARINT_NUM_BITS)) - 1)
+        with self.assertRaises(PythonRuntimeException):
+            writer.writeVarInt(1 << sum(VARINT_NUM_BITS))
+
+    def testWriteVarUInt16(self):
+        writer = BitStreamWriter()
+        writer.writeVarUInt16(0)
+        self.assertEqual(8, writer.getBitPosition())
+        self.assertEqual(b'\x00', writer.getByteArray())
+        with self.assertRaises(PythonRuntimeException):
+            writer.writeVarUInt16(-1)
+        with self.assertRaises(PythonRuntimeException):
+            writer.writeVarUInt16(1 << sum(VARUINT16_NUM_BITS))
+
+    def testWriteVarUInt32(self):
+        writer = BitStreamWriter()
+        writer.writeVarUInt32(0)
+        self.assertEqual(8, writer.getBitPosition())
+        self.assertEqual(b'\x00', writer.getByteArray())
+        with self.assertRaises(PythonRuntimeException):
+            writer.writeVarUInt32(-1)
+        with self.assertRaises(PythonRuntimeException):
+            writer.writeVarUInt32(1 << sum(VARUINT32_NUM_BITS))
+
+    def testWriteVarUInt64(self):
+        writer = BitStreamWriter()
+        writer.writeVarUInt64(0)
+        self.assertEqual(8, writer.getBitPosition())
+        self.assertEqual(b'\x00', writer.getByteArray())
+        with self.assertRaises(PythonRuntimeException):
+            writer.writeVarUInt64(-1)
+        with self.assertRaises(PythonRuntimeException):
+            writer.writeVarUInt64(1 << sum(VARUINT64_NUM_BITS))
+
+    def testWriteVarUInt(self):
+        writer = BitStreamWriter()
+        writer.writeVarUInt(0)
+        self.assertEqual(8, writer.getBitPosition())
+        self.assertEqual(b'\x00', writer.getByteArray())
+        with self.assertRaises(PythonRuntimeException):
+            writer.writeVarUInt(-1)
+        with self.assertRaises(PythonRuntimeException):
+            writer.writeVarUInt(1 << sum(VARUINT_NUM_BITS))
+
+    def testWriteFloat16(self):
+        writer = BitStreamWriter()
+        writer.writeFloat16(0)
+        self.assertEqual(16, writer.getBitPosition())
+        self.assertEqual(b'\x00\x00', writer.getByteArray())
+
+    def testWriteFloat32(self):
+        writer = BitStreamWriter()
+        writer.writeFloat32(0)
+        self.assertEqual(32, writer.getBitPosition())
+        self.assertEqual(b'\x00\x00\x00\x00', writer.getByteArray())
+
+    def testWriteFloat64(self):
+        writer = BitStreamWriter()
+        writer.writeFloat64(0)
+        self.assertEqual(64, writer.getBitPosition())
+        self.assertEqual(b'\x00\x00\x00\x00\x00\x00\x00\x00', writer.getByteArray())
+
+    def testWriteString(self):
+        writer = BitStreamWriter()
+        writer.writeString("")
+        self.assertEqual(8, writer.getBitPosition()) # length 0
+        self.assertEqual(b'\x00', writer.getByteArray())
+
+    def testWriteBool(self):
+        writer = BitStreamWriter()
+        writer.writeBool(True)
+        writer.writeBool(False)
+        writer.writeBool(True)
+        writer.writeBool(False)
+        writer.writeBool(True)
+        writer.writeBool(False)
+        self.assertEqual(6, writer.getBitPosition())
+        self.assertEqual(b'\xA8', writer.getByteArray())
+
+    def testGetByteArray(self):
+        writer = BitStreamWriter()
+        self.assertEqual(b'', writer.getByteArray())
+
+    def testGetBitPosition(self):
+        writer = BitStreamWriter()
+        self.assertEqual(0, writer.getBitPosition())
+
+    def testAlignTo(self):
+        writer = BitStreamWriter()
+        writer.alignTo(8)
+        self.assertEqual(0, writer.getBitPosition())
+        writer.alignTo(2)
+        self.assertEqual(0, writer.getBitPosition())
+        writer.writeBool(True)
+        writer.alignTo(8)
+        self.assertEqual(8, writer.getBitPosition())
+        writer.writeBool(True)
+        writer.alignTo(2)
+        self.assertEqual(10, writer.getBitPosition())

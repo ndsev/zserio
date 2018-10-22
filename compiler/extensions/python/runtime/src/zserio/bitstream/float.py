@@ -122,7 +122,7 @@ def convertFloatToUInt16(float64):
     if (needsRounding):
         float16Value += 1   # might overflow to infinity
 
-    return float16Value;
+    return float16Value
 
 def convertUInt32ToFloat(float32Value):
     """

@@ -13,7 +13,7 @@ class FloatUtilTest(unittest.TestCase):
 
         # minus zero
         float16ValueMinusZero = self._createFloat16Value(1, 0, 0) # -0.0
-        self.assertEqual(-0.0, convertUInt16ToFloat(float16ValuePlusZero))
+        self.assertEqual(-0.0, convertUInt16ToFloat(float16ValueMinusZero))
 
         # plus infinity
         float16ValuePlusInfinity = self._createFloat16Value(0, 0x1F, 0) # +INF
