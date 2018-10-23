@@ -663,7 +663,7 @@ public class ByteArrayBitStreamTest
 
         Method writeMethod = ByteArrayBitStreamWriter.class.getMethod("writeVarInt", long.class);
         Method readMethod = ByteArrayBitStreamReader.class.getMethod("readVarInt");
-        testImpl(writeMethod, readMethod, values, 71);
+        testImpl(writeMethod, readMethod, values, 63);
     }
 
     @Test
@@ -703,7 +703,7 @@ public class ByteArrayBitStreamTest
 
         Method writeMethod = ByteArrayBitStreamWriter.class.getMethod("writeVarUInt", BigInteger.class);
         Method readMethod = ByteArrayBitStreamReader.class.getMethod("readVarUInt");
-        testImpl(writeMethod, readMethod, values, 71);
+        testImpl(writeMethod, readMethod, values, 63);
     }
 
     @Test
