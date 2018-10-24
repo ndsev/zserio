@@ -97,7 +97,7 @@ class FloatUtilTest(unittest.TestCase):
         self.assertEqual(float16ValueSignalingNan, convertFloatToUInt16(convertedFloat))
 
         # normal numbers
-        float16ValueOne = self._createFloat16Value(0, 15, 0); # 1.0
+        float16ValueOne = self._createFloat16Value(0, 15, 0) # 1.0
         self.assertEqual(float16ValueOne, convertFloatToUInt16(1.0))
 
         float64ValueOnePlus = self._createFloat64Value(0, 0x3FF, 0x40000000000) # 1.0 + 2^-10
