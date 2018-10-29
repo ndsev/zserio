@@ -43,8 +43,6 @@ set_global_java_variables()
 }
 
 # Set and check global variables for Java projets.
-#
-# $1 - Zserio project root.
 set_global_cpp_variables()
 {
     exit_if_argc_ne $# 1
@@ -79,6 +77,49 @@ set_global_cpp_variables()
     return 0
 }
 
+# Set and check global variables for Python projets.
+set_global_python_variables()
+{
+    exit_if_argc_ne $# 1
+    local ZSERIO_PROJECT_ROOT="$1"; shift
+
+    PYTHON="${PYTHON:-python}"
+    if [ ! -f "`which "${PYTHON}"`" ] ; then
+        stderr_echo "Cannot find Python! Set PYTHON environment variable."
+        return 1
+    fi
+    local PYTHON_VERSION=$(python -V 2>&1 | cut -d\  -f 2)
+    PYTHON_VERSION=(${PYTHON_VERSION//./ }) # python version as an array
+    if [[ ${#PYTHON_VERSION[@]} -lt 2 || ${PYTHON_VERSION[0]} -lt 3 ]] ||
+       [[ ${PYTHON_VERSION[0]} -eq 3 && ${PYTHON_VERSION[1]} -lt 5 ]] ; then
+        stderr_echo "Python 3.5+ is required! Current Python is '$(python -V 2>&1)'"
+        return 1
+    fi
+
+    # check python requirements
+    local PYTHON_RUNTIME_ROOT="${ZSERIO_PROJECT_ROOT}/compiler/extensions/python/runtime"
+    ${PYTHON} << EOF
+try:
+    import sys
+    import pkg_resources
+    reqs = []
+    with open('${PYTHON_RUNTIME_ROOT}/requirements.txt', 'r') as reqsFile:
+        for req in reqsFile:
+            reqs.append(req.rstrip())
+    pkg_resources.require(reqs)
+except Exception as e:
+    print(e)
+    exit(1)
+EOF
+    if [ $? -ne 0 ] ; then
+        stderr_echo "Required python packages are not installed!"
+        stderr_echo "Try: pip install -r ${PYTHON_RUNTIME_ROOT}/requirements.txt"
+        return 1
+    fi
+
+    return 0
+}
+
 # Print help on the environment variables used.
 print_help_env()
 {
@@ -97,6 +138,7 @@ Uses the following environment variables for building:
     CTEST                  Ctest executable to use. Default is "ctest".
     JAVAC_BIN              Java compiler executable to use. Default is "javac".
     JAVA_BIN               Java executable to use. Default is "java".
+    PYTHON                 Python 3.5+ executable. Default is "python".
     FINDBUGS_HOME          Home directory of findbugs tool where lib is located
                            (e.g. /usr/share/findbugs). If set, findbugs will be
                            called. Default is empty string.
@@ -245,7 +287,7 @@ compile_java()
     return 0
 }
 
-# Compile and test C++ code running cmake and make for all targets.
+# Compile and test C++ code by running cmake and make for all targets.
 compile_cpp()
 {
     exit_if_argc_ne $# 7;
@@ -272,7 +314,7 @@ compile_cpp()
     return 0
 }
 
-# Compile and test C++ code running cmake and make for one target.
+# Compile and test C++ code by running cmake and make for one target.
 compile_cpp_for_target()
 {
     exit_if_argc_ne $# 7
@@ -350,6 +392,28 @@ compile_cpp_for_target()
 
     popd > /dev/null
 
+    return 0
+}
+
+# Test python code by runnig python -m unittest.
+test_python()
+{
+    exit_if_argc_ne $# 3
+    local BUILD_DIR="${1}"; shift
+    local SOURCES_DIR="${1}"; shift
+    local TESTS_DIR="${1}"; shift
+
+    rm -rf "${BUILD_DIR}"
+    mkdir -p "${BUILD_DIR}"
+    pushd "${BUILD_DIR}" > /dev/null
+
+    PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=${SOURCES_DIR} ${PYTHON} -m green ${TESTS_DIR} -rvv
+    if [ $? -ne 0 ] ; then
+        popd > /dev/null
+        return 1
+    fi
+
+    popd > /dev/null
     return 0
 }
 

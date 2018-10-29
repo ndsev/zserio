@@ -10,7 +10,7 @@ def getNumBits(value):
     Note that numBits returns 1 if the value is less than 3.
 
     :param value: An integral value.
-    :returns Number of bits required to encode value-1.
+    :returns: Number of bits required to encode value-1.
     """
 
     if value < 3:

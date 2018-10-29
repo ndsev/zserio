@@ -1,6 +1,7 @@
 """
 The module provides help methods to calculate size of nontrivial types.
 """
+
 from zserio.exception import PythonRuntimeException
 
 INT64_MIN = -1 << 63
@@ -106,7 +107,7 @@ def alignTo(alignmentValue, bitPosition):
     :returns: Aligned bit size.
     """
 
-    if (bitPosition <= 0 or alignmentValue == 0):
+    if bitPosition <= 0 or alignmentValue == 0:
         return bitPosition
 
     return (((bitPosition - 1) // alignmentValue) + 1) * alignmentValue

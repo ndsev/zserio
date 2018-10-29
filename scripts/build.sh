@@ -33,6 +33,8 @@ Package can be the combination of:
     cpp_rt-windows64-msvc   Zserio C++ extension runtime library for windows64 target (MSVC).
     java                    Zserio Java extension.
     java_rt                 Zserio Java extension runtime library.
+    python                  Zserio Python extension.
+    python_rt               Zserio Python extensions runtime library.
     xml                     Zserio XML extension.
     doc                     Zserio Documentation extension.
     zserio                  Zserio bundle (Zserio Core packed together with all already built extensions).
@@ -44,7 +46,7 @@ Package can be the combination of:
     all-windows64-msvc      All available packages for windows32 target (MSVC).
 
 Examples:
-    $0 ant_task core cpp cpp_rt-linux64 java java_rt xml doc
+    $0 ant_task core cpp cpp_rt-linux64 java java_rt python python_rt xml doc
     $0 zserio
 
 EOF
@@ -69,6 +71,8 @@ parse_arguments()
     local PARAM_CPP_TARGET_ARRAY_OUT="$1"; shift
     local PARAM_JAVA_OUT="$1"; shift
     local PARAM_JAVA_RUNTIME_OUT="$1"; shift
+    local PARAM_PYTHON_OUT="$1"; shift
+    local PARAM_PYTHON_RUNTIME_OUT="$1"; shift
     local PARAM_XML_OUT="$1"; shift
     local PARAM_DOC_OUT="$1"; shift
     local PARAM_ZSERIO_OUT="$1"; shift
@@ -81,6 +85,8 @@ parse_arguments()
     eval ${PARAM_CPP_OUT}=0
     eval ${PARAM_JAVA_OUT}=0
     eval ${PARAM_JAVA_RUNTIME_OUT}=0
+    eval ${PARAM_PYTHON_OUT}=0
+    eval ${PARAM_PYTHON_RUNTIME_OUT}=0
     eval ${PARAM_XML_OUT}=0
     eval ${PARAM_DOC_OUT}=0
     eval ${PARAM_ZSERIO_OUT}=0
@@ -155,6 +161,14 @@ parse_arguments()
                 eval ${PARAM_JAVA_RUNTIME_OUT}=1
                 ;;
 
+            "python")
+                eval ${PARAM_PYTHON_OUT}=1
+                ;;
+
+            "python_rt")
+                eval ${PARAM_PYTHON_RUNTIME_OUT}=1
+                ;;
+
             "xml")
                 eval ${PARAM_XML_OUT}=1
                 ;;
@@ -176,6 +190,8 @@ parse_arguments()
                 NUM_TARGETS=$((NUM_TARGETS + 1))
                 eval ${PARAM_JAVA_OUT}=1
                 eval ${PARAM_JAVA_RUNTIME_OUT}=1
+                eval ${PARAM_PYTHON_OUT}=1
+                eval ${PARAM_PYTHON_RUNTIME_OUT}=1
                 eval ${PARAM_XML_OUT}=1
                 eval ${PARAM_DOC_OUT}=1
                 eval ${PARAM_ZSERIO_OUT}=1
@@ -194,6 +210,8 @@ parse_arguments()
           ${NUM_TARGETS} == 0 &&
           ${!PARAM_JAVA_OUT} == 0 &&
           ${!PARAM_JAVA_RUNTIME_OUT} == 0 &&
+          ${!PARAM_PYTHON_OUT} == 0 &&
+          ${!PARAM_PYTHON_RUNTIME_OUT} == 0 &&
           ${!PARAM_XML_OUT} == 0 &&
           ${!PARAM_DOC_OUT} == 0 &&
           ${!PARAM_ZSERIO_OUT} == 0 &&
@@ -203,6 +221,74 @@ parse_arguments()
         return 1
     fi
 
+    return 0
+}
+
+# Install python runtime source to distribution directory.
+install_python_runtime()
+{
+    exit_if_argc_ne $# 4
+    local ZSERIO_PROJECT_ROOT="${1}"; shift
+    local PYTHON_RUNTIME_ROOT="${1}"; shift
+    local PYTHON_RUNTIME_BUILD_DIR="${1}"; shift
+    local PYTHON_RUNTIME_DISTR_DIR="${1}"; shift
+
+    local PYTHON_RUNTIME_SOURCES="${PYTHON_RUNTIME_ROOT}/src"
+    local PYTHON_RUNTIME_DOC_BUILD_DIR="${PYTHON_RUNTIME_BUILD_DIR}/doc"
+    local ZSERIO_LOGO="${ZSERIO_PROJECT_ROOT}/doc/Zserio.png"
+
+    # build doc
+    echo
+    echo "Building documentation for Zserio Python runtime library."
+    rm -rf ${PYTHON_RUNTIME_DOC_BUILD_DIR}
+    mkdir -p ${PYTHON_RUNTIME_DOC_BUILD_DIR}
+    pushd ${PYTHON_RUNTIME_DOC_BUILD_DIR} > /dev/null
+
+    cp ${PYTHON_RUNTIME_ROOT}/doc/* .
+    if [ $? -ne 0 ] ; then
+        stderr_echo "Failed to get python doc configuration!"
+        popd > /dev/null
+        return 1
+    fi
+
+    PYTHONDONTWRITEBYTECODE=1 PYTHONPATH="${PYTHON_RUNTIME_SOURCES}" \
+    sphinx-build -Wa -b html -d . -Dhtml_logo="${ZSERIO_LOGO}" . zserio_apidoc
+    if [ $? -ne 0 ] ; then
+        popd > /dev/null
+        return 1
+    fi
+
+    popd > /dev/null
+
+    echo
+    echo "Installing Zserio Python runtime library."
+
+    echo "    Purging python distr dir: ${PYTHON_RUNTIME_DISTR_DIR}"
+    rm -rf "${PYTHON_RUNTIME_DISTR_DIR}"
+    mkdir -p "${PYTHON_RUNTIME_DISTR_DIR}"
+
+    # install sources and doc
+    pushd "${PYTHON_RUNTIME_SOURCES}" > /dev/null
+
+    find . -name "*.py" | while read -r SOURCE ; do
+        echo "    Installing ${SOURCE}"
+        cp --parents "${SOURCE}" "${PYTHON_RUNTIME_DISTR_DIR}"
+        if [ $? -ne 0 ] ; then
+            stderr_echo "Failed to install ${SOURCE}!"
+            popd > /dev/null
+            return 1
+        fi
+    done
+
+    echo "    Installing API documentation"
+    cp -r "${PYTHON_RUNTIME_DOC_BUILD_DIR}/zserio_apidoc" "${PYTHON_RUNTIME_DISTR_DIR}/"
+    if [ $? -ne 0 ] ; then
+        stderr_echo "Failed to install documentation!"
+        popd > /dev/null
+        return 1
+    fi
+
+    popd > /dev/null
     return 0
 }
 
@@ -219,6 +305,8 @@ main()
     local PARAM_CPP_TARGET_ARRAY=()
     local PARAM_JAVA
     local PARAM_JAVA_RUNTIME
+    local PARAM_PYTHON
+    local PARAM_PYTHON_RUNTIME
     local PARAM_XML
     local PARAM_DOC
     local PARAM_ZSERIO
@@ -226,7 +314,8 @@ main()
     local SWITCH_CLEAN
     local SWITCH_PURGE
     parse_arguments PARAM_ANT_TASK PARAM_CORE \
-                    PARAM_CPP PARAM_CPP_TARGET_ARRAY PARAM_JAVA PARAM_JAVA_RUNTIME PARAM_XML PARAM_DOC PARAM_ZSERIO \
+                    PARAM_CPP PARAM_CPP_TARGET_ARRAY PARAM_JAVA PARAM_JAVA_RUNTIME \
+                    PARAM_PYTHON PARAM_PYTHON_RUNTIME PARAM_XML PARAM_DOC PARAM_ZSERIO \
                     PARAM_OUT_DIR SWITCH_CLEAN SWITCH_PURGE $@
     if [ $? -ne 0 ] ; then
         print_help
@@ -239,6 +328,7 @@ main()
           ${PARAM_CPP} != 0 ||
           ${PARAM_JAVA} != 0 ||
           ${PARAM_JAVA_RUNTIME} != 0 ||
+          ${PARAM_PYTHON} != 0 ||
           ${PARAM_XML} != 0 ||
           ${PARAM_DOC} != 0 ]] ; then
         set_global_java_variables "${ZSERIO_PROJECT_ROOT}"
@@ -249,6 +339,13 @@ main()
 
     if [[ ${#PARAM_CPP_TARGET_ARRAY[@]} -ne 0 ]] ; then
         set_global_cpp_variables "${ZSERIO_PROJECT_ROOT}"
+        if [ $? -ne 0 ] ; then
+            return 1
+        fi
+    fi
+
+    if [[ ${PARAM_PYTHON_RUNTIME} != 0 ]] ; then
+        set_global_python_variables "${ZSERIO_PROJECT_ROOT}"
         if [ $? -ne 0 ] ; then
             return 1
         fi
@@ -355,11 +452,36 @@ main()
         echo "${ACTION_DESCRIPTION} Zserio Java runtime library."
         local JAVA_RUNTIME_ANT_PROPS=("${ANT_PROPS[@]}"
                                       -Drelational.enable=yes)
-        compile_java "${ZSERIO_PROJECT_ROOT}/compiler/extensions/java/runtime/build.xml" JAVA_RUNTIME_ANT_PROPS[@] ${JAVA_TARGET}
+        compile_java "${ZSERIO_PROJECT_ROOT}/compiler/extensions/java/runtime/build.xml" \
+                     JAVA_RUNTIME_ANT_PROPS[@] ${JAVA_TARGET}
         if [ $? -ne 0 ] ; then
             return 1
         fi
         echo
+    fi
+
+    # build Zserio Python extension
+    if [[ ${PARAM_PYTHON} == 1 ]] ; then
+        echo "${ACTION_DESCRIPTION} Zserio Python extension."
+        echo "TODO"
+    fi
+
+    # build Zserio Python runtime library
+    if [[ ${PARAM_PYTHON_RUNTIME} == 1 ]] ; then
+        echo "${ACTION_DESCRIPTION} Zserio Python runtime library."
+
+        local PYTHON_RUNTIME_BUILD_DIR=${ZSERIO_BUILD_DIR}/runtime_libs/python
+        if [[ ${SWITCH_CLEAN} == 1 ]] ; then
+            rm -rf ${PYTHON_RUNTIME_BUILD_DIR}
+        else
+            local PYTHON_RUNTIME_ROOT=${ZSERIO_PROJECT_ROOT}/compiler/extensions/python/runtime
+            test_python ${PYTHON_RUNTIME_BUILD_DIR} ${PYTHON_RUNTIME_ROOT}/src ${PYTHON_RUNTIME_ROOT}/tests
+            if [ $? -ne 0 ]; then
+                return 1
+            fi
+            install_python_runtime ${ZSERIO_PROJECT_ROOT} ${PYTHON_RUNTIME_ROOT} ${PYTHON_RUNTIME_BUILD_DIR} \
+                                   ${ZSERIO_DISTR_DIR}/runtime_libs/python
+        fi
     fi
 
     # build Zserio XML extension
@@ -400,4 +522,3 @@ main()
 
 # call main function
 main "$@"
-

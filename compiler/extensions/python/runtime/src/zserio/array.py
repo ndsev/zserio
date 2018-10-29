@@ -131,7 +131,7 @@ class Array():
         :param size: Number of element to read or None in case of implicit or auto arrays.
         """
 
-        self._rawArray.clear();
+        self._rawArray.clear()
 
         if self._isImplicit:
             index = 0
@@ -141,7 +141,7 @@ class Array():
                     self._rawArray.append(self._arrayTraits.read(reader, index))
                 except PythonRuntimeException:
                     # set exact end bit position in the stream avoiding padding at the end
-                    reader.setBitPosition(bitPosition);
+                    reader.setBitPosition(bitPosition)
                     break
                 index += 1
         else:
@@ -173,7 +173,7 @@ class Array():
 
 class BitFieldArrayTraits():
     """
-    Array traits for unsigned fixed integer Zserio types (uint16, uint32, uint64, bit:5, etc...). 
+    Array traits for unsigned fixed integer Zserio types (uint16, uint32, uint64, bit:5, etc...).
     """
 
     def __init__(self, numBits):
@@ -199,7 +199,7 @@ class BitFieldArrayTraits():
 
 class SignedBitFieldArrayTraits():
     """
-    Array traits for signed fixed integer Zserio types (int16, int32, int64, int:5, etc...). 
+    Array traits for signed fixed integer Zserio types (int16, int32, int64, int:5, etc...).
     """
 
     def __init__(self, numBits):
@@ -225,7 +225,7 @@ class SignedBitFieldArrayTraits():
 
 class VarUInt16ArrayTraits():
     """
-    Array traits for Zserio varuint16 type. 
+    Array traits for Zserio varuint16 type.
     """
     def __eq__(self, other):
         return True
@@ -247,7 +247,7 @@ class VarUInt16ArrayTraits():
 
 class VarUInt32ArrayTraits():
     """
-    Array traits for Zserio varuint32 type. 
+    Array traits for Zserio varuint32 type.
     """
 
     def __eq__(self, other):
@@ -270,7 +270,7 @@ class VarUInt32ArrayTraits():
 
 class VarUInt64ArrayTraits():
     """
-    Array traits for Zserio varuint64 type. 
+    Array traits for Zserio varuint64 type.
     """
 
     def __eq__(self, other):
@@ -293,7 +293,7 @@ class VarUInt64ArrayTraits():
 
 class VarUIntArrayTraits():
     """
-    Array traits for Zserio varuint type. 
+    Array traits for Zserio varuint type.
     """
 
     def __eq__(self, other):
@@ -316,7 +316,7 @@ class VarUIntArrayTraits():
 
 class VarInt16ArrayTraits():
     """
-    Array traits for Zserio varint16 type. 
+    Array traits for Zserio varint16 type.
     """
 
     def __eq__(self, other):
@@ -339,7 +339,7 @@ class VarInt16ArrayTraits():
 
 class VarInt32ArrayTraits():
     """
-    Array traits for Zserio varint32 type. 
+    Array traits for Zserio varint32 type.
     """
 
     def __eq__(self, other):
@@ -362,7 +362,7 @@ class VarInt32ArrayTraits():
 
 class VarInt64ArrayTraits():
     """
-    Array traits for Zserio varint64 type. 
+    Array traits for Zserio varint64 type.
     """
 
     def __eq__(self, other):
@@ -385,7 +385,7 @@ class VarInt64ArrayTraits():
 
 class VarIntArrayTraits():
     """
-    Array traits for Zserio varint type. 
+    Array traits for Zserio varint type.
     """
     def __eq__(self, other):
         return True
@@ -407,7 +407,7 @@ class VarIntArrayTraits():
 
 class Float16ArrayTraits():
     """
-    Array traits for Zserio float16 type. 
+    Array traits for Zserio float16 type.
     """
 
     def __eq__(self, other):
@@ -430,7 +430,7 @@ class Float16ArrayTraits():
 
 class Float32ArrayTraits():
     """
-    Array traits for Zserio float32 type. 
+    Array traits for Zserio float32 type.
     """
 
     def __eq__(self, other):
@@ -453,7 +453,7 @@ class Float32ArrayTraits():
 
 class Float64ArrayTraits():
     """
-    Array traits for Zserio float64 type. 
+    Array traits for Zserio float64 type.
     """
 
     def __eq__(self, other):
@@ -476,7 +476,7 @@ class Float64ArrayTraits():
 
 class StringArrayTraits():
     """
-    Array traits for Zserio string type. 
+    Array traits for Zserio string type.
     """
 
     def __eq__(self, other):
@@ -499,7 +499,7 @@ class StringArrayTraits():
 
 class BoolArrayTraits():
     """
-    Array traits for Zserio bool type. 
+    Array traits for Zserio bool type.
     """
 
     def __eq__(self, other):
@@ -522,7 +522,7 @@ class BoolArrayTraits():
 
 class ObjectArrayTraits():
     """
-    Array traits for Zserio structure, choice, union and enum types. 
+    Array traits for Zserio structure, choice, union and enum types.
     """
 
     def __init__(self, objectCreator):

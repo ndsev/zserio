@@ -1,5 +1,3 @@
-import struct
-
 """
 The module provides help methods for manipulation with float numbers.
 
@@ -9,6 +7,8 @@ The following float formats defined by IEEE 754 standard are supported:
 * single precision float point format (https://en.wikipedia.org/wiki/Single-precision_floating-point_format)
 * double precision float point format (https://en.wikipedia.org/wiki/Double-precision_floating-point_format)
 """
+
+import struct
 
 def convertUInt16ToFloat(float16Value):
     """

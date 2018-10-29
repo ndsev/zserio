@@ -1,0 +1,2 @@
+green>=2.13.0
+sphinx-automodapi>=0.8
