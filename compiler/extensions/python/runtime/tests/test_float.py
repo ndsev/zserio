@@ -1,8 +1,7 @@
 import unittest
 
-from zserio.bitstream.float import (convertUInt16ToFloat, convertFloatToUInt16,
-                                    convertUInt32ToFloat, convertFloatToUInt32,
-                                    convertUInt64ToFloat, convertFloatToUInt64)
+from zserio.float import (convertUInt16ToFloat, convertFloatToUInt16, convertUInt32ToFloat,
+                          convertFloatToUInt32, convertUInt64ToFloat, convertFloatToUInt64)
 
 class FloatUtilTest(unittest.TestCase):
 

@@ -1,6 +1,6 @@
+from zserio.bitsizeof import INT64_MIN
 from zserio.exception import PythonRuntimeException
-from zserio.bitstream.float import convertUInt16ToFloat, convertUInt32ToFloat, convertUInt64ToFloat
-from zserio.bitstream.bitsizeof import INT64_MIN
+from zserio.float import convertUInt16ToFloat, convertUInt32ToFloat, convertUInt64ToFloat
 
 class BitStreamReader:
     """
@@ -9,7 +9,7 @@ class BitStreamReader:
 
     def __init__(self, buffer):
         """
-        Constructor.
+        Constructs bit stream reader from bytes buffer.
 
         :param buffer: Bytes-like buffer to read as a bit stream.
         """

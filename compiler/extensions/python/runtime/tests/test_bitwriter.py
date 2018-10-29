@@ -1,9 +1,9 @@
 import unittest
 
-from zserio import BitStreamWriter, PythonRuntimeException
-from zserio.bitstream.writer import (VARINT16_NUM_BITS, VARINT32_NUM_BITS, VARINT64_NUM_BITS, VARINT_NUM_BITS,
-                                     VARUINT16_NUM_BITS, VARUINT32_NUM_BITS, VARUINT64_NUM_BITS,
-                                     VARUINT_NUM_BITS)
+from zserio.bitwriter import (BitStreamWriter,
+                              VARINT16_NUM_BITS, VARINT32_NUM_BITS, VARINT64_NUM_BITS, VARINT_NUM_BITS,
+                              VARUINT16_NUM_BITS, VARUINT32_NUM_BITS, VARUINT64_NUM_BITS, VARUINT_NUM_BITS)
+from zserio.exception import PythonRuntimeException
 
 class BitStreamWriterTest(unittest.TestCase):
 

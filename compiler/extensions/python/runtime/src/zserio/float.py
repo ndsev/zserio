@@ -27,13 +27,13 @@ def convertUInt16ToFloat(float16Value):
     significand32 = significand16 << (FLOAT32_SIGNIFICAND_NUM_BITS - FLOAT16_SIGNIFICAND_NUM_BITS)
 
     # calculate exponent for single precision float (float32)
-    if (exponent16 == 0):
-        if (significand32 != 0):
+    if exponent16 == 0:
+        if significand32 != 0:
             # subnormal (denormal) number will be normalized
             exponent32 = (1 + FLOAT32_EXPONENT_BIAS -
                           FLOAT16_EXPONENT_BIAS) # exp is initialized by -14
             # shift significand until leading bit overflows into exponent bit
-            while ((significand32 & (FLOAT32_SIGNIFICAND_MASK + 1)) == 0):
+            while (significand32 & (FLOAT32_SIGNIFICAND_MASK + 1)) == 0:
                 exponent32 = exponent32 - 1
                 significand32 <<= 1
 
@@ -42,7 +42,7 @@ def convertUInt16ToFloat(float16Value):
         else:
             # zero
             exponent32 = 0
-    elif (exponent16 == FLOAT16_EXPONENT_INFINITY_NAN):
+    elif exponent16 == FLOAT16_EXPONENT_INFINITY_NAN:
         # infinity or NaN
         exponent32 = FLOAT32_EXPONENT_INFINITY_NAN
     else:
@@ -77,23 +77,23 @@ def convertFloatToUInt16(float64):
 
     # calculate exponent for half precision float (float16)
     needsRounding = False
-    if (exponent32 == 0):
-        if (significand32 != 0):
+    if exponent32 == 0:
+        if significand32 != 0:
             # subnormal (denormal) number will be zero
             significand16 = 0
         exponent16 = 0
-    elif (exponent32 == FLOAT32_EXPONENT_INFINITY_NAN):
+    elif exponent32 == FLOAT32_EXPONENT_INFINITY_NAN:
         # infinity or NaN
         exponent16 = FLOAT16_EXPONENT_INFINITY_NAN
     else:
         # normal number
         signedExponent16 = exponent32 - FLOAT32_EXPONENT_BIAS + FLOAT16_EXPONENT_BIAS
-        if (signedExponent16 > FLOAT16_EXPONENT_INFINITY_NAN):
+        if signedExponent16 > FLOAT16_EXPONENT_INFINITY_NAN:
             # exponent overflow, set infinity or NaN
             exponent16 = FLOAT16_EXPONENT_INFINITY_NAN
-        elif (signedExponent16 <= 0):
+        elif signedExponent16 <= 0:
             # exponent underflow
-            if (signedExponent16 <= -FLOAT16_SIGNIFICAND_NUM_BITS):
+            if signedExponent16 <= -FLOAT16_SIGNIFICAND_NUM_BITS:
                 # too big underflow, set to zero
                 exponent16 = 0
                 significand16 = 0
@@ -119,7 +119,7 @@ def convertFloatToUInt16(float64):
     float16Value = sign16Shifted | exponent16Shifted | significand16
 
     # check rounding
-    if (needsRounding):
+    if needsRounding:
         float16Value += 1   # might overflow to infinity
 
     return float16Value

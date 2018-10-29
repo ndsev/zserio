@@ -1,5 +1,6 @@
 import unittest
-from zserio.bitstream.builtin import getNumBits
+
+from zserio.builtin import getNumBits
 
 class BuiltinOperatorsTest(unittest.TestCase):
 

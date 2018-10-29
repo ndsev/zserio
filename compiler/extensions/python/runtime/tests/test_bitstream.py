@@ -1,7 +1,8 @@
 import unittest
 
-from zserio import BitStreamReader, BitStreamWriter
-from zserio.bitstream.bitsizeof import INT64_MIN
+from zserio.bitreader import BitStreamReader
+from zserio.bitsizeof import INT64_MIN
+from zserio.bitwriter import BitStreamWriter
 
 class BitStreamTest(unittest.TestCase):
 

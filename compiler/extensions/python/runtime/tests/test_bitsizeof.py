@@ -1,10 +1,10 @@
 import unittest
 
-from zserio.bitstream.bitsizeof import (getBitSizeOfVarInt16, getBitSizeOfVarInt32,
-                                        getBitSizeOfVarInt64, getBitSizeOfVarInt,
-                                        getBitSizeOfVarUInt16, getBitSizeOfVarUInt32,
-                                        getBitSizeOfVarUInt64, getBitSizeOfVarUInt,
-                                        getBitSizeOfString, alignTo)
+from zserio.bitsizeof import (getBitSizeOfVarInt16, getBitSizeOfVarInt32,
+                              getBitSizeOfVarInt64, getBitSizeOfVarInt,
+                              getBitSizeOfVarUInt16, getBitSizeOfVarUInt32,
+                              getBitSizeOfVarUInt64, getBitSizeOfVarUInt,
+                              getBitSizeOfString, alignTo)
 from zserio.exception import PythonRuntimeException
 
 class BitSizeOfTest(unittest.TestCase):
