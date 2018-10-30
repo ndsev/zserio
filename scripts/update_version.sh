@@ -3,12 +3,12 @@
 SCRIPT_DIR=`dirname $0`
 source "${SCRIPT_DIR}/common_tools.sh"
 
-# Update Zserio version in a single file
+# Update Zserio version in a single file.
 update_version_in_file()
 {
     exit_if_argc_ne $# 2
-    local NEW_VERSION_STRING="${1}"; shift
     local VERSION_FILE="${1}"; shift
+    local NEW_VERSION_STRING="${1}"; shift
 
     echo -ne "Updating version to ${NEW_VERSION_STRING} in '${VERSION_FILE}'..."
     sed -i -e 's/[0-9]\+\.[0-9]\+\.[0-9]\+/'"${NEW_VERSION_STRING}"'/' "${VERSION_FILE}"
@@ -18,6 +18,8 @@ update_version_in_file()
         return 1
     fi
     echo "Done"
+
+    return 0
 }
 
 # Update Zserio version in local copy of Git repository.
@@ -31,11 +33,17 @@ update_version()
     local VERSION_FILES=`find ${ZSERIO_SOURCE_DIR} -iname "*Version*"`
     for VERSION_FILE in ${VERSION_FILES}
     do
-        update_version_in_file ${NEW_VERSION_STRING} ${VERSION_FILE}
+        update_version_in_file "${VERSION_FILE}" "${NEW_VERSION_STRING}"
+        if [ $? -ne 0 ] ; then
+            return 1
+        fi
     done
 
     local PYTHON_RUNTIME_VERSION_FILE="${ZSERIO_SOURCE_DIR}/extensions/python/runtime/src/zserio/__init__.py"
-    update_version_in_file "${NEW_VERSION_STRING}" "${PYTHON_RUNTIME_VERSION_FILE}"
+    update_version_in_file "${PYTHON_RUNTIME_VERSION_FILE}" "${NEW_VERSION_STRING}"
+    if [ $? -ne 0 ] ; then
+        return 1
+    fi
 
     return 0
 }
