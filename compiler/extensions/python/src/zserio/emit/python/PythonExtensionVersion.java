@@ -1,12 +1,12 @@
-package zserio.emit.java;
+package zserio.emit.python;
 
 /**
- * Java extension version information.
+ * Python extension version information.
  *
  * The version will be stored in MANIFEST.MF and must match ZserioTool version.
  */
-public class JavaExtensionVersion
+public class PythonExtensionVersion
 {
-    /** Java extension version string. */
+    /** Python extension version string. */
     public static final String VERSION_STRING = "1.1.0";
 }

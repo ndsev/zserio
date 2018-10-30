@@ -64,7 +64,7 @@ public class CppExtension implements Extension
         emitters.add(new ChoiceEmitter(outputDir, parameters));
         emitters.add(new UnionEmitter(outputDir, parameters));
 
-        // emit C++ code for decoders
+        // emit C++ code
         for (Emitter cppEmitter: emitters)
             rootNode.walk(cppEmitter);
     }

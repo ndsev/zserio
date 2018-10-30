@@ -1,7 +1,7 @@
 package zserio.emit.cpp;
 
 /**
- * C++ extensions version information.
+ * C++ extension version information.
  *
  * The version will be stored in MANIFEST.MF and must match ZserioTool version.
  */

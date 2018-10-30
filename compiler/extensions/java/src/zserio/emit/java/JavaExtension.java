@@ -89,7 +89,7 @@ public class JavaExtension implements Extension
         emitters.add(new ConstEmitter(extensionParameters, javaParameters));
         emitters.add(new MasterDatabaseEmitter(extensionParameters, javaParameters));
 
-        // emit Java code for decoders
+        // emit Java code
         for (Emitter javaEmitter: emitters)
             rootNode.walk(javaEmitter);
     }
