@@ -6,7 +6,7 @@ from zserio.array import (Array, BitFieldArrayTraits, SignedBitFieldArrayTraits,
                           Float16ArrayTraits, Float32ArrayTraits, Float64ArrayTraits,
                           StringArrayTraits, BoolArrayTraits, ObjectArrayTraits)
 from zserio.bitreader import BitStreamReader
-from zserio.bitsizeof import getBitSizeOfVarUInt64
+from zserio.bitsizeof import getBitSizeOfVarUInt64, alignTo
 from zserio.bitwriter import BitStreamWriter
 
 class ArrayTest(unittest.TestCase):
@@ -232,7 +232,7 @@ class ArrayTest(unittest.TestCase):
                          autoArray.initializeOffsets(7))
 
         alignedArray = Array(arrayTraits, arrayValues, setOffsetMethod=_setOffsetMethod)
-        self.assertEqual(0 + expectedAlignedBitSize, alignedArray.bitSizeOf(0))
+        self.assertEqual(0 + expectedAlignedBitSize, alignedArray.initializeOffsets(0))
 
     def _testRead(self, arrayTraits, arrayValues):
         def _checkOffsetMethod(index):

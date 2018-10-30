@@ -108,7 +108,7 @@ class FloatUtilTest(unittest.TestCase):
         self.assertEqual(float16ValueMax, convertFloatToUInt16(65504.0))
 
         # normal numbers converted to zero
-        float64ValueUnderflow = self._createFloat32Value(0, 998, 0) # 2^-25
+        float64ValueUnderflow = self._createFloat64Value(0, 998, 0) # 2^-25
         convertedFloat = convertUInt64ToFloat(float64ValueUnderflow)
         self.assertEqual(float16ValuePlusZero, convertFloatToUInt16(convertedFloat))
 
@@ -125,7 +125,7 @@ class FloatUtilTest(unittest.TestCase):
         self.assertEqual(float16ValueMinSubnormalRounding, convertFloatToUInt16(convertedFloat))
 
         # normal numbers converted to infinity
-        float64ValueOverflow = self._createFloat64Value(0, 1039, 0) # 2^16
+        float64ValueOverflow = self._createFloat64Value(0, 1040, 0) # 2^17
         convertedFloat = convertUInt64ToFloat(float64ValueOverflow)
         self.assertEqual(float16ValuePlusInfinity, convertFloatToUInt16(convertedFloat))
 
@@ -136,13 +136,13 @@ class FloatUtilTest(unittest.TestCase):
         self.assertEqual(float16ValueRounding, convertFloatToUInt16(convertedFloat))
 
         # subnormal numbers
-        float64ValueMinSubnormal = self._createFloat64Value(0, 0, 1) # 2^-1022 (2^-52)
-        convertedFloat = convertUInt64ToFloat(float64ValueMinSubnormal)
+        float64ValueMin32Subnormal = self._createFloat64Value(0, 874, 0) # 2^-126 (2^-23)
+        convertedFloat = convertUInt64ToFloat(float64ValueMin32Subnormal)
         self.assertEqual(float16ValuePlusZero, convertFloatToUInt16(convertedFloat))
 
-        float64ValueMaxSubnormal = self._createFloat32Value(0, 0,
-                                                            0xFFFFFFFFFFFFF) # 2^-1022 (2^-1 + ... + 2^-52)
-        convertedFloat = convertUInt64ToFloat(float64ValueMaxSubnormal)
+        float64ValueMax32Subnormal = self._createFloat64Value(0, 896,
+                                                              0xFFFFFC0000000) # 2^-126 (2^-1 + ... + 2^-23)
+        convertedFloat = convertUInt64ToFloat(float64ValueMax32Subnormal)
         self.assertEqual(float16ValuePlusZero, convertFloatToUInt16(convertedFloat))
 
     def testConvertUInt32ToFloat(self):

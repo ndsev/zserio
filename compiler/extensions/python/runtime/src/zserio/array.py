@@ -85,8 +85,7 @@ class Array():
         size = len(self._rawArray)
         if self._isAuto:
             endBitPosition += getBitSizeOfVarUInt64(size)
-
-        if self._arrayTraits.isBitSizeOfConstant == True and size > 0:
+        if self._arrayTraits.isBitSizeOfConstant() == True and size > 0:
             elementSize = self._arrayTraits.bitSizeOf(endBitPosition, self._rawArray[0])
             if self._setOffsetMethod == None:
                 endBitPosition += size * elementSize
@@ -113,7 +112,7 @@ class Array():
         if self._isAuto:
             endBitPosition += getBitSizeOfVarUInt64(size)
 
-        if self._arrayTraits.isBitSizeOfConstant == True and self._setOffsetMethod == None and size > 0:
+        if self._arrayTraits.isBitSizeOfConstant() == True and self._setOffsetMethod == None and size > 0:
             endBitPosition += size * self._arrayTraits.bitSizeOf(endBitPosition, self._rawArray[0])
         else:
             for index in range(size):
