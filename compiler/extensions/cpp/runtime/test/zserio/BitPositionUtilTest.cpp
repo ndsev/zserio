@@ -8,16 +8,16 @@ namespace zserio
 
 TEST(BitPositionUtilTest, AlignTo)
 {
-    const size_t bitSize = 5;
-    EXPECT_EQ(5, alignTo(0, bitSize));
-    EXPECT_EQ(5, alignTo(1, bitSize));
-    EXPECT_EQ(6, alignTo(2, bitSize));
-    EXPECT_EQ(6, alignTo(3, bitSize));
-    EXPECT_EQ(8, alignTo(4, bitSize));
-    EXPECT_EQ(5, alignTo(5, bitSize));
-    EXPECT_EQ(6, alignTo(6, bitSize));
-    EXPECT_EQ(7, alignTo(7, bitSize));
-    EXPECT_EQ(8, alignTo(8, bitSize));
+    const size_t bitPosition = 5;
+    EXPECT_EQ(5, alignTo(0, bitPosition));
+    EXPECT_EQ(5, alignTo(1, bitPosition));
+    EXPECT_EQ(6, alignTo(2, bitPosition));
+    EXPECT_EQ(6, alignTo(3, bitPosition));
+    EXPECT_EQ(8, alignTo(4, bitPosition));
+    EXPECT_EQ(5, alignTo(5, bitPosition));
+    EXPECT_EQ(6, alignTo(6, bitPosition));
+    EXPECT_EQ(7, alignTo(7, bitPosition));
+    EXPECT_EQ(8, alignTo(8, bitPosition));
 }
 
 TEST(BitPositionUtilTest, BitsToBytes)

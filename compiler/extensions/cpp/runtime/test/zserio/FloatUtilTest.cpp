@@ -216,7 +216,7 @@ TEST_F(FloatUtilTest, convertFloatToUInt16)
     checkFloat32ToFloat16Conversion(float32ValueMinUnderflowRounding, float16ValueMinSubnormalRounding);
 
     // normal numbers converted to infinity
-    const uint32_t float32ValueOverflow = createFloat32Value(0, 143, 0); // 2^16
+    const uint32_t float32ValueOverflow = createFloat32Value(0, 144, 0); // 2^17
     checkFloat32ToFloat16Conversion(float32ValueOverflow, float16ValuePlusInfinity);
 
     // normal numbers converted with rounding
