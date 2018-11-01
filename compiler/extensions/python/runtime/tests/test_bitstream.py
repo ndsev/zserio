@@ -94,7 +94,7 @@ class BitStreamTest(unittest.TestCase):
     def testVarInt64(self):
         values = [
             # 1 byte
-             0,
+            0,
             - ((1)),
             + ((1)),
             - ((1 << (6)) - 1),
@@ -414,16 +414,16 @@ class BitStreamTest(unittest.TestCase):
         self.assertEqual(0xcafe, reader.readBits(16))
 
     def testFile(self):
-        TEST_FILE_NAME = "BitStreamTest.bin"
+        testFilename = "BitStreamTest.bin"
         writer = BitStreamWriter()
         writer.writeBits(13, 7)
-        writer.writeString(TEST_FILE_NAME)
+        writer.writeString(testFilename)
         writer.writeVarInt(-123456)
-        writer.toFile(TEST_FILE_NAME)
+        writer.toFile(testFilename)
 
-        reader = BitStreamReader.fromFile(TEST_FILE_NAME)
+        reader = BitStreamReader.fromFile(testFilename)
         self.assertEqual(13, reader.readBits(7))
-        self.assertEqual(TEST_FILE_NAME, reader.readString())
+        self.assertEqual(testFilename, reader.readString())
         self.assertEqual(-123456, reader.readVarInt())
 
     def _testBitsImpl(self, writeMethod, readMethod, values, numBits):
@@ -431,14 +431,14 @@ class BitStreamTest(unittest.TestCase):
             writer = BitStreamWriter()
             if bitPos > 0:
                 writer.writeBits(0, bitPos)
-            for v in values:
-                writeMethod(writer, v, numBits)
+            for value in values:
+                writeMethod(writer, value, numBits)
 
             reader = BitStreamReader(buffer=writer.getByteArray())
             if bitPos > 0:
                 reader.readBits(bitPos)
-            for v in values:
-                self.assertEqual(v, readMethod(reader, numBits),
+            for value in values:
+                self.assertEqual(value, readMethod(reader, numBits),
                                  "[numBits=%d, bitPos=%d]" % (numBits, bitPos))
 
     def _testImpl(self, writeMethod, readMethod, values, maxStartBitPos):
@@ -446,11 +446,11 @@ class BitStreamTest(unittest.TestCase):
             writer = BitStreamWriter()
             if bitPos > 0:
                 writer.writeBits(0, bitPos)
-            for v in values:
-                writeMethod(writer, v)
+            for value in values:
+                writeMethod(writer, value)
 
             reader = BitStreamReader(buffer=writer.getByteArray())
             if bitPos > 0:
                 reader.readBits(bitPos)
-            for v in values:
-                self.assertEqual(v, readMethod(reader), "[bitPos=%d]" % bitPos)
+            for value in values:
+                self.assertEqual(value, readMethod(reader), "[bitPos=%d]" % bitPos)

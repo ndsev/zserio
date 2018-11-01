@@ -83,6 +83,7 @@ set_global_python_variables()
     exit_if_argc_ne $# 1
     local ZSERIO_PROJECT_ROOT="$1"; shift
 
+    # python to use, defaults to "python" if not set
     PYTHON="${PYTHON:-python}"
     if [ ! -f "`which "${PYTHON}"`" ] ; then
         stderr_echo "Cannot find Python! Set PYTHON environment variable."
@@ -398,8 +399,9 @@ compile_cpp_for_target()
 # Test python code by runnig python -m unittest.
 test_python()
 {
-    exit_if_argc_ne $# 3
+    exit_if_argc_ne $# 4
     local BUILD_DIR="${1}"; shift
+    local PYLINT_RCFILE="${1}" ; shift
     local SOURCES_DIR="${1}"; shift
     local TESTS_DIR="${1}"; shift
 
@@ -407,17 +409,38 @@ test_python()
     mkdir -p "${BUILD_DIR}"
     pushd "${BUILD_DIR}" > /dev/null
 
+    # run tests
     PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=${SOURCES_DIR} ${PYTHON} -m green ${TESTS_DIR} -rvv
-    if [ $? -ne 0 ] ; then
+    local PYTHON_RESULT=$?
+    if [ ${PYTHON_RESULT} -ne 0 ] ; then
+        stderr_echo "Running python failed with return code ${PYTHON_RESULT}!"
         popd > /dev/null
         return 1
     fi
 
     popd > /dev/null
+    echo
+
+    # check sources
+    ${PYTHON} -m pylint ${SOURCES_DIR}/* --rcfile ${PYLINT_RCFILE}
+    local PYLINT_RESULT=$?
+    if [ ${PYLINT_RESULT} -ne 0 ] ; then
+        stderr_echo "Running pylint failed with return code ${PYLINT_RESULT}!"
+        return 1
+    fi
+
+    # check test sources
+    PYTHONPATH=${SOURCES_DIR} ${PYTHON} -m pylint ${TESTS_DIR}/* --disable=missing-docstring --rcfile ${PYLINT_RCFILE}
+    local PYLINT_RESULT=$?
+    if [ ${PYLINT_RESULT} -ne 0 ] ; then
+        stderr_echo "Running pylint failed with return code ${PYLINT_RESULT}!"
+        return 1
+    fi
+
     return 0
 }
 
-# Tests if it's possible to run tests for given target on current host.
+# Test if it's possible to run tests for given target on current host.
 can_run_tests()
 {
     exit_if_argc_ne $# 1

@@ -105,8 +105,9 @@ def convertFloatToUInt16(float64):
                 significand16 = fullSignificand32 >> (FLOAT32_SIGNIFICAND_NUM_BITS -
                                                       FLOAT16_SIGNIFICAND_NUM_BITS + significandShift)
 
-                needsRounding = ((fullSignificand32 >> (FLOAT32_SIGNIFICAND_NUM_BITS -
-                        FLOAT16_SIGNIFICAND_NUM_BITS + significandShift - 1)) & 1) != 0
+                needsRounding = ((fullSignificand32 >>
+                                  (FLOAT32_SIGNIFICAND_NUM_BITS - FLOAT16_SIGNIFICAND_NUM_BITS +
+                                   significandShift - 1)) & 1) != 0
         else:
             # exponent ok
             exponent16 = signedExponent16

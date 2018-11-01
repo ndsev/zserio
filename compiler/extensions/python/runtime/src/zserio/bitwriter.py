@@ -1,3 +1,7 @@
+"""
+The module implements abstraction for writing data to the bit stream.
+"""
+
 from zserio.bitsizeof import (getBitSizeOfVarInt16, getBitSizeOfVarInt32,
                               getBitSizeOfVarInt64, getBitSizeOfVarInt,
                               getBitSizeOfVarUInt16, getBitSizeOfVarUInt32,
@@ -190,8 +194,8 @@ class BitStreamWriter:
 
         stringBytes = string.encode("utf-8")
         self.writeVarUInt64(len(stringBytes))
-        for b in stringBytes:
-            self.writeBits(b, 8)
+        for stringByte in stringBytes:
+            self.writeBits(stringByte, 8)
 
     def writeBool(self, value):
         """
@@ -272,15 +276,15 @@ class BitStreamWriter:
             shiftBits = (i - 1) * 7 + (1 if numBytes == maxNumBytes and i > 1 else 0)
             self.writeBits((absValue >> shiftBits) & VAR_NUM_BIT_MASKS[numBits - 1], numBits)
 
-VAR_NUM_BIT_MASKS = [ 0x01, 0x03, 0x07, 0x0f, 0x1f, 0x3f, 0x7f, 0xff ]
+VAR_NUM_BIT_MASKS = [0x01, 0x03, 0x07, 0x0f, 0x1f, 0x3f, 0x7f, 0xff]
 VAR_NUM_SIGNED_FIRST_BYTE = 6
 VAR_NUM_LAST_BYTE = 8
 
-VARINT16_NUM_BITS = [ 6, 8 ]
-VARINT32_NUM_BITS = [ 6, 7, 7, 8 ]
-VARINT64_NUM_BITS = [ 6, 7, 7, 7, 7, 7, 7, 8 ]
-VARINT_NUM_BITS = [ 6, 7, 7, 7, 7, 7, 7, 7, 8 ]
-VARUINT16_NUM_BITS = [ 7, 8 ]
-VARUINT32_NUM_BITS = [ 7, 7, 7, 8 ]
-VARUINT64_NUM_BITS = [ 7, 7, 7, 7, 7, 7, 7, 8 ]
-VARUINT_NUM_BITS = [ 7, 7, 7, 7, 7, 7, 7, 7, 8 ]
+VARINT16_NUM_BITS = [6, 8]
+VARINT32_NUM_BITS = [6, 7, 7, 8]
+VARINT64_NUM_BITS = [6, 7, 7, 7, 7, 7, 7, 8]
+VARINT_NUM_BITS = [6, 7, 7, 7, 7, 7, 7, 7, 8]
+VARUINT16_NUM_BITS = [7, 8]
+VARUINT32_NUM_BITS = [7, 7, 7, 8]
+VARUINT64_NUM_BITS = [7, 7, 7, 7, 7, 7, 7, 8]
+VARUINT_NUM_BITS = [7, 7, 7, 7, 7, 7, 7, 7, 8]

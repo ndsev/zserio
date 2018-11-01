@@ -169,4 +169,3 @@ class BitStreamReaderTest(unittest.TestCase):
         self.assertEqual(1, reader.getBitPosition())
         reader.alignTo(4)
         self.assertEqual(4, reader.getBitPosition())
-

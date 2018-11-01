@@ -1,3 +1,7 @@
+"""
+The module implements abstraction for reading data to the bit stream.
+"""
+
 from zserio.bitsizeof import INT64_MIN
 from zserio.exception import PythonRuntimeException
 from zserio.float import convertUInt16ToFloat, convertUInt32ToFloat, convertUInt64ToFloat
@@ -26,8 +30,8 @@ class BitStreamReader:
         :param filename: Filename to read as a bit stream.
         """
 
-        with open(filename, 'rb') as f:
-            return cls(f.read())
+        with open(filename, 'rb') as file:
+            return cls(file.read())
 
     def readBits(self, numBits):
         """

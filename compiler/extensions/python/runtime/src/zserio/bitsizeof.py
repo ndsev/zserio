@@ -115,8 +115,8 @@ def alignTo(alignmentValue, bitPosition):
 def _getBitSizeOfVarIntImpl(value, maxValues, *, signed):
     if signed or value >= 0:
         absValue = abs(value)
-        for i in range(len(maxValues)):
-            if absValue <= maxValues[i]:
+        for i, maxValue in enumerate(maxValues):
+            if absValue <= maxValue:
                 return (i + 1) * 8
 
     raise PythonRuntimeException("Var%sInt%s value %d is out of range!" %

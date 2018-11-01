@@ -238,8 +238,8 @@ install_python_runtime()
     local ZSERIO_LOGO="${ZSERIO_PROJECT_ROOT}/doc/Zserio.png"
 
     # build doc
-    echo
     echo "Building documentation for Zserio Python runtime library."
+    echo
     rm -rf ${PYTHON_RUNTIME_DOC_BUILD_DIR}
     mkdir -p ${PYTHON_RUNTIME_DOC_BUILD_DIR}
     pushd ${PYTHON_RUNTIME_DOC_BUILD_DIR} > /dev/null
@@ -262,8 +262,9 @@ install_python_runtime()
 
     echo
     echo "Installing Zserio Python runtime library."
+    echo
 
-    echo "    Purging python distr dir: ${PYTHON_RUNTIME_DISTR_DIR}"
+    echo "Purging python distr dir: ${PYTHON_RUNTIME_DISTR_DIR}"
     rm -rf "${PYTHON_RUNTIME_DISTR_DIR}"
     mkdir -p "${PYTHON_RUNTIME_DISTR_DIR}"
 
@@ -271,7 +272,7 @@ install_python_runtime()
     pushd "${PYTHON_RUNTIME_SOURCES}" > /dev/null
 
     find . -name "*.py" | while read -r SOURCE ; do
-        echo "    Installing ${SOURCE}"
+        echo "Installing ${SOURCE}"
         cp --parents "${SOURCE}" "${PYTHON_RUNTIME_DISTR_DIR}"
         if [ $? -ne 0 ] ; then
             stderr_echo "Failed to install ${SOURCE}!"
@@ -280,7 +281,7 @@ install_python_runtime()
         fi
     done
 
-    echo "    Installing API documentation"
+    echo "Installing API documentation"
     cp -r "${PYTHON_RUNTIME_DOC_BUILD_DIR}/zserio_apidoc" "${PYTHON_RUNTIME_DISTR_DIR}/"
     if [ $? -ne 0 ] ; then
         stderr_echo "Failed to install documentation!"
@@ -362,6 +363,7 @@ main()
     fi
     mkdir -p "${ZSERIO_BUILD_DIR}"
     mkdir -p "${ZSERIO_DISTR_DIR}"
+
     # extensions need absolute paths
     convert_to_absolute_path "${ZSERIO_BUILD_DIR}" ZSERIO_BUILD_DIR
     convert_to_absolute_path "${ZSERIO_DISTR_DIR}" ZSERIO_DISTR_DIR
@@ -463,24 +465,31 @@ main()
     # build Zserio Python extension
     if [[ ${PARAM_PYTHON} == 1 ]] ; then
         echo "${ACTION_DESCRIPTION} Zserio Python extension."
+        echo
         echo "TODO"
     fi
 
     # build Zserio Python runtime library
     if [[ ${PARAM_PYTHON_RUNTIME} == 1 ]] ; then
         echo "${ACTION_DESCRIPTION} Zserio Python runtime library."
+        echo
 
         local PYTHON_RUNTIME_BUILD_DIR=${ZSERIO_BUILD_DIR}/runtime_libs/python
         if [[ ${SWITCH_CLEAN} == 1 ]] ; then
             rm -rf ${PYTHON_RUNTIME_BUILD_DIR}
         else
             local PYTHON_RUNTIME_ROOT=${ZSERIO_PROJECT_ROOT}/compiler/extensions/python/runtime
-            test_python ${PYTHON_RUNTIME_BUILD_DIR} ${PYTHON_RUNTIME_ROOT}/src ${PYTHON_RUNTIME_ROOT}/tests
-            if [ $? -ne 0 ]; then
+            local PYLINT_RCFILE="${PYTHON_RUNTIME_ROOT}/pylintrc.txt"
+            test_python "${PYTHON_RUNTIME_BUILD_DIR}" "${PYLINT_RCFILE}" "${PYTHON_RUNTIME_ROOT}/src" \
+                        "${PYTHON_RUNTIME_ROOT}/tests"
+            if [ $? -ne 0 ] ; then
                 return 1
             fi
-            install_python_runtime ${ZSERIO_PROJECT_ROOT} ${PYTHON_RUNTIME_ROOT} ${PYTHON_RUNTIME_BUILD_DIR} \
-                                   ${ZSERIO_DISTR_DIR}/runtime_libs/python
+            install_python_runtime "${ZSERIO_PROJECT_ROOT}" "${PYTHON_RUNTIME_ROOT}" \
+                                   "${PYTHON_RUNTIME_BUILD_DIR}" "${ZSERIO_DISTR_DIR}/runtime_libs/python"
+            if [ $? -ne 0 ] ; then
+                return 1
+            fi
         fi
     fi
 
@@ -510,7 +519,7 @@ main()
     if [[ ${PARAM_ZSERIO} == 1 ]] ; then
         echo "${ACTION_DESCRIPTION} Zserio bundle."
         echo
-        compile_java ${ZSERIO_PROJECT_ROOT}/build.xml ANT_PROPS[@] zserio_bundle.${JAVA_TARGET}
+        compile_java "${ZSERIO_PROJECT_ROOT}/build.xml" ANT_PROPS[@] zserio_bundle.${JAVA_TARGET}
         if [ $? -ne 0 ] ; then
             return 1
         fi

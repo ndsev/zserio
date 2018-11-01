@@ -149,7 +149,8 @@ class ArrayTest(unittest.TestCase):
             def getValue(self):
                 return self._value
 
-            def bitSizeOf(self, bitPosition):
+            @staticmethod
+            def bitSizeOf(_bitPosition):
                 return 31 # to make an unaligned type
 
             def initializeOffsets(self, bitPosition):
@@ -194,7 +195,7 @@ class ArrayTest(unittest.TestCase):
     def _testSum(self, arrayTraits, arrayValues):
         array = Array(arrayTraits, arrayValues)
         rawArray = array.getRawArray()
-        if len(rawArray) > 0:
+        if rawArray:
             expectedSum = rawArray[0]
             if isinstance(expectedSum, int): # sum supports numeric types only
                 for element in rawArray[1:]:
@@ -202,7 +203,7 @@ class ArrayTest(unittest.TestCase):
                 self.assertEqual(expectedSum, array.sum())
 
     def _testBitSizeOf(self, arrayTraits, arrayValues, expectedBitSize, expectedAlignedBitSize):
-        def _setOffsetMethod(index, endBitPosition):
+        def _setOffsetMethod(_index, endBitPosition):
             return endBitPosition
 
         array = Array(arrayTraits, arrayValues)
@@ -217,7 +218,7 @@ class ArrayTest(unittest.TestCase):
         self.assertEqual(expectedAlignedBitSize, alignedArray.bitSizeOf(0))
 
     def _testInitializeOffsets(self, arrayTraits, arrayValues, expectedBitSize, expectedAlignedBitSize):
-        def _setOffsetMethod(index, endBitPosition):
+        def _setOffsetMethod(_index, endBitPosition):
             endBitPosition = alignTo(8, endBitPosition)
             return endBitPosition
 
@@ -235,36 +236,36 @@ class ArrayTest(unittest.TestCase):
         self.assertEqual(0 + expectedAlignedBitSize, alignedArray.initializeOffsets(0))
 
     def _testRead(self, arrayTraits, arrayValues):
-        def _checkOffsetMethod(index):
+        def _checkOffsetMethod(_index):
             pass
 
         array = Array(arrayTraits, arrayValues)
         writer = BitStreamWriter()
-        array.write(writer);
+        array.write(writer)
         reader = BitStreamReader(writer.getByteArray())
         emptyArray = Array(arrayTraits)
         emptyArray.read(reader, len(array.getRawArray()))
-        self.assertEqual(array, emptyArray);
+        self.assertEqual(array, emptyArray)
 
         autoArray = Array(arrayTraits, arrayValues, isAuto=True)
         writer = BitStreamWriter()
-        autoArray.write(writer);
+        autoArray.write(writer)
         reader = BitStreamReader(writer.getByteArray())
         emptyAutoArray = Array(arrayTraits, isAuto=True)
         emptyAutoArray.read(reader, len(autoArray.getRawArray()))
-        self.assertEqual(autoArray, emptyAutoArray);
+        self.assertEqual(autoArray, emptyAutoArray)
 
         alignedArray = Array(arrayTraits, arrayValues, checkOffsetMethod=_checkOffsetMethod)
         writer = BitStreamWriter()
-        alignedArray.write(writer);
+        alignedArray.write(writer)
         reader = BitStreamReader(writer.getByteArray())
         emptyAlignedArray = Array(arrayTraits, checkOffsetMethod=_checkOffsetMethod)
         emptyAlignedArray.read(reader, len(alignedArray.getRawArray()))
-        self.assertEqual(alignedArray, emptyAlignedArray);
+        self.assertEqual(alignedArray, emptyAlignedArray)
 
         implicitArray = Array(arrayTraits, arrayValues, isImplicit=True)
         writer = BitStreamWriter()
-        implicitArray.write(writer);
+        implicitArray.write(writer)
         reader = BitStreamReader(writer.getByteArray())
         emptyImplicitArray = Array(arrayTraits, isImplicit=True)
         emptyImplicitArray.read(reader)
@@ -272,24 +273,24 @@ class ArrayTest(unittest.TestCase):
         # read implicit array can be bigger (for example, BoolArray)
         implicitRawArray = implicitArray.getRawArray()
         emptyImplicitRawArray = emptyImplicitArray.getRawArray()
-        for index in range(len(implicitRawArray)):
-            self.assertEqual(implicitRawArray[index], emptyImplicitRawArray[index])
+        for index, implicitRawArrayElement in enumerate(implicitRawArray):
+            self.assertEqual(implicitRawArrayElement, emptyImplicitRawArray[index])
 
     def _testWrite(self, arrayTraits, arrayValues, expectedBitSize, expectedAlignedBitSize):
-        def _checkOffsetMethod(index):
+        def _checkOffsetMethod(_index):
             pass
 
         array = Array(arrayTraits, arrayValues)
         writer = BitStreamWriter()
-        array.write(writer);
-        self.assertEqual(expectedBitSize, writer.getBitPosition());
+        array.write(writer)
+        self.assertEqual(expectedBitSize, writer.getBitPosition())
 
         autoArray = Array(arrayTraits, arrayValues, isAuto=True)
         writer = BitStreamWriter()
-        autoArray.write(writer);
-        self.assertEqual(getBitSizeOfVarUInt64(len(arrayValues)) + expectedBitSize, writer.getBitPosition());
+        autoArray.write(writer)
+        self.assertEqual(getBitSizeOfVarUInt64(len(arrayValues)) + expectedBitSize, writer.getBitPosition())
 
         alignedArray = Array(arrayTraits, arrayValues, checkOffsetMethod=_checkOffsetMethod)
         writer = BitStreamWriter()
-        alignedArray.write(writer);
-        self.assertEqual(expectedAlignedBitSize, writer.getBitPosition());
+        alignedArray.write(writer)
+        self.assertEqual(expectedAlignedBitSize, writer.getBitPosition())

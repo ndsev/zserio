@@ -2,7 +2,7 @@
 The module provides utility methods for hash code calculation.
 """
 
-HASH_SEED = 23;
+HASH_SEED = 23
 
 def calcHashCode(seedValue, value):
     """
@@ -15,4 +15,4 @@ def calcHashCode(seedValue, value):
 
     return (HASH_PRIME_NUMBER * seedValue + value) & 0xFFFFFFFF
 
-HASH_PRIME_NUMBER = 37;
+HASH_PRIME_NUMBER = 37
