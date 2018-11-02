@@ -89,7 +89,7 @@ set_global_python_variables()
         stderr_echo "Cannot find Python! Set PYTHON environment variable."
         return 1
     fi
-    local PYTHON_VERSION=$(python -V 2>&1 | cut -d\  -f 2)
+    local PYTHON_VERSION=$(${PYTHON} -V 2>&1 | cut -d\  -f 2)
     PYTHON_VERSION=(${PYTHON_VERSION//./ }) # python version as an array
     if [[ ${#PYTHON_VERSION[@]} -lt 2 || ${PYTHON_VERSION[0]} -lt 3 ]] ||
        [[ ${PYTHON_VERSION[0]} -eq 3 && ${PYTHON_VERSION[1]} -lt 5 ]] ; then
