@@ -99,13 +99,14 @@ set_global_python_variables()
 
     # check python requirements
     local PIP_REQUIREMENTS_FILE="${ZSERIO_PROJECT_ROOT}/compiler/extensions/python/runtime/requirements.txt"
+    local HOST_PIP_REQUIREMENTS_FILE
     posix_to_host_path "${PIP_REQUIREMENTS_FILE}" HOST_PIP_REQUIREMENTS_FILE
     ${PYTHON} << EOF
 try:
     import sys
     import pkg_resources
     reqs = []
-    with open('${HOST_PIP_REQUIREMENTS_FILE}', 'r') as reqsFile:
+    with open(r'${HOST_PIP_REQUIREMENTS_FILE}', 'r') as reqsFile:
         for req in reqsFile:
             reqs.append(req.rstrip())
     pkg_resources.require(reqs)
