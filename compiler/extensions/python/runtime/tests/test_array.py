@@ -146,9 +146,6 @@ class ArrayTest(unittest.TestCase):
             def __hash__(self):
                 return hash(self._value)
 
-            def getValue(self):
-                return self._value
-
             @staticmethod
             def bitSizeOf(_bitPosition):
                 return 31 # to make an unaligned type
@@ -203,9 +200,6 @@ class ArrayTest(unittest.TestCase):
                 self.assertEqual(expectedSum, array.sum())
 
     def _testBitSizeOf(self, arrayTraits, arrayValues, expectedBitSize, expectedAlignedBitSize):
-        def _setOffsetMethod(_index, endBitPosition):
-            return endBitPosition
-
         array = Array(arrayTraits, arrayValues)
         self.assertEqual(expectedBitSize, array.bitSizeOf(0))
         self.assertEqual(expectedBitSize, array.bitSizeOf(7))
@@ -214,7 +208,7 @@ class ArrayTest(unittest.TestCase):
         self.assertEqual(getBitSizeOfVarUInt64(len(arrayValues)) + expectedBitSize, autoArray.bitSizeOf(0))
         self.assertEqual(getBitSizeOfVarUInt64(len(arrayValues)) + expectedBitSize, autoArray.bitSizeOf(7))
 
-        alignedArray = Array(arrayTraits, arrayValues, setOffsetMethod=_setOffsetMethod)
+        alignedArray = Array(arrayTraits, arrayValues, setOffsetMethod=not None)
         self.assertEqual(expectedAlignedBitSize, alignedArray.bitSizeOf(0))
 
     def _testInitializeOffsets(self, arrayTraits, arrayValues, expectedBitSize, expectedAlignedBitSize):

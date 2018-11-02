@@ -403,7 +403,7 @@ test_python()
 {
     exit_if_argc_ne $# 4
     local BUILD_DIR="${1}"; shift
-    local PYLINT_RCFILE="${1}" ; shift
+    local PYTHON_SOURCES_ROOT="${1}" ; shift
     local SOURCES_DIR="${1}"; shift
     local TESTS_DIR="${1}"; shift
 
@@ -411,11 +411,23 @@ test_python()
     mkdir -p "${BUILD_DIR}"
     pushd "${BUILD_DIR}" > /dev/null
 
-    # run tests
-    PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=${SOURCES_DIR} ${PYTHON} -m green ${TESTS_DIR} -rvv
+    # run tests by coverage
+    PYTHONDONTWRITEBYTECODE=1 PYTHONPATH="${SOURCES_DIR}" "${PYTHON}" \
+                                                          -m coverage run --source "${PYTHON_SOURCES_ROOT}/" \
+                                                          -m unittest discover -s "${TESTS_DIR}" -v
     local PYTHON_RESULT=$?
     if [ ${PYTHON_RESULT} -ne 0 ] ; then
-        stderr_echo "Running python failed with return code ${PYTHON_RESULT}!"
+        stderr_echo "Running python coverage tests  failed with return code ${PYTHON_RESULT}!"
+        popd > /dev/null
+        return 1
+    fi
+    echo
+
+    # report tests coverage
+    "${PYTHON}" -m coverage report -m --fail-under=100
+    local COVERAGE_RESULT=$?
+    if [ ${COVERAGE_RESULT} -ne 0 ] ; then
+        stderr_echo "Running python coverage report failed with return code ${COVERAGE_RESULT}!"
         popd > /dev/null
         return 1
     fi
@@ -424,7 +436,8 @@ test_python()
     echo
 
     # check sources
-    ${PYTHON} -m pylint ${SOURCES_DIR}/* --rcfile ${PYLINT_RCFILE}
+    local PYLINT_RCFILE="${PYTHON_SOURCES_ROOT}/pylintrc.txt"
+    "${PYTHON}" -m pylint "${SOURCES_DIR}"/* --rcfile "${PYLINT_RCFILE}"
     local PYLINT_RESULT=$?
     if [ ${PYLINT_RESULT} -ne 0 ] ; then
         stderr_echo "Running pylint failed with return code ${PYLINT_RESULT}!"
@@ -432,7 +445,8 @@ test_python()
     fi
 
     # check test sources
-    PYTHONPATH=${SOURCES_DIR} ${PYTHON} -m pylint ${TESTS_DIR}/* --disable=missing-docstring --rcfile ${PYLINT_RCFILE}
+    PYTHONPATH="${SOURCES_DIR}" "${PYTHON}" -m pylint "${TESTS_DIR}"/* --disable=missing-docstring \
+                                --rcfile "${PYLINT_RCFILE}"
     local PYLINT_RESULT=$?
     if [ ${PYLINT_RESULT} -ne 0 ] ; then
         stderr_echo "Running pylint failed with return code ${PYLINT_RESULT}!"

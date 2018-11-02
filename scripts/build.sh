@@ -479,8 +479,7 @@ main()
             rm -rf ${PYTHON_RUNTIME_BUILD_DIR}
         else
             local PYTHON_RUNTIME_ROOT=${ZSERIO_PROJECT_ROOT}/compiler/extensions/python/runtime
-            local PYLINT_RCFILE="${PYTHON_RUNTIME_ROOT}/pylintrc.txt"
-            test_python "${PYTHON_RUNTIME_BUILD_DIR}" "${PYLINT_RCFILE}" "${PYTHON_RUNTIME_ROOT}/src" \
+            test_python "${PYTHON_RUNTIME_BUILD_DIR}" "${PYTHON_RUNTIME_ROOT}" "${PYTHON_RUNTIME_ROOT}/src" \
                         "${PYTHON_RUNTIME_ROOT}/tests"
             if [ $? -ne 0 ] ; then
                 return 1
