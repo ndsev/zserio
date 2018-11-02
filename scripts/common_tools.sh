@@ -98,13 +98,14 @@ set_global_python_variables()
     fi
 
     # check python requirements
-    local PYTHON_RUNTIME_ROOT="${ZSERIO_PROJECT_ROOT}/compiler/extensions/python/runtime"
+    local PIP_REQUIREMENTS_FILE="${ZSERIO_PROJECT_ROOT}/compiler/extensions/python/runtime/requirements.txt"
+    posix_to_host_path "${PIP_REQUIREMENTS_FILE}" HOST_PIP_REQUIREMENTS_FILE
     ${PYTHON} << EOF
 try:
     import sys
     import pkg_resources
     reqs = []
-    with open('${PYTHON_RUNTIME_ROOT}/requirements.txt', 'r') as reqsFile:
+    with open('${HOST_PIP_REQUIREMENTS_FILE}', 'r') as reqsFile:
         for req in reqsFile:
             reqs.append(req.rstrip())
     pkg_resources.require(reqs)
@@ -537,6 +538,7 @@ get_host_platform()
 }
 
 # Returns path according to the current host.
+#
 # On Linux the given path is unchanged, on Windows the path is converted to windows path.
 posix_to_host_path()
 {
