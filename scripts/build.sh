@@ -467,6 +467,7 @@ main()
         echo "${ACTION_DESCRIPTION} Zserio Python extension."
         echo
         echo "TODO"
+        echo
     fi
 
     # build Zserio Python runtime library
@@ -490,6 +491,7 @@ main()
                 return 1
             fi
         fi
+        echo
     fi
 
     # build Zserio XML extension
