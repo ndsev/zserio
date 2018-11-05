@@ -437,7 +437,7 @@ test_python()
 
     # check sources
     local PYLINT_RCFILE="${PYTHON_SOURCES_ROOT}/pylintrc.txt"
-    "${PYTHON}" -m pylint "${SOURCES_DIR}"/* --rcfile "${PYLINT_RCFILE}"
+    "${PYTHON}" -m pylint "${SOURCES_DIR}"/* --rcfile "${PYLINT_RCFILE}" --persistent=n
     local PYLINT_RESULT=$?
     if [ ${PYLINT_RESULT} -ne 0 ] ; then
         stderr_echo "Running pylint failed with return code ${PYLINT_RESULT}!"
@@ -446,7 +446,7 @@ test_python()
 
     # check test sources
     PYTHONPATH="${SOURCES_DIR}" "${PYTHON}" -m pylint "${TESTS_DIR}"/* --disable=missing-docstring \
-                                --rcfile "${PYLINT_RCFILE}"
+                                --rcfile "${PYLINT_RCFILE}" --persistent=n
     local PYLINT_RESULT=$?
     if [ ${PYLINT_RESULT} -ne 0 ] ; then
         stderr_echo "Running pylint failed with return code ${PYLINT_RESULT}!"
