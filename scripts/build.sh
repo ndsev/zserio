@@ -271,7 +271,7 @@ install_python_runtime()
     # install sources and doc
     pushd "${PYTHON_RUNTIME_SOURCES}" > /dev/null
 
-    find . -name "*.py" | while read -r SOURCE ; do
+    "${FIND}" . -name "*.py" | while read -r SOURCE ; do
         echo "Installing ${SOURCE}"
         cp --parents "${SOURCE}" "${PYTHON_RUNTIME_DISTR_DIR}"
         if [ $? -ne 0 ] ; then
@@ -324,6 +324,11 @@ main()
     fi
 
     # set global variables if needed
+    set_global_common_variables
+    if [ $? -ne 0 ] ; then
+        return 1
+    fi
+
     if [[ ${PARAM_ANT_TASK} != 0 ||
           ${PARAM_CORE} != 0 ||
           ${PARAM_CPP} != 0 ||
@@ -332,14 +337,14 @@ main()
           ${PARAM_PYTHON} != 0 ||
           ${PARAM_XML} != 0 ||
           ${PARAM_DOC} != 0 ]] ; then
-        set_global_java_variables "${ZSERIO_PROJECT_ROOT}"
+        set_global_java_variables
         if [ $? -ne 0 ] ; then
             return 1
         fi
     fi
 
     if [[ ${#PARAM_CPP_TARGET_ARRAY[@]} -ne 0 ]] ; then
-        set_global_cpp_variables "${ZSERIO_PROJECT_ROOT}"
+        set_global_cpp_variables
         if [ $? -ne 0 ] ; then
             return 1
         fi

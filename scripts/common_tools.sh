@@ -6,12 +6,21 @@ if [ -e "${SCRIPT_DIR}/build-env.sh" ] ; then
     source "${SCRIPT_DIR}/build-env.sh"
 fi
 
-# Set and check global variables for Java projets.
+# Set and check global variables for Java projects.
+set_global_common_variables()
+{
+    # bash command find to use, defaults to "/usr/bin/find" if not set
+    # (bash command find makes trouble under MinGW because it clashes with Windows find command)
+    FIND="${FIND:-/usr/bin/find}"
+    if [ ! -f "`which "${FIND}"`" ] ; then
+        stderr_echo "Cannot find bash command find! Set FIND environment variable."
+        return 1
+    fi
+}
+
+# Set and check global variables for Java projects.
 set_global_java_variables()
 {
-    exit_if_argc_ne $# 1
-    local ZSERIO_PROJECT_ROOT="$1"; shift
-
     # ANT to use, defaults to "ant" if not set
     ANT="${ANT:-ant}"
     if [ ! -f "`which "${ANT}"`" ] ; then
@@ -42,12 +51,9 @@ set_global_java_variables()
     FINDBUGS_HOME="${FINDBUGS_HOME:-""}"
 }
 
-# Set and check global variables for Java projets.
+# Set and check global variables for C++ projects.
 set_global_cpp_variables()
 {
-    exit_if_argc_ne $# 1
-    local ZSERIO_PROJECT_ROOT="$1"; shift
-
     # CMake to use, defaults to "cmake" if not set
     CMAKE="${CMAKE:-cmake}"
     if [ ! -f "`which "${CMAKE}"`" ] ; then
@@ -142,6 +148,7 @@ Uses the following environment variables for building:
     JAVAC_BIN              Java compiler executable to use. Default is "javac".
     JAVA_BIN               Java executable to use. Default is "java".
     PYTHON                 Python 3.5+ executable. Default is "python".
+    FIND                   Bash command find to use. Default is "/usr/bin/find".
     FINDBUGS_HOME          Home directory of findbugs tool where lib is located
                            (e.g. /usr/share/findbugs). If set, findbugs will be
                            called. Default is empty string.

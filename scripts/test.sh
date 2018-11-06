@@ -328,13 +328,13 @@ main()
         return 1
     fi
     if [[ ${PARAM_JAVA} == 1 ]] ; then
-        set_global_java_variables "${ZSERIO_PROJECT_ROOT}"
+        set_global_java_variables
         if [ $? -ne 0 ] ; then
             return 1
         fi
     fi
     if [[ ${#PARAM_CPP_TARGET_ARRAY[@]} -ne 0 ]] ; then
-        set_global_cpp_variables "${ZSERIO_PROJECT_ROOT}"
+        set_global_cpp_variables
         if [ $? -ne 0 ] ; then
             return 1
         fi

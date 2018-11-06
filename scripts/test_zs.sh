@@ -663,7 +663,7 @@ main()
         return 1
     fi
 
-    set_global_java_variables "${ZSERIO_PROJECT_ROOT}" # JAVAC needed for zserio tool
+    set_global_java_variables # JAVAC needed for zserio tool
     if [ $? -ne 0 ] ; then
         return 1
     fi

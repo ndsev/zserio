@@ -30,7 +30,7 @@ update_version()
     local NEW_VERSION_STRING="${1}"; shift
 
     # find all files with version
-    local VERSION_FILES=`find ${ZSERIO_SOURCE_DIR} -iname "*Version*"`
+    local VERSION_FILES=`${FIND} ${ZSERIO_SOURCE_DIR} -iname "*Version*"`
     for VERSION_FILE in ${VERSION_FILES}
     do
         update_version_in_file "${VERSION_FILE}" "${NEW_VERSION_STRING}"
@@ -126,6 +126,12 @@ main()
     parse_arguments NEW_VERSION_STRING $@
     if [ $? -ne 0 ] ; then
         print_help
+        return 1
+    fi
+
+    # set global variables if needed
+    set_global_common_variables
+    if [ $? -ne 0 ] ; then
         return 1
     fi
 
