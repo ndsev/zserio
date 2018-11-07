@@ -168,6 +168,9 @@ class ArrayTest(unittest.TestCase):
 
     def _testArray(self, arrayTraits, array1Values, array1BitSizeOf, array1AlignedBitSizeOf, array2Values):
         self._testHashCode(arrayTraits, array1Values, array2Values)
+        self._testLen(arrayTraits, array1Values)
+        self._testGetItem(arrayTraits, array1Values)
+        self._testSetItem(arrayTraits, array1Values)
         self._testGetRawArray(arrayTraits, array1Values, array2Values)
         self._testSum(arrayTraits, array1Values)
         self._testBitSizeOf(arrayTraits, array1Values, array1BitSizeOf, array1AlignedBitSizeOf)
@@ -181,6 +184,27 @@ class ArrayTest(unittest.TestCase):
         array3 = Array(arrayTraits, array1Values)
         self.assertNotEqual(hash(array1), hash(array2))
         self.assertEqual(hash(array1), hash(array3))
+
+    def _testLen(self, arrayTraits, arrayValues):
+        array = Array(arrayTraits, arrayValues)
+        rawArray = array.getRawArray()
+        self.assertEqual(len(rawArray), len(array))
+
+    def _testGetItem(self, arrayTraits, arrayValues):
+        array = Array(arrayTraits, arrayValues)
+        rawArray = array.getRawArray()
+        for value, rawValue in zip(array, rawArray):
+            self.assertEqual(value, rawValue)
+
+    def _testSetItem(self, arrayTraits, arrayValues):
+        array = Array(arrayTraits, arrayValues)
+        rawArray = array.getRawArray()
+        firstValue = array[0]
+        if isinstance(firstValue, int):
+            array[0] = firstValue + 1
+            self.assertEqual(array[0], rawArray[0])
+            rawArray[0] = firstValue # return the original value for other tests
+            self.assertEqual(array[0], rawArray[0])
 
     def _testGetRawArray(self, arrayTraits, array1Values, array2Values):
         array1 = Array(arrayTraits, array1Values)
@@ -197,7 +221,7 @@ class ArrayTest(unittest.TestCase):
             if isinstance(expectedSum, int): # sum supports numeric types only
                 for element in rawArray[1:]:
                     expectedSum = expectedSum + element
-                self.assertEqual(expectedSum, array.sum())
+                self.assertEqual(expectedSum, sum(array))
 
     def _testBitSizeOf(self, arrayTraits, arrayValues, expectedBitSize, expectedAlignedBitSize):
         array = Array(arrayTraits, arrayValues)

@@ -114,6 +114,15 @@ public abstract class CodeDefaultEmitter extends DefaultEmitter
                 requestAmalgamate);
     }
 
+    protected void processAmalgamatedTemplate(String templateName, Object templateData, Package packageToken,
+            String outFileNameRoot, String outputExtension) throws ZserioEmitException
+    {
+        final String codePackagePath = packageMapper.getPackageFilePath(packageToken);
+        final File outDir = new File(outPathName, codePackagePath);
+        final File outFile = new File(outDir, outFileNameRoot + outputExtension);
+        FreeMarkerUtil.processTemplate(codeTemplateLocation + templateName, templateData, outFile, true);
+    }
+
     private void processTemplate(String templateName, Object templateData, String packagePath,
             String outFileNameRoot, String outputExtension, boolean requestAmalgamate)
                     throws ZserioEmitException

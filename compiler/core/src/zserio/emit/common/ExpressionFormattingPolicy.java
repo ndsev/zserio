@@ -107,13 +107,31 @@ public interface ExpressionFormattingPolicy
      */
     public static class TernaryExpressionFormatting
     {
-        public TernaryExpressionFormatting(String beforeOperand1, String afterOperand1,
+        public TernaryExpressionFormatting(Expression expression, String beforeOperand1, String afterOperand1,
                 String afterOperand2, String afterOperand3)
         {
+            this.op1 = expression.op1();
+            this.op2 = expression.op2();
+            this.op3 = expression.op3();
             this.beforeOperand1 = beforeOperand1;
             this.afterOperand1 = afterOperand1;
             this.afterOperand2 = afterOperand2;
             this.afterOperand3 = afterOperand3;
+        }
+
+        public Expression getOperand1()
+        {
+            return op1;
+        }
+
+        public Expression getOperand2()
+        {
+            return op2;
+        }
+
+        public Expression getOperand3()
+        {
+            return op2;
         }
 
         public String getBeforeOperand1()
@@ -136,10 +154,13 @@ public interface ExpressionFormattingPolicy
             return afterOperand3;
         }
 
-        private final String    beforeOperand1;
-        private final String    afterOperand1;
-        private final String    afterOperand2;
-        private final String    afterOperand3;
+        private final Expression op1;
+        private final Expression op2;
+        private final Expression op3;
+        private final String beforeOperand1;
+        private final String afterOperand1;
+        private final String afterOperand2;
+        private final String afterOperand3;
     }
 
     // atom expressions formatting

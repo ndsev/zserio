@@ -39,12 +39,6 @@ class Array():
         self._checkOffsetMethod = checkOffsetMethod
 
     def __eq__(self, other):
-        """
-        Checks if the given array is different.
-
-        :param other: Array to check.
-        :returns: True if the given array is the same.
-        """
         return (self._rawArray == other._rawArray and
                 self._arrayTraits == other._arrayTraits and
                 self._isAuto == other._isAuto and
@@ -53,15 +47,20 @@ class Array():
                 self._checkOffsetMethod == other._checkOffsetMethod)
 
     def __hash__(self):
-        """
-        Calculates hash code of the array.
-        """
-
         hashCode = HASH_SEED
         for element in self._rawArray:
             hashCode = calcHashCode(hashCode, hash(element))
 
         return hashCode
+
+    def __len__(self):
+        return len(self._rawArray)
+
+    def __getitem__(self, key):
+        return self._rawArray[key]
+
+    def __setitem__(self, key, value):
+        self._rawArray[key] = value
 
     def getRawArray(self):
         """
@@ -72,14 +71,6 @@ class Array():
 
         return self._rawArray
 
-    def sum(self):
-        """
-        Calculates sum of all elements stored in the array.
-
-        :returns: Sum of all array elements.
-        """
-
-        return sum(self._rawArray)
 
     def bitSizeOf(self, bitPosition):
         """

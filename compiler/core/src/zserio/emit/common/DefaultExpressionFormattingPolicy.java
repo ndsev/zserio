@@ -163,7 +163,7 @@ public abstract class DefaultExpressionFormattingPolicy implements ExpressionFor
     @Override
     public TernaryExpressionFormatting getQuestionMark(Expression expr)
     {
-        return new TernaryExpressionFormatting("(", ") ? ", " : ", "");
+        return new TernaryExpressionFormatting(expr, "(", ") ? ", " : ", "");
     }
 
     // The following constants are used directly by emitters.

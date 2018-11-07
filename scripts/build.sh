@@ -470,8 +470,10 @@ main()
     # build Zserio Python extension
     if [[ ${PARAM_PYTHON} == 1 ]] ; then
         echo "${ACTION_DESCRIPTION} Zserio Python extension."
-        echo
-        echo "TODO"
+        compile_java "${ZSERIO_PROJECT_ROOT}/compiler/extensions/python/build.xml" ANT_PROPS[@] ${JAVA_TARGET}
+        if [ $? -ne 0 ] ; then
+            return 1
+        fi
         echo
     fi
 

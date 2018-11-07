@@ -48,7 +48,8 @@ public class PythonExtension implements Extension
     {
         final String outputDir = parameters.getCommandLineArg(OptionPython);
         final List<Emitter> emitters = new ArrayList<Emitter>();
-        // TODO: add emitters
+        emitters.add(new EnumerationEmitter(outputDir, parameters));
+        emitters.add(new InitPyEmitter(outputDir, parameters));
 
         // emit Python code
         for (Emitter pythonEmitter: emitters)

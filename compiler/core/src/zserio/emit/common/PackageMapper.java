@@ -79,7 +79,17 @@ final public class PackageMapper
      */
     public String getPackageFilePath(ZserioType type)
     {
-        return getMappedPackageFilePath(type.getPackage());
+        return getPackageFilePath(type.getPackage());
+    }
+
+    /**
+     * Returns the relative path to mapped package.
+     *
+     * @param packageToken The package to use.
+     */
+    public String getPackageFilePath(Package packageToken)
+    {
+        return getMappedPackageFilePath(packageToken);
     }
 
     /**
