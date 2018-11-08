@@ -131,7 +131,7 @@ public interface ExpressionFormattingPolicy
 
         public Expression getOperand3()
         {
-            return op2;
+            return op3;
         }
 
         public String getBeforeOperand1()
