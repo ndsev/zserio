@@ -4,6 +4,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import zserio.emit.common.NativeType;
+import zserio.tools.StringJoinUtil;
 
 public class PythonNativeType implements NativeType
 {
@@ -21,7 +22,7 @@ public class PythonNativeType implements NativeType
     @Override
     public String getFullName()
     {
-        return String.join(".", Arrays.asList(getPackagePath(), name));
+        return StringJoinUtil.joinStrings(Arrays.asList(getPackagePath(), name), ".");
     }
 
     @Override
@@ -32,7 +33,7 @@ public class PythonNativeType implements NativeType
 
     public String getPackagePath()
     {
-        return String.join(".", packagePath);
+        return StringJoinUtil.joinStrings(packagePath, ".");
     }
 
     private final List<String> packagePath;
