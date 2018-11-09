@@ -13,11 +13,7 @@
         <testGenClean testName="optional_members_error"/>
         <testGen testName="optional_members_error" zsFile="auto_optional_with_expression_error.zs"
             ignoreErrors="true"/>
-        <testGen testName="optional_members_error" zsFile="compound_field_in_function_not_available_error.zs"
-            ignoreErrors="true"/>
         <testGen testName="optional_members_error" zsFile="compound_field_not_available_error.zs"
-            ignoreErrors="true"/>
-        <testGen testName="optional_members_error" zsFile="field_in_function_not_available_error.zs"
             ignoreErrors="true"/>
         <testGen testName="optional_members_error" zsFile="field_itself_not_available_error.zs"
             ignoreErrors="true"/>

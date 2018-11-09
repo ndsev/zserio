@@ -108,7 +108,7 @@ public class TypeReference extends TokenAST implements ZserioType
             throw new ParserException(this, "Invalid usage of constant '" + referencedType.getName() +
                     "' as a type!");
         if (referencedType instanceof SqlDatabaseType)
-            throw new ParserException(this, "Invalid use of SQL database '" + referencedType.getName() +
+            throw new ParserException(this, "Invalid usage of SQL database '" + referencedType.getName() +
                     "' as a type!");
     }
 

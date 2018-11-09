@@ -2,7 +2,7 @@ package functions.structure_optional;
 
 /* Important thing here is that defaultValue is set to 0 if this type is constructed using default (empty)
  * constructor. However, externalValue is optional, so it must be initialized by default constructor as well.
- * Otherwise calling of function value() will throw if it is called immediatelly after construction. Please
+ * Otherwise calling of function value() will throw if it is called immediately after construction. Please
  * note that this is not necessary for BitStreamReader constructor which can leave all optional fields
  * uninitialized. */
 struct ValueCalculator

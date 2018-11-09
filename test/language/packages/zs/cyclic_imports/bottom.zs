@@ -1,16 +1,24 @@
 package cyclic_imports.bottom;
 
-import cyclic_imports.top.*;   // test for parsing cyclic depending imports
+import cyclic_imports.top.*; // test for parsing cyclic depending imports
 
 struct BottomStructure
 {
-    uint8   type : type == 3;
-    int32   data;
+    uint8           type : type == 3;
+    int32           data;
+    BottomColour    bottomColour;
+    BottomColour    anotherColour if isBottomColourRed();
+
+    function bool isBottomColourRed()
+    {
+        // test correct full path with multiple evaluation (one evaluation is from top.zs)
+        return bottomColour == cyclic_imports.bottom.BottomColour.RED;
+    }
 };
 
 enum uint8 BottomColour
 {
     RED = 1,
-    GREEN = 2,
+    GREEN = cyclic_imports.top.TopGreenColour.GREEN, // test correct cyclic full path import
     BLUE = 3
 };

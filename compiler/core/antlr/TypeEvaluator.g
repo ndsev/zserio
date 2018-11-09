@@ -130,7 +130,7 @@ structureDeclaration
             (parameterList)?
             (structureFieldDefinition)*
             (functionDefinition)*
-        )                           {   
+        )                           {
                                         currentScope = defaultScope;
                                         expressionScopes.clear();
                                         fillExpressionScopes = false;
@@ -140,7 +140,7 @@ structureDeclaration
 structureFieldDefinition
     :   #(f:FIELD
             (typeReference | a:fieldArrayType)
-            i:ID                    
+            i:ID
             (OPTIONAL)?
             (fieldInitializer)?
             (fieldOptionalClause)?  { currentScope.setSymbol((BaseTokenAST)i, f); }
@@ -188,13 +188,17 @@ fieldAlignment
     ;
 
 functionDefinition
-    :   #(f:FUNCTION definedType i:ID functionBody)
-        {
-            currentScope.setSymbol((BaseTokenAST)i, f);
-            ((FunctionType)f).setPackage(currentPackage);
-            for (Scope expressionScope : expressionScopes)
-                expressionScope.setSymbol((BaseTokenAST)i, f);
-        }
+    :   #(f:FUNCTION
+            definedType
+            i:ID                    {
+                                        for (Scope expressionScope : expressionScopes)
+                                            expressionScope.setSymbol((BaseTokenAST)i, f);
+                                    }
+            functionBody            {
+                                        currentScope.setSymbol((BaseTokenAST)i, f);
+                                        ((FunctionType)f).setPackage(currentPackage);
+                                    }
+        )
     ;
 
 functionBody

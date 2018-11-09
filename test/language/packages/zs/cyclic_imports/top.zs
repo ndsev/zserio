@@ -10,4 +10,10 @@ struct TopStructure
     MiddleStructure  middleStructure;
     BottomStructure  bottomStructure;
     BottomColour     bottomColour : bottomColour == BottomColour.RED;
+    bool             isBottomColourRed if bottomStructure.isBottomColourRed();
+};
+
+enum uint8 TopGreenColour
+{
+    GREEN = 2
 };

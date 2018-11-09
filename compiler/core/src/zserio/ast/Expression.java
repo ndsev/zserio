@@ -15,6 +15,14 @@ import zserio.tools.HashUtil;
 
 public class Expression extends TokenAST
 {
+    /**
+     * Empty constructor.
+     */
+    public Expression()
+    {
+        initialize();
+    }
+
     @Override
     public boolean equals(Object other)
     {
@@ -374,8 +382,8 @@ public class Expression extends TokenAST
      * It is supposed that the previous expression properties have been set to initialization values
      * (set by constructor).
      *
-     * If given scope for evaluation is different to expression scope, the method leaves expression in not
-     * evaluated state.
+     * If given scope for evaluation is different to expression scope, the method forces evaluation even if
+     * the expression has been already evaluated (this is used for function called within owner structure).
      *
      * @param evaluationScope Scope for evaluation.
      *
@@ -385,6 +393,10 @@ public class Expression extends TokenAST
     {
         if (evaluationState == EvaluationState.IN_EVALUATION)
             throw new ParserException(this, "Cyclic dependency detected in expression evaluation!");
+
+        // force evaluation if different scope is specified
+        if (evaluationScope != scope && evaluationState != EvaluationState.NOT_EVALUATED)
+            initialize();
 
         if (evaluationState == EvaluationState.NOT_EVALUATED)
         {
@@ -528,9 +540,7 @@ public class Expression extends TokenAST
                     throw new ParserException(this, "Illegal expression type " + getType() + ".");
             }
 
-            // expression is evaluated only if its scope has been used
-            evaluationState = (evaluationScope == scope) ? EvaluationState.EVALUATED :
-                    EvaluationState.NOT_EVALUATED;
+            evaluationState = EvaluationState.EVALUATED;
         }
     }
 
@@ -577,7 +587,8 @@ public class Expression extends TokenAST
      */
     protected void evaluateTree() throws ParserException
     {
-        evaluateTree(scope);
+        final ExpressionEvaluator expressionEvaluator = new ExpressionEvaluator();
+        callExpressionEvaluator(expressionEvaluator);
     }
 
     /**
@@ -1267,7 +1278,11 @@ public class Expression extends TokenAST
     {
         final ExpressionEvaluator expressionEvaluator = new ExpressionEvaluator();
         expressionEvaluator.setEvaluationScope(evaluationScope);
+        callExpressionEvaluator(expressionEvaluator);
+    }
 
+    private void callExpressionEvaluator(ExpressionEvaluator expressionEvaluator) throws ParserException
+    {
         try
         {
             expressionEvaluator.expression(this);
@@ -1278,6 +1293,21 @@ public class Expression extends TokenAST
         }
     }
 
+    private void initialize()
+    {
+        evaluationState = EvaluationState.NOT_EVALUATED;
+
+        expressionType = ExpressionType.UNKNOWN;
+        zserioType = null;
+        expressionIntegerValue = new ExpressionIntegerValue();
+
+        unresolvedIdentifiers = new ArrayList<Expression>();
+
+        symbolObject = null;
+        needsBigIntegerCastingToNative = false;
+        allowIndex = false;
+    }
+
     private enum EvaluationState
     {
         NOT_EVALUATED,
@@ -1285,17 +1315,17 @@ public class Expression extends TokenAST
         EVALUATED
     };
 
-    private EvaluationState evaluationState = EvaluationState.NOT_EVALUATED;
+    private EvaluationState evaluationState;
 
-    private ExpressionType expressionType = ExpressionType.UNKNOWN;
-    private ZserioType zserioType = null;
-    private ExpressionIntegerValue expressionIntegerValue = new ExpressionIntegerValue();
+    private ExpressionType expressionType;
+    private ZserioType zserioType;
+    private ExpressionIntegerValue expressionIntegerValue;
 
-    private List<Expression> unresolvedIdentifiers = new ArrayList<Expression>();
+    private List<Expression> unresolvedIdentifiers;
 
-    private Object symbolObject = null;
-    private boolean needsBigIntegerCastingToNative = false;
-    private boolean allowIndex = false;
+    private Object symbolObject;
+    private boolean needsBigIntegerCastingToNative;
+    private boolean allowIndex;
 
     private Scope scope = null;
     private Package pkg = null;

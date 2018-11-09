@@ -21,7 +21,7 @@ public class SubtypesErrorTest
     public void databaseSubtype()
     {
         final String error = "database_subtype_error.zs:13:9: " +
-                "Invalid use of SQL database 'TestDatabase' as a type!";
+                "Invalid usage of SQL database 'TestDatabase' as a type!";
         assertTrue(zserioErrors.isPresent(error));
     }
 

@@ -26,27 +26,10 @@ public class OptionalMembersErrorTest
     }
 
     @Test
-    public void compoundFieldInFunctionNotAvailable()
-    {
-        final String error = "compound_field_in_function_not_available_error.zs:17:23: Unresolved symbol " +
-                "'header2.hasOptional' within expression scope! Found in function 'hasOptional2' called " +
-                "from here:";
-        assertTrue(zserioErrors.isPresent(error));
-    }
-
-    @Test
     public void compoundFieldNotAvailable()
     {
         final String error = "compound_field_not_available_error.zs:7:30: Unresolved symbol " +
                 "'header2.hasOptional' within expression scope!";
-        assertTrue(zserioErrors.isPresent(error));
-    }
-
-    @Test
-    public void fieldInFunctionNotAvailable()
-    {
-        final String error = "field_in_function_not_available_error.zs:17:16: Unresolved symbol " +
-                "'hasSpecialData' within expression scope! Found in function 'hasSpecial' called from here:";
         assertTrue(zserioErrors.isPresent(error));
     }
 

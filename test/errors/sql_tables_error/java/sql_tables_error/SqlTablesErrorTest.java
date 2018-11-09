@@ -27,7 +27,7 @@ public class SqlTablesErrorTest
     @Test
     public void databaseField()
     {
-        final String error = ":20:5: Invalid use of SQL database 'TestDatabase' as a type!";
+        final String error = ":20:5: Invalid usage of SQL database 'TestDatabase' as a type!";
         assertTrue(zserioErrors.isPresent(error));
     }
 
