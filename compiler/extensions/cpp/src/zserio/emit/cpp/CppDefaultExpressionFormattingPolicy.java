@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import zserio.ast.ConstType;
+import zserio.ast.FunctionType;
 import zserio.ast.ZserioType;
 import zserio.ast.EnumItem;
 import zserio.ast.EnumType;
@@ -218,9 +219,14 @@ public abstract class CppDefaultExpressionFormattingPolicy extends DefaultExpres
             final CppNativeType nativeConstType = cppNativeTypeMapper.getCppType(constantType);
             result.append(nativeConstType.getFullName());
         }
-        else
+        else if (resolvedType instanceof FunctionType)
         {
             // [functionCall]()
+            final FunctionType functionType = (FunctionType)resolvedType;
+            result.append(AccessorNameFormatter.getFunctionName(functionType));
+        }
+        else
+        {
             result.append(symbol);
         }
     }

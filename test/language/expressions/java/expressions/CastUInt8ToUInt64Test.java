@@ -17,7 +17,7 @@ public class CastUInt8ToUInt64Test
         final CastUInt8ToUInt64Expression castUInt8ToUInt64Expression =
                 new CastUInt8ToUInt64Expression(uint8Value, false);
         final BigInteger expectedUInt64Value = BigInteger.valueOf(uint8Value);
-        assertEquals(expectedUInt64Value, castUInt8ToUInt64Expression.uint64Value());
+        assertEquals(expectedUInt64Value, castUInt8ToUInt64Expression.funcUint64Value());
     }
 
     @Test
@@ -27,6 +27,6 @@ public class CastUInt8ToUInt64Test
         final CastUInt8ToUInt64Expression castUInt8ToUInt64Expression =
                 new CastUInt8ToUInt64Expression(uint8Value, true);
         final BigInteger expectedUInt64Value = BigInteger.ONE;
-        assertEquals(expectedUInt64Value, castUInt8ToUInt64Expression.uint64Value());
+        assertEquals(expectedUInt64Value, castUInt8ToUInt64Expression.funcUint64Value());
     }
 }

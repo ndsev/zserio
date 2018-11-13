@@ -17,7 +17,7 @@ public class CastUInt64ToUInt8Test
         final CastUInt64ToUInt8Expression castUInt64ToUInt8Expression =
                 new CastUInt64ToUInt8Expression(uint64Value, false);
         final short expectedUInt8Value = uint64Value.shortValue();
-        assertEquals(expectedUInt8Value, castUInt64ToUInt8Expression.uint8Value());
+        assertEquals(expectedUInt8Value, castUInt64ToUInt8Expression.funcUint8Value());
     }
 
     @Test
@@ -27,6 +27,6 @@ public class CastUInt64ToUInt8Test
         final CastUInt64ToUInt8Expression castUInt64ToUInt8Expression =
                 new CastUInt64ToUInt8Expression(uint64Value, true);
         final short expectedUInt8Value = 1;
-        assertEquals(expectedUInt8Value, castUInt64ToUInt8Expression.uint8Value());
+        assertEquals(expectedUInt8Value, castUInt64ToUInt8Expression.funcUint8Value());
     }
 }

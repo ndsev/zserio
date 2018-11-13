@@ -47,7 +47,7 @@ protected:
         ValueConsumerCreator valueConsumerCreator;
         createValueConsumerCreator(valueConsumerCreator, defaultValue, externalValue);
         const uint8_t expectedValue = calculateValue(defaultValue, externalValue);
-        ASSERT_EQ(expectedValue, valueConsumerCreator.getValueCalculator().value());
+        ASSERT_EQ(expectedValue, valueConsumerCreator.getValueCalculator().funcValue());
 
         zserio::BitStreamWriter writtenWriter;
         valueConsumerCreator.write(writtenWriter);

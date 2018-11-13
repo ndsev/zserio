@@ -53,7 +53,7 @@ public class StructureOptionalTest
             valueCalculator.setExternalValue(externalValue);
         valueConsumerCreator.setValueCalculator(valueCalculator);
 
-        final ValueConsumer valueConsumer = new ValueConsumer(valueCalculator.value());
+        final ValueConsumer valueConsumer = new ValueConsumer(valueCalculator.funcValue());
         valueConsumer.setIsSmall(calculateValue(defaultValue, externalValue) < SMALL_VALUE_THRESHOLD);
         valueConsumerCreator.setValueConsumer(valueConsumer);
 
@@ -65,7 +65,7 @@ public class StructureOptionalTest
         final ValueConsumerCreator valueConsumerCreator = createValueConsumerCreator(defaultValue,
                 externalValue);
         assertEquals(calculateValue(defaultValue, externalValue),
-                valueConsumerCreator.getValueCalculator().value());
+                valueConsumerCreator.getValueCalculator().funcValue());
 
         final ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter();
         valueConsumerCreator.write(writer);

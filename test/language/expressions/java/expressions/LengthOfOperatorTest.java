@@ -17,7 +17,7 @@ public class LengthOfOperatorTest
         final int fixedArrayLength = 10;
         final UnsignedByteArray fixedArray = new UnsignedByteArray(fixedArrayLength);
         lengthOfFunctions.setFixedArray(fixedArray);
-        assertEquals(fixedArrayLength, lengthOfFunctions.getLengthOfFixedArray());
+        assertEquals(fixedArrayLength, lengthOfFunctions.funcGetLengthOfFixedArray());
     }
 
     @Test
@@ -28,7 +28,7 @@ public class LengthOfOperatorTest
         final UnsignedByteArray variableArray = new UnsignedByteArray(variableArrayLength);
         lengthOfFunctions.setNumElements((short)variableArrayLength);
         lengthOfFunctions.setVariableArray(variableArray);
-        assertEquals(variableArrayLength, lengthOfFunctions.getLengthOfVariableArray());
+        assertEquals(variableArrayLength, lengthOfFunctions.funcGetLengthOfVariableArray());
     }
 
     @Test
@@ -38,6 +38,6 @@ public class LengthOfOperatorTest
         final int implicitArrayLength = 12;
         final UnsignedByteArray implicitArray = new UnsignedByteArray(implicitArrayLength);
         lengthOfFunctions.setImplicitArray(implicitArray);
-        assertEquals(implicitArrayLength, lengthOfFunctions.getLengthOfImplicitArray());
+        assertEquals(implicitArrayLength, lengthOfFunctions.funcGetLengthOfImplicitArray());
     }
 }

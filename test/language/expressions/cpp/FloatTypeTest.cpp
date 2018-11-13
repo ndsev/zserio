@@ -16,7 +16,7 @@ TEST(FloatTypeTest, result)
     floatTypeExpression.setFloatValue(floatValue);
 
     const bool result = (floatValue * 2.0 + 1.0 / 0.5 > 1.0);
-    ASSERT_EQ(result, floatTypeExpression.result());
+    ASSERT_EQ(result, floatTypeExpression.funcResult());
 }
 
 } // namespace float_type

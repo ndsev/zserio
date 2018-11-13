@@ -12,9 +12,9 @@ public class NegationOperatorTest
     public void negatedValue()
     {
         NegationOperatorExpression negationOperatorExpression = new NegationOperatorExpression(true);
-        assertEquals(false, negationOperatorExpression.negatedValue());
+        assertEquals(false, negationOperatorExpression.funcNegatedValue());
 
         negationOperatorExpression.setValue(false);
-        assertEquals(true, negationOperatorExpression.negatedValue());
+        assertEquals(true, negationOperatorExpression.funcNegatedValue());
     }
 }

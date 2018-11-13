@@ -21,6 +21,6 @@ public class SumOperatorTest
         int expectedSum = 0;
         for (int element : fixedArrayData)
             expectedSum += element;
-        assertEquals(expectedSum, sumFunction.getSumFixedArray());
+        assertEquals(expectedSum, sumFunction.funcGetSumFixedArray());
     }
 }

@@ -3,6 +3,7 @@ package zserio.emit.java;
 import java.math.BigInteger;
 
 import zserio.ast.ConstType;
+import zserio.ast.FunctionType;
 import zserio.ast.ZserioType;
 import zserio.ast.EnumItem;
 import zserio.ast.EnumType;
@@ -448,9 +449,14 @@ public abstract class JavaDefaultExpressionFormattingPolicy extends DefaultExpre
             final JavaNativeType javaType = javaNativeTypeMapper.getJavaType(resolvedType);
             result.append(javaType.getFullName());
         }
-        else
+        else if (resolvedType instanceof FunctionType)
         {
             // [functionCall]()
+            final FunctionType functionType = (FunctionType)resolvedType;
+            result.append(AccessorNameFormatter.getFunctionName(functionType));
+        }
+        else
+        {
             result.append(symbol);
         }
     }

@@ -81,7 +81,7 @@ public class UnionArrayTest
         }
         else
         {
-            itemRef.setPos(pos);
+            itemRef.setPosition(pos);
         }
 
         return new Inner(outerArray, itemRef);
@@ -93,11 +93,11 @@ public class UnionArrayTest
         final short isExplicit = (pos >= NUM_ITEM_ELEMENTS) ? (short)1 : (short)0;
         if (isExplicit != 0)
         {
-            assertEquals(EXPLICIT_ITEM, inner.getRef().getExplicitItem());
+            assertEquals(EXPLICIT_ITEM, inner.getRef().funcGetItem());
         }
         else
         {
-            assertEquals(ITEMS.get(pos), inner.getRef().getElement());
+            assertEquals(ITEMS.get(pos), inner.getRef().funcGetElement());
         }
 
         final ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter();

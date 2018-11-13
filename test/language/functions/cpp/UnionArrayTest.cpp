@@ -74,7 +74,7 @@ protected:
         }
         else
         {
-            itemRef.setPos(pos);
+            itemRef.setPosition(pos);
         }
 
         inner.initializeChildren();
@@ -87,12 +87,12 @@ protected:
         const uint8_t isExplicit = (pos >= NUM_ITEM_ELEMENTS) ? 1 : 0;
         if (isExplicit != 0)
         {
-            const Item readElement = inner.getRef().getExplicitItem();
+            const Item readElement = inner.getRef().funcGetItem();
             ASSERT_EQ(m_explicitItem, readElement);
         }
         else
         {
-            const Item readElement = inner.getRef().getElement();
+            const Item readElement = inner.getRef().funcGetElement();
             ASSERT_EQ(m_items[pos], readElement);
         }
 

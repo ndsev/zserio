@@ -96,7 +96,7 @@ protected:
     {
         Inner inner;
         fillInner(inner, pos);
-        const Item readElement = inner.getRef().getElement();
+        const Item readElement = inner.getRef().funcGetElement();
         if (pos >= NUM_ITEM_ELEMENTS)
         {
             ASSERT_EQ(m_explicitItem, readElement);

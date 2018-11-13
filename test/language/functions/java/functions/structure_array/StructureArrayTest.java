@@ -66,7 +66,7 @@ public class StructureArrayTest
     private void checkStructureArray(int pos) throws IOException
     {
         final StructureArray structureArray = createStructureArray(pos);
-        assertEquals(ITEMS.get(pos), structureArray.getElement());
+        assertEquals(ITEMS.get(pos), structureArray.funcGetElement());
 
         final ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter();
         structureArray.write(writer);

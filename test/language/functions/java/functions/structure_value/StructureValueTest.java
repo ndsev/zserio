@@ -96,7 +96,7 @@ public class StructureValueTest
     private void checkCustomVarInt(int value) throws IOException
     {
         final CustomVarInt customVarInt = createCustomVarInt(value);
-        final long readValue = customVarInt.getValue();
+        final long readValue = customVarInt.funcGetValue();
         assertEquals(value, readValue);
 
         final ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter();

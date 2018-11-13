@@ -14,7 +14,7 @@ public class ParenthesisTest
         final ParenthesisExpression parenthesisExpression = new ParenthesisExpression(FIRST_VALUE,
                 SECOND_VALUE);
 
-        assertEquals(FIRST_VALUE * (SECOND_VALUE + 1), parenthesisExpression.result());
+        assertEquals(FIRST_VALUE * (SECOND_VALUE + 1), parenthesisExpression.funcResult());
     }
 
     private static final byte FIRST_VALUE = 0x11;

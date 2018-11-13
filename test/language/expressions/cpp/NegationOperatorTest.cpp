@@ -13,10 +13,10 @@ TEST(NumBitsOperatorTest, NegatedValue)
 {
     NegationOperatorExpression negationOperatorExpression;
     negationOperatorExpression.setValue(true);
-    ASSERT_FALSE(negationOperatorExpression.negatedValue());
+    ASSERT_FALSE(negationOperatorExpression.funcNegatedValue());
 
     negationOperatorExpression.setValue(false);
-    ASSERT_TRUE(negationOperatorExpression.negatedValue());
+    ASSERT_TRUE(negationOperatorExpression.funcNegatedValue());
 }
 
 } // namespace negation_operator
