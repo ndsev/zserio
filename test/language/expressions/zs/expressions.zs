@@ -7,6 +7,7 @@ import expressions.const_type.*;
 import expressions.enumeration_type.*;
 import expressions.field_type.*;
 import expressions.float_type.*;
+import expressions.full_const_type.*;
 import expressions.full_enumeration_type.*;
 import expressions.function_type.*;
 import expressions.index_operator.*;

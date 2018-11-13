@@ -32,6 +32,7 @@
         <testGen testName="expressions_error" zsFile="offsets/signed_integer_error.zs" ignoreErrors="true"/>
         <testGen testName="expressions_error" zsFile="offsets/signed_varint_error.zs" ignoreErrors="true"/>
         <testGen testName="expressions_error" zsFile="offsets/string_error.zs" ignoreErrors="true"/>
+        <testGen testName="expressions_error" zsFile="wrong_full_type_error.zs" ignoreErrors="true"/>
     </target>
 
     <target name="compile" depends="gen">

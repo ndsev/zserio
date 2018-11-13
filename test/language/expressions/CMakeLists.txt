@@ -25,6 +25,9 @@ set(ZSERIO_GENERATED_SOURCES
     ${ZSERIO_GEN_DIR}/expressions/float_type/FloatTypeExpression.cpp
     ${ZSERIO_GEN_DIR}/expressions/float_type/FloatTypeExpression.h
 
+    ${ZSERIO_GEN_DIR}/expressions/full_const_type/FullConstTypeExpression.cpp
+    ${ZSERIO_GEN_DIR}/expressions/full_const_type/FullConstTypeExpression.h
+
     ${ZSERIO_GEN_DIR}/expressions/full_enumeration_type/Color.cpp
     ${ZSERIO_GEN_DIR}/expressions/full_enumeration_type/Color.h
     ${ZSERIO_GEN_DIR}/expressions/full_enumeration_type/FullEnumerationTypeExpression.cpp
@@ -101,6 +104,7 @@ add_test_sources(
     cpp/EnumerationTypeTest.cpp
     cpp/FieldTypeTest.cpp
     cpp/FloatTypeTest.cpp
+    cpp/FullConstTypeTest.cpp
     cpp/FullEnumerationTypeTest.cpp
     cpp/FunctionTypeTest.cpp
     cpp/IndexOperatorTest.cpp

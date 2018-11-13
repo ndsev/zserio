@@ -723,72 +723,85 @@ public class Expression extends TokenAST
         if (identifierSymbol == null)
         {
             // it still can be a type
-            final ZserioType identifierType = pkg.getVisibleType(this, new PackageName(),
-                    identifier);
-            symbolObject = identifierType;
+            final ZserioType identifierType = pkg.getVisibleType(new PackageName(), identifier);
             if (identifierType == null)
             {
-                // identifier not found, this can happened for structure field or package, we must wait for dot
+                // identifier not found, this can happened for a package name, we must wait for dot
                 unresolvedIdentifiers.add(this);
-            }
-            else if (identifierType instanceof EnumType)
-            {
-                // enumeration type, we must wait for field and dot
-                zserioType = (EnumType)identifierType;
-            }
-            else if (identifierType instanceof ConstType)
-            {
-                // constant type
-                final ConstType constType = (ConstType)identifierType;
-                evaluateExpressionType(constType.getConstType());
-                final Expression constValueExpression = constType.getValueExpression();
-
-                // call evaluation explicitly because this const does not have to be evaluated yet
-                constValueExpression.evaluateTree();
-
-                expressionIntegerValue = constValueExpression.expressionIntegerValue;
-
-                // add this expression to 'Used-by' list for constant type (needed by documentation emitter)
-                constType.setUsedByExpression(this);
             }
             else
             {
-                throw new ParserException(this, "Type '" + identifier + "' (" +
-                        identifierType.getClass() + ") is not allowed here!");
+                evaluateIdentifierType(identifierType);
             }
         }
         else
         {
-            symbolObject = identifierSymbol;
-            if (identifierSymbol instanceof Field)
-            {
-                evaluateExpressionType(((Field)identifierSymbol).getFieldType());
-            }
-            else if (identifierSymbol instanceof Parameter)
-            {
-                evaluateExpressionType(((Parameter)identifierSymbol).getParameterType());
-            }
-            else if (identifierSymbol instanceof FunctionType)
-            {
-                // function type, we must wait for "()"
-                zserioType = (FunctionType)identifierSymbol;
-            }
-            else if (identifierSymbol instanceof EnumItem)
-            {
-                // enumeration item (this can happen for enum choices where enum is visible or for enum itself)
-                final EnumItem enumItem = (EnumItem)identifierSymbol;
-                final EnumType enumType = enumItem.getEnumType();
+            evaluateIdentifierSymbol(identifierSymbol, evaluationScope, identifier);
+        }
+    }
 
-                // if this enumeration item is in own enum, leave it unresolved (we have problem with it because
-                // such enumeration items cannot be evaluated yet)
-                if (evaluationScope.getOwner() != enumType)
-                    evaluateExpressionType(enumType);
-            }
-            else
-            {
-                throw new ParserException(this, "Symbol '" + identifier + "' (" +
-                        identifierSymbol.getClass() + ") is not allowed here!");
-            }
+    private void evaluateIdentifierType(ZserioType identifierType) throws ParserException
+    {
+        symbolObject = identifierType;
+        if (identifierType instanceof EnumType)
+        {
+            // enumeration type, we must wait for field and dot
+            zserioType = identifierType;
+        }
+        else if (identifierType instanceof ConstType)
+        {
+            // constant type
+            final ConstType constType = (ConstType)identifierType;
+            evaluateExpressionType(constType.getConstType());
+            final Expression constValueExpression = constType.getValueExpression();
+
+            // call evaluation explicitly because this const does not have to be evaluated yet
+            constValueExpression.evaluateTree();
+
+            expressionIntegerValue = constValueExpression.expressionIntegerValue;
+
+            // add this expression to 'Used-by' list for constant type (needed by documentation emitter)
+            constType.setUsedByExpression(this);
+        }
+        else
+        {
+            throw new ParserException(this, "Type '" + identifierType.getName() + "' (" +
+                    identifierType.getClass() + ") is not allowed here!");
+        }
+    }
+
+    private void evaluateIdentifierSymbol(Object identifierSymbol, Scope evaluationScope, String identifier)
+            throws ParserException
+    {
+        symbolObject = identifierSymbol;
+        if (identifierSymbol instanceof Field)
+        {
+            evaluateExpressionType(((Field)identifierSymbol).getFieldType());
+        }
+        else if (identifierSymbol instanceof Parameter)
+        {
+            evaluateExpressionType(((Parameter)identifierSymbol).getParameterType());
+        }
+        else if (identifierSymbol instanceof FunctionType)
+        {
+            // function type, we must wait for "()"
+            zserioType = (FunctionType)identifierSymbol;
+        }
+        else if (identifierSymbol instanceof EnumItem)
+        {
+            // enumeration item (this can happen for enum choices where enum is visible or for enum itself)
+            final EnumItem enumItem = (EnumItem)identifierSymbol;
+            final EnumType enumType = enumItem.getEnumType();
+
+            // if this enumeration item is in own enum, leave it unresolved (we have problem with it because
+            // such enumeration items cannot be evaluated yet)
+            if (evaluationScope.getOwner() != enumType)
+                evaluateExpressionType(enumType);
+        }
+        else
+        {
+            throw new ParserException(this, "Symbol '" + identifier + "' (" +
+                    identifierSymbol.getClass() + ") is not allowed here!");
         }
     }
 
@@ -889,39 +902,28 @@ public class Expression extends TokenAST
 
     private void evaluatePackageDotExpression(Expression op1, Expression op2) throws ParserException
     {
-        if (op2.zserioType == null)
+        // try to resolve op1 as package name and op2 as type
+        final PackageName op1UnresolvedPackageName = new PackageName();
+        for (Expression unresolvedIdentifier : op1.unresolvedIdentifiers)
+            op1UnresolvedPackageName.addId(unresolvedIdentifier.getText());
+
+        final ZserioType identifierType = pkg.getVisibleType(op1UnresolvedPackageName, op2.getText());
+        if (identifierType == null)
         {
-            // right operand is unknown as well => it still can be a part of long package
+            // identifier still not found, this can happened for long package name, we must wait for dot
             unresolvedIdentifiers.addAll(op1.unresolvedIdentifiers);
-            unresolvedIdentifiers.addAll(op2.unresolvedIdentifiers);
-        }
-        else if (op2.zserioType instanceof EnumType || op2.zserioType instanceof CompoundType)
-        {
-            // left operand is package and right operand in enum or compound
-            final ZserioType op2ZserioType = op2.zserioType;
-            final Package op2Package = op2ZserioType.getPackage();
-            final PackageName op2PackageName = op2Package.getPackageName();
-            final PackageName op1UnresolvedPackageName = new PackageName();
-
-            for (Expression unresolvedIdentifier : op1.unresolvedIdentifiers)
-            {
-                op1UnresolvedPackageName.addId(unresolvedIdentifier.getText());
-                unresolvedIdentifier.symbolObject = op2Package;
-            }
-
-            if (!op2PackageName.equals(op1UnresolvedPackageName))
-            {
-                // specified package is wrong
-                throw new ParserException(op1, "Wrong package '" + op1UnresolvedPackageName.toString() +
-                        "' for type '" + op2ZserioType.getName() + "'.");
-            }
-
-            zserioType = op2ZserioType;
+            unresolvedIdentifiers.add(op2);
         }
         else
         {
-            // left operand is package and right operand is not enum or compound
-            throw new ParserException(op2, "Unexpected dot expression '" + op2.getText() + "'.");
+            evaluateIdentifierType(identifierType);
+
+            // reset op2, it could be already found in different package
+            op2.reset(identifierType);
+
+            // set symbolObject to all unresolved identifier expressions (needed for formatters)
+            for (Expression unresolvedIdentifier : op1.unresolvedIdentifiers)
+                unresolvedIdentifier.symbolObject = identifierType.getPackage();
         }
     }
 
@@ -935,11 +937,10 @@ public class Expression extends TokenAST
             throw new ParserException(this, "'" + dotOperand + "' undefined in enumeration '" +
                     enumType.getName() + "'.");
 
-        // set unresolved symbol object for enumeration item as well (needed for formatters)
-        op2.symbolObject = enumSymbol;
-        // enumeration items can be already resolved because they are searched globally to support choices
-        // with enumeration selector
-        op2.zserioType = null;
+        // reset op2, enumeration items can be already resolved because they are searched globally to
+        // support choices with enumeration selector (needed for formatters)
+        op2.reset(enumSymbol);
+
         symbolObject = enumSymbol;
         evaluateExpressionType(enumType);
     }
@@ -954,8 +955,9 @@ public class Expression extends TokenAST
             throw new ParserException(this, "'" + dotOperand + "' undefined in compound '" +
                     compoundType.getName() + "'.");
 
-        // update unresolved symbol object for field as well (needed for formatters)
-        op2.symbolObject = compoundSymbol;
+        // reset op2, it could be already found in the compound type (needed for formatters)
+        op2.reset(compoundSymbol);
+
         symbolObject = compoundSymbol;
         if (compoundSymbol instanceof Field)
         {
@@ -1246,9 +1248,7 @@ public class Expression extends TokenAST
     {
         final Expression op1 = op1();
         if (!(op1.zserioType instanceof FunctionType))
-        {
             throw new ParserException(op1, "'" + op1().getText() + "' is not a function.");
-        }
 
         final FunctionType functionType = (FunctionType)op1.zserioType;
         final Expression functionResultExpression = functionType.getResultExpression();
@@ -1291,6 +1291,19 @@ public class Expression extends TokenAST
         {
             throw new ParserException(this, excpt.getMessage());
         }
+    }
+
+    private void reset(Object newSymbolObject)
+    {
+        expressionType = ExpressionType.UNKNOWN;
+        zserioType = null;
+        expressionIntegerValue = new ExpressionIntegerValue();
+
+        unresolvedIdentifiers.clear();
+
+        symbolObject = newSymbolObject;
+        needsBigIntegerCastingToNative = false;
+        allowIndex = false;
     }
 
     private void initialize()

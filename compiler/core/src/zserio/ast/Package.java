@@ -110,15 +110,34 @@ public class Package extends TokenAST
     public ZserioType getVisibleType(BaseTokenAST ownerToken, PackageName typePackageName, String typeName)
             throws ParserException
     {
-        ZserioType foundType = getLocalType(typePackageName, typeName);
-        if (foundType == null)
+        final List<ZserioType> foundTypes = getAllVisibleTypes(typePackageName, typeName);
+        final int numFoundTypes = foundTypes.size();
+        if (numFoundTypes > 1)
         {
-            foundType = getTypeFromImportedPackages(ownerToken, typePackageName, typeName);
-            if (foundType == null)
-                foundType = getTypeFromImportedSingleTypes(ownerToken, typePackageName, typeName);
+            final String firstPackageName = foundTypes.get(0).getPackage().getPackageName().toString();
+            final String secondPackageName = foundTypes.get(1).getPackage().getPackageName().toString();
+            throw new ParserException(ownerToken, "Ambiguous type reference '" + typeName +
+                    "' found in packages '" + firstPackageName + "' and '" + secondPackageName + "'!");
         }
 
-        return foundType;
+        return (numFoundTypes == 1) ? foundTypes.get(0) : null;
+    }
+
+    /**
+     * Gets Zserio type for given type name with its package if it's visible for this package.
+     *
+     * This method does not throw exception in case of ambiguous type. It just returns null in this case.
+     *
+     * @param typePackageName Package name of the type to resolve.
+     * @param typeName        Type name to resolve.
+     *
+     * @return Zserio type if given type name is visible for this package or null if given type name is unknown.
+     */
+    public ZserioType getVisibleType(PackageName typePackageName, String typeName)
+    {
+        final List<ZserioType> foundTypes = getAllVisibleTypes(typePackageName, typeName);
+
+        return (foundTypes.size() == 1) ? foundTypes.get(0) : null;
     }
 
     /**
@@ -214,6 +233,24 @@ public class Package extends TokenAST
         }
     }
 
+    private List<ZserioType> getAllVisibleTypes(PackageName typePackageName, String typeName)
+    {
+        final List<ZserioType> foundTypes = new ArrayList<ZserioType>();
+        final ZserioType foundLocalType = getLocalType(typePackageName, typeName);
+        if (foundLocalType != null)
+        {
+            foundTypes.add(foundLocalType);
+        }
+        else
+        {
+            // because we must check for ambiguous types, we must collect all found types
+            foundTypes.addAll(getTypesFromImportedPackages(typePackageName, typeName));
+            foundTypes.addAll(getTypesFromImportedSingleTypes(typePackageName, typeName));
+        }
+
+        return foundTypes;
+    }
+
     private ZserioType getLocalType(PackageName typePackageName, String typeName)
     {
         if (!typePackageName.isEmpty() && !typePackageName.equals(packageName))
@@ -222,58 +259,36 @@ public class Package extends TokenAST
         return localTypes.get(typeName);
     }
 
-    private ZserioType getTypeFromImportedPackages(BaseTokenAST ownerToken, PackageName typePackageName,
-            String typeName) throws ParserException
+    private List<ZserioType> getTypesFromImportedPackages(PackageName typePackageName, String typeName)
     {
-        ZserioType foundType = null;
+        final List<ZserioType> foundTypes = new ArrayList<ZserioType>();
         for (Package importedPackage : importedPackages)
         {
             // don't exit the loop if something has been found, we need to check for ambiguities
-            final ZserioType importedType = getImportedType(ownerToken, importedPackage, typePackageName,
-                    typeName, foundType);
+            final ZserioType importedType = importedPackage.getLocalType(typePackageName, typeName);
             if (importedType != null)
-                foundType = importedType;
+                foundTypes.add(importedType);
         }
 
-        return foundType;
+        return foundTypes;
     }
 
-    private ZserioType getTypeFromImportedSingleTypes(BaseTokenAST ownerToken, PackageName typePackageName,
-            String typeName) throws ParserException
+    private List<ZserioType> getTypesFromImportedSingleTypes(PackageName typePackageName, String typeName)
     {
-        ZserioType foundType = null;
+        final List<ZserioType> foundTypes = new ArrayList<ZserioType>();
         for (SingleTypeName importedSingleType : importedSingleTypes)
         {
             // don't exit the loop if something has been found, we need to check for ambiguities
             if (typeName.equals(importedSingleType.getTypeName()))
             {
-                final ZserioType importedType = getImportedType(ownerToken, importedSingleType.getPackageType(),
-                        typePackageName, typeName, foundType);
+                final Package importedPackage = importedSingleType.getPackageType();
+                final ZserioType importedType = importedPackage.getLocalType(typePackageName, typeName);
                 if (importedType != null)
-                    foundType = importedType;
+                    foundTypes.add(importedType);
             }
         }
 
-        return foundType;
-    }
-
-    private ZserioType getImportedType(BaseTokenAST ownerToken, Package importedPackage,
-            PackageName typePackageName, String typeName, ZserioType foundType) throws ParserException
-    {
-        final ZserioType importedType = importedPackage.getLocalType(typePackageName, typeName);
-        if (foundType != null)
-        {
-            // already found, we check for ambiguities
-            if (importedType != null)
-            {
-                final String foundPackageName = foundType.getPackage().getPackageName().toString();
-                final String importedTypePackageName = importedType.getPackage().getPackageName().toString();
-                throw new ParserException(ownerToken, "Ambiguous type reference '" + typeName + "' found in " +
-                        "packages '" + foundPackageName + "' and '" + importedTypePackageName + "'!");
-            }
-        }
-
-        return importedType;
+        return foundTypes;
     }
 
     private static class SingleTypeName implements Comparable<SingleTypeName>, Serializable
