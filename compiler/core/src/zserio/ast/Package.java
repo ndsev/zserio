@@ -185,6 +185,8 @@ public class Package extends TokenAST
                     ZserioToolPrinter.printWarning(importedNode, "Duplicated import of package '" +
                             importedPackageName.toString() + "'.");
 
+                // check redundant single type imports
+                final List<SingleTypeName> redundantSingleTypeImports = new ArrayList<SingleTypeName>();
                 for (SingleTypeName importedSingleType : importedSingleTypes)
                 {
                     if (importedSingleType.getPackageType().getPackageName().equals(importedPackageName))
@@ -192,10 +194,13 @@ public class Package extends TokenAST
                         ZserioToolPrinter.printWarning(importedNode, "Import of package '" +
                                 importedPackageName.toString() + "' overwrites single type import '" +
                                 importedSingleType.getTypeName() + "'.");
-                        // remove it from imported single types not to become ambiguous
-                        importedSingleTypes.remove(importedSingleType);
+                        redundantSingleTypeImports.add(importedSingleType);
                     }
                 }
+
+                // remove all redundant single type imports to avoid ambiguous error
+                for (SingleTypeName redundantSingleTypeImport : redundantSingleTypeImports)
+                    importedSingleTypes.remove(redundantSingleTypeImport);
 
                 importedPackages.add(importedPackage);
             }
