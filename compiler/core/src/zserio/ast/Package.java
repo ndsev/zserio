@@ -188,9 +188,13 @@ public class Package extends TokenAST
                 for (SingleTypeName importedSingleType : importedSingleTypes)
                 {
                     if (importedSingleType.getPackageType().getPackageName().equals(importedPackageName))
+                    {
                         ZserioToolPrinter.printWarning(importedNode, "Import of package '" +
                                 importedPackageName.toString() + "' overwrites single type import '" +
                                 importedSingleType.getTypeName() + "'.");
+                        // remove it from imported single types not to become ambiguous
+                        importedSingleTypes.remove(importedSingleType);
+                    }
                 }
 
                 importedPackages.add(importedPackage);
@@ -199,21 +203,27 @@ public class Package extends TokenAST
             {
                 // this is single type import
                 if (importedPackages.contains(importedPackage))
+                {
                     ZserioToolPrinter.printWarning(importedNode, "Single type '" + importedTypeName +
                             "' imported already by package import.");
+                    // don't add it to imported single types because this type would become ambiguous
+                }
+                else
+                {
+                    final SingleTypeName importedSingleType = new SingleTypeName(importedPackage,
+                            importedTypeName);
+                    if (importedSingleTypes.contains(importedSingleType))
+                        ZserioToolPrinter.printWarning(importedNode, "Duplicated import of type '" +
+                                importedTypeName + "'.");
 
-                final SingleTypeName importedSingleType = new SingleTypeName(importedPackage, importedTypeName);
-                if (importedSingleTypes.contains(importedSingleType))
-                    ZserioToolPrinter.printWarning(importedNode, "Duplicated import of type '" +
-                            importedTypeName + "'.");
+                    final ZserioType importedZserioType = importedPackage.getLocalType(importedPackageName,
+                            importedTypeName);
+                    if (importedZserioType == null)
+                        throw new ParserException(importedNode, "Unknown type '" + importedTypeName +
+                                "' in imported package '" + importedPackageName + "'!");
 
-                final ZserioType importedZserioType = importedPackage.getLocalType(importedPackageName,
-                        importedTypeName);
-                if (importedZserioType == null)
-                    throw new ParserException(importedNode, "Unknown type '" + importedTypeName +
-                            "' in imported package '" + importedPackageName + "'!");
-
-                importedSingleTypes.add(importedSingleType);
+                    importedSingleTypes.add(importedSingleType);
+                }
             }
         }
     }
