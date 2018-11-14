@@ -143,7 +143,7 @@ translationUnit[InputFileManager inputFileManager]
             {
                 if (#p == null)
                 {
-                    // file is not empty but there is no package, we must create the default package explicitly 
+                    // file is not empty but there is no package, we must create the default package explicitly
                     #p = #([PACKAGE, ""]);
                     ((TokenAST)#p).setImaginaryTokenPosition((TokenAST)#translationUnit);
                     #translationUnit = #([TRANSLATION_UNIT, getFilename()], p, translationUnit);

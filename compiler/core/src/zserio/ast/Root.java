@@ -45,8 +45,10 @@ public class Root extends TokenAST
      * Adds translation unit to this root node.
      *
      * @param translationUnit Translation unit to add.
+     *
+     * @throws ParserException In case of multiple default packages.
      */
-    public void addTranslationUnit(TranslationUnit translationUnit)
+    public void addTranslationUnit(TranslationUnit translationUnit) throws ParserException
     {
         addChild(translationUnit);
         translationUnits.add(translationUnit);
@@ -55,7 +57,11 @@ public class Root extends TokenAST
         if (unitPackage != null)
         {
             // translation unit package can be null if input file is empty
-            packageNameMap.put(unitPackage.getPackageName(), unitPackage);
+            if (packageNameMap.put(unitPackage.getPackageName(), unitPackage) != null)
+            {
+                // translation unit package already exists, this could happen only for default packages
+                throw new ParserException(translationUnit, "Multiple default packages are not allowed!");
+            }
         }
     }
 

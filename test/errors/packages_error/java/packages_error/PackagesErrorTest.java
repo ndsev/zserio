@@ -41,6 +41,13 @@ public class PackagesErrorTest
     }
 
     @Test
+    public void multipleDefaultPackage()
+    {
+        final String error = "default_package.zs:1:1: Multiple default packages are not allowed!";
+        assertTrue(zserioErrors.isPresent(error));
+    }
+
+    @Test
     public void transitiveImport()
     {
         final String error = "transitive_import_error.zs:8:5: Unresolved referenced type 'BottomStructure'!";

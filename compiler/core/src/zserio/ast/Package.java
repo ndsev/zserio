@@ -28,8 +28,6 @@ public class Package extends TokenAST
     /**
      * Adds import to this package.
      *
-     * This method is called from ANTLR TypeEvaluator walker.
-     *
      * @param importedNode AST import node to add.
      */
     public void addImport(Import importedNode)
@@ -175,7 +173,10 @@ public class Package extends TokenAST
             final PackageName importedPackageName = importedNode.getImportedPackageName();
             final Package importedPackage = packageNameMap.get(importedPackageName);
             if (importedPackage == null)
+            {
+                // imported package has not been found => this could happen only for default packages
                 throw new ParserException(importedNode, "Default package cannot be imported!");
+            }
 
             final String importedTypeName = importedNode.getImportedTypeName();
             if (importedTypeName == null)
