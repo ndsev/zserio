@@ -660,7 +660,7 @@ unaryOperator
     ;
 
 lengthOfOperand
-    :   LENGTHOF^ unaryExpression
+    :   LENGTHOF^ LPAREN! functionArgument RPAREN!
     ;
 
 sumFunction

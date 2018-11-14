@@ -11,7 +11,7 @@ struct LengthOfFunctions
 
     function uint8 getLengthOfFixedArray()
     {
-        return lengthof fixedArray;
+        return lengthof(fixedArray);
     }
 
     function uint8 getLengthOfVariableArray()
