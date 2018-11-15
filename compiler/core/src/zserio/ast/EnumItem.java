@@ -27,10 +27,10 @@ public class EnumItem extends TokenAST
             // there is a value for this enumeration item => evaluate and check value expression
             valueExpression.evaluateTree();
 
-            value = valueExpression.getIntegerValue();
-            if (value == null)
+            if (valueExpression.getExprType() != Expression.ExpressionType.INTEGER)
                 throw new ParserException(valueExpression, "Enumeration item '" + getName() +
                         "' has non-integer value!");
+            value = valueExpression.getIntegerValue();
         }
         else
         {

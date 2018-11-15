@@ -167,6 +167,12 @@ public abstract class CppDefaultExpressionFormattingPolicy extends DefaultExpres
     }
 
     @Override
+    public UnaryExpressionFormatting getValueOf(Expression expr)
+    {
+        return new UnaryExpressionFormatting("", "");
+    }
+
+    @Override
     public UnaryExpressionFormatting getExplicit(Expression expr)
     {
         return new UnaryExpressionFormatting("");

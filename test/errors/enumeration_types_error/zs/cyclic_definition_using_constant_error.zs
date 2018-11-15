@@ -8,4 +8,4 @@ enum int32 Colors
     WHITE = WHITE_COLOR
 };
 
-const Colors WHITE_COLOR = Colors.WHITE; // cycle!
+const int32 WHITE_COLOR = valueof(Colors.WHITE); // cycle!

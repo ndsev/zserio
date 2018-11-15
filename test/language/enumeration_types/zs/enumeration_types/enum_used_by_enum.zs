@@ -4,14 +4,14 @@ enum bit:7 Color
 {
     NONE,
 
-    LIGHT_RED   = LightColor.LIGHT_RED,
-    LIGHT_GREEN = LightColor.LIGHT_GREEN,
-    LIGHT_BLUE  = LightColor.LIGHT_BLUE,
+    LIGHT_RED   = valueof(LightColor.LIGHT_RED),
+    LIGHT_GREEN = valueof(LightColor.LIGHT_GREEN),
+    LIGHT_BLUE  = valueof(LightColor.LIGHT_BLUE),
     LIGHT_PINK,
 
-    DARK_RED    = DarkColor.DARK_RED,
-    DARK_GREEN  = DarkColor.DARK_GREEN,
-    DARK_BLUE   = DarkColor.DARK_BLUE,
+    DARK_RED    = valueof(DarkColor.DARK_RED),
+    DARK_GREEN  = valueof(DarkColor.DARK_GREEN),
+    DARK_BLUE   = valueof(DarkColor.DARK_BLUE),
     DARK_PINK
 };
 

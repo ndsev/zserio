@@ -225,6 +225,10 @@ public class ExpressionFormatter
                 formatting = policy.getSum(expr);
                 break;
 
+            case ZserioParserTokenTypes.VALUEOF:
+                formatting = policy.getValueOf(expr);
+                break;
+
             case ZserioParserTokenTypes.EXPLICIT:
                 formatting = policy.getExplicit(expr);
                 break;

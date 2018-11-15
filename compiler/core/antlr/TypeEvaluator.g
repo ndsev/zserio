@@ -562,5 +562,6 @@ opExpression
         #(FUNCTIONCALL expression) |
         #(EXPLICIT ID) |
         #(SUM expression) |
+        #(VALUEOF expression) |
         #(NUMBITS expression)
     ;

@@ -32,6 +32,12 @@
         <testGen testName="expressions_error" zsFile="offsets/signed_integer_error.zs" ignoreErrors="true"/>
         <testGen testName="expressions_error" zsFile="offsets/signed_varint_error.zs" ignoreErrors="true"/>
         <testGen testName="expressions_error" zsFile="offsets/string_error.zs" ignoreErrors="true"/>
+        <testGen testName="expressions_error" zsFile="valueof_operators/array_type_error.zs"
+            ignoreErrors="true"/>
+        <testGen testName="expressions_error" zsFile="valueof_operators/enum_type_error.zs"
+            ignoreErrors="true"/>
+        <testGen testName="expressions_error" zsFile="valueof_operators/integer_type_error.zs"
+            ignoreErrors="true"/>
         <testGen testName="expressions_error" zsFile="wrong_full_type_error.zs" ignoreErrors="true"/>
         <testGen testName="expressions_error" zsFile="wrong_lengthof_syntax_error.zs" ignoreErrors="true"/>
     </target>

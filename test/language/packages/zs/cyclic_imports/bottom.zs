@@ -19,6 +19,6 @@ struct BottomStructure
 enum uint8 BottomColour
 {
     RED = 1,
-    GREEN = cyclic_imports.top.TopGreenColour.GREEN, // test correct cyclic full path import
+    GREEN = cyclic_imports.top.GREEN, // test correct cyclic full path import
     BLUE = 3
 };

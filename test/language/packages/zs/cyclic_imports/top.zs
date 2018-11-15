@@ -13,7 +13,4 @@ struct TopStructure
     bool             isBottomColourRed if bottomStructure.isBottomColourRed();
 };
 
-enum uint8 TopGreenColour
-{
-    GREEN = 2
-};
+const uint8 GREEN = 2;

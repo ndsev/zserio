@@ -491,6 +491,10 @@ public class Expression extends TokenAST
                     evaluateSumOperator();
                     break;
 
+                case ZserioParserTokenTypes.VALUEOF:
+                    evaluateValueOfOperator();
+                    break;
+
                 case ZserioParserTokenTypes.NUMBITS:
                     evaluateNumBitsOperator();
                     break;
@@ -537,7 +541,7 @@ public class Expression extends TokenAST
                     break;
 
                 default:
-                    throw new ParserException(this, "Illegal expression type " + getType() + ".");
+                    throw new ParserException(this, "Illegal expression type '" + getType() + "'!");
             }
 
             evaluationState = EvaluationState.EVALUATED;
@@ -896,7 +900,7 @@ public class Expression extends TokenAST
         }
         else
         {
-            throw new ParserException(op1, "Unexpected dot expression '" + op1.getText() + "'.");
+            throw new ParserException(op1, "Unexpected dot expression '" + op1.getText() + "'!");
         }
     }
 
@@ -935,7 +939,7 @@ public class Expression extends TokenAST
         final Object enumSymbol = enumScope.getSymbol(dotOperand);
         if (!(enumSymbol instanceof EnumItem))
             throw new ParserException(this, "'" + dotOperand + "' undefined in enumeration '" +
-                    enumType.getName() + "'.");
+                    enumType.getName() + "'!");
 
         // reset op2, enumeration items can be already resolved because they are searched globally to
         // support choices with enumeration selector (needed for formatters)
@@ -953,7 +957,7 @@ public class Expression extends TokenAST
         final Object compoundSymbol = compoundScope.getSymbol(dotOperand);
         if (compoundSymbol == null)
             throw new ParserException(this, "'" + dotOperand + "' undefined in compound '" +
-                    compoundType.getName() + "'.");
+                    compoundType.getName() + "'!");
 
         // reset op2, it could be already found in the compound type (needed for formatters)
         op2.reset(compoundSymbol);
@@ -979,7 +983,7 @@ public class Expression extends TokenAST
         else
         {
             throw new ParserException(this, "'" + dotOperand + "' undefined in compound '" +
-                    compoundType.getName() + "'.");
+                    compoundType.getName() + "'!");
         }
     }
 
@@ -987,11 +991,11 @@ public class Expression extends TokenAST
     {
         final Expression op1 = op1();
         if (!(op1.zserioType instanceof ArrayType))
-            throw new ParserException(op1, "'" + op1().getText() + "' is not an array.");
+            throw new ParserException(op1, "'" + op1().getText() + "' is not an array!");
 
         final Expression op2 = op2();
         if (op2.expressionType != ExpressionType.INTEGER)
-            throw new ParserException(op2, "Integer expression expected.");
+            throw new ParserException(op2, "Integer expression expected!");
 
         final ArrayType arrayType = (ArrayType)op1.zserioType;
         evaluateExpressionType(arrayType.getElementType());
@@ -1001,13 +1005,13 @@ public class Expression extends TokenAST
     {
         final Expression op1 = op1();
         if (op1.expressionType != ExpressionType.BOOLEAN)
-            throw new ParserException(op1, "Boolean expression expected.");
+            throw new ParserException(op1, "Boolean expression expected!");
 
         final Expression op2 = op2();
         final Expression op3 = op3();
         if (op2.expressionType == ExpressionType.UNKNOWN || op2.expressionType != op3.expressionType)
             throw new ParserException(this, "Incompatible expression types (" + op2.expressionType +
-                    " != " + op3.expressionType + ").");
+                    " != " + op3.expressionType + ")!");
 
         expressionType = op2.expressionType;
         zserioType = op2.zserioType;
@@ -1037,20 +1041,20 @@ public class Expression extends TokenAST
         final Expression op2 = op2();
         if (op1.expressionType == ExpressionType.UNKNOWN || op1.expressionType != op2.expressionType)
             throw new ParserException(this, "Incompatible expression types (" + op1.expressionType +
-                    " != " + op2.expressionType + ").");
+                    " != " + op2.expressionType + ")!");
 
         final int tokenType = getType();
         if (op1.expressionType == ExpressionType.FLOAT &&
                 tokenType != ZserioParserTokenTypes.LT && tokenType != ZserioParserTokenTypes.GT)
-            throw new ParserException(this, "Equality operator is not allowed for floats.");
+            throw new ParserException(this, "Equality operator is not allowed for floats!");
 
         if (op1.expressionType == ExpressionType.STRING &&
                 tokenType != ZserioParserTokenTypes.EQ && tokenType != ZserioParserTokenTypes.NE)
             throw new ParserException(this,
-                    "'Greater than' and 'less than' comparison is not allowed for strings.");
+                    "'Greater than' and 'less than' comparison is not allowed for strings!");
 
         if (op1.expressionType == ExpressionType.STRING)
-            throw new ParserException(this, "String comparison is not implemented.");
+            throw new ParserException(this, "String comparison is not implemented!");
 
         expressionType = ExpressionType.BOOLEAN;
         if (op1.expressionType == ExpressionType.INTEGER)
@@ -1068,7 +1072,7 @@ public class Expression extends TokenAST
     {
         final Expression op1 = op1();
         if (op1.expressionType != ExpressionType.BOOLEAN)
-            throw new ParserException(this, "Boolean expression expected.");
+            throw new ParserException(this, "Boolean expression expected!");
 
         expressionType = ExpressionType.BOOLEAN;
     }
@@ -1077,7 +1081,7 @@ public class Expression extends TokenAST
     {
         final Expression op1 = op1();
         if (op1.expressionType != ExpressionType.INTEGER && op1.expressionType != ExpressionType.FLOAT)
-            throw new ParserException(this, "Integer or float expressions expected.");
+            throw new ParserException(this, "Integer or float expressions expected!");
 
         if (op1.expressionType == ExpressionType.FLOAT)
         {
@@ -1104,7 +1108,7 @@ public class Expression extends TokenAST
         {
             if ( (op1.expressionType != ExpressionType.INTEGER && op1.expressionType != ExpressionType.FLOAT) ||
                  (op2.expressionType != ExpressionType.INTEGER && op2.expressionType != ExpressionType.FLOAT) )
-                throw new ParserException(this, "Integer or float expressions expected.");
+                throw new ParserException(this, "Integer or float expressions expected!");
 
             if (op1.expressionType == ExpressionType.FLOAT || op2.expressionType == ExpressionType.FLOAT)
             {
@@ -1139,7 +1143,7 @@ public class Expression extends TokenAST
                         break;
 
                     default:
-                        throw new ParserException(this, "Illegal expression type " + getType() + ".");
+                        throw new ParserException(this, "Illegal expression type " + getType() + "!");
                 }
 
                 if (expressionIntegerValue.needsBigInteger())
@@ -1156,7 +1160,7 @@ public class Expression extends TokenAST
         final Expression op1 = op1();
         final Expression op2 = op2();
         if (op1.expressionType != ExpressionType.INTEGER || op2.expressionType != ExpressionType.INTEGER)
-            throw new ParserException(this, "Integer expressions expected.");
+            throw new ParserException(this, "Integer expressions expected!");
 
         expressionType = ExpressionType.INTEGER;
         final int tokenType = getType();
@@ -1183,7 +1187,7 @@ public class Expression extends TokenAST
                 break;
 
             default:
-                throw new ParserException(this, "Illegal expression type " + getType() + ".");
+                throw new ParserException(this, "Illegal expression type '" + getType() + "'!");
         }
 
         if (tokenType != ZserioParserTokenTypes.LSHIFT && tokenType != ZserioParserTokenTypes.RSHIFT &&
@@ -1199,7 +1203,7 @@ public class Expression extends TokenAST
         final Expression op1 = op1();
         final Expression op2 = op2();
         if (op1.expressionType != ExpressionType.BOOLEAN || op2.expressionType != ExpressionType.BOOLEAN)
-            throw new ParserException(this, "Boolean expressions expected.");
+            throw new ParserException(this, "Boolean expressions expected!");
 
         expressionType = ExpressionType.BOOLEAN;
     }
@@ -1208,7 +1212,7 @@ public class Expression extends TokenAST
     {
         final Expression op1 = op1();
         if (op1.expressionType != ExpressionType.INTEGER)
-            throw new ParserException(this, "Integer expression expected.");
+            throw new ParserException(this, "Integer expression expected!");
 
         expressionType = ExpressionType.INTEGER;
         expressionIntegerValue = op1.expressionIntegerValue.not();
@@ -1218,7 +1222,7 @@ public class Expression extends TokenAST
     {
         final Expression op1 = op1();
         if (!(op1.zserioType instanceof ArrayType))
-            throw new ParserException(op1, "'" + op1().getText() + "' is not an array.");
+            throw new ParserException(op1, "'" + op1().getText() + "' is not an array!");
 
         expressionType = ExpressionType.INTEGER;
         // length of result has default expressionIntegerValue
@@ -1228,17 +1232,27 @@ public class Expression extends TokenAST
     {
         final Expression op1 = op1();
         if (!(op1.zserioType instanceof ArrayType))
-            throw new ParserException(op1, "'" + op1().getText() + "' is not an array.");
+            throw new ParserException(op1, "'" + op1().getText() + "' is not an array!");
 
         final ArrayType arrayType = (ArrayType)op1.zserioType;
         evaluateExpressionType(arrayType.getElementType());
+    }
+
+    private void evaluateValueOfOperator() throws ParserException
+    {
+        final Expression op1 = op1();
+        if (op1.expressionType != ExpressionType.ENUM)
+            throw new ParserException(op1, "'" + op1().getText() + "' is not an enumeration item!");
+
+        expressionType = ExpressionType.INTEGER;
+        expressionIntegerValue = op1.expressionIntegerValue;
     }
 
     private void evaluateNumBitsOperator() throws ParserException
     {
         final Expression op1 = op1();
         if (op1.expressionType != ExpressionType.INTEGER)
-            throw new ParserException(op1, "Integer expression expected.");
+            throw new ParserException(op1, "Integer expression expected!");
 
         expressionType = ExpressionType.INTEGER;
         expressionIntegerValue = op1.expressionIntegerValue.numbits();
@@ -1248,7 +1262,7 @@ public class Expression extends TokenAST
     {
         final Expression op1 = op1();
         if (!(op1.zserioType instanceof FunctionType))
-            throw new ParserException(op1, "'" + op1().getText() + "' is not a function.");
+            throw new ParserException(op1, "'" + op1().getText() + "' is not a function!");
 
         final FunctionType functionType = (FunctionType)op1.zserioType;
         final Expression functionResultExpression = functionType.getResultExpression();

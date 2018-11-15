@@ -85,6 +85,11 @@ set(ZSERIO_GENERATED_SOURCES
     ${ZSERIO_GEN_DIR}/expressions/used_before_type/UsedBeforeTypeExpression.h
 
     ${ZSERIO_GEN_DIR}/expressions/ConstType.h
+
+    ${ZSERIO_GEN_DIR}/expressions/valueof_operator/Color.cpp
+    ${ZSERIO_GEN_DIR}/expressions/valueof_operator/Color.h
+    ${ZSERIO_GEN_DIR}/expressions/valueof_operator/ValueOfFunctions.cpp
+    ${ZSERIO_GEN_DIR}/expressions/valueof_operator/ValueOfFunctions.h
 )
 
 zserio_add_library(TARGET expressions_zs
@@ -119,6 +124,7 @@ add_test_sources(
     cpp/SumOperatorTest.cpp
     cpp/UInt64TypeTest.cpp
     cpp/UsedBeforeTypeTest.cpp
+    cpp/ValueOfOperatorTest.cpp
 )
 
 add_test_dependencies(expressions_zs)

@@ -233,6 +233,12 @@ public abstract class JavaDefaultExpressionFormattingPolicy extends DefaultExpre
     }
 
     @Override
+    public UnaryExpressionFormatting getValueOf(Expression expr)
+    {
+        return new UnaryExpressionFormatting("", ".getValue()");
+    }
+
+    @Override
     public UnaryExpressionFormatting getExplicit(Expression expr)
     {
         return new UnaryExpressionFormatting("");

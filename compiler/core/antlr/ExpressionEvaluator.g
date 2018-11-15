@@ -407,5 +407,6 @@ opExpression
         #(FUNCTIONCALL nestedExpression) |
         #(EXPLICIT ID) |
         #(SUM nestedExpression) |
+        #(VALUEOF nestedExpression) |
         #(NUMBITS nestedExpression)
     ;

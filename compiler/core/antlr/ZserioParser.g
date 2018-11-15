@@ -116,6 +116,7 @@ tokens
     UNION="union"<AST=zserio.ast.UnionType>;
     UNUSED="unused";
     UPLUS<AST=zserio.ast.Expression>;
+    VALUEOF="valueof"<AST=zserio.ast.Expression>;
     VARINT="varint"<AST=zserio.ast.VarIntegerType>;
     VARINT16="varint16"<AST=zserio.ast.VarIntegerType>;
     VARINT32="varint32"<AST=zserio.ast.VarIntegerType>;
@@ -566,6 +567,7 @@ unaryExpression
         unaryOperand |
         lengthOfOperand |
         sumFunction |
+        valueOfOperand |
         numbitsFunction
     ;
 
@@ -665,6 +667,10 @@ lengthOfOperand
 
 sumFunction
     :   SUM^ LPAREN! functionArgument RPAREN!
+    ;
+
+valueOfOperand
+    :   VALUEOF^ LPAREN! functionArgument RPAREN!
     ;
 
 functionArgument
