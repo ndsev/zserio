@@ -12,7 +12,7 @@ public class UserTypeTemplateData extends CppTemplateData
 
         nativeType = context.getCppNativeTypeMapper().getCppType(type);
         name = nativeType.getName();
-        packageData = new Package(nativeType);
+        packageData = new PackageTemplateData(nativeType);
     }
 
     public String getName()
@@ -20,7 +20,7 @@ public class UserTypeTemplateData extends CppTemplateData
         return name;
     }
 
-    public Package getPackage()
+    public PackageTemplateData getPackage()
     {
         return packageData;
     }
@@ -32,5 +32,5 @@ public class UserTypeTemplateData extends CppTemplateData
 
     private final CppNativeType nativeType;
     private final String name;
-    private final Package packageData;
+    private final PackageTemplateData packageData;
 }

@@ -33,7 +33,7 @@ public final class CompoundFunctionTemplateData
         {
             final ZserioType returnZserioType = functionType.getReturnType();
             returnTypeName = javaNativeTypeMapper.getJavaType(returnZserioType).getFullName();
-            name = functionType.getName();
+            name = AccessorNameFormatter.getFunctionName(functionType);
             resultExpression = javaExpressionFormatter.formatGetter(functionType.getResultExpression());
         }
 

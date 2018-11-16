@@ -185,6 +185,7 @@ public interface ExpressionFormattingPolicy
     public UnaryExpressionFormatting getFunctionCall(Expression expr);
     public UnaryExpressionFormatting getLengthOf(Expression expr);
     public UnaryExpressionFormatting getSum(Expression expr);
+    public UnaryExpressionFormatting getValueOf(Expression expr);
     public UnaryExpressionFormatting getExplicit(Expression expr);
     public UnaryExpressionFormatting getNumBits(Expression expr);
 

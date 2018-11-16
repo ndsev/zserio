@@ -11,7 +11,7 @@ public class UserTypeTemplateData extends JavaTemplateData
         super(context);
 
         final JavaNativeType javaNativeType = context.getJavaNativeTypeMapper().getJavaType(type);
-        packageName = javaNativeType.getPackageName();
+        packageName = JavaFullNameFormatter.getFullName(javaNativeType.getPackageName());
         name = javaNativeType.getName();
         withWriterCode = context.getWithWriterCode();
     }

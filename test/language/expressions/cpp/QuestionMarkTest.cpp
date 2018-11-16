@@ -17,7 +17,7 @@ TEST(QuestionMarkTest, firstValue)
     questionMarkExpression.setSecondValue(0x22);
     questionMarkExpression.setIsFirstValueValid(true);
 
-    ASSERT_EQ(firstValue, questionMarkExpression.validValue());
+    ASSERT_EQ(firstValue, questionMarkExpression.funcValidValue());
 }
 
 TEST(QuestionMarkTest, secondValue)
@@ -28,7 +28,7 @@ TEST(QuestionMarkTest, secondValue)
     questionMarkExpression.setSecondValue(secondValue);
     questionMarkExpression.setIsFirstValueValid(false);
 
-    ASSERT_EQ(secondValue, questionMarkExpression.validValue());
+    ASSERT_EQ(secondValue, questionMarkExpression.funcValidValue());
 }
 
 } // namespace question_mark

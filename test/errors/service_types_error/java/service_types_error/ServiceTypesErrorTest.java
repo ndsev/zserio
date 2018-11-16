@@ -44,7 +44,8 @@ public class ServiceTypesErrorTest
     public void nonCompoundSubtype()
     {
         final String error = "non_compound_subtype_error.zs:12:5: " +
-                "Only non-parameterized compound types can be used in RPC calls, 'Request' is not a compound type!";
+                "Only non-parameterized compound types can be used in RPC calls, " +
+                "'Request' is not a compound type!";
         assertTrue(zserioErrors.isPresent(error));
     }
 
@@ -61,7 +62,7 @@ public class ServiceTypesErrorTest
     public void sqlDatabaseType()
     {
         final String error = "sql_database_type_error.zs:20:29: " +
-                "Invalid use of SQL database 'Request' as a type!";
+                "Invalid usage of SQL database 'Request' as a type!";
         assertTrue(zserioErrors.isPresent(error));
     }
 

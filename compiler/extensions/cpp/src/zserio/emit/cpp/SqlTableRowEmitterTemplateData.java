@@ -20,7 +20,7 @@ public class SqlTableRowEmitterTemplateData extends CppTemplateData
 
         final CppNativeTypeMapper cppNativeTypeMapper = context.getCppNativeTypeMapper();
         final CppNativeType nativeType = cppNativeTypeMapper.getCppType(tableType);
-        packageData = new Package(nativeType);
+        packageData = new PackageTemplateData(nativeType);
 
         final List<Field> tableFields = tableType.getFields();
         fields = new ArrayList<FieldTemplateData>(tableFields.size());
@@ -36,7 +36,7 @@ public class SqlTableRowEmitterTemplateData extends CppTemplateData
         return name;
     }
 
-    public Package getPackage()
+    public PackageTemplateData getPackage()
     {
         return packageData;
     }
@@ -81,6 +81,6 @@ public class SqlTableRowEmitterTemplateData extends CppTemplateData
     }
 
     private final String name;
-    private final Package packageData;
+    private final PackageTemplateData packageData;
     private final List<FieldTemplateData> fields;
 }

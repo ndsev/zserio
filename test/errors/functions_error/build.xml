@@ -11,6 +11,10 @@
 
     <target name="gen" depends="gen.check" unless="functions_error.zs.gen_is_uptodate">
         <testGenClean testName="functions_error"/>
+        <testGen testName="functions_error" zsFile="compound_field_not_available_error.zs" ignoreErrors="true"/>
+        <testGen testName="functions_error" zsFile="different_scopes_error.zs" ignoreErrors="true"/>
+        <testGen testName="functions_error" zsFile="field_not_available_error.zs" ignoreErrors="true"/>
+        <testGen testName="functions_error" zsFile="recursive_error.zs" ignoreErrors="true"/>
         <testGen testName="functions_error" zsFile="wrong_return_type_error.zs" ignoreErrors="true"/>
     </target>
 

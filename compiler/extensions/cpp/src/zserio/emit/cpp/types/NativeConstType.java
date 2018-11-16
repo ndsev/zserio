@@ -1,16 +1,23 @@
 package zserio.emit.cpp.types;
 
-import java.util.List;
+import zserio.ast.PackageName;
+import zserio.emit.cpp.CppFullNameFormatter;
 
 public class NativeConstType extends CppNativeType
 {
-    public NativeConstType(List<String> namespacePath, String name, String includeFileName,
+    public NativeConstType(PackageName packageName, String name, String includePathRoot,
             CppNativeType targetType)
     {
-        super(namespacePath, name, targetType.isSimpleType());
+        super(packageName, name, targetType.isSimpleType());
         this.targetType = targetType;
-        addUserIncludeFile(includeFileName);
+        addUserIncludeFile(includePathRoot + CONST_TYPE_INCLUDE);
         addIncludeFiles(targetType);
+    }
+
+    @Override
+    public String getFullName()
+    {
+        return CppFullNameFormatter.getFullName(getPackageName(), CONST_TYPE_NAME, getName());
     }
 
     public CppNativeType getTargetType()
@@ -19,4 +26,6 @@ public class NativeConstType extends CppNativeType
     }
 
     private final CppNativeType targetType;
+    private final static String CONST_TYPE_NAME = "ConstType";
+    private final static String CONST_TYPE_INCLUDE = "ConstType.h";
 }

@@ -27,7 +27,7 @@ ${compoundFunction.returnTypeName} ${compoundName}::${compoundFunction.name}() c
         <#list compoundFunctionsData.list as compoundFunction>
             <#local zserioFunctionName>_${compoundFunction.name}Function</#local>
             <#local functionZserioTypeName>${rootPackageName}::InspectorZserioTypeNames::<@inspector_zserio_type_name compoundFunction.zserioReturnTypeName/></#local>
-            <#local functionZserioName>${rootPackageName}::InspectorZserioNames::<@inspector_zserio_name compoundFunction.name/></#local>
+            <#local functionZserioName>${rootPackageName}::InspectorZserioNames::<@inspector_zserio_name compoundFunction.zserioName/></#local>
     zserio::BlobInspectorNode::ZserioFunction& ${zserioFunctionName} = _tree.createZserioFunction(
         ${functionZserioTypeName},
         ${functionZserioName});

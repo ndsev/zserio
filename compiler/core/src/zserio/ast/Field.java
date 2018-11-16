@@ -319,7 +319,7 @@ public class Field extends TokenAST
     protected void check() throws ParserException
     {
         // check field name
-        if (compoundType.getPackage().getVisibleType(this, new PackageName(), getName()) != null)
+        if (compoundType.getPackage().getVisibleType(this, PackageName.EMPTY, getName()) != null)
             throw new ParserException(this, "'" + getName() + "' is a defined type in this package!");
 
         // check initializer expression type

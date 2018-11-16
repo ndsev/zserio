@@ -1,8 +1,10 @@
 package zserio.emit.java.types;
 
+import zserio.ast.PackageName;
+
 public class NativeServiceType extends JavaNativeType
 {
-    public NativeServiceType(String packageName, String name)
+    public NativeServiceType(PackageName packageName, String name)
     {
         super(packageName, name);
     }

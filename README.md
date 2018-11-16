@@ -1,5 +1,7 @@
 <img src="doc/Zserio.png" height="100">
 
+***z*** ero ***seri*** alization ***o*** verhead
+
 --------
 No time to read? Go to the [Quick Start](#quick-start) or [download latest release](https://github.com/ndsev/zserio/releases/latest).
 

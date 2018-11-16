@@ -18,7 +18,7 @@ public class NumBitsOperatorTest
         for (short value8 = 1; value8 <= 255; ++value8)
         {
             numBitsFunctions.setValue8(value8);
-            assertEquals(calculateExpectedNumBits(value8), numBitsFunctions.getNumBits8());
+            assertEquals(calculateExpectedNumBits(value8), numBitsFunctions.funcGetNumBits8());
         }
     }
 
@@ -29,7 +29,7 @@ public class NumBitsOperatorTest
         for (int value16 = 1; value16 <= 65535; ++value16)
         {
             numBitsFunctions.setValue16(value16);
-            assertEquals(calculateExpectedNumBits(value16), numBitsFunctions.getNumBits16());
+            assertEquals(calculateExpectedNumBits(value16), numBitsFunctions.funcGetNumBits16());
         }
     }
 
@@ -40,7 +40,7 @@ public class NumBitsOperatorTest
         for (long value32 = 1; value32 <= 4294967295L; value32<<=1)
         {
             numBitsFunctions.setValue32(value32);
-            assertEquals(calculateExpectedNumBits(value32), numBitsFunctions.getNumBits32());
+            assertEquals(calculateExpectedNumBits(value32), numBitsFunctions.funcGetNumBits32());
         }
     }
 
@@ -53,7 +53,7 @@ public class NumBitsOperatorTest
             // value64 = 2**power - 1
             final BigInteger value64 = BigInteger.valueOf(2).pow(power).subtract(BigInteger.ONE);
             numBitsFunctions.setValue64(value64);
-            assertEquals(calculateExpectedNumBits(value64.longValue()), numBitsFunctions.getNumBits64());
+            assertEquals(calculateExpectedNumBits(value64.longValue()), numBitsFunctions.funcGetNumBits64());
         }
     }
 

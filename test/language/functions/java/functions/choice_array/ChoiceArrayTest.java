@@ -109,7 +109,7 @@ public class ChoiceArrayTest
     private void checkChoiceArrayFunction(int pos) throws IOException
     {
         final Inner inner = createInner(pos);
-        final Item readElement = inner.getRef().getElement();
+        final Item readElement = inner.getRef().funcGetElement();
         if (pos >= NUM_ITEM_ELEMENTS)
         {
             assertEquals(EXPLICIT_ITEM, readElement);

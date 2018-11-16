@@ -1,8 +1,10 @@
 package zserio.emit.java.types;
 
+import zserio.ast.PackageName;
+
 public class NativeEnumType extends JavaNativeType
 {
-    public NativeEnumType(String packageName, String name, NativeIntegralType nativeBaseType)
+    public NativeEnumType(PackageName packageName, String name, NativeIntegralType nativeBaseType)
     {
         super(packageName, name);
         this.nativeBaseType = nativeBaseType;

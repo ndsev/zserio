@@ -20,8 +20,8 @@ public class PackagesErrorTest
     @Test
     public void ambiguousSimpleType()
     {
-        final String error = "ambiguous_single_type_error.zs:12:5: Ambiguous type reference 'SimpleTable' " +
-                "found in packages 'complex_database' and 'simple_database'!";
+        final String error = "ambiguous_single_type_error.zs:13:5: Ambiguous type reference 'SimpleTable' " +
+                "found in packages 'simple_database' and 'complex_database'!";
         assertTrue(zserioErrors.isPresent(error));
     }
 
@@ -37,6 +37,13 @@ public class PackagesErrorTest
     {
         final String error = "imported_unknown_single_type_error.zs:4:1: " +
                 "Unknown type 'UnknownTable' in imported package 'simple_database'!";
+        assertTrue(zserioErrors.isPresent(error));
+    }
+
+    @Test
+    public void multipleDefaultPackage()
+    {
+        final String error = "default_package.zs:1:1: Multiple default packages are not allowed!";
         assertTrue(zserioErrors.isPresent(error));
     }
 

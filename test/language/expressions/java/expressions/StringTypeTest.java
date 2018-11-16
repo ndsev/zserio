@@ -13,7 +13,7 @@ public class StringTypeTest
     {
         final StringTypeExpression stringTypeExpression = new StringTypeExpression(firstValue, secondValue);
 
-        assertEquals(firstValue + secondValue + "_appendix", stringTypeExpression.append());
+        assertEquals(firstValue + secondValue + "_appendix", stringTypeExpression.funcAppend());
     }
 
     private static final String firstValue = "first";

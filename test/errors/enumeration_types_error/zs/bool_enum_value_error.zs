@@ -1,6 +1,6 @@
-package non_integer_enum_value_error;
+package bool_enum_value_error;
 
-enum uint8 WrongNonIntegerValueEnum
+enum uint8 BoolEnumValueEnum
 {
     NONE       = 000b,
     DARK_RED   = 001b,

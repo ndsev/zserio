@@ -1,10 +1,11 @@
 package zserio.emit.java.types;
 
+import zserio.ast.PackageName;
 import zserio.emit.java.JavaFullNameFormatter;
 
 public class NativeConstType extends JavaNativeType
 {
-    public NativeConstType(String packageName, String name, JavaNativeType targetType)
+    public NativeConstType(PackageName packageName, String name, JavaNativeType targetType)
     {
         super(packageName, name);
         this.targetType = targetType;
@@ -13,8 +14,7 @@ public class NativeConstType extends JavaNativeType
     @Override
     public String getFullName()
     {
-        return JavaFullNameFormatter.getFullName(getPackageName(),
-                JavaFullNameFormatter.getFullName(CONST_CLASS_NAME, getName()));
+        return JavaFullNameFormatter.getFullName(getPackageName(), CONST_CLASS_NAME, getName());
     }
 
     @Override

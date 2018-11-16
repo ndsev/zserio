@@ -17,7 +17,7 @@ TEST(ParenthesisTest, firstValue)
     const uint8_t secondValue = 0x22;
     parenthesisExpression.setSecondValue(secondValue);
 
-    ASSERT_EQ(firstValue * (secondValue + 1), parenthesisExpression.result());
+    ASSERT_EQ(firstValue * (secondValue + 1), parenthesisExpression.funcResult());
 }
 
 } // namespace parenthesis

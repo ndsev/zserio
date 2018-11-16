@@ -20,7 +20,7 @@ TEST(SumOperatorTest, GetSumFixedArray)
         expectedSum += i;
     }
     sumFunction.setFixedArray(fixedArray);
-    ASSERT_EQ(expectedSum, sumFunction.getSumFixedArray());
+    ASSERT_EQ(expectedSum, sumFunction.funcGetSumFixedArray());
 }
 
 } // namespace sum_operator

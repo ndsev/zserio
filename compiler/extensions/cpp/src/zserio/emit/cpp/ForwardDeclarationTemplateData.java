@@ -1,6 +1,7 @@
 package zserio.emit.cpp;
 
-import zserio.emit.cpp.CppTemplateData.Package;
+import zserio.ast.PackageName;
+import zserio.emit.cpp.CppTemplateData.PackageTemplateData;
 import zserio.emit.cpp.types.CppNativeType;
 import zserio.tools.HashUtil;
 
@@ -8,13 +9,15 @@ public class ForwardDeclarationTemplateData implements Comparable<ForwardDeclara
 {
     public ForwardDeclarationTemplateData(CppNativeType nativeType)
     {
-        packageName = new Package(nativeType);
+        packageName = nativeType.getPackageName();
         cppTypeNameOnly = nativeType.getName();
+
+        packageData = new PackageTemplateData(packageName);
     }
 
-    public Package getPackage()
+    public PackageTemplateData getPackage()
     {
-        return packageName;
+        return packageData;
     }
 
     public String getCppTypeNameOnly()
@@ -56,6 +59,8 @@ public class ForwardDeclarationTemplateData implements Comparable<ForwardDeclara
         return hash;
     }
 
-    private final Package packageName;
+    private final PackageName packageName;
     private final String cppTypeNameOnly;
+
+    private final PackageTemplateData packageData;
 }

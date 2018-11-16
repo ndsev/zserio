@@ -18,17 +18,25 @@ public class EnumerationTypesErrorTest
     }
 
     @Test
+    public void boolEnumValue()
+    {
+        final String error =
+                "bool_enum_value_error.zs:7:18: Enumeration item 'DARK_BLUE' has non-integer value!";
+        assertTrue(zserioErrors.isPresent(error));
+    }
+
+    @Test
     public void cyclicDefinition()
     {
         final String error =
-                "cyclic_definition_error.zs:6:18: Unresolved symbol 'DARK_RED' within expression scope!";
+                "cyclic_definition_error.zs:6:26: Unresolved symbol 'DARK_RED' within expression scope!";
         assertTrue(zserioErrors.isPresent(error));
     }
 
     @Test
     public void cyclicDefinitionUsingConstant()
     {
-        final String error = "cyclic_definition_using_constant_error.zs:11:34: Cyclic dependency detected in " +
+        final String error = "cyclic_definition_using_constant_error.zs:11:27: Cyclic dependency detected in " +
                 "expression evaluation!";
         assertTrue(zserioErrors.isPresent(error));
     }
@@ -36,7 +44,7 @@ public class EnumerationTypesErrorTest
     @Test
     public void cyclicDefinitionUsingEnumValue()
     {
-        final String error = "cyclic_definition_using_enum_value_error.zs:12:21: Cyclic dependency detected " +
+        final String error = "cyclic_definition_using_enum_value_error.zs:12:15: Cyclic dependency detected " +
                 "in expression evaluation!";
         assertTrue(zserioErrors.isPresent(error));
     }
@@ -57,17 +65,17 @@ public class EnumerationTypesErrorTest
     }
 
     @Test
-    public void nonIntegerEnumValue()
+    public void enumTypeValue()
     {
         final String error =
-                "non_integer_enum_value_error.zs:7:18: Enumeration item 'DARK_BLUE' has non-integer value!";
+                "enum_type_value_error.zs:7:27: Enumeration item 'DARK_BLUE' has non-integer value!";
         assertTrue(zserioErrors.isPresent(error));
     }
 
     @Test
     public void notAvailableEnumItem()
     {
-        final String error = "not_available_enum_item_error.zs:6:18: Unresolved symbol 'DARK_BLACK' within " +
+        final String error = "not_available_enum_item_error.zs:6:26: Unresolved symbol 'DARK_BLACK' within " +
                 "expression scope!";
         assertTrue(zserioErrors.isPresent(error));
     }

@@ -1,12 +1,12 @@
 package zserio.emit.cpp.types;
 
-import java.util.List;
+import zserio.ast.PackageName;
 
 public class NativeServiceType extends CppNativeType
 {
-    public NativeServiceType(List<String> namespacePath, String name, String includeFileName)
+    public NativeServiceType(PackageName packageName, String name, String includeFileName)
     {
-        super(namespacePath, name, false);
+        super(packageName, name, false);
         addUserIncludeFile(includeFileName);
     }
 }

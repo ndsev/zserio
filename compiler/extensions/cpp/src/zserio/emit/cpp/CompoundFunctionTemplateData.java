@@ -39,7 +39,8 @@ public class CompoundFunctionTemplateData
             final CppNativeType returnNativeType = cppNativeTypeMapper.getCppType(returnZserioType);
             returnTypeName = returnNativeType.getFullName();
             zserioReturnTypeName = ZserioTypeUtil.getFullName(returnZserioType);
-            name = functionType.getName();
+            name = AccessorNameFormatter.getFunctionName(functionType);
+            zserioName = functionType.getName();
             resultExpression = cppExpressionFormatter.formatGetter(functionType.getResultExpression());
             addIncludes(includeCollector, returnNativeType);
         }
@@ -57,6 +58,11 @@ public class CompoundFunctionTemplateData
         public String getName()
         {
             return name;
+        }
+
+        public String getZserioName()
+        {
+            return zserioName;
         }
 
         public String getResultExpression()
@@ -104,6 +110,7 @@ public class CompoundFunctionTemplateData
         private final String returnTypeName;
         private final String zserioReturnTypeName;
         private final String name;
+        private final String zserioName;
         private final String resultExpression;
     }
 

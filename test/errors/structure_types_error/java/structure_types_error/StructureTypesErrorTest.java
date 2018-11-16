@@ -36,7 +36,7 @@ public class StructureTypesErrorTest
     @Test
     public void databaseArrayField()
     {
-        final String error = "database_array_field_error.zs:20:5: Invalid use of SQL database " +
+        final String error = "database_array_field_error.zs:20:5: Invalid usage of SQL database " +
                 "'TestDatabaseForArray' as a type!";
         assertTrue(zserioErrors.isPresent(error));
     }
@@ -60,7 +60,7 @@ public class StructureTypesErrorTest
     public void databaseField()
     {
         final String error =
-                "database_field_error.zs:20:5: Invalid use of SQL database 'TestDatabase' as a type!";
+                "database_field_error.zs:20:5: Invalid usage of SQL database 'TestDatabase' as a type!";
         assertTrue(zserioErrors.isPresent(error));
     }
 

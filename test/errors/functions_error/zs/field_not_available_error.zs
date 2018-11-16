@@ -1,4 +1,4 @@
-package field_in_function_not_available_error;
+package field_not_available_error;
 
 struct Container
 {
@@ -17,4 +17,3 @@ struct Container
         return hasSpecialData; // hasSpecialData not available in the call on line 7
     }
 };
-

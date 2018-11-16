@@ -292,6 +292,9 @@ Referring to the example, any other enumeration type `Foo` may also contain a me
 In expressions outside of the defining type, enumeration members must always be prefixed by the type name
 and a dot, e.g. `Color.NONE`.
 
+The enumeration value represented by integer type can be referenced as `valueof(enumeration)`,
+see [valueof Operator](#valueof-operator).
+
 [top](#language-guide)
 
 ## Compound Types
@@ -556,7 +559,7 @@ struct ImplicitArray
 };
 ```
 
-The length of the `list` array can be referenced as `lengthof list`, see
+The length of the `list` array can be referenced as `lengthof(list)`, see
 [lengthof Operator](#lengthof-operator).
 
 ### Auto Length Arrays
@@ -572,7 +575,7 @@ struct AutoArray
 };
 ```
 
-The length of the `list` array can be referenced as `lengthof list`, see
+The length of the `list` array can be referenced as `lengthof(list)`, see
 [lengthof Operator](#lengthof-operator).
 
 Auto length arrays might be particularly useful if variable array length expression is a single field:
@@ -779,6 +782,30 @@ struct SumOperator
 };
 ```
 
+#### valueof Operator
+
+The `valueof` operator may be applied to an enumeration type and returns the actual enumeration value as
+an integer value.
+
+**Example**
+```
+struct ValueOfOperator
+{
+    Color  color;
+
+    function uint8 getValueOfColor()
+    {
+        return valueof(color);
+    }
+};
+
+enum uint8 Color
+{
+    WHITE = 1,
+    BLACK = 2
+};
+```
+
 #### numbits Operator
 
 The `numbits(value)` operator is defined for unsigned integers as minimum number of bits required to encode
@@ -862,7 +889,7 @@ and are evaluated left to right, except assignment operators which are evaluated
 - `+` `-`
 - `*` `/` `%`
 - unary `+` `-` `~` `!`
-- `lengthof` `sum` `numbits`
+- `lengthof` `sum` `valueof` `numbits`
 - `[]` `()` `.`
 
 [top](#language-guide)

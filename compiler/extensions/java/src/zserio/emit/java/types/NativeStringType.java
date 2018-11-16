@@ -1,10 +1,12 @@
 package zserio.emit.java.types;
 
+import zserio.ast.PackageName;
+
 public class NativeStringType extends JavaNativeType
 {
     public NativeStringType()
     {
-        super("", "String");
+        super(PackageName.EMPTY, "String");
     }
 
     @Override

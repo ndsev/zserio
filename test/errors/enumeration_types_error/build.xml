@@ -11,6 +11,7 @@
 
     <target name="gen" depends="gen.check" unless="enumeration_types_error.zs.gen_is_uptodate">
         <testGenClean testName="enumeration_types_error"/>
+        <testGen testName="enumeration_types_error" zsFile="bool_enum_value_error.zs" ignoreErrors="true"/>
         <testGen testName="enumeration_types_error" zsFile="cyclic_definition_error.zs" ignoreErrors="true"/>
         <testGen testName="enumeration_types_error" zsFile="cyclic_definition_using_constant_error.zs"
             ignoreErrors="true"/>
@@ -20,7 +21,7 @@
             ignoreErrors="true"/>
         <testGen testName="enumeration_types_error" zsFile="duplicated_enum_value_error.zs"
             ignoreErrors="true"/>
-        <testGen testName="enumeration_types_error" zsFile="non_integer_enum_value_error.zs"
+        <testGen testName="enumeration_types_error" zsFile="enum_type_value_error.zs"
             ignoreErrors="true"/>
         <testGen testName="enumeration_types_error" zsFile="not_available_enum_item_error.zs"
             ignoreErrors="true"/>

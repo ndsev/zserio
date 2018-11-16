@@ -6,6 +6,7 @@ import zserio.ast.BooleanType;
 import zserio.ast.ChoiceType;
 import zserio.ast.CompoundType;
 import zserio.ast.ConstType;
+import zserio.ast.PackageName;
 import zserio.ast.ServiceType;
 import zserio.ast.ZserioType;
 import zserio.ast.ZserioTypeVisitor;
@@ -493,7 +494,7 @@ final class JavaNativeTypeMapper
         @Override
         public void visitConstType(ConstType type)
         {
-            final String packageName = javaPackageMapper.getRootPackageName();
+            final PackageName packageName = javaPackageMapper.getRootPackageName();
             final String name = type.getName();
             try
             {
@@ -514,7 +515,7 @@ final class JavaNativeTypeMapper
             try
             {
                 final NativeIntegralType nativeBaseType = getJavaIntegralType(type.getIntegerBaseType());
-                final String packageName = javaPackageMapper.getPackageName(type);
+                final PackageName packageName = javaPackageMapper.getPackageName(type);
                 final String name = type.getName();
                 javaType = new NativeEnumType(packageName, name, nativeBaseType);
                 javaNullableType = javaType;
@@ -549,7 +550,7 @@ final class JavaNativeTypeMapper
         @Override
         public void visitServiceType(ServiceType type)
         {
-            final String packageName = javaPackageMapper.getPackageName(type);
+            final PackageName packageName = javaPackageMapper.getPackageName(type);
             final String name = type.getName();
             javaType = new NativeServiceType(packageName, name);
             javaNullableType = javaType;
@@ -712,7 +713,7 @@ final class JavaNativeTypeMapper
 
         private void mapCompoundType(CompoundType compoundType)
         {
-            final String packageName = javaPackageMapper.getPackageName(compoundType);
+            final PackageName packageName = javaPackageMapper.getPackageName(compoundType);
             final String name = compoundType.getName();
             javaType = new NativeCompoundType(packageName, name);
             javaNullableType = javaType;

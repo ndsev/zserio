@@ -57,7 +57,7 @@ protected:
     {
         CustomVarInt customVarInt;
         createCustomVarInt(customVarInt, value);
-        const uint32_t readValue = customVarInt.getValue();
+        const uint32_t readValue = customVarInt.funcGetValue();
         ASSERT_EQ(value, readValue);
 
         zserio::BitStreamWriter writtenWriter;

@@ -25,6 +25,9 @@ set(ZSERIO_GENERATED_SOURCES
     ${ZSERIO_GEN_DIR}/expressions/float_type/FloatTypeExpression.cpp
     ${ZSERIO_GEN_DIR}/expressions/float_type/FloatTypeExpression.h
 
+    ${ZSERIO_GEN_DIR}/expressions/full_const_type/FullConstTypeExpression.cpp
+    ${ZSERIO_GEN_DIR}/expressions/full_const_type/FullConstTypeExpression.h
+
     ${ZSERIO_GEN_DIR}/expressions/full_enumeration_type/Color.cpp
     ${ZSERIO_GEN_DIR}/expressions/full_enumeration_type/Color.h
     ${ZSERIO_GEN_DIR}/expressions/full_enumeration_type/FullEnumerationTypeExpression.cpp
@@ -82,6 +85,11 @@ set(ZSERIO_GENERATED_SOURCES
     ${ZSERIO_GEN_DIR}/expressions/used_before_type/UsedBeforeTypeExpression.h
 
     ${ZSERIO_GEN_DIR}/expressions/ConstType.h
+
+    ${ZSERIO_GEN_DIR}/expressions/valueof_operator/Color.cpp
+    ${ZSERIO_GEN_DIR}/expressions/valueof_operator/Color.h
+    ${ZSERIO_GEN_DIR}/expressions/valueof_operator/ValueOfFunctions.cpp
+    ${ZSERIO_GEN_DIR}/expressions/valueof_operator/ValueOfFunctions.h
 )
 
 zserio_add_library(TARGET expressions_zs
@@ -101,6 +109,7 @@ add_test_sources(
     cpp/EnumerationTypeTest.cpp
     cpp/FieldTypeTest.cpp
     cpp/FloatTypeTest.cpp
+    cpp/FullConstTypeTest.cpp
     cpp/FullEnumerationTypeTest.cpp
     cpp/FunctionTypeTest.cpp
     cpp/IndexOperatorTest.cpp
@@ -115,6 +124,7 @@ add_test_sources(
     cpp/SumOperatorTest.cpp
     cpp/UInt64TypeTest.cpp
     cpp/UsedBeforeTypeTest.cpp
+    cpp/ValueOfOperatorTest.cpp
 )
 
 add_test_dependencies(expressions_zs)

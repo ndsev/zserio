@@ -1,6 +1,7 @@
 package ambiguous_single_type_error;
 
-import simple_database.SimpleTable;
+// To check ambiguous error more deeply, the first one is package import and the second one is type import.
+import simple_database.*;
 import complex_database.SimpleTable;
 
 sql_database MyDatabase

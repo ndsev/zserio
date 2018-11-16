@@ -1,20 +1,19 @@
 package zserio.emit.cpp.types;
 
 import java.util.Collections;
-import java.util.List;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
+import zserio.ast.PackageName;
 import zserio.emit.common.NativeType;
 import zserio.emit.cpp.CppFullNameFormatter;
-import zserio.emit.cpp.CppUtil;
 
 public abstract class CppNativeType implements NativeType
 {
-    public CppNativeType(List<String> namespacePath, String name, boolean simpleType)
+    public CppNativeType(PackageName packageName, String name, boolean simpleType)
     {
-        this.namespacePath = namespacePath;
-        this.namespace = CppUtil.makeNamespaceFromPath(namespacePath);
+        this.packageName = packageName;
+        this.namespace = CppFullNameFormatter.getFullName(packageName);
         this.name = name;
         this.systemIncludeFiles = new TreeSet<String>();
         this.userIncludeFiles = new TreeSet<String>();
@@ -24,7 +23,7 @@ public abstract class CppNativeType implements NativeType
     @Override
     public String getFullName()
     {
-        return CppFullNameFormatter.getFullName(namespace, name);
+        return CppFullNameFormatter.getFullName(packageName, name);
     }
 
     @Override
@@ -42,11 +41,11 @@ public abstract class CppNativeType implements NativeType
     }
 
     /**
-     * Return the namespace that contains this type as a list of components.
+     * Return name of the package which contains this type.
      */
-    public List<String> getNamespacePath()
+    public PackageName getPackageName()
     {
-        return namespacePath;
+        return packageName;
     }
 
     /**
@@ -58,7 +57,7 @@ public abstract class CppNativeType implements NativeType
         if (isSimpleType())
             return getFullName();
         else
-            return CppUtil.formatConstRef(getFullName());
+            return "const " + getFullName() + '&';
     }
 
     /**
@@ -116,7 +115,7 @@ public abstract class CppNativeType implements NativeType
         }
     }
 
-    private final List<String> namespacePath;
+    private final PackageName packageName;
     private final String namespace;
     private final String name;
     private final SortedSet<String> systemIncludeFiles;

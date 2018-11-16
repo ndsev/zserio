@@ -1,11 +1,12 @@
 package zserio.emit.java.types;
 
+import zserio.ast.PackageName;
 import zserio.emit.common.NativeType;
 import zserio.emit.java.JavaFullNameFormatter;
 
 public abstract class JavaNativeType implements NativeType
 {
-    public JavaNativeType(String packageName, String name)
+    public JavaNativeType(PackageName packageName, String name)
     {
         this.packageName = packageName;
         this.name = name;
@@ -26,13 +27,13 @@ public abstract class JavaNativeType implements NativeType
     /**
      * Return the name of the package that contains this type.
      */
-    public String getPackageName()
+    public PackageName getPackageName()
     {
         return packageName;
     }
 
     public abstract boolean isSimple();
 
-    private final String packageName;
+    private final PackageName packageName;
     private final String name;
 }

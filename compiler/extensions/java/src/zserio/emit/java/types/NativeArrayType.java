@@ -1,5 +1,7 @@
 package zserio.emit.java.types;
 
+import zserio.ast.PackageName;
+
 public class NativeArrayType extends JavaNativeType
 {
     public NativeArrayType(String name)
@@ -23,5 +25,6 @@ public class NativeArrayType extends JavaNativeType
         return false;
     }
 
-    private final static String RUNTIME_ARRAY_PACKAGE = "zserio.runtime.array";
+    private static final PackageName RUNTIME_ARRAY_PACKAGE =
+            new PackageName.Builder().addId("zserio").addId("runtime").addId("array").get();
 }

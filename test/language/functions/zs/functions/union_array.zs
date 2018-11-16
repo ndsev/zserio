@@ -22,9 +22,10 @@ struct Inner
 union ItemRef(OuterArray array)
 {
     Item        item;
-    uint16      pos;
+    uint16      position;
 
-    function Item getExplicitItem()
+    // Intentionally named as getItem to check clashing with item getter name.
+    function Item getItem()
     {
         return item;
     }
@@ -34,8 +35,9 @@ union ItemRef(OuterArray array)
         return array.values[getPosition()];
     }
 
+    // Intentionally named as getPosition to check clashing with position getter name.
     function uint16 getPosition()
     {
-        return pos;
+        return position;
     }
 };

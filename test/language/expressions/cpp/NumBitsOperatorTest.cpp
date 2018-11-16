@@ -26,7 +26,7 @@ TEST(NumBitsOperatorTest, GetNumBits8)
     for (uint8_t value8 = 1; value8 < 255; ++value8)
     {
         numBitsFunctions.setValue8(value8);
-        ASSERT_EQ(calculateExpectedNumBits(value8), numBitsFunctions.getNumBits8());
+        ASSERT_EQ(calculateExpectedNumBits(value8), numBitsFunctions.funcGetNumBits8());
     }
 }
 
@@ -36,7 +36,7 @@ TEST(NumBitsOperatorTest, GetNumBits16)
     for (uint16_t value16 = 1; value16 < 65535; ++value16)
     {
         numBitsFunctions.setValue16(value16);
-        ASSERT_EQ(calculateExpectedNumBits(value16), numBitsFunctions.getNumBits16());
+        ASSERT_EQ(calculateExpectedNumBits(value16), numBitsFunctions.funcGetNumBits16());
     }
 }
 
@@ -46,7 +46,7 @@ TEST(NumBitsOperatorTest, GetNumBits32)
     for (uint32_t value32 = 1; value32 < (uint32_t)1 << 31; value32<<=1)
     {
         numBitsFunctions.setValue32(value32);
-        ASSERT_EQ(calculateExpectedNumBits(value32), numBitsFunctions.getNumBits32());
+        ASSERT_EQ(calculateExpectedNumBits(value32), numBitsFunctions.funcGetNumBits32());
     }
 }
 
@@ -56,7 +56,7 @@ TEST(NumBitsOperatorTest, GetNumBits64)
     for (uint64_t value64 = 1; value64 < (uint64_t)1 << 48; value64<<=1)
     {
         numBitsFunctions.setValue64(value64);
-        ASSERT_EQ(calculateExpectedNumBits(value64), numBitsFunctions.getNumBits64());
+        ASSERT_EQ(calculateExpectedNumBits(value64), numBitsFunctions.funcGetNumBits64());
     }
 }
 

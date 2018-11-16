@@ -1,15 +1,14 @@
 package zserio.emit.cpp.types;
 
 import java.math.BigInteger;
-import java.util.ArrayList;
-
+import zserio.ast.PackageName;
 import zserio.emit.common.ZserioEmitException;
 
 public class NativeStdIntType extends NativeIntegralType
 {
     public NativeStdIntType(int nBits, boolean signed)
     {
-        super(new ArrayList<String>(), formatName(nBits, signed), STDINT_INCLUDE);
+        super(PackageName.EMPTY, formatName(nBits, signed), STDINT_INCLUDE);
         this.nBits = nBits;
         this.signed = signed;
 

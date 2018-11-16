@@ -16,7 +16,7 @@ TEST(CastUInt64ToUInt8Test, uint8ValueUsingUInt64Value)
     castUInt64ToUInt8Expression.setUint64Value(uint64Value);
     castUInt64ToUInt8Expression.setUseConstant(false);
     const uint8_t expectedUInt8Value = static_cast<uint8_t>(uint64Value);
-    ASSERT_EQ(expectedUInt8Value, castUInt64ToUInt8Expression.uint8Value());
+    ASSERT_EQ(expectedUInt8Value, castUInt64ToUInt8Expression.funcUint8Value());
 }
 
 TEST(CastUInt64ToUInt8Test, uint8ValueUsingConstant)
@@ -26,7 +26,7 @@ TEST(CastUInt64ToUInt8Test, uint8ValueUsingConstant)
     castUInt64ToUInt8Expression.setUint64Value(uint64Value);
     castUInt64ToUInt8Expression.setUseConstant(true);
     const uint8_t expectedUInt8Value = 1;
-    ASSERT_EQ(expectedUInt8Value, castUInt64ToUInt8Expression.uint8Value());
+    ASSERT_EQ(expectedUInt8Value, castUInt64ToUInt8Expression.funcUint8Value());
 }
 
 } // namespace cast_uint64_to_uint8

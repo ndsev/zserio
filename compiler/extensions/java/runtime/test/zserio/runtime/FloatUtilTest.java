@@ -121,7 +121,7 @@ public class FloatUtilTest
         checkFloat32ToFloat16Conversion(float32ValueMinUnderflowRounding, float16ValueMinSubnormalRounding);
 
         // normal numbers converted to infinity
-        final int float32ValueOverflow = createFloat32Value(0, 143, 0); // 2^16
+        final int float32ValueOverflow = createFloat32Value(0, 144, 0); // 2^17
         checkFloat32ToFloat16Conversion(float32ValueOverflow, float16ValuePlusInfinity);
 
         // normal numbers converted with rounding

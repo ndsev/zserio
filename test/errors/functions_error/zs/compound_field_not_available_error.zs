@@ -1,4 +1,4 @@
-package compound_field_in_function_not_available_error;
+package compound_field_not_available_error;
 
 struct Container
 {

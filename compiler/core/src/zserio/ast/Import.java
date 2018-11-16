@@ -16,7 +16,7 @@ public class Import extends TokenAST
      */
     public PackageName getImportedPackageName()
     {
-        return importedPackageName;
+        return importedPackageNameBuilder.get();
     }
 
     /**
@@ -36,13 +36,13 @@ public class Import extends TokenAST
         {
         case ZserioParserTokenTypes.ID:
             if (importedTypeName != null)
-                importedPackageName.addId(importedTypeName);
+                importedPackageNameBuilder.addId(importedTypeName);
             importedTypeName = child.getText();
             break;
 
         case ZserioParserTokenTypes.MULTIPLY:
             if (importedTypeName != null)
-                importedPackageName.addId(importedTypeName);
+                importedPackageNameBuilder.addId(importedTypeName);
             importedTypeName = null;
             break;
 
@@ -55,6 +55,6 @@ public class Import extends TokenAST
 
     private static final long serialVersionUID = 1L;
 
-    private final PackageName importedPackageName = new PackageName();
+    private final PackageName.Builder importedPackageNameBuilder = new PackageName.Builder();
     private String importedTypeName = null;
 }

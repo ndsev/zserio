@@ -17,7 +17,7 @@ TEST(StringTypeTest, append)
     const std::string secondValue = "second";
     stringTypeExpression.setSecondValue(secondValue);
 
-    ASSERT_EQ(firstValue + secondValue + "_appendix", stringTypeExpression.append());
+    ASSERT_EQ(firstValue + secondValue + "_appendix", stringTypeExpression.funcAppend());
 }
 
 } // namespace string_type

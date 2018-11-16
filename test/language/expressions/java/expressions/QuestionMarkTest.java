@@ -14,7 +14,7 @@ public class QuestionMarkTest
         final QuestionMarkExpression questionMarkExpression = new QuestionMarkExpression(FIRST_VALUE,
                 SECOND_VALUE, true);
 
-        assertEquals(FIRST_VALUE, questionMarkExpression.validValue());
+        assertEquals(FIRST_VALUE, questionMarkExpression.funcValidValue());
     }
 
     @Test
@@ -23,7 +23,7 @@ public class QuestionMarkTest
         final QuestionMarkExpression questionMarkExpression = new QuestionMarkExpression(FIRST_VALUE,
                 SECOND_VALUE, false);
 
-        assertEquals(SECOND_VALUE, questionMarkExpression.validValue());
+        assertEquals(SECOND_VALUE, questionMarkExpression.funcValidValue());
     }
 
     private static final byte FIRST_VALUE = 0x11;

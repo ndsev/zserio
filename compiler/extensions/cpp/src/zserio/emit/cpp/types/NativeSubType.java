@@ -1,13 +1,13 @@
 package zserio.emit.cpp.types;
 
-import java.util.List;
+import zserio.ast.PackageName;
 
 public class NativeSubType extends CppNativeType
 {
-    public NativeSubType(List<String> namespacePath, String name, String includeFileName,
+    public NativeSubType(PackageName packageName, String name, String includeFileName,
             CppNativeType targetType)
     {
-        super(namespacePath, name, targetType.isSimpleType());
+        super(packageName, name, targetType.isSimpleType());
         this.targetType = targetType;
         addUserIncludeFile(includeFileName);
     }

@@ -1,16 +1,15 @@
 package zserio.emit.cpp.types;
 
-import java.util.List;
-
-import zserio.emit.cpp.CppUtil;
+import zserio.ast.PackageName;
+import zserio.emit.cpp.TemplateInstantiationFormatter;
 
 public class NativeObjectArrayType extends NativeArrayType
 {
-    public NativeObjectArrayType(List<String> zserioNamespace, String includePathRoot,
+    public NativeObjectArrayType(PackageName packageName, String includePathRoot,
             CppNativeType elementType)
     {
-        super(zserioNamespace,
-                CppUtil.formatTemplateInstantiation(OBJECT_ARRAY_TEMPLATE, elementType.getFullName()),
+        super(packageName,
+                TemplateInstantiationFormatter.format(OBJECT_ARRAY_TEMPLATE, elementType.getFullName()),
                 includePathRoot + OBJECT_ARRAY_INCLUDE, elementType);
     }
 

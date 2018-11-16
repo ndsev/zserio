@@ -2,11 +2,13 @@ package zserio.emit.java.types;
 
 import java.math.BigInteger;
 
+import zserio.ast.PackageName;
+
 public class NativeByteType extends NativeIntegralType
 {
     public NativeByteType(boolean nullable)
     {
-        super("", nullable ? "Byte" : "byte");
+        super(PackageName.EMPTY, nullable ? "Byte" : "byte");
         this.nullable = nullable;
     }
 

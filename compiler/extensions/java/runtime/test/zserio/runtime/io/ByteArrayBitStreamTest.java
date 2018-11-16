@@ -47,7 +47,7 @@ public class ByteArrayBitStreamTest
         for (int numBits = 1; numBits <= 64; ++numBits)
         {
             // min and max values and some smaller values
-            final long minValue = (-1L << (numBits - 1)) + 1;
+            final long minValue = -1L << (numBits - 1);
             final long maxValue = (1L << (numBits - 1)) - 1;
             final Long data[] =
             {
@@ -350,7 +350,7 @@ public class ByteArrayBitStreamTest
 
         Method writeMethod = ByteArrayBitStreamWriter.class.getMethod("writeFloat32", float.class);
         Method readMethod = ByteArrayBitStreamReader.class.getMethod("readFloat32");
-        testImpl(writeMethod, readMethod, values, 15);
+        testImpl(writeMethod, readMethod, values, 31);
     }
 
     @Test
@@ -370,7 +370,7 @@ public class ByteArrayBitStreamTest
 
         Method writeMethod = ByteArrayBitStreamWriter.class.getMethod("writeFloat64", double.class);
         Method readMethod = ByteArrayBitStreamReader.class.getMethod("readFloat64");
-        testImpl(writeMethod, readMethod, values, 15);
+        testImpl(writeMethod, readMethod, values, 63);
     }
 
     @Test
@@ -421,7 +421,7 @@ public class ByteArrayBitStreamTest
     {
         Short values[] =
         {
-             // 1 byte
+            // 1 byte
             (short)0,
             -(short)1,
             +(short)1,
@@ -530,7 +530,7 @@ public class ByteArrayBitStreamTest
     {
         Short values[] =
         {
-             // 1 byte
+            // 1 byte
             (short)0,
             (short)1,
             (short)((1 << (7)) - 1),

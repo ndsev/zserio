@@ -19,7 +19,7 @@ public class StructureArrayParamTest
     public void checkParentStructure() throws IOException
     {
         final ParentStructure parentStructure = createParentStructure();
-        assertEquals(CHILD_BIT_SIZE, parentStructure.getChildBitSize());
+        assertEquals(CHILD_BIT_SIZE, parentStructure.funcGetChildBitSize());
 
         final ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter();
         parentStructure.write(writer);

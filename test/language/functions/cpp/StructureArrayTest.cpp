@@ -57,7 +57,7 @@ protected:
     {
         StructureArray structureArray;
         createStructureArray(structureArray, pos);
-        const Item readElement = structureArray.getElement();
+        const Item readElement = structureArray.funcGetElement();
         ASSERT_EQ(m_items[pos], readElement);
 
         zserio::BitStreamWriter writtenWriter;

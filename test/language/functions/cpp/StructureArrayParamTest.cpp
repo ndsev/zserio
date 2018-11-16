@@ -56,7 +56,7 @@ TEST_F(FunctionsStructureArrayParamTest, checkParentStructure)
     ParentStructure parentStructure;
     createParentStructure(parentStructure);
     const uint8_t expectedChildBitSize = CHILD_BIT_SIZE;
-    ASSERT_EQ(expectedChildBitSize, parentStructure.getChildBitSize());
+    ASSERT_EQ(expectedChildBitSize, parentStructure.funcGetChildBitSize());
 
     zserio::BitStreamWriter writtenWriter;
     parentStructure.write(writtenWriter);

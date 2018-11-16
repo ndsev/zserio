@@ -1,5 +1,6 @@
 package zserio.ast;
 
+import java.io.File;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -15,6 +16,90 @@ import zserio.tools.StringJoinUtil;
  */
 public class PackageName implements Comparable<PackageName>, Serializable
 {
+    /**
+     * Package name builder. Used to build an immutable package name.
+     *
+     * The built package name is cached within the builder until a next change is made.
+     */
+    public static final class Builder implements Serializable
+    {
+        /**
+         * Gets the built package name.
+         *
+         * @return The built package name.
+         */
+        public PackageName get()
+        {
+            if (cachedPackageName != null)
+                return cachedPackageName;
+
+            cachedPackageName = new PackageName(new ArrayList<String>(idList));
+            return cachedPackageName;
+        }
+
+        /**
+         * Adds ID to the end of the package name.
+         *
+         * @param id ID to be added at the end of the building package name.
+         *
+         * @return This builder for easy building.
+         */
+        public Builder addId(String id)
+        {
+            cachedPackageName = null;
+            idList.add(id);
+            return this;
+        }
+
+        /**
+         * Adds IDs to the end of the package name.
+         *
+         * @param ids IDs to be added at the end of the building package name.
+         *
+         * @return This builder for easy building.
+         */
+        public Builder addIds(Iterable<String> ids)
+        {
+            cachedPackageName = null;
+            for (String id : ids)
+                idList.add(id);
+            return this;
+        }
+
+        /**
+         * Appends given package name at the end of the building package name.
+         *
+         * @param packageName
+         *
+         * @return This builder for easy building.
+         */
+        public Builder append(PackageName packageName)
+        {
+            cachedPackageName = null;
+            for (String id : packageName.getIdList())
+                idList.add(id);
+            return this;
+        }
+
+        /**
+         * Removes ID from the end of the package name.
+         *
+         * @return Last ID in the package name or null if package name is empty.
+         */
+        public String removeLastId()
+        {
+            if (idList.isEmpty())
+                return null;
+
+            cachedPackageName = null;
+            return idList.remove(idList.size() - 1);
+        }
+
+        private final List<String> idList = new ArrayList<String>();
+        private PackageName cachedPackageName = null;
+        private static final long serialVersionUID = 4652468631166184740L;
+    }
+
     @Override
     public int compareTo(PackageName other)
     {
@@ -55,37 +140,13 @@ public class PackageName implements Comparable<PackageName>, Serializable
     }
 
     /**
-     * Adds ID to the end of the package name.
+     * Converts the package name to filesystem path.
      *
-     * @param id ID to be added at the end of the package name.
+     * @return Filesystem path.
      */
-    public void addId(String id)
+    public String toFilesystemPath()
     {
-        idList.add(id);
-        if (name.isEmpty())
-            name += id;
-        else
-            name += PACKAGE_NAME_SEPARATOR + id;
-    }
-
-    /**
-     * Removes ID from the end of the package name.
-     *
-     * @return Last ID in the package name or null if package name is empty.
-     */
-    public String removeLastId()
-    {
-        if (idList.isEmpty())
-            return null;
-
-        final String removedPathElement = idList.remove(idList.size() - 1);
-
-        if (idList.isEmpty())
-            name = "";
-        else
-            name = name.substring(0, name.length() - removedPathElement.length() - 1);
-
-        return removedPathElement;
+        return toString(File.separator);
     }
 
     /**
@@ -103,15 +164,24 @@ public class PackageName implements Comparable<PackageName>, Serializable
      *
      * @return List of identifiers in the package name.
      */
-    public List<String> getIdList()
+    public Iterable<String> getIdList()
     {
         return idList;
     }
+
+    private PackageName(List<String> idList)
+    {
+        this.idList = idList;
+        this.name = StringJoinUtil.joinStrings(idList, PACKAGE_NAME_SEPARATOR);
+    }
+
+    /** Empty package name constant. */
+    public static final PackageName EMPTY = new PackageName(new ArrayList<String>());
 
     private static final long serialVersionUID = -4965489451342750477L;
 
     private static final String PACKAGE_NAME_SEPARATOR = ".";
 
-    private final List<String> idList = new ArrayList<String>();
-    private String name = "";
+    private final List<String> idList;
+    private final String name;
 }

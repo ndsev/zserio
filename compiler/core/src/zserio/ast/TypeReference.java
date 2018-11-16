@@ -65,7 +65,7 @@ public class TypeReference extends TokenAST implements ZserioType
         {
         case ZserioParserTokenTypes.ID:
             if (referencedTypeName != null)
-                referencedPackageName.addId(referencedTypeName);
+                referencedPackageNameBuilder.addId(referencedTypeName);
             referencedTypeName = child.getText();
             break;
 
@@ -99,7 +99,7 @@ public class TypeReference extends TokenAST implements ZserioType
     protected void resolve(Package pkg) throws ParserException
     {
         // resolve referenced type
-        referencedType = pkg.getVisibleType(this, referencedPackageName, referencedTypeName);
+        referencedType = pkg.getVisibleType(this, referencedPackageNameBuilder.get(), referencedTypeName);
         if (referencedType == null)
             throw new ParserException(this, "Unresolved referenced type '" + referencedTypeName + "'!");
 
@@ -108,7 +108,7 @@ public class TypeReference extends TokenAST implements ZserioType
             throw new ParserException(this, "Invalid usage of constant '" + referencedType.getName() +
                     "' as a type!");
         if (referencedType instanceof SqlDatabaseType)
-            throw new ParserException(this, "Invalid use of SQL database '" + referencedType.getName() +
+            throw new ParserException(this, "Invalid usage of SQL database '" + referencedType.getName() +
                     "' as a type!");
     }
 
@@ -154,7 +154,7 @@ public class TypeReference extends TokenAST implements ZserioType
 
     private static final long serialVersionUID = 8158308333230987942L;
 
-    private final PackageName referencedPackageName = new PackageName();
+    private final PackageName.Builder referencedPackageNameBuilder = new PackageName.Builder();
     private String referencedTypeName = null;
     private ZserioType referencedType;
 

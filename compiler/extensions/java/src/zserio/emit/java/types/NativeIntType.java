@@ -2,11 +2,13 @@ package zserio.emit.java.types;
 
 import java.math.BigInteger;
 
+import zserio.ast.PackageName;
+
 public class NativeIntType extends NativeIntegralType
 {
     public NativeIntType(boolean nullable)
     {
-        super("", nullable ? "Integer" : "int");
+        super(PackageName.EMPTY, nullable ? "Integer" : "int");
         this.nullable = nullable;
     }
 
