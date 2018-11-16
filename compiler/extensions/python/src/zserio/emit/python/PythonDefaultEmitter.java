@@ -1,7 +1,7 @@
 package zserio.emit.python;
 
+import zserio.ast.PackageName;
 import zserio.ast.ZserioType;
-import zserio.ast.Package;
 import zserio.emit.common.CodeDefaultEmitter;
 import zserio.emit.common.ZserioEmitException;
 import zserio.tools.Parameters;
@@ -10,7 +10,7 @@ abstract class PythonDefaultEmitter extends CodeDefaultEmitter
 {
     public PythonDefaultEmitter(String outputPathName, Parameters extensionParameters)
     {
-        super(outputPathName, extensionParameters, PYTHON_TEMPLATE_LOCATION, ".");
+        super(outputPathName, extensionParameters, PYTHON_TEMPLATE_LOCATION);
 
         this.extensionParameters = extensionParameters;
     }
@@ -21,11 +21,11 @@ abstract class PythonDefaultEmitter extends CodeDefaultEmitter
         super.processTemplate(templateName, templateData, zserioType, PYTHON_SOURCE_EXTENSION, false);
     }
 
-    protected void processAmalgamatedTemplate(String templateName, Object templateData, Package packageToken,
-            String outputFilename) throws ZserioEmitException
+    protected void processTemplate(String templateName, Object templateData, PackageName packageName,
+            String outFileNameRoot) throws ZserioEmitException
     {
-        super.processAmalgamatedTemplate(templateName, templateData, packageToken, outputFilename,
-                PYTHON_SOURCE_EXTENSION);
+        super.processTemplate(templateName, templateData, packageName, outFileNameRoot,
+                PYTHON_SOURCE_EXTENSION, false);
     }
 
     protected TemplateDataContext getTemplateDataContext()

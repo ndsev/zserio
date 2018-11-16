@@ -1,8 +1,5 @@
 package zserio.emit.python;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import zserio.ast.ArrayType;
 import zserio.ast.BooleanType;
 import zserio.ast.ChoiceType;
@@ -11,6 +8,7 @@ import zserio.ast.ConstType;
 import zserio.ast.EnumType;
 import zserio.ast.FloatType;
 import zserio.ast.FunctionType;
+import zserio.ast.PackageName;
 import zserio.ast.ServiceType;
 import zserio.ast.SignedBitFieldType;
 import zserio.ast.SqlDatabaseType;
@@ -30,6 +28,7 @@ import zserio.emit.common.PackageMapper;
 import zserio.emit.common.ZserioEmitException;
 import zserio.emit.python.types.NativeArrayType;
 import zserio.emit.python.types.NativeCompoundType;
+import zserio.emit.python.types.NativeConstType;
 import zserio.emit.python.types.NativeEnumType;
 import zserio.emit.python.types.PythonNativeType;
 
@@ -113,14 +112,15 @@ public class PythonNativeTypeMapper
         public void visitConstType(ConstType type)
         {
             // zserio doesn't allow to instantiate compound types
-            pythonType = dynamicType;
+            final PackageName packageName = pythonPackageMapper.getPackageName(type);
+            pythonType = new NativeConstType(packageName, type.getName());
         }
 
         @Override
         public void visitEnumType(EnumType type)
         {
-            final List<String> packagePath = pythonPackageMapper.getPackagePath(type);
-            pythonType = new NativeEnumType(packagePath, type.getName());
+            final PackageName packageName = pythonPackageMapper.getPackageName(type);
+            pythonType = new NativeEnumType(packageName, type.getName());
         }
 
         @Override
@@ -215,8 +215,8 @@ public class PythonNativeTypeMapper
 
         private PythonNativeType mapCompoundType(CompoundType type)
         {
-            final List<String> packagePath = pythonPackageMapper.getPackagePath(type);
-            return new NativeCompoundType(packagePath, type.getName());
+            final PackageName packageName = pythonPackageMapper.getPackageName(type);
+            return new NativeCompoundType(packageName, type.getName());
         }
 
         private PythonNativeType pythonType;

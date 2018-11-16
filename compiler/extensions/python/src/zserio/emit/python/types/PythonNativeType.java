@@ -1,28 +1,26 @@
 package zserio.emit.python.types;
 
-import java.util.Arrays;
-import java.util.List;
-
+import zserio.ast.PackageName;
 import zserio.emit.common.NativeType;
-import zserio.tools.StringJoinUtil;
+import zserio.emit.python.PythonFullNameFormatter;
 
 public class PythonNativeType implements NativeType
 {
     public PythonNativeType()
     {
-        this(null, null);
+        this(PackageName.EMPTY, "");
     }
 
-    protected PythonNativeType(List<String> packagePath, String name)
+    protected PythonNativeType(PackageName packageName, String name)
     {
-        this.packagePath = packagePath;
+        this.packageName = packageName;
         this.name = name;
     }
 
     @Override
     public String getFullName()
     {
-        return StringJoinUtil.joinStrings(Arrays.asList(getPackagePath(), name), ".");
+        return PythonFullNameFormatter.getFullName(this.packageName, name);
     }
 
     @Override
@@ -31,11 +29,11 @@ public class PythonNativeType implements NativeType
         return name;
     }
 
-    public String getPackagePath()
+    public PackageName getPackageName()
     {
-        return StringJoinUtil.joinStrings(packagePath, ".");
+        return packageName;
     }
 
-    private final List<String> packagePath;
+    private final PackageName packageName;
     private final String name;
 }

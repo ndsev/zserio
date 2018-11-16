@@ -219,6 +219,12 @@ public class PythonExpressionFormattingPolicy extends DefaultExpressionFormattin
     }
 
     @Override
+    public UnaryExpressionFormatting getValueOf(Expression expr)
+    {
+        return new UnaryExpressionFormatting("", ".value");
+    }
+
+    @Override
     public UnaryExpressionFormatting getExplicit(Expression expr)
     {
         return new UnaryExpressionFormatting("");
@@ -227,7 +233,7 @@ public class PythonExpressionFormattingPolicy extends DefaultExpressionFormattin
     @Override
     public UnaryExpressionFormatting getNumBits(Expression expr)
     {
-        importCollector.importRuntime();
+        importCollector.importRuntimePackage();
         return new UnaryExpressionFormatting("zserio.builtin.getNumBits(", ")");
     }
 
@@ -255,8 +261,8 @@ public class PythonExpressionFormattingPolicy extends DefaultExpressionFormattin
 
     private static class TernaryExpressionFormattingPython extends TernaryExpressionFormatting
     {
-        public TernaryExpressionFormattingPython(Expression expression, String beforeOperand1, String afterOperand1,
-                String afterOperand2, String afterOperand3)
+        public TernaryExpressionFormattingPython(Expression expression,
+                String beforeOperand1, String afterOperand1, String afterOperand2, String afterOperand3)
         {
             super(expression, beforeOperand1, afterOperand1, afterOperand2, afterOperand3);
         }

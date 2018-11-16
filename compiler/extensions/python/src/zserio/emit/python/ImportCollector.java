@@ -4,6 +4,6 @@ import zserio.emit.python.types.PythonNativeType;
 
 public interface ImportCollector
 {
-    void importRuntime();
+    void importRuntimePackage();
     void importType(PythonNativeType nativeType);
 }

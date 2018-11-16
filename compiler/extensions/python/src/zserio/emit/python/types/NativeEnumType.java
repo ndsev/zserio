@@ -1,11 +1,11 @@
 package zserio.emit.python.types;
 
-import java.util.List;
+import zserio.ast.PackageName;
 
 public class NativeEnumType extends PythonNativeType
 {
-    public NativeEnumType(List<String> packagePath, String name)
+    public NativeEnumType(PackageName packageName, String name)
     {
-        super(packagePath, name);
+        super(packageName, name);
     }
 }

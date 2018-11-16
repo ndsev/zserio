@@ -1,11 +1,11 @@
 package zserio.emit.python.types;
 
-import java.util.List;
+import zserio.ast.PackageName;
 
 public class NativeCompoundType extends PythonNativeType
 {
-    public NativeCompoundType(List<String> packagePath, String name)
+    public NativeCompoundType(PackageName packageName, String name)
     {
-        super(packagePath, name);
+        super(packageName, name);
     }
 }

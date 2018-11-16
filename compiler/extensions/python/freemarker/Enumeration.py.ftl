@@ -2,7 +2,7 @@
 <@file_header generatorDescription/>
 
 import enum
-<@package_imports imports/>
+<@all_imports packageImports typeImports/>
 
 class ${name}(enum.Enum):
 <#list items as item>

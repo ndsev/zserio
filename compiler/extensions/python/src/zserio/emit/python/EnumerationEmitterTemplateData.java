@@ -22,7 +22,7 @@ public class EnumerationEmitterTemplateData extends UserTypeTemplateData
         final IntegerType enumBaseType = enumType.getIntegerBaseType();
         bitSize = createBitSize(enumBaseType);
         if (bitSize == null)
-            importRuntime();
+            importRuntimePackage();
 
         final ExpressionFormatter pythonExpressionFormatter = context.getExpressionFormatter(this);
         runtimeFunction = PythonRuntimeFunctionDataCreator.createData(enumBaseType, pythonExpressionFormatter);
