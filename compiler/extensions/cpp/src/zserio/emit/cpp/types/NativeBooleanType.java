@@ -1,13 +1,13 @@
 package zserio.emit.cpp.types;
 
 import java.math.BigInteger;
-import java.util.ArrayList;
+import zserio.ast.PackageName;
 
 public class NativeBooleanType extends NativeIntegralType
 {
     public NativeBooleanType()
     {
-        super(new ArrayList<String>(), "bool");
+        super(PackageName.EMPTY, "bool");
     }
 
     @Override

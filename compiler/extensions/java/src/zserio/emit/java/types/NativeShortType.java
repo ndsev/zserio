@@ -2,11 +2,13 @@ package zserio.emit.java.types;
 
 import java.math.BigInteger;
 
+import zserio.ast.PackageName;
+
 public class NativeShortType extends NativeIntegralType
 {
     public NativeShortType(boolean nullable)
     {
-        super("", nullable ? "Short" : "short");
+        super(PackageName.EMPTY, nullable ? "Short" : "short");
         this.nullable = nullable;
     }
 

@@ -2,13 +2,14 @@ package zserio.emit.java.types;
 
 import java.math.BigInteger;
 
+import zserio.ast.PackageName;
 import zserio.emit.common.ZserioEmitException;
 
 public class NativeBooleanType extends NativeIntegralType
 {
     public NativeBooleanType(boolean nullable)
     {
-        super("", nullable ? "Boolean" : "boolean");
+        super(PackageName.EMPTY, nullable ? "Boolean" : "boolean");
         this.nullable = nullable;
     }
 

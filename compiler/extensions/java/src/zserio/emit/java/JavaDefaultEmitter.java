@@ -9,8 +9,7 @@ abstract class JavaDefaultEmitter extends CodeDefaultEmitter
 {
     public JavaDefaultEmitter(Parameters extensionParameters, JavaExtensionParameters javaParameters)
     {
-        super(javaParameters.getJavaOutputDir(), extensionParameters, JAVA_TEMPLATE_LOCATION,
-                JavaFullNameFormatter.JAVA_PACKAGE_SEPARATOR);
+        super(javaParameters.getJavaOutputDir(), extensionParameters, JAVA_TEMPLATE_LOCATION);
 
         this.extensionParameters = extensionParameters;
         this.javaParameters = javaParameters;

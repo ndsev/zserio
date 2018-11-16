@@ -1,22 +1,21 @@
 package zserio.emit.cpp.types;
 
 import java.math.BigInteger;
-import java.util.List;
-
+import zserio.ast.PackageName;
 import zserio.emit.common.ZserioEmitException;
 
 public abstract class NativeIntegralType extends CppNativeType
 {
-    public NativeIntegralType(List<String> namespacePath, String name, String includeFileName)
+    public NativeIntegralType(PackageName packageName, String name, String includeFileName)
     {
-        super(namespacePath, name, true);
+        super(packageName, name, true);
         if (includeFileName != null)
             addSystemIncludeFile(includeFileName);
     }
 
-    public NativeIntegralType(List<String> namespacePath, String name)
+    public NativeIntegralType(PackageName packageName, String name)
     {
-        this(namespacePath, name, null);
+        this(packageName, name, null);
     }
 
     /**

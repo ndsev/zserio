@@ -99,7 +99,9 @@ public class OverviewEmitter extends DefaultHtmlEmitter
 
     private static String getReversePackageName(Package pkg)
     {
-        final List<String> packageIds = pkg.getPackageName().getIdList();
+        final List<String> packageIds = new ArrayList<String>();
+        for (String id : pkg.getPackageName().getIdList())
+            packageIds.add(id);
         final List<String> reversePackageIds = new ArrayList<String>();
         for (int i = packageIds.size() - 1; i >= 0; i--)
             reversePackageIds.add(packageIds.get(i));

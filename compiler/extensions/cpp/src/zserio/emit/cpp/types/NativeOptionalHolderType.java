@@ -1,16 +1,15 @@
 package zserio.emit.cpp.types;
 
-import java.util.List;
-
-import zserio.emit.cpp.CppUtil;
+import zserio.ast.PackageName;
+import zserio.emit.cpp.TemplateInstantiationFormatter;
 
 public class NativeOptionalHolderType extends CppNativeType
 {
-    public NativeOptionalHolderType(List<String> zserioNamespace, String zserioIncludePathRoot,
+    public NativeOptionalHolderType(PackageName packageName, String zserioIncludePathRoot,
             CppNativeType wrappedType, String optionalHolderTemplate)
     {
-        super(zserioNamespace,
-                CppUtil.formatTemplateInstantiation(optionalHolderTemplate, wrappedType.getFullName()), false);
+        super(packageName, TemplateInstantiationFormatter.format(optionalHolderTemplate,
+                wrappedType.getFullName()), false);
         this.wrappedType = wrappedType;
 
         addSystemIncludeFile(zserioIncludePathRoot + OPTIONAL_HOLDER_INCLUDE);

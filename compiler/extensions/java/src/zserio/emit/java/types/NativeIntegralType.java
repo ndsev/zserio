@@ -2,11 +2,12 @@ package zserio.emit.java.types;
 
 import java.math.BigInteger;
 
+import zserio.ast.PackageName;
 import zserio.emit.common.ZserioEmitException;
 
 abstract public class NativeIntegralType extends JavaNativeType
 {
-    public NativeIntegralType(String packageName, String name)
+    public NativeIntegralType(PackageName packageName, String name)
     {
         super(packageName, name);
     }

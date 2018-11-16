@@ -1,11 +1,11 @@
 package zserio.emit.cpp.types;
 
-import java.util.ArrayList;
+import zserio.ast.PackageName;
 
 public class NativeFloatType extends CppNativeType
 {
     public NativeFloatType()
     {
-        super(new ArrayList<String>(), "float", true);
+        super(PackageName.EMPTY, "float", true);
     }
 }

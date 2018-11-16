@@ -91,7 +91,7 @@ public class Package extends TokenAST
      */
     public PackageName getPackageName()
     {
-        return packageName;
+        return packageNameBuilder.get();
     }
 
     /**
@@ -156,7 +156,7 @@ public class Package extends TokenAST
         switch (child.getType())
         {
         case ZserioParserTokenTypes.ID:
-            packageName.addId(child.getText());
+            packageNameBuilder.addId(child.getText());
             break;
 
         default:
@@ -269,7 +269,7 @@ public class Package extends TokenAST
 
     private ZserioType getLocalType(PackageName typePackageName, String typeName)
     {
-        if (!typePackageName.isEmpty() && !typePackageName.equals(packageName))
+        if (!typePackageName.isEmpty() && !typePackageName.equals(getPackageName()))
             return null;
 
         return localTypes.get(typeName);
@@ -365,7 +365,7 @@ public class Package extends TokenAST
 
     private static final long serialVersionUID = -1L;
 
-    private final PackageName packageName = new PackageName();
+    private final PackageName.Builder packageNameBuilder = new PackageName.Builder();
 
     // this must be a LinkedHashMap because of 'Cyclic dependency' error checked in resolveSubtypes()
     private final Map<String, ZserioType> localTypes = new LinkedHashMap<String, ZserioType>();

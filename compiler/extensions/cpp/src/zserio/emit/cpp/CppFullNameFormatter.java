@@ -1,5 +1,6 @@
 package zserio.emit.cpp;
 
+import zserio.ast.PackageName;
 import zserio.tools.StringJoinUtil;
 
 /**
@@ -8,15 +9,45 @@ import zserio.tools.StringJoinUtil;
 public final class CppFullNameFormatter
 {
     /**
-     * Constructs full C++ name from package name and type name.
+     * Constructs full C++ name from the given package name - i.e. constructs full namespace.
      *
-     * @param namespaceName Namespace name (can be empty).
-     * @param typeName      Type name.
+     * @param packageName Package name.
+     *
+     * @return Full namespace.
      */
-    public static String getFullName(String namespaceName, String typeName)
+    public static String getFullName(PackageName packageName)
     {
-        return StringJoinUtil.joinStrings(namespaceName, typeName, CPP_NAMESPACE_SEPARATOR);
+        return packageName.toString(CPP_NAMESPACE_SEPARATOR);
     }
 
-    public static final String CPP_NAMESPACE_SEPARATOR = "::";
+    /**
+     * Constructs full C++ name from package name and type name.
+     *
+     * @param packageName Package name.
+     * @param typeName    Type name.
+     *
+     * @return Full type name.
+     */
+    public static String getFullName(PackageName packageName, String typeName)
+    {
+        return StringJoinUtil.joinStrings(getFullName(packageName), typeName,
+                CPP_NAMESPACE_SEPARATOR);
+    }
+
+    /**
+     * Constructs full C++ name from package name, type name and member name.
+     *
+     * @param packageName Package name.
+     * @param typeName    Type name.
+     * @param memberName  Member name.
+     *
+     * @return Full name of a member function or a static member variable.
+     */
+    public static String getFullName(PackageName packageName, String typeName, String memberName)
+    {
+        return StringJoinUtil.joinStrings(getFullName(packageName, typeName), memberName,
+                CPP_NAMESPACE_SEPARATOR);
+    }
+
+    private static final String CPP_NAMESPACE_SEPARATOR = "::";
 }

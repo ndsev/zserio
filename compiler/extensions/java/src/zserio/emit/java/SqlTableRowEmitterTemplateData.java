@@ -20,7 +20,7 @@ public final class SqlTableRowEmitterTemplateData extends JavaTemplateData
 
         final JavaNativeTypeMapper javaNativeTypeMapper = context.getJavaNativeTypeMapper();
         final JavaNativeType javaType = javaNativeTypeMapper.getJavaType(tableType);
-        packageName = javaType.getPackageName();
+        packageName = JavaFullNameFormatter.getFullName(javaType.getPackageName());
 
         name = tableRowName;
 

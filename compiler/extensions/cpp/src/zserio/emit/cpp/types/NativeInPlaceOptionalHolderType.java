@@ -1,13 +1,13 @@
 package zserio.emit.cpp.types;
 
-import java.util.List;
+import zserio.ast.PackageName;
 
 public class NativeInPlaceOptionalHolderType extends NativeOptionalHolderType
 {
-    public NativeInPlaceOptionalHolderType(List<String> zserioNamespace, String zserioIncludePathRoot,
+    public NativeInPlaceOptionalHolderType(PackageName packageName, String zserioIncludePathRoot,
             CppNativeType wrappedType)
     {
-        super(zserioNamespace, zserioIncludePathRoot, wrappedType, IN_PLACE_OPTIONAL_HOLDER_TEMPLATE);
+        super(packageName, zserioIncludePathRoot, wrappedType, IN_PLACE_OPTIONAL_HOLDER_TEMPLATE);
     }
 
     private final static String IN_PLACE_OPTIONAL_HOLDER_TEMPLATE = "InPlaceOptionalHolder";

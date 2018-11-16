@@ -564,10 +564,10 @@ public class Expression extends TokenAST
     {
         if (getType() != ZserioParserTokenTypes.EXPLICIT && !unresolvedIdentifiers.isEmpty())
         {
-            final PackageName unresolvedSymbol = new PackageName();
+            final PackageName.Builder unresolvedSymbolBuilder = new PackageName.Builder();
             for (Expression unresolvedIdentifier : unresolvedIdentifiers)
-                unresolvedSymbol.addId(unresolvedIdentifier.getText());
-            throw new ParserException(this, "Unresolved symbol '" + unresolvedSymbol.toString() +
+                unresolvedSymbolBuilder.addId(unresolvedIdentifier.getText());
+            throw new ParserException(this, "Unresolved symbol '" + unresolvedSymbolBuilder.get().toString() +
                     "' within expression scope!");
         }
     }
@@ -727,7 +727,7 @@ public class Expression extends TokenAST
         if (identifierSymbol == null)
         {
             // it still can be a type
-            final ZserioType identifierType = pkg.getVisibleType(new PackageName(), identifier);
+            final ZserioType identifierType = pkg.getVisibleType(PackageName.EMPTY, identifier);
             if (identifierType == null)
             {
                 // identifier not found, this can happened for a package name, we must wait for dot
@@ -907,11 +907,12 @@ public class Expression extends TokenAST
     private void evaluatePackageDotExpression(Expression op1, Expression op2) throws ParserException
     {
         // try to resolve op1 as package name and op2 as type
-        final PackageName op1UnresolvedPackageName = new PackageName();
+        final PackageName.Builder op1UnresolvedPackageNameBuilder = new PackageName.Builder();
         for (Expression unresolvedIdentifier : op1.unresolvedIdentifiers)
-            op1UnresolvedPackageName.addId(unresolvedIdentifier.getText());
+            op1UnresolvedPackageNameBuilder.addId(unresolvedIdentifier.getText());
 
-        final ZserioType identifierType = pkg.getVisibleType(op1UnresolvedPackageName, op2.getText());
+        final ZserioType identifierType = pkg.getVisibleType(op1UnresolvedPackageNameBuilder.get(),
+                op2.getText());
         if (identifierType == null)
         {
             // identifier still not found, this can happened for long package name, we must wait for dot

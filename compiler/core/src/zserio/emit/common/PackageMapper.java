@@ -1,13 +1,8 @@
 package zserio.emit.common;
 
-import java.io.File;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-
+import zserio.ast.PackageName;
 import zserio.ast.ZserioType;
 import zserio.ast.Package;
-import zserio.tools.StringJoinUtil;
 
 /**
  * The class maps the Zserio package name into language dependent package name.
@@ -21,104 +16,69 @@ final public class PackageMapper
      * Constructor.
      *
      * @param topLevelPackageNameList The list of top level package names defined in the command line.
-     * @param codePackageSeparator    The language package separator to use.
      */
-    public PackageMapper(Package rootPackage, Iterable<String> topLevelPackageNameList,
-            String codePackageSeparator)
+    public PackageMapper(Package rootPackage, Iterable<String> topLevelPackageNameList)
     {
-        this.codePackageSeparator = codePackageSeparator;
-
-        final List<String> topLevelPath = new ArrayList<String>();
-        for (String component: topLevelPackageNameList)
-            topLevelPath.add(component);
-        topLevelPackageNamePath = Collections.unmodifiableList(topLevelPath);
-
-        mappedRootPackagePath = Collections.unmodifiableList(getMappedPackagePath(rootPackage));
-        mappedRootPackageName = getMappedPackageName(rootPackage);
-        mappedRootPackageFilePath = getMappedPackageFilePath(rootPackage);
+        topLevelPackageName = new PackageName.Builder().addIds(topLevelPackageNameList).get();
+        mappedRootPackageName = getPackageName(rootPackage);
     }
 
     /**
-     * Returns the mapped root package name.
+     * Gets the mapped root package name.
+     *
+     * @return Mapped root package name.
      */
-    public String getRootPackageName()
+    public PackageName getRootPackageName()
     {
         return mappedRootPackageName;
     }
 
     /**
-     * Returns the relative path to mapped root directory.
-     */
-    public String getRootPackageFilePath()
-    {
-        return mappedRootPackageFilePath;
-    }
-
-    /**
-     * Returns the components of the root package.
-     */
-    public List<String> getRootPackagePath()
-    {
-        return mappedRootPackagePath;
-    }
-
-    /**
-     * Returns the mapped package name of the given zserio type.
+     * Returns the mapped package name for the given zserio type.
+     * Provided for convenience.
      *
      * @param type The zserio type to use.
-     */
-    public String getPackageName(ZserioType type)
-    {
-        return getMappedPackageName(type.getPackage());
-    }
-
-    /**
-     * Returns the relative path to mapped package of the given zserio type.
      *
-     * @param type The zserio type to use.
+     * @return Mapped package name.
      */
-    public String getPackageFilePath(ZserioType type)
+    public PackageName getPackageName(ZserioType type)
     {
-        return getMappedPackageFilePath(type.getPackage());
+        return getMappedPackageName(type.getPackage().getPackageName());
     }
 
     /**
-     * Returns the package a zserio type belongs in as a list of components.
-     * @param type
-     * @return The package as a list of its components.
+     * Returns the mapped package name for the given zserio package.
+     * Provided for convenience.
+     *
+     * @param zserioPackage The zserio package to use.
+     *
+     * @return Mapped package name.
      */
-    public List<String> getPackagePath(ZserioType type)
+    public PackageName getPackageName(Package zserioPackage)
     {
-        return getMappedPackagePath(type.getPackage());
+        return getMappedPackageName(zserioPackage.getPackageName());
     }
 
-    // TODO rename Path, to use PackageName somehow and get rid of getIdList()
-    private List<String> getMappedPackagePath(Package zserioPackage)
+    /**
+     * Maps the given package name.
+     *
+     * @param packageName Package name to map.
+     *
+     * @return Mapped package name.
+     */
+    public PackageName getPackageName(PackageName packageName)
     {
-        final List<String> packagePath = zserioPackage.getPackageName().getIdList();
-        final List<String> path = new ArrayList<String>(topLevelPackageNamePath.size() + packagePath.size());
-        path.addAll(topLevelPackageNamePath);
-        path.addAll(packagePath);
-
-        return path;
+        return getMappedPackageName(packageName);
     }
 
-    private String getMappedPackageName(Package zserioPackage)
+    private PackageName getMappedPackageName(PackageName packageName)
     {
-        return StringJoinUtil.joinStrings(topLevelPackageNamePath,
-                zserioPackage.getPackageName().getIdList(), codePackageSeparator);
+        final PackageName.Builder mappedPackageNameBuilder = new PackageName.Builder();
+        mappedPackageNameBuilder.append(topLevelPackageName);
+        mappedPackageNameBuilder.append(packageName);
+        return mappedPackageNameBuilder.get();
     }
 
-    private String getMappedPackageFilePath(Package zserioPackage)
-    {
-        return StringJoinUtil.joinStrings(topLevelPackageNamePath,
-                zserioPackage.getPackageName().getIdList(), File.separator);
-    }
-
-    private final List<String> topLevelPackageNamePath;
-    private final List<String> mappedRootPackagePath;
-
-    private final String codePackageSeparator;
-    private final String mappedRootPackageName;
-    private final String mappedRootPackageFilePath;
+    private final PackageName topLevelPackageName;
+    private final PackageName mappedRootPackageName;
 }

@@ -38,7 +38,7 @@ public class SymbolReference implements Serializable
         for (String referenceElement : referenceElementList)
         {
             if (referencedTypeName != null)
-                referencedPackageName.addId(referencedTypeName);
+                referencedPackageNameBuilder.addId(referencedTypeName);
             referencedTypeName = referenceElement;
         }
     }
@@ -85,12 +85,13 @@ public class SymbolReference implements Serializable
     {
         // try if the last link component was a type name
         final Package ownerPackage = ownerType.getPackage();
-        referencedType = ownerPackage.getVisibleType(ownerToken, referencedPackageName, referencedTypeName);
+        referencedType = ownerPackage.getVisibleType(ownerToken, referencedPackageNameBuilder.get(),
+                referencedTypeName);
         if (referencedType == null)
         {
             // try if the last link component was not type name (can be a field name or enumeration item)
             referencedSymbolName = referencedTypeName;
-            referencedTypeName = referencedPackageName.removeLastId();
+            referencedTypeName = referencedPackageNameBuilder.removeLastId();
             if (referencedTypeName == null)
             {
                 // there is only symbol name, try to resolve it in owner scope
@@ -98,7 +99,7 @@ public class SymbolReference implements Serializable
             }
             else
             {
-                referencedType = ownerPackage.getVisibleType(ownerToken, referencedPackageName,
+                referencedType = ownerPackage.getVisibleType(ownerToken, referencedPackageNameBuilder.get(),
                         referencedTypeName);
 
                 // this was our last attempt to resolve symbol type
@@ -129,7 +130,7 @@ public class SymbolReference implements Serializable
     private static final String SYMBOL_REFERENCE_SEPARATOR = ".";
 
     private final BaseTokenAST ownerToken;
-    private final PackageName referencedPackageName = new PackageName();
+    private final PackageName.Builder referencedPackageNameBuilder = new PackageName.Builder();
     private String referencedTypeName = null;
     private String referencedSymbolName = null;
     private ZserioType referencedType = null;

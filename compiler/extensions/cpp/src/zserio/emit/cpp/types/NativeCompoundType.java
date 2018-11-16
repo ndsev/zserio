@@ -1,12 +1,12 @@
 package zserio.emit.cpp.types;
 
-import java.util.List;
+import zserio.ast.PackageName;
 
 public class NativeCompoundType extends CppNativeType
 {
-    public NativeCompoundType(List<String> namespacePath, String name, String includeFileName)
+    public NativeCompoundType(PackageName packageName, String name, String includeFileName)
     {
-        super(namespacePath, name, false);
+        super(packageName, name, false);
         addUserIncludeFile(includeFileName);
     }
 }

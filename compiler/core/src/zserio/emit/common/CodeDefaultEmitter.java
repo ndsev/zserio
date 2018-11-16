@@ -3,6 +3,7 @@ package zserio.emit.common;
 import java.io.File;
 import java.util.Locale;
 
+import zserio.ast.PackageName;
 import zserio.ast.ZserioType;
 import zserio.ast.TranslationUnit;
 import zserio.ast.Package;
@@ -19,10 +20,8 @@ public abstract class CodeDefaultEmitter extends DefaultEmitter
      * @param outPathName          Path where to store all generated outputs.
      * @param extensionParameters  Command line parameter for the extension.
      * @param codeTemplateLocation Path where are all FreeMarker templates.
-     * @param codePackageSeparator Separator which must be used in package names.
      */
-    public CodeDefaultEmitter(String outPathName, Parameters extensionParameters, String codeTemplateLocation,
-            String codePackageSeparator)
+    public CodeDefaultEmitter(String outPathName, Parameters extensionParameters, String codeTemplateLocation)
     {
         this.outPathName = outPathName;
         withInspectorCode = extensionParameters.getWithInspectorCode();
@@ -36,7 +35,6 @@ public abstract class CodeDefaultEmitter extends DefaultEmitter
         this.codeTemplateLocation = codeTemplateLocation;
 
         topLevelPackageNameList = extensionParameters.getTopLevelPackageNameList();
-        this.codePackageSeparator = codePackageSeparator;
         packageMapper = null;
     }
 
@@ -49,7 +47,7 @@ public abstract class CodeDefaultEmitter extends DefaultEmitter
             if (rootPackage != null)
             {
                 // root package can be null for empty files
-                packageMapper = new PackageMapper(rootPackage, topLevelPackageNameList, codePackageSeparator);
+                packageMapper = new PackageMapper(rootPackage, topLevelPackageNameList);
             }
         }
     }
@@ -92,8 +90,8 @@ public abstract class CodeDefaultEmitter extends DefaultEmitter
     protected void processTemplate(String templateName, Object templateData, ZserioType zserioType,
             String outputExtension, boolean requestAmalgamate) throws ZserioEmitException
     {
-        final String codePackagePath = packageMapper.getPackageFilePath(zserioType);
-        processTemplate(templateName, templateData, codePackagePath, zserioType.getName(), outputExtension,
+        final PackageName packageName = packageMapper.getPackageName(zserioType);
+        processTemplate(templateName, templateData, packageName, zserioType.getName(), outputExtension,
                 requestAmalgamate);
     }
 
@@ -101,24 +99,24 @@ public abstract class CodeDefaultEmitter extends DefaultEmitter
             String outFileNameRoot, String outputExtension, boolean requestAmalgamate)
                     throws ZserioEmitException
     {
-        final String codePackagePath = packageMapper.getPackageFilePath(zserioType);
-        processTemplate(templateName, templateData, codePackagePath, outFileNameRoot, outputExtension,
+        final PackageName packageName = packageMapper.getPackageName(zserioType);
+        processTemplate(templateName, templateData, packageName, outFileNameRoot, outputExtension,
                 requestAmalgamate);
     }
 
     protected void processTemplateToRootDir(String templateName, Object templateData, String outFileNameRoot,
             String outputExtension, boolean requestAmalgamate) throws ZserioEmitException
     {
-        final String rootPackagePath = packageMapper.getRootPackageFilePath();
-        processTemplate(templateName, templateData, rootPackagePath, outFileNameRoot, outputExtension,
+        final PackageName rootPackageName = packageMapper.getRootPackageName();
+        processTemplate(templateName, templateData, rootPackageName, outFileNameRoot, outputExtension,
                 requestAmalgamate);
     }
 
-    private void processTemplate(String templateName, Object templateData, String packagePath,
+    protected void processTemplate(String templateName, Object templateData, PackageName packageName,
             String outFileNameRoot, String outputExtension, boolean requestAmalgamate)
                     throws ZserioEmitException
     {
-        final File outDir = new File(outPathName, packagePath);
+        final File outDir = new File(outPathName, packageName.toFilesystemPath());
         final String outDirName = outDir.getName();
         final boolean amalgamate = (withSourcesAmalgamation && requestAmalgamate);
         final String outFileNameWithoutExtension = (amalgamate) ? convertDirNameToCamelCase(outDirName) :
@@ -150,6 +148,5 @@ public abstract class CodeDefaultEmitter extends DefaultEmitter
 
     private final String codeTemplateLocation;
     private final Iterable<String> topLevelPackageNameList;
-    private final String codePackageSeparator;
     private PackageMapper packageMapper;
 }

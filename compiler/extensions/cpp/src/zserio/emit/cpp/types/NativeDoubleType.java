@@ -1,11 +1,11 @@
 package zserio.emit.cpp.types;
 
-import java.util.ArrayList;
+import zserio.ast.PackageName;
 
 public class NativeDoubleType extends CppNativeType
 {
     public NativeDoubleType()
     {
-        super(new ArrayList<String>(), "double", true);
+        super(PackageName.EMPTY, "double", true);
     }
 }

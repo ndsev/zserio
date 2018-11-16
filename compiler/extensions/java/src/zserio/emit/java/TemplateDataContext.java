@@ -11,7 +11,7 @@ final class TemplateDataContext
     {
         javaMajorVersion = javaParameters.getJavaMajorVersion();
         javaNativeTypeMapper = new JavaNativeTypeMapper(javaPackageMapper);
-        javaRootPackageName = javaPackageMapper.getRootPackageName();
+        javaRootPackageName = JavaFullNameFormatter.getFullName(javaPackageMapper.getRootPackageName());
 
         final JavaExpressionFormattingPolicy policy = new JavaExpressionFormattingPolicy(javaNativeTypeMapper);
         javaExpressionFormatter = new ExpressionFormatter(policy);

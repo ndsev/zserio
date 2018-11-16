@@ -1,5 +1,6 @@
 package zserio.emit.java;
 
+import zserio.ast.PackageName;
 import zserio.tools.StringJoinUtil;
 
 /**
@@ -8,15 +9,45 @@ import zserio.tools.StringJoinUtil;
 final public class JavaFullNameFormatter
 {
     /**
-     * Constructs full Java name from package name and type name.
+     * Constructs full Java name from the given package name.
      *
-     * @param packageName Package name. Can be empty.
-     * @param typeName    Type name.
+     * @param packageName Package name.
+     *
+     * @return Full package name.
      */
-    public static String getFullName(String packageName, String typeName)
+    public static String getFullName(PackageName packageName)
     {
-        return StringJoinUtil.joinStrings(packageName, typeName, JAVA_PACKAGE_SEPARATOR);
+        return packageName.toString(JAVA_PACKAGE_SEPARATOR);
     }
 
-    public static final String JAVA_PACKAGE_SEPARATOR = ".";
+    /**
+     * Constructs full Java name from package name and type name.
+     *
+     * @param packageName Package name.
+     * @param typeName    Type name.
+     *
+     * @return Full type name.
+     */
+    public static String getFullName(PackageName packageName, String typeName)
+    {
+        return StringJoinUtil.joinStrings(getFullName(packageName), typeName,
+                JAVA_PACKAGE_SEPARATOR);
+    }
+
+    /**
+     * Constructs full Java name from package name, type name and member name.
+     *
+     * @param packageName Package name.
+     * @param typeName    Type name.
+     * @param memberName  Member name.
+     *
+     * @return Full name of a member function or a static member variable.
+     */
+    public static String getFullName(PackageName packageName, String typeName, String memberName)
+    {
+        return StringJoinUtil.joinStrings(getFullName(packageName, typeName), memberName,
+                JAVA_PACKAGE_SEPARATOR);
+    }
+
+    private static final String JAVA_PACKAGE_SEPARATOR = ".";
 }

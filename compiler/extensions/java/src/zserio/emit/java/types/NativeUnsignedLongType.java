@@ -1,6 +1,7 @@
 package zserio.emit.java.types;
 
 import java.math.BigInteger;
+import zserio.ast.PackageName;
 
 /**
  * Class used to simulate uint64 in Java.
@@ -16,7 +17,7 @@ public class NativeUnsignedLongType extends NativeIntegralType
 {
     public NativeUnsignedLongType()
     {
-        super("java.math", "BigInteger");
+        super(BIG_INTEGER_PACKAGE, "BigInteger");
     }
 
     @Override
@@ -52,4 +53,6 @@ public class NativeUnsignedLongType extends NativeIntegralType
     // emulate uint64_t
     private static final BigInteger lowerBound = BigInteger.ZERO;
     private static final BigInteger upperBound = new BigInteger("FFFFFFFFFFFFFFFF", 16);
+    private static final PackageName BIG_INTEGER_PACKAGE =
+            new PackageName.Builder().addId("java").addId("math").get();
 }

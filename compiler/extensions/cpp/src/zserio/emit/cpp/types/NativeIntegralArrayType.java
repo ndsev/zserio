@@ -1,13 +1,13 @@
 package zserio.emit.cpp.types;
 
-import java.util.List;
+import zserio.ast.PackageName;
 
 public class NativeIntegralArrayType extends NativeArrayType
 {
-    public NativeIntegralArrayType(List<String> namespacePath, String name, String includeFileName,
+    public NativeIntegralArrayType(PackageName packageName, String name, String includeFileName,
             CppNativeType elementType)
     {
-        super(namespacePath, name, includeFileName, elementType);
+        super(packageName, name, includeFileName, elementType);
     }
 
     @Override

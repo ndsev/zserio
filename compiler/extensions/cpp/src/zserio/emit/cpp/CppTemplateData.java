@@ -3,9 +3,9 @@ package zserio.emit.cpp;
 import java.util.Collection;
 import java.util.TreeSet;
 
+import zserio.ast.PackageName;
 import zserio.emit.common.PackageMapper;
 import zserio.emit.cpp.types.CppNativeType;
-import zserio.tools.HashUtil;
 
 public abstract class CppTemplateData implements IncludeCollector
 {
@@ -14,8 +14,8 @@ public abstract class CppTemplateData implements IncludeCollector
         generatorDescription = "Zserio C++ extension version " + CppExtensionVersion.VERSION_STRING;
 
         final PackageMapper cppPackageMapper = context.getCppPackageMapper();
-        rootPackage =
-                new Package(cppPackageMapper.getRootPackageName(), cppPackageMapper.getRootPackagePath());
+        final PackageName rootPackageName = cppPackageMapper.getRootPackageName();
+        rootPackage = new PackageTemplateData(rootPackageName);
         withWriterCode = context.getWithWriterCode();
         withInspectorCode = context.getWithInspectorCode();
         withValidationCode = context.getWithValidationCode();
@@ -32,7 +32,7 @@ public abstract class CppTemplateData implements IncludeCollector
         return generatorDescription;
     }
 
-    public Package getRootPackage()
+    public PackageTemplateData getRootPackage()
     {
         return rootPackage;
     }
@@ -124,63 +124,33 @@ public abstract class CppTemplateData implements IncludeCollector
         cppUserIncludes.addAll(userIncludes);
     }
 
-    public static class Package implements Comparable<Package>
+    public static class PackageTemplateData
     {
-        public Package(CppNativeType type)
+        public PackageTemplateData(CppNativeType type)
         {
-            this(type.getNamespace(), type.getNamespacePath());
+            this(type.getPackageName());
         }
 
-        public Package(String name, Iterable<String> path)
+        public PackageTemplateData(PackageName packageName)
         {
-            this.name = name;
-            this.path = path;
+            this.packageName = packageName;
         }
 
         public String getName()
         {
-            return name;
+            return CppFullNameFormatter.getFullName(packageName);
         }
 
         public Iterable<String> getPath()
         {
-            return path;
+            return packageName.getIdList();
         }
 
-        @Override
-        public int compareTo(Package other)
-        {
-            return name.compareTo(other.name);
-        }
-
-        @Override
-        public boolean equals(Object other)
-        {
-            if (this == other)
-                return true;
-
-            if (other instanceof Package)
-            {
-                return compareTo((Package)other) == 0;
-            }
-
-            return false;
-        }
-
-        @Override
-        public int hashCode()
-        {
-            int hash = HashUtil.HASH_SEED;
-            hash = HashUtil.hash(hash, name);
-            return hash;
-        }
-
-        private final String name;
-        private final Iterable<String> path;
+        private final PackageName packageName;
     }
 
     private final String generatorDescription;
-    private final Package rootPackage;
+    private final PackageTemplateData rootPackage;
 
     private final boolean withWriterCode;
     private final boolean withInspectorCode;

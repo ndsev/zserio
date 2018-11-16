@@ -9,8 +9,7 @@ abstract class CppDefaultEmitter extends CodeDefaultEmitter
 {
     public CppDefaultEmitter(String outPathName, Parameters extensionParameters)
     {
-        super(outPathName, extensionParameters, CPP_TEMPLATE_LOCATION,
-                CppFullNameFormatter.CPP_NAMESPACE_SEPARATOR);
+        super(outPathName, extensionParameters, CPP_TEMPLATE_LOCATION);
 
         this.extensionParameters = extensionParameters;
     }

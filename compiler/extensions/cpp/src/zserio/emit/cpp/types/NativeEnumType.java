@@ -1,13 +1,13 @@
 package zserio.emit.cpp.types;
 
-import java.util.List;
+import zserio.ast.PackageName;
 
 public class NativeEnumType extends CppNativeType
 {
-    public NativeEnumType(List<String> namespacePath, String name, String includeFileName,
+    public NativeEnumType(PackageName packageName, String name, String includeFileName,
             NativeIntegralType baseType)
     {
-        super(namespacePath, name, true);
+        super(packageName, name, true);
         this.baseType = baseType;
         addUserIncludeFile(includeFileName);
     }

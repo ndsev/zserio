@@ -1,12 +1,14 @@
 package zserio.emit.cpp.types;
 
-import java.util.Arrays;
+import zserio.ast.PackageName;
 
 public class NativeStringType extends CppNativeType
 {
     public NativeStringType()
     {
-        super(Arrays.asList("std"), "string", false);
+        super(STD_PACKAGE_NAME, "string", false);
         addSystemIncludeFile("string");
     }
+
+    private static final PackageName STD_PACKAGE_NAME = new PackageName.Builder().addId("std").get();
 }
