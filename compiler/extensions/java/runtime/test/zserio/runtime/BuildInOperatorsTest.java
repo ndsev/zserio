@@ -11,7 +11,7 @@ public class BuildInOperatorsTest
     @Test
     public void getNumBits()
     {
-        assertEquals(1, BuildInOperators.getNumBits(0));
+        assertEquals(0, BuildInOperators.getNumBits(0));
         assertEquals(1, BuildInOperators.getNumBits(1));
         assertEquals(1, BuildInOperators.getNumBits(2));
         assertEquals(2, BuildInOperators.getNumBits(3));

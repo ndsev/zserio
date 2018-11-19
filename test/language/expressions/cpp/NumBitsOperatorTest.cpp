@@ -13,7 +13,9 @@ namespace
 {
     uint8_t calculateExpectedNumBits(uint64_t value)
     {
-        if (value <= 1)
+        if (value == 0)
+            return 0;
+        if (value == 1)
             return 1;
 
         return (uint8_t)(floor(log(value - 1) / log(2)) + 1);

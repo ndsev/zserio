@@ -37,7 +37,7 @@ public class NumBitsOperatorTest
     public void getNumBits32()
     {
         final NumBitsFunctions numBitsFunctions = new NumBitsFunctions();
-        for (long value32 = 1; value32 <= 4294967295L; value32<<=1)
+        for (long value32 = 1; value32 <= 4294967295L; value32 <<= 1)
         {
             numBitsFunctions.setValue32(value32);
             assertEquals(calculateExpectedNumBits(value32), numBitsFunctions.funcGetNumBits32());
@@ -59,7 +59,9 @@ public class NumBitsOperatorTest
 
     private short calculateExpectedNumBits(long value)
     {
-        if (value <= 1)
+        if (value <= 0)
+            return (short)0;
+        if (value == 1)
             return (short)1;
 
         return (short)(Math.floor(Math.log((double)(value - 1)) / Math.log(2.0)) + 1);
