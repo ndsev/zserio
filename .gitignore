@@ -13,6 +13,9 @@
 # Eclipse project files
 .project
 
+# Eclipse Python project files
+.pydevproject
+
 # Eclipse classpath files
 .classpath
 
