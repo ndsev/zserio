@@ -9,14 +9,14 @@ class ${name}(enum.Enum):
     ${item.name} = ${item.value}
 </#list>
 
-    def bitSizeOf(self, _bitPosition = 0):
+    def bitSizeOf(self, _bitPosition=0):
 <#if bitSize??>
         return ${bitSize}
 <#else>
         return zserio.bitsizeof.getBitSizeOf${runtimeFunction.suffix}(self.value)
 </#if>
 
-    def initializeOffsets(self, bitPosition = 0):
+    def initializeOffsets(self, bitPosition=0):
         return bitPosition + self.bitSizeOf(bitPosition)
 
     def write(self, writer):
