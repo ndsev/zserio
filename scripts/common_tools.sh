@@ -126,6 +126,9 @@ EOF
         return 1
     fi
 
+    # prevent __pycache__ and *.pyc being created in sources directory
+    export PYTHONDONTWRITEBYTECODE=1
+
     return 0
 }
 
@@ -405,62 +408,20 @@ compile_cpp_for_target()
     return 0
 }
 
-# Test python code by runnig python -m unittest.
-test_python()
+run_pylint()
 {
-    exit_if_argc_ne $# 4
-    local BUILD_DIR="${1}"; shift
-    local PYTHON_SOURCES_ROOT="${1}" ; shift
-    local SOURCES_DIR="${1}"; shift
-    local TESTS_DIR="${1}"; shift
+    exit_if_argc_lt $# 3
+    local PYLINT_RCFILE="$1"; shift
+    local MSYS_WORKAROUND_TEMP=("${!1}"); shift
+    local PYLINT_ARGS=("${MSYS_WORKAROUND_TEMP[@]}")
+    local SOURCES="$@"; shift
 
-    rm -rf "${BUILD_DIR}"
-    mkdir -p "${BUILD_DIR}"
-    pushd "${BUILD_DIR}" > /dev/null
-
-    # run tests by coverage
-    PYTHONDONTWRITEBYTECODE=1 PYTHONPATH="${SOURCES_DIR}" "${PYTHON}" \
-                                                          -m coverage run --source "${PYTHON_SOURCES_ROOT}/" \
-                                                          -m unittest discover -s "${TESTS_DIR}" -v
-    local PYTHON_RESULT=$?
-    if [ ${PYTHON_RESULT} -ne 0 ] ; then
-        stderr_echo "Running python coverage tests  failed with return code ${PYTHON_RESULT}!"
-        popd > /dev/null
-        return 1
-    fi
-    echo
-
-    # report tests coverage
-    "${PYTHON}" -m coverage report -m --fail-under=100
-    local COVERAGE_RESULT=$?
-    if [ ${COVERAGE_RESULT} -ne 0 ] ; then
-        stderr_echo "Running python coverage report failed with return code ${COVERAGE_RESULT}!"
-        popd > /dev/null
-        return 1
-    fi
-
-    popd > /dev/null
-    echo
-
-    # check sources
-    local PYLINT_RCFILE="${PYTHON_SOURCES_ROOT}/pylintrc.txt"
-    "${PYTHON}" -m pylint "${SOURCES_DIR}"/* --rcfile "${PYLINT_RCFILE}" --persistent=n
+    "${PYTHON}" -m pylint ${SOURCES} --rcfile "${PYLINT_RCFILE}" --persistent=n ${PYLINT_ARGS[@]}
     local PYLINT_RESULT=$?
     if [ ${PYLINT_RESULT} -ne 0 ] ; then
         stderr_echo "Running pylint failed with return code ${PYLINT_RESULT}!"
         return 1
     fi
-
-    # check test sources
-    PYTHONPATH="${SOURCES_DIR}" "${PYTHON}" -m pylint "${TESTS_DIR}"/* --disable=missing-docstring \
-                                --rcfile "${PYLINT_RCFILE}" --persistent=n
-    local PYLINT_RESULT=$?
-    if [ ${PYLINT_RESULT} -ne 0 ] ; then
-        stderr_echo "Running pylint failed with return code ${PYLINT_RESULT}!"
-        return 1
-    fi
-
-    return 0
 }
 
 # Test if it's possible to run tests for given target on current host.
