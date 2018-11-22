@@ -5,7 +5,7 @@ from zserio.builtin import getNumBits
 class BuiltinOperatorsTest(unittest.TestCase):
 
     def testNumBits(self):
-        self.assertEqual(1, getNumBits(0))
+        self.assertEqual(0, getNumBits(0))
         self.assertEqual(1, getNumBits(1))
         self.assertEqual(1, getNumBits(2))
         self.assertEqual(2, getNumBits(3))

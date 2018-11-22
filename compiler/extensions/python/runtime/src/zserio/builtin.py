@@ -2,17 +2,19 @@
 The module provides implementation of zserio built-in operators.
 """
 
-def getNumBits(value):
+def getNumBits(numValues):
     """
-    Gets the minimum number of bits required to encode value-1.
+    Gets the minimum number of bits required to encode given number of different values.
 
     This method implements zserio built-in operator numBits.
-    Note that numBits returns 1 if the value is less than 3.
 
-    :param value: An integral value.
-    :returns: Number of bits required to encode value-1.
+    :param numValues: The number of different values from which to calculate number of bits.
+    :returns: Number of bits required to encode numValues different values.
     """
 
-    if value < 3:
+    if numValues == 0:
+        return 0
+    if numValues == 1:
         return 1
-    return (value - 1).bit_length()
+
+    return (numValues - 1).bit_length()
