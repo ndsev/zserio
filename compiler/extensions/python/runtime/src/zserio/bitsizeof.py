@@ -3,8 +3,7 @@ The module provides help methods to calculate size of nontrivial types.
 """
 
 from zserio.exception import PythonRuntimeException
-
-INT64_MIN = -1 << 63
+from zserio.limits import INT64_MIN
 
 def getBitSizeOfVarInt16(value):
     """

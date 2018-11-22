@@ -6,6 +6,7 @@ from zserio.bitsizeof import (getBitSizeOfVarInt16, getBitSizeOfVarInt32,
                               getBitSizeOfVarUInt64, getBitSizeOfVarUInt,
                               getBitSizeOfString, alignTo)
 from zserio.exception import PythonRuntimeException
+from zserio.limits import INT64_MIN
 
 class BitSizeOfTest(unittest.TestCase):
 
@@ -144,10 +145,10 @@ class BitSizeOfTest(unittest.TestCase):
         self.assertEqual(72, getBitSizeOfVarInt((1 << 63) - 1))
 
         # special case, INT64_MIN is stored as -0
-        self.assertEqual(8, getBitSizeOfVarInt(-(1 << 63)))
+        self.assertEqual(8, getBitSizeOfVarInt(INT64_MIN))
 
         with self.assertRaises(PythonRuntimeException):
-            getBitSizeOfVarInt(-(1 << 63) - 1) # below the lower bound
+            getBitSizeOfVarInt(INT64_MIN - 1) # below the lower bound
 
         with self.assertRaises(PythonRuntimeException):
             getBitSizeOfVarInt(1 << 63) # above the upper bound

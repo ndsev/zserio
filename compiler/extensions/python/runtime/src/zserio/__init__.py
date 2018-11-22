@@ -14,5 +14,6 @@ import zserio.array
 import zserio.builtin
 import zserio.float
 import zserio.hashcode
+import zserio.limits
 
 VERSION_STRING = "1.1.0"
