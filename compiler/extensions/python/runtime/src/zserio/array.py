@@ -38,6 +38,29 @@ class Array():
         self._setOffsetMethod = setOffsetMethod
         self._checkOffsetMethod = checkOffsetMethod
 
+    @classmethod
+    def fromReader(cls, arrayTraits, reader, size=None, *, isAuto=None, isImplicit=None, setOffsetMethod=None,
+                   checkOffsetMethod=None):
+        """
+        Constructs array and reads elements from the given bit stream reader.
+
+        :param arrayTraits: Array traits which specify the array type.
+        :param reader: Bit stream from which to read.
+        :param size: Number of elements to read or None in case of implicit or auto arrays.
+        :param rawArray: Native python list which will be hold by this abstraction.
+        :param isAuto: True if mapped Zserio array is auto array.
+        :param isImplicit: True if mapped Zserio array is implicit array.
+        :param setOffsetMethod:  Set offset method if mapped Zserio array is indexed offset array.
+        :param checkOffsetMethod: Check offset method if mapped Zserio array is indexed offset array.
+        :returns: Array instance filled using given bit stream reader.
+        """
+
+        instance = cls(arrayTraits, isAuto=isAuto, isImplicit=isImplicit, setOffsetMethod=setOffsetMethod,
+                       checkOffsetMethod=checkOffsetMethod)
+        instance.read(reader, size)
+
+        return instance
+
     def __eq__(self, other):
         return (self._rawArray == other._rawArray and
                 self._arrayTraits == other._arrayTraits and

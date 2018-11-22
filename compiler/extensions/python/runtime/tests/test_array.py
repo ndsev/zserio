@@ -167,6 +167,7 @@ class ArrayTest(unittest.TestCase):
         self._testArray(arrayTraits, array1Values, array1BitSizeOf, array1AligneBitSizeOf, array2Values)
 
     def _testArray(self, arrayTraits, array1Values, array1BitSizeOf, array1AlignedBitSizeOf, array2Values):
+        self._testFromReader(arrayTraits, array1Values)
         self._testHashCode(arrayTraits, array1Values, array2Values)
         self._testLen(arrayTraits, array1Values)
         self._testGetItem(arrayTraits, array1Values)
@@ -177,6 +178,14 @@ class ArrayTest(unittest.TestCase):
         self._testInitializeOffsets(arrayTraits, array1Values, array1BitSizeOf, array1AlignedBitSizeOf)
         self._testRead(arrayTraits, array1Values)
         self._testWrite(arrayTraits, array1Values, array1BitSizeOf, array1AlignedBitSizeOf)
+
+    def _testFromReader(self, arrayTraits, arrayValues):
+        array = Array(arrayTraits, arrayValues)
+        writer = BitStreamWriter()
+        array.write(writer)
+        reader = BitStreamReader(writer.getByteArray())
+        readArray = Array.fromReader(arrayTraits, reader, len(arrayValues))
+        self.assertEqual(array, readArray)
 
     def _testHashCode(self, arrayTraits, array1Values, array2Values):
         array1 = Array(arrayTraits, array1Values)
