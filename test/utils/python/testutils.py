@@ -13,47 +13,27 @@ TEST_ARGS["build_dir"] = os.path.join(TEST_ARGS["zserio_root_dir"], "build", "te
 TEST_ARGS["release_dir"] = os.path.join(TEST_ARGS["zserio_root_dir"], "distr")
 TEST_ARGS["java"] = "java"
 
-def compileZserio(testFile, mainZsFile, extraArgs=None):
-    """
-    Compiles test zserio sources for the current python test file (i.e. test suite) and
-    directly imports the generated python sources.
+# set containing all compiled main zs files to prevent multiple compilations of the same zserio sources
+COMPILED_ZS_SET = set() # contains zs definition tuples: (zsDir, mainZsFile)
 
-    :param testFile: Current test file (i.e. test suite).
+def getZserioApi(testFile, mainZsFile, extraArgs=None):
+    """
+    :param testFile: Current test file (i.e. test case).
     :param mainZsFile: Main zserio source file for the current test suite.
-    :param extraArgs: Extra arguments to zserio compiler.
-
     :returns: Generated python API.
-    :raises Exception: When zserio tool fails.
     """
 
-    if extraArgs is None:
-        extraArgs = []
-    zserioLibsDir = os.path.join(TEST_ARGS["release_dir"], "zserio_libs")
-    zserioCore = os.path.join(zserioLibsDir, "zserio_core.jar")
-    zserioPython = os.path.join(zserioLibsDir, "zserio_python.jar")
     testDir = os.path.dirname(testFile) # current test directory
-    testZsDir = os.path.join(testDir, "..", "zs") # directory where test zs files are located
+    zsDir = os.path.join(testDir, "..", "zs") # directory where test zs files are located
     apiDir = getApiDir(testDir)
-    zserioCmd = ('"{java}" -cp "{core}{sep}{python}" zserio.tools.ZserioTool '
-                 '{extraArgs} -python "{pythonDir}" -src "{sourceDir}" "{mainSource}"')
-    zserioResult = os.system(zserioCmd.format(java=TEST_ARGS["java"],
-                                              core=zserioCore,
-                                              sep=os.pathsep,
-                                              python=zserioPython,
-                                              extraArgs=' '.join(extraArgs),
-                                              pythonDir=apiDir,
-                                              sourceDir=testZsDir,
-                                              mainSource=mainZsFile))
-    if zserioResult != 0:
-        raise Exception("Zserio compilation failed!")
 
-    # import generated api
-    sys.path.append(apiDir)
-    apiModule = os.path.splitext(mainZsFile)[0] + ".api"
-    api = importlib.import_module(apiModule)
-    sys.path.remove(apiDir)
+    zsDef = (zsDir, mainZsFile)
+    if zsDef not in COMPILED_ZS_SET:
+        COMPILED_ZS_SET.add(zsDef)
+        _compileZserio(zsDef, apiDir, extraArgs)
 
-    return api
+    apiModule = os.path.splitext(mainZsFile)[0] + os.extsep + "api"
+    return _importModule(apiDir, apiModule)
 
 def getApiDir(testDir):
     """
@@ -66,6 +46,50 @@ def getApiDir(testDir):
     buildDir = TEST_ARGS["build_dir"] # python test root build directory
     testSuiteName = _getTestSuiteName(testDir)
     return os.path.join(buildDir, testSuiteName)
+
+def _compileZserio(zsDef, apiDir, extraArgs=None):
+    """
+    Compiles test zserio sources for the current python test file (i.e. test suite) and
+    directly imports the generated python sources.
+
+    :param zsDef: Tuple defining the zs source to compile (zsDir, mainZsFile).
+    :param apiDir: Output directory for the generated API.
+    :param extraArgs: Extra arguments to zserio compiler.
+
+    :raises Exception: When zserio tool fails.
+    """
+
+    if extraArgs is None:
+        extraArgs = []
+    zserioLibsDir = os.path.join(TEST_ARGS["release_dir"], "zserio_libs")
+    zserioCore = os.path.join(zserioLibsDir, "zserio_core.jar")
+    zserioPython = os.path.join(zserioLibsDir, "zserio_python.jar")
+    zserioCmd = ('"{java}" -cp "{core}{sep}{python}" zserio.tools.ZserioTool '
+                 '{extraArgs} -python "{pythonDir}" -src "{sourceDir}" "{mainSource}"')
+    zserioResult = os.system(zserioCmd.format(java=TEST_ARGS["java"],
+                                              core=zserioCore,
+                                              sep=os.pathsep,
+                                              python=zserioPython,
+                                              extraArgs=' '.join(extraArgs),
+                                              pythonDir=apiDir,
+                                              sourceDir=zsDef[0],
+                                              mainSource=zsDef[1]))
+    if zserioResult != 0:
+        raise Exception("Zserio compilation failed!")
+
+def _importModule(path, modulePath):
+    """
+    Imports a module specified by the given path and modulePath.
+
+    :path: Root path for the requested module.
+    :modulePath: Path to the requested module with respect to the path.
+    :returns: Loaded module.
+    """
+
+    sys.path.append(path)
+    api = importlib.import_module(modulePath)
+    sys.path.remove(path)
+    return api
 
 def _getTestSuiteName(testDir):
     """

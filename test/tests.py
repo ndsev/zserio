@@ -38,7 +38,7 @@ def main():
     loader = unittest.TestLoader()
     testSuite = unittest.TestSuite()
 
-    testPattern = "test_*.py"
+    testPattern = "*Test.py"
     if "**" in args.filter:
         testFilesPattern = os.path.join(testRoot, args.filter, testPattern)
     else:
@@ -50,7 +50,7 @@ def main():
         testDir = os.path.dirname(globResult)
         if testDir not in testDirs:
             testDirs.add(testDir)
-            loadedTests = loader.discover(testDir)
+            loadedTests = loader.discover(testDir, pattern=testPattern, top_level_dir=testDir)
             testSuite.addTest(loadedTests)
     runner = unittest.TextTestRunner(verbosity=args.verbosity)
     testResult = runner.run(testSuite)
@@ -64,7 +64,8 @@ def main():
 
     # pylint for test files
     print("\nRunning pylint on python tests.")
-    pylintResult = _runPylint(testFiles, pylintOptions, "missing-docstring,invalid-name,global-statement")
+    pylintResult = _runPylint(testFiles, pylintOptions,
+                              "missing-docstring,invalid-name,duplicate-code,too-many-public-methods")
     if pylintResult != 0:
         return pylintResult
 
