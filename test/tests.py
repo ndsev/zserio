@@ -90,6 +90,9 @@ def main():
     return pylintResult
 
 def _runPylint(files, options, disableOption=None):
+    if not files:
+        return 0
+
     pylintOptions = list(files)
     pylintOptions += options
     if disableOption:
