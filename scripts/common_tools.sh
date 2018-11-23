@@ -16,6 +16,16 @@ set_global_common_variables()
         stderr_echo "Cannot find bash command find! Set FIND environment variable."
         return 1
     fi
+
+    # check java binary
+    if [ -n "${JAVA_HOME}" ] ; then
+        JAVA_BIN="${JAVA_HOME}/bin/java"
+    fi
+    JAVA_BIN="${JAVA_BIN:-java}"
+    if [ ! -f "`which "${JAVA_BIN}"`" ] ; then
+        stderr_echo "Cannot find java! Set JAVA_HOME or JAVA_BIN environment variable."
+        return 1
+    fi
 }
 
 # Set and check global variables for Java projects.
@@ -31,19 +41,13 @@ set_global_java_variables()
     # Ant extra arguments are empty by default
     ANT_EXTRA_ARGS="${ANT_EXTRA_ARGS:-""}"
 
-    # check java and javac binaries
+    # check javac binary
     if [ -n "${JAVA_HOME}" ] ; then
         JAVAC_BIN="${JAVA_HOME}/bin/javac"
-        JAVA_BIN="${JAVA_HOME}/bin/java"
     fi
     JAVAC_BIN="${JAVAC_BIN:-javac}"
-    JAVA_BIN="${JAVA_BIN:-java}"
     if [ ! -f "`which "${JAVAC_BIN}"`" ] ; then
         stderr_echo "Cannot find java compiler! Set JAVA_HOME or JAVAC_BIN environment variable."
-        return 1
-    fi
-    if [ ! -f "`which "${JAVA_BIN}"`" ] ; then
-        stderr_echo "Cannot find java! Set JAVA_HOME or JAVA_BIN environment variable."
         return 1
     fi
 
@@ -416,7 +420,7 @@ run_pylint()
     local PYLINT_ARGS=("${MSYS_WORKAROUND_TEMP[@]}")
     local SOURCES="$@"; shift
 
-    "${PYTHON}" -m pylint ${SOURCES} --rcfile "${PYLINT_RCFILE}" --persistent=n ${PYLINT_ARGS[@]}
+    "${PYTHON}" -m pylint ${SOURCES} --rcfile "${PYLINT_RCFILE}" --persistent=n "${PYLINT_ARGS[@]}"
     local PYLINT_RESULT=$?
     if [ ${PYLINT_RESULT} -ne 0 ] ; then
         stderr_echo "Running pylint failed with return code ${PYLINT_RESULT}!"

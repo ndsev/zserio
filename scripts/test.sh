@@ -45,7 +45,7 @@ test_python()
     echo "Running python tests."
     echo
 
-    "${PYTHON}" "${TEST_FILE}" ${TEST_ARGS[@]} "--pylint_rcfile=${PYLINT_RCFILE}"
+    "${PYTHON}" "${TEST_FILE}" "${TEST_ARGS[@]}" --pylint_rcfile="${PYLINT_RCFILE}"
     if [ $? -ne 0 ] ; then
         return 1
     fi
@@ -154,8 +154,8 @@ test()
             rm -rf "${TEST_OUT_DIR}/python"
         else
             local TEST_ARGS=("--release_dir=${UNPACKED_ZSERIO_RELEASE_DIR}"
-                            "--build_dir=${TEST_OUT_DIR}/python"
-                            "--java=${JAVA_BIN}")
+                             "--build_dir=${TEST_OUT_DIR}/python"
+                             "--java=${JAVA_BIN}")
             if [[ ${SWITCH_TEST_NAME} != "" ]] ; then
                 TEST_ARGS+=("--filter=${SWITCH_TEST_NAME}")
             fi
@@ -395,6 +395,10 @@ main()
     convert_to_absolute_path "${SCRIPT_DIR}/.." ZSERIO_PROJECT_ROOT
 
     # set global variables
+    set_global_common_variables
+    if [ $? -ne 0 ] ; then
+        return 1
+    fi
     set_test_global_variables
     if [ $? -ne 0 ] ; then
         return 1

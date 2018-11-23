@@ -445,13 +445,13 @@ main()
         local ACTION_DESCRIPTION="Building"
     fi
 
-    local ANT_PROPS=(-Dzserio.build_dir="${ZSERIO_BUILD_DIR}"
-                     -Dzserio.install_dir="${ZSERIO_DISTR_DIR}"
-                     -Dzserio_extensions.build_dir="${ZSERIO_BUILD_DIR}/compiler/extensions"
-                     -Dzserio_extensions.install_dir="${ZSERIO_DISTR_DIR}/zserio_libs"
-                     -Dzserio_runtimes.build_dir="${ZSERIO_BUILD_DIR}/runtime_libs"
-                     -Dzserio_runtimes.install_dir="${ZSERIO_DISTR_DIR}/runtime_libs"
-                     -Dzserio_core.jar_file="${ZSERIO_BUILD_DIR}/compiler/core/jar/zserio_core.jar")
+    local ANT_PROPS=("-Dzserio.build_dir=${ZSERIO_BUILD_DIR}"
+                     "-Dzserio.install_dir=${ZSERIO_DISTR_DIR}"
+                     "-Dzserio_extensions.build_dir=${ZSERIO_BUILD_DIR}/compiler/extensions"
+                     "-Dzserio_extensions.install_dir=${ZSERIO_DISTR_DIR}/zserio_libs"
+                     "-Dzserio_runtimes.build_dir=${ZSERIO_BUILD_DIR}/runtime_libs"
+                     "-Dzserio_runtimes.install_dir=${ZSERIO_DISTR_DIR}/runtime_libs"
+                     "-Dzserio_core.jar_file=${ZSERIO_BUILD_DIR}/compiler/core/jar/zserio_core.jar")
 
     # build Zserio Ant task
     if [[ ${PARAM_ANT_TASK} == 1 ]] ; then
@@ -519,7 +519,7 @@ main()
     if [[ ${PARAM_JAVA_RUNTIME} == 1 ]] ; then
         echo "${ACTION_DESCRIPTION} Zserio Java runtime library."
         local JAVA_RUNTIME_ANT_PROPS=("${ANT_PROPS[@]}"
-                                      -Drelational.enable=yes)
+                                      "-Drelational.enable=yes")
         compile_java "${ZSERIO_PROJECT_ROOT}/compiler/extensions/java/runtime/build.xml" \
                      JAVA_RUNTIME_ANT_PROPS[@] ${JAVA_TARGET}
         if [ $? -ne 0 ] ; then
