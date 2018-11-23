@@ -65,6 +65,9 @@ const string        UNICODE_ESC_STRING_CONSTANT = "Test string with unicode esca
 const string        HEX_ESC_STRING_CONSTANT = "Test string with hexadecimal escape \x19";
 const string        OCTAL_ESC_STRING_CONSTANT = "Test string with octal escape \031";
 
+// constant defined by another constant
+const uint32        UINT32_FULL_MASK = UINT32_MAX_CONSTANT;
+
 // enumeration type
 enum bit:4 Colors
 {
@@ -77,5 +80,10 @@ enum bit:4 Colors
 // constant defined by enum value
 const Colors        DEFAULT_PEN_COLOR = Colors.BLACK;
 
-// constant defined by another constant
-const uint32        UINT32_FULL_MASK = UINT32_MAX_CONSTANT;
+// subtype to intfield
+subtype int<25> Int25Subtype;
+const Int25Subtype SUBTYPE_INT25_CONSTANT = 25;
+
+// constant defined by subtyped enum value
+subtype Colors ColorsSubtype;
+const ColorsSubtype SUBTYPE_BLUE_COLOR_CONSTANT = Colors.BLUE;

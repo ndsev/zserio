@@ -9,6 +9,10 @@ class ${name}(enum.Enum):
     ${item.name} = ${item.value}
 </#list>
 
+    @classmethod
+    def fromReader(cls, reader):
+        return cls(reader.read${runtimeFunction.suffix}(${runtimeFunction.arg!}))
+
     def bitSizeOf(self, _bitPosition=0):
 <#if bitSize??>
         return ${bitSize}
@@ -22,7 +26,3 @@ class ${name}(enum.Enum):
     def write(self, writer):
         writer.write${runtimeFunction.suffix}(self.value<#rt>
                                               <#lt><#if runtimeFunction.arg??>, ${runtimeFunction.arg}</#if>)
-
-    @staticmethod
-    def read(reader):
-        return ${name}(reader.read${runtimeFunction.suffix}(${runtimeFunction.arg!}))

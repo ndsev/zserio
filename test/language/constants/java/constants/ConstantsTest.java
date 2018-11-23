@@ -292,14 +292,27 @@ public class ConstantsTest
     }
 
     @Test
+    public void constantDefinedByConstant()
+    {
+        assertEquals(__ConstType.UINT32_FULL_MASK, __ConstType.UINT32_MAX_CONSTANT);
+    }
+
+    @Test
     public void constantDefinedByEnum()
     {
         assertEquals(Colors.BLACK, __ConstType.DEFAULT_PEN_COLOR); // constant defined by enum
     }
 
     @Test
-    public void constantDefinedByConstant()
+    public void subtypeToInt25Constant()
     {
-        assertEquals(__ConstType.UINT32_FULL_MASK, __ConstType.UINT32_MAX_CONSTANT);
+        assertEquals(25, __ConstType.SUBTYPE_INT25_CONSTANT);
+    }
+
+    @Test
+    public void subtypeToEnumConstant()
+    {
+        assertEquals(Colors.BLUE, __ConstType.SUBTYPE_BLUE_COLOR_CONSTANT);
     }
 }
+

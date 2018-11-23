@@ -251,14 +251,27 @@ TEST(ConstantsTest, octalEscStringConstant)
     ASSERT_EQ("Test string with octal escape \031", ConstType::OCTAL_ESC_STRING_CONSTANT);
 }
 
+TEST(ConstantsTest, constantDefinedByConstant)
+{
+    ASSERT_EQ(ConstType::UINT32_FULL_MASK, ConstType::UINT32_MAX_CONSTANT);
+}
+
 TEST(ConstantsTest, enumerationConstant)
 {
     ASSERT_EQ(Colors::BLACK, ConstType::DEFAULT_PEN_COLOR);
 }
 
-TEST(ConstantsTest, constantDefinedByConstant)
+TEST(ConstantsTest, subtypeToInt25Constant)
 {
-    ASSERT_EQ(ConstType::UINT32_FULL_MASK, ConstType::UINT32_MAX_CONSTANT);
+    ASSERT_EQ(25, ConstType::SUBTYPE_INT25_CONSTANT);
+    const Int25Subtype expectedValue = 25;
+    ASSERT_EQ(expectedValue, ConstType::SUBTYPE_INT25_CONSTANT);
+}
+
+TEST(ConstantsTest, subtypeToEnumConstant)
+{
+    ASSERT_EQ(ColorsSubtype::BLUE, ConstType::SUBTYPE_BLUE_COLOR_CONSTANT);
+    ASSERT_EQ(Colors::BLUE, ConstType::SUBTYPE_BLUE_COLOR_CONSTANT);
 }
 
 } // namespace constants

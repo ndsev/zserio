@@ -15,6 +15,14 @@ class UInt64EnumTest(unittest.TestCase):
         self.assertEqual(DARK_BLUE_VALUE, self.api.DarkColor.DARK_BLUE.value)
         self.assertEqual(DARK_BLACK_VALUE, self.api.DarkColor.DARK_BLACK.value)
 
+    def testFromReader(self):
+        writer = zserio.BitStreamWriter()
+        writer.writeBits(self.api.DarkColor.DARK_BLACK.value, DARK_COLOR_BITSIZEOF)
+        byteArray = writer.getByteArray()
+        reader = zserio.BitStreamReader(byteArray)
+        color = self.api.DarkColor.fromReader(reader)
+        self.assertEqual(DARK_BLACK_VALUE, color.value)
+
     def testBitSizeOf(self):
         self.assertEqual(DARK_COLOR_BITSIZEOF, self.api.DarkColor.NONE.bitSizeOf())
         self.assertEqual(DARK_COLOR_BITSIZEOF, self.api.DarkColor.DARK_RED.bitSizeOf())
@@ -26,14 +34,6 @@ class UInt64EnumTest(unittest.TestCase):
         self.assertEqual(DARK_COLOR_BITSIZEOF + 1, self.api.DarkColor.DARK_RED.initializeOffsets(1))
         self.assertEqual(DARK_COLOR_BITSIZEOF + 2, self.api.DarkColor.DARK_BLUE.initializeOffsets(2))
         self.assertEqual(DARK_COLOR_BITSIZEOF + 3, self.api.DarkColor.DARK_BLACK.initializeOffsets(3))
-
-    def testRead(self):
-        writer = zserio.BitStreamWriter()
-        writer.writeBits(self.api.DarkColor.DARK_BLACK.value, DARK_COLOR_BITSIZEOF)
-        byteArray = writer.getByteArray()
-        reader = zserio.BitStreamReader(byteArray)
-        color = self.api.DarkColor.read(reader)
-        self.assertEqual(DARK_BLACK_VALUE, color.value)
 
     def testWrite(self):
         writer = zserio.BitStreamWriter()

@@ -6,6 +6,7 @@ import zserio.ast.EnumType;
 import zserio.ast.Package;
 import zserio.ast.PackageName;
 import zserio.ast.Root;
+import zserio.ast.Subtype;
 import zserio.ast.ZserioType;
 import zserio.emit.common.PackageMapper;
 import zserio.emit.common.ZserioEmitException;
@@ -50,6 +51,12 @@ public class ApiEmitter extends PythonDefaultEmitter
     public void beginEnumeration(EnumType enumType) throws ZserioEmitException
     {
         addTypeMapping(enumType);
+    }
+
+    @Override
+    public void beginSubtype(Subtype subtype) throws ZserioEmitException
+    {
+        addTypeMapping(subtype);
     }
 
     private void addTypeMapping(ZserioType zserioType) throws ZserioEmitException

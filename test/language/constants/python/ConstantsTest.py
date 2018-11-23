@@ -149,8 +149,16 @@ class BitfieldEnumTest(unittest.TestCase):
     def testOctalEscStringConstant(self):
         self.assertEqual("Test string with octal escape \031", self.api.OCTAL_ESC_STRING_CONSTANT)
 
+    def testConstantDefinedByConstant(self):
+        self.assertEqual(self.api.UINT32_FULL_MASK, self.api.UINT32_MAX_CONSTANT)
+
     def testEnumerationConstant(self):
         self.assertEqual(self.api.Colors.BLACK, self.api.DEFAULT_PEN_COLOR)
 
-    def testConstantDefinedByConstant(self):
-        self.assertEqual(self.api.UINT32_FULL_MASK, self.api.UINT32_MAX_CONSTANT)
+    def testSubtypeToInt25Constant(self):
+        self.assertEqual(25, self.api.SUBTYPE_INT25_CONSTANT)
+        self.assertEqual(self.api.Int25Subtype(25), self.api.SUBTYPE_INT25_CONSTANT)
+
+    def testSubtypeToEnumConstant(self):
+        self.assertEqual(self.api.ColorsSubtype.BLUE, self.api.SUBTYPE_BLUE_COLOR_CONSTANT)
+        self.assertEqual(self.api.Colors.BLUE, self.api.SUBTYPE_BLUE_COLOR_CONSTANT)

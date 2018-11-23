@@ -27,9 +27,8 @@ import zserio.ast.ZserioTypeVisitor;
 import zserio.emit.common.PackageMapper;
 import zserio.emit.common.ZserioEmitException;
 import zserio.emit.python.types.NativeArrayType;
-import zserio.emit.python.types.NativeCompoundType;
-import zserio.emit.python.types.NativeConstType;
-import zserio.emit.python.types.NativeEnumType;
+import zserio.emit.python.types.NativeBuiltinType;
+import zserio.emit.python.types.NativeUserType;
 import zserio.emit.python.types.PythonNativeType;
 
 
@@ -92,14 +91,14 @@ public class PythonNativeTypeMapper
             ZserioType resolvedElementBaseType = TypeReference.resolveBaseType(type.getElementType());
             if (resolvedElementBaseType instanceof CompoundType)
                 pythonType = new NativeArrayType(mapCompoundType((CompoundType)resolvedElementBaseType));
-            else
-                pythonType = dynamicArrayType;
+            //else
+                // TODO: implement !!!
         }
 
         @Override
         public void visitBooleanType(BooleanType type)
         {
-            pythonType = dynamicType;
+            pythonType = boolType;
         }
 
         @Override
@@ -111,22 +110,21 @@ public class PythonNativeTypeMapper
         @Override
         public void visitConstType(ConstType type)
         {
-            // zserio doesn't allow to instantiate compound types
             final PackageName packageName = pythonPackageMapper.getPackageName(type);
-            pythonType = new NativeConstType(packageName, type.getName());
+            pythonType = new NativeUserType(packageName, type.getName());
         }
 
         @Override
         public void visitEnumType(EnumType type)
         {
             final PackageName packageName = pythonPackageMapper.getPackageName(type);
-            pythonType = new NativeEnumType(packageName, type.getName());
+            pythonType = new NativeUserType(packageName, type.getName());
         }
 
         @Override
         public void visitFloatType(FloatType type)
         {
-            pythonType = dynamicType;
+            pythonType = floatType;
         }
 
         @Override
@@ -144,7 +142,7 @@ public class PythonNativeTypeMapper
         @Override
         public void visitSignedBitFieldType(SignedBitFieldType type)
         {
-            pythonType = dynamicType;
+            pythonType = intType;
         }
 
         @Override
@@ -156,19 +154,19 @@ public class PythonNativeTypeMapper
         @Override
         public void visitSqlTableType(SqlTableType type)
         {
-            pythonType = mapCompoundType(type);
+            // not supported // TODO: Add when SQL for python is implemented
         }
 
         @Override
         public void visitStdIntegerType(StdIntegerType type)
         {
-            pythonType = dynamicType;
+            pythonType = intType;
         }
 
         @Override
         public void visitStringType(StringType type)
         {
-            pythonType = dynamicType;
+            pythonType = strType;
         }
 
         @Override
@@ -180,7 +178,8 @@ public class PythonNativeTypeMapper
         @Override
         public void visitSubtype(Subtype type)
         {
-            // not supported
+            final PackageName packageName = pythonPackageMapper.getPackageName(type);
+            pythonType = new NativeUserType(packageName, type.getName());
         }
 
         @Override
@@ -204,19 +203,19 @@ public class PythonNativeTypeMapper
         @Override
         public void visitUnsignedBitFieldType(UnsignedBitFieldType type)
         {
-            pythonType = dynamicType;
+            pythonType = intType;
         }
 
         @Override
         public void visitVarIntegerType(VarIntegerType type)
         {
-            pythonType = dynamicType;
+            pythonType = intType;
         }
 
         private PythonNativeType mapCompoundType(CompoundType type)
         {
             final PackageName packageName = pythonPackageMapper.getPackageName(type);
-            return new NativeCompoundType(packageName, type.getName());
+            return new NativeUserType(packageName, type.getName());
         }
 
         private PythonNativeType pythonType;
@@ -224,6 +223,8 @@ public class PythonNativeTypeMapper
     }
 
     private final PackageMapper pythonPackageMapper;
-    private final static PythonNativeType dynamicType = new PythonNativeType();
-    private final static NativeArrayType dynamicArrayType = new NativeArrayType(dynamicType);
+    private final static PythonNativeType boolType = new NativeBuiltinType("bool");
+    private final static PythonNativeType intType = new NativeBuiltinType("int");
+    private final static PythonNativeType strType = new NativeBuiltinType("str");
+    private final static PythonNativeType floatType = new NativeBuiltinType("float");
 }

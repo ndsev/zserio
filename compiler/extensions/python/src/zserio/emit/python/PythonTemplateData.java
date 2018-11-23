@@ -3,6 +3,7 @@ package zserio.emit.python;
 import java.util.TreeSet;
 
 import zserio.ast.PackageName;
+import zserio.emit.python.types.NativeBuiltinType;
 import zserio.emit.python.types.PythonNativeType;
 import zserio.tools.HashUtil;
 
@@ -32,9 +33,10 @@ public class PythonTemplateData implements ImportCollector
     @Override
     public void importType(PythonNativeType nativeType)
     {
-        PackageName packageName = nativeType.getPackageName();
-        if (packageName != null)
-            typeImports.add(new TypeImportTemplateData(nativeType));
+        if (nativeType instanceof NativeBuiltinType)
+            return;
+
+        typeImports.add(new TypeImportTemplateData(nativeType));
     }
 
     public static class TypeImportTemplateData implements Comparable<TypeImportTemplateData>

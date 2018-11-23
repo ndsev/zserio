@@ -6,11 +6,6 @@ import zserio.emit.python.PythonFullNameFormatter;
 
 public class PythonNativeType implements NativeType
 {
-    public PythonNativeType()
-    {
-        this(PackageName.EMPTY, "");
-    }
-
     protected PythonNativeType(PackageName packageName, String name)
     {
         this.packageName = packageName;

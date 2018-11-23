@@ -15,6 +15,14 @@ class BitfieldEnumTest(unittest.TestCase):
         self.assertEqual(BLUE_VALUE, self.api.Color.BLUE.value)
         self.assertEqual(BLACK_VALUE, self.api.Color.BLACK.value)
 
+    def testFromReader(self):
+        writer = zserio.BitStreamWriter()
+        writer.writeBits(self.api.Color.BLACK.value, COLOR_BITSIZEOF)
+        byteArray = writer.getByteArray()
+        reader = zserio.BitStreamReader(byteArray)
+        color = self.api.Color.fromReader(reader)
+        self.assertEqual(BLACK_VALUE, color.value)
+
     def testBitSizeOf(self):
         self.assertEqual(COLOR_BITSIZEOF, self.api.Color.NONE.bitSizeOf())
         self.assertEqual(COLOR_BITSIZEOF, self.api.Color.RED.bitSizeOf())
@@ -26,14 +34,6 @@ class BitfieldEnumTest(unittest.TestCase):
         self.assertEqual(COLOR_BITSIZEOF + 1, self.api.Color.RED.initializeOffsets(1))
         self.assertEqual(COLOR_BITSIZEOF + 2, self.api.Color.BLUE.initializeOffsets(2))
         self.assertEqual(COLOR_BITSIZEOF + 3, self.api.Color.BLACK.initializeOffsets(3))
-
-    def testRead(self):
-        writer = zserio.BitStreamWriter()
-        writer.writeBits(self.api.Color.BLACK.value, COLOR_BITSIZEOF)
-        byteArray = writer.getByteArray()
-        reader = zserio.BitStreamReader(byteArray)
-        color = self.api.Color.read(reader)
-        self.assertEqual(BLACK_VALUE, color.value)
 
     def testWrite(self):
         writer = zserio.BitStreamWriter()
