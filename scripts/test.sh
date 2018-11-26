@@ -153,12 +153,9 @@ test()
         if [[ ${SWITCH_CLEAN} == 1 ]] ; then
             rm -rf "${TEST_OUT_DIR}/python"
         else
-            posix_to_host_path "${UNPACKED_ZSERIO_RELEASE_DIR}" HOST_RELEASE_DIR
-            posix_to_host_path "${TEST_OUT_DIR}/python" HOST_BUILD_DIR
-            posix_to_host_path "${JAVA_BIN}" HOST_JAVA_BIN
-            local TEST_ARGS=("--release_dir=${HOST_RELEASE_DIR}"
-                             "--build_dir=${HOST_BUILD_DIR}"
-                             "--java=${HOST_JAVA_BIT}")
+            local TEST_ARGS=("--release_dir=${UNPACKED_ZSERIO_RELEASE_DIR}"
+                             "--build_dir=${TEST_OUT_DIR}/python"
+                             "--java=${JAVA_BIN}")
             if [[ ${SWITCH_TEST_NAME} != "" ]] ; then
                 TEST_ARGS+=("--filter=${SWITCH_TEST_NAME}")
             fi
