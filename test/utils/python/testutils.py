@@ -5,6 +5,7 @@ Test utilities.
 import os
 import sys
 import importlib
+import subprocess
 
 # global arguments with default values (stored here to allow running of particular tests)
 TEST_ARGS = {}
@@ -64,16 +65,17 @@ def _compileZserio(zsDef, apiDir, extraArgs=None):
     zserioLibsDir = os.path.join(TEST_ARGS["release_dir"], "zserio_libs")
     zserioCore = os.path.join(zserioLibsDir, "zserio_core.jar")
     zserioPython = os.path.join(zserioLibsDir, "zserio_python.jar")
-    zserioCmd = ('"{java}" -cp "{core}{sep}{python}" zserio.tools.ZserioTool '
-                 '{extraArgs} -python "{pythonDir}" -src "{sourceDir}" "{mainSource}"')
-    zserioResult = os.system(zserioCmd.format(java=TEST_ARGS["java"],
-                                              core=zserioCore,
-                                              sep=os.pathsep,
-                                              python=zserioPython,
-                                              extraArgs=' '.join(extraArgs),
-                                              pythonDir=apiDir,
-                                              sourceDir=zsDef[0],
-                                              mainSource=zsDef[1]))
+    zserioCmd = [TEST_ARGS["java"],
+                 "-cp",
+                 os.pathsep.join([zserioCore, zserioPython]),
+                 "zserio.tools.ZserioTool",
+                 "-python",
+                 "{pythonDir}".format(pythonDir=apiDir),
+                 "-src",
+                 "{sourceDir}".format(sourceDir=zsDef[0]),
+                 zsDef[1]]
+    zserioCmd += extraArgs
+    zserioResult = subprocess.call(zserioCmd)
     if zserioResult != 0:
         raise Exception("Zserio compilation failed!")
 
