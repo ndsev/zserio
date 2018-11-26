@@ -11,7 +11,7 @@ public class ConstEmitterTemplateData extends PythonTemplateData
     {
         name = constType.getName();
 
-        final ExpressionFormatter pythonExpressionFormatter = context.getExpressionFormatter(this);
+        final ExpressionFormatter pythonExpressionFormatter = context.getPythonExpressionFormatter(this);
         value = pythonExpressionFormatter.formatGetter(constType.getValueExpression());
     }
 

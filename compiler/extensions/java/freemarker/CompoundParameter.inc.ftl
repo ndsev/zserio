@@ -1,5 +1,4 @@
-<#include "RangeCheck.inc.ftl">
-<#macro compound_parameter_accessors compoundParametersData compoundName>
+<#macro compound_parameter_accessors compoundParametersData>
     <#list compoundParametersData.list as compoundParameter>
     public ${compoundParameter.javaTypeName} ${compoundParameter.getterName}()
     {

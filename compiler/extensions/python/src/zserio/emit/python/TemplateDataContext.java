@@ -25,7 +25,7 @@ final class TemplateDataContext
         return pythonPackageMapper;
     }
 
-    public ExpressionFormatter getExpressionFormatter(ImportCollector importCollector)
+    public ExpressionFormatter getPythonExpressionFormatter(ImportCollector importCollector)
     {
         final ExpressionFormattingPolicy expressionFormattingPolicy =
                 new PythonExpressionFormattingPolicy(pythonNativeTypeMapper, importCollector);

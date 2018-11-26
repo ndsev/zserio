@@ -90,7 +90,7 @@ public class PythonNativeTypeMapper
         {
             ZserioType resolvedElementBaseType = TypeReference.resolveBaseType(type.getElementType());
             if (resolvedElementBaseType instanceof CompoundType)
-                pythonType = new NativeArrayType(mapCompoundType((CompoundType)resolvedElementBaseType));
+                pythonType = new NativeArrayType(mapCompoundType((CompoundType)resolvedElementBaseType), null);
             //else
                 // TODO: implement !!!
         }

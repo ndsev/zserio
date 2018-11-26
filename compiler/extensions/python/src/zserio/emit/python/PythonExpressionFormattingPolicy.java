@@ -165,16 +165,8 @@ public class PythonExpressionFormattingPolicy extends DefaultExpressionFormattin
         if (isFirst)
             result.append(getAccessPrefix());
 
-        if (isSetter)
-        {
-            result.append(AccessorNameFormatter.getSetterName(param));
-            result.append(PYTHON_SETTER_FUNCTION_CALL);
-        }
-        else
-        {
-            result.append(AccessorNameFormatter.getGetterName(param));
-            result.append(PYTHON_GETTER_FUNCTION_CALL);
-        }
+        result.append(AccessorNameFormatter.getGetterName(param));
+        result.append(PYTHON_GETTER_FUNCTION_CALL);
     }
 
     private void formatFieldAccessor(StringBuilder result, boolean isFirst, Field field, boolean isSetter)

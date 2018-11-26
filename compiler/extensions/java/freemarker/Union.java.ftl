@@ -3,6 +3,7 @@
 <#include "CompoundParameter.inc.ftl">
 <#include "CompoundFunction.inc.ftl">
 <#include "CompoundField.inc.ftl">
+<#include "RangeCheck.inc.ftl">
 <@standard_header generatorDescription, packageName, javaMajorVersion, [
         "java.io.IOException",
         "java.io.File",
@@ -68,7 +69,7 @@ public class ${name} implements <#if withWriterCode>InitializeOffsetsWriter, </#
         return __choiceTag;
     }
 
-<@compound_parameter_accessors compoundParametersData, name/>
+<@compound_parameter_accessors compoundParametersData/>
 <#list fieldList as field>
     <#if field.isObjectArray>@java.lang.SuppressWarnings("unchecked")</#if>
     public ${field.javaTypeName} ${field.getterName}() throws ZserioError

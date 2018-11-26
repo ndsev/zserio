@@ -243,13 +243,13 @@ public final class CompoundFieldTemplateData
             String bitSizeOfValue = null;
             if (type instanceof FixedSizeType)
             {
-                bitSizeOfValue = JavaLiteralFormatter.formatIntegerLiteral(((FixedSizeType)type).getBitSize());
+                bitSizeOfValue = JavaLiteralFormatter.formatDecimalLiteral(((FixedSizeType)type).getBitSize());
             }
             else if (type instanceof BitFieldType)
             {
                 final BitFieldType bitFieldType = (BitFieldType)type;
                 final Integer bitSize = bitFieldType.getBitSize();
-                bitSizeOfValue = (bitSize != null) ? JavaLiteralFormatter.formatIntegerLiteral(bitSize) :
+                bitSizeOfValue = (bitSize != null) ? JavaLiteralFormatter.formatDecimalLiteral(bitSize) :
                     javaExpressionFormatter.formatGetter(bitFieldType.getLengthExpression());
             }
 

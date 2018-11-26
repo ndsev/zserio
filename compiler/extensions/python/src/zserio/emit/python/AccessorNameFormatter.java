@@ -3,6 +3,7 @@ package zserio.emit.python;
 import java.util.Locale;
 
 import zserio.ast.Field;
+import zserio.ast.FunctionType;
 import zserio.ast.Parameter;
 
 public class AccessorNameFormatter
@@ -22,14 +23,14 @@ public class AccessorNameFormatter
         return getAccessorName(SETTER_NAME_PREFIX, field.getName());
     }
 
-    public static String getSetterName(Parameter param)
-    {
-        return getAccessorName(SETTER_NAME_PREFIX, param.getName());
-    }
-
     public static String getIndicatorName(Field field)
     {
         return getAccessorName(INDICATOR_NAME_PREFIX, field.getName());
+    }
+
+    public static String getFunctionName(FunctionType functionType)
+    {
+        return getAccessorName(FUNCTION_NAME_PREFIX, functionType.getName());
     }
 
     private static String getAccessorName(String accessorNamePrefix, String memberName)
@@ -46,7 +47,8 @@ public class AccessorNameFormatter
         return accessorName.toString();
     }
 
-    private final static String GETTER_NAME_PREFIX = "get";
-    private final static String SETTER_NAME_PREFIX = "set";
-    private final static String INDICATOR_NAME_PREFIX = "has";
+    private static final String GETTER_NAME_PREFIX = "get";
+    private static final String SETTER_NAME_PREFIX = "set";
+    private static final String INDICATOR_NAME_PREFIX = "has";
+    private static final String FUNCTION_NAME_PREFIX = "func";
 }

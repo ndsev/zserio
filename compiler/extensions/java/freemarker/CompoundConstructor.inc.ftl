@@ -1,4 +1,3 @@
-<#include "CompoundParameter.inc.ftl">
 <#macro compound_constructors compoundConstructorsData>
     <#local name=compoundConstructorsData.compoundName>
     <#local constructorArgumentTypeList><@compound_constructor_argument_type_list compoundConstructorsData/></#local>

@@ -113,7 +113,7 @@ ${I}__endBitPosition = BitPositionUtil.alignTo(Byte.SIZE, __endBitPosition);
 </#if>
     }
 
-<@compound_parameter_accessors compoundParametersData, name/>
+<@compound_parameter_accessors compoundParametersData/>
 <#list fieldList as field>
     public ${field.javaTypeName} ${field.getterName}()
     {
