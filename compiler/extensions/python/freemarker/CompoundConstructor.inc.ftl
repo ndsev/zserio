@@ -6,7 +6,6 @@
         <@compound_constructor_parameter_assignments compoundConstructorsData.compoundParametersData/>
 
     </#if>
-
     @classmethod
     def fromReader(cls, reader, ${constructorParamList}):
     <#if compoundConstructorsData.withWriterCode>

@@ -28,6 +28,8 @@ import zserio.emit.common.PackageMapper;
 import zserio.emit.common.ZserioEmitException;
 import zserio.emit.python.types.NativeArrayType;
 import zserio.emit.python.types.NativeBuiltinType;
+import zserio.emit.python.types.NativeFixedSizeIntArrayType;
+import zserio.emit.python.types.NativeObjectArrayType;
 import zserio.emit.python.types.NativeUserType;
 import zserio.emit.python.types.PythonNativeType;
 
@@ -61,10 +63,6 @@ public class PythonNativeTypeMapper
         final TypeMapperVisitor visitor = new TypeMapperVisitor();
         resolvedBaseType.callVisitor(visitor);
 
-        /*final ZserioEmitException thrownException = visitor.getThrownException();
-        if (thrownException != null)
-            throw thrownException;*/
-
         final PythonNativeType nativeType = visitor.getPythonType();
         if (nativeType == null)
             throw new ZserioEmitException("Unhandled type '" + resolvedBaseType.getClass().getName() +
@@ -80,19 +78,13 @@ public class PythonNativeTypeMapper
             return pythonType;
         }
 
-        /*public ZserioEmitException getThrownException()
-        {
-            return thrownException;
-        }*/
-
         @Override
         public void visitArrayType(ArrayType type)
         {
-            ZserioType resolvedElementBaseType = TypeReference.resolveBaseType(type.getElementType());
-            if (resolvedElementBaseType instanceof CompoundType)
-                pythonType = new NativeArrayType(mapCompoundType((CompoundType)resolvedElementBaseType), null);
-            //else
-                // TODO: implement !!!
+            final ZserioType resolvedElementBaseType = TypeReference.resolveBaseType(type.getElementType());
+            final ArrayTypeMapperVisitor visitor = new ArrayTypeMapperVisitor();
+            resolvedElementBaseType.callVisitor(visitor);
+            pythonType = visitor.getPythonArrayType();
         }
 
         @Override
@@ -136,7 +128,7 @@ public class PythonNativeTypeMapper
         @Override
         public void visitServiceType(ServiceType type)
         {
-            // not supported // TODO: Add when gRPC for python is implemented!
+            // not supported
         }
 
         @Override
@@ -154,7 +146,7 @@ public class PythonNativeTypeMapper
         @Override
         public void visitSqlTableType(SqlTableType type)
         {
-            // not supported // TODO: Add when SQL for python is implemented
+            // not supported
         }
 
         @Override
@@ -219,7 +211,176 @@ public class PythonNativeTypeMapper
         }
 
         private PythonNativeType pythonType;
-        /*private ZserioEmitException thrownException = null;*/
+    }
+
+    private class ArrayTypeMapperVisitor implements ZserioTypeVisitor
+    {
+        public NativeArrayType getPythonArrayType()
+        {
+            return pythonArrayType;
+        }
+
+        @Override
+        public void visitArrayType(ArrayType type)
+        {
+            // not supported
+        }
+
+        @Override
+        public void visitBooleanType(BooleanType type)
+        {
+            pythonArrayType = new NativeArrayType("BoolArrayTraits");
+        }
+
+        @Override
+        public void visitChoiceType(ChoiceType type)
+        {
+            pythonArrayType = new NativeObjectArrayType("ObjectArrayTraits");
+        }
+
+        @Override
+        public void visitConstType(ConstType type)
+        {
+            // not supported
+        }
+
+        @Override
+        public void visitEnumType(EnumType type)
+        {
+            // not supported
+        }
+
+        @Override
+        public void visitFloatType(FloatType type)
+        {
+            switch (type.getBitSize())
+            {
+            case 16:
+                pythonArrayType = new NativeArrayType("Float16ArrayTraits");
+                break;
+
+            case 32:
+                pythonArrayType = new NativeArrayType("Float32ArrayTraits");
+                break;
+
+            case 64:
+                pythonArrayType = new NativeArrayType("Float64ArrayTraits");
+                break;
+
+            default:
+                // not supported
+                break;
+            }
+        }
+
+        @Override
+        public void visitFunctionType(FunctionType type)
+        {
+            // not supported
+        }
+
+        @Override
+        public void visitServiceType(ServiceType type)
+        {
+            // not supported
+        }
+
+        @Override
+        public void visitSignedBitFieldType(SignedBitFieldType type)
+        {
+            pythonArrayType = new NativeFixedSizeIntArrayType("SignedBitFieldArrayTraits");
+        }
+
+        @Override
+        public void visitSqlDatabaseType(SqlDatabaseType type)
+        {
+            // not supported
+        }
+
+        @Override
+        public void visitSqlTableType(SqlTableType type)
+        {
+            // not supported
+        }
+
+        @Override
+        public void visitStdIntegerType(StdIntegerType type)
+        {
+            pythonArrayType = new NativeFixedSizeIntArrayType((type.isSigned()) ? "SignedBitFieldArrayTraits"
+                    : "BitFieldArrayTraits");
+        }
+
+        @Override
+        public void visitStringType(StringType type)
+        {
+            pythonArrayType = new NativeArrayType("StringArrayTraits");
+        }
+
+        @Override
+        public void visitStructureType(StructureType type)
+        {
+            pythonArrayType = new NativeObjectArrayType("ObjectArrayTraits");
+        }
+
+        @Override
+        public void visitSubtype(Subtype type)
+        {
+            // not supported
+        }
+
+        @Override
+        public void visitTypeInstantiation(TypeInstantiation type)
+        {
+            pythonArrayType = new NativeObjectArrayType("ObjectArrayTraits");
+        }
+
+        @Override
+        public void visitTypeReference(TypeReference type)
+        {
+            // not supported
+        }
+
+        @Override
+        public void visitUnionType(UnionType type)
+        {
+            pythonArrayType = new NativeObjectArrayType("ObjectArrayTraits");
+        }
+
+        @Override
+        public void visitUnsignedBitFieldType(UnsignedBitFieldType type)
+        {
+            pythonArrayType = new NativeFixedSizeIntArrayType("BitFieldArrayTraits");
+        }
+
+        @Override
+        public void visitVarIntegerType(VarIntegerType type)
+        {
+            final String unsignedPrefix = new String(type.isSigned() ? "" : "U");
+            switch (type.getMaxBitSize())
+            {
+            case 16:
+                pythonArrayType = new NativeArrayType("Var" + unsignedPrefix + "Int16ArrayTraits");
+                break;
+
+            case 32:
+                pythonArrayType = new NativeArrayType("Var" + unsignedPrefix + "Int32ArrayTraits");
+                break;
+
+            case 64:
+                pythonArrayType = new NativeArrayType("Var" + unsignedPrefix + "Int64ArrayTraits");
+                break;
+
+            case 72:
+                pythonArrayType = new NativeArrayType("Var" + unsignedPrefix + "IntArrayTraits");
+                break;
+
+            default:
+                // not supported
+                break;
+            }
+        }
+
+        private NativeArrayType pythonArrayType = null;
     }
 
     private final PackageMapper pythonPackageMapper;

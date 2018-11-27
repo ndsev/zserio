@@ -4,12 +4,18 @@ import zserio.ast.PackageName;
 
 public class NativeArrayType extends PythonNativeType
 {
-    public NativeArrayType(PythonNativeType elementType, String traitsName)
+    public NativeArrayType(String traitsName)
+    {
+        this(traitsName, false, false);
+    }
+
+    public NativeArrayType(String traitsName, boolean requiresElementBitSize, boolean requiresElementCreator)
     {
         super(ARRAY_PACKAGE_NAME, "Array");
 
-        this.elementType = elementType;
         this.traitsName = traitsName;
+        this.requiresElementBitSize = requiresElementBitSize;
+        this.requiresElementCreator = requiresElementCreator;
     }
 
     public String getTraitsName()
@@ -17,14 +23,19 @@ public class NativeArrayType extends PythonNativeType
         return traitsName;
     }
 
-    // TODO TBR?!?
-    public PythonNativeType getElementType()
+    public boolean getRequiresElementBitSize()
     {
-        return elementType;
+        return requiresElementBitSize;
+    }
+
+    public boolean getRequiresElementCreator()
+    {
+        return requiresElementCreator;
     }
 
     private static final PackageName ARRAY_PACKAGE_NAME = new PackageName.Builder().addId("zserio").get();
 
-    private final PythonNativeType elementType;
     private final String traitsName;
+    private final boolean requiresElementBitSize;
+    private final boolean requiresElementCreator;
 }

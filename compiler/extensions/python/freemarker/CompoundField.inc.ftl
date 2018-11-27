@@ -2,10 +2,6 @@
     <#local I>${""?left_pad(indent * 4)}</#local>
     <#if field.optional??>(not self.${field.optional.indicatorName}() or </#if><#t>
 self.<@field_member_name field/> == other.<@field_member_name field/><#if field.optional??>)</#if><#rt>
-    <#if field_has_next>
- and
-${I}<#rt>
-    </#if>
 </#macro>
 
 <#macro compound_hashcode_field field>
