@@ -213,7 +213,7 @@ public class PythonNativeTypeMapper
         private PythonNativeType pythonType;
     }
 
-    private class ArrayTypeMapperVisitor implements ZserioTypeVisitor
+    private static class ArrayTypeMapperVisitor implements ZserioTypeVisitor
     {
         public NativeArrayType getPythonArrayType()
         {
@@ -355,7 +355,7 @@ public class PythonNativeTypeMapper
         @Override
         public void visitVarIntegerType(VarIntegerType type)
         {
-            final String unsignedPrefix = new String(type.isSigned() ? "" : "U");
+            final String unsignedPrefix = type.isSigned() ? "" : "U";
             switch (type.getMaxBitSize())
             {
             case 16:
