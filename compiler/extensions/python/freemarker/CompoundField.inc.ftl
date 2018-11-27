@@ -81,10 +81,9 @@ ${I}reader.alignTo(${field.alignmentValue})
     <#if field.offset?? && !field.offset.containsIndex>
         <@compound_read_field_offset_check field, compoundName, indent/>
     </#if>
-    <#local fieldMemberName><@field_member_name field.name/></#local>
-
+    <#local fieldMemberName><@field_member_name field/></#local>
     <#if field.array??>
-${I}${fieldMemberName} = zserio.Array.fromReader(${field.array.traitsName}(), reader, <#rt>
+${I}self.${fieldMemberName} = zserio.Array.fromReader(${field.array.traitsName}(<#-- TODO -->), reader, <#rt>
         <#lt><#if field.array.length??>${field.array.length}<#rt>
         <#lt><#elseif field.array.isImplicit>isImplicit=True<#rt>
         <#lt><#else>isAuto=True</#if><#rt>
@@ -93,10 +92,10 @@ ${I}${fieldMemberName} = zserio.Array.fromReader(${field.array.traitsName}(), re
         </#if>
         <#lt>)
     <#elseif field.runtimeFunction??>
-${I}${fieldMemberName} = reader.read${field.runtimeFunction.suffix}(${field.runtimeFunction.arg!});
+${I}self.${fieldMemberName} = reader.read${field.runtimeFunction.suffix}(${field.runtimeFunction.arg!})
     <#else>
         <#local fromReaderArguments><#if field.compound??><@compound_field_compound_ctor_params field.compound/></#if></#local>
-${I}${fieldMemberName} = ${field.pythonTypeName}.fromReader(reader<#rt>
+${I}self.${fieldMemberName} = ${field.pythonTypeName}.fromReader(reader<#rt>
         <#lt><#if fromReaderArguments?has_content>, ${fromReaderArguments}</#if>)
     </#if>
 </#macro>
@@ -117,7 +116,7 @@ ${I}                                 (reader.getBitPosition(), 8 * ${field.offse
 
 <#macro compound_write_field field compoundName>
     <#if field.optional??>
-        if <@field_optional_condition field/>:
+        if self.${field.optional.indicatorName}():
         <#if !field.optional.clause??>
             writer.writeBool(true)
         </#if>
@@ -151,10 +150,6 @@ ${I}${field.getterName}().write(writer);
     </#if>
 </#macro>
 
-<#macro field_optional_condition field>
-    <#if field.optional.clause??>${field.optional.clause}<#else>${field.getterName}() != None</#if><#t>
-</#macro>
-
 <#macro compound_write_field_offset_check field compoundName indent>
     <#local I>${""?left_pad(indent * 4)}</#local>
 ${I}writer.alignTo(8)
@@ -165,11 +160,15 @@ ${I}                                 (writer.getBitPosition(), 8 * ${field.offse
 
 <#macro compound_check_constraint_field field compoundName>
     <#if field.constraint??>
-        if <#if field.optional??>(<@field_optional_condition field/>) && </#if>!(${field.constraint}):
+        if <#if field.optional??>(self.${field.optional.indicatorName}()) && </#if>!(${field.constraint}):
             raise PythonRuntimeException("Constraint violated at ${compoundName}.${field.name}!");
     </#if>
 </#macro>
 
 <#macro field_member_name field>
 _${field.name}_<#rt>
+</#macro>
+
+<#macro field_argument_name field>
+${field.name}_<#rt>
 </#macro>

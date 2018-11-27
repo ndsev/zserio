@@ -23,7 +23,6 @@ public class CompoundTypeTemplateData extends UserTypeTemplateData
         compoundParametersData = new CompoundParameterTemplateData(compoundType);
         compoundFunctionsData = new CompoundFunctionTemplateData(compoundType, pythonExpressionFormatter);
 
-        // TODO not implemented at the moment
         hasFieldWithOffset = compoundType.hasFieldWithOffset();
 
         final List<Field> fieldTypeList = compoundType.getFields();

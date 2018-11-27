@@ -52,7 +52,7 @@ public final class CompoundFieldTemplateData
         return name;
     }
 
-    public String getJavaTypeName()
+    public String getPythonTypeName()
     {
         return pythonTypeName;
     }
@@ -383,10 +383,13 @@ public final class CompoundFieldTemplateData
     private static Array createArray(PythonNativeType nativeType, ZserioType baseType,
             ExpressionFormatter pythonExpressionFormatter) throws ZserioEmitException
     {
-        if (!(nativeType instanceof NativeArrayType))
+        if (!(baseType instanceof ArrayType))
             return null;
 
-        //TODO paranoa with nativeType?
+        if (!(nativeType instanceof NativeArrayType))
+            throw new ZserioEmitException("Inconsistent base type '" + baseType.getClass() +
+                    "' and native type '" + nativeType.getClass() + "'!");
+
         return new Array((NativeArrayType)nativeType, (ArrayType)baseType, pythonExpressionFormatter);
     }
 

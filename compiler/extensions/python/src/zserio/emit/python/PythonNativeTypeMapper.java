@@ -247,7 +247,7 @@ public class PythonNativeTypeMapper
         @Override
         public void visitEnumType(EnumType type)
         {
-            // not supported
+            pythonArrayType = new NativeObjectArrayType("ObjectArrayTraits");
         }
 
         @Override

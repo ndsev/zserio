@@ -20,10 +20,10 @@
         "zserio.runtime.io.InitializeOffsetsWriter"
 ]/>
 </#if>
-<#assign hasFieldsWithConstraint=false/>
+<#assign hasFieldWithConstraint=false/>
 <#list fieldList as field>
     <#if field.constraint??>
-        <#assign hasFieldsWithConstraint=true/>
+        <#assign hasFieldWithConstraint=true/>
 <@imports ["zserio.runtime.ConstraintError"]/>
         <#break>
     </#if>
@@ -201,7 +201,7 @@ ${I}__endBitPosition = BitPositionUtil.alignTo(Byte.SIZE, __endBitPosition);
 
         </#if>
     </#list>
-    <#if hasFieldsWithConstraint>
+    <#if hasFieldWithConstraint>
 
         __checkConstraints();
     </#if>
@@ -277,7 +277,7 @@ ${I}}
         }
 
         </#if>
-        <#if hasFieldsWithConstraint>
+        <#if hasFieldWithConstraint>
         __checkConstraints();
         </#if>
         <#list fieldList as field>
@@ -290,7 +290,7 @@ ${I}}
     }
 </#if>
 
-<#if hasFieldsWithConstraint>
+<#if hasFieldWithConstraint>
     private void __checkConstraints() throws ZserioError
     {
     <#list fieldList as field>
