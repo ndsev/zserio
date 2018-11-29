@@ -6,7 +6,9 @@ import zserio.ast.EnumType;
 import zserio.ast.Package;
 import zserio.ast.PackageName;
 import zserio.ast.Root;
+import zserio.ast.StructureType;
 import zserio.ast.Subtype;
+import zserio.ast.UnionType;
 import zserio.ast.ZserioType;
 import zserio.emit.common.PackageMapper;
 import zserio.emit.common.ZserioEmitException;
@@ -59,6 +61,18 @@ public class ApiEmitter extends PythonDefaultEmitter
         addTypeMapping(subtype);
     }
 
+    @Override
+    public void beginUnion(UnionType unionType) throws ZserioEmitException
+    {
+        addTypeMapping(unionType);
+    }
+
+    @Override
+    public void beginStructure(StructureType structureType) throws ZserioEmitException
+    {
+        addTypeMapping(structureType);
+    }
+
     private void addTypeMapping(ZserioType zserioType) throws ZserioEmitException
     {
         final PackageMapper packageMapper = getTemplateDataContext().getPythonPackageMapper();
@@ -73,20 +87,22 @@ public class ApiEmitter extends PythonDefaultEmitter
     {
         if (!packageMapping.isEmpty())
             throw new ZserioEmitException("ApiEmitter: Empty package shall be first!");
-        packageMapping.put(PackageName.EMPTY, new ApiEmitterTemplateData(PackageName.EMPTY));
+        packageMapping.put(PackageName.EMPTY,
+                new ApiEmitterTemplateData(getTemplateDataContext(), PackageName.EMPTY));
     }
 
     private void addPackageMapping(PackageName mappedPackageName)
     {
         ApiEmitterTemplateData prevPackageTemplateData = packageMapping.get(PackageName.EMPTY);
         final PackageName.Builder currentPackageNameBuilder = new PackageName.Builder();
+        final TemplateDataContext context = getTemplateDataContext();
         for (String id : mappedPackageName.getIdList())
         {
             currentPackageNameBuilder.addId(id);
             ApiEmitterTemplateData apiEmitterTemplateData = packageMapping.get(currentPackageNameBuilder.get());
             if (apiEmitterTemplateData == null)
             {
-                apiEmitterTemplateData = new ApiEmitterTemplateData(currentPackageNameBuilder.get());
+                apiEmitterTemplateData = new ApiEmitterTemplateData(context, currentPackageNameBuilder.get());
                 packageMapping.put(currentPackageNameBuilder.get(), apiEmitterTemplateData);
             }
 

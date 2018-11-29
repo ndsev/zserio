@@ -68,13 +68,13 @@ ${I}{
             <#list caseMember.caseList as case>
 ${I}case ${case.expressionForCase}:
             </#list>
-        <@.vars[memberActionMacroName] caseMember, indent+1/>
+        <@.vars[memberActionMacroName] caseMember, indent + 1/>
 ${I}    break;
         </#list>
         <#if !isDefaultUnreachable>
 ${I}default:
             <#if defaultMember??>
-        <@.vars[memberActionMacroName] defaultMember, indent+1/>
+        <@.vars[memberActionMacroName] defaultMember, indent + 1/>
 ${I}    break;
             <#else>
 ${I}    throw new ZserioError("No match in choice ${name}: " + ${selectorExpression} + "!");
@@ -91,14 +91,14 @@ ${I}<#if caseMember_index != 0>else </#if>if (<@choice_selector_condition caseMe
 ${I}else
             </#if>
 ${I}{
-        <@.vars[memberActionMacroName] caseMember, indent+1/>
+        <@.vars[memberActionMacroName] caseMember, indent + 1/>
 ${I}}
         </#list>
         <#if !isDefaultUnreachable>
 ${I}else
 ${I}{
             <#if defaultMember??>
-        <@.vars[memberActionMacroName] defaultMember, indent+1/>
+        <@.vars[memberActionMacroName] defaultMember, indent + 1/>
             <#else>
 ${I}    throw new ZserioError("No match in choice ${name}: " + ${selectorExpression} + "!");
             </#if>
@@ -202,7 +202,7 @@ ${I}}
     <#if member.compoundField??>
         <#if useSwitch>
 ${I}{
-        <@compound_field_initialize_offsets member.compoundField, indent+1/>
+        <@compound_field_initialize_offsets member.compoundField, indent + 1/>
 ${I}}
         <#else>
     <@compound_field_initialize_offsets member.compoundField, indent/>

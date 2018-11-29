@@ -9,6 +9,8 @@ public class SubtypeEmitterTemplateData extends PythonTemplateData
     public SubtypeEmitterTemplateData(TemplateDataContext context, Subtype subtype)
             throws ZserioEmitException
     {
+        super(context);
+
         name = subtype.getName();
 
         final PythonNativeTypeMapper pythonNativeTypeMapper = context.getPythonNativeTypeMapper();

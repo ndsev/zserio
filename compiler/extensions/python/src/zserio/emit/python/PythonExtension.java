@@ -54,6 +54,7 @@ public class PythonExtension implements Extension
         emitters.add(new InitPyEmitter(outputDir, parameters));
         emitters.add(new ApiEmitter(outputDir, parameters));
         emitters.add(new StructureEmitter(outputDir, parameters));
+        emitters.add(new UnionEmitter(outputDir, parameters));
 
         // emit Python code
         for (Emitter pythonEmitter: emitters)

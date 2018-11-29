@@ -1,10 +1,8 @@
 <#include "FileHeader.inc.ftl"/>
-<#include "CompoundConstructor.inc.ftl"/>
 <#include "CompoundField.inc.ftl"/>
 <#include "CompoundFunction.inc.ftl"/>
 <#include "CompoundParameter.inc.ftl"/>
 <@file_header generatorDescription/>
-
 <@all_imports packageImports typeImports/>
 
 <#assign hasFieldWithConstraint=false/>
@@ -15,10 +13,23 @@
     </#if>
 </#list>
 class ${name}():
-    <@compound_constructors compoundConstructorsData/>
+<#assign constructorParamList><@compound_constructor_parameters compoundParametersData/></#assign>
+<#if constructorParamList?has_content || fieldList?has_content>
+    def __init__(self<#if constructorParamList?has_content>, ${constructorParamList}</#if>):
+        <@compound_constructor_parameter_assignments compoundParametersData/>
+    <#list fieldList as field>
+        <@field_member_name field/> = None <#-- TODO: initialize fields with default values or None always in ctor!!! -->
+    </#list>
+</#if>
 
+    @classmethod
+    def fromReader(cls, <#if constructorParamList?has_content>, ${constructorParamList}</#if>):
+        instance = cls(${constructorParamList})
+        instance.read(reader)
+
+        return instance
 <#if withWriterCode && fieldList?has_content>
-    <#assign constructorParamList><@compound_constructor_parameters compoundParametersData/></#assign>
+
     @classmethod
     def fromFields(cls<#if constructorParamList?has_content>, ${constructorParamList}</#if><#rt>
                    <#lt><#list fieldList as field>, <@field_argument_name field/></#list>)
@@ -28,13 +39,33 @@ class ${name}():
     </#list>
 
         return instance
-
 </#if>
+
+<#macro structure_compare_fields fieldList indent>
+    <#local I>${""?left_pad(indent * 4)}</#local>
+    <#list fieldList as field>
+<@compound_compare_field field/><#rt>
+        <#if field?has_next>
+ and
+${I}<#rt>
+        </#if>
+    </#list>
+</#macro>
     def __eq__(self, other):
-        return (<@compound_compare_parameters compoundParametersData, 4/><#if fieldList?has_content> and</#if>
-<#list fieldList as field>
-                <@compound_compare_field field, 4/><#if field_has_next> and<#else>)</#if>
-</#list>
+<#if compoundParametersData.list?has_content || fieldList?has_content>
+        if isinstance(other, ${name}):
+            return (<#rt>
+    <#if compoundParametersData.list?has_content>
+                    <#lt><@compound_compare_parameters compoundParametersData, 5/><#if fieldList?has_content> and</#if>
+                    <@structure_compare_fields fieldList, 5/>)
+    <#else>
+                    <#lt><@structure_compare_fields fieldList, 5/>)
+    </#if>
+
+        return False
+<#else>
+        return isinstance(other, ${name})
+</#if>
 
     def __hash__(self):
         result = zserio.hashcode.HASH_SEED
@@ -44,37 +75,18 @@ class ${name}():
 </#list>
 
         return result
+<#list compoundParametersData.list as parameter>
 
-    def bitSizeOf(self, bitPosition=0):
-        endBitPosition = bitPosition
-<#list fieldList as field>
-        <@compound_bitsizeof_field field/>
+    def ${parameter.getterName}(self): 
+        <@compound_parameter_accessor parameter/>
 </#list>
-
-        return endBitPosition - bitPosition
-
-<#if withWriterCode>
-    def initializeOffsets(self, bitPosition):
-    <#if hasFieldWithOffset>
-        endBitPosition = bitPosition
-        <#list fieldList as field>
-        <@compound_initialize_offsets_field field/>
-        </#list>
-
-        return endBitPosition
-    <#else>
-        return bitPosition + self.bitSizeOf(bitPosition)
-    </#if>
-
-</#if>
-    <@compound_parameter_accessors compoundParametersData/>
 <#list fieldList as field>
+
     def ${field.getterName}(self):
         return self.<@field_member_name field/><#if field.array??>.getRawArray()</#if>
-
     <#if withWriterCode>
+    
     def ${field.setterName}(self, <@field_argument_name field/>):
-<#--  TODO range check is missing      <@range_check field.rangeCheckData, name/> -->
         <#if field.array??>
         self.<@field_member_name field/> = zserio.Array(${field.array.traitsName}(<#-- TODO -->), <@field_argument_name field/><#rt>
             <#lt><#if field.array.isImplicit>, isImplicit=True<#rt>
@@ -86,41 +98,58 @@ class ${name}():
         <#else>
         self.<@field_member_name field/> = <@field_argument_name field/>
         </#if>
-
     </#if>
     <#if field.optional??>
+    
     def ${field.optional.indicatorName}(self):
         return (<#if field.optional.clause??>${field.optional.clause}<#else>${field.getterName}() != None</#if>)
-
     </#if>
 </#list>
+
+    def bitSizeOf(self, bitPosition=0):
+        endBitPosition = bitPosition
+<#list fieldList as field>
+        <@compound_bitsizeof_field field, 2/>
+</#list>
+
+        return endBitPosition - bitPosition
+<#if withWriterCode>
+
+    def initializeOffsets(self, bitPosition):
+        endBitPosition = bitPosition
+        <#list fieldList as field>
+        <@compound_initialize_offsets_field field, 2/>
+        </#list>
+
+        return endBitPosition
+</#if>
+    
     def read(self, reader):
 <#list fieldList as field>
-    <@compound_read_field field, name/>
-    <#if field_has_next>
-
-    </#if>
+        <@compound_read_field field, name, 2/>
 </#list>
     <#if hasFieldWithConstraint>
-
         <#--  TODO check constraints is missing -->
     </#if>
 <#if withWriterCode>
 
-    def write(self, writer, callInitializeOffsets=None):
-    <#if hasFieldWithOffset>
-    startBitPosition = writer.getBitPosition()
-    if callInitializeOffsets:
-        initializeOffsets(startBitPosition)
-    </#if>
-    <#if hasFieldWithConstraint>
-
-        <#--  TODO check constraints is missing -->
-    </#if>
-    <#list fieldList as field>
-    <@compound_write_field field, name/>
-        <#if field_has_next>
-
+    def write(self, writer, *, callInitializeOffsets=True):
+    <#if fieldList?has_content>
+        <#if hasFieldWithOffset>
+        if callInitializeOffsets:
+            initializeOffsets(writer.getBitPosition())
+            
         </#if>
-    </#list>
+        <#if hasFieldWithConstraint>
+        <#-- TODO check constraints is missing -->
+        <#-- TODO range check is missing      <@range_check field.rangeCheckData, name/> -->
+        <#-- TODO check everthing all -->
+        <#-- TODO check offsets -->
+        <#-- TODO use private methods! -->
+        <#--newline-->
+        </#if>
+        <#list fieldList as field>
+        <@compound_write_field field, name, 2/>
+        </#list>
+    </#if>
 </#if>

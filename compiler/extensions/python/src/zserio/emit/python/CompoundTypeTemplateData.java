@@ -15,11 +15,9 @@ public class CompoundTypeTemplateData extends UserTypeTemplateData
     {
         super(context, compoundType);
 
+        withRangeCheckCode = context.getWithRangeCheckCode();
         final PythonNativeTypeMapper javaNativeTypeMapper = context.getPythonNativeTypeMapper();
-        final boolean withRangeCheckCode = context.getWithRangeCheckCode();
-        final boolean withWriterCode = context.getWithWriterCode();
         final ExpressionFormatter pythonExpressionFormatter = context.getPythonExpressionFormatter(this);
-        compoundConstructorsData = new CompoundConstructorTemplateData(withWriterCode, compoundType);
         compoundParametersData = new CompoundParameterTemplateData(compoundType);
         compoundFunctionsData = new CompoundFunctionTemplateData(compoundType, pythonExpressionFormatter);
 
@@ -30,11 +28,13 @@ public class CompoundTypeTemplateData extends UserTypeTemplateData
         for (Field fieldType : fieldTypeList)
             fieldList.add(new CompoundFieldTemplateData(javaNativeTypeMapper, withRangeCheckCode, fieldType,
                     pythonExpressionFormatter));
+
+        importRuntimePackage();
     }
 
-    public CompoundConstructorTemplateData getCompoundConstructorsData()
+    public boolean getWithRangeCheckCode()
     {
-        return compoundConstructorsData;
+        return withRangeCheckCode;
     }
 
     public CompoundParameterTemplateData getCompoundParametersData()
@@ -57,7 +57,7 @@ public class CompoundTypeTemplateData extends UserTypeTemplateData
         return fieldList;
     }
 
-    private final CompoundConstructorTemplateData compoundConstructorsData;
+    private final boolean withRangeCheckCode;
     private final CompoundParameterTemplateData compoundParametersData;
     private final CompoundFunctionTemplateData compoundFunctionsData;
     private final boolean hasFieldWithOffset;

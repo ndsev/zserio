@@ -9,8 +9,9 @@ import zserio.ast.ZserioType;
 
 public class ApiEmitterTemplateData extends PythonTemplateData
 {
-    public ApiEmitterTemplateData(PackageName packageName)
+    public ApiEmitterTemplateData(TemplateDataContext context, PackageName packageName)
     {
+        super(context);
         this.packageName = packageName;
     }
 

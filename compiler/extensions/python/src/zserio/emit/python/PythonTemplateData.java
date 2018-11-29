@@ -9,9 +9,19 @@ import zserio.tools.HashUtil;
 
 public class PythonTemplateData implements ImportCollector
 {
+    public PythonTemplateData(TemplateDataContext context)
+    {
+        withWriterCode = context.getWithWriterCode();
+    }
+
     public String getGeneratorDescription()
     {
         return generatorDescription;
+    }
+
+    public boolean getWithWriterCode()
+    {
+        return withWriterCode;
     }
 
     public Iterable<String> getPackageImports()
@@ -98,6 +108,8 @@ public class PythonTemplateData implements ImportCollector
 
     private static final String generatorDescription =
             "Zserio Python extension version " + PythonExtensionVersion.VERSION_STRING;
+
+    private final boolean withWriterCode;
 
     private final TreeSet<String> packageImports = new TreeSet<String>();
     private final TreeSet<TypeImportTemplateData> typeImports = new TreeSet<TypeImportTemplateData>();

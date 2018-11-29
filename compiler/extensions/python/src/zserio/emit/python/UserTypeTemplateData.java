@@ -8,9 +8,10 @@ public class UserTypeTemplateData extends PythonTemplateData
 {
     public UserTypeTemplateData(TemplateDataContext context, ZserioType type) throws ZserioEmitException
     {
+        super(context);
+
         final PythonNativeType nativeType = context.getPythonNativeTypeMapper().getPythonType(type);
         name = nativeType.getName();
-        withWriterCode = context.getWithWriterCode();
     }
 
     public String getName()
@@ -18,11 +19,5 @@ public class UserTypeTemplateData extends PythonTemplateData
         return name;
     }
 
-    public boolean getWithWriterCode()
-    {
-        return withWriterCode;
-    }
-
     private final String name;
-    private final boolean withWriterCode;
 }

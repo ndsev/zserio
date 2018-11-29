@@ -3,7 +3,6 @@ package zserio.emit.python;
 import zserio.ast.ArrayType;
 import zserio.ast.BooleanType;
 import zserio.ast.ChoiceType;
-import zserio.ast.CompoundType;
 import zserio.ast.ConstType;
 import zserio.ast.EnumType;
 import zserio.ast.FloatType;
@@ -60,7 +59,7 @@ public class PythonNativeTypeMapper
         // resolve to base type, python doesn't have subtypes
         final ZserioType resolvedBaseType = TypeReference.resolveBaseType(type);
 
-        final TypeMapperVisitor visitor = new TypeMapperVisitor();
+        final TypeMapperVisitor visitor = new TypeMapperVisitor(pythonPackageMapper);
         resolvedBaseType.callVisitor(visitor);
 
         final PythonNativeType nativeType = visitor.getPythonType();
@@ -71,8 +70,13 @@ public class PythonNativeTypeMapper
         return nativeType;
     }
 
-    private class TypeMapperVisitor implements ZserioTypeVisitor
+    private static class TypeMapperVisitor implements ZserioTypeVisitor
     {
+        public TypeMapperVisitor(PackageMapper pythonPackageMapper)
+        {
+            this.pythonPackageMapper = pythonPackageMapper;
+        }
+
         public PythonNativeType getPythonType()
         {
             return pythonType;
@@ -96,7 +100,7 @@ public class PythonNativeTypeMapper
         @Override
         public void visitChoiceType(ChoiceType type)
         {
-            pythonType = mapCompoundType(type);
+            pythonType = mapUserType(type);
         }
 
         @Override
@@ -128,7 +132,7 @@ public class PythonNativeTypeMapper
         @Override
         public void visitServiceType(ServiceType type)
         {
-            // not supported
+            pythonType = mapUserType(type);
         }
 
         @Override
@@ -140,13 +144,13 @@ public class PythonNativeTypeMapper
         @Override
         public void visitSqlDatabaseType(SqlDatabaseType type)
         {
-            pythonType = mapCompoundType(type);
+            pythonType = mapUserType(type);
         }
 
         @Override
         public void visitSqlTableType(SqlTableType type)
         {
-            // not supported
+            pythonType = mapUserType(type);
         }
 
         @Override
@@ -164,20 +168,19 @@ public class PythonNativeTypeMapper
         @Override
         public void visitStructureType(StructureType type)
         {
-            pythonType = mapCompoundType(type);
+            pythonType = mapUserType(type);
         }
 
         @Override
         public void visitSubtype(Subtype type)
         {
-            final PackageName packageName = pythonPackageMapper.getPackageName(type);
-            pythonType = new NativeUserType(packageName, type.getName());
+            pythonType = mapUserType(type);
         }
 
         @Override
         public void visitTypeInstantiation(TypeInstantiation type)
         {
-            pythonType = mapCompoundType(type.getBaseType());
+            pythonType = mapUserType(type.getBaseType());
         }
 
         @Override
@@ -189,7 +192,7 @@ public class PythonNativeTypeMapper
         @Override
         public void visitUnionType(UnionType type)
         {
-            pythonType = mapCompoundType(type);
+            pythonType = mapUserType(type);
         }
 
         @Override
@@ -204,13 +207,14 @@ public class PythonNativeTypeMapper
             pythonType = intType;
         }
 
-        private PythonNativeType mapCompoundType(CompoundType type)
+        private PythonNativeType mapUserType(ZserioType type)
         {
             final PackageName packageName = pythonPackageMapper.getPackageName(type);
             return new NativeUserType(packageName, type.getName());
         }
 
         private PythonNativeType pythonType;
+        private PackageMapper pythonPackageMapper;
     }
 
     private static class ArrayTypeMapperVisitor implements ZserioTypeVisitor

@@ -33,12 +33,8 @@ ${I}<#rt>
     </#list>
 </#macro>
 
-<#macro compound_parameter_accessors compoundParametersData>
-    <#list compoundParametersData.list as parameter>
-    def ${parameter.getterName}(self):
+<#macro compound_parameter_accessor parameter>
         return self.<@parameter_member_name parameter/>
-
-    </#list>
 </#macro>
 
 <#macro parameter_member_name parameter>

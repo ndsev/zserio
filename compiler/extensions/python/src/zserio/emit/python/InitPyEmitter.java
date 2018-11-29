@@ -30,7 +30,7 @@ public class InitPyEmitter extends PythonDefaultEmitter
 
         if (!topLevelFolders.contains(PackageName.EMPTY) && topLevelFolders.add(topLevelFolder.get()))
         {
-            final Object templateData = new PythonTemplateData();
+            final Object templateData = new PythonTemplateData(getTemplateDataContext());
             processTemplate(INIT_PY_TEMPLATE, templateData, topLevelFolder.get(), INIT_PY_FILENAME_ROOT);
         }
     }

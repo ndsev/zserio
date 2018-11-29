@@ -19,10 +19,12 @@ class ${name}(enum.Enum):
 <#else>
         return zserio.bitsizeof.getBitSizeOf${runtimeFunction.suffix}(self.value)
 </#if>
+<#if withWriterCode>
 
-    def initializeOffsets(self, bitPosition=0):
+    def initializeOffsets(self, bitPosition):
         return bitPosition + self.bitSizeOf(bitPosition)
 
     def write(self, writer):
         writer.write${runtimeFunction.suffix}(self.value<#rt>
                                               <#lt><#if runtimeFunction.arg??>, ${runtimeFunction.arg}</#if>)
+</#if>

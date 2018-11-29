@@ -9,6 +9,8 @@ public class ConstEmitterTemplateData extends PythonTemplateData
     public ConstEmitterTemplateData(TemplateDataContext context, ConstType constType)
             throws ZserioEmitException
     {
+        super(context);
+
         name = constType.getName();
 
         final ExpressionFormatter pythonExpressionFormatter = context.getPythonExpressionFormatter(this);

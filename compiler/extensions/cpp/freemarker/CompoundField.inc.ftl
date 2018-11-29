@@ -169,7 +169,7 @@ ${I}    throw zserio::ConstraintException("Constraint violated at ${compoundName
         <#if field.optional??>
 ${I}if (<@field_optional_condition field/>)
 ${I}{
-        <@compound_check_range_field_inner field, compoundName, indent+1/>
+        <@compound_check_range_field_inner field, compoundName, indent + 1/>
 ${I}}
         <#else>
     <@compound_check_range_field_inner field, compoundName, indent/>
@@ -189,7 +189,7 @@ ${I};
 ${I}for (${field.cppTypeName}::const_iterator it = <@compound_get_field field/>.begin(); it != <@compound_get_field field/>.end(); ++it)
 ${I}{
         <@compound_check_range_value "*it", field.name, compoundName, field.array.elementCppTypeName,
-            field.array.elementIntegerRange, indent+1/>
+            field.array.elementIntegerRange, indent + 1/>
 ${I}}
     </#if>
 </#macro>

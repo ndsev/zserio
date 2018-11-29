@@ -1,5 +1,4 @@
-<#macro compound_compare_field field indent>
-    <#local I>${""?left_pad(indent * 4)}</#local>
+<#macro compound_compare_field field>
     <#if field.optional??>(not self.${field.optional.indicatorName}() or </#if><#t>
 self.<@field_member_name field/> == other.<@field_member_name field/><#if field.optional??>)</#if><#rt>
 </#macro>
@@ -18,12 +17,13 @@ self.<@field_member_name field/> == other.<@field_member_name field/><#if field.
 ${I}result = zserio.hashcode.calcHashCode(result, hash(self.<@field_member_name field/>))
 </#macro>
 
-<#macro compound_bitsizeof_field field>
+<#macro compound_bitsizeof_field field indent>
+    <#local I>${""?left_pad(indent * 4)}</#local>
     <#if field.optional??>
-        if self.${field.optional.indicatorName}():
-            <@compound_bitsizeof_field_inner field, 3/>
+${I}if self.${field.optional.indicatorName}():
+<@compound_bitsizeof_field_inner field, indent + 1/>
     <#else>
-        <@compound_bitsizeof_field_inner field, 2/>
+<@compound_bitsizeof_field_inner field, indent/>
     </#if>
 </#macro>
 
@@ -38,12 +38,13 @@ ${I}endBitPosition += ${field.getterName}().bitSizeOf(endBitPosition)
     </#if>
 </#macro>
 
-<#macro compound_initialize_offsets_field field>
+<#macro compound_initialize_offsets_field field indent>
+    <#local I>${""?left_pad(indent * 4)}</#local>
     <#if field.optional??>
-        if self.${field.optional.indicatorName}():
-            <@compound_initialize_offsets_field_inner field, 3/>
+${I}if self.${field.optional.indicatorName}():
+    <@compound_initialize_offsets_field_inner field, indent + 1/>
     <#else>
-        <@compound_initialize_offsets_field_inner field, 2/>
+<@compound_initialize_offsets_field_inner field, indent/>
     </#if>
 </#macro>
 
@@ -60,16 +61,17 @@ ${I}endBitPosition += ${field.getterName}().bitSizeOf(__endBitPosition)
     </#if>
 </#macro>
 
-<#macro compound_read_field field compoundName>
+<#macro compound_read_field field compoundName indent>
+    <#local I>${""?left_pad(indent * 4)}</#local>
     <#if field.optional??>
         <#if field.optional.clause??>
-        if self.${field.optional.indicatorName}():
+${I}if self.${field.optional.indicatorName}():
         <#else>
-        if reader.readBool():
+${I}if reader.readBool():
         </#if>
-            <@compound_read_field_inner field, compoundName, 3/>
+<@compound_read_field_inner field, compoundName, indent + 1/>
     <#else>
-        <@compound_read_field_inner field, compoundName, 2/>
+<@compound_read_field_inner field, compoundName, indent/>
     </#if>
 </#macro>
 
@@ -114,19 +116,20 @@ ${I}                                 (reader.getBitPosition(), 8 * ${field.offse
     </#list>
 </#macro>
 
-<#macro compound_write_field field compoundName>
+<#macro compound_write_field field compoundName, indent>
+    <#local I>${""?left_pad(indent * 4)}</#local>
     <#if field.optional??>
-        if self.${field.optional.indicatorName}():
+${I}if self.${field.optional.indicatorName}():
         <#if !field.optional.clause??>
-            writer.writeBool(true)
+${I}    writer.writeBool(true)
         </#if>
-            <@compound_write_field_inner field, compoundName, 3/>
+<@compound_write_field_inner field, compoundName, indent + 1/>
         <#if !field.optional.clause??>
-        else:
-            writer.writeBool(false)
+${I}else:
+${I}    writer.writeBool(false)
         </#if>
     <#else>
-        <@compound_write_field_inner field, compoundName, 2/>
+<@compound_write_field_inner field, compoundName, indent/>
     </#if>
 </#macro>
 
@@ -141,12 +144,16 @@ ${I}writer.alignTo(${field.alignmentValue})
     <#if field.runtimeFunction??>
 ${I}writer.write${field.runtimeFunction.suffix}(${field.getterName}()<#if field.runtimeFunction.arg??>, ${field.runtimeFunction.arg}</#if>)
     <#else>
-        <#if field.array?? && field.array.length??>
+        <#if field.array??>
+            <#if field.array.length??>
 ${I}if ${field.getterName}().length() != ${field.array.length}:
 ${I}    raise PythonRuntimeException("Write: Wrong array length for field ${compoundName}.${field.name}: %d != %d!" %
 ${I}                                (${field.getterName}().length(), ${field.array.length})
+            </#if>
+${I}${field.getterName}().write(writer)
+        <#else><#-- enum or compound TODO: Enum does NOT have callInitializeOffsets! -->
+${I}${field.getterName}().write(writer, callInitializeOffsets=False)
         </#if>
-${I}${field.getterName}().write(writer);
     </#if>
 </#macro>
 
@@ -171,4 +178,8 @@ _${field.name}_<#rt>
 
 <#macro field_argument_name field>
 ${field.name}_<#rt>
+</#macro>
+
+<#macro choice_tag_name field>
+    CHOICE_${field.name}<#t>
 </#macro>
