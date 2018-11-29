@@ -30,7 +30,7 @@ class UInt64EnumTest(unittest.TestCase):
         self.assertEqual(DARK_COLOR_BITSIZEOF, self.api.DarkColor.DARK_BLACK.bitSizeOf())
 
     def testInitializeOffsets(self):
-        self.assertEqual(DARK_COLOR_BITSIZEOF, self.api.DarkColor.NONE.initializeOffsets())
+        self.assertEqual(DARK_COLOR_BITSIZEOF, self.api.DarkColor.NONE.initializeOffsets(0))
         self.assertEqual(DARK_COLOR_BITSIZEOF + 1, self.api.DarkColor.DARK_RED.initializeOffsets(1))
         self.assertEqual(DARK_COLOR_BITSIZEOF + 2, self.api.DarkColor.DARK_BLUE.initializeOffsets(2))
         self.assertEqual(DARK_COLOR_BITSIZEOF + 3, self.api.DarkColor.DARK_BLACK.initializeOffsets(3))

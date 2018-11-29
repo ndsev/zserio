@@ -30,7 +30,7 @@ class BitfieldEnumTest(unittest.TestCase):
         self.assertEqual(COLOR_BITSIZEOF, self.api.Color.BLACK.bitSizeOf())
 
     def testInitializeOffsets(self):
-        self.assertEqual(COLOR_BITSIZEOF, self.api.Color.NONE.initializeOffsets())
+        self.assertEqual(COLOR_BITSIZEOF, self.api.Color.NONE.initializeOffsets(0))
         self.assertEqual(COLOR_BITSIZEOF + 1, self.api.Color.RED.initializeOffsets(1))
         self.assertEqual(COLOR_BITSIZEOF + 2, self.api.Color.BLUE.initializeOffsets(2))
         self.assertEqual(COLOR_BITSIZEOF + 3, self.api.Color.BLACK.initializeOffsets(3))
