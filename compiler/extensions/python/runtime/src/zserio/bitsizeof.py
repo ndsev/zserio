@@ -97,20 +97,6 @@ def getBitSizeOfString(string):
     stringBytes = string.encode("utf-8")
     return getBitSizeOfVarUInt64(len(stringBytes)) + len(stringBytes) * 8
 
-def alignTo(alignmentValue, bitPosition):
-    """
-    Aligns the bit size to the given alignment value.
-
-    :param alignmentValue: Value to align.
-    :param bitPosition: Current bit position where to apply alignment.
-    :returns: Aligned bit size.
-    """
-
-    if bitPosition <= 0 or alignmentValue == 0:
-        return bitPosition
-
-    return (((bitPosition - 1) // alignmentValue) + 1) * alignmentValue
-
 def _getBitSizeOfVarIntImpl(value, maxValues, *, signed):
     if signed or value >= 0:
         absValue = abs(value)

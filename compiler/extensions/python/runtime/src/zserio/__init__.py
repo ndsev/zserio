@@ -11,6 +11,8 @@ from zserio.bitwriter import BitStreamWriter
 from zserio.exception import PythonRuntimeException
 
 import zserio.array
+import zserio.bitposition
+import zserio.bitsizeof
 import zserio.builtin
 import zserio.float
 import zserio.hashcode

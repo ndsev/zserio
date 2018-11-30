@@ -18,12 +18,12 @@ class ${name}():
     def __init__(self<#if constructorParamList?has_content>, ${constructorParamList}</#if>):
         <@compound_constructor_parameter_assignments compoundParametersData/>
     <#list fieldList as field>
-        <@field_member_name field/> = None <#-- TODO: initialize fields with default values or None always in ctor!!! -->
+        <@field_member_name field/> = <#if field.initializer??>${field.initializer}<#else>None</#if>
     </#list>
 </#if>
 
     @classmethod
-    def fromReader(cls, <#if constructorParamList?has_content>, ${constructorParamList}</#if>):
+    def fromReader(cls, reader<#if constructorParamList?has_content>, ${constructorParamList}</#if>):
         instance = cls(${constructorParamList})
         instance.read(reader)
 
@@ -85,22 +85,16 @@ ${I}<#rt>
     def ${field.getterName}(self):
         return self.<@field_member_name field/><#if field.array??>.getRawArray()</#if>
     <#if withWriterCode>
-    
+
     def ${field.setterName}(self, <@field_argument_name field/>):
         <#if field.array??>
-        self.<@field_member_name field/> = zserio.Array(${field.array.traitsName}(<#-- TODO -->), <@field_argument_name field/><#rt>
-            <#lt><#if field.array.isImplicit>, isImplicit=True<#rt>
-            <#lt><#elseif !field.array.length??>, isAuto=True</#if><#rt>
-            <#if field.offset?? && field.offset.containsIndex>
-                <#lt>, setOffsetMethod=None, checkOffsetMethod=None<#rt>  <#-- TODO -->
-            </#if>
-            <#lt>)
+        self.<@field_member_name field/> = zserio.Array(<@array_field_constructor_parameters field/>)
         <#else>
         self.<@field_member_name field/> = <@field_argument_name field/>
         </#if>
     </#if>
     <#if field.optional??>
-    
+
     def ${field.optional.indicatorName}(self):
         return (<#if field.optional.clause??>${field.optional.clause}<#else>${field.getterName}() != None</#if>)
     </#if>
@@ -123,13 +117,14 @@ ${I}<#rt>
 
         return endBitPosition
 </#if>
-    
+
     def read(self, reader):
 <#list fieldList as field>
         <@compound_read_field field, name, 2/>
 </#list>
     <#if hasFieldWithConstraint>
-        <#--  TODO check constraints is missing -->
+
+        _checkConstraints()
     </#if>
 <#if withWriterCode>
 
@@ -138,18 +133,29 @@ ${I}<#rt>
         <#if hasFieldWithOffset>
         if callInitializeOffsets:
             initializeOffsets(writer.getBitPosition())
-            
+
         </#if>
         <#if hasFieldWithConstraint>
-        <#-- TODO check constraints is missing -->
-        <#-- TODO range check is missing      <@range_check field.rangeCheckData, name/> -->
-        <#-- TODO check everthing all -->
-        <#-- TODO check offsets -->
-        <#-- TODO use private methods! -->
-        <#--newline-->
+        _checkConstraints()
+
         </#if>
+        <#-- TODO range check is missing      <@range_check field.rangeCheckData, name/> -->
         <#list fieldList as field>
         <@compound_write_field field, name, 2/>
         </#list>
     </#if>
 </#if>
+<#if hasFieldWithConstraint>
+
+    def _checkConstraints(self):
+    <#list fieldList as field>
+        <@compound_check_constraint_field field, name, 2/>
+    </#list>
+</#if>
+<#list fieldList as field>
+    <@define_offset_checker name, field/>
+    <#if withWriterCode>
+        <@define_offset_setter field/>
+    </#if>
+    <@define_element_creator field/>
+</#list>

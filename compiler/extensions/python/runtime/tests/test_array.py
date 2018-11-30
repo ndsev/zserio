@@ -6,7 +6,7 @@ from zserio.array import (Array, BitFieldArrayTraits, SignedBitFieldArrayTraits,
                           Float16ArrayTraits, Float32ArrayTraits, Float64ArrayTraits,
                           StringArrayTraits, BoolArrayTraits, ObjectArrayTraits)
 from zserio.bitreader import BitStreamReader
-from zserio.bitsizeof import getBitSizeOfVarUInt64, alignTo
+from zserio.bitsizeof import getBitSizeOfVarUInt64
 from zserio.bitwriter import BitStreamWriter
 
 class ArrayTest(unittest.TestCase):
@@ -15,121 +15,121 @@ class ArrayTest(unittest.TestCase):
         arrayTraits = BitFieldArrayTraits(5)
         array1Values = [1, 2]
         array1BitSizeOf = 2 * 5
-        array1AligneBitSizeOf = 5 + 3 + 5
+        array1AlignedBitSizeOf = 5 + 3 + 5
         array2Values = [3, 4]
-        self._testArray(arrayTraits, array1Values, array1BitSizeOf, array1AligneBitSizeOf, array2Values)
+        self._testArray(arrayTraits, array1Values, array1BitSizeOf, array1AlignedBitSizeOf, array2Values)
 
     def testSignedBitFieldArray(self):
         arrayTraits = SignedBitFieldArrayTraits(5)
         array1Values = [-1, 1]
         array1BitSizeOf = 2 * 5
-        array1AligneBitSizeOf = 5 + 3 + 5
+        array1AlignedBitSizeOf = 5 + 3 + 5
         array2Values = [-2, 2]
-        self._testArray(arrayTraits, array1Values, array1BitSizeOf, array1AligneBitSizeOf, array2Values)
+        self._testArray(arrayTraits, array1Values, array1BitSizeOf, array1AlignedBitSizeOf, array2Values)
 
     def testVarUInt16Array(self):
         arrayTraits = VarUInt16ArrayTraits()
         array1Values = [1, 1024]
         array1BitSizeOf = 8 + 16
-        array1AligneBitSizeOf = array1BitSizeOf
+        array1AlignedBitSizeOf = array1BitSizeOf
         array2Values = [1, 8192]
-        self._testArray(arrayTraits, array1Values, array1BitSizeOf, array1AligneBitSizeOf, array2Values)
+        self._testArray(arrayTraits, array1Values, array1BitSizeOf, array1AlignedBitSizeOf, array2Values)
 
     def testVarUInt32Array(self):
         arrayTraits = VarUInt32ArrayTraits()
         array1Values = [1, 16384]
         array1BitSizeOf = 8 + 24
-        array1AligneBitSizeOf = array1BitSizeOf
+        array1AlignedBitSizeOf = array1BitSizeOf
         array2Values = [1, 32768]
-        self._testArray(arrayTraits, array1Values, array1BitSizeOf, array1AligneBitSizeOf, array2Values)
+        self._testArray(arrayTraits, array1Values, array1BitSizeOf, array1AlignedBitSizeOf, array2Values)
 
     def testVarUInt64Array(self):
         arrayTraits = VarUInt64ArrayTraits()
         array1Values = [1, 16384]
         array1BitSizeOf = 8 + 24
-        array1AligneBitSizeOf = array1BitSizeOf
+        array1AlignedBitSizeOf = array1BitSizeOf
         array2Values = [1, 65536]
-        self._testArray(arrayTraits, array1Values, array1BitSizeOf, array1AligneBitSizeOf, array2Values)
+        self._testArray(arrayTraits, array1Values, array1BitSizeOf, array1AlignedBitSizeOf, array2Values)
 
     def testVarUIntArray(self):
         arrayTraits = VarUIntArrayTraits()
         array1Values = [1, 1024]
         array1BitSizeOf = 8 + 16
-        array1AligneBitSizeOf = array1BitSizeOf
+        array1AlignedBitSizeOf = array1BitSizeOf
         array2Values = [1, 8192]
-        self._testArray(arrayTraits, array1Values, array1BitSizeOf, array1AligneBitSizeOf, array2Values)
+        self._testArray(arrayTraits, array1Values, array1BitSizeOf, array1AlignedBitSizeOf, array2Values)
 
     def testVarInt16Array(self):
         arrayTraits = VarInt16ArrayTraits()
         array1Values = [-1, 1024]
         array1BitSizeOf = 8 + 16
-        array1AligneBitSizeOf = array1BitSizeOf
+        array1AlignedBitSizeOf = array1BitSizeOf
         array2Values = [-1, 8192]
-        self._testArray(arrayTraits, array1Values, array1BitSizeOf, array1AligneBitSizeOf, array2Values)
+        self._testArray(arrayTraits, array1Values, array1BitSizeOf, array1AlignedBitSizeOf, array2Values)
 
     def testVarInt32Array(self):
         arrayTraits = VarInt32ArrayTraits()
         array1Values = [-1, 16384]
         array1BitSizeOf = 8 + 24
-        array1AligneBitSizeOf = array1BitSizeOf
+        array1AlignedBitSizeOf = array1BitSizeOf
         array2Values = [-1, 32768]
-        self._testArray(arrayTraits, array1Values, array1BitSizeOf, array1AligneBitSizeOf, array2Values)
+        self._testArray(arrayTraits, array1Values, array1BitSizeOf, array1AlignedBitSizeOf, array2Values)
 
     def testVarInt64Array(self):
         arrayTraits = VarInt64ArrayTraits()
         array1Values = [-1, 16384]
         array1BitSizeOf = 8 + 24
-        array1AligneBitSizeOf = array1BitSizeOf
+        array1AlignedBitSizeOf = array1BitSizeOf
         array2Values = [-1, 65536]
-        self._testArray(arrayTraits, array1Values, array1BitSizeOf, array1AligneBitSizeOf, array2Values)
+        self._testArray(arrayTraits, array1Values, array1BitSizeOf, array1AlignedBitSizeOf, array2Values)
 
     def testVarIntArray(self):
         arrayTraits = VarIntArrayTraits()
         array1Values = [-1, 1024]
         array1BitSizeOf = 8 + 16
-        array1AligneBitSizeOf = array1BitSizeOf
+        array1AlignedBitSizeOf = array1BitSizeOf
         array2Values = [-1, 8192]
-        self._testArray(arrayTraits, array1Values, array1BitSizeOf, array1AligneBitSizeOf, array2Values)
+        self._testArray(arrayTraits, array1Values, array1BitSizeOf, array1AlignedBitSizeOf, array2Values)
 
     def testFloat16Array(self):
         arrayTraits = Float16ArrayTraits()
         array1Values = [-1.0, 1.0]
         array1BitSizeOf = 2 * 16
-        array1AligneBitSizeOf = array1BitSizeOf
+        array1AlignedBitSizeOf = array1BitSizeOf
         array2Values = [-3.5, 3.5]
-        self._testArray(arrayTraits, array1Values, array1BitSizeOf, array1AligneBitSizeOf, array2Values)
+        self._testArray(arrayTraits, array1Values, array1BitSizeOf, array1AlignedBitSizeOf, array2Values)
 
     def testFloat32Array(self):
         arrayTraits = Float32ArrayTraits()
         array1Values = [-1.0, 1.0]
         array1BitSizeOf = 2 * 32
-        array1AligneBitSizeOf = array1BitSizeOf
+        array1AlignedBitSizeOf = array1BitSizeOf
         array2Values = [-3.5, 3.5]
-        self._testArray(arrayTraits, array1Values, array1BitSizeOf, array1AligneBitSizeOf, array2Values)
+        self._testArray(arrayTraits, array1Values, array1BitSizeOf, array1AlignedBitSizeOf, array2Values)
 
     def testFloat64Array(self):
         arrayTraits = Float64ArrayTraits()
         array1Values = [-1.0, 1.0]
         array1BitSizeOf = 2 * 64
-        array1AligneBitSizeOf = array1BitSizeOf
+        array1AlignedBitSizeOf = array1BitSizeOf
         array2Values = [-3.5, 3.5]
-        self._testArray(arrayTraits, array1Values, array1BitSizeOf, array1AligneBitSizeOf, array2Values)
+        self._testArray(arrayTraits, array1Values, array1BitSizeOf, array1AlignedBitSizeOf, array2Values)
 
     def testStringArray(self):
         arrayTraits = StringArrayTraits()
         array1Values = ["Text1", "Text2"]
         array1BitSizeOf = 2 * (1 + len("TextN")) * 8
-        array1AligneBitSizeOf = array1BitSizeOf
+        array1AlignedBitSizeOf = array1BitSizeOf
         array2Values = ["Text3", "Text4"]
-        self._testArray(arrayTraits, array1Values, array1BitSizeOf, array1AligneBitSizeOf, array2Values)
+        self._testArray(arrayTraits, array1Values, array1BitSizeOf, array1AlignedBitSizeOf, array2Values)
 
     def testBoolArray(self):
         arrayTraits = BoolArrayTraits()
         array1Values = [True, False]
         array1BitSizeOf = 2 * 1
-        array1AligneBitSizeOf = 1 + 7 + 1
+        array1AlignedBitSizeOf = 1 + 7 + 1
         array2Values = [True, True]
-        self._testArray(arrayTraits, array1Values, array1BitSizeOf, array1AligneBitSizeOf, array2Values)
+        self._testArray(arrayTraits, array1Values, array1BitSizeOf, array1AlignedBitSizeOf, array2Values)
 
     def testObjectArray(self):
         class DummyObject():
@@ -137,8 +137,11 @@ class ArrayTest(unittest.TestCase):
                 self._value = value
 
             @classmethod
-            def create(cls, index):
-                return cls(index)
+            def create(cls, reader, index):
+                instance = cls(index)
+                instance.read(reader)
+
+                return instance
 
             def __eq__(self, other):
                 return self._value == other._value
@@ -162,9 +165,9 @@ class ArrayTest(unittest.TestCase):
         arrayTraits = ObjectArrayTraits(DummyObject.create)
         array1Values = [DummyObject(1), DummyObject(2)]
         array1BitSizeOf = 2 * 31
-        array1AligneBitSizeOf = 31 + 1 + 31
+        array1AlignedBitSizeOf = 31 + 1 + 31
         array2Values = [DummyObject(3), DummyObject(4)]
-        self._testArray(arrayTraits, array1Values, array1BitSizeOf, array1AligneBitSizeOf, array2Values)
+        self._testArray(arrayTraits, array1Values, array1BitSizeOf, array1AlignedBitSizeOf, array2Values)
 
     def _testArray(self, arrayTraits, array1Values, array1BitSizeOf, array1AlignedBitSizeOf, array2Values):
         self._testFromReader(arrayTraits, array1Values)
@@ -208,12 +211,13 @@ class ArrayTest(unittest.TestCase):
     def _testSetItem(self, arrayTraits, arrayValues):
         array = Array(arrayTraits, arrayValues)
         rawArray = array.getRawArray()
+        self.assertTrue(len(array) > 1)
         firstValue = array[0]
-        if isinstance(firstValue, int):
-            array[0] = firstValue + 1
-            self.assertEqual(array[0], rawArray[0])
-            rawArray[0] = firstValue # return the original value for other tests
-            self.assertEqual(array[0], rawArray[0])
+        secondValue = array[1]
+        array[0] = secondValue
+        self.assertEqual(array[0], rawArray[0])
+        rawArray[0] = firstValue # return the original value for other tests
+        self.assertEqual(array[0], rawArray[0])
 
     def _testGetRawArray(self, arrayTraits, array1Values, array2Values):
         array1 = Array(arrayTraits, array1Values)
@@ -245,9 +249,8 @@ class ArrayTest(unittest.TestCase):
         self.assertEqual(expectedAlignedBitSize, alignedArray.bitSizeOf(0))
 
     def _testInitializeOffsets(self, arrayTraits, arrayValues, expectedBitSize, expectedAlignedBitSize):
-        def _setOffsetMethod(_index, endBitPosition):
-            endBitPosition = alignTo(8, endBitPosition)
-            return endBitPosition
+        def _setOffsetMethod(_index, _byteOffset):
+            pass
 
         array = Array(arrayTraits, arrayValues)
         self.assertEqual(0 + expectedBitSize, array.initializeOffsets(0))
@@ -263,7 +266,7 @@ class ArrayTest(unittest.TestCase):
         self.assertEqual(0 + expectedAlignedBitSize, alignedArray.initializeOffsets(0))
 
     def _testRead(self, arrayTraits, arrayValues):
-        def _checkOffsetMethod(_index):
+        def _checkOffsetMethod(_index, _byteOffset):
             pass
 
         array = Array(arrayTraits, arrayValues)
@@ -304,7 +307,7 @@ class ArrayTest(unittest.TestCase):
             self.assertEqual(implicitRawArrayElement, emptyImplicitRawArray[index])
 
     def _testWrite(self, arrayTraits, arrayValues, expectedBitSize, expectedAlignedBitSize):
-        def _checkOffsetMethod(_index):
+        def _checkOffsetMethod(_index, _byteOffset):
             pass
 
         array = Array(arrayTraits, arrayValues)

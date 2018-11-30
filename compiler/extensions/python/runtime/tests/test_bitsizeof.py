@@ -4,7 +4,7 @@ from zserio.bitsizeof import (getBitSizeOfVarInt16, getBitSizeOfVarInt32,
                               getBitSizeOfVarInt64, getBitSizeOfVarInt,
                               getBitSizeOfVarUInt16, getBitSizeOfVarUInt32,
                               getBitSizeOfVarUInt64, getBitSizeOfVarUInt,
-                              getBitSizeOfString, alignTo)
+                              getBitSizeOfString)
 from zserio.exception import PythonRuntimeException
 from zserio.limits import INT64_MIN
 
@@ -255,15 +255,3 @@ class BitSizeOfTest(unittest.TestCase):
         testStringLength = 1 << 7 # 2 bytes per character!
         testString = (b'\xc2\xAB' * testStringLength).decode("utf-8")
         self.assertEqual((2 + 2 * testStringLength) * 8, getBitSizeOfString(testString))
-
-    def testAlignTo(self):
-        bitPosition = 5
-        self.assertEqual(5, alignTo(0, bitPosition))
-        self.assertEqual(5, alignTo(1, bitPosition))
-        self.assertEqual(6, alignTo(2, bitPosition))
-        self.assertEqual(6, alignTo(3, bitPosition))
-        self.assertEqual(8, alignTo(4, bitPosition))
-        self.assertEqual(5, alignTo(5, bitPosition))
-        self.assertEqual(6, alignTo(6, bitPosition))
-        self.assertEqual(7, alignTo(7, bitPosition))
-        self.assertEqual(8, alignTo(8, bitPosition))

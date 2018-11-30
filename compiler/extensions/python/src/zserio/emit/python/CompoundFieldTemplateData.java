@@ -42,7 +42,7 @@ public final class CompoundFieldTemplateData
 
         bitSize = new BitSize(baseType, pythonExpressionFormatter);
         offset = createOffset(fieldType, pythonExpressionFormatter);
-        array = createArray(nativeType, baseType, pythonExpressionFormatter);
+        array = createArray(nativeType, baseType, pythonNativeTypeMapper, pythonExpressionFormatter);
         runtimeFunction = PythonRuntimeFunctionDataCreator.createData(baseType, pythonExpressionFormatter);
         compound = createCompound(pythonExpressionFormatter, baseType);
     }
@@ -219,7 +219,8 @@ public final class CompoundFieldTemplateData
     public static class Array
     {
         public Array(NativeArrayType nativeType, ArrayType baseType,
-                ExpressionFormatter pythonExpressionFormatter) throws ZserioEmitException
+                PythonNativeTypeMapper pythonNativeTypeMapper, ExpressionFormatter pythonExpressionFormatter)
+                        throws ZserioEmitException
         {
             traitsName = nativeType.getTraitsName();
             requiresElementBitSize = nativeType.getRequiresElementBitSize();
@@ -229,6 +230,8 @@ public final class CompoundFieldTemplateData
             length = createLength(baseType, pythonExpressionFormatter);
 
             final ZserioType elementType = TypeReference.resolveBaseType(baseType.getElementType());
+            final PythonNativeType elementNativeType = pythonNativeTypeMapper.getPythonType(elementType);
+            elementPythonTypeName = elementNativeType.getFullName();
             elementBitSize = new BitSize(elementType, pythonExpressionFormatter);
             elementCompound = createCompound(pythonExpressionFormatter, elementType);
         }
@@ -258,6 +261,11 @@ public final class CompoundFieldTemplateData
             return length;
         }
 
+        public String getElementPythonTypeName()
+        {
+            return elementPythonTypeName;
+        }
+
         public BitSize getElementBitSize()
         {
             return elementBitSize;
@@ -283,6 +291,7 @@ public final class CompoundFieldTemplateData
         private final boolean requiresElementCreator;
         private final boolean isImplicit;
         private final String length;
+        private final String elementPythonTypeName;
         private final BitSize elementBitSize;
         private final Compound elementCompound;
     }
@@ -381,7 +390,8 @@ public final class CompoundFieldTemplateData
     }
 
     private static Array createArray(PythonNativeType nativeType, ZserioType baseType,
-            ExpressionFormatter pythonExpressionFormatter) throws ZserioEmitException
+            PythonNativeTypeMapper pythonNativeTypeMapper, ExpressionFormatter pythonExpressionFormatter)
+                    throws ZserioEmitException
     {
         if (!(baseType instanceof ArrayType))
             return null;
@@ -390,7 +400,8 @@ public final class CompoundFieldTemplateData
             throw new ZserioEmitException("Inconsistent base type '" + baseType.getClass() +
                     "' and native type '" + nativeType.getClass() + "'!");
 
-        return new Array((NativeArrayType)nativeType, (ArrayType)baseType, pythonExpressionFormatter);
+        return new Array((NativeArrayType)nativeType, (ArrayType)baseType, pythonNativeTypeMapper,
+                pythonExpressionFormatter);
     }
 
     private static Compound createCompound(ExpressionFormatter pythonExpressionFormatter, ZserioType baseType)

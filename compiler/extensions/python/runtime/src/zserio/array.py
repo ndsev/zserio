@@ -2,11 +2,12 @@
 The module implements abstraction for arrays used by Zserio python extension.
 """
 
+from zserio.bitposition import (alignToByte, bitsToBytes)
 from zserio.bitsizeof import (getBitSizeOfVarUInt16, getBitSizeOfVarUInt32,
                               getBitSizeOfVarUInt64, getBitSizeOfVarUInt,
                               getBitSizeOfVarInt16, getBitSizeOfVarInt32,
                               getBitSizeOfVarInt64, getBitSizeOfVarInt,
-                              getBitSizeOfString, alignTo)
+                              getBitSizeOfString)
 from zserio.hashcode import calcHashCode, HASH_SEED
 from zserio.exception import PythonRuntimeException
 
@@ -113,11 +114,11 @@ class Array():
             if self._setOffsetMethod is None:
                 endBitPosition += size * elementSize
             else:
-                endBitPosition += elementSize + (size - 1) * alignTo(8, elementSize)
+                endBitPosition += elementSize + (size - 1) * alignToByte(elementSize)
         else:
             for element in self._rawArray:
                 if self._setOffsetMethod is not None:
-                    endBitPosition = alignTo(8, endBitPosition)
+                    endBitPosition = alignToByte(endBitPosition)
                 endBitPosition += self._arrayTraits.bitSizeOf(endBitPosition, element)
 
         return endBitPosition - bitPosition
@@ -140,7 +141,8 @@ class Array():
 
         for index in range(size):
             if self._setOffsetMethod is not None:
-                endBitPosition = self._setOffsetMethod(index, endBitPosition)
+                endBitPosition = alignToByte(endBitPosition)
+                self._setOffsetMethod(index, bitsToBytes(endBitPosition))
             endBitPosition = self._arrayTraits.initializeOffsets(endBitPosition, self._rawArray[index])
 
         return endBitPosition
@@ -173,7 +175,7 @@ class Array():
             for index in range(size):
                 if self._checkOffsetMethod is not None:
                     reader.alignTo(8)
-                    self._checkOffsetMethod(index)
+                    self._checkOffsetMethod(index, bitsToBytes(reader.getBitPosition()))
                 self._rawArray.append(self._arrayTraits.read(reader, index))
 
     def write(self, writer):
@@ -190,7 +192,7 @@ class Array():
         for index in range(size):
             if self._checkOffsetMethod is not None:
                 writer.alignTo(8)
-                self._checkOffsetMethod(index)
+                self._checkOffsetMethod(index, bitsToBytes(writer.getBitPosition()))
             self._arrayTraits.write(writer, self._rawArray[index])
 
 class BitFieldArrayTraits():
@@ -880,10 +882,7 @@ class ObjectArrayTraits():
         :param index: Element index in the array.
         """
 
-        createdObject = self._objectCreator(index)
-        createdObject.read(reader)
-
-        return createdObject
+        return self._objectCreator(reader, index)
 
     @staticmethod
     def write(writer, value):

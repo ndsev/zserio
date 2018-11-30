@@ -11,7 +11,7 @@ class ${name}:
         <@compound_constructor_parameter_assignments compoundParametersData/>
         self._choiceTag = CHOICE_TAG_UNDEFINED
         self._choice = None
-    
+
     @classmethod
     def fromReader(cls, reader<#if constructorParamList?has_content>, ${constructorParamList}</#if>):
         instance = cls(${constructorParamList})
@@ -53,17 +53,11 @@ class ${name}:
 
         return self._choice
     <#if withWriterCode>
-    
+
     def ${field.setterName}(self, <@field_argument_name field/>):
         self._choiceTag = <@choice_tag_name field/>
         <#if field.array??>
-        self._choice = zserio.Array(${field.array.traitsName}(<#-- TODO -->), <@field_argument_name field/><#rt>
-            <#lt><#if field.array.isImplicit>, isImplicit=True<#rt>
-            <#lt><#elseif !field.array.length??>, isAuto=True</#if><#rt>
-            <#if field.offset?? && field.offset.containsIndex>
-                <#lt>, setOffsetMethod=None, checkOffsetMethod=None<#rt>  <#-- TODO -->
-            </#if>
-            <#lt>)
+        self._choice = zserio.Array(<@array_field_constructor_parameters field/>)
         <#else>
         self._choice = <@field_argument_name field/>)
         </#if>
@@ -113,12 +107,12 @@ class ${name}:
 
     def read(self, reader):
 <#if fieldList?has_content>
-        self._choiceTag = reader.readVarUInt64() <#-- TODO: convert to int??? -->
+        self._choiceTag = reader.readVarUInt64()
 
     <#list fieldList as field>
         <#if field?is_first>if <#else>elif </#if>self._choiceTag == <@choice_tag_name field/>:
             <@compound_read_field field, name, 3/>
-            <#--<@compound_check_constraint_field field, name, 3/> TODO -->
+            <@compound_check_constraint_field field, name, 3/>
     </#list>
         else:
             raise zserio.PythonRuntimeException("No match in union ${name}!")
@@ -134,10 +128,10 @@ class ${name}:
 
         </#if>
         writer.writeVarUInt64(self._choiceTag)
-        
+
         <#list fieldList as field>
         <#if field?is_first>if <#else>elif </#if>self._choiceTag == <@choice_tag_name field/>:
-            <#--<@compound_check_constraint_field field, name, 3/>-->
+            <@compound_check_constraint_field field, name, 3/>
             <@compound_write_field field, name, 3/>
         </#list>
         else:

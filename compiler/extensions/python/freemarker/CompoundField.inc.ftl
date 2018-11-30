@@ -85,18 +85,11 @@ ${I}reader.alignTo(${field.alignmentValue})
     </#if>
     <#local fieldMemberName><@field_member_name field/></#local>
     <#if field.array??>
-${I}self.${fieldMemberName} = zserio.Array.fromReader(${field.array.traitsName}(<#-- TODO -->), reader, <#rt>
-        <#lt><#if field.array.length??>${field.array.length}<#rt>
-        <#lt><#elseif field.array.isImplicit>isImplicit=True<#rt>
-        <#lt><#else>isAuto=True</#if><#rt>
-        <#if field.offset?? && field.offset.containsIndex>
-            <#lt>, setOffsetMethod=None, checkOffsetMethod=None<#rt>  <#-- TODO -->
-        </#if>
-        <#lt>)
+${I}self.${fieldMemberName} = zserio.Array.fromReader(<@array_field_from_reader_parameters field/>)
     <#elseif field.runtimeFunction??>
 ${I}self.${fieldMemberName} = reader.read${field.runtimeFunction.suffix}(${field.runtimeFunction.arg!})
     <#else>
-        <#local fromReaderArguments><#if field.compound??><@compound_field_compound_ctor_params field.compound/></#if></#local>
+        <#local fromReaderArguments><#if field.compound??><@compound_field_constructor_parameters field.compound/></#if></#local>
 ${I}self.${fieldMemberName} = ${field.pythonTypeName}.fromReader(reader<#rt>
         <#lt><#if fromReaderArguments?has_content>, ${fromReaderArguments}</#if>)
     </#if>
@@ -105,12 +98,42 @@ ${I}self.${fieldMemberName} = ${field.pythonTypeName}.fromReader(reader<#rt>
 <#macro compound_read_field_offset_check field compoundName indent>
     <#local I>${""?left_pad(indent * 4)}</#local>
 ${I}reader.alignTo(8)
-${I}if reader.getBitPosition() != 8 * ${field.offset.getter}:
+${I}if reader.getBitPosition() != zserio.bitposition.bytesToBits(${field.offset.getter}):
 ${I}    raise PythonRuntimeException("Read: Wrong offset for field ${compoundName}.${field.name}: %d != %d!" %
-${I}                                 (reader.getBitPosition(), 8 * ${field.offset.getter})
+${I}                                 (reader.getBitPosition(), zserio.bitposition.bytesToBits(${field.offset.getter}))
 </#macro>
 
-<#macro compound_field_compound_ctor_params compound>
+<#macro array_field_traits_parameters field>
+    <#if field.array.requiresElementBitSize>
+        ${field.array.elementBitSize.value}<#t>
+    <#elseif field.array.requiresElementCreator>
+        <@element_creator_name field/><#t>
+    </#if>
+</#macro>
+
+<#macro array_field_extra_parameters field>
+    <#if field.array.isImplicit>, isImplicit=True<#t>
+    <#elseif !field.array.length??>, isAuto=True<#t>
+    </#if>
+    <#if field.offset?? && field.offset.containsIndex>
+        , setOffsetMethod=<@offset_setter_name field/>, checkOffsetMethod=<@offset_checker_name field/><#t>
+    </#if>
+</#macro>
+
+<#macro array_field_from_reader_parameters field>
+    <#local extraArrayParameters><@array_field_extra_parameters field/></#local>
+    ${field.array.traitsName}(<@array_field_traits_parameters field/>), reader<#t>
+    <#if field.array.length??>, ${field.array.length}</#if><#t>
+    <#if extraArrayParameters??>${extraArrayParameters}</#if><#t>
+</#macro>
+
+<#macro array_field_constructor_parameters field>
+    <#local extraArrayParameters><@array_field_extra_parameters field/></#local>
+    ${field.array.traitsName}(<@array_field_traits_parameters field/>), <@field_argument_name field/><#t>
+    <#if extraArrayParameters??>${extraArrayParameters}</#if><#t>
+</#macro>
+
+<#macro compound_field_constructor_parameters compound>
     <#list compound.instantiatedParameters as parameter>
         ${parameter.expression}<#if parameter_has_next>, </#if><#t>
     </#list>
@@ -160,15 +183,60 @@ ${I}${field.getterName}().write(writer, callInitializeOffsets=False)
 <#macro compound_write_field_offset_check field compoundName indent>
     <#local I>${""?left_pad(indent * 4)}</#local>
 ${I}writer.alignTo(8)
-${I}if writer.getBitPosition() != 8 * ${field.offset.getter}:
+${I}if writer.getBitPosition() != zserio.bitposition.bytesToBits(${field.offset.getter}):
 ${I}    raise PythonRuntimeException("Write: Wrong offset for field ${compoundName}.${field.name}: %d != %d!" %
-${I}                                 (writer.getBitPosition(), 8 * ${field.offset.getter})
+${I}                                 (writer.getBitPosition(), zserio.bitposition.bytesToBits(${field.offset.getter}))
 </#macro>
 
-<#macro compound_check_constraint_field field compoundName>
+<#macro compound_check_constraint_field field compoundName indent>
+    <#local I>${""?left_pad(indent * 4)}</#local>
     <#if field.constraint??>
-        if <#if field.optional??>(self.${field.optional.indicatorName}()) && </#if>!(${field.constraint}):
-            raise PythonRuntimeException("Constraint violated at ${compoundName}.${field.name}!");
+${I}if <#if field.optional??>(self.${field.optional.indicatorName}()) && </#if>!(${field.constraint}):
+${I}    raise PythonRuntimeException("Constraint violated at ${compoundName}.${field.name}!");
+    </#if>
+</#macro>
+
+<#macro offset_checker_name field>
+    _offsetChecker_${field.name}<#t>
+</#macro>
+
+<#macro define_offset_checker compoundName field>
+    <#if field.array?? && field.offset?? && field.offset.containsIndex>
+
+    def <@offset_checker_name field/>(index, byteOffset):
+        if byteOffset != ${field.offset.getter}:
+            raise PythonRuntimeException("Wrong offset for field ${compoundName}.${field.name}: %d != %d!" %
+                                        (byteOffset, ${field.offset.getter})
+    </#if>
+</#macro>
+
+<#macro offset_setter_name field>
+    _offsetSetter_${field.name}<#t>
+</#macro>
+
+<#macro define_offset_setter field>
+    <#if field.array?? && field.offset?? && field.offset.containsIndex>
+
+    def <@offset_setter_name field/>(index, byteOffset):
+        value = byteOffset
+        ${field.offset.setter}
+    </#if>
+</#macro>
+
+<#macro element_creator_name field>
+    _elementCreator_${field.name}<#t>
+</#macro>
+
+<#macro define_element_creator field>
+   <#if field.array?? && field.array.requiresElementCreator>
+        <#local extraConstructorArguments>
+            <#if field.array.elementCompound??>
+                <@compound_field_constructor_parameters field.array.elementCompound/><#t>
+            </#if>
+        </#local>
+
+    def <@element_creator_name field/>(reader, index):
+        return ${field.array.elementPythonTypeName}.fromReader(reader<#if extraConstructorArguments?has_content>, ${extraConstructorArguments}</#if>)
     </#if>
 </#macro>
 
