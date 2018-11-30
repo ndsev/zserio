@@ -136,7 +136,7 @@ choiceDeclaration
                 if (exprType instanceof EnumType)
                     ((ChoiceType)c).addScopeForCaseExpressions(((EnumType)exprType).getScope());
             }
-            (choiceCases)+
+            (choiceCases)*
             (defaultChoice)?
             (functionDefinition)*
         )
@@ -158,7 +158,7 @@ defaultChoice
  * unionDeclaration.
  */
 unionDeclaration
-    :   #(u:UNION i:ID (parameterList)? (unionFieldDefinition)+ (functionDefinition)*)
+    :   #(u:UNION i:ID (parameterList)? (unionFieldDefinition)* (functionDefinition)*)
     ;
 
 unionFieldDefinition

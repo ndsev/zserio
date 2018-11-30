@@ -1,5 +1,11 @@
 set(ZSERIO_GEN_DIR ${CMAKE_CURRENT_BINARY_DIR}/gen)
 set(ZSERIO_GENERATED_SOURCES
+    ${ZSERIO_GEN_DIR}/union_types/empty_union/EmptyUnion.h
+    ${ZSERIO_GEN_DIR}/union_types/empty_union/EmptyUnion.cpp
+
+    ${ZSERIO_GEN_DIR}/union_types/empty_union_with_parameter/EmptyUnionParameter.h
+    ${ZSERIO_GEN_DIR}/union_types/empty_union_with_parameter/EmptyUnionWithParameter.cpp
+
     ${ZSERIO_GEN_DIR}/union_types/simple_union/SimpleUnion.h
     ${ZSERIO_GEN_DIR}/union_types/simple_union/SimpleUnion.cpp
 
@@ -22,6 +28,8 @@ zserio_add_library(TARGET union_types_zs
 )
 
 add_test_sources(
+    cpp/EmptyUnionTest.cpp
+    cpp/EmptyUnionWithParameterTest.cpp
     cpp/SimpleUnionTest.cpp
     cpp/UnionWithArrayTest.cpp
     cpp/UnionWithParameterTest.cpp

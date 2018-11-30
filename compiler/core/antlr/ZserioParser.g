@@ -297,7 +297,7 @@ functionBody
 choiceDeclaration
     :   CHOICE^ ID parameterList ON! choiceTag
         LCURLY!
-        (choiceCases)+
+        (choiceCases)*
         (defaultChoice)?
         (functionDefinition)*
         RCURLY!
@@ -329,7 +329,7 @@ defaultChoice
 unionDeclaration
     :   UNION^ ID (parameterList)?
         LCURLY!
-            (unionFieldDefinition)+
+            (unionFieldDefinition)*
             (functionDefinition)*
         RCURLY!
     ;

@@ -221,6 +221,8 @@ void ${name}::read(zserio::BitStreamReader&<#if fieldList?has_content> _in</#if>
     default:
         throw zserio::CppRuntimeException("No match in union ${name}!");
     }
+<#else>
+    m_choiceTag = CHOICE_UNDEFINED;
 </#if>
 }
 <#if withInspectorCode>
@@ -243,6 +245,8 @@ void ${name}::read(const zserio::BlobInspectorTree&<#if fieldList?has_content> _
     {
         throw zserio::CppRuntimeException("No match in union ${name}!");
     }
+<#else>
+    m_choiceTag = CHOICE_UNDEFINED;
 </#if>
 }
 </#if>
@@ -251,11 +255,11 @@ void ${name}::read(const zserio::BlobInspectorTree&<#if fieldList?has_content> _
 
 size_t ${name}::initializeOffsets(size_t _bitPosition)
 {
+    <#if fieldList?has_content>
     size_t _endBitPosition = _bitPosition;
 
     _endBitPosition += zserio::getBitSizeOfVarUInt64(m_choiceTag);
 
-    <#if fieldList?has_content>
     switch (m_choiceTag)
     {
         <#list fieldList as field>
@@ -267,12 +271,14 @@ size_t ${name}::initializeOffsets(size_t _bitPosition)
         throw zserio::CppRuntimeException("No match in union ${name}!");
     }
 
-    </#if>
     return _endBitPosition;
+    <#else>
+    return _bitPosition;
+    </#if>
 }
 
 <#assign hasPreWriteAction=needsRangeCheck || needsChildrenInitialization || hasFieldWithOffset/>
-void ${name}::write(zserio::BitStreamWriter&<#if fieldList?has_content> _out,</#if> <#rt>
+void ${name}::write(zserio::BitStreamWriter&<#if fieldList?has_content> _out</#if>, <#rt>
         zserio::PreWriteAction<#if hasPreWriteAction> _preWriteAction</#if>)<#lt>
 {
     <#if fieldList?has_content>
@@ -298,7 +304,7 @@ void ${name}::write(zserio::BitStreamWriter&<#if fieldList?has_content> _out,</#
 </#if>
 <#if withInspectorCode>
 
-void ${name}::write(zserio::BitStreamWriter&<#if fieldList?has_content> _out,</#if> <#rt>
+void ${name}::write(zserio::BitStreamWriter&<#if fieldList?has_content> _out</#if>, <#rt>
         zserio::BlobInspectorTree&<#if fieldList?has_content || compoundFunctionsData.list?has_content> _tree</#if>,<#lt>
         zserio::PreWriteAction<#if hasPreWriteAction> _preWriteAction</#if>)
 {
