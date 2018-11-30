@@ -3,17 +3,17 @@
 namespace zserio
 {
 
-uint8_t getNumBits(uint64_t value)
+uint8_t getNumBits(uint64_t numValues)
 {
+    if (numValues == 0)
+        return 0;
+
     uint8_t result = 1;
-    if (value > 0)
+    uint64_t current = (numValues - 1) >> 1;
+    while (current > 0)
     {
-        uint64_t current = (value - 1) >> 1;
-        while (current > 0)
-        {
-            result++;
-            current >>= 1;
-        }
+        result++;
+        current >>= 1;
     }
 
     return result;

@@ -221,7 +221,7 @@ choiceDeclaration
                                         currentScope = new Scope(currentChoiceOrUnionScope);
                                     }
             expression
-            (choiceCases)+
+            (choiceCases)*
             (defaultChoice)?        {
                                         currentScope = currentChoiceOrUnionScope;
                                         currentChoiceOrUnionScope = null;
@@ -270,7 +270,7 @@ unionDeclaration
                                         currentChoiceOrUnionScope = currentScope;
                                         currentScope = new Scope(currentChoiceOrUnionScope);
                                     }
-            (unionFieldDefinition)+ {
+            (unionFieldDefinition)* {
                                         currentScope = currentChoiceOrUnionScope;
                                         currentChoiceOrUnionScope = null;
                                     }

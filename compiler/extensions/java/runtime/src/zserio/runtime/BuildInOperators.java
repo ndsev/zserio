@@ -8,15 +8,15 @@ import java.math.BigInteger;
 public class BuildInOperators
 {
     /**
-     * Gets the minimum number of bits required to encode <code>value-1</code>.
+     * Gets the minimum number of bits required to encode <code>numValues</code> different values.
      * <p>
      * This method implements Zserio build-in operator <code>numbits</code> for Zserio uint8, uint16
      * and uint32 types.</p>
      * <p>
-     * <b>Note:</b> Please note that this method returns 1 if value is zero or negative value.</p>
+     * <b>Note:</b> Please note that this method returns 0 if value is zero or negative value.</p>
      * <p>
      * Examples:</p>
-     * <code>numbits(0) = 1</code><br>
+     * <code>numbits(0) = 0</code><br>
      * <code>numbits(1) = 1</code><br>
      * <code>numbits(2) = 1</code><br>
      * <code>numbits(3) = 2</code><br>
@@ -24,35 +24,34 @@ public class BuildInOperators
      * <code>numbits(8) = 3</code><br>
      * <code>numbits(16) = 4</code>
      *
-     * @param value The value from which to calculate number of bits.
+     * @param numValues The number of different values from which to calculate number of bits.
      *
-     * @return Number of bis required to encode <code>value-1</code> or <code>1</code>
-     *         if <code>value</code> is <code>0</code> or <code>1</code>.
+     * @return Number of bis required to encode <code>numValues</code> different values.
      */
-    public static short getNumBits(long value)
+    public static short getNumBits(long numValues)
     {
+        if (numValues <= 0)
+            return 0;
+
         short result = 1;
-        if (value > 0)
+        long current = (numValues - 1) >> 1;
+        while (current > 0)
         {
-            long current = (value - 1) >> 1;
-            while (current > 0)
-            {
-                result++;
-                current >>= 1;
-            }
+            result++;
+            current >>= 1;
         }
 
         return result;
     }
 
     /**
-     * Gets the minimum number of bits required to encode <code>value-1</code>.
+     * Gets the minimum number of bits required to encode <code>numValues</code> different values.
      * <p>
      * This method implements Zserio build-in operator <code>numbits</code> for Zserio uint64 type
      * which is mapped to Java BigInteger type.</p>
      * <p>
      * Examples:</p>
-     * <code>numbits(0) = 1</code><br>
+     * <code>numbits(0) = 0</code><br>
      * <code>numbits(1) = 1</code><br>
      * <code>numbits(2) = 1</code><br>
      * <code>numbits(3) = 2</code><br>
@@ -60,17 +59,19 @@ public class BuildInOperators
      * <code>numbits(8) = 3</code><br>
      * <code>numbits(16) = 4</code>
      *
-     * @param value The value from which to calculate number of bits.
+     * @param numValues The number of different values from which to calculate number of bits.
      *
-     * @return Number of bis required to encode <code>value-1</code> or <code>1</code>
-     *         if <code>value</code> is <code>0</code> or <code>1</code>.
+     * @return Number of bis required to encode <code>numValues</code> different values.
      */
-    public static short getNumBits(BigInteger value)
+    public static short getNumBits(BigInteger numValues)
     {
-        if (value.doubleValue() < 2.0)
+        if (numValues.doubleValue() <= 0.0)
+            return 0;
+        if (numValues.doubleValue() == 1.0)
             return 1;
 
-        final BigInteger calcValue = value.subtract(BigInteger.ONE);
+        final BigInteger calcValue = numValues.subtract(BigInteger.ONE);
+
         return (short)calcValue.bitLength();
     }
 }

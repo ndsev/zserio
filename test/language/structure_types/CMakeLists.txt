@@ -1,5 +1,11 @@
 set(ZSERIO_GEN_DIR ${CMAKE_CURRENT_BINARY_DIR}/gen)
 set(ZSERIO_GENERATED_SOURCES
+    ${ZSERIO_GEN_DIR}/structure_types/empty_structure/EmptyStructure.cpp
+    ${ZSERIO_GEN_DIR}/structure_types/empty_structure/EmptyStructure.h
+
+    ${ZSERIO_GEN_DIR}/structure_types/empty_structure_with_parameter/EmptyStructureWithParameter.cpp
+    ${ZSERIO_GEN_DIR}/structure_types/empty_structure_with_parameter/EmptyStructureWithParameter.h
+
     ${ZSERIO_GEN_DIR}/structure_types/one_string_structure/OneStringStructure.cpp
     ${ZSERIO_GEN_DIR}/structure_types/one_string_structure/OneStringStructure.h
 
@@ -17,6 +23,8 @@ zserio_add_library(TARGET structure_types_zs
 )
 
 add_test_sources(
+    cpp/EmptyStructureTest.cpp
+    cpp/EmptyStructureWithParameterTest.cpp
     cpp/OneStringStructureTest.cpp
     cpp/SimpleStructureTest.cpp
 )

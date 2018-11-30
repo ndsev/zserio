@@ -2,6 +2,9 @@ package choice_types;
 
 import choice_types.bool_param_choice.*;
 import choice_types.choice_with_array.*;
+import choice_types.empty_choice.*;
+import choice_types.empty_choice_with_case.*;
+import choice_types.empty_choice_with_default.*;
 import choice_types.enum_param_choice.*;
 import choice_types.int_choice.*;
 import choice_types.uint64_param_choice.*;

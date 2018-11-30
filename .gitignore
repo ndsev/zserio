@@ -17,6 +17,9 @@
 # Python bytecode
 __pycache__
 
+# Eclipse Python project files
+.pydevproject
+
 # Eclipse classpath files
 .classpath
 

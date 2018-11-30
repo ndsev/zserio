@@ -117,11 +117,15 @@ ${I}}
     @Override
     public int bitSizeOf(long __bitPosition) throws ZserioError
     {
+<#if fieldList?has_content>
         long __endBitPosition = __bitPosition;
 
         <@choice_switch "choice_bitsizeof_member", 2/>
 
         return (int)(__endBitPosition - __bitPosition);
+<#else>
+        return 0;
+</#if>
     }
 
 <@compound_parameter_accessors compoundParametersData/>
@@ -193,7 +197,9 @@ ${I}}
 </#macro>
     public void read(final BitStreamReader __in) throws IOException, ZserioError
     {
+<#if fieldList?has_content>
         <@choice_switch "choice_read_member", 2/>
+</#if>
     }
 <#if withWriterCode>
 
@@ -213,11 +219,15 @@ ${I}// empty
 </#macro>
     public long initializeOffsets(long __bitPosition) throws ZserioError
     {
+    <#if fieldList?has_content>
         long __endBitPosition = __bitPosition;
 
         <@choice_switch "choice_initialize_offsets_member", 2/>
 
         return __endBitPosition;
+    <#else>
+        return __bitPosition;
+    </#if>
     }
 
     public void write(File __file) throws IOException, ZserioError
@@ -245,7 +255,8 @@ ${I}// empty
     @Override
     public void write(BitStreamWriter __out, boolean __callInitializeOffsets) throws IOException, ZserioError
     {
-    <#if hasFieldWithOffset>
+    <#if fieldList?has_content>
+        <#if hasFieldWithOffset>
         final long __startBitPosition = __out.getBitPosition();
 
         if (__callInitializeOffsets)
@@ -253,8 +264,9 @@ ${I}// empty
             initializeOffsets(__startBitPosition);
         }
 
-    </#if>
+        </#if>
         <@choice_switch "choice_write_member", 2/>
+    </#if>
     }
 </#if>
 

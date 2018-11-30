@@ -156,11 +156,11 @@ public class ${name} implements <#if withWriterCode>InitializeOffsetsWriter, </#
 
     public long initializeOffsets(long __bitPosition) throws ZserioError
     {
+    <#if fieldList?has_content>
         long __endBitPosition = __bitPosition;
 
         __endBitPosition += BitSizeOfCalculator.getBitSizeOfVarUInt64(__choiceTag);
 
-    <#if fieldList?has_content>
         switch (__choiceTag)
         {
         <#list fieldList as field>
@@ -172,8 +172,10 @@ public class ${name} implements <#if withWriterCode>InitializeOffsetsWriter, </#
             throw new ZserioError("No match in union ${name}!");
         }
 
-    </#if>
         return __endBitPosition;
+    <#else>
+        return __bitPosition;
+    </#if>
     }
 
     public void write(File __file) throws IOException, ZserioError

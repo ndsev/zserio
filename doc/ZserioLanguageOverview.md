@@ -808,14 +808,14 @@ enum uint8 Color
 
 #### numbits Operator
 
-The `numbits(value)` operator is defined for unsigned integers as minimum number of bits required to encode
-`value-1`. The returned number is of type `uint8`. The `numbits` operator returns `1` if applied to value `0`
-or `1`.
+The `numbits(numValues)` operator is defined for unsigned integers as minimum number of bits required to encode
+`numValues` different values. The returned number is of type `uint8`. The `numbits` operator returns `0` if
+applied to value `0`.
 
 The following table shows the results of the `numbits` operator applied some common values:
 
 ```
-numbits(0) = 1
+numbits(0) = 0
 numbits(1) = 1
 numbits(2) = 1
 numbits(3) = 2

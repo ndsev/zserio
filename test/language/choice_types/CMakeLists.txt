@@ -10,6 +10,15 @@ set(ZSERIO_GENERATED_SOURCES
     ${ZSERIO_GEN_DIR}/choice_types/choice_with_array/Data8.cpp
     ${ZSERIO_GEN_DIR}/choice_types/choice_with_array/Data8.h
 
+    ${ZSERIO_GEN_DIR}/choice_types/empty_choice/EmptyChoice.cpp
+    ${ZSERIO_GEN_DIR}/choice_types/empty_choice/EmptyChoice.h
+
+    ${ZSERIO_GEN_DIR}/choice_types/empty_choice_with_case/EmptyChoiceWithCase.cpp
+    ${ZSERIO_GEN_DIR}/choice_types/empty_choice_with_case/EmptyChoiceWithCase.h
+
+    ${ZSERIO_GEN_DIR}/choice_types/empty_choice_with_default/EmptyChoiceWithDefault.cpp
+    ${ZSERIO_GEN_DIR}/choice_types/empty_choice_with_default/EmptyChoiceWithDefault.h
+
     ${ZSERIO_GEN_DIR}/choice_types/enum_param_choice/Black.h
     ${ZSERIO_GEN_DIR}/choice_types/enum_param_choice/EnumParamChoice.cpp
     ${ZSERIO_GEN_DIR}/choice_types/enum_param_choice/EnumParamChoice.h
@@ -43,6 +52,9 @@ zserio_add_library(TARGET choice_types_zs
 add_test_sources(
     cpp/BoolParamChoiceTest.cpp
     cpp/ChoiceWithArrayTest.cpp
+    cpp/EmptyChoiceTest.cpp
+    cpp/EmptyChoiceWithCaseTest.cpp
+    cpp/EmptyChoiceWithDefaultTest.cpp
     cpp/EnumParamChoiceTest.cpp
     cpp/IntChoiceTest.cpp
     cpp/UInt64ParamChoiceTest.cpp
