@@ -8,12 +8,10 @@
         "java.io.IOException",
         "java.io.File",
         "zserio.runtime.SizeOf",
-        "zserio.runtime.BitSizeOfCalculator",
         "zserio.runtime.io.BitStreamReader",
         "zserio.runtime.io.FileBitStreamReader",
         "zserio.runtime.ZserioError",
-        "zserio.runtime.Util",
-        "zserio.runtime.VarUInt64Util"
+        "zserio.runtime.Util"
 ]/>
 <#if withWriterCode>
 <@imports [
@@ -28,6 +26,12 @@
         <#break>
     </#if>
 </#list>
+<#if fieldList?has_content>
+<@imports [
+        "zserio.runtime.BitSizeOfCalculator",
+        "zserio.runtime.VarUInt64Util"
+]/>
+</#if>
 
 <@class_header generatorDescription/>
 public class ${name} implements <#if withWriterCode>InitializeOffsetsWriter, </#if>SizeOf
