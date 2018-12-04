@@ -208,11 +208,11 @@ public class ChoiceType extends CompoundType
     private void checkSelectorType() throws ParserException
     {
         final Expression.ExpressionType selectorExpressionType = selectorExpression.getExprType();
-        if (selectorExpressionType == Expression.ExpressionType.STRING)
-            throw new ParserException(this, "Choice '" + getName() + "' uses forbidden string selector!");
-
-        if (selectorExpressionType == Expression.ExpressionType.FLOAT)
-            throw new ParserException(this, "Choice '" + getName() + "' uses forbidden float selector!");
+        if (selectorExpressionType != Expression.ExpressionType.INTEGER &&
+            selectorExpressionType != Expression.ExpressionType.BOOLEAN &&
+            selectorExpressionType != Expression.ExpressionType.ENUM)
+            throw new ParserException(this, "Choice '" + getName() + "' uses forbidden " +
+                    selectorExpressionType.name() + " selector!");
     }
 
     private void checkCaseTypes() throws ParserException
@@ -293,7 +293,7 @@ public class ChoiceType extends CompoundType
     private boolean checkUnreachableDefault() throws ParserException
     {
         boolean isDefaulUnreachable = false;
-        if (selectorExpression.getExprType() == Expression.ExpressionType.BOOLEAN && choiceCases.size() > 1)
+        if (selectorExpression.getExprType() == Expression.ExpressionType.BOOLEAN && numCases() > 1)
         {
             if (choiceDefault != null)
                 throw new ParserException(choiceDefault, "Choice '" + getName() +
@@ -303,6 +303,14 @@ public class ChoiceType extends CompoundType
         }
 
         return isDefaulUnreachable;
+    }
+
+    private int numCases()
+    {
+        int numCases = 0;
+        for (ChoiceCase choiceCase : choiceCases)
+            numCases += choiceCase.getExpressions().size();
+        return numCases;
     }
 
     private static final long serialVersionUID = 5277638180208281212L;
