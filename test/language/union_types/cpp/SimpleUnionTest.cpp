@@ -79,11 +79,7 @@ TEST_F(SimpleUnionTest, bitStreamReaderConstructor)
         const uint8_t* writeBuffer = writer.getWriteBuffer(writeBufferByteSize);
         zserio::BitStreamReader reader(writeBuffer, writeBufferByteSize);
         SimpleUnion simpleUnion(reader);
-        ASSERT_NO_THROW(simpleUnion.getCase1Field());
         ASSERT_EQ(CASE1_FIELD, simpleUnion.getCase1Field());
-        ASSERT_THROW(simpleUnion.getCase2Field(), zserio::CppRuntimeException);
-        ASSERT_THROW(simpleUnion.getCase3Field(), zserio::CppRuntimeException);
-        ASSERT_THROW(simpleUnion.getCase4Field(), zserio::CppRuntimeException);
     }
     {
         zserio::BitStreamWriter writer;
@@ -92,11 +88,7 @@ TEST_F(SimpleUnionTest, bitStreamReaderConstructor)
         const uint8_t* writeBuffer = writer.getWriteBuffer(writeBufferByteSize);
         zserio::BitStreamReader reader(writeBuffer, writeBufferByteSize);
         SimpleUnion simpleUnion(reader);
-        ASSERT_THROW(simpleUnion.getCase1Field(), zserio::CppRuntimeException);
-        ASSERT_NO_THROW(simpleUnion.getCase2Field());
         ASSERT_EQ(CASE2_FIELD, simpleUnion.getCase2Field());
-        ASSERT_THROW(simpleUnion.getCase3Field(), zserio::CppRuntimeException);
-        ASSERT_THROW(simpleUnion.getCase4Field(), zserio::CppRuntimeException);
     }
     {
         zserio::BitStreamWriter writer;
@@ -105,11 +97,7 @@ TEST_F(SimpleUnionTest, bitStreamReaderConstructor)
         const uint8_t* writeBuffer = writer.getWriteBuffer(writeBufferByteSize);
         zserio::BitStreamReader reader(writeBuffer, writeBufferByteSize);
         SimpleUnion simpleUnion(reader);
-        ASSERT_THROW(simpleUnion.getCase1Field(), zserio::CppRuntimeException);
-        ASSERT_THROW(simpleUnion.getCase2Field(), zserio::CppRuntimeException);
-        ASSERT_NO_THROW(simpleUnion.getCase3Field());
         ASSERT_EQ(CASE3_FIELD, simpleUnion.getCase3Field());
-        ASSERT_THROW(simpleUnion.getCase4Field(), zserio::CppRuntimeException);
     }
     {
         zserio::BitStreamWriter writer;
@@ -118,10 +106,6 @@ TEST_F(SimpleUnionTest, bitStreamReaderConstructor)
         const uint8_t* writeBuffer = writer.getWriteBuffer(writeBufferByteSize);
         zserio::BitStreamReader reader(writeBuffer, writeBufferByteSize);
         SimpleUnion simpleUnion(reader);
-        ASSERT_THROW(simpleUnion.getCase1Field(), zserio::CppRuntimeException);
-        ASSERT_THROW(simpleUnion.getCase2Field(), zserio::CppRuntimeException);
-        ASSERT_THROW(simpleUnion.getCase3Field(), zserio::CppRuntimeException);
-        ASSERT_NO_THROW(simpleUnion.getCase4Field());
         ASSERT_EQ(CASE4_FIELD, simpleUnion.getCase4Field());
     }
 }
@@ -265,11 +249,7 @@ TEST_F(SimpleUnionTest, read)
         zserio::BitStreamReader reader(writeBuffer, writeBufferByteSize);
         SimpleUnion simpleUnion;
         simpleUnion.read(reader);
-        ASSERT_NO_THROW(simpleUnion.getCase1Field());
         ASSERT_EQ(CASE1_FIELD, simpleUnion.getCase1Field());
-        ASSERT_THROW(simpleUnion.getCase2Field(), zserio::CppRuntimeException);
-        ASSERT_THROW(simpleUnion.getCase3Field(), zserio::CppRuntimeException);
-        ASSERT_THROW(simpleUnion.getCase4Field(), zserio::CppRuntimeException);
     }
     {
         zserio::BitStreamWriter writer;
@@ -279,11 +259,7 @@ TEST_F(SimpleUnionTest, read)
         zserio::BitStreamReader reader(writeBuffer, writeBufferByteSize);
         SimpleUnion simpleUnion;
         simpleUnion.read(reader);
-        ASSERT_THROW(simpleUnion.getCase1Field(), zserio::CppRuntimeException);
-        ASSERT_NO_THROW(simpleUnion.getCase2Field());
         ASSERT_EQ(CASE2_FIELD, simpleUnion.getCase2Field());
-        ASSERT_THROW(simpleUnion.getCase3Field(), zserio::CppRuntimeException);
-        ASSERT_THROW(simpleUnion.getCase4Field(), zserio::CppRuntimeException);
     }
     {
         zserio::BitStreamWriter writer;
@@ -293,11 +269,7 @@ TEST_F(SimpleUnionTest, read)
         zserio::BitStreamReader reader(writeBuffer, writeBufferByteSize);
         SimpleUnion simpleUnion;
         simpleUnion.read(reader);
-        ASSERT_THROW(simpleUnion.getCase1Field(), zserio::CppRuntimeException);
-        ASSERT_THROW(simpleUnion.getCase2Field(), zserio::CppRuntimeException);
-        ASSERT_NO_THROW(simpleUnion.getCase3Field());
         ASSERT_EQ(CASE3_FIELD, simpleUnion.getCase3Field());
-        ASSERT_THROW(simpleUnion.getCase4Field(), zserio::CppRuntimeException);
     }
     {
         zserio::BitStreamWriter writer;
@@ -307,10 +279,6 @@ TEST_F(SimpleUnionTest, read)
         zserio::BitStreamReader reader(writeBuffer, writeBufferByteSize);
         SimpleUnion simpleUnion;
         simpleUnion.read(reader);
-        ASSERT_THROW(simpleUnion.getCase1Field(), zserio::CppRuntimeException);
-        ASSERT_THROW(simpleUnion.getCase2Field(), zserio::CppRuntimeException);
-        ASSERT_THROW(simpleUnion.getCase3Field(), zserio::CppRuntimeException);
-        ASSERT_NO_THROW(simpleUnion.getCase4Field());
         ASSERT_EQ(CASE4_FIELD, simpleUnion.getCase4Field());
     }
 }

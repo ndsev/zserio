@@ -46,11 +46,6 @@ class ${name}:
 <#list fieldList as field>
 
     def ${field.getterName}(self):
-        if (self._choiceTag != <@choice_tag_name field/>:
-            raise zserio.PythonRuntimeException("Cannot get field ${field.name} from union ${name}: "
-                                                "choiceTag " + self._choiceTag + " != " +
-                                                <@choice_tag_name field/> + "!")
-
         return self._choice<#if field.array??>.getRawArray()</#if>
     <#if withWriterCode>
 

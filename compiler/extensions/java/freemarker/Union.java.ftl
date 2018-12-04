@@ -78,10 +78,6 @@ public class ${name} implements <#if withWriterCode>InitializeOffsetsWriter, </#
     <#if field.isObjectArray>@java.lang.SuppressWarnings("unchecked")</#if>
     public ${field.javaTypeName} ${field.getterName}() throws ZserioError
     {
-        if (__choiceTag != <@choice_tag_name field/>)
-            throw new ZserioError("Cannot get field ${field.name} from union ${name}: choiceTag " +
-                    + __choiceTag + " != " + <@choice_tag_name field/> + "!");
-
         return (${field.javaNullableTypeName}) this.__objectChoice;
     }
 
