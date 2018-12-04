@@ -32,9 +32,9 @@ ${I}if self.${field.optional.indicatorName}():
     <#if field.bitSize.value??>
 ${I}endBitPosition += ${field.bitSize.value}
     <#elseif field.bitSize.runtimeFunction??>
-${I}endBitPosition += zserio.bitsizeof.getBitSizeOf${field.bitSize.runtimeFunction.suffix}(${field.getterName}())
+${I}endBitPosition += zserio.bitsizeof.getBitSizeOf${field.bitSize.runtimeFunction.suffix}(self.${field.getterName}())
     <#else>
-${I}endBitPosition += ${field.getterName}().bitSizeOf(endBitPosition)
+${I}endBitPosition += self.${field.getterName}().bitSizeOf(endBitPosition)
     </#if>
 </#macro>
 
@@ -53,11 +53,11 @@ ${I}if self.${field.optional.indicatorName}():
     <#if field.bitSize.value??>
 ${I}endBitPosition += ${field.bitSize.value}
     <#elseif field.bitSize.runtimeFunction??>
-${I}endBitPosition += zserio.bitsizeof.getBitSizeOf${field.bitSize.runtimeFunction.suffix}(${field.getterName}())
+${I}endBitPosition += zserio.bitsizeof.getBitSizeOf${field.bitSize.runtimeFunction.suffix}(self.${field.getterName}())
     <#elseif field.compound?? || field.array??>
-${I}endBitPosition = ${field.getterName}().initializeOffsets(__endBitPosition)
+${I}endBitPosition = self.${field.getterName}().initializeOffsets(endBitPosition)
     <#else>
-${I}endBitPosition += ${field.getterName}().bitSizeOf(__endBitPosition)
+${I}endBitPosition += self.${field.getterName}().bitSizeOf(endBitPosition)
     </#if>
 </#macro>
 
@@ -165,17 +165,17 @@ ${I}writer.alignTo(${field.alignmentValue})
         <@compound_write_field_offset_check field, compoundName, indent/>
     </#if>
     <#if field.runtimeFunction??>
-${I}writer.write${field.runtimeFunction.suffix}(${field.getterName}()<#if field.runtimeFunction.arg??>, ${field.runtimeFunction.arg}</#if>)
+${I}writer.write${field.runtimeFunction.suffix}(self.${field.getterName}()<#if field.runtimeFunction.arg??>, ${field.runtimeFunction.arg}</#if>)
     <#else>
         <#if field.array??>
             <#if field.array.length??>
-${I}if ${field.getterName}().length() != ${field.array.length}:
+${I}if self.${field.getterName}().length() != ${field.array.length}:
 ${I}    raise PythonRuntimeException("Write: Wrong array length for field ${compoundName}.${field.name}: %d != %d!" %
-${I}                                (${field.getterName}().length(), ${field.array.length})
+${I}                                (self.${field.getterName}().length(), ${field.array.length})
             </#if>
-${I}${field.getterName}().write(writer)
+${I}self.${field.getterName}().write(writer)
         <#else><#-- enum or compound TODO: Enum does NOT have callInitializeOffsets! -->
-${I}${field.getterName}().write(writer, callInitializeOffsets=False)
+${I}self.${field.getterName}().write(writer, callInitializeOffsets=False)
         </#if>
     </#if>
 </#macro>

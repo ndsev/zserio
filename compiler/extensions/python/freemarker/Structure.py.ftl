@@ -18,7 +18,7 @@ class ${name}():
     def __init__(self<#if constructorParamList?has_content>, ${constructorParamList}</#if>):
         <@compound_constructor_parameter_assignments compoundParametersData/>
     <#list fieldList as field>
-        <@field_member_name field/> = <#if field.initializer??>${field.initializer}<#else>None</#if>
+        self.<@field_member_name field/> = <#if field.initializer??>${field.initializer}<#else>None</#if>
     </#list>
 </#if>
 
@@ -32,7 +32,7 @@ class ${name}():
 
     @classmethod
     def fromFields(cls<#if constructorParamList?has_content>, ${constructorParamList}</#if><#rt>
-                   <#lt><#list fieldList as field>, <@field_argument_name field/></#list>)
+                   <#lt><#list fieldList as field>, <@field_argument_name field/></#list>):
         instance = cls(${constructorParamList})
     <#list fieldList as field>
         instance.<@field_member_name field/> = <@field_argument_name field/>
@@ -53,13 +53,14 @@ ${I}<#rt>
 </#macro>
     def __eq__(self, other):
 <#if compoundParametersData.list?has_content || fieldList?has_content>
+        <#assign eqHasParenthesis = (compoundParametersData.list?size  + fieldList?size) gt 1/>
         if isinstance(other, ${name}):
-            return (<#rt>
+            return <#if eqHasParenthesis>(</#if><#rt>
     <#if compoundParametersData.list?has_content>
-                    <#lt><@compound_compare_parameters compoundParametersData, 5/><#if fieldList?has_content> and</#if>
-                    <@structure_compare_fields fieldList, 5/>)
-    <#else>
-                    <#lt><@structure_compare_fields fieldList, 5/>)
+                    <#lt><@compound_compare_parameters compoundParametersData, 5/><#if fieldList?has_content> and<#else><#if eqHasParenthesis>)</#if></#if>
+    </#if>
+    <#if fieldList?has_content>
+                    <#if !compoundParametersData.list?has_content><#lt></#if><@structure_compare_fields fieldList, 5/><#if eqHasParenthesis>)</#if>
     </#if>
 
         return False
@@ -77,7 +78,7 @@ ${I}<#rt>
         return result
 <#list compoundParametersData.list as parameter>
 
-    def ${parameter.getterName}(self): 
+    def ${parameter.getterName}(self):
         <@compound_parameter_accessor parameter/>
 </#list>
 <#list fieldList as field>
@@ -100,35 +101,47 @@ ${I}<#rt>
     </#if>
 </#list>
 
-    def bitSizeOf(self, bitPosition=0):
+    def bitSizeOf(self, <#if !fieldList?has_content>_</#if>bitPosition=0):
+<#if fieldList?has_content>
         endBitPosition = bitPosition
-<#list fieldList as field>
+    <#list fieldList as field>
         <@compound_bitsizeof_field field, 2/>
-</#list>
+    </#list>
 
         return endBitPosition - bitPosition
+<#else>
+        return 0
+</#if>
 <#if withWriterCode>
 
     def initializeOffsets(self, bitPosition):
+    <#if fieldList?has_content>
         endBitPosition = bitPosition
         <#list fieldList as field>
         <@compound_initialize_offsets_field field, 2/>
         </#list>
 
         return endBitPosition
+    <#else>
+        return bitPosition
+    </#if>
 </#if>
 
-    def read(self, reader):
-<#list fieldList as field>
+    def read(self, <#if !fieldList?has_content>_</#if>reader):
+<#if fieldList?has_content>
+    <#list fieldList as field>
         <@compound_read_field field, name, 2/>
-</#list>
+    </#list>
     <#if hasFieldWithConstraint>
 
-        _checkConstraints()
+        _checkConstraints() <#-- this could be done immediatelly after field reading -->
     </#if>
+<#else>
+        pass
+</#if>
 <#if withWriterCode>
 
-    def write(self, writer, *, callInitializeOffsets=True):
+    def write(self, <#if !fieldList?has_content>_</#if>writer, *, <#if !hasFieldWithOffset>_</#if>callInitializeOffsets=True):
     <#if fieldList?has_content>
         <#if hasFieldWithOffset>
         if callInitializeOffsets:
@@ -143,6 +156,8 @@ ${I}<#rt>
         <#list fieldList as field>
         <@compound_write_field field, name, 2/>
         </#list>
+    <#else>
+        pass
     </#if>
 </#if>
 <#if hasFieldWithConstraint>
