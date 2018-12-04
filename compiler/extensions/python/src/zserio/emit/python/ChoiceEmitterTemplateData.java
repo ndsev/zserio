@@ -104,7 +104,7 @@ public class ChoiceEmitterTemplateData extends CompoundTypeTemplateData
                 ExpressionFormatter expressionFormatter) throws ZserioEmitException
         {
             final Field fieldType = choiceDefault.getField();
-            compoundField = (fieldType == null) ?
+            compoundField = (fieldType != null) ?
                     new CompoundFieldTemplateData(pythonNativeTypeMapper, withRangeCheckCode,
                             fieldType, expressionFormatter) : null;
         }
