@@ -134,7 +134,7 @@ ${I}<#rt>
     </#list>
     <#if hasFieldWithConstraint>
 
-        _checkConstraints() <#-- this could be done immediatelly after field reading -->
+        _checkConstraints() <#-- this could be done immediately after field reading -->
     </#if>
 <#else>
         pass

@@ -5,8 +5,8 @@
 <@file_header generatorDescription/>
 <@all_imports packageImports typeImports/>
 
-class ${name}:
 <#assign constructorParamList><@compound_constructor_parameters compoundParametersData/></#assign>
+class ${name}:
     def __init__(self<#if constructorParamList?has_content>, ${constructorParamList}</#if>):
         <@compound_constructor_parameter_assignments compoundParametersData/>
         self._choiceTag = CHOICE_TAG_UNDEFINED
@@ -40,7 +40,7 @@ class ${name}:
         return result
 <#list compoundParametersData.list as parameter>
 
-    def ${parameter.getterName}(self): 
+    def ${parameter.getterName}(self):
         <@compound_parameter_accessor parameter/>
 </#list>
 <#list fieldList as field>
@@ -51,7 +51,7 @@ class ${name}:
                                                 "choiceTag " + self._choiceTag + " != " +
                                                 <@choice_tag_name field/> + "!")
 
-        return self._choice
+        return self._choice<#if field.array??>.getRawArray()</#if>
     <#if withWriterCode>
 
     def ${field.setterName}(self, <@field_argument_name field/>):
@@ -99,7 +99,7 @@ class ${name}:
         else:
             raise zserio.PythonRuntimeException("No match in union ${name}!")
 
-        return endBitPosition 
+        return endBitPosition
     <#else>
         return bitPosition
     </#if>
