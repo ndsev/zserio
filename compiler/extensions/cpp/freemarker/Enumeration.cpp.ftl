@@ -21,10 +21,12 @@
 <@user_includes cppUserIncludes, false/>
 
 <@namespace_begin package.path/>
+<#if withWriterCode>
 
 ${name}::${name}() : m_value(static_cast<e_${name}>(0))
 {
 }
+</#if>
 
 ${name}::${name}(e_${name} value) : m_value(value)
 {
@@ -60,11 +62,13 @@ size_t ${name}::bitSizeOf(size_t) const
     return zserio::getBitSizeOf${runtimeFunction.suffix}(m_value);
 </#if>
 }
+<#if withWriterCode>
 
 size_t ${name}::initializeOffsets(size_t _bitPosition) const
 {
     return _bitPosition + bitSizeOf(_bitPosition);
 }
+</#if>
 
 bool ${name}::operator==(const ${name}& other) const
 {
@@ -104,6 +108,7 @@ void ${name}::read(const zserio::BlobInspectorTree& _tree)
     m_value = _readEnum;
 }
 </#if>
+<#if withWriterCode>
 
 void ${name}::write(zserio::BitStreamWriter& _out, zserio::PreWriteAction) const
 {
@@ -111,7 +116,7 @@ void ${name}::write(zserio::BitStreamWriter& _out, zserio::PreWriteAction) const
             <#lt><@instantiate_template "static_cast", baseCppTypeName/>(m_value)<#rt>
             <#lt><#if runtimeFunction.arg??>, ${runtimeFunction.arg}</#if>);
 }
-<#if withInspectorCode>
+    <#if withInspectorCode>
 
 void ${name}::write(zserio::BitStreamWriter& _out, zserio::BlobInspectorTree& _tree,
         zserio::PreWriteAction _preWriteAction) const
@@ -124,6 +129,7 @@ void ${name}::write(zserio::BitStreamWriter& _out, zserio::BlobInspectorTree& _t
     write(_out, _preWriteAction);
     _node.setZserioDescriptor(_startBitPosition, _out.getBitPosition());
 }
+    </#if>
 </#if>
 
 const char* ${name}::toString() const

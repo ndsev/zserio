@@ -35,7 +35,7 @@
 <@class_header generatorDescription/>
 public class ${name} implements <#if withWriterCode>InitializeOffsetsWriter, </#if>SizeOf
 {
-<@compound_constructors compoundConstructorsData/>
+    <@compound_constructors compoundConstructorsData/>
     @Override
     public int bitSizeOf() throws ZserioError
     {

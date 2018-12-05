@@ -9,6 +9,13 @@ namespace without_writer_code
 class WithoutWriterCode : public ::testing::Test
 {
 protected:
+    bool isMethodInTypePresent(const char* typeName, const char* methodName)
+    {
+        const std::string filePath = std::string(PATH) + typeName;
+        return (isMethodInFilePresent((filePath + ".cpp").c_str(), methodName) ||
+                isMethodInFilePresent((filePath + ".h").c_str(), methodName));
+    }
+
     bool isMethodInFilePresent(const char* fileName, const char* methodName)
     {
         std::ifstream file(fileName);
@@ -27,68 +34,53 @@ protected:
         return isPresent;
     }
 
-    bool isWriteMethodInCompoundPresent(const char* fileName)
+    bool isWriteMethodInUserTypePresent(const char* typeName)
     {
-        return (isMethodInFilePresent(fileName, "initializeOffsets(") ||
-                isMethodInFilePresent(fileName, "write("));
+        return (isMethodInTypePresent(typeName, "initializeOffsets(") ||
+                isMethodInTypePresent(typeName, "write("));
     }
 
-    bool isWriteMethodInSqlTablePresent(const char* fileName)
+    bool isWriteMethodInSqlTablePresent(const char* typeName)
     {
-        return (isMethodInFilePresent(fileName, "createTable(") ||
-                isMethodInFilePresent(fileName, "createOrdinaryRowIdTable(") ||
-                isMethodInFilePresent(fileName, "deleteTable(") ||
-                isMethodInFilePresent(fileName, "write(") ||
-                isMethodInFilePresent(fileName, "update(") ||
-                isMethodInFilePresent(fileName, "writeRow(") ||
-                isMethodInFilePresent(fileName, "appendCreateTableToQuery("));
+        return (isMethodInTypePresent(typeName, "createTable(") ||
+                isMethodInTypePresent(typeName, "createOrdinaryRowIdTable(") ||
+                isMethodInTypePresent(typeName, "deleteTable(") ||
+                isMethodInTypePresent(typeName, "write(") ||
+                isMethodInTypePresent(typeName, "update(") ||
+                isMethodInTypePresent(typeName, "writeRow(") ||
+                isMethodInTypePresent(typeName, "appendCreateTableToQuery("));
     }
 
-    bool isWriteMethodInSqlDatabasePresent(const char* fileName)
+    bool isWriteMethodInSqlDatabasePresent(const char* typeName)
     {
-        return (isMethodInFilePresent(fileName, "createSchema(") ||
-                isMethodInFilePresent(fileName, "deleteSchema("));
+        return (isMethodInTypePresent(typeName, "createSchema(") ||
+                isMethodInTypePresent(typeName, "deleteSchema("));
     }
+
+    static const char* PATH;
 };
 
-TEST_F(WithoutWriterCode, checkCompoundTypes)
+const char* WithoutWriterCode::PATH = "arguments/without_writer_code/gen/without_writer_code/";
+
+TEST_F(WithoutWriterCode, checkUserTypes)
 {
-    ASSERT_FALSE(isWriteMethodInCompoundPresent(
-            "arguments/without_writer_code/gen/without_writer_code/Item.cpp"));
-    ASSERT_FALSE(isWriteMethodInCompoundPresent(
-            "arguments/without_writer_code/gen/without_writer_code/Item.h"));
-    ASSERT_FALSE(isWriteMethodInCompoundPresent(
-            "arguments/without_writer_code/gen/without_writer_code/ItemChoice.cpp"));
-    ASSERT_FALSE(isWriteMethodInCompoundPresent(
-            "arguments/without_writer_code/gen/without_writer_code/ItemChoice.h"));
-    ASSERT_FALSE(isWriteMethodInCompoundPresent(
-            "arguments/without_writer_code/gen/without_writer_code/ItemChoiceHolder.cpp"));
-    ASSERT_FALSE(isWriteMethodInCompoundPresent(
-            "arguments/without_writer_code/gen/without_writer_code/ItemChoiceHolder.h"));
-    ASSERT_FALSE(isWriteMethodInCompoundPresent(
-            "arguments/without_writer_code/gen/without_writer_code/Tile.cpp"));
-    ASSERT_FALSE(isWriteMethodInCompoundPresent(
-            "arguments/without_writer_code/gen/without_writer_code/Tile.h"));
+    ASSERT_FALSE(isWriteMethodInUserTypePresent("Item"));
+    ASSERT_FALSE(isWriteMethodInUserTypePresent("ItemChoice"));
+    ASSERT_FALSE(isWriteMethodInUserTypePresent("ItemChoiceHolder"));
+    ASSERT_FALSE(isWriteMethodInUserTypePresent("Tile"));
+    ASSERT_FALSE(isWriteMethodInUserTypePresent("ElementsUnion"));
+    ASSERT_FALSE(isWriteMethodInUserTypePresent("TypeEnum"));
 }
 
 TEST_F(WithoutWriterCode, checkSqlTableTypes)
 {
-    ASSERT_FALSE(isWriteMethodInSqlTablePresent(
-            "arguments/without_writer_code/gen/without_writer_code/GeoMapTable.cpp"));
-    ASSERT_FALSE(isWriteMethodInSqlTablePresent(
-            "arguments/without_writer_code/gen/without_writer_code/GeoMapTable.h"));
+    ASSERT_FALSE(isWriteMethodInSqlTablePresent("GeoMapTable"));
 }
 
 TEST_F(WithoutWriterCode, checkSqlDatabaseTypes)
 {
-    ASSERT_FALSE(isWriteMethodInSqlDatabasePresent(
-            "arguments/without_writer_code/gen/without_writer_code/WorldDb.cpp"));
-    ASSERT_FALSE(isWriteMethodInSqlDatabasePresent(
-            "arguments/without_writer_code/gen/without_writer_code/WorldDb.h"));
-    ASSERT_FALSE(isWriteMethodInSqlDatabasePresent(
-            "arguments/without_writer_code/gen/without_writer_code/MasterDatabase.cpp"));
-    ASSERT_FALSE(isWriteMethodInSqlDatabasePresent(
-            "arguments/without_writer_code/gen/without_writer_code/MasterDatabase.h"));
+    ASSERT_FALSE(isWriteMethodInSqlDatabasePresent("WorldDb"));
+    ASSERT_FALSE(isWriteMethodInSqlDatabasePresent("MasterDatabase"));
 }
 
 } // namespace without_writer_code
