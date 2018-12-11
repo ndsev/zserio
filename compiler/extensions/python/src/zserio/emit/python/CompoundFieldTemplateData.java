@@ -1,11 +1,15 @@
 package zserio.emit.python;
 
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
 
 import zserio.ast.ArrayType;
 import zserio.ast.BitFieldType;
+import zserio.ast.BooleanType;
 import zserio.ast.CompoundType;
+import zserio.ast.IntegerType;
+import zserio.ast.StdIntegerType;
 import zserio.ast.ZserioType;
 import zserio.ast.Expression;
 import zserio.ast.Field;
@@ -32,8 +36,7 @@ public final class CompoundFieldTemplateData
         getterName = AccessorNameFormatter.getGetterName(fieldType);
         setterName = AccessorNameFormatter.getSetterName(fieldType);
 
-        /* TODO
-        rangeCheckData = new RangeCheckTemplateData(); */
+        rangeCheck = createRangeCheck(baseType, withRangeCheckCode, pythonExpressionFormatter);
         optional = createOptional(fieldType, pythonExpressionFormatter);
 
         alignmentValue = createAlignmentValue(fieldType, pythonExpressionFormatter);
@@ -67,11 +70,10 @@ public final class CompoundFieldTemplateData
         return setterName;
     }
 
-    /* TODO
-    public RangeCheckTemplateData getRangeCheckData()
+    public RangeCheck getRangeCheck()
     {
-        return rangeCheckData;
-    }*/
+        return rangeCheck;
+    }
 
     public Optional getOptional()
     {
@@ -116,6 +118,65 @@ public final class CompoundFieldTemplateData
     public Compound getCompound()
     {
         return compound;
+    }
+
+    public static class RangeCheck
+    {
+        public RangeCheck(BitFieldWithExpression bitFieldWithExpression, String lowerBound, String upperBound)
+        {
+            this.bitFieldWithExpression = bitFieldWithExpression;
+            this.lowerBound = lowerBound;
+            this.upperBound = upperBound;
+        }
+
+        public BitFieldWithExpression getBitFieldWithExpression()
+        {
+            return bitFieldWithExpression;
+        }
+
+        public String getLowerBound()
+        {
+            return lowerBound;
+        }
+
+        public String getUpperBound()
+        {
+            return upperBound;
+        }
+
+        private final BitFieldWithExpression bitFieldWithExpression;
+        private final String lowerBound;
+        private final String upperBound;
+    }
+
+    public static class BitFieldWithExpression
+    {
+        public BitFieldWithExpression(BitFieldType bitFieldType,
+                ExpressionFormatter pythonExpressionFormatter) throws ZserioEmitException
+        {
+            lengthExpression = createBitFieldLengthExpression(bitFieldType, pythonExpressionFormatter);
+            isSigned = bitFieldType.isSigned();
+        }
+
+        public String getLengthExpression()
+        {
+            return lengthExpression;
+        }
+
+        public boolean getIsSigned()
+        {
+            return isSigned;
+        }
+
+        private static String createBitFieldLengthExpression(BitFieldType bitFieldType,
+                ExpressionFormatter pythonExpressionFormatter) throws ZserioEmitException
+        {
+            final Expression lengthExpression = bitFieldType.getLengthExpression();
+            return pythonExpressionFormatter.formatGetter(lengthExpression);
+        }
+
+        private final String lengthExpression;
+        private final boolean isSigned;
     }
 
     public static class Optional
@@ -337,6 +398,39 @@ public final class CompoundFieldTemplateData
         final List<InstantiatedParameterData> instantiatedParameters;
     }
 
+    private static RangeCheck createRangeCheck(ZserioType type, boolean withRangeCheckCode,
+            ExpressionFormatter pythonExpressionFormatter) throws ZserioEmitException
+    {
+        // don't do range check for non-integer type
+        if (!withRangeCheckCode || !(type instanceof IntegerType))
+            return null;
+
+        final IntegerType integerType = (IntegerType)type;
+        final BitFieldWithExpression bitFieldWithExpression = createBitFieldWithExpression(type,
+                pythonExpressionFormatter);
+
+        final BigInteger zserioLowerBound = integerType.getLowerBound();
+        final String lowerBound = PythonLiteralFormatter.formatDecimalLiteral(zserioLowerBound);
+
+        final BigInteger zserioUpperBound = integerType.getUpperBound();
+        final String upperBound = PythonLiteralFormatter.formatDecimalLiteral(zserioUpperBound);
+
+        return new RangeCheck(bitFieldWithExpression, lowerBound, upperBound);
+    }
+
+    private static BitFieldWithExpression createBitFieldWithExpression(ZserioType type,
+            ExpressionFormatter pythonExpressionFormatter) throws ZserioEmitException
+    {
+        if (type instanceof BitFieldType)
+        {
+            final BitFieldType bitFieldType = (BitFieldType)type;
+            if (bitFieldType.getBitSize() == null)
+                return new BitFieldWithExpression(bitFieldType, pythonExpressionFormatter);
+        }
+
+        return null;
+    }
+
     private static Optional createOptional(Field fieldType, ExpressionFormatter pythonExpressionFormatter)
             throws ZserioEmitException
     {
@@ -420,7 +514,7 @@ public final class CompoundFieldTemplateData
     private final String getterName;
     private final String setterName;
 
-    //TODO private final RangeCheckTemplateData rangeCheckData;
+    private final RangeCheck rangeCheck;
     private final Optional optional;
 
     private final String alignmentValue;

@@ -81,7 +81,8 @@ ${I}if reader.readBool():
 ${I}reader.alignTo(${field.alignmentValue})
     </#if>
     <#if field.offset?? && !field.offset.containsIndex>
-        <@compound_read_field_offset_check field, compoundName, indent/>
+${I}reader.alignTo(8)
+        <@compound_check_offset_field field, compoundName, "reader.getBitPosition()", indent/>
     </#if>
     <#local fieldMemberName><@field_member_name field/></#local>
     <#if field.array??>
@@ -93,14 +94,7 @@ ${I}self.${fieldMemberName} = reader.read${field.runtimeFunction.suffix}(${field
 ${I}self.${fieldMemberName} = ${field.pythonTypeName}.fromReader(reader<#rt>
         <#lt><#if fromReaderArguments?has_content>, ${fromReaderArguments}</#if>)
     </#if>
-</#macro>
-
-<#macro compound_read_field_offset_check field compoundName indent>
-    <#local I>${""?left_pad(indent * 4)}</#local>
-${I}reader.alignTo(8)
-${I}if reader.getBitPosition() != zserio.bitposition.bytesToBits(${field.offset.getter}):
-${I}    raise PythonRuntimeException("Read: Wrong offset for field ${compoundName}.${field.name}: %d != %d!" %
-${I}                                 (reader.getBitPosition(), zserio.bitposition.bytesToBits(${field.offset.getter}))
+    <@compound_check_constraint_field field, compoundName, indent/>
 </#macro>
 
 <#macro array_field_traits_parameters field>
@@ -162,37 +156,63 @@ ${I}    writer.writeBool(false)
 ${I}writer.alignTo(${field.alignmentValue})
     </#if>
     <#if field.offset?? && !field.offset.containsIndex>
-        <@compound_write_field_offset_check field, compoundName, indent/>
+${I}writer.alignTo(8)
+        <@compound_check_offset_field field, compoundName, "writer.getBitPosition()", indent/>
     </#if>
+    <@compound_check_constraint_field field, compoundName, indent/>
+    <@compound_check_array_length_field field, compoundName, indent/>
+    <@compound_check_range_field field, compoundName, indent/>
     <#if field.runtimeFunction??>
 ${I}writer.write${field.runtimeFunction.suffix}(self.${field.getterName}()<#if field.runtimeFunction.arg??>, ${field.runtimeFunction.arg}</#if>)
     <#else>
-        <#if field.array??>
-            <#if field.array.length??>
-${I}if self.${field.getterName}().length() != ${field.array.length}:
-${I}    raise PythonRuntimeException("Write: Wrong array length for field ${compoundName}.${field.name}: %d != %d!" %
-${I}                                (self.${field.getterName}().length(), ${field.array.length})
-            </#if>
-${I}self.${field.getterName}().write(writer)
-        <#else><#-- enum or compound TODO: Enum does NOT have callInitializeOffsets! -->
-${I}self.${field.getterName}().write(writer, callInitializeOffsets=False)
-        </#if>
+${I}self.${field.getterName}().write(writer<#if field.compound??>, callInitializeOffsets=False</#if>)
     </#if>
 </#macro>
 
-<#macro compound_write_field_offset_check field compoundName indent>
+<#macro compound_check_offset_field field compoundName bitPositionName indent>
     <#local I>${""?left_pad(indent * 4)}</#local>
-${I}writer.alignTo(8)
-${I}if writer.getBitPosition() != zserio.bitposition.bytesToBits(${field.offset.getter}):
-${I}    raise PythonRuntimeException("Write: Wrong offset for field ${compoundName}.${field.name}: %d != %d!" %
-${I}                                 (writer.getBitPosition(), zserio.bitposition.bytesToBits(${field.offset.getter}))
+    <#if field.offset??>
+${I}# check offset
+${I}if ${bitPositionName} != zserio.bitposition.bytesToBits(${field.offset.getter}):
+${I}    raise PythonRuntimeException("Wrong offset for field ${compoundName}.${field.name}: %d != %d!" %
+${I}                                 (${bitPositionName}, zserio.bitposition.bytesToBits(${field.offset.getter}))
+    </#if>
 </#macro>
 
 <#macro compound_check_constraint_field field compoundName indent>
     <#local I>${""?left_pad(indent * 4)}</#local>
     <#if field.constraint??>
+${I}# check constraint
 ${I}if <#if field.optional??>(self.${field.optional.indicatorName}()) && </#if>!(${field.constraint}):
-${I}    raise PythonRuntimeException("Constraint violated at ${compoundName}.${field.name}!");
+${I}    raise PythonRuntimeException("Constraint violated for field ${compoundName}.${field.name}!")
+    </#if>
+</#macro>
+
+<#macro compound_check_array_length_field field compoundName indent>
+    <#local I>${""?left_pad(indent * 4)}</#local>
+    <#if field.array?? && field.array.length??> 
+${I}# check array length
+${I}if self.${field.getterName}().length() != ${field.array.length}:
+${I}    raise PythonRuntimeException("Wrong array length for field ${compoundName}.${field.name}: %d != %d!" %
+${I}                                (self.${field.getterName}().length(), ${field.array.length})
+    </#if>
+</#macro>
+
+<#macro compound_check_range_field field compoundName indent>
+    <#local I>${""?left_pad(indent * 4)}</#local>
+    <#if field.rangeCheck??>
+${I}# check range
+        <#if rangeCheck.bitFieldWithExpression??>
+${I}length = ${rangeCheck.bitFieldWithExpression.lengthExpression}
+${I}lowerBound = zserio.get<#if rangeCheck.bitFieldWithExpression.isSigned>Signed</#if>BitFieldLowerBound(length)
+${I}upperBound = zserio.get<#if rangeCheck.bitFieldWithExpression.isSigned>Signed</#if>BitFieldUpperBound(length)
+        <#else>
+${I}lowerBound = ${rangeCheck.lowerBound}
+${I}upperBound = ${rangeCheck.upperBound}
+        </#if>
+${I}if self.${field.getterName}() < lowerBound or self.${field.getterName}() > upperBound):
+${I}    raise PythonRuntimeException("Value %d for field ${compoundName}.${field.name} is out range: <%d, %d>!" %
+${I}                                (self.${field.getterName}(), lowerBound, upperBound)
     </#if>
 </#macro>
 
@@ -203,10 +223,8 @@ ${I}    raise PythonRuntimeException("Constraint violated at ${compoundName}.${f
 <#macro define_offset_checker compoundName field>
     <#if field.array?? && field.offset?? && field.offset.containsIndex>
 
-    def <@offset_checker_name field/>(index, byteOffset):
-        if byteOffset != ${field.offset.getter}:
-            raise PythonRuntimeException("Wrong offset for field ${compoundName}.${field.name}: %d != %d!" %
-                                        (byteOffset, ${field.offset.getter})
+    def <@offset_checker_name field/>(index, bitOffset):
+        <@macro compound_check_offset_field field, compoundName, "bitOffset", 2/>
     </#if>
 </#macro>
 
@@ -217,8 +235,8 @@ ${I}    raise PythonRuntimeException("Constraint violated at ${compoundName}.${f
 <#macro define_offset_setter field>
     <#if field.array?? && field.offset?? && field.offset.containsIndex>
 
-    def <@offset_setter_name field/>(index, byteOffset):
-        value = byteOffset
+    def <@offset_setter_name field/>(index, bitOffset):
+        value = zserio.bitPosition.bitsToBytes(bitOffset)
         ${field.offset.setter}
     </#if>
 </#macro>
@@ -251,3 +269,29 @@ ${field.name}_<#rt>
 <#macro choice_tag_name field>
     CHOICE_${field.name}<#t>
 </#macro>
+
+<#function has_field_any_read_check_code field compoundName indent>
+    <#local checkCode>
+        <@compound_check_offset_field field, compoundName, "reader.getBitPosition()", indent/>
+        <@compound_check_constraint_field field, compoundName, indent/>
+    </#local>
+    <#if checkCode == "">
+        <#return false>
+    </#if>
+
+    <#return true>
+</#function>
+
+<#function has_field_any_write_check_code field compoundName indent>
+    <#local checkCode>
+        <@compound_check_offset_field field, compoundName, "writer.getBitPosition()", indent/>
+        <@compound_check_constraint_field field, compoundName, indent/>
+        <@compound_check_array_length_field field, compoundName, indent/>
+        <@compound_check_range_field field, compoundName, indent/>
+    </#local>
+    <#if checkCode == "">
+        <#return false>
+    </#if>
+
+    <#return true>
+</#function>

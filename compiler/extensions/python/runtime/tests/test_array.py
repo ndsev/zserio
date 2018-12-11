@@ -249,7 +249,7 @@ class ArrayTest(unittest.TestCase):
         self.assertEqual(expectedAlignedBitSize, alignedArray.bitSizeOf(0))
 
     def _testInitializeOffsets(self, arrayTraits, arrayValues, expectedBitSize, expectedAlignedBitSize):
-        def _setOffsetMethod(_index, _byteOffset):
+        def _setOffsetMethod(_index, _bitOffset):
             pass
 
         array = Array(arrayTraits, arrayValues)
@@ -266,7 +266,7 @@ class ArrayTest(unittest.TestCase):
         self.assertEqual(0 + expectedAlignedBitSize, alignedArray.initializeOffsets(0))
 
     def _testRead(self, arrayTraits, arrayValues):
-        def _checkOffsetMethod(_index, _byteOffset):
+        def _checkOffsetMethod(_index, _bitOffset):
             pass
 
         array = Array(arrayTraits, arrayValues)
@@ -307,7 +307,7 @@ class ArrayTest(unittest.TestCase):
             self.assertEqual(implicitRawArrayElement, emptyImplicitRawArray[index])
 
     def _testWrite(self, arrayTraits, arrayValues, expectedBitSize, expectedAlignedBitSize):
-        def _checkOffsetMethod(_index, _byteOffset):
+        def _checkOffsetMethod(_index, _bitOffset):
             pass
 
         array = Array(arrayTraits, arrayValues)

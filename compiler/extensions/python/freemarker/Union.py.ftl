@@ -112,7 +112,6 @@ class ${name}:
     <#list fieldList as field>
         <#if field?is_first>if <#else>elif </#if>self._choiceTag == <@choice_tag_name field/>:
             <@compound_read_field field, name, 3/>
-            <@compound_check_constraint_field field, name, 3/>
     </#list>
         else:
             raise zserio.PythonRuntimeException("No match in union ${name}!")
@@ -121,7 +120,6 @@ class ${name}:
 
     def write(self, <#if fieldList?has_content>_</#if>writer, *, <#if fieldList?has_content>_</#if>callInitializeOffsets=True):
     <#if fieldList?has_content>
-<#-- TODO range check is missing      <@range_check field.rangeCheckData, name/> -->
         <#if hasFieldWithOffset>
         if callInitializeOffests:
             initializeOffsets(writer.getBitPosition())
@@ -131,7 +129,6 @@ class ${name}:
 
         <#list fieldList as field>
         <#if field?is_first>if <#else>elif </#if>self._choiceTag == <@choice_tag_name field/>:
-            <@compound_check_constraint_field field, name, 3/>
             <@compound_write_field field, name, 3/>
         </#list>
         else:

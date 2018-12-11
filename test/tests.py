@@ -85,7 +85,7 @@ def main():
         return pylintResult
 
     print("Running pylint on generated api.py files.")
-    pylintResult = _runPylint(apiFiles, pylintOptions, "missing-docstring,unused-import")
+    pylintResult = _runPylint(apiFiles, pylintOptions, "missing-docstring,unused-import,line-too-long")
 
     return pylintResult
 

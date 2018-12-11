@@ -122,7 +122,6 @@ class ${name}:
 <#macro choice_read_member member indent>
     <#if member.compoundField??>
         <@compound_read_field member.compoundField, name, indent/>
-        <@compound_check_constraint_field member.compoundField, name, indent/>
     <#else>
         <#local I>${""?left_pad(indent * 4)}</#local>
         <#lt>${I}pass
@@ -138,7 +137,6 @@ class ${name}:
 
     <#macro choice_write_member member indent>
         <#if member.compoundField??>
-            <@compound_check_constraint_field member.compoundField, name, indent/>
             <@compound_write_field member.compoundField, name, indent/>
         <#else>
             <#local I>${""?left_pad(indent * 4)}</#local>

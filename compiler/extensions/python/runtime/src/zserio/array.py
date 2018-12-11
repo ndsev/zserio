@@ -2,7 +2,7 @@
 The module implements abstraction for arrays used by Zserio python extension.
 """
 
-from zserio.bitposition import (alignToByte, bitsToBytes)
+from zserio.bitposition import (alignToByte)
 from zserio.bitsizeof import (getBitSizeOfVarUInt16, getBitSizeOfVarUInt32,
                               getBitSizeOfVarUInt64, getBitSizeOfVarUInt,
                               getBitSizeOfVarInt16, getBitSizeOfVarInt32,
@@ -142,7 +142,7 @@ class Array():
         for index in range(size):
             if self._setOffsetMethod is not None:
                 endBitPosition = alignToByte(endBitPosition)
-                self._setOffsetMethod(index, bitsToBytes(endBitPosition))
+                self._setOffsetMethod(index, endBitPosition)
             endBitPosition = self._arrayTraits.initializeOffsets(endBitPosition, self._rawArray[index])
 
         return endBitPosition
@@ -175,7 +175,7 @@ class Array():
             for index in range(size):
                 if self._checkOffsetMethod is not None:
                     reader.alignTo(8)
-                    self._checkOffsetMethod(index, bitsToBytes(reader.getBitPosition()))
+                    self._checkOffsetMethod(index, reader.getBitPosition())
                 self._rawArray.append(self._arrayTraits.read(reader, index))
 
     def write(self, writer):
@@ -192,7 +192,7 @@ class Array():
         for index in range(size):
             if self._checkOffsetMethod is not None:
                 writer.alignTo(8)
-                self._checkOffsetMethod(index, bitsToBytes(writer.getBitPosition()))
+                self._checkOffsetMethod(index, writer.getBitPosition())
             self._arrayTraits.write(writer, self._rawArray[index])
 
 class BitFieldArrayTraits():

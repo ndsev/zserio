@@ -5,13 +5,6 @@
 <@file_header generatorDescription/>
 <@all_imports packageImports typeImports/>
 
-<#assign hasFieldWithConstraint=false/>
-<#list fieldList as field>
-    <#if field.constraint??>
-        <#assign hasFieldWithConstraint=true/>
-        <#break>
-    </#if>
-</#list>
 class ${name}():
 <#assign constructorParamList><@compound_constructor_parameters compoundParametersData/></#assign>
 <#if constructorParamList?has_content || fieldList?has_content>
@@ -57,10 +50,11 @@ ${I}<#rt>
         if isinstance(other, ${name}):
             return <#if eqHasParenthesis>(</#if><#rt>
     <#if compoundParametersData.list?has_content>
-                    <#lt><@compound_compare_parameters compoundParametersData, 5/><#if fieldList?has_content> and<#else><#if eqHasParenthesis>)</#if></#if>
+                    <#lt><@compound_compare_parameters compoundParametersData, 5/><#if fieldList?has_content> and<#elseif eqHasParenthesis>)</#if>
     </#if>
     <#if fieldList?has_content>
-                    <#if !compoundParametersData.list?has_content><#lt></#if><@structure_compare_fields fieldList, 5/><#if eqHasParenthesis>)</#if>
+                    <#if compoundParametersData.list?has_content>                    </#if><#t>
+                    <#lt><@structure_compare_fields fieldList, 5/><#if eqHasParenthesis>)</#if>
     </#if>
 
         return False
@@ -118,7 +112,7 @@ ${I}<#rt>
     <#if fieldList?has_content>
         endBitPosition = bitPosition
         <#list fieldList as field>
-        <@compound_initialize_offsets_field field, 2/>
+            <@compound_initialize_offsets_field field, 2/>
         </#list>
 
         return endBitPosition
@@ -127,20 +121,33 @@ ${I}<#rt>
     </#if>
 </#if>
 
+<#assign needsReadNewLines=false/>
+<#list fieldList as field>
+    <#if has_field_any_read_check_code(field, name, 2)>
+        <#assign needsReadNewLines=true/>
+        <#break>
+    </#if>
+</#list>
     def read(self, <#if !fieldList?has_content>_</#if>reader):
 <#if fieldList?has_content>
     <#list fieldList as field>
         <@compound_read_field field, name, 2/>
-    </#list>
-    <#if hasFieldWithConstraint>
+        <#if field?has_next && needsReadNewLines>
 
-        _checkConstraints() <#-- this could be done immediately after field reading -->
-    </#if>
+        </#if>
+    </#list>
 <#else>
         pass
 </#if>
 <#if withWriterCode>
 
+    <#assign needsWriteNewLines=false/>
+    <#list fieldList as field>
+        <#if has_field_any_write_check_code(field, name, 2)>
+            <#assign needsWriteNewLines=true/>
+            <#break>
+        </#if>
+    </#list>
     def write(self, <#if !fieldList?has_content>_</#if>writer, *, <#if !hasFieldWithOffset>_</#if>callInitializeOffsets=True):
     <#if fieldList?has_content>
         <#if hasFieldWithOffset>
@@ -148,24 +155,15 @@ ${I}<#rt>
             initializeOffsets(writer.getBitPosition())
 
         </#if>
-        <#if hasFieldWithConstraint>
-        _checkConstraints()
-
-        </#if>
-        <#-- TODO range check is missing      <@range_check field.rangeCheckData, name/> -->
         <#list fieldList as field>
-        <@compound_write_field field, name, 2/>
+            <@compound_write_field field, name, 2/>
+            <#if field?has_next && needsWriteNewLines>
+
+            </#if>
         </#list>
     <#else>
         pass
     </#if>
-</#if>
-<#if hasFieldWithConstraint>
-
-    def _checkConstraints(self):
-    <#list fieldList as field>
-        <@compound_check_constraint_field field, name, 2/>
-    </#list>
 </#if>
 <#list fieldList as field>
     <@define_offset_checker name, field/>
