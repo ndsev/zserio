@@ -340,13 +340,11 @@ public class BitSizeOfCalculator
         long size = 0;
         try
         {
-            if (str != null)
-            {
-                size = str.getBytes("UTF-8").length;
-            }
+            size = str.getBytes("UTF-8").length;
         }
         catch (IOException e)
-        {}
+        {
+        }
 
         return size;
     }

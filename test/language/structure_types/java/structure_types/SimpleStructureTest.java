@@ -23,7 +23,9 @@ public class SimpleStructureTest
     public void emptyConstructor()
     {
         final SimpleStructure simpleStructure = new SimpleStructure();
-        assertEquals(SIMPLE_STRUCTURE_BIT_SIZE, simpleStructure.bitSizeOf());
+        assertEquals(0, simpleStructure.getNumberA());
+        assertEquals(0, simpleStructure.getNumberB());
+        assertEquals(0, simpleStructure.getNumberC());
     }
 
     @Test

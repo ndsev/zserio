@@ -25,7 +25,7 @@ public class EmptyStructureWithParameterTest
     }
 
     @Test
-    public void emptyConstructor()
+    public void paramConstructor()
     {
         final EmptyStructureWithParameter emptyStructureWithParameter =
                 new EmptyStructureWithParameter((short)1);
