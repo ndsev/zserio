@@ -11,10 +11,15 @@ public class NativeConstType extends JavaNativeType
         this.targetType = targetType;
     }
 
+    public JavaNativeType getTargetType()
+    {
+        return targetType;
+    }
+
     @Override
     public String getFullName()
     {
-        return JavaFullNameFormatter.getFullName(getPackageName(), CONST_CLASS_NAME, getName());
+        return JavaFullNameFormatter.getFullName(getPackageName(), getName(), getName());
     }
 
     @Override
@@ -23,17 +28,5 @@ public class NativeConstType extends JavaNativeType
         return false;
     }
 
-    public JavaNativeType getTargetType()
-    {
-        return targetType;
-    }
-
-    public static String getClassName()
-    {
-        return CONST_CLASS_NAME;
-    }
-
     private final JavaNativeType targetType;
-
-    private static final String CONST_CLASS_NAME = "__ConstType";
 }

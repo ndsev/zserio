@@ -1,88 +1,35 @@
 package zserio.emit.java;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import zserio.ast.ConstType;
-import zserio.ast.Expression;
 import zserio.emit.common.ExpressionFormatter;
 import zserio.emit.common.ZserioEmitException;
 import zserio.emit.java.types.JavaNativeType;
-import zserio.emit.java.types.NativeConstType;
 
-public final class ConstEmitterTemplateData extends JavaTemplateData
+public final class ConstEmitterTemplateData extends UserTypeTemplateData
 {
-    public ConstEmitterTemplateData(TemplateDataContext context, List<ConstType> constTypes)
-            throws ZserioEmitException
+    public ConstEmitterTemplateData(TemplateDataContext context, ConstType constType) throws ZserioEmitException
     {
-        super(context);
+        super(context, constType);
 
         final JavaNativeTypeMapper javaNativeTypeMapper = context.getJavaNativeTypeMapper();
-        packageName = context.getJavaRootPackageName();
         final ExpressionFormatter javaExpressionFormatter = context.getJavaExpressionFormatter();
-        name = NativeConstType.getClassName();
-        items = new ArrayList<ConstItemData>();
-        for (ConstType constType : constTypes)
-        {
-            final JavaNativeType nativeType = javaNativeTypeMapper.getJavaType(constType);
-            if (!(nativeType instanceof NativeConstType))
-                throw new InternalError("A const type mapped to something else than NativeConstType!");
 
-            final NativeConstType nativeConstType = (NativeConstType)nativeType;
-            items.add(new ConstItemData(constType, nativeConstType, javaExpressionFormatter));
-        }
+        final JavaNativeType nativeTargetType = javaNativeTypeMapper.getJavaType(constType.getConstType());
+        javaTypeName = nativeTargetType.getFullName();
+
+        value = javaExpressionFormatter.formatGetter(constType.getValueExpression());
     }
 
-    public String getPackageName()
+    public String getJavaTypeName()
     {
-        return packageName;
+        return javaTypeName;
     }
 
-    public String getName()
+    public String getValue()
     {
-        return name;
+        return value;
     }
 
-    public Iterable<ConstItemData> getItems()
-    {
-        return items;
-    }
-
-    public static class ConstItemData
-    {
-        public ConstItemData(ConstType constType, NativeConstType nativeConstType,
-                ExpressionFormatter javaExpressionFormatter) throws ZserioEmitException
-        {
-            name = constType.getName();
-
-            // subtype is already resolved by the native type mapper - there are not native subtypes in java
-            final JavaNativeType nativeTargetType = nativeConstType.getTargetType();
-            javaTypeName = nativeTargetType.getFullName();
-            final Expression valueExpression = constType.getValueExpression();
-            value = javaExpressionFormatter.formatGetter(valueExpression);
-        }
-
-        public String getName()
-        {
-            return name;
-        }
-
-        public String getJavaTypeName()
-        {
-            return javaTypeName;
-        }
-
-        public String getValue()
-        {
-            return value;
-        }
-
-        private final String name;
-        private final String javaTypeName;
-        private final String value;
-    }
-
-    private final String                packageName;
-    private final String                name;
-    private final List<ConstItemData>   items;
+    private final String javaTypeName;
+    private final String value;
 }

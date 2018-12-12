@@ -74,8 +74,11 @@ enum bit:4 Colors
     BLUE
 };
 
-// constant defined by enum value
+// enum constant defined by enum value
 const Colors        DEFAULT_PEN_COLOR = Colors.BLACK;
+
+// base type constant defined by enum value using valueof
+const int32         DEFAULT_PEN_COLOR_VALUE = valueof(Colors.BLACK);
 
 // constant defined by another constant
 const uint32        UINT32_FULL_MASK = UINT32_MAX_CONSTANT;

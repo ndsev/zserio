@@ -2,19 +2,14 @@
 <#include "InstantiateTemplate.inc.ftl">
 <@file_header generatorDescription/>
 
-<@include_guard_begin rootPackage.path, "ConstType"/>
+<@include_guard_begin package.path, name/>
 
 <@system_includes headerSystemIncludes, true/>
 <@user_includes headerUserIncludes, true/>
-<@namespace_begin rootPackage.path/>
+<@namespace_begin package.path/>
 
-namespace ConstType
-{
-<#list items as item>
-    const ${item.cppTypeName} ${item.name} = ${item.value};
-</#list>
-} // namespace ConstType
+const ${cppTypeName} ${name} = ${value};
 
-<@namespace_end rootPackage.path/>
+<@namespace_end package.path/>
 
-<@include_guard_end rootPackage.path, "ConstType"/>
+<@include_guard_end package.path, name/>

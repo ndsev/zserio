@@ -56,7 +56,7 @@ enum int8 Category
     ARRAY
 };
 
-const uint32 useExpression = 0;
+const uint32 USE_EXPRESSION = 0;
 
 choice TypeInfo (Category category) on category
 {
@@ -93,12 +93,12 @@ subtype int32 FieldId;
 subtype int32 TypeRef;
 
 // @todo HW: Use doc comments. Comments must precede commented item.
-// @todo HW: Does not make sense. "useExpression" is undefined. The bitfield
+// @todo HW: Does not make sense. "USE_EXPRESSION" is undefined. The bitfield
 // length is always an expression (which may be a constant Atom).
 struct BitfieldInfo
 {
     uint32        numBits;   // see Zserio Language Overview 3.2 (The length is not limited)
-    ExpressionId  exprId    if useExpression == numBits;
+    ExpressionId  exprId    if USE_EXPRESSION == numBits;
 };
 
 struct EnumInfo

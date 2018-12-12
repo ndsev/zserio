@@ -24,11 +24,6 @@ public class EnumerationEmitterTemplateData extends UserTypeTemplateData
 
         // add const type includes
         final CppNativeTypeMapper cppNativeTypeMapper = context.getCppNativeTypeMapper();
-        for (ConstType constType : enumType.getReferencedConstTypes())
-        {
-            final CppNativeType nativeType = cppNativeTypeMapper.getCppType(constType);
-            addCppIncludesForType(nativeType);
-        }
 
         final IntegerType enumBaseType = enumType.getIntegerBaseType();
         final NativeIntegralType nativeBaseType = cppNativeTypeMapper.getCppIntegralType(enumBaseType);

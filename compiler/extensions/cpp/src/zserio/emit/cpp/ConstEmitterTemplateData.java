@@ -1,81 +1,44 @@
 package zserio.emit.cpp;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import zserio.ast.ConstType;
-import zserio.ast.Expression;
 import zserio.emit.common.ExpressionFormatter;
 import zserio.emit.common.ZserioEmitException;
 import zserio.emit.cpp.types.CppNativeType;
-import zserio.emit.cpp.types.NativeConstType;
 
-public class ConstEmitterTemplateData extends CppTemplateData
+public class ConstEmitterTemplateData extends UserTypeTemplateData
 {
-    public ConstEmitterTemplateData(TemplateDataContext context, List<ConstType> constTypes)
-            throws ZserioEmitException
+    public ConstEmitterTemplateData(TemplateDataContext context, ConstType constType) throws ZserioEmitException
     {
-        super(context);
+        super(context, constType);
 
-        cppNativeTypeMapper = context.getCppNativeTypeMapper();
-        cppExpressionFormatter = context.getExpressionFormatter(this);
-        items = new ArrayList<Item>();
-        for (ConstType constType : constTypes)
-        {
-            final CppNativeType nativeType = cppNativeTypeMapper.getCppType(constType);
-            if (!(nativeType instanceof NativeConstType))
-                throw new InternalError("A const type mapped to something else than NativeConstType!");
+        final CppNativeTypeMapper cppNativeTypeMapper = context.getCppNativeTypeMapper();
+        final ExpressionFormatter cppExpressionFormatter = context.getExpressionFormatter(
+                new HeaderIncludeCollectorAdapter(this));
 
-            final NativeConstType nativeConstType = (NativeConstType)nativeType;
-            items.add(new Item(constType, nativeConstType, cppExpressionFormatter));
+        name = constType.getName();
+        CppNativeType nativeTargetType = cppNativeTypeMapper.getCppType(constType.getConstType());
+        cppTypeName = nativeTargetType.getFullName();
+        value = cppExpressionFormatter.formatGetter(constType.getValueExpression());
 
-            /*
-             * don't use nativeConstType here to avoid adding "ConstType.h" into the list here,
-             * add the target type instead
-             */
-            addHeaderIncludesForType(nativeConstType.getTargetType());
-        }
+        addHeaderIncludesForType(nativeTargetType);
     }
 
-    public Iterable<Item> getItems()
+    public String getName()
     {
-        return items;
+        return name;
     }
 
-    public static class Item
+    public String getCppTypeName()
     {
-        public Item(ConstType constType, NativeConstType nativeConstType,
-                ExpressionFormatter cppExpressionFormatter) throws ZserioEmitException
-        {
-            name = nativeConstType.getName();
-
-            final CppNativeType nativeTargetType = nativeConstType.getTargetType();
-            cppTypeName = nativeTargetType.getFullName();
-            final Expression valueExpression = constType.getValueExpression();
-            value = cppExpressionFormatter.formatGetter(valueExpression);
-        }
-
-        public String getName()
-        {
-            return name;
-        }
-
-        public String getCppTypeName()
-        {
-            return cppTypeName;
-        }
-
-        public String getValue()
-        {
-            return value;
-        }
-
-        private final String name;
-        private final String cppTypeName;
-        private final String value;
+        return cppTypeName;
     }
 
-    private final CppNativeTypeMapper   cppNativeTypeMapper;
-    private final ExpressionFormatter   cppExpressionFormatter;
-    private final List<Item>            items;
+    public String getValue()
+    {
+        return value;
+    }
+
+    private final String cppTypeName;
+    private final String name;
+    private final String value;
 }

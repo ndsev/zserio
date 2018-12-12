@@ -512,9 +512,10 @@ public class CppNativeTypeMapper
             try
             {
                 final CppNativeType nativeTargetType = CppNativeTypeMapper.this.getCppType(type.getConstType());
-                final String includePathRoot = getIncludePathRoot(cppPackageMapper.getRootPackageName());
-                cppType = new NativeConstType(cppPackageMapper.getRootPackageName(), type.getName(),
-                        includePathRoot, nativeTargetType);
+                final PackageName packageName = cppPackageMapper.getPackageName(type);
+                final String name = type.getName();
+                final String includeFileName = getIncludePath(packageName, name);
+                cppType = new NativeConstType(packageName, type.getName(), includeFileName, nativeTargetType);
             }
             catch (ZserioEmitException exception)
             {

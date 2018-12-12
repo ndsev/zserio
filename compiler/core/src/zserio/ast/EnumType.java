@@ -133,23 +133,6 @@ public class EnumType extends TokenAST implements ZserioScopedType
     }
 
     /**
-     * Gets the list of referenced Const Types of the enumeration type.
-     *
-     * @return List of referenced Const Types of the enumeration type.
-     */
-    public Set<ConstType> getReferencedConstTypes()
-    {
-        final Set<ConstType> referencedConstTypes = new HashSet<ConstType>();
-        if (integerBaseType instanceof BitFieldType)
-        {
-            final Expression lengthExpression = ((BitFieldType)integerBaseType).getLengthExpression();
-            referencedConstTypes.addAll(lengthExpression.getReferencedSymbolObjects(ConstType.class));
-        }
-
-        return referencedConstTypes;
-    }
-
-    /**
      * Gets documentation comment associated to this enumeration type.
      *
      * @return Documentation comment token associated to this enumeration type.
@@ -226,6 +209,9 @@ public class EnumType extends TokenAST implements ZserioScopedType
         final Set<BigInteger> enumItemValues = new HashSet<BigInteger>();
         for (EnumItem enumItem : enumItems)
         {
+            if (enumItem.getValueExpression() != null)
+                ExpressionUtil.checkExpressionType(enumItem.getValueExpression(), getIntegerBaseType());
+
             // check if enumeration item value is not duplicated
             final BigInteger enumItemValue = enumItem.getValue();
             if ( !enumItemValues.add(enumItemValue) )

@@ -1,7 +1,7 @@
 package expressions.used_before_type;
 
 // This example demonstrates expression which uses Zserio types defined after expression definition.
-// This checks evaluation of expression 'Color.RED' which must envoke evaluation of enumeration 'Color' and
+// This checks evaluation of expression 'Color.RED' which must invoke evaluation of enumeration 'Color' and
 // const types 'COLOR_RED_VALUE' and 'NUM_VALUE_BITS'.
 struct UsedBeforeTypeExpression
 {
