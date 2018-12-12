@@ -152,8 +152,11 @@ class BitfieldEnumTest(unittest.TestCase):
     def testConstantDefinedByConstant(self):
         self.assertEqual(self.api.UINT32_FULL_MASK, self.api.UINT32_MAX_CONSTANT)
 
-    def testEnumerationConstant(self):
+    def testConstantDefinedByEnum(self):
         self.assertEqual(self.api.Colors.BLACK, self.api.DEFAULT_PEN_COLOR)
+
+    def testConstantDefinedByEnumValueof(self):
+        self.assertEqual(self.api.Colors.BLACK.value, self.api.DEFAULT_PEN_COLOR_VALUE)
 
     def testSubtypeToInt25Constant(self):
         self.assertEqual(25, self.api.SUBTYPE_INT25_CONSTANT)

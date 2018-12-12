@@ -6,7 +6,6 @@ import java.util.List;
 import zserio.ast.BitFieldType;
 import zserio.ast.EnumItem;
 import zserio.ast.EnumType;
-import zserio.ast.Expression;
 import zserio.ast.IntegerType;
 import zserio.ast.StdIntegerType;
 import zserio.emit.common.ExpressionFormatter;
@@ -30,7 +29,7 @@ public class EnumerationEmitterTemplateData extends UserTypeTemplateData
         final List<EnumItem> enumItems = enumType.getItems();
         items = new ArrayList<EnumItemData>(enumItems.size());
         for (EnumItem enumItem : enumItems)
-            items.add(new EnumItemData(enumItem, pythonExpressionFormatter));
+            items.add(new EnumItemData(enumItem));
     }
 
     public String getBitSize()
@@ -50,11 +49,10 @@ public class EnumerationEmitterTemplateData extends UserTypeTemplateData
 
     public static class EnumItemData
     {
-        public EnumItemData(EnumItem enumItem, ExpressionFormatter expressionFormatter)
-                throws ZserioEmitException
+        public EnumItemData(EnumItem enumItem) throws ZserioEmitException
         {
             name = enumItem.getName();
-            value = createValue(enumItem, expressionFormatter);
+            value = PythonLiteralFormatter.formatDecimalLiteral(enumItem.getValue());
         }
 
         public String getName()
@@ -65,16 +63,6 @@ public class EnumerationEmitterTemplateData extends UserTypeTemplateData
         public String getValue()
         {
             return value;
-        }
-
-        private String createValue(EnumItem enumItem, ExpressionFormatter expressionFormatter)
-                throws ZserioEmitException
-        {
-            final Expression valueExpression = enumItem.getValueExpression();
-            if (valueExpression != null)
-                return expressionFormatter.formatGetter(valueExpression);
-            else
-                return PythonLiteralFormatter.formatDecimalLiteral(enumItem.getValue());
         }
 
         private final String name;

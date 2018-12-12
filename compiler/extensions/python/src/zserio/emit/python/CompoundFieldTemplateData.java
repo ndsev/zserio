@@ -6,10 +6,8 @@ import java.util.List;
 
 import zserio.ast.ArrayType;
 import zserio.ast.BitFieldType;
-import zserio.ast.BooleanType;
 import zserio.ast.CompoundType;
 import zserio.ast.IntegerType;
-import zserio.ast.StdIntegerType;
 import zserio.ast.ZserioType;
 import zserio.ast.Expression;
 import zserio.ast.Field;
