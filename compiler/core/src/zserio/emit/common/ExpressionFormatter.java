@@ -177,9 +177,9 @@ public class ExpressionFormatter
                 break;
 
             case ZserioParserTokenTypes.ID:
-                final boolean isLast = !inArray && !inDot;
-                final boolean isSetter = isLast && formatSetter;
-                buffer.append(policy.getIdentifier(expr, isLast, isSetter));
+                final boolean isLastInDot = !inArray && !inDot;
+                final boolean isSetter = isLastInDot && formatSetter;
+                buffer.append(policy.getIdentifier(expr, isLastInDot, isSetter));
                 break;
 
             default:

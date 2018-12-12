@@ -8,7 +8,7 @@
 #include "sql_constraints/TestDb.h"
 #include "sql_constraints/ConstraintsTable.h"
 #include "sql_constraints/ConstraintsTableRow.h"
-#include "sql_constraints/ConstType.h"
+#include "sql_constraints/ConstraintsConstant.h"
 
 namespace sql_constraints
 {
@@ -131,7 +131,7 @@ TEST_F(SqlConstraintsTest, sqlCheckConstant)
     row.setSqlNotNull(1);
     row.setSqlDefaultNull(1);
     row.setSqlNull(1);
-    row.setSqlCheckConstant(ConstType::ConstraintsConstant);
+    row.setSqlCheckConstant(ConstraintsConstant);
     row.setSqlCheckEnum(ConstraintsEnum::VALUE1);
     row.setSqlCheckUnicodeEscape(UNICODE_ESCAPE_CONST);
     row.setSqlCheckHexEscape(HEX_ESCAPE_CONST);

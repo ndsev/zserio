@@ -133,7 +133,7 @@ public class SqlConstraintsTest
         row.setSqlNotNull(1);
         row.setSqlDefaultNull(1);
         row.setSqlNull(1);
-        row.setSqlCheckConstant(__ConstType.ConstraintsConstant);
+        row.setSqlCheckConstant(ConstraintsConstant.ConstraintsConstant);
         row.setSqlCheckEnum(ConstraintsEnum.VALUE1);
         row.setSqlCheckUnicodeEscape(UNICODE_ESCAPE_CONST);
         row.setSqlCheckHexEscape(HEX_ESCAPE_CONST);

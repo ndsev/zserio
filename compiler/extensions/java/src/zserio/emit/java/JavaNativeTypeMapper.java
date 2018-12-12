@@ -494,12 +494,12 @@ final class JavaNativeTypeMapper
         @Override
         public void visitConstType(ConstType type)
         {
-            final PackageName packageName = javaPackageMapper.getRootPackageName();
-            final String name = type.getName();
             try
             {
                 final JavaNativeType nativeTargetType =
                         JavaNativeTypeMapper.this.getJavaType(type.getConstType());
+                final PackageName packageName = javaPackageMapper.getPackageName(type);
+                final String name = type.getName();
                 javaType = new NativeConstType(packageName, name, nativeTargetType);
                 javaNullableType = javaType;
             }

@@ -1,10 +1,6 @@
 package zserio.emit.cpp;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import zserio.ast.ConstType;
-import zserio.ast.Root;
 import zserio.emit.common.ZserioEmitException;
 import zserio.tools.Parameters;
 
@@ -18,22 +14,10 @@ public class ConstEmitter extends CppDefaultEmitter
     @Override
     public void beginConst(ConstType constType) throws ZserioEmitException
     {
-        constTypes.add(constType);
-    }
-
-    @Override
-    public void endRoot(Root root) throws ZserioEmitException
-    {
-        if (!constTypes.isEmpty())
-        {
-            final ConstEmitterTemplateData templateData =
-                    new ConstEmitterTemplateData(getTemplateDataContext(), constTypes);
-            processHeaderTemplateToRootDir(TEMPLATE_HEADER_NAME, templateData, OUTPUT_FILE_NAME_ROOT);
-        }
+        final ConstEmitterTemplateData templateData = new ConstEmitterTemplateData(getTemplateDataContext(),
+                constType);
+        processHeaderTemplate(TEMPLATE_HEADER_NAME, templateData, constType);
     }
 
     private static final String TEMPLATE_HEADER_NAME = "ConstType.h.ftl";
-    private static final String OUTPUT_FILE_NAME_ROOT = "ConstType";
-
-    private final List<ConstType> constTypes = new ArrayList<ConstType>();
 }

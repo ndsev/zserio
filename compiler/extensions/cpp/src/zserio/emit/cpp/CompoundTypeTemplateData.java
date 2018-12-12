@@ -4,11 +4,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import zserio.ast.CompoundType;
-import zserio.ast.ConstType;
 import zserio.ast.Field;
 import zserio.emit.common.ExpressionFormatter;
 import zserio.emit.common.ZserioEmitException;
-import zserio.emit.cpp.types.CppNativeType;
 
 public class CompoundTypeTemplateData extends UserTypeTemplateData
 {
@@ -43,13 +41,6 @@ public class CompoundTypeTemplateData extends UserTypeTemplateData
         needsChildrenInitialization = compoundType.needsChildrenInitialization();
         withRangeCheckCode = context.getWithRangeCheckCode();
         hasFieldWithOffset = compoundType.hasFieldWithOffset();
-
-        // add const type includes
-        for (ConstType constType : compoundType.getReferencedTypes(ConstType.class))
-        {
-            final CppNativeType nativeType = cppNativeTypeMapper.getCppType(constType);
-            addCppIncludesForType(nativeType);
-        }
     }
 
     public Iterable<CompoundFieldTemplateData> getFieldList()

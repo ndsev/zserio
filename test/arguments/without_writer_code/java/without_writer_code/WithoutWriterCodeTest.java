@@ -11,25 +11,27 @@ import org.junit.Test;
 public class WithoutWriterCodeTest
 {
     @Test
-    public void checkCompoundTypes() throws IOException
+    public void checkUserTypes() throws IOException
     {
-        assertFalse(isWriteMethodInCompoundPresent("../gen/without_writer_code/Item.java"));
-        assertFalse(isWriteMethodInCompoundPresent("../gen/without_writer_code/ItemChoice.java"));
-        assertFalse(isWriteMethodInCompoundPresent("../gen/without_writer_code/ItemChoiceHolder.java"));
-        assertFalse(isWriteMethodInCompoundPresent("../gen/without_writer_code/Tile.java"));
+        assertFalse(isWriteMethodInUserTypePresent("Item"));
+        assertFalse(isWriteMethodInUserTypePresent("ItemChoice"));
+        assertFalse(isWriteMethodInUserTypePresent("ItemChoiceHolder"));
+        assertFalse(isWriteMethodInUserTypePresent("Tile"));
+        assertFalse(isWriteMethodInUserTypePresent("ElementsUnion"));
+        assertFalse(isWriteMethodInUserTypePresent("TypeEnum"));
     }
 
     @Test
     public void checkSqlTableTypes() throws IOException
     {
-        assertFalse(isWriteMethodInSqlTablePresent("../gen/without_writer_code/GeoMapTable.java"));
+        assertFalse(isWriteMethodInSqlTablePresent("GeoMapTable"));
     }
 
     @Test
     public void checkSqlDatabaseTypes() throws IOException
     {
-        assertFalse(isWriteMethodInSqlDatabasePresent("../gen/without_writer_code/WorldDb.java"));
-        assertFalse(isWriteMethodInSqlDatabasePresent("../gen/without_writer_code/MasterDatabase.java"));
+        assertFalse(isWriteMethodInSqlDatabasePresent("WorldDb"));
+        assertFalse(isWriteMethodInSqlDatabasePresent("MasterDatabase"));
     }
 
     private boolean isMethodInFilePresent(String fileName, String methodName) throws IOException
@@ -50,26 +52,33 @@ public class WithoutWriterCodeTest
         return isPresent;
     }
 
-    private boolean isWriteMethodInCompoundPresent(String fileName) throws IOException
+    private boolean isMethodInTypePresent(String typeName, String methodName) throws IOException
     {
-        return (isMethodInFilePresent(fileName, "initializeOffsets(") ||
-                isMethodInFilePresent(fileName, "write("));
+        return isMethodInFilePresent(PATH + typeName + ".java", methodName);
     }
 
-    private boolean isWriteMethodInSqlTablePresent(String fileName) throws IOException
+    private boolean isWriteMethodInUserTypePresent(String typeName) throws IOException
     {
-        return (isMethodInFilePresent(fileName, "createTable(") ||
-                isMethodInFilePresent(fileName, "createOrdinaryRowIdTable(") ||
-                isMethodInFilePresent(fileName, "deleteTable(") ||
-                isMethodInFilePresent(fileName, "write(") ||
-                isMethodInFilePresent(fileName, "update(") ||
-                isMethodInFilePresent(fileName, "writeRow(") ||
-                isMethodInFilePresent(fileName, "getCreateTableQuery("));
+        return (isMethodInTypePresent(typeName, "initializeOffsets(") ||
+                isMethodInTypePresent(typeName, "write("));
     }
 
-    private boolean isWriteMethodInSqlDatabasePresent(String fileName) throws IOException
+    private boolean isWriteMethodInSqlTablePresent(String typeName) throws IOException
     {
-        return (isMethodInFilePresent(fileName, "createSchema(") ||
-                isMethodInFilePresent(fileName, "deleteSchema("));
+        return (isMethodInTypePresent(typeName, "createTable(") ||
+                isMethodInTypePresent(typeName, "createOrdinaryRowIdTable(") ||
+                isMethodInTypePresent(typeName, "deleteTable(") ||
+                isMethodInTypePresent(typeName, "write(") ||
+                isMethodInTypePresent(typeName, "update(") ||
+                isMethodInTypePresent(typeName, "writeRow(") ||
+                isMethodInTypePresent(typeName, "getCreateTableQuery("));
     }
+
+    private boolean isWriteMethodInSqlDatabasePresent(String typeName) throws IOException
+    {
+        return (isMethodInTypePresent(typeName, "createSchema(") ||
+                isMethodInTypePresent(typeName, "deleteSchema("));
+    }
+
+    private static final String PATH = "../gen/without_writer_code/";
 }

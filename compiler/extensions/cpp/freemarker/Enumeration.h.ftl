@@ -35,7 +35,9 @@ public:
 </#list>
     };
 
+<#if withWriterCode>
     ${name}();
+</#if>
     ${name}(e_${name} value);
     explicit ${name}(zserio::BitStreamReader& _in);
 <#if withInspectorCode>
@@ -46,7 +48,9 @@ public:
     ${baseCppTypeName} getValue() const;
 
     size_t bitSizeOf(size_t _bitPosition = 0) const;
+<#if withWriterCode>
     size_t initializeOffsets(size_t _bitPosition = 0) const;
+</#if>
 
     bool operator==(const ${name}& other) const;
     bool operator==(e_${name} other) const;
@@ -56,11 +60,13 @@ public:
 <#if withInspectorCode>
     void read(const zserio::BlobInspectorTree& _tree);
 </#if>
+<#if withWriterCode>
     void write(zserio::BitStreamWriter& _out,
             zserio::PreWriteAction _preWriteAction = zserio::ALL_PRE_WRITE_ACTIONS) const;
-<#if withInspectorCode>
+    <#if withInspectorCode>
     void write(zserio::BitStreamWriter& _out, zserio::BlobInspectorTree& _tree,
             zserio::PreWriteAction _preWriteAction = zserio::ALL_PRE_WRITE_ACTIONS) const;
+    </#if>
 </#if>
 
     const char* toString() const;

@@ -31,6 +31,19 @@ numElementsOffset:
     ItemChoiceHolder    data[numElements];
 };
 
+enum int8 TypeEnum
+{
+    SIMPLE,
+    COMPLEX
+};
+
+union ElementsUnion
+{
+    int8 elements8[];
+    int16 elements16[];
+    int32 elements32[];
+};
+
 sql_table GeoMapTable
 {
     int32           tileId sql "PRIMARY KEY";

@@ -12,6 +12,7 @@
     <target name="gen" depends="gen.check" unless="choice_types_error.zs.gen_is_uptodate">
         <testGenClean testName="choice_types_error"/>
         <testGen testName="choice_types_error" zsFile="bool_case_error.zs" ignoreErrors="true"/>
+        <testGen testName="choice_types_error" zsFile="compound_selector_error.zs" ignoreErrors="true"/>
         <testGen testName="choice_types_error" zsFile="enum_case_error.zs" ignoreErrors="true"/>
         <testGen testName="choice_types_error" zsFile="field_case_error.zs" ignoreErrors="true"/>
         <testGen testName="choice_types_error" zsFile="float_selector_error.zs" ignoreErrors="true"/>
@@ -22,6 +23,8 @@
         <testGen testName="choice_types_error" zsFile="recursive_error.zs" ignoreErrors="true"/>
         <testGen testName="choice_types_error" zsFile="string_selector_error.zs" ignoreErrors="true"/>
         <testGen testName="choice_types_error" zsFile="unreachable_default_error.zs" ignoreErrors="true"/>
+        <testGen testName="choice_types_error" zsFile="unreachable_default_multicase_error.zs"
+            ignoreErrors="true"/>
         <testGen testName="choice_types_error" zsFile="unresolved_enum_item_error.zs" ignoreErrors="true"/>
         <testGen testName="choice_types_error" zsFile="unresolved_field_in_constraint_error.zs"
             ignoreErrors="true"/>

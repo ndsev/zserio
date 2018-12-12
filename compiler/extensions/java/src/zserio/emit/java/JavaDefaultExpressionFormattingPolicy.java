@@ -139,34 +139,35 @@ public abstract class JavaDefaultExpressionFormattingPolicy extends DefaultExpre
     }
 
     @Override
-    public String getIdentifier(Expression expr, boolean isLast, boolean isSetter) throws ZserioEmitException
+    public String getIdentifier(Expression expr, boolean isLastInDot, boolean isSetter)
+            throws ZserioEmitException
     {
         // check if casting to BigInteger is necessary
         final String symbol = expr.getText();
         final Object resolvedSymbol = expr.getExprSymbolObject();
-        final boolean isFirst = (expr.getExprZserioType() != null);
+        final boolean isFirstInDot = (expr.getExprZserioType() != null);
         final StringBuilder result = new StringBuilder();
         final BigInteger exprUpperBound = expr.getIntegerUpperBound();
         final boolean isMappedToBigInteger = (exprUpperBound != null &&
                 exprUpperBound.compareTo(BigInteger.valueOf(Long.MAX_VALUE)) > 0);
         final boolean needsCastingToBigInteger = (!isMappedToBigInteger && expr.needsBigInteger());
-        if (isFirst && needsCastingToBigInteger)
+        if (isFirstInDot && needsCastingToBigInteger)
             result.append(BIG_INTEGER + ".valueOf(");
 
         // ignore package identifiers, they will be a part of the following Zserio type
         if (resolvedSymbol instanceof ZserioType)
         {
             // Zserio types
-            formatTypeIdentifier(result, symbol, isFirst, (ZserioType)resolvedSymbol);
+            formatTypeIdentifier(result, symbol, isFirstInDot, (ZserioType)resolvedSymbol);
         }
         else if (!(resolvedSymbol instanceof Package))
         {
             // identifier symbol objects
-            formatSymbolIdentifier(result, symbol, isFirst, resolvedSymbol, isSetter);
+            formatSymbolIdentifier(result, symbol, isFirstInDot, resolvedSymbol, isSetter);
         }
 
         // finish casting to BigInteger
-        if (isLast && needsCastingToBigInteger)
+        if (isLastInDot && needsCastingToBigInteger)
             result.append(")");
 
         return result.toString();
@@ -441,7 +442,7 @@ public abstract class JavaDefaultExpressionFormattingPolicy extends DefaultExpre
             result.append("()");
     }
 
-    private void formatTypeIdentifier(StringBuilder result, String symbol, boolean isFirst,
+    private void formatTypeIdentifier(StringBuilder result, String symbol, boolean isFirstInDot,
             ZserioType resolvedType) throws ZserioEmitException
     {
         if (resolvedType instanceof EnumType)
@@ -474,14 +475,14 @@ public abstract class JavaDefaultExpressionFormattingPolicy extends DefaultExpre
         return (accessPrefix.isEmpty()) ? accessPrefix : accessPrefix + ".";
     }
 
-    private void formatSymbolIdentifier(StringBuilder result, String symbol, boolean isFirst,
+    private void formatSymbolIdentifier(StringBuilder result, String symbol, boolean isFirstInDot,
             Object resolvedSymbol, boolean isSetter)
     {
         if (resolvedSymbol instanceof Parameter)
         {
             final Parameter param = (Parameter)resolvedSymbol;
             final String accessor = AccessorNameFormatter.getGetterName(param);
-            if (isFirst)
+            if (isFirstInDot)
                 result.append(getAccessPrefix());
             formatAccessorCall(result, accessor, isSetter);
         }
@@ -490,7 +491,7 @@ public abstract class JavaDefaultExpressionFormattingPolicy extends DefaultExpre
             final Field field = (Field)resolvedSymbol;
             final String accessor = isSetter ? AccessorNameFormatter.getSetterName(field) :
                     AccessorNameFormatter.getGetterName(field);
-            if (isFirst)
+            if (isFirstInDot)
                 result.append(getAccessPrefix());
             formatAccessorCall(result, accessor, isSetter);
         }

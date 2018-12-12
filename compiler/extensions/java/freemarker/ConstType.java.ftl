@@ -2,9 +2,7 @@
 <@standard_header generatorDescription, packageName, javaMajorVersion, []/>
 
 <@class_header generatorDescription/>
-public class ${name}
+public final class ${name}
 {
-<#list items as item>
-    public static final ${item.javaTypeName} ${item.name} = ${item.value};
-</#list>
+    public static final ${javaTypeName} ${name} = ${value};
 }

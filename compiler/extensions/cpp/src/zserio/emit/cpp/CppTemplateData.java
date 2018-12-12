@@ -89,14 +89,20 @@ public abstract class CppTemplateData implements IncludeCollector
     @Override
     public void addHeaderIncludesForType(CppNativeType nativeType)
     {
-        headerSystemIncludes.addAll(nativeType.getSystemIncludeFiles());
-        headerUserIncludes.addAll(nativeType.getUserIncludeFiles());
+        addHeaderSystemIncludes(nativeType.getSystemIncludeFiles());
+        addHeaderUserIncludes(nativeType.getUserIncludeFiles());
     }
 
     @Override
     public void addHeaderSystemIncludes(Collection<String> systemIncludes)
     {
         headerSystemIncludes.addAll(systemIncludes);
+    }
+
+    @Override
+    public void addHeaderUserIncludes(Collection<String> userIncludes)
+    {
+        headerUserIncludes.addAll(userIncludes);
     }
 
     @Override

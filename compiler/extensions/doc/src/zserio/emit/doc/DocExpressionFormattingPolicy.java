@@ -65,7 +65,7 @@ public class DocExpressionFormattingPolicy extends DefaultExpressionFormattingPo
     }
 
     @Override
-    public String getIdentifier(Expression expr, boolean isLast, boolean isSetter)
+    public String getIdentifier(Expression expr, boolean isLastInDot, boolean isSetter)
     {
         String symbol = expr.getText();
         String res = "";

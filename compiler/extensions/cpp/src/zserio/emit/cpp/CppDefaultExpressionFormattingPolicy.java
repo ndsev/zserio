@@ -131,17 +131,18 @@ public abstract class CppDefaultExpressionFormattingPolicy extends DefaultExpres
     }
 
     @Override
-    public String getIdentifier(Expression expr, boolean isLast, boolean isSetter) throws ZserioEmitException
+    public String getIdentifier(Expression expr, boolean isLastInDot, boolean isSetter)
+            throws ZserioEmitException
     {
         // first try Zserio types then try identifier symbol objects
         final StringBuilder result = new StringBuilder();
         final String symbol = expr.getText();
         final Object resolvedSymbol = expr.getExprSymbolObject();
-        final boolean isFirst = (expr.getExprZserioType() != null);
+        final boolean isFirstInDot = (expr.getExprZserioType() != null);
         if (resolvedSymbol instanceof ZserioType)
-            formatIdentifierForType(result, symbol, isFirst, (ZserioType)resolvedSymbol);
+            formatIdentifierForType(result, symbol, isFirstInDot, (ZserioType)resolvedSymbol);
         else if (!(resolvedSymbol instanceof Package))
-            formatIdentifierForSymbol(result, symbol, isFirst, resolvedSymbol, isSetter);
+            formatIdentifierForSymbol(result, symbol, isFirstInDot, resolvedSymbol, isSetter);
 
         // ignore package identifiers, they will be a part of the following Zserio type
 
@@ -208,7 +209,7 @@ public abstract class CppDefaultExpressionFormattingPolicy extends DefaultExpres
 
     protected abstract String getAccessPrefixForCompoundType();
 
-    private void formatIdentifierForType(StringBuilder result, String symbol, boolean isFirst,
+    private void formatIdentifierForType(StringBuilder result, String symbol, boolean isFirstInDot,
             ZserioType resolvedType) throws ZserioEmitException
     {
         if (resolvedType instanceof EnumType)
@@ -217,6 +218,7 @@ public abstract class CppDefaultExpressionFormattingPolicy extends DefaultExpres
             final EnumType enumType = (EnumType)resolvedType;
             final CppNativeType nativeEnumType = cppNativeTypeMapper.getCppType(enumType);
             result.append(nativeEnumType.getFullName());
+            includeCollector.addCppIncludesForType(nativeEnumType);
         }
         else if (resolvedType instanceof ConstType)
         {
@@ -224,6 +226,7 @@ public abstract class CppDefaultExpressionFormattingPolicy extends DefaultExpres
             final ConstType constantType = (ConstType)resolvedType;
             final CppNativeType nativeConstType = cppNativeTypeMapper.getCppType(constantType);
             result.append(nativeConstType.getFullName());
+            includeCollector.addCppIncludesForType(nativeConstType);
         }
         else if (resolvedType instanceof FunctionType)
         {
@@ -237,18 +240,18 @@ public abstract class CppDefaultExpressionFormattingPolicy extends DefaultExpres
         }
     }
 
-    private void formatIdentifierForSymbol(StringBuilder result, String symbol, boolean isFirst,
+    private void formatIdentifierForSymbol(StringBuilder result, String symbol, boolean isFirstInDot,
             Object resolvedSymbol, boolean isSetter) throws ZserioEmitException
     {
         if (resolvedSymbol instanceof Parameter)
         {
             final Parameter param = (Parameter)resolvedSymbol;
-            formatParameterAccessor(result, isFirst, param, isSetter);
+            formatParameterAccessor(result, isFirstInDot, param, isSetter);
         }
         else if (resolvedSymbol instanceof Field)
         {
             final Field field = (Field)resolvedSymbol;
-            formatFieldAccessor(result, isFirst, field, isSetter);
+            formatFieldAccessor(result, isFirstInDot, field, isSetter);
         }
         else if (resolvedSymbol instanceof EnumItem)
         {
@@ -256,7 +259,7 @@ public abstract class CppDefaultExpressionFormattingPolicy extends DefaultExpres
             // emit the whole name if this is the first symbol in this dot subtree, otherwise emit only the
             // enum short name
             final EnumItem item = (EnumItem)resolvedSymbol;
-            if (isFirst)
+            if (isFirstInDot)
             {
                 final EnumType enumType = item.getEnumType();
                 final CppNativeType nativeEnumType = cppNativeTypeMapper.getCppType(enumType);
@@ -302,10 +305,10 @@ public abstract class CppDefaultExpressionFormattingPolicy extends DefaultExpres
         return (accessPrefix.isEmpty()) ? accessPrefix : accessPrefix + ".";
     }
 
-    private void formatParameterAccessor(StringBuilder result, boolean isFirst, Parameter param,
+    private void formatParameterAccessor(StringBuilder result, boolean isFirstInDot, Parameter param,
             boolean isSetter)
     {
-        if (isFirst)
+        if (isFirstInDot)
             result.append(getAccessPrefix());
 
         if (isSetter)
@@ -320,9 +323,9 @@ public abstract class CppDefaultExpressionFormattingPolicy extends DefaultExpres
         }
     }
 
-    private void formatFieldAccessor(StringBuilder result, boolean isFirst, Field field, boolean isSetter)
+    private void formatFieldAccessor(StringBuilder result, boolean isFirstInDot, Field field, boolean isSetter)
     {
-        if (isFirst)
+        if (isFirstInDot)
             result.append(getAccessPrefix());
 
         if (isSetter)

@@ -77,8 +77,11 @@ enum bit:4 Colors
     BLUE
 };
 
-// constant defined by enum value
+// enum constant defined by enum value
 const Colors        DEFAULT_PEN_COLOR = Colors.BLACK;
+
+// base type constant defined by enum value using valueof
+const int32         DEFAULT_PEN_COLOR_VALUE = valueof(Colors.BLACK);
 
 // subtype to intfield
 subtype int<25> Int25Subtype;

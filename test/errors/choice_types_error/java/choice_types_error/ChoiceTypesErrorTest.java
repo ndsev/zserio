@@ -25,6 +25,14 @@ public class ChoiceTypesErrorTest
     }
 
     @Test
+    public void compoundSelectorError()
+    {
+        final String error = "compound_selector_error.zs:8:1: " +
+                "Choice 'CompoundSelectorChoice' uses forbidden COMPOUND selector!";
+        assertTrue(zserioErrors.isPresent(error));
+    }
+
+    @Test
     public void enumCaseError()
     {
         final String error = "enum_case_error.zs:27:23: Choice 'EnumParamChoice' has case with different " +
@@ -43,7 +51,7 @@ public class ChoiceTypesErrorTest
     public void floatSelectorError()
     {
         final String error =
-                "float_selector_error.zs:3:1: Choice 'FloatSelectorChoice' uses forbidden float selector!";
+                "float_selector_error.zs:3:1: Choice 'FloatSelectorChoice' uses forbidden FLOAT selector!";
         assertTrue(zserioErrors.isPresent(error));
     }
 
@@ -88,7 +96,7 @@ public class ChoiceTypesErrorTest
     public void stringSelectorError()
     {
         final String error =
-                "string_selector_error.zs:3:1: Choice 'StringSelectorChoice' uses forbidden string selector!";
+                "string_selector_error.zs:3:1: Choice 'StringSelectorChoice' uses forbidden STRING selector!";
         assertTrue(zserioErrors.isPresent(error));
     }
 
@@ -97,6 +105,14 @@ public class ChoiceTypesErrorTest
     {
         final String error = "unreachable_default_error.zs:11:5: Choice 'UnreachableDefaultChoice' has " +
                 "unreachable default case!";
+        assertTrue(zserioErrors.isPresent(error));
+    }
+
+    @Test
+    public void unreachableDefaultMulticaseError()
+    {
+        final String error = "unreachable_default_multicase_error.zs:9:5: " +
+                "Choice 'UnreachableDefaultMulticaseChoice' has unreachable default case!";
         assertTrue(zserioErrors.isPresent(error));
     }
 
