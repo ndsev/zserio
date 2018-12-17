@@ -80,7 +80,7 @@ public class PythonExpressionFormattingPolicy extends DefaultExpressionFormattin
     @Override
     public String getIndex(Expression expr)
     {
-        return "_index";
+        return "index";
     }
 
     @Override
@@ -111,16 +111,16 @@ public class PythonExpressionFormattingPolicy extends DefaultExpressionFormattin
             // [EnumType].ENUM_ITEM
             final EnumType enumType = (EnumType)resolvedType;
             final PythonNativeType nativeEnumType = pythonNativeTypeMapper.getPythonType(enumType);
-            result.append(nativeEnumType.getFullName());
             importCollector.importType(nativeEnumType);
+            result.append(nativeEnumType.getFullName());
         }
         else if (resolvedType instanceof ConstType)
         {
             // [ConstName]
             final ConstType constType = (ConstType)resolvedType;
             final PythonNativeType nativeConstType = pythonNativeTypeMapper.getPythonType(constType);
-            result.append(nativeConstType.getFullName());
             importCollector.importType(nativeConstType);
+            result.append(nativeConstType.getFullName());
         }
         else
         {
@@ -152,6 +152,7 @@ public class PythonExpressionFormattingPolicy extends DefaultExpressionFormattin
             {
                 final EnumType enumType = item.getEnumType();
                 final PythonNativeType nativeEnumType = pythonNativeTypeMapper.getPythonType(enumType);
+                // import type is not necessary because this can happen only for choices with enum selector
                 result.append(nativeEnumType.getFullName());
                 result.append(".");
             }
@@ -188,8 +189,7 @@ public class PythonExpressionFormattingPolicy extends DefaultExpressionFormattin
 
     private String getAccessPrefix()
     {
-        // TODO:
-        return "";
+        return "self.";
     }
 
     @Override
@@ -225,7 +225,6 @@ public class PythonExpressionFormattingPolicy extends DefaultExpressionFormattin
     @Override
     public UnaryExpressionFormatting getNumBits(Expression expr)
     {
-        importCollector.importRuntimePackage();
         return new UnaryExpressionFormatting("zserio.builtin.getNumBits(", ")");
     }
 

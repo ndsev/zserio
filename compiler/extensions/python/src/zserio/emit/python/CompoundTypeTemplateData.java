@@ -26,8 +26,8 @@ public class CompoundTypeTemplateData extends UserTypeTemplateData
         final List<Field> fieldTypeList = compoundType.getFields();
         fieldList = new ArrayList<CompoundFieldTemplateData>(fieldTypeList.size());
         for (Field fieldType : fieldTypeList)
-            fieldList.add(new CompoundFieldTemplateData(javaNativeTypeMapper, withRangeCheckCode, fieldType,
-                    pythonExpressionFormatter));
+            fieldList.add(new CompoundFieldTemplateData(javaNativeTypeMapper, withRangeCheckCode, compoundType,
+                    fieldType, pythonExpressionFormatter, this));
 
         importRuntimePackage();
     }

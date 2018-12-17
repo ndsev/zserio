@@ -1,3 +1,19 @@
+<#macro compound_getter_field field>
+    <#if field.array??>
+        return None if self.<@field_member_name field/> is None else self.<@field_member_name field/>.getRawArray()
+    <#else>
+        return self.<@field_member_name field/>
+    </#if>
+</#macro>
+
+<#macro compound_setter_field field>
+    <#if field.array??>
+        self.<@field_member_name field/> = zserio.array.Array(<@array_field_constructor_parameters field/>)
+    <#else>
+        self.<@field_member_name field/> = <@field_argument_name field/>
+    </#if>
+</#macro>
+
 <#macro compound_compare_field field>
     <#if field.optional??>(not self.${field.optional.indicatorName}() or </#if><#t>
 self.<@field_member_name field/> == other.<@field_member_name field/><#if field.optional??>)</#if><#rt>
@@ -32,9 +48,9 @@ ${I}if self.${field.optional.indicatorName}():
     <#if field.bitSize.value??>
 ${I}endBitPosition += ${field.bitSize.value}
     <#elseif field.bitSize.runtimeFunction??>
-${I}endBitPosition += zserio.bitsizeof.getBitSizeOf${field.bitSize.runtimeFunction.suffix}(self.${field.getterName}())
+${I}endBitPosition += zserio.bitsizeof.getBitSizeOf${field.bitSize.runtimeFunction.suffix}(self.<@field_member_name field/>)
     <#else>
-${I}endBitPosition += self.${field.getterName}().bitSizeOf(endBitPosition)
+${I}endBitPosition += self.<@field_member_name field/>.bitSizeOf(endBitPosition)
     </#if>
 </#macro>
 
@@ -53,11 +69,11 @@ ${I}if self.${field.optional.indicatorName}():
     <#if field.bitSize.value??>
 ${I}endBitPosition += ${field.bitSize.value}
     <#elseif field.bitSize.runtimeFunction??>
-${I}endBitPosition += zserio.bitsizeof.getBitSizeOf${field.bitSize.runtimeFunction.suffix}(self.${field.getterName}())
+${I}endBitPosition += zserio.bitsizeof.getBitSizeOf${field.bitSize.runtimeFunction.suffix}(self.<@field_member_name field/>)
     <#elseif field.compound?? || field.array??>
-${I}endBitPosition = self.${field.getterName}().initializeOffsets(endBitPosition)
+${I}endBitPosition = self.<@field_member_name field/>.initializeOffsets(endBitPosition)
     <#else>
-${I}endBitPosition += self.${field.getterName}().bitSizeOf(endBitPosition)
+${I}endBitPosition += self.<@field_member_name field/>.bitSizeOf(endBitPosition)
     </#if>
 </#macro>
 
@@ -84,14 +100,13 @@ ${I}reader.alignTo(${field.alignmentValue})
 ${I}reader.alignTo(8)
         <@compound_check_offset_field field, compoundName, "reader.getBitPosition()", indent/>
     </#if>
-    <#local fieldMemberName><@field_member_name field/></#local>
     <#if field.array??>
-${I}self.${fieldMemberName} = zserio.Array.fromReader(<@array_field_from_reader_parameters field/>)
+${I}self.<@field_member_name field/> = zserio.array.Array.fromReader(<@array_field_from_reader_parameters field/>)
     <#elseif field.runtimeFunction??>
-${I}self.${fieldMemberName} = reader.read${field.runtimeFunction.suffix}(${field.runtimeFunction.arg!})
+${I}self.<@field_member_name field/> = reader.read${field.runtimeFunction.suffix}(${field.runtimeFunction.arg!})
     <#else>
         <#local fromReaderArguments><#if field.compound??><@compound_field_constructor_parameters field.compound/></#if></#local>
-${I}self.${fieldMemberName} = ${field.pythonTypeName}.fromReader(reader<#rt>
+${I}self.<@field_member_name field/> = ${field.pythonTypeName}.fromReader(reader<#rt>
         <#lt><#if fromReaderArguments?has_content>, ${fromReaderArguments}</#if>)
     </#if>
     <@compound_check_constraint_field field, compoundName, indent/>
@@ -101,30 +116,32 @@ ${I}self.${fieldMemberName} = ${field.pythonTypeName}.fromReader(reader<#rt>
     <#if field.array.requiresElementBitSize>
         ${field.array.elementBitSize.value}<#t>
     <#elseif field.array.requiresElementCreator>
-        <@element_creator_name field/><#t>
+        self.<@element_creator_name field/><#t>
     </#if>
 </#macro>
 
-<#macro array_field_extra_parameters field>
+<#macro array_field_parameters field forReader>
+    zserio.array.${field.array.traitsName}(<@array_field_traits_parameters field/>)<#t>
+    <#if forReader>
+        , reader<#t>
+        <#if field.array.length??>, ${field.array.length}</#if><#t>
+    <#else>
+        , <@field_argument_name field/><#t>
+    </#if>
     <#if field.array.isImplicit>, isImplicit=True<#t>
     <#elseif !field.array.length??>, isAuto=True<#t>
     </#if>
     <#if field.offset?? && field.offset.containsIndex>
-        , setOffsetMethod=<@offset_setter_name field/>, checkOffsetMethod=<@offset_checker_name field/><#t>
+        , setOffsetMethod=self.<@offset_setter_name field/>, checkOffsetMethod=self.<@offset_checker_name field/><#t>
     </#if>
 </#macro>
 
 <#macro array_field_from_reader_parameters field>
-    <#local extraArrayParameters><@array_field_extra_parameters field/></#local>
-    ${field.array.traitsName}(<@array_field_traits_parameters field/>), reader<#t>
-    <#if field.array.length??>, ${field.array.length}</#if><#t>
-    <#if extraArrayParameters??>${extraArrayParameters}</#if><#t>
+    <@array_field_parameters field, true/>
 </#macro>
 
 <#macro array_field_constructor_parameters field>
-    <#local extraArrayParameters><@array_field_extra_parameters field/></#local>
-    ${field.array.traitsName}(<@array_field_traits_parameters field/>), <@field_argument_name field/><#t>
-    <#if extraArrayParameters??>${extraArrayParameters}</#if><#t>
+    <@array_field_parameters field, false/>
 </#macro>
 
 <#macro compound_field_constructor_parameters compound>
@@ -163,9 +180,9 @@ ${I}writer.alignTo(8)
     <@compound_check_array_length_field field, compoundName, indent/>
     <@compound_check_range_field field, compoundName, indent/>
     <#if field.runtimeFunction??>
-${I}writer.write${field.runtimeFunction.suffix}(self.${field.getterName}()<#if field.runtimeFunction.arg??>, ${field.runtimeFunction.arg}</#if>)
+${I}writer.write${field.runtimeFunction.suffix}(self.<@field_member_name field/><#if field.runtimeFunction.arg??>, ${field.runtimeFunction.arg}</#if>)
     <#else>
-${I}self.${field.getterName}().write(writer<#if field.compound??>, callInitializeOffsets=False</#if>)
+${I}self.<@field_member_name field/>.write(writer<#if field.compound??>, callInitializeOffsets=False</#if>)
     </#if>
 </#macro>
 
@@ -174,8 +191,8 @@ ${I}self.${field.getterName}().write(writer<#if field.compound??>, callInitializ
     <#if field.offset??>
 ${I}# check offset
 ${I}if ${bitPositionName} != zserio.bitposition.bytesToBits(${field.offset.getter}):
-${I}    raise PythonRuntimeException("Wrong offset for field ${compoundName}.${field.name}: %d != %d!" %
-${I}                                 (${bitPositionName}, zserio.bitposition.bytesToBits(${field.offset.getter}))
+${I}    raise zserio.PythonRuntimeException("Wrong offset for field ${compoundName}.${field.name}: %d != %d!" %
+${I}                                        (${bitPositionName}, zserio.bitposition.bytesToBits(${field.offset.getter})))
     </#if>
 </#macro>
 
@@ -183,8 +200,8 @@ ${I}                                 (${bitPositionName}, zserio.bitposition.byt
     <#local I>${""?left_pad(indent * 4)}</#local>
     <#if field.constraint??>
 ${I}# check constraint
-${I}if <#if field.optional??>(self.${field.optional.indicatorName}()) && </#if>!(${field.constraint}):
-${I}    raise PythonRuntimeException("Constraint violated for field ${compoundName}.${field.name}!")
+${I}if <#if field.optional??>self.${field.optional.indicatorName}() and </#if>not ${field.constraint}:
+${I}    raise zserio.PythonRuntimeException("Constraint violated for field ${compoundName}.${field.name}!")
     </#if>
 </#macro>
 
@@ -192,9 +209,9 @@ ${I}    raise PythonRuntimeException("Constraint violated for field ${compoundNa
     <#local I>${""?left_pad(indent * 4)}</#local>
     <#if field.array?? && field.array.length??> 
 ${I}# check array length
-${I}if self.${field.getterName}().length() != ${field.array.length}:
-${I}    raise PythonRuntimeException("Wrong array length for field ${compoundName}.${field.name}: %d != %d!" %
-${I}                                (self.${field.getterName}().length(), ${field.array.length})
+${I}if self.<@field_member_name field/>.length() != ${field.array.length}:
+${I}    raise zserio.PythonRuntimeException("Wrong array length for field ${compoundName}.${field.name}: %d != %d!" %
+${I}                                        (self.<@field_member_name field/>.length(), ${field.array.length}))
     </#if>
 </#macro>
 
@@ -210,9 +227,9 @@ ${I}upperBound = zserio.get<#if rangeCheck.bitFieldWithExpression.isSigned>Signe
 ${I}lowerBound = ${rangeCheck.lowerBound}
 ${I}upperBound = ${rangeCheck.upperBound}
         </#if>
-${I}if self.${field.getterName}() < lowerBound or self.${field.getterName}() > upperBound):
-${I}    raise PythonRuntimeException("Value %d for field ${compoundName}.${field.name} is out range: <%d, %d>!" %
-${I}                                (self.${field.getterName}(), lowerBound, upperBound)
+${I}if self.<@field_member_name field/> < lowerBound or self.<@field_member_name field/> > upperBound):
+${I}    raise zserio.PythonRuntimeException("Value %d for field ${compoundName}.${field.name} is out range: <%d, %d>!" %
+${I}                                        (self.<@field_member_name field/>, lowerBound, upperBound))
     </#if>
 </#macro>
 
@@ -223,7 +240,7 @@ ${I}                                (self.${field.getterName}(), lowerBound, upp
 <#macro define_offset_checker compoundName field>
     <#if field.array?? && field.offset?? && field.offset.containsIndex>
 
-    def <@offset_checker_name field/>(index, bitOffset):
+    def <@offset_checker_name field/>(self, index, bitOffset):
         <@macro compound_check_offset_field field, compoundName, "bitOffset", 2/>
     </#if>
 </#macro>
@@ -235,7 +252,7 @@ ${I}                                (self.${field.getterName}(), lowerBound, upp
 <#macro define_offset_setter field>
     <#if field.array?? && field.offset?? && field.offset.containsIndex>
 
-    def <@offset_setter_name field/>(index, bitOffset):
+    def <@offset_setter_name field/>(self, index, bitOffset):
         value = zserio.bitPosition.bitsToBytes(bitOffset)
         ${field.offset.setter}
     </#if>
@@ -247,23 +264,30 @@ ${I}                                (self.${field.getterName}(), lowerBound, upp
 
 <#macro define_element_creator field>
    <#if field.array?? && field.array.requiresElementCreator>
+        <#local usesElementCreatorIndex = false/>
         <#local extraConstructorArguments>
             <#if field.array.elementCompound??>
                 <@compound_field_constructor_parameters field.array.elementCompound/><#t>
+                <#list field.array.elementCompound.instantiatedParameters as parameter>
+                    <#if parameter.containsIndex>
+                        <#local usesElementCreatorIndex = true/>
+                        <#break>
+                    </#if>
+                </#list>
             </#if>
         </#local>
 
-    def <@element_creator_name field/>(reader, index):
+    def <@element_creator_name field/>(self, reader, <#if !usesElementCreatorIndex>_</#if>index):
         return ${field.array.elementPythonTypeName}.fromReader(reader<#if extraConstructorArguments?has_content>, ${extraConstructorArguments}</#if>)
     </#if>
 </#macro>
 
 <#macro field_member_name field>
-_${field.name}_<#rt>
+    <#if field.usesChoiceMember>_choice<#else>_${field.name}_</#if><#t>
 </#macro>
 
 <#macro field_argument_name field>
-${field.name}_<#rt>
+    ${field.name}_<#t>
 </#macro>
 
 <#macro choice_tag_name field>

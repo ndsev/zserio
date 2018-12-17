@@ -6,8 +6,10 @@ import java.util.List;
 
 import zserio.ast.ArrayType;
 import zserio.ast.BitFieldType;
+import zserio.ast.ChoiceType;
 import zserio.ast.CompoundType;
 import zserio.ast.IntegerType;
+import zserio.ast.UnionType;
 import zserio.ast.ZserioType;
 import zserio.ast.Expression;
 import zserio.ast.Field;
@@ -23,12 +25,14 @@ import zserio.emit.python.types.PythonNativeType;
 public final class CompoundFieldTemplateData
 {
     public CompoundFieldTemplateData(PythonNativeTypeMapper pythonNativeTypeMapper, boolean withRangeCheckCode,
-            Field fieldType, ExpressionFormatter pythonExpressionFormatter) throws ZserioEmitException
+            CompoundType parentType, Field fieldType, ExpressionFormatter pythonExpressionFormatter,
+            ImportCollector importCollector) throws ZserioEmitException
     {
         name = fieldType.getName();
 
         final ZserioType baseType = TypeReference.resolveBaseType(fieldType.getFieldType());
         final PythonNativeType nativeType = pythonNativeTypeMapper.getPythonType(baseType);
+        importCollector.importType(nativeType);
         pythonTypeName = nativeType.getFullName();
 
         getterName = AccessorNameFormatter.getGetterName(fieldType);
@@ -41,9 +45,12 @@ public final class CompoundFieldTemplateData
         initializer = createInitializer(fieldType, pythonExpressionFormatter);
         constraint = createConstraint(fieldType, pythonExpressionFormatter);
 
+        usesChoiceMember = (parentType instanceof ChoiceType) || (parentType instanceof UnionType);
+
         bitSize = new BitSize(baseType, pythonExpressionFormatter);
         offset = createOffset(fieldType, pythonExpressionFormatter);
-        array = createArray(nativeType, baseType, pythonNativeTypeMapper, pythonExpressionFormatter);
+        array = createArray(nativeType, baseType, pythonNativeTypeMapper, pythonExpressionFormatter,
+                importCollector);
         runtimeFunction = PythonRuntimeFunctionDataCreator.createData(baseType, pythonExpressionFormatter);
         compound = createCompound(pythonExpressionFormatter, baseType);
     }
@@ -91,6 +98,11 @@ public final class CompoundFieldTemplateData
     public String getConstraint()
     {
         return constraint;
+    }
+
+    public boolean getUsesChoiceMember()
+    {
+        return usesChoiceMember;
     }
 
     public BitSize getBitSize()
@@ -278,8 +290,8 @@ public final class CompoundFieldTemplateData
     public static class Array
     {
         public Array(NativeArrayType nativeType, ArrayType baseType,
-                PythonNativeTypeMapper pythonNativeTypeMapper, ExpressionFormatter pythonExpressionFormatter)
-                        throws ZserioEmitException
+                PythonNativeTypeMapper pythonNativeTypeMapper, ExpressionFormatter pythonExpressionFormatter,
+                ImportCollector importCollector) throws ZserioEmitException
         {
             traitsName = nativeType.getTraitsName();
             requiresElementBitSize = nativeType.getRequiresElementBitSize();
@@ -290,6 +302,7 @@ public final class CompoundFieldTemplateData
 
             final ZserioType elementType = TypeReference.resolveBaseType(baseType.getElementType());
             final PythonNativeType elementNativeType = pythonNativeTypeMapper.getPythonType(elementType);
+            importCollector.importType(elementNativeType);
             elementPythonTypeName = elementNativeType.getFullName();
             elementBitSize = new BitSize(elementType, pythonExpressionFormatter);
             elementCompound = createCompound(pythonExpressionFormatter, elementType);
@@ -381,8 +394,9 @@ public final class CompoundFieldTemplateData
             public InstantiatedParameterData(ExpressionFormatter pythonExpressionFormatter,
                     InstantiatedParameter instantiatedParameter) throws ZserioEmitException
             {
-                expression = pythonExpressionFormatter.formatGetter(
-                        instantiatedParameter.getArgumentExpression());
+                final Expression argumentExpression = instantiatedParameter.getArgumentExpression();
+                expression = pythonExpressionFormatter.formatGetter(argumentExpression);
+                containsIndex = argumentExpression.containsIndex();
             }
 
             public String getExpression()
@@ -390,7 +404,13 @@ public final class CompoundFieldTemplateData
                 return expression;
             }
 
+            public boolean getContainsIndex()
+            {
+                return containsIndex;
+            }
+
             private final String expression;
+            private final boolean containsIndex;
         }
 
         final List<InstantiatedParameterData> instantiatedParameters;
@@ -482,8 +502,8 @@ public final class CompoundFieldTemplateData
     }
 
     private static Array createArray(PythonNativeType nativeType, ZserioType baseType,
-            PythonNativeTypeMapper pythonNativeTypeMapper, ExpressionFormatter pythonExpressionFormatter)
-                    throws ZserioEmitException
+            PythonNativeTypeMapper pythonNativeTypeMapper, ExpressionFormatter pythonExpressionFormatter,
+            ImportCollector importCollector) throws ZserioEmitException
     {
         if (!(baseType instanceof ArrayType))
             return null;
@@ -493,7 +513,7 @@ public final class CompoundFieldTemplateData
                     "' and native type '" + nativeType.getClass() + "'!");
 
         return new Array((NativeArrayType)nativeType, (ArrayType)baseType, pythonNativeTypeMapper,
-                pythonExpressionFormatter);
+                pythonExpressionFormatter, importCollector);
     }
 
     private static Compound createCompound(ExpressionFormatter pythonExpressionFormatter, ZserioType baseType)
@@ -518,6 +538,8 @@ public final class CompoundFieldTemplateData
     private final String alignmentValue;
     private final String initializer;
     private final String constraint;
+
+    private final boolean usesChoiceMember;
 
     private final BitSize bitSize;
     private final Offset offset;

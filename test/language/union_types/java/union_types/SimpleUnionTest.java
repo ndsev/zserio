@@ -309,7 +309,7 @@ public class SimpleUnionTest
             writeSimpleUnionCase4ToByteArray(writer);
             break;
         default:
-            throw new RuntimeException("writeSimpleUnionToByteArray - unkown choiceTag" + choiceTag + "!");
+            throw new RuntimeException("writeSimpleUnionToByteArray - unknown choiceTag" + choiceTag + "!");
         }
     }
 

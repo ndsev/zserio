@@ -46,7 +46,7 @@ ${I}<#rt>
 </#macro>
     def __eq__(self, other):
 <#if compoundParametersData.list?has_content || fieldList?has_content>
-        <#assign eqHasParenthesis = (compoundParametersData.list?size  + fieldList?size) gt 1/>
+    <#assign eqHasParenthesis = (compoundParametersData.list?size + fieldList?size) gt 1/>
         if isinstance(other, ${name}):
             return <#if eqHasParenthesis>(</#if><#rt>
     <#if compoundParametersData.list?has_content>
@@ -78,20 +78,16 @@ ${I}<#rt>
 <#list fieldList as field>
 
     def ${field.getterName}(self):
-        return self.<@field_member_name field/><#if field.array??>.getRawArray()</#if>
+        <@compound_getter_field field/>
     <#if withWriterCode>
 
     def ${field.setterName}(self, <@field_argument_name field/>):
-        <#if field.array??>
-        self.<@field_member_name field/> = zserio.Array(<@array_field_constructor_parameters field/>)
-        <#else>
-        self.<@field_member_name field/> = <@field_argument_name field/>
-        </#if>
+        <@compound_setter_field field/>
     </#if>
     <#if field.optional??>
 
     def ${field.optional.indicatorName}(self):
-        return (<#if field.optional.clause??>${field.optional.clause}<#else>${field.getterName}() != None</#if>)
+        return <#if field.optional.clause??>${field.optional.clause}<#else>${field.getterName}() != None</#if>
     </#if>
 </#list>
 
@@ -152,7 +148,7 @@ ${I}<#rt>
     <#if fieldList?has_content>
         <#if hasFieldWithOffset>
         if callInitializeOffsets:
-            initializeOffsets(writer.getBitPosition())
+            self.initializeOffsets(writer.getBitPosition())
 
         </#if>
         <#list fieldList as field>

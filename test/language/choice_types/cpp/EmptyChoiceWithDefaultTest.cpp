@@ -11,7 +11,7 @@ namespace choice_types
 namespace empty_choice_with_default
 {
 
-TEST(EmptyChoiceWithDefaultTest, emptyConstructor)
+TEST(EmptyChoiceWithDefaultTest, selectorConstructor)
 {
     EmptyChoiceWithDefault emptyChoiceWithDefault;
     ASSERT_THROW(emptyChoiceWithDefault.getSelector(), zserio::CppRuntimeException);

@@ -10,7 +10,6 @@ def getBitFieldLowerBound(length):
 
     :param length: Length of the unsigned bitfield in bits.
     :returns: The lowest value the unsigned bitfield can hold.
-
     :raises PythonRuntimeException: If unsigned bitfield with wrong length has been specified.
     """
 
@@ -24,7 +23,6 @@ def getBitFieldUpperBound(length):
 
     :param length: Length of the unsigned bitfield in bits.
     :returns: The largest value the unsigned bitfield can hold.
-
     :raises PythonRuntimeException: If unsigned bitfield with wrong length has been specified.
     """
 
@@ -37,7 +35,6 @@ def getSignedBitFieldLowerBound(length):
 
     :param length: Length of the signed bitfield in bits.
     :returns: The lowest value the signed bitfield can hold.
-
     :raises PythonRuntimeException: If signed bitfield with wrong length has been specified.
     """
 
@@ -50,7 +47,6 @@ def getSignedBitFieldUpperBound(length):
 
     :param length: Length of the signed bitfield in bits.
     :returns: The largest value the signed bitfield can hold.
-
     :raises PythonRuntimeException: If signed bitfield with wrong length has been specified.
     """
 

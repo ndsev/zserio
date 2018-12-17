@@ -23,8 +23,8 @@ public class BoolParamChoiceTest
     public void selectorConstructor()
     {
         final boolean selector = true;
-        final BoolParamChoice enumParamChoice = new BoolParamChoice(selector);
-        assertEquals(selector, enumParamChoice.getSelector());
+        final BoolParamChoice boolParamChoice = new BoolParamChoice(selector);
+        assertEquals(selector, boolParamChoice.getSelector());
     }
 
     @Test
@@ -34,9 +34,9 @@ public class BoolParamChoiceTest
         final File file = new File("test.bin");
         final int value = 99;
         writeBoolParamChoiceToFile(file, selector, value);
-        final BoolParamChoice enumParamChoice = new BoolParamChoice(file, selector);
-        assertEquals(selector, enumParamChoice.getSelector());
-        assertEquals((byte)value, enumParamChoice.getBlack());
+        final BoolParamChoice boolParamChoice = new BoolParamChoice(file, selector);
+        assertEquals(selector, boolParamChoice.getSelector());
+        assertEquals((byte)value, boolParamChoice.getBlack());
     }
 
     @Test
@@ -47,46 +47,46 @@ public class BoolParamChoiceTest
         final int value = 234;
         writeBoolParamChoiceToFile(file, selector, value);
         final BitStreamReader stream = new FileBitStreamReader(file);
-        final BoolParamChoice enumParamChoice = new BoolParamChoice(stream, selector);
+        final BoolParamChoice boolParamChoice = new BoolParamChoice(stream, selector);
         stream.close();
-        assertEquals(selector, enumParamChoice.getSelector());
-        assertEquals((short)value, enumParamChoice.getGrey());
+        assertEquals(selector, boolParamChoice.getSelector());
+        assertEquals((short)value, boolParamChoice.getGrey());
     }
 
     @Test
     public void bitSizeOf()
     {
-        BoolParamChoice enumParamChoice = new BoolParamChoice(true);
-        assertEquals(8, enumParamChoice.bitSizeOf());
+        BoolParamChoice boolParamChoice = new BoolParamChoice(true);
+        assertEquals(8, boolParamChoice.bitSizeOf());
 
-        enumParamChoice = new BoolParamChoice(false);
-        assertEquals(16, enumParamChoice.bitSizeOf());
+        boolParamChoice = new BoolParamChoice(false);
+        assertEquals(16, boolParamChoice.bitSizeOf());
     }
 
     @Test
     public void getSelector()
     {
         final boolean selector = true;
-        final BoolParamChoice enumParamChoice = new BoolParamChoice(selector);
-        assertEquals(selector, enumParamChoice.getSelector());
+        final BoolParamChoice boolParamChoice = new BoolParamChoice(selector);
+        assertEquals(selector, boolParamChoice.getSelector());
     }
 
     @Test
     public void getSetBlack()
     {
-        BoolParamChoice enumParamChoice = new BoolParamChoice(true);
+        BoolParamChoice boolParamChoice = new BoolParamChoice(true);
         final byte value = 99;
-        enumParamChoice.setBlack(value);
-        assertEquals(value, enumParamChoice.getBlack());
+        boolParamChoice.setBlack(value);
+        assertEquals(value, boolParamChoice.getBlack());
     }
 
     @Test
     public void getSetGrey()
     {
-        BoolParamChoice enumParamChoice = new BoolParamChoice(false);
+        BoolParamChoice boolParamChoice = new BoolParamChoice(false);
         final short value = 234;
-        enumParamChoice.setGrey(value);
-        assertEquals(value, enumParamChoice.getGrey());
+        boolParamChoice.setGrey(value);
+        assertEquals(value, boolParamChoice.getGrey());
     }
 
     @Test
@@ -130,31 +130,31 @@ public class BoolParamChoiceTest
     @Test
     public void initializeOffsets()
     {
-        BoolParamChoice enumParamChoice = new BoolParamChoice(true);
+        BoolParamChoice boolParamChoice = new BoolParamChoice(true);
         final int bitPosition = 1;
-        assertEquals(9, enumParamChoice.initializeOffsets(bitPosition));
+        assertEquals(9, boolParamChoice.initializeOffsets(bitPosition));
 
-        enumParamChoice = new BoolParamChoice(false);
-        assertEquals(17, enumParamChoice.initializeOffsets(bitPosition));
+        boolParamChoice = new BoolParamChoice(false);
+        assertEquals(17, boolParamChoice.initializeOffsets(bitPosition));
     }
 
     @Test
     public void fileWrite() throws IOException, ZserioError
     {
         boolean selector = true;
-        BoolParamChoice enumParamChoice = new BoolParamChoice(selector);
+        BoolParamChoice boolParamChoice = new BoolParamChoice(selector);
         final byte byteValue = 99;
-        enumParamChoice.setBlack(byteValue);
+        boolParamChoice.setBlack(byteValue);
         final File file = new File("test.bin");
-        enumParamChoice.write(file);
+        boolParamChoice.write(file);
         BoolParamChoice readBoolParamChoice = new BoolParamChoice(file, selector);
         assertEquals(byteValue, readBoolParamChoice.getBlack());
 
         selector = false;
-        enumParamChoice = new BoolParamChoice(selector);
+        boolParamChoice = new BoolParamChoice(selector);
         final short shortValue = 234;
-        enumParamChoice.setGrey(shortValue);
-        enumParamChoice.write(file);
+        boolParamChoice.setGrey(shortValue);
+        boolParamChoice.write(file);
         readBoolParamChoice = new BoolParamChoice(file, selector);
         assertEquals(shortValue, readBoolParamChoice.getGrey());
     }
@@ -163,22 +163,22 @@ public class BoolParamChoiceTest
     public void bitStreamWriterWrite() throws IOException, ZserioError
     {
         boolean selector = true;
-        BoolParamChoice enumParamChoice = new BoolParamChoice(selector);
+        BoolParamChoice boolParamChoice = new BoolParamChoice(selector);
         final byte byteValue = 99;
-        enumParamChoice.setBlack(byteValue);
+        boolParamChoice.setBlack(byteValue);
         final File file = new File("test.bin");
         BitStreamWriter writer = new FileBitStreamWriter(file);
-        enumParamChoice.write(writer);
+        boolParamChoice.write(writer);
         writer.close();
         BoolParamChoice readBoolParamChoice = new BoolParamChoice(file, selector);
         assertEquals(byteValue, readBoolParamChoice.getBlack());
 
         selector = false;
-        enumParamChoice = new BoolParamChoice(selector);
+        boolParamChoice = new BoolParamChoice(selector);
         final short shortValue = 234;
-        enumParamChoice.setGrey(shortValue);
+        boolParamChoice.setGrey(shortValue);
         writer = new FileBitStreamWriter(file);
-        enumParamChoice.write(writer);
+        boolParamChoice.write(writer);
         writer.close();
         readBoolParamChoice = new BoolParamChoice(file, selector);
         assertEquals(shortValue, readBoolParamChoice.getGrey());

@@ -11,7 +11,7 @@ public class NativeArrayType extends PythonNativeType
 
     public NativeArrayType(String traitsName, boolean requiresElementBitSize, boolean requiresElementCreator)
     {
-        super(ARRAY_PACKAGE_NAME, "Array");
+        super(ARRAY_PACKAGE_NAME, "array");
 
         this.traitsName = traitsName;
         this.requiresElementBitSize = requiresElementBitSize;

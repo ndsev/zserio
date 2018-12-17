@@ -25,7 +25,7 @@ public class EmptyChoiceWithCaseTest
     }
 
     @Test
-    public void containerConstructor()
+    public void selectorConstructor()
     {
         final EmptyChoiceWithCase emptyChoiceWithCase = new EmptyChoiceWithCase((short)1);
         assertEquals(1, emptyChoiceWithCase.getSelector());

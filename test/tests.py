@@ -65,7 +65,7 @@ def main():
     # pylint for test files
     print("\nRunning pylint on python tests.")
     pylintResult = _runPylint(testFiles, pylintOptions,
-                              "missing-docstring,invalid-name,duplicate-code,too-many-public-methods")
+                              "missing-docstring, invalid-name, duplicate-code, too-many-public-methods")
     if pylintResult != 0:
         return pylintResult
 
@@ -79,13 +79,13 @@ def main():
         genFiles += [genFile for genFile in globResult if not genFile.endswith("api.py")]
 
     print("Running pylint on generated files.")
-    pylintResult = _runPylint(genFiles, pylintOptions,
-                              "missing-docstring,invalid-name,no-self-use,duplicate-code")
+    pylintResult = _runPylint(genFiles, pylintOptions, ("missing-docstring, invalid-name, no-self-use,"
+                                                        "duplicate-code, line-too-long, singleton-comparison"))
     if pylintResult != 0:
         return pylintResult
 
     print("Running pylint on generated api.py files.")
-    pylintResult = _runPylint(apiFiles, pylintOptions, "missing-docstring,unused-import,line-too-long")
+    pylintResult = _runPylint(apiFiles, pylintOptions, "missing-docstring, unused-import, line-too-long")
 
     return pylintResult
 

@@ -25,7 +25,7 @@ public class EmptyChoiceWithDefaultTest
     }
 
     @Test
-    public void containerConstructor()
+    public void selectorConstructor()
     {
         final EmptyChoiceWithDefault emptyChoiceWithDefault = new EmptyChoiceWithDefault((short)1);
         assertEquals(1, emptyChoiceWithDefault.getSelector());

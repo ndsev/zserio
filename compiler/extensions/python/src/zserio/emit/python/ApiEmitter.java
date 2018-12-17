@@ -1,6 +1,8 @@
 package zserio.emit.python;
 
 import java.util.TreeMap;
+
+import zserio.ast.ChoiceType;
 import zserio.ast.ConstType;
 import zserio.ast.EnumType;
 import zserio.ast.Package;
@@ -41,6 +43,12 @@ public class ApiEmitter extends PythonDefaultEmitter
             addEmptyPackageMapping();
         else
             addPackageMapping(mappedPackageName);
+    }
+
+    @Override
+    public void beginChoice(ChoiceType choiceType) throws ZserioEmitException
+    {
+        addTypeMapping(choiceType);
     }
 
     @Override

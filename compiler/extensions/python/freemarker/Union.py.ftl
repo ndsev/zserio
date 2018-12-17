@@ -9,7 +9,7 @@
 class ${name}:
     def __init__(self<#if constructorParamList?has_content>, ${constructorParamList}</#if>):
         <@compound_constructor_parameter_assignments compoundParametersData/>
-        self._choiceTag = CHOICE_TAG_UNDEFINED
+        self._choiceTag = self.UNDEFINED_CHOICE
         self._choice = None
 
     @classmethod
@@ -24,10 +24,10 @@ class ${name}:
             return (<#rt>
 <#if compoundParametersData.list?has_content>
                     <#lt><@compound_compare_parameters compoundParametersData, 5/> and
-                    self._choiceTag == other._choiceTag and self._choice == other._choice)
-<#else>
-                    <#lt>self._choiceTag == other._choiceTag and self._choice == other._choice)
 </#if>
+                    <#if compoundParametersData.list?has_content>                    </#if><#t>
+                    <#lt>self._choiceTag == other._choiceTag and
+                    self._choice == other._choice)
 
         return False
 
@@ -46,36 +46,35 @@ class ${name}:
 <#list fieldList as field>
 
     def ${field.getterName}(self):
-        return self._choice<#if field.array??>.getRawArray()</#if>
+        <@compound_getter_field field/>
     <#if withWriterCode>
 
     def ${field.setterName}(self, <@field_argument_name field/>):
-        self._choiceTag = <@choice_tag_name field/>
-        <#if field.array??>
-        self._choice = zserio.Array(<@array_field_constructor_parameters field/>)
-        <#else>
-        self._choice = <@field_argument_name field/>)
-        </#if>
+        self._choiceTag = self.<@choice_tag_name field/>
+        <@compound_setter_field field/>
     </#if>
 </#list>
 
     def choiceTag(self):
         return self._choiceTag
 
-    def bitSizeOf(self, <#if fieldList?has_content>_</#if>bitPosition=0):
+<#macro union_if memberActionMacroName>
+    <#list fieldList as field>
+        <#if field?is_first>if <#else>elif </#if>self._choiceTag == self.<@choice_tag_name field/>:
+            <@.vars[memberActionMacroName] field, 3/>
+    </#list>
+        else:
+            raise zserio.PythonRuntimeException("No match in union ${name}!")
+</#macro>
+    def bitSizeOf(self, <#if !fieldList?has_content>_</#if>bitPosition=0):
 <#if fieldList?has_content>
         endBitPosition = bitPosition
 
         endBitPosition = zserio.bitsizeof.getBitSizeOfVarUInt64(self._choiceTag)
 
-    <#list fieldList as field>
-        <#if field?is_first>if <#else>elif </#if>self._choiceTag == <@choice_tag_name field/>:
-            <@compound_bitsizeof_field field, 3/>
-    </#list>
-        else:
-            raise zserio.PythonRuntimeException("No match in union ${name}!")
+        <@union_if "compound_bitsizeof_field"/>
 
-        return endBitPosition - bitPosition;
+        return endBitPosition - bitPosition
 <#else>
         return 0
 </#if>
@@ -87,12 +86,7 @@ class ${name}:
 
         endBitPosition += zserio.bitsizeof.getBitSizeOfVarUInt64(self._choiceTag)
 
-        <#list fieldList as field>
-        <#if field?is_first>if <#else>elif </#if>self._choiceTag == <@choice_tag_name field/>:
-            <@compound_initialize_offsets_field field, 3/>
-        </#list>
-        else:
-            raise zserio.PythonRuntimeException("No match in union ${name}!")
+        <@union_if "compound_initialize_offsets_field"/>
 
         return endBitPosition
     <#else>
@@ -100,20 +94,23 @@ class ${name}:
     </#if>
 </#if>
 
-    def read(self, reader):
+<#macro union_read_field field indent>
+    <@compound_read_field field, name, indent/>
+</#macro>
+    def read(self, <#if !fieldList?has_content>_</#if>reader):
 <#if fieldList?has_content>
         self._choiceTag = reader.readVarUInt64()
 
-    <#list fieldList as field>
-        <#if field?is_first>if <#else>elif </#if>self._choiceTag == <@choice_tag_name field/>:
-            <@compound_read_field field, name, 3/>
-    </#list>
-        else:
-            raise zserio.PythonRuntimeException("No match in union ${name}!")
+        <@union_if "union_read_field"/>
+<#else>
+        pass
 </#if>
 <#if withWriterCode>
 
-    def write(self, <#if fieldList?has_content>_</#if>writer, *, <#if fieldList?has_content>_</#if>callInitializeOffsets=True):
+    <#macro union_write_field field indent>
+        <@compound_write_field field, name, indent/>
+    </#macro>
+    def write(self, <#if !fieldList?has_content>_</#if>writer, *, <#if !hasFieldWithOffset>_</#if>callInitializeOffsets=True):
     <#if fieldList?has_content>
         <#if hasFieldWithOffset>
         if callInitializeOffests:
@@ -122,18 +119,17 @@ class ${name}:
         </#if>
         writer.writeVarUInt64(self._choiceTag)
 
-        <#list fieldList as field>
-        <#if field?is_first>if <#else>elif </#if>self._choiceTag == <@choice_tag_name field/>:
-            <@compound_write_field field, name, 3/>
-        </#list>
-        else:
-            raise zserio.PythonRuntimeException("No match in union ${name}!")
+        <@union_if "union_write_field"/>
     <#else>
         pass
     </#if>
 </#if>
+<#list fieldList as field>
+    <@define_element_creator field/>
+</#list>
 
 <#list fieldList as field>
     <@choice_tag_name field/> = ${field?index}
 </#list>
-    CHOICE_TAG_UNDEFINED = -1
+    <#-- Don't use CHOICE_UNDEFINED name because of clashing with generated tags from fields. -->
+    UNDEFINED_CHOICE = -1

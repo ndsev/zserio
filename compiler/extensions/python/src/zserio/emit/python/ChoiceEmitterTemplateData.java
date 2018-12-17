@@ -29,14 +29,14 @@ public class ChoiceEmitterTemplateData extends CompoundTypeTemplateData
         for (ChoiceCase choiceCase : choiceCases)
         {
             caseMemberList.add(new CaseMember(choiceType, choiceCase, pythonNativeTypeMapper,
-                    getWithRangeCheckCode(), pythonExpressionFormatter));
+                    getWithRangeCheckCode(), pythonExpressionFormatter, this));
         }
 
         final ChoiceDefault choiceDefault = choiceType.getChoiceDefault();
         if (choiceDefault != null)
         {
             defaultMember = new DefaultMember(choiceType, choiceDefault, pythonNativeTypeMapper,
-                    getWithRangeCheckCode(), pythonExpressionFormatter);
+                    getWithRangeCheckCode(), pythonExpressionFormatter, this);
         }
         else
         {
@@ -70,7 +70,8 @@ public class ChoiceEmitterTemplateData extends CompoundTypeTemplateData
     {
         public CaseMember(ChoiceType choiceType, ChoiceCase choiceCase,
                 PythonNativeTypeMapper pythonNativeTypeMapper, boolean withRangeCheckCode,
-                ExpressionFormatter expressionFormatter) throws ZserioEmitException
+                ExpressionFormatter expressionFormatter, ImportCollector importCollector)
+                        throws ZserioEmitException
         {
             expressionList = new ArrayList<String>();
             final Iterable<ChoiceCase.CaseExpression> caseExpressions = choiceCase.getExpressions();
@@ -79,8 +80,8 @@ public class ChoiceEmitterTemplateData extends CompoundTypeTemplateData
 
             final Field fieldType = choiceCase.getField();
             compoundField = (fieldType != null) ?
-                    new CompoundFieldTemplateData(pythonNativeTypeMapper, withRangeCheckCode,
-                            fieldType, expressionFormatter) : null;
+                    new CompoundFieldTemplateData(pythonNativeTypeMapper, withRangeCheckCode, choiceType,
+                            fieldType, expressionFormatter, importCollector) : null;
         }
 
         public Iterable<String> getExpressionList()
@@ -101,12 +102,13 @@ public class ChoiceEmitterTemplateData extends CompoundTypeTemplateData
     {
         public DefaultMember(ChoiceType choiceType, ChoiceDefault choiceDefault,
                 PythonNativeTypeMapper pythonNativeTypeMapper, boolean withRangeCheckCode,
-                ExpressionFormatter expressionFormatter) throws ZserioEmitException
+                ExpressionFormatter expressionFormatter, ImportCollector importCollector)
+                        throws ZserioEmitException
         {
             final Field fieldType = choiceDefault.getField();
             compoundField = (fieldType != null) ?
-                    new CompoundFieldTemplateData(pythonNativeTypeMapper, withRangeCheckCode,
-                            fieldType, expressionFormatter) : null;
+                    new CompoundFieldTemplateData(pythonNativeTypeMapper, withRangeCheckCode, choiceType,
+                            fieldType, expressionFormatter, importCollector) : null;
         }
 
         public CompoundFieldTemplateData getCompoundField()

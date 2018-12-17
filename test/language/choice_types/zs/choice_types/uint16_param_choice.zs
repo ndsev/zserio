@@ -1,10 +1,10 @@
-package choice_types.int_choice;
+package choice_types.uint16_param_choice;
 
 subtype int8  VariantA;
 subtype int16 VariantB;
 subtype int32 VariantC;
 
-choice IntChoice(uint16 tag) on tag
+choice UInt16ParamChoice(uint16 tag) on tag
 {
     case 1:
         VariantA  a;

@@ -8,9 +8,7 @@
     <#if expressionList?size == 1>
 selector == (${expressionList?first})<#rt>
     <#else>
-        <#list expressionList as expression>
-selector == (${expression})<#if expression?has_next> || </#if><#rt>
-        </#list>
+selector in (<#list expressionList as expression>${expression}<#if expression?has_next>, </#if></#list>)<#rt>
     </#if>
 </#macro>
 <#macro choice_if memberActionMacroName>
@@ -26,9 +24,9 @@ selector == (${expression})<#if expression?has_next> || </#if><#rt>
     <#if !isDefaultUnreachable>
         else:
         <#if defaultMember??>
-            <@.vars[memberActionMacroName] defaultMember, 4/>
+            <@.vars[memberActionMacroName] defaultMember, 3/>
         <#else>
-            raise PythonRuntimeException("No match in choice ${name}: " + selector + "!")
+            raise zserio.PythonRuntimeException("No match in choice ${name}: %d!" % selector)
         </#if>
     </#if>
 </#macro>
@@ -58,7 +56,7 @@ class ${name}:
         <@compound_hashcode_parameters compoundParametersData/>
         result = zserio.hashcode.calcHashCode(result, hash(self._choice))
 
-        return result;
+        return result
 <#list compoundParametersData.list as parameter>
 
     def ${parameter.getterName}(self):
@@ -67,15 +65,11 @@ class ${name}:
 <#list fieldList as field>
 
     def ${field.getterName}(self):
-        return self._choice<#if field.array??>.getRawArray()</#if>
+        <@compound_getter_field field/>
     <#if withWriterCode>
 
     def ${field.setterName}(self, <@field_argument_name field/>):
-        <#if field.array??>
-        self.<@field_member_name field/> = zserio.Array(<@array_field_constructor_parameters field/>)
-        <#else>
-        self.<@field_member_name field/> = <@field_argument_name field/>
-        </#if>
+        <@compound_setter_field field/>
     </#if>
 </#list>
 
@@ -143,7 +137,7 @@ class ${name}:
             <#lt>${I}pass
         </#if>
     </#macro>
-    def write(self, <#if fieldList?has_content>_</#if>writer, *, callInitializeOffsets=True):
+    def write(self, <#if !fieldList?has_content>_</#if>writer, *, <#if !hasFieldWithOffset>_</#if>callInitializeOffsets=True):
     <#if fieldList?has_content>
         <#if hasFieldWithOffset>
         if callInitializeOffsets:
@@ -155,3 +149,6 @@ class ${name}:
         pass
     </#if>
 </#if>
+<#list fieldList as field>
+    <@define_element_creator field/>
+</#list>
