@@ -93,45 +93,206 @@ set_global_python_variables()
     exit_if_argc_ne $# 1
     local ZSERIO_PROJECT_ROOT="$1"; shift
 
-    # python to use, defaults to "python" if not set
-    PYTHON="${PYTHON:-python}"
-    if [ ! -f "`which "${PYTHON}"`" ] ; then
-        stderr_echo "Cannot find Python! Set PYTHON environment variable."
-        return 1
-    fi
-    local PYTHON_VERSION=$(${PYTHON} -V 2>&1 | cut -d\  -f 2)
-    PYTHON_VERSION=(${PYTHON_VERSION//./ }) # python version as an array
-    if [[ ${#PYTHON_VERSION[@]} -lt 2 || ${PYTHON_VERSION[0]} -lt 3 ]] ||
-       [[ ${PYTHON_VERSION[0]} -eq 3 && ${PYTHON_VERSION[1]} -lt 5 ]] ; then
-        stderr_echo "Python 3.5+ is required! Current Python is '$(python -V 2>&1)'"
-        return 1
-    fi
+    PYTHON_VIRTUALENV="${PYTHON_VIRTUALENV:-""}"
 
-    # check python requirements
-    local PIP_REQUIREMENTS_FILE="${ZSERIO_PROJECT_ROOT}/compiler/extensions/python/runtime/requirements.txt"
-    local HOST_PIP_REQUIREMENTS_FILE
-    posix_to_host_path "${PIP_REQUIREMENTS_FILE}" HOST_PIP_REQUIREMENTS_FILE
-    ${PYTHON} << EOF
-try:
-    import sys
-    import pkg_resources
-    reqs = []
-    with open(r'${HOST_PIP_REQUIREMENTS_FILE}', 'r') as reqsFile:
-        for req in reqsFile:
-            reqs.append(req.rstrip())
-    pkg_resources.require(reqs)
-except Exception as e:
-    print(e)
-    exit(1)
-EOF
-    if [ $? -ne 0 ] ; then
-        stderr_echo "Required python packages are not installed!"
-        stderr_echo "Try: pip install -r ${PYTHON_RUNTIME_ROOT}/requirements.txt"
-        return 1
+    if [ -z "${PYTHON_VIRTUALENV}" ] ; then
+        # python to use, defaults to "python3" if not set
+        PYTHON="${PYTHON:-python3}"
+        if [ ! -f "`which "${PYTHON}"`" ] ; then
+            stderr_echo "Cannot find Python! Set PYTHON environment variable."
+            return 1
+        fi
+
+        check_python_version ${PYTHON}
+
+        # check that python pip and virtualenv modules are installed
+        local PYTHON_REQUIREMENTS=("virtualenv" "pip")
+        check_python_requirements "${PYTHON}" PYTHON_REQUIREMENTS[@]
+        if [ $? -ne 0 ] ; then
+            return 1
+        fi
     fi
 
     # prevent __pycache__ and *.pyc being created in sources directory
     export PYTHONDONTWRITEBYTECODE=1
+
+    return 0
+}
+
+# Check python version.
+check_python_version()
+{
+    exit_if_argc_ne $# 1
+    local PYTHON_BIN="$1"; shift
+
+    local PYTHON_VERSION=$(${PYTHON_BIN} -V 2>&1 | cut -d\  -f 2)
+    PYTHON_VERSION=(${PYTHON_VERSION//./ }) # python version as an array
+    if [[ ${#PYTHON_VERSION[@]} -lt 2 || ${PYTHON_VERSION[0]} -lt 3 ]] ||
+       [[ ${PYTHON_VERSION[0]} -eq 3 && ${PYTHON_VERSION[1]} -lt 5 ]] ; then
+        stderr_echo "Python 3.5+ is required! Current Python is '$(${PYTHON_BIN} -V 2>&1)'"
+        return 1
+    fi
+
+    return 0
+}
+
+# Check python requirements.
+check_python_requirements()
+{
+    exit_if_argc_ne $# 2
+    local PYTHON_BIN="$1"; shift
+    local MSYS_WORKAROUND_TEMP=("${!1}"); shift
+    local PYTHON_REQUIREMENTS=("${MSYS_WORKAROUND_TEMP[@]}")
+
+    "${PYTHON_BIN}" << EOF
+try:
+    import sys
+    import pkg_resources
+    reqs = "${PYTHON_REQUIREMENTS[@]}".split()
+    pkg_resources.require(reqs)
+except Exception as e:
+    print(e, file=sys.stderr)
+    exit(1)
+EOF
+    if [ $? -ne 0 ] ; then
+        stderr_echo "Required python packages are not installed!"
+        return 1
+    fi
+}
+
+# Detect path to python virtualenv activate scripts which differs on Linux and Windows.
+detect_python_virtualenv_activate()
+{
+    exit_if_argc_ne $# 2
+    local PYTHON_VIRTUALENV_ROOT="$1"; shift
+    local PYTHON_VIRTUALENV_ACTIVATE_OUT="$1"; shift
+
+    local ACTIVATE=
+    if [ -f "${PYTHON_VIRTUALENV_ROOT}/bin/activate" ] ; then
+        ACTIVATE="${PYTHON_VIRTUALENV_ROOT}/bin/activate"
+    elif [ -f "${PYTHON_VIRTUALENV_ROOT}/Scripts/activate" ] ; then
+        ACTIVATE="${PYTHON_VIRTUALENV_ROOT}/Scripts/activate"
+    fi
+
+    eval ${PYTHON_VIRTUALENV_ACTIVATE_OUT}="${ACTIVATE}"
+}
+
+# Activate python virtualenv.
+#
+# When PYTHON_VIRTUALENV is set, just try to use it and check that it fullfils all requirements.
+# When PYTHON_VIRTUALENV is not set, try to create new python virtualenv and install all required packages.
+activate_python_virtualenv()
+{
+    exit_if_argc_ne $# 2
+    local ZSERIO_PROJECT_ROOT="$1"; shift
+    local ZSERIO_BUILD_DIR="$1"; shift
+
+    local PYTHON_VIRTUALENV_ROOT="${PYTHON_VIRTUALENV:-"${ZSERIO_BUILD_DIR}/pyenv"}"
+    local PYTHON_VIRTUALENV_ACTIVATE
+    detect_python_virtualenv_activate "${PYTHON_VIRTUALENV_ROOT}" PYTHON_VIRTUALENV_ACTIVATE
+
+    if [ ! -z ${PYTHON_VIRTUALENV} ] ; then # forced python virtualenv
+        if [ -z "${PYTHON_VIRTUALENV_ACTIVATE}" ] ; then
+            stderr_echo "Failed to find virtualenv activate script in '${PYTHON_VIRTUALENV_ROOT}'!"
+            return 1
+        fi
+    else
+        if [ -z "${PYTHON_VIRTUALENV_ACTIVATE}" ] ; then
+            ${PYTHON} -m virtualenv -p ${PYTHON} "${PYTHON_VIRTUALENV_ROOT}"
+            if [ $? -ne 0 ] ; then
+                stderr_echo "Failed to create virtualenv!"
+                return 1
+            fi
+
+            detect_python_virtualenv_activate "${PYTHON_VIRTUALENV_ROOT}" PYTHON_VIRTUALENV_ACTIVATE
+            if [ -z "${PYTHON_VIRTUALENV_ACTIVATE}" ] ; then
+                stderr_echo "Failed to find virtualenv activate script in '${PYTHON_VIRTUALENV_ROOT}'!"
+                return 1
+            fi
+        fi
+    fi
+
+    echo
+    echo "Activating python virtualenv '${PYTHON_VIRTUALENV_ACTIVATE}'."
+
+    source "${PYTHON_VIRTUALENV_ACTIVATE}"
+    if [ $? -ne 0 ] ; then
+        stderr_echo "Failed to activate virtualenv!"
+        return 1
+    fi
+
+    check_python_version python
+    if [ $? -ne 0 ] ; then
+        return 1
+    fi
+
+    local STANDARD_REQUIREMENTS=("coverage>=4.5.1" "sphinx-automodapi>=0.8" "pylint>=2.1.1")
+    local APSW_REQUIREMENTS=("apsw")
+
+    if [ ! -z "${PYTHON_VIRTUALENV}" ] ; then  # forced python virtualenv
+        local REQUIREMENTS=(${STANDARD_REQUIREMENTS[@]} ${APSW_REQUIREMENTS[@]})
+        check_python_requirements python REQUIREMENTS[@]
+        if [ $? -ne 0 ] ; then
+            return 1
+        fi
+    else
+        check_python_requirements python STANDARD_REQUIREMENTS[@] 2> /dev/null
+        if [ $? -ne 0 ] ; then
+            pip install ${STANDARD_REQUIREMENTS[@]}
+            if [ $? -ne 0 ] ; then
+                stderr_echo "Failed to install python requirements!"
+                return 1
+            fi
+        fi
+
+        check_python_requirements python APSW_REQUIREMENTS[@] 2> /dev/null
+        if [ $? -ne 0 ] ; then
+            install_python_apsw "${ZSERIO_PROJECT_ROOT}" "${PYTHON_VIRTUALENV_ROOT}"
+            if [ $? -ne 0 ] ; then
+                return 1
+            fi
+        fi
+    fi
+
+    return 0
+}
+
+# Build and install python apsw package using same sqlite sources as for C++ projects.
+install_python_apsw()
+{
+    exit_if_argc_ne $# 2
+    local ZSERIO_PROJECT_ROOT="$1"; shift
+    local PYTHON_VIRTUALENV_ROOT="$1"; shift
+
+    local SQLITE_ROOT="${ZSERIO_PROJECT_ROOT}/3rdparty/cpp/sqlite"
+
+    pushd "${PYTHON_VIRTUALENV_ROOT}" > /dev/null
+    if [ ! -d "${PYTHON_VIRTUALENV_ROOT}/apsw" ] ; then
+        git clone --depth 1 https://github.com/rogerbinns/apsw.git -b 3.24.0-r1
+        if [ $? -ne 0 ] ; then
+            stderr_echo "Failed to clone apsw repository!"
+            popd > /dev/null
+            return 1
+        fi
+    fi
+
+    cd apsw
+
+    # copy 3rdparty sqlite3 to be built within apsw module
+    cp -r "${SQLITE_ROOT}" sqlite3
+    if [ $? -ne 0 ] ; then
+        stderr_echo "Failed to copy 3rdparty sqlite to apsw build directory!"
+        popd > /dev/null
+        return 1
+    fi
+
+    python setup.py build --enable=fts4,fts5 install
+    if [ $? -ne 0 ] ; then
+        stderr_echo "Failed to build python apsw module!"
+        popd > /dev/null
+        return 1
+    fi
+    popd > /dev/null
 
     return 0
 }
@@ -420,7 +581,7 @@ run_pylint()
     local PYLINT_ARGS=("${MSYS_WORKAROUND_TEMP[@]}")
     local SOURCES="$@"; shift
 
-    "${PYTHON}" -m pylint ${SOURCES} --rcfile "${PYLINT_RCFILE}" --persistent=n "${PYLINT_ARGS[@]}"
+    python -m pylint ${SOURCES} --rcfile "${PYLINT_RCFILE}" --persistent=n "${PYLINT_ARGS[@]}"
     local PYLINT_RESULT=$?
     if [ ${PYLINT_RESULT} -ne 0 ] ; then
         stderr_echo "Running pylint failed with return code ${PYLINT_RESULT}!"

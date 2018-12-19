@@ -3,6 +3,136 @@
 SCRIPT_DIR=`dirname $0`
 source "${SCRIPT_DIR}/common_tools.sh"
 
+# Test python code by runnig python -m unittest.
+test_python_runtime()
+{
+    exit_if_argc_ne $# 2
+    local PYTHON_RUNTIME_ROOT="${1}" ; shift
+    local BUILD_DIR="${1}"; shift
+
+    mkdir -p "${BUILD_DIR}"
+    pushd "${BUILD_DIR}" > /dev/null
+
+    local SOURCES_DIR="${PYTHON_RUNTIME_ROOT}/src"
+    local TESTS_DIR="${PYTHON_RUNTIME_ROOT}/tests"
+
+    echo "Running python runtime unit tests."
+    echo
+
+    PYTHONPATH="${SOURCES_DIR}" python \
+                                -m coverage run --source "${PYTHON_RUNTIME_ROOT}/" \
+                                -m unittest discover -s "${TESTS_DIR}" -v
+    local PYTHON_RESULT=$?
+    if [ ${PYTHON_RESULT} -ne 0 ] ; then
+        stderr_echo "Running python unit tests failed with return code ${PYTHON_RESULT}!"
+        popd > /dev/null
+        return 1
+    fi
+    echo
+
+    echo "Running python coverage report."
+    echo
+
+    python -m coverage report -m --fail-under=100
+    local COVERAGE_RESULT=$?
+    if [ ${COVERAGE_RESULT} -ne 0 ] ; then
+        stderr_echo "Running python coverage report failed with return code ${COVERAGE_RESULT}!"
+        popd > /dev/null
+        return 1
+    fi
+
+    popd > /dev/null
+    echo
+
+    echo "Running pylint on python runtime sources."
+
+    local PYLINT_RCFILE="${PYTHON_RUNTIME_ROOT}/pylintrc.txt"
+    local PYLINT_ARGS=()
+    run_pylint "${PYLINT_RCFILE}" PYLINT_ARGS[@] "${SOURCES_DIR}"/*
+    if [ $? -ne 0 ]; then
+        return 1
+    fi
+
+    echo "Running pylint on python runtime test sources."
+
+    PYLINT_ARGS+=("--disable=missing-docstring")
+    PYTHONPATH="${SOURCES_DIR}" run_pylint "${PYLINT_RCFILE}" PYLINT_ARGS[@] "${TESTS_DIR}"/*
+    if [ $? -ne 0 ]; then
+        return 1
+    fi
+
+    return 0
+}
+
+# Install python runtime source to distribution directory.
+install_python_runtime()
+{
+    exit_if_argc_ne $# 4
+    local ZSERIO_PROJECT_ROOT="${1}"; shift
+    local PYTHON_RUNTIME_ROOT="${1}"; shift
+    local PYTHON_RUNTIME_BUILD_DIR="${1}"; shift
+    local PYTHON_RUNTIME_DISTR_DIR="${1}"; shift
+
+    local PYTHON_RUNTIME_SOURCES="${PYTHON_RUNTIME_ROOT}/src"
+    local PYTHON_RUNTIME_DOC_BUILD_DIR="${PYTHON_RUNTIME_BUILD_DIR}/doc"
+    local ZSERIO_LOGO="${ZSERIO_PROJECT_ROOT}/doc/Zserio.png"
+
+    # build doc
+    echo "Building documentation for Zserio Python runtime library."
+    echo
+    rm -rf "${PYTHON_RUNTIME_DOC_BUILD_DIR}/"
+    mkdir -p "${PYTHON_RUNTIME_DOC_BUILD_DIR}"
+    pushd "${PYTHON_RUNTIME_DOC_BUILD_DIR}" > /dev/null
+
+    cp ${PYTHON_RUNTIME_ROOT}/doc/* .
+    if [ $? -ne 0 ] ; then
+        stderr_echo "Failed to get python doc configuration!"
+        popd > /dev/null
+        return 1
+    fi
+
+    PYTHONDONTWRITEBYTECODE=1 PYTHONPATH="${PYTHON_RUNTIME_SOURCES}" \
+    sphinx-build -Wa -b html -d . -Dhtml_logo="${ZSERIO_LOGO}" . zserio_apidoc
+    if [ $? -ne 0 ] ; then
+        popd > /dev/null
+        return 1
+    fi
+
+    popd > /dev/null
+
+    echo
+    echo "Installing Zserio Python runtime library."
+    echo
+
+    echo "Purging python distr dir: ${PYTHON_RUNTIME_DISTR_DIR}"
+    rm -rf "${PYTHON_RUNTIME_DISTR_DIR}/"
+    mkdir -p "${PYTHON_RUNTIME_DISTR_DIR}"
+
+    # install sources and doc
+    pushd "${PYTHON_RUNTIME_SOURCES}" > /dev/null
+
+    "${FIND}" . -name "*.py" | while read -r SOURCE ; do
+        echo "Installing ${SOURCE}"
+        cp --parents "${SOURCE}" "${PYTHON_RUNTIME_DISTR_DIR}"
+        if [ $? -ne 0 ] ; then
+            stderr_echo "Failed to install ${SOURCE}!"
+            popd > /dev/null
+            return 1
+        fi
+    done
+
+    echo "Installing API documentation"
+    cp -r "${PYTHON_RUNTIME_DOC_BUILD_DIR}/zserio_apidoc" "${PYTHON_RUNTIME_DISTR_DIR}/"
+    if [ $? -ne 0 ] ; then
+        stderr_echo "Failed to install documentation!"
+        popd > /dev/null
+        return 1
+    fi
+
+    popd > /dev/null
+    return 0
+}
+
 # Print help message.
 print_help()
 {
@@ -224,136 +354,6 @@ parse_arguments()
     return 0
 }
 
-# Test python code by runnig python -m unittest.
-test_python_runtime()
-{
-    exit_if_argc_ne $# 2
-    local PYTHON_RUNTIME_ROOT="${1}" ; shift
-    local BUILD_DIR="${1}"; shift
-
-    mkdir -p "${BUILD_DIR}"
-    pushd "${BUILD_DIR}" > /dev/null
-
-    local SOURCES_DIR="${PYTHON_RUNTIME_ROOT}/src"
-    local TESTS_DIR="${PYTHON_RUNTIME_ROOT}/tests"
-
-    echo "Running python runtime unit tests."
-    echo
-
-    PYTHONPATH="${SOURCES_DIR}" "${PYTHON}" \
-                                -m coverage run --source "${PYTHON_RUNTIME_ROOT}/" \
-                                -m unittest discover -s "${TESTS_DIR}" -v
-    local PYTHON_RESULT=$?
-    if [ ${PYTHON_RESULT} -ne 0 ] ; then
-        stderr_echo "Running python unit tests failed with return code ${PYTHON_RESULT}!"
-        popd > /dev/null
-        return 1
-    fi
-    echo
-
-    echo "Running python coverage report."
-    echo
-
-    "${PYTHON}" -m coverage report -m --fail-under=100
-    local COVERAGE_RESULT=$?
-    if [ ${COVERAGE_RESULT} -ne 0 ] ; then
-        stderr_echo "Running python coverage report failed with return code ${COVERAGE_RESULT}!"
-        popd > /dev/null
-        return 1
-    fi
-
-    popd > /dev/null
-    echo
-
-    echo "Running pylint on python runtime sources."
-
-    local PYLINT_RCFILE="${PYTHON_RUNTIME_ROOT}/pylintrc.txt"
-    local PYLINT_ARGS=()
-    run_pylint "${PYLINT_RCFILE}" PYLINT_ARGS[@] "${SOURCES_DIR}"/*
-    if [ $? -ne 0 ]; then
-        return 1
-    fi
-
-    echo "Running pylint on python runtime test sources."
-
-    PYLINT_ARGS+=("--disable=missing-docstring")
-    PYTHONPATH="${SOURCES_DIR}" run_pylint "${PYLINT_RCFILE}" PYLINT_ARGS[@] "${TESTS_DIR}"/*
-    if [ $? -ne 0 ]; then
-        return 1
-    fi
-
-    return 0
-}
-
-# Install python runtime source to distribution directory.
-install_python_runtime()
-{
-    exit_if_argc_ne $# 4
-    local ZSERIO_PROJECT_ROOT="${1}"; shift
-    local PYTHON_RUNTIME_ROOT="${1}"; shift
-    local PYTHON_RUNTIME_BUILD_DIR="${1}"; shift
-    local PYTHON_RUNTIME_DISTR_DIR="${1}"; shift
-
-    local PYTHON_RUNTIME_SOURCES="${PYTHON_RUNTIME_ROOT}/src"
-    local PYTHON_RUNTIME_DOC_BUILD_DIR="${PYTHON_RUNTIME_BUILD_DIR}/doc"
-    local ZSERIO_LOGO="${ZSERIO_PROJECT_ROOT}/doc/Zserio.png"
-
-    # build doc
-    echo "Building documentation for Zserio Python runtime library."
-    echo
-    rm -rf ${PYTHON_RUNTIME_DOC_BUILD_DIR}
-    mkdir -p ${PYTHON_RUNTIME_DOC_BUILD_DIR}
-    pushd ${PYTHON_RUNTIME_DOC_BUILD_DIR} > /dev/null
-
-    cp ${PYTHON_RUNTIME_ROOT}/doc/* .
-    if [ $? -ne 0 ] ; then
-        stderr_echo "Failed to get python doc configuration!"
-        popd > /dev/null
-        return 1
-    fi
-
-    PYTHONDONTWRITEBYTECODE=1 PYTHONPATH="${PYTHON_RUNTIME_SOURCES}" \
-    sphinx-build -Wa -b html -d . -Dhtml_logo="${ZSERIO_LOGO}" . zserio_apidoc
-    if [ $? -ne 0 ] ; then
-        popd > /dev/null
-        return 1
-    fi
-
-    popd > /dev/null
-
-    echo
-    echo "Installing Zserio Python runtime library."
-    echo
-
-    echo "Purging python distr dir: ${PYTHON_RUNTIME_DISTR_DIR}"
-    rm -rf "${PYTHON_RUNTIME_DISTR_DIR}"
-    mkdir -p "${PYTHON_RUNTIME_DISTR_DIR}"
-
-    # install sources and doc
-    pushd "${PYTHON_RUNTIME_SOURCES}" > /dev/null
-
-    "${FIND}" . -name "*.py" | while read -r SOURCE ; do
-        echo "Installing ${SOURCE}"
-        cp --parents "${SOURCE}" "${PYTHON_RUNTIME_DISTR_DIR}"
-        if [ $? -ne 0 ] ; then
-            stderr_echo "Failed to install ${SOURCE}!"
-            popd > /dev/null
-            return 1
-        fi
-    done
-
-    echo "Installing API documentation"
-    cp -r "${PYTHON_RUNTIME_DOC_BUILD_DIR}/zserio_apidoc" "${PYTHON_RUNTIME_DISTR_DIR}/"
-    if [ $? -ne 0 ] ; then
-        stderr_echo "Failed to install documentation!"
-        popd > /dev/null
-        return 1
-    fi
-
-    popd > /dev/null
-    return 0
-}
-
 main()
 {
     # get the project root, absolute path is necessary only for CMake
@@ -543,9 +543,14 @@ main()
         echo "${ACTION_DESCRIPTION} Zserio Python runtime library."
         echo
 
+        activate_python_virtualenv "${ZSERIO_PROJECT_ROOT}" "${ZSERIO_BUILD_DIR}"
+        if [ $? -ne 0 ] ; then
+            return 1
+        fi
+
         local PYTHON_RUNTIME_BUILD_DIR=${ZSERIO_BUILD_DIR}/runtime_libs/python
         if [[ ${SWITCH_CLEAN} == 1 ]] ; then
-            rm -rf "${PYTHON_RUNTIME_BUILD_DIR}"
+            rm -rf "${PYTHON_RUNTIME_BUILD_DIR}/"
         else
             local PYTHON_RUNTIME_ROOT=${ZSERIO_PROJECT_ROOT}/compiler/extensions/python/runtime
             test_python_runtime "${PYTHON_RUNTIME_ROOT}" "${PYTHON_RUNTIME_BUILD_DIR}"

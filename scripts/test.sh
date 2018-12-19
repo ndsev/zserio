@@ -45,7 +45,7 @@ test_python()
     echo "Running python tests."
     echo
 
-    "${PYTHON}" "${TEST_FILE}" "${TEST_ARGS[@]}" --pylint_rcfile="${PYLINT_RCFILE}"
+    python "${TEST_FILE}" "${TEST_ARGS[@]}" --pylint_rcfile="${PYLINT_RCFILE}"
     if [ $? -ne 0 ] ; then
         return 1
     fi
@@ -64,10 +64,11 @@ test_python()
 # Run zserio tests.
 test()
 {
-    exit_if_argc_ne $# 10
+    exit_if_argc_ne $# 11
     local ZSERIO_RELEASE_DIR="$1"; shift
     local ZSERIO_VERSION="$1"; shift
     local ZSERIO_PROJECT_ROOT="$1"; shift
+    local ZSERIO_BUILD_DIR="$1"; shift
     local TEST_OUT_DIR="$1"; shift
     local MSYS_WORKAROUND_TEMP=("${!1}"); shift
     local CPP_TARGETS=("${MSYS_WORKAROUND_TEMP[@]}")
@@ -150,6 +151,12 @@ test()
     if [[ ${PARAM_PYTHON} != 0 ]]; then
         local MESSAGE="zserio Python tests"
         echo "STARTING - ${MESSAGE}"
+
+        activate_python_virtualenv "${ZSERIO_PROJECT_ROOT}" "${ZSERIO_BUILD_DIR}"
+        if [ $? -ne 0 ] ; then
+            return 1
+        fi
+
         if [[ ${SWITCH_CLEAN} == 1 ]] ; then
             rm -rf "${TEST_OUT_DIR}/python"
         else
@@ -264,6 +271,7 @@ parse_arguments()
     local PARAM_CPP_TARGET_ARRAY_OUT="$1"; shift
     local PARAM_JAVA_OUT="$1"; shift
     local PARAM_PYTHON_OUT="$1"; shift
+    local PARAM_OUT_DIR_OUT="$1"; shift
     local SWITCH_CLEAN_OUT="$1"; shift
     local SWITCH_PURGE_OUT="$1"; shift
     local SWITCH_GRPC_OUT="$1"; shift
@@ -310,6 +318,11 @@ parse_arguments()
                 fi
                 eval ${SWITCH_TEST_NAME_OUT}="${ARG}"
                 shift
+                ;;
+
+            "-o" | "--output-directory")
+                eval ${PARAM_OUT_DIR_OUT}="$2"
+                shift 2
                 ;;
 
             "-"*)
@@ -375,24 +388,25 @@ main()
     echo "Compilation and testing of zserio sources."
     echo
 
+    # get the project root, absolute path is necessary only for CMake
+    local ZSERIO_PROJECT_ROOT
+    convert_to_absolute_path "${SCRIPT_DIR}/.." ZSERIO_PROJECT_ROOT
+
     # parse command line arguments
     local PARAM_CPP_TARGET_ARRAY=()
     local PARAM_JAVA
     local PARAM_PYTHON
+    local PARAM_OUT_DIR="${ZSERIO_PROJECT_ROOT}"
     local SWITCH_CLEAN
     local SWITCH_PURGE
     local SWITCH_GRPC
     local SWITCH_TEST_NAME
-    parse_arguments PARAM_CPP_TARGET_ARRAY PARAM_JAVA PARAM_PYTHON \
+    parse_arguments PARAM_CPP_TARGET_ARRAY PARAM_JAVA PARAM_PYTHON PARAM_OUT_DIR \
                     SWITCH_CLEAN SWITCH_PURGE SWITCH_GRPC SWITCH_TEST_NAME $@
     if [ $? -ne 0 ] ; then
         print_help
         return 1
     fi
-
-    # get the project root, absolute path is necessary only for CMake
-    local ZSERIO_PROJECT_ROOT
-    convert_to_absolute_path "${SCRIPT_DIR}/.." ZSERIO_PROJECT_ROOT
 
     # set global variables
     set_global_common_variables
@@ -432,7 +446,8 @@ main()
     fi
 
     # purge if requested and then create test output directory
-    local TEST_OUT_DIR="${ZSERIO_PROJECT_ROOT}/build/test"
+    local ZSERIO_BUILD_DIR="${PARAM_OUT_DIR}/build"
+    local TEST_OUT_DIR="${ZSERIO_BUILD_DIR}/test"
     if [[ ${SWITCH_PURGE} == 1 ]] ; then
         echo "Purging test directory."
         echo
@@ -446,8 +461,8 @@ main()
     echo
 
     # run test
-    test "${ZSERIO_RELEASE_DIR}" "${ZSERIO_VERSION}" "${ZSERIO_PROJECT_ROOT}" "${TEST_OUT_DIR}" \
-         PARAM_CPP_TARGET_ARRAY[@] ${PARAM_JAVA} ${PARAM_PYTHON} \
+    test "${ZSERIO_RELEASE_DIR}" "${ZSERIO_VERSION}" "${ZSERIO_PROJECT_ROOT}" "${ZSERIO_BUILD_DIR}" \
+         "${TEST_OUT_DIR}" PARAM_CPP_TARGET_ARRAY[@] ${PARAM_JAVA} ${PARAM_PYTHON} \
          ${SWITCH_CLEAN} ${SWITCH_GRPC} "${SWITCH_TEST_NAME}"
     if [ $? -ne 0 ] ; then
         return 1
