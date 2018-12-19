@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import zserio.ast.BitFieldType;
-import zserio.ast.ConstType;
 import zserio.ast.ZserioTypeUtil;
 import zserio.ast.EnumItem;
 import zserio.ast.EnumType;
@@ -12,7 +11,6 @@ import zserio.ast.IntegerType;
 import zserio.ast.StdIntegerType;
 import zserio.emit.common.ExpressionFormatter;
 import zserio.emit.common.ZserioEmitException;
-import zserio.emit.cpp.types.CppNativeType;
 import zserio.emit.cpp.types.NativeIntegralType;
 
 public class EnumerationEmitterTemplateData extends UserTypeTemplateData

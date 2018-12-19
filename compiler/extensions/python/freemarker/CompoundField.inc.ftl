@@ -1,19 +1,3 @@
-<#macro compound_getter_field field>
-    <#if field.array??>
-        return None if self.<@field_member_name field/> is None else self.<@field_member_name field/>.getRawArray()
-    <#else>
-        return self.<@field_member_name field/>
-    </#if>
-</#macro>
-
-<#macro compound_setter_field field>
-    <#if field.array??>
-        self.<@field_member_name field/> = zserio.array.Array(<@array_field_constructor_parameters field/>)
-    <#else>
-        self.<@field_member_name field/> = <@field_argument_name field/>
-    </#if>
-</#macro>
-
 <#macro compound_compare_field field>
     <#if field.optional??>(not self.${field.optional.indicatorName}() or </#if><#t>
 self.<@field_member_name field/> == other.<@field_member_name field/><#if field.optional??>)</#if><#rt>
@@ -33,6 +17,22 @@ self.<@field_member_name field/> == other.<@field_member_name field/><#if field.
 ${I}result = zserio.hashcode.calcHashCode(result, hash(self.<@field_member_name field/>))
 </#macro>
 
+<#macro compound_getter_field field>
+    <#if field.array??>
+        return None if self.<@field_member_name field/> is None else self.<@field_member_name field/>.getRawArray()
+    <#else>
+        return self.<@field_member_name field/>
+    </#if>
+</#macro>
+
+<#macro compound_setter_field field>
+    <#if field.array??>
+        self.<@field_member_name field/> = zserio.array.Array(<@array_field_constructor_parameters field/>)
+    <#else>
+        self.<@field_member_name field/> = <@field_argument_name field/>
+    </#if>
+</#macro>
+
 <#macro compound_bitsizeof_field field indent>
     <#local I>${""?left_pad(indent * 4)}</#local>
     <#if field.optional??>
@@ -45,12 +45,29 @@ ${I}if self.${field.optional.indicatorName}():
 
 <#macro compound_bitsizeof_field_inner field indent>
     <#local I>${""?left_pad(indent * 4)}</#local>
+    <@compound_align_field field, indent/>
     <#if field.bitSize.value??>
 ${I}endBitPosition += ${field.bitSize.value}
     <#elseif field.bitSize.runtimeFunction??>
 ${I}endBitPosition += zserio.bitsizeof.getBitSizeOf${field.bitSize.runtimeFunction.suffix}(self.<@field_member_name field/>)
     <#else>
 ${I}endBitPosition += self.<@field_member_name field/>.bitSizeOf(endBitPosition)
+    </#if>
+</#macro>
+
+<#macro compound_align_field field indent>
+    <#local I>${""?left_pad(indent * 4)}</#local>
+    <#if field.alignmentValue??>
+${I}endBitPosition = zserio.bitposition.alignTo(${field.alignmentValue}, endBitPosition)
+    </#if>
+    <#if field.offset??>
+        <#if field.offset.containsIndex>
+            <#-- align to bytes only if the array is non-empty to match read/write behavior -->
+${I}if len(self.<@field_member_name field/>) > 0:
+${I}    endBitPosition = zserio.bitposition.alignTo(8, endBitPosition)
+        <#else>
+${I}endBitPosition = zserio.bitposition.alignTo(8, endBitPosition)
+        </#if>
     </#if>
 </#macro>
 
@@ -66,6 +83,12 @@ ${I}if self.${field.optional.indicatorName}():
 
 <#macro compound_initialize_offsets_field_inner field indent>
     <#local I>${""?left_pad(indent * 4)}</#local>
+    <@compound_align_field field, indent/>
+    <#if field.offset?? && !field.offset.containsIndex>
+${I}# initialize offset
+${I}value = zserio.bitposition.bitsToBytes(endBitPosition)
+${I}${field.offset.setter}
+    </#if>
     <#if field.bitSize.value??>
 ${I}endBitPosition += ${field.bitSize.value}
     <#elseif field.bitSize.runtimeFunction??>
@@ -209,9 +232,9 @@ ${I}    raise zserio.PythonRuntimeException("Constraint violated for field ${com
     <#local I>${""?left_pad(indent * 4)}</#local>
     <#if field.array?? && field.array.length??> 
 ${I}# check array length
-${I}if self.<@field_member_name field/>.length() != ${field.array.length}:
+${I}if len(self.<@field_member_name field/>) != ${field.array.length}:
 ${I}    raise zserio.PythonRuntimeException("Wrong array length for field ${compoundName}.${field.name}: %d != %d!" %
-${I}                                        (self.<@field_member_name field/>.length(), ${field.array.length}))
+${I}                                        (len(self.<@field_member_name field/>), ${field.array.length}))
     </#if>
 </#macro>
 

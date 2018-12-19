@@ -81,7 +81,7 @@ class ${name}:
         <#lt>${I}pass
     </#if>
 </#macro>
-    def bitSizeOf(self, <#if !fieldList?has_content>_</#if>bitPosition=0):
+    def bitSizeOf(self, bitPosition=0):
 <#if fieldList?has_content>
         endBitPosition = 0
 
@@ -89,6 +89,8 @@ class ${name}:
 
         return endBitPosition - bitPosition
 <#else>
+        del bitPosition
+
         return 0
 </#if>
 <#if withWriterCode>
@@ -121,11 +123,11 @@ class ${name}:
         <#lt>${I}pass
     </#if>
 </#macro>
-    def read(self, <#if !fieldList?has_content>_</#if>reader):
+    def read(self, reader):
 <#if fieldList?has_content>
         <@choice_if "choice_read_member"/>
 <#else>
-        pass
+        del reader
 </#if>
 <#if withWriterCode>
 
@@ -137,16 +139,19 @@ class ${name}:
             <#lt>${I}pass
         </#if>
     </#macro>
-    def write(self, <#if !fieldList?has_content>_</#if>writer, *, <#if !hasFieldWithOffset>_</#if>callInitializeOffsets=True):
+    def write(self, writer, *, callInitializeOffsets=True):
     <#if fieldList?has_content>
         <#if hasFieldWithOffset>
         if callInitializeOffsets:
             initializeOffsets(writer.getBitPosition())
-
+        <#else>
+        del callInitializeOffsets
         </#if>
+
         <@choice_if "choice_write_member"/>
     <#else>
-        pass
+        del writer
+        del callInitializeOffsets
     </#if>
 </#if>
 <#list fieldList as field>

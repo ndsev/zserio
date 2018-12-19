@@ -66,7 +66,7 @@ class ${name}:
         else:
             raise zserio.PythonRuntimeException("No match in union ${name}!")
 </#macro>
-    def bitSizeOf(self, <#if !fieldList?has_content>_</#if>bitPosition=0):
+    def bitSizeOf(self, bitPosition=0):
 <#if fieldList?has_content>
         endBitPosition = bitPosition
 
@@ -76,6 +76,8 @@ class ${name}:
 
         return endBitPosition - bitPosition
 <#else>
+        del bitPosition
+
         return 0
 </#if>
 <#if withWriterCode>
@@ -97,31 +99,34 @@ class ${name}:
 <#macro union_read_field field indent>
     <@compound_read_field field, name, indent/>
 </#macro>
-    def read(self, <#if !fieldList?has_content>_</#if>reader):
+    def read(self, reader):
 <#if fieldList?has_content>
         self._choiceTag = reader.readVarUInt64()
 
         <@union_if "union_read_field"/>
 <#else>
-        pass
+        del reader
 </#if>
 <#if withWriterCode>
 
     <#macro union_write_field field indent>
         <@compound_write_field field, name, indent/>
     </#macro>
-    def write(self, <#if !fieldList?has_content>_</#if>writer, *, <#if !hasFieldWithOffset>_</#if>callInitializeOffsets=True):
+    def write(self, writer, *, callInitializeOffsets=True):
     <#if fieldList?has_content>
         <#if hasFieldWithOffset>
         if callInitializeOffests:
             initializeOffsets(writer.getBitPosition())
-
+        <#else>
+        del callInitializeOffsets
         </#if>
+
         writer.writeVarUInt64(self._choiceTag)
 
         <@union_if "union_write_field"/>
     <#else>
-        pass
+        del writer
+        del callInitializeOffsets
     </#if>
 </#if>
 <#list fieldList as field>

@@ -28,7 +28,7 @@ class ${name}():
                    <#lt><#list fieldList as field>, <@field_argument_name field/></#list>):
         instance = cls(${constructorParamList})
     <#list fieldList as field>
-        instance.<@field_member_name field/> = <@field_argument_name field/>
+        instance.${field.setterName}(<@field_argument_name field/>)
     </#list>
 
         return instance
@@ -91,7 +91,7 @@ ${I}<#rt>
     </#if>
 </#list>
 
-    def bitSizeOf(self, <#if !fieldList?has_content>_</#if>bitPosition=0):
+    def bitSizeOf(self, bitPosition=0):
 <#if fieldList?has_content>
         endBitPosition = bitPosition
     <#list fieldList as field>
@@ -100,6 +100,8 @@ ${I}<#rt>
 
         return endBitPosition - bitPosition
 <#else>
+        del bitPosition
+
         return 0
 </#if>
 <#if withWriterCode>
@@ -124,7 +126,7 @@ ${I}<#rt>
         <#break>
     </#if>
 </#list>
-    def read(self, <#if !fieldList?has_content>_</#if>reader):
+    def read(self, reader):
 <#if fieldList?has_content>
     <#list fieldList as field>
         <@compound_read_field field, name, 2/>
@@ -133,7 +135,7 @@ ${I}<#rt>
         </#if>
     </#list>
 <#else>
-        pass
+        del reader
 </#if>
 <#if withWriterCode>
 
@@ -144,21 +146,24 @@ ${I}<#rt>
             <#break>
         </#if>
     </#list>
-    def write(self, <#if !fieldList?has_content>_</#if>writer, *, <#if !hasFieldWithOffset>_</#if>callInitializeOffsets=True):
+    def write(self, writer, *, callInitializeOffsets=True):
     <#if fieldList?has_content>
         <#if hasFieldWithOffset>
         if callInitializeOffsets:
             self.initializeOffsets(writer.getBitPosition())
-
+        <#else>
+        del callInitializeOffsets
         </#if>
+
         <#list fieldList as field>
-            <@compound_write_field field, name, 2/>
+        <@compound_write_field field, name, 2/>
             <#if field?has_next && needsWriteNewLines>
 
             </#if>
         </#list>
     <#else>
-        pass
+        del writer
+        del callInitializeOffsets
     </#if>
 </#if>
 <#list fieldList as field>

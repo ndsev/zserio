@@ -2,6 +2,8 @@
 The module provides help methods for bit position calculation.
 """
 
+from zserio.exception import PythonRuntimeException
+
 def alignTo(alignmentValue, bitPosition):
     """
     Aligns the bit size to the given alignment value.
@@ -16,25 +18,19 @@ def alignTo(alignmentValue, bitPosition):
 
     return (((bitPosition - 1) // alignmentValue) + 1) * alignmentValue
 
-def alignToByte(bitPosition):
-    """
-    Aligns the bit size to the byte boundary.
-
-    :param bitPosition: Current bit position where to apply alignment.
-    :returns: Aligned bit position.
-    """
-
-    return alignTo(8, bitPosition)
-
 def bitsToBytes(numBits):
     """
     Converts number of bits to bytes.
 
     :param numBits: The number of bits to convert.
-    :returns: Number of bytes (could be a float number).
+    :returns: Number of bytes
+    :raises PythonRuntimeException: If number of bits to convert is not divisible by 8.
     """
 
-    return numBits / 8
+    if numBits % 8 != 0:
+        raise PythonRuntimeException("bitsToBytes: %d is not a multiple of 8!" % numBits)
+
+    return numBits // 8
 
 def bytesToBits(numBytes):
     """

@@ -231,7 +231,7 @@ public class PythonExpressionFormattingPolicy extends DefaultExpressionFormattin
     @Override
     public BinaryExpressionFormatting getArrayElement(Expression expr, boolean isSetter)
     {
-        return new BinaryExpressionFormatting("", "[", (isSetter) ? "] = _value" : "]");
+        return new BinaryExpressionFormatting("", "[", (isSetter) ? "] = value" : "]");
     }
 
     @Override
@@ -279,5 +279,5 @@ public class PythonExpressionFormattingPolicy extends DefaultExpressionFormattin
     private final static String PYTHON_OCTAL_LITERAL_PREFIX = "0o";
 
     private final static String PYTHON_GETTER_FUNCTION_CALL = "()";
-    private final static String PYTHON_SETTER_FUNCTION_CALL = "(_value)";
+    private final static String PYTHON_SETTER_FUNCTION_CALL = "(value)";
 }

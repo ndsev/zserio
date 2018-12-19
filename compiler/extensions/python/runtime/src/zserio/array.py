@@ -2,7 +2,7 @@
 The module implements abstraction for arrays used by Zserio python extension.
 """
 
-from zserio.bitposition import (alignToByte)
+from zserio.bitposition import alignTo
 from zserio.bitsizeof import (getBitSizeOfVarUInt16, getBitSizeOfVarUInt32,
                               getBitSizeOfVarUInt64, getBitSizeOfVarUInt,
                               getBitSizeOfVarInt16, getBitSizeOfVarInt32,
@@ -114,11 +114,11 @@ class Array():
             if self._setOffsetMethod is None:
                 endBitPosition += size * elementSize
             else:
-                endBitPosition += elementSize + (size - 1) * alignToByte(elementSize)
+                endBitPosition += elementSize + (size - 1) * alignTo(8, elementSize)
         else:
             for element in self._rawArray:
                 if self._setOffsetMethod is not None:
-                    endBitPosition = alignToByte(endBitPosition)
+                    endBitPosition = alignTo(8, endBitPosition)
                 endBitPosition += self._arrayTraits.bitSizeOf(endBitPosition, element)
 
         return endBitPosition - bitPosition
@@ -141,7 +141,7 @@ class Array():
 
         for index in range(size):
             if self._setOffsetMethod is not None:
-                endBitPosition = alignToByte(endBitPosition)
+                endBitPosition = alignTo(8, endBitPosition)
                 self._setOffsetMethod(index, endBitPosition)
             endBitPosition = self._arrayTraits.initializeOffsets(endBitPosition, self._rawArray[index])
 
@@ -849,7 +849,9 @@ class ObjectArrayTraits():
         self._objectCreator = objectCreator
 
     def __eq__(self, other):
-        return self._objectCreator == other._objectCreator
+        # checks the name of the object creators (= name of the class and bound method)
+        return (self._objectCreator.__self__.__class__ == other._objectCreator.__self__.__class__ and
+                self._objectCreator.__name__ == other._objectCreator.__name__)
 
     @staticmethod
     def bitSizeOf(bitPosition, value):
