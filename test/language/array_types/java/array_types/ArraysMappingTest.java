@@ -44,7 +44,7 @@ public class ArraysMappingTest
         arraysMapping.setUint32Array(new UnsignedIntArray(FIXED_ARRAY_LENGTH));
 
         // just do something with arraysMapping not to have FindBugs warning
-        final BigIntegerArray bigIntegerArray = new BigIntegerArray(EMPTY_ARRAY_LENGTH);
+        final BigIntegerArray bigIntegerArray = new BigIntegerArray(FIXED_ARRAY_LENGTH);
         arraysMapping.setUint64Array(bigIntegerArray);
         assertEquals(bigIntegerArray, arraysMapping.getUint64Array());
     }
@@ -73,6 +73,7 @@ public class ArraysMappingTest
         arraysMapping.setBitfield16Array(new UnsignedShortArray(FIXED_ARRAY_LENGTH));
         arraysMapping.setBitfield32Array(new UnsignedIntArray(FIXED_ARRAY_LENGTH));
         arraysMapping.setBitfield63Array(new UnsignedLongArray(FIXED_ARRAY_LENGTH));
+        arraysMapping.setUint8Value(8);
         arraysMapping.setVariableBitfieldLongArray(new UnsignedLongArray(FIXED_ARRAY_LENGTH));
         arraysMapping.setVariableBitfieldIntArray(new UnsignedIntArray(FIXED_ARRAY_LENGTH));
         arraysMapping.setVariableBitfieldShortArray(new UnsignedShortArray(FIXED_ARRAY_LENGTH));
@@ -92,6 +93,7 @@ public class ArraysMappingTest
         arraysMapping.setIntfield16Array(new ShortArray(FIXED_ARRAY_LENGTH));
         arraysMapping.setIntfield32Array(new IntArray(FIXED_ARRAY_LENGTH));
         arraysMapping.setIntfield64Array(new LongArray(FIXED_ARRAY_LENGTH));
+        arraysMapping.setUint8Value(8);
         arraysMapping.setVariableIntfieldLongArray(new LongArray(FIXED_ARRAY_LENGTH));
         arraysMapping.setVariableIntfieldIntArray(new IntArray(FIXED_ARRAY_LENGTH));
         arraysMapping.setVariableIntfieldShortArray(new ShortArray(FIXED_ARRAY_LENGTH));
@@ -103,31 +105,12 @@ public class ArraysMappingTest
     }
 
     @Test
-    public void float16Array()
+    public void floatArrays()
     {
         ArraysMapping arraysMapping = new ArraysMapping();
 
-        // just do something with arraysMapping not to have FindBugs warning
-        final Float16Array float16Array = new Float16Array(FIXED_ARRAY_LENGTH);
-        arraysMapping.setFloat16Array(float16Array);
-        assertEquals(float16Array, arraysMapping.getFloat16Array());
-    }
-
-    @Test
-    public void float32Array()
-    {
-        ArraysMapping arraysMapping = new ArraysMapping();
-
-        // just do something with arraysMapping not to have FindBugs warning
-        final Float32Array float32Array = new Float32Array(FIXED_ARRAY_LENGTH);
-        arraysMapping.setFloat32Array(float32Array);
-        assertEquals(float32Array, arraysMapping.getFloat32Array());
-    }
-
-    @Test
-    public void float64Array()
-    {
-        ArraysMapping arraysMapping = new ArraysMapping();
+        arraysMapping.setFloat16Array(new Float16Array(FIXED_ARRAY_LENGTH));
+        arraysMapping.setFloat32Array(new Float32Array(FIXED_ARRAY_LENGTH));
 
         // just do something with arraysMapping not to have FindBugs warning
         final Float64Array float64Array = new Float64Array(FIXED_ARRAY_LENGTH);
@@ -142,11 +125,12 @@ public class ArraysMappingTest
 
         arraysMapping.setVaruint16Array(new VarUInt16Array(FIXED_ARRAY_LENGTH));
         arraysMapping.setVaruint32Array(new VarUInt32Array(FIXED_ARRAY_LENGTH));
+        arraysMapping.setVaruint64Array(new VarUInt64Array(FIXED_ARRAY_LENGTH));
 
         // just do something with arraysMapping not to have FindBugs warning
-        final VarUInt64Array varUInt64Array = new VarUInt64Array(FIXED_ARRAY_LENGTH);
-        arraysMapping.setVaruint64Array(varUInt64Array);
-        assertEquals(varUInt64Array, arraysMapping.getVaruint64Array());
+        final VarUIntArray varUIntArray = new VarUIntArray(FIXED_ARRAY_LENGTH);
+        arraysMapping.setVaruintArray(varUIntArray);
+        assertEquals(varUIntArray, arraysMapping.getVaruintArray());
     }
 
     @Test
@@ -156,35 +140,12 @@ public class ArraysMappingTest
 
         arraysMapping.setVarint16Array(new VarInt16Array(FIXED_ARRAY_LENGTH));
         arraysMapping.setVarint32Array(new VarInt32Array(FIXED_ARRAY_LENGTH));
+        arraysMapping.setVarint64Array(new VarInt64Array(FIXED_ARRAY_LENGTH));
 
         // just do something with arraysMapping not to have FindBugs warning
-        final VarInt64Array varInt64Array = new VarInt64Array(FIXED_ARRAY_LENGTH);
-        arraysMapping.setVarint64Array(varInt64Array);
-        assertEquals(varInt64Array, arraysMapping.getVarint64Array());
-    }
-
-    @Test
-    public void varintArray()
-    {
-        ArraysMapping arraysMapping = new ArraysMapping();
-
         final VarIntArray varIntArray = new VarIntArray(FIXED_ARRAY_LENGTH);
         arraysMapping.setVarintArray(varIntArray);
-
-        // just do something with arraysMapping not to have FindBugs warning
         assertEquals(varIntArray, arraysMapping.getVarintArray());
-    }
-
-    @Test
-    public void varuintArray()
-    {
-        ArraysMapping arraysMapping = new ArraysMapping();
-
-        final VarUIntArray varUIntArray = new VarUIntArray(EMPTY_ARRAY_LENGTH);
-        arraysMapping.setVaruintArray(varUIntArray);
-
-        // just do something with arraysMapping not to have FindBugs warning
-        assertEquals(varUIntArray, arraysMapping.getVaruintArray());
     }
 
     @Test
@@ -230,5 +191,4 @@ public class ArraysMappingTest
     }
 
     private static final int FIXED_ARRAY_LENGTH = 5;
-    private static final int EMPTY_ARRAY_LENGTH = 0;
 }

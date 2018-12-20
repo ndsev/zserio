@@ -1,6 +1,5 @@
 <#include "FileHeader.inc.ftl"/>
 <#include "CompoundParameter.inc.ftl">
-<#include "CompoundFunction.inc.ftl">
 <#include "CompoundField.inc.ftl"/>
 <@file_header generatorDescription/>
 <@all_imports packageImports typeImports/>
@@ -71,6 +70,11 @@ class ${name}:
     def ${field.setterName}(self, <@field_argument_name field/>):
         <@compound_setter_field field/>
     </#if>
+</#list>
+<#list compoundFunctionsData.list as function>
+
+    def ${function.name}(self):
+        return ${function.resultExpression}
 </#list>
 
 <#macro choice_bitsizeof_member member indent>

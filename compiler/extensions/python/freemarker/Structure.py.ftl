@@ -1,6 +1,5 @@
 <#include "FileHeader.inc.ftl"/>
 <#include "CompoundField.inc.ftl"/>
-<#include "CompoundFunction.inc.ftl"/>
 <#include "CompoundParameter.inc.ftl"/>
 <@file_header generatorDescription/>
 <@all_imports packageImports typeImports/>
@@ -89,6 +88,11 @@ ${I}<#rt>
     def ${field.optional.indicatorName}(self):
         return <#if field.optional.clause??>${field.optional.clause}<#else>self.<@field_member_name field/> != None</#if>
     </#if>
+</#list>
+<#list compoundFunctionsData.list as function>
+
+    def ${function.name}(self):
+        return ${function.resultExpression}
 </#list>
 
     def bitSizeOf(self, bitPosition=0):

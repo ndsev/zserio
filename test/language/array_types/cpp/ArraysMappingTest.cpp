@@ -41,6 +41,7 @@ TEST_F(ArraysMappingTest, unsignedBitfieldArrays)
     arraysMapping.setBitfield16Array(zserio::UInt16Array(fixedArrayLength));
     arraysMapping.setBitfield32Array(zserio::UInt32Array(fixedArrayLength));
     arraysMapping.setBitfield63Array(zserio::UInt64Array(fixedArrayLength));
+    arraysMapping.setUint8Value(8);
     arraysMapping.setVariableBitfieldLongArray(zserio::UInt64Array(fixedArrayLength));
     arraysMapping.setVariableBitfieldIntArray(zserio::UInt32Array(fixedArrayLength));
     arraysMapping.setVariableBitfieldShortArray(zserio::UInt16Array(fixedArrayLength));
@@ -55,6 +56,7 @@ TEST_F(ArraysMappingTest, signedBitfieldArrays)
     arraysMapping.setIntfield16Array(zserio::Int16Array(fixedArrayLength));
     arraysMapping.setIntfield32Array(zserio::Int32Array(fixedArrayLength));
     arraysMapping.setIntfield64Array(zserio::Int64Array(fixedArrayLength));
+    arraysMapping.setUint8Value(8);
     arraysMapping.setVariableIntfieldLongArray(zserio::Int64Array(fixedArrayLength));
     arraysMapping.setVariableIntfieldIntArray(zserio::Int32Array(fixedArrayLength));
     arraysMapping.setVariableIntfieldShortArray(zserio::Int16Array(fixedArrayLength));
@@ -65,17 +67,7 @@ TEST_F(ArraysMappingTest, float16Array)
 {
     ArraysMapping arraysMapping;
     arraysMapping.setFloat16Array(zserio::Float16Array(fixedArrayLength));
-}
-
-TEST_F(ArraysMappingTest, float32Array)
-{
-    ArraysMapping arraysMapping;
     arraysMapping.setFloat32Array(zserio::Float32Array(fixedArrayLength));
-}
-
-TEST_F(ArraysMappingTest, float64Array)
-{
-    ArraysMapping arraysMapping;
     arraysMapping.setFloat64Array(zserio::Float64Array(fixedArrayLength));
 }
 
@@ -86,17 +78,6 @@ TEST_F(ArraysMappingTest, variableUnsignedIntegerArrays)
     arraysMapping.setVaruint16Array(zserio::VarUInt16Array(fixedArrayLength));
     arraysMapping.setVaruint32Array(zserio::VarUInt32Array(fixedArrayLength));
     arraysMapping.setVaruint64Array(zserio::VarUInt64Array(fixedArrayLength));
-}
-
-TEST_F(ArraysMappingTest, varintArray)
-{
-    ArraysMapping arraysMapping;
-    arraysMapping.setVarintArray(zserio::VarIntArray(fixedArrayLength));
-}
-
-TEST_F(ArraysMappingTest, varuintArray)
-{
-    ArraysMapping arraysMapping;
     arraysMapping.setVaruintArray(zserio::VarUIntArray(fixedArrayLength));
 }
 
@@ -107,6 +88,7 @@ TEST_F(ArraysMappingTest, variableSignedIntegerArrays)
     arraysMapping.setVarint16Array(zserio::VarInt16Array(fixedArrayLength));
     arraysMapping.setVarint32Array(zserio::VarInt32Array(fixedArrayLength));
     arraysMapping.setVarint64Array(zserio::VarInt64Array(fixedArrayLength));
+    arraysMapping.setVarintArray(zserio::VarIntArray(fixedArrayLength));
 }
 
 TEST_F(ArraysMappingTest, boolArray)

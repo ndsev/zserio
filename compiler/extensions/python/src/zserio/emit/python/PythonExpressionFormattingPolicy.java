@@ -5,6 +5,7 @@ import zserio.ast.EnumItem;
 import zserio.ast.EnumType;
 import zserio.ast.Expression;
 import zserio.ast.Field;
+import zserio.ast.FunctionType;
 import zserio.ast.Package;
 import zserio.ast.Parameter;
 import zserio.ast.ZserioType;
@@ -122,9 +123,15 @@ public class PythonExpressionFormattingPolicy extends DefaultExpressionFormattin
             importCollector.importType(nativeConstType);
             result.append(nativeConstType.getFullName());
         }
-        else
+        else if (resolvedType instanceof FunctionType)
         {
             // [functionCall]()
+            final FunctionType functionType = (FunctionType)resolvedType;
+            result.append(getAccessPrefix());
+            result.append(AccessorNameFormatter.getFunctionName(functionType));
+        }
+        else
+        {
             result.append(symbol);
         }
     }
@@ -189,7 +196,7 @@ public class PythonExpressionFormattingPolicy extends DefaultExpressionFormattin
 
     private String getAccessPrefix()
     {
-        return "self.";
+        return PYTHON_FUNCTION_CALL_PREFIX;
     }
 
     @Override
@@ -280,4 +287,6 @@ public class PythonExpressionFormattingPolicy extends DefaultExpressionFormattin
 
     private final static String PYTHON_GETTER_FUNCTION_CALL = "()";
     private final static String PYTHON_SETTER_FUNCTION_CALL = "(value)";
+
+    private final static String PYTHON_FUNCTION_CALL_PREFIX = "self.";
 }

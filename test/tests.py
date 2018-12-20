@@ -82,7 +82,8 @@ def main():
     pylintResult = _runPylint(genFiles, pylintOptions, ("missing-docstring, invalid-name, no-self-use,"
                                                         "duplicate-code, line-too-long, singleton-comparison, "
                                                         "too-many-instance-attributes, too-many-arguments, "
-                                                        "too-many-public-methods, too-many-locals"))
+                                                        "too-many-public-methods, too-many-locals, "
+                                                        "too-many-branches, too-many-statements"))
     if pylintResult != 0:
         return pylintResult
 
