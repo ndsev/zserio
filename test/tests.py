@@ -80,7 +80,9 @@ def main():
 
     print("Running pylint on generated files.")
     pylintResult = _runPylint(genFiles, pylintOptions, ("missing-docstring, invalid-name, no-self-use,"
-                                                        "duplicate-code, line-too-long, singleton-comparison"))
+                                                        "duplicate-code, line-too-long, singleton-comparison, "
+                                                        "too-many-instance-attributes, too-many-arguments, "
+                                                        "too-many-public-methods"))
     if pylintResult != 0:
         return pylintResult
 

@@ -36,6 +36,10 @@ ${I}result = zserio.hashcode.calcHashCode(result, hash(self.<@field_member_name 
 <#macro compound_bitsizeof_field field indent>
     <#local I>${""?left_pad(indent * 4)}</#local>
     <#if field.optional??>
+        <#if !field.optional.clause??>
+            <#-- auto optional field -->
+${I}endBitPosition += 1
+        </#if>
 ${I}if self.${field.optional.indicatorName}():
 <@compound_bitsizeof_field_inner field, indent + 1/>
     <#else>
@@ -74,6 +78,10 @@ ${I}endBitPosition = zserio.bitposition.alignTo(8, endBitPosition)
 <#macro compound_initialize_offsets_field field indent>
     <#local I>${""?left_pad(indent * 4)}</#local>
     <#if field.optional??>
+        <#if !field.optional.clause??>
+            <#-- auto optional field -->
+${I}endBitPosition += 1
+        </#if>
 ${I}if self.${field.optional.indicatorName}():
     <@compound_initialize_offsets_field_inner field, indent + 1/>
     <#else>
@@ -178,12 +186,12 @@ ${I}self.<@field_member_name field/> = ${field.pythonTypeName}.fromReader(reader
     <#if field.optional??>
 ${I}if self.${field.optional.indicatorName}():
         <#if !field.optional.clause??>
-${I}    writer.writeBool(true)
+${I}    writer.writeBool(True)
         </#if>
 <@compound_write_field_inner field, compoundName, indent + 1/>
         <#if !field.optional.clause??>
 ${I}else:
-${I}    writer.writeBool(false)
+${I}    writer.writeBool(False)
         </#if>
     <#else>
 <@compound_write_field_inner field, compoundName, indent/>

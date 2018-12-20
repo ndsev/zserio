@@ -87,7 +87,7 @@ ${I}<#rt>
     <#if field.optional??>
 
     def ${field.optional.indicatorName}(self):
-        return <#if field.optional.clause??>${field.optional.clause}<#else>${field.getterName}() != None</#if>
+        return <#if field.optional.clause??>${field.optional.clause}<#else>self.<@field_member_name field/> != None</#if>
     </#if>
 </#list>
 
