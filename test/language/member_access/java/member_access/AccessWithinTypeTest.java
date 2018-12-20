@@ -57,7 +57,7 @@ public class AccessWithinTypeTest
         writer.close();
         final Message readMessage = new Message(file);
         checkMessage(readMessage, numSentences);
-        assertTrue(message.equals(message));
+        assertTrue(message.equals(readMessage));
     }
 
     @Test(expected=ZserioError.class)

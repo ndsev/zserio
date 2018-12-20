@@ -301,6 +301,9 @@ class VarUInt16ArrayTraits():
     IS_BITSIZEOF_CONSTANT = False
     NEEDS_INITIALIZE_OFFSETS = False
 
+    def __eq__(self, other):
+        return True
+
     @staticmethod
     def bitSizeOf(_bitPosition, value):
         """
@@ -342,6 +345,9 @@ class VarUInt32ArrayTraits():
 
     IS_BITSIZEOF_CONSTANT = False
     NEEDS_INITIALIZE_OFFSETS = False
+
+    def __eq__(self, other):
+        return True
 
     @staticmethod
     def bitSizeOf(_bitPosition, value):
@@ -385,6 +391,9 @@ class VarUInt64ArrayTraits():
     IS_BITSIZEOF_CONSTANT = False
     NEEDS_INITIALIZE_OFFSETS = False
 
+    def __eq__(self, other):
+        return True
+
     @staticmethod
     def bitSizeOf(_bitPosition, value):
         """
@@ -426,6 +435,9 @@ class VarUIntArrayTraits():
 
     IS_BITSIZEOF_CONSTANT = False
     NEEDS_INITIALIZE_OFFSETS = False
+
+    def __eq__(self, other):
+        return True
 
     @staticmethod
     def bitSizeOf(_bitPosition, value):
@@ -469,6 +481,9 @@ class VarInt16ArrayTraits():
     IS_BITSIZEOF_CONSTANT = False
     NEEDS_INITIALIZE_OFFSETS = False
 
+    def __eq__(self, other):
+        return True
+
     @staticmethod
     def bitSizeOf(_bitPosition, value):
         """
@@ -510,6 +525,9 @@ class VarInt32ArrayTraits():
 
     IS_BITSIZEOF_CONSTANT = False
     NEEDS_INITIALIZE_OFFSETS = False
+
+    def __eq__(self, other):
+        return True
 
     @staticmethod
     def bitSizeOf(_bitPosition, value):
@@ -553,6 +571,9 @@ class VarInt64ArrayTraits():
     IS_BITSIZEOF_CONSTANT = False
     NEEDS_INITIALIZE_OFFSETS = False
 
+    def __eq__(self, other):
+        return True
+
     @staticmethod
     def bitSizeOf(_bitPosition, value):
         """
@@ -594,6 +615,9 @@ class VarIntArrayTraits():
 
     IS_BITSIZEOF_CONSTANT = False
     NEEDS_INITIALIZE_OFFSETS = False
+
+    def __eq__(self, other):
+        return True
 
     @staticmethod
     def bitSizeOf(_bitPosition, value):
@@ -637,6 +661,9 @@ class Float16ArrayTraits():
     IS_BITSIZEOF_CONSTANT = True
     NEEDS_INITIALIZE_OFFSETS = False
 
+    def __eq__(self, other):
+        return True
+
     @staticmethod
     def bitSizeOf():
         """
@@ -676,6 +703,9 @@ class Float32ArrayTraits():
 
     IS_BITSIZEOF_CONSTANT = True
     NEEDS_INITIALIZE_OFFSETS = False
+
+    def __eq__(self, other):
+        return True
 
     @staticmethod
     def bitSizeOf():
@@ -717,6 +747,9 @@ class Float64ArrayTraits():
     IS_BITSIZEOF_CONSTANT = True
     NEEDS_INITIALIZE_OFFSETS = False
 
+    def __eq__(self, other):
+        return True
+
     @staticmethod
     def bitSizeOf():
         """
@@ -756,6 +789,9 @@ class StringArrayTraits():
 
     IS_BITSIZEOF_CONSTANT = False
     NEEDS_INITIALIZE_OFFSETS = False
+
+    def __eq__(self, other):
+        return True
 
     @staticmethod
     def bitSizeOf(_bitPosition, value):
@@ -798,6 +834,9 @@ class BoolArrayTraits():
 
     IS_BITSIZEOF_CONSTANT = True
     NEEDS_INITIALIZE_OFFSETS = False
+
+    def __eq__(self, other):
+        return True
 
     @staticmethod
     def bitSizeOf():
