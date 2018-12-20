@@ -83,7 +83,8 @@ def main():
                                                         "duplicate-code, line-too-long, singleton-comparison, "
                                                         "too-many-instance-attributes, too-many-arguments, "
                                                         "too-many-public-methods, too-many-locals, "
-                                                        "too-many-branches, too-many-statements"))
+                                                        "too-many-branches, too-many-statements, "
+                                                        "unneeded-not, superfluous-parens"))
     if pylintResult != 0:
         return pylintResult
 
