@@ -73,7 +73,7 @@ public class ArraysMappingTest
         arraysMapping.setBitfield16Array(new UnsignedShortArray(FIXED_ARRAY_LENGTH));
         arraysMapping.setBitfield32Array(new UnsignedIntArray(FIXED_ARRAY_LENGTH));
         arraysMapping.setBitfield63Array(new UnsignedLongArray(FIXED_ARRAY_LENGTH));
-        arraysMapping.setUint8Value(8);
+        arraysMapping.setUint8Value((short)8);
         arraysMapping.setVariableBitfieldLongArray(new UnsignedLongArray(FIXED_ARRAY_LENGTH));
         arraysMapping.setVariableBitfieldIntArray(new UnsignedIntArray(FIXED_ARRAY_LENGTH));
         arraysMapping.setVariableBitfieldShortArray(new UnsignedShortArray(FIXED_ARRAY_LENGTH));
@@ -93,7 +93,7 @@ public class ArraysMappingTest
         arraysMapping.setIntfield16Array(new ShortArray(FIXED_ARRAY_LENGTH));
         arraysMapping.setIntfield32Array(new IntArray(FIXED_ARRAY_LENGTH));
         arraysMapping.setIntfield64Array(new LongArray(FIXED_ARRAY_LENGTH));
-        arraysMapping.setUint8Value(8);
+        arraysMapping.setUint8Value((short)8);
         arraysMapping.setVariableIntfieldLongArray(new LongArray(FIXED_ARRAY_LENGTH));
         arraysMapping.setVariableIntfieldIntArray(new IntArray(FIXED_ARRAY_LENGTH));
         arraysMapping.setVariableIntfieldShortArray(new ShortArray(FIXED_ARRAY_LENGTH));
