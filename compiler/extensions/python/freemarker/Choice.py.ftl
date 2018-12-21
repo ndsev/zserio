@@ -87,7 +87,7 @@ class ${name}:
 </#macro>
     def bitSizeOf(self, bitPosition=0):
 <#if fieldList?has_content>
-        endBitPosition = 0
+        endBitPosition = bitPosition
 
         <@choice_if "choice_bitsizeof_member"/>
 
@@ -147,7 +147,7 @@ class ${name}:
     <#if fieldList?has_content>
         <#if hasFieldWithOffset>
         if callInitializeOffsets:
-            initializeOffsets(writer.getBitPosition())
+            self.initializeOffsets(writer.getBitPosition())
         <#else>
         del callInitializeOffsets
         </#if>

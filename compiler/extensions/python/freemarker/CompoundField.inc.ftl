@@ -67,7 +67,7 @@ ${I}endBitPosition = zserio.bitposition.alignTo(${field.alignmentValue}, endBitP
     <#if field.offset??>
         <#if field.offset.containsIndex>
             <#-- align to bytes only if the array is non-empty to match read/write behavior -->
-${I}if len(self.<@field_member_name field/>) > 0:
+${I}if self.<@field_member_name field/>:
 ${I}    endBitPosition = zserio.bitposition.alignTo(8, endBitPosition)
         <#else>
 ${I}endBitPosition = zserio.bitposition.alignTo(8, endBitPosition)
@@ -272,7 +272,7 @@ ${I}                                        (self.<@field_member_name field/>, l
     <#if field.array?? && field.offset?? && field.offset.containsIndex>
 
     def <@offset_checker_name field/>(self, index, bitOffset):
-        <@macro compound_check_offset_field field, compoundName, "bitOffset", 2/>
+        <@compound_check_offset_field field, compoundName, "bitOffset", 2/>
     </#if>
 </#macro>
 
@@ -284,7 +284,7 @@ ${I}                                        (self.<@field_member_name field/>, l
     <#if field.array?? && field.offset?? && field.offset.containsIndex>
 
     def <@offset_setter_name field/>(self, index, bitOffset):
-        value = zserio.bitPosition.bitsToBytes(bitOffset)
+        value = zserio.bitposition.bitsToBytes(bitOffset)
         ${field.offset.setter}
     </#if>
 </#macro>
@@ -327,7 +327,9 @@ ${I}                                        (self.<@field_member_name field/>, l
 
 <#function has_field_any_read_check_code field compoundName indent>
     <#local checkCode>
-        <@compound_check_offset_field field, compoundName, "reader.getBitPosition()", indent/>
+        <#if field.offset?? && !field.offset.containsIndex>
+            <@compound_check_offset_field field, compoundName, "reader.getBitPosition()", indent/>
+        </#if>
         <@compound_check_constraint_field field, compoundName, indent/>
     </#local>
     <#if checkCode == "">
@@ -339,7 +341,9 @@ ${I}                                        (self.<@field_member_name field/>, l
 
 <#function has_field_any_write_check_code field compoundName indent>
     <#local checkCode>
-        <@compound_check_offset_field field, compoundName, "writer.getBitPosition()", indent/>
+        <#if field.offset?? && !field.offset.containsIndex>
+            <@compound_check_offset_field field, compoundName, "writer.getBitPosition()", indent/>
+        </#if>
         <@compound_check_constraint_field field, compoundName, indent/>
         <@compound_check_array_length_field field, compoundName, indent/>
         <@compound_check_range_field field, compoundName, indent/>

@@ -134,9 +134,6 @@ class Array():
         :returns: Updated bit stream position which points to the first bit after the array.
         """
 
-        if not self._arrayTraits.NEEDS_INITIALIZE_OFFSETS:
-            return bitPosition + self.bitSizeOf(bitPosition)
-
         endBitPosition = bitPosition
         size = len(self._rawArray)
         if self._isAuto:
@@ -146,7 +143,12 @@ class Array():
             if self._setOffsetMethod is not None:
                 endBitPosition = alignTo(8, endBitPosition)
                 self._setOffsetMethod(index, endBitPosition)
-            endBitPosition = self._arrayTraits.initializeOffsets(endBitPosition, self._rawArray[index])
+            if self._arrayTraits.NEEDS_INITIALIZE_OFFSETS:
+                endBitPosition = self._arrayTraits.initializeOffsets(endBitPosition, self._rawArray[index])
+            elif self._arrayTraits.IS_BITSIZEOF_CONSTANT:
+                endBitPosition += self._arrayTraits.bitSizeOf()
+            else:
+                endBitPosition += self._arrayTraits.bitSizeOf(endBitPosition, self._rawArray[index])
 
         return endBitPosition
 

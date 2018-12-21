@@ -74,7 +74,7 @@ class ${name}:
 <#if fieldList?has_content>
         endBitPosition = bitPosition
 
-        endBitPosition = zserio.bitsizeof.getBitSizeOfVarUInt64(self._choiceTag)
+        endBitPosition += zserio.bitsizeof.getBitSizeOfVarUInt64(self._choiceTag)
 
         <@union_if "compound_bitsizeof_field"/>
 
@@ -119,8 +119,8 @@ class ${name}:
     def write(self, writer, *, callInitializeOffsets=True):
     <#if fieldList?has_content>
         <#if hasFieldWithOffset>
-        if callInitializeOffests:
-            initializeOffsets(writer.getBitPosition())
+        if callInitializeOffsets:
+            self.initializeOffsets(writer.getBitPosition())
         <#else>
         del callInitializeOffsets
         </#if>
