@@ -84,12 +84,13 @@ def main():
                                                         "too-many-instance-attributes, too-many-arguments, "
                                                         "too-many-public-methods, too-many-locals, "
                                                         "too-many-branches, too-many-statements, "
-                                                        "unneeded-not, superfluous-parens"))
+                                                        "unneeded-not, superfluous-parens, import-error"))
     if pylintResult != 0:
         return pylintResult
 
     print("Running pylint on generated api.py files.")
-    pylintResult = _runPylint(apiFiles, pylintOptions, "missing-docstring, unused-import, line-too-long")
+    pylintResult = _runPylint(apiFiles, pylintOptions, ("missing-docstring, unused-import, line-too-long, "
+                                                        "import-error"))
 
     return pylintResult
 

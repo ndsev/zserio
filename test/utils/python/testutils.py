@@ -17,10 +17,11 @@ TEST_ARGS["java"] = "java"
 # set containing all compiled main zs files to prevent multiple compilations of the same zserio sources
 COMPILED_ZS_SET = set() # contains zs definition tuples: (zsDir, mainZsFile)
 
-def getZserioApi(testFile, mainZsFile, extraArgs=None):
+def getZserioApi(testFile, mainZsFile, hasPackage=True, extraArgs=None):
     """
     :param testFile: Current test file (i.e. test case).
     :param mainZsFile: Main zserio source file for the current test suite.
+    :param hasPackage: Whether the mainZsFile has a package definition. Default is True.
     :returns: Generated python API.
     """
 
@@ -33,7 +34,10 @@ def getZserioApi(testFile, mainZsFile, extraArgs=None):
         COMPILED_ZS_SET.add(zsDef)
         _compileZserio(zsDef, apiDir, extraArgs)
 
-    apiModule = os.path.splitext(mainZsFile)[0] + os.extsep + "api"
+    apiModule = "api"
+    if hasPackage:
+        apiModule = (os.path.splitext(mainZsFile)[0] + os.extsep) + apiModule
+
     return _importModule(apiDir, apiModule)
 
 def getApiDir(testDir):
