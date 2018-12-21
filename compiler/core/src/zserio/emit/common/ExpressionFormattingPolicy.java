@@ -19,8 +19,6 @@ public interface ExpressionFormattingPolicy
      *
      * Example:
      * !'UnaryOperand'
-     *
-     * Special argument 'skipOperand' can be used to skip unary operand during formatting.
      */
     public static class UnaryExpressionFormatting
     {

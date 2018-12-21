@@ -9,11 +9,11 @@ import zserio.ast.FunctionType;
 import zserio.ast.Package;
 import zserio.ast.Parameter;
 import zserio.ast.ZserioType;
-import zserio.emit.common.DefaultExpressionFormattingPolicy;
 import zserio.emit.common.ZserioEmitException;
+import zserio.emit.common.ExpressionFormattingPolicy;
 import zserio.emit.python.types.PythonNativeType;
 
-public class PythonExpressionFormattingPolicy extends DefaultExpressionFormattingPolicy
+public class PythonExpressionFormattingPolicy implements ExpressionFormattingPolicy
 {
     public PythonExpressionFormattingPolicy(PythonNativeTypeMapper pythonNativeTypeMapper,
             ImportCollector importCollector)
@@ -21,6 +21,8 @@ public class PythonExpressionFormattingPolicy extends DefaultExpressionFormattin
         this.pythonNativeTypeMapper = pythonNativeTypeMapper;
         this.importCollector = importCollector;
     }
+
+    // atom expressions formatting
 
     @Override
     public String getDecimalLiteral(Expression expr, boolean isNegative)
@@ -104,6 +106,220 @@ public class PythonExpressionFormattingPolicy extends DefaultExpressionFormattin
         return result.toString();
     }
 
+    // unary expressions formatting
+
+    @Override
+    public UnaryExpressionFormatting getBigIntegerCastingToNative(Expression expr)
+    {
+        return new UnaryExpressionFormatting("");
+    }
+
+    @Override
+    public UnaryExpressionFormatting getUnaryPlus(Expression expr)
+    {
+        return new UnaryExpressionFormatting("+");
+    }
+
+    @Override
+    public UnaryExpressionFormatting getUnaryMinus(Expression expr)
+    {
+        return new UnaryExpressionFormatting("-");
+    }
+
+    @Override
+    public UnaryExpressionFormatting getTilde(Expression expr)
+    {
+        return new UnaryExpressionFormatting("~");
+    }
+
+    @Override
+    public UnaryExpressionFormatting getBang(Expression expr)
+    {
+        return new UnaryExpressionFormatting("not ");
+    }
+
+    @Override
+    public UnaryExpressionFormatting getLeftParenthesis(Expression expr)
+    {
+        return new UnaryExpressionFormatting("(", ")");
+    }
+
+    @Override
+    public UnaryExpressionFormatting getFunctionCall(Expression expr)
+    {
+        return new UnaryExpressionFormatting("", "()");
+    }
+
+    @Override
+    public UnaryExpressionFormatting getLengthOf(Expression expr)
+    {
+        return new UnaryExpressionFormatting("len(", ")");
+    }
+
+    @Override
+    public UnaryExpressionFormatting getSum(Expression expr)
+    {
+        return new UnaryExpressionFormatting("sum(", ")");
+    }
+
+    @Override
+    public UnaryExpressionFormatting getValueOf(Expression expr)
+    {
+        return new UnaryExpressionFormatting("", ".value");
+    }
+
+    @Override
+    public UnaryExpressionFormatting getExplicit(Expression expr)
+    {
+        return new UnaryExpressionFormatting("");
+    }
+
+    @Override
+    public UnaryExpressionFormatting getNumBits(Expression expr)
+    {
+        return new UnaryExpressionFormatting("zserio.builtin.getNumBits(", ")");
+    }
+
+    // binary expressions formatting
+
+    @Override
+    public BinaryExpressionFormatting getComma(Expression expr)
+    {
+        return new BinaryExpressionFormatting(", ");
+    }
+
+    @Override
+    public BinaryExpressionFormatting getLogicalOr(Expression expr)
+    {
+        return new BinaryExpressionFormatting(" or ");
+    }
+
+    @Override
+    public BinaryExpressionFormatting getLogicalAnd(Expression expr)
+    {
+        return new BinaryExpressionFormatting(" and ");
+    }
+
+    @Override
+    public BinaryExpressionFormatting getOr(Expression expr)
+    {
+        return new BinaryExpressionFormatting(" | ");
+    }
+
+    @Override
+    public BinaryExpressionFormatting getXor(Expression expr)
+    {
+        return new BinaryExpressionFormatting(" ^ ");
+    }
+
+    @Override
+    public BinaryExpressionFormatting getAnd(Expression expr)
+    {
+        return new BinaryExpressionFormatting(" & ");
+    }
+
+    @Override
+    public BinaryExpressionFormatting getEq(Expression expr)
+    {
+        return new BinaryExpressionFormatting(" == ");
+    }
+
+    @Override
+    public BinaryExpressionFormatting getNe(Expression expr)
+    {
+        return new BinaryExpressionFormatting(" != ");
+    }
+
+    @Override
+    public BinaryExpressionFormatting getLt(Expression expr)
+    {
+        return new BinaryExpressionFormatting(" < ");
+    }
+
+    @Override
+    public BinaryExpressionFormatting getLe(Expression expr)
+    {
+        return new BinaryExpressionFormatting(" <= ");
+    }
+
+    @Override
+    public BinaryExpressionFormatting getGe(Expression expr)
+    {
+        return new BinaryExpressionFormatting(" >= ");
+    }
+
+    @Override
+    public BinaryExpressionFormatting getGt(Expression expr)
+    {
+        return new BinaryExpressionFormatting(" > ");
+    }
+
+    @Override
+    public BinaryExpressionFormatting getLeftShift(Expression expr)
+    {
+        return new BinaryExpressionFormatting(" << ");
+    }
+
+    @Override
+    public BinaryExpressionFormatting getRightShift(Expression expr)
+    {
+        return new BinaryExpressionFormatting(" >> ");
+    }
+
+    @Override
+    public BinaryExpressionFormatting getPlus(Expression expr)
+    {
+        return new BinaryExpressionFormatting(" + ");
+    }
+
+    @Override
+    public BinaryExpressionFormatting getMinus(Expression expr)
+    {
+        return new BinaryExpressionFormatting(" - ");
+    }
+
+    @Override
+    public BinaryExpressionFormatting getMultiply(Expression expr)
+    {
+        return new BinaryExpressionFormatting(" * ");
+    }
+
+    @Override
+    public BinaryExpressionFormatting getDivide(Expression expr)
+    {
+        return new BinaryExpressionFormatting(" / ");
+    }
+
+    @Override
+    public BinaryExpressionFormatting getModulo(Expression expr)
+    {
+        return new BinaryExpressionFormatting(" % ");
+    }
+
+    @Override
+    public BinaryExpressionFormatting getArrayElement(Expression expr, boolean isSetter)
+    {
+        return new BinaryExpressionFormatting("", "[", (isSetter) ? "] = value" : "]");
+    }
+
+    @Override
+    public BinaryExpressionFormatting getDot(Expression expr)
+    {
+        // ignore dots between package identifiers
+        if (expr.op1().getExprZserioType() == null)
+            return new BinaryExpressionFormatting("");
+
+        return new BinaryExpressionFormatting(".");
+    }
+
+    // ternary expressions formatting
+
+    @Override
+    public TernaryExpressionFormatting getQuestionMark(Expression expr)
+    {
+        return new TernaryExpressionFormattingPython(expr, "(", ") if (", ") else (", ")");
+    }
+
     private void formatIdentifierForType(StringBuilder result, String symbol,
             ZserioType resolvedType) throws ZserioEmitException
     {
@@ -127,7 +343,7 @@ public class PythonExpressionFormattingPolicy extends DefaultExpressionFormattin
         {
             // [functionCall]()
             final FunctionType functionType = (FunctionType)resolvedType;
-            result.append(getAccessPrefix());
+            result.append(PYTHON_FUNCTION_CALL_PREFIX);
             result.append(AccessorNameFormatter.getFunctionName(functionType));
         }
         else
@@ -171,7 +387,7 @@ public class PythonExpressionFormattingPolicy extends DefaultExpressionFormattin
             boolean isSetter)
     {
         if (isFirst)
-            result.append(getAccessPrefix());
+            result.append(PYTHON_FUNCTION_CALL_PREFIX);
 
         result.append(AccessorNameFormatter.getGetterName(param));
         result.append(PYTHON_GETTER_FUNCTION_CALL);
@@ -180,7 +396,7 @@ public class PythonExpressionFormattingPolicy extends DefaultExpressionFormattin
     private void formatFieldAccessor(StringBuilder result, boolean isFirst, Field field, boolean isSetter)
     {
         if (isFirst)
-            result.append(getAccessPrefix());
+            result.append(PYTHON_FUNCTION_CALL_PREFIX);
 
         if (isSetter)
         {
@@ -192,69 +408,6 @@ public class PythonExpressionFormattingPolicy extends DefaultExpressionFormattin
             result.append(AccessorNameFormatter.getGetterName(field));
             result.append(PYTHON_GETTER_FUNCTION_CALL);
         }
-    }
-
-    private String getAccessPrefix()
-    {
-        return PYTHON_FUNCTION_CALL_PREFIX;
-    }
-
-    @Override
-    public UnaryExpressionFormatting getFunctionCall(Expression expr)
-    {
-        return new UnaryExpressionFormatting("", "()");
-    }
-
-    @Override
-    public UnaryExpressionFormatting getLengthOf(Expression expr)
-    {
-        return new UnaryExpressionFormatting("len(", ")");
-    }
-
-    @Override
-    public UnaryExpressionFormatting getSum(Expression expr)
-    {
-        return new UnaryExpressionFormatting("sum(", ")");
-    }
-
-    @Override
-    public UnaryExpressionFormatting getValueOf(Expression expr)
-    {
-        return new UnaryExpressionFormatting("", ".value");
-    }
-
-    @Override
-    public UnaryExpressionFormatting getExplicit(Expression expr)
-    {
-        return new UnaryExpressionFormatting("");
-    }
-
-    @Override
-    public UnaryExpressionFormatting getNumBits(Expression expr)
-    {
-        return new UnaryExpressionFormatting("zserio.builtin.getNumBits(", ")");
-    }
-
-    @Override
-    public BinaryExpressionFormatting getArrayElement(Expression expr, boolean isSetter)
-    {
-        return new BinaryExpressionFormatting("", "[", (isSetter) ? "] = value" : "]");
-    }
-
-    @Override
-    public BinaryExpressionFormatting getDot(Expression expr)
-    {
-        // ignore dots between package identifiers
-        if (expr.op1().getExprZserioType() == null)
-            return new BinaryExpressionFormatting("");
-
-        return new BinaryExpressionFormatting(".");
-    }
-
-    @Override
-    public TernaryExpressionFormatting getQuestionMark(Expression expr)
-    {
-        return new TernaryExpressionFormattingPython(expr, "(", ") if (", ") else (", ")");
     }
 
     private static class TernaryExpressionFormattingPython extends TernaryExpressionFormatting

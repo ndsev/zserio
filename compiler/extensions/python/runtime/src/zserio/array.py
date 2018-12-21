@@ -63,12 +63,15 @@ class Array():
         return instance
 
     def __eq__(self, other):
-        return (self._rawArray == other._rawArray and
-                self._arrayTraits == other._arrayTraits and
-                self._isAuto == other._isAuto and
-                self._isImplicit == other._isImplicit and
-                self._setOffsetMethod == other._setOffsetMethod and
-                self._checkOffsetMethod == other._checkOffsetMethod)
+        if isinstance(other, Array):
+            return (self._rawArray == other._rawArray and
+                    self._arrayTraits == other._arrayTraits and
+                    self._isAuto == other._isAuto and
+                    self._isImplicit == other._isImplicit and
+                    self._setOffsetMethod == other._setOffsetMethod and
+                    self._checkOffsetMethod == other._checkOffsetMethod)
+
+        return False
 
     def __hash__(self):
         hashCode = HASH_SEED
@@ -213,7 +216,10 @@ class BitFieldArrayTraits():
         self._numBits = numBits
 
     def __eq__(self, other):
-        return self._numBits == other._numBits
+        if isinstance(other, BitFieldArrayTraits):
+            return self._numBits == other._numBits
+
+        return False
 
     def bitSizeOf(self):
         """
@@ -262,7 +268,10 @@ class SignedBitFieldArrayTraits():
         self._numBits = numBits
 
     def __eq__(self, other):
-        return self._numBits == other._numBits
+        if isinstance(other, SignedBitFieldArrayTraits):
+            return self._numBits == other._numBits
+
+        return False
 
     def bitSizeOf(self):
         """
@@ -302,7 +311,7 @@ class VarUInt16ArrayTraits():
     NEEDS_INITIALIZE_OFFSETS = False
 
     def __eq__(self, other):
-        return True
+        return isinstance(other, VarUInt16ArrayTraits)
 
     @staticmethod
     def bitSizeOf(_bitPosition, value):
@@ -347,7 +356,7 @@ class VarUInt32ArrayTraits():
     NEEDS_INITIALIZE_OFFSETS = False
 
     def __eq__(self, other):
-        return True
+        return isinstance(other, VarUInt32ArrayTraits)
 
     @staticmethod
     def bitSizeOf(_bitPosition, value):
@@ -392,7 +401,7 @@ class VarUInt64ArrayTraits():
     NEEDS_INITIALIZE_OFFSETS = False
 
     def __eq__(self, other):
-        return True
+        return isinstance(other, VarUInt64ArrayTraits)
 
     @staticmethod
     def bitSizeOf(_bitPosition, value):
@@ -437,7 +446,7 @@ class VarUIntArrayTraits():
     NEEDS_INITIALIZE_OFFSETS = False
 
     def __eq__(self, other):
-        return True
+        return isinstance(other, VarUIntArrayTraits)
 
     @staticmethod
     def bitSizeOf(_bitPosition, value):
@@ -482,7 +491,7 @@ class VarInt16ArrayTraits():
     NEEDS_INITIALIZE_OFFSETS = False
 
     def __eq__(self, other):
-        return True
+        return isinstance(other, VarInt16ArrayTraits)
 
     @staticmethod
     def bitSizeOf(_bitPosition, value):
@@ -527,7 +536,7 @@ class VarInt32ArrayTraits():
     NEEDS_INITIALIZE_OFFSETS = False
 
     def __eq__(self, other):
-        return True
+        return isinstance(other, VarInt32ArrayTraits)
 
     @staticmethod
     def bitSizeOf(_bitPosition, value):
@@ -572,7 +581,7 @@ class VarInt64ArrayTraits():
     NEEDS_INITIALIZE_OFFSETS = False
 
     def __eq__(self, other):
-        return True
+        return isinstance(other, VarInt64ArrayTraits)
 
     @staticmethod
     def bitSizeOf(_bitPosition, value):
@@ -617,7 +626,7 @@ class VarIntArrayTraits():
     NEEDS_INITIALIZE_OFFSETS = False
 
     def __eq__(self, other):
-        return True
+        return isinstance(other, VarIntArrayTraits)
 
     @staticmethod
     def bitSizeOf(_bitPosition, value):
@@ -662,7 +671,7 @@ class Float16ArrayTraits():
     NEEDS_INITIALIZE_OFFSETS = False
 
     def __eq__(self, other):
-        return True
+        return isinstance(other, Float16ArrayTraits)
 
     @staticmethod
     def bitSizeOf():
@@ -705,7 +714,7 @@ class Float32ArrayTraits():
     NEEDS_INITIALIZE_OFFSETS = False
 
     def __eq__(self, other):
-        return True
+        return isinstance(other, Float32ArrayTraits)
 
     @staticmethod
     def bitSizeOf():
@@ -748,7 +757,7 @@ class Float64ArrayTraits():
     NEEDS_INITIALIZE_OFFSETS = False
 
     def __eq__(self, other):
-        return True
+        return isinstance(other, Float64ArrayTraits)
 
     @staticmethod
     def bitSizeOf():
@@ -791,7 +800,7 @@ class StringArrayTraits():
     NEEDS_INITIALIZE_OFFSETS = False
 
     def __eq__(self, other):
-        return True
+        return isinstance(other, StringArrayTraits)
 
     @staticmethod
     def bitSizeOf(_bitPosition, value):
@@ -836,7 +845,7 @@ class BoolArrayTraits():
     NEEDS_INITIALIZE_OFFSETS = False
 
     def __eq__(self, other):
-        return True
+        return isinstance(other, BoolArrayTraits)
 
     @staticmethod
     def bitSizeOf():
@@ -888,9 +897,12 @@ class ObjectArrayTraits():
         self._objectCreator = objectCreator
 
     def __eq__(self, other):
-        # checks the name of the object creators (= name of the class and bound method)
-        return (self._objectCreator.__self__.__class__ == other._objectCreator.__self__.__class__ and
-                self._objectCreator.__name__ == other._objectCreator.__name__)
+        if isinstance(other, ObjectArrayTraits):
+            # checks the name of the object creators (= name of the class and bound method)
+            return (self._objectCreator.__self__.__class__ == other._objectCreator.__self__.__class__ and
+                    self._objectCreator.__name__ == other._objectCreator.__name__)
+
+        return False
 
     @staticmethod
     def bitSizeOf(bitPosition, value):
