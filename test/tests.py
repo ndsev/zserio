@@ -12,7 +12,10 @@ import pylint.lint
 
 def main():
     testRoot = os.path.dirname(os.path.realpath(__file__))
-    sys.path.append(os.path.abspath(os.path.join(testRoot, "utils", "python")))
+    origSysPath = list(sys.path)
+
+    testutilsPath = os.path.join(testRoot, "utils", "python")
+    sys.path.append(testutilsPath)
     from testutils import TEST_ARGS, getApiDir
 
     argParser = argparse.ArgumentParser()
@@ -32,7 +35,8 @@ def main():
         TEST_ARGS["java"] = args.java
 
     # path to zserio runtime release
-    sys.path.append(os.path.join(TEST_ARGS["release_dir"], "runtime_libs", "python"))
+    runtimePath = os.path.join(TEST_ARGS["release_dir"], "runtime_libs", "python")
+    sys.path.append(runtimePath)
 
     # load tests
     loader = unittest.TestLoader()
@@ -57,8 +61,11 @@ def main():
     if not testResult.wasSuccessful():
         return 1
 
+    # restore orig sys.path to make pylint running faster
+    sys.path = origSysPath
+
     # run pylint
-    pylintOptions = ["--persistent=n"]
+    pylintOptions = ["--persistent=n", "--ignored-modules=zserio,testutils"]
     if args.pylint_rcfile:
         pylintOptions.append("--rcfile=%s" % (args.pylint_rcfile))
 
@@ -103,11 +110,11 @@ def _runPylint(files, options, disableOption=None):
     pylintOptions += options
     if disableOption:
         pylintOptions.append("--disable=%s" % disableOption)
-    try:
-        pylint.lint.Run(pylintOptions)
-    except SystemExit as systemExit:
-        if systemExit.code != 0:
-            return systemExit.code
+
+    pylintRunner = pylint.lint.Run(pylintOptions, do_exit=False)
+    if pylintRunner.linter.msg_status:
+        return pylintRunner.linter.msg_status
+
     return 0
 
 if __name__ == "__main__":
