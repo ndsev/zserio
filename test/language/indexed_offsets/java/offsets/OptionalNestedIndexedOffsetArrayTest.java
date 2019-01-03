@@ -29,7 +29,8 @@ public class OptionalNestedIndexedOffsetArrayTest
         final File file = new File("test.bin");
         writeOptionalNestedIndexedOffsetArrayToFile(file, length, writeWrongOffsets);
         final BitStreamReader stream = new FileBitStreamReader(file);
-        final OptionalNestedIndexedOffsetArray optionalNestedIndexedOffsetArray = new OptionalNestedIndexedOffsetArray(stream);
+        final OptionalNestedIndexedOffsetArray optionalNestedIndexedOffsetArray =
+                new OptionalNestedIndexedOffsetArray(stream);
         stream.close();
         checkOptionalNestedIndexedOffsetArray(optionalNestedIndexedOffsetArray, length);
     }
@@ -42,7 +43,8 @@ public class OptionalNestedIndexedOffsetArrayTest
         final File file = new File("test.bin");
         writeOptionalNestedIndexedOffsetArrayToFile(file, length, writeWrongOffsets);
         final BitStreamReader stream = new FileBitStreamReader(file);
-        final OptionalNestedIndexedOffsetArray optionalNestedIndexedOffsetArray = new OptionalNestedIndexedOffsetArray(stream);
+        final OptionalNestedIndexedOffsetArray optionalNestedIndexedOffsetArray =
+                new OptionalNestedIndexedOffsetArray(stream);
         stream.close();
         checkOptionalNestedIndexedOffsetArray(optionalNestedIndexedOffsetArray, length);
     }
@@ -54,7 +56,8 @@ public class OptionalNestedIndexedOffsetArrayTest
         final boolean createWrongOffsets = false;
         final OptionalNestedIndexedOffsetArray optionalNestedIndexedOffsetArray =
                 createOptionalNestedIndexedOffsetArray(length, createWrongOffsets);
-        assertEquals(getOptionalNestedIndexedOffsetArrayBitSize(length), optionalNestedIndexedOffsetArray.bitSizeOf());
+        assertEquals(getOptionalNestedIndexedOffsetArrayBitSize(length),
+                optionalNestedIndexedOffsetArray.bitSizeOf());
     }
 
     @Test
@@ -64,7 +67,8 @@ public class OptionalNestedIndexedOffsetArrayTest
         final boolean createWrongOffsets = false;
         final OptionalNestedIndexedOffsetArray optionalNestedIndexedOffsetArray =
                 createOptionalNestedIndexedOffsetArray(length, createWrongOffsets);
-        assertEquals(getOptionalNestedIndexedOffsetArrayBitSize(length), optionalNestedIndexedOffsetArray.bitSizeOf());
+        assertEquals(getOptionalNestedIndexedOffsetArrayBitSize(length),
+                optionalNestedIndexedOffsetArray.bitSizeOf());
     }
 
     @Test
@@ -104,7 +108,8 @@ public class OptionalNestedIndexedOffsetArrayTest
         optionalNestedIndexedOffsetArray.write(writer);
         writer.close();
         checkOptionalNestedIndexedOffsetArray(optionalNestedIndexedOffsetArray, length);
-        final OptionalNestedIndexedOffsetArray readOptionalNestedIndexedOffsetArray = new OptionalNestedIndexedOffsetArray(file);
+        final OptionalNestedIndexedOffsetArray readOptionalNestedIndexedOffsetArray =
+                new OptionalNestedIndexedOffsetArray(file);
         checkOptionalNestedIndexedOffsetArray(readOptionalNestedIndexedOffsetArray, length);
         assertTrue(optionalNestedIndexedOffsetArray.equals(readOptionalNestedIndexedOffsetArray));
     }
@@ -120,7 +125,8 @@ public class OptionalNestedIndexedOffsetArrayTest
         final BitStreamWriter writer = new FileBitStreamWriter(file);
         optionalNestedIndexedOffsetArray.write(writer);
         writer.close();
-        final OptionalNestedIndexedOffsetArray readOptionalNestedIndexedOffsetArray = new OptionalNestedIndexedOffsetArray(file);
+        final OptionalNestedIndexedOffsetArray readOptionalNestedIndexedOffsetArray =
+                new OptionalNestedIndexedOffsetArray(file);
         checkOptionalNestedIndexedOffsetArray(readOptionalNestedIndexedOffsetArray, length);
         assertTrue(optionalNestedIndexedOffsetArray.equals(readOptionalNestedIndexedOffsetArray));
     }
@@ -154,7 +160,8 @@ public class OptionalNestedIndexedOffsetArrayTest
         writer.close();
     }
 
-    private void checkOffsets(OptionalNestedIndexedOffsetArray optionalNestedIndexedOffsetArray, short offsetShift)
+    private void checkOffsets(OptionalNestedIndexedOffsetArray optionalNestedIndexedOffsetArray,
+            short offsetShift)
     {
         final short length = optionalNestedIndexedOffsetArray.getHeader().getLength();
         final UnsignedIntArray offsets = optionalNestedIndexedOffsetArray.getHeader().getOffsets();
@@ -167,8 +174,8 @@ public class OptionalNestedIndexedOffsetArrayTest
         }
     }
 
-    private void checkOptionalNestedIndexedOffsetArray(OptionalNestedIndexedOffsetArray optionalNestedIndexedOffsetArray,
-            short length)
+    private void checkOptionalNestedIndexedOffsetArray(
+            OptionalNestedIndexedOffsetArray optionalNestedIndexedOffsetArray, short length)
     {
         assertEquals(length, optionalNestedIndexedOffsetArray.getHeader().getLength());
 
@@ -189,7 +196,8 @@ public class OptionalNestedIndexedOffsetArrayTest
     private OptionalNestedIndexedOffsetArray createOptionalNestedIndexedOffsetArray(short length,
             boolean createWrongOffsets)
     {
-        final OptionalNestedIndexedOffsetArray optionalNestedIndexedOffsetArray = new OptionalNestedIndexedOffsetArray();
+        final OptionalNestedIndexedOffsetArray optionalNestedIndexedOffsetArray =
+                new OptionalNestedIndexedOffsetArray();
 
         final Header header = new Header();
 
@@ -243,5 +251,5 @@ public class OptionalNestedIndexedOffsetArrayTest
 
     private static final byte  FIELD_VALUE = 63;
 
-    private static final String DATA[] = {"Gree", "Red", "Pink", "Blue", "Black"};
+    private static final String DATA[] = {"Green", "Red", "Pink", "Blue", "Black"};
 }

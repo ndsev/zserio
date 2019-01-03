@@ -63,13 +63,9 @@ class Array():
         return instance
 
     def __eq__(self, other):
+        # it's enough to check only rawArray because compound types which call this are always the same type
         if isinstance(other, Array):
-            return (self._rawArray == other._rawArray and
-                    self._arrayTraits == other._arrayTraits and
-                    self._isAuto == other._isAuto and
-                    self._isImplicit == other._isImplicit and
-                    self._setOffsetMethod == other._setOffsetMethod and
-                    self._checkOffsetMethod == other._checkOffsetMethod)
+            return self._rawArray == other._rawArray
 
         return False
 
@@ -112,7 +108,7 @@ class Array():
         if self._isAuto:
             endBitPosition += getBitSizeOfVarUInt64(size)
 
-        if self._arrayTraits.IS_BITSIZEOF_CONSTANT and size > 0:
+        if self._arrayTraits.HAS_BITSIZEOF_CONSTANT and size > 0:
             elementSize = self._arrayTraits.bitSizeOf()
             if self._setOffsetMethod is None:
                 endBitPosition += size * elementSize
@@ -143,12 +139,7 @@ class Array():
             if self._setOffsetMethod is not None:
                 endBitPosition = alignTo(8, endBitPosition)
                 self._setOffsetMethod(index, endBitPosition)
-            if self._arrayTraits.NEEDS_INITIALIZE_OFFSETS:
-                endBitPosition = self._arrayTraits.initializeOffsets(endBitPosition, self._rawArray[index])
-            elif self._arrayTraits.IS_BITSIZEOF_CONSTANT:
-                endBitPosition += self._arrayTraits.bitSizeOf()
-            else:
-                endBitPosition += self._arrayTraits.bitSizeOf(endBitPosition, self._rawArray[index])
+            endBitPosition = self._arrayTraits.initializeOffsets(endBitPosition, self._rawArray[index])
 
         return endBitPosition
 
@@ -205,8 +196,7 @@ class BitFieldArrayTraits():
     Array traits for unsigned fixed integer Zserio types (uint16, uint32, uint64, bit:5, etc...).
     """
 
-    IS_BITSIZEOF_CONSTANT = True
-    NEEDS_INITIALIZE_OFFSETS = False
+    HAS_BITSIZEOF_CONSTANT = True
 
     def __init__(self, numBits):
         """
@@ -217,12 +207,6 @@ class BitFieldArrayTraits():
 
         self._numBits = numBits
 
-    def __eq__(self, other):
-        if isinstance(other, BitFieldArrayTraits):
-            return self._numBits == other._numBits
-
-        return False
-
     def bitSizeOf(self):
         """
         Returns length of unsigned fixed integer Zserio type stored in the bit stream in bits.
@@ -231,6 +215,17 @@ class BitFieldArrayTraits():
         """
 
         return self._numBits
+
+    def initializeOffsets(self, bitPosition, _value):
+        """
+        Initializes indexed offsets for unsigned fixed integer Zserio type.
+
+        :param bitPosition: Current bit stream position.
+        :param _value: Not used.
+        :returns: Updated bit stream position which points to the first bit after unsigned fixed integer type.
+        """
+
+        return bitPosition + self.bitSizeOf()
 
     def read(self, reader, _index):
         """
@@ -257,8 +252,7 @@ class SignedBitFieldArrayTraits():
     Array traits for signed fixed integer Zserio types (int16, int32, int64, int:5, etc...).
     """
 
-    IS_BITSIZEOF_CONSTANT = True
-    NEEDS_INITIALIZE_OFFSETS = False
+    HAS_BITSIZEOF_CONSTANT = True
 
     def __init__(self, numBits):
         """
@@ -269,12 +263,6 @@ class SignedBitFieldArrayTraits():
 
         self._numBits = numBits
 
-    def __eq__(self, other):
-        if isinstance(other, SignedBitFieldArrayTraits):
-            return self._numBits == other._numBits
-
-        return False
-
     def bitSizeOf(self):
         """
         Returns length of signed fixed integer Zserio type stored in the bit stream in bits.
@@ -283,6 +271,17 @@ class SignedBitFieldArrayTraits():
         """
 
         return self._numBits
+
+    def initializeOffsets(self, bitPosition, _value):
+        """
+        Initializes indexed offsets for signed fixed integer Zserio type.
+
+        :param bitPosition: Current bit stream position.
+        :param _value: Not used.
+        :returns: Updated bit stream position which points to the first bit after signed fixed integer type.
+        """
+
+        return bitPosition + self.bitSizeOf()
 
     def read(self, reader, _index):
         """
@@ -309,11 +308,7 @@ class VarUInt16ArrayTraits():
     Array traits for Zserio varuint16 type.
     """
 
-    IS_BITSIZEOF_CONSTANT = False
-    NEEDS_INITIALIZE_OFFSETS = False
-
-    def __eq__(self, other):
-        return isinstance(other, VarUInt16ArrayTraits)
+    HAS_BITSIZEOF_CONSTANT = False
 
     @staticmethod
     def bitSizeOf(_bitPosition, value):
@@ -326,6 +321,18 @@ class VarUInt16ArrayTraits():
         """
 
         return getBitSizeOfVarUInt16(value)
+
+    @staticmethod
+    def initializeOffsets(bitPosition, value):
+        """
+        Initializes indexed offsets for Zserio varuint16 type.
+
+        :param bitPosition: Current bit stream position.
+        :param value: Zserio varuint16 type value.
+        :returns: Updated bit stream position which points to the first bit after Zserio varuint16 type.
+        """
+
+        return bitPosition + VarUInt16ArrayTraits.bitSizeOf(bitPosition, value)
 
     @staticmethod
     def read(reader, _index):
@@ -354,11 +361,7 @@ class VarUInt32ArrayTraits():
     Array traits for Zserio varuint32 type.
     """
 
-    IS_BITSIZEOF_CONSTANT = False
-    NEEDS_INITIALIZE_OFFSETS = False
-
-    def __eq__(self, other):
-        return isinstance(other, VarUInt32ArrayTraits)
+    HAS_BITSIZEOF_CONSTANT = False
 
     @staticmethod
     def bitSizeOf(_bitPosition, value):
@@ -371,6 +374,18 @@ class VarUInt32ArrayTraits():
         """
 
         return getBitSizeOfVarUInt32(value)
+
+    @staticmethod
+    def initializeOffsets(bitPosition, value):
+        """
+        Initializes indexed offsets for Zserio varuint32 type.
+
+        :param bitPosition: Current bit stream position.
+        :param value: Zserio varuint32 type value.
+        :returns: Updated bit stream position which points to the first bit after Zserio varuint32 type.
+        """
+
+        return bitPosition + VarUInt32ArrayTraits.bitSizeOf(bitPosition, value)
 
     @staticmethod
     def read(reader, _index):
@@ -399,11 +414,7 @@ class VarUInt64ArrayTraits():
     Array traits for Zserio varuint64 type.
     """
 
-    IS_BITSIZEOF_CONSTANT = False
-    NEEDS_INITIALIZE_OFFSETS = False
-
-    def __eq__(self, other):
-        return isinstance(other, VarUInt64ArrayTraits)
+    HAS_BITSIZEOF_CONSTANT = False
 
     @staticmethod
     def bitSizeOf(_bitPosition, value):
@@ -416,6 +427,18 @@ class VarUInt64ArrayTraits():
         """
 
         return getBitSizeOfVarUInt64(value)
+
+    @staticmethod
+    def initializeOffsets(bitPosition, value):
+        """
+        Initializes indexed offsets for Zserio varuint64 type.
+
+        :param bitPosition: Current bit stream position.
+        :param value: Zserio varuint64 type value.
+        :returns: Updated bit stream position which points to the first bit after Zserio varuint64 type.
+        """
+
+        return bitPosition + VarUInt64ArrayTraits.bitSizeOf(bitPosition, value)
 
     @staticmethod
     def read(reader, _index):
@@ -444,11 +467,7 @@ class VarUIntArrayTraits():
     Array traits for Zserio varuint type.
     """
 
-    IS_BITSIZEOF_CONSTANT = False
-    NEEDS_INITIALIZE_OFFSETS = False
-
-    def __eq__(self, other):
-        return isinstance(other, VarUIntArrayTraits)
+    HAS_BITSIZEOF_CONSTANT = False
 
     @staticmethod
     def bitSizeOf(_bitPosition, value):
@@ -461,6 +480,18 @@ class VarUIntArrayTraits():
         """
 
         return getBitSizeOfVarUInt(value)
+
+    @staticmethod
+    def initializeOffsets(bitPosition, value):
+        """
+        Initializes indexed offsets for Zserio varuint type.
+
+        :param bitPosition: Current bit stream position.
+        :param value: Zserio varuint type value.
+        :returns: Updated bit stream position which points to the first bit after Zserio varuint type.
+        """
+
+        return bitPosition + VarUIntArrayTraits.bitSizeOf(bitPosition, value)
 
     @staticmethod
     def read(reader, _index):
@@ -489,11 +520,7 @@ class VarInt16ArrayTraits():
     Array traits for Zserio varint16 type.
     """
 
-    IS_BITSIZEOF_CONSTANT = False
-    NEEDS_INITIALIZE_OFFSETS = False
-
-    def __eq__(self, other):
-        return isinstance(other, VarInt16ArrayTraits)
+    HAS_BITSIZEOF_CONSTANT = False
 
     @staticmethod
     def bitSizeOf(_bitPosition, value):
@@ -506,6 +533,18 @@ class VarInt16ArrayTraits():
         """
 
         return getBitSizeOfVarInt16(value)
+
+    @staticmethod
+    def initializeOffsets(bitPosition, value):
+        """
+        Initializes indexed offsets for Zserio varint16 type.
+
+        :param bitPosition: Current bit stream position.
+        :param value: Zserio varint16 type value.
+        :returns: Updated bit stream position which points to the first bit after Zserio varint16 type.
+        """
+
+        return bitPosition + VarInt16ArrayTraits.bitSizeOf(bitPosition, value)
 
     @staticmethod
     def read(reader, _index):
@@ -534,11 +573,7 @@ class VarInt32ArrayTraits():
     Array traits for Zserio varint32 type.
     """
 
-    IS_BITSIZEOF_CONSTANT = False
-    NEEDS_INITIALIZE_OFFSETS = False
-
-    def __eq__(self, other):
-        return isinstance(other, VarInt32ArrayTraits)
+    HAS_BITSIZEOF_CONSTANT = False
 
     @staticmethod
     def bitSizeOf(_bitPosition, value):
@@ -551,6 +586,18 @@ class VarInt32ArrayTraits():
         """
 
         return getBitSizeOfVarInt32(value)
+
+    @staticmethod
+    def initializeOffsets(bitPosition, value):
+        """
+        Initializes indexed offsets for Zserio varint32 type.
+
+        :param bitPosition: Current bit stream position.
+        :param value: Zserio varint32 type value.
+        :returns: Updated bit stream position which points to the first bit after Zserio varint32 type.
+        """
+
+        return bitPosition + VarInt32ArrayTraits.bitSizeOf(bitPosition, value)
 
     @staticmethod
     def read(reader, _index):
@@ -579,11 +626,7 @@ class VarInt64ArrayTraits():
     Array traits for Zserio varint64 type.
     """
 
-    IS_BITSIZEOF_CONSTANT = False
-    NEEDS_INITIALIZE_OFFSETS = False
-
-    def __eq__(self, other):
-        return isinstance(other, VarInt64ArrayTraits)
+    HAS_BITSIZEOF_CONSTANT = False
 
     @staticmethod
     def bitSizeOf(_bitPosition, value):
@@ -596,6 +639,18 @@ class VarInt64ArrayTraits():
         """
 
         return getBitSizeOfVarInt64(value)
+
+    @staticmethod
+    def initializeOffsets(bitPosition, value):
+        """
+        Initializes indexed offsets for Zserio varint64 type.
+
+        :param bitPosition: Current bit stream position.
+        :param value: Zserio varint64 type value.
+        :returns: Updated bit stream position which points to the first bit after Zserio varint64 type.
+        """
+
+        return bitPosition + VarInt64ArrayTraits.bitSizeOf(bitPosition, value)
 
     @staticmethod
     def read(reader, _index):
@@ -624,11 +679,7 @@ class VarIntArrayTraits():
     Array traits for Zserio varint type.
     """
 
-    IS_BITSIZEOF_CONSTANT = False
-    NEEDS_INITIALIZE_OFFSETS = False
-
-    def __eq__(self, other):
-        return isinstance(other, VarIntArrayTraits)
+    HAS_BITSIZEOF_CONSTANT = False
 
     @staticmethod
     def bitSizeOf(_bitPosition, value):
@@ -641,6 +692,18 @@ class VarIntArrayTraits():
         """
 
         return getBitSizeOfVarInt(value)
+
+    @staticmethod
+    def initializeOffsets(bitPosition, value):
+        """
+        Initializes indexed offsets for Zserio varint type.
+
+        :param bitPosition: Current bit stream position.
+        :param value: Zserio varint type value.
+        :returns: Updated bit stream position which points to the first bit after Zserio varint type.
+        """
+
+        return bitPosition + VarIntArrayTraits.bitSizeOf(bitPosition, value)
 
     @staticmethod
     def read(reader, _index):
@@ -669,11 +732,7 @@ class Float16ArrayTraits():
     Array traits for Zserio float16 type.
     """
 
-    IS_BITSIZEOF_CONSTANT = True
-    NEEDS_INITIALIZE_OFFSETS = False
-
-    def __eq__(self, other):
-        return isinstance(other, Float16ArrayTraits)
+    HAS_BITSIZEOF_CONSTANT = True
 
     @staticmethod
     def bitSizeOf():
@@ -684,6 +743,18 @@ class Float16ArrayTraits():
         """
 
         return 16
+
+    @staticmethod
+    def initializeOffsets(bitPosition, _value):
+        """
+        Initializes indexed offsets for Zserio float16 type.
+
+        :param bitPosition: Current bit stream position.
+        :param _value: Not used.
+        :returns: Updated bit stream position which points to the first bit after Zserio float16 type.
+        """
+
+        return bitPosition + Float16ArrayTraits.bitSizeOf()
 
     @staticmethod
     def read(reader, _index):
@@ -712,11 +783,7 @@ class Float32ArrayTraits():
     Array traits for Zserio float32 type.
     """
 
-    IS_BITSIZEOF_CONSTANT = True
-    NEEDS_INITIALIZE_OFFSETS = False
-
-    def __eq__(self, other):
-        return isinstance(other, Float32ArrayTraits)
+    HAS_BITSIZEOF_CONSTANT = True
 
     @staticmethod
     def bitSizeOf():
@@ -727,6 +794,18 @@ class Float32ArrayTraits():
         """
 
         return 32
+
+    @staticmethod
+    def initializeOffsets(bitPosition, _value):
+        """
+        Initializes indexed offsets for Zserio float32 type.
+
+        :param bitPosition: Current bit stream position.
+        :param _value: Not used.
+        :returns: Updated bit stream position which points to the first bit after Zserio float32 type.
+        """
+
+        return bitPosition + Float32ArrayTraits.bitSizeOf()
 
     @staticmethod
     def read(reader, _index):
@@ -755,11 +834,7 @@ class Float64ArrayTraits():
     Array traits for Zserio float64 type.
     """
 
-    IS_BITSIZEOF_CONSTANT = True
-    NEEDS_INITIALIZE_OFFSETS = False
-
-    def __eq__(self, other):
-        return isinstance(other, Float64ArrayTraits)
+    HAS_BITSIZEOF_CONSTANT = True
 
     @staticmethod
     def bitSizeOf():
@@ -770,6 +845,18 @@ class Float64ArrayTraits():
         """
 
         return 64
+
+    @staticmethod
+    def initializeOffsets(bitPosition, _value):
+        """
+        Initializes indexed offsets for Zserio float64 type.
+
+        :param bitPosition: Current bit stream position.
+        :param _value: Not used.
+        :returns: Updated bit stream position which points to the first bit after Zserio float64 type.
+        """
+
+        return bitPosition + Float64ArrayTraits.bitSizeOf()
 
     @staticmethod
     def read(reader, _index):
@@ -798,11 +885,7 @@ class StringArrayTraits():
     Array traits for Zserio string type.
     """
 
-    IS_BITSIZEOF_CONSTANT = False
-    NEEDS_INITIALIZE_OFFSETS = False
-
-    def __eq__(self, other):
-        return isinstance(other, StringArrayTraits)
+    HAS_BITSIZEOF_CONSTANT = False
 
     @staticmethod
     def bitSizeOf(_bitPosition, value):
@@ -815,6 +898,18 @@ class StringArrayTraits():
         """
 
         return getBitSizeOfString(value)
+
+    @staticmethod
+    def initializeOffsets(bitPosition, value):
+        """
+        Initializes indexed offsets for Zserio string type.
+
+        :param bitPosition: Current bit stream position.
+        :param value: Zserio string type value.
+        :returns: Updated bit stream position which points to the first bit after Zserio string type.
+        """
+
+        return bitPosition + StringArrayTraits.bitSizeOf(bitPosition, value)
 
     @staticmethod
     def read(reader, _index):
@@ -843,11 +938,7 @@ class BoolArrayTraits():
     Array traits for Zserio bool type.
     """
 
-    IS_BITSIZEOF_CONSTANT = True
-    NEEDS_INITIALIZE_OFFSETS = False
-
-    def __eq__(self, other):
-        return isinstance(other, BoolArrayTraits)
+    HAS_BITSIZEOF_CONSTANT = True
 
     @staticmethod
     def bitSizeOf():
@@ -858,6 +949,18 @@ class BoolArrayTraits():
         """
 
         return 1
+
+    @staticmethod
+    def initializeOffsets(bitPosition, _value):
+        """
+        Initializes indexed offsets for Zserio bool type.
+
+        :param bitPosition: Current bit stream position.
+        :param _value: Not used.
+        :returns: Updated bit stream position which points to the first bit after Zserio bool type.
+        """
+
+        return bitPosition + BoolArrayTraits.bitSizeOf()
 
     @staticmethod
     def read(reader, _index):
@@ -886,8 +989,7 @@ class ObjectArrayTraits():
     Array traits for Zserio structure, choice, union and enum types.
     """
 
-    IS_BITSIZEOF_CONSTANT = False
-    NEEDS_INITIALIZE_OFFSETS = True
+    HAS_BITSIZEOF_CONSTANT = False
 
     def __init__(self, objectCreator):
         """
@@ -897,14 +999,6 @@ class ObjectArrayTraits():
         """
 
         self._objectCreator = objectCreator
-
-    def __eq__(self, other):
-        if isinstance(other, ObjectArrayTraits):
-            # checks the name of the object creators (= name of the class and bound method)
-            return (self._objectCreator.__self__.__class__ == other._objectCreator.__self__.__class__ and
-                    self._objectCreator.__name__ == other._objectCreator.__name__)
-
-        return False
 
     @staticmethod
     def bitSizeOf(bitPosition, value):
@@ -924,6 +1018,7 @@ class ObjectArrayTraits():
         Initializes indexed offsets for the Zserio object type.
 
         :param bitPosition: Current bit stream position.
+        :param value: Zserio object type value.
         :returns: Updated bit stream position which points to the first bit after the Zserio object type.
         """
 

@@ -17,6 +17,9 @@ disable=no-else-return,
 # Maximum number of characters on a single line.
 max-line-length=112
 
+# Maximum number of lines in a module.
+max-module-lines=1500
+
 [BASIC]
 
 # Naming style matching correct argument names.

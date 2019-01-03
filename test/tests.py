@@ -84,7 +84,8 @@ def main():
                                                         "too-many-instance-attributes, too-many-arguments, "
                                                         "too-many-public-methods, too-many-locals, "
                                                         "too-many-branches, too-many-statements, "
-                                                        "unneeded-not, superfluous-parens, import-error"))
+                                                        "unneeded-not, superfluous-parens, import-error, "
+                                                        "len-as-condition"))
     if pylintResult != 0:
         return pylintResult
 

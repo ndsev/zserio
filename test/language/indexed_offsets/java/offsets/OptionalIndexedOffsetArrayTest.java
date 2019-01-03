@@ -236,5 +236,5 @@ public class OptionalIndexedOffsetArrayTest
 
     private static final byte  FIELD_VALUE = 63;
 
-    private static final String DATA[] = {"Gree", "Red", "Pink", "Blue", "Black"};
+    private static final String DATA[] = {"Green", "Red", "Pink", "Blue", "Black"};
 }

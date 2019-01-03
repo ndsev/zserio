@@ -195,7 +195,6 @@ class ArrayTest(unittest.TestCase):
         array1 = Array(arrayTraits, array1Values)
         array2 = Array(arrayTraits, array2Values)
         array3 = Array(arrayTraits, array1Values)
-        self.assertNotEqual(arrayTraits, None)
         self.assertNotEqual(array1, None)
         self.assertNotEqual(array1, array2)
         self.assertEqual(array1, array3)
