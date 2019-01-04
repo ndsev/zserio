@@ -1,16 +1,20 @@
 set(ZSERIO_GEN_DIR ${CMAKE_CURRENT_BINARY_DIR}/gen)
 set(ZSERIO_GENERATED_SOURCES
+    ${ZSERIO_GEN_DIR}/without_writer_code/ExtraParamUnion.cpp
+    ${ZSERIO_GEN_DIR}/without_writer_code/ExtraParamUnion.h
     ${ZSERIO_GEN_DIR}/without_writer_code/GeoMapTable.cpp
     ${ZSERIO_GEN_DIR}/without_writer_code/GeoMapTable.h
     ${ZSERIO_GEN_DIR}/without_writer_code/GeoMapTableRow.cpp
     ${ZSERIO_GEN_DIR}/without_writer_code/GeoMapTableRow.h
     ${ZSERIO_GEN_DIR}/without_writer_code/IParameterProvider.h
-    ${ZSERIO_GEN_DIR}/without_writer_code/Item.cpp
-    ${ZSERIO_GEN_DIR}/without_writer_code/Item.h
     ${ZSERIO_GEN_DIR}/without_writer_code/ItemChoice.cpp
     ${ZSERIO_GEN_DIR}/without_writer_code/ItemChoice.h
     ${ZSERIO_GEN_DIR}/without_writer_code/ItemChoiceHolder.cpp
     ${ZSERIO_GEN_DIR}/without_writer_code/ItemChoiceHolder.h
+    ${ZSERIO_GEN_DIR}/without_writer_code/Item.cpp
+    ${ZSERIO_GEN_DIR}/without_writer_code/Item.h
+    ${ZSERIO_GEN_DIR}/without_writer_code/ItemType.cpp
+    ${ZSERIO_GEN_DIR}/without_writer_code/ItemType.h
     ${ZSERIO_GEN_DIR}/without_writer_code/MasterDatabase.cpp
     ${ZSERIO_GEN_DIR}/without_writer_code/MasterDatabase.h
     ${ZSERIO_GEN_DIR}/without_writer_code/Tile.cpp

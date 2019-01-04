@@ -35,9 +35,7 @@ public:
 </#list>
     };
 
-<#if withWriterCode>
     ${name}();
-</#if>
     ${name}(e_${name} value);
     explicit ${name}(zserio::BitStreamReader& _in);
 <#if withInspectorCode>
