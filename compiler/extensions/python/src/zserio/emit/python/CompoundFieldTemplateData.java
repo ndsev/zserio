@@ -428,10 +428,12 @@ public final class CompoundFieldTemplateData
                 pythonExpressionFormatter);
 
         final BigInteger zserioLowerBound = integerType.getLowerBound();
-        final String lowerBound = PythonLiteralFormatter.formatDecimalLiteral(zserioLowerBound);
+        final String lowerBound = zserioLowerBound != null ?
+                PythonLiteralFormatter.formatDecimalLiteral(zserioLowerBound) : null;
 
         final BigInteger zserioUpperBound = integerType.getUpperBound();
-        final String upperBound = PythonLiteralFormatter.formatDecimalLiteral(zserioUpperBound);
+        final String upperBound = zserioUpperBound != null ?
+                PythonLiteralFormatter.formatDecimalLiteral(zserioUpperBound) : null;
 
         return new RangeCheck(bitFieldWithExpression, lowerBound, upperBound);
     }

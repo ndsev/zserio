@@ -249,16 +249,17 @@ ${I}                                        (len(self.<@field_member_name field/
 <#macro compound_check_range_field field compoundName indent>
     <#local I>${""?left_pad(indent * 4)}</#local>
     <#if field.rangeCheck??>
+        <#local rangeCheck=field.rangeCheck/>
 ${I}# check range
         <#if rangeCheck.bitFieldWithExpression??>
 ${I}length = ${rangeCheck.bitFieldWithExpression.lengthExpression}
-${I}lowerBound = zserio.get<#if rangeCheck.bitFieldWithExpression.isSigned>Signed</#if>BitFieldLowerBound(length)
-${I}upperBound = zserio.get<#if rangeCheck.bitFieldWithExpression.isSigned>Signed</#if>BitFieldUpperBound(length)
+${I}lowerBound = zserio.bitfield.get<#if rangeCheck.bitFieldWithExpression.isSigned>Signed</#if>BitFieldLowerBound(length)
+${I}upperBound = zserio.bitfield.get<#if rangeCheck.bitFieldWithExpression.isSigned>Signed</#if>BitFieldUpperBound(length)
         <#else>
 ${I}lowerBound = ${rangeCheck.lowerBound}
 ${I}upperBound = ${rangeCheck.upperBound}
         </#if>
-${I}if self.<@field_member_name field/> < lowerBound or self.<@field_member_name field/> > upperBound):
+${I}if self.<@field_member_name field/> < lowerBound or self.<@field_member_name field/> > upperBound:
 ${I}    raise zserio.PythonRuntimeException("Value %d for field ${compoundName}.${field.name} is out range: <%d, %d>!" %
 ${I}                                        (self.<@field_member_name field/>, lowerBound, upperBound))
     </#if>
