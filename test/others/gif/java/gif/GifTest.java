@@ -11,6 +11,10 @@ import zserio.runtime.ZserioError;
 import zserio.runtime.array.ObjectArray;
 import zserio.runtime.array.UnsignedByteArray;
 
+import gif_data.*;
+import rgb_color.RgbColor;
+import screen_descriptor.ScreenDescriptor;
+
 public class GifTest
 {
     @Test
@@ -66,8 +70,8 @@ public class GifTest
             System.out.println(alignment + "No global color map found.");
         }
 
-        GIFData gifData = gifFile.getBlocks();
-        BLOCK_TYPE gifTag;
+        GifData gifData = gifFile.getBlocks();
+        BlockType gifTag;
         do
         {
             gifTag = gifData.getTag();
@@ -89,15 +93,15 @@ public class GifTest
                     System.out.println(alignment + "unknown block.");
                     break;
             }
-            if (gifTag != BLOCK_TYPE.TERMINATOR_BLOCK)
+            if (gifTag != BlockType.TERMINATOR_BLOCK)
                 gifData = gifData.getNextBlock();
 
-        } while (gifTag != BLOCK_TYPE.TERMINATOR_BLOCK);
+        } while (gifTag != BlockType.TERMINATOR_BLOCK);
 
         assertTrue(true);
     }
 
-    private void printColorMap(ObjectArray<RGBColor> globalColorMap)
+    private void printColorMap(ObjectArray<RgbColor> globalColorMap)
     {
         System.out.println(alignment + "ColorMap:");
         int entry = 0;
@@ -108,7 +112,7 @@ public class GifTest
             for (int i = 0; i < 16; i++, entry++)
             {
                 String sep = (i == 16-1) ? "%n" : ", ";
-                RGBColor rgbColor = globalColorMap.elementAt(entry);
+                RgbColor rgbColor = globalColorMap.elementAt(entry);
                 System.out.format("#%1$02X%2$02X%3$02X" + sep,
                         rgbColor.getRed(), rgbColor.getGreen(), rgbColor.getBlue());
             }
@@ -117,7 +121,7 @@ public class GifTest
         for (int i = globalColorMap.length() % 16; i > 0; i--, entry++)
         {
             String sep = (i == 1) ? "%n" : ", ";
-            RGBColor rgbColor = globalColorMap.elementAt(entry);
+            RgbColor rgbColor = globalColorMap.elementAt(entry);
             System.out.format("#%1$02X%2$02X%3$02X" + sep,
                     rgbColor.getRed(), rgbColor.getGreen(), rgbColor.getBlue());
         }

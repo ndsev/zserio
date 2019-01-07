@@ -54,7 +54,7 @@ TEST_F(GifTest, OnePixGif)
     const std::string expectedGifFileVersion("89a");
     ASSERT_EQ(expectedGifFileVersion, fileVersion);
 
-    const gif::ScreenDescriptor& screenDescriptor = gifFile.getScreen();
+    const screen_descriptor::ScreenDescriptor& screenDescriptor = gifFile.getScreen();
     const uint16_t expectedGifScreenWidth = 256;
     ASSERT_EQ(expectedGifScreenWidth, screenDescriptor.getWidth());
 
