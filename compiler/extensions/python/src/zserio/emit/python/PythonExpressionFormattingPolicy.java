@@ -87,20 +87,21 @@ public class PythonExpressionFormattingPolicy implements ExpressionFormattingPol
     }
 
     @Override
-    public String getIdentifier(Expression expr, boolean isLast, boolean isSetter) throws ZserioEmitException
+    public String getIdentifier(Expression expr, boolean isLastInDot, boolean isSetter)
+            throws ZserioEmitException
     {
         final StringBuilder result = new StringBuilder();
         final String symbol = expr.getText();
         final Object resolvedSymbol = expr.getExprSymbolObject();
+        final boolean isFirstInDot = (expr.getExprZserioType() != null); // first in a dot expression
         if (resolvedSymbol instanceof ZserioType)
         {
             // package identifiers are part of this Zserio type
-            formatIdentifierForType(result, symbol, (ZserioType)resolvedSymbol);
+            formatIdentifierForType(result, symbol, isFirstInDot, (ZserioType)resolvedSymbol);
         }
         else if (!(resolvedSymbol instanceof Package))
         {
-            final boolean isFirst = (expr.getExprZserioType() != null); // first in a dot expression
-            formatIdentifierForSymbol(result, symbol, isFirst, resolvedSymbol, isSetter);
+            formatIdentifierForSymbol(result, symbol, isFirstInDot, resolvedSymbol, isSetter);
         }
 
         return result.toString();
@@ -320,7 +321,7 @@ public class PythonExpressionFormattingPolicy implements ExpressionFormattingPol
         return new TernaryExpressionFormattingPython(expr, "(", ") if (", ") else (", ")");
     }
 
-    private void formatIdentifierForType(StringBuilder result, String symbol,
+    private void formatIdentifierForType(StringBuilder result, String symbol, boolean isFirstInDot,
             ZserioType resolvedType) throws ZserioEmitException
     {
         if (resolvedType instanceof EnumType)
@@ -343,7 +344,8 @@ public class PythonExpressionFormattingPolicy implements ExpressionFormattingPol
         {
             // [functionCall]()
             final FunctionType functionType = (FunctionType)resolvedType;
-            result.append(PYTHON_FUNCTION_CALL_PREFIX);
+            if (isFirstInDot)
+                result.append(PYTHON_FUNCTION_CALL_PREFIX);
             result.append(AccessorNameFormatter.getFunctionName(functionType));
         }
         else
@@ -352,18 +354,18 @@ public class PythonExpressionFormattingPolicy implements ExpressionFormattingPol
         }
     }
 
-    private void formatIdentifierForSymbol(StringBuilder result, String symbol, boolean isFirst,
+    private void formatIdentifierForSymbol(StringBuilder result, String symbol, boolean isFirstInDot,
             Object resolvedSymbol, boolean isSetter) throws ZserioEmitException
     {
         if (resolvedSymbol instanceof Parameter)
         {
             final Parameter param = (Parameter)resolvedSymbol;
-            formatParameterAccessor(result, isFirst, param, isSetter);
+            formatParameterAccessor(result, isFirstInDot, param, isSetter);
         }
         else if (resolvedSymbol instanceof Field)
         {
             final Field field = (Field)resolvedSymbol;
-            formatFieldAccessor(result, isFirst, field, isSetter);
+            formatFieldAccessor(result, isFirstInDot, field, isSetter);
         }
         else if (resolvedSymbol instanceof EnumItem)
         {
@@ -371,7 +373,7 @@ public class PythonExpressionFormattingPolicy implements ExpressionFormattingPol
             // emit the whole name if this is the first symbol in this dot subtree, otherwise emit only the
             // enum short name
             final EnumItem item = (EnumItem)resolvedSymbol;
-            if (isFirst)
+            if (isFirstInDot)
             {
                 final EnumType enumType = item.getEnumType();
                 final PythonNativeType nativeEnumType = pythonNativeTypeMapper.getPythonType(enumType);
@@ -383,19 +385,19 @@ public class PythonExpressionFormattingPolicy implements ExpressionFormattingPol
         }
     }
 
-    private void formatParameterAccessor(StringBuilder result, boolean isFirst, Parameter param,
+    private void formatParameterAccessor(StringBuilder result, boolean isFirstInDot, Parameter param,
             boolean isSetter)
     {
-        if (isFirst)
+        if (isFirstInDot)
             result.append(PYTHON_FUNCTION_CALL_PREFIX);
 
         result.append(AccessorNameFormatter.getGetterName(param));
         result.append(PYTHON_GETTER_FUNCTION_CALL);
     }
 
-    private void formatFieldAccessor(StringBuilder result, boolean isFirst, Field field, boolean isSetter)
+    private void formatFieldAccessor(StringBuilder result, boolean isFirstInDot, Field field, boolean isSetter)
     {
-        if (isFirst)
+        if (isFirstInDot)
             result.append(PYTHON_FUNCTION_CALL_PREFIX);
 
         if (isSetter)
