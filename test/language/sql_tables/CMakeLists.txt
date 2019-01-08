@@ -28,6 +28,14 @@ set(ZSERIO_GENERATED_SOURCES
     ${ZSERIO_GEN_DIR}/sql_tables/multiple_pk_table/MultiplePkTableRow.cpp
     ${ZSERIO_GEN_DIR}/sql_tables/multiple_pk_table/MultiplePkTableRow.h
 
+    ${ZSERIO_GEN_DIR}/sql_tables/subtyped_table/Student.cpp
+    ${ZSERIO_GEN_DIR}/sql_tables/subtyped_table/Student.h
+    ${ZSERIO_GEN_DIR}/sql_tables/subtyped_table/SubtypedTable.h
+    ${ZSERIO_GEN_DIR}/sql_tables/subtyped_table/TestTable.cpp
+    ${ZSERIO_GEN_DIR}/sql_tables/subtyped_table/TestTable.h
+    ${ZSERIO_GEN_DIR}/sql_tables/subtyped_table/TestTableRow.cpp
+    ${ZSERIO_GEN_DIR}/sql_tables/subtyped_table/TestTableRow.h
+
     ${ZSERIO_GEN_DIR}/sql_tables/without_pk_table/WithoutPkTable.cpp
     ${ZSERIO_GEN_DIR}/sql_tables/without_pk_table/WithoutPkTable.h
     ${ZSERIO_GEN_DIR}/sql_tables/without_pk_table/WithoutPkTableRow.cpp
@@ -55,6 +63,7 @@ add_test_sources(
     cpp/ComplexTableTest.cpp
     cpp/ConstParamTableTest.cpp
     cpp/MultiplePkTableTest.cpp
+    cpp/SubtypedTableTest.cpp
     cpp/WithoutPkTableTest.cpp
 )
 

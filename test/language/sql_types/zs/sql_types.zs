@@ -84,7 +84,7 @@ sql_table SqlTypesTable
     TestChoice(false)   choiceType;
 
     // union type
-    TestUnion           unionType;
+    TestUnion       unionType;
 };
 
 sql_database SqlTypesDb
