@@ -64,14 +64,14 @@ protected:
         sqlite3_stmt* const stmtEurope = db.prepareStatement("INSERT INTO europe VALUES (?, ?)");
         ASSERT_TRUE(stmtEurope != NULL);
         sqlite3_bind_int(stmtEurope, 1, TILE_ID_EUROPE);
-        sqlite3_bind_blob(stmtEurope, 2, buffer, size, SQLITE_TRANSIENT);
+        sqlite3_bind_blob(stmtEurope, 2, buffer, static_cast<int>(size), SQLITE_TRANSIENT);
         ASSERT_EQ(SQLITE_DONE, sqlite3_step(stmtEurope));
         ASSERT_EQ(SQLITE_OK, sqlite3_finalize(stmtEurope));
 
         sqlite3_stmt* const stmtAmerica = db.prepareStatement("INSERT INTO america VALUES (?, ?)");
         ASSERT_TRUE(stmtAmerica != NULL);
         sqlite3_bind_int(stmtAmerica, 1, TILE_ID_AMERICA);
-        sqlite3_bind_blob(stmtAmerica, 2, buffer, size, SQLITE_TRANSIENT);
+        sqlite3_bind_blob(stmtAmerica, 2, buffer, static_cast<int>(size), SQLITE_TRANSIENT);
         ASSERT_EQ(SQLITE_DONE, sqlite3_step(stmtAmerica));
         ASSERT_EQ(SQLITE_OK, sqlite3_finalize(stmtAmerica));
     }
