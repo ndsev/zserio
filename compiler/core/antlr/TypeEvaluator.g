@@ -107,7 +107,6 @@ subtypeDeclaration
                                         final Subtype subtype = (Subtype)s;
                                         subtype.setPackage(currentPackage);
                                     }
-    
             definedType
             i:ID                    {
                                         currentPackage.setLocalType((BaseTokenAST)i, subtype);

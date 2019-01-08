@@ -11,7 +11,7 @@ namespace choice_types
 namespace empty_choice_with_case
 {
 
-TEST(EmptyChoiceWithCaseTest, emptyConstructor)
+TEST(EmptyChoiceWithCaseTest, selectorConstructor)
 {
     EmptyChoiceWithCase emptyChoiceWithCase;
     ASSERT_THROW(emptyChoiceWithCase.getSelector(), zserio::CppRuntimeException);

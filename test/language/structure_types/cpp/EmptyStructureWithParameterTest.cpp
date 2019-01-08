@@ -10,7 +10,7 @@ namespace structure_types
 namespace empty_structure_with_parameter
 {
 
-TEST(EmptyStructureWithParameterTest, emptyConstructor)
+TEST(EmptyStructureWithParameterTest, paramConstructor)
 {
     EmptyStructureWithParameter emptyStructureWithParameter;
     ASSERT_EQ(0, emptyStructureWithParameter.bitSizeOf());

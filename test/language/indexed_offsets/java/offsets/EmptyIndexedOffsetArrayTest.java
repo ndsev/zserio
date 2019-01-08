@@ -50,7 +50,8 @@ public class EmptyIndexedOffsetArrayTest
     {
         final EmptyIndexedOffsetArray emptyIndexedOffsetArray = createEmptyIndexedOffsetArray();
         final int bitPosition = 0;
-        assertEquals(EMPTY_INDEXED_OFFSET_ARRAY_BIT_SIZE, emptyIndexedOffsetArray.initializeOffsets(bitPosition));
+        assertEquals(EMPTY_INDEXED_OFFSET_ARRAY_BIT_SIZE,
+                emptyIndexedOffsetArray.initializeOffsets(bitPosition));
         checkEmptyIndexedOffsetArray(emptyIndexedOffsetArray);
     }
 

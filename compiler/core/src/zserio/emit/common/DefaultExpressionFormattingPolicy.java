@@ -6,7 +6,7 @@ import zserio.emit.common.ExpressionFormattingPolicy;
 /**
  * Default formatting policy for emitters.
  *
- * This abstract policy implements operators which are common for all emitters.
+ * This abstract policy implements operators which might be common for some emitters.
  */
 public abstract class DefaultExpressionFormattingPolicy implements ExpressionFormattingPolicy
 {
@@ -37,13 +37,13 @@ public abstract class DefaultExpressionFormattingPolicy implements ExpressionFor
     @Override
     public UnaryExpressionFormatting getBang(Expression expr)
     {
-        return new UnaryExpressionFormatting(BANG_OPERATOR);
+        return new UnaryExpressionFormatting("!");
     }
 
     @Override
     public UnaryExpressionFormatting getLeftParenthesis(Expression expr)
     {
-        return new UnaryExpressionFormatting(LEFT_PARENTHESIS, RIGHT_PARENTHESIS);
+        return new UnaryExpressionFormatting("(", ")");
     }
 
     @Override
@@ -61,7 +61,7 @@ public abstract class DefaultExpressionFormattingPolicy implements ExpressionFor
     @Override
     public BinaryExpressionFormatting getLogicalAnd(Expression expr)
     {
-        return new BinaryExpressionFormatting(LOGICAL_AND_OPERATOR);
+        return new BinaryExpressionFormatting(" && ");
     }
 
     @Override
@@ -163,12 +163,6 @@ public abstract class DefaultExpressionFormattingPolicy implements ExpressionFor
     @Override
     public TernaryExpressionFormatting getQuestionMark(Expression expr)
     {
-        return new TernaryExpressionFormatting("(", ") ? ", " : ", "");
+        return new TernaryExpressionFormatting(expr, "(", ") ? ", " : ", "");
     }
-
-    // The following constants are used directly by emitters.
-    public static final String BANG_OPERATOR = "!";
-    public static final String LOGICAL_AND_OPERATOR = " && ";
-    public static final String LEFT_PARENTHESIS = "(";
-    public static final String RIGHT_PARENTHESIS = ")";
 }

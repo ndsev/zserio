@@ -23,7 +23,7 @@ public class OneStringStructureTest
     public void emptyConstructor()
     {
         final OneStringStructure oneStringStructure = new OneStringStructure();
-        assertEquals(EMPTY_ONE_STRING_STRUCTURE_BIT_SIZE, oneStringStructure.bitSizeOf());
+        assertEquals(null, oneStringStructure.getOneString());
     }
 
     @Test
@@ -137,8 +137,6 @@ public class OneStringStructureTest
 
         stream.close();
     }
-
-    private static final int    EMPTY_ONE_STRING_STRUCTURE_BIT_SIZE = 8;
 
     private static final String ONE_STRING = "This is a string!";
     private static final int    ONE_STRING_STRUCTURE_BIT_SIZE = (1 + ONE_STRING.length()) * 8;

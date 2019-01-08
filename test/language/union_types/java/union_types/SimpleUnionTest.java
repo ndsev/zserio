@@ -39,34 +39,6 @@ public class SimpleUnionTest
         assertEquals(CASE1_FIELD, simpleUnion.getCase1Field());
     }
 
-    @Test(expected=ZserioError.class)
-    public void bitStreamReaderConstructorCase1_getCase2Field() throws ZserioError, IOException
-    {
-        SimpleUnion simpleUnion = bitStreamReaderConstructor(SimpleUnion.CHOICE_case1Field);
-        simpleUnion.getCase2Field();
-    }
-
-    @Test(expected=ZserioError.class)
-    public void bitStreamReaderConstructorCase1_getCase3Field() throws ZserioError, IOException
-    {
-        SimpleUnion simpleUnion = bitStreamReaderConstructor(SimpleUnion.CHOICE_case1Field);
-        simpleUnion.getCase3Field();
-    }
-
-    @Test(expected=ZserioError.class)
-    public void bitStreamReaderConstructorCase1_getCase4Field() throws ZserioError, IOException
-    {
-        SimpleUnion simpleUnion = bitStreamReaderConstructor(SimpleUnion.CHOICE_case1Field);
-        simpleUnion.getCase4Field();
-    }
-
-    @Test(expected=ZserioError.class)
-    public void bitStreamReaderConstructorCase2_getCase1Field() throws ZserioError, IOException
-    {
-        SimpleUnion simpleUnion = bitStreamReaderConstructor(SimpleUnion.CHOICE_case2Field);
-        simpleUnion.getCase1Field();
-    }
-
     @Test
     public void bitStreamReaderConstructorCase2_getCase2Field() throws ZserioError, IOException
     {
@@ -74,67 +46,11 @@ public class SimpleUnionTest
         assertEquals(CASE2_FIELD, simpleUnion.getCase2Field());
     }
 
-    @Test(expected=ZserioError.class)
-    public void bitStreamReaderConstructorCase2_getCase3Field() throws ZserioError, IOException
-    {
-        SimpleUnion simpleUnion = bitStreamReaderConstructor(SimpleUnion.CHOICE_case2Field);
-        simpleUnion.getCase3Field();
-    }
-
-    @Test(expected=ZserioError.class)
-    public void bitStreamReaderConstructorCase2_getCase4Field() throws ZserioError, IOException
-    {
-        SimpleUnion simpleUnion = bitStreamReaderConstructor(SimpleUnion.CHOICE_case2Field);
-        simpleUnion.getCase4Field();
-    }
-
-    @Test(expected=ZserioError.class)
-    public void bitStreamReaderConstructorCase3_getCase1Field() throws ZserioError, IOException
-    {
-        SimpleUnion simpleUnion = bitStreamReaderConstructor(SimpleUnion.CHOICE_case3Field);
-        simpleUnion.getCase1Field();
-    }
-
-    @Test(expected=ZserioError.class)
-    public void bitStreamReaderConstructorCase3_getCase2Field() throws ZserioError, IOException
-    {
-        SimpleUnion simpleUnion = bitStreamReaderConstructor(SimpleUnion.CHOICE_case3Field);
-        simpleUnion.getCase2Field();
-    }
-
     @Test
     public void bitStreamReaderConstructorCase3_getCase3Field() throws ZserioError, IOException
     {
         SimpleUnion simpleUnion = bitStreamReaderConstructor(SimpleUnion.CHOICE_case3Field);
         assertEquals(CASE3_FIELD, simpleUnion.getCase3Field());
-    }
-
-    @Test(expected=ZserioError.class)
-    public void bitStreamReaderConstructorCase3_getCase4Field() throws ZserioError, IOException
-    {
-        SimpleUnion simpleUnion = bitStreamReaderConstructor(SimpleUnion.CHOICE_case3Field);
-        simpleUnion.getCase4Field();
-    }
-
-    @Test(expected=ZserioError.class)
-    public void bitStreamReaderConstructorCase4_getCase1Field() throws ZserioError, IOException
-    {
-        SimpleUnion simpleUnion = bitStreamReaderConstructor(SimpleUnion.CHOICE_case4Field);
-        simpleUnion.getCase1Field();
-    }
-
-    @Test(expected=ZserioError.class)
-    public void bitStreamReaderConstructorCase4_getCase2Field() throws ZserioError, IOException
-    {
-        SimpleUnion simpleUnion = bitStreamReaderConstructor(SimpleUnion.CHOICE_case4Field);
-        simpleUnion.getCase2Field();
-    }
-
-    @Test(expected=ZserioError.class)
-    public void bitStreamReaderConstructorCase4_getCase3Field() throws ZserioError, IOException
-    {
-        SimpleUnion simpleUnion = bitStreamReaderConstructor(SimpleUnion.CHOICE_case4Field);
-        simpleUnion.getCase3Field();
     }
 
     @Test
@@ -289,34 +205,6 @@ public class SimpleUnionTest
         assertEquals(CASE1_FIELD, simpleUnion.getCase1Field());
     }
 
-    @Test(expected=ZserioError.class)
-    public void readCase1_getCase2Field() throws IOException
-    {
-        SimpleUnion simpleUnion = read(SimpleUnion.CHOICE_case1Field);
-        simpleUnion.getCase2Field();
-    }
-
-    @Test(expected=ZserioError.class)
-    public void readCase1_getCase3Field() throws IOException
-    {
-        SimpleUnion simpleUnion = read(SimpleUnion.CHOICE_case1Field);
-        simpleUnion.getCase3Field();
-    }
-
-    @Test(expected=ZserioError.class)
-    public void readCase1_getCase4Field() throws IOException
-    {
-        SimpleUnion simpleUnion = read(SimpleUnion.CHOICE_case1Field);
-        simpleUnion.getCase4Field();
-    }
-
-    @Test(expected=ZserioError.class)
-    public void readCase2_getCase1Field() throws IOException
-    {
-        SimpleUnion simpleUnion = read(SimpleUnion.CHOICE_case2Field);
-        simpleUnion.getCase1Field();
-    }
-
     @Test
     public void readCase2_getCase2Field() throws IOException
     {
@@ -324,67 +212,11 @@ public class SimpleUnionTest
         assertEquals(CASE2_FIELD, simpleUnion.getCase2Field());
     }
 
-    @Test(expected=ZserioError.class)
-    public void readCase2_getCase3Field() throws IOException
-    {
-        SimpleUnion simpleUnion = read(SimpleUnion.CHOICE_case2Field);
-        simpleUnion.getCase3Field();
-    }
-
-    @Test(expected=ZserioError.class)
-    public void readCase2_getCase4Field() throws IOException
-    {
-        SimpleUnion simpleUnion = read(SimpleUnion.CHOICE_case2Field);
-        simpleUnion.getCase4Field();
-    }
-
-    @Test(expected=ZserioError.class)
-    public void readCase3_getCase1Field() throws IOException
-    {
-        SimpleUnion simpleUnion = read(SimpleUnion.CHOICE_case3Field);
-        simpleUnion.getCase1Field();
-    }
-
-    @Test(expected=ZserioError.class)
-    public void readCase3_getCase2Field() throws IOException
-    {
-        SimpleUnion simpleUnion = read(SimpleUnion.CHOICE_case3Field);
-        simpleUnion.getCase2Field();
-    }
-
     @Test
     public void readCase3_getCase3Field() throws IOException
     {
         SimpleUnion simpleUnion = read(SimpleUnion.CHOICE_case3Field);
         assertEquals(CASE3_FIELD, simpleUnion.getCase3Field());
-    }
-
-    @Test(expected=ZserioError.class)
-    public void readCase3_getCase4Field() throws IOException
-    {
-        SimpleUnion simpleUnion = read(SimpleUnion.CHOICE_case3Field);
-        simpleUnion.getCase4Field();
-    }
-
-    @Test(expected=ZserioError.class)
-    public void readCase4_getCase1Field() throws IOException
-    {
-        SimpleUnion simpleUnion = read(SimpleUnion.CHOICE_case4Field);
-        simpleUnion.getCase1Field();
-    }
-
-    @Test(expected=ZserioError.class)
-    public void readCase4_getCase2Field() throws IOException
-    {
-        SimpleUnion simpleUnion = read(SimpleUnion.CHOICE_case4Field);
-        simpleUnion.getCase2Field();
-    }
-
-    @Test(expected=ZserioError.class)
-    public void readCase4_getCase3Field() throws IOException
-    {
-        SimpleUnion simpleUnion = read(SimpleUnion.CHOICE_case4Field);
-        simpleUnion.getCase3Field();
     }
 
     @Test
@@ -477,7 +309,7 @@ public class SimpleUnionTest
             writeSimpleUnionCase4ToByteArray(writer);
             break;
         default:
-            throw new RuntimeException("writeSimpleUnionToByteArray - unkown choiceTag" + choiceTag + "!");
+            throw new RuntimeException("writeSimpleUnionToByteArray - unknown choiceTag" + choiceTag + "!");
         }
     }
 

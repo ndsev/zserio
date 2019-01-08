@@ -3,6 +3,7 @@
 <#include "CompoundParameter.inc.ftl">
 <#include "CompoundFunction.inc.ftl">
 <#include "CompoundField.inc.ftl">
+<#include "RangeCheck.inc.ftl">
 <@standard_header generatorDescription, packageName, javaMajorVersion, [
         "java.io.IOException",
         "java.io.File",
@@ -67,13 +68,13 @@ ${I}{
             <#list caseMember.caseList as case>
 ${I}case ${case.expressionForCase}:
             </#list>
-        <@.vars[memberActionMacroName] caseMember, indent+1/>
+        <@.vars[memberActionMacroName] caseMember, indent + 1/>
 ${I}    break;
         </#list>
         <#if !isDefaultUnreachable>
 ${I}default:
             <#if defaultMember??>
-        <@.vars[memberActionMacroName] defaultMember, indent+1/>
+        <@.vars[memberActionMacroName] defaultMember, indent + 1/>
 ${I}    break;
             <#else>
 ${I}    throw new ZserioError("No match in choice ${name}: " + ${selectorExpression} + "!");
@@ -90,14 +91,14 @@ ${I}<#if caseMember_index != 0>else </#if>if (<@choice_selector_condition caseMe
 ${I}else
             </#if>
 ${I}{
-        <@.vars[memberActionMacroName] caseMember, indent+1/>
+        <@.vars[memberActionMacroName] caseMember, indent + 1/>
 ${I}}
         </#list>
         <#if !isDefaultUnreachable>
 ${I}else
 ${I}{
             <#if defaultMember??>
-        <@.vars[memberActionMacroName] defaultMember, indent+1/>
+        <@.vars[memberActionMacroName] defaultMember, indent + 1/>
             <#else>
 ${I}    throw new ZserioError("No match in choice ${name}: " + ${selectorExpression} + "!");
             </#if>
@@ -127,7 +128,7 @@ ${I}}
 </#if>
     }
 
-<@compound_parameter_accessors compoundParametersData, name/>
+<@compound_parameter_accessors compoundParametersData/>
 <#list fieldList as field>
     <#if field.isObjectArray>@java.lang.SuppressWarnings("unchecked")</#if>
     public ${field.javaTypeName} ${field.getterName}()
@@ -207,7 +208,7 @@ ${I}}
     <#if member.compoundField??>
         <#if useSwitch>
 ${I}{
-        <@compound_field_initialize_offsets member.compoundField, indent+1/>
+        <@compound_field_initialize_offsets member.compoundField, indent + 1/>
 ${I}}
         <#else>
     <@compound_field_initialize_offsets member.compoundField, indent/>

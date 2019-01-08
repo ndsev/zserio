@@ -373,11 +373,11 @@ public class ExpressionFormatter
         }
 
         buffer.append(formatting.getBeforeOperand1());
-        append(expr.op1());
+        append(formatting.getOperand1());
         buffer.append(formatting.getAfterOperand1());
-        append(expr.op2());
+        append(formatting.getOperand2());
         buffer.append(formatting.getAfterOperand2());
-        append(expr.op3());
+        append(formatting.getOperand3());
         buffer.append(formatting.getAfterOperand3());
     }
 

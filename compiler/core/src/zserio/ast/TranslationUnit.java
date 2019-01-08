@@ -37,7 +37,7 @@ public class TranslationUnit extends TokenAST
     /**
      * Gets the package which is defined in this translation unit.
      *
-     * @return Package defined in this translation unit.
+     * @return Package defined in this translation unit or null for empty input file.
      */
     public Package getPackage()
     {

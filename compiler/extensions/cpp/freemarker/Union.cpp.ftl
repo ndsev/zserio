@@ -138,21 +138,13 @@ ${name}::ChoiceTag ${name}::choiceTag() const
 }
 
 <@compound_parameter_accessors_definition name, compoundParametersData/>
-<#macro union_return_field field>
-    if (m_choiceTag != <@choice_tag_name field/>)
-        throw zserio::CppRuntimeException("Cannot get field ${field.name} from union ${name}: choiceTag " +
-                zserio::convertToString(m_choiceTag) + " != " +
-                zserio::convertToString(<@choice_tag_name field/>) + "!");
-
-    <@compound_return_field field/>
-</#macro>
 <#macro union_set_field field>
     m_choiceTag = <@choice_tag_name field/>;
     <@compound_set_field field/>
 </#macro>
 <#list fieldList as field>
-<@compound_field_getter_definition field name "union_return_field"/>
-<@compound_field_const_getter_definition field name "union_return_field"/>
+<@compound_field_getter_definition field name "compound_return_field"/>
+<@compound_field_const_getter_definition field name "compound_return_field"/>
 <@compound_field_setter_definition field name "union_set_field"/>
 
 </#list>

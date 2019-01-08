@@ -1,8 +1,0 @@
-<FindBugsFilter>
-    <Match>
-        <!-- Same code in different switch clauses. -->
-        <Bug code="DB"/>
-        <Class name="metamodel.TypeInfo"/>
-        <Method name="initializeOffsets"/>
-    </Match>
-</FindBugsFilter>

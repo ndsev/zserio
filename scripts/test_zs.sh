@@ -658,14 +658,19 @@ main()
     convert_to_absolute_path "${SCRIPT_DIR}/.." ZSERIO_PROJECT_ROOT
 
     # set global variables
+    set_global_common_variables
+    if [ $? -ne 0 ] ; then
+        return 1
+    fi
     set_test_global_variables
     if [ $? -ne 0 ] ; then
         return 1
     fi
-
-    set_global_java_variables "${ZSERIO_PROJECT_ROOT}" # JAVAC needed for zserio tool
-    if [ $? -ne 0 ] ; then
-        return 1
+    if [[ ${PARAM_JAVA} -ne 0 ]] ; then
+        set_global_java_variables
+        if [ $? -ne 0 ] ; then
+            return 1
+        fi
     fi
     if [[ ${#PARAM_CPP_TARGET_ARRAY[@]} -ne 0 ]] ; then
         set_global_cpp_variables "${ZSERIO_PROJECT_ROOT}"

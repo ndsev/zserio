@@ -15,7 +15,7 @@ class OptionalIndexedOffsetArrayTest : public ::testing::Test
 public:
     OptionalIndexedOffsetArrayTest()
     {
-        const char* data[NUM_ELEMENTS] = {"Gree", "Red", "Pink", "Blue", "Black"};
+        const char* data[NUM_ELEMENTS] = {"Green", "Red", "Pink", "Blue", "Black"};
         for (uint8_t i = 0; i < NUM_ELEMENTS; ++i)
             m_data.push_back(data[i]);
     }

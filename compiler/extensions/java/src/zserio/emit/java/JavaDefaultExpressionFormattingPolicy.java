@@ -481,8 +481,7 @@ public abstract class JavaDefaultExpressionFormattingPolicy extends DefaultExpre
         if (resolvedSymbol instanceof Parameter)
         {
             final Parameter param = (Parameter)resolvedSymbol;
-            final String accessor = isSetter ? AccessorNameFormatter.getSetterName(param) :
-                    AccessorNameFormatter.getGetterName(param);
+            final String accessor = AccessorNameFormatter.getGetterName(param);
             if (isFirstInDot)
                 result.append(getAccessPrefix());
             formatAccessorCall(result, accessor, isSetter);

@@ -90,7 +90,7 @@ ${name}::${name}()<#rt>
         _selector == ${expressionList?first}<#t>
     <#else>
         <#list expressionList as expression>
-        (_selector == ${expression})<#if case_has_next> || </#if><#t>
+        (_selector == ${expression})<#if expression_has_next> || </#if><#t>
         </#list>
     </#if>
 </#macro>

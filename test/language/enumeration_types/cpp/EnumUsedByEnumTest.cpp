@@ -21,7 +21,6 @@ protected:
     static const uint8_t VALUE_DARK_GREEN    = 0x12;
     static const uint8_t VALUE_DARK_BLUE     = 0x13;
     static const uint8_t VALUE_DARK_PINK     = 0x14;
-
 };
 
 TEST_F(EnumUsedByEnumTest, lightColor)

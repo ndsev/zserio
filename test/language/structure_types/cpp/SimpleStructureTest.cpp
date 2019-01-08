@@ -27,8 +27,9 @@ protected:
 TEST_F(SimpleStructureTest, emptyConstructor)
 {
     SimpleStructure simpleStructure;
-    const size_t expectedBitSize = SIMPLE_STRUCTURE_BIT_SIZE;
-    ASSERT_EQ(expectedBitSize, simpleStructure.bitSizeOf());
+    ASSERT_EQ(0, simpleStructure.getNumberA());
+    ASSERT_EQ(0, simpleStructure.getNumberB());
+    ASSERT_EQ(0, simpleStructure.getNumberC());
 }
 
 TEST_F(SimpleStructureTest, bitStreamReaderConstructor)

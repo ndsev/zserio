@@ -24,6 +24,8 @@
 #include "constants/INTFIELD8_MIN_CONSTANT.h"
 #include "constants/OCTAL_ESC_STRING_CONSTANT.h"
 #include "constants/STRING_CONSTANT.h"
+#include "constants/SUBTYPE_BLUE_COLOR_CONSTANT.h"
+#include "constants/SUBTYPE_INT25_CONSTANT.h"
 #include "constants/UINT16_MAX_CONSTANT.h"
 #include "constants/UINT16_MIN_CONSTANT.h"
 #include "constants/UINT32_FULL_MASK.h"
@@ -300,6 +302,11 @@ TEST(ConstantsTest, octalEscStringConstant)
     ASSERT_EQ("Test string with octal escape \031", OCTAL_ESC_STRING_CONSTANT);
 }
 
+TEST(ConstantsTest, constantDefinedByConstant)
+{
+    ASSERT_EQ(UINT32_FULL_MASK, UINT32_MAX_CONSTANT);
+}
+
 TEST(ConstantsTest, constantDefinedByEnum)
 {
     ASSERT_EQ(Colors::BLACK, DEFAULT_PEN_COLOR);
@@ -310,9 +317,17 @@ TEST(ConstantsTest, constantDefinedByEnumValueof)
     ASSERT_EQ(Colors::BLACK, DEFAULT_PEN_COLOR_VALUE);
 }
 
-TEST(ConstantsTest, constantDefinedByConstant)
+TEST(ConstantsTest, subtypeToInt25Constant)
 {
-    ASSERT_EQ(UINT32_FULL_MASK, UINT32_MAX_CONSTANT);
+    ASSERT_EQ(25, SUBTYPE_INT25_CONSTANT);
+    const Int25Subtype expectedValue = 25;
+    ASSERT_EQ(expectedValue, SUBTYPE_INT25_CONSTANT);
+}
+
+TEST(ConstantsTest, subtypeToEnumConstant)
+{
+    ASSERT_EQ(ColorsSubtype::BLUE, SUBTYPE_BLUE_COLOR_CONSTANT);
+    ASSERT_EQ(Colors::BLUE, SUBTYPE_BLUE_COLOR_CONSTANT);
 }
 
 } // namespace constants

@@ -105,7 +105,8 @@ public class Root extends TokenAST
             emitter.beginTranslationUnit(translationUnit);
 
             final Package unitPackage = translationUnit.getPackage();
-            emitter.beginPackage(unitPackage);
+            if (unitPackage != null) // translation unit package can be null if input file is empty
+                emitter.beginPackage(unitPackage);
 
             final List<Import> unitImports = translationUnit.getImports();
             for (Import unitImport : unitImports)

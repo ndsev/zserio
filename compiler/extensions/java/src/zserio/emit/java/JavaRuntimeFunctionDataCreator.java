@@ -183,7 +183,7 @@ public class JavaRuntimeFunctionDataCreator
                     try
                     {
                         templateData = new RuntimeFunctionTemplateData("BigInteger",
-                                JavaLiteralFormatter.formatIntegerLiteral(bitCount));
+                                JavaLiteralFormatter.formatDecimalLiteral(bitCount));
                     }
                     catch (ZserioEmitException exception)
                     {

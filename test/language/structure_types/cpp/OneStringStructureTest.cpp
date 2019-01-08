@@ -24,15 +24,13 @@ protected:
     static const size_t ONE_STRING_STRUCTURE_BIT_SIZE;
 };
 
-const size_t OneStringStructureTest::EMPTY_ONE_STRING_STRUCTURE_BIT_SIZE = 8;
-
 const char   OneStringStructureTest::ONE_STRING[] = "This is a string!";
 const size_t OneStringStructureTest::ONE_STRING_STRUCTURE_BIT_SIZE = (1 + sizeof(ONE_STRING) - 1) * 8;
 
 TEST_F(OneStringStructureTest, emptyConstructor)
 {
     OneStringStructure oneStringStructure;
-    ASSERT_EQ(EMPTY_ONE_STRING_STRUCTURE_BIT_SIZE, oneStringStructure.bitSizeOf());
+    ASSERT_EQ("", oneStringStructure.getOneString());
 }
 
 TEST_F(OneStringStructureTest, bitStreamReaderConstructor)

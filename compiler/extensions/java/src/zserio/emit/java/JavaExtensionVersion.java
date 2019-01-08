@@ -1,7 +1,7 @@
 package zserio.emit.java;
 
 /**
- * Java extensions version information.
+ * Java extension version information.
  *
  * The version will be stored in MANIFEST.MF and must match ZserioTool version.
  */

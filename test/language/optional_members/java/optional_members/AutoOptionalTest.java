@@ -102,12 +102,12 @@ public class AutoOptionalTest
         assertEquals(AUTO_OPTIONAL_INT_VALUE, (int) readAutoOptionalContainer.getAutoOptionalInt());
     }
 
-    private static void checkContainerInFile(File file, int nonOptionalIntValue, Integer AutoOptionalIntValue)
+    private static void checkContainerInFile(File file, int nonOptionalIntValue, Integer autoOptionalIntValue)
             throws IOException
     {
         final FileImageInputStream stream = new FileImageInputStream(file);
 
-        if (AutoOptionalIntValue == null)
+        if (autoOptionalIntValue == null)
         {
             assertEquals((CONTAINER_BIT_SIZE_WITHOUT_OPTIONAL + 7) / Byte.SIZE, stream.length());
             assertEquals(nonOptionalIntValue, (int) stream.readBits(32));
@@ -118,7 +118,7 @@ public class AutoOptionalTest
             assertEquals((CONTAINER_BIT_SIZE_WITH_OPTIONAL + 7) / Byte.SIZE, stream.length());
             assertEquals(nonOptionalIntValue, (int) stream.readBits(32));
             assertEquals(1, stream.readBit());
-            assertEquals((int) AutoOptionalIntValue, (int) stream.readBits(32));
+            assertEquals((int) autoOptionalIntValue, (int) stream.readBits(32));
         }
 
         stream.close();

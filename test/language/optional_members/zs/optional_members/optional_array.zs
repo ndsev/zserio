@@ -8,9 +8,9 @@ struct Data8
 // test optional arrays setters and getters especially for ObjectArray<?>
 struct TestStruct
 {
-    bool hasData8;
-    Data8 data8[] if hasData8;
-    optional Data8 autoData8[];
-    int16 data16[] if !hasData8;
-    optional int16 autoData16[];
+    bool            hasData8;
+    Data8           data8[] if hasData8;
+    optional Data8  autoData8[];
+    int16           data16[] if !hasData8;
+    optional int16  autoData16[];
 };

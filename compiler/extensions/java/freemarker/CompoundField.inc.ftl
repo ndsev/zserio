@@ -48,13 +48,13 @@ ${I}${fieldMemberName} = <#if field.runtimeFunction.javaReadTypeName??>(${field.
 ${I}${fieldMemberName} = ${field.javaTypeName}.readEnum(__in);
     <#else>
         <#-- compound -->
-        <#local compoundParamsArguments><@compound_field_compound_ctor_params field.compound, false/></#local>
+        <#local compoundParamsArguments><@compound_field_compound_ctor_params field.compound/></#local>
         <#local compoundArguments>__in<#if compoundParamsArguments?has_content>, ${compoundParamsArguments}</#if></#local>
 ${I}${fieldMemberName} = new ${field.javaTypeName}(${compoundArguments});
     </#if>
 </#macro>
 
-<#macro compound_field_compound_ctor_params compound useFullThis>
+<#macro compound_field_compound_ctor_params compound>
     <#list compound.instantiatedParameters as parameter>
         <#if parameter.isSimpleType>(${parameter.javaTypeName})(</#if>${parameter.expression}<#if parameter.isSimpleType>)</#if><#t>
         <#if parameter_has_next>, </#if><#t>
@@ -290,7 +290,7 @@ ${I}__result = Util.HASH_PRIME_NUMBER * __result + ((${field.name} == null) ? 0 
 <#macro define_element_factory field>
     <#local extraConstructorArguments>
         <#if field.array.elementCompound??>
-            <@compound_field_compound_ctor_params field.array.elementCompound, true/><#t>
+            <@compound_field_compound_ctor_params field.array.elementCompound/><#t>
         </#if>
     </#local>
     private <#if !field.array.requiresParentContext>static </#if>final class <@element_factory_name field.name/> <#rt>

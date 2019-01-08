@@ -60,18 +60,6 @@ final class AccessorNameFormatter
     }
 
     /**
-     * Returns the name of setter accessor.
-     *
-     * @param param The zserio paramater for which to get setter accessor.
-     *
-     * @return Setter accessor name.
-     */
-    public static String getSetterName(Parameter param)
-    {
-        return getAccessorName(SETTER_NAME_PREFIX, param.getName());
-    }
-
-    /**
      * Returns the name of function accessor.
      *
      * @param functionType The zserio function for which to get accessor.

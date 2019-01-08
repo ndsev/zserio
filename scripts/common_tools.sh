@@ -6,12 +6,31 @@ if [ -e "${SCRIPT_DIR}/build-env.sh" ] ; then
     source "${SCRIPT_DIR}/build-env.sh"
 fi
 
-# Set and check global variables for Java projets.
+# Set and check global variables for Java projects.
+set_global_common_variables()
+{
+    # bash command find to use, defaults to "/usr/bin/find" if not set
+    # (bash command find makes trouble under MinGW because it clashes with Windows find command)
+    FIND="${FIND:-/usr/bin/find}"
+    if [ ! -f "`which "${FIND}"`" ] ; then
+        stderr_echo "Cannot find bash command find! Set FIND environment variable."
+        return 1
+    fi
+
+    # check java binary
+    if [ -n "${JAVA_HOME}" ] ; then
+        JAVA_BIN="${JAVA_HOME}/bin/java"
+    fi
+    JAVA_BIN="${JAVA_BIN:-java}"
+    if [ ! -f "`which "${JAVA_BIN}"`" ] ; then
+        stderr_echo "Cannot find java! Set JAVA_HOME or JAVA_BIN environment variable."
+        return 1
+    fi
+}
+
+# Set and check global variables for Java projects.
 set_global_java_variables()
 {
-    exit_if_argc_ne $# 1
-    local ZSERIO_PROJECT_ROOT="$1"; shift
-
     # ANT to use, defaults to "ant" if not set
     ANT="${ANT:-ant}"
     if [ ! -f "`which "${ANT}"`" ] ; then
@@ -22,19 +41,13 @@ set_global_java_variables()
     # Ant extra arguments are empty by default
     ANT_EXTRA_ARGS="${ANT_EXTRA_ARGS:-""}"
 
-    # check java and javac binaries
+    # check javac binary
     if [ -n "${JAVA_HOME}" ] ; then
         JAVAC_BIN="${JAVA_HOME}/bin/javac"
-        JAVA_BIN="${JAVA_HOME}/bin/java"
     fi
     JAVAC_BIN="${JAVAC_BIN:-javac}"
-    JAVA_BIN="${JAVA_BIN:-java}"
     if [ ! -f "`which "${JAVAC_BIN}"`" ] ; then
         stderr_echo "Cannot find java compiler! Set JAVA_HOME or JAVAC_BIN environment variable."
-        return 1
-    fi
-    if [ ! -f "`which "${JAVA_BIN}"`" ] ; then
-        stderr_echo "Cannot find java! Set JAVA_HOME or JAVA_BIN environment variable."
         return 1
     fi
 
@@ -42,14 +55,9 @@ set_global_java_variables()
     FINDBUGS_HOME="${FINDBUGS_HOME:-""}"
 }
 
-# Set and check global variables for Java projets.
-#
-# $1 - Zserio project root.
+# Set and check global variables for C++ projects.
 set_global_cpp_variables()
 {
-    exit_if_argc_ne $# 1
-    local ZSERIO_PROJECT_ROOT="$1"; shift
-
     # CMake to use, defaults to "cmake" if not set
     CMAKE="${CMAKE:-cmake}"
     if [ ! -f "`which "${CMAKE}"`" ] ; then
@@ -79,6 +87,216 @@ set_global_cpp_variables()
     return 0
 }
 
+# Set and check global variables for Python projets.
+set_global_python_variables()
+{
+    exit_if_argc_ne $# 1
+    local ZSERIO_PROJECT_ROOT="$1"; shift
+
+    PYTHON_VIRTUALENV="${PYTHON_VIRTUALENV:-""}"
+
+    if [ -z "${PYTHON_VIRTUALENV}" ] ; then
+        # python to use, defaults to "python3" if not set
+        PYTHON="${PYTHON:-python3}"
+        if [ ! -f "`which "${PYTHON}"`" ] ; then
+            stderr_echo "Cannot find Python! Set PYTHON environment variable."
+            return 1
+        fi
+
+        check_python_version ${PYTHON}
+
+        # check that python pip and virtualenv modules are installed
+        local PYTHON_REQUIREMENTS=("virtualenv" "pip")
+        check_python_requirements "${PYTHON}" PYTHON_REQUIREMENTS[@]
+        if [ $? -ne 0 ] ; then
+            return 1
+        fi
+    fi
+
+    # prevent __pycache__ and *.pyc being created in sources directory
+    export PYTHONDONTWRITEBYTECODE=1
+
+    return 0
+}
+
+# Check python version.
+check_python_version()
+{
+    exit_if_argc_ne $# 1
+    local PYTHON_BIN="$1"; shift
+
+    local PYTHON_VERSION=$(${PYTHON_BIN} -V 2>&1 | cut -d\  -f 2)
+    PYTHON_VERSION=(${PYTHON_VERSION//./ }) # python version as an array
+    if [[ ${#PYTHON_VERSION[@]} -lt 2 || ${PYTHON_VERSION[0]} -lt 3 ]] ||
+       [[ ${PYTHON_VERSION[0]} -eq 3 && ${PYTHON_VERSION[1]} -lt 5 ]] ; then
+        stderr_echo "Python 3.5+ is required! Current Python is '$(${PYTHON_BIN} -V 2>&1)'"
+        return 1
+    fi
+
+    return 0
+}
+
+# Check python requirements.
+check_python_requirements()
+{
+    exit_if_argc_ne $# 2
+    local PYTHON_BIN="$1"; shift
+    local MSYS_WORKAROUND_TEMP=("${!1}"); shift
+    local PYTHON_REQUIREMENTS=("${MSYS_WORKAROUND_TEMP[@]}")
+
+    "${PYTHON_BIN}" << EOF
+try:
+    import sys
+    import pkg_resources
+    reqs = "${PYTHON_REQUIREMENTS[@]}".split()
+    pkg_resources.require(reqs)
+except Exception as e:
+    print(e, file=sys.stderr)
+    exit(1)
+EOF
+    if [ $? -ne 0 ] ; then
+        stderr_echo "Required python packages are not installed!"
+        return 1
+    fi
+}
+
+# Detect path to python virtualenv activate scripts which differs on Linux and Windows.
+detect_python_virtualenv_activate()
+{
+    exit_if_argc_ne $# 2
+    local PYTHON_VIRTUALENV_ROOT="$1"; shift
+    local PYTHON_VIRTUALENV_ACTIVATE_OUT="$1"; shift
+
+    local ACTIVATE=
+    if [ -f "${PYTHON_VIRTUALENV_ROOT}/bin/activate" ] ; then
+        ACTIVATE="${PYTHON_VIRTUALENV_ROOT}/bin/activate"
+    elif [ -f "${PYTHON_VIRTUALENV_ROOT}/Scripts/activate" ] ; then
+        ACTIVATE="${PYTHON_VIRTUALENV_ROOT}/Scripts/activate"
+    fi
+
+    eval ${PYTHON_VIRTUALENV_ACTIVATE_OUT}="${ACTIVATE}"
+}
+
+# Activate python virtualenv.
+#
+# When PYTHON_VIRTUALENV is set, just try to use it and check that it fullfils all requirements.
+# When PYTHON_VIRTUALENV is not set, try to create new python virtualenv and install all required packages.
+activate_python_virtualenv()
+{
+    exit_if_argc_ne $# 2
+    local ZSERIO_PROJECT_ROOT="$1"; shift
+    local ZSERIO_BUILD_DIR="$1"; shift
+
+    local PYTHON_VIRTUALENV_ROOT="${PYTHON_VIRTUALENV:-"${ZSERIO_BUILD_DIR}/pyenv"}"
+    local PYTHON_VIRTUALENV_ACTIVATE
+    detect_python_virtualenv_activate "${PYTHON_VIRTUALENV_ROOT}" PYTHON_VIRTUALENV_ACTIVATE
+
+    if [ ! -z ${PYTHON_VIRTUALENV} ] ; then # forced python virtualenv
+        if [ -z "${PYTHON_VIRTUALENV_ACTIVATE}" ] ; then
+            stderr_echo "Failed to find virtualenv activate script in '${PYTHON_VIRTUALENV_ROOT}'!"
+            return 1
+        fi
+    else
+        if [ -z "${PYTHON_VIRTUALENV_ACTIVATE}" ] ; then
+            ${PYTHON} -m virtualenv -p ${PYTHON} "${PYTHON_VIRTUALENV_ROOT}"
+            if [ $? -ne 0 ] ; then
+                stderr_echo "Failed to create virtualenv!"
+                return 1
+            fi
+
+            detect_python_virtualenv_activate "${PYTHON_VIRTUALENV_ROOT}" PYTHON_VIRTUALENV_ACTIVATE
+            if [ -z "${PYTHON_VIRTUALENV_ACTIVATE}" ] ; then
+                stderr_echo "Failed to find virtualenv activate script in '${PYTHON_VIRTUALENV_ROOT}'!"
+                return 1
+            fi
+        fi
+    fi
+
+    echo
+    echo "Activating python virtualenv '${PYTHON_VIRTUALENV_ACTIVATE}'."
+
+    source "${PYTHON_VIRTUALENV_ACTIVATE}"
+    if [ $? -ne 0 ] ; then
+        stderr_echo "Failed to activate virtualenv!"
+        return 1
+    fi
+
+    check_python_version python
+    if [ $? -ne 0 ] ; then
+        return 1
+    fi
+
+    local STANDARD_REQUIREMENTS=("coverage>=4.5.1" "sphinx-automodapi>=0.8" "pylint>=2.1.1")
+    local APSW_REQUIREMENTS=("apsw")
+
+    if [ ! -z "${PYTHON_VIRTUALENV}" ] ; then  # forced python virtualenv
+        local REQUIREMENTS=(${STANDARD_REQUIREMENTS[@]} ${APSW_REQUIREMENTS[@]})
+        check_python_requirements python REQUIREMENTS[@]
+        if [ $? -ne 0 ] ; then
+            return 1
+        fi
+    else
+        check_python_requirements python STANDARD_REQUIREMENTS[@] 2> /dev/null
+        if [ $? -ne 0 ] ; then
+            pip install ${STANDARD_REQUIREMENTS[@]}
+            if [ $? -ne 0 ] ; then
+                stderr_echo "Failed to install python requirements!"
+                return 1
+            fi
+        fi
+
+        check_python_requirements python APSW_REQUIREMENTS[@] 2> /dev/null
+        if [ $? -ne 0 ] ; then
+            install_python_apsw "${ZSERIO_PROJECT_ROOT}" "${PYTHON_VIRTUALENV_ROOT}"
+            if [ $? -ne 0 ] ; then
+                return 1
+            fi
+        fi
+    fi
+
+    return 0
+}
+
+# Build and install python apsw package using same sqlite sources as for C++ projects.
+install_python_apsw()
+{
+    exit_if_argc_ne $# 2
+    local ZSERIO_PROJECT_ROOT="$1"; shift
+    local PYTHON_VIRTUALENV_ROOT="$1"; shift
+
+    local SQLITE_ROOT="${ZSERIO_PROJECT_ROOT}/3rdparty/cpp/sqlite"
+
+    pushd "${PYTHON_VIRTUALENV_ROOT}" > /dev/null
+    if [ ! -d "${PYTHON_VIRTUALENV_ROOT}/apsw" ] ; then
+        git clone --depth 1 https://github.com/rogerbinns/apsw.git -b 3.24.0-r1
+        if [ $? -ne 0 ] ; then
+            stderr_echo "Failed to clone apsw repository!"
+            popd > /dev/null
+            return 1
+        fi
+    fi
+
+    cd apsw
+
+    # copy 3rdparty sqlite3 to be built within apsw module
+    cp -r "${SQLITE_ROOT}" sqlite3
+    if [ $? -ne 0 ] ; then
+        stderr_echo "Failed to copy 3rdparty sqlite to apsw build directory!"
+        popd > /dev/null
+        return 1
+    fi
+
+    python setup.py build --enable=fts4,fts5 install
+    if [ $? -ne 0 ] ; then
+        stderr_echo "Failed to build python apsw module!"
+        popd > /dev/null
+        return 1
+    fi
+    popd > /dev/null
+
+    return 0
+}
+
 # Print help on the environment variables used.
 print_help_env()
 {
@@ -97,6 +315,8 @@ Uses the following environment variables for building:
     CTEST                  Ctest executable to use. Default is "ctest".
     JAVAC_BIN              Java compiler executable to use. Default is "javac".
     JAVA_BIN               Java executable to use. Default is "java".
+    PYTHON                 Python 3.5+ executable. Default is "python".
+    FIND                   Bash command find to use. Default is "/usr/bin/find".
     FINDBUGS_HOME          Home directory of findbugs tool where lib is located
                            (e.g. /usr/share/findbugs). If set, findbugs will be
                            called. Default is empty string.
@@ -245,7 +465,7 @@ compile_java()
     return 0
 }
 
-# Compile and test C++ code running cmake and make for all targets.
+# Compile and test C++ code by running cmake and make for all targets.
 compile_cpp()
 {
     exit_if_argc_ne $# 7;
@@ -272,7 +492,7 @@ compile_cpp()
     return 0
 }
 
-# Compile and test C++ code running cmake and make for one target.
+# Compile and test C++ code by running cmake and make for one target.
 compile_cpp_for_target()
 {
     exit_if_argc_ne $# 7
@@ -353,7 +573,23 @@ compile_cpp_for_target()
     return 0
 }
 
-# Tests if it's possible to run tests for given target on current host.
+run_pylint()
+{
+    exit_if_argc_lt $# 3
+    local PYLINT_RCFILE="$1"; shift
+    local MSYS_WORKAROUND_TEMP=("${!1}"); shift
+    local PYLINT_ARGS=("${MSYS_WORKAROUND_TEMP[@]}")
+    local SOURCES="$@"; shift
+
+    python -m pylint ${SOURCES} --rcfile "${PYLINT_RCFILE}" --persistent=n "${PYLINT_ARGS[@]}"
+    local PYLINT_RESULT=$?
+    if [ ${PYLINT_RESULT} -ne 0 ] ; then
+        stderr_echo "Running pylint failed with return code ${PYLINT_RESULT}!"
+        return 1
+    fi
+}
+
+# Test if it's possible to run tests for given target on current host.
 can_run_tests()
 {
     exit_if_argc_ne $# 1
@@ -450,6 +686,7 @@ get_host_platform()
 }
 
 # Returns path according to the current host.
+#
 # On Linux the given path is unchanged, on Windows the path is converted to windows path.
 posix_to_host_path()
 {

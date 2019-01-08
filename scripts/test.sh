@@ -29,17 +29,51 @@ Uses the following environment variables for testing:
 EOF
 }
 
+# Run python tests.
+test_python()
+{
+    exit_if_argc_ne $# 3
+    local PYTHON_RUNTIME_ROOT="$1"; shift
+    local TEST_SRC_DIR="$1"; shift
+    local MSYS_WORKAROUND_TEMP=("${!1}"); shift
+    local TEST_ARGS=("${MSYS_WORKAROUND_TEMP[@]}")
+
+    local TEST_FILE="${TEST_SRC_DIR}/tests.py"
+    local PYLINT_RCFILE="${PYTHON_RUNTIME_ROOT}/pylintrc.txt"
+
+    echo
+    echo "Running python tests."
+    echo
+
+    python "${TEST_FILE}" "${TEST_ARGS[@]}" --pylint_rcfile="${PYLINT_RCFILE}"
+    if [ $? -ne 0 ] ; then
+        return 1
+    fi
+
+    echo "Running pylint on python test utilites."
+
+    local PYLINT_ARGS=("--disable=missing-docstring")
+    run_pylint "${PYLINT_RCFILE}" PYLINT_ARGS[@] "${TEST_FILE}" "${TEST_SRC_DIR}/utils/python"/*
+    if [ $? -ne 0 ]; then
+        return 1
+    fi
+
+    return 0
+}
+
 # Run zserio tests.
 test()
 {
-    exit_if_argc_ne $# 9
+    exit_if_argc_ne $# 11
     local ZSERIO_RELEASE_DIR="$1"; shift
     local ZSERIO_VERSION="$1"; shift
     local ZSERIO_PROJECT_ROOT="$1"; shift
+    local ZSERIO_BUILD_DIR="$1"; shift
     local TEST_OUT_DIR="$1"; shift
-    local PARAM_JAVA="$1"; shift
     local MSYS_WORKAROUND_TEMP=("${!1}"); shift
     local CPP_TARGETS=("${MSYS_WORKAROUND_TEMP[@]}")
+    local PARAM_JAVA="$1"; shift
+    local PARAM_PYTHON="$1"; shift
     local SWITCH_CLEAN="$1"; shift
     local SWITCH_GRPC="$1"; shift
     local SWITCH_TEST_NAME="$1"; shift
@@ -51,6 +85,41 @@ test()
     unpack_release "${TEST_OUT_DIR}" "${ZSERIO_RELEASE_DIR}" "${ZSERIO_VERSION}" UNPACKED_ZSERIO_RELEASE_DIR
     if [ $? -ne 0 ] ; then
         return 1
+    fi
+
+    # run C++ zserio tests
+    if [[ ${#CPP_TARGETS[@]} != 0 ]] ; then
+        local MESSAGE="zserio C++ tests"
+        echo "STARTING - ${MESSAGE}"
+
+        local HOST_PLATFORM
+        get_host_platform HOST_PLATFORM
+        if [ $? -ne 0 ] ; then
+            return 1
+        fi
+
+        local CPP_TEST_NAME="${SWITCH_TEST_NAME}"
+        if [[ "${CPP_TEST_NAME}" == "" ]]; then
+            CPP_TEST_NAME="*"
+        fi
+        local CMAKE_ARGS=("-DZSERIO_RUNTIME_INCLUDE_INSPECTOR=ON"
+                          "-DZSERIO_RELEASE_ROOT=${UNPACKED_ZSERIO_RELEASE_DIR}"
+                          "-DZSERIO_TEST_NAME=${CPP_TEST_NAME}"
+                          "-DGRPC_ENABLED=${SWITCH_GRPC}"
+                          "-DGRPC_ROOT=${GRPC_ROOT}")
+        local CTEST_ARGS=()
+        if [[ ${SWITCH_CLEAN} == 1 ]] ; then
+            local CPP_TARGET="clean"
+        else
+            local CPP_TARGET="all"
+        fi
+        compile_cpp "${ZSERIO_PROJECT_ROOT}" "${TEST_OUT_DIR}" "${TEST_SRC_DIR}" CPP_TARGETS[@] \
+                    CMAKE_ARGS[@] CTEST_ARGS[@] ${CPP_TARGET}
+        if [ $? -ne 0 ] ; then
+            stderr_echo "${MESSAGE} failed!"
+            return 1
+        fi
+        echo -e "FINISHED - ${MESSAGE}\n"
     fi
 
     # run Java zserio tests
@@ -78,33 +147,30 @@ test()
         echo -e "FINISHED - ${MESSAGE}\n"
     fi
 
-    # run C++ zserio tests
-    if [[ ${#CPP_TARGETS[@]} != 0 ]] ; then
-        local MESSAGE="zserio C++ tests"
+    # run Python zserio tests
+    if [[ ${PARAM_PYTHON} != 0 ]]; then
+        local MESSAGE="zserio Python tests"
         echo "STARTING - ${MESSAGE}"
 
-        local HOST_PLATFORM
-        get_host_platform HOST_PLATFORM
+        activate_python_virtualenv "${ZSERIO_PROJECT_ROOT}" "${ZSERIO_BUILD_DIR}"
         if [ $? -ne 0 ] ; then
             return 1
         fi
 
-        local CMAKE_ARGS=("-DZSERIO_RUNTIME_INCLUDE_INSPECTOR=ON"
-                          "-DZSERIO_RELEASE_ROOT=${UNPACKED_ZSERIO_RELEASE_DIR}"
-                          "-DZSERIO_TEST_NAME=${SWITCH_TEST_NAME}"
-                          "-DGRPC_ENABLED=${SWITCH_GRPC}"
-                          "-DGRPC_ROOT=${GRPC_ROOT}")
-        local CTEST_ARGS=()
         if [[ ${SWITCH_CLEAN} == 1 ]] ; then
-            local CPP_TARGET="clean"
+            rm -rf "${TEST_OUT_DIR}/python"
         else
-            local CPP_TARGET="all"
-        fi
-        compile_cpp "${ZSERIO_PROJECT_ROOT}" "${TEST_OUT_DIR}" "${TEST_SRC_DIR}" CPP_TARGETS[@] \
-                    CMAKE_ARGS[@] CTEST_ARGS[@] ${CPP_TARGET}
-        if [ $? -ne 0 ] ; then
-            stderr_echo "${MESSAGE} failed!"
-            return 1
+            local TEST_ARGS=("--release_dir=${UNPACKED_ZSERIO_RELEASE_DIR}"
+                             "--build_dir=${TEST_OUT_DIR}/python"
+                             "--java=${JAVA_BIN}")
+            if [[ ${SWITCH_TEST_NAME} != "" ]] ; then
+                TEST_ARGS+=("--filter=${SWITCH_TEST_NAME}")
+            fi
+            local PYTHON_RUNTIME_ROOT="${ZSERIO_PROJECT_ROOT}/compiler/extensions/python/runtime"
+            test_python "${PYTHON_RUNTIME_ROOT}" "${TEST_SRC_DIR}" TEST_ARGS[@]
+            if [ $? -ne 0 ] ; then
+                return 1
+            fi
         fi
         echo -e "FINISHED - ${MESSAGE}\n"
     fi
@@ -165,13 +231,14 @@ Arguments:
     package                   Specify the package to test.
 
 Package can be a combination of:
-    java                Zserio Java tests.
     cpp-linux32         Zserio C++ tests for linux32 target using gcc compiler.
     cpp-linux64         Zserio C++ tests for linux64 target using gcc compiler.
     cpp-windows32-mingw Zserio C++ tests for windows32 target (MinGW).
     cpp-windows64-mingw Zserio C++ tests for windows64 target (MinGW64).
     cpp-windows32-msvc  Zserio C++ tests for windows32 target (MSVC).
     cpp-windows64-msvc  Zserio C++ tests for windows64 target (MSVC).
+    java                Zserio Java tests.
+    python              Zserio Python tests.
     all-linux32         Zserio tests - all available linux32 packages.
     all-linux64         Zserio tests - all available linux64 packages.
     all-windows32-mingw Zserio tests - all available windows32 packages (MinGW).
@@ -200,22 +267,25 @@ EOF
 # 2 - Help switch is present. Arguments after help switch have not been checked.
 parse_arguments()
 {
-    exit_if_argc_lt $# 6
-    local PARAM_JAVA_OUT="$1"; shift
+    exit_if_argc_lt $# 7
     local PARAM_CPP_TARGET_ARRAY_OUT="$1"; shift
+    local PARAM_JAVA_OUT="$1"; shift
+    local PARAM_PYTHON_OUT="$1"; shift
+    local PARAM_OUT_DIR_OUT="$1"; shift
     local SWITCH_CLEAN_OUT="$1"; shift
     local SWITCH_PURGE_OUT="$1"; shift
     local SWITCH_GRPC_OUT="$1"; shift
     local SWITCH_TEST_NAME_OUT="$1"; shift
 
     eval ${PARAM_JAVA_OUT}=0
+    eval ${PARAM_PYTHON_OUT}=0
     eval ${SWITCH_CLEAN_OUT}=0
     eval ${SWITCH_PURGE_OUT}=0
     eval ${SWITCH_GRPC_OUT}=0
-    eval ${SWITCH_TEST_NAME_OUT}="*"
+    eval ${SWITCH_TEST_NAME_OUT}=""
 
     local NUM_PARAMS=0
-    local PARAM_ARRAY=();
+    local PARAM_ARRAY=()
     local ARG="$1"
     while [ -n "${ARG}" ] ; do
         case "${ARG}" in
@@ -250,6 +320,11 @@ parse_arguments()
                 shift
                 ;;
 
+            "-o" | "--output-directory")
+                eval ${PARAM_OUT_DIR_OUT}="$2"
+                shift 2
+                ;;
+
             "-"*)
                 stderr_echo "Invalid switch ${ARG}!"
                 echo
@@ -269,18 +344,23 @@ parse_arguments()
     local PARAM
     for PARAM in "${PARAM_ARRAY[@]}" ; do
         case "${PARAM}" in
-            "java")
-                eval ${PARAM_JAVA_OUT}=1
-                ;;
-
             "cpp-linux32" | "cpp-linux64" | "cpp-windows32-"* | "cpp-windows64-"*)
                 eval ${PARAM_CPP_TARGET_ARRAY_OUT}[${NUM_TARGETS}]="${PARAM#cpp-}"
                 NUM_TARGETS=$((NUM_TARGETS + 1))
                 ;;
 
-            "all-linux32" | "all-linux64" | "all-windows32-"* | "all-windows64-"*)
+            "java")
                 eval ${PARAM_JAVA_OUT}=1
+                ;;
+
+            "python")
+                eval ${PARAM_PYTHON_OUT}=1
+                ;;
+
+            "all-linux32" | "all-linux64" | "all-windows32-"* | "all-windows64-"*)
                 eval ${PARAM_CPP_TARGET_ARRAY_OUT}[${NUM_TARGETS}]="${PARAM#all-}"
+                eval ${PARAM_JAVA_OUT}=1
+                eval ${PARAM_PYTHON_OUT}=1
                 NUM_TARGETS=$((NUM_TARGETS + 1))
                 ;;
 
@@ -291,7 +371,10 @@ parse_arguments()
         esac
     done
 
-    if [[ ${!PARAM_JAVA_OUT} == 0 && ${NUM_TARGETS} -eq 0 && ${!SWITCH_PURGE_OUT} == 0 ]] ; then
+    if [[ ${NUM_TARGETS} -eq 0 &&
+          ${!PARAM_JAVA_OUT} == 0 &&
+          ${!PARAM_PYTHON_OUT} == 0 &&
+          ${!SWITCH_PURGE_OUT} == 0 ]] ; then
         stderr_echo "Package to test is not specified!"
         echo
         return 1
@@ -305,36 +388,50 @@ main()
     echo "Compilation and testing of zserio sources."
     echo
 
+    # get the project root, absolute path is necessary only for CMake
+    local ZSERIO_PROJECT_ROOT
+    convert_to_absolute_path "${SCRIPT_DIR}/.." ZSERIO_PROJECT_ROOT
+
     # parse command line arguments
+    local PARAM_CPP_TARGET_ARRAY=()
     local PARAM_JAVA
-    local PARAM_CPP_TARGET_ARRAY
+    local PARAM_PYTHON
+    local PARAM_OUT_DIR="${ZSERIO_PROJECT_ROOT}"
     local SWITCH_CLEAN
     local SWITCH_PURGE
     local SWITCH_GRPC
     local SWITCH_TEST_NAME
-    parse_arguments PARAM_JAVA PARAM_CPP_TARGET_ARRAY SWITCH_CLEAN SWITCH_PURGE SWITCH_GRPC SWITCH_TEST_NAME $@
+    parse_arguments PARAM_CPP_TARGET_ARRAY PARAM_JAVA PARAM_PYTHON PARAM_OUT_DIR \
+                    SWITCH_CLEAN SWITCH_PURGE SWITCH_GRPC SWITCH_TEST_NAME $@
     if [ $? -ne 0 ] ; then
         print_help
         return 1
     fi
 
-    # get the project root, absolute path is necessary only for CMake
-    local ZSERIO_PROJECT_ROOT
-    convert_to_absolute_path "${SCRIPT_DIR}/.." ZSERIO_PROJECT_ROOT
-
     # set global variables
+    set_global_common_variables
+    if [ $? -ne 0 ] ; then
+        return 1
+    fi
     set_test_global_variables
     if [ $? -ne 0 ] ; then
         return 1
     fi
     if [[ ${PARAM_JAVA} == 1 ]] ; then
-        set_global_java_variables "${ZSERIO_PROJECT_ROOT}"
+        set_global_java_variables
         if [ $? -ne 0 ] ; then
             return 1
         fi
     fi
     if [[ ${#PARAM_CPP_TARGET_ARRAY[@]} -ne 0 ]] ; then
-        set_global_cpp_variables "${ZSERIO_PROJECT_ROOT}"
+        set_global_cpp_variables
+        if [ $? -ne 0 ] ; then
+            return 1
+        fi
+    fi
+
+    if [[ ${PARAM_PYTHON} != 0 ]] ; then
+        set_global_python_variables "${ZSERIO_PROJECT_ROOT}"
         if [ $? -ne 0 ] ; then
             return 1
         fi
@@ -349,7 +446,8 @@ main()
     fi
 
     # purge if requested and then create test output directory
-    local TEST_OUT_DIR="${ZSERIO_PROJECT_ROOT}/build/test"
+    local ZSERIO_BUILD_DIR="${PARAM_OUT_DIR}/build"
+    local TEST_OUT_DIR="${ZSERIO_BUILD_DIR}/test"
     if [[ ${SWITCH_PURGE} == 1 ]] ; then
         echo "Purging test directory."
         echo
@@ -363,8 +461,9 @@ main()
     echo
 
     # run test
-    test "${ZSERIO_RELEASE_DIR}" "${ZSERIO_VERSION}" "${ZSERIO_PROJECT_ROOT}" "${TEST_OUT_DIR}" \
-         ${PARAM_JAVA} PARAM_CPP_TARGET_ARRAY[@] ${SWITCH_CLEAN} ${SWITCH_GRPC} "${SWITCH_TEST_NAME}"
+    test "${ZSERIO_RELEASE_DIR}" "${ZSERIO_VERSION}" "${ZSERIO_PROJECT_ROOT}" "${ZSERIO_BUILD_DIR}" \
+         "${TEST_OUT_DIR}" PARAM_CPP_TARGET_ARRAY[@] ${PARAM_JAVA} ${PARAM_PYTHON} \
+         ${SWITCH_CLEAN} ${SWITCH_GRPC} "${SWITCH_TEST_NAME}"
     if [ $? -ne 0 ] ; then
         return 1
     fi

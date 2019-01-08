@@ -1,25 +1,20 @@
 set(ZSERIO_GEN_DIR ${CMAKE_CURRENT_BINARY_DIR}/gen)
 set(ZSERIO_GENERATED_SOURCES
-    ${ZSERIO_GEN_DIR}/subtypes/Identifier.h
-    ${ZSERIO_GEN_DIR}/subtypes/Student.h
-    ${ZSERIO_GEN_DIR}/subtypes/SubtypedTable.h
+    ${ZSERIO_GEN_DIR}/subtypes/param_structure_subtype/ParameterizedStruct.cpp
+    ${ZSERIO_GEN_DIR}/subtypes/param_structure_subtype/ParameterizedStruct.h
+    ${ZSERIO_GEN_DIR}/subtypes/param_structure_subtype/ParameterizedSubtype.h
+    ${ZSERIO_GEN_DIR}/subtypes/param_structure_subtype/ParameterizedSubtypeStruct.cpp
+    ${ZSERIO_GEN_DIR}/subtypes/param_structure_subtype/ParameterizedSubtypeStruct.h
 
-    ${ZSERIO_GEN_DIR}/subtypes/Database.h
-    ${ZSERIO_GEN_DIR}/subtypes/Database.cpp
-    ${ZSERIO_GEN_DIR}/subtypes/SubtypeStructure.h
-    ${ZSERIO_GEN_DIR}/subtypes/SubtypeStructure.cpp
-    ${ZSERIO_GEN_DIR}/subtypes/TestStructure.h
-    ${ZSERIO_GEN_DIR}/subtypes/TestStructure.cpp
-    ${ZSERIO_GEN_DIR}/subtypes/TestTable.h
-    ${ZSERIO_GEN_DIR}/subtypes/TestTable.cpp
-    ${ZSERIO_GEN_DIR}/subtypes/TestTableRow.h
-    ${ZSERIO_GEN_DIR}/subtypes/TestTableRow.cpp
+    ${ZSERIO_GEN_DIR}/subtypes/structure_subtype/Student.h
+    ${ZSERIO_GEN_DIR}/subtypes/structure_subtype/SubtypeStructure.cpp
+    ${ZSERIO_GEN_DIR}/subtypes/structure_subtype/SubtypeStructure.h
+    ${ZSERIO_GEN_DIR}/subtypes/structure_subtype/TestStructure.cpp
+    ${ZSERIO_GEN_DIR}/subtypes/structure_subtype/TestStructure.h
 
-    ${ZSERIO_GEN_DIR}/subtypes/ParameterizedStruct.cpp
-    ${ZSERIO_GEN_DIR}/subtypes/ParameterizedStruct.h
-    ${ZSERIO_GEN_DIR}/subtypes/ParameterizedSubtype.h
-    ${ZSERIO_GEN_DIR}/subtypes/ParameterizedSubtypeStruct.cpp
-    ${ZSERIO_GEN_DIR}/subtypes/ParameterizedSubtypeStruct.h
+    ${ZSERIO_GEN_DIR}/subtypes/uint16_subtype/Identifier.h
+    ${ZSERIO_GEN_DIR}/subtypes/uint16_subtype/TestStructure.cpp
+    ${ZSERIO_GEN_DIR}/subtypes/uint16_subtype/TestStructure.h
 )
 
 zserio_add_library(TARGET subtypes_zs
@@ -32,7 +27,9 @@ zserio_add_library(TARGET subtypes_zs
 )
 
 add_test_sources(
-    cpp/SubtypesTest.cpp
+    cpp/ParamStructureSubtypeTest.cpp
+    cpp/StructureSubtypeTest.cpp
+    cpp/UInt16SubtypeTest.cpp
 )
 
 add_test_dependencies(subtypes_zs)

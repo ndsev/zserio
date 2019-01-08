@@ -1,7 +1,7 @@
 package zserio.emit.xml;
 
 /**
- * XML extensions version information.
+ * XML extension version information.
  *
  * The version will be stored in MANIFEST.MF and must match ZserioTool version.
  */

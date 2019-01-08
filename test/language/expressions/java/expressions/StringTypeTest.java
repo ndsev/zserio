@@ -11,11 +11,11 @@ public class StringTypeTest
     @Test
     public void append()
     {
-        final StringTypeExpression stringTypeExpression = new StringTypeExpression(firstValue, secondValue);
+        final StringTypeExpression stringTypeExpression = new StringTypeExpression(FIRST_VALUE, SECOND_VALUE);
 
-        assertEquals(firstValue + secondValue + "_appendix", stringTypeExpression.funcAppend());
+        assertEquals(FIRST_VALUE + SECOND_VALUE + "_appendix", stringTypeExpression.funcAppend());
     }
 
-    private static final String firstValue = "first";
-    private static final String secondValue = "second";
+    private static final String FIRST_VALUE = "first";
+    private static final String SECOND_VALUE = "second";
 }

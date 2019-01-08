@@ -1,15 +1,27 @@
 package without_writer_code;
 
-struct Item(bool hasExtraParameter)
+enum int8 ItemType
 {
-    uint16    param;
-    uint32    extraParam if hasExtraParameter == true;
+    SIMPLE,
+    WITH_EXTRA_PARAM,
+};
+
+union ExtraParamUnion
+{
+    uint16  value16;
+    uint32  value32;
+};
+
+struct Item(ItemType itemType)
+{
+    uint16          param;
+    ExtraParamUnion extraParam if itemType == ItemType.WITH_EXTRA_PARAM;
 };
 
 choice ItemChoice(bool hasItem) on hasItem
 {
     case true:
-        Item(true)  item;
+        Item(ItemType.WITH_EXTRA_PARAM)  item;
 
     case false:
         uint16      param;
@@ -29,19 +41,6 @@ struct Tile
 numElementsOffset:
     uint32              numElements;
     ItemChoiceHolder    data[numElements];
-};
-
-enum int8 TypeEnum
-{
-    SIMPLE,
-    COMPLEX
-};
-
-union ElementsUnion
-{
-    int8 elements8[];
-    int16 elements16[];
-    int32 elements32[];
 };
 
 sql_table GeoMapTable

@@ -14,8 +14,6 @@ import zserio.runtime.ZserioError;
 import zserio.runtime.io.BitStreamReader;
 import zserio.runtime.io.ByteArrayBitStreamReader;
 import zserio.runtime.io.ByteArrayBitStreamWriter;
-import zserio.runtime.io.FileBitStreamReader;
-import zserio.runtime.io.FileBitStreamWriter;
 
 public class EmptyChoiceTest
 {
@@ -27,7 +25,7 @@ public class EmptyChoiceTest
     }
 
     @Test
-    public void emptyConstructor()
+    public void selectorConstructor()
     {
         final EmptyChoice emptyChoice = new EmptyChoice((short)1);
         assertEquals(1, emptyChoice.getSelector());

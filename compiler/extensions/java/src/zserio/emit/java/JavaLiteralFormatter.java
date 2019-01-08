@@ -24,15 +24,15 @@ final class JavaLiteralFormatter
     }
 
     /**
-     * Formats integer value in Java format.
+     * Formats decimal integer value in Java format.
      *
      * @param value Integer value to format.
      *
-     * @return The integer value in Java format.
+     * @return The decimal integer value in Java format.
      *
      * @throws ZserioEmitException Throws in case of any range error.
      */
-    public static String formatIntegerLiteral(int value) throws ZserioEmitException
+    public static String formatDecimalLiteral(int value) throws ZserioEmitException
     {
         return intType.formatLiteral(BigInteger.valueOf(value));
     }

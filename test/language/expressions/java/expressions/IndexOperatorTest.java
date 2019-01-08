@@ -33,16 +33,6 @@ public class IndexOperatorTest
         checkElements(readWrite(list), length);
     }
 
-    // TODO: This should throw an exception
-    @Test
-    public void oneElementWrongField() throws IOException
-    {
-        final int length = 1;
-        ElementList list = createElementList(1);
-        assertEquals(LENGTH_SIZE + FIELD16_SIZE, list.bitSizeOf());
-        checkElements(readWrite(list), length, true);
-    }
-
     @Test
     public void twoElements() throws IOException
     {
@@ -105,18 +95,12 @@ public class IndexOperatorTest
 
     private static void checkElements(ElementList list, int length)
     {
-        checkElements(list, length, false);
-    }
-
-    private static void checkElements(ElementList list, int length, boolean lastWrong)
-    {
         assertEquals(length, list.getLength());
         for (int i = 0; i < length; ++i)
         {
             final boolean isEven = i % 2 + 1 == 2;
-            final boolean wrong = lastWrong && i + 1 == length;
             Element element = list.getElements().elementAt(i);
-            assertEquals(ELEMENTS[i], (wrong ? !isEven : isEven) ? element.getField8() : element.getField16());
+            assertEquals(ELEMENTS[i], isEven ? element.getField8() : element.getField16());
         }
     }
 

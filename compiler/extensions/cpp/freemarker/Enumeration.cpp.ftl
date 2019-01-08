@@ -21,12 +21,10 @@
 <@user_includes cppUserIncludes, false/>
 
 <@namespace_begin package.path/>
-<#if withWriterCode>
 
-${name}::${name}() : m_value(static_cast<e_${name}>(0))
+${name}::${name}() : m_value(${items?first.name})
 {
 }
-</#if>
 
 ${name}::${name}(e_${name} value) : m_value(value)
 {

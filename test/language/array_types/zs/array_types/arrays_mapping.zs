@@ -59,14 +59,13 @@ struct ArraysMapping
     varuint16                   varuint16Array[5];
     varuint32                   varuint32Array[5];
     varuint64                   varuint64Array[5];
+    varuint                     varuintArray[5];
 
     // variable signed integer arrays
     varint16                    varint16Array[5];
     varint32                    varint32Array[5];
     varint64                    varint64Array[5];
-
     varint                      varintArray[5];
-    varuint                     varuintArray[5];
 
     // boolean array
     bool                        boolArray[5];
