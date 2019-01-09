@@ -377,7 +377,7 @@ public class PythonExpressionFormattingPolicy implements ExpressionFormattingPol
             {
                 final EnumType enumType = item.getEnumType();
                 final PythonNativeType nativeEnumType = pythonNativeTypeMapper.getPythonType(enumType);
-                // import type is not necessary because this can happen only for choices with enum selector
+                importCollector.importType(nativeEnumType);
                 result.append(nativeEnumType.getFullName());
                 result.append(".");
             }

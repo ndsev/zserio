@@ -27,6 +27,14 @@ set(ZSERIO_GENERATED_SOURCES
     ${ZSERIO_GEN_DIR}/choice_types/enum_param_choice/Selector.h
     ${ZSERIO_GEN_DIR}/choice_types/enum_param_choice/White.h
 
+    ${ZSERIO_GEN_DIR}/choice_types/full_enum_param_choice/Black.h
+    ${ZSERIO_GEN_DIR}/choice_types/full_enum_param_choice/FullEnumParamChoice.cpp
+    ${ZSERIO_GEN_DIR}/choice_types/full_enum_param_choice/FullEnumParamChoice.h
+    ${ZSERIO_GEN_DIR}/choice_types/full_enum_param_choice/Grey.h
+    ${ZSERIO_GEN_DIR}/choice_types/full_enum_param_choice/Selector.cpp
+    ${ZSERIO_GEN_DIR}/choice_types/full_enum_param_choice/Selector.h
+    ${ZSERIO_GEN_DIR}/choice_types/full_enum_param_choice/White.h
+
     ${ZSERIO_GEN_DIR}/choice_types/uint16_param_choice/UInt16ParamChoice.cpp
     ${ZSERIO_GEN_DIR}/choice_types/uint16_param_choice/UInt16ParamChoice.h
     ${ZSERIO_GEN_DIR}/choice_types/uint16_param_choice/VariantA.h
@@ -56,6 +64,7 @@ add_test_sources(
     cpp/EmptyChoiceWithCaseTest.cpp
     cpp/EmptyChoiceWithDefaultTest.cpp
     cpp/EnumParamChoiceTest.cpp
+    cpp/FullEnumParamChoiceTest.cpp
     cpp/UInt16ParamChoiceTest.cpp
     cpp/UInt64ParamChoiceTest.cpp
 )
