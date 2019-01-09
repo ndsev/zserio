@@ -116,6 +116,12 @@ set_global_python_variables()
     # prevent __pycache__ and *.pyc being created in sources directory
     export PYTHONDONTWRITEBYTECODE=1
 
+    # Pylint configuration - pylint disabled by default
+    PYLINT_ENABLED="${PYLINT_ENABLED:-0}"
+
+    # Pylint extra arguments are empty by default
+    PYLINT_EXTRA_ARGS="${PYLINT_EXTRA_ARGS:-""}"
+
     return 0
 }
 
@@ -323,6 +329,8 @@ Uses the following environment variables for building:
     CPPCHECK_HOME          Home directory of cppcheck tool where cppcheck
                            binary is located. If set, cppcheck will be called.
                            Default is empty string.
+    PYLINT_ENABLED         Defines whether to run pylint. Default is 0 (disabled).
+    PYLINT_EXTRA_ARGS      Extra arguments to pylint. Default is empty string.
 
     Either set these directly, or create 'scripts/build-env.sh' that sets
     these. It's sourced automatically if it exists.
@@ -575,18 +583,28 @@ compile_cpp_for_target()
 
 run_pylint()
 {
+    if [[ ${PYLINT_ENABLED} != 1 ]] ; then
+        echo "Pylint is disabled."
+        echo
+        return 0
+    fi
+
     exit_if_argc_lt $# 3
     local PYLINT_RCFILE="$1"; shift
     local MSYS_WORKAROUND_TEMP=("${!1}"); shift
     local PYLINT_ARGS=("${MSYS_WORKAROUND_TEMP[@]}")
     local SOURCES="$@"; shift
 
-    python -m pylint ${SOURCES} --rcfile "${PYLINT_RCFILE}" --persistent=n "${PYLINT_ARGS[@]}"
+    python -m pylint --init-hook="import sys; sys.setrecursionlimit(5000)" ${PYLINT_EXTRA_ARGS} \
+                     --rcfile "${PYLINT_RCFILE}" --persistent=n "${PYLINT_ARGS[@]}" \
+                     ${SOURCES}
     local PYLINT_RESULT=$?
     if [ ${PYLINT_RESULT} -ne 0 ] ; then
         stderr_echo "Running pylint failed with return code ${PYLINT_RESULT}!"
         return 1
     fi
+
+    return 0
 }
 
 # Test if it's possible to run tests for given target on current host.

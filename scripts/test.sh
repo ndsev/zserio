@@ -226,6 +226,8 @@ Arguments:
     -h, --help                Show this help.
     -c, --clean               Clean package instead of build.
     -p, --purge               Purge test build directory.
+    -o <dir>, --output-directory <dir>
+                              Output directory where tests will be run.
     -g, --grpc                Enable gRPC language tests (disabled by default).
     -t, --test-name TEST_NAME Run only TEST_NAME test.
     package                   Specify the package to test.
@@ -303,6 +305,11 @@ parse_arguments()
                 shift
                 ;;
 
+            "-o" | "--output-directory")
+                eval ${PARAM_OUT_DIR_OUT}="$2"
+                shift 2
+                ;;
+
             "-g" | "--grpc")
                 eval ${SWITCH_GRPC_OUT}=1
                 shift
@@ -318,11 +325,6 @@ parse_arguments()
                 fi
                 eval ${SWITCH_TEST_NAME_OUT}="${ARG}"
                 shift
-                ;;
-
-            "-o" | "--output-directory")
-                eval ${PARAM_OUT_DIR_OUT}="$2"
-                shift 2
                 ;;
 
             "-"*)
@@ -413,18 +415,21 @@ main()
     if [ $? -ne 0 ] ; then
         return 1
     fi
+
     set_test_global_variables
     if [ $? -ne 0 ] ; then
         return 1
     fi
-    if [[ ${PARAM_JAVA} == 1 ]] ; then
-        set_global_java_variables
+
+    if [[ ${#PARAM_CPP_TARGET_ARRAY[@]} -ne 0 ]] ; then
+        set_global_cpp_variables
         if [ $? -ne 0 ] ; then
             return 1
         fi
     fi
-    if [[ ${#PARAM_CPP_TARGET_ARRAY[@]} -ne 0 ]] ; then
-        set_global_cpp_variables
+
+    if [[ ${PARAM_JAVA} == 1 ]] ; then
+        set_global_java_variables
         if [ $? -ne 0 ] ; then
             return 1
         fi

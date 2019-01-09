@@ -301,16 +301,18 @@ EOF
 # Run zserio tests.
 test()
 {
-    exit_if_argc_ne $# 12
+    exit_if_argc_ne $# 14
     local ZSERIO_RELEASE_DIR="$1"; shift
     local ZSERIO_VERSION="$1"; shift
     local ZSERIO_PROJECT_ROOT="$1"; shift
+    local ZSERIO_BUILD_DIR="$1"; shift
     local TEST_OUT_DIR="$1"; shift
-    local PARAM_DOC="$1"; shift
-    local PARAM_XML="$1"; shift
-    local PARAM_JAVA="$1"; shift
     local MSYS_WORKAROUND_TEMP=("${!1}"); shift
     local CPP_TARGETS=("${MSYS_WORKAROUND_TEMP[@]}")
+    local PARAM_JAVA="$1"; shift
+    local PARAM_PYTHON="$1"; shift
+    local PARAM_XML="$1"; shift
+    local PARAM_DOC="$1"; shift
     local SWITCH_DIRECTORY="$1"; shift
     local SWITCH_SOURCE="$1"; shift
     local SWITCH_TEST_NAME="$1"; shift
@@ -324,21 +326,25 @@ test()
     fi
 
     local ZSERIO_ARGS=()
-    if [[ ${PARAM_DOC} == 1 ]] ; then
-        rm -rf "${TEST_OUT_DIR}/doc"
-        ZSERIO_ARGS+=("-doc" "${TEST_OUT_DIR}/doc")
-    fi
-    if [[ ${PARAM_XML} == 1 ]] ; then
-        rm -rf "${TEST_OUT_DIR}/xml"
-        ZSERIO_ARGS+=("-xml" "${TEST_OUT_DIR}/xml")
+    if [[ ${#CPP_TARGETS[@]} -ne 0 ]] ; then
+        rm -rf "${TEST_OUT_DIR}/cpp"
+        ZSERIO_ARGS+=("-cpp" "${TEST_OUT_DIR}/cpp/gen")
     fi
     if [[ ${PARAM_JAVA} == 1 ]] ; then
         rm -rf "${TEST_OUT_DIR}/java"
         ZSERIO_ARGS+=("-java" "${TEST_OUT_DIR}/java/gen")
     fi
-    if [[ ${#CPP_TARGETS[@]} -ne 0 ]] ; then
-        rm -rf "${TEST_OUT_DIR}/cpp"
-        ZSERIO_ARGS+=("-cpp" "${TEST_OUT_DIR}/cpp/gen")
+    if [[ ${PARAM_PYTHON} == 1 ]] ; then
+        rm -rf "${TEST_OUT_DIR}/python"
+        ZSERIO_ARGS+=("-python" "${TEST_OUT_DIR}/python/gen")
+    fi
+    if [[ ${PARAM_XML} == 1 ]] ; then
+        rm -rf "${TEST_OUT_DIR}/xml"
+        ZSERIO_ARGS+=("-xml" "${TEST_OUT_DIR}/xml")
+    fi
+    if [[ ${PARAM_DOC} == 1 ]] ; then
+        rm -rf "${TEST_OUT_DIR}/doc"
+        ZSERIO_ARGS+=("-doc" "${TEST_OUT_DIR}/doc")
     fi
 
     run_zserio_tool "${UNPACKED_ZSERIO_RELEASE_DIR}" "${TEST_OUT_DIR}" \
@@ -382,6 +388,54 @@ test()
         compile_cpp "${ZSERIO_PROJECT_ROOT}" "${TEST_OUT_DIR}/cpp" "${TEST_OUT_DIR}/cpp" CPP_TARGETS[@] \
                     CMAKE_ARGS[@] CTEST_ARGS[@] all
         if [ $? -ne 0 ] ; then
+            return 1
+        fi
+    fi
+
+    # pylint generated Python sources
+    if [[ ${PARAM_PYTHON} == 1 ]] ; then
+        activate_python_virtualenv "${ZSERIO_PROJECT_ROOT}" "${ZSERIO_BUILD_DIR}"
+        if [ $? -ne 0 ] ; then
+            return 1
+        fi
+
+        local PYTHON_RUNTIME_ROOT="${ZSERIO_PROJECT_ROOT}/compiler/extensions/python/runtime"
+        local PYLINT_RCFILE="${PYTHON_RUNTIME_ROOT}/pylintrc.txt"
+        local IFS_ORIG=$IFS
+        IFS=$'\n'
+        local PY_SOURCES=($(${FIND} ${TEST_OUT_DIR}/python/gen -type f -name "*.py"))
+        IFS=$IFS_ORIG
+        local PY_GEN_SOURCES=()
+        local PY_API_SOURCES=()
+        for SOURCE in "${PY_SOURCES[@]}" ; do
+            if [[ "${SOURCE}" == *"api.py" ]] ; then
+                PY_API_SOURCES+=("${SOURCE}")
+            else
+                PY_GEN_SOURCES+=("${SOURCE}")
+            fi
+        done
+
+        echo
+        echo "Running pylint on Python generated files."
+
+        local GEN_DISABLE_OPTION=""
+        GEN_DISABLE_OPTION+="missing-docstring,invalid-name,no-self-use,duplicate-code,line-too-long,"
+        GEN_DISABLE_OPTION+="singleton-comparison,too-many-instance-attributes,too-many-arguments,"
+        GEN_DISABLE_OPTION+="too-many-public-methods,too-many-locals,too-many-branches,too-many-statements,"
+        GEN_DISABLE_OPTION+="too-many-lines,unneeded-not,superfluous-parens,import-error,len-as-condition,"
+        GEN_DISABLE_OPTION+="import-self"
+        local PYLINT_ARGS=("--disable=${GEN_DISABLE_OPTION}")
+        run_pylint "${PYLINT_RCFILE}" PYLINT_ARGS[@] "${PY_GEN_SOURCES[@]}"
+        if [ $? -ne 0 ]; then
+            return 1
+        fi
+
+        echo "Running pylint on Python generated api.py files."
+
+        local API_DISABLE_OPTION="missing-docstring,unused-import,line-too-long,import-error,redefined-builtin"
+        local PYLINT_ARGS=("--disable=${API_DISABLE_OPTION}")
+        run_pylint "${PYLINT_RCFILE}" PYLINT_ARGS[@] "${PY_API_SOURCES[@]}"
+        if [ $? -ne 0 ]; then
             return 1
         fi
     fi
@@ -436,6 +490,8 @@ Usage:
 Arguments:
     -h, --help                Show this help.
     -p, --purge               Purge test build directory.
+    -o <dir>, --output-directory <dir>
+                              Output directory where tests will be run.
     -d, --source-dir DIR      Directory with zserio sources. Default is ".".
     -s, --source SOURCE       Main zserio source.
     -t, --test-name NAME      Test name. Optional.
@@ -443,15 +499,16 @@ Arguments:
     generator                 Specify the generator to test.
 
 Generator can be:
-    doc                 Generate HTML documentation.
-    xml                 Generate XML.
-    java                Generate Java sources and compile them.
     cpp-linux32         Generate C++ sources and compile them for linux32 target (GCC).
     cpp-linux64         Generate C++ sources and compile them for for linux64 target (GCC).
     cpp-windows32-mingw Generate C++ sources and compile them for for windows32 target (MinGW).
     cpp-windows64-mingw Generate C++ sources and compile them for for windows64 target (MinGW64).
     cpp-windows32-msvc  Generate C++ sources and compile them for for windows32 target (MSVC).
     cpp-windows64-msvc  Generate C++ sources and compile them for for windows64 target (MSVC).
+    java                Generate Java sources and compile them.
+    python              Generate python sources.
+    xml                 Generate XML.
+    doc                 Generate HTML documentation.
     all-linux32         Test all generators and compile all possible linux32 sources (GCC).
     all-linux64         Test all generators and compile all possible linux64 sources (GCC).
     all-windows32-mingw Test all generators and compile all possible windows32 sources (MinGW).
@@ -460,7 +517,7 @@ Generator can be:
     all-windows64-msvc  Test all generators and compile all possible windows64 sources (MSVC).
 
 Examples:
-    $0 doc xml java cpp-linux64 -d /tmp/zs -s test.zs
+    $0 cpp-linux64 java python xml doc -d /tmp/zs -s test.zs
     $0 all-linux64 -d /tmp/zs -s test.zs
 
 EOF
@@ -479,20 +536,23 @@ EOF
 # 2 - Help switch is present. Arguments after help switch have not been checked.
 parse_arguments()
 {
-    exit_if_argc_lt $# 9
-    local PARAM_DOC_OUT="$1"; shift
-    local PARAM_XML_OUT="$1"; shift
-    local PARAM_JAVA_OUT="$1"; shift
+    exit_if_argc_lt $# 10
     local PARAM_CPP_TARGET_ARRAY_OUT="$1"; shift
+    local PARAM_JAVA_OUT="$1"; shift
+    local PARAM_PYTHON_OUT="$1"; shift
+    local PARAM_XML_OUT="$1"; shift
+    local PARAM_DOC_OUT="$1"; shift
+    local PARAM_OUT_DIR_OUT="$1"; shift
     local SWITCH_DIRECTORY_OUT="$1"; shift
     local SWITCH_SOURCE_OUT="$1"; shift
     local SWITCH_TEST_NAME_OUT="$1"; shift
     local SWITCH_WERROR_OUT="$1"; shift
     local SWITCH_PURGE_OUT="$1"; shift
 
-    eval ${PARAM_DOC_OUT}=0
-    eval ${PARAM_XML_OUT}=0
     eval ${PARAM_JAVA_OUT}=0
+    eval ${PARAM_PYTHON_OUT}=0
+    eval ${PARAM_XML_OUT}=0
+    eval ${PARAM_DOC_OUT}=0
     eval ${SWITCH_DIRECTORY_OUT}="."
     eval ${SWITCH_SOURCE_OUT}=""
     eval ${SWITCH_TEST_NAME_OUT}=""
@@ -511,6 +571,11 @@ parse_arguments()
             "-p" | "--purge")
                 eval ${SWITCH_PURGE_OUT}=1
                 shift
+                ;;
+
+            "-o" | "--output-directory")
+                eval ${PARAM_OUT_DIR_OUT}="$2"
+                shift 2
                 ;;
 
             "-d" | "--directory")
@@ -573,29 +638,34 @@ parse_arguments()
     local PARAM
     for PARAM in "${PARAM_ARRAY[@]}" ; do
         case "${PARAM}" in
-            "doc")
-                eval ${PARAM_DOC_OUT}=1
-                ;;
-
-            "xml")
-                eval ${PARAM_XML_OUT}=1
+            "cpp-linux32" | "cpp-linux64" | "cpp-windows32-"* | "cpp-windows64-"*)
+                eval ${PARAM_CPP_TARGET_ARRAY_OUT}[${NUM_TARGETS}]="${PARAM#cpp-}"
+                NUM_TARGETS=$((NUM_TARGETS + 1))
                 ;;
 
             "java")
                 eval ${PARAM_JAVA_OUT}=1
                 ;;
 
-            "cpp-linux32" | "cpp-linux64" | "cpp-windows32-"* | "cpp-windows64-"*)
-                eval ${PARAM_CPP_TARGET_ARRAY_OUT}[${NUM_TARGETS}]="${PARAM#cpp-}"
-                NUM_TARGETS=$((NUM_TARGETS + 1))
+            "python")
+                eval ${PARAM_PYTHON_OUT}=1
+                ;;
+
+            "xml")
+                eval ${PARAM_XML_OUT}=1
+                ;;
+
+            "doc")
+                eval ${PARAM_DOC_OUT}=1
                 ;;
 
             "all-linux32" | "all-linux64" | "all-windows32-"* | "all-windows64-"*)
-                eval ${PARAM_DOC_OUT}=1
-                eval ${PARAM_XML_OUT}=1
-                eval ${PARAM_JAVA_OUT}=1
                 eval ${PARAM_CPP_TARGET_ARRAY_OUT}[${NUM_TARGETS}]="${PARAM#all-}"
                 NUM_TARGETS=$((NUM_TARGETS + 1))
+                eval ${PARAM_JAVA_OUT}=1
+                eval ${PARAM_PYTHON_OUT}=1
+                eval ${PARAM_XML_OUT}=1
+                eval ${PARAM_DOC_OUT}=1
                 ;;
 
             *)
@@ -605,10 +675,11 @@ parse_arguments()
         esac
     done
 
-    if [[ ${!PARAM_DOC_OUT} == 0 &&
-          ${!PARAM_XML_OUT} == 0 &&
+    if [[ ${NUM_TARGETS} == 0 &&
           ${!PARAM_JAVA_OUT} == 0 &&
-          ${NUM_TARGETS} == 0 &&
+          ${!PARAM_PYTHON_OUT} == 0 &&
+          ${!PARAM_DOC_OUT} == 0 &&
+          ${!PARAM_XML_OUT} == 0 &&
           ${!SWITCH_PURGE_OUT} == 0 ]] ; then
         stderr_echo "Generator to test is not specified!"
         echo
@@ -636,42 +707,40 @@ main()
     echo "Testing generators on given zserio sources."
     echo
 
+    # get the project root, absolute path is necessary only for CMake
+    local ZSERIO_PROJECT_ROOT
+    convert_to_absolute_path "${SCRIPT_DIR}/.." ZSERIO_PROJECT_ROOT
+
     # parse command line arguments
-    local PARAM_DOC
-    local PARAM_XML
-    local PARAM_JAVA
     local PARAM_CPP_TARGET_ARRAY
+    local PARAM_JAVA
+    local PARAM_PYTHON
+    local PARAM_XML
+    local PARAM_DOC
+    local PARAM_OUT_DIR="${ZSERIO_PROJECT_ROOT}"
     local SWITCH_DIRECTORY
     local SWITCH_SOURCE
     local SWITCH_TEST_NAME
     local SWITCH_WERROR
     local SWITCH_PURGE
-    parse_arguments PARAM_DOC PARAM_XML PARAM_JAVA PARAM_CPP_TARGET_ARRAY \
+    parse_arguments PARAM_CPP_TARGET_ARRAY PARAM_JAVA PARAM_PYTHON PARAM_XML PARAM_DOC PARAM_OUT_DIR \
             SWITCH_DIRECTORY SWITCH_SOURCE SWITCH_TEST_NAME SWITCH_WERROR SWITCH_PURGE $@
     if [ $? -ne 0 ] ; then
         print_help
         return 1
     fi
 
-    # get the project root, absolute path is necessary only for CMake
-    local ZSERIO_PROJECT_ROOT
-    convert_to_absolute_path "${SCRIPT_DIR}/.." ZSERIO_PROJECT_ROOT
-
     # set global variables
     set_global_common_variables
     if [ $? -ne 0 ] ; then
         return 1
     fi
+
     set_test_global_variables
     if [ $? -ne 0 ] ; then
         return 1
     fi
-    if [[ ${PARAM_JAVA} -ne 0 ]] ; then
-        set_global_java_variables
-        if [ $? -ne 0 ] ; then
-            return 1
-        fi
-    fi
+
     if [[ ${#PARAM_CPP_TARGET_ARRAY[@]} -ne 0 ]] ; then
         set_global_cpp_variables "${ZSERIO_PROJECT_ROOT}"
         if [ $? -ne 0 ] ; then
@@ -679,17 +748,33 @@ main()
         fi
     fi
 
+    if [[ ${PARAM_JAVA} -ne 0 ]] ; then
+        set_global_java_variables
+        if [ $? -ne 0 ] ; then
+            return 1
+        fi
+    fi
+
+    if [[ ${PARAM_PYTHON} != 0 ]] ; then
+        set_global_python_variables "${ZSERIO_PROJECT_ROOT}"
+        if [ $? -ne 0 ] ; then
+            return 1
+        fi
+    fi
+
     # purge if requested and then create test output directory
-    local TEST_OUT_DIR="${ZSERIO_PROJECT_ROOT}/build/test_zs/${SWITCH_TEST_NAME}"
+    local ZSERIO_BUILD_DIR="${PARAM_OUT_DIR}/build"
+    local TEST_OUT_DIR="${ZSERIO_BUILD_DIR}/test_zs/${SWITCH_TEST_NAME}"
     if [[ ${SWITCH_PURGE} == 1 ]] ; then
         echo "Purging test directory." # purges all tests in test_zs directory
         echo
         rm -rf "${TEST_OUT_DIR}/"
 
-        if [[ ${PARAM_DOC} == 0 &&
-              ${PARAM_XML} == 0 &&
+        if [[ ${#PARAM_CPP_TARGET_ARRAY[@]} == 0 &&
               ${PARAM_JAVA} == 0 &&
-              ${#PARAM_CPP_TARGET_ARRAY[@]} == 0 ]] ; then
+              ${PARAM_PYTHON} == 0 &&
+              ${PARAM_XML} == 0 &&
+              ${PARAM_DOC} == 0 ]] ; then
             return 0; # purge only
         fi
     fi
@@ -709,8 +794,8 @@ main()
     echo
 
     # run test
-    test "${ZSERIO_RELEASE_DIR}" "${ZSERIO_VERSION}" "${ZSERIO_PROJECT_ROOT}" "${TEST_OUT_DIR}" \
-         ${PARAM_DOC} ${PARAM_XML} ${PARAM_JAVA} PARAM_CPP_TARGET_ARRAY[@] \
+    test "${ZSERIO_RELEASE_DIR}" "${ZSERIO_VERSION}" "${ZSERIO_PROJECT_ROOT}" "${ZSERIO_BUILD_DIR}" \
+         "${TEST_OUT_DIR}" PARAM_CPP_TARGET_ARRAY[@] ${PARAM_JAVA} ${PARAM_PYTHON} ${PARAM_XML} ${PARAM_DOC} \
          ${SWITCH_DIRECTORY} ${SWITCH_SOURCE} ${SWITCH_TEST_NAME} ${SWITCH_WERROR}
     if [ $? -ne 0 ] ; then
         return 1

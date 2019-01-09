@@ -106,6 +106,10 @@ def _runPylint(files, options, disableOption=None):
     if not files:
         return 0
 
+    if not "PYLINT_ENABLED" in os.environ or os.environ["PYLINT_ENABLED"] != '1':
+        print("Pylint is disabled.\n")
+        return 0
+
     pylintOptions = list(files)
     pylintOptions += options
     if disableOption:
