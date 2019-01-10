@@ -595,14 +595,20 @@ run_pylint()
     local PYLINT_ARGS=("${MSYS_WORKAROUND_TEMP[@]}")
     local SOURCES="$@"; shift
 
-    python -m pylint --init-hook="import sys; sys.setrecursionlimit(5000)" ${PYLINT_EXTRA_ARGS} \
-                     --rcfile "${PYLINT_RCFILE}" --persistent=n "${PYLINT_ARGS[@]}" \
-                     ${SOURCES}
-    local PYLINT_RESULT=$?
-    if [ ${PYLINT_RESULT} -ne 0 ] ; then
-        stderr_echo "Running pylint failed with return code ${PYLINT_RESULT}!"
-        return 1
-    fi
+    local SOURCES_ARRAY=(${SOURCES})
+    for SOURCE in "${SOURCES_ARRAY[@]}"; do
+        python -m pylint --init-hook="import sys; sys.setrecursionlimit(5000)" ${PYLINT_EXTRA_ARGS} \
+                         --rcfile "${PYLINT_RCFILE}" --persistent=n --score=n "${PYLINT_ARGS[@]}" \
+                         ${SOURCE}
+        local PYLINT_RESULT=$?
+        if [ ${PYLINT_RESULT} -ne 0 ] ; then
+            stderr_echo "Running pylint failed with return code ${PYLINT_RESULT}!"
+            return 1
+        fi
+    done
+
+    echo "Pylint done."
+    echo
 
     return 0
 }

@@ -65,7 +65,7 @@ def main():
     sys.path = origSysPath
 
     # run pylint
-    pylintOptions = ["--persistent=n", "--ignored-modules=zserio,testutils"]
+    pylintOptions = ["--persistent=n", "--score=n", "--ignored-modules=zserio,testutils"]
     if args.pylint_rcfile:
         pylintOptions.append("--rcfile=%s" % (args.pylint_rcfile))
 
@@ -118,6 +118,8 @@ def _runPylint(files, options, disableOption=None):
     pylintRunner = pylint.lint.Run(pylintOptions, do_exit=False)
     if pylintRunner.linter.msg_status:
         return pylintRunner.linter.msg_status
+
+    print("Pylint done.\n")
 
     return 0
 

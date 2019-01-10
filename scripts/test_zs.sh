@@ -712,7 +712,7 @@ main()
     convert_to_absolute_path "${SCRIPT_DIR}/.." ZSERIO_PROJECT_ROOT
 
     # parse command line arguments
-    local PARAM_CPP_TARGET_ARRAY
+    local PARAM_CPP_TARGET_ARRAY=()
     local PARAM_JAVA
     local PARAM_PYTHON
     local PARAM_XML
