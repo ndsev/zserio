@@ -32,7 +32,7 @@ zserio_extensions.build_dir - Zserio extensions build directory.
             <striplinebreaks/>
             <tokenfilter>
                 <replaceregex
-                    pattern='.*VERSION_STRING\s*=\s*"([0-9]+.[0-9]+.[0-9]+)".*'
+                    pattern='.*VERSION_STRING\s*=\s*"([0-9]+.[0-9]+.[0-9]+(-[A-Za-z0-9]+)?)".*'
                     replace="\1"/>
             </tokenfilter>
         </filterchain>

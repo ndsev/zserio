@@ -11,7 +11,7 @@ update_version_in_file()
     local NEW_VERSION_STRING="${1}"; shift
 
     echo -ne "Updating version to ${NEW_VERSION_STRING} in '${VERSION_FILE}'..."
-    sed -i -e 's/[0-9]\+\.[0-9]\+\.[0-9]\+/'"${NEW_VERSION_STRING}"'/' "${VERSION_FILE}"
+    sed -i -e 's/[0-9]\+\.[0-9]\+\.[0-9]\+\(\-[A-Za-z0-9]\+\)\?/'"${NEW_VERSION_STRING}"'/' "${VERSION_FILE}"
     local SED_RESULT=$?
     if [ ${SED_RESULT} -ne 0 ] ; then
         stderr_echo "Failed with return code ${SED_RESULT}!"
