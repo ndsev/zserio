@@ -593,10 +593,9 @@ run_pylint()
     local PYLINT_RCFILE="$1"; shift
     local MSYS_WORKAROUND_TEMP=("${!1}"); shift
     local PYLINT_ARGS=("${MSYS_WORKAROUND_TEMP[@]}")
-    local SOURCES="$@"; shift
+    local SOURCES=("$@")
 
-    local SOURCES_ARRAY=(${SOURCES})
-    for SOURCE in "${SOURCES_ARRAY[@]}"; do
+    for SOURCE in "${SOURCES[@]}"; do
         python -m pylint --init-hook="import sys; sys.setrecursionlimit(5000)" ${PYLINT_EXTRA_ARGS} \
                          --rcfile "${PYLINT_RCFILE}" --persistent=n --score=n "${PYLINT_ARGS[@]}" \
                          ${SOURCE}
