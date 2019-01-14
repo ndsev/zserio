@@ -31,8 +31,8 @@
 <#list rpcList as rpc>
                 <tr><td id="tabIndent">
                     rpc <#if rpc.hasResponseStreaming>stream </#if><@linkedtype rpc.responseType/> <#rt>
-                    <a href="#${rpc.name}" class="fieldLink">${rpc.name}</a> <#t>
-                    <#lt><#if rpc.hasRequestStreaming>stream </#if><@linkedtype rpc.requestType/>;
+                    <a href="#${rpc.name}" class="fieldLink">${rpc.name}</a><#t>
+                    <#lt>(<#if rpc.hasRequestStreaming>stream </#if><@linkedtype rpc.requestType/>);
                 </td></tr>
 </#list>
                 <tr><td>};</td></tr>
