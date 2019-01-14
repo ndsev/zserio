@@ -74,7 +74,7 @@ public class ComplexTypesServiceTest
         {
             CMYKModel cmyk = cmykData.elementAt(i);
             assertEquals(cmykValues[i % 3][0], cmyk.getCyan());
-            assertEquals(cmykValues[i % 3][1], cmyk.getMagneta());
+            assertEquals(cmykValues[i % 3][1], cmyk.getMagenta());
             assertEquals(cmykValues[i % 3][2], cmyk.getYellow());
             assertEquals(cmykValues[i % 3][3], cmyk.getKey());
         }
@@ -242,7 +242,7 @@ public class ComplexTypesServiceTest
             for (int i = 0; i < data.length(); ++i)
             {
                 CMYKModel cmykModel = data.elementAt(i).getCmyk();
-                convertCmykToRgb(cmykModel.getCyan(), cmykModel.getMagneta(), cmykModel.getYellow(),
+                convertCmykToRgb(cmykModel.getCyan(), cmykModel.getMagenta(), cmykModel.getYellow(),
                         cmykModel.getKey(), rgb);
                 RGBModel rgbModel = new RGBModel(rgb.r, rgb.g, rgb.b);
                 rgbData.setElementAt(rgbModel, i);

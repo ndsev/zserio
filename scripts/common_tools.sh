@@ -232,7 +232,7 @@ activate_python_virtualenv()
         return 1
     fi
 
-    local STANDARD_REQUIREMENTS=("coverage>=4.5.1" "sphinx-automodapi>=0.8" "pylint>=2.1.1")
+    local STANDARD_REQUIREMENTS=("coverage>=4.5.1" "sphinx-automodapi>=0.8" "pylint>=2.1.1" "grpcio==1.17.1")
     local APSW_REQUIREMENTS=("apsw")
 
     if [ ! -z "${PYTHON_VIRTUALENV}" ] ; then  # forced python virtualenv
@@ -595,16 +595,30 @@ run_pylint()
     local PYLINT_ARGS=("${MSYS_WORKAROUND_TEMP[@]}")
     local SOURCES=("$@")
 
-    for SOURCE in "${SOURCES[@]}"; do
+    local HOST_PLATFORM
+    get_host_platform HOST_PLATFORM
+    if [[ "${HOST_PLATFORM}" == "windows"* && ${#SOURCES[@]} -gt 50 ]] ; then
+        # prevent bad file number under msys caused by too long command line
+        for SOURCE in "${SOURCES[@]}"; do
+            python -m pylint --init-hook="import sys; sys.setrecursionlimit(5000)" ${PYLINT_EXTRA_ARGS} \
+                            --rcfile "${PYLINT_RCFILE}" --persistent=n --score=n "${PYLINT_ARGS[@]}" \
+                            ${SOURCE}
+            local PYLINT_RESULT=$?
+            if [ ${PYLINT_RESULT} -ne 0 ] ; then
+                stderr_echo "Running pylint failed with return code ${PYLINT_RESULT}!"
+                return 1
+            fi
+        done
+    else
         python -m pylint --init-hook="import sys; sys.setrecursionlimit(5000)" ${PYLINT_EXTRA_ARGS} \
                          --rcfile "${PYLINT_RCFILE}" --persistent=n --score=n "${PYLINT_ARGS[@]}" \
-                         ${SOURCE}
+                         "${SOURCES[@]}"
         local PYLINT_RESULT=$?
         if [ ${PYLINT_RESULT} -ne 0 ] ; then
             stderr_echo "Running pylint failed with return code ${PYLINT_RESULT}!"
             return 1
         fi
-    done
+    fi
 
     echo "Pylint done."
     echo

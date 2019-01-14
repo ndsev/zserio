@@ -6,8 +6,7 @@ from testutils import getZserioApi
 class WithoutWriterCodeTest(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        cls.api = getZserioApi(__file__, "without_writer_code.zs",
-                               extraArgs=["-withoutWriterCode"])
+        cls.api = getZserioApi(__file__, "without_writer_code.zs", extraArgs=["-withoutWriterCode"])
 
     def testItemType(self):
         userType = self.api.ItemType

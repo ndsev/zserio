@@ -8,6 +8,7 @@ import zserio.ast.EnumType;
 import zserio.ast.Package;
 import zserio.ast.PackageName;
 import zserio.ast.Root;
+import zserio.ast.ServiceType;
 import zserio.ast.StructureType;
 import zserio.ast.Subtype;
 import zserio.ast.UnionType;
@@ -81,14 +82,11 @@ public class ApiEmitter extends PythonDefaultEmitter
         addTypeMapping(structureType);
     }
 
-    private void addTypeMapping(ZserioType zserioType) throws ZserioEmitException
+    @Override
+    public void beginService(ServiceType serviceType) throws ZserioEmitException
     {
-        final PackageMapper packageMapper = getTemplateDataContext().getPythonPackageMapper();
-        final PackageName packageName = packageMapper.getPackageName(zserioType);
-        ApiEmitterTemplateData packageTemplateData = packageMapping.get(packageName);
-        if (packageTemplateData == null)
-            throw new ZserioEmitException("ApiEmitter: Package not yet mapped!");
-        packageTemplateData.addType(zserioType);
+        if (getWithGrpcCode())
+            addModuleMapping(serviceType);
     }
 
     private void addEmptyPackageMapping() throws ZserioEmitException
@@ -118,6 +116,26 @@ public class ApiEmitter extends PythonDefaultEmitter
                 prevPackageTemplateData.addSubpackage(id);
             prevPackageTemplateData = apiEmitterTemplateData;
         }
+    }
+
+    private void addModuleMapping(ZserioType zserioType) throws ZserioEmitException
+    {
+        final PackageMapper packageMapper = getTemplateDataContext().getPythonPackageMapper();
+        final PackageName packageName = packageMapper.getPackageName(zserioType);
+        final ApiEmitterTemplateData packageTemplateData = packageMapping.get(packageName);
+        if (packageTemplateData == null)
+            throw new ZserioEmitException("ApiEmitter: Package not yet mapped!");
+        packageTemplateData.addModule(zserioType);
+    }
+
+    private void addTypeMapping(ZserioType zserioType) throws ZserioEmitException
+    {
+        final PackageMapper packageMapper = getTemplateDataContext().getPythonPackageMapper();
+        final PackageName packageName = packageMapper.getPackageName(zserioType);
+        final ApiEmitterTemplateData packageTemplateData = packageMapping.get(packageName);
+        if (packageTemplateData == null)
+            throw new ZserioEmitException("ApiEmitter: Package not yet mapped!");
+        packageTemplateData.addType(zserioType);
     }
 
     private static final String API_TEMPLATE = "api.py.ftl";

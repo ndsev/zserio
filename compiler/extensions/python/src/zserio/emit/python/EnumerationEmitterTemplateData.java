@@ -21,7 +21,7 @@ public class EnumerationEmitterTemplateData extends UserTypeTemplateData
         final IntegerType enumBaseType = enumType.getIntegerBaseType();
         bitSize = createBitSize(enumBaseType);
         if (bitSize == null)
-            importRuntimePackage();
+            importPackage("zserio");
 
         final ExpressionFormatter pythonExpressionFormatter = context.getPythonExpressionFormatter(this);
         runtimeFunction = PythonRuntimeFunctionDataCreator.createData(enumBaseType, pythonExpressionFormatter);

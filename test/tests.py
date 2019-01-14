@@ -72,7 +72,8 @@ def main():
     # pylint for test files
     print("\nRunning pylint on python tests.")
     pylintResult = _runPylint(testFiles, pylintOptions,
-                              "missing-docstring, invalid-name, duplicate-code, too-many-public-methods")
+                              ("missing-docstring, invalid-name, duplicate-code, too-many-public-methods, "
+                               "too-few-public-methods"))
     if pylintResult != 0:
         return pylintResult
 
@@ -89,10 +90,11 @@ def main():
     pylintResult = _runPylint(genFiles, pylintOptions, ("missing-docstring, invalid-name, no-self-use,"
                                                         "duplicate-code, line-too-long, singleton-comparison, "
                                                         "too-many-instance-attributes, too-many-arguments, "
-                                                        "too-many-public-methods, too-many-locals, "
-                                                        "too-many-branches, too-many-statements, "
-                                                        "unneeded-not, superfluous-parens, import-error, "
-                                                        "len-as-condition, import-self"))
+                                                        "too-many-public-methods, too-few-public-methods, "
+                                                        "too-many-locals, too-many-branches, "
+                                                        "too-many-statements, unneeded-not, "
+                                                        "superfluous-parens, import-error, len-as-condition, "
+                                                        "import-self"))
     if pylintResult != 0:
         return pylintResult
 

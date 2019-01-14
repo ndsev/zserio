@@ -6,6 +6,12 @@
 import <#if packagePath?has_content>${packagePath}.</#if>${subpackage}.api as ${subpackage}
     </#list>
 </#if>
+<#if modules?has_content>
+
+    <#list modules as module>
+import <#if packagePath?has_content>${packagePath}.</#if>${module} as ${module}
+    </#list>
+</#if>
 <#if types?has_content>
 
     <#list types as type>

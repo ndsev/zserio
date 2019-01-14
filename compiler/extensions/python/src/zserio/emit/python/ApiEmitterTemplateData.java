@@ -1,8 +1,9 @@
 package zserio.emit.python;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Set;
 import java.util.TreeSet;
+import java.util.List;
+import java.util.ArrayList;
 
 import zserio.ast.PackageName;
 import zserio.ast.ZserioType;
@@ -25,19 +26,19 @@ public class ApiEmitterTemplateData extends PythonTemplateData
         return PythonFullNameFormatter.getFullName(packageName);
     }
 
-    public Iterable<String> getTypes()
-    {
-        return types;
-    }
-
     public Iterable<String> getSubpackages()
     {
         return subpackages;
     }
 
-    public void addType(ZserioType zserioType)
+    public Iterable<String> getModules()
     {
-        types.add(zserioType.getName());
+        return modules;
+    }
+
+    public Iterable<String> getTypes()
+    {
+        return types;
     }
 
     public void addSubpackage(String subpackage)
@@ -45,7 +46,18 @@ public class ApiEmitterTemplateData extends PythonTemplateData
         subpackages.add(subpackage);
     }
 
+    public void addModule(ZserioType zserioType)
+    {
+        modules.add(zserioType.getName());
+    }
+
+    public void addType(ZserioType zserioType)
+    {
+        types.add(zserioType.getName());
+    }
+
     final PackageName packageName;
+    final Set<String> subpackages = new TreeSet<String>();
+    final List<String> modules = new ArrayList<String>();
     final List<String> types = new ArrayList<String>();
-    final TreeSet<String> subpackages = new TreeSet<String>();
 }

@@ -108,7 +108,7 @@ private:
             uint8_t c, m, y, k;
             convertRgbToCmyk(rgb.getRed(), rgb.getGreen(), rgb.getBlue(), c, m, y, k);
             cmykData[i].setCyan(c);
-            cmykData[i].setMagneta(m);
+            cmykData[i].setMagenta(m);
             cmykData[i].setYellow(y);
             cmykData[i].setKey(k);
         }
@@ -123,7 +123,7 @@ private:
         {
             const CMYKModel& cmyk = data.at(i).getCmyk();
             uint8_t r, g, b;
-            convertCmykToRgb(cmyk.getCyan(), cmyk.getMagneta(), cmyk.getYellow(), cmyk.getKey(), r, g, b);
+            convertCmykToRgb(cmyk.getCyan(), cmyk.getMagenta(), cmyk.getYellow(), cmyk.getKey(), r, g, b);
             rgbData[i].setRed(r);
             rgbData[i].setGreen(g);
             rgbData[i].setBlue(b);
@@ -201,7 +201,7 @@ TEST_F(ComplexTypesServiceTest, rgbToCmyk)
     {
         const CMYKModel& cmyk = cmykData.at(i);
         ASSERT_EQ(cmykValues[i % 3][0], cmyk.getCyan());
-        ASSERT_EQ(cmykValues[i % 3][1], cmyk.getMagneta());
+        ASSERT_EQ(cmykValues[i % 3][1], cmyk.getMagenta());
         ASSERT_EQ(cmykValues[i % 3][2], cmyk.getYellow());
         ASSERT_EQ(cmykValues[i % 3][3], cmyk.getKey());
     }
@@ -220,7 +220,7 @@ TEST_F(ComplexTypesServiceTest, cmykToRgb)
     for (size_t i = 0; i < data.size(); ++i)
     {
         model.setCyan(cmykValues[i % 3][0]);
-        model.setMagneta(cmykValues[i % 3][1]);
+        model.setMagenta(cmykValues[i % 3][1]);
         model.setYellow(cmykValues[i % 3][2]);
         model.setKey(cmykValues[i % 3][3]);
         data.at(i).setCmyk(model);

@@ -25,9 +25,9 @@ struct RGBModel
 struct CMYKModel
 {
     bit:8 cyan;
-    bit:8 magneta;
+    bit:8 magenta;
     bit:8 yellow;
-    bit:8 key; // (blacK)
+    bit:8 key; // (black)
 };
 
 choice ColorModelChoice(ColorModel model) on model

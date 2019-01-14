@@ -20,7 +20,7 @@ public class ServiceEmitterTemplateData extends UserTypeTemplateData
         {
             addHeaderIncludesForType(cppTypeMapper.getCppType(rpc.getResponseType()));
             addHeaderIncludesForType(cppTypeMapper.getCppType(rpc.getRequestType()));
-            RpcTemplateData templateData = new RpcTemplateData(cppTypeMapper, rpc);
+            final RpcTemplateData templateData = new RpcTemplateData(cppTypeMapper, rpc);
             this.rpcList.add(templateData);
 
             if (templateData.getNoStreaming())

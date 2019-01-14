@@ -35,9 +35,9 @@ public class PythonTemplateData implements ImportCollector
     }
 
     @Override
-    public void importRuntimePackage()
+    public void importPackage(String packageName)
     {
-        packageImports.add("zserio");
+        packageImports.add(packageName);
     }
 
     @Override
@@ -65,7 +65,6 @@ public class PythonTemplateData implements ImportCollector
         {
             return moduleName;
         }
-
 
         @Override
         public boolean equals(Object otherObject)

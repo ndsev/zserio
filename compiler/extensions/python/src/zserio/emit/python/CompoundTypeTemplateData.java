@@ -29,7 +29,7 @@ public class CompoundTypeTemplateData extends UserTypeTemplateData
             fieldList.add(new CompoundFieldTemplateData(javaNativeTypeMapper, withRangeCheckCode, compoundType,
                     fieldType, pythonExpressionFormatter, this));
 
-        importRuntimePackage();
+        importPackage("zserio");
     }
 
     public boolean getWithRangeCheckCode()
