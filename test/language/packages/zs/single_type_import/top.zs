@@ -16,7 +16,7 @@ struct TopStructure
     /*
      * Test that unqualified SimpleParamStructure resolves to the local type, not to
      * single_type_import.imported.SimpleParamStructure. The type
-     * single_type_import.imported.SimpleParamStructure is parametrized. So, if the tool resolves
+     * single_type_import.imported.SimpleParamStructure is parameterized. So, if the tool resolves
      * SimpleParamStructure to the wrong type, we get a compilation error.
      */
     SimpleParamStructure simpleParamStructureLocal;

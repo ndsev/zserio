@@ -12,7 +12,7 @@ struct Coordinate(uint8 constraintX, uint8 constraintY)
 struct TopStructure
 {
     /*
-     * Test that unqualified Coordinate resolves to the local type. The imported types are not parametrized
+     * Test that unqualified Coordinate resolves to the local type. The imported types are not parameterized
      * with two parameters. So, if the tool resolves Coordinate to the wrong type, we get a compilation error.
      */
     Coordinate(1, 1) coordinateLocal;

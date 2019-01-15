@@ -255,7 +255,7 @@ fieldTypeId!
     ;
     exception
     catch [NoViableAltException e]
-    { 
+    {
         if (LA(2) != ZserioParserTokenTypes.EOF)
             throw e;
         // let a following rule to fail with proper message for unexpected EOF
@@ -512,7 +512,7 @@ floatType
  * parameterList.
  */
 parameterList
-    :   LPAREN! ( parameterDefinition ( COMMA! parameterDefinition)* )? RPAREN!
+    :   LPAREN! parameterDefinition (COMMA! parameterDefinition)* RPAREN!
     ;
 
 parameterDefinition
@@ -540,14 +540,14 @@ typeReference
                 if (#typeReference instanceof TypeReference)
                 {
                     // type reference
-                    ((TypeReference)#typeReference).setNonParametrizedTypeCheck();
+                    ((TypeReference)#typeReference).setNonParameterizedTypeCheck();
                 }
             }
         )
     ;
 
 typeArgumentList
-    :   LPAREN! (typeArgument (COMMA! typeArgument)* )? RPAREN!
+    :   LPAREN! typeArgument (COMMA! typeArgument)* RPAREN!
     ;
 
 typeArgument
@@ -622,14 +622,14 @@ postfixOperand
     ;
 
 arrayOperand!
-    :   LBRACKET e:expression RBRACKET
+    :   LBRACKET! e:expression RBRACKET!
         {
             #arrayOperand = #([ARRAYELEM], e);
         }
     ;
 
 functionArgumentList
-    :   LPAREN! (functionArgument (COMMA! functionArgument)* )? RPAREN!
+    :   LPAREN! RPAREN!
         {
             #functionArgumentList = #([FUNCTIONCALL], functionArgumentList);
         }

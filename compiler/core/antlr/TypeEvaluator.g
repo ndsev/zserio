@@ -96,7 +96,7 @@ constDeclaration
                                         currentPackage.setLocalType((BaseTokenAST)i, (ConstType)c);
                                     }
             e:expression
-        ) 
+        )
     ;
 
 /**
@@ -155,7 +155,7 @@ structureFieldDefinition
 
 fieldArrayType
     :   #(ARRAY
-                                    { allowIndex = true; } // needed for parametrized types
+                                    { allowIndex = true; } // needed for parameterized types
             typeReference
                                     { allowIndex = false; }
             fieldArrayRange
@@ -227,7 +227,7 @@ choiceDeclaration
                                         currentChoiceOrUnionScope = null;
                                     }
             (functionDefinition)*
-        )                           {   
+        )                           {
                                         currentScope = defaultScope;
                                         expressionScopes.clear();
                                         fillExpressionScopes = false;
@@ -275,7 +275,7 @@ unionDeclaration
                                         currentChoiceOrUnionScope = null;
                                     }
             (functionDefinition)*
-        )                           {   
+        )                           {
                                         currentScope = defaultScope;
                                         expressionScopes.clear();
                                         fillExpressionScopes = false;

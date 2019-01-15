@@ -1,4 +1,4 @@
-package referenced_parametrized_type_error;
+package referenced_parameterized_type_error;
 
 struct Item(uint32 version)
 {

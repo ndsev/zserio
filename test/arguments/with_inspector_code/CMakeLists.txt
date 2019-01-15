@@ -33,26 +33,26 @@ set(ZSERIO_GENERATED_SOURCES
     ${ZSERIO_GEN_DIR}/with_inspector_code/last_union_with_auto_optional/LastUnionTableRow.cpp
     ${ZSERIO_GEN_DIR}/with_inspector_code/last_union_with_auto_optional/LastUnionTableRow.h
 
-    ${ZSERIO_GEN_DIR}/with_inspector_code/parametrized_structure/RootStructure.cpp
-    ${ZSERIO_GEN_DIR}/with_inspector_code/parametrized_structure/RootStructure.h
-    ${ZSERIO_GEN_DIR}/with_inspector_code/parametrized_structure/SimpleEnum.cpp
-    ${ZSERIO_GEN_DIR}/with_inspector_code/parametrized_structure/SimpleEnum.h
-    ${ZSERIO_GEN_DIR}/with_inspector_code/parametrized_structure/SimpleStructure.cpp
-    ${ZSERIO_GEN_DIR}/with_inspector_code/parametrized_structure/SimpleStructure.h
-    ${ZSERIO_GEN_DIR}/with_inspector_code/parametrized_structure/TestAlign.cpp
-    ${ZSERIO_GEN_DIR}/with_inspector_code/parametrized_structure/TestAlign.h
-    ${ZSERIO_GEN_DIR}/with_inspector_code/parametrized_structure/TestArray.cpp
-    ${ZSERIO_GEN_DIR}/with_inspector_code/parametrized_structure/TestArray.h
-    ${ZSERIO_GEN_DIR}/with_inspector_code/parametrized_structure/TestChoice.cpp
-    ${ZSERIO_GEN_DIR}/with_inspector_code/parametrized_structure/TestChoice.h
-    ${ZSERIO_GEN_DIR}/with_inspector_code/parametrized_structure/TestDatabase.cpp
-    ${ZSERIO_GEN_DIR}/with_inspector_code/parametrized_structure/TestDatabase.h
-    ${ZSERIO_GEN_DIR}/with_inspector_code/parametrized_structure/TestTable.cpp
-    ${ZSERIO_GEN_DIR}/with_inspector_code/parametrized_structure/TestTable.h
-    ${ZSERIO_GEN_DIR}/with_inspector_code/parametrized_structure/TestTableRow.cpp
-    ${ZSERIO_GEN_DIR}/with_inspector_code/parametrized_structure/TestTableRow.h
-    ${ZSERIO_GEN_DIR}/with_inspector_code/parametrized_structure/TestUnion.cpp
-    ${ZSERIO_GEN_DIR}/with_inspector_code/parametrized_structure/TestUnion.h
+    ${ZSERIO_GEN_DIR}/with_inspector_code/parameterized_structure/RootStructure.cpp
+    ${ZSERIO_GEN_DIR}/with_inspector_code/parameterized_structure/RootStructure.h
+    ${ZSERIO_GEN_DIR}/with_inspector_code/parameterized_structure/SimpleEnum.cpp
+    ${ZSERIO_GEN_DIR}/with_inspector_code/parameterized_structure/SimpleEnum.h
+    ${ZSERIO_GEN_DIR}/with_inspector_code/parameterized_structure/SimpleStructure.cpp
+    ${ZSERIO_GEN_DIR}/with_inspector_code/parameterized_structure/SimpleStructure.h
+    ${ZSERIO_GEN_DIR}/with_inspector_code/parameterized_structure/TestAlign.cpp
+    ${ZSERIO_GEN_DIR}/with_inspector_code/parameterized_structure/TestAlign.h
+    ${ZSERIO_GEN_DIR}/with_inspector_code/parameterized_structure/TestArray.cpp
+    ${ZSERIO_GEN_DIR}/with_inspector_code/parameterized_structure/TestArray.h
+    ${ZSERIO_GEN_DIR}/with_inspector_code/parameterized_structure/TestChoice.cpp
+    ${ZSERIO_GEN_DIR}/with_inspector_code/parameterized_structure/TestChoice.h
+    ${ZSERIO_GEN_DIR}/with_inspector_code/parameterized_structure/TestDatabase.cpp
+    ${ZSERIO_GEN_DIR}/with_inspector_code/parameterized_structure/TestDatabase.h
+    ${ZSERIO_GEN_DIR}/with_inspector_code/parameterized_structure/TestTable.cpp
+    ${ZSERIO_GEN_DIR}/with_inspector_code/parameterized_structure/TestTable.h
+    ${ZSERIO_GEN_DIR}/with_inspector_code/parameterized_structure/TestTableRow.cpp
+    ${ZSERIO_GEN_DIR}/with_inspector_code/parameterized_structure/TestTableRow.h
+    ${ZSERIO_GEN_DIR}/with_inspector_code/parameterized_structure/TestUnion.cpp
+    ${ZSERIO_GEN_DIR}/with_inspector_code/parameterized_structure/TestUnion.h
 )
 
 zserio_add_library(TARGET with_inspector_code_zs
@@ -67,7 +67,7 @@ zserio_add_library(TARGET with_inspector_code_zs
 add_test_sources(
     cpp/LastAutoOptionalFieldTest.cpp
     cpp/LastUnionWithAutoOptionalTest.cpp
-    cpp/ParametrizedStructureTest.cpp
+    cpp/ParameterizedStructureTest.cpp
 )
 
 add_test_dependencies(with_inspector_code_zs)

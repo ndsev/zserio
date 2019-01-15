@@ -185,7 +185,7 @@ offsets[@index]:
 };
 ```
 
-**Parametrized Types**
+**Parameterized Types**
 ```
 struct Header
 {

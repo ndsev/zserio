@@ -1,4 +1,4 @@
-package referenced_non_parametrized_type_error;
+package referenced_non_parameterized_type_error;
 
 struct Item
 {

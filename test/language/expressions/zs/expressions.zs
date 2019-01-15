@@ -15,7 +15,7 @@ import expressions.lengthof_operator.*;
 import expressions.negation_operator.*;
 import expressions.numbits_operator.*;
 import expressions.parameter_type.*;
-import expressions.parametrized_array_type.*;
+import expressions.parameterized_array_type.*;
 import expressions.parenthesis.*;
 import expressions.question_mark.*;
 import expressions.string_type.*;

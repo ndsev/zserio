@@ -1284,8 +1284,7 @@ public class Expression extends TokenAST
                     getFileName() + ":" + getLine() + ":" + getColumn());
         }
 
-        expressionType = functionResultExpression.expressionType;
-        zserioType = functionResultExpression.zserioType;
+        evaluateExpressionType(functionType.getReturnType());
         expressionIntegerValue = functionResultExpression.expressionIntegerValue;
     }
 

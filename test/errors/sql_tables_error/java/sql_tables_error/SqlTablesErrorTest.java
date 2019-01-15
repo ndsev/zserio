@@ -46,7 +46,7 @@ public class SqlTablesErrorTest
     }
 
     @Test
-    public void parametrizedTable()
+    public void parameterizedTable()
     {
         final String error = ":3:20: unexpected token: (";
         assertTrue(zserioErrors.isPresent(error));

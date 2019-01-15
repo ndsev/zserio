@@ -132,7 +132,7 @@ public class StructureType extends CompoundType
             if (!field.getIsOptional())
             {
                 // but this field is not optional => ERROR
-                throw new ParserException(field, "Parametrized field '" + field.getName() +
+                throw new ParserException(field, "Parameterized field '" + field.getName() +
                         "' is not optional but uses optional parameters!");
             }
             else
@@ -142,7 +142,7 @@ public class StructureType extends CompoundType
                 {
                     // there are at least two parameters which are field and which have different optional
                     // clauses OR optional clause of parameter is not the same as optional clause of field
-                    ZserioToolPrinter.printWarning(field, "Parametrized field '" + field.getName() +
+                    ZserioToolPrinter.printWarning(field, "Parameterized field '" + field.getName() +
                             "' has different optional clause than parameters.");
                 }
             }

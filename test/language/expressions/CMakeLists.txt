@@ -57,12 +57,12 @@ set(ZSERIO_GENERATED_SOURCES
     ${ZSERIO_GEN_DIR}/expressions/parameter_type/ParameterTypeExpression.cpp
     ${ZSERIO_GEN_DIR}/expressions/parameter_type/ParameterTypeExpression.h
 
-    ${ZSERIO_GEN_DIR}/expressions/parametrized_array_type/ParametrizedArrayElement.cpp
-    ${ZSERIO_GEN_DIR}/expressions/parametrized_array_type/ParametrizedArrayElement.h
-    ${ZSERIO_GEN_DIR}/expressions/parametrized_array_type/ParametrizedArrayHolder.cpp
-    ${ZSERIO_GEN_DIR}/expressions/parametrized_array_type/ParametrizedArrayHolder.h
-    ${ZSERIO_GEN_DIR}/expressions/parametrized_array_type/ParametrizedArrayTypeExpression.cpp
-    ${ZSERIO_GEN_DIR}/expressions/parametrized_array_type/ParametrizedArrayTypeExpression.h
+    ${ZSERIO_GEN_DIR}/expressions/parameterized_array_type/ParameterizedArrayElement.cpp
+    ${ZSERIO_GEN_DIR}/expressions/parameterized_array_type/ParameterizedArrayElement.h
+    ${ZSERIO_GEN_DIR}/expressions/parameterized_array_type/ParameterizedArrayHolder.cpp
+    ${ZSERIO_GEN_DIR}/expressions/parameterized_array_type/ParameterizedArrayHolder.h
+    ${ZSERIO_GEN_DIR}/expressions/parameterized_array_type/ParameterizedArrayTypeExpression.cpp
+    ${ZSERIO_GEN_DIR}/expressions/parameterized_array_type/ParameterizedArrayTypeExpression.h
 
     ${ZSERIO_GEN_DIR}/expressions/parenthesis/ParenthesisExpression.cpp
     ${ZSERIO_GEN_DIR}/expressions/parenthesis/ParenthesisExpression.h
@@ -117,7 +117,7 @@ add_test_sources(
     cpp/NegationOperatorTest.cpp
     cpp/NumBitsOperatorTest.cpp
     cpp/ParameterTypeTest.cpp
-    cpp/ParametrizedArrayTypeTest.cpp
+    cpp/ParameterizedArrayTypeTest.cpp
     cpp/ParenthesisTest.cpp
     cpp/QuestionMarkTest.cpp
     cpp/StringTypeTest.cpp

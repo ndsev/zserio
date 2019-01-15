@@ -35,6 +35,16 @@ set(ZSERIO_GENERATED_SOURCES
     ${ZSERIO_GEN_DIR}/choice_types/full_enum_param_choice/Selector.h
     ${ZSERIO_GEN_DIR}/choice_types/full_enum_param_choice/White.h
 
+    ${ZSERIO_GEN_DIR}/choice_types/function_returning_literal_selector_choice/Selector.cpp
+    ${ZSERIO_GEN_DIR}/choice_types/function_returning_literal_selector_choice/Selector.h
+    ${ZSERIO_GEN_DIR}/choice_types/function_returning_literal_selector_choice/TestChoice.cpp
+    ${ZSERIO_GEN_DIR}/choice_types/function_returning_literal_selector_choice/TestChoice.h
+
+    ${ZSERIO_GEN_DIR}/choice_types/function_selector_choice/Selector.cpp
+    ${ZSERIO_GEN_DIR}/choice_types/function_selector_choice/Selector.h
+    ${ZSERIO_GEN_DIR}/choice_types/function_selector_choice/TestChoice.cpp
+    ${ZSERIO_GEN_DIR}/choice_types/function_selector_choice/TestChoice.h
+
     ${ZSERIO_GEN_DIR}/choice_types/uint16_param_choice/UInt16ParamChoice.cpp
     ${ZSERIO_GEN_DIR}/choice_types/uint16_param_choice/UInt16ParamChoice.h
     ${ZSERIO_GEN_DIR}/choice_types/uint16_param_choice/VariantA.h
@@ -65,6 +75,8 @@ add_test_sources(
     cpp/EmptyChoiceWithDefaultTest.cpp
     cpp/EnumParamChoiceTest.cpp
     cpp/FullEnumParamChoiceTest.cpp
+    cpp/FunctionReturningLiteralSelectorChoiceTest.cpp
+    cpp/FunctionSelectorChoiceTest.cpp
     cpp/UInt16ParamChoiceTest.cpp
     cpp/UInt64ParamChoiceTest.cpp
 )

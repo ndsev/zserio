@@ -336,7 +336,7 @@ choice VarCoordXY(uint8 width) on width
 ```
 
 In the example above, the selector expression refers to a parameter `width` of a `uint8` type (see
-[Parametrized Types](#parametrized-types)).
+[Parameterized Types](#parameterized-types)).
 
 A given branch of a choice may have more than one case label. In this case, the branch is selected when
 the selector value is equal to any of the case label values. A choice type may have a default branch which is

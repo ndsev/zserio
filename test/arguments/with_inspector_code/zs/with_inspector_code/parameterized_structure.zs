@@ -1,11 +1,11 @@
-package with_inspector_code.parametrized_structure;
+package with_inspector_code.parameterized_structure;
 
 sql_database TestDatabase
 {
     TestTable   testTable;
 };
 
-// Please note that this table has multiple instances of parametrized type using different parameters. Such
+// Please note that this table has multiple instances of parameterized type using different parameters. Such
 // test is necessary to check generation of ParameterProvider for Blob Inspector.
 sql_table TestTable
 {

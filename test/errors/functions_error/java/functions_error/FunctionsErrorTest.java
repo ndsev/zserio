@@ -43,6 +43,21 @@ public class FunctionsErrorTest
     }
 
     @Test
+    public void functionCallWithArgument()
+    {
+        final String error = "function_call_with_argument_error.zs:16:48: expecting RPAREN, found '2'";
+        assertTrue(zserioErrors.isPresent(error));
+    }
+
+    @Test
+    public void functionWithParameter()
+    {
+        final String error = "function_with_parameter_error.zs:7:38: " +
+                "expecting RPAREN, found 'int32' (reserved keyword)";
+        assertTrue(zserioErrors.isPresent(error));
+    }
+
+    @Test
     public void recursive()
     {
         final String error = "recursive_error.zs:11:62: Unresolved symbol 'getValue' within expression scope!";

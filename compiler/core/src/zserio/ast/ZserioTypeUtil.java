@@ -32,8 +32,9 @@ public class ZserioTypeUtil
      */
     public static boolean isBuiltIn(ZserioType type)
     {
-        return type instanceof BuiltInType || (type instanceof ArrayType &&
-                TypeReference.resolveBaseType(((ArrayType)type).getElementType()) instanceof BuiltInType);
+        return type instanceof BuiltInType ||
+               (type instanceof ArrayType && TypeReference.resolveBaseType(
+                        ((ArrayType)type).getElementType()) instanceof BuiltInType);
     }
 
     private static final String FULL_NAME_SEPARATOR = ".";

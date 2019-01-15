@@ -9,12 +9,12 @@ import zserio.antlr.util.BaseTokenAST;
 import zserio.antlr.util.ParserException;
 
 /**
- * AST node for parametrized type instantiations.
+ * AST node for parameterized type instantiations.
  *
- * Parametrized type instantiations are type references to parametrized types with given arguments. All others
+ * Parameterized type instantiations are type references to parameterized types with given arguments. All others
  * type references are modelled by AST node TypeReference.
  *
- * Parametrized type instantiations are Zserio types as well.
+ * Parameterized type instantiations are Zserio types as well.
  */
 public class TypeInstantiation extends TokenAST implements ZserioType
 {
@@ -51,7 +51,7 @@ public class TypeInstantiation extends TokenAST implements ZserioType
      * This method can be called directly from Expression.evaluate() method if some expression refers to
      * the type instantiation before its definition.
      *
-     * @throws ParserException Throws if parametrized type instantiation does not refer to a compound type.
+     * @throws ParserException Throws if parameterized type instantiation does not refer to a compound type.
      */
     public void evaluateBaseType() throws ParserException
     {
@@ -60,18 +60,18 @@ public class TypeInstantiation extends TokenAST implements ZserioType
             // check if referenced type is a compound type
             final ZserioType resolvedReferencedType = TypeReference.resolveBaseType(referencedType);
             if (!(resolvedReferencedType instanceof CompoundType))
-                throw new ParserException(referencedType, "Parametrized type instantiation '" + getName() +
+                throw new ParserException(referencedType, "Parameterized type instantiation '" + getName() +
                         "' does not refer to a compound type!");
             baseType = (CompoundType)resolvedReferencedType;
 
-            // check if referenced type is a parametrized type
+            // check if referenced type is a parameterized type
             final List<Parameter> parameters = baseType.getParameters();
             final int numParameters = parameters.size();
             if (numParameters == 0)
-                throw new ParserException(referencedType, "Parametrized type instantiation '" + getName() +
+                throw new ParserException(referencedType, "Parameterized type instantiation '" + getName() +
                         "' does not refer to a parameterized type!");
             if (arguments.size() != numParameters)
-                throw new ParserException(referencedType, "Parametrized type instantiation '" + getName() +
+                throw new ParserException(referencedType, "Parameterized type instantiation '" + getName() +
                         "' has wrong number of arguments (" + arguments.size() + " != " + numParameters + ")!");
 
             // fill instantiated parameter list
@@ -143,7 +143,7 @@ public class TypeInstantiation extends TokenAST implements ZserioType
         }
 
         /**
-         * Gets the parameter as used in the definition of the parametrized compound type.
+         * Gets the parameter as used in the definition of the parameterized compound type.
          *
          * @return The parameter that is instantiated.
          */

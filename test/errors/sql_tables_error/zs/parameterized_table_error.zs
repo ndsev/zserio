@@ -1,4 +1,4 @@
-package parametrized_table_error;
+package parameterized_table_error;
 
 sql_table TestTable(bool badParameter)
 {
