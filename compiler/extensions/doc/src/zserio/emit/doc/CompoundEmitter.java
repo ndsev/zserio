@@ -173,6 +173,11 @@ public class CompoundEmitter extends DefaultHtmlEmitter
             return tne.getArrayRange(field);
         }
 
+        public String getInitializer() throws ZserioEmitException
+        {
+            return tne.getInitializer(field);
+        }
+
         public String getOptionalClause() throws ZserioEmitException
         {
             return tne.getOptionalClause(field);

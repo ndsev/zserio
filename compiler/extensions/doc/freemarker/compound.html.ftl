@@ -47,6 +47,7 @@
 
   <#assign fname = field.name>
   <#assign array = field.arrayRange!"">
+  <#assign init = field.initializer>
   <#assign opt = field.optionalClause>
   <#assign c = field.constraint>
   <#assign sqlc = field.sqlConstraint>
@@ -63,7 +64,7 @@
           <td></td>
           <td valign="top" id="tabIndent"><@linkedtype field.type/><@arglist field/></td>
           <td valign="bottom">
-            <a href="#${fname}" class="fieldLink">${fname}</a>${array}${opt}${c};</td>
+            <a href="#${fname}" class="fieldLink">${fname}</a>${array}${init}${opt}${c};</td>
           <td valign="bottom"><i>${sqlc}</i></td>
           <#if field.isVirtual>
             <td valign="bottom"><i>(virtual)</i></td>

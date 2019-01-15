@@ -57,6 +57,18 @@ public class TypeNameEmitter
         return result;
     }
 
+    public String getInitializer(Field field) throws ZserioEmitException
+    {
+        String result = "";
+        Expression expr = field.getInitializerExpr();
+        if (expr != null)
+        {
+            result += " = " + expressionFormatter.formatGetter(expr);
+        }
+
+        return StringHtmlUtil.escapeForHtml(result);
+    }
+
     public String getOptionalClause(Field field) throws ZserioEmitException
     {
         String result = "";
