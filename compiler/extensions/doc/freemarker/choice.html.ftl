@@ -173,7 +173,7 @@
                     <a name="case_default">default</a>
                 </dt>
                 <dd class="memberDetail">
-                    Default when no other cases are matched.
+                    <@doc_comment choiceData.defaultMember.docComment/>
                 </dd>
             </dl>
         </dd>

@@ -1,0 +1,34 @@
+<project name="comments_warning" basedir="." default="run">
+    <testProperties testPath="warnings/comments_warning" testName="comments_warning"/>
+
+    <target name="prepare">
+        <testPrepare testName="comments_warning"/>
+    </target>
+
+    <target name="gen.check" depends="prepare">
+        <testGenCheck testName="comments_warning"/>
+    </target>
+
+    <target name="gen" depends="gen.check" unless="comments_warning.zs.gen_is_uptodate">
+        <testGenClean testName="comments_warning"/>
+        <testGen testName="comments_warning" zsFile="comments_warning.zs">
+            <arg name="withUnusedWarnings"/>
+        </testGen>
+    </target>
+
+    <target name="compile" depends="gen">
+        <testCompile testName="comments_warning"/>
+    </target>
+
+    <target name="findbugs" depends="compile" if="findbugs.home_dir">
+        <testFindbugs testName="comments_warning"/>
+    </target>
+
+    <target name="run" depends="findbugs">
+        <testRun testName="comments_warning"/>
+    </target>
+
+    <target name="clean">
+        <testClean testName="comments_warning"/>
+    </target>
+</project>

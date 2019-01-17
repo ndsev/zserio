@@ -6,6 +6,7 @@ import zserio.antlr.util.BaseTokenAST;
 import zserio.antlr.util.TokenTypeDescriptor;
 import zserio.antlr.util.ParserException;
 import zserio.ast.doc.DocCommentToken;
+import zserio.tools.ZserioToolPrinter;
 import antlr.CommonHiddenStreamToken;
 import antlr.Token;
 
@@ -42,10 +43,7 @@ public class TokenAST extends BaseTokenAST
      */
     public DocCommentToken getHiddenDocComment()
     {
-        if (hiddenDocCommentString == null)
-            return null;
-
-        return hiddenDocCommentString.getDocCommentToken();
+        return hiddenDocCommentString != null ? hiddenDocCommentString.getDocCommentToken() : null;
     }
 
     /**
@@ -76,16 +74,29 @@ public class TokenAST extends BaseTokenAST
      *
      * @param owner Zserio type to which belongs this documentation comment.
      *
+     * @return True if the hidden documentation comment was found, false otherwise.
+     *
      * @throws ParserException Throws in case of invalid AST token.
      */
-    public void evaluateHiddenDocComment(ZserioType owner) throws ParserException
+    public boolean evaluateHiddenDocComment(ZserioType owner) throws ParserException
     {
         final CommonHiddenStreamToken hiddenLexerToken = getHiddenBefore();
         if (hiddenLexerToken != null && hiddenLexerToken.getType() == ZserioParserTokenTypes.DOC_COMMENT)
         {
             hiddenDocCommentString = new DocCommentString(hiddenLexerToken, owner);
             hiddenDocCommentString.evaluateAll();
+            isDocCommentUsed = true;
+            return true;
         }
+        return false;
+    }
+
+    /**
+     * Marks that the doc comment is not used.
+     */
+    public void setDocCommentNotUsed()
+    {
+        isDocCommentUsed = false;
     }
 
     /**
@@ -103,6 +114,13 @@ public class TokenAST extends BaseTokenAST
 
         if (hiddenDocCommentString != null)
             hiddenDocCommentString.checkAll();
+
+        // check for unused doc comments
+        final CommonHiddenStreamToken hiddenLexerToken = getHiddenBefore();
+        if (hiddenLexerToken != null && hiddenLexerToken.getType() == ZserioParserTokenTypes.DOC_COMMENT &&
+            !isDocCommentUsed)
+            ZserioToolPrinter.printWarning(hiddenLexerToken.getFilename(), hiddenLexerToken.getLine(),
+                                           hiddenLexerToken.getColumn(), "Documentation comment is not used!");
     }
 
     /**
@@ -120,5 +138,6 @@ public class TokenAST extends BaseTokenAST
     private static final TokenTypeDescriptor tokenTypeDescriptor =
             new TokenTypeDescriptor(ZserioParser.class);
 
-    private DocCommentString hiddenDocCommentString;
+    private DocCommentString hiddenDocCommentString = null;
+    private boolean isDocCommentUsed = false;
 }

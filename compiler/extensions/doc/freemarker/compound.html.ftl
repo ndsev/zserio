@@ -38,14 +38,8 @@
         <tr><td colspan=4>${categoryKeyword} ${type.name}<@parameterlist type/></td></tr>
         <tr><td colspan=4>{</td></tr>
 <#list fields as field>
-  <#assign lname = field.offset>
-  <#if lname?has_content>
-        <tr class="codeMember">
-          <td></td><td colspan=2>${lname}</td>
-        </tr>
-  </#if>
-
   <#assign fname = field.name>
+  <#assign oname = field.offset>
   <#assign array = field.arrayRange!"">
   <#assign init = field.initializer>
   <#assign opt = field.optionalClause>
@@ -54,10 +48,13 @@
 
   <#if field.hasAlignment>
         <tr class="codeMember">
-          <td></td>
-          <td valign="top" id="tabIndent"><i>align(${field.alignmentValue});</i></td>
-          <td valign="bottom"></td>
-          <td></td>
+          <td></td><td colspan=2>align(${field.alignmentValue}):</td>
+        </tr>
+
+  </#if>
+  <#if oname?has_content>
+        <tr class="codeMember">
+          <td></td><td colspan=2>${oname}</td>
         </tr>
   </#if>
         <tr class="codeMember">

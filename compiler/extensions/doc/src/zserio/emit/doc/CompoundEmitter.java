@@ -602,9 +602,10 @@ public class CompoundEmitter extends DefaultHtmlEmitter
 
         public class DefaultMember
         {
-            public DefaultMember(ChoiceDefault choiceDefault)
+            public DefaultMember(ChoiceDefault choiceDefault) throws ZserioEmitException
             {
                 compoundField = choiceDefault.getField();
+                docComment = new DocCommentTemplateData(choiceDefault.getDocComment());
             }
 
             public Field getCompoundField()
@@ -612,7 +613,13 @@ public class CompoundEmitter extends DefaultHtmlEmitter
                 return compoundField;
             }
 
+            public DocCommentTemplateData getDocComment()
+            {
+                return docComment;
+            }
+
             private final Field compoundField;
+            private final DocCommentTemplateData docComment;
         }
 
         private final String            selector;

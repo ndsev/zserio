@@ -226,7 +226,7 @@ public class Field extends TokenAST
      */
     public DocCommentToken getDocComment()
     {
-        return tokenWithDoc.getHiddenDocComment();
+        return tokenWithDoc != null ? tokenWithDoc.getHiddenDocComment() : null;
     }
 
     @Override
@@ -241,6 +241,7 @@ public class Field extends TokenAST
 
         case ZserioParserTokenTypes.OPTIONAL:
             isAutoOptional = true;
+            evaluateDocComment((TokenAST)child);
             break;
 
         case ZserioParserTokenTypes.ASSIGN:
@@ -264,24 +265,15 @@ public class Field extends TokenAST
         case ZserioParserTokenTypes.OFFSET:
             if (!(firstChildOfChild instanceof Expression))
                 return false;
-
-            tokenWithDoc = (TokenAST)firstChildOfChild;
-            while (true)
-            {
-                final TokenAST leftMostChild = (TokenAST)tokenWithDoc.getFirstChild();
-                if (leftMostChild == null)
-                    break;
-                tokenWithDoc = leftMostChild;
-            }
-            tokenWithDoc.evaluateHiddenDocComment(compoundType);
-
             offsetExpr = (Expression)firstChildOfChild;
+            evaluateDocComment((TokenAST)child);
             break;
 
         case ZserioParserTokenTypes.ALIGN:
             if (!(firstChildOfChild instanceof Expression))
                 return false;
             alignmentExpr = (Expression)firstChildOfChild;
+            evaluateDocComment((TokenAST)child);
             break;
 
         case ZserioParserTokenTypes.SQL:
@@ -294,21 +286,15 @@ public class Field extends TokenAST
         case ZserioParserTokenTypes.SQL_VIRTUAL:
             if (!(child instanceof TokenAST))
                 return false;
-            tokenWithDoc = (TokenAST)child;
-            tokenWithDoc.evaluateHiddenDocComment(compoundType);
             isVirtual = true;
+            evaluateDocComment((TokenAST)child);
             break;
 
         default:
             if (fieldType != null || !(child instanceof ZserioType))
                 return false;
-
-            tokenWithDoc = (TokenAST)child;
-            while (tokenWithDoc.isImaginary())
-                tokenWithDoc = (TokenAST)(tokenWithDoc.getFirstChild());
-            tokenWithDoc.evaluateHiddenDocComment(compoundType);
-
             fieldType = (ZserioType)child;
+            evaluateDocComment((TokenAST)child);
             break;
         }
 
@@ -381,6 +367,34 @@ public class Field extends TokenAST
     protected void setCompoundType(CompoundType compoundType)
     {
         this.compoundType = compoundType;
+    }
+
+    /**
+     * Evaluates hidden doc comment within the AST subtree of the given comment.
+     *
+     * Traverses only left most path in the AST subtree (i.e. only first children) and takes the last found
+     * comment. All other comments are marked as not used.
+     * \note Note that "priority" of comments is given by order of children in the Field token,
+     *       which is given in the parser grammar.
+     *
+     * @param token Token to be searched for documentation comments.
+     * @throws ParserException In case of invalid AST token.
+     */
+    private void evaluateDocComment(TokenAST token) throws ParserException
+    {
+        TokenAST currentToken = token;
+
+        while (currentToken != null)
+        {
+            if (currentToken.evaluateHiddenDocComment(compoundType))
+            {
+                if (tokenWithDoc != null)
+                    tokenWithDoc.setDocCommentNotUsed();
+                tokenWithDoc = currentToken;
+            }
+
+            currentToken = (TokenAST)currentToken.getFirstChild();
+        }
     }
 
     public static final String SEPARATOR = ".";

@@ -3,6 +3,7 @@ package zserio.ast;
 import zserio.antlr.ZserioParserTokenTypes;
 import zserio.antlr.util.BaseTokenAST;
 import zserio.antlr.util.ParserException;
+import zserio.ast.doc.DocCommentToken;
 
 /**
  * AST node for default case defined by choice types.
@@ -17,6 +18,16 @@ public class ChoiceDefault extends TokenAST
     public Field getField()
     {
         return defaultField;
+    }
+
+    /**
+     * Gets documentation comment associated to this RPC method.
+     *
+     * @return Documentation comment token associated to this RPC method.
+     */
+    public DocCommentToken getDocComment()
+    {
+        return getHiddenDocComment();
     }
 
     @Override
@@ -36,6 +47,12 @@ public class ChoiceDefault extends TokenAST
         }
 
         return true;
+    }
+
+    @Override
+    protected void evaluate() throws ParserException
+    {
+        evaluateHiddenDocComment(choiceType);
     }
 
     /**
