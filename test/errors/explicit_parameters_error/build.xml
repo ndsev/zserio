@@ -1,35 +1,35 @@
-<project name="enumeration_types_error" basedir="." default="run">
-    <testProperties testPath="errors/enumeration_types_error" testName="enumeration_types_error"/>
+<project name="explicit_parameters_error" basedir="." default="run">
+    <testProperties testPath="errors/explicit_parameters_error" testName="explicit_parameters_error"/>
 
     <target name="prepare">
-        <testPrepare testName="enumeration_types_error"/>
+        <testPrepare testName="explicit_parameters_error"/>
     </target>
 
     <target name="gen.check" depends="prepare">
-        <testGenCheck testName="enumeration_types_error"/>
+        <testGenCheck testName="explicit_parameters_error"/>
     </target>
 
-    <target name="gen" depends="gen.check" unless="enumeration_types_error.zs.gen_is_uptodate">
-        <testGenClean testName="enumeration_types_error"/>
-        <testGen testName="enumeration_types_error" zsFile="different_builtin_type_error.zs"
+    <target name="gen" depends="gen.check" unless="explicit_parameters_error.zs.gen_is_uptodate">
+        <testGenClean testName="explicit_parameters_error"/>
+        <testGen testName="explicit_parameters_error" zsFile="different_builtin_type_error.zs"
                 ignoreErrors="true"/>
-        <testGen testName="enumeration_types_error" zsFile="different_compound_type_error.zs"
+        <testGen testName="explicit_parameters_error" zsFile="different_compound_type_error.zs"
                 ignoreErrors="true"/>
     </target>
 
     <target name="compile" depends="gen">
-        <testCompile testName="enumeration_types_error" srcPath="${enumeration_types_error.base_dir}/java"/>
+        <testCompile testName="explicit_parameters_error" srcPath="${explicit_parameters_error.base_dir}/java"/>
     </target>
 
     <target name="findbugs" depends="compile" if="findbugs.home_dir">
-        <testFindbugs testName="enumeration_types_error" srcPath="${enumeration_types_error.base_dir}/java"/>
+        <testFindbugs testName="explicit_parameters_error" srcPath="${explicit_parameters_error.base_dir}/java"/>
     </target>
 
     <target name="run" depends="findbugs">
-        <testRun testName="enumeration_types_error"/>
+        <testRun testName="explicit_parameters_error"/>
     </target>
 
     <target name="clean">
-        <testClean testName="enumeration_types_error"/>
+        <testClean testName="explicit_parameters_error"/>
     </target>
 </project>
