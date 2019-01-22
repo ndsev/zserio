@@ -163,6 +163,9 @@ test()
             local TEST_ARGS=("--release_dir=${UNPACKED_ZSERIO_RELEASE_DIR}"
                              "--build_dir=${TEST_OUT_DIR}/python"
                              "--java=${JAVA_BIN}")
+            if [[ ${SWITCH_GRPC} == 1 ]] ; then
+                TEST_ARGS+=("--grpc=1")
+            fi
             if [[ ${SWITCH_TEST_NAME} != "" ]] ; then
                 TEST_ARGS+=("--filter=${SWITCH_TEST_NAME}")
             fi

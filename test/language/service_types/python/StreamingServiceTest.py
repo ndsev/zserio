@@ -2,11 +2,14 @@ import unittest
 from concurrent import futures
 import grpc
 
-from testutils import getZserioApi
+from testutils import getZserioApi, TEST_ARGS
 
 class StreamingServiceTest(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
+        if not TEST_ARGS["grpc"]:
+            return
+
         cls.api = getZserioApi(__file__, "service_types.zs").streaming_service
 
         class Client:
@@ -15,8 +18,8 @@ class StreamingServiceTest(unittest.TestCase):
 
             def addUser(self, name, age):
                 user = cls.api.User.fromFields(name, age)
-                num = self._stub.addUser(user)
-                return num.getNum()
+                self._stub.addUser(user)
+                return True
 
             def addUsers(self, users):
                 def makeUsersIterator(users):
@@ -52,8 +55,7 @@ class StreamingServiceTest(unittest.TestCase):
 
             def addUser(self, user, _context):
                 self._users[user.getName()] = user
-                num = cls.api.Num.fromFields(len(self._users))
-                return num
+                return cls.api.Empty()
 
             def addUsers(self, usersIterator, _context):
                 for user in usersIterator:
@@ -85,9 +87,10 @@ class StreamingServiceTest(unittest.TestCase):
         self.server = None
         self.client = None
 
+    @unittest.skipUnless(TEST_ARGS["grpc"], "GRPC is not enabled")
     def testUserDatabase(self):
         # no streaming
-        self.assertEqual(1, self.client.addUser("A", 10))
+        self.assertTrue(self.client.addUser("A", 10))
 
         # client streaming
         usersToAdd = []
@@ -96,7 +99,7 @@ class StreamingServiceTest(unittest.TestCase):
         self.assertEqual(3, self.client.addUsers(usersToAdd))
 
         # no streaming
-        self.assertEqual(4, self.client.addUser("D", 25))
+        self.assertTrue(self.client.addUser("D", 25))
 
         # server streaming
         allUsers = self.client.getUsers()

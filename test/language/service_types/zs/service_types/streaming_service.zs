@@ -32,13 +32,13 @@ struct Age
 /** User database. */
 service UserDB
 {
-    /** Adds the user and returns the number of users. Normal RPC. */
-    rpc Num addUser(User);
+    /** Adds the user Returns nothing to check Empty response. Normal RPC. */
+    rpc Empty addUser(User);
 
     /** Adds stream of users, returns number of users. Client streaming RPC. */
     rpc Num addUsers(stream User);
 
-    /** Returns stream of users. Server streaming RPC. */
+    /** Returns stream of users, needs nothing as a parameter to check Empty request. Server streaming RPC. */
     rpc stream User getUsers(Empty);
 
     /** Returns stream of ages corresponding to the stream of user names. Bidirectional streaming RPC. */

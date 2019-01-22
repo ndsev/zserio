@@ -42,7 +42,7 @@ public class StreamingServiceTest
     public void userDB() throws InterruptedException
     {
         // no streaming
-        assertEquals(1, client.addUser("A", 10));
+        assertTrue(client.addUser("A", 10));
 
         // client streaming
         List<User> usersToAdd = new ArrayList<User>();
@@ -51,7 +51,7 @@ public class StreamingServiceTest
         assertEquals(3, client.addUsers(usersToAdd));
 
         // no streaming
-        assertEquals(4, client.addUser("D", 25));
+        assertTrue(client.addUser("D", 25));
 
         // server streaming
         List<User> allUsers = client.getUsers();
@@ -75,17 +75,17 @@ public class StreamingServiceTest
             asyncStub = UserDBGrpc.newStub(channel);
         }
 
-        int addUser(String name, int age)
+        boolean addUser(String name, int age)
         {
             User user = new User(name, (short) age);
             try
             {
-                Num num = blockingStub.addUser(user);
-                return (int) num.getNum();
+                blockingStub.addUser(user);
+                return true;
             }
             catch (StatusRuntimeException e)
             {
-                throw new RuntimeException("Client.addUser failed with: " + e);
+                return false;
             }
         };
 
@@ -175,10 +175,10 @@ public class StreamingServiceTest
     {
         @Override
         public void addUser(service_types.streaming_service.User request,
-                io.grpc.stub.StreamObserver<service_types.streaming_service.Num> responseObserver)
+                io.grpc.stub.StreamObserver<service_types.streaming_service.Empty> responseObserver)
         {
             users.put(request.getName(), request);
-            responseObserver.onNext(new Num(users.size()));
+            responseObserver.onNext(new Empty());
             responseObserver.onCompleted();
         }
 

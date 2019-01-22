@@ -22,19 +22,16 @@ public:
     typedef std::pair<std::string, uint8_t> UserPair;
     typedef std::vector<UserPair> Users;
 
-    uint32_t addUser(std::string name, uint8_t age)
+    bool addUser(std::string name, uint8_t age)
     {
         User user;
         user.setName(name);
         user.setAge(age);
-        Num num;
+        Empty empty;
         grpc::ClientContext context;
 
-        grpc::Status status = m_stub->addUser(&context, user, &num);
-        if (status.ok())
-            return num.getNum();
-        else
-            throw std::runtime_error("Client.addUser failed!");
+        grpc::Status status = m_stub->addUser(&context, user, &empty);
+        return status.ok();
     }
 
     uint32_t addUsers(const Users& users)
@@ -103,10 +100,10 @@ class Service final : public UserDB::Service
 {
 public:
     ::grpc::Status addUser(::grpc::ServerContext*, const service_types::streaming_service::User* request,
-            service_types::streaming_service::Num* response) override
+            service_types::streaming_service::Empty* response) override
     {
+        (void)response;
         m_users[request->getName()] = *request;
-        response->setNum(static_cast<uint32_t>(m_users.size()));
         return ::grpc::Status::OK;
     }
 
@@ -177,7 +174,7 @@ protected:
 TEST_F(StreamingServiceTest, userDatabase)
 {
     // no streaming
-    ASSERT_EQ(1, client.addUser("A", 10));
+    ASSERT_TRUE(client.addUser("A", 10));
 
     // client streaming
     Client::Users usersToAdd;
@@ -186,7 +183,7 @@ TEST_F(StreamingServiceTest, userDatabase)
     ASSERT_EQ(3, client.addUsers(usersToAdd));
 
     // no streaming
-    ASSERT_EQ(4, client.addUser("D", 25));
+    ASSERT_TRUE(client.addUser("D", 25));
 
     // server streaming
     Client::Users allUsers;

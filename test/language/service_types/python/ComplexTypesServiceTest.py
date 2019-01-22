@@ -2,7 +2,7 @@ import unittest
 from concurrent import futures
 import grpc
 
-from testutils import getZserioApi
+from testutils import getZserioApi, TEST_ARGS
 
 def _convertRgbToCmyk(rgb):
     # see https://www.rapidtables.com/convert/color/rgb-to-cmyk.html
@@ -35,6 +35,9 @@ CMYK_VALUES = [
 class ComplexTypesServiceTest(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
+        if not TEST_ARGS["grpc"]:
+            return
+
         cls.api = getZserioApi(__file__, "service_types.zs").complex_types_service
 
         class Client:
@@ -109,6 +112,7 @@ class ComplexTypesServiceTest(unittest.TestCase):
         self.server = None
         self.client = None
 
+    @unittest.skipUnless(TEST_ARGS["grpc"], "GRPC is not enabled")
     def testRgbToCmyk(self):
         length = 10000
         offsets = [0] * length
@@ -135,6 +139,7 @@ class ComplexTypesServiceTest(unittest.TestCase):
             self.assertEqual(CMYK_VALUES[i % 3][2], cmyk.getYellow())
             self.assertEqual(CMYK_VALUES[i % 3][3], cmyk.getKey())
 
+    @unittest.skipUnless(TEST_ARGS["grpc"], "GRPC is not enabled")
     def testCmykToRgb(self):
         length = 10000
         offsets = [0] * length
