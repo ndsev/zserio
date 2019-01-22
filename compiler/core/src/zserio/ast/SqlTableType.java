@@ -1,12 +1,15 @@
 package zserio.ast;
 
+import java.util.AbstractMap;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import zserio.antlr.ZserioParserTokenTypes;
 import zserio.antlr.util.BaseTokenAST;
 import zserio.antlr.util.ParserException;
+import zserio.ast.TypeInstantiation.InstantiatedParameter;
 import zserio.tools.ZserioToolPrinter;
 
 /**
@@ -132,6 +135,7 @@ public class SqlTableType extends CompoundType
     {
         super.check();
         checkTableFields();
+        checkExplicitParameters();
 
         if (!isVirtual())
         {
@@ -144,6 +148,47 @@ public class SqlTableType extends CompoundType
     private boolean isVirtual()
     {
         return sqlUsingId != null;
+    }
+
+    private void checkExplicitParameters() throws ParserException
+    {
+        final HashMap<String, AbstractMap.SimpleEntry<String, Expression> > paramTypeMap =
+                new HashMap<String, AbstractMap.SimpleEntry<String, Expression> >();
+
+        for (Field tableField : getFields())
+        {
+            final List<InstantiatedParameter> instantiatedParameters = tableField.getInstantiatedParameters();
+            for (InstantiatedParameter instantiatedParam : instantiatedParameters)
+            {
+                final Expression argumentExpression = instantiatedParam.getArgumentExpression();
+                if (argumentExpression.isExplicitVariable())
+                {
+                    final Parameter param = instantiatedParam.getParameter();
+                    final String paramName = param.getName();
+                    final ZserioType type = TypeReference.resolveBaseType(param.getParameterType());
+                    final String typeName = ZserioTypeUtil.getFullName(type);
+
+                    final AbstractMap.SimpleEntry<String, Expression> prevEntry = paramTypeMap.get(paramName);
+                    if (prevEntry != null)
+                    {
+                        final String prevTypeName = prevEntry.getKey();
+                        if (!prevTypeName.equals(typeName))
+                        {
+                            final Expression prevExpression = prevEntry.getValue();
+                            throw new ParserException(argumentExpression, "Type of explicit parameter '" +
+                                    paramName + "' resolved to '" + typeName + "' but first used as '" +
+                                    prevTypeName + "' at " + prevExpression.getLine() + ":" +
+                                    prevExpression.getColumn() + "!");
+                        }
+                    }
+                    else
+                    {
+                        paramTypeMap.put(paramName, new AbstractMap.SimpleEntry<String, Expression>(
+                                typeName, argumentExpression));
+                    }
+                }
+            }
+        }
     }
 
     private void checkOrdinaryTableFields() throws ParserException
