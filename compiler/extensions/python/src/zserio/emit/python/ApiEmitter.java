@@ -9,6 +9,8 @@ import zserio.ast.Package;
 import zserio.ast.PackageName;
 import zserio.ast.Root;
 import zserio.ast.ServiceType;
+import zserio.ast.SqlDatabaseType;
+import zserio.ast.SqlTableType;
 import zserio.ast.StructureType;
 import zserio.ast.Subtype;
 import zserio.ast.UnionType;
@@ -80,6 +82,20 @@ public class ApiEmitter extends PythonDefaultEmitter
     public void beginStructure(StructureType structureType) throws ZserioEmitException
     {
         addTypeMapping(structureType);
+    }
+
+    @Override
+    public void beginSqlTable(SqlTableType sqlTableType) throws ZserioEmitException
+    {
+        if (getWithSqlCode())
+            addTypeMapping(sqlTableType);
+    }
+
+    @Override
+    public void beginSqlDatabase(SqlDatabaseType sqlDatabaseType) throws ZserioEmitException
+    {
+        if (getWithSqlCode())
+            addTypeMapping(sqlDatabaseType);
     }
 
     @Override

@@ -501,6 +501,7 @@ public abstract class JavaDefaultExpressionFormattingPolicy extends DefaultExpre
         }
         else
         {
+            // this could happen for "explicit identifier" expressions
             result.append(symbol);
         }
     }

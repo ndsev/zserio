@@ -12,8 +12,10 @@
     <target name="gen" depends="gen.check" unless="field_names_error.zs.gen_is_uptodate">
         <testGenClean testName="field_names_error"/>
         <testGen testName="field_names_error" zsFile="defined_type_error.zs" ignoreErrors="true"/>
+        <testGen testName="field_names_error" zsFile="reserved_cpp_keyword_error.zs" ignoreErrors="true"/>
+        <testGen testName="field_names_error" zsFile="reserved_java_keyword_error.zs" ignoreErrors="true"/>
+        <testGen testName="field_names_error" zsFile="reserved_python_keyword_error.zs" ignoreErrors="true"/>
         <testGen testName="field_names_error" zsFile="reserved_zserio_keyword_error.zs" ignoreErrors="true"/>
-        <testGen testName="field_names_error" zsFile="reserved_generated_keyword_error.zs" ignoreErrors="true"/>
     </target>
 
     <target name="compile" depends="gen">

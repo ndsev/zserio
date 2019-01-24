@@ -33,6 +33,14 @@ final class TemplateDataContext
         return new ExpressionFormatter(expressionFormattingPolicy);
     }
 
+    public ExpressionFormatter getPythonSqlIndirectExpressionFormatter(ImportCollector importCollector)
+    {
+        final ExpressionFormattingPolicy expressionFormattingPolicy =
+                new PythonSqlIndirectExpressionFormattingPolicy(pythonNativeTypeMapper, importCollector);
+
+        return new ExpressionFormatter(expressionFormattingPolicy);
+    }
+
     public boolean getWithWriterCode()
     {
         return withWriterCode;

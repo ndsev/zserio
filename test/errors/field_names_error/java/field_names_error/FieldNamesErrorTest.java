@@ -25,16 +25,30 @@ public class FieldNamesErrorTest
     }
 
     @Test
-    public void reservedZserioKeyword()
+    public void reservedJavaKeyword()
     {
-        final String error = "6:11: expecting ID, found 'index' (reserved keyword)";
+        final String error = ":6:13: 'abstract' is a reserved keyword and may not be used here!";
         assertTrue(zserioErrors.isPresent(error));
     }
 
     @Test
-    public void reservedGeneratedKeyword()
+    public void reservedCppKeyword()
     {
-        final String error = ":6:17: 'short' is a reserved keyword and may not be used here!";
+        final String error = ":6:13: 'auto' is a reserved keyword and may not be used here!";
+        assertTrue(zserioErrors.isPresent(error));
+    }
+
+    @Test
+    public void reservedPythonKeyword()
+    {
+        final String error = ":6:13: 'def' is a reserved keyword and may not be used here!";
+        assertTrue(zserioErrors.isPresent(error));
+    }
+
+    @Test
+    public void reservedZserioKeyword()
+    {
+        final String error = "6:11: expecting ID, found 'index' (reserved keyword)";
         assertTrue(zserioErrors.isPresent(error));
     }
 

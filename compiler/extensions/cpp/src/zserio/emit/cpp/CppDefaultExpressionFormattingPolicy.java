@@ -270,6 +270,7 @@ public abstract class CppDefaultExpressionFormattingPolicy extends DefaultExpres
         }
         else
         {
+            // this could happen for "explicit identifier" expressions
             result.append(symbol);
         }
     }

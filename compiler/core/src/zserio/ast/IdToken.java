@@ -56,7 +56,12 @@ public class IdToken extends TokenAST
         "native",     "new",          "null",       "package",  "private",   "protected",
         "public",     "return",       "short",      "static",   "strictfp",  "super",
         "switch",     "synchronized", "this",       "throw",    "throws",    "transient",
-        "true",       "try",          "void",       "volatile", "while"
+
+        // Python reserved keywords
+        "and",    "as",      "assert",   "break", "class", "continue", "def",   "del",    "elif", "else",
+        "except", "finally", "False",    "for",   "from",  "global",   "if",    "import", "in",   "is",
+        "lambda", "None",    "nonlocal", "not",   "or",    "pass",     "raise", "return", "True", "try",
+        "while",  "with",    "yield"
     };
 
     private static final long serialVersionUID = -1L;

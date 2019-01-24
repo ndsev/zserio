@@ -7,7 +7,6 @@ import zserio.ast.ZserioType;
 import zserio.ast.EnumType;
 import zserio.ast.Expression;
 import zserio.ast.Field;
-import zserio.ast.Parameter;
 import zserio.ast.SqlConstraint;
 import zserio.ast.SqlTableType;
 import zserio.ast.TypeInstantiation;
@@ -188,47 +187,6 @@ public final class SqlTableEmitterTemplateData extends UserTypeTemplateData
         public SqlTypeTemplateData getSqlTypeData()
         {
             return sqlTypeData;
-        }
-
-        public static class ParameterTemplateData
-        {
-            public ParameterTemplateData(JavaNativeTypeMapper javaNativeTypeMapper,
-                    ExpressionFormatter javaExpressionFormatter, Parameter parameter, Expression argument,
-                    SqlTableType tableType) throws ZserioEmitException
-            {
-                name = parameter.getName();
-                instantiationName = (!argument.isExplicitVariable()) ? null :
-                    javaExpressionFormatter.formatGetter(argument);
-                javaTypeName = javaNativeTypeMapper.getJavaType(parameter.getParameterType()).getFullName();
-            }
-
-            /**
-             * Returns the name of the parameter (it's the name used in the definition of the type).
-             * @return
-             */
-            public String getName()
-            {
-                return name;
-            }
-
-            /**
-             * Returns the name used in the instantiation of the type.
-             *
-             * This works only for explicit parameters. For non-explicit parameters null is returned.
-             */
-            public String getInstantiationName()
-            {
-                return instantiationName;
-            }
-
-            public String getJavaTypeName()
-            {
-                return javaTypeName;
-            }
-
-            private final String name;
-            private final String instantiationName;
-            private final String javaTypeName;
         }
 
         public static class EnumTemplateData

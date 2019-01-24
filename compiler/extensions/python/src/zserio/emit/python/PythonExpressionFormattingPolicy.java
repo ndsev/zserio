@@ -322,6 +322,24 @@ public class PythonExpressionFormattingPolicy implements ExpressionFormattingPol
         return new TernaryExpressionFormattingPython(expr, "(", ") if (", ") else (", ")");
     }
 
+    protected void formatFieldAccessor(StringBuilder result, boolean isFirstInDot, Field field,
+            boolean isSetter)
+    {
+        if (isFirstInDot)
+            result.append(PYTHON_FUNCTION_CALL_PREFIX);
+
+        if (isSetter)
+        {
+            result.append(AccessorNameFormatter.getSetterName(field));
+            result.append(PYTHON_SETTER_FUNCTION_CALL);
+        }
+        else
+        {
+            result.append(AccessorNameFormatter.getGetterName(field));
+            result.append(PYTHON_GETTER_FUNCTION_CALL);
+        }
+    }
+
     private void formatIdentifierForType(StringBuilder result, String symbol, boolean isFirstInDot,
             ZserioType resolvedType) throws ZserioEmitException
     {
@@ -384,6 +402,11 @@ public class PythonExpressionFormattingPolicy implements ExpressionFormattingPol
             }
             result.append(item.getName());
         }
+        else
+        {
+            // this could happen for "explicit identifier" expressions
+            result.append(symbol);
+        }
     }
 
     private void formatParameterAccessor(StringBuilder result, boolean isFirstInDot, Parameter param,
@@ -394,23 +417,6 @@ public class PythonExpressionFormattingPolicy implements ExpressionFormattingPol
 
         result.append(AccessorNameFormatter.getGetterName(param));
         result.append(PYTHON_GETTER_FUNCTION_CALL);
-    }
-
-    private void formatFieldAccessor(StringBuilder result, boolean isFirstInDot, Field field, boolean isSetter)
-    {
-        if (isFirstInDot)
-            result.append(PYTHON_FUNCTION_CALL_PREFIX);
-
-        if (isSetter)
-        {
-            result.append(AccessorNameFormatter.getSetterName(field));
-            result.append(PYTHON_SETTER_FUNCTION_CALL);
-        }
-        else
-        {
-            result.append(AccessorNameFormatter.getGetterName(field));
-            result.append(PYTHON_GETTER_FUNCTION_CALL);
-        }
     }
 
     private static class TernaryExpressionFormattingPython extends TernaryExpressionFormatting

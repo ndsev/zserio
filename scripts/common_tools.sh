@@ -443,6 +443,9 @@ get_release_dir()
 
     local ZSERIO_VERSION_GET_RELEASE_DIR
     get_zserio_version "${ZSERIO_PROJECT_ROOT}" ZSERIO_VERSION_GET_RELEASE_DIR
+    if [ $? -ne 0 ] ; then
+        return 1
+    fi
 
     eval ${ZSERIO_RELEASE_DIR_OUT}="'${ZSERIO_PROJECT_ROOT}/release-${ZSERIO_VERSION_GET_RELEASE_DIR}'"
     eval ${ZSERIO_VERSION_OUT}="'${ZSERIO_VERSION_GET_RELEASE_DIR}'"

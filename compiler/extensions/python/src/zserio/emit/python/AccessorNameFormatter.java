@@ -33,6 +33,11 @@ public class AccessorNameFormatter
         return getAccessorName(FUNCTION_NAME_PREFIX, functionType.getName());
     }
 
+    public static String getSqlColumnName(Field field)
+    {
+        return field.getName() + "_";
+    }
+
     private static String getAccessorName(String accessorNamePrefix, String memberName)
     {
         StringBuilder accessorName = new StringBuilder(accessorNamePrefix);
