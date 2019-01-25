@@ -430,29 +430,6 @@ TEST_F(WithoutWriterCode, checkWorldDbMethods)
             "void fillTableNames(", "void WorldDb::fillTableNames(");
 }
 
-TEST_F(WithoutWriterCode, checkMasterDatabaseMethods)
-{
-    const char* type = "MasterDatabase";
-
-    assertMethodNotPresent(type,
-            "void createSchema(", "void MasterDatabase::createSchema(");
-    assertMethodNotPresent(type,
-            "void deleteSchema(", "void MasterDatabase::deleteSchema(");
-
-    assertMethodPresent(type,
-            "MasterDatabase()", "MasterDatabase::MasterDatabase()");
-    assertMethodPresent(type,
-            "MasterDatabase(sqlite3*", "MasterDatabase::MasterDatabase(sqlite3*");
-    assertMethodPresent(type,
-            "MasterDatabase(const std::string&", "MasterDatabase::MasterDatabase(const std::string&");
-    assertMethodPresent(type,
-            "void open(sqlite3*", "void MasterDatabase::open(sqlite3*");
-    assertMethodPresent(type,
-            "void open(const std::string&", "void MasterDatabase::open(const std::string&");
-    assertMethodPresent(type,
-            "void doOpen(sqlite3*", "void MasterDatabase::doOpen(sqlite3*");
-}
-
 TEST_F(WithoutWriterCode, readConstructor)
 {
     zserio::BitStreamWriter writer;

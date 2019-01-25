@@ -15,8 +15,6 @@ set(ZSERIO_GENERATED_SOURCES
     ${ZSERIO_GEN_DIR}/without_writer_code/Item.h
     ${ZSERIO_GEN_DIR}/without_writer_code/ItemType.cpp
     ${ZSERIO_GEN_DIR}/without_writer_code/ItemType.h
-    ${ZSERIO_GEN_DIR}/without_writer_code/MasterDatabase.cpp
-    ${ZSERIO_GEN_DIR}/without_writer_code/MasterDatabase.h
     ${ZSERIO_GEN_DIR}/without_writer_code/Tile.cpp
     ${ZSERIO_GEN_DIR}/without_writer_code/Tile.h
     ${ZSERIO_GEN_DIR}/without_writer_code/WorldDb.cpp

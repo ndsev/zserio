@@ -13,10 +13,7 @@ set(ZSERIO_GENERATED_SOURCES
     ${ZSERIO_GEN_DIR}/sql_virtual_columns/simple_virtual_columns/SimpleVirtualColumnsTable.h
     ${ZSERIO_GEN_DIR}/sql_virtual_columns/simple_virtual_columns/SimpleVirtualColumnsTableRow.cpp
     ${ZSERIO_GEN_DIR}/sql_virtual_columns/simple_virtual_columns/SimpleVirtualColumnsTableRow.h
-
     ${ZSERIO_GEN_DIR}/sql_virtual_columns/IParameterProvider.h
-    ${ZSERIO_GEN_DIR}/sql_virtual_columns/MasterDatabase.cpp
-    ${ZSERIO_GEN_DIR}/sql_virtual_columns/MasterDatabase.h
 )
 
 zserio_add_library(TARGET sql_virtual_columns_zs

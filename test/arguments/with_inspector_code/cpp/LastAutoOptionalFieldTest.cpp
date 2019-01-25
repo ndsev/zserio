@@ -5,9 +5,8 @@
 
 #include "zserio/StringConvertUtil.h"
 
-#include "with_inspector_code/MasterDatabase.h"
 #include "with_inspector_code/InspectorParameterProvider.h"
-#include "with_inspector_code/last_auto_optional_field/LastAutoOptionalStructure.h"
+#include "with_inspector_code/last_auto_optional_field/LastAutoOptionalDatabase.h"
 
 namespace with_inspector_code
 {
@@ -38,12 +37,14 @@ protected:
         zserio::BitStreamReader reader(writerBuffer, writerBufferByteSize);
         InspectorParameterProvider inspectorParameterProvider;
         zserio::BlobInspectorTree tree;
-        const MasterDatabase masterDatabase;
-        masterDatabase.convertBitStreamToBlobTree("lastAutoOptionalTable", "lastAutoOptionalStructure", reader,
+        const LastAutoOptionalDatabase lastAutoOptionalDatabase;
+        lastAutoOptionalDatabase.convertBitStreamToBlobTree("lastAutoOptionalTable",
+                "lastAutoOptionalStructure", reader,
                 inspectorParameterProvider, tree);
 
         zserio::BitStreamWriter treeWriter;
-        masterDatabase.convertBlobTreeToBitStream("lastAutoOptionalTable", "lastAutoOptionalStructure", tree,
+        lastAutoOptionalDatabase.convertBlobTreeToBitStream("lastAutoOptionalTable",
+                "lastAutoOptionalStructure", tree,
                 inspectorParameterProvider, treeWriter);
 
         size_t treeWriterBufferByteSize;

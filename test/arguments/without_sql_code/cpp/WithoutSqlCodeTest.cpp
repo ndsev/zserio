@@ -26,8 +26,6 @@ TEST_F(WithoutSqlCodeTest, checkSqlSources)
     ASSERT_FALSE(isFilePresent("arguments/without_sql_code/gen/without_sql_code/GeoMapTableRow.cpp"));
     ASSERT_FALSE(isFilePresent("arguments/without_sql_code/gen/without_sql_code/GeoMapTableRow.h"));
     ASSERT_FALSE(isFilePresent("arguments/without_sql_code/gen/without_sql_code/IParameterProvider.h"));
-    ASSERT_FALSE(isFilePresent("arguments/without_sql_code/gen/without_sql_code/MasterDatabase.cpp"));
-    ASSERT_FALSE(isFilePresent("arguments/without_sql_code/gen/without_sql_code/MasterDatabase.h"));
     ASSERT_FALSE(isFilePresent("arguments/without_sql_code/gen/without_sql_code/WorldDb.cpp"));
     ASSERT_FALSE(isFilePresent("arguments/without_sql_code/gen/without_sql_code/WorldDb.h"));
 }

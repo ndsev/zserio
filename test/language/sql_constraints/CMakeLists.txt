@@ -9,8 +9,6 @@ set(ZSERIO_GENERATED_SOURCES
 
     ${ZSERIO_GEN_DIR}/sql_constraints/ConstType.h
     ${ZSERIO_GEN_DIR}/sql_constraints/IParameterProvider.h
-    ${ZSERIO_GEN_DIR}/sql_constraints/MasterDatabase.cpp
-    ${ZSERIO_GEN_DIR}/sql_constraints/MasterDatabase.h
     ${ZSERIO_GEN_DIR}/sql_constraints/TestDb.cpp
     ${ZSERIO_GEN_DIR}/sql_constraints/TestDb.h
 )

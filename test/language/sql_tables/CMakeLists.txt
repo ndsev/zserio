@@ -42,8 +42,6 @@ set(ZSERIO_GENERATED_SOURCES
     ${ZSERIO_GEN_DIR}/sql_tables/without_pk_table/WithoutPkTableRow.h
 
     ${ZSERIO_GEN_DIR}/sql_tables/IParameterProvider.h
-    ${ZSERIO_GEN_DIR}/sql_tables/MasterDatabase.cpp
-    ${ZSERIO_GEN_DIR}/sql_tables/MasterDatabase.h
     ${ZSERIO_GEN_DIR}/sql_tables/TestDb.cpp
     ${ZSERIO_GEN_DIR}/sql_tables/TestDb.h
 )

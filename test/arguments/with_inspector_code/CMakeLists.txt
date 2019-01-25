@@ -10,8 +10,6 @@ set(ZSERIO_GENERATED_SOURCES
     ${ZSERIO_GEN_DIR}/with_inspector_code/IParameterProvider.h
     ${ZSERIO_GEN_DIR}/with_inspector_code/ISqlDatabaseInspector.h
     ${ZSERIO_GEN_DIR}/with_inspector_code/ISqlTableInspector.h
-    ${ZSERIO_GEN_DIR}/with_inspector_code/MasterDatabase.cpp
-    ${ZSERIO_GEN_DIR}/with_inspector_code/MasterDatabase.h
 
     ${ZSERIO_GEN_DIR}/with_inspector_code/last_auto_optional_field/LastAutoOptionalDatabase.cpp
     ${ZSERIO_GEN_DIR}/with_inspector_code/last_auto_optional_field/LastAutoOptionalDatabase.h
@@ -33,6 +31,8 @@ set(ZSERIO_GENERATED_SOURCES
     ${ZSERIO_GEN_DIR}/with_inspector_code/last_union_with_auto_optional/LastUnionTableRow.cpp
     ${ZSERIO_GEN_DIR}/with_inspector_code/last_union_with_auto_optional/LastUnionTableRow.h
 
+    ${ZSERIO_GEN_DIR}/with_inspector_code/parameterized_structure/ParameterizedStructureDatabase.cpp
+    ${ZSERIO_GEN_DIR}/with_inspector_code/parameterized_structure/ParameterizedStructureDatabase.h
     ${ZSERIO_GEN_DIR}/with_inspector_code/parameterized_structure/RootStructure.cpp
     ${ZSERIO_GEN_DIR}/with_inspector_code/parameterized_structure/RootStructure.h
     ${ZSERIO_GEN_DIR}/with_inspector_code/parameterized_structure/SimpleEnum.cpp
@@ -45,8 +45,6 @@ set(ZSERIO_GENERATED_SOURCES
     ${ZSERIO_GEN_DIR}/with_inspector_code/parameterized_structure/TestArray.h
     ${ZSERIO_GEN_DIR}/with_inspector_code/parameterized_structure/TestChoice.cpp
     ${ZSERIO_GEN_DIR}/with_inspector_code/parameterized_structure/TestChoice.h
-    ${ZSERIO_GEN_DIR}/with_inspector_code/parameterized_structure/TestDatabase.cpp
-    ${ZSERIO_GEN_DIR}/with_inspector_code/parameterized_structure/TestDatabase.h
     ${ZSERIO_GEN_DIR}/with_inspector_code/parameterized_structure/TestTable.cpp
     ${ZSERIO_GEN_DIR}/with_inspector_code/parameterized_structure/TestTable.h
     ${ZSERIO_GEN_DIR}/with_inspector_code/parameterized_structure/TestTableRow.cpp

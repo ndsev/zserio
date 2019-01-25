@@ -35,8 +35,6 @@
             property="without_sql_code.zs.out_geo_map_table_row.present"/>
         <available file="${without_sql_code.zs.out_dir}/without_sql_code/IParameterProvider.java"
             property="without_sql_code.zs.out_iparameter_provider.present"/>
-        <available file="${without_sql_code.zs.out_dir}/without_sql_code/MasterDatabase.java"
-            property="without_sql_code.zs.out_master_database.present"/>
         <available file="${without_sql_code.zs.out_dir}/without_sql_code/WorldDb.java"
             property="without_sql_code.zs.out_world_db.present"/>
 
@@ -47,7 +45,6 @@
                     <isset property="without_sql_code.zs.out_geo_map_table.present"/>
                     <isset property="without_sql_code.zs.out_geo_map_table_row.present"/>
                     <isset property="without_sql_code.zs.out_iparameter_provider.present"/>
-                    <isset property="without_sql_code.zs.out_master_database.present"/>
                     <isset property="without_sql_code.zs.out_world_db.present"/>
                 </or>
             </condition>

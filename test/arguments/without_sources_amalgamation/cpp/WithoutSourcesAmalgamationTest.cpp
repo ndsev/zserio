@@ -26,8 +26,6 @@ TEST_F(WithoutSourcesAmalgamation, checkSources)
     ASSERT_FALSE(isFilePresent(
             "arguments/without_sources_amalgamation/gen/without_sources_amalgamation/GeoMapTableRow.cpp"));
     ASSERT_FALSE(isFilePresent(
-            "arguments/without_sources_amalgamation/gen/without_sources_amalgamation/MasterDatabase.cpp"));
-    ASSERT_FALSE(isFilePresent(
             "arguments/without_sources_amalgamation/gen/without_sources_amalgamation/Tile.cpp"));
     ASSERT_FALSE(isFilePresent(
             "arguments/without_sources_amalgamation/gen/without_sources_amalgamation/WorldDb.cpp"));

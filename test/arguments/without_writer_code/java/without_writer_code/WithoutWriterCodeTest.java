@@ -214,20 +214,6 @@ public class WithoutWriterCodeTest
     }
 
     @Test
-    public void checkMasterDatabaseMethods()
-    {
-        final Set<String> methods = getMethods(MasterDatabase.class);
-
-        assertMethodNotPresent(methods, "createSchema(");
-        assertMethodNotPresent(methods, "deleteSchema(");
-
-        assertMethodPresent(methods, "MasterDatabase(java.sql.Connection)");
-        assertMethodPresent(methods, "MasterDatabase(java.lang.String)");
-        assertMethodPresent(methods, "initDatabases(java.sql.Connection)");
-        assertMethodPresent(methods, "getDatabases()");
-    }
-
-    @Test
     public void readConstructor() throws IOException
     {
         final ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter();

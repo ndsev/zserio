@@ -1,6 +1,6 @@
 package with_inspector_code.parameterized_structure;
 
-sql_database TestDatabase
+sql_database ParameterizedStructureDatabase
 {
     TestTable   testTable;
 };

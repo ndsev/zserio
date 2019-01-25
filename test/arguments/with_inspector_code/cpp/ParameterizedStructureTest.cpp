@@ -5,8 +5,7 @@
 
 #include "zserio/StringConvertUtil.h"
 
-#include "with_inspector_code/MasterDatabase.h"
-#include "with_inspector_code/parameterized_structure/RootStructure.h"
+#include "with_inspector_code/parameterized_structure/ParameterizedStructureDatabase.h"
 
 namespace with_inspector_code
 {
@@ -125,8 +124,8 @@ protected:
         zserio::Container<zserio::BlobInspectorNode::ZserioFunction> treeFunctions;
         treeFunctions.push_back(zserio::BlobInspectorNode::ZserioFunction("bool", "isIdValid",
                 zserio::BlobInspectorValue(ROOT_STRUCTURE_ID != 0)));
-        checkBlobInspectorContainerNode(tree, "with_inspector_code.parameterized_structure.RootStructure()", "rootStructure",
-                numChildren, treeDescriptor, treeFunctions);
+        checkBlobInspectorContainerNode(tree, "with_inspector_code.parameterized_structure.RootStructure()",
+                "rootStructure", numChildren, treeDescriptor, treeFunctions);
 
         const zserio::Container<zserio::BlobInspectorNode>& children = tree.getChildren();
 
@@ -139,7 +138,8 @@ protected:
 
         // child2
         bitSize = 8;
-        checkBlobInspectorValueNode(children[1], "with_inspector_code.parameterized_structure.SimpleEnum", "simpleEnum",
+        checkBlobInspectorValueNode(children[1], "with_inspector_code.parameterized_structure.SimpleEnum",
+                "simpleEnum",
                 zserio::BlobInspectorValue(SimpleEnum(SimpleEnum::EnumBar).getValue(),
                         SimpleEnum(SimpleEnum::EnumBar).toString()),
                 zserio::BlobInspectorNode::ZserioDescriptor(currentBitPosition, currentBitPosition + bitSize));
@@ -169,7 +169,8 @@ protected:
     {
         // "with_inspector_code.TestAlign testAlign"
         size_t numChildren = 3;
-        checkBlobInspectorContainerNode(node, "with_inspector_code.parameterized_structure.TestAlign", "testAlign", numChildren,
+        checkBlobInspectorContainerNode(node, "with_inspector_code.parameterized_structure.TestAlign",
+                "testAlign", numChildren,
                 zserio::BlobInspectorNode::ZserioDescriptor(currentBitPosition, currentBitPosition + bitSize));
 
         const zserio::Container<zserio::BlobInspectorNode>& children = node.getChildren();
@@ -200,7 +201,8 @@ protected:
     {
         // "with_inspector_code.TestArray testArray"
         size_t numChildren = 4;
-        checkBlobInspectorContainerNode(node, "with_inspector_code.parameterized_structure.TestArray", "testArray", numChildren,
+        checkBlobInspectorContainerNode(node, "with_inspector_code.parameterized_structure.TestArray",
+                "testArray", numChildren,
                 zserio::BlobInspectorNode::ZserioDescriptor(currentBitPosition, currentBitPosition + bitSize));
 
         const zserio::Container<zserio::BlobInspectorNode>& children = node.getChildren();
@@ -229,16 +231,18 @@ protected:
 
         // child3
         bitSize = 32;
-        checkBlobInspectorArrayNode(children[2], "with_inspector_code.parameterized_structure.SimpleStructure[]", "arraySimpleStructure",
+        checkBlobInspectorArrayNode(children[2],
+                "with_inspector_code.parameterized_structure.SimpleStructure[]", "arraySimpleStructure",
                 TEST_ARRAY_SIZE,
                 zserio::BlobInspectorNode::ZserioDescriptor(currentBitPosition, currentBitPosition + bitSize));
         const zserio::Container<zserio::BlobInspectorNode>& child3Elements = children[2].getChildren();
         for (size_t i = 0; i < TEST_ARRAY_SIZE; ++i)
         {
             bitSize = 16;
-            checkBlobInspectorContainerNode(child3Elements[i], "with_inspector_code.parameterized_structure.SimpleStructure",
-                    "arraySimpleStructure", 2, zserio::BlobInspectorNode::ZserioDescriptor(currentBitPosition,
-                            currentBitPosition + bitSize));
+            checkBlobInspectorContainerNode(child3Elements[i],
+                    "with_inspector_code.parameterized_structure.SimpleStructure", "arraySimpleStructure",
+                    2, zserio::BlobInspectorNode::ZserioDescriptor(currentBitPosition,
+                                currentBitPosition + bitSize));
             const zserio::Container<zserio::BlobInspectorNode>& simpleStructureChildren =
                     child3Elements[i].getChildren();
 
@@ -258,19 +262,22 @@ protected:
 
         // child4
         bitSize = 16;
-        checkBlobInspectorArrayNode(children[3], "with_inspector_code.parameterized_structure.SimpleEnum[]", "arrayEnum", TEST_ARRAY_SIZE,
+        checkBlobInspectorArrayNode(children[3], "with_inspector_code.parameterized_structure.SimpleEnum[]",
+                "arrayEnum", TEST_ARRAY_SIZE,
                 zserio::BlobInspectorNode::ZserioDescriptor(currentBitPosition, currentBitPosition + bitSize));
         const zserio::Container<zserio::BlobInspectorNode>& child4Elements = children[3].getChildren();
         for (size_t i = 0; i < TEST_ARRAY_SIZE; ++i)
         {
             bitSize = 8;
-            checkBlobInspectorContainerNode(child4Elements[i], "with_inspector_code.parameterized_structure.SimpleEnum",
-                    "arrayEnum", 1, zserio::BlobInspectorNode::ZserioDescriptor(currentBitPosition,
+            checkBlobInspectorContainerNode(child4Elements[i],
+                    "with_inspector_code.parameterized_structure.SimpleEnum", "arrayEnum", 1,
+                    zserio::BlobInspectorNode::ZserioDescriptor(currentBitPosition,
                             currentBitPosition + bitSize));
             const zserio::Container<zserio::BlobInspectorNode>& simpleEnumChildren =
                     child4Elements[i].getChildren();
 
-            checkBlobInspectorValueNode(simpleEnumChildren[0], "with_inspector_code.parameterized_structure.SimpleEnum", "SimpleEnum",
+            checkBlobInspectorValueNode(simpleEnumChildren[0],
+                    "with_inspector_code.parameterized_structure.SimpleEnum", "SimpleEnum",
                     zserio::BlobInspectorValue(SimpleEnum(SimpleEnum::EnumBaz).getValue(),
                             SimpleEnum(SimpleEnum::EnumBaz).toString()),
                     zserio::BlobInspectorNode::ZserioDescriptor(currentBitPosition,
@@ -283,7 +290,8 @@ protected:
     {
         // "with_inspector_code.TestUnion testUnion"
         size_t numChildren = 1;
-        checkBlobInspectorContainerNode(node, "with_inspector_code.parameterized_structure.TestUnion", "testUnion", numChildren,
+        checkBlobInspectorContainerNode(node, "with_inspector_code.parameterized_structure.TestUnion",
+                "testUnion", numChildren,
                 zserio::BlobInspectorNode::ZserioDescriptor(currentBitPosition, currentBitPosition + bitSize));
         currentBitPosition += 8; // choice tag
 
@@ -300,8 +308,8 @@ protected:
     {
         // "with_inspector_code.TestChoice(rootArg) testChoice"
         size_t numChildren = 1;
-        checkBlobInspectorContainerNode(node, "with_inspector_code.parameterized_structure.TestChoice()", "testChoice",
-                numChildren,
+        checkBlobInspectorContainerNode(node, "with_inspector_code.parameterized_structure.TestChoice()",
+                "testChoice", numChildren,
                 zserio::BlobInspectorNode::ZserioDescriptor(currentBitPosition, currentBitPosition + bitSize));
 
         const zserio::Container<zserio::BlobInspectorNode>& children = node.getChildren();
@@ -427,8 +435,8 @@ TEST_F(ParameterizedStructureTest, convertBitStreamToBlobTree)
     zserio::BitStreamReader reader(writeBuffer, writeBufferByteSize);
     RootStructureInspectorParameterProvider rootStructureInspectorParameterProvider(ROOT_STRUCTURE_ID);
     zserio::BlobInspectorTree tree;
-    MasterDatabase masterDatabase;
-    masterDatabase.convertBitStreamToBlobTree("testTable", "rootStructure", reader,
+    ParameterizedStructureDatabase parameterizedStructureDatabase;
+    parameterizedStructureDatabase.convertBitStreamToBlobTree("testTable", "rootStructure", reader,
             rootStructureInspectorParameterProvider, tree);
 
     checkRootStructureTree(tree);
@@ -448,12 +456,12 @@ TEST_F(ParameterizedStructureTest, convertBlobTreeToBitStream)
     zserio::BitStreamReader reader(writerBuffer, writerBufferByteSize);
     RootStructureInspectorParameterProvider rootStructureInspectorParameterProvider(ROOT_STRUCTURE_ID_OPTIONAL);
     zserio::BlobInspectorTree tree;
-    const MasterDatabase masterDatabase;
-    masterDatabase.convertBitStreamToBlobTree("testTable", "rootStructure", reader,
+    const ParameterizedStructureDatabase parameterizedStructureDatabase;
+    parameterizedStructureDatabase.convertBitStreamToBlobTree("testTable", "rootStructure", reader,
             rootStructureInspectorParameterProvider, tree);
 
     zserio::BitStreamWriter treeWriter;
-    masterDatabase.convertBlobTreeToBitStream("testTable", "rootStructure", tree,
+    parameterizedStructureDatabase.convertBlobTreeToBitStream("testTable", "rootStructure", tree,
             rootStructureInspectorParameterProvider, treeWriter);
 
     size_t treeWriterBufferByteSize;
@@ -465,12 +473,12 @@ TEST_F(ParameterizedStructureTest, convertBlobTreeToBitStream)
 
 TEST_F(ParameterizedStructureTest, doesBlobExist)
 {
-    const MasterDatabase masterDatabase;
-    ASSERT_TRUE(masterDatabase.doesBlobExist("testTable", "rootStructure"));
-    ASSERT_TRUE(masterDatabase.doesBlobExist("testTable", "extraRootStructure"));
-    ASSERT_FALSE(masterDatabase.doesBlobExist("unknownTable", "rootStructure"));
-    ASSERT_FALSE(masterDatabase.doesBlobExist("unknownTable", "extraRootStructure"));
-    ASSERT_FALSE(masterDatabase.doesBlobExist("testTable", "unknownBlob"));
+    const ParameterizedStructureDatabase parameterizedStructureDatabase;
+    ASSERT_TRUE(parameterizedStructureDatabase.doesBlobExist("testTable", "rootStructure"));
+    ASSERT_TRUE(parameterizedStructureDatabase.doesBlobExist("testTable", "extraRootStructure"));
+    ASSERT_FALSE(parameterizedStructureDatabase.doesBlobExist("unknownTable", "rootStructure"));
+    ASSERT_FALSE(parameterizedStructureDatabase.doesBlobExist("unknownTable", "extraRootStructure"));
+    ASSERT_FALSE(parameterizedStructureDatabase.doesBlobExist("testTable", "unknownBlob"));
 }
 
 } // namespace parameterized_structure

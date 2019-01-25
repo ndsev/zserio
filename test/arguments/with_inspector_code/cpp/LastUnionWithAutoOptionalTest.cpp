@@ -5,9 +5,8 @@
 
 #include "zserio/StringConvertUtil.h"
 
-#include "with_inspector_code/MasterDatabase.h"
 #include "with_inspector_code/InspectorParameterProvider.h"
-#include "with_inspector_code/last_union_with_auto_optional/LastUnion.h"
+#include "with_inspector_code/last_union_with_auto_optional/LastUnionDatabase.h"
 
 namespace with_inspector_code
 {
@@ -39,12 +38,12 @@ protected:
         zserio::BitStreamReader reader(writerBuffer, writerBufferByteSize);
         InspectorParameterProvider inspectorParameterProvider;
         zserio::BlobInspectorTree tree;
-        const MasterDatabase masterDatabase;
-        masterDatabase.convertBitStreamToBlobTree("lastUnionTable", "lastUnion", reader,
+        const LastUnionDatabase lastUnionDatabase;
+        lastUnionDatabase.convertBitStreamToBlobTree("lastUnionTable", "lastUnion", reader,
                 inspectorParameterProvider, tree);
 
         zserio::BitStreamWriter treeWriter;
-        masterDatabase.convertBlobTreeToBitStream("lastUnionTable", "lastUnion", tree,
+        lastUnionDatabase.convertBlobTreeToBitStream("lastUnionTable", "lastUnion", tree,
                 inspectorParameterProvider, treeWriter);
 
         size_t treeWriterBufferByteSize;

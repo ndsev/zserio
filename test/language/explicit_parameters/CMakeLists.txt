@@ -8,8 +8,6 @@ set(ZSERIO_GENERATED_SOURCES
     ${ZSERIO_GEN_DIR}/explicit_parameters/TestTableRow.h
 
     ${ZSERIO_GEN_DIR}/explicit_parameters/IParameterProvider.h
-    ${ZSERIO_GEN_DIR}/explicit_parameters/MasterDatabase.cpp
-    ${ZSERIO_GEN_DIR}/explicit_parameters/MasterDatabase.h
     ${ZSERIO_GEN_DIR}/explicit_parameters/TestDb.cpp
     ${ZSERIO_GEN_DIR}/explicit_parameters/TestDb.h
 )

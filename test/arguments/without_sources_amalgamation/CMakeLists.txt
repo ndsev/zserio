@@ -5,7 +5,6 @@ set(ZSERIO_GENERATED_SOURCES
     ${ZSERIO_GEN_DIR}/without_sources_amalgamation/GeoMapTable.h
     ${ZSERIO_GEN_DIR}/without_sources_amalgamation/GeoMapTableRow.h
     ${ZSERIO_GEN_DIR}/without_sources_amalgamation/IParameterProvider.h
-    ${ZSERIO_GEN_DIR}/without_sources_amalgamation/MasterDatabase.h
     ${ZSERIO_GEN_DIR}/without_sources_amalgamation/Tile.h
     ${ZSERIO_GEN_DIR}/without_sources_amalgamation/WorldDb.h
 )
