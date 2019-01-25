@@ -3,12 +3,14 @@ package sql_tables.subtyped_table;
 import static org.junit.Assert.*;
 
 import java.io.File;
+import java.io.IOException;
 
 import java.net.URISyntaxException;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -29,63 +31,62 @@ public class SubtypedTableTest
     }
 
     @Before
-    public void setUp() throws SQLException
+    public void setUp() throws IOException, URISyntaxException, SQLException
     {
-        FileUtil.deleteFileIfExists(dbFile);
+        FileUtil.deleteFileIfExists(file);
+        database = new TestDb(file.toString());
+        database.createSchema();
+    }
+
+    @After
+    public void tearDown() throws SQLException
+    {
+        if (database != null)
+        {
+            database.close();
+            database = null;
+        }
     }
 
     @Test
-    public void testSubtypedTable() throws SQLException, URISyntaxException
+    public void testSubtypedTable() throws SQLException
     {
-        TestDb db = null;
-        PreparedStatement statement = null;
-        ResultSet resultSet = null;
+        assertTrue(isTableInDb());
 
+        final TestTable subtypedTable = database.getSubtypedTable();
+        assertTrue(subtypedTable != null);
+    }
+
+    private boolean isTableInDb() throws SQLException
+    {
+        // check if database does contain table
+        final String sqlQuery = "SELECT name FROM sqlite_master WHERE type='table' AND name='" + TABLE_NAME +
+                "'";
+
+        final PreparedStatement statement = database.prepareStatement(sqlQuery);
         try
         {
-            db = new TestDb(dbFile.toString());
-            db.createSchema();
-            // check if database does contain the table
-            final String sqlQuery =
-                    "SELECT name FROM sqlite_master WHERE type='table' AND name='subtypedTable'";
-            statement = db.prepareStatement(sqlQuery);
-            resultSet = statement.executeQuery();
-            assertTrue(resultSet.next());
-            final String tableName = resultSet.getString(1);
-            assertEquals("subtypedTable", tableName);
+            final ResultSet resultSet = statement.executeQuery();
+            if (!resultSet.next())
+                return false;
 
-            // check table getter
-            final TestTable subtypedTable = db.getSubtypedTable();
-            assertTrue(subtypedTable != null);
-        }
-        catch (RuntimeException e)
-        {
-            fail("RuntimeException thrown: " + e.getMessage());
+            // read table name
+            final String tableName = resultSet.getString(1);
+            if (resultSet.wasNull() || !tableName.equals(TABLE_NAME))
+                return false;
         }
         finally
         {
-            try
-            {
-                if (resultSet != null)
-                    resultSet.close();
-            }
-            finally
-            {
-                try
-                {
-                    if (statement != null)
-                        statement.close();
-                }
-                finally
-                {
-                    if (db != null)
-                        db.close();
-                }
-            }
+            statement.close();
         }
+
+        return true;
     }
 
-    private static final String DB_FILE_NAME = "subtyped_table_test.sqlite";
+    private static final String TABLE_NAME = "subtypedTable";
 
-    private final File dbFile = new File(DB_FILE_NAME);
+    private static final String FILE_NAME = "subtyped_table_test.sqlite";
+
+    private final File file = new File(FILE_NAME);
+    private TestDb database = null;
 }

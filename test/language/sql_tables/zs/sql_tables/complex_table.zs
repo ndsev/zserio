@@ -20,14 +20,14 @@ enum int8 TestEnum
 sql_table ComplexTable
 {
     // uint64 type is important to test Java which has no 64-bits unsigned integer type
-    uint64                      id          sql "PRIMARY KEY";
+    uint64                      blobId  sql "PRIMARY KEY";
     // int64 type is important to test C++ which has special API for 64-bits types (e.g. sqlite3_column_int64)
     int64                       age;
     string                      name;
     bool                        isValid;
     float16                     salary;
     float64                     bonus;
-    bit:5                       value       sql "NULL";
+    bit:5                       value   sql "NULL";
     TestEnum                    color;
     TestBlob(explicit count)    blob;
 };

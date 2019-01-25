@@ -30,27 +30,27 @@ public:
     }
 
 protected:
-    static void fillWithoutPkTableRow(WithoutPkTableRow& row, int32_t id, const std::string& name)
+    static void fillWithoutPkTableRow(WithoutPkTableRow& row, int32_t identifier, const std::string& name)
     {
-        row.setId(id);
+        row.setIdentifier(identifier);
         row.setName(name);
     }
 
     static void fillWithoutPkTableRows(std::vector<WithoutPkTableRow>& rows)
     {
         rows.clear();
-        for (int32_t id = 0; id < NUM_WITHOUT_PK_TABLE_ROWS; ++id)
+        for (int32_t identifier = 0; identifier < NUM_WITHOUT_PK_TABLE_ROWS; ++identifier)
         {
-            const std::string name = "Name" + zserio::convertToString(id);
+            const std::string name = "Name" + zserio::convertToString(identifier);
             WithoutPkTableRow row;
-            fillWithoutPkTableRow(row, id, name);
+            fillWithoutPkTableRow(row, identifier, name);
             rows.push_back(row);
         }
     }
 
     static void checkWithoutPkTableRow(const WithoutPkTableRow& row1, const WithoutPkTableRow& row2)
     {
-        ASSERT_EQ(row1.getId(), row2.getId());
+        ASSERT_EQ(row1.getIdentifier(), row2.getIdentifier());
         ASSERT_EQ(row1.getName(), row2.getName());
     }
 
@@ -163,7 +163,7 @@ TEST_F(WithoutPkTableTest, update)
     const int32_t updateRowId = 3;
     WithoutPkTableRow updateRow;
     fillWithoutPkTableRow(updateRow, updateRowId, "UpdatedName");
-    const std::string updateCondition = "id=" + zserio::convertToString(updateRowId);
+    const std::string updateCondition = "identifier=" + zserio::convertToString(updateRowId);
     testTable.update(updateRow, updateCondition);
 
     WithoutPkTableParameterProvider parameterProvider;

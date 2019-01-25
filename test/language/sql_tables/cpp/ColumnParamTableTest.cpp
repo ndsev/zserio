@@ -29,32 +29,32 @@ public:
     }
 
 protected:
-    static void fillColumnParamTableRow(ColumnParamTableRow& row, uint32_t id, const std::string& name)
+    static void fillColumnParamTableRow(ColumnParamTableRow& row, uint32_t blobId, const std::string& name)
     {
-        row.setId(id);
+        row.setBlobId(blobId);
         row.setName(name);
 
         ParameterizedBlob parameterizedBlob;
         parameterizedBlob.setValue(PARAMETERIZED_BLOB_VALUE);
-        parameterizedBlob.initialize(id / 2);
+        parameterizedBlob.initialize(blobId / 2);
         row.setBlob(parameterizedBlob);
     }
 
     static void fillColumnParamTableRows(std::vector<ColumnParamTableRow>& rows)
     {
         rows.clear();
-        for (uint32_t id = 0; id < NUM_COLUMN_PARAM_TABLE_ROWS; ++id)
+        for (uint32_t blobId = 0; blobId < NUM_COLUMN_PARAM_TABLE_ROWS; ++blobId)
         {
-            const std::string name = "Name" + zserio::convertToString(id);
+            const std::string name = "Name" + zserio::convertToString(blobId);
             ColumnParamTableRow row;
-            fillColumnParamTableRow(row, id, name);
+            fillColumnParamTableRow(row, blobId, name);
             rows.push_back(row);
         }
     }
 
     static void checkColumnParamTableRow(const ColumnParamTableRow& row1, const ColumnParamTableRow& row2)
     {
-        ASSERT_EQ(row1.getId(), row2.getId());
+        ASSERT_EQ(row1.getBlobId(), row2.getBlobId());
         ASSERT_EQ(row1.getName(), row2.getName());
         ASSERT_EQ(row1.getBlob(), row2.getBlob());
     }
@@ -173,7 +173,7 @@ TEST_F(ColumnParamTableTest, update)
     const uint64_t updateRowId = 3;
     ColumnParamTableRow updateRow;
     fillColumnParamTableRow(updateRow, updateRowId, "UpdatedName");
-    const std::string updateCondition = "id=" + zserio::convertToString(updateRowId);
+    const std::string updateCondition = "blobId=" + zserio::convertToString(updateRowId);
     testTable.update(updateRow, updateCondition);
 
     ColumnParamTableParameterProvider parameterProvider;

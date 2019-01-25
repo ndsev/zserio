@@ -111,7 +111,7 @@ public class WithoutPkTableTest
 
         final int updateRowId = 3;
         final WithoutPkTableRow updateRow = createWithoutPkTableRow(updateRowId, "UpdatedName");
-        final String updateCondition = "id=" + updateRowId;
+        final String updateCondition = "identifier=" + updateRowId;
         testTable.update(updateRow, updateCondition);
 
         final WithoutPkTableParameterProvider parameterProvider = new WithoutPkTableParameterProvider();
@@ -133,16 +133,16 @@ public class WithoutPkTableTest
 
     private static void fillWithoutPkTableRows(List<WithoutPkTableRow> rows)
     {
-        for (int id = 0; id < NUM_WITHOUT_PK_TABLE_ROWS; ++id)
+        for (int identifier = 0; identifier < NUM_WITHOUT_PK_TABLE_ROWS; ++identifier)
         {
-            rows.add(createWithoutPkTableRow(id, "Name" + id));
+            rows.add(createWithoutPkTableRow(identifier, "Name" + identifier));
         }
     }
 
-    private static WithoutPkTableRow createWithoutPkTableRow(int id, String name)
+    private static WithoutPkTableRow createWithoutPkTableRow(int identifier, String name)
     {
         final WithoutPkTableRow row = new WithoutPkTableRow();
-        row.setId(id);
+        row.setIdentifier(identifier);
         row.setName(name);
 
         return row;
@@ -157,7 +157,7 @@ public class WithoutPkTableTest
 
     private static void checkWithoutPkTableRow(WithoutPkTableRow row1, WithoutPkTableRow row2)
     {
-        assertEquals(row1.getId(), row2.getId());
+        assertEquals(row1.getIdentifier(), row2.getIdentifier());
         assertEquals(row1.getName(), row2.getName());
     }
 

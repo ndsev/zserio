@@ -29,9 +29,9 @@ public:
     }
 
 protected:
-    static void fillConstParamTableRow(ConstParamTableRow& row, uint32_t id, const std::string& name)
+    static void fillConstParamTableRow(ConstParamTableRow& row, uint32_t blobId, const std::string& name)
     {
-        row.setId(id);
+        row.setBlobId(blobId);
         row.setName(name);
 
         ParameterizedBlob parameterizedBlob;
@@ -43,18 +43,18 @@ protected:
     static void fillConstParamTableRows(std::vector<ConstParamTableRow>& rows)
     {
         rows.clear();
-        for (uint32_t id = 0; id < NUM_CONST_PARAM_TABLE_ROWS; ++id)
+        for (uint32_t blobId = 0; blobId < NUM_CONST_PARAM_TABLE_ROWS; ++blobId)
         {
-            const std::string name = "Name" + zserio::convertToString(id);
+            const std::string name = "Name" + zserio::convertToString(blobId);
             ConstParamTableRow row;
-            fillConstParamTableRow(row, id, name);
+            fillConstParamTableRow(row, blobId, name);
             rows.push_back(row);
         }
     }
 
     static void checkConstParamTableRow(const ConstParamTableRow& row1, const ConstParamTableRow& row2)
     {
-        ASSERT_EQ(row1.getId(), row2.getId());
+        ASSERT_EQ(row1.getBlobId(), row2.getBlobId());
         ASSERT_EQ(row1.getName(), row2.getName());
         ASSERT_EQ(row1.getBlob(), row2.getBlob());
     }
@@ -174,7 +174,7 @@ TEST_F(ConstParamTableTest, update)
     const uint64_t updateRowId = 3;
     ConstParamTableRow updateRow;
     fillConstParamTableRow(updateRow, updateRowId, "UpdatedName");
-    const std::string updateCondition = "id=" + zserio::convertToString(updateRowId);
+    const std::string updateCondition = "blobId=" + zserio::convertToString(updateRowId);
     testTable.update(updateRow, updateCondition);
 
     ConstParamTableParameterProvider parameterProvider;

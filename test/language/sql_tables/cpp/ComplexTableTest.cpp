@@ -29,9 +29,9 @@ public:
     }
 
 protected:
-    static void fillComplexTableRow(ComplexTableRow& row, uint64_t id, const std::string& name)
+    static void fillComplexTableRow(ComplexTableRow& row, uint64_t blobId, const std::string& name)
     {
-        row.setId(id);
+        row.setBlobId(blobId);
         row.setAge(std::numeric_limits<int64_t>::max());
         row.setName(name);
         row.setIsValid(true);
@@ -43,7 +43,7 @@ protected:
         TestBlob testBlob;
         zserio::UInt8Array& values = testBlob.getValues();
         for (size_t i = 0; i < COMPLEX_TABLE_COUNT; ++i)
-            values.push_back(static_cast<uint8_t>(id));
+            values.push_back(static_cast<uint8_t>(blobId));
         testBlob.initialize(static_cast<uint32_t>(values.size()));
         testBlob.setOffsetEnd(TEST_BLOB_OFFSET_END);
         testBlob.setEnd(true);
@@ -53,18 +53,18 @@ protected:
     static void fillComplexTableRows(std::vector<ComplexTableRow>& rows)
     {
         rows.clear();
-        for (uint64_t id = 0; id < NUM_COMPLEX_TABLE_ROWS; ++id)
+        for (uint64_t blobId = 0; blobId < NUM_COMPLEX_TABLE_ROWS; ++blobId)
         {
-            const std::string name = "Name" + zserio::convertToString(id);
+            const std::string name = "Name" + zserio::convertToString(blobId);
             ComplexTableRow row;
-            fillComplexTableRow(row, id, name);
+            fillComplexTableRow(row, blobId, name);
             rows.push_back(row);
         }
     }
 
     static void checkComplexTableRow(const ComplexTableRow& row1, const ComplexTableRow& row2)
     {
-        ASSERT_EQ(row1.getId(), row2.getId());
+        ASSERT_EQ(row1.getBlobId(), row2.getBlobId());
         ASSERT_EQ(row1.getAge(), row2.getAge());
         ASSERT_EQ(row1.getName(), row2.getName());
         ASSERT_EQ(row1.getIsValid(), row2.getIsValid());
@@ -190,7 +190,7 @@ TEST_F(ComplexTableTest, update)
     const uint64_t updateRowId = 3;
     ComplexTableRow updateRow;
     fillComplexTableRow(updateRow, updateRowId, "UpdatedName");
-    const std::string updateCondition = "id=" + zserio::convertToString(updateRowId);
+    const std::string updateCondition = "blobId=" + zserio::convertToString(updateRowId);
     testTable.update(updateRow, updateCondition);
 
     ComplexTableParameterProvider parameterProvider;

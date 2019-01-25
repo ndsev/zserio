@@ -109,7 +109,7 @@ public class ColumnParamTableTest
 
         final int updateRowId = 3;
         final ColumnParamTableRow updateRow = createColumnParamTableRow(updateRowId, "UpdatedName");
-        final String updateCondition = "id=" + updateRowId;
+        final String updateCondition = "blobId=" + updateRowId;
         testTable.update(updateRow, updateCondition);
 
         final List<ColumnParamTableRow> readRows = testTable.read(null, updateCondition);
@@ -121,18 +121,18 @@ public class ColumnParamTableTest
 
     private static void fillColumnParamTableRows(List<ColumnParamTableRow> rows)
     {
-        for (int id = 0; id < NUM_COLUMN_PARAM_TABLE_ROWS; ++id)
+        for (int blobId = 0; blobId < NUM_COLUMN_PARAM_TABLE_ROWS; ++blobId)
         {
-            rows.add(createColumnParamTableRow(id, "Name" + id));
+            rows.add(createColumnParamTableRow(blobId, "Name" + blobId));
         }
     }
 
-    private static ColumnParamTableRow createColumnParamTableRow(int id, String name)
+    private static ColumnParamTableRow createColumnParamTableRow(int blobId, String name)
     {
         final ColumnParamTableRow row = new ColumnParamTableRow();
-        row.setId(id);
+        row.setBlobId(blobId);
         row.setName(name);
-        final ParameterizedBlob parameterizedBlob = new ParameterizedBlob(id / 2, PARAMETERIZED_BLOB_VALUE);
+        final ParameterizedBlob parameterizedBlob = new ParameterizedBlob(blobId / 2, PARAMETERIZED_BLOB_VALUE);
         row.setBlob(parameterizedBlob);
 
         return row;
@@ -148,7 +148,7 @@ public class ColumnParamTableTest
 
     private static void checkColumnParamTableRow(ColumnParamTableRow row1, ColumnParamTableRow row2)
     {
-        assertEquals(row1.getId(), row2.getId());
+        assertEquals(row1.getBlobId(), row2.getBlobId());
         assertEquals(row1.getName(), row2.getName());
         assertEquals(row1.getBlob(), row2.getBlob());
     }

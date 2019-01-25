@@ -28,9 +28,9 @@ public:
     }
 
 protected:
-    static void fillMultiplePkTableRow(MultiplePkTableRow& row, int32_t id, const std::string& name)
+    static void fillMultiplePkTableRow(MultiplePkTableRow& row, int32_t blobId, const std::string& name)
     {
-        row.setId(id);
+        row.setBlobId(blobId);
         row.setAge(10);
         row.setName(name);
     }
@@ -38,18 +38,18 @@ protected:
     static void fillMultiplePkTableRows(std::vector<MultiplePkTableRow>& rows)
     {
         rows.clear();
-        for (int32_t id = 0; id < NUM_MULTIPLE_PK_TABLE_ROWS; ++id)
+        for (int32_t blobId = 0; blobId < NUM_MULTIPLE_PK_TABLE_ROWS; ++blobId)
         {
-            const std::string name = "Name" + zserio::convertToString(id);
+            const std::string name = "Name" + zserio::convertToString(blobId);
             MultiplePkTableRow row;
-            fillMultiplePkTableRow(row, id, name);
+            fillMultiplePkTableRow(row, blobId, name);
             rows.push_back(row);
         }
     }
 
     static void checkMultiplePkTableRow(const MultiplePkTableRow& row1, const MultiplePkTableRow& row2)
     {
-        ASSERT_EQ(row1.getId(), row2.getId());
+        ASSERT_EQ(row1.getBlobId(), row2.getBlobId());
         ASSERT_EQ(row1.getAge(), row2.getAge());
         ASSERT_EQ(row1.getName(), row2.getName());
     }
@@ -165,7 +165,7 @@ TEST_F(MultiplePkTableTest, update)
     const int32_t updateRowId = 3;
     MultiplePkTableRow updateRow;
     fillMultiplePkTableRow(updateRow, updateRowId, "UpdatedName");
-    const std::string updateCondition = "id=" + zserio::convertToString(updateRowId);
+    const std::string updateCondition = "blobId=" + zserio::convertToString(updateRowId);
     testTable.update(updateRow, updateCondition);
 
     MultiplePkTableParameterProvider parameterProvider;

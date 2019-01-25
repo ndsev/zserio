@@ -109,7 +109,7 @@ public class ConstParamTableTest
 
         final int updateRowId = 3;
         final ConstParamTableRow updateRow = createConstParamTableRow(updateRowId, "UpdatedName");
-        final String updateCondition = "id=" + updateRowId;
+        final String updateCondition = "blobId=" + updateRowId;
         testTable.update(updateRow, updateCondition);
 
         final List<ConstParamTableRow> readRows = testTable.read(null, updateCondition);
@@ -121,16 +121,16 @@ public class ConstParamTableTest
 
     private static void fillConstParamTableRows(List<ConstParamTableRow> rows)
     {
-        for (int id = 0; id < NUM_CONST_PARAM_TABLE_ROWS; ++id)
+        for (int blobId = 0; blobId < NUM_CONST_PARAM_TABLE_ROWS; ++blobId)
         {
-            rows.add(createConstParamTableRow(id, "Name" + id));
+            rows.add(createConstParamTableRow(blobId, "Name" + blobId));
         }
     }
 
-    private static ConstParamTableRow createConstParamTableRow(int id, String name)
+    private static ConstParamTableRow createConstParamTableRow(int blobId, String name)
     {
         final ConstParamTableRow row = new ConstParamTableRow();
-        row.setId(id);
+        row.setBlobId(blobId);
         row.setName(name);
         final ParameterizedBlob parameterizedBlob = new ParameterizedBlob(PARAMETERIZED_BLOB_PARAM,
                 PARAMETERIZED_BLOB_VALUE);
@@ -149,7 +149,7 @@ public class ConstParamTableTest
 
     private static void checkConstParamTableRow(ConstParamTableRow row1, ConstParamTableRow row2)
     {
-        assertEquals(row1.getId(), row2.getId());
+        assertEquals(row1.getBlobId(), row2.getBlobId());
         assertEquals(row1.getName(), row2.getName());
         assertEquals(row1.getBlob(), row2.getBlob());
     }

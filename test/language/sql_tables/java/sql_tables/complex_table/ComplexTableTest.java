@@ -112,7 +112,7 @@ public class ComplexTableTest
 
         final int updateRowId = 3;
         final ComplexTableRow updateRow = createComplexTableRow(updateRowId, "UpdatedName");
-        final String updateCondition = "id=" + updateRowId;
+        final String updateCondition = "blobId=" + updateRowId;
         testTable.update(updateRow, updateCondition);
 
         final ComplexTableParameterProvider parameterProvider = new ComplexTableParameterProvider();
@@ -134,17 +134,17 @@ public class ComplexTableTest
 
     private static void fillComplexTableRows(List<ComplexTableRow> rows)
     {
-        for (int id = 0; id < NUM_COMPLEX_TABLE_ROWS; ++id)
+        for (int blobId = 0; blobId < NUM_COMPLEX_TABLE_ROWS; ++blobId)
         {
-            rows.add(createComplexTableRow(id, "Name" + id));
+            rows.add(createComplexTableRow(blobId, "Name" + blobId));
         }
     }
 
-    private static ComplexTableRow createComplexTableRow(int id, String name)
+    private static ComplexTableRow createComplexTableRow(int blobId, String name)
     {
         final ComplexTableRow row = new ComplexTableRow();
 
-        row.setId(BigInteger.valueOf(id));
+        row.setBlobId(BigInteger.valueOf(blobId));
         row.setAge(Long.MAX_VALUE);
         row.setName(name);
         row.setIsValid(true);
@@ -155,7 +155,7 @@ public class ComplexTableTest
 
         final UnsignedByteArray values = new UnsignedByteArray(COMPLEX_TABLE_COUNT);
         for (int i = 0; i < values.length(); ++i)
-            values.setElementAt((short)id, i);
+            values.setElementAt((short)blobId, i);
         final TestBlob testBlob = new TestBlob(values.length(), 0, values, true);
         row.setBlob(testBlob);
 
@@ -171,7 +171,7 @@ public class ComplexTableTest
 
     private static void checkComplexTableRow(ComplexTableRow row1, ComplexTableRow row2)
     {
-        assertEquals(row1.getId(), row2.getId());
+        assertEquals(row1.getBlobId(), row2.getBlobId());
         assertEquals(row1.getAge(), row2.getAge());
         assertEquals(row1.getName(), row2.getName());
         assertEquals(row1.getIsValid(), row2.getIsValid());

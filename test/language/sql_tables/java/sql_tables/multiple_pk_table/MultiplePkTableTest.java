@@ -110,7 +110,7 @@ public class MultiplePkTableTest
 
         final int updateRowId = 3;
         final MultiplePkTableRow updateRow = createMultiplePkTableRow(updateRowId, "UpdatedName");
-        final String updateCondition = "id=" + updateRowId;
+        final String updateCondition = "blobId=" + updateRowId;
         testTable.update(updateRow, updateCondition);
 
         final MultiplePkTableParameterProvider parameterProvider = new MultiplePkTableParameterProvider();
@@ -132,16 +132,16 @@ public class MultiplePkTableTest
 
     private static void fillMultiplePkTableRows(List<MultiplePkTableRow> rows)
     {
-        for (int id = 0; id < NUM_MULTIPLE_PK_TABLE_ROWS; ++id)
+        for (int blobId = 0; blobId < NUM_MULTIPLE_PK_TABLE_ROWS; ++blobId)
         {
-            rows.add(createMultiplePkTableRow(id, "Name" + id));
+            rows.add(createMultiplePkTableRow(blobId, "Name" + blobId));
         }
     }
 
-    private static MultiplePkTableRow createMultiplePkTableRow(int id, String name)
+    private static MultiplePkTableRow createMultiplePkTableRow(int blobId, String name)
     {
         final MultiplePkTableRow row = new MultiplePkTableRow();
-        row.setId(id);
+        row.setBlobId(blobId);
         row.setAge(10);
         row.setName(name);
 
@@ -157,7 +157,7 @@ public class MultiplePkTableTest
 
     private static void checkMultiplePkTableRow(MultiplePkTableRow row1, MultiplePkTableRow row2)
     {
-        assertEquals(row1.getId(), row2.getId());
+        assertEquals(row1.getBlobId(), row2.getBlobId());
         assertEquals(row1.getAge(), row2.getAge());
         assertEquals(row1.getName(), row2.getName());
     }

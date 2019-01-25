@@ -11,35 +11,63 @@ namespace sql_tables
 namespace subtyped_table
 {
 
-TEST(SubtypedTest, TestSubtypedTable)
+class SubtypedTableTest : public ::testing::Test
 {
-    const std::string dbFileName = "subtyped_table_test.sqlite";
-    std::remove(dbFileName.c_str());
-
-    TestDb database(dbFileName);
-    database.createSchema();
-    ASSERT_TRUE(database.isOpen());
-
-    // check if database does contain the table
-    std::string tableName;
-    sqlite3_stmt* statement;
-    const std::string sqlQuery = "SELECT name FROM sqlite_master WHERE type='table' AND name='subtypedTable'";
-    int result = sqlite3_prepare_v2(database.getConnection(), sqlQuery.c_str(), -1, &statement, NULL);
-    ASSERT_EQ(result, SQLITE_OK);
-    result = sqlite3_step(statement);
-    if (result == SQLITE_ROW)
+public:
+    SubtypedTableTest() : m_database(DB_FILE_NAME)
     {
-        const unsigned char* readTableName = sqlite3_column_text(statement, 0);
-        if (readTableName != NULL)
-            tableName = reinterpret_cast<const char*>(readTableName);
+        m_database.createSchema();
     }
-    sqlite3_finalize(statement);
 
-    ASSERT_EQ("subtypedTable", tableName);
+    ~SubtypedTableTest()
+    {
+        m_database.close();
+        std::remove(DB_FILE_NAME);
+    }
 
-    // check table getter
-    TestTable& studentsAsTestTable = database.getSubtypedTable();
-    SubtypedTable& studentsAsSubtypedTable = database.getSubtypedTable();
+protected:
+    bool isTableInDb()
+    {
+        sqlite3_stmt* statement;
+        std::string checkTableName = "subtypedTable";
+        std::string sqlQuery = "SELECT name FROM sqlite_master WHERE type='table' AND name='" + checkTableName +
+                "'";
+        int result = sqlite3_prepare_v2(m_database.getConnection(), sqlQuery.c_str(), -1, &statement, NULL);
+        if (result != SQLITE_OK)
+            return false;
+
+        result = sqlite3_step(statement);
+        if (result == SQLITE_DONE || result != SQLITE_ROW)
+        {
+            sqlite3_finalize(statement);
+            return false;
+        }
+
+        const unsigned char* readTableName = sqlite3_column_text(statement, 0);
+        if (readTableName == NULL || checkTableName.compare(reinterpret_cast<const char*>(readTableName)) != 0)
+        {
+            sqlite3_finalize(statement);
+            return false;
+        }
+
+        sqlite3_finalize(statement);
+
+        return true;
+    }
+
+    static const char DB_FILE_NAME[];
+
+    sql_tables::TestDb  m_database;
+};
+
+const char SubtypedTableTest::DB_FILE_NAME[] = "subtyped_table_test.sqlite";
+
+TEST_F(SubtypedTableTest, testSubtypedTable)
+{
+    ASSERT_TRUE(isTableInDb());
+
+    TestTable& studentsAsTestTable = m_database.getSubtypedTable();
+    SubtypedTable& studentsAsSubtypedTable = m_database.getSubtypedTable();
     ASSERT_EQ(&studentsAsTestTable, &studentsAsSubtypedTable);
 }
 

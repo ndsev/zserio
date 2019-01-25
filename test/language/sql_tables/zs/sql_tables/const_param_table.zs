@@ -12,7 +12,7 @@ struct ParameterizedBlob(uint32 param)
 
 sql_table ConstParamTable
 {
-    uint32                  id          sql "PRIMARY KEY";
+    uint32                  blobId  sql "PRIMARY KEY";
     string                  name;
     ParameterizedBlob(2)    blob;
 };
