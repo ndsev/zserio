@@ -13,6 +13,7 @@
 
 class ${name}():
     def __init__(self, connection, tableToDbFileNameRelocationDict=None):
+        self._isExternal = True
         self._connection = connection
         self._cursor = connection.cursor()
         self._initTables(tableToDbFileNameRelocationDict)
@@ -21,7 +22,16 @@ class ${name}():
     def fromFile(cls, fileName, tableToDbFileNameRelocationDict=None):
         connection = apsw.Connection(fileName, <#rt>
             <#lt><#if withWriterCode>apsw.SQLITE_OPEN_READWRITE | apsw.SQLITE_OPEN_CREATE<#else>apsw.SQLITE_OPEN_READONLY</#if>)
-        return cls(connection, tableToDbFileNameRelocationDict)
+        instance = cls(connection, tableToDbFileNameRelocationDict)
+        instance._isExternal = False
+
+        return instance
+
+    def close(self):
+        self._detachDatabases()
+        if not self._isExternal:
+            self._connection.close()
+        self._connection = None
 <#list fields as field>
 
     <#macro field_member_name field>
@@ -78,15 +88,15 @@ class ${name}():
 </#if>
 
     def _initTables(self, tableToDbFileNameRelocationDict):
+        self._dbFileNameToAttachedDbNameDict = {}
         tableNameToAttachedDbNameDict = {}
         if tableToDbFileNameRelocationDict:
-            dbFileNameToAttachedDbNameDict = {}
             for relocatedTableName, dbFileName in tableToDbFileNameRelocationDict.items():
-                attachedDbName = dbFileNameToAttachedDbNameDict.get(dbFileName)
+                attachedDbName = self._dbFileNameToAttachedDbNameDict.get(dbFileName)
                 if attachedDbName is None:
                     attachedDbName = self.DATABASE_NAME + "_" + relocatedTableName
                     self._attachDatabase(dbFileName, attachedDbName)
-                    dbFileNameToAttachedDbNameDict[dbFileName] = attachedDbName
+                    self._dbFileNameToAttachedDbNameDict[dbFileName] = attachedDbName
 
                 tableNameToAttachedDbNameDict[relocatedTableName] = attachedDbName
 
@@ -101,6 +111,11 @@ class ${name}():
         sqlQuery += "' AS "
         sqlQuery += dbName
         self._cursor.execute(sqlQuery)
+
+    def _detachDatabases(self):
+        for attachedDbName in self._dbFileNameToAttachedDbNameDict.values():
+            sqlQuery = "DETACH DATABASE " + attachedDbName
+            self._cursor.execute(sqlQuery)
 
     DATABASE_NAME = "${name}"
 <#list fields as field>

@@ -17,6 +17,9 @@ class SqlConstraintsTest(unittest.TestCase):
         self._database.createSchema()
         self._constraintsTable = self._database.getConstraintsTable()
 
+    def tearDown(self):
+        self._database.close()
+
     def testWithoutSql(self):
         primaryKey = 1
         withoutSql = None

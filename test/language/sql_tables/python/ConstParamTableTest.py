@@ -15,6 +15,9 @@ class ConstParamTableTest(unittest.TestCase):
         self._database = self.api.TestDb.fromFile(self._fileName)
         self._database.createSchema()
 
+    def tearDown(self):
+        self._database.close()
+
     def testDeleteTable(self):
         self.assertTrue(self._isTableInDb())
 
