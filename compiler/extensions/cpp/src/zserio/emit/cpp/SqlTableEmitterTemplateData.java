@@ -234,7 +234,7 @@ public class SqlTableEmitterTemplateData extends UserTypeTemplateData
             return sqlTypeData;
         }
 
-        public static class ParameterTemplateData implements Comparable<ParameterTemplateData>
+        public static class ParameterTemplateData
         {
             public ParameterTemplateData(CppNativeTypeMapper cppNativeTypeMapper,
                     ExpressionFormatter cppSqlIndirectExpressionFormatter, SqlTableType tableType, Field field,
