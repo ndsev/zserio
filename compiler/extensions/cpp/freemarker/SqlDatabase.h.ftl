@@ -64,10 +64,6 @@ public:
             zserio::BitStreamWriter& writer) const;
     virtual bool doesBlobExist(const std::string& tableName, const std::string& blobName) const;
 </#if>
-<#if withValidationCode>
-
-    void validate(/*TODO*/);
-</#if>
 
     static const char* getDatabaseName();
     static void fillTableNames(std::vector<std::string>& tableNames);

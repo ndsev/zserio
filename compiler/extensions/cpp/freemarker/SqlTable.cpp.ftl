@@ -5,10 +5,6 @@
 </#if>
 <@file_header generatorDescription/>
 
-<#if withValidationCode>
-#include <stdexcept>
-
-</#if>
 #include <zserio/CppRuntimeException.h>
 #include <zserio/SqliteException.h>
 #include <zserio/BitStreamReader.h>
@@ -246,14 +242,6 @@ bool ${name}::doesBlobExist(const std::string&<#if hasBlobField> blobName</#if>)
     </#if>
 </#list>
     return false;
-}
-</#if>
-<#if withValidationCode>
-
-void ${name}::validate()
-{
-    // TODO
-    throw std::runtime_error("not implemented");
 }
 </#if>
 

@@ -69,10 +69,6 @@ public:
             zserio::BitStreamWriter& writer) const;
     virtual bool doesBlobExist(const std::string& blobName) const;
 </#if>
-<#if withValidationCode>
-
-    void validate();
-</#if>
 
 private:
     static void readRow(<#if needsParameterProvider>IParameterProvider& parameterProvider, </#if><#rt>

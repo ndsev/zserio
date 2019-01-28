@@ -2,9 +2,6 @@
 <#include "Sql.inc.ftl">
 <@file_header generatorDescription/>
 
-<#if withValidationCode>
-#include <stdexcept>
-</#if>
 #include <sqlite3.h>
 
 #include "<@include_path package.path, "${name}.h"/>"
@@ -151,14 +148,6 @@ bool ${name}::doesBlobExist(const std::string& tableName, const std::string& blo
         return false;
 
     return table->doesBlobExist(blobName);
-}
-</#if>
-<#if withValidationCode>
-
-void ${name}::validate()
-{
-    // TODO
-    throw std::runtime_error("not implemented");
 }
 </#if>
 
