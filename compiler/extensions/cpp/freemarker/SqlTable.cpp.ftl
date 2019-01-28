@@ -172,7 +172,8 @@ void ${name}::update(const ${rowName}& row, const std::string& whereCondition)
 </#if>
 <#macro read_blob field blob_ctor_variable_name="reader" called_by_inspector=false>
         <#list field.typeParameters as parameter>
-        const ${parameter.cppTypeName} ${parameter.definitionName} = <#rt>
+        <#-- non-const getter is necessary for setting of offsets -->
+        ${parameter.cppTypeName} ${parameter.definitionName} = <#rt>
             <#if called_by_inspector>
                 <#lt>parameterProvider.<@inspector_parameter_provider_getter_name parameter/>();
             <#elseif parameter.isExplicit>

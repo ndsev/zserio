@@ -1,16 +1,21 @@
 set(ZSERIO_GEN_DIR ${CMAKE_CURRENT_BINARY_DIR}/gen)
 set(ZSERIO_GENERATED_SOURCES
-    ${ZSERIO_GEN_DIR}/explicit_parameters/TestBlob.cpp
-    ${ZSERIO_GEN_DIR}/explicit_parameters/TestBlob.h
-    ${ZSERIO_GEN_DIR}/explicit_parameters/TestBlobMultiParam.cpp
-    ${ZSERIO_GEN_DIR}/explicit_parameters/TestBlobMultiParam.h
-    ${ZSERIO_GEN_DIR}/explicit_parameters/TestTable.cpp
-    ${ZSERIO_GEN_DIR}/explicit_parameters/TestTable.h
-    ${ZSERIO_GEN_DIR}/explicit_parameters/TestTableRow.cpp
-    ${ZSERIO_GEN_DIR}/explicit_parameters/TestTableRow.h
+    ${ZSERIO_GEN_DIR}/explicit_parameters/explicit_simple_param/TestBlob.cpp
+    ${ZSERIO_GEN_DIR}/explicit_parameters/explicit_simple_param/TestBlob.h
+    ${ZSERIO_GEN_DIR}/explicit_parameters/explicit_simple_param/SimpleParamTable.cpp
+    ${ZSERIO_GEN_DIR}/explicit_parameters/explicit_simple_param/SimpleParamTable.h
+    ${ZSERIO_GEN_DIR}/explicit_parameters/explicit_simple_param/SimpleParamTableRow.cpp
+    ${ZSERIO_GEN_DIR}/explicit_parameters/explicit_simple_param/SimpleParamTableRow.h
 
-    ${ZSERIO_GEN_DIR}/explicit_parameters/TestDb.cpp
-    ${ZSERIO_GEN_DIR}/explicit_parameters/TestDb.h
+    ${ZSERIO_GEN_DIR}/explicit_parameters/multiple_explicit_params/TestBlob.cpp
+    ${ZSERIO_GEN_DIR}/explicit_parameters/multiple_explicit_params/TestBlob.h
+    ${ZSERIO_GEN_DIR}/explicit_parameters/multiple_explicit_params/MultipleParamsTable.cpp
+    ${ZSERIO_GEN_DIR}/explicit_parameters/multiple_explicit_params/MultipleParamsTable.h
+    ${ZSERIO_GEN_DIR}/explicit_parameters/multiple_explicit_params/MultipleParamsTableRow.cpp
+    ${ZSERIO_GEN_DIR}/explicit_parameters/multiple_explicit_params/MultipleParamsTableRow.h
+
+    ${ZSERIO_GEN_DIR}/explicit_parameters/ExplicitParametersDb.cpp
+    ${ZSERIO_GEN_DIR}/explicit_parameters/ExplicitParametersDb.h
 )
 
 zserio_add_library(TARGET explicit_parameters_zs
@@ -23,7 +28,8 @@ zserio_add_library(TARGET explicit_parameters_zs
 )
 
 add_test_sources(
-    cpp/ExplicitParametersTest.cpp
+    cpp/ExplicitSimpleParamTest.cpp
+    cpp/MultipleExplicitParamsTest.cpp
 )
 
 add_test_dependencies(explicit_parameters_zs)

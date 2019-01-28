@@ -1,27 +1,10 @@
 package explicit_parameters;
 
-struct TestBlob(uint32 count)
-{
-    bit:3   values[count];
-};
+import explicit_parameters.explicit_simple_param.*;
+import explicit_parameters.multiple_explicit_params.*;
 
-struct TestBlobMultiParam(uint32 countA, uint32 countB)
+sql_database ExplicitParametersDb
 {
-    uint8   valuesA[countA];
-    uint16  valuesB[countB];
-};
-
-sql_table TestTable
-{
-    uint32                                                  id          sql "PRIMARY KEY";
-    string                                                  name;
-    TestBlob(explicit count1)                               blob1;
-    TestBlob(explicit count2)                               blob2;
-    TestBlob(explicit count1)                               blob3; // count1 is reused here
-    TestBlobMultiParam(explicit count2, explicit count2)    blobMultiParam;
-};
-
-sql_database TestDb
-{
-    TestTable   testTable;
+    SimpleParamTable    simpleParamTable;
+    MultipleParamsTable multipleParamsTable;
 };
