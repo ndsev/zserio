@@ -18,4 +18,3 @@ sql_database WorldDb
     GeoMapTable europe;
     GeoMapTable america;
 };
-

@@ -78,13 +78,13 @@ public class DbWithRelocationTest
     @Test
     public void validate() throws SQLException
     {
-        ValidationReport report = europeDb.validate(null);
+        ValidationReport report = europeDb.validate();
         assertEquals(NUM_ALL_EUROPE_DB_TABLES, report.getNumberOfValidatedTables());
         assertEquals(0, report.getNumberOfValidatedRows());
         assertTrue(report.getTotalParameterProviderTime() <= report.getTotalValidationTime());
         assertTrue(report.getErrors().isEmpty());
 
-        report = americaDb.validate(null);
+        report = americaDb.validate();
         assertEquals(NUM_ALL_AMERICA_DB_TABLES, report.getNumberOfValidatedTables());
         assertEquals(0, report.getNumberOfValidatedRows());
         assertTrue(report.getTotalParameterProviderTime() <= report.getTotalValidationTime());
@@ -114,11 +114,11 @@ public class DbWithRelocationTest
         relocatedTable.update(updatedRows.get(0), updateCondition);
 
         // read it back
-        final List<CountryMapTableRow> readRows = relocatedTable.read(null);
+        final List<CountryMapTableRow> readRows = relocatedTable.read();
         checkCountryMapTableRows(updatedRows, readRows);
 
         // validate
-        final ValidationReport report = relocatedTable.validate(null);
+        final ValidationReport report = relocatedTable.validate();
         assertEquals(1, report.getNumberOfValidatedTables());
         assertEquals(1, report.getNumberOfValidatedRows());
         assertTrue(report.getTotalParameterProviderTime() <= report.getTotalValidationTime());
@@ -148,11 +148,11 @@ public class DbWithRelocationTest
         relocatedTable.update(updatedRows.get(0), updateCondition);
 
         // read it back
-        final List<CountryMapTableRow> readRows = relocatedTable.read(null);
+        final List<CountryMapTableRow> readRows = relocatedTable.read();
         checkCountryMapTableRows(updatedRows, readRows);
 
         // validate
-        final ValidationReport report = relocatedTable.validate(null);
+        final ValidationReport report = relocatedTable.validate();
         assertEquals(1, report.getNumberOfValidatedTables());
         assertEquals(1, report.getNumberOfValidatedRows());
         assertTrue(report.getTotalParameterProviderTime() <= report.getTotalValidationTime());

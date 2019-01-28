@@ -76,7 +76,7 @@ public class HiddenVirtualColumnsTest
         fillHiddenVirtualColumnsTableRows(writtenRows);
         testTable.write(writtenRows);
 
-        final List<HiddenVirtualColumnsTableRow> readRows = testTable.read(null);
+        final List<HiddenVirtualColumnsTableRow> readRows = testTable.read();
         checkHiddenVirtualColumnsTableRows(writtenRows, readRows);
     }
 
@@ -90,7 +90,7 @@ public class HiddenVirtualColumnsTest
         testTable.write(writtenRows);
 
         final String condition = "searchTags='Search Tags1'";
-        final List<HiddenVirtualColumnsTableRow> readRows = testTable.read(null, condition);
+        final List<HiddenVirtualColumnsTableRow> readRows = testTable.read(condition);
 
         assertEquals(1, readRows.size());
 
@@ -114,7 +114,7 @@ public class HiddenVirtualColumnsTest
         final String updateCondition = "docId='" + updateDocId + "'";
         testTable.update(updateRow, updateCondition);
 
-        final List<HiddenVirtualColumnsTableRow> readRows = testTable.read(null, updateCondition);
+        final List<HiddenVirtualColumnsTableRow> readRows = testTable.read(updateCondition);
         assertEquals(1, readRows.size());
 
         final HiddenVirtualColumnsTableRow readRow = readRows.get(0);

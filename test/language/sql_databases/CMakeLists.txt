@@ -19,7 +19,6 @@ set(ZSERIO_GENERATED_SOURCES
     ${ZSERIO_GEN_DIR}/sql_databases/db_with_relocation/EuropeDb.h
     ${ZSERIO_GEN_DIR}/sql_databases/db_with_relocation/Tile.cpp
     ${ZSERIO_GEN_DIR}/sql_databases/db_with_relocation/Tile.h
-    ${ZSERIO_GEN_DIR}/sql_databases/IParameterProvider.h
 )
 
 zserio_add_library(TARGET sql_databases_zs

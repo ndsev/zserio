@@ -21,7 +21,6 @@ import org.junit.Test;
 import test_utils.FileUtil;
 import test_utils.JdbcUtil;
 
-import sql_tables.IParameterProvider;
 import sql_tables.TestDb;
 
 import zserio.runtime.ZserioError;
@@ -75,7 +74,7 @@ public class ConstParamTableTest
         fillConstParamTableRows(writtenRows);
         testTable.write(writtenRows);
 
-        final List<ConstParamTableRow> readRows = testTable.read(null);
+        final List<ConstParamTableRow> readRows = testTable.read();
         checkConstParamTableRows(writtenRows, readRows);
     }
 
@@ -89,7 +88,7 @@ public class ConstParamTableTest
         testTable.write(writtenRows);
 
         final String condition = "name='Name1'";
-        final List<ConstParamTableRow> readRows = testTable.read(null, condition);
+        final List<ConstParamTableRow> readRows = testTable.read(condition);
 
         assertEquals(1, readRows.size());
 
@@ -112,7 +111,7 @@ public class ConstParamTableTest
         final String updateCondition = "blobId=" + updateRowId;
         testTable.update(updateRow, updateCondition);
 
-        final List<ConstParamTableRow> readRows = testTable.read(null, updateCondition);
+        final List<ConstParamTableRow> readRows = testTable.read(updateCondition);
         assertEquals(1, readRows.size());
 
         final ConstParamTableRow readRow = readRows.get(0);

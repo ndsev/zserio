@@ -1,4 +1,5 @@
 <#include "FileHeader.inc.ftl">
+<#include "Sql.inc.ftl">
 <@file_header generatorDescription/>
 
 <@include_guard_begin package.path, name/>
@@ -14,7 +15,6 @@
 #include <zserio/inspector/BlobInspectorTree.h>
 </#if>
 
-#include "<@include_path rootPackage.path, "IParameterProvider.h"/>"
 <#if withInspectorCode>
 #include "<@include_path rootPackage.path, "ISqlTableInspector.h"/>"
 </#if>
@@ -23,29 +23,36 @@
 
 <@namespace_begin package.path/>
 
-<#assign hasNonVirtualField=false/>
-<#list fields as field>
-    <#if !field.isVirtual>
-        <#assign hasNonVirtualField=true/>
-        <#break>
-    </#if>
-</#list>
+<#assign needsParameterProvider=explicitParameters?has_content/>
 class ${name}<#if withInspectorCode> : public ${rootPackage.name}::ISqlTableInspector</#if>
 {
 public:
+<#if needsParameterProvider>
+    class IParameterProvider
+    {
+    public:
+        <#list explicitParameters as parameter>
+        virtual ${parameter.cppTypeName} <@sql_parameter_provider_getter_name parameter/>(sqlite3_stmt& statement) = 0;
+        </#list>
+
+        virtual ~IParameterProvider()
+        {}
+    };
+
+</#if>
     ${name}(zserio::SqlDatabase& db, const std::string& tableName);
     ~${name}();
 <#if withWriterCode>
 
     void createTable();
-    <#if hasNonVirtualField && isWithoutRowId>
+    <#if sql_table_has_non_virtual_field(fields) && isWithoutRowId>
     void createOrdinaryRowIdTable();
     </#if>
     void deleteTable();
 </#if>
 
-    void read(${rootPackage.name}::IParameterProvider& parameterProvider, std::vector<${rowName}>& rows) const;
-    void read(${rootPackage.name}::IParameterProvider& parameterProvider, const std::string& condition,
+    void read(<#if needsParameterProvider>IParameterProvider& parameterProvider, </#if>std::vector<${rowName}>& rows) const;
+    void read(<#if needsParameterProvider>IParameterProvider& parameterProvider, </#if>const std::string& condition,
             std::vector<${rowName}>& rows) const;
 <#if withWriterCode>
     void write(const std::vector<${rowName}>& rows);
@@ -68,8 +75,9 @@ public:
 </#if>
 
 private:
-    static void readRow(${rootPackage.name}::IParameterProvider& parameterProvider,
-            sqlite3_stmt& statement, std::vector<${rowName}>& rows);
+    static void readRow(<#if needsParameterProvider>IParameterProvider& parameterProvider, </#if><#rt>
+            <#lt>sqlite3_stmt& statement,
+            std::vector<${rowName}>& rows);
 <#if withWriterCode>
     static void writeRow(const ${rowName}& row, sqlite3_stmt& statement);
 

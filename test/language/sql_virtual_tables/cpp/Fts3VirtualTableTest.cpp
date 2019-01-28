@@ -91,10 +91,6 @@ protected:
         return true;
     }
 
-    class Fts3VirtualTableParameterProvider : public IParameterProvider
-    {
-    };
-
     static const char DB_FILE_NAME[];
     static const int32_t NUM_VIRTUAL_TABLE_ROWS;
 
@@ -124,9 +120,8 @@ TEST_F(Fts3VirtualTableTest, readWithoutCondition)
     fillFts3VirtualTableRows(writtenRows);
     testTable.write(writtenRows);
 
-    Fts3VirtualTableParameterProvider parameterProvider;
     std::vector<Fts3VirtualTableRow> readRows;
-    testTable.read(parameterProvider, readRows);
+    testTable.read(readRows);
     checkFts3VirtualTableRows(writtenRows, readRows);
 }
 
@@ -138,10 +133,9 @@ TEST_F(Fts3VirtualTableTest, readWithCondition)
     fillFts3VirtualTableRows(writtenRows);
     testTable.write(writtenRows);
 
-    Fts3VirtualTableParameterProvider parameterProvider;
     const std::string condition = "body='Body1'";
     std::vector<Fts3VirtualTableRow> readRows;
-    testTable.read(parameterProvider, condition, readRows);
+    testTable.read(condition, readRows);
     ASSERT_EQ(1, readRows.size());
 
     const size_t expectedRowNum = 1;
@@ -162,9 +156,8 @@ TEST_F(Fts3VirtualTableTest, update)
     const std::string updateCondition = "title='" + updateTitle + "'";
     testTable.update(updateRow, updateCondition);
 
-    Fts3VirtualTableParameterProvider parameterProvider;
     std::vector<Fts3VirtualTableRow> readRows;
-    testTable.read(parameterProvider, updateCondition, readRows);
+    testTable.read(updateCondition, readRows);
     ASSERT_EQ(1, readRows.size());
 
     checkFts3VirtualTableRow(updateRow, readRows[0]);

@@ -1,7 +1,5 @@
 set(ZSERIO_GEN_DIR ${CMAKE_CURRENT_BINARY_DIR}/gen)
 set(ZSERIO_GENERATED_SOURCES
-    ${ZSERIO_GEN_DIR}/sql_types/IParameterProvider.h
-
     ${ZSERIO_GEN_DIR}/sql_types/SqlTypesDb.cpp
     ${ZSERIO_GEN_DIR}/sql_types/SqlTypesDb.h
     ${ZSERIO_GEN_DIR}/sql_types/SqlTypesTable.cpp

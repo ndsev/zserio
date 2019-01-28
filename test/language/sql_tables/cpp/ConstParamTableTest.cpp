@@ -96,14 +96,6 @@ protected:
         return true;
     }
 
-    class ConstParamTableParameterProvider : public IParameterProvider
-    {
-        virtual uint32_t getComplexTable_count(sqlite3_stmt&)
-        {
-            return 0;
-        }
-    };
-
     static const char DB_FILE_NAME[];
 
     static const uint32_t PARAMETERIZED_BLOB_VALUE;
@@ -139,9 +131,8 @@ TEST_F(ConstParamTableTest, readWithoutCondition)
     fillConstParamTableRows(writtenRows);
     testTable.write(writtenRows);
 
-    ConstParamTableParameterProvider parameterProvider;
     std::vector<ConstParamTableRow> readRows;
-    testTable.read(parameterProvider, readRows);
+    testTable.read(readRows);
     checkConstParamTableRows(writtenRows, readRows);
 }
 
@@ -153,10 +144,9 @@ TEST_F(ConstParamTableTest, readWithCondition)
     fillConstParamTableRows(writtenRows);
     testTable.write(writtenRows);
 
-    ConstParamTableParameterProvider parameterProvider;
     const std::string condition = "name='Name1'";
     std::vector<ConstParamTableRow> readRows;
-    testTable.read(parameterProvider, condition, readRows);
+    testTable.read(condition, readRows);
     ASSERT_EQ(1, readRows.size());
 
     const size_t expectedRowNum = 1;
@@ -177,9 +167,8 @@ TEST_F(ConstParamTableTest, update)
     const std::string updateCondition = "blobId=" + zserio::convertToString(updateRowId);
     testTable.update(updateRow, updateCondition);
 
-    ConstParamTableParameterProvider parameterProvider;
     std::vector<ConstParamTableRow> readRows;
-    testTable.read(parameterProvider, updateCondition, readRows);
+    testTable.read(updateCondition, readRows);
     ASSERT_EQ(1, readRows.size());
 
     checkConstParamTableRow(updateRow, readRows[0]);

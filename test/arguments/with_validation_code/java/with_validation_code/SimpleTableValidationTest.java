@@ -69,7 +69,7 @@ public class SimpleTableValidationTest
         assertEquals(ENTRY_COUNT, report.getNumberOfValidatedRows());
         assertTrue(report.getTotalParameterProviderTime() <= report.getTotalValidationTime());
         assertTrue(report.getErrors().isEmpty());
-        assertEquals(ENTRY_COUNT, parameterProvider.getSimpleTable_count_callCount());
+        assertEquals(ENTRY_COUNT, parameterProvider.getLocalCount1_callCount());
     }
 
     @Test
@@ -107,7 +107,7 @@ public class SimpleTableValidationTest
 
         final SimpleTable table = database.getSimpleTable();
         final TestParameterProvider parameterProvider = new TestParameterProvider();
-        final ValidationReport report = table.validate(parameterProvider);
+        final ValidationReport report = table.validate(parameterProvider.getSimpleTableParameterProvider());
 
         assertEquals(1, report.getNumberOfValidatedTables());
         assertEquals(ENTRY_COUNT, report.getNumberOfValidatedRows());
@@ -390,8 +390,8 @@ public class SimpleTableValidationTest
             byte id, boolean wrongOffset) throws SQLException
     {
         final byte fieldNonBlob = id;
-        final RootStruct fieldBlob =
-                createTestRootStruct((int)parameterProvider.getSimpleTable_localCount1(null), id);
+        final int localCount1 = (int)parameterProvider.getSimpleTableParameterProvider().getLocalCount1(null);
+        final RootStruct fieldBlob = createTestRootStruct(localCount1, id);
         final TestEnum fieldEnum = (id == ENUM_RED_ROW_ID) ? TestEnum.RED : TestEnum.BLUE;
 
         insertRow(database, id, id == 0, fieldNonBlob, fieldBlob, wrongOffset, fieldEnum);
@@ -445,21 +445,38 @@ public class SimpleTableValidationTest
         bytesFieldBlob[0] = -1;
     }
 
-    private static class TestParameterProvider implements IParameterProvider
+    private static class TestParameterProvider implements SimpleTableValidationDb.IParameterProvider
     {
+        private static class SimpleTableParameterProvider implements SimpleTable.IParameterProvider
+        {
+            @Override
+            public long getLocalCount1(ResultSet resultSet)
+            {
+                LocalCount1_callCount++;
+                return SIMPLE_TABLE_COUNT;
+            }
+
+            public int getLocalCount1_callCount()
+            {
+                return LocalCount1_callCount;
+            }
+
+            private int LocalCount1_callCount = 0;
+        }
+
         @Override
-        public long getSimpleTable_localCount1(ResultSet resultSet)
+        public SimpleTable.IParameterProvider getSimpleTableParameterProvider()
         {
-            SimpleTable_count_callCount++;
-            return SIMPLE_TABLE_COUNT;
+            return simpleTableParameterProvider;
         }
 
-        public int getSimpleTable_count_callCount()
+        public int getLocalCount1_callCount()
         {
-            return SimpleTable_count_callCount;
+            return simpleTableParameterProvider.getLocalCount1_callCount();
         }
 
-        private int SimpleTable_count_callCount = 0;
+        private final SimpleTableParameterProvider simpleTableParameterProvider =
+                new SimpleTableParameterProvider();
     }
 
     private static final int ENTRY_COUNT = 5;

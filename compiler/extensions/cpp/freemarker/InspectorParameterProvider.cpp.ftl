@@ -8,11 +8,19 @@
 
 <@namespace_begin rootPackage.path/>
 
-<#list sqlTableParameters as parameter>
-${parameter.cppTypeName} InspectorParameterProvider::<@inspector_parameter_provider_name parameter/>()
+<#list parameters as parameter>
+${parameter.cppTypeName} InspectorParameterProvider::<@inspector_parameter_provider_getter_name parameter/>()
 {
     throw zserio::CppRuntimeException("InspectorParameterProvider: "
-            "'<@inspector_parameter_provider_name parameter/>' not implemented yet!");
+            "'<@inspector_parameter_provider_getter_name parameter/>' not implemented yet!");
+}
+
+</#list>
+<#list explicitParameters as parameter>
+${parameter.cppTypeName} InspectorParameterProvider::<@inspector_parameter_provider_getter_name parameter/>()
+{
+    throw zserio::CppRuntimeException("InspectorParameterProvider: "
+            "'<@inspector_parameter_provider_getter_name parameter/>' not implemented yet!");
 }
 
 </#list>

@@ -13,7 +13,6 @@ set(ZSERIO_GENERATED_SOURCES
     ${ZSERIO_GEN_DIR}/sql_virtual_tables/fts5_virtual_table/Fts5VirtualTableRow.h
     ${ZSERIO_GEN_DIR}/sql_virtual_tables/fts5_virtual_table/Fts5TestDb.cpp
     ${ZSERIO_GEN_DIR}/sql_virtual_tables/fts5_virtual_table/Fts5TestDb.h
-    ${ZSERIO_GEN_DIR}/sql_virtual_tables/IParameterProvider.h
 )
 
 zserio_add_library(TARGET sql_virtual_tables_zs

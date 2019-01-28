@@ -115,10 +115,6 @@ protected:
         return isFound;
     }
 
-    class SimpleVirtualColumnsTableParameterProvider : public IParameterProvider
-    {
-    };
-
     static const char DB_FILE_NAME[];
     static const int32_t NUM_TABLE_ROWS;
 
@@ -150,9 +146,8 @@ TEST_F(SimpleVirtualColumnsTest, readWithoutCondition)
     fillSimpleVirtualColumnsTableRows(writtenRows);
     testTable.write(writtenRows);
 
-    SimpleVirtualColumnsTableParameterProvider parameterProvider;
     std::vector<SimpleVirtualColumnsTableRow> readRows;
-    testTable.read(parameterProvider, readRows);
+    testTable.read(readRows);
     checkSimpleVirtualColumnsTableRows(writtenRows, readRows);
 }
 
@@ -164,10 +159,9 @@ TEST_F(SimpleVirtualColumnsTest, readWithCondition)
     fillSimpleVirtualColumnsTableRows(writtenRows);
     testTable.write(writtenRows);
 
-    SimpleVirtualColumnsTableParameterProvider parameterProvider;
     const std::string condition = "content='Content1'";
     std::vector<SimpleVirtualColumnsTableRow> readRows;
-    testTable.read(parameterProvider, condition, readRows);
+    testTable.read(condition, readRows);
     ASSERT_EQ(1, readRows.size());
 
     const size_t expectedRowNum = 1;
@@ -188,10 +182,9 @@ TEST_F(SimpleVirtualColumnsTest, update)
     const std::string updateCondition = "content='Content3'";
     testTable.update(updateRow, updateCondition);
 
-    SimpleVirtualColumnsTableParameterProvider parameterProvider;
     std::vector<SimpleVirtualColumnsTableRow> readRows;
     const std::string readCondition = "content='" + updateContent + "'";
-    testTable.read(parameterProvider, readCondition, readRows);
+    testTable.read(readCondition, readRows);
     ASSERT_EQ(1, readRows.size());
 
     checkSimpleVirtualColumnsTableRow(updateRow, readRows[0]);

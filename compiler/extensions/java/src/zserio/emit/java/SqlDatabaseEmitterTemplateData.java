@@ -3,6 +3,7 @@ package zserio.emit.java;
 import java.util.ArrayList;
 import java.util.List;
 
+import zserio.ast.TypeInstantiation.InstantiatedParameter;
 import zserio.ast.ZserioType;
 import zserio.ast.Field;
 import zserio.ast.SqlDatabaseType;
@@ -50,8 +51,17 @@ public final  class SqlDatabaseEmitterTemplateData extends UserTypeTemplateData
             javaTypeName = javaNativeTypeMapper.getJavaType(field.getFieldType()).getFullName();
             getterName = AccessorNameFormatter.getGetterName(field);
             final ZserioType fieldBaseType = TypeReference.resolveBaseType(field.getFieldReferencedType());
-            isWithoutRowIdTable = (fieldBaseType instanceof SqlTableType) ?
-                    ((SqlTableType)fieldBaseType).isWithoutRowId() : false;
+            if (fieldBaseType instanceof SqlTableType)
+            {
+                SqlTableType tableType = (SqlTableType)fieldBaseType;
+                isWithoutRowIdTable = tableType.isWithoutRowId();
+                hasExplicitParameters = hasTableExplicitParameters(tableType);
+            }
+            else
+            {
+                isWithoutRowIdTable = false;
+                hasExplicitParameters = false;
+            }
         }
 
         public String getName()
@@ -74,13 +84,33 @@ public final  class SqlDatabaseEmitterTemplateData extends UserTypeTemplateData
             return isWithoutRowIdTable;
         }
 
-        private final String  name;
-        private final String  javaTypeName;
-        private final String  getterName;
+        public boolean getHasExplicitParameters()
+        {
+            return hasExplicitParameters;
+        }
+
+        private static boolean hasTableExplicitParameters(SqlTableType tableType)
+        {
+            for (Field tableField : tableType.getFields())
+            {
+                for (InstantiatedParameter instantiatedParam : tableField.getInstantiatedParameters())
+                {
+                    if (instantiatedParam.getArgumentExpression().isExplicitVariable())
+                        return true;
+                }
+            }
+
+            return false;
+        }
+
+        private final String name;
+        private final String javaTypeName;
+        private final String getterName;
         private final boolean isWithoutRowIdTable;
+        private final boolean hasExplicitParameters;
     }
 
-    private final String                    rootPackageName;
-    private final boolean                   withValidationCode;
-    private final List<DatabaseFieldData>   fields;
+    private final String rootPackageName;
+    private final boolean withValidationCode;
+    private final List<DatabaseFieldData> fields;
 }

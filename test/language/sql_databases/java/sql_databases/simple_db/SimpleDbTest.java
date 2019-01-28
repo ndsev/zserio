@@ -202,7 +202,7 @@ public class SimpleDbTest
 
     private static void checkDb(WorldDb database) throws SQLException
     {
-        final ValidationReport report = database.validate(null);
+        final ValidationReport report = database.validate();
         assertEquals(NUM_ALL_TABLES, report.getNumberOfValidatedTables());
         assertEquals(0, report.getNumberOfValidatedRows());
         assertTrue(report.getTotalParameterProviderTime() <= report.getTotalValidationTime());

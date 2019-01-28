@@ -55,7 +55,7 @@ public class BlobTableValidationTest
     {
         insertRowWithNoneStandardBlob(database);
 
-        final ValidationReport report = database.validate(null);
+        final ValidationReport report = database.validate();
         assertEquals(1, report.getNumberOfValidatedTables());
         assertEquals(1, report.getNumberOfValidatedRows());
         assertTrue(report.getTotalParameterProviderTime() <= report.getTotalValidationTime());

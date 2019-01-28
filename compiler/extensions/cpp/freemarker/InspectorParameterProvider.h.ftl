@@ -17,8 +17,14 @@
 class InspectorParameterProvider : public IInspectorParameterProvider
 {
 public:
-<#list sqlTableParameters as parameter>
-    virtual ${parameter.cppTypeName} <@inspector_parameter_provider_name parameter/>();
+<#list parameters as parameter>
+    virtual ${parameter.cppTypeName} <@inspector_parameter_provider_getter_name parameter/>();
+</#list>
+<#if parameters?has_content && explicitParameters?has_content>
+
+</#if>
+<#list explicitParameters as parameter>
+    virtual ${parameter.cppTypeName} <@inspector_parameter_provider_getter_name parameter/>();
 </#list>
 };
 

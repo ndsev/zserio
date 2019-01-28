@@ -1,4 +1,5 @@
 <#include "FileHeader.inc.ftl">
+<#include "Sql.inc.ftl">
 <#include "GeneratePkgPrefix.inc.ftl">
 <@standard_header generatorDescription, packageName, javaMajorVersion, [
         "java.net.URISyntaxException",
@@ -14,11 +15,11 @@
 </#if>
 <#if withValidationCode>
 <@imports ["zserio.runtime.validation.ValidationReport"]/>
+    <#assign needsParameterProvider = sql_db_needs_parameter_provider(fields)/>
 </#if>
 
 <@class_header generatorDescription/>
-public class ${name} extends SqlDatabase<#if withWriterCode> implements SqlDatabaseWriter</#if><#rt>
-        <#lt><#if withValidationCode>, <@generate_pkg_prefix rootPackageName/>SqlDatabaseValidator</#if>
+public class ${name} extends SqlDatabase<#if withWriterCode> implements SqlDatabaseWriter</#if>
 {
     public ${name}(String fileName) throws SQLException, URISyntaxException
     {
@@ -113,13 +114,12 @@ public class ${name} extends SqlDatabase<#if withWriterCode> implements SqlDatab
 </#if>
 <#if withValidationCode>
 
-    @Override
-    public ValidationReport validate(<@generate_pkg_prefix rootPackageName/>IParameterProvider parameterProvider)
+    public ValidationReport validate(<#if needsParameterProvider>IParameterProvider parameterProvider</#if>)
             throws SQLException
     {
         final ValidationReport report = new ValidationReport();
     <#list fields as field>
-        report.add(${field.name}.validate(parameterProvider));
+        report.add(${field.name}.validate(<#if field.hasExplicitParameters>parameterProvider.get${field.name?cap_first}ParameterProvider()</#if>));
     </#list>
 
         return report;
@@ -141,6 +141,17 @@ public class ${name} extends SqlDatabase<#if withWriterCode> implements SqlDatab
         };
     }
 
+<#if withValidationCode && needsParameterProvider>
+    public static interface IParameterProvider
+    {
+        <#list fields as field>
+            <#if field.hasExplicitParameters>
+        ${field.javaTypeName}.IParameterProvider get${field.name?cap_first}ParameterProvider();
+            </#if>
+        </#list>
+    };
+
+</#if>
     private void initTables()
     {
 <#list fields as field>

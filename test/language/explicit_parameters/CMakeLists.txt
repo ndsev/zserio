@@ -2,12 +2,13 @@ set(ZSERIO_GEN_DIR ${CMAKE_CURRENT_BINARY_DIR}/gen)
 set(ZSERIO_GENERATED_SOURCES
     ${ZSERIO_GEN_DIR}/explicit_parameters/TestBlob.cpp
     ${ZSERIO_GEN_DIR}/explicit_parameters/TestBlob.h
+    ${ZSERIO_GEN_DIR}/explicit_parameters/TestBlobMultiParam.cpp
+    ${ZSERIO_GEN_DIR}/explicit_parameters/TestBlobMultiParam.h
     ${ZSERIO_GEN_DIR}/explicit_parameters/TestTable.cpp
     ${ZSERIO_GEN_DIR}/explicit_parameters/TestTable.h
     ${ZSERIO_GEN_DIR}/explicit_parameters/TestTableRow.cpp
     ${ZSERIO_GEN_DIR}/explicit_parameters/TestTableRow.h
 
-    ${ZSERIO_GEN_DIR}/explicit_parameters/IParameterProvider.h
     ${ZSERIO_GEN_DIR}/explicit_parameters/TestDb.cpp
     ${ZSERIO_GEN_DIR}/explicit_parameters/TestDb.h
 )

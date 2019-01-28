@@ -450,15 +450,14 @@ TEST_F(WithoutWriterCode, readWorldDb)
     createWorldDb(db);
 
     WorldDb worldDb(db.getConnection());
-    IParameterProvider provider;
 
     const GeoMapTable& europe = worldDb.getEurope();
     std::vector<GeoMapTableRow> europeRows;
-    europe.read(provider, europeRows);
+    europe.read(europeRows);
 
     const GeoMapTable& america = worldDb.getAmerica();
     std::vector<GeoMapTableRow> americaRows;
-    america.read(provider, americaRows);
+    america.read(americaRows);
 
     ASSERT_EQ(1, europeRows.size());
     ASSERT_EQ(TILE_ID_EUROPE, europeRows[0].getTileId());

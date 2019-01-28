@@ -21,7 +21,6 @@ import org.junit.Test;
 import test_utils.FileUtil;
 import test_utils.JdbcUtil;
 
-import sql_tables.IParameterProvider;
 import sql_tables.TestDb;
 
 import zserio.runtime.ZserioError;
@@ -75,8 +74,7 @@ public class WithoutPkTableTest
         fillWithoutPkTableRows(writtenRows);
         testTable.write(writtenRows);
 
-        final WithoutPkTableParameterProvider parameterProvider = new WithoutPkTableParameterProvider();
-        final List<WithoutPkTableRow> readRows = testTable.read(parameterProvider);
+        final List<WithoutPkTableRow> readRows = testTable.read();
         checkWithoutPkTableRows(writtenRows, readRows);
     }
 
@@ -89,9 +87,8 @@ public class WithoutPkTableTest
         fillWithoutPkTableRows(writtenRows);
         testTable.write(writtenRows);
 
-        final WithoutPkTableParameterProvider parameterProvider = new WithoutPkTableParameterProvider();
         final String condition = "name='Name1'";
-        final List<WithoutPkTableRow> readRows = testTable.read(parameterProvider, condition);
+        final List<WithoutPkTableRow> readRows = testTable.read(condition);
 
         assertEquals(1, readRows.size());
 
@@ -114,21 +111,11 @@ public class WithoutPkTableTest
         final String updateCondition = "identifier=" + updateRowId;
         testTable.update(updateRow, updateCondition);
 
-        final WithoutPkTableParameterProvider parameterProvider = new WithoutPkTableParameterProvider();
-        final List<WithoutPkTableRow> readRows = testTable.read(parameterProvider, updateCondition);
+        final List<WithoutPkTableRow> readRows = testTable.read(updateCondition);
         assertEquals(1, readRows.size());
 
         final WithoutPkTableRow readRow = readRows.get(0);
         checkWithoutPkTableRow(updateRow, readRow);
-    }
-
-    private static class WithoutPkTableParameterProvider implements IParameterProvider
-    {
-        @Override
-        public long getComplexTable_count(ResultSet resultSet)
-        {
-            return 0;
-        }
     }
 
     private static void fillWithoutPkTableRows(List<WithoutPkTableRow> rows)

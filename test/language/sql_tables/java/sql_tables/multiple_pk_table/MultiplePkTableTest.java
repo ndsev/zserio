@@ -21,7 +21,6 @@ import org.junit.Test;
 import test_utils.FileUtil;
 import test_utils.JdbcUtil;
 
-import sql_tables.IParameterProvider;
 import sql_tables.TestDb;
 
 import zserio.runtime.ZserioError;
@@ -75,8 +74,7 @@ public class MultiplePkTableTest
         fillMultiplePkTableRows(writtenRows);
         testTable.write(writtenRows);
 
-        final MultiplePkTableParameterProvider parameterProvider = new MultiplePkTableParameterProvider();
-        final List<MultiplePkTableRow> readRows = testTable.read(parameterProvider);
+        final List<MultiplePkTableRow> readRows = testTable.read();
         checkMultiplePkTableRows(writtenRows, readRows);
     }
 
@@ -89,9 +87,8 @@ public class MultiplePkTableTest
         fillMultiplePkTableRows(writtenRows);
         testTable.write(writtenRows);
 
-        final MultiplePkTableParameterProvider parameterProvider = new MultiplePkTableParameterProvider();
         final String condition = "name='Name1'";
-        final List<MultiplePkTableRow> readRows = testTable.read(parameterProvider, condition);
+        final List<MultiplePkTableRow> readRows = testTable.read(condition);
         assertEquals(1, readRows.size());
 
         final int expectedRowNum = 1;
@@ -113,21 +110,11 @@ public class MultiplePkTableTest
         final String updateCondition = "blobId=" + updateRowId;
         testTable.update(updateRow, updateCondition);
 
-        final MultiplePkTableParameterProvider parameterProvider = new MultiplePkTableParameterProvider();
-        final List<MultiplePkTableRow> readRows = testTable.read(parameterProvider, updateCondition);
+        final List<MultiplePkTableRow> readRows = testTable.read(updateCondition);
         assertEquals(1, readRows.size());
 
         final MultiplePkTableRow readRow = readRows.get(0);
         checkMultiplePkTableRow(updateRow, readRow);
-    }
-
-    private static class MultiplePkTableParameterProvider implements IParameterProvider
-    {
-        @Override
-        public long getComplexTable_count(ResultSet resultSet)
-        {
-            return 0;
-        }
     }
 
     private static void fillMultiplePkTableRows(List<MultiplePkTableRow> rows)

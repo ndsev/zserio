@@ -173,9 +173,9 @@ public class WithoutWriterCodeTest
         assertMethodNotPresent(methods, "writeRow(");
 
         assertMethodPresent(methods, "GeoMapTable(zserio.runtime.SqlDatabase");
-        assertMethodPresent(methods, "readRow(without_writer_code.IParameterProvider");
-        assertMethodPresent(methods, "read(without_writer_code.IParameterProvider)");
-        assertMethodPresent(methods, "read(without_writer_code.IParameterProvider,java.lang.String)");
+        assertMethodPresent(methods, "readRow(");
+        assertMethodPresent(methods, "read()");
+        assertMethodPresent(methods, "read(java.lang.String)");
     }
 
     @Test
@@ -233,10 +233,10 @@ public class WithoutWriterCodeTest
         final WorldDb worldDb = new WorldDb(db.getConnection());
 
         final GeoMapTable europe = worldDb.getEurope();
-        final List<GeoMapTableRow> europeRows = europe.read(null);
+        final List<GeoMapTableRow> europeRows = europe.read();
 
         final GeoMapTable america = worldDb.getAmerica();
-        final List<GeoMapTableRow> americaRows = america.read(null);
+        final List<GeoMapTableRow> americaRows = america.read();
 
         assertEquals(1, europeRows.size());
         assertEquals(TILE_ID_EUROPE, europeRows.get(0).getTileId());

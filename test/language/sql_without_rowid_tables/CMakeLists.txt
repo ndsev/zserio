@@ -17,7 +17,6 @@ set(ZSERIO_GENERATED_SOURCES
     ${ZSERIO_GEN_DIR}/sql_without_rowid_tables/simple_without_rowid_table/SimpleWithoutRowIdTable.h
     ${ZSERIO_GEN_DIR}/sql_without_rowid_tables/simple_without_rowid_table/SimpleWithoutRowIdTableRow.cpp
     ${ZSERIO_GEN_DIR}/sql_without_rowid_tables/simple_without_rowid_table/SimpleWithoutRowIdTableRow.h
-    ${ZSERIO_GEN_DIR}/sql_without_rowid_tables/IParameterProvider.h
 )
 
 zserio_add_library(TARGET sql_without_rowid_zs

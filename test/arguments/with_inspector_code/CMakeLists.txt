@@ -7,7 +7,6 @@ set(ZSERIO_GENERATED_SOURCES
     ${ZSERIO_GEN_DIR}/with_inspector_code/InspectorZserioTypeNames.h
     ${ZSERIO_GEN_DIR}/with_inspector_code/InspectorParameterProvider.cpp
     ${ZSERIO_GEN_DIR}/with_inspector_code/InspectorParameterProvider.h
-    ${ZSERIO_GEN_DIR}/with_inspector_code/IParameterProvider.h
     ${ZSERIO_GEN_DIR}/with_inspector_code/ISqlDatabaseInspector.h
     ${ZSERIO_GEN_DIR}/with_inspector_code/ISqlTableInspector.h
 

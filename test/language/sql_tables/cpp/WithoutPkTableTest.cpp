@@ -91,14 +91,6 @@ protected:
         return true;
     }
 
-    class WithoutPkTableParameterProvider : public IParameterProvider
-    {
-        virtual uint32_t getComplexTable_count(sqlite3_stmt&)
-        {
-            return 0;
-        }
-    };
-
     static const char DB_FILE_NAME[];
     static const int32_t NUM_WITHOUT_PK_TABLE_ROWS;
 
@@ -128,9 +120,8 @@ TEST_F(WithoutPkTableTest, readWithoutCondition)
     fillWithoutPkTableRows(writtenRows);
     testTable.write(writtenRows);
 
-    WithoutPkTableParameterProvider parameterProvider;
     std::vector<WithoutPkTableRow> readRows;
-    testTable.read(parameterProvider, readRows);
+    testTable.read(readRows);
     checkWithoutPkTableRows(writtenRows, readRows);
 }
 
@@ -142,10 +133,9 @@ TEST_F(WithoutPkTableTest, readWithCondition)
     fillWithoutPkTableRows(writtenRows);
     testTable.write(writtenRows);
 
-    WithoutPkTableParameterProvider parameterProvider;
     const std::string condition = "name='Name1'";
     std::vector<WithoutPkTableRow> readRows;
-    testTable.read(parameterProvider, condition, readRows);
+    testTable.read(condition, readRows);
     ASSERT_EQ(1, readRows.size());
 
     const size_t expectedRowNum = 1;
@@ -166,9 +156,8 @@ TEST_F(WithoutPkTableTest, update)
     const std::string updateCondition = "identifier=" + zserio::convertToString(updateRowId);
     testTable.update(updateRow, updateCondition);
 
-    WithoutPkTableParameterProvider parameterProvider;
     std::vector<WithoutPkTableRow> readRows;
-    testTable.read(parameterProvider, updateCondition, readRows);
+    testTable.read(updateCondition, readRows);
     ASSERT_EQ(1, readRows.size());
 
     checkWithoutPkTableRow(updateRow, readRows[0]);

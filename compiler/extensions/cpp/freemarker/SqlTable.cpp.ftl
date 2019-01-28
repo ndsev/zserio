@@ -1,4 +1,5 @@
 <#include "FileHeader.inc.ftl">
+<#include "Sql.inc.ftl">
 <#if withInspectorCode>
     <#include "Inspector.inc.ftl">
 </#if>
@@ -25,6 +26,12 @@
 
 <@namespace_begin package.path/>
 
+<#assign hasBlobField=sql_table_has_blob_field(fields)/>
+<#assign needsParameterProvider=explicitParameters?has_content/>
+<#assign needsInspectorParameterProvider=sql_table_needs_inspector_parameter_provider(fields)/>
+<#if withWriterCode>
+    <#assign hasNonVirtualField=sql_table_has_non_virtual_field(fields)/>
+</#if>
 ${name}::${name}(zserio::SqlDatabase& db, const std::string& tableName) : m_db(db), m_name(tableName)
 {
 }
@@ -32,18 +39,8 @@ ${name}::${name}(zserio::SqlDatabase& db, const std::string& tableName) : m_db(d
 ${name}::~${name}()
 {
 }
-<#if withWriterCode>
 
-    <#function strip_quotes string>
-        <#return string[1..string?length - 2]>
-    </#function>
-    <#assign hasNonVirtualField=false/>
-    <#list fields as field>
-        <#if !field.isVirtual>
-            <#assign hasNonVirtualField=true/>
-            <#break>
-        </#if>
-    </#list>
+<#if withWriterCode>
 void ${name}::createTable()
 {
     std::string sqlQuery;
@@ -69,14 +66,16 @@ void ${name}::deleteTable()
     sqlQuery += m_name;
     m_db.executeUpdate(sqlQuery.c_str());
 }
-</#if>
 
-void ${name}::read(${rootPackage.name}::IParameterProvider& parameterProvider, std::vector<${rowName}>& rows) const
+</#if>
+void ${name}::read(<#if needsParameterProvider>IParameterProvider& parameterProvider, </#if><#rt>
+        <#lt>std::vector<${rowName}>& rows) const
 {
-    read(parameterProvider, "", rows);
+    read(<#if needsParameterProvider>parameterProvider, </#if>"", rows);
 }
 
-void ${name}::read(${rootPackage.name}::IParameterProvider& parameterProvider, const std::string& condition,
+void ${name}::read(<#if needsParameterProvider>IParameterProvider& parameterProvider, </#if><#rt>
+        <#lt>const std::string& condition,
         std::vector<${rowName}>& rows) const
 {
     // assemble sql query
@@ -105,7 +104,7 @@ void ${name}::read(${rootPackage.name}::IParameterProvider& parameterProvider, c
         if (result == SQLITE_DONE || result != SQLITE_ROW)
             break;
 
-        readRow(parameterProvider, *statement, rows);
+        readRow(<#if needsParameterProvider>parameterProvider, </#if>*statement, rows);
     }
 
     sqlite3_finalize(statement);
@@ -175,38 +174,18 @@ void ${name}::update(const ${rowName}& row, const std::string& whereCondition)
         throw zserio::SqliteException("Update: sqlite3_step() failed", result);
 }
 </#if>
-<#assign isUsedParameterProvider=false/>
-<#assign isUsedInspectorParameterProvider=false/>
-<#list fields as field>
-    <#if field.sqlTypeData.isBlob>
-        <#list field.typeParameters as parameter>
-            <#assign isUsedInspectorParameterProvider=true/>
-            <#if parameter.isExplicit>
-                <#assign isUsedParameterProvider=true/>
-                <#break>
-            </#if>
-        </#list>
-    </#if>
-</#list>
-<#assign hasBlobField=false/>
-<#list fields as field>
-    <#if field.sqlTypeData.isBlob>
-        <#assign hasBlobField=true/>
-        <#break>
-    </#if>
-</#list>
 <#macro read_blob field blob_ctor_variable_name="reader" called_by_inspector=false>
         <#list field.typeParameters as parameter>
-        ${parameter.cppTypeName} ${parameter.definitionName} = <#rt>
+        const ${parameter.cppTypeName} ${parameter.definitionName} = <#rt>
             <#if called_by_inspector>
-                <#lt>parameterProvider.<@inspector_parameter_provider_name parameter/>();
+                <#lt>parameterProvider.<@inspector_parameter_provider_getter_name parameter/>();
             <#elseif parameter.isExplicit>
-                <#lt>parameterProvider.get${parameter.tableName}_${parameter.expression}(<#if !called_by_inspector>statement</#if>);
+                <#lt>parameterProvider.<@sql_parameter_provider_getter_name parameter/>(<#if !called_by_inspector>statement</#if>);
             <#else>
                 <#lt>${parameter.expression};
             </#if>
         </#list>
-        ${field.cppTypeName} blob(${blob_ctor_variable_name}<#rt>
+        <#if !called_by_inspector>const </#if>${field.cppTypeName} blob(${blob_ctor_variable_name}<#rt>
         <#list field.typeParameters as parameter>
                 , ${parameter.definitionName}<#t>
         </#list>
@@ -216,7 +195,7 @@ void ${name}::update(const ${rowName}& row, const std::string& whereCondition)
 
 bool ${name}::convertBitStreamToBlobTree(const std::string&<#if hasBlobField> blobName</#if>,
         zserio::BitStreamReader&<#if hasBlobField> reader</#if>,
-        ${rootPackage.name}::IInspectorParameterProvider&<#if isUsedInspectorParameterProvider> parameterProvider</#if>,
+        ${rootPackage.name}::IInspectorParameterProvider&<#if needsInspectorParameterProvider> parameterProvider</#if>,
         zserio::BlobInspectorTree&<#if hasBlobField> tree</#if>) const
 {
 <#list fields as field>
@@ -240,7 +219,7 @@ bool ${name}::convertBitStreamToBlobTree(const std::string&<#if hasBlobField> bl
 
 bool ${name}::convertBlobTreeToBitStream(const std::string&<#if hasBlobField> blobName</#if>,
         const zserio::BlobInspectorTree&<#if hasBlobField> tree</#if>,
-        ${rootPackage.name}::IInspectorParameterProvider&<#if isUsedInspectorParameterProvider> parameterProvider</#if>,
+        ${rootPackage.name}::IInspectorParameterProvider&<#if needsInspectorParameterProvider> parameterProvider</#if>,
         zserio::BitStreamWriter&<#if hasBlobField> writer</#if>) const
 {
 <#list fields as field>
@@ -278,8 +257,9 @@ void ${name}::validate()
 }
 </#if>
 
-void ${name}::readRow(${rootPackage.name}::IParameterProvider&<#if isUsedParameterProvider> parameterProvider</#if>,
-        sqlite3_stmt&<#if fields?has_content> statement</#if>, std::vector<${rowName}>& rows)
+void ${name}::readRow(<#if needsParameterProvider>IParameterProvider& parameterProvider, </#if><#rt>
+        <#lt>sqlite3_stmt&<#if fields?has_content> statement</#if>,
+        std::vector<${rowName}>& rows)
 {
     ${rowName} row;
 
@@ -374,7 +354,7 @@ void ${name}::appendCreateTableToQuery(std::string& sqlQuery)
         <#list fields as field>
             <#if !field.isVirtual>
             "${field.name}<#if needsTypesInSchema> ${field.sqlTypeData.name}</#if><#rt>
-                    <#lt><#if field.sqlConstraint??> ${strip_quotes(field.sqlConstraint)}</#if><#rt>
+                    <#lt><#if field.sqlConstraint??> ${sql_strip_quotes(field.sqlConstraint)}</#if><#rt>
                     <#lt><#if field_has_next>, </#if>"
             </#if>
         </#list>

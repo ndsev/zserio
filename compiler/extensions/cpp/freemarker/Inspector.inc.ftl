@@ -14,6 +14,6 @@
     </#if>
 </#macro>
 
-<#macro inspector_parameter_provider_name parameter>
+<#macro inspector_parameter_provider_getter_name parameter>
     get${parameter.tableName}_<@inspector_parameter_name parameter/><#t>
 </#macro>

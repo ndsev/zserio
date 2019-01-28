@@ -44,6 +44,24 @@ protected:
         for (uint32_t i = 0; i < TEST_TABLE_COUNT2; ++i)
             values2.push_back(static_cast<uint8_t>(id + 1));
         row.setBlob2(testBlob2);
+
+        TestBlob testBlob3;
+        testBlob3.initialize(TEST_TABLE_COUNT1);
+        zserio::UInt8Array& values3 = testBlob3.getValues();
+        for (uint32_t i = 0; i < TEST_TABLE_COUNT1; ++i)
+            values3.push_back(static_cast<uint8_t>(id + 2));
+        row.setBlob3(testBlob3);
+
+        TestBlobMultiParam testBlobMultiParam;
+        testBlobMultiParam.initialize(TEST_TABLE_COUNT2, TEST_TABLE_COUNT2);
+        zserio::UInt8Array& valuesA = testBlobMultiParam.getValuesA();
+        zserio::UInt16Array& valuesB = testBlobMultiParam.getValuesB();
+        for (uint32_t i = 0; i < TEST_TABLE_COUNT2; ++i)
+        {
+            valuesA.push_back(static_cast<uint8_t>(id + 3));
+            valuesB.push_back(static_cast<uint16_t>(id + 4));
+        }
+        row.setBlobMultiParam(testBlobMultiParam);
     }
 
     static void fillTestTableRows(std::vector<TestTableRow>& rows)
@@ -64,6 +82,11 @@ protected:
         ASSERT_EQ(row1.getName(), row2.getName());
         ASSERT_EQ(row1.getBlob1(), row2.getBlob1());
         ASSERT_EQ(row1.getBlob2(), row2.getBlob2());
+        ASSERT_EQ(row1.getBlob3(), row2.getBlob3());
+        ASSERT_EQ(row1.getBlobMultiParam(), row2.getBlobMultiParam());
+
+        // check reused explicit count1 parameter
+        ASSERT_EQ(row2.getBlob1().getCount(), row2.getBlob3().getCount());
     }
 
     static void checkTestTableRows(const std::vector<TestTableRow>& rows1,
@@ -74,14 +97,14 @@ protected:
             checkTestTableRow(rows1[i], rows2[i]);
     }
 
-    class TestTableParameterProvider : public IParameterProvider
+    class TestTableParameterProvider : public TestTable::IParameterProvider
     {
-        virtual uint32_t getTestTable_count1(sqlite3_stmt&)
+        virtual uint32_t getCount1(sqlite3_stmt&)
         {
             return TEST_TABLE_COUNT1;
         }
 
-        virtual uint32_t getTestTable_count2(sqlite3_stmt&)
+        virtual uint32_t getCount2(sqlite3_stmt&)
         {
             return TEST_TABLE_COUNT2;
         }

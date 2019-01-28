@@ -22,7 +22,6 @@ import org.junit.Test;
 import test_utils.FileUtil;
 import test_utils.JdbcUtil;
 
-import sql_tables.IParameterProvider;
 import sql_tables.TestDb;
 
 import zserio.runtime.ZserioError;
@@ -123,10 +122,10 @@ public class ComplexTableTest
         checkComplexTableRow(updateRow, readRow);
     }
 
-    private static class ComplexTableParameterProvider implements IParameterProvider
+    private static class ComplexTableParameterProvider implements ComplexTable.IParameterProvider
     {
         @Override
-        public long getComplexTable_count(ResultSet resultSet)
+        public long getCount(ResultSet resultSet)
         {
             return COMPLEX_TABLE_COUNT;
         }

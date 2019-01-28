@@ -2,6 +2,8 @@ package zserio.emit.python;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 import zserio.ast.EnumType;
 import zserio.ast.Expression;
@@ -17,6 +19,7 @@ import zserio.emit.common.sql.SqlNativeTypeMapper;
 import zserio.emit.common.sql.types.NativeBlobType;
 import zserio.emit.common.sql.types.SqlNativeType;
 import zserio.emit.python.types.PythonNativeType;
+import zserio.tools.HashUtil;
 
 public class SqlTableEmitterTemplateData extends UserTypeTemplateData
 {
@@ -41,6 +44,14 @@ public class SqlTableEmitterTemplateData extends UserTypeTemplateData
                     pythonExpressionFormatter, context.getPythonSqlIndirectExpressionFormatter(this),
                     sqlNativeTypeMapper, sqlTableType, field, this);
             fields.add(fieldData);
+            for (FieldTemplateData.ParameterTemplateData parameterTemplateData : fieldData.getParameters())
+            {
+                if (parameterTemplateData.getIsExplicit())
+                {
+                    explicitParameters.add(new ExplicitParameterTemplateData(
+                            parameterTemplateData.getExpression()));
+                }
+            }
         }
     }
 
@@ -67,6 +78,54 @@ public class SqlTableEmitterTemplateData extends UserTypeTemplateData
     public Iterable<FieldTemplateData> getFields()
     {
         return fields;
+    }
+
+    public Iterable<ExplicitParameterTemplateData> getExplicitParameters()
+    {
+        return explicitParameters;
+    }
+
+    public static class ExplicitParameterTemplateData implements Comparable<ExplicitParameterTemplateData>
+    {
+        public ExplicitParameterTemplateData(String expression)
+        {
+            this.expression = expression;
+        }
+
+        public String getExpression()
+        {
+            return expression;
+        }
+
+        @Override
+        public int compareTo(ExplicitParameterTemplateData other)
+        {
+            return expression.compareTo(other.expression);
+        }
+
+        @Override
+        public boolean equals(Object other)
+        {
+            if (this == other)
+                return true;
+
+            if (other instanceof ExplicitParameterTemplateData)
+            {
+                return compareTo((ExplicitParameterTemplateData)other) == 0;
+            }
+
+            return false;
+        }
+
+        @Override
+        public int hashCode()
+        {
+            int hash = HashUtil.HASH_SEED;
+            hash = HashUtil.hash(hash, expression);
+            return hash;
+        }
+
+        private final String expression;
     }
 
     public static class FieldTemplateData
@@ -142,38 +201,6 @@ public class SqlTableEmitterTemplateData extends UserTypeTemplateData
             return sqlTypeData;
         }
 
-        public static class ParameterTemplateData
-        {
-            public ParameterTemplateData(ExpressionFormatter pythonSqlIndirectExpressionFormatter,
-                    SqlTableType tableType, TypeInstantiation.InstantiatedParameter instantiatedParameter)
-                            throws ZserioEmitException
-            {
-                tableName = tableType.getName();
-                final Expression argumentExpression = instantiatedParameter.getArgumentExpression();
-                isExplicit = argumentExpression.isExplicitVariable();
-                expression = pythonSqlIndirectExpressionFormatter.formatGetter(argumentExpression);
-            }
-
-            public String getTableName()
-            {
-                return tableName;
-            }
-
-            public boolean getIsExplicit()
-            {
-                return isExplicit;
-            }
-
-            public String getExpression()
-            {
-                return expression;
-            }
-
-            private final String tableName;
-            private final boolean isExplicit;
-            private final String expression;
-        }
-
         public static class EnumTemplateData
         {
             public EnumTemplateData(PythonNativeType enumNativeType)
@@ -213,6 +240,31 @@ public class SqlTableEmitterTemplateData extends UserTypeTemplateData
             private final boolean isBlob;
         }
 
+        public static class ParameterTemplateData
+        {
+            public ParameterTemplateData(ExpressionFormatter pythonSqlIndirectExpressionFormatter,
+                    SqlTableType tableType, TypeInstantiation.InstantiatedParameter instantiatedParameter)
+                            throws ZserioEmitException
+            {
+                final Expression argumentExpression = instantiatedParameter.getArgumentExpression();
+                isExplicit = argumentExpression.isExplicitVariable();
+                expression = pythonSqlIndirectExpressionFormatter.formatGetter(argumentExpression);
+            }
+
+            public boolean getIsExplicit()
+            {
+                return isExplicit;
+            }
+
+            public String getExpression()
+            {
+                return expression;
+            }
+
+            private final boolean isExplicit;
+            private final String expression;
+        }
+
         private final String name;
         private final String pythonTypeName;
 
@@ -229,4 +281,6 @@ public class SqlTableEmitterTemplateData extends UserTypeTemplateData
     private final boolean isWithoutRowId;
 
     private final List<FieldTemplateData> fields = new ArrayList<FieldTemplateData>();
+    private final SortedSet<ExplicitParameterTemplateData> explicitParameters =
+            new TreeSet<ExplicitParameterTemplateData>();
 }

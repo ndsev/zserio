@@ -73,7 +73,7 @@ public class Fts5VirtualTableTest
         fillFts5VirtualTableRows(writtenRows);
         testTable.write(writtenRows);
 
-        final List<Fts5VirtualTableRow> readRows = testTable.read(null);
+        final List<Fts5VirtualTableRow> readRows = testTable.read();
         checkFts5VirtualTableRows(writtenRows, readRows);
     }
 
@@ -87,7 +87,7 @@ public class Fts5VirtualTableTest
         testTable.write(writtenRows);
 
         final String condition = "body='Body1'";
-        final List<Fts5VirtualTableRow> readRows = testTable.read(null, condition);
+        final List<Fts5VirtualTableRow> readRows = testTable.read(condition);
 
         assertEquals(1, readRows.size());
 
@@ -110,7 +110,7 @@ public class Fts5VirtualTableTest
         final String updateCondition = "title='" + updateTitle + "'";
         testTable.update(updateRow, updateCondition);
 
-        final List<Fts5VirtualTableRow> readRows = testTable.read(null, updateCondition);
+        final List<Fts5VirtualTableRow> readRows = testTable.read(updateCondition);
         assertEquals(1, readRows.size());
 
         final Fts5VirtualTableRow readRow = readRows.get(0);

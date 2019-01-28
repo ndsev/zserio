@@ -16,15 +16,7 @@
     </#if>
 </#list>
 <#assign needsRowConversion = hasBlobField || hasEnumField/>
-<#assign needsParameterProvider = false/>
-<#list fields as field>
-    <#list field.parameters as parameter>
-        <#if parameter.isExplicit>
-            <#assign needsParameterProvider = true/>
-            <#break>
-        </#if>
-    </#list>
-</#list>
+<#assign needsParameterProvider = explicitParameters?has_content/>
 <#if withWriterCode>
     <#assign hasNonVirtualField=false/>
     <#list fields as field>
@@ -39,6 +31,17 @@
 </#if>
 
 class ${name}():
+<#if needsParameterProvider>
+    <#macro parameter_provider_method_name parameter>
+        get${parameter.expression?cap_first}<#t>
+    </#macro>
+    class IParameterProvider():
+    <#list explicitParameters as parameter>
+        def <@parameter_provider_method_name parameter/>(self, row):
+            raise NotImplementedError()
+    </#list>
+
+</#if>
     def __init__(self, connectionCursor, tableName, attachedDbName=None):
         self._cursor = connectionCursor
         self._tableName = tableName
@@ -88,7 +91,7 @@ class ${name}():
                 ${field.name}_ = ${field.pythonTypeName}.fromReader(reader<#rt>
             <#list field.parameters as parameter>
                 <#if parameter.isExplicit>
-                , self._parameterProvider.<@parameter_provider_method_name field, parameter/>(row)<#t>
+                , self._parameterProvider.<@parameter_provider_method_name parameter/>(row)<#t>
                 <#else>
                 , ${parameter.expression}<#t>
                 </#if>
@@ -142,21 +145,6 @@ class ${name}():
                      " WHERE ") + whereCondition
 
         self._cursor.execute(sqlQuery, <#if needsRowConversion>self._writeRow(row)<#else>row</#if>)
-</#if>
-<#if needsParameterProvider>
-
-    <#macro parameter_provider_method_name field parameter>
-        get${parameter.expression?cap_first}<#t>
-    </#macro>
-    class IParameterProvider():
-    <#list fields as field>
-        <#list field.parameters as parameter>
-            <#if parameter.isExplicit>
-        def <@parameter_provider_method_name field, parameter/>(self, row):
-            raise NotImplementedError()
-            </#if>
-        </#list>
-    </#list>
 </#if>
 
     def _getTableNameInQuery(self):

@@ -2,7 +2,10 @@ package zserio.emit.cpp;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
+import zserio.ast.Parameter;
 import zserio.ast.ZserioType;
 import zserio.ast.ZserioTypeUtil;
 import zserio.ast.Expression;
@@ -20,6 +23,7 @@ import zserio.emit.common.sql.types.SqlNativeType;
 import zserio.emit.cpp.types.CppNativeType;
 import zserio.emit.cpp.types.NativeBooleanType;
 import zserio.emit.cpp.types.NativeEnumType;
+import zserio.tools.HashUtil;
 
 public class SqlTableEmitterTemplateData extends UserTypeTemplateData
 {
@@ -44,11 +48,21 @@ public class SqlTableEmitterTemplateData extends UserTypeTemplateData
         final ExpressionFormatter cppSqlIndirectExpressionFormatter =
                 context.getSqlIndirectExpressionFormatter(this);
         final SqlNativeTypeMapper sqlNativeTypeMapper = new SqlNativeTypeMapper();
+        explicitParameters = new TreeSet<ExplicitParameterTemplateData>();
         for (Field tableField : tableFields)
         {
             final FieldTemplateData field = new FieldTemplateData(cppNativeTypeMapper, cppExpressionFormatter,
                     cppSqlIndirectExpressionFormatter, sqlNativeTypeMapper, tableType, tableField, this);
             fields.add(field);
+            for (FieldTemplateData.ParameterTemplateData parameterTemplateData : field.getTypeParameters())
+            {
+                if (parameterTemplateData.getIsExplicit())
+                {
+                    final String expression = parameterTemplateData.getExpression();
+                    final String cppTypeName = parameterTemplateData.getCppTypeName();
+                    explicitParameters.add(new ExplicitParameterTemplateData(expression, cppTypeName));
+                }
+            }
         }
     }
 
@@ -60,6 +74,11 @@ public class SqlTableEmitterTemplateData extends UserTypeTemplateData
     public Iterable<FieldTemplateData> getFields()
     {
         return fields;
+    }
+
+    public Iterable<ExplicitParameterTemplateData> getExplicitParameters()
+    {
+        return explicitParameters;
     }
 
     public String getSqlConstraint()
@@ -82,6 +101,61 @@ public class SqlTableEmitterTemplateData extends UserTypeTemplateData
         return isWithoutRowId;
     }
 
+    public static class ExplicitParameterTemplateData implements Comparable<ExplicitParameterTemplateData>
+    {
+        public ExplicitParameterTemplateData(String expression, String cppTypeName)
+        {
+            this.expression = expression;
+            this.cppTypeName = cppTypeName;
+        }
+
+        public String getExpression()
+        {
+            return expression;
+        }
+
+        public String getCppTypeName()
+        {
+            return cppTypeName;
+        }
+
+        @Override
+        public int compareTo(ExplicitParameterTemplateData other)
+        {
+            int result = expression.compareTo(other.expression);
+            if (result != 0)
+                return result;
+
+            return cppTypeName.compareTo(other.cppTypeName);
+        }
+
+        @Override
+        public boolean equals(Object other)
+        {
+            if (this == other)
+                return true;
+
+            if (other instanceof ExplicitParameterTemplateData)
+            {
+                return compareTo((ExplicitParameterTemplateData)other) == 0;
+            }
+
+            return false;
+        }
+
+        @Override
+        public int hashCode()
+        {
+            int hash = HashUtil.HASH_SEED;
+            hash = HashUtil.hash(hash, expression);
+            hash = HashUtil.hash(hash, cppTypeName);
+            return hash;
+        }
+
+        private final String expression;
+        private final String cppTypeName;
+    }
+
     public static class FieldTemplateData
     {
         public FieldTemplateData(CppNativeTypeMapper cppNativeTypeMapper,
@@ -101,14 +175,13 @@ public class SqlTableEmitterTemplateData extends UserTypeTemplateData
                 cppExpressionFormatter.formatGetter(sqlConstraintExpr);
             isVirtual = field.getIsVirtual();
 
-            typeParameters = new ArrayList<SqlTableParameterTemplateData>();
+            typeParameters = new ArrayList<ParameterTemplateData>();
             final List<TypeInstantiation.InstantiatedParameter> parameters =
                     field.getInstantiatedParameters();
             for (TypeInstantiation.InstantiatedParameter parameter : parameters)
             {
-                typeParameters.add(new SqlTableParameterTemplateData(cppNativeTypeMapper,
-                        cppExpressionFormatter, cppSqlIndirectExpressionFormatter, table, field, parameter,
-                        includeCollector));
+                typeParameters.add(new ParameterTemplateData(cppNativeTypeMapper,
+                        cppSqlIndirectExpressionFormatter, table, field, parameter, includeCollector));
             }
 
             isBoolean = nativeFieldType instanceof NativeBooleanType;
@@ -141,7 +214,7 @@ public class SqlTableEmitterTemplateData extends UserTypeTemplateData
             return isVirtual;
         }
 
-        public Iterable<SqlTableParameterTemplateData> getTypeParameters()
+        public Iterable<ParameterTemplateData> getTypeParameters()
         {
             return typeParameters;
         }
@@ -159,6 +232,130 @@ public class SqlTableEmitterTemplateData extends UserTypeTemplateData
         public SqlTypeTemplateData getSqlTypeData()
         {
             return sqlTypeData;
+        }
+
+        public static class ParameterTemplateData implements Comparable<ParameterTemplateData>
+        {
+            public ParameterTemplateData(CppNativeTypeMapper cppNativeTypeMapper,
+                    ExpressionFormatter cppSqlIndirectExpressionFormatter, SqlTableType tableType, Field field,
+                    TypeInstantiation.InstantiatedParameter instantiatedParameter,
+                    IncludeCollector includeCollector) throws ZserioEmitException
+            {
+                final Parameter parameter = instantiatedParameter.getParameter();
+                final CppNativeType parameterNativeType =
+                        cppNativeTypeMapper.getCppType(parameter.getParameterType());
+                includeCollector.addHeaderIncludesForType(parameterNativeType);
+
+                final Expression argumentExpression = instantiatedParameter.getArgumentExpression();
+                isExplicit = argumentExpression.isExplicitVariable();
+                tableName = tableType.getName();
+                fieldName = field.getName();
+                definitionName = parameter.getName();
+                cppTypeName = parameterNativeType.getFullName();
+                expression = cppSqlIndirectExpressionFormatter.formatGetter(argumentExpression);
+            }
+
+            public String getTableName()
+            {
+                return tableName;
+            }
+
+            public String getFieldName()
+            {
+                return fieldName;
+            }
+
+            public String getDefinitionName()
+            {
+                return definitionName;
+            }
+
+            public String getCppTypeName()
+            {
+                return cppTypeName;
+            }
+
+            public boolean getIsExplicit()
+            {
+                return isExplicit;
+            }
+
+            public String getExpression()
+            {
+                return expression;
+            }
+
+            @Override
+            public int compareTo(ParameterTemplateData other)
+            {
+                int result = tableName.compareTo(other.tableName);
+                if (result != 0)
+                    return result;
+
+                result = Boolean.compare(isExplicit,  other.isExplicit);
+                if (result != 0)
+                    return result;
+
+                if (isExplicit)
+                {
+                    // IParameterProvider groups explicit parameters by expressions
+                    result = expression.compareTo(other.expression);
+                    if (result != 0)
+                        return result;
+                }
+                else
+                {
+                    // IInspectorParameterProvider groups non-explicit parameters by fieldName-definitionName
+                    result = fieldName.compareTo(other.fieldName);
+                    if (result != 0)
+                        return result;
+
+                    result = definitionName.compareTo(other.definitionName);
+                    if (result != 0)
+                        return result;
+                }
+
+                return cppTypeName.compareTo(other.cppTypeName);
+            }
+
+            @Override
+            public boolean equals(Object other)
+            {
+                if (this == other)
+                    return true;
+
+                if (other instanceof ParameterTemplateData)
+                    return compareTo((ParameterTemplateData)other) == 0;
+
+                return false;
+            }
+
+            @Override
+            public int hashCode()
+            {
+                int hash = HashUtil.HASH_SEED;
+                hash = HashUtil.hash(hash, tableName);
+                hash = HashUtil.hash(hash, isExplicit);
+                if (isExplicit)
+                {
+                    hash = HashUtil.hash(hash, expression);
+                }
+                else
+                {
+                    hash = HashUtil.hash(hash, fieldName);
+                    hash = HashUtil.hash(hash, definitionName);
+                }
+                hash = HashUtil.hash(hash, cppTypeName);
+
+                return hash;
+            }
+
+            private final String tableName;
+            private final String fieldName;
+            private final String definitionName;
+            private final String cppTypeName;
+            private final boolean isExplicit;
+            private final String expression;
         }
 
         public static class EnumTemplateData
@@ -208,10 +405,10 @@ public class SqlTableEmitterTemplateData extends UserTypeTemplateData
                 return isReal;
             }
 
-            private final String    name;
-            private final boolean   isBlob;
-            private final boolean   isInteger;
-            private final boolean   isReal;
+            private final String  name;
+            private final boolean isBlob;
+            private final boolean isInteger;
+            private final boolean isReal;
         }
 
         private EnumTemplateData createEnumTemplateData(CppNativeType nativeType)
@@ -222,21 +419,22 @@ public class SqlTableEmitterTemplateData extends UserTypeTemplateData
             return new EnumTemplateData((NativeEnumType)nativeType);
         }
 
-        private final String                name;
-        private final String                cppTypeName;
-        private final String                zserioTypeName;
-        private final String                sqlConstraint;
-        private final boolean               isVirtual;
-        private final List<SqlTableParameterTemplateData>   typeParameters;
-        private final boolean               isBoolean;
-        private final EnumTemplateData      enumData;
-        private final SqlTypeTemplateData   sqlTypeData;
+        private final String name;
+        private final String cppTypeName;
+        private final String zserioTypeName;
+        private final String sqlConstraint;
+        private final boolean isVirtual;
+        private final List<ParameterTemplateData> typeParameters;
+        private final boolean isBoolean;
+        private final EnumTemplateData enumData;
+        private final SqlTypeTemplateData sqlTypeData;
     }
 
-    private final String                    rowName;
-    private final List<FieldTemplateData>   fields;
-    private final String                    sqlConstraint;
-    private final String                    virtualTableUsing;
-    private final boolean                   needsTypesInSchema;
-    private final boolean                   isWithoutRowId;
+    private final String rowName;
+    private final List<FieldTemplateData> fields;
+    private final SortedSet<ExplicitParameterTemplateData> explicitParameters;
+    private final String sqlConstraint;
+    private final String virtualTableUsing;
+    private final boolean needsTypesInSchema;
+    private final boolean isWithoutRowId;
 }

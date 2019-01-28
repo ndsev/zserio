@@ -51,7 +51,7 @@ public class FullRangeTableValidationTest
     @Test
     public void validation() throws SQLException, URISyntaxException, ZserioError
     {
-        final ValidationReport report = database.validate(null);
+        final ValidationReport report = database.validate();
         assertEquals(1, report.getNumberOfValidatedTables());
         assertEquals(0, report.getNumberOfValidatedRows());
         assertTrue(report.getTotalParameterProviderTime() <= report.getTotalValidationTime());

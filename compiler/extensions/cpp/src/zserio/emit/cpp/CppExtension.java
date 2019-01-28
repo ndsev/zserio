@@ -49,7 +49,6 @@ public class CppExtension implements Extension
         final String outputDir = parameters.getCommandLineArg(OptionCpp);
         final List<Emitter> emitters = new ArrayList<Emitter>();
         emitters.add(new SqlDatabaseEmitter(outputDir, parameters));
-        emitters.add(new ParameterProviderEmitter(outputDir, parameters));
         emitters.add(new SqlTableEmitter(outputDir, parameters));
         emitters.add(new SqlDatabaseInspectorEmitter(outputDir, parameters));
         emitters.add(new SqlTableInspectorEmitter(outputDir, parameters));

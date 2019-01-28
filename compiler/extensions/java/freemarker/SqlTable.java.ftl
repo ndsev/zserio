@@ -1,4 +1,5 @@
 <#include "FileHeader.inc.ftl">
+<#include "Sql.inc.ftl">
 <#include "GeneratePkgPrefix.inc.ftl">
 <#include "RangeCheck.inc.ftl">
 <@standard_header generatorDescription, packageName, javaMajorVersion, [
@@ -10,13 +11,14 @@
         "java.util.ArrayList",
         "zserio.runtime.SqlDatabase"
 ]/>
-<#assign hasBlobField=false/>
-<#list fields as field>
-    <#if field.sqlTypeData.isBlob>
-        <#assign hasBlobField=true/>
-        <#break>
-    </#if>
-</#list>
+<#assign hasBlobField=sql_table_has_blob_field(fields)/>
+<#assign needsParameterProvider=explicitParameters?has_content/>
+<#if withWriterCode>
+    <#assign hasNonVirtualField=sql_table_has_non_virtual_field(fields)/>
+</#if>
+<#if withValidationCode>
+    <#assign hasValidateableField=sql_table_has_validatable_field(fields)/>
+</#if>
 <#if hasBlobField>
     <#if withWriterCode>
 <@imports ["zserio.runtime.io.ZserioIO"]/>
@@ -43,6 +45,15 @@
 <@class_header generatorDescription/>
 public class ${name}
 {
+<#if needsParameterProvider>
+    public static interface IParameterProvider
+    {
+    <#list explicitParameters as parameter>
+        ${parameter.javaTypeName} <@sql_parameter_provider_getter_name parameter/>(ResultSet resultSet);
+    </#list>
+    };
+
+</#if>
     public ${name}(SqlDatabase db, String tableName)
     {
         __db = db;
@@ -58,16 +69,6 @@ public class ${name}
     }
 <#if withWriterCode>
 
-    <#function strip_quotes string>
-        <#return string[1..string?length - 2]>
-    </#function>
-    <#assign hasNonVirtualField=false/>
-    <#list fields as field>
-        <#if !field.isVirtual>
-            <#assign hasNonVirtualField=true/>
-            <#break>
-        </#if>
-    </#list>
     public void createTable() throws SQLException
     {
         final StringBuilder sqlQuery = getCreateTableQuery();
@@ -91,18 +92,18 @@ public class ${name}
         appendTableNameToQuery(sqlQuery);
         __db.executeUpdate(sqlQuery.toString());
     }
-
 </#if>
+
     /** Reads all rows from the table. */
-    public List<${rowName}> read(<@generate_pkg_prefix rootPackageName/>IParameterProvider parameterProvider)
+    public List<${rowName}> read(<#if needsParameterProvider>IParameterProvider parameterProvider</#if>)
             throws SQLException, IOException
     {
-        return read(parameterProvider, "");
+        return read(<#if needsParameterProvider>parameterProvider, </#if>"");
     }
 
     /** Reads all rows from the table which fulfill the given condition. */
-    public List<${rowName}> read(<@generate_pkg_prefix rootPackageName/>IParameterProvider parameterProvider,
-            String condition) throws SQLException, IOException
+    public List<${rowName}> read(<#if needsParameterProvider>IParameterProvider parameterProvider, </#if><#rt>
+            <#lt>String condition) throws SQLException, IOException
     {
         // assemble sql query
         final StringBuilder sqlQuery = new StringBuilder("SELECT " +
@@ -125,7 +126,7 @@ public class ${name}
             final ResultSet resultSet = statement.executeQuery();
             while (resultSet.next())
             {
-                final ${rowName} row = readRow(parameterProvider, resultSet);
+                final ${rowName} row = readRow(<#if needsParameterProvider>parameterProvider, </#if>resultSet);
                 rows.add(row);
             }
         }
@@ -207,17 +208,8 @@ public class ${name}
 </#if>
 <#if withValidationCode>
 
-    <#assign hasValidateableField=false/>
-    <#list fields as field>
-        <#if !field.isVirtual>
-            <#if field.sqlTypeData.isBlob || field.enumData?? || field.rangeCheckData.sqlRangeData??>
-                <#assign hasValidateableField=true/>
-                <#break>
-            </#if>
-        </#if>
-    </#list>
     /** Validates all fields in all rows of the table. */
-    public ValidationReport validate(<@generate_pkg_prefix rootPackageName/>IParameterProvider parameterProvider)
+    public ValidationReport validate(<#if needsParameterProvider>IParameterProvider parameterProvider</#if>)
             throws SQLException
     {
         final ValidationTimer totalValidationTimer = new ValidationTimer();
@@ -248,7 +240,8 @@ public class ${name}
                     final ${rowName} row = new ${rowName}();
         <#list fields as field>
             <#if field.sqlTypeData.isBlob>
-                    if (!validateBlob${field.name?cap_first}(errors, resultSet, row, parameterProvider,
+                    if (!validateBlob${field.name?cap_first}(errors, resultSet, row,<#rt>
+                            <#lt> <#if needsParameterProvider>parameterProvider,</#if>
                             totalParameterProviderTimer))
                         continue;
             <#else>
@@ -299,7 +292,7 @@ public class ${name}
         <#list fields as field>
             <#if !field.isVirtual>
                 "${field.name}<#if needsTypesInSchema> ${field.sqlTypeData.name}</#if><#rt>
-                    <#lt><#if field.sqlConstraint??> ${strip_quotes(field.sqlConstraint)}</#if><#if field_has_next>, </#if>" +
+                    <#lt><#if field.sqlConstraint??> ${sql_strip_quotes(field.sqlConstraint)}</#if><#if field_has_next>, </#if>" +
             </#if>
         </#list>
         <#if hasNonVirtualField && sqlConstraint??>
@@ -322,8 +315,8 @@ ${I}totalParameterProviderTimer.start();
     </#if>
     <#list field.typeParameters as parameter>
         <#if parameter.isExplicit>
-${I}final ${parameter.javaTypeName} param${parameter.expression?cap_first} =
-${I}        parameterProvider.get${name}_${parameter.expression}(resultSet);
+${I}final ${parameter.javaTypeName} param${parameter.definitionName?cap_first} =
+${I}        parameterProvider.<@sql_parameter_provider_getter_name parameter/>(resultSet);
         </#if>
     </#list>
     <#if called_from_validation>
@@ -333,15 +326,15 @@ ${I}final ${field.javaTypeName} blob = new ${field.javaTypeName}(reader<#rt>
     <#list field.typeParameters as parameter>
 <#lt>,
         <#if parameter.isExplicit>
-${I}    param${parameter.expression?cap_first}<#rt>
+${I}    param${parameter.definitionName?cap_first}<#rt>
         <#else>
 ${I}    (${parameter.javaTypeName})(${parameter.expression})<#rt>
         </#if>
     </#list>
 <#lt>);
 </#macro>
-    private static ${rowName} readRow(<@generate_pkg_prefix rootPackageName/>IParameterProvider parameterProvider,
-            ResultSet resultSet) throws SQLException, IOException
+    private static ${rowName} readRow(<#if needsParameterProvider>IParameterProvider parameterProvider, </#if><#rt>
+            <#lt>ResultSet resultSet) throws SQLException, IOException
     {
         final ${rowName} row = new ${rowName}();
 
@@ -489,8 +482,8 @@ ${I}    (${parameter.javaTypeName})(${parameter.expression})<#rt>
         <#list fields as field>
             <#if field.sqlTypeData.isBlob>
 
-    private boolean validateBlob${field.name?cap_first}(List<ValidationError> errors, ResultSet resultSet,
-            ${rowName} row, <@generate_pkg_prefix rootPackageName/>IParameterProvider parameterProvider,
+    private boolean validateBlob${field.name?cap_first}(List<ValidationError> errors,
+            ResultSet resultSet, ${rowName} row, <#if needsParameterProvider>IParameterProvider parameterProvider, </#if>
             ValidationTimer totalParameterProviderTimer) throws SQLException
     {
         final byte[] blobData = resultSet.getBytes(${field_index + 1});

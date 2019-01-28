@@ -21,6 +21,7 @@ import test_utils.JdbcUtil;
 import zserio.runtime.ZserioError;
 import zserio.runtime.SqlDatabase.Mode;
 import zserio.runtime.array.UnsignedByteArray;
+import zserio.runtime.array.UnsignedShortArray;
 
 public class ExplicitParametersTest
 {
@@ -103,16 +104,16 @@ public class ExplicitParametersTest
         checkTestTableRow(updateRow, readRow);
     }
 
-    private static class TestTableParameterProvider implements IParameterProvider
+    private static class TestTableParameterProvider implements TestTable.IParameterProvider
     {
         @Override
-        public long getTestTable_count1(ResultSet resultSet)
+        public long getCount1(ResultSet resultSet)
         {
             return TEST_TABLE_COUNT1;
         }
 
         @Override
-        public long getTestTable_count2(ResultSet resultSet)
+        public long getCount2(ResultSet resultSet)
         {
             return TEST_TABLE_COUNT2;
         }
@@ -145,6 +146,23 @@ public class ExplicitParametersTest
         final TestBlob testBlob2 = new TestBlob(values2.length(), values2);
         row.setBlob2(testBlob2);
 
+        final UnsignedByteArray values3 = new UnsignedByteArray(TEST_TABLE_COUNT1);
+        for (int i = 0; i < values3.length(); ++i)
+            values3.setElementAt((short)(id + 2), i);
+        final TestBlob testBlob3 = new TestBlob(values3.length(), values3);
+        row.setBlob3(testBlob3);
+
+        final UnsignedByteArray valuesA = new UnsignedByteArray(TEST_TABLE_COUNT2);
+        final UnsignedShortArray valuesB = new UnsignedShortArray(TEST_TABLE_COUNT2);
+        for (int i = 0; i < valuesA.length(); ++i)
+        {
+            valuesA.setElementAt((short)(id + 3), i);
+            valuesB.setElementAt((int)(id + 4), i);
+        }
+        final TestBlobMultiParam testBlobMultiParam = new TestBlobMultiParam(valuesA.length(), valuesB.length(),
+                valuesA, valuesB);
+        row.setBlobMultiParam(testBlobMultiParam);
+
         return row;
     }
 
@@ -161,6 +179,11 @@ public class ExplicitParametersTest
         assertEquals(row1.getName(), row2.getName());
         assertEquals(row1.getBlob1(), row2.getBlob1());
         assertEquals(row1.getBlob2(), row2.getBlob2());
+        assertEquals(row1.getBlob3(), row2.getBlob3());
+        assertEquals(row1.getBlobMultiParam(), row2.getBlobMultiParam());
+
+        // check reused explicit count1 parameter
+        assertEquals(row2.getBlob1().getCount(), row2.getBlob3().getCount());
     }
 
     private static final int    NUM_TEST_TABLE_ROWS = 5;

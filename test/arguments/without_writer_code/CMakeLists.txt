@@ -6,7 +6,6 @@ set(ZSERIO_GENERATED_SOURCES
     ${ZSERIO_GEN_DIR}/without_writer_code/GeoMapTable.h
     ${ZSERIO_GEN_DIR}/without_writer_code/GeoMapTableRow.cpp
     ${ZSERIO_GEN_DIR}/without_writer_code/GeoMapTableRow.h
-    ${ZSERIO_GEN_DIR}/without_writer_code/IParameterProvider.h
     ${ZSERIO_GEN_DIR}/without_writer_code/ItemChoice.cpp
     ${ZSERIO_GEN_DIR}/without_writer_code/ItemChoice.h
     ${ZSERIO_GEN_DIR}/without_writer_code/ItemChoiceHolder.cpp

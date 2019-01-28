@@ -27,8 +27,8 @@ public class InspectorParameterProviderEmitter extends CppDefaultEmitter
     {
         if (!sqlTableTypes.isEmpty())
         {
-            final ParameterProviderTemplateData templateData =
-                    new ParameterProviderTemplateData(getTemplateDataContext(), sqlTableTypes);
+            final InspectorParameterProviderTemplateData templateData =
+                    new InspectorParameterProviderTemplateData(getTemplateDataContext(), sqlTableTypes);
 
             processHeaderTemplateToRootDir(IINSPECTOR_TEMPLATE_HEADER_NAME, templateData,
                     IINSPECTOR_OUTPUT_FILE_NAME_ROOT);

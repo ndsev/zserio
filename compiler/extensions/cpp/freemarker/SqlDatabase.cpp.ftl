@@ -1,4 +1,5 @@
 <#include "FileHeader.inc.ftl">
+<#include "Sql.inc.ftl">
 <@file_header generatorDescription/>
 
 <#if withValidationCode>
@@ -10,6 +11,9 @@
 
 <@namespace_begin package.path/>
 
+<#if withWriterCode>
+    <#assign hasWithoutRowIdTable=sql_db_has_without_rowid_table(fields)/>
+</#if>
 const char ${name}::DATABASE_NAME[] = "${name}";
 <#list fields as field>
 const char ${name}::${field.name?upper_case}_TABLE_NAME[] = "${field.name}";
@@ -76,13 +80,6 @@ void ${name}::createSchema()
     </#if>
 }
 
-    <#assign hasWithoutRowIdTable=false/>
-    <#list fields as field>
-        <#if field.isWithoutRowIdTable>
-            <#assign hasWithoutRowIdTable=true/>
-            <#break>
-        </#if>
-    </#list>
 void ${name}::createSchema(const std::set<std::string>&<#if hasWithoutRowIdTable> withoutRowIdTableNamesBlackList</#if>)
 {
     <#if fields?has_content>

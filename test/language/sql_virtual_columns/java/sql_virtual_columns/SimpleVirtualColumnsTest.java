@@ -76,7 +76,7 @@ public class SimpleVirtualColumnsTest
         fillSimpleVirtualColumnsTableRows(writtenRows);
         testTable.write(writtenRows);
 
-        final List<SimpleVirtualColumnsTableRow> readRows = testTable.read(null);
+        final List<SimpleVirtualColumnsTableRow> readRows = testTable.read();
         checkSimpleVirtualColumnsTableRows(writtenRows, readRows);
     }
 
@@ -90,7 +90,7 @@ public class SimpleVirtualColumnsTest
         testTable.write(writtenRows);
 
         final String condition = "content='Content1'";
-        final List<SimpleVirtualColumnsTableRow> readRows = testTable.read(null, condition);
+        final List<SimpleVirtualColumnsTableRow> readRows = testTable.read(condition);
 
         assertEquals(1, readRows.size());
 
@@ -114,7 +114,7 @@ public class SimpleVirtualColumnsTest
         testTable.update(updateRow, updateCondition);
 
         final String readCondition = "content='" + updateContent + "'";
-        final List<SimpleVirtualColumnsTableRow> readRows = testTable.read(null, readCondition);
+        final List<SimpleVirtualColumnsTableRow> readRows = testTable.read(readCondition);
         assertEquals(1, readRows.size());
 
         final SimpleVirtualColumnsTableRow readRow = readRows.get(0);

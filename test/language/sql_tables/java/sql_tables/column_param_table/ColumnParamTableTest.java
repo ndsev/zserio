@@ -21,7 +21,6 @@ import org.junit.Test;
 import test_utils.FileUtil;
 import test_utils.JdbcUtil;
 
-import sql_tables.IParameterProvider;
 import sql_tables.TestDb;
 
 import zserio.runtime.ZserioError;
@@ -75,7 +74,7 @@ public class ColumnParamTableTest
         fillColumnParamTableRows(writtenRows);
         testTable.write(writtenRows);
 
-        final List<ColumnParamTableRow> readRows = testTable.read(null);
+        final List<ColumnParamTableRow> readRows = testTable.read();
         checkColumnParamTableRows(writtenRows, readRows);
     }
 
@@ -89,7 +88,7 @@ public class ColumnParamTableTest
         testTable.write(writtenRows);
 
         final String condition = "name='Name1'";
-        final List<ColumnParamTableRow> readRows = testTable.read(null, condition);
+        final List<ColumnParamTableRow> readRows = testTable.read(condition);
 
         assertEquals(1, readRows.size());
 
@@ -112,7 +111,7 @@ public class ColumnParamTableTest
         final String updateCondition = "blobId=" + updateRowId;
         testTable.update(updateRow, updateCondition);
 
-        final List<ColumnParamTableRow> readRows = testTable.read(null, updateCondition);
+        final List<ColumnParamTableRow> readRows = testTable.read(updateCondition);
         assertEquals(1, readRows.size());
 
         final ColumnParamTableRow readRow = readRows.get(0);

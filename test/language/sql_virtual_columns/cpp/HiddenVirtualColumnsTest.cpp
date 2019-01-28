@@ -106,10 +106,6 @@ protected:
         return (result == SQLITE_OK) ? true : false;
     }
 
-    class HiddenVirtualColumnsTableParameterProvider : public IParameterProvider
-    {
-    };
-
     static const char DB_FILE_NAME[];
     static const int32_t NUM_TABLE_ROWS;
 
@@ -140,9 +136,8 @@ TEST_F(HiddenVirtualColumnsTest, readWithoutCondition)
     fillHiddenVirtualColumnsTableRows(writtenRows);
     testTable.write(writtenRows);
 
-    HiddenVirtualColumnsTableParameterProvider parameterProvider;
     std::vector<HiddenVirtualColumnsTableRow> readRows;
-    testTable.read(parameterProvider, readRows);
+    testTable.read(readRows);
     checkHiddenVirtualColumnsTableRows(writtenRows, readRows);
 }
 
@@ -154,10 +149,9 @@ TEST_F(HiddenVirtualColumnsTest, readWithCondition)
     fillHiddenVirtualColumnsTableRows(writtenRows);
     testTable.write(writtenRows);
 
-    HiddenVirtualColumnsTableParameterProvider parameterProvider;
     const std::string condition = "searchTags='Search Tags1'";
     std::vector<HiddenVirtualColumnsTableRow> readRows;
-    testTable.read(parameterProvider, condition, readRows);
+    testTable.read(condition, readRows);
     ASSERT_EQ(1, readRows.size());
 
     const size_t expectedRowNum = 1;
@@ -178,9 +172,8 @@ TEST_F(HiddenVirtualColumnsTest, update)
     const std::string updateCondition = "docId='" + zserio::convertToString(updateDocId) + "'";
     testTable.update(updateRow, updateCondition);
 
-    HiddenVirtualColumnsTableParameterProvider parameterProvider;
     std::vector<HiddenVirtualColumnsTableRow> readRows;
-    testTable.read(parameterProvider, updateCondition, readRows);
+    testTable.read(updateCondition, readRows);
     ASSERT_EQ(1, readRows.size());
 
     checkHiddenVirtualColumnsTableRow(updateRow, readRows[0]);

@@ -82,10 +82,8 @@ public class JavaExtension implements Extension
         emitters.add(new StructureEmitter(extensionParameters, javaParameters));
         emitters.add(new ChoiceEmitter(extensionParameters, javaParameters));
         emitters.add(new UnionEmitter(extensionParameters, javaParameters));
-        emitters.add(new SqlDatabaseValidatorEmitter(extensionParameters, javaParameters));
         emitters.add(new SqlDatabaseEmitter(extensionParameters, javaParameters));
         emitters.add(new SqlTableEmitter(extensionParameters, javaParameters));
-        emitters.add(new ParameterProviderEmitter(extensionParameters, javaParameters));
         emitters.add(new ConstEmitter(extensionParameters, javaParameters));
 
         // emit Java code

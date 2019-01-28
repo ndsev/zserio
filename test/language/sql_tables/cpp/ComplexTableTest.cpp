@@ -112,9 +112,9 @@ protected:
         return true;
     }
 
-    class ComplexTableParameterProvider : public IParameterProvider
+    class ComplexTableParameterProvider : public ComplexTable::IParameterProvider
     {
-        virtual uint32_t getComplexTable_count(sqlite3_stmt&)
+        virtual uint32_t getCount(sqlite3_stmt&)
         {
             return static_cast<uint32_t>(COMPLEX_TABLE_COUNT);
         }

@@ -91,14 +91,6 @@ protected:
         return true;
     }
 
-    class MultiplePkTableParameterProvider : public IParameterProvider
-    {
-        virtual uint32_t getComplexTable_count(sqlite3_stmt&)
-        {
-            return 0;
-        }
-    };
-
     static const char DB_FILE_NAME[];
 
     static const int32_t NUM_MULTIPLE_PK_TABLE_ROWS;
@@ -130,9 +122,8 @@ TEST_F(MultiplePkTableTest, readWithoutCondition)
     fillMultiplePkTableRows(writtenRows);
     testTable.write(writtenRows);
 
-    MultiplePkTableParameterProvider parameterProvider;
     std::vector<MultiplePkTableRow> readRows;
-    testTable.read(parameterProvider, readRows);
+    testTable.read(readRows);
     checkMultiplePkTableRows(writtenRows, readRows);
 }
 
@@ -144,10 +135,9 @@ TEST_F(MultiplePkTableTest, readWithCondition)
     fillMultiplePkTableRows(writtenRows);
     testTable.write(writtenRows);
 
-    MultiplePkTableParameterProvider parameterProvider;
     const std::string condition = "name='Name1'";
     std::vector<MultiplePkTableRow> readRows;
-    testTable.read(parameterProvider, condition, readRows);
+    testTable.read(condition, readRows);
     ASSERT_EQ(1, readRows.size());
 
     const size_t expectedRowNum = 1;
@@ -168,9 +158,8 @@ TEST_F(MultiplePkTableTest, update)
     const std::string updateCondition = "blobId=" + zserio::convertToString(updateRowId);
     testTable.update(updateRow, updateCondition);
 
-    MultiplePkTableParameterProvider parameterProvider;
     std::vector<MultiplePkTableRow> readRows;
-    testTable.read(parameterProvider, updateCondition, readRows);
+    testTable.read(updateCondition, readRows);
     ASSERT_EQ(1, readRows.size());
 
     checkMultiplePkTableRow(updateRow, readRows[0]);
