@@ -1,4 +1,5 @@
 import unittest
+import apsw
 import zserio
 
 from testutils import getZserioApi
@@ -8,7 +9,7 @@ class WithoutWriterCodeTest(unittest.TestCase):
     def setUpClass(cls):
         cls.api = getZserioApi(__file__, "without_writer_code.zs", extraArgs=["-withoutWriterCode"])
 
-    def testItemType(self):
+    def testItemTypeMethods(self):
         userType = self.api.ItemType
 
         self._assertMethodNotPresent(userType, "initializeOffsets")
@@ -17,7 +18,7 @@ class WithoutWriterCodeTest(unittest.TestCase):
         self._assertMethodPresent(userType, "fromReader")
         self._assertMethodPresent(userType, "bitSizeOf")
 
-    def testExtraParamUnion(self):
+    def testExtraParamUnionMethods(self):
         userType = self.api.ExtraParamUnion
 
         self._assertMethodNotPresent(userType, "initializeOffsets")
@@ -33,7 +34,7 @@ class WithoutWriterCodeTest(unittest.TestCase):
         self._assertMethodPresent(userType, "getValue16")
         self._assertMethodPresent(userType, "getValue32")
 
-    def testItem(self):
+    def testItemMethods(self):
         userType = self.api.Item
 
         self._assertMethodNotPresent(userType, "initializeOffsets")
@@ -50,7 +51,7 @@ class WithoutWriterCodeTest(unittest.TestCase):
         self._assertMethodPresent(userType, "getParam")
         self._assertMethodPresent(userType, "getExtraParam")
 
-    def testItemChoice(self):
+    def testItemChoiceMethods(self):
         userType = self.api.ItemChoice
 
         self._assertMethodNotPresent(userType, "initializeOffsets")
@@ -66,7 +67,7 @@ class WithoutWriterCodeTest(unittest.TestCase):
         self._assertMethodPresent(userType, "getItem")
         self._assertMethodPresent(userType, "getParam")
 
-    def testItemChoiceHolder(self):
+    def testItemChoiceHolderMethods(self):
         userType = self.api.ItemChoiceHolder
 
         self._assertMethodNotPresent(userType, "initializeOffsets")
@@ -82,7 +83,7 @@ class WithoutWriterCodeTest(unittest.TestCase):
         self._assertMethodPresent(userType, "getHasItem")
         self._assertMethodPresent(userType, "getItemChoice")
 
-    def testTile(self):
+    def testTileMethods(self):
         userType = self.api.Tile
 
         self._assertMethodNotPresent(userType, "initializeOffsets")
@@ -101,6 +102,36 @@ class WithoutWriterCodeTest(unittest.TestCase):
         self._assertMethodPresent(userType, "getNumElementsOffset")
         self._assertMethodPresent(userType, "getNumElements")
         self._assertMethodPresent(userType, "getData")
+
+    def testGeoMapTableMethods(self):
+        userType = self.api.GeoMapTable
+
+        self._assertMethodNotPresent(userType, "createTable")
+        self._assertMethodNotPresent(userType, "deleteTable")
+        self._assertMethodNotPresent(userType, "write")
+        self._assertMethodNotPresent(userType, "update")
+
+        self._assertMethodPresent(userType, "__init__")
+        self._assertMethodPresent(userType, "read")
+
+    def testWorldDbMethods(self):
+        userType = self.api.WorldDb
+
+        self._assertMethodNotPresent(userType, "createSchema")
+        self._assertMethodNotPresent(userType, "deleteSchema")
+
+        self._assertMethodPresent(userType, "__init__")
+        self._assertMethodPresent(userType, "fromFile")
+        self._assertMethodPresent(userType, "close")
+        self._assertMethodPresent(userType, "getEurope")
+        self._assertMethodPresent(userType, "getAmerica")
+        self._assertMethodPresent(userType, "connection")
+        self._assertMethodPresent(userType, "executeQuery")
+
+        # static constants
+        self.assertTrue(hasattr(userType, "DATABASE_NAME"))
+        self.assertTrue(hasattr(userType, "EUROPE_TABLE_NAME"))
+        self.assertTrue(hasattr(userType, "AMERICA_TABLE_NAME"))
 
     def testRead(self):
         writer = zserio.BitStreamWriter()
@@ -121,6 +152,45 @@ class WithoutWriterCodeTest(unittest.TestCase):
         tile = self.api.Tile.fromReader(reader)
 
         self._checkTile(tile)
+
+    def testReadWorldDb(self):
+        connection = self._createWorldDb()
+
+        worldDb = self.api.WorldDb(connection)
+
+        europe = worldDb.getEurope()
+        europeRows = europe.read()
+        count = 0
+        for row in europeRows:
+            self.assertEqual(TILE_ID_EUROPE, row[0])
+            self._checkTile(row[1])
+            count += 1
+        self.assertEqual(1, count)
+
+        america = worldDb.getAmerica()
+        americaRows = america.read()
+        count = 0
+        for row in americaRows:
+            self.assertEqual(TILE_ID_AMERICA, row[0])
+            self._checkTile(row[1])
+            count += 1
+        self.assertEqual(1, count)
+
+    def _createWorldDb(self):
+        connection = apsw.Connection(":memory:")
+        cursor = connection.cursor()
+
+        cursor.execute("CREATE TABLE europe(tileId INTEGER PRIMARY KEY, tile BLOB)")
+        cursor.execute("CREATE TABLE america(tileId INTEGER PRIMARY KEY, tile BLOB)")
+
+        writer = zserio.BitStreamWriter()
+        self._writeTile(writer)
+        blob = writer.getByteArray()
+
+        cursor.execute("INSERT INTO europe VALUES(?, ?)", (TILE_ID_EUROPE, blob))
+        cursor.execute("INSERT INTO america VALUES(?, ?)", (TILE_ID_AMERICA, blob))
+
+        return connection
 
     def _writeTile(self, writer):
         # Tile
@@ -171,7 +241,9 @@ class WithoutWriterCodeTest(unittest.TestCase):
         self.assertTrue(hasattr(userType, method),
                         msg=("Method '%s' is not present in '%s'!" % (method, userType.__name__)))
 
-VERSION = 1
+TILE_ID_EUROPE = 99
+TILE_ID_AMERICA = 11
+VERSION = 8
 NUM_ELEMENTS = 2
 PARAMS = [13, 21]
 EXTRA_PARAM = 42
