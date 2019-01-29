@@ -16,13 +16,13 @@ class IInspectorParameterProvider
 public:
 <#if parameters?has_content>
     <#list parameters as parameter>
-    virtual ${parameter.cppTypeName} <@inspector_parameter_provider_getter_name parameter/>() = 0;
+    virtual <@inspector_parameter_provider_return_type parameter/> <@inspector_parameter_provider_getter_name parameter/>() = 0;
     </#list>
 
 </#if>
 <#if explicitParameters?has_content>
     <#list explicitParameters as parameter>
-    virtual ${parameter.cppTypeName} <@inspector_parameter_provider_getter_name parameter/>() = 0;
+    virtual <@inspector_parameter_provider_return_type parameter/> <@inspector_parameter_provider_getter_name parameter/>() = 0;
     </#list>
 
 </#if>

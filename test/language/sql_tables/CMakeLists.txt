@@ -1,5 +1,23 @@
 set(ZSERIO_GEN_DIR ${CMAKE_CURRENT_BINARY_DIR}/gen)
 set(ZSERIO_GENERATED_SOURCES
+    ${ZSERIO_GEN_DIR}/sql_tables/blob_param_table/BlobParamTable.cpp
+    ${ZSERIO_GEN_DIR}/sql_tables/blob_param_table/BlobParamTable.h
+    ${ZSERIO_GEN_DIR}/sql_tables/blob_param_table/BlobParamTableRow.cpp
+    ${ZSERIO_GEN_DIR}/sql_tables/blob_param_table/BlobParamTableRow.h
+    ${ZSERIO_GEN_DIR}/sql_tables/blob_param_table/Parameters.cpp
+    ${ZSERIO_GEN_DIR}/sql_tables/blob_param_table/Parameters.h
+    ${ZSERIO_GEN_DIR}/sql_tables/blob_param_table/ParameterizedBlob.cpp
+    ${ZSERIO_GEN_DIR}/sql_tables/blob_param_table/ParameterizedBlob.h
+
+    ${ZSERIO_GEN_DIR}/sql_tables/blob_offsets_param_table/BlobOffsetsParamTable.cpp
+    ${ZSERIO_GEN_DIR}/sql_tables/blob_offsets_param_table/BlobOffsetsParamTable.h
+    ${ZSERIO_GEN_DIR}/sql_tables/blob_offsets_param_table/BlobOffsetsParamTableRow.cpp
+    ${ZSERIO_GEN_DIR}/sql_tables/blob_offsets_param_table/BlobOffsetsParamTableRow.h
+    ${ZSERIO_GEN_DIR}/sql_tables/blob_offsets_param_table/OffsetsHolder.cpp
+    ${ZSERIO_GEN_DIR}/sql_tables/blob_offsets_param_table/OffsetsHolder.h
+    ${ZSERIO_GEN_DIR}/sql_tables/blob_offsets_param_table/ParameterizedBlob.cpp
+    ${ZSERIO_GEN_DIR}/sql_tables/blob_offsets_param_table/ParameterizedBlob.h
+
     ${ZSERIO_GEN_DIR}/sql_tables/column_param_table/ColumnParamTable.cpp
     ${ZSERIO_GEN_DIR}/sql_tables/column_param_table/ColumnParamTable.h
     ${ZSERIO_GEN_DIR}/sql_tables/column_param_table/ColumnParamTableRow.cpp
@@ -56,6 +74,8 @@ zserio_add_library(TARGET sql_tables_zs
 )
 
 add_test_sources(
+    cpp/BlobParamTableTest.cpp
+    cpp/BlobOffsetsParamTableTest.cpp
     cpp/ColumnParamTableTest.cpp
     cpp/ComplexTableTest.cpp
     cpp/ConstParamTableTest.cpp

@@ -18,13 +18,13 @@ class InspectorParameterProvider : public IInspectorParameterProvider
 {
 public:
 <#list parameters as parameter>
-    virtual ${parameter.cppTypeName} <@inspector_parameter_provider_getter_name parameter/>();
+    virtual <@inspector_parameter_provider_return_type parameter/> <@inspector_parameter_provider_getter_name parameter/>();
 </#list>
 <#if parameters?has_content && explicitParameters?has_content>
 
 </#if>
 <#list explicitParameters as parameter>
-    virtual ${parameter.cppTypeName} <@inspector_parameter_provider_getter_name parameter/>();
+    virtual <@inspector_parameter_provider_return_type parameter/> <@inspector_parameter_provider_getter_name parameter/>();
 </#list>
 };
 

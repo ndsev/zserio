@@ -14,6 +14,13 @@ ${name}::~${name}()
 }
 
 <#list fields as field>
+<#if !field.isSimpleType>
+${field.cppTypeName}& ${name}::get${field.name?cap_first}()
+{
+    return m_${field.name}.get();
+}
+
+</#if>
 ${field.cppArgumentTypeName} ${name}::get${field.name?cap_first}() const
 {
     return m_${field.name}.get();

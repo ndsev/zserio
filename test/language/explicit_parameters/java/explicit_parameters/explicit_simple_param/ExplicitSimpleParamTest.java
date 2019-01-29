@@ -179,7 +179,7 @@ public class ExplicitSimpleParamTest
     private static final int NUM_SIMPLE_PARAM_TABLE_ROWS = 5;
     private static final int SIMPLE_PARAM_TABLE_COUNT1 = 10;
     private static final int SIMPLE_PARAM_TABLE_COUNT2 = 11;
-    private static final String FILE_NAME = "explicit_parameters_test.sqlite";
+    private static final String FILE_NAME = "explicit_simple_param_test.sqlite";
 
     private final File file = new File(FILE_NAME);
     private ExplicitParametersDb database = null;

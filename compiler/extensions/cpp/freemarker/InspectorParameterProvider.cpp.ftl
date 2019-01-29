@@ -9,7 +9,7 @@
 <@namespace_begin rootPackage.path/>
 
 <#list parameters as parameter>
-${parameter.cppTypeName} InspectorParameterProvider::<@inspector_parameter_provider_getter_name parameter/>()
+<@inspector_parameter_provider_return_type parameter/> InspectorParameterProvider::<@inspector_parameter_provider_getter_name parameter/>()
 {
     throw zserio::CppRuntimeException("InspectorParameterProvider: "
             "'<@inspector_parameter_provider_getter_name parameter/>' not implemented yet!");
@@ -17,7 +17,7 @@ ${parameter.cppTypeName} InspectorParameterProvider::<@inspector_parameter_provi
 
 </#list>
 <#list explicitParameters as parameter>
-${parameter.cppTypeName} InspectorParameterProvider::<@inspector_parameter_provider_getter_name parameter/>()
+<@inspector_parameter_provider_return_type parameter/> InspectorParameterProvider::<@inspector_parameter_provider_getter_name parameter/>()
 {
     throw zserio::CppRuntimeException("InspectorParameterProvider: "
             "'<@inspector_parameter_provider_getter_name parameter/>' not implemented yet!");

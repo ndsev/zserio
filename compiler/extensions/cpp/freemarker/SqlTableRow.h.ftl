@@ -16,6 +16,9 @@ public:
     ~${name}();
 
 <#list fields as field>
+    <#if !field.isSimpleType>
+    ${field.cppTypeName}& get${field.name?cap_first}();
+    </#if>
     ${field.cppArgumentTypeName} get${field.name?cap_first}() const;
     void set${field.name?cap_first}(${field.cppArgumentTypeName} ${field.name});
     bool isNull${field.name?cap_first}() const;

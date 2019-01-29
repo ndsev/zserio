@@ -134,7 +134,7 @@ protected:
     static const uint32_t MULTIPLE_PARAMS_COUNT;
 };
 
-const char MultipleExplicitParamsTest::DB_FILE_NAME[] = "explicit_parameters.sqlite";
+const char MultipleExplicitParamsTest::DB_FILE_NAME[] = "multiple_explicit_param_test.sqlite";
 
 const uint32_t MultipleExplicitParamsTest::NUM_MULTIPLE_PARAMS_ROWS = 5;
 const uint32_t MultipleExplicitParamsTest::MULTIPLE_PARAMS_COUNT1 = 10;

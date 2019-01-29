@@ -32,7 +32,7 @@ public:
     {
     public:
         <#list explicitParameters as parameter>
-        virtual ${parameter.cppTypeName} <@sql_parameter_provider_getter_name parameter/>(sqlite3_stmt& statement) = 0;
+        virtual <@sql_parameter_provider_return_type parameter/> <@sql_parameter_provider_getter_name parameter/>(sqlite3_stmt& statement) = 0;
         </#list>
 
         virtual ~IParameterProvider()
@@ -55,8 +55,8 @@ public:
     void read(<#if needsParameterProvider>IParameterProvider& parameterProvider, </#if>const std::string& condition,
             std::vector<${rowName}>& rows) const;
 <#if withWriterCode>
-    void write(const std::vector<${rowName}>& rows);
-    void update(const ${rowName}& row, const std::string& whereCondition);
+    void write(std::vector<${rowName}>& rows);
+    void update(${rowName}& row, const std::string& whereCondition);
 </#if>
 <#if withInspectorCode>
 
@@ -75,7 +75,7 @@ private:
             <#lt>sqlite3_stmt& statement,
             std::vector<${rowName}>& rows);
 <#if withWriterCode>
-    static void writeRow(const ${rowName}& row, sqlite3_stmt& statement);
+    static void writeRow(${rowName}& row, sqlite3_stmt& statement);
 
     void appendCreateTableToQuery(std::string& sqlQuery);
 </#if>

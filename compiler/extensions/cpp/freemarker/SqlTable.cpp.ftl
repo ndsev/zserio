@@ -109,7 +109,7 @@ void ${name}::read(<#if needsParameterProvider>IParameterProvider& parameterProv
 }
 <#if withWriterCode>
 
-void ${name}::write(const std::vector<${rowName}>& rows)
+void ${name}::write(std::vector<${rowName}>& rows)
 {
     // assemble sql query
     std::string sqlQuery("INSERT INTO '");
@@ -129,7 +129,7 @@ void ${name}::write(const std::vector<${rowName}>& rows)
     m_db.executeUpdate("BEGIN TRANSACTION;");
     sqlite3_stmt* statement = m_db.prepareStatement(sqlQuery);
     int result = SQLITE_OK;
-    for (std::vector<${rowName}>::const_iterator it = rows.begin(); it != rows.end(); ++it)
+    for (std::vector<${rowName}>::iterator it = rows.begin(); it != rows.end(); ++it)
     {
         writeRow(*it, *statement);
         result = sqlite3_step(statement);
@@ -148,7 +148,7 @@ void ${name}::write(const std::vector<${rowName}>& rows)
     m_db.executeUpdate("COMMIT;");
 }
 
-void ${name}::update(const ${rowName}& row, const std::string& whereCondition)
+void ${name}::update(${rowName}& row, const std::string& whereCondition)
 {
     // assemble sql query
     std::string sqlQuery("UPDATE ");
@@ -172,8 +172,7 @@ void ${name}::update(const ${rowName}& row, const std::string& whereCondition)
 </#if>
 <#macro read_blob field blob_ctor_variable_name="reader" called_by_inspector=false>
         <#list field.typeParameters as parameter>
-        <#-- non-const getter is necessary for setting of offsets -->
-        ${parameter.cppTypeName} ${parameter.definitionName} = <#rt>
+        <@sql_parameter_variable_type parameter/> _${parameter.definitionName} = <#rt>
             <#if called_by_inspector>
                 <#lt>parameterProvider.<@inspector_parameter_provider_getter_name parameter/>();
             <#elseif parameter.isExplicit>
@@ -184,7 +183,7 @@ void ${name}::update(const ${rowName}& row, const std::string& whereCondition)
         </#list>
         <#if !called_by_inspector>const </#if>${field.cppTypeName} blob(${blob_ctor_variable_name}<#rt>
         <#list field.typeParameters as parameter>
-                , ${parameter.definitionName}<#t>
+                , _${parameter.definitionName}<#t>
         </#list>
         <#lt>);
 </#macro>
@@ -250,7 +249,8 @@ void ${name}::readRow(<#if needsParameterProvider>IParameterProvider& parameterP
         <#lt>sqlite3_stmt&<#if fields?has_content> statement</#if>,
         std::vector<${rowName}>& rows)
 {
-    ${rowName} row;
+    rows.resize(rows.size() + 1);
+    ${rowName}& row = rows.back();
 
 <#list fields as field>
     // field ${field.name}
@@ -285,13 +285,14 @@ void ${name}::readRow(<#if needsParameterProvider>IParameterProvider& parameterP
         row.set${field.name?cap_first}(reinterpret_cast<const char*>(textValue));
     </#if>
     }
+    <#if field_has_next>
 
+    </#if>
 </#list>
-    rows.push_back(row);
 }
 <#if withWriterCode>
 
-void ${name}::writeRow(const ${rowName}&<#if fields?has_content> row</#if>, sqlite3_stmt&<#if fields?has_content> statement</#if>)
+void ${name}::writeRow(${rowName}&<#if fields?has_content> row</#if>, sqlite3_stmt&<#if fields?has_content> statement</#if>)
 {
     <#if fields?has_content>
     int result;
@@ -305,7 +306,7 @@ void ${name}::writeRow(const ${rowName}&<#if fields?has_content> row</#if>, sqli
     else
     {
         <#if field.sqlTypeData.isBlob>
-        ${field.cppTypeName} blob = row.get${field.name?cap_first}();
+        ${field.cppTypeName}& blob = row.get${field.name?cap_first}();
         zserio::BitStreamWriter writer;
         blob.write(writer);
         size_t blobDataLength;

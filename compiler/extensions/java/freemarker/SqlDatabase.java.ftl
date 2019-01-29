@@ -21,6 +21,17 @@
 <@class_header generatorDescription/>
 public class ${name} extends SqlDatabase<#if withWriterCode> implements SqlDatabaseWriter</#if>
 {
+<#if withValidationCode && needsParameterProvider>
+    public static interface IParameterProvider
+    {
+        <#list fields as field>
+            <#if field.hasExplicitParameters>
+        ${field.javaTypeName}.IParameterProvider get${field.name?cap_first}ParameterProvider();
+            </#if>
+        </#list>
+    };
+
+</#if>
     public ${name}(String fileName) throws SQLException, URISyntaxException
     {
         this(fileName, new HashMap<String, String>());
@@ -141,17 +152,6 @@ public class ${name} extends SqlDatabase<#if withWriterCode> implements SqlDatab
         };
     }
 
-<#if withValidationCode && needsParameterProvider>
-    public static interface IParameterProvider
-    {
-        <#list fields as field>
-            <#if field.hasExplicitParameters>
-        ${field.javaTypeName}.IParameterProvider get${field.name?cap_first}ParameterProvider();
-            </#if>
-        </#list>
-    };
-
-</#if>
     private void initTables()
     {
 <#list fields as field>

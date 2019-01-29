@@ -43,3 +43,20 @@
 <#macro sql_parameter_provider_getter_name parameter>
     get${parameter.expression?cap_first}<#t>
 </#macro>
+
+<#macro sql_parameter_provider_return_type parameter>
+    <#if parameter.isSimpleType>
+        ${parameter.cppTypeName}<#t>
+    <#else>
+        <#-- non-const reference is necessary for setting of offsets -->
+        ${parameter.cppTypeName}&<#t>
+    </#if>
+</#macro>
+
+<#macro sql_parameter_variable_type parameter>
+    <#if parameter.isSimpleType>
+        const ${parameter.cppTypeName}<#t>
+    <#else>
+        ${parameter.cppTypeName}&<#t>
+    </#if>
+</#macro>

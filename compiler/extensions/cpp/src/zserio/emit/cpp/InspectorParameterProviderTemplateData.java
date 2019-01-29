@@ -70,6 +70,7 @@ public class InspectorParameterProviderTemplateData extends CppTemplateData
             fieldName = field.getName();
             definitionName = parameter.getName();
             cppTypeName = parameterNativeType.getFullName();
+            isSimpleType = parameterNativeType.isSimpleType();
         }
 
         public boolean getIsExplicit()
@@ -95,6 +96,11 @@ public class InspectorParameterProviderTemplateData extends CppTemplateData
         public String getCppTypeName()
         {
             return cppTypeName;
+        }
+
+        public boolean getIsSimpleType()
+        {
+            return isSimpleType;
         }
 
         @Override
@@ -144,6 +150,7 @@ public class InspectorParameterProviderTemplateData extends CppTemplateData
         private final String fieldName;
         private final String definitionName;
         private final String cppTypeName;
+        private final boolean isSimpleType;
     }
 
     public static class ExplicitParameterTemplateData implements Comparable<ExplicitParameterTemplateData>
@@ -162,6 +169,7 @@ public class InspectorParameterProviderTemplateData extends CppTemplateData
             tableName = tableType.getName();
             expression = cppSqlIndirectExpressionFormatter.formatGetter(argumentExpression);
             cppTypeName = parameterNativeType.getFullName();
+            isSimpleType = parameterNativeType.isSimpleType();
         }
 
         public boolean getIsExplicit()
@@ -182,6 +190,11 @@ public class InspectorParameterProviderTemplateData extends CppTemplateData
         public String getCppTypeName()
         {
             return cppTypeName;
+        }
+
+        public boolean getIsSimpleType()
+        {
+            return isSimpleType;
         }
 
         @Override
@@ -225,6 +238,7 @@ public class InspectorParameterProviderTemplateData extends CppTemplateData
         private final String tableName;
         private final String expression;
         private final String cppTypeName;
+        private final boolean isSimpleType;
     }
 
     private final TreeSet<ExplicitParameterTemplateData> explicitParameters =

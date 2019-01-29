@@ -110,7 +110,7 @@ protected:
     static const uint32_t SIMPLE_PARAM_TABLE_COUNT2;
 };
 
-const char ExplicitSimpleParamTest::DB_FILE_NAME[] = "explicit_parameters.sqlite";
+const char ExplicitSimpleParamTest::DB_FILE_NAME[] = "explicit_simple_param_test.sqlite";
 
 const uint32_t ExplicitSimpleParamTest::NUM_SIMPLE_PARAM_TABLE_ROWS = 5;
 const uint32_t ExplicitSimpleParamTest::SIMPLE_PARAM_TABLE_COUNT1 = 10;

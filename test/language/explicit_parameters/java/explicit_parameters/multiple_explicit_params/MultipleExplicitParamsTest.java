@@ -204,7 +204,7 @@ public class MultipleExplicitParamsTest
     private static final int MULTIPLE_PARAMS_TABLE_COUNT1 = 10;
     private static final int MULTIPLE_PARAMS_TABLE_COUNT2 = 11;
     private static final int MULTIPLE_PARAMS_TABLE_COUNT = 12;
-    private static final String FILE_NAME = "explicit_parameters_test.sqlite";
+    private static final String FILE_NAME = "multiple_explicit_params_test.sqlite";
 
     private final File file = new File(FILE_NAME);
     private ExplicitParametersDb database = null;

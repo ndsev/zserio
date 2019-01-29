@@ -60,7 +60,9 @@ public class SqlTableEmitterTemplateData extends UserTypeTemplateData
                 {
                     final String expression = parameterTemplateData.getExpression();
                     final String cppTypeName = parameterTemplateData.getCppTypeName();
-                    explicitParameters.add(new ExplicitParameterTemplateData(expression, cppTypeName));
+                    final boolean isSimpleType = parameterTemplateData.getIsSimpleType();
+                    explicitParameters.add(new ExplicitParameterTemplateData(expression, cppTypeName,
+                            isSimpleType));
                 }
             }
         }
@@ -103,10 +105,11 @@ public class SqlTableEmitterTemplateData extends UserTypeTemplateData
 
     public static class ExplicitParameterTemplateData implements Comparable<ExplicitParameterTemplateData>
     {
-        public ExplicitParameterTemplateData(String expression, String cppTypeName)
+        public ExplicitParameterTemplateData(String expression, String cppTypeName, boolean isSimpleType)
         {
             this.expression = expression;
             this.cppTypeName = cppTypeName;
+            this.isSimpleType = isSimpleType;
         }
 
         public String getExpression()
@@ -117,6 +120,11 @@ public class SqlTableEmitterTemplateData extends UserTypeTemplateData
         public String getCppTypeName()
         {
             return cppTypeName;
+        }
+
+        public boolean getIsSimpleType()
+        {
+            return isSimpleType;
         }
 
         @Override
@@ -154,6 +162,7 @@ public class SqlTableEmitterTemplateData extends UserTypeTemplateData
 
         private final String expression;
         private final String cppTypeName;
+        private final boolean isSimpleType;
     }
 
     public static class FieldTemplateData
@@ -252,6 +261,7 @@ public class SqlTableEmitterTemplateData extends UserTypeTemplateData
                 fieldName = field.getName();
                 definitionName = parameter.getName();
                 cppTypeName = parameterNativeType.getFullName();
+                isSimpleType = parameterNativeType.isSimpleType();
                 expression = cppSqlIndirectExpressionFormatter.formatGetter(argumentExpression);
             }
 
@@ -275,6 +285,11 @@ public class SqlTableEmitterTemplateData extends UserTypeTemplateData
                 return cppTypeName;
             }
 
+            public boolean getIsSimpleType()
+            {
+                return isSimpleType;
+            }
+
             public boolean getIsExplicit()
             {
                 return isExplicit;
@@ -289,6 +304,7 @@ public class SqlTableEmitterTemplateData extends UserTypeTemplateData
             private final String fieldName;
             private final String definitionName;
             private final String cppTypeName;
+            private final boolean isSimpleType;
             private final boolean isExplicit;
             private final String expression;
         }

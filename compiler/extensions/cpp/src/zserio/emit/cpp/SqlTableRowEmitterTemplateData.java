@@ -58,6 +58,7 @@ public class SqlTableRowEmitterTemplateData extends CppTemplateData
             name = field.getName();
             cppTypeName = nativeFieldType.getFullName();
             cppArgumentTypeName = nativeFieldType.getArgumentTypeName();
+            isSimpleType = nativeFieldType.isSimpleType();
         }
 
         public String getName()
@@ -75,9 +76,15 @@ public class SqlTableRowEmitterTemplateData extends CppTemplateData
             return cppArgumentTypeName;
         }
 
+        public boolean getIsSimpleType()
+        {
+            return isSimpleType;
+        }
+
         private final String name;
         private final String cppTypeName;
         private final String cppArgumentTypeName;
+        private final boolean isSimpleType;
     }
 
     private final String name;
