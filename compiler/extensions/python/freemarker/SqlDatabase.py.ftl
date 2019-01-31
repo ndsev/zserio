@@ -20,7 +20,7 @@ class ${name}():
 
     @classmethod
     def fromFile(cls, fileName, tableToDbFileNameRelocationMap=None):
-        connection = apsw.Connection(fileName, <#rt>
+        connection = apsw.Connection(fileName, apsw.SQLITE_OPEN_URI | <#rt>
             <#lt><#if withWriterCode>apsw.SQLITE_OPEN_READWRITE | apsw.SQLITE_OPEN_CREATE<#else>apsw.SQLITE_OPEN_READONLY</#if>)
 
         tableNameToAttachedDbNameMap = {}
