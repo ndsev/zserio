@@ -255,7 +255,7 @@ ${I}__result = Util.HASH_PRIME_NUMBER * __result + ((${field.name} == null) ? 0 
         {
             if (__byteOffset != <@compound_field_get_offset field/>)
             {
-                throw new ZserioError("Write: Wrong offset for field ${compoundName}.${field.name}: " +
+                throw new ZserioError("Wrong offset for field ${compoundName}.${field.name}: " +
                         __byteOffset + " != " + <@compound_field_get_offset field/> + "!");
             }
         }
