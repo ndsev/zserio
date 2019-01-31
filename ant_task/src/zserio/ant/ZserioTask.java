@@ -370,6 +370,7 @@ public class ZserioTask extends Task
 
     private File    javaOutput;
     private File    cppOutput;
+    private File    pythonOutput;
     private File    docOutput;
     private File    xmlOutput;
 

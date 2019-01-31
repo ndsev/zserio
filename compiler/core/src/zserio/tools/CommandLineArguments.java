@@ -233,7 +233,7 @@ public class CommandLineArguments implements Serializable
         hf.setSyntaxPrefix("Usage: ");
         hf.setLeftPadding(2);
         hf.setOptionComparator(null);
-        hf.printHelp("zserio_core <options> zserioInputFile\n", "Options:", options, null, false);
+        hf.printHelp("java -jar zserio.jar <options> zserioInputFile\n", "Options:", options, null, false);
         ZserioToolPrinter.printMessage("");
     }
 
