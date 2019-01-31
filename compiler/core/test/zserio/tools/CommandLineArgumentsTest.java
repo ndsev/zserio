@@ -21,7 +21,8 @@ public class CommandLineArgumentsTest
         assertTrue(parse(args).hasHelpOption());
     }
 
-    @Test
+    // Blob Inspector interface has been DISABLED
+    //@Test
     public void withInspectorCode() throws ParseException
     {
         String[] args = { "-withInspectorCode" };
@@ -29,21 +30,24 @@ public class CommandLineArgumentsTest
         assertTrue(parsedArgs.getWithInspectorCode());
     }
 
-    @Test
+    // Blob Inspector interface has been DISABLED
+    //@Test
     public void withoutInspectorCode() throws ParseException
     {
         String[] args = { "-withoutInspectorCode" };
         assertFalse(parse(args).getWithInspectorCode());
     }
 
-    @Test
+    // Blob Inspector interface has been DISABLED
+    //@Test
     public void withInspectorCodeDefault() throws ParseException
     {
         String[] args = {};
         assertFalse(parse(args).getWithInspectorCode());
     }
 
-    @Test(expected=ParseException.class)
+    // Blob Inspector interface has been DISABLED
+    //@Test(expected=ParseException.class)
     public void inspectorCodeConflict() throws ParseException
     {
         String[] args = { "-withInspectorCode", "-withoutInspectorCode" };

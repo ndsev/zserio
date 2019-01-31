@@ -260,13 +260,14 @@ public class CommandLineArguments implements Serializable
         grpcCodeGroup.setRequired(false);
         options.addOptionGroup(grpcCodeGroup);
 
-        final OptionGroup inspectorCodeGroup = new OptionGroup();
-        option = new Option(OptionNameWithInspectorCode, false, "enable code for Blob Inspector");
-        inspectorCodeGroup.addOption(option);
-        option = new Option(OptionNameWithoutInspectorCode, false, "disable code for Blob Inspector (default)");
-        inspectorCodeGroup.addOption(option);
-        inspectorCodeGroup.setRequired(false);
-        options.addOptionGroup(inspectorCodeGroup);
+        // Blob Inspector interface has been DISABLED
+        // final OptionGroup inspectorCodeGroup = new OptionGroup();
+        // option = new Option(OptionNameWithInspectorCode, false, "enable code for Blob Inspector");
+        // inspectorCodeGroup.addOption(option);
+        // option = new Option(OptionNameWithoutInspectorCode, false, "disable code for Blob Inspector (default)");
+        // inspectorCodeGroup.addOption(option);
+        // inspectorCodeGroup.setRequired(false);
+        // options.addOptionGroup(inspectorCodeGroup);
 
         final OptionGroup rangeCheckCodeGroup = new OptionGroup();
         option = new Option(OptionNameWithRangeCheckCode, false,
