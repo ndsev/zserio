@@ -22,7 +22,7 @@ import java.util.Properties;
  * <p>
  * This base class supports table relocations. If some tables are relocated to the different databases, then
  * caller must reflect these relocations in constructor parameter <code>tableToDbFileNameRelocationMap</code> or
- * <code>tableToDbNameRelocationMap</code>.</p>
+ * <code>tableToAttachedDbNameRelocationMap</code>.</p>
  * <p>
  * The parameter <code>tableToDbFileNameRelocationMap</code> is used by the constructor using
  * database file name and it maps table name to file name of database where the table is relocated. Then this
@@ -34,7 +34,7 @@ import java.util.Properties;
  * ...
  * americaDb.close()</pre>
  * <p>
- * The parameter <code>tableToDbNameRelocationMap</code> is used by the constructor using
+ * The parameter <code>tableToAttachedDbNameRelocationMap</code> is used by the constructor using
  * SQLite connection and it maps table name to alias name of database where the table is relocated. In this
  * case, caller is responsible for attaching all specified databases. Example:</p>
  * <pre>
@@ -49,9 +49,9 @@ import java.util.Properties;
  * attachStatement.executeUpdate(attachSqlQuery);
  * attachStatement.close();
  *
- * final Map&lt;String, String&gt; tableToDbNameRelocationMap = new HashMap&lt;String, String&gt;();
- * tableToDbNameRelocationMap.put("slovakia", aliasDbName);
- * final AmericaDb americaDb = new AmericaDb(connection, tableToDbNameRelocationMap);
+ * final Map&lt;String, String&gt; tableToAttachedDbNameRelocationMap = new HashMap&lt;String, String&gt;();
+ * tableToAttachedDbNameRelocationMap.put("slovakia", aliasDbName);
+ * final AmericaDb americaDb = new AmericaDb(connection, tableToAttachedDbNameRelocationMap);
  * ...
  * final String detachSqlQuery = "DETACH DATABASE " + aliasDbName;
  * final Statement detachStatement = connection.createStatement();
@@ -122,14 +122,14 @@ public class SqlDatabase
     /**
      * Constructs a new SQL database object with the given connection.
      *
-     * @param externalConnection         Database connection to use.
-     * @param tableToDbNameRelocationMap Table to database name relocation map.
+     * @param externalConnection                 Database connection to use.
+     * @param tableToAttachedDbNameRelocationMap Table to database name relocation map.
      */
-    public SqlDatabase(Connection externalConnection, Map<String, String> tableToDbNameRelocationMap)
+    public SqlDatabase(Connection externalConnection, Map<String, String> tableToAttachedDbNameRelocationMap)
     {
         connection = externalConnection;
         isExternal = true;
-        tableNameToAttachedDbNameMap = tableToDbNameRelocationMap;
+        tableNameToAttachedDbNameMap = tableToAttachedDbNameRelocationMap;
         dbFileNameToAttachedDbNameMap = null;
     }
 

@@ -42,8 +42,8 @@ class ${name}():
     </#list>
 
 </#if>
-    def __init__(self, connectionCursor, tableName, attachedDbName=None):
-        self._cursor = connectionCursor
+    def __init__(self, connection, tableName, attachedDbName=None):
+        self._connection = connection
         self._tableName = tableName
         self._attachedDbName = attachedDbName
 <#if withWriterCode>
@@ -53,18 +53,21 @@ class ${name}():
     <#if hasNonVirtualField && isWithoutRowId>
         sqlQuery += " WITHOUT ROWID"
     </#if>
-        self._cursor.execute(sqlQuery)
+        cursor = self._connection.cursor()
+        cursor.execute(sqlQuery)
     <#if hasNonVirtualField && isWithoutRowId>
 
     def createOrdinaryRowIdTable(self):
         sqlQuery = self._getCreateTableQuery()
-        self._cursor.execute(sqlQuery)
+        cursor = self._connection.cursor()
+        cursor.execute(sqlQuery)
     </#if>
 
     def deleteTable(self):
         sqlQuery = "DROP TABLE "
         sqlQuery += self._getTableNameInQuery()
-        self._cursor.execute(sqlQuery)
+        cursor = self._connection.cursor()
+        cursor.execute(sqlQuery)
 </#if>
 
     def read(self, <#if needsParameterProvider>parameterProvider, </#if>condition=None):
@@ -116,7 +119,8 @@ class ${name}():
         if condition:
             sqlQuery += " WHERE " + condition
 
-        readRows = self._cursor.execute(sqlQuery)
+        cursor = self._connection.cursor()
+        readRows = cursor.execute(sqlQuery)
 
         return ${rowsClassName}(readRows<#if needsParameterProvider>, parameterProvider</#if>)
 <#if withWriterCode>
@@ -130,10 +134,11 @@ class ${name}():
     </#list>
                      ") VALUES (<#list fields as field>?<#if field?has_next>, </#if></#list>)")
 
-        self._cursor.execute("BEGIN")
+        cursor = self._connection.cursor()
+        cursor.execute("BEGIN")
         for row in rows:
-            self._cursor.execute(sqlQuery, <#if needsRowConversion>self._writeRow(row)<#else>row</#if>)
-        self._cursor.execute("COMMIT")
+            cursor.execute(sqlQuery, <#if needsRowConversion>self._writeRow(row)<#else>row</#if>)
+        cursor.execute("COMMIT")
 
     def update(self, row, whereCondition):
         sqlQuery = "UPDATE "
@@ -144,7 +149,8 @@ class ${name}():
     </#list>
                      " WHERE ") + whereCondition
 
-        self._cursor.execute(sqlQuery, <#if needsRowConversion>self._writeRow(row)<#else>row</#if>)
+        cursor = self._connection.cursor()
+        cursor.execute(sqlQuery, <#if needsRowConversion>self._writeRow(row)<#else>row</#if>)
 </#if>
 
     def _getTableNameInQuery(self):

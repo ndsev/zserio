@@ -36,12 +36,14 @@ public class DbWithRelocationTest
     @Before
     public void setUp() throws IOException, URISyntaxException, SQLException
     {
-        europeDb = new EuropeDb(EUROPE_DB_FILE_URI_NAME);
+        FileUtil.deleteFileIfExists(europeDbFile);
+        europeDb = new EuropeDb(EUROPE_DB_FILE_NAME);
         europeDb.createSchema();
 
+        FileUtil.deleteFileIfExists(americaDbFile);
         final Map<String, String> tableToDbFileNameRelocationMap = new HashMap<String, String>();
-        tableToDbFileNameRelocationMap.put(RELOCATED_SLOVAKIA_TABLE_NAME, EUROPE_DB_FILE_URI_NAME);
-        tableToDbFileNameRelocationMap.put(RELOCATED_CZECHIA_TABLE_NAME, EUROPE_DB_FILE_URI_NAME);
+        tableToDbFileNameRelocationMap.put(RELOCATED_SLOVAKIA_TABLE_NAME, EUROPE_DB_FILE_NAME);
+        tableToDbFileNameRelocationMap.put(RELOCATED_CZECHIA_TABLE_NAME, EUROPE_DB_FILE_NAME);
         americaDb = new AmericaDb(AMERICA_DB_FILE_NAME, tableToDbFileNameRelocationMap);
         americaDb.createSchema();
     }
@@ -49,11 +51,17 @@ public class DbWithRelocationTest
     @After
     public void tearDown() throws SQLException
     {
-        closeDb(americaDb);
-        FileUtil.deleteFileIfExists(americaDbFile);
+        if (americaDb != null)
+        {
+            americaDb.close();
+            americaDb = null;
+        }
 
-        closeDb(europeDb);
-        FileUtil.deleteFileIfExists(europeDbFile);
+        if (europeDb != null)
+        {
+            europeDb.close();
+            europeDb = null;
+        }
     }
 
     @Test
@@ -184,12 +192,6 @@ public class DbWithRelocationTest
         }
     }
 
-    private static void closeDb(SqlDatabase database) throws SQLException
-    {
-        if (database != null)
-            database.close();
-    }
-
     private static boolean isRelocatedTableInDb(String relocatedTableName, SqlDatabase db) throws SQLException
     {
         // check if database does contain relocated table
@@ -239,8 +241,6 @@ public class DbWithRelocationTest
     }
 
     private static final String EUROPE_DB_FILE_NAME = "db_with_relocation_test_europe.sqlite";
-    private static final String EUROPE_DB_FILE_URI_PARAMS = "?zv=zlib&password=my16BytePassword";
-    private static final String EUROPE_DB_FILE_URI_NAME = EUROPE_DB_FILE_NAME + EUROPE_DB_FILE_URI_PARAMS;
     private static final String AMERICA_DB_FILE_NAME = "db_with_relocation_test_america.sqlite";
 
     private static final String RELOCATED_SLOVAKIA_TABLE_NAME = "slovakia";

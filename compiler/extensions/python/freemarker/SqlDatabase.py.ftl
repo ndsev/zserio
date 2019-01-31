@@ -12,24 +12,39 @@
 </#if>
 
 class ${name}():
-    def __init__(self, connection, tableToDbFileNameRelocationDict=None):
-        self._isExternal = True
+    def __init__(self, connection, tableToAttachedDbNameRelocationMap=None):
         self._connection = connection
-        self._cursor = connection.cursor()
-        self._initTables(tableToDbFileNameRelocationDict)
+        self._initTables(tableToAttachedDbNameRelocationMap if tableToAttachedDbNameRelocationMap else {})
+        self._attachedDbNameList = []
+        self._isExternal = True
 
     @classmethod
-    def fromFile(cls, fileName, tableToDbFileNameRelocationDict=None):
+    def fromFile(cls, fileName, tableToDbFileNameRelocationMap=None):
         connection = apsw.Connection(fileName, <#rt>
             <#lt><#if withWriterCode>apsw.SQLITE_OPEN_READWRITE | apsw.SQLITE_OPEN_CREATE<#else>apsw.SQLITE_OPEN_READONLY</#if>)
-        instance = cls(connection, tableToDbFileNameRelocationDict)
+
+        tableNameToAttachedDbNameMap = {}
+        dbFileNameToAttachedDbNameMap = {}
+        if tableToDbFileNameRelocationMap:
+            cursor = connection.cursor()
+            for relocatedTableName, dbFileName in tableToDbFileNameRelocationMap.items():
+                attachedDbName = dbFileNameToAttachedDbNameMap.get(dbFileName)
+                if attachedDbName is None:
+                    attachedDbName = cls.DATABASE_NAME + "_" + relocatedTableName
+                    cls._attachDatabase(cursor, dbFileName, attachedDbName)
+                    dbFileNameToAttachedDbNameMap[dbFileName] = attachedDbName
+
+                tableNameToAttachedDbNameMap[relocatedTableName] = attachedDbName
+
+        instance = cls(connection, tableNameToAttachedDbNameMap)
+        instance._attachedDbNameList = dbFileNameToAttachedDbNameMap.values()
         instance._isExternal = False
 
         return instance
 
     def close(self):
-        self._detachDatabases()
         if not self._isExternal:
+            self._detachDatabases()
             self._connection.close()
         self._connection = None
 <#list fields as field>
@@ -48,20 +63,27 @@ class ${name}():
         return self._connection
 
     def executeQuery(self, query):
-        return self._cursor.execute(query)
+        cursor = self._connection.cursor()
+        return cursor.execute(query)
 <#if withWriterCode>
 
     def createSchema(self<#if hasWithoutRowIdTable>, withoutRowIdTableNamesBlackList=None</#if>):
     <#if fields?has_content>
         hasAutoCommit = self._connection.getautocommit()
         if hasAutoCommit:
-            self._cursor.execute("BEGIN")
+            cursor = self._connection.cursor()
+            cursor.execute("BEGIN")
+        <#if hasWithoutRowIdTable>
+
+        if withoutRowIdTableNamesBlackList is None:
+            withoutRowIdTableNamesBlackList = []
+        </#if>
 
         <#list fields as field>
             <#if field.isWithoutRowIdTable>
         if self.<@field_table_name field/> in withoutRowIdTableNamesBlackList:
             self.<@field_member_name field/>.createOrdinaryRowIdTable()
-        else
+        else:
             self.<@field_member_name field/>.createTable()
             <#else>
         self.<@field_member_name field/>.createTable()
@@ -69,53 +91,46 @@ class ${name}():
         </#list>
 
         if hasAutoCommit:
-            self._cursor.execute("COMMIT")
+            cursor = self._connection.cursor()
+            cursor.execute("COMMIT")
     </#if>
 
     def deleteSchema(self):
     <#if fields?has_content>
         hasAutoCommit = self._connection.getautocommit()
         if hasAutoCommit:
-            self._cursor.execute("BEGIN")
+            cursor = self._connection.cursor()
+            cursor.execute("BEGIN")
 
         <#list fields as field>
         self.<@field_member_name field/>.deleteTable()
         </#list>
 
         if hasAutoCommit:
-            self._cursor.execute("COMMIT")
+            cursor = self._connection.cursor()
+            cursor.execute("COMMIT")
     </#if>
 </#if>
 
-    def _initTables(self, tableToDbFileNameRelocationDict):
-        self._dbFileNameToAttachedDbNameDict = {}
-        tableNameToAttachedDbNameDict = {}
-        if tableToDbFileNameRelocationDict:
-            for relocatedTableName, dbFileName in tableToDbFileNameRelocationDict.items():
-                attachedDbName = self._dbFileNameToAttachedDbNameDict.get(dbFileName)
-                if attachedDbName is None:
-                    attachedDbName = self.DATABASE_NAME + "_" + relocatedTableName
-                    self._attachDatabase(dbFileName, attachedDbName)
-                    self._dbFileNameToAttachedDbNameDict[dbFileName] = attachedDbName
-
-                tableNameToAttachedDbNameDict[relocatedTableName] = attachedDbName
-
+    def _initTables(self, tableNameToAttachedDbNameMap):
 <#list fields as field>
         self.<@field_member_name field/> = ${field.pythonTypeName}(
-            self._cursor, self.<@field_table_name field/>, tableNameToAttachedDbNameDict.get(self.<@field_table_name field/>))
+            self._connection, self.<@field_table_name field/>, tableNameToAttachedDbNameMap.get(self.<@field_table_name field/>))
 </#list>
 
-    def _attachDatabase(self, dbFileName, dbName):
+    @staticmethod
+    def _attachDatabase(cursor, dbFileName, dbName):
         sqlQuery = "ATTACH DATABASE '"
-        sqlQuery += "file:" + dbFileName
+        sqlQuery += dbFileName
         sqlQuery += "' AS "
         sqlQuery += dbName
-        self._cursor.execute(sqlQuery)
+        cursor.execute(sqlQuery)
 
     def _detachDatabases(self):
-        for attachedDbName in self._dbFileNameToAttachedDbNameDict.values():
+        for attachedDbName in self._attachedDbNameList:
             sqlQuery = "DETACH DATABASE " + attachedDbName
-            self._cursor.execute(sqlQuery)
+            cursor = self._connection.cursor()
+            cursor.execute(sqlQuery)
 
     DATABASE_NAME = "${name}"
 <#list fields as field>
