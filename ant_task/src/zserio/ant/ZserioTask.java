@@ -43,7 +43,7 @@ import org.apache.tools.ant.types.Path;
  * Supported syntax:
  *
  * <zserio srcPath="src/path" srcFile="zs/all.zs" java="gen/java" cpp="gen/cpp" doc="gen/html"
- *               xml="gen/xml/syntax.xml" clean="true" ignoreError="true">
+ *         python="gen/python" xml="gen/xml/syntax.xml" clean="true" ignoreError="true">
  *     <arg name="cmdlineOption" value="value"/>
  *     <arg name="anotherOption"/>
  *     <dependencies>
@@ -76,6 +76,9 @@ import org.apache.tools.ant.types.Path;
  *
  * cpp="outDir"
  * Generate C++ sources in given directory.
+ *
+ * python="outDir"
+ * Generate Python sources in given directory.
  *
  * doc="outDir"
  * Generate HTML documentation in given directory.
@@ -132,6 +135,11 @@ public class ZserioTask extends Task
     public void setCpp(File cppOutput)
     {
         this.cppOutput = cppOutput;
+    }
+
+    public void setPython(File pythonOutput)
+    {
+        this.pythonOutput = pythonOutput;
     }
 
     public void setDoc(File docOutput)
@@ -246,6 +254,7 @@ public class ZserioTask extends Task
 
         tryAddOption(argsList, OptionJava, javaOutput);
         tryAddOption(argsList, OptionCpp, cppOutput);
+        tryAddOption(argsList, OptionPython, pythonOutput);
         tryAddOption(argsList, OptionDoc, docOutput);
         tryAddOption(argsList, OptionXml, xmlOutput);
 
@@ -376,6 +385,7 @@ public class ZserioTask extends Task
     private static final String OptionSrcPath = "src";
     private static final String OptionJava = "java";
     private static final String OptionCpp = "cpp";
+    private static final String OptionPython = "python";
     private static final String OptionDoc = "doc";
     private static final String OptionXml = "xml";
 }

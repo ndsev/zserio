@@ -36,11 +36,8 @@ functionality. You can find more information on [Zserio Invisibles](doc/ZserioIn
 
 At the moment the following languages are supported
 - C++
-- JAVA
-- Python (coming soon)
-
-It is still missing some features that we will work on in the next months, which for example include definition
-of rpc service interfaces or a Python emitter.
+- Java
+- Python
 
 ## Quick introduction
 
@@ -108,7 +105,8 @@ To be able to serialize data with zserio, you have to follow these basic steps:
 You can find the detailed quick start tutorial in their respective repositories:
 
 - [C++ Tutorial](https://github.com/ndsev/zserio-tutorial-cpp#zserio-c-quick-start-tutorial)
-- [JAVA tutorial](https://github.com/ndsev/zserio-tutorial-java#zserio-java-quick-start-tutorial)
+- [Java Tutorial](https://github.com/ndsev/zserio-tutorial-java#zserio-java-quick-start-tutorial)
+- [Python Tutorial](https://github.com/ndsev/zserio-tutorial-python#zserio-python-quick-start-tutorial)
 
 
 ## Features overview
@@ -139,6 +137,9 @@ C++ users can find more information in the
 [C++ Tutorial](https://github.com/ndsev/zserio-tutorial-cpp#zserio-c-quick-start-tutorial).
 
 Java users can find more information in the
-[JAVA tutorial](https://github.com/ndsev/zserio-tutorial-java#zserio-java-quick-start-tutorial).
+[Java Tutorial](https://github.com/ndsev/zserio-tutorial-java#zserio-java-quick-start-tutorial).
 
-Check out as well the [Zserio Types Mapping](doc/ZserioTypesMapping.md) for JAVA and C++ types mapping.
+Python users can find more information in the
+[Python Tutorial](https://github.com/ndsev/zserio-tutorial-python#zserio-python-quick-start-tutorial).
+
+Check out as well the [Zserio Types Mapping](doc/ZserioTypesMapping.md) for types mapping description.

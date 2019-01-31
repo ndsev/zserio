@@ -28,6 +28,7 @@ java -jar zserio.jar
     [-h,--help]
     [-java <output directory>]
     [-javaVersion <version>]
+    [-python <output directory>]
     [-setDotExecutable <dotExec>]
     [-setDotLinksPrefix <prefix>]
     [-setTopLevelPackage <package>]
@@ -77,6 +78,10 @@ for version which is run during Zserio compilation. Java version 6 is the lowest
 which Zserio is able to generate sources.
 
 > Parameter `-javaVersion 1.6` or `-javaVersion 6` specifies Java version 6.
+
+**`-python`**
+
+Zserio will generate Python API into a given output directory.
 
 **`-setDotExecutable`**
 
@@ -199,10 +204,11 @@ generates:
 
 - Java API into directory `api/java`,
 - C++ API into directory `api/cpp`,
+- Python API into directory `api/python`,
 - HTML documentation into directory `html`,
 - XML syntax tree of all input files into directory `xml`.
 
-`java -jar zserio.jar -java api/java -cpp api/cpp -doc html -xml xml -src sources zserio/test.zs`
+`java -jar zserio.jar -java api/java -cpp api/cpp -python api/python -doc html -xml xml -src sources zserio/test.zs`
 
 [top](#zserio-compiler-user-guide)
 
@@ -234,6 +240,7 @@ Zserio Task Attribute   | Description
 `ignoreError="boolean"` | When set to `true`, compilation error will be ignored and not reported to Ant. Default is `false`.
 `java="outDir"`         | Generates Java sources in `outDir`.
 `cpp="outDir"`          | Generates C++ sources in `outDir`.
+`python="outDir"`       | Generates Python sources in `outDir`.
 `doc="outDir"`          | Generates HTML documentation in `outDir`.
 `xml="outDir"`          | Generates XML representation of the input in `outDir`.
 
