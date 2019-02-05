@@ -225,7 +225,7 @@ template <typename T>
 class OffsetCheckerWrapper
 {
 public:
-    OffsetCheckerWrapper(T &checker) : m_checker(checker)
+    explicit OffsetCheckerWrapper(T &checker) : m_checker(checker)
     {}
 
     void alignAndCheckOffset(size_t index, BitStreamReader& in)
@@ -267,7 +267,7 @@ template <typename T>
 class OffsetSetterWrapper
 {
 public:
-    OffsetSetterWrapper(T &setter) : m_setter(setter)
+    explicit OffsetSetterWrapper(T &setter) : m_setter(setter)
     {}
 
     size_t alignAndSetOffset(size_t index, size_t bitPosition)

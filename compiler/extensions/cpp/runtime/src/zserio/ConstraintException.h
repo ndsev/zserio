@@ -11,7 +11,7 @@ namespace zserio
 class ConstraintException : public CppRuntimeException
 {
 public:
-    ConstraintException(const std::string& message) : CppRuntimeException(message) {}
+    explicit ConstraintException(const std::string& message) : CppRuntimeException(message) {}
 };
 
 } // namespace zserio

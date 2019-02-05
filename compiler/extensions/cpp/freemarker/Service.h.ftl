@@ -58,7 +58,7 @@ public:
     class Stub final : public StubInterface
     {
     public:
-        Stub(const std::shared_ptr<::grpc::ChannelInterface>& channel);
+        explicit Stub(const std::shared_ptr<::grpc::ChannelInterface>& channel);
 
 <#list rpcList as rpc>
         <@stub_header_public rpc/>

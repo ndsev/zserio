@@ -54,7 +54,7 @@ public:
     }
 
 #ifdef ZSERIO_RUNTIME_INCLUDE_INSPECTOR
-    BasicArray(const zserio::BlobInspectorNode& arrayNode)
+    explicit BasicArray(const zserio::BlobInspectorNode& arrayNode)
     {
         read(arrayNode);
     }

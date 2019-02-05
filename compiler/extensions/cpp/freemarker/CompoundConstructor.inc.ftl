@@ -14,7 +14,7 @@
 
 <#macro compound_read_constructor_declaration compoundConstructorsData>
     <#local constructorArgumentTypeList><@compound_constructor_argument_type_list compoundConstructorsData, 3/></#local>
-    ${compoundConstructorsData.compoundName}(zserio::BitStreamReader& _in<#rt>
+    <#if !constructorArgumentTypeList?has_content>explicit </#if>${compoundConstructorsData.compoundName}(zserio::BitStreamReader& _in<#rt>
     <#if constructorArgumentTypeList?has_content>
         ,${constructorArgumentTypeList}<#t>
     </#if>
@@ -51,8 +51,11 @@ ${compoundConstructorsData.compoundName}::${compoundConstructorsData.compoundNam
 
 <#macro compound_read_tree_constructor_declaration compoundConstructorsData>
     <#local constructorArgumentTypeList><@compound_constructor_argument_type_list compoundConstructorsData, 3/></#local>
-    ${compoundConstructorsData.compoundName}(const zserio::BlobInspectorTree& _tree<#rt>
-<#if constructorArgumentTypeList?has_content>,${constructorArgumentTypeList}</#if>);
+    <#if !constructorArgumentTypeList?has_content>explicit </#if>${compoundConstructorsData.compoundName}(const zserio::BlobInspectorTree& _tree<#rt>
+    <#if constructorArgumentTypeList?has_content>
+        ,${constructorArgumentTypeList}<#t>
+    </#if>
+    <#lt>);
 </#macro>
 
 <#macro compound_read_tree_constructor_definition compoundConstructorsData>
