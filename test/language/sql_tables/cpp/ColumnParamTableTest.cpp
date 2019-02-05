@@ -17,15 +17,17 @@ namespace column_param_table
 class ColumnParamTableTest : public ::testing::Test
 {
 public:
-    ColumnParamTableTest() : m_database(DB_FILE_NAME)
+    ColumnParamTableTest()
     {
-        m_database.createSchema();
+        std::remove(DB_FILE_NAME);
+
+        m_database = new sql_tables::TestDb(DB_FILE_NAME);
+        m_database->createSchema();
     }
 
     ~ColumnParamTableTest()
     {
-        m_database.close();
-        std::remove(DB_FILE_NAME);
+        delete m_database;
     }
 
 protected:
@@ -73,7 +75,7 @@ protected:
         std::string checkTableName = "columnParamTable";
         std::string sqlQuery = "SELECT name FROM sqlite_master WHERE type='table' AND name='" + checkTableName +
                 "'";
-        int result = sqlite3_prepare_v2(m_database.getConnection(), sqlQuery.c_str(), -1, &statement, NULL);
+        int result = sqlite3_prepare_v2(m_database->connection(), sqlQuery.c_str(), -1, &statement, NULL);
         if (result != SQLITE_OK)
             return false;
 
@@ -101,7 +103,7 @@ protected:
     static const uint32_t PARAMETERIZED_BLOB_VALUE;
     static const uint32_t NUM_COLUMN_PARAM_TABLE_ROWS;
 
-    sql_tables::TestDb  m_database;
+    sql_tables::TestDb* m_database;
 };
 
 const char ColumnParamTableTest::DB_FILE_NAME[] = "column_param_table_test.sqlite";
@@ -113,7 +115,7 @@ TEST_F(ColumnParamTableTest, deleteTable)
 {
     ASSERT_TRUE(isTableInDb());
 
-    ColumnParamTable& testTable = m_database.getColumnParamTable();
+    ColumnParamTable& testTable = m_database->getColumnParamTable();
     testTable.deleteTable();
     ASSERT_FALSE(isTableInDb());
 
@@ -123,7 +125,7 @@ TEST_F(ColumnParamTableTest, deleteTable)
 
 TEST_F(ColumnParamTableTest, readWithoutCondition)
 {
-    ColumnParamTable& testTable = m_database.getColumnParamTable();
+    ColumnParamTable& testTable = m_database->getColumnParamTable();
 
     std::vector<ColumnParamTableRow> writtenRows;
     fillColumnParamTableRows(writtenRows);
@@ -136,7 +138,7 @@ TEST_F(ColumnParamTableTest, readWithoutCondition)
 
 TEST_F(ColumnParamTableTest, readWithCondition)
 {
-    ColumnParamTable& testTable = m_database.getColumnParamTable();
+    ColumnParamTable& testTable = m_database->getColumnParamTable();
 
     std::vector<ColumnParamTableRow> writtenRows;
     fillColumnParamTableRows(writtenRows);
@@ -153,7 +155,7 @@ TEST_F(ColumnParamTableTest, readWithCondition)
 
 TEST_F(ColumnParamTableTest, update)
 {
-    ColumnParamTable& testTable = m_database.getColumnParamTable();
+    ColumnParamTable& testTable = m_database->getColumnParamTable();
 
     std::vector<ColumnParamTableRow> writtenRows;
     fillColumnParamTableRows(writtenRows);

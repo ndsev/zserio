@@ -160,7 +160,7 @@ public class ${name}
                 )");<#lt>
 
         // write rows
-        __db.setAutoCommit(false);
+        final boolean wasTransactionStarted = __db.startTransaction();
         final PreparedStatement statement = __db.prepareStatement(sqlQuery.toString());
         try
         {
@@ -176,8 +176,7 @@ public class ${name}
             statement.close();
         }
 
-        __db.commit();
-        __db.setAutoCommit(true);
+        __db.endTransaction(wasTransactionStarted);
     }
 
     /** Updates given row in the table. */

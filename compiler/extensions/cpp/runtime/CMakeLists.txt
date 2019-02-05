@@ -23,10 +23,6 @@ compiler_set_static_clibs()
 compiler_set_warnings()
 compiler_set_warnings_as_errors()
 
-# add SQLite3 library
-include(sqlite_utils)
-sqlite_add_library(${ZSERIO_PROJECT_ROOT})
-
 # cmake helpers
 include(cmake_utils)
 

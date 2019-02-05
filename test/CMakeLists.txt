@@ -47,9 +47,7 @@ endif ()
 include(zserio_utils)
 set(ZSERIO_JAR_DIR "${ZSERIO_RELEASE_ROOT}/zserio_libs")
 set(ZSERIO_RUNTIME_LIBRARY_DIR "${ZSERIO_RELEASE_ROOT}/runtime_libs/cpp")
-zserio_add_runtime_library(RUNTIME_LIBRARY_DIR "${ZSERIO_RUNTIME_LIBRARY_DIR}"
-                           INCLUDE_INSPECTOR ON
-                           INCLUDE_RELATIONAL ON)
+zserio_add_runtime_library(RUNTIME_LIBRARY_DIR "${ZSERIO_RUNTIME_LIBRARY_DIR}" INCLUDE_INSPECTOR ON)
 
 # functions to set globals called by included CMake lists
 set(TEST_SOURCES_LIST "" CACHE INTERNAL "Test sources")
@@ -74,7 +72,14 @@ foreach(subproject ${SUBPROJECTS})
 endforeach()
 
 add_executable(${PROJECT_NAME} ${TEST_SOURCES_LIST})
+
 target_link_libraries(${PROJECT_NAME} gtest_main ${TEST_DEPENDENCIES_LIST})
+
+target_include_directories(${PROJECT_NAME} SYSTEM PRIVATE ${SQLITE_INCDIR})
+foreach(dependency ${TEST_DEPENDENCIES_LIST})
+    target_include_directories(${dependency} SYSTEM PRIVATE ${SQLITE_INCDIR})
+endforeach()
+target_link_libraries(${PROJECT_NAME} ${SQLITE_LIBRARY})
 
 # grpc
 if (GRPC_ENABLED)

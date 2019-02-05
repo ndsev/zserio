@@ -16,15 +16,17 @@ namespace hidden_virtual_columns
 class HiddenVirtualColumnsTest : public ::testing::Test
 {
 public:
-    HiddenVirtualColumnsTest() : m_tableName("hiddenVirtualColumnsTable"), m_database(DB_FILE_NAME)
+    HiddenVirtualColumnsTest() : m_tableName("hiddenVirtualColumnsTable")
     {
-        m_database.createSchema();
+        std::remove(DB_FILE_NAME);
+
+        m_database = new HiddenVirtualColumnsDb(DB_FILE_NAME);
+        m_database->createSchema();
     }
 
     ~HiddenVirtualColumnsTest()
     {
-        m_database.close();
-        std::remove(DB_FILE_NAME);
+        delete m_database;
     }
 
 protected:
@@ -73,7 +75,7 @@ protected:
         sqlite3_stmt* statement;
         std::string sqlQuery = "SELECT name FROM sqlite_master WHERE type='table' AND name='" + m_tableName +
                 "'";
-        int result = sqlite3_prepare_v2(m_database.getConnection(), sqlQuery.c_str(), -1, &statement, NULL);
+        int result = sqlite3_prepare_v2(m_database->connection(), sqlQuery.c_str(), -1, &statement, NULL);
         if (result != SQLITE_OK)
             return false;
 
@@ -100,7 +102,7 @@ protected:
     {
         sqlite3_stmt* statement;
         const std::string sqlQuery = "SELECT " + columnName + " FROM " + m_tableName + " LIMIT 0";
-        int result = sqlite3_prepare_v2(m_database.getConnection(), sqlQuery.c_str(), -1, &statement, NULL);
+        int result = sqlite3_prepare_v2(m_database->connection(), sqlQuery.c_str(), -1, &statement, NULL);
         sqlite3_finalize(statement);
 
         return (result == SQLITE_OK) ? true : false;
@@ -110,7 +112,7 @@ protected:
     static const int32_t NUM_TABLE_ROWS;
 
     std::string m_tableName;
-    HiddenVirtualColumnsDb m_database;
+    HiddenVirtualColumnsDb* m_database;
 };
 
 const char HiddenVirtualColumnsTest::DB_FILE_NAME[] = "hidden_virtual_columns_test.sqlite";
@@ -120,7 +122,7 @@ TEST_F(HiddenVirtualColumnsTest, deleteTable)
 {
     ASSERT_TRUE(isTableInDb());
 
-    HiddenVirtualColumnsTable& testTable = m_database.getHiddenVirtualColumnsTable();
+    HiddenVirtualColumnsTable& testTable = m_database->getHiddenVirtualColumnsTable();
     testTable.deleteTable();
     ASSERT_FALSE(isTableInDb());
 
@@ -130,7 +132,7 @@ TEST_F(HiddenVirtualColumnsTest, deleteTable)
 
 TEST_F(HiddenVirtualColumnsTest, readWithoutCondition)
 {
-    HiddenVirtualColumnsTable& testTable = m_database.getHiddenVirtualColumnsTable();
+    HiddenVirtualColumnsTable& testTable = m_database->getHiddenVirtualColumnsTable();
 
     std::vector<HiddenVirtualColumnsTableRow> writtenRows;
     fillHiddenVirtualColumnsTableRows(writtenRows);
@@ -143,7 +145,7 @@ TEST_F(HiddenVirtualColumnsTest, readWithoutCondition)
 
 TEST_F(HiddenVirtualColumnsTest, readWithCondition)
 {
-    HiddenVirtualColumnsTable& testTable = m_database.getHiddenVirtualColumnsTable();
+    HiddenVirtualColumnsTable& testTable = m_database->getHiddenVirtualColumnsTable();
 
     std::vector<HiddenVirtualColumnsTableRow> writtenRows;
     fillHiddenVirtualColumnsTableRows(writtenRows);
@@ -160,7 +162,7 @@ TEST_F(HiddenVirtualColumnsTest, readWithCondition)
 
 TEST_F(HiddenVirtualColumnsTest, update)
 {
-    HiddenVirtualColumnsTable& testTable = m_database.getHiddenVirtualColumnsTable();
+    HiddenVirtualColumnsTable& testTable = m_database->getHiddenVirtualColumnsTable();
 
     std::vector<HiddenVirtualColumnsTableRow> writtenRows;
     fillHiddenVirtualColumnsTableRows(writtenRows);

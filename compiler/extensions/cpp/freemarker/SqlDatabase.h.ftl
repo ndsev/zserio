@@ -1,20 +1,16 @@
 <#include "FileHeader.inc.ftl">
+<#include "Sql.inc.ftl">
 <#include "InstantiateTemplate.inc.ftl">
 <@file_header generatorDescription/>
 
 <@include_guard_begin package.path, name/>
 
-<#if withInspectorCode>
-#include <map>
-</#if>
 #include <string>
 #include <vector>
 #include <set>
-#include <sqlite3.h>
-#include <zserio/SqlDatabase.h>
-<#if withWriterCode>
-#include <zserio/ISqlDatabaseWriter.h>
-</#if>
+#include <map>
+#include <zserio/ISqliteDatabase<#if !withWriterCode>Reader</#if>.h>
+#include <zserio/SqliteConnection.h>
 <#if withInspectorCode>
 #include <zserio/BitStreamReader.h>
 </#if>
@@ -29,23 +25,26 @@
 
 <@namespace_begin package.path/>
 
-class ${name} : public zserio::SqlDatabase<#rt>
-        <#lt><#if withWriterCode>, public zserio::ISqlDatabaseWriter</#if><#if withInspectorCode>,
+class ${name} : public zserio::ISqliteDatabase<#if !withWriterCode>Reader</#if><#if withInspectorCode>,
         public ${rootPackage.name}::ISqlDatabaseInspector</#if>
 {
 public:
-    ${name}();
-    explicit ${name}(sqlite3* externalConnection);
-    ${name}(const std::string& fileName);
+    typedef std::map<std::string, std::string> TRelocationMap;
 
-    void open(sqlite3* externalConnection);
-    void open(const std::string& fileName);
-<#if fields?has_content>
+    explicit ${name}(const std::string& fileName,
+            const TRelocationMap& tableToDbFileNameRelocationMap = TRelocationMap());
+    explicit ${name}(sqlite3* externalConnection,
+            const TRelocationMap& tableToAttachedDbNameRelocationMap = TRelocationMap());
 
-    <#list fields as field>
+    ~${name}();
+
+    sqlite3* connection();
+    void executeUpdate(const std::string& query);
+    sqlite3_stmt* prepareStatement(const std::string& query);
+
+<#list fields as field>
     ${field.cppTypeName}& ${field.getterName}();
-    </#list>
-</#if>
+</#list>
 <#if withWriterCode>
 
     virtual void createSchema();
@@ -65,31 +64,34 @@ public:
     virtual bool doesBlobExist(const std::string& tableName, const std::string& blobName) const;
 </#if>
 
-    static const char* getDatabaseName();
+    static const char* databaseName();
     static void fillTableNames(std::vector<std::string>& tableNames);
-<#if fields?has_content>
 
 private:
+    void initTables(const TRelocationMap& tableToAttachedDbNameRelocationMap);
+    void attachDatabase(const std::string& fileName, const std::string& attachedDbName);
+    void detachDatabases();
+
+<#list fields as field>
+    static const char* <@sql_db_table_name_getter field/>;
+</#list>
+
     <#if withInspectorCode>
     void fillTableMap();
     ${rootPackage.name}::ISqlTableInspector* findTableByName(const std::string& tableName) const;
 
     </#if>
-    static const char DATABASE_NAME[];
-    <#list fields as field>
-    static const char ${field.name?upper_case}_TABLE_NAME[];
-    </#list>
+    zserio::SqliteConnection m_db;
+    std::vector<std::string> m_attachedDbList;
 
+<#list fields as field>
+    ${field.cppTypeName}* m_${field.name};
+</#list>
     <#if withInspectorCode>
+
     typedef std::map<std::string, ${rootPackage.name}::ISqlTableInspector*> TTableMap;
-
     TTableMap m_tableMap;
-
     </#if>
-    <#list fields as field>
-    ${field.cppTypeName} m_${field.name};
-    </#list>
-</#if>
 };
 
 <@namespace_end package.path/>

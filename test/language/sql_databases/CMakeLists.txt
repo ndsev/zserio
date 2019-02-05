@@ -31,6 +31,7 @@ zserio_add_library(TARGET sql_databases_zs
 )
 
 add_test_sources(
+    cpp/DbWithRelocationTest.cpp
     cpp/SimpleDbTest.cpp
 )
 

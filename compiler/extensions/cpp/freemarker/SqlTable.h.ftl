@@ -8,7 +8,7 @@
 #include <string>
 #include <sqlite3.h>
 <@system_includes headerSystemIncludes, false/>
-#include <zserio/SqlDatabase.h>
+#include <zserio/SqliteConnection.h>
 <#if withInspectorCode>
 #include <zserio/BitStreamReader.h>
 #include <zserio/BitStreamWriter.h>
@@ -40,7 +40,7 @@ public:
     };
 
 </#if>
-    ${name}(zserio::SqlDatabase& db, const std::string& tableName);
+    ${name}(zserio::SqliteConnection& db, const std::string& tableName, const std::string& attachedDbName = "");
     ~${name}();
 <#if withWriterCode>
 
@@ -80,8 +80,11 @@ private:
     void appendCreateTableToQuery(std::string& sqlQuery);
 </#if>
 
-    zserio::SqlDatabase& m_db;
+    void appendTableNameToQuery(std::string& sqlQuery) const;
+
+    zserio::SqliteConnection& m_db;
     const std::string m_name;
+    const std::string m_attachedDbName;
 };
 
 <@namespace_end package.path/>

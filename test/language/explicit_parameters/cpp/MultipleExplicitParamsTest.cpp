@@ -16,15 +16,17 @@ namespace multiple_explicit_params
 class MultipleExplicitParamsTest : public ::testing::Test
 {
 public:
-    MultipleExplicitParamsTest() : m_database(DB_FILE_NAME)
+    MultipleExplicitParamsTest()
     {
-        m_database.createSchema();
+        std::remove(DB_FILE_NAME);
+
+        m_database = new ExplicitParametersDb(DB_FILE_NAME);
+        m_database->createSchema();
     }
 
     ~MultipleExplicitParamsTest()
     {
-        m_database.close();
-        std::remove(DB_FILE_NAME);
+        delete m_database;
     }
 
 protected:
@@ -124,7 +126,7 @@ protected:
         }
     };
 
-    ExplicitParametersDb m_database;
+    ExplicitParametersDb* m_database;
 
     static const char DB_FILE_NAME[];
 
@@ -143,7 +145,7 @@ const uint32_t MultipleExplicitParamsTest::MULTIPLE_PARAMS_COUNT = 12;
 
 TEST_F(MultipleExplicitParamsTest, readWithoutCondition)
 {
-    MultipleParamsTable& multipleParamsTable = m_database.getMultipleParamsTable();
+    MultipleParamsTable& multipleParamsTable = m_database->getMultipleParamsTable();
 
     std::vector<MultipleParamsTableRow> writtenRows;
     fillMultipleParamsTableRows(writtenRows);
@@ -157,7 +159,7 @@ TEST_F(MultipleExplicitParamsTest, readWithoutCondition)
 
 TEST_F(MultipleExplicitParamsTest, readWithCondition)
 {
-    MultipleParamsTable& multipleParamsTable = m_database.getMultipleParamsTable();
+    MultipleParamsTable& multipleParamsTable = m_database->getMultipleParamsTable();
 
     std::vector<MultipleParamsTableRow> writtenRows;
     fillMultipleParamsTableRows(writtenRows);
@@ -175,7 +177,7 @@ TEST_F(MultipleExplicitParamsTest, readWithCondition)
 
 TEST_F(MultipleExplicitParamsTest, update)
 {
-    MultipleParamsTable& multipleParamsTable = m_database.getMultipleParamsTable();
+    MultipleParamsTable& multipleParamsTable = m_database->getMultipleParamsTable();
 
     std::vector<MultipleParamsTableRow> writtenRows;
     fillMultipleParamsTableRows(writtenRows);

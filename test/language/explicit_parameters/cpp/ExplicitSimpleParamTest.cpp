@@ -16,15 +16,17 @@ namespace explicit_simple_param
 class ExplicitSimpleParamTest : public ::testing::Test
 {
 public:
-    ExplicitSimpleParamTest() : m_database(DB_FILE_NAME)
+    ExplicitSimpleParamTest()
     {
-        m_database.createSchema();
+        std::remove(DB_FILE_NAME);
+
+        m_database = new ExplicitParametersDb(DB_FILE_NAME);
+        m_database->createSchema();
     }
 
     ~ExplicitSimpleParamTest()
     {
-        m_database.close();
-        std::remove(DB_FILE_NAME);
+        delete m_database;
     }
 
 protected:
@@ -101,7 +103,7 @@ protected:
         }
     };
 
-    ExplicitParametersDb m_database;
+    ExplicitParametersDb* m_database;
 
     static const char DB_FILE_NAME[];
 
@@ -118,7 +120,7 @@ const uint32_t ExplicitSimpleParamTest::SIMPLE_PARAM_TABLE_COUNT2 = 11;
 
 TEST_F(ExplicitSimpleParamTest, readWithoutCondition)
 {
-    SimpleParamTable& simpleParamTable = m_database.getSimpleParamTable();
+    SimpleParamTable& simpleParamTable = m_database->getSimpleParamTable();
 
     std::vector<SimpleParamTableRow> writtenRows;
     fillSimpleParamTableRows(writtenRows);
@@ -132,7 +134,7 @@ TEST_F(ExplicitSimpleParamTest, readWithoutCondition)
 
 TEST_F(ExplicitSimpleParamTest, readWithCondition)
 {
-    SimpleParamTable& simpleParamTable = m_database.getSimpleParamTable();
+    SimpleParamTable& simpleParamTable = m_database->getSimpleParamTable();
 
     std::vector<SimpleParamTableRow> writtenRows;
     fillSimpleParamTableRows(writtenRows);
@@ -150,7 +152,7 @@ TEST_F(ExplicitSimpleParamTest, readWithCondition)
 
 TEST_F(ExplicitSimpleParamTest, update)
 {
-    SimpleParamTable& simpleParamTable = m_database.getSimpleParamTable();
+    SimpleParamTable& simpleParamTable = m_database->getSimpleParamTable();
 
     std::vector<SimpleParamTableRow> writtenRows;
     fillSimpleParamTableRows(writtenRows);

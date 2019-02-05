@@ -3,12 +3,10 @@
 # Usage: zserio_add_runtime_library
 #   RUNTIME_LIBRARY_DIR runtime_library_dir
 #   INCLUDE_INSPECTOR  ON/OFF
-#   INCLUDE_RELATIONAL ON/OFF
 function(zserio_add_runtime_library)
     # parse cmdline args
     foreach (ARG ${ARGV})
-        if ((ARG STREQUAL RUNTIME_LIBRARY_DIR) OR (ARG STREQUAL INCLUDE_INSPECTOR) OR
-            (ARG STREQUAL INCLUDE_RELATIONAL))
+        if ((ARG STREQUAL RUNTIME_LIBRARY_DIR) OR (ARG STREQUAL INCLUDE_INSPECTOR))
             if (DEFINED VALUE_${ARG})
                 message(FATAL_ERROR "Option ${ARG} used multiple times!")
             endif ()
@@ -21,14 +19,13 @@ function(zserio_add_runtime_library)
         endif ()
     endforeach ()
 
-    foreach (ARG RUNTIME_LIBRARY_DIR INCLUDE_INSPECTOR INCLUDE_RELATIONAL)
+    foreach (ARG RUNTIME_LIBRARY_DIR INCLUDE_INSPECTOR)
         if (NOT DEFINED VALUE_${ARG})
             message(FATAL_ERROR "No value defined for required argument ${ARG}!")
         endif ()
     endforeach ()
 
     set(ZSERIO_RUNTIME_INCLUDE_INSPECTOR ${VALUE_INCLUDE_INSPECTOR})
-    set(ZSERIO_RUNTIME_INCLUDE_RELATIONAL ${VALUE_INCLUDE_RELATIONAL})
     add_subdirectory(${VALUE_RUNTIME_LIBRARY_DIR} ZserioCppRuntime)
 endfunction()
 

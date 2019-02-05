@@ -17,15 +17,17 @@ namespace const_param_table
 class ConstParamTableTest : public ::testing::Test
 {
 public:
-    ConstParamTableTest() : m_database(DB_FILE_NAME)
+    ConstParamTableTest()
     {
-        m_database.createSchema();
+        std::remove(DB_FILE_NAME);
+
+        m_database = new sql_tables::TestDb(DB_FILE_NAME);
+        m_database->createSchema();
     }
 
     ~ConstParamTableTest()
     {
-        m_database.close();
-        std::remove(DB_FILE_NAME);
+        delete m_database;
     }
 
 protected:
@@ -73,7 +75,7 @@ protected:
         std::string checkTableName = "constParamTable";
         std::string sqlQuery = "SELECT name FROM sqlite_master WHERE type='table' AND name='" + checkTableName +
                 "'";
-        int result = sqlite3_prepare_v2(m_database.getConnection(), sqlQuery.c_str(), -1, &statement, NULL);
+        int result = sqlite3_prepare_v2(m_database->connection(), sqlQuery.c_str(), -1, &statement, NULL);
         if (result != SQLITE_OK)
             return false;
 
@@ -102,7 +104,7 @@ protected:
     static const uint32_t PARAMETERIZED_BLOB_PARAM;
     static const uint32_t NUM_CONST_PARAM_TABLE_ROWS;
 
-    sql_tables::TestDb  m_database;
+    sql_tables::TestDb* m_database;
 };
 
 const char ConstParamTableTest::DB_FILE_NAME[] = "const_param_table_test.sqlite";
@@ -115,7 +117,7 @@ TEST_F(ConstParamTableTest, deleteTable)
 {
     ASSERT_TRUE(isTableInDb());
 
-    ConstParamTable& testTable = m_database.getConstParamTable();
+    ConstParamTable& testTable = m_database->getConstParamTable();
     testTable.deleteTable();
     ASSERT_FALSE(isTableInDb());
 
@@ -125,7 +127,7 @@ TEST_F(ConstParamTableTest, deleteTable)
 
 TEST_F(ConstParamTableTest, readWithoutCondition)
 {
-    ConstParamTable& testTable = m_database.getConstParamTable();
+    ConstParamTable& testTable = m_database->getConstParamTable();
 
     std::vector<ConstParamTableRow> writtenRows;
     fillConstParamTableRows(writtenRows);
@@ -138,7 +140,7 @@ TEST_F(ConstParamTableTest, readWithoutCondition)
 
 TEST_F(ConstParamTableTest, readWithCondition)
 {
-    ConstParamTable& testTable = m_database.getConstParamTable();
+    ConstParamTable& testTable = m_database->getConstParamTable();
 
     std::vector<ConstParamTableRow> writtenRows;
     fillConstParamTableRows(writtenRows);
@@ -155,7 +157,7 @@ TEST_F(ConstParamTableTest, readWithCondition)
 
 TEST_F(ConstParamTableTest, update)
 {
-    ConstParamTable& testTable = m_database.getConstParamTable();
+    ConstParamTable& testTable = m_database->getConstParamTable();
 
     std::vector<ConstParamTableRow> writtenRows;
     fillConstParamTableRows(writtenRows);

@@ -240,7 +240,7 @@ public class SqlDatabase
      *
      * @throws SQLException If a database access error occurs.
      */
-    protected boolean startTransaction() throws SQLException
+    public boolean startTransaction() throws SQLException
     {
         boolean wasTransactionStarted = false;
         if (getAutoCommit())
@@ -259,7 +259,7 @@ public class SqlDatabase
      *
      * @throws SQLException If a database access error occurs.
      */
-    protected void endTransaction(boolean wasTransactionStarted) throws SQLException
+    public void endTransaction(boolean wasTransactionStarted) throws SQLException
     {
         if (wasTransactionStarted)
         {
@@ -284,8 +284,7 @@ public class SqlDatabase
     private void attachDatabase(String dbFileName, String dbName) throws SQLException
     {
         final StringBuilder sqlQuery = new StringBuilder("ATTACH DATABASE '");
-        final String dbUriPath = "file:" + new File(dbFileName).toString();
-        sqlQuery.append(dbUriPath);
+        sqlQuery.append(new File(dbFileName).toString()); // use File to handle separators corretly
         sqlQuery.append("' AS ");
         sqlQuery.append(dbName);
         executeUpdate(sqlQuery.toString());

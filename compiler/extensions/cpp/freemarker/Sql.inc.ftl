@@ -36,6 +36,10 @@
     <#return false>
 </#function>
 
+<#macro sql_db_table_name_getter field>
+    tableName${field.name?cap_first}()<#t>
+</#macro>
+
 <#function sql_strip_quotes string>
     <#return string[1..string?length - 2]>
 </#function>

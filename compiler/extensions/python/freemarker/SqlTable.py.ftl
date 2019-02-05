@@ -135,10 +135,15 @@ class ${name}():
                      ") VALUES (<#list fields as field>?<#if field?has_next>, </#if></#list>)")
 
         cursor = self._connection.cursor()
-        cursor.execute("BEGIN")
+        hasAutoCommit = self._connection.getautocommit()
+        if hasAutoCommit:
+            cursor.execute("BEGIN")
+
         for row in rows:
             cursor.execute(sqlQuery, <#if needsRowConversion>self._writeRow(row)<#else>row</#if>)
-        cursor.execute("COMMIT")
+
+        if hasAutoCommit:
+            cursor.execute("COMMIT")
 
     def update(self, row, whereCondition):
         sqlQuery = "UPDATE "

@@ -13,6 +13,10 @@ project(ZserioCppRuntimeTest)
 include(gtest_utils)
 gtest_add_library("${CMAKE_CURRENT_SOURCE_DIR}/../../../../../3rdparty/cpp/googletest")
 
+# add SQLite3 library
+include(sqlite_utils)
+sqlite_add_library(${ZSERIO_PROJECT_ROOT})
+
 set(ZSERIO_CPP_RUNTIME_TEST_SRCS
     zserio/AlignedStorageTest.cpp
     zserio/AnyHolderTest.cpp
@@ -31,6 +35,7 @@ set(ZSERIO_CPP_RUNTIME_TEST_SRCS
     zserio/HashCodeUtilTest.cpp
     zserio/ObjectArrayTest.cpp
     zserio/OptionalHolderTest.cpp
+    zserio/SqliteConnectionTest.cpp
     zserio/StringConvertUtilTest.cpp
     zserio/StringHolderTest.cpp
     zserio/VarUInt64UtilTest.cpp
@@ -45,16 +50,10 @@ if (ZSERIO_RUNTIME_INCLUDE_INSPECTOR)
     )
 endif ()
 
-if (ZSERIO_RUNTIME_INCLUDE_RELATIONAL)
-    set(ZSERIO_CPP_RUNTIME_TEST_SRCS
-        ${ZSERIO_CPP_RUNTIME_TEST_SRCS}
-        zserio/SqlDatabaseTest.cpp
-    )
-endif()
-
 add_executable(${PROJECT_NAME} ${ZSERIO_CPP_RUNTIME_TEST_SRCS})
 target_include_directories(${PROJECT_NAME} PRIVATE ../src)
-target_link_libraries(${PROJECT_NAME} PRIVATE ZserioCppRuntime gtest_main)
+target_include_directories(${PROJECT_NAME} SYSTEM PRIVATE ${SQLITE_INCDIR})
+target_link_libraries(${PROJECT_NAME} PRIVATE ZserioCppRuntime gtest_main ${SQLITE_LIBRARY})
 
 gtest_add_tests(${PROJECT_NAME} "--gtest_output=xml" ${ZSERIO_CPP_RUNTIME_TEST_SRCS})
 

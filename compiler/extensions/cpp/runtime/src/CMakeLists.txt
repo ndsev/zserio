@@ -12,14 +12,6 @@
 #                                    macro ZSERIO_RUNTIME_INCLUDE_INSPECTOR. When not defined
 #                                    behaves as if it's set to OFF.
 #
-# ZSERIO_RUNTIME_INCLUDE_RELATIONAL - Set to ON or OFF. When "ON" support for Zserio relational extension is
-#                                     included. When "OFF", Zserio must be used with command line argument
-#                                     '-withoutSqlCode'. Default is OFF.
-#
-# ZSERIO_RUNTIME_SQLITE_LIBRARY     - Set SQLite library to use.
-#
-# ZSERIO_RUNTIME_SQLITE_INCLUDE_DIR - Set directory with SQLite include files (sqlite3.h).
-#
 # An example application CMakeLists.txt follows:
 #
 # project(ZserioTestApp)
@@ -41,44 +33,8 @@ else ()
     set(ZSERIO_RUNTIME_INCLUDE_INSPECTOR_DEFAULT OFF)
 endif ()
 
-if (DEFINED ZSERIO_RUNTIME_INCLUDE_RELATIONAL)
-    set(ZSERIO_RUNTIME_INCLUDE_RELATIONAL_DEFAULT ${ZSERIO_RUNTIME_INCLUDE_RELATIONAL})
-else ()
-    set(ZSERIO_RUNTIME_INCLUDE_RELATIONAL_DEFAULT OFF)
-endif ()
-
 option(ZSERIO_RUNTIME_INCLUDE_INSPECTOR "Include support for Blob Inspector."
        ${ZSERIO_RUNTIME_INCLUDE_INSPECTOR_DEFAULT})
-option(ZSERIO_RUNTIME_INCLUDE_RELATIONAL "Include support for Zserio Relational Extension."
-       ${ZSERIO_RUNTIME_INCLUDE_RELATIONAL_DEFAULT})
-
-if (ZSERIO_RUNTIME_INCLUDE_RELATIONAL)
-    if (DEFINED ZSERIO_RUNTIME_SQLITE_LIBRARY)
-        set(ZSERIO_RUNTIME_SQLITE_LIBRARY_DEFAULT ${ZSERIO_RUNTIME_SQLITE_LIBRARY})
-    else ()
-        set(ZSERIO_RUNTIME_SQLITE_LIBRARY_DEFAULT "NOT-FOUND")
-    endif ()
-
-    if (DEFINED ZSERIO_RUNTIME_SQLITE_INCLUDE_DIR)
-        set(ZSERIO_RUNTIME_SQLITE_INCLUDE_DIR_DEFAULT ${ZSERIO_RUNTIME_SQLITE_INCLUDE_DIR})
-    else ()
-        set(ZSERIO_RUNTIME_SQLITE_INCLUDE_DIR_DEFAULT "NOT-FOUND")
-    endif ()
-
-    set(ZSERIO_RUNTIME_SQLITE_LIBRARY ${ZSERIO_RUNTIME_SQLITE_LIBRARY_DEFAULT}
-        CACHE PATH "SQLite3 library to use.")
-    set(ZSERIO_RUNTIME_SQLITE_INCLUDE_DIR ${ZSERIO_RUNTIME_SQLITE_INCLUDE_DIR_DEFAULT}
-        CACHE PATH "SQLite3 include directory.")
-
-    if (${ZSERIO_RUNTIME_SQLITE_LIBRARY} STREQUAL "NOT-FOUND")
-        message(FATAL_ERROR "SQLite3 library not found. Please set ZSERIO_RUNTIME_SQLITE_LIBRARY correctly.")
-    endif ()
-
-    if (NOT IS_DIRECTORY ${ZSERIO_RUNTIME_SQLITE_INCLUDE_DIR})
-        message(FATAL_ERROR
-                "SQLite3 include directory not found. Please set ZSERIO_RUNTIME_SQLITE_INCLUDE_DIR correctly.")
-    endif ()
-endif ()
 
 set(ZSERIO_CPP_RUNTIME_LIB_SRCS
     zserio/AlignedStorage.h
@@ -105,9 +61,13 @@ set(ZSERIO_CPP_RUNTIME_LIB_SRCS
     zserio/FloatUtil.cpp
     zserio/FloatUtil.h
     zserio/HashCodeUtil.h
+    zserio/ISqliteDatabase.h
+    zserio/ISqliteDatabaseReader.h
     zserio/ObjectArray.h
     zserio/OptionalHolder.h
     zserio/PreWriteAction.h
+    zserio/SqliteConnection.h
+    zserio/SqliteException.h
     zserio/StringConvertUtil.cpp
     zserio/StringConvertUtil.h
     zserio/StringHolder.h
@@ -132,16 +92,6 @@ if (ZSERIO_RUNTIME_INCLUDE_INSPECTOR)
                  APPEND PROPERTY COMPILE_DEFINITIONS ZSERIO_RUNTIME_INCLUDE_INSPECTOR)
 endif ()
 
-if (ZSERIO_RUNTIME_INCLUDE_RELATIONAL)
-    set(ZSERIO_CPP_RUNTIME_LIB_SRCS
-        ${ZSERIO_CPP_RUNTIME_LIB_SRCS}
-        zserio/ISqlDatabaseWriter.h
-        zserio/SqlDatabase.cpp
-        zserio/SqlDatabase.h
-        zserio/SqliteException.h
-    )
-endif ()
-
 if (CMAKE_SIZEOF_VOID_P EQUAL 8)
     # allows bit stream reader optimization for 64bit platforms
     set_property(SOURCE zserio/BitStreamReader.cpp
@@ -152,7 +102,3 @@ add_library(ZserioCppRuntime STATIC ${ZSERIO_CPP_RUNTIME_LIB_SRCS})
 
 target_include_directories(ZserioCppRuntime PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 
-if (ZSERIO_RUNTIME_INCLUDE_RELATIONAL)
-    target_link_libraries(ZserioCppRuntime PUBLIC ${ZSERIO_RUNTIME_SQLITE_LIBRARY})
-    target_include_directories(ZserioCppRuntime PUBLIC ${ZSERIO_RUNTIME_SQLITE_INCLUDE_DIR})
-endif ()

@@ -9,9 +9,12 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.junit.After;
 import org.junit.Before;
@@ -175,21 +178,21 @@ public class DbWithRelocationTest
         try
         {
             final ResultSet resultSet = statement.executeQuery();
-            for (int i = 0; i < attachedDatabaseNames.length; ++i)
+            while (resultSet.next())
             {
-                assertTrue(resultSet.next());
-
                 final String databaseName = resultSet.getString(2);
                 assertFalse(resultSet.wasNull());
-                assertEquals(attachedDatabaseNames[i], databaseName);
+                assertTrue(attachedDatabaseNames.contains(databaseName));
+                attachedDatabaseNames.remove(databaseName);
             }
-
-            assertFalse(resultSet.next());
         }
         finally
         {
             statement.close();
         }
+
+        assertEquals(1, attachedDatabaseNames.size());
+        assertFalse(attachedDatabaseNames.contains("main"));
     }
 
     private static boolean isRelocatedTableInDb(String relocatedTableName, SqlDatabase db) throws SQLException
@@ -249,8 +252,11 @@ public class DbWithRelocationTest
     private static final int NUM_ALL_EUROPE_DB_TABLES = 1;
     private static final int NUM_ALL_AMERICA_DB_TABLES = 4;
 
-    private static final String attachedDatabaseNames[] = new String[]
-            { "main", "AmericaDb_" + RELOCATED_SLOVAKIA_TABLE_NAME };
+    private static final Set<String> attachedDatabaseNames = new HashSet<String>(Arrays.asList(
+            "main",
+            "AmericaDb_" + RELOCATED_SLOVAKIA_TABLE_NAME,
+            "AmericaDb_" + RELOCATED_CZECHIA_TABLE_NAME
+    ));
 
     private final File  europeDbFile = new File(EUROPE_DB_FILE_NAME);
     private final File  americaDbFile = new File(AMERICA_DB_FILE_NAME);

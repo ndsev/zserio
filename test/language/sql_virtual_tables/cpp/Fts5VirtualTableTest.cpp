@@ -16,15 +16,17 @@ namespace fts5_virtual_table
 class Fts5VirtualTableTest : public ::testing::Test
 {
 public:
-    Fts5VirtualTableTest() : m_database(DB_FILE_NAME)
+    Fts5VirtualTableTest()
     {
-        m_database.createSchema();
+        std::remove(DB_FILE_NAME);
+
+        m_database = new sql_virtual_tables::fts5_virtual_table::Fts5TestDb(DB_FILE_NAME);
+        m_database->createSchema();
     }
 
     ~Fts5VirtualTableTest()
     {
-        m_database.close();
-        std::remove(DB_FILE_NAME);
+        delete m_database;
     }
 
 protected:
@@ -68,7 +70,7 @@ protected:
         std::string checkTableName = "fts5VirtualTable";
         std::string sqlQuery = "SELECT name FROM sqlite_master WHERE type='table' AND name='" + checkTableName +
                 "'";
-        int result = sqlite3_prepare_v2(m_database.getConnection(), sqlQuery.c_str(), -1, &statement, NULL);
+        int result = sqlite3_prepare_v2(m_database->connection(), sqlQuery.c_str(), -1, &statement, NULL);
         if (result != SQLITE_OK)
             return false;
 
@@ -94,7 +96,7 @@ protected:
     static const char DB_FILE_NAME[];
     static const int32_t NUM_VIRTUAL_TABLE_ROWS;
 
-    sql_virtual_tables::fts5_virtual_table::Fts5TestDb  m_database;
+    sql_virtual_tables::fts5_virtual_table::Fts5TestDb* m_database;
 
 };
 
@@ -105,7 +107,7 @@ TEST_F(Fts5VirtualTableTest, deleteTable)
 {
     ASSERT_TRUE(isTableInDb());
 
-    Fts5VirtualTable& testTable = m_database.getFts5VirtualTable();
+    Fts5VirtualTable& testTable = m_database->getFts5VirtualTable();
     testTable.deleteTable();
     ASSERT_FALSE(isTableInDb());
 
@@ -115,7 +117,7 @@ TEST_F(Fts5VirtualTableTest, deleteTable)
 
 TEST_F(Fts5VirtualTableTest, readWithoutCondition)
 {
-    Fts5VirtualTable& testTable = m_database.getFts5VirtualTable();
+    Fts5VirtualTable& testTable = m_database->getFts5VirtualTable();
 
     std::vector<Fts5VirtualTableRow> writtenRows;
     fillFts5VirtualTableRows(writtenRows);
@@ -128,7 +130,7 @@ TEST_F(Fts5VirtualTableTest, readWithoutCondition)
 
 TEST_F(Fts5VirtualTableTest, readWithCondition)
 {
-    Fts5VirtualTable& testTable = m_database.getFts5VirtualTable();
+    Fts5VirtualTable& testTable = m_database->getFts5VirtualTable();
 
     std::vector<Fts5VirtualTableRow> writtenRows;
     fillFts5VirtualTableRows(writtenRows);
@@ -145,7 +147,7 @@ TEST_F(Fts5VirtualTableTest, readWithCondition)
 
 TEST_F(Fts5VirtualTableTest, update)
 {
-    Fts5VirtualTable& testTable = m_database.getFts5VirtualTable();
+    Fts5VirtualTable& testTable = m_database->getFts5VirtualTable();
 
     std::vector<Fts5VirtualTableRow> writtenRows;
     fillFts5VirtualTableRows(writtenRows);

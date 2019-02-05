@@ -12,6 +12,7 @@
     <target name="gen" depends="gen.check" unless="sql_databases_error.zs.gen_is_uptodate">
         <testGenClean testName="sql_databases_error"/>
         <testGen testName="sql_databases_error" zsFile="database_field_error.zs" ignoreErrors="true"/>
+        <testGen testName="sql_databases_error" zsFile="empty_database_error.zs" ignoreErrors="true"/>
         <testGen testName="sql_databases_error" zsFile="subtyped_structure_field_error.zs" ignoreErrors="true"/>
         <testGen testName="sql_databases_error" zsFile="structure_field_error.zs" ignoreErrors="true"/>
     </target>

@@ -14,15 +14,17 @@ namespace subtyped_table
 class SubtypedTableTest : public ::testing::Test
 {
 public:
-    SubtypedTableTest() : m_database(DB_FILE_NAME)
+    SubtypedTableTest()
     {
-        m_database.createSchema();
+        std::remove(DB_FILE_NAME);
+
+        m_database = new sql_tables::TestDb(DB_FILE_NAME);
+        m_database->createSchema();
     }
 
     ~SubtypedTableTest()
     {
-        m_database.close();
-        std::remove(DB_FILE_NAME);
+        delete m_database;
     }
 
 protected:
@@ -32,7 +34,7 @@ protected:
         std::string checkTableName = "subtypedTable";
         std::string sqlQuery = "SELECT name FROM sqlite_master WHERE type='table' AND name='" + checkTableName +
                 "'";
-        int result = sqlite3_prepare_v2(m_database.getConnection(), sqlQuery.c_str(), -1, &statement, NULL);
+        int result = sqlite3_prepare_v2(m_database->connection(), sqlQuery.c_str(), -1, &statement, NULL);
         if (result != SQLITE_OK)
             return false;
 
@@ -57,7 +59,7 @@ protected:
 
     static const char DB_FILE_NAME[];
 
-    sql_tables::TestDb  m_database;
+    sql_tables::TestDb* m_database;
 };
 
 const char SubtypedTableTest::DB_FILE_NAME[] = "subtyped_table_test.sqlite";
@@ -66,8 +68,8 @@ TEST_F(SubtypedTableTest, testSubtypedTable)
 {
     ASSERT_TRUE(isTableInDb());
 
-    TestTable& studentsAsTestTable = m_database.getSubtypedTable();
-    SubtypedTable& studentsAsSubtypedTable = m_database.getSubtypedTable();
+    TestTable& studentsAsTestTable = m_database->getSubtypedTable();
+    SubtypedTable& studentsAsSubtypedTable = m_database->getSubtypedTable();
     ASSERT_EQ(&studentsAsTestTable, &studentsAsSubtypedTable);
 }
 

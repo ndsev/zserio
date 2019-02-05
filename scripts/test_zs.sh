@@ -226,14 +226,16 @@ generate_cmake_lists()
     posix_to_host_path "${BUILD_DIR}" HOST_BUILD_DIR ${DISABLE_SLASHES_CONVERSION}
 
     local SQLITE_SETUP
-    local SQLITE_USE="OFF"
+    local SQLITE_USE
     if [ ${NEEDS_SQLITE} -ne 0 ] ; then
         SQLITE_SETUP="
 
 # add SQLite3 library
 include(sqlite_utils)
 sqlite_add_library(\"\${ZSERIO_ROOT}\")"
-        SQLITE_USE="ON"
+        SQLITE_USE="
+target_include_directories(\${PROJECT_NAME} SYSTEM PRIVATE \${SQLITE_INCDIR})
+target_link_libraries(\${PROJECT_NAME} \${SQLITE_LIBRARY})"
     fi
 
     local INSPECTOR_SETUP
@@ -282,13 +284,12 @@ compiler_set_warnings_as_errors()${SQLITE_SETUP}${GRPC_SETUP}
 include(zserio_utils)
 set(ZSERIO_RUNTIME_LIBRARY_DIR "\${ZSERIO_RELEASE}/runtime_libs/cpp")
 zserio_add_runtime_library(RUNTIME_LIBRARY_DIR "\${ZSERIO_RUNTIME_LIBRARY_DIR}"
-                           INCLUDE_INSPECTOR ${INSPECTOR_USE}
-                           INCLUDE_RELATIONAL ${SQLITE_USE})${INSPECTOR_SETUP}
+                           INCLUDE_INSPECTOR ${INSPECTOR_USE})${INSPECTOR_SETUP}
 
 file(GLOB_RECURSE SOURCES RELATIVE "\${CMAKE_CURRENT_SOURCE_DIR}" "gen/*.cpp" "gen/*.h")
 add_library(\${PROJECT_NAME} \${SOURCES})
 target_include_directories(\${PROJECT_NAME} PUBLIC "\${CMAKE_CURRENT_SOURCE_DIR}/gen")
-target_link_libraries(\${PROJECT_NAME} ZserioCppRuntime)${GRPC_USE}
+target_link_libraries(\${PROJECT_NAME} ZserioCppRuntime)${SQLITE_USE}${GRPC_USE}
 
 # add cppcheck custom command
 include(cppcheck_utils)

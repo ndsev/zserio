@@ -12,15 +12,17 @@ namespace sql_types
 class SqlTypesTest : public ::testing::Test
 {
 public:
-    SqlTypesTest() : m_database(DB_FILE_NAME)
+    SqlTypesTest()
     {
-        m_database.createSchema();
+        std::remove(DB_FILE_NAME);
+
+        m_database = new sql_types::SqlTypesDb(DB_FILE_NAME);
+        m_database->createSchema();
     }
 
     ~SqlTypesTest()
     {
-        m_database.close();
-        std::remove(DB_FILE_NAME);
+        delete m_database;
     }
 
 protected:
@@ -32,7 +34,7 @@ protected:
 
         // get table info
         sqlite3_stmt* statement;
-        int result = sqlite3_prepare_v2(m_database.getConnection(), sqlQuery.c_str(), -1, &statement, NULL);
+        int result = sqlite3_prepare_v2(m_database->connection(), sqlQuery.c_str(), -1, &statement, NULL);
         if (result != SQLITE_OK)
             return false;
 
@@ -63,7 +65,7 @@ protected:
 
     static const char DB_FILE_NAME[];
 
-    sql_types::SqlTypesDb  m_database;
+    sql_types::SqlTypesDb* m_database;
 };
 
 const char SqlTypesTest::DB_FILE_NAME[] = "sql_types_test.sqlite";

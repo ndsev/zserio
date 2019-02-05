@@ -18,15 +18,17 @@ namespace without_pk_table
 class WithoutPkTableTest : public ::testing::Test
 {
 public:
-    WithoutPkTableTest() : m_database(DB_FILE_NAME)
+    WithoutPkTableTest()
     {
-        m_database.createSchema();
+        std::remove(DB_FILE_NAME);
+
+        m_database = new sql_tables::TestDb(DB_FILE_NAME);
+        m_database->createSchema();
     }
 
     ~WithoutPkTableTest()
     {
-        m_database.close();
-        std::remove(DB_FILE_NAME);
+        delete m_database;
     }
 
 protected:
@@ -68,7 +70,7 @@ protected:
         std::string checkTableName = "withoutPkTable";
         std::string sqlQuery = "SELECT name FROM sqlite_master WHERE type='table' AND name='" + checkTableName +
                 "'";
-        int result = sqlite3_prepare_v2(m_database.getConnection(), sqlQuery.c_str(), -1, &statement, NULL);
+        int result = sqlite3_prepare_v2(m_database->connection(), sqlQuery.c_str(), -1, &statement, NULL);
         if (result != SQLITE_OK)
             return false;
 
@@ -94,7 +96,7 @@ protected:
     static const char DB_FILE_NAME[];
     static const int32_t NUM_WITHOUT_PK_TABLE_ROWS;
 
-    sql_tables::TestDb  m_database;
+    sql_tables::TestDb* m_database;
 };
 
 const char WithoutPkTableTest::DB_FILE_NAME[] = "without_pk_table_test.sqlite";
@@ -104,7 +106,7 @@ TEST_F(WithoutPkTableTest, deleteTable)
 {
     ASSERT_TRUE(isTableInDb());
 
-    WithoutPkTable& testTable = m_database.getWithoutPkTable();
+    WithoutPkTable& testTable = m_database->getWithoutPkTable();
     testTable.deleteTable();
     ASSERT_FALSE(isTableInDb());
 
@@ -114,7 +116,7 @@ TEST_F(WithoutPkTableTest, deleteTable)
 
 TEST_F(WithoutPkTableTest, readWithoutCondition)
 {
-    WithoutPkTable& testTable = m_database.getWithoutPkTable();
+    WithoutPkTable& testTable = m_database->getWithoutPkTable();
 
     std::vector<WithoutPkTableRow> writtenRows;
     fillWithoutPkTableRows(writtenRows);
@@ -127,7 +129,7 @@ TEST_F(WithoutPkTableTest, readWithoutCondition)
 
 TEST_F(WithoutPkTableTest, readWithCondition)
 {
-    WithoutPkTable& testTable = m_database.getWithoutPkTable();
+    WithoutPkTable& testTable = m_database->getWithoutPkTable();
 
     std::vector<WithoutPkTableRow> writtenRows;
     fillWithoutPkTableRows(writtenRows);
@@ -144,7 +146,7 @@ TEST_F(WithoutPkTableTest, readWithCondition)
 
 TEST_F(WithoutPkTableTest, update)
 {
-    WithoutPkTable& testTable = m_database.getWithoutPkTable();
+    WithoutPkTable& testTable = m_database->getWithoutPkTable();
 
     std::vector<WithoutPkTableRow> writtenRows;
     fillWithoutPkTableRows(writtenRows);

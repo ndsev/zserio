@@ -17,15 +17,17 @@ namespace blob_offsets_param_table
 class BlobOffsetsParamTableTest : public ::testing::Test
 {
 public:
-    BlobOffsetsParamTableTest() : m_database(DB_FILE_NAME)
+    BlobOffsetsParamTableTest()
     {
-        m_database.createSchema();
+        std::remove(DB_FILE_NAME);
+
+        m_database = new sql_tables::TestDb(DB_FILE_NAME);
+        m_database->createSchema();
     }
 
     ~BlobOffsetsParamTableTest()
     {
-        m_database.close();
-        std::remove(DB_FILE_NAME);
+        delete m_database;
     }
 
 protected:
@@ -83,7 +85,7 @@ protected:
         std::string checkTableName = "blobOffsetsParamTable";
         std::string sqlQuery = "SELECT name FROM sqlite_master WHERE type='table' AND name='" + checkTableName +
                 "'";
-        int result = sqlite3_prepare_v2(m_database.getConnection(), sqlQuery.c_str(), -1, &statement, NULL);
+        int result = sqlite3_prepare_v2(m_database->connection(), sqlQuery.c_str(), -1, &statement, NULL);
         if (result != SQLITE_OK)
             return false;
 
@@ -111,7 +113,7 @@ protected:
     static const uint32_t ARRAY_SIZE;
     static const uint32_t NUM_BLOB_OFFSETS_PARAM_TABLE_ROWS;
 
-    sql_tables::TestDb  m_database;
+    sql_tables::TestDb* m_database;
 };
 
 const char BlobOffsetsParamTableTest::DB_FILE_NAME[] = "blob_offsets_param_table_test.sqlite";
@@ -123,7 +125,7 @@ TEST_F(BlobOffsetsParamTableTest, deleteTable)
 {
     ASSERT_TRUE(isTableInDb());
 
-    BlobOffsetsParamTable& testTable = m_database.getBlobOffsetsParamTable();
+    BlobOffsetsParamTable& testTable = m_database->getBlobOffsetsParamTable();
     testTable.deleteTable();
     ASSERT_FALSE(isTableInDb());
 
@@ -133,7 +135,7 @@ TEST_F(BlobOffsetsParamTableTest, deleteTable)
 
 TEST_F(BlobOffsetsParamTableTest, readWithoutCondition)
 {
-    BlobOffsetsParamTable& testTable = m_database.getBlobOffsetsParamTable();
+    BlobOffsetsParamTable& testTable = m_database->getBlobOffsetsParamTable();
 
     std::vector<BlobOffsetsParamTableRow> writtenRows;
     fillBlobOffsetsParamTableRows(writtenRows);
@@ -149,7 +151,7 @@ TEST_F(BlobOffsetsParamTableTest, readWithoutCondition)
 
 TEST_F(BlobOffsetsParamTableTest, readWithCondition)
 {
-    BlobOffsetsParamTable& testTable = m_database.getBlobOffsetsParamTable();
+    BlobOffsetsParamTable& testTable = m_database->getBlobOffsetsParamTable();
 
     std::vector<BlobOffsetsParamTableRow> writtenRows;
     fillBlobOffsetsParamTableRows(writtenRows);
@@ -167,7 +169,7 @@ TEST_F(BlobOffsetsParamTableTest, readWithCondition)
 
 TEST_F(BlobOffsetsParamTableTest, update)
 {
-    BlobOffsetsParamTable& testTable = m_database.getBlobOffsetsParamTable();
+    BlobOffsetsParamTable& testTable = m_database->getBlobOffsetsParamTable();
 
     std::vector<BlobOffsetsParamTableRow> writtenRows;
     fillBlobOffsetsParamTableRows(writtenRows);

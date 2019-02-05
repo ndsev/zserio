@@ -18,6 +18,6 @@ function(sqlite_add_library ZSERIO_PROJECT_ROOT)
         target_link_libraries(SQLite3 PUBLIC dl)
     endif ()
 
-    set(ZSERIO_RUNTIME_SQLITE_LIBRARY SQLite3 PARENT_SCOPE)
-    set(ZSERIO_RUNTIME_SQLITE_INCLUDE_DIR ${SQLITE_ROOT} PARENT_SCOPE)
+    set(SQLITE_LIBRARY SQLite3 PARENT_SCOPE)
+    set(SQLITE_INCDIR ${SQLITE_ROOT} PARENT_SCOPE)
 endfunction()

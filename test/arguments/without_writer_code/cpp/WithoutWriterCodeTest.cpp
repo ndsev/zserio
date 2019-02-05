@@ -3,6 +3,7 @@
 #include <vector>
 
 #include "gtest/gtest.h"
+#include "sqlite3.h"
 
 #include "zserio/BitStreamWriter.h"
 #include "without_writer_code/Tile.h"
@@ -50,9 +51,14 @@ protected:
                 << "Method definition '" << definition << "' is not present in '" << typeName << "'!";
     }
 
-    void createWorldDb(zserio::SqlDatabase& db)
+    void createWorldDb(zserio::SqliteConnection& db)
     {
-        db.open(":memory:", zserio::SqlDatabase::DB_ACCESS_CREATE);
+        sqlite3* connection = NULL;
+        const int result = sqlite3_open_v2(":memory:", &connection, SQLITE_OPEN_CREATE | SQLITE_OPEN_READWRITE,
+                NULL);
+        ASSERT_EQ(SQLITE_OK, result);
+        db.reset(connection);
+
         db.executeUpdate("CREATE TABLE europe(tileId INTEGER PRIMARY KEY, tile BLOB)");
         db.executeUpdate("CREATE TABLE america(tileId INTEGER PRIMARY KEY, tile BLOB)");
 
@@ -368,7 +374,7 @@ TEST_F(WithoutWriterCode, checkGeoMapTableMethods)
             "void appendCreateTableToQuery(", "void GeoMapTable::appendCreateTableToQuery(");
 
     assertMethodPresent(type,
-            "GeoMapTable(zserio::SqlDatabase&", "GeoMapTable::GeoMapTable(zserio::SqlDatabase&");
+            "GeoMapTable(zserio::SqliteConnection&", "GeoMapTable::GeoMapTable(zserio::SqliteConnection&");
     assertMethodPresent(type,
             "void read(", "void GeoMapTable::read(");
     assertMethodPresent(type,
@@ -411,21 +417,15 @@ TEST_F(WithoutWriterCode, checkWorldDbMethods)
             "void deleteSchema(", "void WorldDb::deleteSchema(");
 
     assertMethodPresent(type,
-            "WorldDb()", "WorldDb::WorldDb()");
-    assertMethodPresent(type,
             "WorldDb(sqlite3*", "WorldDb::WorldDb(sqlite3*");
     assertMethodPresent(type,
             "WorldDb(const std::string&", "WorldDb::WorldDb(const std::string&");
-    assertMethodPresent(type,
-            "void open(sqlite3*", "void WorldDb::open(sqlite3*");
-    assertMethodPresent(type,
-            "void open(const std::string&", "void WorldDb::open(const std::string&");
     assertMethodPresent(type,
             "GeoMapTable& getEurope()", "GeoMapTable& WorldDb::getEurope()");
     assertMethodPresent(type,
             "GeoMapTable& getAmerica()", "GeoMapTable& WorldDb::getAmerica()");
     assertMethodPresent(type,
-            "const char* getDatabaseName()", "const char* WorldDb::getDatabaseName()");
+            "const char* databaseName()", "const char* WorldDb::databaseName()");
     assertMethodPresent(type,
             "void fillTableNames(", "void WorldDb::fillTableNames(");
 }
@@ -446,7 +446,7 @@ TEST_F(WithoutWriterCode, readConstructor)
 
 TEST_F(WithoutWriterCode, readWorldDb)
 {
-    zserio::SqlDatabase db;
+    zserio::SqliteConnection db;
     createWorldDb(db);
 
     WorldDb worldDb(db.getConnection());

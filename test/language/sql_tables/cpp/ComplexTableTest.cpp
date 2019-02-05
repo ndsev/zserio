@@ -17,15 +17,17 @@ namespace complex_table
 class ComplexTableTest : public ::testing::Test
 {
 public:
-    ComplexTableTest() : m_database(DB_FILE_NAME)
+    ComplexTableTest()
     {
-        m_database.createSchema();
+        std::remove(DB_FILE_NAME);
+
+        m_database = new sql_tables::TestDb(DB_FILE_NAME);
+        m_database->createSchema();
     }
 
     ~ComplexTableTest()
     {
-        m_database.close();
-        std::remove(DB_FILE_NAME);
+        delete m_database;
     }
 
 protected:
@@ -89,7 +91,7 @@ protected:
         std::string checkTableName = "complexTable";
         std::string sqlQuery = "SELECT name FROM sqlite_master WHERE type='table' AND name='" + checkTableName +
                 "'";
-        int result = sqlite3_prepare_v2(m_database.getConnection(), sqlQuery.c_str(), -1, &statement, NULL);
+        int result = sqlite3_prepare_v2(m_database->connection(), sqlQuery.c_str(), -1, &statement, NULL);
         if (result != SQLITE_OK)
             return false;
 
@@ -126,7 +128,7 @@ protected:
     static const size_t COMPLEX_TABLE_COUNT;
     static const uint32_t TEST_BLOB_OFFSET_END;
 
-    sql_tables::TestDb  m_database;
+    sql_tables::TestDb* m_database;
 };
 
 const char ComplexTableTest::DB_FILE_NAME[] = "complex_table_test.sqlite";
@@ -139,7 +141,7 @@ TEST_F(ComplexTableTest, deleteTable)
 {
     ASSERT_TRUE(isTableInDb());
 
-    ComplexTable& testTable = m_database.getComplexTable();
+    ComplexTable& testTable = m_database->getComplexTable();
     testTable.deleteTable();
     ASSERT_FALSE(isTableInDb());
 
@@ -149,7 +151,7 @@ TEST_F(ComplexTableTest, deleteTable)
 
 TEST_F(ComplexTableTest, readWithoutCondition)
 {
-    ComplexTable& testTable = m_database.getComplexTable();
+    ComplexTable& testTable = m_database->getComplexTable();
 
     std::vector<ComplexTableRow> writtenRows;
     fillComplexTableRows(writtenRows);
@@ -163,7 +165,7 @@ TEST_F(ComplexTableTest, readWithoutCondition)
 
 TEST_F(ComplexTableTest, readWithCondition)
 {
-    ComplexTable& testTable = m_database.getComplexTable();
+    ComplexTable& testTable = m_database->getComplexTable();
 
     std::vector<ComplexTableRow> writtenRows;
     fillComplexTableRows(writtenRows);
@@ -181,7 +183,7 @@ TEST_F(ComplexTableTest, readWithCondition)
 
 TEST_F(ComplexTableTest, update)
 {
-    ComplexTable& testTable = m_database.getComplexTable();
+    ComplexTable& testTable = m_database->getComplexTable();
 
     std::vector<ComplexTableRow> writtenRows;
     fillComplexTableRows(writtenRows);

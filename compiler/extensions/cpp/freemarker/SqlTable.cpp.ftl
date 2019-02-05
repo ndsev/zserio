@@ -28,7 +28,9 @@
 <#if withWriterCode>
     <#assign hasNonVirtualField=sql_table_has_non_virtual_field(fields)/>
 </#if>
-${name}::${name}(zserio::SqlDatabase& db, const std::string& tableName) : m_db(db), m_name(tableName)
+${name}::${name}(zserio::SqliteConnection& db, const std::string& tableName,
+        const std::string& attachedDbName) :
+        m_db(db), m_name(tableName), m_attachedDbName(attachedDbName)
 {
 }
 
@@ -59,7 +61,7 @@ void ${name}::createOrdinaryRowIdTable()
 void ${name}::deleteTable()
 {
     std::string sqlQuery = "DROP TABLE ";
-    sqlQuery += m_name;
+    appendTableNameToQuery(sqlQuery);
     m_db.executeUpdate(sqlQuery.c_str());
 }
 
@@ -81,9 +83,8 @@ void ${name}::read(<#if needsParameterProvider>IParameterProvider& parameterProv
 <#list fields as field>
             "${field.name}<#if field_has_next>, </#if>"
 </#list>
-            " FROM '";
-    sqlQuery += m_name;
-    sqlQuery += "'";
+            " FROM ";
+    appendTableNameToQuery(sqlQuery);
     if (!condition.empty())
     {
         sqlQuery += " WHERE ";
@@ -112,10 +113,10 @@ void ${name}::read(<#if needsParameterProvider>IParameterProvider& parameterProv
 void ${name}::write(std::vector<${rowName}>& rows)
 {
     // assemble sql query
-    std::string sqlQuery("INSERT INTO '");
-    sqlQuery += m_name;
+    std::string sqlQuery("INSERT INTO ");
+    appendTableNameToQuery(sqlQuery);
     sqlQuery +=
-            "'("
+            "("
     <#list fields as field>
             "${field.name}<#if field_has_next>, </#if>"
     </#list>
@@ -126,7 +127,7 @@ void ${name}::write(std::vector<${rowName}>& rows)
             );";<#lt>
 
     // write rows
-    m_db.executeUpdate("BEGIN TRANSACTION;");
+    const bool wasTransactionStarted = m_db.startTransaction();
     sqlite3_stmt* statement = m_db.prepareStatement(sqlQuery);
     int result = SQLITE_OK;
     for (std::vector<${rowName}>::iterator it = rows.begin(); it != rows.end(); ++it)
@@ -145,14 +146,14 @@ void ${name}::write(std::vector<${rowName}>& rows)
     if (result != SQLITE_DONE && result != SQLITE_OK)
         throw zserio::SqliteException("Write: sqlite3_step() failed", result);
 
-    m_db.executeUpdate("COMMIT;");
+    m_db.endTransaction(wasTransactionStarted);
 }
 
 void ${name}::update(${rowName}& row, const std::string& whereCondition)
 {
     // assemble sql query
     std::string sqlQuery("UPDATE ");
-    sqlQuery += m_name;
+    appendTableNameToQuery(sqlQuery);
     sqlQuery +=
             " SET"
     <#list fields as field>
@@ -334,7 +335,7 @@ void ${name}::writeRow(${rowName}&<#if fields?has_content> row</#if>, sqlite3_st
 void ${name}::appendCreateTableToQuery(std::string& sqlQuery)
 {
     sqlQuery += "CREATE <#if virtualTableUsing??>VIRTUAL </#if>TABLE ";
-    sqlQuery += m_name;
+    appendTableNameToQuery(sqlQuery);
     sqlQuery +=
     <#if virtualTableUsing??>
             " USING ${virtualTableUsing}"<#if !hasNonVirtualField && !sqlConstraint??>;</#if>
@@ -358,5 +359,10 @@ void ${name}::appendCreateTableToQuery(std::string& sqlQuery)
     </#if>
 }
 </#if>
+
+void ${name}::appendTableNameToQuery(std::string& sqlQuery) const
+{
+    sqlQuery.append(m_attachedDbName.empty() ? m_name : (m_attachedDbName + "." + m_name));
+}
 
 <@namespace_end package.path/>

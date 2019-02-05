@@ -38,7 +38,7 @@ public class ${name} extends SqlDatabase<#if withWriterCode> implements SqlDatab
     }
 
     public ${name}(String fileName, Map<String, String> tableToDbFileNameRelocationMap)
-        throws SQLException, URISyntaxException
+            throws SQLException, URISyntaxException
     {
         super(fileName, Mode.<#if withWriterCode>CREATE<#else>READONLY</#if>, tableToDbFileNameRelocationMap);
         initTables();
@@ -66,7 +66,6 @@ public class ${name} extends SqlDatabase<#if withWriterCode> implements SqlDatab
     @Override
     public void createSchema() throws SQLException
     {
-    <#if fields?has_content>
         final boolean wasTransactionStarted = startTransaction();
 
         <#list fields as field>
@@ -74,7 +73,6 @@ public class ${name} extends SqlDatabase<#if withWriterCode> implements SqlDatab
         </#list>
 
         endTransaction(wasTransactionStarted);
-    </#if>
     }
 
     <#assign hasWithoutRowIdTable=false/>
@@ -87,40 +85,36 @@ public class ${name} extends SqlDatabase<#if withWriterCode> implements SqlDatab
     @Override
     public void createSchema(Set<String> withoutRowIdTableNamesBlackList) throws SQLException
     {
-    <#if fields?has_content>
-        <#if hasWithoutRowIdTable>
+    <#if hasWithoutRowIdTable>
         final boolean wasTransactionStarted = startTransaction();
 
-            <#list fields as field>
-                <#if field.isWithoutRowIdTable>
+        <#list fields as field>
+            <#if field.isWithoutRowIdTable>
         if (withoutRowIdTableNamesBlackList.contains(${field.name?upper_case}_TABLE_NAME))
             ${field.name}.createOrdinaryRowIdTable();
         else
             ${field.name}.createTable();
-                <#else>
+            <#else>
         ${field.name}.createTable();
-                </#if>
-            </#list>
+            </#if>
+        </#list>
 
         endTransaction(wasTransactionStarted);
-        <#else>
+    <#else>
         createSchema();
-        </#if>
     </#if>
     }
 
     @Override
     public void deleteSchema() throws SQLException
     {
-    <#if fields?has_content>
         final boolean wasTransactionStarted = startTransaction();
 
-        <#list fields as field>
+    <#list fields as field>
         ${field.name}.deleteTable();
-        </#list>
+    </#list>
 
         endTransaction(wasTransactionStarted);
-    </#if>
     }
 </#if>
 <#if withValidationCode>
@@ -164,9 +158,7 @@ public class ${name} extends SqlDatabase<#if withWriterCode> implements SqlDatab
 <#list fields as field>
     private static final String ${field.name?upper_case}_TABLE_NAME = "${field.name}";
 </#list>
-<#if fields?has_content>
 
-</#if>
 <#list fields as field>
     private ${field.javaTypeName} ${field.name};
 </#list>

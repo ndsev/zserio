@@ -68,48 +68,42 @@ class ${name}():
 <#if withWriterCode>
 
     def createSchema(self<#if hasWithoutRowIdTable>, withoutRowIdTableNamesBlackList=None</#if>):
-    <#if fields?has_content>
         hasAutoCommit = self._connection.getautocommit()
         if hasAutoCommit:
             cursor = self._connection.cursor()
             cursor.execute("BEGIN")
-        <#if hasWithoutRowIdTable>
+    <#if hasWithoutRowIdTable>
 
         if withoutRowIdTableNamesBlackList is None:
             withoutRowIdTableNamesBlackList = []
-        </#if>
+    </#if>
 
-        <#list fields as field>
-            <#if field.isWithoutRowIdTable>
+    <#list fields as field>
+        <#if field.isWithoutRowIdTable>
         if self.<@field_table_name field/> in withoutRowIdTableNamesBlackList:
             self.<@field_member_name field/>.createOrdinaryRowIdTable()
         else:
             self.<@field_member_name field/>.createTable()
-            <#else>
+        <#else>
         self.<@field_member_name field/>.createTable()
-            </#if>
-        </#list>
+        </#if>
+    </#list>
 
         if hasAutoCommit:
-            cursor = self._connection.cursor()
             cursor.execute("COMMIT")
-    </#if>
 
     def deleteSchema(self):
-    <#if fields?has_content>
         hasAutoCommit = self._connection.getautocommit()
         if hasAutoCommit:
             cursor = self._connection.cursor()
             cursor.execute("BEGIN")
 
-        <#list fields as field>
+    <#list fields as field>
         self.<@field_member_name field/>.deleteTable()
-        </#list>
+    </#list>
 
         if hasAutoCommit:
-            cursor = self._connection.cursor()
             cursor.execute("COMMIT")
-    </#if>
 </#if>
 
     def _initTables(self, tableNameToAttachedDbNameMap):

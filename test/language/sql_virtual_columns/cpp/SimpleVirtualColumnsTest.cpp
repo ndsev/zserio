@@ -17,16 +17,17 @@ namespace simple_virtual_columns
 class SimpleVirtualColumnsTest : public ::testing::Test
 {
 public:
-    SimpleVirtualColumnsTest() : m_tableName("simpleVirtualColumnsTable"), m_virtualColumnName("content"),
-                                 m_database(DB_FILE_NAME)
+    SimpleVirtualColumnsTest() : m_tableName("simpleVirtualColumnsTable"), m_virtualColumnName("content")
     {
-        m_database.createSchema();
+        std::remove(DB_FILE_NAME);
+
+        m_database = new SimpleVirtualColumnsDb(DB_FILE_NAME);
+        m_database->createSchema();
     }
 
     ~SimpleVirtualColumnsTest()
     {
-        m_database.close();
-        std::remove(DB_FILE_NAME);
+        delete m_database;
     }
 
 protected:
@@ -66,7 +67,7 @@ protected:
         sqlite3_stmt* statement;
         std::string sqlQuery = "SELECT name FROM sqlite_master WHERE type='table' AND name='" + m_tableName +
                 "'";
-        int result = sqlite3_prepare_v2(m_database.getConnection(), sqlQuery.c_str(), -1, &statement, NULL);
+        int result = sqlite3_prepare_v2(m_database->connection(), sqlQuery.c_str(), -1, &statement, NULL);
         if (result != SQLITE_OK)
             return false;
 
@@ -93,7 +94,7 @@ protected:
     {
         sqlite3_stmt* statement;
         std::string sqlQuery = "PRAGMA table_info(" + m_tableName + ")";
-        int result = sqlite3_prepare_v2(m_database.getConnection(), sqlQuery.c_str(), -1, &statement, NULL);
+        int result = sqlite3_prepare_v2(m_database->connection(), sqlQuery.c_str(), -1, &statement, NULL);
         if (result != SQLITE_OK)
             return false;
 
@@ -120,7 +121,7 @@ protected:
 
     std::string m_tableName;
     std::string m_virtualColumnName;
-    SimpleVirtualColumnsDb m_database;
+    SimpleVirtualColumnsDb* m_database;
 };
 
 const char SimpleVirtualColumnsTest::DB_FILE_NAME[] = "simple_virtual_columns_test.sqlite";
@@ -130,7 +131,7 @@ TEST_F(SimpleVirtualColumnsTest, deleteTable)
 {
     ASSERT_TRUE(isTableInDb());
 
-    SimpleVirtualColumnsTable& testTable = m_database.getSimpleVirtualColumnsTable();
+    SimpleVirtualColumnsTable& testTable = m_database->getSimpleVirtualColumnsTable();
     testTable.deleteTable();
     ASSERT_FALSE(isTableInDb());
 
@@ -140,7 +141,7 @@ TEST_F(SimpleVirtualColumnsTest, deleteTable)
 
 TEST_F(SimpleVirtualColumnsTest, readWithoutCondition)
 {
-    SimpleVirtualColumnsTable& testTable = m_database.getSimpleVirtualColumnsTable();
+    SimpleVirtualColumnsTable& testTable = m_database->getSimpleVirtualColumnsTable();
 
     std::vector<SimpleVirtualColumnsTableRow> writtenRows;
     fillSimpleVirtualColumnsTableRows(writtenRows);
@@ -153,7 +154,7 @@ TEST_F(SimpleVirtualColumnsTest, readWithoutCondition)
 
 TEST_F(SimpleVirtualColumnsTest, readWithCondition)
 {
-    SimpleVirtualColumnsTable& testTable = m_database.getSimpleVirtualColumnsTable();
+    SimpleVirtualColumnsTable& testTable = m_database->getSimpleVirtualColumnsTable();
 
     std::vector<SimpleVirtualColumnsTableRow> writtenRows;
     fillSimpleVirtualColumnsTableRows(writtenRows);
@@ -170,7 +171,7 @@ TEST_F(SimpleVirtualColumnsTest, readWithCondition)
 
 TEST_F(SimpleVirtualColumnsTest, update)
 {
-    SimpleVirtualColumnsTable& testTable = m_database.getSimpleVirtualColumnsTable();
+    SimpleVirtualColumnsTable& testTable = m_database->getSimpleVirtualColumnsTable();
 
     std::vector<SimpleVirtualColumnsTableRow> writtenRows;
     fillSimpleVirtualColumnsTableRows(writtenRows);

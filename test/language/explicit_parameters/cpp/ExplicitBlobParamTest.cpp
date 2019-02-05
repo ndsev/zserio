@@ -16,17 +16,19 @@ namespace explicit_blob_param
 class ExplicitBlobParamTest : public ::testing::Test
 {
 public:
-    ExplicitBlobParamTest() : m_database(DB_FILE_NAME)
+    ExplicitBlobParamTest()
     {
-        m_database.createSchema();
+        std::remove(DB_FILE_NAME);
+
+        m_database = new ExplicitParametersDb(DB_FILE_NAME);
+        m_database->createSchema();
         m_header.setCount(BLOB_PARAM_TABLE_HEADER_COUNT);
         m_blob.setCount(BLOB_PARAM_TABLE_BLOB_COUNT);
     }
 
     ~ExplicitBlobParamTest()
     {
-        m_database.close();
-        std::remove(DB_FILE_NAME);
+        delete m_database;
     }
 
 protected:
@@ -114,7 +116,7 @@ protected:
         Header m_blob;
     };
 
-    ExplicitParametersDb m_database;
+    ExplicitParametersDb* m_database;
     Header m_header;
     Header m_blob;
 
@@ -133,7 +135,7 @@ const uint32_t ExplicitBlobParamTest::BLOB_PARAM_TABLE_BLOB_COUNT = 11;
 
 TEST_F(ExplicitBlobParamTest, readWithoutCondition)
 {
-    BlobParamTable& blobParamTable = m_database.getBlobParamTable();
+    BlobParamTable& blobParamTable = m_database->getBlobParamTable();
 
     std::vector<BlobParamTableRow> writtenRows;
     fillBlobParamTableRows(writtenRows);
@@ -147,7 +149,7 @@ TEST_F(ExplicitBlobParamTest, readWithoutCondition)
 
 TEST_F(ExplicitBlobParamTest, readWithCondition)
 {
-    BlobParamTable& blobParamTable = m_database.getBlobParamTable();
+    BlobParamTable& blobParamTable = m_database->getBlobParamTable();
 
     std::vector<BlobParamTableRow> writtenRows;
     fillBlobParamTableRows(writtenRows);
@@ -165,7 +167,7 @@ TEST_F(ExplicitBlobParamTest, readWithCondition)
 
 TEST_F(ExplicitBlobParamTest, update)
 {
-    BlobParamTable& blobParamTable = m_database.getBlobParamTable();
+    BlobParamTable& blobParamTable = m_database->getBlobParamTable();
 
     std::vector<BlobParamTableRow> writtenRows;
     fillBlobParamTableRows(writtenRows);

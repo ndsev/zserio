@@ -16,15 +16,17 @@ namespace fts3_virtual_table
 class Fts3VirtualTableTest : public ::testing::Test
 {
 public:
-    Fts3VirtualTableTest() : m_database(DB_FILE_NAME)
+    Fts3VirtualTableTest()
     {
-        m_database.createSchema();
+        std::remove(DB_FILE_NAME);
+
+        m_database = new sql_virtual_tables::fts3_virtual_table::Fts3TestDb(DB_FILE_NAME);
+        m_database->createSchema();
     }
 
     ~Fts3VirtualTableTest()
     {
-        m_database.close();
-        std::remove(DB_FILE_NAME);
+        delete m_database;
     }
 
 protected:
@@ -68,7 +70,7 @@ protected:
         std::string checkTableName = "fts3VirtualTable";
         std::string sqlQuery = "SELECT name FROM sqlite_master WHERE type='table' AND name='" + checkTableName +
                 "'";
-        int result = sqlite3_prepare_v2(m_database.getConnection(), sqlQuery.c_str(), -1, &statement, NULL);
+        int result = sqlite3_prepare_v2(m_database->connection(), sqlQuery.c_str(), -1, &statement, NULL);
         if (result != SQLITE_OK)
             return false;
 
@@ -94,7 +96,7 @@ protected:
     static const char DB_FILE_NAME[];
     static const int32_t NUM_VIRTUAL_TABLE_ROWS;
 
-    sql_virtual_tables::fts3_virtual_table::Fts3TestDb  m_database;
+    sql_virtual_tables::fts3_virtual_table::Fts3TestDb* m_database;
 };
 
 const char Fts3VirtualTableTest::DB_FILE_NAME[] = "fts3_virtual_table_test.sqlite";
@@ -104,7 +106,7 @@ TEST_F(Fts3VirtualTableTest, deleteTable)
 {
     ASSERT_TRUE(isTableInDb());
 
-    Fts3VirtualTable& testTable = m_database.getFts3VirtualTable();
+    Fts3VirtualTable& testTable = m_database->getFts3VirtualTable();
     testTable.deleteTable();
     ASSERT_FALSE(isTableInDb());
 
@@ -114,7 +116,7 @@ TEST_F(Fts3VirtualTableTest, deleteTable)
 
 TEST_F(Fts3VirtualTableTest, readWithoutCondition)
 {
-    Fts3VirtualTable& testTable = m_database.getFts3VirtualTable();
+    Fts3VirtualTable& testTable = m_database->getFts3VirtualTable();
 
     std::vector<Fts3VirtualTableRow> writtenRows;
     fillFts3VirtualTableRows(writtenRows);
@@ -127,7 +129,7 @@ TEST_F(Fts3VirtualTableTest, readWithoutCondition)
 
 TEST_F(Fts3VirtualTableTest, readWithCondition)
 {
-    Fts3VirtualTable& testTable = m_database.getFts3VirtualTable();
+    Fts3VirtualTable& testTable = m_database->getFts3VirtualTable();
 
     std::vector<Fts3VirtualTableRow> writtenRows;
     fillFts3VirtualTableRows(writtenRows);
@@ -144,7 +146,7 @@ TEST_F(Fts3VirtualTableTest, readWithCondition)
 
 TEST_F(Fts3VirtualTableTest, update)
 {
-    Fts3VirtualTable& testTable = m_database.getFts3VirtualTable();
+    Fts3VirtualTable& testTable = m_database->getFts3VirtualTable();
 
     std::vector<Fts3VirtualTableRow> writtenRows;
     fillFts3VirtualTableRows(writtenRows);

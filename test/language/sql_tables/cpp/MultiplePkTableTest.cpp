@@ -16,15 +16,17 @@ namespace multiple_pk_table
 class MultiplePkTableTest : public ::testing::Test
 {
 public:
-    MultiplePkTableTest() : m_database(DB_FILE_NAME)
+    MultiplePkTableTest()
     {
-        m_database.createSchema();
+        std::remove(DB_FILE_NAME);
+
+        m_database = new sql_tables::TestDb(DB_FILE_NAME);
+        m_database->createSchema();
     }
 
     ~MultiplePkTableTest()
     {
-        m_database.close();
-        std::remove(DB_FILE_NAME);
+        delete m_database;
     }
 
 protected:
@@ -68,7 +70,7 @@ protected:
         std::string checkTableName = "multiplePkTable";
         std::string sqlQuery = "SELECT name FROM sqlite_master WHERE type='table' AND name='" + checkTableName +
                 "'";
-        int result = sqlite3_prepare_v2(m_database.getConnection(), sqlQuery.c_str(), -1, &statement, NULL);
+        int result = sqlite3_prepare_v2(m_database->connection(), sqlQuery.c_str(), -1, &statement, NULL);
         if (result != SQLITE_OK)
             return false;
 
@@ -95,7 +97,7 @@ protected:
 
     static const int32_t NUM_MULTIPLE_PK_TABLE_ROWS;
 
-    sql_tables::TestDb  m_database;
+    sql_tables::TestDb* m_database;
 };
 
 const char MultiplePkTableTest::DB_FILE_NAME[] = "multiple_pk_table_test.sqlite";
@@ -106,7 +108,7 @@ TEST_F(MultiplePkTableTest, deleteTable)
 {
     ASSERT_TRUE(isTableInDb());
 
-    MultiplePkTable& testTable = m_database.getMultiplePkTable();
+    MultiplePkTable& testTable = m_database->getMultiplePkTable();
     testTable.deleteTable();
     ASSERT_FALSE(isTableInDb());
 
@@ -116,7 +118,7 @@ TEST_F(MultiplePkTableTest, deleteTable)
 
 TEST_F(MultiplePkTableTest, readWithoutCondition)
 {
-    MultiplePkTable& testTable = m_database.getMultiplePkTable();
+    MultiplePkTable& testTable = m_database->getMultiplePkTable();
 
     std::vector<MultiplePkTableRow> writtenRows;
     fillMultiplePkTableRows(writtenRows);
@@ -129,7 +131,7 @@ TEST_F(MultiplePkTableTest, readWithoutCondition)
 
 TEST_F(MultiplePkTableTest, readWithCondition)
 {
-    MultiplePkTable& testTable = m_database.getMultiplePkTable();
+    MultiplePkTable& testTable = m_database->getMultiplePkTable();
 
     std::vector<MultiplePkTableRow> writtenRows;
     fillMultiplePkTableRows(writtenRows);
@@ -146,7 +148,7 @@ TEST_F(MultiplePkTableTest, readWithCondition)
 
 TEST_F(MultiplePkTableTest, update)
 {
-    MultiplePkTable& testTable = m_database.getMultiplePkTable();
+    MultiplePkTable& testTable = m_database->getMultiplePkTable();
 
     std::vector<MultiplePkTableRow> writtenRows;
     fillMultiplePkTableRows(writtenRows);

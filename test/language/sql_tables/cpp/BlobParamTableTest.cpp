@@ -17,15 +17,17 @@ namespace blob_param_table
 class BlobParamTableTest : public ::testing::Test
 {
 public:
-    BlobParamTableTest() : m_database(DB_FILE_NAME)
+    BlobParamTableTest()
     {
-        m_database.createSchema();
+        std::remove(DB_FILE_NAME);
+
+        m_database = new sql_tables::TestDb(DB_FILE_NAME);
+        m_database->createSchema();
     }
 
     ~BlobParamTableTest()
     {
-        m_database.close();
-        std::remove(DB_FILE_NAME);
+        delete m_database;
     }
 
 protected:
@@ -79,7 +81,7 @@ protected:
         std::string checkTableName = "blobParamTable";
         std::string sqlQuery = "SELECT name FROM sqlite_master WHERE type='table' AND name='" + checkTableName +
                 "'";
-        int result = sqlite3_prepare_v2(m_database.getConnection(), sqlQuery.c_str(), -1, &statement, NULL);
+        int result = sqlite3_prepare_v2(m_database->connection(), sqlQuery.c_str(), -1, &statement, NULL);
         if (result != SQLITE_OK)
             return false;
 
@@ -107,7 +109,7 @@ protected:
     static const uint32_t PARAMETERS_COUNT;
     static const uint32_t NUM_BLOB_PARAM_TABLE_ROWS;
 
-    sql_tables::TestDb  m_database;
+    sql_tables::TestDb* m_database;
 };
 
 const char BlobParamTableTest::DB_FILE_NAME[] = "blob_param_table_test.sqlite";
@@ -119,7 +121,7 @@ TEST_F(BlobParamTableTest, deleteTable)
 {
     ASSERT_TRUE(isTableInDb());
 
-    BlobParamTable& testTable = m_database.getBlobParamTable();
+    BlobParamTable& testTable = m_database->getBlobParamTable();
     testTable.deleteTable();
     ASSERT_FALSE(isTableInDb());
 
@@ -129,7 +131,7 @@ TEST_F(BlobParamTableTest, deleteTable)
 
 TEST_F(BlobParamTableTest, readWithoutCondition)
 {
-    BlobParamTable& testTable = m_database.getBlobParamTable();
+    BlobParamTable& testTable = m_database->getBlobParamTable();
 
     std::vector<BlobParamTableRow> writtenRows;
     fillBlobParamTableRows(writtenRows);
@@ -144,7 +146,7 @@ TEST_F(BlobParamTableTest, readWithoutCondition)
 
 TEST_F(BlobParamTableTest, readWithCondition)
 {
-    BlobParamTable& testTable = m_database.getBlobParamTable();
+    BlobParamTable& testTable = m_database->getBlobParamTable();
 
     std::vector<BlobParamTableRow> writtenRows;
     fillBlobParamTableRows(writtenRows);
@@ -162,7 +164,7 @@ TEST_F(BlobParamTableTest, readWithCondition)
 
 TEST_F(BlobParamTableTest, update)
 {
-    BlobParamTable& testTable = m_database.getBlobParamTable();
+    BlobParamTable& testTable = m_database->getBlobParamTable();
 
     std::vector<BlobParamTableRow> writtenRows;
     fillBlobParamTableRows(writtenRows);

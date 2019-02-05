@@ -19,20 +19,16 @@ public:
     SimpleDbTest() : m_dbFileName("simple_db_test.sqlite"), m_worldDbName("WorldDb"),
             m_europeTableName("europe"), m_americaTableName("america")
     {
-    }
-
-    ~SimpleDbTest()
-    {
         std::remove(m_dbFileName.c_str());
     }
 
 protected:
-    bool isTableInDb(zserio::SqlDatabase& database, const std::string& checkTableName)
+    bool isTableInDb(zserio::ISqliteDatabase& database, const std::string& checkTableName)
     {
         sqlite3_stmt* statement;
         std::string sqlQuery = "SELECT name FROM sqlite_master WHERE type='table' AND name='" + checkTableName +
                 "'";
-        int result = sqlite3_prepare_v2(database.getConnection(), sqlQuery.c_str(), -1, &statement, NULL);
+        int result = sqlite3_prepare_v2(database.connection(), sqlQuery.c_str(), -1, &statement, NULL);
         if (result != SQLITE_OK)
             return false;
 
@@ -62,25 +58,17 @@ protected:
     const std::string m_americaTableName;
 };
 
-TEST_F(SimpleDbTest, emptyConstructor)
-{
-    WorldDb database;
-    database.open(m_dbFileName);
-    ASSERT_TRUE(database.isOpen());
-    database.close();
-}
-
 TEST_F(SimpleDbTest, externalConstructor)
 {
     sqlite3 *externalConnection = NULL;
     const int result = sqlite3_open(m_dbFileName.c_str(), &externalConnection);
     ASSERT_EQ(SQLITE_OK, result);
 
-    WorldDb database(externalConnection);
-    database.createSchema();
-    ASSERT_TRUE(database.isOpen());
-
-    database.close();
+    {
+        WorldDb database(externalConnection);
+        database.createSchema();
+        ASSERT_EQ(externalConnection, database.connection());
+    }
 
     ASSERT_EQ(SQLITE_OK, sqlite3_close(externalConnection));
 }
@@ -88,32 +76,7 @@ TEST_F(SimpleDbTest, externalConstructor)
 TEST_F(SimpleDbTest, fileNameConstructor)
 {
     WorldDb database(m_dbFileName);
-    ASSERT_TRUE(database.isOpen());
-    database.close();
-}
-
-TEST_F(SimpleDbTest, externalOpen)
-{
-    sqlite3 *externalConnection = NULL;
-    const int result = sqlite3_open(m_dbFileName.c_str(), &externalConnection);
-    ASSERT_EQ(SQLITE_OK, result);
-
-    WorldDb database;
-    database.open(externalConnection);
-    database.createSchema();
-    ASSERT_TRUE(database.isOpen());
-
-    database.close();
-
-    ASSERT_EQ(SQLITE_OK, sqlite3_close(externalConnection));
-}
-
-TEST_F(SimpleDbTest, fileNameOpen)
-{
-    WorldDb database;
-    database.open(m_dbFileName);
-    ASSERT_TRUE(database.isOpen());
-    database.close();
+    ASSERT_TRUE(NULL != database.connection());
 }
 
 TEST_F(SimpleDbTest, tableGetters)
@@ -126,9 +89,6 @@ TEST_F(SimpleDbTest, tableGetters)
     GeoMapTable& europe = database.getEurope();
     GeoMapTable& america = database.getAmerica();
     ASSERT_TRUE(&europe != &america);
-    ASSERT_TRUE(database.isOpen());
-
-    database.close();
 }
 
 TEST_F(SimpleDbTest, createSchema)
@@ -140,8 +100,6 @@ TEST_F(SimpleDbTest, createSchema)
     database.createSchema();
     ASSERT_TRUE(isTableInDb(database, m_europeTableName));
     ASSERT_TRUE(isTableInDb(database, m_americaTableName));
-
-    database.close();
 }
 
 TEST_F(SimpleDbTest, createSchemaWithoutRowIdBlackList)
@@ -154,8 +112,6 @@ TEST_F(SimpleDbTest, createSchemaWithoutRowIdBlackList)
     database.createSchema(withoutRowIdTableNamesBlackList);
     ASSERT_TRUE(isTableInDb(database, m_europeTableName));
     ASSERT_TRUE(isTableInDb(database, m_americaTableName));
-
-    database.close();
 }
 
 TEST_F(SimpleDbTest, deleteSchema)
@@ -168,13 +124,11 @@ TEST_F(SimpleDbTest, deleteSchema)
     database.deleteSchema();
     ASSERT_FALSE(isTableInDb(database, m_europeTableName));
     ASSERT_FALSE(isTableInDb(database, m_americaTableName));
-
-    database.close();
 }
 
-TEST_F(SimpleDbTest, getDatabaseName)
+TEST_F(SimpleDbTest, databaseName)
 {
-    ASSERT_EQ(m_worldDbName, WorldDb::getDatabaseName());
+    ASSERT_EQ(m_worldDbName, WorldDb::databaseName());
 }
 
 TEST_F(SimpleDbTest, fillTableNames)

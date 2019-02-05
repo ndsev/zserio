@@ -105,7 +105,10 @@ class DbWithRelocationTest(unittest.TestCase):
         sqlQuery = "PRAGMA database_list"
         rows = self._americaDb.executeQuery(sqlQuery)
         for row in rows:
-            self.assertTrue(row[1] in attachedDatabaseNames)
+            self.assertIn(row[1], attachedDatabaseNames)
+            attachedDatabaseNames.remove(row[1])
+        self.assertEqual(1, len(attachedDatabaseNames))
+        self.assertNotIn("main", attachedDatabaseNames)
 
     @staticmethod
     def _isTableInDb(database, tableName):

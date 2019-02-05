@@ -16,15 +16,17 @@ namespace sql_constraints
 class SqlConstraintsTest : public ::testing::Test
 {
 public:
-    SqlConstraintsTest() : m_database(DB_FILE_NAME)
+    SqlConstraintsTest()
     {
-        m_database.createSchema();
+        std::remove(DB_FILE_NAME);
+
+        m_database = new TestDb(DB_FILE_NAME);
+        m_database->createSchema();
     }
 
     ~SqlConstraintsTest()
     {
-        m_database.close();
-        std::remove(DB_FILE_NAME);
+        delete m_database;
     }
 
 protected:
@@ -38,7 +40,7 @@ protected:
     static const uint8_t WRONG_HEX_ESCAPE_CONST;
     static const uint8_t WRONG_OCTAL_ESCAPE_CONST;
 
-    TestDb m_database;
+    TestDb* m_database;
 };
 
 const char SqlConstraintsTest::DB_FILE_NAME[] = "sql_constraints_test.sqlite";
@@ -53,7 +55,7 @@ const uint8_t SqlConstraintsTest::WRONG_OCTAL_ESCAPE_CONST = 0;
 
 TEST_F(SqlConstraintsTest, withoutSql)
 {
-    ConstraintsTable& constraintsTable = m_database.getConstraintsTable();
+    ConstraintsTable& constraintsTable = m_database->getConstraintsTable();
     ConstraintsTableRow row;
     row.setNullWithoutSql();
     row.setSqlNotNull(1);
@@ -71,7 +73,7 @@ TEST_F(SqlConstraintsTest, withoutSql)
 
 TEST_F(SqlConstraintsTest, sqlNotNull)
 {
-    ConstraintsTable& constraintsTable = m_database.getConstraintsTable();
+    ConstraintsTable& constraintsTable = m_database->getConstraintsTable();
     ConstraintsTableRow row;
     row.setWithoutSql(1);
     row.setNullSqlNotNull();
@@ -89,7 +91,7 @@ TEST_F(SqlConstraintsTest, sqlNotNull)
 
 TEST_F(SqlConstraintsTest, sqlDefaultNull)
 {
-    ConstraintsTable& constraintsTable = m_database.getConstraintsTable();
+    ConstraintsTable& constraintsTable = m_database->getConstraintsTable();
     ConstraintsTableRow row;
     row.setWithoutSql(1);
     row.setSqlNotNull(1);
@@ -107,7 +109,7 @@ TEST_F(SqlConstraintsTest, sqlDefaultNull)
 
 TEST_F(SqlConstraintsTest, sqlNull)
 {
-    ConstraintsTable& constraintsTable = m_database.getConstraintsTable();
+    ConstraintsTable& constraintsTable = m_database->getConstraintsTable();
     ConstraintsTableRow row;
     row.setWithoutSql(1);
     row.setSqlNotNull(1);
@@ -125,7 +127,7 @@ TEST_F(SqlConstraintsTest, sqlNull)
 
 TEST_F(SqlConstraintsTest, sqlCheckConstant)
 {
-    ConstraintsTable& constraintsTable = m_database.getConstraintsTable();
+    ConstraintsTable& constraintsTable = m_database->getConstraintsTable();
     ConstraintsTableRow row;
     row.setWithoutSql(1);
     row.setSqlNotNull(1);
@@ -143,7 +145,7 @@ TEST_F(SqlConstraintsTest, sqlCheckConstant)
 
 TEST_F(SqlConstraintsTest, sqlCheckEnum)
 {
-    ConstraintsTable& constraintsTable = m_database.getConstraintsTable();
+    ConstraintsTable& constraintsTable = m_database->getConstraintsTable();
     ConstraintsTableRow row;
     row.setWithoutSql(1);
     row.setSqlNotNull(1);
@@ -161,7 +163,7 @@ TEST_F(SqlConstraintsTest, sqlCheckEnum)
 
 TEST_F(SqlConstraintsTest, sqlCheckUnicodeEscape)
 {
-    ConstraintsTable& constraintsTable = m_database.getConstraintsTable();
+    ConstraintsTable& constraintsTable = m_database->getConstraintsTable();
     ConstraintsTableRow row;
     row.setWithoutSql(1);
     row.setSqlNotNull(1);
@@ -179,7 +181,7 @@ TEST_F(SqlConstraintsTest, sqlCheckUnicodeEscape)
 
 TEST_F(SqlConstraintsTest, sqlCheckHexEscape)
 {
-    ConstraintsTable& constraintsTable = m_database.getConstraintsTable();
+    ConstraintsTable& constraintsTable = m_database->getConstraintsTable();
     ConstraintsTableRow row;
     row.setWithoutSql(1);
     row.setSqlNotNull(1);
@@ -197,7 +199,7 @@ TEST_F(SqlConstraintsTest, sqlCheckHexEscape)
 
 TEST_F(SqlConstraintsTest, sqlCheckOctalEscape)
 {
-    ConstraintsTable& constraintsTable = m_database.getConstraintsTable();
+    ConstraintsTable& constraintsTable = m_database->getConstraintsTable();
     ConstraintsTableRow row;
     row.setWithoutSql(1);
     row.setSqlNotNull(1);
