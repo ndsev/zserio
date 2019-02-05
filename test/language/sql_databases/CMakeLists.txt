@@ -30,6 +30,8 @@ zserio_add_library(TARGET sql_databases_zs
     ZSERIO_OPTIONS -withoutSourcesAmalgamation
 )
 
+target_include_directories(sql_databases_zs SYSTEM PRIVATE ${SQLITE_INCDIR})
+
 add_test_sources(
     cpp/DbWithRelocationTest.cpp
     cpp/SimpleDbTest.cpp

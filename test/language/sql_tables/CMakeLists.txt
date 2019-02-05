@@ -73,6 +73,8 @@ zserio_add_library(TARGET sql_tables_zs
     IGNORE_WARNINGS ON
 )
 
+target_include_directories(sql_tables_zs SYSTEM PRIVATE ${SQLITE_INCDIR})
+
 add_test_sources(
     cpp/BlobParamTableTest.cpp
     cpp/BlobOffsetsParamTableTest.cpp

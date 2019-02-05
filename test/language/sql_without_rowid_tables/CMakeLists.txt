@@ -28,6 +28,8 @@ zserio_add_library(TARGET sql_without_rowid_zs
     ZSERIO_OPTIONS -withoutSourcesAmalgamation
 )
 
+target_include_directories(sql_without_rowid_zs SYSTEM PRIVATE ${SQLITE_INCDIR})
+
 add_test_sources(
     cpp/RowIdAndWithoutRowIdTablesTest.cpp
     cpp/SimpleWithoutRowIdTableTest.cpp

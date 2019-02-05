@@ -19,6 +19,8 @@ zserio_add_library(TARGET without_sources_amalgamation_zs
     ZSERIO_CORE_DIR ${ZSERIO_JAR_DIR}
 )
 
+target_include_directories(without_sources_amalgamation_zs SYSTEM PRIVATE ${SQLITE_INCDIR})
+
 add_test_sources(
     cpp/WithoutSourcesAmalgamationTest.cpp
 )

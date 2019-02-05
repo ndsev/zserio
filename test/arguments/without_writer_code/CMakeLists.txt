@@ -29,6 +29,8 @@ zserio_add_library(TARGET without_writer_code_zs
     ZSERIO_OPTIONS -withoutWriterCode -withoutSourcesAmalgamation
 )
 
+target_include_directories(without_writer_code_zs SYSTEM PRIVATE ${SQLITE_INCDIR})
+
 add_test_sources(
     cpp/WithoutWriterCodeTest.cpp
 )

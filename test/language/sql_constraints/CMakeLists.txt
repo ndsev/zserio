@@ -21,6 +21,8 @@ zserio_add_library(TARGET sql_constraints_zs
     ZSERIO_OPTIONS -withoutSourcesAmalgamation
 )
 
+target_include_directories(sql_constraints_zs SYSTEM PRIVATE ${SQLITE_INCDIR})
+
 add_test_sources(
     cpp/SqlConstraintsTest.cpp
 )

@@ -24,6 +24,8 @@ zserio_add_library(TARGET sql_virtual_columns_zs
     ZSERIO_OPTIONS -withoutSourcesAmalgamation
 )
 
+target_include_directories(sql_virtual_columns_zs SYSTEM PRIVATE ${SQLITE_INCDIR})
+
 add_test_sources(
     cpp/HiddenVirtualColumnsTest.cpp
     cpp/SimpleVirtualColumnsTest.cpp

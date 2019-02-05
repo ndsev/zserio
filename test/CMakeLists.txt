@@ -76,9 +76,6 @@ add_executable(${PROJECT_NAME} ${TEST_SOURCES_LIST})
 target_link_libraries(${PROJECT_NAME} gtest_main ${TEST_DEPENDENCIES_LIST})
 
 target_include_directories(${PROJECT_NAME} SYSTEM PRIVATE ${SQLITE_INCDIR})
-foreach(dependency ${TEST_DEPENDENCIES_LIST})
-    target_include_directories(${dependency} SYSTEM PRIVATE ${SQLITE_INCDIR})
-endforeach()
 target_link_libraries(${PROJECT_NAME} ${SQLITE_LIBRARY})
 
 # grpc
