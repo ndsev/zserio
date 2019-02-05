@@ -56,15 +56,15 @@ public class PythonNativeTypeMapper
      */
     public PythonNativeType getPythonType(ZserioType type) throws ZserioEmitException
     {
-        // resolve to base type, python doesn't have subtypes
-        final ZserioType resolvedBaseType = TypeReference.resolveBaseType(type);
+        // don't resolve subtypes so that the subtype name (Python imports) will be used
+        final ZserioType resolvedType = TypeReference.resolveType(type);
 
         final TypeMapperVisitor visitor = new TypeMapperVisitor(pythonPackageMapper);
-        resolvedBaseType.callVisitor(visitor);
+        resolvedType.callVisitor(visitor);
 
         final PythonNativeType nativeType = visitor.getPythonType();
         if (nativeType == null)
-            throw new ZserioEmitException("Unhandled type '" + resolvedBaseType.getClass().getName() +
+            throw new ZserioEmitException("Unhandled type '" + resolvedType.getClass().getName() +
                     "' in PythonNativeTypeMapper!");
 
         return nativeType;
@@ -214,7 +214,7 @@ public class PythonNativeTypeMapper
         }
 
         private PythonNativeType pythonType;
-        private PackageMapper pythonPackageMapper;
+        private final PackageMapper pythonPackageMapper;
     }
 
     private static class ArrayTypeMapperVisitor implements ZserioTypeVisitor

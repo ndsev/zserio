@@ -747,15 +747,19 @@ public class Expression extends TokenAST
     private void evaluateIdentifierType(ZserioType identifierType) throws ParserException
     {
         symbolObject = identifierType;
-        if (identifierType instanceof EnumType)
+
+        // resolve type
+        final ZserioType resolvedType = TypeReference.resolveBaseType(identifierType);
+
+        if (resolvedType instanceof EnumType)
         {
             // enumeration type, we must wait for field and dot
-            zserioType = identifierType;
+            zserioType = resolvedType;
         }
-        else if (identifierType instanceof ConstType)
+        else if (resolvedType instanceof ConstType)
         {
             // constant type
-            final ConstType constType = (ConstType)identifierType;
+            final ConstType constType = (ConstType)resolvedType;
             evaluateExpressionType(constType.getConstType());
             final Expression constValueExpression = constType.getValueExpression();
 
@@ -769,8 +773,8 @@ public class Expression extends TokenAST
         }
         else
         {
-            throw new ParserException(this, "Type '" + identifierType.getName() + "' (" +
-                    identifierType.getClass() + ") is not allowed here!");
+            throw new ParserException(this, "Type '" + resolvedType.getName() + "' (" +
+                    resolvedType.getClass() + ") is not allowed here!");
         }
     }
 

@@ -4,6 +4,7 @@ import java.math.BigInteger;
 
 import zserio.ast.ConstType;
 import zserio.ast.FunctionType;
+import zserio.ast.TypeReference;
 import zserio.ast.ZserioType;
 import zserio.ast.EnumItem;
 import zserio.ast.EnumType;
@@ -443,8 +444,10 @@ public abstract class JavaDefaultExpressionFormattingPolicy extends DefaultExpre
     }
 
     private void formatTypeIdentifier(StringBuilder result, String symbol, boolean isFirstInDot,
-            ZserioType resolvedType) throws ZserioEmitException
+            ZserioType identifierType) throws ZserioEmitException
     {
+        // we need to resolve subtypes because Java does not support them
+        final ZserioType resolvedType = TypeReference.resolveBaseType(identifierType);
         if (resolvedType instanceof EnumType)
         {
             // [EnumType].ENUM_ITEM

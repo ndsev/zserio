@@ -6,6 +6,7 @@ import java.util.List;
 
 import zserio.ast.ConstType;
 import zserio.ast.FunctionType;
+import zserio.ast.Subtype;
 import zserio.ast.ZserioType;
 import zserio.ast.EnumItem;
 import zserio.ast.EnumType;
@@ -210,28 +211,36 @@ public abstract class CppDefaultExpressionFormattingPolicy extends DefaultExpres
     protected abstract String getAccessPrefixForCompoundType();
 
     private void formatIdentifierForType(StringBuilder result, String symbol, boolean isFirstInDot,
-            ZserioType resolvedType) throws ZserioEmitException
+            ZserioType identifierType) throws ZserioEmitException
     {
-        if (resolvedType instanceof EnumType)
+        if (identifierType instanceof Subtype)
+        {
+            // subtype
+            final Subtype subtype = (Subtype)identifierType;
+            final CppNativeType nativeEnumType = cppNativeTypeMapper.getCppType(subtype);
+            result.append(nativeEnumType.getFullName());
+            includeCollector.addCppIncludesForType(nativeEnumType);
+        }
+        else if (identifierType instanceof EnumType)
         {
             // [EnumType].ENUM_ITEM
-            final EnumType enumType = (EnumType)resolvedType;
+            final EnumType enumType = (EnumType)identifierType;
             final CppNativeType nativeEnumType = cppNativeTypeMapper.getCppType(enumType);
             result.append(nativeEnumType.getFullName());
             includeCollector.addCppIncludesForType(nativeEnumType);
         }
-        else if (resolvedType instanceof ConstType)
+        else if (identifierType instanceof ConstType)
         {
             // [ConstName]
-            final ConstType constantType = (ConstType)resolvedType;
+            final ConstType constantType = (ConstType)identifierType;
             final CppNativeType nativeConstType = cppNativeTypeMapper.getCppType(constantType);
             result.append(nativeConstType.getFullName());
             includeCollector.addCppIncludesForType(nativeConstType);
         }
-        else if (resolvedType instanceof FunctionType)
+        else if (identifierType instanceof FunctionType)
         {
             // [functionCall]()
-            final FunctionType functionType = (FunctionType)resolvedType;
+            final FunctionType functionType = (FunctionType)identifierType;
             result.append(AccessorNameFormatter.getFunctionName(functionType));
         }
         else

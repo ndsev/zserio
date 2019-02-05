@@ -8,6 +8,7 @@ import zserio.ast.Field;
 import zserio.ast.FunctionType;
 import zserio.ast.Package;
 import zserio.ast.Parameter;
+import zserio.ast.Subtype;
 import zserio.ast.ZserioType;
 import zserio.emit.common.ZserioEmitException;
 import zserio.emit.common.ExpressionFormattingPolicy;
@@ -341,28 +342,36 @@ public class PythonExpressionFormattingPolicy implements ExpressionFormattingPol
     }
 
     private void formatIdentifierForType(StringBuilder result, String symbol, boolean isFirstInDot,
-            ZserioType resolvedType) throws ZserioEmitException
+            ZserioType identifierType) throws ZserioEmitException
     {
-        if (resolvedType instanceof EnumType)
+        if (identifierType instanceof Subtype)
+        {
+            // subtype
+            final Subtype subtype = (Subtype)identifierType;
+            final PythonNativeType nativeSubtype = pythonNativeTypeMapper.getPythonType(subtype);
+            importCollector.importType(nativeSubtype);
+            result.append(nativeSubtype.getFullName());
+        }
+        else if (identifierType instanceof EnumType)
         {
             // [EnumType].ENUM_ITEM
-            final EnumType enumType = (EnumType)resolvedType;
+            final EnumType enumType = (EnumType)identifierType;
             final PythonNativeType nativeEnumType = pythonNativeTypeMapper.getPythonType(enumType);
             importCollector.importType(nativeEnumType);
             result.append(nativeEnumType.getFullName());
         }
-        else if (resolvedType instanceof ConstType)
+        else if (identifierType instanceof ConstType)
         {
             // [ConstName]
-            final ConstType constType = (ConstType)resolvedType;
+            final ConstType constType = (ConstType)identifierType;
             final PythonNativeType nativeConstType = pythonNativeTypeMapper.getPythonType(constType);
             importCollector.importType(nativeConstType);
             result.append(nativeConstType.getFullName());
         }
-        else if (resolvedType instanceof FunctionType)
+        else if (identifierType instanceof FunctionType)
         {
             // [functionCall]()
-            final FunctionType functionType = (FunctionType)resolvedType;
+            final FunctionType functionType = (FunctionType)identifierType;
             if (isFirstInDot)
                 result.append(PYTHON_FUNCTION_CALL_PREFIX);
             result.append(AccessorNameFormatter.getFunctionName(functionType));

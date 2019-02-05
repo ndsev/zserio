@@ -1,5 +1,10 @@
 set(ZSERIO_GEN_DIR ${CMAKE_CURRENT_BINARY_DIR}/gen)
 set(ZSERIO_GENERATED_SOURCES
+    ${ZSERIO_GEN_DIR}/subtypes/enum_subtype/Color.cpp
+    ${ZSERIO_GEN_DIR}/subtypes/enum_subtype/Color.h
+    ${ZSERIO_GEN_DIR}/subtypes/enum_subtype/ColorSubtype.h
+    ${ZSERIO_GEN_DIR}/subtypes/enum_subtype/CONST_BLACK.h
+
     ${ZSERIO_GEN_DIR}/subtypes/param_structure_subtype/ParameterizedStruct.cpp
     ${ZSERIO_GEN_DIR}/subtypes/param_structure_subtype/ParameterizedStruct.h
     ${ZSERIO_GEN_DIR}/subtypes/param_structure_subtype/ParameterizedSubtype.h
@@ -27,6 +32,7 @@ zserio_add_library(TARGET subtypes_zs
 )
 
 add_test_sources(
+    cpp/EnumSubtypeTest.cpp
     cpp/ParamStructureSubtypeTest.cpp
     cpp/StructureSubtypeTest.cpp
     cpp/UInt16SubtypeTest.cpp

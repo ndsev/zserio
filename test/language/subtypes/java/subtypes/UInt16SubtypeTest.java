@@ -2,7 +2,7 @@ package subtypes;
 
 import static org.junit.Assert.*;
 
-import org.junit.Test;;
+import org.junit.Test;
 
 import subtypes.uint16_subtype.TestStructure;
 
