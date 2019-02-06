@@ -115,7 +115,7 @@ protected:
 const char BlobParamTableTest::DB_FILE_NAME[] = "blob_param_table_test.sqlite";
 
 const uint32_t BlobParamTableTest::PARAMETERS_COUNT = 10;
-const uint32_t BlobParamTableTest::NUM_BLOB_PARAM_TABLE_ROWS = 5;
+const uint32_t BlobParamTableTest::NUM_BLOB_PARAM_TABLE_ROWS = 20;
 
 TEST_F(BlobParamTableTest, deleteTable)
 {
@@ -140,6 +140,7 @@ TEST_F(BlobParamTableTest, readWithoutCondition)
     std::vector<BlobParamTableRow> readRows;
     // we must use reserve to prevent dangling pointer to parameters in parameterizedBlob
     // once std::vector is reallocated!
+    readRows.reserve(NUM_BLOB_PARAM_TABLE_ROWS);
     testTable.read(readRows);
     checkBlobParamTableRows(writtenRows, readRows);
 }

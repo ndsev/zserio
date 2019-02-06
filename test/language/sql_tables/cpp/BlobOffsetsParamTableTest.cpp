@@ -119,7 +119,7 @@ protected:
 const char BlobOffsetsParamTableTest::DB_FILE_NAME[] = "blob_offsets_param_table_test.sqlite";
 
 const uint32_t BlobOffsetsParamTableTest::ARRAY_SIZE = 10;
-const uint32_t BlobOffsetsParamTableTest::NUM_BLOB_OFFSETS_PARAM_TABLE_ROWS = 5;
+const uint32_t BlobOffsetsParamTableTest::NUM_BLOB_OFFSETS_PARAM_TABLE_ROWS = 20;
 
 TEST_F(BlobOffsetsParamTableTest, deleteTable)
 {
@@ -144,7 +144,7 @@ TEST_F(BlobOffsetsParamTableTest, readWithoutCondition)
     std::vector<BlobOffsetsParamTableRow> readRows;
     // we must use reserve to prevent dangling pointer to offsetsHolder in parameterizedBlob
     // once std::vector is reallocated!
-    readRows.reserve(ARRAY_SIZE);
+    readRows.reserve(NUM_BLOB_OFFSETS_PARAM_TABLE_ROWS);
     testTable.read(readRows);
     checkBlobOffsetsParamTableRows(writtenRows, readRows);
 }
