@@ -149,6 +149,10 @@ function(zserio_add_library)
         add_library(${VALUE_TARGET} STATIC ${VALUE_OUT_FILES})
         target_include_directories(${VALUE_TARGET} PUBLIC ${VALUE_OUT_DIR})
         target_link_libraries(${VALUE_TARGET} PUBLIC ZserioCppRuntime)
+        if (SOURCE_FILE_POSITION EQUAL -1)
+            # make sure that cmake knows language when no sources are available
+            set_target_properties(${VALUE_TARGET} PROPERTIES LINKER_LANGUAGE CXX)
+        endif ()
     endif ()
 
     # add cppcheck custom command (cppcheck fails if no sources to check are available)
