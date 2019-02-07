@@ -4,7 +4,6 @@ import static org.junit.Assert.*;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.URISyntaxException;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -28,7 +27,7 @@ public class SqlTypesTest
     }
 
     @Before
-    public void setUp() throws IOException, URISyntaxException, SQLException
+    public void setUp() throws IOException, SQLException
     {
         FileUtil.deleteFileIfExists(file);
         database = new SqlTypesDb(file.toString());
@@ -261,7 +260,7 @@ public class SqlTypesTest
         sqlQuery.append(")");
 
         // get table info
-        final PreparedStatement statement = database.prepareStatement(sqlQuery.toString());
+        final PreparedStatement statement = database.connection().prepareStatement(sqlQuery.toString());
         try
         {
             final ResultSet resultSet = statement.executeQuery();

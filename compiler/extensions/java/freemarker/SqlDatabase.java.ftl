@@ -2,46 +2,79 @@
 <#include "Sql.inc.ftl">
 <#include "GeneratePkgPrefix.inc.ftl">
 <@standard_header generatorDescription, packageName, javaMajorVersion, [
-        "java.net.URISyntaxException",
+        "java.io.File",
         "java.sql.Connection",
+        "java.sql.DriverManager",
+        "java.sql.Statement",
         "java.sql.SQLException",
-        "java.util.Map",
+        "java.util.ArrayList",
         "java.util.HashMap",
+        "java.util.List",
+        "java.util.Map",
+        "java.util.Properties",
         "java.util.Set"
 ]/>
-<@imports ["zserio.runtime.SqlDatabase"]/>
 <#if withWriterCode>
-<@imports ["zserio.runtime.SqlDatabaseWriter"]/>
+<@imports ["zserio.runtime.SqlDatabase"]/>
+<#else>
+<@imports ["zserio.runtime.SqlDatabaseReader"]/>
 </#if>
 <#if withValidationCode>
 <@imports ["zserio.runtime.validation.ValidationReport"]/>
     <#assign needsParameterProvider = sql_db_needs_parameter_provider(fields)/>
 </#if>
 
+<#macro field_member_name field>
+    ${field.name}_<#t>
+</#macro>
 <@class_header generatorDescription/>
-public class ${name} extends SqlDatabase<#if withWriterCode> implements SqlDatabaseWriter</#if>
+public class ${name} implements SqlDatabase<#if !withWriterCode>Reader</#if>
 {
 <#if withValidationCode && needsParameterProvider>
-    public static interface IParameterProvider
+    public static interface ParameterProvider
     {
         <#list fields as field>
             <#if field.hasExplicitParameters>
-        ${field.javaTypeName}.IParameterProvider get${field.name?cap_first}ParameterProvider();
+        ${field.javaTypeName}.ParameterProvider get${field.name?cap_first}ParameterProvider();
             </#if>
         </#list>
     };
 
 </#if>
-    public ${name}(String fileName) throws SQLException, URISyntaxException
+    public ${name}(String fileName) throws SQLException
     {
         this(fileName, new HashMap<String, String>());
     }
 
-    public ${name}(String fileName, Map<String, String> tableToDbFileNameRelocationMap)
-            throws SQLException, URISyntaxException
+    public ${name}(String fileName, Map<String, String> tableToDbFileNameRelocationMap) throws SQLException
     {
-        super(fileName, Mode.<#if withWriterCode>CREATE<#else>READONLY</#if>, tableToDbFileNameRelocationMap);
-        initTables();
+        final Properties connectionProps = new Properties();
+        connectionProps.setProperty("flags", <#if withWriterCode>"CREATE"<#else>"READONLY"</#if>);
+        final String uriPath = "jdbc:sqlite:" + new File(fileName).toString();
+
+        __connection = DriverManager.getConnection(uriPath, connectionProps);
+        __isExternal = false;
+        __attachedDbList = new ArrayList<String>();
+
+        final Map<String, String> tableToAttachedDbNameRelocationMap = new HashMap<String, String>();
+        final Map<String, String> dbFileNameToAttachedDbNameMap = new HashMap<String, String>();
+        for (Map.Entry<String, String> entry : tableToDbFileNameRelocationMap.entrySet())
+        {
+            final String relocatedTableName = entry.getKey();
+            final String dbFileName = entry.getValue();
+
+            String attachedDbName = dbFileNameToAttachedDbNameMap.get(dbFileName);
+            if (attachedDbName == null)
+            {
+                attachedDbName = "${name}" + "_" + relocatedTableName;
+                attachDatabase(dbFileName, attachedDbName);
+                dbFileNameToAttachedDbNameMap.put(dbFileName, attachedDbName);
+            }
+
+            tableToAttachedDbNameRelocationMap.put(relocatedTableName, attachedDbName);
+        }
+
+        initTables(tableToAttachedDbNameRelocationMap);
     }
 
     public ${name}(Connection externalConnection)
@@ -49,16 +82,36 @@ public class ${name} extends SqlDatabase<#if withWriterCode> implements SqlDatab
         this(externalConnection, new HashMap<String, String>());
     }
 
-    public ${name}(Connection externalConnection, Map<String, String> tableToDbNameRelocationMap)
+    public ${name}(Connection externalConnection, Map<String, String> tableToAttachedDbNameRelocationMap)
     {
-        super(externalConnection, tableToDbNameRelocationMap);
-        initTables();
+        __connection = externalConnection;
+        __isExternal = true;
+        __attachedDbList = null;
+
+        initTables(tableToAttachedDbNameRelocationMap);
     }
+
+    @Override
+    public void close() throws SQLException
+    {
+        if (!__isExternal)
+        {
+            detachDatabases();
+            __connection.close();
+        }
+    }
+
+    @Override
+    public Connection connection()
+    {
+        return __connection;
+    }
+
 <#list fields as field>
 
     public ${field.javaTypeName} ${field.getterName}()
     {
-        return ${field.name};
+        return <@field_member_name field/>;
     }
 </#list>
 <#if withWriterCode>
@@ -69,7 +122,7 @@ public class ${name} extends SqlDatabase<#if withWriterCode> implements SqlDatab
         final boolean wasTransactionStarted = startTransaction();
 
         <#list fields as field>
-        ${field.name}.createTable();
+        <@field_member_name field/>.createTable();
         </#list>
 
         endTransaction(wasTransactionStarted);
@@ -91,11 +144,11 @@ public class ${name} extends SqlDatabase<#if withWriterCode> implements SqlDatab
         <#list fields as field>
             <#if field.isWithoutRowIdTable>
         if (withoutRowIdTableNamesBlackList.contains(${field.name?upper_case}_TABLE_NAME))
-            ${field.name}.createOrdinaryRowIdTable();
+            <@field_member_name field/>.createOrdinaryRowIdTable();
         else
-            ${field.name}.createTable();
+            <@field_member_name field/>.createTable();
             <#else>
-        ${field.name}.createTable();
+        <@field_member_name field/>.createTable();
             </#if>
         </#list>
 
@@ -111,7 +164,7 @@ public class ${name} extends SqlDatabase<#if withWriterCode> implements SqlDatab
         final boolean wasTransactionStarted = startTransaction();
 
     <#list fields as field>
-        ${field.name}.deleteTable();
+        <@field_member_name field/>.deleteTable();
     </#list>
 
         endTransaction(wasTransactionStarted);
@@ -119,24 +172,24 @@ public class ${name} extends SqlDatabase<#if withWriterCode> implements SqlDatab
 </#if>
 <#if withValidationCode>
 
-    public ValidationReport validate(<#if needsParameterProvider>IParameterProvider parameterProvider</#if>)
+    public ValidationReport validate(<#if needsParameterProvider>ParameterProvider parameterProvider</#if>)
             throws SQLException
     {
         final ValidationReport report = new ValidationReport();
     <#list fields as field>
-        report.add(${field.name}.validate(<#if field.hasExplicitParameters>parameterProvider.get${field.name?cap_first}ParameterProvider()</#if>));
+        report.add(<@field_member_name field/>.validate(<#if field.hasExplicitParameters>parameterProvider.get${field.name?cap_first}ParameterProvider()</#if>));
     </#list>
 
         return report;
     }
 </#if>
 
-    public static String getDatabaseName()
+    public static String databaseName()
     {
         return DATABASE_NAME;
     }
 
-    public static String[] getTableNames()
+    public static String[] tableNames()
     {
         return new String[]
         {
@@ -146,20 +199,81 @@ public class ${name} extends SqlDatabase<#if withWriterCode> implements SqlDatab
         };
     }
 
-    private void initTables()
+    private void initTables(Map<String, String> tableToAttachedDbNameRelocationMap)
     {
 <#list fields as field>
-        ${field.name} = new ${field.javaTypeName}(
-                this, getAttachedDbName(${field.name?upper_case}_TABLE_NAME), ${field.name?upper_case}_TABLE_NAME);
+        <@field_member_name field/> = new ${field.javaTypeName}(__connection,
+                tableToAttachedDbNameRelocationMap.get(${field.name?upper_case}_TABLE_NAME),
+                ${field.name?upper_case}_TABLE_NAME);
 </#list>
     }
+
+    private void executeUpdate(String sql) throws SQLException
+    {
+        final Statement statement = __connection.createStatement();
+        try
+        {
+            statement.executeUpdate(sql);
+        }
+        finally
+        {
+            statement.close();
+        }
+    }
+
+    private void attachDatabase(String dbFileName, String attachedDbName) throws SQLException
+    {
+        final StringBuilder sqlQuery = new StringBuilder("ATTACH DATABASE '");
+        sqlQuery.append(new File(dbFileName).toString());
+        sqlQuery.append("' AS ");
+        sqlQuery.append(attachedDbName);
+        executeUpdate(sqlQuery.toString());
+
+        __attachedDbList.add(attachedDbName);
+    }
+
+    private void detachDatabases() throws SQLException
+    {
+        for (String attachedDbName : __attachedDbList)
+        {
+            final String sqlQuery = "DETACH DATABASE " + attachedDbName;
+            executeUpdate(sqlQuery);
+        }
+    }
+<#if withWriterCode>
+
+    private boolean startTransaction() throws SQLException
+    {
+        boolean wasTransactionStarted = false;
+        if (__connection.getAutoCommit())
+        {
+            __connection.setAutoCommit(false);
+            wasTransactionStarted = true;
+        }
+
+        return wasTransactionStarted;
+    }
+
+    private void endTransaction(boolean wasTransactionStarted) throws SQLException
+    {
+        if (wasTransactionStarted)
+        {
+            __connection.commit();
+            __connection.setAutoCommit(true);
+        }
+    }
+</#if>
 
     private static final String DATABASE_NAME = "${name}";
 <#list fields as field>
     private static final String ${field.name?upper_case}_TABLE_NAME = "${field.name}";
 </#list>
 
+    private final Connection __connection;
+    private final boolean __isExternal;
+    private final List<String> __attachedDbList;
+
 <#list fields as field>
-    private ${field.javaTypeName} ${field.name};
+    private ${field.javaTypeName} <@field_member_name field/>;
 </#list>
 }

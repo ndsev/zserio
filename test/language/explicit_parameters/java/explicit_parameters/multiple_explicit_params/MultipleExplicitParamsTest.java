@@ -4,7 +4,6 @@ import static org.junit.Assert.assertEquals;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.URISyntaxException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -21,7 +20,6 @@ import test_utils.JdbcUtil;
 import explicit_parameters.ExplicitParametersDb;
 
 import zserio.runtime.ZserioError;
-import zserio.runtime.SqlDatabase.Mode;
 import zserio.runtime.array.UnsignedByteArray;
 import zserio.runtime.array.UnsignedShortArray;
 
@@ -34,7 +32,7 @@ public class MultipleExplicitParamsTest
     }
 
     @Before
-    public void setUp() throws IOException, URISyntaxException, SQLException
+    public void setUp() throws IOException, SQLException
     {
         FileUtil.deleteFileIfExists(file);
         database = new ExplicitParametersDb(file.toString());
@@ -52,7 +50,7 @@ public class MultipleExplicitParamsTest
     }
 
     @Test
-    public void readWithoutCondition() throws SQLException, URISyntaxException, IOException, ZserioError
+    public void readWithoutCondition() throws SQLException, IOException, ZserioError
     {
         final MultipleParamsTable multipleParamsTable = database.getMultipleParamsTable();
 
@@ -66,7 +64,7 @@ public class MultipleExplicitParamsTest
     }
 
     @Test
-    public void readWithCondition() throws SQLException, URISyntaxException, IOException, ZserioError
+    public void readWithCondition() throws SQLException, IOException, ZserioError
     {
         final MultipleParamsTable multipleParamsTable = database.getMultipleParamsTable();
 
@@ -85,7 +83,7 @@ public class MultipleExplicitParamsTest
     }
 
     @Test
-    public void update() throws SQLException, URISyntaxException, IOException, ZserioError
+    public void update() throws SQLException, IOException, ZserioError
     {
         final MultipleParamsTable multipleParamsTable = database.getMultipleParamsTable();
 
@@ -106,7 +104,7 @@ public class MultipleExplicitParamsTest
         checkMultipleParamsTableRow(updateRow, readRow);
     }
 
-    private static class MultipleParamsTableParameterProvider implements MultipleParamsTable.IParameterProvider
+    private static class MultipleParamsTableParameterProvider implements MultipleParamsTable.ParameterProvider
     {
         @Override
         public long getCount1(ResultSet resultSet)

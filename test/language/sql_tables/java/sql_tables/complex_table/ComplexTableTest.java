@@ -7,7 +7,6 @@ import static org.junit.Assert.assertTrue;
 import java.io.File;
 import java.io.IOException;
 import java.math.BigInteger;
-import java.net.URISyntaxException;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -25,7 +24,6 @@ import test_utils.JdbcUtil;
 import sql_tables.TestDb;
 
 import zserio.runtime.ZserioError;
-import zserio.runtime.SqlDatabase.Mode;
 import zserio.runtime.array.UnsignedByteArray;
 
 public class ComplexTableTest
@@ -37,7 +35,7 @@ public class ComplexTableTest
     }
 
     @Before
-    public void setUp() throws IOException, URISyntaxException, SQLException
+    public void setUp() throws IOException, SQLException
     {
         FileUtil.deleteFileIfExists(file);
         database = new TestDb(file.toString());
@@ -68,7 +66,7 @@ public class ComplexTableTest
     }
 
     @Test
-    public void readWithoutCondition() throws SQLException, URISyntaxException, IOException, ZserioError
+    public void readWithoutCondition() throws SQLException, IOException, ZserioError
     {
         final ComplexTable testTable = database.getComplexTable();
 
@@ -82,7 +80,7 @@ public class ComplexTableTest
     }
 
     @Test
-    public void readWithCondition() throws SQLException, URISyntaxException, IOException, ZserioError
+    public void readWithCondition() throws SQLException, IOException, ZserioError
     {
         final ComplexTable testTable = database.getComplexTable();
 
@@ -101,7 +99,7 @@ public class ComplexTableTest
     }
 
     @Test
-    public void update() throws SQLException, URISyntaxException, IOException, ZserioError
+    public void update() throws SQLException, IOException, ZserioError
     {
         final ComplexTable testTable = database.getComplexTable();
 
@@ -122,7 +120,7 @@ public class ComplexTableTest
         checkComplexTableRow(updateRow, readRow);
     }
 
-    private static class ComplexTableParameterProvider implements ComplexTable.IParameterProvider
+    private static class ComplexTableParameterProvider implements ComplexTable.ParameterProvider
     {
         @Override
         public long getCount(ResultSet resultSet)
@@ -187,7 +185,7 @@ public class ComplexTableTest
         final String sqlQuery = "SELECT name FROM sqlite_master WHERE type='table' AND name='" + TABLE_NAME +
                 "'";
 
-        final PreparedStatement statement = database.prepareStatement(sqlQuery);
+        final PreparedStatement statement = database.connection().prepareStatement(sqlQuery);
         try
         {
             final ResultSet resultSet = statement.executeQuery();

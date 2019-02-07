@@ -7,17 +7,15 @@
     <Match>
         <!-- A prepared statement is generated from a nonconstant String - this is ok, caller is responsible -->
         <Bug code="SQL"/>
-        <Class name="zserio.runtime.SqlDatabase"/>
+        <Class name="zserio.runtime.validation.ValidationSqliteUtilTest$TestSqlDatabase"/>
         <Or>
-            <Method name="attachDatabase"/>
             <Method name="executeUpdate"/>
-            <Method name="prepareStatement"/>
         </Or>
     </Match>
     <Match>
         <!-- A prepared statement is generated from a nonconstant String - this is ok, caller is responsible -->
         <Bug code="SQL"/>
-        <Class name="zserio.runtime.validation.ValidationSqlUtil"/>
+        <Class name="zserio.runtime.validation.ValidationSqliteUtil"/>
         <Or>
             <Method name="getTableSchema"/>
             <Method name="isHiddenColumnInTable"/>

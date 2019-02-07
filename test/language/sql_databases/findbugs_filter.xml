@@ -9,6 +9,9 @@
             <Method name="update"/>
             <Method name="validate"/>
             <Method name="isRelocatedTableInDb"/>
+            <Method name="executeUpdate"/>
+            <Method name="attachDatabase"/>
+            <Method name="isTableInDb"/>
         </Or>
     </Match>
 </FindBugsFilter>

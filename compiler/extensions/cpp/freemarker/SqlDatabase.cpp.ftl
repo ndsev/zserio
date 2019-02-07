@@ -13,14 +13,15 @@
 </#if>
 <#macro db_table_initializer fields>
     <#list fields as field>
-        m_${field.name}(NULL)<#if field?has_next>,</#if>
+        <@sql_db_field_member_name field/>(NULL)<#if field?has_next>,</#if>
     </#list>
 </#macro>
 ${name}::${name}(const std::string& fileName, const TRelocationMap& tableToDbFileNameRelocationMap) :
         <@db_table_initializer fields/>
 {
     sqlite3 *internalConnection = NULL;
-    const int sqliteOpenMode = SQLITE_OPEN_URI | <#if withWriterCode>SQLITE_OPEN_CREATE | SQLITE_OPEN_READWRITE<#else>SQLITE_OPEN_READONLY</#if>;
+    const int sqliteOpenMode = SQLITE_OPEN_URI | <#rt>
+            <#lt><#if withWriterCode>SQLITE_OPEN_CREATE | SQLITE_OPEN_READWRITE<#else>SQLITE_OPEN_READONLY</#if>;
     const int result = sqlite3_open_v2(fileName.c_str(), &internalConnection, sqliteOpenMode, NULL);
     if (result != SQLITE_OK)
         throw zserio::SqliteException("${name}::open(): can't open DB " + fileName, result);
@@ -64,7 +65,7 @@ ${name}::${name}(sqlite3* externalConnection, const TRelocationMap& tableToAttac
 ${name}::~${name}()
 {
 <#list fields as field>
-    delete m_${field.name};
+    delete <@sql_db_field_member_name field/>;
 </#list>
     detachDatabases();
 }
@@ -74,20 +75,11 @@ sqlite3* ${name}::connection()
     return m_db.getConnection();
 }
 
-void ${name}::executeUpdate(const std::string& sqlQuery)
-{
-    m_db.executeUpdate(sqlQuery);
-}
-
-sqlite3_stmt* ${name}::prepareStatement(const std::string& sqlQuery)
-{
-    return m_db.prepareStatement(sqlQuery);
-}
 <#list fields as field>
 
 ${field.cppTypeName}& ${name}::${field.getterName}()
 {
-    return *m_${field.name};
+    return *<@sql_db_field_member_name field/>;
 }
 </#list>
 <#if withWriterCode>
@@ -97,7 +89,7 @@ void ${name}::createSchema()
     const bool wasTransactionStarted = m_db.startTransaction();
 
     <#list fields as field>
-    m_${field.name}->createTable();
+    <@sql_db_field_member_name field/>->createTable();
     </#list>
 
     m_db.endTransaction(wasTransactionStarted);
@@ -112,11 +104,11 @@ void ${name}::createSchema(const std::set<std::string>&<#if hasWithoutRowIdTable
             <#if field.isWithoutRowIdTable>
     if (withoutRowIdTableNamesBlackList.find(<@sql_db_table_name_getter field/>) !=
             withoutRowIdTableNamesBlackList.end())
-        m_${field.name}->createOrdinaryRowIdTable();
+        <@sql_db_field_member_name field/>->createOrdinaryRowIdTable();
     else
-        m_${field.name}->createTable();
+        <@sql_db_field_member_name field/>->createTable();
             <#else>
-    m_${field.name}->createTable();
+    <@sql_db_field_member_name field/>->createTable();
             </#if>
         </#list>
 
@@ -131,7 +123,7 @@ void ${name}::deleteSchema()
     const bool wasTransactionStarted = m_db.startTransaction();
 
     <#list fields as field>
-    m_${field.name}->deleteTable();
+    <@sql_db_field_member_name field/>->deleteTable();
     </#list>
 
     m_db.endTransaction(wasTransactionStarted);
@@ -206,7 +198,7 @@ void ${name}::initTables(const TRelocationMap& tableToAttachedDbNameRelocationMa
     <#else>
         relocationIt = tableToAttachedDbNameRelocationMap.find(<@sql_db_table_name_getter field/>);
     </#if>
-        m_${field.name} = new ${field.cppTypeName}(
+        <@sql_db_field_member_name field/> = new ${field.cppTypeName}(
                 this->m_db, <@sql_db_table_name_getter field/>,
                 relocationIt != tableToAttachedDbNameRelocationMap.end() ? relocationIt->second : EMPTY_STR);
     <#if field?has_next>
@@ -218,7 +210,7 @@ void ${name}::initTables(const TRelocationMap& tableToAttachedDbNameRelocationMa
     {
 <#list fields as field>
         <#-- deleting NULL pointer is ok -->
-        delete m_${field.name};
+        delete <@sql_db_field_member_name field/>;
 </#list>
         throw;
     }
@@ -251,7 +243,7 @@ void ${name}::detachDatabases()
 void ${name}::fillTableMap()
 {
     <#list fields as field>
-    m_tableMap["${field.name}"] = m_${field.name};
+    m_tableMap["${field.name}"] = <@sql_db_field_member_name field/>;
     </#list>
 }
 

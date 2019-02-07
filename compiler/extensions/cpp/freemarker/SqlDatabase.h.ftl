@@ -39,8 +39,6 @@ public:
     ~${name}();
 
     sqlite3* connection();
-    void executeUpdate(const std::string& query);
-    sqlite3_stmt* prepareStatement(const std::string& query);
 
 <#list fields as field>
     ${field.cppTypeName}& ${field.getterName}();
@@ -85,7 +83,7 @@ private:
     std::vector<std::string> m_attachedDbList;
 
 <#list fields as field>
-    ${field.cppTypeName}* m_${field.name};
+    ${field.cppTypeName}* <@sql_db_field_member_name field/>;
 </#list>
     <#if withInspectorCode>
 

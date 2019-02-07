@@ -62,9 +62,6 @@ class ${name}():
     def connection(self):
         return self._connection
 
-    def executeQuery(self, query):
-        cursor = self._connection.cursor()
-        return cursor.execute(query)
 <#if withWriterCode>
 
     def createSchema(self<#if hasWithoutRowIdTable>, withoutRowIdTableNamesBlackList=None</#if>):

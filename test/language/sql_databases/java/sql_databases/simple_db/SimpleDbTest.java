@@ -3,7 +3,6 @@ package sql_databases.simple_db;
 import static org.junit.Assert.*;
 
 import java.io.File;
-import java.net.URISyntaxException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -22,7 +21,6 @@ import org.junit.Test;
 import test_utils.FileUtil;
 import test_utils.JdbcUtil;
 
-import zserio.runtime.SqlDatabase.Mode;
 import zserio.runtime.validation.ValidationReport;
 
 public class SimpleDbTest
@@ -40,7 +38,7 @@ public class SimpleDbTest
     }
 
     @Test
-    public void fileNameConstructor() throws SQLException, URISyntaxException
+    public void fileNameConstructor() throws SQLException
     {
         database = new WorldDb(dbFile.toString());
         database.createSchema();
@@ -49,7 +47,7 @@ public class SimpleDbTest
     }
 
     @Test
-    public void fileNameConstructorTableRelocationMap() throws SQLException, URISyntaxException
+    public void fileNameConstructorTableRelocationMap() throws SQLException
     {
         final Map<String, String> tableToDbFileNameRelocationMap = new HashMap<String, String>();
         database = new WorldDb(dbFile.toString(), tableToDbFileNameRelocationMap);
@@ -62,7 +60,7 @@ public class SimpleDbTest
     public void connectionConstructor() throws SQLException
     {
         final Properties connectionProps = new Properties();
-        connectionProps.setProperty("flags", Mode.CREATE.toString());
+        connectionProps.setProperty("flags", "CREATE");
         final String uriPath = "jdbc:sqlite:file:" + dbFile.toString();
         final Connection connection = DriverManager.getConnection(uriPath, connectionProps);
 
@@ -76,7 +74,7 @@ public class SimpleDbTest
     public void connectionConstructorTableRelocationMap() throws SQLException
     {
         final Properties connectionProps = new Properties();
-        connectionProps.setProperty("flags", Mode.CREATE.toString());
+        connectionProps.setProperty("flags", "CREATE");
         final String uriPath = "jdbc:sqlite:file:" + dbFile.toString();
         final Connection connection = DriverManager.getConnection(uriPath, connectionProps);
 
@@ -88,7 +86,7 @@ public class SimpleDbTest
     }
 
     @Test
-    public void tableGetters() throws SQLException, URISyntaxException
+    public void tableGetters() throws SQLException
     {
         database = new WorldDb(dbFile.toString());
         database.createSchema();
@@ -105,7 +103,7 @@ public class SimpleDbTest
     }
 
     @Test
-    public void createSchema() throws SQLException, URISyntaxException
+    public void createSchema() throws SQLException
     {
         database = new WorldDb(dbFile.toString());
 
@@ -120,7 +118,7 @@ public class SimpleDbTest
     }
 
     @Test
-    public void createSchemaWithoutRowIdBlackList() throws SQLException, URISyntaxException
+    public void createSchemaWithoutRowIdBlackList() throws SQLException
     {
         database = new WorldDb(dbFile.toString());
 
@@ -136,7 +134,7 @@ public class SimpleDbTest
     }
 
     @Test
-    public void deleteSchema() throws SQLException, URISyntaxException
+    public void deleteSchema() throws SQLException
     {
         database = new WorldDb(dbFile.toString());
         database.createSchema();
@@ -151,7 +149,7 @@ public class SimpleDbTest
     }
 
     @Test
-    public void validate() throws SQLException, URISyntaxException
+    public void validate() throws SQLException
     {
         database = new WorldDb(dbFile.toString());
         database.createSchema();
@@ -162,13 +160,13 @@ public class SimpleDbTest
     @Test
     public void getDatabaseName()
     {
-        assertEquals(WORLD_DB_NAME, WorldDb.getDatabaseName());
+        assertEquals(WORLD_DB_NAME, WorldDb.databaseName());
     }
 
     @Test
     public void getTableNames()
     {
-        final String[] tableNames = WorldDb.getTableNames();
+        final String[] tableNames = WorldDb.tableNames();
         assertEquals(SimpleDbTest.tableNames.length, tableNames.length);
         for (int i = 0; i < tableNames.length; ++i)
             assertEquals(SimpleDbTest.tableNames[i], tableNames[i]);
@@ -180,7 +178,7 @@ public class SimpleDbTest
         final String sqlQuery = "SELECT name FROM sqlite_master WHERE type='table' AND name='" +
                 checkTableName + "'";
 
-        final PreparedStatement statement = database.prepareStatement(sqlQuery);
+        final PreparedStatement statement = database.connection().prepareStatement(sqlQuery);
         try
         {
             final ResultSet resultSet = statement.executeQuery();

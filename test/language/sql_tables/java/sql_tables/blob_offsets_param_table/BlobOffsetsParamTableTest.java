@@ -6,7 +6,6 @@ import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.URISyntaxException;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -24,7 +23,6 @@ import test_utils.JdbcUtil;
 import sql_tables.TestDb;
 
 import zserio.runtime.ZserioError;
-import zserio.runtime.SqlDatabase.Mode;
 import zserio.runtime.array.UnsignedIntArray;
 
 public class BlobOffsetsParamTableTest
@@ -36,7 +34,7 @@ public class BlobOffsetsParamTableTest
     }
 
     @Before
-    public void setUp() throws IOException, URISyntaxException, SQLException
+    public void setUp() throws IOException, SQLException
     {
         FileUtil.deleteFileIfExists(file);
         database = new TestDb(file.toString());
@@ -67,7 +65,7 @@ public class BlobOffsetsParamTableTest
     }
 
     @Test
-    public void readWithoutCondition() throws SQLException, URISyntaxException, IOException, ZserioError
+    public void readWithoutCondition() throws SQLException, IOException, ZserioError
     {
         final BlobOffsetsParamTable testTable = database.getBlobOffsetsParamTable();
 
@@ -80,7 +78,7 @@ public class BlobOffsetsParamTableTest
     }
 
     @Test
-    public void readWithCondition() throws SQLException, URISyntaxException, IOException, ZserioError
+    public void readWithCondition() throws SQLException, IOException, ZserioError
     {
         final BlobOffsetsParamTable testTable = database.getBlobOffsetsParamTable();
 
@@ -99,7 +97,7 @@ public class BlobOffsetsParamTableTest
     }
 
     @Test
-    public void update() throws SQLException, URISyntaxException, IOException, ZserioError
+    public void update() throws SQLException, IOException, ZserioError
     {
         final BlobOffsetsParamTable testTable = database.getBlobOffsetsParamTable();
 
@@ -172,7 +170,7 @@ public class BlobOffsetsParamTableTest
         final String sqlQuery = "SELECT name FROM sqlite_master WHERE type='table' AND name='" + TABLE_NAME +
                 "'";
 
-        final PreparedStatement statement = database.prepareStatement(sqlQuery);
+        final PreparedStatement statement = database.connection().prepareStatement(sqlQuery);
         try
         {
             final ResultSet resultSet = statement.executeQuery();

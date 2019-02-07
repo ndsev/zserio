@@ -517,8 +517,7 @@ main()
     # build Zserio Java runtime library
     if [[ ${PARAM_JAVA_RUNTIME} == 1 ]] ; then
         echo "${ACTION_DESCRIPTION} Zserio Java runtime library."
-        local JAVA_RUNTIME_ANT_PROPS=("${ANT_PROPS[@]}"
-                                      "-Drelational.enable=yes")
+        local JAVA_RUNTIME_ANT_PROPS=("${ANT_PROPS[@]}")
         compile_java "${ZSERIO_PROJECT_ROOT}/compiler/extensions/java/runtime/build.xml" \
                      JAVA_RUNTIME_ANT_PROPS[@] ${JAVA_TARGET}
         if [ $? -ne 0 ] ; then

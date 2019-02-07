@@ -4,7 +4,6 @@ import static org.junit.Assert.*;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.URISyntaxException;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -25,7 +24,6 @@ import test_utils.FileUtil;
 import test_utils.JdbcUtil;
 
 import zserio.runtime.SqlDatabase;
-import zserio.runtime.SqlDatabase.Mode;
 import zserio.runtime.validation.ValidationReport;
 
 public class DbWithRelocationTest
@@ -37,7 +35,7 @@ public class DbWithRelocationTest
     }
 
     @Before
-    public void setUp() throws IOException, URISyntaxException, SQLException
+    public void setUp() throws IOException, SQLException
     {
         FileUtil.deleteFileIfExists(europeDbFile);
         europeDb = new EuropeDb(EUROPE_DB_FILE_NAME);
@@ -174,7 +172,7 @@ public class DbWithRelocationTest
     public void checkAttachedDatabases() throws SQLException
     {
         final String sqlQuery = "PRAGMA database_list";
-        final PreparedStatement statement = americaDb.prepareStatement(sqlQuery);
+        final PreparedStatement statement = americaDb.connection().prepareStatement(sqlQuery);
         try
         {
             final ResultSet resultSet = statement.executeQuery();
@@ -201,7 +199,7 @@ public class DbWithRelocationTest
         final String sqlQuery = "SELECT name FROM sqlite_master WHERE type='table' AND name='" +
                 relocatedTableName + "'";
 
-        final PreparedStatement statement = db.prepareStatement(sqlQuery);
+        final PreparedStatement statement = db.connection().prepareStatement(sqlQuery);
         try
         {
             final ResultSet resultSet = statement.executeQuery();

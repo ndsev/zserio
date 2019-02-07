@@ -6,15 +6,16 @@ import static org.junit.Assert.assertFalse;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.PreparedStatement;
 import java.sql.SQLException;
-import java.util.HashMap;
+import java.sql.Statement;
 import java.util.Map;
 import java.util.Properties;
 import org.junit.Test;
 
-import zserio.runtime.SqlDatabase;
+import zserio.runtime.SqlDatabaseReader;
 
-public class ValidationSqlUtilTest
+public class ValidationSqliteUtilTest
 {
     static
     {
@@ -33,27 +34,27 @@ public class ValidationSqlUtilTest
     {
         final String TABLE_NAME = "ColumnTypesTestTable";
 
-        SqlDatabase testDatabase = new TestSqlDatabase();
+        TestSqlDatabase testDatabase = new TestSqlDatabase();
         try
         {
             testDatabase.executeUpdate("CREATE TABLE " + TABLE_NAME +
                     "(col1 TEXT, col2 INTEGER NOT NULL PRIMARY KEY, col3 BLOB);");
-            final Map<String, ValidationSqlUtil.ColumnDescription> schema =
-                    ValidationSqlUtil.getTableSchema(testDatabase, null, TABLE_NAME);
+            final Map<String, ValidationSqliteUtil.ColumnDescription> schema =
+                    ValidationSqliteUtil.getTableSchema(testDatabase.connection(), null, TABLE_NAME);
 
-            final ValidationSqlUtil.ColumnDescription col1 = schema.remove("col1");
+            final ValidationSqliteUtil.ColumnDescription col1 = schema.remove("col1");
             assertEquals("col1", col1.getName());
             assertEquals("TEXT", col1.getType());
             assertEquals(false, col1.isNotNull());
             assertEquals(false, col1.isPrimaryKey());
 
-            final ValidationSqlUtil.ColumnDescription col2 = schema.remove("col2");
+            final ValidationSqliteUtil.ColumnDescription col2 = schema.remove("col2");
             assertEquals("col2", col2.getName());
             assertEquals("INTEGER", col2.getType());
             assertEquals(true, col2.isNotNull());
             assertEquals(true, col2.isPrimaryKey());
 
-            final ValidationSqlUtil.ColumnDescription col3 = schema.remove("col3");
+            final ValidationSqliteUtil.ColumnDescription col3 = schema.remove("col3");
             assertEquals("col3", col3.getName());
             assertEquals("BLOB", col3.getType());
             assertEquals(false, col3.isNotNull());
@@ -72,13 +73,14 @@ public class ValidationSqlUtilTest
     {
         final String TABLE_NAME = "HiddenColumnTestTable";
 
-        SqlDatabase testDatabase = new TestSqlDatabase();
+        TestSqlDatabase testDatabase = new TestSqlDatabase();
         try
         {
             testDatabase.executeUpdate("CREATE VIRTUAL TABLE " + TABLE_NAME + " USING fts4 " +
                     "(substitutionId TEXT NOT NULL);");
-            assertTrue(ValidationSqlUtil.isHiddenColumnInTable(testDatabase, null, TABLE_NAME, "docId"));
-            assertFalse(ValidationSqlUtil.isHiddenColumnInTable(testDatabase, null, TABLE_NAME,
+            assertTrue(ValidationSqliteUtil.isHiddenColumnInTable(testDatabase.connection(), null, TABLE_NAME,
+                    "docId"));
+            assertFalse(ValidationSqliteUtil.isHiddenColumnInTable(testDatabase.connection(), null, TABLE_NAME,
                     "languageCode"));
         }
         finally
@@ -87,20 +89,42 @@ public class ValidationSqlUtilTest
         }
     }
 
-    private static class TestSqlDatabase extends SqlDatabase
+    private static class TestSqlDatabase implements SqlDatabaseReader
     {
         public TestSqlDatabase() throws SQLException
-        {
-            super(createMemoryDb(), new HashMap<String, String>());
-        }
-
-        private static Connection createMemoryDb() throws SQLException
         {
             final String uriPath = "jdbc:sqlite::memory:";
             final Properties connectionProps = new Properties();
             connectionProps.setProperty("flags", "CREATE");
 
-            return DriverManager.getConnection(uriPath, connectionProps);
+            connection = DriverManager.getConnection(uriPath, connectionProps);
         }
+
+        @Override
+        public void close() throws SQLException
+        {
+            connection.close();
+        }
+
+        @Override
+        public Connection connection()
+        {
+            return connection;
+        }
+
+        public void executeUpdate(String sql) throws SQLException
+        {
+            final Statement statement = connection.createStatement();
+            try
+            {
+                statement.executeUpdate(sql);
+            }
+            finally
+            {
+                statement.close();
+            }
+        }
+
+        private final Connection connection;
     }
 }

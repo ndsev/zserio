@@ -40,6 +40,10 @@
     tableName${field.name?cap_first}()<#t>
 </#macro>
 
+<#macro sql_db_field_member_name field>
+    m_${field.name}_<#t>
+</#macro>
+
 <#function sql_strip_quotes string>
     <#return string[1..string?length - 2]>
 </#function>

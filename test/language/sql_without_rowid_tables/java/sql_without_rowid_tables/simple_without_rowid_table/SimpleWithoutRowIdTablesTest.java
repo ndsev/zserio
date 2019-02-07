@@ -5,7 +5,6 @@ import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.URISyntaxException;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.HashSet;
@@ -21,8 +20,6 @@ import test_utils.JdbcUtil;
 
 import sql_without_rowid_tables.simple_without_rowid_table.SimpleWithoutRowIdDb;
 
-import zserio.runtime.SqlDatabase.Mode;
-
 public class SimpleWithoutRowIdTablesTest
 {
     @BeforeClass
@@ -32,7 +29,7 @@ public class SimpleWithoutRowIdTablesTest
     }
 
     @Before
-    public void setUp() throws IOException, URISyntaxException, SQLException
+    public void setUp() throws IOException, SQLException
     {
         FileUtil.deleteFileIfExists(file);
     }
@@ -48,7 +45,7 @@ public class SimpleWithoutRowIdTablesTest
     }
 
     @Test
-    public void checkRowIdColumn() throws SQLException, URISyntaxException
+    public void checkRowIdColumn() throws SQLException
     {
         database = new SimpleWithoutRowIdDb(file.toString());
         database.createSchema();
@@ -56,7 +53,7 @@ public class SimpleWithoutRowIdTablesTest
     }
 
     @Test
-    public void createOrdinaryRowIdTable() throws SQLException, URISyntaxException
+    public void createOrdinaryRowIdTable() throws SQLException
     {
         database = new SimpleWithoutRowIdDb(file.toString());
         final SimpleWithoutRowIdTable testTable = database.getSimpleWithoutRowIdTable();
@@ -65,7 +62,7 @@ public class SimpleWithoutRowIdTablesTest
     }
 
     @Test
-    public void checkWithoutRowIdTableNamesBlackList() throws SQLException, URISyntaxException
+    public void checkWithoutRowIdTableNamesBlackList() throws SQLException
     {
         final Set<String> withoutRowIdTableNamesBlackList = new HashSet<String>();
         withoutRowIdTableNamesBlackList.add(TABLE_NAME);
@@ -81,7 +78,7 @@ public class SimpleWithoutRowIdTablesTest
         // try select to check if column exists
         try
         {
-            final PreparedStatement statement = database.prepareStatement(sqlQuery);
+            final PreparedStatement statement = database.connection().prepareStatement(sqlQuery);
             statement.close();
             return true;
         }

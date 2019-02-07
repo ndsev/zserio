@@ -6,7 +6,6 @@ import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.URISyntaxException;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -23,7 +22,6 @@ import test_utils.FileUtil;
 import test_utils.JdbcUtil;
 
 import zserio.runtime.ZserioError;
-import zserio.runtime.SqlDatabase.Mode;
 
 public class Fts5VirtualTableTest
 {
@@ -34,7 +32,7 @@ public class Fts5VirtualTableTest
     }
 
     @Before
-    public void setUp() throws IOException, URISyntaxException, SQLException
+    public void setUp() throws IOException, SQLException
     {
         FileUtil.deleteFileIfExists(file);
         database = new Fts5TestDb(file.toString());
@@ -65,7 +63,7 @@ public class Fts5VirtualTableTest
     }
 
     @Test
-    public void readWithoutCondition() throws SQLException, URISyntaxException, IOException, ZserioError
+    public void readWithoutCondition() throws SQLException, IOException, ZserioError
     {
         final Fts5VirtualTable testTable = database.getFts5VirtualTable();
 
@@ -78,7 +76,7 @@ public class Fts5VirtualTableTest
     }
 
     @Test
-    public void readWithCondition() throws SQLException, URISyntaxException, IOException, ZserioError
+    public void readWithCondition() throws SQLException, IOException, ZserioError
     {
         final Fts5VirtualTable testTable = database.getFts5VirtualTable();
 
@@ -97,7 +95,7 @@ public class Fts5VirtualTableTest
     }
 
     @Test
-    public void update() throws SQLException, URISyntaxException, IOException, ZserioError
+    public void update() throws SQLException, IOException, ZserioError
     {
         final Fts5VirtualTable testTable = database.getFts5VirtualTable();
 
@@ -154,7 +152,7 @@ public class Fts5VirtualTableTest
         final String sqlQuery = "SELECT name FROM sqlite_master WHERE type='table' AND name='" + TABLE_NAME +
                 "'";
 
-        final PreparedStatement statement = database.prepareStatement(sqlQuery);
+        final PreparedStatement statement = database.connection().prepareStatement(sqlQuery);
         try
         {
             final ResultSet resultSet = statement.executeQuery();

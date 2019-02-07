@@ -6,7 +6,6 @@ import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.URISyntaxException;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -26,7 +25,6 @@ import sql_virtual_columns.simple_virtual_columns.SimpleVirtualColumnsTable;
 import sql_virtual_columns.simple_virtual_columns.SimpleVirtualColumnsTableRow;
 
 import zserio.runtime.ZserioError;
-import zserio.runtime.SqlDatabase.Mode;
 
 public class SimpleVirtualColumnsTest
 {
@@ -37,7 +35,7 @@ public class SimpleVirtualColumnsTest
     }
 
     @Before
-    public void setUp() throws IOException, URISyntaxException, SQLException
+    public void setUp() throws IOException, SQLException
     {
         FileUtil.deleteFileIfExists(file);
         database = new SimpleVirtualColumnsDb(file.toString());
@@ -68,7 +66,7 @@ public class SimpleVirtualColumnsTest
     }
 
     @Test
-    public void readWithoutCondition() throws SQLException, URISyntaxException, IOException, ZserioError
+    public void readWithoutCondition() throws SQLException, IOException, ZserioError
     {
         final SimpleVirtualColumnsTable testTable = database.getSimpleVirtualColumnsTable();
 
@@ -81,7 +79,7 @@ public class SimpleVirtualColumnsTest
     }
 
     @Test
-    public void readWithCondition() throws SQLException, URISyntaxException, IOException, ZserioError
+    public void readWithCondition() throws SQLException, IOException, ZserioError
     {
         final SimpleVirtualColumnsTable testTable = database.getSimpleVirtualColumnsTable();
 
@@ -100,7 +98,7 @@ public class SimpleVirtualColumnsTest
     }
 
     @Test
-    public void update() throws SQLException, URISyntaxException, IOException, ZserioError
+    public void update() throws SQLException, IOException, ZserioError
     {
         final SimpleVirtualColumnsTable testTable = database.getSimpleVirtualColumnsTable();
 
@@ -163,7 +161,7 @@ public class SimpleVirtualColumnsTest
         final String sqlQuery = "SELECT name FROM sqlite_master WHERE type='table' AND name='" + TABLE_NAME +
                 "'";
 
-        final PreparedStatement statement = database.prepareStatement(sqlQuery);
+        final PreparedStatement statement = database.connection().prepareStatement(sqlQuery);
         try
         {
             final ResultSet resultSet = statement.executeQuery();
@@ -186,7 +184,7 @@ public class SimpleVirtualColumnsTest
     private boolean isVirtualColumnInTable() throws SQLException
     {
         final String sqlQuery = "PRAGMA table_info(" + TABLE_NAME + ")";
-        final PreparedStatement statement = database.prepareStatement(sqlQuery);
+        final PreparedStatement statement = database.connection().prepareStatement(sqlQuery);
         try
         {
             final ResultSet resultSet = statement.executeQuery();

@@ -6,9 +6,10 @@ import static org.junit.Assert.assertNotNull;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.URISyntaxException;
+import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.Statement;
 import java.sql.SQLException;
 import java.util.List;
 
@@ -40,7 +41,7 @@ public class SimpleTableValidationTest
     }
 
     @Before
-    public void setUp() throws IOException, URISyntaxException, SQLException
+    public void setUp() throws IOException, SQLException
     {
         FileUtil.deleteFileIfExists(file);
         database = new SimpleTableValidationDb(file.toString());
@@ -58,9 +59,9 @@ public class SimpleTableValidationTest
     }
 
     @Test
-    public void validation() throws SQLException, URISyntaxException, ZserioError
+    public void validation() throws SQLException, ZserioError
     {
-        populateDb(database, new TestParameterProvider(), false);
+        populateDb(database.connection(), new TestParameterProvider(), false);
 
         final TestParameterProvider parameterProvider = new TestParameterProvider();
         final ValidationReport report = database.validate(parameterProvider);
@@ -73,9 +74,9 @@ public class SimpleTableValidationTest
     }
 
     @Test
-    public void validationBlobFailure() throws SQLException, URISyntaxException
+    public void validationBlobFailure() throws SQLException
     {
-        populateDb(database, new TestParameterProvider(), true);
+        populateDb(database.connection(), new TestParameterProvider(), true);
 
         final TestParameterProvider parameterProvider = new TestParameterProvider();
         final ValidationReport report = database.validate(parameterProvider);
@@ -101,9 +102,9 @@ public class SimpleTableValidationTest
     }
 
     @Test
-    public void validateSingleTable() throws SQLException, URISyntaxException
+    public void validateSingleTable() throws SQLException
     {
-        populateDb(database, new TestParameterProvider(), false);
+        populateDb(database.connection(), new TestParameterProvider(), false);
 
         final SimpleTable table = database.getSimpleTable();
         final TestParameterProvider parameterProvider = new TestParameterProvider();
@@ -116,11 +117,11 @@ public class SimpleTableValidationTest
     }
 
     @Test
-    public void extraColumn() throws SQLException, URISyntaxException
+    public void extraColumn() throws SQLException
     {
-        populateDb(database, new TestParameterProvider(), false);
+        populateDb(database.connection(), new TestParameterProvider(), false);
 
-        database.executeUpdate("ALTER TABLE simpleTable ADD COLUMN extraColumn TEXT");
+        executeUpdate("ALTER TABLE simpleTable ADD COLUMN extraColumn TEXT");
 
         final TestParameterProvider parameterProvider = new TestParameterProvider();
         final ValidationReport report = database.validate(parameterProvider);
@@ -148,16 +149,16 @@ public class SimpleTableValidationTest
     }
 
     @Test
-    public void missingColumn() throws SQLException, URISyntaxException
+    public void missingColumn() throws SQLException
     {
-        populateDb(database, new TestParameterProvider(), false);
+        populateDb(database.connection(), new TestParameterProvider(), false);
 
-        database.executeUpdate("CREATE TABLE simpleTableTemp (rowid INTEGER PRIMARY KEY NOT NULL, " +
+        executeUpdate("CREATE TABLE simpleTableTemp (rowid INTEGER PRIMARY KEY NOT NULL, " +
                 "fieldBool INTEGER NOT NULL, fieldBlob BLOB NOT NULL, fieldEnum INTEGER NOT NULL)");
-        database.executeUpdate("INSERT INTO simpleTableTemp SELECT rowid, fieldBool, fieldBlob, fieldEnum " +
+        executeUpdate("INSERT INTO simpleTableTemp SELECT rowid, fieldBool, fieldBlob, fieldEnum " +
                          "from simpleTable");
-        database.executeUpdate("DROP TABLE simpleTable");
-        database.executeUpdate("ALTER TABLE simpleTableTemp RENAME TO simpleTable");
+        executeUpdate("DROP TABLE simpleTable");
+        executeUpdate("ALTER TABLE simpleTableTemp RENAME TO simpleTable");
 
         final TestParameterProvider parameterProvider = new TestParameterProvider();
         final ValidationReport report = database.validate(parameterProvider);
@@ -184,17 +185,17 @@ public class SimpleTableValidationTest
     }
 
     @Test
-    public void wrongColumnType() throws SQLException, URISyntaxException
+    public void wrongColumnType() throws SQLException
     {
-        populateDb(database, new TestParameterProvider(), false);
+        populateDb(database.connection(), new TestParameterProvider(), false);
 
-        database.executeUpdate("CREATE TABLE simpleTableTemp (rowid INTEGER PRIMARY KEY NOT NULL, " +
+        executeUpdate("CREATE TABLE simpleTableTemp (rowid INTEGER PRIMARY KEY NOT NULL, " +
                 "fieldBool INTEGER NOT NULL, fieldNonBlob TEXT, fieldBlob BLOB NOT NULL, " +
                 "fieldEnum INTEGER NOT NULL)");
-        database.executeUpdate("INSERT INTO simpleTableTemp SELECT rowid, fieldBool, fieldNonBlob, fieldBlob, "
+        executeUpdate("INSERT INTO simpleTableTemp SELECT rowid, fieldBool, fieldNonBlob, fieldBlob, "
                 + "fieldEnum from simpleTable");
-        database.executeUpdate("DROP TABLE simpleTable");
-        database.executeUpdate("ALTER TABLE simpleTableTemp RENAME TO simpleTable");
+        executeUpdate("DROP TABLE simpleTable");
+        executeUpdate("ALTER TABLE simpleTableTemp RENAME TO simpleTable");
 
         final TestParameterProvider parameterProvider = new TestParameterProvider();
         final ValidationReport report = database.validate(parameterProvider);
@@ -222,17 +223,17 @@ public class SimpleTableValidationTest
     }
 
     @Test
-    public void wrongColumnNotNullConstraint() throws SQLException, URISyntaxException
+    public void wrongColumnNotNullConstraint() throws SQLException
     {
-        populateDb(database, new TestParameterProvider(), false);
+        populateDb(database.connection(), new TestParameterProvider(), false);
 
-        database.executeUpdate("CREATE TABLE simpleTableTemp (rowid INTEGER PRIMARY KEY NOT NULL, " +
+        executeUpdate("CREATE TABLE simpleTableTemp (rowid INTEGER PRIMARY KEY NOT NULL, " +
                 "fieldBool INTEGER NOT NULL, fieldNonBlob INTEGER NOT NULL, fieldBlob BLOB, " +
                 "fieldEnum INTEGER NOT NULL)");
-        database.executeUpdate("INSERT INTO simpleTableTemp SELECT rowid, fieldBool, fieldNonBlob, fieldBlob, "
+        executeUpdate("INSERT INTO simpleTableTemp SELECT rowid, fieldBool, fieldNonBlob, fieldBlob, "
                 + "fieldEnum from simpleTable");
-        database.executeUpdate("DROP TABLE simpleTable");
-        database.executeUpdate("ALTER TABLE simpleTableTemp RENAME TO simpleTable");
+        executeUpdate("DROP TABLE simpleTable");
+        executeUpdate("ALTER TABLE simpleTableTemp RENAME TO simpleTable");
 
         final TestParameterProvider parameterProvider = new TestParameterProvider();
         final ValidationReport report = database.validate(parameterProvider);
@@ -268,17 +269,17 @@ public class SimpleTableValidationTest
     }
 
     @Test
-    public void wrongColumnPrimaryKeyConstraint() throws SQLException, URISyntaxException
+    public void wrongColumnPrimaryKeyConstraint() throws SQLException
     {
-        populateDb(database, new TestParameterProvider(), false);
+        populateDb(database.connection(), new TestParameterProvider(), false);
 
-        database.executeUpdate("CREATE TABLE simpleTableTemp (rowid INTEGER NOT NULL, " +
+        executeUpdate("CREATE TABLE simpleTableTemp (rowid INTEGER NOT NULL, " +
                 "fieldBool INTEGER NOT NULL, fieldNonBlob INTEGER, fieldBlob BLOB NOT NULL, " +
                 "fieldEnum INTEGER NOT NULL)");
-        database.executeUpdate("INSERT INTO simpleTableTemp SELECT rowid, fieldBool, fieldNonBlob, fieldBlob, "
+        executeUpdate("INSERT INTO simpleTableTemp SELECT rowid, fieldBool, fieldNonBlob, fieldBlob, "
                 + "fieldEnum from simpleTable");
-        database.executeUpdate("DROP TABLE simpleTable");
-        database.executeUpdate("ALTER TABLE simpleTableTemp RENAME TO simpleTable");
+        executeUpdate("DROP TABLE simpleTable");
+        executeUpdate("ALTER TABLE simpleTableTemp RENAME TO simpleTable");
 
         final TestParameterProvider parameterProvider = new TestParameterProvider();
         final ValidationReport report = database.validate(parameterProvider);
@@ -306,12 +307,12 @@ public class SimpleTableValidationTest
     }
 
     @Test
-    public void outOfRange() throws SQLException, URISyntaxException
+    public void outOfRange() throws SQLException
     {
-        populateDb(database, new TestParameterProvider(), false);
+        populateDb(database.connection(), new TestParameterProvider(), false);
 
         // set fieldNonBlob to a value outside its Zserio type
-        database.executeUpdate("UPDATE simpleTable SET fieldNonBlob = -1 WHERE fieldNonBlob = " +
+        executeUpdate("UPDATE simpleTable SET fieldNonBlob = -1 WHERE fieldNonBlob = " +
                 FIELD_NON_BLOB_OUT_OF_RANGE_ROW_ID);
 
         final TestParameterProvider parameterProvider = new TestParameterProvider();
@@ -341,13 +342,12 @@ public class SimpleTableValidationTest
     }
 
     @Test
-    public void invalidEnumValue() throws SQLException, URISyntaxException
+    public void invalidEnumValue() throws SQLException
     {
-        populateDb(database, new TestParameterProvider(), false);
+        populateDb(database.connection(), new TestParameterProvider(), false);
 
         // set fieldEnum to an invalid enum value
-        database.executeUpdate("UPDATE simpleTable SET fieldEnum = 1 WHERE fieldEnum = " +
-                TestEnum.RED.getValue());
+        executeUpdate("UPDATE simpleTable SET fieldEnum = 1 WHERE fieldEnum = " + TestEnum.RED.getValue());
 
         final TestParameterProvider parameterProvider = new TestParameterProvider();
         final ValidationReport report = database.validate(parameterProvider);
@@ -375,18 +375,18 @@ public class SimpleTableValidationTest
         assertEquals("<init>", stackTrace[1].getMethodName());
     }
 
-    private void populateDb(SimpleTableValidationDb database, TestParameterProvider parameterProvider,
+    private void populateDb(Connection connection, TestParameterProvider parameterProvider,
             boolean wrongOffset) throws SQLException
     {
         for (byte id = 0; id < ENTRY_COUNT; id++)
         {
             // make the first entry have wrong offset - if requested by caller
             // first is used to check that the validation continues past the erroneous blob
-            insertTestRow(database, parameterProvider, id, wrongOffset && id == 0);
+            insertTestRow(connection, parameterProvider, id, wrongOffset && id == 0);
         }
     }
 
-    private void insertTestRow(SimpleTableValidationDb database, TestParameterProvider parameterProvider,
+    private void insertTestRow(Connection connection, TestParameterProvider parameterProvider,
             byte id, boolean wrongOffset) throws SQLException
     {
         final byte fieldNonBlob = id;
@@ -394,7 +394,7 @@ public class SimpleTableValidationTest
         final RootStruct fieldBlob = createTestRootStruct(localCount1, id);
         final TestEnum fieldEnum = (id == ENUM_RED_ROW_ID) ? TestEnum.RED : TestEnum.BLUE;
 
-        insertRow(database, id, id == 0, fieldNonBlob, fieldBlob, wrongOffset, fieldEnum);
+        insertRow(connection, id, id == 0, fieldNonBlob, fieldBlob, wrongOffset, fieldEnum);
     }
 
     private static RootStruct createTestRootStruct(int count, byte id)
@@ -410,7 +410,7 @@ public class SimpleTableValidationTest
         return struct;
     }
 
-    private void insertRow(SimpleTableValidationDb database, long id, boolean fieldBool, byte fieldNonBlob,
+    private void insertRow(Connection connection, long id, boolean fieldBool, byte fieldNonBlob,
             RootStruct fieldBlob, boolean wrongOffset, TestEnum fieldEnum) throws SQLException
     {
         /**
@@ -418,20 +418,40 @@ public class SimpleTableValidationTest
          */
         final String sql = "INSERT INTO simpleTable (rowid, fieldBool, fieldNonBlob, fieldBlob, fieldEnum) " +
             "VALUES (?, ?, ?, ?, ?)";
-        PreparedStatement statement = database.prepareStatement(sql);
+        final PreparedStatement statement = connection.prepareStatement(sql);
 
-        int argIdx = 1;
-        statement.setLong(argIdx++, id);
-        statement.setInt(argIdx++, fieldBool ? 1 : 0);
-        statement.setInt(argIdx++, fieldNonBlob);
+        try
+        {
+            int argIdx = 1;
+            statement.setLong(argIdx++, id);
+            statement.setInt(argIdx++, fieldBool ? 1 : 0);
+            statement.setInt(argIdx++, fieldNonBlob);
 
-        final byte[] bytesFieldBlob = ZserioIO.write(fieldBlob);
-        if (wrongOffset)
-            corruptOffsetInFieldBlob(bytesFieldBlob);
-        statement.setBytes(argIdx++, bytesFieldBlob);
-        statement.setLong(argIdx++, fieldEnum.getValue());
+            final byte[] bytesFieldBlob = ZserioIO.write(fieldBlob);
+            if (wrongOffset)
+                corruptOffsetInFieldBlob(bytesFieldBlob);
+            statement.setBytes(argIdx++, bytesFieldBlob);
+            statement.setLong(argIdx++, fieldEnum.getValue());
 
-        statement.execute();
+            statement.execute();
+        }
+        finally
+        {
+            statement.close();
+        }
+    }
+
+    private void executeUpdate(String sql) throws SQLException
+    {
+        final Statement statement = database.connection().createStatement();
+        try
+        {
+            statement.executeUpdate(sql);
+        }
+        finally
+        {
+            statement.close();
+        }
     }
 
     private static void corruptOffsetInFieldBlob(byte[] bytesFieldBlob)
@@ -445,9 +465,9 @@ public class SimpleTableValidationTest
         bytesFieldBlob[0] = -1;
     }
 
-    private static class TestParameterProvider implements SimpleTableValidationDb.IParameterProvider
+    private static class TestParameterProvider implements SimpleTableValidationDb.ParameterProvider
     {
-        private static class SimpleTableParameterProvider implements SimpleTable.IParameterProvider
+        private static class SimpleTableParameterProvider implements SimpleTable.ParameterProvider
         {
             @Override
             public long getLocalCount1(ResultSet resultSet)
@@ -465,7 +485,7 @@ public class SimpleTableValidationTest
         }
 
         @Override
-        public SimpleTable.IParameterProvider getSimpleTableParameterProvider()
+        public SimpleTable.ParameterProvider getSimpleTableParameterProvider()
         {
             return simpleTableParameterProvider;
         }

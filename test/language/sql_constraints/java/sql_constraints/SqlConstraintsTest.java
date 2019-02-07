@@ -2,7 +2,6 @@ package sql_constraints;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.URISyntaxException;
 import java.sql.SQLException;
 import java.util.Arrays;
 
@@ -16,8 +15,6 @@ import org.junit.rules.ExpectedException;
 import test_utils.FileUtil;
 import test_utils.JdbcUtil;
 
-import zserio.runtime.SqlDatabase.Mode;
-
 public class SqlConstraintsTest
 {
     @BeforeClass
@@ -27,7 +24,7 @@ public class SqlConstraintsTest
     }
 
     @Before
-    public void setUp() throws IOException, URISyntaxException, SQLException
+    public void setUp() throws IOException, SQLException
     {
         FileUtil.deleteFileIfExists(file);
         database = new TestDb(file.toString());

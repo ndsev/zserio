@@ -3,12 +3,15 @@ package without_writer_code;
 import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
-import java.net.URISyntaxException;
+import java.sql.Connection;
+import java.sql.DriverManager;
 import java.sql.PreparedStatement;
+import java.sql.Statement;
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Properties;
 import java.util.Set;
 
 import static org.junit.Assert.*;
@@ -171,8 +174,10 @@ public class WithoutWriterCodeTest
         assertMethodNotPresent(methods, "update(");
         assertMethodNotPresent(methods, "getCreateTableQuery(");
         assertMethodNotPresent(methods, "writeRow(");
+        assertMethodNotPresent(methods, "startTransaction(");
+        assertMethodNotPresent(methods, "endTransaction(");
 
-        assertMethodPresent(methods, "GeoMapTable(zserio.runtime.SqlDatabase");
+        assertMethodPresent(methods, "GeoMapTable(java.sql.Connection");
         assertMethodPresent(methods, "readRow(");
         assertMethodPresent(methods, "read()");
         assertMethodPresent(methods, "read(java.lang.String)");
@@ -201,16 +206,18 @@ public class WithoutWriterCodeTest
 
         assertMethodNotPresent(methods, "createSchema(");
         assertMethodNotPresent(methods, "deleteSchema(");
+        assertMethodNotPresent(methods, "startTransaction(");
+        assertMethodNotPresent(methods, "endTransaction(");
 
         assertMethodPresent(methods, "WorldDb(java.sql.Connection)");
         assertMethodPresent(methods, "WorldDb(java.sql.Connection,");
         assertMethodPresent(methods, "WorldDb(java.lang.String)");
         assertMethodPresent(methods, "WorldDb(java.lang.String,");
-        assertMethodPresent(methods, "getTableNames()");
-        assertMethodPresent(methods, "getDatabaseName()");
+        assertMethodPresent(methods, "tableNames()");
+        assertMethodPresent(methods, "databaseName()");
         assertMethodPresent(methods, "getAmerica()");
         assertMethodPresent(methods, "getEurope()");
-        assertMethodPresent(methods, "initTables()");
+        assertMethodPresent(methods, "initTables(");
     }
 
     @Test
@@ -227,10 +234,10 @@ public class WithoutWriterCodeTest
     }
 
     @Test
-    public void readWorldDb() throws SQLException, URISyntaxException, IOException
+    public void readWorldDb() throws SQLException, IOException
     {
-        final SqlDatabase db = createWorldDb();
-        final WorldDb worldDb = new WorldDb(db.getConnection());
+        final Connection connection = createWorldDb();
+        final WorldDb worldDb = new WorldDb(connection);
 
         final GeoMapTable europe = worldDb.getEurope();
         final List<GeoMapTableRow> europeRows = europe.read();
@@ -247,7 +254,7 @@ public class WithoutWriterCodeTest
         checkTile(americaRows.get(0).getTile());
 
         worldDb.close();
-        db.close();
+        connection.close();
     }
 
     private Set<String> getMethods(Class<?> userType)
@@ -290,29 +297,54 @@ public class WithoutWriterCodeTest
         assertTrue(present);
     }
 
-    private SqlDatabase createWorldDb() throws SQLException, URISyntaxException, IOException
+    private Connection createWorldDb() throws SQLException, IOException
     {
-        final SqlDatabase db = new SqlDatabase(":memory:", SqlDatabase.Mode.CREATE,
-                new HashMap<String, String>());
+        final String uriPath = "jdbc:sqlite::memory:";
+        final Properties connectionProps = new Properties();
+        connectionProps.setProperty("flags", "CREATE");
 
-        db.executeUpdate("CREATE TABLE europe(tileId INTEGER PRIMARY KEY, tile BLOB)");
-        db.executeUpdate("CREATE TABLE america(tileId INTEGER PRIMARY KEY, tile BLOB)");
+        final Connection connection = DriverManager.getConnection(uriPath, connectionProps);
+
+        final Statement statement = connection.createStatement();
+        try
+        {
+            statement.executeUpdate("CREATE TABLE europe(tileId INTEGER PRIMARY KEY, tile BLOB)");
+            statement.executeUpdate( "CREATE TABLE america(tileId INTEGER PRIMARY KEY, tile BLOB)");
+        }
+        finally
+        {
+            statement.close();
+        }
 
         final ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter();
         writeTile(writer);
         final byte[] tileBytes = writer.toByteArray();
 
-        final PreparedStatement stmtEurope = db.prepareStatement("INSERT INTO europe VALUES (?, ?)");
-        stmtEurope.setInt(1, TILE_ID_EUROPE);
-        stmtEurope.setBytes(2, tileBytes);
-        stmtEurope.executeUpdate();
+        final PreparedStatement stmtEurope = connection.prepareStatement("INSERT INTO europe VALUES (?, ?)");
+        try
+        {
+            stmtEurope.setInt(1, TILE_ID_EUROPE);
+            stmtEurope.setBytes(2, tileBytes);
+            stmtEurope.executeUpdate();
+        }
+        finally
+        {
+            stmtEurope.close();
+        }
 
-        final PreparedStatement stmtAmerica = db.prepareStatement("INSERT INTO america VALUES (?, ?)");
-        stmtAmerica.setInt(1, TILE_ID_AMERICA);
-        stmtAmerica.setBytes(2, tileBytes);
-        stmtAmerica.executeUpdate();
+        final PreparedStatement stmtAmerica = connection.prepareStatement("INSERT INTO america VALUES (?, ?)");
+        try
+        {
+            stmtAmerica.setInt(1, TILE_ID_AMERICA);
+            stmtAmerica.setBytes(2, tileBytes);
+            stmtAmerica.executeUpdate();
+        }
+        finally
+        {
+            stmtAmerica.close();
+        }
 
-        return db;
+        return connection;
     }
 
     private void writeTile(BitStreamWriter writer) throws IOException

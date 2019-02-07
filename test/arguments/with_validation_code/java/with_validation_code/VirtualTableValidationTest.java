@@ -5,7 +5,6 @@ import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.URISyntaxException;
 import java.sql.SQLException;
 
 import org.junit.After;
@@ -19,7 +18,6 @@ import test_utils.JdbcUtil;
 import with_validation_code.virtual_table_validation.VirtualTableValidationDb;
 
 import zserio.runtime.ZserioError;
-import zserio.runtime.SqlDatabase.Mode;
 import zserio.runtime.validation.ValidationReport;
 
 public class VirtualTableValidationTest
@@ -31,7 +29,7 @@ public class VirtualTableValidationTest
     }
 
     @Before
-    public void setUp() throws IOException, URISyntaxException, SQLException
+    public void setUp() throws IOException, SQLException
     {
         FileUtil.deleteFileIfExists(file);
         database = new VirtualTableValidationDb(file.toString());
@@ -49,7 +47,7 @@ public class VirtualTableValidationTest
     }
 
     @Test
-    public void validation() throws SQLException, URISyntaxException, ZserioError
+    public void validation() throws SQLException, ZserioError
     {
         final ValidationReport report = database.validate();
         assertEquals(1, report.getNumberOfValidatedTables());

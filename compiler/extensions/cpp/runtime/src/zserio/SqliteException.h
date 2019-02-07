@@ -15,7 +15,7 @@ public:
     explicit SqliteException(const std::string& message) : CppRuntimeException(message) {}
 
     SqliteException(const std::string& message, int sqliteCode) :
-        CppRuntimeException(message + ": " + sqlite3_errstr(sqliteCode) + "!") {}
+            CppRuntimeException(message + ": " + sqlite3_errstr(sqliteCode) + "!") {}
 };
 
 } // namespace zserio

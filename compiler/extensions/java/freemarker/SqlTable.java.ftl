@@ -3,13 +3,14 @@
 <#include "GeneratePkgPrefix.inc.ftl">
 <#include "RangeCheck.inc.ftl">
 <@standard_header generatorDescription, packageName, javaMajorVersion, [
+        "java.sql.Connection",
         "java.sql.SQLException",
         "java.sql.PreparedStatement",
         "java.sql.ResultSet",
+        "java.sql.Statement",
         "java.io.IOException",
         "java.util.List",
-        "java.util.ArrayList",
-        "zserio.runtime.SqlDatabase"
+        "java.util.ArrayList"
 ]/>
 <#assign hasBlobField=sql_table_has_blob_field(fields)/>
 <#assign needsParameterProvider=explicitParameters?has_content/>
@@ -30,7 +31,7 @@
         "java.util.Map",
         "zserio.runtime.validation.ValidationError",
         "zserio.runtime.validation.ValidationReport",
-        "zserio.runtime.validation.ValidationSqlUtil",
+        "zserio.runtime.validation.ValidationSqliteUtil",
         "zserio.runtime.validation.ValidationTimer"
 ]/>
     <#if hasBlobField>
@@ -46,7 +47,7 @@
 public class ${name}
 {
 <#if needsParameterProvider>
-    public static interface IParameterProvider
+    public static interface ParameterProvider
     {
     <#list explicitParameters as parameter>
         ${parameter.javaTypeName} <@sql_parameter_provider_getter_name parameter/>(ResultSet resultSet);
@@ -54,16 +55,16 @@ public class ${name}
     };
 
 </#if>
-    public ${name}(SqlDatabase db, String tableName)
+    public ${name}(Connection connection, String tableName)
     {
-        __db = db;
+        __connection = connection;
         __attachedDbName = null;
         __tableName = tableName;
     }
 
-    public ${name}(SqlDatabase db, String attachedDbName, String tableName)
+    public ${name}(Connection connection, String attachedDbName, String tableName)
     {
-        __db = db;
+        __connection = connection;
         __attachedDbName = attachedDbName;
         __tableName = tableName;
     }
@@ -75,14 +76,14 @@ public class ${name}
     <#if hasNonVirtualField && isWithoutRowId>
         sqlQuery.append(" WITHOUT ROWID");
     </#if>
-        __db.executeUpdate(sqlQuery.toString());
+        executeUpdate(sqlQuery.toString());
     }
 
     <#if hasNonVirtualField && isWithoutRowId>
     public void createOrdinaryRowIdTable() throws SQLException
     {
         final StringBuilder sqlQuery = getCreateTableQuery();
-        __db.executeUpdate(sqlQuery.toString());
+        executeUpdate(sqlQuery.toString());
     }
 
     </#if>
@@ -90,19 +91,19 @@ public class ${name}
     {
         final StringBuilder sqlQuery = new StringBuilder("DROP TABLE ");
         appendTableNameToQuery(sqlQuery);
-        __db.executeUpdate(sqlQuery.toString());
+        executeUpdate(sqlQuery.toString());
     }
 </#if>
 
     /** Reads all rows from the table. */
-    public List<${rowName}> read(<#if needsParameterProvider>IParameterProvider parameterProvider</#if>)
+    public List<${rowName}> read(<#if needsParameterProvider>ParameterProvider parameterProvider</#if>)
             throws SQLException, IOException
     {
         return read(<#if needsParameterProvider>parameterProvider, </#if>"");
     }
 
     /** Reads all rows from the table which fulfill the given condition. */
-    public List<${rowName}> read(<#if needsParameterProvider>IParameterProvider parameterProvider, </#if><#rt>
+    public List<${rowName}> read(<#if needsParameterProvider>ParameterProvider parameterProvider, </#if><#rt>
             <#lt>String condition) throws SQLException, IOException
     {
         // assemble sql query
@@ -120,7 +121,7 @@ public class ${name}
 
         // read rows
         final List<${rowName}> rows = new ArrayList<${rowName}>();
-        final PreparedStatement statement = __db.prepareStatement(sqlQuery.toString());
+        final PreparedStatement statement = __connection.prepareStatement(sqlQuery.toString());
         try
         {
             final ResultSet resultSet = statement.executeQuery();
@@ -160,8 +161,8 @@ public class ${name}
                 )");<#lt>
 
         // write rows
-        final boolean wasTransactionStarted = __db.startTransaction();
-        final PreparedStatement statement = __db.prepareStatement(sqlQuery.toString());
+        final boolean wasTransactionStarted = startTransaction();
+        final PreparedStatement statement = __connection.prepareStatement(sqlQuery.toString());
         try
         {
             for (${rowName} row : rows)
@@ -176,7 +177,7 @@ public class ${name}
             statement.close();
         }
 
-        __db.endTransaction(wasTransactionStarted);
+        endTransaction(wasTransactionStarted);
     }
 
     /** Updates given row in the table. */
@@ -193,7 +194,7 @@ public class ${name}
         sqlQuery.append(whereCondition);
 
         // update row
-        final PreparedStatement statement = __db.prepareStatement(sqlQuery.toString());
+        final PreparedStatement statement = __connection.prepareStatement(sqlQuery.toString());
         try
         {
             writeRow(row, statement);
@@ -208,7 +209,7 @@ public class ${name}
 <#if withValidationCode>
 
     /** Validates all fields in all rows of the table. */
-    public ValidationReport validate(<#if needsParameterProvider>IParameterProvider parameterProvider</#if>)
+    public ValidationReport validate(<#if needsParameterProvider>ParameterProvider parameterProvider</#if>)
             throws SQLException
     {
         final ValidationTimer totalValidationTimer = new ValidationTimer();
@@ -227,7 +228,7 @@ public class ${name}
         </#list>
                     " FROM ");
             appendTableNameToQuery(sqlQuery);
-            final PreparedStatement statement = __db.prepareStatement(sqlQuery.toString());
+            final PreparedStatement statement = __connection.prepareStatement(sqlQuery.toString());
 
             try
             {
@@ -276,6 +277,40 @@ public class ${name}
         sqlQuery.append(__tableName);
     }
 <#if withWriterCode>
+
+    private void executeUpdate(String sql) throws SQLException
+    {
+        final Statement statement = __connection.createStatement();
+        try
+        {
+            statement.executeUpdate(sql);
+        }
+        finally
+        {
+            statement.close();
+        }
+    }
+
+    private boolean startTransaction() throws SQLException
+    {
+        boolean wasTransactionStarted = false;
+        if (__connection.getAutoCommit())
+        {
+            __connection.setAutoCommit(false);
+            wasTransactionStarted = true;
+        }
+
+        return wasTransactionStarted;
+    }
+
+    private void endTransaction(boolean wasTransactionStarted) throws SQLException
+    {
+        if (wasTransactionStarted)
+        {
+            __connection.commit();
+            __connection.setAutoCommit(true);
+        }
+    }
 
     private StringBuilder getCreateTableQuery() throws SQLException
     {
@@ -332,7 +367,7 @@ ${I}    (${parameter.javaTypeName})(${parameter.expression})<#rt>
     </#list>
 <#lt>);
 </#macro>
-    private static ${rowName} readRow(<#if needsParameterProvider>IParameterProvider parameterProvider, </#if><#rt>
+    private static ${rowName} readRow(<#if needsParameterProvider>ParameterProvider parameterProvider, </#if><#rt>
             <#lt>ResultSet resultSet) throws SQLException, IOException
     {
         final ${rowName} row = new ${rowName}();
@@ -404,8 +439,8 @@ ${I}    (${parameter.javaTypeName})(${parameter.expression})<#rt>
 
     private boolean validateSchema(List<ValidationError> errors) throws SQLException
     {
-        final Map<String, ValidationSqlUtil.ColumnDescription> schema =
-                ValidationSqlUtil.getTableSchema(__db, __attachedDbName, __tableName);
+        final Map<String, ValidationSqliteUtil.ColumnDescription> schema =
+                ValidationSqliteUtil.getTableSchema(__connection, __attachedDbName, __tableName);
         boolean result = true;
 
     <#list fields as field>
@@ -416,7 +451,7 @@ ${I}    (${parameter.javaTypeName})(${parameter.expression})<#rt>
         if (!schema.isEmpty())
         {
             // report superfluous columns
-            for (Map.Entry<String, ValidationSqlUtil.ColumnDescription> entry : schema.entrySet())
+            for (Map.Entry<String, ValidationSqliteUtil.ColumnDescription> entry : schema.entrySet())
             {
                 final String columnName = entry.getKey();
                 final String columnType = entry.getValue().getType();
@@ -432,12 +467,12 @@ ${I}    (${parameter.javaTypeName})(${parameter.expression})<#rt>
     <#list fields as field>
 
     private boolean validateColumn${field.name?cap_first}(List<ValidationError> errors,
-            Map<String, ValidationSqlUtil.ColumnDescription> schema)
+            Map<String, ValidationSqliteUtil.ColumnDescription> schema)
     {
-        final ValidationSqlUtil.ColumnDescription column = schema.remove("${field.name}");
+        final ValidationSqliteUtil.ColumnDescription column = schema.remove("${field.name}");
         <#-- if column is virtual, it can be hidden -->
         if (column == null<#if field.isVirtual> &&
-                !ValidationSqlUtil.isHiddenColumnInTable(__db, __attachedDbName, __tableName, "${field.name}")</#if>)
+                !ValidationSqliteUtil.isHiddenColumnInTable(__connection, __attachedDbName, __tableName, "${field.name}")</#if>)
         {
             errors.add(new ValidationError(__tableName, "${field.name}", ValidationError.Type.COLUMN_MISSING,
                     "column ${name}.${field.name} is missing"));
@@ -482,7 +517,7 @@ ${I}    (${parameter.javaTypeName})(${parameter.expression})<#rt>
             <#if field.sqlTypeData.isBlob>
 
     private boolean validateBlob${field.name?cap_first}(List<ValidationError> errors,
-            ResultSet resultSet, ${rowName} row, <#if needsParameterProvider>IParameterProvider parameterProvider, </#if>
+            ResultSet resultSet, ${rowName} row, <#if needsParameterProvider>ParameterProvider parameterProvider, </#if>
             ValidationTimer totalParameterProviderTimer) throws SQLException
     {
         final byte[] blobData = resultSet.getBytes(${field_index + 1});
@@ -632,7 +667,7 @@ ${I}    (${parameter.javaTypeName})(${parameter.expression})<#rt>
     </#if>
 </#if>
 
-    private final SqlDatabase __db;
+    private final Connection __connection;
     private final String __attachedDbName;
     private final String __tableName;
 }

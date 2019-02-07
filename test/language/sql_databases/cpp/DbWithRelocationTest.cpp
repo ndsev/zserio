@@ -186,7 +186,11 @@ TEST_F(DbWithRelocationTest, relocatedCzechiaTable)
 
 TEST_F(DbWithRelocationTest, attachedDatabases)
 {
-    sqlite3_stmt* stmt = m_americaDb->prepareStatement("PRAGMA database_list");
+    sqlite3* connection = m_americaDb->connection();
+
+    sqlite3_stmt* stmt = NULL;
+    const int result = sqlite3_prepare_v2(connection, "PRAGMA database_list", -1, &stmt, NULL);
+    ASSERT_EQ(SQLITE_OK, result);
 
     while (sqlite3_step(stmt) == SQLITE_ROW)
     {

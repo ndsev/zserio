@@ -8,6 +8,8 @@
             <Method name="read"/>
             <Method name="update"/>
             <Method name="validate"/>
+            <Method name="attachDatabase"/>
+            <Method name="executeUpdate"/>
         </Or>
     </Match>
 </FindBugsFilter>

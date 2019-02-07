@@ -12,7 +12,7 @@ zserio_java_runtime.build_dir   - Directory where to put generated files.
                                   Default is "${zserio_runtimes.build_dir}/java".
 zserio_java_runtime.install_dir - Directory where to install library.
                                   Default is "${zserio_runtimes.install_dir}/java".
-relational.enable               - Flag whether the relational extension is included. Default is "no".
+relational.enable               - Flag whether the relational extension is included. Default is "yes".
 relational.sqlite.jar_file      - SQLite JDBC jar file.
                                   Default is "../../../../3rdparty/java/sqlite-jdbc-3.23.1.jar".
 relational.validation           - Flag whether the support for low level validation is included.
@@ -29,9 +29,11 @@ findbugs.home_dir               - Location of the findbugs tool. If not set, fin
     <property name="zserio_runtimes.install_dir" value="${zserio_java_runtime.zserio_root}/distr/runtime_libs"/>
     <property name="zserio_java_runtime.build_dir" value="${zserio_runtimes.build_dir}/java"/>
     <property name="zserio_java_runtime.install_dir" value="${zserio_runtimes.install_dir}/java"/>
-    <property name="relational.enable" value="no"/>
+    <property name="relational.enable" value="yes"/>
     <property name="relational.sqlite.jar_file"
         value="${zserio_java_runtime.zserio_root}/3rdparty/java/sqlite-jdbc-3.23.1.jar"/>
+    <dirname property="relational.sqlite.jar_dirname" file="${relational.sqlite.jar_file}"/>
+    <basename property="relational.sqlite.jar_filename" file="${relational.sqlite.jar_file}"/>
     <property name="relational.validation" value="yes"/>
 
     <property name="zserio_java_runtime.src_dir" location="${zserio_java_runtime.base_dir}/src"/>
@@ -98,7 +100,7 @@ findbugs.home_dir               - Location of the findbugs tool. If not set, fin
 
     <patternset id="zserio_java_runtime.sources_patterns">
         <include name="**/*.java"/>
-        <exclude name="zserio/runtime/SqlDatabase.java" unless="relational.enabled"/>
+        <exclude name="zserio/runtime/SqlDatabase*.java" unless="relational.enabled"/>
         <exclude name="zserio/runtime/validation/*.java" unless="relational.validation_enabled"/>
     </patternset>
 
@@ -247,13 +249,14 @@ findbugs.home_dir               - Location of the findbugs tool. If not set, fin
                 <pathelement path="${zserio_java_runtime.3rdparty.junit.jar_file}"/>
                 <pathelement path="${zserio_java_runtime.jar_file}"/>
                 <pathelement path="${zserio_java_runtime.test.classes_dir}"/>
-                <pathelement path="${relational.sqlite.jar_file}"/>
+                <fileset dir="${relational.sqlite.jar_dirname}">
+                    <include name="${relational.sqlite.jar_filename}" if="relational.validation_enabled"/>
+                </fileset>
             </classpath>
             <batchtest todir="${zserio_java_runtime.test.results_dir}">
                 <fileset dir="${zserio_java_runtime.test.src_dir}">
                     <include name="**/*Test.java"/>
-                    <exclude name="zserio/runtime/validation/*.java"
-                        unless="relational.validation_enabled"/>
+                    <exclude name="zserio/runtime/validation/*.java" unless="relational.validation_enabled"/>
                 </fileset>
                 <formatter type="plain" usefile="false"/>
                 <formatter type="xml"/>

@@ -4,7 +4,7 @@ import static org.junit.Assert.*;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.URISyntaxException;
+import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
@@ -20,7 +20,6 @@ import with_validation_code.blob_table_validation.Blob;
 import with_validation_code.blob_table_validation.BlobTableValidationDb;
 
 import zserio.runtime.ZserioError;
-import zserio.runtime.SqlDatabase.Mode;
 import zserio.runtime.io.ZserioIO;
 import zserio.runtime.validation.ValidationReport;
 
@@ -33,7 +32,7 @@ public class BlobTableValidationTest
     }
 
     @Before
-    public void setUp() throws IOException, URISyntaxException, SQLException
+    public void setUp() throws IOException, SQLException
     {
         FileUtil.deleteFileIfExists(file);
         database = new BlobTableValidationDb(file.toString());
@@ -51,9 +50,9 @@ public class BlobTableValidationTest
     }
 
     @Test
-    public void validation() throws SQLException, URISyntaxException, ZserioError
+    public void validation() throws SQLException, ZserioError
     {
-        insertRowWithNoneStandardBlob(database);
+        insertRowWithNoneStandardBlob(database.connection());
 
         final ValidationReport report = database.validate();
         assertEquals(1, report.getNumberOfValidatedTables());
@@ -62,21 +61,27 @@ public class BlobTableValidationTest
         assertTrue(report.getErrors().isEmpty());
     }
 
-    private void insertRowWithNoneStandardBlob(BlobTableValidationDb database) throws SQLException
+    private void insertRowWithNoneStandardBlob(Connection connection) throws SQLException
     {
         final String sqlCommand = "INSERT INTO blobTable(id, blob) VALUES (?, ?)";
-        final PreparedStatement statement = database.prepareStatement(sqlCommand);
+        final PreparedStatement statement = connection.prepareStatement(sqlCommand);
+        try
+        {
+            int argIdx = 1;
+            statement.setLong(argIdx++, ROW_ID);
 
-        int argIdx = 1;
-        statement.setLong(argIdx++, ROW_ID);
+            final Blob blob = new Blob(Float.isNaN(NONE_STANDARD_NAN_VALUE), NONE_STANDARD_NAN_VALUE, END_VALUE);
+            final byte[] bytesBlob = ZserioIO.write(blob);
+            bytesBlob[1] = (byte)0xFF;      // none standard NaN
+            bytesBlob[2] = (byte)0xFF;      // set skipped bits
+            statement.setBytes(argIdx, bytesBlob);
 
-        final Blob blob = new Blob(Float.isNaN(NONE_STANDARD_NAN_VALUE), NONE_STANDARD_NAN_VALUE, END_VALUE);
-        final byte[] bytesBlob = ZserioIO.write(blob);
-        bytesBlob[1] = (byte)0xFF;      // none standard NaN
-        bytesBlob[2] = (byte)0xFF;      // set skipped bits
-        statement.setBytes(argIdx, bytesBlob);
-
-        statement.execute();
+            statement.execute();
+        }
+        finally
+        {
+            statement.close();
+        }
     }
 
     private static final long  ROW_ID = 0;

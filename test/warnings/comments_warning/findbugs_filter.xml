@@ -7,6 +7,8 @@
             <Method name="deleteTable"/>
             <Method name="read"/>
             <Method name="update"/>
+            <Method name="executeUpdate"/>
+            <Method name="attachDatabase"/>
         </Or>
     </Match>
 </FindBugsFilter>
