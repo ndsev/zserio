@@ -137,7 +137,7 @@ public:
         else
         {
             if (isSet())
-                throw CppRuntimeException("Optional field is set");
+                throw CppRuntimeException("Invalid usage of OptionalHolder reset method!");
             m_isSet = true;
         }
     }
@@ -187,7 +187,7 @@ private:
     void checkIsSet() const
     {
         if (!isSet())
-            throw CppRuntimeException("Optional field is not set");
+            throw CppRuntimeException("Trying to access value of non-present optional field!");
     }
 
     STORAGE m_storage;
@@ -226,7 +226,7 @@ class HeapOptionalHolder : public detail::optional_holder<T, detail::heap_storag
 
 template <typename T>
 class OptimizedOptionalHolder :
-          public detail::optimized_optional_holder<T, detail::is_optimized_in_place<T>::value>::type
+        public detail::optimized_optional_holder<T, detail::is_optimized_in_place<T>::value>::type
 {
 };
 
