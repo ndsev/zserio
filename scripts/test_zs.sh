@@ -101,6 +101,8 @@ generate_ant_file()
                 <Method name=\"read\"/>
                 <Method name=\"update\"/>
                 <Method name=\"validate\"/>
+                <Method name=\"executeUpdate\"/>
+                <Method name=\"attachDatabase\"/>
             </Or>
         </Match>"
     fi
