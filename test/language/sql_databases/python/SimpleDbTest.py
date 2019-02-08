@@ -89,7 +89,7 @@ class SimpleDbTest(unittest.TestCase):
 
         for tableName in self._tableNames:
             sqlQuery = "SELECT name FROM sqlite_master WHERE type='table' AND name='" + tableName + "'"
-            for row in database.executeQuery(sqlQuery):
+            for row in database.connection().cursor().execute(sqlQuery):
                 self.assertEqual(tableName, row[0])
 
         database.close()
@@ -128,7 +128,7 @@ class SimpleDbTest(unittest.TestCase):
     def _isTableInDb(database, tableName):
         # check if database does contain table
         sqlQuery = "SELECT name FROM sqlite_master WHERE type='table' AND name='" + tableName + "'"
-        for row in database.executeQuery(sqlQuery):
+        for row in database.connection().cursor().execute(sqlQuery):
             if len(row) == 1 and row[0] == tableName:
                 return True
 

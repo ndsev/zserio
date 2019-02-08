@@ -113,7 +113,7 @@ class ExplicitSimpleParamTest(unittest.TestCase):
     def _isTableInDb(self):
         # check if database does contain table
         sqlQuery = "SELECT name FROM sqlite_master WHERE type='table' AND name='" + TABLE_NAME + "'"
-        for row in self._database.executeQuery(sqlQuery):
+        for row in self._database.connection().cursor().execute(sqlQuery):
             if len(row) == 1 and row[0] == TABLE_NAME:
                 return True
 

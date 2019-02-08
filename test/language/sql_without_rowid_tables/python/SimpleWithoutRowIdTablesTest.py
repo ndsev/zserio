@@ -38,7 +38,7 @@ class SimpleWithoutRowIdTableTest(unittest.TestCase):
 
         # try select to check if hidden column exists
         try:
-            self._database.executeQuery(sqlQuery)
+            self._database.connection().cursor().execute(sqlQuery)
             return True
         except apsw.SQLError:
             return False

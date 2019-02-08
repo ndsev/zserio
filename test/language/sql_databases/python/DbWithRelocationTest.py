@@ -103,7 +103,7 @@ class DbWithRelocationTest(unittest.TestCase):
                                  "AmericaDb_" + self.RELOCATED_SLOVAKIA_TABLE_NAME,
                                  "AmericaDb_" + self.RELOCATED_CZECHIA_TABLE_NAME]
         sqlQuery = "PRAGMA database_list"
-        rows = self._americaDb.executeQuery(sqlQuery)
+        rows = self._americaDb.connection().cursor().execute(sqlQuery)
         for row in rows:
             self.assertIn(row[1], attachedDatabaseNames)
             attachedDatabaseNames.remove(row[1])
@@ -114,7 +114,7 @@ class DbWithRelocationTest(unittest.TestCase):
     def _isTableInDb(database, tableName):
         # check if database does contain table
         sqlQuery = "SELECT name FROM sqlite_master WHERE type='table' AND name='" + tableName + "'"
-        rows = database.executeQuery(sqlQuery)
+        rows = database.connection().cursor().execute(sqlQuery)
         for row in rows:
             if len(row) == 1 and row[0] == tableName:
                 return True

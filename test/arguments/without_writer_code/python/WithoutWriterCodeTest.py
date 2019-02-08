@@ -126,7 +126,6 @@ class WithoutWriterCodeTest(unittest.TestCase):
         self._assertMethodPresent(userType, "getEurope")
         self._assertMethodPresent(userType, "getAmerica")
         self._assertMethodPresent(userType, "connection")
-        self._assertMethodPresent(userType, "executeQuery")
 
         # static constants
         self.assertTrue(hasattr(userType, "DATABASE_NAME"))
