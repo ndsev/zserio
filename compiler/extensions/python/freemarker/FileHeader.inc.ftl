@@ -12,7 +12,7 @@ import ${packageImport}
 
 <#macro type_imports typeImports>
     <#list typeImports as typeImport>
-import ${typeImport.packagePath}.${typeImport.moduleName}
+import <#if typeImport.packagePath?has_content>${typeImport.packagePath}.</#if>${typeImport.moduleName}
     </#list>
 </#macro>
 

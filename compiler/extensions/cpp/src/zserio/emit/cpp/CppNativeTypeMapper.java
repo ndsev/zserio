@@ -161,6 +161,9 @@ public class CppNativeTypeMapper
 
     private String getIncludePathRoot(PackageName packageName)
     {
+        if (packageName.isEmpty())
+            return "";
+
         return packageName.toString(INCLUDE_DIR_SEPARATOR) + INCLUDE_DIR_SEPARATOR;
     }
 

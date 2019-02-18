@@ -61,7 +61,6 @@ class ${name}():
 
     def connection(self):
         return self._connection
-
 <#if withWriterCode>
 
     def createSchema(self<#if hasWithoutRowIdTable>, withoutRowIdTableNamesBlackList=None</#if>):

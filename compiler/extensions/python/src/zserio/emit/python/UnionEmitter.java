@@ -12,10 +12,10 @@ public class UnionEmitter extends PythonDefaultEmitter
     }
 
     @Override
-    public void beginUnion(UnionType choiceType) throws ZserioEmitException
+    public void beginUnion(UnionType unionType) throws ZserioEmitException
     {
-        final Object templateData = new UnionEmitterTemplateData(getTemplateDataContext(), choiceType);
-        processSourceTemplate(TEMPLATE_SOURCE_NAME, templateData, choiceType);
+        final Object templateData = new UnionEmitterTemplateData(getTemplateDataContext(), unionType);
+        processSourceTemplate(TEMPLATE_SOURCE_NAME, templateData, unionType);
     }
 
     private static final String TEMPLATE_SOURCE_NAME = "Union.py.ftl";

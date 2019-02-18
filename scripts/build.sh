@@ -91,7 +91,7 @@ install_python_runtime()
         return 1
     fi
 
-    PYTHONDONTWRITEBYTECODE=1 PYTHONPATH="${PYTHON_RUNTIME_SOURCES}" \
+    PYTHONPATH="${PYTHON_RUNTIME_SOURCES}" \
     sphinx-build -Wa -b html -d . -Dhtml_logo="${ZSERIO_LOGO}" . zserio_apidoc
     if [ $? -ne 0 ] ; then
         popd > /dev/null
@@ -541,20 +541,22 @@ main()
         echo "${ACTION_DESCRIPTION} Zserio Python runtime library."
         echo
 
-        activate_python_virtualenv "${ZSERIO_PROJECT_ROOT}" "${ZSERIO_BUILD_DIR}"
-        if [ $? -ne 0 ] ; then
-            return 1
-        fi
-
-        local PYTHON_RUNTIME_BUILD_DIR=${ZSERIO_BUILD_DIR}/runtime_libs/python
+        local PYTHON_RUNTIME_BUILD_DIR="${ZSERIO_BUILD_DIR}/runtime_libs/python"
         if [[ ${SWITCH_CLEAN} == 1 ]] ; then
             rm -rf "${PYTHON_RUNTIME_BUILD_DIR}/"
         else
-            local PYTHON_RUNTIME_ROOT=${ZSERIO_PROJECT_ROOT}/compiler/extensions/python/runtime
+            activate_python_virtualenv "${ZSERIO_PROJECT_ROOT}" "${ZSERIO_BUILD_DIR}"
+            if [ $? -ne 0 ] ; then
+                return 1
+            fi
+
+            local PYTHON_RUNTIME_ROOT="${ZSERIO_PROJECT_ROOT}/compiler/extensions/python/runtime"
+
             test_python_runtime "${PYTHON_RUNTIME_ROOT}" "${PYTHON_RUNTIME_BUILD_DIR}"
             if [ $? -ne 0 ] ; then
                 return 1
             fi
+
             install_python_runtime "${ZSERIO_PROJECT_ROOT}" "${PYTHON_RUNTIME_ROOT}" \
                                    "${PYTHON_RUNTIME_BUILD_DIR}" "${ZSERIO_DISTR_DIR}/runtime_libs/python"
             if [ $? -ne 0 ] ; then

@@ -322,6 +322,7 @@ Uses the following environment variables for building:
     JAVAC_BIN              Java compiler executable to use. Default is "javac".
     JAVA_BIN               Java executable to use. Default is "java".
     PYTHON                 Python 3.5+ executable. Default is "python".
+    PYTHON_VIRTUALENV      Custom python virtualenv to use. Default is empty string.
     FIND                   Bash command find to use. Default is "/usr/bin/find".
     FINDBUGS_HOME          Home directory of findbugs tool where lib is located
                            (e.g. /usr/share/findbugs). If set, findbugs will be
@@ -584,6 +585,7 @@ compile_cpp_for_target()
     return 0
 }
 
+# Run pylint on given python sources.
 run_pylint()
 {
     if [[ ${PYLINT_ENABLED} != 1 ]] ; then

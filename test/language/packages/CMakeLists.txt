@@ -34,6 +34,8 @@ set(ZSERIO_GENERATED_SOURCES_PACKAGES
 set(ZSERIO_GENERATED_SOURCES_DEFAULT_PACKAGE
     ${ZSERIO_GEN_DIR_DEFAULT_PACKAGE}/DefaultPackageStructure.cpp
     ${ZSERIO_GEN_DIR_DEFAULT_PACKAGE}/DefaultPackageStructure.h
+    ${ZSERIO_GEN_DIR_DEFAULT_PACKAGE}/Child.cpp
+    ${ZSERIO_GEN_DIR_DEFAULT_PACKAGE}/Child.h
     ${ZSERIO_GEN_DIR_DEFAULT_PACKAGE}/default_package_import/top/TopStructure.cpp
     ${ZSERIO_GEN_DIR_DEFAULT_PACKAGE}/default_package_import/top/TopStructure.h
 )
