@@ -62,7 +62,7 @@ zserio_add_library(TARGET gif_zs
     ZSERIO_OPTIONS -withoutSourcesAmalgamation
 )
 
-add_test_sources(cpp/gifTest.cpp)
+add_test_sources(cpp/GifTest.cpp)
 add_test_dependencies(gif_zs)
 
 add_custom_command(TARGET gif_zs POST_BUILD

@@ -1,7 +1,7 @@
 package sql_without_rowid_tables.rowid_and_without_rowid_tables;
 
 // This example contains mixture of without_rowid and ordinary rowid tables. This caused an compilation
-// error in old Zserio version 4.1 due to the bug in generated SQL databases which called createOrdinaryRowIdTable
+// error in old version of Zserio due to the bug in generated SQL databases which called createOrdinaryRowIdTable
 // method on ordinary rowid tables.
 
 sql_table WithoutRowIdTable

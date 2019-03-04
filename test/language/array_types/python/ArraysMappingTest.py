@@ -68,7 +68,7 @@ class ArraysMappingTest(unittest.TestCase):
         arraysMapping.setVaruint16Array(intArray)
         arraysMapping.setVaruint32Array(intArray)
         arraysMapping.setVaruint64Array(intArray)
-        arraysMapping.setVarintArray(intArray)
+        arraysMapping.setVaruintArray(intArray)
 
     def testVariableSignedIntegerArrays(self):
         arraysMapping = self.api.ArraysMapping()
@@ -77,7 +77,7 @@ class ArraysMappingTest(unittest.TestCase):
         arraysMapping.setVarint16Array(intArray)
         arraysMapping.setVarint32Array(intArray)
         arraysMapping.setVarint64Array(intArray)
-        arraysMapping.setVaruintArray(intArray)
+        arraysMapping.setVarintArray(intArray)
 
     def testBoolArray(self):
         arraysMapping = self.api.ArraysMapping()

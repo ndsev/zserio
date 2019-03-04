@@ -190,6 +190,7 @@ public class ConstantsTest
         assertEquals(0x0000000000000000L, VARUINT64_MIN_CONSTANT.VARUINT64_MIN_CONSTANT);
     }
 
+    @Test
     public void varuint64MaxConstant()
     {
         assertEquals(0x01FFFFFFFFFFFFFFL, VARUINT64_MAX_CONSTANT.VARUINT64_MAX_CONSTANT);

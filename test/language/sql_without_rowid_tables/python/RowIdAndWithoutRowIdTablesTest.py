@@ -4,7 +4,7 @@ import apsw
 
 from testutils import getZserioApi, getApiDir
 
-class SimpleWithoutRowIdTableTest(unittest.TestCase):
+class RowIdAndWithoutRowIdTablesTest(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.api = getZserioApi(__file__, "sql_without_rowid_tables.zs").rowid_and_without_rowid_tables

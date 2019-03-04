@@ -23,6 +23,8 @@ def getZserioApi(testFile, mainZsFile, hasPackage=True, hasApi=True, topLevelPac
     :param mainZsFile: Main zserio source file for the current test suite.
     :param hasPackage: Whether the mainZsFile has a package definition. Default is True.
     :param hasApi: Whether the api.py is supposed to be generated. Default is True.
+    :param topLevelPackage: Top level package. By default it's guessed from the mainZsFile.
+    :param extraArgs: Extra arguments to zserio compiler.
     :returns: Generated python API if available, None otherwise.
     """
 

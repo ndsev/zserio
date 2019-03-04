@@ -11,7 +11,7 @@ class StructureOptionalTest(unittest.TestCase):
     def testDefaultValueConsumerCreator(self):
         self._checkValueConsumerCreator(self.DEFAULT_VALUE, self.EXTERNAL_VALUE)
 
-    def testExtenalValueConsumerCreator(self):
+    def testExternalValueConsumerCreator(self):
         self._checkValueConsumerCreator(self.INVALID_DEFAULT_VALUE, self.EXTERNAL_VALUE)
 
     def _calculateValue(self, defaultValue, externalValue):

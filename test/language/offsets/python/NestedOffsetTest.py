@@ -3,7 +3,7 @@ import zserio
 
 from testutils import getZserioApi
 
-class BitOffsetTest(unittest.TestCase):
+class NestedOffsetTest(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.api = getZserioApi(__file__, "offsets.zs").nested_offset
