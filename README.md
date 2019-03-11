@@ -61,7 +61,7 @@ enum uint8 Role
     DEVELOPER = 0,
     TEAM_LEAD = 1,
     CTO       = 2,
-}
+};
 ```
 
 So if we use the schema above and serialize one employee with
