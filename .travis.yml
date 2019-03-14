@@ -21,7 +21,8 @@ script:
   - mkdir -p build_runtime
   - cd build_runtime
   - cmake ../compiler/extensions/cpp/runtime/ -GNinja
-  - cmake --build .
+  - cmake --build . --config Release
+  - ctest -C Release -V
 
 before_install:
   - eval "${MATRIX_EVAL}"
