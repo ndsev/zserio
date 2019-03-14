@@ -25,3 +25,9 @@ __pycache__
 
 # temp
 /temp/
+
+# CMake
+cmake-build-*/
+
+# IDEA
+.idea
