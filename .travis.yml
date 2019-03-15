@@ -22,7 +22,7 @@ script:
   - cd build_runtime
   - cmake ../compiler/extensions/cpp/runtime/ -GNinja
   - cmake --build . --config Release
-  - ctest -C Release -V
+  - ctest -C Release -V --output-on-failure
 
 before_install:
   - eval "${MATRIX_EVAL}"
