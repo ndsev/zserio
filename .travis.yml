@@ -25,6 +25,6 @@ script:
   - cd build_runtime
   - export CC=${CC_COMPILER}
   - export CXX=${CXX_COMPILER}
-  - cmake -DZSERIO_RUNTIME_INCLUDE_INSPECTOR ../compiler/extensions/cpp/runtime/ -GNinja
+  - cmake -DZSERIO_RUNTIME_INCLUDE_INSPECTOR=1 ../compiler/extensions/cpp/runtime/ -GNinja
   - cmake --build . --config Release
   - ctest -C Release -V --output-on-failure
