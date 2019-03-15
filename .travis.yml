@@ -1,5 +1,4 @@
 
-
 # C++ project
 language: cpp
 dist: trusty
@@ -8,6 +7,8 @@ matrix:
   include:
     # works on Precise and Trusty
     - os: linux
+      compiler:
+        - gcc
       addons:
         apt:
           sources:
@@ -16,14 +17,14 @@ matrix:
             - g++-4.9
             - ninja-build
       env:
-        - MATRIX_EVAL="CC=gcc-4.9 && CXX=g++-4.9"
+        - CC_COMPILER=gcc-4.9
+        - CXX_COMPILER=g++-4.9
 
 script:
   - mkdir -p build_runtime
   - cd build_runtime
-  - cmake ../compiler/extensions/cpp/runtime/ -GNinja
+  - export CC=${CC_COMPILER}
+  - export CXX=${CXX_COMPILER}
+  - cmake -DZSERIO_RUNTIME_INCLUDE_INSPECTOR ../compiler/extensions/cpp/runtime/ -GNinja
   - cmake --build . --config Release
   - ctest -C Release -V --output-on-failure
-
-before_install:
-  - eval "${MATRIX_EVAL}"
