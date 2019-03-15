@@ -2,6 +2,7 @@
 
 # C++ project
 language: cpp
+dist: trusty
 
 matrix:
   include:
