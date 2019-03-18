@@ -51,10 +51,10 @@ matrix:
       jdk:
         - oraclejdk8
       install: true
-      script:
-        - ant test
       env:
         - JOB_NAME=ant_test
+      script:
+        - ant test
 
     # Generated C++ code cppcheck
     - language: cpp
