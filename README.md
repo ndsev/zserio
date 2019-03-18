@@ -2,7 +2,7 @@
 
 ***z*** ero ***seri*** alization ***o*** verhead
 
-[![Build Status](https://travis-ci.org/PeachOS/zserio.svg?branch=master)](https://travis-ci.org/PeachOS/zserio
+[![Build Status](https://travis-ci.org/PeachOS/zserio.svg?branch=master)](https://travis-ci.org/PeachOS/zserio)
 
 --------
 No time to read? Go to the [Quick Start](#quick-start) or [download latest release](https://github.com/ndsev/zserio/releases/latest).
