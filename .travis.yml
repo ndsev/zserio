@@ -42,12 +42,8 @@ matrix:
             - ninja-build
       env:
         - JOB_NAME=runtime_cppcheck
-        - CC=gcc-4.9
-        - CXX=g++-4.9
       script:
-        - mkdir -p build_runtime
-        - cd build_runtime
-        - cppcheck ../compiler/extensions/cpp/runtime/
+        - cppcheck --platform=unix64 --enable=all --std=c++11 --max-configs=1 --inconclusive --check-config --suppress=missingIncludeSystem -I3rdparty/cpp/googletest/include compiler/extensions/cpp/runtime/src
 
     # Ant Test
     - language: java
@@ -77,7 +73,7 @@ matrix:
             - cppcheck
             - ninja-build
       after_success:
-        - cppcheck --platform=unix64 --enable=all --std=c++11 --max-configs=1 --inconclusive --check-config --suppress=missingIncludeSystem -Ithirdparty/runtime/ --suppress=*:*thirdparty* -Isrc/ src/
+        - cppcheck --platform=unix64 --enable=all --std=c++11 --max-configs=1 --inconclusive --check-config --suppress=missingIncludeSystem --suppress=*:*thirdparty* -Ithirdparty/runtime/ -Isrc/ src/
       env:
         - JOB_NAME=generated_cppcheck
         - CC=gcc-4.9
