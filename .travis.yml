@@ -1,12 +1,12 @@
 
 # C++ project
-language: cpp
 dist: trusty
 
 matrix:
   include:
-    # works on Precise and Trusty
-    - os: linux
+    # C++ Runtime Unit Tests
+    - language: cpp
+      os: linux
       compiler:
         - gcc
       addons:
@@ -17,14 +17,78 @@ matrix:
             - g++-4.9
             - ninja-build
       env:
-        - CC_COMPILER=gcc-4.9
-        - CXX_COMPILER=g++-4.9
+        - JOB_NAME=runtime_unit_test
+        - CC=gcc-4.9
+        - CXX=g++-4.9
+      script:
+        - mkdir -p build_runtime
+        - cd build_runtime
+        - cmake -DZSERIO_RUNTIME_INCLUDE_INSPECTOR=1 ../compiler/extensions/cpp/runtime/ -GNinja
+        - cmake --build . --config Release
+        - ctest -C Release -V --output-on-failure
 
-script:
-  - mkdir -p build_runtime
-  - cd build_runtime
-  - export CC=${CC_COMPILER}
-  - export CXX=${CXX_COMPILER}
-  - cmake -DZSERIO_RUNTIME_INCLUDE_INSPECTOR=1 ../compiler/extensions/cpp/runtime/ -GNinja
-  - cmake --build . --config Release
-  - ctest -C Release -V --output-on-failure
+    # C++ Runtime CppCheck
+    - language: cpp
+      os: linux
+      compiler:
+        - gcc
+      addons:
+        apt:
+          sources:
+            - ubuntu-toolchain-r-test
+          packages:
+            - g++-4.9
+            - cppcheck
+            - ninja-build
+      env:
+        - JOB_NAME=runtime_cppcheck
+        - CC=gcc-4.9
+        - CXX=g++-4.9
+      script:
+        - mkdir -p build_runtime
+        - cd build_runtime
+        - cppcheck ../compiler/extensions/cpp/runtime/
+
+    # Ant Test
+    - language: java
+      os: linux
+      jdk:
+        - oraclejdk8
+      install: true
+      script:
+        - ant test
+      env:
+        - JOB_NAME=ant_test
+
+    # Generated C++ code cppcheck
+    - language: cpp
+      os: linux
+      jdk:
+        - oraclejdk8
+      install: true
+      compiler:
+        - gcc
+      addons:
+        apt:
+          sources:
+            - ubuntu-toolchain-r-test
+          packages:
+            - g++-4.9
+            - cppcheck
+            - ninja-build
+      after_success:
+        - cppcheck --platform=unix64 --enable=all --std=c++11 --max-configs=1 --inconclusive --check-config --suppress=missingIncludeSystem -Ithirdparty/runtime/ --suppress=*:*thirdparty* -Isrc/ src/
+      env:
+        - JOB_NAME=generated_cppcheck
+        - CC=gcc-4.9
+        - CXX=g++-4.9
+      script:
+        - ant install && ant -f compiler/extensions/cpp install && ant zserio_bundle.install
+        - mkdir -p test_cpp_project/thirdparty && cd test_cpp_project/input
+        - java -jar ../../build/zserio/zserio.jar -cpp ../src constraints.zs
+        - cd ..
+        - cp -R ../compiler/extensions/cpp/runtime/src thirdparty/runtime
+        - mkdir -p build && cd build
+        - cmake -DZSERIO_RUNTIME_INCLUDE_INSPECTOR=1 .. -GNinja
+        - cmake --build .
+        - cd ..
