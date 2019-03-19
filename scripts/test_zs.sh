@@ -402,21 +402,9 @@ test()
             return 1
         fi
 
-        local PYTHON_RUNTIME_ROOT="${ZSERIO_PROJECT_ROOT}/compiler/extensions/python/runtime"
-        local PYLINT_RCFILE="${PYTHON_RUNTIME_ROOT}/pylintrc.txt"
-        local IFS_ORIG=$IFS
-        IFS=$'\n'
-        local PY_SOURCES=($(${FIND} ${TEST_OUT_DIR}/python/gen -type f -name "*.py"))
-        IFS=$IFS_ORIG
-        local PY_GEN_SOURCES=()
-        local PY_API_SOURCES=()
-        for SOURCE in "${PY_SOURCES[@]}" ; do
-            if [[ "${SOURCE}" == *"api.py" ]] ; then
-                PY_API_SOURCES+=("${SOURCE}")
-            else
-                PY_GEN_SOURCES+=("${SOURCE}")
-            fi
-        done
+        local PYLINT_RCFILE="${ZSERIO_PROJECT_ROOT}/compiler/extensions/python/runtime/pylintrc.txt"
+        local GEN_PYTHON_DIR="${TEST_OUT_DIR}/python/gen"
+        local PYTHON_RUNTIME_ROOT="${UNPACKED_ZSERIO_RELEASE_DIR}/runtime_libs/python"
 
         echo
         echo "Running pylint on Python generated files."
@@ -425,19 +413,23 @@ test()
         GEN_DISABLE_OPTION+="missing-docstring,invalid-name,no-self-use,duplicate-code,line-too-long,"
         GEN_DISABLE_OPTION+="singleton-comparison,too-many-instance-attributes,too-many-arguments,"
         GEN_DISABLE_OPTION+="too-many-public-methods,too-many-locals,too-many-branches,too-many-statements,"
-        GEN_DISABLE_OPTION+="too-many-lines,unneeded-not,superfluous-parens,import-error,len-as-condition,"
-        GEN_DISABLE_OPTION+="import-self"
-        local PYLINT_ARGS=("--disable=${GEN_DISABLE_OPTION}")
-        run_pylint "${PYLINT_RCFILE}" PYLINT_ARGS[@] "${PY_GEN_SOURCES[@]}"
+        GEN_DISABLE_OPTION+="too-many-lines,unneeded-not,superfluous-parens,len-as-condition,"
+        GEN_DISABLE_OPTION+="import-self,too-few-public-methods,too-many-function-args,c-extension-no-member,"
+        GEN_DISABLE_OPTION+="simplifiable-if-expression"
+        local PYLINT_ARGS=("--disable=${GEN_DISABLE_OPTION}" "--ignore=api.py")
+        PYTHONPATH="${GEN_PYTHON_DIR}:${PYTHON_RUNTIME_ROOT}" \
+        run_pylint "${PYLINT_RCFILE}" PYLINT_ARGS[@] "${GEN_PYTHON_DIR}"/*
         if [ $? -ne 0 ]; then
             return 1
         fi
 
         echo "Running pylint on Python generated api.py files."
 
-        local API_DISABLE_OPTION="missing-docstring,unused-import,line-too-long,import-error,redefined-builtin"
-        local PYLINT_ARGS=("--disable=${API_DISABLE_OPTION}")
-        run_pylint "${PYLINT_RCFILE}" PYLINT_ARGS[@] "${PY_API_SOURCES[@]}"
+        local API_DISABLE_OPTION="missing-docstring,unused-import,line-too-long,redefined-builtin"
+        # ignore all files that are not api.py, but don't ignore directories
+        local PYLINT_ARGS=("--disable=${API_DISABLE_OPTION}" "--ignore-patterns=^.*\.py(?<!^api\.py)$")
+        PYTHONPATH="${GEN_PYTHON_DIR}" \
+        run_pylint "${PYLINT_RCFILE}" PYLINT_ARGS[@] "${GEN_PYTHON_DIR}"/*
         if [ $? -ne 0 ]; then
             return 1
         fi

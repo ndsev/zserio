@@ -12,11 +12,10 @@ import pylint.lint
 
 def main():
     testRoot = os.path.dirname(os.path.realpath(__file__))
-    origSysPath = list(sys.path)
 
     testutilsPath = os.path.join(testRoot, "utils", "python")
     sys.path.append(testutilsPath)
-    from testutils import TEST_ARGS, getApiDir
+    from testutils import TEST_ARGS
 
     argParser = argparse.ArgumentParser()
     argParser.add_argument("--build_dir")
@@ -39,6 +38,8 @@ def main():
     # path to zserio runtime release
     runtimePath = os.path.join(TEST_ARGS["release_dir"], "runtime_libs", "python")
     sys.path.append(runtimePath)
+
+    sysPathBeforeTests = list(sys.path)
 
     # load tests
     loader = unittest.TestLoader()
@@ -63,58 +64,77 @@ def main():
     if not testResult.wasSuccessful():
         return 1
 
-    # restore orig sys.path to make pylint running faster
-    sys.path = origSysPath
+    # restore sys.path to get rid of what test runner recently added
+    sys.path = sysPathBeforeTests
 
     # run pylint
-    pylintOptions = ["--persistent=n", "--score=n", "--ignored-modules=zserio, testutils, apsw"]
-    if args.pylint_rcfile:
-        pylintOptions.append("--rcfile=%s" % (args.pylint_rcfile))
+    return _runPylintOnAllSources(args, testDirs)
 
-    # pylint for test files
-    print("\nRunning pylint on python tests.")
-    pylintResult = _runPylint(testFiles, pylintOptions,
-                              ("missing-docstring, invalid-name, duplicate-code, too-many-public-methods, "
-                               "too-few-public-methods"))
-    if pylintResult != 0:
-        return pylintResult
-
-    # pylint for generated code (for all tests which were run)
-    apiFiles = [] # only api.py
-    genFiles = [] # all other generated files
-    for testDir in testDirs:
-        apiDir = getApiDir(testDir)
-        globResult = glob.glob(os.path.join(apiDir, "**", "*.py"), recursive=True)
-        apiFiles += [apiFile for apiFile in globResult if apiFile.endswith("api.py")]
-        genFiles += [genFile for genFile in globResult if not genFile.endswith("api.py")]
-
-    print("Running pylint on generated files.")
-    pylintResult = _runPylint(genFiles, pylintOptions, ("missing-docstring, invalid-name, no-self-use,"
-                                                        "duplicate-code, line-too-long, singleton-comparison, "
-                                                        "too-many-instance-attributes, too-many-arguments, "
-                                                        "too-many-public-methods, too-few-public-methods, "
-                                                        "too-many-locals, too-many-branches, "
-                                                        "too-many-statements, unneeded-not, "
-                                                        "superfluous-parens, import-error, len-as-condition, "
-                                                        "import-self"))
-    if pylintResult != 0:
-        return pylintResult
-
-    print("Running pylint on generated api.py files.")
-    pylintResult = _runPylint(apiFiles, pylintOptions, ("missing-docstring, unused-import, line-too-long, "
-                                                        "import-error"))
-
-    return pylintResult
-
-def _runPylint(files, options, disableOption=None):
-    if not files:
-        return 0
+def _runPylintOnAllSources(args, testDirs):
+    print("\nRunning pylint on python tests")
 
     if not "PYLINT_ENABLED" in os.environ or os.environ["PYLINT_ENABLED"] != '1':
         print("Pylint is disabled.\n")
         return 0
 
-    pylintOptions = list(files)
+    from testutils import getApiDir, getTestSuiteName
+
+    pylintOptions = ["--persistent=n", "--score=n"]
+    if args.pylint_rcfile:
+        pylintOptions.append("--rcfile=%s" % (args.pylint_rcfile))
+
+    testDisableOption = ("missing-docstring, invalid-name, duplicate-code, too-many-public-methods, "
+                         "too-few-public-methods, c-extension-no-member")
+    genDisableOption = ("missing-docstring, invalid-name, no-self-use, duplicate-code, line-too-long, "
+                        "singleton-comparison, too-many-instance-attributes, too-many-arguments, "
+                        "too-many-public-methods, too-few-public-methods, too-many-locals, too-many-branches, "
+                        "too-many-statements, unneeded-not, superfluous-parens, len-as-condition, "
+                        "import-self, misplaced-comparison-constant, invalid-unary-operand-type, "
+                        "c-extension-no-member")
+    genPylintOptions = list(pylintOptions)
+    genPylintOptions.append("--ignore=api.py")
+    apiDisableOption = ("missing-docstring, unused-import, line-too-long")
+    apiPylintOptions = list(pylintOptions)
+    apiPylintOptions.append("--ignore-patterns=^.*\\.py(?<!^api\\.py)$")
+
+    for testDir in testDirs:
+        testSources = [os.path.join(testDir, child) for child in os.listdir(testDir) if child.endswith(".py")]
+
+        apiDir = getApiDir(testDir)
+        apiSources = [os.path.join(apiDir, child) for child in os.listdir(apiDir)
+                      if child.endswith(".py") or os.path.isdir(os.path.join(apiDir, child))]
+
+        testSuiteName = getTestSuiteName(testDir)
+        print(testSuiteName)
+
+        print("    test files...")
+        pylintResult = _runPylint(testSources, pylintOptions, testDisableOption)
+        if pylintResult != 0:
+            return pylintResult
+
+        sys.path.append(apiDir)
+
+        print("    generated files...") # except api.py files
+        pylintResult = _runPylint(apiSources, genPylintOptions, genDisableOption)
+        if pylintResult != 0:
+            return pylintResult
+
+        print("    generated api.py files...")
+        pylintResult = _runPylint(apiSources, apiPylintOptions, apiDisableOption)
+        if pylintResult != 0:
+            return pylintResult
+
+        sys.path.remove(apiDir)
+
+    print("Pylint done.\n")
+
+    return 0
+
+def _runPylint(sources, options, disableOption=None):
+    if not sources:
+        return 0
+
+    pylintOptions = list(sources)
     pylintOptions += options
     if disableOption:
         pylintOptions.append("--disable=%s" % disableOption)
@@ -122,8 +142,6 @@ def _runPylint(files, options, disableOption=None):
     pylintRunner = pylint.lint.Run(pylintOptions, do_exit=False)
     if pylintRunner.linter.msg_status:
         return pylintRunner.linter.msg_status
-
-    print("Pylint done.\n")
 
     return 0
 
