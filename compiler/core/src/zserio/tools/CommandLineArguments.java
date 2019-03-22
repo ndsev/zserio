@@ -383,12 +383,12 @@ public class CommandLineArguments implements Serializable
             {
                 throw new ParseException(
                         "The specified option 'withValidationCode' conflicts with another option: " +
-                        "'withtoutWriterCode'");
+                        "'withoutWriterCode'");
             }
             if (hasOption(OptionNameWithGrpcCode))
             {
                 throw new ParseException(
-                        "The specified option 'withGrpcCoce' conflicts with another option: " +
+                        "The specified option 'withGrpcCode' conflicts with another option: " +
                         "'withoutWriterCode'");
             }
         }
