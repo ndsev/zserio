@@ -50,12 +50,14 @@ findbugs.home_dir       - Location of the findbugs tool. If not set, findbugs is
     <property name="3rdparty.root_dir" value="${zserio_core.zserio_root}/3rdparty"/>
     <property name="3rdparty.jar_dir" value="${3rdparty.root_dir}/java"/>
     <property name="3rdparty.antlr.jar_file_name" value="antlr.jar"/>
+    <property name="3rdparty.antlr4.jar_file_name" value="antlr-4.7.2-complete.jar"/>
     <property name="3rdparty.freemarker.jar_file_name" value="freemarker-2.3.28.jar"/>
     <property name="3rdparty.commons-cli.jar_file_name" value="commons-cli-1.4.jar"/>
     <property name="3rdparty.junit.jar_file" value="${3rdparty.jar_dir}/junit-4.10.jar"/>
 
     <fileset dir="${3rdparty.jar_dir}" id="3rdparty.jar_files_ref">
         <include name="${3rdparty.antlr.jar_file_name}"/>
+        <include name="${3rdparty.antlr4.jar_file_name}"/>
         <include name="${3rdparty.freemarker.jar_file_name}"/>
         <include name="${3rdparty.commons-cli.jar_file_name}"/>
     </fileset>
@@ -63,6 +65,25 @@ findbugs.home_dir       - Location of the findbugs tool. If not set, findbugs is
     <target name="clean">
         <delete dir="${zserio_core.build_dir}"/>
     </target>
+
+    <macrodef name="antlr4">
+        <attribute name="target"/>
+        <attribute name="outputdirectory"/>
+        <attribute name="package" default="zserio.antlr"/>
+        <sequential>
+            <echo message="Generating ANTLR 4 grammar: @{target}"/>
+            <java classname="org.antlr.v4.Tool" failonerror="true">
+                <classpath>
+                    <pathelement location="${3rdparty.jar_dir}/${3rdparty.antlr4.jar_file_name}"/>
+                </classpath>
+                <arg value="-o"/>
+                <arg value="@{outputdirectory}"/>
+                <arg value="-package"/>
+                <arg value="@{package}"/>
+                <arg value="@{target}"/>
+            </java>
+        </sequential>
+    </macrodef>
 
     <target name="antlr.parser">
         <mkdir dir="${zserio_core.antlr.out_dir}"/>
@@ -79,6 +100,8 @@ findbugs.home_dir       - Location of the findbugs tool. If not set, findbugs is
                 <pathelement location="${3rdparty.jar_dir}/${3rdparty.antlr.jar_file_name}"/>
             </classpath>
         </antlr>
+        <antlr4 target="${zserio_core.antlr_dir}/Zserio4Lexer.g4"
+            outputdirectory="${zserio_core.antlr.out_dir}"/>
     </target>
 
     <target name="antlr.walkers">
