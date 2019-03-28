@@ -4,15 +4,12 @@ channels { DOC }
 
 // operators
 AND             : '&' ;
-AND_ASSIGN      : '&=' ;
 ASSIGN          : '=' ;
 BANG            : '!' ;
 COLON           : ':' ;
 COMMA           : ',' ;
 DIVIDE          : '/' ;
-DIVIDE_ASSIGN   : '/=' ;
 DOT             : '.' ;
-DOUBLE_COLON    : '::' ;
 EQ              : '==' ;
 GE              : '>=' ;
 GT              : '>' ;
@@ -23,29 +20,21 @@ LOGICAL_AND     : '&&' ;
 LOGICAL_OR      : '||' ;
 LPAREN          : '(' ;
 LSHIFT          : '<<' ;
-LSHIFT_ASSIGN   : '<<=' ;
 LT              : '<' ;
 MINUS           : '-' ;
-MINUS_ASSIGN    : '-=' ;
 MODULO          : '%' ;
-MODULO_ASSIGN   : '%=' ;
 MULTIPLY        : '*' ;
-MULTIPLY_ASSIGN : '*=' ;
 NE              : '!=' ;
 OR              : '|' ;
-OR_ASSIGN       : '|=' ;
 PLUS            : '+' ;
-PLUS_ASSIGN     : '+=' ;
 QUESTIONMARK    : '?' ;
 RBRACE          : '}' ;
 RBRACKET        : ']' ;
 RPAREN          : ')' ;
 RSHIFT          : '>>' ;
-RSHIFT_ASSIGN   : '>>=' ;
 SEMICOLON       : ';' ;
 TILDE           : '~' ;
 XOR             : '^' ;
-XOR_ASSIGN      : '^=' ;
 
 // keywords
 ALIGN               : 'align' ;
@@ -78,6 +67,7 @@ PACKAGE             : 'package' ;
 RETURN              : 'return' ;
 RPC                 : 'rpc' ;
 SERVICE             : 'service' ;
+SQL                 : 'sql' ;
 SQL_DATABASE        : 'sql_database' ;
 SQL_TABLE           : 'sql_table' ;
 SQL_VIRTUAL         : 'sql_virtual' ;
@@ -92,6 +82,7 @@ UINT32              : 'uint32' ;
 UINT64              : 'uint64' ;
 UINT8               : 'uint8' ;
 UNION               : 'union' ;
+USING               : 'using' ;
 VALUEOF             : 'valueof' ;
 VARINT              : 'varint' ;
 VARINT16            : 'varint16' ;
@@ -125,15 +116,16 @@ HEXADECIMAL_LITERAL : HEX_PREFIX HEX_DIGIT+ ;
 
 fragment FLOAT_EXPONENT : [eE] [+\-]? [0-9]+ ;
 fragment FLOAT_SUFFIX : [fF] ;
-FLOAT_LITERAL
-    : [0-9]+ FLOAT_EXPONENT FLOAT_SUFFIX?
-    | [0-9]+ '.' [0-9]* FLOAT_EXPONENT? FLOAT_SUFFIX?
-    | '.' [0-9]+ FLOAT_EXPONENT? FLOAT_SUFFIX?
+DOUBLE_LITERAL
+    :   [0-9]+ FLOAT_EXPONENT
+    |   [0-9]+ '.' [0-9]* FLOAT_EXPONENT?
+    |   '.' [0-9]+ FLOAT_EXPONENT?
     ;
+FLOAT_LITERAL : DOUBLE_LITERAL FLOAT_SUFFIX ;
 
 DECIMAL_LITERAL
-    : [1-9][0-9]*
-    | '0' // special case - 0 is DECIMAL_LITERAL
+    :   [1-9][0-9]*
+    |   '0' // special case - 0 is DECIMAL_LITERAL
     ;
 
 // id

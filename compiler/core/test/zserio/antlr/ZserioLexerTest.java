@@ -15,15 +15,12 @@ public class ZserioLexerTest
     {
         final CharStream input = CharStreams.fromString(
                 "& " +
-                "&= " +
                 "= " +
                 "! " +
                 ": " +
                 ", " +
                 "/ " +
-                "/= " +
                 ". " +
-                ":: " +
                 "== " +
                 ">= " +
                 "> " +
@@ -34,43 +31,32 @@ public class ZserioLexerTest
                 "|| " +
                 "( " +
                 "<< " +
-                "<<= " +
                 "< " +
                 "- " +
-                "-= " +
                 "% " +
-                "%= " +
                 "* " +
-                "*= " +
                 "!= " +
                 "| " +
-                "|= " +
                 "+ " +
-                "+= " +
                 "? " +
                 "} " +
                 "] " +
                 ") " +
                 ">> " +
-                ">>= " +
                 "; " +
                 "~ " +
-                "^ " +
-                "^=\n"
+                "^\n"
         );
 
         Zserio4Lexer lexer = new Zserio4Lexer(input);
 
         checkToken(lexer, Zserio4Lexer.AND);
-        checkToken(lexer, Zserio4Lexer.AND_ASSIGN);
         checkToken(lexer, Zserio4Lexer.ASSIGN);
         checkToken(lexer, Zserio4Lexer.BANG);
         checkToken(lexer, Zserio4Lexer.COLON);
         checkToken(lexer, Zserio4Lexer.COMMA);
         checkToken(lexer, Zserio4Lexer.DIVIDE);
-        checkToken(lexer, Zserio4Lexer.DIVIDE_ASSIGN);
         checkToken(lexer, Zserio4Lexer.DOT);
-        checkToken(lexer, Zserio4Lexer.DOUBLE_COLON);
         checkToken(lexer, Zserio4Lexer.EQ);
         checkToken(lexer, Zserio4Lexer.GE);
         checkToken(lexer, Zserio4Lexer.GT);
@@ -81,29 +67,21 @@ public class ZserioLexerTest
         checkToken(lexer, Zserio4Lexer.LOGICAL_OR);
         checkToken(lexer, Zserio4Lexer.LPAREN);
         checkToken(lexer, Zserio4Lexer.LSHIFT);
-        checkToken(lexer, Zserio4Lexer.LSHIFT_ASSIGN);
         checkToken(lexer, Zserio4Lexer.LT);
         checkToken(lexer, Zserio4Lexer.MINUS);
-        checkToken(lexer, Zserio4Lexer.MINUS_ASSIGN);
         checkToken(lexer, Zserio4Lexer.MODULO);
-        checkToken(lexer, Zserio4Lexer.MODULO_ASSIGN);
         checkToken(lexer, Zserio4Lexer.MULTIPLY);
-        checkToken(lexer, Zserio4Lexer.MULTIPLY_ASSIGN);
         checkToken(lexer, Zserio4Lexer.NE);
         checkToken(lexer, Zserio4Lexer.OR);
-        checkToken(lexer, Zserio4Lexer.OR_ASSIGN);
         checkToken(lexer, Zserio4Lexer.PLUS);
-        checkToken(lexer, Zserio4Lexer.PLUS_ASSIGN);
         checkToken(lexer, Zserio4Lexer.QUESTIONMARK);
         checkToken(lexer, Zserio4Lexer.RBRACE);
         checkToken(lexer, Zserio4Lexer.RBRACKET);
         checkToken(lexer, Zserio4Lexer.RPAREN);
         checkToken(lexer, Zserio4Lexer.RSHIFT);
-        checkToken(lexer, Zserio4Lexer.RSHIFT_ASSIGN);
         checkToken(lexer, Zserio4Lexer.SEMICOLON);
         checkToken(lexer, Zserio4Lexer.TILDE);
         checkToken(lexer, Zserio4Lexer.XOR);
-        checkToken(lexer, Zserio4Lexer.XOR_ASSIGN);
 
         checkEOF(lexer);
     }
@@ -142,6 +120,7 @@ public class ZserioLexerTest
                 "return " +
                 "rpc " +
                 "service " +
+                "sql " +
                 "sql_database " +
                 "sql_table " +
                 "sql_virtual " +
@@ -156,6 +135,7 @@ public class ZserioLexerTest
                 "uint64 " +
                 "uint8 " +
                 "union " +
+                "using " +
                 "valueof " +
                 "varint " +
                 "varint16 " +
@@ -199,6 +179,7 @@ public class ZserioLexerTest
         checkToken(lexer, Zserio4Lexer.RETURN);
         checkToken(lexer, Zserio4Lexer.RPC);
         checkToken(lexer, Zserio4Lexer.SERVICE);
+        checkToken(lexer, Zserio4Lexer.SQL);
         checkToken(lexer, Zserio4Lexer.SQL_DATABASE);
         checkToken(lexer, Zserio4Lexer.SQL_TABLE);
         checkToken(lexer, Zserio4Lexer.SQL_VIRTUAL);
@@ -213,6 +194,7 @@ public class ZserioLexerTest
         checkToken(lexer, Zserio4Lexer.UINT64);
         checkToken(lexer, Zserio4Lexer.UINT8);
         checkToken(lexer, Zserio4Lexer.UNION);
+        checkToken(lexer, Zserio4Lexer.USING);
         checkToken(lexer, Zserio4Lexer.VALUEOF);
         checkToken(lexer, Zserio4Lexer.VARINT);
         checkToken(lexer, Zserio4Lexer.VARINT16);
@@ -373,7 +355,7 @@ public class ZserioLexerTest
     }
 
     @Test
-    public void floatLiteral()
+    public void floatOrDoubleLiteral()
     {
         final CharStream input = CharStreams.fromString(
                 "0e1 0e-1 1e2f 9. 9.12 9.f 9.1f 9.e2 9.e2f 9.e-2f .0 .0e-1 .0f .1e3f"
@@ -381,18 +363,18 @@ public class ZserioLexerTest
 
         Zserio4Lexer lexer = new Zserio4Lexer(input);
 
-        checkToken(lexer, Zserio4Lexer.FLOAT_LITERAL, "0e1");
-        checkToken(lexer, Zserio4Lexer.FLOAT_LITERAL, "0e-1");
+        checkToken(lexer, Zserio4Lexer.DOUBLE_LITERAL, "0e1");
+        checkToken(lexer, Zserio4Lexer.DOUBLE_LITERAL, "0e-1");
         checkToken(lexer, Zserio4Lexer.FLOAT_LITERAL, "1e2f");
-        checkToken(lexer, Zserio4Lexer.FLOAT_LITERAL, "9.");
-        checkToken(lexer, Zserio4Lexer.FLOAT_LITERAL, "9.12");
+        checkToken(lexer, Zserio4Lexer.DOUBLE_LITERAL, "9.");
+        checkToken(lexer, Zserio4Lexer.DOUBLE_LITERAL, "9.12");
         checkToken(lexer, Zserio4Lexer.FLOAT_LITERAL, "9.f");
         checkToken(lexer, Zserio4Lexer.FLOAT_LITERAL, "9.1f");
-        checkToken(lexer, Zserio4Lexer.FLOAT_LITERAL, "9.e2");
+        checkToken(lexer, Zserio4Lexer.DOUBLE_LITERAL, "9.e2");
         checkToken(lexer, Zserio4Lexer.FLOAT_LITERAL, "9.e2f");
         checkToken(lexer, Zserio4Lexer.FLOAT_LITERAL, "9.e-2f");
-        checkToken(lexer, Zserio4Lexer.FLOAT_LITERAL, ".0");
-        checkToken(lexer, Zserio4Lexer.FLOAT_LITERAL, ".0e-1");
+        checkToken(lexer, Zserio4Lexer.DOUBLE_LITERAL, ".0");
+        checkToken(lexer, Zserio4Lexer.DOUBLE_LITERAL, ".0e-1");
         checkToken(lexer, Zserio4Lexer.FLOAT_LITERAL, ".0f");
         checkToken(lexer, Zserio4Lexer.FLOAT_LITERAL, ".1e3f");
 

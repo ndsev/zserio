@@ -76,10 +76,8 @@ findbugs.home_dir       - Location of the findbugs tool. If not set, findbugs is
                 <classpath>
                     <pathelement location="${3rdparty.jar_dir}/${3rdparty.antlr4.jar_file_name}"/>
                 </classpath>
-                <arg value="-o"/>
-                <arg value="@{outputdirectory}"/>
-                <arg value="-package"/>
-                <arg value="@{package}"/>
+                <arg line="-o @{outputdirectory}"/>
+                <arg line="-package @{package}"/>
                 <arg value="@{target}"/>
             </java>
         </sequential>
@@ -100,8 +98,6 @@ findbugs.home_dir       - Location of the findbugs tool. If not set, findbugs is
                 <pathelement location="${3rdparty.jar_dir}/${3rdparty.antlr.jar_file_name}"/>
             </classpath>
         </antlr>
-        <antlr4 target="${zserio_core.antlr_dir}/Zserio4Lexer.g4"
-            outputdirectory="${zserio_core.antlr.out_dir}"/>
     </target>
 
     <target name="antlr.walkers">
@@ -127,7 +123,14 @@ findbugs.home_dir       - Location of the findbugs tool. If not set, findbugs is
         </antlr>
     </target>
 
-    <target name="antlr" depends="antlr.parser, antlr.lexer, antlr.walkers, antlr.comments">
+    <target name="antlr4">
+        <antlr4 target="${zserio_core.antlr_dir}/Zserio4Lexer.g4"
+            outputdirectory="${zserio_core.antlr.out_dir}"/>
+        <antlr4 target="${zserio_core.antlr_dir}/Zserio4Parser.g4"
+            outputdirectory="${zserio_core.antlr.out_dir}"/>
+    </target>
+
+    <target name="antlr" depends="antlr.parser, antlr.lexer, antlr.walkers, antlr.comments, antlr4">
         <!-- ZserioParser.g must be compiled before lexer and walkers because lexer and walker grammars use
              importVocab to ZserioParser. -->
     </target>
