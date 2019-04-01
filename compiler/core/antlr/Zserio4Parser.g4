@@ -26,29 +26,29 @@ importName
     ;
 
 typeDeclaration
-    :   constDeclaration SEMICOLON
-    |   subtypeDeclaration SEMICOLON
-    |   structureDeclaration SEMICOLON
-    |   choiceDeclaration SEMICOLON
-    |   unionDeclaration SEMICOLON
-    |   enumDeclaration SEMICOLON
-    |   sqlTableDeclaration SEMICOLON
-    |   sqlDatabaseDefinition SEMICOLON
-    |   serviceDefinition SEMICOLON
+    :   constDeclaration
+    |   subtypeDeclaration
+    |   structureDeclaration
+    |   choiceDeclaration
+    |   unionDeclaration
+    |   enumDeclaration
+    |   sqlTableDeclaration
+    |   sqlDatabaseDefinition
+    |   serviceDefinition
     ;
 
 
 // CONST
 
 constDeclaration
-    :   CONST typeName ID ASSIGN constantExpression
+    :   CONST typeName ID ASSIGN constantExpression SEMICOLON
     ;
 
 
 // SUBTYPE
 
 subtypeDeclaration
-    :   SUBTYPE typeName ID
+    :   SUBTYPE typeName ID SEMICOLON
     ;
 
 
@@ -60,16 +60,23 @@ structureDeclaration
         structureFieldDefinition*
         functionDefinition*
         RBRACE
+        SEMICOLON
     ;
 
 structureFieldDefinition
     :   fieldAlignment?
         fieldOffset?
-        OPTIONAL?
-        fieldTypeId
-        fieldInitializer?
-        fieldOptionalClause?
-        fieldConstraint?
+        (
+            OPTIONAL
+            fieldTypeId
+            fieldInitializer?
+            fieldConstraint?
+        |
+            fieldTypeId
+            fieldInitializer?
+            fieldOptionalClause?
+            fieldConstraint?
+        )
         SEMICOLON
     ;
 
@@ -82,7 +89,8 @@ fieldOffset
     ;
 
 fieldTypeId
-    :   IMPLICIT? typeReference ID fieldArrayRange?
+    :   IMPLICIT typeReference ID LBRACKET RBRACKET
+    |   typeReference ID fieldArrayRange?
     ;
 
 fieldArrayRange
@@ -117,7 +125,7 @@ choiceTag
     ;
 
 choiceCases
-    :   choiceCase+ choiceFieldDefinition? SEMICOLON
+    :   choiceCase+ choiceFieldDefinition?
     ;
 
 choiceCase
@@ -125,12 +133,11 @@ choiceCase
     ;
 
 choiceDefault
-    :   DEFAULT COLON choiceFieldDefinition? SEMICOLON
+    :   DEFAULT COLON choiceFieldDefinition?
     ;
 
 choiceFieldDefinition
-    :   fieldTypeId
-        fieldConstraint?
+    :   fieldTypeId fieldConstraint? SEMICOLON
     ;
 
 
@@ -145,7 +152,7 @@ unionDeclaration
     ;
 
 unionFieldDefinition
-    :   choiceFieldDefinition SEMICOLON
+    :   choiceFieldDefinition
     ;
 
 
@@ -227,8 +234,7 @@ rpcDeclaration
 
 functionDefinition
     :   FUNCTION functionType
-        functionName
-        LPAREN RPAREN // zserio funciton doesn't have any arguments
+        functionName LPAREN RPAREN // zserio funciton cannot have any arguments
         functionBody
     ;
 
@@ -241,7 +247,9 @@ functionName
     ;
 
 functionBody
-    :   LBRACE RETURN expression SEMICOLON RBRACE
+    :   LBRACE
+        RETURN expression SEMICOLON
+        RBRACE
     ;
 
 
