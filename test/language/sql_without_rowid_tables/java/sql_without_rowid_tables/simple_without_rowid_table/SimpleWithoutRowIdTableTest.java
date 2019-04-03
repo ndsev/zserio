@@ -20,7 +20,7 @@ import test_utils.JdbcUtil;
 
 import sql_without_rowid_tables.simple_without_rowid_table.SimpleWithoutRowIdDb;
 
-public class SimpleWithoutRowIdTablesTest
+public class SimpleWithoutRowIdTableTest
 {
     @BeforeClass
     public static void init()
