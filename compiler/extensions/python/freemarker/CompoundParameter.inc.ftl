@@ -10,12 +10,6 @@
     </#list>
 </#macro>
 
-<#macro compound_instance_parameter_assignments compoundParametersData>
-    <#list compoundParametersData.list as parameter>
-        instance.<@parameter_member_name parameter/> = <@parameter_argument_name parameter/>
-    </#list>
-</#macro>
-
 <#macro compound_compare_parameters compoundParametersData indent>
     <#local I>${""?left_pad(indent * 4)}</#local>
     <#list compoundParametersData.list as parameter>
