@@ -1,13 +1,12 @@
 set(ZSERIO_GEN_DIR ${CMAKE_CURRENT_BINARY_DIR}/gen)
 set(ZSERIO_GENERATED_SOURCES
+    ${ZSERIO_GEN_DIR}/sql_constraints/ConstraintsConstant.h
+    ${ZSERIO_GEN_DIR}/sql_constraints/ConstraintsEnum.cpp
+    ${ZSERIO_GEN_DIR}/sql_constraints/ConstraintsEnum.h
     ${ZSERIO_GEN_DIR}/sql_constraints/ConstraintsTable.cpp
     ${ZSERIO_GEN_DIR}/sql_constraints/ConstraintsTable.h
     ${ZSERIO_GEN_DIR}/sql_constraints/ConstraintsTableRow.cpp
     ${ZSERIO_GEN_DIR}/sql_constraints/ConstraintsTableRow.h
-    ${ZSERIO_GEN_DIR}/sql_constraints/ConstraintsEnum.cpp
-    ${ZSERIO_GEN_DIR}/sql_constraints/ConstraintsEnum.h
-
-    ${ZSERIO_GEN_DIR}/sql_constraints/ConstType.h
     ${ZSERIO_GEN_DIR}/sql_constraints/TestDb.cpp
     ${ZSERIO_GEN_DIR}/sql_constraints/TestDb.h
 )

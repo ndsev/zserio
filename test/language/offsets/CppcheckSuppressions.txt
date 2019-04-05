@@ -1,0 +1,3 @@
+// suppress "Member variable 'X' is not initialized in the constructor."
+uninitMemberVar:*/NestedOffsetChoice.cpp
+uninitMemberVar:*/Room.cpp

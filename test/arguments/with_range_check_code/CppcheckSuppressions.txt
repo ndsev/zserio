@@ -1,0 +1,2 @@
+// suppress "Member variable 'ChoiceBit4RangeCheckCompound::m_selector' is not initialized in the constructor."
+uninitMemberVar:*/ChoiceBit4RangeCheckCompound.cpp

@@ -1,0 +1,12 @@
+// suppress "Class 'X' has a constructor with 1 argument that is not explicit."
+noExplicitConstructor:*/Selector.h
+
+// suppress "Member variable 'X' is not initialized in the constructor."
+uninitMemberVar:*/BoolParamChoice.cpp
+uninitMemberVar:*/TestChoice.cpp
+uninitMemberVar:*/EmptyChoice.cpp
+uninitMemberVar:*/EmptyChoiceWithCase.cpp
+uninitMemberVar:*/EmptyChoiceWithDefault.cpp
+uninitMemberVar:*/Selector.cpp
+uninitMemberVar:*/UInt16ParamChoice.cpp
+uninitMemberVar:*/UInt64ParamChoice.cpp

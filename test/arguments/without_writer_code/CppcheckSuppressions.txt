@@ -1,0 +1,2 @@
+// suppress "Class 'ItemType' has a constructor with 1 argument that is not explicit."
+noExplicitConstructor:*/ItemType.h

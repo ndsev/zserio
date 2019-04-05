@@ -11,6 +11,7 @@ set(ZSERIO_GENERATED_SOURCES
 
     ${ZSERIO_GEN_DIR}/expressions/const_type/ConstTypeExpression.cpp
     ${ZSERIO_GEN_DIR}/expressions/const_type/ConstTypeExpression.h
+    ${ZSERIO_GEN_DIR}/expressions/const_type/INVALID_VALUE.h
 
     ${ZSERIO_GEN_DIR}/expressions/enumeration_type/Color.cpp
     ${ZSERIO_GEN_DIR}/expressions/enumeration_type/Color.h
@@ -27,6 +28,7 @@ set(ZSERIO_GENERATED_SOURCES
 
     ${ZSERIO_GEN_DIR}/expressions/full_const_type/FullConstTypeExpression.cpp
     ${ZSERIO_GEN_DIR}/expressions/full_const_type/FullConstTypeExpression.h
+    ${ZSERIO_GEN_DIR}/expressions/full_const_type/FULL_INVALID_VALUE.h
 
     ${ZSERIO_GEN_DIR}/expressions/full_enumeration_type/Color.cpp
     ${ZSERIO_GEN_DIR}/expressions/full_enumeration_type/Color.h
@@ -81,10 +83,10 @@ set(ZSERIO_GENERATED_SOURCES
 
     ${ZSERIO_GEN_DIR}/expressions/used_before_type/Color.cpp
     ${ZSERIO_GEN_DIR}/expressions/used_before_type/Color.h
+    ${ZSERIO_GEN_DIR}/expressions/used_before_type/COLOR_RED_VALUE.h
+    ${ZSERIO_GEN_DIR}/expressions/used_before_type/NUM_VALUE_BITS.h
     ${ZSERIO_GEN_DIR}/expressions/used_before_type/UsedBeforeTypeExpression.cpp
     ${ZSERIO_GEN_DIR}/expressions/used_before_type/UsedBeforeTypeExpression.h
-
-    ${ZSERIO_GEN_DIR}/expressions/ConstType.h
 
     ${ZSERIO_GEN_DIR}/expressions/valueof_operator/Color.cpp
     ${ZSERIO_GEN_DIR}/expressions/valueof_operator/Color.h

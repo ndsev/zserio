@@ -5,6 +5,7 @@ set(ZSERIO_GENERATED_SOURCES
 
     ${ZSERIO_GEN_DIR}/enumeration_types/enum_defined_by_constant/Colors.cpp
     ${ZSERIO_GEN_DIR}/enumeration_types/enum_defined_by_constant/Colors.h
+    ${ZSERIO_GEN_DIR}/enumeration_types/enum_defined_by_constant/WHITE_COLOR.h
 
     ${ZSERIO_GEN_DIR}/enumeration_types/enum_used_by_enum/Color.cpp
     ${ZSERIO_GEN_DIR}/enumeration_types/enum_used_by_enum/Color.h
@@ -18,8 +19,6 @@ set(ZSERIO_GENERATED_SOURCES
 
     ${ZSERIO_GEN_DIR}/enumeration_types/uint8_enum/DarkColor.cpp
     ${ZSERIO_GEN_DIR}/enumeration_types/uint8_enum/DarkColor.h
-
-    ${ZSERIO_GEN_DIR}/enumeration_types/ConstType.h
 )
 
 zserio_add_library(TARGET enumeration_types_zs

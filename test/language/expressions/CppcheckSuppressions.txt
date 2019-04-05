@@ -1,0 +1,7 @@
+// suppress "Class 'X' has a constructor with 1 argument that is not explicit."
+noExplicitConstructor:*/Color.h
+
+// suppress "Member variable 'X' is not initialized in the constructor."
+uninitMemberVar:*/Element.cpp
+uninitMemberVar:*/ParameterizedArrayElement.cpp
+uninitMemberVar:*/ParameterizedArrayHolder.cpp

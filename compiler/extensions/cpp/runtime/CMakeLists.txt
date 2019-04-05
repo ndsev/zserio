@@ -39,5 +39,8 @@ install(DIRECTORY src/ DESTINATION cpp
 
 # add cppcheck custom command
 include(cppcheck_utils)
-cppcheck_add_custom_command(TARGET ZserioCppRuntime SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/src
-        SUPPRESSION_FILE ${CMAKE_CURRENT_SOURCE_DIR}/src/CppcheckSuppressions.txt)
+cppcheck_add_custom_command(TARGET ZserioCppRuntime
+                            SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/src"
+                                       "${CMAKE_CURRENT_SOURCE_DIR}/src/*/*.h"
+                                       "${CMAKE_CURRENT_SOURCE_DIR}/src/*/*/*.h"
+                            SUPPRESSION_FILE "${CMAKE_CURRENT_SOURCE_DIR}/src/CppcheckSuppressions.txt")

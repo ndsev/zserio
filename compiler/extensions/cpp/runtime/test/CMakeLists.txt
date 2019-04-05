@@ -59,4 +59,6 @@ gtest_add_tests(${PROJECT_NAME} "--gtest_output=xml" ${ZSERIO_CPP_RUNTIME_TEST_S
 
 # add cppcheck custom command
 include(cppcheck_utils)
-cppcheck_add_custom_command(TARGET ${PROJECT_NAME} SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR})
+cppcheck_add_custom_command(TARGET ${PROJECT_NAME}
+                            SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}"
+                            INCLUDE_DIR ../src "${SQLITE_INCDIR}")

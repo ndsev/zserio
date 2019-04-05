@@ -12,7 +12,6 @@
 
 # Eclipse project files
 .project
-.pydevproject
 
 # Python bytecode
 __pycache__

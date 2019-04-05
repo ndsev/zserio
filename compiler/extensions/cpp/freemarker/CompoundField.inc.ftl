@@ -595,22 +595,6 @@ void ${compoundName}::${field.setterName}(${field.cppArgumentTypeName} ${field.n
     </#if>
 </#macro>
 
-<#macro compound_default_constructor_field field indent>
-    <#local I>${""?left_pad(indent * 4)}</#local>
-    <#if !field.usesAnyHolder>
-        <#if field.optionalHolder??>
-            <#if !field.optional?? || field.initializer??>
-            <#--  optional fields can have initializers -->
-${I}m_${field.name}.reset(new (m_${field.name}.getResetStorage())
-${I}        ${field.cppTypeName}(<#if field.initializer??>${field.initializer}</#if>));
-            </#if>
-        <#elseif field.isSimpleType || field.initializer??>
-            <#-- string types are not simple types but can have default value (initializer) -->
-${I}m_${field.name} = <#if field.initializer??>${field.initializer}<#else>${field.cppTypeName}()</#if>;
-        </#if>
-    </#if>
-</#macro>
-
 <#macro compound_copy_constructor_initializer_field field hasNext indent>
     <#local I>${""?left_pad(indent * 4)}</#local>
     <#if field.usesAnyHolder>

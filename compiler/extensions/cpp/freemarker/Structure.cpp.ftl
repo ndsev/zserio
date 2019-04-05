@@ -68,17 +68,42 @@
 
 </#if>
 <#if withWriterCode>
+<#macro compound_constructor_fields_initialization constructorMembersInitialization>
+    <#if constructorMembersInitialization?has_content>
+        <#local startedComma=true>
+        ${constructorMembersInitialization}<#rt>
+    <#else>
+        <#local startedComma=false>
+    </#if>
+    <#list fieldList as field>
+        <#-- string types are not simple types but can have default value (initializer) -->
+        <#if !field.optionalHolder?? && (field.isSimpleType || field.initializer??)>
+        <#if startedComma>
+            <#lt>,
+        </#if>
+        m_${field.name}(<#if field.initializer??>${field.initializer}<#else>${field.cppTypeName}()</#if>)<#rt>
+            <#local startedComma=true>
+        </#if>
+    </#list>
+</#macro>
 ${name}::${name}()<#rt>
     <#assign constructorMembersInitialization><@compound_constructor_members_initialization compoundConstructorsData/></#assign>
-    <#if constructorMembersInitialization?has_content>
+    <#assign constructorFieldsInitialization><@compound_constructor_fields_initialization constructorMembersInitialization/></#assign>
+    <#if constructorFieldsInitialization?has_content>
         <#lt> :
-        ${constructorMembersInitialization}
+        <#lt>${constructorFieldsInitialization}
     <#else>
 
     </#if>
 {
     <#list fieldList as field>
-    <@compound_default_constructor_field field, 1/>
+        <#if field.optionalHolder??>
+            <#if !field.optional?? || field.initializer??>
+            <#-- optional fields can have initializers -->
+    m_${field.name}.reset(new (m_${field.name}.getResetStorage())
+        ${field.cppTypeName}(<#if field.initializer??>${field.initializer}</#if>));
+            </#if>
+        </#if>
     </#list>
 }
 

@@ -163,7 +163,7 @@ private:
 
         virtual IHolder* clone(void* storage) const
         {
-            Holder<T>* holder = (storage != NULL) ? new (storage) Holder<T>() : new Holder<T>();
+            Holder<T>* holder = (storage == NULL) ? new Holder<T>() : new (storage) Holder<T>();
             holder->m_typedHolder = m_typedHolder;
 
             return holder;

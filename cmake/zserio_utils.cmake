@@ -158,6 +158,8 @@ function(zserio_add_library)
     # add cppcheck custom command (cppcheck fails if no sources to check are available)
     if (NOT(SOURCE_FILE_POSITION EQUAL -1))
         include(cppcheck_utils)
-        cppcheck_add_custom_command(TARGET ${VALUE_TARGET} SOURCE_DIR ${VALUE_OUT_DIR})
+        cppcheck_add_custom_command(TARGET ${VALUE_TARGET}
+                                    SOURCE_DIR ${VALUE_OUT_DIR}
+                                    INCLUDE_DIR ${VALUE_OUT_DIR})
     endif ()
 endfunction()

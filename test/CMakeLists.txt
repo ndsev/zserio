@@ -12,6 +12,8 @@ project(ZserioCppTest)
 enable_testing()
 
 # input parameters
+set(CPPCHECK_HOME "" CACHE PATH "Home directory of cppcheck tool. If empty, cppcheck tool is not called.")
+
 set(ZSERIO_PROJECT_ROOT "${CMAKE_CURRENT_SOURCE_DIR}/..")
 set(ZSERIO_RELEASE_ROOT "${ZSERIO_PROJECT_ROOT}/distr" CACHE PATH "Root directory of Zserio release binaries.")
 set(ZSERIO_TEST_NAME "*" CACHE STRING "Example test name to run. Empty means all example tests.")
@@ -89,4 +91,5 @@ gtest_add_tests(${PROJECT_NAME} "--gtest_output=xml" ${TEST_SOURCES_LIST})
 
 # add cppcheck custom command
 include(cppcheck_utils)
-cppcheck_add_custom_command(TARGET ${PROJECT_NAME} SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR})
+cppcheck_add_custom_command(TARGET ${PROJECT_NAME}
+                            SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}")

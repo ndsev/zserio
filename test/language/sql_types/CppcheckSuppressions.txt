@@ -1,0 +1,5 @@
+// suppress "Class 'X' has a constructor with 1 argument that is not explicit."
+noExplicitConstructor:*/TestEnum.h
+
+// suppress "Member variable 'X' is not initialized in the constructor."
+uninitMemberVar:*/TestChoice.cpp

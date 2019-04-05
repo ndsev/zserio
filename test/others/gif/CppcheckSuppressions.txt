@@ -1,0 +1,9 @@
+// suppress "Class 'X' has a constructor with 1 argument that is not explicit."
+noExplicitConstructor:*/BlockType.h
+noExplicitConstructor:*/ExtensionType.h
+noExplicitConstructor:*/DisposalMethod.h
+noExplicitConstructor:*/GifVersion.h
+
+// suppress "Member variable 'X' is not initialized in the constructor."
+uninitMemberVar:*/SubBlock.cpp
+uninitMemberVar:*/ZippedSubBlock.cpp

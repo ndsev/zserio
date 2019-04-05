@@ -1,5 +1,8 @@
-// suppress "Member variable 'DefaultPackageStructure::m_numBits' is not initialized in the constructor."
+// suppress "Member variable 'X' is not initialized in the constructor."
+uninitMemberVar:*/Coordinate.cpp
+uninitMemberVar:*/SimpleParamStructure.cpp
 uninitMemberVar:*/DefaultPackageStructure.cpp
 
-// suppress "Class 'TopStructure' has a constructor with 1 argument that is not explicit."
-noExplicitConstructor:*/TopStructure.h
+// suppress "Class 'X' has a constructor with 1 argument that is not explicit."
+noExplicitConstructor:*/Colour.h
+noExplicitConstructor:*/BottomColour.h
