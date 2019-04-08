@@ -79,6 +79,7 @@ findbugs.home_dir       - Location of the findbugs tool. If not set, findbugs is
                 <arg line="-o @{outputdirectory}"/>
                 <arg line="-package @{package}"/>
                 <arg value="@{target}"/>
+                <arg line="-no-listener -visitor"/>
             </java>
         </sequential>
     </macrodef>

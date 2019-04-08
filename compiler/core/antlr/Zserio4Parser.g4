@@ -18,11 +18,7 @@ packageDeclaration
     ;
 
 importDeclaration
-    :   IMPORT importName SEMICOLON
-    ;
-
-importName
-    :   ID DOT (ID DOT)* (ID | MULTIPLY)
+    :   IMPORT id DOT (id DOT)* (id | MULTIPLY) SEMICOLON
     ;
 
 typeDeclaration
@@ -41,21 +37,21 @@ typeDeclaration
 // CONST
 
 constDeclaration
-    :   CONST typeName ID ASSIGN constantExpression SEMICOLON
+    :   CONST typeName id ASSIGN constantExpression SEMICOLON
     ;
 
 
 // SUBTYPE
 
 subtypeDeclaration
-    :   SUBTYPE typeName ID SEMICOLON
+    :   SUBTYPE typeName id SEMICOLON
     ;
 
 
 // STRUCTURE
 
 structureDeclaration
-    :   STRUCTURE ID parameterList?
+    :   STRUCTURE id parameterList?
         LBRACE
         structureFieldDefinition*
         functionDefinition*
@@ -89,8 +85,8 @@ fieldOffset
     ;
 
 fieldTypeId
-    :   IMPLICIT typeReference ID LBRACKET RBRACKET
-    |   typeReference ID fieldArrayRange?
+    :   IMPLICIT typeReference id LBRACKET RBRACKET
+    |   typeReference id fieldArrayRange?
     ;
 
 fieldArrayRange
@@ -112,7 +108,7 @@ fieldConstraint
 // CHOICE
 
 choiceDeclaration
-    :   CHOICE ID parameterList ON choiceTag
+    :   CHOICE id parameterList ON choiceTag
         LBRACE
         choiceCases*
         choiceDefault?
@@ -144,7 +140,7 @@ choiceFieldDefinition
 // UNION
 
 unionDeclaration
-    :   UNION ID parameterList?
+    :   UNION id parameterList?
         LBRACE
         unionFieldDefinition*
         functionDefinition*
@@ -159,21 +155,21 @@ unionFieldDefinition
 // ENUM
 
 enumDeclaration
-    :   ENUM typeName ID
+    :   ENUM typeName id
         LBRACE
         enumItem (COMMA enumItem)* COMMA?
         RBRACE
     ;
 
 enumItem
-    :   ID (ASSIGN constantExpression)?
+    :   id (ASSIGN constantExpression)?
     ;
 
 
 // SQL TABLE
 
 sqlTableDeclaration
-    :   SQL_TABLE ID (USING ID)?
+    :   SQL_TABLE id (USING id)?
         LBRACE
         sqlTableFieldDefinition*
         sqlConstraintDefinition?
@@ -182,7 +178,7 @@ sqlTableDeclaration
     ;
 
 sqlTableFieldDefinition
-    :   SQL_VIRTUAL? typeReference ID sqlConstraint? SEMICOLON
+    :   SQL_VIRTUAL? typeReference id sqlConstraint? SEMICOLON
     ;
 
 sqlConstraintDefinition
@@ -201,14 +197,14 @@ sqlWithoutRowId
 // SQL DATABASE
 
 sqlDatabaseDefinition
-    :   SQL_DATABASE ID
+    :   SQL_DATABASE id
         LBRACE
         sqlDatabaseFieldDefinition+
         RBRACE
     ;
 
 sqlDatabaseFieldDefinition
-    :   sqlTableReference ID SEMICOLON
+    :   sqlTableReference id SEMICOLON
     ;
 
 sqlTableReference
@@ -219,14 +215,14 @@ sqlTableReference
 // RPC SERVICE
 
 serviceDefinition
-    :   SERVICE ID
+    :   SERVICE id
         LBRACE
         rpcDeclaration*
         RBRACE
     ;
 
 rpcDeclaration
-    :   RPC STREAM? qualifiedName ID LPAREN STREAM? qualifiedName RPAREN SEMICOLON
+    :   RPC STREAM? qualifiedName id LPAREN STREAM? qualifiedName RPAREN SEMICOLON
     ;
 
 
@@ -243,7 +239,7 @@ functionType
     ;
 
 functionName
-    :   ID
+    :   id
     ;
 
 functionBody
@@ -260,7 +256,7 @@ parameterList
     ;
 
 parameterDefinition
-    :   typeName ID
+    :   typeName id
     ;
 
 
@@ -272,7 +268,7 @@ constantExpression // TODO: do we need this?
 
 expression
     :   primary                                             // primary atom / parenthesised expression
-    |   expression DOT ID                                   // postfix dot
+    |   expression DOT id                                   // postfix dot
     |   expression LBRACKET expression RBRACKET             // postfix array
     |   expression LPAREN RPAREN                            // postfix function call
     |   (PLUS | MINUS) expression                           // unary +/-
@@ -295,7 +291,7 @@ primary
     |   builtinFunciton
     |   literal
     |   INDEX
-    |   ID
+    |   id
     ;
 
 literal
@@ -309,6 +305,9 @@ literal
     |   DOUBLE_LITERAL
     ;
 
+id
+    :   ID
+    ;
 
 // BUILTIN FUNCTIONS
 
@@ -346,15 +345,15 @@ typeName
 builtinType
     :   intType
     |   varintType
-    |   unsignedBitfieldType
-    |   signedBitfieldType
+    |   unsignedBitFieldType
+    |   signedBitFieldType
     |   boolType
     |   stringType
     |   floatType
     ;
 
 qualifiedName
-    :   ID (DOT ID)*
+    :   id (DOT id)*
     ;
 
 typeReference
@@ -367,7 +366,7 @@ typeArgumentList
     ;
 
 typeArgument
-    :   EXPLICIT ID // TODO: allow only within a SQL table!
+    :   EXPLICIT id // TODO: allow only within a SQL table!
     |   expression
     ;
 
@@ -393,15 +392,15 @@ varintType
     |   VARUINT64
     ;
 
-unsignedBitfieldType
-    :   BIT_FIELD bitfieldLength
+unsignedBitFieldType
+    :   BIT_FIELD bitFieldLength
     ;
 
-signedBitfieldType
-    :   INT_FIELD bitfieldLength
+signedBitFieldType
+    :   INT_FIELD bitFieldLength
     ;
 
-bitfieldLength
+bitFieldLength
     :   COLON DECIMAL_LITERAL
     |   LT expression GT
     ;

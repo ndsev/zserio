@@ -1,6 +1,8 @@
 package zserio.tools;
 
 import zserio.antlr.util.BaseTokenAST;
+import zserio.ast4.AstNode;
+import zserio.ast4.AstNodeLocation;
 
 /**
  * Class with static methods to handle all printing possibilities from Zserio Tool.
@@ -35,6 +37,31 @@ public class ZserioToolPrinter
     }
 
     /**
+     * Prints warning which is localized by base AST node.
+     *
+     * @param astNode AST node to which the warning belongs to.
+     * @param text      Text of the warning to print.
+     */
+    public static void printWarning(AstNode astNode, String text)
+    {
+        if (astNode == null)
+            printWarning(null, 0, 0, text);
+        else
+            printWarning(astNode.getLocation(), text);
+    }
+
+    /**
+     * Prints warning which is localized by AST node location.
+     *
+     * @param astNodeLocation   AST node location.
+     * @param text              Text of the warning to print.
+     */
+    public static void printWarning(AstNodeLocation location, String text)
+    {
+        printWarning(location.getFileName(), location.getLine(), location.getColumn(), text);
+    }
+
+    /**
      * Prints warning which is localized in the Zserio source file.
      *
      * @param fileName Zserio source file to which the warning belongs to.
@@ -43,6 +70,17 @@ public class ZserioToolPrinter
     public static void printWarning(String fileName, String text)
     {
         printWarning(fileName, 0, 0, text);
+    }
+
+    /**
+     * Prints error which is localized by AST node location.
+     *
+     * @param astNodeLocation AST node location.
+     * @param text            Text of the error to print.
+     */
+    public static void printError(AstNodeLocation location, String text)
+    {
+        printError(location.getFileName(), location.getLine(), location.getColumn(), text);
     }
 
     /**

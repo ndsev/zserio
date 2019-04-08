@@ -265,6 +265,8 @@ public class ZserioParserTest
                 "extraneous input 'int32' expecting ')'");
         assertParseError("functionDefinition", "function Parameterized testFunc(int32 arg) { return 0; }",
                 "mismatched input 'int32' expecting {"); // TODO: why antlr4 does NOT report "expecting ')'"?
+        assertParseError("functionDefinition", "function int32 testFunc(int32 arg) { return 0; }",
+                "mismatched input 'int32' expecting ')'"); // TODO: and why this works?
     }
 
     private static class ThrowingErrorListener extends BaseErrorListener
