@@ -342,6 +342,11 @@ typeName
     |   qualifiedName
     ;
 
+typeReference
+    :   builtinType
+    |   qualifiedName typeArgumentList?
+    ;
+
 builtinType
     :   intType
     |   varintType
@@ -354,11 +359,6 @@ builtinType
 
 qualifiedName
     :   id (DOT id)*
-    ;
-
-typeReference
-    :   builtinType
-    |   qualifiedName typeArgumentList?
     ;
 
 typeArgumentList

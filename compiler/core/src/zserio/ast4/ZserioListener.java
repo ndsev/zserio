@@ -12,11 +12,29 @@ public interface ZserioListener
 
     void enterImport(Import unitImport);
 
-    void beginSubtype(Subtype subtype);
-    void endSubtype(Subtype subtype);
+    void beginSubtype(Subtype subtypeType);
+    void endSubtype(Subtype subtypeType);
+    void beginStructureType(StructureType structureType);
+    void endStructureType(StructureType structureType);
 
-    void beginTypeReference(TypeReference typeReference);
-    void endTypeReference(TypeReference typeReference);
+    void beginField(Field field);
+    void endField(Field field);
+
+    void beginFunction(FunctionType functionType);
+    void endFunction(FunctionType functionType);
+
+    void beginParameter(Parameter parameter);
+    void endParameter(Parameter parameter);
+
+    void enterExpression(Expression expresssion);
+
+    void beginArrayType(ArrayType arrayType);
+    void endArrayType(ArrayType arrayType);
+
+    void beginTypeInstantiation(TypeInstantiation typeInstantiation);
+    void endTypeInstantiation(TypeInstantiation typeInstantiation);
+
+    void enterTypeReference(TypeReference typeReference);
 
     void enterStdIntegerType(StdIntegerType stdIntegerType);
     void enterVarIntegerType(VarIntegerType varIntegerType);
@@ -38,11 +56,29 @@ public interface ZserioListener
 
         @Override public void enterImport(Import unitImport) {}
 
-        @Override public void beginSubtype(Subtype subtype) {}
-        @Override public void endSubtype(Subtype subtype) {}
+        @Override public void beginSubtype(Subtype subtypeType) {}
+        @Override public void endSubtype(Subtype subtypeType) {}
+        @Override public void beginStructureType(StructureType structureType) {}
+        @Override public void endStructureType(StructureType structureType) {}
 
-        @Override public void beginTypeReference(TypeReference typeReference) {}
-        @Override public void endTypeReference(TypeReference typeReference) {}
+        @Override public void beginField(Field field) {}
+        @Override public void endField(Field field) {}
+
+        @Override public void beginFunction(FunctionType functionType) {}
+        @Override public void endFunction(FunctionType functionType) {}
+
+        @Override public void beginParameter(Parameter parameter) {}
+        @Override public void endParameter(Parameter parameter) {}
+
+        @Override public void enterExpression(Expression expresssion) {}
+
+        @Override public void beginArrayType(ArrayType arrayType) {}
+        @Override public void endArrayType(ArrayType arrayType) {}
+
+        @Override public void beginTypeInstantiation(TypeInstantiation typeInstantiation) {}
+        @Override public void endTypeInstantiation(TypeInstantiation typeInstantiation) {}
+
+        @Override public void enterTypeReference(TypeReference typeReference) {}
 
         @Override public void enterStdIntegerType(StdIntegerType stdIntegerType) {}
         @Override public void enterVarIntegerType(VarIntegerType varIntegerType) {}

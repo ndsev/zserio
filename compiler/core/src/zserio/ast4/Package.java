@@ -37,6 +37,33 @@ public class Package extends AstNodeBase
     /**
      * Gets Zserio type for given type name with its package if it's visible for this package.
      *
+     * @param ownerNode       AST node which holds type to resolve (used for ParserException).
+     * @param typePackageName Package name of the type to resolve.
+     * @param typeName        Type name to resolve.
+     *
+     * @return Zserio type if given type name is visible for this package or null if given type name is unknown.
+     *
+     * @throws ParserException Throws in case of given type name is ambiguous for this package.
+     */
+    public ZserioType getVisibleType(AstNode ownerNode, PackageName typePackageName, String typeName)
+            throws ParserException
+    {
+        final List<ZserioType> foundTypes = getAllVisibleTypes(typePackageName, typeName);
+        final int numFoundTypes = foundTypes.size();
+        if (numFoundTypes > 1)
+        {
+            final String firstPackageName = foundTypes.get(0).getPackage().getPackageName().toString();
+            final String secondPackageName = foundTypes.get(1).getPackage().getPackageName().toString();
+            throw new ParserException(ownerNode, "Ambiguous type reference '" + typeName +
+                    "' found in packages '" + firstPackageName + "' and '" + secondPackageName + "'!");
+        }
+
+        return (numFoundTypes == 1) ? foundTypes.get(0) : null;
+    }
+
+    /**
+     * Gets Zserio type for given type name with its package if it's visible for this package.
+     *
      * This method does not throw exception in case of ambiguous type. It just returns null in this case.
      *
      * @param typePackageName Package name of the type to resolve.
@@ -64,6 +91,34 @@ public class Package extends AstNodeBase
     }
 
     /**
+     * Stores a type in the package types map.
+     *
+     * @param type Zserio type to add.
+     * @param token Parse tree token defining location of the type name.
+     *
+     * @throws ParserException Throws if type has been already defined in the current package.
+     */
+    protected void setLocalType(ZserioType type, Token token) throws ParserException
+    {
+        final String typeName = type.getName();
+        final ZserioType addedType = localTypes.put(typeName, type);
+        if (addedType != null)
+            throw new ParserException(token, "'" + typeName + "' is already defined in this package!");
+    }
+
+    /**
+     * Adds type reference to resolve.
+     *
+     * This method is called from ANTLR TypeEvaluator walker.
+     *
+     * @param typeReference Type reference to resolve.
+     */
+    protected void addTypeReferenceToResolve(TypeReference typeReference)
+    {
+        typeReferencesToResolve.add(typeReference);
+    }
+
+    /**
      * Resolves this package.
      *
      * This method
@@ -82,8 +137,8 @@ public class Package extends AstNodeBase
         // TODO: resolve
         // because subtypes can used type references, type references must be resolved before subtypes
         resolveImports(packageNameMap);
-        //resolveTypeReferences();
-        //resolveSubtypes();
+        resolveTypeReferences();
+        resolveSubtypes();
     }
 
     private void resolveImports(Map<PackageName, Package> packageNameMap)
@@ -151,6 +206,21 @@ public class Package extends AstNodeBase
                     importedSingleTypes.add(importedSingleType);
                 }
             }
+        }
+    }
+
+    private void resolveTypeReferences()
+    {
+        for (TypeReference typeReference : typeReferencesToResolve)
+            typeReference.resolve(this);
+    }
+
+    private void resolveSubtypes()
+    {
+        for (ZserioType type : localTypes.values())
+        {
+            if (type instanceof Subtype)
+                ((Subtype)type).resolve();
         }
     }
 
@@ -274,5 +344,5 @@ public class Package extends AstNodeBase
     private final Set<Package> importedPackages = new HashSet<Package>();
     // this must be a TreeSet because of 'Ambiguous type reference' error checked in getVisibleType()
     private final Set<SingleTypeName> importedSingleTypes = new TreeSet<SingleTypeName>();
-    //private final List<TypeReference> typeReferencesToResolve = new ArrayList<TypeReference>(); // TODO:
+    private final List<TypeReference> typeReferencesToResolve = new ArrayList<TypeReference>();
 }

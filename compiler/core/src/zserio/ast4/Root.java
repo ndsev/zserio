@@ -1,6 +1,11 @@
 package zserio.ast4;
 
 import java.util.List;
+import java.util.Map;
+
+import zserio.antlr.util.ParserException;
+import zserio.ast.PackageName;
+import zserio.ast4.Package;
 import zserio.emit.common.Emitter;
 import zserio.emit.common.ZserioEmitException;
 
@@ -16,11 +21,13 @@ public class Root extends AstNodeBase
      *
      * @param checkUnusedTypes Whether to print warnings for unused types.
      */
-    public Root(List<TranslationUnit> translationUnits, boolean checkUnusedTypes)
+    public Root(List<TranslationUnit> translationUnits, Map<PackageName, Package> packageNameMap,
+            boolean checkUnusedTypes)
     {
         super(null);
 
         this.translationUnits = translationUnits;
+        this.packageNameMap = packageNameMap;
         this.checkUnusedTypes = checkUnusedTypes;
     }
 
@@ -34,13 +41,17 @@ public class Root extends AstNodeBase
     }
 
     /**
-     * Gets all translation units defined in this root.
+     * Resolves all references in all translation units.
      *
-     * @return All translation units defined in this root.
+     * @throws ParserException In case of wrong import or wrong type reference or if cyclic subtype definition
+     *                         is detected.
      */
-    public List<TranslationUnit> getTranslationUnits()
+    public void resolveReferences() throws ParserException
     {
-        return translationUnits;
+        for (Map.Entry<PackageName, Package> packageNameEntry : packageNameMap.entrySet())
+        {
+            packageNameEntry.getValue().resolve(packageNameMap);
+        }
     }
 
     /**
@@ -98,5 +109,6 @@ public class Root extends AstNodeBase
     }
 
     private final List<TranslationUnit> translationUnits;
+    private final Map<PackageName, Package> packageNameMap;
     private final boolean checkUnusedTypes; // TODO:
 }

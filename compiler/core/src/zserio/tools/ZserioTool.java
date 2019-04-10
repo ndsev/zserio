@@ -12,7 +12,6 @@ import org.apache.commons.cli.ParseException;
 import zserio.antlr.Zserio4Lexer;
 import zserio.antlr.Zserio4Parser;
 import zserio.ast.PackageName;
-import zserio.ast4.AstNodeLocation;
 import zserio.ast4.Import;
 import zserio.ast4.ParseTreeCheckingVisitor;
 import zserio.ast4.ParserException;
@@ -162,12 +161,9 @@ public class ZserioTool
         parseImportedPackages(astBuilderVisitor, translationUnit);
 
         final Root rootNode = astBuilderVisitor.getAst();
+        //rootNode.resolveReferences();
 
-        // TODO: type evaluation
-
-        // TODO: resolve references
-        // rootNode.resolveReferences();
-
+        // TODO: scope evaluation
         // TODO: expression evaluation
 
         return rootNode;
@@ -188,8 +184,7 @@ public class ZserioTool
         ParseTreeCheckingVisitor parseTreeCheckingVisitor = new ParseTreeCheckingVisitor(inputFileManager);
         parseTreeCheckingVisitor.visit(tree);
 
-        final TranslationUnit translationUnit =
-                (TranslationUnit)astBuilderVisitor.visit(tree);
+        final TranslationUnit translationUnit = (TranslationUnit)astBuilderVisitor.visit(tree);
 
         return translationUnit;
     }

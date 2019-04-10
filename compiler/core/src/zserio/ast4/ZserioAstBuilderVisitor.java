@@ -5,6 +5,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import zserio.antlr.Zserio4Parser;
+import zserio.antlr.Zserio4Parser.TypeArgumentContext;
 import zserio.antlr.Zserio4ParserBaseVisitor;
 import zserio.ast.PackageName;
 
@@ -17,8 +18,7 @@ public class ZserioAstBuilderVisitor extends Zserio4ParserBaseVisitor<Object>
 
     public Root getAst()
     {
-        // TODO: add also package set?
-        return new Root(translationUnits, checkUnusedTypes);
+        return new Root(translationUnits, packageNameMap, checkUnusedTypes);
     }
 
     @Override
@@ -49,7 +49,7 @@ public class ZserioAstBuilderVisitor extends Zserio4ParserBaseVisitor<Object>
         {
             final Object typeDeclaration = visitTypeDeclaration(typeCtx);
             if (typeDeclaration != null) // TODO: remove null check when all types are implemented
-                types.add((ZserioType)visitTypeDeclaration(typeCtx));
+                types.add((ZserioType)typeDeclaration);
         }
 
         currentPackage = null;
@@ -76,8 +76,8 @@ public class ZserioAstBuilderVisitor extends Zserio4ParserBaseVisitor<Object>
 
         if (ctx.MULTIPLY() == null)
         {
-            importedPackageName = createPackageName(ctx.id().subList(0, ctx.id().size() - 1));
-            importedTypeName = ctx.id().get(ctx.id().size() - 1).getText();
+            importedPackageName = createPackageName(getPackageNameIds(ctx.id()));
+            importedTypeName = getTypeNameId(ctx.id()).getText();
         }
         else
         {
@@ -99,7 +99,97 @@ public class ZserioAstBuilderVisitor extends Zserio4ParserBaseVisitor<Object>
         final String name = ctx.id().getText();
         final ZserioType targetType = (ZserioType)visitTypeName(ctx.typeName());
 
-        return new Subtype(ctx.getStart(), name, targetType);
+        final Subtype subtype = new Subtype(ctx.getStart(), currentPackage, name, targetType);
+        currentPackage.setLocalType(subtype, ctx.id().getStart());
+        return subtype;
+    }
+
+    @Override
+    public Object visitStructureDeclaration(Zserio4Parser.StructureDeclarationContext ctx)
+    {
+        final String name = ctx.id().getText();
+
+        final List<Parameter> parameters = new ArrayList<Parameter>();
+        if (ctx.parameterList() != null)
+        {
+            for (Zserio4Parser.ParameterDefinitionContext parameterDefinitionCtx :
+                    ctx.parameterList().parameterDefinition())
+                parameters.add((Parameter)visitParameterDefinition(parameterDefinitionCtx));
+        }
+
+        final List<Field> fields = new ArrayList<Field>();
+        for (Zserio4Parser.StructureFieldDefinitionContext fieldCtx : ctx.structureFieldDefinition())
+            fields.add((Field)visitStructureFieldDefinition(fieldCtx));
+
+        final List<FunctionType> functions = new ArrayList<FunctionType>();
+        for (Zserio4Parser.FunctionDefinitionContext functionDefinitionCtx : ctx.functionDefinition())
+            functions.add((FunctionType)visitFunctionDefinition(functionDefinitionCtx));
+
+        final StructureType structureType = new StructureType(ctx.getStart(), currentPackage, name,
+                parameters, fields, functions);
+        currentPackage.setLocalType(structureType, ctx.id().getStart());
+        return structureType;
+    }
+
+    @Override
+    public Object visitStructureFieldDefinition(Zserio4Parser.StructureFieldDefinitionContext ctx)
+    {
+        final ZserioType type = getZserioType(ctx.fieldTypeId());
+        final String name = ctx.fieldTypeId().id().getText();
+        final boolean isAutoOptional = ctx.OPTIONAL() != null;
+
+        final Expression alignmentExpr = ctx.fieldAlignment() != null
+                ? (Expression)visitFieldAlignment(ctx.fieldAlignment()) : null;
+        final Expression offsetExpr = ctx.fieldOffset() != null
+                ? (Expression)visitFieldOffset(ctx.fieldOffset()) : null;
+        final Expression initializerExpr = ctx.fieldInitializer() != null
+                ? (Expression)visitFieldInitializer(ctx.fieldInitializer()) : null;
+        final Expression optionalClauseExpr = ctx.fieldOptionalClause() != null
+                ? (Expression)visitFieldOptionalClause(ctx.fieldOptionalClause()) : null;
+        final Expression constraintExpr = ctx.fieldConstraint() != null
+                ? (Expression)visitFieldConstraint(ctx.fieldConstraint()) : null;
+
+        return new Field(ctx.getStart(), type, name, isAutoOptional, alignmentExpr, offsetExpr, initializerExpr,
+                optionalClauseExpr, constraintExpr);
+    }
+
+    private ZserioType getZserioType(Zserio4Parser.FieldTypeIdContext ctx)
+    {
+        final ZserioType type = (ZserioType)visitTypeReference(ctx.typeReference());
+        if (ctx.fieldArrayRange() == null)
+            return type;
+
+        final Expression lengthExpression = (Expression)visit(ctx.fieldArrayRange().expression());
+        return new ArrayType(ctx.getStart(), type, lengthExpression, ctx.IMPLICIT() != null);
+    }
+
+    @Override
+    public Object visitFieldAlignment(Zserio4Parser.FieldAlignmentContext ctx)
+    {
+        return new Expression(ctx.DECIMAL_LITERAL().getSymbol(), ctx.DECIMAL_LITERAL().getText(), false);
+    }
+
+    @Override
+    public Object visitFunctionDefinition(Zserio4Parser.FunctionDefinitionContext ctx)
+    {
+        final ZserioType returnType = (ZserioType)visitTypeName(ctx.functionType().typeName());
+        final String name = ctx.functionName().getText();
+        final Expression resultExpression = (Expression)visit(ctx.functionBody().expression());
+
+        return new FunctionType(ctx.getStart(), currentPackage, returnType, name, resultExpression);
+    }
+
+    @Override
+    public Object visitParameterDefinition(Zserio4Parser.ParameterDefinitionContext ctx)
+    {
+        return new Parameter(ctx.getStart(), (ZserioType)visitTypeName(ctx.typeName()), ctx.id().getText());
+    }
+
+    @Override
+    public Object visitExpression(Zserio4Parser.ExpressionContext ctx)
+    {
+        final boolean isExplicit = false;
+        return new Expression(ctx.getStart(), ctx.getText(), isExplicit);
     }
 
     @Override
@@ -108,7 +198,51 @@ public class ZserioAstBuilderVisitor extends Zserio4ParserBaseVisitor<Object>
         if (ctx.builtinType() != null)
             return visitBuiltinType(ctx.builtinType());
 
-        return new TypeReference(ctx.getStart()); // TODO: handle referenced type
+        final PackageName referencedPackageName = createPackageName(
+                getPackageNameIds(ctx.qualifiedName().id()));
+        final String referencedTypeName = getTypeNameId(ctx.qualifiedName().id()).getText();
+        final boolean isParameterized = false;
+        final TypeReference typeReference =
+                new TypeReference(ctx.getStart(), referencedPackageName, referencedTypeName, isParameterized);
+
+        currentPackage.addTypeReferenceToResolve(typeReference);
+        return typeReference;
+    }
+
+    @Override
+    public Object visitTypeReference(Zserio4Parser.TypeReferenceContext ctx)
+    {
+        if (ctx.builtinType() != null)
+            return visitBuiltinType(ctx.builtinType());
+
+        final PackageName referencedPackageName = createPackageName(
+                getPackageNameIds(ctx.qualifiedName().id()));
+        final String referencedTypeName = getTypeNameId(ctx.qualifiedName().id()).getText();
+        final boolean isParameterized = ctx.typeArgumentList() != null;
+        final TypeReference typeReference =
+                new TypeReference(ctx.getStart(), referencedPackageName, referencedTypeName, isParameterized);
+        currentPackage.addTypeReferenceToResolve(typeReference);
+
+        if (isParameterized)
+        {
+            final List<Expression> arguments = new ArrayList<Expression>();
+            for (TypeArgumentContext typeArgumentCtx : ctx.typeArgumentList().typeArgument())
+                arguments.add((Expression)visitTypeArgument(typeArgumentCtx));
+            return new TypeInstantiation(ctx.getStart(), typeReference, arguments);
+        }
+        else
+        {
+            return typeReference;
+        }
+    }
+
+    @Override
+    public Object visitTypeArgument(Zserio4Parser.TypeArgumentContext ctx)
+    {
+        if (ctx.EXPLICIT() != null)
+            return new Expression(ctx.getStart(), ctx.id().getText(), true);
+        else
+            return visitExpression(ctx.expression());
     }
 
     @Override
@@ -179,6 +313,16 @@ public class ZserioAstBuilderVisitor extends Zserio4ParserBaseVisitor<Object>
         for (Zserio4Parser.IdContext id : ids)
             packageNameBuilder.addId(id.getText());
         return packageNameBuilder.get();
+    }
+
+    private List<Zserio4Parser.IdContext> getPackageNameIds(List<Zserio4Parser.IdContext> qualifiedName)
+    {
+        return qualifiedName.subList(0, qualifiedName.size() - 1);
+    }
+
+    private Zserio4Parser.IdContext getTypeNameId(List<Zserio4Parser.IdContext> qualifiedName)
+    {
+        return qualifiedName.get(qualifiedName.size() - 1);
     }
 
     private final boolean checkUnusedTypes;

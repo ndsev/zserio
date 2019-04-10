@@ -54,16 +54,92 @@ public class PrintStringTreeListener implements ZserioListener
     }
 
     @Override
-    public void beginTypeReference(TypeReference typeReference)
+    public void beginStructureType(StructureType structureType)
     {
-        print("typeReference");
+        print("structure [" + structureType.getPackage().getPackageName() + ", "
+                + structureType.getName() + "]");
         ++level;
     }
 
     @Override
-    public void endTypeReference(TypeReference typeReference)
+    public void endStructureType(StructureType structureType)
     {
         --level;
+    }
+
+    @Override
+    public void beginField(Field field)
+    {
+        print("field [" + field.getName() + "]");
+        ++level;
+    }
+
+    @Override
+    public void endField(Field field)
+    {
+        --level;
+    }
+
+    @Override
+    public void beginFunction(FunctionType functionType)
+    {
+        print("function [" + functionType.getName() + "]");
+        ++level;
+    }
+
+    @Override
+    public void endFunction(FunctionType functionType)
+    {
+        --level;
+    }
+
+    @Override
+    public void beginParameter(Parameter parameter)
+    {
+        print("parameter [" + parameter.getName() + "]");
+        ++level;
+    }
+
+    @Override
+    public void endParameter(Parameter parameter)
+    {
+        --level;
+    }
+
+    @Override
+    public void enterExpression(Expression expression)
+    {
+        print("expression [\"" + expression.getExpressionString() + "\"]");
+    }
+
+    @Override
+    public void beginArrayType(ArrayType arrayType)
+    {
+        print("arrayType");
+        ++level;
+    }
+
+    @Override
+    public void endArrayType(ArrayType arrayType)
+    {
+        --level;
+    }
+
+    public void beginTypeInstantiation(TypeInstantiation typeInstantiation)
+    {
+        print("typeInstantiation");
+        ++level;
+    }
+
+    public void endTypeInstantiation(TypeInstantiation typeInstantiation)
+    {
+        --level;
+    }
+
+    @Override
+    public void enterTypeReference(TypeReference typeReference)
+    {
+        print("typeReference [" + typeReference.getName() + "]");
     }
 
     @Override
