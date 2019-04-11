@@ -37,7 +37,7 @@ typeDeclaration
 // CONST
 
 constDeclaration
-    :   CONST typeName id ASSIGN constantExpression SEMICOLON
+    :   CONST typeName id ASSIGN expression SEMICOLON
     ;
 
 
@@ -94,7 +94,7 @@ fieldArrayRange
     ;
 
 fieldInitializer
-    :   ASSIGN constantExpression
+    :   ASSIGN expression
     ;
 
 fieldOptionalClause
@@ -162,7 +162,7 @@ enumDeclaration
     ;
 
 enumItem
-    :   id (ASSIGN constantExpression)?
+    :   id (ASSIGN expression)?
     ;
 
 
@@ -262,36 +262,30 @@ parameterDefinition
 
 // EXPRESSION
 
-constantExpression // TODO: do we need this?
-    :   expression
-    ;
-
 expression
-    :   primary                                             // primary atom / parenthesised expression
-    |   expression DOT id                                   // postfix dot
-    |   expression LBRACKET expression RBRACKET             // postfix array
-    |   expression LPAREN RPAREN                            // postfix function call
-    |   (PLUS | MINUS) expression                           // unary +/-
-    |   (TILDE | BANG) expression                           // unary ~/!
-    |   expression (MULTIPLY | DIVIDE | MODULO) expression  // multiplicative
-    |   expression (PLUS | MINUS) expression                // additive
-    |   expression (LSHIFT | RSHIFT) expression             // shift
-    |   expression (LT | LE | GT | GE) expression           // relational
-    |   expression (EQ | NE) expression                     // equality
-    |   expression AND expression                           // bitwise and
-    |   expression XOR expression                           // bitwise xor
-    |   expression OR expression                            // bitwise or
-    |   expression LOGICAL_AND expression                   // logical and
-    |   expression LOGICAL_OR expression                    // logical or
-    |   expression QUESTIONMARK expression COLON expression // ternary operator
-    ;
-
-primary
-    :   LPAREN expression RPAREN
-    |   builtinFunciton
-    |   literal
-    |   INDEX
-    |   id
+    :   operator=LPAREN expression RPAREN                                           # parenthesizedExpression
+    |   expression LPAREN operator=RPAREN                                           # functionCallExpression
+    |   expression operator=LBRACKET expression RBRACKET                            # arrayExpression
+    |   expression operator=DOT id                                                  # dotExpression
+    |   operator=LENGTHOF LPAREN expression RPAREN                                  # lengthofExpression
+    |   operator=SUM LPAREN expression RPAREN                                       # sumExpression
+    |   operator=VALUEOF LPAREN expression RPAREN                                   # valueofExpression
+    |   operator=NUMBITS LPAREN expression RPAREN                                   # numbitsExpression
+    |   operator=(PLUS | MINUS | BANG | TILDE) expression                           # unaryExpression
+    |   expression operator=(MULTIPLY | DIVIDE | MODULO) expression                 # multiplicativeExpression
+    |   expression operator=(PLUS | MINUS) expression                               # additiveExpression
+    |   expression operator=(LSHIFT | RSHIFT) expression                            # shiftExpression
+    |   expression operator=(LT | LE | GT | GE) expression                          # relationalExpression
+    |   expression operator=(EQ | NE) expression                                    # equalityExpression
+    |   expression operator=AND expression                                          # bitwiseAndExpression
+    |   expression operator=XOR expression                                          # bitwiseXorExpression
+    |   expression operator=OR expression                                           # bitwiseOrExpression
+    |   expression operator=LOGICAL_AND expression                                  # logicalAndExpression
+    |   expression operator=LOGICAL_OR expression                                   # logicalOrExpression
+    |   <assoc=right>expression operator=QUESTIONMARK expression COLON expression   # ternaryExpression
+    |   literal                                                                     # literalExpression
+    |   INDEX                                                                       # indexExpression
+    |   id                                                                          # identifierExpression
     ;
 
 literal
@@ -307,31 +301,6 @@ literal
 
 id
     :   ID
-    ;
-
-// BUILTIN FUNCTIONS
-
-builtinFunciton
-    :   lengthof
-    |   numbits
-    |   sum
-    |   valueof
-    ;
-
-lengthof
-    :   LENGTHOF LPAREN expression RPAREN
-    ;
-
-sum
-    :   SUM LPAREN expression RPAREN
-    ;
-
-valueof
-    :   VALUEOF LPAREN expression RPAREN
-    ;
-
-numbits
-    :   NUMBITS LPAREN expression RPAREN
     ;
 
 

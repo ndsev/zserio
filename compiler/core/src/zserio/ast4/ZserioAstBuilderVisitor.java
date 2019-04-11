@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+
 import zserio.antlr.Zserio4Parser;
 import zserio.antlr.Zserio4Parser.TypeArgumentContext;
 import zserio.antlr.Zserio4ParserBaseVisitor;
@@ -166,7 +167,7 @@ public class ZserioAstBuilderVisitor extends Zserio4ParserBaseVisitor<Object>
     @Override
     public Object visitFieldAlignment(Zserio4Parser.FieldAlignmentContext ctx)
     {
-        return new Expression(ctx.DECIMAL_LITERAL().getSymbol(), ctx.DECIMAL_LITERAL().getText(), false);
+        return new Expression(ctx.DECIMAL_LITERAL().getSymbol());
     }
 
     @Override
@@ -186,10 +187,175 @@ public class ZserioAstBuilderVisitor extends Zserio4ParserBaseVisitor<Object>
     }
 
     @Override
-    public Object visitExpression(Zserio4Parser.ExpressionContext ctx)
+    public Object visitParenthesizedExpression(Zserio4Parser.ParenthesizedExpressionContext ctx)
     {
-        final boolean isExplicit = false;
-        return new Expression(ctx.getStart(), ctx.getText(), isExplicit);
+        final Expression operand1 = (Expression)visit(ctx.expression());
+        return new Expression(ctx.getStart(), ctx.operator, operand1);
+    }
+
+    @Override
+    public Object visitFunctionCallExpression(Zserio4Parser.FunctionCallExpressionContext ctx)
+    {
+        final Expression operand1 = (Expression)visit(ctx.expression());
+        return new Expression(ctx.getStart(), ctx.operator, operand1);
+    }
+
+    @Override
+    public Object visitArrayExpression(Zserio4Parser.ArrayExpressionContext ctx)
+    {
+        final Expression operand1 = (Expression)visit(ctx.expression(0));
+        final Expression operand2 = (Expression)visit(ctx.expression(1));
+        return new Expression(ctx.getStart(), ctx.operator, operand1, operand2);
+    }
+
+    @Override
+    public Object visitDotExpression(Zserio4Parser.DotExpressionContext ctx)
+    {
+        final Expression operand1 = (Expression)visit(ctx.expression());
+        final Expression operand2 = new Expression(ctx.id().ID().getSymbol());
+        return new Expression(ctx.getStart(), ctx.operator, operand1, operand2);
+    }
+
+    @Override
+    public Object visitLengthofExpression(Zserio4Parser.LengthofExpressionContext ctx)
+    {
+        final Expression operand1 = (Expression)visit(ctx.expression());
+        return new Expression(ctx.getStart(), ctx.operator, operand1);
+    }
+
+    @Override
+    public Object visitSumExpression(Zserio4Parser.SumExpressionContext ctx)
+    {
+        final Expression operand1 = (Expression)visit(ctx.expression());
+        return new Expression(ctx.getStart(), ctx.operator, operand1);
+    }
+
+    @Override
+    public Object visitValueofExpression(Zserio4Parser.ValueofExpressionContext ctx)
+    {
+        final Expression operand1 = (Expression)visit(ctx.expression());
+        return new Expression(ctx.getStart(), ctx.operator, operand1);
+    }
+
+    @Override
+    public Object visitNumbitsExpression(Zserio4Parser.NumbitsExpressionContext ctx)
+    {
+        final Expression operand1 = (Expression)visit(ctx.expression());
+        return new Expression(ctx.getStart(), ctx.operator, operand1);
+    }
+
+    @Override
+    public Object visitUnaryExpression(Zserio4Parser.UnaryExpressionContext ctx)
+    {
+        final Expression operand1 = (Expression)visit(ctx.expression());
+        return new Expression(ctx.getStart(), ctx.operator, operand1);
+    }
+
+    @Override
+    public Object visitMultiplicativeExpression(Zserio4Parser.MultiplicativeExpressionContext ctx)
+    {
+        final Expression operand1 = (Expression)visit(ctx.expression(0));
+        final Expression operand2 = (Expression)visit(ctx.expression(1));
+        return new Expression(ctx.getStart(), ctx.operator, operand1, operand2);
+    }
+
+    @Override
+    public Object visitAdditiveExpression(Zserio4Parser.AdditiveExpressionContext ctx)
+    {
+        final Expression operand1 = (Expression)visit(ctx.expression(0));
+        final Expression operand2 = (Expression)visit(ctx.expression(1));
+        return new Expression(ctx.getStart(), ctx.operator, operand1, operand2);
+    }
+
+    @Override
+    public Object visitShiftExpression(Zserio4Parser.ShiftExpressionContext ctx)
+    {
+        final Expression operand1 = (Expression)visit(ctx.expression(0));
+        final Expression operand2 = (Expression)visit(ctx.expression(1));
+        return new Expression(ctx.getStart(), ctx.operator, operand1, operand2);
+    }
+
+    @Override
+    public Object visitRelationalExpression(Zserio4Parser.RelationalExpressionContext ctx)
+    {
+        final Expression operand1 = (Expression)visit(ctx.expression(0));
+        final Expression operand2 = (Expression)visit(ctx.expression(1));
+        return new Expression(ctx.getStart(), ctx.operator, operand1, operand2);
+    }
+
+    @Override
+    public Object visitEqualityExpression(Zserio4Parser.EqualityExpressionContext ctx)
+    {
+        final Expression operand1 = (Expression)visit(ctx.expression(0));
+        final Expression operand2 = (Expression)visit(ctx.expression(1));
+        return new Expression(ctx.getStart(), ctx.operator, operand1, operand2);
+    }
+
+    @Override
+    public Object visitBitwiseAndExpression(Zserio4Parser.BitwiseAndExpressionContext ctx)
+    {
+        final Expression operand1 = (Expression)visit(ctx.expression(0));
+        final Expression operand2 = (Expression)visit(ctx.expression(1));
+        return new Expression(ctx.getStart(), ctx.operator, operand1, operand2);
+    }
+
+    @Override
+    public Object visitBitwiseXorExpression(Zserio4Parser.BitwiseXorExpressionContext ctx)
+    {
+        final Expression operand1 = (Expression)visit(ctx.expression(0));
+        final Expression operand2 = (Expression)visit(ctx.expression(1));
+        return new Expression(ctx.getStart(), ctx.operator, operand1, operand2);
+    }
+
+    @Override
+    public Object visitBitwiseOrExpression(Zserio4Parser.BitwiseOrExpressionContext ctx)
+    {
+        final Expression operand1 = (Expression)visit(ctx.expression(0));
+        final Expression operand2 = (Expression)visit(ctx.expression(1));
+        return new Expression(ctx.getStart(), ctx.operator, operand1, operand2);
+    }
+
+    @Override
+    public Object visitLogicalAndExpression(Zserio4Parser.LogicalAndExpressionContext ctx)
+    {
+        final Expression operand1 = (Expression)visit(ctx.expression(0));
+        final Expression operand2 = (Expression)visit(ctx.expression(1));
+        return new Expression(ctx.getStart(), ctx.operator, operand1, operand2);
+    }
+
+    @Override
+    public Object visitLogicalOrExpression(Zserio4Parser.LogicalOrExpressionContext ctx)
+    {
+        final Expression operand1 = (Expression)visit(ctx.expression(0));
+        final Expression operand2 = (Expression)visit(ctx.expression(1));
+        return new Expression(ctx.getStart(), ctx.operator, operand1, operand2);
+    }
+
+    @Override
+    public Object visitTernaryExpression(Zserio4Parser.TernaryExpressionContext ctx)
+    {
+        final Expression operand1 = (Expression)visit(ctx.expression(0));
+        final Expression operand2 = (Expression)visit(ctx.expression(1));
+        final Expression operand3 = (Expression)visit(ctx.expression(2));
+        return new Expression(ctx.getStart(), ctx.operator, operand1, operand2, operand3);
+    }
+
+    @Override
+    public Object visitLiteralExpression(Zserio4Parser.LiteralExpressionContext ctx)
+    {
+        return new Expression(ctx.literal().getStart());
+    }
+
+    @Override
+    public Object visitIndexExpression(Zserio4Parser.IndexExpressionContext ctx)
+    {
+        return new Expression(ctx.INDEX().getSymbol());
+    }
+
+    @Override
+    public Object visitIdentifierExpression(Zserio4Parser.IdentifierExpressionContext ctx)
+    {
+        return new Expression(ctx.id().ID().getSymbol());
     }
 
     @Override
@@ -240,9 +406,9 @@ public class ZserioAstBuilderVisitor extends Zserio4ParserBaseVisitor<Object>
     public Object visitTypeArgument(Zserio4Parser.TypeArgumentContext ctx)
     {
         if (ctx.EXPLICIT() != null)
-            return new Expression(ctx.getStart(), ctx.id().getText(), true);
+            return new Expression(ctx.getStart(), ctx.id().ID().getSymbol(), true);
         else
-            return visitExpression(ctx.expression());
+            return visit(ctx.expression());
     }
 
     @Override

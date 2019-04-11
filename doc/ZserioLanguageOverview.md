@@ -873,24 +873,24 @@ Otherwise, it has the value of `expr2`.
 
 ### Operator Precedence
 
-In the following list, operators are grouped by precedence in ascending order. Operators on the bottom line
+In the following list, operators are grouped by precedence in descending order. Operators on the  line
 have the highest precedence and are evaluated first. All operators on the same line have the same precedence
-and are evaluated left to right, except assignment operators which are evaluated right to left.
+and are evaluated left to right, except ternary operator which are evaluated right to left.
 
-- `?` `:`
-- `||`
-- `&&`
-- `|`
-- `^`
-- `&`
-- `==` `!=`
-- `<` `>` `<=` `>=`
-- `<<` `>>`
-- `+` `-`
-- `*` `/` `%`
-- unary `+` `-` `~` `!`
+- `()`, `[]`, `.`
 - `lengthof` `sum` `valueof` `numbits`
-- `[]` `()` `.`
+- unary `+` `-` `~` `!`
+- `*` `/` `%`
+- `+` `-`
+- `<<` `>>`
+- `<` `>` `<=` `>=`
+- `==` `!=`
+- `&`
+- `^`
+- `|`
+- `&&`
+- `||`
+- `?` `:`
 
 [top](#language-guide)
 
