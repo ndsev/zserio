@@ -69,13 +69,25 @@ public class PrintStringTreeListener implements ZserioListener
     @Override
     public void beginStructureType(StructureType structureType)
     {
-        print("structure [" + structureType.getPackage().getPackageName() + ", "
-                + structureType.getName() + "]");
+        print("structureType [" + structureType.getName() + "]");
         ++level;
     }
 
     @Override
     public void endStructureType(StructureType structureType)
+    {
+        --level;
+    }
+
+    @Override
+    public void beginChoiceType(ChoiceType choiceType)
+    {
+        print("choiceType [" + choiceType.getName() + "]");
+        ++level;
+    }
+
+    @Override
+    public void endChoiceType(ChoiceType choiceType)
     {
         --level;
     }
@@ -89,6 +101,28 @@ public class PrintStringTreeListener implements ZserioListener
 
     @Override
     public void endField(Field field)
+    {
+        --level;
+    }
+
+    @Override public void beginChoiceCase(ChoiceCase choiceCase)
+    {
+        print("choiceCase");
+        ++level;
+    }
+
+    @Override public void endChoiceCase(ChoiceCase choiceCase)
+    {
+        --level;
+    }
+
+    @Override public void beginChoiceDefault(ChoiceDefault choiceDefault)
+    {
+        print("choiceDefault");
+        ++level;
+    }
+
+    @Override public void endChoiceDefault(ChoiceDefault choiceDefault)
     {
         --level;
     }

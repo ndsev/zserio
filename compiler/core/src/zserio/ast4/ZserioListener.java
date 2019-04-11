@@ -18,9 +18,16 @@ public interface ZserioListener
     void endSubtype(Subtype subtypeType);
     void beginStructureType(StructureType structureType);
     void endStructureType(StructureType structureType);
+    void beginChoiceType(ChoiceType choiceType);
+    void endChoiceType(ChoiceType choiceType);
 
     void beginField(Field field);
     void endField(Field field);
+
+    void beginChoiceCase(ChoiceCase choiceCase);
+    void endChoiceCase(ChoiceCase choiceCase);
+    void beginChoiceDefault(ChoiceDefault choiceDefault);
+    void endChoiceDefault(ChoiceDefault choiceDefault);
 
     void beginFunction(FunctionType functionType);
     void endFunction(FunctionType functionType);
@@ -65,9 +72,16 @@ public interface ZserioListener
         @Override public void endSubtype(Subtype subtypeType) {}
         @Override public void beginStructureType(StructureType structureType) {}
         @Override public void endStructureType(StructureType structureType) {}
+        @Override public void beginChoiceType(ChoiceType choiceType) {}
+        @Override public void endChoiceType(ChoiceType choiceType) {}
 
         @Override public void beginField(Field field) {}
         @Override public void endField(Field field) {}
+
+        @Override public void beginChoiceCase(ChoiceCase choiceCase) {}
+        @Override public void endChoiceCase(ChoiceCase choiceCase) {}
+        @Override public void beginChoiceDefault(ChoiceDefault choiceDefault) {}
+        @Override public void endChoiceDefault(ChoiceDefault choiceDefault) {}
 
         @Override public void beginFunction(FunctionType functionType) {}
         @Override public void endFunction(FunctionType functionType) {}

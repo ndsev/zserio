@@ -108,16 +108,12 @@ fieldConstraint
 // CHOICE
 
 choiceDeclaration
-    :   CHOICE id parameterList ON choiceTag
+    :   CHOICE id parameterList ON expression
         LBRACE
         choiceCases*
         choiceDefault?
         functionDefinition*
         RBRACE
-    ;
-
-choiceTag
-    :   expression
     ;
 
 choiceCases

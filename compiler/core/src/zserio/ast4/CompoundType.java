@@ -138,10 +138,10 @@ public abstract class CompoundType extends AstNodeBase implements ZserioScopedTy
      *
      * @return List of functions which this compound type contains.
      */
-    /*public List<FunctionType> getFunctions()
+    public List<FunctionType> getFunctions()
     {
         return functions;
-    }*/ // TODO:
+    }
 
     /**
      * Checks if this compound type contains itself as an optional none array field.
@@ -271,6 +271,9 @@ public abstract class CompoundType extends AstNodeBase implements ZserioScopedTy
 
         for (Field field : fields)
             field.walk(listener);
+
+        for (FunctionType function : functions)
+            function.walk(listener);
     }
 
     /*protected void addFieldsToUsedTypeSet(Set<ZserioType> usedTypeSet)
