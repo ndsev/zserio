@@ -20,6 +20,8 @@ public interface ZserioListener
     void endStructureType(StructureType structureType);
     void beginChoiceType(ChoiceType choiceType);
     void endChoiceType(ChoiceType choiceType);
+    void beginUnionType(UnionType unionType);
+    void endUnionType(UnionType unionType);
 
     void beginField(Field field);
     void endField(Field field);
@@ -74,6 +76,8 @@ public interface ZserioListener
         @Override public void endStructureType(StructureType structureType) {}
         @Override public void beginChoiceType(ChoiceType choiceType) {}
         @Override public void endChoiceType(ChoiceType choiceType) {}
+        @Override public void beginUnionType(UnionType unionType) {}
+        @Override public void endUnionType(UnionType unionType) {}
 
         @Override public void beginField(Field field) {}
         @Override public void endField(Field field) {}

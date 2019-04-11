@@ -93,6 +93,19 @@ public class PrintStringTreeListener implements ZserioListener
     }
 
     @Override
+    public void beginUnionType(UnionType unionType)
+    {
+        print("unionType [" + unionType.getName() + "]");
+        ++level;
+    }
+
+    @Override
+    public void endUnionType(UnionType unionType)
+    {
+        --level;
+    }
+
+    @Override
     public void beginField(Field field)
     {
         print("field [" + field.getName() + "]");

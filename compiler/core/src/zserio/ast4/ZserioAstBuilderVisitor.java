@@ -27,7 +27,7 @@ public class ZserioAstBuilderVisitor extends Zserio4ParserBaseVisitor<Object>
         // imports
         final List<Import> imports = new ArrayList<Import>();
         for (Zserio4Parser.ImportDeclarationContext importCtx : ctx.importDeclaration())
-            imports.add((Import)visitImportDeclaration(importCtx));
+            imports.add(visitImportDeclaration(importCtx));
 
         // package
         Package unitPackage = null;
@@ -90,11 +90,15 @@ public class ZserioAstBuilderVisitor extends Zserio4ParserBaseVisitor<Object>
     @Override
     public ConstType visitConstDeclaration(Zserio4Parser.ConstDeclarationContext ctx)
     {
-        final ZserioType constType = visitTypeName(ctx.typeName());
+        final ZserioType type = visitTypeName(ctx.typeName());
         final String name = ctx.id().getText();
         final Expression valueExpression = (Expression)visit(ctx.expression());
 
-        return new ConstType(ctx.getStart(), currentPackage, constType, name, valueExpression);
+        final ConstType constType = new ConstType(ctx.getStart(), currentPackage, type, name,
+                valueExpression);
+        currentPackage.setLocalType(constType, ctx.id().getStart());
+
+        return constType;
     }
 
     @Override
@@ -139,15 +143,15 @@ public class ZserioAstBuilderVisitor extends Zserio4ParserBaseVisitor<Object>
         final boolean isAutoOptional = ctx.OPTIONAL() != null;
 
         final Expression alignmentExpr = ctx.fieldAlignment() != null
-                ? (Expression)visitFieldAlignment(ctx.fieldAlignment()) : null;
+                ? visitFieldAlignment(ctx.fieldAlignment()) : null;
         final Expression offsetExpr = ctx.fieldOffset() != null
-                ? (Expression)visitFieldOffset(ctx.fieldOffset()) : null;
+                ? (Expression)visit(ctx.fieldOffset().expression()) : null;
         final Expression initializerExpr = ctx.fieldInitializer() != null
-                ? (Expression)visitFieldInitializer(ctx.fieldInitializer()) : null;
+                ? (Expression)visit(ctx.fieldInitializer().expression()) : null;
         final Expression optionalClauseExpr = ctx.fieldOptionalClause() != null
-                ? (Expression)visitFieldOptionalClause(ctx.fieldOptionalClause()) : null;
+                ? (Expression)visit(ctx.fieldOptionalClause().expression()) : null;
         final Expression constraintExpr = ctx.fieldConstraint() != null
-                ? (Expression)visitFieldConstraint(ctx.fieldConstraint()) : null;
+                ? (Expression)visit(ctx.fieldConstraint().expression()) : null;
 
         return new Field(ctx.getStart(), type, name, isAutoOptional, alignmentExpr, offsetExpr, initializerExpr,
                 optionalClauseExpr, constraintExpr);
@@ -163,20 +167,27 @@ public class ZserioAstBuilderVisitor extends Zserio4ParserBaseVisitor<Object>
     public ChoiceType visitChoiceDeclaration(Zserio4Parser.ChoiceDeclarationContext ctx)
     {
         final String name = ctx.id().getText();
+
         final List<Parameter> parameters = visitParameterList(ctx.parameterList());
+
         final Expression selectorExpression = (Expression)visit(ctx.expression());
+
         final List<ChoiceCase> choiceCases = new ArrayList<ChoiceCase>();
         for (Zserio4Parser.ChoiceCasesContext choiceCasesCtx : ctx.choiceCases())
             choiceCases.add(visitChoiceCases(choiceCasesCtx));
+
         final ChoiceDefault choiceDefault = ctx.choiceDefault() != null
                 ? visitChoiceDefault(ctx.choiceDefault()) : null;
 
         final List<FunctionType> functions = new ArrayList<FunctionType>();
         for (Zserio4Parser.FunctionDefinitionContext functionDefinitionCtx : ctx.functionDefinition())
-            functions.add((FunctionType)visitFunctionDefinition(functionDefinitionCtx));
+            functions.add(visitFunctionDefinition(functionDefinitionCtx));
 
-        return new ChoiceType(ctx.getStart(), currentPackage, name, parameters, selectorExpression,
-                choiceCases, choiceDefault, functions);
+        final ChoiceType choiceType = new ChoiceType(ctx.getStart(), currentPackage, name, parameters,
+                selectorExpression, choiceCases, choiceDefault, functions);
+        currentPackage.setLocalType(choiceType, ctx.id().getStart());
+
+        return choiceType;
     }
 
     @Override
@@ -216,10 +227,32 @@ public class ZserioAstBuilderVisitor extends Zserio4ParserBaseVisitor<Object>
         final Expression initializerExpr = null;
         final Expression optionalClauseExpr = null;
         final Expression constraintExpr = ctx.fieldConstraint() != null
-                ? (Expression)visitFieldConstraint(ctx.fieldConstraint()) : null;
+                ? (Expression)visit(ctx.fieldConstraint().expression()) : null;
 
         return new Field(ctx.getStart(), type, name, isAutoOptional, alignmentExpr, offsetExpr, initializerExpr,
                 optionalClauseExpr, constraintExpr);
+    }
+
+    @Override
+    public UnionType visitUnionDeclaration(Zserio4Parser.UnionDeclarationContext ctx)
+    {
+        final String name = ctx.id().getText();
+
+        final List<Parameter> parameters = visitParameterList(ctx.parameterList());
+
+        final List<Field> fields = new ArrayList<Field>();
+        for (Zserio4Parser.UnionFieldDefinitionContext fieldCtx : ctx.unionFieldDefinition())
+            fields.add(visitChoiceFieldDefinition(fieldCtx.choiceFieldDefinition()));
+
+        final List<FunctionType> functions = new ArrayList<FunctionType>();
+        for (Zserio4Parser.FunctionDefinitionContext functionDefinitionCtx : ctx.functionDefinition())
+            functions.add(visitFunctionDefinition(functionDefinitionCtx));
+
+        final UnionType unionType = new UnionType(ctx.getStart(), currentPackage, name, parameters, fields,
+                functions);
+        currentPackage.setLocalType(unionType, ctx.id().getStart());
+
+        return unionType;
     }
 
     @Override
@@ -247,7 +280,7 @@ public class ZserioAstBuilderVisitor extends Zserio4ParserBaseVisitor<Object>
     @Override
     public Object visitParameterDefinition(Zserio4Parser.ParameterDefinitionContext ctx)
     {
-        return new Parameter(ctx.getStart(), (ZserioType)visitTypeName(ctx.typeName()), ctx.id().getText());
+        return new Parameter(ctx.getStart(), visitTypeName(ctx.typeName()), ctx.id().getText());
     }
 
     @Override
@@ -459,7 +492,7 @@ public class ZserioAstBuilderVisitor extends Zserio4ParserBaseVisitor<Object>
         {
             final List<Expression> arguments = new ArrayList<Expression>();
             for (Zserio4Parser.TypeArgumentContext typeArgumentCtx : ctx.typeArgumentList().typeArgument())
-                arguments.add((Expression)visitTypeArgument(typeArgumentCtx));
+                arguments.add(visitTypeArgument(typeArgumentCtx));
             return new TypeInstantiation(ctx.getStart(), typeReference, arguments);
         }
         else
@@ -492,14 +525,14 @@ public class ZserioAstBuilderVisitor extends Zserio4ParserBaseVisitor<Object>
     @Override
     public UnsignedBitFieldType visitUnsignedBitFieldType(Zserio4Parser.UnsignedBitFieldTypeContext ctx)
     {
-        final Expression lengthExpression = (Expression)visitBitFieldLength(ctx.bitFieldLength());
+        final Expression lengthExpression = visitBitFieldLength(ctx.bitFieldLength());
         return new UnsignedBitFieldType(ctx.getStart(), lengthExpression);
     }
 
     @Override
     public SignedBitFieldType visitSignedBitFieldType(Zserio4Parser.SignedBitFieldTypeContext ctx)
     {
-        final Expression lengthExpression = (Expression)visitBitFieldLength(ctx.bitFieldLength());
+        final Expression lengthExpression = visitBitFieldLength(ctx.bitFieldLength());
         return new SignedBitFieldType(ctx.getStart(), lengthExpression);
     }
 
@@ -567,7 +600,7 @@ public class ZserioAstBuilderVisitor extends Zserio4ParserBaseVisitor<Object>
 
     private ZserioType getFieldType(Zserio4Parser.FieldTypeIdContext ctx)
     {
-        final ZserioType type = (ZserioType)visitTypeReference(ctx.typeReference());
+        final ZserioType type = visitTypeReference(ctx.typeReference());
         if (ctx.fieldArrayRange() == null)
             return type;
 

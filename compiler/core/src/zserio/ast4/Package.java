@@ -94,16 +94,16 @@ public class Package extends AstNodeBase
      * Stores a type in the package types map.
      *
      * @param type Zserio type to add.
-     * @param token Parse tree token defining location of the type name.
+     * @param nameToken Parse tree token defining location of the type name.
      *
      * @throws ParserException Throws if type has been already defined in the current package.
      */
-    protected void setLocalType(ZserioType type, Token token) throws ParserException
+    protected void setLocalType(ZserioType type, Token nameToken) throws ParserException
     {
         final String typeName = type.getName();
         final ZserioType addedType = localTypes.put(typeName, type);
         if (addedType != null)
-            throw new ParserException(token, "'" + typeName + "' is already defined in this package!");
+            throw new ParserException(nameToken, "'" + typeName + "' is already defined in this package!");
     }
 
     /**

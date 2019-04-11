@@ -114,10 +114,11 @@ choiceDeclaration
         choiceDefault?
         functionDefinition*
         RBRACE
+        SEMICOLON
     ;
 
 choiceCases
-    :   choiceCase+ choiceFieldDefinition?
+    :   choiceCase+ choiceFieldDefinition? SEMICOLON
     ;
 
 choiceCase
@@ -125,11 +126,11 @@ choiceCase
     ;
 
 choiceDefault
-    :   DEFAULT COLON choiceFieldDefinition?
+    :   DEFAULT COLON choiceFieldDefinition? SEMICOLON
     ;
 
 choiceFieldDefinition
-    :   fieldTypeId fieldConstraint? SEMICOLON
+    :   fieldTypeId fieldConstraint?
     ;
 
 
@@ -141,10 +142,11 @@ unionDeclaration
         unionFieldDefinition*
         functionDefinition*
         RBRACE
+        SEMICOLON
     ;
 
 unionFieldDefinition
-    :   choiceFieldDefinition
+    :   choiceFieldDefinition SEMICOLON
     ;
 
 
@@ -155,6 +157,7 @@ enumDeclaration
         LBRACE
         enumItem (COMMA enumItem)* COMMA?
         RBRACE
+        SEMICOLON
     ;
 
 enumItem
@@ -171,6 +174,7 @@ sqlTableDeclaration
         sqlConstraintDefinition?
         sqlWithoutRowId?
         RBRACE
+        SEMICOLON
     ;
 
 sqlTableFieldDefinition
@@ -197,6 +201,7 @@ sqlDatabaseDefinition
         LBRACE
         sqlDatabaseFieldDefinition+
         RBRACE
+        SEMICOLON
     ;
 
 sqlDatabaseFieldDefinition
@@ -215,6 +220,7 @@ serviceDefinition
         LBRACE
         rpcDeclaration*
         RBRACE
+        SEMICOLON
     ;
 
 rpcDeclaration
