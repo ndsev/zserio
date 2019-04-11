@@ -12,6 +12,8 @@ public interface ZserioListener
 
     void enterImport(Import unitImport);
 
+    void beginConstType(ConstType constType);
+    void endConstType(ConstType constType);
     void beginSubtype(Subtype subtypeType);
     void endSubtype(Subtype subtypeType);
     void beginStructureType(StructureType structureType);
@@ -38,8 +40,8 @@ public interface ZserioListener
 
     void enterStdIntegerType(StdIntegerType stdIntegerType);
     void enterVarIntegerType(VarIntegerType varIntegerType);
-    void enterUnsignedBitFieldType(UnsignedBitFieldType unsignedBitFieldType);
-    void enterSignedBitFieldType(SignedBitFieldType signedBitFieldType);
+    void beginBitFieldType(BitFieldType bitFieldType);
+    void endBitFieldType(BitFieldType bitFieldType);
     void enterBooleanType(BooleanType booleanType);
     void enterStringType(StringType stringType);
     void enterFloatType(FloatType floatType);
@@ -56,6 +58,8 @@ public interface ZserioListener
 
         @Override public void enterImport(Import unitImport) {}
 
+        @Override public void beginConstType(ConstType constType) {}
+        @Override public void endConstType(ConstType constType) {}
         @Override public void beginSubtype(Subtype subtypeType) {}
         @Override public void endSubtype(Subtype subtypeType) {}
         @Override public void beginStructureType(StructureType structureType) {}
@@ -82,8 +86,8 @@ public interface ZserioListener
 
         @Override public void enterStdIntegerType(StdIntegerType stdIntegerType) {}
         @Override public void enterVarIntegerType(VarIntegerType varIntegerType) {}
-        @Override public void enterUnsignedBitFieldType(UnsignedBitFieldType unsignedBitFieldType) {}
-        @Override public void enterSignedBitFieldType(SignedBitFieldType signedBitFieldType) {}
+        @Override public void beginBitFieldType(BitFieldType bitFieldType) {}
+        @Override public void endBitFieldType(BitFieldType bitFieldType) {}
         @Override public void enterBooleanType(BooleanType booleanType) {}
         @Override public void enterStringType(StringType stringType) {}
         @Override public void enterFloatType(FloatType floatType) {}

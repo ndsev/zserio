@@ -9,12 +9,12 @@ import zserio.ast4.ZserioType;
 
 public class Subtype extends AstNodeBase implements ZserioType
 {
-    public Subtype(Token token, Package pkg, String name, ZserioType targetType)
+    public Subtype(Token token, Package pkg, ZserioType targetType, String name)
     {
         super(token);
         this.pkg = pkg;
-        this.name = name;
         this.targetType = targetType;
+        this.name = name;
     }
 
     @Override
@@ -110,8 +110,8 @@ public class Subtype extends AstNodeBase implements ZserioType
 
     private final Package pkg;
 
-    private final String name;
     private final ZserioType targetType;
+    private final String name;
     private ResolvingState resolvingState = ResolvingState.UNRESOLVED;
     private ZserioType targetBaseType;
 

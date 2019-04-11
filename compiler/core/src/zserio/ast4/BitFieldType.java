@@ -10,10 +10,21 @@ import org.antlr.v4.runtime.Token;
  */
 public abstract class BitFieldType extends IntegerType
 {
-    public BitFieldType(Token token)
+    public BitFieldType(Token token, Expression lengthExpression)
     {
-        // TODO: get length expression in constructor
         super(token);
+
+        this.lengthExpression = lengthExpression;
+    }
+
+    @Override
+    public void walk(ZserioListener listener)
+    {
+        listener.beginBitFieldType(this);
+
+        lengthExpression.walk(listener);
+
+        listener.endBitFieldType(this);
     }
 
     /**
@@ -23,11 +34,10 @@ public abstract class BitFieldType extends IntegerType
      *
      * @return Length expression.
      */
-    // TODO:
-/*    public Expression getLengthExpression()
+    public Expression getLengthExpression()
     {
         return lengthExpression;
-    }*/
+    }
 
     /**
      * Returns the number of bits in this bitfield.
@@ -111,8 +121,7 @@ public abstract class BitFieldType extends IntegerType
 
     protected abstract int getMaxBitFieldBits();
 
-    // TODO:
-    //private Expression lengthExpression = null;
+    private final Expression lengthExpression;
     private Integer bitSize;
     private int maxBitSize;
     private boolean areBitSizesEvaluated = false;

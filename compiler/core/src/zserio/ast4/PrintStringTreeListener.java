@@ -41,6 +41,19 @@ public class PrintStringTreeListener implements ZserioListener
     }
 
     @Override
+    public void beginConstType(ConstType constType)
+    {
+        print("constType [" + constType.getName() + "]");
+        ++level;
+    }
+
+    @Override
+    public void endConstType(ConstType constType)
+    {
+        --level;
+    }
+
+    @Override
     public void beginSubtype(Subtype subtype)
     {
         print("subtype [" + subtype.getName() + "]");
@@ -155,15 +168,17 @@ public class PrintStringTreeListener implements ZserioListener
     }
 
     @Override
-    public void enterUnsignedBitFieldType(UnsignedBitFieldType unsignedBitFieldType)
+    public void beginBitFieldType(BitFieldType bitFieldType)
     {
-        print("unsignedBitFieldType [" + "]"); // TODO: length expression
+        print("bitFieldType [" + (bitFieldType.isSigned() ? "signed" : "unsigned") + ", " +
+                bitFieldType.getLengthExpression().getExpressionString() + "]");
+        ++level;
     }
 
     @Override
-    public void enterSignedBitFieldType(SignedBitFieldType signedBitFieldType)
+    public void endBitFieldType(BitFieldType bitFieldType)
     {
-        print("signedBitFieldType [" + "]"); // TODO: length expression
+        --level;
     }
 
     @Override

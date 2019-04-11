@@ -11,9 +11,9 @@ import org.antlr.v4.runtime.Token;
  */
 public class SignedBitFieldType extends BitFieldType
 {
-    public SignedBitFieldType(Token token)
+    public SignedBitFieldType(Token token, Expression lengthExpression)
     {
-        super(token);
+        super(token, lengthExpression);
     }
 
     /*@Override
@@ -21,12 +21,6 @@ public class SignedBitFieldType extends BitFieldType
     {
         visitor.visitSignedBitFieldType(this);
     }*/
-
-    @Override
-    public void walk(ZserioListener listener)
-    {
-        listener.enterSignedBitFieldType(this);
-    }
 
     @Override
     public BigInteger getUpperBound()

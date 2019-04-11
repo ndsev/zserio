@@ -81,7 +81,7 @@ fieldAlignment
     ;
 
 fieldOffset
-    :   expression COLON // TODO: try to prune in the grammar!
+    :   expression COLON
     ;
 
 fieldTypeId

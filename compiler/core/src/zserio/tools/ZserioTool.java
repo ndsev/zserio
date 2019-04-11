@@ -161,7 +161,7 @@ public class ZserioTool
         parseImportedPackages(astBuilderVisitor, translationUnit);
 
         final Root rootNode = astBuilderVisitor.getAst();
-        //rootNode.resolveReferences();
+        rootNode.resolveReferences();
 
         // TODO: scope evaluation
         // TODO: expression evaluation
