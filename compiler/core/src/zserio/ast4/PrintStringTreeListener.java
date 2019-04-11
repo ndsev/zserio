@@ -120,9 +120,16 @@ public class PrintStringTreeListener implements ZserioListener
     }
 
     @Override
-    public void enterExpression(Expression expression)
+    public void beginExpression(Expression expression)
     {
         print("expression [\"" + expression.getExpressionString() + "\"]");
+        ++level;
+    }
+
+    @Override
+    public void endExpression(Expression expression)
+    {
+        --level;
     }
 
     @Override

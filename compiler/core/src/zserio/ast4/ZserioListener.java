@@ -28,7 +28,8 @@ public interface ZserioListener
     void beginParameter(Parameter parameter);
     void endParameter(Parameter parameter);
 
-    void enterExpression(Expression expresssion);
+    void beginExpression(Expression expresssion);
+    void endExpression(Expression expresssion);
 
     void beginArrayType(ArrayType arrayType);
     void endArrayType(ArrayType arrayType);
@@ -74,7 +75,8 @@ public interface ZserioListener
         @Override public void beginParameter(Parameter parameter) {}
         @Override public void endParameter(Parameter parameter) {}
 
-        @Override public void enterExpression(Expression expresssion) {}
+        @Override public void beginExpression(Expression expresssion) {}
+        @Override public void endExpression(Expression expresssion) {}
 
         @Override public void beginArrayType(ArrayType arrayType) {}
         @Override public void endArrayType(ArrayType arrayType) {}
