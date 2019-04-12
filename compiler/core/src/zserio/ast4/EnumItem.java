@@ -4,8 +4,6 @@ import java.math.BigInteger;
 
 import org.antlr.v4.runtime.Token;
 
-import zserio.ast.Expression;
-
 public class EnumItem extends AstNodeBase
 {
     public EnumItem(Token locationToken, String name, Expression valueExpression)
@@ -20,35 +18,35 @@ public class EnumItem extends AstNodeBase
     public void walk(ZserioListener listener)
     {
         listener.beginEnumItem(this);
-        // TODO
+        if (valueExpression != null)
+            valueExpression.walk(listener);
         listener.endEnumItem(this);
     }
 
     /**
-     * Evaluates enumeration item value.
+     * Evaluates enumeration item value expression.
      *
      * @param defaultValue Enumeration item value to use if value expression has not been specified.
      *
      * @throws ParserException Throws in case of any error during evaluation.
      */
-    public void evaluateValue(BigInteger defaultValue) throws ParserException
+    public void evaluateValueExpression(BigInteger defaultValue) throws ParserException
     {
-        /* TODO
         if (valueExpression != null)
         {
             // there is a value for this enumeration item => evaluate and check value expression
+            /* TODO
             valueExpression.evaluateTree();
 
             if (valueExpression.getExprType() != Expression.ExpressionType.INTEGER)
                 throw new ParserException(valueExpression, "Enumeration item '" + getName() +
                         "' has non-integer value!");
-            value = valueExpression.getIntegerValue();
+            value = valueExpression.getIntegerValue(); */
         }
         else
         {
             value = defaultValue;
         }
-        */
     }
 
     /**
@@ -116,5 +114,5 @@ public class EnumItem extends AstNodeBase
     private final Expression valueExpression;
 
     private EnumType enumType = null;
-    private BigInteger value;
+    private BigInteger value = null;
 }

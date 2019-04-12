@@ -288,6 +288,30 @@ public class ZserioAstBuilderVisitor extends Zserio4ParserBaseVisitor<Object>
     }
 
     @Override
+    public EnumType visitEnumDeclaration(Zserio4Parser.EnumDeclarationContext ctx)
+    {
+        final ZserioType zserioEnumType = visitTypeName(ctx.typeName());
+        final String name = ctx.id().getText();
+        final List<EnumItem> enumItems = new ArrayList<EnumItem>();
+        for (Zserio4Parser.EnumItemContext enumItemCtx : ctx.enumItem())
+            enumItems.add(visitEnumItem(enumItemCtx));
+
+        final EnumType enumType = new EnumType(ctx.getStart(), currentPackage, zserioEnumType, name, enumItems);
+        currentPackage.setLocalType(enumType, ctx.id().getStart());
+
+        return enumType;
+    }
+
+    @Override
+    public EnumItem visitEnumItem(Zserio4Parser.EnumItemContext ctx)
+    {
+        final String name = ctx.id().getText();
+        final Expression valueExpression = (Expression)visit(ctx.expression());
+
+        return new EnumItem(ctx.getStart(), name, valueExpression);
+    }
+
+    @Override
     public SqlTableType visitSqlTableDeclaration(Zserio4Parser.SqlTableDeclarationContext ctx)
     {
         final String name = ctx.id(0).getText();
