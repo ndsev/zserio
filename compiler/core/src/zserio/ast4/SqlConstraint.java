@@ -314,7 +314,7 @@ public class SqlConstraint extends AstNodeBase
 
     private CompoundType compoundType = null;
 
-    private Expression constraintExpr = null;
+    private final Expression constraintExpr;
     private Expression translatedConstraintExpr = null;
     private Expression translatedFieldConstraintExpr = null;
 

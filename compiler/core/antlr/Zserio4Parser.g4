@@ -224,7 +224,11 @@ serviceDefinition
     ;
 
 rpcDeclaration
-    :   RPC STREAM? qualifiedName id LPAREN STREAM? qualifiedName RPAREN SEMICOLON
+    :   RPC rpcTypeName id LPAREN rpcTypeName RPAREN SEMICOLON
+    ;
+
+rpcTypeName
+    :   STREAM? qualifiedName
     ;
 
 

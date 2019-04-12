@@ -359,6 +359,35 @@ public class ZserioAstBuilderVisitor extends Zserio4ParserBaseVisitor<Object>
     }
 
     @Override
+    public ServiceType visitServiceDefinition(Zserio4Parser.ServiceDefinitionContext ctx)
+    {
+        final String name = ctx.id().getText();
+
+        List<Rpc> rpcs = new ArrayList<Rpc>();
+        for (Zserio4Parser.RpcDeclarationContext rpcDeclarationCtx : ctx.rpcDeclaration())
+            rpcs.add(visitRpcDeclaration(rpcDeclarationCtx));
+
+        final ServiceType serviceType = new ServiceType(ctx.getStart(), currentPackage, name, rpcs);
+        currentPackage.setLocalType(serviceType, ctx.id().getStart());
+
+        return serviceType;
+    }
+
+    @Override
+    public Rpc visitRpcDeclaration(Zserio4Parser.RpcDeclarationContext ctx)
+    {
+        final boolean responseStreaming = ctx.rpcTypeName(0).STREAM() != null;
+        final ZserioType responseType = visitQualifiedName(ctx.rpcTypeName(0).qualifiedName());
+
+        final String name = ctx.id().getText();
+
+        final boolean requestStreaming = ctx.rpcTypeName(1).STREAM() != null;
+        final ZserioType requestType = visitQualifiedName(ctx.rpcTypeName(1).qualifiedName());
+
+        return new Rpc(ctx.getStart(), name, responseType, responseStreaming, requestType, requestStreaming);
+    }
+
+    @Override
     public FunctionType visitFunctionDefinition(Zserio4Parser.FunctionDefinitionContext ctx)
     {
         final ZserioType returnType = visitTypeName(ctx.functionType().typeName());

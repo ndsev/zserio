@@ -28,6 +28,8 @@ public interface ZserioListener
     void endSqlTableType(SqlTableType sqlTableType);
     void beginSqlDatabaseType(SqlDatabaseType sqlDatabaseType);
     void endSqlDatabaseType(SqlDatabaseType sqlDatabaseType);
+    void beginServiceType(ServiceType serviceType);
+    void endServiceType(ServiceType serviceType);
 
     void beginField(Field field);
     void endField(Field field);
@@ -42,6 +44,9 @@ public interface ZserioListener
 
     void beginSqlConstraint(SqlConstraint sqlConstraint);
     void endSqlConstraint(SqlConstraint sqlConstraint);
+
+    void beginRpc(Rpc rpc);
+    void endRpc(Rpc rpc);
 
     void beginFunction(FunctionType functionType);
     void endFunction(FunctionType functionType);
@@ -96,6 +101,8 @@ public interface ZserioListener
         @Override public void endSqlTableType(SqlTableType sqlTableType) {}
         @Override public void beginSqlDatabaseType(SqlDatabaseType sqlDatabaseType) {}
         @Override public void endSqlDatabaseType(SqlDatabaseType sqlDatabaseType) {}
+        @Override public void beginServiceType(ServiceType serviceType) {}
+        @Override public void endServiceType(ServiceType serviceType) {}
 
         @Override public void beginField(Field field) {}
         @Override public void endField(Field field) {}
@@ -110,6 +117,9 @@ public interface ZserioListener
 
         @Override public void beginSqlConstraint(SqlConstraint sqlConstraint) {}
         @Override public void endSqlConstraint(SqlConstraint sqlConstraint) {}
+
+        @Override public void beginRpc(Rpc rpc) {}
+        @Override public void endRpc(Rpc rpc) {}
 
         @Override public void beginFunction(FunctionType functionType) {}
         @Override public void endFunction(FunctionType functionType) {}

@@ -145,6 +145,19 @@ public class PrintStringTreeListener implements ZserioListener
     }
 
     @Override
+    public void beginServiceType(ServiceType serviceType)
+    {
+        print("serviceType [" + serviceType.getName() + "]");
+        ++level;
+    }
+
+    @Override
+    public void endServiceType(ServiceType serviceType)
+    {
+        --level;
+    }
+
+    @Override
     public void beginField(Field field)
     {
         print("field [" + field.getName() + "]");
@@ -201,6 +214,19 @@ public class PrintStringTreeListener implements ZserioListener
 
     @Override
     public void endSqlConstraint(SqlConstraint sqlConstraint)
+    {
+        --level;
+    }
+
+    @Override
+    public void beginRpc(Rpc rpc)
+    {
+        print("rpc [" + rpc.getName() + "]");
+        ++level;
+    }
+
+    @Override
+    public void endRpc(Rpc rpc)
     {
         --level;
     }
