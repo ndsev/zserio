@@ -22,9 +22,14 @@ public interface ZserioListener
     void endChoiceType(ChoiceType choiceType);
     void beginUnionType(UnionType unionType);
     void endUnionType(UnionType unionType);
+    void beginEnumType(EnumType enumType);
+    void endEnumType(EnumType enumType);
 
     void beginField(Field field);
     void endField(Field field);
+
+    void beginEnumItem(EnumItem enumItem);
+    void endEnumItem(EnumItem enumItem);
 
     void beginChoiceCase(ChoiceCase choiceCase);
     void endChoiceCase(ChoiceCase choiceCase);
@@ -78,9 +83,14 @@ public interface ZserioListener
         @Override public void endChoiceType(ChoiceType choiceType) {}
         @Override public void beginUnionType(UnionType unionType) {}
         @Override public void endUnionType(UnionType unionType) {}
+        @Override public void beginEnumType(EnumType enumType) {}
+        @Override public void endEnumType(EnumType enumType) {}
 
         @Override public void beginField(Field field) {}
         @Override public void endField(Field field) {}
+
+        @Override public void beginEnumItem(EnumItem enumItem) {}
+        @Override public void endEnumItem(EnumItem enumItem) {}
 
         @Override public void beginChoiceCase(ChoiceCase choiceCase) {}
         @Override public void endChoiceCase(ChoiceCase choiceCase) {}

@@ -48,12 +48,6 @@ public class TypeInstantiation extends AstNodeBase implements ZserioType
         return referencedType.getName() + "()";
     }
 
-    @Override
-    public Iterable<ZserioType> getUsedTypeList()
-    {
-        throw new InternalError("TypeInstantiation.getUsedTypeList() is not implemented!");
-    }
-
     /*@Override
     public void callVisitor(ZserioTypeVisitor visitor)
     {

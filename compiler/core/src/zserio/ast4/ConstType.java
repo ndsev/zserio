@@ -56,12 +56,6 @@ public class ConstType extends AstNodeBase implements ZserioType, Comparable<Con
     }
 
     @Override
-    public Iterable<ZserioType> getUsedTypeList()
-    {
-        return usedTypeList;
-    }
-
-    @Override
     public int compareTo(ConstType other)
     {
         return getName().compareTo(other.getName());

@@ -15,13 +15,4 @@ public interface ZserioType extends AstNode
      * @return Name of this type.
      */
     String getName();
-
-    /**
-     * Gets the list of Zserio types used by this type (e.g. used in compound field definition).
-     *
-     * This is not supported by all derived classes.
-     *
-     * @return List of Zserio types used by this type.
-     */
-    Iterable<ZserioType> getUsedTypeList();
 }

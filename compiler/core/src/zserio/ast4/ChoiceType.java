@@ -50,22 +50,6 @@ public class ChoiceType extends CompoundType
     }
 
     /*@Override
-    public Iterable<ZserioType> getUsedTypeList()
-    {
-        Set<ZserioType> usedTypeSet = new LinkedHashSet<ZserioType>();
-        if (selectorExpression != null)
-        {
-            final ZserioType usedType = selectorExpression.getExprZserioType();
-            if (!ZserioTypeUtil.isBuiltIn(usedType))
-                usedTypeSet.add(usedType);
-        }
-
-        addFieldsToUsedTypeSet(usedTypeSet);
-
-        return usedTypeSet;
-    }*/ // TODO:
-
-    /*@Override
     public void callVisitor(ZserioTypeVisitor visitor)
     {
         visitor.visitChoiceType(this);

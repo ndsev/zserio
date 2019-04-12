@@ -45,12 +45,6 @@ public class FunctionType extends AstNodeBase implements ZserioType
         return name;
     }
 
-    @Override
-    public Iterable<ZserioType> getUsedTypeList()
-    {
-        return usedTypeList;
-    }
-
     /*@Override
     public void callVisitor(ZserioTypeVisitor visitor)
     {

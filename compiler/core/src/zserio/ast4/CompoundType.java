@@ -81,15 +81,6 @@ public abstract class CompoundType extends AstNodeBase implements ZserioScopedTy
     }
 
     @Override
-    public Iterable<ZserioType> getUsedTypeList()
-    {
-        Set<ZserioType> usedTypeSet = new LinkedHashSet<ZserioType>();
-        //addFieldsToUsedTypeSet(usedTypeSet); // TODO:
-
-        return usedTypeSet;
-    }
-
-    @Override
     public Scope getScope()
     {
         return scope;
@@ -403,7 +394,7 @@ public abstract class CompoundType extends AstNodeBase implements ZserioScopedTy
 
     private final Scope scope = new Scope(this);
     private Package pkg;
-    private String name;
+    private final String name;
 
     private final List<Field> fields;
     private final List<Parameter> parameters;

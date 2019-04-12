@@ -42,12 +42,6 @@ public class ArrayType extends AstNodeBase implements ZserioType
         return elementBaseType.getName() + "[]";
     }
 
-    @Override
-    public Iterable<ZserioType> getUsedTypeList()
-    {
-        throw new InternalError("ArrayType.getUsedTypeList() is not implemented!");
-    }
-
     /*@Override
     public void callVisitor(ZserioTypeVisitor visitor)
     {
@@ -104,7 +98,7 @@ public class ArrayType extends AstNodeBase implements ZserioType
     }*/ // TODO:
 
     private final ZserioType elementType;
-    private ZserioType elementBaseType = null;
+    private final ZserioType elementBaseType = null;
     private final Expression lengthExpression;
     private final boolean isImplicit;
 }

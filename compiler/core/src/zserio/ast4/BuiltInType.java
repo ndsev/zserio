@@ -28,11 +28,5 @@ public abstract class BuiltInType extends AstNodeBase implements ZserioType
         return name;
     }
 
-    @Override
-    public Iterable<ZserioType> getUsedTypeList()
-    {
-        throw new InternalError("BuiltInType.getUsedTypeList() is not implemented!");
-    }
-
     private final String name;
 }

@@ -50,12 +50,6 @@ public class Subtype extends AstNodeBase implements ZserioType
     }
 
     @Override
-    public Iterable<ZserioType> getUsedTypeList()
-    {
-        return null; // TODO:
-    }
-
-    @Override
     public void walk(ZserioListener listener)
     {
         listener.beginSubtype(this);

@@ -106,6 +106,19 @@ public class PrintStringTreeListener implements ZserioListener
     }
 
     @Override
+    public void beginEnumType(EnumType enumType)
+    {
+        print("enumType [" + enumType.getName() + "]");
+        ++level;
+    }
+
+    @Override
+    public void endEnumType(EnumType enumType)
+    {
+        --level;
+    }
+
+    @Override
     public void beginField(Field field)
     {
         print("field [" + field.getName() + "]");
@@ -114,6 +127,19 @@ public class PrintStringTreeListener implements ZserioListener
 
     @Override
     public void endField(Field field)
+    {
+        --level;
+    }
+
+    @Override
+    public void beginEnumItem(EnumItem enumItem)
+    {
+        print("enumItem [" + enumItem.getName() + "]");
+        ++level;
+    }
+
+    @Override
+    public void endEnumItem(EnumItem enumItem)
     {
         --level;
     }

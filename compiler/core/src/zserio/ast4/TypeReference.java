@@ -51,12 +51,6 @@ public class TypeReference extends AstNodeBase implements ZserioType
         return referencedTypeName;
     }
 
-    @Override
-    public Iterable<ZserioType> getUsedTypeList()
-    {
-        throw new InternalError("TypeReference.getUsedTypeList() is not implemented!");
-    }
-
     /**
      * Gets referenced type.
      *
