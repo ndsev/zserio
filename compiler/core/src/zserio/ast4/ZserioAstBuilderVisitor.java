@@ -288,6 +288,77 @@ public class ZserioAstBuilderVisitor extends Zserio4ParserBaseVisitor<Object>
     }
 
     @Override
+    public SqlTableType visitSqlTableDeclaration(Zserio4Parser.SqlTableDeclarationContext ctx)
+    {
+        final String name = ctx.id(0).getText();
+        final String sqlUsingId = ctx.id(1) != null ? ctx.id(1).getText() : null;
+        final List<Field> fields = new ArrayList<Field>();
+        for (Zserio4Parser.SqlTableFieldDefinitionContext fieldCtx : ctx.sqlTableFieldDefinition())
+            fields.add(visitSqlTableFieldDefinition(fieldCtx));
+        final SqlConstraint sqlConstraint = visitSqlConstraintDefinition(ctx.sqlConstraintDefinition());
+        final boolean sqlWithoutRowId = ctx.sqlWithoutRowId() != null;
+
+        final SqlTableType sqlTableType = new SqlTableType(ctx.getStart(), currentPackage, name, sqlUsingId,
+                fields, sqlConstraint, sqlWithoutRowId);
+        currentPackage.setLocalType(sqlTableType, ctx.id(0).getStart());
+
+        return sqlTableType;
+    }
+
+    @Override
+    public Field visitSqlTableFieldDefinition(Zserio4Parser.SqlTableFieldDefinitionContext ctx)
+    {
+        final boolean isVirtual = ctx.SQL_VIRTUAL() != null;
+        final ZserioType type = visitTypeReference(ctx.typeReference());
+        final String name = ctx.id().getText();
+        final SqlConstraint sqlConstraint = visitSqlConstraint(ctx.sqlConstraint());
+
+        return new Field(ctx.getStart(), type, name, isVirtual, sqlConstraint);
+    }
+
+    @Override
+    public SqlConstraint visitSqlConstraintDefinition(Zserio4Parser.SqlConstraintDefinitionContext ctx)
+    {
+        if (ctx == null)
+            return null;
+
+        return visitSqlConstraint(ctx.sqlConstraint());
+    }
+
+    @Override
+    public SqlConstraint visitSqlConstraint(Zserio4Parser.SqlConstraintContext ctx)
+    {
+        if (ctx == null)
+            return null;
+
+        return new SqlConstraint(ctx.getStart(), new Expression(ctx.STRING_LITERAL().getSymbol()));
+    }
+
+    @Override
+    public SqlDatabaseType visitSqlDatabaseDefinition(Zserio4Parser.SqlDatabaseDefinitionContext ctx)
+    {
+        final String name = ctx.id().getText();
+        final List<Field> fields = new ArrayList<Field>();
+        for (Zserio4Parser.SqlDatabaseFieldDefinitionContext fieldCtx : ctx.sqlDatabaseFieldDefinition())
+            fields.add(visitSqlDatabaseFieldDefinition(fieldCtx));
+
+        final SqlDatabaseType sqlDatabaseType = new SqlDatabaseType(ctx.getStart(), currentPackage, name,
+                fields);
+        currentPackage.setLocalType(sqlDatabaseType, ctx.id().getStart());
+
+        return sqlDatabaseType;
+    }
+
+    @Override
+    public Field visitSqlDatabaseFieldDefinition(Zserio4Parser.SqlDatabaseFieldDefinitionContext ctx)
+    {
+        final ZserioType type = visitQualifiedName(ctx.sqlTableReference().qualifiedName());
+        final String name = ctx.id().getText();
+
+        return new Field(ctx.getStart(), type, name);
+    }
+
+    @Override
     public FunctionType visitFunctionDefinition(Zserio4Parser.FunctionDefinitionContext ctx)
     {
         final ZserioType returnType = visitTypeName(ctx.functionType().typeName());
@@ -493,16 +564,8 @@ public class ZserioAstBuilderVisitor extends Zserio4ParserBaseVisitor<Object>
         if (ctx.builtinType() != null)
             return (ZserioType)visitBuiltinType(ctx.builtinType());
 
-        final PackageName referencedPackageName = createPackageName(
-                getPackageNameIds(ctx.qualifiedName().id()));
-        final String referencedTypeName = getTypeNameId(ctx.qualifiedName().id()).getText();
-        final boolean isParameterized = false;
 
-        final TypeReference typeReference =
-                new TypeReference(ctx.getStart(), referencedPackageName, referencedTypeName, isParameterized);
-        currentPackage.addTypeReferenceToResolve(typeReference);
-
-        return typeReference;
+        return visitQualifiedName(ctx.qualifiedName());
     }
 
     @Override
@@ -511,14 +574,8 @@ public class ZserioAstBuilderVisitor extends Zserio4ParserBaseVisitor<Object>
         if (ctx.builtinType() != null)
             return (ZserioType)visitBuiltinType(ctx.builtinType());
 
-        final PackageName referencedPackageName = createPackageName(
-                getPackageNameIds(ctx.qualifiedName().id()));
-        final String referencedTypeName = getTypeNameId(ctx.qualifiedName().id()).getText();
         final boolean isParameterized = ctx.typeArgumentList() != null;
-
-        final TypeReference typeReference =
-                new TypeReference(ctx.getStart(), referencedPackageName, referencedTypeName, isParameterized);
-        currentPackage.addTypeReferenceToResolve(typeReference);
+        final TypeReference typeReference = visitQualifiedName(ctx.qualifiedName(), isParameterized);
 
         if (isParameterized)
         {
@@ -531,6 +588,25 @@ public class ZserioAstBuilderVisitor extends Zserio4ParserBaseVisitor<Object>
         {
             return typeReference;
         }
+    }
+
+    @Override
+    public TypeReference visitQualifiedName(Zserio4Parser.QualifiedNameContext ctx)
+    {
+        return visitQualifiedName(ctx, false);
+    }
+
+    public TypeReference visitQualifiedName(Zserio4Parser.QualifiedNameContext ctx, boolean isParameterized)
+    {
+        final PackageName referencedPackageName = createPackageName(
+                getPackageNameIds(ctx.id()));
+        final String referencedTypeName = getTypeNameId(ctx.id()).getText();
+
+        final TypeReference typeReference =
+                new TypeReference(ctx.getStart(), referencedPackageName, referencedTypeName, isParameterized);
+        currentPackage.addTypeReferenceToResolve(typeReference);
+
+        return typeReference;
     }
 
     @Override

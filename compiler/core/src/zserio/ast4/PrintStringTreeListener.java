@@ -119,6 +119,32 @@ public class PrintStringTreeListener implements ZserioListener
     }
 
     @Override
+    public void beginSqlTableType(SqlTableType sqlTableType)
+    {
+        print("sqlTableType [" + sqlTableType.getName() + "]");
+        ++level;
+    }
+
+    @Override
+    public void endSqlTableType(SqlTableType sqlTableType)
+    {
+        --level;
+    }
+
+    @Override
+    public void beginSqlDatabaseType(SqlDatabaseType sqlDatabaseType)
+    {
+        print("sqlDatabaseType [" + sqlDatabaseType.getName() + "]");
+        ++level;
+    }
+
+    @Override
+    public void endSqlDatabaseType(SqlDatabaseType sqlDatabaseType)
+    {
+        --level;
+    }
+
+    @Override
     public void beginField(Field field)
     {
         print("field [" + field.getName() + "]");
@@ -127,19 +153,6 @@ public class PrintStringTreeListener implements ZserioListener
 
     @Override
     public void endField(Field field)
-    {
-        --level;
-    }
-
-    @Override
-    public void beginEnumItem(EnumItem enumItem)
-    {
-        print("enumItem [" + enumItem.getName() + "]");
-        ++level;
-    }
-
-    @Override
-    public void endEnumItem(EnumItem enumItem)
     {
         --level;
     }
@@ -162,6 +175,32 @@ public class PrintStringTreeListener implements ZserioListener
     }
 
     @Override public void endChoiceDefault(ChoiceDefault choiceDefault)
+    {
+        --level;
+    }
+
+    @Override
+    public void beginEnumItem(EnumItem enumItem)
+    {
+        print("enumItem [" + enumItem.getName() + "]");
+        ++level;
+    }
+
+    @Override
+    public void endEnumItem(EnumItem enumItem)
+    {
+        --level;
+    }
+
+    @Override
+    public void beginSqlConstraint(SqlConstraint sqlConstraint)
+    {
+        print("sqlConstraint");
+        ++level;
+    }
+
+    @Override
+    public void endSqlConstraint(SqlConstraint sqlConstraint)
     {
         --level;
     }

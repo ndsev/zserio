@@ -1,5 +1,8 @@
 package zserio.ast4;
 
+import java.util.LinkedList;
+import java.util.List;
+
 import org.antlr.v4.runtime.Token;
 
 /**
@@ -13,6 +16,7 @@ public class Field extends AstNodeBase
     {
         super(token);
 
+
         this.fieldType = fieldType;
         this.name = name;
         this.isAutoOptional = isAutoOptional;
@@ -24,6 +28,45 @@ public class Field extends AstNodeBase
         this.constraintExpr = constraintExpr;
 
         this.isVirtual = false;
+        this.sqlConstraint = null;
+    }
+
+    // table field
+    public Field(Token token, ZserioType fieldType, String name, boolean isVirtual, SqlConstraint sqlConstraint)
+    {
+        super(token);
+
+        this.fieldType = fieldType;
+        this.name = name;
+        this.isAutoOptional = false;
+
+        this.alignmentExpr = null;
+        this.offsetExpr = null;
+        this.initializerExpr = null;
+        this.optionalClauseExpr = null;
+        this.constraintExpr = null;
+
+        this.isVirtual = isVirtual;
+        this.sqlConstraint = sqlConstraint; // TODO: use SqlConstraint.createDefaultFieldConstraint(); if null?
+    }
+
+    // database field
+    public Field(Token token, ZserioType fieldType, String name)
+    {
+        super(token);
+
+        this.fieldType = fieldType;
+        this.name = name;
+        this.isAutoOptional = false;
+
+        this.alignmentExpr = null;
+        this.offsetExpr = null;
+        this.initializerExpr = null;
+        this.optionalClauseExpr = null;
+        this.constraintExpr = null;
+
+        this.isVirtual = false;
+        this.sqlConstraint = null;
     }
 
     @Override
@@ -42,6 +85,8 @@ public class Field extends AstNodeBase
             optionalClauseExpr.walk(listener);
         if (constraintExpr != null)
             constraintExpr.walk(listener);
+        if (sqlConstraint != null)
+            sqlConstraint.walk(listener);
 
         listener.endField(this);
     }
@@ -66,7 +111,7 @@ public class Field extends AstNodeBase
      *
      * @return Referenced Zserio type associated with the field.
      */
-    /*public ZserioType getFieldReferencedType()
+    public ZserioType getFieldReferencedType()
     {
         ZserioType referencedType = fieldType;
 
@@ -79,7 +124,7 @@ public class Field extends AstNodeBase
             referencedType = ((TypeInstantiation)referencedType).getReferencedType();
 
         return referencedType;
-    }*/ // TODO:
+    }
 
     /**
      * Gets a list of parameters used in the field.
@@ -91,14 +136,14 @@ public class Field extends AstNodeBase
      *
      * @return A list of parameters or empty list if a field has no parameters.
      */
-    /*public List<TypeInstantiation.InstantiatedParameter> getInstantiatedParameters()
+    public List<TypeInstantiation.InstantiatedParameter> getInstantiatedParameters()
     {
         final ZserioType resolvedFieldType = TypeReference.resolveType(fieldType);
         if (!(resolvedFieldType instanceof TypeInstantiation))
             return new LinkedList<TypeInstantiation.InstantiatedParameter>();
 
         return ((TypeInstantiation)resolvedFieldType).getInstantiatedParameters();
-    }*/ // TODO:
+    }
 
     /**
      * Gets the name of the field.
@@ -179,10 +224,10 @@ public class Field extends AstNodeBase
      *
      * @return SQL constraint.
      */
-    /*public SqlConstraint getSqlConstraint()
+    public SqlConstraint getSqlConstraint()
     {
         return sqlConstraint;
-    }*/
+    }
 
     /**
      * Gets flag which indicates if the field has been defined using "sql_virtual" keyword in Zserio.
@@ -364,6 +409,6 @@ public class Field extends AstNodeBase
     private final Expression optionalClauseExpr;
     private final Expression constraintExpr;
 
-    //private SqlConstraint sqlConstraint = SqlConstraint.createDefaultFieldConstraint(); // TODO
+    private final SqlConstraint sqlConstraint;
     private final boolean isVirtual;
 }

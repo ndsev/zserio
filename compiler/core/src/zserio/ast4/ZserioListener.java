@@ -24,17 +24,24 @@ public interface ZserioListener
     void endUnionType(UnionType unionType);
     void beginEnumType(EnumType enumType);
     void endEnumType(EnumType enumType);
+    void beginSqlTableType(SqlTableType sqlTableType);
+    void endSqlTableType(SqlTableType sqlTableType);
+    void beginSqlDatabaseType(SqlDatabaseType sqlDatabaseType);
+    void endSqlDatabaseType(SqlDatabaseType sqlDatabaseType);
 
     void beginField(Field field);
     void endField(Field field);
-
-    void beginEnumItem(EnumItem enumItem);
-    void endEnumItem(EnumItem enumItem);
 
     void beginChoiceCase(ChoiceCase choiceCase);
     void endChoiceCase(ChoiceCase choiceCase);
     void beginChoiceDefault(ChoiceDefault choiceDefault);
     void endChoiceDefault(ChoiceDefault choiceDefault);
+
+    void beginEnumItem(EnumItem enumItem);
+    void endEnumItem(EnumItem enumItem);
+
+    void beginSqlConstraint(SqlConstraint sqlConstraint);
+    void endSqlConstraint(SqlConstraint sqlConstraint);
 
     void beginFunction(FunctionType functionType);
     void endFunction(FunctionType functionType);
@@ -85,17 +92,24 @@ public interface ZserioListener
         @Override public void endUnionType(UnionType unionType) {}
         @Override public void beginEnumType(EnumType enumType) {}
         @Override public void endEnumType(EnumType enumType) {}
+        @Override public void beginSqlTableType(SqlTableType sqlTableType) {}
+        @Override public void endSqlTableType(SqlTableType sqlTableType) {}
+        @Override public void beginSqlDatabaseType(SqlDatabaseType sqlDatabaseType) {}
+        @Override public void endSqlDatabaseType(SqlDatabaseType sqlDatabaseType) {}
 
         @Override public void beginField(Field field) {}
         @Override public void endField(Field field) {}
-
-        @Override public void beginEnumItem(EnumItem enumItem) {}
-        @Override public void endEnumItem(EnumItem enumItem) {}
 
         @Override public void beginChoiceCase(ChoiceCase choiceCase) {}
         @Override public void endChoiceCase(ChoiceCase choiceCase) {}
         @Override public void beginChoiceDefault(ChoiceDefault choiceDefault) {}
         @Override public void endChoiceDefault(ChoiceDefault choiceDefault) {}
+
+        @Override public void beginEnumItem(EnumItem enumItem) {}
+        @Override public void endEnumItem(EnumItem enumItem) {}
+
+        @Override public void beginSqlConstraint(SqlConstraint sqlConstraint) {}
+        @Override public void endSqlConstraint(SqlConstraint sqlConstraint) {}
 
         @Override public void beginFunction(FunctionType functionType) {}
         @Override public void endFunction(FunctionType functionType) {}
