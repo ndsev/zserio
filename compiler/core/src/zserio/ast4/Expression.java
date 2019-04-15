@@ -31,18 +31,20 @@ public class Expression extends AstNodeBase
     }
 
     @Override
-    public void walk(ZserioListener listener)
+    public void accept(ZserioVisitor visitor)
     {
-        listener.beginExpression(this);
+        visitor.visitExpression(this);
+    }
 
+    @Override
+    public void visitChildren(ZserioVisitor visitor)
+    {
         if (operand1 != null)
-            operand1.walk(listener);
+            operand1.accept(visitor);
         if (operand2 != null)
-            operand2.walk(listener);
+            operand2.accept(visitor);
         if (operand3 != null)
-            operand3.walk(listener);
-
-        listener.endExpression(this);
+            operand3.accept(visitor);
     }
 
     public String getExpressionString()

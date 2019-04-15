@@ -72,16 +72,10 @@ public class VarIntegerType extends IntegerType
         }
     }
 
-    /*@Override
-    public void callVisitor(ZserioTypeVisitor visitor)
+    @Override
+    public void accept(ZserioVisitor visitor)
     {
         visitor.visitVarIntegerType(this);
-    }*/
-
-    @Override
-    public void walk(ZserioListener listener)
-    {
-        listener.enterVarIntegerType(this);
     }
 
     @Override

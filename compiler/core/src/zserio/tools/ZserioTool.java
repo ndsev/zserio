@@ -12,12 +12,13 @@ import org.apache.commons.cli.ParseException;
 import zserio.antlr.Zserio4Lexer;
 import zserio.antlr.Zserio4Parser;
 import zserio.ast.PackageName;
+import zserio.ast4.CheckingVisitor;
 import zserio.ast4.Import;
 import zserio.ast4.ParseTreeCheckingVisitor;
 import zserio.ast4.ParserException;
+import zserio.ast4.PrintStringTreeVisitor;
 import zserio.ast4.Root;
-import zserio.ast4.CheckingListener;
-import zserio.ast4.PrintStringTreeListener;
+import zserio.ast4.ScopeEvaluator;
 import zserio.ast4.TranslationUnit;
 import zserio.ast4.ZserioAstBuilderVisitor;
 import zserio.emit.common.ZserioEmitException;
@@ -152,7 +153,7 @@ public class ZserioTool
 
     private Root parse() throws Exception
     {
-        ZserioAstBuilderVisitor astBuilderVisitor = new ZserioAstBuilderVisitor(
+        final ZserioAstBuilderVisitor astBuilderVisitor = new ZserioAstBuilderVisitor(
                 commandLineArguments.getWithUnusedWarnings());
 
         final String inputFileName = commandLineArguments.getInputFileName();
@@ -164,6 +165,9 @@ public class ZserioTool
         rootNode.resolveReferences();
 
         // TODO: scope evaluation
+        final ScopeEvaluator scopeEvaluator = new ScopeEvaluator();
+        rootNode.accept(scopeEvaluator);
+
         // TODO: expression evaluation
 
         return rootNode;
@@ -210,8 +214,8 @@ public class ZserioTool
     {
         ZserioToolPrinter.printMessage("Checking");
 
-        CheckingListener checkingListener = new CheckingListener();
-        rootNode.walk(checkingListener);
+        CheckingVisitor checkingListener = new CheckingVisitor();
+        rootNode.accept(checkingListener);
     }
 
     /*private void emit(Root rootNode) throws Exception
@@ -223,8 +227,8 @@ public class ZserioTool
     private static void showAstTree(Root rootNode)
     {
         ZserioToolPrinter.printMessage("AST:");
-        PrintStringTreeListener printStringTreeListener = new PrintStringTreeListener();
-        rootNode.walk(printStringTreeListener);
+        PrintStringTreeVisitor printStringTreeVisitor = new PrintStringTreeVisitor();
+        rootNode.accept(printStringTreeVisitor);
     }
 
     private final InputFileManager inputFileManager;

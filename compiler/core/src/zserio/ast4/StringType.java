@@ -14,15 +14,9 @@ public class StringType extends BuiltInType
         super(token);
     }
 
-    /*@Override
-    public void callVisitor(ZserioTypeVisitor visitor)
+    @Override
+    public void accept(ZserioVisitor visitor)
     {
         visitor.visitStringType(this);
-    }*/
-
-    @Override
-    public void walk(ZserioListener listener)
-    {
-        listener.enterStringType(this);
     }
 }

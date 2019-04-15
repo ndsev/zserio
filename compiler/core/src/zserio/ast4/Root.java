@@ -32,12 +32,16 @@ public class Root extends AstNodeBase
     }
 
     @Override
-    public void walk(ZserioListener listener)
+    public void accept(ZserioVisitor visitor)
     {
-        listener.beginRoot(this);
+        visitor.visitRoot(this);
+    }
+
+    @Override
+    public void visitChildren(ZserioVisitor visitor)
+    {
         for (TranslationUnit translationUnit : translationUnits)
-            translationUnit.walk(listener);
-        listener.endRoot(this);
+            translationUnit.accept(visitor);
     }
 
     /**

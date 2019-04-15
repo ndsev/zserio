@@ -15,12 +15,16 @@ public class EnumItem extends AstNodeBase
     }
 
     @Override
-    public void walk(ZserioListener listener)
+    public void accept(ZserioVisitor visitor)
     {
-        listener.beginEnumItem(this);
+        visitor.visitEnumItem(this);
+    }
+
+    @Override
+    public void visitChildren(ZserioVisitor visitor)
+    {
         if (valueExpression != null)
-            valueExpression.walk(listener);
-        listener.endEnumItem(this);
+            valueExpression.accept(visitor);
     }
 
     /**

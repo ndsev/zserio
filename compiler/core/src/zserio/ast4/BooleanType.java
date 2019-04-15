@@ -14,16 +14,10 @@ public class BooleanType extends BuiltInType implements FixedSizeType
         super(token);
     }
 
-    /*@Override
-    public void callVisitor(ZserioTypeVisitor visitor)
+    @Override
+    public void accept(ZserioVisitor visitor)
     {
         visitor.visitBooleanType(this);
-    }*/
-
-    @Override
-    public void walk(ZserioListener listener)
-    {
-        listener.enterBooleanType(this);
     }
 
     @Override

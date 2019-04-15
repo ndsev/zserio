@@ -14,9 +14,9 @@ public class Import extends AstNodeBase
     }
 
     @Override
-    public void walk(ZserioListener listener)
+    public void accept(ZserioVisitor visitor)
     {
-        listener.enterImport(this);
+        visitor.visitImport(this);
     }
 
     /**

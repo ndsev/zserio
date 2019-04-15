@@ -37,6 +37,19 @@ public abstract class CompoundType extends AstNodeBase implements ZserioScopedTy
     }
 
     @Override
+    public void visitChildren(ZserioVisitor visitor)
+    {
+        for (Parameter parameter : parameters)
+            parameter.accept(visitor);
+
+        for (Field field : fields)
+            field.accept(visitor);
+
+        for (FunctionType function : functions)
+            function.accept(visitor);
+    }
+
+    @Override
     public int compareTo(CompoundType other)
     {
         final int result = getName().compareTo(other.getName());
@@ -254,18 +267,6 @@ public abstract class CompoundType extends AstNodeBase implements ZserioScopedTy
     {
         return (docComment != null) ? docComment : getHiddenDocComment();
     }*/ // TODO:
-
-    protected void walkCompoundType(ZserioListener listener)
-    {
-        for (Parameter parameter : parameters)
-            parameter.walk(listener);
-
-        for (Field field : fields)
-            field.walk(listener);
-
-        for (FunctionType function : functions)
-            function.walk(listener);
-    }
 
     /*protected void addFieldsToUsedTypeSet(Set<ZserioType> usedTypeSet)
     {

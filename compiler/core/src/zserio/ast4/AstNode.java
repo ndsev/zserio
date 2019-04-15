@@ -10,9 +10,16 @@ public interface AstNode
     public AstNodeLocation getLocation();
 
     /**
-     * Walks the underlying AST using the given listener.
+     * Accept zserio visitor.
      *
-     * @param listener Listener to use for walking.
+     * @param visitor Visitor to accept.
      */
-    public void walk(ZserioListener listener);
+    public void accept(ZserioVisitor visitor);
+
+    /**
+     * Visit children of the current AST node using given visitor.
+     *
+     * @param visitor Visitor to use.
+     */
+    public void visitChildren(ZserioVisitor vistor);
 }

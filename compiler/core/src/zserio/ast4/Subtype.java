@@ -1,7 +1,5 @@
 package zserio.ast4;
 
-import java.util.ArrayList;
-import java.util.List;
 import org.antlr.v4.runtime.Token;
 
 import zserio.ast4.TypeReference;
@@ -12,6 +10,7 @@ public class Subtype extends AstNodeBase implements ZserioType
     public Subtype(Token token, Package pkg, ZserioType targetType, String name)
     {
         super(token);
+
         this.pkg = pkg;
         this.targetType = targetType;
         this.name = name;
@@ -50,11 +49,15 @@ public class Subtype extends AstNodeBase implements ZserioType
     }
 
     @Override
-    public void walk(ZserioListener listener)
+    public void accept(ZserioVisitor visitor)
     {
-        listener.beginSubtype(this);
-        targetType.walk(listener);
-        listener.endSubtype(this);
+        visitor.visitSubtype(this);
+    }
+
+    @Override
+    public void visitChildren(ZserioVisitor visitor)
+    {
+        targetType.accept(visitor);
     }
 
     /**
@@ -111,6 +114,6 @@ public class Subtype extends AstNodeBase implements ZserioType
 
     /*private final List<ConstType> usedByConstList = new ArrayList<ConstType>();
     private final SortedSet<CompoundType> usedByCompoundList = new TreeSet<CompoundType>();
-    private final SortedSet<ServiceType> usedByServiceList = new TreeSet<ServiceType>();*/
-    private final List<ZserioType> usedTypeList = new ArrayList<ZserioType>();
+    private final SortedSet<ServiceType> usedByServiceList = new TreeSet<ServiceType>();
+    private final List<ZserioType> usedTypeList = new ArrayList<ZserioType>();*/
 }

@@ -31,16 +31,10 @@ public class FloatType extends BuiltInType implements FixedSizeType
         }
     }
 
-    /*@Override
-    public void callVisitor(ZserioTypeVisitor visitor)
+    @Override
+    public void accept(ZserioVisitor visitor)
     {
         visitor.visitFloatType(this);
-    }*/
-
-    @Override
-    public void walk(ZserioListener listener)
-    {
-        listener.enterFloatType(this);
     }
 
     @Override

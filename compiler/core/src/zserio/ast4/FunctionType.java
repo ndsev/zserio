@@ -23,14 +23,16 @@ public class FunctionType extends AstNodeBase implements ZserioType
     }
 
     @Override
-    public void walk(ZserioListener listener)
+    public void accept(ZserioVisitor visitor)
     {
-        listener.beginFunction(this);
+        visitor.visitFunction(this);
+    }
 
-        returnType.walk(listener);
-        resultExpression.walk(listener);
-
-        listener.endFunction(this);
+    @Override
+    public void visitChildren(ZserioVisitor visitor)
+    {
+        returnType.accept(visitor);
+        resultExpression.accept(visitor);
     }
 
     @Override

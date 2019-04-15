@@ -18,13 +18,15 @@ public class SqlConstraint extends AstNodeBase
     }
 
     @Override
-    public void walk(ZserioListener listener)
+    public void accept(ZserioVisitor visitor)
     {
-        listener.beginSqlConstraint(this);
+        visitor.visitSqlConstraint(this);
+    }
 
-        constraintExpr.walk(listener);
-
-        listener.endSqlConstraint(this);
+    @Override
+    public void visitChildren(ZserioVisitor visitor)
+    {
+        constraintExpr.accept(visitor);
     }
 
     /**

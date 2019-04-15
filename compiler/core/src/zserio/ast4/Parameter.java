@@ -16,13 +16,15 @@ public class Parameter extends AstNodeBase
     }
 
     @Override
-    public void walk(ZserioListener listener)
+    public void accept(ZserioVisitor visitor)
     {
-        listener.beginParameter(this);
+        visitor.visitParameter(this);
+    }
 
-        parameterType.walk(listener);
-
-        listener.endParameter(this);
+    @Override
+    public void visitChildren(ZserioVisitor visitor)
+    {
+        parameterType.accept(visitor);
     }
 
     /**

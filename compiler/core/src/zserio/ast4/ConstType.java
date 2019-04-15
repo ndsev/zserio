@@ -27,21 +27,17 @@ public class ConstType extends AstNodeBase implements ZserioType, Comparable<Con
     }
 
     @Override
-    public void walk(ZserioListener listener)
-    {
-        listener.beginConstType(this);
-
-        constType.walk(listener);
-        valueExpression.walk(listener);
-
-        listener.endConstType(this);
-    }
-
-    /*@Override
-    public void callVisitor(ZserioTypeVisitor visitor)
+    public void accept(ZserioVisitor visitor)
     {
         visitor.visitConstType(this);
-    }*/
+    }
+
+    @Override
+    public void visitChildren(ZserioVisitor visitor)
+    {
+        constType.accept(visitor);
+        valueExpression.accept(visitor);
+    }
 
     @Override
     public String getName()

@@ -18,13 +18,15 @@ public abstract class BitFieldType extends IntegerType
     }
 
     @Override
-    public void walk(ZserioListener listener)
+    public void accept(ZserioVisitor visitor)
     {
-        listener.beginBitFieldType(this);
+        visitor.visitBitFieldType(this);
+    }
 
-        lengthExpression.walk(listener);
-
-        listener.endBitFieldType(this);
+    @Override
+    public void visitChildren(ZserioVisitor visitor)
+    {
+        lengthExpression.accept(visitor);
     }
 
     /**

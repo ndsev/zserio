@@ -68,16 +68,10 @@ public class StdIntegerType extends IntegerType implements FixedSizeType
     }
 
     @Override
-    public void walk(ZserioListener listener)
-    {
-        listener.enterStdIntegerType(this);
-    }
-
-    /*@Override
-    public void callVisitor(ZserioTypeVisitor visitor)
+    public void accept(ZserioVisitor visitor)
     {
         visitor.visitStdIntegerType(this);
-    }*/
+    }
 
     @Override
     public BigInteger getUpperBound()

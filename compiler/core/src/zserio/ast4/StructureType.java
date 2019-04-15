@@ -17,56 +17,10 @@ public class StructureType extends CompoundType
     }
 
     @Override
-    public void walk(ZserioListener listener)
-    {
-        listener.beginStructureType(this);
-
-        super.walkCompoundType(listener);
-
-        listener.endStructureType(this);
-    }
-
-    /*@Override
-    public void callVisitor(ZserioTypeVisitor visitor)
+    public void accept(ZserioVisitor visitor)
     {
         visitor.visitStructureType(this);
-    }*/
-
-    /*@Override
-    protected boolean evaluateChild(BaseTokenAST child) throws ParserException
-    {
-        switch (child.getType())
-        {
-        case ZserioParserTokenTypes.ID:
-            if (!(child instanceof IdToken))
-                return false;
-            setName(child.getText());
-            break;
-
-        case ZserioParserTokenTypes.PARAM:
-            if (!(child instanceof Parameter))
-                return false;
-            addParameter((Parameter)child);
-            break;
-
-        case ZserioParserTokenTypes.FIELD:
-            if (!(child instanceof Field))
-                return false;
-            addField((Field)child);
-            break;
-
-        case ZserioParserTokenTypes.FUNCTION:
-            if (!(child instanceof FunctionType))
-                return false;
-            addFunction((FunctionType)child);
-            break;
-
-        default:
-            return false;
-        }
-
-        return true;
-    }*/
+    }
 
     /*@Override
     protected void evaluate() throws ParserException

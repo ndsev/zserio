@@ -23,25 +23,22 @@ public class SqlTableType extends CompoundType
         this.sqlConstraint = sqlConstraint;
         this.sqlWithoutRowId = sqlWithoutRowId;
 
-        for (Field field : fields)
-        {
-            if (field.getSqlConstraint() != null)
-                field.getSqlConstraint().setCompoundType(this);
-        }
         if(sqlConstraint != null)
             sqlConstraint.setCompoundType(this);
     }
 
     @Override
-    public void walk(ZserioListener listener)
+    public void accept(ZserioVisitor visitor)
     {
-        listener.beginSqlTableType(this);
+        visitor.visitSqlTableType(this);
+    }
 
-        walkCompoundType(listener);
+    @Override
+    public void visitChildren(ZserioVisitor visitor)
+    {
+        super.visitChildren(visitor);
         if (sqlConstraint != null)
-            sqlConstraint.walk(listener);
-
-        listener.endSqlTableType(this);
+            sqlConstraint.accept(visitor);
     }
 
     /**

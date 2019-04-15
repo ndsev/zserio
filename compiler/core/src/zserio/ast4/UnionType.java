@@ -18,13 +18,9 @@ public class UnionType extends CompoundType
     }
 
     @Override
-    public void walk(ZserioListener listener)
+    public void accept(ZserioVisitor visitor)
     {
-        listener.beginUnionType(this);
-
-        walkCompoundType(listener);
-
-        listener.endUnionType(this);
+        visitor.visitUnionType(this);
     }
 
     /*@Override

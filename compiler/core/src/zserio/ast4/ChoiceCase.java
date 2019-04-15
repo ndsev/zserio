@@ -18,16 +18,18 @@ public class ChoiceCase extends AstNodeBase
     }
 
     @Override
-    public void walk(ZserioListener listener)
+    public void accept(ZserioVisitor visitor)
     {
-        listener.beginChoiceCase(this);
+        visitor.visitChoiceCase(this);
+    }
 
+    @Override
+    public void visitChildren(ZserioVisitor visitor)
+    {
         for (Expression caseExpression : caseExpressions)
-            caseExpression.walk(listener);
+            caseExpression.accept(visitor);
         if (caseField != null)
-            caseField.walk(listener);
-
-        listener.endChoiceCase(this);
+            caseField.accept(visitor);
     }
 
     /**

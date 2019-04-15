@@ -24,9 +24,9 @@ public class Package extends AstNodeBase
     }
 
     @Override
-    public void walk(ZserioListener listener)
+    public void accept(ZserioVisitor visitor)
     {
-        listener.enterPackage(this);
+        visitor.visitPackage(this);
     }
 
     public PackageName getPackageName()

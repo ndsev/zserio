@@ -1,13 +1,10 @@
 package zserio.ast4;
 
 import java.util.ArrayList;
-import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Set;
 
 import org.antlr.v4.runtime.Token;
 
-import zserio.tools.ZserioToolPrinter;
 
 /**
  * AST node for choice types.
@@ -28,32 +25,28 @@ public class ChoiceType extends CompoundType
     }
 
     @Override
-    public void walk(ZserioListener listener)
-    {
-        listener.beginChoiceType(this);
-
-        for (Parameter parameter : getParameters())
-            parameter.walk(listener);
-
-        selectorExpression.walk(listener);
-
-        for (ChoiceCase choiceCase : choiceCases)
-            choiceCase.walk(listener);
-
-        if (choiceDefault != null)
-            choiceDefault.walk(listener);
-
-        for (FunctionType function : getFunctions())
-            function.walk(listener);
-
-        listener.endChoiceType(this);
-    }
-
-    /*@Override
-    public void callVisitor(ZserioTypeVisitor visitor)
+    public void accept(ZserioVisitor visitor)
     {
         visitor.visitChoiceType(this);
-    }*/
+    }
+
+    @Override
+    public void visitChildren(ZserioVisitor visitor)
+    {
+        for (Parameter parameter : getParameters())
+            parameter.accept(visitor);
+
+        selectorExpression.accept(visitor);
+
+        for (ChoiceCase choiceCase : choiceCases)
+            choiceCase.accept(visitor);
+
+        if (choiceDefault != null)
+            choiceDefault.accept(visitor);
+
+        for (FunctionType function : getFunctions())
+            function.accept(visitor);
+    }
 
     /*@Override
     public <T extends ZserioType> Set<T> getReferencedTypes(Class<? extends T> clazz)

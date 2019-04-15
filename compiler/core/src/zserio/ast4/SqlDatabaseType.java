@@ -18,13 +18,9 @@ public class SqlDatabaseType extends CompoundType
     }
 
     @Override
-    public void walk(ZserioListener listener)
+    public void accept(ZserioVisitor visitor)
     {
-        listener.beginSqlDatabaseType(this);
-
-        walkCompoundType(listener);
-
-        listener.endSqlDatabaseType(this);
+        visitor.visitSqlDatabaseType(this);
     }
 
     /*@Override

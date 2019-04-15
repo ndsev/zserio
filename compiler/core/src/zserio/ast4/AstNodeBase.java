@@ -15,5 +15,9 @@ public abstract class AstNodeBase implements AstNode
         return location;
     }
 
+    @Override
+    public void visitChildren(ZserioVisitor visitor)
+    {}
+
     private final AstNodeLocation location;
 };

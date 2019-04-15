@@ -1,6 +1,5 @@
 package zserio.ast4;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -25,15 +24,17 @@ public class TypeInstantiation extends AstNodeBase implements ZserioType
     }
 
     @Override
-    public void walk(ZserioListener listener)
+    public void accept(ZserioVisitor visitor)
     {
-        listener.beginTypeInstantiation(this);
+        visitor.visitTypeInstantiation(this);
+    }
 
-        referencedType.walk(listener);
+    @Override
+    public void visitChildren(ZserioVisitor visitor)
+    {
+        referencedType.accept(visitor);
         for (Expression argument : arguments)
-            argument.walk(listener);
-
-        listener.endTypeInstantiation(this);
+            argument.accept(visitor);
     }
 
     @Override
@@ -47,12 +48,6 @@ public class TypeInstantiation extends AstNodeBase implements ZserioType
     {
         return referencedType.getName() + "()";
     }
-
-    /*@Override
-    public void callVisitor(ZserioTypeVisitor visitor)
-    {
-        visitor.visitTypeInstantiation(this);
-    }*/
 
     /**
      * Evaluates base type of this type instantiation.
@@ -168,27 +163,6 @@ public class TypeInstantiation extends AstNodeBase implements ZserioType
         private final Expression argumentExpression;
         private final Parameter parameter;
     }
-
-    /*@Override
-    protected boolean evaluateChild(BaseTokenAST child) throws ParserException
-    {
-        switch (child.getType())
-        {
-        case ZserioParserTokenTypes.TYPEREF:
-            if (!(child instanceof TypeReference))
-                return false;
-            referencedType = (TypeReference)child;
-            break;
-
-        default:
-            if (!(child instanceof Expression))
-                return false;
-            arguments.add((Expression)child);
-            break;
-        }
-
-        return true;
-    }*/
 
     /*@Override
     protected void check() throws ParserException

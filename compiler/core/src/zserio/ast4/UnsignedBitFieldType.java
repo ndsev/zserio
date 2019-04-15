@@ -16,12 +16,6 @@ public class UnsignedBitFieldType extends BitFieldType
         super(token, lengthExpression);
     }
 
-    /*@Override
-    public void callVisitor(ZserioTypeVisitor visitor)
-    {
-        visitor.visitUnsignedBitFieldType(this);
-    }*/
-
     @Override
     public BigInteger getUpperBound()
     {

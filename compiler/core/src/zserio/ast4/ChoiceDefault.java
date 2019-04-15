@@ -15,14 +15,16 @@ public class ChoiceDefault extends AstNodeBase
     }
 
     @Override
-    public void walk(ZserioListener listener)
+    public void accept(ZserioVisitor visitor)
     {
-        listener.beginChoiceDefault(this);
+        visitor.visitChoiceDefault(this);
+    }
 
+    @Override
+    public void visitChildren(ZserioVisitor visitor)
+    {
         if (defaultField != null)
-            defaultField.walk(listener);
-
-        listener.endChoiceDefault(this);
+            defaultField.accept(visitor);
     }
 
     /**

@@ -23,12 +23,17 @@ public class EnumType extends AstNodeBase implements ZserioScopedType
     }
 
     @Override
-    public void walk(ZserioListener listener)
+    public void accept(ZserioVisitor visitor)
     {
-        listener.beginEnumType(this);
+        visitor.visitEnumType(this);
+    }
+
+    @Override
+    public void visitChildren(ZserioVisitor visitor)
+    {
+        enumType.accept(visitor);
         for (EnumItem enumItem : enumItems)
-            enumItem.walk(listener);
-        listener.endEnumType(this);
+            enumItem.accept(visitor);
     }
 
     @Override

@@ -16,15 +16,19 @@ public class TranslationUnit extends AstNodeBase
     }
 
     @Override
-    public void walk(ZserioListener listener)
+    public void accept(ZserioVisitor visitor)
     {
-        listener.beginTranslationUnit(this);
-        unitPackage.walk(listener);
+        visitor.visitTranslationUnit(this);
+    }
+
+    @Override
+    public void visitChildren(ZserioVisitor visitor)
+    {
+        unitPackage.accept(visitor);
         for (Import unitImport : imports)
-            unitImport.walk(listener);
+            unitImport.accept(visitor);
         for (ZserioType type : types)
-            type.walk(listener);
-        listener.endTranslationUnit(this);
+            type.accept(visitor);
     }
 
     /**

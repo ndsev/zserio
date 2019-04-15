@@ -24,16 +24,10 @@ public class TypeReference extends AstNodeBase implements ZserioType
         this.isParameterized = isParameterized;
     }
 
-    /*@Override
-    public void callVisitor(ZserioTypeVisitor visitor)
+    @Override
+    public void accept(ZserioVisitor visitor)
     {
         visitor.visitTypeReference(this);
-    }*/
-
-    @Override
-    public void walk(ZserioListener listener)
-    {
-        listener.enterTypeReference(this);
     }
 
     @Override
@@ -87,13 +81,12 @@ public class TypeReference extends AstNodeBase implements ZserioType
 
         // check referenced type
         // TODO: shall we put this to the checking listener?
-        /*if (referencedType instanceof ConstType)
+        if (referencedType instanceof ConstType)
             throw new ParserException(this, "Invalid usage of constant '" + referencedType.getName() +
                     "' as a type!");
         if (referencedType instanceof SqlDatabaseType)
             throw new ParserException(this, "Invalid usage of SQL database '" + referencedType.getName() +
                     "' as a type!");
-         */
     }
 
     /**

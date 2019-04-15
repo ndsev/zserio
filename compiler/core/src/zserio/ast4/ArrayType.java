@@ -20,14 +20,16 @@ public class ArrayType extends AstNodeBase implements ZserioType
     }
 
     @Override
-    public void walk(ZserioListener listener)
+    public void accept(ZserioVisitor visitor)
     {
-        listener.beginArrayType(this);
+        visitor.visitArrayType(this);
+    }
 
-        elementType.walk(listener);
-        lengthExpression.walk(listener);
-
-        listener.endArrayType(this);
+    @Override
+    public void visitChildren(ZserioVisitor visitor)
+    {
+        elementType.accept(visitor);
+        lengthExpression.accept(visitor);
     }
 
     @Override
@@ -41,12 +43,6 @@ public class ArrayType extends AstNodeBase implements ZserioType
     {
         return elementBaseType.getName() + "[]";
     }
-
-    /*@Override
-    public void callVisitor(ZserioTypeVisitor visitor)
-    {
-        visitor.visitArrayType(this);
-    }*/
 
     /**
      * Gets unresolved Zserio type of this array element.

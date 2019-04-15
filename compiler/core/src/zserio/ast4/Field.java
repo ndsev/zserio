@@ -70,25 +70,27 @@ public class Field extends AstNodeBase
     }
 
     @Override
-    public void walk(ZserioListener listener)
+    public void accept(ZserioVisitor visitor)
     {
-        listener.beginField(this);
+        visitor.visitField(this);
+    }
 
-        fieldType.walk(listener);
+    @Override
+    public void visitChildren(ZserioVisitor visitor)
+    {
+        fieldType.accept(visitor);
         if (alignmentExpr != null)
-            alignmentExpr.walk(listener);
+            alignmentExpr.accept(visitor);
         if (offsetExpr != null)
-            offsetExpr.walk(listener);
+            offsetExpr.accept(visitor);
         if (initializerExpr != null)
-            initializerExpr.walk(listener);
+            initializerExpr.accept(visitor);
         if (optionalClauseExpr != null)
-            optionalClauseExpr.walk(listener);
+            optionalClauseExpr.accept(visitor);
         if (constraintExpr != null)
-            constraintExpr.walk(listener);
+            constraintExpr.accept(visitor);
         if (sqlConstraint != null)
-            sqlConstraint.walk(listener);
-
-        listener.endField(this);
+            sqlConstraint.accept(visitor);
     }
 
     /**
@@ -369,6 +371,9 @@ public class Field extends AstNodeBase
     protected void setCompoundType(CompoundType compoundType)
     {
         this.compoundType = compoundType;
+
+        if (sqlConstraint != null)
+            sqlConstraint.setCompoundType(compoundType);
     }
 
     /**

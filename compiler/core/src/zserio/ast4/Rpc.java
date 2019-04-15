@@ -1,8 +1,5 @@
 package zserio.ast4;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.antlr.v4.runtime.Token;
 
 /**
@@ -23,14 +20,16 @@ public class Rpc extends AstNodeBase
     }
 
     @Override
-    public void walk(ZserioListener listener)
+    public void accept(ZserioVisitor visitor)
     {
-        listener.beginRpc(this);
+        visitor.visitRpc(this);
+    }
 
-        responseType.walk(listener);
-        requestType.walk(listener);
-
-        listener.endRpc(this);
+    @Override
+    public void visitChildren(ZserioVisitor visitor)
+    {
+        responseType.accept(visitor);
+        requestType.accept(visitor);
     }
 
     /**
