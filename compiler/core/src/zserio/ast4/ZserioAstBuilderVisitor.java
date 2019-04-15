@@ -5,6 +5,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.antlr.v4.runtime.ParserRuleContext;
 import zserio.antlr.Zserio4Parser;
 import zserio.antlr.Zserio4ParserBaseVisitor;
 import zserio.ast.PackageName;
@@ -30,8 +31,7 @@ public class ZserioAstBuilderVisitor extends Zserio4ParserBaseVisitor<Object>
             imports.add(visitImportDeclaration(importCtx));
 
         // package
-        Package unitPackage = new Package(ctx.getStart(), visitPackageDeclaration(ctx.packageDeclaration()),
-                imports);
+        final Package unitPackage = createPackage(ctx, imports);
 
         currentPackage = unitPackage; // set current package for types
 
@@ -53,7 +53,6 @@ public class ZserioAstBuilderVisitor extends Zserio4ParserBaseVisitor<Object>
         return translationUnit;
     }
 
-    @Override
     public PackageName visitPackageDeclaration(Zserio4Parser.PackageDeclarationContext ctx)
     {
         if (ctx != null)
@@ -78,7 +77,7 @@ public class ZserioAstBuilderVisitor extends Zserio4ParserBaseVisitor<Object>
             importedPackageName = createPackageName(ctx.id());
         }
 
-        return new Import(ctx.getStart(), importedPackageName, importedTypeName);
+        return new Import(ctx.id(0).getStart(), importedPackageName, importedTypeName);
     }
 
     @Override
@@ -88,9 +87,9 @@ public class ZserioAstBuilderVisitor extends Zserio4ParserBaseVisitor<Object>
         final String name = ctx.id().getText();
         final Expression valueExpression = (Expression)visit(ctx.expression());
 
-        final ConstType constType = new ConstType(ctx.getStart(), currentPackage, type, name,
+        final ConstType constType = new ConstType(ctx.id().getStart(), currentPackage, type, name,
                 valueExpression);
-        currentPackage.setLocalType(constType, ctx.id().getStart());
+        currentPackage.setLocalType(constType);
 
         return constType;
     }
@@ -101,8 +100,8 @@ public class ZserioAstBuilderVisitor extends Zserio4ParserBaseVisitor<Object>
         final ZserioType targetType = visitTypeName(ctx.typeName());
         final String name = ctx.id().getText();
 
-        final Subtype subtype = new Subtype(ctx.getStart(), currentPackage, targetType, name);
-        currentPackage.setLocalType(subtype, ctx.id().getStart());
+        final Subtype subtype = new Subtype(ctx.id().getStart(), currentPackage, targetType, name);
+        currentPackage.setLocalType(subtype);
 
         return subtype;
     }
@@ -122,9 +121,9 @@ public class ZserioAstBuilderVisitor extends Zserio4ParserBaseVisitor<Object>
         for (Zserio4Parser.FunctionDefinitionContext functionDefinitionCtx : ctx.functionDefinition())
             functions.add(visitFunctionDefinition(functionDefinitionCtx));
 
-        final StructureType structureType = new StructureType(ctx.getStart(), currentPackage, name,
+        final StructureType structureType = new StructureType(ctx.id().getStart(), currentPackage, name,
                 parameters, fields, functions);
-        currentPackage.setLocalType(structureType, ctx.id().getStart());
+        currentPackage.setLocalType(structureType);
 
         return structureType;
     }
@@ -142,8 +141,8 @@ public class ZserioAstBuilderVisitor extends Zserio4ParserBaseVisitor<Object>
         final Expression optionalClauseExpr = visitFieldOptionalClause(ctx.fieldOptionalClause());
         final Expression constraintExpr = visitFieldConstraint(ctx.fieldConstraint());
 
-        return new Field(ctx.getStart(), type, name, isAutoOptional, alignmentExpr, offsetExpr, initializerExpr,
-                optionalClauseExpr, constraintExpr);
+        return new Field(ctx.fieldTypeId().id().getStart(), type, name, isAutoOptional, alignmentExpr,
+                offsetExpr, initializerExpr, optionalClauseExpr, constraintExpr);
     }
 
     @Override
@@ -210,9 +209,9 @@ public class ZserioAstBuilderVisitor extends Zserio4ParserBaseVisitor<Object>
         for (Zserio4Parser.FunctionDefinitionContext functionDefinitionCtx : ctx.functionDefinition())
             functions.add(visitFunctionDefinition(functionDefinitionCtx));
 
-        final ChoiceType choiceType = new ChoiceType(ctx.getStart(), currentPackage, name, parameters,
+        final ChoiceType choiceType = new ChoiceType(ctx.id().getStart(), currentPackage, name, parameters,
                 selectorExpression, choiceCases, choiceDefault, functions);
-        currentPackage.setLocalType(choiceType, ctx.id().getStart());
+        currentPackage.setLocalType(choiceType);
 
         return choiceType;
     }
@@ -252,7 +251,8 @@ public class ZserioAstBuilderVisitor extends Zserio4ParserBaseVisitor<Object>
             return null;
 
         final ZserioType type = getFieldType(ctx.fieldTypeId());
-        final String name = ctx.fieldTypeId().id().getText();
+        final ParserRuleContext nameCtx = ctx.fieldTypeId().id();
+        final String name = nameCtx.getText();
         final boolean isAutoOptional = false;
 
         final Expression alignmentExpr = null;
@@ -261,8 +261,8 @@ public class ZserioAstBuilderVisitor extends Zserio4ParserBaseVisitor<Object>
         final Expression optionalClauseExpr = null;
         final Expression constraintExpr = visitFieldConstraint(ctx.fieldConstraint());
 
-        return new Field(ctx.getStart(), type, name, isAutoOptional, alignmentExpr, offsetExpr, initializerExpr,
-                optionalClauseExpr, constraintExpr);
+        return new Field(nameCtx.getStart(), type, name, isAutoOptional, alignmentExpr, offsetExpr,
+                initializerExpr, optionalClauseExpr, constraintExpr);
     }
 
     @Override
@@ -280,9 +280,9 @@ public class ZserioAstBuilderVisitor extends Zserio4ParserBaseVisitor<Object>
         for (Zserio4Parser.FunctionDefinitionContext functionDefinitionCtx : ctx.functionDefinition())
             functions.add(visitFunctionDefinition(functionDefinitionCtx));
 
-        final UnionType unionType = new UnionType(ctx.getStart(), currentPackage, name, parameters, fields,
+        final UnionType unionType = new UnionType(ctx.id().getStart(), currentPackage, name, parameters, fields,
                 functions);
-        currentPackage.setLocalType(unionType, ctx.id().getStart());
+        currentPackage.setLocalType(unionType);
 
         return unionType;
     }
@@ -296,8 +296,9 @@ public class ZserioAstBuilderVisitor extends Zserio4ParserBaseVisitor<Object>
         for (Zserio4Parser.EnumItemContext enumItemCtx : ctx.enumItem())
             enumItems.add(visitEnumItem(enumItemCtx));
 
-        final EnumType enumType = new EnumType(ctx.getStart(), currentPackage, zserioEnumType, name, enumItems);
-        currentPackage.setLocalType(enumType, ctx.id().getStart());
+        final EnumType enumType = new EnumType(ctx.id().getStart(), currentPackage, zserioEnumType, name,
+                enumItems);
+        currentPackage.setLocalType(enumType);
 
         return enumType;
     }
@@ -322,9 +323,9 @@ public class ZserioAstBuilderVisitor extends Zserio4ParserBaseVisitor<Object>
         final SqlConstraint sqlConstraint = visitSqlConstraintDefinition(ctx.sqlConstraintDefinition());
         final boolean sqlWithoutRowId = ctx.sqlWithoutRowId() != null;
 
-        final SqlTableType sqlTableType = new SqlTableType(ctx.getStart(), currentPackage, name, sqlUsingId,
-                fields, sqlConstraint, sqlWithoutRowId);
-        currentPackage.setLocalType(sqlTableType, ctx.id(0).getStart());
+        final SqlTableType sqlTableType = new SqlTableType(ctx.id(0).getStart(), currentPackage, name,
+                sqlUsingId, fields, sqlConstraint, sqlWithoutRowId);
+        currentPackage.setLocalType(sqlTableType);
 
         return sqlTableType;
     }
@@ -337,7 +338,7 @@ public class ZserioAstBuilderVisitor extends Zserio4ParserBaseVisitor<Object>
         final String name = ctx.id().getText();
         final SqlConstraint sqlConstraint = visitSqlConstraint(ctx.sqlConstraint());
 
-        return new Field(ctx.getStart(), type, name, isVirtual, sqlConstraint);
+        return new Field(ctx.id().getStart(), type, name, isVirtual, sqlConstraint);
     }
 
     @Override
@@ -366,9 +367,9 @@ public class ZserioAstBuilderVisitor extends Zserio4ParserBaseVisitor<Object>
         for (Zserio4Parser.SqlDatabaseFieldDefinitionContext fieldCtx : ctx.sqlDatabaseFieldDefinition())
             fields.add(visitSqlDatabaseFieldDefinition(fieldCtx));
 
-        final SqlDatabaseType sqlDatabaseType = new SqlDatabaseType(ctx.getStart(), currentPackage, name,
+        final SqlDatabaseType sqlDatabaseType = new SqlDatabaseType(ctx.id().getStart(), currentPackage, name,
                 fields);
-        currentPackage.setLocalType(sqlDatabaseType, ctx.id().getStart());
+        currentPackage.setLocalType(sqlDatabaseType);
 
         return sqlDatabaseType;
     }
@@ -391,8 +392,8 @@ public class ZserioAstBuilderVisitor extends Zserio4ParserBaseVisitor<Object>
         for (Zserio4Parser.RpcDeclarationContext rpcDeclarationCtx : ctx.rpcDeclaration())
             rpcs.add(visitRpcDeclaration(rpcDeclarationCtx));
 
-        final ServiceType serviceType = new ServiceType(ctx.getStart(), currentPackage, name, rpcs);
-        currentPackage.setLocalType(serviceType, ctx.id().getStart());
+        final ServiceType serviceType = new ServiceType(ctx.id().getStart(), currentPackage, name, rpcs);
+        currentPackage.setLocalType(serviceType);
 
         return serviceType;
     }
@@ -408,7 +409,8 @@ public class ZserioAstBuilderVisitor extends Zserio4ParserBaseVisitor<Object>
         final boolean requestStreaming = ctx.rpcTypeName(1).STREAM() != null;
         final ZserioType requestType = visitQualifiedName(ctx.rpcTypeName(1).qualifiedName());
 
-        return new Rpc(ctx.getStart(), name, responseType, responseStreaming, requestType, requestStreaming);
+        return new Rpc(ctx.id().getStart(), name, responseType, responseStreaming, requestType,
+                requestStreaming);
     }
 
     @Override
@@ -418,7 +420,8 @@ public class ZserioAstBuilderVisitor extends Zserio4ParserBaseVisitor<Object>
         final String name = ctx.functionName().getText();
         final Expression resultExpression = (Expression)visit(ctx.functionBody().expression());
 
-        return new FunctionType(ctx.getStart(), currentPackage, returnType, name, resultExpression);
+        return new FunctionType(ctx.functionName().getStart(), currentPackage, returnType, name,
+                resultExpression);
     }
 
     @Override
@@ -436,7 +439,7 @@ public class ZserioAstBuilderVisitor extends Zserio4ParserBaseVisitor<Object>
     @Override
     public Object visitParameterDefinition(Zserio4Parser.ParameterDefinitionContext ctx)
     {
-        return new Parameter(ctx.getStart(), visitTypeName(ctx.typeName()), ctx.id().getText());
+        return new Parameter(ctx.id().getStart(), visitTypeName(ctx.typeName()), ctx.id().getText());
     }
 
     @Override
@@ -722,6 +725,20 @@ public class ZserioAstBuilderVisitor extends Zserio4ParserBaseVisitor<Object>
     public FloatType visitFloatType(Zserio4Parser.FloatTypeContext ctx)
     {
         return new FloatType(ctx.getStart());
+    }
+
+    private Package createPackage(Zserio4Parser.TranslationUnitContext translationUnitCtx, List<Import> imports)
+    {
+        if (translationUnitCtx.packageDeclaration() != null)
+        {
+            return new Package(translationUnitCtx.packageDeclaration().qualifiedName().getStart(),
+                    createPackageName(translationUnitCtx.packageDeclaration().qualifiedName().id()), imports);
+        }
+        else
+        {
+            // default package
+            return new Package(translationUnitCtx.getStart(), PackageName.EMPTY, imports);
+        }
     }
 
     /**
