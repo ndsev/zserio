@@ -335,8 +335,8 @@ public class Package extends AstNodeBase
         private final String typeName;
     }
 
-    private PackageName packageName;
-    private List<Import> imports;
+    private final PackageName packageName;
+    private final List<Import> imports;
 
     // this must be a LinkedHashMap because of 'Cyclic dependency' error checked in resolveSubtypes()
     private final Map<String, ZserioType> localTypes = new LinkedHashMap<String, ZserioType>();
