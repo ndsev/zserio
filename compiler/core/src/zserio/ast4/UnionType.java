@@ -24,12 +24,6 @@ public class UnionType extends CompoundType
     }
 
     /*@Override
-    public void callVisitor(ZserioTypeVisitor visitor)
-    {
-        visitor.visitUnionType(this);
-    }*/
-
-    /*@Override
     protected void check() throws ParserException
     {
         super.check();
