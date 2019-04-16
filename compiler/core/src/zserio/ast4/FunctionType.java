@@ -2,7 +2,11 @@ package zserio.ast4;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
+
 import org.antlr.v4.runtime.Token;
+
+import zserio.tools.ZserioToolPrinter;
 
 /**
  * AST node for function types.
@@ -23,13 +27,13 @@ public class FunctionType extends AstNodeBase implements ZserioType
     }
 
     @Override
-    public void accept(ZserioVisitor visitor)
+    public void accept(ZserioAstVisitor visitor)
     {
         visitor.visitFunction(this);
     }
 
     @Override
-    public void visitChildren(ZserioVisitor visitor)
+    public void visitChildren(ZserioAstVisitor visitor)
     {
         returnType.accept(visitor);
         resultExpression.accept(visitor);
@@ -73,17 +77,18 @@ public class FunctionType extends AstNodeBase implements ZserioType
         return resultExpression;
     }
 
-    /*@Override
+    @Override
     protected void check() throws ParserException
     {
-        // fill used type list
         final ZserioType resolvedTypeReference = TypeReference.resolveType(returnType);
-        if (!ZserioTypeUtil.isBuiltIn(resolvedTypeReference))
-            usedTypeList.add(resolvedTypeReference);
 
         // check result expression type
         final ZserioType resolvedReturnType = TypeReference.resolveBaseType(resolvedTypeReference);
         ExpressionUtil.checkExpressionType(resultExpression, resolvedReturnType);
+
+        // fill used type list
+        /*if (!ZserioTypeUtil.isBuiltIn(resolvedTypeReference))
+            usedTypeList.add(resolvedTypeReference);*/ // TODO:
 
         // check usage of unconditional optional fields (this is considered as a warning)
         if (!resultExpression.containsFunctionCall() && !resultExpression.containsTernaryOperator())
@@ -96,7 +101,7 @@ public class FunctionType extends AstNodeBase implements ZserioType
                             "unconditional optional fields.");
             }
         }
-    }*/ // TODO:
+    }
 
     private final Package pkg;
     private final ZserioType returnType;

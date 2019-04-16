@@ -68,7 +68,7 @@ public class StdIntegerType extends IntegerType implements FixedSizeType
     }
 
     @Override
-    public void accept(ZserioVisitor visitor)
+    public void accept(ZserioAstVisitor visitor)
     {
         visitor.visitStdIntegerType(this);
     }

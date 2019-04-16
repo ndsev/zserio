@@ -2,8 +2,11 @@ package zserio.ast4;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 import org.antlr.v4.runtime.Token;
+
+import zserio.tools.ZserioToolPrinter;
 
 
 /**
@@ -25,13 +28,13 @@ public class ChoiceType extends CompoundType
     }
 
     @Override
-    public void accept(ZserioVisitor visitor)
+    public void accept(ZserioAstVisitor visitor)
     {
         visitor.visitChoiceType(this);
     }
 
     @Override
-    public void visitChildren(ZserioVisitor visitor)
+    public void visitChildren(ZserioAstVisitor visitor)
     {
         for (Parameter parameter : getParameters())
             parameter.accept(visitor);
@@ -48,7 +51,7 @@ public class ChoiceType extends CompoundType
             function.accept(visitor);
     }
 
-    /*@Override
+    @Override
     public <T extends ZserioType> Set<T> getReferencedTypes(Class<? extends T> clazz)
     {
         final Set<T> referencedTypes = super.getReferencedTypes(clazz);
@@ -59,13 +62,13 @@ public class ChoiceType extends CompoundType
         // add choice-specific expressions: case expressions
         for (ChoiceCase choiceCase : choiceCases)
         {
-            final Iterable<ChoiceCase.CaseExpression> caseExpressions = choiceCase.getExpressions();
-            for (ChoiceCase.CaseExpression caseExpression : caseExpressions)
-                referencedTypes.addAll(caseExpression.getExpression().getReferencedSymbolObjects(clazz));
+            final Iterable<Expression> caseExpressions = choiceCase.getExpressions();
+            for (Expression caseExpression : caseExpressions)
+                referencedTypes.addAll(caseExpression.getReferencedSymbolObjects(clazz));
         }
 
         return referencedTypes;
-    }*/ // TODO:
+    }
 
     /**
      * Extends scope for case expressions to support enumeration values.
@@ -74,18 +77,17 @@ public class ChoiceType extends CompoundType
      *
      * @param scope Scope which shall be added to case expression scopes.
      */
-    /*public void addScopeForCaseExpressions(Scope scope)
+    protected void addScopeForCaseExpressions(Scope scope)
     {
         for (ChoiceCase choiceCase : choiceCases)
         {
-            final List<ChoiceCase.CaseExpression> caseExpressions = choiceCase.getExpressions();
-            for (ChoiceCase.CaseExpression caseExpression : caseExpressions)
+            final List<Expression> caseExpressions = choiceCase.getExpressions();
+            for (Expression caseExpression : caseExpressions)
             {
-                final Expression expression = caseExpression.getExpression();
-                expression.addScope(scope);
+                caseExpression.addScope(scope);
             }
         }
-    }*/ // TODO:
+    }
 
     /**
      * Gets selector expression.
@@ -145,8 +147,8 @@ public class ChoiceType extends CompoundType
         return fields;
     }
 
-    /*@Override
-    protected void check() throws ParserException
+    @Override
+    protected void check()
     {
         super.check();
         checkTableFields();
@@ -156,9 +158,9 @@ public class ChoiceType extends CompoundType
         checkDuplicatedCases();
         checkEnumerationCases();
         isChoiceDefaultUnreachable = checkUnreachableDefault();
-    }*/ // TODO:
+    }
 
-    /*private void checkSelectorType() throws ParserException
+    private void checkSelectorType() throws ParserException
     {
         final Expression.ExpressionType selectorExpressionType = selectorExpression.getExprType();
         if (selectorExpressionType != Expression.ExpressionType.INTEGER &&
@@ -166,23 +168,22 @@ public class ChoiceType extends CompoundType
             selectorExpressionType != Expression.ExpressionType.ENUM)
             throw new ParserException(this, "Choice '" + getName() + "' uses forbidden " +
                     selectorExpressionType.name() + " selector!");
-    }*/
+    }
 
-    /*private void checkCaseTypes() throws ParserException
+    private void checkCaseTypes() throws ParserException
     {
         final Expression.ExpressionType selectorExpressionType = selectorExpression.getExprType();
         for (ChoiceCase choiceCase : choiceCases)
         {
-            final List<ChoiceCase.CaseExpression> caseExpressions = choiceCase.getExpressions();
-            for (ChoiceCase.CaseExpression caseExpression : caseExpressions)
+            final List<Expression> caseExpressions = choiceCase.getExpressions();
+            for (Expression caseExpression : caseExpressions)
             {
-                final Expression expression = caseExpression.getExpression();
-                if (expression.getExprType() != selectorExpressionType)
-                    throw new ParserException(expression, "Choice '" + getName() +
+                if (caseExpression.getExprType() != selectorExpressionType)
+                    throw new ParserException(caseExpression, "Choice '" + getName() +
                             "' has incompatible case type!");
 
-                if (!expression.getReferencedSymbolObjects(Parameter.class).isEmpty())
-                    throw new ParserException(expression, "Choice '" + getName() +
+                if (!caseExpression.getReferencedSymbolObjects(Parameter.class).isEmpty())
+                    throw new ParserException(caseExpression, "Choice '" + getName() +
                             "' has non-constant case expression!");
             }
         }
@@ -193,17 +194,16 @@ public class ChoiceType extends CompoundType
         final List<Expression> allExpressions = new ArrayList<Expression>();
         for (ChoiceCase choiceCase : choiceCases)
         {
-            final List<ChoiceCase.CaseExpression> newCaseExpressions = choiceCase.getExpressions();
-            for (ChoiceCase.CaseExpression newCaseExpression : newCaseExpressions)
+            final List<Expression> newCaseExpressions = choiceCase.getExpressions();
+            for (Expression newCaseExpression : newCaseExpressions)
             {
-                final Expression newExpression = newCaseExpression.getExpression();
                 for (Expression caseExpression : allExpressions)
                 {
-                    if (newExpression.equals(caseExpression))
-                        throw new ParserException(newExpression, "Choice '" + getName() +
+                    if (newCaseExpression.equals(caseExpression))
+                        throw new ParserException(newCaseExpression, "Choice '" + getName() +
                                 "' has duplicated case!");
                 }
-                allExpressions.add(newExpression);
+                allExpressions.add(newCaseExpression);
             }
         }
     }
@@ -218,15 +218,14 @@ public class ChoiceType extends CompoundType
 
             for (ChoiceCase choiceCase : choiceCases)
             {
-                final List<ChoiceCase.CaseExpression> caseExpressions = choiceCase.getExpressions();
-                for (ChoiceCase.CaseExpression caseExpression : caseExpressions)
+                final List<Expression> caseExpressions = choiceCase.getExpressions();
+                for (Expression caseExpression : caseExpressions)
                 {
-                    final Expression expression = caseExpression.getExpression();
                     final Set<EnumItem> referencedEnumItems =
-                            expression.getReferencedSymbolObjects(EnumItem.class);
+                            caseExpression.getReferencedSymbolObjects(EnumItem.class);
                     for (EnumItem referencedEnumItem : referencedEnumItems)
                         if (!availableEnumItems.remove(referencedEnumItem))
-                            throw new ParserException(expression, "Choice '" + getName() +
+                            throw new ParserException(caseExpression, "Choice '" + getName() +
                                     "' has case with different enumeration type than selector!");
                 }
             }
@@ -264,7 +263,7 @@ public class ChoiceType extends CompoundType
         for (ChoiceCase choiceCase : choiceCases)
             numCases += choiceCase.getExpressions().size();
         return numCases;
-    }*/
+    }
 
     private final Expression selectorExpression;
     private final List<ChoiceCase> choiceCases;

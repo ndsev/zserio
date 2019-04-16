@@ -15,7 +15,7 @@ public class StringType extends BuiltInType
     }
 
     @Override
-    public void accept(ZserioVisitor visitor)
+    public void accept(ZserioAstVisitor visitor)
     {
         visitor.visitStringType(this);
     }

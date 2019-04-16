@@ -1,5 +1,7 @@
 package zserio.ast4;
 
+import java.math.BigInteger;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
@@ -18,13 +20,13 @@ public class SqlConstraint extends AstNodeBase
     }
 
     @Override
-    public void accept(ZserioVisitor visitor)
+    public void accept(ZserioAstVisitor visitor)
     {
         visitor.visitSqlConstraint(this);
     }
 
     @Override
-    public void visitChildren(ZserioVisitor visitor)
+    public void visitChildren(ZserioAstVisitor visitor)
     {
         constraintExpr.accept(visitor);
     }
@@ -118,7 +120,7 @@ public class SqlConstraint extends AstNodeBase
         return sqlConstraint;
     }*/ // TODO:
 
-    /*@Override
+    @Override
     protected void check() throws ParserException
     {
         String translatedConstraint = "";
@@ -129,7 +131,7 @@ public class SqlConstraint extends AstNodeBase
             isPrimaryKey = containsPrimaryKey();
 
             // replace all @-references
-            translatedConstraint = resolveConstraintReferences(constraintExpr.getText());
+            translatedConstraint = resolveConstraintReferences(constraintExpr.getExpressionString());
             translatedConstraintExpr = createStringLiteralExpression(translatedConstraint);
         }
         else
@@ -140,7 +142,7 @@ public class SqlConstraint extends AstNodeBase
 
         // set translated constraint expression for table field
         setTranslatedFieldConstraintExpr(translatedConstraint);
-    }*/ // TODO:
+    }
 
     /**
      * Sets the compound type which is owner of the field.
@@ -152,7 +154,7 @@ public class SqlConstraint extends AstNodeBase
         this.compoundType = compoundType;
     }
 
-    /*private void setTranslatedFieldConstraintExpr(String translatedConstraint)
+    private void setTranslatedFieldConstraintExpr(String translatedConstraint)
     {
         // unlike SQLite, the default column constraint in Zserio is 'NOT NULL' and NULL-constraints have to be
         // explicitly set
@@ -206,17 +208,19 @@ public class SqlConstraint extends AstNodeBase
 
     private static Expression createStringLiteralExpression(String stringLiteral)
     {
-        final Expression stringLiteralExpr = new Expression();
+        return null;
+        // TODO:
+        /*final Expression stringLiteralExpr = new Expression();
         stringLiteralExpr.setText(stringLiteral);
         stringLiteralExpr.setType(ZserioParserTokenTypes.STRING_LITERAL);
 
-        return stringLiteralExpr;
+        return stringLiteralExpr;*/
     }
 
     private List<String> extractColumnNames(String constraintName)
     {
         final ArrayList<String> columnNames = new ArrayList<String>();
-        final String sqlConstraintString = constraintExpr.getText();
+        final String sqlConstraintString = constraintExpr.getExpressionString();
         final int constraintIndex = sqlConstraintString.toUpperCase(Locale.ENGLISH).indexOf(constraintName);
         if (constraintIndex > -1)
         {
@@ -235,7 +239,7 @@ public class SqlConstraint extends AstNodeBase
         }
 
         return columnNames;
-    }*/ // TODO:
+    }
 
     private boolean containsPrimaryKey()
     {
@@ -244,7 +248,7 @@ public class SqlConstraint extends AstNodeBase
         return (sqlConstraintString.toUpperCase(Locale.ENGLISH).indexOf(PRIMARY_KEY_CONSTRAINT) > -1);
     }
 
-    /*private String resolveConstraintReferences(String constraintText) throws ParserException
+    private String resolveConstraintReferences(String constraintText) throws ParserException
     {
         int referenceIndex = constraintText.indexOf(CONSTRAINT_REFERENCE_ESCAPE);
         if (referenceIndex < 0)
@@ -308,7 +312,7 @@ public class SqlConstraint extends AstNodeBase
         }
 
         return resolvedReferencedText;
-    }*/
+    }
 
     private static final String PRIMARY_KEY_CONSTRAINT = "PRIMARY KEY";
     private static final String UNIQUE_CONSTRAINT = "UNIQUE";

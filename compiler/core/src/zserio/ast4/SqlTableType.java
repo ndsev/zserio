@@ -1,11 +1,16 @@
 package zserio.ast4;
 
+import java.util.AbstractMap;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
 import org.antlr.v4.runtime.Token;
+
+import zserio.ast4.TypeInstantiation.InstantiatedParameter;
+import zserio.tools.ZserioToolPrinter;
 
 /**
  * AST node for SQL table types.
@@ -28,13 +33,13 @@ public class SqlTableType extends CompoundType
     }
 
     @Override
-    public void accept(ZserioVisitor visitor)
+    public void accept(ZserioAstVisitor visitor)
     {
         visitor.visitSqlTableType(this);
     }
 
     @Override
-    public void visitChildren(ZserioVisitor visitor)
+    public void visitChildren(ZserioAstVisitor visitor)
     {
         super.visitChildren(visitor);
         if (sqlConstraint != null)
@@ -100,51 +105,12 @@ public class SqlTableType extends CompoundType
         return sqlWithoutRowId;
     }
 
-    /*@Override
-    protected boolean evaluateChild(BaseTokenAST child) throws ParserException
-    {
-        switch (child.getType())
-        {
-        case ZserioParserTokenTypes.ID:
-            if (getName() == null)
-                setName(child.getText());
-            else
-                sqlUsingId = child.getText();
-            break;
-
-        case ZserioParserTokenTypes.FIELD:
-        case ZserioParserTokenTypes.VFIELD:
-            if (!(child instanceof Field))
-                return false;
-            addField((Field)child);
-            break;
-
-        case ZserioParserTokenTypes.SQL:
-            if (!(child instanceof SqlConstraint))
-                return false;
-            sqlConstraint = (SqlConstraint)child;
-            sqlConstraint.setCompoundType(this);
-            break;
-
-        case ZserioParserTokenTypes.SQL_WITHOUT_ROWID:
-            if (isVirtual())
-                throw new ParserException(child, "Virtual table cannot be without rowid!");
-            sqlWithoutRowId = true;
-            break;
-
-        default:
-            return false;
-        }
-
-        return true;
-    }*/ // TODO:
-
     private boolean isVirtual()
     {
         return sqlUsingId != null;
     }
 
-    /*@Override
+    @Override
     protected void check() throws ParserException
     {
         super.check();
@@ -186,8 +152,8 @@ public class SqlTableType extends CompoundType
                             final Expression prevExpression = prevEntry.getValue();
                             throw new ParserException(argumentExpression, "Type of explicit parameter '" +
                                     paramName + "' resolved to '" + typeName + "' but first used as '" +
-                                    prevTypeName + "' at " + prevExpression.getLine() + ":" +
-                                    prevExpression.getColumn() + "!");
+                                    prevTypeName + "' at " + prevExpression.getLocation().getLine() + ":" +
+                                    prevExpression.getLocation().getColumn() + "!");
                         }
                     }
                     else
@@ -223,7 +189,7 @@ public class SqlTableType extends CompoundType
         for (Field tableField : getFields())
         {
             final SqlConstraint fieldSqlConstraint = tableField.getSqlConstraint();
-            if (fieldSqlConstraint.isPrimaryKey())
+            if (fieldSqlConstraint != null && fieldSqlConstraint.isPrimaryKey())
             {
                 if (found)
                 {
@@ -352,7 +318,7 @@ public class SqlTableType extends CompoundType
             ZserioToolPrinter.printWarning(sqlConstraint, "Primary key column '" + columnName +
                     "' is in bad order in sql table '" + getName() + "'.");
         }
-    }*/ // TODO:
+    }
 
     private final String sqlUsingId;
     private final SqlConstraint sqlConstraint;

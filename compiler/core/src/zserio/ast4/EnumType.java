@@ -2,7 +2,9 @@ package zserio.ast4;
 
 import java.math.BigInteger;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.antlr.v4.runtime.Token;
 
@@ -23,13 +25,13 @@ public class EnumType extends AstNodeBase implements ZserioScopedType
     }
 
     @Override
-    public void accept(ZserioVisitor visitor)
+    public void accept(ZserioAstVisitor visitor)
     {
         visitor.visitEnumType(this);
     }
 
     @Override
-    public void visitChildren(ZserioVisitor visitor)
+    public void visitChildren(ZserioAstVisitor visitor)
     {
         enumType.accept(visitor);
         for (EnumItem enumItem : enumItems)
@@ -123,7 +125,6 @@ public class EnumType extends AstNodeBase implements ZserioScopedType
         return null;
     }*/
 
-    /* TODO
     @Override
     protected void check() throws ParserException
     {
@@ -163,7 +164,7 @@ public class EnumType extends AstNodeBase implements ZserioScopedType
                         enumItem.getName() + "' has value (" + enumItemValue + ") out of range <" +
                         lowerBound + "," + upperBound + ">!");
         }
-    }*/
+    }
 
     private final Scope scope = new Scope(this);
     private final Package pkg;
@@ -172,5 +173,5 @@ public class EnumType extends AstNodeBase implements ZserioScopedType
     private final List<EnumItem> enumItems;
 
     private boolean areValuesEvaluated = false;
-    private final IntegerType integerBaseType = null;
+    private IntegerType integerBaseType = null;
 }

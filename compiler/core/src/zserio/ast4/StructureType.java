@@ -1,7 +1,12 @@
 package zserio.ast4;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+
 import org.antlr.v4.runtime.Token;
+
+import zserio.tools.ZserioToolPrinter;
 
 /**
  * AST node for structure types.
@@ -17,7 +22,7 @@ public class StructureType extends CompoundType
     }
 
     @Override
-    public void accept(ZserioVisitor visitor)
+    public void accept(ZserioAstVisitor visitor)
     {
         visitor.visitStructureType(this);
     }
@@ -29,7 +34,7 @@ public class StructureType extends CompoundType
         setDocComment(getHiddenDocComment());
     }*/
 
-    /*@Override
+    @Override
     protected void check() throws ParserException
     {
         super.check();
@@ -42,9 +47,9 @@ public class StructureType extends CompoundType
 
         // check that implicit array field is the last one in the structure
         checkImplicitArrayFields();
-    }*/ // TODO:
+    }
 
-    /*private void checkOptionalFields() throws ParserException
+    private void checkOptionalFields() throws ParserException
     {
         for (Field field : getFields())
             checkOptionalField(field);
@@ -111,9 +116,9 @@ public class StructureType extends CompoundType
                 }
             }
         }
-    }*/
+    }
 
-    /*private static Set<Field> getReferencedParameterFields(Field field)
+    private static Set<Field> getReferencedParameterFields(Field field)
     {
         final Iterable<TypeInstantiation.InstantiatedParameter> instantiatedParameters =
                 field.getInstantiatedParameters();
@@ -125,9 +130,9 @@ public class StructureType extends CompoundType
         }
 
         return referencedFields;
-    }*/ // TODO:
+    }
 
-    /*private static boolean haveFieldsDifferentOptionals(Field field1, Field field2)
+    private static boolean haveFieldsDifferentOptionals(Field field1, Field field2)
     {
         final Expression optionalClause1 = field1.getOptionalClauseExpr();
         final Expression optionalClause2 = field2.getOptionalClauseExpr();
@@ -135,5 +140,5 @@ public class StructureType extends CompoundType
             return false;
 
         return true;
-    }*/ // TODO:
+    }
 }

@@ -18,40 +18,12 @@ public class SqlDatabaseType extends CompoundType
     }
 
     @Override
-    public void accept(ZserioVisitor visitor)
+    public void accept(ZserioAstVisitor visitor)
     {
         visitor.visitSqlDatabaseType(this);
     }
 
-    /*@Override
-    public void callVisitor(ZserioTypeVisitor visitor)
-    {
-        visitor.visitSqlDatabaseType(this);
-    }*/
-
-    /*@Override
-    protected boolean evaluateChild(BaseTokenAST child) throws ParserException
-    {
-        switch (child.getType())
-        {
-        case ZserioParserTokenTypes.ID:
-            setName(child.getText());
-            break;
-
-        case ZserioParserTokenTypes.FIELD:
-            if (!(child instanceof Field))
-                return false;
-            addField((Field)child);
-            break;
-
-        default:
-            return false;
-        }
-
-        return true;
-    }*/
-
-    /*@Override
+    @Override
     protected void check() throws ParserException
     {
         super.check();
@@ -64,5 +36,5 @@ public class SqlDatabaseType extends CompoundType
                 throw new ParserException(databaseField,
                         "Field '" + databaseField.getName() + "' is not a sql table!");
         }
-    }*/
+    }
 }

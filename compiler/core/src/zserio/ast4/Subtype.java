@@ -49,13 +49,13 @@ public class Subtype extends AstNodeBase implements ZserioType
     }
 
     @Override
-    public void accept(ZserioVisitor visitor)
+    public void accept(ZserioAstVisitor visitor)
     {
         visitor.visitSubtype(this);
     }
 
     @Override
-    public void visitChildren(ZserioVisitor visitor)
+    public void visitChildren(ZserioAstVisitor visitor)
     {
         targetType.accept(visitor);
     }

@@ -73,7 +73,7 @@ public class VarIntegerType extends IntegerType
     }
 
     @Override
-    public void accept(ZserioVisitor visitor)
+    public void accept(ZserioAstVisitor visitor)
     {
         visitor.visitVarIntegerType(this);
     }

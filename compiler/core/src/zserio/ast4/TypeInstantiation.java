@@ -24,13 +24,13 @@ public class TypeInstantiation extends AstNodeBase implements ZserioType
     }
 
     @Override
-    public void accept(ZserioVisitor visitor)
+    public void accept(ZserioAstVisitor visitor)
     {
         visitor.visitTypeInstantiation(this);
     }
 
     @Override
-    public void visitChildren(ZserioVisitor visitor)
+    public void visitChildren(ZserioAstVisitor visitor)
     {
         referencedType.accept(visitor);
         for (Expression argument : arguments)
@@ -164,7 +164,7 @@ public class TypeInstantiation extends AstNodeBase implements ZserioType
         private final Parameter parameter;
     }
 
-    /*@Override
+    @Override
     protected void check() throws ParserException
     {
         // check all argument types in instantiated parameter list
@@ -177,7 +177,7 @@ public class TypeInstantiation extends AstNodeBase implements ZserioType
                         instantiatedParameter.getParameter().getParameterType()));
             }
         }
-    }*/ // TODO:
+    }
 
     private final TypeReference referencedType;
     private final List<Expression> arguments;

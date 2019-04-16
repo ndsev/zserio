@@ -24,7 +24,7 @@ public class Package extends AstNodeBase
     }
 
     @Override
-    public void accept(ZserioVisitor visitor)
+    public void accept(ZserioAstVisitor visitor)
     {
         visitor.visitPackage(this);
     }
@@ -133,7 +133,6 @@ public class Package extends AstNodeBase
      */
     protected void resolve(Map<PackageName, Package> packageNameMap)
     {
-        // TODO: resolve
         // because subtypes can used type references, type references must be resolved before subtypes
         resolveImports(packageNameMap);
         resolveTypeReferences();

@@ -18,13 +18,13 @@ public abstract class BitFieldType extends IntegerType
     }
 
     @Override
-    public void accept(ZserioVisitor visitor)
+    public void accept(ZserioAstVisitor visitor)
     {
         visitor.visitBitFieldType(this);
     }
 
     @Override
-    public void visitChildren(ZserioVisitor visitor)
+    public void visitChildren(ZserioAstVisitor visitor)
     {
         lengthExpression.accept(visitor);
     }

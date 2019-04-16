@@ -10,9 +10,9 @@ import zserio.antlr.Zserio4Parser;
 import zserio.antlr.Zserio4ParserBaseVisitor;
 import zserio.ast.PackageName;
 
-public class ZserioAstBuilderVisitor extends Zserio4ParserBaseVisitor<Object>
+public class ZserioAstBuilder extends Zserio4ParserBaseVisitor<Object>
 {
-    public ZserioAstBuilderVisitor(boolean checkUnusedTypes)
+    public ZserioAstBuilder(boolean checkUnusedTypes)
     {
         this.checkUnusedTypes = checkUnusedTypes;
     }
@@ -38,11 +38,7 @@ public class ZserioAstBuilderVisitor extends Zserio4ParserBaseVisitor<Object>
         // types declarations
         final List<ZserioType> types = new ArrayList<ZserioType>();
         for (Zserio4Parser.TypeDeclarationContext typeCtx : ctx.typeDeclaration())
-        {
-            final Object typeDeclaration = visitTypeDeclaration(typeCtx);
-            if (typeDeclaration != null) // TODO: remove null check when all types are implemented
-                types.add((ZserioType)typeDeclaration);
-        }
+            types.add((ZserioType)visitTypeDeclaration(typeCtx));
 
         currentPackage = null;
 

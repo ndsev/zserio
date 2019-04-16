@@ -29,13 +29,13 @@ public class ServiceType extends AstNodeBase implements ZserioScopedType, Compar
     }
 
     @Override
-    public void accept(ZserioVisitor visitor)
+    public void accept(ZserioAstVisitor visitor)
     {
         visitor.visitServiceType(this);
     }
 
     @Override
-    public void visitChildren(ZserioVisitor visitor)
+    public void visitChildren(ZserioAstVisitor visitor)
     {
         for (Rpc rpc : rpcs)
             rpc.accept(visitor);

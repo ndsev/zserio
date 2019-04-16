@@ -1,6 +1,6 @@
 package zserio.ast4;
 
-public interface ZserioVisitor
+public interface ZserioAstVisitor
 {
     void visitRoot(Root root);
 
@@ -47,7 +47,7 @@ public interface ZserioVisitor
     void visitStringType(StringType stringType);
     void visitFloatType(FloatType floatType);
 
-    public class Base implements ZserioVisitor
+    public class Base implements ZserioAstVisitor
     {
         @Override public void visitRoot(Root root) { root.visitChildren(this); }
 

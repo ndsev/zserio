@@ -3,7 +3,7 @@ package zserio.ast4;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ScopeEvaluator extends ZserioVisitor.Base
+public class ZserioScopeEvaluator extends ZserioAstVisitor.Base
 {
     @Override
     public void visitStructureType(StructureType structureType)
@@ -205,7 +205,7 @@ public class ScopeEvaluator extends ZserioVisitor.Base
         final Scope expressionScope = new Scope(currentScope);
         if (fillExpressionScopes)
             expressionScopes.add(expressionScope);
-        //expression.setScope(expressionScope); // TODO:
+        expression.setScope(expressionScope);
     }
 
     private void visitChoiceField(Field field)
@@ -218,8 +218,6 @@ public class ScopeEvaluator extends ZserioVisitor.Base
     private final Scope defaultScope = new Scope((ZserioScopedType)null);
     private Scope currentScope = defaultScope;
     private Scope currentChoiceOrUnionScope = null;
-
-    private Field currentField = null;
 
     private List<Scope> expressionScopes = new ArrayList<Scope>();
     private boolean fillExpressionScopes = false;

@@ -20,13 +20,13 @@ public class ArrayType extends AstNodeBase implements ZserioType
     }
 
     @Override
-    public void accept(ZserioVisitor visitor)
+    public void accept(ZserioAstVisitor visitor)
     {
         visitor.visitArrayType(this);
     }
 
     @Override
-    public void visitChildren(ZserioVisitor visitor)
+    public void visitChildren(ZserioAstVisitor visitor)
     {
         elementType.accept(visitor);
         lengthExpression.accept(visitor);
@@ -74,8 +74,7 @@ public class ArrayType extends AstNodeBase implements ZserioType
         return isImplicit;
     }
 
-    /*@Override
-    protected void check() throws ParserException
+    protected void check()
     {
         // resolve element base type
         elementBaseType = TypeReference.resolveBaseType(elementType);
@@ -91,10 +90,11 @@ public class ArrayType extends AstNodeBase implements ZserioType
                 throw new ParserException(lengthExpression,
                         "Invalid length expression for array. Length must be integer!");
         }
-    }*/ // TODO:
+    }
 
     private final ZserioType elementType;
-    private final ZserioType elementBaseType = null;
     private final Expression lengthExpression;
     private final boolean isImplicit;
+
+    private ZserioType elementBaseType = null;
 }

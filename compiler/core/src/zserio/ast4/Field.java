@@ -1,9 +1,14 @@
 package zserio.ast4;
 
+import java.math.BigInteger;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 
 import org.antlr.v4.runtime.Token;
+
+import zserio.ast.PackageName;
 
 /**
  * AST node for fields.
@@ -70,13 +75,13 @@ public class Field extends AstNodeBase
     }
 
     @Override
-    public void accept(ZserioVisitor visitor)
+    public void accept(ZserioAstVisitor visitor)
     {
         visitor.visitField(this);
     }
 
     @Override
-    public void visitChildren(ZserioVisitor visitor)
+    public void visitChildren(ZserioAstVisitor visitor)
     {
         fieldType.accept(visitor);
         if (alignmentExpr != null)
@@ -248,7 +253,7 @@ public class Field extends AstNodeBase
      *
      * @return List of referenced Zserio types of given type.
      */
-    /*public <T extends ZserioType> Set<T> getReferencedTypes(Class<? extends T> clazz)
+    public <T extends ZserioType> Set<T> getReferencedTypes(Class<? extends T> clazz)
     {
         final Set<T> referencedTypes = new HashSet<T>();
 
@@ -293,7 +298,7 @@ public class Field extends AstNodeBase
         }
 
         return referencedTypes;
-    }*/ //TODO:
+    }
 
     /**
      * Gets documentation comment associated to this field.
@@ -305,7 +310,7 @@ public class Field extends AstNodeBase
         return tokenWithDoc != null ? tokenWithDoc.getHiddenDocComment() : null;
     }*/ // TODO:
 
-    /*@Override
+    @Override
     protected void check() throws ParserException
     {
         // check field name
@@ -333,16 +338,15 @@ public class Field extends AstNodeBase
             if (optionalClauseExpr.getExprType() != Expression.ExpressionType.BOOLEAN)
                 throw new ParserException(optionalClauseExpr, "Optional expression for field '" +
                         getName() + "' is not boolean!");
-
-            if (isAutoOptional)
-                throw new ParserException(optionalClauseExpr, "Auto optional field '" + getName() +
-                        "' cannot contain if clause!");
         }
 
         // check constraint expression type
-        if (constraintExpr != null && constraintExpr.getExprType() != Expression.ExpressionType.BOOLEAN)
-            throw new ParserException(constraintExpr, "Constraint expression for field '" +
-                    getName() + "' is not boolean!");
+        if (constraintExpr != null)
+        {
+            if (constraintExpr.getExprType() != Expression.ExpressionType.BOOLEAN)
+                throw new ParserException(constraintExpr, "Constraint expression for field '" +
+                        getName() + "' is not boolean!");
+        }
 
         // check offset expression type
         if (offsetExpr != null)
@@ -361,7 +365,7 @@ public class Field extends AstNodeBase
                 throw new ParserException(alignmentExpr, "Alignment expression for field '" + getName() +
                         "' is not positive integer!");
         }
-    }*/ // TODO:
+    }
 
     /**
      * Sets the compound type which is owner of the field.

@@ -20,13 +20,13 @@ public class Rpc extends AstNodeBase
     }
 
     @Override
-    public void accept(ZserioVisitor visitor)
+    public void accept(ZserioAstVisitor visitor)
     {
         visitor.visitRpc(this);
     }
 
     @Override
-    public void visitChildren(ZserioVisitor visitor)
+    public void visitChildren(ZserioAstVisitor visitor)
     {
         responseType.accept(visitor);
         requestType.accept(visitor);
@@ -92,13 +92,13 @@ public class Rpc extends AstNodeBase
         return getHiddenDocComment();
     }*/ // TODO:
 
-    /*@Override
+    @Override
     protected void check() throws ParserException
     {
         // fill used type list
         checkUsedType(responseType);
         checkUsedType(requestType);
-    }*/ // TODO:
+    }
 
     /**
      * Sets service type which is owner of this RPC method.
@@ -110,24 +110,23 @@ public class Rpc extends AstNodeBase
         this.serviceType = serviceType;
     }
 
-    /*private void checkUsedType(ZserioType type) throws ParserException
+    private void checkUsedType(ZserioType type) throws ParserException
     {
         final ZserioType resolvedBaseType = TypeReference.resolveBaseType(type);
         if (!(resolvedBaseType instanceof CompoundType))
-            throw new ParserException(this, "Only non-parameterized compound types can be used in RPC calls, " +
+            throw new ParserException(type, "Only non-parameterized compound types can be used in RPC calls, " +
                     "'" + type.getName() + "' is not a compound type!");
 
         final CompoundType compoundType = (CompoundType)resolvedBaseType;
         if (compoundType.getParameters().size() > 0)
-            throw new ParserException(this, "Only non-parameterized compound types can be used in RPC calls, " +
+            throw new ParserException(type, "Only non-parameterized compound types can be used in RPC calls, " +
                     "'" + type.getName() + "' is a parameterized type!");
         if (resolvedBaseType instanceof SqlTableType)
-            throw new ParserException(this, "SQL table '" + type.getName() + "' cannot be used in RPC call");
+            throw new ParserException(type, "SQL table '" + type.getName() + "' cannot be used in RPC call");
 
-        compoundType.setUsedByServiceType(serviceType);
-
-        usedTypeList.add(TypeReference.resolveType(type));
-    }*/ // TODO:
+        /*compoundType.setUsedByServiceType(serviceType);
+        usedTypeList.add(TypeReference.resolveType(type));*/ // TODO:
+    }
 
     private final String name;
     private final ZserioType responseType;

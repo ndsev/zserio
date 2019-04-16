@@ -25,7 +25,7 @@ public class TypeReference extends AstNodeBase implements ZserioType
     }
 
     @Override
-    public void accept(ZserioVisitor visitor)
+    public void accept(ZserioAstVisitor visitor)
     {
         visitor.visitTypeReference(this);
     }

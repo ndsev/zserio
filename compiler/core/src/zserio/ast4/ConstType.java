@@ -27,13 +27,13 @@ public class ConstType extends AstNodeBase implements ZserioType, Comparable<Con
     }
 
     @Override
-    public void accept(ZserioVisitor visitor)
+    public void accept(ZserioAstVisitor visitor)
     {
         visitor.visitConstType(this);
     }
 
     @Override
-    public void visitChildren(ZserioVisitor visitor)
+    public void visitChildren(ZserioAstVisitor visitor)
     {
         constType.accept(visitor);
         valueExpression.accept(visitor);
@@ -104,7 +104,6 @@ public class ConstType extends AstNodeBase implements ZserioType, Comparable<Con
         return usedByCompoundList;
     }
 
-    /*@Override
     protected void check() throws ParserException
     {
         // fill used type list
@@ -113,8 +112,8 @@ public class ConstType extends AstNodeBase implements ZserioType, Comparable<Con
             usedTypeList.add(resolvedTypeReference);
 
         // add this const to 'Used-by' list for subtype type (needed by documentation emitter)
-        if (resolvedTypeReference instanceof Subtype)
-            ((Subtype)resolvedTypeReference).setUsedByConst(this);
+        /*if (resolvedTypeReference instanceof Subtype)
+            ((Subtype)resolvedTypeReference).setUsedByConst(this);*/ // TODO:
 
         final ZserioType baseType = TypeReference.resolveBaseType(resolvedTypeReference);
 
@@ -127,7 +126,7 @@ public class ConstType extends AstNodeBase implements ZserioType, Comparable<Con
 
         // check integer constant range
         ExpressionUtil.checkIntegerExpressionRange(valueExpression, baseType, name);
-    }*/ // TODO:
+    }
 
     /**
      * Sets expression which uses this constant type.

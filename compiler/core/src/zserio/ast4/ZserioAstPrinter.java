@@ -1,6 +1,6 @@
 package zserio.ast4;
 
-public class PrintStringTreeVisitor implements ZserioVisitor
+public class ZserioAstPrinter implements ZserioAstVisitor
 {
     @Override
     public void visitRoot(Root root)

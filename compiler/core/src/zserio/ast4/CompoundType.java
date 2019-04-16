@@ -1,6 +1,6 @@
 package zserio.ast4;
 
-import java.util.LinkedHashSet;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.SortedSet;
@@ -37,7 +37,7 @@ public abstract class CompoundType extends AstNodeBase implements ZserioScopedTy
     }
 
     @Override
-    public void visitChildren(ZserioVisitor visitor)
+    public void visitChildren(ZserioAstVisitor visitor)
     {
         for (Parameter parameter : parameters)
             parameter.accept(visitor);
@@ -169,7 +169,7 @@ public abstract class CompoundType extends AstNodeBase implements ZserioScopedTy
      */
     public boolean needsChildrenInitialization()
     {
-        /*for (Field field : fields)
+        for (Field field : fields)
         {
             final ZserioType fieldBaseType = TypeReference.resolveBaseType(field.getFieldReferencedType());
             if (fieldBaseType instanceof CompoundType)
@@ -180,7 +180,7 @@ public abstract class CompoundType extends AstNodeBase implements ZserioScopedTy
                         (childCompoundType != this && childCompoundType.needsChildrenInitialization()))
                     return true;
             }
-        }*/ // TODO:
+        }
 
         return false;
     }
@@ -192,7 +192,7 @@ public abstract class CompoundType extends AstNodeBase implements ZserioScopedTy
      */
     public boolean hasFieldWithOffset()
     {
-        /*for (Field field : fields)
+        for (Field field : fields)
         {
             if (field.getOffsetExpr() != null)
                 return true;
@@ -205,7 +205,7 @@ public abstract class CompoundType extends AstNodeBase implements ZserioScopedTy
                 if (childCompoundType != this && childCompoundType.hasFieldWithOffset())
                     return true;
             }
-        }*/ // TODO:
+        }
 
         return false;
     }
@@ -247,7 +247,7 @@ public abstract class CompoundType extends AstNodeBase implements ZserioScopedTy
      *
      * @return List of referenced Zserio types of given type.
      */
-    /*public <T extends ZserioType> Set<T> getReferencedTypes(Class<? extends T> clazz)
+    public <T extends ZserioType> Set<T> getReferencedTypes(Class<? extends T> clazz)
     {
         final Set<T> result = new HashSet<T>();
         for (Field field : fields)
@@ -256,7 +256,7 @@ public abstract class CompoundType extends AstNodeBase implements ZserioScopedTy
             result.addAll(function.getResultExpression().getReferencedSymbolObjects(clazz));
 
         return result;
-    }*/ // TODO:
+    }
 
     /**
      * Gets documentation comment associated to this compound type.
@@ -283,20 +283,7 @@ public abstract class CompoundType extends AstNodeBase implements ZserioScopedTy
         this.docComment = docComment;
     }*/
 
-    /*protected void checkTableFields() throws ParserException
-    {
-        // check if fields are not sql tables
-        for (Field field : fields)
-        {
-            ZserioType fieldBaseType = TypeReference.resolveBaseType(field.getFieldReferencedType());
-            if (fieldBaseType instanceof SqlTableType)
-                throw new ParserException(field, "Field '" + field.getName() +
-                        "' cannot be a sql table!");
-        }
-    }*/ // TODO:
-
-    /*@Override
-    protected void check() throws ParserException
+    protected void check()
     {
         // check recursive fields which are not arrays
         containsOptionalRecursion = false;
@@ -319,7 +306,7 @@ public abstract class CompoundType extends AstNodeBase implements ZserioScopedTy
         }
 
         // add use-by compound for subtypes needed for documentation emitter
-        for (Field field : fields)
+        /*for (Field field : fields)
         {
             final ZserioType fieldReferencedType =
                     TypeReference.resolveType(field.getFieldReferencedType());
@@ -337,8 +324,20 @@ public abstract class CompoundType extends AstNodeBase implements ZserioScopedTy
             final ZserioType functionType = TypeReference.resolveType(function.getReturnType());
             if (functionType instanceof Subtype)
                 ((Subtype)functionType).setUsedByCompound(this);
+        }*/
+    }
+
+    protected void checkTableFields() throws ParserException
+    {
+        // check if fields are not sql tables
+        for (Field field : fields)
+        {
+            ZserioType fieldBaseType = TypeReference.resolveBaseType(field.getFieldReferencedType());
+            if (fieldBaseType instanceof SqlTableType)
+                throw new ParserException(field, "Field '" + field.getName() +
+                        "' cannot be a sql table!");
         }
-    }*/
+    }
 
     /**
      * Sets compound type which uses this compound type.

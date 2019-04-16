@@ -12,15 +12,15 @@ import org.apache.commons.cli.ParseException;
 import zserio.antlr.Zserio4Lexer;
 import zserio.antlr.Zserio4Parser;
 import zserio.ast.PackageName;
-import zserio.ast4.CheckingVisitor;
+import zserio.ast4.ZserioAstChecker;
 import zserio.ast4.Import;
-import zserio.ast4.ParseTreeCheckingVisitor;
+import zserio.ast4.ZserioParseTreeChecker;
 import zserio.ast4.ParserException;
-import zserio.ast4.PrintStringTreeVisitor;
+import zserio.ast4.ZserioAstPrinter;
 import zserio.ast4.Root;
-import zserio.ast4.ScopeEvaluator;
+import zserio.ast4.ZserioScopeEvaluator;
 import zserio.ast4.TranslationUnit;
-import zserio.ast4.ZserioAstBuilderVisitor;
+import zserio.ast4.ZserioAstBuilder;
 import zserio.emit.common.ZserioEmitException;
 
 /**
@@ -153,7 +153,7 @@ public class ZserioTool
 
     private Root parse() throws Exception
     {
-        final ZserioAstBuilderVisitor astBuilderVisitor = new ZserioAstBuilderVisitor(
+        final ZserioAstBuilder astBuilderVisitor = new ZserioAstBuilder(
                 commandLineArguments.getWithUnusedWarnings());
 
         final String inputFileName = commandLineArguments.getInputFileName();
@@ -165,7 +165,7 @@ public class ZserioTool
         rootNode.resolveReferences();
 
         // TODO: scope evaluation
-        final ScopeEvaluator scopeEvaluator = new ScopeEvaluator();
+        final ZserioScopeEvaluator scopeEvaluator = new ZserioScopeEvaluator();
         rootNode.accept(scopeEvaluator);
 
         // TODO: expression evaluation
@@ -173,7 +173,7 @@ public class ZserioTool
         return rootNode;
     }
 
-    private TranslationUnit parsePackage(ZserioAstBuilderVisitor astBuilderVisitor,
+    private TranslationUnit parsePackage(ZserioAstBuilder astBuilderVisitor,
             String inputFileFullName) throws Exception
     {
         ZserioToolPrinter.printMessage("Parsing " + inputFileFullName);
@@ -185,7 +185,7 @@ public class ZserioTool
         final Zserio4Parser parser = new Zserio4Parser(tokenStream);
         final ParseTree tree = parser.translationUnit();
 
-        ParseTreeCheckingVisitor parseTreeCheckingVisitor = new ParseTreeCheckingVisitor(inputFileManager);
+        ZserioParseTreeChecker parseTreeCheckingVisitor = new ZserioParseTreeChecker(inputFileManager);
         parseTreeCheckingVisitor.visit(tree);
 
         final TranslationUnit translationUnit = (TranslationUnit)astBuilderVisitor.visit(tree);
@@ -193,7 +193,7 @@ public class ZserioTool
         return translationUnit;
     }
 
-    private void parseImportedPackages(ZserioAstBuilderVisitor astBuilderVisitor,
+    private void parseImportedPackages(ZserioAstBuilder astBuilderVisitor,
             TranslationUnit parentTranslationUnit) throws Exception
     {
         final Iterable<Import> imports = parentTranslationUnit.getImports();
@@ -214,8 +214,8 @@ public class ZserioTool
     {
         ZserioToolPrinter.printMessage("Checking");
 
-        CheckingVisitor checkingListener = new CheckingVisitor();
-        rootNode.accept(checkingListener);
+        ZserioAstChecker checkingVisitor = new ZserioAstChecker();
+        rootNode.accept(checkingVisitor);
     }
 
     /*private void emit(Root rootNode) throws Exception
@@ -227,7 +227,7 @@ public class ZserioTool
     private static void showAstTree(Root rootNode)
     {
         ZserioToolPrinter.printMessage("AST:");
-        PrintStringTreeVisitor printStringTreeVisitor = new PrintStringTreeVisitor();
+        ZserioAstPrinter printStringTreeVisitor = new ZserioAstPrinter();
         rootNode.accept(printStringTreeVisitor);
     }
 

@@ -16,13 +16,13 @@ public class TranslationUnit extends AstNodeBase
     }
 
     @Override
-    public void accept(ZserioVisitor visitor)
+    public void accept(ZserioAstVisitor visitor)
     {
         visitor.visitTranslationUnit(this);
     }
 
     @Override
-    public void visitChildren(ZserioVisitor visitor)
+    public void visitChildren(ZserioAstVisitor visitor)
     {
         unitPackage.accept(visitor);
         for (Import unitImport : imports)

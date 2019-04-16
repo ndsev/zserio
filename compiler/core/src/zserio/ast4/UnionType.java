@@ -18,15 +18,15 @@ public class UnionType extends CompoundType
     }
 
     @Override
-    public void accept(ZserioVisitor visitor)
+    public void accept(ZserioAstVisitor visitor)
     {
         visitor.visitUnionType(this);
     }
 
-    /*@Override
+    @Override
     protected void check() throws ParserException
     {
         super.check();
         checkTableFields();
-    }*/ // TODO:
+    }
 };

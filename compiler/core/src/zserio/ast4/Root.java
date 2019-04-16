@@ -32,13 +32,13 @@ public class Root extends AstNodeBase
     }
 
     @Override
-    public void accept(ZserioVisitor visitor)
+    public void accept(ZserioAstVisitor visitor)
     {
         visitor.visitRoot(this);
     }
 
     @Override
-    public void visitChildren(ZserioVisitor visitor)
+    public void visitChildren(ZserioAstVisitor visitor)
     {
         for (TranslationUnit translationUnit : translationUnits)
             translationUnit.accept(visitor);
@@ -112,7 +112,12 @@ public class Root extends AstNodeBase
         emitter.endRoot(this);*/
     }
 
+    protected void check()
+    {
+        // TODO: check for unused types - maybe just do it in self-standing visitor and don't use root for it?
+    }
+
     private final List<TranslationUnit> translationUnits;
     private final Map<PackageName, Package> packageNameMap;
-    private final boolean checkUnusedTypes; // TODO:
+    private final boolean checkUnusedTypes;
 }

@@ -19,9 +19,9 @@ import zserio.ast.PackageName;
 import zserio.tools.InputFileManager;
 import zserio.tools.ZserioToolPrinter;
 
-public class ParseTreeCheckingVisitor extends Zserio4ParserBaseVisitor<Void>
+public class ZserioParseTreeChecker extends Zserio4ParserBaseVisitor<Void>
 {
-    public ParseTreeCheckingVisitor(InputFileManager inputFileManager)
+    public ZserioParseTreeChecker(InputFileManager inputFileManager)
     {
         this.inputFileManager = inputFileManager;
     }
