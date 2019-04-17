@@ -1,7 +1,5 @@
 package zserio.ast4;
 
-import zserio.ast.PackageName;
-
 /**
  * The class represents symbol reference.
  *

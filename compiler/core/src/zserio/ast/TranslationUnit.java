@@ -104,10 +104,10 @@ public class TranslationUnit extends TokenAST
             if (!unitPackageName.isEmpty())
             {
                 // check it only if the package is not default
-                final String expectedFileFullName = inputFileManager.getFileFullName(unitPackageName);
+                /*final String expectedFileFullName = inputFileManager.getFileFullName(unitPackageName);
                 if (!expectedFileFullName.equals(getFileName()))
                     throw new ParserException(unitPackage, "Package '" + unitPackageName.toString() +
-                                "' does not match to the source file name!");
+                                "' does not match to the source file name!");*/
             }
         }
     }

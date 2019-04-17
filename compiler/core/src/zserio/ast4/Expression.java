@@ -10,8 +10,6 @@ import org.antlr.v4.runtime.Token;
 
 import zserio.antlr.Zserio4Parser;
 
-import zserio.ast.PackageName;
-
 /**
  *
  * TODO

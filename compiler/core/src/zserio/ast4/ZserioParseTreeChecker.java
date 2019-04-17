@@ -15,7 +15,6 @@ import java.util.Set;
 
 import zserio.antlr.Zserio4Parser;
 import zserio.antlr.Zserio4ParserBaseVisitor;
-import zserio.ast.PackageName;
 import zserio.tools.InputFileManager;
 import zserio.tools.ZserioToolPrinter;
 

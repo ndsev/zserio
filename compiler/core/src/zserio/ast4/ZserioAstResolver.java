@@ -2,8 +2,6 @@ package zserio.ast4;
 
 import java.util.Map;
 
-import zserio.ast.PackageName;
-
 public class ZserioAstResolver extends ZserioAstVisitor.Base
 {
     @Override

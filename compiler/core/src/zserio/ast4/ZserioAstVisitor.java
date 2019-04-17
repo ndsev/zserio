@@ -5,9 +5,11 @@ public interface ZserioAstVisitor
     void visitRoot(Root root);
 
     void visitPackage(Package unitPackage);
+
     void visitImport(Import unitImport);
+
     void visitConstType(ConstType constType);
-    void visitSubtype(Subtype subtypeType);
+    void visitSubtype(Subtype subtype);
     void visitStructureType(StructureType structureType);
     void visitChoiceType(ChoiceType choiceType);
     void visitUnionType(UnionType unionType);
@@ -55,7 +57,7 @@ public interface ZserioAstVisitor
         @Override public void visitImport(Import unitImport) { unitImport.visitChildren(this); }
 
         @Override public void visitConstType(ConstType constType) { constType.visitChildren(this); }
-        @Override public void visitSubtype(Subtype subtypeType) { subtypeType.visitChildren(this); }
+        @Override public void visitSubtype(Subtype subtype) { subtype.visitChildren(this); }
         @Override public void visitStructureType(StructureType structureType) { structureType.visitChildren(this); }
         @Override public void visitChoiceType(ChoiceType choiceType) { choiceType.visitChildren(this); }
         @Override public void visitUnionType(UnionType unionType) { unionType.visitChildren(this); }

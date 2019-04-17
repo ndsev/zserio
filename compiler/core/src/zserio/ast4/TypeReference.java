@@ -2,8 +2,6 @@ package zserio.ast4;
 
 import org.antlr.v4.runtime.Token;
 
-import zserio.ast.PackageName;
-
 /**
  * AST node for type references.
  *

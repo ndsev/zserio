@@ -6,7 +6,6 @@ import java.util.List;
 import org.antlr.v4.runtime.ParserRuleContext;
 import zserio.antlr.Zserio4Parser;
 import zserio.antlr.Zserio4ParserBaseVisitor;
-import zserio.ast.PackageName;
 
 public class ZserioAstBuilder extends Zserio4ParserBaseVisitor<Object>
 {

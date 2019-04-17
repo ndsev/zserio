@@ -6,7 +6,7 @@ import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
 
-import zserio.ast.PackageName;
+import zserio.ast4.PackageName;
 
 /**
  * The manager which holds all Zserio input file names.

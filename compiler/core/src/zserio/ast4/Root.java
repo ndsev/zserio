@@ -2,9 +2,7 @@ package zserio.ast4;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
-import zserio.ast.PackageName;
-import zserio.ast4.Package;
-import zserio.emit.common.Emitter;
+import zserio.emit.common.Emitter4;
 import zserio.emit.common.ZserioEmitException;
 
 /**
@@ -53,51 +51,17 @@ public class Root extends AstNodeBase
      *
      * @throws ZserioEmitException Throws in case of unknown ZserioType.
      */
-    public void walk(Emitter emitter) throws ZserioEmitException
+    public void walk(Emitter4 emitter) throws ZserioEmitException
     {
-        /*emitter.beginRoot(this);
-
-        for (TranslationUnit translationUnit : translationUnits)
+        final ZserioAstEmitter astEmitter = new ZserioAstEmitter(emitter);
+        try
         {
-            emitter.beginTranslationUnit(translationUnit);
-
-            final Package unitPackage = translationUnit.getPackage();
-            if (unitPackage != null) // translation unit package can be null if input file is empty
-                emitter.beginPackage(unitPackage);
-
-            final List<Import> unitImports = translationUnit.getImports();
-            for (Import unitImport : unitImports)
-                emitter.beginImport(unitImport);
-
-            final List<ZserioType> types = translationUnit.getTypes();
-            for (ZserioType type : types)
-            {
-                if (type instanceof ConstType)
-                    emitter.beginConst((ConstType)type);
-                else if (type instanceof Subtype)
-                    emitter.beginSubtype((Subtype)type);
-                else if (type instanceof StructureType)
-                    emitter.beginStructure((StructureType)type);
-                else if (type instanceof ChoiceType)
-                    emitter.beginChoice((ChoiceType)type);
-                else if (type instanceof UnionType)
-                    emitter.beginUnion((UnionType)type);
-                else if (type instanceof EnumType)
-                    emitter.beginEnumeration((EnumType)type);
-                else if (type instanceof SqlTableType)
-                    emitter.beginSqlTable((SqlTableType)type);
-                else if (type instanceof SqlDatabaseType)
-                    emitter.beginSqlDatabase((SqlDatabaseType)type);
-                else if (type instanceof ServiceType)
-                    emitter.beginService((ServiceType)type);
-                else
-                    throw new ZserioEmitException("Unknown type '" + type.getClass() + "' in tree walker!");
-            }
-
-            emitter.endTranslationUnit(translationUnit);
+            this.accept(astEmitter);
         }
-
-        emitter.endRoot(this);*/
+        catch (ZserioAstEmitter.UncheckedZserioEmitException e)
+        {
+            throw e.getCause();
+        }
     }
 
     protected void check()

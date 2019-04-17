@@ -10,7 +10,6 @@ import java.util.TreeSet;
 
 import org.antlr.v4.runtime.Token;
 
-import zserio.ast.PackageName;
 import zserio.tools.HashUtil;
 import zserio.tools.ZserioToolPrinter;
 

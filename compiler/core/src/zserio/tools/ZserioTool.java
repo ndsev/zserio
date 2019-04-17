@@ -11,7 +11,7 @@ import org.apache.commons.cli.ParseException;
 
 import zserio.antlr.Zserio4Lexer;
 import zserio.antlr.Zserio4Parser;
-import zserio.ast.PackageName;
+import zserio.ast4.PackageName;
 import zserio.ast4.ZserioAstChecker;
 import zserio.ast4.Import;
 import zserio.ast4.Package;
@@ -146,8 +146,7 @@ public class ZserioTool
 
         check(rootNode);
 
-        ZserioToolPrinter.printMessage("Emitting not implemented with ATNLR4"); // TODO: emit
-        // emit()
+        emit(rootNode);
 
         ZserioToolPrinter.printMessage("Done");
     }
@@ -217,11 +216,11 @@ public class ZserioTool
         rootNode.accept(checkingVisitor);
     }
 
-    /*private void emit(Root rootNode) throws Exception
+    private void emit(Root rootNode) throws Exception
     {
         final ExtensionParameters parameters = new ExtensionParameters(commandLineArguments);
         extensionManager.callExtensions(parameters, rootNode);
-    }*/
+    }
 
     private static void showAstTree(Root rootNode)
     {

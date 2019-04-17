@@ -8,8 +8,6 @@ import java.util.Set;
 
 import org.antlr.v4.runtime.Token;
 
-import zserio.ast.PackageName;
-
 /**
  * AST node for fields.
  */

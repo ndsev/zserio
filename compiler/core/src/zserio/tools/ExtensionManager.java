@@ -8,7 +8,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.ServiceLoader;
 
-import zserio.ast.Root;
+import zserio.ast4.Root;
 import zserio.emit.common.ZserioEmitException;
 
 /**
@@ -23,12 +23,12 @@ public class ExtensionManager
      */
     public ExtensionManager(CommandLineArguments commandLineArguments)
     {
-        extensions = new ArrayList<Extension>();
-        ServiceLoader<Extension> loader = ServiceLoader.load(Extension.class, getClass().getClassLoader());
-        Iterator<Extension> it = loader.iterator();
+        extensions = new ArrayList<Extension4>();
+        ServiceLoader<Extension4> loader = ServiceLoader.load(Extension4.class, getClass().getClassLoader());
+        Iterator<Extension4> it = loader.iterator();
         while (it.hasNext())
         {
-            Extension extension = it.next();
+            Extension4 extension = it.next();
             if (ZserioVersion.VERSION_STRING.equals(extension.getVersion()))
             {
                 extensions.add(extension);
@@ -55,7 +55,7 @@ public class ExtensionManager
         else
         {
             ZserioToolPrinter.printMessage("Available extensions:");
-            for (Extension extension : extensions)
+            for (Extension4 extension : extensions)
             {
                 ZserioToolPrinter.printMessage("  " + extension.getName());
             }
@@ -78,7 +78,7 @@ public class ExtensionManager
         }
         else
         {
-            for (Extension extension : extensions)
+            for (Extension4 extension : extensions)
             {
                 if (extension.isEnabled(parameters))
                 {
@@ -124,5 +124,5 @@ public class ExtensionManager
         return message;
     }
 
-    private final List<Extension> extensions;
+    private final List<Extension4> extensions;
 }
