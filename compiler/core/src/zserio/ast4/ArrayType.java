@@ -74,6 +74,7 @@ public class ArrayType extends AstNodeBase implements ZserioType
         return isImplicit;
     }
 
+    @Override
     protected void check()
     {
         // resolve element base type
@@ -82,10 +83,6 @@ public class ArrayType extends AstNodeBase implements ZserioType
         // check length expression
         if (lengthExpression != null)
         {
-            if (isImplicit)
-                throw new ParserException(lengthExpression,
-                        "Length expression is not allowed for implicit arrays!");
-
             if (lengthExpression.getExprType() != Expression.ExpressionType.INTEGER)
                 throw new ParserException(lengthExpression,
                         "Invalid length expression for array. Length must be integer!");

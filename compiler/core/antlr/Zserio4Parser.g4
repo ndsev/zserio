@@ -62,17 +62,11 @@ structureDeclaration
 structureFieldDefinition
     :   fieldAlignment?
         fieldOffset?
-        (
-            OPTIONAL
-            fieldTypeId
-            fieldInitializer?
-            fieldConstraint?
-        |
-            fieldTypeId
-            fieldInitializer?
-            fieldOptionalClause?
-            fieldConstraint?
-        )
+        OPTIONAL?
+        fieldTypeId
+        fieldInitializer?
+        fieldOptionalClause?
+        fieldConstraint?
         SEMICOLON
     ;
 
@@ -85,8 +79,7 @@ fieldOffset
     ;
 
 fieldTypeId
-    :   IMPLICIT typeReference id LBRACKET RBRACKET
-    |   typeReference id fieldArrayRange?
+    :   IMPLICIT? typeReference id fieldArrayRange?
     ;
 
 fieldArrayRange

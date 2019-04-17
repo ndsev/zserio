@@ -39,9 +39,8 @@ public class ZserioParseTreeChecker extends Zserio4ParserBaseVisitor<Void>
     @Override
     public Void visitPackageDeclaration(Zserio4Parser.PackageDeclarationContext ctx)
     {
-        final PackageName packageName = createPackageName(ctx.qualifiedName().id());
-
         // this must be checked now to avoid obscure errors if package is not stored in the same file name
+        final PackageName packageName = createPackageName(ctx.qualifiedName().id());
         final String expectedFileFullName = inputFileManager.getFileFullName(packageName);
         final String fileFullName = ctx.getStart().getInputStream().getSourceName();
         if (!expectedFileFullName.equals(fileFullName))
@@ -52,14 +51,42 @@ public class ZserioParseTreeChecker extends Zserio4ParserBaseVisitor<Void>
     }
 
     @Override
+    public Void visitStructureFieldDefinition(Zserio4Parser.StructureFieldDefinitionContext ctx)
+    {
+        // this check avoids auto optional fields with optional clause
+        if (ctx.OPTIONAL() != null && ctx.fieldOptionalClause() != null)
+            throw new ParserException(ctx.fieldOptionalClause().getStart(), "Auto optional field '" +
+                    ctx.fieldTypeId().id().getText() + "' cannot contain if clause!");
+
+        return null;
+    }
+
+    @Override
+    public Void visitFieldTypeId(Zserio4Parser.FieldTypeIdContext ctx)
+    {
+        // this check avoids implicit for none-array fields and implicit arrays with length expression
+        if (ctx.IMPLICIT() != null)
+        {
+            final Zserio4Parser.FieldArrayRangeContext fieldArrayRangeCtx = ctx.fieldArrayRange();
+            if (fieldArrayRangeCtx == null)
+                throw new ParserException(ctx.IMPLICIT().getSymbol(),
+                        "Implicit keyword can be used only for arrays!");
+
+            if (fieldArrayRangeCtx.expression() != null)
+                throw new ParserException(fieldArrayRangeCtx.expression().getStart(),
+                        "Length expression is not allowed for implicit arrays!");
+        }
+
+        return null;
+    }
+
+    @Override
     public Void visitId(Zserio4Parser.IdContext ctx)
     {
         final String id = ctx.getText();
         if (reservedKeywordsList.contains(id))
-        {
             throw new ParserException(ctx.getStart(),
                     "'" + id +  "' is a reserved keyword and may not be used here!");
-        }
 
         return null;
     }
@@ -180,7 +207,8 @@ public class ZserioParseTreeChecker extends Zserio4ParserBaseVisitor<Void>
         "while",  "with",    "yield"
     };
 
-    private static final Set<String> reservedKeywordsList = new HashSet<String>(Arrays.asList(reservedKeywords));
+    private static final Set<String> reservedKeywordsList =
+            new HashSet<String>(Arrays.asList(reservedKeywords));
 
     private final InputFileManager inputFileManager;
 }

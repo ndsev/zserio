@@ -12,29 +12,71 @@ import zserio.antlr.Zserio4Parser;
 
 import zserio.ast.PackageName;
 
+/**
+ *
+ * TODO
+ * It would be probably better to use internal visitors instead of if (operandX) construction.
+ *
+ */
 public class Expression extends AstNodeBase
 {
+    /**
+     * TODO
+     * @param expressionToken
+     * @param pkg
+     */
     public Expression(Token expressionToken, Package pkg)
     {
         this(expressionToken, pkg, expressionToken, false, null, null, null);
     }
 
+    /**
+     * TODO
+     * @param locationToken
+     * @param pkg
+     * @param expressionToken
+     * @param isExplicit
+     */
     public Expression(Token locationToken, Package pkg, Token expressionToken, boolean isExplicit)
     {
         this(locationToken, pkg, expressionToken, isExplicit, null, null, null);
     }
 
+    /**
+     * TODO
+     * @param locationToken
+     * @param pkg
+     * @param expressionToken
+     * @param operand1
+     */
     public Expression(Token locationToken, Package pkg, Token expressionToken, Expression operand1)
     {
         this(locationToken, pkg, expressionToken, false, operand1, null, null);
     }
 
+    /**
+     * TODO
+     * @param locationToken
+     * @param pkg
+     * @param expressionToken
+     * @param operand1
+     * @param operand2
+     */
     public Expression(Token locationToken, Package pkg, Token expressionToken, Expression operand1,
             Expression operand2)
     {
         this(locationToken, pkg, expressionToken, false, operand1, operand2, null);
     }
 
+    /**
+     * TODO
+     * @param locationToken
+     * @param pkg
+     * @param expressionToken
+     * @param operand1
+     * @param operand2
+     * @param operand3
+     */
     public Expression(Token locationToken, Package pkg, Token expressionToken, Expression operand1,
             Expression operand2, Expression operand3)
     {
@@ -1185,7 +1227,7 @@ public class Expression extends AstNodeBase
         {
             // call evaluation explicitly because this type instantiation does not have to be evaluated yet
             final TypeInstantiation typeInstantiation = (TypeInstantiation)resolvedType;
-            typeInstantiation.evaluateBaseType();
+            typeInstantiation.evaluateBaseType();  // TODO should be evaluate
             resolvedType = typeInstantiation.getReferencedType();
         }
 
