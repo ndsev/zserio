@@ -16,17 +16,29 @@ import zserio.tools.ZserioToolPrinter;
 
 public class Package extends AstNodeBase
 {
-    public Package(Token token, PackageName packageName, List<Import> imports)
+    public Package(Token token, PackageName packageName, List<Import> imports,
+            LinkedHashMap<String, ZserioType> localTypes)
     {
         super(token);
         this.packageName = packageName;
         this.imports = imports;
+        this.localTypes = localTypes;
     }
 
     @Override
     public void accept(ZserioAstVisitor visitor)
     {
         visitor.visitPackage(this);
+    }
+
+    @Override
+    public void visitChildren(ZserioAstVisitor visitor)
+    {
+        for (Import packageImport : imports)
+            packageImport.accept(visitor);
+
+        for (ZserioType type : localTypes.values())
+            type.accept(visitor);
     }
 
     public PackageName getPackageName()
@@ -79,6 +91,16 @@ public class Package extends AstNodeBase
     }
 
     /**
+     * Gets imports which are defined in this package.
+     *
+     * @return List of all imports defined in this package.
+     */
+    public Iterable<Import> getImports()
+    {
+        return imports;
+    }
+
+    /**
      * Gets list of all local types stored in the packages.
      *
      * This is called from doc emitter only. Doc emitter should be redesigned not to require such method. TODO
@@ -88,33 +110,6 @@ public class Package extends AstNodeBase
     public Iterable<ZserioType> getLocalTypes()
     {
         return localTypes.values();
-    }
-
-    /**
-     * Stores a type in the package types map.
-     *
-     * @param type Zserio type to add.
-     *
-     * @throws ParserException Throws if type has been already defined in the current package.
-     */
-    protected void setLocalType(ZserioType type) throws ParserException
-    {
-        final String typeName = type.getName();
-        final ZserioType addedType = localTypes.put(typeName, type);
-        if (addedType != null)
-            throw new ParserException(type, "'" + typeName + "' is already defined in this package!");
-    }
-
-    /**
-     * Adds type reference to resolve.
-     *
-     * This method is called from ANTLR TypeEvaluator walker.
-     *
-     * @param typeReference Type reference to resolve.
-     */
-    protected void addTypeReferenceToResolve(TypeReference typeReference)
-    {
-        typeReferencesToResolve.add(typeReference);
     }
 
     /**
@@ -132,14 +127,6 @@ public class Package extends AstNodeBase
      *                         is detected.
      */
     protected void resolve(Map<PackageName, Package> packageNameMap)
-    {
-        // because subtypes can used type references, type references must be resolved before subtypes
-        resolveImports(packageNameMap);
-        resolveTypeReferences();
-        resolveSubtypes();
-    }
-
-    private void resolveImports(Map<PackageName, Package> packageNameMap)
     {
         for (Import importedNode : imports)
         {
@@ -204,21 +191,6 @@ public class Package extends AstNodeBase
                     importedSingleTypes.add(importedSingleType);
                 }
             }
-        }
-    }
-
-    private void resolveTypeReferences()
-    {
-        for (TypeReference typeReference : typeReferencesToResolve)
-            typeReference.resolve(this);
-    }
-
-    private void resolveSubtypes()
-    {
-        for (ZserioType type : localTypes.values())
-        {
-            if (type instanceof Subtype)
-                ((Subtype)type).resolve();
         }
     }
 
@@ -337,10 +309,9 @@ public class Package extends AstNodeBase
     private final PackageName packageName;
     private final List<Import> imports;
 
-    // this must be a LinkedHashMap because of 'Cyclic dependency' error checked in resolveSubtypes()
-    private final Map<String, ZserioType> localTypes = new LinkedHashMap<String, ZserioType>();
+    // this must be a LinkedHashMap because of 'Cyclic dependency' error checked in ZserioAstResolver
+    private final LinkedHashMap<String, ZserioType> localTypes;
     private final Set<Package> importedPackages = new HashSet<Package>();
     // this must be a TreeSet because of 'Ambiguous type reference' error checked in getVisibleType()
     private final Set<SingleTypeName> importedSingleTypes = new TreeSet<SingleTypeName>();
-    private final List<TypeReference> typeReferencesToResolve = new ArrayList<TypeReference>();
 }

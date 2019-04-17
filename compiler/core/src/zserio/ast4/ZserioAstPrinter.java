@@ -10,13 +10,6 @@ public class ZserioAstPrinter implements ZserioAstVisitor
     }
 
     @Override
-    public void visitTranslationUnit(TranslationUnit translationUnit)
-    {
-        print("translationUnit [" + translationUnit.getLocation().getFileName() + "]");
-        visitChildren(translationUnit);
-    }
-
-    @Override
     public void visitPackage(Package unitPackage)
     {
         print("package [" + unitPackage.getPackageName() + "]");

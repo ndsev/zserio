@@ -82,7 +82,10 @@ public class Subtype extends AstNodeBase implements ZserioType
         // base type can be only type reference or a defined type.
         if (targetType instanceof TypeReference)
         {
-            final ZserioType referencedTargetType = ((TypeReference)targetType).getReferencedType();
+            final TypeReference targetTypeReference = (TypeReference)targetType;
+            targetTypeReference.resolve(); // make sure the type reference is resolved
+
+            final ZserioType referencedTargetType = targetTypeReference.getReferencedType();
             if (referencedTargetType instanceof Subtype)
                 targetBaseType = ((Subtype)referencedTargetType).resolve();
             else

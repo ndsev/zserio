@@ -3,8 +3,6 @@ package zserio.ast4;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
-
 import org.antlr.v4.runtime.ParserRuleContext;
 import zserio.antlr.Zserio4Parser;
 import zserio.antlr.Zserio4ParserBaseVisitor;
@@ -19,38 +17,50 @@ public class ZserioAstBuilder extends Zserio4ParserBaseVisitor<Object>
 
     public Root getAst()
     {
-        return new Root(translationUnits, packageNameMap, checkUnusedTypes);
+        return new Root(packageNameMap, checkUnusedTypes);
     }
 
     @Override
-    public Object visitTranslationUnit(Zserio4Parser.TranslationUnitContext ctx)
+    public Object visitPackageDeclaration(Zserio4Parser.PackageDeclarationContext ctx)
     {
+        // package
+        final PackageName packageName = visitPackageNameDefinition(ctx.packageNameDefinition());
+
         // imports
         final List<Import> imports = new ArrayList<Import>();
         for (Zserio4Parser.ImportDeclarationContext importCtx : ctx.importDeclaration())
             imports.add(visitImportDeclaration(importCtx));
 
-        // package
-        final Package unitPackage = createPackage(ctx, imports);
-
-        currentPackage = unitPackage; // set current package for types
+        // package instance
+        final ParserRuleContext packageLocationCtx = ctx.packageNameDefinition() != null
+                ? ctx.packageNameDefinition().qualifiedName() : ctx;
+        localTypes = new LinkedHashMap<String, ZserioType>();
+        currentPackage = new Package(packageLocationCtx.getStart(), packageName, imports, localTypes);
+        if (packageNameMap.put(currentPackage.getPackageName(), currentPackage) != null)
+        {
+            // translation unit package already exists, this could happen only for default packages
+            throw new ParserException(currentPackage, "Multiple default packages are not allowed!");
+        }
 
         // types declarations
-        final List<ZserioType> types = new ArrayList<ZserioType>();
         for (Zserio4Parser.TypeDeclarationContext typeCtx : ctx.typeDeclaration())
-            types.add((ZserioType)visitTypeDeclaration(typeCtx));
+        {
+            ZserioType type = (ZserioType)visitTypeDeclaration(typeCtx);
+            final String typeName = type.getName();
+            final ZserioType addedType = localTypes.put(typeName, type);
+            if (addedType != null)
+                throw new ParserException(type, "'" + typeName + "' is already defined in this package!");
+        }
 
+        localTypes = null;
+        final Package result = currentPackage;
         currentPackage = null;
 
-        final TranslationUnit translationUnit = new TranslationUnit(
-                ctx.getStart(), unitPackage, imports, types);
-        addTranslationUnit(translationUnit);
-
-        return translationUnit;
+        return result;
     }
 
     @Override
-    public PackageName visitPackageDeclaration(Zserio4Parser.PackageDeclarationContext ctx)
+    public PackageName visitPackageNameDefinition(Zserio4Parser.PackageNameDefinitionContext ctx)
     {
         if (ctx != null)
             return createPackageName(ctx.qualifiedName().id());
@@ -86,7 +96,6 @@ public class ZserioAstBuilder extends Zserio4ParserBaseVisitor<Object>
 
         final ConstType constType = new ConstType(ctx.id().getStart(), currentPackage, type, name,
                 valueExpression);
-        currentPackage.setLocalType(constType);
 
         return constType;
     }
@@ -98,7 +107,6 @@ public class ZserioAstBuilder extends Zserio4ParserBaseVisitor<Object>
         final String name = ctx.id().getText();
 
         final Subtype subtype = new Subtype(ctx.id().getStart(), currentPackage, targetType, name);
-        currentPackage.setLocalType(subtype);
 
         return subtype;
     }
@@ -120,7 +128,6 @@ public class ZserioAstBuilder extends Zserio4ParserBaseVisitor<Object>
 
         final StructureType structureType = new StructureType(ctx.id().getStart(), currentPackage, name,
                 parameters, fields, functions);
-        currentPackage.setLocalType(structureType);
 
         return structureType;
     }
@@ -208,7 +215,6 @@ public class ZserioAstBuilder extends Zserio4ParserBaseVisitor<Object>
 
         final ChoiceType choiceType = new ChoiceType(ctx.id().getStart(), currentPackage, name, parameters,
                 selectorExpression, choiceCases, choiceDefault, functions);
-        currentPackage.setLocalType(choiceType);
 
         return choiceType;
     }
@@ -279,7 +285,6 @@ public class ZserioAstBuilder extends Zserio4ParserBaseVisitor<Object>
 
         final UnionType unionType = new UnionType(ctx.id().getStart(), currentPackage, name, parameters, fields,
                 functions);
-        currentPackage.setLocalType(unionType);
 
         return unionType;
     }
@@ -295,7 +300,6 @@ public class ZserioAstBuilder extends Zserio4ParserBaseVisitor<Object>
 
         final EnumType enumType = new EnumType(ctx.id().getStart(), currentPackage, zserioEnumType, name,
                 enumItems);
-        currentPackage.setLocalType(enumType);
 
         return enumType;
     }
@@ -322,7 +326,6 @@ public class ZserioAstBuilder extends Zserio4ParserBaseVisitor<Object>
 
         final SqlTableType sqlTableType = new SqlTableType(ctx.id(0).getStart(), currentPackage, name,
                 sqlUsingId, fields, sqlConstraint, sqlWithoutRowId);
-        currentPackage.setLocalType(sqlTableType);
 
         return sqlTableType;
     }
@@ -367,7 +370,6 @@ public class ZserioAstBuilder extends Zserio4ParserBaseVisitor<Object>
 
         final SqlDatabaseType sqlDatabaseType = new SqlDatabaseType(ctx.id().getStart(), currentPackage, name,
                 fields);
-        currentPackage.setLocalType(sqlDatabaseType);
 
         return sqlDatabaseType;
     }
@@ -391,7 +393,6 @@ public class ZserioAstBuilder extends Zserio4ParserBaseVisitor<Object>
             rpcs.add(visitRpcDeclaration(rpcDeclarationCtx));
 
         final ServiceType serviceType = new ServiceType(ctx.id().getStart(), currentPackage, name, rpcs);
-        currentPackage.setLocalType(serviceType);
 
         return serviceType;
     }
@@ -657,8 +658,8 @@ public class ZserioAstBuilder extends Zserio4ParserBaseVisitor<Object>
         final String referencedTypeName = getTypeNameId(ctx.id()).getText();
 
         final TypeReference typeReference =
-                new TypeReference(ctx.getStart(), referencedPackageName, referencedTypeName, isParameterized);
-        currentPackage.addTypeReferenceToResolve(typeReference);
+                new TypeReference(ctx.getStart(), currentPackage, referencedPackageName, referencedTypeName,
+                        isParameterized);
 
         return typeReference;
     }
@@ -725,37 +726,6 @@ public class ZserioAstBuilder extends Zserio4ParserBaseVisitor<Object>
         return new FloatType(ctx.getStart());
     }
 
-    private Package createPackage(Zserio4Parser.TranslationUnitContext translationUnitCtx, List<Import> imports)
-    {
-        if (translationUnitCtx.packageDeclaration() != null)
-        {
-            return new Package(translationUnitCtx.packageDeclaration().qualifiedName().getStart(),
-                    createPackageName(translationUnitCtx.packageDeclaration().qualifiedName().id()), imports);
-        }
-        else
-        {
-            // default package
-            return new Package(translationUnitCtx.getStart(), PackageName.EMPTY, imports);
-        }
-    }
-
-    /**
-     * Adds translation unit to this root node.
-     *
-     * @param translationUnit Translation unit to add.
-     */
-    private void addTranslationUnit(TranslationUnit translationUnit)
-    {
-        translationUnits.add(translationUnit);
-
-        final Package unitPackage = translationUnit.getPackage();
-        if (packageNameMap.put(unitPackage.getPackageName(), unitPackage) != null)
-        {
-            // translation unit package already exists, this could happen only for default packages
-            throw new ParserException(translationUnit, "Multiple default packages are not allowed!");
-        }
-    }
-
     private PackageName createPackageName(List<Zserio4Parser.IdContext> ids)
     {
         final PackageName.Builder packageNameBuilder = new PackageName.Builder();
@@ -785,8 +755,8 @@ public class ZserioAstBuilder extends Zserio4ParserBaseVisitor<Object>
     }
 
     private final boolean checkUnusedTypes;
-    private final List<TranslationUnit> translationUnits = new ArrayList<TranslationUnit>();
-    private final Map<PackageName, Package> packageNameMap = new LinkedHashMap<PackageName, Package>();
-
+    private final LinkedHashMap<PackageName, Package> packageNameMap =
+            new LinkedHashMap<PackageName, Package>();
     private Package currentPackage = null;
+    private LinkedHashMap<String, ZserioType> localTypes = null;
 }

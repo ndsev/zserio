@@ -14,11 +14,12 @@ import zserio.ast.PackageName;
  */
 public class TypeReference extends AstNodeBase implements ZserioType
 {
-    TypeReference(Token token, PackageName referencedPackageName, String referencedTypeName,
-            boolean isParameterized)
+    TypeReference(Token token, Package ownerPackage, PackageName referencedPackageName,
+            String referencedTypeName, boolean isParameterized)
     {
         super(token);
 
+        this.ownerPackage = ownerPackage;
         this.referencedPackageName = referencedPackageName;
         this.referencedTypeName = referencedTypeName;
         this.isParameterized = isParameterized;
@@ -68,14 +69,12 @@ public class TypeReference extends AstNodeBase implements ZserioType
     /**
      * Resolves this reference to the corresponding referenced type.
      *
-     * @param pkg Package to use for referenced type resolving.
-     *
      * @throws ParserException Throws if the referenced type is unresolvable.
      */
-    protected void resolve(Package pkg) throws ParserException
+    protected void resolve()
     {
         // resolve referenced type
-        referencedType = pkg.getVisibleType(this, referencedPackageName, referencedTypeName);
+        referencedType = ownerPackage.getVisibleType(this, referencedPackageName, referencedTypeName);
         if (referencedType == null)
             throw new ParserException(this, "Unresolved referenced type '" + referencedTypeName + "'!");
 
@@ -129,8 +128,10 @@ public class TypeReference extends AstNodeBase implements ZserioType
         return resolvedType;
     }
 
+    private final Package ownerPackage;
     private final PackageName referencedPackageName;
     private final String referencedTypeName;
-    private ZserioType referencedType = null;
     private final boolean isParameterized;
+
+    private ZserioType referencedType = null;
 }

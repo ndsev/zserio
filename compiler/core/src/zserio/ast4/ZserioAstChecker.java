@@ -9,12 +9,6 @@ public class ZserioAstChecker implements ZserioAstVisitor
     }
 
     @Override
-    public void visitTranslationUnit(TranslationUnit translationUnit)
-    {
-        check(translationUnit);
-    }
-
-    @Override
     public void visitPackage(Package unitPackage)
     {
         check(unitPackage);
@@ -133,7 +127,7 @@ public class ZserioAstChecker implements ZserioAstVisitor
     {
         check(expresssion);
     }
-    
+
     @Override
     public void visitArrayType(ArrayType arrayType)
     {

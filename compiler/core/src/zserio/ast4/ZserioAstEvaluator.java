@@ -9,12 +9,6 @@ public class ZserioAstEvaluator implements ZserioAstVisitor
     }
 
     @Override
-    public void visitTranslationUnit(TranslationUnit translationUnit)
-    {
-        evaluate(translationUnit);
-    }
-
-    @Override
     public void visitPackage(Package unitPackage)
     {
         evaluate(unitPackage);

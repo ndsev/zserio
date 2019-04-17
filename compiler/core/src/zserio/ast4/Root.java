@@ -1,9 +1,7 @@
 package zserio.ast4;
 
-import java.util.List;
+import java.util.LinkedHashMap;
 import java.util.Map;
-
-import zserio.antlr.util.ParserException;
 import zserio.ast.PackageName;
 import zserio.ast4.Package;
 import zserio.emit.common.Emitter;
@@ -18,15 +16,11 @@ public class Root extends AstNodeBase
 {
     /**
      * Constructor.
-     *
-     * @param checkUnusedTypes Whether to print warnings for unused types.
      */
-    public Root(List<TranslationUnit> translationUnits, Map<PackageName, Package> packageNameMap,
-            boolean checkUnusedTypes)
+    public Root(LinkedHashMap<PackageName, Package> packageNameMap, boolean checkUnusedTypes)
     {
         super(null);
 
-        this.translationUnits = translationUnits;
         this.packageNameMap = packageNameMap;
         this.checkUnusedTypes = checkUnusedTypes;
     }
@@ -40,22 +34,16 @@ public class Root extends AstNodeBase
     @Override
     public void visitChildren(ZserioAstVisitor visitor)
     {
-        for (TranslationUnit translationUnit : translationUnits)
-            translationUnit.accept(visitor);
+        for (Package pkg : packageNameMap.values())
+            pkg.accept(visitor);
     }
 
     /**
-     * Resolves all references in all translation units.
-     *
-     * @throws ParserException In case of wrong import or wrong type reference or if cyclic subtype definition
-     *                         is detected.
+     * Gets map of all packages.
      */
-    public void resolveReferences() throws ParserException
+    public Map<PackageName, Package> getPackageNameMap()
     {
-        for (Map.Entry<PackageName, Package> packageNameEntry : packageNameMap.entrySet())
-        {
-            packageNameEntry.getValue().resolve(packageNameMap);
-        }
+        return packageNameMap;
     }
 
     /**
@@ -117,7 +105,6 @@ public class Root extends AstNodeBase
         // TODO: check for unused types - maybe just do it in self-standing visitor and don't use root for it?
     }
 
-    private final List<TranslationUnit> translationUnits;
-    private final Map<PackageName, Package> packageNameMap;
+    private final LinkedHashMap<PackageName, Package> packageNameMap;
     private final boolean checkUnusedTypes;
 }

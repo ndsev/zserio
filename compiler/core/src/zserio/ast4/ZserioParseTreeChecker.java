@@ -27,27 +27,30 @@ public class ZserioParseTreeChecker extends Zserio4ParserBaseVisitor<Void>
     }
 
     @Override
-    public Void visitTranslationUnit(Zserio4Parser.TranslationUnitContext ctx)
+    public Void visitPackageDeclaration(Zserio4Parser.PackageDeclarationContext ctx)
     {
         AstNodeLocation location = new AstNodeLocation(ctx.getStart());
         checkUtf8Encoding(location);
         checkNonPrintableCharacters(location);
 
-        return super.visitTranslationUnit(ctx);
+        return super.visitPackageDeclaration(ctx);
     }
 
     @Override
-    public Void visitPackageDeclaration(Zserio4Parser.PackageDeclarationContext ctx)
+    public Void visitPackageNameDefinition(Zserio4Parser.PackageNameDefinitionContext ctx)
     {
+        if (ctx == null)
+            return null;
+
         // this must be checked now to avoid obscure errors if package is not stored in the same file name
-        final PackageName packageName = createPackageName(ctx.qualifiedName().id());
+       final PackageName packageName = createPackageName(ctx.qualifiedName().id());
         final String expectedFileFullName = inputFileManager.getFileFullName(packageName);
         final String fileFullName = ctx.getStart().getInputStream().getSourceName();
         if (!expectedFileFullName.equals(fileFullName))
             throw new ParserException(ctx.qualifiedName().getStart(), "Package '" + packageName.toString() +
                     "' does not match to the source file name!");
 
-        return null;
+        return super.visitPackageNameDefinition(ctx);
     }
 
     @Override
@@ -58,7 +61,7 @@ public class ZserioParseTreeChecker extends Zserio4ParserBaseVisitor<Void>
             throw new ParserException(ctx.fieldOptionalClause().getStart(), "Auto optional field '" +
                     ctx.fieldTypeId().id().getText() + "' cannot contain if clause!");
 
-        return null;
+        return super.visitStructureFieldDefinition(ctx);
     }
 
     @Override
@@ -77,7 +80,7 @@ public class ZserioParseTreeChecker extends Zserio4ParserBaseVisitor<Void>
                         "Length expression is not allowed for implicit arrays!");
         }
 
-        return null;
+        return super.visitFieldTypeId(ctx);
     }
 
     @Override
@@ -85,8 +88,10 @@ public class ZserioParseTreeChecker extends Zserio4ParserBaseVisitor<Void>
     {
         final String id = ctx.getText();
         if (reservedKeywordsList.contains(id))
+        {
             throw new ParserException(ctx.getStart(),
                     "'" + id +  "' is a reserved keyword and may not be used here!");
+        }
 
         return null;
     }

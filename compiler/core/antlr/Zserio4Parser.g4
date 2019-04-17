@@ -5,16 +5,16 @@ options
     tokenVocab=Zserio4Lexer;
 }
 
-// TRANSLATION UNIN (main rule)
-translationUnit
-    :   packageDeclaration?
+// PACKAGE (main rule)
+packageDeclaration
+    :   packageNameDefinition?
         importDeclaration*
         typeDeclaration*
         EOF
     ;
-
-packageDeclaration
-    :   PACKAGE qualifiedName SEMICOLON
+    
+packageNameDefinition
+    : PACKAGE qualifiedName SEMICOLON
     ;
 
 importDeclaration

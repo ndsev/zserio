@@ -4,7 +4,6 @@ public interface ZserioAstVisitor
 {
     void visitRoot(Root root);
 
-    void visitTranslationUnit(TranslationUnit translationUnit);
     void visitPackage(Package unitPackage);
     void visitImport(Import unitImport);
     void visitConstType(ConstType constType);
@@ -50,8 +49,6 @@ public interface ZserioAstVisitor
     public class Base implements ZserioAstVisitor
     {
         @Override public void visitRoot(Root root) { root.visitChildren(this); }
-
-        @Override public void visitTranslationUnit(TranslationUnit translationUnit) { translationUnit.visitChildren(this); }
 
         @Override public void visitPackage(Package unitPackage) { unitPackage.visitChildren(this); }
 
