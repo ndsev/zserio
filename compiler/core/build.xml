@@ -129,6 +129,8 @@ findbugs.home_dir       - Location of the findbugs tool. If not set, findbugs is
             outputdirectory="${zserio_core.antlr.out_dir}"/>
         <antlr4 target="${zserio_core.antlr_dir}/Zserio4Parser.g4"
             outputdirectory="${zserio_core.antlr.out_dir}"/>
+        <antlr4 target="${zserio_core.antlr_dir}/DocComment4.g4"
+            outputdirectory="${zserio_core.antlr.out_dir}"/>
     </target>
 
     <target name="antlr" depends="antlr.parser, antlr.lexer, antlr.walkers, antlr.comments, antlr4">

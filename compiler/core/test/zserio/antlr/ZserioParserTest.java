@@ -269,7 +269,7 @@ public class ZserioParserTest
                 "mismatched input 'int32' expecting ')'"); // TODO: and why this works?
     }
 
-    private static class ThrowingErrorListener extends BaseErrorListener
+    protected static class ThrowingErrorListener extends BaseErrorListener
     {
         @Override
         public void syntaxError(Recognizer<?, ?> recognizer, Object offendingSymbol,
@@ -280,7 +280,7 @@ public class ZserioParserTest
         }
     }
 
-    private Zserio4Parser createParser(String input)
+    private static Zserio4Parser createParser(String input)
     {
         final ThrowingErrorListener throwingErrorListener = new ThrowingErrorListener();
         final Zserio4Lexer lexer = new Zserio4Lexer(CharStreams.fromString(input));
@@ -293,7 +293,7 @@ public class ZserioParserTest
         return parser;
     }
 
-    private void assertParseError(String ruleName, String input, String errorSubstring)
+    private static void assertParseError(String ruleName, String input, String errorSubstring)
     {
         final Zserio4Parser parser = createParser(input);
         String error = "";
@@ -331,7 +331,7 @@ public class ZserioParserTest
                 error.contains(errorSubstring));
     }
 
-    private void checkParseTree(String ruleName, String input, String stringTree)
+    private static void checkParseTree(String ruleName, String input, String stringTree)
     {
         final Zserio4Parser parser = createParser(input);
         try
