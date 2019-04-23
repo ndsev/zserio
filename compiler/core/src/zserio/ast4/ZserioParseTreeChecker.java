@@ -60,7 +60,25 @@ public class ZserioParseTreeChecker extends Zserio4ParserBaseVisitor<Void>
             throw new ParserException(ctx.fieldOptionalClause().getStart(), "Auto optional field '" +
                     ctx.fieldTypeId().id().getText() + "' cannot contain if clause!");
 
-        return super.visitStructureFieldDefinition(ctx);
+        // because of index expression check we must know if we are in array
+        if (ctx.fieldTypeId().fieldArrayRange() != null)
+            isInArrayField = true;
+        super.visitStructureFieldDefinition(ctx);
+        isInArrayField = false;
+
+        return null;
+    }
+
+    @Override
+    public Void visitFieldOffset(Zserio4Parser.FieldOffsetContext ctx)
+    {
+        // index expression is allowed if we are in array
+        if (isInArrayField)
+            isIndexAllowed = true;
+        super.visitFieldOffset(ctx);
+        isIndexAllowed = false;
+
+        return null;
     }
 
     @Override
@@ -83,14 +101,50 @@ public class ZserioParseTreeChecker extends Zserio4ParserBaseVisitor<Void>
     }
 
     @Override
+    public Void visitSqlTableFieldDefinition(Zserio4Parser.SqlTableFieldDefinitionContext ctx)
+    {
+        isInSqlTableField = true;
+        super.visitSqlTableFieldDefinition(ctx);
+        isInSqlTableField = false;
+
+        return null;
+    }
+
+    @Override
+    public Void visitIndexExpression(Zserio4Parser.IndexExpressionContext ctx)
+    {
+        // this check allows index expressions only for arrays in field offsets or parameters
+        if (!isIndexAllowed)
+            throw new ParserException(ctx.INDEX().getSymbol(),
+                    "Index operator is not allowed in this context!");
+
+        return visitChildren(ctx);
+    }
+
+    @Override
     public Void visitId(Zserio4Parser.IdContext ctx)
     {
         final String id = ctx.getText();
         if (reservedKeywordsList.contains(id))
-        {
-            throw new ParserException(ctx.getStart(),
-                    "'" + id +  "' is a reserved keyword and may not be used here!");
-        }
+            throw new ParserException(ctx.getStart(), "'" + id +
+                    "' is a reserved keyword and may not be used here!");
+
+        return null;
+    }
+
+    @Override
+    public Void visitTypeArgument(Zserio4Parser.TypeArgumentContext ctx)
+    {
+        // explicit is allowed only for SQL table fields
+        if (ctx.EXPLICIT() != null && !isInSqlTableField)
+            throw new ParserException(ctx.EXPLICIT().getSymbol(),
+                    "Explicit keyword is allowed only in SQL tables!");
+
+        // index expression is allowed if we are in array
+        if (isInArrayField)
+            isIndexAllowed = true;
+        super.visitTypeArgument(ctx);
+        isIndexAllowed = false;
 
         return null;
     }
@@ -215,4 +269,11 @@ public class ZserioParseTreeChecker extends Zserio4ParserBaseVisitor<Void>
             new HashSet<String>(Arrays.asList(reservedKeywords));
 
     private final InputFileManager inputFileManager;
+
+    /** Flags used to allow index operator only in offsets or arguments in array fields. */
+    private boolean isInArrayField = false;
+    private boolean isIndexAllowed = false;
+
+    /** Flag used to allow explicit keyword only for SQL tables. */
+    private boolean isInSqlTableField = false;
 }

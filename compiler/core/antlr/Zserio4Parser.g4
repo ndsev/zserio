@@ -5,16 +5,18 @@ options
     tokenVocab=Zserio4Lexer;
 }
 
+
 // PACKAGE (main rule)
+
 packageDeclaration
     :   packageNameDefinition?
         importDeclaration*
         typeDeclaration*
         EOF
     ;
-    
+
 packageNameDefinition
-    : PACKAGE qualifiedName SEMICOLON
+    :   PACKAGE qualifiedName SEMICOLON
     ;
 
 importDeclaration
@@ -97,6 +99,7 @@ fieldOptionalClause
 fieldConstraint
     :   COLON expression
     ;
+
 
 // CHOICE
 
@@ -229,7 +232,7 @@ rpcTypeName
 
 functionDefinition
     :   FUNCTION functionType
-        functionName LPAREN RPAREN // zserio funciton cannot have any arguments
+        functionName LPAREN RPAREN // zserio functions cannot have any arguments
         functionBody
     ;
 
@@ -334,7 +337,7 @@ typeArgumentList
     ;
 
 typeArgument
-    :   EXPLICIT id // TODO: allow only within a SQL table!
+    :   EXPLICIT id
     |   expression
     ;
 
