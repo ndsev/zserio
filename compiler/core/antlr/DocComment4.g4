@@ -15,13 +15,12 @@ docParagraph
     ;
 
 docTextLine
-    :   docTag
+    :   docTag docText*
     |   docText+
     ;
 
 docTag
-    :   seeTag
-    |   todoTag
+    :   todoTag
     |   paramTag
     |   deprecatedTag
     ;
@@ -84,14 +83,14 @@ docTagText
 
 whitespace
     :   (
-            whitespaceInLine
+            SPACE
         |   NEWLINE
         )+
     ;
 
 whitespaceInParagraph
-    :   whitespaceInLine? NEWLINE whitespaceInLine?
-    |   whitespaceInLine
+    :   SPACE* NEWLINE SPACE*
+    |   SPACE+
     ;
 
 whitespaceInLine

@@ -20,9 +20,9 @@ public class DocCommentParserTest
     public void emptyComment()
     {
         checkParseTree("docComment", "/** */",
-                "(docComment /** (whitespace (whitespaceInLine  )) */)");
+                "(docComment /** (whitespace  ) */)");
         checkParseTree("docComment", "/** **/",
-                "(docComment /** (whitespace (whitespaceInLine  )) **/)");
+                "(docComment /** (whitespace  ) **/)");
         checkParseTree("docComment", "/***/",
                 "(docComment /** */)");
         checkParseTree("docComment", "/****/",
@@ -46,7 +46,7 @@ public class DocCommentParserTest
     public void singleLineComment()
     {
         checkParseTree("docComment", "/** Single line. */",
-                "(docComment /** (whitespace (whitespaceInLine  )) " +
+                "(docComment /** (whitespace  ) " +
                 "(docContent (docParagraph (docTextLine (docText (text Single (whitespaceInLine  ) line ." +
                         " (whitespaceInLine  )))))) " +
                 "*/)");
@@ -93,18 +93,157 @@ public class DocCommentParserTest
     }
 
     @Test
+    public void seeTag()
+    {
+        checkParseTree("docComment", "/** Hello.\n * @see \"alias\" id */",
+                "(docComment /** (whitespace  ) " +
+                "(docContent (docParagraph (docTextLine (docText (text Hello .))) \\n *  " +
+                    "(docTextLine (docText " +
+                        "(seeTag @see (whitespaceInParagraph  ) " +
+                        "(seeTagAlias \" (text alias) \") (whitespaceInParagraph  ) " +
+                        "(seeTagId id))) " +
+                    "(docText (text (whitespaceInLine  )))))) " +
+                "*/)");
+    }
+
+    @Test
+    public void seeTagNoAlias()
+    {
+        checkParseTree("docComment", "/** Hello.\n * @see id */",
+                "(docComment /** (whitespace  ) " +
+                    "(docContent (docParagraph (docTextLine (docText (text Hello .))) \\n *  " +
+                        "(docTextLine (docText " +
+                            "(seeTag @see (whitespaceInParagraph  ) " +
+                            "(seeTagId id))) " +
+                        "(docText (text (whitespaceInLine  )))))) " +
+                "*/)");
+    }
+
+    @Test
     public void seeTagInText()
     {
         checkParseTree("docComment", "/** See tag @see \"alias\" identifier test. */",
-                "(docComment /** (whitespace (whitespaceInLine  )) " +
+                "(docComment /** (whitespace  ) " +
                 "(docContent " +
                     "(docParagraph (docTextLine (docText (text See (whitespaceInLine  ) tag " +
                     "(whitespaceInLine  ))) (docText " +
-                        "(seeTag @see (whitespaceInParagraph (whitespaceInLine  )) " +
-                        "(seeTagAlias \" (text alias) \") (whitespaceInParagraph (whitespaceInLine  )) " +
+                        "(seeTag @see (whitespaceInParagraph  ) " +
+                        "(seeTagAlias \" (text alias) \") (whitespaceInParagraph  ) " +
                         "(seeTagId identifier))) " +
                     "(docText (text (whitespaceInLine  ) test . (whitespaceInLine  )))))) " +
                 "*/)");
+
+        // see tag at the beginning
+        checkParseTree("docComment", "/**\n * @see \"Structure A\" structA for more info.\n */",
+                "(docComment /** (whitespace \\n * ) " +
+                "(docContent " +
+                    "(docParagraph (docTextLine (docText " +
+                        "(seeTag @see (whitespaceInParagraph  ) " +
+                        "(seeTagAlias \" (text Structure (whitespaceInLine  ) A) \") " +
+                            "(whitespaceInParagraph  ) " +
+                        "(seeTagId structA))) (docText (text (whitespaceInLine  ) for " +
+                            "(whitespaceInLine  ) more (whitespaceInLine  ) info .))))) " +
+                "(whitespace \\n ) */)");
+    }
+
+    @Test
+    public void paramTag()
+    {
+        // single line
+        checkParseTree("docComment", "/** @param arg1 Description. */",
+                "(docComment /** (whitespace  ) " +
+                    "(docContent (docParagraph (docTextLine (docTag " +
+                        "(paramTag @param (whitespaceInParagraph  ) (paramId arg1) (whitespaceInParagraph  ) " +
+                        "(paramDescription (docTagText " +
+                            "(docText (text Description . (whitespaceInLine  )))))))))) " +
+                "*/)");
+
+        // new line before description
+        checkParseTree("docComment", "/** @param arg1 \n *         Description. */",
+                "(docComment /** (whitespace  ) " +
+                    "(docContent (docParagraph (docTextLine " +
+                        "(docTag (paramTag @param (whitespaceInParagraph  ) (paramId arg1) " +
+                        "(whitespaceInParagraph   \\n *                 ) " +
+                        "(paramDescription (docTagText " +
+                            "(docText (text Description . (whitespaceInLine  )))))))))) " +
+                "*/)");
+
+        // new line before both id and description
+        checkParseTree("docComment", "/** @param \n *     arg1 \n *         Description.\n */",
+                "(docComment /** (whitespace  ) " +
+                    "(docContent (docParagraph (docTextLine (docTag " +
+                        "(paramTag @param (whitespaceInParagraph   \\n *         ) " +
+                        "(paramId arg1) (whitespaceInParagraph   \\n *                 ) " +
+                        "(paramDescription (docTagText " +
+                            "(docText (text Description .))))))))) (whitespace \\n ) " +
+                "*/)");
+    }
+
+    @Test
+    public void paramTagAsText()
+    {
+        checkParseTree("docComment", "/** This is not @param p description param tag! */",
+                "(docComment /** (whitespace  ) " +
+                "(docContent (docParagraph (docTextLine " +
+                    "(docText (text This (whitespaceInLine  ) is (whitespaceInLine  ) not " +
+                        "(whitespaceInLine  ))) " +
+                    "(docText (text @param)) " +
+                    "(docText (text (whitespaceInLine  ) p (whitespaceInLine  ) description " +
+                        "(whitespaceInLine  ) param (whitespaceInLine  ) tag! (whitespaceInLine  )))))) " +
+                "*/)");
+    }
+
+    @Test
+    public void todoTag()
+    {
+        checkParseTree("docComment", "/** @todo This is todo. Do it!. */",
+                "(docComment /** (whitespace  ) " +
+                "(docContent (docParagraph (docTextLine (docTag " +
+                    "(todoTag @todo (whitespaceInParagraph  ) " +
+                    "(docTagText (docText (text This (whitespaceInLine  ) is (whitespaceInLine  ) todo . " +
+                        "(whitespaceInLine  ) Do (whitespaceInLine  ) it! . (whitespaceInLine  ))))))))) " +
+                "*/)");
+    }
+
+    @Test
+    public void todoTagAsText()
+    {
+        checkParseTree("docComment", "/** This is not @todo tag! */",
+                "(docComment /** (whitespace  ) " +
+                "(docContent (docParagraph (docTextLine " +
+                    "(docText (text This (whitespaceInLine  ) is (whitespaceInLine  ) not (whitespaceInLine  ))) " +
+                    "(docText (text @todo)) " +
+                    "(docText (text (whitespaceInLine  ) tag! (whitespaceInLine  )))))) " +
+                "*/)");
+    }
+
+    @Test
+    public void deprecatedTag()
+    {
+        checkParseTree("docComment", "/**\n * @deprecated\n */",
+                "(docComment /** (whitespace \\n * ) (docContent (docParagraph (docTextLine (docTag " +
+                    "(deprecatedTag @deprecated))))) " +
+                "(whitespace \\n ) */)");
+
+        // with pending text
+        checkParseTree("docComment", "/**\n * @deprecated with pending text.\n */",
+                "(docComment /** (whitespace \\n * ) (docContent (docParagraph (docTextLine (docTag " +
+                    "(deprecatedTag @deprecated)) " +
+                    "(docText (text (whitespaceInLine  ) with (whitespaceInLine  ) pending " +
+                        "(whitespaceInLine  ) text .))))) " +
+                "(whitespace \\n ) */)");
+    }
+
+    @Test
+    public void deprecatedTagAsText()
+    {
+        checkParseTree("docComment", "/**\n * This is not @deprecated tag.\n */",
+                "(docComment /** (whitespace \\n * ) (docContent (docParagraph (docTextLine " +
+                    "(docText (text This (whitespaceInLine  ) is (whitespaceInLine  ) not " +
+                        "(whitespaceInLine  ))) " +
+                    "(docText (text @deprecated)) " +
+                    "(docText (text (whitespaceInLine  ) tag .))))) " +
+                "(whitespace \\n ) */)");
     }
 
     private static class ThrowingErrorListener extends BaseErrorListener
