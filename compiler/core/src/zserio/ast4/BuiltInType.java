@@ -9,6 +9,11 @@ import org.antlr.v4.runtime.Token;
  */
 public abstract class BuiltInType extends AstNodeBase implements ZserioType
 {
+    /**
+     * Constructor from ANTLR4 token.
+     *
+     * @param token Token to construct from.
+     */
     public BuiltInType(Token token)
     {
         super(token);

@@ -16,6 +16,9 @@ import zserio.antlr.Zserio4Parser;
  * It would be probably better to use internal visitors instead of if (operandX) construction.
  *
  */
+/**
+ * AST node for expressions defined in the language.
+ */
 public class Expression extends AstNodeBase
 {
     /**
@@ -26,6 +29,18 @@ public class Expression extends AstNodeBase
     public Expression(Token expressionToken, Package pkg)
     {
         this(expressionToken, pkg, expressionToken, false, null, null, null);
+    }
+
+    /**
+     * TODO
+     * @param locationToken
+     * @param pkg
+     * @param expressionToken
+     * @param isExplicit
+     */
+    public Expression(Token locationToken, Package pkg, Token expressionToken)
+    {
+        this(locationToken, pkg, expressionToken, false, null, null, null);
     }
 
     /**
@@ -371,6 +386,12 @@ public class Expression extends AstNodeBase
         return containsOperand(Zserio4Parser.RPAREN);
     }
 
+    @Override
+    protected void evaluate() throws ParserException
+    {
+        evaluate(scope);
+    }
+
     /**
      * This method evaluates one expression.
      *
@@ -416,7 +437,7 @@ public class Expression extends AstNodeBase
                 }
             }
 
-            // check unresolved identifiers if no further DOT or ID is available
+            // check unresolved identifiers if no further DOT or ID is available TODO why?
             if (type != Zserio4Parser.DOT && type != Zserio4Parser.ID)
             {
                 if (operand1 != null)
@@ -563,7 +584,6 @@ public class Expression extends AstNodeBase
                 default:
                     throw new ParserException(this, "Illegal expression type '" + type + "'!");
             }
-
 
             checkUnresolvedIdentifiers();
             evaluationState = EvaluationState.EVALUATED;
@@ -1225,7 +1245,7 @@ public class Expression extends AstNodeBase
         {
             // call evaluation explicitly because this type instantiation does not have to be evaluated yet
             final TypeInstantiation typeInstantiation = (TypeInstantiation)resolvedType;
-            typeInstantiation.evaluateBaseType();  // TODO should be evaluate
+            typeInstantiation.evaluate();  // TODO
             resolvedType = typeInstantiation.getReferencedType();
         }
 

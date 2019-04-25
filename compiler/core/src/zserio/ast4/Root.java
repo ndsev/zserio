@@ -1,5 +1,6 @@
 package zserio.ast4;
 
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import zserio.emit.common.Emitter4;
@@ -14,6 +15,9 @@ public class Root extends AstNodeBase
 {
     /**
      * Constructor.
+     *
+     * @param packageNameMap   Map of all available packages.
+     * @param checkUnusedTypes True to check unused types.
      */
     public Root(LinkedHashMap<PackageName, Package> packageNameMap, boolean checkUnusedTypes)
     {
@@ -38,10 +42,12 @@ public class Root extends AstNodeBase
 
     /**
      * Gets map of all packages.
+     *
+     * @return The map of all available packages.
      */
     public Map<PackageName, Package> getPackageNameMap()
     {
-        return packageNameMap;
+        return Collections.unmodifiableMap(packageNameMap);
     }
 
     /**
@@ -64,7 +70,8 @@ public class Root extends AstNodeBase
         }
     }
 
-    protected void check()
+    @Override
+    protected void evaluate()
     {
         // TODO: check for unused types - maybe just do it in self-standing visitor and don't use root for it?
     }

@@ -337,7 +337,8 @@ public class ZserioAstBuilder extends Zserio4ParserBaseVisitor<Object>
         final String name = ctx.id().getText();
         final SqlConstraint sqlConstraint = visitSqlConstraint(ctx.sqlConstraint());
 
-        return new Field(ctx.id().getStart(), type, name, isVirtual, sqlConstraint);
+        return new Field(ctx.id().getStart(), type, name, isVirtual, (sqlConstraint == null) ?
+                SqlConstraint.createDefaultFieldConstraint(currentPackage) : sqlConstraint);
     }
 
     @Override

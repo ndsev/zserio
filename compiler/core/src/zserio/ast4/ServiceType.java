@@ -1,9 +1,7 @@
 package zserio.ast4;
 
-import java.util.LinkedHashSet;
+import java.util.Collections;
 import java.util.List;
-import java.util.ArrayList;
-import java.util.Set;
 
 import org.antlr.v4.runtime.Token;
 
@@ -16,6 +14,14 @@ import zserio.tools.HashUtil;
  */
 public class ServiceType extends AstNodeBase implements ZserioScopedType, Comparable<ServiceType>
 {
+    /**
+     * Constructor.
+     *
+     * @param token ANTLR4 token to localize AST node in the sources.
+     * @param pkg   Package to which belongs the service type.
+     * @param name  Name of the service type.
+     * @param rpcs  List of all RPCs which belong to the service type.
+     */
     public ServiceType(Token token, Package pkg, String name, List<Rpc> rpcs)
     {
         super(token);
@@ -23,9 +29,6 @@ public class ServiceType extends AstNodeBase implements ZserioScopedType, Compar
         this.pkg = pkg;
         this.name = name;
         this.rpcs = rpcs;
-
-        for (Rpc rpc : rpcs)
-            rpc.setServiceType(this);
     }
 
     @Override
@@ -96,14 +99,14 @@ public class ServiceType extends AstNodeBase implements ZserioScopedType, Compar
      *
      * @return List of RPC methods.
      */
-    public Iterable<Rpc> getRpcList()
+    public List<Rpc> getRpcList()
     {
-        return rpcs;
+        return Collections.unmodifiableList(rpcs);
     }
 
     private final Scope scope = new Scope(this);
-    private final Package pkg;
 
+    private final Package pkg;
     private final String name;
     private final List<Rpc> rpcs;
 }

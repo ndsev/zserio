@@ -4,11 +4,21 @@ import java.math.BigInteger;
 
 import org.antlr.v4.runtime.Token;
 
+/**
+ * AST node for items defined by enumeration types.
+ */
 public class EnumItem extends AstNodeBase
 {
-    public EnumItem(Token locationToken, String name, Expression valueExpression)
+    /**
+     * Constructor.
+     *
+     * @param token           ANTLR4 token to localize AST node in the sources.
+     * @param name            Name of the enumeration item.
+     * @param valueExpression Expression value of the enumeration item.
+     */
+    public EnumItem(Token token, String name, Expression valueExpression)
     {
-        super(locationToken);
+        super(token);
 
         this.name = name;
         this.valueExpression = valueExpression;
@@ -25,32 +35,6 @@ public class EnumItem extends AstNodeBase
     {
         if (valueExpression != null)
             valueExpression.accept(visitor);
-    }
-
-    /**
-     * Evaluates enumeration item value expression.
-     *
-     * @param defaultValue Enumeration item value to use if value expression has not been specified.
-     *
-     * @throws ParserException Throws in case of any error during evaluation.
-     */
-    public void evaluateValueExpression(BigInteger defaultValue) throws ParserException
-    {
-        if (valueExpression != null)
-        {
-            // there is a value for this enumeration item => evaluate and check value expression
-            /* TODO
-            valueExpression.evaluateTree();
-
-            if (valueExpression.getExprType() != Expression.ExpressionType.INTEGER)
-                throw new ParserException(valueExpression, "Enumeration item '" + getName() +
-                        "' has non-integer value!");
-            value = valueExpression.getIntegerValue(); */
-        }
-        else
-        {
-            value = defaultValue;
-        }
     }
 
     /**
@@ -94,17 +78,6 @@ public class EnumItem extends AstNodeBase
     }
 
     /**
-     * Gets documentation comment associated to this enumeration item.
-     *
-     * @return Documentation comment token associated to this enumeration item.
-     */
-    /* TODO
-    public DocCommentToken getDocComment()
-    {
-        return tokenWithDoc.getHiddenDocComment();
-    }*/
-
-    /**
      * Sets the enumeration type which is owner of the enumeration item.
      *
      * @param enumType Owner to set.
@@ -112,6 +85,29 @@ public class EnumItem extends AstNodeBase
     protected void setEnumType(EnumType enumType)
     {
         this.enumType = enumType;
+    }
+
+    /**
+     * Evaluates enumeration item value expression.
+     *
+     * @param defaultValue Enumeration item value to use if value expression has not been specified.
+     */
+    protected void evaluateValueExpression(BigInteger defaultValue)
+    {
+        if (valueExpression != null)
+        {
+            // there is a value for this enumeration item => evaluate and check value expression
+            valueExpression.evaluate();
+
+            if (valueExpression.getExprType() != Expression.ExpressionType.INTEGER)
+                throw new ParserException(valueExpression, "Enumeration item '" + getName() +
+                        "' has non-integer value!");
+            value = valueExpression.getIntegerValue();
+        }
+        else
+        {
+            value = defaultValue;
+        }
     }
 
     private final String name;

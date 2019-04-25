@@ -7,6 +7,12 @@ import org.antlr.v4.runtime.Token;
  */
 public class ChoiceDefault extends AstNodeBase
 {
+    /**
+     * Constructor.
+     *
+     * @param token        ANTLR4 token to localize AST node in the sources.
+     * @param defaultField Default field associated to this default case or null if it's not defined.
+     */
     public ChoiceDefault(Token token, Field defaultField)
     {
         super(token);
@@ -37,26 +43,5 @@ public class ChoiceDefault extends AstNodeBase
         return defaultField;
     }
 
-    /**
-     * Gets documentation comment associated to this RPC method.
-     *
-     * @return Documentation comment token associated to this RPC method.
-     */
-    /*public DocCommentToken getDocComment()
-    {
-        return getHiddenDocComment();
-    }*/ // TODO:
-
-    /**
-     * Sets the choice type which is owner of the default case.
-     *
-     * @param choiceType Owner to set.
-     */
-    protected void setChoiceType(ChoiceType choiceType)
-    {
-        this.choiceType = choiceType;
-    }
-
-    private ChoiceType choiceType;
     private final Field defaultField;
 }

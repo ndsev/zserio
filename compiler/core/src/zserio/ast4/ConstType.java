@@ -1,21 +1,25 @@
 package zserio.ast4;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.SortedSet;
-import java.util.TreeSet;
-
 import org.antlr.v4.runtime.Token;
 
 import zserio.tools.HashUtil;
 
 /**
- * AST node for constant types.
+ * AST node for Constant types.
  *
  * Constant types are Zserio types as well.
  */
 public class ConstType extends AstNodeBase implements ZserioType, Comparable<ConstType>
 {
+    /**
+     * Constructor.
+     *
+     * @param token           ANTLR4 token to localize AST node in the sources.
+     * @param pkg             Package to which belongs the constant type.
+     * @param constType       Zserio type of the constant.
+     * @param name            Name of the constant type.
+     * @param valueExpression Value expression associated to the constant type.
+     */
     public ConstType(Token token, Package pkg, ZserioType constType, String name, Expression valueExpression)
     {
         super(token);
@@ -75,9 +79,9 @@ public class ConstType extends AstNodeBase implements ZserioType, Comparable<Con
     }
 
     /**
-     * Gets unresolved const Zserio type.
+     * Gets unresolved Zserio type.
      *
-     * @return Unresolved const Zserio type.
+     * @return Unresolved Zserio type.
      */
     public ZserioType getConstType()
     {
@@ -94,30 +98,12 @@ public class ConstType extends AstNodeBase implements ZserioType, Comparable<Con
         return valueExpression;
     }
 
-    /**
-     * Gets list of compound types which use this constant type.
-     *
-     * @return List of compound types which use this constant type.
-     */
-    public Iterable<CompoundType> getUsedByCompoundList()
+    @Override
+    protected void evaluate()
     {
-        return usedByCompoundList;
-    }
-
-    protected void check() throws ParserException
-    {
-        // fill used type list
-        final ZserioType resolvedTypeReference = TypeReference.resolveType(constType);
-        if (!ZserioTypeUtil.isBuiltIn(resolvedTypeReference))
-            usedTypeList.add(resolvedTypeReference);
-
-        // add this const to 'Used-by' list for subtype type (needed by documentation emitter)
-        /*if (resolvedTypeReference instanceof Subtype)
-            ((Subtype)resolvedTypeReference).setUsedByConst(this);*/ // TODO:
-
-        final ZserioType baseType = TypeReference.resolveBaseType(resolvedTypeReference);
-
         // check base type
+        final ZserioType resolvedTypeReference = TypeReference.resolveType(constType);
+        final ZserioType baseType = TypeReference.resolveBaseType(resolvedTypeReference);
         if (!ZserioTypeUtil.isBuiltIn(baseType) && !(baseType instanceof EnumType))
             throw new ParserException(this, "Constants can be defined only for built-in types and enums!");
 
@@ -128,24 +114,8 @@ public class ConstType extends AstNodeBase implements ZserioType, Comparable<Con
         ExpressionUtil.checkIntegerExpressionRange(valueExpression, baseType, name);
     }
 
-    /**
-     * Sets expression which uses this constant type.
-     *
-     * @param expression Expression to set.
-     */
-    /*protected void setUsedByExpression(Expression expression)
-    {
-        final ZserioType ownerType = expression.getScope().getOwner();
-        if (ownerType != null && ownerType instanceof CompoundType)
-            usedByCompoundList.add((CompoundType)ownerType);
-    }*/ // TODO:
-
     private final Package pkg;
-
     private final ZserioType constType;
     private final String name;
     private final Expression valueExpression;
-
-    private final SortedSet<CompoundType> usedByCompoundList = new TreeSet<CompoundType>();
-    private final List<ZserioType> usedTypeList = new ArrayList<ZserioType>();
 }

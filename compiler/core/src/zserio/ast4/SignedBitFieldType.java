@@ -5,12 +5,18 @@ import java.math.BigInteger;
 import org.antlr.v4.runtime.Token;
 
 /**
- * AST node for built-in signed bit field integer types.
+ * AST node for built-in signed bit field Integer types.
  *
- * Signed bit field integer types (int:1, int<expr>, ...) are Zserio types as well.
+ * Signed bit field Integer types (int:1, int<expr>, ...) are Zserio types as well.
  */
 public class SignedBitFieldType extends BitFieldType
 {
+    /**
+     * Constructor from ANTLR4 token.
+     *
+     * @param token            Token to construct from.
+     * @param lengthExpression Length expression associated with this signed bit field type.
+     */
     public SignedBitFieldType(Token token, Expression lengthExpression)
     {
         super(token, lengthExpression);

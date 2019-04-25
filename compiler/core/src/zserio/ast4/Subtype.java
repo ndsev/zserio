@@ -5,8 +5,19 @@ import org.antlr.v4.runtime.Token;
 import zserio.ast4.TypeReference;
 import zserio.ast4.ZserioType;
 
+/**
+ * AST node for Subtypes.
+ *
+ * Subtypes are Zserio types as well.
+ */
 public class Subtype extends AstNodeBase implements ZserioType
 {
+    /**
+     * @param token      ANTLR4 token to localize AST node in the sources.
+     * @param pkg        Package to which belongs the subtype.
+     * @param targetType Zserio type which belongs to the subtype.
+     * @param name       Name of the subtype.
+     */
     public Subtype(Token token, Package pkg, ZserioType targetType, String name)
     {
         super(token);
@@ -14,6 +25,18 @@ public class Subtype extends AstNodeBase implements ZserioType
         this.pkg = pkg;
         this.targetType = targetType;
         this.name = name;
+    }
+
+    @Override
+    public void accept(ZserioAstVisitor visitor)
+    {
+        visitor.visitSubtype(this);
+    }
+
+    @Override
+    public void visitChildren(ZserioAstVisitor visitor)
+    {
+        targetType.accept(visitor);
     }
 
     @Override
@@ -48,26 +71,12 @@ public class Subtype extends AstNodeBase implements ZserioType
         return targetBaseType;
     }
 
-    @Override
-    public void accept(ZserioAstVisitor visitor)
-    {
-        visitor.visitSubtype(this);
-    }
-
-    @Override
-    public void visitChildren(ZserioAstVisitor visitor)
-    {
-        targetType.accept(visitor);
-    }
-
     /**
      * Resolves the subtype to a defined type called at the end of linking phase.
      *
      * @return Resolved base type of this subtype.
-     *
-     * @throws ParserException When cyclic definition is detected.
      */
-    protected ZserioType resolve() throws ParserException
+    protected ZserioType resolve()
     {
         if (resolvingState == ResolvingState.RESOLVED)
             return targetBaseType;
@@ -109,14 +118,9 @@ public class Subtype extends AstNodeBase implements ZserioType
     };
 
     private final Package pkg;
-
     private final ZserioType targetType;
     private final String name;
-    private ResolvingState resolvingState = ResolvingState.UNRESOLVED;
-    private ZserioType targetBaseType;
 
-    /*private final List<ConstType> usedByConstList = new ArrayList<ConstType>();
-    private final SortedSet<CompoundType> usedByCompoundList = new TreeSet<CompoundType>();
-    private final SortedSet<ServiceType> usedByServiceList = new TreeSet<ServiceType>();
-    private final List<ZserioType> usedTypeList = new ArrayList<ZserioType>();*/
+    private ResolvingState resolvingState = ResolvingState.UNRESOLVED;
+    private ZserioType targetBaseType = null;
 }

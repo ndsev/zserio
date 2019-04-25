@@ -7,12 +7,17 @@ import org.antlr.v4.runtime.Token;
 import zserio.antlr.Zserio4Parser;
 
 /**
- * AST node for built-in signed and unsigned standard integer types.
+ * AST node for built-in signed and unsigned standard Integer types.
  *
- * Standard integer types (int8, uint8, ...) are Zserio types as well.
+ * Standard Integer types (int8, uint8, ...) are Zserio types as well.
  */
 public class StdIntegerType extends IntegerType implements FixedSizeType
 {
+    /**
+     * Constructor from ANTLR4 token.
+     *
+     * @param token Token to construct from.
+     */
     public StdIntegerType(Token token)
     {
         super(token);
@@ -23,36 +28,44 @@ public class StdIntegerType extends IntegerType implements FixedSizeType
             isSigned = true;
             bitSize = 8;
             break;
+
         case Zserio4Parser.INT16:
             isSigned = true;
             bitSize = 16;
             break;
+
         case Zserio4Parser.INT32:
             isSigned = true;
             bitSize = 32;
             break;
+
         case Zserio4Parser.INT64:
             isSigned = true;
             bitSize = 64;
             break;
+
         case Zserio4Parser.UINT8:
             isSigned = false;
             bitSize = 8;
             break;
+
         case Zserio4Parser.UINT16:
             isSigned = false;
             bitSize = 16;
             break;
+
         case Zserio4Parser.UINT32:
             isSigned = false;
             bitSize = 32;
             break;
+
         case Zserio4Parser.UINT64:
             isSigned = false;
             bitSize = 64;
             break;
+
         default:
-            throw new ParserException(this, "Unexpected AST node type in StdIntegerType!");
+            throw new InternalError("Unexpected AST node type in StdIntegerType!");
         }
 
         if (isSigned)

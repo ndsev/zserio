@@ -1,75 +1,64 @@
 package zserio.ast4;
 
 import java.math.BigInteger;
-import java.util.HashSet;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Set;
 
 import org.antlr.v4.runtime.Token;
 
 /**
- * AST node for fields.
+ * AST node for compound fields.
+ *
+ * This field is used by all Compound types (structure types, choice types, ...).
  */
 public class Field extends AstNodeBase
 {
+    /**
+     * Constructor from Structure, Choice and Union types.
+     *
+     * @param token              ANTLR4 token to localize AST node in the sources.
+     * @param fieldType          Field type.
+     * @param name               Field name.
+     * @param isAutoOptional     Auto optional flag.
+     * @param alignmentExpr      Alignment expression or null if it's not defined.
+     * @param offsetExpr         Offset expression or null if it's not defined.
+     * @param initializerExpr    Initializer expression or null if it's not defined.
+     * @param optionalClauseExpr Optional clause expression or null if it's not defined.
+     * @param constraintExpr     Constraint expression or null if it's not defined.
+     */
     public Field(Token token, ZserioType fieldType, String name, boolean isAutoOptional,
             Expression alignmentExpr, Expression offsetExpr, Expression initializerExpr,
             Expression optionalClauseExpr, Expression constraintExpr)
     {
-        super(token);
-
-
-        this.fieldType = fieldType;
-        this.name = name;
-        this.isAutoOptional = isAutoOptional;
-
-        this.alignmentExpr = alignmentExpr;
-        this.offsetExpr = offsetExpr;
-        this.initializerExpr = initializerExpr;
-        this.optionalClauseExpr = optionalClauseExpr;
-        this.constraintExpr = constraintExpr;
-
-        this.isVirtual = false;
-        this.sqlConstraint = null;
+        this(token, fieldType, name, isAutoOptional, alignmentExpr, offsetExpr, initializerExpr,
+                optionalClauseExpr, constraintExpr, false, null);
     }
 
-    // table field
+    /**
+     * Constructor from SQL Table types.
+     *
+     * @param token         ANTLR4 token to localize AST node in the sources.
+     * @param fieldType     Field type.
+     * @param name          Field name.
+     * @param isVirtual     True if field is virtual.
+     * @param sqlConstraint SQL constraint or null if it's not defined.
+     */
     public Field(Token token, ZserioType fieldType, String name, boolean isVirtual, SqlConstraint sqlConstraint)
     {
-        super(token);
-
-        this.fieldType = fieldType;
-        this.name = name;
-        this.isAutoOptional = false;
-
-        this.alignmentExpr = null;
-        this.offsetExpr = null;
-        this.initializerExpr = null;
-        this.optionalClauseExpr = null;
-        this.constraintExpr = null;
-
-        this.isVirtual = isVirtual;
-        this.sqlConstraint = sqlConstraint; // TODO: use SqlConstraint.createDefaultFieldConstraint(); if null?
+        this(token, fieldType, name, false, null, null, null, null, null, isVirtual, sqlConstraint);
     }
 
-    // database field
+    /**
+     * Constructor from SQL Database types.
+     *
+     * @param token     ANTLR4 token to localize AST node in the sources.
+     * @param fieldType Field type.
+     * @param name      Field name.
+     */
     public Field(Token token, ZserioType fieldType, String name)
     {
-        super(token);
-
-        this.fieldType = fieldType;
-        this.name = name;
-        this.isAutoOptional = false;
-
-        this.alignmentExpr = null;
-        this.offsetExpr = null;
-        this.initializerExpr = null;
-        this.optionalClauseExpr = null;
-        this.constraintExpr = null;
-
-        this.isVirtual = false;
-        this.sqlConstraint = null;
+        this(token, fieldType, name, false, null, null, null, null, null, false, null);
     }
 
     @Override
@@ -145,7 +134,7 @@ public class Field extends AstNodeBase
     {
         final ZserioType resolvedFieldType = TypeReference.resolveType(fieldType);
         if (!(resolvedFieldType instanceof TypeInstantiation))
-            return new LinkedList<TypeInstantiation.InstantiatedParameter>();
+            return Collections.unmodifiableList(new LinkedList<TypeInstantiation.InstantiatedParameter>());
 
         return ((TypeInstantiation)resolvedFieldType).getInstantiatedParameters();
     }
@@ -225,9 +214,9 @@ public class Field extends AstNodeBase
      * Gets SQL constraint associated with the field.
      *
      * Even if SQL constraint is not specified in Zserio, this method returns valid SQL constraint which
-     * corresponds to Zserio SQL constraint default behavior.
+     * corresponds to Zserio SQL constraint default behavior (valid only for SQL tables).
      *
-     * @return SQL constraint.
+     * @return SQL constraint or null if the owner is not SQL table.
      */
     public SqlConstraint getSqlConstraint()
     {
@@ -244,77 +233,9 @@ public class Field extends AstNodeBase
         return isVirtual;
     }
 
-    /**
-     * Gets the list of Zserio types referenced by all expressions of the field.
-     *
-     * @param clazz Zserio type to use.
-     *
-     * @return List of referenced Zserio types of given type.
-     */
-    public <T extends ZserioType> Set<T> getReferencedTypes(Class<? extends T> clazz)
-    {
-        final Set<T> referencedTypes = new HashSet<T>();
-
-        // check direct expressions
-        if (optionalClauseExpr != null)
-            referencedTypes.addAll(optionalClauseExpr.getReferencedSymbolObjects(clazz));
-        if (constraintExpr != null)
-            referencedTypes.addAll(constraintExpr.getReferencedSymbolObjects(clazz));
-        if (offsetExpr != null)
-            referencedTypes.addAll(offsetExpr.getReferencedSymbolObjects(clazz));
-        if (alignmentExpr != null)
-            referencedTypes.addAll(alignmentExpr.getReferencedSymbolObjects(clazz));
-
-        ZserioType checkedType = fieldType;
-        if (checkedType instanceof ArrayType)
-        {
-            // check array fields which have expressions as well
-            final ArrayType arrayType = (ArrayType)checkedType;
-            final Expression lengthExpression = arrayType.getLengthExpression();
-            if (lengthExpression != null)
-                referencedTypes.addAll(lengthExpression.getReferencedSymbolObjects(clazz));
-
-            checkedType = arrayType.getElementType();
-        }
-
-        if (checkedType instanceof TypeInstantiation)
-        {
-            // check type instantiations which have expressions in arguments
-            final TypeInstantiation typeInstantiation = (TypeInstantiation)checkedType;
-            for (TypeInstantiation.InstantiatedParameter instantiatedParameter :
-                    typeInstantiation.getInstantiatedParameters())
-            {
-                final Expression argumentExpression = instantiatedParameter.getArgumentExpression();
-                referencedTypes.addAll(argumentExpression.getReferencedSymbolObjects(clazz));
-            }
-        }
-        else if (checkedType instanceof BitFieldType)
-        {
-            // check bit fields which have expressions as well
-            final Expression lengthExpression = ((BitFieldType)checkedType).getLengthExpression();
-            referencedTypes.addAll(lengthExpression.getReferencedSymbolObjects(clazz));
-        }
-
-        return referencedTypes;
-    }
-
-    /**
-     * Gets documentation comment associated to this field.
-     *
-     * @return Documentation comment token associated to this field.
-     */
-    /*public DocCommentToken getDocComment()
-    {
-        return tokenWithDoc != null ? tokenWithDoc.getHiddenDocComment() : null;
-    }*/ // TODO:
-
     @Override
-    protected void check() throws ParserException
+    protected void evaluate()
     {
-        // check field name
-        if (compoundType.getPackage().getVisibleType(this, PackageName.EMPTY, getName()) != null)
-            throw new ParserException(this, "'" + getName() + "' is a defined type in this package!");
-
         // check initializer expression type
         if (initializerExpr != null)
         {
@@ -363,6 +284,10 @@ public class Field extends AstNodeBase
                 throw new ParserException(alignmentExpr, "Alignment expression for field '" + getName() +
                         "' is not positive integer!");
         }
+
+        // check field name
+        if (compoundType.getPackage().getVisibleType(this, PackageName.EMPTY, getName()) != null)
+            throw new ParserException(this, "'" + getName() + "' is a defined type in this package!");
     }
 
     /**
@@ -378,44 +303,39 @@ public class Field extends AstNodeBase
             sqlConstraint.setCompoundType(compoundType);
     }
 
-    /**
-     * Evaluates hidden doc comment within the AST subtree of the given comment.
-     *
-     * Traverses only left most path in the AST subtree (i.e. only first children) and takes the last found
-     * comment. All other comments are marked as not used.
-     * \note Note that "priority" of comments is given by order of children in the Field token,
-     *       which is given in the parser grammar.
-     *
-     * @param token Token to be searched for documentation comments.
-     * @throws ParserException In case of invalid AST token.
-     */
-    /*private void evaluateDocComment(TokenAST token) throws ParserException
+    private Field(Token token, ZserioType fieldType, String name, boolean isAutoOptional,
+            Expression alignmentExpr, Expression offsetExpr, Expression initializerExpr,
+            Expression optionalClauseExpr, Expression constraintExpr, boolean isVirtual,
+            SqlConstraint sqlConstraint)
     {
-        TokenAST currentToken = token;
+        super(token);
 
-        while (currentToken != null)
-        {
-            if (currentToken.evaluateHiddenDocComment(compoundType))
-            {
-                if (tokenWithDoc != null)
-                    tokenWithDoc.setDocCommentNotUsed();
-                tokenWithDoc = currentToken;
-            }
+        this.fieldType = fieldType;
+        this.name = name;
+        this.isAutoOptional = isAutoOptional;
 
-            currentToken = (TokenAST)currentToken.getFirstChild();
-        }
-    }*/
+        this.alignmentExpr = alignmentExpr;
+        this.offsetExpr = offsetExpr;
+        this.initializerExpr = initializerExpr;
+        this.optionalClauseExpr = optionalClauseExpr;
+        this.constraintExpr = constraintExpr;
 
-    private CompoundType compoundType = null;
+        this.isVirtual = isVirtual;
+        this.sqlConstraint = sqlConstraint;
+    }
+
     private final ZserioType fieldType;
     private final String name;
     private final boolean isAutoOptional;
+
     private final Expression offsetExpr;
     private final Expression alignmentExpr;
     private final Expression initializerExpr;
     private final Expression optionalClauseExpr;
     private final Expression constraintExpr;
 
-    private final SqlConstraint sqlConstraint;
     private final boolean isVirtual;
+    private final SqlConstraint sqlConstraint;
+
+    private CompoundType compoundType = null;
 }

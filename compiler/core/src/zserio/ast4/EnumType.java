@@ -8,12 +8,25 @@ import java.util.Set;
 
 import org.antlr.v4.runtime.Token;
 
+/**
+ * AST node for Enumeration types.
+ *
+ * Enumeration types are Zserio types as well.
+ */
 public class EnumType extends AstNodeBase implements ZserioScopedType
 {
-    public EnumType(Token locationToken, Package pkg, ZserioType enumType, String name,
-            List<EnumItem> enumItems)
+    /**
+     * Constructor.
+     *
+     * @param token     ANTLR4 token to localize AST node in the sources.
+     * @param pkg       Package to which belongs the enumeration type.
+     * @param enumType  Zserio type of the enumeration.
+     * @param name      Name of the enumeration type.
+     * @param enumItems List of all items which belong to the enumeration type.
+     */
+    public EnumType(Token token, Package pkg, ZserioType enumType, String name, List<EnumItem> enumItems)
     {
-        super(locationToken);
+        super(token);
 
         this.pkg = pkg;
         this.enumType = enumType;
@@ -57,34 +70,6 @@ public class EnumType extends AstNodeBase implements ZserioScopedType
     }
 
     /**
-     * Evaluates all enumeration item value expressions of the enumeration type.
-     *
-     * This method is called from code Expression Evaluator.
-     *
-     * This method can be called directly from Expression.evaluate() method if some expression refers to
-     * enumeration item before definition of this item.
-     *
-     * This method calculates and sets value to all enumeration items.
-     *
-     * @throws ParserException Throws if evaluation of all enumeration item values fails.
-     */
-    public void evaluateValueExpressions() throws ParserException
-    {
-        if (!areValuesEvaluated)
-        {
-            // evaluate enumeration values
-            BigInteger defaultEnumItemValue = BigInteger.ZERO;
-            for (EnumItem enumItem : enumItems)
-            {
-                enumItem.evaluateValueExpression(defaultEnumItemValue);
-                defaultEnumItemValue = enumItem.getValue().add(BigInteger.ONE);
-            }
-
-            areValuesEvaluated = true;
-        }
-    }
-
-    /**
      * Gets all enumeration items which belong to the enumeration type.
      *
      * @return List of all enumeration items.
@@ -115,31 +100,41 @@ public class EnumType extends AstNodeBase implements ZserioScopedType
     }
 
     /**
-     * Gets documentation comment associated to this enumeration type.
+     * Evaluates all enumeration item value expressions of the enumeration type.
      *
-     * @return Documentation comment token associated to this enumeration type.
+     * This method can be called directly from Expression.evaluate() method if some expression refers to
+     * enumeration item before definition of this item.
+     *
+     * This method calculates and sets value to all enumeration items.
      */
-    /* TODO
-    public DocCommentToken getDocComment()
-    {
-        return null;
-    }*/
-
     @Override
-    protected void check() throws ParserException
+    protected void evaluate()
     {
-        // fill resolved enumeration type
-        final ZserioType baseType = TypeReference.resolveBaseType(enumType);
-        if (!(baseType instanceof IntegerType))
-            throw new ParserException(this, "Enumeration '" + this.getName() + "' has forbidden type " +
-                    baseType.getName() + "!");
-        integerBaseType = (IntegerType)baseType;
+        if (!isEvaluated)
+        {
+            // fill resolved enumeration type
+            final ZserioType baseType = TypeReference.resolveBaseType(enumType);
+            if (!(baseType instanceof IntegerType))
+                throw new ParserException(this, "Enumeration '" + this.getName() + "' has forbidden type " +
+                        baseType.getName() + "!");
+            integerBaseType = (IntegerType)baseType;
 
-        // check enumeration items
-        checkEnumerationItems();
+            // evaluate enumeration values
+            BigInteger defaultEnumItemValue = BigInteger.ZERO;
+            for (EnumItem enumItem : enumItems)
+            {
+                enumItem.evaluateValueExpression(defaultEnumItemValue);
+                defaultEnumItemValue = enumItem.getValue().add(BigInteger.ONE);
+            }
+
+            // check enumeration items
+            checkEnumerationItems();
+
+            isEvaluated = true;
+        }
     }
 
-    private void checkEnumerationItems() throws ParserException
+    private void checkEnumerationItems()
     {
         final Set<BigInteger> enumItemValues = new HashSet<BigInteger>();
         for (EnumItem enumItem : enumItems)
@@ -167,11 +162,12 @@ public class EnumType extends AstNodeBase implements ZserioScopedType
     }
 
     private final Scope scope = new Scope(this);
+
     private final Package pkg;
-    private final String name;
     private final ZserioType enumType;
+    private final String name;
     private final List<EnumItem> enumItems;
 
-    private boolean areValuesEvaluated = false;
+    private boolean isEvaluated = false;
     private IntegerType integerBaseType = null;
 }

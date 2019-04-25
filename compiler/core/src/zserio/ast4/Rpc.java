@@ -3,10 +3,20 @@ package zserio.ast4;
 import org.antlr.v4.runtime.Token;
 
 /**
- * AST node for rpc calls.
+ * AST node for RPC calls.
  */
 public class Rpc extends AstNodeBase
 {
+    /**
+     * Constructor.
+     *
+     * @param token             ANTLR4 token to localize AST node in the sources.
+     * @param name              Name of the RPC call.
+     * @param responseType      Zserio type of the response.
+     * @param responseStreaming True if response streaming is requested.
+     * @param requestType       Zserio type of the request.
+     * @param requestStreaming  True if request streaming is requested.
+     */
     public Rpc(Token token, String name, ZserioType responseType, boolean responseStreaming,
             ZserioType requestType, boolean requestStreaming)
     {
@@ -82,35 +92,14 @@ public class Rpc extends AstNodeBase
         return responseStreaming;
     }
 
-    /**
-     * Gets documentation comment associated to this RPC method.
-     *
-     * @return Documentation comment token associated to this RPC method.
-     */
-    /*public DocCommentToken getDocComment()
-    {
-        return getHiddenDocComment();
-    }*/ // TODO:
-
     @Override
-    protected void check() throws ParserException
+    protected void evaluate()
     {
-        // fill used type list
         checkUsedType(responseType);
         checkUsedType(requestType);
     }
 
-    /**
-     * Sets service type which is owner of this RPC method.
-     *
-     * @param serviceType Owner to set.
-     */
-    protected void setServiceType(ServiceType serviceType)
-    {
-        this.serviceType = serviceType;
-    }
-
-    private void checkUsedType(ZserioType type) throws ParserException
+    private void checkUsedType(ZserioType type)
     {
         final ZserioType resolvedBaseType = TypeReference.resolveBaseType(type);
         if (!(resolvedBaseType instanceof CompoundType))
@@ -123,15 +112,11 @@ public class Rpc extends AstNodeBase
                     "'" + type.getName() + "' is a parameterized type!");
         if (resolvedBaseType instanceof SqlTableType)
             throw new ParserException(type, "SQL table '" + type.getName() + "' cannot be used in RPC call");
-
-        /*compoundType.setUsedByServiceType(serviceType);
-        usedTypeList.add(TypeReference.resolveType(type));*/ // TODO:
     }
 
     private final String name;
     private final ZserioType responseType;
-    private boolean responseStreaming;
+    private final boolean responseStreaming;
     private final ZserioType requestType;
     private final boolean requestStreaming;
-    private ServiceType serviceType = null;
 }

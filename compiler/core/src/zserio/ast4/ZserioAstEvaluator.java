@@ -125,7 +125,8 @@ public class ZserioAstEvaluator implements ZserioAstVisitor
     @Override
     public void visitExpression(Expression expresssion)
     {
-        evaluate(expresssion);
+        // this evaluates whole expression tree at once
+        expresssion.evaluate();
     }
 
     @Override

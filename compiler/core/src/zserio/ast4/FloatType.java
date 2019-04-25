@@ -5,12 +5,17 @@ import org.antlr.v4.runtime.Token;
 import zserio.antlr.Zserio4Parser;
 
 /**
- * AST node for float types.
+ * AST node for Float types.
  *
  * Float types are Zserio types as well.
  */
 public class FloatType extends BuiltInType implements FixedSizeType
 {
+    /**
+     * Constructor from ANTLR4 token.
+     *
+     * @param token Token to construct from.
+     */
     public FloatType(Token token)
     {
         super(token);
@@ -20,14 +25,17 @@ public class FloatType extends BuiltInType implements FixedSizeType
         case Zserio4Parser.FLOAT16:
             bitSize = 16;
             break;
+
         case Zserio4Parser.FLOAT32:
             bitSize = 32;
             break;
+
         case Zserio4Parser.FLOAT64:
             bitSize = 64;
             break;
+
         default:
-            throw new ParserException(this, "Unexpected AST node type in FloatType!");
+            throw new InternalError("Unexpected AST node type in FloatType!");
         }
     }
 
@@ -43,5 +51,5 @@ public class FloatType extends BuiltInType implements FixedSizeType
         return bitSize;
     }
 
-    private int bitSize;
+    private final int bitSize;
 }

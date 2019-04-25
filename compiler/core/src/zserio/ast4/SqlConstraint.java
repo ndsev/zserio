@@ -2,16 +2,26 @@ package zserio.ast4;
 
 import java.math.BigInteger;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 
+import org.antlr.v4.runtime.CommonToken;
 import org.antlr.v4.runtime.Token;
+
+import zserio.antlr.Zserio4Parser;
 
 /**
  * AST node for SQL constraints.
  */
 public class SqlConstraint extends AstNodeBase
 {
+    /**
+     * Constructor.
+     *
+     * @param token         ANTLR4 token to localize AST node in the sources.
+     * @param constaintExpr Constraint expression.
+     */
     public SqlConstraint(Token token, Expression constraintExpr)
     {
         super(token);
@@ -89,7 +99,7 @@ public class SqlConstraint extends AstNodeBase
      */
     public List<String> getPrimaryKeyColumnNames()
     {
-        return primaryKeyColumnNames;
+        return Collections.unmodifiableList(primaryKeyColumnNames);
     }
 
     /**
@@ -99,7 +109,7 @@ public class SqlConstraint extends AstNodeBase
      */
     public List<String> getUniqueColumnNames()
     {
-        return uniqueColumnNames;
+        return Collections.unmodifiableList(uniqueColumnNames);
     }
 
     /**
@@ -110,38 +120,25 @@ public class SqlConstraint extends AstNodeBase
      *
      * @return Created default SQL constraint.
      */
-    /*public static SqlConstraint createDefaultFieldConstraint()
+    protected static SqlConstraint createDefaultFieldConstraint(Package pkg)
     {
-        final SqlConstraint sqlConstraint = new SqlConstraint();
-
-        // set translated constraint expression for table field
-        sqlConstraint.setTranslatedFieldConstraintExpr("");
-
-        return sqlConstraint;
-    }*/ // TODO:
+        return new SqlConstraint(null, createStringLiteralExpression(pkg, ""));
+    }
 
     @Override
-    protected void check() throws ParserException
+    protected void evaluate()
     {
-        String translatedConstraint = "";
-        if (constraintExpr != null)
-        {
-            primaryKeyColumnNames = extractColumnNames(PRIMARY_KEY_CONSTRAINT);
-            uniqueColumnNames = extractColumnNames(UNIQUE_CONSTRAINT);
-            isPrimaryKey = containsPrimaryKey();
+        primaryKeyColumnNames = extractColumnNames(PRIMARY_KEY_CONSTRAINT);
+        uniqueColumnNames = extractColumnNames(UNIQUE_CONSTRAINT);
+        isPrimaryKey = containsPrimaryKey();
 
-            // replace all @-references
-            translatedConstraint = resolveConstraintReferences(constraintExpr.getExpressionString());
-            translatedConstraintExpr = createStringLiteralExpression(translatedConstraint);
-        }
-        else
-        {
-            primaryKeyColumnNames = new ArrayList<String>();
-            uniqueColumnNames = new ArrayList<String>();
-        }
+        // replace all @-references
+        final String translatedConstraint = resolveConstraintReferences(constraintExpr.getExpressionString());
+        translatedConstraintExpr = createStringLiteralExpression(compoundType.getPackage(),
+                translatedConstraint);
 
         // set translated constraint expression for table field
-        setTranslatedFieldConstraintExpr(translatedConstraint);
+        translatedFieldConstraintExpr = createTranslatedFieldConstraintExpr(translatedConstraint);
     }
 
     /**
@@ -154,7 +151,7 @@ public class SqlConstraint extends AstNodeBase
         this.compoundType = compoundType;
     }
 
-    private void setTranslatedFieldConstraintExpr(String translatedConstraint)
+    private Expression createTranslatedFieldConstraintExpr(String translatedConstraint)
     {
         // unlike SQLite, the default column constraint in Zserio is 'NOT NULL' and NULL-constraints have to be
         // explicitly set
@@ -164,34 +161,34 @@ public class SqlConstraint extends AstNodeBase
         if (fieldConstraint.length() > 1)
             fieldConstraint = fieldConstraint.substring(1, fieldConstraint.length() - 1);
 
-        // remove duplicate white spaces to be able detect "NOT NULL" and "DEFAULT NULL" properly
+        // remove duplicated white spaces to be able detect NOT_NULL_CONSTRAINT/DEFAULT_NULL_CONSTRAINT properly
         fieldConstraint = fieldConstraint.replaceAll("\\s+", " ");
 
         // trim leading and trailing whitespace
         fieldConstraint = fieldConstraint.trim();
 
-        if (!fieldConstraint.contains("NOT NULL"))
+        if (!fieldConstraint.contains(NOT_NULL_CONSTRAINT))
         {
-            // there is no "NOT NULL"
-            if (fieldConstraint.contains("DEFAULT NULL"))
+            // there is no NOT_NULL_CONSTRAINT
+            if (fieldConstraint.contains(DEFAULT_NULL_CONSTRAINT))
             {
-                // there is "DEFAULT NULL" => null is allowed
+                // there is DEFAULT_NULL_CONSTRAINT => null is allowed
                 isNullAllowed = true;
             }
             else
             {
-                // there is no "NOT NULL" and no "DEFAULT NULL"
-                if (!fieldConstraint.contains("NULL"))
+                // there is no NOT_NULL_CONSTRAINT and no DEFAULT_NULL_CONSTRAINT
+                if (!fieldConstraint.contains(NULL_CONSTRAINT))
                 {
-                    // and there is no "NULL" => add "NOT NULL" constraint (default in Zserio)
+                    // and there is no NULL_CONSTRAINT => add NOT_NULL_CONSTRAINT constraint (default in Zserio)
                     if (!fieldConstraint.isEmpty())
                         fieldConstraint = fieldConstraint.concat(" ");
-                    fieldConstraint = fieldConstraint.concat("NOT NULL");
+                    fieldConstraint = fieldConstraint.concat(NOT_NULL_CONSTRAINT);
                 }
                 else
                 {
-                    // and there is "NULL" => remove "NULL" constraint (unknown for SQLite)
-                    fieldConstraint = fieldConstraint.replace("NULL", "");
+                    // and there is NULL_CONSTRAINT => remove NULL_CONSTRAINT constraint (unknown for SQLite)
+                    fieldConstraint = fieldConstraint.replace(NULL_CONSTRAINT, "");
 
                     // trim leading and trailing whitespace
                     fieldConstraint = fieldConstraint.trim();
@@ -202,19 +199,15 @@ public class SqlConstraint extends AstNodeBase
             }
         }
 
-        translatedFieldConstraintExpr = (fieldConstraint.isEmpty()) ? null :
-            createStringLiteralExpression("\"" + fieldConstraint + "\"");
+        return (fieldConstraint.isEmpty()) ? null : createStringLiteralExpression(compoundType.getPackage(),
+                "\"" + fieldConstraint + "\"");
     }
 
-    private static Expression createStringLiteralExpression(String stringLiteral)
+    private static Expression createStringLiteralExpression(Package pkg, String stringLiteral)
     {
-        return null;
-        // TODO:
-        /*final Expression stringLiteralExpr = new Expression();
-        stringLiteralExpr.setText(stringLiteral);
-        stringLiteralExpr.setType(ZserioParserTokenTypes.STRING_LITERAL);
+        final CommonToken stringLiteralToken = new CommonToken(Zserio4Parser.STRING_LITERAL, stringLiteral);
 
-        return stringLiteralExpr;*/
+        return new Expression(null, pkg, stringLiteralToken);
     }
 
     private List<String> extractColumnNames(String constraintName)
@@ -316,16 +309,20 @@ public class SqlConstraint extends AstNodeBase
 
     private static final String PRIMARY_KEY_CONSTRAINT = "PRIMARY KEY";
     private static final String UNIQUE_CONSTRAINT = "UNIQUE";
+    private static final String NOT_NULL_CONSTRAINT = "NOT NULL";
+    private static final String NULL_CONSTRAINT = "NULL";
+    private static final String DEFAULT_NULL_CONSTRAINT = "DEFAULT NULL";
     private static final String CONSTRAINT_REFERENCE_ESCAPE = "@";
+
+    private final Expression constraintExpr;
 
     private CompoundType compoundType = null;
 
-    private final Expression constraintExpr;
     private Expression translatedConstraintExpr = null;
     private Expression translatedFieldConstraintExpr = null;
 
-    private List<String> primaryKeyColumnNames;
-    private List<String> uniqueColumnNames;
+    private List<String> primaryKeyColumnNames = new ArrayList<String>();
+    private List<String> uniqueColumnNames = new ArrayList<String>();
 
     private boolean isNullAllowed = false;
     private boolean isPrimaryKey = false;

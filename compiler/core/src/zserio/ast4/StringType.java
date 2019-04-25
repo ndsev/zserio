@@ -3,12 +3,17 @@ package zserio.ast4;
 import org.antlr.v4.runtime.Token;
 
 /**
- * AST node for string types.
+ * AST node for String types.
  *
- * String types (Zserio command 'string') are Zserio types as well.
+ * String types (Zserio keyword 'string') are Zserio types as well.
  */
 public class StringType extends BuiltInType
 {
+    /**
+     * Constructor from ANTLR4 token.
+     *
+     * @param token Token to construct from.
+     */
     public StringType(Token token)
     {
         super(token);

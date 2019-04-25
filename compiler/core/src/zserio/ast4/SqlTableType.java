@@ -13,12 +13,23 @@ import zserio.ast4.TypeInstantiation.InstantiatedParameter;
 import zserio.tools.ZserioToolPrinter;
 
 /**
- * AST node for SQL table types.
+ * AST node for SQL Table types.
  *
- * SQL table types are Zserio types as well.
+ * SQL Ttypes are Zserio types as well.
  */
 public class SqlTableType extends CompoundType
 {
+    /**
+     * Constructor.
+     *
+     * @param token           ANTLR4 token to localize AST node in the sources.
+     * @param pkg             Package to which belongs the SQL table type.
+     * @param name            Name of the SQL table type.
+     * @param sqlUsingId      SQL using id associated to the SQL table type.
+     * @param fields          List of all fields of to the SQL table type.
+     * @param sqlConstraint   SQL constraint of the SQL table type.
+     * @param sqlWithoutRowId SQL without row id associated to the SQL table type.
+     */
     public SqlTableType(Token token, Package pkg, String name, String sqlUsingId, List<Field> fields,
             SqlConstraint sqlConstraint, boolean sqlWithoutRowId)
     {
@@ -28,7 +39,7 @@ public class SqlTableType extends CompoundType
         this.sqlConstraint = sqlConstraint;
         this.sqlWithoutRowId = sqlWithoutRowId;
 
-        if(sqlConstraint != null)
+        if (sqlConstraint != null)
             sqlConstraint.setCompoundType(this);
     }
 
@@ -105,15 +116,9 @@ public class SqlTableType extends CompoundType
         return sqlWithoutRowId;
     }
 
-    private boolean isVirtual()
-    {
-        return sqlUsingId != null;
-    }
-
     @Override
-    protected void check() throws ParserException
+    protected void evaluate()
     {
-        super.check();
         checkTableFields();
         checkExplicitParameters();
 
@@ -125,7 +130,12 @@ public class SqlTableType extends CompoundType
         }
     }
 
-    private void checkExplicitParameters() throws ParserException
+    private boolean isVirtual()
+    {
+        return sqlUsingId != null;
+    }
+
+    private void checkExplicitParameters()
     {
         final HashMap<String, AbstractMap.SimpleEntry<String, Expression> > paramTypeMap =
                 new HashMap<String, AbstractMap.SimpleEntry<String, Expression> >();
@@ -166,7 +176,7 @@ public class SqlTableType extends CompoundType
         }
     }
 
-    private void checkOrdinaryTableFields() throws ParserException
+    private void checkOrdinaryTableFields()
     {
         if (getFields().isEmpty())
             throw new ParserException(this, "Ordinary table must have at least one field!");
@@ -215,7 +225,7 @@ public class SqlTableType extends CompoundType
         checkPrimaryKeyForWithoutRowId();
     }
 
-    private void checkPrimaryKeyInSqlConstraint(boolean primaryKeyFound) throws ParserException
+    private void checkPrimaryKeyInSqlConstraint(boolean primaryKeyFound)
     {
         final List<String> primaryKeyColumnNames = (sqlConstraint != null) ?
                 sqlConstraint.getPrimaryKeyColumnNames() : new ArrayList<String>();
@@ -245,7 +255,7 @@ public class SqlTableType extends CompoundType
         }
     }
 
-    private void checkPrimaryKeyForWithoutRowId() throws ParserException
+    private void checkPrimaryKeyForWithoutRowId()
     {
         // single integer primary key for without rowid table brings performance drop
         if (sqlWithoutRowId && sqlPrimaryKeyFields.size() == 1)
@@ -261,7 +271,7 @@ public class SqlTableType extends CompoundType
         }
     }
 
-    private void checkUniqueConstraint() throws ParserException
+    private void checkUniqueConstraint()
     {
         if (sqlConstraint != null)
         {
@@ -293,7 +303,7 @@ public class SqlTableType extends CompoundType
                     "' can contain NULL in sql table '" + getName() + "'.");
     }
 
-    private void checkPrimaryKeyByColumnName(String columnName, int columnIndex) throws ParserException
+    private void checkPrimaryKeyByColumnName(String columnName, int columnIndex)
     {
         boolean found = false;
         int fieldIndex = 0;
@@ -322,6 +332,7 @@ public class SqlTableType extends CompoundType
 
     private final String sqlUsingId;
     private final SqlConstraint sqlConstraint;
-    private final Set<Field> sqlPrimaryKeyFields = new HashSet<Field>();
     private final boolean sqlWithoutRowId;
+
+    private final Set<Field> sqlPrimaryKeyFields = new HashSet<Field>();
 }

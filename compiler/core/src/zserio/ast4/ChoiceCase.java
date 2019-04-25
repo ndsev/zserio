@@ -1,5 +1,6 @@
 package zserio.ast4;
 
+import java.util.Collections;
 import java.util.List;
 
 import org.antlr.v4.runtime.Token;
@@ -9,6 +10,13 @@ import org.antlr.v4.runtime.Token;
  */
 public class ChoiceCase extends AstNodeBase
 {
+    /**
+     * Constructor.
+     *
+     * @param token           ANTLR4 token to localize AST node in the sources.
+     * @param caseExpressions List of all case expressions associated to this choice case.
+     * @param caseField       Case field associated to this choice case or null if it's not defined.
+     */
     public ChoiceCase(Token token, List<Expression> caseExpressions, Field caseField)
     {
         super(token);
@@ -37,9 +45,9 @@ public class ChoiceCase extends AstNodeBase
      *
      * @return Choice case expression list.
      */
-    public List<Expression> getExpressions() // TODO: List<CaseExpression> ?
+    public List<Expression> getExpressions()
     {
-        return caseExpressions;
+        return Collections.unmodifiableList(caseExpressions);
     }
 
     /**
@@ -52,40 +60,6 @@ public class ChoiceCase extends AstNodeBase
         return caseField;
     }
 
-    /*public static class CaseExpression
-    {
-        public CaseExpression(Expression expression, DocCommentToken docComment)
-        {
-            this.expression = expression;
-            this.docComment = docComment;
-        }
-
-        public Expression getExpression()
-        {
-            return expression;
-        }
-
-        public DocCommentToken getDocComment()
-        {
-            return docComment;
-        }
-
-        private final Expression        expression;
-        private final DocCommentToken   docComment;
-    }*/ // TODO:
-
-    /**
-     * Sets the choice type which is owner of the choice case.
-     *
-     * @param choiceType Owner to set.
-     */
-    protected void setChoiceType(ChoiceType choiceType)
-    {
-        this.choiceType = choiceType;
-    }
-
-    private ChoiceType choiceType;
     private final List<Expression> caseExpressions;
     private final Field caseField;
-    //private final ChoiceCase lastCaseToken; // TODO:
 };

@@ -1,6 +1,7 @@
 package zserio.ast4;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -13,12 +14,26 @@ import org.antlr.v4.runtime.Token;
 import zserio.tools.HashUtil;
 import zserio.tools.ZserioToolPrinter;
 
+/**
+ * AST node for one package defined in the language.
+ *
+ * Package is represented by one translation unit (one source file).
+ */
 public class Package extends AstNodeBase
 {
+    /**
+     * Constructor.
+     *
+     * @param token       ANTLR4 token to localize AST node in the sources.
+     * @param packageName Name of the package.
+     * @param imports     List of all imports defined in the package.
+     * @param localTypes  Map of all available local types defined in the package.
+     */
     public Package(Token token, PackageName packageName, List<Import> imports,
             LinkedHashMap<String, ZserioType> localTypes)
     {
         super(token);
+
         this.packageName = packageName;
         this.imports = imports;
         this.localTypes = localTypes;
@@ -40,9 +55,24 @@ public class Package extends AstNodeBase
             type.accept(visitor);
     }
 
+    /**
+     * Gets name of the package.
+     *
+     * @return Package name.
+     */
     public PackageName getPackageName()
     {
         return packageName;
+    }
+
+    /**
+     * Gets imports which are defined in this package.
+     *
+     * @return List of all imports defined in this package.
+     */
+    public List<Import> getImports()
+    {
+        return Collections.unmodifiableList(imports);
     }
 
     /**
@@ -53,11 +83,8 @@ public class Package extends AstNodeBase
      * @param typeName        Type name to resolve.
      *
      * @return Zserio type if given type name is visible for this package or null if given type name is unknown.
-     *
-     * @throws ParserException Throws in case of given type name is ambiguous for this package.
      */
     public ZserioType getVisibleType(AstNode ownerNode, PackageName typePackageName, String typeName)
-            throws ParserException
     {
         final List<ZserioType> foundTypes = getAllVisibleTypes(typePackageName, typeName);
         final int numFoundTypes = foundTypes.size();
@@ -90,28 +117,6 @@ public class Package extends AstNodeBase
     }
 
     /**
-     * Gets imports which are defined in this package.
-     *
-     * @return List of all imports defined in this package.
-     */
-    public Iterable<Import> getImports()
-    {
-        return imports;
-    }
-
-    /**
-     * Gets list of all local types stored in the packages.
-     *
-     * This is called from doc emitter only. Doc emitter should be redesigned not to require such method. TODO
-     *
-     * @return List of all local types stored in the packages.
-     */
-    public Iterable<ZserioType> getLocalTypes()
-    {
-        return localTypes.values();
-    }
-
-    /**
      * Resolves this package.
      *
      * This method
@@ -120,10 +125,7 @@ public class Package extends AstNodeBase
      * - resolves all type references which belong to this package
      * - resolves all subtypes which belong to this package
      *
-     * @param packageNameMap   Map of all available package name to the package object.
-     *
-     * @throws ParserException In case of wrong import or wrong type reference or if cyclic subtype definition
-     *                         is detected.
+     * @param packageNameMap Map of all available package name to the package object.
      */
     protected void resolve(Map<PackageName, Package> packageNameMap)
     {
@@ -310,6 +312,7 @@ public class Package extends AstNodeBase
 
     // this must be a LinkedHashMap because of 'Cyclic dependency' error checked in ZserioAstResolver
     private final LinkedHashMap<String, ZserioType> localTypes;
+
     private final Set<Package> importedPackages = new HashSet<Package>();
     // this must be a TreeSet because of 'Ambiguous type reference' error checked in getVisibleType()
     private final Set<SingleTypeName> importedSingleTypes = new TreeSet<SingleTypeName>();

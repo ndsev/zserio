@@ -3,12 +3,17 @@ package zserio.ast4;
 import org.antlr.v4.runtime.Token;
 
 /**
- * AST node for boolean types.
+ * AST node for Boolean types.
  *
  * Boolean types are Zserio types as well.
  */
 public class BooleanType extends BuiltInType implements FixedSizeType
 {
+    /**
+     * Constructor from ANTLR4 token.
+     *
+     * @param token Token to construct from.
+     */
     public BooleanType(Token token)
     {
         super(token);

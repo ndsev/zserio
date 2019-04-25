@@ -3,16 +3,25 @@ package zserio.ast4;
 import org.antlr.v4.runtime.Token;
 
 /**
- * AST node for type references.
+ * AST node for Type References.
  *
- * A type reference is either a simple name or a sequence of simple names separated by dots referring to
+ * A Type Reference is either a simple name or a sequence of simple names separated by dots referring to
  * a nested type, e.g. {@code Outer.Inner}.
  *
  * Type references are Zserio types as well.
  */
 public class TypeReference extends AstNodeBase implements ZserioType
 {
-    TypeReference(Token token, Package ownerPackage, PackageName referencedPackageName,
+    /**
+     * Constructor.
+     *
+     * @param token                 ANTLR4 token to localize AST node in the sources.
+     * @param ownerPackage          Package of the type reference owner.
+     * @param referencedPackageName Package name which the reference points to.
+     * @param referencedTypeName    Type name which the reference points to.
+     * @param isParameterized       True if the reference points to parameterized type.
+     */
+    public TypeReference(Token token, Package ownerPackage, PackageName referencedPackageName,
             String referencedTypeName, boolean isParameterized)
     {
         super(token);
@@ -66,8 +75,6 @@ public class TypeReference extends AstNodeBase implements ZserioType
 
     /**
      * Resolves this reference to the corresponding referenced type.
-     *
-     * @throws ParserException Throws if the referenced type is unresolvable.
      */
     protected void resolve()
     {
