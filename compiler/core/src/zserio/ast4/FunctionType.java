@@ -78,7 +78,9 @@ public class FunctionType extends AstNodeBase implements ZserioType
         return resultExpression;
     }
 
-    @Override
+    /**
+     * Evaluates the function type.
+     */
     protected void evaluate()
     {
         // check result expression type

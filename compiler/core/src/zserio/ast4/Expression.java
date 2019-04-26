@@ -410,12 +410,6 @@ public class Expression extends AstNodeBase
         return containsOperand(Zserio4Parser.RPAREN);
     }
 
-    @Override
-    protected void evaluate()
-    {
-        evaluate(evaluationScope);
-    }
-
     /**
      * Adds additional lexical scope to the expression evaluation scope.
      *
@@ -424,6 +418,14 @@ public class Expression extends AstNodeBase
     protected void addEvaluationScope(Scope additionalEvalutionScope)
     {
         evaluationScope.add(additionalEvalutionScope);
+    }
+
+    /**
+     * Evaluates the expression.
+     */
+    protected void evaluate()
+    {
+        evaluate(evaluationScope);
     }
 
     /**

@@ -84,7 +84,6 @@ public abstract class BitFieldType extends IntegerType
      * This method can be called directly from Expression.evaluate() method if some expression refers to
      * bit field type before definition of this type. Therefore 'isEvaluated' check is necessary.
      */
-    @Override
     protected void evaluate()
     {
         if (!isEvaluated)

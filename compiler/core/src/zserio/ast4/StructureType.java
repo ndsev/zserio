@@ -37,9 +37,15 @@ public class StructureType extends CompoundType
         visitor.visitStructureType(this);
     }
 
+    /**
+     * Evaluates the structure type.
+     */
     @Override
     protected void evaluate()
     {
+        // evaluates common compound type
+        super.evaluate();
+
         // check that no field is SQL table
         checkTableFields();
 

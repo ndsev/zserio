@@ -123,13 +123,16 @@ public class ChoiceType extends CompoundType
         return fields;
     }
 
+    /**
+     * Evaluates the choice type.
+     */
     @Override
     protected void evaluate()
     {
-        isChoiceDefaultUnreachable = checkUnreachableDefault();
-
+        super.evaluate();
         checkTableFields();
 
+        isChoiceDefaultUnreachable = checkUnreachableDefault();
         checkSelectorType();
         checkCaseTypes();
         checkDuplicatedCases();

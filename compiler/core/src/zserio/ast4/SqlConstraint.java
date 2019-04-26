@@ -125,7 +125,9 @@ public class SqlConstraint extends AstNodeBase
         return new SqlConstraint(null, createStringLiteralExpression(pkg, ""));
     }
 
-    @Override
+    /**
+     * Evaluates the SQL constraint.
+     */
     protected void evaluate()
     {
         primaryKeyColumnNames = extractColumnNames(PRIMARY_KEY_CONSTRAINT);

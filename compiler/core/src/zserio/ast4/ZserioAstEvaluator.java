@@ -2,7 +2,7 @@ package zserio.ast4;
 
 import java.util.List;
 
-public class ZserioAstEvaluator implements ZserioAstVisitor
+public class ZserioAstEvaluator extends ZserioAstVisitor.Base
 {
     public ZserioAstEvaluator()
     {
@@ -15,39 +15,17 @@ public class ZserioAstEvaluator implements ZserioAstVisitor
     }
 
     @Override
-    public void visitRoot(Root root)
-    {
-        evaluate(root);
-    }
-
-    @Override
-    public void visitPackage(Package unitPackage)
-    {
-        evaluate(unitPackage);
-    }
-
-    @Override
-    public void visitImport(Import unitImport)
-    {
-        evaluate(unitImport);
-    }
-
-    @Override
     public void visitConstType(ConstType constType)
     {
-        evaluate(constType);
-    }
-
-    @Override
-    public void visitSubtype(Subtype subtypeType)
-    {
-        evaluate(subtypeType);
+        constType.visitChildren(this);
+        constType.evaluate();
     }
 
     @Override
     public void visitStructureType(StructureType structureType)
     {
-        evaluate(structureType);
+        structureType.visitChildren(this);
+        structureType.evaluate();
     }
 
     @Override
@@ -70,85 +48,71 @@ public class ZserioAstEvaluator implements ZserioAstVisitor
             }
         }
 
-        evaluate(choiceType);
+        choiceType.visitChildren(this);
+        choiceType.evaluate();
     }
 
     @Override
     public void visitUnionType(UnionType unionType)
     {
-        evaluate(unionType);
+        unionType.visitChildren(this);
+        unionType.evaluate();
     }
 
     @Override
     public void visitEnumType(EnumType enumType)
     {
-        evaluate(enumType);
+        enumType.visitChildren(this);
+        enumType.evaluate();
     }
 
     @Override
     public void visitSqlTableType(SqlTableType sqlTableType)
     {
-        evaluate(sqlTableType);
+        sqlTableType.visitChildren(this);
+        sqlTableType.evaluate();
     }
 
     @Override
     public void visitSqlDatabaseType(SqlDatabaseType sqlDatabaseType)
     {
-        evaluate(sqlDatabaseType);
-    }
-
-    @Override
-    public void visitServiceType(ServiceType serviceType)
-    {
-        evaluate(serviceType);
+        sqlDatabaseType.visitChildren(this);
+        sqlDatabaseType.evaluate();
     }
 
     @Override
     public void visitField(Field field)
     {
-        evaluate(field);
-    }
-
-    @Override
-    public void visitChoiceCase(ChoiceCase choiceCase)
-    {
-        evaluate(choiceCase);
-    }
-
-    @Override
-    public void visitChoiceDefault(ChoiceDefault choiceDefault)
-    {
-        evaluate(choiceDefault);
+        field.visitChildren(this);
+        field.evaluate();
     }
 
     @Override
     public void visitEnumItem(EnumItem enumItem)
     {
-        evaluate(enumItem);
+        enumItem.visitChildren(this);
+        enumItem.evaluate();
     }
 
     @Override
     public void visitSqlConstraint(SqlConstraint sqlConstraint)
     {
-        evaluate(sqlConstraint);
+        sqlConstraint.visitChildren(this);
+        sqlConstraint.evaluate();
     }
 
     @Override
     public void visitRpc(Rpc rpc)
     {
-        evaluate(rpc);
+        rpc.visitChildren(this);
+        rpc.evaluate();
     }
 
     @Override
     public void visitFunction(FunctionType functionType)
     {
-        evaluate(functionType);
-    }
-
-    @Override
-    public void visitParameter(Parameter parameter)
-    {
-        evaluate(parameter);
+        functionType.visitChildren(this);
+        functionType.evaluate();
     }
 
     @Override
@@ -164,61 +128,22 @@ public class ZserioAstEvaluator implements ZserioAstVisitor
     @Override
     public void visitArrayType(ArrayType arrayType)
     {
-        evaluate(arrayType);
+        arrayType.visitChildren(this);
+        arrayType.evaluate();
     }
 
     @Override
     public void visitTypeInstantiation(TypeInstantiation typeInstantiation)
     {
-        evaluate(typeInstantiation);
-    }
-
-    @Override
-    public void visitTypeReference(TypeReference typeReference)
-    {
-        evaluate(typeReference);
-    }
-
-    @Override
-    public void visitStdIntegerType(StdIntegerType stdIntegerType)
-    {
-        evaluate(stdIntegerType);
-    }
-
-    @Override
-    public void visitVarIntegerType(VarIntegerType varIntegerType)
-    {
-        evaluate(varIntegerType);
+        typeInstantiation.visitChildren(this);
+        typeInstantiation.evaluate();
     }
 
     @Override
     public void visitBitFieldType(BitFieldType bitFieldType)
     {
-        evaluate(bitFieldType);
-    }
-
-    @Override
-    public void visitBooleanType(BooleanType booleanType)
-    {
-        evaluate(booleanType);
-    }
-
-    @Override
-    public void visitStringType(StringType stringType)
-    {
-        evaluate(stringType);
-    }
-
-    @Override
-    public void visitFloatType(FloatType floatType)
-    {
-        evaluate(floatType);
-    }
-
-    private void evaluate(AstNodeBase astNode)
-    {
-        astNode.visitChildren(this);
-        astNode.evaluate();
+        bitFieldType.visitChildren(this);
+        bitFieldType.evaluate();
     }
 
     private final Scope evaluationScope;

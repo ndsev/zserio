@@ -233,7 +233,9 @@ public class Field extends AstNodeBase
         return isVirtual;
     }
 
-    @Override
+    /**
+     * Evaluates the compound field.
+     */
     protected void evaluate()
     {
         // check initializer expression type

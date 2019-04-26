@@ -92,7 +92,9 @@ public class Rpc extends AstNodeBase
         return responseStreaming;
     }
 
-    @Override
+    /**
+     * Evaluates the RPC call.
+     */
     protected void evaluate()
     {
         checkUsedType(responseType);

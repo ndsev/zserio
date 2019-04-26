@@ -204,7 +204,9 @@ public abstract class CompoundType extends AstNodeBase implements ZserioScopedTy
         return false;
     }
 
-    @Override
+    /**
+     * Evaluates the compound type.
+     */
     protected void evaluate()
     {
         containsOptionalRecursion = checkRecursiveFields();

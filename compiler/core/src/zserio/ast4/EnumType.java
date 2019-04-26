@@ -107,7 +107,6 @@ public class EnumType extends AstNodeBase implements ZserioScopedType
      *
      * This method calculates and sets value to all enumeration items.
      */
-    @Override
     protected void evaluate()
     {
         if (!isEvaluated)

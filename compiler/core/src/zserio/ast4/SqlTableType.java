@@ -116,9 +116,13 @@ public class SqlTableType extends CompoundType
         return sqlWithoutRowId;
     }
 
+    /**
+     * Evaluates the SQL table type.
+     */
     @Override
     protected void evaluate()
     {
+        super.evaluate();
         checkTableFields();
         checkExplicitParameters();
 

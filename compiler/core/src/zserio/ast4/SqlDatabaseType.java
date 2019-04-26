@@ -31,9 +31,15 @@ public class SqlDatabaseType extends CompoundType
         visitor.visitSqlDatabaseType(this);
     }
 
+    /**
+     * Evaluates the SQL database type.
+     */
     @Override
     protected void evaluate()
     {
+        // evaluates common compound type
+        super.evaluate();
+
         // check if all fields are SQL tables
         for (Field databaseField : getFields())
         {

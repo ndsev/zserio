@@ -82,7 +82,9 @@ public class ArrayType extends AstNodeBase implements ZserioType
         return isImplicit;
     }
 
-    @Override
+    /**
+     * Evaluates the array type.
+     */
     protected void evaluate()
     {
         // resolve element base type

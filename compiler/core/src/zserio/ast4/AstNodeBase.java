@@ -24,13 +24,5 @@ public abstract class AstNodeBase implements AstNode
     public void visitChildren(ZserioAstVisitor visitor)
     {}
 
-    /**
-     * Evaluates this node.
-     *
-     * This method is supposed to be overridden by inherited class.
-     */
-    protected void evaluate()
-    {}
-
     private final AstNodeLocation location;
 };

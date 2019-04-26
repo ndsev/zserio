@@ -70,10 +70,9 @@ public class Root extends AstNodeBase
         }
     }
 
-    @Override
+    // TODO: check for unused types - maybe just do it in self-standing visitor and don't use root for it?
     protected void evaluate()
     {
-        // TODO: check for unused types - maybe just do it in self-standing visitor and don't use root for it?
     }
 
     private final LinkedHashMap<PackageName, Package> packageNameMap;
