@@ -207,8 +207,27 @@ public abstract class CompoundType extends AstNodeBase implements ZserioScopedTy
     @Override
     protected void evaluate()
     {
+        containsOptionalRecursion = checkRecursiveFields();
+
+        checkCircularContainment(this, this);
+    }
+
+    protected void checkTableFields()
+    {
+        // check if fields are not sql tables
+        for (Field field : fields)
+        {
+            final ZserioType fieldBaseType = TypeReference.resolveBaseType(field.getFieldReferencedType());
+            if (fieldBaseType instanceof SqlTableType)
+                throw new ParserException(field, "Field '" + field.getName() +
+                        "' cannot be a sql table!");
+        }
+    }
+
+    private boolean checkRecursiveFields()
+    {
         // check recursive fields which are not arrays
-        containsOptionalRecursion = false;
+        boolean containsOptionalRecursion = false;
         for (Field field : fields)
         {
             ZserioType fieldType = field.getFieldType();
@@ -226,77 +245,26 @@ public abstract class CompoundType extends AstNodeBase implements ZserioScopedTy
                             "' is recursive and neither optional nor array!");
             }
         }
+
+        return containsOptionalRecursion;
     }
 
-    protected void checkTableFields()
+    private static void checkCircularContainment(CompoundType outer, CompoundType inner)
     {
-        // check if fields are not sql tables
-        for (Field field : fields)
+        for (Field field : inner.fields)
         {
             final ZserioType fieldBaseType = TypeReference.resolveBaseType(field.getFieldReferencedType());
-            if (fieldBaseType instanceof SqlTableType)
-                throw new ParserException(field, "Field '" + field.getName() +
-                        "' cannot be a sql table!");
-        }
-    }
-
-    /**
-     * Checks if this compound type is contained in the given compound type 'outer'.
-     *
-     * @return true if this compound type is contained in compound type 'outer'
-     */
-    /* TODO
-    protected boolean isContainedIn(CompoundType outer)
-    {
-        return isContainedIn(outer, new Stack<CompoundType>());
-    } */
-
-    /**
-     * Sets compound type which uses this compound type.
-     *
-     * @param compoundType Compound type to set.
-     *
-     * @throws Throws if circular containment occurs.
-     */
-    /* TODO
-    protected void setUsedByCompoundType(CompoundType compoundType) throws ParserException
-    {
-        // check for circular containment  TODO This is used by expressions
-        if (compoundType.isContainedIn(this))
-            throw new ParserException(this, "Circular containment between '" + getName() +
-                                      "' and '" + compoundType.getName() + "'!");
-
-        usedByCompoundList.add(compoundType);
-    } */
-
-    /**
-     * The "is contained" relationship may contain cycles use a stack to avoid them. This is a simple DFS path
-     * finding algorithm that finds a path from 'this' to 'outer'.
-     */
-    /* TODO
-    private boolean isContainedIn(CompoundType outer, Stack<CompoundType> seen)
-    {
-        if (usedByCompoundList.contains(outer))
-        {
-            return true;
-        }
-
-        // check whether any container of 'this' is contained in 'outer'
-        for (CompoundType c : usedByCompoundList)
-        {
-            if (seen.search(c) == -1)
+            if (fieldBaseType instanceof CompoundType)
             {
-                seen.push(c);
-                if (c.isContainedIn(outer, seen))
-                    return true;
-                seen.pop();
+                final CompoundType childCompoundType = (CompoundType)fieldBaseType;
+                if (outer != inner && outer == childCompoundType)
+                    throw new ParserException(field, "Circular containment between '" + outer.getName() +
+                            "' and '" + inner.getName() + "'!");
+
+                checkCircularContainment(outer, childCompoundType);
             }
         }
-
-        return false;
     }
-    private final SortedSet<CompoundType> usedByCompoundList = new TreeSet<CompoundType>();
-    */
 
     private final Scope scope = new Scope(this);
     private final Package pkg;
