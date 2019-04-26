@@ -12,7 +12,6 @@ import org.apache.commons.cli.ParseException;
 import zserio.antlr.Zserio4Lexer;
 import zserio.antlr.Zserio4Parser;
 import zserio.ast4.PackageName;
-import zserio.ast4.ZserioAstChecker;
 import zserio.ast4.Import;
 import zserio.ast4.Package;
 import zserio.ast4.ZserioAstEvaluator;
@@ -145,8 +144,6 @@ public class ZserioTool
 
         showAstTree(rootNode);
 
-        check(rootNode);
-
         emit(rootNode);
 
         ZserioToolPrinter.printMessage("Done");
@@ -208,14 +205,6 @@ public class ZserioTool
                 parseImportedPackages(astBuilderVisitor, parsedPackage);
             }
         }
-    }
-
-    private void check(Root rootNode)
-    {
-        ZserioToolPrinter.printMessage("Checking");
-
-        ZserioAstChecker checkingVisitor = new ZserioAstChecker();
-        rootNode.accept(checkingVisitor);
     }
 
     private void emit(Root rootNode) throws Exception

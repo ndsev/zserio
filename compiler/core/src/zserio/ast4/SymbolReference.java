@@ -67,13 +67,11 @@ public class SymbolReference
     }
 
     /**
-     * Checks the correctness of the symbol reference.
+     * Evaluates the correctness of the symbol reference.
      *
      * @param ownerType ZserioType which is owner of the symbol reference.
-     *
-     * @throws ParserException Throws if the symbol reference is invalid.
      */
-    public void check(ZserioType ownerType) throws ParserException
+    public void evaluate(ZserioType ownerType)
     {
         // try if the last link component was a type name
         final Package ownerPackage = ownerType.getPackage();

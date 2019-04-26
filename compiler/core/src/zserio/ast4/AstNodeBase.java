@@ -32,13 +32,5 @@ public abstract class AstNodeBase implements AstNode
     protected void evaluate()
     {}
 
-    /**
-     * Checks integrity of this node.
-     *
-     * This method is supposed to be overridden by inherited class.
-     */
-    protected void check()
-    {}
-
     private final AstNodeLocation location;
 };

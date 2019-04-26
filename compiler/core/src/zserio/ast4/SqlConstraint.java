@@ -280,7 +280,7 @@ public class SqlConstraint extends AstNodeBase
     private String resolveConstraintReference(String referencedText) throws ParserException
     {
         final SymbolReference symbolReference = new SymbolReference(this, referencedText);
-        symbolReference.check(compoundType);
+        symbolReference.evaluate(compoundType);
 
         final ZserioType referencedType = symbolReference.getReferencedType();
         final Object referencedSymbol = symbolReference.getReferencedSymbol();
