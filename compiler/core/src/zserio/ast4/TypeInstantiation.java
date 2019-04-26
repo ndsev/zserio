@@ -138,7 +138,7 @@ public class TypeInstantiation extends AstNodeBase implements ZserioType
      * Evaluates base type of this type instantiation.
      *
      * This method can be called directly from Expression.evaluate() method if some expression refers to
-     * the type instantiation before its definition.
+     * the type instantiation before its definition. Therefore 'isEvaluated' check is necessary.
      */
     @Override
     public void evaluate()

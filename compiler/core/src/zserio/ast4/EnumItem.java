@@ -88,25 +88,37 @@ public class EnumItem extends AstNodeBase
     }
 
     /**
+     * Sets the default integer value which represents the enumeration item.
+     *
+     * This method is called only if enumeration item value is not defined in the language.
+     *
+     * @param value Default integer value of the enumeration item.
+     */
+    protected void setValue(BigInteger value)
+    {
+        this.value = value;
+    }
+
+    /**
      * Evaluates enumeration item value expression.
      *
-     * @param defaultValue Enumeration item value to use if value expression has not been specified.
+     * This method can be called directly from Expression.evaluate() method if some expression refers to
+     * enumeration item before definition of this item. Therefore 'isEvaluated' check is necessary.
      */
-    protected void evaluateValueExpression(BigInteger defaultValue)
+    @Override
+    protected void evaluate()
     {
-        if (valueExpression != null)
+        if (!isEvaluated)
         {
-            // there is a value for this enumeration item => evaluate and check value expression
-            valueExpression.evaluate();
+            if (valueExpression != null)
+            {
+                if (valueExpression.getExprType() != Expression.ExpressionType.INTEGER)
+                    throw new ParserException(valueExpression, "Enumeration item '" + getName() +
+                            "' has non-integer value!");
+                value = valueExpression.getIntegerValue();
+            }
 
-            if (valueExpression.getExprType() != Expression.ExpressionType.INTEGER)
-                throw new ParserException(valueExpression, "Enumeration item '" + getName() +
-                        "' has non-integer value!");
-            value = valueExpression.getIntegerValue();
-        }
-        else
-        {
-            value = defaultValue;
+            isEvaluated = true;
         }
     }
 
@@ -115,4 +127,5 @@ public class EnumItem extends AstNodeBase
 
     private EnumType enumType = null;
     private BigInteger value = null;
+    private boolean isEvaluated = false;
 }

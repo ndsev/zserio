@@ -133,7 +133,7 @@ public class SqlConstraint extends AstNodeBase
         isPrimaryKey = containsPrimaryKey();
 
         // replace all @-references
-        final String translatedConstraint = resolveConstraintReferences(constraintExpr.getExpressionString());
+        final String translatedConstraint = resolveConstraintReferences(constraintExpr.getText());
         translatedConstraintExpr = createStringLiteralExpression(compoundType.getPackage(),
                 translatedConstraint);
 
@@ -213,7 +213,7 @@ public class SqlConstraint extends AstNodeBase
     private List<String> extractColumnNames(String constraintName)
     {
         final ArrayList<String> columnNames = new ArrayList<String>();
-        final String sqlConstraintString = constraintExpr.getExpressionString();
+        final String sqlConstraintString = constraintExpr.getText();
         final int constraintIndex = sqlConstraintString.toUpperCase(Locale.ENGLISH).indexOf(constraintName);
         if (constraintIndex > -1)
         {
@@ -236,7 +236,7 @@ public class SqlConstraint extends AstNodeBase
 
     private boolean containsPrimaryKey()
     {
-        final String sqlConstraintString = constraintExpr.getExpressionString();
+        final String sqlConstraintString = constraintExpr.getText();
 
         return (sqlConstraintString.toUpperCase(Locale.ENGLISH).indexOf(PRIMARY_KEY_CONSTRAINT) > -1);
     }

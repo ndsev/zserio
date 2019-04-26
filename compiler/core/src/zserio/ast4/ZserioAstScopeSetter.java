@@ -18,6 +18,7 @@ public class ZserioAstScopeSetter extends ZserioAstVisitor.Base
         fillExpressionScopes = false;
     }
 
+    @Override
     public void visitField(Field field)
     {
         field.getFieldType().accept(this);
@@ -205,7 +206,7 @@ public class ZserioAstScopeSetter extends ZserioAstVisitor.Base
         final Scope expressionScope = new Scope(currentScope);
         if (fillExpressionScopes)
             expressionScopes.add(expressionScope);
-        expression.setScope(expressionScope);
+        expression.setEvaluationScope(expressionScope);
     }
 
     private void visitChoiceField(Field field)
@@ -219,6 +220,6 @@ public class ZserioAstScopeSetter extends ZserioAstVisitor.Base
     private Scope currentScope = defaultScope;
     private Scope currentChoiceOrUnionScope = null;
 
-    private List<Scope> expressionScopes = new ArrayList<Scope>();
+    private final List<Scope> expressionScopes = new ArrayList<Scope>();
     private boolean fillExpressionScopes = false;
 }

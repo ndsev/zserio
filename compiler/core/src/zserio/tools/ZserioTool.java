@@ -15,6 +15,7 @@ import zserio.ast4.PackageName;
 import zserio.ast4.ZserioAstChecker;
 import zserio.ast4.Import;
 import zserio.ast4.Package;
+import zserio.ast4.ZserioAstEvaluator;
 import zserio.ast4.ZserioAstResolver;
 import zserio.ast4.ZserioParseTreeChecker;
 import zserio.ast4.ParserException;
@@ -166,10 +167,11 @@ public class ZserioTool
         final ZserioAstResolver resolver = new ZserioAstResolver();
         rootNode.accept(resolver);
 
-        final ZserioAstScopeSetter scopeEvaluator = new ZserioAstScopeSetter();
-        rootNode.accept(scopeEvaluator);
+        final ZserioAstScopeSetter scopeSetter = new ZserioAstScopeSetter();
+        rootNode.accept(scopeSetter);
 
-        // TODO: expression evaluation
+        final ZserioAstEvaluator evaluator = new ZserioAstEvaluator();
+        rootNode.accept(evaluator);
 
         return rootNode;
     }

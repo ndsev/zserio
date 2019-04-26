@@ -143,7 +143,7 @@ public class ZserioAstPrinter implements ZserioAstVisitor
     @Override
     public void visitExpression(Expression expression)
     {
-        print("expression [\"" + expression.getExpressionString() + "\"]");
+        print("expression [\"" + expression.getText() + "\"]");
         visitChildren(expression);
     }
 
@@ -154,6 +154,7 @@ public class ZserioAstPrinter implements ZserioAstVisitor
         visitChildren(arrayType);
     }
 
+    @Override
     public void visitTypeInstantiation(TypeInstantiation typeInstantiation)
     {
         print("typeInstantiation");
@@ -185,7 +186,7 @@ public class ZserioAstPrinter implements ZserioAstVisitor
     public void visitBitFieldType(BitFieldType bitFieldType)
     {
         print("bitFieldType [" + (bitFieldType.isSigned() ? "signed" : "unsigned") + ", " +
-                bitFieldType.getLengthExpression().getExpressionString() + "]");
+                bitFieldType.getLengthExpression().getText() + "]");
         visitChildren(bitFieldType);
     }
 

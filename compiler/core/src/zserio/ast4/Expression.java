@@ -11,89 +11,127 @@ import org.antlr.v4.runtime.Token;
 import zserio.antlr.Zserio4Parser;
 
 /**
- *
- * TODO
- * It would be probably better to use internal visitors instead of if (operandX) construction.
- *
- */
-/**
  * AST node for expressions defined in the language.
  */
 public class Expression extends AstNodeBase
 {
     /**
-     * TODO
-     * @param expressionToken
-     * @param pkg
+     * Defines expression flag for constructors.
+     */
+    public enum ExpressionFlag
+    {
+        NONE,                   /** no flag */
+        IS_EXPLICIT,            /** the explicit keyword was before expression in the source */
+        IS_TOP_LEVEL_DOT,       /** the expression is top level dot operator */
+        IS_DOT_RIGHT_OPERAND    /** the expression is identifier which is dot right operand */
+    };
+
+    /**
+     * Constructor.
+     *
+     * @param expressionToken Token to construct expression from.
+     * @param pkg             Package to which the expression belongs.
      */
     public Expression(Token expressionToken, Package pkg)
     {
-        this(expressionToken, pkg, expressionToken, false, null, null, null);
+        this(expressionToken, pkg, expressionToken, ExpressionFlag.NONE, null, null, null);
     }
 
     /**
-     * TODO
-     * @param locationToken
-     * @param pkg
-     * @param expressionToken
-     * @param isExplicit
+     * Constructor.
+     *
+     * @param expressionToken Token to construct expression from.
+     * @param pkg             Package to which the expression belongs.
+     * @param expressionFlag  Flag for the expression.
+     */
+    public Expression(Token expressionToken, Package pkg, ExpressionFlag expressionFlag)
+    {
+        this(expressionToken, pkg, expressionToken, expressionFlag, null, null, null);
+    }
+
+    /**
+     * Constructor.
+     *
+     * @param locationToken   Token which denotes expression location in the sources.
+     * @param pkg             Package to which the expression belongs.
+     * @param expressionToken Token to construct expression from.
      */
     public Expression(Token locationToken, Package pkg, Token expressionToken)
     {
-        this(locationToken, pkg, expressionToken, false, null, null, null);
+        this(locationToken, pkg, expressionToken, ExpressionFlag.NONE, null, null, null);
     }
 
     /**
-     * TODO
-     * @param locationToken
-     * @param pkg
-     * @param expressionToken
-     * @param isExplicit
+     * Constructor.
+     *
+     * @param locationToken   Token which denotes expression location in the sources.
+     * @param pkg             Package to which the expression belongs.
+     * @param expressionToken Token to construct expression from.
+     * @param expressionFlag  Flag for the expression.
      */
-    public Expression(Token locationToken, Package pkg, Token expressionToken, boolean isExplicit)
+    public Expression(Token locationToken, Package pkg, Token expressionToken, ExpressionFlag expressionFlag)
     {
-        this(locationToken, pkg, expressionToken, isExplicit, null, null, null);
+        this(locationToken, pkg, expressionToken, expressionFlag, null, null, null);
     }
 
     /**
-     * TODO
-     * @param locationToken
-     * @param pkg
-     * @param expressionToken
-     * @param operand1
+     * Constructor.
+     *
+     * @param locationToken   Token which denotes expression location in the sources.
+     * @param pkg             Package to which the expression belongs.
+     * @param expressionToken Token to construct expression from.
+     * @param operand1        Left operand of the expression.
      */
     public Expression(Token locationToken, Package pkg, Token expressionToken, Expression operand1)
     {
-        this(locationToken, pkg, expressionToken, false, operand1, null, null);
+        this(locationToken, pkg, expressionToken, ExpressionFlag.NONE, operand1, null, null);
     }
 
     /**
-     * TODO
-     * @param locationToken
-     * @param pkg
-     * @param expressionToken
-     * @param operand1
-     * @param operand2
+     * Constructor.
+     *
+     * @param locationToken   Token which denotes expression location in the sources.
+     * @param pkg             Package to which the expression belongs.
+     * @param expressionToken Token to construct expression from.
+     * @param operand1        Left operand of the expression.
+     * @param operand2        Right operand of the expression.
      */
     public Expression(Token locationToken, Package pkg, Token expressionToken, Expression operand1,
             Expression operand2)
     {
-        this(locationToken, pkg, expressionToken, false, operand1, operand2, null);
+        this(locationToken, pkg, expressionToken, ExpressionFlag.NONE, operand1, operand2, null);
     }
 
     /**
-     * TODO
-     * @param locationToken
-     * @param pkg
-     * @param expressionToken
-     * @param operand1
-     * @param operand2
-     * @param operand3
+     * Constructor.
+     *
+     * @param locationToken   Token which denotes expression location in the sources.
+     * @param pkg             Package to which the expression belongs.
+     * @param expressionToken Token to construct expression from.
+     * @param expressionFlag  Flag for the expression.
+     * @param operand1        Left operand of the expression.
+     * @param operand2        Right operand of the expression.
+     */
+    public Expression(Token locationToken, Package pkg, Token expressionToken, ExpressionFlag expressionFlag,
+            Expression operand1, Expression operand2)
+    {
+        this(locationToken, pkg, expressionToken, expressionFlag, operand1, operand2, null);
+    }
+
+    /**
+     * Constructor.
+     *
+     * @param locationToken   Token which denotes expression location in the sources.
+     * @param pkg             Package to which the expression belongs.
+     * @param expressionToken Token to construct expression from.
+     * @param operand1        Left operand of the ternary expression.
+     * @param operand2        Middle operand of the ternary expression.
+     * @param operand3        Right operand of the ternary expression.
      */
     public Expression(Token locationToken, Package pkg, Token expressionToken, Expression operand1,
             Expression operand2, Expression operand3)
     {
-        this(locationToken, pkg, expressionToken, false, operand1, operand2, operand3);
+        this(locationToken, pkg, expressionToken, ExpressionFlag.NONE, operand1, operand2, operand3);
     }
 
     @Override
@@ -118,27 +156,21 @@ public class Expression extends AstNodeBase
     }
 
     /**
-     * Sets lexical scope for the expression.
+     * Sets lexical scope for the expression evaluation.
      *
-     * This method is called by ScopeEvaluator.
+     * This method is called by ZserioAstScopeSetter.
      *
-     * @param scope Lexical scope to set.
+     * @param evaluationScope Lexical scope for evaluation to set.
      */
-    public void setScope(Scope scope)
+    public void setEvaluationScope(Scope evaluationScope)
     {
-        this.scope = scope;
-    }
-
-    /**
-     * TODO
-     */
-    public String getExpressionString()
-    {
-        return text;
+        this.evaluationScope = evaluationScope;
     }
 
     /**
      * Gets the expression type given by the parser.
+     *
+     * This method should not be public but it is used by expression formatters at the moment.
      *
      * @return Expression type given by ANTLR4.
      */
@@ -150,21 +182,13 @@ public class Expression extends AstNodeBase
     /**
      * Gets the expression text given by the parser.
      *
+     * This method should not be public but it is used by expression formatters at the moment.
+     *
      * @return Expression text given by ANTLR4.
      */
     public String getText()
     {
         return text;
-    }
-
-    /**
-     * Checks if the expression contains explicit variable.
-     *
-     * @return Returns true if expression is explicit otherwise false.
-     */
-    public boolean isExplicitVariable()
-    {
-        return isExplicit;
     }
 
     /**
@@ -204,13 +228,13 @@ public class Expression extends AstNodeBase
     }
 
     /**
-     * Gets lexical scope of the expression.
+     * Checks if the expression contains explicit variable.
      *
-     * @return Lexical scope of the expression.
+     * @return Returns true if expression is explicit otherwise false.
      */
-    public Scope getScope()
+    public boolean isExplicitVariable()
     {
-        return scope;
+        return expressionFlag == ExpressionFlag.IS_EXPLICIT;
     }
 
     /**
@@ -387,9 +411,19 @@ public class Expression extends AstNodeBase
     }
 
     @Override
-    protected void evaluate() throws ParserException
+    protected void evaluate()
     {
-        evaluate(scope);
+        evaluate(evaluationScope);
+    }
+
+    /**
+     * Adds additional lexical scope to the expression evaluation scope.
+     *
+     * @param additionalEvaluationScope Additional scope for evaluation to add.
+     */
+    protected void addEvaluationScope(Scope additionalEvalutionScope)
+    {
+        evaluationScope.add(additionalEvalutionScope);
     }
 
     /**
@@ -406,51 +440,24 @@ public class Expression extends AstNodeBase
      * It is supposed that the previous expression properties have been set to initialization values
      * (set by constructor).
      *
-     * If given scope for evaluation is different to expression scope, the method forces evaluation even if
-     * the expression has been already evaluated (this is used for function called within owner structure).
+     * If given forced evaluation scope is different to expression evaluation scope, the method forces
+     * evaluation even if the expression has been already evaluated (this is used for function called within
+     * owner structure).
      *
-     * @param evaluationScope Scope for evaluation.
-     *
-     * @throws ParserException Throws if expression is not valid.
+     * @param forcedEvaluationScope Forced scope for evaluation.
      */
-    protected void evaluate(Scope evaluationScope) throws ParserException
+    protected void evaluate(Scope forcedEvaluationScope)
     {
         if (evaluationState == EvaluationState.IN_EVALUATION)
             throw new ParserException(this, "Cyclic dependency detected in expression evaluation!");
 
         // force evaluation if different scope is specified
-        if (evaluationScope != scope && evaluationState != EvaluationState.NOT_EVALUATED)
+        if (forcedEvaluationScope != evaluationScope && evaluationState != EvaluationState.NOT_EVALUATED)
             initialize();
 
         if (evaluationState == EvaluationState.NOT_EVALUATED)
         {
             evaluationState = EvaluationState.IN_EVALUATION;
-
-            if (operand1 != null)
-            {
-                operand1.evaluate(evaluationScope);
-                if (operand2 != null)
-                {
-                    operand2.evaluate(evaluationScope);
-                    if (operand3 != null)
-                        operand3.evaluate(evaluationScope);
-                }
-            }
-
-            // check unresolved identifiers if no further DOT or ID is available TODO why?
-            if (type != Zserio4Parser.DOT && type != Zserio4Parser.ID)
-            {
-                if (operand1 != null)
-                {
-                    operand1.checkUnresolvedIdentifiers();
-                    if (operand2 != null)
-                    {
-                        operand2.checkUnresolvedIdentifiers();
-                        if (operand3 != null)
-                            operand3.checkUnresolvedIdentifiers();
-                    }
-                }
-            }
 
             switch (type)
             {
@@ -459,7 +466,7 @@ public class Expression extends AstNodeBase
                     break;
 
                 case Zserio4Parser.RPAREN:              // functionCallExpression
-                    evaluateFunctionCallExpression(evaluationScope);
+                    evaluateFunctionCallExpression(forcedEvaluationScope);
                     break;
 
                 case Zserio4Parser.LBRACKET:            // arrayExpression
@@ -578,26 +585,15 @@ public class Expression extends AstNodeBase
                     break;
 
                 case Zserio4Parser.ID:                  // identifierExpression
-                    evaluateIdentifier(evaluationScope);
+                    evaluateIdentifier(forcedEvaluationScope);
                     break;
 
                 default:
                     throw new ParserException(this, "Illegal expression type '" + type + "'!");
             }
 
-            checkUnresolvedIdentifiers();
             evaluationState = EvaluationState.EVALUATED;
         }
-    }
-
-    /**
-     * Adds additional lexical scope to the expression scope.
-     *
-     * @param additionalScope Additional scope to add.
-     */
-    protected void addScope(Scope additionalScope)
-    {
-        scope.add(additionalScope);
     }
 
     /**
@@ -657,7 +653,7 @@ public class Expression extends AstNodeBase
         needsBigIntegerCastingToNative = true;
     }
 
-    private Expression(Token locationToken, Package pkg, Token expressionToken, boolean isExplicit,
+    private Expression(Token locationToken, Package pkg, Token expressionToken, ExpressionFlag expressionFlag,
             Expression operand1, Expression operand2, Expression operand3)
     {
         super(locationToken);
@@ -665,7 +661,7 @@ public class Expression extends AstNodeBase
         this.pkg = pkg;
         type = expressionToken.getType();
         text = expressionToken.getText();
-        this.isExplicit = isExplicit;
+        this.expressionFlag = expressionFlag;
         this.operand1 = operand1;
         this.operand2 = operand2;
         this.operand3 = operand3;
@@ -716,30 +712,6 @@ public class Expression extends AstNodeBase
         return false;
     }
 
-    /**
-     * This method checks of evaluation for expression.
-     *
-     * Method is necessary because of full qualified enumeration names. Example: wrong_package.enum_type.
-     *
-     * Expression "wrong_package" can be legally unknown identifier during evaluation (we know nothing about
-     * enum_type yet). Therefore the evaluation process must continue. Afterwards, expression "wrong_package"
-     * will be checked during evaluation of dot expression. However if dot expression is not there, evaluation
-     * of expression "wrong_package" will be succeeded even if the expression is not valid.
-     *
-     * @throws ParserException Throws if expression is not valid.
-     */
-    private void checkUnresolvedIdentifiers() throws ParserException
-    {
-        if (!isExplicit && !unresolvedIdentifiers.isEmpty())
-        {
-            final PackageName.Builder unresolvedSymbolBuilder = new PackageName.Builder();
-            for (Expression unresolvedIdentifier : unresolvedIdentifiers)
-                unresolvedSymbolBuilder.addId(unresolvedIdentifier.text);
-            throw new ParserException(this, "Unresolved symbol '" + unresolvedSymbolBuilder.get().toString() +
-                    "' within expression scope!");
-        }
-    }
-
     private void evaluateParenthesizedExpression()
     {
         expressionType = operand1.expressionType;
@@ -748,7 +720,7 @@ public class Expression extends AstNodeBase
         unresolvedIdentifiers = operand1.unresolvedIdentifiers;
     }
 
-    private void evaluateFunctionCallExpression(Scope evaluationScope) throws ParserException
+    private void evaluateFunctionCallExpression(Scope forcedEvaluationScope) throws ParserException
     {
         if (!(operand1.zserioType instanceof FunctionType))
             throw new ParserException(operand1, "'" + operand1.text + "' is not a function!");
@@ -760,10 +732,12 @@ public class Expression extends AstNodeBase
         // - if it's called within its owner object, it can see only symbols defined before the call
         try
         {
-            if (evaluationScope.getOwner() == functionResultExpression.getScope().getOwner())
-                functionResultExpression.evaluate(evaluationScope); // called within the owner
+            ZserioAstEvaluator evaluator;
+            if (forcedEvaluationScope.getOwner() == functionResultExpression.evaluationScope.getOwner())
+                evaluator = new ZserioAstEvaluator(forcedEvaluationScope); // called within the owner
             else
-                functionResultExpression.evaluate(scope); // called externally
+                evaluator = new ZserioAstEvaluator(); // called externally
+            functionResultExpression.accept(evaluator);
         }
         catch (ParserException e)
         {
@@ -823,16 +797,21 @@ public class Expression extends AstNodeBase
                 operand2.text);
         if (identifierType == null)
         {
-            // identifier still not found, this can happened for long package name, we must wait for dot
+            // identifier still not found
+            if (expressionFlag == ExpressionFlag.IS_TOP_LEVEL_DOT)
+            {
+                // and we are top level dot
+                throw new ParserException(this, "Unresolved symbol '" +
+                        op1UnresolvedPackageNameBuilder.get().toString() + "' within expression scope!");
+            }
+
+            // this can happened for long package name, we must wait for dot
             unresolvedIdentifiers.addAll(operand1.unresolvedIdentifiers);
             unresolvedIdentifiers.add(operand2);
         }
         else
         {
             evaluateIdentifierType(identifierType);
-
-            // reset operand2, it could be already found in different package
-            operand2.reset(identifierType);
 
             // set symbolObject to all unresolved identifier expressions (needed for formatters)
             for (Expression unresolvedIdentifier : operand1.unresolvedIdentifiers)
@@ -850,10 +829,6 @@ public class Expression extends AstNodeBase
             throw new ParserException(this, "'" + dotOperand + "' undefined in enumeration '" +
                     enumType.getName() + "'!");
 
-        // reset operand2, enumeration items can be already resolved because they are searched globally to
-        // support choices with enumeration selector (needed for formatters)
-        operand2.reset(enumSymbol);
-
         symbolObject = enumSymbol;
         evaluateExpressionType(enumType);
     }
@@ -867,9 +842,6 @@ public class Expression extends AstNodeBase
         if (compoundSymbol == null)
             throw new ParserException(this, "'" + dotOperand + "' undefined in compound '" +
                     compoundType.getName() + "'!");
-
-        // reset operand2, it could be already found in the compound type (needed for formatters)
-        operand2.reset(compoundSymbol);
 
         symbolObject = compoundSymbol;
         if (compoundSymbol instanceof Field)
@@ -1147,26 +1119,35 @@ public class Expression extends AstNodeBase
         // array index has default expressionIntegerValue
     }
 
-    private void evaluateIdentifier(Scope evaluationScope) throws ParserException
+    private void evaluateIdentifier(Scope forcedEvaluationScope) throws ParserException
     {
-        final Object identifierSymbol = evaluationScope.getSymbol(text);
-        if (identifierSymbol == null)
+        if (expressionFlag == ExpressionFlag.IS_DOT_RIGHT_OPERAND)
         {
-            // it still can be a type
-            final ZserioType identifierType = pkg.getVisibleType(PackageName.EMPTY, text);
-            if (identifierType == null)
-            {
-                // identifier not found, this can happened for a package name, we must wait for dot
-                unresolvedIdentifiers.add(this);
-            }
-            else
-            {
-                evaluateIdentifierType(identifierType);
-            }
+            // identifier on right side of dot operator, we must wait for dot and not to try to evaluate
+            // because the identifier without left side (package) can be found wrongly in local scope
+            unresolvedIdentifiers.add(this);
         }
         else
         {
-            evaluateIdentifierSymbol(identifierSymbol, evaluationScope, text);
+            final Object identifierSymbol = forcedEvaluationScope.getSymbol(text);
+            if (identifierSymbol == null)
+            {
+                // it still can be a type
+                final ZserioType identifierType = pkg.getVisibleType(PackageName.EMPTY, text);
+                if (identifierType == null)
+                {
+                    // identifier not found, this can happened for a long package name, we must wait for dot
+                    unresolvedIdentifiers.add(this);
+                }
+                else
+                {
+                    evaluateIdentifierType(identifierType);
+                }
+            }
+            else
+            {
+                evaluateIdentifierSymbol(identifierSymbol, forcedEvaluationScope, text);
+            }
         }
     }
 
@@ -1187,12 +1168,12 @@ public class Expression extends AstNodeBase
             // constant type
             final ConstType constType = (ConstType)resolvedType;
             evaluateExpressionType(constType.getConstType());
-            final Expression constValueExpression = constType.getValueExpression();
 
             // call evaluation explicitly because this const does not have to be evaluated yet
-            // TODO should be constType.evaluateExpressions()
-            // constValueExpression.evaluateTree();
+            final ZserioAstEvaluator evaluator = new ZserioAstEvaluator();
+            constType.accept(evaluator);
 
+            final Expression constValueExpression = constType.getValueExpression();
             expressionIntegerValue = constValueExpression.expressionIntegerValue;
         }
         else
@@ -1202,8 +1183,8 @@ public class Expression extends AstNodeBase
         }
     }
 
-    private void evaluateIdentifierSymbol(Object identifierSymbol, Scope evaluationScope, String identifier)
-            throws ParserException
+    private void evaluateIdentifierSymbol(Object identifierSymbol, Scope forcedEvaluationScope,
+            String identifier) throws ParserException
     {
         symbolObject = identifierSymbol;
         if (identifierSymbol instanceof Field)
@@ -1227,7 +1208,7 @@ public class Expression extends AstNodeBase
 
             // if this enumeration item is in own enum, leave it unresolved (we have problem with it because
             // such enumeration items cannot be evaluated yet)
-            if (evaluationScope.getOwner() != enumType)
+            if (forcedEvaluationScope.getOwner() != enumType)
                 evaluateExpressionType(enumType);
         }
         else
@@ -1245,7 +1226,8 @@ public class Expression extends AstNodeBase
         {
             // call evaluation explicitly because this type instantiation does not have to be evaluated yet
             final TypeInstantiation typeInstantiation = (TypeInstantiation)resolvedType;
-            typeInstantiation.evaluate();  // TODO
+            final ZserioAstEvaluator evaluator = new ZserioAstEvaluator();
+            typeInstantiation.accept(evaluator);
             resolvedType = typeInstantiation.getReferencedType();
         }
 
@@ -1259,8 +1241,8 @@ public class Expression extends AstNodeBase
             {
                 // call evaluation explicitly because this enumeration item does not have to be evaluated yet
                 final EnumItem enumItem = (EnumItem)symbolObject;
-                // TODO should be enumType.evaluateExpressions()
-                // enumItem.getEnumType().evaluateItemValues();
+                final ZserioAstEvaluator evaluator = new ZserioAstEvaluator();
+                enumItem.getEnumType().accept(evaluator);
 
                 // set integer value according to this enumeration item
                 expressionIntegerValue = new ExpressionIntegerValue(enumItem.getValue());
@@ -1274,8 +1256,8 @@ public class Expression extends AstNodeBase
             {
                 // call evaluation explicitly because this length does not have to be evaluated yet
                 final BitFieldType bitFieldType = (BitFieldType)resolvedType;
-                // TODO should be bitFieldType.evaluateExpressions()
-                // bitFieldType.evaluateBitSizes();
+                final ZserioAstEvaluator evaluator = new ZserioAstEvaluator();
+                bitFieldType.accept(evaluator);
             }
             final BigInteger lowerBound = integerType.getLowerBound();
             final BigInteger upperBound = integerType.getUpperBound();
@@ -1306,19 +1288,14 @@ public class Expression extends AstNodeBase
         zserioType = resolvedType;
     }
 
-    private void reset(Object newSymbolObject)
+    private void initialize()
     {
+        evaluationState = EvaluationState.NOT_EVALUATED;
         expressionType = ExpressionType.UNKNOWN;
         zserioType = null;
         expressionIntegerValue = new ExpressionIntegerValue();
         unresolvedIdentifiers = new ArrayList<Expression>();
-        symbolObject = newSymbolObject;
-    }
-
-    private void initialize()
-    {
-        evaluationState = EvaluationState.NOT_EVALUATED;
-        reset(null);
+        symbolObject = null;
         needsBigIntegerCastingToNative = false;
     }
 
@@ -1334,13 +1311,13 @@ public class Expression extends AstNodeBase
     private final int type;
     private final String text;
 
-    private final boolean isExplicit;
+    private final ExpressionFlag expressionFlag;
 
     private final Expression operand1;
     private final Expression operand2;
     private final Expression operand3;
 
-    private Scope scope;
+    private Scope evaluationScope;
 
     private EvaluationState evaluationState;
 

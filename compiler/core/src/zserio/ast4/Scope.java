@@ -10,7 +10,7 @@ import java.util.Map;
  * types (called owner) which contains fields (Compound Types, SQL Table, SQL Database...). Then, field name
  * is a symbol name and object represents this field.
  *
- * Scopes are filled by ZserioScopeEvaluator.
+ * Scopes are filled by ZserioAstScopeSetter.
  */
 public class Scope
 {

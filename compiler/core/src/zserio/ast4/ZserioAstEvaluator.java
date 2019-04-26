@@ -2,6 +2,16 @@ package zserio.ast4;
 
 public class ZserioAstEvaluator implements ZserioAstVisitor
 {
+    public ZserioAstEvaluator()
+    {
+        this.evaluationScope = null;
+    }
+
+    public ZserioAstEvaluator(Scope evaluationScope)
+    {
+        this.evaluationScope = evaluationScope;
+    }
+
     @Override
     public void visitRoot(Root root)
     {
@@ -123,10 +133,13 @@ public class ZserioAstEvaluator implements ZserioAstVisitor
     }
 
     @Override
-    public void visitExpression(Expression expresssion)
+    public void visitExpression(Expression expression)
     {
-        // this evaluates whole expression tree at once
-        expresssion.evaluate();
+        expression.visitChildren(this);
+        if (evaluationScope == null)
+            expression.evaluate();
+        else
+            expression.evaluate(evaluationScope);
     }
 
     @Override
@@ -188,4 +201,6 @@ public class ZserioAstEvaluator implements ZserioAstVisitor
         astNode.visitChildren(this);
         astNode.evaluate();
     }
+
+    private final Scope evaluationScope;
 };

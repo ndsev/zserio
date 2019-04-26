@@ -466,9 +466,14 @@ public class ZserioAstBuilder extends Zserio4ParserBaseVisitor<Object>
     @Override
     public Object visitDotExpression(Zserio4Parser.DotExpressionContext ctx)
     {
+        final Expression.ExpressionFlag expressionFlag = (isInDotExpression) ? Expression.ExpressionFlag.NONE :
+            Expression.ExpressionFlag.IS_TOP_LEVEL_DOT;
+        isInDotExpression = true;
         final Expression operand1 = (Expression)visit(ctx.expression());
-        final Expression operand2 = new Expression(ctx.id().ID().getSymbol(), currentPackage);
-        return new Expression(ctx.getStart(), currentPackage, ctx.operator, operand1, operand2);
+        final Expression operand2 = new Expression(ctx.id().ID().getSymbol(), currentPackage,
+                Expression.ExpressionFlag.IS_DOT_RIGHT_OPERAND);
+
+        return new Expression(ctx.getStart(), currentPackage, ctx.operator, expressionFlag, operand1, operand2);
     }
 
     @Override
@@ -668,7 +673,8 @@ public class ZserioAstBuilder extends Zserio4ParserBaseVisitor<Object>
     public Expression visitTypeArgument(Zserio4Parser.TypeArgumentContext ctx)
     {
         if (ctx.EXPLICIT() != null)
-            return new Expression(ctx.getStart(), currentPackage, ctx.id().ID().getSymbol(), true);
+            return new Expression(ctx.getStart(), currentPackage, ctx.id().ID().getSymbol(),
+                    Expression.ExpressionFlag.IS_EXPLICIT);
         else
             return (Expression)visit(ctx.expression());
     }
@@ -757,6 +763,8 @@ public class ZserioAstBuilder extends Zserio4ParserBaseVisitor<Object>
     private final boolean checkUnusedTypes;
     private final LinkedHashMap<PackageName, Package> packageNameMap =
             new LinkedHashMap<PackageName, Package>();
+
     private Package currentPackage = null;
     private LinkedHashMap<String, ZserioType> localTypes = null;
+    private boolean isInDotExpression = false;
 }

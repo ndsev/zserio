@@ -89,9 +89,6 @@ public abstract class BitFieldType extends IntegerType
     {
         if (!isEvaluated)
         {
-            // evaluate length expression
-            lengthExpression.evaluate();
-
             // check length expression
             if (lengthExpression.getExprType() != Expression.ExpressionType.INTEGER)
                 throw new ParserException(lengthExpression, "Invalid length expression for bitfield. " +

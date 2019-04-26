@@ -149,7 +149,7 @@ public class ChoiceType extends CompoundType
             {
                 final List<Expression> caseExpressions = choiceCase.getExpressions();
                 for (Expression caseExpression : caseExpressions)
-                    caseExpression.addScope(enumScope);
+                    caseExpression.addEvaluationScope(enumScope);
             }
         }
     }
