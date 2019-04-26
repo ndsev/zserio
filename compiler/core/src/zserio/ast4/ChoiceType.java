@@ -126,8 +126,6 @@ public class ChoiceType extends CompoundType
     @Override
     protected void evaluate()
     {
-        addScopeForCaseExpressions(); // TODO!!! wrong, it must be called before case expression evaluation
-
         isChoiceDefaultUnreachable = checkUnreachableDefault();
 
         checkTableFields();
@@ -136,22 +134,6 @@ public class ChoiceType extends CompoundType
         checkCaseTypes();
         checkDuplicatedCases();
         checkEnumerationCases();
-    }
-
-    private void addScopeForCaseExpressions()
-    {
-        // extend scope for case expressions to support enumeration values if necessary
-        final ZserioType selectorExprZserioType = selectorExpression.getExprZserioType();
-        if (selectorExprZserioType instanceof EnumType)
-        {
-            final Scope enumScope = ((EnumType)selectorExprZserioType).getScope();
-            for (ChoiceCase choiceCase : choiceCases)
-            {
-                final List<Expression> caseExpressions = choiceCase.getExpressions();
-                for (Expression caseExpression : caseExpressions)
-                    caseExpression.addEvaluationScope(enumScope);
-            }
-        }
     }
 
     private boolean checkUnreachableDefault()

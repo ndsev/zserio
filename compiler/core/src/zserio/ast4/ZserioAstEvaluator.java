@@ -1,5 +1,7 @@
 package zserio.ast4;
 
+import java.util.List;
+
 public class ZserioAstEvaluator implements ZserioAstVisitor
 {
     public ZserioAstEvaluator()
@@ -51,6 +53,23 @@ public class ZserioAstEvaluator implements ZserioAstVisitor
     @Override
     public void visitChoiceType(ChoiceType choiceType)
     {
+        // force selector expression evaluation
+        final Expression selectorExpression = choiceType.getSelectorExpression();
+        selectorExpression.accept(this);
+
+        // extend scope for case expressions to support enumeration values if necessary
+        final ZserioType selectorExprZserioType = selectorExpression.getExprZserioType();
+        if (selectorExprZserioType instanceof EnumType)
+        {
+            final Scope enumScope = ((EnumType)selectorExprZserioType).getScope();
+            for (ChoiceCase choiceCase : choiceType.getChoiceCases())
+            {
+                final List<Expression> caseExpressions = choiceCase.getExpressions();
+                for (Expression caseExpression : caseExpressions)
+                    caseExpression.addEvaluationScope(enumScope);
+            }
+        }
+
         evaluate(choiceType);
     }
 
