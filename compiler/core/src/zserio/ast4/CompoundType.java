@@ -209,9 +209,9 @@ public abstract class CompoundType extends AstNodeBase implements ZserioScopedTy
      */
     protected void evaluate()
     {
-        containsOptionalRecursion = checkRecursiveFields();
+        containsOptionalRecursion = checkDirectRecursiveFields();
 
-        checkCircularContainment(this, this);
+        checkIndirectRecursion(this, this);
     }
 
     protected void checkTableFields()
@@ -226,7 +226,7 @@ public abstract class CompoundType extends AstNodeBase implements ZserioScopedTy
         }
     }
 
-    private boolean checkRecursiveFields()
+    private boolean checkDirectRecursiveFields()
     {
         // check recursive fields which are not arrays
         boolean containsOptionalRecursion = false;
@@ -251,7 +251,7 @@ public abstract class CompoundType extends AstNodeBase implements ZserioScopedTy
         return containsOptionalRecursion;
     }
 
-    private static void checkCircularContainment(CompoundType outer, CompoundType inner)
+    private static void checkIndirectRecursion(CompoundType outer, CompoundType inner)
     {
         for (Field field : inner.fields)
         {
@@ -260,10 +260,10 @@ public abstract class CompoundType extends AstNodeBase implements ZserioScopedTy
             {
                 final CompoundType childCompoundType = (CompoundType)fieldBaseType;
                 if (outer != inner && outer == childCompoundType)
-                    throw new ParserException(field, "Circular containment between '" + outer.getName() +
+                    throw new ParserException(field, "Indirect recursion between '" + outer.getName() +
                             "' and '" + inner.getName() + "'!");
 
-                checkCircularContainment(outer, childCompoundType);
+                checkIndirectRecursion(outer, childCompoundType);
             }
         }
     }
