@@ -196,7 +196,7 @@ public class SqlTableType extends CompoundType
         }
     }
 
-    private void checkPrimaryKeyConstraint() throws ParserException
+    private void checkPrimaryKeyConstraint()
     {
         boolean first = true;
         boolean found = false;

@@ -40,10 +40,8 @@ public class Scope
      *
      * @param name Symbol name in current scope.
      * @param symbol AST node which represent an object of that name.
-     *
-     * @throws ParserException Throws if symbol has been already defined in the current scope.
      */
-    public void setSymbol(String name, AstNode node) throws ParserException
+    public void setSymbol(String name, AstNode node)
     {
         final Object symbolObject = symbolTable.put(name, node);
         if (symbolObject != null)

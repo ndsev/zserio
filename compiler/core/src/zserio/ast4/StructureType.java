@@ -56,13 +56,13 @@ public class StructureType extends CompoundType
         checkImplicitArrayFields();
     }
 
-    private void checkOptionalFields() throws ParserException
+    private void checkOptionalFields()
     {
         for (Field field : getFields())
             checkOptionalField(field);
     }
 
-    private void checkImplicitArrayFields() throws ParserException
+    private void checkImplicitArrayFields()
     {
         final List<Field> fields = getFields();
         final int numFields = fields.size();
@@ -79,7 +79,7 @@ public class StructureType extends CompoundType
         }
     }
 
-    private static void checkOptionalField(Field field) throws ParserException
+    private static void checkOptionalField(Field field)
     {
         final Set<Field> referencedFields = getReferencedParameterFields(field);
 

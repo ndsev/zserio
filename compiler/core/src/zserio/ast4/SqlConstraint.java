@@ -241,7 +241,7 @@ public class SqlConstraint extends AstNodeBase
         return (sqlConstraintString.toUpperCase(Locale.ENGLISH).indexOf(PRIMARY_KEY_CONSTRAINT) > -1);
     }
 
-    private String resolveConstraintReferences(String sqlConstraintString) throws ParserException
+    private String resolveConstraintReferences(String sqlConstraintString)
     {
         int referenceIndex = sqlConstraintString.indexOf(CONSTRAINT_REFERENCE_ESCAPE);
         if (referenceIndex < 0)
@@ -277,7 +277,7 @@ public class SqlConstraint extends AstNodeBase
         return endIndex;
     }
 
-    private String resolveConstraintReference(String referencedText) throws ParserException
+    private String resolveConstraintReference(String referencedText)
     {
         final SymbolReference symbolReference = new SymbolReference(this, referencedText);
         symbolReference.resolve(compoundType);

@@ -190,7 +190,7 @@ public class ZserioParseTreeChecker extends Zserio4ParserBaseVisitor<Void>
         }
     }
 
-    private byte[] readFile(AstNodeLocation location) throws ParserException
+    private byte[] readFile(AstNodeLocation location)
     {
         final String fileName = location.getFileName();
         final File file = new File(fileName);

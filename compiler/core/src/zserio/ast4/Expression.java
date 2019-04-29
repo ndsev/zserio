@@ -722,7 +722,7 @@ public class Expression extends AstNodeBase
         unresolvedIdentifiers = operand1.unresolvedIdentifiers;
     }
 
-    private void evaluateFunctionCallExpression(Scope forcedEvaluationScope) throws ParserException
+    private void evaluateFunctionCallExpression(Scope forcedEvaluationScope)
     {
         if (!(operand1.zserioType instanceof FunctionType))
             throw new ParserException(operand1, "'" + operand1.text + "' is not a function!");
@@ -753,7 +753,7 @@ public class Expression extends AstNodeBase
         expressionIntegerValue = functionResultExpression.expressionIntegerValue;
     }
 
-    private void evaluateArrayElement() throws ParserException
+    private void evaluateArrayElement()
     {
         if (!(operand1.zserioType instanceof ArrayType))
             throw new ParserException(operand1, "'" + operand1.text + "' is not an array!");
@@ -765,7 +765,7 @@ public class Expression extends AstNodeBase
         evaluateExpressionType(arrayType.getElementType());
     }
 
-    private void evaluateDotExpression() throws ParserException
+    private void evaluateDotExpression()
     {
         if (operand1.zserioType == null)
         {
@@ -788,7 +788,7 @@ public class Expression extends AstNodeBase
         }
     }
 
-    private void evaluatePackageDotExpression() throws ParserException
+    private void evaluatePackageDotExpression()
     {
         // try to resolve operand1 as package name and operand2 as type
         final PackageName.Builder op1UnresolvedPackageNameBuilder = new PackageName.Builder();
@@ -821,7 +821,7 @@ public class Expression extends AstNodeBase
         }
     }
 
-    private void evaluateEnumDotExpression() throws ParserException
+    private void evaluateEnumDotExpression()
     {
         final EnumType enumType = (EnumType)(operand1.zserioType);
         final Scope enumScope = enumType.getScope();
@@ -835,7 +835,7 @@ public class Expression extends AstNodeBase
         evaluateExpressionType(enumType);
     }
 
-    private void evaluateCompoundDotExpression() throws ParserException
+    private void evaluateCompoundDotExpression()
     {
         final CompoundType compoundType = (CompoundType)(operand1.zserioType);
         final Scope compoundScope = compoundType.getScope();
@@ -870,7 +870,7 @@ public class Expression extends AstNodeBase
         }
     }
 
-    private void evaluateLengthOfOperator() throws ParserException
+    private void evaluateLengthOfOperator()
     {
         if (!(operand1.zserioType instanceof ArrayType))
             throw new ParserException(operand1, "'" + operand1.text + "' is not an array!");
@@ -879,7 +879,7 @@ public class Expression extends AstNodeBase
         // length of result has default expressionIntegerValue
     }
 
-    private void evaluateSumOperator() throws ParserException
+    private void evaluateSumOperator()
     {
         if (!(operand1.zserioType instanceof ArrayType))
             throw new ParserException(operand1, "'" + operand1.text + "' is not an array!");
@@ -888,7 +888,7 @@ public class Expression extends AstNodeBase
         evaluateExpressionType(arrayType.getElementType());
     }
 
-    private void evaluateValueOfOperator() throws ParserException
+    private void evaluateValueOfOperator()
     {
         if (operand1.expressionType != ExpressionType.ENUM)
             throw new ParserException(operand1, "'" + operand1.text + "' is not an enumeration item!");
@@ -897,7 +897,7 @@ public class Expression extends AstNodeBase
         expressionIntegerValue = operand1.expressionIntegerValue;
     }
 
-    private void evaluateNumBitsOperator() throws ParserException
+    private void evaluateNumBitsOperator()
     {
         if (operand1.expressionType != ExpressionType.INTEGER)
             throw new ParserException(operand1, "Integer expression expected!");
@@ -906,7 +906,7 @@ public class Expression extends AstNodeBase
         expressionIntegerValue = operand1.expressionIntegerValue.numbits();
     }
 
-    private void evaluateUnaryPlusMinus(boolean isNegate) throws ParserException
+    private void evaluateUnaryPlusMinus(boolean isNegate)
     {
         if (operand1.expressionType != ExpressionType.INTEGER &&
                 operand1.expressionType != ExpressionType.FLOAT)
@@ -924,7 +924,7 @@ public class Expression extends AstNodeBase
         }
     }
 
-    private void evaluateNegationOperator() throws ParserException
+    private void evaluateNegationOperator()
     {
         final Expression op1 = op1();
         if (op1.expressionType != ExpressionType.BOOLEAN)
@@ -933,7 +933,7 @@ public class Expression extends AstNodeBase
         expressionType = ExpressionType.BOOLEAN;
     }
 
-    private void evaluateBitNotExpression() throws ParserException
+    private void evaluateBitNotExpression()
     {
         final Expression op1 = op1();
         if (op1.expressionType != ExpressionType.INTEGER)
@@ -943,7 +943,7 @@ public class Expression extends AstNodeBase
         expressionIntegerValue = op1.expressionIntegerValue.not();
     }
 
-    private void evaluateArithmeticExpression() throws ParserException
+    private void evaluateArithmeticExpression()
     {
         if (type == Zserio4Parser.PLUS && operand1.expressionType == ExpressionType.STRING &&
                 operand2.expressionType == ExpressionType.STRING)
@@ -1006,7 +1006,7 @@ public class Expression extends AstNodeBase
         }
     }
 
-    private void evaluateBitExpression() throws ParserException
+    private void evaluateBitExpression()
     {
         if (operand1.expressionType != ExpressionType.INTEGER ||
                 operand2.expressionType != ExpressionType.INTEGER)
@@ -1050,7 +1050,7 @@ public class Expression extends AstNodeBase
         }
     }
 
-    private void evaluateRelationalExpression() throws ParserException
+    private void evaluateRelationalExpression()
     {
         if (operand1.expressionType == ExpressionType.UNKNOWN ||
                 operand1.expressionType != operand2.expressionType)
@@ -1082,7 +1082,7 @@ public class Expression extends AstNodeBase
         }
     }
 
-    private void evaluateLogicalExpression() throws ParserException
+    private void evaluateLogicalExpression()
     {
         if (operand1.expressionType != ExpressionType.BOOLEAN ||
                 operand2.expressionType != ExpressionType.BOOLEAN)
@@ -1091,7 +1091,7 @@ public class Expression extends AstNodeBase
         expressionType = ExpressionType.BOOLEAN;
     }
 
-    private void evaluateConditionalExpression() throws ParserException
+    private void evaluateConditionalExpression()
     {
         if (operand1.expressionType != ExpressionType.BOOLEAN)
             throw new ParserException(operand1, "Boolean expression expected!");
@@ -1115,13 +1115,13 @@ public class Expression extends AstNodeBase
         }
     }
 
-    private void evaluateIndexExpression() throws ParserException
+    private void evaluateIndexExpression()
     {
         expressionType = ExpressionType.INTEGER;
         // array index has default expressionIntegerValue
     }
 
-    private void evaluateIdentifier(Scope forcedEvaluationScope) throws ParserException
+    private void evaluateIdentifier(Scope forcedEvaluationScope)
     {
         if (expressionFlag == ExpressionFlag.IS_DOT_RIGHT_OPERAND)
         {
@@ -1153,7 +1153,7 @@ public class Expression extends AstNodeBase
         }
     }
 
-    private void evaluateIdentifierType(ZserioType identifierType) throws ParserException
+    private void evaluateIdentifierType(ZserioType identifierType)
     {
         symbolObject = identifierType;
 
@@ -1186,7 +1186,7 @@ public class Expression extends AstNodeBase
     }
 
     private void evaluateIdentifierSymbol(Object identifierSymbol, Scope forcedEvaluationScope,
-            String identifier) throws ParserException
+            String identifier)
     {
         symbolObject = identifierSymbol;
         if (identifierSymbol instanceof Field)
@@ -1220,7 +1220,7 @@ public class Expression extends AstNodeBase
         }
     }
 
-    private void evaluateExpressionType(ZserioType type) throws ParserException
+    private void evaluateExpressionType(ZserioType type)
     {
         // resolved instantiated type
         ZserioType resolvedType = type;

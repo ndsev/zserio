@@ -102,7 +102,7 @@ public class SymbolReference
         }
     }
 
-    private void resolveSymbol(String referencedSymbolName) throws ParserException
+    private void resolveSymbol(String referencedSymbolName)
     {
         if (!(referencedType instanceof ZserioScopedType))
             throw new ParserException(ownerNode, "Referenced symbol type '" + referencedType.getName() +
