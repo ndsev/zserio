@@ -22,15 +22,21 @@ public class ZserioAstResolver extends ZserioAstVisitor.Base
     }
 
     @Override
-    public void visitTypeReference(TypeReference typeReference)
-    {
-        typeReference.resolve();
-    }
-
-    @Override
     public void visitSubtype(Subtype subtype)
     {
         subtype.resolve();
+    }
+
+    @Override
+    public void visitSqlConstraint(SqlConstraint sqlConstraint)
+    {
+        sqlConstraint.resolve();
+    }
+
+    @Override
+    public void visitTypeReference(TypeReference typeReference)
+    {
+        typeReference.resolve();
     }
 
     private Map<PackageName, Package> packageNameMap = null;

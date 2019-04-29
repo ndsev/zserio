@@ -126,16 +126,17 @@ public class SqlConstraint extends AstNodeBase
     }
 
     /**
-     * Evaluates the SQL constraint.
+     * Resolves the SQL constraint.
      */
-    protected void evaluate()
+    protected void resolve()
     {
-        primaryKeyColumnNames = extractColumnNames(PRIMARY_KEY_CONSTRAINT);
-        uniqueColumnNames = extractColumnNames(UNIQUE_CONSTRAINT);
-        isPrimaryKey = containsPrimaryKey();
+        final String sqlConstraintString = constraintExpr.getText();
+        primaryKeyColumnNames = extractColumnNames(sqlConstraintString, PRIMARY_KEY_CONSTRAINT);
+        uniqueColumnNames = extractColumnNames(sqlConstraintString, UNIQUE_CONSTRAINT);
+        isPrimaryKey = containsPrimaryKey(sqlConstraintString);
 
         // replace all @-references
-        final String translatedConstraint = resolveConstraintReferences(constraintExpr.getText());
+        final String translatedConstraint = resolveConstraintReferences(sqlConstraintString);
         translatedConstraintExpr = createStringLiteralExpression(compoundType.getPackage(),
                 translatedConstraint);
 
@@ -212,10 +213,9 @@ public class SqlConstraint extends AstNodeBase
         return new Expression(null, pkg, stringLiteralToken);
     }
 
-    private List<String> extractColumnNames(String constraintName)
+    private static List<String> extractColumnNames(String sqlConstraintString, String constraintName)
     {
         final ArrayList<String> columnNames = new ArrayList<String>();
-        final String sqlConstraintString = constraintExpr.getText();
         final int constraintIndex = sqlConstraintString.toUpperCase(Locale.ENGLISH).indexOf(constraintName);
         if (constraintIndex > -1)
         {
@@ -236,20 +236,18 @@ public class SqlConstraint extends AstNodeBase
         return columnNames;
     }
 
-    private boolean containsPrimaryKey()
+    private static boolean containsPrimaryKey(String sqlConstraintString)
     {
-        final String sqlConstraintString = constraintExpr.getText();
-
         return (sqlConstraintString.toUpperCase(Locale.ENGLISH).indexOf(PRIMARY_KEY_CONSTRAINT) > -1);
     }
 
-    private String resolveConstraintReferences(String constraintText) throws ParserException
+    private String resolveConstraintReferences(String sqlConstraintString) throws ParserException
     {
-        int referenceIndex = constraintText.indexOf(CONSTRAINT_REFERENCE_ESCAPE);
+        int referenceIndex = sqlConstraintString.indexOf(CONSTRAINT_REFERENCE_ESCAPE);
         if (referenceIndex < 0)
-            return constraintText; // shortcut when there are no references
+            return sqlConstraintString; // shortcut when there are no references
 
-        final StringBuilder stringBuilder = new StringBuilder(constraintText);
+        final StringBuilder stringBuilder = new StringBuilder(sqlConstraintString);
         while (referenceIndex >= 0)
         {
             final int endIndex = findEndOfConstraintReference(stringBuilder, referenceIndex + 1);
@@ -282,7 +280,7 @@ public class SqlConstraint extends AstNodeBase
     private String resolveConstraintReference(String referencedText) throws ParserException
     {
         final SymbolReference symbolReference = new SymbolReference(this, referencedText);
-        symbolReference.evaluate(compoundType);
+        symbolReference.resolve(compoundType);
 
         final ZserioType referencedType = symbolReference.getReferencedType();
         final Object referencedSymbol = symbolReference.getReferencedSymbol();

@@ -67,11 +67,11 @@ public class SymbolReference
     }
 
     /**
-     * Evaluates the correctness of the symbol reference.
+     * Resolves the symbol reference.
      *
      * @param ownerType ZserioType which is owner of the symbol reference.
      */
-    public void evaluate(ZserioType ownerType)
+    public void resolve(ZserioType ownerType)
     {
         // try if the last link component was a type name
         final Package ownerPackage = ownerType.getPackage();
