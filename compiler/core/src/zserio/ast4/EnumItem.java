@@ -102,8 +102,8 @@ public class EnumItem extends AstNodeBase
     /**
      * Evaluates enumeration item value expression.
      *
-     * This method can be called directly from Expression.evaluate() method if some expression refers to
-     * enumeration item before definition of this item. Therefore 'isEvaluated' check is necessary.
+     * This method can be called from Expression.evaluate() method if some expression refers to enumeration
+     * item before definition of this item. Therefore 'isEvaluated' check is necessary.
      */
     protected void evaluate()
     {

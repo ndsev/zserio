@@ -102,8 +102,8 @@ public class EnumType extends AstNodeBase implements ZserioScopedType
     /**
      * Evaluates all enumeration item value expressions of the enumeration type.
      *
-     * This method can be called directly from Expression.evaluate() method if some expression refers to
-     * enumeration item before definition of this item. Therefore 'isEvaluated' check is necessary.
+     * This method can be called from Expression.evaluate() method if some expression refers to enumeration
+     * item before definition of this item. Therefore 'isEvaluated' check is necessary.
      *
      * This method calculates and sets value to all enumeration items.
      */

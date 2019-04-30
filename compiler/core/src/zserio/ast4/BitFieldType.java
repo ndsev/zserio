@@ -81,8 +81,8 @@ public abstract class BitFieldType extends IntegerType
     /**
      * Evaluates bit sizes of this bit field type.
      *
-     * This method can be called directly from Expression.evaluate() method if some expression refers to
-     * bit field type before definition of this type. Therefore 'isEvaluated' check is necessary.
+     * This method can be called from Expression.evaluate() method if some expression refers to bit field type
+     * before definition of this type. Therefore 'isEvaluated' check is necessary.
      */
     protected void evaluate()
     {

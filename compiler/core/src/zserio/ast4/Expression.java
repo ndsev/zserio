@@ -738,7 +738,7 @@ public class Expression extends AstNodeBase
             if (forcedEvaluationScope.getOwner() == functionResultExpression.evaluationScope.getOwner())
                 evaluator = new ZserioAstEvaluator(forcedEvaluationScope); // called within the owner
             else
-                evaluator = new ZserioAstEvaluator(); // called externally
+                evaluator = new ZserioAstEvaluator(); // called externally from different compound type
             functionResultExpression.accept(evaluator);
         }
         catch (ParserException e)
@@ -1123,13 +1123,9 @@ public class Expression extends AstNodeBase
 
     private void evaluateIdentifier(Scope forcedEvaluationScope)
     {
-        if (expressionFlag == ExpressionFlag.IS_DOT_RIGHT_OPERAND)
-        {
-            // identifier on right side of dot operator, we must wait for dot and not to try to evaluate
-            // because the identifier without left side (package) can be found wrongly in local scope
-            unresolvedIdentifiers.add(this);
-        }
-        else
+        // identifier on right side of dot operator cannot be evaluated because the identifier without left
+        // side (package) can be found wrongly in local scope
+        if (expressionFlag != ExpressionFlag.IS_DOT_RIGHT_OPERAND)
         {
             final Object identifierSymbol = forcedEvaluationScope.getSymbol(text);
             if (identifierSymbol == null)
