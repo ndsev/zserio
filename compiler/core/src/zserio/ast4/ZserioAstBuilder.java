@@ -9,14 +9,9 @@ import zserio.antlr.Zserio4ParserBaseVisitor;
 
 public class ZserioAstBuilder extends Zserio4ParserBaseVisitor<Object>
 {
-    public ZserioAstBuilder(boolean checkUnusedTypes)
-    {
-        this.checkUnusedTypes = checkUnusedTypes;
-    }
-
     public Root getAst()
     {
-        return new Root(packageNameMap, checkUnusedTypes);
+        return new Root(packageNameMap);
     }
 
     @Override
@@ -760,7 +755,6 @@ public class ZserioAstBuilder extends Zserio4ParserBaseVisitor<Object>
         return new ArrayType(ctx.getStart(), type, lengthExpression, ctx.IMPLICIT() != null);
     }
 
-    private final boolean checkUnusedTypes;
     private final LinkedHashMap<PackageName, Package> packageNameMap =
             new LinkedHashMap<PackageName, Package>();
 

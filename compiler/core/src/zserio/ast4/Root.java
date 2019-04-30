@@ -17,14 +17,12 @@ public class Root extends AstNodeBase
      * Constructor.
      *
      * @param packageNameMap   Map of all available packages.
-     * @param checkUnusedTypes True to check unused types.
      */
-    public Root(LinkedHashMap<PackageName, Package> packageNameMap, boolean checkUnusedTypes)
+    public Root(LinkedHashMap<PackageName, Package> packageNameMap)
     {
         super(null);
 
         this.packageNameMap = packageNameMap;
-        this.checkUnusedTypes = checkUnusedTypes;
     }
 
     @Override
@@ -70,11 +68,5 @@ public class Root extends AstNodeBase
         }
     }
 
-    // TODO: check for unused types - maybe just do it in self-standing visitor and don't use root for it?
-    protected void evaluate()
-    {
-    }
-
     private final LinkedHashMap<PackageName, Package> packageNameMap;
-    private final boolean checkUnusedTypes;
 }

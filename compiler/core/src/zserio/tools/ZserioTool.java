@@ -22,6 +22,7 @@ import zserio.ast4.ZserioAstPrinter;
 import zserio.ast4.Root;
 import zserio.ast4.ZserioAstScopeSetter;
 import zserio.ast4.ZserioAstBuilder;
+import zserio.ast4.ZserioAstChecker;
 import zserio.emit.common.ZserioEmitException;
 
 /**
@@ -151,8 +152,7 @@ public class ZserioTool
 
     private Root parse() throws Exception
     {
-        final ZserioAstBuilder astBuilderVisitor = new ZserioAstBuilder(
-                commandLineArguments.getWithUnusedWarnings());
+        final ZserioAstBuilder astBuilderVisitor = new ZserioAstBuilder();
 
         final String inputFileName = commandLineArguments.getInputFileName();
         final String inputFileFullName = inputFileManager.getFileFullName(inputFileName);
@@ -169,6 +169,9 @@ public class ZserioTool
 
         final ZserioAstEvaluator evaluator = new ZserioAstEvaluator();
         rootNode.accept(evaluator);
+
+        final ZserioAstChecker checker = new ZserioAstChecker(commandLineArguments.getWithUnusedWarnings());
+        rootNode.accept(checker);
 
         return rootNode;
     }
