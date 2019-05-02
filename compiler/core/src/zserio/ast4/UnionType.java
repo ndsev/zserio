@@ -4,6 +4,8 @@ import java.util.List;
 
 import org.antlr.v4.runtime.Token;
 
+import zserio.ast4.doc.DocComment;
+
 /**
  * AST node for Union types.
  *
@@ -20,11 +22,12 @@ public class UnionType extends CompoundType
      * @param parameters List of parameters for the union type.
      * @param fields     List of all fields of the union type.
      * @param functions  List of all functions of the union type.
+     * @param docComment Documentation comment belonging to this node.
      */
     public UnionType(Token token, Package pkg, String name, List<Parameter> parameters, List<Field> fields,
-            List<FunctionType> functions)
+            List<FunctionType> functions, DocComment docComment)
     {
-        super(token, pkg, name, parameters, fields, functions);
+        super(token, pkg, name, parameters, fields, functions, docComment);
     }
 
     @Override

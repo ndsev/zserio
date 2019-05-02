@@ -1,5 +1,14 @@
 package zserio.ast4;
 
+import zserio.ast4.doc.DocComment;
+import zserio.ast4.doc.DocParagraph;
+import zserio.ast4.doc.DocTagParam;
+import zserio.ast4.doc.DocTagSee;
+import zserio.ast4.doc.DocTagTodo;
+import zserio.ast4.doc.DocText;
+import zserio.ast4.doc.DocTextElement;
+import zserio.ast4.doc.DocTextLine;
+
 public interface ZserioAstVisitor
 {
     void visitRoot(Root root);
@@ -48,6 +57,15 @@ public interface ZserioAstVisitor
     void visitStringType(StringType stringType);
     void visitFloatType(FloatType floatType);
 
+    void visitDocComment(DocComment docComment);
+    void visitDocTagSee(DocTagSee docTagSee);
+    void visitDocTagTodo(DocTagTodo docTagTodo);
+    void visitDocTagParam(DocTagParam docTagParam);
+    void visitDocParagraph(DocParagraph docParagraph);
+    void visitDocTextLine(DocTextLine docTextLine);
+    void visitDocText(DocText docText);
+    void visitDocTextElement(DocTextElement docTextElement);
+
     public class Base implements ZserioAstVisitor
     {
         @Override public void visitRoot(Root root) { root.visitChildren(this); }
@@ -95,5 +113,14 @@ public interface ZserioAstVisitor
         @Override public void visitBooleanType(BooleanType booleanType) { booleanType.visitChildren(this); }
         @Override public void visitStringType(StringType stringType) { stringType.visitChildren(this); }
         @Override public void visitFloatType(FloatType floatType) { floatType.visitChildren(this); }
+
+        @Override public void visitDocComment(DocComment docComment) { docComment.visitChildren(this); }
+        @Override public void visitDocTagSee(DocTagSee docTagSee) { docTagSee.visitChildren(this); }
+        @Override public void visitDocTagTodo(DocTagTodo docTagTodo) { docTagTodo.visitChildren(this); }
+        @Override public void visitDocTagParam(DocTagParam docTagParam) { docTagParam.visitChildren(this); }
+        @Override public void visitDocParagraph(DocParagraph docParagraph) { docParagraph.visitChildren(this); }
+        @Override public void visitDocTextLine(DocTextLine docTextLine) { docTextLine.visitChildren(this); }
+        @Override public void visitDocText(DocText docText) { docText.visitChildren(this); }
+        @Override public void visitDocTextElement(DocTextElement docTextElement) { docTextElement.visitChildren(this); }
     }
 }

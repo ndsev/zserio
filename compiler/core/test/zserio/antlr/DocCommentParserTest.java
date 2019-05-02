@@ -211,7 +211,8 @@ public class DocCommentParserTest
         checkParseTree("docComment", "/** This is not @todo tag! */",
                 "(docComment /** (whitespace  ) " +
                 "(docContent (docParagraph (docTextLine " +
-                    "(docText (text This (whitespaceInLine  ) is (whitespaceInLine  ) not (whitespaceInLine  ))) " +
+                    "(docText (text This (whitespaceInLine  ) is (whitespaceInLine  ) not " +
+                        "(whitespaceInLine  ))) " +
                     "(docText (text @todo)) " +
                     "(docText (text (whitespaceInLine  ) tag! (whitespaceInLine  )))))) " +
                 "*/)");

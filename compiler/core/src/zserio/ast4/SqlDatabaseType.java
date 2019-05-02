@@ -5,6 +5,8 @@ import java.util.List;
 
 import org.antlr.v4.runtime.Token;
 
+import zserio.ast4.doc.DocComment;
+
 /**
  * AST node for SQL Database types.
  *
@@ -15,14 +17,15 @@ public class SqlDatabaseType extends CompoundType
     /**
      * Constructor.
      *
-     * @param token  ANTLR4 token to localize AST node in the sources.
-     * @param pkg    Package to which belongs the SQL database type.
-     * @param name   Name of the SQL database type.
-     * @param fields List of all fields of the SQL database type.
+     * @param token      ANTLR4 token to localize AST node in the sources.
+     * @param pkg        Package to which belongs the SQL database type.
+     * @param name       Name of the SQL database type.
+     * @param fields     List of all fields of the SQL database type.
+     * @param docComment Documentation comment belonging to this node.
      */
-    public SqlDatabaseType(Token token, Package pkg, String name, List<Field> fields)
+    public SqlDatabaseType(Token token, Package pkg, String name, List<Field> fields, DocComment docComment)
     {
-        super(token, pkg, name, new ArrayList<Parameter>(), fields, new ArrayList<FunctionType>());
+        super(token, pkg, name, new ArrayList<Parameter>(), fields, new ArrayList<FunctionType>(), docComment);
     }
 
     @Override

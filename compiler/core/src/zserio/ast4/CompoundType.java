@@ -8,6 +8,7 @@ import org.antlr.v4.runtime.Token;
 import zserio.ast4.Package;
 import zserio.ast4.Scope;
 import zserio.ast4.ZserioScopedType;
+import zserio.ast4.doc.DocComment;
 import zserio.tools.HashUtil;
 
 /**
@@ -15,7 +16,7 @@ import zserio.tools.HashUtil;
  *
  * This is an abstract class for all Compound Zserio types (structure types, choice types, ...).
  */
-public abstract class CompoundType extends AstNodeBase implements ZserioScopedType, Comparable<CompoundType>
+public abstract class CompoundType extends AstNodeWithDoc implements ZserioScopedType, Comparable<CompoundType>
 {
     /**
      * Constructor.
@@ -26,11 +27,12 @@ public abstract class CompoundType extends AstNodeBase implements ZserioScopedTy
      * @param parameters List of parameters for the compound type.
      * @param fields     List of all fields of the compound type.
      * @param functions  List of all functions of the compound type.
+     * @param docComment Documentation comment belonging to the compound type.
      */
     CompoundType(Token token, Package pkg, String name, List<Parameter> parameters, List<Field> fields,
-            List<FunctionType> functions)
+            List<FunctionType> functions, DocComment docComment)
     {
-        super(token);
+        super(token, docComment);
 
         this.pkg = pkg;
         this.name = name;
@@ -53,6 +55,8 @@ public abstract class CompoundType extends AstNodeBase implements ZserioScopedTy
 
         for (FunctionType function : functions)
             function.accept(visitor);
+
+        super.visitChildren(visitor);
     }
 
     @Override

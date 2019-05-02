@@ -7,12 +7,14 @@ import java.util.List;
 
 import org.antlr.v4.runtime.Token;
 
+import zserio.ast4.doc.DocComment;
+
 /**
  * AST node for compound fields.
  *
  * This field is used by all Compound types (structure types, choice types, ...).
  */
-public class Field extends AstNodeBase
+public class Field extends AstNodeWithDoc
 {
     /**
      * Constructor from Structure, Choice and Union types.
@@ -26,13 +28,14 @@ public class Field extends AstNodeBase
      * @param initializerExpr    Initializer expression or null if it's not defined.
      * @param optionalClauseExpr Optional clause expression or null if it's not defined.
      * @param constraintExpr     Constraint expression or null if it's not defined.
+     * @param docComment         Documentation comment belonging to this node.
      */
     public Field(Token token, ZserioType fieldType, String name, boolean isAutoOptional,
             Expression alignmentExpr, Expression offsetExpr, Expression initializerExpr,
-            Expression optionalClauseExpr, Expression constraintExpr)
+            Expression optionalClauseExpr, Expression constraintExpr, DocComment docComment)
     {
         this(token, fieldType, name, isAutoOptional, alignmentExpr, offsetExpr, initializerExpr,
-                optionalClauseExpr, constraintExpr, false, null);
+                optionalClauseExpr, constraintExpr, false, null, docComment);
     }
 
     /**
@@ -44,9 +47,10 @@ public class Field extends AstNodeBase
      * @param isVirtual     True if field is virtual.
      * @param sqlConstraint SQL constraint or null if it's not defined.
      */
-    public Field(Token token, ZserioType fieldType, String name, boolean isVirtual, SqlConstraint sqlConstraint)
+    public Field(Token token, ZserioType fieldType, String name, boolean isVirtual, SqlConstraint sqlConstraint,
+            DocComment docComment)
     {
-        this(token, fieldType, name, false, null, null, null, null, null, isVirtual, sqlConstraint);
+        this(token, fieldType, name, false, null, null, null, null, null, isVirtual, sqlConstraint, docComment);
     }
 
     /**
@@ -56,9 +60,9 @@ public class Field extends AstNodeBase
      * @param fieldType Field type.
      * @param name      Field name.
      */
-    public Field(Token token, ZserioType fieldType, String name)
+    public Field(Token token, ZserioType fieldType, String name, DocComment docComment)
     {
-        this(token, fieldType, name, false, null, null, null, null, null, false, null);
+        this(token, fieldType, name, false, null, null, null, null, null, false, null, docComment);
     }
 
     @Override
@@ -83,6 +87,8 @@ public class Field extends AstNodeBase
             constraintExpr.accept(visitor);
         if (sqlConstraint != null)
             sqlConstraint.accept(visitor);
+
+        super.visitChildren(visitor);
     }
 
     /**
@@ -308,9 +314,9 @@ public class Field extends AstNodeBase
     private Field(Token token, ZserioType fieldType, String name, boolean isAutoOptional,
             Expression alignmentExpr, Expression offsetExpr, Expression initializerExpr,
             Expression optionalClauseExpr, Expression constraintExpr, boolean isVirtual,
-            SqlConstraint sqlConstraint)
+            SqlConstraint sqlConstraint, DocComment docComment)
     {
-        super(token);
+        super(token, docComment);
 
         this.fieldType = fieldType;
         this.name = name;

@@ -188,10 +188,10 @@ public class ZserioTool
         final Zserio4Parser parser = new Zserio4Parser(tokenStream);
         final ParseTree tree = parser.packageDeclaration();
 
-        ZserioParseTreeChecker parseTreeCheckingVisitor = new ZserioParseTreeChecker(inputFileManager);
-        parseTreeCheckingVisitor.visit(tree);
+        ZserioParseTreeChecker parseTreeChecker = new ZserioParseTreeChecker(inputFileManager);
+        parseTreeChecker.visit(tree);
 
-        return (Package)astBuilder.visit(tree);
+        return (Package)astBuilder.visit(tree, tokenStream);
     }
 
     private void parseImportedPackages(ZserioAstBuilder astBuilderVisitor,

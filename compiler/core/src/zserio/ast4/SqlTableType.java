@@ -10,6 +10,7 @@ import java.util.Set;
 import org.antlr.v4.runtime.Token;
 
 import zserio.ast4.TypeInstantiation.InstantiatedParameter;
+import zserio.ast4.doc.DocComment;
 import zserio.tools.ZserioToolPrinter;
 
 /**
@@ -29,11 +30,12 @@ public class SqlTableType extends CompoundType
      * @param fields          List of all fields of to the SQL table type.
      * @param sqlConstraint   SQL constraint of the SQL table type.
      * @param sqlWithoutRowId SQL without row id associated to the SQL table type.
+     * @param docComment      Documentation comment belonging to this node.
      */
     public SqlTableType(Token token, Package pkg, String name, String sqlUsingId, List<Field> fields,
-            SqlConstraint sqlConstraint, boolean sqlWithoutRowId)
+            SqlConstraint sqlConstraint, boolean sqlWithoutRowId, DocComment docComment)
     {
-        super(token, pkg, name, new ArrayList<Parameter>(), fields, new ArrayList<FunctionType>());
+        super(token, pkg, name, new ArrayList<Parameter>(), fields, new ArrayList<FunctionType>(), docComment);
 
         this.sqlUsingId = sqlUsingId;
         this.sqlConstraint = sqlConstraint;

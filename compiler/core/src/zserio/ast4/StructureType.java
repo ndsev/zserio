@@ -6,6 +6,7 @@ import java.util.Set;
 
 import org.antlr.v4.runtime.Token;
 
+import zserio.ast4.doc.DocComment;
 import zserio.tools.ZserioToolPrinter;
 
 /**
@@ -24,11 +25,12 @@ public class StructureType extends CompoundType
      * @param parameters List of parameters for the structure type.
      * @param fields     List of all fields of the structure type.
      * @param functions  List of all functions of the structure type.
+     * @param docComment Documentation comment belonging to this node.
      */
     public StructureType(Token token, Package pkg, String name, List<Parameter> parameters, List<Field> fields,
-            List<FunctionType> functions)
+            List<FunctionType> functions, DocComment docComment)
     {
-        super(token, pkg, name, parameters, fields, functions);
+        super(token, pkg, name, parameters, fields, functions, docComment);
     }
 
     @Override

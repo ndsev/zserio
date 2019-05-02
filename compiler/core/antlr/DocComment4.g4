@@ -3,46 +3,41 @@ grammar DocComment4;
 /** Parser */
 
 docComment
-    :   COMMENT_BEGIN whitespace? docContent? whitespace? COMMENT_END
+    :   COMMENT_BEGIN whitespace? docContent whitespace? COMMENT_END
     ;
 
 docContent
-    :   docParagraph (NEWLINE whitespaceInLine? NEWLINE whitespace? docParagraph)*
+    :   docLine (whitespaceInLine? NEWLINE whitespaceInLine? docLine)*?
     ;
 
-docParagraph
-    :   docTextLine (NEWLINE docTextLine)*
+docLine
+    :   docTag
+    |   docTextLine
+    |   // empty line
     ;
 
 docTextLine
-    :   docTag docText*
-    |   docText+
+    :   docText (whitespaceInLine? docText)*
     ;
 
 docTag
-    :   todoTag
+    :   seeTag
+    |   todoTag
     |   paramTag
     |   deprecatedTag
     ;
 
 docText
-    : seeTag
-    | text
+    :   seeTag
+    |   textElement
     ;
 
-text
+textElement
     :   SEE
     |   TODO
     |   PARAM
     |   DEPRECATED
-    |   (
-            ID
-        |   WORD
-        |   DOUBLE_QUOTE
-        |   DOT
-        |   STAR
-        |   whitespaceInLine
-        )+
+    |   ((ID | WORD | ESC | DOUBLE_QOUTE_ESC | DOUBLE_QUOTE | DOT | STAR) whitespaceInLine?)+
     ;
 
 seeTag
@@ -50,7 +45,11 @@ seeTag
     ;
 
 seeTagAlias
-    :   DOUBLE_QUOTE text DOUBLE_QUOTE
+    :   DOUBLE_QUOTE seeTagAliasText DOUBLE_QUOTE
+    ;
+
+seeTagAliasText
+    :   ((SEE | TODO | PARAM | DEPRECATED | ID | WORD | ESC | DOUBLE_QOUTE_ESC | DOT | STAR) whitespaceInLine?)+
     ;
 
 seeTagId
@@ -58,27 +57,19 @@ seeTagId
     ;
 
 todoTag
-    :   TODO whitespaceInParagraph docTagText
+    :   TODO whitespaceInParagraph docTextLine
     ;
 
 paramTag
-    :   PARAM whitespaceInParagraph paramId whitespaceInParagraph paramDescription
+    :   PARAM whitespaceInParagraph paramName whitespaceInParagraph docTextLine
     ;
 
-paramId
+paramName
     :   ID
-    ;
-
-paramDescription
-    :   docTagText
     ;
 
 deprecatedTag
     :   DEPRECATED
-    ;
-
-docTagText
-    :   docText+ (NEWLINE docText+)*
     ;
 
 whitespace
@@ -120,6 +111,10 @@ DOT : '.' ;
 
 STAR : '*' ;
 
+ESC : '\\\\';
+
+DOUBLE_QOUTE_ESC : '\\"' ;
+
 DOUBLE_QUOTE : '"' ;
 
 SEE : AT 'see' ;
@@ -130,6 +125,6 @@ PARAM : AT 'param' ;
 
 DEPRECATED : AT 'deprecated' ;
 
-ID : [a-zA-Z_][a-zA-Z_0-9]+ ;
+ID : [a-zA-Z_][a-zA-Z_0-9]* ;
 
-WORD : ~[ .\t\r\n"*]+ ;
+WORD : ~[ .\t\r\n"*\\]+ ;

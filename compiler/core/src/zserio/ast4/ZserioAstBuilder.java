@@ -3,15 +3,31 @@ package zserio.ast4;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
+
+import org.antlr.v4.runtime.BufferedTokenStream;
 import org.antlr.v4.runtime.ParserRuleContext;
+import org.antlr.v4.runtime.tree.ParseTree;
+
 import zserio.antlr.Zserio4Parser;
 import zserio.antlr.Zserio4ParserBaseVisitor;
+import zserio.ast4.doc.DocComment;
+import zserio.ast4.doc.DocCommentFinder;
 
 public class ZserioAstBuilder extends Zserio4ParserBaseVisitor<Object>
 {
     public Root getAst()
     {
         return new Root(packageNameMap);
+    }
+
+    public Object visit(ParseTree tree, BufferedTokenStream tokenStream)
+    {
+        docCommentFinder.setStream(tokenStream);
+        final Object result = visit(tree);
+        docCommentFinder.printUnusedWarnings();
+        docCommentFinder.resetStream();
+
+        return result;
     }
 
     @Override
@@ -120,8 +136,10 @@ public class ZserioAstBuilder extends Zserio4ParserBaseVisitor<Object>
         for (Zserio4Parser.FunctionDefinitionContext functionDefinitionCtx : ctx.functionDefinition())
             functions.add(visitFunctionDefinition(functionDefinitionCtx));
 
+        final DocComment docComment = docCommentFinder.findDocComment(ctx);
+
         final StructureType structureType = new StructureType(ctx.id().getStart(), currentPackage, name,
-                parameters, fields, functions);
+                parameters, fields, functions, docComment);
 
         return structureType;
     }
@@ -139,8 +157,10 @@ public class ZserioAstBuilder extends Zserio4ParserBaseVisitor<Object>
         final Expression optionalClauseExpr = visitFieldOptionalClause(ctx.fieldOptionalClause());
         final Expression constraintExpr = visitFieldConstraint(ctx.fieldConstraint());
 
+        final DocComment docComment = docCommentFinder.findDocComment(ctx);
+
         return new Field(ctx.fieldTypeId().id().getStart(), type, name, isAutoOptional, alignmentExpr,
-                offsetExpr, initializerExpr, optionalClauseExpr, constraintExpr);
+                offsetExpr, initializerExpr, optionalClauseExpr, constraintExpr, docComment);
     }
 
     @Override
@@ -207,8 +227,10 @@ public class ZserioAstBuilder extends Zserio4ParserBaseVisitor<Object>
         for (Zserio4Parser.FunctionDefinitionContext functionDefinitionCtx : ctx.functionDefinition())
             functions.add(visitFunctionDefinition(functionDefinitionCtx));
 
+        final DocComment docComment = docCommentFinder.findDocComment(ctx);
+
         final ChoiceType choiceType = new ChoiceType(ctx.id().getStart(), currentPackage, name, parameters,
-                selectorExpression, choiceCases, choiceDefault, functions);
+                selectorExpression, choiceCases, choiceDefault, functions, docComment);
 
         return choiceType;
     }
@@ -258,8 +280,10 @@ public class ZserioAstBuilder extends Zserio4ParserBaseVisitor<Object>
         final Expression optionalClauseExpr = null;
         final Expression constraintExpr = visitFieldConstraint(ctx.fieldConstraint());
 
+        final DocComment docComment = docCommentFinder.findDocComment(ctx);
+
         return new Field(nameCtx.getStart(), type, name, isAutoOptional, alignmentExpr, offsetExpr,
-                initializerExpr, optionalClauseExpr, constraintExpr);
+                initializerExpr, optionalClauseExpr, constraintExpr, docComment);
     }
 
     @Override
@@ -277,8 +301,10 @@ public class ZserioAstBuilder extends Zserio4ParserBaseVisitor<Object>
         for (Zserio4Parser.FunctionDefinitionContext functionDefinitionCtx : ctx.functionDefinition())
             functions.add(visitFunctionDefinition(functionDefinitionCtx));
 
+        final DocComment docComment = docCommentFinder.findDocComment(ctx);
+
         final UnionType unionType = new UnionType(ctx.id().getStart(), currentPackage, name, parameters, fields,
-                functions);
+                functions, docComment);
 
         return unionType;
     }
@@ -318,8 +344,10 @@ public class ZserioAstBuilder extends Zserio4ParserBaseVisitor<Object>
         final SqlConstraint sqlConstraint = visitSqlConstraintDefinition(ctx.sqlConstraintDefinition());
         final boolean sqlWithoutRowId = ctx.sqlWithoutRowId() != null;
 
+        final DocComment docComment = docCommentFinder.findDocComment(ctx);
+
         final SqlTableType sqlTableType = new SqlTableType(ctx.id(0).getStart(), currentPackage, name,
-                sqlUsingId, fields, sqlConstraint, sqlWithoutRowId);
+                sqlUsingId, fields, sqlConstraint, sqlWithoutRowId, docComment);
 
         return sqlTableType;
     }
@@ -332,8 +360,10 @@ public class ZserioAstBuilder extends Zserio4ParserBaseVisitor<Object>
         final String name = ctx.id().getText();
         final SqlConstraint sqlConstraint = visitSqlConstraint(ctx.sqlConstraint());
 
+	final DocComment docComment = docCommentFinder.findDocComment(ctx);
+
         return new Field(ctx.id().getStart(), type, name, isVirtual, (sqlConstraint == null) ?
-                SqlConstraint.createDefaultFieldConstraint(currentPackage) : sqlConstraint);
+                SqlConstraint.createDefaultFieldConstraint(currentPackage) : sqlConstraint, docComment);
     }
 
     @Override
@@ -363,8 +393,10 @@ public class ZserioAstBuilder extends Zserio4ParserBaseVisitor<Object>
         for (Zserio4Parser.SqlDatabaseFieldDefinitionContext fieldCtx : ctx.sqlDatabaseFieldDefinition())
             fields.add(visitSqlDatabaseFieldDefinition(fieldCtx));
 
+        final DocComment docComment = docCommentFinder.findDocComment(ctx);
+
         final SqlDatabaseType sqlDatabaseType = new SqlDatabaseType(ctx.id().getStart(), currentPackage, name,
-                fields);
+                fields, docComment);
 
         return sqlDatabaseType;
     }
@@ -375,7 +407,9 @@ public class ZserioAstBuilder extends Zserio4ParserBaseVisitor<Object>
         final ZserioType type = visitQualifiedName(ctx.sqlTableReference().qualifiedName());
         final String name = ctx.id().getText();
 
-        return new Field(ctx.getStart(), type, name);
+        final DocComment docComment = docCommentFinder.findDocComment(ctx);
+
+        return new Field(ctx.getStart(), type, name, docComment);
     }
 
     @Override
@@ -755,6 +789,7 @@ public class ZserioAstBuilder extends Zserio4ParserBaseVisitor<Object>
         return new ArrayType(ctx.getStart(), type, lengthExpression, ctx.IMPLICIT() != null);
     }
 
+    private final DocCommentFinder docCommentFinder = new DocCommentFinder();
     private final LinkedHashMap<PackageName, Package> packageNameMap =
             new LinkedHashMap<PackageName, Package>();
 

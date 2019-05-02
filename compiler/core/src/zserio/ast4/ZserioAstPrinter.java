@@ -1,5 +1,14 @@
 package zserio.ast4;
 
+import zserio.ast4.doc.DocComment;
+import zserio.ast4.doc.DocParagraph;
+import zserio.ast4.doc.DocTagParam;
+import zserio.ast4.doc.DocTagSee;
+import zserio.ast4.doc.DocTagTodo;
+import zserio.ast4.doc.DocText;
+import zserio.ast4.doc.DocTextElement;
+import zserio.ast4.doc.DocTextLine;
+
 public class ZserioAstPrinter implements ZserioAstVisitor
 {
     @Override
@@ -209,6 +218,63 @@ public class ZserioAstPrinter implements ZserioAstVisitor
     {
         print("floatType [" + floatType.getName() + "]");
         visitChildren(floatType);
+    }
+
+    @Override
+    public void visitDocComment(DocComment docComment)
+    {
+        print("docComment");
+        visitChildren(docComment);
+    }
+
+    @Override
+    public void visitDocTagSee(DocTagSee docTagSee)
+    {
+        print("docTagSee [" + (docTagSee.getAlias() != null ? "\"" + docTagSee.getAlias() + "\", " : "") +
+                docTagSee.getId() + "]");
+        visitChildren(docTagSee);
+    }
+
+    @Override
+    public void visitDocTagTodo(DocTagTodo docTagTodo)
+    {
+        print("docTagTodo");
+        visitChildren(docTagTodo);
+    }
+
+    @Override
+    public void visitDocTagParam(DocTagParam docTagParam)
+    {
+        print("docTagParam [" + docTagParam.getParamName() + "]");
+        visitChildren(docTagParam);
+    }
+
+    @Override
+    public void visitDocParagraph(DocParagraph docParagraph)
+    {
+        print("docParagraph");
+        visitChildren(docParagraph);
+    }
+
+    @Override
+    public void visitDocTextLine(DocTextLine docTextLine)
+    {
+        print("docTextLine");
+        visitChildren(docTextLine);
+    }
+
+    @Override
+    public void visitDocText(DocText docText)
+    {
+        print("docText");
+        visitChildren(docText);
+    }
+
+    @Override
+    public void visitDocTextElement(DocTextElement docTextElement)
+    {
+        print("docTextElement [" + docTextElement.getText() + "]");
+        visitChildren(docTextElement);
     }
 
     private void print(String text)

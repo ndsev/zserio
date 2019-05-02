@@ -7,6 +7,7 @@ import java.util.Set;
 
 import org.antlr.v4.runtime.Token;
 
+import zserio.ast4.doc.DocComment;
 import zserio.tools.ZserioToolPrinter;
 
 /**
@@ -27,12 +28,13 @@ public class ChoiceType extends CompoundType
      * @param choiceCases        List of all choice cases.
      * @param choiceDefault      Choice default case or null if default case is not defined.
      * @param functions          List of all functions of the choice type.
+     * @param docComment         Documentation comment belonging to this node.
      */
     public ChoiceType(Token token, Package pkg, String name, List<Parameter> parameters,
             Expression selectorExpression, List<ChoiceCase> choiceCases, ChoiceDefault choiceDefault,
-            List<FunctionType> functions)
+            List<FunctionType> functions, DocComment docComment)
     {
-        super(token, pkg, name, parameters, getChoiceFields(choiceCases, choiceDefault), functions);
+        super(token, pkg, name, parameters, getChoiceFields(choiceCases, choiceDefault), functions, docComment);
 
         this.selectorExpression = selectorExpression;
         this.choiceCases = choiceCases;
@@ -61,6 +63,9 @@ public class ChoiceType extends CompoundType
 
         for (FunctionType function : getFunctions())
             function.accept(visitor);
+
+        if (getDocComment() != null)
+            getDocComment().accept(visitor);
     }
 
     /**
