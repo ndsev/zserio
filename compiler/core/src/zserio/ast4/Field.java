@@ -7,7 +7,6 @@ import java.util.List;
 
 import org.antlr.v4.runtime.Token;
 
-import zserio.ast4.doc.DocComment;
 
 /**
  * AST node for compound fields.

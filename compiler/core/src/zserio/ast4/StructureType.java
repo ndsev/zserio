@@ -6,7 +6,6 @@ import java.util.Set;
 
 import org.antlr.v4.runtime.Token;
 
-import zserio.ast4.doc.DocComment;
 import zserio.tools.ZserioToolPrinter;
 
 /**

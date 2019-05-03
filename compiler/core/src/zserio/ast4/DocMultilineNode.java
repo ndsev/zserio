@@ -1,15 +1,22 @@
-package zserio.ast4.doc;
+package zserio.ast4;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import org.antlr.v4.runtime.Token;
 
-import zserio.ast4.AstNodeBase;
-import zserio.ast4.ZserioAstVisitor;
-
-abstract class DocMultilineNode extends AstNodeBase
+/**
+ * Documentation comment node which can have multiple documentation lines.
+ */
+public abstract class DocMultilineNode extends AstNodeBase
 {
+    /**
+     * Constructor.
+     *
+     * @param token         ANTLR4 token to localize AST node in the sources.
+     * @param docTextLine   First documentation line.
+     */
     public DocMultilineNode(Token token, DocTextLine docTextLine)
     {
         super(token);
@@ -24,9 +31,14 @@ abstract class DocMultilineNode extends AstNodeBase
             docTextLine.accept(visitor);
     }
 
-    public Iterable<DocTextLine> getTextLines()
+    /**
+     * Gets documentation lines.
+     *
+     * @return List of documentation lines.
+     */
+    public List<DocTextLine> getTextLines()
     {
-        return docTextLines;
+        return Collections.unmodifiableList(docTextLines);
     }
 
     protected void addLine(DocTextLine docTextLine)

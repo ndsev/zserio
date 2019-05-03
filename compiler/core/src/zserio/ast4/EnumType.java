@@ -8,25 +8,28 @@ import java.util.Set;
 
 import org.antlr.v4.runtime.Token;
 
+
 /**
  * AST node for Enumeration types.
  *
  * Enumeration types are Zserio types as well.
  */
-public class EnumType extends AstNodeBase implements ZserioScopedType
+public class EnumType extends AstNodeWithDoc implements ZserioScopedType
 {
     /**
      * Constructor.
      *
-     * @param token     ANTLR4 token to localize AST node in the sources.
-     * @param pkg       Package to which belongs the enumeration type.
-     * @param enumType  Zserio type of the enumeration.
-     * @param name      Name of the enumeration type.
-     * @param enumItems List of all items which belong to the enumeration type.
+     * @param token         ANTLR4 token to localize AST node in the sources.
+     * @param pkg           Package to which belongs the enumeration type.
+     * @param enumType      Zserio type of the enumeration.
+     * @param name          Name of the enumeration type.
+     * @param enumItems     List of all items which belong to the enumeration type.
+     * @param docComment    Documentation comment belonging to this node.
      */
-    public EnumType(Token token, Package pkg, ZserioType enumType, String name, List<EnumItem> enumItems)
+    public EnumType(Token token, Package pkg, ZserioType enumType, String name, List<EnumItem> enumItems,
+            DocComment docComment)
     {
-        super(token);
+        super(token, docComment);
 
         this.pkg = pkg;
         this.enumType = enumType;
@@ -49,6 +52,8 @@ public class EnumType extends AstNodeBase implements ZserioScopedType
         enumType.accept(visitor);
         for (EnumItem enumItem : enumItems)
             enumItem.accept(visitor);
+
+        super.visitChildren(visitor);
     }
 
     @Override

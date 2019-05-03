@@ -7,7 +7,7 @@ public interface AstNode
      *
      * @return Location of the current AST node.
      */
-    public AstNodeLocation getLocation();
+    public AstLocation getLocation();
 
     /**
      * Accept zserio visitor.

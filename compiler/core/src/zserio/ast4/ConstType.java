@@ -9,7 +9,7 @@ import zserio.tools.HashUtil;
  *
  * Constant types are Zserio types as well.
  */
-public class ConstType extends AstNodeBase implements ZserioType, Comparable<ConstType>
+public class ConstType extends AstNodeWithDoc implements ZserioType, Comparable<ConstType>
 {
     /**
      * Constructor.
@@ -19,10 +19,12 @@ public class ConstType extends AstNodeBase implements ZserioType, Comparable<Con
      * @param constType       Zserio type of the constant.
      * @param name            Name of the constant type.
      * @param valueExpression Value expression associated to the constant type.
+     * @param docComment      Documentation comment belonging to this node.
      */
-    public ConstType(Token token, Package pkg, ZserioType constType, String name, Expression valueExpression)
+    public ConstType(Token token, Package pkg, ZserioType constType, String name, Expression valueExpression,
+            DocComment docComment)
     {
-        super(token);
+        super(token, docComment);
 
         this.pkg = pkg;
         this.constType = constType;
@@ -41,6 +43,8 @@ public class ConstType extends AstNodeBase implements ZserioType, Comparable<Con
     {
         constType.accept(visitor);
         valueExpression.accept(visitor);
+
+        super.visitChildren(visitor);
     }
 
     @Override

@@ -28,7 +28,7 @@ public class ZserioParseTreeChecker extends Zserio4ParserBaseVisitor<Void>
     @Override
     public Void visitPackageDeclaration(Zserio4Parser.PackageDeclarationContext ctx)
     {
-        AstNodeLocation location = new AstNodeLocation(ctx.getStart());
+        AstLocation location = new AstLocation(ctx.getStart());
         checkUtf8Encoding(location);
         checkNonPrintableCharacters(location);
 
@@ -157,7 +157,7 @@ public class ZserioParseTreeChecker extends Zserio4ParserBaseVisitor<Void>
         return packageNameBuilder.get();
     }
 
-    private void checkUtf8Encoding(AstNodeLocation location)
+    private void checkUtf8Encoding(AstLocation location)
     {
         final byte[] fileContent = readFile(location);
         try
@@ -171,7 +171,7 @@ public class ZserioParseTreeChecker extends Zserio4ParserBaseVisitor<Void>
         }
     }
 
-    private void checkNonPrintableCharacters(AstNodeLocation location)
+    private void checkNonPrintableCharacters(AstLocation location)
     {
         final byte[] fileContent = readFile(location);
         final String content = new String(fileContent, Charset.forName("UTF-8"));
@@ -190,7 +190,7 @@ public class ZserioParseTreeChecker extends Zserio4ParserBaseVisitor<Void>
         }
     }
 
-    private byte[] readFile(AstNodeLocation location)
+    private byte[] readFile(AstLocation location)
     {
         final String fileName = location.getFileName();
         final File file = new File(fileName);

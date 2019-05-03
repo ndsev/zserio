@@ -2,20 +2,22 @@ package zserio.ast4;
 
 import org.antlr.v4.runtime.Token;
 
+
 /**
  * AST node for default case defined by choice types.
  */
-public class ChoiceDefault extends AstNodeBase
+public class ChoiceDefault extends AstNodeWithDoc
 {
     /**
      * Constructor.
      *
      * @param token        ANTLR4 token to localize AST node in the sources.
      * @param defaultField Default field associated to this default case or null if it's not defined.
+     * @param docComment   Documentation comment belonging to this node.
      */
-    public ChoiceDefault(Token token, Field defaultField)
+    public ChoiceDefault(Token token, Field defaultField, DocComment docComment)
     {
-        super(token);
+        super(token, docComment);
 
         this.defaultField = defaultField;
     }
@@ -31,6 +33,8 @@ public class ChoiceDefault extends AstNodeBase
     {
         if (defaultField != null)
             defaultField.accept(visitor);
+
+        super.visitChildren(visitor);
     }
 
     /**

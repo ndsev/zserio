@@ -11,11 +11,11 @@ public abstract class AstNodeBase implements AstNode
      */
     public AstNodeBase(Token token)
     {
-        this.location = new AstNodeLocation(token);
+        this.location = new AstLocation(token);
     }
 
     @Override
-    public AstNodeLocation getLocation()
+    public AstLocation getLocation()
     {
         return location;
     }
@@ -24,5 +24,5 @@ public abstract class AstNodeBase implements AstNode
     public void visitChildren(ZserioAstVisitor visitor)
     {}
 
-    private final AstNodeLocation location;
+    private final AstLocation location;
 };

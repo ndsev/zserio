@@ -1,14 +1,21 @@
-package zserio.ast4.doc;
+package zserio.ast4;
 
+import java.util.Collections;
 import java.util.List;
 
 import org.antlr.v4.runtime.Token;
 
-import zserio.ast4.AstNodeBase;
-import zserio.ast4.ZserioAstVisitor;
-
+/**
+ * Single documentation line AST node.
+ */
 public class DocTextLine extends AstNodeBase
 {
+    /**
+     * Constructor.
+     *
+     * @param token    ANTLR4 token to localize AST node in the sources.
+     * @param docTexts List of documentation texts which form the current documentation line.
+     */
     public DocTextLine(Token token, List<DocText> docTexts)
     {
         super(token);
@@ -29,9 +36,14 @@ public class DocTextLine extends AstNodeBase
             docText.accept(visitor);
     }
 
-    public Iterable<DocText> getTexts()
+    /**
+     * Gets documentation texts forming the current documentation line.
+     *
+     * @return List of doc texts.
+     */
+    public List<DocText> getTexts()
     {
-        return docTexts;
+        return Collections.unmodifiableList(docTexts);
     }
 
     private final List<DocText> docTexts;

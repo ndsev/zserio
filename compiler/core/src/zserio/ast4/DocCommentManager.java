@@ -1,4 +1,4 @@
-package zserio.ast4.doc;
+package zserio.ast4;
 
 import java.util.HashSet;
 import java.util.List;
@@ -16,17 +16,29 @@ import zserio.antlr.DocComment4Lexer;
 import zserio.antlr.DocComment4Parser;
 import zserio.antlr.Zserio4Lexer;
 import zserio.antlr.Zserio4Parser;
-import zserio.ast4.AstNodeLocation;
 import zserio.tools.ZserioToolPrinter;
 
-public class DocCommentFinder
+/**
+ * Documentation comment manager which helps to find and parse usable documentation comments.
+ *
+ * The manager also detects unused documentation comments.
+ */
+public class DocCommentManager
 {
+    /**
+     * Sets the current token stream.
+     *
+     * @param tokenStream Current token stream.
+     */
     public void setStream(BufferedTokenStream tokenStream)
     {
         currentTokenStream = tokenStream;
     }
 
-    public void printUnusedWarnings()
+    /**
+     * Prints warnings for unused documentation comments.
+     */
+    public void printWarnings()
     {
         if (currentTokenStream == null)
             return;
@@ -37,17 +49,27 @@ public class DocCommentFinder
             if (token.getChannel() == Zserio4Lexer.DOC)
             {
                 if (!currentUsedComments.contains(token))
-                    ZserioToolPrinter.printWarning(new AstNodeLocation(token), "Unused documentation comment!");
+                    ZserioToolPrinter.printWarning(new AstLocation(token), "Unused documentation comment!");
             }
         }
     }
 
+    /**
+     * Resets the current token stream.
+     */
     public void resetStream()
     {
         currentTokenStream = null;
         currentUsedComments.clear();
     }
 
+    /**
+     * Finds appropriate documentation comment which belongs to the given context.
+     *
+     * @param ctx Parser context.
+     *
+     * @return Parsed documentation comment or null.
+     */
     public DocComment findDocComment(ParserRuleContext ctx)
     {
         final Token docToken = findDocTokenBefore(ctx);
@@ -57,6 +79,14 @@ public class DocCommentFinder
         return null;
     }
 
+    /**
+     * Finds appropriate documentation comment which belongs to the given context.
+     * Overloaded version for structure field.
+     *
+     * @param ctx Parser context.
+     *
+     * @return Parsed documentation comment or null.
+     */
     public DocComment findDocComment(Zserio4Parser.StructureFieldDefinitionContext ctx)
     {
         // before field type
@@ -79,14 +109,14 @@ public class DocCommentFinder
 
     private Token findDocTokenBefore(ParserRuleContext ctx)
     {
-        if (ctx == null || currentTokenStream == null)
+        if (currentTokenStream == null || ctx == null)
             return null;
 
         final int tokenIndex = ctx.getStart().getTokenIndex();
         final List<Token> docList = currentTokenStream.getHiddenTokensToLeft(tokenIndex, Zserio4Lexer.DOC);
         if (docList != null && !docList.isEmpty())
         {
-            final Token docToken = docList.get(docList.size() - 1); // TODO: which order?
+            final Token docToken = docList.get(docList.size() - 1);
             currentUsedComments.add(docToken);
             return docToken;
         }
@@ -102,14 +132,16 @@ public class DocCommentFinder
             final DocComment4Lexer lexer = new DocComment4Lexer(inputStream);
             final CommonTokenStream tokenStream = new CommonTokenStream(lexer);
             final DocComment4Parser parser = new DocComment4Parser(tokenStream);
-            ParseTree tree = parser.docComment();
+            final ParseTree tree = parser.docComment();
 
             final DocCommentAstBuilder docCommentAstBuilder = new DocCommentAstBuilder();
             return (DocComment)docCommentAstBuilder.visit(tree);
         }
         catch (Exception e)
         {
-            ZserioToolPrinter.printError("Doc comment parsing failed: " + e.getMessage() + "!");
+            // if we cannot parse comment, just ignore it and report warning
+            ZserioToolPrinter.printWarning(new AstLocation(docCommentToken),
+                    "Doc comment parsing failed: " + e.getMessage() + "!");
             return null;
         }
     }

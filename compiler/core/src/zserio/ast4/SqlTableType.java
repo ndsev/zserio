@@ -10,7 +10,6 @@ import java.util.Set;
 import org.antlr.v4.runtime.Token;
 
 import zserio.ast4.TypeInstantiation.InstantiatedParameter;
-import zserio.ast4.doc.DocComment;
 import zserio.tools.ZserioToolPrinter;
 
 /**
@@ -55,6 +54,7 @@ public class SqlTableType extends CompoundType
     public void visitChildren(ZserioAstVisitor visitor)
     {
         super.visitChildren(visitor);
+
         if (sqlConstraint != null)
             sqlConstraint.accept(visitor);
     }

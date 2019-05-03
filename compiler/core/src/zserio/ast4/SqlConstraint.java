@@ -280,7 +280,7 @@ public class SqlConstraint extends AstNodeBase
     private String resolveConstraintReference(String referencedText)
     {
         final SymbolReference symbolReference = new SymbolReference(this, referencedText);
-        symbolReference.resolve(compoundType);
+        symbolReference.resolve(compoundType.getPackage(), compoundType);
 
         final ZserioType referencedType = symbolReference.getReferencedType();
         final Object referencedSymbol = symbolReference.getReferencedSymbol();

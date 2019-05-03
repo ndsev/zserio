@@ -4,10 +4,11 @@ import java.math.BigInteger;
 
 import org.antlr.v4.runtime.Token;
 
+
 /**
  * AST node for items defined by enumeration types.
  */
-public class EnumItem extends AstNodeBase
+public class EnumItem extends AstNodeWithDoc
 {
     /**
      * Constructor.
@@ -15,10 +16,11 @@ public class EnumItem extends AstNodeBase
      * @param token           ANTLR4 token to localize AST node in the sources.
      * @param name            Name of the enumeration item.
      * @param valueExpression Expression value of the enumeration item.
+     * @param docComment      Documentation comment belonging to this node.
      */
-    public EnumItem(Token token, String name, Expression valueExpression)
+    public EnumItem(Token token, String name, Expression valueExpression, DocComment docComment)
     {
-        super(token);
+        super(token, docComment);
 
         this.name = name;
         this.valueExpression = valueExpression;
@@ -35,6 +37,8 @@ public class EnumItem extends AstNodeBase
     {
         if (valueExpression != null)
             valueExpression.accept(visitor);
+
+        super.visitChildren(visitor);
     }
 
     /**

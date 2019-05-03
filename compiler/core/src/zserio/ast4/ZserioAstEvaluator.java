@@ -42,9 +42,9 @@ public class ZserioAstEvaluator extends ZserioAstVisitor.Base
             final Scope enumScope = ((EnumType)selectorExprZserioType).getScope();
             for (ChoiceCase choiceCase : choiceType.getChoiceCases())
             {
-                final List<Expression> caseExpressions = choiceCase.getExpressions();
-                for (Expression caseExpression : caseExpressions)
-                    caseExpression.addEvaluationScope(enumScope);
+                final List<ChoiceCaseExpression> caseExpressions = choiceCase.getExpressions();
+                for (ChoiceCaseExpression caseExpression : caseExpressions)
+                    caseExpression.getExpression().addEvaluationScope(enumScope);
             }
         }
 

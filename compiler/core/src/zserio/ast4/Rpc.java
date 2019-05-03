@@ -2,10 +2,11 @@ package zserio.ast4;
 
 import org.antlr.v4.runtime.Token;
 
+
 /**
  * AST node for RPC calls.
  */
-public class Rpc extends AstNodeBase
+public class Rpc extends AstNodeWithDoc
 {
     /**
      * Constructor.
@@ -16,11 +17,12 @@ public class Rpc extends AstNodeBase
      * @param responseStreaming True if response streaming is requested.
      * @param requestType       Zserio type of the request.
      * @param requestStreaming  True if request streaming is requested.
+     * @param docComment        Documentation comment belonging to this node.
      */
     public Rpc(Token token, String name, ZserioType responseType, boolean responseStreaming,
-            ZserioType requestType, boolean requestStreaming)
+            ZserioType requestType, boolean requestStreaming, DocComment docComment)
     {
-        super(token);
+        super(token, docComment);
 
         this.name = name;
         this.responseType = responseType;
@@ -40,6 +42,8 @@ public class Rpc extends AstNodeBase
     {
         responseType.accept(visitor);
         requestType.accept(visitor);
+
+        super.visitChildren(visitor);
     }
 
     /**

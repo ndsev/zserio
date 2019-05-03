@@ -1,14 +1,5 @@
 package zserio.ast4;
 
-import zserio.ast4.doc.DocComment;
-import zserio.ast4.doc.DocParagraph;
-import zserio.ast4.doc.DocTagParam;
-import zserio.ast4.doc.DocTagSee;
-import zserio.ast4.doc.DocTagTodo;
-import zserio.ast4.doc.DocText;
-import zserio.ast4.doc.DocTextElement;
-import zserio.ast4.doc.DocTextLine;
-
 public interface ZserioAstVisitor
 {
     void visitRoot(Root root);
@@ -30,6 +21,7 @@ public interface ZserioAstVisitor
     void visitField(Field field);
 
     void visitChoiceCase(ChoiceCase choiceCase);
+    void visitChoiceCaseExpression(ChoiceCaseExpression choiceCaseExpression);
     void visitChoiceDefault(ChoiceDefault choiceDefault);
 
     void visitEnumItem(EnumItem enumItem);
@@ -87,6 +79,7 @@ public interface ZserioAstVisitor
         @Override public void visitField(Field field) { field.visitChildren(this); }
 
         @Override public void visitChoiceCase(ChoiceCase choiceCase) { choiceCase.visitChildren(this); }
+        @Override public void visitChoiceCaseExpression(ChoiceCaseExpression choiceCaseExpression) { choiceCaseExpression.visitChildren(this); }
         @Override public void visitChoiceDefault(ChoiceDefault choiceDefault) { choiceDefault.visitChildren(this); }
 
         @Override public void visitEnumItem(EnumItem enumItem) { enumItem.visitChildren(this); }

@@ -78,7 +78,7 @@ public class ZserioAstScopeSetter extends ZserioAstVisitor.Base
     @Override
     public void visitChoiceCase(ChoiceCase choiceCase)
     {
-        for (Expression caseExpression : choiceCase.getExpressions())
+        for (ChoiceCaseExpression caseExpression : choiceCase.getExpressions())
             caseExpression.accept(this);
 
         if (choiceCase.getField() != null)

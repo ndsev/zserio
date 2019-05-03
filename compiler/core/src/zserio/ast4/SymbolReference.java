@@ -69,12 +69,12 @@ public class SymbolReference
     /**
      * Resolves the symbol reference.
      *
+     * @param ownerPackage Zserio package in which the symbol reference is defined.
      * @param ownerType ZserioType which is owner of the symbol reference.
      */
-    public void resolve(ZserioType ownerType)
+    public void resolve(Package ownerPackage, ZserioScopedType ownerType)
     {
         // try if the last link component was a type name
-        final Package ownerPackage = ownerType.getPackage();
         referencedType = ownerPackage.getVisibleType(ownerNode, referencedPackageNameBuilder.get(),
                 referencedTypeName);
         if (referencedType == null)
@@ -91,12 +91,12 @@ public class SymbolReference
             {
                 referencedType = ownerPackage.getVisibleType(ownerNode, referencedPackageNameBuilder.get(),
                         referencedTypeName);
-
-                // this was our last attempt to resolve symbol type
-                if (referencedType == null)
-                    throw new ParserException(ownerNode, "Unresolved referenced symbol '" +
-                            referencedSymbolName + "'!");
             }
+
+            // this was our last attempt to resolve symbol type
+            if (referencedType == null)
+                throw new ParserException(ownerNode, "Unresolved referenced symbol '" +
+                        referencedSymbolName + "'!");
 
             resolveSymbol(referencedSymbolName);
         }

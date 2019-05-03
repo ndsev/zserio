@@ -97,7 +97,7 @@ fragment
 AT : '@' ;
 
 fragment
-NEWLINE_COMMENT : SPACE? (STAR { _input.LA(1) != '/' }?)+ ;
+NEWLINE_COMMENT : SPACE* (STAR { _input.LA(1) != '/' }?)+ ;
 
 COMMENT_BEGIN : '/**' (STAR { _input.LA(1) != '/' }?)*;
 

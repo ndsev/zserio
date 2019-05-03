@@ -8,7 +8,6 @@ import org.antlr.v4.runtime.Token;
 import zserio.ast4.Package;
 import zserio.ast4.Scope;
 import zserio.ast4.ZserioScopedType;
-import zserio.ast4.doc.DocComment;
 import zserio.tools.HashUtil;
 
 /**
@@ -27,7 +26,7 @@ public abstract class CompoundType extends AstNodeWithDoc implements ZserioScope
      * @param parameters List of parameters for the compound type.
      * @param fields     List of all fields of the compound type.
      * @param functions  List of all functions of the compound type.
-     * @param docComment Documentation comment belonging to the compound type.
+     * @param docComment Documentation comment belonging to this node.
      */
     CompoundType(Token token, Package pkg, String name, List<Parameter> parameters, List<Field> fields,
             List<FunctionType> functions, DocComment docComment)

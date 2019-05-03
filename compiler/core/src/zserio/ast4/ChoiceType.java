@@ -7,7 +7,6 @@ import java.util.Set;
 
 import org.antlr.v4.runtime.Token;
 
-import zserio.ast4.doc.DocComment;
 import zserio.tools.ZserioToolPrinter;
 
 /**
@@ -183,14 +182,14 @@ public class ChoiceType extends CompoundType
         final Expression.ExpressionType selectorExpressionType = selectorExpression.getExprType();
         for (ChoiceCase choiceCase : choiceCases)
         {
-            final List<Expression> caseExpressions = choiceCase.getExpressions();
-            for (Expression caseExpression : caseExpressions)
+            final List<ChoiceCaseExpression> caseExpressions = choiceCase.getExpressions();
+            for (ChoiceCaseExpression caseExpression : caseExpressions)
             {
-                if (caseExpression.getExprType() != selectorExpressionType)
+                if (caseExpression.getExpression().getExprType() != selectorExpressionType)
                     throw new ParserException(caseExpression, "Choice '" + getName() +
                             "' has incompatible case type!");
 
-                if (!caseExpression.getReferencedSymbolObjects(Parameter.class).isEmpty())
+                if (!caseExpression.getExpression().getReferencedSymbolObjects(Parameter.class).isEmpty())
                     throw new ParserException(caseExpression, "Choice '" + getName() +
                             "' has non-constant case expression!");
             }
@@ -202,16 +201,16 @@ public class ChoiceType extends CompoundType
         final List<Expression> allExpressions = new ArrayList<Expression>();
         for (ChoiceCase choiceCase : choiceCases)
         {
-            final List<Expression> newCaseExpressions = choiceCase.getExpressions();
-            for (Expression newCaseExpression : newCaseExpressions)
+            final List<ChoiceCaseExpression> newCaseExpressions = choiceCase.getExpressions();
+            for (ChoiceCaseExpression newCaseExpression : newCaseExpressions)
             {
                 for (Expression caseExpression : allExpressions)
                 {
-                    if (newCaseExpression.equals(caseExpression))
+                    if (newCaseExpression.getExpression().equals(caseExpression))
                         throw new ParserException(newCaseExpression, "Choice '" + getName() +
                                 "' has duplicated case!");
                 }
-                allExpressions.add(newCaseExpression);
+                allExpressions.add(newCaseExpression.getExpression());
             }
         }
     }
@@ -226,11 +225,11 @@ public class ChoiceType extends CompoundType
 
             for (ChoiceCase choiceCase : choiceCases)
             {
-                final List<Expression> caseExpressions = choiceCase.getExpressions();
-                for (Expression caseExpression : caseExpressions)
+                final List<ChoiceCaseExpression> caseExpressions = choiceCase.getExpressions();
+                for (ChoiceCaseExpression caseExpression : caseExpressions)
                 {
                     final Set<EnumItem> referencedEnumItems =
-                            caseExpression.getReferencedSymbolObjects(EnumItem.class);
+                            caseExpression.getExpression().getReferencedSymbolObjects(EnumItem.class);
                     for (EnumItem referencedEnumItem : referencedEnumItems)
                         if (!availableEnumItems.remove(referencedEnumItem))
                             throw new ParserException(caseExpression, "Choice '" + getName() +

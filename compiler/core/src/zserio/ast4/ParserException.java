@@ -6,7 +6,7 @@ public class ParserException extends RuntimeException
 {
     public ParserException(Token token, String message)
     {
-        this(new AstNodeLocation(token), message);
+        this(new AstLocation(token), message);
     }
 
     public ParserException(AstNode node, String message)
@@ -14,17 +14,17 @@ public class ParserException extends RuntimeException
         this(node.getLocation(), message);
     }
 
-    public ParserException(AstNodeLocation location, String message)
+    public ParserException(AstLocation location, String message)
     {
         super(message);
         this.location = location;
     }
 
-    public AstNodeLocation getLocation()
+    public AstLocation getLocation()
     {
         return location;
     }
 
-    private AstNodeLocation location;
+    private AstLocation location;
     private static final long serialVersionUID = -2149318704048979392L;
 }

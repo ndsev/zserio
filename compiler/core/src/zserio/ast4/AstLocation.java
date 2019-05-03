@@ -2,9 +2,17 @@ package zserio.ast4;
 
 import org.antlr.v4.runtime.Token;
 
-public class AstNodeLocation
+/**
+ * Location in AST.
+ */
+public class AstLocation
 {
-    public AstNodeLocation(Token token)
+    /**
+     * Constructor.
+     *
+     * @param token ANTLR4 token to localize AST node in the sources.
+     */
+    public AstLocation(Token token)
     {
         if (token == null)
         {
@@ -20,16 +28,31 @@ public class AstNodeLocation
         }
     }
 
+    /**
+     * Gets file name where the AST node is localized.
+     *
+     * @return File name.
+     */
     public String getFileName()
     {
         return fileName;
     }
 
+    /**
+     * Gets line number where the AST node is localized.
+     *
+     * @return Line number.
+     */
     public int getLine()
     {
         return line;
     }
 
+    /**
+     * Gets column number where the AST node is localized.
+     *
+     * @return Column number.
+     */
     public int getColumn()
     {
         return column;

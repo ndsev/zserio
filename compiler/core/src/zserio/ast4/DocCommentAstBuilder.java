@@ -1,4 +1,4 @@
-package zserio.ast4.doc;
+package zserio.ast4;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -8,6 +8,9 @@ import org.antlr.v4.runtime.Token;
 import zserio.antlr.DocComment4BaseVisitor;
 import zserio.antlr.DocComment4Parser;
 
+/**
+ * Implementation of DocComment4BaseVisitor which build the documentaion comment AST.
+ */
 public class DocCommentAstBuilder extends DocComment4BaseVisitor<Object>
 {
     @Override
@@ -124,11 +127,11 @@ public class DocCommentAstBuilder extends DocComment4BaseVisitor<Object>
     }
 
     private Token token = null;
-    final List<DocParagraph> paragraphs = new ArrayList<DocParagraph>();
-    final List<DocTagSee> seeTags = new ArrayList<DocTagSee>();
-    final List<DocTagTodo> todoTags = new ArrayList<DocTagTodo>();
-    final List<DocTagParam> paramTags = new ArrayList<DocTagParam>();
-    boolean isDeprecated = false;
+    private final List<DocParagraph> paragraphs = new ArrayList<DocParagraph>();
+    private final List<DocTagSee> seeTags = new ArrayList<DocTagSee>();
+    private final List<DocTagTodo> todoTags = new ArrayList<DocTagTodo>();
+    private final List<DocTagParam> paramTags = new ArrayList<DocTagParam>();
+    private boolean isDeprecated = false;
 
-    DocMultilineNode prevMultilineNode = null;
+    private DocMultilineNode prevMultilineNode = null;
 }

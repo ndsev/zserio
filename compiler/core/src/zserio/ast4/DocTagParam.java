@@ -1,11 +1,17 @@
-package zserio.ast4.doc;
+package zserio.ast4;
 
 import org.antlr.v4.runtime.Token;
 
-import zserio.ast4.ZserioAstVisitor;
-
+/** Param tag documentation node used to document parameters. */
 public class DocTagParam extends DocMultilineNode
 {
+    /**
+     * Constructor.
+     *
+     * @param token     ANTLR4 token to localize AST node in the sources.
+     * @param paramName Parameter name.
+     * @param firstLine First line of parameter description.
+     */
     public DocTagParam(Token token, String paramName, DocTextLine firstLine)
     {
         super(token, firstLine);
@@ -19,6 +25,11 @@ public class DocTagParam extends DocMultilineNode
         visitor.visitDocTagParam(this);
     }
 
+    /**
+     * Gets parameter name.
+     *
+     * @return Parameter name.
+     */
     public String getParamName()
     {
         return paramName;

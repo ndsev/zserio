@@ -1,13 +1,25 @@
-package zserio.ast4.doc;
+package zserio.ast4;
 
+import java.util.Collections;
 import java.util.List;
 
 import org.antlr.v4.runtime.Token;
-import zserio.ast4.AstNodeBase;
-import zserio.ast4.ZserioAstVisitor;
 
+/**
+ * Class representing a single documentation comment.
+ */
 public class DocComment extends AstNodeBase
 {
+    /**
+     * Constructor.
+     *
+     * @param token        ANTLR4 token to localize AST node in the sources.
+     * @param paragraphs   Doc comment paragraphs.
+     * @param seeTags      Doc comment see tags.
+     * @param todoTags     Doc comment todo tags.
+     * @param paramTags    Doc comment param tags.
+     * @param isDeprecated Flag if the documented node is deprecated.
+     */
     public DocComment(Token token, List<DocParagraph> paragraphs, List<DocTagSee> seeTags,
             List<DocTagTodo> todoTags, List<DocTagParam> paramTags, boolean isDeprecated)
     {
@@ -42,26 +54,51 @@ public class DocComment extends AstNodeBase
             paramTag.accept(visitor);
     }
 
-    public Iterable<DocParagraph> getParagraphs()
+    /**
+     * Gets doc comment paragraphs.
+     *
+     * @return List of paragraphs.
+     */
+    public List<DocParagraph> getParagraphs()
     {
-        return paragraphs;
+        return Collections.unmodifiableList(paragraphs);
     }
 
-    public Iterable<DocTagSee> getSeeTags()
+    /**
+     * Gets doc comment see tags.
+     *
+     * @return List of see tags.
+     */
+    public List<DocTagSee> getSeeTags()
     {
-        return seeTags;
+        return Collections.unmodifiableList(seeTags);
     }
 
-    public Iterable<DocTagTodo> getTodoTags()
+    /**
+     * Gets doc comment todo tags.
+     *
+     * @return List of todo tags.
+     */
+    public List<DocTagTodo> getTodoTags()
     {
-        return todoTags;
+        return Collections.unmodifiableList(todoTags);
     }
 
-    public Iterable<DocTagParam> getParamTags()
+    /**
+     * Gets doc comment param tags.
+     *
+     * @return List of param tags.
+     */
+    public List<DocTagParam> getParamTags()
     {
-        return paramTags;
+        return Collections.unmodifiableList(paramTags);
     }
 
+    /**
+     * Gets whether the documented node is deprecated.
+     *
+     * @return Deprecation flag.
+     */
     public boolean isDeprecated()
     {
         return isDeprecated;

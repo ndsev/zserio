@@ -1,12 +1,18 @@
-package zserio.ast4.doc;
+package zserio.ast4;
 
 import org.antlr.v4.runtime.Token;
 
-import zserio.ast4.AstNodeBase;
-import zserio.ast4.ZserioAstVisitor;
-
+/**
+ * Documentation node which wraps documentation text which can be either DocTextElement or DocTagSee.
+ */
 public class DocText extends AstNodeBase
 {
+    /**
+     * Constructor from text element.
+     *
+     * @param token       ANTLR4 token to localize AST node in the sources.
+     * @param textElement Text element.
+     */
     public DocText(Token token, DocTextElement textElement)
     {
         super(token);
@@ -15,6 +21,12 @@ public class DocText extends AstNodeBase
         this.seeTag = null;
     }
 
+    /**
+     * Constructor from see tag.
+     *
+     * @param token  ANTLR4 token to localize AST node in the sources.
+     * @param seeTag See tag.
+     */
     public DocText(Token token, DocTagSee seeTag)
     {
         super(token);
@@ -38,11 +50,21 @@ public class DocText extends AstNodeBase
             seeTag.accept(visitor);
     }
 
+    /**
+     * Gets text element if available.
+     *
+     * @return Text element or null.
+     */
     public DocTextElement getTextElement()
     {
         return textElement;
     }
 
+    /**
+     * Gets see tag if available.
+     *
+     * @return See tag or null.
+     */
     public DocTagSee getSeeTag()
     {
         return seeTag;

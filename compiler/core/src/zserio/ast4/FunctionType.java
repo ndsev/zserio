@@ -11,7 +11,7 @@ import zserio.tools.ZserioToolPrinter;
  *
  * Function types are Zserio types as well.
  */
-public class FunctionType extends AstNodeBase implements ZserioType
+public class FunctionType extends AstNodeWithDoc implements ZserioType
 {
     /**
      * Constructor.
@@ -21,11 +21,12 @@ public class FunctionType extends AstNodeBase implements ZserioType
      * @param returnType       Zserio type of the function return value.
      * @param name             Name of the function type.
      * @param resultExpression Result expression of the function type.
+     * @param docComment      Documentation comment belonging to this node.
      */
     public FunctionType(Token token, Package pkg, ZserioType returnType, String name,
-            Expression resultExpression)
+            Expression resultExpression, DocComment docComment)
     {
-        super(token);
+        super(token, docComment);
 
         this.pkg = pkg;
         this.returnType = returnType;
@@ -44,6 +45,8 @@ public class FunctionType extends AstNodeBase implements ZserioType
     {
         returnType.accept(visitor);
         resultExpression.accept(visitor);
+
+        super.visitChildren(visitor);
     }
 
     @Override

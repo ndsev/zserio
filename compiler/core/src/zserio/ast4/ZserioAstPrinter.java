@@ -1,13 +1,5 @@
 package zserio.ast4;
 
-import zserio.ast4.doc.DocComment;
-import zserio.ast4.doc.DocParagraph;
-import zserio.ast4.doc.DocTagParam;
-import zserio.ast4.doc.DocTagSee;
-import zserio.ast4.doc.DocTagTodo;
-import zserio.ast4.doc.DocText;
-import zserio.ast4.doc.DocTextElement;
-import zserio.ast4.doc.DocTextLine;
 
 public class ZserioAstPrinter implements ZserioAstVisitor
 {
@@ -102,13 +94,22 @@ public class ZserioAstPrinter implements ZserioAstVisitor
         visitChildren(field);
     }
 
-    @Override public void visitChoiceCase(ChoiceCase choiceCase)
+    @Override
+    public void visitChoiceCase(ChoiceCase choiceCase)
     {
         print("choiceCase");
         visitChildren(choiceCase);
     }
 
-    @Override public void visitChoiceDefault(ChoiceDefault choiceDefault)
+    @Override
+    public void visitChoiceCaseExpression(ChoiceCaseExpression choiceCaseExpression)
+    {
+        print("choiceCaseExpression");
+        visitChildren(choiceCaseExpression);
+    }
+
+    @Override
+    public void visitChoiceDefault(ChoiceDefault choiceDefault)
     {
         print("choiceDefault");
         visitChildren(choiceDefault);
@@ -230,8 +231,8 @@ public class ZserioAstPrinter implements ZserioAstVisitor
     @Override
     public void visitDocTagSee(DocTagSee docTagSee)
     {
-        print("docTagSee [" + (docTagSee.getAlias() != null ? "\"" + docTagSee.getAlias() + "\", " : "") +
-                docTagSee.getId() + "]");
+        print("docTagSee [\"" + docTagSee.getLinkAlias() + "\", " +
+                docTagSee.getLinkSymbolReference().getReferencedSymbolName() + "]");
         visitChildren(docTagSee);
     }
 

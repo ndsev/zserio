@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.antlr.v4.runtime.Token;
 
+
 /**
  * AST node for cases defined by choice types.
  */
@@ -17,7 +18,7 @@ public class ChoiceCase extends AstNodeBase
      * @param caseExpressions List of all case expressions associated to this choice case.
      * @param caseField       Case field associated to this choice case or null if it's not defined.
      */
-    public ChoiceCase(Token token, List<Expression> caseExpressions, Field caseField)
+    public ChoiceCase(Token token, List<ChoiceCaseExpression> caseExpressions, Field caseField)
     {
         super(token);
 
@@ -34,7 +35,7 @@ public class ChoiceCase extends AstNodeBase
     @Override
     public void visitChildren(ZserioAstVisitor visitor)
     {
-        for (Expression caseExpression : caseExpressions)
+        for (ChoiceCaseExpression caseExpression : caseExpressions)
             caseExpression.accept(visitor);
         if (caseField != null)
             caseField.accept(visitor);
@@ -45,7 +46,7 @@ public class ChoiceCase extends AstNodeBase
      *
      * @return Choice case expression list.
      */
-    public List<Expression> getExpressions()
+    public List<ChoiceCaseExpression> getExpressions()
     {
         return Collections.unmodifiableList(caseExpressions);
     }
@@ -60,6 +61,6 @@ public class ChoiceCase extends AstNodeBase
         return caseField;
     }
 
-    private final List<Expression> caseExpressions;
+    private final List<ChoiceCaseExpression> caseExpressions;
     private final Field caseField;
 };

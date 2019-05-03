@@ -12,19 +12,20 @@ import zserio.tools.HashUtil;
  *
  * Service types are Zserio types as well.
  */
-public class ServiceType extends AstNodeBase implements ZserioScopedType, Comparable<ServiceType>
+public class ServiceType extends AstNodeWithDoc implements ZserioScopedType, Comparable<ServiceType>
 {
     /**
      * Constructor.
      *
-     * @param token ANTLR4 token to localize AST node in the sources.
-     * @param pkg   Package to which belongs the service type.
-     * @param name  Name of the service type.
-     * @param rpcs  List of all RPCs which belong to the service type.
+     * @param token      ANTLR4 token to localize AST node in the sources.
+     * @param pkg        Package to which belongs the service type.
+     * @param name       Name of the service type.
+     * @param rpcs       List of all RPCs which belong to the service type.
+     * @param docComment Documentation comment belonging to this node.
      */
-    public ServiceType(Token token, Package pkg, String name, List<Rpc> rpcs)
+    public ServiceType(Token token, Package pkg, String name, List<Rpc> rpcs, DocComment docComment)
     {
-        super(token);
+        super(token, docComment);
 
         this.pkg = pkg;
         this.name = name;
@@ -42,6 +43,8 @@ public class ServiceType extends AstNodeBase implements ZserioScopedType, Compar
     {
         for (Rpc rpc : rpcs)
             rpc.accept(visitor);
+
+        super.visitChildren(visitor);
     }
 
     @Override

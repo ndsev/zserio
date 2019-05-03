@@ -743,7 +743,7 @@ public class Expression extends AstNodeBase
         }
         catch (ParserException e)
         {
-            final AstNodeLocation location = getLocation();
+            final AstLocation location = getLocation();
             throw new ParserException(functionResultExpression, e.getMessage() +
                     " Found in function '" + functionType.getName() + "' called from here: " +
                     location.getFileName() + ":" + location.getLine() + ":" + location.getColumn());

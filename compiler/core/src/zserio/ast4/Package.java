@@ -19,7 +19,7 @@ import zserio.tools.ZserioToolPrinter;
  *
  * Package is represented by one translation unit (one source file).
  */
-public class Package extends AstNodeBase
+public class Package extends AstNodeWithDoc
 {
     /**
      * Constructor.
@@ -28,11 +28,12 @@ public class Package extends AstNodeBase
      * @param packageName Name of the package.
      * @param imports     List of all imports defined in the package.
      * @param localTypes  Map of all available local types defined in the package.
+     * @param docComment  Documentation comment belonging to this node.
      */
     public Package(Token token, PackageName packageName, List<Import> imports,
-            LinkedHashMap<String, ZserioType> localTypes)
+            LinkedHashMap<String, ZserioType> localTypes, DocComment docComment)
     {
-        super(token);
+        super(token, docComment);
 
         this.packageName = packageName;
         this.imports = imports;
@@ -53,6 +54,8 @@ public class Package extends AstNodeBase
 
         for (ZserioType type : localTypes.values())
             type.accept(visitor);
+
+        super.visitChildren(visitor);
     }
 
     /**

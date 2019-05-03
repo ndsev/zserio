@@ -10,17 +10,18 @@ import zserio.ast4.ZserioType;
  *
  * Subtypes are Zserio types as well.
  */
-public class Subtype extends AstNodeBase implements ZserioType
+public class Subtype extends AstNodeWithDoc implements ZserioType
 {
     /**
      * @param token      ANTLR4 token to localize AST node in the sources.
      * @param pkg        Package to which belongs the subtype.
      * @param targetType Zserio type which belongs to the subtype.
      * @param name       Name of the subtype.
+     * @param docComment Documentation comment belonging to this node.
      */
-    public Subtype(Token token, Package pkg, ZserioType targetType, String name)
+    public Subtype(Token token, Package pkg, ZserioType targetType, String name, DocComment docComment)
     {
-        super(token);
+        super(token, docComment);
 
         this.pkg = pkg;
         this.targetType = targetType;
@@ -37,6 +38,8 @@ public class Subtype extends AstNodeBase implements ZserioType
     public void visitChildren(ZserioAstVisitor visitor)
     {
         targetType.accept(visitor);
+
+        super.visitChildren(visitor);
     }
 
     @Override

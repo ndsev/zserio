@@ -2,8 +2,10 @@ package zserio.ast4;
 
 import org.antlr.v4.runtime.Token;
 
-import zserio.ast4.doc.DocComment;
 
+/**
+ * AST node which can have documentation comment.
+ */
 public abstract class AstNodeWithDoc extends AstNodeBase
 {
     /**

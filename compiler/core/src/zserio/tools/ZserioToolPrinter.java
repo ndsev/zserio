@@ -2,7 +2,7 @@ package zserio.tools;
 
 import zserio.antlr.util.BaseTokenAST;
 import zserio.ast4.AstNode;
-import zserio.ast4.AstNodeLocation;
+import zserio.ast4.AstLocation;
 
 /**
  * Class with static methods to handle all printing possibilities from Zserio Tool.
@@ -56,7 +56,7 @@ public class ZserioToolPrinter
      * @param astNodeLocation   AST node location.
      * @param text              Text of the warning to print.
      */
-    public static void printWarning(AstNodeLocation location, String text)
+    public static void printWarning(AstLocation location, String text)
     {
         printWarning(location.getFileName(), location.getLine(), location.getColumn(), text);
     }
@@ -78,7 +78,7 @@ public class ZserioToolPrinter
      * @param astNodeLocation AST node location.
      * @param text            Text of the error to print.
      */
-    public static void printError(AstNodeLocation location, String text)
+    public static void printError(AstLocation location, String text)
     {
         printError(location.getFileName(), location.getLine(), location.getColumn(), text);
     }
