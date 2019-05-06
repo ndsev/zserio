@@ -280,14 +280,14 @@ public class ZserioParserTest
         }
     }
 
-    private static Zserio4Parser createParser(String input)
+    private static ZserioParser createParser(String input)
     {
         final ThrowingErrorListener throwingErrorListener = new ThrowingErrorListener();
-        final Zserio4Lexer lexer = new Zserio4Lexer(CharStreams.fromString(input));
+        final ZserioLexer lexer = new ZserioLexer(CharStreams.fromString(input));
         lexer.removeErrorListeners();
         lexer.addErrorListener(throwingErrorListener);
         final CommonTokenStream tokens = new CommonTokenStream(lexer);
-        final Zserio4Parser parser = new Zserio4Parser(tokens);
+        final ZserioParser parser = new ZserioParser(tokens);
         parser.removeErrorListeners();
         parser.addErrorListener(throwingErrorListener);
         return parser;
@@ -295,11 +295,11 @@ public class ZserioParserTest
 
     private static void assertParseError(String ruleName, String input, String errorSubstring)
     {
-        final Zserio4Parser parser = createParser(input);
+        final ZserioParser parser = createParser(input);
         String error = "";
         try
         {
-            Method rule = Zserio4Parser.class.getMethod(ruleName);
+            Method rule = ZserioParser.class.getMethod(ruleName);
             rule.invoke(parser);
         }
         catch (IllegalAccessException e)
@@ -333,10 +333,10 @@ public class ZserioParserTest
 
     private static void checkParseTree(String ruleName, String input, String stringTree)
     {
-        final Zserio4Parser parser = createParser(input);
+        final ZserioParser parser = createParser(input);
         try
         {
-            Method rule = Zserio4Parser.class.getMethod(ruleName);
+            Method rule = ZserioParser.class.getMethod(ruleName);
             ParseTree tree = (ParseTree)(rule.invoke(parser));
             assertEquals(stringTree, tree.toStringTree(parser));
         }

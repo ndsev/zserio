@@ -85,11 +85,11 @@ findbugs.home_dir       - Location of the findbugs tool. If not set, findbugs is
     </macrodef>
 
     <target name="antlr4">
-        <antlr4 target="${zserio_core.antlr_dir}/Zserio4Lexer.g4"
+        <antlr4 target="${zserio_core.antlr_dir}/ZserioLexer.g4"
             outputdirectory="${zserio_core.antlr.out_dir}"/>
-        <antlr4 target="${zserio_core.antlr_dir}/Zserio4Parser.g4"
+        <antlr4 target="${zserio_core.antlr_dir}/ZserioParser.g4"
             outputdirectory="${zserio_core.antlr.out_dir}"/>
-        <antlr4 target="${zserio_core.antlr_dir}/DocComment4.g4"
+        <antlr4 target="${zserio_core.antlr_dir}/DocComment.g4"
             outputdirectory="${zserio_core.antlr.out_dir}"/>
     </target>
 

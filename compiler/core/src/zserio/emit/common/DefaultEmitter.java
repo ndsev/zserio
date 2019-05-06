@@ -1,23 +1,23 @@
 package zserio.emit.common;
 
-import zserio.ast4.ChoiceType;
-import zserio.ast4.ConstType;
-import zserio.ast4.EnumType;
-import zserio.ast4.Import;
-import zserio.ast4.Package;
-import zserio.ast4.Root;
-import zserio.ast4.ServiceType;
-import zserio.ast4.SqlDatabaseType;
-import zserio.ast4.SqlTableType;
-import zserio.ast4.StructureType;
-import zserio.ast4.Subtype;
-import zserio.ast4.UnionType;
+import zserio.ast.ChoiceType;
+import zserio.ast.ConstType;
+import zserio.ast.EnumType;
+import zserio.ast.Import;
+import zserio.ast.Package;
+import zserio.ast.Root;
+import zserio.ast.ServiceType;
+import zserio.ast.SqlDatabaseType;
+import zserio.ast.SqlTableType;
+import zserio.ast.StructureType;
+import zserio.ast.Subtype;
+import zserio.ast.UnionType;
 
 /**
  * Implements the Emitter interface and does nothing. Saves some typing for derived classes that only need to
  * implement a few of the emitter actions.
  */
-public abstract class DefaultEmitter implements Emitter4
+public abstract class DefaultEmitter implements Emitter
 {
     @Override
     public void beginRoot(Root root) throws ZserioEmitException {}

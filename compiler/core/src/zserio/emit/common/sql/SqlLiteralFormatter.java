@@ -2,7 +2,7 @@ package zserio.emit.common.sql;
 
 import java.math.BigInteger;
 
-import zserio.ast4.Expression;
+import zserio.ast.Expression;
 import zserio.emit.common.ZserioEmitException;
 import zserio.emit.common.sql.types.NativeIntegerType;
 import zserio.emit.common.sql.types.NativeRealType;

@@ -9,20 +9,20 @@ import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.apache.commons.cli.ParseException;
 
-import zserio.antlr.Zserio4Lexer;
-import zserio.antlr.Zserio4Parser;
-import zserio.ast4.PackageName;
-import zserio.ast4.Import;
-import zserio.ast4.Package;
-import zserio.ast4.ZserioAstEvaluator;
-import zserio.ast4.ZserioAstResolver;
-import zserio.ast4.ZserioParseTreeChecker;
-import zserio.ast4.ParserException;
-import zserio.ast4.ZserioAstPrinter;
-import zserio.ast4.Root;
-import zserio.ast4.ZserioAstScopeSetter;
-import zserio.ast4.ZserioAstBuilder;
-import zserio.ast4.ZserioAstChecker;
+import zserio.antlr.ZserioLexer;
+import zserio.antlr.ZserioParser;
+import zserio.ast.Import;
+import zserio.ast.Package;
+import zserio.ast.PackageName;
+import zserio.ast.ParserException;
+import zserio.ast.Root;
+import zserio.ast.ZserioAstBuilder;
+import zserio.ast.ZserioAstChecker;
+import zserio.ast.ZserioAstEvaluator;
+import zserio.ast.ZserioAstPrinter;
+import zserio.ast.ZserioAstResolver;
+import zserio.ast.ZserioAstScopeSetter;
+import zserio.ast.ZserioParseTreeChecker;
 import zserio.emit.common.ZserioEmitException;
 
 /**
@@ -161,9 +161,9 @@ public class ZserioTool
         inputFileManager.registerFile(inputFileFullName);
 
         final CharStream inputStream = CharStreams.fromFileName(inputFileFullName, Charset.forName("UTF-8"));
-        final Zserio4Lexer lexer = new Zserio4Lexer(inputStream);
+        final ZserioLexer lexer = new ZserioLexer(inputStream);
         final CommonTokenStream tokenStream = new CommonTokenStream(lexer);
-        final Zserio4Parser parser = new Zserio4Parser(tokenStream);
+        final ZserioParser parser = new ZserioParser(tokenStream);
         final ParseTree tree = parser.packageDeclaration();
 
         ZserioParseTreeChecker parseTreeChecker = new ZserioParseTreeChecker(inputFileManager);

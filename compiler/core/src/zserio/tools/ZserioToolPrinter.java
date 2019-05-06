@@ -1,8 +1,8 @@
 package zserio.tools;
 
 import zserio.antlr.util.BaseTokenAST;
-import zserio.ast4.AstNode;
-import zserio.ast4.AstLocation;
+import zserio.ast.AstLocation;
+import zserio.ast.AstNode;
 
 /**
  * Class with static methods to handle all printing possibilities from Zserio Tool.

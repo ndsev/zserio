@@ -2,8 +2,8 @@ package zserio.emit.common;
 
 import java.math.BigInteger;
 
-import zserio.antlr.Zserio4Parser;
-import zserio.ast4.Expression;
+import zserio.antlr.ZserioParser;
+import zserio.ast.Expression;
 
 /**
  * Expression formatter used by all emitters.
@@ -152,43 +152,43 @@ public class ExpressionFormatter
     {
         switch (expr.getType())
         {
-            case Zserio4Parser.DECIMAL_LITERAL:
+            case ZserioParser.DECIMAL_LITERAL:
                 buffer.append(policy.getDecimalLiteral(expr, isNegativeLiteral));
                 break;
 
-            case Zserio4Parser.BINARY_LITERAL:
+            case ZserioParser.BINARY_LITERAL:
                 buffer.append(policy.getBinaryLiteral(expr, isNegativeLiteral));
                 break;
 
-            case Zserio4Parser.HEXADECIMAL_LITERAL:
+            case ZserioParser.HEXADECIMAL_LITERAL:
                 buffer.append(policy.getHexadecimalLiteral(expr, isNegativeLiteral));
                 break;
 
-            case Zserio4Parser.OCTAL_LITERAL:
+            case ZserioParser.OCTAL_LITERAL:
                 buffer.append(policy.getOctalLiteral(expr, isNegativeLiteral));
                 break;
 
-            case Zserio4Parser.FLOAT_LITERAL:
+            case ZserioParser.FLOAT_LITERAL:
                 buffer.append(policy.getFloatLiteral(expr, isNegativeLiteral));
                 break;
 
-            case Zserio4Parser.DOUBLE_LITERAL:
+            case ZserioParser.DOUBLE_LITERAL:
                 buffer.append(policy.getDoubleLiteral(expr, isNegativeLiteral));
                 break;
 
-            case Zserio4Parser.BOOL_LITERAL:
+            case ZserioParser.BOOL_LITERAL:
                 buffer.append(policy.getBoolLiteral(expr));
                 break;
 
-            case Zserio4Parser.STRING_LITERAL:
+            case ZserioParser.STRING_LITERAL:
                 buffer.append(policy.getStringLiteral(expr));
                 break;
 
-            case Zserio4Parser.INDEX:
+            case ZserioParser.INDEX:
                 buffer.append(policy.getIndex(expr));
                 break;
 
-            case Zserio4Parser.ID:
+            case ZserioParser.ID:
                 final boolean isLastInDot = !inArray && !inDot;
                 final boolean isSetter = isLastInDot && formatSetter;
                 buffer.append(policy.getIdentifier(expr, isLastInDot, isSetter));
@@ -204,48 +204,48 @@ public class ExpressionFormatter
         ExpressionFormattingPolicy.UnaryExpressionFormatting formatting;
         switch (expr.getType())
         {
-            case Zserio4Parser.PLUS:
+            case ZserioParser.PLUS:
                 formatting = policy.getUnaryPlus(expr);
                 break;
 
-            case Zserio4Parser.MINUS:
+            case ZserioParser.MINUS:
                 wasUnaryMinus = true;
                 formatting = policy.getUnaryMinus(expr);
                 break;
 
-            case Zserio4Parser.TILDE:
+            case ZserioParser.TILDE:
                 formatting = policy.getTilde(expr);
                 break;
 
-            case Zserio4Parser.BANG:
+            case ZserioParser.BANG:
                 formatting = policy.getBang(expr);
                 break;
 
-            case Zserio4Parser.LPAREN:
+            case ZserioParser.LPAREN:
                 formatting = policy.getLeftParenthesis(expr);
                 break;
 
-            case Zserio4Parser.RPAREN: // function call
+            case ZserioParser.RPAREN: // function call
                 formatting = policy.getFunctionCall(expr);
                 break;
 
-            case Zserio4Parser.LENGTHOF:
+            case ZserioParser.LENGTHOF:
                 formatting = policy.getLengthOf(expr);
                 break;
 
-            case Zserio4Parser.SUM:
+            case ZserioParser.SUM:
                 formatting = policy.getSum(expr);
                 break;
 
-            case Zserio4Parser.VALUEOF:
+            case ZserioParser.VALUEOF:
                 formatting = policy.getValueOf(expr);
                 break;
 
-            case Zserio4Parser.EXPLICIT:
+            case ZserioParser.EXPLICIT:
                 formatting = policy.getExplicit(expr);
                 break;
 
-            case Zserio4Parser.NUMBITS:
+            case ZserioParser.NUMBITS:
                 formatting = policy.getNumBits(expr);
                 break;
 
@@ -265,90 +265,90 @@ public class ExpressionFormatter
         final int expressionType = expr.getType();
         switch (expressionType)
         {
-            case Zserio4Parser.COMMA:
+            case ZserioParser.COMMA:
                 formatting = policy.getComma(expr);
                 break;
 
-            case Zserio4Parser.LOGICAL_OR:
+            case ZserioParser.LOGICAL_OR:
                 formatting = policy.getLogicalOr(expr);
                 break;
 
-            case Zserio4Parser.LOGICAL_AND:
+            case ZserioParser.LOGICAL_AND:
                 formatting = policy.getLogicalAnd(expr);
                 break;
 
-            case Zserio4Parser.OR:
+            case ZserioParser.OR:
                 formatting = policy.getOr(expr);
                 break;
 
-            case Zserio4Parser.XOR:
+            case ZserioParser.XOR:
                 formatting = policy.getXor(expr);
                 break;
 
-            case Zserio4Parser.AND:
+            case ZserioParser.AND:
                 formatting = policy.getAnd(expr);
                 break;
 
-            case Zserio4Parser.EQ:
+            case ZserioParser.EQ:
                 formatting = policy.getEq(expr);
                 break;
 
-            case Zserio4Parser.NE:
+            case ZserioParser.NE:
                 formatting = policy.getNe(expr);
                 break;
 
-            case Zserio4Parser.LT:
+            case ZserioParser.LT:
                 formatting = policy.getLt(expr);
                 break;
 
-            case Zserio4Parser.LE:
+            case ZserioParser.LE:
                 formatting = policy.getLe(expr);
                 break;
 
-            case Zserio4Parser.GE:
+            case ZserioParser.GE:
                 formatting = policy.getGe(expr);
                 break;
 
-            case Zserio4Parser.GT:
+            case ZserioParser.GT:
                 formatting = policy.getGt(expr);
                 break;
 
-            case Zserio4Parser.LSHIFT:
+            case ZserioParser.LSHIFT:
                 formatting = policy.getLeftShift(expr);
                 break;
 
-            case Zserio4Parser.RSHIFT:
+            case ZserioParser.RSHIFT:
                 formatting = policy.getRightShift(expr);
                 break;
 
-            case Zserio4Parser.PLUS:
+            case ZserioParser.PLUS:
                 formatting = policy.getPlus(expr);
                 break;
 
-            case Zserio4Parser.MINUS:
+            case ZserioParser.MINUS:
                 formatting = policy.getMinus(expr);
                 break;
 
-            case Zserio4Parser.MULTIPLY:
+            case ZserioParser.MULTIPLY:
                 formatting = policy.getMultiply(expr);
                 break;
 
-            case Zserio4Parser.DIVIDE:
+            case ZserioParser.DIVIDE:
                 formatting = policy.getDivide(expr);
                 break;
 
-            case Zserio4Parser.MODULO:
+            case ZserioParser.MODULO:
                 formatting = policy.getModulo(expr);
                 break;
 
-            case Zserio4Parser.LBRACKET:
+            case ZserioParser.LBRACKET:
                 oldInFlag = inArray;
                 inArray = true;
                 final boolean isSetter = !inDot && formatSetter;
                 formatting = policy.getArrayElement(expr, isSetter);
                 break;
 
-            case Zserio4Parser.DOT:
+            case ZserioParser.DOT:
                 oldInFlag = inDot;
                 inDot = true;
                 formatting = policy.getDot(expr);
@@ -362,9 +362,9 @@ public class ExpressionFormatter
         append(expr.op1());
         buffer.append(formatting.getAfterOperand1());
 
-        if (expressionType == Zserio4Parser.LBRACKET)
+        if (expressionType == ZserioParser.LBRACKET)
             inArray = oldInFlag;
-        else if (expressionType == Zserio4Parser.DOT)
+        else if (expressionType == ZserioParser.DOT)
             inDot = oldInFlag;
 
         append(expr.op2());
@@ -376,7 +376,7 @@ public class ExpressionFormatter
         ExpressionFormattingPolicy.TernaryExpressionFormatting formatting;
         switch (expr.getType())
         {
-            case Zserio4Parser.QUESTIONMARK:
+            case ZserioParser.QUESTIONMARK:
                 formatting = policy.getQuestionMark(expr);
                 break;
 

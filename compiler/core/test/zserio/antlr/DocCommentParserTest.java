@@ -258,14 +258,14 @@ public class DocCommentParserTest
         }
     }
 
-    private DocComment4Parser createParser(String input)
+    private DocCommentParser createParser(String input)
     {
         final ThrowingErrorListener throwingErrorListener = new ThrowingErrorListener();
-        final DocComment4Lexer lexer = new DocComment4Lexer(CharStreams.fromString(input));
+        final DocCommentLexer lexer = new DocCommentLexer(CharStreams.fromString(input));
         lexer.removeErrorListeners();
         lexer.addErrorListener(throwingErrorListener);
         final CommonTokenStream tokens = new CommonTokenStream(lexer);
-        final DocComment4Parser parser = new DocComment4Parser(tokens);
+        final DocCommentParser parser = new DocCommentParser(tokens);
         parser.removeErrorListeners();
         parser.addErrorListener(throwingErrorListener);
         return parser;
@@ -273,10 +273,10 @@ public class DocCommentParserTest
 
     private void checkParseTree(String ruleName, String input, String stringTree)
     {
-        final DocComment4Parser parser = createParser(input);
+        final DocCommentParser parser = createParser(input);
         try
         {
-            Method rule = DocComment4Parser.class.getMethod(ruleName);
+            Method rule = DocCommentParser.class.getMethod(ruleName);
             ParseTree tree = (ParseTree)(rule.invoke(parser));
             assertEquals(stringTree, tree.toStringTree(parser));
         }

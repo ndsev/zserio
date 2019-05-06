@@ -48,40 +48,40 @@ public class ZserioLexerTest
                 "^\n"
         );
 
-        Zserio4Lexer lexer = new Zserio4Lexer(input);
+        ZserioLexer lexer = new ZserioLexer(input);
 
-        checkToken(lexer, Zserio4Lexer.AND);
-        checkToken(lexer, Zserio4Lexer.ASSIGN);
-        checkToken(lexer, Zserio4Lexer.BANG);
-        checkToken(lexer, Zserio4Lexer.COLON);
-        checkToken(lexer, Zserio4Lexer.COMMA);
-        checkToken(lexer, Zserio4Lexer.DIVIDE);
-        checkToken(lexer, Zserio4Lexer.DOT);
-        checkToken(lexer, Zserio4Lexer.EQ);
-        checkToken(lexer, Zserio4Lexer.GE);
-        checkToken(lexer, Zserio4Lexer.GT);
-        checkToken(lexer, Zserio4Lexer.LBRACE);
-        checkToken(lexer, Zserio4Lexer.LBRACKET);
-        checkToken(lexer, Zserio4Lexer.LE);
-        checkToken(lexer, Zserio4Lexer.LOGICAL_AND);
-        checkToken(lexer, Zserio4Lexer.LOGICAL_OR);
-        checkToken(lexer, Zserio4Lexer.LPAREN);
-        checkToken(lexer, Zserio4Lexer.LSHIFT);
-        checkToken(lexer, Zserio4Lexer.LT);
-        checkToken(lexer, Zserio4Lexer.MINUS);
-        checkToken(lexer, Zserio4Lexer.MODULO);
-        checkToken(lexer, Zserio4Lexer.MULTIPLY);
-        checkToken(lexer, Zserio4Lexer.NE);
-        checkToken(lexer, Zserio4Lexer.OR);
-        checkToken(lexer, Zserio4Lexer.PLUS);
-        checkToken(lexer, Zserio4Lexer.QUESTIONMARK);
-        checkToken(lexer, Zserio4Lexer.RBRACE);
-        checkToken(lexer, Zserio4Lexer.RBRACKET);
-        checkToken(lexer, Zserio4Lexer.RPAREN);
-        checkToken(lexer, Zserio4Lexer.RSHIFT);
-        checkToken(lexer, Zserio4Lexer.SEMICOLON);
-        checkToken(lexer, Zserio4Lexer.TILDE);
-        checkToken(lexer, Zserio4Lexer.XOR);
+        checkToken(lexer, ZserioLexer.AND);
+        checkToken(lexer, ZserioLexer.ASSIGN);
+        checkToken(lexer, ZserioLexer.BANG);
+        checkToken(lexer, ZserioLexer.COLON);
+        checkToken(lexer, ZserioLexer.COMMA);
+        checkToken(lexer, ZserioLexer.DIVIDE);
+        checkToken(lexer, ZserioLexer.DOT);
+        checkToken(lexer, ZserioLexer.EQ);
+        checkToken(lexer, ZserioLexer.GE);
+        checkToken(lexer, ZserioLexer.GT);
+        checkToken(lexer, ZserioLexer.LBRACE);
+        checkToken(lexer, ZserioLexer.LBRACKET);
+        checkToken(lexer, ZserioLexer.LE);
+        checkToken(lexer, ZserioLexer.LOGICAL_AND);
+        checkToken(lexer, ZserioLexer.LOGICAL_OR);
+        checkToken(lexer, ZserioLexer.LPAREN);
+        checkToken(lexer, ZserioLexer.LSHIFT);
+        checkToken(lexer, ZserioLexer.LT);
+        checkToken(lexer, ZserioLexer.MINUS);
+        checkToken(lexer, ZserioLexer.MODULO);
+        checkToken(lexer, ZserioLexer.MULTIPLY);
+        checkToken(lexer, ZserioLexer.NE);
+        checkToken(lexer, ZserioLexer.OR);
+        checkToken(lexer, ZserioLexer.PLUS);
+        checkToken(lexer, ZserioLexer.QUESTIONMARK);
+        checkToken(lexer, ZserioLexer.RBRACE);
+        checkToken(lexer, ZserioLexer.RBRACKET);
+        checkToken(lexer, ZserioLexer.RPAREN);
+        checkToken(lexer, ZserioLexer.RSHIFT);
+        checkToken(lexer, ZserioLexer.SEMICOLON);
+        checkToken(lexer, ZserioLexer.TILDE);
+        checkToken(lexer, ZserioLexer.XOR);
 
         checkEOF(lexer);
     }
@@ -147,63 +147,63 @@ public class ZserioLexerTest
                 "varuint64\n"
         );
 
-        Zserio4Lexer lexer = new Zserio4Lexer(input);
+        ZserioLexer lexer = new ZserioLexer(input);
 
-        checkToken(lexer, Zserio4Lexer.ALIGN);
-        checkToken(lexer, Zserio4Lexer.BIT_FIELD);
-        checkToken(lexer, Zserio4Lexer.BOOL);
-        checkToken(lexer, Zserio4Lexer.CASE);
-        checkToken(lexer, Zserio4Lexer.CHOICE);
-        checkToken(lexer, Zserio4Lexer.CONST);
-        checkToken(lexer, Zserio4Lexer.DEFAULT);
-        checkToken(lexer, Zserio4Lexer.ENUM);
-        checkToken(lexer, Zserio4Lexer.EXPLICIT);
-        checkToken(lexer, Zserio4Lexer.FLOAT16);
-        checkToken(lexer, Zserio4Lexer.FLOAT32);
-        checkToken(lexer, Zserio4Lexer.FLOAT64);
-        checkToken(lexer, Zserio4Lexer.FUNCTION);
-        checkToken(lexer, Zserio4Lexer.IF);
-        checkToken(lexer, Zserio4Lexer.IMPLICIT);
-        checkToken(lexer, Zserio4Lexer.IMPORT);
-        checkToken(lexer, Zserio4Lexer.INDEX);
-        checkToken(lexer, Zserio4Lexer.INT_FIELD);
-        checkToken(lexer, Zserio4Lexer.INT16);
-        checkToken(lexer, Zserio4Lexer.INT32);
-        checkToken(lexer, Zserio4Lexer.INT64);
-        checkToken(lexer, Zserio4Lexer.INT8);
-        checkToken(lexer, Zserio4Lexer.LENGTHOF);
-        checkToken(lexer, Zserio4Lexer.NUMBITS);
-        checkToken(lexer, Zserio4Lexer.ON);
-        checkToken(lexer, Zserio4Lexer.OPTIONAL);
-        checkToken(lexer, Zserio4Lexer.PACKAGE);
-        checkToken(lexer, Zserio4Lexer.RETURN);
-        checkToken(lexer, Zserio4Lexer.RPC);
-        checkToken(lexer, Zserio4Lexer.SERVICE);
-        checkToken(lexer, Zserio4Lexer.SQL);
-        checkToken(lexer, Zserio4Lexer.SQL_DATABASE);
-        checkToken(lexer, Zserio4Lexer.SQL_TABLE);
-        checkToken(lexer, Zserio4Lexer.SQL_VIRTUAL);
-        checkToken(lexer, Zserio4Lexer.SQL_WITHOUT_ROWID);
-        checkToken(lexer, Zserio4Lexer.STREAM);
-        checkToken(lexer, Zserio4Lexer.STRING);
-        checkToken(lexer, Zserio4Lexer.STRUCTURE);
-        checkToken(lexer, Zserio4Lexer.SUBTYPE);
-        checkToken(lexer, Zserio4Lexer.SUM);
-        checkToken(lexer, Zserio4Lexer.UINT16);
-        checkToken(lexer, Zserio4Lexer.UINT32);
-        checkToken(lexer, Zserio4Lexer.UINT64);
-        checkToken(lexer, Zserio4Lexer.UINT8);
-        checkToken(lexer, Zserio4Lexer.UNION);
-        checkToken(lexer, Zserio4Lexer.USING);
-        checkToken(lexer, Zserio4Lexer.VALUEOF);
-        checkToken(lexer, Zserio4Lexer.VARINT);
-        checkToken(lexer, Zserio4Lexer.VARINT16);
-        checkToken(lexer, Zserio4Lexer.VARINT32);
-        checkToken(lexer, Zserio4Lexer.VARINT64);
-        checkToken(lexer, Zserio4Lexer.VARUINT);
-        checkToken(lexer, Zserio4Lexer.VARUINT16);
-        checkToken(lexer, Zserio4Lexer.VARUINT32);
-        checkToken(lexer, Zserio4Lexer.VARUINT64);
+        checkToken(lexer, ZserioLexer.ALIGN);
+        checkToken(lexer, ZserioLexer.BIT_FIELD);
+        checkToken(lexer, ZserioLexer.BOOL);
+        checkToken(lexer, ZserioLexer.CASE);
+        checkToken(lexer, ZserioLexer.CHOICE);
+        checkToken(lexer, ZserioLexer.CONST);
+        checkToken(lexer, ZserioLexer.DEFAULT);
+        checkToken(lexer, ZserioLexer.ENUM);
+        checkToken(lexer, ZserioLexer.EXPLICIT);
+        checkToken(lexer, ZserioLexer.FLOAT16);
+        checkToken(lexer, ZserioLexer.FLOAT32);
+        checkToken(lexer, ZserioLexer.FLOAT64);
+        checkToken(lexer, ZserioLexer.FUNCTION);
+        checkToken(lexer, ZserioLexer.IF);
+        checkToken(lexer, ZserioLexer.IMPLICIT);
+        checkToken(lexer, ZserioLexer.IMPORT);
+        checkToken(lexer, ZserioLexer.INDEX);
+        checkToken(lexer, ZserioLexer.INT_FIELD);
+        checkToken(lexer, ZserioLexer.INT16);
+        checkToken(lexer, ZserioLexer.INT32);
+        checkToken(lexer, ZserioLexer.INT64);
+        checkToken(lexer, ZserioLexer.INT8);
+        checkToken(lexer, ZserioLexer.LENGTHOF);
+        checkToken(lexer, ZserioLexer.NUMBITS);
+        checkToken(lexer, ZserioLexer.ON);
+        checkToken(lexer, ZserioLexer.OPTIONAL);
+        checkToken(lexer, ZserioLexer.PACKAGE);
+        checkToken(lexer, ZserioLexer.RETURN);
+        checkToken(lexer, ZserioLexer.RPC);
+        checkToken(lexer, ZserioLexer.SERVICE);
+        checkToken(lexer, ZserioLexer.SQL);
+        checkToken(lexer, ZserioLexer.SQL_DATABASE);
+        checkToken(lexer, ZserioLexer.SQL_TABLE);
+        checkToken(lexer, ZserioLexer.SQL_VIRTUAL);
+        checkToken(lexer, ZserioLexer.SQL_WITHOUT_ROWID);
+        checkToken(lexer, ZserioLexer.STREAM);
+        checkToken(lexer, ZserioLexer.STRING);
+        checkToken(lexer, ZserioLexer.STRUCTURE);
+        checkToken(lexer, ZserioLexer.SUBTYPE);
+        checkToken(lexer, ZserioLexer.SUM);
+        checkToken(lexer, ZserioLexer.UINT16);
+        checkToken(lexer, ZserioLexer.UINT32);
+        checkToken(lexer, ZserioLexer.UINT64);
+        checkToken(lexer, ZserioLexer.UINT8);
+        checkToken(lexer, ZserioLexer.UNION);
+        checkToken(lexer, ZserioLexer.USING);
+        checkToken(lexer, ZserioLexer.VALUEOF);
+        checkToken(lexer, ZserioLexer.VARINT);
+        checkToken(lexer, ZserioLexer.VARINT16);
+        checkToken(lexer, ZserioLexer.VARINT32);
+        checkToken(lexer, ZserioLexer.VARINT64);
+        checkToken(lexer, ZserioLexer.VARUINT);
+        checkToken(lexer, ZserioLexer.VARUINT16);
+        checkToken(lexer, ZserioLexer.VARUINT32);
+        checkToken(lexer, ZserioLexer.VARUINT64);
 
         checkEOF(lexer);
     }
@@ -219,10 +219,10 @@ public class ZserioLexerTest
                 " */"
         );
 
-        Zserio4Lexer lexer = new Zserio4Lexer(input);
+        ZserioLexer lexer = new ZserioLexer(input);
 
-        checkToken(lexer, Zserio4Lexer.DOC_COMMENT, Zserio4Lexer.DOC, "/** doc comment */");
-        checkToken(lexer, Zserio4Lexer.DOC_COMMENT, Zserio4Lexer.DOC, "/**\n * doc comment\n * multiline\n */");
+        checkToken(lexer, ZserioLexer.DOC_COMMENT, ZserioLexer.DOC, "/** doc comment */");
+        checkToken(lexer, ZserioLexer.DOC_COMMENT, ZserioLexer.DOC, "/**\n * doc comment\n * multiline\n */");
 
         checkEOF(lexer);
     }
@@ -236,10 +236,10 @@ public class ZserioLexerTest
                 "   multiline */"
         );
 
-        Zserio4Lexer lexer = new Zserio4Lexer(input);
+        ZserioLexer lexer = new ZserioLexer(input);
 
-        checkToken(lexer, Zserio4Lexer.BLOCK_COMMENT, Lexer.HIDDEN, "/* block comment */");
-        checkToken(lexer, Zserio4Lexer.BLOCK_COMMENT, Lexer.HIDDEN, "/* block comment\n   multiline */");
+        checkToken(lexer, ZserioLexer.BLOCK_COMMENT, Lexer.HIDDEN, "/* block comment */");
+        checkToken(lexer, ZserioLexer.BLOCK_COMMENT, Lexer.HIDDEN, "/* block comment\n   multiline */");
 
         checkEOF(lexer);
     }
@@ -252,10 +252,10 @@ public class ZserioLexerTest
                 "// line comment at the end"
         );
 
-        Zserio4Lexer lexer = new Zserio4Lexer(input);
+        ZserioLexer lexer = new ZserioLexer(input);
 
-        checkToken(lexer, Zserio4Lexer.LINE_COMMENT, Lexer.HIDDEN, "// line comment");
-        checkToken(lexer, Zserio4Lexer.LINE_COMMENT, Lexer.HIDDEN, "// line comment at the end");
+        checkToken(lexer, ZserioLexer.LINE_COMMENT, Lexer.HIDDEN, "// line comment");
+        checkToken(lexer, ZserioLexer.LINE_COMMENT, Lexer.HIDDEN, "// line comment at the end");
 
         checkEOF(lexer);
     }
@@ -267,12 +267,12 @@ public class ZserioLexerTest
                 "true false false true"
         );
 
-        Zserio4Lexer lexer = new Zserio4Lexer(input);
+        ZserioLexer lexer = new ZserioLexer(input);
 
-        checkToken(lexer, Zserio4Lexer.BOOL_LITERAL, "true");
-        checkToken(lexer, Zserio4Lexer.BOOL_LITERAL, "false");
-        checkToken(lexer, Zserio4Lexer.BOOL_LITERAL, "false");
-        checkToken(lexer, Zserio4Lexer.BOOL_LITERAL, "true");
+        checkToken(lexer, ZserioLexer.BOOL_LITERAL, "true");
+        checkToken(lexer, ZserioLexer.BOOL_LITERAL, "false");
+        checkToken(lexer, ZserioLexer.BOOL_LITERAL, "false");
+        checkToken(lexer, ZserioLexer.BOOL_LITERAL, "true");
 
         checkEOF(lexer);
     }
@@ -285,14 +285,14 @@ public class ZserioLexerTest
                 "\"multiple escapes \\\\\" \"more \\\\\\\"escapes\\\""
         );
 
-        Zserio4Lexer lexer = new Zserio4Lexer(input);
+        ZserioLexer lexer = new ZserioLexer(input);
 
-        checkToken(lexer, Zserio4Lexer.STRING_LITERAL, "\"true\"");
-        checkToken(lexer, Zserio4Lexer.STRING_LITERAL, "\"0\"");
-        checkToken(lexer, Zserio4Lexer.STRING_LITERAL, "\"text\"");
-        checkToken(lexer, Zserio4Lexer.STRING_LITERAL, "\"with \\\"escaped\\\" string\"");
-        checkToken(lexer, Zserio4Lexer.STRING_LITERAL, "\"multiple escapes \\\\\"");
-        checkToken(lexer, Zserio4Lexer.STRING_LITERAL, "\"more \\\\\\\"escapes\\\"");
+        checkToken(lexer, ZserioLexer.STRING_LITERAL, "\"true\"");
+        checkToken(lexer, ZserioLexer.STRING_LITERAL, "\"0\"");
+        checkToken(lexer, ZserioLexer.STRING_LITERAL, "\"text\"");
+        checkToken(lexer, ZserioLexer.STRING_LITERAL, "\"with \\\"escaped\\\" string\"");
+        checkToken(lexer, ZserioLexer.STRING_LITERAL, "\"multiple escapes \\\\\"");
+        checkToken(lexer, ZserioLexer.STRING_LITERAL, "\"more \\\\\\\"escapes\\\"");
 
         checkEOF(lexer);
     }
@@ -304,14 +304,14 @@ public class ZserioLexerTest
                 "1001b 0101b 00b 0B 1B 101B"
         );
 
-        Zserio4Lexer lexer = new Zserio4Lexer(input);
+        ZserioLexer lexer = new ZserioLexer(input);
 
-        checkToken(lexer, Zserio4Lexer.BINARY_LITERAL, "1001b");
-        checkToken(lexer, Zserio4Lexer.BINARY_LITERAL, "0101b");
-        checkToken(lexer, Zserio4Lexer.BINARY_LITERAL, "00b");
-        checkToken(lexer, Zserio4Lexer.BINARY_LITERAL, "0B");
-        checkToken(lexer, Zserio4Lexer.BINARY_LITERAL, "1B");
-        checkToken(lexer, Zserio4Lexer.BINARY_LITERAL, "101B");
+        checkToken(lexer, ZserioLexer.BINARY_LITERAL, "1001b");
+        checkToken(lexer, ZserioLexer.BINARY_LITERAL, "0101b");
+        checkToken(lexer, ZserioLexer.BINARY_LITERAL, "00b");
+        checkToken(lexer, ZserioLexer.BINARY_LITERAL, "0B");
+        checkToken(lexer, ZserioLexer.BINARY_LITERAL, "1B");
+        checkToken(lexer, ZserioLexer.BINARY_LITERAL, "101B");
 
         checkEOF(lexer);
     }
@@ -323,13 +323,13 @@ public class ZserioLexerTest
                 "0101 0770 012 00 01234567"
         );
 
-        Zserio4Lexer lexer = new Zserio4Lexer(input);
+        ZserioLexer lexer = new ZserioLexer(input);
 
-        checkToken(lexer, Zserio4Lexer.OCTAL_LITERAL, "0101");
-        checkToken(lexer, Zserio4Lexer.OCTAL_LITERAL, "0770");
-        checkToken(lexer, Zserio4Lexer.OCTAL_LITERAL, "012");
-        checkToken(lexer, Zserio4Lexer.OCTAL_LITERAL, "00");
-        checkToken(lexer, Zserio4Lexer.OCTAL_LITERAL, "01234567");
+        checkToken(lexer, ZserioLexer.OCTAL_LITERAL, "0101");
+        checkToken(lexer, ZserioLexer.OCTAL_LITERAL, "0770");
+        checkToken(lexer, ZserioLexer.OCTAL_LITERAL, "012");
+        checkToken(lexer, ZserioLexer.OCTAL_LITERAL, "00");
+        checkToken(lexer, ZserioLexer.OCTAL_LITERAL, "01234567");
 
         checkEOF(lexer);
     }
@@ -341,15 +341,15 @@ public class ZserioLexerTest
                 "0x12 0x0 0xFEDCBA98 0xFF 0x1 0xabcdef00 0x1f"
         );
 
-        Zserio4Lexer lexer = new Zserio4Lexer(input);
+        ZserioLexer lexer = new ZserioLexer(input);
 
-        checkToken(lexer, Zserio4Lexer.HEXADECIMAL_LITERAL, "0x12");
-        checkToken(lexer, Zserio4Lexer.HEXADECIMAL_LITERAL, "0x0");
-        checkToken(lexer, Zserio4Lexer.HEXADECIMAL_LITERAL, "0xFEDCBA98");
-        checkToken(lexer, Zserio4Lexer.HEXADECIMAL_LITERAL, "0xFF");
-        checkToken(lexer, Zserio4Lexer.HEXADECIMAL_LITERAL, "0x1");
-        checkToken(lexer, Zserio4Lexer.HEXADECIMAL_LITERAL, "0xabcdef00");
-        checkToken(lexer, Zserio4Lexer.HEXADECIMAL_LITERAL, "0x1f");
+        checkToken(lexer, ZserioLexer.HEXADECIMAL_LITERAL, "0x12");
+        checkToken(lexer, ZserioLexer.HEXADECIMAL_LITERAL, "0x0");
+        checkToken(lexer, ZserioLexer.HEXADECIMAL_LITERAL, "0xFEDCBA98");
+        checkToken(lexer, ZserioLexer.HEXADECIMAL_LITERAL, "0xFF");
+        checkToken(lexer, ZserioLexer.HEXADECIMAL_LITERAL, "0x1");
+        checkToken(lexer, ZserioLexer.HEXADECIMAL_LITERAL, "0xabcdef00");
+        checkToken(lexer, ZserioLexer.HEXADECIMAL_LITERAL, "0x1f");
 
         checkEOF(lexer);
     }
@@ -361,22 +361,22 @@ public class ZserioLexerTest
                 "0e1 0e-1 1e2f 9. 9.12 9.f 9.1f 9.e2 9.e2f 9.e-2f .0 .0e-1 .0f .1e3f"
         );
 
-        Zserio4Lexer lexer = new Zserio4Lexer(input);
+        ZserioLexer lexer = new ZserioLexer(input);
 
-        checkToken(lexer, Zserio4Lexer.DOUBLE_LITERAL, "0e1");
-        checkToken(lexer, Zserio4Lexer.DOUBLE_LITERAL, "0e-1");
-        checkToken(lexer, Zserio4Lexer.FLOAT_LITERAL, "1e2f");
-        checkToken(lexer, Zserio4Lexer.DOUBLE_LITERAL, "9.");
-        checkToken(lexer, Zserio4Lexer.DOUBLE_LITERAL, "9.12");
-        checkToken(lexer, Zserio4Lexer.FLOAT_LITERAL, "9.f");
-        checkToken(lexer, Zserio4Lexer.FLOAT_LITERAL, "9.1f");
-        checkToken(lexer, Zserio4Lexer.DOUBLE_LITERAL, "9.e2");
-        checkToken(lexer, Zserio4Lexer.FLOAT_LITERAL, "9.e2f");
-        checkToken(lexer, Zserio4Lexer.FLOAT_LITERAL, "9.e-2f");
-        checkToken(lexer, Zserio4Lexer.DOUBLE_LITERAL, ".0");
-        checkToken(lexer, Zserio4Lexer.DOUBLE_LITERAL, ".0e-1");
-        checkToken(lexer, Zserio4Lexer.FLOAT_LITERAL, ".0f");
-        checkToken(lexer, Zserio4Lexer.FLOAT_LITERAL, ".1e3f");
+        checkToken(lexer, ZserioLexer.DOUBLE_LITERAL, "0e1");
+        checkToken(lexer, ZserioLexer.DOUBLE_LITERAL, "0e-1");
+        checkToken(lexer, ZserioLexer.FLOAT_LITERAL, "1e2f");
+        checkToken(lexer, ZserioLexer.DOUBLE_LITERAL, "9.");
+        checkToken(lexer, ZserioLexer.DOUBLE_LITERAL, "9.12");
+        checkToken(lexer, ZserioLexer.FLOAT_LITERAL, "9.f");
+        checkToken(lexer, ZserioLexer.FLOAT_LITERAL, "9.1f");
+        checkToken(lexer, ZserioLexer.DOUBLE_LITERAL, "9.e2");
+        checkToken(lexer, ZserioLexer.FLOAT_LITERAL, "9.e2f");
+        checkToken(lexer, ZserioLexer.FLOAT_LITERAL, "9.e-2f");
+        checkToken(lexer, ZserioLexer.DOUBLE_LITERAL, ".0");
+        checkToken(lexer, ZserioLexer.DOUBLE_LITERAL, ".0e-1");
+        checkToken(lexer, ZserioLexer.FLOAT_LITERAL, ".0f");
+        checkToken(lexer, ZserioLexer.FLOAT_LITERAL, ".1e3f");
 
         checkEOF(lexer);
     }
@@ -388,12 +388,12 @@ public class ZserioLexerTest
                 "0 19 99 987654321"
         );
 
-        Zserio4Lexer lexer = new Zserio4Lexer(input);
+        ZserioLexer lexer = new ZserioLexer(input);
 
-        checkToken(lexer, Zserio4Lexer.DECIMAL_LITERAL, "0");
-        checkToken(lexer, Zserio4Lexer.DECIMAL_LITERAL, "19");
-        checkToken(lexer, Zserio4Lexer.DECIMAL_LITERAL, "99");
-        checkToken(lexer, Zserio4Lexer.DECIMAL_LITERAL, "987654321");
+        checkToken(lexer, ZserioLexer.DECIMAL_LITERAL, "0");
+        checkToken(lexer, ZserioLexer.DECIMAL_LITERAL, "19");
+        checkToken(lexer, ZserioLexer.DECIMAL_LITERAL, "99");
+        checkToken(lexer, ZserioLexer.DECIMAL_LITERAL, "987654321");
 
         checkEOF(lexer);
     }
@@ -405,17 +405,17 @@ public class ZserioLexerTest
                 "id _id i1 _1 _ __ I _I s0mE_UgLy_id"
         );
 
-        Zserio4Lexer lexer = new Zserio4Lexer(input);
+        ZserioLexer lexer = new ZserioLexer(input);
 
-        checkToken(lexer, Zserio4Lexer.ID, "id");
-        checkToken(lexer, Zserio4Lexer.ID, "_id");
-        checkToken(lexer, Zserio4Lexer.ID, "i1");
-        checkToken(lexer, Zserio4Lexer.ID, "_1");
-        checkToken(lexer, Zserio4Lexer.ID, "_");
-        checkToken(lexer, Zserio4Lexer.ID, "__");
-        checkToken(lexer, Zserio4Lexer.ID, "I");
-        checkToken(lexer, Zserio4Lexer.ID, "_I");
-        checkToken(lexer, Zserio4Lexer.ID, "s0mE_UgLy_id");
+        checkToken(lexer, ZserioLexer.ID, "id");
+        checkToken(lexer, ZserioLexer.ID, "_id");
+        checkToken(lexer, ZserioLexer.ID, "i1");
+        checkToken(lexer, ZserioLexer.ID, "_1");
+        checkToken(lexer, ZserioLexer.ID, "_");
+        checkToken(lexer, ZserioLexer.ID, "__");
+        checkToken(lexer, ZserioLexer.ID, "I");
+        checkToken(lexer, ZserioLexer.ID, "_I");
+        checkToken(lexer, ZserioLexer.ID, "s0mE_UgLy_id");
 
         checkEOF(lexer);
     }
@@ -427,11 +427,11 @@ public class ZserioLexerTest
                 "01abc 0x13fx 01278"
         );
 
-        Zserio4Lexer lexer = new Zserio4Lexer(input);
+        ZserioLexer lexer = new ZserioLexer(input);
 
-        checkToken(lexer, Zserio4Lexer.INVALID_TOKEN, "01abc");
-        checkToken(lexer, Zserio4Lexer.INVALID_TOKEN, "0x13fx");
-        checkToken(lexer, Zserio4Lexer.INVALID_TOKEN, "01278");
+        checkToken(lexer, ZserioLexer.INVALID_TOKEN, "01abc");
+        checkToken(lexer, ZserioLexer.INVALID_TOKEN, "0x13fx");
+        checkToken(lexer, ZserioLexer.INVALID_TOKEN, "01278");
 
         checkEOF(lexer);
     }

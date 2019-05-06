@@ -1,6 +1,6 @@
 package zserio.emit.common;
 
-import zserio.ast4.Expression;
+import zserio.ast.Expression;
 import zserio.emit.common.ExpressionFormattingPolicy;
 
 /**

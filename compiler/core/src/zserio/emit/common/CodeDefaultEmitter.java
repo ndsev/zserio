@@ -3,9 +3,9 @@ package zserio.emit.common;
 import java.io.File;
 import java.util.Locale;
 
-import zserio.ast4.Package;
-import zserio.ast4.PackageName;
-import zserio.ast4.ZserioType;
+import zserio.ast.Package;
+import zserio.ast.PackageName;
+import zserio.ast.ZserioType;
 import zserio.tools.Parameters;
 
 /**
