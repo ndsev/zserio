@@ -2,8 +2,8 @@ package zserio.emit.common;
 
 import java.math.BigInteger;
 
-import zserio.antlr.ZserioParserTokenTypes;
-import zserio.ast.Expression;
+import zserio.antlr.Zserio4Parser;
+import zserio.ast4.Expression;
 
 /**
  * Expression formatter used by all emitters.
@@ -95,7 +95,7 @@ public class ExpressionFormatter
             final boolean isNegativeLiteral = wasUnaryMinus;
             wasUnaryMinus = false;
 
-            final int arity = expr.getNumberOfChildren();
+            final int arity = getArity(expr);
             switch (arity)
             {
                 case 0:
@@ -121,6 +121,18 @@ public class ExpressionFormatter
         }
     }
 
+    private int getArity(Expression expr)
+    {
+        if (expr.op1() == null)
+            return 0;
+        if (expr.op2() == null)
+            return 1;
+        if (expr.op3() == null)
+            return 2;
+        else
+            return 3;
+    }
+
     private boolean tryEmitExpressionAsIntegerValue(Expression expr)
     {
         if (!evaluateIntegers)
@@ -140,43 +152,43 @@ public class ExpressionFormatter
     {
         switch (expr.getType())
         {
-            case ZserioParserTokenTypes.DECIMAL_LITERAL:
+            case Zserio4Parser.DECIMAL_LITERAL:
                 buffer.append(policy.getDecimalLiteral(expr, isNegativeLiteral));
                 break;
 
-            case ZserioParserTokenTypes.BINARY_LITERAL:
+            case Zserio4Parser.BINARY_LITERAL:
                 buffer.append(policy.getBinaryLiteral(expr, isNegativeLiteral));
                 break;
 
-            case ZserioParserTokenTypes.HEXADECIMAL_LITERAL:
+            case Zserio4Parser.HEXADECIMAL_LITERAL:
                 buffer.append(policy.getHexadecimalLiteral(expr, isNegativeLiteral));
                 break;
 
-            case ZserioParserTokenTypes.OCTAL_LITERAL:
+            case Zserio4Parser.OCTAL_LITERAL:
                 buffer.append(policy.getOctalLiteral(expr, isNegativeLiteral));
                 break;
 
-            case ZserioParserTokenTypes.FLOAT_LITERAL:
+            case Zserio4Parser.FLOAT_LITERAL:
                 buffer.append(policy.getFloatLiteral(expr, isNegativeLiteral));
                 break;
 
-            case ZserioParserTokenTypes.DOUBLE_LITERAL:
+            case Zserio4Parser.DOUBLE_LITERAL:
                 buffer.append(policy.getDoubleLiteral(expr, isNegativeLiteral));
                 break;
 
-            case ZserioParserTokenTypes.BOOL_LITERAL:
+            case Zserio4Parser.BOOL_LITERAL:
                 buffer.append(policy.getBoolLiteral(expr));
                 break;
 
-            case ZserioParserTokenTypes.STRING_LITERAL:
+            case Zserio4Parser.STRING_LITERAL:
                 buffer.append(policy.getStringLiteral(expr));
                 break;
 
-            case ZserioParserTokenTypes.INDEX:
+            case Zserio4Parser.INDEX:
                 buffer.append(policy.getIndex(expr));
                 break;
 
-            case ZserioParserTokenTypes.ID:
+            case Zserio4Parser.ID:
                 final boolean isLastInDot = !inArray && !inDot;
                 final boolean isSetter = isLastInDot && formatSetter;
                 buffer.append(policy.getIdentifier(expr, isLastInDot, isSetter));
@@ -192,48 +204,48 @@ public class ExpressionFormatter
         ExpressionFormattingPolicy.UnaryExpressionFormatting formatting;
         switch (expr.getType())
         {
-            case ZserioParserTokenTypes.UPLUS:
+            case Zserio4Parser.PLUS:
                 formatting = policy.getUnaryPlus(expr);
                 break;
 
-            case ZserioParserTokenTypes.UMINUS:
+            case Zserio4Parser.MINUS:
                 wasUnaryMinus = true;
                 formatting = policy.getUnaryMinus(expr);
                 break;
 
-            case ZserioParserTokenTypes.TILDE:
+            case Zserio4Parser.TILDE:
                 formatting = policy.getTilde(expr);
                 break;
 
-            case ZserioParserTokenTypes.BANG:
+            case Zserio4Parser.BANG:
                 formatting = policy.getBang(expr);
                 break;
 
-            case ZserioParserTokenTypes.LPAREN:
+            case Zserio4Parser.LPAREN:
                 formatting = policy.getLeftParenthesis(expr);
                 break;
 
-            case ZserioParserTokenTypes.FUNCTIONCALL:
+            case Zserio4Parser.RPAREN: // function call
                 formatting = policy.getFunctionCall(expr);
                 break;
 
-            case ZserioParserTokenTypes.LENGTHOF:
+            case Zserio4Parser.LENGTHOF:
                 formatting = policy.getLengthOf(expr);
                 break;
 
-            case ZserioParserTokenTypes.SUM:
+            case Zserio4Parser.SUM:
                 formatting = policy.getSum(expr);
                 break;
 
-            case ZserioParserTokenTypes.VALUEOF:
+            case Zserio4Parser.VALUEOF:
                 formatting = policy.getValueOf(expr);
                 break;
 
-            case ZserioParserTokenTypes.EXPLICIT:
+            case Zserio4Parser.EXPLICIT:
                 formatting = policy.getExplicit(expr);
                 break;
 
-            case ZserioParserTokenTypes.NUMBITS:
+            case Zserio4Parser.NUMBITS:
                 formatting = policy.getNumBits(expr);
                 break;
 
@@ -253,90 +265,90 @@ public class ExpressionFormatter
         final int expressionType = expr.getType();
         switch (expressionType)
         {
-            case ZserioParserTokenTypes.COMMA:
+            case Zserio4Parser.COMMA:
                 formatting = policy.getComma(expr);
                 break;
 
-            case ZserioParserTokenTypes.LOGICALOR:
+            case Zserio4Parser.LOGICAL_OR:
                 formatting = policy.getLogicalOr(expr);
                 break;
 
-            case ZserioParserTokenTypes.LOGICALAND:
+            case Zserio4Parser.LOGICAL_AND:
                 formatting = policy.getLogicalAnd(expr);
                 break;
 
-            case ZserioParserTokenTypes.OR:
+            case Zserio4Parser.OR:
                 formatting = policy.getOr(expr);
                 break;
 
-            case ZserioParserTokenTypes.XOR:
+            case Zserio4Parser.XOR:
                 formatting = policy.getXor(expr);
                 break;
 
-            case ZserioParserTokenTypes.AND:
+            case Zserio4Parser.AND:
                 formatting = policy.getAnd(expr);
                 break;
 
-            case ZserioParserTokenTypes.EQ:
+            case Zserio4Parser.EQ:
                 formatting = policy.getEq(expr);
                 break;
 
-            case ZserioParserTokenTypes.NE:
+            case Zserio4Parser.NE:
                 formatting = policy.getNe(expr);
                 break;
 
-            case ZserioParserTokenTypes.LT:
+            case Zserio4Parser.LT:
                 formatting = policy.getLt(expr);
                 break;
 
-            case ZserioParserTokenTypes.LE:
+            case Zserio4Parser.LE:
                 formatting = policy.getLe(expr);
                 break;
 
-            case ZserioParserTokenTypes.GE:
+            case Zserio4Parser.GE:
                 formatting = policy.getGe(expr);
                 break;
 
-            case ZserioParserTokenTypes.GT:
+            case Zserio4Parser.GT:
                 formatting = policy.getGt(expr);
                 break;
 
-            case ZserioParserTokenTypes.LSHIFT:
+            case Zserio4Parser.LSHIFT:
                 formatting = policy.getLeftShift(expr);
                 break;
 
-            case ZserioParserTokenTypes.RSHIFT:
+            case Zserio4Parser.RSHIFT:
                 formatting = policy.getRightShift(expr);
                 break;
 
-            case ZserioParserTokenTypes.PLUS:
+            case Zserio4Parser.PLUS:
                 formatting = policy.getPlus(expr);
                 break;
 
-            case ZserioParserTokenTypes.MINUS:
+            case Zserio4Parser.MINUS:
                 formatting = policy.getMinus(expr);
                 break;
 
-            case ZserioParserTokenTypes.MULTIPLY:
+            case Zserio4Parser.MULTIPLY:
                 formatting = policy.getMultiply(expr);
                 break;
 
-            case ZserioParserTokenTypes.DIVIDE:
+            case Zserio4Parser.DIVIDE:
                 formatting = policy.getDivide(expr);
                 break;
 
-            case ZserioParserTokenTypes.MODULO:
+            case Zserio4Parser.MODULO:
                 formatting = policy.getModulo(expr);
                 break;
 
-            case ZserioParserTokenTypes.ARRAYELEM:
+            case Zserio4Parser.LBRACKET:
                 oldInFlag = inArray;
                 inArray = true;
                 final boolean isSetter = !inDot && formatSetter;
                 formatting = policy.getArrayElement(expr, isSetter);
                 break;
 
-            case ZserioParserTokenTypes.DOT:
+            case Zserio4Parser.DOT:
                 oldInFlag = inDot;
                 inDot = true;
                 formatting = policy.getDot(expr);
@@ -350,9 +362,9 @@ public class ExpressionFormatter
         append(expr.op1());
         buffer.append(formatting.getAfterOperand1());
 
-        if (expressionType == ZserioParserTokenTypes.ARRAYELEM)
+        if (expressionType == Zserio4Parser.LBRACKET)
             inArray = oldInFlag;
-        else if (expressionType == ZserioParserTokenTypes.DOT)
+        else if (expressionType == Zserio4Parser.DOT)
             inDot = oldInFlag;
 
         append(expr.op2());
@@ -364,7 +376,7 @@ public class ExpressionFormatter
         ExpressionFormattingPolicy.TernaryExpressionFormatting formatting;
         switch (expr.getType())
         {
-            case ZserioParserTokenTypes.QUESTIONMARK:
+            case Zserio4Parser.QUESTIONMARK:
                 formatting = policy.getQuestionMark(expr);
                 break;
 

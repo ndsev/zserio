@@ -1,6 +1,6 @@
 package zserio.emit.common;
 
-import zserio.ast.Expression;
+import zserio.ast4.Expression;
 
 /**
  * Interface for expression formatting policy.

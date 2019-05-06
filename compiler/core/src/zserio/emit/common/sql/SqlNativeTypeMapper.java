@@ -1,28 +1,27 @@
 package zserio.emit.common.sql;
 
-import zserio.ast.ArrayType;
-import zserio.ast.BooleanType;
-import zserio.ast.ChoiceType;
-import zserio.ast.ConstType;
-import zserio.ast.ZserioType;
-import zserio.ast.ZserioTypeUtil;
-import zserio.ast.ZserioTypeVisitor;
-import zserio.ast.EnumType;
-import zserio.ast.FloatType;
-import zserio.ast.FunctionType;
-import zserio.ast.ServiceType;
-import zserio.ast.StructureType;
-import zserio.ast.SignedBitFieldType;
-import zserio.ast.SqlDatabaseType;
-import zserio.ast.SqlTableType;
-import zserio.ast.StdIntegerType;
-import zserio.ast.StringType;
-import zserio.ast.Subtype;
-import zserio.ast.TypeInstantiation;
-import zserio.ast.TypeReference;
-import zserio.ast.UnionType;
-import zserio.ast.UnsignedBitFieldType;
-import zserio.ast.VarIntegerType;
+import zserio.ast4.ArrayType;
+import zserio.ast4.BitFieldType;
+import zserio.ast4.BooleanType;
+import zserio.ast4.ChoiceType;
+import zserio.ast4.ConstType;
+import zserio.ast4.ZserioType;
+import zserio.ast4.ZserioTypeUtil;
+import zserio.ast4.EnumType;
+import zserio.ast4.FloatType;
+import zserio.ast4.FunctionType;
+import zserio.ast4.ServiceType;
+import zserio.ast4.StructureType;
+import zserio.ast4.SqlDatabaseType;
+import zserio.ast4.SqlTableType;
+import zserio.ast4.StdIntegerType;
+import zserio.ast4.StringType;
+import zserio.ast4.Subtype;
+import zserio.ast4.TypeInstantiation;
+import zserio.ast4.TypeReference;
+import zserio.ast4.UnionType;
+import zserio.ast4.VarIntegerType;
+import zserio.ast4.ZserioAstVisitorBase;
 import zserio.emit.common.ZserioEmitException;
 import zserio.emit.common.sql.types.NativeBlobType;
 import zserio.emit.common.sql.types.NativeIntegerType;
@@ -52,7 +51,7 @@ public class SqlNativeTypeMapper
         type = TypeReference.resolveBaseType(type);
 
         final TypeMapperVisitor visitor = new TypeMapperVisitor();
-        type.callVisitor(visitor);
+        type.accept(visitor);
         final SqlNativeType nativeType = visitor.getSqlType();
 
         if (nativeType == null)
@@ -62,7 +61,7 @@ public class SqlNativeTypeMapper
         return nativeType;
     }
 
-    private static class TypeMapperVisitor implements ZserioTypeVisitor
+    private static class TypeMapperVisitor extends ZserioAstVisitorBase
     {
         SqlNativeType getSqlType()
         {
@@ -106,7 +105,7 @@ public class SqlNativeTypeMapper
         }
 
         @Override
-        public void visitFunctionType(FunctionType type)
+        public void visitFunction(FunctionType type)
         {
             // not supported
         }
@@ -118,7 +117,7 @@ public class SqlNativeTypeMapper
         }
 
         @Override
-        public void visitSignedBitFieldType(SignedBitFieldType type)
+        public void visitBitFieldType(BitFieldType type)
         {
             sqlType = integerType;
         }
@@ -175,12 +174,6 @@ public class SqlNativeTypeMapper
         public void visitUnionType(UnionType type)
         {
             sqlType = blobType;
-        }
-
-        @Override
-        public void visitUnsignedBitFieldType(UnsignedBitFieldType type)
-        {
-            sqlType = integerType;
         }
 
         @Override

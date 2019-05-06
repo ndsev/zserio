@@ -84,46 +84,6 @@ findbugs.home_dir       - Location of the findbugs tool. If not set, findbugs is
         </sequential>
     </macrodef>
 
-    <target name="antlr.parser">
-        <mkdir dir="${zserio_core.antlr.out_dir}"/>
-        <antlr target="${zserio_core.antlr_dir}/ZserioParser.g" outputdirectory="${zserio_core.antlr.out_dir}">
-            <classpath>
-                <pathelement location="${3rdparty.jar_dir}/${3rdparty.antlr.jar_file_name}"/>
-            </classpath>
-        </antlr>
-    </target>
-
-    <target name="antlr.lexer">
-        <antlr target="${zserio_core.antlr_dir}/ZserioLexer.g" outputdirectory="${zserio_core.antlr.out_dir}">
-            <classpath>
-                <pathelement location="${3rdparty.jar_dir}/${3rdparty.antlr.jar_file_name}"/>
-            </classpath>
-        </antlr>
-    </target>
-
-    <target name="antlr.walkers">
-        <antlr target="${zserio_core.antlr_dir}/TypeEvaluator.g" outputdirectory="${zserio_core.antlr.out_dir}">
-            <classpath>
-                <pathelement location="${3rdparty.jar_dir}/${3rdparty.antlr.jar_file_name}"/>
-            </classpath>
-        </antlr>
-
-        <antlr target="${zserio_core.antlr_dir}/ExpressionEvaluator.g"
-            outputdirectory="${zserio_core.antlr.out_dir}">
-            <classpath>
-                <pathelement location="${3rdparty.jar_dir}/${3rdparty.antlr.jar_file_name}"/>
-            </classpath>
-        </antlr>
-    </target>
-
-    <target name="antlr.comments">
-        <antlr target="${zserio_core.antlr_dir}/DocComment.g" outputdirectory="${zserio_core.antlr.out_dir}">
-            <classpath>
-                <pathelement location="${3rdparty.jar_dir}/${3rdparty.antlr.jar_file_name}"/>
-            </classpath>
-        </antlr>
-    </target>
-
     <target name="antlr4">
         <antlr4 target="${zserio_core.antlr_dir}/Zserio4Lexer.g4"
             outputdirectory="${zserio_core.antlr.out_dir}"/>
@@ -133,12 +93,7 @@ findbugs.home_dir       - Location of the findbugs tool. If not set, findbugs is
             outputdirectory="${zserio_core.antlr.out_dir}"/>
     </target>
 
-    <target name="antlr" depends="antlr.parser, antlr.lexer, antlr.walkers, antlr.comments, antlr4">
-        <!-- ZserioParser.g must be compiled before lexer and walkers because lexer and walker grammars use
-             importVocab to ZserioParser. -->
-    </target>
-
-    <target name="compile" depends="antlr">
+    <target name="compile" depends="antlr4">
         <mkdir dir="${zserio_core.classes_dir}"/>
         <depend srcDir="${zserio_core.src_dir}:${zserio_core.antlr.gen_dir}"
             destDir="${zserio_core.classes_dir}" cache="${zserio_core.build_dir}/depend-cache"/>

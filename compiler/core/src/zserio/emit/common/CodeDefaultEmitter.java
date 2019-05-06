@@ -3,10 +3,9 @@ package zserio.emit.common;
 import java.io.File;
 import java.util.Locale;
 
-import zserio.ast.PackageName;
-import zserio.ast.ZserioType;
-import zserio.ast.TranslationUnit;
-import zserio.ast.Package;
+import zserio.ast4.Package;
+import zserio.ast4.PackageName;
+import zserio.ast4.ZserioType;
 import zserio.tools.Parameters;
 
 /**
@@ -39,11 +38,11 @@ public abstract class CodeDefaultEmitter extends DefaultEmitter
     }
 
     @Override
-    public void beginTranslationUnit(TranslationUnit translationUnit) throws ZserioEmitException
+    public void beginPackage(Package pkg) throws ZserioEmitException
     {
         if (packageMapper == null)
         {
-            final Package rootPackage = translationUnit.getPackage();
+            final Package rootPackage = pkg;
             if (rootPackage != null)
             {
                 // root package can be null for empty files

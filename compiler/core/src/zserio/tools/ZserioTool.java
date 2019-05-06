@@ -73,28 +73,6 @@ public class ZserioTool
             ZserioToolPrinter.printError(exception.getLocation(), exception.getMessage());
             return false;
         }
-        /*catch (NoViableAltException exception)
-        {
-            ZserioToolPrinter.printError(exception.getFilename(), exception.getLine(),
-                    exception.getColumn(), getErrorMessage(exception.getMessage(), exception.token));
-            return false;
-        }
-        catch (MismatchedTokenException exception)
-        {
-            ZserioToolPrinter.printError(exception.getFilename(), exception.getLine(),
-                    exception.getColumn(), getErrorMessage(exception.getMessage(), exception.token));
-            return false;
-        }
-        catch (RecognitionException exception)
-        {
-            ZserioToolPrinter.printError(exception.getFilename(), exception.getLine(),
-                                             exception.getColumn(), exception.getMessage());
-            return false;
-        }
-        catch (TokenStreamException exception)
-        {
-            ZserioToolPrinter.printError(exception.toString());
-        }*/
         catch (IOException exception)
         {
             ZserioToolPrinter.printError(exception.getMessage());

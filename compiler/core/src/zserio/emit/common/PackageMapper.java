@@ -1,8 +1,8 @@
 package zserio.emit.common;
 
-import zserio.ast.PackageName;
-import zserio.ast.ZserioType;
-import zserio.ast.Package;
+import zserio.ast4.PackageName;
+import zserio.ast4.ZserioType;
+import zserio.ast4.Package;
 
 /**
  * The class maps the Zserio package name into language dependent package name.
