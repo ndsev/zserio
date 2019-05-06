@@ -7,8 +7,16 @@ import java.util.Set;
 
 import zserio.tools.ZserioToolPrinter;
 
+/**
+ * Implementation of ZserioAstVisitor which manages checking phase.
+ */
 public class ZserioAstChecker extends ZserioAstVisitorBase
 {
+    /**
+     * Constructor.
+     *
+     * @param checkUnusedTypes Whether to check for unused types.
+     */
     public ZserioAstChecker(boolean checkUnusedTypes)
     {
         this.checkUnusedTypes = checkUnusedTypes;

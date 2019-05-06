@@ -2,7 +2,6 @@ package zserio.ast4;
 
 import org.antlr.v4.runtime.Token;
 
-
 /**
  * AST node which can have documentation comment.
  */

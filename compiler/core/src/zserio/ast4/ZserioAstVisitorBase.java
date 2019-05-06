@@ -1,5 +1,10 @@
 package zserio.ast4;
 
+/**
+ * The class provide default implementation of ZserioAstVisitor which can be extended to create a visitor
+ * which only needs override only a subset of available methods. Default methods implementation just traverse
+ * all children nodes.
+ */
 public class ZserioAstVisitorBase implements ZserioAstVisitor
 {
     @Override

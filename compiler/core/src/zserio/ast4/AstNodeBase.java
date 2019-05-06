@@ -2,6 +2,9 @@ package zserio.ast4;
 
 import org.antlr.v4.runtime.Token;
 
+/**
+ * Base implementation of AstNode interface.
+ */
 public abstract class AstNodeBase implements AstNode
 {
     /**

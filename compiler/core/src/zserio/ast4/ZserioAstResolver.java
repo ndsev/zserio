@@ -2,7 +2,9 @@ package zserio.ast4;
 
 import java.util.Map;
 
-
+/**
+ * Implementation of ZserioAstVisitor which manages resolving phase.
+ */
 public class ZserioAstResolver extends ZserioAstVisitorBase
 {
     @Override

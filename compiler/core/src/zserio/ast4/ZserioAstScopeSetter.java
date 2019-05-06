@@ -3,6 +3,9 @@ package zserio.ast4;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Implementation of ZserioAstVisitor which handles scopes of symbols.
+ */
 public class ZserioAstScopeSetter extends ZserioAstVisitorBase
 {
     @Override

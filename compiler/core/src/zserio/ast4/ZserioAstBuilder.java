@@ -11,13 +11,29 @@ import org.antlr.v4.runtime.tree.ParseTree;
 import zserio.antlr.Zserio4Parser;
 import zserio.antlr.Zserio4ParserBaseVisitor;
 
+/**
+ * Implementation of ZserioParserBaseVisitor which builds Zserio AST.
+ */
 public class ZserioAstBuilder extends Zserio4ParserBaseVisitor<Object>
 {
+    /**
+     * Gets built AST.
+     *
+     * @return Root AST node.
+     */
     public Root getAst()
     {
         return new Root(packageNameMap);
     }
 
+    /**
+     * Custom visit overload which should be called on the parse tree of a single package (translation unit).
+     *
+     * @param tree          Parse tree for a single package.
+     * @param tokenStream   Token stream for a single translation unit.
+     * @return Object       Result of the main rule of ZserioParser grammar.
+     *                      Should be a package if the method was called on a correct parse tree.
+     */
     public Object visit(ParseTree tree, BufferedTokenStream tokenStream)
     {
         docCommentManager.setStream(tokenStream);
@@ -29,7 +45,7 @@ public class ZserioAstBuilder extends Zserio4ParserBaseVisitor<Object>
     }
 
     @Override
-    public Object visitPackageDeclaration(Zserio4Parser.PackageDeclarationContext ctx)
+    public Package visitPackageDeclaration(Zserio4Parser.PackageDeclarationContext ctx)
     {
         // package
         final PackageName packageName = visitPackageNameDefinition(ctx.packageNameDefinition());
@@ -64,10 +80,10 @@ public class ZserioAstBuilder extends Zserio4ParserBaseVisitor<Object>
         }
 
         localTypes = null;
-        final Package result = currentPackage;
+        final Package unitPackage = currentPackage;
         currentPackage = null;
 
-        return result;
+        return unitPackage;
     }
 
     @Override

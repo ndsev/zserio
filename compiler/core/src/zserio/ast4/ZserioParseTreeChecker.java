@@ -18,8 +18,16 @@ import zserio.antlr.Zserio4ParserBaseVisitor;
 import zserio.tools.InputFileManager;
 import zserio.tools.ZserioToolPrinter;
 
+/**
+ * Visitor which checks ANTLR4 parse tree semantics.
+ */
 public class ZserioParseTreeChecker extends Zserio4ParserBaseVisitor<Void>
 {
+    /**
+     * Constructor.
+     *
+     * @param inputFileManager Input file manager.
+     */
     public ZserioParseTreeChecker(InputFileManager inputFileManager)
     {
         this.inputFileManager = inputFileManager;

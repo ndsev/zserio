@@ -1,5 +1,8 @@
 package zserio.ast4;
 
+/**
+ * Interface for a single AST node.
+ */
 public interface AstNode
 {
     /**

@@ -3,8 +3,16 @@ package zserio.ast4;
 import zserio.emit.common.Emitter4;
 import zserio.emit.common.ZserioEmitException;
 
+/**
+ * Implementation of ZserioAstVisitor which adapts the visitor interface to emitter interface for extensions.
+ */
 public class ZserioAstEmitter extends ZserioAstVisitorBase
 {
+    /**
+     * Constructor.
+     *
+     * @param emitter Emitter to call during AST walking.
+     */
     public ZserioAstEmitter(Emitter4 emitter)
     {
         this.emitter = emitter;

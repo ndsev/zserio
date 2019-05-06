@@ -2,13 +2,24 @@ package zserio.ast4;
 
 import java.util.List;
 
+/**
+ * Implementation of ZserioAstVisitor which manages evaluating phase.
+ */
 public class ZserioAstEvaluator extends ZserioAstVisitorBase
 {
+    /**
+     * Constructor.
+     */
     public ZserioAstEvaluator()
     {
         this.evaluationScope = null;
     }
 
+    /**
+     * Constructor with forced evaluation scope.
+     *
+     * @param evaluationScope Evaluation scope to use.
+     */
     public ZserioAstEvaluator(Scope evaluationScope)
     {
         this.evaluationScope = evaluationScope;

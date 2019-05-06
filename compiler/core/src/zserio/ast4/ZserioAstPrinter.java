@@ -1,6 +1,8 @@
 package zserio.ast4;
 
-
+/**
+ * Implementation of ZserioAstVisitor which prints the AST (for convenient debugging).
+ */
 public class ZserioAstPrinter implements ZserioAstVisitor
 {
     @Override

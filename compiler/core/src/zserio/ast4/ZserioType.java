@@ -1,5 +1,8 @@
 package zserio.ast4;
 
+/**
+ * The base interface for all Zserio types used during emitting.
+ */
 public interface ZserioType extends AstNode
 {
     /**
