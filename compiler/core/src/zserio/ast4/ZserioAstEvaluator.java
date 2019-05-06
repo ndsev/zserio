@@ -15,6 +15,16 @@ public class ZserioAstEvaluator extends ZserioAstVisitor.Base
     }
 
     @Override
+    public void visitPackage(Package pkg)
+    {
+        currentPackage = pkg;
+
+        pkg.visitChildren(this);
+
+        currentPackage = null;
+    }
+
+    @Override
     public void visitConstType(ConstType constType)
     {
         constType.visitChildren(this);
@@ -84,7 +94,7 @@ public class ZserioAstEvaluator extends ZserioAstVisitor.Base
     public void visitField(Field field)
     {
         field.visitChildren(this);
-        field.evaluate();
+        field.evaluate(currentPackage);
     }
 
     @Override
@@ -140,4 +150,6 @@ public class ZserioAstEvaluator extends ZserioAstVisitor.Base
     }
 
     private final Scope evaluationScope;
+
+    private Package currentPackage = null;
 };

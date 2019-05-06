@@ -128,7 +128,7 @@ public class SqlConstraint extends AstNodeBase
     /**
      * Resolves the SQL constraint.
      */
-    protected void resolve()
+    protected void resolve(CompoundType compoundType)
     {
         final String sqlConstraintString = constraintExpr.getText();
         primaryKeyColumnNames = extractColumnNames(sqlConstraintString, PRIMARY_KEY_CONSTRAINT);
@@ -136,25 +136,16 @@ public class SqlConstraint extends AstNodeBase
         isPrimaryKey = containsPrimaryKey(sqlConstraintString);
 
         // replace all @-references
-        final String translatedConstraint = resolveConstraintReferences(sqlConstraintString);
+        final String translatedConstraint = resolveConstraintReferences(compoundType, sqlConstraintString);
         translatedConstraintExpr = createStringLiteralExpression(compoundType.getPackage(),
                 translatedConstraint);
 
         // set translated constraint expression for table field
-        translatedFieldConstraintExpr = createTranslatedFieldConstraintExpr(translatedConstraint);
+        translatedFieldConstraintExpr = createTranslatedFieldConstraintExpr(compoundType.getPackage(),
+                translatedConstraint);
     }
 
-    /**
-     * Sets the compound type which is owner of the field.
-     *
-     * @param compoundType Owner to set.
-     */
-    protected void setCompoundType(CompoundType compoundType)
-    {
-        this.compoundType = compoundType;
-    }
-
-    private Expression createTranslatedFieldConstraintExpr(String translatedConstraint)
+    private Expression createTranslatedFieldConstraintExpr(Package pkg, String translatedConstraint)
     {
         // unlike SQLite, the default column constraint in Zserio is 'NOT NULL' and NULL-constraints have to be
         // explicitly set
@@ -202,7 +193,7 @@ public class SqlConstraint extends AstNodeBase
             }
         }
 
-        return (fieldConstraint.isEmpty()) ? null : createStringLiteralExpression(compoundType.getPackage(),
+        return (fieldConstraint.isEmpty()) ? null : createStringLiteralExpression(pkg,
                 "\"" + fieldConstraint + "\"");
     }
 
@@ -241,7 +232,7 @@ public class SqlConstraint extends AstNodeBase
         return (sqlConstraintString.toUpperCase(Locale.ENGLISH).indexOf(PRIMARY_KEY_CONSTRAINT) > -1);
     }
 
-    private String resolveConstraintReferences(String sqlConstraintString)
+    private String resolveConstraintReferences(CompoundType compoundType, String sqlConstraintString)
     {
         int referenceIndex = sqlConstraintString.indexOf(CONSTRAINT_REFERENCE_ESCAPE);
         if (referenceIndex < 0)
@@ -253,7 +244,7 @@ public class SqlConstraint extends AstNodeBase
             final int endIndex = findEndOfConstraintReference(stringBuilder, referenceIndex + 1);
 
             final String referencedText = stringBuilder.substring(referenceIndex + 1, endIndex);
-            final String resolved = resolveConstraintReference(referencedText);
+            final String resolved = resolveConstraintReference(compoundType, referencedText);
 
             stringBuilder.replace(referenceIndex, endIndex, resolved);
             referenceIndex = stringBuilder.indexOf(CONSTRAINT_REFERENCE_ESCAPE);
@@ -277,7 +268,7 @@ public class SqlConstraint extends AstNodeBase
         return endIndex;
     }
 
-    private String resolveConstraintReference(String referencedText)
+    private String resolveConstraintReference(CompoundType compoundType, String referencedText)
     {
         final SymbolReference symbolReference = new SymbolReference(this, referencedText);
         symbolReference.resolve(compoundType.getPackage(), compoundType);
@@ -315,8 +306,6 @@ public class SqlConstraint extends AstNodeBase
     private static final String CONSTRAINT_REFERENCE_ESCAPE = "@";
 
     private final Expression constraintExpr;
-
-    private CompoundType compoundType = null;
 
     private Expression translatedConstraintExpr = null;
     private Expression translatedFieldConstraintExpr = null;

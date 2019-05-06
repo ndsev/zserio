@@ -39,9 +39,6 @@ public class SqlTableType extends CompoundType
         this.sqlUsingId = sqlUsingId;
         this.sqlConstraint = sqlConstraint;
         this.sqlWithoutRowId = sqlWithoutRowId;
-
-        if (sqlConstraint != null)
-            sqlConstraint.setCompoundType(this);
     }
 
     @Override

@@ -241,7 +241,7 @@ public class Field extends AstNodeWithDoc
     /**
      * Evaluates the compound field.
      */
-    protected void evaluate()
+    protected void evaluate(Package pkg)
     {
         // check initializer expression type
         if (initializerExpr != null)
@@ -293,21 +293,8 @@ public class Field extends AstNodeWithDoc
         }
 
         // check field name
-        if (compoundType.getPackage().getVisibleType(this, PackageName.EMPTY, getName()) != null)
+        if (pkg.getVisibleType(this, PackageName.EMPTY, getName()) != null)
             throw new ParserException(this, "'" + getName() + "' is a defined type in this package!");
-    }
-
-    /**
-     * Sets the compound type which is owner of the field.
-     *
-     * @param compoundType Owner to set.
-     */
-    protected void setCompoundType(CompoundType compoundType)
-    {
-        this.compoundType = compoundType;
-
-        if (sqlConstraint != null)
-            sqlConstraint.setCompoundType(compoundType);
     }
 
     private Field(Token token, ZserioType fieldType, String name, boolean isAutoOptional,
@@ -343,6 +330,4 @@ public class Field extends AstNodeWithDoc
 
     private final boolean isVirtual;
     private final SqlConstraint sqlConstraint;
-
-    private CompoundType compoundType = null;
 }

@@ -78,7 +78,7 @@ public class ZserioAstResolver extends ZserioAstVisitor.Base
     @Override
     public void visitSqlConstraint(SqlConstraint sqlConstraint)
     {
-        sqlConstraint.resolve();
+        sqlConstraint.resolve(currentCompoundType);
         sqlConstraint.visitChildren(this);
     }
 

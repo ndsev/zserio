@@ -38,9 +38,6 @@ public abstract class CompoundType extends AstNodeWithDoc implements ZserioScope
         this.parameters = parameters;
         this.fields = fields;
         this.functions = functions;
-
-        for (Field field : fields)
-            field.setCompoundType(this);
     }
 
     @Override
