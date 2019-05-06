@@ -3,7 +3,7 @@ package zserio.ast4;
 import zserio.emit.common.Emitter4;
 import zserio.emit.common.ZserioEmitException;
 
-public class ZserioAstEmitter extends ZserioAstVisitor.Base
+public class ZserioAstEmitter extends ZserioAstVisitorBase
 {
     public ZserioAstEmitter(Emitter4 emitter)
     {

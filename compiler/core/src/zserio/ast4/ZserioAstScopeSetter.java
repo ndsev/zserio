@@ -3,7 +3,7 @@ package zserio.ast4;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ZserioAstScopeSetter extends ZserioAstVisitor.Base
+public class ZserioAstScopeSetter extends ZserioAstVisitorBase
 {
     @Override
     public void visitStructureType(StructureType structureType)

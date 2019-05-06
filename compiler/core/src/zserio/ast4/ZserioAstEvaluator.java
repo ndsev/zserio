@@ -2,7 +2,7 @@ package zserio.ast4;
 
 import java.util.List;
 
-public class ZserioAstEvaluator extends ZserioAstVisitor.Base
+public class ZserioAstEvaluator extends ZserioAstVisitorBase
 {
     public ZserioAstEvaluator()
     {

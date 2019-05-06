@@ -3,7 +3,7 @@ package zserio.ast4;
 import java.util.Map;
 
 
-public class ZserioAstResolver extends ZserioAstVisitor.Base
+public class ZserioAstResolver extends ZserioAstVisitorBase
 {
     @Override
     public void visitRoot(Root root)

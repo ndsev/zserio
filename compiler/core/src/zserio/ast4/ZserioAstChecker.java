@@ -7,7 +7,7 @@ import java.util.Set;
 
 import zserio.tools.ZserioToolPrinter;
 
-public class ZserioAstChecker extends ZserioAstVisitor.Base
+public class ZserioAstChecker extends ZserioAstVisitorBase
 {
     public ZserioAstChecker(boolean checkUnusedTypes)
     {
