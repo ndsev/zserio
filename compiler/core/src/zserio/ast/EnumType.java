@@ -8,6 +8,8 @@ import java.util.Set;
 
 import org.antlr.v4.runtime.Token;
 
+import zserio.antlr.util.ParserException;
+
 
 /**
  * AST node for Enumeration types.

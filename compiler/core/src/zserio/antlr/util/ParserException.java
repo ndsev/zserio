@@ -1,46 +1,33 @@
 package zserio.antlr.util;
 
-import antlr.RecognitionException;
+import org.antlr.v4.runtime.Token;
 
-/**
- * Unchecked exception which is thrown if any error during parsing or checking occurs.
- */
-public class ParserException extends RecognitionException
+import zserio.ast.AstLocation;
+import zserio.ast.AstNode;
+
+public class ParserException extends RuntimeException
 {
-    /**
-     * Constructor from AST token and text.
-     *
-     * @param originToken The AST token which throws this exception.
-     * @param message     The message describing exception.
-     */
-    public ParserException(BaseTokenAST originToken, String message)
+    public ParserException(Token token, String message)
     {
-        this(originToken.getFileName(), originToken.getLine(), originToken.getColumn(), message);
+        this(new AstLocation(token), message);
     }
 
-    /**
-     * Constructor from file name and text.
-     *
-     * @param fileName The name of source file where the exception occurred.
-     * @param message  The message describing exception.
-     */
-    public ParserException(String fileName, String message)
+    public ParserException(AstNode node, String message)
     {
-        this(fileName, 0, 0, message);
+        this(node.getLocation(), message);
     }
 
-    /**
-     * Constructor from file name, line, column and text.
-     *
-     * @param fileName The name of source file where the exception occurred.
-     * @param line     The line number in source file where the exception occurred.
-     * @param line     The column number in source file where the exception occurred.
-     * @param message  The message describing exception.
-     */
-    public ParserException(String fileName, int line, int column, String message)
+    public ParserException(AstLocation location, String message)
     {
-        super(message, fileName, line, column);
+        super(message);
+        this.location = location;
     }
 
-    private static final long serialVersionUID = 1L;
+    public AstLocation getLocation()
+    {
+        return location;
+    }
+
+    private AstLocation location;
+    private static final long serialVersionUID = -2149318704048979392L;
 }

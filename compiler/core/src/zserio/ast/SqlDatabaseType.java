@@ -5,6 +5,8 @@ import java.util.List;
 
 import org.antlr.v4.runtime.Token;
 
+import zserio.antlr.util.ParserException;
+
 
 /**
  * AST node for SQL Database types.

@@ -11,10 +11,11 @@ import org.apache.commons.cli.ParseException;
 
 import zserio.antlr.ZserioLexer;
 import zserio.antlr.ZserioParser;
+import zserio.antlr.util.ParseCancellingErrorListener;
+import zserio.antlr.util.ParserException;
 import zserio.ast.Import;
 import zserio.ast.Package;
 import zserio.ast.PackageName;
-import zserio.ast.ParserException;
 import zserio.ast.Root;
 import zserio.ast.ZserioAstBuilder;
 import zserio.ast.ZserioAstChecker;

@@ -1,4 +1,4 @@
-package zserio.tools;
+package zserio.antlr.util;
 
 import org.antlr.v4.runtime.BaseErrorListener;
 import org.antlr.v4.runtime.RecognitionException;
@@ -7,7 +7,6 @@ import org.antlr.v4.runtime.Token;
 import org.antlr.v4.runtime.misc.ParseCancellationException;
 
 import zserio.ast.AstLocation;
-import zserio.ast.ParserException;
 
 /**
  * ANTLR4 error listener implementation which terminates parsing in case of an error.

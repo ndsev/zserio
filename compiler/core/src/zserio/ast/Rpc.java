@@ -2,6 +2,8 @@ package zserio.ast;
 
 import org.antlr.v4.runtime.Token;
 
+import zserio.antlr.util.ParserException;
+
 
 /**
  * AST node for RPC calls.

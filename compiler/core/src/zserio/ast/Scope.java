@@ -3,6 +3,8 @@ package zserio.ast;
 import java.util.HashMap;
 import java.util.Map;
 
+import zserio.antlr.util.ParserException;
+
 /**
  * This class represents a lexical scope which maps symbol names to objects.
  *

@@ -16,7 +16,8 @@ import zserio.antlr.DocCommentLexer;
 import zserio.antlr.DocCommentParser;
 import zserio.antlr.ZserioLexer;
 import zserio.antlr.ZserioParser;
-import zserio.tools.ParseCancellingErrorListener;
+import zserio.antlr.util.ParseCancellingErrorListener;
+import zserio.antlr.util.ParserException;
 import zserio.tools.ZserioToolPrinter;
 
 /**

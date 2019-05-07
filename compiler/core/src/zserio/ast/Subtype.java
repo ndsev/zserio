@@ -2,6 +2,7 @@ package zserio.ast;
 
 import org.antlr.v4.runtime.Token;
 
+import zserio.antlr.util.ParserException;
 import zserio.ast.TypeReference;
 import zserio.ast.ZserioType;
 

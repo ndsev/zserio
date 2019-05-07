@@ -11,6 +11,7 @@ import java.util.TreeSet;
 
 import org.antlr.v4.runtime.Token;
 
+import zserio.antlr.util.ParserException;
 import zserio.tools.HashUtil;
 import zserio.tools.ZserioToolPrinter;
 

@@ -4,6 +4,8 @@ import java.math.BigInteger;
 
 import org.antlr.v4.runtime.Token;
 
+import zserio.antlr.util.ParserException;
+
 /**
  * AST abstract node for all bit field Integer types.
  *
