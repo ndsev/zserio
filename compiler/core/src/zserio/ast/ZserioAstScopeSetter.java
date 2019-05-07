@@ -214,7 +214,13 @@ public class ZserioAstScopeSetter extends ZserioAstVisitorBase
 
     private void visitChoiceField(Field field)
     {
-        visitField(field);
+        field.getFieldType().accept(this);
+
+        currentScope.setSymbol(field.getName(), field);
+        currentChoiceOrUnionScope.setSymbol(field.getName(), field);
+
+        if (field.getConstraintExpr() != null)
+            field.getConstraintExpr().accept(this);
 
         currentScope.removeSymbol(field.getName());
     }
