@@ -37,7 +37,8 @@ public class ArrayType extends AstNodeBase implements ZserioType
     public void visitChildren(ZserioAstVisitor visitor)
     {
         elementType.accept(visitor);
-        lengthExpression.accept(visitor);
+        if (lengthExpression != null)
+            lengthExpression.accept(visitor);
     }
 
     @Override
