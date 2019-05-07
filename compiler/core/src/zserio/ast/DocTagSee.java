@@ -1,6 +1,6 @@
 package zserio.ast;
 
-import org.antlr.v4.runtime.Token;
+import zserio.tools.ZserioToolPrinter;
 
 /** See tag documentation node. */
 public class DocTagSee extends AstNodeBase
@@ -8,13 +8,13 @@ public class DocTagSee extends AstNodeBase
     /**
      * Constructor.
      *
-     * @param token     ANTLR4 token to localize AST node in the sources.
+     * @param location  AST node location.
      * @param linkAlias Link alias. Defaults to link name if null is passed.
      * @param linkName  Link name.
      */
-    public DocTagSee(Token token, String linkAlias, String linkName)
+    public DocTagSee(AstLocation location, String linkAlias, String linkName)
     {
-        super(token);
+        super(location);
 
         // link alias is the same as a link name if no alias is available
         this.linkAlias = linkAlias != null ? linkAlias : linkName;
@@ -52,7 +52,15 @@ public class DocTagSee extends AstNodeBase
      */
     protected void resolve(Package ownerPackage, ZserioScopedType ownerType)
     {
-        linkSymbolReference.resolve(ownerPackage, ownerType);
+        try
+        {
+            linkSymbolReference.resolve(ownerPackage, ownerType);
+        }
+        catch (ParserException e)
+        {
+            ZserioToolPrinter.printWarning(e.getLocation(), "Documentation: " +
+                    e.getMessage() + "!");
+        }
     }
 
     private final String linkAlias;

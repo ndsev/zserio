@@ -1,7 +1,5 @@
 package zserio.ast;
 
-import org.antlr.v4.runtime.Token;
-
 /**
  * Documentation paragraph.
  */
@@ -10,12 +8,12 @@ public class DocParagraph extends DocMultilineNode
     /**
      * Constructor.
      *
-     * @param token     ANTLR4 token to localize AST node in the sources.
+     * @param location  AST node location.
      * @param firstLine First documentation line.
      */
-    public DocParagraph(Token token, DocTextLine firstLine)
+    public DocParagraph(AstLocation location, DocTextLine firstLine)
     {
-        super(token, firstLine);
+        super(location, firstLine);
     }
 
     @Override

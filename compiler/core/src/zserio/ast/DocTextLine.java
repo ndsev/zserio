@@ -3,8 +3,6 @@ package zserio.ast;
 import java.util.Collections;
 import java.util.List;
 
-import org.antlr.v4.runtime.Token;
-
 /**
  * Single documentation line AST node.
  */
@@ -13,12 +11,12 @@ public class DocTextLine extends AstNodeBase
     /**
      * Constructor.
      *
-     * @param token    ANTLR4 token to localize AST node in the sources.
+     * @param location  AST node location.
      * @param docTexts List of documentation texts which form the current documentation line.
      */
-    public DocTextLine(Token token, List<DocText> docTexts)
+    public DocTextLine(AstLocation location, List<DocText> docTexts)
     {
-        super(token);
+        super(location);
 
         this.docTexts = docTexts;
     }

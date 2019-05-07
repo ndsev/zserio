@@ -17,6 +17,16 @@ public abstract class AstNodeBase implements AstNode
         this.location = new AstLocation(token);
     }
 
+    /**
+     * Constructor from AST location.
+     *
+     * @param location AST node location.
+     */
+    public AstNodeBase(AstLocation location)
+    {
+        this.location = location;
+    }
+
     @Override
     public AstLocation getLocation()
     {

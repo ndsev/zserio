@@ -16,6 +16,7 @@ import zserio.antlr.DocCommentLexer;
 import zserio.antlr.DocCommentParser;
 import zserio.antlr.ZserioLexer;
 import zserio.antlr.ZserioParser;
+import zserio.tools.ParseCancellingErrorListener;
 import zserio.tools.ZserioToolPrinter;
 
 /**
@@ -129,19 +130,25 @@ public class DocCommentManager
         try
         {
             final CharStream inputStream = CharStreams.fromString(docCommentToken.getText());
+            final ParseCancellingErrorListener parseCancellingErrorListener =
+                    new ParseCancellingErrorListener(docCommentToken);
             final DocCommentLexer lexer = new DocCommentLexer(inputStream);
+            lexer.removeErrorListeners();
+            lexer.addErrorListener(parseCancellingErrorListener);
             final CommonTokenStream tokenStream = new CommonTokenStream(lexer);
             final DocCommentParser parser = new DocCommentParser(tokenStream);
+            parser.removeErrorListeners();
+            parser.addErrorListener(parseCancellingErrorListener);
             final ParseTree tree = parser.docComment();
 
-            final DocCommentAstBuilder docCommentAstBuilder = new DocCommentAstBuilder();
+            final DocCommentAstBuilder docCommentAstBuilder = new DocCommentAstBuilder(docCommentToken);
             return (DocComment)docCommentAstBuilder.visit(tree);
         }
-        catch (Exception e)
+        catch (ParserException e)
         {
             // if we cannot parse comment, just ignore it and report warning
-            ZserioToolPrinter.printWarning(new AstLocation(docCommentToken),
-                    "Doc comment parsing failed: " + e.getMessage() + "!");
+            ZserioToolPrinter.printWarning(e.getLocation(), "Documentation: " +
+                    e.getMessage() + "!");
             return null;
         }
     }

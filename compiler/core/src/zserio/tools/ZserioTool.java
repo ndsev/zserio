@@ -161,9 +161,15 @@ public class ZserioTool
         inputFileManager.registerFile(inputFileFullName);
 
         final CharStream inputStream = CharStreams.fromFileName(inputFileFullName, Charset.forName("UTF-8"));
+        final ParseCancellingErrorListener parseCancellingErrorListener =
+                new ParseCancellingErrorListener();
         final ZserioLexer lexer = new ZserioLexer(inputStream);
+        lexer.removeErrorListeners();
+        lexer.addErrorListener(parseCancellingErrorListener);
         final CommonTokenStream tokenStream = new CommonTokenStream(lexer);
         final ZserioParser parser = new ZserioParser(tokenStream);
+        parser.removeErrorListeners();
+        parser.addErrorListener(parseCancellingErrorListener);
         final ParseTree tree = parser.packageDeclaration();
 
         ZserioParseTreeChecker parseTreeChecker = new ZserioParseTreeChecker(inputFileManager);

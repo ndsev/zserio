@@ -1,7 +1,5 @@
 package zserio.ast;
 
-import org.antlr.v4.runtime.Token;
-
 /**
  * Todo tag documentation node.
  */
@@ -10,12 +8,12 @@ public class DocTagTodo extends DocMultilineNode
     /**
      * Constructor.
      *
-     * @param token     ANTLR4 token to localize AST node in the sources.
+     * @param location  AST node location.
      * @param firstLine First line of todo description.
      */
-    public DocTagTodo(Token token, DocTextLine firstLine)
+    public DocTagTodo(AstLocation location, DocTextLine firstLine)
     {
-        super(token, firstLine);
+        super(location, firstLine);
     }
 
     @Override

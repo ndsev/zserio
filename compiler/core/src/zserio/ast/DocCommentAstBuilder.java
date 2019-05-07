@@ -13,13 +13,17 @@ import zserio.antlr.DocCommentParser;
  */
 public class DocCommentAstBuilder extends DocCommentBaseVisitor<Object>
 {
+    DocCommentAstBuilder(Token docCommentToken)
+    {
+        this.docCommentToken = docCommentToken;
+    }
+
     @Override
     public Object visitDocComment(DocCommentParser.DocCommentContext ctx)
     {
-        token = ctx.getStart();
         visitChildren(ctx);
 
-        return new DocComment(token, paragraphs, seeTags, todoTags, paramTags, isDeprecated);
+        return new DocComment(docCommentToken, paragraphs, seeTags, todoTags, paramTags, isDeprecated);
     }
 
     @Override
@@ -35,7 +39,7 @@ public class DocCommentAstBuilder extends DocCommentBaseVisitor<Object>
             final DocTextLine docTextLine = visitDocTextLine(ctx.docTextLine());
             if (prevMultilineNode == null)
             {
-                final DocParagraph paragraph = new DocParagraph(ctx.getStart(), docTextLine);
+                final DocParagraph paragraph = new DocParagraph(getLocation(ctx.getStart()), docTextLine);
                 paragraphs.add(paragraph);
                 prevMultilineNode = paragraph;
             }
@@ -78,7 +82,7 @@ public class DocCommentAstBuilder extends DocCommentBaseVisitor<Object>
     @Override
     public DocTagSee visitSeeTag(DocCommentParser.SeeTagContext ctx)
     {
-        return new DocTagSee(ctx.getStart(),
+        return new DocTagSee(getLocation(ctx.getStart()),
                 (ctx.seeTagAlias() != null ? ctx.seeTagAlias().seeTagAliasText().getText() : null),
                 ctx.seeTagId().getText());
     }
@@ -86,7 +90,7 @@ public class DocCommentAstBuilder extends DocCommentBaseVisitor<Object>
     @Override
     public DocTagTodo visitTodoTag(DocCommentParser.TodoTagContext ctx)
     {
-        final DocTagTodo todoTag = new DocTagTodo(ctx.getStart(), visitDocTextLine(ctx.docTextLine()));
+        final DocTagTodo todoTag = new DocTagTodo(getLocation(ctx.getStart()), visitDocTextLine(ctx.docTextLine()));
         prevMultilineNode = todoTag;
         return todoTag;
     }
@@ -94,7 +98,7 @@ public class DocCommentAstBuilder extends DocCommentBaseVisitor<Object>
     @Override
     public DocTagParam visitParamTag(DocCommentParser.ParamTagContext ctx)
     {
-        final DocTagParam paramTag = new DocTagParam(ctx.getStart(), ctx.paramName().getText(),
+        final DocTagParam paramTag = new DocTagParam(getLocation(ctx.getStart()), ctx.paramName().getText(),
                 visitDocTextLine(ctx.docTextLine()));
         prevMultilineNode = paramTag;
         return paramTag;
@@ -108,25 +112,36 @@ public class DocCommentAstBuilder extends DocCommentBaseVisitor<Object>
         for (DocCommentParser.DocTextContext docTextCtx : ctx.docText())
             docTexts.add(visitDocText(docTextCtx));
 
-        return new DocTextLine(ctx.getStart(), docTexts);
+        return new DocTextLine(getLocation(ctx.getStart()), docTexts);
     }
 
     @Override
     public DocText visitDocText(DocCommentParser.DocTextContext ctx)
     {
         if (ctx.seeTag() != null)
-            return new DocText(ctx.getStart(), visitSeeTag(ctx.seeTag()));
+            return new DocText(getLocation(ctx.getStart()), visitSeeTag(ctx.seeTag()));
         else
-            return new DocText(ctx.getStart(), visitTextElement(ctx.textElement()));
+            return new DocText(getLocation(ctx.getStart()), visitTextElement(ctx.textElement()));
     }
 
     @Override
     public DocTextElement visitTextElement(DocCommentParser.TextElementContext ctx)
     {
-        return new DocTextElement(ctx.getStart(), ctx.getText());
+        return new DocTextElement(getLocation(ctx.getStart()), ctx.getText());
     }
 
-    private Token token = null;
+    private AstLocation getLocation(Token token)
+    {
+        final String fileName = docCommentToken.getInputStream().getSourceName();
+        final int line = docCommentToken.getLine() + token.getLine() - 1; // lines are numbered from 1!
+        final int charPositionInLine = token.getLine() == 1
+                ? docCommentToken.getCharPositionInLine() + token.getCharPositionInLine()
+                : token.getCharPositionInLine();
+
+        return new AstLocation(fileName, line, charPositionInLine);
+    }
+
+    private final Token docCommentToken;
     private final List<DocParagraph> paragraphs = new ArrayList<DocParagraph>();
     private final List<DocTagSee> seeTags = new ArrayList<DocTagSee>();
     private final List<DocTagTodo> todoTags = new ArrayList<DocTagTodo>();

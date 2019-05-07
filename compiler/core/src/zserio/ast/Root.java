@@ -20,7 +20,7 @@ public class Root extends AstNodeBase
      */
     public Root(LinkedHashMap<PackageName, Package> packageNameMap)
     {
-        super(null);
+        super((AstLocation)null);
 
         this.packageNameMap = packageNameMap;
     }

@@ -1,6 +1,5 @@
 package zserio.tools;
 
-import zserio.antlr.util.BaseTokenAST;
 import zserio.ast.AstLocation;
 import zserio.ast.AstNode;
 
@@ -20,20 +19,6 @@ public class ZserioToolPrinter
     public static void printWarning(String fileName, int line, int column, String text)
     {
         printWarningOrError("[WARNING] ", fileName, line, column, text);
-    }
-
-    /**
-     * Prints warning which is localized by base AST token.
-     *
-     * @param orignToken AST token to which the warning belongs to.
-     * @param text       Text of the warning to print.
-     */
-    public static void printWarning(BaseTokenAST originToken, String text)
-    {
-        if (originToken == null)
-            printWarning(null, 0, 0, text);
-        else
-            printWarning(originToken.getFileName(), originToken.getLine(), originToken.getColumn(), text);
     }
 
     /**

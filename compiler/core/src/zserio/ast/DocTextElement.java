@@ -1,7 +1,5 @@
 package zserio.ast;
 
-import org.antlr.v4.runtime.Token;
-
 /**
  * Text element documentation node.
  */
@@ -10,12 +8,12 @@ public class DocTextElement extends AstNodeBase
     /**
      * Constructor.
      *
-     * @param token ANTLR4 token to localize AST node in the sources.
+     * @param location  AST node location.
      * @param text  Text content.
      */
-    public DocTextElement(Token token, String text)
+    public DocTextElement(AstLocation location, String text)
     {
-        super(token);
+        super(location);
 
         this.text = text;
     }

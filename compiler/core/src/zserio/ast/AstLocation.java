@@ -28,6 +28,13 @@ public class AstLocation
         }
     }
 
+    public AstLocation(String fileName, int line, int charPositionInLine)
+    {
+        this.fileName = fileName;
+        this.line = line;
+        this.column = charPositionInLine + 1;
+    }
+
     /**
      * Gets file name where the AST node is localized.
      *
