@@ -407,9 +407,13 @@ convert_to_absolute_path()
     if [ ! -d "${DIR_TO_CONVERT}" ] ; then
         DIR_TO_CONVERT="${PATH_TO_CONVERT%/*}"
         FILE_TO_CONVERT="${PATH_TO_CONVERT##*/}"
-        if [ ! -d "${DIR_TO_CONVERT}" ] ; then
-            stderr_echo "${FUNCNAME[0]}() called with a non-existing directory ${DIR_TO_CONVERT}!"
-            return 1
+        if [[ "${DIR_TO_CONVERT}" == "${FILE_TO_CONVERT}" ]] ; then
+            DIR_TO_CONVERT="."
+        else
+            if [ ! -d "${DIR_TO_CONVERT}" ] ; then
+                stderr_echo "${FUNCNAME[0]}() called with a non-existing directory ${DIR_TO_CONVERT}!"
+                return 1
+            fi
         fi
     fi
 
