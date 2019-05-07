@@ -139,11 +139,11 @@ public class ZserioTool
 
         final Root rootNode = astBuilderVisitor.getAst();
 
-        final ZserioAstResolver resolver = new ZserioAstResolver();
-        rootNode.accept(resolver);
-
         final ZserioAstScopeSetter scopeSetter = new ZserioAstScopeSetter();
         rootNode.accept(scopeSetter);
+
+        final ZserioAstResolver resolver = new ZserioAstResolver();
+        rootNode.accept(resolver);
 
         final ZserioAstEvaluator evaluator = new ZserioAstEvaluator();
         rootNode.accept(evaluator);

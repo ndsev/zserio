@@ -118,6 +118,8 @@ public class SqlConstraint extends AstNodeBase
      * This is used for table fields which have no SQL constraint specified in Zserio. If table field has
      * no SQL constraint, it should be translated to 'NOT NULL' constraint for SQLite (Zserio default behavior).
      *
+     * @param pkg Package to use for created SQL constraint.
+     *
      * @return Created default SQL constraint.
      */
     protected static SqlConstraint createDefaultFieldConstraint(Package pkg)
@@ -127,25 +129,148 @@ public class SqlConstraint extends AstNodeBase
 
     /**
      * Resolves the SQL constraint.
+     *
+     * @param compoundType Compound type which owns the SQL constraint.
      */
     protected void resolve(CompoundType compoundType)
+    {
+        // store package of the owner
+        pkg = compoundType.getPackage();
+
+        // resolve all @-references
+        final String sqlConstraintString = constraintExpr.getText();
+        resolveConstraintReferences2(compoundType, sqlConstraintString);
+    }
+
+    /**
+     * Evaluates the SQL constraint.
+     */
+    protected void evaluate()
     {
         final String sqlConstraintString = constraintExpr.getText();
         primaryKeyColumnNames = extractColumnNames(sqlConstraintString, PRIMARY_KEY_CONSTRAINT);
         uniqueColumnNames = extractColumnNames(sqlConstraintString, UNIQUE_CONSTRAINT);
         isPrimaryKey = containsPrimaryKey(sqlConstraintString);
 
-        // replace all @-references
-        final String translatedConstraint = resolveConstraintReferences(compoundType, sqlConstraintString);
-        translatedConstraintExpr = createStringLiteralExpression(compoundType.getPackage(),
-                translatedConstraint);
+        // set translated constraint expression for table
+        final String translatedConstraint = createTranslatedConstraint();
+        translatedConstraintExpr = createStringLiteralExpression(pkg, translatedConstraint);
 
         // set translated constraint expression for table field
-        translatedFieldConstraintExpr = createTranslatedFieldConstraintExpr(compoundType.getPackage(),
-                translatedConstraint);
+        translatedFieldConstraintExpr = createTranslatedFieldConstraintExpr(translatedConstraint);
     }
 
-    private Expression createTranslatedFieldConstraintExpr(Package pkg, String translatedConstraint)
+    private void resolveConstraintReferences2(CompoundType compoundType, String sqlConstraintString)
+    {
+        int startIndex = 0;
+        int referenceIndex = sqlConstraintString.indexOf(CONSTRAINT_REFERENCE_ESCAPE);
+        while (referenceIndex >= 0)
+        {
+            translatedConstraintStrings.add(sqlConstraintString.substring(startIndex, referenceIndex - 1));
+
+            final int endIndex = findEndOfConstraintReference2(sqlConstraintString, referenceIndex + 1);
+            final String referencedText = sqlConstraintString.substring(referenceIndex + 1, endIndex);
+            constrainReferencedTexts.add(referencedText);
+            final SymbolReference symbolReference = new SymbolReference(this, referencedText);
+            symbolReference.resolve(compoundType.getPackage(), compoundType);
+            constraintReferences.add(symbolReference);
+
+            startIndex = endIndex;
+            referenceIndex = sqlConstraintString.indexOf(CONSTRAINT_REFERENCE_ESCAPE, startIndex);
+        }
+
+        if (startIndex < sqlConstraintString.length())
+            translatedConstraintStrings.add(sqlConstraintString.substring(startIndex));
+    }
+
+    private static int findEndOfConstraintReference2(String sqlConstrainString, int startIndex)
+    {
+        int endIndex = startIndex;
+        while (endIndex < sqlConstrainString.length())
+        {
+            final char c = sqlConstrainString.charAt(endIndex);
+            if (c != '.' && c != '_' && !Character.isLetterOrDigit(sqlConstrainString.charAt(endIndex)))
+                break;
+
+            endIndex++;
+        }
+
+        return endIndex;
+    }
+
+    private static List<String> extractColumnNames(String sqlConstraintString, String constraintName)
+    {
+        final ArrayList<String> columnNames = new ArrayList<String>();
+        final int constraintIndex = sqlConstraintString.toUpperCase(Locale.ENGLISH).indexOf(constraintName);
+        if (constraintIndex > -1)
+        {
+            final int leftBracketIndex = sqlConstraintString.indexOf('(', constraintIndex);
+            if (leftBracketIndex > -1)
+            {
+                final int rightBracketIndex = sqlConstraintString.indexOf(')', leftBracketIndex);
+                if (rightBracketIndex > -1)
+                {
+                    final String[] cols = sqlConstraintString.substring(leftBracketIndex + 1,
+                            rightBracketIndex).split(",");
+                    for (int i = 0; i < cols.length; i++ )
+                        columnNames.add(cols[i].trim());
+                }
+            }
+        }
+
+        return columnNames;
+    }
+
+    private static boolean containsPrimaryKey(String sqlConstraintString)
+    {
+        return (sqlConstraintString.toUpperCase(Locale.ENGLISH).indexOf(PRIMARY_KEY_CONSTRAINT) > -1);
+    }
+
+    private String createTranslatedConstraint()
+    {
+        final StringBuilder stringBuilder = new StringBuilder();
+        int numUsedReferences = 0;
+        for (String translatedConstraintString : translatedConstraintStrings)
+        {
+            stringBuilder.append(translatedConstraintString);
+            if (numUsedReferences < constraintReferences.size())
+            {
+                final SymbolReference symbolReference = constraintReferences.get(numUsedReferences);
+                final ZserioType referencedType = symbolReference.getReferencedType();
+                final Object referencedSymbol = symbolReference.getReferencedSymbol();
+                String resolvedReferencedText;
+                if (referencedType instanceof ConstType)
+                {
+                    final ConstType referencedConstType = (ConstType)referencedType;
+                    final BigInteger value = referencedConstType.getValueExpression().getIntegerValue();
+                    if (value == null)
+                    {
+                        final String referencedText = constrainReferencedTexts.get(numUsedReferences);
+                        throw new ParserException(this, "Reference '" + referencedText + "' refers " +
+                                "to non-integer constant!");
+                    }
+
+                    resolvedReferencedText = value.toString();
+                }
+                else if (referencedSymbol instanceof EnumItem)
+                {
+                    resolvedReferencedText = ((EnumItem)referencedSymbol).getValue().toString();
+                }
+                else
+                {
+                    final String referencedText = constrainReferencedTexts.get(numUsedReferences);
+                    throw new ParserException(this, "Reference '" + referencedText +
+                            "' does refer to neither enumeration type nor constant!");
+                }
+
+                stringBuilder.append(resolvedReferencedText);
+            }
+        }
+
+        return stringBuilder.toString();
+    }
+
+    private Expression createTranslatedFieldConstraintExpr(String translatedConstraint)
     {
         // unlike SQLite, the default column constraint in Zserio is 'NOT NULL' and NULL-constraints have to be
         // explicitly set
@@ -193,8 +318,8 @@ public class SqlConstraint extends AstNodeBase
             }
         }
 
-        return (fieldConstraint.isEmpty()) ? null : createStringLiteralExpression(pkg,
-                "\"" + fieldConstraint + "\"");
+        return (fieldConstraint.isEmpty()) ? null :
+            createStringLiteralExpression(pkg, "\"" + fieldConstraint + "\"");
     }
 
     private static Expression createStringLiteralExpression(Package pkg, String stringLiteral)
@@ -202,100 +327,6 @@ public class SqlConstraint extends AstNodeBase
         final CommonToken stringLiteralToken = new CommonToken(ZserioParser.STRING_LITERAL, stringLiteral);
 
         return new Expression(null, pkg, stringLiteralToken);
-    }
-
-    private static List<String> extractColumnNames(String sqlConstraintString, String constraintName)
-    {
-        final ArrayList<String> columnNames = new ArrayList<String>();
-        final int constraintIndex = sqlConstraintString.toUpperCase(Locale.ENGLISH).indexOf(constraintName);
-        if (constraintIndex > -1)
-        {
-            final int leftBracketIndex = sqlConstraintString.indexOf('(', constraintIndex);
-            if (leftBracketIndex > -1)
-            {
-                final int rightBracketIndex = sqlConstraintString.indexOf(')', leftBracketIndex);
-                if (rightBracketIndex > -1)
-                {
-                    final String[] cols = sqlConstraintString.substring(leftBracketIndex + 1,
-                            rightBracketIndex).split(",");
-                    for (int i = 0; i < cols.length; i++ )
-                        columnNames.add(cols[i].trim());
-                }
-            }
-        }
-
-        return columnNames;
-    }
-
-    private static boolean containsPrimaryKey(String sqlConstraintString)
-    {
-        return (sqlConstraintString.toUpperCase(Locale.ENGLISH).indexOf(PRIMARY_KEY_CONSTRAINT) > -1);
-    }
-
-    private String resolveConstraintReferences(CompoundType compoundType, String sqlConstraintString)
-    {
-        int referenceIndex = sqlConstraintString.indexOf(CONSTRAINT_REFERENCE_ESCAPE);
-        if (referenceIndex < 0)
-            return sqlConstraintString; // shortcut when there are no references
-
-        final StringBuilder stringBuilder = new StringBuilder(sqlConstraintString);
-        while (referenceIndex >= 0)
-        {
-            final int endIndex = findEndOfConstraintReference(stringBuilder, referenceIndex + 1);
-
-            final String referencedText = stringBuilder.substring(referenceIndex + 1, endIndex);
-            final String resolved = resolveConstraintReference(compoundType, referencedText);
-
-            stringBuilder.replace(referenceIndex, endIndex, resolved);
-            referenceIndex = stringBuilder.indexOf(CONSTRAINT_REFERENCE_ESCAPE);
-        }
-
-        return stringBuilder.toString();
-    }
-
-    private static int findEndOfConstraintReference(StringBuilder buffer, int startIndex)
-    {
-        int endIndex = startIndex;
-        while (endIndex < buffer.length())
-        {
-            final char c = buffer.charAt(endIndex);
-            if (c != '.' && c != '_' && !Character.isLetterOrDigit(buffer.charAt(endIndex)))
-                break;
-
-            endIndex++;
-        }
-
-        return endIndex;
-    }
-
-    private String resolveConstraintReference(CompoundType compoundType, String referencedText)
-    {
-        final SymbolReference symbolReference = new SymbolReference(this, referencedText);
-        symbolReference.resolve(compoundType.getPackage(), compoundType);
-
-        final ZserioType referencedType = symbolReference.getReferencedType();
-        final Object referencedSymbol = symbolReference.getReferencedSymbol();
-        String resolvedReferencedText;
-        if (referencedType instanceof ConstType)
-        {
-            final BigInteger value = ((ConstType)referencedType).getValueExpression().getIntegerValue();
-            if (value == null)
-                throw new ParserException(this, "Reference '" + referencedText + "' refers " +
-                        "to non-integer constant!");
-
-            resolvedReferencedText = value.toString();
-        }
-        else if (referencedSymbol instanceof EnumItem)
-        {
-            resolvedReferencedText = ((EnumItem)referencedSymbol).getValue().toString();
-        }
-        else
-        {
-            throw new ParserException(this, "Reference '" + referencedText + "' does refer to neither " +
-                    "enumeration type nor constant!");
-        }
-
-        return resolvedReferencedText;
     }
 
     private static final String PRIMARY_KEY_CONSTRAINT = "PRIMARY KEY";
@@ -306,6 +337,11 @@ public class SqlConstraint extends AstNodeBase
     private static final String CONSTRAINT_REFERENCE_ESCAPE = "@";
 
     private final Expression constraintExpr;
+
+    private final List<String> translatedConstraintStrings = new ArrayList<String>();
+    private final List<SymbolReference> constraintReferences = new ArrayList<SymbolReference>();
+    private final List<String> constrainReferencedTexts = new ArrayList<String>();
+    private Package pkg;
 
     private Expression translatedConstraintExpr = null;
     private Expression translatedFieldConstraintExpr = null;

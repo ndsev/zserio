@@ -116,6 +116,13 @@ public class ZserioAstEvaluator extends ZserioAstVisitorBase
     }
 
     @Override
+    public void visitSqlConstraint(SqlConstraint sqlConstraint)
+    {
+        sqlConstraint.visitChildren(this);
+        sqlConstraint.evaluate();
+    }
+
+    @Override
     public void visitRpc(Rpc rpc)
     {
         rpc.visitChildren(this);
