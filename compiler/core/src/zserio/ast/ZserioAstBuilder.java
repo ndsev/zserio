@@ -354,7 +354,8 @@ public class ZserioAstBuilder extends ZserioParserBaseVisitor<Object>
     public EnumItem visitEnumItem(ZserioParser.EnumItemContext ctx)
     {
         final String name = ctx.id().getText();
-        final Expression valueExpression = (Expression)visit(ctx.expression());
+        final ZserioParser.ExpressionContext exprCtx = ctx.expression();
+        final Expression valueExpression = (exprCtx != null) ? (Expression)visit(exprCtx) : null;
 
         final DocComment docComment = docCommentManager.findDocComment(ctx);
 
@@ -820,7 +821,8 @@ public class ZserioAstBuilder extends ZserioParserBaseVisitor<Object>
         if (ctx.fieldArrayRange() == null)
             return type;
 
-        final Expression lengthExpression = (Expression)visit(ctx.fieldArrayRange().expression());
+        final ZserioParser.ExpressionContext exprCtx = ctx.fieldArrayRange().expression();
+        final Expression lengthExpression = (exprCtx != null) ? (Expression)visit(exprCtx) : null;
         return new ArrayType(ctx.getStart(), type, lengthExpression, ctx.IMPLICIT() != null);
     }
 
