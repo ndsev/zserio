@@ -21,14 +21,14 @@ show_parser_tree()
     fi
     echo
 
-    "${JAVAC_BIN}" "${PARSER_TREE_BUILD_DIR}"/Zserio4*.java -cp .:"${ANTLR4_JAR}" 
+    "${JAVAC_BIN}" "${PARSER_TREE_BUILD_DIR}"/Zserio*.java -cp .:"${ANTLR4_JAR}" 
     if [ $? -ne 0 ]; then
         return 1
     fi
     echo
 
     pushd "${PARSER_TREE_BUILD_DIR}" > /dev/null
-    java -cp .:"${ANTLR4_JAR}" org.antlr.v4.gui.TestRig Zserio4 "${PARAM_PARSER_RULE}" -tokens -gui \
+    java -cp .:"${ANTLR4_JAR}" org.antlr.v4.gui.TestRig Zserio "${PARAM_PARSER_RULE}" -tokens -gui \
             "${PARAM_ZSERIO_SOURCE}"
     local GRUN_RESULT=$?
     popd > /dev/null
