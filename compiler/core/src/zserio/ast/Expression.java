@@ -551,7 +551,8 @@ public class Expression extends AstNodeBase
 
                 case ZserioParser.BINARY_LITERAL:      // literalExpression
                     expressionType = ExpressionType.INTEGER;
-                    expressionIntegerValue = new ExpressionIntegerValue(new BigInteger(getText(), 2));
+                    final String binText = stripBinaryLiteral(getText());
+                    expressionIntegerValue = new ExpressionIntegerValue(new BigInteger(binText, 2));
                     break;
 
                 case ZserioParser.OCTAL_LITERAL:       // literalExpression
@@ -566,7 +567,8 @@ public class Expression extends AstNodeBase
 
                 case ZserioParser.HEXADECIMAL_LITERAL: // literalExpression
                     expressionType = ExpressionType.INTEGER;
-                    expressionIntegerValue = new ExpressionIntegerValue(new BigInteger(getText(), 16));
+                    final String hexText = stripHexadecimalLiteral(getText());
+                    expressionIntegerValue = new ExpressionIntegerValue(new BigInteger(hexText, 16));
                     break;
 
                 case ZserioParser.BOOL_LITERAL:        // literalExpression
@@ -1284,6 +1286,24 @@ public class Expression extends AstNodeBase
         }
 
         zserioType = resolvedType;
+    }
+
+    private String stripBinaryLiteral(String binaryLiteral)
+    {
+        int postfixPos = binaryLiteral.indexOf('b');
+        if (postfixPos == -1)
+            postfixPos = binaryLiteral.indexOf('B');
+
+        return (postfixPos == -1) ? binaryLiteral : binaryLiteral.substring(0, postfixPos);
+    }
+
+    private String stripHexadecimalLiteral(String hexadecimalLiteral)
+    {
+        int prefixPos = hexadecimalLiteral.indexOf('x');
+        if (prefixPos == -1)
+            prefixPos = hexadecimalLiteral.indexOf('X');
+
+        return (prefixPos == -1) ? hexadecimalLiteral : hexadecimalLiteral.substring(prefixPos + 1);
     }
 
     private void initialize()
