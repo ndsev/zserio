@@ -90,7 +90,7 @@ Arguments:
     -o <dir>, --output-directory <dir>
                     Output directory where to store ANTLR4 outputs.
     -r <rule>, --parser-rule <rule>
-                    Parser rule to accept (default is translationUnit).
+                    Parser rule to accept (default is packageDeclaration).
     zserio_source   Zserio source for which to show ANTLR4 parser tree.
 
 Examples:
@@ -187,7 +187,7 @@ main()
     # parse command line arguments
     local PARAM_ZSERIO_SOURCE
     local PARAM_OUT_DIR="${ZSERIO_PROJECT_ROOT}"
-    local PARAM_PARSER_RULE="translationUnit"
+    local PARAM_PARSER_RULE="packageDeclaration"
     local SWITCH_CLEAN
     local SWITCH_PURGE
     parse_arguments PARAM_ZSERIO_SOURCE PARAM_OUT_DIR PARAM_PARSER_RULE SWITCH_CLEAN SWITCH_PURGE $@
