@@ -1,10 +1,12 @@
 package zserio.ast;
 
 import java.math.BigInteger;
+import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 import org.antlr.v4.runtime.CommonToken;
 import org.antlr.v4.runtime.Token;
@@ -140,7 +142,7 @@ public class SqlConstraint extends AstNodeBase
 
         // resolve all @-references
         final String sqlConstraintString = constraintExpr.getText();
-        resolveConstraintReferences2(compoundType, sqlConstraintString);
+        resolveConstraintReferences(compoundType, sqlConstraintString);
     }
 
     /**
@@ -161,20 +163,20 @@ public class SqlConstraint extends AstNodeBase
         translatedFieldConstraintExpr = createTranslatedFieldConstraintExpr(translatedConstraint);
     }
 
-    private void resolveConstraintReferences2(CompoundType compoundType, String sqlConstraintString)
+    private void resolveConstraintReferences(CompoundType compoundType, String sqlConstraintString)
     {
         int startIndex = 0;
         int referenceIndex = sqlConstraintString.indexOf(CONSTRAINT_REFERENCE_ESCAPE);
         while (referenceIndex >= 0)
         {
-            translatedConstraintStrings.add(sqlConstraintString.substring(startIndex, referenceIndex - 1));
+            translatedConstraintStrings.add(sqlConstraintString.substring(startIndex, referenceIndex));
 
             final int endIndex = findEndOfConstraintReference2(sqlConstraintString, referenceIndex + 1);
             final String referencedText = sqlConstraintString.substring(referenceIndex + 1, endIndex);
-            constrainReferencedTexts.add(referencedText);
             final SymbolReference symbolReference = new SymbolReference(this, referencedText);
             symbolReference.resolve(compoundType.getPackage(), compoundType);
-            constraintReferences.add(symbolReference);
+            constraintReferences.add(new AbstractMap.SimpleEntry<SymbolReference, String>(symbolReference,
+                    referencedText));
 
             startIndex = endIndex;
             referenceIndex = sqlConstraintString.indexOf(CONSTRAINT_REFERENCE_ESCAPE, startIndex);
@@ -236,7 +238,9 @@ public class SqlConstraint extends AstNodeBase
             stringBuilder.append(translatedConstraintString);
             if (numUsedReferences < constraintReferences.size())
             {
-                final SymbolReference symbolReference = constraintReferences.get(numUsedReferences);
+                final Map.Entry<SymbolReference, String> referenceEntry =
+                        constraintReferences.get(numUsedReferences);
+                final SymbolReference symbolReference = referenceEntry.getKey();
                 final ZserioType referencedType = symbolReference.getReferencedType();
                 final Object referencedSymbol = symbolReference.getReferencedSymbol();
                 String resolvedReferencedText;
@@ -245,11 +249,8 @@ public class SqlConstraint extends AstNodeBase
                     final ConstType referencedConstType = (ConstType)referencedType;
                     final BigInteger value = referencedConstType.getValueExpression().getIntegerValue();
                     if (value == null)
-                    {
-                        final String referencedText = constrainReferencedTexts.get(numUsedReferences);
-                        throw new ParserException(this, "Reference '" + referencedText + "' refers " +
-                                "to non-integer constant!");
-                    }
+                        throw new ParserException(this, "Reference '" + referenceEntry.getValue() +
+                                "' refers to non-integer constant!");
 
                     resolvedReferencedText = value.toString();
                 }
@@ -259,12 +260,12 @@ public class SqlConstraint extends AstNodeBase
                 }
                 else
                 {
-                    final String referencedText = constrainReferencedTexts.get(numUsedReferences);
-                    throw new ParserException(this, "Reference '" + referencedText +
+                    throw new ParserException(this, "Reference '" + referenceEntry.getValue() +
                             "' does refer to neither enumeration type nor constant!");
                 }
 
                 stringBuilder.append(resolvedReferencedText);
+                numUsedReferences++;
             }
         }
 
@@ -340,8 +341,8 @@ public class SqlConstraint extends AstNodeBase
     private final Expression constraintExpr;
 
     private final List<String> translatedConstraintStrings = new ArrayList<String>();
-    private final List<SymbolReference> constraintReferences = new ArrayList<SymbolReference>();
-    private final List<String> constrainReferencedTexts = new ArrayList<String>();
+    private final List<Map.Entry<SymbolReference, String>> constraintReferences =
+            new ArrayList<Map.Entry<SymbolReference, String>>();
     private Package pkg;
 
     private Expression translatedConstraintExpr = null;
