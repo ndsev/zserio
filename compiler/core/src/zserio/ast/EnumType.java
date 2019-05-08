@@ -21,12 +21,12 @@ public class EnumType extends AstNodeWithDoc implements ZserioScopedType
     /**
      * Constructor.
      *
-     * @param token         ANTLR4 token to localize AST node in the sources.
-     * @param pkg           Package to which belongs the enumeration type.
-     * @param enumType      Zserio type of the enumeration.
-     * @param name          Name of the enumeration type.
-     * @param enumItems     List of all items which belong to the enumeration type.
-     * @param docComment    Documentation comment belonging to this node.
+     * @param token      ANTLR4 token to localize AST node in the sources.
+     * @param pkg        Package to which belongs the enumeration type.
+     * @param enumType   Zserio type of the enumeration.
+     * @param name       Name of the enumeration type.
+     * @param enumItems  List of all items which belong to the enumeration type.
+     * @param docComment Documentation comment belonging to this node.
      */
     public EnumType(Token token, Package pkg, ZserioType enumType, String name, List<EnumItem> enumItems,
             DocComment docComment)
@@ -37,9 +37,6 @@ public class EnumType extends AstNodeWithDoc implements ZserioScopedType
         this.enumType = enumType;
         this.name = name;
         this.enumItems = enumItems;
-
-        for (EnumItem enumItem : enumItems)
-            enumItem.setEnumType(this);
     }
 
     @Override

@@ -64,16 +64,6 @@ public class EnumItem extends AstNodeWithDoc
     }
 
     /**
-     * Gets the enumeration type which is owner of the enumeration item.
-     *
-     * @return Returns enumeration type which is owner of the enumeration item.
-     */
-    public EnumType getEnumType()
-    {
-        return enumType;
-    }
-
-    /**
      * Gets the integer value which represents the enumeration item.
      *
      * @return Returns the integer value of the enumeration item.
@@ -81,16 +71,6 @@ public class EnumItem extends AstNodeWithDoc
     public BigInteger getValue()
     {
         return value;
-    }
-
-    /**
-     * Sets the enumeration type which is owner of the enumeration item.
-     *
-     * @param enumType Owner to set.
-     */
-    protected void setEnumType(EnumType enumType)
-    {
-        this.enumType = enumType;
     }
 
     /**
@@ -130,7 +110,6 @@ public class EnumItem extends AstNodeWithDoc
     private final String name;
     private final Expression valueExpression;
 
-    private EnumType enumType = null;
     private BigInteger value = null;
     private boolean isEvaluated = false;
 }

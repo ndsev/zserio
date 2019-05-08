@@ -1204,13 +1204,18 @@ public class Expression extends AstNodeBase
         else if (identifierSymbol instanceof EnumItem)
         {
             // enumeration item (this can happen for enum choices where enum is visible or for enum itself)
-            final EnumItem enumItem = (EnumItem)identifierSymbol;
-            final EnumType enumType = enumItem.getEnumType();
-
+            final ZserioType scopeOwner = forcedEvaluationScope.getOwner();
+            if (scopeOwner instanceof ChoiceType)
+            {
+                // this enumeration item is in choice with enumeration type selector
+                final ChoiceType enumChoice = (ChoiceType)scopeOwner;
+                final Expression selectorExpression = enumChoice.getSelectorExpression();
+                final ZserioType selectorExprZserioType = selectorExpression.getExprZserioType();
+                if (selectorExprZserioType instanceof EnumType)
+                    evaluateExpressionType((EnumType)selectorExprZserioType);
+            }
             // if this enumeration item is in own enum, leave it unresolved (we have problem with it because
             // such enumeration items cannot be evaluated yet)
-            if (forcedEvaluationScope.getOwner() != enumType)
-                evaluateExpressionType(enumType);
         }
         else
         {
@@ -1243,7 +1248,7 @@ public class Expression extends AstNodeBase
                 // call evaluation explicitly because this enumeration item does not have to be evaluated yet
                 final EnumItem enumItem = (EnumItem)symbolObject;
                 final ZserioAstEvaluator evaluator = new ZserioAstEvaluator();
-                enumItem.getEnumType().accept(evaluator);
+                ((EnumType)resolvedType).accept(evaluator);
 
                 // set integer value according to this enumeration item
                 expressionIntegerValue = new ExpressionIntegerValue(enumItem.getValue());
