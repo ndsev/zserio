@@ -82,7 +82,24 @@ findbugs.home_dir       - Location of the findbugs tool. If not set, findbugs is
         </sequential>
     </macrodef>
 
-    <target name="antlr4">
+    <target name="antlr4.check">
+        <mkdir dir="${zserio_core.antlr.out_dir}"/>
+        <uptodate property="antlr4.not_required">
+            <srcfiles dir="${zserio_core.antlr_dir}" includes="*.g4"/>
+            <compositemapper>
+                <mapper type="merge" to="${zserio_core.antlr.out_dir}/DocCommentBaseVisitor.java"/>
+                <mapper type="merge" to="${zserio_core.antlr.out_dir}/DocCommentLexer.java"/>
+                <mapper type="merge" to="${zserio_core.antlr.out_dir}/DocCommentParser.java"/>
+                <mapper type="merge" to="${zserio_core.antlr.out_dir}/DocCommentVisitor.java"/>
+                <mapper type="merge" to="${zserio_core.antlr.out_dir}/ZserioLexer.java"/>
+                <mapper type="merge" to="${zserio_core.antlr.out_dir}/ZserioParser.java"/>
+                <mapper type="merge" to="${zserio_core.antlr.out_dir}/ZserioParserBaseVisitor.java"/>
+                <mapper type="merge" to="${zserio_core.antlr.out_dir}/ZserioParserVisitor.java"/>
+            </compositemapper>
+        </uptodate>
+    </target>
+
+    <target name="antlr4" depends="antlr4.check" unless="antlr4.not_required">
         <antlr4 target="${zserio_core.antlr_dir}/ZserioLexer.g4"
             outputdirectory="${zserio_core.antlr.out_dir}"/>
         <antlr4 target="${zserio_core.antlr_dir}/ZserioParser.g4"
