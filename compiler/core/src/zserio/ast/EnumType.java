@@ -128,8 +128,6 @@ public class EnumType extends AstNodeWithDoc implements ZserioScopedType
             {
                 if (enumItem.getValueExpression() == null)
                     enumItem.setValue(defaultEnumItemValue);
-                else
-                    defaultEnumItemValue = enumItem.getValue();
 
                 defaultEnumItemValue = enumItem.getValue().add(BigInteger.ONE);
             }

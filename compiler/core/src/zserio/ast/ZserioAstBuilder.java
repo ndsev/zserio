@@ -297,18 +297,11 @@ public class ZserioAstBuilder extends ZserioParserBaseVisitor<Object>
         final ZserioType type = getFieldType(ctx.fieldTypeId());
         final ParserRuleContext nameCtx = ctx.fieldTypeId().id();
         final String name = nameCtx.getText();
-        final boolean isAutoOptional = false;
-
-        final Expression alignmentExpr = null;
-        final Expression offsetExpr = null;
-        final Expression initializerExpr = null;
-        final Expression optionalClauseExpr = null;
         final Expression constraintExpr = visitFieldConstraint(ctx.fieldConstraint());
 
         final DocComment docComment = docCommentManager.findDocComment(ctx);
 
-        return new Field(nameCtx.getStart(), type, name, isAutoOptional, alignmentExpr, offsetExpr,
-                initializerExpr, optionalClauseExpr, constraintExpr, docComment);
+        return new Field(nameCtx.getStart(), type, name, constraintExpr, docComment);
     }
 
     @Override

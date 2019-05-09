@@ -18,7 +18,7 @@ import zserio.antlr.util.ParserException;
 public class Field extends AstNodeWithDoc
 {
     /**
-     * Constructor from Structure, Choice and Union types.
+     * Constructor from Structure types.
      *
      * @param token              ANTLR4 token to localize AST node in the sources.
      * @param fieldType          Field type.
@@ -37,6 +37,15 @@ public class Field extends AstNodeWithDoc
     {
         this(token, fieldType, name, isAutoOptional, alignmentExpr, offsetExpr, initializerExpr,
                 optionalClauseExpr, constraintExpr, false, null, docComment);
+    }
+
+    /**
+     * Constructor from Choice and Union types.
+     */
+    public Field(Token token, ZserioType fieldType, String name, Expression constraintExpr,
+            DocComment docComment)
+    {
+        this(token, fieldType, name, false, null, null, null, null, constraintExpr, false, null, docComment);
     }
 
     /**

@@ -28,6 +28,6 @@ public class ParserException extends RuntimeException
         return location;
     }
 
-    private AstLocation location;
+    private transient AstLocation location;
     private static final long serialVersionUID = -2149318704048979392L;
 }
