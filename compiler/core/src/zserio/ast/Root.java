@@ -53,9 +53,9 @@ public class Root extends AstNodeBase
      *
      * @param emitter Emitter interface to use for walking.
      *
-     * @throws ZserioEmitException Throws in case of unknown ZserioType.
+     * @throws ZserioEmitException Throws in case of any error.
      */
-    public void walk(Emitter emitter) throws ZserioEmitException
+    public void emit(Emitter emitter) throws ZserioEmitException
     {
         final ZserioAstEmitter astEmitter = new ZserioAstEmitter(emitter);
         try
@@ -64,7 +64,7 @@ public class Root extends AstNodeBase
         }
         catch (ZserioAstEmitter.UncheckedZserioEmitException e)
         {
-            throw e.getCause();
+            throw e.getOriginalException();
         }
     }
 

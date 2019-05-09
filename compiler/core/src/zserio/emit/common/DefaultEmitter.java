@@ -14,18 +14,23 @@ import zserio.ast.Subtype;
 import zserio.ast.UnionType;
 
 /**
- * Implements the Emitter interface and does nothing. Saves some typing for derived classes that only need to
- * implement a few of the emitter actions.
+ * Implements the Emitter interface and does nothing.
+ *
+ * It saves some typing for derived classes that only need to implement a few of the emitter actions.
  */
 public abstract class DefaultEmitter implements Emitter
 {
     @Override
     public void beginRoot(Root root) throws ZserioEmitException {}
+
     @Override
     public void endRoot(Root root) throws ZserioEmitException {}
 
     @Override
     public void beginPackage(Package packageToken) throws ZserioEmitException {}
+
+    @Override
+    public void endPackage(Package packageToken) throws ZserioEmitException {}
 
     @Override
     public void beginImport(Import importNode) throws ZserioEmitException {}

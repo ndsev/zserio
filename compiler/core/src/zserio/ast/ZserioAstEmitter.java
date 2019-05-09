@@ -154,18 +154,19 @@ public class ZserioAstEmitter extends ZserioAstVisitorBase
 
     protected static class UncheckedZserioEmitException extends RuntimeException
     {
-        public UncheckedZserioEmitException(ZserioEmitException cause)
+        public UncheckedZserioEmitException(ZserioEmitException originalException)
         {
-            this.cause = cause;
+            this.originalException = originalException;
         }
 
-        public ZserioEmitException getCause()
+        public ZserioEmitException getOriginalException()
         {
-            return cause;
+            return originalException;
         }
 
         private static final long serialVersionUID = -7096395966484125254L;
-        private ZserioEmitException cause;
+
+        private final ZserioEmitException originalException;
     }
 
     private final Emitter emitter;
