@@ -5,7 +5,7 @@ import java.util.List;
 /**
  * Implementation of ZserioAstVisitor which manages evaluating phase.
  */
-public class ZserioAstEvaluator extends ZserioAstVisitorBase
+public class ZserioAstEvaluator extends ZserioAstWalker
 {
     /**
      * Constructor.

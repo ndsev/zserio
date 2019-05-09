@@ -26,7 +26,6 @@ public interface ZserioAstVisitor
      */
     void visitImport(Import importNode);
 
-
     /**
      * Visits constant type definition.
      *
@@ -90,14 +89,12 @@ public interface ZserioAstVisitor
      */
     void visitServiceType(ServiceType serviceType);
 
-
     /**
      * Visits field definition.
      *
      * @param field Field AST node.
      */
     void visitField(Field field);
-
 
     /**
      * Visits choice case definition. Note that a single case can have multiple choice case expressions.
@@ -120,14 +117,12 @@ public interface ZserioAstVisitor
      */
     void visitChoiceDefault(ChoiceDefault choiceDefault);
 
-
     /**
      * Visits enum item definition.
      *
      * @param enumItem Enum item AST node.
      */
     void visitEnumItem(EnumItem enumItem);
-
 
     /**
      * Visits SQL constraint definition.
@@ -136,14 +131,12 @@ public interface ZserioAstVisitor
      */
     void visitSqlConstraint(SqlConstraint sqlConstraint);
 
-
     /**
      * Visits RPC call definition.
      *
      * @param rpc RPC call AST node.
      */
     void visitRpc(Rpc rpc);
-
 
     /**
      * Visits function definition.
@@ -152,7 +145,6 @@ public interface ZserioAstVisitor
      */
     void visitFunction(FunctionType functionType);
 
-
     /**
      * Visits parameter definition.
      *
@@ -160,14 +152,12 @@ public interface ZserioAstVisitor
      */
     void visitParameter(Parameter parameter);
 
-
     /**
      * Visits expression.
      *
      * @param expresssion Expression AST node.
      */
     void visitExpression(Expression expresssion);
-
 
     /**
      * Visits array definition.
@@ -190,7 +180,6 @@ public interface ZserioAstVisitor
      */
     void visitTypeReference(TypeReference typeReference);
 
-
     /**
      * Visits reference to built-in standard integer type.
      *
@@ -212,7 +201,8 @@ public interface ZserioAstVisitor
      */
     void visitBitFieldType(BitFieldType bitFieldType);
 
-    /** Visits reference to built-in boolean type.
+    /**
+     * Visits reference to built-in boolean type.
      *
      * @param booleanType Boolean type AST node.
      */
@@ -220,6 +210,7 @@ public interface ZserioAstVisitor
 
     /**
      * Visits reference to built-in string type.
+     *
      * @param stringType String type AST node.
      */
     void visitStringType(StringType stringType);
@@ -230,7 +221,6 @@ public interface ZserioAstVisitor
      * @param floatType Float type AST node.
      */
     void visitFloatType(FloatType floatType);
-
 
     /**
      * Visits a documentation comment.
@@ -275,8 +265,11 @@ public interface ZserioAstVisitor
     void visitDocTextLine(DocTextLine docTextLine);
 
     /**
-     * Visits documentation text wrapper. DocText can be either a text element or a see tag.
-     * @param docText
+     * Visits documentation text wrapper.
+     *
+     * DocText can be either a text element or a see tag.
+     *
+     * @param docText Documentation text element AST node.
      */
     void visitDocText(DocText docText);
 

@@ -6,7 +6,7 @@ import zserio.emit.common.ZserioEmitException;
 /**
  * Implementation of ZserioAstVisitor which adapts the visitor interface to emitter interface for extensions.
  */
-public class ZserioAstEmitter extends ZserioAstVisitorBase
+public class ZserioAstEmitter extends ZserioAstWalker
 {
     /**
      * Constructor.

@@ -5,7 +5,7 @@ import java.util.Map;
 /**
  * Implementation of ZserioAstVisitor which manages resolving phase.
  */
-public class ZserioAstResolver extends ZserioAstVisitorBase
+public class ZserioAstResolver extends ZserioAstWalker
 {
     @Override
     public void visitRoot(Root root)

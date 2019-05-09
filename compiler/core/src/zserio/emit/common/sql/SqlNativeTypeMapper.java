@@ -19,7 +19,8 @@ import zserio.ast.TypeInstantiation;
 import zserio.ast.TypeReference;
 import zserio.ast.UnionType;
 import zserio.ast.VarIntegerType;
-import zserio.ast.ZserioAstVisitorBase;
+import zserio.ast.ZserioAstDefaultVisitor;
+import zserio.ast.ZserioAstWalker;
 import zserio.ast.ZserioType;
 import zserio.ast.ZserioTypeUtil;
 import zserio.emit.common.ZserioEmitException;
@@ -61,17 +62,16 @@ public class SqlNativeTypeMapper
         return nativeType;
     }
 
-    private static class TypeMapperVisitor extends ZserioAstVisitorBase
+    private static class TypeMapperVisitor extends ZserioAstDefaultVisitor
     {
+        /**
+         * Gets the SQL type mapped from Zserio type.
+         *
+         * @return Mapped SQL type.
+         */
         SqlNativeType getSqlType()
         {
             return sqlType;
-        }
-
-        @Override
-        public void visitArrayType(ArrayType type)
-        {
-            // not supported
         }
 
         @Override
@@ -87,12 +87,6 @@ public class SqlNativeTypeMapper
         }
 
         @Override
-        public void visitConstType(ConstType type)
-        {
-            // not supported
-        }
-
-        @Override
         public void visitEnumType(EnumType type)
         {
             sqlType = integerType;
@@ -105,33 +99,9 @@ public class SqlNativeTypeMapper
         }
 
         @Override
-        public void visitFunction(FunctionType type)
-        {
-            // not supported
-        }
-
-        @Override
-        public void visitServiceType(ServiceType type)
-        {
-            // not supported
-        }
-
-        @Override
         public void visitBitFieldType(BitFieldType type)
         {
             sqlType = integerType;
-        }
-
-        @Override
-        public void visitSqlDatabaseType(SqlDatabaseType type)
-        {
-            // not supported
-        }
-
-        @Override
-        public void visitSqlTableType(SqlTableType type)
-        {
-            // not supported
         }
 
         @Override
@@ -153,21 +123,9 @@ public class SqlNativeTypeMapper
         }
 
         @Override
-        public void visitSubtype(Subtype type)
-        {
-            // not supported
-        }
-
-        @Override
         public void visitTypeInstantiation(TypeInstantiation type)
         {
             sqlType = blobType;
-        }
-
-        @Override
-        public void visitTypeReference(TypeReference type)
-        {
-            // not supported
         }
 
         @Override

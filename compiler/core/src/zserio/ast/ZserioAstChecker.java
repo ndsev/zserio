@@ -10,7 +10,7 @@ import zserio.tools.ZserioToolPrinter;
 /**
  * Implementation of ZserioAstVisitor which manages checking phase.
  */
-public class ZserioAstChecker extends ZserioAstVisitorBase
+public class ZserioAstChecker extends ZserioAstWalker
 {
     /**
      * Constructor.

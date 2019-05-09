@@ -6,7 +6,7 @@ import java.util.List;
 /**
  * Implementation of ZserioAstVisitor which handles scopes of symbols.
  */
-public class ZserioAstScopeSetter extends ZserioAstVisitorBase
+public class ZserioAstScopeSetter extends ZserioAstWalker
 {
     @Override
     public void visitStructureType(StructureType structureType)

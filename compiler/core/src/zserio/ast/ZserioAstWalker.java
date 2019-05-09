@@ -1,11 +1,12 @@
 package zserio.ast;
 
 /**
- * The class provide default implementation of ZserioAstVisitor which can be extended to create a visitor
- * which only needs override only a subset of available methods. Default methods implementation just traverse
- * all children nodes.
+ * The class provide walker implementation of ZserioAstVisitor.
+ *
+ * This implementation can be extended to create a visitor which needs override only a subset of available
+ * methods. Default methods implementation just traverse all children nodes.
  */
-public class ZserioAstVisitorBase implements ZserioAstVisitor
+public class ZserioAstWalker implements ZserioAstVisitor
 {
     @Override
     public void visitRoot(Root root)
@@ -30,41 +31,49 @@ public class ZserioAstVisitorBase implements ZserioAstVisitor
     {
         constType.visitChildren(this);
     }
+
     @Override
     public void visitSubtype(Subtype subtype)
     {
         subtype.visitChildren(this);
     }
+
     @Override
     public void visitStructureType(StructureType structureType)
     {
         structureType.visitChildren(this);
     }
+
     @Override
     public void visitChoiceType(ChoiceType choiceType)
     {
         choiceType.visitChildren(this);
     }
+
     @Override
     public void visitUnionType(UnionType unionType)
     {
         unionType.visitChildren(this);
     }
+
     @Override
     public void visitEnumType(EnumType enumType)
     {
         enumType.visitChildren(this);
     }
+
     @Override
     public void visitSqlTableType(SqlTableType sqlTableType)
     {
         sqlTableType.visitChildren(this);
     }
+
     @Override
     public void visitSqlDatabaseType(SqlDatabaseType sqlDatabaseType)
     {
         sqlDatabaseType.visitChildren(this);
     }
+
     @Override
     public void visitServiceType(ServiceType serviceType)
     {
@@ -82,11 +91,13 @@ public class ZserioAstVisitorBase implements ZserioAstVisitor
     {
         choiceCase.visitChildren(this);
     }
+
     @Override
     public void visitChoiceCaseExpression(ChoiceCaseExpression choiceCaseExpression)
     {
         choiceCaseExpression.visitChildren(this);
     }
+
     @Override
     public void visitChoiceDefault(ChoiceDefault choiceDefault)
     {
@@ -152,26 +163,31 @@ public class ZserioAstVisitorBase implements ZserioAstVisitor
     {
         stdIntegerType.visitChildren(this);
     }
+
     @Override
     public void visitVarIntegerType(VarIntegerType varIntegerType)
     {
         varIntegerType.visitChildren(this);
     }
+
     @Override
     public void visitBitFieldType(BitFieldType bitFieldType)
     {
         bitFieldType.visitChildren(this);
     }
+
     @Override
     public void visitBooleanType(BooleanType booleanType)
     {
         booleanType.visitChildren(this);
     }
+
     @Override
     public void visitStringType(StringType stringType)
     {
         stringType.visitChildren(this);
     }
+
     @Override
     public void visitFloatType(FloatType floatType)
     {
@@ -183,36 +199,43 @@ public class ZserioAstVisitorBase implements ZserioAstVisitor
     {
         docComment.visitChildren(this);
     }
+
     @Override
     public void visitDocTagSee(DocTagSee docTagSee)
     {
         docTagSee.visitChildren(this);
     }
+
     @Override
     public void visitDocTagTodo(DocTagTodo docTagTodo)
     {
         docTagTodo.visitChildren(this);
     }
+
     @Override
     public void visitDocTagParam(DocTagParam docTagParam)
     {
         docTagParam.visitChildren(this);
     }
+
     @Override
     public void visitDocParagraph(DocParagraph docParagraph)
     {
         docParagraph.visitChildren(this);
     }
+
     @Override
     public void visitDocTextLine(DocTextLine docTextLine)
     {
         docTextLine.visitChildren(this);
     }
+
     @Override
     public void visitDocText(DocText docText)
     {
         docText.visitChildren(this);
     }
+
     @Override
     public void visitDocTextElement(DocTextElement docTextElement)
     {
