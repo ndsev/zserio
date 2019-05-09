@@ -1,15 +1,14 @@
 package zserio.emit.python;
 
 import zserio.ast.ArrayType;
+import zserio.ast.BitFieldType;
 import zserio.ast.BooleanType;
 import zserio.ast.ChoiceType;
 import zserio.ast.ConstType;
 import zserio.ast.EnumType;
 import zserio.ast.FloatType;
-import zserio.ast.FunctionType;
 import zserio.ast.PackageName;
 import zserio.ast.ServiceType;
-import zserio.ast.SignedBitFieldType;
 import zserio.ast.SqlDatabaseType;
 import zserio.ast.SqlTableType;
 import zserio.ast.StdIntegerType;
@@ -19,10 +18,9 @@ import zserio.ast.Subtype;
 import zserio.ast.TypeInstantiation;
 import zserio.ast.TypeReference;
 import zserio.ast.UnionType;
-import zserio.ast.UnsignedBitFieldType;
 import zserio.ast.VarIntegerType;
+import zserio.ast.ZserioAstDefaultVisitor;
 import zserio.ast.ZserioType;
-import zserio.ast.ZserioTypeVisitor;
 import zserio.emit.common.PackageMapper;
 import zserio.emit.common.ZserioEmitException;
 import zserio.emit.python.types.NativeArrayType;
@@ -60,7 +58,7 @@ public class PythonNativeTypeMapper
         final ZserioType resolvedType = TypeReference.resolveType(type);
 
         final TypeMapperVisitor visitor = new TypeMapperVisitor(pythonPackageMapper);
-        resolvedType.callVisitor(visitor);
+        resolvedType.accept(visitor);
 
         final PythonNativeType nativeType = visitor.getPythonType();
         if (nativeType == null)
@@ -70,7 +68,7 @@ public class PythonNativeTypeMapper
         return nativeType;
     }
 
-    private static class TypeMapperVisitor implements ZserioTypeVisitor
+    private static class TypeMapperVisitor extends ZserioAstDefaultVisitor
     {
         public TypeMapperVisitor(PackageMapper pythonPackageMapper)
         {
@@ -87,7 +85,7 @@ public class PythonNativeTypeMapper
         {
             final ZserioType resolvedElementBaseType = TypeReference.resolveBaseType(type.getElementType());
             final ArrayTypeMapperVisitor visitor = new ArrayTypeMapperVisitor();
-            resolvedElementBaseType.callVisitor(visitor);
+            resolvedElementBaseType.accept(visitor);
             pythonType = visitor.getPythonArrayType();
         }
 
@@ -124,19 +122,13 @@ public class PythonNativeTypeMapper
         }
 
         @Override
-        public void visitFunctionType(FunctionType type)
-        {
-            // not supported
-        }
-
-        @Override
         public void visitServiceType(ServiceType type)
         {
             pythonType = mapUserType(type);
         }
 
         @Override
-        public void visitSignedBitFieldType(SignedBitFieldType type)
+        public void visitBitFieldType(BitFieldType type)
         {
             pythonType = intType;
         }
@@ -184,21 +176,9 @@ public class PythonNativeTypeMapper
         }
 
         @Override
-        public void visitTypeReference(TypeReference type)
-        {
-            // not supported
-        }
-
-        @Override
         public void visitUnionType(UnionType type)
         {
             pythonType = mapUserType(type);
-        }
-
-        @Override
-        public void visitUnsignedBitFieldType(UnsignedBitFieldType type)
-        {
-            pythonType = intType;
         }
 
         @Override
@@ -217,17 +197,11 @@ public class PythonNativeTypeMapper
         private final PackageMapper pythonPackageMapper;
     }
 
-    private static class ArrayTypeMapperVisitor implements ZserioTypeVisitor
+    private static class ArrayTypeMapperVisitor extends ZserioAstDefaultVisitor
     {
         public NativeArrayType getPythonArrayType()
         {
             return pythonArrayType;
-        }
-
-        @Override
-        public void visitArrayType(ArrayType type)
-        {
-            // not supported
         }
 
         @Override
@@ -240,12 +214,6 @@ public class PythonNativeTypeMapper
         public void visitChoiceType(ChoiceType type)
         {
             pythonArrayType = new NativeObjectArrayType("ObjectArrayTraits");
-        }
-
-        @Override
-        public void visitConstType(ConstType type)
-        {
-            // not supported
         }
 
         @Override
@@ -278,33 +246,12 @@ public class PythonNativeTypeMapper
         }
 
         @Override
-        public void visitFunctionType(FunctionType type)
+        public void visitBitFieldType(BitFieldType type)
         {
-            // not supported
-        }
-
-        @Override
-        public void visitServiceType(ServiceType type)
-        {
-            // not supported
-        }
-
-        @Override
-        public void visitSignedBitFieldType(SignedBitFieldType type)
-        {
-            pythonArrayType = new NativeFixedSizeIntArrayType("SignedBitFieldArrayTraits");
-        }
-
-        @Override
-        public void visitSqlDatabaseType(SqlDatabaseType type)
-        {
-            // not supported
-        }
-
-        @Override
-        public void visitSqlTableType(SqlTableType type)
-        {
-            // not supported
+            if (type.isSigned())
+                pythonArrayType = new NativeFixedSizeIntArrayType("SignedBitFieldArrayTraits");
+            else
+                pythonArrayType = new NativeFixedSizeIntArrayType("BitFieldArrayTraits");
         }
 
         @Override
@@ -327,33 +274,15 @@ public class PythonNativeTypeMapper
         }
 
         @Override
-        public void visitSubtype(Subtype type)
-        {
-            // not supported
-        }
-
-        @Override
         public void visitTypeInstantiation(TypeInstantiation type)
         {
             pythonArrayType = new NativeObjectArrayType("ObjectArrayTraits");
         }
 
         @Override
-        public void visitTypeReference(TypeReference type)
-        {
-            // not supported
-        }
-
-        @Override
         public void visitUnionType(UnionType type)
         {
             pythonArrayType = new NativeObjectArrayType("ObjectArrayTraits");
-        }
-
-        @Override
-        public void visitUnsignedBitFieldType(UnsignedBitFieldType type)
-        {
-            pythonArrayType = new NativeFixedSizeIntArrayType("BitFieldArrayTraits");
         }
 
         @Override
