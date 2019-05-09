@@ -260,16 +260,12 @@ public abstract class CompoundType extends AstNodeWithDoc implements ZserioScope
             if (fieldBaseType instanceof CompoundType)
             {
                 final CompoundType childCompoundType = (CompoundType)fieldBaseType;
-                if (outer == childCompoundType)
-                {
-                    if (outer != inner)
+                if (outer != inner && outer == childCompoundType)
                         throw new ParserException(field, "Indirect recursion between '" + outer.getName() +
                                 "' and '" + inner.getName() + "'!");
-                }
-                else
-                {
+
+                if (inner != childCompoundType)
                     checkIndirectRecursion(outer, childCompoundType);
-                }
             }
         }
     }
