@@ -1,27 +1,12 @@
 package zserio.emit.java;
 
-import zserio.ast.ArrayType;
 import zserio.ast.BitFieldType;
 import zserio.ast.BooleanType;
-import zserio.ast.ChoiceType;
-import zserio.ast.ConstType;
+import zserio.ast.ZserioAstDefaultVisitor;
 import zserio.ast.ZserioType;
-import zserio.ast.ZserioTypeVisitor;
-import zserio.ast.EnumType;
 import zserio.ast.FloatType;
-import zserio.ast.FunctionType;
-import zserio.ast.ServiceType;
-import zserio.ast.StructureType;
-import zserio.ast.SignedBitFieldType;
-import zserio.ast.SqlDatabaseType;
-import zserio.ast.SqlTableType;
 import zserio.ast.StdIntegerType;
 import zserio.ast.StringType;
-import zserio.ast.Subtype;
-import zserio.ast.TypeInstantiation;
-import zserio.ast.TypeReference;
-import zserio.ast.UnionType;
-import zserio.ast.UnsignedBitFieldType;
 import zserio.ast.VarIntegerType;
 import zserio.emit.common.ExpressionFormatter;
 import zserio.emit.common.ZserioEmitException;
@@ -33,7 +18,7 @@ public class JavaRuntimeFunctionDataCreator
                     throws ZserioEmitException
     {
         final Visitor visitor = new Visitor(javaExpressionFormatter, javaNativeTypeMapper);
-        type.callVisitor(visitor);
+        type.accept(visitor);
 
         final ZserioEmitException thrownException = visitor.getThrownException();
         if (thrownException != null)
@@ -43,7 +28,7 @@ public class JavaRuntimeFunctionDataCreator
         return visitor.getTemplateData();
     }
 
-    private static class Visitor implements ZserioTypeVisitor
+    private static class Visitor extends ZserioAstDefaultVisitor
     {
         public Visitor(ExpressionFormatter javaExpressionFormatter, JavaNativeTypeMapper javaNativeTypeMapper)
         {
@@ -62,33 +47,9 @@ public class JavaRuntimeFunctionDataCreator
         }
 
         @Override
-        public void visitArrayType(ArrayType type)
-        {
-            // do nothing
-        }
-
-        @Override
         public void visitBooleanType(BooleanType type)
         {
             templateData = new RuntimeFunctionTemplateData("Bool");
-        }
-
-        @Override
-        public void visitChoiceType(ChoiceType type)
-        {
-            // do nothing
-        }
-
-        @Override
-        public void visitConstType(ConstType type)
-        {
-            // do nothing
-        }
-
-        @Override
-        public void visitEnumType(EnumType type)
-        {
-            // do nothing
         }
 
         @Override
@@ -98,33 +59,9 @@ public class JavaRuntimeFunctionDataCreator
         }
 
         @Override
-        public void visitFunctionType(FunctionType type)
-        {
-            // do nothing
-        }
-
-        @Override
-        public void visitServiceType(ServiceType type)
-        {
-            // do nothing
-        }
-
-        @Override
-        public void visitSignedBitFieldType(SignedBitFieldType type)
+        public void visitBitFieldType(BitFieldType type)
         {
             handleBitFieldType(type);
-        }
-
-        @Override
-        public void visitSqlDatabaseType(SqlDatabaseType type)
-        {
-            // do nothing
-        }
-
-        @Override
-        public void visitSqlTableType(SqlTableType type)
-        {
-            // do nothing
         }
 
         @Override
@@ -201,42 +138,6 @@ public class JavaRuntimeFunctionDataCreator
         public void visitStringType(StringType type)
         {
             templateData = new RuntimeFunctionTemplateData("String");
-        }
-
-        @Override
-        public void visitStructureType(StructureType type)
-        {
-            // do nothing
-        }
-
-        @Override
-        public void visitSubtype(Subtype type)
-        {
-            // do nothing
-        }
-
-        @Override
-        public void visitTypeInstantiation(TypeInstantiation type)
-        {
-            // do nothing
-        }
-
-        @Override
-        public void visitTypeReference(TypeReference type)
-        {
-            // do nothing
-        }
-
-        @Override
-        public void visitUnionType(UnionType type)
-        {
-            // do nothing
-        }
-
-        @Override
-        public void visitUnsignedBitFieldType(UnsignedBitFieldType type)
-        {
-            handleBitFieldType(type);
         }
 
         @Override

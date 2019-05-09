@@ -8,23 +8,19 @@ import zserio.ast.CompoundType;
 import zserio.ast.ConstType;
 import zserio.ast.PackageName;
 import zserio.ast.ServiceType;
+import zserio.ast.ZserioAstDefaultVisitor;
 import zserio.ast.ZserioType;
-import zserio.ast.ZserioTypeVisitor;
 import zserio.ast.EnumType;
 import zserio.ast.FloatType;
-import zserio.ast.FunctionType;
 import zserio.ast.IntegerType;
 import zserio.ast.StructureType;
-import zserio.ast.SignedBitFieldType;
 import zserio.ast.SqlDatabaseType;
 import zserio.ast.SqlTableType;
 import zserio.ast.StdIntegerType;
 import zserio.ast.StringType;
-import zserio.ast.Subtype;
 import zserio.ast.TypeInstantiation;
 import zserio.ast.TypeReference;
 import zserio.ast.UnionType;
-import zserio.ast.UnsignedBitFieldType;
 import zserio.ast.VarIntegerType;
 import zserio.emit.common.NativeType;
 import zserio.emit.common.PackageMapper;
@@ -147,7 +143,7 @@ final class JavaNativeTypeMapper
     {
         type = TypeReference.resolveBaseType(type);
         final ZserioTypeMapperVisitor visitor = new ZserioTypeMapperVisitor(javaPackageMapper);
-        type.callVisitor(visitor);
+        type.accept(visitor);
 
         final ZserioEmitException thrownException = visitor.getThrownException();
         if (thrownException != null)
@@ -156,16 +152,10 @@ final class JavaNativeTypeMapper
         return visitor;
     }
 
-    private abstract class TypeMapperVisitor implements ZserioTypeVisitor
+    private abstract class TypeMapperVisitor extends ZserioAstDefaultVisitor
     {
         @Override
-        public void visitFunctionType(FunctionType type)
-        {
-            // not supported
-        }
-
-        @Override
-        public void visitSignedBitFieldType(SignedBitFieldType type)
+        public void visitBitFieldType(BitFieldType type)
         {
             mapBitfieldType(type);
         }
@@ -174,24 +164,6 @@ final class JavaNativeTypeMapper
         public void visitStdIntegerType(StdIntegerType type)
         {
             mapIntegralType(type.getBitSize(), type.isSigned(), false);
-        }
-
-        @Override
-        public void visitSubtype(Subtype type)
-        {
-            // not supported
-        }
-
-        @Override
-        public void visitTypeReference(TypeReference type)
-        {
-            // not supported
-        }
-
-        @Override
-        public void visitUnsignedBitFieldType(UnsignedBitFieldType type)
-        {
-            mapBitfieldType(type);
         }
 
         @Override
@@ -226,12 +198,6 @@ final class JavaNativeTypeMapper
         }
 
         @Override
-        public void visitArrayType(ArrayType type)
-        {
-            // not supported
-        }
-
-        @Override
         public void visitBooleanType(BooleanType type)
         {
             javaNullableType = boolArrayType;
@@ -241,12 +207,6 @@ final class JavaNativeTypeMapper
         public void visitChoiceType(ChoiceType type)
         {
             mapObjectArray(type);
-        }
-
-        @Override
-        public void visitConstType(ConstType type)
-        {
-            // not supported
         }
 
         @Override
@@ -275,24 +235,6 @@ final class JavaNativeTypeMapper
             default:
                 break;
             }
-        }
-
-        @Override
-        public void visitServiceType(ServiceType type)
-        {
-            // not supported
-        }
-
-        @Override
-        public void visitSqlDatabaseType(SqlDatabaseType type)
-        {
-            // not supported
-        }
-
-        @Override
-        public void visitSqlTableType(SqlTableType type)
-        {
-            // not supported
         }
 
         @Override
@@ -472,7 +414,7 @@ final class JavaNativeTypeMapper
             final ZserioType elementType = TypeReference.resolveBaseType(type.getElementType());
             final ArrayElementTypeMapperVisitor arrayVisitor = new ArrayElementTypeMapperVisitor();
 
-            TypeReference.resolveBaseType(elementType).callVisitor(arrayVisitor);
+            TypeReference.resolveBaseType(elementType).accept(arrayVisitor);
             javaType = arrayVisitor.getJavaNullableType();
             javaNullableType = javaType;
             thrownException = arrayVisitor.getThrownException();
