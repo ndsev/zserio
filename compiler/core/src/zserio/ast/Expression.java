@@ -665,7 +665,7 @@ public class Expression extends AstNodeBase
 
         this.pkg = pkg;
         type = expressionToken.getType();
-        text = expressionToken.getText();
+        text = extractTokenText(expressionToken);
         this.expressionFlag = expressionFlag;
         this.operand1 = operand1;
         this.operand2 = operand2;
@@ -821,6 +821,7 @@ public class Expression extends AstNodeBase
             // set symbolObject to all unresolved identifier expressions (needed for formatters)
             for (Expression unresolvedIdentifier : operand1.unresolvedIdentifiers)
                 unresolvedIdentifier.symbolObject = identifierType.getPackage();
+            operand2.symbolObject = identifierType; // this is used by formatters (operand2 was not evaluated)
         }
     }
 
@@ -834,6 +835,7 @@ public class Expression extends AstNodeBase
             throw new ParserException(this, "'" + dotOperand + "' undefined in enumeration '" +
                     enumType.getName() + "'!");
 
+        operand2.symbolObject = enumSymbol; // this is used by formatters (operand2 was not evaluated)
         symbolObject = enumSymbol;
         evaluateExpressionType(enumType);
     }
@@ -848,6 +850,7 @@ public class Expression extends AstNodeBase
             throw new ParserException(this, "'" + dotOperand + "' undefined in compound '" +
                     compoundType.getName() + "'!");
 
+        operand2.symbolObject = compoundSymbol; // this is used by formatter (operand2 was not evaluated)
         symbolObject = compoundSymbol;
         if (compoundSymbol instanceof Field)
         {
@@ -1212,7 +1215,11 @@ public class Expression extends AstNodeBase
                 final Expression selectorExpression = enumChoice.getSelectorExpression();
                 final ZserioType selectorExprZserioType = selectorExpression.getExprZserioType();
                 if (selectorExprZserioType instanceof EnumType)
-                    evaluateExpressionType((EnumType)selectorExprZserioType);
+                {
+                    final EnumType enumType = (EnumType)selectorExprZserioType;
+                    zserioType = enumType;
+                    evaluateExpressionType(enumType);
+                }
             }
             // if this enumeration item is in own enum, leave it unresolved (we have problem with it because
             // such enumeration items cannot be evaluated yet)
@@ -1294,24 +1301,6 @@ public class Expression extends AstNodeBase
         zserioType = resolvedType;
     }
 
-    private String stripBinaryLiteral(String binaryLiteral)
-    {
-        int postfixPos = binaryLiteral.indexOf('b');
-        if (postfixPos == -1)
-            postfixPos = binaryLiteral.indexOf('B');
-
-        return (postfixPos == -1) ? binaryLiteral : binaryLiteral.substring(0, postfixPos);
-    }
-
-    private String stripHexadecimalLiteral(String hexadecimalLiteral)
-    {
-        int prefixPos = hexadecimalLiteral.indexOf('x');
-        if (prefixPos == -1)
-            prefixPos = hexadecimalLiteral.indexOf('X');
-
-        return (prefixPos == -1) ? hexadecimalLiteral : hexadecimalLiteral.substring(prefixPos + 1);
-    }
-
     private void initialize()
     {
         evaluationState = EvaluationState.NOT_EVALUATED;
@@ -1329,6 +1318,71 @@ public class Expression extends AstNodeBase
         IN_EVALUATION,
         EVALUATED
     };
+
+    private static String extractTokenText(Token expressionToken)
+    {
+        String tokenText = expressionToken.getText();
+        switch (expressionToken.getType())
+        {
+            case ZserioParser.BINARY_LITERAL:
+                tokenText = stripBinaryLiteral(tokenText);
+                break;
+
+            case ZserioParser.OCTAL_LITERAL:
+                tokenText = stripOctalLiteral(tokenText);
+                break;
+
+            case ZserioParser.HEXADECIMAL_LITERAL:
+                tokenText = stripHexadecimalLiteral(tokenText);
+                break;
+
+            case ZserioParser.FLOAT_LITERAL:
+                tokenText = stripFloatLiteral(tokenText);
+                break;
+
+            default:
+                break;
+        }
+
+        return tokenText;
+    }
+
+    private static String stripBinaryLiteral(String binaryLiteral)
+    {
+        final int postfixPos = findChars(binaryLiteral, 'b', 'B');
+
+        return (postfixPos == -1) ? binaryLiteral : binaryLiteral.substring(0, postfixPos);
+    }
+
+    private static String stripOctalLiteral(String octalLiteral)
+    {
+        final int prefixPos = octalLiteral.indexOf('0');
+
+        return (prefixPos == -1) ? octalLiteral : octalLiteral.substring(prefixPos + 1);
+    }
+
+    private static String stripHexadecimalLiteral(String hexadecimalLiteral)
+    {
+        final int prefixPos = findChars(hexadecimalLiteral, 'x', 'X');
+
+        return (prefixPos == -1) ? hexadecimalLiteral : hexadecimalLiteral.substring(prefixPos + 1);
+    }
+
+    private static String stripFloatLiteral(String floatLiteral)
+    {
+        final int postfixPos = findChars(floatLiteral, 'f', 'F');
+
+        return (postfixPos == -1) ? floatLiteral : floatLiteral.substring(0, postfixPos);
+    }
+
+    private static int findChars(String text, char firstChar, char secondChar)
+    {
+        int pos = text.indexOf(firstChar);
+        if (pos == -1)
+            pos = text.indexOf(secondChar);
+
+        return pos;
+    }
 
     private final Package pkg;
 
