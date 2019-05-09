@@ -8,15 +8,13 @@ import zserio.ast.BooleanType;
 import zserio.ast.ChoiceType;
 import zserio.ast.CompoundType;
 import zserio.ast.ConstType;
+import zserio.ast.ZserioAstDefaultVisitor;
 import zserio.ast.ZserioType;
-import zserio.ast.ZserioTypeVisitor;
 import zserio.ast.EnumType;
 import zserio.ast.FloatType;
-import zserio.ast.FunctionType;
 import zserio.ast.IntegerType;
 import zserio.ast.ServiceType;
 import zserio.ast.StructureType;
-import zserio.ast.SignedBitFieldType;
 import zserio.ast.SqlDatabaseType;
 import zserio.ast.SqlTableType;
 import zserio.ast.StdIntegerType;
@@ -24,7 +22,6 @@ import zserio.ast.StringType;
 import zserio.ast.Subtype;
 import zserio.ast.TypeInstantiation;
 import zserio.ast.TypeReference;
-import zserio.ast.UnsignedBitFieldType;
 import zserio.ast.VarIntegerType;
 import zserio.emit.common.PackageMapper;
 import zserio.emit.common.ZserioEmitException;
@@ -75,7 +72,7 @@ public class CppNativeTypeMapper
         final ZserioType resolvedType = TypeReference.resolveType(type);
 
         final ZserioTypeMapperVisitor visitor = new ZserioTypeMapperVisitor();
-        resolvedType.callVisitor(visitor);
+        resolvedType.accept(visitor);
 
         final ZserioEmitException thrownException = visitor.getThrownException();
         if (thrownException != null)
@@ -172,16 +169,10 @@ public class CppNativeTypeMapper
         return getIncludePathRoot(packageName) + name + HEADER_SUFFIX;
     }
 
-    private static abstract class TypeMapperVisitor implements ZserioTypeVisitor
+    private static abstract class TypeMapperVisitor extends ZserioAstDefaultVisitor
     {
         @Override
-        public void visitFunctionType(FunctionType type)
-        {
-            // not supported
-        }
-
-        @Override
-        public void visitSignedBitFieldType(SignedBitFieldType type)
+        public void visitBitFieldType(BitFieldType type)
         {
             mapBitfieldType(type);
         }
@@ -190,18 +181,6 @@ public class CppNativeTypeMapper
         public void visitStdIntegerType(StdIntegerType type)
         {
             mapIntegralType(type.getBitSize(), type.isSigned(), false);
-        }
-
-        @Override
-        public void visitTypeReference(TypeReference type)
-        {
-            // not supported
-        }
-
-        @Override
-        public void visitUnsignedBitFieldType(UnsignedBitFieldType type)
-        {
-            mapBitfieldType(type);
         }
 
         @Override
@@ -242,12 +221,6 @@ public class CppNativeTypeMapper
         }
 
         @Override
-        public void visitArrayType(ArrayType type)
-        {
-            // not supported
-        }
-
-        @Override
         public void visitBooleanType(BooleanType type)
         {
             cppType = booleanArrayType;
@@ -257,12 +230,6 @@ public class CppNativeTypeMapper
         public void visitChoiceType(ChoiceType type)
         {
             mapObjectArray();
-        }
-
-        @Override
-        public void visitConstType(ConstType type)
-        {
-            // not supported
         }
 
         @Override
@@ -294,24 +261,6 @@ public class CppNativeTypeMapper
         }
 
         @Override
-        public void visitServiceType(ServiceType type)
-        {
-            // not supported
-        }
-
-        @Override
-        public void visitSqlDatabaseType(SqlDatabaseType type)
-        {
-            // not supported
-        }
-
-        @Override
-        public void visitSqlTableType(SqlTableType type)
-        {
-            // not supported
-        }
-
-        @Override
         public void visitStringType(StringType type)
         {
             cppType = stdStringArrayType;
@@ -321,12 +270,6 @@ public class CppNativeTypeMapper
         public void visitStructureType(StructureType type)
         {
             mapObjectArray();
-        }
-
-        @Override
-        public void visitSubtype(Subtype type)
-        {
-            // not supported
         }
 
         @Override
@@ -492,7 +435,7 @@ public class CppNativeTypeMapper
              *
              * the field ids should be backed by ObjectArray<MyID> (not ObjectArray<Foo>).
              */
-            TypeReference.resolveBaseType(elementType).callVisitor(arrayVisitor);
+            TypeReference.resolveBaseType(elementType).accept(arrayVisitor);
             cppType = arrayVisitor.getCppType();
             thrownException = arrayVisitor.getThrownException();
         }

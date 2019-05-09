@@ -64,7 +64,7 @@ public class CppExtension implements Extension
 
         // emit C++ code
         for (Emitter cppEmitter: emitters)
-            rootNode.walk(cppEmitter);
+            rootNode.emit(cppEmitter);
     }
 
     private final static String OptionCpp = "cpp";
