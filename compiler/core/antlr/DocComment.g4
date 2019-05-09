@@ -37,7 +37,8 @@ textElement
     |   TODO
     |   PARAM
     |   DEPRECATED
-    |   ((ID | WORD | ESC | DOUBLE_QOUTE_ESC | DOUBLE_QUOTE | DOT | STAR) whitespaceInLine?)+
+    |   (ID | WORD | ESC | DOUBLE_QUOTE_ESC | DOUBLE_QUOTE | DOT | STAR)
+        (whitespaceInLine? (ID | WORD | ESC | DOUBLE_QUOTE_ESC | DOUBLE_QUOTE | DOT | STAR))*
     ;
 
 seeTag
@@ -49,7 +50,7 @@ seeTagAlias
     ;
 
 seeTagAliasText
-    :   ((SEE | TODO | PARAM | DEPRECATED | ID | WORD | ESC | DOUBLE_QOUTE_ESC | DOT | STAR) whitespaceInLine?)+
+    :   ((SEE | TODO | PARAM | DEPRECATED | ID | WORD | ESC | DOUBLE_QUOTE_ESC | DOT | STAR) whitespaceInLine?)+
     ;
 
 seeTagId
@@ -113,7 +114,7 @@ STAR : '*' ;
 
 ESC : '\\\\';
 
-DOUBLE_QOUTE_ESC : '\\"' ;
+DOUBLE_QUOTE_ESC : '\\"' ;
 
 DOUBLE_QUOTE : '"' ;
 
