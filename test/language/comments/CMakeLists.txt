@@ -17,6 +17,12 @@ set(ZSERIO_GENERATED_SOURCES
     ${ZSERIO_GEN_DIR}/comments/documentation_comments/VirtualTable.h
     ${ZSERIO_GEN_DIR}/comments/documentation_comments/VirtualTableRow.cpp
     ${ZSERIO_GEN_DIR}/comments/documentation_comments/VirtualTableRow.h
+    ${ZSERIO_GEN_DIR}/comments/unknown_tag/Table.cpp
+    ${ZSERIO_GEN_DIR}/comments/unknown_tag/Table.h
+    ${ZSERIO_GEN_DIR}/comments/uknown_tag_matching_prefix/Max.cpp
+    ${ZSERIO_GEN_DIR}/comments/uknown_tag_matching_prefix/Max.h
+    ${ZSERIO_GEN_DIR}/comments/uknown_tag_matching_prefix/Table.cpp
+    ${ZSERIO_GEN_DIR}/comments/uknown_tag_matching_prefix/Table.cpp
 )
 
 zserio_add_library(TARGET comments_zs

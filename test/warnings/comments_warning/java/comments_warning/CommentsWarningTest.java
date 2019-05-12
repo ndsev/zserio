@@ -18,6 +18,14 @@ public class CommentsWarningTest
     }
 
     @Test
+    public void unresolvedSeeTagReference()
+    {
+        final String warning = "unresolved_see_tag_reference.zs:6:4: " +
+                "Documentation: Unresolved referenced symbol 'Unexisting' for type 'Test'!";
+        assertTrue(zserioWarnings.isPresent(warning));
+    }
+
+    @Test
     public void unusedFieldComments()
     {
         assertTrue(zserioWarnings.isPresent(

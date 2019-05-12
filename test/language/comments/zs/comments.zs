@@ -5,3 +5,8 @@ package comments;
 import comments.documentation_comments.DirectionStructure;
 
 import comments.standard_comments.*;
+
+// caused an error with older Zserio versions
+import comments.unknown_tag_matching_prefix.*;
+// caused an error with older Zserio versions
+import comments.unknown_tag.*;

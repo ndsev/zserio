@@ -37,7 +37,7 @@ public class ExplicitParametersErrorTest
     @Test
     public void notAllowed()
     {
-        final String error = "not_allowed_error.zs:28:15: Explicit keyword is allowed only in SQL tables!";
+        final String error = "not_allowed_error.zs:15:10: Explicit keyword is allowed only in SQL tables!";
         assertTrue(zserioErrors.isPresent(error));
     }
 

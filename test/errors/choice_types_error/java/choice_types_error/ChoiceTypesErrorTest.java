@@ -27,7 +27,7 @@ public class ChoiceTypesErrorTest
     @Test
     public void compoundSelectorError()
     {
-        final String error = "compound_selector_error.zs:8:1: " +
+        final String error = "compound_selector_error.zs:8:8: " +
                 "Choice 'CompoundSelectorChoice' uses forbidden COMPOUND selector!";
         assertTrue(zserioErrors.isPresent(error));
     }
@@ -35,23 +35,23 @@ public class ChoiceTypesErrorTest
     @Test
     public void enumCaseError()
     {
-        final String error = "enum_case_error.zs:27:23: Choice 'EnumParamChoice' has case with different " +
-                "enumeration type than selector!";
+        final String error = "enum_case_error.zs:27:10: " +
+                "Choice 'EnumParamChoice' has case with different enumeration type than selector!";
         assertTrue(zserioErrors.isPresent(error));
     }
 
     @Test
     public void fieldCaseError()
     {
-        final String error = "field_case_error.zs:23:10: Unresolved symbol 'b' within expression scope!";
+        final String error = "field_case_error.zs:23:10: Choice 'IntChoice' has incompatible case type!";
         assertTrue(zserioErrors.isPresent(error));
     }
 
     @Test
     public void floatSelectorError()
     {
-        final String error =
-                "float_selector_error.zs:3:1: Choice 'FloatSelectorChoice' uses forbidden FLOAT selector!";
+        final String error = "float_selector_error.zs:3:8: " +
+                "Choice 'FloatSelectorChoice' uses forbidden FLOAT selector!";
         assertTrue(zserioErrors.isPresent(error));
     }
 
@@ -65,7 +65,8 @@ public class ChoiceTypesErrorTest
     @Test
     public void multipleDefaults()
     {
-        final String error = "multiple_defaults_error.zs:14:5: expecting RCURLY, found 'default'";
+        final String error = "multiple_defaults_error.zs:14:5: " +
+                "mismatched input 'default' expecting {'}', 'function'}";
         assertTrue(zserioErrors.isPresent(error));
     }
 
@@ -80,7 +81,7 @@ public class ChoiceTypesErrorTest
     @Test
     public void optionalMember()
     {
-        final String error = "optional_member_error.zs:6:29: unexpected token: if";
+        final String error = "optional_member_error.zs:6:29: mismatched input 'if' expecting {':', '[', ';'}";
         assertTrue(zserioErrors.isPresent(error));
     }
 
@@ -88,15 +89,15 @@ public class ChoiceTypesErrorTest
     public void recursive()
     {
         final String error =
-                "recursive_error.zs:12:9: Field 'recursiveValue' is recursive and neither optional nor array!";
+                "recursive_error.zs:12:28: Field 'recursiveValue' is recursive and neither optional nor array!";
         assertTrue(zserioErrors.isPresent(error));
     }
 
     @Test
     public void stringSelectorError()
     {
-        final String error =
-                "string_selector_error.zs:3:1: Choice 'StringSelectorChoice' uses forbidden STRING selector!";
+        final String error = "string_selector_error.zs:3:8: " +
+                "Choice 'StringSelectorChoice' uses forbidden STRING selector!";
         assertTrue(zserioErrors.isPresent(error));
     }
 
@@ -119,16 +120,16 @@ public class ChoiceTypesErrorTest
     @Test
     public void unresolvedEnumItem()
     {
-        final String error = "unresolved_enum_item_error.zs:19:31: Unresolved symbol 'RED' within " +
-                "expression scope!";
+        final String error = "unresolved_enum_item_error.zs:19:24: " +
+                "Incompatible expression types (ENUM != UNKNOWN)!";
         assertTrue(zserioErrors.isPresent(error));
     }
 
     @Test
     public void unresolvedFieldInConstraint()
     {
-        final String error = "unresolved_field_in_constraint_error.zs:9:47: Unresolved symbol 'uint16Value' " +
-                "within expression scope!";
+        final String error = "unresolved_field_in_constraint_error.zs:9:47: " +
+                "Incompatible expression types (UNKNOWN != INTEGER)!";
         assertTrue(zserioErrors.isPresent(error));
     }
 

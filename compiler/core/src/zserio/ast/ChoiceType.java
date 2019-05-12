@@ -186,12 +186,13 @@ public class ChoiceType extends CompoundType
             final List<ChoiceCaseExpression> caseExpressions = choiceCase.getExpressions();
             for (ChoiceCaseExpression caseExpression : caseExpressions)
             {
-                if (caseExpression.getExpression().getExprType() != selectorExpressionType)
-                    throw new ParserException(caseExpression, "Choice '" + getName() +
+                final Expression expression = caseExpression.getExpression();
+                if (expression.getExprType() != selectorExpressionType)
+                    throw new ParserException(expression, "Choice '" + getName() +
                             "' has incompatible case type!");
 
-                if (!caseExpression.getExpression().getReferencedSymbolObjects(Parameter.class).isEmpty())
-                    throw new ParserException(caseExpression, "Choice '" + getName() +
+                if (!expression.getReferencedSymbolObjects(Parameter.class).isEmpty())
+                    throw new ParserException(expression, "Choice '" + getName() +
                             "' has non-constant case expression!");
             }
         }
@@ -207,8 +208,9 @@ public class ChoiceType extends CompoundType
             {
                 for (Expression caseExpression : allExpressions)
                 {
-                    if (newCaseExpression.getExpression().equals(caseExpression))
-                        throw new ParserException(newCaseExpression, "Choice '" + getName() +
+                    final Expression newExpression = newCaseExpression.getExpression();
+                    if (newExpression.equals(caseExpression))
+                        throw new ParserException(newExpression, "Choice '" + getName() +
                                 "' has duplicated case!");
                 }
                 allExpressions.add(newCaseExpression.getExpression());
@@ -229,11 +231,12 @@ public class ChoiceType extends CompoundType
                 final List<ChoiceCaseExpression> caseExpressions = choiceCase.getExpressions();
                 for (ChoiceCaseExpression caseExpression : caseExpressions)
                 {
+                    final Expression expression = caseExpression.getExpression();
                     final Set<EnumItem> referencedEnumItems =
-                            caseExpression.getExpression().getReferencedSymbolObjects(EnumItem.class);
+                            expression.getReferencedSymbolObjects(EnumItem.class);
                     for (EnumItem referencedEnumItem : referencedEnumItems)
                         if (!availableEnumItems.remove(referencedEnumItem))
-                            throw new ParserException(caseExpression, "Choice '" + getName() +
+                            throw new ParserException(expression, "Choice '" + getName() +
                                     "' has case with different enumeration type than selector!");
                 }
             }

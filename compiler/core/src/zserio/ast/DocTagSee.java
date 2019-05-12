@@ -59,8 +59,7 @@ public class DocTagSee extends AstNodeBase
         }
         catch (ParserException e)
         {
-            ZserioToolPrinter.printWarning(e.getLocation(), "Documentation: " +
-                    e.getMessage() + "!");
+            ZserioToolPrinter.printWarning(e.getLocation(), "Documentation: " + e.getMessage());
         }
     }
 
