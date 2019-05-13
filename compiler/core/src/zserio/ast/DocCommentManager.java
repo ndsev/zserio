@@ -11,6 +11,7 @@ import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.Token;
 import org.antlr.v4.runtime.tree.ParseTree;
+import org.antlr.v4.runtime.tree.TerminalNode;
 
 import zserio.antlr.DocCommentLexer;
 import zserio.antlr.DocCommentParser;
@@ -96,6 +97,11 @@ public class DocCommentManager
         if (docToken != null)
             return parseDocComment(docToken);
 
+        // before field optional
+        docToken = findDocTokenBefore(ctx.OPTIONAL());
+        if (docToken != null)
+            return parseDocComment(docToken);
+
         // before field offset
         docToken = findDocTokenBefore(ctx.fieldOffset());
         if (docToken != null)
@@ -111,10 +117,20 @@ public class DocCommentManager
 
     private Token findDocTokenBefore(ParserRuleContext ctx)
     {
-        if (currentTokenStream == null || ctx == null)
+        return (ctx == null) ? null : findDocTokenBefore(ctx.getStart());
+    }
+
+    private Token findDocTokenBefore(TerminalNode terminalNode)
+    {
+        return (terminalNode == null) ? null : findDocTokenBefore(terminalNode.getSymbol());
+    }
+
+    private Token findDocTokenBefore(Token token)
+    {
+        if (currentTokenStream == null)
             return null;
 
-        final int tokenIndex = ctx.getStart().getTokenIndex();
+        final int tokenIndex = token.getTokenIndex();
         final List<Token> docList = currentTokenStream.getHiddenTokensToLeft(tokenIndex, ZserioLexer.DOC);
         if (docList != null && !docList.isEmpty())
         {
