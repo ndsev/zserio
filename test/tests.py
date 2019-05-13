@@ -101,30 +101,31 @@ def _runPylintOnAllSources(args, testDirs):
         testSources = [os.path.join(testDir, child) for child in os.listdir(testDir) if child.endswith(".py")]
 
         apiDir = getApiDir(testDir)
-        apiSources = [os.path.join(apiDir, child) for child in os.listdir(apiDir)
-                      if child.endswith(".py") or os.path.isdir(os.path.join(apiDir, child))]
+        if os.path.isdir(apiDir):
+            apiSources = [os.path.join(apiDir, child) for child in os.listdir(apiDir)
+                          if child.endswith(".py") or os.path.isdir(os.path.join(apiDir, child))]
 
-        testSuiteName = getTestSuiteName(testDir)
-        print(testSuiteName)
+            testSuiteName = getTestSuiteName(testDir)
+            print(testSuiteName)
 
-        print("    test files...")
-        pylintResult = _runPylint(testSources, pylintOptions, testDisableOption)
-        if pylintResult != 0:
-            return pylintResult
+            print("    test files...")
+            pylintResult = _runPylint(testSources, pylintOptions, testDisableOption)
+            if pylintResult != 0:
+                return pylintResult
 
-        sys.path.append(apiDir)
+            sys.path.append(apiDir)
 
-        print("    generated files...") # except api.py files
-        pylintResult = _runPylint(apiSources, genPylintOptions, genDisableOption)
-        if pylintResult != 0:
-            return pylintResult
+            print("    generated files...") # except api.py files
+            pylintResult = _runPylint(apiSources, genPylintOptions, genDisableOption)
+            if pylintResult != 0:
+                return pylintResult
 
-        print("    generated api.py files...")
-        pylintResult = _runPylint(apiSources, apiPylintOptions, apiDisableOption)
-        if pylintResult != 0:
-            return pylintResult
+            print("    generated api.py files...")
+            pylintResult = _runPylint(apiSources, apiPylintOptions, apiDisableOption)
+            if pylintResult != 0:
+                return pylintResult
 
-        sys.path.remove(apiDir)
+            sys.path.remove(apiDir)
 
     print("Pylint done.\n")
 
