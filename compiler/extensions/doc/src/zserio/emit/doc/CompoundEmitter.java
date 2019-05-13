@@ -8,9 +8,11 @@ import java.util.Set;
 
 import zserio.ast.ArrayType;
 import zserio.ast.ChoiceCase;
+import zserio.ast.ChoiceCaseExpression;
 import zserio.ast.ChoiceDefault;
 import zserio.ast.ChoiceType;
 import zserio.ast.CompoundType;
+import zserio.ast.DocComment;
 import zserio.ast.ServiceType;
 import zserio.ast.ZserioType;
 import zserio.ast.EnumItem;
@@ -25,7 +27,6 @@ import zserio.ast.SqlTableType;
 import zserio.ast.TypeInstantiation;
 import zserio.ast.TypeReference;
 import zserio.ast.UnionType;
-import zserio.ast.doc.DocCommentToken;
 import zserio.emit.common.ExpressionFormatter;
 import zserio.emit.common.ZserioEmitException;
 import freemarker.template.Template;
@@ -470,9 +471,9 @@ public class CompoundEmitter extends DefaultHtmlEmitter
         return new DocCommentTemplateData(f.getDocComment());
     }
 
-    public DocCommentTemplateData getCaseDocComment(DocCommentToken token) throws ZserioEmitException
+    public DocCommentTemplateData getCaseDocComment(DocComment docComment) throws ZserioEmitException
     {
-        return new DocCommentTemplateData(token);
+        return new DocCommentTemplateData(docComment);
     }
 
     public String emitExpression(Expression expr) throws ZserioEmitException
@@ -521,8 +522,8 @@ public class CompoundEmitter extends DefaultHtmlEmitter
             public CaseMember(ChoiceCase choiceCase) throws ZserioEmitException
             {
                 caseList = new ArrayList<Case>();
-                final Iterable<ChoiceCase.CaseExpression> caseExpressions = choiceCase.getExpressions();
-                for (ChoiceCase.CaseExpression caseExpression : caseExpressions)
+                final Iterable<ChoiceCaseExpression> caseExpressions = choiceCase.getExpressions();
+                for (ChoiceCaseExpression caseExpression : caseExpressions)
                     caseList.add(new Case(caseExpression.getExpression(), caseExpression.getDocComment()));
 
                 compoundField = choiceCase.getField();
@@ -544,10 +545,10 @@ public class CompoundEmitter extends DefaultHtmlEmitter
 
         public class Case
         {
-            public Case(Expression caseExpression, DocCommentToken docCommentToken) throws ZserioEmitException
+            public Case(Expression caseExpression, DocComment docComment) throws ZserioEmitException
             {
                 expression = getExpressionFormatter().formatGetter(caseExpression);
-                docComment = new DocCommentTemplateData(docCommentToken);
+                docCommentData = new DocCommentTemplateData(docComment);
 
                 final Set<EnumItem> referencedEnumItems =
                         caseExpression.getReferencedSymbolObjects(EnumItem.class);
@@ -564,7 +565,7 @@ public class CompoundEmitter extends DefaultHtmlEmitter
 
             public DocCommentTemplateData getDocComment()
             {
-                return docComment;
+                return docCommentData;
             }
 
             public CaseSeeLink getSeeLink()
@@ -573,7 +574,7 @@ public class CompoundEmitter extends DefaultHtmlEmitter
             }
 
             private final String                    expression;
-            private final DocCommentTemplateData    docComment;
+            private final DocCommentTemplateData    docCommentData;
             private final CaseSeeLink               seeLink;
         }
 

@@ -7,6 +7,7 @@ import java.util.List;
 import zserio.ast.ChoiceType;
 import zserio.ast.CompoundType;
 import zserio.ast.ConstType;
+import zserio.ast.DocComment;
 import zserio.ast.EnumItem;
 import zserio.ast.EnumType;
 import zserio.ast.Field;
@@ -17,7 +18,6 @@ import zserio.ast.SqlTableType;
 import zserio.ast.Subtype;
 import zserio.ast.ZserioType;
 import zserio.ast.UnionType;
-import zserio.ast.doc.DocCommentToken;
 import zserio.emit.common.ZserioEmitException;
 import freemarker.template.Template;
 import freemarker.template.TemplateException;
@@ -256,11 +256,11 @@ public class DeprecatedEmitter extends DefaultHtmlEmitter
         handleFields(sqlTableType);
     }
 
-    public boolean getIsDeprecated(DocCommentToken docCommentToken)
+    public boolean getIsDeprecated(DocComment docComment)
     {
         boolean isDeprecated = false;
-        if (docCommentToken != null)
-            isDeprecated = docCommentToken.isDeprecated();
+        if (docComment != null)
+            isDeprecated = docComment.isDeprecated();
 
         return isDeprecated;
     };

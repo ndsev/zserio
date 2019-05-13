@@ -1,6 +1,5 @@
 package zserio.emit.doc;
 
-import zserio.antlr.ZserioParserTokenTypes;
 import zserio.ast.ArrayType;
 import zserio.ast.BitFieldType;
 import zserio.ast.CompoundType;
@@ -12,7 +11,6 @@ import zserio.ast.Expression;
 import zserio.ast.Field;
 import zserio.ast.StdIntegerType;
 import zserio.ast.Subtype;
-import zserio.ast.TokenAST;
 import zserio.ast.TypeInstantiation;
 import zserio.ast.TypeReference;
 import zserio.ast.VarIntegerType;
@@ -169,10 +167,7 @@ public class TypeNameEmitter
         else
         {
             ZserioType res = TypeReference.resolveType(t);
-            if (res instanceof TokenAST)
-                result = ((TokenAST) res).getText();
-            else
-                result = res.toString();
+            result = res.toString();
         }
 
         return StringHtmlUtil.escapeForHtml(result);
@@ -192,35 +187,13 @@ public class TypeNameEmitter
     {
         String rawName = "", parameterizedName = "";
 
-        switch (t.getType())
-        {
-        case ZserioParserTokenTypes.BOOL:
-            rawName = "bool";
-            break;
+        rawName = (t.isSigned()) ? "int" : "bit";
 
-        case ZserioParserTokenTypes.BIT:
-            rawName = "bit";
-            break;
-
-        case ZserioParserTokenTypes.INT:
-            rawName = "int";
-            break;
-
-        default:
-            throw new InternalError("BitFieldType: unexpected type");
-        }
-
-        if (t.getType() != ZserioParserTokenTypes.BOOL)
-        {
-            final DocExpressionFormattingPolicy policy = new DocExpressionFormattingPolicy();
-            final ExpressionFormatter expressionFormatter = new ExpressionFormatter(policy);
-            Expression expression = t.getLengthExpression();
-            parameterizedName = expressionFormatter.formatGetter(expression);
-            if (expression.getType() == ZserioParserTokenTypes.DECIMAL_LITERAL)
-                parameterizedName = ":" + parameterizedName;
-            else
-                parameterizedName = "<" + parameterizedName + ">";
-        }
+        final DocExpressionFormattingPolicy policy = new DocExpressionFormattingPolicy();
+        final ExpressionFormatter expressionFormatter = new ExpressionFormatter(policy);
+        Expression expression = t.getLengthExpression();
+        parameterizedName = expressionFormatter.formatGetter(expression);
+        parameterizedName = "<" + parameterizedName + ">";
 
         return rawName + parameterizedName;
     }
