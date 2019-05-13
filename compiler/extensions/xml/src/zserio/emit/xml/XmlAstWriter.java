@@ -295,7 +295,7 @@ public class XmlAstWriter implements ZserioAstVisitor
     }
 
     @Override
-    public void visitFunction(FunctionType functionType)
+    public void visitFunctionType(FunctionType functionType)
     {
         visitZserioType(functionType, "FUNCTION");
     }

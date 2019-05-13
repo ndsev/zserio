@@ -114,7 +114,7 @@ public class ZserioAstScopeSetter extends ZserioAstWalker
         currentChoiceOrUnionScope = null;
 
         for (FunctionType function : unionType.getFunctions())
-            visitFunction(function);
+            visitFunctionType(function);
 
         currentScope = defaultScope;
         expressionScopes.clear();
@@ -183,7 +183,7 @@ public class ZserioAstScopeSetter extends ZserioAstWalker
     }
 
     @Override
-    public void visitFunction(FunctionType functionType)
+    public void visitFunctionType(FunctionType functionType)
     {
         for (Scope expressionScope : expressionScopes)
             expressionScope.setSymbol(functionType.getName(), functionType);

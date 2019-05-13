@@ -123,7 +123,7 @@ public class ZserioAstWalker implements ZserioAstVisitor
     }
 
     @Override
-    public void visitFunction(FunctionType functionType)
+    public void visitFunctionType(FunctionType functionType)
     {
         functionType.visitChildren(this);
     }

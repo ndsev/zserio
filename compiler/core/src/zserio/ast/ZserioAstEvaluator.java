@@ -130,7 +130,7 @@ public class ZserioAstEvaluator extends ZserioAstWalker
     }
 
     @Override
-    public void visitFunction(FunctionType functionType)
+    public void visitFunctionType(FunctionType functionType)
     {
         functionType.visitChildren(this);
         functionType.evaluate();

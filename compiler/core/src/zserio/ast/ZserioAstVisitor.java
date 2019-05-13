@@ -143,7 +143,7 @@ public interface ZserioAstVisitor
      *
      * @param functionType Function AST node.
      */
-    void visitFunction(FunctionType functionType);
+    void visitFunctionType(FunctionType functionType);
 
     /**
      * Visits parameter definition.

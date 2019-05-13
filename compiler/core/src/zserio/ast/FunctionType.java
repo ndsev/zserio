@@ -37,7 +37,7 @@ public class FunctionType extends AstNodeWithDoc implements ZserioType
     @Override
     public void accept(ZserioAstVisitor visitor)
     {
-        visitor.visitFunction(this);
+        visitor.visitFunctionType(this);
     }
 
     @Override

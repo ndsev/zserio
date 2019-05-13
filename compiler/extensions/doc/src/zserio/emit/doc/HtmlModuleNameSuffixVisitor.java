@@ -64,7 +64,7 @@ public class HtmlModuleNameSuffixVisitor extends ZserioAstDefaultVisitor
     }
 
     @Override
-    public void visitFunction(FunctionType type)
+    public void visitFunctionType(FunctionType type)
     {
         htmlModuleNameSuffix = "FUNCTION";
     }
