@@ -145,7 +145,8 @@ public class StructureType extends CompoundType
     {
         final Expression optionalClause1 = field1.getOptionalClauseExpr();
         final Expression optionalClause2 = field2.getOptionalClauseExpr();
-        if (optionalClause1 != null && optionalClause2 != null && optionalClause1.equals(optionalClause2))
+        if (optionalClause1 != null && optionalClause2 != null &&
+                optionalClause1.toString().equals(optionalClause2.toString()))
             return false;
 
         return true;

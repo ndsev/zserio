@@ -10,7 +10,6 @@ import org.antlr.v4.runtime.Token;
 
 import zserio.antlr.ZserioParser;
 import zserio.antlr.util.ParserException;
-import zserio.tools.HashUtil;
 
 /**
  * AST node for expressions defined in the language.
@@ -158,85 +157,21 @@ public class Expression extends AstNodeBase
     }
 
     @Override
-    public boolean equals(Object other)
+    public String toString()
     {
-        if (!(other instanceof Expression))
-            return false;
-
-        return equals((Expression)other);
-    }
-
-    @Override
-    public int hashCode()
-    {
-        int hash = HashUtil.HASH_SEED;
-        hash = HashUtil.hash(hash, getText());
-        final Expression op1 = op1();
-        if (op1 != null)
+        final StringBuilder stringBuilder = new StringBuilder(text);
+        if (operand1 != null)
         {
-            hash = HashUtil.hash(hash, op1);
-            final Expression op2 = op2();
-            if (op2 != null)
+            stringBuilder.append(operand1.toString());
+            if (operand2 != null)
             {
-                hash = HashUtil.hash(hash, op2);
-                final Expression op3 = op3();
-                if (op3 != null)
-                    hash = HashUtil.hash(hash, op3);
+                stringBuilder.append(operand2.toString());
+                if (operand3 != null)
+                    stringBuilder.append(operand3.toString());
             }
         }
 
-        return hash;
-    }
-
-    /**
-     * Indicates whether some other object is equal to this one.
-     *
-     * Please note that this method is necessary to hide method equals(AST t) from base class BaseAST.
-     * Otherwise equals(expression) will call BaseAST.equals((AST)expression) instead of
-     * Expression.equals((Object)expression).
-     *
-     * @param other The object with which to compare.
-     *
-     * @return true if this object is the same as given object, otherwise false.
-     */
-    public boolean equals(Expression other)
-    {
-        if (this != other)
-        {
-            if ( !(getText().equals(other.getText())) )
-                return false;
-
-            final Expression op1 = op1();
-            if (op1 != null)
-            {
-                if (!op1.equals(other.op1()))
-                    return false;
-
-                final Expression op2 = op2();
-                if (op2 != null)
-                {
-                    if (!op2.equals(other.op2()))
-                        return false;
-
-                    final Expression op3 = op3();
-                    final boolean op3Equals = (op3 != null) ? op3.equals(other.op3()) : (other.op3() == null);
-                    if (!op3Equals)
-                        return false;
-                }
-                else
-                {
-                    if (other.op2() != null)
-                        return false;
-                }
-            }
-            else
-            {
-                if (other.op1() != null)
-                    return false;
-            }
-        }
-
-        return true;
+        return stringBuilder.toString();
     }
 
     /**
