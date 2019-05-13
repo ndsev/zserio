@@ -20,7 +20,6 @@ import zserio.ast.Root;
 import zserio.ast.ZserioAstBuilder;
 import zserio.ast.ZserioAstChecker;
 import zserio.ast.ZserioAstEvaluator;
-import zserio.ast.ZserioAstPrinter;
 import zserio.ast.ZserioAstResolver;
 import zserio.ast.ZserioAstScopeSetter;
 import zserio.ast.ZserioParseTreeChecker;
@@ -121,11 +120,7 @@ public class ZserioTool
     private void process() throws Exception
     {
         final Root rootNode = parse();
-
-        showAstTree(rootNode);
-
         emit(rootNode);
-
         ZserioToolPrinter.printMessage("Done");
     }
 
@@ -199,13 +194,6 @@ public class ZserioTool
     {
         final ExtensionParameters parameters = new ExtensionParameters(commandLineArguments);
         extensionManager.callExtensions(parameters, rootNode);
-    }
-
-    private static void showAstTree(Root rootNode)
-    {
-        ZserioToolPrinter.printMessage("AST:");
-        ZserioAstPrinter printStringTreeVisitor = new ZserioAstPrinter();
-        rootNode.accept(printStringTreeVisitor);
     }
 
     private final InputFileManager inputFileManager;
