@@ -21,44 +21,58 @@ import zserio.ast.UnionType;
 public abstract class DefaultEmitter implements Emitter
 {
     @Override
-    public void beginRoot(Root root) throws ZserioEmitException {}
+    public void beginRoot(Root root) throws ZserioEmitException
+    {}
 
     @Override
-    public void endRoot(Root root) throws ZserioEmitException {}
+    public void endRoot(Root root) throws ZserioEmitException
+    {}
 
     @Override
-    public void beginPackage(Package packageToken) throws ZserioEmitException {}
+    public void beginPackage(Package packageToken) throws ZserioEmitException
+    {}
 
     @Override
-    public void endPackage(Package packageToken) throws ZserioEmitException {}
+    public void endPackage(Package packageToken) throws ZserioEmitException
+    {}
 
     @Override
-    public void beginImport(Import importNode) throws ZserioEmitException {}
+    public void beginImport(Import importNode) throws ZserioEmitException
+    {}
 
     @Override
-    public void beginConst(ConstType constType) throws ZserioEmitException {}
+    public void beginConst(ConstType constType) throws ZserioEmitException
+    {}
 
     @Override
-    public void beginSubtype(Subtype subType) throws ZserioEmitException {}
+    public void beginSubtype(Subtype subType) throws ZserioEmitException
+    {}
 
     @Override
-    public void beginStructure(StructureType structureType) throws ZserioEmitException {}
+    public void beginStructure(StructureType structureType) throws ZserioEmitException
+    {}
 
     @Override
-    public void beginChoice(ChoiceType choiceType) throws ZserioEmitException {}
+    public void beginChoice(ChoiceType choiceType) throws ZserioEmitException
+    {}
 
     @Override
-    public void beginUnion(UnionType unionType) throws ZserioEmitException {}
+    public void beginUnion(UnionType unionType) throws ZserioEmitException
+    {}
 
     @Override
-    public void beginEnumeration(EnumType enumType) throws ZserioEmitException {}
+    public void beginEnumeration(EnumType enumType) throws ZserioEmitException
+    {}
 
     @Override
-    public void beginSqlTable(SqlTableType sqlTableType) throws ZserioEmitException {}
+    public void beginSqlTable(SqlTableType sqlTableType) throws ZserioEmitException
+    {}
 
     @Override
-    public void beginSqlDatabase(SqlDatabaseType sqlDatabaseType) throws ZserioEmitException {}
+    public void beginSqlDatabase(SqlDatabaseType sqlDatabaseType) throws ZserioEmitException
+    {}
 
     @Override
-    public void beginService(ServiceType service) throws ZserioEmitException {}
+    public void beginService(ServiceType service) throws ZserioEmitException
+    {}
 }

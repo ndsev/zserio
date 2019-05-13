@@ -1,10 +1,12 @@
 package zserio.emit.common;
 
 import java.io.File;
+import java.util.Collection;
 import java.util.Locale;
 
 import zserio.ast.Package;
 import zserio.ast.PackageName;
+import zserio.ast.Root;
 import zserio.ast.ZserioType;
 import zserio.tools.Parameters;
 
@@ -38,16 +40,13 @@ public abstract class CodeDefaultEmitter extends DefaultEmitter
     }
 
     @Override
-    public void beginPackage(Package pkg) throws ZserioEmitException
+    public void beginRoot(Root root) throws ZserioEmitException
     {
-        if (packageMapper == null)
+        final Collection<Package> packages = root.getPackageNameMap().values();
+        if (!packages.isEmpty())
         {
-            final Package rootPackage = pkg;
-            if (rootPackage != null)
-            {
-                // root package can be null for empty files
-                packageMapper = new PackageMapper(rootPackage, topLevelPackageNameList);
-            }
+            final Package rootPackage = packages.iterator().next();
+            packageMapper = new PackageMapper(rootPackage, topLevelPackageNameList);
         }
     }
 

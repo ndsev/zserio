@@ -19,15 +19,41 @@ public class ZserioAstEmitter extends ZserioAstWalker
     }
 
     @Override
+    public void visitRoot(Root root)
+    {
+        try
+        {
+            emitter.beginRoot(root);
+            root.visitChildren(this);
+            emitter.endRoot(root);
+        }
+        catch (ZserioEmitException e)
+        {
+            throw new UncheckedZserioEmitException(e);
+        }
+    }
+
+    @Override
     public void visitPackage(Package pkg)
     {
         try
         {
             emitter.beginPackage(pkg);
-
             pkg.visitChildren(this);
-
             emitter.endPackage(pkg);
+        }
+        catch (ZserioEmitException e)
+        {
+            throw new UncheckedZserioEmitException(e);
+        }
+    }
+
+    @Override
+    public void visitImport(Import importNode)
+    {
+        try
+        {
+            emitter.beginImport(importNode);
         }
         catch (ZserioEmitException e)
         {
