@@ -1,26 +1,18 @@
 package zserio.emit.common.sql;
 
-import zserio.ast.ArrayType;
 import zserio.ast.BitFieldType;
 import zserio.ast.BooleanType;
 import zserio.ast.ChoiceType;
-import zserio.ast.ConstType;
 import zserio.ast.EnumType;
 import zserio.ast.FloatType;
-import zserio.ast.FunctionType;
-import zserio.ast.ServiceType;
-import zserio.ast.SqlDatabaseType;
-import zserio.ast.SqlTableType;
 import zserio.ast.StdIntegerType;
 import zserio.ast.StringType;
 import zserio.ast.StructureType;
-import zserio.ast.Subtype;
 import zserio.ast.TypeInstantiation;
 import zserio.ast.TypeReference;
 import zserio.ast.UnionType;
 import zserio.ast.VarIntegerType;
 import zserio.ast.ZserioAstDefaultVisitor;
-import zserio.ast.ZserioAstWalker;
 import zserio.ast.ZserioType;
 import zserio.ast.ZserioTypeUtil;
 import zserio.emit.common.ZserioEmitException;
