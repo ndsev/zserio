@@ -10,6 +10,7 @@ import zserio.ast.DocTagParam;
 import zserio.ast.DocTagSee;
 import zserio.ast.DocTagTodo;
 import zserio.ast.DocText;
+import zserio.ast.DocTextElement;
 import zserio.ast.DocTextLine;
 import zserio.ast.SymbolReference;
 import zserio.emit.common.ZserioEmitException;
@@ -114,8 +115,13 @@ public class DocCommentTemplateData
                 {
                     for (DocText docText : docTextLine.getTexts())
                     {
-                        textList.add(StringHtmlUtil.escapeCommentsForHtml(docText.getTextElement().getText()));
-                        tagSeeList.add(new DocTagSeeData(docText.getSeeTag()));
+                        final DocTextElement docTextElement = docText.getTextElement();
+                        if (docTextElement != null)
+                            textList.add(StringHtmlUtil.escapeCommentsForHtml(docTextElement.getText()));
+
+                        final DocTagSee docTagSee = docText.getSeeTag();
+                        if (docTagSee != null)
+                            tagSeeList.add(new DocTagSeeData(docTagSee));
                     }
                 }
             }
@@ -173,8 +179,9 @@ public class DocCommentTemplateData
                 {
                     for (DocText docText : docTextLine.getTexts())
                     {
-                        final String todoText = docText.getTextElement().getText();
-                        textList.add(StringHtmlUtil.escapeCommentsForHtml(todoText));
+                        final DocTextElement docTextElement = docText.getTextElement();
+                        if (docTextElement != null)
+                            textList.add(StringHtmlUtil.escapeCommentsForHtml(docTextElement.getText()));
                     }
                 }
             }
@@ -201,8 +208,9 @@ public class DocCommentTemplateData
                 {
                     for (DocText docText : docTextLine.getTexts())
                     {
-                        final String paramDescription = docText.getTextElement().getText();
-                        descriptionList.add(StringHtmlUtil.escapeCommentsForHtml(paramDescription));
+                        final DocTextElement docTextElement = docText.getTextElement();
+                        if (docTextElement != null)
+                            descriptionList.add(StringHtmlUtil.escapeCommentsForHtml(docTextElement.getText()));
                     }
                 }
             }
