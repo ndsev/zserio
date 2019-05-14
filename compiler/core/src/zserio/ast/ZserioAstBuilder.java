@@ -532,6 +532,7 @@ public class ZserioAstBuilder extends ZserioParserBaseVisitor<Object>
         final Expression operand1 = (Expression)visit(ctx.expression());
         final Expression operand2 = new Expression(ctx.id().ID().getSymbol(), currentPackage,
                 Expression.ExpressionFlag.IS_DOT_RIGHT_OPERAND_ID);
+        isInDotExpression = false;
 
         return new Expression(ctx.getStart(), currentPackage, ctx.operator, expressionFlag, operand1, operand2);
     }
