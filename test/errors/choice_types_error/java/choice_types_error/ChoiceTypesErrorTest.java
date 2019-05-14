@@ -43,7 +43,7 @@ public class ChoiceTypesErrorTest
     @Test
     public void fieldCaseError()
     {
-        final String error = "field_case_error.zs:23:10: Choice 'IntChoice' has incompatible case type!";
+        final String error = "field_case_error.zs:23:10: Unresolved symbol 'b' within expression scope!";
         assertTrue(zserioErrors.isPresent(error));
     }
 
@@ -59,6 +59,22 @@ public class ChoiceTypesErrorTest
     public void multipleCases()
     {
         final String error = "multiple_cases_error.zs:11:10: Choice 'MultipleCasesChoice' has duplicated case!";
+        assertTrue(zserioErrors.isPresent(error));
+    }
+
+    @Test
+    public void multipleCasesWithExpression()
+    {
+        final String error = "multiple_cases_with_expression_error.zs:11:10: " +
+                "Choice 'MultipleCasesChoice' has duplicated case!";
+        assertTrue(zserioErrors.isPresent(error));
+    }
+
+    @Test
+    public void multipleCasesOnEnum()
+    {
+        final String error = "multiple_cases_on_enum_error.zs:18:10: " +
+                "Choice 'MultipleCasesChoice' has duplicated case!";
         assertTrue(zserioErrors.isPresent(error));
     }
 
@@ -120,8 +136,8 @@ public class ChoiceTypesErrorTest
     @Test
     public void unresolvedEnumItem()
     {
-        final String error = "unresolved_enum_item_error.zs:19:24: " +
-                "Incompatible expression types (ENUM != UNKNOWN)!";
+        final String error = "unresolved_enum_item_error.zs:19:31: " +
+                "Unresolved symbol 'RED' within expression scope!";
         assertTrue(zserioErrors.isPresent(error));
     }
 
@@ -129,7 +145,7 @@ public class ChoiceTypesErrorTest
     public void unresolvedFieldInConstraint()
     {
         final String error = "unresolved_field_in_constraint_error.zs:9:47: " +
-                "Incompatible expression types (UNKNOWN != INTEGER)!";
+                "Unresolved symbol 'uint16Value' within expression scope!";
         assertTrue(zserioErrors.isPresent(error));
     }
 

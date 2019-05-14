@@ -20,8 +20,8 @@ public class ConstantsErrorTest
     @Test
     public void choiceTypeConstant()
     {
-        final String error = "choice_type_constant_error.zs:11:1: Constants can be defined only for built-in " +
-                "types and enums!";
+        final String error = "choice_type_constant_error.zs:11:14: " +
+                "Constants can be defined only for built-in types and enums!";
         assertTrue(zserioErrors.isPresent(error));
     }
 
@@ -44,31 +44,31 @@ public class ConstantsErrorTest
     @Test
     public void cyclicDefinitionUsingConstant()
     {
-        final String error = "cyclic_definition_using_constant_error.zs:8:25: Cyclic dependency detected " +
-                "in expression evaluation!";
+        final String error = "cyclic_definition_using_constant_error.zs:7:25: " +
+                "Cyclic dependency detected in expression evaluation!";
         assertTrue(zserioErrors.isPresent(error));
     }
 
     @Test
     public void cyclicDefinitionUsingEnumValue()
     {
-        final String error = "cyclic_definition_using_enum_value_error.zs:16:13: Cyclic dependency detected " +
-                "in expression evaluation!";
+        final String error = "cyclic_definition_using_enum_value_error.zs:12:37: " +
+                "Cyclic dependency detected in expression evaluation!";
         assertTrue(zserioErrors.isPresent(error));
     }
 
     @Test
     public void invalidConstantName()
     {
-        final String error = "invalid_constant_name_error.zs:4:13: expecting ID, found 'align' (reserved " +
-                "keyword)";
+        final String error = "invalid_constant_name_error.zs:4:13: " +
+                "mismatched input 'align' expecting ID ('align' is a reserved keyword)!";
         assertTrue(zserioErrors.isPresent(error));
     }
 
     @Test
     public void structureTypeConstant()
     {
-        final String error = "structure_type_constant_error.zs:8:1: Constants can be defined only for " +
+        final String error = "structure_type_constant_error.zs:8:17: Constants can be defined only for " +
                 "built-in types and enums!";
         assertTrue(zserioErrors.isPresent(error));
     }
@@ -76,7 +76,7 @@ public class ConstantsErrorTest
     @Test
     public void subtypedCompoundTypeConstant()
     {
-        final String error = "subtyped_compound_type_constant_error.zs:12:1: Constants can be defined only " +
+        final String error = "subtyped_compound_type_constant_error.zs:12:23: Constants can be defined only " +
                 "for built-in types and enums!";
         assertTrue(zserioErrors.isPresent(error));
     }

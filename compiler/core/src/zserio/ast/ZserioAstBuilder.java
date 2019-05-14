@@ -698,7 +698,7 @@ public class ZserioAstBuilder extends ZserioParserBaseVisitor<Object>
             return (ZserioType)visitBuiltinType(ctx.builtinType());
 
         final boolean isParameterized = ctx.typeArgumentList() != null;
-        final TypeReference typeReference = visitQualifiedName(ctx.qualifiedName(), isParameterized);
+        final TypeReference typeReference = visitQualifiedName(ctx.qualifiedName(), !isParameterized);
 
         if (isParameterized)
         {
@@ -719,7 +719,8 @@ public class ZserioAstBuilder extends ZserioParserBaseVisitor<Object>
         return visitQualifiedName(ctx, false);
     }
 
-    public TypeReference visitQualifiedName(ZserioParser.QualifiedNameContext ctx, boolean isParameterized)
+    public TypeReference visitQualifiedName(ZserioParser.QualifiedNameContext ctx,
+            boolean checkIfNeedsParameters)
     {
         final PackageName referencedPackageName = createPackageName(
                 getPackageNameIds(ctx.id()));
@@ -727,7 +728,7 @@ public class ZserioAstBuilder extends ZserioParserBaseVisitor<Object>
 
         final TypeReference typeReference =
                 new TypeReference(ctx.getStart(), currentPackage, referencedPackageName, referencedTypeName,
-                        isParameterized);
+                        checkIfNeedsParameters);
 
         return typeReference;
     }

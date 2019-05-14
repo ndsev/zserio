@@ -140,7 +140,7 @@ public class Package extends AstNodeWithDoc
             if (importedPackage == null)
             {
                 // imported package has not been found => this could happen only for default packages
-                throw new ParserException(this, "Default package cannot be imported!");
+                throw new ParserException(importedNode, "Default package cannot be imported!");
             }
 
             final String importedTypeName = importedNode.getImportedTypeName();
@@ -148,7 +148,7 @@ public class Package extends AstNodeWithDoc
             {
                 // this is package import
                 if (importedPackages.contains(importedPackage))
-                    ZserioToolPrinter.printWarning(this, "Duplicated import of package '" +
+                    ZserioToolPrinter.printWarning(importedNode, "Duplicated import of package '" +
                             importedPackageName.toString() + "'.");
 
                 // check redundant single type imports
@@ -157,7 +157,7 @@ public class Package extends AstNodeWithDoc
                 {
                     if (importedSingleType.getPackageType().getPackageName().equals(importedPackageName))
                     {
-                        ZserioToolPrinter.printWarning(this, "Import of package '" +
+                        ZserioToolPrinter.printWarning(importedNode, "Import of package '" +
                                 importedPackageName.toString() + "' overwrites single type import '" +
                                 importedSingleType.getTypeName() + "'.");
                         redundantSingleTypeImports.add(importedSingleType);
@@ -175,7 +175,7 @@ public class Package extends AstNodeWithDoc
                 // this is single type import
                 if (importedPackages.contains(importedPackage))
                 {
-                    ZserioToolPrinter.printWarning(this, "Single type '" + importedTypeName +
+                    ZserioToolPrinter.printWarning(importedNode, "Single type '" + importedTypeName +
                             "' imported already by package import.");
                     // don't add it to imported single types because this type would become ambiguous
                 }
@@ -184,13 +184,13 @@ public class Package extends AstNodeWithDoc
                     final SingleTypeName importedSingleType = new SingleTypeName(importedPackage,
                             importedTypeName);
                     if (importedSingleTypes.contains(importedSingleType))
-                        ZserioToolPrinter.printWarning(this, "Duplicated import of type '" +
+                        ZserioToolPrinter.printWarning(importedNode, "Duplicated import of type '" +
                                 importedTypeName + "'.");
 
                     final ZserioType importedZserioType = importedPackage.getLocalType(importedPackageName,
                             importedTypeName);
                     if (importedZserioType == null)
-                        throw new ParserException(this, "Unknown type '" + importedTypeName +
+                        throw new ParserException(importedNode, "Unknown type '" + importedTypeName +
                                 "' in imported package '" + importedPackageName + "'!");
 
                     importedSingleTypes.add(importedSingleType);

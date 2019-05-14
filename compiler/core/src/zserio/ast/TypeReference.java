@@ -17,21 +17,21 @@ public class TypeReference extends AstNodeBase implements ZserioType
     /**
      * Constructor.
      *
-     * @param token                 ANTLR4 token to localize AST node in the sources.
-     * @param ownerPackage          Package of the type reference owner.
-     * @param referencedPackageName Package name which the reference points to.
-     * @param referencedTypeName    Type name which the reference points to.
-     * @param isParameterized       True if the reference points to parameterized type.
+     * @param token                     ANTLR4 token to localize AST node in the sources.
+     * @param ownerPackage              Package of the type reference owner.
+     * @param referencedPackageName     Package name which the reference points to.
+     * @param referencedTypeName        Type name which the reference points to.
+     * @param checkIfNeedsParameters    True if check if the referenced type needs parameters.
      */
     public TypeReference(Token token, Package ownerPackage, PackageName referencedPackageName,
-            String referencedTypeName, boolean isParameterized)
+            String referencedTypeName, boolean checkIfNeedsParameters)
     {
         super(token);
 
         this.ownerPackage = ownerPackage;
         this.referencedPackageName = referencedPackageName;
         this.referencedTypeName = referencedTypeName;
-        this.isParameterized = isParameterized;
+        this.checkIfNeedsParameters = checkIfNeedsParameters;
     }
 
     @Override
@@ -66,13 +66,21 @@ public class TypeReference extends AstNodeBase implements ZserioType
     }
 
     /**
-     * Gets whether the referenced type is parameterized.
-     *
-     * @return True for parameterized types.
+     * Evaluates the type reference.
      */
-    public boolean isParameterized()
+    void evaluate()
     {
-        return isParameterized;
+        if (checkIfNeedsParameters)
+        {
+            final ZserioType referencedBaseType = resolveBaseType(referencedType);
+            if (referencedBaseType instanceof CompoundType)
+            {
+                final CompoundType referencedCompoundType = (CompoundType)referencedBaseType;
+                if (referencedCompoundType.getParameters().size() > 0)
+                    throw new ParserException(this, "Referenced type '" + referencedTypeName +
+                            "' is defined as parameterized type!");
+            }
+        }
     }
 
     /**
@@ -137,7 +145,7 @@ public class TypeReference extends AstNodeBase implements ZserioType
     private final Package ownerPackage;
     private final PackageName referencedPackageName;
     private final String referencedTypeName;
-    private final boolean isParameterized;
+    private final boolean checkIfNeedsParameters;
 
     private ZserioType referencedType = null;
 }

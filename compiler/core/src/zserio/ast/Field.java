@@ -41,6 +41,12 @@ public class Field extends AstNodeWithDoc
 
     /**
      * Constructor from Choice and Union types.
+     *
+     * @param token              ANTLR4 token to localize AST node in the sources.
+     * @param fieldType          Field type.
+     * @param name               Field name.
+     * @param constraintExpr     Constraint expression or null if it's not defined.
+     * @param docComment         Documentation comment belonging to this node.
      */
     public Field(Token token, ZserioType fieldType, String name, Expression constraintExpr,
             DocComment docComment)

@@ -20,7 +20,8 @@ public class SqlWithoutRowIdTablesErrorTest
     @Test
     public void noPrimaryKeyColumn()
     {
-        final String error = ":4:1: No primary key in without rowid table 'WrongWithoutRowIdTable'!";
+        final String error = "no_primary_key_column_error.zs:4:11: " +
+                "No primary key in without rowid table 'WrongWithoutRowIdTable'!";
         assertTrue(zserioErrors.isPresent(error));
     }
 

@@ -20,14 +20,15 @@ public class ParameterizedTypesErrorTest
     @Test
     public void noArguments()
     {
-        final String error = "no_arguments_error.zs:10:19: unexpected token: )";
+        // TODO:
+        final String error = "no_arguments_error.zs:10:21: missing ':' at 'parameterized'";
         assertTrue(zserioErrors.isPresent(error));
     }
 
     @Test
     public void noParameters()
     {
-        final String error = "no_parameters_error.zs:3:21: unexpected token: )";
+        final String error = "no_parameters_error.zs:3:21: mismatched input ')' expecting {";
         assertTrue(zserioErrors.isPresent(error));
     }
 

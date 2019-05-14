@@ -20,7 +20,7 @@ public class ConstraintsErrorTest
     @Test
     public void fieldInFunctionNotAvailableError()
     {
-        final String error = "field_in_function_not_available_error.zs:17:29: Unresolved symbol " +
+        final String error = "field_in_function_not_available_error.zs:17:16: Unresolved symbol " +
                 "'specialMinValue' within expression scope! Found in function 'checkSpecial' called from here:";
         assertTrue(zserioErrors.isPresent(error));
     }

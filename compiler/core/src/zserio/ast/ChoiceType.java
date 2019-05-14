@@ -140,8 +140,8 @@ public class ChoiceType extends CompoundType
         isChoiceDefaultUnreachable = checkUnreachableDefault();
         checkSelectorType();
         checkCaseTypes();
-        checkDuplicatedCases();
         checkEnumerationCases();
+        checkDuplicatedCases();
     }
 
     private boolean checkUnreachableDefault()
@@ -209,7 +209,10 @@ public class ChoiceType extends CompoundType
                 for (Expression caseExpression : allExpressions)
                 {
                     final Expression newExpression = newCaseExpression.getExpression();
-                    if (newExpression.equals(caseExpression))
+                    final boolean equals = newExpression.getIntegerValue() != null
+                            ? newExpression.getIntegerValue().equals(caseExpression.getIntegerValue())
+                            : newExpression.toString().equals(caseExpression.toString());
+                    if (equals)
                         throw new ParserException(newExpression, "Choice '" + getName() +
                                 "' has duplicated case!");
                 }
@@ -235,7 +238,7 @@ public class ChoiceType extends CompoundType
                     final Set<EnumItem> referencedEnumItems =
                             expression.getReferencedSymbolObjects(EnumItem.class);
                     for (EnumItem referencedEnumItem : referencedEnumItems)
-                        if (!availableEnumItems.remove(referencedEnumItem))
+                        if (!availableEnumItems.contains(referencedEnumItem))
                             throw new ParserException(expression, "Choice '" + getName() +
                                     "' has case with different enumeration type than selector!");
                 }

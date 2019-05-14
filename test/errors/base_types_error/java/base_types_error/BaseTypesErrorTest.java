@@ -45,7 +45,7 @@ public class BaseTypesErrorTest
     public void bitfieldLengthFieldNotAvailable()
     {
         final String error = "bitfield_length_field_not_available_error.zs:8:9: " +
-                "Invalid length expression for bitfield. Length must be integer!";
+                "Unresolved symbol 'prevBitfieldLength' within expression scope!";
         assertTrue(zserioErrors.isPresent(error));
     }
 
@@ -61,7 +61,7 @@ public class BaseTypesErrorTest
     public void bitfieldUnknownLength()
     {
         final String error = "bitfield_unknown_length_error.zs:5:9: " +
-                "Invalid length expression for bitfield. Length must be integer!";
+                "Unresolved symbol 'unknownLength' within expression scope!";
         assertTrue(zserioErrors.isPresent(error));
     }
 

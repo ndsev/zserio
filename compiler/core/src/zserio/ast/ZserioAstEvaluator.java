@@ -154,6 +154,13 @@ public class ZserioAstEvaluator extends ZserioAstWalker
     }
 
     @Override
+    public void visitTypeReference(TypeReference typeReference)
+    {
+        typeReference.visitChildren(this);
+        typeReference.evaluate();
+    }
+
+    @Override
     public void visitTypeInstantiation(TypeInstantiation typeInstantiation)
     {
         typeInstantiation.visitChildren(this);

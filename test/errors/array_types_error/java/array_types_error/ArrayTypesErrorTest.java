@@ -21,7 +21,7 @@ public class ArrayTypesErrorTest
     public void arrayLengthNotAvailable()
     {
         final String error = "array_length_field_not_available_error.zs:7:18: " +
-                "Invalid length expression for array. Length must be integer!";
+                "Unresolved symbol 'array2Size' within expression scope!";
         assertTrue(zserioErrors.isPresent(error));
     }
 

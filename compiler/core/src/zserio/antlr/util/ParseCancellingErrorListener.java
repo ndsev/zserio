@@ -1,11 +1,13 @@
 package zserio.antlr.util;
 
 import org.antlr.v4.runtime.BaseErrorListener;
+import org.antlr.v4.runtime.InputMismatchException;
 import org.antlr.v4.runtime.RecognitionException;
 import org.antlr.v4.runtime.Recognizer;
 import org.antlr.v4.runtime.Token;
 import org.antlr.v4.runtime.misc.ParseCancellationException;
 
+import zserio.antlr.ZserioParser;
 import zserio.ast.AstLocation;
 
 /**
@@ -39,16 +41,37 @@ public class ParseCancellingErrorListener extends BaseErrorListener
     {
         if (sourceName != null)
         {
-
             throw new ParserException(new AstLocation(this.sourceName,
                     this.line + line - 1, // lines are numbered from 1
                     (line == 1 ? this.charPositionInLine + charPositionInLine : charPositionInLine)), msg);
         }
         else
         {
-            throw new ParserException(new AstLocation(recognizer.getInputStream().getSourceName(), line,
-                charPositionInLine), msg);
+            if (e instanceof InputMismatchException && isKeyword(e.getOffendingToken()))
+            {
+                final String message = msg + " ('" + e.getOffendingToken().getText() +
+                        "' is a reserved keyword)!";
+                throw new ParserException(new AstLocation(recognizer.getInputStream().getSourceName(), line,
+                        charPositionInLine), message);
+            }
+            else
+            {
+                throw new ParserException(new AstLocation(recognizer.getInputStream().getSourceName(), line,
+                        charPositionInLine), msg);
+            }
         }
+    }
+
+    private boolean isKeyword(Token token)
+    {
+        if (token == null)
+            return false;
+
+        // according to keywords defined in ZserioLexer.g4
+        if (token.getType() >= ZserioParser.ALIGN && token.getType() <= ZserioParser.VARUINT64)
+            return true;
+
+        return false;
     }
 
     private ParseCancellingErrorListener(String sourceName, int line, int charPositionInLine)

@@ -110,6 +110,7 @@ public class Rpc extends AstNodeWithDoc
     private void checkUsedType(ZserioType type)
     {
         final ZserioType resolvedBaseType = TypeReference.resolveBaseType(type);
+
         if (!(resolvedBaseType instanceof CompoundType))
             throw new ParserException(type, "Only non-parameterized compound types can be used in RPC calls, " +
                     "'" + type.getName() + "' is not a compound type!");
@@ -118,6 +119,7 @@ public class Rpc extends AstNodeWithDoc
         if (compoundType.getParameters().size() > 0)
             throw new ParserException(type, "Only non-parameterized compound types can be used in RPC calls, " +
                     "'" + type.getName() + "' is a parameterized type!");
+
         if (resolvedBaseType instanceof SqlTableType)
             throw new ParserException(type, "SQL table '" + type.getName() + "' cannot be used in RPC call");
     }
