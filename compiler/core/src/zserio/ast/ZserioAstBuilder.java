@@ -531,7 +531,7 @@ public class ZserioAstBuilder extends ZserioParserBaseVisitor<Object>
         isInDotExpression = true;
         final Expression operand1 = (Expression)visit(ctx.expression());
         final Expression operand2 = new Expression(ctx.id().ID().getSymbol(), currentPackage,
-                Expression.ExpressionFlag.IS_DOT_RIGHT_OPERAND);
+                Expression.ExpressionFlag.IS_DOT_RIGHT_OPERAND_ID);
 
         return new Expression(ctx.getStart(), currentPackage, ctx.operator, expressionFlag, operand1, operand2);
     }
@@ -675,7 +675,10 @@ public class ZserioAstBuilder extends ZserioParserBaseVisitor<Object>
     @Override
     public Object visitIdentifierExpression(ZserioParser.IdentifierExpressionContext ctx)
     {
-        return new Expression(ctx.id().ID().getSymbol(), currentPackage);
+        final Expression.ExpressionFlag expressionFlag = (isInDotExpression) ?
+                Expression.ExpressionFlag.IS_DOT_LEFT_OPERAND_ID : Expression.ExpressionFlag.NONE;
+
+        return new Expression(ctx.id().ID().getSymbol(), currentPackage, expressionFlag);
     }
 
     @Override

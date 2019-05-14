@@ -21,10 +21,11 @@ public class Expression extends AstNodeBase
      */
     public enum ExpressionFlag
     {
-        NONE,                   /** no flag */
-        IS_EXPLICIT,            /** the explicit keyword was before expression in the source */
-        IS_TOP_LEVEL_DOT,       /** the expression is top level dot operator */
-        IS_DOT_RIGHT_OPERAND    /** the expression is identifier which is dot right operand */
+        NONE,                       /** no flag */
+        IS_EXPLICIT,                /** the explicit keyword was before expression in the source */
+        IS_TOP_LEVEL_DOT,           /** the expression is top level dot operator */
+        IS_DOT_RIGHT_OPERAND_ID,    /** the expression is identifier which is dot right operand */
+        IS_DOT_LEFT_OPERAND_ID      /** the expression is identifier which is dot left operand */
     };
 
     /**
@@ -1149,7 +1150,7 @@ public class Expression extends AstNodeBase
     {
         // identifier on right side of dot operator cannot be evaluated because the identifier without left
         // side (package) can be found wrongly in local scope
-        if (expressionFlag != ExpressionFlag.IS_DOT_RIGHT_OPERAND)
+        if (expressionFlag != ExpressionFlag.IS_DOT_RIGHT_OPERAND_ID)
         {
             final Object identifierSymbol = forcedEvaluationScope.getSymbol(text);
             if (identifierSymbol == null)
@@ -1158,7 +1159,16 @@ public class Expression extends AstNodeBase
                 final ZserioType identifierType = pkg.getVisibleType(PackageName.EMPTY, text);
                 if (identifierType == null)
                 {
-                    // identifier not found, this can happened for a long package name, we must wait for dot
+                    // identifier not found
+                    if (expressionFlag != ExpressionFlag.IS_EXPLICIT &&
+                            expressionFlag != ExpressionFlag.IS_DOT_LEFT_OPERAND_ID)
+                    {
+                        // and expression is not explicit nor in dot expression
+                        throw new ParserException(this, "Unresolved symbol '" + text +
+                                "' within expression scope!");
+                    }
+
+                    // this can happened for a long package name, we must wait for dot
                     unresolvedIdentifiers.add(this);
                 }
                 else
