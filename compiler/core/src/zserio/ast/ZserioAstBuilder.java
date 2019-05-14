@@ -364,7 +364,7 @@ public class ZserioAstBuilder extends ZserioParserBaseVisitor<Object>
         final List<Field> fields = new ArrayList<Field>();
         for (ZserioParser.SqlTableFieldDefinitionContext fieldCtx : ctx.sqlTableFieldDefinition())
             fields.add(visitSqlTableFieldDefinition(fieldCtx));
-        // TODO: should constraint have comments?
+
         final SqlConstraint sqlConstraint = visitSqlConstraintDefinition(ctx.sqlConstraintDefinition());
         final boolean sqlWithoutRowId = ctx.sqlWithoutRowId() != null;
 

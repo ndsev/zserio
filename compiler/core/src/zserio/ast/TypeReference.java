@@ -86,7 +86,6 @@ public class TypeReference extends AstNodeBase implements ZserioType
             throw new ParserException(this, "Unresolved referenced type '" + referencedTypeName + "'!");
 
         // check referenced type
-        // TODO: shall we put this to the checking listener?
         if (referencedType instanceof ConstType)
             throw new ParserException(this, "Invalid usage of constant '" + referencedType.getName() +
                     "' as a type!");
