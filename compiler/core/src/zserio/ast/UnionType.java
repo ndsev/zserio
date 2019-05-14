@@ -39,7 +39,7 @@ public class UnionType extends CompoundType
      * Evaluates the union type.
      */
     @Override
-    protected void evaluate()
+    void evaluate()
     {
         super.evaluate();
         checkTableFields();

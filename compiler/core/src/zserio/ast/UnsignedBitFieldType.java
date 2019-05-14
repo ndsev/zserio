@@ -46,7 +46,7 @@ public class UnsignedBitFieldType extends BitFieldType
     }
 
     @Override
-    protected int getMaxBitFieldBits()
+    int getMaxBitFieldBits()
     {
         return MAX_UNSIGNED_BITFIELD_BITS;
     }

@@ -43,7 +43,7 @@ public class StructureType extends CompoundType
      * Evaluates the structure type.
      */
     @Override
-    protected void evaluate()
+    void evaluate()
     {
         // evaluates common compound type
         super.evaluate();

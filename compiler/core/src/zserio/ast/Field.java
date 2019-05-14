@@ -252,7 +252,7 @@ public class Field extends AstNodeWithDoc
     /**
      * Evaluates the compound field.
      */
-    protected void evaluate(Package pkg)
+    void evaluate(Package pkg)
     {
         // check initializer expression type
         if (initializerExpr != null)

@@ -10,7 +10,7 @@ import zserio.ast.ZserioType;
  * Note that Zserio package names cannot be used directly because user can defined custom top level package
  * using command line argument.
  */
-final public class PackageMapper
+public final class PackageMapper
 {
     /**
      * Constructor.

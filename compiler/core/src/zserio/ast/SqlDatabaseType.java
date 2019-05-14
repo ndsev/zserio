@@ -39,7 +39,7 @@ public class SqlDatabaseType extends CompoundType
      * Evaluates the SQL database type.
      */
     @Override
-    protected void evaluate()
+    void evaluate()
     {
         // evaluates common compound type
         super.evaluate();

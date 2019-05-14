@@ -88,7 +88,7 @@ public class ArrayType extends AstNodeBase implements ZserioType
     /**
      * Evaluates the array type.
      */
-    protected void evaluate()
+    void evaluate()
     {
         // resolve element base type
         elementBaseType = TypeReference.resolveBaseType(elementType);

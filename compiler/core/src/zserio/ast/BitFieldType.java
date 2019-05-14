@@ -86,7 +86,7 @@ public abstract class BitFieldType extends IntegerType
      * This method can be called from Expression.evaluate() method if some expression refers to bit field type
      * before definition of this type. Therefore 'isEvaluated' check is necessary.
      */
-    protected void evaluate()
+    void evaluate()
     {
         if (!isEvaluated)
         {
@@ -122,7 +122,7 @@ public abstract class BitFieldType extends IntegerType
         }
     }
 
-    protected abstract int getMaxBitFieldBits();
+    abstract int getMaxBitFieldBits();
 
     private final Expression lengthExpression;
 

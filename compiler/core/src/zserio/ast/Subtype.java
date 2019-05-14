@@ -80,7 +80,7 @@ public class Subtype extends AstNodeWithDoc implements ZserioType
      *
      * @return Resolved base type of this subtype.
      */
-    protected ZserioType resolve()
+    ZserioType resolve()
     {
         if (resolvingState == ResolvingState.RESOLVED)
             return targetBaseType;

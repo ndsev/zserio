@@ -132,7 +132,7 @@ public class ChoiceType extends CompoundType
      * Evaluates the choice type.
      */
     @Override
-    protected void evaluate()
+    void evaluate()
     {
         super.evaluate();
         checkTableFields();

@@ -39,7 +39,12 @@ public abstract class DocMultilineNode extends AstNodeBase
         return Collections.unmodifiableList(docTextLines);
     }
 
-    protected void addLine(DocTextLine docTextLine)
+    /**
+     * Adds the documentation text line.
+     *
+     * @param docTextLine Text line to add.
+     */
+    void addLine(DocTextLine docTextLine)
     {
         docTextLines.add(docTextLine);
     }

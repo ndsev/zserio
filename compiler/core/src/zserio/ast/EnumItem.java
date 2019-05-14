@@ -80,7 +80,7 @@ public class EnumItem extends AstNodeWithDoc
      *
      * @param value Default integer value of the enumeration item.
      */
-    protected void setValue(BigInteger value)
+    void setValue(BigInteger value)
     {
         this.value = value;
     }
@@ -91,7 +91,7 @@ public class EnumItem extends AstNodeWithDoc
      * This method can be called from Expression.evaluate() method if some expression refers to enumeration
      * item before definition of this item. Therefore 'isEvaluated' check is necessary.
      */
-    protected void evaluate()
+    void evaluate()
     {
         if (!isEvaluated)
         {

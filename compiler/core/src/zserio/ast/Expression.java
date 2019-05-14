@@ -176,18 +176,6 @@ public class Expression extends AstNodeBase
     }
 
     /**
-     * Sets lexical scope for the expression evaluation.
-     *
-     * This method is called by ZserioAstScopeSetter.
-     *
-     * @param evaluationScope Lexical scope for evaluation to set.
-     */
-    public void setEvaluationScope(Scope evaluationScope)
-    {
-        this.evaluationScope = evaluationScope;
-    }
-
-    /**
      * Gets the expression type given by the parser.
      *
      * This method should not be public but it is used by expression formatters at the moment.
@@ -431,11 +419,23 @@ public class Expression extends AstNodeBase
     }
 
     /**
+     * Sets lexical scope for the expression evaluation.
+     *
+     * This method is called by ZserioAstScopeSetter.
+     *
+     * @param evaluationScope Lexical scope for evaluation to set.
+     */
+    void setEvaluationScope(Scope evaluationScope)
+    {
+        this.evaluationScope = evaluationScope;
+    }
+
+    /**
      * Adds additional lexical scope to the expression evaluation scope.
      *
      * @param additionalEvaluationScope Additional scope for evaluation to add.
      */
-    protected void addEvaluationScope(Scope additionalEvalutionScope)
+    void addEvaluationScope(Scope additionalEvalutionScope)
     {
         evaluationScope.add(additionalEvalutionScope);
     }
@@ -443,7 +443,7 @@ public class Expression extends AstNodeBase
     /**
      * Evaluates the expression.
      */
-    protected void evaluate()
+    void evaluate()
     {
         evaluate(evaluationScope);
     }
@@ -468,7 +468,7 @@ public class Expression extends AstNodeBase
      *
      * @param forcedEvaluationScope Forced scope for evaluation.
      */
-    protected void evaluate(Scope forcedEvaluationScope)
+    void evaluate(Scope forcedEvaluationScope)
     {
         if (evaluationState == EvaluationState.IN_EVALUATION)
             throw new ParserException(this, "Cyclic dependency detected in expression evaluation!");
@@ -634,7 +634,7 @@ public class Expression extends AstNodeBase
      * set only after whole expression evaluation during checking of expression type in assignment. Therefore,
      * this method must be public.
      */
-    protected void propagateNeedsBigInteger()
+    void propagateNeedsBigInteger()
     {
         if (expressionType == ExpressionType.INTEGER && !expressionIntegerValue.needsBigInteger())
         {
@@ -672,7 +672,7 @@ public class Expression extends AstNodeBase
      *     }
      * };
      */
-    protected void setNeedsBigIntegerCastingNative()
+    void setNeedsBigIntegerCastingNative()
     {
         needsBigIntegerCastingToNative = true;
     }

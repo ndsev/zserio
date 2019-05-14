@@ -208,14 +208,16 @@ public abstract class CompoundType extends AstNodeWithDoc implements ZserioScope
     /**
      * Evaluates the compound type.
      */
-    protected void evaluate()
+    void evaluate()
     {
         containsOptionalRecursion = checkDirectRecursiveFields();
-
         checkIndirectRecursion(this, this);
     }
 
-    protected void checkTableFields()
+    /**
+     * Checks if no field is SQL table.
+     */
+    void checkTableFields()
     {
         // check if fields are not sql tables
         for (Field field : fields)

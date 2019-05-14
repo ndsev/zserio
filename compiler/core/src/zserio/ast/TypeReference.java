@@ -78,7 +78,7 @@ public class TypeReference extends AstNodeBase implements ZserioType
     /**
      * Resolves this reference to the corresponding referenced type.
      */
-    protected void resolve()
+    void resolve()
     {
         // resolve referenced type
         referencedType = ownerPackage.getVisibleType(this, referencedPackageName, referencedTypeName);

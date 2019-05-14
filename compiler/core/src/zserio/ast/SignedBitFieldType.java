@@ -51,7 +51,7 @@ public class SignedBitFieldType extends BitFieldType
     }
 
     @Override
-    protected int getMaxBitFieldBits()
+    int getMaxBitFieldBits()
     {
         return MAX_SIGNED_BITFIELD_BITS;
     }

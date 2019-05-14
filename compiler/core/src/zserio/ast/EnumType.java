@@ -111,7 +111,7 @@ public class EnumType extends AstNodeWithDoc implements ZserioScopedType
      *
      * This method calculates and sets value to all enumeration items.
      */
-    protected void evaluate()
+    void evaluate()
     {
         if (!isEvaluated)
         {

@@ -70,34 +70,6 @@ class ExpressionIntegerValue
     }
 
     /**
-     * Private constructor from lower and upper bounds and from BigInteger flag.
-     *
-     * @param lowerBound      Lower bound to construct from.
-     * @param upperBound      Upper bound to construct from.
-     * @param needsBigInteger BigInteger flag to construct from.
-     */
-    private ExpressionIntegerValue(BigInteger lowerBound, BigInteger upperBound, boolean needsBigInteger)
-    {
-        value = null;
-        this.lowerBound = lowerBound;
-        this.upperBound = upperBound;
-        this.needsBigInteger = needsBigInteger;
-    }
-
-    /**
-     * Private constructor from BigInteger flag.
-     *
-     * @param needsBigInteger BigInteger flag to construct from.
-     */
-    private ExpressionIntegerValue(boolean needsBigInteger)
-    {
-        value = null;
-        lowerBound = null;
-        upperBound = null;
-        this.needsBigInteger = needsBigInteger;
-    }
-
-    /**
      * Gets integer expression value.
      *
      * @return Integer expression value or null if integer expression value is unknown.
@@ -444,6 +416,34 @@ class ExpressionIntegerValue
     public ExpressionIntegerValue relationalOperator(ExpressionIntegerValue operand)
     {
         return new ExpressionIntegerValue(needsBigInteger || operand.needsBigInteger);
+    }
+
+    /**
+     * Private constructor from lower and upper bounds and from BigInteger flag.
+     *
+     * @param lowerBound      Lower bound to construct from.
+     * @param upperBound      Upper bound to construct from.
+     * @param needsBigInteger BigInteger flag to construct from.
+     */
+    private ExpressionIntegerValue(BigInteger lowerBound, BigInteger upperBound, boolean needsBigInteger)
+    {
+        value = null;
+        this.lowerBound = lowerBound;
+        this.upperBound = upperBound;
+        this.needsBigInteger = needsBigInteger;
+    }
+
+    /**
+     * Private constructor from BigInteger flag.
+     *
+     * @param needsBigInteger BigInteger flag to construct from.
+     */
+    private ExpressionIntegerValue(boolean needsBigInteger)
+    {
+        value = null;
+        lowerBound = null;
+        upperBound = null;
+        this.needsBigInteger = needsBigInteger;
     }
 
     // TODO This is redundant with runtime library but we don't have available runtime library in Zserio core.

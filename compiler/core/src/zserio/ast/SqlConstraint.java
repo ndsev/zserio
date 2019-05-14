@@ -125,7 +125,7 @@ public class SqlConstraint extends AstNodeBase
      *
      * @return Created default SQL constraint.
      */
-    protected static SqlConstraint createDefaultFieldConstraint(Package pkg)
+    static SqlConstraint createDefaultFieldConstraint(Package pkg)
     {
         return new SqlConstraint(null, createStringLiteralExpression(pkg, ""));
     }
@@ -135,7 +135,7 @@ public class SqlConstraint extends AstNodeBase
      *
      * @param compoundType Compound type which owns the SQL constraint.
      */
-    protected void resolve(CompoundType compoundType)
+    void resolve(CompoundType compoundType)
     {
         // store package of the owner
         pkg = compoundType.getPackage();
@@ -148,7 +148,7 @@ public class SqlConstraint extends AstNodeBase
     /**
      * Evaluates the SQL constraint.
      */
-    protected void evaluate()
+    void evaluate()
     {
         final String sqlConstraintString = constraintExpr.getText();
         primaryKeyColumnNames = extractColumnNames(sqlConstraintString, PRIMARY_KEY_CONSTRAINT);

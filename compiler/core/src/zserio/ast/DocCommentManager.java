@@ -26,7 +26,7 @@ import zserio.tools.ZserioToolPrinter;
  *
  * The manager also detects unused documentation comments.
  */
-public class DocCommentManager
+class DocCommentManager
 {
     /**
      * Sets the current token stream.

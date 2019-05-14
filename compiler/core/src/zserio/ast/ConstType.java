@@ -109,7 +109,7 @@ public class ConstType extends AstNodeWithDoc implements ZserioType, Comparable<
      * This method can be called from Expression.evaluate() method if some expression refers to constant type
      * before definition of this type. Therefore 'isEvaluated' check is necessary.
      */
-    protected void evaluate()
+    void evaluate()
     {
         if (!isEvaluated)
         {

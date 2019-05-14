@@ -14,7 +14,7 @@ import zserio.antlr.util.ParserException;
  *
  * Scopes are filled by ZserioAstScopeSetter.
  */
-public class Scope
+class Scope
 {
     /**
      * Constructs scope within given package and sets owner to the given Zserio type.

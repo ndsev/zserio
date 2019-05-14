@@ -101,7 +101,7 @@ public class Rpc extends AstNodeWithDoc
     /**
      * Evaluates the RPC call.
      */
-    protected void evaluate()
+    void evaluate()
     {
         checkUsedType(responseType);
         checkUsedType(requestType);

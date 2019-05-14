@@ -8,7 +8,7 @@ import zserio.antlr.util.ParserException;
 /**
  * This class implements various utilities on Expression type.
  */
-public class ExpressionUtil
+class ExpressionUtil
 {
     /**
      * Checks expression type according given Zserio type.

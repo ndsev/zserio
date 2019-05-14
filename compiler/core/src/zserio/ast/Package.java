@@ -88,7 +88,7 @@ public class Package extends AstNodeWithDoc
      *
      * @return Zserio type if given type name is visible for this package or null if given type name is unknown.
      */
-    public ZserioType getVisibleType(AstNode ownerNode, PackageName typePackageName, String typeName)
+    ZserioType getVisibleType(AstNode ownerNode, PackageName typePackageName, String typeName)
     {
         final List<ZserioType> foundTypes = getAllVisibleTypes(typePackageName, typeName);
         final int numFoundTypes = foundTypes.size();
@@ -113,7 +113,7 @@ public class Package extends AstNodeWithDoc
      *
      * @return Zserio type if given type name is visible for this package or null if given type name is unknown.
      */
-    public ZserioType getVisibleType(PackageName typePackageName, String typeName)
+    ZserioType getVisibleType(PackageName typePackageName, String typeName)
     {
         final List<ZserioType> foundTypes = getAllVisibleTypes(typePackageName, typeName);
 
@@ -131,7 +131,7 @@ public class Package extends AstNodeWithDoc
      *
      * @param packageNameMap Map of all available package name to the package object.
      */
-    protected void resolve(Map<PackageName, Package> packageNameMap)
+    void resolve(Map<PackageName, Package> packageNameMap)
     {
         for (Import importedNode : imports)
         {

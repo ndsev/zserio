@@ -74,7 +74,7 @@ public class SymbolReference
      * @param ownerPackage Zserio package in which the symbol reference is defined.
      * @param ownerType ZserioType which is owner of the symbol reference.
      */
-    public void resolve(Package ownerPackage, ZserioScopedType ownerType)
+    void resolve(Package ownerPackage, ZserioScopedType ownerType)
     {
         // try if the last link component was a type name
         referencedType = ownerPackage.getVisibleType(ownerNode, referencedPackageNameBuilder.get(),

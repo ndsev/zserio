@@ -178,7 +178,7 @@ public class ZserioAstEmitter extends ZserioAstWalker
         }
     }
 
-    protected static class UncheckedZserioEmitException extends RuntimeException
+    static class UncheckedZserioEmitException extends RuntimeException
     {
         public UncheckedZserioEmitException(ZserioEmitException originalException)
         {

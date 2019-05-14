@@ -120,7 +120,7 @@ public class SqlTableType extends CompoundType
      * Evaluates the SQL table type.
      */
     @Override
-    protected void evaluate()
+    void evaluate()
     {
         super.evaluate();
         checkTableFields();
