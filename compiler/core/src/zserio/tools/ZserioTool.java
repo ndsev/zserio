@@ -154,6 +154,7 @@ public class ZserioTool
             String inputFileFullName) throws Exception
     {
         ZserioToolPrinter.printMessage("Parsing " + inputFileFullName);
+
         inputFileManager.registerFile(inputFileFullName);
 
         final CharStream inputStream = CharStreams.fromFileName(inputFileFullName, Charset.forName("UTF-8"));
@@ -166,12 +167,14 @@ public class ZserioTool
         final ZserioParser parser = new ZserioParser(tokenStream);
         parser.removeErrorListeners();
         parser.addErrorListener(parseCancellingErrorListener);
+
         final ParseTree tree = parser.packageDeclaration();
 
-        ZserioParseTreeChecker parseTreeChecker = new ZserioParseTreeChecker(inputFileManager);
+        final ZserioParseTreeChecker parseTreeChecker = new ZserioParseTreeChecker(inputFileManager);
         parseTreeChecker.visit(tree);
 
-        return (Package)astBuilder.visit(tree, tokenStream);
+        final Package parsedPackage = (Package)astBuilder.visit(tree, tokenStream);
+        return parsedPackage;
     }
 
     private void parseImportedPackages(ZserioAstBuilder astBuilderVisitor,

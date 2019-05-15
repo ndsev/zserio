@@ -222,6 +222,17 @@ public class DocCommentParserTest
                 "(whitespace \\n ) */)");
     }
 
+    @Test
+    public void specialCharacters()
+    {
+        checkParseTree("docComment", "/** .\t\r\n\"*\\ \\\\ ?!:;+- */",
+                "(docComment /** (whitespace  ) (docContent " +
+                        "(docLine (docTextLine (docText (textElement .)))) (whitespaceInLine \\t) \\r\\n " +
+                        "(docLine (docTextLine (docText (textElement \" * \\ (whitespaceInLine  ) \\\\" +
+                                " (whitespaceInLine  ) ?!:;+-))))) " +
+                "(whitespace  ) */)");
+    }
+
     private static class ThrowingErrorListener extends BaseErrorListener
     {
         @Override

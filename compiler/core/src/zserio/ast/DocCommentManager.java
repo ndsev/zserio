@@ -10,6 +10,7 @@ import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.Token;
+import org.antlr.v4.runtime.atn.PredictionMode;
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.TerminalNode;
 
@@ -159,10 +160,24 @@ class DocCommentManager
             final DocCommentParser parser = new DocCommentParser(tokenStream);
             parser.removeErrorListeners();
             parser.addErrorListener(parseCancellingErrorListener);
-            final ParseTree tree = parser.docComment();
+
+            ParseTree tree = null;
+            try
+            {
+                parser.getInterpreter().setPredictionMode(PredictionMode.SLL);
+                tree = parser.docComment();
+            }
+            catch (ParserException e)
+            {
+                tokenStream.seek(0);
+                parser.getInterpreter().setPredictionMode(PredictionMode.LL);
+                tree = parser.docComment();
+            }
 
             final DocCommentAstBuilder docCommentAstBuilder = new DocCommentAstBuilder(docCommentToken);
-            return (DocComment)docCommentAstBuilder.visit(tree);
+            final DocComment docComment = (DocComment)docCommentAstBuilder.visit(tree);
+
+            return docComment;
         }
         catch (ParserException e)
         {
