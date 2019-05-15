@@ -66,24 +66,6 @@ public class TypeReference extends AstNodeBase implements ZserioType
     }
 
     /**
-     * Evaluates the type reference.
-     */
-    void evaluate()
-    {
-        if (checkIfNeedsParameters)
-        {
-            final ZserioType referencedBaseType = resolveBaseType(referencedType);
-            if (referencedBaseType instanceof CompoundType)
-            {
-                final CompoundType referencedCompoundType = (CompoundType)referencedBaseType;
-                if (referencedCompoundType.getParameters().size() > 0)
-                    throw new ParserException(this, "Referenced type '" + referencedTypeName +
-                            "' is defined as parameterized type!");
-            }
-        }
-    }
-
-    /**
      * Resolves this reference to the corresponding referenced type.
      */
     void resolve()
@@ -100,6 +82,24 @@ public class TypeReference extends AstNodeBase implements ZserioType
         if (referencedType instanceof SqlDatabaseType)
             throw new ParserException(this, "Invalid usage of SQL database '" + referencedType.getName() +
                     "' as a type!");
+    }
+
+    /**
+     * Checks the type reference.
+     */
+    void check()
+    {
+        if (checkIfNeedsParameters)
+        {
+            final ZserioType referencedBaseType = resolveBaseType(referencedType);
+            if (referencedBaseType instanceof CompoundType)
+            {
+                final CompoundType referencedCompoundType = (CompoundType)referencedBaseType;
+                if (referencedCompoundType.getParameters().size() > 0)
+                    throw new ParserException(this, "Referenced type '" + referencedTypeName +
+                            "' is defined as parameterized type!");
+            }
+        }
     }
 
     /**

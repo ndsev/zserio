@@ -132,11 +132,17 @@ public class EnumType extends AstNodeWithDoc implements ZserioScopedType
                 defaultEnumItemValue = enumItem.getValue().add(BigInteger.ONE);
             }
 
-            // check enumeration items
-            checkEnumerationItems();
-
             isEvaluated = true;
         }
+    }
+
+    /**
+     * Checks the enumeration type.
+     */
+    void check()
+    {
+        // check enumeration items
+        checkEnumerationItems();
     }
 
     private void checkEnumerationItems()

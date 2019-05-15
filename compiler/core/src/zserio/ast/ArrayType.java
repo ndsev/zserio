@@ -92,7 +92,13 @@ public class ArrayType extends AstNodeBase implements ZserioType
     {
         // resolve element base type
         elementBaseType = TypeReference.resolveBaseType(elementType);
+    }
 
+    /**
+     * Checks the array type.
+     */
+    void check()
+    {
         // check length expression
         if (lengthExpression != null)
         {

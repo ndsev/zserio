@@ -82,9 +82,9 @@ public class FunctionType extends AstNodeWithDoc implements ZserioType
     }
 
     /**
-     * Evaluates the function type.
+     * Checks the function type.
      */
-    void evaluate()
+    void check()
     {
         // check result expression type
         final ZserioType resolvedTypeReference = TypeReference.resolveType(returnType);

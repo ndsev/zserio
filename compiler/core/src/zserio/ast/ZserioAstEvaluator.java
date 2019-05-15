@@ -26,30 +26,6 @@ public class ZserioAstEvaluator extends ZserioAstWalker
     }
 
     @Override
-    public void visitPackage(Package pkg)
-    {
-        currentPackage = pkg;
-
-        pkg.visitChildren(this);
-
-        currentPackage = null;
-    }
-
-    @Override
-    public void visitConstType(ConstType constType)
-    {
-        constType.visitChildren(this);
-        constType.evaluate();
-    }
-
-    @Override
-    public void visitStructureType(StructureType structureType)
-    {
-        structureType.visitChildren(this);
-        structureType.evaluate();
-    }
-
-    @Override
     public void visitChoiceType(ChoiceType choiceType)
     {
         // force selector expression evaluation
@@ -70,14 +46,6 @@ public class ZserioAstEvaluator extends ZserioAstWalker
         }
 
         choiceType.visitChildren(this);
-        choiceType.evaluate();
-    }
-
-    @Override
-    public void visitUnionType(UnionType unionType)
-    {
-        unionType.visitChildren(this);
-        unionType.evaluate();
     }
 
     @Override
@@ -85,27 +53,6 @@ public class ZserioAstEvaluator extends ZserioAstWalker
     {
         enumType.visitChildren(this);
         enumType.evaluate();
-    }
-
-    @Override
-    public void visitSqlTableType(SqlTableType sqlTableType)
-    {
-        sqlTableType.visitChildren(this);
-        sqlTableType.evaluate();
-    }
-
-    @Override
-    public void visitSqlDatabaseType(SqlDatabaseType sqlDatabaseType)
-    {
-        sqlDatabaseType.visitChildren(this);
-        sqlDatabaseType.evaluate();
-    }
-
-    @Override
-    public void visitField(Field field)
-    {
-        field.visitChildren(this);
-        field.evaluate(currentPackage);
     }
 
     @Override
@@ -120,20 +67,6 @@ public class ZserioAstEvaluator extends ZserioAstWalker
     {
         sqlConstraint.visitChildren(this);
         sqlConstraint.evaluate();
-    }
-
-    @Override
-    public void visitRpc(Rpc rpc)
-    {
-        rpc.visitChildren(this);
-        rpc.evaluate();
-    }
-
-    @Override
-    public void visitFunctionType(FunctionType functionType)
-    {
-        functionType.visitChildren(this);
-        functionType.evaluate();
     }
 
     @Override
@@ -154,13 +87,6 @@ public class ZserioAstEvaluator extends ZserioAstWalker
     }
 
     @Override
-    public void visitTypeReference(TypeReference typeReference)
-    {
-        typeReference.visitChildren(this);
-        typeReference.evaluate();
-    }
-
-    @Override
     public void visitTypeInstantiation(TypeInstantiation typeInstantiation)
     {
         typeInstantiation.visitChildren(this);
@@ -175,6 +101,4 @@ public class ZserioAstEvaluator extends ZserioAstWalker
     }
 
     private final Scope evaluationScope;
-
-    private Package currentPackage = null;
 };

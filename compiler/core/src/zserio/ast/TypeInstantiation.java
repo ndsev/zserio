@@ -167,18 +167,24 @@ public class TypeInstantiation extends AstNodeBase implements ZserioType
             for (int i = 0; i < numParameters; i++)
                 instantiatedParameters.add(new InstantiatedParameter(arguments.get(i), parameters.get(i)));
 
-            // check all argument types in instantiated parameter list
-            for (InstantiatedParameter instantiatedParameter : instantiatedParameters)
-            {
-                final Expression argumentExpression = instantiatedParameter.getArgumentExpression();
-                if (!argumentExpression.isExplicitVariable())
-                {
-                    ExpressionUtil.checkExpressionType(argumentExpression, TypeReference.resolveBaseType(
-                            instantiatedParameter.getParameter().getParameterType()));
-                }
-            }
-
             isEvaluated = true;
+        }
+    }
+
+    /**
+     * Checks base type of this type instantiation.
+     */
+    void check()
+    {
+        // check all argument types in instantiated parameter list
+        for (InstantiatedParameter instantiatedParameter : instantiatedParameters)
+        {
+            final Expression argumentExpression = instantiatedParameter.getArgumentExpression();
+            if (!argumentExpression.isExplicitVariable())
+            {
+                ExpressionUtil.checkExpressionType(argumentExpression, TypeReference.resolveBaseType(
+                        instantiatedParameter.getParameter().getParameterType()));
+            }
         }
     }
 

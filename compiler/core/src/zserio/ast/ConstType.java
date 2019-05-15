@@ -104,35 +104,25 @@ public class ConstType extends AstNodeWithDoc implements ZserioType, Comparable<
     }
 
     /**
-     * Evaluates constant type.
-     *
-     * This method can be called from Expression.evaluate() method if some expression refers to constant type
-     * before definition of this type. Therefore 'isEvaluated' check is necessary.
+     * Checks the constant type.
      */
-    void evaluate()
+    void check()
     {
-        if (!isEvaluated)
-        {
-            // check base type
-            final ZserioType resolvedTypeReference = TypeReference.resolveType(constType);
-            final ZserioType baseType = TypeReference.resolveBaseType(resolvedTypeReference);
-            if (!ZserioTypeUtil.isBuiltIn(baseType) && !(baseType instanceof EnumType))
-                throw new ParserException(this, "Constants can be defined only for built-in types and enums!");
+        // check base type
+        final ZserioType resolvedTypeReference = TypeReference.resolveType(constType);
+        final ZserioType baseType = TypeReference.resolveBaseType(resolvedTypeReference);
+        if (!ZserioTypeUtil.isBuiltIn(baseType) && !(baseType instanceof EnumType))
+            throw new ParserException(this, "Constants can be defined only for built-in types and enums!");
 
-            // check expression type
-            ExpressionUtil.checkExpressionType(valueExpression, baseType);
+        // check expression type
+        ExpressionUtil.checkExpressionType(valueExpression, baseType);
 
-            // check integer constant range
-            ExpressionUtil.checkIntegerExpressionRange(valueExpression, baseType, name);
-
-            isEvaluated = true;
-        }
+        // check integer constant range
+        ExpressionUtil.checkIntegerExpressionRange(valueExpression, baseType, name);
     }
 
     private final Package pkg;
     private final ZserioType constType;
     private final String name;
     private final Expression valueExpression;
-
-    private boolean isEvaluated = false;
 }

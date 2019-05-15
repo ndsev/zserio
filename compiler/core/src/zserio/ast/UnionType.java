@@ -35,13 +35,10 @@ public class UnionType extends CompoundType
         visitor.visitUnionType(this);
     }
 
-    /**
-     * Evaluates the union type.
-     */
     @Override
-    void evaluate()
+    void check()
     {
-        super.evaluate();
+        super.check();
         checkTableFields();
     }
 };
