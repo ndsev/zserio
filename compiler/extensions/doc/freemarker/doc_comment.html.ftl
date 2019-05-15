@@ -4,42 +4,40 @@
     <div class="docuTag">&lt;<i>no documentation found</i>&gt;</div>
     <#else>
         <#list doc.paragraphList as paragraph>
-            <#if paragraph.paragraphTextList?size != 0>
     <div class="docuTag">
-                <#list paragraph.paragraphTextList as paragraphText>
-                    <#list paragraphText.textList as text>
-        ${text}
-                    </#list>
-                    <#list paragraphText.tagSeeList as tagSee>
-        <a href="${tagSee.url}">${tagSee.alias}</a>
-                    </#list>
-                </#list>
+            <#list paragraph.docTextList as docText>
+                <#if docText.docString??>
+        ${docText.docString}
+                </#if>
+                <#if docText.seeTag??>
+        <a href="${docText.seeTag.url}">${docText.seeTag.alias}</a>
+                </#if>
+            </#list>
     </div>
-            </#if>
+        </#list>
 
-            <#list paragraph.tagTodoList as tagTodo>
+        <#list doc.tagTodoList as tagTodo>
     <div class="docuTag">
         <span>Todo:</span>
-                <#list tagTodo.textList as text>
+            <#list tagTodo.textList as text>
         ${text}
-                </#list>
-    </div>
             </#list>
+    </div>
+        </#list>
 
-            <#list paragraph.tagSeeList as tagSee>
+        <#list doc.tagSeeList as tagSee>
     <div class="docuTag">
         <span>See:</span> <a href="${tagSee.url}">${tagSee.alias}</a>
     </div>
-            </#list>
+        </#list>
 
-            <#list paragraph.tagParamList as tagParam>
+        <#list doc.tagParamList as tagParam>
     <div class="docuTag">
         <span>Param:</span> <code>${tagParam.name}</code>
                 <#list tagParam.descriptionList as description>
         ${description}
                 </#list>
     </div>
-            </#list>
         </#list>
 
         <#if doc.isDeprecated>

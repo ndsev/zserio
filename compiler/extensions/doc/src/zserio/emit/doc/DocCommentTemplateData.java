@@ -29,10 +29,20 @@ public class DocCommentTemplateData
      */
     public DocCommentTemplateData(DocComment docComment) throws ZserioEmitException
     {
-        docParagraphList = new ArrayList<DocParagraphData>();
         if (docComment != null)
         {
-            docParagraphList.add(new DocParagraphData(docComment));
+            for (DocParagraph docParagraph : docComment.getParagraphs())
+            docParagraphList.add(new DocMultilineNodeData(docParagraph));
+
+            for (DocTagTodo docTagTodo : docComment.getTodoTags())
+                docTagTodoList.add(new DocTagTodoData(docTagTodo));
+
+            for (DocTagSee docTagSee : docComment.getSeeTags())
+                docTagSeeList.add(new DocTagSeeData(docTagSee));
+
+            for (DocTagParam docTagParam : docComment.getParamTags())
+                docTagParamList.add(new DocTagParamData(docTagParam));
+
             isDeprecated = docComment.isDeprecated();
         }
         else
@@ -44,9 +54,33 @@ public class DocCommentTemplateData
     /**
      * Returns the documentation comment paragraph list.
      */
-    public Iterable<DocParagraphData> getParagraphList()
+    public Iterable<DocMultilineNodeData> getParagraphList()
     {
         return docParagraphList;
+    }
+
+    /**
+     * Returns the todo tag list.
+     */
+    public Iterable<DocTagTodoData> getTagTodoList()
+    {
+        return docTagTodoList;
+    }
+
+    /**
+     * Returns the see tag list.
+     */
+    public Iterable<DocTagSeeData> getTagSeeList()
+    {
+        return docTagSeeList;
+    }
+
+    /**
+     * Returns the param tag list.
+     */
+    public Iterable<DocTagParamData> getTagParamList()
+    {
+        return docTagParamList;
     }
 
     /**
@@ -58,183 +92,147 @@ public class DocCommentTemplateData
     }
 
     /**
-     * Helper class to model the documentation comment paragraph used for FreeMarker template.
+     * Helper class to model the documentation multiline text used for FreeMarker template.
      */
-    public static class DocParagraphData
+    public static class DocMultilineNodeData
     {
-        public DocParagraphData(DocComment docComment) throws ZserioEmitException
+        public DocMultilineNodeData(DocMultilineNode docMultilineNode) throws ZserioEmitException
         {
-            docParagraphTextList = new ArrayList<DocMultilineNodeData>();
-            for (DocParagraph docParagraph : docComment.getParagraphs())
-                docParagraphTextList.add(new DocMultilineNodeData(docParagraph));
-
-            docTagTodoList = new ArrayList<DocTagTodoData>();
-            for (DocTagTodo docTagTodo : docComment.getTodoTags())
-                docTagTodoList.add(new DocTagTodoData(docTagTodo));
-
-            docTagSeeList = new ArrayList<DocTagSeeData>();
-            for (DocTagSee docTagSee : docComment.getSeeTags())
-                docTagSeeList.add(new DocTagSeeData(docTagSee));
-
-            docTagParamList = new ArrayList<DocTagParamData>();
-            for (DocTagParam docTagParam : docComment.getParamTags())
-                docTagParamList.add(new DocTagParamData(docTagParam));
-        }
-
-        public Iterable<DocMultilineNodeData> getParagraphTextList()
-        {
-            return docParagraphTextList;
-        }
-
-        public Iterable<DocTagTodoData> getTagTodoList()
-        {
-            return docTagTodoList;
-        }
-
-        public Iterable<DocTagSeeData> getTagSeeList()
-        {
-            return docTagSeeList;
-        }
-
-        public Iterable<DocTagParamData> getTagParamList()
-        {
-            return docTagParamList;
-        }
-
-        /**
-         * Helper class to model the documentation paragraph text used for FreeMarker template.
-         */
-        public static class DocMultilineNodeData
-        {
-            public DocMultilineNodeData(DocMultilineNode docMultilineNode) throws ZserioEmitException
+            for (DocTextLine docTextLine : docMultilineNode.getTextLines())
             {
-                textList = new ArrayList<String>();
-                tagSeeList = new ArrayList<DocTagSeeData>();
-
-                for (DocTextLine docTextLine : docMultilineNode.getTextLines())
+                for (DocText docText : docTextLine.getTexts())
                 {
-                    for (DocText docText : docTextLine.getTexts())
-                    {
-                        final DocTextElement docTextElement = docText.getTextElement();
-                        if (docTextElement != null)
-                            textList.add(StringHtmlUtil.escapeCommentsForHtml(docTextElement.getText()));
-
-                        final DocTagSee docTagSee = docText.getSeeTag();
-                        if (docTagSee != null)
-                            tagSeeList.add(new DocTagSeeData(docTagSee));
-                    }
+                    docTextList.add(new DocTextData(docText));
                 }
             }
-
-            public Iterable<String> getTextList()
-            {
-                return textList;
-            }
-
-            public Iterable<DocTagSeeData> getTagSeeList()
-            {
-                return tagSeeList;
-            }
-
-            private final List<String> textList;
-            private final List<DocTagSeeData> tagSeeList;
         }
 
-        /**
-         * Helper class to model the documentation see tag used for FreeMarker template.
-         */
-        public static class DocTagSeeData
+        public Iterable<DocTextData> getDocTextList()
         {
-            public DocTagSeeData(DocTagSee docTagSee) throws ZserioEmitException
-            {
-                alias = docTagSee.getLinkAlias();
-                final SymbolReference linkSymbolReference = docTagSee.getLinkSymbolReference();
-                url = DocEmitterTools.getUrlNameFromTypeAndFieldName(linkSymbolReference.getReferencedType(),
-                        linkSymbolReference.getReferencedSymbolName());
-            }
-
-            public String getUrl()
-            {
-                return url;
-            }
-
-            public String getAlias()
-            {
-                return alias;
-            }
-
-            private final String alias;
-            private final String url;
+            return docTextList;
         }
 
-        /**
-         * Helper class to model the documentation todo tag used for FreeMarker template.
-         */
-        public static class DocTagTodoData
+        public static class DocTextData
         {
-            public DocTagTodoData(DocTagTodo docTagTodo)
+            DocTextData(DocText docText) throws ZserioEmitException
             {
-                textList = new ArrayList<String>();
-                for (DocTextLine docTextLine : docTagTodo.getTextLines())
-                {
-                    for (DocText docText : docTextLine.getTexts())
-                    {
-                        final DocTextElement docTextElement = docText.getTextElement();
-                        if (docTextElement != null)
-                            textList.add(StringHtmlUtil.escapeCommentsForHtml(docTextElement.getText()));
-                    }
-                }
+                final DocTextElement docTextElement = docText.getTextElement();
+                docString = docTextElement != null ?
+                        StringHtmlUtil.escapeCommentsForHtml(docTextElement.getText()) : null;
+
+                final DocTagSee docTagSee = docText.getSeeTag();
+                seeTag = docTagSee != null ? new DocTagSeeData(docTagSee) : null;
             }
 
-            public Iterable<String> getTextList()
+            public String getDocString()
             {
-                return textList;
+                return docString;
             }
 
-            private final List<String> textList;
+            public DocTagSeeData getSeeTag()
+            {
+                return seeTag;
+            }
+
+            private final String docString;
+            private final DocTagSeeData seeTag;
         }
 
-        /**
-         * Helper class to model the documentation param tag used for FreeMarker template.
-         */
-        public static class DocTagParamData
-        {
-            public DocTagParamData(DocTagParam docTagParam)
-            {
-                name = docTagParam.getParamName();
-
-                descriptionList = new ArrayList<String>();
-                for (DocTextLine docTextLine : docTagParam.getTextLines())
-                {
-                    for (DocText docText : docTextLine.getTexts())
-                    {
-                        final DocTextElement docTextElement = docText.getTextElement();
-                        if (docTextElement != null)
-                            descriptionList.add(StringHtmlUtil.escapeCommentsForHtml(docTextElement.getText()));
-                    }
-                }
-            }
-
-            public String getName()
-            {
-                return name;
-            }
-
-            public Iterable<String> getDescriptionList()
-            {
-                return descriptionList;
-            }
-
-            private final String name;
-            private final List<String> descriptionList;
-        }
-
-        private final List<DocMultilineNodeData> docParagraphTextList;
-        private final List<DocTagSeeData> docTagSeeList;
-        private final List<DocTagTodoData> docTagTodoList;
-        private final List<DocTagParamData> docTagParamList;
+        private final List<DocTextData> docTextList = new ArrayList<DocTextData>();
     }
 
-    private final List<DocParagraphData> docParagraphList;
+    /**
+     * Helper class to model the documentation see tag used for FreeMarker template.
+     */
+    public static class DocTagSeeData
+    {
+        public DocTagSeeData(DocTagSee docTagSee) throws ZserioEmitException
+        {
+            alias = docTagSee.getLinkAlias();
+            final SymbolReference linkSymbolReference = docTagSee.getLinkSymbolReference();
+            url = DocEmitterTools.getUrlNameFromTypeAndFieldName(linkSymbolReference.getReferencedType(),
+                    linkSymbolReference.getReferencedSymbolName());
+        }
+
+        public String getUrl()
+        {
+            return url;
+        }
+
+        public String getAlias()
+        {
+            return alias;
+        }
+
+        private final String alias;
+        private final String url;
+    }
+
+    /**
+     * Helper class to model the documentation todo tag used for FreeMarker template.
+     */
+    public static class DocTagTodoData
+    {
+        public DocTagTodoData(DocTagTodo docTagTodo)
+        {
+            textList = new ArrayList<String>();
+            for (DocTextLine docTextLine : docTagTodo.getTextLines())
+            {
+                for (DocText docText : docTextLine.getTexts())
+                {
+                    final DocTextElement docTextElement = docText.getTextElement();
+                    if (docTextElement != null)
+                        textList.add(StringHtmlUtil.escapeCommentsForHtml(docTextElement.getText()));
+                }
+            }
+        }
+
+        public Iterable<String> getTextList()
+        {
+            return textList;
+        }
+
+        private final List<String> textList;
+    }
+
+    /**
+     * Helper class to model the documentation param tag used for FreeMarker template.
+     */
+    public static class DocTagParamData
+    {
+        public DocTagParamData(DocTagParam docTagParam)
+        {
+            name = docTagParam.getParamName();
+
+            descriptionList = new ArrayList<String>();
+            for (DocTextLine docTextLine : docTagParam.getTextLines())
+            {
+                for (DocText docText : docTextLine.getTexts())
+                {
+                    final DocTextElement docTextElement = docText.getTextElement();
+                    if (docTextElement != null)
+                        descriptionList.add(StringHtmlUtil.escapeCommentsForHtml(docTextElement.getText()));
+                }
+            }
+        }
+
+        public String getName()
+        {
+            return name;
+        }
+
+        public Iterable<String> getDescriptionList()
+        {
+            return descriptionList;
+        }
+
+        private final String name;
+        private final List<String> descriptionList;
+    }
+
+    private final List<DocMultilineNodeData> docParagraphList = new ArrayList<DocMultilineNodeData>();
+    private final List<DocTagSeeData> docTagSeeList = new ArrayList<DocTagSeeData>();
+    private final List<DocTagTodoData> docTagTodoList = new ArrayList<DocTagTodoData>();
+    private final List<DocTagParamData> docTagParamList = new ArrayList<DocTagParamData>();
     private final boolean isDeprecated;
 }
