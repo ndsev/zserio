@@ -1,5 +1,8 @@
 package zserio.emit.common.sql.types;
 
+/**
+ * SQLite native type for Blobs.
+ */
 public class NativeBlobType implements SqlNativeType
 {
     @Override

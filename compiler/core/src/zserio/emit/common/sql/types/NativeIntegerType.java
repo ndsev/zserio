@@ -2,6 +2,9 @@ package zserio.emit.common.sql.types;
 
 import java.math.BigInteger;
 
+/**
+ * SQLite native type for Integers.
+ */
 public class NativeIntegerType implements SqlNativeType
 {
     @Override

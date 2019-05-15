@@ -1,5 +1,8 @@
 package zserio.emit.common.sql.types;
 
+/**
+ * SQLite native type for Floats.
+ */
 public class NativeRealType implements SqlNativeType
 {
     @Override

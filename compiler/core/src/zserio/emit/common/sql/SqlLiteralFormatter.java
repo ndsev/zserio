@@ -8,6 +8,9 @@ import zserio.emit.common.sql.types.NativeIntegerType;
 import zserio.emit.common.sql.types.NativeRealType;
 import zserio.emit.common.sql.types.NativeTextType;
 
+/**
+ * Utility for expression formatting in SQLite format.
+ */
 public class SqlLiteralFormatter
 {
     /**

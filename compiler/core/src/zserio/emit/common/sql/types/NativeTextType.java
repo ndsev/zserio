@@ -1,5 +1,8 @@
 package zserio.emit.common.sql.types;
 
+/**
+ * SQLite native type for Texts.
+ */
 public class NativeTextType implements SqlNativeType
 {
     @Override
