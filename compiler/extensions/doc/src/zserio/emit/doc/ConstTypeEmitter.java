@@ -18,13 +18,15 @@ public class ConstTypeEmitter extends DefaultHtmlEmitter
     private DocCommentTemplateData docCommentTemplateData;
     private final String docPath;
     private final boolean withSvgDiagrams;
+    private final UsedByCollector usedByCollector;
 
-    public ConstTypeEmitter(String outputPath, boolean withSvgDiagrams)
+    public ConstTypeEmitter(String outputPath, boolean withSvgDiagrams, UsedByCollector usedByCollector)
     {
         super(outputPath);
         docPath = outputPath;
         directory = new File(directory, CONTENT_FOLDER);
         this.withSvgDiagrams = withSvgDiagrams;
+        this.usedByCollector = usedByCollector;
     }
 
     public void emit(ConstType constType) throws ZserioEmitException
@@ -32,7 +34,7 @@ public class ConstTypeEmitter extends DefaultHtmlEmitter
         this.consttype = constType;
         docCommentTemplateData = new DocCommentTemplateData(consttype.getDocComment());
         containers.clear();
-        for (CompoundType compound : consttype.getUsedByCompoundList())
+        for (CompoundType compound : usedByCollector.getUsedByTypes(consttype, CompoundType.class))
         {
             CompoundEmitter ce = new CompoundEmitter(compound);
             containers.add(ce);

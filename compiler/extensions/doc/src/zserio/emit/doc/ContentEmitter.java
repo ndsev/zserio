@@ -20,14 +20,14 @@ public class ContentEmitter extends DefaultHtmlEmitter
     private final ConstTypeEmitter constTypeEmitter;
     private final ServiceEmitter serviceEmitter;
 
-    public ContentEmitter(String outputPath, boolean withSvgDiagrams)
+    public ContentEmitter(String outputPath, boolean withSvgDiagrams, UsedByCollector usedByCollector)
     {
         super(outputPath);
 
-        compoundEmitter = new CompoundEmitter(outputPath, withSvgDiagrams);
-        enumerationEmitter = new EnumerationEmitter(outputPath, withSvgDiagrams);
-        subtypeEmitter = new SubtypeEmitter(outputPath, withSvgDiagrams);
-        constTypeEmitter = new ConstTypeEmitter(outputPath, withSvgDiagrams);
+        compoundEmitter = new CompoundEmitter(outputPath, withSvgDiagrams, usedByCollector);
+        enumerationEmitter = new EnumerationEmitter(outputPath, withSvgDiagrams, usedByCollector);
+        subtypeEmitter = new SubtypeEmitter(outputPath, withSvgDiagrams, usedByCollector);
+        constTypeEmitter = new ConstTypeEmitter(outputPath, withSvgDiagrams, usedByCollector);
         serviceEmitter = new ServiceEmitter(outputPath, withSvgDiagrams);
     }
 

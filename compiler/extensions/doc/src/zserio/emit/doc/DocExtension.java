@@ -46,6 +46,10 @@ public class DocExtension implements Extension
 
         final String docPath = parameters.getCommandLineArg(OptionDoc);
 
+        // collect used by information
+        final UsedByCollector usedByCollector = new UsedByCollector();
+        rootNode.emit(usedByCollector);
+
         // emit DB overview dot file
         DbOverviewDotEmitter dbOverviewDotEmitter = new DbOverviewDotEmitter(docPath, dotLinksPrefix,
                                                         withSvgDiagrams, dotExecutable);
@@ -58,11 +62,11 @@ public class DocExtension implements Extension
 
         // emit type collaboration diagram files (must be before HTML documentation)
         TypeCollaborationDotEmitter typeCollaborationDotEmitter = new TypeCollaborationDotEmitter(docPath,
-                                                        dotLinksPrefix, withSvgDiagrams, dotExecutable);
+                dotLinksPrefix, withSvgDiagrams, dotExecutable, usedByCollector);
         rootNode.emit(typeCollaborationDotEmitter);
 
         // emit frameset
-        ContentEmitter docEmitter = new ContentEmitter(docPath, withSvgDiagrams);
+        ContentEmitter docEmitter = new ContentEmitter(docPath, withSvgDiagrams, usedByCollector);
         docEmitter.emitFrameset();
 
         // emit stylesheets

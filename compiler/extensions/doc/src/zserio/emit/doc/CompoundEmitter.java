@@ -4,7 +4,6 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
 import zserio.ast.ArrayType;
 import zserio.ast.ChoiceCase;
@@ -38,17 +37,19 @@ public class CompoundEmitter extends DefaultHtmlEmitter
     private DocCommentTemplateData docCommentTemplateData;
     private String docPath;
     private boolean withSvgDiagrams;
+    private UsedByCollector usedByCollector;
 
     private final List<FieldEmitter> fields = new ArrayList<FieldEmitter>();
 
     private final List<FunctionEmitter> functions = new ArrayList<FunctionEmitter>();
 
-    public CompoundEmitter(String outputPath, boolean withSvgDiagrams)
+    public CompoundEmitter(String outputPath, boolean withSvgDiagrams, UsedByCollector usedByCollector)
     {
         super(outputPath);
         docPath = outputPath;
         directory = new File(directory, CONTENT_FOLDER);
         this.withSvgDiagrams = withSvgDiagrams;
+        this.usedByCollector = usedByCollector;
     }
 
     public CompoundEmitter(CompoundType cc)
@@ -278,13 +279,13 @@ public class CompoundEmitter extends DefaultHtmlEmitter
             functions.add(fe);
         }
         containers.clear();
-        for (CompoundType compound : compnd.getUsedByCompoundList())
+        for (CompoundType compound : usedByCollector.getUsedByTypes(compnd, CompoundType.class))
         {
             CompoundEmitter ce = new CompoundEmitter(compound);
             containers.add(ce);
         }
         services.clear();
-        for (ServiceType service : compnd.getUsedByServiceList())
+        for (ServiceType service : usedByCollector.getUsedByTypes(compnd, ServiceType.class))
         {
             services.add(new LinkedType(service));
         }
