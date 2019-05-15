@@ -5,6 +5,7 @@ import zserio.ast.BitFieldType;
 import zserio.ast.CompoundType;
 import zserio.ast.ConstType;
 import zserio.ast.ServiceType;
+import zserio.ast.SqlConstraint;
 import zserio.ast.ZserioType;
 import zserio.ast.EnumType;
 import zserio.ast.Expression;
@@ -93,11 +94,11 @@ public class TypeNameEmitter
 
     public String getSqlConstraint(Field field) throws ZserioEmitException
     {
-        final Expression sqlConstraintExpr = field.getSqlConstraint().getConstraintExpr();
-        if (sqlConstraintExpr == null)
+        final SqlConstraint sqlConstraint = field.getSqlConstraint();
+        if (sqlConstraint == null)
             return "";
 
-        final String result = expressionFormatter.formatGetter(sqlConstraintExpr);
+        final String result = expressionFormatter.formatGetter(sqlConstraint.getConstraintExpr());
 
         return StringHtmlUtil.escapeForHtml(result);
     }

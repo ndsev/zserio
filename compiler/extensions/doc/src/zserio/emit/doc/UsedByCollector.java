@@ -36,17 +36,13 @@ public class UsedByCollector extends DefaultEmitter
     @Override
     public void beginConst(ConstType constType)
     {
-        final List<ZserioType> usedTypes = new ArrayList<ZserioType>();
-        usedTypes.add(TypeReference.resolveType(constType.getConstType()));
-        storeType(constType, usedTypes);
+        storeType(constType, constType.getConstType());
     }
 
     @Override
     public void beginSubtype(Subtype subtype)
     {
-        final List<ZserioType> usedTypes = new ArrayList<ZserioType>();
-        usedTypes.add(TypeReference.resolveType(subtype.getTargetType()));
-        storeType(subtype, usedTypes);
+        storeType(subtype, subtype.getTargetType());
     }
 
     @Override
@@ -59,7 +55,7 @@ public class UsedByCollector extends DefaultEmitter
     public void beginChoice(ChoiceType choiceType)
     {
         final List<ZserioType> usedTypes = getUsedTypesForCompoundType(choiceType);
-        usedTypes.add(choiceType.getSelectorExpression().getExprZserioType());
+        addTypeToUsedTypes(choiceType.getSelectorExpression().getExprZserioType(), usedTypes);
         storeType(choiceType, usedTypes);
 
         for (ChoiceCase choiceCase : choiceType.getChoiceCases())
@@ -82,9 +78,7 @@ public class UsedByCollector extends DefaultEmitter
     @Override
     public void beginEnumeration(EnumType enumType)
     {
-        final List<ZserioType> usedTypes = new ArrayList<ZserioType>();
-        usedTypes.add(TypeReference.resolveType(enumType.getEnumType()));
-        storeType(enumType, usedTypes);
+        storeType(enumType, enumType.getEnumType());
     }
 
     @Override
@@ -105,8 +99,8 @@ public class UsedByCollector extends DefaultEmitter
         final List<ZserioType> usedTypes = new ArrayList<ZserioType>();
         for (Rpc rpc : serviceType.getRpcList())
         {
-            usedTypes.add(TypeReference.resolveType(rpc.getRequestType()));
-            usedTypes.add(TypeReference.resolveType(rpc.getResponseType()));
+            addTypeToUsedTypes(rpc.getRequestType(), usedTypes);
+            addTypeToUsedTypes(rpc.getResponseType(), usedTypes);
         }
         storeType(serviceType, usedTypes);
     }
@@ -174,13 +168,27 @@ public class UsedByCollector extends DefaultEmitter
         return (usedByChoices != null) ? Collections.unmodifiableList(usedByChoices) : EMPTY_CHOICE_TYPE_LIST;
     }
 
+    private static void addTypeToUsedTypes(ZserioType unresolvedUsedType, List<ZserioType> usedTypes)
+    {
+        final ZserioType resolvedUsedType = TypeReference.resolveType(unresolvedUsedType);
+        if (!ZserioTypeUtil.isBuiltIn(resolvedUsedType))
+            usedTypes.add(resolvedUsedType);
+    }
+
     private List<ZserioType> getUsedTypesForCompoundType(CompoundType compoundType)
     {
         final List<ZserioType> usedTypes = new ArrayList<ZserioType>();
         for (Field field : compoundType.getFields())
-            usedTypes.add(TypeReference.resolveType(field.getFieldReferencedType()));
+            addTypeToUsedTypes(field.getFieldReferencedType(), usedTypes);
 
         return usedTypes;
+    }
+
+    private void storeType(ZserioType type, ZserioType unresolvedUsedType)
+    {
+        final List<ZserioType> usedTypes = new ArrayList<ZserioType>();
+        addTypeToUsedTypes(unresolvedUsedType, usedTypes);
+        storeType(type, usedTypes);
     }
 
     private void storeType(ZserioType type, List<ZserioType> usedTypes)
@@ -189,12 +197,9 @@ public class UsedByCollector extends DefaultEmitter
         boolean isEmpty = true;
         for (ZserioType usedType : usedTypes)
         {
-            if (!ZserioTypeUtil.isBuiltIn(usedType))
-            {
-                final Set<ZserioType> usedByTypeSet = createUsedByTypeSet(usedType);
-                usedByTypeSet.add(type);
-                isEmpty = false;
-            }
+            final Set<ZserioType> usedByTypeSet = createUsedByTypeSet(usedType);
+            usedByTypeSet.add(type);
+            isEmpty = false;
         }
 
         if (!isEmpty)
