@@ -39,12 +39,6 @@ public class ZserioAstChecker extends ZserioAstWalker
     }
 
     @Override
-    public void visitConstType(ConstType constType)
-    {
-        addUsedType(constType.getConstType());
-    }
-
-    @Override
     public void visitSubtype(Subtype subtype)
     {
         definedTypes.add(subtype);
@@ -55,10 +49,6 @@ public class ZserioAstChecker extends ZserioAstWalker
     public void visitStructureType(StructureType structureType)
     {
         definedTypes.add(structureType);
-
-        for (Parameter param : structureType.getParameters())
-            addUsedType(param.getParameterType());
-
         structureType.visitChildren(this);
     }
 
@@ -66,10 +56,6 @@ public class ZserioAstChecker extends ZserioAstWalker
     public void visitChoiceType(ChoiceType choiceType)
     {
         definedTypes.add(choiceType);
-
-        for (Parameter param : choiceType.getParameters())
-            addUsedType(param.getParameterType());
-
         choiceType.visitChildren(this);
     }
 
@@ -77,10 +63,6 @@ public class ZserioAstChecker extends ZserioAstWalker
     public void visitUnionType(UnionType unionType)
     {
         definedTypes.add(unionType);
-
-        for (Parameter param : unionType.getParameters())
-            addUsedType(param.getParameterType());
-
         unionType.visitChildren(this);
     }
 
@@ -88,7 +70,6 @@ public class ZserioAstChecker extends ZserioAstWalker
     public void visitEnumType(EnumType enumType)
     {
         definedTypes.add(enumType);
-        addUsedType(enumType.getEnumType());
     }
 
     @Override
@@ -99,16 +80,9 @@ public class ZserioAstChecker extends ZserioAstWalker
     }
 
     @Override
-    public void visitField(Field field)
+    public void visitTypeReference(TypeReference typeReference)
     {
-        addUsedType(field.getFieldReferencedType());
-    }
-
-    @Override
-    public void visitRpc(Rpc rpc)
-    {
-        addUsedType(rpc.getResponseType());
-        addUsedType(rpc.getRequestType());
+        addUsedType(typeReference.getReferencedType());
     }
 
     private void addUsedType(ZserioType usedType)
