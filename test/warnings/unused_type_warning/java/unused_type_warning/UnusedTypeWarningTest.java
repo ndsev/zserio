@@ -20,42 +20,42 @@ public class UnusedTypeWarningTest
     @Test
     public void unusedEnumeration()
     {
-        final String warning = ":4:1: Type unused_type_warning.UnusedEnumeration is not used.";
+        final String warning = ":4:12: Type 'unused_type_warning.UnusedEnumeration' is not used.";
         assertTrue(zserioWarnings.isPresent(warning));
     }
 
     @Test
     public void unusedSubtype()
     {
-        final String warning = ":18:1: Type unused_type_warning.UnusedSubtype is not used.";
+        final String warning = ":18:15: Type 'unused_type_warning.UnusedSubtype' is not used.";
         assertTrue(zserioWarnings.isPresent(warning));
     }
 
     @Test
     public void unusedChoice()
     {
-        final String warning = ":28:1: Type unused_type_warning.UnusedChoice is not used.";
+        final String warning = ":28:8: Type 'unused_type_warning.UnusedChoice' is not used.";
         assertTrue(zserioWarnings.isPresent(warning));
     }
 
     @Test
     public void unusedUnion()
     {
-        final String warning = ":48:1: Type unused_type_warning.UnusedUnion is not used.";
+        final String warning = ":48:7: Type 'unused_type_warning.UnusedUnion' is not used.";
         assertTrue(zserioWarnings.isPresent(warning));
     }
 
     @Test
     public void unusedStructure()
     {
-        final String warning = ":62:1: Type unused_type_warning.UnusedStructure is not used.";
+        final String warning = ":62:8: Type 'unused_type_warning.UnusedStructure' is not used.";
         assertTrue(zserioWarnings.isPresent(warning));
     }
 
     @Test
     public void unusedTable()
     {
-        final String warning = ":76:1: Type unused_type_warning.UnusedTable is not used.";
+        final String warning = ":76:11: Type 'unused_type_warning.UnusedTable' is not used.";
         assertTrue(zserioWarnings.isPresent(warning));
     }
 

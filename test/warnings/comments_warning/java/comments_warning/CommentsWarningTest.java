@@ -75,13 +75,6 @@ public class CommentsWarningTest
     }
 
     @Test
-    public void unusedPackageComment()
-    {
-        final String warning = "unused_package_comment.zs:1:1: Documentation comment is not used!";
-        assertTrue(zserioWarnings.isPresent(warning));
-    }
-
-    @Test
     public void unusedStructCommentById()
     {
         final String warning = "unused_struct_comment_by_id.zs:3:8: Documentation comment is not used!";

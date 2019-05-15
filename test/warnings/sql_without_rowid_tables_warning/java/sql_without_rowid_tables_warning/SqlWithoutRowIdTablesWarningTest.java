@@ -20,7 +20,7 @@ public class SqlWithoutRowIdTablesWarningTest
     @Test
     public void integerPrimaryKey()
     {
-        final String warning = ":3:1: Single integer primary key in without rowid table 'WithoutRowIdTable' " +
+        final String warning = ":3:11: Single integer primary key in without rowid table 'WithoutRowIdTable' " +
                 "brings performance drop.";
         assertTrue(zserioWarnings.isPresent(warning));
     }

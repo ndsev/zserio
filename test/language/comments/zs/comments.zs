@@ -1,5 +1,6 @@
 package comments;
 
+import comments.documentation.package_comment.*;
 import comments.documentation.enum_comments.*;
 import comments.documentation.sql_database_comments.*;
 import comments.documentation.sql_table_comments.*;

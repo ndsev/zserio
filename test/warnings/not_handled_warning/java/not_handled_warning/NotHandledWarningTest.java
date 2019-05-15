@@ -20,14 +20,14 @@ public class NotHandledWarningTest
     @Test
     public void notHandledWhite()
     {
-        final String warning = ":15:1: Enumeration value 'WHITE' is not handled in choice 'EnumParamChoice'.";
+        final String warning = ":15:8: Enumeration value 'WHITE' is not handled in choice 'EnumParamChoice'.";
         assertTrue(zserioWarnings.isPresent(warning));
     }
 
     @Test
     public void notHandledRed()
     {
-        final String warning = ":15:1: Enumeration value 'RED' is not handled in choice 'EnumParamChoice'.";
+        final String warning = ":15:8: Enumeration value 'RED' is not handled in choice 'EnumParamChoice'.";
         assertTrue(zserioWarnings.isPresent(warning));
     }
 

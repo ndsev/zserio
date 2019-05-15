@@ -20,7 +20,7 @@ public class OptionalMembersWarningTest
     @Test
     public void optionalMemberWithDifferentAutoOptionalParams()
     {
-        final String warning = "optional_members_warning.zs:28:5: Parameterized field 'mixedTones' " +
+        final String warning = "optional_members_warning.zs:28:55: Parameterized field 'mixedTones' " +
                 "has different optional clause than parameters.";
         assertTrue(zserioWarnings.isPresent(warning));
     }
@@ -28,7 +28,7 @@ public class OptionalMembersWarningTest
     @Test
     public void optionalMemberWithDifferentOptionalParams()
     {
-        final String warning = "optional_members_warning.zs:25:5: Parameterized field 'blackAndWhiteTones' " +
+        final String warning = "optional_members_warning.zs:25:47: Parameterized field 'blackAndWhiteTones' " +
                 "has different optional clause than parameters.";
         assertTrue(zserioWarnings.isPresent(warning));
     }

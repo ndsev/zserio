@@ -227,7 +227,8 @@ public class ChoiceType extends CompoundType
         if (selectorExpressionType instanceof EnumType)
         {
             final EnumType resolvedEnumType = (EnumType)TypeReference.resolveType(selectorExpressionType);
-            final List<EnumItem> availableEnumItems = new ArrayList<EnumItem>(resolvedEnumType.getItems());
+            final List<EnumItem> availableEnumItems = resolvedEnumType.getItems();
+            final List<EnumItem> unhandledEnumItems = new ArrayList<EnumItem>(resolvedEnumType.getItems());
 
             for (ChoiceCase choiceCase : choiceCases)
             {
@@ -238,18 +239,21 @@ public class ChoiceType extends CompoundType
                     final Set<EnumItem> referencedEnumItems =
                             expression.getReferencedSymbolObjects(EnumItem.class);
                     for (EnumItem referencedEnumItem : referencedEnumItems)
+                    {
                         if (!availableEnumItems.contains(referencedEnumItem))
                             throw new ParserException(expression, "Choice '" + getName() +
                                     "' has case with different enumeration type than selector!");
+                        unhandledEnumItems.remove(referencedEnumItem);
+                    }
                 }
             }
 
             if (choiceDefault == null)
             {
-                for (EnumItem availableEnumItem : availableEnumItems)
+                for (EnumItem unhandledEnumItem : unhandledEnumItems)
                 {
                     ZserioToolPrinter.printWarning(this, "Enumeration value '" +
-                            availableEnumItem.getName() + "' is not handled in choice '" + getName() +
+                            unhandledEnumItem.getName() + "' is not handled in choice '" + getName() +
                             "'.");
                 }
             }

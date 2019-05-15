@@ -43,7 +43,7 @@ public class SqlTablesWarningTest
     @Test
     public void noPrimaryKey()
     {
-        final String warning = ":3:1: No primary key in sql table 'NoPrimaryKeyTable'.";
+        final String warning = ":3:11: No primary key in sql table 'NoPrimaryKeyTable'.";
         assertTrue(zserioWarnings.isPresent(warning));
     }
 
@@ -58,11 +58,11 @@ public class SqlTablesWarningTest
     @Test
     public void notNullPrimaryKey()
     {
-        final String warning1 = ":5:5: Primary key column 'schoolId' can contain NULL in sql table " +
+        final String warning1 = ":5:17: Primary key column 'schoolId' can contain NULL in sql table " +
                 "'NotNullPrimaryKeyTable1'.";
         assertTrue(zserioWarnings.isPresent(warning1));
 
-        final String warning2 = ":14:5: Primary key column 'schoolId' can contain NULL in sql table " +
+        final String warning2 = ":14:17: Primary key column 'schoolId' can contain NULL in sql table " +
                 "'NotNullPrimaryKeyTable2'.";
         assertTrue(zserioWarnings.isPresent(warning2));
     }

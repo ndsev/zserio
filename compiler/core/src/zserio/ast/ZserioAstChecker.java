@@ -33,7 +33,7 @@ public class ZserioAstChecker extends ZserioAstWalker
             {
                 final String definedTypeName = ZserioTypeUtil.getFullName(definedType);
                 if (!usedTypeNames.contains(definedTypeName))
-                    ZserioToolPrinter.printWarning(definedType, "Type `" + definedTypeName + "` is not used.");
+                    ZserioToolPrinter.printWarning(definedType, "Type '" + definedTypeName + "' is not used.");
             }
         }
     }
@@ -55,6 +55,10 @@ public class ZserioAstChecker extends ZserioAstWalker
     public void visitStructureType(StructureType structureType)
     {
         definedTypes.add(structureType);
+
+        for (Parameter param : structureType.getParameters())
+            addUsedType(param.getParameterType());
+
         structureType.visitChildren(this);
     }
 
@@ -62,6 +66,10 @@ public class ZserioAstChecker extends ZserioAstWalker
     public void visitChoiceType(ChoiceType choiceType)
     {
         definedTypes.add(choiceType);
+
+        for (Parameter param : choiceType.getParameters())
+            addUsedType(param.getParameterType());
+
         choiceType.visitChildren(this);
     }
 
@@ -69,6 +77,10 @@ public class ZserioAstChecker extends ZserioAstWalker
     public void visitUnionType(UnionType unionType)
     {
         definedTypes.add(unionType);
+
+        for (Parameter param : unionType.getParameters())
+            addUsedType(param.getParameterType());
+
         unionType.visitChildren(this);
     }
 

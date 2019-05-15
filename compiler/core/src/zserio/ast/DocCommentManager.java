@@ -52,7 +52,10 @@ class DocCommentManager
             if (token.getChannel() == ZserioLexer.DOC)
             {
                 if (!currentUsedComments.contains(token))
-                    ZserioToolPrinter.printWarning(new AstLocation(token), "Unused documentation comment!");
+                {
+                    ZserioToolPrinter.printWarning(new AstLocation(token),
+                            "Documentation comment is not used!");
+                }
             }
         }
     }
@@ -92,13 +95,8 @@ class DocCommentManager
      */
     public DocComment findDocComment(ZserioParser.StructureFieldDefinitionContext ctx)
     {
-        // before field type
-        Token docToken = findDocTokenBefore(ctx.fieldTypeId());
-        if (docToken != null)
-            return parseDocComment(docToken);
-
-        // before field optional
-        docToken = findDocTokenBefore(ctx.OPTIONAL());
+        // before field alignment
+        Token docToken = findDocTokenBefore(ctx.fieldAlignment());
         if (docToken != null)
             return parseDocComment(docToken);
 
@@ -107,8 +105,13 @@ class DocCommentManager
         if (docToken != null)
             return parseDocComment(docToken);
 
-        // before field alignment
-        docToken = findDocTokenBefore(ctx.fieldAlignment());
+        // before optional keyword
+        docToken = findDocTokenBefore(ctx.OPTIONAL());
+        if (docToken != null)
+            return parseDocComment(docToken);
+
+        // before field type
+        docToken = findDocTokenBefore(ctx.fieldTypeId());
         if (docToken != null)
             return parseDocComment(docToken);
 

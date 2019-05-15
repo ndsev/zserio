@@ -1,4 +1,4 @@
-package see_tag_error;
+package comments_warning.unresolved_see_tag_reference;
 
 /**
  * Test structure.
@@ -8,4 +8,15 @@ package see_tag_error;
 struct Test
 {
     int32 test;
+};
+
+sql_table Table
+{
+    int32 id sql "PRIMARY KEY";
+    Test test;
+};
+
+sql_database Database
+{
+    Table table;
 };
