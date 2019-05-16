@@ -18,6 +18,12 @@ set(ZSERIO_GENERATED_SOURCES
 
     ${ZSERIO_GEN_DIR}/parameterized_types/simple_param/Item.cpp
     ${ZSERIO_GEN_DIR}/parameterized_types/simple_param/Item.h
+
+    ${ZSERIO_GEN_DIR}/parameterized_types/subtyped_bitfield_param/ParamType.h
+    ${ZSERIO_GEN_DIR}/parameterized_types/subtyped_bitfield_param/SubtypedBitfieldParam.cpp
+    ${ZSERIO_GEN_DIR}/parameterized_types/subtyped_bitfield_param/SubtypedBitfieldParam.h
+    ${ZSERIO_GEN_DIR}/parameterized_types/subtyped_bitfield_param/SubtypedBitfieldParamHolder.cpp
+    ${ZSERIO_GEN_DIR}/parameterized_types/subtyped_bitfield_param/SubtypedBitfieldParamHolder.h
 )
 
 zserio_add_library(TARGET parameterized_types_zs
@@ -33,6 +39,7 @@ add_test_sources(
     cpp/ArrayElementParamTest.cpp
     cpp/GrandChildParamTest.cpp
     cpp/SimpleParamTest.cpp
+    cpp/SubtypedBitfieldParamTest.cpp
 )
 
 add_test_dependencies(parameterized_types_zs)
