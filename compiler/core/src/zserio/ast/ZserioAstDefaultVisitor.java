@@ -136,6 +136,18 @@ public class ZserioAstDefaultVisitor implements ZserioAstVisitor
     {}
 
     @Override
+    public void visitDocParagraph(DocParagraph docParagraph)
+    {}
+
+    @Override
+    public void visitDocElement(DocElement docElement)
+    {}
+
+    @Override
+    public void visitDocMultiline(DocMultiline docMultiline)
+    {}
+
+    @Override
     public void visitDocTagSee(DocTagSee docTagSee)
     {}
 
@@ -148,18 +160,14 @@ public class ZserioAstDefaultVisitor implements ZserioAstVisitor
     {}
 
     @Override
-    public void visitDocParagraph(DocParagraph docParagraph)
+    public void visitDocLine(DocLine docLine)
     {}
 
     @Override
-    public void visitDocTextLine(DocTextLine docTextLine)
+    public void visitDocLineElement(DocLineElement docLineElement)
     {}
 
     @Override
     public void visitDocText(DocText docText)
-    {}
-
-    @Override
-    public void visitDocTextElement(DocTextElement docTextElement)
     {}
 }

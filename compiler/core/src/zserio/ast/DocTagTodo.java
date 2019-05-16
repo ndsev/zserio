@@ -3,7 +3,7 @@ package zserio.ast;
 /**
  * Todo tag documentation node.
  */
-public class DocTagTodo extends DocMultilineNode
+public class DocTagTodo extends DocMultiline
 {
     /**
      * Constructor.
@@ -11,7 +11,7 @@ public class DocTagTodo extends DocMultilineNode
      * @param location  AST node location.
      * @param firstLine First line of todo description.
      */
-    public DocTagTodo(AstLocation location, DocTextLine firstLine)
+    public DocTagTodo(AstLocation location, DocLine firstLine)
     {
         super(location, firstLine);
     }

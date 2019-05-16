@@ -230,6 +230,27 @@ public interface ZserioAstVisitor
     void visitDocComment(DocComment docComment);
 
     /**
+     * Visits documentation paragraph.
+     *
+     * @param docParagraph Documentation paragraph AST node.
+     */
+    void visitDocParagraph(DocParagraph docParagraph);
+
+    /**
+     * Visits documentation element.
+     *
+     * @param docElement Documentation element AST node.
+     */
+    void visitDocElement(DocElement docElement);
+
+    /**
+     * Visits documentation multiline.
+     *
+     * @param docMultiline Documentation multiline AST node.
+     */
+    void visitDocMultiline(DocMultiline docMultiline);
+
+    /**
      * Visits a see tag within a documentation comment.
      *
      * @param docTagSee See tag AST node.
@@ -251,32 +272,25 @@ public interface ZserioAstVisitor
     void visitDocTagParam(DocTagParam docTagParam);
 
     /**
-     * Visits documentation paragraph.
-     *
-     * @param docTagTodo Documentation paragraph AST node.
-     */
-    void visitDocParagraph(DocParagraph docParagraph);
-
-    /**
      * Visits a single line of documentation.
      *
-     * @param docTextLine Documentation line AST node.
+     * @param docLine Documentation line AST node.
      */
-    void visitDocTextLine(DocTextLine docTextLine);
+    void visitDocLine(DocLine docLine);
 
     /**
      * Visits documentation text wrapper.
      *
-     * DocText can be either a text element or a see tag.
+     * DocLineElement can be either a text or a see tag.
      *
-     * @param docText Documentation text element AST node.
+     * @param docLineElement Documentation line element AST node.
      */
-    void visitDocText(DocText docText);
+    void visitDocLineElement(DocLineElement docLineElement);
 
     /**
-     * Visits documentation text element.
+     * Visits documentation text.
      *
-     * @param docTextElement Documentation text element AST node.
+     * @param docText Documentation text AST node.
      */
-    void visitDocTextElement(DocTextElement docTextElement);
+    void visitDocText(DocText docText);
 }

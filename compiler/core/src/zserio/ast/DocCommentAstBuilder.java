@@ -23,58 +23,51 @@ class DocCommentAstBuilder extends DocCommentBaseVisitor<Object>
     {
         visitChildren(ctx);
 
-        return new DocComment(docCommentToken, paragraphs, seeTags, todoTags, paramTags, isDeprecated);
+        return new DocComment(docCommentToken, paragraphs, isDeprecated);
     }
 
     @Override
-    public Object visitDocLine(DocCommentParser.DocLineContext ctx)
+    public Object visitDocElement(DocCommentParser.DocElementContext ctx)
     {
         if (ctx.docTag() != null)
         {
-            prevMultilineNode = null;
-            visitDocTag(ctx.docTag());
+            currentMultilineNode = null;
+            addDocElement(visitDocTag(ctx.docTag()));
         }
-        else if (ctx.docTextLine() != null)
+        else if (ctx.docLine() != null)
         {
-            final DocTextLine docTextLine = visitDocTextLine(ctx.docTextLine());
-            if (prevMultilineNode == null)
+            final DocLine docLine = visitDocLine(ctx.docLine());
+
+            if (currentMultilineNode != null)
             {
-                final DocParagraph paragraph = new DocParagraph(getLocation(ctx.getStart()), docTextLine);
-                paragraphs.add(paragraph);
-                prevMultilineNode = paragraph;
+                currentMultilineNode.addLine(docLine);
             }
             else
             {
-                prevMultilineNode.addLine(docTextLine);
+                currentMultilineNode = new DocMultiline(docLine.getLocation(), docLine);
+                addDocElement(new DocElement(docLine.getLocation(), currentMultilineNode));
             }
         }
         else // empty line
         {
-            prevMultilineNode = null;
+            currentParagraph = null;
+            currentMultilineNode = null;
         }
 
         return null;
     }
 
     @Override
-    public Object visitDocTag(DocCommentParser.DocTagContext ctx)
+    public DocElement visitDocTag(DocCommentParser.DocTagContext ctx)
     {
         if (ctx.seeTag() != null)
-        {
-            seeTags.add(visitSeeTag(ctx.seeTag()));
-        }
+            return new DocElement(getLocation(ctx.getStart()), visitSeeTag(ctx.seeTag()));
         else if (ctx.todoTag() != null)
-        {
-            todoTags.add(visitTodoTag(ctx.todoTag()));
-        }
+            return new DocElement(getLocation(ctx.getStart()), (visitTodoTag(ctx.todoTag())));
         else if (ctx.paramTag() != null)
-        {
-            paramTags.add(visitParamTag(ctx.paramTag()));
-        }
+            return new DocElement(getLocation(ctx.getStart()), (visitParamTag(ctx.paramTag())));
         else // deprecated tag
-        {
             isDeprecated = true;
-        }
 
         return null;
     }
@@ -90,44 +83,61 @@ class DocCommentAstBuilder extends DocCommentBaseVisitor<Object>
     @Override
     public DocTagTodo visitTodoTag(DocCommentParser.TodoTagContext ctx)
     {
-        final DocTagTodo todoTag = new DocTagTodo(getLocation(ctx.getStart()), visitDocTextLine(ctx.docTextLine()));
-        prevMultilineNode = todoTag;
+        final DocLine docLine = ctx.docLine() != null
+                ? visitDocLine(ctx.docLine())
+                : new DocLine(getLocation(ctx.getStop()), new ArrayList<DocLineElement>());
+        final DocTagTodo todoTag = new DocTagTodo(getLocation(ctx.getStart()), docLine);
+        currentMultilineNode = todoTag;
         return todoTag;
     }
 
     @Override
     public DocTagParam visitParamTag(DocCommentParser.ParamTagContext ctx)
     {
+        final DocLine docLine = ctx.docLine() != null
+                ? visitDocLine(ctx.docLine())
+                : new DocLine(getLocation(ctx.getStop()), new ArrayList<DocLineElement>());
         final DocTagParam paramTag = new DocTagParam(getLocation(ctx.getStart()), ctx.paramName().getText(),
-                visitDocTextLine(ctx.docTextLine()));
-        prevMultilineNode = paramTag;
+                docLine);
+        currentMultilineNode = paramTag;
         return paramTag;
     }
 
     @Override
-    public DocTextLine visitDocTextLine(DocCommentParser.DocTextLineContext ctx)
+    public DocLine visitDocLine(DocCommentParser.DocLineContext ctx)
     {
-        List<DocText> docTexts = new ArrayList<DocText>();
+        List<DocLineElement> docLineElements = new ArrayList<DocLineElement>();
 
-        for (DocCommentParser.DocTextContext docTextCtx : ctx.docText())
-            docTexts.add(visitDocText(docTextCtx));
+        for (DocCommentParser.DocLineElementContext docLineElementCtx : ctx.docLineElement())
+            docLineElements.add(visitDocLineElement(docLineElementCtx));
 
-        return new DocTextLine(getLocation(ctx.getStart()), docTexts);
+        return new DocLine(getLocation(ctx.getStart()), docLineElements);
+    }
+
+    @Override
+    public DocLineElement visitDocLineElement(DocCommentParser.DocLineElementContext ctx)
+    {
+        if (ctx.seeTag() != null)
+            return new DocLineElement(getLocation(ctx.getStart()), visitSeeTag(ctx.seeTag()));
+        else
+            return new DocLineElement(getLocation(ctx.getStart()), visitDocText(ctx.docText()));
     }
 
     @Override
     public DocText visitDocText(DocCommentParser.DocTextContext ctx)
     {
-        if (ctx.seeTag() != null)
-            return new DocText(getLocation(ctx.getStart()), visitSeeTag(ctx.seeTag()));
-        else
-            return new DocText(getLocation(ctx.getStart()), visitTextElement(ctx.textElement()));
+        return new DocText(getLocation(ctx.getStart()), ctx.getText());
     }
 
-    @Override
-    public DocTextElement visitTextElement(DocCommentParser.TextElementContext ctx)
+    private void addDocElement(DocElement docElement)
     {
-        return new DocTextElement(getLocation(ctx.getStart()), ctx.getText());
+        if (currentParagraph == null)
+        {
+            currentParagraph = new DocParagraph(docElement.getLocation());
+            paragraphs.add(currentParagraph);
+        }
+
+        currentParagraph.addDocElement(docElement);
     }
 
     private AstLocation getLocation(Token token)
@@ -143,10 +153,8 @@ class DocCommentAstBuilder extends DocCommentBaseVisitor<Object>
 
     private final Token docCommentToken;
     private final List<DocParagraph> paragraphs = new ArrayList<DocParagraph>();
-    private final List<DocTagSee> seeTags = new ArrayList<DocTagSee>();
-    private final List<DocTagTodo> todoTags = new ArrayList<DocTagTodo>();
-    private final List<DocTagParam> paramTags = new ArrayList<DocTagParam>();
     private boolean isDeprecated = false;
 
-    private DocMultilineNode prevMultilineNode = null;
+    private DocParagraph currentParagraph = null;
+    private DocMultiline currentMultilineNode = null;
 }

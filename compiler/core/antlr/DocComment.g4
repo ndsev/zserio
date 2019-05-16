@@ -7,17 +7,17 @@ docComment
     ;
 
 docContent
-    :   docLine (whitespaceInLine? NEWLINE whitespaceInLine? docLine)*?
+    :   docElement (whitespaceInLine? NEWLINE whitespaceInLine? docElement)*?
     ;
 
-docLine
+docElement
     :   docTag
-    |   docTextLine
+    |   docLine
     |   // empty line
     ;
 
-docTextLine
-    :   docText (whitespaceInLine? docText)*
+docLine
+    :   docLineElement (whitespaceInLine? docLineElement)*
     ;
 
 docTag
@@ -27,18 +27,18 @@ docTag
     |   deprecatedTag
     ;
 
-docText
+docLineElement
     :   seeTag
-    |   textElement
+    |   docText
     ;
 
-textElement
+docText
     :   SEE
     |   TODO
     |   PARAM
     |   DEPRECATED
-    |   (ID | WORD | BACKSLASH | ESC | DOUBLE_QUOTE_ESC | DOUBLE_QUOTE | DOT | STAR)
-        (whitespaceInLine? (ID | WORD | BACKSLASH | ESC | DOUBLE_QUOTE_ESC | DOUBLE_QUOTE | DOT | STAR))*
+    |   (ID | TEXT | BACKSLASH | ESC | DOUBLE_QUOTE_ESC | DOUBLE_QUOTE | DOT | STAR | AT)
+        (whitespaceInLine? (ID | TEXT | BACKSLASH | ESC | DOUBLE_QUOTE_ESC | DOUBLE_QUOTE | DOT | STAR | AT))*
     ;
 
 seeTag
@@ -52,7 +52,7 @@ seeTagAlias
 seeTagAliasText
     :   (
             SEE | TODO | PARAM | DEPRECATED |
-            ID | WORD | BACKSLASH | ESC | DOUBLE_QUOTE_ESC | DOT | STAR |
+            ID | TEXT | BACKSLASH | ESC | DOUBLE_QUOTE_ESC | DOT | STAR | AT |
             whitespaceInLine
         )+
     ;
@@ -62,11 +62,11 @@ seeTagId
     ;
 
 todoTag
-    :   TODO whitespaceInParagraph docTextLine
+    :   TODO (whitespaceInParagraph docLine)?
     ;
 
 paramTag
-    :   PARAM whitespaceInParagraph paramName whitespaceInParagraph docTextLine
+    :   PARAM whitespaceInParagraph paramName (whitespaceInParagraph docLine)?
     ;
 
 paramName
@@ -96,12 +96,6 @@ whitespaceInLine
 /** Lexer */
 
 fragment
-SLASH : '/' ;
-
-fragment
-AT : '@' ;
-
-fragment
 NEWLINE_COMMENT : SPACE* (STAR { _input.LA(1) != '/' }?)+ ;
 
 COMMENT_BEGIN : '/**' (STAR { _input.LA(1) != '/' }?)*;
@@ -124,6 +118,8 @@ DOUBLE_QUOTE_ESC : '\\"' ;
 
 DOUBLE_QUOTE : '"' ;
 
+AT : '@' ;
+
 SEE : AT 'see' ;
 
 TODO : AT 'todo' ;
@@ -134,4 +130,4 @@ DEPRECATED : AT 'deprecated' ;
 
 ID : [a-zA-Z_][a-zA-Z_0-9]* ;
 
-WORD : ~[ .\t\r\n"*\\]+ ;
+TEXT : ~[ .\t\r\n"*\\@a-zA-Z_]+;

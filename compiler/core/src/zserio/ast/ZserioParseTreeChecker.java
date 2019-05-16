@@ -116,7 +116,10 @@ public class ZserioParseTreeChecker extends ZserioParserBaseVisitor<Void>
         final boolean isWithoutRowId = ctx.sqlWithoutRowId() != null;
 
         if (isVirtual && isWithoutRowId)
-            throw new ParserException(ctx.sqlWithoutRowId().getStart(), "Virtual table cannot be without rowid!");
+        {
+            throw new ParserException(ctx.sqlWithoutRowId().getStart(),
+                    "Virtual table cannot be without rowid!");
+        }
 
         return super.visitSqlTableDeclaration(ctx);
     }

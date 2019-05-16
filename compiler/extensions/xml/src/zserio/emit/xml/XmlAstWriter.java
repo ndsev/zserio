@@ -25,6 +25,10 @@ import zserio.ast.ChoiceCaseExpression;
 import zserio.ast.ChoiceDefault;
 import zserio.ast.ChoiceType;
 import zserio.ast.ConstType;
+import zserio.ast.DocElement;
+import zserio.ast.DocLine;
+import zserio.ast.DocLineElement;
+import zserio.ast.DocMultiline;
 import zserio.ast.EnumItem;
 import zserio.ast.EnumType;
 import zserio.ast.Expression;
@@ -56,8 +60,6 @@ import zserio.ast.DocTagParam;
 import zserio.ast.DocTagSee;
 import zserio.ast.DocTagTodo;
 import zserio.ast.DocText;
-import zserio.ast.DocTextElement;
-import zserio.ast.DocTextLine;
 import zserio.ast.ZserioType;
 import zserio.emit.common.ZserioEmitException;
 
@@ -379,6 +381,24 @@ public class XmlAstWriter implements ZserioAstVisitor
     }
 
     @Override
+    public void visitDocParagraph(DocParagraph docParagraph)
+    {
+        visitAstNode(docParagraph, "DOC_PARAGRAPH");
+    }
+
+    @Override
+    public void visitDocElement(DocElement docElement)
+    {
+        visitAstNode(docElement, "DOC_ELEMENT");
+    }
+
+    @Override
+    public void visitDocMultiline(DocMultiline docMultiline)
+    {
+        visitAstNode(docMultiline, "DOC_MULTILINE");
+    }
+
+    @Override
     public void visitDocTagSee(DocTagSee docTagSee)
     {
         final Element xmlElement = xmlDoc.createElement("DOC_TAG_SEE");
@@ -413,29 +433,23 @@ public class XmlAstWriter implements ZserioAstVisitor
     }
 
     @Override
-    public void visitDocParagraph(DocParagraph docParagraph)
+    public void visitDocLine(DocLine docLine)
     {
-        visitAstNode(docParagraph, "DOC_PARAGRAPH");
+        visitAstNode(docLine, "DOC_LINE");
     }
 
     @Override
-    public void visitDocTextLine(DocTextLine docTextLine)
+    public void visitDocLineElement(DocLineElement docLineElement)
     {
-        visitAstNode(docTextLine, "DOC_TEXT_LINE");
+        visitAstNode(docLineElement, "DOC_LINE_ELEMENT");
     }
 
     @Override
     public void visitDocText(DocText docText)
     {
-        visitAstNode(docText, "DOC_TEXT");
-    }
-
-    @Override
-    public void visitDocTextElement(DocTextElement docTextElement)
-    {
-        final Element xmlElement = xmlDoc.createElement("DOC_TEXT_ELEMENT");
-        xmlElement.setAttribute("text", docTextElement.getText());
-        visitAstNode(docTextElement, xmlElement);
+        final Element xmlElement = xmlDoc.createElement("DOC_TEXT");
+        xmlElement.setAttribute("text", docText.getText());
+        visitAstNode(docText, xmlElement);
     }
 
     private void visitZserioType(ZserioType zserioType, String xmlElementName)

@@ -201,6 +201,24 @@ public class ZserioAstWalker implements ZserioAstVisitor
     }
 
     @Override
+    public void visitDocParagraph(DocParagraph docParagraph)
+    {
+        docParagraph.visitChildren(this);
+    }
+
+    @Override
+    public void visitDocElement(DocElement docElement)
+    {
+        docElement.visitChildren(this);
+    }
+
+    @Override
+    public void visitDocMultiline(DocMultiline docMultiline)
+    {
+        docMultiline.visitChildren(this);
+    }
+
+    @Override
     public void visitDocTagSee(DocTagSee docTagSee)
     {
         docTagSee.visitChildren(this);
@@ -219,26 +237,20 @@ public class ZserioAstWalker implements ZserioAstVisitor
     }
 
     @Override
-    public void visitDocParagraph(DocParagraph docParagraph)
+    public void visitDocLine(DocLine docLine)
     {
-        docParagraph.visitChildren(this);
+        docLine.visitChildren(this);
     }
 
     @Override
-    public void visitDocTextLine(DocTextLine docTextLine)
+    public void visitDocLineElement(DocLineElement docLineElement)
     {
-        docTextLine.visitChildren(this);
+        docLineElement.visitChildren(this);
     }
 
     @Override
     public void visitDocText(DocText docText)
     {
         docText.visitChildren(this);
-    }
-
-    @Override
-    public void visitDocTextElement(DocTextElement docTextElement)
-    {
-        docTextElement.visitChildren(this);
     }
 }

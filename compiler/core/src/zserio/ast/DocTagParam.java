@@ -1,7 +1,7 @@
 package zserio.ast;
 
 /** Param tag documentation node used to document parameters. */
-public class DocTagParam extends DocMultilineNode
+public class DocTagParam extends DocMultiline
 {
     /**
      * Constructor.
@@ -10,7 +10,7 @@ public class DocTagParam extends DocMultilineNode
      * @param paramName Parameter name.
      * @param firstLine First line of parameter description.
      */
-    public DocTagParam(AstLocation location, String paramName, DocTextLine firstLine)
+    public DocTagParam(AstLocation location, String paramName, DocLine firstLine)
     {
         super(location, firstLine);
 

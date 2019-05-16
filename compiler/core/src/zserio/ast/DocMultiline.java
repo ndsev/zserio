@@ -7,7 +7,7 @@ import java.util.List;
 /**
  * Documentation comment node which can have multiple documentation lines.
  */
-public abstract class DocMultilineNode extends AstNodeBase
+public class DocMultiline extends AstNodeBase
 {
     /**
      * Constructor.
@@ -15,17 +15,23 @@ public abstract class DocMultilineNode extends AstNodeBase
      * @param location      AST node location.
      * @param docTextLine   First documentation line.
      */
-    public DocMultilineNode(AstLocation location, DocTextLine docTextLine)
+    public DocMultiline(AstLocation location, DocLine docTextLine)
     {
         super(location);
 
-        docTextLines.add(docTextLine);
+        docLines.add(docTextLine);
+    }
+
+    @Override
+    public void accept(ZserioAstVisitor visitor)
+    {
+        visitor.visitDocMultiline(this);
     }
 
     @Override
     public void visitChildren(ZserioAstVisitor visitor)
     {
-        for (DocTextLine docTextLine : docTextLines)
+        for (DocLine docTextLine : docLines)
             docTextLine.accept(visitor);
     }
 
@@ -34,9 +40,9 @@ public abstract class DocMultilineNode extends AstNodeBase
      *
      * @return List of documentation lines.
      */
-    public List<DocTextLine> getTextLines()
+    public List<DocLine> getLines()
     {
-        return Collections.unmodifiableList(docTextLines);
+        return Collections.unmodifiableList(docLines);
     }
 
     /**
@@ -44,10 +50,10 @@ public abstract class DocMultilineNode extends AstNodeBase
      *
      * @param docTextLine Text line to add.
      */
-    void addLine(DocTextLine docTextLine)
+    void addLine(DocLine docLine)
     {
-        docTextLines.add(docTextLine);
+        docLines.add(docLine);
     }
 
-    private final List<DocTextLine> docTextLines = new ArrayList<DocTextLine>();
+    private final List<DocLine> docLines = new ArrayList<DocLine>();
 };

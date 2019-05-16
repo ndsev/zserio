@@ -20,26 +20,26 @@ public class DocCommentParserTest
     public void emptyComment()
     {
         checkParseTree("docComment", "/** */",
-                "(docComment /** (whitespace  ) (docContent docLine) */)");
+                "(docComment /** (whitespace  ) (docContent docElement) */)");
         checkParseTree("docComment", "/** **/",
-                "(docComment /** (whitespace  ) (docContent docLine) **/)");
+                "(docComment /** (whitespace  ) (docContent docElement) **/)");
         checkParseTree("docComment", "/***/",
-                "(docComment /** (docContent docLine) */)");
+                "(docComment /** (docContent docElement) */)");
         checkParseTree("docComment", "/****/",
-                "(docComment /*** (docContent docLine) */)");
+                "(docComment /*** (docContent docElement) */)");
         checkParseTree("docComment", "/**\n */",
-                "(docComment /** (whitespace \\n ) (docContent docLine) */)");
+                "(docComment /** (whitespace \\n ) (docContent docElement) */)");
     }
 
     @Test
     public void emptyCommentNewlineWithDecoration()
     {
         checkParseTree("docComment", "/**\n * */",
-                "(docComment /** (whitespace \\n * ) (docContent docLine) */)");
+                "(docComment /** (whitespace \\n * ) (docContent docElement) */)");
         checkParseTree("docComment", "/**\n ** */",
-                "(docComment /** (whitespace \\n ** ) (docContent docLine) */)");
+                "(docComment /** (whitespace \\n ** ) (docContent docElement) */)");
         checkParseTree("docComment", "/**\n **\n **\n **/",
-                "(docComment /** (whitespace \\n ** \\n ** \\n *) (docContent docLine) */)");
+                "(docComment /** (whitespace \\n ** \\n ** \\n *) (docContent docElement) */)");
     }
 
     @Test
@@ -47,7 +47,8 @@ public class DocCommentParserTest
     {
         checkParseTree("docComment", "/** Single line. */",
                 "(docComment /** (whitespace  ) (docContent " +
-                        "(docLine (docTextLine (docText (textElement Single (whitespaceInLine  ) line .))))) " +
+                        "(docElement (docLine (docLineElement (docText Single (whitespaceInLine  ) line ." +
+                        "))))) " +
                 "(whitespace  ) */)");
     }
 
@@ -56,9 +57,9 @@ public class DocCommentParserTest
     {
         checkParseTree("docComment", "/**\n * Comment text\n * multiline.\n */",
                 "(docComment /** (whitespace \\n * ) (docContent " +
-                        "(docLine (docTextLine (docText (textElement Comment (whitespaceInLine  ) text)))) " +
+                        "(docElement (docLine (docLineElement (docText Comment (whitespaceInLine  ) text)))) " +
                         "\\n *  " +
-                        "(docLine (docTextLine (docText (textElement multiline .))))) " +
+                        "(docElement (docLine (docLineElement (docText multiline .))))) " +
                 "(whitespace \\n ) */)");
     }
 
@@ -67,9 +68,10 @@ public class DocCommentParserTest
     {
         checkParseTree("docComment", "/**\n Paragraph 1.\n *\n * Paragraph 2.\n */",
                 "(docComment /** (whitespace \\n ) (docContent " +
-                        "(docLine (docTextLine (docText (textElement Paragraph (whitespaceInLine  ) 1 .)))) " +
-                        "\\n * docLine \\n *  " +
-                        "(docLine (docTextLine (docText (textElement Paragraph (whitespaceInLine  ) 2 .))))) " +
+                        "(docElement (docLine (docLineElement (docText Paragraph (whitespaceInLine  ) 1 ." +
+                        ")))) \\n * docElement \\n *  " +
+                        "(docElement (docLine (docLineElement (docText Paragraph (whitespaceInLine  ) 2 ." +
+                        "))))) " +
                 "(whitespace \\n ) */)");
     }
 
@@ -78,11 +80,12 @@ public class DocCommentParserTest
     {
         checkParseTree("docComment", "/**\n Paragraph 1.\n * Next line.\n *\n * Paragraph 2.\n */",
                 "(docComment /** (whitespace \\n ) (docContent " +
-                        "(docLine (docTextLine (docText (textElement Paragraph (whitespaceInLine  ) 1 .)))) " +
-                        "\\n *  " +
-                        "(docLine (docTextLine (docText (textElement Next (whitespaceInLine  ) line .)))) " +
-                        "\\n * docLine \\n *  " +
-                        "(docLine (docTextLine (docText (textElement Paragraph (whitespaceInLine  ) 2 .))))) " +
+                        "(docElement (docLine (docLineElement (docText Paragraph (whitespaceInLine  ) 1 ." +
+                        ")))) \\n *  " +
+                        "(docElement (docLine (docLineElement (docText Next (whitespaceInLine  ) line ." +
+                        ")))) \\n * docElement \\n *  " +
+                        "(docElement (docLine (docLineElement (docText Paragraph (whitespaceInLine  ) 2 ." +
+                        "))))) " +
                 "(whitespace \\n ) */)");
     }
 
@@ -91,8 +94,8 @@ public class DocCommentParserTest
     {
         checkParseTree("docComment", "/** Hello.\n * @see \"alias\" id */",
                 "(docComment /** (whitespace  ) (docContent " +
-                        "(docLine (docTextLine (docText (textElement Hello .)))) \\n *  " +
-                        "(docLine (docTag (seeTag @see (whitespaceInParagraph  ) " +
+                        "(docElement (docLine (docLineElement (docText Hello .)))) \\n *  " +
+                        "(docElement (docTag (seeTag @see (whitespaceInParagraph  ) " +
                                 "(seeTagAlias \" (seeTagAliasText alias) \") (whitespaceInParagraph  ) " +
                                 "(seeTagId id))))) " +
                 "(whitespace  ) */)");
@@ -103,8 +106,8 @@ public class DocCommentParserTest
     {
         checkParseTree("docComment", "/** Hello.\n * @see id */",
                 "(docComment /** (whitespace  ) (docContent " +
-                        "(docLine (docTextLine (docText (textElement Hello .)))) \\n *  " +
-                        "(docLine (docTag (seeTag @see (whitespaceInParagraph  ) (seeTagId id))))) " +
+                        "(docElement (docLine (docLineElement (docText Hello .)))) \\n *  " +
+                        "(docElement (docTag (seeTag @see (whitespaceInParagraph  ) (seeTagId id))))) " +
                 "(whitespace  ) */)");
     }
 
@@ -113,22 +116,23 @@ public class DocCommentParserTest
     {
         checkParseTree("docComment", "/** See tag @see \"alias\" identifier test. */",
                 "(docComment /** (whitespace  ) (docContent " +
-                        "(docLine (docTextLine (docText (textElement See (whitespaceInLine  ) tag)) " +
+                        "(docElement (docLine (docLineElement (docText See (whitespaceInLine  ) tag)) " +
                         "(whitespaceInLine  ) " +
-                        "(docText (seeTag @see (whitespaceInParagraph  ) " +
+                        "(docLineElement (seeTag @see (whitespaceInParagraph  ) " +
                                 "(seeTagAlias \" (seeTagAliasText alias) \") (whitespaceInParagraph  ) " +
                                 "(seeTagId identifier))) (whitespaceInLine  ) " +
-                        "(docText (textElement test .))))) " +
+                        "(docLineElement (docText test .))))) " +
                 "(whitespace  ) */)");
 
         // see tag at the beginning
         checkParseTree("docComment", "/**\n * @see \"Structure A\" structA for more info.\n */",
-                "(docComment /** (whitespace \\n * ) (docContent (docLine (docTextLine " +
-                        "(docText (seeTag @see (whitespaceInParagraph  ) " +
+                "(docComment /** (whitespace \\n * ) (docContent (docElement (docLine " +
+                        "(docLineElement (seeTag @see (whitespaceInParagraph  ) " +
                                 "(seeTagAlias \" (seeTagAliasText Structure (whitespaceInLine  ) A) \") " +
                                 "(whitespaceInParagraph  ) " +
                                 "(seeTagId structA))) (whitespaceInLine  ) " +
-                        "(docText (textElement for (whitespaceInLine  ) more (whitespaceInLine  ) info .))))) " +
+                        "(docLineElement (docText for (whitespaceInLine  ) more (whitespaceInLine  ) info ." +
+                        "))))) " +
                 "(whitespace \\n ) */)");
     }
 
@@ -137,38 +141,45 @@ public class DocCommentParserTest
     {
         // single line
         checkParseTree("docComment", "/** @param arg1 Description. */",
-                "(docComment /** (whitespace  ) (docContent (docLine (docTag " +
+                "(docComment /** (whitespace  ) (docContent (docElement (docTag " +
                         "(paramTag @param (whitespaceInParagraph  ) (paramName arg1) " +
                                 "(whitespaceInParagraph  ) " +
-                                "(docTextLine (docText (textElement Description .))))))) " +
+                                "(docLine (docLineElement (docText Description .))))))) " +
                 "(whitespace  ) */)");
 
         // new line before description
         checkParseTree("docComment", "/** @param arg1 \n *         Description. */",
-                "(docComment /** (whitespace  ) (docContent (docLine (docTag " +
+                "(docComment /** (whitespace  ) (docContent (docElement (docTag " +
                         "(paramTag @param (whitespaceInParagraph  ) (paramName arg1) " +
                                 "(whitespaceInParagraph   \\n *                 ) " +
-                                "(docTextLine (docText (textElement Description .))))))) " +
+                                "(docLine (docLineElement (docText Description .))))))) " +
                 "(whitespace  ) */)");
 
         // new line before both id and description
         checkParseTree("docComment", "/** @param \n *     arg1 \n *         Description.\n */",
-                "(docComment /** (whitespace  ) (docContent (docLine (docTag " +
+                "(docComment /** (whitespace  ) (docContent (docElement (docTag " +
                         "(paramTag @param (whitespaceInParagraph   \\n *         ) (paramName arg1) " +
                                 "(whitespaceInParagraph   \\n *                 ) " +
-                                "(docTextLine (docText (textElement Description .))))))) " +
+                                "(docLine (docLineElement (docText Description .))))))) " +
                 "(whitespace \\n ) */)");
+
+        // without description
+        checkParseTree("docComment", "/** @param parameter */",
+                "(docComment /** (whitespace  ) " +
+                        "(docContent (docElement (docTag " +
+                                "(paramTag @param (whitespaceInParagraph  ) (paramName parameter))))) " +
+                "(whitespace  ) */)");
     }
 
     @Test
     public void paramTagAsText()
     {
         checkParseTree("docComment", "/** This is not @param p description param tag! */",
-                "(docComment /** (whitespace  ) (docContent (docLine (docTextLine " +
-                        "(docText (textElement This (whitespaceInLine  ) is (whitespaceInLine  ) not)) " +
-                        "(whitespaceInLine  ) (docText (textElement @param)) (whitespaceInLine  ) " +
-                        "(docText (textElement p (whitespaceInLine  ) description (whitespaceInLine  ) param " +
-                        "(whitespaceInLine  ) tag!))))) " +
+                "(docComment /** (whitespace  ) (docContent (docElement (docLine " +
+                        "(docLineElement (docText This (whitespaceInLine  ) is (whitespaceInLine  ) not)) " +
+                        "(whitespaceInLine  ) (docLineElement (docText @param)) (whitespaceInLine  ) " +
+                        "(docLineElement (docText p (whitespaceInLine  ) description (whitespaceInLine  ) " +
+                        "param (whitespaceInLine  ) tag !))))) " +
                 "(whitespace  ) */)");
     }
 
@@ -176,10 +187,16 @@ public class DocCommentParserTest
     public void todoTag()
     {
         checkParseTree("docComment", "/** @todo This is todo. Do it!. */",
-                "(docComment /** (whitespace  ) (docContent (docLine (docTag " +
-                        "(todoTag @todo (whitespaceInParagraph  ) (docTextLine (docText " +
-                                "(textElement This (whitespaceInLine  ) is (whitespaceInLine  ) " +
-                                "todo . (whitespaceInLine  ) Do (whitespaceInLine  ) it! .))))))) " +
+                "(docComment /** (whitespace  ) (docContent (docElement (docTag " +
+                        "(todoTag @todo (whitespaceInParagraph  ) (docLine (docLineElement " +
+                                "(docText This (whitespaceInLine  ) is (whitespaceInLine  ) " +
+                                "todo . (whitespaceInLine  ) Do (whitespaceInLine  ) it ! .))))))) " +
+                "(whitespace  ) */)");
+
+        // without text
+        checkParseTree("docComment", "/** @todo */",
+                "(docComment /** (whitespace  ) " +
+                        "(docContent (docElement (docTag (todoTag @todo)))) " +
                 "(whitespace  ) */)");
     }
 
@@ -187,10 +204,10 @@ public class DocCommentParserTest
     public void todoTagAsText()
     {
         checkParseTree("docComment", "/** This is not @todo tag! */",
-                "(docComment /** (whitespace  ) (docContent (docLine (docTextLine " +
-                        "(docText (textElement This (whitespaceInLine  ) is (whitespaceInLine  ) not)) " +
-                        "(whitespaceInLine  ) (docText (textElement @todo)) (whitespaceInLine  ) " +
-                        "(docText (textElement tag!))))) " +
+                "(docComment /** (whitespace  ) (docContent (docElement (docLine " +
+                        "(docLineElement (docText This (whitespaceInLine  ) is (whitespaceInLine  ) not)) " +
+                        "(whitespaceInLine  ) (docLineElement (docText @todo)) (whitespaceInLine  ) " +
+                        "(docLineElement (docText tag !))))) " +
                 "(whitespace  ) */)");
     }
 
@@ -198,7 +215,7 @@ public class DocCommentParserTest
     public void deprecatedTag()
     {
         checkParseTree("docComment", "/**\n * @deprecated\n */",
-                "(docComment /** (whitespace \\n * ) (docContent (docLine " +
+                "(docComment /** (whitespace \\n * ) (docContent (docElement " +
                         "(docTag (deprecatedTag @deprecated)))) " +
                 "(whitespace \\n ) */)");
     }
@@ -207,17 +224,17 @@ public class DocCommentParserTest
     public void deprecatedTagAsText()
     {
         checkParseTree("docComment", "/**\n * This is not @deprecated tag.\n */",
-                "(docComment /** (whitespace \\n * ) (docContent (docLine (docTextLine " +
-                        "(docText (textElement This (whitespaceInLine  ) is (whitespaceInLine  ) not)) " +
-                        "(whitespaceInLine  ) (docText (textElement @deprecated)) (whitespaceInLine  ) " +
-                        "(docText (textElement tag .))))) " +
+                "(docComment /** (whitespace \\n * ) (docContent (docElement (docLine " +
+                        "(docLineElement (docText This (whitespaceInLine  ) is (whitespaceInLine  ) not)) " +
+                        "(whitespaceInLine  ) (docLineElement (docText @deprecated)) (whitespaceInLine  ) " +
+                        "(docLineElement (docText tag .))))) " +
                 "(whitespace \\n ) */)");
 
         // with pending text
         checkParseTree("docComment", "/**\n * @deprecated with pending text.\n */",
-                "(docComment /** (whitespace \\n * ) (docContent (docLine (docTextLine " +
-                        "(docText (textElement @deprecated)) (whitespaceInLine  ) " +
-                        "(docText (textElement with (whitespaceInLine  ) pending " +
+                "(docComment /** (whitespace \\n * ) (docContent (docElement (docLine " +
+                        "(docLineElement (docText @deprecated)) (whitespaceInLine  ) " +
+                        "(docLineElement (docText with (whitespaceInLine  ) pending " +
                         "(whitespaceInLine  ) text .))))) " +
                 "(whitespace \\n ) */)");
     }
@@ -227,8 +244,8 @@ public class DocCommentParserTest
     {
         checkParseTree("docComment", "/** .\t\r\n\"*\\ \\\\ ?!:;+- */",
                 "(docComment /** (whitespace  ) (docContent " +
-                        "(docLine (docTextLine (docText (textElement .)))) (whitespaceInLine \\t) \\r\\n " +
-                        "(docLine (docTextLine (docText (textElement \" * \\ (whitespaceInLine  ) \\\\" +
+                        "(docElement (docLine (docLineElement (docText .)))) (whitespaceInLine \\t) \\r\\n " +
+                        "(docElement (docLine (docLineElement (docText \" * \\ (whitespaceInLine  ) \\\\" +
                                 " (whitespaceInLine  ) ?!:;+-))))) " +
                 "(whitespace  ) */)");
     }

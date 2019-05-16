@@ -1,36 +1,21 @@
 package zserio.ast;
 
 /**
- * Documentation node which wraps documentation text which can be either DocTextElement or DocTagSee.
+ * Text documentation node.
  */
 public class DocText extends AstNodeBase
 {
     /**
-     * Constructor from text element.
+     * Constructor.
      *
-     * @param location    AST node location.
-     * @param textElement Text element.
+     * @param location  AST node location.
+     * @param text      Text content.
      */
-    public DocText(AstLocation location, DocTextElement textElement)
+    public DocText(AstLocation location, String text)
     {
         super(location);
 
-        this.textElement = textElement;
-        this.seeTag = null;
-    }
-
-    /**
-     * Constructor from see tag.
-     *
-     * @param location AST node location.
-     * @param seeTag   See tag.
-     */
-    public DocText(AstLocation location, DocTagSee seeTag)
-    {
-        super(location);
-
-        this.textElement = null;
-        this.seeTag = seeTag;
+        this.text = text;
     }
 
     @Override
@@ -39,35 +24,15 @@ public class DocText extends AstNodeBase
         visitor.visitDocText(this);
     }
 
-    @Override
-    public void visitChildren(ZserioAstVisitor visitor)
-    {
-        if (textElement != null)
-            textElement.accept(visitor);
-        if (seeTag != null)
-            seeTag.accept(visitor);
-    }
-
     /**
-     * Gets text element if available.
+     * Gets text content of the current text element.
      *
-     * @return Text element or null.
+     * @return Text content.
      */
-    public DocTextElement getTextElement()
+    public String getText()
     {
-        return textElement;
+        return text;
     }
 
-    /**
-     * Gets see tag if available.
-     *
-     * @return See tag or null.
-     */
-    public DocTagSee getSeeTag()
-    {
-        return seeTag;
-    }
-
-    private final DocTextElement textElement;
-    private final DocTagSee seeTag;
-};
+    private final String text;
+}
