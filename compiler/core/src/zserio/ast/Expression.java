@@ -1152,33 +1152,36 @@ public class Expression extends AstNodeBase
         // side (package) can be found wrongly in local scope
         if (expressionFlag != ExpressionFlag.IS_DOT_RIGHT_OPERAND_ID)
         {
-            final Object identifierSymbol = forcedEvaluationScope.getSymbol(text);
-            if (identifierSymbol == null)
+            // explicit identifier does not have to be evaluated
+            if (expressionFlag != ExpressionFlag.IS_EXPLICIT)
             {
-                // it still can be a type
-                final ZserioType identifierType = pkg.getVisibleType(PackageName.EMPTY, text);
-                if (identifierType == null)
+                final Object identifierSymbol = forcedEvaluationScope.getSymbol(text);
+                if (identifierSymbol == null)
                 {
-                    // identifier not found
-                    if (expressionFlag != ExpressionFlag.IS_EXPLICIT &&
-                            expressionFlag != ExpressionFlag.IS_DOT_LEFT_OPERAND_ID)
+                    // it still can be a type
+                    final ZserioType identifierType = pkg.getVisibleType(PackageName.EMPTY, text);
+                    if (identifierType == null)
                     {
-                        // and expression is not explicit nor in dot expression
-                        throw new ParserException(this, "Unresolved symbol '" + text +
-                                "' within expression scope!");
-                    }
+                        // identifier not found
+                        if (expressionFlag != ExpressionFlag.IS_DOT_LEFT_OPERAND_ID)
+                        {
+                            // and expression is not in dot expression
+                            throw new ParserException(this, "Unresolved symbol '" + text +
+                                    "' within expression scope!");
+                        }
 
-                    // this can happened for a long package name, we must wait for dot
-                    unresolvedIdentifiers.add(this);
+                        // this can happened for a long package name, we must wait for dot
+                        unresolvedIdentifiers.add(this);
+                    }
+                    else
+                    {
+                        evaluateIdentifierType(identifierType);
+                    }
                 }
                 else
                 {
-                    evaluateIdentifierType(identifierType);
+                    evaluateIdentifierSymbol(identifierSymbol, forcedEvaluationScope, text);
                 }
-            }
-            else
-            {
-                evaluateIdentifierSymbol(identifierSymbol, forcedEvaluationScope, text);
             }
         }
     }

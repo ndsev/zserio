@@ -172,12 +172,6 @@ public class PythonExpressionFormattingPolicy implements ExpressionFormattingPol
     }
 
     @Override
-    public UnaryExpressionFormatting getExplicit(Expression expr)
-    {
-        return new UnaryExpressionFormatting("");
-    }
-
-    @Override
     public UnaryExpressionFormatting getNumBits(Expression expr)
     {
         importCollector.importPackage("zserio");

@@ -185,7 +185,6 @@ public interface ExpressionFormattingPolicy
     public UnaryExpressionFormatting getLengthOf(Expression expr);
     public UnaryExpressionFormatting getSum(Expression expr);
     public UnaryExpressionFormatting getValueOf(Expression expr);
-    public UnaryExpressionFormatting getExplicit(Expression expr);
     public UnaryExpressionFormatting getNumBits(Expression expr);
 
     // binary expressions formatting

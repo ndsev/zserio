@@ -241,12 +241,6 @@ public abstract class JavaDefaultExpressionFormattingPolicy extends DefaultExpre
     }
 
     @Override
-    public UnaryExpressionFormatting getExplicit(Expression expr)
-    {
-        return new UnaryExpressionFormatting("");
-    }
-
-    @Override
     public UnaryExpressionFormatting getNumBits(Expression expr)
     {
         return new UnaryExpressionFormatting("zserio.runtime.BuildInOperators.getNumBits(", ")");

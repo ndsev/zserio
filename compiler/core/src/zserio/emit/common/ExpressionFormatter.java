@@ -241,10 +241,6 @@ public class ExpressionFormatter
                 formatting = policy.getValueOf(expr);
                 break;
 
-            case ZserioParser.EXPLICIT:
-                formatting = policy.getExplicit(expr);
-                break;
-
             case ZserioParser.NUMBITS:
                 formatting = policy.getNumBits(expr);
                 break;

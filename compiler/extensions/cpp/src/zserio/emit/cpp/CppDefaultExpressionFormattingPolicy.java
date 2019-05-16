@@ -176,12 +176,6 @@ public abstract class CppDefaultExpressionFormattingPolicy extends DefaultExpres
     }
 
     @Override
-    public UnaryExpressionFormatting getExplicit(Expression expr)
-    {
-        return new UnaryExpressionFormatting("");
-    }
-
-    @Override
     public UnaryExpressionFormatting getNumBits(Expression expr)
     {
         includeCollector.addCppSystemIncludes(BUILD_IN_OPERATORS_INCLUDE);
