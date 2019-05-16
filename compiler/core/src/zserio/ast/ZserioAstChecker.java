@@ -81,6 +81,7 @@ public class ZserioAstChecker extends ZserioAstWalker
     {
         unionType.visitChildren(this);
         definedTypes.add(unionType);
+        unionType.check();
     }
 
     @Override
