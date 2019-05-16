@@ -3,6 +3,11 @@ set(ZSERIO_GENERATED_SOURCES
     ${ZSERIO_GEN_DIR}/optional_members/auto_optional/Container.cpp
     ${ZSERIO_GEN_DIR}/optional_members/auto_optional/Container.h
 
+    ${ZSERIO_GEN_DIR}/optional_members/optional_array_recursion/Employee.cpp
+    ${ZSERIO_GEN_DIR}/optional_members/optional_array_recursion/Employee.h
+    ${ZSERIO_GEN_DIR}/optional_members/optional_array_recursion/Title.cpp
+    ${ZSERIO_GEN_DIR}/optional_members/optional_array_recursion/Title.h
+
     ${ZSERIO_GEN_DIR}/optional_members/optional_array/TestStruct.cpp
     ${ZSERIO_GEN_DIR}/optional_members/optional_array/TestStruct.h
     ${ZSERIO_GEN_DIR}/optional_members/optional_array/Data8.cpp
@@ -14,11 +19,6 @@ set(ZSERIO_GENERATED_SOURCES
     ${ZSERIO_GEN_DIR}/optional_members/optional_expression/BlackColor.h
     ${ZSERIO_GEN_DIR}/optional_members/optional_expression/Container.cpp
     ${ZSERIO_GEN_DIR}/optional_members/optional_expression/Container.h
-
-    ${ZSERIO_GEN_DIR}/optional_members/optional_recursion/Employee.cpp
-    ${ZSERIO_GEN_DIR}/optional_members/optional_recursion/Employee.h
-    ${ZSERIO_GEN_DIR}/optional_members/optional_recursion/Title.cpp
-    ${ZSERIO_GEN_DIR}/optional_members/optional_recursion/Title.h
 )
 
 zserio_add_library(TARGET optional_members_zs
@@ -32,9 +32,9 @@ zserio_add_library(TARGET optional_members_zs
 
 add_test_sources(
     cpp/AutoOptionalTest.cpp
+    cpp/OptionalArrayRecursionTest.cpp
     cpp/OptionalArrayTest.cpp
     cpp/OptionalMembersTest.cpp
-    cpp/OptionalRecursionTest.cpp
 )
 
 add_test_dependencies(optional_members_zs)

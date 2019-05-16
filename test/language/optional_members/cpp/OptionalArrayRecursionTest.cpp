@@ -3,15 +3,15 @@
 #include "zserio/BitStreamWriter.h"
 #include "zserio/BitStreamReader.h"
 #
-#include "optional_members/optional_recursion/Employee.h"
-#include "optional_members/optional_recursion/Title.h"
+#include "optional_members/optional_array_recursion/Employee.h"
+#include "optional_members/optional_array_recursion/Title.h"
 
 namespace optional_members
 {
-namespace optional_recursion
+namespace optional_array_recursion
 {
 
-class OptionalRecursionTest : public ::testing::Test
+class OptionalArrayRecursionTest : public ::testing::Test
 {
 protected:
     void fillEmployee(Employee& employee, const char name[], uint16_t salary, Title title)
@@ -69,23 +69,23 @@ protected:
     static const size_t TEAM_LEAD_BIT_SIZE;
 };
 
-const char  OptionalRecursionTest::EMPLOYEE_TEAM_LEAD_NAME[] = "Nico";
-uint16_t    OptionalRecursionTest::EMPLOYEE_TEAM_LEAD_SALARY = 2000;
+const char  OptionalArrayRecursionTest::EMPLOYEE_TEAM_LEAD_NAME[] = "Nico";
+uint16_t    OptionalArrayRecursionTest::EMPLOYEE_TEAM_LEAD_SALARY = 2000;
 
-const char  OptionalRecursionTest::EMPLOYEE_DEVELOPER1_NAME[] = "Mike";
-uint16_t    OptionalRecursionTest::EMPLOYEE_DEVELOPER1_SALARY = 1000;
+const char  OptionalArrayRecursionTest::EMPLOYEE_DEVELOPER1_NAME[] = "Mike";
+uint16_t    OptionalArrayRecursionTest::EMPLOYEE_DEVELOPER1_SALARY = 1000;
 
-const char  OptionalRecursionTest::EMPLOYEE_DEVELOPER2_NAME[] = "Luke";
-uint16_t    OptionalRecursionTest::EMPLOYEE_DEVELOPER2_SALARY = 1800;
+const char  OptionalArrayRecursionTest::EMPLOYEE_DEVELOPER2_NAME[] = "Luke";
+uint16_t    OptionalArrayRecursionTest::EMPLOYEE_DEVELOPER2_SALARY = 1800;
 
-const size_t OptionalRecursionTest::NUM_DEVELOPERS = 2;
-const size_t OptionalRecursionTest::EMPTY_EMPLOYEE_BIT_SIZE = 32;
-const size_t OptionalRecursionTest::TEAM_LEAD_BIT_SIZE = EMPTY_EMPLOYEE_BIT_SIZE * 3 + 8 +
-        (sizeof(OptionalRecursionTest::EMPLOYEE_TEAM_LEAD_NAME) - 1) * 8 +
-        (sizeof(OptionalRecursionTest::EMPLOYEE_DEVELOPER1_NAME) - 1) * 8 +
-        (sizeof(OptionalRecursionTest::EMPLOYEE_DEVELOPER2_NAME) - 1) * 8;
+const size_t OptionalArrayRecursionTest::NUM_DEVELOPERS = 2;
+const size_t OptionalArrayRecursionTest::EMPTY_EMPLOYEE_BIT_SIZE = 32;
+const size_t OptionalArrayRecursionTest::TEAM_LEAD_BIT_SIZE = EMPTY_EMPLOYEE_BIT_SIZE * 3 + 8 +
+        (sizeof(OptionalArrayRecursionTest::EMPLOYEE_TEAM_LEAD_NAME) - 1) * 8 +
+        (sizeof(OptionalArrayRecursionTest::EMPLOYEE_DEVELOPER1_NAME) - 1) * 8 +
+        (sizeof(OptionalArrayRecursionTest::EMPLOYEE_DEVELOPER2_NAME) - 1) * 8;
 
-TEST_F(OptionalRecursionTest, hasTeamMembers)
+TEST_F(OptionalArrayRecursionTest, hasTeamMembers)
 {
     Employee teamLead;
     ASSERT_FALSE(teamLead.hasTeamMembers());
@@ -94,7 +94,7 @@ TEST_F(OptionalRecursionTest, hasTeamMembers)
     ASSERT_TRUE(teamLead.hasTeamMembers());
 }
 
-TEST_F(OptionalRecursionTest, bitSizeOf)
+TEST_F(OptionalArrayRecursionTest, bitSizeOf)
 {
     Employee teamLead;
     ASSERT_EQ(EMPTY_EMPLOYEE_BIT_SIZE, teamLead.bitSizeOf());
@@ -103,7 +103,7 @@ TEST_F(OptionalRecursionTest, bitSizeOf)
     ASSERT_EQ(TEAM_LEAD_BIT_SIZE, teamLead.bitSizeOf());
 }
 
-TEST_F(OptionalRecursionTest, initializeOffsets)
+TEST_F(OptionalArrayRecursionTest, initializeOffsets)
 {
     Employee teamLead;
     const size_t bitPosition = 1;
@@ -113,7 +113,7 @@ TEST_F(OptionalRecursionTest, initializeOffsets)
     ASSERT_EQ(bitPosition + TEAM_LEAD_BIT_SIZE, teamLead.initializeOffsets(bitPosition));
 }
 
-TEST_F(OptionalRecursionTest, operatorEquality)
+TEST_F(OptionalArrayRecursionTest, operatorEquality)
 {
     Employee teamLead1;
     Employee teamLead2;
@@ -126,7 +126,7 @@ TEST_F(OptionalRecursionTest, operatorEquality)
     ASSERT_TRUE(teamLead1 == teamLead2);
 }
 
-TEST_F(OptionalRecursionTest, hashCode)
+TEST_F(OptionalArrayRecursionTest, hashCode)
 {
     Employee teamLead1;
     Employee teamLead2;
@@ -139,7 +139,7 @@ TEST_F(OptionalRecursionTest, hashCode)
     ASSERT_EQ(teamLead1.hashCode(), teamLead2.hashCode());
 }
 
-TEST_F(OptionalRecursionTest, writeEmployee)
+TEST_F(OptionalArrayRecursionTest, writeEmployee)
 {
     Employee employee;
     fillEmployee(employee, EMPLOYEE_DEVELOPER1_NAME, EMPLOYEE_DEVELOPER1_SALARY, Title::DEVELOPER);
@@ -158,7 +158,7 @@ TEST_F(OptionalRecursionTest, writeEmployee)
     ASSERT_EQ(Title::DEVELOPER, readTeamLead.getTitle());
 }
 
-TEST_F(OptionalRecursionTest, writeTeamLead)
+TEST_F(OptionalArrayRecursionTest, writeTeamLead)
 {
     Employee teamLead;
     fillTeamLead(teamLead);
@@ -180,5 +180,5 @@ TEST_F(OptionalRecursionTest, writeTeamLead)
     ASSERT_EQ(NUM_DEVELOPERS, teamMembers.size());
 }
 
-} // namespace optional_recursion
+} // namespace optional_array_recursion
 } // namespace optional_members

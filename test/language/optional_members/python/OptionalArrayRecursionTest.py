@@ -3,10 +3,10 @@ import zserio
 
 from testutils import getZserioApi
 
-class OptionalRecursionTest(unittest.TestCase):
+class OptionalArrayRecursionTest(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        cls.api = getZserioApi(__file__, "optional_members.zs").optional_recursion
+        cls.api = getZserioApi(__file__, "optional_members.zs").optional_array_recursion
 
     def testEq(self):
         emptyEmployee1 = self.api.Employee()

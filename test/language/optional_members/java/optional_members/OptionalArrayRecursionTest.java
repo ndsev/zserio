@@ -9,13 +9,13 @@ import java.util.List;
 
 import org.junit.Test;
 
-import optional_members.optional_recursion.Employee;
-import optional_members.optional_recursion.Title;
+import optional_members.optional_array_recursion.Employee;
+import optional_members.optional_array_recursion.Title;
 
 import zserio.runtime.array.ObjectArray;
 import zserio.runtime.io.FileBitStreamReader;
 
-public class OptionalRecursionTest
+public class OptionalArrayRecursionTest
 {
     @Test
     public void bitSizeOf()

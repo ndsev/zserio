@@ -25,10 +25,9 @@ public class ZserioAstChecker extends ZserioAstWalker
     @Override
     public void visitRoot(Root root)
     {
+        root.visitChildren(this);
         if (checkUnusedTypes)
         {
-            super.visitRoot(root);
-
             for (ZserioType definedType : definedTypes)
             {
                 final String definedTypeName = ZserioTypeUtil.getFullName(definedType);
