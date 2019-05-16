@@ -168,7 +168,7 @@ public class TypeNameEmitter
         else
         {
             ZserioType res = TypeReference.resolveType(t);
-            result = res.toString();
+            result = res.getName();
         }
 
         return StringHtmlUtil.escapeForHtml(result);
