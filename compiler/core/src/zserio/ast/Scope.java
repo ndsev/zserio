@@ -1,10 +1,8 @@
 package zserio.ast;
 
-import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
-import zserio.antlr.util.BaseTokenAST;
 import zserio.antlr.util.ParserException;
 
 /**
@@ -14,9 +12,9 @@ import zserio.antlr.util.ParserException;
  * types (called owner) which contains fields (Compound Types, SQL Table, SQL Database...). Then, field name
  * is a symbol name and object represents this field.
  *
- * Scopes are filled by ANTLR2 TypeEvaluator walker.
+ * Scopes are filled by ZserioAstScopeSetter.
  */
-public class Scope implements Serializable
+class Scope
 {
     /**
      * Constructs scope within given package and sets owner to the given Zserio type.
@@ -42,28 +40,26 @@ public class Scope implements Serializable
     /**
      * Adds a name with its corresponding object to the current scope.
      *
-     * @param name   AST node which defines name in current scope.
+     * @param name Symbol name in current scope.
      * @param symbol AST node which represent an object of that name.
-     *
-     * @throws ParserException Throws if symbol has been already defined in the current scope.
      */
-    public void setSymbol(BaseTokenAST name, Object symbol) throws ParserException
+    public void setSymbol(String name, AstNode node)
     {
-        final Object symbolObject = symbolTable.put(name.getText(), symbol);
+        final Object symbolObject = symbolTable.put(name, node);
         if (symbolObject != null)
-            throw new ParserException(name, "'" + name.getText() + "' is already defined in this scope!");
+            throw new ParserException(node, "'" + name + "' is already defined in this scope!");
     }
 
     /**
      * Removes the symbol object for the given name.
      *
-     * @param name Name of the symbol to be removed.
+     * @param name Name in the current scope to remove.
      *
      * @return Removed symbol object or null if no such symbol is available.
      */
-    public Object removeSymbol(BaseTokenAST name)
+    public AstNode removeSymbol(String name)
     {
-        return symbolTable.remove(name.getText());
+        return symbolTable.remove(name);
     }
 
     /**
@@ -96,12 +92,10 @@ public class Scope implements Serializable
      *
      * @return Corresponding symbol object or null if no such symbol is visible.
      */
-    public Object getSymbol(String name)
+    public AstNode getSymbol(String name)
     {
         return symbolTable.get(name);
     }
-
-    private static final long serialVersionUID = -5373010074297029934L;
 
     private final ZserioType owner;
 
@@ -109,5 +103,5 @@ public class Scope implements Serializable
      * Symbol table containing local symbols defined within the current scope. Each symbol is mapped to
      * an Object.
      */
-    private final Map<String, Object> symbolTable = new HashMap<String, Object>();
+    private final Map<String, AstNode> symbolTable = new HashMap<String, AstNode>();
 }

@@ -36,7 +36,7 @@ public class EnumerationTypesErrorTest
     @Test
     public void cyclicDefinitionUsingConstant()
     {
-        final String error = "cyclic_definition_using_constant_error.zs:11:27: Cyclic dependency detected in " +
+        final String error = "cyclic_definition_using_constant_error.zs:8:13: Cyclic dependency detected in " +
                 "expression evaluation!";
         assertTrue(zserioErrors.isPresent(error));
     }
@@ -44,7 +44,7 @@ public class EnumerationTypesErrorTest
     @Test
     public void cyclicDefinitionUsingEnumValue()
     {
-        final String error = "cyclic_definition_using_enum_value_error.zs:12:15: Cyclic dependency detected " +
+        final String error = "cyclic_definition_using_enum_value_error.zs:7:19: Cyclic dependency detected " +
                 "in expression evaluation!";
         assertTrue(zserioErrors.isPresent(error));
     }
@@ -68,7 +68,7 @@ public class EnumerationTypesErrorTest
     public void enumTypeValue()
     {
         final String error =
-                "enum_type_value_error.zs:7:27: Enumeration item 'DARK_BLUE' has non-integer value!";
+                "enum_type_value_error.zs:7:18: Enumeration item 'DARK_BLUE' has non-integer value!";
         assertTrue(zserioErrors.isPresent(error));
     }
 
@@ -92,7 +92,7 @@ public class EnumerationTypesErrorTest
     public void stringEnumError()
     {
         final String error =
-                "string_enum_error.zs:3:1: Enumeration 'WrongStringEnum' has forbidden type string!";
+                "string_enum_error.zs:3:13: Enumeration 'WrongStringEnum' has forbidden type string!";
         assertTrue(zserioErrors.isPresent(error));
     }
 

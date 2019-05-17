@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import zserio.ast.CompoundType;
+import zserio.ast.ConstType;
 import zserio.ast.ServiceType;
 import zserio.ast.Subtype;
 import zserio.ast.ZserioType;
@@ -19,13 +20,15 @@ public class SubtypeEmitter extends DefaultHtmlEmitter
     private DocCommentTemplateData docCommentTemplateData;
     private final String docPath;
     private final boolean withSvgDiagrams;
+    private final UsedByCollector usedByCollector;
 
-    public SubtypeEmitter(String outputPath, boolean withSvgDiagrams)
+    public SubtypeEmitter(String outputPath, boolean withSvgDiagrams, UsedByCollector usedByCollector)
     {
         super(outputPath);
         docPath = outputPath;
         directory = new File(directory, CONTENT_FOLDER);
         this.withSvgDiagrams = withSvgDiagrams;
+        this.usedByCollector = usedByCollector;
     }
 
     public void emit(Subtype s) throws ZserioEmitException
@@ -33,13 +36,13 @@ public class SubtypeEmitter extends DefaultHtmlEmitter
         this.subtype = s;
         docCommentTemplateData = new DocCommentTemplateData(subtype.getDocComment());
         containers.clear();
-        for (CompoundType compound : subtype.getUsedByCompoundList())
+        for (CompoundType compound : usedByCollector.getUsedByTypes(subtype, CompoundType.class))
         {
             CompoundEmitter ce = new CompoundEmitter(compound);
             containers.add(ce);
         }
         services.clear();
-        for (ServiceType service : subtype.getUsedByServiceList())
+        for (ServiceType service : usedByCollector.getUsedByTypes(subtype, ServiceType.class))
         {
             services.add(new LinkedType(service));
         }
@@ -105,7 +108,7 @@ public class SubtypeEmitter extends DefaultHtmlEmitter
             throw new RuntimeException("getConstInstances() called before emit()!");
 
         List<LinkedType> results = new ArrayList<LinkedType>();
-        for( ZserioType type : subtype.getUsedByConstList() )
+        for (ZserioType type : usedByCollector.getUsedByTypes(subtype, ConstType.class))
         {
             results.add( new LinkedType(type) );
         }

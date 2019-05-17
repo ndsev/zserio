@@ -8,7 +8,7 @@ import zserio.antlr.util.ParserException;
 /**
  * This class implements various utilities on Expression type.
  */
-public class ExpressionUtil
+class ExpressionUtil
 {
     /**
      * Checks expression type according given Zserio type.
@@ -19,7 +19,6 @@ public class ExpressionUtil
      * @throws ParserException Throws if expression type does not correspond to Zserio type.
      */
     public static void checkExpressionType(Expression expression, ZserioType type)
-            throws ParserException
     {
         boolean isTypeMismatch = true;
         if (type instanceof IntegerType)
@@ -78,7 +77,6 @@ public class ExpressionUtil
      * @throws ParserException Throws if integer expression exceeds the bounds of its type.
      */
     public static void checkIntegerExpressionRange(Expression expression, ZserioType type, String ownerName)
-            throws ParserException
     {
         if (type instanceof IntegerType)
         {

@@ -3,7 +3,7 @@ package zserio.emit.common.sql.types;
 import zserio.emit.common.NativeType;
 
 /**
- * Interface for SQLite3 native types.
+ * Interface for SQLite native types used by emitters.
  */
 public interface SqlNativeType extends NativeType
 {

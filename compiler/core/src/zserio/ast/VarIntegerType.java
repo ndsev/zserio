@@ -2,18 +2,91 @@ package zserio.ast;
 
 import java.math.BigInteger;
 
-import zserio.antlr.ZserioParserTokenTypes;
-import zserio.antlr.util.ParserException;
+import org.antlr.v4.runtime.Token;
+
+import zserio.antlr.ZserioParser;
 
 /**
- * AST node for built-in signed and unsigned variable integer types.
+ * AST node for built-in signed and unsigned variable Integer types.
  *
- * Variable integer types (varint16, varuint16, ...) are Zserio types as well.
+ * Variable Integer types (varint16, varuint16, ...) are Zserio types as well.
  */
 public class VarIntegerType extends IntegerType
 {
+    /**
+     * Constructor from ANTLR4 token.
+     *
+     * @param token Token to construct from.
+     */
+    public VarIntegerType(Token token)
+    {
+        super(token);
+
+        switch (token.getType())
+        {
+        case ZserioParser.VARUINT16:
+            isSigned = false;
+            maxBitSize = 16;
+            upperBound = BigInteger.ONE.shiftLeft(15).subtract(BigInteger.ONE);
+            lowerBound = BigInteger.ZERO;
+            break;
+
+        case ZserioParser.VARINT16:
+            isSigned = true;
+            maxBitSize = 16;
+            upperBound = BigInteger.ONE.shiftLeft(14).subtract(BigInteger.ONE);
+            lowerBound = upperBound.negate();
+            break;
+
+        case ZserioParser.VARUINT32:
+            isSigned = false;
+            maxBitSize = 32;
+            upperBound = BigInteger.ONE.shiftLeft(29).subtract(BigInteger.ONE);
+            lowerBound = BigInteger.ZERO;
+            break;
+
+        case ZserioParser.VARINT32:
+            isSigned = true;
+            maxBitSize = 32;
+            upperBound = BigInteger.ONE.shiftLeft(28).subtract(BigInteger.ONE);
+            lowerBound = upperBound.negate();
+            break;
+
+        case ZserioParser.VARUINT64:
+            isSigned = false;
+            maxBitSize = 64;
+            upperBound = BigInteger.ONE.shiftLeft(57).subtract(BigInteger.ONE);
+            lowerBound = BigInteger.ZERO;
+            break;
+
+        case ZserioParser.VARINT64:
+            isSigned = true;
+            maxBitSize = 64;
+            upperBound = BigInteger.ONE.shiftLeft(56).subtract(BigInteger.ONE);
+            lowerBound = upperBound.negate();
+            break;
+
+        case ZserioParser.VARUINT:
+            isSigned = false;
+            maxBitSize = 72;
+            upperBound = BigInteger.ONE.shiftLeft(64).subtract(BigInteger.ONE);
+            lowerBound = BigInteger.ZERO;
+            break;
+
+        case ZserioParser.VARINT:
+            isSigned = true;
+            maxBitSize = 72;
+            upperBound = BigInteger.valueOf(Long.MAX_VALUE);
+            lowerBound = BigInteger.valueOf(Long.MIN_VALUE);
+            break;
+
+        default:
+            throw new InternalError("Unexpected AST node type in VarIntegerType!");
+        }
+    }
+
     @Override
-    public void callVisitor(ZserioTypeVisitor visitor)
+    public void accept(ZserioAstVisitor visitor)
     {
         visitor.visitVarIntegerType(this);
     }
@@ -46,76 +119,8 @@ public class VarIntegerType extends IntegerType
         return maxBitSize;
     }
 
-    @Override
-    protected void evaluate() throws ParserException
-    {
-        switch (getType())
-        {
-        case ZserioParserTokenTypes.VARUINT16:
-            isSigned = false;
-            maxBitSize = 16;
-            upperBound = BigInteger.ONE.shiftLeft(15).subtract(BigInteger.ONE);
-            lowerBound = BigInteger.ZERO;
-            break;
-
-        case ZserioParserTokenTypes.VARINT16:
-            upperBound = BigInteger.ONE.shiftLeft(14).subtract(BigInteger.ONE);
-            lowerBound = upperBound.negate();
-            isSigned = true;
-            maxBitSize = 16;
-            break;
-
-        case ZserioParserTokenTypes.VARUINT32:
-            isSigned = false;
-            maxBitSize = 32;
-            upperBound = BigInteger.ONE.shiftLeft(29).subtract(BigInteger.ONE);
-            lowerBound = BigInteger.ZERO;
-            break;
-
-        case ZserioParserTokenTypes.VARINT32:
-            upperBound = BigInteger.ONE.shiftLeft(28).subtract(BigInteger.ONE);
-            lowerBound = upperBound.negate();
-            isSigned = true;
-            maxBitSize = 32;
-            break;
-
-        case ZserioParserTokenTypes.VARUINT64:
-            isSigned = false;
-            maxBitSize = 64;
-            upperBound = BigInteger.ONE.shiftLeft(57).subtract(BigInteger.ONE);
-            lowerBound = BigInteger.ZERO;
-            break;
-
-        case ZserioParserTokenTypes.VARINT64:
-            upperBound = BigInteger.ONE.shiftLeft(56).subtract(BigInteger.ONE);
-            lowerBound = upperBound.negate();
-            isSigned = true;
-            maxBitSize = 64;
-            break;
-
-        case ZserioParserTokenTypes.VARUINT:
-            upperBound = BigInteger.ONE.shiftLeft(64).subtract(BigInteger.ONE);
-            lowerBound = BigInteger.ZERO;
-            isSigned = false;
-            maxBitSize = 72;
-            break;
-
-        case ZserioParserTokenTypes.VARINT:
-            upperBound = BigInteger.valueOf(Long.MAX_VALUE);
-            lowerBound = BigInteger.valueOf(Long.MIN_VALUE);
-            isSigned = true;
-            maxBitSize = 72;
-            break;
-
-        default:
-            throw new ParserException(this, "Unexpected AST node type in VarIntegerType!");
-        }
-    }
-
-    private static final long serialVersionUID = -1494389523051889417L;
-
-    private BigInteger upperBound;
-    private BigInteger lowerBound;
-    private boolean isSigned;
-    private int maxBitSize;
+    private final boolean isSigned;
+    private final int maxBitSize;
+    private final BigInteger upperBound;
+    private final BigInteger lowerBound;
 }

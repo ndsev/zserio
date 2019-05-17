@@ -7,6 +7,7 @@ import java.util.List;
 import zserio.ast.ChoiceType;
 import zserio.ast.CompoundType;
 import zserio.ast.ConstType;
+import zserio.ast.DocComment;
 import zserio.ast.EnumItem;
 import zserio.ast.EnumType;
 import zserio.ast.Field;
@@ -17,7 +18,6 @@ import zserio.ast.SqlTableType;
 import zserio.ast.Subtype;
 import zserio.ast.ZserioType;
 import zserio.ast.UnionType;
-import zserio.ast.doc.DocCommentToken;
 import zserio.emit.common.ZserioEmitException;
 import freemarker.template.Template;
 import freemarker.template.TemplateException;
@@ -144,7 +144,7 @@ public class DeprecatedEmitter extends DefaultHtmlEmitter
     }
 
     @Override
-    public void beginConst(ConstType constType)
+    public void beginConst(ConstType constType) throws ZserioEmitException
     {
         if (getIsDeprecated(constType.getDocComment()))
         {
@@ -154,7 +154,7 @@ public class DeprecatedEmitter extends DefaultHtmlEmitter
     }
 
     @Override
-    public void beginStructure(StructureType structureType)
+    public void beginStructure(StructureType structureType) throws ZserioEmitException
     {
         if (getIsDeprecated(structureType.getDocComment()))
         {
@@ -166,7 +166,7 @@ public class DeprecatedEmitter extends DefaultHtmlEmitter
     }
 
     @Override
-    public void beginChoice(ChoiceType choiceType)
+    public void beginChoice(ChoiceType choiceType) throws ZserioEmitException
     {
         if (getIsDeprecated(choiceType.getDocComment()))
         {
@@ -179,7 +179,7 @@ public class DeprecatedEmitter extends DefaultHtmlEmitter
 
 
     @Override
-    public void beginUnion(UnionType unionType)
+    public void beginUnion(UnionType unionType) throws ZserioEmitException
     {
         if (getIsDeprecated(unionType.getDocComment()))
         {
@@ -190,7 +190,7 @@ public class DeprecatedEmitter extends DefaultHtmlEmitter
         handleFields(unionType);
     }
 
-    public void handleFields( CompoundType ct )
+    public void handleFields( CompoundType ct ) throws ZserioEmitException
     {
         for( Field f : ct.getFields() )
         {
@@ -203,7 +203,7 @@ public class DeprecatedEmitter extends DefaultHtmlEmitter
     }
 
     @Override
-    public void beginEnumeration(EnumType enumType)
+    public void beginEnumeration(EnumType enumType) throws ZserioEmitException
     {
         if (getIsDeprecated(enumType.getDocComment()))
         {
@@ -223,7 +223,7 @@ public class DeprecatedEmitter extends DefaultHtmlEmitter
     }
 
     @Override
-    public void beginSubtype(Subtype subtype)
+    public void beginSubtype(Subtype subtype) throws ZserioEmitException
     {
         if (getIsDeprecated(subtype.getDocComment()))
         {
@@ -233,7 +233,7 @@ public class DeprecatedEmitter extends DefaultHtmlEmitter
     }
 
     @Override
-    public void beginSqlDatabase(SqlDatabaseType sqlDatabaseType)
+    public void beginSqlDatabase(SqlDatabaseType sqlDatabaseType) throws ZserioEmitException
     {
         if (getIsDeprecated(sqlDatabaseType.getDocComment()))
         {
@@ -245,7 +245,7 @@ public class DeprecatedEmitter extends DefaultHtmlEmitter
     }
 
     @Override
-    public void beginSqlTable(SqlTableType sqlTableType)
+    public void beginSqlTable(SqlTableType sqlTableType) throws ZserioEmitException
     {
         if (getIsDeprecated(sqlTableType.getDocComment()))
         {
@@ -256,11 +256,11 @@ public class DeprecatedEmitter extends DefaultHtmlEmitter
         handleFields(sqlTableType);
     }
 
-    public boolean getIsDeprecated(DocCommentToken docCommentToken)
+    public boolean getIsDeprecated(DocComment docComment) throws ZserioEmitException
     {
         boolean isDeprecated = false;
-        if (docCommentToken != null)
-            isDeprecated = docCommentToken.isDeprecated();
+        if (docComment != null)
+            isDeprecated = new DocCommentTemplateData(docComment).getIsDeprecated();
 
         return isDeprecated;
     };

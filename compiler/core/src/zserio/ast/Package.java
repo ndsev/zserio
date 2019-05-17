@@ -1,7 +1,7 @@
 package zserio.ast;
 
-import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -9,79 +9,54 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 
-import zserio.antlr.ZserioParserTokenTypes;
-import zserio.antlr.util.BaseTokenAST;
+import org.antlr.v4.runtime.Token;
+
 import zserio.antlr.util.ParserException;
 import zserio.tools.HashUtil;
 import zserio.tools.ZserioToolPrinter;
 
 /**
- * The representation of AST PACKAGE node.
+ * AST node for one package defined in the language.
  *
- * This class represents a Zserio package which provides a separate lexical scope for all type names.
- *
- * By default, only type names defined in the current package are visible. Names from other packages can be
- * made visible with an import declaration.
+ * Package is represented by one translation unit (one source file).
  */
-public class Package extends TokenAST
+public class Package extends AstNodeWithDoc
 {
     /**
-     * Adds import to this package.
+     * Constructor.
      *
-     * @param importedNode AST import node to add.
+     * @param token       ANTLR4 token to localize AST node in the sources.
+     * @param packageName Name of the package.
+     * @param imports     List of all imports defined in the package.
+     * @param localTypes  Map of all available local types defined in the package.
+     * @param docComment  Documentation comment belonging to this node.
      */
-    public void addImport(Import importedNode)
+    public Package(Token token, PackageName packageName, List<Import> imports,
+            LinkedHashMap<String, ZserioType> localTypes, DocComment docComment)
     {
-        importedNodes.add(importedNode);
+        super(token, docComment);
+
+        this.packageName = packageName;
+        this.imports = imports;
+        this.localTypes = localTypes;
     }
 
-    /**
-     * Adds type reference to resolve.
-     *
-     * This method is called from ANTLR TypeEvaluator walker.
-     *
-     * @param typeReference Type reference to resolve.
-     */
-    public void addTypeReferenceToResolve(TypeReference typeReference)
+    @Override
+    public void accept(ZserioAstVisitor visitor)
     {
-        typeReferencesToResolve.add(typeReference);
+        visitor.visitPackage(this);
     }
 
-    /**
-     * Stores a type in the package types map.
-     *
-     * @param name AST node which defines type to add.
-     * @param type Zserio type to add.
-     *
-     * @throws ParserException Throws if type has been already defined in the current package.
-     */
-    public void setLocalType(BaseTokenAST name, ZserioType type) throws ParserException
+    @Override
+    public void visitChildren(ZserioAstVisitor visitor)
     {
-        final ZserioType addedType = localTypes.put(name.getText(), type);
-        if (addedType != null)
-            throw new ParserException(name, "'" + name.getText() + "' is already defined in this package!");
-    }
+        for (Import packageImport : imports)
+            packageImport.accept(visitor);
 
-    /**
-     * Resolves this package.
-     *
-     * This methods
-     *
-     * - resolves all imports which belong to this package
-     * - resolves all type references which belong to this package
-     * - resolves all subtypes which belong to this package
-     *
-     * @param packageNameMap   Map of all available package name to the package object.
-     *
-     * @throws ParserException In case of wrong import or wrong type reference or if cyclic subtype definition
-     *                         is detected.
-     */
-    public void resolve(Map<PackageName, Package> packageNameMap) throws ParserException
-    {
-        // because subtypes can used type references, type references must be resolved before subtypes
-        resolveImports(packageNameMap);
-        resolveTypeReferences();
-        resolveSubtypes();
+        for (ZserioType type : localTypes.values())
+            type.accept(visitor);
+
+        super.visitChildren(visitor);
     }
 
     /**
@@ -91,22 +66,29 @@ public class Package extends TokenAST
      */
     public PackageName getPackageName()
     {
-        return packageNameBuilder.get();
+        return packageName;
+    }
+
+    /**
+     * Gets imports which are defined in this package.
+     *
+     * @return List of all imports defined in this package.
+     */
+    public List<Import> getImports()
+    {
+        return Collections.unmodifiableList(imports);
     }
 
     /**
      * Gets Zserio type for given type name with its package if it's visible for this package.
      *
-     * @param ownerToken      AST token which holds type to resolve (used for ParserException).
+     * @param ownerNode       AST node which holds type to resolve (used for ParserException).
      * @param typePackageName Package name of the type to resolve.
      * @param typeName        Type name to resolve.
      *
      * @return Zserio type if given type name is visible for this package or null if given type name is unknown.
-     *
-     * @throws ParserException Throws in case of given type name is ambiguous for this package.
      */
-    public ZserioType getVisibleType(BaseTokenAST ownerToken, PackageName typePackageName, String typeName)
-            throws ParserException
+    ZserioType getVisibleType(AstNode ownerNode, PackageName typePackageName, String typeName)
     {
         final List<ZserioType> foundTypes = getAllVisibleTypes(typePackageName, typeName);
         final int numFoundTypes = foundTypes.size();
@@ -114,7 +96,7 @@ public class Package extends TokenAST
         {
             final String firstPackageName = foundTypes.get(0).getPackage().getPackageName().toString();
             final String secondPackageName = foundTypes.get(1).getPackage().getPackageName().toString();
-            throw new ParserException(ownerToken, "Ambiguous type reference '" + typeName +
+            throw new ParserException(ownerNode, "Ambiguous type reference '" + typeName +
                     "' found in packages '" + firstPackageName + "' and '" + secondPackageName + "'!");
         }
 
@@ -131,7 +113,7 @@ public class Package extends TokenAST
      *
      * @return Zserio type if given type name is visible for this package or null if given type name is unknown.
      */
-    public ZserioType getVisibleType(PackageName typePackageName, String typeName)
+    ZserioType getVisibleType(PackageName typePackageName, String typeName)
     {
         final List<ZserioType> foundTypes = getAllVisibleTypes(typePackageName, typeName);
 
@@ -139,36 +121,19 @@ public class Package extends TokenAST
     }
 
     /**
-     * Gets list of all local types stored in the packages.
+     * Resolves this package.
      *
-     * This is called from doc emitter only. Doc emitter should be redesigned not to require such method. TODO
+     * This method
      *
-     * @return List of all local types stored in the packages.
+     * - resolves all imports which belong to this package
+     * - resolves all type references which belong to this package
+     * - resolves all subtypes which belong to this package
+     *
+     * @param packageNameMap Map of all available package name to the package object.
      */
-    public Iterable<ZserioType> getLocalTypes()
+    void resolve(Map<PackageName, Package> packageNameMap)
     {
-        return localTypes.values();
-    }
-
-    @Override
-    protected boolean evaluateChild(BaseTokenAST child) throws ParserException
-    {
-        switch (child.getType())
-        {
-        case ZserioParserTokenTypes.ID:
-            packageNameBuilder.addId(child.getText());
-            break;
-
-        default:
-            return false;
-        }
-
-        return true;
-    }
-
-    private void resolveImports(Map<PackageName, Package> packageNameMap) throws ParserException
-    {
-        for (Import importedNode : importedNodes)
+        for (Import importedNode : imports)
         {
             final PackageName importedPackageName = importedNode.getImportedPackageName();
             final Package importedPackage = packageNameMap.get(importedPackageName);
@@ -234,21 +199,6 @@ public class Package extends TokenAST
         }
     }
 
-    private void resolveTypeReferences() throws ParserException
-    {
-        for (TypeReference typeReference : typeReferencesToResolve)
-            typeReference.resolve(this);
-    }
-
-    private void resolveSubtypes() throws ParserException
-    {
-        for (ZserioType type : localTypes.values())
-        {
-            if (type instanceof Subtype)
-                ((Subtype)type).resolve();
-        }
-    }
-
     private List<ZserioType> getAllVisibleTypes(PackageName typePackageName, String typeName)
     {
         final List<ZserioType> foundTypes = new ArrayList<ZserioType>();
@@ -307,7 +257,7 @@ public class Package extends TokenAST
         return foundTypes;
     }
 
-    private static class SingleTypeName implements Comparable<SingleTypeName>, Serializable
+    private static class SingleTypeName implements Comparable<SingleTypeName>
     {
         public SingleTypeName(Package packageType, String typeName)
         {
@@ -357,24 +307,17 @@ public class Package extends TokenAST
             return typeName;
         }
 
-        private static final long serialVersionUID = -1L;
-
         private final Package packageType;
         private final String typeName;
     }
 
-    private static final long serialVersionUID = -1L;
+    private final PackageName packageName;
+    private final List<Import> imports;
 
-    private final PackageName.Builder packageNameBuilder = new PackageName.Builder();
+    // this must be a LinkedHashMap because of 'Cyclic dependency' error checked in ZserioAstResolver
+    private final LinkedHashMap<String, ZserioType> localTypes;
 
-    // this must be a LinkedHashMap because of 'Cyclic dependency' error checked in resolveSubtypes()
-    private final Map<String, ZserioType> localTypes = new LinkedHashMap<String, ZserioType>();
-
-    private final List<Import> importedNodes = new ArrayList<Import>();
     private final Set<Package> importedPackages = new HashSet<Package>();
-
     // this must be a TreeSet because of 'Ambiguous type reference' error checked in getVisibleType()
     private final Set<SingleTypeName> importedSingleTypes = new TreeSet<SingleTypeName>();
-
-    private final List<TypeReference> typeReferencesToResolve = new ArrayList<TypeReference>();
 }

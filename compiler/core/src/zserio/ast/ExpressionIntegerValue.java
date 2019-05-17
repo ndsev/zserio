@@ -1,6 +1,5 @@
 package zserio.ast;
 
-import java.io.Serializable;
 import java.math.BigInteger;
 
 /**
@@ -13,7 +12,7 @@ import java.math.BigInteger;
  * - lower and upper bounds if result of integer expression value is unknown
  * - flag which is set if expression contains value which needs BigInteger type
  */
-class ExpressionIntegerValue implements Serializable
+class ExpressionIntegerValue
 {
     /**
      * Empty constructor.
@@ -67,34 +66,6 @@ class ExpressionIntegerValue implements Serializable
         this.value = value;
         this.lowerBound = lowerBound;
         this.upperBound = upperBound;
-        this.needsBigInteger = needsBigInteger;
-    }
-
-    /**
-     * Private constructor from lower and upper bounds and from BigInteger flag.
-     *
-     * @param lowerBound      Lower bound to construct from.
-     * @param upperBound      Upper bound to construct from.
-     * @param needsBigInteger BigInteger flag to construct from.
-     */
-    private ExpressionIntegerValue(BigInteger lowerBound, BigInteger upperBound, boolean needsBigInteger)
-    {
-        value = null;
-        this.lowerBound = lowerBound;
-        this.upperBound = upperBound;
-        this.needsBigInteger = needsBigInteger;
-    }
-
-    /**
-     * Private constructor from BigInteger flag.
-     *
-     * @param needsBigInteger BigInteger flag to construct from.
-     */
-    private ExpressionIntegerValue(boolean needsBigInteger)
-    {
-        value = null;
-        lowerBound = null;
-        upperBound = null;
         this.needsBigInteger = needsBigInteger;
     }
 
@@ -447,6 +418,34 @@ class ExpressionIntegerValue implements Serializable
         return new ExpressionIntegerValue(needsBigInteger || operand.needsBigInteger);
     }
 
+    /**
+     * Private constructor from lower and upper bounds and from BigInteger flag.
+     *
+     * @param lowerBound      Lower bound to construct from.
+     * @param upperBound      Upper bound to construct from.
+     * @param needsBigInteger BigInteger flag to construct from.
+     */
+    private ExpressionIntegerValue(BigInteger lowerBound, BigInteger upperBound, boolean needsBigInteger)
+    {
+        value = null;
+        this.lowerBound = lowerBound;
+        this.upperBound = upperBound;
+        this.needsBigInteger = needsBigInteger;
+    }
+
+    /**
+     * Private constructor from BigInteger flag.
+     *
+     * @param needsBigInteger BigInteger flag to construct from.
+     */
+    private ExpressionIntegerValue(boolean needsBigInteger)
+    {
+        value = null;
+        lowerBound = null;
+        upperBound = null;
+        this.needsBigInteger = needsBigInteger;
+    }
+
     // TODO This is redundant with runtime library but we don't have available runtime library in Zserio core.
     private BigInteger getNumBits(BigInteger value)
     {
@@ -490,6 +489,4 @@ class ExpressionIntegerValue implements Serializable
     private final BigInteger lowerBound;
     private final BigInteger upperBound;
     private final boolean needsBigInteger;
-
-    private static final long serialVersionUID = 8311435023436275517L;
 }

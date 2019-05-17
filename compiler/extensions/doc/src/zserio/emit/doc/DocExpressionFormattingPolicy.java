@@ -68,7 +68,7 @@ public class DocExpressionFormattingPolicy extends DefaultExpressionFormattingPo
     public String getIdentifier(Expression expr, boolean isLastInDot, boolean isSetter)
     {
         String symbol = expr.getText();
-        String res = "";
+        String res = (expr.isExplicitVariable()) ? "explicit " : "";
 
         Object obj = expr.getExprSymbolObject();
         if (obj instanceof EnumType)
@@ -127,12 +127,6 @@ public class DocExpressionFormattingPolicy extends DefaultExpressionFormattingPo
     public UnaryExpressionFormatting getValueOf(Expression expr)
     {
         return new UnaryExpressionFormatting("valueof(" + ")");
-    }
-
-    @Override
-    public UnaryExpressionFormatting getExplicit(Expression expr)
-    {
-        return new UnaryExpressionFormatting("explicit ");
     }
 
     @Override

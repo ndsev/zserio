@@ -18,6 +18,14 @@ public class CommentsWarningTest
     }
 
     @Test
+    public void unresolvedSeeTagReference()
+    {
+        final String warning = "unresolved_see_tag_reference.zs:6:4: " +
+                "Documentation: Unresolved referenced symbol 'Unexisting' for type 'Test'!";
+        assertTrue(zserioWarnings.isPresent(warning));
+    }
+
+    @Test
     public void unusedFieldComments()
     {
         assertTrue(zserioWarnings.isPresent(
@@ -64,13 +72,6 @@ public class CommentsWarningTest
 
         assertTrue(zserioWarnings.isPresent(
             "unused_field_comments.zs:91:5: Documentation comment is not used!"));
-    }
-
-    @Test
-    public void unusedPackageComment()
-    {
-        final String warning = "unused_package_comment.zs:1:1: Documentation comment is not used!";
-        assertTrue(zserioWarnings.isPresent(warning));
     }
 
     @Test

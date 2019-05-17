@@ -16,15 +16,16 @@ public class TypeCollaborationDotTemplateData
     /**
      * The constructor.
      *
-     * @param zserioType           The zserio type for which to generate 'used' diagram.
-     * @param usedByZserioTypeList The list of zserio types which uses the zserioType.
-     * @param docRootPath              The root path of the generated documentation for links or null
-     *                                 if links are not required.
+     * @param zserioType        The zserio type for which to generate 'used' diagram.
+     * @param usedZserioTypes   The list of zserio types which are used by zserioType.
+     * @param usedByZserioTypes The list of zserio types which uses the zserioType.
+     * @param docRootPath       The root path of the generated documentation for links or null
+     *                          if links are not required.
      *
      * @throws ZserioEmitException Throws in case of any internal error.
      */
-    public TypeCollaborationDotTemplateData(ZserioType zserioType, Iterable<ZserioType> usedByZserioTypeList,
-            String docRootPath) throws ZserioEmitException
+    public TypeCollaborationDotTemplateData(ZserioType zserioType, Iterable<ZserioType> usedZserioTypes,
+            Iterable<ZserioType> usedByZserioTypes, String docRootPath) throws ZserioEmitException
     {
         typeName = zserioType.getName();
         packageList = new PackageList();
@@ -32,14 +33,13 @@ public class TypeCollaborationDotTemplateData
 
         addType(zserioType, packageList, docRootPath);
 
-        Iterable<ZserioType> usedZserioTypeList = zserioType.getUsedTypeList();
-        for (ZserioType usedZserioType : usedZserioTypeList)
+        for (ZserioType usedZserioType : usedZserioTypes)
         {
             addType(usedZserioType, packageList, docRootPath);
             relationList.add(new Relation(typeName, usedZserioType.getName()));
         }
 
-        for (ZserioType usedByZserioType : usedByZserioTypeList)
+        for (ZserioType usedByZserioType : usedByZserioTypes)
         {
             addType(usedByZserioType, packageList, docRootPath);
             relationList.add(new Relation(usedByZserioType.getName(), typeName));

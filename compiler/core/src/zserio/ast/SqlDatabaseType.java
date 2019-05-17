@@ -1,54 +1,44 @@
 package zserio.ast;
 
-import zserio.antlr.ZserioParserTokenTypes;
-import zserio.antlr.util.BaseTokenAST;
+import java.util.ArrayList;
+import java.util.List;
+
+import org.antlr.v4.runtime.Token;
+
 import zserio.antlr.util.ParserException;
 
+
 /**
- * AST node for SQL database types.
+ * AST node for SQL Database types.
  *
- * SQL database types are Zserio types as well.
+ * SQL Database types are Zserio types as well.
  */
 public class SqlDatabaseType extends CompoundType
 {
+    /**
+     * Constructor.
+     *
+     * @param token      ANTLR4 token to localize AST node in the sources.
+     * @param pkg        Package to which belongs the SQL database type.
+     * @param name       Name of the SQL database type.
+     * @param fields     List of all fields of the SQL database type.
+     * @param docComment Documentation comment belonging to this node.
+     */
+    public SqlDatabaseType(Token token, Package pkg, String name, List<Field> fields, DocComment docComment)
+    {
+        super(token, pkg, name, new ArrayList<Parameter>(), fields, new ArrayList<FunctionType>(), docComment);
+    }
+
     @Override
-    public void callVisitor(ZserioTypeVisitor visitor)
+    public void accept(ZserioAstVisitor visitor)
     {
         visitor.visitSqlDatabaseType(this);
     }
 
     @Override
-    protected boolean evaluateChild(BaseTokenAST child) throws ParserException
+    void check()
     {
-        switch (child.getType())
-        {
-        case ZserioParserTokenTypes.ID:
-            setName(child.getText());
-            break;
-
-        case ZserioParserTokenTypes.FIELD:
-            if (!(child instanceof Field))
-                return false;
-            addField((Field)child);
-            break;
-
-        default:
-            return false;
-        }
-
-        return true;
-    }
-
-    @Override
-    protected void evaluate() throws ParserException
-    {
-        evaluateHiddenDocComment(this);
-        setDocComment(getHiddenDocComment());
-    }
-
-    @Override
-    protected void check() throws ParserException
-    {
+        // evaluates common compound type
         super.check();
 
         // check if all fields are SQL tables
@@ -60,6 +50,4 @@ public class SqlDatabaseType extends CompoundType
                         "Field '" + databaseField.getName() + "' is not a sql table!");
         }
     }
-
-    private static final long serialVersionUID = 661949362821042274L;
 }

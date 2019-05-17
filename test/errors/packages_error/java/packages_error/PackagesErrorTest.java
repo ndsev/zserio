@@ -28,14 +28,14 @@ public class PackagesErrorTest
     @Test
     public void importedDefaultPackage()
     {
-        final String error = "imported_default_package_error.zs:4:1: Default package cannot be imported!";
+        final String error = "imported_default_package_error.zs:4:8: Default package cannot be imported!";
         assertTrue(zserioErrors.isPresent(error));
     }
 
     @Test
     public void importedUnknownSingleType()
     {
-        final String error = "imported_unknown_single_type_error.zs:4:1: " +
+        final String error = "imported_unknown_single_type_error.zs:4:8: " +
                 "Unknown type 'UnknownTable' in imported package 'simple_database'!";
         assertTrue(zserioErrors.isPresent(error));
     }
@@ -55,9 +55,16 @@ public class PackagesErrorTest
     }
 
     @Test
+    public void wrongImportName()
+    {
+        final String error = "wrong_import_name.zs: No such file!";
+        assertTrue(zserioErrors.isPresent(error));
+    }
+
+    @Test
     public void wrongPackageName()
     {
-        final String error = "bad_package_name.zs:2:1: Package 'bad_really_bad' does not match to the source " +
+        final String error = "bad_package_name.zs:2:9: Package 'bad_really_bad' does not match to the source " +
                 "file name!";
         assertTrue(zserioErrors.isPresent(error));
     }

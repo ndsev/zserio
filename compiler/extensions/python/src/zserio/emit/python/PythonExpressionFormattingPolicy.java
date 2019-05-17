@@ -94,6 +94,7 @@ public class PythonExpressionFormattingPolicy implements ExpressionFormattingPol
         final StringBuilder result = new StringBuilder();
         final String symbol = expr.getText();
         final Object resolvedSymbol = expr.getExprSymbolObject();
+        final ZserioType resolvedType = expr.getExprZserioType();
         final boolean isFirstInDot = (expr.getExprZserioType() != null); // first in a dot expression
         if (resolvedSymbol instanceof ZserioType)
         {
@@ -102,7 +103,7 @@ public class PythonExpressionFormattingPolicy implements ExpressionFormattingPol
         }
         else if (!(resolvedSymbol instanceof Package))
         {
-            formatIdentifierForSymbol(result, symbol, isFirstInDot, resolvedSymbol, isSetter);
+            formatIdentifierForSymbol(result, symbol, isFirstInDot, resolvedSymbol, resolvedType, isSetter);
         }
 
         return result.toString();
@@ -168,12 +169,6 @@ public class PythonExpressionFormattingPolicy implements ExpressionFormattingPol
     public UnaryExpressionFormatting getValueOf(Expression expr)
     {
         return new UnaryExpressionFormatting("", ".value");
-    }
-
-    @Override
-    public UnaryExpressionFormatting getExplicit(Expression expr)
-    {
-        return new UnaryExpressionFormatting("");
     }
 
     @Override
@@ -383,7 +378,7 @@ public class PythonExpressionFormattingPolicy implements ExpressionFormattingPol
     }
 
     private void formatIdentifierForSymbol(StringBuilder result, String symbol, boolean isFirstInDot,
-            Object resolvedSymbol, boolean isSetter) throws ZserioEmitException
+            Object resolvedSymbol, ZserioType resolvedType, boolean isSetter) throws ZserioEmitException
     {
         if (resolvedSymbol instanceof Parameter)
         {
@@ -401,9 +396,9 @@ public class PythonExpressionFormattingPolicy implements ExpressionFormattingPol
             // emit the whole name if this is the first symbol in this dot subtree, otherwise emit only the
             // enum short name
             final EnumItem item = (EnumItem)resolvedSymbol;
-            if (isFirstInDot)
+            if (isFirstInDot && resolvedType instanceof EnumType)
             {
-                final EnumType enumType = item.getEnumType();
+                final EnumType enumType = (EnumType)resolvedType;
                 final PythonNativeType nativeEnumType = pythonNativeTypeMapper.getPythonType(enumType);
                 importCollector.importType(nativeEnumType);
                 result.append(nativeEnumType.getFullName());

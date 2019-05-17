@@ -19,7 +19,8 @@ execute_process(
 )
 
 if (NOT ${ZSERIO_RESULT} EQUAL 0)
-    message(FATAL_ERROR "Zserio tool failed!\n${ZSERIO_LOG}")
+    message(STATUS ${ZSERIO_LOG})
+    message(FATAL_ERROR "Zserio tool failed!")
 endif ()
 
 if (NOT "${ZSERIO_LOG}" STREQUAL "")

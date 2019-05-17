@@ -18,14 +18,6 @@ public class StructureTypesErrorTest
     }
 
     @Test
-    public void circularContainment()
-    {
-        final String error =
-                "circular_containment_error.zs:3:1: Circular containment between 'Item' and 'ItemHolder'!";
-        assertTrue(zserioErrors.isPresent(error));
-    }
-
-    @Test
     public void constantUsedAsType()
     {
         final String error =
@@ -36,15 +28,32 @@ public class StructureTypesErrorTest
     @Test
     public void databaseArrayField()
     {
-        final String error = "database_array_field_error.zs:20:5: Invalid usage of SQL database " +
-                "'TestDatabaseForArray' as a type!";
+        final String error = "database_array_field_error.zs:20:5: " +
+                "Invalid usage of SQL database 'TestDatabaseForArray' as a type!";
         assertTrue(zserioErrors.isPresent(error));
     }
 
     @Test
     public void implicitNonArray()
     {
-        final String error = "implicit_non_array_field_error.zs:6:27: unexpected token: ;";
+        final String error = "implicit_non_array_field_error.zs:6:5: " +
+                "Implicit keyword can be used only for arrays!";
+        assertTrue(zserioErrors.isPresent(error));
+    }
+
+    @Test
+    public void indirectArrayRecursion()
+    {
+        final String error = "indirect_array_recursion_error.zs:13:17: " +
+                "Indirect recursion between 'Item' and 'ItemHolder'!";
+        assertTrue(zserioErrors.isPresent(error));
+    }
+
+    @Test
+    public void indirectRecursion()
+    {
+        final String error = "indirect_recursion_error.zs:13:17: " +
+                "Indirect recursion between 'Item' and 'ItemHolder'!";
         assertTrue(zserioErrors.isPresent(error));
     }
 
@@ -52,7 +61,7 @@ public class StructureTypesErrorTest
     public void recursive()
     {
         final String error =
-                "recursive_error.zs:7:5: Field 'item' is recursive and neither optional nor array!";
+                "recursive_error.zs:7:17: Field 'item' is recursive and neither optional nor array!";
         assertTrue(zserioErrors.isPresent(error));
     }
 
@@ -64,26 +73,25 @@ public class StructureTypesErrorTest
         assertTrue(zserioErrors.isPresent(error));
     }
 
-
     @Test
     public void subtypedTableField()
     {
         final String error =
-                "subtyped_table_field_error.zs:17:5: Field 'subtypedTestTable' cannot be a sql table!";
+                "subtyped_table_field_error.zs:17:19: Field 'subtypedTestTable' cannot be a sql table!";
         assertTrue(zserioErrors.isPresent(error));
     }
 
     @Test
     public void tableArrayField()
     {
-        final String error = "table_array_field_error.zs:15:5: Field 'testTableArray' cannot be a sql table!";
+        final String error = "table_array_field_error.zs:15:17: Field 'testTableArray' cannot be a sql table!";
         assertTrue(zserioErrors.isPresent(error));
     }
 
     @Test
     public void tableField()
     {
-        final String error = ":15:5: Field 'testTable' cannot be a sql table!";
+        final String error = ":15:17: Field 'testTable' cannot be a sql table!";
         assertTrue(zserioErrors.isPresent(error));
     }
 

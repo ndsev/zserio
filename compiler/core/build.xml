@@ -49,13 +49,13 @@ findbugs.home_dir       - Location of the findbugs tool. If not set, findbugs is
 
     <property name="3rdparty.root_dir" value="${zserio_core.zserio_root}/3rdparty"/>
     <property name="3rdparty.jar_dir" value="${3rdparty.root_dir}/java"/>
-    <property name="3rdparty.antlr.jar_file_name" value="antlr.jar"/>
+    <property name="3rdparty.antlr4.jar_file_name" value="antlr-4.7.2-complete.jar"/>
     <property name="3rdparty.freemarker.jar_file_name" value="freemarker-2.3.28.jar"/>
     <property name="3rdparty.commons-cli.jar_file_name" value="commons-cli-1.4.jar"/>
     <property name="3rdparty.junit.jar_file" value="${3rdparty.jar_dir}/junit-4.10.jar"/>
 
     <fileset dir="${3rdparty.jar_dir}" id="3rdparty.jar_files_ref">
-        <include name="${3rdparty.antlr.jar_file_name}"/>
+        <include name="${3rdparty.antlr4.jar_file_name}"/>
         <include name="${3rdparty.freemarker.jar_file_name}"/>
         <include name="${3rdparty.commons-cli.jar_file_name}"/>
     </fileset>
@@ -64,52 +64,51 @@ findbugs.home_dir       - Location of the findbugs tool. If not set, findbugs is
         <delete dir="${zserio_core.build_dir}"/>
     </target>
 
-    <target name="antlr.parser">
+    <macrodef name="antlr4">
+        <attribute name="target"/>
+        <attribute name="outputdirectory"/>
+        <attribute name="package" default="zserio.antlr"/>
+        <sequential>
+            <echo message="Generating ANTLR 4 grammar: @{target}"/>
+            <java classname="org.antlr.v4.Tool" failonerror="true">
+                <classpath>
+                    <pathelement location="${3rdparty.jar_dir}/${3rdparty.antlr4.jar_file_name}"/>
+                </classpath>
+                <arg line="-o @{outputdirectory}"/>
+                <arg line="-package @{package}"/>
+                <arg value="@{target}"/>
+                <arg line="-no-listener -visitor"/>
+            </java>
+        </sequential>
+    </macrodef>
+
+    <target name="antlr4.check">
         <mkdir dir="${zserio_core.antlr.out_dir}"/>
-        <antlr target="${zserio_core.antlr_dir}/ZserioParser.g" outputdirectory="${zserio_core.antlr.out_dir}">
-            <classpath>
-                <pathelement location="${3rdparty.jar_dir}/${3rdparty.antlr.jar_file_name}"/>
-            </classpath>
-        </antlr>
+        <uptodate property="antlr4.not_required">
+            <srcfiles dir="${zserio_core.antlr_dir}" includes="*.g4"/>
+            <compositemapper>
+                <mapper type="merge" to="${zserio_core.antlr.out_dir}/DocCommentBaseVisitor.java"/>
+                <mapper type="merge" to="${zserio_core.antlr.out_dir}/DocCommentLexer.java"/>
+                <mapper type="merge" to="${zserio_core.antlr.out_dir}/DocCommentParser.java"/>
+                <mapper type="merge" to="${zserio_core.antlr.out_dir}/DocCommentVisitor.java"/>
+                <mapper type="merge" to="${zserio_core.antlr.out_dir}/ZserioLexer.java"/>
+                <mapper type="merge" to="${zserio_core.antlr.out_dir}/ZserioParser.java"/>
+                <mapper type="merge" to="${zserio_core.antlr.out_dir}/ZserioParserBaseVisitor.java"/>
+                <mapper type="merge" to="${zserio_core.antlr.out_dir}/ZserioParserVisitor.java"/>
+            </compositemapper>
+        </uptodate>
     </target>
 
-    <target name="antlr.lexer">
-        <antlr target="${zserio_core.antlr_dir}/ZserioLexer.g" outputdirectory="${zserio_core.antlr.out_dir}">
-            <classpath>
-                <pathelement location="${3rdparty.jar_dir}/${3rdparty.antlr.jar_file_name}"/>
-            </classpath>
-        </antlr>
+    <target name="antlr4" depends="antlr4.check" unless="antlr4.not_required">
+        <antlr4 target="${zserio_core.antlr_dir}/ZserioLexer.g4"
+            outputdirectory="${zserio_core.antlr.out_dir}"/>
+        <antlr4 target="${zserio_core.antlr_dir}/ZserioParser.g4"
+            outputdirectory="${zserio_core.antlr.out_dir}"/>
+        <antlr4 target="${zserio_core.antlr_dir}/DocComment.g4"
+            outputdirectory="${zserio_core.antlr.out_dir}"/>
     </target>
 
-    <target name="antlr.walkers">
-        <antlr target="${zserio_core.antlr_dir}/TypeEvaluator.g" outputdirectory="${zserio_core.antlr.out_dir}">
-            <classpath>
-                <pathelement location="${3rdparty.jar_dir}/${3rdparty.antlr.jar_file_name}"/>
-            </classpath>
-        </antlr>
-
-        <antlr target="${zserio_core.antlr_dir}/ExpressionEvaluator.g"
-            outputdirectory="${zserio_core.antlr.out_dir}">
-            <classpath>
-                <pathelement location="${3rdparty.jar_dir}/${3rdparty.antlr.jar_file_name}"/>
-            </classpath>
-        </antlr>
-    </target>
-
-    <target name="antlr.comments">
-        <antlr target="${zserio_core.antlr_dir}/DocComment.g" outputdirectory="${zserio_core.antlr.out_dir}">
-            <classpath>
-                <pathelement location="${3rdparty.jar_dir}/${3rdparty.antlr.jar_file_name}"/>
-            </classpath>
-        </antlr>
-    </target>
-
-    <target name="antlr" depends="antlr.parser, antlr.lexer, antlr.walkers, antlr.comments">
-        <!-- ZserioParser.g must be compiled before lexer and walkers because lexer and walker grammars use
-             importVocab to ZserioParser. -->
-    </target>
-
-    <target name="compile" depends="antlr">
+    <target name="compile" depends="antlr4">
         <mkdir dir="${zserio_core.classes_dir}"/>
         <depend srcDir="${zserio_core.src_dir}:${zserio_core.antlr.gen_dir}"
             destDir="${zserio_core.classes_dir}" cache="${zserio_core.build_dir}/depend-cache"/>

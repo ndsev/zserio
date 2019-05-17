@@ -239,7 +239,7 @@ public class DocEmitterTools
     private static String getFileNameFromType(ZserioType type, String extensionName) throws ZserioEmitException
     {
         HtmlModuleNameSuffixVisitor suffixVisitor = new HtmlModuleNameSuffixVisitor();
-        type.callVisitor(suffixVisitor);
+        type.accept(suffixVisitor);
 
         return type.getName() + "_" + suffixVisitor.getSuffix() + "." + extensionName;
     }

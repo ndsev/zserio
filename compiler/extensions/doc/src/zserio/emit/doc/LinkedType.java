@@ -148,7 +148,7 @@ public class LinkedType
         }
 
         HtmlModuleNameSuffixVisitor suffixVisitor = new HtmlModuleNameSuffixVisitor();
-        ti.callVisitor(suffixVisitor);
+        ti.accept(suffixVisitor);
         hyperlinkName += suffixVisitor.getSuffix();
 
         return hyperlinkName;

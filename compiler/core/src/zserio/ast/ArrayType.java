@@ -1,16 +1,48 @@
 package zserio.ast;
 
-import zserio.antlr.ZserioParserTokenTypes;
-import zserio.antlr.util.BaseTokenAST;
+import org.antlr.v4.runtime.Token;
+
 import zserio.antlr.util.ParserException;
 
 /**
- * AST node for array types.
+ * AST node for Array types.
  *
  * Array types are Zserio types as well.
  */
-public class ArrayType extends TokenAST implements ZserioType
+public class ArrayType extends AstNodeBase implements ZserioType
 {
+    /**
+     * Constructor.
+     *
+     * @param location         ANTLR4 token to localize AST node in the sources.
+     * @param elementType      Zserio type of the array element.
+     * @param lengthExpression Length expression associated to the array.
+     * @param isImplicit       True for implicit arrays.
+     */
+    public ArrayType(Token token, ZserioType elementType, Expression lengthExpression,
+            boolean isImplicit)
+    {
+        super(token);
+
+        this.elementType = elementType;
+        this.lengthExpression = lengthExpression;
+        this.isImplicit = isImplicit;
+    }
+
+    @Override
+    public void accept(ZserioAstVisitor visitor)
+    {
+        visitor.visitArrayType(this);
+    }
+
+    @Override
+    public void visitChildren(ZserioAstVisitor visitor)
+    {
+        elementType.accept(visitor);
+        if (lengthExpression != null)
+            lengthExpression.accept(visitor);
+    }
+
     @Override
     public Package getPackage()
     {
@@ -21,18 +53,6 @@ public class ArrayType extends TokenAST implements ZserioType
     public String getName()
     {
         return elementBaseType.getName() + "[]";
-    }
-
-    @Override
-    public Iterable<ZserioType> getUsedTypeList()
-    {
-        throw new InternalError("ArrayType.getUsedTypeList() is not implemented!");
-    }
-
-    @Override
-    public void callVisitor(ZserioTypeVisitor visitor)
-    {
-        visitor.visitArrayType(this);
     }
 
     /**
@@ -65,56 +85,32 @@ public class ArrayType extends TokenAST implements ZserioType
         return isImplicit;
     }
 
-    @Override
-    protected boolean evaluateChild(BaseTokenAST child) throws ParserException
-    {
-        if (child instanceof ZserioType)
-        {
-            if (elementType != null)
-                return false;
-            elementType = (ZserioType)child;
-        }
-        else if (child instanceof Expression)
-        {
-            if (lengthExpression != null)
-                return false;
-            lengthExpression = (Expression)child;
-        }
-        else if (child.getType() == ZserioParserTokenTypes.IMPLICIT)
-        {
-            isImplicit = true;
-        }
-        else
-        {
-            return false;
-        }
-
-        return true;
-    }
-
-    @Override
-    protected void check() throws ParserException
+    /**
+     * Evaluates the array type.
+     */
+    void evaluate()
     {
         // resolve element base type
         elementBaseType = TypeReference.resolveBaseType(elementType);
+    }
 
+    /**
+     * Checks the array type.
+     */
+    void check()
+    {
         // check length expression
         if (lengthExpression != null)
         {
-            if (isImplicit)
-                throw new ParserException(lengthExpression,
-                        "Length expression is not allowed for implicit arrays!");
-
             if (lengthExpression.getExprType() != Expression.ExpressionType.INTEGER)
                 throw new ParserException(lengthExpression,
                         "Invalid length expression for array. Length must be integer!");
         }
     }
 
-    private static final long serialVersionUID = 6231540349926054424L;
+    private final ZserioType elementType;
+    private final Expression lengthExpression;
+    private final boolean isImplicit;
 
-    private ZserioType elementType = null;
     private ZserioType elementBaseType = null;
-    private Expression lengthExpression = null;
-    private boolean isImplicit = false;
 }

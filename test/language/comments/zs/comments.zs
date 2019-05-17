@@ -1,7 +1,11 @@
 package comments;
 
-// This direct import 'DirectionStructure' is intentional. For older Zserio, this caused the following error:
-// '[ERROR] zs/comments/documentation_comments.zs:25:4: The type Direction not found!'
-import comments.documentation_comments.DirectionStructure;
+import comments.documentation.package_comment.*;
+import comments.documentation.enum_comments.*;
+import comments.documentation.sql_database_comments.*;
+import comments.documentation.sql_table_comments.*;
+import comments.documentation.struct_comments.*;
+import comments.documentation.unknown_tag_matching_prefix.*;
+import comments.documentation.unknown_tag.*;
 
 import comments.standard_comments.*;

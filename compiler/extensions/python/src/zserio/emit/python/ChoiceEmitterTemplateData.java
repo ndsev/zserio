@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import zserio.ast.ChoiceCase;
+import zserio.ast.ChoiceCaseExpression;
 import zserio.ast.ChoiceDefault;
 import zserio.ast.ChoiceType;
 import zserio.ast.Expression;
@@ -74,8 +75,8 @@ public class ChoiceEmitterTemplateData extends CompoundTypeTemplateData
                         throws ZserioEmitException
         {
             expressionList = new ArrayList<String>();
-            final Iterable<ChoiceCase.CaseExpression> caseExpressions = choiceCase.getExpressions();
-            for (ChoiceCase.CaseExpression caseExpression : caseExpressions)
+            final Iterable<ChoiceCaseExpression> caseExpressions = choiceCase.getExpressions();
+            for (ChoiceCaseExpression caseExpression : caseExpressions)
                 expressionList.add(expressionFormatter.formatGetter(caseExpression.getExpression()));
 
             final Field fieldType = choiceCase.getField();

@@ -1,53 +1,45 @@
 package zserio.ast;
 
 import java.math.BigInteger;
-import java.util.ArrayList;
-import java.util.List;
 
-import zserio.antlr.util.BaseTokenAST;
+import org.antlr.v4.runtime.Token;
+
 import zserio.antlr.util.ParserException;
-import zserio.ast.doc.DocCommentToken;
 
 /**
- * AST node for enumeration items.
+ * AST node for items defined by enumeration types.
  */
-public class EnumItem extends TokenAST
+public class EnumItem extends AstNodeWithDoc
 {
     /**
-     * Evaluates enumeration item value.
+     * Constructor.
      *
-     * @param defaultValue Enumeration item value to use if value expression has not been specified.
-     *
-     * @throws ParserException Throws in case of any error during evaluation.
+     * @param token           ANTLR4 token to localize AST node in the sources.
+     * @param name            Name of the enumeration item.
+     * @param valueExpression Expression value of the enumeration item.
+     * @param docComment      Documentation comment belonging to this node.
      */
-    public void evaluateValue(BigInteger defaultValue) throws ParserException
+    public EnumItem(Token token, String name, Expression valueExpression, DocComment docComment)
     {
-        if (valueExpression != null)
-        {
-            // there is a value for this enumeration item => evaluate and check value expression
-            valueExpression.evaluateTree();
+        super(token, docComment);
 
-            if (valueExpression.getExprType() != Expression.ExpressionType.INTEGER)
-                throw new ParserException(valueExpression, "Enumeration item '" + getName() +
-                        "' has non-integer value!");
-            value = valueExpression.getIntegerValue();
-        }
-        else
-        {
-            value = defaultValue;
-        }
+        this.name = name;
+        this.valueExpression = valueExpression;
     }
 
-    /**
-     * Adds expression which used the enumeration item.
-     *
-     * This method is called directly from AST node Expression during evaluation.
-     *
-     * @param expression Expression which uses the enumeration item.
-     */
-    public void addUsedByExpression(Expression expression)
+    @Override
+    public void accept(ZserioAstVisitor visitor)
     {
-        usedByExpressionList.add(expression);
+        visitor.visitEnumItem(this);
+    }
+
+    @Override
+    public void visitChildren(ZserioAstVisitor visitor)
+    {
+        if (valueExpression != null)
+            valueExpression.accept(visitor);
+
+        super.visitChildren(visitor);
     }
 
     /**
@@ -71,16 +63,6 @@ public class EnumItem extends TokenAST
     }
 
     /**
-     * Gets the enumeration type which is owner of the enumeration item.
-     *
-     * @return Returns enumeration type which is owner of the enumeration item.
-     */
-    public EnumType getEnumType()
-    {
-        return enumType;
-    }
-
-    /**
      * Gets the integer value which represents the enumeration item.
      *
      * @return Returns the integer value of the enumeration item.
@@ -91,68 +73,42 @@ public class EnumItem extends TokenAST
     }
 
     /**
-     * Gets list of expressions which use the enumeration item.
+     * Sets the default integer value which represents the enumeration item.
      *
-     * This method is used by documentation emitter.
+     * This method is called only if enumeration item value is not defined in the language.
      *
-     * @return List of expressions which use the enumeration item.
+     * @param value Default integer value of the enumeration item.
      */
-    public Iterable<Expression> getUsedByExpressionList()
+    void setValue(BigInteger value)
     {
-        return usedByExpressionList;
+        this.value = value;
     }
 
     /**
-     * Gets documentation comment associated to this enumeration item.
+     * Evaluates enumeration item value expression.
      *
-     * @return Documentation comment token associated to this enumeration item.
+     * This method can be called from Expression.evaluate() method if some expression refers to enumeration
+     * item before definition of this item. Therefore 'isEvaluated' check is necessary.
      */
-    public DocCommentToken getDocComment()
+    void evaluate()
     {
-        return tokenWithDoc.getHiddenDocComment();
-    }
-
-    @Override
-    protected boolean evaluateChild(BaseTokenAST child) throws ParserException
-    {
-        if (name == null)
+        if (!isEvaluated)
         {
-            if (!(child instanceof TokenAST))
-                return false;
-            tokenWithDoc = (TokenAST)child;
-            tokenWithDoc.evaluateHiddenDocComment(enumType);
-            name = child.getText();
-        }
-        else
-        {
-            if (!(child instanceof Expression))
-                return false;
-            valueExpression = (Expression)child;
-        }
+            if (valueExpression != null)
+            {
+                if (valueExpression.getExprType() != Expression.ExpressionType.INTEGER)
+                    throw new ParserException(valueExpression, "Enumeration item '" + getName() +
+                            "' has non-integer value!");
+                value = valueExpression.getIntegerValue();
+            }
 
-        return true;
+            isEvaluated = true;
+        }
     }
 
-    /**
-     * Sets the enumeration type which is owner of the enumeration item.
-     *
-     * @param enumType Owner to set.
-     */
-    protected void setEnumType(EnumType enumType)
-    {
-        this.enumType = enumType;
-    }
+    private final String name;
+    private final Expression valueExpression;
 
-    private static final long serialVersionUID = -2577973642614324740L;
-
-    private String name = null;
-    private Expression valueExpression = null;
-
-    private EnumType enumType;
-    private BigInteger value;
-
-    // TODO the problem is in doc emitter which tries to get owner as Choice type from these expressions.
-    // don't store this to HashSet because the same expressions can be in different scopes!
-    private final List<Expression> usedByExpressionList = new ArrayList<Expression>();
-    private TokenAST tokenWithDoc;
+    private BigInteger value = null;
+    private boolean isEvaluated = false;
 }

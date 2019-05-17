@@ -402,14 +402,30 @@ convert_to_absolute_path()
     local PATH_TO_CONVERT="$1"; shift
     local ABSOLUTE_PATH_OUT="$1"; shift
 
-    if [ ! -d "${PATH_TO_CONVERT}" ] ; then
-        stderr_echo "${FUNCNAME[0]}() called with a non-directory ${PATH_TO_CONVERT}!"
-        return 1
+    local DIR_TO_CONVERT="${PATH_TO_CONVERT}"
+    local FILE_TO_CONVERT=""
+    if [ ! -d "${DIR_TO_CONVERT}" ] ; then
+        DIR_TO_CONVERT="${PATH_TO_CONVERT%/*}"
+        FILE_TO_CONVERT="${PATH_TO_CONVERT##*/}"
+        if [[ "${DIR_TO_CONVERT}" == "${FILE_TO_CONVERT}" ]] ; then
+            DIR_TO_CONVERT="."
+        else
+            if [ ! -d "${DIR_TO_CONVERT}" ] ; then
+                stderr_echo "${FUNCNAME[0]}() called with a non-existing directory ${DIR_TO_CONVERT}!"
+                return 1
+            fi
+        fi
     fi
 
-    pushd "${PATH_TO_CONVERT}" > /dev/null
-    eval ${ABSOLUTE_PATH_OUT}="`pwd`"
+    pushd "${DIR_TO_CONVERT}" > /dev/null
+    local ABSOLUTE_PATH="`pwd`"
     popd > /dev/null
+
+    if [ -n "${FILE_TO_CONVERT}" ] ; then
+        ABSOLUTE_PATH="${ABSOLUTE_PATH}/${FILE_TO_CONVERT}"
+    fi
+
+    eval ${ABSOLUTE_PATH_OUT}="${ABSOLUTE_PATH}"
 
     return 0
 }

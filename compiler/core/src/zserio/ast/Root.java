@@ -1,92 +1,41 @@
 package zserio.ast;
 
-import java.util.ArrayList;
+import java.util.Collections;
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
-
-import antlr.CommonHiddenStreamToken;
-import zserio.antlr.ZserioParserTokenTypes;
-import zserio.antlr.util.FileNameLexerToken;
-import zserio.antlr.util.ParserException;
 import zserio.emit.common.Emitter;
 import zserio.emit.common.ZserioEmitException;
 
 /**
  * The representation of AST ROOT node.
  *
- * This class represents an AST node which has all translation unit compiled by zserio.
+ * This class represents an AST node which has all translation units compiled by zserio.
  */
-public class Root extends TokenAST
+public class Root extends AstNodeBase
 {
     /**
      * Constructor.
      *
-     * @param checkUnusedTypes Whether to print warnings for unused types.
+     * @param packageNameMap   Map of all available packages.
      */
-    public Root(boolean checkUnusedTypes)
+    public Root(LinkedHashMap<PackageName, Package> packageNameMap)
     {
-        this(null, checkUnusedTypes);
+        super((AstLocation)null);
+
+        this.packageNameMap = packageNameMap;
     }
 
-    /**
-     * Creates root node with hidden token. Needed for comment parser.
-     *
-     * @param hiddenTokenBefore Hidden token which should be stored before created root node.
-     *
-     * @return Created root node.
-     */
-    public Root(CommonHiddenStreamToken hiddenTokenBefore)
+    @Override
+    public void accept(ZserioAstVisitor visitor)
     {
-        this(hiddenTokenBefore, false);
+        visitor.visitRoot(this);
     }
 
-    /**
-     * Adds translation unit to this root node.
-     *
-     * @param translationUnit Translation unit to add.
-     *
-     * @throws ParserException In case of multiple default packages.
-     */
-    public void addTranslationUnit(TranslationUnit translationUnit) throws ParserException
+    @Override
+    public void visitChildren(ZserioAstVisitor visitor)
     {
-        addChild(translationUnit);
-        translationUnits.add(translationUnit);
-
-        final Package unitPackage = translationUnit.getPackage();
-        if (unitPackage != null)
-        {
-            // translation unit package can be null if input file is empty
-            if (packageNameMap.put(unitPackage.getPackageName(), unitPackage) != null)
-            {
-                // translation unit package already exists, this could happen only for default packages
-                throw new ParserException(translationUnit, "Multiple default packages are not allowed!");
-            }
-        }
-    }
-
-    /**
-     * Resolves all references in all translation units.
-     *
-     * @throws ParserException In case of wrong import or wrong type reference or if cyclic subtype definition
-     *                         is detected.
-     */
-    public void resolveReferences() throws ParserException
-    {
-        for (Map.Entry<PackageName, Package> packageNameEntry : packageNameMap.entrySet())
-        {
-            packageNameEntry.getValue().resolve(packageNameMap);
-        }
-    }
-
-    /**
-     * Gets all translation units defined in this root.
-     *
-     * @return All translation units defined in this root.
-     */
-    public List<TranslationUnit> getTranslationUnits()
-    {
-        return translationUnits;
+        for (Package pkg : packageNameMap.values())
+            pkg.accept(visitor);
     }
 
     /**
@@ -94,81 +43,30 @@ public class Root extends TokenAST
      *
      * @param emitter Emitter interface to use for walking.
      *
-     * @throws ZserioEmitException Throws in case of unknown ZserioType.
+     * @throws ZserioEmitException Throws in case of any error.
      */
-    public void walk(Emitter emitter) throws ZserioEmitException
+    public void emit(Emitter emitter) throws ZserioEmitException
     {
-        emitter.beginRoot(this);
-
-        for (TranslationUnit translationUnit : translationUnits)
+        final ZserioAstEmitter astEmitter = new ZserioAstEmitter(emitter);
+        try
         {
-            emitter.beginTranslationUnit(translationUnit);
-
-            final Package unitPackage = translationUnit.getPackage();
-            if (unitPackage != null) // translation unit package can be null if input file is empty
-                emitter.beginPackage(unitPackage);
-
-            final List<Import> unitImports = translationUnit.getImports();
-            for (Import unitImport : unitImports)
-                emitter.beginImport(unitImport);
-
-            final List<ZserioType> types = translationUnit.getTypes();
-            for (ZserioType type : types)
-            {
-                if (type instanceof ConstType)
-                    emitter.beginConst((ConstType)type);
-                else if (type instanceof Subtype)
-                    emitter.beginSubtype((Subtype)type);
-                else if (type instanceof StructureType)
-                    emitter.beginStructure((StructureType)type);
-                else if (type instanceof ChoiceType)
-                    emitter.beginChoice((ChoiceType)type);
-                else if (type instanceof UnionType)
-                    emitter.beginUnion((UnionType)type);
-                else if (type instanceof EnumType)
-                    emitter.beginEnumeration((EnumType)type);
-                else if (type instanceof SqlTableType)
-                    emitter.beginSqlTable((SqlTableType)type);
-                else if (type instanceof SqlDatabaseType)
-                    emitter.beginSqlDatabase((SqlDatabaseType)type);
-                else if (type instanceof ServiceType)
-                    emitter.beginService((ServiceType)type);
-                else
-                    throw new ZserioEmitException("Unknown type '" + type.getClass() + "' in tree walker!");
-            }
-
-            emitter.endTranslationUnit(translationUnit);
+            this.accept(astEmitter);
         }
-
-        emitter.endRoot(this);
+        catch (ZserioAstEmitter.UncheckedZserioEmitException e)
+        {
+            throw e.getOriginalException();
+        }
     }
 
-    @Override
-    protected void check() throws ParserException
+    /**
+     * Gets map of all packages.
+     *
+     * @return The map of all available packages.
+     */
+    Map<PackageName, Package> getPackageNameMap()
     {
-        // check if zserio type (const, substype, structure, union, choice, enum, etc...) is used
-        final List<ZserioType> checkedTypes = new ArrayList<ZserioType>();
-        for (TranslationUnit translationUnit : translationUnits)
-            checkedTypes.addAll(translationUnit.getTypes());
-
-        // call visitor for all checked types
-        final ZserioTypeCheckerVisitor zserioCheckerVisitor =
-                new ZserioTypeCheckerVisitor(printUnusedWarnings);
-        for (ZserioType checkedType : checkedTypes)
-            checkedType.callVisitor(zserioCheckerVisitor);
-        zserioCheckerVisitor.throwErrors();
-        zserioCheckerVisitor.printWarnings();
+        return Collections.unmodifiableMap(packageNameMap);
     }
 
-    private Root(CommonHiddenStreamToken hiddenTokenBefore, boolean printUnusedWarnings)
-    {
-        super(new FileNameLexerToken(ZserioParserTokenTypes.ROOT, "ROOT", hiddenTokenBefore));
-        this.printUnusedWarnings = printUnusedWarnings;
-    }
-
-    private static final long serialVersionUID = -1L;
-
-    private final List<TranslationUnit> translationUnits = new ArrayList<TranslationUnit>();
-    private final Map<PackageName, Package> packageNameMap = new LinkedHashMap<PackageName, Package>();
-    private final boolean printUnusedWarnings;
+    private final LinkedHashMap<PackageName, Package> packageNameMap;
 }

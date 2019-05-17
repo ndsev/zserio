@@ -1,14 +1,33 @@
 package zserio.ast;
 
-import zserio.antlr.ZserioParserTokenTypes;
-import zserio.antlr.util.BaseTokenAST;
-import zserio.antlr.util.ParserException;
+import org.antlr.v4.runtime.Token;
 
 /**
- * AST node for import declaration.
+ * AST node for import defined in the package.
  */
-public class Import extends TokenAST
+public class Import extends AstNodeBase
 {
+    /**
+     * Constructor.
+     *
+     * @param token               ANTLR4 token to localize AST node in the sources.
+     * @param importedPackageName Imported package name.
+     * @param importedTypeName    Imported package type name or null for package type import.
+     */
+    public Import(Token token, PackageName importedPackageName, String importedTypeName)
+    {
+        super(token);
+
+        this.importedPackageName = importedPackageName;
+        this.importedTypeName = importedTypeName;
+    }
+
+    @Override
+    public void accept(ZserioAstVisitor visitor)
+    {
+        visitor.visitImport(this);
+    }
+
     /**
      * Gets the imported package name.
      *
@@ -16,7 +35,7 @@ public class Import extends TokenAST
      */
     public PackageName getImportedPackageName()
     {
-        return importedPackageNameBuilder.get();
+        return importedPackageName;
     }
 
     /**
@@ -29,32 +48,6 @@ public class Import extends TokenAST
         return importedTypeName;
     }
 
-    @Override
-    protected boolean evaluateChild(BaseTokenAST child) throws ParserException
-    {
-        switch (child.getType())
-        {
-        case ZserioParserTokenTypes.ID:
-            if (importedTypeName != null)
-                importedPackageNameBuilder.addId(importedTypeName);
-            importedTypeName = child.getText();
-            break;
-
-        case ZserioParserTokenTypes.MULTIPLY:
-            if (importedTypeName != null)
-                importedPackageNameBuilder.addId(importedTypeName);
-            importedTypeName = null;
-            break;
-
-        default:
-            return false;
-        }
-
-        return true;
-    }
-
-    private static final long serialVersionUID = 1L;
-
-    private final PackageName.Builder importedPackageNameBuilder = new PackageName.Builder();
-    private String importedTypeName = null;
+    private final PackageName importedPackageName;
+    private final String importedTypeName;
 }

@@ -5,7 +5,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import zserio.ast.TranslationUnit;
 import zserio.ast.ZserioType;
 import zserio.ast.Package;
 import zserio.emit.common.ExpressionFormatter;
@@ -65,14 +64,6 @@ abstract public class DefaultHtmlEmitter extends DefaultDocEmitter
         return currentPackage.getPackageName().toString();
     }
 
-    @Override
-    public void beginTranslationUnit(TranslationUnit translationUnit)
-    {
-        // first translation unit has root package
-        if (currentRootPackage == null)
-            currentRootPackage = translationUnit.getPackage();
-    }
-
     public String getRootPackageName()
     {
         return currentRootPackage.getPackageName().toString();
@@ -91,6 +82,9 @@ abstract public class DefaultHtmlEmitter extends DefaultDocEmitter
     @Override
     public void beginPackage(Package packageToken) throws ZserioEmitException
     {
+        // the first one is root package
+        if (currentRootPackage == null)
+            currentRootPackage = packageToken;
         currentPackage = packageToken;
     }
 

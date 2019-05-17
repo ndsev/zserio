@@ -20,7 +20,8 @@ public class UnionTypesErrorTest
     @Test
     public void optionalMember()
     {
-        final String error = "optional_field_error.zs:6:18: unexpected token: if (reserved keyword)";
+        final String error = "optional_field_error.zs:6:18: " +
+                "mismatched input 'if' expecting {':', '[', ';'} ('if' is a reserved keyword)!";
         assertTrue(zserioErrors.isPresent(error));
     }
 
@@ -28,7 +29,7 @@ public class UnionTypesErrorTest
     public void recursive()
     {
         final String error =
-                "recursive_error.zs:6:5: Field 'field2' is recursive and neither optional nor array!";
+                "recursive_error.zs:6:17: Field 'field2' is recursive and neither optional nor array!";
         assertTrue(zserioErrors.isPresent(error));
     }
 

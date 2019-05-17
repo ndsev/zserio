@@ -20,7 +20,7 @@ public class LiteralsErrorTest
     @Test
     public void wrongDecimalConstant()
     {
-        final String error = "wrong_octal_literal_error.zs:3:37: unexpected token: 9";
+        final String error = "wrong_octal_literal_error.zs:3:36: mismatched input '09' expecting {"; // ...
         assertTrue(zserioErrors.isPresent(error));
     }
 

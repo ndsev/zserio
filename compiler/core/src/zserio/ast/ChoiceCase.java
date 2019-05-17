@@ -1,27 +1,53 @@
 package zserio.ast;
 
-import java.io.Serializable;
-import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
-import zserio.antlr.ZserioParserTokenTypes;
-import zserio.antlr.util.BaseTokenAST;
-import zserio.antlr.util.ParserException;
-import zserio.ast.doc.DocCommentToken;
+import org.antlr.v4.runtime.Token;
 
 /**
  * AST node for cases defined by choice types.
  */
-public class ChoiceCase extends TokenAST
+public class ChoiceCase extends AstNodeBase
 {
+    /**
+     * Constructor.
+     *
+     * @param token           ANTLR4 token to localize AST node in the sources.
+     * @param caseExpressions List of all case expressions associated to this choice case.
+     * @param caseField       Case field associated to this choice case or null if it's not defined.
+     */
+    public ChoiceCase(Token token, List<ChoiceCaseExpression> caseExpressions, Field caseField)
+    {
+        super(token);
+
+        this.caseExpressions = caseExpressions;
+        this.caseField = caseField;
+    }
+
+    @Override
+    public void accept(ZserioAstVisitor visitor)
+    {
+        visitor.visitChoiceCase(this);
+    }
+
+    @Override
+    public void visitChildren(ZserioAstVisitor visitor)
+    {
+        for (ChoiceCaseExpression caseExpression : caseExpressions)
+            caseExpression.accept(visitor);
+        if (caseField != null)
+            caseField.accept(visitor);
+    }
+
     /**
      * Gets expressions defined by the choice case.
      *
      * @return Choice case expression list.
      */
-    public List<CaseExpression> getExpressions()
+    public List<ChoiceCaseExpression> getExpressions()
     {
-        return caseExpressions;
+        return Collections.unmodifiableList(caseExpressions);
     }
 
     /**
@@ -34,79 +60,6 @@ public class ChoiceCase extends TokenAST
         return caseField;
     }
 
-    public static class CaseExpression implements Serializable
-    {
-        public CaseExpression(Expression expression, DocCommentToken docComment)
-        {
-            this.expression = expression;
-            this.docComment = docComment;
-        }
-
-        public Expression getExpression()
-        {
-            return expression;
-        }
-
-        public DocCommentToken getDocComment()
-        {
-            return docComment;
-        }
-
-        private static final long serialVersionUID = 703521218397552727L;
-
-        private final Expression        expression;
-        private final DocCommentToken   docComment;
-    }
-
-    @Override
-    protected boolean evaluateChild(BaseTokenAST child) throws ParserException
-    {
-        if (child instanceof Expression)
-        {
-            if (lastCaseToken == null)
-                lastCaseToken = this;
-            lastCaseToken.evaluateHiddenDocComment(choiceType);
-            caseExpressions.add(new CaseExpression((Expression)child, lastCaseToken.getHiddenDocComment()));
-        }
-        else
-        {
-            switch (child.getType())
-            {
-            case ZserioParserTokenTypes.CASE:
-                if (!(child instanceof ChoiceCase))
-                    return false;
-                lastCaseToken = (ChoiceCase)child;
-                break;
-
-            case ZserioParserTokenTypes.FIELD:
-                if (!(child instanceof Field))
-                    return false;
-                caseField = (Field)child;
-                choiceType.addField(caseField);
-                break;
-
-            default:
-                return false;
-            }
-        }
-
-        return true;
-    }
-
-    /**
-     * Sets the choice type which is owner of the choice case.
-     *
-     * @param choiceType Owner to set.
-     */
-    protected void setChoiceType(ChoiceType choiceType)
-    {
-        this.choiceType = choiceType;
-    }
-
-    private static final long serialVersionUID = 703521218397552828L;
-
-    private ChoiceType choiceType;
-    private final List<CaseExpression> caseExpressions = new ArrayList<CaseExpression>();
-    private Field caseField;
-    private ChoiceCase lastCaseToken;
+    private final List<ChoiceCaseExpression> caseExpressions;
+    private final Field caseField;
 };

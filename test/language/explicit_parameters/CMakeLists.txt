@@ -25,6 +25,13 @@ set(ZSERIO_GENERATED_SOURCES
     ${ZSERIO_GEN_DIR}/explicit_parameters/multiple_explicit_params/MultipleParamsTableRow.h
     ${ZSERIO_GEN_DIR}/explicit_parameters/multiple_explicit_params/TestBlob.cpp
     ${ZSERIO_GEN_DIR}/explicit_parameters/multiple_explicit_params/TestBlob.h
+
+    ${ZSERIO_GEN_DIR}/explicit_parameters/explicit_same_as_field/SameAsFieldTable.cpp
+    ${ZSERIO_GEN_DIR}/explicit_parameters/explicit_same_as_field/SameAsFieldTable.h
+    ${ZSERIO_GEN_DIR}/explicit_parameters/explicit_same_as_field/SameAsFieldTableRow.cpp
+    ${ZSERIO_GEN_DIR}/explicit_parameters/explicit_same_as_field/SameAsFieldTableRow.h
+    ${ZSERIO_GEN_DIR}/explicit_parameters/explicit_same_as_field/TestBlob.cpp
+    ${ZSERIO_GEN_DIR}/explicit_parameters/explicit_same_as_field/TestBlob.h
 )
 
 zserio_add_library(TARGET explicit_parameters_zs
@@ -40,6 +47,7 @@ target_include_directories(explicit_parameters_zs SYSTEM PRIVATE ${SQLITE_INCDIR
 
 add_test_sources(
     cpp/ExplicitBlobParamTest.cpp
+    cpp/ExplicitSameAsFieldTest.cpp
     cpp/ExplicitSimpleParamTest.cpp
     cpp/MultipleExplicitParamsTest.cpp
 )

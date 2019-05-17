@@ -39,6 +39,8 @@ public class ApiEmitter extends PythonDefaultEmitter
     @Override
     public void beginPackage(Package zserioPackage) throws ZserioEmitException
     {
+        super.beginPackage(zserioPackage);
+
         final PackageMapper packageMapper = getTemplateDataContext().getPythonPackageMapper();
         final PackageName mappedPackageName = packageMapper.getPackageName(zserioPackage);
 

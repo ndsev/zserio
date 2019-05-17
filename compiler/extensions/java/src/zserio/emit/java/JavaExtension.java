@@ -88,7 +88,7 @@ public class JavaExtension implements Extension
 
         // emit Java code
         for (Emitter javaEmitter: emitters)
-            rootNode.walk(javaEmitter);
+            rootNode.emit(javaEmitter);
     }
 
     private static String getMajorVersion(String javaVersionOption)

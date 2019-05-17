@@ -17,6 +17,9 @@
         <testGen testName="choice_types_error" zsFile="field_case_error.zs" ignoreErrors="true"/>
         <testGen testName="choice_types_error" zsFile="float_selector_error.zs" ignoreErrors="true"/>
         <testGen testName="choice_types_error" zsFile="multiple_cases_error.zs" ignoreErrors="true"/>
+        <testGen testName="choice_types_error" zsFile="multiple_cases_on_enum_error.zs" ignoreErrors="true"/>
+        <testGen testName="choice_types_error" zsFile="multiple_cases_with_expression_error.zs"
+            ignoreErrors="true"/>
         <testGen testName="choice_types_error" zsFile="multiple_defaults_error.zs" ignoreErrors="true"/>
         <testGen testName="choice_types_error" zsFile="non_constant_case_error.zs" ignoreErrors="true"/>
         <testGen testName="choice_types_error" zsFile="optional_member_error.zs" ignoreErrors="true"/>

@@ -1,17 +1,46 @@
 package zserio.ast;
 
-import zserio.antlr.ZserioParserTokenTypes;
-import zserio.antlr.util.ParserException;
+import org.antlr.v4.runtime.Token;
+
+import zserio.antlr.ZserioParser;
 
 /**
- * AST node for float types.
+ * AST node for Float types.
  *
  * Float types are Zserio types as well.
  */
 public class FloatType extends BuiltInType implements FixedSizeType
 {
+    /**
+     * Constructor from ANTLR4 token.
+     *
+     * @param token Token to construct from.
+     */
+    public FloatType(Token token)
+    {
+        super(token);
+
+        switch (token.getType())
+        {
+        case ZserioParser.FLOAT16:
+            bitSize = 16;
+            break;
+
+        case ZserioParser.FLOAT32:
+            bitSize = 32;
+            break;
+
+        case ZserioParser.FLOAT64:
+            bitSize = 64;
+            break;
+
+        default:
+            throw new InternalError("Unexpected AST node type in FloatType!");
+        }
+    }
+
     @Override
-    public void callVisitor(ZserioTypeVisitor visitor)
+    public void accept(ZserioAstVisitor visitor)
     {
         visitor.visitFloatType(this);
     }
@@ -22,29 +51,5 @@ public class FloatType extends BuiltInType implements FixedSizeType
         return bitSize;
     }
 
-    @Override
-    protected void evaluate() throws ParserException
-    {
-        switch (getType())
-        {
-        case ZserioParserTokenTypes.FLOAT16:
-            bitSize = 16;
-            break;
-
-        case ZserioParserTokenTypes.FLOAT32:
-            bitSize = 32;
-            break;
-
-        case ZserioParserTokenTypes.FLOAT64:
-            bitSize = 64;
-            break;
-
-        default:
-            throw new ParserException(this, "Unexpected AST node type in FloatType!");
-        }
-    }
-
-    private static final long serialVersionUID = 125193189598509024L;
-
-    private int bitSize;
+    private final int bitSize;
 }

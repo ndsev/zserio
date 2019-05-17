@@ -139,11 +139,12 @@ public abstract class CppDefaultExpressionFormattingPolicy extends DefaultExpres
         final StringBuilder result = new StringBuilder();
         final String symbol = expr.getText();
         final Object resolvedSymbol = expr.getExprSymbolObject();
+        final ZserioType resolvedType = expr.getExprZserioType();
         final boolean isFirstInDot = (expr.getExprZserioType() != null);
         if (resolvedSymbol instanceof ZserioType)
             formatIdentifierForType(result, symbol, isFirstInDot, (ZserioType)resolvedSymbol);
         else if (!(resolvedSymbol instanceof Package))
-            formatIdentifierForSymbol(result, symbol, isFirstInDot, resolvedSymbol, isSetter);
+            formatIdentifierForSymbol(result, symbol, isFirstInDot, resolvedSymbol, resolvedType, isSetter);
 
         // ignore package identifiers, they will be a part of the following Zserio type
 
@@ -172,12 +173,6 @@ public abstract class CppDefaultExpressionFormattingPolicy extends DefaultExpres
     public UnaryExpressionFormatting getValueOf(Expression expr)
     {
         return new UnaryExpressionFormatting("", "");
-    }
-
-    @Override
-    public UnaryExpressionFormatting getExplicit(Expression expr)
-    {
-        return new UnaryExpressionFormatting("");
     }
 
     @Override
@@ -250,7 +245,7 @@ public abstract class CppDefaultExpressionFormattingPolicy extends DefaultExpres
     }
 
     private void formatIdentifierForSymbol(StringBuilder result, String symbol, boolean isFirstInDot,
-            Object resolvedSymbol, boolean isSetter) throws ZserioEmitException
+            Object resolvedSymbol, ZserioType resolvedType, boolean isSetter) throws ZserioEmitException
     {
         if (resolvedSymbol instanceof Parameter)
         {
@@ -268,9 +263,9 @@ public abstract class CppDefaultExpressionFormattingPolicy extends DefaultExpres
             // emit the whole name if this is the first symbol in this dot subtree, otherwise emit only the
             // enum short name
             final EnumItem item = (EnumItem)resolvedSymbol;
-            if (isFirstInDot)
+            if (isFirstInDot && resolvedType instanceof EnumType)
             {
-                final EnumType enumType = item.getEnumType();
+                final EnumType enumType = (EnumType)resolvedType;
                 final CppNativeType nativeEnumType = cppNativeTypeMapper.getCppType(enumType);
                 result.append(nativeEnumType.getFullName());
                 result.append("::");

@@ -20,7 +20,8 @@ public class IndexOperatorsErrorTest
     @Test
     public void alignmentExpression()
     {
-        final String error = "alignment_expression_error.zs:5:7: expecting DECIMAL_LITERAL, found '@'";
+        final String error = "alignment_expression_error.zs:5:7: " +
+                "mismatched input '@index' expecting DECIMAL_LITERAL ('@index' is a reserved keyword)!";
         assertTrue(zserioErrors.isPresent(error));
     }
 
@@ -28,7 +29,7 @@ public class IndexOperatorsErrorTest
     public void constantExpression()
     {
         final String error =
-                "constant_expression_error.zs:3:29: Index operator is not allowed in this context!";
+                "constant_expression_error.zs:3:28: Index operator is not allowed in this context!";
         assertTrue(zserioErrors.isPresent(error));
     }
 
@@ -36,7 +37,7 @@ public class IndexOperatorsErrorTest
     public void constraintExpression()
     {
         final String error =
-                "constraint_expression_error.zs:5:32: Index operator is not allowed in this context!";
+                "constraint_expression_error.zs:5:31: Index operator is not allowed in this context!";
         assertTrue(zserioErrors.isPresent(error));
     }
 
@@ -44,7 +45,7 @@ public class IndexOperatorsErrorTest
     public void defaultValueExpression()
     {
         final String error =
-                "default_value_expression_error.zs:5:24: Index operator is not allowed in this context!";
+                "default_value_expression_error.zs:5:23: Index operator is not allowed in this context!";
         assertTrue(zserioErrors.isPresent(error));
     }
 
@@ -52,14 +53,14 @@ public class IndexOperatorsErrorTest
     public void enumValueExpression()
     {
         final String error =
-                "enum_value_expression_error.zs:5:15: Index operator is not allowed in this context!";
+                "enum_value_expression_error.zs:5:14: Index operator is not allowed in this context!";
         assertTrue(zserioErrors.isPresent(error));
     }
 
     @Test
     public void noArray()
     {
-        final String error = "no_array_error.zs:6:10: Index operator is not allowed in this context!";
+        final String error = "no_array_error.zs:6:9: Index operator is not allowed in this context!";
         assertTrue(zserioErrors.isPresent(error));
     }
 
@@ -67,15 +68,15 @@ public class IndexOperatorsErrorTest
     public void optionalExpression()
     {
         final String error =
-                "optional_expression_error.zs:5:25: Index operator is not allowed in this context!";
+                "optional_expression_error.zs:5:24: Index operator is not allowed in this context!";
         assertTrue(zserioErrors.isPresent(error));
     }
 
     @Test
     public void parameterNoArray()
     {
-        final String error =
-                "parameter_no_array_error.zs:10:20: Index operator is not allowed in this context!";
+        final String error = "parameter_no_array_error.zs:10:19: " +
+                "Index operator is not allowed in this context!";
         assertTrue(zserioErrors.isPresent(error));
     }
 

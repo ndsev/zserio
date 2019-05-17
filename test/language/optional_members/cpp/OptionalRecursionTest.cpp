@@ -3,8 +3,7 @@
 #include "zserio/BitStreamWriter.h"
 #include "zserio/BitStreamReader.h"
 #
-#include "optional_members/optional_recursion/Employee.h"
-#include "optional_members/optional_recursion/Title.h"
+#include "optional_members/optional_recursion/Block.h"
 
 namespace optional_members
 {
@@ -14,170 +13,181 @@ namespace optional_recursion
 class OptionalRecursionTest : public ::testing::Test
 {
 protected:
-    void fillEmployee(Employee& employee, const char name[], uint16_t salary, Title title)
+    void fillBlock(Block& block, const uint8_t* blockData, size_t blockDataSize)
     {
-        employee.setName(name);
-        employee.setSalary(salary);
-        employee.setTitle(title);
+        block.initialize(static_cast<uint8_t>(blockDataSize));
+
+        zserio::UInt8Array dataBytes;
+        dataBytes.reserve(blockDataSize);
+        for (size_t i = 0; i < blockDataSize; ++i)
+            dataBytes.push_back(static_cast<uint8_t>(blockData[i]));
+        block.setDataBytes(dataBytes);
+
+        block.setBlockTerminator(0);
     }
 
-    void fillTeamLead(Employee& teamLead)
+    void fillBlock(Block& block1, const uint8_t* block1Data, size_t block1DataSize, const uint8_t* block2Data,
+            size_t block2DataSize)
     {
-        fillEmployee(teamLead, EMPLOYEE_TEAM_LEAD_NAME, EMPLOYEE_TEAM_LEAD_SALARY, Title::TEAM_LEAD);
+        Block block2;
+        fillBlock(block2, block2Data, block2DataSize);
 
-        zserio::ObjectArray<Employee> teamMembers;
-        Employee teamMember1;
-        fillEmployee(teamMember1, EMPLOYEE_DEVELOPER1_NAME, EMPLOYEE_DEVELOPER1_SALARY, Title::DEVELOPER);
-        teamMembers.push_back(teamMember1);
+        block1.initialize(static_cast<uint8_t>(block1DataSize));
 
-        Employee teamMember2;
-        fillEmployee(teamMember2, EMPLOYEE_DEVELOPER2_NAME, EMPLOYEE_DEVELOPER2_SALARY, Title::DEVELOPER);
-        teamMembers.push_back(teamMember2);
+        zserio::UInt8Array dataBytes;
+        dataBytes.reserve(block1DataSize);
+        for (size_t i = 0; i < block1DataSize; ++i)
+            dataBytes.push_back(static_cast<uint8_t>(block1Data[i]));
+        block1.setDataBytes(dataBytes);
 
-        teamLead.setTeamMembers(teamMembers);
+        block1.setBlockTerminator(block2DataSize);
+        block1.setNextData(block2);
     }
 
-    void checkEmployeeInBitStream(zserio::BitStreamReader& reader, const char name[], uint16_t salary,
-            Title title)
+    size_t getBlockBitSize(size_t blockDataSize)
     {
-        ASSERT_EQ(name, reader.readString());
-        ASSERT_EQ(salary, reader.readBits(16));
-        ASSERT_EQ(title, reader.readBits(8));
+        return 8 * blockDataSize + 8;
     }
 
-    void checkTeamLeadInBitStream(zserio::BitStreamReader& reader)
+    size_t getBlockBitSize(size_t block1DataSize, size_t block2DataSize)
     {
-        checkEmployeeInBitStream(reader, EMPLOYEE_TEAM_LEAD_NAME, EMPLOYEE_TEAM_LEAD_SALARY, Title::TEAM_LEAD);
-        ASSERT_EQ(NUM_DEVELOPERS, reader.readVarUInt64());
-        checkEmployeeInBitStream(reader, EMPLOYEE_DEVELOPER1_NAME, EMPLOYEE_DEVELOPER1_SALARY,
-                Title::DEVELOPER);
-        checkEmployeeInBitStream(reader, EMPLOYEE_DEVELOPER2_NAME, EMPLOYEE_DEVELOPER2_SALARY,
-                Title::DEVELOPER);
+        return getBlockBitSize(block1DataSize) + getBlockBitSize(block2DataSize);
     }
 
-    static const char   EMPLOYEE_TEAM_LEAD_NAME[];
-    static uint16_t     EMPLOYEE_TEAM_LEAD_SALARY;
+    void checkBlockInBitStream(zserio::BitStreamReader& reader, const uint8_t* blockData, size_t blockDataSize)
+    {
+        for (size_t i = 0; i < blockDataSize; ++i)
+            ASSERT_EQ(blockData[i], reader.readBits(8));
 
-    static const char   EMPLOYEE_DEVELOPER1_NAME[];
-    static uint16_t     EMPLOYEE_DEVELOPER1_SALARY;
+        ASSERT_EQ(0, reader.readBits(8));
+    }
 
-    static const char   EMPLOYEE_DEVELOPER2_NAME[];
-    static uint16_t     EMPLOYEE_DEVELOPER2_SALARY;
+    void checkBlockInBitStream(zserio::BitStreamReader& reader, const uint8_t* block1Data,
+            size_t block1DataSize, const uint8_t* block2Data, size_t block2DataSize)
+    {
+        for (size_t i = 0; i < block1DataSize; ++i)
+            ASSERT_EQ(block1Data[i], reader.readBits(8));
+        ASSERT_EQ(block2DataSize, reader.readBits(8));
 
-    static const size_t NUM_DEVELOPERS;
-    static const size_t EMPTY_EMPLOYEE_BIT_SIZE;
-    static const size_t TEAM_LEAD_BIT_SIZE;
+        checkBlockInBitStream(reader, block2Data, block2DataSize);
+    }
+
+    static const uint8_t BLOCK1_DATA[];
+    static const uint8_t BLOCK2_DATA[];
 };
 
-const char  OptionalRecursionTest::EMPLOYEE_TEAM_LEAD_NAME[] = "Nico";
-uint16_t    OptionalRecursionTest::EMPLOYEE_TEAM_LEAD_SALARY = 2000;
+const uint8_t OptionalRecursionTest::BLOCK1_DATA[] = {1, 2, 3, 4, 5, 6};
+const uint8_t OptionalRecursionTest::BLOCK2_DATA[] = {10, 9, 8, 7};
 
-const char  OptionalRecursionTest::EMPLOYEE_DEVELOPER1_NAME[] = "Mike";
-uint16_t    OptionalRecursionTest::EMPLOYEE_DEVELOPER1_SALARY = 1000;
-
-const char  OptionalRecursionTest::EMPLOYEE_DEVELOPER2_NAME[] = "Luke";
-uint16_t    OptionalRecursionTest::EMPLOYEE_DEVELOPER2_SALARY = 1800;
-
-const size_t OptionalRecursionTest::NUM_DEVELOPERS = 2;
-const size_t OptionalRecursionTest::EMPTY_EMPLOYEE_BIT_SIZE = 32;
-const size_t OptionalRecursionTest::TEAM_LEAD_BIT_SIZE = EMPTY_EMPLOYEE_BIT_SIZE * 3 + 8 +
-        (sizeof(OptionalRecursionTest::EMPLOYEE_TEAM_LEAD_NAME) - 1) * 8 +
-        (sizeof(OptionalRecursionTest::EMPLOYEE_DEVELOPER1_NAME) - 1) * 8 +
-        (sizeof(OptionalRecursionTest::EMPLOYEE_DEVELOPER2_NAME) - 1) * 8;
-
-TEST_F(OptionalRecursionTest, hasTeamMembers)
+TEST_F(OptionalRecursionTest, hasNextData)
 {
-    Employee teamLead;
-    ASSERT_FALSE(teamLead.hasTeamMembers());
+    Block block1;
+    fillBlock(block1, BLOCK1_DATA, sizeof(BLOCK1_DATA));
+    ASSERT_FALSE(block1.hasNextData());
 
-    fillTeamLead(teamLead);
-    ASSERT_TRUE(teamLead.hasTeamMembers());
+    Block block12;
+    fillBlock(block12, BLOCK1_DATA, sizeof(BLOCK1_DATA), BLOCK2_DATA, sizeof(BLOCK2_DATA));
+    ASSERT_TRUE(block12.hasNextData());
 }
 
 TEST_F(OptionalRecursionTest, bitSizeOf)
 {
-    Employee teamLead;
-    ASSERT_EQ(EMPTY_EMPLOYEE_BIT_SIZE, teamLead.bitSizeOf());
+    Block block1;
+    fillBlock(block1, BLOCK1_DATA, sizeof(BLOCK1_DATA));
+    ASSERT_EQ(getBlockBitSize(sizeof(BLOCK1_DATA)), block1.bitSizeOf());
 
-    fillTeamLead(teamLead);
-    ASSERT_EQ(TEAM_LEAD_BIT_SIZE, teamLead.bitSizeOf());
+    Block block12;
+    fillBlock(block12, BLOCK1_DATA, sizeof(BLOCK1_DATA), BLOCK2_DATA, sizeof(BLOCK2_DATA));
+    ASSERT_EQ(getBlockBitSize(sizeof(BLOCK1_DATA), sizeof(BLOCK2_DATA)), block12.bitSizeOf());
 }
 
 TEST_F(OptionalRecursionTest, initializeOffsets)
 {
-    Employee teamLead;
+    Block block1;
+    fillBlock(block1, BLOCK1_DATA, sizeof(BLOCK1_DATA));
     const size_t bitPosition = 1;
-    ASSERT_EQ(bitPosition + EMPTY_EMPLOYEE_BIT_SIZE, teamLead.initializeOffsets(bitPosition));
+    ASSERT_EQ(bitPosition + getBlockBitSize(sizeof(BLOCK1_DATA)), block1.initializeOffsets(bitPosition));
 
-    fillTeamLead(teamLead);
-    ASSERT_EQ(bitPosition + TEAM_LEAD_BIT_SIZE, teamLead.initializeOffsets(bitPosition));
+    Block block12;
+    fillBlock(block12, BLOCK1_DATA, sizeof(BLOCK1_DATA), BLOCK2_DATA, sizeof(BLOCK2_DATA));
+    ASSERT_EQ(bitPosition + getBlockBitSize(sizeof(BLOCK1_DATA), sizeof(BLOCK2_DATA)),
+            block12.initializeOffsets(bitPosition));
 }
 
 TEST_F(OptionalRecursionTest, operatorEquality)
 {
-    Employee teamLead1;
-    Employee teamLead2;
-    ASSERT_TRUE(teamLead1 == teamLead2);
+    Block emptyBlock1;
+    emptyBlock1.initialize(0);
+    Block emptyBlock2;
+    emptyBlock2.initialize(0);
+    ASSERT_TRUE(emptyBlock1 == emptyBlock2);
 
-    fillTeamLead(teamLead1);
-    ASSERT_FALSE(teamLead1 == teamLead2);
+    Block block1;
+    fillBlock(block1, BLOCK1_DATA, sizeof(BLOCK1_DATA));
+    ASSERT_FALSE(block1 == emptyBlock1);
 
-    fillTeamLead(teamLead2);
-    ASSERT_TRUE(teamLead1 == teamLead2);
+    Block block2;
+    fillBlock(block2, BLOCK1_DATA, sizeof(BLOCK1_DATA));
+    ASSERT_TRUE(block2 == block1);
+
+    Block block12;
+    fillBlock(block12, BLOCK1_DATA, sizeof(BLOCK1_DATA), BLOCK2_DATA, sizeof(BLOCK2_DATA));
+    ASSERT_FALSE(block12 == block1);
 }
 
 TEST_F(OptionalRecursionTest, hashCode)
 {
-    Employee teamLead1;
-    Employee teamLead2;
-    ASSERT_EQ(teamLead1.hashCode(), teamLead2.hashCode());
+    Block emptyBlock1;
+    emptyBlock1.initialize(0);
+    Block emptyBlock2;
+    emptyBlock2.initialize(0);
+    ASSERT_EQ(emptyBlock1.hashCode(), emptyBlock2.hashCode());
 
-    fillTeamLead(teamLead1);
-    ASSERT_NE(teamLead1.hashCode(), teamLead2.hashCode());
+    Block block1;
+    fillBlock(block1, BLOCK1_DATA, sizeof(BLOCK1_DATA));
+    ASSERT_NE(block1.hashCode(), emptyBlock1.hashCode());
 
-    fillTeamLead(teamLead2);
-    ASSERT_EQ(teamLead1.hashCode(), teamLead2.hashCode());
+    Block block2;
+    fillBlock(block2, BLOCK1_DATA, sizeof(BLOCK1_DATA));
+    ASSERT_EQ(block2.hashCode(), block1.hashCode());
+
+    Block block12;
+    fillBlock(block12, BLOCK1_DATA, sizeof(BLOCK1_DATA), BLOCK2_DATA, sizeof(BLOCK2_DATA));
+    ASSERT_NE(block12.hashCode(), block1.hashCode());
 }
 
-TEST_F(OptionalRecursionTest, writeEmployee)
+TEST_F(OptionalRecursionTest, writeBlock1)
 {
-    Employee employee;
-    fillEmployee(employee, EMPLOYEE_DEVELOPER1_NAME, EMPLOYEE_DEVELOPER1_SALARY, Title::DEVELOPER);
+    Block block1;
+    fillBlock(block1, BLOCK1_DATA, sizeof(BLOCK1_DATA));
 
     zserio::BitStreamWriter writer;
-    employee.write(writer);
+    block1.write(writer);
     size_t writerBufferByteSize;
     const uint8_t* writerBuffer = writer.getWriteBuffer(writerBufferByteSize);
     zserio::BitStreamReader reader(writerBuffer, writerBufferByteSize);
-    checkEmployeeInBitStream(reader, EMPLOYEE_DEVELOPER1_NAME, EMPLOYEE_DEVELOPER1_SALARY, Title::DEVELOPER);
+    checkBlockInBitStream(reader, BLOCK1_DATA, sizeof(BLOCK1_DATA));
     reader.setBitPosition(0);
 
-    Employee readTeamLead(reader);
-    ASSERT_EQ(EMPLOYEE_DEVELOPER1_NAME, readTeamLead.getName());
-    ASSERT_EQ(EMPLOYEE_DEVELOPER1_SALARY, readTeamLead.getSalary());
-    ASSERT_EQ(Title::DEVELOPER, readTeamLead.getTitle());
+    Block readBlock1(reader, sizeof(BLOCK1_DATA));
+    ASSERT_EQ(block1, readBlock1);
 }
 
-TEST_F(OptionalRecursionTest, writeTeamLead)
+TEST_F(OptionalRecursionTest, writeBlock12)
 {
-    Employee teamLead;
-    fillTeamLead(teamLead);
+    Block block12;
+    fillBlock(block12, BLOCK1_DATA, sizeof(BLOCK1_DATA), BLOCK2_DATA, sizeof(BLOCK2_DATA));
 
     zserio::BitStreamWriter writer;
-    teamLead.write(writer);
+    block12.write(writer);
     size_t writerBufferByteSize;
     const uint8_t* writerBuffer = writer.getWriteBuffer(writerBufferByteSize);
     zserio::BitStreamReader reader(writerBuffer, writerBufferByteSize);
-    checkTeamLeadInBitStream(reader);
+    checkBlockInBitStream(reader, BLOCK1_DATA, sizeof(BLOCK1_DATA), BLOCK2_DATA, sizeof(BLOCK2_DATA));
     reader.setBitPosition(0);
 
-    Employee readTeamLead(reader);
-    ASSERT_EQ(EMPLOYEE_TEAM_LEAD_NAME, readTeamLead.getName());
-    ASSERT_EQ(EMPLOYEE_TEAM_LEAD_SALARY, readTeamLead.getSalary());
-    ASSERT_EQ(Title::TEAM_LEAD, readTeamLead.getTitle());
-    ASSERT_TRUE(readTeamLead.hasTeamMembers());
-    zserio::ObjectArray<Employee> teamMembers = readTeamLead.getTeamMembers();
-    ASSERT_EQ(NUM_DEVELOPERS, teamMembers.size());
+    Block readBlock12(reader, sizeof(BLOCK1_DATA));
+    ASSERT_EQ(block12, readBlock12);
 }
 
 } // namespace optional_recursion

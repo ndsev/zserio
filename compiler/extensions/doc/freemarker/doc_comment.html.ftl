@@ -1,44 +1,35 @@
 <#-- This macro generates HTML source for the documentation comment. -->
 <#macro doc_comment doc>
-    <#if doc.paragraphList?size == 0>
+    <#if doc.paragraphs?size == 0>
     <div class="docuTag">&lt;<i>no documentation found</i>&gt;</div>
     <#else>
-        <#list doc.paragraphList as paragraph>
-            <#if paragraph.paragraphTextList?size != 0>
+        <#list doc.paragraphs as paragraph>
+            <#list paragraph.elements as element>
+                <#if element.multiline??>
     <div class="docuTag">
-                <#list paragraph.paragraphTextList as paragraphText>
-                    <#list paragraphText.textList as text>
-        ${text}
-                    </#list>
-                    <#list paragraphText.tagSeeList as tagSee>
-        <a href="${tagSee.url}">${tagSee.alias}</a>
-                    </#list>
-                </#list>
+        <@doc_multiline_node element.multiline/>
     </div>
-            </#if>
+                </#if>
 
-            <#list paragraph.tagTodoList as tagTodo>
+                <#if element.todoTag??>
     <div class="docuTag">
         <span>Todo:</span>
-                <#list tagTodo.textList as text>
-        ${text}
-                </#list>
+        <@doc_multiline_node element.todoTag/>
     </div>
-            </#list>
+                </#if>
 
-            <#list paragraph.tagSeeList as tagSee>
+                <#if element.seeTag??>
     <div class="docuTag">
-        <span>See:</span> <a href="${tagSee.url}">${tagSee.alias}</a>
+        <span>See:</span> <a href="${element.seeTag.url}">${element.seeTag.alias}</a>
     </div>
-            </#list>
+                </#if>
 
-            <#list paragraph.tagParamList as tagParam>
+                <#if element.paramTag??>
     <div class="docuTag">
-        <span>Param:</span> <code>${tagParam.name}</code>
-                <#list tagParam.descriptionList as description>
-        ${description}
-                </#list>
+        <span>Param:</span> <code>${element.paramTag.name}</code>
+        <@doc_multiline_node element.paramTag.description/>
     </div>
+                </#if>
             </#list>
         </#list>
 
@@ -49,3 +40,14 @@
         </#if>
     </#if>
 </#macro>
+
+<#macro doc_multiline_node multilineNode>
+    <#list multilineNode.docLineElements as docLineElement>
+        <#if docLineElement.docString??>
+        ${docLineElement.docString}
+        </#if>
+        <#if docLineElement.seeTag??>
+        <a href="${docLineElement.seeTag.url}">${docLineElement.seeTag.alias}</a>
+        </#if>
+    </#list>
+</#macro> 

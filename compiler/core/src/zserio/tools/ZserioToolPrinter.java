@@ -1,6 +1,7 @@
 package zserio.tools;
 
-import zserio.antlr.util.BaseTokenAST;
+import zserio.ast.AstLocation;
+import zserio.ast.AstNode;
 
 /**
  * Class with static methods to handle all printing possibilities from Zserio Tool.
@@ -21,17 +22,28 @@ public class ZserioToolPrinter
     }
 
     /**
-     * Prints warning which is localized by base AST token.
+     * Prints warning which is localized by base AST node.
      *
-     * @param orignToken AST token to which the warning belongs to.
-     * @param text       Text of the warning to print.
+     * @param astNode AST node to which the warning belongs to.
+     * @param text      Text of the warning to print.
      */
-    public static void printWarning(BaseTokenAST originToken, String text)
+    public static void printWarning(AstNode astNode, String text)
     {
-        if (originToken == null)
+        if (astNode == null)
             printWarning(null, 0, 0, text);
         else
-            printWarning(originToken.getFileName(), originToken.getLine(), originToken.getColumn(), text);
+            printWarning(astNode.getLocation(), text);
+    }
+
+    /**
+     * Prints warning which is localized by AST node location.
+     *
+     * @param astNodeLocation   AST node location.
+     * @param text              Text of the warning to print.
+     */
+    public static void printWarning(AstLocation location, String text)
+    {
+        printWarning(location.getFileName(), location.getLine(), location.getColumn(), text);
     }
 
     /**
@@ -43,6 +55,17 @@ public class ZserioToolPrinter
     public static void printWarning(String fileName, String text)
     {
         printWarning(fileName, 0, 0, text);
+    }
+
+    /**
+     * Prints error which is localized by AST node location.
+     *
+     * @param astNodeLocation AST node location.
+     * @param text            Text of the error to print.
+     */
+    public static void printError(AstLocation location, String text)
+    {
+        printError(location.getFileName(), location.getLine(), location.getColumn(), text);
     }
 
     /**

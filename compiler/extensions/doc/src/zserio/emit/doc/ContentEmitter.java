@@ -1,13 +1,15 @@
 package zserio.emit.doc;
 
-import zserio.ast.CompoundType;
+import zserio.ast.ChoiceType;
 import zserio.ast.ConstType;
 import zserio.ast.EnumType;
-import zserio.ast.Package;
 import zserio.ast.Root;
 import zserio.ast.ServiceType;
+import zserio.ast.SqlDatabaseType;
+import zserio.ast.SqlTableType;
+import zserio.ast.StructureType;
 import zserio.ast.Subtype;
-import zserio.ast.ZserioType;
+import zserio.ast.UnionType;
 import zserio.emit.common.ZserioEmitException;
 
 public class ContentEmitter extends DefaultHtmlEmitter
@@ -18,14 +20,14 @@ public class ContentEmitter extends DefaultHtmlEmitter
     private final ConstTypeEmitter constTypeEmitter;
     private final ServiceEmitter serviceEmitter;
 
-    public ContentEmitter(String outputPath, boolean withSvgDiagrams)
+    public ContentEmitter(String outputPath, boolean withSvgDiagrams, UsedByCollector usedByCollector)
     {
         super(outputPath);
 
-        compoundEmitter = new CompoundEmitter(outputPath, withSvgDiagrams);
-        enumerationEmitter = new EnumerationEmitter(outputPath, withSvgDiagrams);
-        subtypeEmitter = new SubtypeEmitter(outputPath, withSvgDiagrams);
-        constTypeEmitter = new ConstTypeEmitter(outputPath, withSvgDiagrams);
+        compoundEmitter = new CompoundEmitter(outputPath, withSvgDiagrams, usedByCollector);
+        enumerationEmitter = new EnumerationEmitter(outputPath, withSvgDiagrams, usedByCollector);
+        subtypeEmitter = new SubtypeEmitter(outputPath, withSvgDiagrams, usedByCollector);
+        constTypeEmitter = new ConstTypeEmitter(outputPath, withSvgDiagrams, usedByCollector);
         serviceEmitter = new ServiceEmitter(outputPath, withSvgDiagrams);
     }
 
@@ -36,40 +38,56 @@ public class ContentEmitter extends DefaultHtmlEmitter
     }
 
     @Override
-    public void beginPackage(Package packageToken) throws ZserioEmitException
+    public void beginConst(ConstType constType) throws ZserioEmitException
     {
-        super.beginPackage(packageToken);
-        emitPackage(packageToken);
+        constTypeEmitter.emit(constType);
     }
 
-    private void emitPackage(Package pkg) throws ZserioEmitException
+    @Override
+    public void beginSubtype(Subtype subType) throws ZserioEmitException
     {
-        for (ZserioType type : pkg.getLocalTypes())
-        {
-            if (type instanceof CompoundType)
-            {
-                compoundEmitter.emit((CompoundType)type);
-            }
-            else if (type instanceof EnumType)
-            {
-                enumerationEmitter.emit((EnumType)type);
-            }
-            else if (type instanceof Subtype)
-            {
-                subtypeEmitter.emit((Subtype)type);
-            }
-            else if (type instanceof ConstType)
-            {
-                constTypeEmitter.emit((ConstType)type);
-            }
-            else if (type instanceof ServiceType)
-            {
-                serviceEmitter.emit((ServiceType)type);
-            }
-            else
-            {
-                throw new RuntimeException("don't know how to emit content for type " + type);
-            }
-        }
+        subtypeEmitter.emit(subType);
+    }
+
+    @Override
+    public void beginStructure(StructureType structureType) throws ZserioEmitException
+    {
+        compoundEmitter.emit(structureType);
+    }
+
+    @Override
+    public void beginChoice(ChoiceType choiceType) throws ZserioEmitException
+    {
+        compoundEmitter.emit(choiceType);
+    }
+
+    @Override
+    public void beginUnion(UnionType unionType) throws ZserioEmitException
+    {
+        compoundEmitter.emit(unionType);
+    }
+
+    @Override
+    public void beginEnumeration(EnumType enumType) throws ZserioEmitException
+    {
+        enumerationEmitter.emit(enumType);
+    }
+
+    @Override
+    public void beginSqlTable(SqlTableType sqlTableType) throws ZserioEmitException
+    {
+        compoundEmitter.emit(sqlTableType);
+    }
+
+    @Override
+    public void beginSqlDatabase(SqlDatabaseType sqlDatabaseType) throws ZserioEmitException
+    {
+        compoundEmitter.emit(sqlDatabaseType);
+    }
+
+    @Override
+    public void beginService(ServiceType service) throws ZserioEmitException
+    {
+        serviceEmitter.emit(service);
     }
 }

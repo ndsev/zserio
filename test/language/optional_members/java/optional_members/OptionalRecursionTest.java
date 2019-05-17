@@ -4,15 +4,12 @@ import static org.junit.Assert.*;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 
 import org.junit.Test;
 
-import optional_members.optional_recursion.Employee;
-import optional_members.optional_recursion.Title;
+import optional_members.optional_recursion.Block;
 
-import zserio.runtime.array.ObjectArray;
+import zserio.runtime.array.UnsignedByteArray;
 import zserio.runtime.io.FileBitStreamReader;
 
 public class OptionalRecursionTest
@@ -20,155 +17,139 @@ public class OptionalRecursionTest
     @Test
     public void bitSizeOf()
     {
-        final Employee employee = createEmployee(EMPLOYEE_DEVELOPER1_NAME, EMPLOYEE_DEVELOPER1_SALARY,
-                Title.DEVELOPER);
-        assertEquals(DEVELOPER1_BIT_SIZE, employee.bitSizeOf());
+        final Block block1 = createBlock(BLOCK1_DATA);
+        assertEquals(getBlockBitSize(BLOCK1_DATA), block1.bitSizeOf());
 
-        final Employee teamLead = createTeamLead();
-        assertEquals(TEAM_LEAD_BIT_SIZE, teamLead.bitSizeOf());
+        final Block block12 = createBlock(BLOCK1_DATA, BLOCK2_DATA);
+        assertEquals(getBlockBitSize(BLOCK1_DATA, BLOCK2_DATA), block12.bitSizeOf());
     }
 
     @Test
-    public void hasTeamMembers()
+    public void hasNextData()
     {
-        final Employee employee = createEmployee(EMPLOYEE_DEVELOPER1_NAME, EMPLOYEE_DEVELOPER1_SALARY,
-                Title.DEVELOPER);
-        assertFalse(employee.hasTeamMembers());
+        final Block block1 = createBlock(BLOCK1_DATA);
+        assertFalse(block1.hasNextData());
 
-        final Employee teamLead = createTeamLead();
-        assertTrue(teamLead.hasTeamMembers());
+        final Block block12 = createBlock(BLOCK1_DATA, BLOCK2_DATA);
+        assertTrue(block12.hasNextData());
     }
 
     @Test
     public void equals()
     {
-        final Employee emptyEmployee1 = new Employee();
-        final Employee emptyEmployee2 = new Employee();
-        assertTrue(emptyEmployee1.equals(emptyEmployee2));
+        final Block emptyBlock1 = new Block((short)0);
+        final Block emptyBlock2 = new Block((short)0);
+        assertTrue(emptyBlock1.equals(emptyBlock2));
 
-        final Employee teamLead1 = createTeamLead();
-        assertFalse(teamLead1.equals(emptyEmployee1));
+        final Block block1 = createBlock(BLOCK1_DATA);
+        assertFalse(block1.equals(emptyBlock1));
 
-        final Employee teamLead2 = createTeamLead();
-        assertTrue(teamLead1.equals(teamLead2));
+        final Block block2 = createBlock(BLOCK1_DATA);
+        assertTrue(block2.equals(block1));
+
+        final Block block12 = createBlock(BLOCK1_DATA, BLOCK2_DATA);
+        assertFalse(block12.equals(block1));
     }
 
     @Test
     public void hashCodeMethod()
     {
-        final Employee emptyEmployee1 = new Employee();
-        final Employee emptyEmployee2 = new Employee();
-        assertEquals(emptyEmployee1.hashCode(), emptyEmployee2.hashCode());
+        final Block emptyBlock1 = new Block((short)0);
+        final Block emptyBlock2 = new Block((short)0);
+        assertEquals(emptyBlock1.hashCode(), emptyBlock2.hashCode());
 
-        final Employee teamLead1 = createTeamLead();
-        assertTrue(teamLead1.hashCode() != emptyEmployee1.hashCode());
+        final Block block1 = createBlock(BLOCK1_DATA);
+        assertTrue(block1.hashCode() != emptyBlock1.hashCode());
 
-        final Employee teamLead2 = createTeamLead();
-        assertEquals(teamLead1.hashCode(), teamLead2.hashCode());
+        final Block block2 = createBlock(BLOCK1_DATA);
+        assertEquals(block2.hashCode(), block1.hashCode());
+
+        final Block block12 = createBlock(BLOCK1_DATA, BLOCK2_DATA);
+        assertTrue(block12.hashCode() != block1.hashCode());
     }
 
     @Test
     public void initializeOffsets()
     {
-        final Employee employee = createEmployee(EMPLOYEE_DEVELOPER1_NAME, EMPLOYEE_DEVELOPER1_SALARY,
-                Title.DEVELOPER);
+        final Block block1 = createBlock(BLOCK1_DATA);
         final int bitPosition = 1;
-        assertEquals(bitPosition + DEVELOPER1_BIT_SIZE, employee.initializeOffsets(bitPosition));
+        assertEquals(bitPosition + getBlockBitSize(BLOCK1_DATA), block1.initializeOffsets(bitPosition));
 
-        final Employee teamLead = createTeamLead();
-        assertEquals(bitPosition + TEAM_LEAD_BIT_SIZE, teamLead.initializeOffsets(bitPosition));
+        final Block block12 = createBlock(BLOCK1_DATA, BLOCK2_DATA);
+        assertEquals(bitPosition + getBlockBitSize(BLOCK1_DATA, BLOCK2_DATA),
+                block12.initializeOffsets(bitPosition));
     }
 
     @Test
-    public void fileWriteEmployee() throws IOException
+    public void fileWriteBlock1() throws IOException
     {
-        final Employee employee = createEmployee(EMPLOYEE_DEVELOPER1_NAME, EMPLOYEE_DEVELOPER1_SALARY,
-                Title.DEVELOPER);
-
-        final File employeeFile = new File("employee.bin");
-        employee.write(employeeFile);
-        final FileBitStreamReader reader = new FileBitStreamReader(employeeFile);
-        checkEmployeeInStream(reader, EMPLOYEE_DEVELOPER1_NAME, EMPLOYEE_DEVELOPER1_SALARY, Title.DEVELOPER);
+        final Block block1 = createBlock(BLOCK1_DATA);
+        final File block1File = new File("block1.bin");
+        block1.write(block1File);
+        final FileBitStreamReader reader = new FileBitStreamReader(block1File);
+        checkBlockInStream(reader, BLOCK1_DATA);
         reader.close();
 
-        Employee readEmployee = new Employee(employeeFile);
-        assertEquals(EMPLOYEE_DEVELOPER1_NAME, readEmployee.getName());
-        assertEquals(EMPLOYEE_DEVELOPER1_SALARY, readEmployee.getSalary());
-        assertEquals(Title.DEVELOPER, readEmployee.getTitle());
+        final Block readBlock1 = new Block(block1File, (short)BLOCK1_DATA.length);
+        assertEquals(block1, readBlock1);
     }
 
     @Test
-    public void fileWriteTeamLead() throws IOException
+    public void fileWriteBlock12() throws IOException
     {
-        final Employee teamLead = createTeamLead();
-
-        final File teamLeadFile = new File("team_lead.bin");
-        teamLead.write(teamLeadFile);
-        final FileBitStreamReader reader = new FileBitStreamReader(teamLeadFile);
-        checkTeamLeadInStream(reader);
+        final Block block12 = createBlock(BLOCK1_DATA, BLOCK2_DATA);
+        final File block12File = new File("block12.bin");
+        block12.write(block12File);
+        final FileBitStreamReader reader = new FileBitStreamReader(block12File);
+        checkBlockInStream(reader, BLOCK1_DATA, BLOCK2_DATA);
         reader.close();
 
-        Employee readTeamLead = new Employee(teamLeadFile);
-        assertEquals(EMPLOYEE_TEAM_LEAD_NAME, readTeamLead.getName());
-        assertEquals(EMPLOYEE_TEAM_LEAD_SALARY, readTeamLead.getSalary());
-        assertEquals(Title.TEAM_LEAD, readTeamLead.getTitle());
-        assertEquals(NUM_DEVELOPERS, readTeamLead.getTeamMembers().length());
+        final Block readBlock12 = new Block(block12File, (short)BLOCK1_DATA.length);
+        assertEquals(block12, readBlock12);
     }
 
-    private static Employee createEmployee(String name, int salary, Title title)
+    private static Block createBlock(short[] blockData)
     {
-        final Employee employee = new Employee();
-        employee.setName(name);
-        employee.setSalary(salary);
-        employee.setTitle(title);
+        final UnsignedByteArray blockDataArray = new UnsignedByteArray(blockData, 0, blockData.length); 
 
-        return employee;
+        return new Block((short)blockData.length, blockDataArray, (short)0, null);
     }
 
-    private static Employee createTeamLead()
+    private static Block createBlock(short[] block1Data, short[] block2Data)
     {
-        final Employee teamLead = createEmployee(EMPLOYEE_TEAM_LEAD_NAME, EMPLOYEE_TEAM_LEAD_SALARY,
-                Title.TEAM_LEAD);
+        final Block block2 = createBlock(block2Data);
+        final UnsignedByteArray block1DataArray = new UnsignedByteArray(block1Data, 0, block1Data.length);
 
-        final List<Employee> teamMembers = new ArrayList<Employee>();
-        final Employee teamMember1 = createEmployee(EMPLOYEE_DEVELOPER1_NAME, EMPLOYEE_DEVELOPER1_SALARY,
-                Title.DEVELOPER);
-        teamMembers.add(teamMember1);
-        final Employee teamMember2 = createEmployee(EMPLOYEE_DEVELOPER2_NAME, EMPLOYEE_DEVELOPER2_SALARY,
-                Title.DEVELOPER);
-        teamMembers.add(teamMember2);
-        teamLead.setTeamMembers(new ObjectArray<Employee>(teamMembers));
-
-        return teamLead;
+        return new Block((short)block1Data.length, block1DataArray, (short)block2Data.length, block2);
     }
 
-    private static void checkEmployeeInStream(FileBitStreamReader reader, String name, int salary,
-            Title title) throws IOException
+    private static int getBlockBitSize(short[] blockData)
     {
-        assertEquals(name, reader.readString());
-        assertEquals(salary, reader.readBits(16));
-        assertEquals(title.getValue(), reader.readBits(8));
+        return 8 * blockData.length + 8;
     }
 
-    private static void checkTeamLeadInStream(FileBitStreamReader reader) throws IOException
+    private static int getBlockBitSize(short[] block1Data, short[] block2Data)
     {
-        checkEmployeeInStream(reader, EMPLOYEE_TEAM_LEAD_NAME, EMPLOYEE_TEAM_LEAD_SALARY, Title.TEAM_LEAD);
-        assertEquals(NUM_DEVELOPERS, reader.readVarUInt64());
-        checkEmployeeInStream(reader, EMPLOYEE_DEVELOPER1_NAME, EMPLOYEE_DEVELOPER1_SALARY, Title.DEVELOPER);
-        checkEmployeeInStream(reader, EMPLOYEE_DEVELOPER2_NAME, EMPLOYEE_DEVELOPER2_SALARY, Title.DEVELOPER);
+        return getBlockBitSize(block1Data) + getBlockBitSize(block2Data);
     }
 
-    private static String   EMPLOYEE_TEAM_LEAD_NAME = "Nico";
-    private static int      EMPLOYEE_TEAM_LEAD_SALARY = 2000;
+    private static void checkBlockInStream(FileBitStreamReader reader, short[] blockData) throws IOException
+    {
+        for (short element : blockData)
+            assertEquals(element, reader.readBits(8));
+        assertEquals(0, reader.readBits(8));
+    }
 
-    private static String   EMPLOYEE_DEVELOPER1_NAME = "Mike";
-    private static int      EMPLOYEE_DEVELOPER1_SALARY = 1000;
+    private static void checkBlockInStream(FileBitStreamReader reader, short[] block1Data, short[] block2Data)
+            throws IOException
+    {
+        for (short element : block1Data)
+            assertEquals(element, reader.readBits(8));
+        assertEquals(block2Data.length, reader.readBits(8));
 
-    private static String   EMPLOYEE_DEVELOPER2_NAME = "Luke";
-    private static int      EMPLOYEE_DEVELOPER2_SALARY = 1800;
+        checkBlockInStream(reader, block2Data);
+    }
 
-    private static int      NUM_DEVELOPERS = 2;
-    private static int      DEVELOPER1_BIT_SIZE = EMPLOYEE_DEVELOPER1_NAME.length() * 8 + 32;
-    private static int      TEAM_LEAD_BIT_SIZE = EMPLOYEE_TEAM_LEAD_NAME.length() * 8 + 32 + 8 +
-            DEVELOPER1_BIT_SIZE + EMPLOYEE_DEVELOPER2_NAME.length() * 8 + 32;
+    private static short[] BLOCK1_DATA = {1, 2, 3, 4, 5, 6};
+    private static short[] BLOCK2_DATA = {10, 9, 8, 7};
 }

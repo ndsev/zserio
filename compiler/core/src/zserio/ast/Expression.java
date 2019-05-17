@@ -6,147 +6,243 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import antlr.RecognitionException;
+import org.antlr.v4.runtime.Token;
 
-import zserio.antlr.ZserioParserTokenTypes;
-import zserio.antlr.ExpressionEvaluator;
+import zserio.antlr.ZserioParser;
 import zserio.antlr.util.ParserException;
-import zserio.tools.HashUtil;
 
-public class Expression extends TokenAST
+/**
+ * AST node for expressions defined in the language.
+ */
+public class Expression extends AstNodeBase
 {
     /**
-     * Empty constructor.
+     * Defines expression flag for constructors.
      */
-    public Expression()
+    public enum ExpressionFlag
     {
-        initialize();
+        NONE,                       /** no flag */
+        IS_EXPLICIT,                /** the explicit keyword was before expression in the source */
+        IS_TOP_LEVEL_DOT,           /** the expression is top level dot operator */
+        IS_DOT_RIGHT_OPERAND_ID,    /** the expression is identifier which is dot right operand */
+        IS_DOT_LEFT_OPERAND_ID      /** the expression is identifier which is dot left operand */
+    };
+
+    /**
+     * Constructor.
+     *
+     * @param expressionToken Token to construct expression from.
+     * @param pkg             Package to which the expression belongs.
+     */
+    public Expression(Token expressionToken, Package pkg)
+    {
+        this(expressionToken, pkg, expressionToken, ExpressionFlag.NONE, null, null, null);
+    }
+
+    /**
+     * Constructor.
+     *
+     * @param expressionToken Token to construct expression from.
+     * @param pkg             Package to which the expression belongs.
+     * @param expressionFlag  Flag for the expression.
+     */
+    public Expression(Token expressionToken, Package pkg, ExpressionFlag expressionFlag)
+    {
+        this(expressionToken, pkg, expressionToken, expressionFlag, null, null, null);
+    }
+
+    /**
+     * Constructor.
+     *
+     * @param locationToken   Token which denotes expression location in the sources.
+     * @param pkg             Package to which the expression belongs.
+     * @param expressionToken Token to construct expression from.
+     */
+    public Expression(Token locationToken, Package pkg, Token expressionToken)
+    {
+        this(locationToken, pkg, expressionToken, ExpressionFlag.NONE, null, null, null);
+    }
+
+    /**
+     * Constructor.
+     *
+     * @param locationToken   Token which denotes expression location in the sources.
+     * @param pkg             Package to which the expression belongs.
+     * @param expressionToken Token to construct expression from.
+     * @param expressionFlag  Flag for the expression.
+     */
+    public Expression(Token locationToken, Package pkg, Token expressionToken, ExpressionFlag expressionFlag)
+    {
+        this(locationToken, pkg, expressionToken, expressionFlag, null, null, null);
+    }
+
+    /**
+     * Constructor.
+     *
+     * @param locationToken   Token which denotes expression location in the sources.
+     * @param pkg             Package to which the expression belongs.
+     * @param expressionToken Token to construct expression from.
+     * @param operand1        Left operand of the expression.
+     */
+    public Expression(Token locationToken, Package pkg, Token expressionToken, Expression operand1)
+    {
+        this(locationToken, pkg, expressionToken, ExpressionFlag.NONE, operand1, null, null);
+    }
+
+    /**
+     * Constructor.
+     *
+     * @param locationToken   Token which denotes expression location in the sources.
+     * @param pkg             Package to which the expression belongs.
+     * @param expressionToken Token to construct expression from.
+     * @param operand1        Left operand of the expression.
+     * @param operand2        Right operand of the expression.
+     */
+    public Expression(Token locationToken, Package pkg, Token expressionToken, Expression operand1,
+            Expression operand2)
+    {
+        this(locationToken, pkg, expressionToken, ExpressionFlag.NONE, operand1, operand2, null);
+    }
+
+    /**
+     * Constructor.
+     *
+     * @param locationToken   Token which denotes expression location in the sources.
+     * @param pkg             Package to which the expression belongs.
+     * @param expressionToken Token to construct expression from.
+     * @param expressionFlag  Flag for the expression.
+     * @param operand1        Left operand of the expression.
+     * @param operand2        Right operand of the expression.
+     */
+    public Expression(Token locationToken, Package pkg, Token expressionToken, ExpressionFlag expressionFlag,
+            Expression operand1, Expression operand2)
+    {
+        this(locationToken, pkg, expressionToken, expressionFlag, operand1, operand2, null);
+    }
+
+    /**
+     * Constructor.
+     *
+     * @param locationToken   Token which denotes expression location in the sources.
+     * @param pkg             Package to which the expression belongs.
+     * @param expressionToken Token to construct expression from.
+     * @param operand1        Left operand of the ternary expression.
+     * @param operand2        Middle operand of the ternary expression.
+     * @param operand3        Right operand of the ternary expression.
+     */
+    public Expression(Token locationToken, Package pkg, Token expressionToken, Expression operand1,
+            Expression operand2, Expression operand3)
+    {
+        this(locationToken, pkg, expressionToken, ExpressionFlag.NONE, operand1, operand2, operand3);
     }
 
     @Override
-    public boolean equals(Object other)
+    public void accept(ZserioAstVisitor visitor)
     {
-        if (!(other instanceof Expression))
-            return false;
-
-        return equals((Expression)other);
+        visitor.visitExpression(this);
     }
 
     @Override
-    public int hashCode()
+    public void visitChildren(ZserioAstVisitor visitor)
     {
-        int hash = HashUtil.HASH_SEED;
-        hash = HashUtil.hash(hash, getText());
-        final Expression op1 = op1();
-        if (op1 != null)
+        if (operand1 != null)
         {
-            hash = HashUtil.hash(hash, op1);
-            final Expression op2 = op2();
-            if (op2 != null)
+            operand1.accept(visitor);
+            if (operand2 != null)
             {
-                hash = HashUtil.hash(hash, op2);
-                final Expression op3 = op3();
-                if (op3 != null)
-                    hash = HashUtil.hash(hash, op3);
+                operand2.accept(visitor);
+                if (operand3 != null)
+                    operand3.accept(visitor);
+            }
+        }
+    }
+
+    @Override
+    public String toString()
+    {
+        final StringBuilder stringBuilder = new StringBuilder(text);
+        if (operand1 != null)
+        {
+            stringBuilder.append(operand1.toString());
+            if (operand2 != null)
+            {
+                stringBuilder.append(operand2.toString());
+                if (operand3 != null)
+                    stringBuilder.append(operand3.toString());
             }
         }
 
-        return hash;
+        return stringBuilder.toString();
     }
 
     /**
-     * Indicates whether some other object is equal to this one.
+     * Gets the expression type given by the parser.
      *
-     * Please note that this method is necessary to hide method equals(AST t) from base class BaseAST.
-     * Otherwise equals(expression) will call BaseAST.equals((AST)expression) instead of
-     * Expression.equals((Object)expression).
+     * This method should not be public but it is used by expression formatters at the moment.
      *
-     * @param other The object with which to compare.
-     *
-     * @return true if this object is the same as given object, otherwise false.
+     * @return Expression type given by ANTLR4.
      */
-    public boolean equals(Expression other)
+    public int getType()
     {
-        if (this != other)
-        {
-            if ( !(getText().equals(other.getText())) )
-                return false;
-
-            final Expression op1 = op1();
-            if (op1 != null)
-            {
-                if (!op1.equals(other.op1()))
-                    return false;
-
-                final Expression op2 = op2();
-                if (op2 != null)
-                {
-                    if (!op2.equals(other.op2()))
-                        return false;
-
-                    final Expression op3 = op3();
-                    final boolean op3Equals = (op3 != null) ? op3.equals(other.op3()) : (other.op3() == null);
-                    if (!op3Equals)
-                        return false;
-                }
-                else
-                {
-                    if (other.op2() != null)
-                        return false;
-                }
-            }
-            else
-            {
-                if (other.op1() != null)
-                    return false;
-            }
-        }
-
-        return true;
+        return type;
     }
 
     /**
-     * Sets package for the expression.
+     * Gets the expression text given by the parser.
      *
-     * This method is called by code generated by ANTLR using TypeEvaluator.g.
+     * This method should not be public but it is used by expression formatters at the moment.
      *
-     * @param pkg Package to set.
+     * @return Expression text given by ANTLR4.
      */
-    public void setPackage(Package pkg)
+    public String getText()
     {
-        this.pkg = pkg;
+        return text;
     }
 
     /**
-     * Sets lexical scope for the expression.
+     * Gets the first operand for the expression.
      *
-     * This method is called by code generated by ANTLR using TypeEvaluator.g.
+     * This method should not be public but it is used by expression formatters at the moment.
      *
-     * @param scope Lexical scope to set.
+     * @return Returns the first operand.
      */
-    public void setScope(Scope scope)
+    public Expression op1()
     {
-        this.scope = scope;
+        return operand1;
     }
 
     /**
-     * Gets lexical scope of the expression.
+     * Gets the second operand for the expression.
      *
-     * @return Lexical scope of the expression.
+     * This method should not be public but it is used by expression formatters at the moment.
+     *
+     * @return Returns the second operand.
      */
-    public Scope getScope()
+    public Expression op2()
     {
-        return scope;
+        return operand2;
     }
 
     /**
-     * Sets flag if keyword 'index' is allowed for this expression.
+     * Gets the third operand for the expression.
      *
-     * @param allowIndex true if keyword 'index' is allowed
+     * This method should not be public but it is used by expression formatters at the moment.
+     *
+     * @return Returns the third operand.
      */
-    public void setAllowIndex(boolean allowIndex)
+    public Expression op3()
     {
-        this.allowIndex = allowIndex;
+        return operand3;
+    }
+
+    /**
+     * Checks if the expression contains explicit variable.
+     *
+     * @return Returns true if expression is explicit otherwise false.
+     */
+    public boolean isExplicitVariable()
+    {
+        return expressionFlag == ExpressionFlag.IS_EXPLICIT;
     }
 
     /**
@@ -159,7 +255,7 @@ public class Expression extends TokenAST
 
         /**
          * Integer expression. Result of expression can be read using getIntegerValue(). Actually, integer
-         * result is needed to evaluate const types and length of bit field types.
+         * result is needed to evaluate const types, length of bit field types and enumeration item values.
          */
         INTEGER,
 
@@ -253,42 +349,6 @@ public class Expression extends TokenAST
     }
 
     /**
-     * Gets the first operand for the expression.
-     *
-     * This method should not be public but it is used by expression formatters at the moment.
-     *
-     * @return Returns the first operand.
-     */
-    public Expression op1()
-    {
-        return (Expression)getFirstChild();
-    }
-
-    /**
-     * Gets the second operand for the expression.
-     *
-     * This method should not be public but it is used by expression formatters at the moment.
-     *
-     * @return Returns the second operand.
-     */
-    public Expression op2()
-    {
-        return (Expression)op1().getNextSibling();
-    }
-
-    /**
-     * Gets the third operand for the expression.
-     *
-     * This method should not be public but it is used by expression formatters at the moment.
-     *
-     * @return Returns the third operand.
-     */
-    public Expression op3()
-    {
-        return (Expression)op2().getNextSibling();
-    }
-
-    /**
      * Gets all objects of given class referenced from the expression.
      *
      * @param clazz Class of which objects should be found.
@@ -298,7 +358,7 @@ public class Expression extends TokenAST
     public <T extends Object> Set<T> getReferencedSymbolObjects(Class<? extends T> clazz)
     {
         final Set<T> referencedSymbolObjects = new HashSet<T>();
-        addReferencedSymbolObject(this, referencedSymbolObjects, clazz);
+        addReferencedSymbolObject(referencedSymbolObjects, clazz);
 
         return referencedSymbolObjects;
     }
@@ -335,7 +395,7 @@ public class Expression extends TokenAST
      */
     public boolean containsIndex()
     {
-        return containsOperand(this, ZserioParserTokenTypes.INDEX);
+        return containsOperand(ZserioParser.INDEX);
     }
 
     /**
@@ -345,7 +405,7 @@ public class Expression extends TokenAST
      */
     public boolean containsTernaryOperator()
     {
-        return containsOperand(this, ZserioParserTokenTypes.QUESTIONMARK);
+        return containsOperand(ZserioParser.QUESTIONMARK);
     }
 
     /**
@@ -355,17 +415,37 @@ public class Expression extends TokenAST
      */
     public boolean containsFunctionCall()
     {
-        return containsOperand(this, ZserioParserTokenTypes.FUNCTIONCALL);
+        return containsOperand(ZserioParser.RPAREN);
     }
 
     /**
-     * Checks if the expression contains explicit variable.
+     * Sets lexical scope for the expression evaluation.
      *
-     * @return Returns true if expression is explicit otherwise false.
+     * This method is called by ZserioAstScopeSetter.
+     *
+     * @param evaluationScope Lexical scope for evaluation to set.
      */
-    public boolean isExplicitVariable()
+    void setEvaluationScope(Scope evaluationScope)
     {
-        return (getType() == ZserioParserTokenTypes.EXPLICIT);
+        this.evaluationScope = evaluationScope;
+    }
+
+    /**
+     * Adds additional lexical scope to the expression evaluation scope.
+     *
+     * @param additionalEvaluationScope Additional scope for evaluation to add.
+     */
+    void addEvaluationScope(Scope additionalEvalutionScope)
+    {
+        evaluationScope.add(additionalEvalutionScope);
+    }
+
+    /**
+     * Evaluates the expression.
+     */
+    void evaluate()
+    {
+        evaluate(evaluationScope);
     }
 
     /**
@@ -382,217 +462,162 @@ public class Expression extends TokenAST
      * It is supposed that the previous expression properties have been set to initialization values
      * (set by constructor).
      *
-     * If given scope for evaluation is different to expression scope, the method forces evaluation even if
-     * the expression has been already evaluated (this is used for function called within owner structure).
+     * If given forced evaluation scope is different to expression evaluation scope, the method forces
+     * evaluation even if the expression has been already evaluated (this is used for function called within
+     * owner structure).
      *
-     * @param evaluationScope Scope for evaluation.
-     *
-     * @throws ParserException Throws if expression is not valid.
+     * @param forcedEvaluationScope Forced scope for evaluation.
      */
-    public void evaluateOne(Scope evaluationScope) throws ParserException
+    void evaluate(Scope forcedEvaluationScope)
     {
         if (evaluationState == EvaluationState.IN_EVALUATION)
             throw new ParserException(this, "Cyclic dependency detected in expression evaluation!");
 
         // force evaluation if different scope is specified
-        if (evaluationScope != scope && evaluationState != EvaluationState.NOT_EVALUATED)
+        if (forcedEvaluationScope != evaluationScope && evaluationState != EvaluationState.NOT_EVALUATED)
             initialize();
 
         if (evaluationState == EvaluationState.NOT_EVALUATED)
         {
             evaluationState = EvaluationState.IN_EVALUATION;
 
-            // check unresolved identifiers if no further DOT or ID is available
-            final int tokenType = getType();
-            if (tokenType != ZserioParserTokenTypes.DOT && tokenType != ZserioParserTokenTypes.ID)
-                checkUnresolvedIdentifiersInOperators();
-
-            switch (tokenType)
+            switch (type)
             {
-                case ZserioParserTokenTypes.ID:
-                    evaluateIdentifier(evaluationScope, getText());
+                case ZserioParser.LPAREN:              // parenthesizedExpression
+                    evaluateParenthesizedExpression();
                     break;
 
-                case ZserioParserTokenTypes.LPAREN:
-                    final Expression operand = op1();
-                    expressionType = operand.expressionType;
-                    zserioType = operand.zserioType;
-                    expressionIntegerValue = operand.expressionIntegerValue;
-                    unresolvedIdentifiers = operand.unresolvedIdentifiers;
+                case ZserioParser.RPAREN:              // functionCallExpression
+                    evaluateFunctionCallExpression(forcedEvaluationScope);
                     break;
 
-                case ZserioParserTokenTypes.DOT:
-                    evaluateDotExpression();
-                    break;
-
-                case ZserioParserTokenTypes.ARRAYELEM:
+                case ZserioParser.LBRACKET:            // arrayExpression
                     evaluateArrayElement();
                     break;
 
-                case ZserioParserTokenTypes.QUESTIONMARK:
-                    evaluateConditionalExpression();
+                case ZserioParser.DOT:                 // dotExpression
+                    evaluateDotExpression();
                     break;
 
-                case ZserioParserTokenTypes.INDEX:
-                    evaluateIndexExpression();
+                case ZserioParser.LENGTHOF:
+                    evaluateLengthOfOperator();         // lengthofExpression
                     break;
 
-                case ZserioParserTokenTypes.LT:
-                case ZserioParserTokenTypes.LE:
-                case ZserioParserTokenTypes.GT:
-                case ZserioParserTokenTypes.GE:
-                case ZserioParserTokenTypes.EQ:
-                case ZserioParserTokenTypes.NE:
-                    evaluateRelationalExpression();
+                case ZserioParser.SUM:
+                    evaluateSumOperator();              // sumExpression
                     break;
 
-                case ZserioParserTokenTypes.BANG:
+                case ZserioParser.VALUEOF:
+                    evaluateValueOfOperator();          // valueofExpression
+                    break;
+
+                case ZserioParser.NUMBITS:
+                    evaluateNumBitsOperator();          // numbitsExpression
+                    break;
+
+                case ZserioParser.PLUS:                // unaryExpression or additiveExpression
+                    if (operand2 == null)
+                        evaluateUnaryPlusMinus(false);
+                    else
+                        evaluateArithmeticExpression();
+                    break;
+
+                case ZserioParser.MINUS:               // unaryExpression or additiveExpression
+                    if (operand2 == null)
+                        evaluateUnaryPlusMinus(true);
+                    else
+                        evaluateArithmeticExpression();
+                    break;
+
+                case ZserioParser.BANG:                // unaryExpression
                     evaluateNegationOperator();
                     break;
 
-                case ZserioParserTokenTypes.UPLUS:
-                    evaluateUnaryPlusMinus(false);
-                    break;
-
-                case ZserioParserTokenTypes.UMINUS:
-                    evaluateUnaryPlusMinus(true);
-                    break;
-
-                case ZserioParserTokenTypes.PLUS:
-                case ZserioParserTokenTypes.MINUS:
-                case ZserioParserTokenTypes.MULTIPLY:
-                case ZserioParserTokenTypes.DIVIDE:
-                case ZserioParserTokenTypes.MODULO:
-                    evaluateArithmeticExpression();
-                    break;
-
-                case ZserioParserTokenTypes.LSHIFT:
-                case ZserioParserTokenTypes.RSHIFT:
-                case ZserioParserTokenTypes.AND:
-                case ZserioParserTokenTypes.OR:
-                case ZserioParserTokenTypes.XOR:
-                    evaluateBitExpression();
-                    break;
-
-                case ZserioParserTokenTypes.LOGICALAND:
-                case ZserioParserTokenTypes.LOGICALOR:
-                    evaluateLogicalExpression();
-                    break;
-
-                case ZserioParserTokenTypes.TILDE:
+                case ZserioParser.TILDE:               // unaryExpression
                     evaluateBitNotExpression();
                     break;
 
-                case ZserioParserTokenTypes.LENGTHOF:
-                    evaluateLengthOfOperator();
+                case ZserioParser.MULTIPLY:            // multiplicativeExpression
+                case ZserioParser.DIVIDE:
+                case ZserioParser.MODULO:
+                    evaluateArithmeticExpression();
                     break;
 
-                case ZserioParserTokenTypes.SUM:
-                    evaluateSumOperator();
+                case ZserioParser.LSHIFT:              // shiftExpression
+                case ZserioParser.RSHIFT:
+                case ZserioParser.AND:                 // bitwiseAndExpression
+                case ZserioParser.XOR:                 // bitwiseXorExpression
+                case ZserioParser.OR:                  // bitwiseOrExpression
+                    evaluateBitExpression();
                     break;
 
-                case ZserioParserTokenTypes.VALUEOF:
-                    evaluateValueOfOperator();
+                case ZserioParser.LT:                  // relationalExpression
+                case ZserioParser.LE:
+                case ZserioParser.GT:
+                case ZserioParser.GE:
+                case ZserioParser.EQ:                  // equalityExpression
+                case ZserioParser.NE:
+                    evaluateRelationalExpression();
                     break;
 
-                case ZserioParserTokenTypes.NUMBITS:
-                    evaluateNumBitsOperator();
+                case ZserioParser.LOGICAL_AND:         // logicalAndExpression
+                case ZserioParser.LOGICAL_OR:          // logicalOrExpression
+                    evaluateLogicalExpression();
                     break;
 
-                case ZserioParserTokenTypes.FUNCTIONCALL:
-                    evaluateFunctionCallExpression(evaluationScope);
+                case ZserioParser.QUESTIONMARK:        // ternaryExpression
+                    evaluateConditionalExpression();
                     break;
 
-                case ZserioParserTokenTypes.EXPLICIT:
-                    // do nothing
-                    break;
-
-                case ZserioParserTokenTypes.DECIMAL_LITERAL:
+                case ZserioParser.BINARY_LITERAL:      // literalExpression
                     expressionType = ExpressionType.INTEGER;
-                    expressionIntegerValue = new ExpressionIntegerValue(new BigInteger(getText()));
+                    final String binText = stripBinaryLiteral(getText());
+                    expressionIntegerValue = new ExpressionIntegerValue(new BigInteger(binText, 2));
                     break;
 
-                case ZserioParserTokenTypes.BINARY_LITERAL:
-                    expressionType = ExpressionType.INTEGER;
-                    expressionIntegerValue = new ExpressionIntegerValue(new BigInteger(getText(), 2));
-                    break;
-
-                case ZserioParserTokenTypes.HEXADECIMAL_LITERAL:
-                    expressionType = ExpressionType.INTEGER;
-                    expressionIntegerValue = new ExpressionIntegerValue(new BigInteger(getText(), 16));
-                    break;
-
-                case ZserioParserTokenTypes.OCTAL_LITERAL:
+                case ZserioParser.OCTAL_LITERAL:       // literalExpression
                     expressionType = ExpressionType.INTEGER;
                     expressionIntegerValue = new ExpressionIntegerValue(new BigInteger(getText(), 8));
                     break;
 
-                case ZserioParserTokenTypes.BOOL_LITERAL:
+                case ZserioParser.DECIMAL_LITERAL:     // literalExpression
+                    expressionType = ExpressionType.INTEGER;
+                    expressionIntegerValue = new ExpressionIntegerValue(new BigInteger(getText()));
+                    break;
+
+                case ZserioParser.HEXADECIMAL_LITERAL: // literalExpression
+                    expressionType = ExpressionType.INTEGER;
+                    final String hexText = stripHexadecimalLiteral(getText());
+                    expressionIntegerValue = new ExpressionIntegerValue(new BigInteger(hexText, 16));
+                    break;
+
+                case ZserioParser.BOOL_LITERAL:        // literalExpression
                     expressionType = ExpressionType.BOOLEAN;
                     break;
 
-                case ZserioParserTokenTypes.FLOAT_LITERAL:
-                case ZserioParserTokenTypes.DOUBLE_LITERAL:
-                    expressionType = ExpressionType.FLOAT;
-                    break;
-
-                case ZserioParserTokenTypes.STRING_LITERAL:
+                case ZserioParser.STRING_LITERAL:      // literalExpression
                     expressionType = ExpressionType.STRING;
                     break;
 
+                case ZserioParser.FLOAT_LITERAL:       // literalExpression
+                case ZserioParser.DOUBLE_LITERAL:
+                    expressionType = ExpressionType.FLOAT;
+                    break;
+
+                case ZserioParser.INDEX:               // indexExpression
+                    evaluateIndexExpression();
+                    break;
+
+                case ZserioParser.ID:                  // identifierExpression
+                    evaluateIdentifier(forcedEvaluationScope);
+                    break;
+
                 default:
-                    throw new ParserException(this, "Illegal expression type '" + getType() + "'!");
+                    throw new ParserException(this, "Illegal expression type '" + type + "'!");
             }
 
             evaluationState = EvaluationState.EVALUATED;
         }
-    }
-
-    /**
-     * This method checks of evaluation for expression.
-     *
-     * Method is necessary because of full qualified enumeration names. Example: wrong_package.enum_type.
-     *
-     * Expression "wrong_package" can be legally unknown identifier during evaluation (we know nothing about
-     * enum_type yet). Therefore the evaluation process must continue. Afterwards, expression "wrong_package"
-     * will be checked during evaluation of dot expression. However if dot expression is not there, evaluation
-     * of expression "wrong_package" will be succeeded even if the expression is not valid.
-     *
-     * @throws ParserException Throws if expression is not valid.
-     */
-    public void checkUnresolvedIdentifiers() throws ParserException
-    {
-        if (getType() != ZserioParserTokenTypes.EXPLICIT && !unresolvedIdentifiers.isEmpty())
-        {
-            final PackageName.Builder unresolvedSymbolBuilder = new PackageName.Builder();
-            for (Expression unresolvedIdentifier : unresolvedIdentifiers)
-                unresolvedSymbolBuilder.addId(unresolvedIdentifier.getText());
-            throw new ParserException(this, "Unresolved symbol '" + unresolvedSymbolBuilder.get().toString() +
-                    "' within expression scope!");
-        }
-    }
-
-    /**
-     * Adds additional lexical scope to the expression scope.
-     *
-     * @param additionalScope Additional scope to add.
-     */
-    protected void addScope(Scope additionalScope)
-    {
-        scope.add(additionalScope);
-    }
-
-    /**
-     * This method evaluates all expressions in tree which root is this expression.
-     *
-     * This method is called during pre-evaluation of expressions which are defined after the first usage.
-     *
-     * @throws ParserException Throws if expression is not valid.
-     */
-    protected void evaluateTree() throws ParserException
-    {
-        final ExpressionEvaluator expressionEvaluator = new ExpressionEvaluator();
-        callExpressionEvaluator(expressionEvaluator);
     }
 
     /**
@@ -609,22 +634,19 @@ public class Expression extends TokenAST
      * set only after whole expression evaluation during checking of expression type in assignment. Therefore,
      * this method must be public.
      */
-    protected void propagateNeedsBigInteger()
+    void propagateNeedsBigInteger()
     {
         if (expressionType == ExpressionType.INTEGER && !expressionIntegerValue.needsBigInteger())
         {
             expressionIntegerValue = new ExpressionIntegerValue(expressionIntegerValue.getValue(),
                     expressionIntegerValue.getLowerBound(), expressionIntegerValue.getUpperBound(), true);
 
-            final Expression operand1 = op1();
             if (operand1 != null)
             {
                 operand1.propagateNeedsBigInteger();
-                final Expression operand2 = op2();
                 if (operand2 != null)
                 {
                     operand2.propagateNeedsBigInteger();
-                    final Expression operand3 = op3();
                     if (operand3 != null)
                         operand3.propagateNeedsBigInteger();
                 }
@@ -650,101 +672,521 @@ public class Expression extends TokenAST
      *     }
      * };
      */
-    protected void setNeedsBigIntegerCastingNative()
+    void setNeedsBigIntegerCastingNative()
     {
         needsBigIntegerCastingToNative = true;
     }
 
-    private void checkUnresolvedIdentifiersInOperators() throws ParserException
+    private Expression(Token locationToken, Package pkg, Token expressionToken, ExpressionFlag expressionFlag,
+            Expression operand1, Expression operand2, Expression operand3)
     {
-        final Expression op1 = op1();
-        if (op1 != null)
-        {
-            op1.checkUnresolvedIdentifiers();
-            final Expression op2 = op2();
-            if (op2 != null)
-            {
-                op2.checkUnresolvedIdentifiers();
-                final Expression op3 = op3();
-                if (op3 != null)
-                    op3.checkUnresolvedIdentifiers();
-            }
-        }
+        super(locationToken);
+
+        this.pkg = pkg;
+        type = expressionToken.getType();
+        text = extractTokenText(expressionToken);
+        this.expressionFlag = expressionFlag;
+        this.operand1 = operand1;
+        this.operand2 = operand2;
+        this.operand3 = operand3;
+
+        initialize();
     }
 
     @SuppressWarnings("unchecked")
-    private <T extends Object> void addReferencedSymbolObject(Expression expression,
-            Set<T> referencedObjectList, Class<? extends Object> elementClass)
+    private <T extends Object> void addReferencedSymbolObject(Set<T> referencedObjectList,
+            Class<? extends Object> elementClass)
     {
-        final Object exprSymbolObject = expression.symbolObject;
-        if (exprSymbolObject != null && elementClass.isInstance(exprSymbolObject))
-            referencedObjectList.add((T)exprSymbolObject);
+        if (symbolObject != null && elementClass.isInstance(symbolObject))
+            referencedObjectList.add((T)symbolObject);
 
-        final Expression operand1 = expression.op1();
         if (operand1 != null)
         {
-            addReferencedSymbolObject(operand1, referencedObjectList, elementClass);
-            final Expression operand2 = expression.op2();
+            operand1.addReferencedSymbolObject(referencedObjectList, elementClass);
             if (operand2 != null)
             {
-                addReferencedSymbolObject(operand2, referencedObjectList, elementClass);
-                final Expression operand3 = expression.op3();
+                operand2.addReferencedSymbolObject(referencedObjectList, elementClass);
                 if (operand3 != null)
-                    addReferencedSymbolObject(operand3, referencedObjectList, elementClass);
+                    operand3.addReferencedSymbolObject(referencedObjectList, elementClass);
             }
         }
     }
 
-    private boolean containsOperand(Expression expression, int operandTokenType)
+    private boolean containsOperand(int operandTokenType)
     {
-        if (expression.getType() == operandTokenType)
+        if (type == operandTokenType)
             return true;
 
-        final Expression operand1 = expression.op1();
         if (operand1 != null)
         {
-            if (containsOperand(operand1, operandTokenType))
+            if (operand1.containsOperand(operandTokenType))
                 return true;
 
-            final Expression operand2 = expression.op2();
             if (operand2 != null)
             {
-                if (containsOperand(operand2, operandTokenType))
+                if (operand2.containsOperand(operandTokenType))
                     return true;
 
-                final Expression operand3 = expression.op3();
-                if (operand3 != null && containsOperand(operand3, operandTokenType))
-                    return true;
+                if (operand3 != null)
+                    if (operand3.containsOperand(operandTokenType))
+                        return true;
             }
         }
 
         return false;
     }
 
-    private void evaluateIdentifier(Scope evaluationScope, String identifier) throws ParserException
+    private void evaluateParenthesizedExpression()
     {
-        final Object identifierSymbol = evaluationScope.getSymbol(identifier);
-        if (identifierSymbol == null)
+        expressionType = operand1.expressionType;
+        zserioType = operand1.zserioType;
+        expressionIntegerValue = operand1.expressionIntegerValue;
+        unresolvedIdentifiers = operand1.unresolvedIdentifiers;
+    }
+
+    private void evaluateFunctionCallExpression(Scope forcedEvaluationScope)
+    {
+        if (!(operand1.zserioType instanceof FunctionType))
+            throw new ParserException(operand1, "'" + operand1.text + "' is not a function!");
+
+        final FunctionType functionType = (FunctionType)operand1.zserioType;
+        final Expression functionResultExpression = functionType.getResultExpression();
+
+        // function expression should know only symbols available on a place of the function call:
+        // - if it's called within its owner object, it can see only symbols defined before the call
+        try
         {
-            // it still can be a type
-            final ZserioType identifierType = pkg.getVisibleType(PackageName.EMPTY, identifier);
-            if (identifierType == null)
-            {
-                // identifier not found, this can happened for a package name, we must wait for dot
-                unresolvedIdentifiers.add(this);
-            }
+            ZserioAstEvaluator evaluator;
+            if (forcedEvaluationScope.getOwner() == functionResultExpression.evaluationScope.getOwner())
+                evaluator = new ZserioAstEvaluator(forcedEvaluationScope); // called within the owner
             else
-            {
-                evaluateIdentifierType(identifierType);
-            }
+                evaluator = new ZserioAstEvaluator(); // called externally from different compound type
+            functionResultExpression.accept(evaluator);
+        }
+        catch (ParserException e)
+        {
+            final AstLocation location = getLocation();
+            throw new ParserException(functionResultExpression, e.getMessage() +
+                    " Found in function '" + functionType.getName() + "' called from here: " +
+                    location.getFileName() + ":" + location.getLine() + ":" + location.getColumn());
+        }
+
+        evaluateExpressionType(functionType.getReturnType());
+        expressionIntegerValue = functionResultExpression.expressionIntegerValue;
+    }
+
+    private void evaluateArrayElement()
+    {
+        if (!(operand1.zserioType instanceof ArrayType))
+            throw new ParserException(operand1, "'" + operand1.text + "' is not an array!");
+
+        if (operand2.expressionType != ExpressionType.INTEGER)
+            throw new ParserException(operand2, "Integer expression expected!");
+
+        final ArrayType arrayType = (ArrayType)operand1.zserioType;
+        evaluateExpressionType(arrayType.getElementType());
+    }
+
+    private void evaluateDotExpression()
+    {
+        if (operand1.zserioType == null)
+        {
+            // left operand is unknown => it still can be a part of package
+            evaluatePackageDotExpression();
+        }
+        else if (operand1.zserioType instanceof EnumType)
+        {
+            // left operand is enumeration type
+            evaluateEnumDotExpression();
+        }
+        else if (operand1.zserioType instanceof CompoundType)
+        {
+            // left operand is compound type
+            evaluateCompoundDotExpression();
         }
         else
         {
-            evaluateIdentifierSymbol(identifierSymbol, evaluationScope, identifier);
+            throw new ParserException(operand1, "Unexpected dot expression '" + operand1.text + "'!");
         }
     }
 
-    private void evaluateIdentifierType(ZserioType identifierType) throws ParserException
+    private void evaluatePackageDotExpression()
+    {
+        // try to resolve operand1 as package name and operand2 as type
+        final PackageName.Builder op1UnresolvedPackageNameBuilder = new PackageName.Builder();
+        for (Expression unresolvedIdentifier : operand1.unresolvedIdentifiers)
+            op1UnresolvedPackageNameBuilder.addId(unresolvedIdentifier.text);
+
+        final ZserioType identifierType = pkg.getVisibleType(op1UnresolvedPackageNameBuilder.get(),
+                operand2.text);
+        if (identifierType == null)
+        {
+            // identifier still not found
+            if (expressionFlag == ExpressionFlag.IS_TOP_LEVEL_DOT)
+            {
+                // and we are top level dot
+                throw new ParserException(this, "Unresolved symbol '" +
+                        op1UnresolvedPackageNameBuilder.get().toString() + "' within expression scope!");
+            }
+
+            // this can happened for long package name, we must wait for dot
+            unresolvedIdentifiers.addAll(operand1.unresolvedIdentifiers);
+            unresolvedIdentifiers.add(operand2);
+        }
+        else
+        {
+            evaluateIdentifierType(identifierType);
+
+            // set symbolObject to all unresolved identifier expressions (needed for formatters)
+            for (Expression unresolvedIdentifier : operand1.unresolvedIdentifiers)
+                unresolvedIdentifier.symbolObject = identifierType.getPackage();
+            operand2.symbolObject = identifierType; // this is used by formatters (operand2 was not evaluated)
+        }
+    }
+
+    private void evaluateEnumDotExpression()
+    {
+        final EnumType enumType = (EnumType)(operand1.zserioType);
+        final Scope enumScope = enumType.getScope();
+        final String dotOperand = operand2.text;
+        final Object enumSymbol = enumScope.getSymbol(dotOperand);
+        if (!(enumSymbol instanceof EnumItem))
+            throw new ParserException(this, "'" + dotOperand + "' undefined in enumeration '" +
+                    enumType.getName() + "'!");
+
+        operand2.symbolObject = enumSymbol; // this is used by formatters (operand2 was not evaluated)
+        symbolObject = enumSymbol;
+        evaluateExpressionType(enumType);
+    }
+
+    private void evaluateCompoundDotExpression()
+    {
+        final CompoundType compoundType = (CompoundType)(operand1.zserioType);
+        final Scope compoundScope = compoundType.getScope();
+        final String dotOperand = operand2.text;
+        final Object compoundSymbol = compoundScope.getSymbol(dotOperand);
+        if (compoundSymbol == null)
+            throw new ParserException(this, "'" + dotOperand + "' undefined in compound '" +
+                    compoundType.getName() + "'!");
+
+        operand2.symbolObject = compoundSymbol; // this is used by formatter (operand2 was not evaluated)
+        symbolObject = compoundSymbol;
+        if (compoundSymbol instanceof Field)
+        {
+            evaluateExpressionType(((Field)compoundSymbol).getFieldType());
+        }
+        else if (compoundSymbol instanceof Parameter)
+        {
+            evaluateExpressionType(((Parameter)compoundSymbol).getParameterType());
+        }
+        else if (compoundSymbol instanceof FunctionType)
+        {
+            // function type, we must wait for "()"
+            zserioType = (FunctionType)compoundSymbol;
+        }
+        else if (compoundSymbol instanceof CompoundType)
+        {
+            evaluateExpressionType((CompoundType)compoundSymbol);
+        }
+        else
+        {
+            throw new ParserException(this, "'" + dotOperand + "' undefined in compound '" +
+                    compoundType.getName() + "'!");
+        }
+    }
+
+    private void evaluateLengthOfOperator()
+    {
+        if (!(operand1.zserioType instanceof ArrayType))
+            throw new ParserException(operand1, "'" + operand1.text + "' is not an array!");
+
+        expressionType = ExpressionType.INTEGER;
+        // length of result has default expressionIntegerValue
+    }
+
+    private void evaluateSumOperator()
+    {
+        if (!(operand1.zserioType instanceof ArrayType))
+            throw new ParserException(operand1, "'" + operand1.text + "' is not an array!");
+
+        final ArrayType arrayType = (ArrayType)operand1.zserioType;
+        evaluateExpressionType(arrayType.getElementType());
+    }
+
+    private void evaluateValueOfOperator()
+    {
+        if (operand1.expressionType != ExpressionType.ENUM)
+            throw new ParserException(operand1, "'" + operand1.text + "' is not an enumeration item!");
+
+        expressionType = ExpressionType.INTEGER;
+        expressionIntegerValue = operand1.expressionIntegerValue;
+    }
+
+    private void evaluateNumBitsOperator()
+    {
+        if (operand1.expressionType != ExpressionType.INTEGER)
+            throw new ParserException(operand1, "Integer expression expected!");
+
+        expressionType = ExpressionType.INTEGER;
+        expressionIntegerValue = operand1.expressionIntegerValue.numbits();
+    }
+
+    private void evaluateUnaryPlusMinus(boolean isNegate)
+    {
+        if (operand1.expressionType != ExpressionType.INTEGER &&
+                operand1.expressionType != ExpressionType.FLOAT)
+            throw new ParserException(this, "Integer or float expressions expected!");
+
+        if (operand1.expressionType == ExpressionType.FLOAT)
+        {
+            expressionType = ExpressionType.FLOAT;
+        }
+        else
+        {
+            expressionType = ExpressionType.INTEGER;
+            expressionIntegerValue = (isNegate) ? operand1.expressionIntegerValue.negate() :
+                operand1.expressionIntegerValue;
+        }
+    }
+
+    private void evaluateNegationOperator()
+    {
+        final Expression op1 = op1();
+        if (op1.expressionType != ExpressionType.BOOLEAN)
+            throw new ParserException(this, "Boolean expression expected!");
+
+        expressionType = ExpressionType.BOOLEAN;
+    }
+
+    private void evaluateBitNotExpression()
+    {
+        final Expression op1 = op1();
+        if (op1.expressionType != ExpressionType.INTEGER)
+            throw new ParserException(this, "Integer expression expected!");
+
+        expressionType = ExpressionType.INTEGER;
+        expressionIntegerValue = op1.expressionIntegerValue.not();
+    }
+
+    private void evaluateArithmeticExpression()
+    {
+        if (type == ZserioParser.PLUS && operand1.expressionType == ExpressionType.STRING &&
+                operand2.expressionType == ExpressionType.STRING)
+        {
+            expressionType = ExpressionType.STRING;
+        }
+        else
+        {
+            if ( (operand1.expressionType != ExpressionType.INTEGER &&
+                    operand1.expressionType != ExpressionType.FLOAT) ||
+                 (operand2.expressionType != ExpressionType.INTEGER &&
+                    operand2.expressionType != ExpressionType.FLOAT) )
+                throw new ParserException(this, "Integer or float expressions expected!");
+
+            if (operand1.expressionType == ExpressionType.FLOAT ||
+                    operand2.expressionType == ExpressionType.FLOAT)
+            {
+                expressionType = ExpressionType.FLOAT;
+            }
+            else
+            {
+                expressionType = ExpressionType.INTEGER;
+                switch (getType())
+                {
+                    case ZserioParser.PLUS:
+                        expressionIntegerValue = operand1.expressionIntegerValue.add(
+                                operand2.expressionIntegerValue);
+                        break;
+
+                    case ZserioParser.MINUS:
+                        expressionIntegerValue =
+                            operand1.expressionIntegerValue.subtract(operand2.expressionIntegerValue);
+                        break;
+
+                    case ZserioParser.MULTIPLY:
+                        expressionIntegerValue =
+                            operand1.expressionIntegerValue.multiply(operand2.expressionIntegerValue);
+                        break;
+
+                    case ZserioParser.DIVIDE:
+                        expressionIntegerValue = operand1.expressionIntegerValue.divide(
+                                operand2.expressionIntegerValue);
+                        break;
+
+                    case ZserioParser.MODULO:
+                        expressionIntegerValue =
+                            operand1.expressionIntegerValue.remainder(operand2.expressionIntegerValue);
+                        break;
+
+                    default:
+                        throw new ParserException(this, "Illegal expression type " + type + "!");
+                }
+
+                if (expressionIntegerValue.needsBigInteger())
+                {
+                    operand1.propagateNeedsBigInteger();
+                    operand2.propagateNeedsBigInteger();
+                }
+            }
+        }
+    }
+
+    private void evaluateBitExpression()
+    {
+        if (operand1.expressionType != ExpressionType.INTEGER ||
+                operand2.expressionType != ExpressionType.INTEGER)
+            throw new ParserException(this, "Integer expressions expected!");
+
+        expressionType = ExpressionType.INTEGER;
+        switch (type)
+        {
+            case ZserioParser.LSHIFT:
+                expressionIntegerValue = operand1.expressionIntegerValue.shiftLeft(
+                        operand2.expressionIntegerValue);
+                break;
+
+            case ZserioParser.RSHIFT:
+                expressionIntegerValue = operand1.expressionIntegerValue.shiftRight(
+                        operand2.expressionIntegerValue);
+                break;
+
+            case ZserioParser.AND:
+                expressionIntegerValue = operand1.expressionIntegerValue.and(
+                        operand2.expressionIntegerValue);
+                break;
+
+            case ZserioParser.OR:
+                expressionIntegerValue = operand1.expressionIntegerValue.or(operand2.expressionIntegerValue);
+                break;
+
+            case ZserioParser.XOR:
+                expressionIntegerValue = operand1.expressionIntegerValue.xor(operand2.expressionIntegerValue);
+                break;
+
+            default:
+                throw new ParserException(this, "Illegal expression type '" + type + "'!");
+        }
+
+        if (type != ZserioParser.LSHIFT && type != ZserioParser.RSHIFT &&
+                expressionIntegerValue.needsBigInteger())
+        {
+            operand1.propagateNeedsBigInteger();
+            operand2.propagateNeedsBigInteger();
+        }
+    }
+
+    private void evaluateRelationalExpression()
+    {
+        if (operand1.expressionType == ExpressionType.UNKNOWN ||
+                operand1.expressionType != operand2.expressionType)
+            throw new ParserException(this, "Incompatible expression types (" + operand1.expressionType +
+                    " != " + operand2.expressionType + ")!");
+
+        if (operand1.expressionType == ExpressionType.FLOAT &&
+                type != ZserioParser.LT && type != ZserioParser.GT)
+            throw new ParserException(this, "Equality operator is not allowed for floats!");
+
+        if (operand1.expressionType == ExpressionType.STRING &&
+                type != ZserioParser.EQ && type != ZserioParser.NE)
+            throw new ParserException(this,
+                    "'Greater than' and 'less than' comparison is not allowed for strings!");
+
+        if (operand1.expressionType == ExpressionType.STRING)
+            throw new ParserException(this, "String comparison is not implemented!");
+
+        expressionType = ExpressionType.BOOLEAN;
+        if (operand1.expressionType == ExpressionType.INTEGER)
+        {
+            expressionIntegerValue = operand1.expressionIntegerValue.relationalOperator(
+                    operand2.expressionIntegerValue);
+            if (expressionIntegerValue.needsBigInteger())
+            {
+                operand1.propagateNeedsBigInteger();
+                operand2.propagateNeedsBigInteger();
+            }
+        }
+    }
+
+    private void evaluateLogicalExpression()
+    {
+        if (operand1.expressionType != ExpressionType.BOOLEAN ||
+                operand2.expressionType != ExpressionType.BOOLEAN)
+            throw new ParserException(this, "Boolean expressions expected!");
+
+        expressionType = ExpressionType.BOOLEAN;
+    }
+
+    private void evaluateConditionalExpression()
+    {
+        if (operand1.expressionType != ExpressionType.BOOLEAN)
+            throw new ParserException(operand1, "Boolean expression expected!");
+
+        if (operand2.expressionType == ExpressionType.UNKNOWN ||
+                operand2.expressionType != operand3.expressionType)
+            throw new ParserException(this, "Incompatible expression types (" + operand2.expressionType +
+                    " != " + operand3.expressionType + ")!");
+
+        expressionType = operand2.expressionType;
+        zserioType = operand2.zserioType;
+        if (expressionType == ExpressionType.INTEGER)
+        {
+            expressionIntegerValue = operand2.expressionIntegerValue.conditional(
+                    operand3.expressionIntegerValue);
+            if (expressionIntegerValue.needsBigInteger())
+            {
+                operand2.propagateNeedsBigInteger();
+                operand3.propagateNeedsBigInteger();
+            }
+        }
+    }
+
+    private void evaluateIndexExpression()
+    {
+        expressionType = ExpressionType.INTEGER;
+        // array index has default expressionIntegerValue
+    }
+
+    private void evaluateIdentifier(Scope forcedEvaluationScope)
+    {
+        // identifier on right side of dot operator cannot be evaluated because the identifier without left
+        // side (package) can be found wrongly in local scope
+        if (expressionFlag != ExpressionFlag.IS_DOT_RIGHT_OPERAND_ID)
+        {
+            // explicit identifier does not have to be evaluated
+            if (expressionFlag != ExpressionFlag.IS_EXPLICIT)
+            {
+                final Object identifierSymbol = forcedEvaluationScope.getSymbol(text);
+                if (identifierSymbol == null)
+                {
+                    // it still can be a type
+                    final ZserioType identifierType = pkg.getVisibleType(PackageName.EMPTY, text);
+                    if (identifierType == null)
+                    {
+                        // identifier not found
+                        if (expressionFlag != ExpressionFlag.IS_DOT_LEFT_OPERAND_ID)
+                        {
+                            // and expression is not in dot expression
+                            throw new ParserException(this, "Unresolved symbol '" + text +
+                                    "' within expression scope!");
+                        }
+
+                        // this can happened for a long package name, we must wait for dot
+                        unresolvedIdentifiers.add(this);
+                    }
+                    else
+                    {
+                        evaluateIdentifierType(identifierType);
+                    }
+                }
+                else
+                {
+                    evaluateIdentifierSymbol(identifierSymbol, forcedEvaluationScope, text);
+                }
+            }
+        }
+    }
+
+    private void evaluateIdentifierType(ZserioType identifierType)
     {
         symbolObject = identifierType;
 
@@ -761,15 +1203,13 @@ public class Expression extends TokenAST
             // constant type
             final ConstType constType = (ConstType)resolvedType;
             evaluateExpressionType(constType.getConstType());
-            final Expression constValueExpression = constType.getValueExpression();
 
             // call evaluation explicitly because this const does not have to be evaluated yet
-            constValueExpression.evaluateTree();
+            final ZserioAstEvaluator evaluator = new ZserioAstEvaluator();
+            constType.accept(evaluator);
 
+            final Expression constValueExpression = constType.getValueExpression();
             expressionIntegerValue = constValueExpression.expressionIntegerValue;
-
-            // add this expression to 'Used-by' list for constant type (needed by documentation emitter)
-            constType.setUsedByExpression(this);
         }
         else
         {
@@ -778,8 +1218,8 @@ public class Expression extends TokenAST
         }
     }
 
-    private void evaluateIdentifierSymbol(Object identifierSymbol, Scope evaluationScope, String identifier)
-            throws ParserException
+    private void evaluateIdentifierSymbol(Object identifierSymbol, Scope forcedEvaluationScope,
+            String identifier)
     {
         symbolObject = identifierSymbol;
         if (identifierSymbol instanceof Field)
@@ -798,13 +1238,22 @@ public class Expression extends TokenAST
         else if (identifierSymbol instanceof EnumItem)
         {
             // enumeration item (this can happen for enum choices where enum is visible or for enum itself)
-            final EnumItem enumItem = (EnumItem)identifierSymbol;
-            final EnumType enumType = enumItem.getEnumType();
-
+            final ZserioType scopeOwner = forcedEvaluationScope.getOwner();
+            if (scopeOwner instanceof ChoiceType)
+            {
+                // this enumeration item is in choice with enumeration type selector
+                final ChoiceType enumChoice = (ChoiceType)scopeOwner;
+                final Expression selectorExpression = enumChoice.getSelectorExpression();
+                final ZserioType selectorExprZserioType = selectorExpression.getExprZserioType();
+                if (selectorExprZserioType instanceof EnumType)
+                {
+                    final EnumType enumType = (EnumType)selectorExprZserioType;
+                    zserioType = enumType;
+                    evaluateExpressionType(enumType);
+                }
+            }
             // if this enumeration item is in own enum, leave it unresolved (we have problem with it because
             // such enumeration items cannot be evaluated yet)
-            if (evaluationScope.getOwner() != enumType)
-                evaluateExpressionType(enumType);
         }
         else
         {
@@ -813,7 +1262,7 @@ public class Expression extends TokenAST
         }
     }
 
-    private void evaluateExpressionType(ZserioType type) throws ParserException
+    private void evaluateExpressionType(ZserioType type)
     {
         // resolved instantiated type
         ZserioType resolvedType = type;
@@ -821,7 +1270,8 @@ public class Expression extends TokenAST
         {
             // call evaluation explicitly because this type instantiation does not have to be evaluated yet
             final TypeInstantiation typeInstantiation = (TypeInstantiation)resolvedType;
-            typeInstantiation.evaluateBaseType();
+            final ZserioAstEvaluator evaluator = new ZserioAstEvaluator();
+            typeInstantiation.accept(evaluator);
             resolvedType = typeInstantiation.getReferencedType();
         }
 
@@ -835,13 +1285,11 @@ public class Expression extends TokenAST
             {
                 // call evaluation explicitly because this enumeration item does not have to be evaluated yet
                 final EnumItem enumItem = (EnumItem)symbolObject;
-                enumItem.getEnumType().evaluateItemValues();
+                final ZserioAstEvaluator evaluator = new ZserioAstEvaluator();
+                ((EnumType)resolvedType).accept(evaluator);
 
                 // set integer value according to this enumeration item
                 expressionIntegerValue = new ExpressionIntegerValue(enumItem.getValue());
-
-                // add this expression to 'Used-by' list for enumeration item (needed by documentation emitter)
-                enumItem.addUsedByExpression(this);
             }
         }
         else if (resolvedType instanceof IntegerType)
@@ -852,7 +1300,8 @@ public class Expression extends TokenAST
             {
                 // call evaluation explicitly because this length does not have to be evaluated yet
                 final BitFieldType bitFieldType = (BitFieldType)resolvedType;
-                bitFieldType.evaluateBitSizes();
+                final ZserioAstEvaluator evaluator = new ZserioAstEvaluator();
+                bitFieldType.accept(evaluator);
             }
             final BigInteger lowerBound = integerType.getLowerBound();
             final BigInteger upperBound = integerType.getUpperBound();
@@ -883,460 +1332,15 @@ public class Expression extends TokenAST
         zserioType = resolvedType;
     }
 
-    private void evaluateDotExpression() throws ParserException
-    {
-        final Expression op1 = op1();
-        final Expression op2 = op2();
-        if (op1.zserioType == null)
-        {
-            // left operand is unknown => it still can be a part of package
-            evaluatePackageDotExpression(op1, op2);
-        }
-        else if (op1.zserioType instanceof EnumType)
-        {
-            // left operand is enumeration type
-            evaluateEnumDotExpression(op1, op2);
-        }
-        else if (op1.zserioType instanceof CompoundType)
-        {
-            // left operand is compound type
-            evaluateCompoundDotExpression(op1, op2);
-        }
-        else
-        {
-            throw new ParserException(op1, "Unexpected dot expression '" + op1.getText() + "'!");
-        }
-    }
-
-    private void evaluatePackageDotExpression(Expression op1, Expression op2) throws ParserException
-    {
-        // try to resolve op1 as package name and op2 as type
-        final PackageName.Builder op1UnresolvedPackageNameBuilder = new PackageName.Builder();
-        for (Expression unresolvedIdentifier : op1.unresolvedIdentifiers)
-            op1UnresolvedPackageNameBuilder.addId(unresolvedIdentifier.getText());
-
-        final ZserioType identifierType = pkg.getVisibleType(op1UnresolvedPackageNameBuilder.get(),
-                op2.getText());
-        if (identifierType == null)
-        {
-            // identifier still not found, this can happened for long package name, we must wait for dot
-            unresolvedIdentifiers.addAll(op1.unresolvedIdentifiers);
-            unresolvedIdentifiers.add(op2);
-        }
-        else
-        {
-            evaluateIdentifierType(identifierType);
-
-            // reset op2, it could be already found in different package
-            op2.reset(identifierType);
-
-            // set symbolObject to all unresolved identifier expressions (needed for formatters)
-            for (Expression unresolvedIdentifier : op1.unresolvedIdentifiers)
-                unresolvedIdentifier.symbolObject = identifierType.getPackage();
-        }
-    }
-
-    private void evaluateEnumDotExpression(Expression op1, Expression op2) throws ParserException
-    {
-        final EnumType enumType = (EnumType)(op1.zserioType);
-        final Scope enumScope = enumType.getScope();
-        final String dotOperand = op2.getText();
-        final Object enumSymbol = enumScope.getSymbol(dotOperand);
-        if (!(enumSymbol instanceof EnumItem))
-            throw new ParserException(this, "'" + dotOperand + "' undefined in enumeration '" +
-                    enumType.getName() + "'!");
-
-        // reset op2, enumeration items can be already resolved because they are searched globally to
-        // support choices with enumeration selector (needed for formatters)
-        op2.reset(enumSymbol);
-
-        symbolObject = enumSymbol;
-        evaluateExpressionType(enumType);
-    }
-
-    private void evaluateCompoundDotExpression(Expression op1, Expression op2) throws ParserException
-    {
-        final CompoundType compoundType = (CompoundType)(op1.zserioType);
-        final Scope compoundScope = compoundType.getScope();
-        final String dotOperand = op2.getText();
-        final Object compoundSymbol = compoundScope.getSymbol(dotOperand);
-        if (compoundSymbol == null)
-            throw new ParserException(this, "'" + dotOperand + "' undefined in compound '" +
-                    compoundType.getName() + "'!");
-
-        // reset op2, it could be already found in the compound type (needed for formatters)
-        op2.reset(compoundSymbol);
-
-        symbolObject = compoundSymbol;
-        if (compoundSymbol instanceof Field)
-        {
-            evaluateExpressionType(((Field)compoundSymbol).getFieldType());
-        }
-        else if (compoundSymbol instanceof Parameter)
-        {
-            evaluateExpressionType(((Parameter)compoundSymbol).getParameterType());
-        }
-        else if (compoundSymbol instanceof FunctionType)
-        {
-            // function type, we must wait for "()"
-            zserioType = (FunctionType)compoundSymbol;
-        }
-        else if (compoundSymbol instanceof CompoundType)
-        {
-            evaluateExpressionType((CompoundType)compoundSymbol);
-        }
-        else
-        {
-            throw new ParserException(this, "'" + dotOperand + "' undefined in compound '" +
-                    compoundType.getName() + "'!");
-        }
-    }
-
-    private void evaluateArrayElement() throws ParserException
-    {
-        final Expression op1 = op1();
-        if (!(op1.zserioType instanceof ArrayType))
-            throw new ParserException(op1, "'" + op1().getText() + "' is not an array!");
-
-        final Expression op2 = op2();
-        if (op2.expressionType != ExpressionType.INTEGER)
-            throw new ParserException(op2, "Integer expression expected!");
-
-        final ArrayType arrayType = (ArrayType)op1.zserioType;
-        evaluateExpressionType(arrayType.getElementType());
-    }
-
-    private void evaluateConditionalExpression() throws ParserException
-    {
-        final Expression op1 = op1();
-        if (op1.expressionType != ExpressionType.BOOLEAN)
-            throw new ParserException(op1, "Boolean expression expected!");
-
-        final Expression op2 = op2();
-        final Expression op3 = op3();
-        if (op2.expressionType == ExpressionType.UNKNOWN || op2.expressionType != op3.expressionType)
-            throw new ParserException(this, "Incompatible expression types (" + op2.expressionType +
-                    " != " + op3.expressionType + ")!");
-
-        expressionType = op2.expressionType;
-        zserioType = op2.zserioType;
-        if (expressionType == ExpressionType.INTEGER)
-        {
-            expressionIntegerValue = op2.expressionIntegerValue.conditional(op3.expressionIntegerValue);
-            if (expressionIntegerValue.needsBigInteger())
-            {
-                op2.propagateNeedsBigInteger();
-                op3.propagateNeedsBigInteger();
-            }
-        }
-    }
-
-    private void evaluateIndexExpression() throws ParserException
-    {
-        if (!allowIndex)
-            throw new ParserException(this, "Index operator is not allowed in this context!");
-
-        expressionType = ExpressionType.INTEGER;
-        // array index has default expressionIntegerValue
-    }
-
-    private void evaluateRelationalExpression() throws ParserException
-    {
-        final Expression op1 = op1();
-        final Expression op2 = op2();
-        if (op1.expressionType == ExpressionType.UNKNOWN || op1.expressionType != op2.expressionType)
-            throw new ParserException(this, "Incompatible expression types (" + op1.expressionType +
-                    " != " + op2.expressionType + ")!");
-
-        final int tokenType = getType();
-        if (op1.expressionType == ExpressionType.FLOAT &&
-                tokenType != ZserioParserTokenTypes.LT && tokenType != ZserioParserTokenTypes.GT)
-            throw new ParserException(this, "Equality operator is not allowed for floats!");
-
-        if (op1.expressionType == ExpressionType.STRING &&
-                tokenType != ZserioParserTokenTypes.EQ && tokenType != ZserioParserTokenTypes.NE)
-            throw new ParserException(this,
-                    "'Greater than' and 'less than' comparison is not allowed for strings!");
-
-        if (op1.expressionType == ExpressionType.STRING)
-            throw new ParserException(this, "String comparison is not implemented!");
-
-        expressionType = ExpressionType.BOOLEAN;
-        if (op1.expressionType == ExpressionType.INTEGER)
-        {
-            expressionIntegerValue = op1.expressionIntegerValue.relationalOperator(op2.expressionIntegerValue);
-            if (expressionIntegerValue.needsBigInteger())
-            {
-                op1.propagateNeedsBigInteger();
-                op2.propagateNeedsBigInteger();
-            }
-        }
-    }
-
-    private void evaluateNegationOperator() throws ParserException
-    {
-        final Expression op1 = op1();
-        if (op1.expressionType != ExpressionType.BOOLEAN)
-            throw new ParserException(this, "Boolean expression expected!");
-
-        expressionType = ExpressionType.BOOLEAN;
-    }
-
-    private void evaluateUnaryPlusMinus(boolean isNegate) throws ParserException
-    {
-        final Expression op1 = op1();
-        if (op1.expressionType != ExpressionType.INTEGER && op1.expressionType != ExpressionType.FLOAT)
-            throw new ParserException(this, "Integer or float expressions expected!");
-
-        if (op1.expressionType == ExpressionType.FLOAT)
-        {
-            expressionType = ExpressionType.FLOAT;
-        }
-        else
-        {
-            expressionType = ExpressionType.INTEGER;
-            expressionIntegerValue = (isNegate) ? op1.expressionIntegerValue.negate() :
-                op1.expressionIntegerValue;
-        }
-    }
-
-    private void evaluateArithmeticExpression() throws ParserException
-    {
-        final Expression op1 = op1();
-        final Expression op2 = op2();
-        if (getType() == ZserioParserTokenTypes.PLUS && op1.expressionType == ExpressionType.STRING &&
-                op2.expressionType == ExpressionType.STRING)
-        {
-            expressionType = ExpressionType.STRING;
-        }
-        else
-        {
-            if ( (op1.expressionType != ExpressionType.INTEGER && op1.expressionType != ExpressionType.FLOAT) ||
-                 (op2.expressionType != ExpressionType.INTEGER && op2.expressionType != ExpressionType.FLOAT) )
-                throw new ParserException(this, "Integer or float expressions expected!");
-
-            if (op1.expressionType == ExpressionType.FLOAT || op2.expressionType == ExpressionType.FLOAT)
-            {
-                expressionType = ExpressionType.FLOAT;
-            }
-            else
-            {
-                expressionType = ExpressionType.INTEGER;
-                switch (getType())
-                {
-                    case ZserioParserTokenTypes.PLUS:
-                        expressionIntegerValue = op1.expressionIntegerValue.add(op2.expressionIntegerValue);
-                        break;
-
-                    case ZserioParserTokenTypes.MINUS:
-                        expressionIntegerValue =
-                            op1.expressionIntegerValue.subtract(op2.expressionIntegerValue);
-                        break;
-
-                    case ZserioParserTokenTypes.MULTIPLY:
-                        expressionIntegerValue =
-                            op1.expressionIntegerValue.multiply(op2.expressionIntegerValue);
-                        break;
-
-                    case ZserioParserTokenTypes.DIVIDE:
-                        expressionIntegerValue = op1.expressionIntegerValue.divide(op2.expressionIntegerValue);
-                        break;
-
-                    case ZserioParserTokenTypes.MODULO:
-                        expressionIntegerValue =
-                            op1.expressionIntegerValue.remainder(op2.expressionIntegerValue);
-                        break;
-
-                    default:
-                        throw new ParserException(this, "Illegal expression type " + getType() + "!");
-                }
-
-                if (expressionIntegerValue.needsBigInteger())
-                {
-                    op1.propagateNeedsBigInteger();
-                    op2.propagateNeedsBigInteger();
-                }
-            }
-        }
-    }
-
-    private void evaluateBitExpression() throws ParserException
-    {
-        final Expression op1 = op1();
-        final Expression op2 = op2();
-        if (op1.expressionType != ExpressionType.INTEGER || op2.expressionType != ExpressionType.INTEGER)
-            throw new ParserException(this, "Integer expressions expected!");
-
-        expressionType = ExpressionType.INTEGER;
-        final int tokenType = getType();
-        switch (tokenType)
-        {
-            case ZserioParserTokenTypes.LSHIFT:
-                expressionIntegerValue = op1.expressionIntegerValue.shiftLeft(op2.expressionIntegerValue);
-                break;
-
-            case ZserioParserTokenTypes.RSHIFT:
-                expressionIntegerValue = op1.expressionIntegerValue.shiftRight(op2.expressionIntegerValue);
-                break;
-
-            case ZserioParserTokenTypes.AND:
-                expressionIntegerValue = op1.expressionIntegerValue.and(op2.expressionIntegerValue);
-                break;
-
-            case ZserioParserTokenTypes.OR:
-                expressionIntegerValue = op1.expressionIntegerValue.or(op2.expressionIntegerValue);
-                break;
-
-            case ZserioParserTokenTypes.XOR:
-                expressionIntegerValue = op1.expressionIntegerValue.xor(op2.expressionIntegerValue);
-                break;
-
-            default:
-                throw new ParserException(this, "Illegal expression type '" + getType() + "'!");
-        }
-
-        if (tokenType != ZserioParserTokenTypes.LSHIFT && tokenType != ZserioParserTokenTypes.RSHIFT &&
-                expressionIntegerValue.needsBigInteger())
-        {
-            op1.propagateNeedsBigInteger();
-            op2.propagateNeedsBigInteger();
-        }
-    }
-
-    private void evaluateLogicalExpression() throws ParserException
-    {
-        final Expression op1 = op1();
-        final Expression op2 = op2();
-        if (op1.expressionType != ExpressionType.BOOLEAN || op2.expressionType != ExpressionType.BOOLEAN)
-            throw new ParserException(this, "Boolean expressions expected!");
-
-        expressionType = ExpressionType.BOOLEAN;
-    }
-
-    private void evaluateBitNotExpression() throws ParserException
-    {
-        final Expression op1 = op1();
-        if (op1.expressionType != ExpressionType.INTEGER)
-            throw new ParserException(this, "Integer expression expected!");
-
-        expressionType = ExpressionType.INTEGER;
-        expressionIntegerValue = op1.expressionIntegerValue.not();
-    }
-
-    private void evaluateLengthOfOperator() throws ParserException
-    {
-        final Expression op1 = op1();
-        if (!(op1.zserioType instanceof ArrayType))
-            throw new ParserException(op1, "'" + op1().getText() + "' is not an array!");
-
-        expressionType = ExpressionType.INTEGER;
-        // length of result has default expressionIntegerValue
-    }
-
-    private void evaluateSumOperator() throws ParserException
-    {
-        final Expression op1 = op1();
-        if (!(op1.zserioType instanceof ArrayType))
-            throw new ParserException(op1, "'" + op1().getText() + "' is not an array!");
-
-        final ArrayType arrayType = (ArrayType)op1.zserioType;
-        evaluateExpressionType(arrayType.getElementType());
-    }
-
-    private void evaluateValueOfOperator() throws ParserException
-    {
-        final Expression op1 = op1();
-        if (op1.expressionType != ExpressionType.ENUM)
-            throw new ParserException(op1, "'" + op1().getText() + "' is not an enumeration item!");
-
-        expressionType = ExpressionType.INTEGER;
-        expressionIntegerValue = op1.expressionIntegerValue;
-    }
-
-    private void evaluateNumBitsOperator() throws ParserException
-    {
-        final Expression op1 = op1();
-        if (op1.expressionType != ExpressionType.INTEGER)
-            throw new ParserException(op1, "Integer expression expected!");
-
-        expressionType = ExpressionType.INTEGER;
-        expressionIntegerValue = op1.expressionIntegerValue.numbits();
-    }
-
-    private void evaluateFunctionCallExpression(Scope evaluationScope) throws ParserException
-    {
-        final Expression op1 = op1();
-        if (!(op1.zserioType instanceof FunctionType))
-            throw new ParserException(op1, "'" + op1().getText() + "' is not a function!");
-
-        final FunctionType functionType = (FunctionType)op1.zserioType;
-        final Expression functionResultExpression = functionType.getResultExpression();
-
-        // function expression should know only symbols available on a place of the function call:
-        // - if it's called within its owner object, it can see only symbols defined before the call
-        try
-        {
-            if (evaluationScope.getOwner() == functionResultExpression.getScope().getOwner())
-                functionResultExpression.evaluateTree(evaluationScope); // called within the owner
-            else
-                functionResultExpression.evaluateTree();
-        }
-        catch (ParserException e)
-        {
-            throw new ParserException(functionResultExpression, e.getMessage() +
-                    " Found in function '" + functionType.getName() + "' called from here: " +
-                    getFileName() + ":" + getLine() + ":" + getColumn());
-        }
-
-        evaluateExpressionType(functionType.getReturnType());
-        expressionIntegerValue = functionResultExpression.expressionIntegerValue;
-    }
-
-    private void evaluateTree(Scope evaluationScope) throws ParserException
-    {
-        final ExpressionEvaluator expressionEvaluator = new ExpressionEvaluator();
-        expressionEvaluator.setEvaluationScope(evaluationScope);
-        callExpressionEvaluator(expressionEvaluator);
-    }
-
-    private void callExpressionEvaluator(ExpressionEvaluator expressionEvaluator) throws ParserException
-    {
-        try
-        {
-            expressionEvaluator.expression(this);
-        }
-        catch (RecognitionException excpt)
-        {
-            throw new ParserException(this, excpt.getMessage());
-        }
-    }
-
-    private void reset(Object newSymbolObject)
-    {
-        expressionType = ExpressionType.UNKNOWN;
-        zserioType = null;
-        expressionIntegerValue = new ExpressionIntegerValue();
-
-        unresolvedIdentifiers.clear();
-
-        symbolObject = newSymbolObject;
-        needsBigIntegerCastingToNative = false;
-        allowIndex = false;
-    }
-
     private void initialize()
     {
         evaluationState = EvaluationState.NOT_EVALUATED;
-
         expressionType = ExpressionType.UNKNOWN;
         zserioType = null;
         expressionIntegerValue = new ExpressionIntegerValue();
-
         unresolvedIdentifiers = new ArrayList<Expression>();
-
         symbolObject = null;
         needsBigIntegerCastingToNative = false;
-        allowIndex = false;
     }
 
     private enum EvaluationState
@@ -1346,20 +1350,91 @@ public class Expression extends TokenAST
         EVALUATED
     };
 
+    private static String extractTokenText(Token expressionToken)
+    {
+        String tokenText = expressionToken.getText();
+        switch (expressionToken.getType())
+        {
+            case ZserioParser.BINARY_LITERAL:
+                tokenText = stripBinaryLiteral(tokenText);
+                break;
+
+            case ZserioParser.OCTAL_LITERAL:
+                tokenText = stripOctalLiteral(tokenText);
+                break;
+
+            case ZserioParser.HEXADECIMAL_LITERAL:
+                tokenText = stripHexadecimalLiteral(tokenText);
+                break;
+
+            case ZserioParser.FLOAT_LITERAL:
+                tokenText = stripFloatLiteral(tokenText);
+                break;
+
+            default:
+                break;
+        }
+
+        return tokenText;
+    }
+
+    private static String stripBinaryLiteral(String binaryLiteral)
+    {
+        final int postfixPos = findChars(binaryLiteral, 'b', 'B');
+
+        return (postfixPos == -1) ? binaryLiteral : binaryLiteral.substring(0, postfixPos);
+    }
+
+    private static String stripOctalLiteral(String octalLiteral)
+    {
+        final int prefixPos = octalLiteral.indexOf('0');
+
+        return (prefixPos == -1) ? octalLiteral : octalLiteral.substring(prefixPos + 1);
+    }
+
+    private static String stripHexadecimalLiteral(String hexadecimalLiteral)
+    {
+        final int prefixPos = findChars(hexadecimalLiteral, 'x', 'X');
+
+        return (prefixPos == -1) ? hexadecimalLiteral : hexadecimalLiteral.substring(prefixPos + 1);
+    }
+
+    private static String stripFloatLiteral(String floatLiteral)
+    {
+        final int postfixPos = findChars(floatLiteral, 'f', 'F');
+
+        return (postfixPos == -1) ? floatLiteral : floatLiteral.substring(0, postfixPos);
+    }
+
+    private static int findChars(String text, char firstChar, char secondChar)
+    {
+        int pos = text.indexOf(firstChar);
+        if (pos == -1)
+            pos = text.indexOf(secondChar);
+
+        return pos;
+    }
+
+    private final Package pkg;
+
+    private final int type;
+    private final String text;
+
+    private final ExpressionFlag expressionFlag;
+
+    private final Expression operand1;
+    private final Expression operand2;
+    private final Expression operand3;
+
+    private Scope evaluationScope;
+
     private EvaluationState evaluationState;
 
     private ExpressionType expressionType;
     private ZserioType zserioType;
     private ExpressionIntegerValue expressionIntegerValue;
-
     private List<Expression> unresolvedIdentifiers;
-
     private Object symbolObject;
+
     private boolean needsBigIntegerCastingToNative;
-    private boolean allowIndex;
-
-    private Scope scope = null;
-    private Package pkg = null;
-
-    private static final long serialVersionUID = -8971097647537214273L;
 }

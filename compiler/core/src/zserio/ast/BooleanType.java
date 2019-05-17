@@ -1,14 +1,26 @@
 package zserio.ast;
 
+import org.antlr.v4.runtime.Token;
+
 /**
- * AST node for boolean types.
+ * AST node for Boolean types.
  *
  * Boolean types are Zserio types as well.
  */
 public class BooleanType extends BuiltInType implements FixedSizeType
 {
+    /**
+     * Constructor from ANTLR4 token.
+     *
+     * @param token Token to construct from.
+     */
+    public BooleanType(Token token)
+    {
+        super(token);
+    }
+
     @Override
-    public void callVisitor(ZserioTypeVisitor visitor)
+    public void accept(ZserioAstVisitor visitor)
     {
         visitor.visitBooleanType(this);
     }
@@ -18,6 +30,4 @@ public class BooleanType extends BuiltInType implements FixedSizeType
     {
         return 1;
     }
-
-    private static final long serialVersionUID = 2528776617383794636L;
 }

@@ -14,7 +14,7 @@ public class ServiceTemplateData
     {
         name = serviceType.getName();
         packageName = serviceType.getPackage().getPackageName().toString();
-        docComment = new DocCommentTemplateData(serviceType.getHiddenDocComment());
+        docComment = new DocCommentTemplateData(serviceType.getDocComment());
         for (Rpc rpc : serviceType.getRpcList())
         {
             rpcList.add(new RpcTemplateData(rpc));
@@ -57,7 +57,7 @@ public class ServiceTemplateData
             hasRequestStreaming = rpc.hasRequestStreaming();
             responseType = new LinkedType(rpc.getResponseType());
             hasResponseStreaming = rpc.hasResponseStreaming();
-            docComment = new DocCommentTemplateData(rpc.getHiddenDocComment());
+            docComment = new DocCommentTemplateData(rpc.getDocComment());
         }
 
         public String getName()

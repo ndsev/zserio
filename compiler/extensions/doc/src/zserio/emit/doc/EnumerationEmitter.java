@@ -26,13 +26,15 @@ public class EnumerationEmitter extends DefaultHtmlEmitter
     private final List<EnumItemTemplateData> items = new ArrayList<EnumItemTemplateData>();
     private final String docPath;
     private final boolean withSvgDiagrams;
+    private final UsedByCollector usedByCollector;
 
-    public EnumerationEmitter(String outputPath, boolean withSvgDiagrams)
+    public EnumerationEmitter(String outputPath, boolean withSvgDiagrams, UsedByCollector usedByCollector)
     {
         super(outputPath);
         docPath = outputPath;
         directory = new File(directory, CONTENT_FOLDER);
         this.withSvgDiagrams = withSvgDiagrams;
+        this.usedByCollector = usedByCollector;
     }
 
     public void emit(EnumType e) throws ZserioEmitException
@@ -42,10 +44,10 @@ public class EnumerationEmitter extends DefaultHtmlEmitter
         items.clear();
         for (EnumItem item : e.getItems())
         {
-            items.add(new EnumItemTemplateData(item));
+            items.add(new EnumItemTemplateData(item, usedByCollector));
         }
         containers.clear();
-        for (CompoundType compound : enumeration.getUsedByCompoundList())
+        for (CompoundType compound : usedByCollector.getUsedByTypes(enumeration, CompoundType.class))
         {
             CompoundEmitter ce = new CompoundEmitter(compound);
             containers.add(ce);
@@ -106,13 +108,12 @@ public class EnumerationEmitter extends DefaultHtmlEmitter
     public static class UsageInfoEmitter implements Comparable<UsageInfoEmitter>
     {
         private final EnumItem enumItem;
-        private final Expression usedByExpression;
+        private final ChoiceType choiceType;
 
-        public UsageInfoEmitter( EnumItem   enumItem,
-                                 Expression usedByExpression )
+        public UsageInfoEmitter(EnumItem enumItem, ChoiceType choiceType)
         {
             this.enumItem = enumItem;
-            this.usedByExpression = usedByExpression;
+            this.choiceType = choiceType;
         }
 
         /* Don't change this ordering to have always the same generated HTML sources. */
@@ -144,36 +145,19 @@ public class EnumerationEmitter extends DefaultHtmlEmitter
             return enumItem;
         }
 
-        public Expression getExpression()
-        {
-            return usedByExpression;
-        }
-
-        private ChoiceType getChoiceType()
-        {
-            // by manual investigation the fixed hangout of the choiceType of a
-            // expression within a "choice-case-item" can be resolved as follows
-            final ZserioType type = getExpression().getScope().getOwner();
-            return (type instanceof ChoiceType) ? (ChoiceType)type : null;
-        }
-
         public boolean getIsFromChoiceCase()
         {
-            return getChoiceType()!=null;
+            return choiceType != null;
         }
 
         public String getChoiceCaseLinkText()
         {
-            ChoiceType ct = getChoiceType();
-            return(
-                ct.getName() + "( " + getEnumItem().getName() + " )"
-            );
+            return (choiceType.getName() + "( " + getEnumItem().getName() + " )");
         }
 
         public String getChoiceCaseLink() throws ZserioEmitException
         {
-            ChoiceType ct = getChoiceType();
-            return DocEmitterTools.getUrlNameFromType(ct) + "#casedef_" + getEnumItem().getName();
+            return DocEmitterTools.getUrlNameFromType(choiceType) + "#casedef_" + getEnumItem().getName();
         }
     }; // class usageInfoEmitter
 
@@ -190,7 +174,8 @@ public class EnumerationEmitter extends DefaultHtmlEmitter
 
     public static class EnumItemTemplateData
     {
-        public EnumItemTemplateData(EnumItem enumItem) throws ZserioEmitException
+        public EnumItemTemplateData(EnumItem enumItem, UsedByCollector usedByCollector)
+                throws ZserioEmitException
         {
             name = enumItem.getName();
 
@@ -203,13 +188,8 @@ public class EnumerationEmitter extends DefaultHtmlEmitter
             docCommentData = new DocCommentTemplateData(enumItem.getDocComment());
 
             usageInfoList = new TreeSet<UsageInfoEmitter>();
-            for (Expression expression : enumItem.getUsedByExpressionList())
-            {
-                final UsageInfoEmitter usageInfoEmitter = new UsageInfoEmitter(enumItem, expression);
-                /* This hack is necessary not to have duplicit entries. */
-                if (usageInfoEmitter.getIsFromChoiceCase())
-                    usageInfoList.add(new UsageInfoEmitter(enumItem, expression));
-            }
+            for (ChoiceType choiceType : usedByCollector.getUsedByChoices(enumItem))
+                usageInfoList.add(new UsageInfoEmitter(enumItem, choiceType));
         }
 
         public String getName()

@@ -1,16 +1,15 @@
 package zserio.emit.doc;
 
 import zserio.ast.ArrayType;
+import zserio.ast.BitFieldType;
 import zserio.ast.BooleanType;
 import zserio.ast.ChoiceType;
 import zserio.ast.ConstType;
 import zserio.ast.ServiceType;
-import zserio.ast.ZserioTypeVisitor;
 import zserio.ast.EnumType;
 import zserio.ast.FloatType;
 import zserio.ast.FunctionType;
 import zserio.ast.StructureType;
-import zserio.ast.SignedBitFieldType;
 import zserio.ast.SqlDatabaseType;
 import zserio.ast.SqlTableType;
 import zserio.ast.StdIntegerType;
@@ -19,14 +18,14 @@ import zserio.ast.Subtype;
 import zserio.ast.TypeInstantiation;
 import zserio.ast.TypeReference;
 import zserio.ast.UnionType;
-import zserio.ast.UnsignedBitFieldType;
 import zserio.ast.VarIntegerType;
+import zserio.ast.ZserioAstDefaultVisitor;
 import zserio.emit.common.ZserioEmitException;
 
 /**
  * The ZserioType visitor which resolves the suffix for HTML module name from ZserioType.
  */
-public class HtmlModuleNameSuffixVisitor implements ZserioTypeVisitor
+public class HtmlModuleNameSuffixVisitor extends ZserioAstDefaultVisitor
 {
     @Override
     public void visitArrayType(ArrayType type)
@@ -77,9 +76,12 @@ public class HtmlModuleNameSuffixVisitor implements ZserioTypeVisitor
     }
 
     @Override
-    public void visitSignedBitFieldType(SignedBitFieldType type)
+    public void visitBitFieldType(BitFieldType type)
     {
-        htmlModuleNameSuffix = "SIGNED_BIT_FIELD";
+        if (type.isSigned())
+            htmlModuleNameSuffix = "SIGNED_BIT_FIELD";
+        else
+            htmlModuleNameSuffix = "BIT";
     }
 
     @Override
@@ -135,12 +137,6 @@ public class HtmlModuleNameSuffixVisitor implements ZserioTypeVisitor
     {
         htmlModuleNameSuffix = "UNION";
 
-    }
-
-    @Override
-    public void visitUnsignedBitFieldType(UnsignedBitFieldType type)
-    {
-        htmlModuleNameSuffix = "BIT";
     }
 
     @Override

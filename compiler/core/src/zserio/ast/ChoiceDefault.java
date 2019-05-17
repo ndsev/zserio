@@ -1,15 +1,42 @@
 package zserio.ast;
 
-import zserio.antlr.ZserioParserTokenTypes;
-import zserio.antlr.util.BaseTokenAST;
-import zserio.antlr.util.ParserException;
-import zserio.ast.doc.DocCommentToken;
+import org.antlr.v4.runtime.Token;
+
 
 /**
  * AST node for default case defined by choice types.
  */
-public class ChoiceDefault extends TokenAST
+public class ChoiceDefault extends AstNodeWithDoc
 {
+    /**
+     * Constructor.
+     *
+     * @param token        ANTLR4 token to localize AST node in the sources.
+     * @param defaultField Default field associated to this default case or null if it's not defined.
+     * @param docComment   Documentation comment belonging to this node.
+     */
+    public ChoiceDefault(Token token, Field defaultField, DocComment docComment)
+    {
+        super(token, docComment);
+
+        this.defaultField = defaultField;
+    }
+
+    @Override
+    public void accept(ZserioAstVisitor visitor)
+    {
+        visitor.visitChoiceDefault(this);
+    }
+
+    @Override
+    public void visitChildren(ZserioAstVisitor visitor)
+    {
+        if (defaultField != null)
+            defaultField.accept(visitor);
+
+        super.visitChildren(visitor);
+    }
+
     /**
      * Gets field defined by the default choice case.
      *
@@ -20,53 +47,5 @@ public class ChoiceDefault extends TokenAST
         return defaultField;
     }
 
-    /**
-     * Gets documentation comment associated to this RPC method.
-     *
-     * @return Documentation comment token associated to this RPC method.
-     */
-    public DocCommentToken getDocComment()
-    {
-        return getHiddenDocComment();
-    }
-
-    @Override
-    protected boolean evaluateChild(BaseTokenAST child) throws ParserException
-    {
-        switch (child.getType())
-        {
-        case ZserioParserTokenTypes.FIELD:
-            if (!(child instanceof Field))
-                return false;
-            defaultField = (Field)child;
-            choiceType.addField(defaultField);
-            break;
-
-        default:
-            return false;
-        }
-
-        return true;
-    }
-
-    @Override
-    protected void evaluate() throws ParserException
-    {
-        evaluateHiddenDocComment(choiceType);
-    }
-
-    /**
-     * Sets the choice type which is owner of the default case.
-     *
-     * @param choiceType Owner to set.
-     */
-    protected void setChoiceType(ChoiceType choiceType)
-    {
-        this.choiceType = choiceType;
-    }
-
-    private static final long serialVersionUID = 5346352027746617282L;
-
-    private ChoiceType choiceType;
-    private Field defaultField;
+    private final Field defaultField;
 }

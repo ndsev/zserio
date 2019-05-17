@@ -2,17 +2,24 @@ package zserio.ast;
 
 import java.math.BigInteger;
 
+import org.antlr.v4.runtime.Token;
+
 /**
- * AST node for built-in unsigned bit field integer types.
+ * AST node for built-in unsigned bit field Integer types.
  *
- * Unsigned bit field integer types (bit:1, bit<expr>, ...) are Zserio types as well.
+ * Unsigned bit field Integer types (bit:1, bit<expr>, ...) are Zserio types as well.
  */
 public class UnsignedBitFieldType extends BitFieldType
 {
-    @Override
-    public void callVisitor(ZserioTypeVisitor visitor)
+    /**
+     * Constructor from ANTLR4 token.
+     *
+     * @param token            Token to construct from.
+     * @param lengthExpression Length expression associated with this unsigned bit field type.
+     */
+    public UnsignedBitFieldType(Token token, Expression lengthExpression)
     {
-        visitor.visitUnsignedBitFieldType(this);
+        super(token, lengthExpression);
     }
 
     @Override
@@ -39,11 +46,10 @@ public class UnsignedBitFieldType extends BitFieldType
     }
 
     @Override
-    protected int getMaxBitFieldBits()
+    int getMaxBitFieldBits()
     {
         return MAX_UNSIGNED_BITFIELD_BITS;
     }
 
-    private static final long serialVersionUID = 2306571678256389121L;
     private static final int MAX_UNSIGNED_BITFIELD_BITS = 63;
 }

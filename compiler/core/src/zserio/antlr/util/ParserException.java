@@ -1,46 +1,61 @@
 package zserio.antlr.util;
 
-import antlr.RecognitionException;
+import org.antlr.v4.runtime.Token;
+
+import zserio.ast.AstLocation;
+import zserio.ast.AstNode;
 
 /**
- * Unchecked exception which is thrown if any error during parsing or checking occurs.
+ * Unchecked exception which is used during parsing in zserio.
+ *
+ * This exception is unchecked because it is used by visitors.
  */
-public class ParserException extends RecognitionException
+public class ParserException extends RuntimeException
 {
     /**
-     * Constructor from AST token and text.
+     * Constructor from token and message.
      *
-     * @param originToken The AST token which throws this exception.
-     * @param message     The message describing exception.
+     * @param token   Token to construct from.
+     * @param message Message to construct from.
      */
-    public ParserException(BaseTokenAST originToken, String message)
+    public ParserException(Token token, String message)
     {
-        this(originToken.getFileName(), originToken.getLine(), originToken.getColumn(), message);
+        this(new AstLocation(token), message);
     }
 
     /**
-     * Constructor from file name and text.
+     * Constructor from node and message.
      *
-     * @param fileName The name of source file where the exception occurred.
-     * @param message  The message describing exception.
+     * @param node    AST node to construct from.
+     * @param message Message to construct from.
      */
-    public ParserException(String fileName, String message)
+    public ParserException(AstNode node, String message)
     {
-        this(fileName, 0, 0, message);
+        this(node.getLocation(), message);
     }
 
     /**
-     * Constructor from file name, line, column and text.
+     * Constructor from location and message.
      *
-     * @param fileName The name of source file where the exception occurred.
-     * @param line     The line number in source file where the exception occurred.
-     * @param line     The column number in source file where the exception occurred.
-     * @param message  The message describing exception.
+     * @param location AST location to construct from.
+     * @param message  Message to construct from.
      */
-    public ParserException(String fileName, int line, int column, String message)
+    public ParserException(AstLocation location, String message)
     {
-        super(message, fileName, line, column);
+        super(message);
+        this.location = location;
     }
 
-    private static final long serialVersionUID = 1L;
+    /**
+     * Gets the AST location.
+     *
+     * @return Location of the AST node stored in the exception.
+     */
+    public AstLocation getLocation()
+    {
+        return location;
+    }
+
+    private transient AstLocation location;
+    private static final long serialVersionUID = -2149318704048979392L;
 }

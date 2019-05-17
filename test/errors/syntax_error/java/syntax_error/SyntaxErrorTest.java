@@ -20,42 +20,47 @@ public class SyntaxErrorTest
     @Test
     public void unexpectedEofInArrayLength()
     {
-        final String error = "unexpected_eof_in_array_length_error.zs:6:1: Unexpected end of file: unexpected token: null";
+        final String error = "unexpected_eof_in_array_length_error.zs:6:1: " +
+                "mismatched input '<EOF>' expecting {"; //...
         assertTrue(zserioErrors.isPresent(error));
     }
 
     @Test
     public void unexpectedEofInConstDefinition()
     {
-        final String error = "unexpected_eof_in_const_definition_error.zs:4:1: Unexpected end of file: unexpected token: null";
+        final String error = "unexpected_eof_in_const_definition_error.zs:4:1: " +
+                "mismatched input '<EOF>' expecting {"; //...
         assertTrue(zserioErrors.isPresent(error));
     }
 
     @Test
     public void unexpectedEofInFieldDefinition()
     {
-        final String error = "unexpected_eof_in_field_definition_error.zs:6:1: Unexpected end of file: expecting ID, found 'null'";
+        final String error = "unexpected_eof_in_field_definition_error.zs:6:1: " +
+                "mismatched input '<EOF>' expecting ID";
         assertTrue(zserioErrors.isPresent(error));
     }
 
     @Test
     public void unexpectedEofInParameterizedFieldDefinition()
     {
-        final String error = "unexpected_eof_in_parameterized_field_definition_error.zs:11:1: Unexpected end of file: unexpected token: null";
+        final String error = "unexpected_eof_in_parameterized_field_definition_error.zs:11:1: " +
+                "mismatched input '<EOF>' expecting {',', ')'}";
         assertTrue(zserioErrors.isPresent(error));
     }
 
     @Test
     public void unexpectedEofInStructDefinition()
     {
-        final String error = "unexpected_eof_in_struct_definition_error.zs:6:1: Unexpected end of file: expecting RCURLY, found 'null'";
+        final String error = "unexpected_eof_in_struct_definition_error.zs:6:1: " +
+                "extraneous input '<EOF>' expecting {"; //...
         assertTrue(zserioErrors.isPresent(error));
     }
 
     @Test
     public void unexpectedEofMissingSemicolon()
     {
-        final String error = "unexpected_eof_missing_semicolon_error.zs:7:1: Unexpected end of file: expecting SEMICOLON, found 'null'";
+        final String error = "unexpected_eof_missing_semicolon_error.zs:7:1: missing ';' at '<EOF>'";
         assertTrue(zserioErrors.isPresent(error));
     }
 

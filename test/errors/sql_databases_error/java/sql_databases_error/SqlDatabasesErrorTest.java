@@ -28,7 +28,7 @@ public class SqlDatabasesErrorTest
     @Test
     public void emptyDatabase()
     {
-        final String error = "empty_database_error.zs:6:1: unexpected token: }";
+        final String error = "empty_database_error.zs:6:1: mismatched input '}' expecting ID";
         assertTrue(zserioErrors.isPresent(error));
     }
 

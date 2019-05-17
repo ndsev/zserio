@@ -20,14 +20,15 @@ public class ServiceTypesErrorTest
     @Test
     public void builtinType()
     {
-        final String error = "builtin_type_error.zs:10:29: unexpected token: int32 (reserved keyword)";
+        final String error = "builtin_type_error.zs:10:29: " +
+                "mismatched input 'int32' expecting {'stream', ID} ('int32' is a reserved keyword)!";
         assertTrue(zserioErrors.isPresent(error));
     }
 
     @Test
     public void choiceType()
     {
-        final String error = "choice_type_error.zs:19:5: " +
+        final String error = "choice_type_error.zs:19:29: " +
                 "Only non-parameterized compound types can be used in RPC calls, " +
                 "'Request' is a parameterized type!";
         assertTrue(zserioErrors.isPresent(error));
@@ -43,7 +44,7 @@ public class ServiceTypesErrorTest
     @Test
     public void nonCompoundSubtype()
     {
-        final String error = "non_compound_subtype_error.zs:12:5: " +
+        final String error = "non_compound_subtype_error.zs:12:29: " +
                 "Only non-parameterized compound types can be used in RPC calls, " +
                 "'Request' is not a compound type!";
         assertTrue(zserioErrors.isPresent(error));
@@ -52,7 +53,7 @@ public class ServiceTypesErrorTest
     @Test
     public void parameterizedStruct()
     {
-        final String error = "parameterized_struct_error.zs:16:5: " +
+        final String error = "parameterized_struct_error.zs:16:29: " +
                 "Only non-parameterized compound types can be used in RPC calls, " +
                 "'Request' is a parameterized type!";
         assertTrue(zserioErrors.isPresent(error));
@@ -69,7 +70,7 @@ public class ServiceTypesErrorTest
     @Test
     public void sqlTableType()
     {
-        final String error = "sql_table_type_error.zs:15:5: SQL table 'Request' cannot be used in RPC call";
+        final String error = "sql_table_type_error.zs:15:29: SQL table 'Request' cannot be used in RPC call";
         assertTrue(zserioErrors.isPresent(error));
     }
 

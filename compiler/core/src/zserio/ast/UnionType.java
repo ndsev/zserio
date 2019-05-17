@@ -1,70 +1,44 @@
 package zserio.ast;
 
-import zserio.antlr.ZserioParserTokenTypes;
-import zserio.antlr.util.BaseTokenAST;
-import zserio.antlr.util.ParserException;
+import java.util.List;
+
+import org.antlr.v4.runtime.Token;
+
 
 /**
- * AST node for auto choice types.
+ * AST node for Union types.
  *
- * Auto choice types are Zserio types as well.
+ * Union types are Zserio types as well.
  */
 public class UnionType extends CompoundType
 {
-    @Override
-    protected boolean evaluateChild(BaseTokenAST child) throws ParserException
+    /**
+     * Constructor.
+     *
+     * @param token      ANTLR4 token to localize AST node in the sources.
+     * @param pkg        Package to which belongs the union type.
+     * @param name       Name of the union type.
+     * @param parameters List of parameters for the union type.
+     * @param fields     List of all fields of the union type.
+     * @param functions  List of all functions of the union type.
+     * @param docComment Documentation comment belonging to this node.
+     */
+    public UnionType(Token token, Package pkg, String name, List<Parameter> parameters, List<Field> fields,
+            List<FunctionType> functions, DocComment docComment)
     {
-        switch (child.getType())
-        {
-        case ZserioParserTokenTypes.ID:
-            if (!(child instanceof IdToken))
-                return false;
-            setName(child.getText());
-            break;
-
-        case ZserioParserTokenTypes.PARAM:
-            if (!(child instanceof Parameter))
-                return false;
-            addParameter((Parameter)child);
-            break;
-
-        case ZserioParserTokenTypes.FIELD:
-            if (!(child instanceof Field))
-                return false;
-            addField((Field)child);
-            break;
-
-        case ZserioParserTokenTypes.FUNCTION:
-            if (!(child instanceof FunctionType))
-                return false;
-            addFunction((FunctionType)child);
-            break;
-        default:
-            return false;
-        }
-
-        return true;
+        super(token, pkg, name, parameters, fields, functions, docComment);
     }
 
     @Override
-    public void callVisitor(ZserioTypeVisitor visitor)
+    public void accept(ZserioAstVisitor visitor)
     {
         visitor.visitUnionType(this);
     }
 
     @Override
-    protected void evaluate() throws ParserException
-    {
-        evaluateHiddenDocComment(this);
-        setDocComment(getHiddenDocComment());
-    }
-
-    @Override
-    protected void check() throws ParserException
+    void check()
     {
         super.check();
         checkTableFields();
     }
-
-    private static final long serialVersionUID = 6695949481469160388L;
 };

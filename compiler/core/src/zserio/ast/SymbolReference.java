@@ -1,12 +1,6 @@
 package zserio.ast;
 
-import java.io.Serializable;
-
-import zserio.antlr.util.BaseTokenAST;
 import zserio.antlr.util.ParserException;
-import zserio.ast.PackageName;
-import zserio.ast.ZserioType;
-import zserio.ast.Package;
 
 /**
  * The class represents symbol reference.
@@ -22,17 +16,17 @@ import zserio.ast.Package;
  * - documentation comment tag see token (@see)
  * - SQLite constraints (@expression)
  */
-public class SymbolReference implements Serializable
+public class SymbolReference
 {
     /**
      * Constructor from owner token and text.
      *
-     * @param ownerToken          AST token which owns the symbol reference test.
+     * @param ownerNode           AST token which owns the symbol reference test.
      * @param symbolReferenceText Symbol reference in unparsed text format.
      */
-    public SymbolReference(BaseTokenAST ownerToken, String symbolReferenceText)
+    public SymbolReference(AstNode ownerNode, String symbolReferenceText)
     {
-        this.ownerToken = ownerToken;
+        this.ownerNode = ownerNode;
 
         final String[] referenceElementList = symbolReferenceText.split("\\" + SYMBOL_REFERENCE_SEPARATOR);
         for (String referenceElement : referenceElementList)
@@ -75,17 +69,15 @@ public class SymbolReference implements Serializable
     }
 
     /**
-     * Checks the correctness of the symbol reference.
+     * Resolves the symbol reference.
      *
+     * @param ownerPackage Zserio package in which the symbol reference is defined.
      * @param ownerType ZserioType which is owner of the symbol reference.
-     *
-     * @throws ParserException Throws if the symbol reference is invalid.
      */
-    public void check(ZserioType ownerType) throws ParserException
+    void resolve(Package ownerPackage, ZserioScopedType ownerType)
     {
         // try if the last link component was a type name
-        final Package ownerPackage = ownerType.getPackage();
-        referencedType = ownerPackage.getVisibleType(ownerToken, referencedPackageNameBuilder.get(),
+        referencedType = ownerPackage.getVisibleType(ownerNode, referencedPackageNameBuilder.get(),
                 referencedTypeName);
         if (referencedType == null)
         {
@@ -99,37 +91,35 @@ public class SymbolReference implements Serializable
             }
             else
             {
-                referencedType = ownerPackage.getVisibleType(ownerToken, referencedPackageNameBuilder.get(),
+                referencedType = ownerPackage.getVisibleType(ownerNode, referencedPackageNameBuilder.get(),
                         referencedTypeName);
-
-                // this was our last attempt to resolve symbol type
-                if (referencedType == null)
-                    throw new ParserException(ownerToken, "Unresolved referenced symbol '" +
-                            referencedSymbolName + "'!");
             }
+
+            // this was our last attempt to resolve symbol type
+            if (referencedType == null)
+                throw new ParserException(ownerNode, "Unresolved referenced symbol '" +
+                        referencedSymbolName + "'!");
 
             resolveSymbol(referencedSymbolName);
         }
     }
 
-    private void resolveSymbol(String referencedSymbolName) throws ParserException
+    private void resolveSymbol(String referencedSymbolName)
     {
         if (!(referencedType instanceof ZserioScopedType))
-            throw new ParserException(ownerToken, "Referenced symbol type '" + referencedType.getName() +
+            throw new ParserException(ownerNode, "Referenced symbol type '" + referencedType.getName() +
                     "' can't refer to '" + referencedSymbolName + "'!");
 
         final Scope referencedScope = ((ZserioScopedType)referencedType).getScope();
         referencedSymbol = referencedScope.getSymbol(referencedSymbolName);
         if (referencedSymbol == null)
-            throw new ParserException(ownerToken, "Unresolved referenced symbol '" + referencedSymbolName +
+            throw new ParserException(ownerNode, "Unresolved referenced symbol '" + referencedSymbolName +
                     "' for type '" + referencedType.getName() + "'!");
     }
 
-    private static final long serialVersionUID = 1L;
-
     private static final String SYMBOL_REFERENCE_SEPARATOR = ".";
 
-    private final BaseTokenAST ownerToken;
+    private final AstNode ownerNode;
     private final PackageName.Builder referencedPackageNameBuilder = new PackageName.Builder();
     private String referencedTypeName = null;
     private String referencedSymbolName = null;

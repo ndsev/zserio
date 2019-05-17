@@ -62,7 +62,7 @@ public class PythonExtension implements Extension
 
         // emit Python code
         for (Emitter pythonEmitter: emitters)
-            rootNode.walk(pythonEmitter);
+            rootNode.emit(pythonEmitter);
     }
 
     private final static String OptionPython = "python";

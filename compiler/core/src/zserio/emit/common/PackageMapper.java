@@ -1,8 +1,8 @@
 package zserio.emit.common;
 
+import zserio.ast.Package;
 import zserio.ast.PackageName;
 import zserio.ast.ZserioType;
-import zserio.ast.Package;
 
 /**
  * The class maps the Zserio package name into language dependent package name.
@@ -10,7 +10,7 @@ import zserio.ast.Package;
  * Note that Zserio package names cannot be used directly because user can defined custom top level package
  * using command line argument.
  */
-final public class PackageMapper
+public final class PackageMapper
 {
     /**
      * Constructor.

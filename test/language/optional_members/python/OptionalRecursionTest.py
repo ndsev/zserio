@@ -9,125 +9,112 @@ class OptionalRecursionTest(unittest.TestCase):
         cls.api = getZserioApi(__file__, "optional_members.zs").optional_recursion
 
     def testEq(self):
-        emptyEmployee1 = self.api.Employee()
-        emptyEmployee2 = self.api.Employee()
-        self.assertTrue(emptyEmployee1 == emptyEmployee2)
+        emptyBlock1 = self._createEmptyBlock()
+        emptyBlock2 = self._createEmptyBlock()
+        self.assertTrue(emptyBlock1 == emptyBlock2)
 
-        teamLead1 = self._createTeamLead()
-        self.assertFalse(teamLead1 == emptyEmployee1)
+        block1 = self._createBlock(self.BLOCK1_DATA)
+        self.assertFalse(block1 == emptyBlock1)
 
-        teamLead2 = self._createTeamLead()
-        self.assertTrue(teamLead1 == teamLead2)
+        block2 = self._createBlock(self.BLOCK1_DATA)
+        self.assertTrue(block2 == block1)
+
+        block12 = self._createBlock12(self.BLOCK1_DATA, self.BLOCK2_DATA)
+        self.assertFalse(block12 == block1)
 
     def testHash(self):
-        emptyEmployee1 = self.api.Employee()
-        emptyEmployee2 = self.api.Employee()
-        self.assertEqual(hash(emptyEmployee1), hash(emptyEmployee2))
+        emptyBlock1 = self._createEmptyBlock()
+        emptyBlock2 = self._createEmptyBlock()
+        self.assertEqual(hash(emptyBlock1), hash(emptyBlock2))
 
-        teamLead1 = self._createTeamLead()
-        self.assertTrue(hash(teamLead1) != hash(emptyEmployee1))
+        block1 = self._createBlock(self.BLOCK1_DATA)
+        self.assertTrue(hash(block1) != hash(emptyBlock1))
 
-        teamLead2 = self._createTeamLead()
-        self.assertEqual(hash(teamLead1), hash(teamLead2))
+        block2 = self._createBlock(self.BLOCK1_DATA)
+        self.assertEqual(hash(block2), hash(block1))
 
-    def testHasTeamMembers(self):
-        employee = self._createEmployee(self.EMPLOYEE_DEVELOPER1_NAME, self.EMPLOYEE_DEVELOPER1_SALARY,
-                                        self.api.Title.DEVELOPER)
-        self.assertFalse(employee.hasTeamMembers())
+        block12 = self._createBlock12(self.BLOCK1_DATA, self.BLOCK2_DATA)
+        self.assertTrue(hash(block12) != hash(block1))
 
-        teamLead = self._createTeamLead()
-        self.assertTrue(teamLead.hasTeamMembers())
+    def testHasNextData(self):
+        block1 = self._createBlock(self.BLOCK1_DATA)
+        self.assertFalse(block1.hasNextData())
+
+        block12 = self._createBlock12(self.BLOCK1_DATA, self.BLOCK2_DATA)
+        self.assertTrue(block12.hasNextData())
 
     def testBitSizeOf(self):
-        employee = self._createEmployee(self.EMPLOYEE_DEVELOPER1_NAME, self.EMPLOYEE_DEVELOPER1_SALARY,
-                                        self.api.Title.DEVELOPER)
-        self.assertEqual(self.DEVELOPER1_BIT_SIZE, employee.bitSizeOf())
+        block1 = self._createBlock(self.BLOCK1_DATA)
+        self.assertEqual(OptionalRecursionTest._getBlockBitSize(self.BLOCK1_DATA), block1.bitSizeOf())
 
-        teamLead = self._createTeamLead()
-        self.assertEqual(self.TEAM_LEAD_BIT_SIZE, teamLead.bitSizeOf())
+        block12 = self._createBlock12(self.BLOCK1_DATA, self.BLOCK2_DATA)
+        self.assertEqual(OptionalRecursionTest._getBlock12BitSize(self.BLOCK1_DATA, self.BLOCK2_DATA),
+                         block12.bitSizeOf())
 
     def testInitializeOffsets(self):
-        employee = self._createEmployee(self.EMPLOYEE_DEVELOPER1_NAME, self.EMPLOYEE_DEVELOPER1_SALARY,
-                                        self.api.Title.DEVELOPER)
+        block1 = self._createBlock(self.BLOCK1_DATA)
         bitPosition = 1
-        self.assertEqual(bitPosition + self.DEVELOPER1_BIT_SIZE, employee.initializeOffsets(bitPosition))
+        self.assertEqual(bitPosition + OptionalRecursionTest._getBlockBitSize(self.BLOCK1_DATA),
+                         block1.initializeOffsets(bitPosition))
 
-        teamLead = self._createTeamLead()
-        self.assertEqual(bitPosition + self.TEAM_LEAD_BIT_SIZE, teamLead.initializeOffsets(bitPosition))
+        block12 = self._createBlock12(self.BLOCK1_DATA, self.BLOCK2_DATA)
+        self.assertEqual(bitPosition +
+                         OptionalRecursionTest._getBlock12BitSize(self.BLOCK1_DATA, self.BLOCK2_DATA),
+                         block12.initializeOffsets(bitPosition))
 
-    def testWriteEmployee(self):
-        employee = self._createEmployee(self.EMPLOYEE_DEVELOPER1_NAME, self.EMPLOYEE_DEVELOPER1_SALARY,
-                                        self.api.Title.DEVELOPER)
-
+    def testWriteBlock1(self):
+        block1 = self._createBlock(self.BLOCK1_DATA)
         writer = zserio.BitStreamWriter()
-        employee.write(writer)
+        block1.write(writer)
         reader = zserio.BitStreamReader(writer.getByteArray())
-        self._checkEmployeeInStream(reader, self.EMPLOYEE_DEVELOPER1_NAME, self.EMPLOYEE_DEVELOPER1_SALARY,
-                                    self.api.Title.DEVELOPER)
+        self._checkBlockInStream(reader, self.BLOCK1_DATA)
 
         reader.setBitPosition(0)
-        readEmployee = self.api.Employee.fromReader(reader)
-        self.assertEqual(self.EMPLOYEE_DEVELOPER1_NAME, readEmployee.getName())
-        self.assertEqual(self.EMPLOYEE_DEVELOPER1_SALARY, readEmployee.getSalary())
-        self.assertEqual(self.api.Title.DEVELOPER, readEmployee.getTitle())
+        readBlock1 = self.api.Block.fromReader(reader, len(self.BLOCK1_DATA))
+        self.assertEqual(block1, readBlock1)
 
-    def testWriteTeamLead(self):
-        teamLead = self._createTeamLead()
+    def testWriteBlock12(self):
+        block12 = self._createBlock12(self.BLOCK1_DATA, self.BLOCK2_DATA)
         writer = zserio.BitStreamWriter()
-        teamLead.write(writer)
+        block12.write(writer)
         reader = zserio.BitStreamReader(writer.getByteArray())
-        self._checkTeamLeadInStream(reader)
+        self._checkBlock12InStream(reader, self.BLOCK1_DATA, self.BLOCK2_DATA)
 
         reader.setBitPosition(0)
-        readTeamLead = self.api.Employee.fromReader(reader)
-        self.assertEqual(self.EMPLOYEE_TEAM_LEAD_NAME, readTeamLead.getName())
-        self.assertEqual(self.EMPLOYEE_TEAM_LEAD_SALARY, readTeamLead.getSalary())
-        self.assertEqual(self.api.Title.TEAM_LEAD, readTeamLead.getTitle())
-        self.assertEqual(self.NUM_DEVELOPERS, len(readTeamLead.getTeamMembers()))
+        readBlock12 = self.api.Block.fromReader(reader, len(self.BLOCK1_DATA))
+        self.assertEqual(block12, readBlock12)
 
-    def _createEmployee(self, name, salary, title):
-        employee = self.api.Employee()
-        employee.setName(name)
-        employee.setSalary(salary)
-        employee.setTitle(title)
+    def _createEmptyBlock(self):
+        return self.api.Block.fromFields(0, None, 0, None)
 
-        return employee
+    def _createBlock(self, blockData):
+        return self.api.Block.fromFields(len(blockData), blockData, 0, None)
 
-    def _createTeamLead(self):
-        teamLead = self._createEmployee(self.EMPLOYEE_TEAM_LEAD_NAME, self.EMPLOYEE_TEAM_LEAD_SALARY,
-                                        self.api.Title.TEAM_LEAD)
+    def _createBlock12(self, block1Data, block2Data):
+        block2 = self._createBlock(block2Data)
 
-        teamMember1 = self._createEmployee(self.EMPLOYEE_DEVELOPER1_NAME, self.EMPLOYEE_DEVELOPER1_SALARY,
-                                           self.api.Title.DEVELOPER)
-        teamMember2 = self._createEmployee(self.EMPLOYEE_DEVELOPER2_NAME, self.EMPLOYEE_DEVELOPER2_SALARY,
-                                           self.api.Title.DEVELOPER)
-        teamLead.setTeamMembers([teamMember1, teamMember2])
+        return self.api.Block.fromFields(len(block1Data), block1Data, len(block2Data), block2)
 
-        return teamLead
+    @staticmethod
+    def _getBlockBitSize(blockData):
+        return 8 * len(blockData) + 8
 
-    def _checkEmployeeInStream(self, reader, name, salary, title):
-        self.assertEqual(name, reader.readString())
-        self.assertEqual(salary, reader.readBits(16))
-        self.assertEqual(title.value, reader.readBits(8))
+    @staticmethod
+    def _getBlock12BitSize(block1Data, block2Data):
+        return (OptionalRecursionTest._getBlockBitSize(block1Data) +
+                OptionalRecursionTest._getBlockBitSize(block2Data))
 
-    def _checkTeamLeadInStream(self, reader):
-        self._checkEmployeeInStream(reader, self.EMPLOYEE_TEAM_LEAD_NAME, self.EMPLOYEE_TEAM_LEAD_SALARY,
-                                    self.api.Title.TEAM_LEAD)
-        self.assertEqual(self.NUM_DEVELOPERS, reader.readVarUInt64())
-        self._checkEmployeeInStream(reader, self.EMPLOYEE_DEVELOPER1_NAME, self.EMPLOYEE_DEVELOPER1_SALARY,
-                                    self.api.Title.DEVELOPER)
-        self._checkEmployeeInStream(reader, self.EMPLOYEE_DEVELOPER2_NAME, self.EMPLOYEE_DEVELOPER2_SALARY,
-                                    self.api.Title.DEVELOPER)
+    def _checkBlockInStream(self, reader, blockData):
+        for element in blockData:
+            self.assertEqual(element, reader.readBits(8))
+        self.assertEqual(0, reader.readBits(8))
 
-    EMPLOYEE_TEAM_LEAD_NAME = "Nico"
-    EMPLOYEE_TEAM_LEAD_SALARY = 2000
+    def _checkBlock12InStream(self, reader, block1Data, block2Data):
+        for element in block1Data:
+            self.assertEqual(element, reader.readBits(8))
+        self.assertEqual(len(block2Data), reader.readBits(8))
 
-    EMPLOYEE_DEVELOPER1_NAME = "Mike"
-    EMPLOYEE_DEVELOPER1_SALARY = 1000
+        self._checkBlockInStream(reader, block2Data)
 
-    EMPLOYEE_DEVELOPER2_NAME = "Luke"
-    EMPLOYEE_DEVELOPER2_SALARY = 1800
-
-    NUM_DEVELOPERS = 2
-    DEVELOPER1_BIT_SIZE = 4 * 8 + 32
-    TEAM_LEAD_BIT_SIZE = 4 * 8 + 32 + 8 + 4 * 8 + 32 + 4 * 8 + 32
+    BLOCK1_DATA = [1, 2, 3, 4, 5, 6]
+    BLOCK2_DATA = [10, 9, 8, 7]

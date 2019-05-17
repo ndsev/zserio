@@ -1,15 +1,39 @@
 package zserio.ast;
 
-import zserio.antlr.ZserioParserTokenTypes;
-import zserio.antlr.util.BaseTokenAST;
-import zserio.antlr.util.ParserException;
-import zserio.ast.ZserioType;
+import org.antlr.v4.runtime.Token;
 
 /**
- * AST node for a parameter defined in compound types.
+ * AST node for a parameter defined in the parameterized compound types.
  */
-public class Parameter extends TokenAST
+public class Parameter extends AstNodeBase
 {
+    /**
+     * Constructor.
+     *
+     * @param token         ANTLR4 token to localize AST node in the sources.
+     * @param parameterType Zserio type of the parameter.
+     * @param name          Name of the parameter.
+     */
+    public Parameter(Token token, ZserioType parameterType, String name)
+    {
+        super(token);
+
+        this.parameterType = parameterType;
+        this.name = name;
+    }
+
+    @Override
+    public void accept(ZserioAstVisitor visitor)
+    {
+        visitor.visitParameter(this);
+    }
+
+    @Override
+    public void visitChildren(ZserioAstVisitor visitor)
+    {
+        parameterType.accept(visitor);
+    }
+
     /**
      * Gets parameter Zserio type.
      *
@@ -30,27 +54,6 @@ public class Parameter extends TokenAST
         return name;
     }
 
-    @Override
-    protected boolean evaluateChild(BaseTokenAST child) throws ParserException
-    {
-        switch (child.getType())
-        {
-        case ZserioParserTokenTypes.ID:
-            name = child.getText();
-            break;
-
-        default:
-            if (parameterType != null || !(child instanceof ZserioType))
-                return false;
-            parameterType = (ZserioType)child;
-            break;
-        }
-
-        return true;
-    }
-
-    private static final long serialVersionUID = 8311434055636275517L;
-
-    private ZserioType parameterType;
-    private String name;
+    private final ZserioType parameterType;
+    private final String name;
 }

@@ -20,15 +20,15 @@ public class ArrayTypesErrorTest
     @Test
     public void arrayLengthNotAvailable()
     {
-        final String error = "array_length_field_not_available_error.zs:7:18: Unresolved symbol 'array2Size' " +
-                "within expression scope!";
+        final String error = "array_length_field_not_available_error.zs:7:18: " +
+                "Unresolved symbol 'array2Size' within expression scope!";
         assertTrue(zserioErrors.isPresent(error));
     }
 
     @Test
     public void implicitArrayNotLast()
     {
-        final String error = "implicit_array_not_last_error.zs:5:14: Implicit array must be defined at the " +
+        final String error = "implicit_array_not_last_error.zs:5:5: Implicit array must be defined at the " +
                 "end of structure!";
         assertTrue(zserioErrors.isPresent(error));
     }

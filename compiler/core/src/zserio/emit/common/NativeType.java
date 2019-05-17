@@ -1,5 +1,8 @@
 package zserio.emit.common;
 
+/**
+ * Interface for native types used by emitters.
+ */
 public interface NativeType
 {
     /**

@@ -1,28 +1,20 @@
 package zserio.emit.common.sql;
 
-import zserio.ast.ArrayType;
+import zserio.ast.BitFieldType;
 import zserio.ast.BooleanType;
 import zserio.ast.ChoiceType;
-import zserio.ast.ConstType;
-import zserio.ast.ZserioType;
-import zserio.ast.ZserioTypeUtil;
-import zserio.ast.ZserioTypeVisitor;
 import zserio.ast.EnumType;
 import zserio.ast.FloatType;
-import zserio.ast.FunctionType;
-import zserio.ast.ServiceType;
-import zserio.ast.StructureType;
-import zserio.ast.SignedBitFieldType;
-import zserio.ast.SqlDatabaseType;
-import zserio.ast.SqlTableType;
 import zserio.ast.StdIntegerType;
 import zserio.ast.StringType;
-import zserio.ast.Subtype;
+import zserio.ast.StructureType;
 import zserio.ast.TypeInstantiation;
 import zserio.ast.TypeReference;
 import zserio.ast.UnionType;
-import zserio.ast.UnsignedBitFieldType;
 import zserio.ast.VarIntegerType;
+import zserio.ast.ZserioAstDefaultVisitor;
+import zserio.ast.ZserioType;
+import zserio.ast.ZserioTypeUtil;
 import zserio.emit.common.ZserioEmitException;
 import zserio.emit.common.sql.types.NativeBlobType;
 import zserio.emit.common.sql.types.NativeIntegerType;
@@ -52,7 +44,7 @@ public class SqlNativeTypeMapper
         type = TypeReference.resolveBaseType(type);
 
         final TypeMapperVisitor visitor = new TypeMapperVisitor();
-        type.callVisitor(visitor);
+        type.accept(visitor);
         final SqlNativeType nativeType = visitor.getSqlType();
 
         if (nativeType == null)
@@ -62,17 +54,16 @@ public class SqlNativeTypeMapper
         return nativeType;
     }
 
-    private static class TypeMapperVisitor implements ZserioTypeVisitor
+    private static class TypeMapperVisitor extends ZserioAstDefaultVisitor
     {
+        /**
+         * Gets the SQL type mapped from Zserio type.
+         *
+         * @return Mapped SQL type.
+         */
         SqlNativeType getSqlType()
         {
             return sqlType;
-        }
-
-        @Override
-        public void visitArrayType(ArrayType type)
-        {
-            // not supported
         }
 
         @Override
@@ -88,12 +79,6 @@ public class SqlNativeTypeMapper
         }
 
         @Override
-        public void visitConstType(ConstType type)
-        {
-            // not supported
-        }
-
-        @Override
         public void visitEnumType(EnumType type)
         {
             sqlType = integerType;
@@ -106,33 +91,9 @@ public class SqlNativeTypeMapper
         }
 
         @Override
-        public void visitFunctionType(FunctionType type)
-        {
-            // not supported
-        }
-
-        @Override
-        public void visitServiceType(ServiceType type)
-        {
-            // not supported
-        }
-
-        @Override
-        public void visitSignedBitFieldType(SignedBitFieldType type)
+        public void visitBitFieldType(BitFieldType type)
         {
             sqlType = integerType;
-        }
-
-        @Override
-        public void visitSqlDatabaseType(SqlDatabaseType type)
-        {
-            // not supported
-        }
-
-        @Override
-        public void visitSqlTableType(SqlTableType type)
-        {
-            // not supported
         }
 
         @Override
@@ -154,33 +115,15 @@ public class SqlNativeTypeMapper
         }
 
         @Override
-        public void visitSubtype(Subtype type)
-        {
-            // not supported
-        }
-
-        @Override
         public void visitTypeInstantiation(TypeInstantiation type)
         {
             sqlType = blobType;
         }
 
         @Override
-        public void visitTypeReference(TypeReference type)
-        {
-            // not supported
-        }
-
-        @Override
         public void visitUnionType(UnionType type)
         {
             sqlType = blobType;
-        }
-
-        @Override
-        public void visitUnsignedBitFieldType(UnsignedBitFieldType type)
-        {
-            sqlType = integerType;
         }
 
         @Override

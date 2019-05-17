@@ -20,7 +20,7 @@ public class BaseTypesErrorTest
     @Test
     public void bitfieldCyclicDefinition()
     {
-        final String error = "bitfield_cyclic_definition_error.zs:4:11: Cyclic dependency detected in " +
+        final String error = "bitfield_cyclic_definition_error.zs:3:11: Cyclic dependency detected in " +
                 "expression evaluation!";
         assertTrue(zserioErrors.isPresent(error));
     }
@@ -44,8 +44,8 @@ public class BaseTypesErrorTest
     @Test
     public void bitfieldLengthFieldNotAvailable()
     {
-        final String error = "bitfield_length_field_not_available_error.zs:8:9: Unresolved symbol " +
-                "'prevBitfieldLength' within expression scope!";
+        final String error = "bitfield_length_field_not_available_error.zs:8:9: " +
+                "Unresolved symbol 'prevBitfieldLength' within expression scope!";
         assertTrue(zserioErrors.isPresent(error));
     }
 
@@ -60,8 +60,8 @@ public class BaseTypesErrorTest
     @Test
     public void bitfieldUnknownLength()
     {
-        final String error = "bitfield_unknown_length_error.zs:5:9: Unresolved symbol 'unknownLength' " +
-                "within expression scope!";
+        final String error = "bitfield_unknown_length_error.zs:5:9: " +
+                "Unresolved symbol 'unknownLength' within expression scope!";
         assertTrue(zserioErrors.isPresent(error));
     }
 
