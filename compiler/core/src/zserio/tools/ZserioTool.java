@@ -2,6 +2,7 @@ package zserio.tools;
 
 import java.io.IOException;
 import java.nio.charset.Charset;
+import java.nio.file.NoSuchFileException;
 
 import org.antlr.v4.runtime.CharStream;
 import org.antlr.v4.runtime.CharStreams;
@@ -71,6 +72,11 @@ public class ZserioTool
         catch (ParserException exception)
         {
             ZserioToolPrinter.printError(exception.getLocation(), exception.getMessage());
+            return false;
+        }
+        catch (NoSuchFileException exception)
+        {
+            ZserioToolPrinter.printError(exception.getMessage() + ": No such file!");
             return false;
         }
         catch (IOException exception)

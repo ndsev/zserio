@@ -55,6 +55,13 @@ public class PackagesErrorTest
     }
 
     @Test
+    public void wrongImportName()
+    {
+        final String error = "wrong_import_name.zs: No such file!";
+        assertTrue(zserioErrors.isPresent(error));
+    }
+
+    @Test
     public void wrongPackageName()
     {
         final String error = "bad_package_name.zs:2:9: Package 'bad_really_bad' does not match to the source " +
