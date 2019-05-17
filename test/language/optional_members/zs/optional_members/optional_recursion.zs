@@ -1,17 +1,9 @@
 package optional_members.optional_recursion;
 
-struct Employee
+struct Block(uint8 byteCount)
 {
-    string      name;
-    uint16      salary;
-    Title       title;
- 
-    // if employee is a team lead, list the team members
-    Employee    teamMembers[] if title == Title.TEAM_LEAD;
-};
+    uint8   dataBytes[byteCount];
+    uint8   blockTerminator;
 
-enum uint8 Title
-{
-    DEVELOPER = 0,
-    TEAM_LEAD = 1
+    Block(blockTerminator) nextData if blockTerminator > 0;
 };
