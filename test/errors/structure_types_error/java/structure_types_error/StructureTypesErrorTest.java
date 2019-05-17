@@ -18,14 +18,6 @@ public class StructureTypesErrorTest
     }
 
     @Test
-    public void circularContainment()
-    {
-        final String error = "circular_containment_error.zs:13:17: " +
-                "Indirect recursion between 'Item' and 'ItemHolder'!";
-        assertTrue(zserioErrors.isPresent(error));
-    }
-
-    @Test
     public void constantUsedAsType()
     {
         final String error =
@@ -50,6 +42,22 @@ public class StructureTypesErrorTest
     }
 
     @Test
+    public void indirectArrayRecursion()
+    {
+        final String error = "indirect_array_recursion_error.zs:13:17: " +
+                "Indirect recursion between 'Item' and 'ItemHolder'!";
+        assertTrue(zserioErrors.isPresent(error));
+    }
+
+    @Test
+    public void indirectRecursion()
+    {
+        final String error = "indirect_recursion_error.zs:13:17: " +
+                "Indirect recursion between 'Item' and 'ItemHolder'!";
+        assertTrue(zserioErrors.isPresent(error));
+    }
+
+    @Test
     public void recursive()
     {
         final String error =
@@ -64,7 +72,6 @@ public class StructureTypesErrorTest
                 "database_field_error.zs:20:5: Invalid usage of SQL database 'TestDatabase' as a type!";
         assertTrue(zserioErrors.isPresent(error));
     }
-
 
     @Test
     public void subtypedTableField()

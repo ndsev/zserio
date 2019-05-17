@@ -1,4 +1,4 @@
-package circular_containment_error;
+package indirect_recursion_error;
 
 struct Item
 {
