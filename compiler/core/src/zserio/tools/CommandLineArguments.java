@@ -172,26 +172,6 @@ class CommandLineArguments implements Serializable
     }
 
     /**
-     * Gets the show AST option.
-     *
-     * @returns True if command line arguments contain show AST option.
-     */
-    public boolean hasShowAstOption()
-    {
-        return showAstOption;
-    }
-
-    /**
-     * Gets the documentation comment file name.
-     *
-     * @returns Documentation comment file name or null if not specified.
-     */
-    public String getDocCommentFileName()
-    {
-        return docCommentFileName;
-    }
-
-    /**
      * Gets the top level package name.
      *
      * @returns Top level package name or null if not specified.
@@ -323,16 +303,6 @@ class CommandLineArguments implements Serializable
         unusedWarningsGroup.setRequired(false);
         options.addOptionGroup(unusedWarningsGroup);
 
-        option = new Option(OptionNameShowAST, false, "show syntax tree of zserio");
-        option.setRequired(false);
-        options.addOption(option);
-
-        option = new Option(OptionNameShowDocAST, true,
-                            "show syntax tree of documentation comment stored in file");
-        option.setArgName("file");
-        option.setRequired(false);
-        options.addOption(option);
-
         option = new Option(OptionNameSetTopLevelPackage, true,
                             "set top level package/namespace to use for generated Java/C++ code");
         option.setArgName("packageName");
@@ -347,8 +317,6 @@ class CommandLineArguments implements Serializable
         srcPathName = getOptionValue(OptionNameSource);
         helpOption = hasOption(OptionNameHelpShort);
         versionOption = hasOption(OptionNameVersionShort);
-        showAstOption = hasOption(OptionNameShowAST);
-        docCommentFileName = getOptionValue(OptionNameShowDocAST);
         topLevelPackageName = getOptionValue(OptionNameSetTopLevelPackage);
 
         withGrpcCodeOption = !hasOption(OptionNameWithoutGrpcCode) && !hasOption(OptionNameWithoutWriterCode);
@@ -418,8 +386,6 @@ class CommandLineArguments implements Serializable
 
     private static final String OptionNameHelpShort = "h";
     private static final String OptionNameSource = "src";
-    private static final String OptionNameShowAST = "showAst";
-    private static final String OptionNameShowDocAST = "showDocAst";
     private static final String OptionNameVersionShort = "v";
     private static final String OptionNameSetTopLevelPackage = "setTopLevelPackage";
     private static final String OptionNameWithGrpcCode = "withGrpcCode";
@@ -443,9 +409,7 @@ class CommandLineArguments implements Serializable
     private CommandLine parsedCommandLine;
 
     private String  inputFileName;
-    private String  docCommentFileName;
     private boolean helpOption;
-    private boolean showAstOption;
     private String  srcPathName;
     private String  topLevelPackageName;
     private boolean versionOption;
