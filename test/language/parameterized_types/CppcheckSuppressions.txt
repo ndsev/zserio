@@ -2,3 +2,4 @@
 uninitMemberVar:*/Block.cpp
 uninitMemberVar:*/Item.cpp
 uninitMemberVar:*/ItemChoice.cpp
+uninitMemberVar:*/SubtypedBitfieldParam.cpp
