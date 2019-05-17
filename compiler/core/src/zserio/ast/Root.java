@@ -39,16 +39,6 @@ public class Root extends AstNodeBase
     }
 
     /**
-     * Gets map of all packages.
-     *
-     * @return The map of all available packages.
-     */
-    public Map<PackageName, Package> getPackageNameMap()
-    {
-        return Collections.unmodifiableMap(packageNameMap);
-    }
-
-    /**
      * Walks through AST tree applying given emitter interface.
      *
      * @param emitter Emitter interface to use for walking.
@@ -66,6 +56,16 @@ public class Root extends AstNodeBase
         {
             throw e.getOriginalException();
         }
+    }
+
+    /**
+     * Gets map of all packages.
+     *
+     * @return The map of all available packages.
+     */
+    Map<PackageName, Package> getPackageNameMap()
+    {
+        return Collections.unmodifiableMap(packageNameMap);
     }
 
     private final LinkedHashMap<PackageName, Package> packageNameMap;

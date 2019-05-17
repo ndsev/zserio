@@ -1,12 +1,10 @@
 package zserio.emit.common;
 
 import java.io.File;
-import java.util.Collection;
 import java.util.Locale;
 
 import zserio.ast.Package;
 import zserio.ast.PackageName;
-import zserio.ast.Root;
 import zserio.ast.ZserioType;
 import zserio.tools.Parameters;
 
@@ -40,14 +38,10 @@ public abstract class CodeDefaultEmitter extends DefaultEmitter
     }
 
     @Override
-    public void beginRoot(Root root) throws ZserioEmitException
+    public void beginPackage(Package pkg) throws ZserioEmitException
     {
-        final Collection<Package> packages = root.getPackageNameMap().values();
-        if (!packages.isEmpty())
-        {
-            final Package rootPackage = packages.iterator().next();
-            packageMapper = new PackageMapper(rootPackage, topLevelPackageNameList);
-        }
+        if (packageMapper == null)
+            packageMapper = new PackageMapper(pkg, topLevelPackageNameList);
     }
 
     protected boolean getWithInspectorCode()
