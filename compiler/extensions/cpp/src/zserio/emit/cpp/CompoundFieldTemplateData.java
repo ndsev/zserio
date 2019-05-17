@@ -69,8 +69,8 @@ public class CompoundFieldTemplateData
         runtimeFunction = CppRuntimeFunctionDataCreator.createData(baseFieldType, cppExpressionFormatter);
         bitSizeValue = createBitSizeValue(baseFieldType, cppExpressionFormatter);
         final boolean isOptionalField = (optional != null);
-        optionalHolder = createOptionalHolder(fieldType, baseFieldType, isOptionalField, cppNativeTypeMapper,
-                includeCollector);
+        optionalHolder = createOptionalHolder(fieldType, baseFieldType, parentType, isOptionalField,
+                cppNativeTypeMapper, includeCollector);
         this.withWriterCode = withWriterCode;
     }
 
@@ -613,8 +613,8 @@ public class CompoundFieldTemplateData
     }
 
     private static OptionalHolder createOptionalHolder(ZserioType fieldType, ZserioType baseFieldType,
-            boolean isOptionalField, CppNativeTypeMapper cppNativeTypeMapper, IncludeCollector includeCollector)
-                    throws ZserioEmitException
+            CompoundType parentType, boolean isOptionalField, CppNativeTypeMapper cppNativeTypeMapper,
+            IncludeCollector includeCollector) throws ZserioEmitException
     {
         ZserioType fieldInstantiatedType = baseFieldType;
         if (baseFieldType instanceof TypeInstantiation)
@@ -624,8 +624,8 @@ public class CompoundFieldTemplateData
         if (!isOptionalField && !isCompoundField)
             return null;
 
-        final boolean useHeapOptionalHolder = (isCompoundField) ?
-                ((CompoundType)fieldInstantiatedType).containsOptionalRecursion() : false;
+        final boolean containsRecursion = (fieldInstantiatedType == parentType);
+        final boolean useHeapOptionalHolder = (isCompoundField) ? containsRecursion : false;
         final NativeOptionalHolderType nativeOptionalHolderType =
                 cppNativeTypeMapper.getCppOptionalHolderType(fieldType, isOptionalField, useHeapOptionalHolder);
         includeCollector.addHeaderIncludesForType(nativeOptionalHolderType);

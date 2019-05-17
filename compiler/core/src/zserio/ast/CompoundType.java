@@ -143,18 +143,6 @@ public abstract class CompoundType extends AstNodeWithDoc implements ZserioScope
     }
 
     /**
-     * Checks if this compound type contains itself as an optional none array field.
-     *
-     * This is called from C++ emitter during mapping of optional fields.
-     *
-     * @return true if this compound type contains optional recursion.
-     */
-    public boolean containsOptionalRecursion()
-    {
-        return containsOptionalRecursion;
-    }
-
-    /**
      * Checks if this compound type needs children initialization method.
      *
      * This is called from C++ emitter to check if the compound type has some descendant with parameters (if
@@ -210,7 +198,7 @@ public abstract class CompoundType extends AstNodeWithDoc implements ZserioScope
      */
     void check()
     {
-        containsOptionalRecursion = checkDirectRecursiveFields();
+        checkDirectRecursion();
         checkIndirectRecursion(this, this);
     }
 
@@ -229,29 +217,26 @@ public abstract class CompoundType extends AstNodeWithDoc implements ZserioScope
         }
     }
 
-    private boolean checkDirectRecursiveFields()
+    private void checkDirectRecursion()
     {
         // check recursive fields which are not arrays
-        boolean containsOptionalRecursion = false;
         for (Field field : fields)
         {
-            ZserioType fieldType = field.getFieldType();
-            if (fieldType instanceof TypeInstantiation)
-                fieldType = ((TypeInstantiation)fieldType).getReferencedType();
-            fieldType = TypeReference.resolveBaseType(fieldType);
-
-            if (fieldType == this)
+            if (!field.getIsOptional())
             {
-                // this field is not array and it is recursive
-                if (field.getIsOptional())
-                    containsOptionalRecursion = true;
-                else
+                ZserioType fieldType = field.getFieldType();
+                if (fieldType instanceof TypeInstantiation)
+                    fieldType = ((TypeInstantiation)fieldType).getReferencedType();
+                fieldType = TypeReference.resolveBaseType(fieldType);
+
+                if (fieldType == this)
+                {
+                    // this field is not array or optional and it is recursive
                     throw new ParserException(field, "Field '" + field.getName() +
                             "' is recursive and neither optional nor array!");
+                }
             }
         }
-
-        return containsOptionalRecursion;
     }
 
     private static void checkIndirectRecursion(CompoundType outer, CompoundType inner)
@@ -279,6 +264,4 @@ public abstract class CompoundType extends AstNodeWithDoc implements ZserioScope
     private final List<Field> fields;
     private final List<Parameter> parameters;
     private final List<FunctionType> functions;
-
-    private boolean containsOptionalRecursion = false;
 }
