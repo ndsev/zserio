@@ -32,7 +32,9 @@ class DocCommentAstBuilder extends DocCommentBaseVisitor<Object>
         if (ctx.docTag() != null)
         {
             currentMultilineNode = null;
-            addDocElement(visitDocTag(ctx.docTag()));
+            final DocElement docElement = visitDocTag(ctx.docTag());
+            if (docElement != null) // deprecated doesn't create doc element!
+                addDocElement(docElement);
         }
         else if (ctx.docLine() != null)
         {
