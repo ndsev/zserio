@@ -142,36 +142,36 @@ public class DocCommentTemplateData
             return docLineElements;
         }
 
+        /**
+         * Helper class to model the documentation line element used for FreeMarker template.
+         */
+        public static class DocLineElementData
+        {
+            DocLineElementData(DocLineElement docLineElement) throws ZserioEmitException
+            {
+                final DocText docText = docLineElement.getDocText();
+                docString = docText != null ?
+                        StringHtmlUtil.escapeCommentsForHtml(docText.getText()) : null;
+
+                final DocTagSee docTagSee = docLineElement.getSeeTag();
+                seeTag = docTagSee != null ? new DocTagSeeData(docTagSee) : null;
+            }
+
+            public String getDocString()
+            {
+                return docString;
+            }
+
+            public DocTagSeeData getSeeTag()
+            {
+                return seeTag;
+            }
+
+            private final String docString;
+            private final DocTagSeeData seeTag;
+        }
+
         private final List<DocLineElementData> docLineElements = new ArrayList<DocLineElementData>();
-    }
-
-    /**
-     * Helper class to model the documentation line element used for FreeMarker template.
-     */
-    public static class DocLineElementData
-    {
-        DocLineElementData(DocLineElement docLineElement) throws ZserioEmitException
-        {
-            final DocText docText = docLineElement.getDocText();
-            docString = docText != null ?
-                    StringHtmlUtil.escapeCommentsForHtml(docText.getText()) : null;
-
-            final DocTagSee docTagSee = docLineElement.getSeeTag();
-            seeTag = docTagSee != null ? new DocTagSeeData(docTagSee) : null;
-        }
-
-        public String getDocString()
-        {
-            return docString;
-        }
-
-        public DocTagSeeData getSeeTag()
-        {
-            return seeTag;
-        }
-
-        private final String docString;
-        private final DocTagSeeData seeTag;
     }
 
     /**

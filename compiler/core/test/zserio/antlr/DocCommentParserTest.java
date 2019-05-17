@@ -124,7 +124,7 @@ public class DocCommentParserTest
                         "(docLineElement (docText test .))))) " +
                 "(whitespace  ) */)");
 
-        // see tag at the beginning
+        // at the beginning
         checkParseTree("docComment", "/**\n * @see \"Structure A\" structA for more info.\n */",
                 "(docComment /** (whitespace \\n * ) (docContent (docElement (docLine " +
                         "(docLineElement (seeTag @see (whitespaceInParagraph  ) " +
@@ -134,6 +134,14 @@ public class DocCommentParserTest
                         "(docLineElement (docText for (whitespaceInLine  ) more (whitespaceInLine  ) info ." +
                         "))))) " +
                 "(whitespace \\n ) */)");
+
+        // in parenthesis
+        checkParseTree("docComment", "/** Hello. (@see HelloStruct). */",
+                "(docComment /** (whitespace  ) (docContent (docElement (docLine " +
+                        "(docLineElement (docText Hello . (whitespaceInLine  ) ()) " +
+                        "(docLineElement (seeTag @see (whitespaceInParagraph  ) (seeTagId HelloStruct))) " +
+                        "(docLineElement (docText ) .))))) " +
+                "(whitespace  ) */)");
     }
 
     @Test

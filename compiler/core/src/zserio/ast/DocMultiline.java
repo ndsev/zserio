@@ -48,7 +48,7 @@ public class DocMultiline extends AstNodeBase
     /**
      * Adds the documentation text line.
      *
-     * @param docTextLine Text line to add.
+     * @param docLine Documentation line to add.
      */
     void addLine(DocLine docLine)
     {

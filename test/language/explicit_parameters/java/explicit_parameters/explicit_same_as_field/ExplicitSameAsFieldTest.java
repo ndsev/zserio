@@ -164,6 +164,7 @@ public class ExplicitSameAsFieldTest
     {
         assertEquals(row1.getId(), row2.getId());
         assertEquals(row1.getName(), row2.getName());
+        assertEquals(row1.getCount(), row2.getCount());
         assertEquals(row1.getBlob(), row2.getBlob());
         assertEquals(row1.getBlobExplicit(), row2.getBlobExplicit());
     }

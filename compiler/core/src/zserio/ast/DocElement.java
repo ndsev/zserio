@@ -1,25 +1,50 @@
 package zserio.ast;
 
+/** Documentation node which wraps documentation element which can be either a text or a tag. */
 public class DocElement extends AstNodeBase
 {
+    /**
+     * Constructor from multiline.
+     *
+     * @param location      ANTLR4 token to localize AST node in the sources.
+     * @param docMultiline  Multiline AST node.
+     */
+    public DocElement(AstLocation location, DocMultiline docMultiline)
+    {
+        this(location, docMultiline, null, null, null);
+    }
+
+    /**
+     * Constructor from see tag.
+     *
+     * @param location  ANTLR4 token to localize AST node in the sources.
+     * @param seeTag    See tag.
+     */
     public DocElement(AstLocation location, DocTagSee seeTag)
     {
         this(location, null, seeTag, null, null);
     }
 
+    /**
+     * Constructor from todo tag.
+     *
+     * @param location  ANTLR4 token to localize AST node in the sources.
+     * @param todoTag   Todo tag.
+     */
     public DocElement(AstLocation location, DocTagTodo todoTag)
     {
         this(location, null, null, todoTag, null);
     }
 
+    /**
+     * Constructor from param tag.
+     *
+     * @param location  ANTLR4 token to localize AST node in the sources.
+     * @param paramTag   Param tag.
+     */
     public DocElement(AstLocation location, DocTagParam paramTag)
     {
         this(location, null, null, null, paramTag);
-    }
-
-    public DocElement(AstLocation location, DocMultiline docMultiline)
-    {
-        this(location, docMultiline, null, null, null);
     }
 
     @Override
@@ -44,21 +69,41 @@ public class DocElement extends AstNodeBase
             paramTag.accept(visitor);
     }
 
+    /**
+     * Gets documentation multiline text if available.
+     *
+     * @return Multiline text or null.
+     */
     public DocMultiline getDocMultiline()
     {
         return docMultiline;
     }
 
+    /**
+     * Gets documentation see tag if available.
+     *
+     * @return See tag or null.
+     */
     public DocTagSee getSeeTag()
     {
         return seeTag;
     }
 
+    /**
+     * Gets documentation todo tag if available.
+     *
+     * @return Todo tag or null.
+     */
     public DocTagTodo getTodoTag()
     {
         return todoTag;
     }
 
+    /**
+     * Gets documentation param tag if available.
+     *
+     * @return Param tag or null.
+     */
     public DocTagParam getParamTag()
     {
         return paramTag;

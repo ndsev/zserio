@@ -1,7 +1,7 @@
 package zserio.ast;
 
 /**
- * Text documentation node.
+ * Documentation text node.
  */
 public class DocText extends AstNodeBase
 {
@@ -25,7 +25,7 @@ public class DocText extends AstNodeBase
     }
 
     /**
-     * Gets text content of the current text element.
+     * Gets text string.
      *
      * @return Text content.
      */

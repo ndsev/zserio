@@ -32,6 +32,11 @@ public class DocParagraph extends AstNodeBase
             docElement.accept(visitor);
     }
 
+    /**
+     * Gets documentation elements.
+     *
+     * @return List of documentation elements.
+     */
     public List<DocElement> getDocElements()
     {
         return Collections.unmodifiableList(docElements);

@@ -1,7 +1,7 @@
 package zserio.ast;
 
 /**
- * Documentation node which wraps documentation text which can be either DocTextElement or DocTagSee.
+ * Documentation node which wraps documentation line element which can be either DocText or DocTagSee.
  */
 public class DocLineElement extends AstNodeBase
 {
@@ -9,7 +9,7 @@ public class DocLineElement extends AstNodeBase
      * Constructor from text element.
      *
      * @param location  AST node location.
-     * @param docText   Documentation string.
+     * @param docText   Documentation text.
      */
     public DocLineElement(AstLocation location, DocText docText)
     {

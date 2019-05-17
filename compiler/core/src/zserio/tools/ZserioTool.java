@@ -180,6 +180,7 @@ public class ZserioTool
         parseTreeChecker.visit(tree);
 
         final Package parsedPackage = (Package)astBuilder.visit(tree, tokenStream);
+
         return parsedPackage;
     }
 

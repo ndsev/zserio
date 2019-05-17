@@ -35,9 +35,9 @@ public class DocLine extends AstNodeBase
     }
 
     /**
-     * Gets documentation texts forming the current documentation line.
+     * Gets documentation line elements forming the current documentation line.
      *
-     * @return List of doc texts.
+     * @return List of line elements.
      */
     public List<DocLineElement> getLineElements()
     {
