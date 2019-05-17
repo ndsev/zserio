@@ -21,8 +21,8 @@ class SubtypedBitfieldParamTest(unittest.TestCase):
 
     def _createSubtypedBitfieldParamHolder(self):
         subtypedBitfieldParam = self.api.SubtypedBitfieldParam.fromFields(
-                self.SUBTYPED_BITFIELD_PARAM, self.SUBTYPED_BITFIELD_PARAM_VALUE,
-                self.SUBTYPED_BITFIELD_PARAM_EXTRA_VALUE)
+            self.SUBTYPED_BITFIELD_PARAM, self.SUBTYPED_BITFIELD_PARAM_VALUE,
+            self.SUBTYPED_BITFIELD_PARAM_EXTRA_VALUE)
 
         return self.api.SubtypedBitfieldParamHolder.fromFields(subtypedBitfieldParam)
 
