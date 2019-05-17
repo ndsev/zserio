@@ -160,6 +160,10 @@ public class ZserioAstDefaultVisitor implements ZserioAstVisitor
     {}
 
     @Override
+    public void visitDocTagDeprecated(DocTagDeprecated docTagDeprecated)
+    {}
+
+    @Override
     public void visitDocLine(DocLine docLine)
     {}
 

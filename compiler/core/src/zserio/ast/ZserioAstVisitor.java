@@ -267,9 +267,16 @@ public interface ZserioAstVisitor
     /**
      * Visits a param tag within a documentation comment.
      *
-     * @param docTagTodo Param tag AST node.
+     * @param docTagParam Param tag AST node.
      */
     void visitDocTagParam(DocTagParam docTagParam);
+
+    /**
+     * Visits a deprecated tag within a documentation comment.
+     *
+     * @param docTagDeprecated Deprecated tag AST node.
+     */
+    void visitDocTagDeprecated(DocTagDeprecated docTagDeprecated);
 
     /**
      * Visits a single line of documentation.

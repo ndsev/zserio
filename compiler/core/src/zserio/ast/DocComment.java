@@ -15,14 +15,12 @@ public class DocComment extends AstNodeBase
      *
      * @param token        ANTLR4 token to localize AST node in the sources.
      * @param paragraphs   Doc comment paragraphs.
-     * @param isDeprecated Flag if the documented node is deprecated.
      */
-    public DocComment(Token token, List<DocParagraph> paragraphs, boolean isDeprecated)
+    public DocComment(Token token, List<DocParagraph> paragraphs)
     {
         super(token);
 
         this.paragraphs = paragraphs;
-        this.isDeprecated = isDeprecated;
     }
 
     @Override
@@ -48,16 +46,5 @@ public class DocComment extends AstNodeBase
         return Collections.unmodifiableList(paragraphs);
     }
 
-    /**
-     * Gets whether the documented node is deprecated.
-     *
-     * @return Deprecation flag.
-     */
-    public boolean isDeprecated()
-    {
-        return isDeprecated;
-    }
-
     private final List<DocParagraph> paragraphs;
-    private final boolean isDeprecated;
 }

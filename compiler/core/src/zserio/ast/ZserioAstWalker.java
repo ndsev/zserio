@@ -237,6 +237,12 @@ public class ZserioAstWalker implements ZserioAstVisitor
     }
 
     @Override
+    public void visitDocTagDeprecated(DocTagDeprecated docTagDeprecated)
+    {
+        docTagDeprecated.visitChildren(this);
+    }
+
+    @Override
     public void visitDocLine(DocLine docLine)
     {
         docLine.visitChildren(this);

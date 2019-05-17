@@ -8,7 +8,7 @@ public class DocTagTodo extends DocMultiline
     /**
      * Constructor.
      *
-     * @param location  AST node location.
+     * @param location  Location of this AST node.
      * @param firstLine First line of todo description.
      */
     public DocTagTodo(AstLocation location, DocLine firstLine)

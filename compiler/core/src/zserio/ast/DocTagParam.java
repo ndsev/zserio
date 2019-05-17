@@ -6,7 +6,7 @@ public class DocTagParam extends DocMultiline
     /**
      * Constructor.
      *
-     * @param location  AST node location.
+     * @param location  Location of this AST node.
      * @param paramName Parameter name.
      * @param firstLine First line of parameter description.
      */

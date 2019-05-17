@@ -1,17 +1,19 @@
 package zserio.ast;
 
-/** Documentation node which wraps documentation element which can be either a text or a tag. */
+/**
+ * Documentation node which wraps documentation element which can be either a text or a tag.
+ */
 public class DocElement extends AstNodeBase
 {
     /**
      * Constructor from multiline.
      *
-     * @param location      ANTLR4 token to localize AST node in the sources.
+     * @param location      Location of this AST node.
      * @param docMultiline  Multiline AST node.
      */
     public DocElement(AstLocation location, DocMultiline docMultiline)
     {
-        this(location, docMultiline, null, null, null);
+        this(location, docMultiline, null, null, null, null);
     }
 
     /**
@@ -22,7 +24,7 @@ public class DocElement extends AstNodeBase
      */
     public DocElement(AstLocation location, DocTagSee seeTag)
     {
-        this(location, null, seeTag, null, null);
+        this(location, null, seeTag, null, null, null);
     }
 
     /**
@@ -33,7 +35,7 @@ public class DocElement extends AstNodeBase
      */
     public DocElement(AstLocation location, DocTagTodo todoTag)
     {
-        this(location, null, null, todoTag, null);
+        this(location, null, null, todoTag, null, null);
     }
 
     /**
@@ -44,7 +46,18 @@ public class DocElement extends AstNodeBase
      */
     public DocElement(AstLocation location, DocTagParam paramTag)
     {
-        this(location, null, null, null, paramTag);
+        this(location, null, null, null, paramTag, null);
+    }
+
+    /**
+     * Constructor from deprecated tag.
+     *
+     * @param location      ANTLR4 token to localize AST node in the sources.
+     * @param deprecatedTag Deprecated tag.
+     */
+    public DocElement(AstLocation location, DocTagDeprecated deprecatedTag)
+    {
+        this(location, null, null, null, null, deprecatedTag);
     }
 
     @Override
@@ -67,6 +80,9 @@ public class DocElement extends AstNodeBase
 
         if (paramTag != null)
             paramTag.accept(visitor);
+
+        if (deprecatedTag != null)
+            deprecatedTag.accept(visitor);
     }
 
     /**
@@ -109,8 +125,18 @@ public class DocElement extends AstNodeBase
         return paramTag;
     }
 
+    /**
+     * Gets documentation deprecated tag if available.
+     *
+     * @return Deprecated tag or null.
+     */
+    public DocTagDeprecated getDeprecatedTag()
+    {
+        return deprecatedTag;
+    }
+
     private DocElement(AstLocation location, DocMultiline docMultiline, DocTagSee seeTag, DocTagTodo todoTag,
-            DocTagParam paramTag)
+            DocTagParam paramTag, DocTagDeprecated deprecatedTag)
     {
         super(location);
 
@@ -118,10 +144,12 @@ public class DocElement extends AstNodeBase
         this.seeTag = seeTag;
         this.todoTag = todoTag;
         this.paramTag = paramTag;
+        this.deprecatedTag = deprecatedTag;
     }
 
     private final DocMultiline docMultiline;
     private final DocTagSee seeTag;
     private final DocTagTodo todoTag;
     private final DocTagParam paramTag;
+    private final DocTagDeprecated deprecatedTag;
 }

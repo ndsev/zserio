@@ -12,7 +12,7 @@ public class DocMultiline extends AstNodeBase
     /**
      * Constructor.
      *
-     * @param location      AST node location.
+     * @param location      Location of this AST node.
      * @param docTextLine   First documentation line.
      */
     public DocMultiline(AstLocation location, DocLine docTextLine)

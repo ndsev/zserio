@@ -8,7 +8,7 @@ public class DocText extends AstNodeBase
     /**
      * Constructor.
      *
-     * @param location  AST node location.
+     * @param location  Location of this AST node.
      * @param text      Text content.
      */
     public DocText(AstLocation location, String text)

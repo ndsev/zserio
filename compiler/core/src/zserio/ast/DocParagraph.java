@@ -12,7 +12,7 @@ public class DocParagraph extends AstNodeBase
     /**
      * Constructor.
      *
-     * @param location  AST node location.
+     * @param location  Location of this AST node.
      */
     public DocParagraph(AstLocation location)
     {

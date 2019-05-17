@@ -3,13 +3,15 @@ package zserio.ast;
 import zserio.antlr.util.ParserException;
 import zserio.tools.ZserioToolPrinter;
 
-/** See tag documentation node. */
+/**
+ * See tag documentation node.
+ */
 public class DocTagSee extends AstNodeBase
 {
     /**
      * Constructor.
      *
-     * @param location  AST node location.
+     * @param location  Location of this AST node.
      * @param linkAlias Link alias. Defaults to link name if null is passed.
      * @param linkName  Link name.
      */

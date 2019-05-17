@@ -8,7 +8,7 @@ public class DocLineElement extends AstNodeBase
     /**
      * Constructor from text element.
      *
-     * @param location  AST node location.
+     * @param location  Location of this AST node.
      * @param docText   Documentation text.
      */
     public DocLineElement(AstLocation location, DocText docText)

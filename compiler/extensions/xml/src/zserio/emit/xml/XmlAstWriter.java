@@ -29,6 +29,7 @@ import zserio.ast.DocElement;
 import zserio.ast.DocLine;
 import zserio.ast.DocLineElement;
 import zserio.ast.DocMultiline;
+import zserio.ast.DocTagDeprecated;
 import zserio.ast.EnumItem;
 import zserio.ast.EnumType;
 import zserio.ast.Expression;
@@ -430,6 +431,12 @@ public class XmlAstWriter implements ZserioAstVisitor
         final Element xmlElement = xmlDoc.createElement("DOC_TAG_PARAM");
         xmlElement.setAttribute("name", docTagParam.getParamName());
         visitAstNode(docTagParam, xmlElement);
+    }
+
+    @Override
+    public void visitDocTagDeprecated(DocTagDeprecated docTagDeprecated)
+    {
+        visitAstNode(docTagDeprecated, "DOC_TAG_DEPRECATED");
     }
 
     @Override

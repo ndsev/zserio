@@ -11,7 +11,7 @@ public class DocLine extends AstNodeBase
     /**
      * Constructor.
      *
-     * @param location      AST node location.
+     * @param location      Location of this AST node.
      * @param lineElements  List of line elements which form the current documentation line.
      */
     public DocLine(AstLocation location, List<DocLineElement> lineElements)

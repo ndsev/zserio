@@ -697,10 +697,10 @@ public class ZserioAstBuilder extends ZserioParserBaseVisitor<Object>
         if (ctx.builtinType() != null)
             return (ZserioType)visitBuiltinType(ctx.builtinType());
 
-        final boolean isParameterized = ctx.typeArgumentList() != null;
-        final TypeReference typeReference = visitQualifiedName(ctx.qualifiedName(), !isParameterized);
+        final boolean hasArguments = ctx.typeArgumentList() != null;
+        final TypeReference typeReference = visitQualifiedName(ctx.qualifiedName(), !hasArguments);
 
-        if (isParameterized)
+        if (hasArguments)
         {
             final List<Expression> arguments = new ArrayList<Expression>();
             for (ZserioParser.TypeArgumentContext typeArgumentCtx : ctx.typeArgumentList().typeArgument())

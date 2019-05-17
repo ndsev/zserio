@@ -32,10 +32,26 @@ public class DocCommentTemplateData
     {
         if (docComment != null)
         {
+            boolean isDeprecated = false;
+
             for (DocParagraph docParagraph : docComment.getParagraphs())
+            {
                 docParagraphs.add(new DocParagraphData(docParagraph));
 
-            isDeprecated = docComment.isDeprecated();
+                if (!isDeprecated)
+                {
+                    for (DocElement element : docParagraph.getDocElements())
+                    {
+                        if (element.getDeprecatedTag() != null)
+                        {
+                            isDeprecated = true;
+                            break;
+                        }
+                    }
+                }
+            }
+
+            this.isDeprecated = isDeprecated;
         }
         else
         {
@@ -90,6 +106,8 @@ public class DocCommentTemplateData
 
                 final DocTagParam paramTag = docElement.getParamTag();
                 this.paramTag = paramTag != null ? new DocTagParamData(paramTag) : null;
+
+                // deprecated tag is ignored here, solved in DocCommentTempateData
             }
 
             public DocMultilineData getMultiline()

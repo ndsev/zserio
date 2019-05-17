@@ -23,7 +23,7 @@ class DocCommentAstBuilder extends DocCommentBaseVisitor<Object>
     {
         visitChildren(ctx);
 
-        return new DocComment(docCommentToken, paragraphs, isDeprecated);
+        return new DocComment(docCommentToken, paragraphs);
     }
 
     @Override
@@ -32,9 +32,7 @@ class DocCommentAstBuilder extends DocCommentBaseVisitor<Object>
         if (ctx.docTag() != null)
         {
             currentMultilineNode = null;
-            final DocElement docElement = visitDocTag(ctx.docTag());
-            if (docElement != null) // deprecated doesn't create doc element!
-                addDocElement(docElement);
+            addDocElement(visitDocTag(ctx.docTag()));
         }
         else if (ctx.docLine() != null)
         {
@@ -69,9 +67,7 @@ class DocCommentAstBuilder extends DocCommentBaseVisitor<Object>
         else if (ctx.paramTag() != null)
             return new DocElement(getLocation(ctx.getStart()), (visitParamTag(ctx.paramTag())));
         else // deprecated tag
-            isDeprecated = true;
-
-        return null;
+            return new DocElement(getLocation(ctx.getStart()), (visitDeprecatedTag(ctx.deprecatedTag())));
     }
 
     @Override
@@ -103,6 +99,12 @@ class DocCommentAstBuilder extends DocCommentBaseVisitor<Object>
                 docLine);
         currentMultilineNode = paramTag;
         return paramTag;
+    }
+
+    @Override
+    public DocTagDeprecated visitDeprecatedTag(DocCommentParser.DeprecatedTagContext ctx)
+    {
+        return new DocTagDeprecated(getLocation(ctx.getStart()));
     }
 
     @Override
@@ -155,7 +157,6 @@ class DocCommentAstBuilder extends DocCommentBaseVisitor<Object>
 
     private final Token docCommentToken;
     private final List<DocParagraph> paragraphs = new ArrayList<DocParagraph>();
-    private boolean isDeprecated = false;
 
     private DocParagraph currentParagraph = null;
     private DocMultiline currentMultilineNode = null;
