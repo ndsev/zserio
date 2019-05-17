@@ -41,7 +41,7 @@ public class ZserioParseTreeChecker extends ZserioParserBaseVisitor<Void>
         checkUtf8Encoding(location);
         checkNonPrintableCharacters(location);
 
-        return super.visitPackageDeclaration(ctx);
+        return visitChildren(ctx);
     }
 
     @Override
@@ -58,7 +58,7 @@ public class ZserioParseTreeChecker extends ZserioParserBaseVisitor<Void>
             throw new ParserException(ctx.qualifiedName().getStart(), "Package '" + packageName.toString() +
                     "' does not match to the source file name!");
 
-        return super.visitPackageNameDefinition(ctx);
+        return visitChildren(ctx);
     }
 
     @Override
@@ -72,7 +72,7 @@ public class ZserioParseTreeChecker extends ZserioParserBaseVisitor<Void>
         // because of index expression check we must know if we are in array
         if (ctx.fieldTypeId().fieldArrayRange() != null)
             isInArrayField = true;
-        super.visitStructureFieldDefinition(ctx);
+        visitChildren(ctx);
         isInArrayField = false;
 
         return null;
@@ -84,7 +84,7 @@ public class ZserioParseTreeChecker extends ZserioParserBaseVisitor<Void>
         // index expression is allowed if we are in array
         if (isInArrayField)
             isIndexAllowed = true;
-        super.visitFieldOffset(ctx);
+        visitChildren(ctx);
         isIndexAllowed = false;
 
         return null;
@@ -106,7 +106,7 @@ public class ZserioParseTreeChecker extends ZserioParserBaseVisitor<Void>
                         "Length expression is not allowed for implicit arrays!");
         }
 
-        return super.visitFieldTypeId(ctx);
+        return visitChildren(ctx);
     }
 
     @Override
@@ -121,14 +121,14 @@ public class ZserioParseTreeChecker extends ZserioParserBaseVisitor<Void>
                     "Virtual table cannot be without rowid!");
         }
 
-        return super.visitSqlTableDeclaration(ctx);
+        return visitChildren(ctx);
     }
 
     @Override
     public Void visitSqlTableFieldDefinition(ZserioParser.SqlTableFieldDefinitionContext ctx)
     {
         isInSqlTableField = true;
-        super.visitSqlTableFieldDefinition(ctx);
+        visitChildren(ctx);
         isInSqlTableField = false;
 
         return null;
@@ -167,7 +167,7 @@ public class ZserioParseTreeChecker extends ZserioParserBaseVisitor<Void>
         // index expression is allowed if we are in array
         if (isInArrayField)
             isIndexAllowed = true;
-        super.visitTypeArgument(ctx);
+        visitChildren(ctx);
         isIndexAllowed = false;
 
         return null;

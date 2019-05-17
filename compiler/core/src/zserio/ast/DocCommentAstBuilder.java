@@ -9,7 +9,7 @@ import zserio.antlr.DocCommentBaseVisitor;
 import zserio.antlr.DocCommentParser;
 
 /**
- * Implementation of DocComment4BaseVisitor which build the documentation comment AST.
+ * Implementation of DocCommentBaseVisitor which build the documentation comment AST.
  */
 class DocCommentAstBuilder extends DocCommentBaseVisitor<Object>
 {

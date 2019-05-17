@@ -12,7 +12,7 @@ import org.apache.commons.cli.ParseException;
 
 import zserio.antlr.ZserioLexer;
 import zserio.antlr.ZserioParser;
-import zserio.antlr.util.ParseCancellingErrorListener;
+import zserio.antlr.util.ParseErrorListener;
 import zserio.antlr.util.ParserException;
 import zserio.ast.Import;
 import zserio.ast.Package;
@@ -164,15 +164,14 @@ public class ZserioTool
         inputFileManager.registerFile(inputFileFullName);
 
         final CharStream inputStream = CharStreams.fromFileName(inputFileFullName, Charset.forName("UTF-8"));
-        final ParseCancellingErrorListener parseCancellingErrorListener =
-                new ParseCancellingErrorListener();
+        final ParseErrorListener parseErrorListener = new ParseErrorListener();
         final ZserioLexer lexer = new ZserioLexer(inputStream);
         lexer.removeErrorListeners();
-        lexer.addErrorListener(parseCancellingErrorListener);
+        lexer.addErrorListener(parseErrorListener);
         final CommonTokenStream tokenStream = new CommonTokenStream(lexer);
         final ZserioParser parser = new ZserioParser(tokenStream);
         parser.removeErrorListeners();
-        parser.addErrorListener(parseCancellingErrorListener);
+        parser.addErrorListener(parseErrorListener);
 
         final ParseTree tree = parser.packageDeclaration();
 

@@ -18,8 +18,8 @@ import zserio.antlr.DocCommentLexer;
 import zserio.antlr.DocCommentParser;
 import zserio.antlr.ZserioLexer;
 import zserio.antlr.ZserioParser;
-import zserio.antlr.util.ParseCancellingErrorListener;
 import zserio.antlr.util.ParserException;
+import zserio.antlr.util.TokenParseErrorListener;
 import zserio.tools.ZserioToolPrinter;
 
 /**
@@ -151,15 +151,14 @@ class DocCommentManager
         try
         {
             final CharStream inputStream = CharStreams.fromString(docCommentToken.getText());
-            final ParseCancellingErrorListener parseCancellingErrorListener =
-                    new ParseCancellingErrorListener(docCommentToken);
+            final TokenParseErrorListener parseErrorListener = new TokenParseErrorListener(docCommentToken);
             final DocCommentLexer lexer = new DocCommentLexer(inputStream);
             lexer.removeErrorListeners();
-            lexer.addErrorListener(parseCancellingErrorListener);
+            lexer.addErrorListener(parseErrorListener);
             final CommonTokenStream tokenStream = new CommonTokenStream(lexer);
             final DocCommentParser parser = new DocCommentParser(tokenStream);
             parser.removeErrorListeners();
-            parser.addErrorListener(parseCancellingErrorListener);
+            parser.addErrorListener(parseErrorListener);
 
             ParseTree tree = null;
             try
