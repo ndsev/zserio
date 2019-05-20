@@ -94,6 +94,7 @@ TEST(SqliteConnectionTest, CtorDefaultInternal)
 {
     sqlite3* internalConnection = NULL;
     int result = sqlite3_open(SQLITE3_MEM_DB, &internalConnection);
+    ASSERT_EQ(SQLITE_OK, result);
 
     SqliteConnection db(internalConnection, SqliteConnection::INTERNAL_CONNECTION);
     ASSERT_EQ(internalConnection, db.getConnection());
@@ -101,9 +102,6 @@ TEST(SqliteConnectionTest, CtorDefaultInternal)
 
     db.reset();
     ASSERT_EQ(NULL, db.getConnection());
-
-    result = sqlite3_close(internalConnection);
-    ASSERT_NE(SQLITE_OK, result); // shall be already closed!
 
     ASSERT_EQ(SQLITE_OK, sqlite3_shutdown());
 }
@@ -132,6 +130,7 @@ TEST(SqliteConnectionTest, ResetInternal)
 {
     sqlite3* internalConnection = NULL;
     int result = sqlite3_open(SQLITE3_MEM_DB, &internalConnection);
+    ASSERT_EQ(SQLITE_OK, result);
 
     SqliteConnection db;
     db.reset(internalConnection, SqliteConnection::INTERNAL_CONNECTION);
@@ -141,9 +140,6 @@ TEST(SqliteConnectionTest, ResetInternal)
     db.reset();
     ASSERT_EQ(NULL, db.getConnection());
 
-    result = sqlite3_close(internalConnection);
-    ASSERT_NE(SQLITE_OK, result); // shall be already closed!
-
     ASSERT_EQ(SQLITE_OK, sqlite3_shutdown());
 }
 
@@ -151,6 +147,7 @@ TEST(SqliteConnectionTest, ResetDefaultInternal)
 {
     sqlite3* internalConnection = NULL;
     int result = sqlite3_open(SQLITE3_MEM_DB, &internalConnection);
+    ASSERT_EQ(SQLITE_OK, result);
 
     SqliteConnection db;
     db.reset(internalConnection);
@@ -159,9 +156,6 @@ TEST(SqliteConnectionTest, ResetDefaultInternal)
 
     db.reset();
     ASSERT_EQ(NULL, db.getConnection());
-
-    result = sqlite3_close(internalConnection);
-    ASSERT_NE(SQLITE_OK, result); // shall be already closed!
 
     ASSERT_EQ(SQLITE_OK, sqlite3_shutdown());
 }
@@ -215,13 +209,7 @@ TEST(SqliteConnectionTest, DoubleResetInternal)
         db.reset(internalConnection2);
         ASSERT_EQ(internalConnection2, db.getConnection());
         ASSERT_EQ(SqliteConnection::INTERNAL_CONNECTION, db.getConnectionType());
-
-        result = sqlite3_close(internalConnection1);
-        ASSERT_NE(SQLITE_OK, result); // shall be already closed!
     } // db dtor
-
-    result = sqlite3_close(internalConnection2);
-    ASSERT_NE(SQLITE_OK, result); // shall be already closed
 
     ASSERT_EQ(SQLITE_OK, sqlite3_shutdown());
 }
