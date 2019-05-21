@@ -40,7 +40,7 @@ protected:
             dataBytes.push_back(static_cast<uint8_t>(block1Data[i]));
         block1.setDataBytes(dataBytes);
 
-        block1.setBlockTerminator(block2DataSize);
+        block1.setBlockTerminator(static_cast<uint8_t>(block2DataSize));
         block1.setNextData(block2);
     }
 
