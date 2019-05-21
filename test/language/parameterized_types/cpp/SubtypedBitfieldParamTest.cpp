@@ -33,10 +33,14 @@ protected:
     }
 
 private:
-    static const ParamType SUBTYPED_BITFIELD_PARAM = 11;
-    static const uint16_t SUBTYPED_BITFIELD_PARAM_VALUE = 0x0BED;
-    static const uint32_t SUBTYPED_BITFIELD_PARAM_EXTRA_VALUE = 0x0BEDDEAD;
+    static const ParamType SUBTYPED_BITFIELD_PARAM;
+    static const uint16_t SUBTYPED_BITFIELD_PARAM_VALUE;
+    static const uint32_t SUBTYPED_BITFIELD_PARAM_EXTRA_VALUE;
 };
+
+const ParamType SubtypedBitfieldParamTest::SUBTYPED_BITFIELD_PARAM = 11;
+const uint16_t SubtypedBitfieldParamTest::SUBTYPED_BITFIELD_PARAM_VALUE = 0x0BED;
+const uint32_t SubtypedBitfieldParamTest::SUBTYPED_BITFIELD_PARAM_EXTRA_VALUE = 0x0BEDDEAD;
 
 TEST_F(SubtypedBitfieldParamTest, write)
 {

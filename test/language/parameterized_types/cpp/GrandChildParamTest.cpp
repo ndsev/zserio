@@ -37,10 +37,14 @@ protected:
     }
 
 private:
-    static const bool     ITEM_CHOICE_HOLDER_HAS_ITEM = true;
-    static const uint16_t ITEM_PARAM = 0xAABB;
-    static const uint32_t ITEM_EXTRA_PARAM = 0x11223344;
+    static const bool     ITEM_CHOICE_HOLDER_HAS_ITEM;
+    static const uint16_t ITEM_PARAM;
+    static const uint32_t ITEM_EXTRA_PARAM;
 };
+
+const bool     GrandChildParamTest::ITEM_CHOICE_HOLDER_HAS_ITEM = true;
+const uint16_t GrandChildParamTest::ITEM_PARAM = 0xAABB;
+const uint32_t GrandChildParamTest::ITEM_EXTRA_PARAM = 0x11223344;
 
 TEST_F(GrandChildParamTest, write)
 {

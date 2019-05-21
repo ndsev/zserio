@@ -28,15 +28,24 @@ protected:
             ASSERT_EQ(item.getExtraParam(), reader.readBits(32));
     }
 
-    static const uint32_t LOWER_VERSION = 9;
-    static const uint32_t HIGHER_VERSION = 10;
+    static const uint32_t LOWER_VERSION;
+    static const uint32_t HIGHER_VERSION;
 
-    static const uint16_t ITEM_PARAM = 0xAA;
-    static const uint32_t ITEM_EXTRA_PARAM = 0xBB;
+    static const uint16_t ITEM_PARAM;
+    static const uint32_t ITEM_EXTRA_PARAM;
 
-    static const size_t ITEM_BIT_SIZE_WITHOUT_OPTIONAL = 16;
-    static const size_t ITEM_BIT_SIZE_WITH_OPTIONAL = 16 + 32;
+    static const size_t ITEM_BIT_SIZE_WITHOUT_OPTIONAL;
+    static const size_t ITEM_BIT_SIZE_WITH_OPTIONAL;
 };
+
+const uint32_t ParameterizedTypesSimpleParamTest::LOWER_VERSION = 9;
+const uint32_t ParameterizedTypesSimpleParamTest::HIGHER_VERSION = 10;
+
+const uint16_t ParameterizedTypesSimpleParamTest::ITEM_PARAM = 0xAA;
+const uint32_t ParameterizedTypesSimpleParamTest::ITEM_EXTRA_PARAM = 0xBB;
+
+const size_t ParameterizedTypesSimpleParamTest::ITEM_BIT_SIZE_WITHOUT_OPTIONAL = 16;
+const size_t ParameterizedTypesSimpleParamTest::ITEM_BIT_SIZE_WITH_OPTIONAL = 16 + 32;
 
 TEST_F(ParameterizedTypesSimpleParamTest, emptyConstructor)
 {

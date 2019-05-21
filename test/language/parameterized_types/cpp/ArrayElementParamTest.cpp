@@ -64,9 +64,13 @@ protected:
     }
 
 private:
-    static const uint16_t NUM_BLOCKS = 3;
-    static const uint32_t FIRST_BYTE_OFFSET = 2 + NUM_BLOCKS * (2 + 4);
+    static const uint16_t NUM_BLOCKS;
+    static const uint32_t FIRST_BYTE_OFFSET;
 };
+
+const uint16_t ParameterizedTypesArrayElementParamTest::NUM_BLOCKS = 3;
+const uint32_t ParameterizedTypesArrayElementParamTest::FIRST_BYTE_OFFSET =
+        2 + ParameterizedTypesArrayElementParamTest::NUM_BLOCKS * (2 + 4);
 
 TEST_F(ParameterizedTypesArrayElementParamTest, write)
 {
