@@ -30,6 +30,20 @@ find_program(CMAKE_CXX_COMPILER "${TOOLCHAIN_NAME}-g++" PATHS "${TOOLCHAIN_ROOT}
 find_program(CMAKE_RC_COMPILER "${TOOLCHAIN_NAME}-windres" PATHS "${TOOLCHAIN_ROOT}/toolchain/bin"
              NO_DEFAULT_PATH ONLY_CMAKE_FIND_ROOT_PATH)
 
+# check that the toolchain is available
+if (CMAKE_C_COMPILER STREQUAL "CMAKE_C_COMPILER-NOTFOUND")
+    message(FATAL_ERROR "Could not find '${TOOLCHAIN_NAME}-gcc' in the specified toolchain: "
+                        "${TOOLCHAIN_ROOT}'!")
+endif ()
+if (CMAKE_CXX_COMPILER STREQUAL "CMAKE_CXX_COMPILER-NOTFOUND")
+    message(FATAL_ERROR "Could not find '${TOOLCHAIN_NAME}-g++' in the specified toolchain: "
+                        "${TOOLCHAIN_ROOT}'!")
+endif ()
+if (CMAKE_RC_COMPILER STREQUAL "CMAKE_RC_COMPILER-NOTFOUND")
+    message(FATAL_ERROR "Could not find '${TOOLCHAIN_NAME}-windres' in the specified toolchain: "
+                        "${TOOLCHAIN_ROOT}'!")
+endif ()
+
 # search for programs in the build host directories
 set(CMAKE_FIND_ROOT_PATH_MODE_PROGRAM NEVER)
 
