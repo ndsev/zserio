@@ -6,9 +6,10 @@
 #define ENUMERATION_TYPES_BITFIELD_ENUM_COLOR_H
 
 #include <string>
+#include <vector>
+
 #include <zserio/BitStreamReader.h>
 #include <zserio/BitStreamWriter.h>
-#include <zserio/HashCodeUtil.h>
 #include <zserio/PreWriteAction.h>
 #include <zserio/Types.h>
 
@@ -17,51 +18,85 @@ namespace enumeration_types
 namespace bitfield_enum
 {
 
-class Color
+enum class Color : uint8_t
 {
-public:
-    enum class EnumType : uint8_t
-    {
-        NONE = UINT8_C(0),
-        RED = UINT8_C(2),
-        BLUE = UINT8_C(3),
-        BLACK = UINT8_C(7)
-    };
-
-    static const EnumType NONE = EnumType::NONE;
-    static const EnumType RED = EnumType::RED;
-    static const EnumType BLUE = EnumType::BLUE;
-    static const EnumType BLACK = EnumType::BLACK;
-
-    Color();
-    Color(EnumType value);
-    explicit Color(uint8_t rawValue);
-    explicit Color(zserio::BitStreamReader& _in);
-
-    operator EnumType() const;
-    uint8_t getValue() const;
-
-    size_t bitSizeOf(size_t _bitPosition = 0) const;
-    size_t initializeOffsets(size_t _bitPosition = 0) const;
-
-    bool operator==(const Color& other) const;
-    bool operator==(EnumType other) const;
-    int hashCode() const;
-
-    void read(zserio::BitStreamReader& _in);
-    void write(zserio::BitStreamWriter& _out,
-            zserio::PreWriteAction _preWriteAction = zserio::ALL_PRE_WRITE_ACTIONS) const;
-
-    const char* toString() const;
-
-    static constexpr std::array<EnumType> getEnumValues();
-    static constexpr std::array<const char*> getEnumStrings();
-
-private:
-    EnumType m_value;
+    NONE = UINT8_C(0),
+    RED = UINT8_C(2),
+    BLUE = UINT8_C(3),
+    BLACK = UINT8_C(7)
 };
 
 } // namespace bitfield_enum
 } // namespace enumeration_types
+
+// This should be implemented in runtime library header.
+namespace zserio
+{
+    // 1. This solution
+    // 2. Generate everywhere like this.
+    // 3. Make template EnumWrapper class in runtime library
+    template<typename T>
+    size_t enumBitSizeOf();
+
+    template<typename T>
+    T enumRead(BitStreamReader& in);
+
+    template<typename T>
+    void enumWrite(T value, zserio::BitStreamWriter& out, zserio::PreWriteAction);
+
+    template<typename T>
+    std::string enumToString(T value);
+
+    template<typename T>
+    T rawValueToEnum(uint8_t value);
+
+    template<typename T>
+    std::vector<T> getEnumValues();
+};
+
+/* Example of EnumWrapper
+template<typename T, bool IS_SIGNED, size_t NUM_BITS>
+class EnumWrapper
+{
+public:
+    EnumWrapper(T value) : m_value(value) {}
+
+    T get() const { return m_value; }
+    void set(T value) { m_value = value; }
+
+    size_t bitSizeOf() { return NUM_BITS; }
+
+    void read(BitStreamReader& in);
+
+    void write(zserio::BitStreamWriter& out, zserio::PreWriteAction);
+
+private:
+    T m_value;
+}*/
+
+// These are full specializations for Color enumeration
+namespace zserio
+{
+    template<>
+    size_t enumBitSizeOf<enumeration_types::bitfield_enum::Color>();
+
+    template<>
+    enumeration_types::bitfield_enum::Color enumRead<enumeration_types::bitfield_enum::Color>(
+            zserio::BitStreamReader& in);
+
+    template<>
+    void enumWrite<enumeration_types::bitfield_enum::Color>(enumeration_types::bitfield_enum::Color value,
+            zserio::BitStreamWriter& out, zserio::PreWriteAction);
+
+    template<>
+    std::string enumToString<enumeration_types::bitfield_enum::Color>(
+            enumeration_types::bitfield_enum::Color value);
+
+    template<>
+    enumeration_types::bitfield_enum::Color rawValueToEnum<enumeration_types::bitfield_enum::Color>(uint8_t value);
+
+    template<>
+    std::vector<enumeration_types::bitfield_enum::Color> getEnumValues<enumeration_types::bitfield_enum::Color>();
+}
 
 #endif // ENUMERATION_TYPES_BITFIELD_ENUM_COLOR_H
