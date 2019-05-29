@@ -32,71 +32,31 @@ enum class Color : uint8_t
 // This should be implemented in runtime library header.
 namespace zserio
 {
-    // 1. This solution
-    // 2. Generate everywhere like this.
-    // 3. Make template EnumWrapper class in runtime library
-    template<typename T>
-    size_t enumBitSizeOf();
 
-    template<typename T>
-    T enumRead(BitStreamReader& in);
-
-    template<typename T>
-    void enumWrite(T value, zserio::BitStreamWriter& out, zserio::PreWriteAction);
-
-    template<typename T>
-    std::string enumToString(T value);
-
-    template<typename T>
-    T rawValueToEnum(uint8_t value);
-
-    template<typename T>
-    std::vector<T> getEnumValues();
-};
-
-/* Example of EnumWrapper
-template<typename T, bool IS_SIGNED, size_t NUM_BITS>
-class EnumWrapper
+template<typename T>
+class EnumUtil
 {
 public:
-    EnumWrapper(T value) : m_value(value) {}
+    static std::string toString(T value);
+    static T toEnum(uint8_t value);
+    static std::vector<T> getValues();
+};
 
-    T get() const { return m_value; }
-    void set(T value) { m_value = value; }
+} // namespace zserio
 
-    size_t bitSizeOf() { return NUM_BITS; }
-
-    void read(BitStreamReader& in);
-
-    void write(zserio::BitStreamWriter& out, zserio::PreWriteAction);
-
-private:
-    T m_value;
-}*/
-
-// These are full specializations for Color enumeration
+// This is full specialization for Color enumeration.
 namespace zserio
 {
-    template<>
-    size_t enumBitSizeOf<enumeration_types::bitfield_enum::Color>();
 
-    template<>
-    enumeration_types::bitfield_enum::Color enumRead<enumeration_types::bitfield_enum::Color>(
-            zserio::BitStreamReader& in);
+template<>
+class EnumUtil<enumeration_types::bitfield_enum::Color>
+{
+public:
+    static std::string toString(enumeration_types::bitfield_enum::Color value);
+    static enumeration_types::bitfield_enum::Color toEnum(uint8_t value);
+    static std::vector<enumeration_types::bitfield_enum::Color> getValues();
+};
 
-    template<>
-    void enumWrite<enumeration_types::bitfield_enum::Color>(enumeration_types::bitfield_enum::Color value,
-            zserio::BitStreamWriter& out, zserio::PreWriteAction);
-
-    template<>
-    std::string enumToString<enumeration_types::bitfield_enum::Color>(
-            enumeration_types::bitfield_enum::Color value);
-
-    template<>
-    enumeration_types::bitfield_enum::Color rawValueToEnum<enumeration_types::bitfield_enum::Color>(uint8_t value);
-
-    template<>
-    std::vector<enumeration_types::bitfield_enum::Color> getEnumValues<enumeration_types::bitfield_enum::Color>();
-}
+} // namespace zserio
 
 #endif // ENUMERATION_TYPES_BITFIELD_ENUM_COLOR_H
