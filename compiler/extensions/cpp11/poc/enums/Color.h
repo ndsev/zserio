@@ -7,11 +7,6 @@
 
 #include <array>
 
-#include <zserio/BitStreamReader.h>
-#include <zserio/BitStreamWriter.h>
-#include <zserio/PreWriteAction.h>
-#include <zserio/Types.h>
-
 namespace enumeration_types
 {
 namespace bitfield_enum
@@ -33,7 +28,7 @@ namespace zserio
 {
 
 template<typename T>
-class EnumUtil
+class EnumTraits
 {
 };
 
@@ -44,11 +39,20 @@ namespace zserio
 {
 
 template<>
-class EnumUtil<enumeration_types::bitfield_enum::Color>
+class EnumTraits<enumeration_types::bitfield_enum::Color>
 {
 public:
     static const char* toString(enumeration_types::bitfield_enum::Color value);
+    static size_t toOrdinal(enumeration_types::bitfield_enum::Color value);
     static enumeration_types::bitfield_enum::Color toEnum(uint8_t rawValue);
+
+    static constexpr std::array<const char*, 4> names =
+    {
+        "NONE",
+        "RED",
+        "BLUE",
+        "BLACK"
+    };
 
     static constexpr std::array<enumeration_types::bitfield_enum::Color, 4> values =
     {

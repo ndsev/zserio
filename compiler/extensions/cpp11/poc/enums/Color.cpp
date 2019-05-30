@@ -11,26 +11,31 @@
 namespace zserio
 {
 
-const char* EnumUtil<enumeration_types::bitfield_enum::Color>::toString(
+const char* EnumTraits<enumeration_types::bitfield_enum::Color>::toString(enumeration_types::bitfield_enum::Color value)
+{
+    return names[toOrdinal(value)];
+}
+
+size_t EnumTraits<enumeration_types::bitfield_enum::Color>::toOrdinal(
         enumeration_types::bitfield_enum::Color value)
 {
     switch (value)
     {
     case enumeration_types::bitfield_enum::Color::NONE:
-        return "NONE";
+        return 0;
     case enumeration_types::bitfield_enum::Color::RED:
-        return "RED";
+        return 1;
     case enumeration_types::bitfield_enum::Color::BLUE:
-        return "BLUE";
+        return 2;
     case enumeration_types::bitfield_enum::Color::BLACK:
-        return "BLACK";
+        return 3;
     default:
         throw zserio::CppRuntimeException("Unknown value for enumeration Color: " +
                 zserio::convertToString(static_cast<uint8_t>(value)) + "!");
     }
 }
 
-enumeration_types::bitfield_enum::Color EnumUtil<enumeration_types::bitfield_enum::Color>::toEnum(uint8_t rawValue)
+enumeration_types::bitfield_enum::Color EnumTraits<enumeration_types::bitfield_enum::Color>::toEnum(uint8_t rawValue)
 {
     switch (rawValue)
     {
@@ -45,6 +50,7 @@ enumeration_types::bitfield_enum::Color EnumUtil<enumeration_types::bitfield_enu
     }
 }
 
-constexpr std::array<enumeration_types::bitfield_enum::Color, 4> EnumUtil<enumeration_types::bitfield_enum::Color>::values;
+constexpr std::array<const char*, 4> EnumTraits<enumeration_types::bitfield_enum::Color>::names;
+constexpr std::array<enumeration_types::bitfield_enum::Color, 4> EnumTraits<enumeration_types::bitfield_enum::Color>::values;
 
 } // namespace zserio
