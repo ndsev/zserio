@@ -5,8 +5,7 @@
 #ifndef ENUMERATION_TYPES_BITFIELD_ENUM_COLOR_H
 #define ENUMERATION_TYPES_BITFIELD_ENUM_COLOR_H
 
-#include <string>
-#include <vector>
+#include <array>
 
 #include <zserio/BitStreamReader.h>
 #include <zserio/BitStreamWriter.h>
@@ -36,10 +35,6 @@ namespace zserio
 template<typename T>
 class EnumUtil
 {
-public:
-    static std::string toString(T value);
-    static T toEnum(uint8_t value);
-    static std::vector<T> getValues();
 };
 
 } // namespace zserio
@@ -52,9 +47,16 @@ template<>
 class EnumUtil<enumeration_types::bitfield_enum::Color>
 {
 public:
-    static std::string toString(enumeration_types::bitfield_enum::Color value);
-    static enumeration_types::bitfield_enum::Color toEnum(uint8_t value);
-    static std::vector<enumeration_types::bitfield_enum::Color> getValues();
+    static const char* toString(enumeration_types::bitfield_enum::Color value);
+    static enumeration_types::bitfield_enum::Color toEnum(uint8_t rawValue);
+
+    static constexpr std::array<enumeration_types::bitfield_enum::Color, 4> values =
+    {
+        enumeration_types::bitfield_enum::Color::NONE,
+        enumeration_types::bitfield_enum::Color::RED,
+        enumeration_types::bitfield_enum::Color::BLUE,
+        enumeration_types::bitfield_enum::Color::BLACK
+    };
 };
 
 } // namespace zserio
