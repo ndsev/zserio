@@ -11,13 +11,8 @@
 namespace zserio
 {
 
-const char* EnumTraits<enumeration_types::bitfield_enum::Color>::toString(enumeration_types::bitfield_enum::Color value)
-{
-    return names[toOrdinal(value)];
-}
-
-size_t EnumTraits<enumeration_types::bitfield_enum::Color>::toOrdinal(
-        enumeration_types::bitfield_enum::Color value)
+template<>
+size_t enumToOrdinal<enumeration_types::bitfield_enum::Color>(enumeration_types::bitfield_enum::Color value)
 {
     switch (value)
     {
@@ -35,7 +30,9 @@ size_t EnumTraits<enumeration_types::bitfield_enum::Color>::toOrdinal(
     }
 }
 
-enumeration_types::bitfield_enum::Color EnumTraits<enumeration_types::bitfield_enum::Color>::toEnum(uint8_t rawValue)
+template<>
+enumeration_types::bitfield_enum::Color valueToEnum(
+        typename std::underlying_type<enumeration_types::bitfield_enum::Color>::type rawValue)
 {
     switch (rawValue)
     {

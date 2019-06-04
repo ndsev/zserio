@@ -5,6 +5,7 @@
 #ifndef ENUMERATION_TYPES_BITFIELD_ENUM_COLOR_H
 #define ENUMERATION_TYPES_BITFIELD_ENUM_COLOR_H
 
+#include <type_traits>
 #include <array>
 
 namespace enumeration_types
@@ -28,9 +29,21 @@ namespace zserio
 {
 
 template<typename T>
-class EnumTraits
+struct EnumTraits
 {
 };
+
+template<typename ENUM_TYPE>
+size_t enumToOrdinal(ENUM_TYPE value);
+
+template<typename ENUM_TYPE>
+ENUM_TYPE valueToEnum(typename std::underlying_type<ENUM_TYPE>::type rawValue);
+
+template<typename ENUM_TYPE>
+const char* enumToString(ENUM_TYPE value)
+{
+    return EnumTraits<ENUM_TYPE>::names[enumToOrdinal(value)];
+}
 
 } // namespace zserio
 
@@ -39,13 +52,15 @@ namespace zserio
 {
 
 template<>
-class EnumTraits<enumeration_types::bitfield_enum::Color>
-{
-public:
-    static const char* toString(enumeration_types::bitfield_enum::Color value);
-    static size_t toOrdinal(enumeration_types::bitfield_enum::Color value);
-    static enumeration_types::bitfield_enum::Color toEnum(uint8_t rawValue);
+size_t enumToOrdinal<enumeration_types::bitfield_enum::Color>(enumeration_types::bitfield_enum::Color value);
 
+template<>
+enumeration_types::bitfield_enum::Color valueToEnum<enumeration_types::bitfield_enum::Color>(
+        typename std::underlying_type<enumeration_types::bitfield_enum::Color>::type rawValue);
+
+template<>
+struct EnumTraits<enumeration_types::bitfield_enum::Color>
+{
     static constexpr std::array<const char*, 4> names =
     {
         "NONE",
