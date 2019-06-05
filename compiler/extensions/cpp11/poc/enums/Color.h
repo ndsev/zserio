@@ -40,6 +40,12 @@ template<typename ENUM_TYPE>
 ENUM_TYPE valueToEnum(typename std::underlying_type<ENUM_TYPE>::type rawValue);
 
 template<typename ENUM_TYPE>
+typename std::underlying_type<ENUM_TYPE>::type enumToValue(ENUM_TYPE value)
+{
+    return static_cast<typename std::underlying_type<ENUM_TYPE>::type>(value);
+}
+
+template<typename ENUM_TYPE>
 const char* enumToString(ENUM_TYPE value)
 {
     return EnumTraits<ENUM_TYPE>::names[enumToOrdinal(value)];
