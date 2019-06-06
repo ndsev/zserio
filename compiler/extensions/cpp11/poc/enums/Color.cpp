@@ -11,8 +11,11 @@
 namespace zserio
 {
 
+namespace enums
+{
+
 template<>
-size_t enumToOrdinal<enumeration_types::bitfield_enum::Color>(enumeration_types::bitfield_enum::Color value)
+size_t toOrdinal<enumeration_types::bitfield_enum::Color>(enumeration_types::bitfield_enum::Color value)
 {
     switch (value)
     {
@@ -31,7 +34,7 @@ size_t enumToOrdinal<enumeration_types::bitfield_enum::Color>(enumeration_types:
 }
 
 template<>
-enumeration_types::bitfield_enum::Color valueToEnum(
+enumeration_types::bitfield_enum::Color fromValue(
         typename std::underlying_type<enumeration_types::bitfield_enum::Color>::type rawValue)
 {
     switch (rawValue)
@@ -47,7 +50,9 @@ enumeration_types::bitfield_enum::Color valueToEnum(
     }
 }
 
-constexpr std::array<const char*, 4> EnumTraits<enumeration_types::bitfield_enum::Color>::names;
-constexpr std::array<enumeration_types::bitfield_enum::Color, 4> EnumTraits<enumeration_types::bitfield_enum::Color>::values;
+constexpr std::array<const char*, 4> Traits<enumeration_types::bitfield_enum::Color>::names;
+constexpr std::array<enumeration_types::bitfield_enum::Color, 4> Traits<enumeration_types::bitfield_enum::Color>::values;
+
+} // namespace enums
 
 } // namespace zserio

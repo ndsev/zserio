@@ -5,11 +5,13 @@
 #ifndef ENUMERATION_TYPES_BITFIELD_ENUM_COLOR_H
 #define ENUMERATION_TYPES_BITFIELD_ENUM_COLOR_H
 
-#include <type_traits>
 #include <array>
+
+#include "Enums.h"
 
 namespace enumeration_types
 {
+
 namespace bitfield_enum
 {
 
@@ -22,50 +24,25 @@ enum class Color : uint8_t
 };
 
 } // namespace bitfield_enum
+
 } // namespace enumeration_types
-
-// This should be implemented in runtime library header.
-namespace zserio
-{
-
-template<typename T>
-struct EnumTraits
-{
-};
-
-template<typename ENUM_TYPE>
-size_t enumToOrdinal(ENUM_TYPE value);
-
-template<typename ENUM_TYPE>
-ENUM_TYPE valueToEnum(typename std::underlying_type<ENUM_TYPE>::type rawValue);
-
-template<typename ENUM_TYPE>
-typename std::underlying_type<ENUM_TYPE>::type enumToValue(ENUM_TYPE value)
-{
-    return static_cast<typename std::underlying_type<ENUM_TYPE>::type>(value);
-}
-
-template<typename ENUM_TYPE>
-const char* enumToString(ENUM_TYPE value)
-{
-    return EnumTraits<ENUM_TYPE>::names[enumToOrdinal(value)];
-}
-
-} // namespace zserio
 
 // This is full specialization for Color enumeration.
 namespace zserio
 {
 
-template<>
-size_t enumToOrdinal<enumeration_types::bitfield_enum::Color>(enumeration_types::bitfield_enum::Color value);
+namespace enums
+{
 
 template<>
-enumeration_types::bitfield_enum::Color valueToEnum<enumeration_types::bitfield_enum::Color>(
+size_t toOrdinal<enumeration_types::bitfield_enum::Color>(enumeration_types::bitfield_enum::Color value);
+
+template<>
+enumeration_types::bitfield_enum::Color fromValue<enumeration_types::bitfield_enum::Color>(
         typename std::underlying_type<enumeration_types::bitfield_enum::Color>::type rawValue);
 
 template<>
-struct EnumTraits<enumeration_types::bitfield_enum::Color>
+struct Traits<enumeration_types::bitfield_enum::Color>
 {
     static constexpr std::array<const char*, 4> names =
     {
@@ -83,6 +60,8 @@ struct EnumTraits<enumeration_types::bitfield_enum::Color>
         enumeration_types::bitfield_enum::Color::BLACK
     };
 };
+
+} // namespace enums
 
 } // namespace zserio
 
