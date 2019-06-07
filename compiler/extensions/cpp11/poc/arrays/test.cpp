@@ -72,22 +72,22 @@ int main()
     std::vector<int8_t> bitArray = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
     std::cout << "sum(bitArray): " << static_cast<int>(sum(bitArray)) << std::endl;
     std::cout << "hashCode(bitArray): " << hashCode(bitArray) << std::endl;
-    std::cout << "bitSizeOf(bitArray): " << bitSizeOf<detail::bit_field_array_traits, 5>(bitArray) << std::endl;
-    std::cout << "initializeOffsets(bitArray): " << initializeOffsets<detail::bit_field_array_traits, 5>(bitArray, 1) << std::endl << std::endl;
+    std::cout << "bitSizeOf(bitArray): " << bitSizeOf<detail::bit_field_array_traits<5, int8_t>>(bitArray) << std::endl;
+    std::cout << "initializeOffsets(bitArray): " << initializeOffsets<detail::bit_field_array_traits<5, int8_t>>(bitArray, 1) << std::endl << std::endl;
 
     // std_integer_array_traits
     std::vector<int8_t> intArray = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
     std::cout << "sum(intArray): " << static_cast<int>(sum(intArray)) << std::endl;
     std::cout << "hashCode(intArray): " << hashCode(intArray) << std::endl;
-    std::cout << "bitSizeOf(intArray): " << bitSizeOf<detail::std_integer_array_traits>(intArray) << std::endl;
-    std::cout << "initializeOffsets(intArray): " << initializeOffsets<detail::std_integer_array_traits>(intArray, 1) << std::endl << std::endl;
+    std::cout << "bitSizeOf(intArray): " << bitSizeOf<detail::std_int_array_traits<int8_t>>(intArray) << std::endl;
+    std::cout << "initializeOffsets(intArray): " << initializeOffsets<detail::std_int_array_traits<int8_t>>(intArray, 1) << std::endl << std::endl;
 
     // object_array_traits
     std::vector<DummyObject> objectArray = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
     std::cout << "sum(objectArray): " << sum(objectArray).getValue() << std::endl;
     std::cout << "hashCode(objectArray): " << hashCode(objectArray) << std::endl;
-    std::cout << "bitSizeOf(objectArray): " << bitSizeOf<detail::object_array_traits>(objectArray) << std::endl;
-    std::cout << "initializeOffsets(objectArray): " << initializeOffsets<detail::object_array_traits>(objectArray, 1) << std::endl << std::endl;
+    std::cout << "bitSizeOf(objectArray): " << bitSizeOf<detail::object_array_traits<DummyObject>>(objectArray) << std::endl;
+    std::cout << "initializeOffsets(objectArray): " << initializeOffsets<detail::object_array_traits<DummyObject>>(objectArray, 1) << std::endl << std::endl;
 
     return 0;
 }
