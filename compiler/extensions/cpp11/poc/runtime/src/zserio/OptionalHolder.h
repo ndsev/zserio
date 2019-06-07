@@ -32,12 +32,12 @@ public:
 
     in_place_storage(in_place_storage&& other)
     {
-        new (&m_inPlace) T(std::move(*other.getObject()));
+        move(std::move(other));
     }
 
     in_place_storage& operator=(in_place_storage&& other)
     {
-        new (&m_inPlace) T(std::move(*other.getObject()));
+        move(std::move(other));
     }
 
     void* getStorage()
@@ -56,6 +56,12 @@ public:
     }
 
 private:
+    void move(in_place_storage&& other)
+    {
+        new (&m_inPlace) T(std::move(*other.getObject()));
+        other.getObject()->~T(); // ensure that destructor of object in original storage is called
+    }
+
     typename std::aligned_storage<sizeof(T), alignof(T)>::type m_inPlace;
 };
 
@@ -76,14 +82,12 @@ public:
 
     heap_storage(heap_storage&& other)
     {
-        m_heap = other.m_heap;
-        other.m_heap = nullptr;
+        move(std::move(other));
     }
 
     heap_storage& operator=(heap_storage&& other)
     {
-        m_heap = other.m_heap;
-        other.m_heap = nullptr;
+        move(std::move(other));
 
         return *this;
     }
@@ -107,6 +111,12 @@ public:
     }
 
 private:
+    void move(heap_storage&& other)
+    {
+        m_heap = other.m_heap;
+        other.m_heap = nullptr;
+    }
+
     unsigned char* m_heap;
 };
 
@@ -120,42 +130,78 @@ public:
     constexpr optional_holder(NullOptType) noexcept
     {}
 
-    optional_holder(const optional_holder<T, STORAGE>& other)
+    template <typename U = T>
+    optional_holder(U&& value)
     {
-        copy(other);
+        new (getStorage()) T(std::forward<U>(value));
+        m_isSet = true;
     }
 
-    optional_holder<T, STORAGE>& operator=(const optional_holder<T, STORAGE>& other)
+    optional_holder(const optional_holder<T, STORAGE>& other)
     {
-        if (this != &other)
-            copy(other);
-
-        return *this;
+        if (other.isSet())
+        {
+            new (getStorage()) T(*other.m_storage.getObject());
+            m_isSet = true;
+        }
     }
 
     optional_holder(optional_holder<T, STORAGE>&& other)
     {
-        move(std::move(other));
-    }
-
-    optional_holder& operator=(optional_holder<T, STORAGE>&& other)
-    {
-        move(std::move(other));
-    }
-
-    optional_holder(const T& value)
-    {
-        set(value);
-    }
-
-    optional_holder(T&& value)
-    {
-        set(std::move(value));
+        if (other.isSet())
+        {
+            m_storage = std::move(other.m_storage);
+            other.m_isSet = false;
+            m_isSet = true;
+        }
     }
 
     ~optional_holder()
     {
         reset();
+    }
+
+    optional_holder<T, STORAGE>& operator=(const optional_holder<T, STORAGE>& other)
+    {
+        if (this != &other)
+        {
+            reset();
+            if (other.isSet())
+            {
+                new (getStorage()) T(*other.m_storage.getObject());
+                m_isSet = true;
+            }
+        }
+
+        return *this;
+    }
+
+    optional_holder& operator=(optional_holder<T, STORAGE>&& other)
+    {
+        if (this != &other)
+        {
+            reset();
+            if (other.isSet())
+            {
+                m_storage = std::move(other.m_storage);
+                other.m_isSet = false;
+                m_isSet = true;
+            }
+        }
+    }
+
+    template <typename U = T>
+    optional_holder& operator=(U&& value)
+    {
+        set(std::forward<U>(value));
+    }
+
+    template <typename U = T>
+    void set(U&& value)
+    {
+        reset();
+        new (getStorage()) T(std::forward<U>(value));
+        m_isSet = true;
     }
 
     bool operator==(const optional_holder<T, STORAGE>& other) const
@@ -171,38 +217,13 @@ public:
         return true;
     }
 
-    void* getResetStorage()
+    void reset()
     {
-        reset();
-        return m_storage.getStorage();
-    }
-
-    void reset(T* value = nullptr) // TODO: split to reset and setimpl something
-    {
-        if (value == nullptr)
+        if (isSet())
         {
-            if (isSet())
-            {
-                m_storage.getObject()->~T();
-                m_isSet = false;
-            }
+            m_storage.getObject()->~T();
+            m_isSet = false;
         }
-        else
-        {
-            if (isSet())
-                throw CppRuntimeException("Invalid usage of OptionalHolder reset method!");
-            m_isSet = true;
-        }
-    }
-
-    void set(const T& value)
-    {
-        reset(new (getResetStorage()) T(value));
-    }
-
-    void set(T&& value)
-    {
-        reset(new (getResetStorage()) T(std::move(value)));
     }
 
     T& get()
@@ -234,23 +255,9 @@ public:
     }
 
 private:
-    void copy(const optional_holder<T, STORAGE>& other)
+    void* getStorage()
     {
-        if (other.isSet())
-            set(*(other.m_storage.getObject()));
-        else
-            reset();
-    }
-
-    void move(optional_holder<T, STORAGE>&& other)
-    {
-        reset();
-        if (other.isSet())
-        {
-            m_storage = std::move(other.m_storage);
-            other.m_isSet = false;
-            m_isSet = true;
-        }
+        return m_storage.getStorage();
     }
 
     void checkIsSet() const
