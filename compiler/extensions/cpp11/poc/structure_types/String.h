@@ -21,8 +21,11 @@ public:
     explicit String(zserio::BitStreamReader& in);
 
     // new in cpp11
-    String(const std::string& str);
-    String(std::string&& _str);
+    template <typename ZSERIO_T_str>
+    String(ZSERIO_T_str&& _str)
+    :   m_str(std::forward<ZSERIO_T_str>(_str))
+    {
+    }
 
     std::string& getStr();
     const std::string& getStr() const;

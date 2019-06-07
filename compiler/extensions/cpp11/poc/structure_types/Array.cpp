@@ -44,14 +44,6 @@ Array& Array::operator=(const Array& other)
     return *this;
 }
 
-Array::Array(uint32_t _size, const std::vector<int32_t>& _values)
-:   m_size(_size), m_values(_values)
-{}
-
-Array::Array(uint32_t _size, std::vector<int32_t>&& _values)
-:   m_size(_size), m_values(std::move(_values))
-{}
-
 void Array::initialize(
         uint32_t _size)
 {

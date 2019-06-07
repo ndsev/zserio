@@ -21,16 +21,6 @@ String::String(zserio::BitStreamReader& in)
     read(in);
 }
 
-String::String(const std::string& _str)
-:   m_str(_str)
-{
-}
-
-String::String(std::string&& _str)
-:   m_str(std::move(_str))
-{
-}
-
 std::string& String::getStr()
 {
     return m_str;

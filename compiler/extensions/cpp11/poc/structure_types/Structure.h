@@ -39,56 +39,24 @@ public:
     Structure();
     explicit Structure(zserio::BitStreamReader& in);
 
-    Structure(const Structure& other);
-    Structure& operator=(const Structure& other);
-
     // new in cpp11
-    Structure(uint32_t _size, const Array& _array, bool _hasExtra,
-            const zserio::OptionalHolder<uint32_t>& _extraSize,
-            const zserio::OptionalHolder<Array>& _extraArray, const String& _str,
-            const zserio::OptionalHolder<Structure>& _recursive);
-    Structure(uint32_t _size, Array&& _array, bool _hasExtra,
-            const zserio::OptionalHolder<uint32_t>& _extraSize,
-            const zserio::OptionalHolder<Array>& _extraArray, const String& _str,
-            const zserio::OptionalHolder<Structure>& _recursive);
-    Structure(uint32_t _size, Array&& _array, bool _hasExtra,
-            const zserio::OptionalHolder<uint32_t>& _extraSize,
-            zserio::OptionalHolder<Array>&& _extraArray, const String& _str,
-            const zserio::OptionalHolder<Structure>& _recursive);
-    Structure(uint32_t _size, Array&& _array, bool _hasExtra,
-            const zserio::OptionalHolder<uint32_t>& _extraSize,
-            zserio::OptionalHolder<Array>&& _extraArray, String&& _str,
-            const zserio::OptionalHolder<Structure>& _recursive);
-    Structure(uint32_t _size, Array&& _array, bool _hasExtra,
-            const zserio::OptionalHolder<uint32_t>& _extraSize,
-            zserio::OptionalHolder<Array>&& _extraArray, String&& _str,
-            zserio::OptionalHolder<Structure>&& _recursive);
-    Structure(uint32_t _size, const Array& _array, bool _hasExtra,
-            const zserio::OptionalHolder<uint32_t>& _extraSize,
-            zserio::OptionalHolder<Array>&& _extraArray, const String& _str,
-            const zserio::OptionalHolder<Structure>& _recursive);
-    Structure(uint32_t _size, const Array& _array, bool _hasExtra,
-            const zserio::OptionalHolder<uint32_t>& _extraSize,
-            zserio::OptionalHolder<Array>&& _extraArray, String&& _str,
-            const zserio::OptionalHolder<Structure>& _recursive);
-    Structure(uint32_t _size, const Array& _array, bool _hasExtra,
-            const zserio::OptionalHolder<uint32_t>& _extraSize,
-            zserio::OptionalHolder<Array>&& _extraArray, String&& _str,
-            zserio::OptionalHolder<Structure>&& _recursive);
-    Structure(uint32_t _size, const Array& _array, bool _hasExtra,
-            const zserio::OptionalHolder<uint32_t>& _extraSize,
-            const zserio::OptionalHolder<Array>& _extraArray, String&& _str,
-            const zserio::OptionalHolder<Structure>& _recursive);
-    Structure(uint32_t _size, const Array& _array, bool _hasExtra,
-            const zserio::OptionalHolder<uint32_t>& _extraSize,
-            const zserio::OptionalHolder<Array>& _extraArray, String&& _str,
-            zserio::OptionalHolder<Structure>&& _recursive);
-    Structure(uint32_t _size, const Array& _array, bool _hasExtra,
-            const zserio::OptionalHolder<uint32_t>& _extraSize,
-            const zserio::OptionalHolder<Array>& _extraArray, const String& _str,
-            zserio::OptionalHolder<Structure>&& _recursive);
+    // not that ZSERIO prefix (case-insensitive) will be disabled by compiler for all user-defined identifiers
+    template <typename ZSERIO_T_array, typename ZSERIO_T_extraArray, typename ZSERIO_T_str,
+                typename ZSERIO_T_recursive>
+    Structure(uint32_t _size, ZSERIO_T_array&& _array, bool _hasExtra,
+            const zserio::OptionalHolder<uint32_t>& _extraSize, ZSERIO_T_extraArray&& _extraArray,
+            ZSERIO_T_str&& _str, ZSERIO_T_recursive&& _recursive)
+    :   m_size(_size), m_array(std::forward<ZSERIO_T_array>(_array)), m_hasExtra(_hasExtra),
+        m_extraSize(_extraSize), m_extraArray(std::forward<ZSERIO_T_extraArray>(_extraArray)),
+        m_str(std::forward<ZSERIO_T_str>(_str)), m_recursive(std::forward<ZSERIO_T_recursive>(_recursive))
+    {
+    }
+
     Structure(Structure&&) = default;
     Structure& operator=(Structure&& other) = default;
+
+    Structure(const Structure& other);
+    Structure& operator=(const Structure& other);
 
     void initializeChildren();
 
