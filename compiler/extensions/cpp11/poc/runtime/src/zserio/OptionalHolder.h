@@ -6,11 +6,17 @@
 
 #include "CppRuntimeException.h"
 #include "HashCodeUtil.h"
-#include "AlignedStorage.h"
 #include "Types.h"
 
 namespace zserio
 {
+
+struct NullOptType
+{
+    explicit constexpr NullOptType(int) {}
+};
+
+constexpr NullOptType NullOpt{int()};
 
 namespace detail
 {
@@ -50,14 +56,14 @@ public:
     }
 
 private:
-    typename AlignedStorage<T>::type m_inPlace;  // TODO: use std::aligned_storage
+    typename std::aligned_storage<sizeof(T), alignof(T)>::type m_inPlace;
 };
 
 template <typename T>
 class heap_storage
 {
 public:
-    heap_storage() : m_heap(NULL) {}
+    heap_storage() : m_heap(nullptr) {}
 
     heap_storage(const heap_storage&) = delete;
     heap_storage& operator=(const heap_storage&) = delete;
@@ -65,26 +71,26 @@ public:
     ~heap_storage()
     {
         delete [] m_heap;
-        m_heap = NULL; // TODO: NULL -> nullptr
+        m_heap = nullptr;
     }
 
     heap_storage(heap_storage&& other)
     {
         m_heap = other.m_heap;
-        other.m_heap = NULL;
+        other.m_heap = nullptr;
     }
 
     heap_storage& operator=(heap_storage&& other)
     {
         m_heap = other.m_heap;
-        other.m_heap = NULL;
+        other.m_heap = nullptr;
 
         return *this;
     }
 
     void* getStorage()
     {
-        if (m_heap == NULL)
+        if (m_heap == nullptr)
             m_heap = new unsigned char [sizeof(T)];
 
         return m_heap;
@@ -108,7 +114,10 @@ template<typename T, typename STORAGE>
 class optional_holder
 {
 public:
-    optional_holder()
+    constexpr optional_holder() noexcept
+    {}
+
+    constexpr optional_holder(NullOptType) noexcept
     {}
 
     optional_holder(const optional_holder<T, STORAGE>& other)
@@ -144,12 +153,6 @@ public:
         set(std::move(value));
     }
 
-    template<typename ...Args, typename std::enable_if<std::is_constructible<T, Args...>::value, int>::type = 0>
-    explicit optional_holder(Args&& ...args)
-    {
-        reset(new (getResetStorage()) T(std::forward<Args>(args)...));
-    }
-
     ~optional_holder()
     {
         reset();
@@ -174,9 +177,9 @@ public:
         return m_storage.getStorage();
     }
 
-    void reset(T* value = NULL) // TODO: split to reset and setimpl something
+    void reset(T* value = nullptr) // TODO: split to reset and setimpl something
     {
-        if (value == NULL)
+        if (value == nullptr)
         {
             if (isSet())
             {
