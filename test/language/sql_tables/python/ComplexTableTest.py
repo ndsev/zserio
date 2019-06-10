@@ -69,6 +69,19 @@ class ComplexTableTest(unittest.TestCase):
         for readRow in readRows:
             self.assertEqual(updateRow, readRow)
 
+    def testNullValues(self):
+        testTable = self._database.getComplexTable()
+
+        writtenRows = self._createComplexTableRowsWithNullValues()
+        testTable.write(writtenRows)
+
+        readRows = testTable.read(self._getParameterProvider())
+        numReadRows = 0
+        for readRow in readRows:
+            self.assertEqual(writtenRows[numReadRows], readRow)
+            numReadRows += 1
+        self.assertTrue(len(writtenRows), numReadRows)
+
     def _getParameterProvider(self):
         class ComplexTableParameterProvider(self.api.complex_table.ComplexTable.IParameterProvider):
             def __init__(self, tableCount):
@@ -92,6 +105,18 @@ class ComplexTableTest(unittest.TestCase):
 
         return (blobId, zserio.limits.INT64_MAX, name, True, 9.9, 5.5, 0x34,
                 self.api.complex_table.TestEnum.RED, blob)
+
+    def _createComplexTableRowsWithNullValues(self):
+        rows = []
+        for blobId in range(self.NUM_COMPLEX_TABLE_ROWS):
+            rows.append(self._createComplexTableRowWithNullValues(blobId))
+
+        return rows
+
+    @staticmethod
+    def _createComplexTableRowWithNullValues(blobId):
+        return (blobId, None, None, None, None, None, None,
+                None, None)
 
     def _isTableInDb(self):
         # check if database does contain table

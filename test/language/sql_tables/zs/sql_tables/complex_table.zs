@@ -22,12 +22,12 @@ sql_table ComplexTable
     // uint64 type is important to test Java which has no 64-bits unsigned integer type
     uint64                      blobId  sql "PRIMARY KEY";
     // int64 type is important to test C++ which has special API for 64-bits types (e.g. sqlite3_column_int64)
-    int64                       age;
-    string                      name;
-    bool                        isValid;
-    float16                     salary;
-    float64                     bonus;
+    int64                       age     sql "NULL";
+    string                      name    sql "NULL";
+    bool                        isValid sql "NULL";
+    float16                     salary  sql "NULL";
+    float64                     bonus   sql "NULL";
     bit:5                       value   sql "NULL";
-    TestEnum                    color;
-    TestBlob(explicit count)    blob;
+    TestEnum                    color   sql "NULL";
+    TestBlob(explicit count)    blob    sql "NULL";
 };

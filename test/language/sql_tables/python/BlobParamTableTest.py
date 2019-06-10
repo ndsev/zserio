@@ -39,6 +39,7 @@ class BlobParamTableTest(unittest.TestCase):
         for readRow in readRows:
             self.assertEqual(writtenRows[numReadRows], readRow)
             numReadRows += 1
+
         self.assertTrue(len(writtenRows), numReadRows)
 
     def testReadWithCondition(self):
@@ -68,6 +69,20 @@ class BlobParamTableTest(unittest.TestCase):
         for readRow in readRows:
             self.assertEqual(updateRow, readRow)
 
+    def testNullValues(self):
+        testTable = self._database.getBlobParamTable()
+
+        writtenRows = self._createBlobParamTableRowsWithNullValues()
+        testTable.write(writtenRows)
+
+        readRows = testTable.read()
+        numReadRows = 0
+        for readRow in readRows:
+            self.assertEqual(writtenRows[numReadRows], readRow)
+            numReadRows += 1
+
+        self.assertTrue(len(writtenRows), numReadRows)
+
     def _createBlobParamTableRows(self):
         rows = []
         for blobId in range(self.NUM_BLOB_PARAM_TABLE_ROWS):
@@ -81,6 +96,17 @@ class BlobParamTableTest(unittest.TestCase):
         blob = self.api.blob_param_table.ParameterizedBlob.fromFields(parameters, array)
 
         return (blobId, name, parameters, blob)
+
+    def _createBlobParamTableRowsWithNullValues(self):
+        rows = []
+        for blobId in range(self.NUM_BLOB_PARAM_TABLE_ROWS):
+            rows.append(self._createBlobParamTableRowWithNullValues(blobId))
+
+        return rows
+
+    @staticmethod
+    def _createBlobParamTableRowWithNullValues(blobId):
+        return (blobId, None, None, None)
 
     def _isTableInDb(self):
         # check if database does contain table

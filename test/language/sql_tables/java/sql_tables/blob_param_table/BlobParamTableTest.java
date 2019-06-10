@@ -117,12 +117,23 @@ public class BlobParamTableTest
         checkBlobParamTableRow(updateRow, readRow);
     }
 
+    @Test
+    public void nullValues() throws SQLException, IOException, ZserioError
+    {
+        final BlobParamTable testTable = database.getBlobParamTable();
+
+        final List<BlobParamTableRow> writtenRows = new ArrayList<BlobParamTableRow>();
+        fillBlobParamTableRowsWithNullValues(writtenRows);
+        testTable.write(writtenRows);
+
+        final List<BlobParamTableRow> readRows = testTable.read();
+        checkBlobParamTableRows(writtenRows, readRows);
+    }
+
     private static void fillBlobParamTableRows(List<BlobParamTableRow> rows)
     {
         for (int blobId = 0; blobId < NUM_BLOB_PARAM_TABLE_ROWS; ++blobId)
-        {
             rows.add(createBlobParamTableRow(blobId, "Name" + blobId));
-        }
     }
 
     private static BlobParamTableRow createBlobParamTableRow(int blobId, String name)
@@ -141,6 +152,23 @@ public class BlobParamTableTest
         return row;
     }
 
+    private static void fillBlobParamTableRowsWithNullValues(List<BlobParamTableRow> rows)
+    {
+        for (int blobId = 0; blobId < NUM_BLOB_PARAM_TABLE_ROWS; ++blobId)
+            rows.add(createBlobParamTableRowWithNullValues(blobId));
+    }
+
+    private static BlobParamTableRow createBlobParamTableRowWithNullValues(int blobId)
+    {
+        final BlobParamTableRow row = new BlobParamTableRow();
+        row.setBlobId(blobId);
+        row.setName(null);
+        row.setParameters(null);
+        row.setBlob(null);
+
+        return row;
+    }
+
     private static void checkBlobParamTableRows(List<BlobParamTableRow> rows1,
             List<BlobParamTableRow> rows2)
     {
@@ -152,9 +180,18 @@ public class BlobParamTableTest
     private static void checkBlobParamTableRow(BlobParamTableRow row1, BlobParamTableRow row2)
     {
         assertEquals(row1.getBlobId(), row2.getBlobId());
-        assertEquals(row1.getName(), row2.getName());
-        assertEquals(row1.getParameters(), row2.getParameters());
-        assertEquals(row1.getBlob(), row2.getBlob());
+        if (row1.isNullName())
+            assertTrue(row2.isNullName());
+        else
+            assertEquals(row1.getName(), row2.getName());
+        if (row1.isNullParameters())
+            assertTrue(row2.isNullParameters());
+        else
+            assertEquals(row1.getParameters(), row2.getParameters());
+        if (row1.isNullBlob())
+            assertTrue(row2.isNullParameters());
+        else
+            assertEquals(row1.getBlob(), row2.getBlob());
     }
 
     private boolean isTableInDb() throws SQLException

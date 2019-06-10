@@ -89,21 +89,22 @@ class ${name}():
     </#if>
             def _readRow(<#if needsParameterProvider>self, </#if>row):
     <#list fields as field>
+                ${field.name}_ = row[${field?index}]
         <#if field.sqlTypeData.isBlob>
-                reader = zserio.BitStreamReader(row[${field?index}])
-                ${field.name}_ = ${field.pythonTypeName}.fromReader(reader<#rt>
+                if ${field.name}_ is not None:
+                    reader = zserio.BitStreamReader(${field.name}_)
+                    ${field.name}_ = ${field.pythonTypeName}.fromReader(reader<#rt>
             <#list field.parameters as parameter>
                 <#if parameter.isExplicit>
-                , self._parameterProvider.<@parameter_provider_method_name parameter/>(row)<#t>
+                    , self._parameterProvider.<@parameter_provider_method_name parameter/>(row)<#t>
                 <#else>
-                , ${parameter.expression}<#t>
+                    , ${parameter.expression}<#t>
                 </#if>
             </#list>
                 <#lt>)
         <#elseif field.enumData??>
-                ${field.name}_ = ${field.enumData.pythonTypeName}(row[${field?index}])
-        <#else>
-                ${field.name}_ = row[${field?index}]
+                if ${field.name}_ is not None:
+                    ${field.name}_ = ${field.enumData.pythonTypeName}(${field.name}_)
         </#if>
     </#list>
 
@@ -198,13 +199,15 @@ class ${name}():
         <#list fields as field>
             <#if field.sqlTypeData.isBlob>
         ${field.name}_ = rowInList[${field?index}]
-        writer = zserio.BitStreamWriter()
-        ${field.name}_.write(writer)
-        rowInList[${field?index}] = writer.getByteArray()
+        if ${field.name}_ is not None:
+            writer = zserio.BitStreamWriter()
+            ${field.name}_.write(writer)
+            rowInList[${field?index}] = writer.getByteArray()
 
             <#elseif field.enumData??>
         ${field.name}_ = rowInList[${field?index}]
-        rowInList[${field?index}] = ${field.name}_.value
+        if ${field.name}_ is not None:
+            rowInList[${field?index}] = ${field.name}_.value
 
             </#if>
         </#list>

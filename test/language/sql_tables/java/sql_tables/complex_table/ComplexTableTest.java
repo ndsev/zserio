@@ -120,6 +120,20 @@ public class ComplexTableTest
         checkComplexTableRow(updateRow, readRow);
     }
 
+    @Test
+    public void nullValues() throws SQLException, IOException, ZserioError
+    {
+        final ComplexTable testTable = database.getComplexTable();
+
+        final List<ComplexTableRow> writtenRows = new ArrayList<ComplexTableRow>();
+        fillComplexTableRowsWithNullValues(writtenRows);
+        testTable.write(writtenRows);
+
+        final ComplexTableParameterProvider parameterProvider = new ComplexTableParameterProvider();
+        final List<ComplexTableRow> readRows = testTable.read(parameterProvider);
+        checkComplexTableRowsWithNullValues(writtenRows, readRows);
+    }
+
     private static class ComplexTableParameterProvider implements ComplexTable.ParameterProvider
     {
         @Override
@@ -132,9 +146,7 @@ public class ComplexTableTest
     private static void fillComplexTableRows(List<ComplexTableRow> rows)
     {
         for (int blobId = 0; blobId < NUM_COMPLEX_TABLE_ROWS; ++blobId)
-        {
             rows.add(createComplexTableRow(blobId, "Name" + blobId));
-        }
     }
 
     private static ComplexTableRow createComplexTableRow(int blobId, String name)
@@ -159,6 +171,29 @@ public class ComplexTableTest
         return row;
     }
 
+    private static void fillComplexTableRowsWithNullValues(List<ComplexTableRow> rows)
+    {
+        for (int blobId = 0; blobId < NUM_COMPLEX_TABLE_ROWS; ++blobId)
+            rows.add(createComplexTableRowWithNullValues(blobId));
+    }
+
+    private static ComplexTableRow createComplexTableRowWithNullValues(int blobId)
+    {
+        final ComplexTableRow row = new ComplexTableRow();
+
+        row.setBlobId(BigInteger.valueOf(blobId));
+        row.setNullAge();
+        row.setName(null);
+        row.setNullIsValid();
+        row.setNullSalary();
+        row.setNullBonus();
+        row.setNullValue();
+        row.setColor(null);
+        row.setBlob(null);
+
+        return row;
+    }
+
     private static void checkComplexTableRows(List<ComplexTableRow> rows1, List<ComplexTableRow> rows2)
     {
         assertEquals(rows1.size(), rows2.size());
@@ -177,6 +212,28 @@ public class ComplexTableTest
         assertEquals(row1.getValue(), row2.getValue());
         assertEquals(row1.getColor(), row2.getColor());
         assertEquals(row1.getBlob(), row2.getBlob());
+    }
+
+    private static void checkComplexTableRowsWithNullValues(List<ComplexTableRow> rows1,
+            List<ComplexTableRow> rows2)
+    {
+        assertEquals(rows1.size(), rows2.size());
+        for (int i = 0; i < rows1.size(); ++i)
+            checkComplexTableRowWithNullValues(rows1.get(i), rows2.get(i));
+    }
+
+    private static void checkComplexTableRowWithNullValues(ComplexTableRow row1, ComplexTableRow row2)
+    {
+        assertEquals(row1.getBlobId(), row2.getBlobId());
+
+        assertTrue(row2.isNullAge());
+        assertTrue(row2.isNullName());
+        assertTrue(row2.isNullIsValid());
+        assertTrue(row2.isNullSalary());
+        assertTrue(row2.isNullBonus());
+        assertTrue(row2.isNullValue());
+        assertTrue(row2.isNullColor());
+        assertTrue(row2.isNullBlob());
     }
 
     private boolean isTableInDb() throws SQLException

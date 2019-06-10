@@ -31,6 +31,22 @@ public:
     }
 
 protected:
+    static void fillBlobParamTableRowWithNullValues(BlobParamTableRow& row, uint32_t blobId)
+    {
+        row.setBlobId(blobId);
+        row.setNullName();
+        row.setNullParameters();
+        row.setNullBlob();
+    }
+
+    static void fillBlobParamTableRowsWithNullValues(std::vector<BlobParamTableRow>& rows)
+    {
+        rows.clear();
+        rows.resize(NUM_BLOB_PARAM_TABLE_ROWS);
+        for (uint32_t blobId = 0; blobId < NUM_BLOB_PARAM_TABLE_ROWS; ++blobId)
+            fillBlobParamTableRowWithNullValues(rows[blobId], blobId);
+    }
+
     static void fillBlobParamTableRow(BlobParamTableRow& row, uint32_t blobId, const std::string& name)
     {
         row.setBlobId(blobId);
@@ -53,18 +69,27 @@ protected:
         rows.clear();
         rows.resize(NUM_BLOB_PARAM_TABLE_ROWS);
         for (uint32_t blobId = 0; blobId < NUM_BLOB_PARAM_TABLE_ROWS; ++blobId)
-        {
-            const std::string name = "Name" + zserio::convertToString(blobId);
-            fillBlobParamTableRow(rows[blobId], blobId, name);
-        }
+            fillBlobParamTableRow(rows[blobId], blobId, "Name" + zserio::convertToString(blobId));
     }
 
     static void checkBlobParamTableRow(const BlobParamTableRow& row1, const BlobParamTableRow& row2)
     {
         ASSERT_EQ(row1.getBlobId(), row2.getBlobId());
-        ASSERT_EQ(row1.getName(), row2.getName());
-        ASSERT_EQ(row1.getParameters(), row2.getParameters());
-        ASSERT_EQ(row1.getBlob(), row2.getBlob());
+
+        if (row1.isNullName())
+            ASSERT_TRUE(row2.isNullName());
+        else
+            ASSERT_EQ(row1.getName(), row2.getName());
+
+        if (row1.isNullParameters())
+            ASSERT_TRUE(row2.isNullParameters());
+        else
+            ASSERT_EQ(row1.getParameters(), row2.getParameters());
+
+        if (row1.isNullBlob())
+            ASSERT_TRUE(row2.isNullBlob());
+        else
+            ASSERT_EQ(row1.getBlob(), row2.getBlob());
     }
 
     static void checkBlobParamTableRows(const std::vector<BlobParamTableRow>& rows1,
@@ -183,6 +208,22 @@ TEST_F(BlobParamTableTest, update)
     ASSERT_EQ(1, readRows.size());
 
     checkBlobParamTableRow(updateRow, readRows[0]);
+}
+
+TEST_F(BlobParamTableTest, nullValues)
+{
+    BlobParamTable& testTable = m_database->getBlobParamTable();
+
+    std::vector<BlobParamTableRow> writtenRows;
+    fillBlobParamTableRowsWithNullValues(writtenRows);
+    testTable.write(writtenRows);
+
+    std::vector<BlobParamTableRow> readRows;
+    // we must use reserve to prevent dangling pointer to parameters in parameterizedBlob
+    // once std::vector is reallocated!
+    readRows.reserve(NUM_BLOB_PARAM_TABLE_ROWS);
+    testTable.read(readRows);
+    checkBlobParamTableRows(writtenRows, readRows);
 }
 
 } // namespace blob_param_table
