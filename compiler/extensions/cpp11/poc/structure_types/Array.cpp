@@ -9,6 +9,8 @@
 #include <zserio/BitSizeOfCalculator.h>
 #include <zserio/BitFieldUtil.h>
 
+#include "../arrays/Arrays.h" // will be in zserio/Arrays.h
+
 #include "Array.h"
 
 Array::Array() :
@@ -84,7 +86,8 @@ size_t Array::bitSizeOf(size_t bitPosition) const
 {
     size_t endBitPosition = bitPosition;
 
-    //endBitPosition += m_values.bitSizeOf(endBitPosition, UINT8_C(32));
+    endBitPosition += zserio::arrays::bitSizeOf<zserio::arrays::detail::std_int_array_traits<int32_t> >(
+            m_values, endBitPosition);
 
     return endBitPosition - bitPosition;
 }
@@ -93,7 +96,8 @@ size_t Array::initializeOffsets(size_t bitPosition)
 {
     size_t endBitPosition = bitPosition;
 
-    //endBitPosition = m_values.initializeOffsets(endBitPosition, UINT8_C(32));
+    endBitPosition = zserio::arrays::initializeOffsets<zserio::arrays::detail::std_int_array_traits<int32_t> >(
+            m_values, endBitPosition);
 
     return endBitPosition;
 }
@@ -115,24 +119,25 @@ int Array::hashCode() const
     int result = zserio::HASH_SEED;
 
     result = zserio::calcHashCode(result, getSize());
-    //result = zserio::calcHashCode(result, m_values);
+    result = zserio::calcHashCode(result, zserio::arrays::hashCode(m_values));
 
     return result;
 }
 
 void Array::read(zserio::BitStreamReader& in)
 {
-    //m_values.read(in, static_cast<size_t>(getSize()), UINT8_C(32));
+    zserio::arrays::read<zserio::arrays::detail::std_int_array_traits<int32_t> >(
+            m_values, in, static_cast<size_t>(getSize()), nullptr);
 }
 
 void Array::write(zserio::BitStreamWriter& out, zserio::PreWriteAction)
 {
-    /*if (m_values.size() != static_cast<size_t>(getSize()))
+    if (m_values.size() != static_cast<size_t>(getSize()))
     {
         throw zserio::CppRuntimeException("Write: Wrong array length for field Array.values: " +
                 zserio::convertToString(m_values.size()) + " != " +
                 zserio::convertToString(static_cast<size_t>(getSize())) + "!");
     }
-    m_values.write(out, UINT8_C(32));*/
+    zserio::arrays::write<zserio::arrays::detail::std_int_array_traits<int32_t> >(m_values, out);
 }
 

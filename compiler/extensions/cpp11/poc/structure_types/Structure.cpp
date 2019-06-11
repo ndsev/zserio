@@ -264,40 +264,45 @@ int Structure::hashCode() const
 
 void Structure::read(zserio::BitStreamReader& in)
 {
-    /*m_size = (uint32_t)in.readBits(UINT8_C(32));
-    m_array.reset(new (m_array.getResetStorage())
-            Array(in, getSize()));
+    m_size = (uint32_t)in.readBits(UINT8_C(32));
+    m_array.initialize(getSize());
+    m_array.read(in);
     m_hasExtra = (bool)in.readBool();
-    if (getHasExtra())
+    if (getHasExtra()) // TODO: hasExtraSize?
     {
-        m_extraSize.reset(new (m_extraSize.getResetStorage())
-                uint32_t(in.readBits(UINT8_C(32))));
+        m_extraSize = in.readBits(UINT8_C(32));
     }
-    if (getHasExtra())
+    if (getHasExtra()) // TODO: hasExtraArray?
     {
-        m_extraArray.reset(new (m_extraArray.getResetStorage())
-                Array(in, getExtraSize()));
+        m_extraArray = Array(in, getExtraSize().get()); // TODO: do we need emplace?
     }
-    m_str.reset(new (m_str.getResetStorage())
-            String(in));*/
+    m_str.read(in);
+    if (getHasExtra()) // TODO: hasRecursive?
+    {
+        m_recursive = Structure(in);
+    }
 }
 
-void Structure::write(zserio::BitStreamWriter& _out, zserio::PreWriteAction _preWriteAction)
+void Structure::write(zserio::BitStreamWriter& out, zserio::PreWriteAction preWriteAction)
 {
-    /*if ((_preWriteAction & zserio::PRE_WRITEINITIALIZE_CHILDREN) != 0)
+    if ((preWriteAction & zserio::PRE_WRITE_INITIALIZE_CHILDREN) != 0)
         initializeChildren();
 
-    _out.writeBits(m_size, UINT8_C(32));
-    m_array.get().write(_out, zserio::NO_PRE_WRITE_ACTION);
-    _out.writeBool(m_hasExtra);
-    if (getHasExtra())
+    out.writeBits(m_size, UINT8_C(32));
+    m_array.write(out, zserio::NO_PRE_WRITE_ACTION);
+    out.writeBool(m_hasExtra);
+    if (getHasExtra()) // TODO: hasExtraSize?
     {
-        _out.writeBits(m_extraSize.get(), UINT8_C(32));
+        out.writeBits(m_extraSize.get(), UINT8_C(32));
     }
-    if (getHasExtra())
+    if (getHasExtra()) // TODO: hasExtraArray?
     {
-        m_extraArray.get().write(_out, zserio::NO_PRE_WRITE_ACTION);
+        m_extraArray.get().write(out, zserio::NO_PRE_WRITE_ACTION);
     }
-    m_str.get().write(_out, zserio::NO_PRE_WRITE_ACTION);*/
+    m_str.write(out, zserio::NO_PRE_WRITE_ACTION);
+    if (getHasExtra()) // TODO: hasRecursive?
+    {
+        m_recursive.get().write(out, zserio::NO_PRE_WRITE_ACTION);
+    }
 }
 

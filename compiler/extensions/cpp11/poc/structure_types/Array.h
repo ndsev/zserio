@@ -24,13 +24,13 @@ public:
     // new in cpp11
     template <typename ZSERIO_T_values>
     Array(uint32_t _size, ZSERIO_T_values&& _values)
-    :   m_size(_size), m_values(std::forward<ZSERIO_T_values>(_values))
+    :   m_isInitialized(true), m_size(_size), m_values(std::forward<ZSERIO_T_values>(_values))
     {
     }
 
     // new in cpp11
     Array(uint32_t _size, std::initializer_list<int32_t> _values)
-    :   m_size(_size), m_values(_values)
+    :   m_isInitialized(true), m_size(_size), m_values(_values)
     {
     }
 

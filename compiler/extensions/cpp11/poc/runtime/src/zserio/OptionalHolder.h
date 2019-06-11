@@ -2,7 +2,6 @@
 #define ZSERIO_OPTIONAL_HOLDER_H_INC
 
 #include <cstddef>
-#include <iostream>
 
 #include "CppRuntimeException.h"
 #include "HashCodeUtil.h"

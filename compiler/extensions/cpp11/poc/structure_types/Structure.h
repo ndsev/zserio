@@ -46,8 +46,9 @@ public:
     Structure(uint32_t _size, ZSERIO_T_array&& _array, bool _hasExtra,
             const zserio::OptionalHolder<uint32_t>& _extraSize, ZSERIO_T_extraArray&& _extraArray,
             ZSERIO_T_str&& _str, ZSERIO_T_recursive&& _recursive)
-    :   m_size(_size), m_array(std::forward<ZSERIO_T_array>(_array)), m_hasExtra(_hasExtra),
-        m_extraSize(_extraSize), m_extraArray(std::forward<ZSERIO_T_extraArray>(_extraArray)),
+    :   m_areChildrenInitialized(true), m_size(_size), m_array(std::forward<ZSERIO_T_array>(_array)),
+        m_hasExtra(_hasExtra), m_extraSize(_extraSize),
+        m_extraArray(std::forward<ZSERIO_T_extraArray>(_extraArray)),
         m_str(std::forward<ZSERIO_T_str>(_str)), m_recursive(std::forward<ZSERIO_T_recursive>(_recursive))
     {
     }
@@ -111,7 +112,6 @@ private:
     zserio::OptionalHolder<uint32_t> m_extraSize;
     zserio::OptionalHolder<Array> m_extraArray;
     String m_str;
-
     zserio::OptionalHolder<Structure> m_recursive;
 };
 
