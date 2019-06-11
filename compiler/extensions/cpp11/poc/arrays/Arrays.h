@@ -36,7 +36,7 @@ template <typename T>
 T sum(const std::vector<T>& array)
 {
     T summation = T();
-    for (auto element : array)
+    for (const T& element : array)
         summation += element;
 
     return summation;
@@ -46,7 +46,7 @@ template <typename T>
 int hashCode(const std::vector<T>& array)
 {
     int result = HASH_SEED;
-    for (auto element : array)
+    for (const T& element : array)
         result = calcHashCode(result, element);
 
     return result;
@@ -59,7 +59,7 @@ size_t bitSizeOf(const std::vector<typename ARRAY_TRAITS::type>& array, size_t b
         return ARRAY_TRAITS::BIT_SIZE * array.size();
 
     size_t endBitPosition = bitPosition;
-    for (auto element : array)
+    for (const typename ARRAY_TRAITS::type& element : array)
         endBitPosition += ARRAY_TRAITS::bitSizeOf(endBitPosition, element);
 
     return endBitPosition - bitPosition;
@@ -74,7 +74,7 @@ size_t bitSizeOf(const std::vector<typename ARRAY_TRAITS::type>& array, Aligned,
                 ARRAY_TRAITS::BIT_SIZE;
 
     size_t endBitPosition = bitPosition;
-    for (auto element : array)
+    for (const typename ARRAY_TRAITS::type& element : array)
     {
         endBitPosition = zserio::alignTo(NUM_BITS_PER_BYTE, endBitPosition);
         endBitPosition += ARRAY_TRAITS::bitSizeOf(endBitPosition, element);
@@ -107,7 +107,7 @@ size_t initializeOffsets(std::vector<typename ARRAY_TRAITS::type>& array, size_t
         return bitPosition + ARRAY_TRAITS::BIT_SIZE * array.size();
 
     size_t endBitPosition = bitPosition;
-    for (auto element : array)
+    for (typename ARRAY_TRAITS::type& element : array)
         endBitPosition = ARRAY_TRAITS::initializeOffsets(endBitPosition, element);
 
     return endBitPosition;
@@ -119,7 +119,7 @@ size_t initializeOffsets(std::vector<typename ARRAY_TRAITS::type>& array, OFFSET
 {
     size_t endBitPosition = bitPosition;
     size_t index = 0;
-    for (auto element : array)
+    for (typename ARRAY_TRAITS::type& element : array)
     {
         endBitPosition = zserio::alignTo(NUM_BITS_PER_BYTE, endBitPosition);
         offsetInitializer.setOffset(index, zserio::bitsToBytes(endBitPosition));
@@ -210,7 +210,7 @@ void read(std::vector<typename ARRAY_TRAITS::type>& array, BitStreamReader& in, 
 template <typename ARRAY_TRAITS>
 void write(const std::vector<typename ARRAY_TRAITS::type>& array, BitStreamWriter& out)
 {
-    for (auto element : array)
+    for (const typename ARRAY_TRAITS::type& element : array)
         ARRAY_TRAITS::write(out, element);
 }
 
@@ -219,7 +219,7 @@ void write(const std::vector<typename ARRAY_TRAITS::type>& array, BitStreamWrite
         OFFSET_CHECKER offsetChecker)
 {
     size_t index = 0;
-    for (auto element : array)
+    for (const typename ARRAY_TRAITS::type& element : array)
     {
         out.alignTo(NUM_BITS_PER_BYTE);
         offsetChecker.check(index, zserio::bitsToBytes(out.getBitPosition()));
