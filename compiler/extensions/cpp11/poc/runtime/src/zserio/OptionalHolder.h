@@ -133,25 +133,25 @@ public:
     optional_holder(U&& value)
     {
         new (getStorage()) T(std::forward<U>(value));
-        m_isSet = true;
+        m_hasValue = true;
     }
 
     optional_holder(const optional_holder<T, STORAGE>& other)
     {
-        if (other.isSet())
+        if (other.hasValue())
         {
             new (getStorage()) T(*other.m_storage.getObject());
-            m_isSet = true;
+            m_hasValue = true;
         }
     }
 
     optional_holder(optional_holder<T, STORAGE>&& other)
     {
-        if (other.isSet())
+        if (other.hasValue())
         {
             m_storage = std::move(other.m_storage);
-            other.m_isSet = false;
-            m_isSet = true;
+            other.m_hasValue = false;
+            m_hasValue = true;
         }
     }
 
@@ -165,10 +165,10 @@ public:
         if (this != &other)
         {
             reset();
-            if (other.isSet())
+            if (other.hasValue())
             {
                 new (getStorage()) T(*other.m_storage.getObject());
-                m_isSet = true;
+                m_hasValue = true;
             }
         }
 
@@ -180,11 +180,11 @@ public:
         if (this != &other)
         {
             reset();
-            if (other.isSet())
+            if (other.hasValue())
             {
                 m_storage = std::move(other.m_storage);
-                other.m_isSet = false;
-                m_isSet = true;
+                other.m_hasValue = false;
+                m_hasValue = true;
             }
         }
     }
@@ -195,78 +195,102 @@ public:
         set(std::forward<U>(value));
     }
 
-    template <typename U = T>
-    void set(U&& value)
-    {
-        reset();
-        new (getStorage()) T(std::forward<U>(value));
-        m_isSet = true;
-    }
-
     bool operator==(const optional_holder<T, STORAGE>& other) const
     {
         if (this != &other)
         {
-            if (isSet() && other.isSet())
+            if (hasValue() && other.hasValue())
                 return *(m_storage.getObject()) == *(other.m_storage.getObject());
 
-            return (!isSet() && !other.isSet());
+            return (!hasValue() && !other.hasValue());
         }
 
         return true;
     }
 
-    void reset()
+    explicit operator bool() const noexcept
     {
-        if (isSet())
+        return hasValue();
+    }
+
+    const T& operator*() const
+    {
+        return *get();
+    }
+
+    T& operator*()
+    {
+        return *get();
+    }
+
+    const T* operator->() const
+    {
+        return get();
+    }
+
+    T* operator->()
+    {
+        return get();
+    }
+
+    void reset() noexcept
+    {
+        if (hasValue())
         {
             m_storage.getObject()->~T();
-            m_isSet = false;
+            m_hasValue = false;
         }
     }
 
-    T& get()
+    T& value()
     {
-        checkIsSet();
-        return *(m_storage.getObject());
+        return *get();
     }
 
-    const T& get() const
+    const T& value() const
     {
-        checkIsSet();
-        return *(m_storage.getObject());
+        return *get();
     }
 
-    bool isSet() const
+    bool hasValue() const noexcept
     {
-        return m_isSet;
-    }
-
-    int hashCode() const
-    {
-        int result = HASH_SEED;
-        if (isSet())
-            result = calcHashCode(result, *(m_storage.getObject()));
-        else
-            result = calcHashCode(result, 0);
-
-        return result;
+        return m_hasValue;
     }
 
 private:
+    template <typename U = T>
+    void set(U&& value)
+    {
+        reset();
+        new (getStorage()) T(std::forward<U>(value));
+        m_hasValue = true;
+    }
+
+    T* get()
+    {
+        checkHasValue();
+        return m_storage.getObject();
+    }
+
+    const T* get() const
+    {
+        checkHasValue();
+        return m_storage.getObject();
+    }
+
     void* getStorage()
     {
         return m_storage.getStorage();
     }
 
-    void checkIsSet() const
+    void checkHasValue() const
     {
-        if (!isSet())
+        if (!hasValue())
             throw CppRuntimeException("Trying to access value of non-present optional field!");
     }
 
     STORAGE m_storage;
-    bool    m_isSet = false;
+    bool    m_hasValue = false;
 };
 
 template <typename T>

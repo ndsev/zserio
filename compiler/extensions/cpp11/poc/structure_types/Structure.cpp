@@ -11,8 +11,8 @@
 
 #include "Structure.h"
 
-Structure::Structure() :
-        m_areChildrenInitialized(false)
+Structure::Structure()  noexcept
+:   m_areChildrenInitialized(false)
 {}
 
 Structure::Structure(zserio::BitStreamReader& in) :
@@ -55,12 +55,12 @@ void Structure::initializeChildren()
 {
     m_array.initialize(getSize());
     if (getHasExtra())
-        m_extraArray.get().initialize(getExtraSize().get());
+        m_extraArray->initialize(*getExtraSize());
 
     m_areChildrenInitialized = true;
 }
 
-uint32_t Structure::getSize() const
+uint32_t Structure::getSize() const noexcept
 {
     return m_size;
 }
@@ -70,12 +70,12 @@ void Structure::setSize(uint32_t _size)
     m_size = _size;
 }
 
-Array& Structure::getArray()
+Array& Structure::getArray() noexcept
 {
     return m_array;
 }
 
-const Array& Structure::getArray() const
+const Array& Structure::getArray() const noexcept
 {
     return m_array;
 }
@@ -90,7 +90,7 @@ void Structure::setArray(Array&& _array)
     m_array = std::move(_array);
 }
 
-bool Structure::getHasExtra() const
+bool Structure::getHasExtra() const noexcept
 {
     return m_hasExtra;
 }
@@ -100,12 +100,12 @@ void Structure::setHasExtra(bool _hasExtra)
     m_hasExtra = _hasExtra;
 }
 
-zserio::OptionalHolder<uint32_t>& Structure::getExtraSize()
+zserio::OptionalHolder<uint32_t>& Structure::getExtraSize() noexcept
 {
     return m_extraSize;
 }
 
-const zserio::OptionalHolder<uint32_t>& Structure::getExtraSize() const
+const zserio::OptionalHolder<uint32_t>& Structure::getExtraSize() const noexcept
 {
     return m_extraSize;
 }
@@ -120,12 +120,12 @@ bool Structure::hasExtraSize() const
     return (getHasExtra());
 }
 
-zserio::OptionalHolder<Array>& Structure::getExtraArray()
+zserio::OptionalHolder<Array>& Structure::getExtraArray() noexcept
 {
     return m_extraArray;
 }
 
-const zserio::OptionalHolder<Array>& Structure::getExtraArray() const
+const zserio::OptionalHolder<Array>& Structure::getExtraArray() const noexcept
 {
     return m_extraArray;
 }
@@ -145,12 +145,12 @@ bool Structure::hasExtraArray() const
     return (getHasExtra());
 }
 
-String& Structure::getStr()
+String& Structure::getStr() noexcept
 {
     return m_str;
 }
 
-const String& Structure::getStr() const
+const String& Structure::getStr() const noexcept
 {
     return m_str;
 }
@@ -165,12 +165,12 @@ void Structure::setStr(String&& _str)
     m_str = std::move(_str);
 }
 
-zserio::OptionalHolder<Structure>& Structure::getRecursive()
+zserio::OptionalHolder<Structure>& Structure::getRecursive() noexcept
 {
     return m_recursive;
 }
 
-const zserio::OptionalHolder<Structure>& Structure::getRecursive() const
+const zserio::OptionalHolder<Structure>& Structure::getRecursive() const noexcept
 {
     return m_recursive;
 }
@@ -203,7 +203,7 @@ size_t Structure::bitSizeOf(size_t _bitPosition) const
     }
     if (getHasExtra())
     {
-        _endBitPosition += m_extraArray.get().bitSizeOf(_endBitPosition);
+        _endBitPosition += m_extraArray->bitSizeOf(_endBitPosition);
     }
     _endBitPosition += m_str.bitSizeOf(_endBitPosition);
 
@@ -223,7 +223,7 @@ size_t Structure::initializeOffsets(size_t _bitPosition)
     }
     if (getHasExtra())
     {
-        _endBitPosition = m_extraArray.get().initializeOffsets(_endBitPosition);
+        _endBitPosition = m_extraArray->initializeOffsets(_endBitPosition);
     }
     _endBitPosition = m_str.initializeOffsets(_endBitPosition);
 
@@ -254,9 +254,9 @@ int Structure::hashCode() const
     _result = zserio::calcHashCode(_result, m_array);
     _result = zserio::calcHashCode(_result, m_hasExtra);
     if (getHasExtra())
-        _result = zserio::calcHashCode(_result, m_extraSize);
+        _result = zserio::calcHashCode(_result, *m_extraSize);
     if (getHasExtra())
-        _result = zserio::calcHashCode(_result, m_extraArray);
+        _result = zserio::calcHashCode(_result, *m_extraArray);
     _result = zserio::calcHashCode(_result, m_str);
 
     return _result;
@@ -274,7 +274,7 @@ void Structure::read(zserio::BitStreamReader& in)
     }
     if (getHasExtra()) // TODO: hasExtraArray?
     {
-        m_extraArray = Array(in, getExtraSize().get()); // TODO: do we need emplace?
+        m_extraArray = Array(in, *getExtraSize()); // TODO: do we need emplace?
     }
     m_str.read(in);
     if (getHasExtra()) // TODO: hasRecursive?
@@ -293,16 +293,16 @@ void Structure::write(zserio::BitStreamWriter& out, zserio::PreWriteAction preWr
     out.writeBool(m_hasExtra);
     if (getHasExtra()) // TODO: hasExtraSize?
     {
-        out.writeBits(m_extraSize.get(), UINT8_C(32));
+        out.writeBits(*m_extraSize, UINT8_C(32));
     }
     if (getHasExtra()) // TODO: hasExtraArray?
     {
-        m_extraArray.get().write(out, zserio::NO_PRE_WRITE_ACTION);
+        m_extraArray->write(out, zserio::NO_PRE_WRITE_ACTION);
     }
     m_str.write(out, zserio::NO_PRE_WRITE_ACTION);
     if (getHasExtra()) // TODO: hasRecursive?
     {
-        m_recursive.get().write(out, zserio::NO_PRE_WRITE_ACTION);
+        m_recursive->write(out, zserio::NO_PRE_WRITE_ACTION);
     }
 }
 

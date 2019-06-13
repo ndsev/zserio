@@ -22,7 +22,7 @@ public:
 
     // new in cpp11
     template <typename ZSERIO_T_str>
-    String(ZSERIO_T_str&& _str)
+    explicit String(ZSERIO_T_str&& _str)
     :   m_str(std::forward<ZSERIO_T_str>(_str))
     {
     }

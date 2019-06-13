@@ -17,20 +17,20 @@
 class Array
 {
 public:
-    Array();
+    Array() noexcept;
     Array(zserio::BitStreamReader& in,
             uint32_t _size);
 
     // new in cpp11
     template <typename ZSERIO_T_values>
-    Array(uint32_t _size, ZSERIO_T_values&& _values)
-    :   m_isInitialized(true), m_size(_size), m_values(std::forward<ZSERIO_T_values>(_values))
+    explicit Array(uint32_t _size, ZSERIO_T_values&& _values)
+    :   m_isInitialized(true), m_size_(_size), m_values_(std::forward<ZSERIO_T_values>(_values))
     {
     }
 
     // new in cpp11
-    Array(uint32_t _size, std::initializer_list<int32_t> _values)
-    :   m_isInitialized(true), m_size(_size), m_values(_values)
+    explicit Array(uint32_t _size, std::initializer_list<int32_t> _values)
+    :   m_isInitialized(true), m_size_(_size), m_values_(_values)
     {
     }
 
@@ -44,12 +44,13 @@ public:
     void initialize(
             uint32_t size);
 
-    uint32_t getSize() const;
+    uint32_t getSize() const noexcept;
 
-    std::vector<int32_t>& getValues();
-    const std::vector<int32_t>& getValues() const;
+    std::vector<int32_t>& getValues() noexcept;
+    const std::vector<int32_t>& getValues() const noexcept;
     void setValues(const std::vector<int32_t>& _values);
     void setValues(std::vector<int32_t>&& _values);
+    void setValues(std::initializer_list<int32_t> _values); // do we need also this?
 
     size_t bitSizeOf(size_t bitPosition = 0) const;
     size_t initializeOffsets(size_t bitPosition);
@@ -62,9 +63,9 @@ public:
             zserio::PreWriteAction preWriteAction = zserio::ALL_PRE_WRITE_ACTIONS);
 
 private:
-    uint32_t m_size;
+    uint32_t m_size_;
     bool m_isInitialized;
-    std::vector<int32_t> m_values;
+    std::vector<int32_t> m_values_;
 };
 
 #endif // ARRAY_H

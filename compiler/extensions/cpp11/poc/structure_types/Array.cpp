@@ -13,33 +13,33 @@
 
 #include "Array.h"
 
-Array::Array() :
-        m_isInitialized(false)
+Array::Array() noexcept
+:   m_isInitialized(false)
 {
 }
 
 Array::Array(zserio::BitStreamReader& in,
         uint32_t _size) :
-        m_size(_size),
+        m_size_(_size),
         m_isInitialized(true)
 {
     read(in);
 }
 
 Array::Array(const Array& other) :
-        m_values(other.m_values)
+        m_values_(other.m_values_)
 {
     if (other.m_isInitialized)
-        initialize(other.m_size);
+        initialize(other.m_size_);
     else
         m_isInitialized = false;
 }
 
 Array& Array::operator=(const Array& other)
 {
-    m_values = other.m_values;
+    m_values_ = other.m_values_;
     if (other.m_isInitialized)
-        initialize(other.m_size);
+        initialize(other.m_size_);
     else
         m_isInitialized = false;
 
@@ -49,37 +49,42 @@ Array& Array::operator=(const Array& other)
 void Array::initialize(
         uint32_t _size)
 {
-    m_size = _size;
+    m_size_ = _size;
     m_isInitialized = true;
 }
 
-uint32_t Array::getSize() const
+uint32_t Array::getSize() const noexcept
 {
     if (!m_isInitialized)
         throw zserio::CppRuntimeException("Parameter size of compound Array "
                 "is not initialized!");
 
-    return m_size;
+    return m_size_;
 }
 
-std::vector<int32_t>& Array::getValues()
+std::vector<int32_t>& Array::getValues() noexcept
 {
-    return m_values;
+    return m_values_;
 }
 
-const std::vector<int32_t>& Array::getValues() const
+const std::vector<int32_t>& Array::getValues() const noexcept
 {
-    return m_values;
+    return m_values_;
 }
 
 void Array::setValues(const std::vector<int32_t>& _values)
 {
-    m_values = _values;
+    m_values_ = _values;
 }
 
 void Array::setValues(std::vector<int32_t>&& _values)
 {
-    m_values = std::move(_values);
+    m_values_ = std::move(_values);
+}
+
+void Array::setValues(std::initializer_list<int32_t> _values)
+{
+    m_values_ = _values;
 }
 
 size_t Array::bitSizeOf(size_t bitPosition) const
@@ -87,7 +92,7 @@ size_t Array::bitSizeOf(size_t bitPosition) const
     size_t endBitPosition = bitPosition;
 
     endBitPosition += zserio::arrays::bitSizeOf<zserio::arrays::detail::std_int_array_traits<int32_t> >(
-            m_values, endBitPosition);
+            m_values_, endBitPosition);
 
     return endBitPosition - bitPosition;
 }
@@ -97,7 +102,7 @@ size_t Array::initializeOffsets(size_t bitPosition)
     size_t endBitPosition = bitPosition;
 
     endBitPosition = zserio::arrays::initializeOffsets<zserio::arrays::detail::std_int_array_traits<int32_t> >(
-            m_values, endBitPosition);
+            m_values_, endBitPosition);
 
     return endBitPosition;
 }
@@ -108,7 +113,7 @@ bool Array::operator==(const Array& other) const
     {
         return
                 (getSize() == other.getSize()) &&
-                (m_values == other.m_values);
+                (m_values_ == other.m_values_);
     }
 
     return true;
@@ -119,7 +124,7 @@ int Array::hashCode() const
     int result = zserio::HASH_SEED;
 
     result = zserio::calcHashCode(result, getSize());
-    result = zserio::calcHashCode(result, zserio::arrays::hashCode(m_values));
+    result = zserio::calcHashCode(result, zserio::arrays::hashCode(m_values_));
 
     return result;
 }
@@ -127,17 +132,17 @@ int Array::hashCode() const
 void Array::read(zserio::BitStreamReader& in)
 {
     zserio::arrays::read<zserio::arrays::detail::std_int_array_traits<int32_t> >(
-            m_values, in, static_cast<size_t>(getSize()), nullptr);
+            m_values_, in, static_cast<size_t>(getSize()), nullptr);
 }
 
 void Array::write(zserio::BitStreamWriter& out, zserio::PreWriteAction)
 {
-    if (m_values.size() != static_cast<size_t>(getSize()))
+    if (m_values_.size() != static_cast<size_t>(getSize()))
     {
         throw zserio::CppRuntimeException("Write: Wrong array length for field Array.values: " +
-                zserio::convertToString(m_values.size()) + " != " +
+                zserio::convertToString(m_values_.size()) + " != " +
                 zserio::convertToString(static_cast<size_t>(getSize())) + "!");
     }
-    zserio::arrays::write<zserio::arrays::detail::std_int_array_traits<int32_t> >(m_values, out);
+    zserio::arrays::write<zserio::arrays::detail::std_int_array_traits<int32_t> >(m_values_, out);
 }
 

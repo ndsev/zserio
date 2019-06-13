@@ -36,14 +36,14 @@ namespace detail
 class Structure
 {
 public:
-    Structure();
+    Structure() noexcept;
     explicit Structure(zserio::BitStreamReader& in);
 
     // new in cpp11
     // not that ZSERIO prefix (case-insensitive) will be disabled by compiler for all user-defined identifiers
     template <typename ZSERIO_T_array, typename ZSERIO_T_extraArray, typename ZSERIO_T_str,
                 typename ZSERIO_T_recursive>
-    Structure(uint32_t _size, ZSERIO_T_array&& _array, bool _hasExtra,
+    explicit Structure(uint32_t _size, ZSERIO_T_array&& _array, bool _hasExtra,
             const zserio::OptionalHolder<uint32_t>& _extraSize, ZSERIO_T_extraArray&& _extraArray,
             ZSERIO_T_str&& _str, ZSERIO_T_recursive&& _recursive)
     :   m_areChildrenInitialized(true), m_size(_size), m_array(std::forward<ZSERIO_T_array>(_array)),
@@ -61,44 +61,44 @@ public:
 
     void initializeChildren();
 
-    uint32_t getSize() const;
+    uint32_t getSize() const noexcept;
     void setSize(uint32_t _size);
 
-    Array& getArray();
-    const Array& getArray() const;
+    Array& getArray() noexcept;
+    const Array& getArray() const noexcept;
     void setArray(const Array& _array);
     void setArray(Array&& _array);
 
-    bool getHasExtra() const;
+    bool getHasExtra() const noexcept;
     void setHasExtra(bool _hasExtra);
 
-    zserio::OptionalHolder<uint32_t>& getExtraSize();
-    const zserio::OptionalHolder<uint32_t>& getExtraSize() const;
+    zserio::OptionalHolder<uint32_t>& getExtraSize() noexcept;
+    const zserio::OptionalHolder<uint32_t>& getExtraSize() const noexcept;
     void setExtraSize(const zserio::OptionalHolder<uint32_t>& _extraSize);
-    bool hasExtraSize() const;
+    bool hasExtraSize() const; // TODO: can be noexcept??? what if the expression cause an exception?
 
-    zserio::OptionalHolder<Array>& getExtraArray();
-    const zserio::OptionalHolder<Array>& getExtraArray() const;
+    zserio::OptionalHolder<Array>& getExtraArray() noexcept;
+    const zserio::OptionalHolder<Array>& getExtraArray() const noexcept;
     void setExtraArray(const zserio::OptionalHolder<Array>& _extraArray);
     void setExtraArray(zserio::OptionalHolder<Array>&& _extraArray);
     bool hasExtraArray() const;
 
-    String& getStr();
-    const String& getStr() const;
+    String& getStr() noexcept;
+    const String& getStr() const noexcept;
     void setStr(const String& _str);
     void setStr(String&& _str);
 
-    zserio::OptionalHolder<Structure>& getRecursive();
-    const zserio::OptionalHolder<Structure>& getRecursive() const;
+    zserio::OptionalHolder<Structure>& getRecursive() noexcept;
+    const zserio::OptionalHolder<Structure>& getRecursive() const noexcept;
     void setRecursive(const zserio::OptionalHolder<Structure>& _recursive);
     void setRecursive(zserio::OptionalHolder<Structure>&& _recursive);
     bool hasRecursive() const;
 
-    size_t bitSizeOf(size_t bitPosition = 0) const;
+    size_t bitSizeOf(size_t bitPosition = 0) const; // TODO: can be noexcept?
     size_t initializeOffsets(size_t bitPosition);
 
     bool operator==(const Structure& other) const;
-    int hashCode() const;
+    int hashCode() const; // TODO: can be noexcept?
 
     void read(zserio::BitStreamReader& in);
     void write(zserio::BitStreamWriter& out,

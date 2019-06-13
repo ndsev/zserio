@@ -12,7 +12,7 @@
 #include "Coord.h"
 
 
-Coord::Coord()
+Coord::Coord() noexcept
 {
 }
 
@@ -25,7 +25,7 @@ Coord::Coord(uint32_t _x, uint32_t _y)
 :   m_x(_x), m_y(_y)
 {}
 
-uint32_t Coord::getX() const
+uint32_t Coord::getX() const noexcept
 {
     return m_x;
 }
@@ -35,7 +35,7 @@ void Coord::setX(uint32_t _x)
     m_x = _x;
 }
 
-uint32_t Coord::getY() const
+uint32_t Coord::getY() const noexcept
 {
     return m_y;
 }

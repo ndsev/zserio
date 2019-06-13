@@ -17,16 +17,16 @@
 class Coord
 {
 public:
-    Coord();
+    Coord() noexcept;
     explicit Coord(zserio::BitStreamReader& in);
 
     // new in cpp11
-    Coord(uint32_t _x, uint32_t _y);
+    explicit Coord(uint32_t _x, uint32_t _y); // TODO: can be noexcept? NOT NOW
 
-    uint32_t getX() const;
+    uint32_t getX() const noexcept; // TODO: Verify where we can use noexcept
     void setX(uint32_t _x);
 
-    uint32_t getY() const;
+    uint32_t getY() const noexcept;
     void setY(uint32_t _y);
 
     size_t bitSizeOf(size_t bitPosition = 0) const;
