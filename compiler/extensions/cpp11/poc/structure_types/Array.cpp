@@ -91,7 +91,7 @@ size_t Array::bitSizeOf(size_t bitPosition) const
 {
     size_t endBitPosition = bitPosition;
 
-    endBitPosition += zserio::arrays::bitSizeOf<zserio::arrays::detail::std_int_array_traits<int32_t> >(
+    endBitPosition += zserio::arrays::bitSizeOf<zserio::StdIntArrayTraits<int32_t> >(
             m_values_, endBitPosition);
 
     return endBitPosition - bitPosition;
@@ -101,7 +101,7 @@ size_t Array::initializeOffsets(size_t bitPosition)
 {
     size_t endBitPosition = bitPosition;
 
-    endBitPosition = zserio::arrays::initializeOffsets<zserio::arrays::detail::std_int_array_traits<int32_t> >(
+    endBitPosition = zserio::arrays::initializeOffsets<zserio::StdIntArrayTraits<int32_t> >(
             m_values_, endBitPosition);
 
     return endBitPosition;
@@ -131,8 +131,8 @@ int Array::hashCode() const
 
 void Array::read(zserio::BitStreamReader& in)
 {
-    zserio::arrays::read<zserio::arrays::detail::std_int_array_traits<int32_t> >(
-            m_values_, in, static_cast<size_t>(getSize()), nullptr);
+    zserio::arrays::read<zserio::StdIntArrayTraits<int32_t> >(
+            m_values_, in, static_cast<size_t>(getSize()));
 }
 
 void Array::write(zserio::BitStreamWriter& out, zserio::PreWriteAction)
@@ -143,6 +143,6 @@ void Array::write(zserio::BitStreamWriter& out, zserio::PreWriteAction)
                 zserio::convertToString(m_values_.size()) + " != " +
                 zserio::convertToString(static_cast<size_t>(getSize())) + "!");
     }
-    zserio::arrays::write<zserio::arrays::detail::std_int_array_traits<int32_t> >(m_values_, out);
+    zserio::arrays::write<zserio::StdIntArrayTraits<int32_t> >(m_values_, out);
 }
 

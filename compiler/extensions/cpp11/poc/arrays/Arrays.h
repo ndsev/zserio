@@ -143,9 +143,9 @@ size_t initializeOffsets(std::vector<typename ARRAY_TRAITS::type>& array, AutoLe
     return initializeOffsets(array, offsetInitializer, bitPosition + getBitSizeOfVarUInt64(array.size()));
 }
 
-template <typename ARRAY_TRAITS, typename ELEMENT_FACTORY>
+template <typename ARRAY_TRAITS, typename ELEMENT_FACTORY = nullptr_t>
 void read(std::vector<typename ARRAY_TRAITS::type>& array, zserio::BitStreamReader& in, size_t size,
-        ELEMENT_FACTORY elementFactory)
+        ELEMENT_FACTORY elementFactory = nullptr)
 {
     array.clear();
     array.reserve(size);
@@ -153,9 +153,9 @@ void read(std::vector<typename ARRAY_TRAITS::type>& array, zserio::BitStreamRead
         ARRAY_TRAITS::read(array, in, index, elementFactory);
 }
 
-template <typename ARRAY_TRAITS, typename ELEMENT_FACTORY, typename OFFSET_CHECKER>
+template <typename ARRAY_TRAITS, typename OFFSET_CHECKER, typename ELEMENT_FACTORY = nullptr_t>
 void read(std::vector<typename ARRAY_TRAITS::type>& array, zserio::BitStreamReader& in, size_t size,
-        ELEMENT_FACTORY elementFactory, OFFSET_CHECKER offsetChecker)
+        OFFSET_CHECKER offsetChecker, ELEMENT_FACTORY elementFactory = nullptr)
 {
     array.clear();
     array.reserve(size);
@@ -167,25 +167,25 @@ void read(std::vector<typename ARRAY_TRAITS::type>& array, zserio::BitStreamRead
     }
 }
 
-template <typename ARRAY_TRAITS, typename ELEMENT_FACTORY>
+template <typename ARRAY_TRAITS, typename ELEMENT_FACTORY = nullptr_t>
 void read(std::vector<typename ARRAY_TRAITS::type>& array, zserio::BitStreamReader& in, size_t size,
-        ELEMENT_FACTORY elementFactory, AutoLength)
+        AutoLength, ELEMENT_FACTORY elementFactory = nullptr)
 {
     const uint64_t arraySize = in.readVarUInt64();
     read(array, in, zserio::convertVarUInt64ToArraySize(arraySize), elementFactory);
 }
 
-template <typename ARRAY_TRAITS, typename ELEMENT_FACTORY, typename OFFSET_CHECKER>
+template <typename ARRAY_TRAITS, typename OFFSET_CHECKER, typename ELEMENT_FACTORY = nullptr_t>
 void read(std::vector<typename ARRAY_TRAITS::type>& array, zserio::BitStreamReader& in, size_t size,
-        ELEMENT_FACTORY elementFactory, AutoLength, OFFSET_CHECKER offsetChecker)
+        AutoLength, OFFSET_CHECKER offsetChecker, ELEMENT_FACTORY elementFactory = nullptr)
 {
     const uint64_t arraySize = in.readVarUInt64();
     read(array, in, zserio::convertVarUInt64ToArraySize(arraySize), elementFactory, offsetChecker);
 }
 
-template <typename ARRAY_TRAITS, typename ELEMENT_FACTORY>
+template <typename ARRAY_TRAITS, typename ELEMENT_FACTORY = nullptr_t>
 void read(std::vector<typename ARRAY_TRAITS::type>& array, BitStreamReader& in, ImplicitLength,
-        ELEMENT_FACTORY elementFactory)
+        ELEMENT_FACTORY elementFactory = nullptr)
 {
     array.clear();
     BitStreamReader::BitPosType bitPosition;
@@ -243,14 +243,13 @@ void write(const std::vector<typename ARRAY_TRAITS::type>& array, BitStreamWrite
     write(array, out, offsetChecker);
 }
 
-namespace detail
-{
+} // namespace arrays
 
 template <size_t NUM_BITS, typename T, typename ENABLED = void>
-struct bit_field_array_traits;
+struct BitFieldArrayTraits;
 
 template <size_t NUM_BITS, typename T>
-struct bit_field_array_traits<NUM_BITS, T, typename std::enable_if<std::is_same<T, int8_t>::value ||
+struct BitFieldArrayTraits<NUM_BITS, T, typename std::enable_if<std::is_same<T, int8_t>::value ||
                                                                    std::is_same<T, int16_t>::value ||
                                                                    std::is_same<T, int32_t>::value>::type>
 {
@@ -282,7 +281,7 @@ struct bit_field_array_traits<NUM_BITS, T, typename std::enable_if<std::is_same<
 };
 
 template <size_t NUM_BITS>
-struct bit_field_array_traits<NUM_BITS, int64_t>
+struct BitFieldArrayTraits<NUM_BITS, int64_t>
 {
     typedef int64_t type;
 
@@ -312,7 +311,7 @@ struct bit_field_array_traits<NUM_BITS, int64_t>
 };
 
 template <size_t NUM_BITS, typename T>
-struct bit_field_array_traits<NUM_BITS, T, typename std::enable_if<std::is_same<T, uint8_t>::value ||
+struct BitFieldArrayTraits<NUM_BITS, T, typename std::enable_if<std::is_same<T, uint8_t>::value ||
                                                                    std::is_same<T, uint16_t>::value ||
                                                                    std::is_same<T, uint32_t>::value>::type>
 {
@@ -344,7 +343,7 @@ struct bit_field_array_traits<NUM_BITS, T, typename std::enable_if<std::is_same<
 };
 
 template <size_t NUM_BITS>
-struct bit_field_array_traits<NUM_BITS, uint64_t>
+struct BitFieldArrayTraits<NUM_BITS, uint64_t>
 {
     typedef uint64_t type;
 
@@ -374,15 +373,15 @@ struct bit_field_array_traits<NUM_BITS, uint64_t>
 };
 
 template <typename T>
-struct std_int_array_traits : public bit_field_array_traits<sizeof(T) * 8, T>
+struct StdIntArrayTraits : public BitFieldArrayTraits<sizeof(T) * 8, T>
 {
 };
 
 template <typename T>
-struct var_int_nn_array_traits;
+struct VarIntNNArrayTraits;
 
 template <>
-struct var_int_nn_array_traits<int16_t>
+struct VarIntNNArrayTraits<int16_t>
 {
     typedef int16_t type;
 
@@ -412,7 +411,7 @@ struct var_int_nn_array_traits<int16_t>
 };
 
 template <>
-struct var_int_nn_array_traits<int32_t>
+struct VarIntNNArrayTraits<int32_t>
 {
     typedef int32_t type;
 
@@ -442,7 +441,7 @@ struct var_int_nn_array_traits<int32_t>
 };
 
 template <>
-struct var_int_nn_array_traits<int64_t>
+struct VarIntNNArrayTraits<int64_t>
 {
     typedef int64_t type;
 
@@ -472,7 +471,7 @@ struct var_int_nn_array_traits<int64_t>
 };
 
 template <>
-struct var_int_nn_array_traits<uint16_t>
+struct VarIntNNArrayTraits<uint16_t>
 {
     typedef uint16_t type;
 
@@ -502,7 +501,7 @@ struct var_int_nn_array_traits<uint16_t>
 };
 
 template <>
-struct var_int_nn_array_traits<uint32_t>
+struct VarIntNNArrayTraits<uint32_t>
 {
     typedef uint32_t type;
 
@@ -532,7 +531,7 @@ struct var_int_nn_array_traits<uint32_t>
 };
 
 template <>
-struct var_int_nn_array_traits<uint64_t>
+struct VarIntNNArrayTraits<uint64_t>
 {
     typedef uint64_t type;
 
@@ -562,10 +561,10 @@ struct var_int_nn_array_traits<uint64_t>
 };
 
 template <typename T>
-struct var_int_array_traits;
+struct VarIntArrayTraits;
 
 template <>
-struct var_int_array_traits<int64_t>
+struct VarIntArrayTraits<int64_t>
 {
     typedef int64_t type;
 
@@ -595,7 +594,7 @@ struct var_int_array_traits<int64_t>
 };
 
 template <>
-struct var_int_array_traits<uint64_t>
+struct VarIntArrayTraits<uint64_t>
 {
     typedef uint64_t type;
 
@@ -624,7 +623,7 @@ struct var_int_array_traits<uint64_t>
     static const size_t BIT_SIZE = 0;
 };
 
-struct float16_array_traits
+struct Float16ArrayTraits
 {
     typedef float type;
 
@@ -653,7 +652,7 @@ struct float16_array_traits
     static const size_t BIT_SIZE = 16;
 };
 
-struct float32_array_traits
+struct Float32ArrayTraits
 {
     typedef float type;
 
@@ -682,7 +681,7 @@ struct float32_array_traits
     static const size_t BIT_SIZE = 32;
 };
 
-struct float64_array_traits
+struct Float64ArrayTraits
 {
     typedef double type;
 
@@ -711,7 +710,7 @@ struct float64_array_traits
     static const size_t BIT_SIZE = 64;
 };
 
-struct bool_array_traits
+struct BoolArrayTraits
 {
     typedef bool type;
 
@@ -740,7 +739,7 @@ struct bool_array_traits
     static const size_t BIT_SIZE = 1;
 };
 
-struct string_array_traits
+struct StringArrayTraits
 {
     typedef std::string type;
 
@@ -770,7 +769,7 @@ struct string_array_traits
 };
 
 template <typename T>
-struct object_array_traits
+struct ObjectArrayTraits
 {
     typedef T type;
 
@@ -799,10 +798,6 @@ struct object_array_traits
     static const bool IS_BITSIZEOF_CONSTANT = false;
     static const size_t BIT_SIZE = 0;
 };
-
-} // namespace detail
-
-} // namespace arrays
 
 } // namespace zserio
 
