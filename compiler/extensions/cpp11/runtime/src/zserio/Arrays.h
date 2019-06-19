@@ -13,24 +13,8 @@
 #include "PreWriteAction.h"
 #include "BitSizeOfCalculator.h"
 
-// This should be implemented in runtime library header.
 namespace zserio
 {
-
-namespace arrays
-{
-
-struct ImplicitLength
-{
-};
-
-struct Aligned
-{
-};
-
-struct AutoLength
-{
-};
 
 template <typename T>
 T sum(const std::vector<T>& array)
@@ -53,7 +37,7 @@ int hashCode(const std::vector<T>& array)
 }
 
 template <typename ARRAY_TRAITS>
-size_t bitSizeOf(const std::vector<typename ARRAY_TRAITS::type>& array, size_t bitPosition = 0)
+size_t bitSizeOf(const std::vector<typename ARRAY_TRAITS::type>& array, size_t bitPosition)
 {
     if (ARRAY_TRAITS::IS_BITSIZEOF_CONSTANT)
         return ARRAY_TRAITS::BIT_SIZE * array.size();
@@ -66,38 +50,42 @@ size_t bitSizeOf(const std::vector<typename ARRAY_TRAITS::type>& array, size_t b
 }
 
 template <typename ARRAY_TRAITS>
-size_t bitSizeOf(const std::vector<typename ARRAY_TRAITS::type>& array, Aligned, size_t bitPosition = 0)
+size_t bitSizeOfAligned(const std::vector<typename ARRAY_TRAITS::type>& array, size_t bitPosition)
 {
+    size_t endBitPosition = bitPosition;
     const size_t arraySize = array.size();
     if (ARRAY_TRAITS::IS_BITSIZEOF_CONSTANT && arraySize > 0)
-        return (arraySize - 1) * zserio::alignTo(NUM_BITS_PER_BYTE, ARRAY_TRAITS::BIT_SIZE) +
-                ARRAY_TRAITS::BIT_SIZE;
-
-    size_t endBitPosition = bitPosition;
-    for (const typename ARRAY_TRAITS::type& element : array)
     {
-        endBitPosition = zserio::alignTo(NUM_BITS_PER_BYTE, endBitPosition);
-        endBitPosition += ARRAY_TRAITS::bitSizeOf(endBitPosition, element);
+        endBitPosition = alignTo(NUM_BITS_PER_BYTE, endBitPosition);
+        endBitPosition += (arraySize - 1) * alignTo(NUM_BITS_PER_BYTE, ARRAY_TRAITS::BIT_SIZE) +
+                ARRAY_TRAITS::BIT_SIZE;
+    }
+    else
+    {
+        for (const typename ARRAY_TRAITS::type& element : array)
+        {
+            endBitPosition = alignTo(NUM_BITS_PER_BYTE, endBitPosition);
+            endBitPosition += ARRAY_TRAITS::bitSizeOf(endBitPosition, element);
+        }
     }
 
     return endBitPosition - bitPosition;
 }
 
 template <typename ARRAY_TRAITS>
-size_t bitSizeOf(const std::vector<typename ARRAY_TRAITS::type>& array, AutoLength, size_t bitPosition = 0)
+size_t bitSizeOfAuto(const std::vector<typename ARRAY_TRAITS::type>& array, size_t bitPosition)
 {
     const size_t lengthBitSizeOf = getBitSizeOfVarUInt64(array.size());
 
-    return lengthBitSizeOf + bitSizeOf(array, bitPosition + lengthBitSizeOf);
+    return lengthBitSizeOf + bitSizeOf<ARRAY_TRAITS>(array, bitPosition + lengthBitSizeOf);
 }
 
 template <typename ARRAY_TRAITS>
-size_t bitSizeOf(const std::vector<typename ARRAY_TRAITS::type>& array, AutoLength, Aligned aligned,
-        size_t bitPosition = 0)
+size_t bitSizeOfAlignedAuto(const std::vector<typename ARRAY_TRAITS::type>& array, size_t bitPosition)
 {
     const size_t lengthBitSizeOf = getBitSizeOfVarUInt64(array.size());
 
-    return lengthBitSizeOf + bitSizeOf(array, aligned, bitPosition + lengthBitSizeOf);
+    return lengthBitSizeOf + bitSizeOfAligned<ARRAY_TRAITS>(array, bitPosition + lengthBitSizeOf);
 }
 
 template <typename ARRAY_TRAITS>
@@ -107,22 +95,24 @@ size_t initializeOffsets(std::vector<typename ARRAY_TRAITS::type>& array, size_t
         return bitPosition + ARRAY_TRAITS::BIT_SIZE * array.size();
 
     size_t endBitPosition = bitPosition;
-    for (typename ARRAY_TRAITS::type& element : array)
+    // can't use 'typename ARRAY_TRAITS::type&' because std::vector<bool> returns rvalue
+    for (auto&& element : array)
         endBitPosition = ARRAY_TRAITS::initializeOffsets(endBitPosition, element);
 
     return endBitPosition;
 }
 
 template <typename ARRAY_TRAITS, typename OFFSET_INITIALIZER>
-size_t initializeOffsets(std::vector<typename ARRAY_TRAITS::type>& array, OFFSET_INITIALIZER offsetInitializer,
-        size_t bitPosition)
+size_t initializeOffsetsAligned(std::vector<typename ARRAY_TRAITS::type>& array, size_t bitPosition,
+        OFFSET_INITIALIZER offsetInitializer)
 {
     size_t endBitPosition = bitPosition;
     size_t index = 0;
-    for (typename ARRAY_TRAITS::type& element : array)
+    // can't use 'typename ARRAY_TRAITS::type&' because std::vector<bool> returns rvalue
+    for (auto&& element : array)
     {
-        endBitPosition = zserio::alignTo(NUM_BITS_PER_BYTE, endBitPosition);
-        offsetInitializer.setOffset(index, zserio::bitsToBytes(endBitPosition));
+        endBitPosition = alignTo(NUM_BITS_PER_BYTE, endBitPosition);
+        offsetInitializer.setOffset(index, bitsToBytes(endBitPosition));
         endBitPosition = ARRAY_TRAITS::initializeOffsets(endBitPosition, element);
         index++;
     }
@@ -131,20 +121,21 @@ size_t initializeOffsets(std::vector<typename ARRAY_TRAITS::type>& array, OFFSET
 }
 
 template <typename ARRAY_TRAITS>
-size_t initializeOffsets(std::vector<typename ARRAY_TRAITS::type>& array, AutoLength, size_t bitPosition = 0)
+size_t initializeOffsetsAuto(std::vector<typename ARRAY_TRAITS::type>& array, size_t bitPosition)
 {
-    return initializeOffsets(array, bitPosition + getBitSizeOfVarUInt64(array.size()));
+    return initializeOffsets<ARRAY_TRAITS>(array, bitPosition + getBitSizeOfVarUInt64(array.size()));
 }
 
 template <typename ARRAY_TRAITS, typename OFFSET_INITIALIZER>
-size_t initializeOffsets(std::vector<typename ARRAY_TRAITS::type>& array, AutoLength,
-        OFFSET_INITIALIZER offsetInitializer, size_t bitPosition = 0)
+size_t initializeOffsetsAlignedAuto(std::vector<typename ARRAY_TRAITS::type>& array, size_t bitPosition,
+        OFFSET_INITIALIZER offsetInitializer)
 {
-    return initializeOffsets(array, offsetInitializer, bitPosition + getBitSizeOfVarUInt64(array.size()));
+    return initializeOffsetsAligned<ARRAY_TRAITS, OFFSET_INITIALIZER>(array,
+            bitPosition + getBitSizeOfVarUInt64(array.size()), offsetInitializer);
 }
 
 template <typename ARRAY_TRAITS, typename ELEMENT_FACTORY = nullptr_t>
-void read(std::vector<typename ARRAY_TRAITS::type>& array, zserio::BitStreamReader& in, size_t size,
+void read(std::vector<typename ARRAY_TRAITS::type>& array, BitStreamReader& in, size_t size,
         ELEMENT_FACTORY elementFactory = nullptr)
 {
     array.clear();
@@ -154,7 +145,7 @@ void read(std::vector<typename ARRAY_TRAITS::type>& array, zserio::BitStreamRead
 }
 
 template <typename ARRAY_TRAITS, typename OFFSET_CHECKER, typename ELEMENT_FACTORY = nullptr_t>
-void read(std::vector<typename ARRAY_TRAITS::type>& array, zserio::BitStreamReader& in, size_t size,
+void readAligned(std::vector<typename ARRAY_TRAITS::type>& array, BitStreamReader& in, size_t size,
         OFFSET_CHECKER offsetChecker, ELEMENT_FACTORY elementFactory = nullptr)
 {
     array.clear();
@@ -162,29 +153,30 @@ void read(std::vector<typename ARRAY_TRAITS::type>& array, zserio::BitStreamRead
     for (size_t index = 0; index < size; ++index)
     {
         in.alignTo(NUM_BITS_PER_BYTE);
-        offsetChecker.check(index, zserio::bitsToBytes(in.getBitPosition()));
+        offsetChecker.checkOffset(index, bitsToBytes(in.getBitPosition()));
         ARRAY_TRAITS::read(array, in, index, elementFactory);
     }
 }
 
 template <typename ARRAY_TRAITS, typename ELEMENT_FACTORY = nullptr_t>
-void read(std::vector<typename ARRAY_TRAITS::type>& array, zserio::BitStreamReader& in, size_t size,
-        AutoLength, ELEMENT_FACTORY elementFactory = nullptr)
+void readAuto(std::vector<typename ARRAY_TRAITS::type>& array, BitStreamReader& in,
+        ELEMENT_FACTORY elementFactory = nullptr)
 {
     const uint64_t arraySize = in.readVarUInt64();
-    read(array, in, zserio::convertVarUInt64ToArraySize(arraySize), elementFactory);
+    read<ARRAY_TRAITS, ELEMENT_FACTORY>(array, in, convertVarUInt64ToArraySize(arraySize), elementFactory);
 }
 
 template <typename ARRAY_TRAITS, typename OFFSET_CHECKER, typename ELEMENT_FACTORY = nullptr_t>
-void read(std::vector<typename ARRAY_TRAITS::type>& array, zserio::BitStreamReader& in, size_t size,
-        AutoLength, OFFSET_CHECKER offsetChecker, ELEMENT_FACTORY elementFactory = nullptr)
+void readAlignedAuto(std::vector<typename ARRAY_TRAITS::type>& array, BitStreamReader& in,
+        OFFSET_CHECKER offsetChecker, ELEMENT_FACTORY elementFactory = nullptr)
 {
     const uint64_t arraySize = in.readVarUInt64();
-    read(array, in, zserio::convertVarUInt64ToArraySize(arraySize), elementFactory, offsetChecker);
+    readAligned<ARRAY_TRAITS, OFFSET_CHECKER, ELEMENT_FACTORY>(array, in,
+            convertVarUInt64ToArraySize(arraySize), offsetChecker, elementFactory);
 }
 
 template <typename ARRAY_TRAITS, typename ELEMENT_FACTORY = nullptr_t>
-void read(std::vector<typename ARRAY_TRAITS::type>& array, BitStreamReader& in, ImplicitLength,
+void readImplicit(std::vector<typename ARRAY_TRAITS::type>& array, BitStreamReader& in,
         ELEMENT_FACTORY elementFactory = nullptr)
 {
     array.clear();
@@ -208,50 +200,50 @@ void read(std::vector<typename ARRAY_TRAITS::type>& array, BitStreamReader& in, 
 }
 
 template <typename ARRAY_TRAITS>
-void write(const std::vector<typename ARRAY_TRAITS::type>& array, BitStreamWriter& out)
+void write(std::vector<typename ARRAY_TRAITS::type>& array, BitStreamWriter& out)
 {
-    for (const typename ARRAY_TRAITS::type& element : array)
+    // can't use 'typename ARRAY_TRAITS::type&' because std::vector<bool> returns rvalue
+    for (auto&& element : array)
         ARRAY_TRAITS::write(out, element);
 }
 
 template <typename ARRAY_TRAITS, typename OFFSET_CHECKER>
-void write(const std::vector<typename ARRAY_TRAITS::type>& array, BitStreamWriter& out,
+void writeAligned(std::vector<typename ARRAY_TRAITS::type>& array, BitStreamWriter& out,
         OFFSET_CHECKER offsetChecker)
 {
     size_t index = 0;
-    for (const typename ARRAY_TRAITS::type& element : array)
+    // can't use 'typename ARRAY_TRAITS::type&' because std::vector<bool> returns rvalue
+    for (auto&& element : array)
     {
         out.alignTo(NUM_BITS_PER_BYTE);
-        offsetChecker.check(index, zserio::bitsToBytes(out.getBitPosition()));
+        offsetChecker.checkOffset(index, bitsToBytes(out.getBitPosition()));
         ARRAY_TRAITS::write(out, element);
         index++;
     }
 }
 
 template <typename ARRAY_TRAITS>
-void write(const std::vector<typename ARRAY_TRAITS::type>& array, BitStreamWriter& out, AutoLength)
+void writeAuto(std::vector<typename ARRAY_TRAITS::type>& array, BitStreamWriter& out)
 {
     out.writeVarUInt64(static_cast<uint64_t>(array.size()));
-    write(array, out);
+    write<ARRAY_TRAITS>(array, out);
 }
 
 template <typename ARRAY_TRAITS, typename OFFSET_CHECKER>
-void write(const std::vector<typename ARRAY_TRAITS::type>& array, BitStreamWriter& out, AutoLength,
+void writeAlignedAuto(std::vector<typename ARRAY_TRAITS::type>& array, BitStreamWriter& out,
         OFFSET_CHECKER offsetChecker)
 {
     out.writeVarUInt64(static_cast<uint64_t>(array.size()));
-    write(array, out, offsetChecker);
+    writeAligned<ARRAY_TRAITS, OFFSET_CHECKER>(array, out, offsetChecker);
 }
-
-} // namespace arrays
 
 template <size_t NUM_BITS, typename T, typename ENABLED = void>
 struct BitFieldArrayTraits;
 
 template <size_t NUM_BITS, typename T>
 struct BitFieldArrayTraits<NUM_BITS, T, typename std::enable_if<std::is_same<T, int8_t>::value ||
-                                                                   std::is_same<T, int16_t>::value ||
-                                                                   std::is_same<T, int32_t>::value>::type>
+                                                                std::is_same<T, int16_t>::value ||
+                                                                std::is_same<T, int32_t>::value>::type>
 {
     typedef T type;
 
@@ -312,8 +304,8 @@ struct BitFieldArrayTraits<NUM_BITS, int64_t>
 
 template <size_t NUM_BITS, typename T>
 struct BitFieldArrayTraits<NUM_BITS, T, typename std::enable_if<std::is_same<T, uint8_t>::value ||
-                                                                   std::is_same<T, uint16_t>::value ||
-                                                                   std::is_same<T, uint32_t>::value>::type>
+                                                                std::is_same<T, uint16_t>::value ||
+                                                                std::is_same<T, uint32_t>::value>::type>
 {
     typedef T type;
 
@@ -387,7 +379,7 @@ struct VarIntNNArrayTraits<int16_t>
 
     static size_t bitSizeOf(size_t, type value)
     {
-        return zserio::getBitSizeOfVarInt16(value);
+        return getBitSizeOfVarInt16(value);
     }
 
     static size_t initializeOffsets(size_t bitPosition, type value)
@@ -401,7 +393,7 @@ struct VarIntNNArrayTraits<int16_t>
         array.emplace_back(in.readVarInt16());
     }
 
-    static void write(BitStreamWriter& out, type value, uint8_t)
+    static void write(BitStreamWriter& out, type value)
     {
         out.writeVarInt16(value);
     }
@@ -417,7 +409,7 @@ struct VarIntNNArrayTraits<int32_t>
 
     static size_t bitSizeOf(size_t, type value)
     {
-        return zserio::getBitSizeOfVarInt32(value);
+        return getBitSizeOfVarInt32(value);
     }
 
     static size_t initializeOffsets(size_t bitPosition, type value)
@@ -447,7 +439,7 @@ struct VarIntNNArrayTraits<int64_t>
 
     static size_t bitSizeOf(size_t, type value)
     {
-        return zserio::getBitSizeOfVarInt64(value);
+        return getBitSizeOfVarInt64(value);
     }
 
     static size_t initializeOffsets(size_t bitPosition, type value)
@@ -477,7 +469,7 @@ struct VarIntNNArrayTraits<uint16_t>
 
     static size_t bitSizeOf(size_t, type value)
     {
-        return zserio::getBitSizeOfVarUInt16(value);
+        return getBitSizeOfVarUInt16(value);
     }
 
     static size_t initializeOffsets(size_t bitPosition, type value)
@@ -507,7 +499,7 @@ struct VarIntNNArrayTraits<uint32_t>
 
     static size_t bitSizeOf(size_t, type value)
     {
-        return zserio::getBitSizeOfVarUInt32(value);
+        return getBitSizeOfVarUInt32(value);
     }
 
     static size_t initializeOffsets(size_t bitPosition, type value)
@@ -537,7 +529,7 @@ struct VarIntNNArrayTraits<uint64_t>
 
     static size_t bitSizeOf(size_t, type value)
     {
-        return zserio::getBitSizeOfVarUInt64(value);
+        return getBitSizeOfVarUInt64(value);
     }
 
     static size_t initializeOffsets(size_t bitPosition, type value)
@@ -546,12 +538,12 @@ struct VarIntNNArrayTraits<uint64_t>
     }
 
     template <typename ELEMENT_FACTORY>
-    static void read(std::vector<type>& array, BitStreamReader& in, size_t, ELEMENT_FACTORY, uint8_t)
+    static void read(std::vector<type>& array, BitStreamReader& in, size_t, ELEMENT_FACTORY)
     {
         array.emplace_back(in.readVarUInt64());
     }
 
-    static void write(BitStreamWriter& out, type value, uint8_t)
+    static void write(BitStreamWriter& out, type value)
     {
         out.writeVarUInt64(value);
     }
@@ -570,7 +562,7 @@ struct VarIntArrayTraits<int64_t>
 
     static size_t bitSizeOf(size_t , type value)
     {
-        return zserio::getBitSizeOfVarInt(value);
+        return getBitSizeOfVarInt(value);
     }
 
     static size_t initializeOffsets(size_t bitPosition, type value)
@@ -600,7 +592,7 @@ struct VarIntArrayTraits<uint64_t>
 
     static size_t bitSizeOf(size_t , type value)
     {
-        return zserio::getBitSizeOfVarUInt(value);
+        return getBitSizeOfVarUInt(value);
     }
 
     static size_t initializeOffsets(size_t bitPosition, type value)
@@ -632,7 +624,7 @@ struct Float16ArrayTraits
         return BIT_SIZE;
     }
 
-    static size_t initializeOffsets(size_t bitPosition, type value)
+    static size_t initializeOffsets(size_t bitPosition, type)
     {
         return bitPosition + BIT_SIZE;
     }
@@ -661,7 +653,7 @@ struct Float32ArrayTraits
         return BIT_SIZE;
     }
 
-    static size_t initializeOffsets(size_t bitPosition, type value)
+    static size_t initializeOffsets(size_t bitPosition, type)
     {
         return bitPosition + BIT_SIZE;
     }
@@ -690,7 +682,7 @@ struct Float64ArrayTraits
         return BIT_SIZE;
     }
 
-    static size_t initializeOffsets(size_t bitPosition, type value)
+    static size_t initializeOffsets(size_t bitPosition, type)
     {
         return bitPosition + BIT_SIZE;
     }
@@ -719,7 +711,7 @@ struct BoolArrayTraits
         return BIT_SIZE;
     }
 
-    static size_t initializeOffsets(size_t bitPosition, type value)
+    static size_t initializeOffsets(size_t bitPosition, type)
     {
         return bitPosition + BIT_SIZE;
     }
@@ -745,7 +737,7 @@ struct StringArrayTraits
 
     static size_t bitSizeOf(size_t, const type& value)
     {
-        return zserio::getBitSizeOfString(value);
+        return getBitSizeOfString(value);
     }
 
     static size_t initializeOffsets(size_t bitPosition, const type& value)
@@ -792,7 +784,7 @@ struct ObjectArrayTraits
 
     static void write(BitStreamWriter& out, type& value)
     {
-        value.write(out, zserio::NO_PRE_WRITE_ACTION);
+        value.write(out, NO_PRE_WRITE_ACTION);
     }
 
     static const bool IS_BITSIZEOF_CONSTANT = false;

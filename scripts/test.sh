@@ -113,7 +113,7 @@ test()
         else
             local CPP_TARGET="all"
         fi
-        compile_cpp "${ZSERIO_PROJECT_ROOT}" "${TEST_OUT_DIR}" "${TEST_SRC_DIR}" CPP_TARGETS[@] \
+        compile_cpp "${ZSERIO_PROJECT_ROOT}" "${TEST_OUT_DIR}/cpp" "${TEST_SRC_DIR}" CPP_TARGETS[@] \
                     CMAKE_ARGS[@] CTEST_ARGS[@] ${CPP_TARGET}
         if [ $? -ne 0 ] ; then
             stderr_echo "${MESSAGE} failed!"

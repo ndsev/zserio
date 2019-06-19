@@ -510,8 +510,8 @@ compile_cpp()
 
     local TARGET
     for TARGET in "${TARGETS[@]}" ; do
-        compile_cpp_for_target "${ZSERIO_PROJECT_ROOT}" "${BUILD_DIR}/cpp-${TARGET}" "${CMAKELISTS_DIR}" "${TARGET}" \
-                               CMAKE_ARGS[@] CTEST_ARGS[@] "${MAKE_TARGET}"
+        compile_cpp_for_target "${ZSERIO_PROJECT_ROOT}" "${BUILD_DIR}/${TARGET}" "${CMAKELISTS_DIR}" \
+                               "${TARGET}" CMAKE_ARGS[@] CTEST_ARGS[@] "${MAKE_TARGET}"
         if [ $? -ne 0 ] ; then
             return 1
         fi

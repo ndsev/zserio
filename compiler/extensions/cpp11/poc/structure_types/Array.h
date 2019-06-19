@@ -5,13 +5,14 @@
 #ifndef ARRAY_H
 #define ARRAY_H
 
+#include <vector>
+
 #include <zserio/BitStreamReader.h>
 #include <zserio/BitStreamWriter.h>
 #include <zserio/BitFieldUtil.h>
 #include <zserio/CppRuntimeException.h>
 #include <zserio/StringConvertUtil.h>
 #include <zserio/PreWriteAction.h>
-#include <zserio/BitFieldArray.h>
 #include <zserio/Types.h>
 
 class Array

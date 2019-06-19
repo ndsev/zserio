@@ -31,18 +31,8 @@ enum class Color : uint8_t
 namespace zserio
 {
 
-namespace enums
-{
-
 template<>
-size_t toOrdinal<enumeration_types::bitfield_enum::Color>(enumeration_types::bitfield_enum::Color value);
-
-template<>
-enumeration_types::bitfield_enum::Color fromValue<enumeration_types::bitfield_enum::Color>(
-        typename std::underlying_type<enumeration_types::bitfield_enum::Color>::type rawValue);
-
-template<>
-struct Traits<enumeration_types::bitfield_enum::Color>
+struct EnumTraits<enumeration_types::bitfield_enum::Color>
 {
     static constexpr std::array<const char*, 4> names =
     {
@@ -61,7 +51,38 @@ struct Traits<enumeration_types::bitfield_enum::Color>
     };
 };
 
-} // namespace enums
+template<>
+size_t enumToOrdinal<enumeration_types::bitfield_enum::Color>(enumeration_types::bitfield_enum::Color value);
+
+template<>
+enumeration_types::bitfield_enum::Color valueToEnum<enumeration_types::bitfield_enum::Color>(
+        typename std::underlying_type<enumeration_types::bitfield_enum::Color>::type rawValue);
+
+template <>
+inline constexpr size_t bitSizeOf<enumeration_types::bitfield_enum::Color>(enumeration_types::bitfield_enum::Color value)
+{
+    return 3;
+}
+
+template <>
+inline constexpr size_t initializeOffsets<enumeration_types::bitfield_enum::Color>(enumeration_types::bitfield_enum::Color value,
+        size_t bitPosition)
+{
+    return bitPosition + 3;
+}
+
+template <>
+inline enumeration_types::bitfield_enum::Color read<enumeration_types::bitfield_enum::Color>(zserio::BitStreamReader& in)
+{
+    return valueToEnum<enumeration_types::bitfield_enum::Color>(
+            static_cast<typename std::underlying_type<enumeration_types::bitfield_enum::Color>::type>(in.readSignedBits(3)));
+}
+
+template <>
+inline void write<enumeration_types::bitfield_enum::Color>(BitStreamWriter& out, enumeration_types::bitfield_enum::Color value)
+{
+    out.writeSignedBits(enumToValue(value), 3);
+}
 
 } // namespace zserio
 

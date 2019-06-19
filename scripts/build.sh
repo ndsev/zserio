@@ -491,9 +491,21 @@ main()
         echo "${ACTION_DESCRIPTION} Zserio C++ runtime library."
         echo
         local CMAKELISTS_DIR="${ZSERIO_PROJECT_ROOT}/compiler/extensions/cpp/runtime"
-        local CPP_BUILD_DIR="${ZSERIO_BUILD_DIR}/runtime_libs"
+        local CPP_BUILD_DIR="${ZSERIO_BUILD_DIR}/runtime_libs/cpp"
         local CMAKE_ARGS=("-DCMAKE_INSTALL_PREFIX=${ZSERIO_DISTR_DIR}/runtime_libs"
                           "-DZSERIO_RUNTIME_INCLUDE_INSPECTOR=ON")
+        local CTEST_ARGS=()
+        compile_cpp "${ZSERIO_PROJECT_ROOT}" "${CPP_BUILD_DIR}" "${CMAKELISTS_DIR}" PARAM_CPP_TARGET_ARRAY[@] \
+                    CMAKE_ARGS[@] CTEST_ARGS[@] ${CPP_TARGET}
+        if [ $? -ne 0 ] ; then
+            return 1
+        fi
+        echo
+        echo "${ACTION_DESCRIPTION} Zserio C++11 runtime library."
+        echo
+        local CMAKELISTS_DIR="${ZSERIO_PROJECT_ROOT}/compiler/extensions/cpp11/runtime"
+        local CPP_BUILD_DIR="${ZSERIO_BUILD_DIR}/runtime_libs/cpp11"
+        local CMAKE_ARGS=("-DCMAKE_INSTALL_PREFIX=${ZSERIO_DISTR_DIR}/runtime_libs")
         local CTEST_ARGS=()
         compile_cpp "${ZSERIO_PROJECT_ROOT}" "${CPP_BUILD_DIR}" "${CMAKELISTS_DIR}" PARAM_CPP_TARGET_ARRAY[@] \
                     CMAKE_ARGS[@] CTEST_ARGS[@] ${CPP_TARGET}
