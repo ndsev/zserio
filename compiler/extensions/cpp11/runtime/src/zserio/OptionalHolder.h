@@ -2,6 +2,7 @@
 #define ZSERIO_OPTIONAL_HOLDER_H_INC
 
 #include <cstddef>
+#include <type_traits>
 
 #include "CppRuntimeException.h"
 #include "HashCodeUtil.h"
@@ -316,11 +317,21 @@ struct optimized_optional_holder<T, false>
 template <typename T>
 class InPlaceOptionalHolder : public detail::optional_holder<T, detail::in_place_storage<T> >
 {
+private:
+    typedef typename detail::optimized_optional_holder<T, detail::is_optimized_in_place<T>::value>::type impl;
+
+public:
+    using impl::optional_holder;
 };
 
 template <typename T>
 class HeapOptionalHolder : public detail::optional_holder<T, detail::heap_storage<T> >
 {
+private:
+    typedef typename detail::optimized_optional_holder<T, detail::is_optimized_in_place<T>::value>::type impl;
+
+public:
+    using impl::optional_holder;
 };
 
 template <typename T>
