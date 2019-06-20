@@ -121,7 +121,7 @@ int Array::hashCode() const
     int result = zserio::HASH_SEED;
 
     result = zserio::calcHashCode(result, getSize());
-    result = zserio::calcHashCode(result, zserio::hashCode(m_values_));
+    result = zserio::calcHashCode(result, m_values_);
 
     return result;
 }

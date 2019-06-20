@@ -1,10 +1,14 @@
 #ifndef ZSERIO_HASH_CODE_UTIL_H_INC
 #define ZSERIO_HASH_CODE_UTIL_H_INC
 
+#include <type_traits>
 #include <string>
+#include <vector>
 
 #include "Types.h"
 #include "FloatUtil.h"
+#include "Arrays.h"
+#include "Enums.h"
 
 namespace zserio
 {
@@ -71,21 +75,37 @@ namespace zserio
         return calcHashCode(seedValue, convertDoubleToUInt64(value));
     }
 
-    inline int calcHashCode(int seedValue, const std::string& value)
+    inline int calcHashCode(int seedValue, const std::string& stringValue)
     {
         int result = seedValue;
-        for(std::string::const_iterator it = value.begin(); it != value.end(); ++it)
-        {
-            result = calcHashCode(result, *it);
-        }
+        for (std::string::value_type element : stringValue)
+            result = calcHashCode(result, element);
 
         return result;
     }
 
-    template <class OBJECT>
-    inline int calcHashCode(int seedValue, const OBJECT& value)
+    template <typename ENUM_TYPE>
+    inline typename std::enable_if<std::is_enum<ENUM_TYPE>::value, int>::type calcHashCode(int seedValue,
+            ENUM_TYPE enumValue)
     {
-        return calcHashCode(seedValue, value.hashCode());
+        return calcHashCode(seedValue, enumToValue(enumValue));
+    }
+
+    template <typename ARRAY_ELEMENT>
+    inline int calcHashCode(int seedValue, const std::vector<ARRAY_ELEMENT>& array)
+    {
+        int result = seedValue;
+        for (const ARRAY_ELEMENT& element : array)
+            result = calcHashCode(result, element);
+
+        return result;
+    }
+
+    template <typename OBJECT>
+    inline typename std::enable_if<!std::is_enum<OBJECT>::value, int>::type calcHashCode(int seedValue,
+            const OBJECT& object)
+    {
+        return calcHashCode(seedValue, object.hashCode());
     }
 } // namespace zserio
 

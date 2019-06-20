@@ -4,7 +4,6 @@
 #include <type_traits>
 #include <vector>
 
-#include "HashCodeUtil.h"
 #include "BitStreamWriter.h"
 #include "BitStreamReader.h"
 #include "BitPositionUtil.h"
@@ -24,16 +23,6 @@ T sum(const std::vector<T>& array)
         summation += element;
 
     return summation;
-}
-
-template <typename T>
-int hashCode(const std::vector<T>& array)
-{
-    int result = HASH_SEED;
-    for (const T& element : array)
-        result = calcHashCode(result, element);
-
-    return result;
 }
 
 template <typename ARRAY_TRAITS>

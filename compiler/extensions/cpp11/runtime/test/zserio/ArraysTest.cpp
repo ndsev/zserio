@@ -46,8 +46,6 @@ public:
         return bitPosition + bitSizeOf(bitPosition);
     }
 
-    int hashCode() const { return calcHashCode(HASH_SEED, m_value); }
-
     bool operator==(const DummyObject& other) const
     {
         return m_value == other.m_value;
@@ -116,7 +114,6 @@ protected:
             size_t alignedBitSize, ELEMENT_FACTORY elementFactory = nullptr)
     {
         testSum<ARRAY_TRAITS>(array);
-        testHashCode<ARRAY_TRAITS>(array);
         testBitSizeOf<ARRAY_TRAITS>(array, unalignedBitSize);
         testBitSizeOfAuto<ARRAY_TRAITS>(array, AUTO_LENGTH_BIT_SIZE + unalignedBitSize);
         testBitSizeOfAligned<ARRAY_TRAITS>(array, alignedBitSize);
@@ -147,16 +144,6 @@ private:
             calculatedSum += element;
 
         EXPECT_EQ(calculatedSum, zserio::sum(array));
-    }
-
-    template <typename ARRAY_TRAITS>
-    void testHashCode(const std::vector<typename ARRAY_TRAITS::type>& array)
-    {
-        std::vector<typename ARRAY_TRAITS::type> arrayCopy(array);
-        arrayCopy.pop_back();
-
-        // check only if hashCode differs
-        EXPECT_TRUE(zserio::hashCode(array) != zserio::hashCode(arrayCopy));
     }
 
     template <typename ARRAY_TRAITS>

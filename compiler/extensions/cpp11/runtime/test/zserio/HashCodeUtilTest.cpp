@@ -56,6 +56,30 @@ TEST(HashCodeUtilTest, stringType)
     EXPECT_EQ(HASH_PRIME_NUMBER + '0', calcHashCode(hashSeed, stringValue));
 }
 
+enum class Color : uint8_t
+{
+    NONE = UINT8_C(0),
+    RED = UINT8_C(2),
+    BLUE = UINT8_C(3),
+    BLACK = UINT8_C(7)
+};
+
+TEST(HashCodeUtilTest, enumType)
+{
+    const int hashSeed = 1;
+    EXPECT_EQ(HASH_PRIME_NUMBER + enumToValue(Color::NONE), calcHashCode(hashSeed, Color::NONE));
+    EXPECT_EQ(HASH_PRIME_NUMBER + enumToValue(Color::RED), calcHashCode(hashSeed, Color::RED));
+    EXPECT_EQ(HASH_PRIME_NUMBER + enumToValue(Color::BLUE), calcHashCode(hashSeed, Color::BLUE));
+    EXPECT_EQ(HASH_PRIME_NUMBER + enumToValue(Color::BLACK), calcHashCode(hashSeed, Color::BLACK));
+}
+
+TEST(HashCodeUtilTest, arrayType)
+{
+    const int hashSeed = 1;
+    const std::vector<uint8_t> array = {3, 7};
+    EXPECT_EQ((HASH_PRIME_NUMBER + 3) * HASH_PRIME_NUMBER + 7, calcHashCode(hashSeed, array));
+}
+
 struct DummyObject
 {
     DummyObject() {}

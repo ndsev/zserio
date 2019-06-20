@@ -93,7 +93,7 @@ int Data::hashCode() const
     int _result = zserio::HASH_SEED;
 
     _result = zserio::calcHashCode(_result, m_len_);
-    _result = zserio::calcHashCode(_result, zserio::hashCode(m_array_));
+    _result = zserio::calcHashCode(_result, m_array_);
 
     return _result;
 }
