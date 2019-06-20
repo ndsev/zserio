@@ -113,7 +113,6 @@ private:
         virtual ~IHolder() {}
         virtual bool isSet() const = 0;
         virtual IHolder* clone(void* storage) const = 0;
-        virtual bool compare(const IHolder& other) const = 0;
         virtual bool isType(TypeIdHolder::type_id typeId) const = 0;
     };
 
@@ -155,11 +154,6 @@ private:
             holder->m_typedHolder = m_typedHolder;
 
             return holder;
-        }
-
-        virtual bool compare(const IHolder& other) const
-        {
-            return m_typedHolder == (static_cast<const Holder<T>*>(&other))->m_typedHolder;
         }
 
         virtual bool isType(TypeIdHolder::type_id typeId) const

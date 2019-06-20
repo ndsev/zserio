@@ -53,6 +53,7 @@ public:
     {
     }
 
+    // TODO: is default really ok? see copy ctor!
     Structure(Structure&&) = default;
     Structure& operator=(Structure&& other) = default;
 
