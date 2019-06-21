@@ -21,13 +21,43 @@ Structure::Structure(zserio::BitStreamReader& in) :
     read(in);
 }
 
+Structure::Structure(Structure&& other) :
+    m_size(std::move(other.m_size)),
+    m_array(std::move(other.m_array)),
+    m_hasExtra(std::move(other.m_hasExtra)),
+    m_extraSize(std::move(other.m_extraSize)),
+    m_extraArray(std::move(other.m_extraArray)),
+    m_str(std::move(other.m_str))
+{
+    if (other.m_areChildrenInitialized)
+        initializeChildren();
+    else
+        m_areChildrenInitialized = false;
+}
+
+Structure& Structure::operator=(Structure&& other)
+{
+    m_size = std::move(other.m_size);
+    m_array = std::move(other.m_array);
+    m_hasExtra = std::move(other.m_hasExtra);
+    m_extraSize = std::move(other.m_extraSize);
+    m_extraArray = std::move(other.m_extraArray);
+    m_str = std::move(other.m_str);
+    if (other.m_areChildrenInitialized)
+        initializeChildren();
+    else
+        m_areChildrenInitialized = false;
+
+    return *this;
+}
+
 Structure::Structure(const Structure& other) :
-        m_size(other.m_size),
-        m_array(other.m_array),
-        m_hasExtra(other.m_hasExtra),
-        m_extraSize(other.m_extraSize),
-        m_extraArray(other.m_extraArray),
-        m_str(other.m_str)
+    m_size(other.m_size),
+    m_array(other.m_array),
+    m_hasExtra(other.m_hasExtra),
+    m_extraSize(other.m_extraSize),
+    m_extraArray(other.m_extraArray),
+    m_str(other.m_str)
 {
     if (other.m_areChildrenInitialized)
         initializeChildren();

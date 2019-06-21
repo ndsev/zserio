@@ -14,7 +14,7 @@ namespace zserio
 class AnyHolder
 {
 public:
-    AnyHolder() : m_isInPlace(false)
+    AnyHolder()
     {
         m_untypedHolder.heap = NULL;
     }
@@ -26,22 +26,17 @@ public:
 
     // TODO: implement move constructor and move semantic!
 
-    AnyHolder(const AnyHolder& other) : m_isInPlace(false)
+    AnyHolder(const AnyHolder& other)
     {
         m_untypedHolder.heap = NULL;
         copy(other);
     }
 
-    template <typename T>
-    AnyHolder(T&& value)
+    template <typename T,
+            typename std::enable_if<!std::is_same<typename std::decay<T>::type, AnyHolder>::value, int>::type = 0>
+    explicit AnyHolder(T&& value)
     {
         m_untypedHolder.heap = NULL;
-        set(std::forward<T>(value));
-    }
-
-    template <typename T>
-    AnyHolder& operator=(T&& value)
-    {
         set(std::forward<T>(value));
     }
 
@@ -56,6 +51,13 @@ public:
         return *this;
     }
 
+    template <typename T,
+            typename std::enable_if<!std::is_same<typename std::decay<T>::type, AnyHolder>::value, int>::type = 0>
+    AnyHolder& operator=(T&& value)
+    {
+        set(std::forward<T>(value));
+    }
+
     void reset()
     {
         clearHolder();
@@ -64,7 +66,7 @@ public:
     template <typename T>
     void set(T&& value)
     {
-        createHolder<typename std::remove_reference<T>::type>()->set(std::forward<T>(value));
+        createHolder<typename std::decay<T>::type>()->set(std::forward<T>(value));
     }
 
     template <typename T>
@@ -266,7 +268,7 @@ private:
     };
 
     UntypedHolder   m_untypedHolder;
-    bool            m_isInPlace;
+    bool            m_isInPlace = false;
 };
 
 } // namespace zserio

@@ -5,10 +5,7 @@
 
 Choice createChoice(uint16_t value)
 {
-    Choice ch;
-    ch.initialize(1);
-    ch.setValue16(10);
-    return ch;
+    return Choice(1, value);
 }
 
 int main(int argc, char* argv[])
@@ -22,8 +19,13 @@ int main(int argc, char* argv[])
     ch2.setValue16(10);
     std::cout << (ch == ch2 ? "equal" : "not equal") << std::endl;
 
-    Choice moved = createChoice(10); // TODO: make move working
+    Choice ch3(1, static_cast<uint16_t>(10));
+    std::cout << (ch == ch3 ? "equal" : "not equal") << std::endl;
+
+    Choice moved = std::move(createChoice(10)); // TODO: make move working
     std::cout << moved.getValue16() << std::endl;
+
+    Choice ch4(1, 10);
 
     return 0;
 }

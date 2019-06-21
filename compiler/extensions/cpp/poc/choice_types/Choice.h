@@ -20,6 +20,12 @@ public:
     explicit Choice(zserio::BitStreamReader& in,
             uint8_t selector_);
 
+    // TODO: do we want this?
+    template <typename T>
+    explicit Choice(uint8_t selector_, T&& value_)
+    :   m_selector_(selector_), m_isInitialized(true), m_objectChoice(std::forward<T>(value_))
+    {}
+
     // new in cpp11 // TODO: is default really ok? see copy ctor!
     Choice(Choice&& other) = default;
     Choice& operator=(Choice&& other) = default;

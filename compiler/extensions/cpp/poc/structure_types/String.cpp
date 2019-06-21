@@ -23,29 +23,29 @@ String::String(zserio::BitStreamReader& in)
 
 std::string& String::getStr()
 {
-    return m_str;
+    return m_str_;
 }
 
 const std::string& String::getStr() const
 {
-    return m_str;
+    return m_str_;
 }
 
-void String::setStr(const std::string& _str)
+void String::setStr(const std::string& str_)
 {
-    m_str = _str;
+    m_str_ = str_;
 }
 
-void String::setStr(std::string&& _str)
+void String::setStr(std::string&& str_)
 {
-    m_str = std::move(_str);
+    m_str_ = std::move(str_);
 }
 
 size_t String::bitSizeOf(size_t bitPosition) const
 {
     size_t endBitPosition = bitPosition;
 
-    endBitPosition += zserio::getBitSizeOfString(m_str);
+    endBitPosition += zserio::getBitSizeOfString(m_str_);
 
     return endBitPosition - bitPosition;
 }
@@ -54,7 +54,7 @@ size_t String::initializeOffsets(size_t bitPosition)
 {
     size_t endBitPosition = bitPosition;
 
-    endBitPosition += zserio::getBitSizeOfString(m_str);
+    endBitPosition += zserio::getBitSizeOfString(m_str_);
 
     return endBitPosition;
 }
@@ -64,7 +64,7 @@ bool String::operator==(const String& other) const
     if (this != &other)
     {
         return
-                (m_str == other.m_str);
+                (m_str_ == other.m_str_);
     }
 
     return true;
@@ -74,18 +74,18 @@ int String::hashCode() const
 {
     int result = zserio::HASH_SEED;
 
-    result = zserio::calcHashCode(result, m_str);
+    result = zserio::calcHashCode(result, m_str_);
 
     return result;
 }
 
 void String::read(zserio::BitStreamReader& in)
 {
-    m_str = (std::string)in.readString();
+    m_str_ = (std::string)in.readString();
 }
 
 void String::write(zserio::BitStreamWriter& out, zserio::PreWriteAction)
 {
-    out.writeString(m_str);
+    out.writeString(m_str_);
 }
 

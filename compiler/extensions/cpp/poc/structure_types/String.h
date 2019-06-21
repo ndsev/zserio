@@ -22,15 +22,14 @@ public:
 
     // new in cpp11
     template <typename ZSERIO_T_str>
-    explicit String(ZSERIO_T_str&& _str)
-    :   m_str(std::forward<ZSERIO_T_str>(_str))
-    {
-    }
+    explicit String(ZSERIO_T_str&& str_)
+    :   m_str_(std::forward<ZSERIO_T_str>(str_))
+    {}
 
     std::string& getStr();
     const std::string& getStr() const;
-    void setStr(const std::string& _str);
-    void setStr(std::string&& _str);
+    void setStr(const std::string& str_);
+    void setStr(std::string&& str_);
 
     size_t bitSizeOf(size_t bitPosition = 0) const;
     size_t initializeOffsets(size_t bitPosition);
@@ -43,7 +42,7 @@ public:
             zserio::PreWriteAction preWriteAction = zserio::ALL_PRE_WRITE_ACTIONS);
 
 private:
-    std::string m_str;
+    std::string m_str_;
 };
 
 

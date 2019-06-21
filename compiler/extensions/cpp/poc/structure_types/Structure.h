@@ -53,9 +53,9 @@ public:
     {
     }
 
-    // TODO: is default really ok? see copy ctor!
-    Structure(Structure&&) = default;
-    Structure& operator=(Structure&& other) = default;
+    // TODO: is default really ok? see copy ctor! // TODO: NO, when children compound is in place!!! IMPLEMENT!
+    Structure(Structure&&);
+    Structure& operator=(Structure&& other);
 
     Structure(const Structure& other);
     Structure& operator=(const Structure& other);

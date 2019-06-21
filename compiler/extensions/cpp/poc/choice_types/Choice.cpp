@@ -91,46 +91,46 @@ void Choice::setValue64(uint64_t value64_)
     m_objectChoice.set(value64_);
 }
 
-size_t Choice::bitSizeOf(size_t _bitPosition) const
+size_t Choice::bitSizeOf(size_t bitPosition) const
 {
-    size_t _endBitPosition = _bitPosition;
+    size_t endBitPosition = bitPosition;
 
     switch (getSelector())
     {
     case 0:
-        _endBitPosition += UINT8_C(1);
+        endBitPosition += UINT8_C(1);
         break;
     case 1:
     case 2:
-        _endBitPosition += UINT8_C(16);
+        endBitPosition += UINT8_C(16);
         break;
     default:
-        _endBitPosition += UINT8_C(64);
+        endBitPosition += UINT8_C(64);
         break;
     }
 
-    return _endBitPosition - _bitPosition;
+    return endBitPosition - bitPosition;
 }
 
-size_t Choice::initializeOffsets(size_t _bitPosition)
+size_t Choice::initializeOffsets(size_t bitPosition)
 {
-    size_t _endBitPosition = _bitPosition;
+    size_t endBitPosition = bitPosition;
 
     switch (getSelector())
     {
     case 0:
-        _endBitPosition += UINT8_C(1);
+        endBitPosition += UINT8_C(1);
         break;
     case 1:
     case 2:
-        _endBitPosition += UINT8_C(16);
+        endBitPosition += UINT8_C(16);
         break;
     default:
-        _endBitPosition += UINT8_C(64);
+        endBitPosition += UINT8_C(64);
         break;
     }
 
-    return _endBitPosition;
+    return endBitPosition;
 }
 
 bool Choice::operator==(const Choice& other) const

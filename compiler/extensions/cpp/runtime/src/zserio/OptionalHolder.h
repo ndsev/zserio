@@ -130,10 +130,15 @@ public:
     constexpr optional_holder(NullOptType) noexcept
     {}
 
-    template <typename U = T>
-    optional_holder(U&& value)
+    optional_holder(const T& value)
     {
-        new (getStorage()) T(std::forward<U>(value));
+        new (getStorage()) T(value);
+        m_hasValue = true;
+    }
+
+    optional_holder(T&& value)
+    {
+        new (getStorage()) T(std::move(value));
         m_hasValue = true;
     }
 
@@ -190,10 +195,14 @@ public:
         }
     }
 
-    template <typename U = T>
-    optional_holder& operator=(U&& value)
+    optional_holder& operator=(const T& value)
     {
-        set(std::forward<U>(value));
+        set(value);
+    }
+
+    optional_holder& operator=(T&& value)
+    {
+        set(std::move(value));
     }
 
     bool operator==(const optional_holder<T, STORAGE>& other) const
@@ -315,35 +324,14 @@ struct optimized_optional_holder<T, false>
 } // namespace detail
 
 template <typename T>
-class InPlaceOptionalHolder : public detail::optional_holder<T, detail::in_place_storage<T> >
-{
-private:
-    typedef typename detail::optimized_optional_holder<T, detail::is_optimized_in_place<T>::value>::type impl;
-
-public:
-    using impl::optional_holder;
-};
+using InPlaceOptionalHolder = detail::optional_holder<T, detail::in_place_storage<T>>;
 
 template <typename T>
-class HeapOptionalHolder : public detail::optional_holder<T, detail::heap_storage<T> >
-{
-private:
-    typedef typename detail::optimized_optional_holder<T, detail::is_optimized_in_place<T>::value>::type impl;
-
-public:
-    using impl::optional_holder;
-};
+using HeapOptionalHolder = detail::optional_holder<T, detail::heap_storage<T>>;
 
 template <typename T>
-class OptionalHolder :
-        public detail::optimized_optional_holder<T, detail::is_optimized_in_place<T>::value>::type
-{
-private:
-    typedef typename detail::optimized_optional_holder<T, detail::is_optimized_in_place<T>::value>::type impl;
-
-public:
-    using impl::optional_holder;
-};
+using OptionalHolder =
+        typename detail::optimized_optional_holder<T, detail::is_optimized_in_place<T>::value>::type;
 
 } // namespace zserio
 
