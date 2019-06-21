@@ -24,7 +24,19 @@ public:
         clearHolder();
     }
 
-    // TODO: implement move constructor and move semantic!
+    template <typename T,
+            typename std::enable_if<!std::is_same<typename std::decay<T>::type, AnyHolder>::value, int>::type = 0>
+    explicit AnyHolder(T&& value)
+    {
+        m_untypedHolder.heap = NULL;
+        set(std::forward<T>(value));
+    }
+
+    AnyHolder(AnyHolder&& other)
+    {
+        m_untypedHolder.heap = NULL;
+        move(std::move(other));
+    }
 
     AnyHolder(const AnyHolder& other)
     {
@@ -32,12 +44,15 @@ public:
         copy(other);
     }
 
-    template <typename T,
-            typename std::enable_if<!std::is_same<typename std::decay<T>::type, AnyHolder>::value, int>::type = 0>
-    explicit AnyHolder(T&& value)
+    AnyHolder& operator=(AnyHolder&& other)
     {
-        m_untypedHolder.heap = NULL;
-        set(std::forward<T>(value));
+        if (this != &other)
+        {
+            clearHolder();
+            move(std::move(other));
+        }
+
+        return *this;
     }
 
     AnyHolder& operator=(const AnyHolder& other)
@@ -115,6 +130,7 @@ private:
         virtual ~IHolder() {}
         virtual bool isSet() const = 0;
         virtual IHolder* clone(void* storage) const = 0;
+        virtual void move(void* storage) = 0;
         virtual bool isType(TypeIdHolder::type_id typeId) const = 0;
     };
 
@@ -158,6 +174,12 @@ private:
             return holder;
         }
 
+        virtual void move(void* storage)
+        {
+            Holder<T>* holder = new (storage) Holder<T>();
+            holder->m_typedHolder = std::move(m_typedHolder);
+        }
+
         virtual bool isType(TypeIdHolder::type_id typeId) const
         {
             return TypeIdHolder::get<T>() == typeId;
@@ -181,12 +203,30 @@ private:
         }
     }
 
+    void move(AnyHolder&& other)
+    {
+        if (other.m_isInPlace)
+        {
+            other.getUntypedHolder()->move(&m_untypedHolder.inPlace);
+            m_isInPlace = true;
+            reinterpret_cast<IHolder*>(&m_untypedHolder.inPlace)->~IHolder();
+            other.m_isInPlace = false;
+        }
+        else
+        {
+            m_untypedHolder.heap = other.m_untypedHolder.heap;
+        }
+
+        other.m_untypedHolder.heap = NULL;
+    }
+
     void clearHolder()
     {
         if (m_isInPlace)
         {
             reinterpret_cast<IHolder*>(&m_untypedHolder.inPlace)->~IHolder();
             m_isInPlace = false;
+            m_untypedHolder.heap = NULL;
         }
         else
         {
