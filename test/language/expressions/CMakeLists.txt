@@ -100,33 +100,33 @@ zserio_add_library(TARGET expressions_zs
     OUT_DIR ${ZSERIO_GEN_DIR}
     OUT_FILES ${ZSERIO_GENERATED_SOURCES}
     ZSERIO_CORE_DIR ${ZSERIO_JAR_DIR}
-    ZSERIO_OPTIONS -withoutSourcesAmalgamation
+    ZSERIO_OPTIONS -withoutSourcesAmalgamation -cppStandard ${ZSERIO_CPP_STANDARD}
 )
 
 add_test_sources(
-    cpp/ArrayTypeTest.cpp
-    cpp/CastUInt64ToUInt8Test.cpp
-    cpp/CastUInt8ToUInt64Test.cpp
-    cpp/ConstTypeTest.cpp
-    cpp/EnumerationTypeTest.cpp
-    cpp/FieldTypeTest.cpp
-    cpp/FloatTypeTest.cpp
-    cpp/FullConstTypeTest.cpp
-    cpp/FullEnumerationTypeTest.cpp
-    cpp/FunctionTypeTest.cpp
-    cpp/IndexOperatorTest.cpp
-    cpp/LengthOfOperatorTest.cpp
-    cpp/NegationOperatorTest.cpp
-    cpp/NumBitsOperatorTest.cpp
-    cpp/ParameterTypeTest.cpp
-    cpp/ParameterizedArrayTypeTest.cpp
-    cpp/ParenthesisTest.cpp
-    cpp/QuestionMarkTest.cpp
-    cpp/StringTypeTest.cpp
-    cpp/SumOperatorTest.cpp
-    cpp/UInt64TypeTest.cpp
-    cpp/UsedBeforeTypeTest.cpp
-    cpp/ValueOfOperatorTest.cpp
+    ${ZSERIO_CPP_DIR}/ArrayTypeTest.cpp
+    ${ZSERIO_CPP_DIR}/CastUInt64ToUInt8Test.cpp
+    ${ZSERIO_CPP_DIR}/CastUInt8ToUInt64Test.cpp
+    ${ZSERIO_CPP_DIR}/ConstTypeTest.cpp
+    ${ZSERIO_CPP_DIR}/EnumerationTypeTest.cpp
+    ${ZSERIO_CPP_DIR}/FieldTypeTest.cpp
+    ${ZSERIO_CPP_DIR}/FloatTypeTest.cpp
+    ${ZSERIO_CPP_DIR}/FullConstTypeTest.cpp
+    ${ZSERIO_CPP_DIR}/FullEnumerationTypeTest.cpp
+    ${ZSERIO_CPP_DIR}/FunctionTypeTest.cpp
+    ${ZSERIO_CPP_DIR}/IndexOperatorTest.cpp
+    ${ZSERIO_CPP_DIR}/LengthOfOperatorTest.cpp
+    ${ZSERIO_CPP_DIR}/NegationOperatorTest.cpp
+    ${ZSERIO_CPP_DIR}/NumBitsOperatorTest.cpp
+    ${ZSERIO_CPP_DIR}/ParameterTypeTest.cpp
+    ${ZSERIO_CPP_DIR}/ParameterizedArrayTypeTest.cpp
+    ${ZSERIO_CPP_DIR}/ParenthesisTest.cpp
+    ${ZSERIO_CPP_DIR}/QuestionMarkTest.cpp
+    ${ZSERIO_CPP_DIR}/StringTypeTest.cpp
+    ${ZSERIO_CPP_DIR}/SumOperatorTest.cpp
+    ${ZSERIO_CPP_DIR}/UInt64TypeTest.cpp
+    ${ZSERIO_CPP_DIR}/UsedBeforeTypeTest.cpp
+    ${ZSERIO_CPP_DIR}/ValueOfOperatorTest.cpp
 )
 
 add_test_dependencies(expressions_zs)

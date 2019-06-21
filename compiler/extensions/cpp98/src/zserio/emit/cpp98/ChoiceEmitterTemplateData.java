@@ -1,4 +1,4 @@
-package zserio.emit.cpp;
+package zserio.emit.cpp98;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -11,7 +11,7 @@ import zserio.ast.Expression;
 import zserio.ast.Field;
 import zserio.emit.common.ExpressionFormatter;
 import zserio.emit.common.ZserioEmitException;
-import zserio.emit.cpp.types.CppNativeType;
+import zserio.emit.cpp98.types.CppNativeType;
 
 public class ChoiceEmitterTemplateData extends CompoundTypeTemplateData
 {

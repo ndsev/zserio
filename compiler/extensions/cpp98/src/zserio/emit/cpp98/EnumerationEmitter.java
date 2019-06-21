@@ -1,4 +1,4 @@
-package zserio.emit.cpp;
+package zserio.emit.cpp98;
 
 import zserio.ast.EnumType;
 import zserio.emit.common.ZserioEmitException;

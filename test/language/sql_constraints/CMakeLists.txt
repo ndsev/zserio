@@ -17,13 +17,13 @@ zserio_add_library(TARGET sql_constraints_zs
     OUT_DIR ${ZSERIO_GEN_DIR}
     OUT_FILES ${ZSERIO_GENERATED_SOURCES}
     ZSERIO_CORE_DIR ${ZSERIO_JAR_DIR}
-    ZSERIO_OPTIONS -withoutSourcesAmalgamation
+    ZSERIO_OPTIONS -withoutSourcesAmalgamation -cppStandard ${ZSERIO_CPP_STANDARD}
 )
 
 target_include_directories(sql_constraints_zs SYSTEM PRIVATE ${SQLITE_INCDIR})
 
 add_test_sources(
-    cpp/SqlConstraintsTest.cpp
+    ${ZSERIO_CPP_DIR}/SqlConstraintsTest.cpp
 )
 
 add_test_dependencies(sql_constraints_zs)

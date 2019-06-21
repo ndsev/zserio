@@ -1,4 +1,4 @@
-package zserio.emit.cpp;
+package zserio.emit.cpp98;
 
 import java.util.List;
 import java.util.TreeSet;
@@ -10,7 +10,7 @@ import zserio.ast.SqlTableType;
 import zserio.ast.TypeInstantiation;
 import zserio.emit.common.ExpressionFormatter;
 import zserio.emit.common.ZserioEmitException;
-import zserio.emit.cpp.types.CppNativeType;
+import zserio.emit.cpp98.types.CppNativeType;
 import zserio.tools.HashUtil;
 
 public class InspectorParameterProviderTemplateData extends CppTemplateData

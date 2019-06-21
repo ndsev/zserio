@@ -1,4 +1,4 @@
-package zserio.emit.cpp.types;
+package zserio.emit.cpp98.types;
 
 import zserio.ast.PackageName;
 

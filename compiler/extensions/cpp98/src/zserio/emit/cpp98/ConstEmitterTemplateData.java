@@ -1,9 +1,9 @@
-package zserio.emit.cpp;
+package zserio.emit.cpp98;
 
 import zserio.ast.ConstType;
 import zserio.emit.common.ExpressionFormatter;
 import zserio.emit.common.ZserioEmitException;
-import zserio.emit.cpp.types.CppNativeType;
+import zserio.emit.cpp98.types.CppNativeType;
 
 public class ConstEmitterTemplateData extends UserTypeTemplateData
 {

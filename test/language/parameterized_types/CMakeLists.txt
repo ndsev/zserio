@@ -32,14 +32,14 @@ zserio_add_library(TARGET parameterized_types_zs
     OUT_DIR ${ZSERIO_GEN_DIR}
     OUT_FILES ${ZSERIO_GENERATED_SOURCES}
     ZSERIO_CORE_DIR ${ZSERIO_JAR_DIR}
-    ZSERIO_OPTIONS -withoutSourcesAmalgamation
+    ZSERIO_OPTIONS -withoutSourcesAmalgamation -cppStandard ${ZSERIO_CPP_STANDARD}
 )
 
 add_test_sources(
-    cpp/ArrayElementParamTest.cpp
-    cpp/GrandChildParamTest.cpp
-    cpp/SimpleParamTest.cpp
-    cpp/SubtypedBitfieldParamTest.cpp
+    ${ZSERIO_CPP_DIR}/ArrayElementParamTest.cpp
+    ${ZSERIO_CPP_DIR}/GrandChildParamTest.cpp
+    ${ZSERIO_CPP_DIR}/SimpleParamTest.cpp
+    ${ZSERIO_CPP_DIR}/SubtypedBitfieldParamTest.cpp
 )
 
 add_test_dependencies(parameterized_types_zs)

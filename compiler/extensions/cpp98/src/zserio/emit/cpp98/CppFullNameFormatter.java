@@ -1,4 +1,4 @@
-package zserio.emit.cpp;
+package zserio.emit.cpp98;
 
 import zserio.ast.PackageName;
 import zserio.tools.StringJoinUtil;

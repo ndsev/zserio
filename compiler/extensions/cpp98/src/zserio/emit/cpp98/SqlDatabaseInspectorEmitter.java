@@ -1,4 +1,4 @@
-package zserio.emit.cpp;
+package zserio.emit.cpp98;
 
 import zserio.ast.Root;
 import zserio.emit.common.ZserioEmitException;

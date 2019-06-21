@@ -1,7 +1,7 @@
-package zserio.emit.cpp.types;
+package zserio.emit.cpp98.types;
 
 import zserio.ast.PackageName;
-import zserio.emit.cpp.TemplateInstantiationFormatter;
+import zserio.emit.cpp98.TemplateInstantiationFormatter;
 
 public class NativeObjectArrayType extends NativeArrayType
 {

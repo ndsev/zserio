@@ -1,4 +1,4 @@
-package zserio.emit.cpp;
+package zserio.emit.cpp98;
 
 public class SqlTableInspectorTemplateData extends CppTemplateData
 {

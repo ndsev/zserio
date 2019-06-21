@@ -1,4 +1,4 @@
-package zserio.emit.cpp;
+package zserio.emit.cpp98;
 
 import java.util.SortedSet;
 import java.util.TreeSet;
@@ -6,7 +6,7 @@ import java.util.TreeSet;
 import zserio.ast.Rpc;
 import zserio.ast.ServiceType;
 import zserio.emit.common.ZserioEmitException;
-import zserio.emit.cpp.types.CppNativeType;
+import zserio.emit.cpp98.types.CppNativeType;
 
 public class GrpcSerializationTraitsTemplateData extends CppTemplateData
 {

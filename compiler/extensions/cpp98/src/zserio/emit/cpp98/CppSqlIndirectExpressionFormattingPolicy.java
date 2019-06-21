@@ -1,4 +1,4 @@
-package zserio.emit.cpp;
+package zserio.emit.cpp98;
 
 /**
  * A special formatting policy to be used in generated SQL tables which need indirect references.

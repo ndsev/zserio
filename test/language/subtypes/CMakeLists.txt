@@ -28,14 +28,14 @@ zserio_add_library(TARGET subtypes_zs
     OUT_DIR ${ZSERIO_GEN_DIR}
     OUT_FILES ${ZSERIO_GENERATED_SOURCES}
     ZSERIO_CORE_DIR ${ZSERIO_JAR_DIR}
-    ZSERIO_OPTIONS -withoutSourcesAmalgamation
+    ZSERIO_OPTIONS -withoutSourcesAmalgamation -cppStandard ${ZSERIO_CPP_STANDARD}
 )
 
 add_test_sources(
-    cpp/EnumSubtypeTest.cpp
-    cpp/ParamStructureSubtypeTest.cpp
-    cpp/StructureSubtypeTest.cpp
-    cpp/UInt16SubtypeTest.cpp
+    ${ZSERIO_CPP_DIR}/EnumSubtypeTest.cpp
+    ${ZSERIO_CPP_DIR}/ParamStructureSubtypeTest.cpp
+    ${ZSERIO_CPP_DIR}/StructureSubtypeTest.cpp
+    ${ZSERIO_CPP_DIR}/UInt16SubtypeTest.cpp
 )
 
 add_test_dependencies(subtypes_zs)

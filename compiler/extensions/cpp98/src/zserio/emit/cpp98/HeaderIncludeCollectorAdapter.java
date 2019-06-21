@@ -1,8 +1,8 @@
-package zserio.emit.cpp;
+package zserio.emit.cpp98;
 
 import java.util.Collection;
 
-import zserio.emit.cpp.types.CppNativeType;
+import zserio.emit.cpp98.types.CppNativeType;
 
 /**
  * Adapter which adds all includes as header includes.

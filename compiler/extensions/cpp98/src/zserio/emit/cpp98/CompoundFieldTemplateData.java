@@ -1,4 +1,4 @@
-package zserio.emit.cpp;
+package zserio.emit.cpp98;
 
 import java.math.BigInteger;
 import java.util.ArrayList;
@@ -20,11 +20,11 @@ import zserio.ast.TypeInstantiation.InstantiatedParameter;
 import zserio.ast.TypeReference;
 import zserio.emit.common.ExpressionFormatter;
 import zserio.emit.common.ZserioEmitException;
-import zserio.emit.cpp.types.CppNativeType;
-import zserio.emit.cpp.types.NativeArrayType;
-import zserio.emit.cpp.types.NativeEnumType;
-import zserio.emit.cpp.types.NativeIntegralType;
-import zserio.emit.cpp.types.NativeOptionalHolderType;
+import zserio.emit.cpp98.types.CppNativeType;
+import zserio.emit.cpp98.types.NativeArrayType;
+import zserio.emit.cpp98.types.NativeEnumType;
+import zserio.emit.cpp98.types.NativeIntegralType;
+import zserio.emit.cpp98.types.NativeOptionalHolderType;
 
 public class CompoundFieldTemplateData
 {

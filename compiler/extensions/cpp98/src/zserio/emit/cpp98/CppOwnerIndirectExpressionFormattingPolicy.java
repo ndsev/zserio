@@ -1,4 +1,4 @@
-package zserio.emit.cpp;
+package zserio.emit.cpp98;
 
 /**
  * A special formatting policy to be used in generated helper classes (e.g. factories) which need indirect

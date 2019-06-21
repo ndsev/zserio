@@ -46,7 +46,7 @@ zserio_add_library(TARGET packages_zs
     OUT_DIR ${ZSERIO_GEN_DIR_PACKAGES}
     OUT_FILES ${ZSERIO_GENERATED_SOURCES_PACKAGES}
     ZSERIO_CORE_DIR ${ZSERIO_JAR_DIR}
-    ZSERIO_OPTIONS -withoutSourcesAmalgamation
+    ZSERIO_OPTIONS -withoutSourcesAmalgamation -cppStandard ${ZSERIO_CPP_STANDARD}
 )
 
 zserio_add_library(TARGET empty_file_zs
@@ -55,6 +55,7 @@ zserio_add_library(TARGET empty_file_zs
     OUT_DIR ${ZSERIO_GEN_DIR_EMPTY_FILE}
     OUT_FILES EMPTY
     ZSERIO_CORE_DIR ${ZSERIO_JAR_DIR}
+    ZSERIO_OPTIONS -cppStandard ${ZSERIO_CPP_STANDARD}
 )
 
 zserio_add_library(TARGET default_package_zs
@@ -63,11 +64,11 @@ zserio_add_library(TARGET default_package_zs
     OUT_DIR ${ZSERIO_GEN_DIR_DEFAULT_PACKAGE}
     OUT_FILES ${ZSERIO_GENERATED_SOURCES_DEFAULT_PACKAGE}
     ZSERIO_CORE_DIR ${ZSERIO_JAR_DIR}
-    ZSERIO_OPTIONS -withoutSourcesAmalgamation
+    ZSERIO_OPTIONS -withoutSourcesAmalgamation -cppStandard ${ZSERIO_CPP_STANDARD}
 )
 
 add_test_sources(
-    cpp/DefaultPackageTest.cpp
+    ${ZSERIO_CPP_DIR}/DefaultPackageTest.cpp
 )
 
 add_test_dependencies(packages_zs)

@@ -1,4 +1,4 @@
-package zserio.emit.cpp.types;
+package zserio.emit.cpp98.types;
 
 import java.util.Collections;
 import java.util.SortedSet;
@@ -6,7 +6,7 @@ import java.util.TreeSet;
 
 import zserio.ast.PackageName;
 import zserio.emit.common.NativeType;
-import zserio.emit.cpp.CppFullNameFormatter;
+import zserio.emit.cpp98.CppFullNameFormatter;
 
 public abstract class CppNativeType implements NativeType
 {

@@ -1,8 +1,8 @@
-package zserio.emit.cpp;
+package zserio.emit.cpp98;
 
 import zserio.ast.PackageName;
-import zserio.emit.cpp.CppTemplateData.PackageTemplateData;
-import zserio.emit.cpp.types.CppNativeType;
+import zserio.emit.cpp98.CppTemplateData.PackageTemplateData;
+import zserio.emit.cpp98.types.CppNativeType;
 import zserio.tools.HashUtil;
 
 public class ForwardDeclarationTemplateData implements Comparable<ForwardDeclarationTemplateData>

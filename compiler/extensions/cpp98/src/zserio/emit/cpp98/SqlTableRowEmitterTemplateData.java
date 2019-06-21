@@ -1,4 +1,4 @@
-package zserio.emit.cpp;
+package zserio.emit.cpp98;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -7,7 +7,7 @@ import zserio.ast.ZserioType;
 import zserio.ast.Field;
 import zserio.ast.SqlTableType;
 import zserio.emit.common.ZserioEmitException;
-import zserio.emit.cpp.types.CppNativeType;
+import zserio.emit.cpp98.types.CppNativeType;
 
 public class SqlTableRowEmitterTemplateData extends CppTemplateData
 {

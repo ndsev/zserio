@@ -1,4 +1,4 @@
-package zserio.emit.cpp;
+package zserio.emit.cpp98;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -12,14 +12,14 @@ import zserio.tools.Extension;
 import zserio.tools.Parameters;
 
 /**
- * The extension which generates C++ API sources.
+ * The extension which generates C++98 API sources.
  */
 public class CppExtension implements Extension
 {
     @Override
     public String getName()
     {
-        return "C++ Generator";
+        return "C++98 Generator";
     }
 
     @Override
@@ -31,16 +31,31 @@ public class CppExtension implements Extension
     @Override
     public void registerOptions(org.apache.commons.cli.Options options)
     {
-        Option option = new Option(OptionCpp, true, "generate C++ sources");
-        option.setArgName("outputDir");
-        option.setRequired(false);
-        options.addOption(option);
+        if (!options.hasOption(OptionCpp))
+        {
+            Option option = new Option(OptionCpp, true, "generate C++ sources");
+            option.setArgName("outputDir");
+            option.setRequired(false);
+            options.addOption(option);
+        }
+
+        if (!options.hasOption(OptionCppStandard))
+        {
+            Option option = new Option(OptionCppStandard, true,
+                    "use C++ standard for generated sources (e.g. c++98)");
+            option.setArgName("standard");
+            option.setRequired(false);
+            options.addOption(option);
+        }
     }
 
     @Override
     public boolean isEnabled(Parameters parameters)
     {
-        return parameters.argumentExists(OptionCpp);
+        final String cppStandard = parameters.getCommandLineArg(OptionCppStandard);
+        final boolean isCppStandard98 = (cppStandard == null) ? false : cppStandard.equals("c++98");
+
+        return parameters.argumentExists(OptionCpp) && isCppStandard98;
     }
 
     @Override
@@ -62,10 +77,11 @@ public class CppExtension implements Extension
         emitters.add(new ChoiceEmitter(outputDir, parameters));
         emitters.add(new UnionEmitter(outputDir, parameters));
 
-        // emit C++ code
+        // emit C++98 code
         for (Emitter cppEmitter: emitters)
             rootNode.emit(cppEmitter);
     }
 
     private final static String OptionCpp = "cpp";
+    private final static String OptionCppStandard = "cppStandard";
 }

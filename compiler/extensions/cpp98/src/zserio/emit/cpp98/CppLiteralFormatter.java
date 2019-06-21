@@ -1,10 +1,10 @@
-package zserio.emit.cpp;
+package zserio.emit.cpp98;
 
 import java.math.BigInteger;
 
 import zserio.emit.common.ZserioEmitException;
-import zserio.emit.cpp.types.NativeBooleanType;
-import zserio.emit.cpp.types.NativeStdIntType;
+import zserio.emit.cpp98.types.NativeBooleanType;
+import zserio.emit.cpp98.types.NativeStdIntType;
 
 /**
  * The class to format zserio literals in C++ format.

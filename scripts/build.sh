@@ -144,36 +144,43 @@ Usage:
     $0 [-h] [-c] [-p] [-o <dir>] package...
 
 Arguments:
-    -h, --help              Show this help.
-    -c, --clean             Clean package instead of build.
-    -p, --purge             Purge build and distr directories before build.
+    -h, --help               Show this help.
+    -c, --clean              Clean package instead of build.
+    -p, --purge              Purge build and distr directories before build.
     -o <dir>, --output-directory <dir>
-                            Output directory where build and distr will be located.
-    package                 Specify the package to build or clean.
+                             Output directory where build and distr will be located.
+    package                  Specify the package to build or clean.
 
 Package can be the combination of:
-    ant_task                Zserio Ant task.
-    core                    Zserio Core.
-    cpp                     Zserio C++ extension.
-    cpp_rt-linux32          Zserio C++ extension runtime library for native linux32 (gcc).
-    cpp_rt-linux64          Zserio C++ extension runtime library for native linux64 (gcc).
-    cpp_rt-windows32-mingw  Zserio C++ extension runtime library for windows32 target (MinGW).
-    cpp_rt-windows64-mingw  Zserio C++ extension runtime library for windows64 target (MinGW64).
-    cpp_rt-windows32-msvc   Zserio C++ extension runtime library for windows32 target (MSVC).
-    cpp_rt-windows64-msvc   Zserio C++ extension runtime library for windows64 target (MSVC).
-    java                    Zserio Java extension.
-    java_rt                 Zserio Java extension runtime library.
-    python                  Zserio Python extension.
-    python_rt               Zserio Python extensions runtime library.
-    xml                     Zserio XML extension.
-    doc                     Zserio Documentation extension.
-    zserio                  Zserio bundle (Zserio Core packed together with all already built extensions).
-    all-linux32             All available packages for linux32.
-    all-linux64             All available packages for linux64.
-    all-windows32-mingw     All available packages for windows32 target (MinGW).
-    all-windows64-mingw     All available packages for windows64 target (MinGW64).
-    all-windows32-msvc      All available packages for windows32 target (MSVC).
-    all-windows64-msvc      All available packages for windows32 target (MSVC).
+    ant_task                 Zserio Ant task.
+    core                     Zserio Core.
+    cpp                      Zserio C++ extension.
+    cpp_rt-linux32           Zserio C++ extension runtime library for native linux32 (gcc).
+    cpp_rt-linux64           Zserio C++ extension runtime library for native linux64 (gcc).
+    cpp_rt-windows32-mingw   Zserio C++ extension runtime library for windows32 target (MinGW).
+    cpp_rt-windows64-mingw   Zserio C++ extension runtime library for windows64 target (MinGW64).
+    cpp_rt-windows32-msvc    Zserio C++ extension runtime library for windows32 target (MSVC).
+    cpp_rt-windows64-msvc    Zserio C++ extension runtime library for windows64 target (MSVC).
+    cpp98                    Zserio C++98 extension.
+    cpp98_rt-linux32         Zserio C++98 extension runtime library for native linux32 (gcc).
+    cpp98_rt-linux64         Zserio C++98 extension runtime library for native linux64 (gcc).
+    cpp98_rt-windows32-mingw Zserio C++98 extension runtime library for windows32 target (MinGW).
+    cpp98_rt-windows64-mingw Zserio C++98 extension runtime library for windows64 target (MinGW64).
+    cpp98_rt-windows32-msvc  Zserio C++98 extension runtime library for windows32 target (MSVC).
+    cpp98_rt-windows64-msvc  Zserio C++98 extension runtime library for windows64 target (MSVC).
+    java                     Zserio Java extension.
+    java_rt                  Zserio Java extension runtime library.
+    python                   Zserio Python extension.
+    python_rt                Zserio Python extensions runtime library.
+    xml                      Zserio XML extension.
+    doc                      Zserio Documentation extension.
+    zserio                   Zserio bundle (Zserio Core packed together with all already built extensions).
+    all-linux32              All available packages for linux32.
+    all-linux64              All available packages for linux64.
+    all-windows32-mingw      All available packages for windows32 target (MinGW).
+    all-windows64-mingw      All available packages for windows64 target (MinGW64).
+    all-windows32-msvc       All available packages for windows32 target (MSVC).
+    all-windows64-msvc       All available packages for windows32 target (MSVC).
 
 Examples:
     $0 ant_task core cpp cpp_rt-linux64 java java_rt python python_rt xml doc
@@ -193,12 +200,14 @@ EOF
 # 2 - Help switch is present. Arguments after help switch have not been checked.
 parse_arguments()
 {
-    local NUM_OF_ARGS=12
+    local NUM_OF_ARGS=13
     exit_if_argc_lt $# ${NUM_OF_ARGS}
     local PARAM_ANT_TASK_OUT="$1"; shift
     local PARAM_CORE_OUT="$1"; shift
     local PARAM_CPP_OUT="$1"; shift
     local PARAM_CPP_TARGET_ARRAY_OUT="$1"; shift
+    local PARAM_CPP98_OUT="$1"; shift
+    local PARAM_CPP98_TARGET_ARRAY_OUT="$1"; shift
     local PARAM_JAVA_OUT="$1"; shift
     local PARAM_JAVA_RUNTIME_OUT="$1"; shift
     local PARAM_PYTHON_OUT="$1"; shift
@@ -213,6 +222,7 @@ parse_arguments()
     eval ${PARAM_ANT_TASK_OUT}=0
     eval ${PARAM_CORE_OUT}=0
     eval ${PARAM_CPP_OUT}=0
+    eval ${PARAM_CPP98_OUT}=0
     eval ${PARAM_JAVA_OUT}=0
     eval ${PARAM_JAVA_RUNTIME_OUT}=0
     eval ${PARAM_PYTHON_OUT}=0
@@ -262,7 +272,8 @@ parse_arguments()
         ARG="$1"
     done
 
-    local NUM_TARGETS=0
+    local NUM_CPP_TARGETS=0
+    local NUM_CPP98_TARGETS=0
     local PARAM
     for PARAM in "${PARAM_ARRAY[@]}" ; do
         case "${PARAM}" in
@@ -279,8 +290,17 @@ parse_arguments()
                 ;;
 
             "cpp_rt-linux32" | "cpp_rt-linux64" | "cpp_rt-windows32-"* | "cpp_rt-windows64-"*)
-                eval ${PARAM_CPP_TARGET_ARRAY_OUT}[${NUM_TARGETS}]="${PARAM#cpp_rt-}"
-                NUM_TARGETS=$((NUM_TARGETS + 1))
+                eval ${PARAM_CPP_TARGET_ARRAY_OUT}[${NUM_CPP_TARGETS}]="${PARAM#cpp_rt-}"
+                NUM_CPP_TARGETS=$((NUM_CPP_TARGETS + 1))
+                ;;
+
+            "cpp98")
+                eval ${PARAM_CPP98_OUT}=1
+                ;;
+
+            "cpp98_rt-linux32" | "cpp98_rt-linux64" | "cpp98_rt-windows32-"* | "cpp98_rt-windows64-"*)
+                eval ${PARAM_CPP98_TARGET_ARRAY_OUT}[${NUM_CPP98_TARGETS}]="${PARAM#cpp98_rt-}"
+                NUM_CPP98_TARGETS=$((NUM_CPP98_TARGETS + 1))
                 ;;
 
             "java")
@@ -316,8 +336,10 @@ parse_arguments()
                 eval ${PARAM_ANT_TASK_OUT}=1
                 eval ${PARAM_CORE_OUT}=1
                 eval ${PARAM_CPP_OUT}=1
-                eval ${PARAM_CPP_TARGET_ARRAY_OUT}[${NUM_TARGETS}]="${PARAM#all-}"
-                NUM_TARGETS=$((NUM_TARGETS + 1))
+                eval ${PARAM_CPP_TARGET_ARRAY_OUT}[${NUM_CPP_TARGETS}]="${PARAM#all-}"
+                NUM_CPP_TARGETS=$((NUM_CPP_TARGETS + 1))
+                eval ${PARAM_CPP98_TARGET_ARRAY_OUT}[${NUM_CPP98_TARGETS}]="${PARAM#all-}"
+                NUM_CPP98_TARGETS=$((NUM_CPP98_TARGETS + 1))
                 eval ${PARAM_JAVA_OUT}=1
                 eval ${PARAM_JAVA_RUNTIME_OUT}=1
                 eval ${PARAM_PYTHON_OUT}=1
@@ -337,7 +359,9 @@ parse_arguments()
     if [[ ${!PARAM_ANT_TASK_OUT} == 0 &&
           ${!PARAM_CORE_OUT} == 0 &&
           ${!PARAM_CPP_OUT} == 0 &&
-          ${NUM_TARGETS} == 0 &&
+          ${NUM_CPP_TARGETS} == 0 &&
+          ${!PARAM_CPP98_OUT} == 0 &&
+          ${NUM_CPP98_TARGETS} == 0 &&
           ${!PARAM_JAVA_OUT} == 0 &&
           ${!PARAM_JAVA_RUNTIME_OUT} == 0 &&
           ${!PARAM_PYTHON_OUT} == 0 &&
@@ -365,6 +389,8 @@ main()
     local PARAM_CORE
     local PARAM_CPP
     local PARAM_CPP_TARGET_ARRAY=()
+    local PARAM_CPP98
+    local PARAM_CPP98_TARGET_ARRAY=()
     local PARAM_JAVA
     local PARAM_JAVA_RUNTIME
     local PARAM_PYTHON
@@ -375,8 +401,8 @@ main()
     local PARAM_OUT_DIR="${ZSERIO_PROJECT_ROOT}"
     local SWITCH_CLEAN
     local SWITCH_PURGE
-    parse_arguments PARAM_ANT_TASK PARAM_CORE \
-                    PARAM_CPP PARAM_CPP_TARGET_ARRAY PARAM_JAVA PARAM_JAVA_RUNTIME \
+    parse_arguments PARAM_ANT_TASK PARAM_CORE PARAM_CPP PARAM_CPP_TARGET_ARRAY \
+                    PARAM_CPP98 PARAM_CPP98_TARGET_ARRAY PARAM_JAVA PARAM_JAVA_RUNTIME \
                     PARAM_PYTHON PARAM_PYTHON_RUNTIME PARAM_XML PARAM_DOC PARAM_ZSERIO \
                     PARAM_OUT_DIR SWITCH_CLEAN SWITCH_PURGE $@
     if [ $? -ne 0 ] ; then
@@ -393,6 +419,7 @@ main()
     if [[ ${PARAM_ANT_TASK} != 0 ||
           ${PARAM_CORE} != 0 ||
           ${PARAM_CPP} != 0 ||
+          ${PARAM_CPP98} != 0 ||
           ${PARAM_JAVA} != 0 ||
           ${PARAM_JAVA_RUNTIME} != 0 ||
           ${PARAM_PYTHON} != 0 ||
@@ -404,7 +431,7 @@ main()
         fi
     fi
 
-    if [[ ${#PARAM_CPP_TARGET_ARRAY[@]} -ne 0 ]] ; then
+    if [[ ${#PARAM_CPP_TARGET_ARRAY[@]} -ne 0 || ${#PARAM_CPP98_TARGET_ARRAY[@]} -ne 0 ]] ; then
         set_global_cpp_variables
         if [ $? -ne 0 ] ; then
             return 1
@@ -479,7 +506,7 @@ main()
     if [[ ${PARAM_CPP} == 1 ]] ; then
         echo "${ACTION_DESCRIPTION} Zserio C++ extension."
         echo
-        compile_java "${ZSERIO_PROJECT_ROOT}/compiler/extensions/cpp/build.xml" ANT_PROPS[@] ${JAVA_TARGET}
+        #!@# compile_java "${ZSERIO_PROJECT_ROOT}/compiler/extensions/cpp/build.xml" ANT_PROPS[@] ${JAVA_TARGET}
         if [ $? -ne 0 ] ; then
             return 1
         fi
@@ -500,14 +527,28 @@ main()
         if [ $? -ne 0 ] ; then
             return 1
         fi
+    fi
+
+    # build Zserio C++98 extension
+    if [[ ${PARAM_CPP98} == 1 ]] ; then
+        echo "${ACTION_DESCRIPTION} Zserio C++98 extension."
         echo
-        echo "${ACTION_DESCRIPTION} Zserio C++11 runtime library."
+        compile_java "${ZSERIO_PROJECT_ROOT}/compiler/extensions/cpp98/build.xml" ANT_PROPS[@] ${JAVA_TARGET}
+        if [ $? -ne 0 ] ; then
+            return 1
+        fi
         echo
-        local CMAKELISTS_DIR="${ZSERIO_PROJECT_ROOT}/compiler/extensions/cpp11/runtime"
-        local CPP_BUILD_DIR="${ZSERIO_BUILD_DIR}/runtime_libs/cpp11"
+    fi
+
+    # build Zserio C++98 runtime library
+    if [ ${#PARAM_CPP98_TARGET_ARRAY[@]} -ne 0 ] ; then
+        echo "${ACTION_DESCRIPTION} Zserio C++98 runtime library."
+        echo
+        local CMAKELISTS_DIR="${ZSERIO_PROJECT_ROOT}/compiler/extensions/cpp98/runtime"
+        local CPP_BUILD_DIR="${ZSERIO_BUILD_DIR}/runtime_libs/cpp98"
         local CMAKE_ARGS=("-DCMAKE_INSTALL_PREFIX=${ZSERIO_DISTR_DIR}/runtime_libs")
         local CTEST_ARGS=()
-        compile_cpp "${ZSERIO_PROJECT_ROOT}" "${CPP_BUILD_DIR}" "${CMAKELISTS_DIR}" PARAM_CPP_TARGET_ARRAY[@] \
+        compile_cpp "${ZSERIO_PROJECT_ROOT}" "${CPP_BUILD_DIR}" "${CMAKELISTS_DIR}" PARAM_CPP98_TARGET_ARRAY[@] \
                     CMAKE_ARGS[@] CTEST_ARGS[@] ${CPP_TARGET}
         if [ $? -ne 0 ] ; then
             return 1

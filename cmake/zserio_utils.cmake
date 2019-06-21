@@ -158,8 +158,15 @@ function(zserio_add_library)
     # add cppcheck custom command (cppcheck fails if no sources to check are available)
     if (NOT(SOURCE_FILE_POSITION EQUAL -1))
         include(cppcheck_utils)
+        if (VALUE_ZSERIO_OPTIONS MATCHES "c\\+\\+98")
+            set(SUPPRESSION_SUBDIR "cpp98")
+        else ()
+            set(SUPPRESSION_SUBDIR "cpp")
+        endif ()
+        set(SUPPRESSION_FILE_NAME "${CMAKE_CURRENT_SOURCE_DIR}/${SUPPRESSION_SUBDIR}/CppcheckSuppressions.txt")
         cppcheck_add_custom_command(TARGET ${VALUE_TARGET}
-                                    SOURCE_DIR ${VALUE_OUT_DIR}
-                                    INCLUDE_DIR ${VALUE_OUT_DIR})
+                                    SOURCE_DIR "${VALUE_OUT_DIR}"
+                                    INCLUDE_DIR "${VALUE_OUT_DIR}"
+                                    SUPPRESSION_FILE "${SUPPRESSION_FILE_NAME}")
     endif ()
 endfunction()

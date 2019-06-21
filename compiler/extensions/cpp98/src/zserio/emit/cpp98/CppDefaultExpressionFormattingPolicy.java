@@ -1,4 +1,4 @@
-package zserio.emit.cpp;
+package zserio.emit.cpp98;
 
 import java.math.BigInteger;
 import java.util.Arrays;
@@ -17,7 +17,7 @@ import zserio.ast.Parameter;
 import zserio.emit.common.DefaultExpressionFormattingPolicy;
 import zserio.emit.common.StringEscapeConverter;
 import zserio.emit.common.ZserioEmitException;
-import zserio.emit.cpp.types.CppNativeType;
+import zserio.emit.cpp98.types.CppNativeType;
 
 /**
  * Default expressions formatting policy for C++ expressions.

@@ -1,9 +1,9 @@
-package zserio.emit.cpp;
+package zserio.emit.cpp98;
 
 import zserio.ast.Subtype;
 import zserio.emit.common.ZserioEmitException;
-import zserio.emit.cpp.types.CppNativeType;
-import zserio.emit.cpp.types.NativeSubType;
+import zserio.emit.cpp98.types.CppNativeType;
+import zserio.emit.cpp98.types.NativeSubType;
 
 public class SubtypeEmitterTemplateData extends UserTypeTemplateData
 {

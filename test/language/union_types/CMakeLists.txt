@@ -24,15 +24,15 @@ zserio_add_library(TARGET union_types_zs
     OUT_DIR ${ZSERIO_GEN_DIR}
     OUT_FILES ${ZSERIO_GENERATED_SOURCES}
     ZSERIO_CORE_DIR ${ZSERIO_JAR_DIR}
-    ZSERIO_OPTIONS -withoutSourcesAmalgamation
+    ZSERIO_OPTIONS -withoutSourcesAmalgamation -cppStandard ${ZSERIO_CPP_STANDARD}
 )
 
 add_test_sources(
-    cpp/EmptyUnionTest.cpp
-    cpp/EmptyUnionWithParameterTest.cpp
-    cpp/SimpleUnionTest.cpp
-    cpp/UnionWithArrayTest.cpp
-    cpp/UnionWithParameterTest.cpp
+    ${ZSERIO_CPP_DIR}/EmptyUnionTest.cpp
+    ${ZSERIO_CPP_DIR}/EmptyUnionWithParameterTest.cpp
+    ${ZSERIO_CPP_DIR}/SimpleUnionTest.cpp
+    ${ZSERIO_CPP_DIR}/UnionWithArrayTest.cpp
+    ${ZSERIO_CPP_DIR}/UnionWithParameterTest.cpp
 )
 
 add_test_dependencies(union_types_zs)

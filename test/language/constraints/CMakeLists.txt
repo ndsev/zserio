@@ -17,12 +17,12 @@ zserio_add_library(TARGET constraints_zs
     OUT_DIR ${ZSERIO_GEN_DIR}
     OUT_FILES ${ZSERIO_GENERATED_SOURCES}
     ZSERIO_CORE_DIR ${ZSERIO_JAR_DIR}
-    ZSERIO_OPTIONS -withoutSourcesAmalgamation
+    ZSERIO_OPTIONS -withoutSourcesAmalgamation -cppStandard ${ZSERIO_CPP_STANDARD}
 )
 
 add_test_sources(
-    cpp/ChoiceConstraintsTest.cpp
-    cpp/StructureConstraintsTest.cpp
+    ${ZSERIO_CPP_DIR}/ChoiceConstraintsTest.cpp
+    ${ZSERIO_CPP_DIR}/StructureConstraintsTest.cpp
 )
 
 add_test_dependencies(constraints_zs)

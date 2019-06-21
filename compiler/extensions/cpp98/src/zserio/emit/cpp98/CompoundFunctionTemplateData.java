@@ -1,4 +1,4 @@
-package zserio.emit.cpp;
+package zserio.emit.cpp98;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -9,7 +9,7 @@ import zserio.ast.ZserioTypeUtil;
 import zserio.ast.FunctionType;
 import zserio.emit.common.ExpressionFormatter;
 import zserio.emit.common.ZserioEmitException;
-import zserio.emit.cpp.types.CppNativeType;
+import zserio.emit.cpp98.types.CppNativeType;
 
 public class CompoundFunctionTemplateData
 {

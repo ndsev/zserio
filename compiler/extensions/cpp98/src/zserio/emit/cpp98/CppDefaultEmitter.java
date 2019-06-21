@@ -1,4 +1,4 @@
-package zserio.emit.cpp;
+package zserio.emit.cpp98;
 
 import zserio.ast.ZserioType;
 import zserio.emit.common.CodeDefaultEmitter;
@@ -58,7 +58,7 @@ abstract class CppDefaultEmitter extends CodeDefaultEmitter
 
     private static final String CPP_SOURCE_EXTENSION = ".cpp";
     private static final String CPP_HEADER_EXTENSION = ".h";
-    private static final String CPP_TEMPLATE_LOCATION = "cpp/";
+    private static final String CPP_TEMPLATE_LOCATION = "cpp98/";
 
     private final Parameters extensionParameters;
 }

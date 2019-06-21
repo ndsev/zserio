@@ -1,8 +1,8 @@
-package zserio.emit.cpp;
+package zserio.emit.cpp98;
 
 import zserio.ast.ZserioType;
 import zserio.emit.common.ZserioEmitException;
-import zserio.emit.cpp.types.CppNativeType;
+import zserio.emit.cpp98.types.CppNativeType;
 
 public class UserTypeTemplateData extends CppTemplateData
 {

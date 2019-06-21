@@ -31,7 +31,7 @@ add_subdirectory(src)
 add_subdirectory(test)
 
 # install Zserio C++ runtime library (we release sources only)
-install(DIRECTORY src/ DESTINATION cpp11
+install(DIRECTORY src/ DESTINATION cpp
         FILES_MATCHING
         PATTERN "CMakeLists.txt"
         PATTERN "*.h"

@@ -1,4 +1,4 @@
-package zserio.emit.cpp;
+package zserio.emit.cpp98;
 
 import zserio.ast.ArrayType;
 import zserio.ast.PackageName;
@@ -25,25 +25,25 @@ import zserio.ast.TypeReference;
 import zserio.ast.VarIntegerType;
 import zserio.emit.common.PackageMapper;
 import zserio.emit.common.ZserioEmitException;
-import zserio.emit.cpp.types.CppNativeType;
-import zserio.emit.cpp.types.NativeArrayType;
-import zserio.emit.cpp.types.NativeBooleanType;
-import zserio.emit.cpp.types.NativeCompoundType;
-import zserio.emit.cpp.types.NativeConstType;
-import zserio.emit.cpp.types.NativeDoubleType;
-import zserio.emit.cpp.types.NativeEnumType;
-import zserio.emit.cpp.types.NativeFloatType;
-import zserio.emit.cpp.types.NativeHeapOptionalHolderType;
-import zserio.emit.cpp.types.NativeInPlaceOptionalHolderType;
-import zserio.emit.cpp.types.NativeIntegralArrayType;
-import zserio.emit.cpp.types.NativeIntegralType;
-import zserio.emit.cpp.types.NativeObjectArrayType;
-import zserio.emit.cpp.types.NativeOptimizedOptionalHolderType;
-import zserio.emit.cpp.types.NativeOptionalHolderType;
-import zserio.emit.cpp.types.NativeServiceType;
-import zserio.emit.cpp.types.NativeStdIntType;
-import zserio.emit.cpp.types.NativeStringType;
-import zserio.emit.cpp.types.NativeSubType;
+import zserio.emit.cpp98.types.CppNativeType;
+import zserio.emit.cpp98.types.NativeArrayType;
+import zserio.emit.cpp98.types.NativeBooleanType;
+import zserio.emit.cpp98.types.NativeCompoundType;
+import zserio.emit.cpp98.types.NativeConstType;
+import zserio.emit.cpp98.types.NativeDoubleType;
+import zserio.emit.cpp98.types.NativeEnumType;
+import zserio.emit.cpp98.types.NativeFloatType;
+import zserio.emit.cpp98.types.NativeHeapOptionalHolderType;
+import zserio.emit.cpp98.types.NativeInPlaceOptionalHolderType;
+import zserio.emit.cpp98.types.NativeIntegralArrayType;
+import zserio.emit.cpp98.types.NativeIntegralType;
+import zserio.emit.cpp98.types.NativeObjectArrayType;
+import zserio.emit.cpp98.types.NativeOptimizedOptionalHolderType;
+import zserio.emit.cpp98.types.NativeOptionalHolderType;
+import zserio.emit.cpp98.types.NativeServiceType;
+import zserio.emit.cpp98.types.NativeStdIntType;
+import zserio.emit.cpp98.types.NativeStringType;
+import zserio.emit.cpp98.types.NativeSubType;
 
 public class CppNativeTypeMapper
 {

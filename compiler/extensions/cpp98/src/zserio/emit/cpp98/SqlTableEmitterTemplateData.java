@@ -1,4 +1,4 @@
-package zserio.emit.cpp;
+package zserio.emit.cpp98;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,9 +20,9 @@ import zserio.emit.common.sql.types.NativeBlobType;
 import zserio.emit.common.sql.types.NativeIntegerType;
 import zserio.emit.common.sql.types.NativeRealType;
 import zserio.emit.common.sql.types.SqlNativeType;
-import zserio.emit.cpp.types.CppNativeType;
-import zserio.emit.cpp.types.NativeBooleanType;
-import zserio.emit.cpp.types.NativeEnumType;
+import zserio.emit.cpp98.types.CppNativeType;
+import zserio.emit.cpp98.types.NativeBooleanType;
+import zserio.emit.cpp98.types.NativeEnumType;
 import zserio.tools.HashUtil;
 
 public class SqlTableEmitterTemplateData extends UserTypeTemplateData
