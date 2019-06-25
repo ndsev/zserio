@@ -71,6 +71,8 @@ public:
     AnyHolder& operator=(T&& value)
     {
         set(std::forward<T>(value));
+
+        return *this;
     }
 
     void reset()

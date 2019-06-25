@@ -18,6 +18,7 @@ include(sqlite_utils)
 sqlite_add_library(${ZSERIO_PROJECT_ROOT})
 
 set(ZSERIO_CPP_RUNTIME_TEST_SRCS
+    zserio/AnyHolderTest.cpp
     zserio/ArraysTest.cpp
     zserio/BitFieldUtilTest.cpp
     zserio/BitPositionUtilTest.cpp
@@ -30,6 +31,7 @@ set(ZSERIO_CPP_RUNTIME_TEST_SRCS
     zserio/EnumsTest.cpp
     zserio/FloatUtilTest.cpp
     zserio/HashCodeUtilTest.cpp
+    zserio/OptionalHolderTest.cpp
     zserio/SqliteConnectionTest.cpp
     zserio/StringConvertUtilTest.cpp
     zserio/VarUInt64UtilTest.cpp

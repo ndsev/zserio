@@ -38,6 +38,8 @@ public:
     in_place_storage& operator=(in_place_storage&& other)
     {
         move(std::move(other));
+
+        return *this;
     }
 
     void* getStorage()
@@ -193,16 +195,22 @@ public:
                 m_hasValue = true;
             }
         }
+
+        return *this;
     }
 
     optional_holder& operator=(const T& value)
     {
         set(value);
+
+        return *this;
     }
 
     optional_holder& operator=(T&& value)
     {
         set(std::move(value));
+
+        return *this;
     }
 
     bool operator==(const optional_holder<T, STORAGE>& other) const
