@@ -506,7 +506,7 @@ main()
     if [[ ${PARAM_CPP} == 1 ]] ; then
         echo "${ACTION_DESCRIPTION} Zserio C++ extension."
         echo
-        #!@# compile_java "${ZSERIO_PROJECT_ROOT}/compiler/extensions/cpp/build.xml" ANT_PROPS[@] ${JAVA_TARGET}
+        compile_java "${ZSERIO_PROJECT_ROOT}/compiler/extensions/cpp/build.xml" ANT_PROPS[@] ${JAVA_TARGET}
         if [ $? -ne 0 ] ; then
             return 1
         fi
@@ -527,6 +527,7 @@ main()
         if [ $? -ne 0 ] ; then
             return 1
         fi
+        echo
     fi
 
     # build Zserio C++98 extension
