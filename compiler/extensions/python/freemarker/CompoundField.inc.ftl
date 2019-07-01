@@ -27,7 +27,7 @@ ${I}result = zserio.hashcode.calcHashCode(result, hash(self.<@field_member_name 
 
 <#macro compound_setter_field field>
     <#if field.array??>
-        self.<@field_member_name field/> = zserio.array.Array(<@array_field_constructor_parameters field/>)
+        self.<@field_member_name field/> = zserio.array.Array(<@array_field_constructor_parameters field true/>)
     <#else>
         self.<@field_member_name field/> = <@field_argument_name field/>
     </#if>
@@ -108,7 +108,7 @@ ${I}endBitPosition += self.<@field_member_name field/>.bitSizeOf(endBitPosition)
     </#if>
 </#macro>
 
-<#macro compound_read_field field compoundName indent>
+<#macro compound_read_field field compoundName withWriterCode indent>
     <#local I>${""?left_pad(indent * 4)}</#local>
     <#if field.optional??>
         <#if field.optional.clause??>
@@ -116,13 +116,13 @@ ${I}if self.${field.optional.indicatorName}():
         <#else>
 ${I}if reader.readBool():
         </#if>
-<@compound_read_field_inner field, compoundName, indent + 1/>
+<@compound_read_field_inner field, compoundName, withWriterCode, indent + 1/>
     <#else>
-<@compound_read_field_inner field, compoundName, indent/>
+<@compound_read_field_inner field, compoundName, withWriterCode, indent/>
     </#if>
 </#macro>
 
-<#macro compound_read_field_inner field compoundName indent>
+<#macro compound_read_field_inner field compoundName withWriterCode indent>
     <#local I>${""?left_pad(indent * 4)}</#local>
     <#if field.alignmentValue??>
 ${I}reader.alignTo(${field.alignmentValue})
@@ -132,7 +132,7 @@ ${I}reader.alignTo(8)
         <@compound_check_offset_field field, compoundName, "reader.getBitPosition()", indent/>
     </#if>
     <#if field.array??>
-${I}self.<@field_member_name field/> = zserio.array.Array.fromReader(<@array_field_from_reader_parameters field/>)
+${I}self.<@field_member_name field/> = zserio.array.Array.fromReader(<@array_field_from_reader_parameters field, withWriterCode/>)
     <#elseif field.runtimeFunction??>
 ${I}self.<@field_member_name field/> = reader.read${field.runtimeFunction.suffix}(${field.runtimeFunction.arg!})
     <#else>
@@ -151,7 +151,7 @@ ${I}self.<@field_member_name field/> = ${field.pythonTypeName}.fromReader(reader
     </#if>
 </#macro>
 
-<#macro array_field_parameters field forReader>
+<#macro array_field_parameters field forReader withWriterCode>
     zserio.array.${field.array.traitsName}(<@array_field_traits_parameters field/>)<#t>
     <#if forReader>
         , reader<#t>
@@ -163,15 +163,16 @@ ${I}self.<@field_member_name field/> = ${field.pythonTypeName}.fromReader(reader
     <#elseif !field.array.length??>, isAuto=True<#t>
     </#if>
     <#if field.offset?? && field.offset.containsIndex>
-        , setOffsetMethod=self.<@offset_setter_name field/>, checkOffsetMethod=self.<@offset_checker_name field/><#t>
+        <#if withWriterCode>, setOffsetMethod=self.<@offset_setter_name field/></#if><#t>
+        , checkOffsetMethod=self.<@offset_checker_name field/><#t>
     </#if>
 </#macro>
 
-<#macro array_field_from_reader_parameters field>
-    <@array_field_parameters field, true/>
+<#macro array_field_from_reader_parameters field withWriterCode>
+    <@array_field_parameters field, true, withWriterCode/>
 </#macro>
 
-<#macro array_field_constructor_parameters field>
+<#macro array_field_constructor_parameters field withWriterCode>
     <@array_field_parameters field, false/>
 </#macro>
 

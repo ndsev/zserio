@@ -133,7 +133,7 @@ ${I}<#rt>
     def read(self, reader):
 <#if fieldList?has_content>
     <#list fieldList as field>
-        <@compound_read_field field, name, 2/>
+        <@compound_read_field field, name, withWriterCode, 2/>
         <#if field?has_next && needsReadNewLines>
 
         </#if>

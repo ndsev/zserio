@@ -18,6 +18,7 @@ import static org.junit.Assert.*;
 
 import org.junit.Test;
 
+import zserio.runtime.BitPositionUtil;
 import zserio.runtime.SqlDatabase;
 import zserio.runtime.array.ObjectArray;
 import zserio.runtime.io.BitStreamReader;
@@ -353,8 +354,22 @@ public class WithoutWriterCodeTest
         writer.writeBits((long)VERSION, 8);
         writer.writeBits(5, 32); // numElementsOffset
         writer.writeBits(NUM_ELEMENTS, 32);
+
+        // offsets
+        long offset = BitPositionUtil.bitsToBytes(writer.getBitPosition()) + 4 * NUM_ELEMENTS;
         for (int i = 0; i < NUM_ELEMENTS; ++i)
         {
+            writer.writeBits(offset, 32);
+            final boolean hasItem = i % 2 == 0;
+            if (hasItem)
+                offset += 8;
+            else
+                offset += 3;
+        }
+
+        for (int i = 0; i < NUM_ELEMENTS; ++i)
+        {
+            writer.alignTo(8); // aligned because of indexed offsets
             // ItemChoiceHolder
             final boolean hasItem = i %2 == 0; // hasItem == true for even elements
             writer.writeBool(hasItem);

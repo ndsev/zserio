@@ -40,6 +40,8 @@ struct Tile
 
 numElementsOffset:
     uint32              numElements;
+    uint32              offsets[numElements];
+offsets[@index]:
     ItemChoiceHolder    data[numElements];
 };
 

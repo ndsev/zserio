@@ -121,7 +121,7 @@ class ${name}:
 
 <#macro choice_read_member member indent>
     <#if member.compoundField??>
-        <@compound_read_field member.compoundField, name, indent/>
+        <@compound_read_field member.compoundField, name, withWriterCode, indent/>
     <#else>
         <#local I>${""?left_pad(indent * 4)}</#local>
         <#lt>${I}pass

@@ -101,7 +101,7 @@ class ${name}:
 </#if>
 
 <#macro union_read_field field indent>
-    <@compound_read_field field, name, indent/>
+    <@compound_read_field field, name, withWriterCode, indent/>
 </#macro>
     def read(self, reader):
 <#if fieldList?has_content>

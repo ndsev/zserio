@@ -196,7 +196,20 @@ class WithoutWriterCodeTest(unittest.TestCase):
         writer.writeBits(VERSION, 8)
         writer.writeBits(5, 32) # numElementsOffset
         writer.writeBits(NUM_ELEMENTS, 32)
+
+        # offsets
+        # offset of the first element
+        offset = zserio.bitposition.bitsToBytes(writer.getBitPosition()) + 4 * NUM_ELEMENTS
         for i in range(NUM_ELEMENTS):
+            writer.writeBits(offset, 32)
+            hasItem = i % 2 == 0 # hasItem == True for even elements
+            if hasItem:
+                offset += 8
+            else:
+                offset += 3
+
+        for i in range(NUM_ELEMENTS):
+            writer.alignTo(8) # aligned because of indexed offsets
             # ItemChoiceHolder
             hasItem = i % 2 == 0 # hasItem == True for even elements
             writer.writeBool(hasItem)
