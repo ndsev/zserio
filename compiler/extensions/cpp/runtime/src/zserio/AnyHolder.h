@@ -303,7 +303,8 @@ private:
 
     union UntypedHolder
     {
-        typedef std::aligned_storage<2 * sizeof(void*), alignof(void*)>::type MaxInPlaceType;
+        // 2 * sizeof(void*) for T + sizeof(void*) for Holder's vptr
+        typedef std::aligned_storage<3 * sizeof(void*), alignof(void*)>::type MaxInPlaceType;
 
         IHolder* heap;
         MaxInPlaceType inPlace;
