@@ -31,6 +31,11 @@ set(ZSERIO_GENERATED_SOURCES
     ${ZSERIO_GEN_DIR}/functions/structure_param/MetresConverter.cpp
     ${ZSERIO_GEN_DIR}/functions/structure_param/MetresConverter.h
 
+    ${ZSERIO_GEN_DIR}/functions/structure_parent_child_value/ParentValue.cpp
+    ${ZSERIO_GEN_DIR}/functions/structure_parent_child_value/ParentValue.h
+    ${ZSERIO_GEN_DIR}/functions/structure_parent_child_value/ChildValue.cpp
+    ${ZSERIO_GEN_DIR}/functions/structure_parent_child_value/ChildValue.h
+
     ${ZSERIO_GEN_DIR}/functions/structure_value/CustomVarInt.cpp
     ${ZSERIO_GEN_DIR}/functions/structure_value/CustomVarInt.h
     ${ZSERIO_GEN_DIR}/functions/structure_value/CustomVarList.cpp
@@ -61,6 +66,7 @@ add_test_sources(
     cpp/StructureArrayParamTest.cpp
     cpp/StructureOptionalTest.cpp
     cpp/StructureParamTest.cpp
+    cpp/StructureParentChildValueTest.cpp
     cpp/StructureValueTest.cpp
     cpp/UnionArrayTest.cpp
 )
