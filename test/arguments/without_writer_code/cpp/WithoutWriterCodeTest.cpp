@@ -93,7 +93,7 @@ protected:
         size_t offset = zserio::bitsToBytes(writer.getBitPosition()) + 4 * NUM_ELEMENTS;
         for (uint32_t i = 0; i < NUM_ELEMENTS; ++i)
         {
-            writer.writeBits(offset, 32);
+            writer.writeBits(static_cast<uint32_t>(offset), 32);
             const bool hasItem = i % 2 == 0;
             if (hasItem)
                 offset += 8;

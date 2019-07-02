@@ -173,7 +173,7 @@ ${I}self.<@field_member_name field/> = ${field.pythonTypeName}.fromReader(reader
 </#macro>
 
 <#macro array_field_constructor_parameters field withWriterCode>
-    <@array_field_parameters field, false/>
+    <@array_field_parameters field, false, withWriterCode/>
 </#macro>
 
 <#macro compound_field_constructor_parameters compound>
