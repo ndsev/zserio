@@ -12,7 +12,6 @@ import zserio.ast.ZserioAstDefaultVisitor;
 import zserio.ast.ZserioType;
 import zserio.ast.EnumType;
 import zserio.ast.FloatType;
-import zserio.ast.IntegerType;
 import zserio.ast.ServiceType;
 import zserio.ast.StructureType;
 import zserio.ast.SqlDatabaseType;
@@ -28,10 +27,10 @@ import zserio.emit.common.ZserioEmitException;
 import zserio.emit.cpp.types.CppNativeType;
 import zserio.emit.cpp.types.NativeArrayType;
 import zserio.emit.cpp.types.NativeBooleanType;
+import zserio.emit.cpp.types.NativeUserType;
 import zserio.emit.cpp.types.NativeDoubleType;
 import zserio.emit.cpp.types.NativeFloatType;
 import zserio.emit.cpp.types.NativeIntegralType;
-import zserio.emit.cpp.types.NativeObjectArrayType;
 import zserio.emit.cpp.types.NativeStringType;
 
 public class CppNativeTypeMapper
@@ -74,37 +73,6 @@ public class CppNativeTypeMapper
 
         return nativeType;
     }
-
-    /**
-     * Returns a C++ type that can hold an instance of given optional Zserio type or Zserio compound type.
-     *
-     * @param type                  Zserio type for mapping to C++ type.
-     * @param isOptionalField       true if the given Zserio type is optional.
-     * @param useHeapOptionalHolder true to force mapping to the heap optional holder.
-     *
-     * @return C++ optional holder type which can hold a given Zserio type.
-     *
-     * @throws ZserioEmitException If the Zserio type cannot be mapped to C++ optional holder type.
-     */
-    /* TODO
-    public NativeOptionalHolderType getCppOptionalHolderType(ZserioType type, boolean isOptionalField,
-            boolean useHeapOptionalHolder) throws ZserioEmitException
-    {
-        final CppNativeType rawType = getCppType(type);
-
-        NativeOptionalHolderType nativeOptionalType;
-        if (!isOptionalField || rawType.isSimpleType())
-            nativeOptionalType = new NativeInPlaceOptionalHolderType(ZSERIO_RUNTIME_PACKAGE_NAME,
-                    ZSERIO_RUNTIME_INCLUDE_PREFIX, rawType);
-        else if (useHeapOptionalHolder)
-            nativeOptionalType = new NativeHeapOptionalHolderType(ZSERIO_RUNTIME_PACKAGE_NAME,
-                    ZSERIO_RUNTIME_INCLUDE_PREFIX, rawType);
-        else
-            nativeOptionalType = new NativeOptimizedOptionalHolderType(ZSERIO_RUNTIME_PACKAGE_NAME,
-                    ZSERIO_RUNTIME_INCLUDE_PREFIX, rawType);
-
-        return nativeOptionalType;
-    }*/
 
     /**
      * Returns a C++ integer type that can hold an instance of given Zserio integer type.
@@ -450,19 +418,19 @@ public class CppNativeTypeMapper
         @Override
         public void visitConstType(ConstType type)
         {
-            /* TODO
             try
             {
                 final CppNativeType nativeTargetType = CppNativeTypeMapper.this.getCppType(type.getConstType());
                 final PackageName packageName = cppPackageMapper.getPackageName(type);
                 final String name = type.getName();
                 final String includeFileName = getIncludePath(packageName, name);
-                cppType = new NativeConstType(packageName, type.getName(), includeFileName, nativeTargetType);
+                cppType = new NativeUserType(packageName, type.getName(), includeFileName,
+                        nativeTargetType.isSimpleType());
             }
             catch (ZserioEmitException exception)
             {
                 thrownException = exception;
-            }*/
+            }
         }
 
         @Override
@@ -539,7 +507,6 @@ public class CppNativeTypeMapper
         @Override
         public void visitSubtype(Subtype type)
         {
-            /* TODO
             final ZserioType targetType = type.getTargetType();
             try
             {
@@ -547,12 +514,13 @@ public class CppNativeTypeMapper
                 final PackageName packageName = cppPackageMapper.getPackageName(type);
                 final String name = type.getName();
                 final String includeFileName = getIncludePath(packageName, name);
-                cppType = new NativeSubType(packageName, name, includeFileName, nativeTargetType);
+                cppType = new NativeUserType(packageName, name, includeFileName,
+                        nativeTargetType.isSimpleType());
             }
             catch (ZserioEmitException exception)
             {
                 thrownException = exception;
-            }*/
+            }
         }
 
         @Override
@@ -580,7 +548,6 @@ public class CppNativeTypeMapper
         @Override
         protected void mapSignedIntegralType(int nBits, boolean variable)
         {
-            /* TODO
             if (variable)
             {
                 switch (nBits)
@@ -612,13 +579,12 @@ public class CppNativeTypeMapper
                     cppType = int32Type;
                 else // this could be > 64 (int8 foo; bit<foo> a;) but if we're above 64, we explode at runtime
                     cppType = int64Type;
-            } */
+            }
         }
 
         @Override
         protected void mapUnsignedIntegralType(int nBits, boolean variable)
         {
-            /* TODO
             if (variable)
             {
                 switch (nBits)
@@ -650,7 +616,7 @@ public class CppNativeTypeMapper
                     cppType = uint32Type;
                 else // this could be > 64 (int8 foo; bit<foo> a;) but if we're above 64, we explode at runtime
                     cppType = uint64Type;
-            }*/
+            }
         }
 
         private void mapCompoundType(CompoundType type)

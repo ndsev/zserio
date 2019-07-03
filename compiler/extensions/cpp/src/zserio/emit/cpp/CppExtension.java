@@ -42,7 +42,7 @@ public class CppExtension implements Extension
         if (!options.hasOption(OptionCppStandard))
         {
             Option option = new Option(OptionCppStandard, true,
-                    "use C++ standard for generated sources (e.g. c++98)");
+                    "use C++ standard for generated sources: c++11");
             option.setArgName("standard");
             option.setRequired(false);
             options.addOption(option);
@@ -63,6 +63,8 @@ public class CppExtension implements Extension
     {
         final String outputDir = parameters.getCommandLineArg(OptionCpp);
         final List<Emitter> emitters = new ArrayList<Emitter>();
+        emitters.add(new ConstEmitter(outputDir, parameters));
+        emitters.add(new SubtypeEmitter(outputDir, parameters));
 
         // emit C++ code
         for (Emitter cppEmitter: emitters)

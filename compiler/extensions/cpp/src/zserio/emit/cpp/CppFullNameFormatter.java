@@ -15,10 +15,11 @@ public final class CppFullNameFormatter
      *
      * @return Full namespace.
      */
-    // TODO Use at the beginning of namespace '::'
     public static String getFullName(PackageName packageName)
     {
-        return packageName.toString(CPP_NAMESPACE_SEPARATOR);
+        // TODO: Is it ok to have also ::std::vector / ::std::string? It shall work but seems strange...
+        return (packageName.isEmpty() ? "" : CPP_NAMESPACE_SEPARATOR) +
+                packageName.toString(CPP_NAMESPACE_SEPARATOR);
     }
 
     /**
@@ -31,8 +32,7 @@ public final class CppFullNameFormatter
      */
     public static String getFullName(PackageName packageName, String typeName)
     {
-        return StringJoinUtil.joinStrings(getFullName(packageName), typeName,
-                CPP_NAMESPACE_SEPARATOR);
+        return StringJoinUtil.joinStrings(getFullName(packageName), typeName, CPP_NAMESPACE_SEPARATOR);
     }
 
     /**

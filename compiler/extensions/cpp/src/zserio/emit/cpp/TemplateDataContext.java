@@ -27,13 +27,10 @@ final class TemplateDataContext
 
     public ExpressionFormatter getExpressionFormatter(IncludeCollector includeCollector)
     {
-        /* TODO
         final ExpressionFormattingPolicy expressionFormattingPolicy =
                 new CppExpressionFormattingPolicy(cppNativeTypeMapper, includeCollector);
 
-        return new ExpressionFormatter(expressionFormattingPolicy); */
-
-        return null;
+        return new ExpressionFormatter(expressionFormattingPolicy);
     }
 
     public boolean getWithWriterCode()
