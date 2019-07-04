@@ -1,9 +1,9 @@
-package zserio.emit.cpp98;
+package zserio.emit.cpp;
 
 import java.math.BigInteger;
 
 import zserio.emit.common.ZserioEmitException;
-import zserio.emit.cpp98.types.NativeStdIntType;
+import zserio.emit.cpp.types.NativeIntegralType;
 
 /**
  * The class to format zserio literals in C++ format.
@@ -20,5 +20,5 @@ final class CppLiteralFormatter
         return uint8Type.formatLiteral(BigInteger.valueOf(value));
     }
 
-    private final static NativeStdIntType uint8Type = new NativeStdIntType(8, false);
+    private final static NativeIntegralType uint8Type = new NativeIntegralType(8, false);
 }

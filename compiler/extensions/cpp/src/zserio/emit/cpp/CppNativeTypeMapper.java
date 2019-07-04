@@ -1,6 +1,7 @@
 package zserio.emit.cpp;
 
 import zserio.ast.ArrayType;
+import zserio.ast.IntegerType;
 import zserio.ast.PackageName;
 import zserio.ast.UnionType;
 import zserio.ast.BitFieldType;
@@ -27,11 +28,11 @@ import zserio.emit.common.ZserioEmitException;
 import zserio.emit.cpp.types.CppNativeType;
 import zserio.emit.cpp.types.NativeArrayType;
 import zserio.emit.cpp.types.NativeBooleanType;
-import zserio.emit.cpp.types.NativeUserType;
 import zserio.emit.cpp.types.NativeDoubleType;
 import zserio.emit.cpp.types.NativeFloatType;
 import zserio.emit.cpp.types.NativeIntegralType;
 import zserio.emit.cpp.types.NativeStringType;
+import zserio.emit.cpp.types.NativeUserType;
 
 public class CppNativeTypeMapper
 {
@@ -83,7 +84,6 @@ public class CppNativeTypeMapper
      *
      * @throws ZserioEmitException If the Zserio integer type cannot be mapped to any C++ integer type.
      */
-    /* TODO
     public NativeIntegralType getCppIntegralType(IntegerType type) throws ZserioEmitException
     {
         final CppNativeType nativeType = getCppType(type);
@@ -93,7 +93,7 @@ public class CppNativeTypeMapper
                     "' in CppNativeTypeMapper!");
 
         return (NativeIntegralType)nativeType;
-    }*/
+    }
 
     /**
      * Returns a C++ subtype that can hold an instance of given Zserio subtype.
@@ -420,8 +420,8 @@ public class CppNativeTypeMapper
         {
             try
             {
-                final CppNativeType nativeTargetType = CppNativeTypeMapper.this.getCppType(type.getConstType());
                 final PackageName packageName = cppPackageMapper.getPackageName(type);
+                final CppNativeType nativeTargetType = CppNativeTypeMapper.this.getCppType(type.getConstType());
                 final String name = type.getName();
                 final String includeFileName = getIncludePath(packageName, name);
                 cppType = new NativeUserType(packageName, type.getName(), includeFileName,
@@ -436,19 +436,10 @@ public class CppNativeTypeMapper
         @Override
         public void visitEnumType(EnumType type)
         {
-            /* TODO
-            try
-            {
-                final NativeIntegralType nativeBaseType = getCppIntegralType(type.getIntegerBaseType());
-                final PackageName packageName = cppPackageMapper.getPackageName(type);
-                final String name = type.getName();
-                final String includeFileName = getIncludePath(packageName, name);
-                cppType = new NativeEnumType(packageName, name, includeFileName, nativeBaseType);
-            }
-            catch (ZserioEmitException exception)
-            {
-                thrownException = exception;
-            }*/
+            final PackageName packageName = cppPackageMapper.getPackageName(type);
+            final String name = type.getName();
+            final String includeFileName = getIncludePath(packageName, name);
+            cppType = new NativeUserType(packageName, name, includeFileName, true);
         }
 
         @Override

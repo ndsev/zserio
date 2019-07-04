@@ -65,6 +65,7 @@ public class CppExtension implements Extension
         final List<Emitter> emitters = new ArrayList<Emitter>();
         emitters.add(new ConstEmitter(outputDir, parameters));
         emitters.add(new SubtypeEmitter(outputDir, parameters));
+        emitters.add(new EnumerationEmitter(outputDir, parameters));
 
         // emit C++ code
         for (Emitter cppEmitter: emitters)
