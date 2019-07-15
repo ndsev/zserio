@@ -16,7 +16,7 @@ class ArrayLengthofConstraintTest : public ::testing::Test
 protected:
     void writeArrayLengthofConstraintToByteArray(zserio::BitStreamWriter& writer, size_t length)
     {
-        writer.writeBits(length, 8);
+        writer.writeBits(static_cast<uint32_t>(length), 8); // all lengths in this test fits in a single byte
         for (size_t i = 0; i < length; ++i)
             writer.writeBits(i, 32);
     }
