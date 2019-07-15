@@ -18,7 +18,7 @@ protected:
     {
         writer.writeBits(static_cast<uint32_t>(length), 8); // all lengths in this test fits in a single byte
         for (size_t i = 0; i < length; ++i)
-            writer.writeBits(i, 32);
+            writer.writeBits(static_cast<uint32_t>(i), 32);
     }
 
     static const uint8_t CORRECT_LENGTH = 6;
