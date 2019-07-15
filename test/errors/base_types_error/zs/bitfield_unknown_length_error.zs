@@ -1,6 +1,6 @@
 package bitfield_unknown_length_error;
 
-struct UnknownLenghtBitfield
+struct UnknownLengthBitfield
 {
     bit<unknownLength>  wrong;
 };

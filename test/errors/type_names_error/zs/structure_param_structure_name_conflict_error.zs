@@ -5,7 +5,7 @@ struct Test
     string field;
 };
 
-struct Test(uint32 lenght) // Test is already defined!
+struct Test(uint32 length) // Test is already defined!
 {
     int32 array[length];
 };
