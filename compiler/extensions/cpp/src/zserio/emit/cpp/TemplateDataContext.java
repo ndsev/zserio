@@ -33,6 +33,14 @@ final class TemplateDataContext
         return new ExpressionFormatter(expressionFormattingPolicy);
     }
 
+    public ExpressionFormatter getOwnerIndirectExpressionFormatter(IncludeCollector includeCollector)
+    {
+        final ExpressionFormattingPolicy expressionFormattingPolicy =
+                new CppOwnerIndirectExpressionFormattingPolicy(cppNativeTypeMapper, includeCollector);
+
+        return new ExpressionFormatter(expressionFormattingPolicy);
+    }
+
     public boolean getWithWriterCode()
     {
         return withWriterCode;

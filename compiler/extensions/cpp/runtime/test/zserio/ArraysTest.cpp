@@ -11,7 +11,7 @@ namespace zserio
 class ArrayTestOffsetInitializer
 {
 public:
-    void setOffset(size_t, size_t)
+    void initializeOffset(size_t, size_t)
     {
     }
 };

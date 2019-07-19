@@ -598,18 +598,18 @@ void ${compoundName}::${field.setterName}(${field.cppArgumentTypeName} ${field.n
 <#macro compound_copy_constructor_initializer_field field hasNext indent>
     <#local I>${""?left_pad(indent * 4)}</#local>
     <#if field.usesAnyHolder>
-${I}m_objectChoice(_other.m_objectChoice)
+${I}m_objectChoice(other.m_objectChoice)
     <#else>
-${I}m_${field.name}(_other.m_${field.name})<#if hasNext>,</#if>
+${I}m_${field.name}(other.m_${field.name})<#if hasNext>,</#if>
     </#if>
 </#macro>
 
 <#macro compound_assignment_field field indent>
     <#local I>${""?left_pad(indent * 4)}</#local>
     <#if field.usesAnyHolder>
-${I}m_objectChoice = _other.m_objectChoice;
+${I}m_objectChoice = other.m_objectChoice;
     <#else>
-${I}m_${field.name} = _other.m_${field.name};
+${I}m_${field.name} = other.m_${field.name};
     </#if>
 </#macro>
 

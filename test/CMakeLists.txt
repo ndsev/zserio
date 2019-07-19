@@ -39,6 +39,9 @@ compiler_set_pthread()
 compiler_set_static_clibs()
 compiler_set_warnings()
 compiler_set_warnings_as_errors()
+if (ZSERIO_CPP_STANDARD STREQUAL "c++11")
+    set(CMAKE_CXX_STANDARD 11)
+endif ()
 
 # add SQLite3 for testing
 include(sqlite_utils)

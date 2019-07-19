@@ -101,7 +101,7 @@ size_t initializeOffsetsAligned(std::vector<typename ARRAY_TRAITS::type>& array,
     for (auto&& element : array)
     {
         endBitPosition = alignTo(NUM_BITS_PER_BYTE, endBitPosition);
-        offsetInitializer.setOffset(index, bitsToBytes(endBitPosition));
+        offsetInitializer.initializeOffset(index, bitsToBytes(endBitPosition));
         endBitPosition = ARRAY_TRAITS::initializeOffsets(endBitPosition, element);
         index++;
     }

@@ -1,4 +1,4 @@
-package zserio.emit.cpp98;
+package zserio.emit.cpp;
 
 import java.math.BigInteger;
 import java.util.ArrayList;
@@ -21,11 +21,10 @@ import zserio.ast.TypeInstantiation.InstantiatedParameter;
 import zserio.ast.TypeReference;
 import zserio.emit.common.ExpressionFormatter;
 import zserio.emit.common.ZserioEmitException;
-import zserio.emit.cpp98.types.CppNativeType;
-import zserio.emit.cpp98.types.NativeArrayType;
-import zserio.emit.cpp98.types.NativeEnumType;
-import zserio.emit.cpp98.types.NativeIntegralType;
-import zserio.emit.cpp98.types.NativeOptionalHolderType;
+import zserio.emit.cpp.types.CppNativeType;
+import zserio.emit.cpp.types.NativeArrayType;
+import zserio.emit.cpp.types.NativeIntegralType;
+import zserio.emit.cpp.types.NativeOptionalHolderType;
 
 public class CompoundFieldTemplateData
 {
@@ -36,7 +35,7 @@ public class CompoundFieldTemplateData
     {
         final ZserioType fieldType = TypeReference.resolveType(field.getFieldType());
         final ZserioType baseFieldType = TypeReference.resolveBaseType(fieldType);
-        optional = createOptional(field, cppExpressionFormatter);
+        optional = createOptional(field, cppExpressionFormatter, cppNativeTypeMapper, includeCollector);
         compound = createCompound(cppNativeTypeMapper, cppExpressionFormatter, cppIndirectExpressionFormatter,
                 parentType, baseFieldType, withWriterCode);
 
@@ -69,9 +68,6 @@ public class CompoundFieldTemplateData
                 cppExpressionFormatter, cppIndirectExpressionFormatter, withWriterCode);
         runtimeFunction = CppRuntimeFunctionDataCreator.createData(baseFieldType, cppExpressionFormatter);
         bitSizeValue = createBitSizeValue(baseFieldType, cppExpressionFormatter);
-        final boolean isOptionalField = (optional != null);
-        optionalHolder = createOptionalHolder(fieldType, baseFieldType, parentType, isOptionalField,
-                cppNativeTypeMapper, includeCollector);
         this.withWriterCode = withWriterCode;
     }
 
@@ -170,11 +166,6 @@ public class CompoundFieldTemplateData
         return bitSizeValue;
     }
 
-    public OptionalHolder getOptionalHolder()
-    {
-        return optionalHolder;
-    }
-
     public boolean getWithWriterCode()
     {
         return withWriterCode;
@@ -183,11 +174,14 @@ public class CompoundFieldTemplateData
     public static class Optional
     {
         public Optional(Expression optionalClauseExpression, String indicatorName,
-                ExpressionFormatter cppExpressionFormatter) throws ZserioEmitException
+                ExpressionFormatter cppExpressionFormatter,
+                NativeOptionalHolderType nativeOptionalHolderType) throws ZserioEmitException
         {
             clause = (optionalClauseExpression == null) ? null :
                 cppExpressionFormatter.formatGetter(optionalClauseExpression);
             this.indicatorName = indicatorName;
+            cppTypeName = nativeOptionalHolderType.getFullName();
+            cppArgumentTypeName = nativeOptionalHolderType.getArgumentTypeName();
         }
 
         public String getClause()
@@ -200,8 +194,20 @@ public class CompoundFieldTemplateData
             return indicatorName;
         }
 
+        public String getCppTypeName()
+        {
+            return cppTypeName;
+        }
+
+        public String getCppArgumentTypeName()
+        {
+            return cppArgumentTypeName;
+        }
+
         private final String  clause;
         private final String  indicatorName;
+        private final String cppTypeName;
+        private final String cppArgumentTypeName;
     }
 
     public static class Compound
@@ -386,17 +392,30 @@ public class CompoundFieldTemplateData
         {
             final ZserioType elementType = TypeReference.resolveBaseType(baseType.getElementType());
 
+            traitsName = nativeType.getArrayTraitsName();
+            hasTemplatedTraits = nativeType.hasTemplatedTraits();
             isImplicit = baseType.isImplicit();
             length = createLength(baseType, cppExpressionFormatter);
             indirectLength = createLength(baseType, cppIndirectExpressionFormatter);
             elementZserioTypeName = ZserioTypeUtil.getFullName(elementType);
-            elementCppTypeName = nativeType.getElementType().getFullName();
-            requiresElementBitSize = nativeType.requiresElementBitSize();
+            elementCppTypeName = cppNativeTypeMapper.getCppType(elementType).getFullName();
             requiresElementFactory = nativeType.requiresElementFactory();
-            elementBitSizeValue = createBitSizeValue(elementType, cppExpressionFormatter);
+            elementBitSizeValue = nativeType.requiresElementBitSize()
+                    ? createBitSizeValue(elementType, cppExpressionFormatter)
+                    : null;
             elementCompound = createCompound(cppNativeTypeMapper, cppExpressionFormatter,
                     cppIndirectExpressionFormatter, parentType, elementType, withWriterCode);
             elementIntegerRange = createIntegerRange(cppNativeTypeMapper, elementType, cppExpressionFormatter);
+        }
+
+        public String getTraitsName()
+        {
+            return traitsName;
+        }
+
+        public boolean getHasTemplatedTraits()
+        {
+            return hasTemplatedTraits;
         }
 
         public boolean getIsImplicit()
@@ -422,11 +441,6 @@ public class CompoundFieldTemplateData
         public String getElementCppTypeName()
         {
             return elementCppTypeName;
-        }
-
-        public boolean getRequiresElementBitSize()
-        {
-            return requiresElementBitSize;
         }
 
         public boolean getRequiresElementFactory()
@@ -459,42 +473,22 @@ public class CompoundFieldTemplateData
             return cppExpressionFormatter.formatGetter(lengthExpression);
         }
 
+        private final String        traitsName;
+        private final boolean       hasTemplatedTraits;
         private final boolean       isImplicit;
         private final String        length;
         private final String        indirectLength;
         private final String        elementZserioTypeName;
         private final String        elementCppTypeName;
-        private final boolean       requiresElementBitSize;
         private final boolean       requiresElementFactory;
         private final String        elementBitSizeValue;
         private final Compound      elementCompound;
         private final IntegerRange  elementIntegerRange;
     }
 
-    public static class OptionalHolder
-    {
-        public OptionalHolder(NativeOptionalHolderType nativeOptionalHolderType)
-        {
-            cppTypeName = nativeOptionalHolderType.getFullName();
-            cppArgumentTypeName = nativeOptionalHolderType.getArgumentTypeName();
-        }
-
-        public String getCppTypeName()
-        {
-            return cppTypeName;
-        }
-
-        public String getCppArgumentTypeName()
-        {
-            return cppArgumentTypeName;
-        }
-
-        private final String cppTypeName;
-        private final String cppArgumentTypeName;
-    }
-
-    private static Optional createOptional(Field field, ExpressionFormatter cppExpressionFormatter)
-            throws ZserioEmitException
+    private static Optional createOptional(Field field, ExpressionFormatter cppExpressionFormatter,
+            CppNativeTypeMapper cppNativeTypeMapper,
+            IncludeCollector includeCollector) throws ZserioEmitException
     {
         if (!field.getIsOptional())
             return null;
@@ -502,7 +496,12 @@ public class CompoundFieldTemplateData
         final Expression optionalClauseExpression = field.getOptionalClauseExpr();
         final String indicatorName = AccessorNameFormatter.getIndicatorName(field);
 
-        return new Optional(optionalClauseExpression, indicatorName, cppExpressionFormatter);
+        final NativeOptionalHolderType nativeOptionalHolderType =
+                cppNativeTypeMapper.getCppOptionalHolderType(TypeReference.resolveType(field.getFieldType()));
+        includeCollector.addHeaderIncludesForType(nativeOptionalHolderType);
+
+        return new Optional(optionalClauseExpression, indicatorName, cppExpressionFormatter,
+                nativeOptionalHolderType);
     }
 
     private static IntegerRange createIntegerRange(CppNativeTypeMapper cppNativeTypeMapper,
@@ -613,27 +612,6 @@ public class CompoundFieldTemplateData
             return null;
     }
 
-    private static OptionalHolder createOptionalHolder(ZserioType fieldType, ZserioType baseFieldType,
-            CompoundType parentType, boolean isOptionalField, CppNativeTypeMapper cppNativeTypeMapper,
-            IncludeCollector includeCollector) throws ZserioEmitException
-    {
-        ZserioType fieldInstantiatedType = baseFieldType;
-        if (baseFieldType instanceof TypeInstantiation)
-            fieldInstantiatedType = ((TypeInstantiation)baseFieldType).getBaseType();
-
-        final boolean isCompoundField = (fieldInstantiatedType instanceof CompoundType);
-        if (!isOptionalField && !isCompoundField)
-            return null;
-
-        final boolean containsRecursion = (fieldInstantiatedType == parentType);
-        final boolean useHeapOptionalHolder = (isCompoundField) ? containsRecursion : false;
-        final NativeOptionalHolderType nativeOptionalHolderType =
-                cppNativeTypeMapper.getCppOptionalHolderType(fieldType, isOptionalField, useHeapOptionalHolder);
-        includeCollector.addHeaderIncludesForType(nativeOptionalHolderType);
-
-        return new OptionalHolder(nativeOptionalHolderType);
-    }
-
     private final Optional                      optional;
     private final Compound                      compound;
     private final String                        name;
@@ -653,6 +631,5 @@ public class CompoundFieldTemplateData
     private final Array                         array;
     private final RuntimeFunctionTemplateData   runtimeFunction;
     private final String                        bitSizeValue;
-    private final OptionalHolder                optionalHolder;
     private final boolean                       withWriterCode;
 }

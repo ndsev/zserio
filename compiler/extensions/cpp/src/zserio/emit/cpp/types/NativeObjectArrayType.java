@@ -4,7 +4,7 @@ public class NativeObjectArrayType extends NativeArrayType
 {
     public NativeObjectArrayType(CppNativeType elementType)
     {
-        super(elementType);
+        super(elementType, "ObjectArrayTraits<" + elementType.getFullName() + ">", true);
     }
 
     @Override
