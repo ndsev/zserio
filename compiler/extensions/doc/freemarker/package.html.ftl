@@ -25,15 +25,9 @@
         {
             hiliteElement(clickedElement);
 
-            var docToChange = parent.overview;
             var clickedStyleItemId = "style_" +
                 clickedElement.firstChild.firstChild.data.replace(/\./g, '_');
-            for (var styleItemId in docToChange.allPackageNameListStyles)
-            {
-                var styleElementStyle = docToChange.allPackageNameListStyles[styleItemId];
-                styleElementStyle.display =
-                    (styleItemId == clickedStyleItemId)? "list-item" : "none";
-            }
+            parent.postMessage(clickedStyleItemId, "*");
         }
 
 
@@ -41,12 +35,7 @@
         {
             hiliteElement(clickedElement);
 
-            var docToChange = parent.overview;
-            for (var styleItemId in docToChange.allPackageNameListStyles)
-            {
-                var styleElementStyle = docToChange.allPackageNameListStyles[styleItemId];
-                styleElementStyle.display = "list-item";
-            }
+            parent.postMessage("all", "*");
         }
     </script>
   </head>
