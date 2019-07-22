@@ -68,5 +68,16 @@
             (styleElementSheet.rules)? styleElementSheet.rules : styleElementSheet.cssRules;
         return styleElementRules[0].style;
       }
+
+    function receiveMessage(event)
+    {
+        for (var styleItemId in allPackageNameListStyles)
+        {
+            var styleElementStyle = allPackageNameListStyles[styleItemId];
+            styleElementStyle.display = (event.data === "all" || styleItemId === event.data)? "list-item" : "none";
+        }
+    }
+
+    window.addEventListener("message", receiveMessage, false);
   </script>
 </html>

@@ -1,6 +1,16 @@
 <html>
   <head>
     <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+
+    <script language="JavaScript">
+      function receiveMessage(event) {
+        // forward to overview iframe
+        var f = document.getElementsByName("overview")[0]
+        f.contentWindow.postMessage(event.data, "*")
+      }
+
+      window.addEventListener("message", receiveMessage, false);
+    </script>
   </head>
 
   <frameset cols="20%,*">
