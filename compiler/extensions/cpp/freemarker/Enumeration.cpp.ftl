@@ -3,11 +3,12 @@
 
 #include "zserio/CppRuntimeException.h"
 #include "zserio/StringConvertUtil.h"
+#include "<@include_path package.path, "${name}.h"/>"
 
 // This is full specialization for ${name} enumeration.
 <@namespace_begin ["zserio"]/>
 
-constexpr std::array<const char*, ${items?size}> EnumTraits<enumeration_types::bitfield_enum::Color>::names;
+constexpr std::array<const char*, ${items?size}> EnumTraits<${fullName}>::names;
 constexpr std::array<${fullName}, ${items?size}> EnumTraits<${fullName}>::values;
 
 template<>

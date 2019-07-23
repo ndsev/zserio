@@ -3,7 +3,8 @@
 
 <@include_guard_begin package.path, name/>
 
-#incluce <array>
+#include <array>
+#include <zserio/Enums.h>
 <@system_includes headerSystemIncludes, false/>
 
 <@user_includes headerUserIncludes, true/>
@@ -14,7 +15,7 @@ enum class ${name} : ${baseCppTypeName}
 <#list items as item>
     ${item.name} = ${item.value}<#if item?has_next>,</#if>
 </#list>
-}
+};
 
 <@namespace_end package.path/>
 
@@ -22,7 +23,7 @@ enum class ${name} : ${baseCppTypeName}
 <@namespace_begin ["zserio"]/>
 
 template<>
-struct EnumTraits<enumeration_types::bitfield_enum::Color>
+struct EnumTraits<${fullName}>
 {
     static constexpr std::array<const char*, ${items?size}> names =
     {
@@ -47,13 +48,13 @@ ${fullName} valueToEnum<${fullName}>(
         typename std::underlying_type<${fullName}>::type rawValue);
 
 template <>
-inline constexpr size_t bitSizeOf<${fullName}>(${fullName} value)
+inline constexpr size_t bitSizeOf<${fullName}>(${fullName})
 {
     return ${bitSize};
 }
 
 template <>
-inline constexpr size_t initializeOffsets<${fullName}>(${fullName} value, size_t bitPosition)
+inline constexpr size_t initializeOffsets<${fullName}>(${fullName}, size_t bitPosition)
 {
     return bitPosition + ${bitSize};
 }

@@ -93,6 +93,22 @@ ${compoundParameter.cppArgumentTypeName} ${compoundName}::${compoundParameter.ge
     </#list>
 </#macro>
 
+<#macro compound_parameter_comparison_with_any_holder compoundParametersData>
+    <#if compoundParametersData.list?has_content>
+    if (<#rt>
+    <#list compoundParametersData.list as compoundParameter>
+        <#-- TODO: Consider implementation of operator!= in all compounds! -->
+        <#if !compoundParameter?is_first>            </#if>!(${compoundParameter.getterName}() == other.${compoundParameter.getterName}())<#t>
+        <#if compoundParameter?has_next>
+            <#lt>||
+        </#if>
+    </#list>
+    <#lt>)
+        return false;
+
+    </#if>
+</#macro>
+
 <#macro compound_parameter_hash_code compoundParametersData>
     <#list compoundParametersData.list as compoundParameter>
     result = zserio::calcHashCode(result, ${compoundParameter.getterName}());

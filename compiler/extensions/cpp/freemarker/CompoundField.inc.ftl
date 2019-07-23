@@ -27,7 +27,7 @@ ${I}}
     <@compound_read_field_prolog field, compoundName, indent/>
     <#if field.array??>
         <#if field.usesAnyHolder || field.optional??>
-${I}<@compound_field_storage field/> = ${field.array.cppTypeName};
+${I}<@compound_field_storage field/> = ${field.cppTypeName}();
         </#if>
 ${I}zserio::read<@array_runtime_function_suffix field/>(<@compound_get_field field/>, in<#rt>
         <#lt><@array_offset_checker field/>
@@ -553,7 +553,7 @@ ${I}<@field_member_name field.name/>(std::move(other.<@field_member_name field.n
 <#macro compound_field_constructor_initializer_field field hasNext indent>
     <#local I>${""?left_pad(indent * 4)}</#local>
     <#if field.usesAnyHolder>
-${I}m_objectChoice(std::forward<T>(value))
+${I}m_objectChoice(std::forward<ZSERIO_T>(value))
     <#else>
 ${I}<@field_member_name field.name/>(<#rt>
         <#if field.isSimpleType>
@@ -625,9 +625,15 @@ ${I};
     <#local hasTemplateArg=false/>
     <#local templateArgList>
         <#list fieldList as field>
-            <#if !field.isSimpleType>
-                <#if hasTemplateArg>, </#if>typename ZSERIO_T_${field.name}<#t>
+            <#if field.usesAnyHolder>
+                typename ZSERIO_T<#t>
                 <#local hasTemplateArg=true/>
+                <#break/>
+            <#else>
+                <#if !field.isSimpleType>
+                    <#if hasTemplateArg>, </#if>typename ZSERIO_T_${field.name}<#t>
+                    <#local hasTemplateArg=true/>
+                </#if>
             </#if>
         </#list>
     </#local>
@@ -639,18 +645,23 @@ ${I};
 <#macro compound_field_constructor_type_list fieldList indent>
     <#local I>${""?left_pad(indent * 4)}</#local>
     <#list fieldList as field>
-        <#if field.isSimpleType>
-            <#if field.optional??>
-                ${I}${field.optional.cppArgumentTypeName}<#t>
-            <#else>
-                ${I}${field.cppArgumentTypeName}<#t>
-            </#if>
+        <#if field.usesAnyHolder>
+            ${I}ZSERIO_T&& value<#t>
+            <#break/>
         <#else>
-            ${I}ZSERIO_T_${field.name}&&<#t>
-        </#if>
-        <#lt> <@field_argument_name field.name/><#rt>
-        <#if field?has_next>
-            <#lt>,
+            <#if field.isSimpleType>
+                <#if field.optional??>
+                    ${I}${field.optional.cppArgumentTypeName}<#t>
+                <#else>
+                    ${I}${field.cppArgumentTypeName}<#t>
+                </#if>
+            <#else>
+                ${I}ZSERIO_T_${field.name}&&<#t>
+            </#if>
+            <#lt> <@field_argument_name field.name/><#rt>
+            <#if field?has_next>
+                <#lt>,
+            </#if>
         </#if>
     </#list>
 </#macro>

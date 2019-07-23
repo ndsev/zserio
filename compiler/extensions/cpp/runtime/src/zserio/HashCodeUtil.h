@@ -91,6 +91,13 @@ namespace zserio
         return calcHashCode(seedValue, enumToValue(enumValue));
     }
 
+    template <typename OBJECT>
+    inline typename std::enable_if<!std::is_enum<OBJECT>::value, int>::type calcHashCode(int seedValue,
+            const OBJECT& object)
+    {
+        return calcHashCode(seedValue, object.hashCode());
+    }
+
     template <typename ARRAY_ELEMENT>
     inline int calcHashCode(int seedValue, const std::vector<ARRAY_ELEMENT>& array)
     {
@@ -99,13 +106,6 @@ namespace zserio
             result = calcHashCode(result, element);
 
         return result;
-    }
-
-    template <typename OBJECT>
-    inline typename std::enable_if<!std::is_enum<OBJECT>::value, int>::type calcHashCode(int seedValue,
-            const OBJECT& object)
-    {
-        return calcHashCode(seedValue, object.hashCode());
     }
 } // namespace zserio
 

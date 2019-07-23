@@ -212,7 +212,7 @@ void ${compoundConstructorsData.compoundName}::initialize(
     <#if parameterTypeList?has_content>
         ${parameterTypeList}<#t>
         <#if fieldTypeList?has_content>
-            , <#t>
+            <#lt>,
         </#if>
     </#if>
     <#if fieldTypeList?has_content>

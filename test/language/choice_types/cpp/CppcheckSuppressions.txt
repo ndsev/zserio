@@ -1,0 +1,12 @@
+// suppress "Member variable 'X' is not initialized in the constructor."
+uninitMemberVar:*/BoolParamChoice.cpp
+uninitMemberVar:*/TestChoice.cpp
+uninitMemberVar:*/EmptyChoice.cpp
+uninitMemberVar:*/EmptyChoiceWithCase.cpp
+uninitMemberVar:*/EmptyChoiceWithDefault.cpp
+uninitMemberVar:*/EnumParamChoice.cpp
+uninitMemberVar:*/FullEnumParamChoice.cpp
+uninitMemberVar:*/Selector.cpp
+uninitMemberVar:*/UInt16ParamChoice.cpp
+uninitMemberVar:*/UInt64ParamChoice.cpp
+uninitMemberVar:*/Data8.cpp

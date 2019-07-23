@@ -181,7 +181,7 @@ void Choice::read(zserio::BitStreamReader& in)
     {
     case 0:
         m_objectChoice = static_cast<bool>(in.readBool());
-            break;
+        break;
     case 1:
     case 2:
         m_objectChoice = static_cast<uint16_t>(in.readBits(UINT8_C(16)));
