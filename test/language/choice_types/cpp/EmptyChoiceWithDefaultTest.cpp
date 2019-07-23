@@ -11,7 +11,7 @@ namespace choice_types
 namespace empty_choice_with_default
 {
 
-TEST(EmptyChoiceWithDefaultTest, selectorConstructor)
+TEST(EmptyChoiceWithDefaultTest, emptyConstructor)
 {
     EmptyChoiceWithDefault emptyChoiceWithDefault;
     ASSERT_THROW(emptyChoiceWithDefault.getSelector(), zserio::CppRuntimeException);
@@ -27,6 +27,12 @@ TEST(EmptyChoiceWithDefaultTest, bitStreamReaderConstructor)
     ASSERT_EQ(0, emptyChoiceWithDefault.bitSizeOf());
 }
 
+TEST(EmptyChoiceWithDefaultTest, fieldConstructor)
+{
+    EmptyChoiceWithDefault emptyChoiceWithDefault(1);
+    ASSERT_EQ(1, emptyChoiceWithDefault.getSelector());
+}
+
 TEST(EmptyChoiceWithDefaultTest, copyConstructor)
 {
     const uint8_t selector = 1;
@@ -38,15 +44,41 @@ TEST(EmptyChoiceWithDefaultTest, copyConstructor)
     ASSERT_EQ(0, emptyChoiceWithDefaultCopy.bitSizeOf());
 }
 
-TEST(EmptyChoiceWithDefaultTest, operatorAssignment)
+TEST(EmptyChoiceWithDefaultTest, assignmentOperator)
 {
     const uint8_t selector = 1;
 
     EmptyChoiceWithDefault emptyChoiceWithDefault;
     emptyChoiceWithDefault.initialize(selector);
-    const EmptyChoiceWithDefault emptyChoiceWithDefaultCopy = emptyChoiceWithDefault;
+    EmptyChoiceWithDefault emptyChoiceWithDefaultCopy;
+    emptyChoiceWithDefaultCopy = emptyChoiceWithDefault;
     ASSERT_EQ(selector, emptyChoiceWithDefaultCopy.getSelector());
     ASSERT_EQ(0, emptyChoiceWithDefaultCopy.bitSizeOf());
+}
+
+TEST(EmptyChoiceWithDefaultTest, moveConstructor)
+{
+    const uint8_t selector = 1;
+
+    EmptyChoiceWithDefault emptyChoiceWithDefault;
+    emptyChoiceWithDefault.initialize(selector);
+    // note that it doesn't ensure that move ctor was called
+    const EmptyChoiceWithDefault emptyChoiceWithDefaultMoved(std::move(emptyChoiceWithDefault));
+    ASSERT_EQ(selector, emptyChoiceWithDefaultMoved.getSelector());
+    ASSERT_EQ(0, emptyChoiceWithDefaultMoved.bitSizeOf());
+}
+
+TEST(EmptyChoiceWithDefaultTest, moveAssignmentOperator)
+{
+    const uint8_t selector = 1;
+
+    EmptyChoiceWithDefault emptyChoiceWithDefault;
+    emptyChoiceWithDefault.initialize(selector);
+    // note that it doesn't ensure that move ctor was called
+    EmptyChoiceWithDefault emptyChoiceWithDefaultMoved;
+    emptyChoiceWithDefaultMoved = std::move(emptyChoiceWithDefault);
+    ASSERT_EQ(selector, emptyChoiceWithDefaultMoved.getSelector());
+    ASSERT_EQ(0, emptyChoiceWithDefaultMoved.bitSizeOf());
 }
 
 TEST(EmptyChoiceWithDefaultTest, initialize)

@@ -136,7 +136,7 @@ void ${name}::initializeChildren()
 <@compound_field_getter_definition field name "compound_return_field"/>
 <@compound_field_const_getter_definition field name "compound_return_field"/>
 <@compound_field_setter_definition field name "compound_set_field"/>
-<@compound_field_rvalue_setter_definition field name "compound_set_field"/>
+<@compound_field_rvalue_setter_definition field name "compound_move_to_field"/>
 </#list>
 <@compound_functions_definition name, compoundFunctionsData/>
 <#macro choice_bitsizeof_member member>
@@ -183,7 +183,9 @@ size_t ${name}::initializeOffsets(size_t bitPosition)
 
 <#macro choice_compare_member member>
     <#if member.compoundField??>
-        return <@compound_get_field member.compoundField/> == other.<@compound_get_field member.compoundField/>;
+        return (!m_objectChoice.hasValue() && !other.m_objectChoice.hasValue()) ||
+                (m_objectChoice.hasValue() && other.m_objectChoice.hasValue() &&
+                <@compound_get_field member.compoundField/> == other.<@compound_get_field member.compoundField/>);
     <#else>
         return true; // empty
     </#if>
@@ -204,7 +206,8 @@ bool ${name}::operator==(const ${name}& other) const
 <#-- TODO: Check if it's ok that it fires exception for uninitialized choice! -->
 <#macro choice_hash_code_member member>
     <#if member.compoundField??>
-        result = zserio::calcHashCode(result, <@compound_get_field member.compoundField/>);
+        if (m_objectChoice.hasValue())
+            result = zserio::calcHashCode(result, <@compound_get_field member.compoundField/>);
     <#else>
         // empty
     </#if>

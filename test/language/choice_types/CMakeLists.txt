@@ -68,17 +68,17 @@ zserio_add_library(TARGET choice_types_zs
 )
 
 add_test_sources(
-    # ${ZSERIO_CPP_DIR}/BoolParamChoiceTest.cpp
-    # ${ZSERIO_CPP_DIR}/ChoiceWithArrayTest.cpp
+    ${ZSERIO_CPP_DIR}/BoolParamChoiceTest.cpp
+    ${ZSERIO_CPP_DIR}/ChoiceWithArrayTest.cpp
     ${ZSERIO_CPP_DIR}/EmptyChoiceTest.cpp
     ${ZSERIO_CPP_DIR}/EmptyChoiceWithCaseTest.cpp
     ${ZSERIO_CPP_DIR}/EmptyChoiceWithDefaultTest.cpp
-    # ${ZSERIO_CPP_DIR}/EnumParamChoiceTest.cpp
-    # ${ZSERIO_CPP_DIR}/FullEnumParamChoiceTest.cpp
-    # ${ZSERIO_CPP_DIR}/FunctionReturningLiteralSelectorChoiceTest.cpp
-    # ${ZSERIO_CPP_DIR}/FunctionSelectorChoiceTest.cpp
-    # ${ZSERIO_CPP_DIR}/UInt16ParamChoiceTest.cpp
-    # ${ZSERIO_CPP_DIR}/UInt64ParamChoiceTest.cpp
+    ${ZSERIO_CPP_DIR}/EnumParamChoiceTest.cpp
+    ${ZSERIO_CPP_DIR}/FullEnumParamChoiceTest.cpp
+    ${ZSERIO_CPP_DIR}/FunctionReturningLiteralSelectorChoiceTest.cpp
+    ${ZSERIO_CPP_DIR}/FunctionSelectorChoiceTest.cpp
+    ${ZSERIO_CPP_DIR}/UInt16ParamChoiceTest.cpp
+    ${ZSERIO_CPP_DIR}/UInt64ParamChoiceTest.cpp
 )
 
 add_test_dependencies(choice_types_zs)

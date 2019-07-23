@@ -11,7 +11,7 @@ namespace choice_types
 namespace empty_choice_with_case
 {
 
-TEST(EmptyChoiceWithCaseTest, selectorConstructor)
+TEST(EmptyChoiceWithCaseTest, emptyConstructor)
 {
     EmptyChoiceWithCase emptyChoiceWithCase;
     ASSERT_THROW(emptyChoiceWithCase.getSelector(), zserio::CppRuntimeException);
@@ -27,6 +27,12 @@ TEST(EmptyChoiceWithCaseTest, bitStreamReaderConstructor)
     ASSERT_EQ(0, emptyChoiceWithCase.bitSizeOf());
 }
 
+TEST(EmptyChoiceWithCaseTest, fieldConstructor)
+{
+    EmptyChoiceWithCase emptyChoiceWithCase(1);
+    ASSERT_EQ(1, emptyChoiceWithCase.getSelector());
+}
+
 TEST(EmptyChoiceWithCaseTest, copyConstructor)
 {
     const uint8_t selector = 1;
@@ -38,15 +44,41 @@ TEST(EmptyChoiceWithCaseTest, copyConstructor)
     ASSERT_EQ(0, emptyChoiceWithCaseCopy.bitSizeOf());
 }
 
-TEST(EmptyChoiceWithCaseTest, operatorAssignment)
+TEST(EmptyChoiceWithCaseTest, assignmentOperator)
 {
     const uint8_t selector = 1;
 
     EmptyChoiceWithCase emptyChoiceWithCase;
     emptyChoiceWithCase.initialize(selector);
-    const EmptyChoiceWithCase emptyChoiceWithCaseCopy = emptyChoiceWithCase;
+    EmptyChoiceWithCase emptyChoiceWithCaseCopy;
+    emptyChoiceWithCaseCopy = emptyChoiceWithCase;
     ASSERT_EQ(selector, emptyChoiceWithCaseCopy.getSelector());
     ASSERT_EQ(0, emptyChoiceWithCaseCopy.bitSizeOf());
+}
+
+TEST(EmptyChoiceWithCaseTest, moveConstructor)
+{
+    const uint8_t selector = 1;
+
+    EmptyChoiceWithCase emptyChoiceWithCase;
+    emptyChoiceWithCase.initialize(selector);
+    // note that it doesn't ensure that move ctor was called
+    const EmptyChoiceWithCase emptyChoiceWithCaseMoved(std::move(emptyChoiceWithCase));
+    ASSERT_EQ(selector, emptyChoiceWithCaseMoved.getSelector());
+    ASSERT_EQ(0, emptyChoiceWithCaseMoved.bitSizeOf());
+}
+
+TEST(EmptyChoiceWithCaseTest, moveAssignmentOperator)
+{
+    const uint8_t selector = 1;
+
+    EmptyChoiceWithCase emptyChoiceWithCase;
+    emptyChoiceWithCase.initialize(selector);
+    // note that it doesn't ensure that move ctor was called
+    EmptyChoiceWithCase emptyChoiceWithCaseMoved;
+    emptyChoiceWithCaseMoved = std::move(emptyChoiceWithCase);
+    ASSERT_EQ(selector, emptyChoiceWithCaseMoved.getSelector());
+    ASSERT_EQ(0, emptyChoiceWithCaseMoved.bitSizeOf());
 }
 
 TEST(EmptyChoiceWithCaseTest, initialize)
