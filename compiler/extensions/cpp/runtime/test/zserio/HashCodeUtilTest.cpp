@@ -3,6 +3,29 @@
 
 #include "gtest/gtest.h"
 
+namespace
+{
+
+enum class Color : uint8_t
+{
+    NONE = UINT8_C(0),
+    RED = UINT8_C(2),
+    BLUE = UINT8_C(3),
+    BLACK = UINT8_C(7)
+};
+
+class DummyObject
+{
+public:
+    DummyObject(int hashCode) : m_hashCode(hashCode) {}
+    int hashCode() const { return m_hashCode; }
+
+private:
+    int m_hashCode;
+};
+
+} // namespace
+
 namespace zserio
 {
 
@@ -56,14 +79,6 @@ TEST(HashCodeUtilTest, stringType)
     EXPECT_EQ(HASH_PRIME_NUMBER + '0', calcHashCode(hashSeed, stringValue));
 }
 
-enum class Color : uint8_t
-{
-    NONE = UINT8_C(0),
-    RED = UINT8_C(2),
-    BLUE = UINT8_C(3),
-    BLACK = UINT8_C(7)
-};
-
 TEST(HashCodeUtilTest, enumType)
 {
     const int hashSeed = 1;
@@ -73,24 +88,25 @@ TEST(HashCodeUtilTest, enumType)
     EXPECT_EQ(HASH_PRIME_NUMBER + enumToValue(Color::BLACK), calcHashCode(hashSeed, Color::BLACK));
 }
 
-TEST(HashCodeUtilTest, arrayType)
+TEST(HashCodeUtilTest, objectType)
+{
+    const int hashSeed = 1;
+    const DummyObject objectValue(10);
+    EXPECT_EQ(HASH_PRIME_NUMBER + 10, calcHashCode(hashSeed, objectValue));
+}
+
+TEST(HashCodeUtilTest, simpleArrayType)
 {
     const int hashSeed = 1;
     const std::vector<uint8_t> array = {3, 7};
     EXPECT_EQ((HASH_PRIME_NUMBER + 3) * HASH_PRIME_NUMBER + 7, calcHashCode(hashSeed, array));
 }
 
-struct DummyObject
-{
-    DummyObject() {}
-    int hashCode() const { return 10; }
-};
-
-TEST(HashCodeUtilTest, objectType)
+TEST(HashCodeUtilTest, objectArrayType)
 {
     const int hashSeed = 1;
-    const DummyObject objectValue;
-    EXPECT_EQ(HASH_PRIME_NUMBER + 10, calcHashCode(hashSeed, objectValue));
+    const std::vector<DummyObject> array = {DummyObject(3), DummyObject(7)};
+    EXPECT_EQ((HASH_PRIME_NUMBER + 3) * HASH_PRIME_NUMBER + 7, calcHashCode(hashSeed, array));
 }
 
 } // namespace zserio
