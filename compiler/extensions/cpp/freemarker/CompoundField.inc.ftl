@@ -29,9 +29,10 @@ ${I}}
         <#if field.usesAnyHolder || field.optional??>
 ${I}<@compound_field_storage field/> = ${field.cppTypeName}();
         </#if>
-${I}zserio::read<@array_runtime_function_suffix field/>(<@compound_get_field field/>, in<#rt>
-        <#lt><@array_offset_checker field/>
-        <#lt><@array_element_factory field/>);
+${I}zserio::read<@array_runtime_function_suffix field/><#rt>
+        <#lt><#if field.offset?? && field.offset.containsIndex><<@offset_checker_name field.name/>></#if><#rt>
+        <#lt>(<@array_traits field, true/>, <@compound_get_field field/>, in<#rt>
+        <#lt><@array_offset_checker field/>);
     <#elseif field.runtimeFunction??>
 ${I}<@compound_field_storage field/> = static_cast<${field.cppTypeName}>(in.read${field.runtimeFunction.suffix}(${field.runtimeFunction.arg!}));
     <#elseif field.isEnum>
@@ -119,7 +120,9 @@ ${I}out.write${field.runtimeFunction.suffix}(<@compound_get_field field/><#if fi
         <#lt> ${field.runtimeFunction.arg}</#if>);
     <#elseif field.array??>
     <@compound_write_field_array_prolog field, compoundName, indent/>
-${I}zserio::write<@array_runtime_function_suffix field/>(<#rt>
+${I}zserio::write<@array_runtime_function_suffix field/><#rt>
+        <#lt><#if field.offset?? && field.offset.containsIndex><<@offset_checker_name field.name/>></#if><#rt>
+        <#lt>(<@array_traits field/>, <#rt>
         <#lt><@compound_get_field field/>, out<@array_offset_checker field/>);
     <#else>
 ${I}<@compound_get_field field/>.write(out, zserio::NO_PRE_WRITE_ACTION);
@@ -215,22 +218,25 @@ ${I}            zserio::convertToString(${lowerBoundVarName}) + ".." +
 ${I}            zserio::convertToString(${upperBoundVarName}) + ">!");
 </#macro>
 
-<#macro array_traits array>
+<#macro array_traits field isInRead=false>
+    <#local array=field.array/>
     ${array.traitsName}<#t>
     <#if array.hasTemplatedTraits>
-        <<#t>
-        <#if array.elementBitSizeValue??>
-            <#-- TODO: find solution for bitsize given by non-const expression - i.e. depending on a field! -->
-            ${array.elementBitSizeValue}, <#t>
-        </#if>
-        ${array.elementCppTypeName}><#t>
+        <${array.elementCppTypeName}<#if isInRead && array.requiresElementFactory>, <@element_factory_name field.name/></#if>><#t>
     </#if>
+        (<#t>
+    <#if array.elementBitSizeValue??>
+        ${array.elementBitSizeValue}<#t>
+    </#if>
+    <#if isInRead && array.requiresElementFactory>
+        <@element_factory_name field.name/>(*this)<#t>
+    </#if>
+        )<#t>
 </#macro>
 
 <#macro array_runtime_function_suffix field>
     <#if field.offset?? && field.offset.containsIndex>Aligned</#if><#t>
     <#if !field.array.length?? && !field.array.isImplicit>Auto</#if><#t>
-    <<@array_traits field.array/>><#t>
 </#macro>
 
 <#macro offset_checker_name fieldName>
@@ -292,7 +298,7 @@ class ${compoundName}::<@element_factory_name field.name/>
 public:
     explicit <@element_factory_name field.name/>(${compoundName}& owner) : m_owner(owner) {}
 
-    void create(${field.cppTypeName}& array, zserio::BitStreamReader& in, size_t index)
+    void create(${field.cppTypeName}& array, zserio::BitStreamReader& in, size_t index) const
     {
         (void)index;
         array.emplace_back(in<#if extraConstructorArguments?has_content>, ${extraConstructorArguments}</#if>);
@@ -405,10 +411,6 @@ public:
     <#if field.offset?? && field.offset.containsIndex>, <@offset_checker_name field.name/>(*this)</#if><#t>
 </#macro>
 
-<#macro array_element_factory field>
-    <#if field.array?? && field.array.requiresElementFactory>, <@element_factory_name field.name/>(*this)</#if><#t>
-</#macro>
-
 <#macro array_element_bit_size array>
     <#if array.requiresElementBitSize>
         , ${array.elementBitSizeValue}<#t>
@@ -422,7 +424,7 @@ public:
 <#macro compound_bitsizeof_field field indent>
     <#local I>${""?left_pad(indent * 4)}</#local>
     <#if field.array??>
-${I}endBitPosition += zserio::bitSizeOf<@array_runtime_function_suffix field/>(<#rt>
+${I}endBitPosition += zserio::bitSizeOf<@array_runtime_function_suffix field/>(<@array_traits field/>, <#rt>
         <#lt><@compound_get_field field/>, endBitPosition);
     <#elseif field.bitSizeValue??>
 ${I}endBitPosition += ${field.bitSizeValue};
@@ -436,7 +438,9 @@ ${I}endBitPosition += <@compound_get_field field/>.bitSizeOf(endBitPosition);
 <#macro compound_initialize_offsets_field field indent>
     <#local I>${""?left_pad(indent * 4)}</#local>
     <#if field.array??>
-${I}endBitPosition = zserio::initializeOffsets<@array_runtime_function_suffix field/>(<#rt>
+${I}endBitPosition = zserio::initializeOffsets<@array_runtime_function_suffix field/><#rt>
+        <#lt><#if field.offset?? && field.offset.containsIndex><<@offset_initializer_name field.name/>></#if><#rt>
+        <#lt>(<@array_traits field/>, <#rt>
         <#lt><@compound_get_field field/>, endBitPosition<#rt>
         <#if field.offset?? && field.offset.containsIndex>, <@offset_initializer_name field.name/>(*this)</#if><#t>
         <#lt>);
