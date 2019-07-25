@@ -73,7 +73,7 @@ ${compoundConstructorsData.compoundName}::${compoundConstructorsData.compoundNam
         </#if>
     }
     </#if>
-</#macro> 
+</#macro>
 
 <#macro compound_copy_constructor_declaration compoundConstructorsData>
     ${compoundConstructorsData.compoundName}(const ${compoundConstructorsData.compoundName}& other);
@@ -145,7 +145,11 @@ ${compoundConstructorsData.compoundName}::${compoundConstructorsData.compoundNam
 }
 </#macro>
 
-<#macro compound_move_assignment_constructor_definition compoundConstructorsData>
+<#macro compound_move_assignment_operator_declaration compoundConstructorsData>
+    ${compoundConstructorsData.compoundName}& operator=(${compoundConstructorsData.compoundName}&& other);
+</#macro>
+
+<#macro compound_move_assignment_operator_definition compoundConstructorsData>
 ${compoundConstructorsData.compoundName}& ${compoundConstructorsData.compoundName}::operator=(<#rt>
     <#lt>${compoundConstructorsData.compoundName}&& other)
 {
@@ -159,10 +163,6 @@ ${compoundConstructorsData.compoundName}& ${compoundConstructorsData.compoundNam
 
     return *this;
 }
-</#macro>
-
-<#macro compound_move_assignment_operator_declaration compoundConstructorsData>
-    ${compoundConstructorsData.compoundName}& operator=(${compoundConstructorsData.compoundName}&& other);
 </#macro>
 
 <#macro compound_initialize_declaration compoundConstructorsData>

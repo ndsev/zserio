@@ -1,0 +1,8 @@
+// suppress "Member variable 'X' is not initialized in the constructor."
+// TODO: remove when cppcheck understands noexcept
+uninitMemberVar:*/EmptyUnion.cpp
+uninitMemberVar:*/EmptyUnionWithParameter.cpp
+uninitMemberVar:*/TestUnion.cpp
+// TODO: remove when cppcheck understands noexcept
+uninitMemberVar:*/SimpleUnion.cpp
+uninitMemberVar:*/Data8.cpp

@@ -518,7 +518,7 @@ void ${compoundName}::${field.setterName}(${fieldOrOptional.cppTypeName}&& <@fie
     <@compound_field_storage field/> = <@field_argument_name field.name/>;
 </#macro>
 
-<#macro compound_move_to_field field>
+<#macro compound_rvalue_set_field field>
     <@compound_field_storage field/> = std::move(<@field_argument_name field.name/>);
 </#macro>
 

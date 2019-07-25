@@ -35,9 +35,19 @@ TEST_F(OneStringStructureTest, emptyConstructor)
 
 TEST_F(OneStringStructureTest, fieldConstructor)
 {
-    const char* str = "test";
-    OneStringStructure oneStringStructure(str);
-    ASSERT_EQ(str, oneStringStructure.getOneString());
+    {
+        const char* str = "test";
+        OneStringStructure oneStringStructure(str);
+        ASSERT_EQ(str, oneStringStructure.getOneString());
+    }
+
+    {
+        std::string movedString(1000, 'a'); // long enough to prevent small string optimization
+        const void* ptr = movedString.data();
+        OneStringStructure oneStringStructure(std::move(movedString));
+        const void* movedPtr= oneStringStructure.getOneString().data();
+        ASSERT_EQ(ptr, movedPtr);
+    }
 }
 
 TEST_F(OneStringStructureTest, bitStreamReaderConstructor)
@@ -57,7 +67,7 @@ TEST_F(OneStringStructureTest, getSetOneString)
     oneStringStructure.setOneString(ONE_STRING);
     ASSERT_EQ(ONE_STRING, oneStringStructure.getOneString());
 
-    std::string movedString("a", 1000); // long enough to prevent small string optimization
+    std::string movedString(1000, 'a'); // long enough to prevent small string optimization
     const void* ptr = movedString.data();
     oneStringStructure.setOneString(std::move(movedString));
     const void* movedPtr = oneStringStructure.getOneString().data();

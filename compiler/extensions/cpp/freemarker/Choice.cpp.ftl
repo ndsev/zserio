@@ -47,7 +47,7 @@ ${name}::${name}() noexcept<#rt>
 
 <@compound_move_constructor_definition compoundConstructorsData/>
 
-<@compound_move_assignment_constructor_definition compoundConstructorsData/>
+<@compound_move_assignment_operator_definition compoundConstructorsData/>
 
 </#if>
 <#if needs_compound_initialization(compoundConstructorsData)>
@@ -56,10 +56,10 @@ ${name}::${name}() noexcept<#rt>
 </#if>
 <#macro choice_selector_condition expressionList>
     <#if expressionList?size == 1>
-        _selector == ${expressionList?first}<#t>
+        selector == ${expressionList?first}<#t>
     <#else>
         <#list expressionList as expression>
-        (_selector == ${expression})<#if expression_has_next> || </#if><#t>
+        (selector == ${expression})<#if expression_has_next> || </#if><#t>
         </#list>
     </#if>
 </#macro>
@@ -90,7 +90,7 @@ ${name}::${name}() noexcept<#rt>
         </#if>
     }
     <#else>
-    const ${selectorExpressionTypeName} _selector = ${selectorExpression};
+    const ${selectorExpressionTypeName} selector = ${selectorExpression};
 
         <#list caseMemberList as caseMember>
             <#if caseMember_has_next || !isDefaultUnreachable>
@@ -136,7 +136,7 @@ void ${name}::initializeChildren()
 <@compound_field_getter_definition field name "compound_return_field"/>
 <@compound_field_const_getter_definition field name "compound_return_field"/>
 <@compound_field_setter_definition field name "compound_set_field"/>
-<@compound_field_rvalue_setter_definition field name "compound_move_to_field"/>
+<@compound_field_rvalue_setter_definition field name "compound_rvalue_set_field"/>
 </#list>
 <@compound_functions_definition name, compoundFunctionsData/>
 <#macro choice_bitsizeof_member member>
@@ -194,7 +194,7 @@ bool ${name}::operator==(const ${name}& other) const
 {
     if (this == &other)
         return true;
-        
+
     <@compound_parameter_comparison_with_any_holder compoundParametersData/>
     <#if fieldList?has_content>
     <@choice_switch "choice_compare_member" false/>
@@ -203,7 +203,6 @@ bool ${name}::operator==(const ${name}& other) const
     </#if>
 }
 
-<#-- TODO: Check if it's ok that it fires exception for uninitialized choice! -->
 <#macro choice_hash_code_member member>
     <#if member.compoundField??>
         if (m_objectChoice.hasValue())

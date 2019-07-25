@@ -62,12 +62,14 @@ TEST(EmptyStructureWithParameterTest, moveConstructor)
         ASSERT_THROW(testStructureWithParameterMoved.getParam(), zserio::CppRuntimeException);
     }
 
-    int32_t param = 1;
-    EmptyStructureWithParameter testStructureWithParameter(param);
-    ASSERT_EQ(param, testStructureWithParameter.getParam());
+    {
+        int32_t param = 1;
+        EmptyStructureWithParameter testStructureWithParameter(param);
+        ASSERT_EQ(param, testStructureWithParameter.getParam());
 
-    EmptyStructureWithParameter testStructureWithParameterMoved(std::move(testStructureWithParameter));
-    ASSERT_EQ(param, testStructureWithParameterMoved.getParam());
+        EmptyStructureWithParameter testStructureWithParameterMoved(std::move(testStructureWithParameter));
+        ASSERT_EQ(param, testStructureWithParameterMoved.getParam());
+    }
 }
 
 TEST(EmptyStructureWithParameterTest, moveAssignmentOperator)
@@ -81,13 +83,15 @@ TEST(EmptyStructureWithParameterTest, moveAssignmentOperator)
         ASSERT_THROW(testStructureWithParameterMoved.getParam(), zserio::CppRuntimeException);
     }
 
-    int32_t param = 1;
-    EmptyStructureWithParameter testStructureWithParameter(param);
-    ASSERT_EQ(param, testStructureWithParameter.getParam());
+    {
+        int32_t param = 1;
+        EmptyStructureWithParameter testStructureWithParameter(param);
+        ASSERT_EQ(param, testStructureWithParameter.getParam());
 
-    EmptyStructureWithParameter testStructureWithParameterMoved;
-    testStructureWithParameterMoved = std::move(testStructureWithParameter);
-    ASSERT_EQ(param, testStructureWithParameterMoved.getParam());
+        EmptyStructureWithParameter testStructureWithParameterMoved;
+        testStructureWithParameterMoved = std::move(testStructureWithParameter);
+        ASSERT_EQ(param, testStructureWithParameterMoved.getParam());
+    }
 }
 
 TEST(EmptyStructureWithParameterTest, initialize)

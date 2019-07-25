@@ -63,7 +63,7 @@ ${name}::${name}() noexcept<#rt>
 
 <@compound_move_constructor_definition compoundConstructorsData/>
 
-<@compound_move_assignment_constructor_definition compoundConstructorsData/>
+<@compound_move_assignment_operator_definition compoundConstructorsData/>
 
 </#if>
 <#if needs_compound_initialization(compoundConstructorsData)>
@@ -85,7 +85,7 @@ void ${name}::initializeChildren()
 <@compound_field_getter_definition field name "compound_return_field"/>
 <@compound_field_const_getter_definition field name "compound_return_field"/>
 <@compound_field_setter_definition field name "compound_set_field"/>
-<@compound_field_rvalue_setter_definition field name "compound_move_to_field"/>
+<@compound_field_rvalue_setter_definition field name "compound_rvalue_set_field"/>
     <#if field.optional??>
 bool ${name}::${field.optional.indicatorName}() const
 {
