@@ -172,7 +172,7 @@ public class CppExpressionFormattingPolicy extends DefaultExpressionFormattingPo
     @Override
     public UnaryExpressionFormatting getValueOf(Expression expr)
     {
-        return new UnaryExpressionFormatting("", "");
+        return new UnaryExpressionFormatting("zserio::enumToValue(", ")");
     }
 
     @Override
