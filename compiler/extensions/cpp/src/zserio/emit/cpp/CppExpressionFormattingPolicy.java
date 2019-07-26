@@ -128,7 +128,7 @@ public class CppExpressionFormattingPolicy extends DefaultExpressionFormattingPo
     @Override
     public String getIndex(Expression expr)
     {
-        return "_index";
+        return "index";
     }
 
     @Override
@@ -186,7 +186,7 @@ public class CppExpressionFormattingPolicy extends DefaultExpressionFormattingPo
     @Override
     public BinaryExpressionFormatting getArrayElement(Expression expr, boolean isSetter)
     {
-        return new BinaryExpressionFormatting("", ".at(", (isSetter) ? ") = _value" : ")");
+        return new BinaryExpressionFormatting("", ".at(", (isSetter) ? ") = value" : ")");
     }
 
     @Override
@@ -366,7 +366,7 @@ public class CppExpressionFormattingPolicy extends DefaultExpressionFormattingPo
     private final IncludeCollector includeCollector;
 
     private final static String CPP_GETTER_FUNCTION_CALL = "()";
-    private final static String CPP_SETTER_FUNCTION_CALL = "(_value)";
+    private final static String CPP_SETTER_FUNCTION_CALL = "(value)";
 
     private final static List<String> BUILD_IN_OPERATORS_INCLUDE = Arrays.asList("zserio/BuildInOperators.h");
 

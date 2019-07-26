@@ -25,6 +25,18 @@ T sum(const std::vector<T>& array)
     return summation;
 }
 
+// TODO: add tests!
+template <typename T, typename ELEMENT_INITIALIZER>
+void initializeElements(std::vector<T>& array, ELEMENT_INITIALIZER elementInitializer)
+{
+    size_t index = 0;
+    for (auto it = array.begin(); it != array.end(); ++it)
+    {
+        elementInitializer.initialize(*it, index);
+        index++;
+    }
+}
+
 template <typename ARRAY_TRAITS>
 size_t bitSizeOf(const ARRAY_TRAITS& arrayTraits, const std::vector<typename ARRAY_TRAITS::type>& array,
         size_t bitPosition)

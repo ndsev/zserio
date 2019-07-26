@@ -17,7 +17,7 @@ enum class Color : uint8_t
 class DummyObject
 {
 public:
-    DummyObject(int hashCode) : m_hashCode(hashCode) {}
+    explicit DummyObject(int hashCode) : m_hashCode(hashCode) {}
     int hashCode() const { return m_hashCode; }
 
 private:

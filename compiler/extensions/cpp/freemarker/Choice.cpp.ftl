@@ -94,7 +94,7 @@ ${name}::${name}() noexcept<#rt>
 
         <#list caseMemberList as caseMember>
             <#if caseMember_has_next || !isDefaultUnreachable>
-    <#if caseMember_index != 0>else </#if>if (<@choice_selector_condition caseMember.expressionList/>)
+    <#if caseMember?index != 0>else </#if>if (<@choice_selector_condition caseMember.expressionList/>)
             <#else>
     else
             </#if>

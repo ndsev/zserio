@@ -3,17 +3,18 @@
 <#include "CompoundParameter.inc.ftl">
 <#include "CompoundField.inc.ftl">
 <#include "CompoundFunction.inc.ftl">
+<#include "GrpcSerializationTraits.inc.ftl">
 <@file_header generatorDescription/>
 
 <@include_guard_begin package.path, name/>
 
-<@system_includes headerSystemIncludes, false/>
 #include <zserio/BitStreamReader.h>
 #include <zserio/BitStreamWriter.h>
 #include <zserio/BitFieldUtil.h>
 #include <zserio/CppRuntimeException.h>
 #include <zserio/StringConvertUtil.h>
 #include <zserio/PreWriteAction.h>
+<@system_includes headerSystemIncludes, false/>
 
 <@user_includes headerUserIncludes, true/>
 <@namespace_begin package.path/>
@@ -89,5 +90,6 @@ private:
 };
 
 <@namespace_end package.path/>
+<@grpc_serialization_traits needsRpcTraits fullName/>
 
 <@include_guard_end package.path, name/>

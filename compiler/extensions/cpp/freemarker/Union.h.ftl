@@ -3,6 +3,7 @@
 <#include "CompoundParameter.inc.ftl">
 <#include "CompoundField.inc.ftl">
 <#include "CompoundFunction.inc.ftl">
+<#include "GrpcSerializationTraits.inc.ftl">
 <@file_header generatorDescription/>
 
 <@include_guard_begin package.path, name/>
@@ -24,7 +25,7 @@ public:
     enum ChoiceTag : int32_t
     {
 <#list fieldList as field>
-        <@choice_tag_name field/> = ${field_index},
+        <@choice_tag_name field/> = ${field?index},
 </#list>
         UNDEFINED_CHOICE = -1
     };
@@ -35,7 +36,7 @@ public:
     <@compound_read_constructor_declaration compoundConstructorsData/>
 <#if withWriterCode>
     <#if fieldList?has_content || needs_compound_initialization(compoundConstructorsData)>
-    
+
     <@compound_field_constructor_template_arg_list fieldList/>
     explicit ${name}(<#rt>
         <#lt><@compound_fields_constructor_argument_type_list compoundConstructorsData, 3/><#rt>
@@ -65,7 +66,7 @@ public:
         else
             throw zserio::CppRuntimeException("No match in union Union!");
             <#if has_field_with_initialization(fieldList)>
-            
+
         initializeChildren();
             </#if>
         </#if>
@@ -125,5 +126,6 @@ private:
 };
 
 <@namespace_end package.path/>
+<@grpc_serialization_traits needsRpcTraits fullName/>
 
 <@include_guard_end package.path, name/>

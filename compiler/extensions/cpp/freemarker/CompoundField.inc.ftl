@@ -32,7 +32,7 @@ ${I}<@compound_field_storage field/> = ${field.cppTypeName}();
 ${I}zserio::read<@array_runtime_function_suffix field/><#rt>
         <#lt><#if field.offset?? && field.offset.containsIndex><<@offset_checker_name field.name/>></#if><#rt>
         <#lt>(<@array_traits field, true/>, <@compound_get_field field/>, in<#rt>
-        <#lt><@array_offset_checker field/>);
+        <#lt><#if field.array.length??>, ${field.array.length}</#if><@array_offset_checker field/>);
     <#elseif field.runtimeFunction??>
 ${I}<@compound_field_storage field/> = static_cast<${field.cppTypeName}>(in.read${field.runtimeFunction.suffix}(${field.runtimeFunction.arg!}));
     <#elseif field.isEnum>
@@ -44,7 +44,7 @@ ${I}<@compound_field_storage field/> = zserio::read<${field.cppTypeName}>(in);
         <#if field.usesAnyHolder || field.optional??>
 ${I}<@compound_field_storage field/> = ${field.cppTypeName}(${constructorArguments});
         <#else>
-${I}<@field_member_name field/>.read(${constructorArguments});
+${I}<@field_member_name field.name/> = ${field.cppTypeName}(${constructorArguments});<#-- TODD: initialize and then read! -->
         </#if>
     </#if>
 </#macro>
@@ -114,16 +114,18 @@ ${I}}
 
 <#macro compound_write_field_inner field compoundName indent>
     <#local I>${""?left_pad(indent * 4)}</#local>
-    <@compound_write_field_prolog field, compoundName, indent/>
+<@compound_write_field_prolog field, compoundName, indent/>
     <#if field.runtimeFunction??>
 ${I}out.write${field.runtimeFunction.suffix}(<@compound_get_field field/><#if field.runtimeFunction.arg??>,<#rt>
         <#lt> ${field.runtimeFunction.arg}</#if>);
     <#elseif field.array??>
-    <@compound_write_field_array_prolog field, compoundName, indent/>
+<@compound_write_field_array_prolog field, compoundName, indent/>
 ${I}zserio::write<@array_runtime_function_suffix field/><#rt>
         <#lt><#if field.offset?? && field.offset.containsIndex><<@offset_checker_name field.name/>></#if><#rt>
         <#lt>(<@array_traits field/>, <#rt>
         <#lt><@compound_get_field field/>, out<@array_offset_checker field/>);
+    <#elseif field.isEnum>
+${I}zserio::write(out, <@compound_get_field field/>);
     <#else>
 ${I}<@compound_get_field field/>.write(out, zserio::NO_PRE_WRITE_ACTION);
     </#if>
@@ -426,6 +428,8 @@ public:
     <#if field.array??>
 ${I}endBitPosition += zserio::bitSizeOf<@array_runtime_function_suffix field/>(<@array_traits field/>, <#rt>
         <#lt><@compound_get_field field/>, endBitPosition);
+    <#elseif field.isEnum>
+${I}endBitPosition += zserio::bitSizeOf(<@compound_get_field field/>);
     <#elseif field.bitSizeValue??>
 ${I}endBitPosition += ${field.bitSizeValue};
     <#elseif field.runtimeFunction??>
@@ -444,6 +448,8 @@ ${I}endBitPosition = zserio::initializeOffsets<@array_runtime_function_suffix fi
         <#lt><@compound_get_field field/>, endBitPosition<#rt>
         <#if field.offset?? && field.offset.containsIndex>, <@offset_initializer_name field.name/>(*this)</#if><#t>
         <#lt>);
+    <#elseif field.isEnum>
+${I}endBitPosition = zserio::initializeOffsets(<@compound_get_field field/>, endBitPosition);
     <#elseif field.bitSizeValue??>
 ${I}endBitPosition += ${field.bitSizeValue};
     <#elseif field.runtimeFunction??>
@@ -596,17 +602,19 @@ ${I}<@field_member_name field.name/> = std::move(other.<@field_member_name field
     <#if field.compound??>
         <#if needs_compound_field_initialization(field.compound)>
             <#local initializeCommand><@compound_get_field field/>.initialize(<#rt>
-                <#lt><@compound_field_compound_ctor_params field.compound, false/>);</#local>
+                    <#lt><@compound_field_compound_ctor_params field.compound, false/>);</#local>
         <#elseif field.compound.needsChildrenInitialization>
             <#local initializeCommand><@compound_get_field field/>.initializeChildren();</#local>
         </#if>
     <#elseif field.array?? && field.array.elementCompound??>
         <#if needs_compound_field_initialization(field.array.elementCompound)>
-            <#local initializeCommand><@compound_get_field field/>.initializeElements(<#rt>
-                <#lt><@element_initializer_name field.name/>(*this));</#local>
+            <#local initializeCommand>zserio::initializeElements(<#rt>
+                    <#lt><@compound_get_field field/>, <#rt>
+                    <#lt><@element_initializer_name field.name/>(*this));</#local>
         <#elseif field.array.elementCompound.needsChildrenInitialization>
-            <#local initializeCommand><@compound_get_field field/>.initializeElements(<#rt>
-                <#lt><@element_children_initializer_name field.name/>());</#local>
+            <#local initializeCommand>zserio::initializeElements(<#rt>
+                    <#lt><@compound_get_field field/>, <#rt>
+                    <#lt><@element_children_initializer_name field.name/>());</#local>
         </#if>
     </#if>
     <#if initializeCommand??>

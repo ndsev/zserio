@@ -1,13 +1,9 @@
 package zserio.emit.cpp;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.apache.commons.cli.Option;
 
 import zserio.ast.Root;
 import zserio.emit.common.ZserioEmitException;
-import zserio.emit.common.Emitter;
 import zserio.tools.Extension;
 import zserio.tools.Parameters;
 
@@ -62,17 +58,16 @@ public class CppExtension implements Extension
     public void generate(Parameters parameters, Root rootNode) throws ZserioEmitException
     {
         final String outputDir = parameters.getCommandLineArg(OptionCpp);
-        final List<Emitter> emitters = new ArrayList<Emitter>();
-        emitters.add(new ConstEmitter(outputDir, parameters));
-        emitters.add(new SubtypeEmitter(outputDir, parameters));
-        emitters.add(new EnumerationEmitter(outputDir, parameters));
-        emitters.add(new StructureEmitter(outputDir, parameters));
-        emitters.add(new ChoiceEmitter(outputDir, parameters));
-        emitters.add(new UnionEmitter(outputDir, parameters));
 
         // emit C++ code
-        for (Emitter cppEmitter: emitters)
-            rootNode.emit(cppEmitter);
+        final ServiceEmitter serviceEmitter = new ServiceEmitter(outputDir, parameters);
+        rootNode.emit(serviceEmitter);
+        rootNode.emit(new ConstEmitter(outputDir, parameters));
+        rootNode.emit(new SubtypeEmitter(outputDir, parameters));
+        rootNode.emit(new EnumerationEmitter(outputDir, parameters));
+        rootNode.emit(new StructureEmitter(outputDir, parameters, serviceEmitter.getRpcTypeNames()));
+        rootNode.emit(new ChoiceEmitter(outputDir, parameters));
+        rootNode.emit(new UnionEmitter(outputDir, parameters, serviceEmitter.getRpcTypeNames()));
     }
 
     private final static String OptionCpp = "cpp";
