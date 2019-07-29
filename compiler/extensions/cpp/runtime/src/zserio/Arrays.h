@@ -15,6 +15,18 @@
 namespace zserio
 {
 
+template <typename T, typename ELEMENT_INITIALIZER>
+void initializeElements(std::vector<T>& array, const ELEMENT_INITIALIZER& elementInitializer)
+{
+    size_t index = 0;
+    // can't use 'typename ARRAY_TRAITS::type&' because std::vector<bool> returns rvalue
+    for (auto&& element : array)
+    {
+        elementInitializer.initialize(element, index);
+        index++;
+    }
+}
+
 template <typename T>
 T sum(const std::vector<T>& array)
 {
@@ -23,18 +35,6 @@ T sum(const std::vector<T>& array)
         summation += element;
 
     return summation;
-}
-
-// TODO: add tests!
-template <typename T, typename ELEMENT_INITIALIZER>
-void initializeElements(std::vector<T>& array, ELEMENT_INITIALIZER elementInitializer)
-{
-    size_t index = 0;
-    for (auto it = array.begin(); it != array.end(); ++it)
-    {
-        elementInitializer.initialize(*it, index);
-        index++;
-    }
 }
 
 template <typename ARRAY_TRAITS>
@@ -111,10 +111,10 @@ size_t initializeOffsets(const ARRAY_TRAITS& arrayTraits, std::vector<typename A
     return endBitPosition;
 }
 
-template <typename OFFSET_INITIALIZER, typename ARRAY_TRAITS>
+template <typename ARRAY_TRAITS, typename OFFSET_INITIALIZER>
 size_t initializeOffsetsAligned(const ARRAY_TRAITS& arrayTraits,
         std::vector<typename ARRAY_TRAITS::type>& array, size_t bitPosition,
-        OFFSET_INITIALIZER offsetInitializer)
+        const OFFSET_INITIALIZER& offsetInitializer)
 {
     size_t endBitPosition = bitPosition;
     size_t index = 0;
@@ -137,13 +137,13 @@ size_t initializeOffsetsAuto(const ARRAY_TRAITS& arrayTraits, std::vector<typena
     return initializeOffsets(arrayTraits, array, bitPosition + getBitSizeOfVarUInt64(array.size()));
 }
 
-template <typename OFFSET_INITIALIZER, typename ARRAY_TRAITS>
+template <typename ARRAY_TRAITS, typename OFFSET_INITIALIZER>
 size_t initializeOffsetsAlignedAuto(const ARRAY_TRAITS& arrayTraits,
         std::vector<typename ARRAY_TRAITS::type>& array, size_t bitPosition,
-        OFFSET_INITIALIZER offsetInitializer)
+        const OFFSET_INITIALIZER& offsetInitializer)
 {
-    return initializeOffsetsAligned<OFFSET_INITIALIZER>(arrayTraits, array,
-            bitPosition + getBitSizeOfVarUInt64(array.size()), offsetInitializer);
+    return initializeOffsetsAligned(arrayTraits, array, bitPosition + getBitSizeOfVarUInt64(array.size()),
+            offsetInitializer);
 }
 
 template <typename ARRAY_TRAITS>
@@ -156,9 +156,9 @@ void read(const ARRAY_TRAITS& arrayTraits, std::vector<typename ARRAY_TRAITS::ty
         arrayTraits.read(array, in, index);
 }
 
-template <typename OFFSET_CHECKER, typename ARRAY_TRAITS>
+template <typename ARRAY_TRAITS, typename OFFSET_CHECKER>
 void readAligned(const ARRAY_TRAITS& arrayTraits, std::vector<typename ARRAY_TRAITS::type>& array,
-        BitStreamReader& in, size_t size, OFFSET_CHECKER offsetChecker)
+        BitStreamReader& in, size_t size, const OFFSET_CHECKER& offsetChecker)
 {
     array.clear();
     array.reserve(size);
@@ -178,12 +178,12 @@ void readAuto(const ARRAY_TRAITS& arrayTraits, std::vector<typename ARRAY_TRAITS
     read<ARRAY_TRAITS>(arrayTraits, array, in, convertVarUInt64ToArraySize(arraySize));
 }
 
-template <typename OFFSET_CHECKER, typename ARRAY_TRAITS>
+template <typename ARRAY_TRAITS, typename OFFSET_CHECKER>
 void readAlignedAuto(const ARRAY_TRAITS& arrayTraits, std::vector<typename ARRAY_TRAITS::type>& array,
-        BitStreamReader& in, OFFSET_CHECKER offsetChecker)
+        BitStreamReader& in, const OFFSET_CHECKER& offsetChecker)
 {
     const uint64_t arraySize = in.readVarUInt64();
-    readAligned<OFFSET_CHECKER>(arrayTraits, array, in, convertVarUInt64ToArraySize(arraySize), offsetChecker);
+    readAligned(arrayTraits, array, in, convertVarUInt64ToArraySize(arraySize), offsetChecker);
 }
 
 template <typename ARRAY_TRAITS>
@@ -219,9 +219,9 @@ void write(const ARRAY_TRAITS& arrayTraits, std::vector<typename ARRAY_TRAITS::t
         arrayTraits.write(out, element);
 }
 
-template <typename OFFSET_CHECKER, typename ARRAY_TRAITS>
+template <typename ARRAY_TRAITS, typename OFFSET_CHECKER>
 void writeAligned(const ARRAY_TRAITS& arrayTraits, std::vector<typename ARRAY_TRAITS::type>& array,
-        BitStreamWriter& out, OFFSET_CHECKER offsetChecker)
+        BitStreamWriter& out, const OFFSET_CHECKER& offsetChecker)
 {
     size_t index = 0;
     // can't use 'typename ARRAY_TRAITS::type&' because std::vector<bool> returns rvalue
@@ -242,12 +242,12 @@ void writeAuto(const ARRAY_TRAITS& arrayTraits, std::vector<typename ARRAY_TRAIT
     write(arrayTraits, array, out);
 }
 
-template <typename OFFSET_CHECKER, typename ARRAY_TRAITS>
+template <typename ARRAY_TRAITS, typename OFFSET_CHECKER>
 void writeAlignedAuto(const ARRAY_TRAITS& arrayTraits, std::vector<typename ARRAY_TRAITS::type>& array,
-        BitStreamWriter& out, OFFSET_CHECKER offsetChecker)
+        BitStreamWriter& out, const OFFSET_CHECKER& offsetChecker)
 {
     out.writeVarUInt64(static_cast<uint64_t>(array.size()));
-    writeAligned<OFFSET_CHECKER>(arrayTraits, array, out, offsetChecker);
+    writeAligned(arrayTraits, array, out, offsetChecker);
 }
 
 namespace detail

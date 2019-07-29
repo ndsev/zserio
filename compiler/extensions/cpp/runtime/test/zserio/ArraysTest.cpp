@@ -11,7 +11,7 @@ namespace zserio
 class ArrayTestOffsetInitializer
 {
 public:
-    void initializeOffset(size_t, size_t)
+    void initializeOffset(size_t, size_t) const
     {
     }
 };
@@ -19,7 +19,7 @@ public:
 class ArrayTestOffsetChecker
 {
 public:
-    void checkOffset(size_t, size_t)
+    void checkOffset(size_t, size_t) const
     {
     }
 };
@@ -78,7 +78,19 @@ public:
     }
 
 private:
-    uint32_t    m_value;
+    uint32_t m_value;
+};
+
+class ArrayTestDummyObjectElementInitializer
+{
+public:
+    void initialize(DummyObject& element, size_t _index) const
+    {
+        (void)_index;
+        element.initialize(ELEMENT_VALUE);
+    }
+
+    static const uint32_t ELEMENT_VALUE = 0x12;
 };
 
 class ArrayTestDummyObjectElementFactory
@@ -114,7 +126,7 @@ protected:
     void testArray(const ARRAY_TRAITS& arrayTraits, std::vector<typename ARRAY_TRAITS::type>& array,
             size_t unalignedBitSize, size_t alignedBitSize)
     {
-        testSum<ARRAY_TRAITS>(array);
+        testSum(arrayTraits, array);
         testBitSizeOf(arrayTraits, array, unalignedBitSize);
         testBitSizeOfAuto(arrayTraits, array, AUTO_LENGTH_BIT_SIZE + unalignedBitSize);
         testBitSizeOfAligned(arrayTraits, array, alignedBitSize);
@@ -134,9 +146,20 @@ protected:
         testWriteAlignedAuto(arrayTraits, array, AUTO_LENGTH_BIT_SIZE + alignedBitSize);
     }
 
+    template <typename ARRAY_TRAITS>
+    void testInitializeElements(const ARRAY_TRAITS&, std::vector<typename ARRAY_TRAITS::type>& array)
+    {
+        typedef typename ARRAY_TRAITS::type element_type;
+
+        zserio::initializeElements(array, ArrayTestDummyObjectElementInitializer());
+        const uint32_t expectedValue = ArrayTestDummyObjectElementInitializer::ELEMENT_VALUE;
+        for (const element_type& element : array)
+            EXPECT_EQ(expectedValue, element.getValue());
+    }
+
 private:
     template <typename ARRAY_TRAITS>
-    void testSum(const std::vector<typename ARRAY_TRAITS::type>& array)
+    void testSum(const ARRAY_TRAITS&, const std::vector<typename ARRAY_TRAITS::type>& array)
     {
         typedef typename ARRAY_TRAITS::type element_type;
 
@@ -199,12 +222,12 @@ private:
     void testInitializeOffsetsAligned(const ARRAY_TRAITS& arrayTraits,
             std::vector<typename ARRAY_TRAITS::type>& array, size_t alignedBitSize)
     {
-        const size_t alignedBitPosition0 = zserio::initializeOffsetsAligned<ArrayTestOffsetInitializer>(
-                arrayTraits, array, 0, ArrayTestOffsetInitializer());
+        const size_t alignedBitPosition0 = zserio::initializeOffsetsAligned(arrayTraits, array, 0,
+                ArrayTestOffsetInitializer());
         EXPECT_EQ(0 + alignedBitSize, alignedBitPosition0);
 
-        const size_t alignedBitPosition7 = zserio::initializeOffsetsAligned<ArrayTestOffsetInitializer>(
-                arrayTraits, array, 7, ArrayTestOffsetInitializer());
+        const size_t alignedBitPosition7 = zserio::initializeOffsetsAligned(arrayTraits, array, 7,
+                ArrayTestOffsetInitializer());
         EXPECT_EQ(7 + alignedBitSize + 1, alignedBitPosition7);
     }
 
@@ -212,12 +235,12 @@ private:
     void testInitializeOffsetsAlignedAuto(const ARRAY_TRAITS& arrayTraits,
             std::vector<typename ARRAY_TRAITS::type>& array, size_t alignedAutoBitSize)
     {
-        const size_t alignedAutoBitPosition0 = zserio::initializeOffsetsAlignedAuto<ArrayTestOffsetInitializer>(
-                arrayTraits, array, 0, ArrayTestOffsetInitializer());
+        const size_t alignedAutoBitPosition0 = zserio::initializeOffsetsAlignedAuto(arrayTraits, array, 0,
+                ArrayTestOffsetInitializer());
         EXPECT_EQ(0 + alignedAutoBitSize, alignedAutoBitPosition0);
 
-        const size_t alignedAutoBitPosition7 = zserio::initializeOffsetsAlignedAuto<ArrayTestOffsetInitializer>(
-                arrayTraits, array, 7, ArrayTestOffsetInitializer());
+        const size_t alignedAutoBitPosition7 = zserio::initializeOffsetsAlignedAuto(arrayTraits, array, 7,
+                ArrayTestOffsetInitializer());
         EXPECT_EQ(7 + alignedAutoBitSize + 1, alignedAutoBitPosition7);
     }
 
@@ -250,8 +273,7 @@ private:
         zserio::writeAligned(arrayTraits, array, writer, ArrayTestOffsetChecker());
         BitStreamReader reader(m_byteBuffer, BUFFER_SIZE);
         std::vector<typename ARRAY_TRAITS::type> alignedReadArray;
-        zserio::readAligned<ArrayTestOffsetChecker>(arrayTraits, alignedReadArray, reader, array.size(),
-                ArrayTestOffsetChecker());
+        zserio::readAligned(arrayTraits, alignedReadArray, reader, array.size(), ArrayTestOffsetChecker());
         EXPECT_EQ(array, alignedReadArray);
     }
 
@@ -262,8 +284,7 @@ private:
         zserio::writeAlignedAuto(arrayTraits, array, writer, ArrayTestOffsetChecker());
         BitStreamReader reader(m_byteBuffer, BUFFER_SIZE);
         std::vector<typename ARRAY_TRAITS::type> alignedAutoReadArray;
-        zserio::readAlignedAuto<ArrayTestOffsetChecker>(arrayTraits, alignedAutoReadArray, reader,
-                ArrayTestOffsetChecker());
+        zserio::readAlignedAuto(arrayTraits, alignedAutoReadArray, reader, ArrayTestOffsetChecker());
         EXPECT_EQ(array, alignedAutoReadArray);
     }
 
@@ -303,7 +324,7 @@ private:
             size_t alignedBitSize)
     {
         BitStreamWriter writer(m_byteBuffer, BUFFER_SIZE);
-        zserio::writeAligned<ArrayTestOffsetChecker>(arrayTraits, array, writer, ArrayTestOffsetChecker());
+        zserio::writeAligned(arrayTraits, array, writer, ArrayTestOffsetChecker());
         EXPECT_EQ(alignedBitSize, writer.getBitPosition());
     }
 
@@ -312,7 +333,7 @@ private:
             size_t alignedAutoBitSize)
     {
         BitStreamWriter writer(m_byteBuffer, BUFFER_SIZE);
-        zserio::writeAlignedAuto<ArrayTestOffsetChecker>(arrayTraits, array, writer, ArrayTestOffsetChecker());
+        zserio::writeAlignedAuto(arrayTraits, array, writer, ArrayTestOffsetChecker());
         EXPECT_EQ(alignedAutoBitSize, writer.getBitPosition());
     }
 
@@ -598,6 +619,7 @@ TEST_F(ArraysTest, objectArray)
         unalignedBitSize += bitSize;
         alignedBitSize += (i == 0) ? bitSize : alignTo(NUM_BITS_PER_BYTE, bitSize);
     }
+    testInitializeElements(ObjectArrayTraits<DummyObject>(), array);
     testArray(ObjectArrayTraits<DummyObject,
             ArrayTestDummyObjectElementFactory>(ArrayTestDummyObjectElementFactory()), array, unalignedBitSize,
             alignedBitSize);
