@@ -65,9 +65,9 @@ public class CppExtension implements Extension
         rootNode.emit(new ConstEmitter(outputDir, parameters));
         rootNode.emit(new SubtypeEmitter(outputDir, parameters));
         rootNode.emit(new EnumerationEmitter(outputDir, parameters));
-        rootNode.emit(new StructureEmitter(outputDir, parameters, serviceEmitter.getRpcTypeNames()));
+        rootNode.emit(new StructureEmitter(outputDir, parameters, serviceEmitter.getRpcTypes()));
         rootNode.emit(new ChoiceEmitter(outputDir, parameters));
-        rootNode.emit(new UnionEmitter(outputDir, parameters, serviceEmitter.getRpcTypeNames()));
+        rootNode.emit(new UnionEmitter(outputDir, parameters, serviceEmitter.getRpcTypes()));
     }
 
     private final static String OptionCpp = "cpp";

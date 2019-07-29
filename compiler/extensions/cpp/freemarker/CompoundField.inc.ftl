@@ -45,7 +45,7 @@ ${I}<@compound_field_storage field/> = zserio::read<${field.cppTypeName}>(in);
         <#if field.usesAnyHolder || field.optional??>
 ${I}<@compound_field_storage field/> = ${field.cppTypeName}(${constructorArguments});
         <#else>
-${I}<@field_member_name field.name/> = ${field.cppTypeName}(${constructorArguments});<#-- TODD: initialize and then read! -->
+${I}<@field_member_name field.name/> = ${field.cppTypeName}(${constructorArguments});<#-- TODO: initialize and then read! -->
         </#if>
     </#if>
 </#macro>

@@ -1,11 +1,12 @@
 package zserio.emit.cpp;
 
-import java.util.HashSet;
 import java.util.Set;
+import java.util.TreeSet;
 
+import zserio.ast.CompoundType;
+import zserio.ast.Rpc;
 import zserio.ast.ServiceType;
 import zserio.emit.common.ZserioEmitException;
-import zserio.emit.cpp.ServiceEmitterTemplateData.RpcTemplateData;
 import zserio.tools.Parameters;
 
 public class ServiceEmitter extends CppDefaultEmitter
@@ -27,25 +28,25 @@ public class ServiceEmitter extends CppDefaultEmitter
         processSourceTemplate(TEMPLATE_SOURCE_NAME, templateData, serviceType);
         processHeaderTemplate(TEMPLATE_HEADER_NAME, templateData, serviceType);
 
-        addRpcTypes(templateData.getRpcList());
+        addRpcTypes(serviceType.getRpcList());
     }
 
-    public Set<String> getRpcTypeNames()
+    public Set<CompoundType> getRpcTypes()
     {
-        return rpcTypeNames;
+        return rpcTypes;
     }
 
-    private void addRpcTypes(Iterable<RpcTemplateData> rpcList)
+    private void addRpcTypes(Iterable<Rpc> rpcList)
     {
-        for (RpcTemplateData rpc : rpcList)
+        for (Rpc rpc : rpcList)
         {
-            rpcTypeNames.add(rpc.getRequestTypeFullName());
-            rpcTypeNames.add(rpc.getResponseTypeFullName());
+            rpcTypes.add(rpc.getRequestType());
+            rpcTypes.add(rpc.getResponseType());
         }
     }
 
     private static final String TEMPLATE_SOURCE_NAME = "Service.cpp.ftl";
     private static final String TEMPLATE_HEADER_NAME = "Service.h.ftl";
 
-    private final Set<String> rpcTypeNames = new HashSet<String>();
+    private final Set<CompoundType> rpcTypes = new TreeSet<CompoundType>();
 }

@@ -1,21 +1,18 @@
 package zserio.emit.cpp;
 
 import java.util.Arrays;
-import java.util.Set;
-
 import zserio.ast.StructureType;
 import zserio.emit.common.ZserioEmitException;
 
 public class StructureEmitterTemplateData extends CompoundTypeTemplateData
 {
     public StructureEmitterTemplateData(TemplateDataContext context, StructureType structureType,
-            Set<String> rpcTypeNames) throws ZserioEmitException
+            boolean usedInRpc) throws ZserioEmitException
     {
         super(context, structureType);
 
-        needsRpcTraits = rpcTypeNames.contains(getFullName());
-
-        if (needsRpcTraits)
+        needsRpcTraits = usedInRpc;
+        if (usedInRpc) // TODO: move to FTL
         {
             addHeaderSystemIncludes(Arrays.asList(
                     "vector",

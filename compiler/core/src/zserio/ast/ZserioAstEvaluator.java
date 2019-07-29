@@ -100,5 +100,12 @@ public class ZserioAstEvaluator extends ZserioAstWalker
         bitFieldType.evaluate();
     }
 
+    @Override
+    public void visitRpc(Rpc rpc)
+    {
+        rpc.visitChildren(this);
+        rpc.evaluate();
+    }
+
     private final Scope evaluationScope;
 };
