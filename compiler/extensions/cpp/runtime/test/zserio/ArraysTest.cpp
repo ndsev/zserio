@@ -126,6 +126,13 @@ protected:
     void testArray(const ARRAY_TRAITS& arrayTraits, std::vector<typename ARRAY_TRAITS::type>& array,
             size_t unalignedBitSize, size_t alignedBitSize)
     {
+        testArray(arrayTraits, arrayTraits, array, unalignedBitSize, alignedBitSize);
+    }
+
+    template <typename ARRAY_TRAITS, typename ARRAY_READ_TRAITS>
+    void testArray(const ARRAY_TRAITS& arrayTraits, const ARRAY_READ_TRAITS& arrayReadTraits,
+            std::vector<typename ARRAY_TRAITS::type>& array, size_t unalignedBitSize, size_t alignedBitSize)
+    {
         testSum(arrayTraits, array);
         testBitSizeOf(arrayTraits, array, unalignedBitSize);
         testBitSizeOfAuto(arrayTraits, array, AUTO_LENGTH_BIT_SIZE + unalignedBitSize);
@@ -135,11 +142,11 @@ protected:
         testInitializeOffsetsAuto(arrayTraits, array, AUTO_LENGTH_BIT_SIZE + unalignedBitSize);
         testInitializeOffsetsAligned(arrayTraits, array, alignedBitSize);
         testInitializeOffsetsAlignedAuto(arrayTraits, array, AUTO_LENGTH_BIT_SIZE + alignedBitSize);
-        testRead(arrayTraits, array);
-        testReadAuto(arrayTraits, array);
-        testReadAligned(arrayTraits, array);
-        testReadAlignedAuto(arrayTraits, array);
-        testReadImplicit(arrayTraits, array);
+        testRead(arrayTraits, arrayReadTraits, array);
+        testReadAuto(arrayTraits, arrayReadTraits, array);
+        testReadAligned(arrayTraits, arrayReadTraits, array);
+        testReadAlignedAuto(arrayTraits, arrayReadTraits, array);
+        testReadImplicit(arrayTraits, arrayReadTraits, array);
         testWrite(arrayTraits, array, unalignedBitSize);
         testWriteAuto(arrayTraits, array, AUTO_LENGTH_BIT_SIZE + unalignedBitSize);
         testWriteAligned(arrayTraits, array, alignedBitSize);
@@ -244,59 +251,64 @@ private:
         EXPECT_EQ(7 + alignedAutoBitSize + 1, alignedAutoBitPosition7);
     }
 
-    template <typename ARRAY_TRAITS>
-    void testRead(const ARRAY_TRAITS& arrayTraits, std::vector<typename ARRAY_TRAITS::type>& array)
+    template <typename ARRAY_TRAITS, typename ARRAY_READ_TRAITS>
+    void testRead(const ARRAY_TRAITS& arrayTraits, const ARRAY_READ_TRAITS& arrayReadTraits,
+            std::vector<typename ARRAY_TRAITS::type>& array)
     {
         BitStreamWriter writer(m_byteBuffer, BUFFER_SIZE);
         write(arrayTraits, array, writer);
         BitStreamReader reader(m_byteBuffer, BUFFER_SIZE);
         std::vector<typename ARRAY_TRAITS::type> readArray;
-        zserio::read(arrayTraits, readArray, reader, array.size());
+        zserio::read(arrayReadTraits, readArray, reader, array.size());
         EXPECT_EQ(array, readArray);
     }
 
-    template <typename ARRAY_TRAITS>
-    void testReadAuto(const ARRAY_TRAITS& arrayTraits, std::vector<typename ARRAY_TRAITS::type>& array)
+    template <typename ARRAY_TRAITS, typename ARRAY_READ_TRAITS>
+    void testReadAuto(const ARRAY_TRAITS& arrayTraits, const ARRAY_READ_TRAITS& arrayReadTraits,
+            std::vector<typename ARRAY_TRAITS::type>& array)
     {
         BitStreamWriter writer(m_byteBuffer, BUFFER_SIZE);
         zserio::writeAuto(arrayTraits, array, writer);
         BitStreamReader reader(m_byteBuffer, BUFFER_SIZE);
         std::vector<typename ARRAY_TRAITS::type> autoReadArray;
-        zserio::readAuto(arrayTraits, autoReadArray, reader);
+        zserio::readAuto(arrayReadTraits, autoReadArray, reader);
         EXPECT_EQ(array, autoReadArray);
     }
 
-    template <typename ARRAY_TRAITS>
-    void testReadAligned(const ARRAY_TRAITS& arrayTraits, std::vector<typename ARRAY_TRAITS::type>& array)
+    template <typename ARRAY_TRAITS, typename ARRAY_READ_TRAITS>
+    void testReadAligned(const ARRAY_TRAITS& arrayTraits, const ARRAY_READ_TRAITS& arrayReadTraits,
+            std::vector<typename ARRAY_TRAITS::type>& array)
     {
         BitStreamWriter writer(m_byteBuffer, BUFFER_SIZE);
         zserio::writeAligned(arrayTraits, array, writer, ArrayTestOffsetChecker());
         BitStreamReader reader(m_byteBuffer, BUFFER_SIZE);
         std::vector<typename ARRAY_TRAITS::type> alignedReadArray;
-        zserio::readAligned(arrayTraits, alignedReadArray, reader, array.size(), ArrayTestOffsetChecker());
+        zserio::readAligned(arrayReadTraits, alignedReadArray, reader, array.size(), ArrayTestOffsetChecker());
         EXPECT_EQ(array, alignedReadArray);
     }
 
-    template <typename ARRAY_TRAITS>
-    void testReadAlignedAuto(const ARRAY_TRAITS& arrayTraits, std::vector<typename ARRAY_TRAITS::type>& array)
+    template <typename ARRAY_TRAITS, typename ARRAY_READ_TRAITS>
+    void testReadAlignedAuto(const ARRAY_TRAITS& arrayTraits, const ARRAY_READ_TRAITS& arrayReadTraits,
+            std::vector<typename ARRAY_TRAITS::type>& array)
     {
         BitStreamWriter writer(m_byteBuffer, BUFFER_SIZE);
         zserio::writeAlignedAuto(arrayTraits, array, writer, ArrayTestOffsetChecker());
         BitStreamReader reader(m_byteBuffer, BUFFER_SIZE);
         std::vector<typename ARRAY_TRAITS::type> alignedAutoReadArray;
-        zserio::readAlignedAuto(arrayTraits, alignedAutoReadArray, reader, ArrayTestOffsetChecker());
+        zserio::readAlignedAuto(arrayReadTraits, alignedAutoReadArray, reader, ArrayTestOffsetChecker());
         EXPECT_EQ(array, alignedAutoReadArray);
     }
 
-    template <typename ARRAY_TRAITS>
-    void testReadImplicit(const ARRAY_TRAITS& arrayTraits, std::vector<typename ARRAY_TRAITS::type>& array)
+    template <typename ARRAY_TRAITS, typename ARRAY_READ_TRAITS>
+    void testReadImplicit(const ARRAY_TRAITS& arrayTraits, const ARRAY_READ_TRAITS& arrayReadTraits,
+            std::vector<typename ARRAY_TRAITS::type>& array)
     {
         BitStreamWriter writer(m_byteBuffer, BUFFER_SIZE);
         zserio::write(arrayTraits, array, writer);
         const size_t implicitByteSize = writer.getBitPosition() / 8;
         BitStreamReader reader(m_byteBuffer, implicitByteSize);
         std::vector<typename ARRAY_TRAITS::type> implicitReadArray;
-        zserio::readImplicit(arrayTraits, implicitReadArray, reader);
+        zserio::readImplicit(arrayReadTraits, implicitReadArray, reader);
         for (size_t i = 0; i < implicitReadArray.size(); ++i)
             EXPECT_EQ(array[i], implicitReadArray[i]);
     }
@@ -620,9 +632,9 @@ TEST_F(ArraysTest, objectArray)
         alignedBitSize += (i == 0) ? bitSize : alignTo(NUM_BITS_PER_BYTE, bitSize);
     }
     testInitializeElements(ObjectArrayTraits<DummyObject>(), array);
-    testArray(ObjectArrayTraits<DummyObject,
-            ArrayTestDummyObjectElementFactory>(ArrayTestDummyObjectElementFactory()), array, unalignedBitSize,
-            alignedBitSize);
+    testArray(ObjectArrayTraits<DummyObject>(),
+            ObjectArrayTraits<DummyObject, ArrayTestDummyObjectElementFactory>(
+                    ArrayTestDummyObjectElementFactory()), array, unalignedBitSize, alignedBitSize);
 }
 
 } // namespace zserio

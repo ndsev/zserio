@@ -789,18 +789,29 @@ struct StringArrayTraits
     static const bool IS_BITSIZEOF_CONSTANT = false;
 };
 
-template <typename T, typename ELEMENT_FACTORY = nullptr_t>
+template <typename T, typename ELEMENT_FACTORY = void>
 class ObjectArrayTraits
 {
 public:
-    ObjectArrayTraits() : m_elementFactory(nullptr)
+    explicit ObjectArrayTraits(const ELEMENT_FACTORY& elementFactory) : m_elementFactory(elementFactory)
     {
     }
 
-    explicit ObjectArrayTraits(const ELEMENT_FACTORY& elementFactory) : m_elementFactory(&elementFactory)
+    typedef T type;
+
+    void read(std::vector<type>& array, BitStreamReader& in, size_t index) const
     {
+        m_elementFactory.create(array, in, index);
     }
 
+private:
+    const ELEMENT_FACTORY& m_elementFactory;
+};
+
+template <typename T>
+class ObjectArrayTraits<T>
+{
+public:
     typedef T type;
 
     static size_t bitSizeOf(size_t bitPosition, const type& value)
@@ -813,20 +824,12 @@ public:
         return value.initializeOffsets(bitPosition);
     }
 
-    void read(std::vector<type>& array, BitStreamReader& in, size_t index) const
-    {
-        m_elementFactory->create(array, in, index);
-    }
-
     static void write(BitStreamWriter& out, type& value)
     {
         value.write(out, NO_PRE_WRITE_ACTION);
     }
 
     static const bool IS_BITSIZEOF_CONSTANT = false;
-
-private:
-    const ELEMENT_FACTORY* m_elementFactory;
 };
 
 } // namespace zserio

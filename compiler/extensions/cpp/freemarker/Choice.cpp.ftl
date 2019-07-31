@@ -133,10 +133,34 @@ void ${name}::initializeChildren()
 </#if>
 <@compound_parameter_accessors_definition name, compoundParametersData/>
 <#list fieldList as field>
-<@compound_field_getter_definition field name "compound_return_field"/>
-<@compound_field_const_getter_definition field name "compound_return_field"/>
-<@compound_field_setter_definition field name "compound_set_field"/>
-<@compound_field_rvalue_setter_definition field name "compound_rvalue_set_field"/>
+    <#assign fieldOrOptional=field.optional!field>
+    <#if needs_field_getter(field)>
+
+${fieldOrOptional.cppTypeName}& ${name}::${field.getterName}()
+{
+    return m_objectChoice.get<${field.cppTypeName}>();
+}
+
+    </#if>
+${fieldOrOptional.cppArgumentTypeName} ${name}::${field.getterName}() const
+{
+    return m_objectChoice.get<${field.cppTypeName}>();
+}
+
+    <#if needs_field_setter(field)>
+void ${name}::${field.setterName}(${fieldOrOptional.cppArgumentTypeName} <@field_argument_name field.name/>)
+{
+    m_objectChoice = <@field_argument_name field.name/>;
+}
+
+    </#if>
+    <#if needs_field_rvalue_setter(field)>
+void ${name}::${field.setterName}(${fieldOrOptional.cppTypeName}&& <@field_argument_name field.name/>)
+{
+    m_objectChoice = std::move(<@field_argument_name field.name/>);
+}
+
+    </#if>
 </#list>
 <@compound_functions_definition name, compoundFunctionsData/>
 <#macro choice_bitsizeof_member member>
