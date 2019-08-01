@@ -1,5 +1,4 @@
 <#include "FileHeader.inc.ftl">
-
 <#macro grpc_serialization_traits needsRpcTraits fullName>
     <#if needsRpcTraits>
 
@@ -49,7 +48,7 @@ public:
             joinedBuffer.insert(joinedBuffer.end(), it->begin(), it->end());
 
         zserio::BitStreamReader reader(&joinedBuffer[0], joinedBuffer.size());
-    
+
         msg->read(reader);
 
         return ::grpc::Status::OK;

@@ -131,19 +131,36 @@ ${name}::ChoiceTag ${name}::choiceTag() const
 }
 
 <@compound_parameter_accessors_definition name, compoundParametersData/>
-<#macro union_set_field field>
-    m_choiceTag = <@choice_tag_name field/>;
-    <@compound_set_field field/>
-</#macro>
-<#macro union_rvalue_set_field field>
-    m_choiceTag = <@choice_tag_name field/>;
-    <@compound_rvalue_set_field field/>
-</#macro>
 <#list fieldList as field>
-<@compound_field_getter_definition field name "compound_return_field"/>
-<@compound_field_const_getter_definition field name "compound_return_field"/>
-<@compound_field_setter_definition field name "union_set_field"/>
-<@compound_field_rvalue_setter_definition field name "union_rvalue_set_field"/>
+    <#assign fieldOrOptional=field.optional!field>
+    <#if needs_field_getter(field)>
+${fieldOrOptional.cppTypeName}& ${name}::${field.getterName}()
+{
+    return m_objectChoice.get<${field.cppTypeName}>();
+}
+
+    </#if>
+${fieldOrOptional.cppArgumentTypeName} ${name}::${field.getterName}() const
+{
+    return m_objectChoice.get<${field.cppTypeName}>();
+}
+
+    <#if needs_field_setter(field)>
+void ${name}::${field.setterName}(${fieldOrOptional.cppArgumentTypeName} <@field_argument_name field.name/>)
+{
+    m_choiceTag = <@choice_tag_name field/>;
+    m_objectChoice = <@field_argument_name field.name/>;
+}
+
+    </#if>
+    <#if needs_field_rvalue_setter(field)>
+void ${name}::${field.setterName}(${fieldOrOptional.cppTypeName}&& <@field_argument_name field.name/>)
+{
+    m_choiceTag = <@choice_tag_name field/>;
+    m_objectChoice = std::move(<@field_argument_name field.name/>);
+}
+
+    </#if>
 </#list>
 <@compound_functions_definition name, compoundFunctionsData/>
 size_t ${name}::bitSizeOf(size_t<#if fieldList?has_content> bitPosition</#if>) const
@@ -190,7 +207,7 @@ bool ${name}::operator==(const ${name}& other) const
     {
     <#list fieldList as field>
     case <@choice_tag_name field/>:
-        return <@compound_get_field field/> == other.<@compound_get_field field/>;
+        return m_objectChoice.get<${field.cppTypeName}>() == other.m_objectChoice.get<${field.cppTypeName}>();
     </#list>
     default:
         return true; // UNDEFINED_CHOICE
@@ -213,7 +230,7 @@ int ${name}::hashCode() const
         {
         <#list fieldList as field>
         case <@choice_tag_name field/>:
-            result = zserio::calcHashCode(result, <@compound_get_field field/>);
+            result = zserio::calcHashCode(result, m_objectChoice.get<${field.cppTypeName}>());
             break;
         </#list>
         default:

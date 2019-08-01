@@ -456,16 +456,15 @@ ${I}endBitPosition = <@compound_get_field field/>.initializeOffsets(endBitPositi
 
 <#macro compound_field_accessors_declaration field>
     <#local fieldOrOptional=field.optional!field>
-    <#if field.withWriterCode && (field.optional?? || !field.isSimpleType)>
-        <#-- non-const getter is neccessary for setting of offsets -->
+    <#if needs_field_getter(field)>
     ${fieldOrOptional.cppTypeName}& ${field.getterName}();
     </#if>
     ${fieldOrOptional.cppArgumentTypeName} ${field.getterName}() const;
-    <#if field.withWriterCode>
+    <#if needs_field_setter(field)>
     void ${field.setterName}(${fieldOrOptional.cppArgumentTypeName} <@field_argument_name field.name/>);
-        <#if field.optional?? || !field.isSimpleType>
+    </#if>
+    <#if needs_field_rvalue_setter(field)>
     void ${field.setterName}(${fieldOrOptional.cppTypeName}&& <@field_argument_name field.name/>);
-        </#if>
     </#if>
 </#macro>
 
@@ -511,20 +510,8 @@ void ${compoundName}::${field.setterName}(${fieldOrOptional.cppTypeName}&& <@fie
     </#if>
 </#macro>
 
-<#macro compound_return_field field>
-    return <@compound_get_field field/>;
-</#macro>
-
 <#macro compound_field_storage field>
     <#if field.usesAnyHolder>m_objectChoice<#else><@field_member_name field.name/></#if><#t>
-</#macro>
-
-<#macro compound_set_field field>
-    <@compound_field_storage field/> = <@field_argument_name field.name/>;
-</#macro>
-
-<#macro compound_rvalue_set_field field>
-    <@compound_field_storage field/> = std::move(<@field_argument_name field.name/>);
 </#macro>
 
 <#macro compound_get_field field>
@@ -719,5 +706,26 @@ ${I};
             </#if>
         </#if>
     </#list>
+    <#return false>
+</#function>
+
+<#function needs_field_getter field>
+    <#if field.withWriterCode && (field.optional?? || !field.isSimpleType)>
+        <#return true>
+    </#if>
+    <#return false>
+</#function>
+
+<#function needs_field_setter field>
+    <#if field.withWriterCode>
+        <#return true>
+    </#if>
+    <#return false>
+</#function>
+
+<#function needs_field_rvalue_setter field>
+    <#if field.withWriterCode && (field.optional?? || !field.isSimpleType)>
+        <#return true>
+    </#if>
     <#return false>
 </#function>

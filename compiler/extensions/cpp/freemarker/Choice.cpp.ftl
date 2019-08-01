@@ -135,7 +135,6 @@ void ${name}::initializeChildren()
 <#list fieldList as field>
     <#assign fieldOrOptional=field.optional!field>
     <#if needs_field_getter(field)>
-
 ${fieldOrOptional.cppTypeName}& ${name}::${field.getterName}()
 {
     return m_objectChoice.get<${field.cppTypeName}>();
@@ -209,7 +208,8 @@ size_t ${name}::initializeOffsets(size_t bitPosition)
     <#if member.compoundField??>
         return (!m_objectChoice.hasValue() && !other.m_objectChoice.hasValue()) ||
                 (m_objectChoice.hasValue() && other.m_objectChoice.hasValue() &&
-                <@compound_get_field member.compoundField/> == other.<@compound_get_field member.compoundField/>);
+                m_objectChoice.get<${member.compoundField.cppTypeName}>() == <#rt>
+                <#lt>other.m_objectChoice.get<${member.compoundField.cppTypeName}>());
     <#else>
         return true; // empty
     </#if>
@@ -230,7 +230,7 @@ bool ${name}::operator==(const ${name}& other) const
 <#macro choice_hash_code_member member>
     <#if member.compoundField??>
         if (m_objectChoice.hasValue())
-            result = zserio::calcHashCode(result, <@compound_get_field member.compoundField/>);
+            result = zserio::calcHashCode(result, m_objectChoice.get<${member.compoundField.cppTypeName}>());
     <#else>
         // empty
     </#if>
