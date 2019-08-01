@@ -95,6 +95,20 @@ TEST(HashCodeUtilTest, objectType)
     EXPECT_EQ(HASH_PRIME_NUMBER + 10, calcHashCode(hashSeed, objectValue));
 }
 
+TEST(HashCodeUtilTest, simpleOptionalHolderType)
+{
+    const int hashSeed = 1;
+    const OptionalHolder<uint8_t> optionalHolder(3);
+    EXPECT_EQ(HASH_PRIME_NUMBER + 3, calcHashCode(hashSeed, optionalHolder));
+}
+
+TEST(HashCodeUtilTest, objectOptionalHolderType)
+{
+    const int hashSeed = 1;
+    const OptionalHolder<DummyObject> optionalHolder(DummyObject(3));
+    EXPECT_EQ(HASH_PRIME_NUMBER + 3, calcHashCode(hashSeed, optionalHolder));
+}
+
 TEST(HashCodeUtilTest, simpleArrayType)
 {
     const int hashSeed = 1;

@@ -5,7 +5,6 @@
 #include <type_traits>
 
 #include "CppRuntimeException.h"
-#include "HashCodeUtil.h"
 #include "Types.h"
 
 namespace zserio
@@ -318,15 +317,15 @@ struct is_optimized_in_place
 };
 
 template <typename T, bool IS_IN_PLACE>
-struct optimized_optional_holder
+struct optimized_optional_storage
 {
-    typedef optional_holder<T, detail::in_place_storage<T> > type;
+    typedef detail::in_place_storage<T> type;
 };
 
 template <typename T>
-struct optimized_optional_holder<T, false>
+struct optimized_optional_storage<T, false>
 {
-    typedef optional_holder<T, detail::heap_storage<T> > type;
+    typedef detail::heap_storage<T> type;
 };
 
 } // namespace detail
@@ -337,9 +336,11 @@ using InPlaceOptionalHolder = detail::optional_holder<T, detail::in_place_storag
 template <typename T>
 using HeapOptionalHolder = detail::optional_holder<T, detail::heap_storage<T>>;
 
+// Be aware that if OptionalHolder is defined by typename, C++ compiler will have problem with template
+// function overload, see HashCodeUtil.h (overloads for objects and for OptionalHolder).
 template <typename T>
-using OptionalHolder =
-        typename detail::optimized_optional_holder<T, detail::is_optimized_in_place<T>::value>::type;
+using OptionalHolder = detail::optional_holder<
+        T, typename detail::optimized_optional_storage<T, detail::is_optimized_in_place<T>::value>::type>;
 
 } // namespace zserio
 

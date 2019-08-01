@@ -9,6 +9,7 @@
 #include "FloatUtil.h"
 #include "Arrays.h"
 #include "Enums.h"
+#include "OptionalHolder.h"
 
 namespace zserio
 {
@@ -96,6 +97,15 @@ namespace zserio
             const OBJECT& object)
     {
         return calcHashCode(seedValue, object.hashCode());
+    }
+
+    template <typename FIELD>
+    inline int calcHashCode(int seedValue, const OptionalHolder<FIELD>& optionalHolder)
+    {
+        if (!optionalHolder)
+            return calcHashCode(seedValue, 0);
+
+        return calcHashCode(seedValue, *optionalHolder);
     }
 
     template <typename ARRAY_ELEMENT>
