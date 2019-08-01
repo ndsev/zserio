@@ -52,15 +52,12 @@ ${compoundConstructorsData.compoundName}::${compoundConstructorsData.compoundNam
 </#macro>
 
 <#macro compound_fields_constructor compoundConstructorsData>
-    <#if compoundConstructorsData.fieldList?has_content || needs_compound_initialization(compoundConstructorsData)>
-
     <@compound_field_constructor_template_arg_list compoundConstructorsData.fieldList/>
-    explicit ${compoundConstructorsData.compoundName}(<#rt>
-            <#lt><@compound_fields_constructor_argument_type_list compoundConstructorsData, 3/>) :
-        <#if needs_compound_initialization(compoundConstructorsData)>
-            <@compound_parameter_constructor_initializers compoundConstructorsData.compoundParametersData, 3, true/>
-            m_isInitialized(true)<#if compoundConstructorsData.fieldList?has_content>, </#if>
-        </#if>
+    explicit ${compoundConstructorsData.compoundName}(
+            <#lt><@compound_field_constructor_type_list compoundConstructorsData.fieldList, 3/>) :
+            <#if needs_compound_initialization(compoundConstructorsData)>
+            m_isInitialized(false)<#if compoundConstructorsData.fieldList?has_content>, </#if>
+            </#if>
         <#list compoundConstructorsData.fieldList as field>
             <@compound_field_constructor_initializer_field field, field?has_next, 3/>
             <#if field.usesAnyHolder>
@@ -72,7 +69,6 @@ ${compoundConstructorsData.compoundName}::${compoundConstructorsData.compoundNam
         initializeChildren();
         </#if>
     }
-    </#if>
 </#macro>
 
 <#macro compound_copy_constructor_declaration compoundConstructorsData>
@@ -198,26 +194,6 @@ void ${compoundConstructorsData.compoundName}::initialize(
 
 <#macro compound_constructor_argument_type_list compoundConstructorsData indent>
     <@compound_parameter_constructor_type_list compoundConstructorsData.compoundParametersData, indent/>
-</#macro>
-
-<#macro compound_fields_constructor_argument_type_list compoundConstructorsData indent>
-    <#local I>${""?left_pad(indent * 4)}</#local>
-    <#local parameterTypeList>
-        <@compound_parameter_constructor_type_list compoundConstructorsData.compoundParametersData, indent/>
-    </#local>
-    <#local fieldTypeList>
-        <@compound_field_constructor_type_list compoundConstructorsData.fieldList, indent/>
-    </#local>
-
-    <#if parameterTypeList?has_content>
-        ${parameterTypeList}<#t>
-        <#if fieldTypeList?has_content>
-            <#lt>,
-        </#if>
-    </#if>
-    <#if fieldTypeList?has_content>
-        ${fieldTypeList}<#t>
-    </#if>
 </#macro>
 
 <#macro compound_initialize_copy_argument_list compoundConstructorsData>
