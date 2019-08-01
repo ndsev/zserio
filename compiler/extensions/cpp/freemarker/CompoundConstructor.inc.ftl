@@ -4,6 +4,39 @@
     ${compoundConstructorsData.compoundName}() noexcept;
 </#macro>
 
+<#macro compound_constructor_fields_initialization constructorMembersInitialization>
+    <#if constructorMembersInitialization?has_content>
+        <#local startedComma=true>
+        ${constructorMembersInitialization}<#rt>
+    <#else>
+        <#local startedComma=false>
+    </#if>
+    <#list fieldList as field>
+        <#-- string types are not simple types but can have default value (initializer) -->
+        <#if field.initializer??>
+        <#if startedComma>
+            <#lt>,
+        </#if>
+        <@field_member_name field.name/>(${field.initializer})<#rt>
+            <#local startedComma=true>
+        </#if>
+    </#list>
+</#macro>
+
+<#macro compound_constructor_definition compoundConstructorsData>
+${name}::${name}() noexcept<#rt>
+    <#assign constructorMembersInitialization><@compound_constructor_members_initialization compoundConstructorsData/></#assign>
+    <#assign constructorFieldsInitialization><@compound_constructor_fields_initialization constructorMembersInitialization/></#assign>
+    <#if constructorFieldsInitialization?has_content>
+        <#lt> :
+        <#lt>${constructorFieldsInitialization}
+    <#else>
+
+    </#if>
+{
+}
+</#macro>
+
 <#macro compound_constructor_members_initialization compoundConstructorsData>
     <#if needs_compound_initialization(compoundConstructorsData)>
         m_isInitialized(false)<#t>
