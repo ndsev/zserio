@@ -2,6 +2,9 @@
 #include <vector>
 
 #include "zserio/Arrays.h"
+#include "zserio/Enums.h"
+#include "zserio/CppRuntimeException.h"
+#include "zserio/StringConvertUtil.h"
 
 #include "gtest/gtest.h"
 
@@ -23,6 +26,53 @@ public:
     {
     }
 };
+
+enum class DummyEnum : uint8_t
+{
+    VALUE1 = UINT8_C(0),
+    VALUE2 = UINT8_C(1),
+    VALUE3 = UINT8_C(2)
+};
+
+template<>
+DummyEnum valueToEnum(typename std::underlying_type<DummyEnum>::type rawValue)
+{
+    switch (rawValue)
+    {
+    case UINT8_C(0):
+    case UINT8_C(1):
+    case UINT8_C(2):
+        return DummyEnum(rawValue);
+    default:
+        throw CppRuntimeException("Unknown value for enumeration DummyEnum: " +
+                convertToString(rawValue) + "!");
+    }
+}
+
+template <>
+inline constexpr size_t bitSizeOf<DummyEnum>()
+{
+    return UINT8_C(8);
+}
+
+template <>
+inline constexpr size_t initializeOffsets<DummyEnum>(size_t bitPosition)
+{
+    return bitPosition + UINT8_C(8);
+}
+
+template <>
+inline DummyEnum read<DummyEnum>(zserio::BitStreamReader& in)
+{
+    return valueToEnum<DummyEnum>(
+            static_cast<typename std::underlying_type<DummyEnum>::type>(in.readBits(UINT8_C(8))));
+}
+
+template <>
+inline void write<DummyEnum>(BitStreamWriter& out, DummyEnum value)
+{
+    out.writeBits(enumToValue(value), UINT8_C(8));
+}
 
 class DummyObject
 {
@@ -49,17 +99,6 @@ public:
     bool operator==(const DummyObject& other) const
     {
         return m_value == other.m_value;
-    }
-
-    DummyObject operator+(const DummyObject& other) const
-    {
-        return DummyObject(m_value + other.m_value);
-    }
-
-    DummyObject& operator+=(const DummyObject& other)
-    {
-        m_value += other.m_value;
-        return *this;
     }
 
     uint32_t getValue() const
@@ -133,7 +172,6 @@ protected:
     void testArray(const ARRAY_TRAITS& arrayTraits, const ARRAY_READ_TRAITS& arrayReadTraits,
             std::vector<typename ARRAY_TRAITS::type>& array, size_t unalignedBitSize, size_t alignedBitSize)
     {
-        testSum(arrayTraits, array);
         testBitSizeOf(arrayTraits, array, unalignedBitSize);
         testBitSizeOfAuto(arrayTraits, array, AUTO_LENGTH_BIT_SIZE + unalignedBitSize);
         testBitSizeOfAligned(arrayTraits, array, alignedBitSize);
@@ -153,8 +191,14 @@ protected:
         testWriteAlignedAuto(arrayTraits, array, AUTO_LENGTH_BIT_SIZE + alignedBitSize);
     }
 
+    template <typename T>
+    void testArraySum(const std::vector<T>& array, const T& expectedSum)
+    {
+        EXPECT_EQ(expectedSum, zserio::sum(array));
+    }
+
     template <typename ARRAY_TRAITS>
-    void testInitializeElements(const ARRAY_TRAITS&, std::vector<typename ARRAY_TRAITS::type>& array)
+    void testArrayInitializeElements(const ARRAY_TRAITS&, std::vector<typename ARRAY_TRAITS::type>& array)
     {
         typedef typename ARRAY_TRAITS::type element_type;
 
@@ -165,18 +209,6 @@ protected:
     }
 
 private:
-    template <typename ARRAY_TRAITS>
-    void testSum(const ARRAY_TRAITS&, const std::vector<typename ARRAY_TRAITS::type>& array)
-    {
-        typedef typename ARRAY_TRAITS::type element_type;
-
-        element_type calculatedSum = element_type();
-        for (const element_type& element : array)
-            calculatedSum += element;
-
-        EXPECT_EQ(calculatedSum, zserio::sum(array));
-    }
-
     template <typename ARRAY_TRAITS>
     void testBitSizeOf(const ARRAY_TRAITS& arrayTraits, const std::vector<typename ARRAY_TRAITS::type>& array,
             size_t unalignedBitSize)
@@ -256,7 +288,7 @@ private:
             std::vector<typename ARRAY_TRAITS::type>& array)
     {
         BitStreamWriter writer(m_byteBuffer, BUFFER_SIZE);
-        write(arrayTraits, array, writer);
+        zserio::write(arrayTraits, array, writer);
         BitStreamReader reader(m_byteBuffer, BUFFER_SIZE);
         std::vector<typename ARRAY_TRAITS::type> readArray;
         zserio::read(arrayReadTraits, readArray, reader, array.size());
@@ -387,6 +419,7 @@ TEST_F(ArraysTest, bitField4Array)
 {
     const size_t numBits = 4;
     std::vector<uint8_t> array = {0, 7, (1 << numBits) - 1};
+    testArraySum(array, static_cast<uint8_t>(7 + 15));
     testArray(BitFieldArrayTraits<uint8_t>(numBits), array, numBits);
 }
 
@@ -587,6 +620,7 @@ TEST_F(ArraysTest, float16Array)
 {
     const size_t elementBitSize = 16;
     std::vector<float> array = {-9.0, 0.0,  10.0};
+    testArraySum(array, 1.0f);
     testArray(Float16ArrayTraits(), array, elementBitSize);
 }
 
@@ -594,6 +628,7 @@ TEST_F(ArraysTest, float32Array)
 {
     const size_t elementBitSize = 32;
     std::vector<float> array = {-9.0, 0.0,  10.0};
+    testArraySum(array, 1.0f);
     testArray(Float32ArrayTraits(), array, elementBitSize);
 }
 
@@ -601,6 +636,7 @@ TEST_F(ArraysTest, float64Array)
 {
     const size_t elementBitSize = 64;
     std::vector<double> array = {-9.0, 0.0, 10.0};
+    testArraySum(array, 1.0);
     testArray(Float64ArrayTraits(), array, elementBitSize);
 }
 
@@ -608,6 +644,7 @@ TEST_F(ArraysTest, boolArray)
 {
     const size_t elementBitSize = 1;
     std::vector<bool> array = {false, true};
+    testArraySum(array, true);
     testArray(BoolArrayTraits(), array, elementBitSize);
 }
 
@@ -617,7 +654,15 @@ TEST_F(ArraysTest, stringArray)
     const size_t stringBitSize = (sizeof("StringX") - 1) * 8; // without terminating character
     const size_t elementBitSize = stringLengthBitSize + stringBitSize;
     std::vector<std::string> array = {"String0", "String1", "String2"};
+    testArraySum(array, std::string("String0String1String2"));
     testArray(StringArrayTraits(), array, elementBitSize);
+}
+
+TEST_F(ArraysTest, enumArray)
+{
+    std::vector<DummyEnum> array = {DummyEnum::VALUE1, DummyEnum::VALUE2, DummyEnum::VALUE3};
+    const size_t elementBitSize = 8;
+    testArray(EnumArrayTraits<DummyEnum>(), array, elementBitSize);
 }
 
 TEST_F(ArraysTest, objectArray)
@@ -631,7 +676,7 @@ TEST_F(ArraysTest, objectArray)
         unalignedBitSize += bitSize;
         alignedBitSize += (i == 0) ? bitSize : alignTo(NUM_BITS_PER_BYTE, bitSize);
     }
-    testInitializeElements(ObjectArrayTraits<DummyObject>(), array);
+    testArrayInitializeElements(ObjectArrayTraits<DummyObject>(), array);
     testArray(ObjectArrayTraits<DummyObject>(),
             ObjectArrayTraits<DummyObject, ArrayTestDummyObjectElementFactory>(
                     ArrayTestDummyObjectElementFactory()), array, unalignedBitSize, alignedBitSize);

@@ -11,6 +11,7 @@
 #include "BitStreamException.h"
 #include "PreWriteAction.h"
 #include "BitSizeOfCalculator.h"
+#include "Enums.h"
 
 namespace zserio
 {
@@ -787,6 +788,35 @@ struct StringArrayTraits
     }
 
     static const bool IS_BITSIZEOF_CONSTANT = false;
+};
+
+template <typename T>
+class EnumArrayTraits
+{
+public:
+    typedef T type;
+
+    static size_t bitSizeOf(size_t, type)
+    {
+        return zserio::bitSizeOf<type>();
+    }
+
+    static size_t initializeOffsets(size_t bitPosition, type)
+    {
+        return zserio::initializeOffsets<type>(bitPosition);
+    }
+
+    static void read(std::vector<type>& array, BitStreamReader& in, size_t)
+    {
+        array.emplace_back(zserio::read<type>(in));
+    }
+
+    static void write(BitStreamWriter& out, type& value)
+    {
+        zserio::write(out, value);
+    }
+
+    static const bool IS_BITSIZEOF_CONSTANT = true;
 };
 
 template <typename T, typename ELEMENT_FACTORY = void>

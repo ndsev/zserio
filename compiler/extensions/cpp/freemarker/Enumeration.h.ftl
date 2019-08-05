@@ -48,13 +48,13 @@ ${fullName} valueToEnum<${fullName}>(
         typename std::underlying_type<${fullName}>::type rawValue);
 
 template <>
-inline constexpr size_t bitSizeOf<${fullName}>(${fullName})
+inline constexpr size_t bitSizeOf<${fullName}>()
 {
     return ${bitSize};
 }
 
 template <>
-inline constexpr size_t initializeOffsets<${fullName}>(${fullName}, size_t bitPosition)
+inline constexpr size_t initializeOffsets<${fullName}>(size_t bitPosition)
 {
     return bitPosition + ${bitSize};
 }

@@ -29,7 +29,7 @@ ${I}}
         <#if field.usesAnyHolder || field.optional??>
 ${I}<@compound_field_storage field/> = ${field.cppTypeName}();
         </#if>
-${I}zserio::read<@array_runtime_function_suffix field/><#rt>
+${I}zserio::read<@array_runtime_function_suffix field, true/><#rt>
         <#lt>(<@array_traits field, true/>, <@compound_get_field field/>, in<#rt>
         <#lt><#if field.array.length??>, ${field.array.length}</#if><#rt>
         <#lt><#if field.offset?? && field.offset.containsIndex>, <@offset_checker_name field.name/>(*this)</#if><#rt>
@@ -237,9 +237,19 @@ ${I}            zserio::convertToString(${upperBoundVarName}) + ">!");
         )<#t>
 </#macro>
 
-<#macro array_runtime_function_suffix field>
-    <#if field.offset?? && field.offset.containsIndex>Aligned</#if><#t>
-    <#if !field.array.length?? && !field.array.isImplicit>Auto</#if><#t>
+<#macro array_runtime_function_suffix field isInRead=false>
+    <#if field.offset?? && field.offset.containsIndex>
+        Aligned<#t>
+    </#if>
+    <#if !field.array.length??>
+        <#if field.array.isImplicit>
+            <#if isInRead>
+            Implicit<#t>
+            </#if>
+        <#else>
+            Auto<#t>
+        </#if>
+    </#if>
 </#macro>
 
 <#macro offset_checker_name fieldName>
@@ -620,12 +630,13 @@ ${I};
     <#local templateArgList>
         <#list fieldList as field>
             <#if field.usesAnyHolder>
-                typename ZSERIO_T<#t>
+            typename ZSERIO_T<#t>
                 <#local hasTemplateArg=true/>
                 <#break/>
             <#else>
                 <#if !field.isSimpleType>
-                    <#if hasTemplateArg>, </#if>typename ZSERIO_T_${field.name}<#t>
+                    <#if hasTemplateArg><#lt>,
+            </#if>typename ZSERIO_T_${field.name}<#rt>
                     <#local hasTemplateArg=true/>
                 </#if>
             </#if>

@@ -187,7 +187,16 @@ public class CppNativeTypeMapper
         @Override
         public void visitEnumType(EnumType type)
         {
-            mapObjectArray();
+            // use the original type so that subtype is kept
+            try
+            {
+                final CppNativeType nativeElementType = CppNativeTypeMapper.this.getCppType(originalType);
+                cppType = new NativeArrayType(nativeElementType, "EnumArrayTraits", true);
+            }
+            catch (ZserioEmitException exception)
+            {
+                thrownException = exception;
+            }
         }
 
         @Override

@@ -39,6 +39,6 @@ public class NativeArrayType extends CppNativeType
     private static final PackageName ZSERIO_PACKAGE_NAME = new PackageName.Builder().addId("zserio").get();
     private static final String ARRAY_TRAITS_INCLUDE = "zserio/Arrays.h";
 
-    private final String        arrayTraitsName;
-    private final boolean       hasTemplatedTraits;
+    private final String arrayTraitsName;
+    private final boolean hasTemplatedTraits;
 }
