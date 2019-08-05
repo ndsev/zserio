@@ -9,18 +9,18 @@
 namespace zserio
 {
 
-size_t getBitSizeOfVarInt16(int16_t value);
-size_t getBitSizeOfVarInt32(int32_t value);
-size_t getBitSizeOfVarInt64(int64_t value);
+size_t bitSizeOfVarInt16(int16_t value);
+size_t bitSizeOfVarInt32(int32_t value);
+size_t bitSizeOfVarInt64(int64_t value);
 
-size_t getBitSizeOfVarUInt16(uint16_t value);
-size_t getBitSizeOfVarUInt32(uint32_t value);
-size_t getBitSizeOfVarUInt64(uint64_t value);
+size_t bitSizeOfVarUInt16(uint16_t value);
+size_t bitSizeOfVarUInt32(uint32_t value);
+size_t bitSizeOfVarUInt64(uint64_t value);
 
-size_t getBitSizeOfVarInt(int64_t value);
-size_t getBitSizeOfVarUInt(uint64_t value);
+size_t bitSizeOfVarInt(int64_t value);
+size_t bitSizeOfVarUInt(uint64_t value);
 
-size_t getBitSizeOfString(const std::string& value);
+size_t bitSizeOfString(const std::string& value);
 
 } // namespace zserio
 

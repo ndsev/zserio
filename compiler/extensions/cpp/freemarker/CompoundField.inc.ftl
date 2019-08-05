@@ -440,7 +440,7 @@ ${I}endBitPosition += zserio::bitSizeOf(<@compound_get_field field/>);
     <#elseif field.bitSizeValue??>
 ${I}endBitPosition += ${field.bitSizeValue};
     <#elseif field.runtimeFunction??>
-${I}endBitPosition += zserio::getBitSizeOf${field.runtimeFunction.suffix}(<@compound_get_field field/>);
+${I}endBitPosition += zserio::bitSizeOf${field.runtimeFunction.suffix}(<@compound_get_field field/>);
     <#else>
 ${I}endBitPosition += <@compound_get_field field/>.bitSizeOf(endBitPosition);
     </#if>
@@ -458,7 +458,7 @@ ${I}endBitPosition = zserio::initializeOffsets(<@compound_get_field field/>, end
     <#elseif field.bitSizeValue??>
 ${I}endBitPosition += ${field.bitSizeValue};
     <#elseif field.runtimeFunction??>
-${I}endBitPosition += zserio::getBitSizeOf${field.runtimeFunction.suffix}(<@compound_get_field field/>);
+${I}endBitPosition += zserio::bitSizeOf${field.runtimeFunction.suffix}(<@compound_get_field field/>);
     <#else>
 ${I}endBitPosition = <@compound_get_field field/>.initializeOffsets(endBitPosition);
     </#if>

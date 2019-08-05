@@ -80,7 +80,7 @@ template <typename ARRAY_TRAITS>
 size_t bitSizeOfAuto(const ARRAY_TRAITS& arrayTraits, const std::vector<typename ARRAY_TRAITS::type>& array,
         size_t bitPosition)
 {
-    const size_t lengthBitSizeOf = getBitSizeOfVarUInt64(array.size());
+    const size_t lengthBitSizeOf = zserio::bitSizeOfVarUInt64(array.size());
 
     return lengthBitSizeOf + bitSizeOf(arrayTraits, array, bitPosition + lengthBitSizeOf);
 }
@@ -89,7 +89,7 @@ template <typename ARRAY_TRAITS>
 size_t bitSizeOfAlignedAuto(const ARRAY_TRAITS& arrayTraits,
         const std::vector<typename ARRAY_TRAITS::type>& array, size_t bitPosition)
 {
-    const size_t lengthBitSizeOf = getBitSizeOfVarUInt64(array.size());
+    const size_t lengthBitSizeOf = zserio::bitSizeOfVarUInt64(array.size());
 
     return lengthBitSizeOf + bitSizeOfAligned(arrayTraits, array, bitPosition + lengthBitSizeOf);
 }
@@ -135,7 +135,7 @@ template <typename ARRAY_TRAITS>
 size_t initializeOffsetsAuto(const ARRAY_TRAITS& arrayTraits, std::vector<typename ARRAY_TRAITS::type>& array,
         size_t bitPosition)
 {
-    return initializeOffsets(arrayTraits, array, bitPosition + getBitSizeOfVarUInt64(array.size()));
+    return initializeOffsets(arrayTraits, array, bitPosition + zserio::bitSizeOfVarUInt64(array.size()));
 }
 
 template <typename ARRAY_TRAITS, typename OFFSET_INITIALIZER>
@@ -143,7 +143,7 @@ size_t initializeOffsetsAlignedAuto(const ARRAY_TRAITS& arrayTraits,
         std::vector<typename ARRAY_TRAITS::type>& array, size_t bitPosition,
         const OFFSET_INITIALIZER& offsetInitializer)
 {
-    return initializeOffsetsAligned(arrayTraits, array, bitPosition + getBitSizeOfVarUInt64(array.size()),
+    return initializeOffsetsAligned(arrayTraits, array, bitPosition + zserio::bitSizeOfVarUInt64(array.size()),
             offsetInitializer);
 }
 
@@ -435,7 +435,7 @@ struct VarIntNNArrayTraits<int16_t>
 
     static size_t bitSizeOf(size_t, type value)
     {
-        return getBitSizeOfVarInt16(value);
+        return zserio::bitSizeOfVarInt16(value);
     }
 
     static size_t initializeOffsets(size_t bitPosition, type value)
@@ -463,7 +463,7 @@ struct VarIntNNArrayTraits<int32_t>
 
     static size_t bitSizeOf(size_t, type value)
     {
-        return getBitSizeOfVarInt32(value);
+        return zserio::bitSizeOfVarInt32(value);
     }
 
     static size_t initializeOffsets(size_t bitPosition, type value)
@@ -491,7 +491,7 @@ struct VarIntNNArrayTraits<int64_t>
 
     static size_t bitSizeOf(size_t, type value)
     {
-        return getBitSizeOfVarInt64(value);
+        return zserio::bitSizeOfVarInt64(value);
     }
 
     static size_t initializeOffsets(size_t bitPosition, type value)
@@ -519,7 +519,7 @@ struct VarIntNNArrayTraits<uint16_t>
 
     static size_t bitSizeOf(size_t, type value)
     {
-        return getBitSizeOfVarUInt16(value);
+        return zserio::bitSizeOfVarUInt16(value);
     }
 
     static size_t initializeOffsets(size_t bitPosition, type value)
@@ -547,7 +547,7 @@ struct VarIntNNArrayTraits<uint32_t>
 
     static size_t bitSizeOf(size_t, type value)
     {
-        return getBitSizeOfVarUInt32(value);
+        return zserio::bitSizeOfVarUInt32(value);
     }
 
     static size_t initializeOffsets(size_t bitPosition, type value)
@@ -575,7 +575,7 @@ struct VarIntNNArrayTraits<uint64_t>
 
     static size_t bitSizeOf(size_t, type value)
     {
-        return getBitSizeOfVarUInt64(value);
+        return zserio::bitSizeOfVarUInt64(value);
     }
 
     static size_t initializeOffsets(size_t bitPosition, type value)
@@ -606,7 +606,7 @@ struct VarIntArrayTraits<int64_t>
 
     static size_t bitSizeOf(size_t , type value)
     {
-        return getBitSizeOfVarInt(value);
+        return zserio::bitSizeOfVarInt(value);
     }
 
     static size_t initializeOffsets(size_t bitPosition, type value)
@@ -634,7 +634,7 @@ struct VarIntArrayTraits<uint64_t>
 
     static size_t bitSizeOf(size_t , type value)
     {
-        return getBitSizeOfVarUInt(value);
+        return zserio::bitSizeOfVarUInt(value);
     }
 
     static size_t initializeOffsets(size_t bitPosition, type value)
@@ -769,7 +769,7 @@ struct StringArrayTraits
 
     static size_t bitSizeOf(size_t, const type& value)
     {
-        return getBitSizeOfString(value);
+        return zserio::bitSizeOfString(value);
     }
 
     static size_t initializeOffsets(size_t bitPosition, const type& value)
