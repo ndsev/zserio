@@ -1,0 +1,13 @@
+// suppress "Member variable 'X' is not initialized in the constructor."
+uninitMemberVar:*/blob_offsets_param_table/ParameterizedBlob.cpp
+uninitMemberVar:*/blob_offsets_param_table/ParameterizedBlob.h
+uninitMemberVar:*/blob_param_table/ParameterizedBlob.cpp
+uninitMemberVar:*/blob_param_table/ParameterizedBlob.h
+uninitMemberVar:*/blob_param_table/Parameters.cpp
+uninitMemberVar:*/column_param_table/ParameterizedBlob.cpp
+uninitMemberVar:*/column_param_table/ParameterizedBlob.h
+uninitMemberVar:*/complex_table/TestBlob.cpp
+uninitMemberVar:*/complex_table/TestBlob.h
+uninitMemberVar:*/const_param_table/ParameterizedBlob.cpp
+uninitMemberVar:*/const_param_table/ParameterizedBlob.h
+uninitMemberVar:*/subtyped_table/Student.cpp

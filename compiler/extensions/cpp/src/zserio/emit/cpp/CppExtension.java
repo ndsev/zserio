@@ -68,6 +68,8 @@ public class CppExtension implements Extension
         rootNode.emit(new StructureEmitter(outputDir, parameters, serviceEmitter.getRpcTypes()));
         rootNode.emit(new ChoiceEmitter(outputDir, parameters));
         rootNode.emit(new UnionEmitter(outputDir, parameters, serviceEmitter.getRpcTypes()));
+        rootNode.emit(new SqlDatabaseEmitter(outputDir, parameters));
+        rootNode.emit(new SqlTableEmitter(outputDir, parameters));
     }
 
     private final static String OptionCpp = "cpp";

@@ -44,7 +44,7 @@ ${name}::${name}(<#rt>
     <#if fieldList?has_content>
         <#lt>,
         <#list fieldList as field>
-        <@compound_copy_constructor_initializer_field field, field_has_next, 2/>
+        <@compound_copy_constructor_initializer_field field, field?has_next, 2/>
             <#if field.usesAnyHolder>
                 <#break>
             </#if>
@@ -75,7 +75,7 @@ ${name}::${name}(${name}&& other) :
     <#if fieldList?has_content>
         <#lt>,
         <#list fieldList as field>
-        <@compound_move_constructor_initializer_field field, field_has_next, 2/>
+        <@compound_move_constructor_initializer_field field, field?has_next, 2/>
             <#if field.usesAnyHolder>
                 <#break>
             </#if>

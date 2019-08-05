@@ -41,6 +41,14 @@ final class TemplateDataContext
         return new ExpressionFormatter(expressionFormattingPolicy);
     }
 
+    public ExpressionFormatter getSqlIndirectExpressionFormatter(IncludeCollector includeCollector)
+    {
+        final ExpressionFormattingPolicy expressionFormattingPolicy =
+                new CppSqlIndirectExpressionFormattingPolicy(cppNativeTypeMapper, includeCollector);
+
+        return new ExpressionFormatter(expressionFormattingPolicy);
+    }
+
     public boolean getWithWriterCode()
     {
         return withWriterCode;

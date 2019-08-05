@@ -5,8 +5,8 @@
 
 Structure createStructure()
 {
-    return Structure(5, Array{5, {1,2,3,4,5}}, true, 2, Array{2, {1,2}}, String{"test"},
-            Structure{2, Array{2, {1, 2}}, false,
+    return Structure(5, Array{{1,2,3,4,5}}, true, 2, Array{{1,2}}, String{"test"},
+            Structure{Array{{1, 2}}, false,
                     zserio::NullOpt, zserio::NullOpt, String("last"), zserio::NullOpt});
 }
 

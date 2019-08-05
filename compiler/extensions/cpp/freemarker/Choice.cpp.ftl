@@ -59,7 +59,7 @@ ${name}::${name}() noexcept<#rt>
         selector == ${expressionList?first}<#t>
     <#else>
         <#list expressionList as expression>
-        (selector == ${expression})<#if expression_has_next> || </#if><#t>
+        (selector == ${expression})<#if expression?has_next> || </#if><#t>
         </#list>
     </#if>
 </#macro>
@@ -93,7 +93,7 @@ ${name}::${name}() noexcept<#rt>
     const ${selectorExpressionTypeName} selector = ${selectorExpression};
 
         <#list caseMemberList as caseMember>
-            <#if caseMember_has_next || !isDefaultUnreachable>
+            <#if caseMember?has_next || !isDefaultUnreachable>
     <#if caseMember?index != 0>else </#if>if (<@choice_selector_condition caseMember.expressionList/>)
             <#else>
     else

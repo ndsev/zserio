@@ -16,9 +16,12 @@ int main(int argc, char* argv[])
     });
 
     Table::Reader reader = tbl.createReader();
-    while (reader.hasNext())
+    cursor = tbl.createCursor();
+    while (cursor.hasNext())
     {
-        auto row = reader.next();
+        rows.emplace_back(cursor); // A
+        auto row = Table::Row(reader); // B
+        auto row = reader.next(); // C
 
         std::cout << "{" << *row.getPk() << ", ";
 

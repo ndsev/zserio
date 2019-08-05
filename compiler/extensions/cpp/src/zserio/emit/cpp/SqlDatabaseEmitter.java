@@ -1,14 +1,14 @@
-package zserio.emit.python;
+package zserio.emit.cpp;
 
 import zserio.ast.SqlDatabaseType;
 import zserio.emit.common.ZserioEmitException;
 import zserio.tools.Parameters;
 
-class SqlDatabaseEmitter extends PythonDefaultEmitter
+public class SqlDatabaseEmitter extends CppDefaultEmitter
 {
-    public SqlDatabaseEmitter(String outputPath, Parameters extensionParameters)
+    public SqlDatabaseEmitter(String outPathName, Parameters extensionParameters)
     {
-        super(outputPath, extensionParameters);
+        super(outPathName, extensionParameters);
     }
 
     @Override
@@ -18,9 +18,12 @@ class SqlDatabaseEmitter extends PythonDefaultEmitter
         {
             final Object templateData = new SqlDatabaseEmitterTemplateData(getTemplateDataContext(),
                     sqlDatabaseType);
+
+            processHeaderTemplate(TEMPLATE_HEADER_NAME, templateData, sqlDatabaseType);
             processSourceTemplate(TEMPLATE_SOURCE_NAME, templateData, sqlDatabaseType);
         }
     }
 
-    private static final String TEMPLATE_SOURCE_NAME = "SqlDatabase.py.ftl";
+    private static final String TEMPLATE_SOURCE_NAME = "SqlDatabase.cpp.ftl";
+    private static final String TEMPLATE_HEADER_NAME = "SqlDatabase.h.ftl";
 }

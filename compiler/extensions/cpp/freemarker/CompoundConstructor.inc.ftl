@@ -201,6 +201,8 @@ ${compoundConstructorsData.compoundName}& ${compoundConstructorsData.compoundNam
 
     </#if>
             <#lt>${constructorArgumentTypeList});
+
+    bool isInitialized() const;
 </#macro>
 
 <#macro compound_initialize_definition compoundConstructorsData needsChildrenInitialization>
@@ -214,6 +216,11 @@ void ${compoundConstructorsData.compoundName}::initialize(
 
     initializeChildren();
     </#if>
+}
+
+bool ${compoundConstructorsData.compoundName}::isInitialized() const
+{
+    return m_isInitialized;
 }
 </#macro>
 
