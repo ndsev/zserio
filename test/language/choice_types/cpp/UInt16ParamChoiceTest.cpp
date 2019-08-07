@@ -80,7 +80,8 @@ TEST_F(UInt16ParamChoiceTest, fieldConstructor)
     const uint16_t tag = VARIANT_A_SELECTOR;
     const int8_t value = 99;
 
-    UInt16ParamChoice uint16ParamChoice(tag, value);
+    UInt16ParamChoice uint16ParamChoice(value);
+    uint16ParamChoice.initialize(tag);
     ASSERT_EQ(tag, uint16ParamChoice.getTag());
     ASSERT_EQ(value, uint16ParamChoice.getA());
 }

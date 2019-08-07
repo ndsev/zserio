@@ -26,16 +26,9 @@
 
 <@define_inner_classes fieldList/>
 <#if withWriterCode>
-${name}::${name}() noexcept<#rt>
-    <#assign constructorMembersInitialization><@compound_constructor_members_initialization compoundConstructorsData/></#assign>
-    <#if constructorMembersInitialization?has_content>
-        <#lt> :
-        ${constructorMembersInitialization}
-    <#else>
+<@compound_constructor_definition compoundConstructorsData/>
 
-    </#if>
-{
-}
+<@compound_field_constructors_definition compoundConstructorsData/>
 
 </#if>
 <@compound_read_constructor_definition compoundConstructorsData/>

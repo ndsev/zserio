@@ -8,10 +8,13 @@ namespace choice_types
 namespace choice_with_array
 {
 
+// The following three tests are here because of tests of move operator for arrays.
 TEST(ChoiceWithArrayTest, fieldConstructor)
 {
-    TestChoice choice8(8, std::vector<Data8>{ Data8{1}, Data8{2} , Data8{3} });
-    TestChoice choice16(16, std::vector<int16_t>{ -1, 1 });
+    TestChoice choice8(std::vector<Data8>{ Data8{1}, Data8{2} , Data8{3} });
+    choice8.initialize(8);
+    TestChoice choice16(std::vector<int16_t>{ -1, 1 });
+    choice16.initialize(16);
 
     ASSERT_EQ(3, choice8.getArray8().size());
     ASSERT_EQ(2, choice16.getArray16().size());
@@ -20,23 +23,27 @@ TEST(ChoiceWithArrayTest, fieldConstructor)
 
     std::vector<Data8> data8 = { Data8{1}, Data8{2}, Data8{3} };
     const void* dataPtr = &data8[0];
-    TestChoice choiceData8Copied(8, data8);
+    TestChoice choiceData8Copied(data8);
+    choiceData8Copied.initialize(8);
     ASSERT_NE(dataPtr, &choiceData8Copied.getArray8()[0]);
-    TestChoice choiceData8Moved(8, std::move(data8));
+    TestChoice choiceData8Moved(std::move(data8));
+    choiceData8Moved.initialize(8);
     ASSERT_EQ(dataPtr, &choiceData8Moved.getArray8()[0]);
 }
 
 TEST(ChoiceWithArrayTest, moveConstructor)
 {
-    TestChoice choice8(8, std::vector<Data8>{ Data8{1}, Data8{2} , Data8{3} });
+    TestChoice choice8(std::vector<Data8>{ Data8{1}, Data8{2} , Data8{3} });
+    choice8.initialize(8);
     const void* dataPtr = &choice8.getArray8()[0];
     TestChoice choice8Moved(std::move(choice8));
     ASSERT_EQ(dataPtr, &choice8Moved.getArray8()[0]);
 }
 
-TEST(ChoiceWithArrayTest, moveAssignmentConstructor)
+TEST(ChoiceWithArrayTest, moveAssignmentOperator)
 {
-    TestChoice choice8(8, std::vector<Data8>{ Data8{1}, Data8{2} , Data8{3} });
+    TestChoice choice8(std::vector<Data8>{ Data8{1}, Data8{2} , Data8{3} });
+    choice8.initialize(8);
     const void* dataPtr = &choice8.getArray8()[0];
     TestChoice choice8Moved;
     choice8Moved = std::move(choice8);

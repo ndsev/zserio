@@ -23,7 +23,7 @@ public:
     <@compound_constructor_declaration compoundConstructorsData/>
 </#if>
     <@compound_read_constructor_declaration compoundConstructorsData/>
-<#if withWriterCode || compoundConstructorsData.fieldList?has_content>
+<#if withWriterCode && fieldList?has_content>
 
     <@compound_fields_constructor compoundConstructorsData/>
 </#if>

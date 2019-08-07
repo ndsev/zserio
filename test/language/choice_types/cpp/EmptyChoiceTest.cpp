@@ -27,12 +27,6 @@ TEST(EmptyChoiceTest, bitStreamReaderConstructor)
     ASSERT_EQ(0, emptyChoice.bitSizeOf());
 }
 
-TEST(EmptyChoiceTest, fieldConstructor)
-{
-    EmptyChoice emptyChoice(1);
-    ASSERT_EQ(1, emptyChoice.getSelector());
-}
-
 TEST(EmptyChoiceTest, copyConstructor)
 {
     const uint8_t selector = 1;

@@ -61,7 +61,8 @@ TEST_F(EnumParamChoiceTest, fieldConstructor)
 {
     const Selector selector = Selector::BLACK;
     const int8_t value = 99;
-    EnumParamChoice enumParamChoice(selector, value);
+    EnumParamChoice enumParamChoice(value);
+    enumParamChoice.initialize(selector);
     ASSERT_EQ(selector, enumParamChoice.getSelector());
     ASSERT_EQ(value, enumParamChoice.getBlack());
     ASSERT_THROW(enumParamChoice.getGrey(), zserio::CppRuntimeException);

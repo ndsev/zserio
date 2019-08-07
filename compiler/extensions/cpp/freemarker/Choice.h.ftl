@@ -20,16 +20,14 @@ class ${name}
 public:
 <#if withWriterCode>
     <@compound_constructor_declaration compoundConstructorsData/>
+    <@compound_field_constructors_declaration compoundConstructorsData/>
 </#if>
     <@compound_read_constructor_declaration compoundConstructorsData/>
-<#if withWriterCode>
-    <@compound_fields_constructor compoundConstructorsData/>
-</#if>
 <#if needs_compound_initialization(compoundConstructorsData) || has_field_with_initialization(fieldList)>
 
     <@compound_copy_constructor_declaration compoundConstructorsData/>
     <@compound_assignment_operator_declaration compoundConstructorsData/>
-    
+
     <@compound_move_constructor_declaration compoundConstructorsData/>
     <@compound_move_assignment_operator_declaration compoundConstructorsData/>
 </#if>
