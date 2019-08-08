@@ -38,10 +38,10 @@ const char* enumToString(T value)
 }
 
 template <typename T>
-size_t bitSizeOf();
+constexpr size_t bitSizeOf();
 
 template <typename T>
-size_t initializeOffsets(size_t bitPosition);
+constexpr size_t initializeOffsets(size_t bitPosition);
 
 template <typename T>
 T read(zserio::BitStreamReader& in);

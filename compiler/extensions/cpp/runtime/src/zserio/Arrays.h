@@ -380,7 +380,7 @@ public:
 
     void read(std::vector<type>& array, BitStreamReader& in, size_t) const
     {
-        array.emplace_back(detail::read_bits<type>(in, m_numBits));
+        array.push_back(detail::read_bits<type>(in, m_numBits));
     }
 
     void write(BitStreamWriter& out, type value) const
@@ -411,7 +411,7 @@ struct StdIntArrayTraits
 
     static void read(std::vector<type>& array, BitStreamReader& in, size_t)
     {
-        array.emplace_back(detail::read_bits<type>(in, NUM_BITS));
+        array.push_back(detail::read_bits<type>(in, NUM_BITS));
     }
 
     static void write(BitStreamWriter& out, type value)
@@ -445,7 +445,7 @@ struct VarIntNNArrayTraits<int16_t>
 
     static void read(std::vector<type>& array, BitStreamReader& in, size_t)
     {
-        array.emplace_back(in.readVarInt16());
+        array.push_back(in.readVarInt16());
     }
 
     static void write(BitStreamWriter& out, type value)
@@ -473,7 +473,7 @@ struct VarIntNNArrayTraits<int32_t>
 
     static void read(std::vector<type>& array, BitStreamReader& in, size_t)
     {
-        array.emplace_back(in.readVarInt32());
+        array.push_back(in.readVarInt32());
     }
 
     static void write(BitStreamWriter& out, type value)
@@ -501,7 +501,7 @@ struct VarIntNNArrayTraits<int64_t>
 
     static void read(std::vector<type>& array, BitStreamReader& in, size_t)
     {
-        array.emplace_back(in.readVarInt64());
+        array.push_back(in.readVarInt64());
     }
 
     static void write(BitStreamWriter& out, type value)
@@ -529,7 +529,7 @@ struct VarIntNNArrayTraits<uint16_t>
 
     static void read(std::vector<type>& array, BitStreamReader& in, size_t)
     {
-        array.emplace_back(in.readVarUInt16());
+        array.push_back(in.readVarUInt16());
     }
 
     static void write(BitStreamWriter& out, type value)
@@ -557,7 +557,7 @@ struct VarIntNNArrayTraits<uint32_t>
 
     static void read(std::vector<type>& array, BitStreamReader& in, size_t)
     {
-        array.emplace_back(in.readVarUInt32());
+        array.push_back(in.readVarUInt32());
     }
 
     static void write(BitStreamWriter& out, type value)
@@ -585,7 +585,7 @@ struct VarIntNNArrayTraits<uint64_t>
 
     static void read(std::vector<type>& array, BitStreamReader& in, size_t)
     {
-        array.emplace_back(in.readVarUInt64());
+        array.push_back(in.readVarUInt64());
     }
 
     static void write(BitStreamWriter& out, type value)
@@ -616,7 +616,7 @@ struct VarIntArrayTraits<int64_t>
 
     static void read(std::vector<type>& array, BitStreamReader& in, size_t)
     {
-        array.emplace_back(in.readVarInt());
+        array.push_back(in.readVarInt());
     }
 
     static void write(BitStreamWriter& out, type value)
@@ -644,7 +644,7 @@ struct VarIntArrayTraits<uint64_t>
 
     static void read(std::vector<type>& array, BitStreamReader& in, size_t)
     {
-        array.emplace_back(in.readVarUInt());
+        array.push_back(in.readVarUInt());
     }
 
     static void write(BitStreamWriter& out, type value)
@@ -671,7 +671,7 @@ struct Float16ArrayTraits
 
     static void read(std::vector<type>& array, BitStreamReader& in, size_t)
     {
-        array.emplace_back(in.readFloat16());
+        array.push_back(in.readFloat16());
     }
 
     static void write(BitStreamWriter& out, type value)
@@ -698,7 +698,7 @@ struct Float32ArrayTraits
 
     static void read(std::vector<type>& array, BitStreamReader& in, size_t)
     {
-        array.emplace_back(in.readFloat32());
+        array.push_back(in.readFloat32());
     }
 
     static void write(BitStreamWriter& out, type value)
@@ -725,7 +725,7 @@ struct Float64ArrayTraits
 
     static void read(std::vector<type>& array, BitStreamReader& in, size_t)
     {
-        array.emplace_back(in.readFloat64());
+        array.push_back(in.readFloat64());
     }
 
     static void write(BitStreamWriter& out, type value)
@@ -752,7 +752,7 @@ struct BoolArrayTraits
 
     static void read(std::vector<type>& array, BitStreamReader& in, size_t)
     {
-        array.emplace_back(in.readBool());
+        array.push_back(in.readBool());
     }
 
     static void write(BitStreamWriter& out, type value)
@@ -779,7 +779,7 @@ struct StringArrayTraits
 
     static void read(std::vector<type>& array, BitStreamReader& in, size_t)
     {
-        array.emplace_back(in.readString());
+        array.push_back(in.readString());
     }
 
     static void write(BitStreamWriter& out, type value)
@@ -808,7 +808,7 @@ public:
 
     static void read(std::vector<type>& array, BitStreamReader& in, size_t)
     {
-        array.emplace_back(zserio::read<type>(in));
+        array.push_back(zserio::read<type>(in));
     }
 
     static void write(BitStreamWriter& out, type& value)
