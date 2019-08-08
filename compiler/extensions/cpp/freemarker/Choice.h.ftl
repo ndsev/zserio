@@ -6,6 +6,10 @@
 
 <@include_guard_begin package.path, name/>
 
+<#if withWriterCode>
+#include <type_traits>
+
+</#if>
 #include <zserio/BitStreamReader.h>
 #include <zserio/BitStreamWriter.h>
 #include <zserio/AnyHolder.h>
@@ -20,7 +24,11 @@ class ${name}
 public:
 <#if withWriterCode>
     <@compound_constructor_declaration compoundConstructorsData/>
-    <@compound_field_constructors_declaration compoundConstructorsData/>
+    <#if fieldList?has_content>
+
+    <@compound_fields_constructor_template compoundConstructorsData/>
+
+    </#if>
 </#if>
     <@compound_read_constructor_declaration compoundConstructorsData/>
 <#if needs_compound_initialization(compoundConstructorsData) || has_field_with_initialization(fieldList)>

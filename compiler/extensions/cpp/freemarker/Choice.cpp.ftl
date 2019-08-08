@@ -28,8 +28,6 @@
 <#if withWriterCode>
 <@compound_constructor_definition compoundConstructorsData/>
 
-<@compound_field_constructors_definition compoundConstructorsData/>
-
 </#if>
 <@compound_read_constructor_definition compoundConstructorsData/>
 

@@ -2,7 +2,7 @@
 #
 # Expected defines:
 #     JAVA_BIN Java binary.
-#     CORE_DIR Zseiro core directory.
+#     CORE_DIR Zserio core directory.
 #     OUT_DIR Zserio output directory.
 #     SOURCE_DIR Zserio source directory.
 #     MAIN_SOURCE Zserio main source file.

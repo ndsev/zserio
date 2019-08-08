@@ -8,6 +8,10 @@
 
 <@include_guard_begin package.path, name/>
 
+<#if withWriterCode>
+#include <type_traits>
+
+</#if>
 #include <zserio/BitStreamReader.h>
 #include <zserio/BitStreamWriter.h>
 #include <zserio/AnyHolder.h>
@@ -32,12 +36,9 @@ public:
 
 <#if withWriterCode>
     <@compound_constructor_declaration compoundConstructorsData/>
-</#if>
-    <@compound_read_constructor_declaration compoundConstructorsData/>
-<#if withWriterCode>
-    <#if fieldList?has_content || needs_compound_initialization(compoundConstructorsData)>
+    <#if fieldList?has_content>
 
-    <@compound_field_constructor_template_arg_list fieldList/>
+    <@compound_field_constructor_template_arg_list name, fieldList/>
     explicit ${name}(<#rt>
         <#lt><@compound_fields_constructor_argument_type_list compoundConstructorsData, 3/><#rt>
         <#lt><#if fieldList?has_content>, ChoiceTag tagHint = UNDEFINED_CHOICE</#if>) :
@@ -72,7 +73,9 @@ public:
         </#if>
     }
     </#if>
+
 </#if>
+    <@compound_read_constructor_declaration compoundConstructorsData/>
 <#if needs_compound_initialization(compoundConstructorsData) || has_field_with_initialization(fieldList)>
 
     <@compound_copy_constructor_declaration compoundConstructorsData/>

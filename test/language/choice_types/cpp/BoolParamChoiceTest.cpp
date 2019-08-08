@@ -95,8 +95,8 @@ TEST_F(BoolParamChoiceTest, moveConstructor)
 
     // note that it doesn't ensure that move ctor was called
     const BoolParamChoice boolParamChoiceMoved(std::move(boolParamChoice));
-//    ASSERT_EQ(selector, boolParamChoiceMoved.getSelector());
-//    ASSERT_EQ(value, boolParamChoiceMoved.getBlack());
+    ASSERT_EQ(selector, boolParamChoiceMoved.getSelector());
+    ASSERT_EQ(value, boolParamChoiceMoved.getBlack());
 }
 
 TEST_F(BoolParamChoiceTest, moveAssignmentOperator)

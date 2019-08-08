@@ -85,49 +85,13 @@ ${compoundConstructorsData.compoundName}::${compoundConstructorsData.compoundNam
 }
 </#macro>
 
-<#macro compound_field_constructors_declaration compoundConstructorsData>
-    <#list compoundConstructorsData.fieldList as field>
-    explicit ${compoundConstructorsData.compoundName}(${field.cppArgumentTypeName} <@field_argument_name field.name/>);
-        <#if !field.isSimpleType>
-    explicit ${compoundConstructorsData.compoundName}(${field.cppTypeName}&& <@field_argument_name field.name/>);
-        </#if>
-    </#list>
-</#macro>
-
-<#macro compound_field_constructors_definition compoundConstructorsData>
-    <#list compoundConstructorsData.fieldList as field>
-        <#assign constructorMembersInitialization><@compound_constructor_members_initialization compoundConstructorsData/></#assign>
-${compoundConstructorsData.compoundName}::${compoundConstructorsData.compoundName}(<#rt>
-        <#lt>${field.cppArgumentTypeName} <@field_argument_name field.name/>) :
-        <#if constructorMembersInitialization?has_content>
-        ${constructorMembersInitialization},
-        </#if>
-        <@compound_field_storage field/>(<@field_argument_name field.name/>)
-{
-}
-        <#if !field.isSimpleType>
-
-${compoundConstructorsData.compoundName}::${compoundConstructorsData.compoundName}(<#rt>
-        <#lt>${field.cppTypeName}&& <@field_argument_name field.name/>) :
-        <#if constructorMembersInitialization?has_content>
-        ${constructorMembersInitialization},
-        </#if>
-        <@compound_field_storage field/>(std::move(<@field_argument_name field.name/>))
-{
-}
-        </#if>
-        <#if field_has_next>
-
-        </#if>
-    </#list>
-</#macro>
-
-<#macro compound_fields_constructor compoundConstructorsData>
-    <@compound_field_constructor_template_arg_list compoundConstructorsData.fieldList/>
+<#macro compound_fields_constructor_template compoundConstructorsData>
+    <@compound_field_constructor_template_arg_list compoundConstructorsData.compoundName,
+            compoundConstructorsData.fieldList/>
     explicit ${compoundConstructorsData.compoundName}(
             <#lt><@compound_field_constructor_type_list compoundConstructorsData.fieldList, 3/>) :
             <#if needs_compound_initialization(compoundConstructorsData)>
-            m_isInitialized(false)<#if compoundConstructorsData.fieldList?has_content>, </#if>
+            m_isInitialized(false)<#if compoundConstructorsData.fieldList?has_content>,</#if>
             </#if>
         <#list compoundConstructorsData.fieldList as field>
             <@compound_field_constructor_initializer_field field, field?has_next, 3/>
