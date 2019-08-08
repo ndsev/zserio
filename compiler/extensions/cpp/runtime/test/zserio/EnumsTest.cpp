@@ -118,10 +118,11 @@ TEST(EnumsTest, enumToValue)
 
 TEST(EnumsTest, enumToString)
 {
-    EXPECT_EQ("NONE", enumToString(Color::NONE));
-    EXPECT_EQ("RED", enumToString(Color::RED));
-    EXPECT_EQ("BLUE", enumToString(Color::BLUE));
-    EXPECT_EQ("BLACK", enumToString(Color::BLACK));
+    // use std::string to prevent comparison of pointer values (which happened on MSVC in debug)
+    EXPECT_EQ(std::string("NONE"), enumToString(Color::NONE));
+    EXPECT_EQ(std::string("RED"), enumToString(Color::RED));
+    EXPECT_EQ(std::string("BLUE"), enumToString(Color::BLUE));
+    EXPECT_EQ(std::string("BLACK"), enumToString(Color::BLACK));
 
     EXPECT_THROW(enumToString(valueToEnum<Color>(1)), CppRuntimeException);
 }
