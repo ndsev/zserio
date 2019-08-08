@@ -545,6 +545,17 @@ compile_cpp_for_target()
                     "-DCPPCHECK_HOME=${CPPCHECK_HOME}")
     fi
 
+    # detect build type
+    local BUILD_TYPE="Release"
+    local BUILD_TYPE_LOWER_CASE="release"
+    if [[ "${CMAKE_EXTRA_ARGS}" == *"-DCMAKE_BUILD_TYPE=Debug"* ||
+          "${CMAKE_EXTRA_ARGS}" == *"-DCMAKE_BUILD_TYPE=debug"* ]] ; then
+        BUILD_TYPE="Debug";
+        BUILD_TYPE_LOWER_CASE="debug"
+    fi
+
+    BUILD_DIR="${BUILD_DIR}/${BUILD_TYPE_LOWER_CASE}"
+
     mkdir -p "${BUILD_DIR}"
     pushd "${BUILD_DIR}" > /dev/null
 
@@ -552,8 +563,8 @@ compile_cpp_for_target()
 
     # resolve CMake generator
     if [[ ${TARGET} == *"-msvc" ]] ; then
-        local CMAKE_BUILD_CONFIG="--config Release"
-        CTEST_ARGS+=("-C Release")
+        local CMAKE_BUILD_CONFIG="--config ${BUILD_TYPE}"
+        CTEST_ARGS+=("-C ${BUILD_TYPE}")
         if [[ ${MAKE_TARGET} == "all" ]] ; then
             CMAKE_BUILD_TARGET="ALL_BUILD" # all target doesn't exist in MSVC solution
         fi

@@ -102,7 +102,7 @@ TEST(AnyHolderTest, copyAssignmentOperator)
     ASSERT_EQ(origValues, copiedAnyValues);
 }
 
-TEST(AnyHolderTest, moveConstructor)
+TEST(AnyHolderTest, moveConstructorValueOnHeap)
 {
     std::vector<int> values{1, 2, 3};
     std::vector<int> origValues{values};
@@ -110,13 +110,30 @@ TEST(AnyHolderTest, moveConstructor)
     AnyHolder any{std::move(values)};
 
     AnyHolder movedAny{std::move(any)};
+    ASSERT_TRUE(movedAny.isType<std::vector<int>>());
 
     const std::vector<int>& movedAnyValues = movedAny.get<std::vector<int>>();
     ASSERT_EQ(origAddress, &movedAnyValues[0]);
     ASSERT_EQ(origValues, movedAnyValues);
 }
 
-TEST(AnyHolderTest, moveAssignmentOperator)
+TEST(AnyHolderTest, moveConstructorValueInPlace)
+{
+    uint32_t value = 10;
+    AnyHolder any(value);
+
+    AnyHolder movedAny{std::move(any)};
+    ASSERT_TRUE(movedAny.isType<uint32_t>());
+    uint32_t& movedValue = movedAny.get<uint32_t>();
+    ASSERT_EQ(value, movedValue);
+
+    movedValue = 20;
+    AnyHolder otherMoved{std::move(movedAny)};
+    ASSERT_TRUE(otherMoved.isType<uint32_t>());
+    ASSERT_EQ(20, otherMoved.get<uint32_t>());
+}
+
+TEST(AnyHolderTest, moveAssignmentOperatorValueOnHeap)
 {
     std::vector<int> values{1, 2, 3};
     std::vector<int> origValues{values};
@@ -129,6 +146,24 @@ TEST(AnyHolderTest, moveAssignmentOperator)
     const std::vector<int>& movedAnyValues = movedAny.get<std::vector<int>>();
     ASSERT_EQ(origAddress, &movedAnyValues[0]);
     ASSERT_EQ(origValues, movedAnyValues);
+}
+
+TEST(AnyHolderTest, moveAssignmentOperatorValueInPlace)
+{
+    uint32_t value = 10;
+    AnyHolder any(value);
+
+    AnyHolder movedAny;
+    movedAny = std::move(any);
+    ASSERT_TRUE(movedAny.isType<uint32_t>());
+    uint32_t& movedValue = movedAny.get<uint32_t>();
+    ASSERT_EQ(value, movedValue);
+
+    movedValue = 20;
+    AnyHolder otherMoved;
+    otherMoved = std::move(movedAny);
+    ASSERT_TRUE(otherMoved.isType<uint32_t>());
+    ASSERT_EQ(20, otherMoved.get<uint32_t>());
 }
 
 TEST(AnyHolderTest, lvalueAssignmentOperator)

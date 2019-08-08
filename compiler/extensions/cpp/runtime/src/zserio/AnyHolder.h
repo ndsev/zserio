@@ -211,7 +211,7 @@ private:
         {
             other.getUntypedHolder()->move(&m_untypedHolder.inPlace);
             m_isInPlace = true;
-            reinterpret_cast<IHolder*>(&m_untypedHolder.inPlace)->~IHolder();
+            reinterpret_cast<IHolder*>(&other.m_untypedHolder.inPlace)->~IHolder();
             other.m_isInPlace = false;
         }
         else
