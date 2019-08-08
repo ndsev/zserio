@@ -26,18 +26,18 @@ template<>
 struct EnumTraits<${fullName}>
 {
     static constexpr std::array<const char*, ${items?size}> names =
-    {
+    {{
 <#list items as item>
         "${item.name}"<#if item?has_next>,</#if>
 </#list>
-    };
+    }};
 
     static constexpr std::array<${fullName}, ${items?size}> values =
-    {
+    {{
 <#list items as item>
         ${item.fullName}<#if item?has_next>,</#if>
 </#list>
-    };
+    }};
 };
 
 template<>

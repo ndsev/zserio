@@ -20,8 +20,8 @@ enum class Color : uint8_t
 template<>
 struct EnumTraits<Color>
 {
-    static constexpr std::array<const char*, 4> names = {"NONE", "RED", "BLUE", "BLACK"};
-    static constexpr std::array<Color, 4> values = {Color::NONE, Color::RED, Color::BLUE, Color::BLACK};
+    static constexpr std::array<const char*, 4> names = {{"NONE", "RED", "BLUE", "BLACK"}};
+    static constexpr std::array<Color, 4> values = {{Color::NONE, Color::RED, Color::BLUE, Color::BLACK}};
 };
 
 constexpr std::array<const char*, 4> EnumTraits<Color>::names;
