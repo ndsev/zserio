@@ -3,6 +3,7 @@
 uninitMemberVar:*/EmptyUnion.cpp
 uninitMemberVar:*/EmptyUnionWithParameter.cpp
 uninitMemberVar:*/TestUnion.cpp
+uninitMemberVar:*/TestUnion.h
 // TODO: remove when cppcheck understands noexcept
 uninitMemberVar:*/SimpleUnion.cpp
 uninitMemberVar:*/Data8.cpp

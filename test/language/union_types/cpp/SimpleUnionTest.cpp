@@ -54,14 +54,14 @@ const uint16_t SimpleUnionTest::CASE2_FIELD = 65535;
 const std::string SimpleUnionTest::CASE3_FIELD = "SimpleUnion";
 const int8_t SimpleUnionTest::CASE4_FIELD = 42;
 const size_t SimpleUnionTest::UNION_CASE1_BIT_SIZE =
-        zserio::getBitSizeOfVarUInt64(SimpleUnion::CHOICE_case1Field) + 8;
+        zserio::bitSizeOfVarUInt64(SimpleUnion::CHOICE_case1Field) + 8;
 const size_t SimpleUnionTest::UNION_CASE2_BIT_SIZE =
-        zserio::getBitSizeOfVarUInt64(SimpleUnion::CHOICE_case2Field) + 16;
+        zserio::bitSizeOfVarUInt64(SimpleUnion::CHOICE_case2Field) + 16;
 const size_t SimpleUnionTest::UNION_CASE3_BIT_SIZE =
-        zserio::getBitSizeOfVarUInt64(SimpleUnion::CHOICE_case3Field) +
-        zserio::getBitSizeOfString(SimpleUnionTest::CASE3_FIELD);
+        zserio::bitSizeOfVarUInt64(SimpleUnion::CHOICE_case3Field) +
+        zserio::bitSizeOfString(SimpleUnionTest::CASE3_FIELD);
 const size_t SimpleUnionTest::UNION_CASE4_BIT_SIZE =
-        zserio::getBitSizeOfVarUInt64(SimpleUnion::CHOICE_case4Field) + 8;
+        zserio::bitSizeOfVarUInt64(SimpleUnion::CHOICE_case4Field) + 8;
 
 TEST_F(SimpleUnionTest, emptyConstructor)
 {

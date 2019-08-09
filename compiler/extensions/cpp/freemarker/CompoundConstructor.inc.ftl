@@ -100,9 +100,6 @@ ${compoundConstructorsData.compoundName}::${compoundConstructorsData.compoundNam
             </#if>
         </#list>
     {
-        <#if has_field_with_initialization(compoundConstructorsData.fieldList)>
-        initializeChildren();
-        </#if>
     }
 </#macro>
 

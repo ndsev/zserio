@@ -168,7 +168,7 @@ size_t ${name}::bitSizeOf(size_t<#if fieldList?has_content> bitPosition</#if>) c
 <#if fieldList?has_content>
     size_t endBitPosition = bitPosition;
 
-    endBitPosition += zserio::getBitSizeOfVarUInt64(static_cast<uint64_t>(m_choiceTag));
+    endBitPosition += zserio::bitSizeOfVarUInt64(static_cast<uint64_t>(m_choiceTag));
 
     switch (m_choiceTag)
     {
@@ -271,7 +271,7 @@ size_t ${name}::initializeOffsets(size_t bitPosition)
     <#if fieldList?has_content>
     size_t endBitPosition = bitPosition;
 
-    endBitPosition += zserio::getBitSizeOfVarUInt64(static_cast<uint64_t>(m_choiceTag));
+    endBitPosition += zserio::bitSizeOfVarUInt64(static_cast<uint64_t>(m_choiceTag));
 
     switch (m_choiceTag)
     {

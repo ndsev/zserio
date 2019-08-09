@@ -644,7 +644,6 @@ TEST_F(ArraysTest, boolArray)
 {
     const size_t elementBitSize = 1;
     std::vector<bool> array = {false, true};
-    // testArraySum(array, true); // TODO: How to sum bool arrays? Using of '+=' on bool is not safe!
     testArray(BoolArrayTraits(), array, elementBitSize);
 }
 

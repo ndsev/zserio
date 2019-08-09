@@ -29,14 +29,6 @@ TEST(EmptyUnionWithParameterTest, bitStreamReaderConstructor)
     ASSERT_EQ(0, emptyUnionWithParameter.bitSizeOf());
 }
 
-TEST(EmptyUnionWithParameterTest, fieldConstructor)
-{
-    EmptyUnionWithParameter emptyUnionWithParameter(1);
-    ASSERT_EQ(1, emptyUnionWithParameter.getParam());
-    ASSERT_EQ(EmptyUnionWithParameter::UNDEFINED_CHOICE, emptyUnionWithParameter.choiceTag());
-    ASSERT_EQ(0, emptyUnionWithParameter.bitSizeOf());
-}
-
 TEST(EmptyUnionWithParameterTest, copyConstructor)
 {
     EmptyUnionWithParameter emptyUnionWithParameter;
@@ -75,7 +67,8 @@ TEST(EmptyUnionWithParameterTest, moveConstructor)
     }
 
     {
-        EmptyUnionWithParameter emptyUnionWithParameter(1);
+        EmptyUnionWithParameter emptyUnionWithParameter;
+        emptyUnionWithParameter.initialize(1);
         ASSERT_EQ(1, emptyUnionWithParameter.getParam());
 
         EmptyUnionWithParameter emptyUnionMoveWithParameter(std::move(emptyUnionWithParameter));
@@ -95,7 +88,8 @@ TEST(EmptyUnionWithParameterTest, moveAssignmentOperator)
     }
 
     {
-        EmptyUnionWithParameter emptyUnionWithParameter(1);
+        EmptyUnionWithParameter emptyUnionWithParameter;
+        emptyUnionWithParameter.initialize(1);
         ASSERT_EQ(1, emptyUnionWithParameter.getParam());
 
         EmptyUnionWithParameter emptyUnionAssignWithParameter;
@@ -109,6 +103,14 @@ TEST(EmptyUnionWithParameterTest, initialize)
     EmptyUnionWithParameter emptyUnionWithParameter;
     emptyUnionWithParameter.initialize(1);
     ASSERT_EQ(1, emptyUnionWithParameter.getParam());
+}
+
+TEST(EmptyUnionWithParameterTest, isInitialized)
+{
+    EmptyUnionWithParameter emptyUnionWithParameter;
+    ASSERT_FALSE(emptyUnionWithParameter.isInitialized());
+    emptyUnionWithParameter.initialize(1);
+    ASSERT_TRUE(emptyUnionWithParameter.isInitialized());
 }
 
 TEST(EmptyUnionWithParameterTest, choiceTag)

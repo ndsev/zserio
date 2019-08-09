@@ -20,7 +20,6 @@ template <typename T, typename ELEMENT_INITIALIZER>
 void initializeElements(std::vector<T>& array, const ELEMENT_INITIALIZER& elementInitializer)
 {
     size_t index = 0;
-    // can't use 'typename ARRAY_TRAITS::type&' because std::vector<bool> returns rvalue
     for (auto&& element : array)
     {
         elementInitializer.initialize(element, index);

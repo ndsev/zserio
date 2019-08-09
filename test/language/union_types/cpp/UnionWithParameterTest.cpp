@@ -30,7 +30,9 @@ TEST(UnionWithParameterTest, bitStreamReaderConstructor)
 TEST(UnionWithParameterTest, fieldConstructor)
 {
     int32_t test1 = 13;
-    TestUnion testUnion(true, test1);
+    TestUnion testUnion(test1);
+    testUnion.initialize(true);
+
     ASSERT_EQ(true, testUnion.getCase1Allowed());
     ASSERT_EQ(test1, testUnion.getCase1Field());
 }
@@ -95,6 +97,15 @@ TEST(UnionWithParameterTest, initialize)
     ASSERT_TRUE(testUnion.getCase1Allowed());
     ASSERT_NO_THROW(testUnion.write(writer));
 }
+
+TEST(UnionWithParameterTestTest, isInitialized)
+{
+    TestUnion testUnion;
+    ASSERT_FALSE(testUnion.isInitialized());
+    testUnion.initialize(true);
+    ASSERT_TRUE(testUnion.isInitialized());
+}
+
 
 } //namespace union_with_parameter
 } // namespace union_types

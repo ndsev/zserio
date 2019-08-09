@@ -40,11 +40,10 @@ public:
 
     <@compound_field_constructor_template_arg_list name, fieldList/>
     explicit ${name}(<#rt>
-        <#lt><@compound_fields_constructor_argument_type_list compoundConstructorsData, 3/><#rt>
+        <#lt><@compound_field_constructor_type_list compoundConstructorsData.fieldList, 3/><#rt>
         <#lt><#if fieldList?has_content>, ChoiceTag tagHint = UNDEFINED_CHOICE</#if>) :
         <#if needs_compound_initialization(compoundConstructorsData)>
-            <@compound_parameter_constructor_initializers compoundConstructorsData.compoundParametersData, 3, true/>
-            m_isInitialized(true),
+            m_isInitialized(false),
         </#if>
         <#if fieldList?has_content>
             <#list fieldList as field>
@@ -66,10 +65,6 @@ public:
             </#list>
         else
             throw zserio::CppRuntimeException("No match in union Union!");
-            <#if has_field_with_initialization(fieldList)>
-
-        initializeChildren();
-            </#if>
         </#if>
     }
     </#if>
