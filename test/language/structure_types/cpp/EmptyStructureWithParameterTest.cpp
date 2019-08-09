@@ -2,6 +2,7 @@
 
 #include "zserio/BitStreamWriter.h"
 #include "zserio/BitStreamReader.h"
+#include "zserio/CppRuntimeException.h"
 
 #include "structure_types/empty_structure_with_parameter/EmptyStructureWithParameter.h"
 
@@ -20,7 +21,8 @@ TEST(EmptyStructureWithParameterTest, emptyConstructor)
 TEST(EmptyStructureWithParameterTest, fieldConstructor)
 {
     const int32_t param = 10;
-    EmptyStructureWithParameter emptyStructureWithParameter(param);
+    EmptyStructureWithParameter emptyStructureWithParameter;
+    emptyStructureWithParameter.initialize(param);
     ASSERT_EQ(0, emptyStructureWithParameter.bitSizeOf());
     ASSERT_EQ(param, emptyStructureWithParameter.getParam());
 }
@@ -64,7 +66,8 @@ TEST(EmptyStructureWithParameterTest, moveConstructor)
 
     {
         int32_t param = 1;
-        EmptyStructureWithParameter testStructureWithParameter(param);
+        EmptyStructureWithParameter testStructureWithParameter;
+        testStructureWithParameter.initialize(param);
         ASSERT_EQ(param, testStructureWithParameter.getParam());
 
         EmptyStructureWithParameter testStructureWithParameterMoved(std::move(testStructureWithParameter));
@@ -85,7 +88,8 @@ TEST(EmptyStructureWithParameterTest, moveAssignmentOperator)
 
     {
         int32_t param = 1;
-        EmptyStructureWithParameter testStructureWithParameter(param);
+        EmptyStructureWithParameter testStructureWithParameter;
+        testStructureWithParameter.initialize(param);
         ASSERT_EQ(param, testStructureWithParameter.getParam());
 
         EmptyStructureWithParameter testStructureWithParameterMoved;
