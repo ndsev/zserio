@@ -332,7 +332,7 @@ class ${compoundName}::<@element_initializer_name field.name/>
 public:
     explicit <@element_initializer_name field.name/>(${compoundName}& owner) : m_owner(owner) {}
 
-    void initialize(${field.array.elementCppTypeName}& element, size_t index)
+    void initialize(${field.array.elementCppTypeName}& element, size_t index) const
     {
         (void)index;
         element.initialize(<@compound_field_compound_ctor_params field.array.elementCompound, true/>);
@@ -353,7 +353,7 @@ class ${compoundName}::<@element_children_initializer_name field.name/>
 public:
     <@element_children_initializer_name field.name/>() {}
 
-    void initialize(${field.array.elementCppTypeName}& element, size_t)
+    void initialize(${field.array.elementCppTypeName}& element, size_t) const
     {
         element.initializeChildren();
     }
