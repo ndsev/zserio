@@ -103,5 +103,5 @@ gtest_add_tests(${PROJECT_NAME} "--gtest_output=xml" ${TEST_SOURCES_LIST})
 include(cppcheck_utils)
 set(SUPPRESSION_FILE_NAME "${CMAKE_CURRENT_SOURCE_DIR}/${ZSERIO_CPP_DIR}/CppcheckSuppressions.txt")
 cppcheck_add_custom_command(TARGET ${PROJECT_NAME}
-                            SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}"
+                            SOURCE_DIR "${TEST_SOURCES_LIST}"
                             SUPPRESSION_FILE "${SUPPRESSION_FILE_NAME}")
