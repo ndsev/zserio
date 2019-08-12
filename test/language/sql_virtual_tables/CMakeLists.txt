@@ -2,18 +2,24 @@ set(ZSERIO_GEN_DIR ${CMAKE_CURRENT_BINARY_DIR}/gen)
 set(ZSERIO_GENERATED_SOURCES
     ${ZSERIO_GEN_DIR}/sql_virtual_tables/fts3_virtual_table/Fts3VirtualTable.cpp
     ${ZSERIO_GEN_DIR}/sql_virtual_tables/fts3_virtual_table/Fts3VirtualTable.h
-    ${ZSERIO_GEN_DIR}/sql_virtual_tables/fts3_virtual_table/Fts3VirtualTableRow.cpp
-    ${ZSERIO_GEN_DIR}/sql_virtual_tables/fts3_virtual_table/Fts3VirtualTableRow.h
     ${ZSERIO_GEN_DIR}/sql_virtual_tables/fts3_virtual_table/Fts3TestDb.cpp
     ${ZSERIO_GEN_DIR}/sql_virtual_tables/fts3_virtual_table/Fts3TestDb.h
 
     ${ZSERIO_GEN_DIR}/sql_virtual_tables/fts5_virtual_table/Fts5VirtualTable.cpp
     ${ZSERIO_GEN_DIR}/sql_virtual_tables/fts5_virtual_table/Fts5VirtualTable.h
-    ${ZSERIO_GEN_DIR}/sql_virtual_tables/fts5_virtual_table/Fts5VirtualTableRow.cpp
-    ${ZSERIO_GEN_DIR}/sql_virtual_tables/fts5_virtual_table/Fts5VirtualTableRow.h
     ${ZSERIO_GEN_DIR}/sql_virtual_tables/fts5_virtual_table/Fts5TestDb.cpp
     ${ZSERIO_GEN_DIR}/sql_virtual_tables/fts5_virtual_table/Fts5TestDb.h
 )
+
+if (NOT ${ZSERIO_CPP_STANDARD} STREQUAL c++11)
+    set(ZSERIO_GENERATED_SOURCES
+        ${ZSERIO_GENERATED_SOURCES}
+        ${ZSERIO_GEN_DIR}/sql_virtual_tables/fts3_virtual_table/Fts3VirtualTableRow.cpp
+        ${ZSERIO_GEN_DIR}/sql_virtual_tables/fts3_virtual_table/Fts3VirtualTableRow.h
+        ${ZSERIO_GEN_DIR}/sql_virtual_tables/fts5_virtual_table/Fts5VirtualTableRow.cpp
+        ${ZSERIO_GEN_DIR}/sql_virtual_tables/fts5_virtual_table/Fts5VirtualTableRow.h
+    )
+endif ()
 
 zserio_add_library(TARGET sql_virtual_tables_zs
     SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/zs
