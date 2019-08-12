@@ -47,15 +47,13 @@ TEST_F(UInt64EnumTest, valueToEnumFailure)
 
 TEST_F(UInt64EnumTest, bitSizeOf)
 {
-    const DarkColor color(DarkColor::DARK_BLACK);
-    ASSERT_TRUE(zserio::bitSizeOf(color) == DARK_COLOR_BITSIZEOF);
+    ASSERT_TRUE(zserio::bitSizeOf<DarkColor>() == DARK_COLOR_BITSIZEOF);
 }
 
 TEST_F(UInt64EnumTest, initializeOffsets)
 {
-    const DarkColor darkColor(DarkColor::DARK_BLACK);
     const size_t bitPosition = 1;
-    ASSERT_TRUE(zserio::initializeOffsets(darkColor, bitPosition) == bitPosition + DARK_COLOR_BITSIZEOF);
+    ASSERT_TRUE(zserio::initializeOffsets<DarkColor>(bitPosition) == bitPosition + DARK_COLOR_BITSIZEOF);
 }
 
 TEST_F(UInt64EnumTest, read)

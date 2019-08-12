@@ -49,15 +49,13 @@ TEST_F(BitfieldEnumTest, valueToEnumFailure)
 
 TEST_F(BitfieldEnumTest, bitSizeOf)
 {
-    const Color color(Color::BLACK);
-    ASSERT_TRUE(zserio::bitSizeOf(color) == COLOR_BITSIZEOF);
+    ASSERT_TRUE(zserio::bitSizeOf<Color>() == COLOR_BITSIZEOF);
 }
 
 TEST_F(BitfieldEnumTest, initializeOffsets)
 {
-    const Color color(Color::BLACK);
     const size_t bitPosition = 1;
-    ASSERT_TRUE(zserio::initializeOffsets(color, bitPosition) == bitPosition + COLOR_BITSIZEOF);
+    ASSERT_TRUE(zserio::initializeOffsets<Color>(bitPosition) == bitPosition + COLOR_BITSIZEOF);
 }
 
 TEST_F(BitfieldEnumTest, read)
