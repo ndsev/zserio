@@ -338,34 +338,33 @@ ${name}::Row& ${name}::Row::operator=(Row&& other)
 
     return *this;
 }
+</#if>
+<#list fields as field>
+<#if !field.isSimpleType>
 
-void ${name}::Row::reinitializeBlobs()
+${field.optionalCppTypeName}& ${name}::Row::${field.getterName}()
 {
-    <#if requiresOwnerContext>
-    Row& row = *this;
-
-    </#if>
-        <#list fields as field>
-            <#if field.hasImplicitParameters>
-    if (<@sql_field_member_name field/>->isInitialized())
-    {
-        <@sql_field_member_name field/>->initialize(
-                <#list field.typeParameters as parameter>
-                    <#if parameter.isExplicit>
-                <@sql_field_member_name field/>->${parameter.getterName}()<#rt>
-                    <#else>
-                ${parameter.expression}<#rt>
-                    </#if>
-                    <#if parameter?has_next>
-                <#lt>,
-                    </#if>
-                </#list>
-                <#lt>);
-    }
-            </#if>
-        </#list>
+    return <@sql_field_member_name field/>;
 }
 </#if>
+
+const ${field.optionalCppTypeName}& ${name}::Row::${field.getterName}() const
+{
+    return <@sql_field_member_name field/>;
+}
+
+void ${name}::Row::${field.setterName}(${field.optionalCppArgumentTypeName} <@sql_field_argument_name field/>)
+{
+    <@sql_field_member_name field/> = <@sql_field_argument_name field/>;
+}
+<#if !field.isSimpleType>
+
+void ${name}::Row::${field.setterName}(${field.optionalCppTypeName}&& <@sql_field_argument_name field/>)
+{
+    <@sql_field_member_name field/> = std::move(<@sql_field_argument_name field/>);
+}
+</#if>
+</#list>
 <#if needsChildrenInitialization>
 
 void ${name}::Row::initializeChildren(<#if needsParameterProvider>IParameterProvider& parameterProvider</#if>)
@@ -406,31 +405,34 @@ void ${name}::Row::initializeOffsets()
     </#list>
 }
 </#if>
-<#list fields as field>
-<#if !field.isSimpleType>
+<#if hasImplicitParameters>
 
-${field.optionalCppTypeName}& ${name}::Row::${field.getterName}()
+void ${name}::Row::reinitializeBlobs()
 {
-    return <@sql_field_member_name field/>;
+    <#if requiresOwnerContext>
+    Row& row = *this;
+
+    </#if>
+        <#list fields as field>
+            <#if field.hasImplicitParameters>
+    if (<@sql_field_member_name field/>->isInitialized())
+    {
+        <@sql_field_member_name field/>->initialize(
+                <#list field.typeParameters as parameter>
+                    <#if parameter.isExplicit>
+                <@sql_field_member_name field/>->${parameter.getterName}()<#rt>
+                    <#else>
+                ${parameter.expression}<#rt>
+                    </#if>
+                    <#if parameter?has_next>
+                <#lt>,
+                    </#if>
+                </#list>
+                <#lt>);
+    }
+            </#if>
+        </#list>
 }
 </#if>
-
-const ${field.optionalCppTypeName}& ${name}::Row::${field.getterName}() const
-{
-    return <@sql_field_member_name field/>;
-}
-
-void ${name}::Row::${field.setterName}(${field.optionalCppArgumentTypeName} <@sql_field_argument_name field/>)
-{
-    <@sql_field_member_name field/> = <@sql_field_argument_name field/>;
-}
-<#if !field.isSimpleType>
-
-void ${name}::Row::${field.setterName}(${field.optionalCppTypeName}&& <@sql_field_argument_name field/>)
-{
-    <@sql_field_member_name field/> = std::move(<@sql_field_argument_name field/>);
-}
-</#if>
-</#list>
 
 <@namespace_end package.path/>

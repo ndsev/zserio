@@ -5,8 +5,6 @@ set(ZSERIO_GENERATED_SOURCES
 
     ${ZSERIO_GEN_DIR}/explicit_parameters/explicit_blob_param/BlobParamTable.cpp
     ${ZSERIO_GEN_DIR}/explicit_parameters/explicit_blob_param/BlobParamTable.h
-    ${ZSERIO_GEN_DIR}/explicit_parameters/explicit_blob_param/BlobParamTableRow.cpp
-    ${ZSERIO_GEN_DIR}/explicit_parameters/explicit_blob_param/BlobParamTableRow.h
     ${ZSERIO_GEN_DIR}/explicit_parameters/explicit_blob_param/Header.cpp
     ${ZSERIO_GEN_DIR}/explicit_parameters/explicit_blob_param/Header.h
     ${ZSERIO_GEN_DIR}/explicit_parameters/explicit_blob_param/TestBlob.cpp
@@ -14,22 +12,16 @@ set(ZSERIO_GENERATED_SOURCES
 
     ${ZSERIO_GEN_DIR}/explicit_parameters/explicit_simple_param/SimpleParamTable.cpp
     ${ZSERIO_GEN_DIR}/explicit_parameters/explicit_simple_param/SimpleParamTable.h
-    ${ZSERIO_GEN_DIR}/explicit_parameters/explicit_simple_param/SimpleParamTableRow.cpp
-    ${ZSERIO_GEN_DIR}/explicit_parameters/explicit_simple_param/SimpleParamTableRow.h
     ${ZSERIO_GEN_DIR}/explicit_parameters/explicit_simple_param/TestBlob.cpp
     ${ZSERIO_GEN_DIR}/explicit_parameters/explicit_simple_param/TestBlob.h
 
     ${ZSERIO_GEN_DIR}/explicit_parameters/multiple_explicit_params/MultipleParamsTable.cpp
     ${ZSERIO_GEN_DIR}/explicit_parameters/multiple_explicit_params/MultipleParamsTable.h
-    ${ZSERIO_GEN_DIR}/explicit_parameters/multiple_explicit_params/MultipleParamsTableRow.cpp
-    ${ZSERIO_GEN_DIR}/explicit_parameters/multiple_explicit_params/MultipleParamsTableRow.h
     ${ZSERIO_GEN_DIR}/explicit_parameters/multiple_explicit_params/TestBlob.cpp
     ${ZSERIO_GEN_DIR}/explicit_parameters/multiple_explicit_params/TestBlob.h
 
     ${ZSERIO_GEN_DIR}/explicit_parameters/explicit_same_as_field/SameAsFieldTable.cpp
     ${ZSERIO_GEN_DIR}/explicit_parameters/explicit_same_as_field/SameAsFieldTable.h
-    ${ZSERIO_GEN_DIR}/explicit_parameters/explicit_same_as_field/SameAsFieldTableRow.cpp
-    ${ZSERIO_GEN_DIR}/explicit_parameters/explicit_same_as_field/SameAsFieldTableRow.h
     ${ZSERIO_GEN_DIR}/explicit_parameters/explicit_same_as_field/TestBlob.cpp
     ${ZSERIO_GEN_DIR}/explicit_parameters/explicit_same_as_field/TestBlob.h
 )
