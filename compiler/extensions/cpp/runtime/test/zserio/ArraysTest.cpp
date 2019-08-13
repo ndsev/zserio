@@ -50,15 +50,15 @@ DummyEnum valueToEnum(typename std::underlying_type<DummyEnum>::type rawValue)
 }
 
 template <>
-inline constexpr size_t bitSizeOf<DummyEnum>()
+inline constexpr size_t bitSizeOf<DummyEnum>(DummyEnum)
 {
     return UINT8_C(8);
 }
 
 template <>
-inline constexpr size_t initializeOffsets<DummyEnum>(size_t bitPosition)
+inline constexpr size_t initializeOffsets<DummyEnum>(size_t bitPosition, DummyEnum value)
 {
-    return bitPosition + UINT8_C(8);
+    return bitPosition + bitSizeOf(value);
 }
 
 template <>

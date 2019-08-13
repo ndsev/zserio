@@ -795,14 +795,14 @@ class EnumArrayTraits
 public:
     typedef T type;
 
-    static size_t bitSizeOf(size_t, type)
+    static size_t bitSizeOf(size_t, type value)
     {
-        return zserio::bitSizeOf<type>();
+        return zserio::bitSizeOf(value);
     }
 
-    static size_t initializeOffsets(size_t bitPosition, type)
+    static size_t initializeOffsets(size_t bitPosition, type value)
     {
-        return zserio::initializeOffsets<type>(bitPosition);
+        return zserio::initializeOffsets(bitPosition, value);
     }
 
     static void read(std::vector<type>& array, BitStreamReader& in, size_t)
@@ -810,12 +810,13 @@ public:
         array.push_back(zserio::read<type>(in));
     }
 
-    static void write(BitStreamWriter& out, type& value)
+    static void write(BitStreamWriter& out, type value)
     {
         zserio::write(out, value);
     }
 
-    static const bool IS_BITSIZEOF_CONSTANT = true;
+    // Be aware that T can be varuint, so bitSizeOf cannot return constant value.
+    static const bool IS_BITSIZEOF_CONSTANT = false;
 };
 
 template <typename T, typename ELEMENT_FACTORY = void>

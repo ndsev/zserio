@@ -37,11 +37,12 @@ const char* enumToString(T value)
     return zserio::EnumTraits<T>::names[enumToOrdinal(value)];
 }
 
+// Be aware that T can be varuint, so bitSizeOf and initializeOffsets cannot return constant value.
 template <typename T>
-constexpr size_t bitSizeOf();
+size_t bitSizeOf(T value);
 
 template <typename T>
-constexpr size_t initializeOffsets(size_t bitPosition);
+size_t initializeOffsets(size_t bitPosition, T value);
 
 template <typename T>
 T read(zserio::BitStreamReader& in);

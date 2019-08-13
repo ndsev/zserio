@@ -4,7 +4,11 @@
 <@include_guard_begin package.path, name/>
 
 #include <array>
+
 #include <zserio/Enums.h>
+<#if !bitSize??>
+#include <zserio/BitSizeOfCalculator.h>
+</#if>
 <@system_includes headerSystemIncludes, false/>
 
 <@user_includes headerUserIncludes, true/>
@@ -48,15 +52,19 @@ ${fullName} valueToEnum<${fullName}>(
         typename std::underlying_type<${fullName}>::type rawValue);
 
 template <>
-inline constexpr size_t bitSizeOf<${fullName}>()
+inline size_t bitSizeOf<${fullName}>(${fullName}<#if !bitSize??> value</#if>)
 {
+<#if bitSize??>
     return ${bitSize};
+<#else>
+    return zserio::bitSizeOf${runtimeFunction.suffix}(zserio::enumToValue(value));
+</#if>
 }
 
 template <>
-inline constexpr size_t initializeOffsets<${fullName}>(size_t bitPosition)
+inline size_t initializeOffsets<${fullName}>(size_t bitPosition, ${fullName} value)
 {
-    return bitPosition + ${bitSize};
+    return bitPosition + bitSizeOf(value);
 }
 
 template <>

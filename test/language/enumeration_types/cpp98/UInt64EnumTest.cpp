@@ -28,7 +28,7 @@ TEST(UInt64EnumTest, toEnum)
     ASSERT_EQ(DarkColor::NONE, DarkColor::toEnum(0));
     ASSERT_EQ(DarkColor::DARK_RED, DarkColor::toEnum(1));
     ASSERT_EQ(DarkColor::DARK_BLUE, DarkColor::toEnum(2));
-    ASSERT_EQ(DarkColor::DARK_BLACK, DarkColor::toEnum(7));
+    ASSERT_EQ(DarkColor::DARK_GREEN, DarkColor::toEnum(7));
 }
 
 TEST(UInt64EnumTest, toEnumFailure)

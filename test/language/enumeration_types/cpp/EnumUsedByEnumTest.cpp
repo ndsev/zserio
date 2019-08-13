@@ -23,15 +23,15 @@ protected:
     static const uint8_t VALUE_DARK_PINK;
 };
 
-    const uint8_t EnumUsedByEnumTest::VALUE_NONE          = 0x00;
-    const uint8_t EnumUsedByEnumTest::VALUE_LIGHT_RED     = 0x01;
-    const uint8_t EnumUsedByEnumTest::VALUE_LIGHT_GREEN   = 0x02;
-    const uint8_t EnumUsedByEnumTest::VALUE_LIGHT_BLUE    = 0x03;
-    const uint8_t EnumUsedByEnumTest::VALUE_LIGHT_PINK    = 0x04;
-    const uint8_t EnumUsedByEnumTest::VALUE_DARK_RED      = 0x11;
-    const uint8_t EnumUsedByEnumTest::VALUE_DARK_GREEN    = 0x12;
-    const uint8_t EnumUsedByEnumTest::VALUE_DARK_BLUE     = 0x13;
-    const uint8_t EnumUsedByEnumTest::VALUE_DARK_PINK     = 0x14;
+const uint8_t EnumUsedByEnumTest::VALUE_NONE          = 0x00;
+const uint8_t EnumUsedByEnumTest::VALUE_LIGHT_RED     = 0x01;
+const uint8_t EnumUsedByEnumTest::VALUE_LIGHT_GREEN   = 0x02;
+const uint8_t EnumUsedByEnumTest::VALUE_LIGHT_BLUE    = 0x03;
+const uint8_t EnumUsedByEnumTest::VALUE_LIGHT_PINK    = 0x04;
+const uint8_t EnumUsedByEnumTest::VALUE_DARK_RED      = 0x11;
+const uint8_t EnumUsedByEnumTest::VALUE_DARK_GREEN    = 0x12;
+const uint8_t EnumUsedByEnumTest::VALUE_DARK_BLUE     = 0x13;
+const uint8_t EnumUsedByEnumTest::VALUE_DARK_PINK     = 0x14;
 
 TEST_F(EnumUsedByEnumTest, lightColor)
 {

@@ -1,4 +1,4 @@
-package enumeration_types.uint64_enum;
+package enumeration_types.varuint_enum;
 
 import static org.junit.Assert.*;
 
@@ -11,7 +11,7 @@ import zserio.runtime.io.BitStreamReader;
 import zserio.runtime.io.ByteArrayBitStreamReader;
 import zserio.runtime.io.ByteArrayBitStreamWriter;
 
-public class UInt64EnumTest
+public class VarUIntEnumTest
 {
     @Test
     public void constructor()
@@ -37,8 +37,17 @@ public class UInt64EnumTest
     @Test
     public void bitSizeOf()
     {
-        final DarkColor darkColor = DarkColor.DARK_GREEN;
-        assertEquals(UINT64_ENUM_BITSIZEOF, darkColor.bitSizeOf());
+        final DarkColor darkColor1 = DarkColor.NONE;
+        assertEquals(DARK_COLOR_NONE_BITSIZEOF, darkColor1.bitSizeOf());
+
+        final DarkColor darkColor2 = DarkColor.DARK_RED;
+        assertEquals(DARK_COLOR_DARK_RED_BITSIZEOF, darkColor2.bitSizeOf());
+
+        final DarkColor darkColor3 = DarkColor.DARK_BLUE;
+        assertEquals(DARK_COLOR_DARK_BLUE_BITSIZEOF, darkColor3.bitSizeOf());
+
+        final DarkColor darkColor4 = DarkColor.DARK_GREEN;
+        assertEquals(DARK_COLOR_DARK_GREEN_BITSIZEOF, darkColor4.bitSizeOf());
     }
 
     @Test
@@ -48,7 +57,7 @@ public class UInt64EnumTest
         final ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter();
         darkColor.write(writer);
         final BitStreamReader reader = new ByteArrayBitStreamReader(writer.toByteArray());
-        final BigInteger readColor = reader.readBigInteger(UINT64_ENUM_BITSIZEOF);
+        final BigInteger readColor = reader.readVarUInt();
         assertEquals(readColor, darkColor.getValue());
     }
 
@@ -71,13 +80,16 @@ public class UInt64EnumTest
     @Test(expected=IllegalArgumentException.class)
     public void toEnumFailure()
     {
-        DarkColor.toEnum(BigInteger.valueOf(3));
+        DarkColor.toEnum(new BigInteger("3"));
     }
 
-    private static int UINT64_ENUM_BITSIZEOF = 64;
+    private static int DARK_COLOR_NONE_BITSIZEOF = 8;
+    private static int DARK_COLOR_DARK_RED_BITSIZEOF = 8;
+    private static int DARK_COLOR_DARK_BLUE_BITSIZEOF = 8;
+    private static int DARK_COLOR_DARK_GREEN_BITSIZEOF = 16;
 
     private static BigInteger NONE_VALUE = BigInteger.valueOf(0);
     private static BigInteger DARK_RED_VALUE = BigInteger.valueOf(1);
     private static BigInteger DARK_BLUE_VALUE = BigInteger.valueOf(2);
-    private static BigInteger DARK_GREEN_VALUE = BigInteger.valueOf(7);
+    private static BigInteger DARK_GREEN_VALUE = BigInteger.valueOf(255);
 }

@@ -436,7 +436,7 @@ public:
 ${I}endBitPosition += zserio::bitSizeOf<@array_runtime_function_suffix field/>(<@array_traits field/>, <#rt>
         <#lt><@compound_get_field field/>, endBitPosition);
     <#elseif field.isEnum>
-${I}endBitPosition += zserio::bitSizeOf<${field.cppTypeName}>();
+${I}endBitPosition += zserio::bitSizeOf(<@compound_get_field field/>);
     <#elseif field.bitSizeValue??>
 ${I}endBitPosition += ${field.bitSizeValue};
     <#elseif field.runtimeFunction??>
@@ -454,7 +454,7 @@ ${I}endBitPosition = zserio::initializeOffsets<@array_runtime_function_suffix fi
         <#lt><#if field.offset?? && field.offset.containsIndex>, <@offset_initializer_name field.name/>(*this)</#if><#rt>
         <#lt>);
     <#elseif field.isEnum>
-${I}endBitPosition = zserio::initializeOffsets<${field.cppTypeName}>(endBitPosition);
+${I}endBitPosition = zserio::initializeOffsets(endBitPosition, <@compound_get_field field/>);
     <#elseif field.bitSizeValue??>
 ${I}endBitPosition += ${field.bitSizeValue};
     <#elseif field.runtimeFunction??>

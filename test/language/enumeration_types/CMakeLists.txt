@@ -19,6 +19,9 @@ set(ZSERIO_GENERATED_SOURCES
 
     ${ZSERIO_GEN_DIR}/enumeration_types/uint8_enum/DarkColor.cpp
     ${ZSERIO_GEN_DIR}/enumeration_types/uint8_enum/DarkColor.h
+
+    ${ZSERIO_GEN_DIR}/enumeration_types/varuint_enum/DarkColor.cpp
+    ${ZSERIO_GEN_DIR}/enumeration_types/varuint_enum/DarkColor.h
 )
 
 zserio_add_library(TARGET enumeration_types_zs
@@ -36,6 +39,7 @@ add_test_sources(
     ${ZSERIO_CPP_DIR}/EnumUsedByEnumTest.cpp
     ${ZSERIO_CPP_DIR}/UInt64EnumTest.cpp
     ${ZSERIO_CPP_DIR}/UInt8EnumTest.cpp
+    ${ZSERIO_CPP_DIR}/VarUIntEnumTest.cpp
 )
 
 add_test_dependencies(enumeration_types_zs)

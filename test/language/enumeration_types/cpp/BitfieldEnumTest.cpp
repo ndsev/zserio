@@ -16,13 +16,25 @@ namespace bitfield_enum
 class BitfieldEnumTest : public ::testing::Test
 {
 protected:
-    static const size_t COLOR_BITSIZEOF = 3;
+    static const size_t COLOR_BITSIZEOF;
+
+    static const uint8_t NONE_VALUE;
+    static const uint8_t RED_VALUE;
+    static const uint8_t BLUE_VALUE;
+    static const uint8_t GREEN_VALUE;
 };
+
+const size_t BitfieldEnumTest::COLOR_BITSIZEOF = 3;
+
+const uint8_t BitfieldEnumTest::NONE_VALUE = 0;
+const uint8_t BitfieldEnumTest::RED_VALUE = 2;
+const uint8_t BitfieldEnumTest::BLUE_VALUE = 3;
+const uint8_t BitfieldEnumTest::GREEN_VALUE = 7;
 
 TEST_F(BitfieldEnumTest, EnumTraits)
 {
     ASSERT_EQ("NONE", zserio::EnumTraits<Color>::names[0]);
-    ASSERT_EQ("BLACK", zserio::EnumTraits<Color>::names[3]);
+    ASSERT_EQ("GREEN", zserio::EnumTraits<Color>::names[3]);
     ASSERT_EQ(4, zserio::EnumTraits<Color>::names.size());
 
     ASSERT_EQ(Color::RED, zserio::EnumTraits<Color>::values[1]);
@@ -32,14 +44,18 @@ TEST_F(BitfieldEnumTest, EnumTraits)
 
 TEST_F(BitfieldEnumTest, enumToOrdinal)
 {
+    ASSERT_EQ(0, zserio::enumToOrdinal(Color::NONE));
     ASSERT_EQ(1, zserio::enumToOrdinal(Color::RED));
-    ASSERT_EQ(3, zserio::enumToOrdinal(Color::BLACK));
+    ASSERT_EQ(2, zserio::enumToOrdinal(Color::BLUE));
+    ASSERT_EQ(3, zserio::enumToOrdinal(Color::GREEN));
 }
 
 TEST_F(BitfieldEnumTest, valueToEnum)
 {
-    ASSERT_EQ(Color::NONE, zserio::valueToEnum<Color>(0));
-    ASSERT_EQ(Color::BLUE, zserio::valueToEnum<Color>(3));
+    ASSERT_EQ(Color::NONE, zserio::valueToEnum<Color>(NONE_VALUE));
+    ASSERT_EQ(Color::RED, zserio::valueToEnum<Color>(RED_VALUE));
+    ASSERT_EQ(Color::BLUE, zserio::valueToEnum<Color>(BLUE_VALUE));
+    ASSERT_EQ(Color::GREEN, zserio::valueToEnum<Color>(GREEN_VALUE));
 }
 
 TEST_F(BitfieldEnumTest, valueToEnumFailure)
@@ -49,13 +65,13 @@ TEST_F(BitfieldEnumTest, valueToEnumFailure)
 
 TEST_F(BitfieldEnumTest, bitSizeOf)
 {
-    ASSERT_TRUE(zserio::bitSizeOf<Color>() == COLOR_BITSIZEOF);
+    ASSERT_TRUE(zserio::bitSizeOf(Color::NONE) == COLOR_BITSIZEOF);
 }
 
 TEST_F(BitfieldEnumTest, initializeOffsets)
 {
     const size_t bitPosition = 1;
-    ASSERT_TRUE(zserio::initializeOffsets<Color>(bitPosition) == bitPosition + COLOR_BITSIZEOF);
+    ASSERT_TRUE(zserio::initializeOffsets(bitPosition, Color::NONE) == bitPosition + COLOR_BITSIZEOF);
 }
 
 TEST_F(BitfieldEnumTest, read)
@@ -67,7 +83,7 @@ TEST_F(BitfieldEnumTest, read)
     zserio::BitStreamReader reader(writerBuffer, writerBufferByteSize);
 
     Color color(zserio::read<Color>(reader));
-    ASSERT_EQ(2, zserio::enumToValue(color));
+    ASSERT_EQ(RED_VALUE, zserio::enumToValue(color));
 }
 
 TEST_F(BitfieldEnumTest, write)
@@ -79,7 +95,7 @@ TEST_F(BitfieldEnumTest, write)
     size_t writerBufferByteSize;
     const uint8_t* writerBuffer = writer.getWriteBuffer(writerBufferByteSize);
     zserio::BitStreamReader reader(writerBuffer, writerBufferByteSize);
-    ASSERT_EQ(3, reader.readBits(COLOR_BITSIZEOF));
+    ASSERT_EQ(BLUE_VALUE, reader.readBits(COLOR_BITSIZEOF));
 }
 
 } // namespace bitfield_enum

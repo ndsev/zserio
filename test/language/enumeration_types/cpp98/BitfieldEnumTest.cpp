@@ -34,7 +34,7 @@ TEST_F(BitfieldEnumTest, valueConstructor)
 TEST_F(BitfieldEnumTest, bitStreamReaderConstructor)
 {
     zserio::BitStreamWriter writer;
-    writer.writeBits(static_cast<uint32_t>(Color::BLACK), COLOR_BITSIZEOF);
+    writer.writeBits(static_cast<uint32_t>(Color::GREEN), COLOR_BITSIZEOF);
     size_t writerBufferByteSize;
     const uint8_t* writerBuffer = writer.getWriteBuffer(writerBufferByteSize);
     zserio::BitStreamReader reader(writerBuffer, writerBufferByteSize);
@@ -52,19 +52,19 @@ TEST_F(BitfieldEnumTest, operatorFunction)
 
 TEST_F(BitfieldEnumTest, getValue)
 {
-    const Color color(Color::BLACK);
+    const Color color(Color::GREEN);
     ASSERT_EQ(7, color.getValue());
 }
 
 TEST_F(BitfieldEnumTest, bitSizeOf)
 {
-    const Color color(Color::BLACK);
+    const Color color(Color::GREEN);
     ASSERT_TRUE(color.bitSizeOf() == COLOR_BITSIZEOF);
 }
 
 TEST_F(BitfieldEnumTest, initializeOffsets)
 {
-    const Color color(Color::BLACK);
+    const Color color(Color::GREEN);
     const size_t bitPosition = 1;
     ASSERT_TRUE(color.initializeOffsets(bitPosition) == bitPosition + COLOR_BITSIZEOF);
 }
@@ -73,7 +73,7 @@ TEST_F(BitfieldEnumTest, operatorEquality)
 {
     const Color color1(Color::RED);
     const Color color2;
-    const Color color3(Color::BLACK);
+    const Color color3(Color::GREEN);
     const Color color4(Color::RED);
 
     ASSERT_FALSE(color1 == color2);
@@ -84,7 +84,7 @@ TEST_F(BitfieldEnumTest, operatorEquality)
 TEST_F(BitfieldEnumTest, operatorEnumEquality)
 {
     const Color color1(Color::RED);
-    ASSERT_FALSE(color1 == Color::BLACK);
+    ASSERT_FALSE(color1 == Color::GREEN);
     ASSERT_TRUE(color1 == Color::RED);
 }
 
@@ -92,7 +92,7 @@ TEST_F(BitfieldEnumTest, hashCode)
 {
     const Color color1(Color::RED);
     const Color color2;
-    const Color color3(Color::BLACK);
+    const Color color3(Color::GREEN);
     const Color color4(Color::RED);
 
     ASSERT_NE(color1.hashCode(), color2.hashCode());
@@ -131,7 +131,7 @@ TEST_F(BitfieldEnumTest, toString)
     ASSERT_EQ(std::string("NONE"), std::string(Color(Color::NONE).toString()));
     ASSERT_EQ(std::string("RED"), std::string(Color(Color::RED).toString()));
     ASSERT_EQ(std::string("BLUE"), std::string(Color(Color::BLUE).toString()));
-    ASSERT_EQ(std::string("BLACK"), std::string(Color(Color::BLACK).toString()));
+    ASSERT_EQ(std::string("GREEN"), std::string(Color(Color::GREEN).toString()));
 }
 
 TEST_F(BitfieldEnumTest, toEnum)
@@ -139,7 +139,7 @@ TEST_F(BitfieldEnumTest, toEnum)
     ASSERT_EQ(Color::NONE, Color::toEnum(0));
     ASSERT_EQ(Color::RED, Color::toEnum(2));
     ASSERT_EQ(Color::BLUE, Color::toEnum(3));
-    ASSERT_EQ(Color::BLACK, Color::toEnum(7));
+    ASSERT_EQ(Color::GREEN, Color::toEnum(7));
 }
 
 TEST_F(BitfieldEnumTest, toEnumFailure)

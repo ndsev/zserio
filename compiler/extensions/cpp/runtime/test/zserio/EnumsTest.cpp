@@ -63,13 +63,13 @@ inline Color valueToEnum<Color>(typename std::underlying_type<Color>::type rawVa
 }
 
 template <>
-inline constexpr size_t bitSizeOf<Color>()
+inline size_t bitSizeOf<Color>(Color)
 {
     return 3;
 }
 
 template <>
-inline constexpr size_t initializeOffsets<Color>(size_t bitPosition)
+inline size_t initializeOffsets<Color>(size_t bitPosition, Color)
 {
     return bitPosition + 3;
 }
@@ -129,13 +129,13 @@ TEST(EnumsTest, enumToString)
 
 TEST(EnumsTest, bitSizeOf)
 {
-    EXPECT_EQ(3, bitSizeOf<Color>());
+    EXPECT_EQ(3, bitSizeOf(Color::NONE));
 }
 
 TEST(EnumsTest, initializeOffsets)
 {
     const size_t bitPosition = 1;
-    EXPECT_EQ(3 + bitPosition, initializeOffsets<Color>(bitPosition));
+    EXPECT_EQ(3 + bitPosition, initializeOffsets(bitPosition, Color::NONE));
 }
 
 TEST(EnumsTest, writeAndRead)
