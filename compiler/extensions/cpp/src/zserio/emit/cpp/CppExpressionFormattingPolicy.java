@@ -166,7 +166,7 @@ public class CppExpressionFormattingPolicy extends DefaultExpressionFormattingPo
     @Override
     public UnaryExpressionFormatting getSum(Expression expr)
     {
-        return new UnaryExpressionFormatting("", ".sum()");
+        return new UnaryExpressionFormatting("zserio::sum(", ")");
     }
 
     @Override
@@ -215,9 +215,9 @@ public class CppExpressionFormattingPolicy extends DefaultExpressionFormattingPo
         {
             // subtype
             final Subtype subtype = (Subtype)identifierType;
-            final CppNativeType nativeEnumType = cppNativeTypeMapper.getCppType(subtype);
-            result.append(nativeEnumType.getFullName());
-            includeCollector.addCppIncludesForType(nativeEnumType);
+            final CppNativeType nativeSubtype = cppNativeTypeMapper.getCppType(subtype);
+            result.append(nativeSubtype.getFullName());
+            includeCollector.addCppIncludesForType(nativeSubtype);
         }
         else if (identifierType instanceof EnumType)
         {
