@@ -76,7 +76,7 @@ TEST_F(ParameterizedTypesArrayElementParamTest, fieldConstructor)
 {
     Database database;
     fillDatabase(database);
-    // initialize because Block::operator== touches header parameter
+    // initialize because Block::operator== touches header parameter (see last assert)
     database.initializeChildren();
 
     auto headers = database.getHeaders();
