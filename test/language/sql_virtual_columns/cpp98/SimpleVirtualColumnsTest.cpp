@@ -13,7 +13,6 @@ namespace sql_virtual_columns
 namespace simple_virtual_columns
 {
 
-
 class SimpleVirtualColumnsTest : public ::testing::Test
 {
 public:

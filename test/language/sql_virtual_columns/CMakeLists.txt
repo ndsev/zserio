@@ -4,16 +4,22 @@ set(ZSERIO_GENERATED_SOURCES
     ${ZSERIO_GEN_DIR}/sql_virtual_columns/hidden_virtual_columns/HiddenVirtualColumnsDb.h
     ${ZSERIO_GEN_DIR}/sql_virtual_columns/hidden_virtual_columns/HiddenVirtualColumnsTable.cpp
     ${ZSERIO_GEN_DIR}/sql_virtual_columns/hidden_virtual_columns/HiddenVirtualColumnsTable.h
-    ${ZSERIO_GEN_DIR}/sql_virtual_columns/hidden_virtual_columns/HiddenVirtualColumnsTableRow.cpp
-    ${ZSERIO_GEN_DIR}/sql_virtual_columns/hidden_virtual_columns/HiddenVirtualColumnsTableRow.h
 
     ${ZSERIO_GEN_DIR}/sql_virtual_columns/simple_virtual_columns/SimpleVirtualColumnsDb.cpp
     ${ZSERIO_GEN_DIR}/sql_virtual_columns/simple_virtual_columns/SimpleVirtualColumnsDb.h
     ${ZSERIO_GEN_DIR}/sql_virtual_columns/simple_virtual_columns/SimpleVirtualColumnsTable.cpp
     ${ZSERIO_GEN_DIR}/sql_virtual_columns/simple_virtual_columns/SimpleVirtualColumnsTable.h
-    ${ZSERIO_GEN_DIR}/sql_virtual_columns/simple_virtual_columns/SimpleVirtualColumnsTableRow.cpp
-    ${ZSERIO_GEN_DIR}/sql_virtual_columns/simple_virtual_columns/SimpleVirtualColumnsTableRow.h
 )
+
+if (NOT ${ZSERIO_CPP_STANDARD} STREQUAL c++11)
+    set(ZSERIO_GENERATED_SOURCES
+        ${ZSERIO_GENERATED_SOURCES}
+        ${ZSERIO_GEN_DIR}/sql_virtual_columns/hidden_virtual_columns/HiddenVirtualColumnsTableRow.cpp
+        ${ZSERIO_GEN_DIR}/sql_virtual_columns/hidden_virtual_columns/HiddenVirtualColumnsTableRow.h
+        ${ZSERIO_GEN_DIR}/sql_virtual_columns/simple_virtual_columns/SimpleVirtualColumnsTableRow.cpp
+        ${ZSERIO_GEN_DIR}/sql_virtual_columns/simple_virtual_columns/SimpleVirtualColumnsTableRow.h
+    )
+endif ()
 
 zserio_add_library(TARGET sql_virtual_columns_zs
     SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/zs

@@ -30,7 +30,7 @@ public:
     }
 
 protected:
-    static void fillHiddenVirtualColumnsTableRow(HiddenVirtualColumnsTableRow& row, int64_t docId,
+    static void fillHiddenVirtualColumnsTableRow(HiddenVirtualColumnsTable::Row& row, int64_t docId,
             const std::string& searchTags)
     {
         row.setDocId(docId);
@@ -41,20 +41,20 @@ protected:
         row.setFrequency(frequency);
     }
 
-    static void fillHiddenVirtualColumnsTableRows(std::vector<HiddenVirtualColumnsTableRow>& rows)
+    static void fillHiddenVirtualColumnsTableRows(std::vector<HiddenVirtualColumnsTable::Row>& rows)
     {
         rows.clear();
         for (int32_t id = 0; id < NUM_TABLE_ROWS; ++id)
         {
             const std::string searchTags = "Search Tags" + zserio::convertToString(id);
-            HiddenVirtualColumnsTableRow row;
+            HiddenVirtualColumnsTable::Row row;
             fillHiddenVirtualColumnsTableRow(row, id, searchTags);
             rows.push_back(row);
         }
     }
 
-    static void checkHiddenVirtualColumnsTableRow(const HiddenVirtualColumnsTableRow& row1,
-            const HiddenVirtualColumnsTableRow& row2)
+    static void checkHiddenVirtualColumnsTableRow(const HiddenVirtualColumnsTable::Row& row1,
+            const HiddenVirtualColumnsTable::Row& row2)
     {
         ASSERT_EQ(row1.getDocId(), row2.getDocId());
         ASSERT_EQ(row1.getLanguageCode(), row2.getLanguageCode());
@@ -62,8 +62,8 @@ protected:
         ASSERT_EQ(row1.getFrequency(), row2.getFrequency());
     }
 
-    static void checkHiddenVirtualColumnsTableRows(const std::vector<HiddenVirtualColumnsTableRow>& rows1,
-            const std::vector<HiddenVirtualColumnsTableRow>& rows2)
+    static void checkHiddenVirtualColumnsTableRows(const std::vector<HiddenVirtualColumnsTable::Row>& rows1,
+            const std::vector<HiddenVirtualColumnsTable::Row>& rows2)
     {
         ASSERT_EQ(rows1.size(), rows2.size());
         for (size_t i = 0; i < rows1.size(); ++i)
@@ -134,12 +134,14 @@ TEST_F(HiddenVirtualColumnsTest, readWithoutCondition)
 {
     HiddenVirtualColumnsTable& testTable = m_database->getHiddenVirtualColumnsTable();
 
-    std::vector<HiddenVirtualColumnsTableRow> writtenRows;
+    std::vector<HiddenVirtualColumnsTable::Row> writtenRows;
     fillHiddenVirtualColumnsTableRows(writtenRows);
     testTable.write(writtenRows);
 
-    std::vector<HiddenVirtualColumnsTableRow> readRows;
-    testTable.read(readRows);
+    std::vector<HiddenVirtualColumnsTable::Row> readRows;
+    auto reader = testTable.createReader();
+    while (reader.hasNext())
+        readRows.push_back(reader.next());
     checkHiddenVirtualColumnsTableRows(writtenRows, readRows);
 }
 
@@ -147,13 +149,15 @@ TEST_F(HiddenVirtualColumnsTest, readWithCondition)
 {
     HiddenVirtualColumnsTable& testTable = m_database->getHiddenVirtualColumnsTable();
 
-    std::vector<HiddenVirtualColumnsTableRow> writtenRows;
+    std::vector<HiddenVirtualColumnsTable::Row> writtenRows;
     fillHiddenVirtualColumnsTableRows(writtenRows);
     testTable.write(writtenRows);
 
     const std::string condition = "searchTags='Search Tags1'";
-    std::vector<HiddenVirtualColumnsTableRow> readRows;
-    testTable.read(condition, readRows);
+    std::vector<HiddenVirtualColumnsTable::Row> readRows;
+    auto reader = testTable.createReader(condition);
+    while (reader.hasNext())
+        readRows.push_back(reader.next());
     ASSERT_EQ(1, readRows.size());
 
     const size_t expectedRowNum = 1;
@@ -164,18 +168,20 @@ TEST_F(HiddenVirtualColumnsTest, update)
 {
     HiddenVirtualColumnsTable& testTable = m_database->getHiddenVirtualColumnsTable();
 
-    std::vector<HiddenVirtualColumnsTableRow> writtenRows;
+    std::vector<HiddenVirtualColumnsTable::Row> writtenRows;
     fillHiddenVirtualColumnsTableRows(writtenRows);
     testTable.write(writtenRows);
 
     const int64_t updateDocId = 1;
-    HiddenVirtualColumnsTableRow updateRow;
+    HiddenVirtualColumnsTable::Row updateRow;
     fillHiddenVirtualColumnsTableRow(updateRow, updateDocId, "Updated Search Tags");
     const std::string updateCondition = "docId='" + zserio::convertToString(updateDocId) + "'";
     testTable.update(updateRow, updateCondition);
 
-    std::vector<HiddenVirtualColumnsTableRow> readRows;
-    testTable.read(updateCondition, readRows);
+    std::vector<HiddenVirtualColumnsTable::Row> readRows;
+    auto reader = testTable.createReader(updateCondition);
+    while (reader.hasNext())
+        readRows.push_back(reader.next());
     ASSERT_EQ(1, readRows.size());
 
     checkHiddenVirtualColumnsTableRow(updateRow, readRows[0]);
