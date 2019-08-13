@@ -1,0 +1,15 @@
+// suppress "Member variable 'X' is not initialized in the constructor."
+uninitMemberVar:*/Block.cpp
+uninitMemberVar:*/Block.h
+uninitMemberVar:*/BlockHeader.cpp
+uninitMemberVar:*/Database.cpp
+uninitMemberVar:*/Database.h
+uninitMemberVar:*/Item.cpp
+uninitMemberVar:*/Item.h
+uninitMemberVar:*/ItemChoice.cpp
+uninitMemberVar:*/ItemChoice.h
+uninitMemberVar:*/ItemChoiceHolder.cpp
+uninitMemberVar:*/ItemChoiceHolder.h
+uninitMemberVar:*/SubtypedBitfieldParam.cpp
+uninitMemberVar:*/SubtypedBitfieldParamHolder.cpp
+uninitMemberVar:*/SubtypedBitfieldParamHolder.h
