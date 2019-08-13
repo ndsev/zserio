@@ -4,8 +4,6 @@ set(ZSERIO_GENERATED_SOURCES
     ${ZSERIO_GEN_DIR}/sql_types/SqlTypesDb.h
     ${ZSERIO_GEN_DIR}/sql_types/SqlTypesTable.cpp
     ${ZSERIO_GEN_DIR}/sql_types/SqlTypesTable.h
-    ${ZSERIO_GEN_DIR}/sql_types/SqlTypesTableRow.cpp
-    ${ZSERIO_GEN_DIR}/sql_types/SqlTypesTableRow.h
     ${ZSERIO_GEN_DIR}/sql_types/TestChoice.cpp
     ${ZSERIO_GEN_DIR}/sql_types/TestChoice.h
     ${ZSERIO_GEN_DIR}/sql_types/TestEnum.cpp
@@ -15,6 +13,14 @@ set(ZSERIO_GENERATED_SOURCES
     ${ZSERIO_GEN_DIR}/sql_types/TestUnion.cpp
     ${ZSERIO_GEN_DIR}/sql_types/TestUnion.h
 )
+
+if (NOT ${ZSERIO_CPP_STANDARD} STREQUAL c++11)
+    set(ZSERIO_GENERATED_SOURCES
+        ${ZSERIO_GENERATED_SOURCES}
+        ${ZSERIO_GEN_DIR}/sql_types/SqlTypesTableRow.cpp
+        ${ZSERIO_GEN_DIR}/sql_types/SqlTypesTableRow.h
+    )
+endif ()
 
 zserio_add_library(TARGET sql_types_zs
     SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/zs
