@@ -54,9 +54,12 @@ protected:
         optionalMemberAlignment.setField(field);
     }
 
-    static const size_t WITH_OPTIONAL_MEMBER_ALIGNMENT_BIT_SIZE = 96;
-    static const size_t WITHOUT_OPTIONAL_MEMBER_ALIGNMENT_BIT_SIZE = 33;
+    static const size_t WITH_OPTIONAL_MEMBER_ALIGNMENT_BIT_SIZE;
+    static const size_t WITHOUT_OPTIONAL_MEMBER_ALIGNMENT_BIT_SIZE;
 };
+
+const size_t OptionalMemberAlignmentTest::WITH_OPTIONAL_MEMBER_ALIGNMENT_BIT_SIZE = 96;
+const size_t OptionalMemberAlignmentTest::WITHOUT_OPTIONAL_MEMBER_ALIGNMENT_BIT_SIZE = 33;
 
 TEST_F(OptionalMemberAlignmentTest, readWithOptional)
 {
