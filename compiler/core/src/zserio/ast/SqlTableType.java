@@ -129,6 +129,10 @@ public class SqlTableType extends CompoundType
             checkPrimaryKeyConstraint();
             checkUniqueConstraint();
         }
+        else
+        {
+            checkVirtualTableFields();
+        }
     }
 
     private boolean isVirtual()
@@ -191,6 +195,12 @@ public class SqlTableType extends CompoundType
                         tableField.getName() + "'!");
             }
         }
+    }
+
+    private void checkVirtualTableFields()
+    {
+        if (getFields().isEmpty())
+            throw new ParserException(this, "Virtual table must have at least one field!");
     }
 
     private void checkPrimaryKeyConstraint()

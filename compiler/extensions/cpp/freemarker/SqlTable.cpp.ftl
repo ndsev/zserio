@@ -220,7 +220,7 @@ void ${name}::update(<#if needsParameterProvider>IParameterProvider& parameterPr
 }
 
 void ${name}::writeRow(<#if needsParameterProvider>IParameterProvider& parameterProvider, </#if><#rt>
-        <#lt>Row&<#if fields?has_content> row</#if>, sqlite3_stmt&<#if fields?has_content> statement</#if>)
+        <#lt>Row& row, sqlite3_stmt& statement)
 {
 <#if needsChildrenInitialization>
     row.initializeChildren(<#if needsParameterProvider>parameterProvider</#if>);
@@ -230,9 +230,8 @@ void ${name}::writeRow(<#if needsParameterProvider>IParameterProvider& parameter
     row.initializeOffsets();
 
 </#if>
-    <#if fields?has_content>
     int result;
-    </#if>
+
     <#list fields as field>
     // field ${field.name}
     if (!row.${field.getterName}())

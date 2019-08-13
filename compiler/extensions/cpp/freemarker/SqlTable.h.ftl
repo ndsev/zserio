@@ -11,9 +11,7 @@
 <@system_includes headerSystemIncludes, false/>
 #include <zserio/SqliteConnection.h>
 #include <zserio/SqliteFinalizer.h>
-<#if fields?has_content>
 #include <zserio/OptionalHolder.h>
-</#if>
 
 <@user_includes headerUserIncludes, false/>
 

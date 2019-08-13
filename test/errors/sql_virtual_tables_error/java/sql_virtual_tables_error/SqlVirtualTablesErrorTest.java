@@ -18,9 +18,16 @@ public class SqlVirtualTablesErrorTest
     }
 
     @Test
+    public void noFields()
+    {
+        final String error = "no_fields_error.zs:3:11: Virtual table must have at least one field!";
+        assertTrue(zserioErrors.isPresent(error));
+    }
+
+    @Test
     public void withoutRowId()
     {
-        final String error = ":12:5: Virtual table cannot be without rowid!";
+        final String error = "without_rowid_error.zs:12:5: Virtual table cannot be without rowid!";
         assertTrue(zserioErrors.isPresent(error));
     }
 
