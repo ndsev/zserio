@@ -1,5 +1,9 @@
 set(ZSERIO_GEN_DIR ${CMAKE_CURRENT_BINARY_DIR}/gen)
 set(ZSERIO_GENERATED_SOURCES
+    ${ZSERIO_GEN_DIR}/enumeration_types/bitfield_const_enum/Color.cpp
+    ${ZSERIO_GEN_DIR}/enumeration_types/bitfield_const_enum/Color.h
+    ${ZSERIO_GEN_DIR}/enumeration_types/bitfield_const_enum/NUM_ENUM_BITS.h
+
     ${ZSERIO_GEN_DIR}/enumeration_types/bitfield_enum/Color.cpp
     ${ZSERIO_GEN_DIR}/enumeration_types/bitfield_enum/Color.h
 
@@ -34,6 +38,7 @@ zserio_add_library(TARGET enumeration_types_zs
 )
 
 add_test_sources(
+    ${ZSERIO_CPP_DIR}/BitfieldConstEnumTest.cpp
     ${ZSERIO_CPP_DIR}/BitfieldEnumTest.cpp
     ${ZSERIO_CPP_DIR}/EnumDefinedByConstantTest.cpp
     ${ZSERIO_CPP_DIR}/EnumUsedByEnumTest.cpp

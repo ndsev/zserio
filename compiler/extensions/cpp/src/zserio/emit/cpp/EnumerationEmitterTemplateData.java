@@ -3,11 +3,9 @@ package zserio.emit.cpp;
 import java.util.ArrayList;
 import java.util.List;
 
-import zserio.ast.BitFieldType;
 import zserio.ast.EnumItem;
 import zserio.ast.EnumType;
 import zserio.ast.IntegerType;
-import zserio.ast.StdIntegerType;
 import zserio.emit.common.ExpressionFormatter;
 import zserio.emit.common.ZserioEmitException;
 import zserio.emit.cpp.types.NativeIntegralType;
@@ -27,7 +25,6 @@ public class EnumerationEmitterTemplateData extends UserTypeTemplateData
 
         baseCppTypeName = nativeBaseType.getFullName();
 
-        bitSize = createBitSize(enumType);
         final ExpressionFormatter cppExpressionFormatter = context.getExpressionFormatter(this);
         runtimeFunction = CppRuntimeFunctionDataCreator.createData(enumBaseType, cppExpressionFormatter);
 
@@ -40,11 +37,6 @@ public class EnumerationEmitterTemplateData extends UserTypeTemplateData
     public String getBaseCppTypeName()
     {
         return baseCppTypeName;
-    }
-
-    public String getBitSize()
-    {
-        return bitSize;
     }
 
     public RuntimeFunctionTemplateData getRuntimeFunction()
@@ -88,25 +80,7 @@ public class EnumerationEmitterTemplateData extends UserTypeTemplateData
         private final String value;
     };
 
-    private static String createBitSize(EnumType enumType) throws ZserioEmitException
-    {
-        final IntegerType integerBaseType = enumType.getIntegerBaseType();
-        Integer bitSize = null;
-        if (integerBaseType instanceof StdIntegerType)
-        {
-            bitSize = ((StdIntegerType)integerBaseType).getBitSize();
-        }
-        else if (integerBaseType instanceof BitFieldType)
-        {
-            bitSize = ((BitFieldType)integerBaseType).getBitSize();
-        }
-
-        return (bitSize != null) ? CppLiteralFormatter.formatUInt8Literal(bitSize) : null;
-    }
-
     private final String baseCppTypeName;
-    private final String bitSize;
-
-    private final RuntimeFunctionTemplateData   runtimeFunction;
-    private final List<EnumItemData>            items;
+    private final RuntimeFunctionTemplateData runtimeFunction;
+    private final List<EnumItemData> items;
 }

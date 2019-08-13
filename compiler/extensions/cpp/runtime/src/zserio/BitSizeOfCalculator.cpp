@@ -114,7 +114,7 @@ static size_t bitSizeOfVarIntImpl(uint64_t value, const uint64_t* maxValues, siz
     return bytesToBits(byteSize);
 }
 
-template<typename T>
+template <typename T>
 static uint64_t convertToAbsValue(T value)
 {
     return static_cast<uint64_t>((value < 0) ? -value : value);

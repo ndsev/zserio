@@ -1,9 +1,12 @@
 <#include "FileHeader.inc.ftl">
 <@file_header generatorDescription/>
 
-#include "zserio/CppRuntimeException.h"
-#include "zserio/StringConvertUtil.h"
+#include <zserio/StringConvertUtil.h>
+#include <zserio/CppRuntimeException.h>
+<@system_includes cppSystemIncludes, false/>
+
 #include "<@include_path package.path, "${name}.h"/>"
+<@user_includes cppUserIncludes, false/>
 
 // This is full specialization for ${name} enumeration.
 <@namespace_begin ["zserio"]/>
@@ -11,8 +14,8 @@
 constexpr std::array<const char*, ${items?size}> EnumTraits<${fullName}>::names;
 constexpr std::array<${fullName}, ${items?size}> EnumTraits<${fullName}>::values;
 
-template<>
-size_t enumToOrdinal<${fullName}>(${fullName} value)
+template <>
+size_t enumToOrdinal(${fullName} value)
 {
     switch (value)
     {
@@ -26,7 +29,7 @@ size_t enumToOrdinal<${fullName}>(${fullName} value)
     }
 }
 
-template<>
+template <>
 ${fullName} valueToEnum(
         typename std::underlying_type<${fullName}>::type rawValue)
 {
@@ -40,6 +43,37 @@ ${fullName} valueToEnum(
         throw zserio::CppRuntimeException("Unknown value for enumeration ${name}: " +
                 zserio::convertToString(rawValue) + "!");
     }
+}
+
+template <>
+size_t bitSizeOf(${fullName}<#if !runtimeFunction.arg??> value</#if>)
+{
+<#if runtimeFunction.arg??>
+    return ${runtimeFunction.arg};
+<#else>
+    return zserio::bitSizeOf${runtimeFunction.suffix}(zserio::enumToValue(value));
+</#if>
+}
+
+template <>
+size_t initializeOffsets(size_t bitPosition, ${fullName} value)
+{
+    return bitPosition + bitSizeOf(value);
+}
+
+template <>
+${fullName} read(zserio::BitStreamReader& in)
+{
+    return valueToEnum<${fullName}>(
+            static_cast<typename std::underlying_type<${fullName}>::type>(
+                    in.read${runtimeFunction.suffix}(${runtimeFunction.arg!})));
+}
+
+template <>
+void write<${fullName}>(BitStreamWriter& out, ${fullName} value)
+{
+    out.write${runtimeFunction.suffix}(enumToValue(value)<#rt>
+            <#lt><#if runtimeFunction.arg??>, ${runtimeFunction.arg}</#if>);
 }
 
 <@namespace_end ["zserio"]/>

@@ -253,103 +253,103 @@ void writeAlignedAuto(const ARRAY_TRAITS& arrayTraits, std::vector<typename ARRA
 namespace detail
 {
 
-template<typename T>
+template <typename T>
 T read_bits(BitStreamReader& in, uint8_t numBits);
 
-template<>
+template <>
 inline int8_t read_bits<int8_t>(BitStreamReader& in, uint8_t numBits)
 {
     return static_cast<int8_t>(in.readSignedBits(numBits));
 }
 
-template<>
+template <>
 inline int16_t read_bits<int16_t>(BitStreamReader& in, uint8_t numBits)
 {
     return static_cast<int16_t>(in.readSignedBits(numBits));
 }
 
-template<>
+template <>
 inline int32_t read_bits<int32_t>(BitStreamReader& in, uint8_t numBits)
 {
     return in.readSignedBits(numBits);
 }
 
-template<>
+template <>
 inline int64_t read_bits<int64_t>(BitStreamReader& in, uint8_t numBits)
 {
     return in.readSignedBits64(numBits);
 }
 
-template<>
+template <>
 inline uint8_t read_bits<uint8_t>(BitStreamReader& in, uint8_t numBits)
 {
     return static_cast<uint8_t>(in.readBits(numBits));
 }
 
-template<>
+template <>
 inline uint16_t read_bits<uint16_t>(BitStreamReader& in, uint8_t numBits)
 {
     return static_cast<uint16_t>(in.readBits(numBits));
 }
 
-template<>
+template <>
 inline uint32_t read_bits<uint32_t>(BitStreamReader& in, uint8_t numBits)
 {
     return in.readBits(numBits);
 }
 
-template<>
+template <>
 inline uint64_t read_bits<uint64_t>(BitStreamReader& in, uint8_t numBits)
 {
     return in.readBits64(numBits);
 }
 
-template<typename T>
+template <typename T>
 void write_bits(BitStreamWriter& out, T value, uint8_t numBits);
 
-template<>
+template <>
 inline void write_bits<int8_t>(BitStreamWriter& out, int8_t value, uint8_t numBits)
 {
     out.writeSignedBits(static_cast<int32_t>(value), numBits);
 }
 
-template<>
+template <>
 inline void write_bits<int16_t>(BitStreamWriter& out, int16_t value, uint8_t numBits)
 {
     out.writeSignedBits(static_cast<int32_t>(value), numBits);
 }
 
-template<>
+template <>
 inline void write_bits<int32_t>(BitStreamWriter& out, int32_t value, uint8_t numBits)
 {
     out.writeSignedBits(value, numBits);
 }
 
-template<>
+template <>
 inline void write_bits<int64_t>(BitStreamWriter& out, int64_t value, uint8_t numBits)
 {
     out.writeSignedBits64(value, numBits);
 }
 
-template<>
+template <>
 inline void write_bits<uint8_t>(BitStreamWriter& out, uint8_t value, uint8_t numBits)
 {
     out.writeBits(static_cast<uint32_t>(value), numBits);
 }
 
-template<>
+template <>
 inline void write_bits<uint16_t>(BitStreamWriter& out, uint16_t value, uint8_t numBits)
 {
     out.writeBits(static_cast<uint32_t>(value), numBits);
 }
 
-template<>
+template <>
 inline void write_bits<uint32_t>(BitStreamWriter& out, uint32_t value, uint8_t numBits)
 {
     out.writeBits(value, numBits);
 }
 
-template<>
+template <>
 inline void write_bits<uint64_t>(BitStreamWriter& out, uint64_t value, uint8_t numBits)
 {
     out.writeBits64(value, numBits);

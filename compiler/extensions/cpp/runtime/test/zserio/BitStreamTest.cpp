@@ -20,7 +20,7 @@ public:
     }
 
 protected:
-    template<typename T, size_t N, typename U>
+    template <typename T, size_t N, typename U>
     void testBitStreamValues(const T (&values)[N], void (BitStreamWriter::*writerMethod)(U value),
                              T (BitStreamReader::*readerMethod)())
     {

@@ -26,7 +26,7 @@ enum class ${name} : ${baseCppTypeName}
 // This is full specialization for ${name} enumeration.
 <@namespace_begin ["zserio"]/>
 
-template<>
+template <>
 struct EnumTraits<${fullName}>
 {
     static constexpr std::array<const char*, ${items?size}> names =
@@ -44,43 +44,24 @@ struct EnumTraits<${fullName}>
     }};
 };
 
-template<>
+template <>
 size_t enumToOrdinal<${fullName}>(${fullName} value);
 
-template<>
+template <>
 ${fullName} valueToEnum<${fullName}>(
         typename std::underlying_type<${fullName}>::type rawValue);
 
 template <>
-inline size_t bitSizeOf<${fullName}>(${fullName}<#if !bitSize??> value</#if>)
-{
-<#if bitSize??>
-    return ${bitSize};
-<#else>
-    return zserio::bitSizeOf${runtimeFunction.suffix}(zserio::enumToValue(value));
-</#if>
-}
+size_t bitSizeOf<${fullName}>(${fullName}<#if !runtimeFunction.arg??> value</#if>);
 
 template <>
-inline size_t initializeOffsets<${fullName}>(size_t bitPosition, ${fullName} value)
-{
-    return bitPosition + bitSizeOf(value);
-}
+size_t initializeOffsets<${fullName}>(size_t bitPosition, ${fullName} value);
 
 template <>
-inline ${fullName} read<${fullName}>(zserio::BitStreamReader& in)
-{
-    return valueToEnum<${fullName}>(
-            static_cast<typename std::underlying_type<${fullName}>::type>(
-                    in.read${runtimeFunction.suffix}(${runtimeFunction.arg!})));
-}
+${fullName} read<${fullName}>(zserio::BitStreamReader& in);
 
 template <>
-inline void write<${fullName}>(BitStreamWriter& out, ${fullName} value)
-{
-    out.write${runtimeFunction.suffix}(enumToValue(value)<#rt>
-            <#lt><#if runtimeFunction.arg??>, ${runtimeFunction.arg}</#if>);
-}
+void write<${fullName}>(BitStreamWriter& out, ${fullName} value);
 
 <@namespace_end ["zserio"]/>
 

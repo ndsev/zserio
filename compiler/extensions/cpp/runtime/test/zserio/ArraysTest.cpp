@@ -34,7 +34,7 @@ enum class DummyEnum : uint8_t
     VALUE3 = UINT8_C(2)
 };
 
-template<>
+template <>
 DummyEnum valueToEnum(typename std::underlying_type<DummyEnum>::type rawValue)
 {
     switch (rawValue)

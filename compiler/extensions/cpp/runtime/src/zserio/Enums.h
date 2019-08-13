@@ -14,24 +14,24 @@
 namespace zserio
 {
 
-template<typename T>
+template <typename T>
 struct EnumTraits
 {
 };
 
-template<typename T>
+template <typename T>
 size_t enumToOrdinal(T value);
 
-template<typename T>
+template <typename T>
 T valueToEnum(typename std::underlying_type<T>::type rawValue);
 
-template<typename T>
+template <typename T>
 constexpr typename std::underlying_type<T>::type enumToValue(T value)
 {
     return static_cast<typename std::underlying_type<T>::type>(value);
 }
 
-template<typename T>
+template <typename T>
 const char* enumToString(T value)
 {
     return zserio::EnumTraits<T>::names[enumToOrdinal(value)];

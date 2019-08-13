@@ -1,6 +1,8 @@
-package enumeration_types.bitfield_enum;
+package enumeration_types.bitfield_const_enum;
 
-enum bit:3 Color
+const uint8 NUM_ENUM_BITS = 5;
+
+enum bit<NUM_ENUM_BITS> Color
 {
     NONE  = 000b,
     RED   = 010b,

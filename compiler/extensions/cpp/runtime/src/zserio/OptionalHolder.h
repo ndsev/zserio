@@ -121,7 +121,7 @@ private:
     unsigned char* m_heap;
 };
 
-template<typename T, typename STORAGE>
+template <typename T, typename STORAGE>
 class optional_holder
 {
 public:

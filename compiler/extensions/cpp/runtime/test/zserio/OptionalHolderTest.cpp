@@ -64,7 +64,7 @@ protected:
         ASSERT_EQ(origValues, *optional);
     }
 
-    template <template<class> class OPTIONAL_HOLDER>
+    template <template <class> class OPTIONAL_HOLDER>
     void copyConstructorTest()
     {
         OPTIONAL_HOLDER<int> optional;
@@ -82,7 +82,7 @@ protected:
         ASSERT_EQ(*optionalVector, *optionalVectorCopy);
     }
 
-    template <template<class> class OPTIONAL_HOLDER>
+    template <template <class> class OPTIONAL_HOLDER>
     void copyAssignmentOperatorTest()
     {
         OPTIONAL_HOLDER<int> optional;
@@ -166,7 +166,7 @@ protected:
         ASSERT_FALSE(optional.hasValue());
     }
 
-    template <template<class> class OPTIONAL_HOLDER>
+    template <template <class> class OPTIONAL_HOLDER>
     void equalOperatorTest()
     {
         OPTIONAL_HOLDER<int> optional1;
@@ -182,7 +182,7 @@ protected:
         ASSERT_EQ(false, optional1 == optional4);
     }
 
-    template <template<class> class OPTIONAL_HOLDER>
+    template <template <class> class OPTIONAL_HOLDER>
     void setGetTest()
     {
         OPTIONAL_HOLDER<int> optionalInt;
@@ -209,7 +209,7 @@ protected:
         ASSERT_EQ(intValue, optionalObject->getValue());
     }
 
-    template <template<class> class OPTIONAL_HOLDER>
+    template <template <class> class OPTIONAL_HOLDER>
     void hasValueTest()
     {
         OPTIONAL_HOLDER<int> optionalInt;
@@ -220,7 +220,7 @@ protected:
         ASSERT_EQ(true, optionalInt.hasValue());
     }
 
-    template <template<class> class OPTIONAL_HOLDER>
+    template <template <class> class OPTIONAL_HOLDER>
     void constGetTest()
     {
         const int intValue = 0xDEAD;

@@ -17,7 +17,7 @@ enum class Color : uint8_t
     BLACK = UINT8_C(7)
 };
 
-template<>
+template <>
 struct EnumTraits<Color>
 {
     static constexpr std::array<const char*, 4> names = {{"NONE", "RED", "BLUE", "BLACK"}};
@@ -27,7 +27,7 @@ struct EnumTraits<Color>
 constexpr std::array<const char*, 4> EnumTraits<Color>::names;
 constexpr std::array<Color, 4> EnumTraits<Color>::values;
 
-template<>
+template <>
 inline size_t enumToOrdinal<Color>(Color value)
 {
     switch (value)
@@ -46,7 +46,7 @@ inline size_t enumToOrdinal<Color>(Color value)
     }
 }
 
-template<>
+template <>
 inline Color valueToEnum<Color>(typename std::underlying_type<Color>::type rawValue)
 {
     switch (rawValue)
