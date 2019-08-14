@@ -37,8 +37,8 @@ const uint64_t VarUIntEnumTest::DARK_GREEN_VALUE = 255;
 
 TEST_F(VarUIntEnumTest, EnumTraits)
 {
-    ASSERT_EQ("NONE", zserio::EnumTraits<DarkColor>::names[0]);
-    ASSERT_EQ("DARK_GREEN", zserio::EnumTraits<DarkColor>::names[3]);
+    ASSERT_EQ(std::string("NONE"), zserio::EnumTraits<DarkColor>::names[0]);
+    ASSERT_EQ(std::string("DARK_GREEN"), zserio::EnumTraits<DarkColor>::names[3]);
     ASSERT_EQ(4, zserio::EnumTraits<DarkColor>::names.size());
 
     ASSERT_EQ(DarkColor::DARK_RED, zserio::EnumTraits<DarkColor>::values[1]);

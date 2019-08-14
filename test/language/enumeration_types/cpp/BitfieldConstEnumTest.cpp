@@ -33,8 +33,8 @@ const uint8_t BitfieldConstEnumTest::GREEN_VALUE = 7;
 
 TEST_F(BitfieldConstEnumTest, EnumTraits)
 {
-    ASSERT_EQ("NONE", zserio::EnumTraits<Color>::names[0]);
-    ASSERT_EQ("GREEN", zserio::EnumTraits<Color>::names[3]);
+    ASSERT_EQ(std::string("NONE"), zserio::EnumTraits<Color>::names[0]);
+    ASSERT_EQ(std::string("GREEN"), zserio::EnumTraits<Color>::names[3]);
     ASSERT_EQ(4, zserio::EnumTraits<Color>::names.size());
 
     ASSERT_EQ(Color::RED, zserio::EnumTraits<Color>::values[1]);

@@ -119,8 +119,6 @@ TEST_F(OptionalArrayRecursionTest, operatorEquality)
     Employee teamLead2;
 
     fillTeamLead(teamLead1);
-    ASSERT_FALSE(teamLead1 == teamLead2);
-
     fillTeamLead(teamLead2);
     ASSERT_TRUE(teamLead1 == teamLead2);
 }
@@ -131,8 +129,6 @@ TEST_F(OptionalArrayRecursionTest, hashCode)
     Employee teamLead2;
 
     fillTeamLead(teamLead1);
-    ASSERT_NE(teamLead1.hashCode(), teamLead2.hashCode());
-
     fillTeamLead(teamLead2);
     ASSERT_EQ(teamLead1.hashCode(), teamLead2.hashCode());
 }

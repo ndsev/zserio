@@ -8,13 +8,9 @@ set(ZSERIO_GENERATED_SOURCES
     ${ZSERIO_GEN_DIR}/comments/documentation/sql_database_comments/Db.h
     ${ZSERIO_GEN_DIR}/comments/documentation/sql_database_comments/Table.cpp
     ${ZSERIO_GEN_DIR}/comments/documentation/sql_database_comments/Table.h
-    ${ZSERIO_GEN_DIR}/comments/documentation/sql_database_comments/TableRow.cpp
-    ${ZSERIO_GEN_DIR}/comments/documentation/sql_database_comments/TableRow.h
 
     ${ZSERIO_GEN_DIR}/comments/documentation/sql_table_comments/VirtualTable.cpp
     ${ZSERIO_GEN_DIR}/comments/documentation/sql_table_comments/VirtualTable.h
-    ${ZSERIO_GEN_DIR}/comments/documentation/sql_table_comments/VirtualTableRow.cpp
-    ${ZSERIO_GEN_DIR}/comments/documentation/sql_table_comments/VirtualTableRow.h
 
     ${ZSERIO_GEN_DIR}/comments/documentation/struct_comments/Direction.cpp
     ${ZSERIO_GEN_DIR}/comments/documentation/struct_comments/Direction.h
@@ -28,6 +24,16 @@ set(ZSERIO_GENERATED_SOURCES
     ${ZSERIO_GEN_DIR}/comments/documentation/unknown_tag_matching_prefix/Test.h
     ${ZSERIO_GEN_DIR}/comments/documentation/unknown_tag_matching_prefix/VALUE.h
 )
+
+if (NOT ${ZSERIO_CPP_STANDARD} STREQUAL c++11)
+    set(ZSERIO_GENERATED_SOURCES
+        ${ZSERIO_GENERATED_SOURCES}
+        ${ZSERIO_GEN_DIR}/comments/documentation/sql_database_comments/TableRow.cpp
+        ${ZSERIO_GEN_DIR}/comments/documentation/sql_database_comments/TableRow.h
+        ${ZSERIO_GEN_DIR}/comments/documentation/sql_table_comments/VirtualTableRow.cpp
+        ${ZSERIO_GEN_DIR}/comments/documentation/sql_table_comments/VirtualTableRow.h
+    )
+endif ()
 
 zserio_add_library(TARGET comments_zs
     SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/zs
