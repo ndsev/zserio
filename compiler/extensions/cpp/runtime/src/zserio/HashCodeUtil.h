@@ -99,15 +99,6 @@ namespace zserio
         return calcHashCode(seedValue, object.hashCode());
     }
 
-    template <typename FIELD>
-    inline int calcHashCode(int seedValue, const OptionalHolder<FIELD>& optionalHolder)
-    {
-        if (!optionalHolder)
-            return calcHashCode(seedValue, 0);
-
-        return calcHashCode(seedValue, *optionalHolder);
-    }
-
     template <typename ARRAY_ELEMENT>
     inline int calcHashCode(int seedValue, const std::vector<ARRAY_ELEMENT>& array)
     {
@@ -116,6 +107,17 @@ namespace zserio
             result = calcHashCode(result, element);
 
         return result;
+    }
+
+    // must be last because of the two-phase lookup
+    // - we can have optional array (OptionaHolder<std::vector<T>>), but we cannot have array of optionals
+    template <typename FIELD>
+    inline int calcHashCode(int seedValue, const OptionalHolder<FIELD>& optionalHolder)
+    {
+        if (!optionalHolder)
+            return calcHashCode(seedValue, 0);
+
+        return calcHashCode(seedValue, *optionalHolder);
     }
 } // namespace zserio
 

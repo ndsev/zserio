@@ -528,7 +528,7 @@ void ${compoundName}::${field.setterName}(${fieldOrOptional.cppTypeName}&& <@fie
     <#if field.usesAnyHolder>
         m_objectChoice.get<${field.cppTypeName}>()<#t>
     <#elseif field.optional??>
-        *<@field_member_name field.name/><#t>
+        <@field_member_name field.name/>.value()<#t>
     <#else>
         <@field_member_name field.name/><#t>
     </#if>

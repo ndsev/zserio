@@ -37,7 +37,7 @@ add_test_sources(
     ${ZSERIO_CPP_DIR}/AutoOptionalTest.cpp
     ${ZSERIO_CPP_DIR}/OptionalArrayRecursionTest.cpp
     ${ZSERIO_CPP_DIR}/OptionalArrayTest.cpp
-    ${ZSERIO_CPP_DIR}/OptionalMembersTest.cpp
+    ${ZSERIO_CPP_DIR}/OptionalExpressionTest.cpp
     ${ZSERIO_CPP_DIR}/OptionalRecursionTest.cpp
 )
 

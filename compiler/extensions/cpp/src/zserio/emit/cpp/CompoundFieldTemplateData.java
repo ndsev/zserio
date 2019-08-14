@@ -35,7 +35,8 @@ public class CompoundFieldTemplateData
     {
         final ZserioType fieldType = TypeReference.resolveType(field.getFieldType());
         final ZserioType baseFieldType = TypeReference.resolveBaseType(fieldType);
-        optional = createOptional(field, cppExpressionFormatter, cppNativeTypeMapper, includeCollector);
+        optional = createOptional(field, baseFieldType, parentType, cppExpressionFormatter, cppNativeTypeMapper,
+                includeCollector);
         compound = createCompound(cppNativeTypeMapper, cppExpressionFormatter, cppIndirectExpressionFormatter,
                 parentType, baseFieldType, withWriterCode);
 
@@ -175,13 +176,15 @@ public class CompoundFieldTemplateData
     {
         public Optional(Expression optionalClauseExpression, String indicatorName,
                 ExpressionFormatter cppExpressionFormatter,
-                NativeOptionalHolderType nativeOptionalHolderType) throws ZserioEmitException
+                NativeOptionalHolderType nativeOptionalHolderType,
+                boolean isRecursive) throws ZserioEmitException
         {
             clause = (optionalClauseExpression == null) ? null :
                 cppExpressionFormatter.formatGetter(optionalClauseExpression);
             this.indicatorName = indicatorName;
             cppTypeName = nativeOptionalHolderType.getFullName();
             cppArgumentTypeName = nativeOptionalHolderType.getArgumentTypeName();
+            this.isRecursive = isRecursive;
         }
 
         public String getClause()
@@ -204,10 +207,16 @@ public class CompoundFieldTemplateData
             return cppArgumentTypeName;
         }
 
-        private final String  clause;
-        private final String  indicatorName;
+        public boolean getIsRecursive()
+        {
+            return isRecursive;
+        }
+
+        private final String clause;
+        private final String indicatorName;
         private final String cppTypeName;
         private final String cppArgumentTypeName;
+        private final boolean isRecursive;
     }
 
     public static class Compound
@@ -486,12 +495,17 @@ public class CompoundFieldTemplateData
         private final IntegerRange  elementIntegerRange;
     }
 
-    private static Optional createOptional(Field field, ExpressionFormatter cppExpressionFormatter,
-            CppNativeTypeMapper cppNativeTypeMapper,
+    private static Optional createOptional(Field field, ZserioType baseFieldType, CompoundType parentType,
+            ExpressionFormatter cppExpressionFormatter, CppNativeTypeMapper cppNativeTypeMapper,
             IncludeCollector includeCollector) throws ZserioEmitException
     {
         if (!field.getIsOptional())
             return null;
+
+        ZserioType fieldInstantiatedType = baseFieldType;
+        if (baseFieldType instanceof TypeInstantiation)
+            fieldInstantiatedType = ((TypeInstantiation)baseFieldType).getBaseType();
+        final boolean isRecursive = fieldInstantiatedType == parentType;
 
         final Expression optionalClauseExpression = field.getOptionalClauseExpr();
         final String indicatorName = AccessorNameFormatter.getIndicatorName(field);
@@ -501,7 +515,7 @@ public class CompoundFieldTemplateData
         includeCollector.addHeaderIncludesForType(nativeOptionalHolderType);
 
         return new Optional(optionalClauseExpression, indicatorName, cppExpressionFormatter,
-                nativeOptionalHolderType);
+                nativeOptionalHolderType, isRecursive);
     }
 
     private static IntegerRange createIntegerRange(CppNativeTypeMapper cppNativeTypeMapper,

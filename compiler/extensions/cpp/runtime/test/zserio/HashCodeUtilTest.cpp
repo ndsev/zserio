@@ -123,4 +123,18 @@ TEST(HashCodeUtilTest, objectArrayType)
     EXPECT_EQ((HASH_PRIME_NUMBER + 3) * HASH_PRIME_NUMBER + 7, calcHashCode(hashSeed, array));
 }
 
+TEST(HashCodeUtilTest, optionalSimpleArrayType)
+{
+    const int hashSeed = 1;
+    const OptionalHolder<std::vector<uint32_t>> optionalArray = {{3, 7}};
+    EXPECT_EQ((HASH_PRIME_NUMBER + 3) * HASH_PRIME_NUMBER + 7, calcHashCode(hashSeed, optionalArray));
+}
+
+TEST(HashCodeUtilTest, optionalObjectArrayType)
+{
+    const int hashSeed = 1;
+    const OptionalHolder<std::vector<DummyObject>> optionalArray = {{DummyObject(3), DummyObject(7)}};
+    EXPECT_EQ((HASH_PRIME_NUMBER + 3) * HASH_PRIME_NUMBER + 7, calcHashCode(hashSeed, optionalArray));
+}
+
 } // namespace zserio

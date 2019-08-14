@@ -15,7 +15,7 @@ class OptionalRecursionTest : public ::testing::Test
 protected:
     void fillBlock(Block& block, const uint8_t* blockData, size_t blockDataSize)
     {
-        zserio::UInt8Array dataBytes;
+        std::vector<uint8_t> dataBytes;
         dataBytes.reserve(blockDataSize);
         for (size_t i = 0; i < blockDataSize; ++i)
             dataBytes.push_back(static_cast<uint8_t>(blockData[i]));
@@ -32,7 +32,7 @@ protected:
         Block block2;
         fillBlock(block2, block2Data, block2DataSize);
 
-        zserio::UInt8Array dataBytes;
+        std::vector<uint8_t> dataBytes;
         dataBytes.reserve(block1DataSize);
         for (size_t i = 0; i < block1DataSize; ++i)
             dataBytes.push_back(static_cast<uint8_t>(block1Data[i]));

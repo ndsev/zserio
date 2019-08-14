@@ -18,6 +18,24 @@
 <@system_includes headerSystemIncludes, false/>
 
 <@user_includes headerUserIncludes, true/>
+<#if isRecursive>
+<@namespace_begin package.path/>
+
+class ${name};
+
+<@namespace_end package.path/>
+
+<@namespace_begin ["zserio", "detail"]/>
+
+template <>
+struct is_optimized_in_place<${fullName}>
+{
+    static const bool value = false;
+};
+
+<@namespace_end ["zserio", "detail"]/>
+
+</#if>
 <@namespace_begin package.path/>
 
 class ${name}
