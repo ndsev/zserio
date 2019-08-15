@@ -177,13 +177,13 @@ TEST_F(ParameterizedTypesSimpleParamTest, initializeOffsets)
 
 TEST_F(ParameterizedTypesSimpleParamTest, operatorEquality)
 {
-    Item item1;
+    Item item1(ITEM_PARAM, ITEM_EXTRA_PARAM);
     item1.initialize(LOWER_VERSION);
-    Item item2;
+    Item item2(ITEM_PARAM, ITEM_EXTRA_PARAM);
     item2.initialize(LOWER_VERSION);
     ASSERT_TRUE(item1 == item2);
 
-    Item item3;
+    Item item3(ITEM_PARAM, ITEM_EXTRA_PARAM);
     item3.initialize(HIGHER_VERSION);
 
     ASSERT_FALSE(item2 == item3);
@@ -191,13 +191,13 @@ TEST_F(ParameterizedTypesSimpleParamTest, operatorEquality)
 
 TEST_F(ParameterizedTypesSimpleParamTest, hashCode)
 {
-    Item item1;
+    Item item1(ITEM_PARAM, ITEM_EXTRA_PARAM);
     item1.initialize(LOWER_VERSION);
-    Item item2;
+    Item item2(ITEM_PARAM, ITEM_EXTRA_PARAM);
     item2.initialize(LOWER_VERSION);
     ASSERT_EQ(item1.hashCode(), item2.hashCode());
 
-    Item item3;
+    Item item3(ITEM_PARAM, ITEM_EXTRA_PARAM);
     item3.initialize(HIGHER_VERSION);
     ASSERT_TRUE(item2.hashCode() != item3.hashCode());
 }
