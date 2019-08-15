@@ -54,12 +54,14 @@ size_t bitSizeOf(${fullName}<#if !runtimeFunction.arg??> value</#if>)
     return zserio::bitSizeOf${runtimeFunction.suffix}(zserio::enumToValue(value));
 </#if>
 }
+<#if withWriterCode>
 
 template <>
 size_t initializeOffsets(size_t bitPosition, ${fullName} value)
 {
     return bitPosition + bitSizeOf(value);
 }
+</#if>
 
 template <>
 ${fullName} read(zserio::BitStreamReader& in)
@@ -68,6 +70,7 @@ ${fullName} read(zserio::BitStreamReader& in)
             static_cast<typename std::underlying_type<${fullName}>::type>(
                     in.read${runtimeFunction.suffix}(${runtimeFunction.arg!})));
 }
+<#if withWriterCode>
 
 template <>
 void write<${fullName}>(BitStreamWriter& out, ${fullName} value)
@@ -75,5 +78,6 @@ void write<${fullName}>(BitStreamWriter& out, ${fullName} value)
     out.write${runtimeFunction.suffix}(enumToValue(value)<#rt>
             <#lt><#if runtimeFunction.arg??>, ${runtimeFunction.arg}</#if>);
 }
+</#if>
 
 <@namespace_end ["zserio"]/>

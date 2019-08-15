@@ -41,8 +41,9 @@ struct is_optimized_in_place<${fullName}>
 class ${name}
 {
 public:
-<#if withWriterCode>
+<#-- TODO empty ctor must be only if withWriterCode if reader ctor won't need empty ctors -->
     <@compound_constructor_declaration compoundConstructorsData/>
+<#if withWriterCode>
     <#if fieldList?has_content>
 
     <@compound_fields_constructor_template compoundConstructorsData/>

@@ -21,8 +21,8 @@
 <#if withWriterCode>
     <#assign hasNonVirtualField=sql_table_has_non_virtual_field(fields)/>
 </#if>
-${name}::${name}(zserio::SqliteConnection& db, const std::string& tableName,
-        const std::string& attachedDbName) :
+${name}::${name}(::zserio::SqliteConnection& db, const ::std::string& tableName,
+        const ::std::string& attachedDbName) :
         m_db(db), m_name(tableName), m_attachedDbName(attachedDbName)
 {
 }
@@ -34,7 +34,7 @@ ${name}::~${name}()
 <#if withWriterCode>
 void ${name}::createTable()
 {
-    std::string sqlQuery;
+    ::std::string sqlQuery;
     appendCreateTableToQuery(sqlQuery);
     <#if hasNonVirtualField && isWithoutRowId>
     sqlQuery += " WITHOUT ROWID";
@@ -45,7 +45,7 @@ void ${name}::createTable()
     <#if hasNonVirtualField && isWithoutRowId>
 void ${name}::createOrdinaryRowIdTable()
 {
-    std::string sqlQuery;
+    ::std::string sqlQuery;
     appendCreateTableToQuery(sqlQuery);
     m_db.executeUpdate(sqlQuery.c_str());
 }
@@ -53,7 +53,7 @@ void ${name}::createOrdinaryRowIdTable()
     </#if>
 void ${name}::deleteTable()
 {
-    std::string sqlQuery = "DROP TABLE ";
+    ::std::string sqlQuery = "DROP TABLE ";
     appendTableNameToQuery(sqlQuery);
     m_db.executeUpdate(sqlQuery.c_str());
 }
@@ -63,7 +63,7 @@ ${name}::Reader ${name}::createReader(<#if needsParameterProvider>IParameterProv
         <#lt>const ::std::string& condition) const
 {
     // assemble sql query
-    std::string sqlQuery;
+    ::std::string sqlQuery;
     sqlQuery +=
             "SELECT "
 <#list fields as field>
@@ -112,7 +112,7 @@ bool ${name}::Reader::hasNext() const noexcept
 ${name}::Row ${name}::Reader::next()
 {
     if (!hasNext())
-        throw zserio::SqliteException("Table::Reader::next: next row is not available", m_lastResult);
+        throw ::zserio::SqliteException("Table::Reader::next: next row is not available", m_lastResult);
 
     Row row;
 <#list fields as field>
@@ -123,14 +123,14 @@ ${name}::Row ${name}::Reader::next()
     <#if field.sqlTypeData.isBlob>
         const void* blobData = sqlite3_column_blob(m_stmt.get(), ${field?index});
         const int blobDataLength = sqlite3_column_bytes(m_stmt.get(), ${field?index});
-        zserio::BitStreamReader reader(reinterpret_cast<const uint8_t*>(blobData),
+        ::zserio::BitStreamReader reader(reinterpret_cast<const uint8_t*>(blobData),
                 static_cast<size_t>(blobDataLength));
         <@read_blob field/>
-        row.${field.setterName}(std::move(blob));
+        row.${field.setterName}(::std::move(blob));
     <#elseif field.sqlTypeData.isInteger>
         const int64_t intValue = sqlite3_column_int64(m_stmt.get(), ${field?index});
         <#if field.enumData??>
-        const ${field.cppTypeName} enumValue = zserio::valueToEnum<${field.cppTypeName}>(static_cast<${field.enumData.baseCppTypeName}>(intValue));
+        const ${field.cppTypeName} enumValue = ::zserio::valueToEnum<${field.cppTypeName}>(static_cast<${field.enumData.baseCppTypeName}>(intValue));
         row.${field.setterName}(enumValue);
         <#elseif field.isBoolean>
         row.${field.setterName}(intValue != 0);
@@ -156,15 +156,15 @@ void ${name}::Reader::makeStep()
 {
     m_lastResult = sqlite3_step(m_stmt.get());
     if (m_lastResult != SQLITE_ROW && m_lastResult != SQLITE_DONE)
-        throw zserio::SqliteException("${name}::Read: sqlite3_step() failed", m_lastResult);
+        throw ::zserio::SqliteException("${name}::Read: sqlite3_step() failed", m_lastResult);
 }
 <#if withWriterCode>
 
 void ${name}::write(<#if needsParameterProvider>IParameterProvider& parameterProvider, </#if><#rt>
-        <#lt>std::vector<Row>& rows)
+        <#lt>::std::vector<Row>& rows)
 {
     // assemble sql query
-    std::string sqlQuery("INSERT INTO ");
+    ::std::string sqlQuery("INSERT INTO ");
     appendTableNameToQuery(sqlQuery);
     sqlQuery +=
             "("
@@ -179,29 +179,29 @@ void ${name}::write(<#if needsParameterProvider>IParameterProvider& parameterPro
 
     // write rows
     const bool wasTransactionStarted = m_db.startTransaction();
-    ::std::unique_ptr<sqlite3_stmt, zserio::SqliteFinalizer> statement(m_db.prepareStatement(sqlQuery));
+    ::std::unique_ptr<sqlite3_stmt, ::zserio::SqliteFinalizer> statement(m_db.prepareStatement(sqlQuery));
     int result = SQLITE_OK;
     for (::std::vector<Row>::iterator it = rows.begin(); it != rows.end(); ++it)
     {
         writeRow(<#if needsParameterProvider>parameterProvider, </#if>*it, *statement);
         result = sqlite3_step(statement.get());
         if (result != SQLITE_DONE)
-            throw zserio::SqliteException("Write: sqlite3_step() failed", result);
+            throw ::zserio::SqliteException("Write: sqlite3_step() failed", result);
 
         sqlite3_clear_bindings(statement.get());
         result = sqlite3_reset(statement.get());
         if (result != SQLITE_OK)
-            throw zserio::SqliteException("Write: sqlite3_reset() failed", result);
+            throw ::zserio::SqliteException("Write: sqlite3_reset() failed", result);
     }
 
     m_db.endTransaction(wasTransactionStarted);
 }
 
 void ${name}::update(<#if needsParameterProvider>IParameterProvider& parameterProvider, </#if><#rt>
-        <#lt>Row& row, const std::string& whereCondition)
+        <#lt>Row& row, const ::std::string& whereCondition)
 {
     // assemble sql query
-    std::string sqlQuery("UPDATE ");
+    ::std::string sqlQuery("UPDATE ");
     appendTableNameToQuery(sqlQuery);
     sqlQuery +=
             " SET"
@@ -212,11 +212,11 @@ void ${name}::update(<#if needsParameterProvider>IParameterProvider& parameterPr
     sqlQuery += whereCondition;
 
     // update row
-    ::std::unique_ptr<sqlite3_stmt, zserio::SqliteFinalizer> statement(m_db.prepareStatement(sqlQuery));
+    ::std::unique_ptr<sqlite3_stmt, ::zserio::SqliteFinalizer> statement(m_db.prepareStatement(sqlQuery));
     writeRow(<#if needsParameterProvider>parameterProvider, </#if>row, *statement);
     const int result = sqlite3_step(statement.get());
     if (result != SQLITE_DONE)
-        throw zserio::SqliteException("Update: sqlite3_step() failed", result);
+        throw ::zserio::SqliteException("Update: sqlite3_step() failed", result);
 }
 
 void ${name}::writeRow(<#if needsParameterProvider>IParameterProvider& parameterProvider, </#if><#rt>
@@ -242,8 +242,8 @@ void ${name}::writeRow(<#if needsParameterProvider>IParameterProvider& parameter
     {
         <#if field.sqlTypeData.isBlob>
         ${field.cppTypeName}& blob = *row.${field.getterName}();
-        zserio::BitStreamWriter writer;
-        blob.write(writer, zserio::PRE_WRITE_CHECK_RANGES);
+        ::zserio::BitStreamWriter writer;
+        blob.write(writer, ::zserio::PRE_WRITE_CHECK_RANGES);
         size_t blobDataLength;
         const uint8_t* blobData = writer.getWriteBuffer(blobDataLength);
         result = sqlite3_bind_blob(&statement, ${field?index + 1}, blobData, static_cast<int>(blobDataLength), SQLITE_TRANSIENT);
@@ -259,14 +259,14 @@ void ${name}::writeRow(<#if needsParameterProvider>IParameterProvider& parameter
         </#if>
     }
     if (result != SQLITE_OK)
-        throw zserio::SqliteException("${name}::WriteRow: sqlite3_bind() for field ${field.name} failed", result);
+        throw ::zserio::SqliteException("${name}::WriteRow: sqlite3_bind() for field ${field.name} failed", result);
         <#if field?has_next>
 
         </#if>
     </#list>
 }
 
-void ${name}::appendCreateTableToQuery(std::string& sqlQuery)
+void ${name}::appendCreateTableToQuery(::std::string& sqlQuery)
 {
     sqlQuery += "CREATE <#if virtualTableUsing??>VIRTUAL </#if>TABLE ";
     appendTableNameToQuery(sqlQuery);
@@ -294,7 +294,7 @@ void ${name}::appendCreateTableToQuery(std::string& sqlQuery)
 }
 </#if>
 
-void ${name}::appendTableNameToQuery(std::string& sqlQuery) const
+void ${name}::appendTableNameToQuery(::std::string& sqlQuery) const
 {
     sqlQuery.append(m_attachedDbName.empty() ? m_name : (m_attachedDbName + "." + m_name));
 }
@@ -321,7 +321,7 @@ ${name}::Row& ${name}::Row::operator=(const Row& other)
 
 ${name}::Row::Row(Row&& other) :
     <#list fields as field>
-        <@sql_field_member_name field/>(std::move(other.<@sql_field_member_name field/>))<#if field?has_next>,</#if>
+        <@sql_field_member_name field/>(::std::move(other.<@sql_field_member_name field/>))<#if field?has_next>,</#if>
     </#list>
 {
     reinitializeBlobs();
@@ -330,7 +330,7 @@ ${name}::Row::Row(Row&& other) :
 ${name}::Row& ${name}::Row::operator=(Row&& other)
 {
     <#list fields as field>
-    <@sql_field_member_name field/> = std::move(other.<@sql_field_member_name field/>);
+    <@sql_field_member_name field/> = ::std::move(other.<@sql_field_member_name field/>);
     </#list>
 
     reinitializeBlobs();
@@ -360,49 +360,51 @@ void ${name}::Row::${field.setterName}(${field.optionalCppArgumentTypeName} <@sq
 
 void ${name}::Row::${field.setterName}(${field.optionalCppTypeName}&& <@sql_field_argument_name field/>)
 {
-    <@sql_field_member_name field/> = std::move(<@sql_field_argument_name field/>);
+    <@sql_field_member_name field/> = ::std::move(<@sql_field_argument_name field/>);
 }
 </#if>
 </#list>
-<#if needsChildrenInitialization>
+<#if withWriterCode>
+    <#if needsChildrenInitialization>
 
 void ${name}::Row::initializeChildren(<#if needsParameterProvider>IParameterProvider& parameterProvider</#if>)
 {
-    <#if requiresOwnerContext || needsParameterProvider>
+        <#if requiresOwnerContext || needsParameterProvider>
     Row& row = *this;
 
-    </#if>
-    <#list fields as field>
-        <#if field.typeParameters?has_content>
-    <@sql_field_member_name field/>->initialize(
-            <#list field.typeParameters as parameter>
-                <#if parameter.isExplicit>
-            parameterProvider.<@sql_parameter_provider_getter_name parameter/>(row)<#rt>
-                <#else>
-            ${parameter.expression}<#rt>
-                </#if>
-                <#if parameter?has_next>
-            <#lt>,
-                </#if>
-            </#list>
-            <#lt>);
-        <#elseif field.needsChildrenInitialization>
-            <@sql_field_member_name field/>->initializeChildren();
         </#if>
-    </#list>
+        <#list fields as field>
+            <#if field.typeParameters?has_content>
+    <@sql_field_member_name field/>->initialize(
+                <#list field.typeParameters as parameter>
+                    <#if parameter.isExplicit>
+            parameterProvider.<@sql_parameter_provider_getter_name parameter/>(row)<#rt>
+                    <#else>
+            ${parameter.expression}<#rt>
+                    </#if>
+                    <#if parameter?has_next>
+            <#lt>,
+                    </#if>
+                </#list>
+            <#lt>);
+            <#elseif field.needsChildrenInitialization>
+            <@sql_field_member_name field/>->initializeChildren();
+            </#if>
+        </#list>
 }
-</#if>
-<#if hasBlobField>
+    </#if>
+    <#if hasBlobField>
 
 void ${name}::Row::initializeOffsets()
 {
-    <#list fields as field>
-        <#if field.sqlTypeData.isBlob>
+        <#list fields as field>
+            <#if field.sqlTypeData.isBlob>
     if (<@sql_field_member_name field/>)
         <@sql_field_member_name field/>->initializeOffsets(0);
-        </#if>
-    </#list>
+            </#if>
+        </#list>
 }
+    </#if>
 </#if>
 <#if hasImplicitParameters>
 

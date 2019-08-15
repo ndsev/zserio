@@ -63,13 +63,15 @@ public:
     </#if>
 
 </#list>
-<#if needsChildrenInitialization>
+<#if withWriterCode>
+    <#if needsChildrenInitialization>
         void initializeChildren(<#if needsParameterProvider>IParameterProvider& parameterProvider</#if>);
 
-</#if>
-<#if hasBlobField>
+    </#if>
+    <#if hasBlobField>
         void initializeOffsets();
 
+    </#if>
 </#if>
     private:
 <#if hasImplicitParameters>

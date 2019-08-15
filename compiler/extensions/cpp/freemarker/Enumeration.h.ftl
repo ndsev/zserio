@@ -53,15 +53,19 @@ ${fullName} valueToEnum<${fullName}>(
 
 template <>
 size_t bitSizeOf<${fullName}>(${fullName}<#if !runtimeFunction.arg??> value</#if>);
+<#if withWriterCode>
 
 template <>
 size_t initializeOffsets<${fullName}>(size_t bitPosition, ${fullName} value);
+</#if>
 
 template <>
 ${fullName} read<${fullName}>(zserio::BitStreamReader& in);
+<#if withWriterCode>
 
 template <>
 void write<${fullName}>(BitStreamWriter& out, ${fullName} value);
+</#if>
 
 <@namespace_end ["zserio"]/>
 

@@ -200,7 +200,6 @@ ${compoundConstructorsData.compoundName}& ${compoundConstructorsData.compoundNam
 
     </#if>
             <#lt>${constructorArgumentTypeList});
-
     bool isInitialized() const;
 </#macro>
 

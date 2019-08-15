@@ -25,10 +25,9 @@
 <@namespace_begin package.path/>
 
 <@define_inner_classes fieldList/>
-<#if withWriterCode>
+<#-- TODO empty ctor must be only if withWriterCode if reader ctor won't need empty ctors -->
 <@compound_constructor_definition compoundConstructorsData/>
 
-</#if>
 <@compound_read_constructor_definition compoundConstructorsData/>
 
 <#if needs_compound_initialization(compoundConstructorsData) || has_field_with_initialization(fieldList)>

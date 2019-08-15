@@ -4,8 +4,6 @@ set(ZSERIO_GENERATED_SOURCES
     ${ZSERIO_GEN_DIR}/without_writer_code/ExtraParamUnion.h
     ${ZSERIO_GEN_DIR}/without_writer_code/GeoMapTable.cpp
     ${ZSERIO_GEN_DIR}/without_writer_code/GeoMapTable.h
-    ${ZSERIO_GEN_DIR}/without_writer_code/GeoMapTableRow.cpp
-    ${ZSERIO_GEN_DIR}/without_writer_code/GeoMapTableRow.h
     ${ZSERIO_GEN_DIR}/without_writer_code/ItemChoice.cpp
     ${ZSERIO_GEN_DIR}/without_writer_code/ItemChoice.h
     ${ZSERIO_GEN_DIR}/without_writer_code/ItemChoiceHolder.cpp
@@ -19,6 +17,14 @@ set(ZSERIO_GENERATED_SOURCES
     ${ZSERIO_GEN_DIR}/without_writer_code/WorldDb.cpp
     ${ZSERIO_GEN_DIR}/without_writer_code/WorldDb.h
 )
+
+if (NOT ${ZSERIO_CPP_STANDARD} STREQUAL c++11)
+    set(ZSERIO_GENERATED_SOURCES
+        ${ZSERIO_GENERATED_SOURCES}
+        ${ZSERIO_GEN_DIR}/without_writer_code/GeoMapTableRow.cpp
+        ${ZSERIO_GEN_DIR}/without_writer_code/GeoMapTableRow.h
+    )
+endif ()
 
 zserio_add_library(TARGET without_writer_code_zs
     SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/zs

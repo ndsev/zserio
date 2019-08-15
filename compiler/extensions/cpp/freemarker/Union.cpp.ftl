@@ -23,7 +23,7 @@
 <@namespace_begin package.path/>
 
 <@define_inner_classes fieldList/>
-<#if withWriterCode>
+<#-- TODO empty ctor must be only if withWriterCode if reader ctor won't need empty ctors -->
 ${name}::${name}() noexcept :
     <#assign constructorMembersInitialization><@compound_constructor_members_initialization compoundConstructorsData/></#assign>
     <#if constructorMembersInitialization?has_content>
@@ -34,7 +34,6 @@ ${name}::${name}() noexcept :
 {
 }
 
-</#if>
 <@compound_read_constructor_definition compoundConstructorsData/>
 
 <#if needs_compound_initialization(compoundConstructorsData) || has_field_with_initialization(fieldList)>

@@ -34,8 +34,9 @@ public:
         UNDEFINED_CHOICE = -1
     };
 
-<#if withWriterCode>
+<#-- TODO empty ctor must be only if withWriterCode if reader ctor won't need empty ctors -->
     <@compound_constructor_declaration compoundConstructorsData/>
+<#if withWriterCode>
     <#if fieldList?has_content>
 
     <@compound_field_constructor_template_arg_list name, fieldList/>
