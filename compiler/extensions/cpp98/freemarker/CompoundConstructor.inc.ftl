@@ -87,17 +87,17 @@ ${compoundConstructorsData.compoundName}::${compoundConstructorsData.compoundNam
 </#macro>
 
 <#macro compound_copy_constructor_declaration compoundConstructorsData>
-    ${compoundConstructorsData.compoundName}(const ${compoundConstructorsData.compoundName}& other);
+    ${compoundConstructorsData.compoundName}(const ${compoundConstructorsData.compoundName}& _other);
 </#macro>
 
 <#macro compound_copy_initialization compoundConstructorsData>
     <#if needs_compound_initialization(compoundConstructorsData)>
-    if (other.m_isInitialized)
+    if (_other.m_isInitialized)
         initialize(<@compound_initialize_copy_argument_list compoundConstructorsData/>);
     else
         m_isInitialized = false;
     <#elseif has_field_with_initialization(compoundConstructorsData.fieldList)>
-    if (other.m_areChildrenInitialized)
+    if (_other.m_areChildrenInitialized)
         initializeChildren();
     else
         m_areChildrenInitialized = false;
@@ -106,7 +106,7 @@ ${compoundConstructorsData.compoundName}::${compoundConstructorsData.compoundNam
 
 <#macro compound_copy_constructor_definition compoundConstructorsData>
 ${compoundConstructorsData.compoundName}::${compoundConstructorsData.compoundName}(<#rt>
-    <#lt>const ${compoundConstructorsData.compoundName}& other)<#if compoundConstructorsData.fieldList?has_content> :</#if>
+    <#lt>const ${compoundConstructorsData.compoundName}& _other)<#if compoundConstructorsData.fieldList?has_content> :</#if>
     <#list compoundConstructorsData.fieldList as field>
         <@compound_copy_constructor_initializer_field field, field_has_next, 2/>
         <#if field.usesAnyHolder>
@@ -119,12 +119,12 @@ ${compoundConstructorsData.compoundName}::${compoundConstructorsData.compoundNam
 </#macro>
 
 <#macro compound_assignment_operator_declaration compoundConstructorsData>
-    ${compoundConstructorsData.compoundName}& operator=(const ${compoundConstructorsData.compoundName}& other);
+    ${compoundConstructorsData.compoundName}& operator=(const ${compoundConstructorsData.compoundName}& _other);
 </#macro>
 
 <#macro compound_assignment_operator_definition compoundConstructorsData>
 ${compoundConstructorsData.compoundName}& ${compoundConstructorsData.compoundName}::operator=(<#rt>
-    <#lt>const ${compoundConstructorsData.compoundName}& other)
+    <#lt>const ${compoundConstructorsData.compoundName}& _other)
 {
     <#list compoundConstructorsData.fieldList as field>
         <@compound_assignment_field field, 1/>
