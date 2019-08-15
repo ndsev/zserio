@@ -1,4 +1,4 @@
-package reserved_java_keyword_error;
+package reserved_keywords.java_keyword_field_name_error;
 
 struct Item
 {

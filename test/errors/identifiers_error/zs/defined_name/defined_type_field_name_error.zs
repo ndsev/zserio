@@ -1,4 +1,4 @@
-package defined_type_error;
+package defined_name.defined_type_field_name_error;
 
 subtype int32 Defined;
 

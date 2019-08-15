@@ -1,4 +1,4 @@
-package field_names_error;
+package identifiers_error.reserved_keywords;
 
 import static org.junit.Assert.*;
 
@@ -9,7 +9,7 @@ import java.io.IOException;
 
 import test_utils.ZserioErrors;
 
-public class FieldNamesErrorTest
+public class ReservedKeywordsErrorTest
 {
     @BeforeClass
     public static void readZserioErrors() throws IOException
@@ -18,40 +18,41 @@ public class FieldNamesErrorTest
     }
 
     @Test
-    public void definedType()
+    public void javaKeywordFieldName()
     {
-        final String error = "defined_type_error.zs:9:17: 'Defined' is a defined type in this package!";
-        assertTrue(zserioErrors.isPresent(error));
-    }
-
-    @Test
-    public void reservedJavaKeyword()
-    {
-        final String error = "reserved_java_keyword_error.zs:6:13: " +
+        final String error = "java_keyword_field_name_error.zs:6:13: " +
                 "'abstract' is a reserved keyword and may not be used here!";
         assertTrue(zserioErrors.isPresent(error));
     }
 
     @Test
-    public void reservedCppKeyword()
+    public void cppKeywordFieldName()
     {
-        final String error = "reserved_cpp_keyword_error.zs:6:13: " +
+        final String error = "cpp_keyword_field_name_error.zs:6:13: " +
                 "'auto' is a reserved keyword and may not be used here!";
         assertTrue(zserioErrors.isPresent(error));
     }
 
     @Test
-    public void reservedPythonKeyword()
+    public void cppKeywordStructName()
     {
-        final String error = "reserved_python_keyword_error.zs:6:13: " +
+        final String error = "cpp_keyword_struct_name_error.zs:3:8: " +
+                "'auto' is a reserved keyword and may not be used here!";
+        assertTrue(zserioErrors.isPresent(error));
+    }
+
+    @Test
+    public void pythonKeywordFieldName()
+    {
+        final String error = "python_keyword_field_name_error.zs:6:13: " +
                 "'def' is a reserved keyword and may not be used here!";
         assertTrue(zserioErrors.isPresent(error));
     }
 
     @Test
-    public void reservedZserioKeyword()
+    public void zserioKeywordFieldName()
     {
-        final String error = "reserved_zserio_keyword_error.zs:6:11: " +
+        final String error = "zserio_keyword_field_name_error.zs:6:11: " +
                 "mismatched input 'varint' expecting ID ('varint' is a reserved keyword)!";
         assertTrue(zserioErrors.isPresent(error));
     }

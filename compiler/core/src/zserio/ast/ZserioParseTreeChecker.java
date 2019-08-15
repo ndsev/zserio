@@ -11,6 +11,7 @@ import java.nio.charset.CharsetDecoder;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Set;
 
 import zserio.antlr.ZserioParser;
@@ -152,6 +153,10 @@ public class ZserioParseTreeChecker extends ZserioParserBaseVisitor<Void>
         if (reservedKeywordsList.contains(id))
             throw new ParserException(ctx.getStart(), "'" + id +
                     "' is a reserved keyword and may not be used here!");
+
+        if (id.toLowerCase(Locale.ENGLISH).startsWith("zserio"))
+            throw new ParserException(ctx.getStart(),
+                    "ZSERIO (case insensitive) is a reserved prefix and cannot be used in identifiers!");
 
         return null;
     }

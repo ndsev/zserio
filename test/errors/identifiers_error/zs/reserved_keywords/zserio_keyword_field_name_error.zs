@@ -1,4 +1,4 @@
-package reserved_zserio_keyword_error;
+package reserved_keywords.zserio_keyword_field_name_error;
 
 struct InvalidFieldNameError
 {

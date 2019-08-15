@@ -1,4 +1,4 @@
-package reserved_python_keyword_error;
+package reserved_keywords.python_keyword_field_name_error;
 
 struct Item
 {

@@ -1,4 +1,4 @@
-package reserved_cpp_keyword_error;
+package reserved_keywords.cpp_keyword_field_name_error;
 
 struct Item
 {
