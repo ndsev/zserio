@@ -26,6 +26,20 @@ set(ZSERIO_GENERATED_SOURCES
     ${ZSERIO_GEN_DIR}/explicit_parameters/explicit_same_as_field/TestBlob.h
 )
 
+if (NOT ${ZSERIO_CPP_STANDARD} STREQUAL c++11)
+    set(ZSERIO_GENERATED_SOURCES
+        ${ZSERIO_GENERATED_SOURCES}
+        ${ZSERIO_GEN_DIR}/explicit_parameters/explicit_blob_param/BlobParamTableRow.cpp
+        ${ZSERIO_GEN_DIR}/explicit_parameters/explicit_blob_param/BlobParamTableRow.h
+        ${ZSERIO_GEN_DIR}/explicit_parameters/explicit_simple_param/SimpleParamTableRow.cpp
+        ${ZSERIO_GEN_DIR}/explicit_parameters/explicit_simple_param/SimpleParamTableRow.h
+        ${ZSERIO_GEN_DIR}/explicit_parameters/multiple_explicit_params/MultipleParamsTableRow.cpp
+        ${ZSERIO_GEN_DIR}/explicit_parameters/multiple_explicit_params/MultipleParamsTableRow.h
+        ${ZSERIO_GEN_DIR}/explicit_parameters/explicit_same_as_field/SameAsFieldTableRow.cpp
+        ${ZSERIO_GEN_DIR}/explicit_parameters/explicit_same_as_field/SameAsFieldTableRow.h
+    )
+endif ()
+
 zserio_add_library(TARGET explicit_parameters_zs
     SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/zs
     MAIN_SOURCE explicit_parameters.zs
