@@ -338,6 +338,7 @@ parse_arguments()
                 eval ${PARAM_CPP_OUT}=1
                 eval ${PARAM_CPP_TARGET_ARRAY_OUT}[${NUM_CPP_TARGETS}]="${PARAM#all-}"
                 NUM_CPP_TARGETS=$((NUM_CPP_TARGETS + 1))
+                eval ${PARAM_CPP98_OUT}=1
                 eval ${PARAM_CPP98_TARGET_ARRAY_OUT}[${NUM_CPP98_TARGETS}]="${PARAM#all-}"
                 NUM_CPP98_TARGETS=$((NUM_CPP98_TARGETS + 1))
                 eval ${PARAM_JAVA_OUT}=1
