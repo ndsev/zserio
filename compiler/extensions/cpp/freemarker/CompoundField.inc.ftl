@@ -640,9 +640,11 @@ ${I};
                 <#if !field.isSimpleType>
                     <#if hasTemplateArg><#lt>,
             </#if>typename ZSERIO_T_${field.name}<#rt>
-                    <#local hasTemplateArg=true/>
-                    <#if !field?has_next>
-                        <#local singleTemplateArgName="ZSERIO_T_${field.name}"/>
+                    <#if !hasTemplateArg>
+                        <#local hasTemplateArg=true/>
+                        <#if !field?has_next>
+                            <#local singleTemplateArgName="ZSERIO_T_${field.name}"/>
+                        </#if>
                     </#if>
                 </#if>
             </#if>
