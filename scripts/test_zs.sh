@@ -263,6 +263,14 @@ target_include_directories(\${PROJECT_NAME} SYSTEM PRIVATE \${GRPC_INCDIR})
 target_link_libraries(\${PROJECT_NAME} \${GRPC_LIBRARIES})"
     fi
 
+    local CPP11_SETUP
+    if [ "${RUNTIME_LIBRARY_SUBDIR}" = "cpp" ] ; then
+        CPP11_SETUP="
+
+# setup C++11
+set(CMAKE_CXX_STANDARD 11)"
+    fi
+
     cat > ${BUILD_DIR}/CMakeLists.txt << EOF
 cmake_minimum_required(VERSION 2.8.12.2)
 project(test_zs_${TEST_NAME})
@@ -281,7 +289,7 @@ include(compiler_utils)
 compiler_set_pthread()
 compiler_set_static_clibs()
 compiler_set_warnings()
-compiler_set_warnings_as_errors()${SQLITE_SETUP}${GRPC_SETUP}
+compiler_set_warnings_as_errors()${CPP11_SETUP}${SQLITE_SETUP}${GRPC_SETUP}
 
 # add zserio runtime library
 include(zserio_utils)
