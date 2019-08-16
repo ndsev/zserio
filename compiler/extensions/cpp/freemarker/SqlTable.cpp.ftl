@@ -243,7 +243,7 @@ void ${name}::writeRow(<#if needsParameterProvider>IParameterProvider& parameter
         <#if field.sqlTypeData.isBlob>
         ${field.cppTypeName}& blob = *row.${field.getterName}();
         ::zserio::BitStreamWriter writer;
-        blob.write(writer, ::zserio::PRE_WRITE_CHECK_RANGES);
+        blob.write(writer, ::zserio::NO_PRE_WRITE_ACTION);
         size_t blobDataLength;
         const uint8_t* blobData = writer.getWriteBuffer(blobDataLength);
         result = sqlite3_bind_blob(&statement, ${field?index + 1}, blobData, static_cast<int>(blobDataLength), SQLITE_TRANSIENT);

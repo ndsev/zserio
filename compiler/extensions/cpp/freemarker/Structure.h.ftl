@@ -94,15 +94,6 @@ public:
 
 private:
     <@declare_inner_classes fieldList/>
-<#if has_field_with_constraint(fieldList)>
-    void checkConstraints();
-</#if>
-<#if withRangeCheckCode && has_field_with_range_check(fieldList)>
-    void checkRanges();
-</#if>
-<#if has_field_with_constraint(fieldList) || (withRangeCheckCode && has_field_with_range_check(fieldList))>
-
-</#if>
     <@compound_parameter_members compoundParametersData/>
     <@compound_constructor_members compoundConstructorsData/>
 <#list fieldList as field>

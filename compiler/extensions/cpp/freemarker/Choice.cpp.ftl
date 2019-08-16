@@ -240,7 +240,6 @@ int ${name}::hashCode() const
 <#macro choice_read_member member>
     <#if member.compoundField??>
         <@compound_read_field member.compoundField, name, 2/>
-        <@compound_check_constraint_field member.compoundField, name, 2/>
     <#else>
         // empty
     </#if>
@@ -251,47 +250,25 @@ void ${name}::read(zserio::BitStreamReader&<#if fieldList?has_content> in</#if>)
     <@choice_switch "choice_read_member"/>
 </#if>
 }
-<#assign needsRangeCheck=withRangeCheckCode && has_field_with_range_check(fieldList)/>
 <#if withWriterCode>
 
 <#macro choice_write_member member>
     <#if member.compoundField??>
-        <@compound_check_constraint_field member.compoundField, name, 2/>
         <@compound_write_field member.compoundField, name, 2/>
     <#else>
         // empty
     </#if>
 </#macro>
-<#assign hasPreWriteAction=needsRangeCheck || needsChildrenInitialization || hasFieldWithOffset/>
+<#assign hasPreWriteAction=needsChildrenInitialization || hasFieldWithOffset/>
 void ${name}::write(zserio::BitStreamWriter&<#if fieldList?has_content> out</#if>, <#rt>
         zserio::PreWriteAction<#if hasPreWriteAction> preWriteAction</#if>)<#lt>
 {
     <#if fieldList?has_content>
         <#if hasPreWriteAction>
-    <@compound_pre_write_actions needsRangeCheck, needsChildrenInitialization, hasFieldWithOffset/>
+    <@compound_pre_write_actions needsChildrenInitialization, hasFieldWithOffset/>
 
         </#if>
     <@choice_switch "choice_write_member"/>
-    </#if>
-}
-</#if>
-<#macro choice_check_ranges_member member>
-    <#if member.compoundField??>
-        <#if needs_field_range_check(member.compoundField)>
-        {
-            <@compound_check_range_field member.compoundField, name, 3/>
-        }
-        </#if>
-    <#else>
-        // empty
-    </#if>
-</#macro>
-<#if needsRangeCheck>
-
-void ${name}::checkRanges()
-{
-    <#if fieldList?has_content>
-    <@choice_switch "choice_check_ranges_member"/>
     </#if>
 }
 </#if>

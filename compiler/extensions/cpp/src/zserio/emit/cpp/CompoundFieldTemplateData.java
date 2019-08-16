@@ -31,7 +31,8 @@ public class CompoundFieldTemplateData
     public CompoundFieldTemplateData(CppNativeTypeMapper cppNativeTypeMapper,
             CompoundType parentType, Field field,
             ExpressionFormatter cppExpressionFormatter, ExpressionFormatter cppIndirectExpressionFormatter,
-            IncludeCollector includeCollector, boolean withWriterCode) throws ZserioEmitException
+            IncludeCollector includeCollector, boolean withWriterCode, boolean withRangeCheckCode)
+                    throws ZserioEmitException
     {
         final ZserioType fieldType = TypeReference.resolveType(field.getFieldType());
         final ZserioType baseFieldType = TypeReference.resolveBaseType(fieldType);
@@ -70,6 +71,7 @@ public class CompoundFieldTemplateData
         runtimeFunction = CppRuntimeFunctionDataCreator.createData(baseFieldType, cppExpressionFormatter);
         bitSizeValue = createBitSizeValue(baseFieldType, cppExpressionFormatter);
         this.withWriterCode = withWriterCode;
+        this.withRangeCheckCode = withRangeCheckCode;
     }
 
     public Optional getOptional()
@@ -170,6 +172,11 @@ public class CompoundFieldTemplateData
     public boolean getWithWriterCode()
     {
         return withWriterCode;
+    }
+
+    public boolean getWithRangeCheckCode()
+    {
+        return withRangeCheckCode;
     }
 
     public static class Optional
@@ -646,4 +653,5 @@ public class CompoundFieldTemplateData
     private final RuntimeFunctionTemplateData   runtimeFunction;
     private final String                        bitSizeValue;
     private final boolean                       withWriterCode;
+    private final boolean                       withRangeCheckCode;
 }

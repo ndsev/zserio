@@ -48,6 +48,7 @@ ${I}<@compound_field_storage field/> = ${field.cppTypeName}(${constructorArgumen
 ${I}<@field_member_name field.name/> = ${field.cppTypeName}(${constructorArguments});<#-- TODO: initialize and then read! -->
         </#if>
     </#if>
+    <@compound_check_constraint_field field, compoundName, indent/>
 </#macro>
 
 <#macro compound_field_compound_ctor_params compound useIndirectExpression>
@@ -64,20 +65,22 @@ ${I}in.alignTo(${field.alignmentValue});
     </#if>
     <#if field.offset?? && !field.offset.containsIndex>
 ${I}in.alignTo(UINT32_C(8));
-${I}if (in.getBitPosition() != zserio::bytesToBits(${field.offset.getter}))
-${I}{
-${I}    throw zserio::CppRuntimeException("Read: Wrong offset for field ${compoundName}.${field.name}: " +
-${I}            zserio::convertToString(in.getBitPosition()) + " != " +
-${I}            zserio::convertToString(zserio::bytesToBits(${field.offset.getter})) + "!");
-${I}}
+    <@compound_check_offset_field field, compoundName, "Read", "in.getBitPosition()", indent/>
     </#if>
 </#macro>
 
-<#macro compound_pre_write_actions needsRangeCheck needsChildrenInitialization hasFieldWithOffset>
-    <#if needsRangeCheck>
-    if ((preWriteAction & zserio::PRE_WRITE_CHECK_RANGES) != 0)
-        checkRanges();
-    </#if>
+<#macro compound_check_offset_field field compoundName actionName bitPositionName indent>
+    <#local I>${""?left_pad(indent * 4)}</#local>
+${I}// check offset
+${I}if (${bitPositionName} != zserio::bytesToBits(${field.offset.getter}))
+${I}{
+${I}    throw zserio::CppRuntimeException("${actionName}: Wrong offset for field ${compoundName}.${field.name}: " +
+${I}            zserio::convertToString(${bitPositionName}) + " != " +
+${I}            zserio::convertToString(zserio::bytesToBits(${field.offset.getter})) + "!");
+${I}}
+</#macro>
+
+<#macro compound_pre_write_actions needsChildrenInitialization hasFieldWithOffset>
     <#if needsChildrenInitialization>
     if ((preWriteAction & zserio::PRE_WRITE_INITIALIZE_CHILDREN) != 0)
         initializeChildren();
@@ -115,12 +118,11 @@ ${I}}
 
 <#macro compound_write_field_inner field compoundName indent>
     <#local I>${""?left_pad(indent * 4)}</#local>
-<@compound_write_field_prolog field, compoundName, indent/>
+    <@compound_write_field_prolog field, compoundName, indent/>
     <#if field.runtimeFunction??>
 ${I}out.write${field.runtimeFunction.suffix}(<@compound_get_field field/><#if field.runtimeFunction.arg??>,<#rt>
         <#lt> ${field.runtimeFunction.arg}</#if>);
     <#elseif field.array??>
-<@compound_write_field_array_prolog field, compoundName, indent/>
 ${I}zserio::write<@array_runtime_function_suffix field/><#rt>
         <#lt>(<@array_traits field/>, <@compound_get_field field/>, out<#rt>
         <#lt><#if field.offset?? && field.offset.containsIndex>, <@offset_checker_name field.name/>(*this)</#if><#rt>
@@ -139,18 +141,26 @@ ${I}out.alignTo(${field.alignmentValue});
     </#if>
     <#if field.offset?? && !field.offset.containsIndex>
 ${I}out.alignTo(UINT32_C(8));
-${I}if (out.getBitPosition() != zserio::bytesToBits(${field.offset.getter}))
-${I}{
-${I}    throw zserio::CppRuntimeException("Write: Wrong offset for field ${compoundName}.${field.name}: " +
-${I}            zserio::convertToString(out.getBitPosition()) + " != " +
-${I}            zserio::convertToString(zserio::bytesToBits(${field.offset.getter})) + "!");
-${I}}
+    <@compound_check_offset_field field, compoundName, "Write", "out.getBitPosition()", indent/>
+    </#if>
+    <@compound_check_constraint_field field, compoundName, indent/>
+    <@compound_check_array_length_field field, compoundName, indent/>
+    <@compound_check_range_field field, compoundName, indent/>
+</#macro>
+
+<#macro compound_check_constraint_field field compoundName indent>
+    <#local I>${""?left_pad(indent * 4)}</#local>
+    <#if field.constraint??>
+${I}// check constraint
+${I}if (<#if field.optional??>(<@field_optional_condition field/>) && </#if>!(${field.constraint}))
+${I}    throw zserio::ConstraintException("Constraint violated at ${compoundName}.${field.name}!");
     </#if>
 </#macro>
 
-<#macro compound_write_field_array_prolog field compoundName indent>
+<#macro compound_check_array_length_field field compoundName indent>
     <#local I>${""?left_pad(indent * 4)}</#local>
-    <#if field.array.length??>
+    <#if field.array?? && field.array.length??>
+${I}// check array length
 ${I}if (<@compound_get_field field/>.size() != static_cast<size_t>(${field.array.length}))
 ${I}{
 ${I}    throw zserio::CppRuntimeException("Write: Wrong array length for field ${compoundName}.${field.name}: " +
@@ -160,51 +170,34 @@ ${I}}
     </#if>
 </#macro>
 
-<#macro compound_check_constraint_field field compoundName indent>
+<#macro compound_check_range_field field compoundName indent>
     <#local I>${""?left_pad(indent * 4)}</#local>
-    <#if field.constraint??>
-${I}if (<#if field.optional??>(<@field_optional_condition field/>) && </#if>!(${field.constraint}))
-${I}    throw zserio::ConstraintException("Constraint violated at ${compoundName}.${field.name}!");
-    </#if>
-</#macro>
-
-<#macro compound_check_range_field field compoundName indent mayNotBeEmptyCommand=false>
-    <#local I>${""?left_pad(indent * 4)}</#local>
-    <#if needs_field_range_check(field)>
-        <#if field.optional??>
-${I}if (<@field_optional_condition field/>)
+    <#if field.withRangeCheckCode>
+        <#if field.integerRange?? && !field.integerRange.hasFullRange>
+${I}// check range
+            <#local fieldValue><@compound_get_field field/></#local>
 ${I}{
-        <@compound_check_range_field_inner field, compoundName, indent + 1/>
-${I}}
-        <#else>
-    <@compound_check_range_field_inner field, compoundName, indent/>
-        </#if>
-    <#elseif mayNotBeEmptyCommand>
-${I};
-    </#if>
-</#macro>
-
-<#macro compound_check_range_field_inner field compoundName indent>
-    <#local I>${""?left_pad(indent * 4)}</#local>
-    <#if field.integerRange?? && !field.integerRange.hasFullRange>
-        <#local fieldValue><@compound_get_field field/></#local>
         <@compound_check_range_value fieldValue, field.name, compoundName, field.cppTypeName,
-                field.integerRange, indent/>
-    <#elseif field.array?? && field.array.elementIntegerRange?? && !field.array.elementIntegerRange.hasFullRange>
-${I}for (${field.cppTypeName}::const_iterator it = <@compound_get_field field/>.begin(); it != <@compound_get_field field/>.end(); ++it)
+                field.integerRange, indent + 1/>
+${I}}
+        <#elseif field.array?? && field.array.elementIntegerRange?? && !field.array.elementIntegerRange.hasFullRange>
+${I}// check ranges
+${I}for (${field.cppTypeName}::const_iterator it = <@compound_get_field field/>.begin(); <#rt>
+            <#lt>it != <@compound_get_field field/>.end(); ++it)
 ${I}{
         <@compound_check_range_value "*it", field.name, compoundName, field.array.elementCppTypeName,
-            field.array.elementIntegerRange, indent + 1/>
+                field.array.elementIntegerRange, indent + 1/>
 ${I}}
+        </#if>
     </#if>
 </#macro>
 
 <#macro compound_check_range_value value valueName compoundName cppTypeName integerRange indent>
     <#local I>${""?left_pad(indent * 4)}</#local>
-    <#local lowerBoundVarName>_${valueName}LowerBound</#local>
-    <#local upperBoundVarName>_${valueName}UpperBound</#local>
+    <#local lowerBoundVarName>lowerBound</#local>
+    <#local upperBoundVarName>upperBound</#local>
     <#if !integerRange.lowerBound?? || !integerRange.upperBound??>
-        <#local lengthVarName>_${valueName}Length</#local>
+        <#local lengthVarName>length</#local>
 ${I}const int ${lengthVarName} = ${integerRange.bitFieldLength};
 ${I}const ${cppTypeName} ${lowerBoundVarName} = static_cast<${cppTypeName}><#rt>
         <#lt>(zserio::getBitFieldLowerBound(${lengthVarName}, <#if integerRange.checkLowerBound>true<#else>false</#if>));
@@ -367,7 +360,7 @@ public:
             <#if field.offset?? && field.offset.containsIndex>
                 <#local hasAny=true/>
     class <@offset_checker_name field.name/>;
-                <#if withWriterCode>
+                <#if field.withWriterCode>
                     <#local hasAny=true/>
     class <@offset_initializer_name field.name/>;
                 </#if>
@@ -398,7 +391,7 @@ public:
             <#if field.offset?? && field.offset.containsIndex>
 <@define_offset_checker name, field/>
 
-                <#if withWriterCode>
+                <#if field.withWriterCode>
 <@define_offset_initializer name, field/>
 
                 </#if>
@@ -694,23 +687,6 @@ ${I};
     <#return false>
 </#function>
 
-<#function needs_field_range_check field>
-    <#if (field.integerRange?? && !field.integerRange.hasFullRange) ||
-            (field.array?? && field.array.elementIntegerRange?? && !field.array.elementIntegerRange.hasFullRange)>
-        <#return true>
-    </#if>
-    <#return false>
-</#function>
-
-<#function has_field_with_range_check fieldList>
-    <#list fieldList as field>
-        <#if needs_field_range_check(field)>
-            <#return true>
-        </#if>
-    </#list>
-    <#return false>
-</#function>
-
 <#function needs_compound_field_initialization compoundField>
     <#if compoundField.instantiatedParameters?has_content>
         <#return true>
@@ -732,6 +708,36 @@ ${I};
         </#if>
     </#list>
     <#return false>
+</#function>
+
+<#function has_field_any_read_check_code field compoundName indent>
+    <#local checkCode>
+        <#if field.offset?? && !field.offset.containsIndex>
+    <@compound_check_offset_field field, compoundName, "Read", "in.getBitPosition()", indent/>
+        </#if>
+    <@compound_check_constraint_field field, compoundName, indent/>
+    </#local>
+    <#if checkCode == "">
+        <#return false>
+    </#if>
+
+    <#return true>
+</#function>
+
+<#function has_field_any_write_check_code field compoundName indent>
+    <#local checkCode>
+        <#if field.offset?? && !field.offset.containsIndex>
+    <@compound_check_offset_field field, compoundName, "Write", "out.getBitPosition()", indent/>
+        </#if>
+    <@compound_check_constraint_field field, compoundName, indent/>
+    <@compound_check_array_length_field field, compoundName, indent/>
+    <@compound_check_range_field field, compoundName, indent/>
+    </#local>
+    <#if checkCode == "">
+        <#return false>
+    </#if>
+
+    <#return true>
 </#function>
 
 <#function needs_field_getter field>

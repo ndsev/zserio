@@ -211,58 +211,49 @@ int ${name}::hashCode() const
     return result;
 }
 
+<#assign needsReadNewLines=false/>
+<#list fieldList as field>
+    <#if has_field_any_read_check_code(field, name, 2)>
+        <#assign needsReadNewLines=true/>
+        <#break>
+    </#if>
+</#list>
 void ${name}::read(zserio::BitStreamReader&<#if fieldList?has_content> in</#if>)
 {
 <#if fieldList?has_content>
     <#list fieldList as field>
     <@compound_read_field field, name, 1/>
-    </#list>
-    <#if has_field_with_constraint(fieldList)>
+        <#if field?has_next && needsReadNewLines>
 
-    checkConstraints();
-    </#if>
+        </#if>
+    </#list>
 </#if>
 }
-<#assign needsRangeCheck=withRangeCheckCode && has_field_with_range_check(fieldList)/>
 <#if withWriterCode>
 
-<#assign hasPreWriteAction=needsRangeCheck || needsChildrenInitialization || hasFieldWithOffset/>
+<#assign hasPreWriteAction=needsChildrenInitialization || hasFieldWithOffset/>
+<#assign needsWriteNewLines=false/>
+<#list fieldList as field>
+    <#if has_field_any_write_check_code(field, name, 2)>
+        <#assign needsWriteNewLines=true/>
+        <#break>
+    </#if>
+</#list>
 void ${name}::write(zserio::BitStreamWriter&<#if fieldList?has_content> out</#if>, <#rt>
         zserio::PreWriteAction<#if hasPreWriteAction> preWriteAction</#if>)<#lt>
 {
     <#if fieldList?has_content>
         <#if hasPreWriteAction>
-    <@compound_pre_write_actions needsRangeCheck, needsChildrenInitialization, hasFieldWithOffset/>
+    <@compound_pre_write_actions needsChildrenInitialization, hasFieldWithOffset/>
 
-        </#if>
-        <#if has_field_with_constraint(fieldList)>
-    checkConstraints();
         </#if>
         <#list fieldList as field>
     <@compound_write_field field, name, 1/>
+            <#if field?has_next && needsWriteNewLines>
+
+            </#if>
         </#list>
     </#if>
-}
-</#if>
-<#if has_field_with_constraint(fieldList)>
-
-void ${name}::checkConstraints()
-{
-    <#list fieldList as field>
-    <@compound_check_constraint_field field, name, 1/>
-    </#list>
-}
-</#if>
-<#if needsRangeCheck>
-
-void ${name}::checkRanges()
-{<#rt>
-    <#list fieldList as field>
-        <#if needs_field_range_check(field)>
-
-        </#if>
-    <@compound_check_range_field field, name, 1/>
-    </#list>
 }
 </#if>
 

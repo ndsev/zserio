@@ -114,10 +114,6 @@ public:
 
 private:
     <@declare_inner_classes fieldList/>
-<#if withRangeCheckCode && has_field_with_range_check(fieldList)>
-    void checkRanges();
-
-</#if>
     <@compound_parameter_members compoundParametersData/>
     <@compound_constructor_members compoundConstructorsData/>
     ChoiceTag m_choiceTag;

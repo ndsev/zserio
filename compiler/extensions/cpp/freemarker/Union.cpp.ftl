@@ -252,7 +252,6 @@ void ${name}::read(zserio::BitStreamReader&<#if fieldList?has_content> in</#if>)
     <#list fieldList as field>
     case <@choice_tag_name field/>:
         <@compound_read_field field, name, 2/>
-        <@compound_check_constraint_field field, name, 2/>
         break;
     </#list>
     default:
@@ -262,7 +261,6 @@ void ${name}::read(zserio::BitStreamReader&<#if fieldList?has_content> in</#if>)
     m_choiceTag = UNDEFINED_CHOICE;
 </#if>
 }
-<#assign needsRangeCheck=withRangeCheckCode && has_field_with_range_check(fieldList)/>
 <#if withWriterCode>
 
 size_t ${name}::initializeOffsets(size_t bitPosition)
@@ -289,13 +287,13 @@ size_t ${name}::initializeOffsets(size_t bitPosition)
     </#if>
 }
 
-<#assign hasPreWriteAction=needsRangeCheck || needsChildrenInitialization || hasFieldWithOffset/>
+<#assign hasPreWriteAction=needsChildrenInitialization || hasFieldWithOffset/>
 void ${name}::write(zserio::BitStreamWriter&<#if fieldList?has_content> out</#if>, <#rt>
         zserio::PreWriteAction<#if hasPreWriteAction> preWriteAction</#if>)<#lt>
 {
     <#if fieldList?has_content>
         <#if hasPreWriteAction>
-    <@compound_pre_write_actions needsRangeCheck, needsChildrenInitialization, hasFieldWithOffset/>
+    <@compound_pre_write_actions needsChildrenInitialization, hasFieldWithOffset/>
 
         </#if>
     out.writeVarUInt64(static_cast<uint64_t>(m_choiceTag));
@@ -304,30 +302,7 @@ void ${name}::write(zserio::BitStreamWriter&<#if fieldList?has_content> out</#if
     {
         <#list fieldList as field>
     case <@choice_tag_name field/>:
-        <@compound_check_constraint_field field, name, 2/>
         <@compound_write_field field, name, 2/>
-        break;
-        </#list>
-    default:
-        throw zserio::CppRuntimeException("No match in union ${name}!");
-    }
-    </#if>
-}
-</#if>
-<#if needsRangeCheck>
-
-void ${name}::checkRanges()
-{
-    <#if fieldList?has_content>
-    switch (m_choiceTag)
-    {
-        <#list fieldList as field>
-    case <@choice_tag_name field/>:
-            <#if needs_field_range_check(field)>
-        {
-            <@compound_check_range_field field, name, 3, true/>
-        }
-            </#if>
         break;
         </#list>
     default:

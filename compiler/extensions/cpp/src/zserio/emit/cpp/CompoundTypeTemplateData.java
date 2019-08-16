@@ -18,6 +18,7 @@ public class CompoundTypeTemplateData extends UserTypeTemplateData
         final List<Field> fieldTypeList = compoundType.getFields();
         fieldList = new ArrayList<CompoundFieldTemplateData>(fieldTypeList.size());
         final boolean withWriterCode = context.getWithWriterCode();
+        withRangeCheckCode = context.getWithRangeCheckCode();
         final CppNativeTypeMapper cppNativeTypeMapper = context.getCppNativeTypeMapper();
         final ExpressionFormatter cppExpressionFormatter = context.getExpressionFormatter(this);
         final ExpressionFormatter cppIndirectExpressionFormatter =
@@ -27,7 +28,7 @@ public class CompoundTypeTemplateData extends UserTypeTemplateData
         {
             final CompoundFieldTemplateData data = new CompoundFieldTemplateData(cppNativeTypeMapper,
                     compoundType, fieldType, cppExpressionFormatter, cppIndirectExpressionFormatter,
-                    this, withWriterCode);
+                    this, withWriterCode, withRangeCheckCode);
 
             fieldList.add(data);
             if (data.getOptional() != null && data.getOptional().getIsRecursive())
@@ -44,7 +45,6 @@ public class CompoundTypeTemplateData extends UserTypeTemplateData
                 compoundParametersData, fieldList);
 
         needsChildrenInitialization = compoundType.needsChildrenInitialization();
-        withRangeCheckCode = context.getWithRangeCheckCode();
         hasFieldWithOffset = compoundType.hasFieldWithOffset();
     }
 

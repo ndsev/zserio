@@ -32,20 +32,23 @@ public class ChoiceEmitterTemplateData extends CompoundTypeTemplateData
 
         caseMemberList = new ArrayList<CaseMember>();
         final boolean withWriterCode = context.getWithWriterCode();
+        final boolean withRangeCheckCode = context.getWithRangeCheckCode();
         final ExpressionFormatter cppIndirectExpressionFormatter =
                 context.getOwnerIndirectExpressionFormatter(this);
         final Iterable<ChoiceCase> choiceCaseTypes = choiceType.getChoiceCases();
         for (ChoiceCase choiceCaseType : choiceCaseTypes)
         {
             caseMemberList.add(new CaseMember(cppNativeTypeMapper, choiceType, choiceCaseType,
-                    cppExpressionFormatter, cppIndirectExpressionFormatter, this, withWriterCode));
+                    cppExpressionFormatter, cppIndirectExpressionFormatter, this,
+                    withWriterCode, withRangeCheckCode));
         }
 
         final ChoiceDefault choiceDefaultType = choiceType.getChoiceDefault();
         if (choiceDefaultType != null)
         {
             defaultMember = new DefaultMember(cppNativeTypeMapper, choiceType, choiceDefaultType,
-                    cppExpressionFormatter, cppIndirectExpressionFormatter, this, withWriterCode);
+                    cppExpressionFormatter, cppIndirectExpressionFormatter, this,
+                    withWriterCode, withRangeCheckCode);
         }
         else
         {
@@ -85,7 +88,7 @@ public class ChoiceEmitterTemplateData extends CompoundTypeTemplateData
         public CaseMember(CppNativeTypeMapper cppNativeTypeMapper, ChoiceType choiceType,
                 ChoiceCase choiceCaseType, ExpressionFormatter cppExpressionFormatter,
                 ExpressionFormatter cppIndirectExpressionFormatter, IncludeCollector includeCollector,
-                boolean withWriterCode) throws ZserioEmitException
+                boolean withWriterCode, boolean withRangeCheckCode) throws ZserioEmitException
         {
             expressionList = new ArrayList<String>();
             final Iterable<ChoiceCaseExpression> caseExpressions = choiceCaseType.getExpressions();
@@ -95,7 +98,8 @@ public class ChoiceEmitterTemplateData extends CompoundTypeTemplateData
             final Field fieldType = choiceCaseType.getField();
             compoundField = (fieldType != null) ? new CompoundFieldTemplateData(cppNativeTypeMapper,
                     choiceType, fieldType, cppExpressionFormatter,
-                    cppIndirectExpressionFormatter, includeCollector, withWriterCode) : null;
+                    cppIndirectExpressionFormatter, includeCollector,
+                    withWriterCode, withRangeCheckCode) : null;
         }
 
         public List<String> getExpressionList()
@@ -117,12 +121,14 @@ public class ChoiceEmitterTemplateData extends CompoundTypeTemplateData
         public DefaultMember(CppNativeTypeMapper cppNativeTypeMapper,
                 ChoiceType choiceType, ChoiceDefault choiceDefaultType,
                 ExpressionFormatter cppExpressionFormatter, ExpressionFormatter cppIndirectExpressionFormatter,
-                IncludeCollector includeCollector, boolean withWriterCode) throws ZserioEmitException
+                IncludeCollector includeCollector, boolean withWriterCode,
+                boolean withRangeCheckCode) throws ZserioEmitException
         {
             final Field fieldType = choiceDefaultType.getField();
             compoundField = (fieldType != null) ? new CompoundFieldTemplateData(
                     cppNativeTypeMapper, choiceType, fieldType, cppExpressionFormatter,
-                    cppIndirectExpressionFormatter, includeCollector, withWriterCode) : null;
+                    cppIndirectExpressionFormatter, includeCollector,
+                    withWriterCode, withRangeCheckCode) : null;
         }
 
         public CompoundFieldTemplateData getCompoundField()
