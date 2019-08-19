@@ -13,3 +13,8 @@ uninitMemberVar:*/ItemChoiceHolder.h
 uninitMemberVar:*/SubtypedBitfieldParam.cpp
 uninitMemberVar:*/SubtypedBitfieldParamHolder.cpp
 uninitMemberVar:*/SubtypedBitfieldParamHolder.h
+uninitMemberVar:*/compound_and_field_with_same_param/Compound.cpp
+uninitMemberVar:*/compound_and_field_with_same_param/Compound.h
+uninitMemberVar:*/compound_and_field_with_same_param/Field.cpp
+uninitMemberVar:*/compound_and_field_with_same_param/SameParamTest.cpp
+uninitMemberVar:*/compound_and_field_with_same_param/SameParamTest.h

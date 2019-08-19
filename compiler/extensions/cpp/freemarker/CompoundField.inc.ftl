@@ -620,34 +620,42 @@ ${I};
 </#macro>
 
 <#macro compound_field_constructor_template_arg_list compoundName fieldList>
-    <#local hasTemplateArg=false/>
-    <#local singleTemplateArgName=""/>
+    <#local numTemplateArgs=0/>
+    <#local firstTemplateArgName=""/>
     <#local templateArgList>
         <#list fieldList as field>
             <#if field.usesAnyHolder>
             typename ZSERIO_T<#t>
-                <#local hasTemplateArg=true/>
-                <#local singleTemplateArgName="ZSERIO_T"/>
+                <#local numTemplateArgs=1/>
+                <#local firstTemplateArgName="ZSERIO_T"/>
                 <#break/>
             <#else>
                 <#if !field.isSimpleType>
-                    <#if hasTemplateArg><#lt>,
-            </#if>typename ZSERIO_T_${field.name}<#rt>
-                    <#if !hasTemplateArg>
-                        <#local hasTemplateArg=true/>
-                        <#if !field?has_next>
-                            <#local singleTemplateArgName="ZSERIO_T_${field.name}"/>
-                        </#if>
+                    <#if numTemplateArgs != 0>
+            <#lt>,
+            typename ZSERIO_T_${field.name}<#rt>
+                    <#else>
+            typename ZSERIO_T_${field.name}<#t>
                     </#if>
+                    <#if numTemplateArgs == 0 && field?is_first>
+                        <#local firstTemplateArgName="ZSERIO_T_${field.name}"/>
+                    </#if>
+                    <#local numTemplateArgs=numTemplateArgs+1/>
                 </#if>
             </#if>
         </#list>
     </#local>
     <#if templateArgList?has_content>
-        <#if singleTemplateArgName != "">
+        <#if firstTemplateArgName != "">
+            <#if numTemplateArgs == 1>
     template <${templateArgList},
-            typename std::enable_if<!std::is_same<typename std::decay<${singleTemplateArgName}>::type, ${compoundName}>::value,
+            typename std::enable_if<!std::is_same<typename std::decay<${firstTemplateArgName}>::type, ${compoundName}>::value,
                     int>::type = 0>
+            <#else>
+    template <${templateArgList},
+            typename std::enable_if<!std::is_same<typename std::decay<${firstTemplateArgName}>::type, ::zserio::BitStreamReader>::value,
+                    int>::type = 0>
+            </#if>
         <#else>
     template <${templateArgList}>
         </#if>

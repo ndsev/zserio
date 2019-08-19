@@ -223,5 +223,5 @@ TEST_F(ParameterizedTypesSimpleParamTest, write)
     ASSERT_EQ(item, readItem);
 }
 
-} // namespace compound_param
+} // namespace simple_param
 } // namespace parameterized_types

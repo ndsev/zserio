@@ -10,7 +10,7 @@ namespace parameterized_types
 namespace grand_child_param
 {
 
-class GrandChildParamTest : public ::testing::Test
+class ParameterizedTypesGrandChildParamTest : public ::testing::Test
 {
 protected:
     void fillGrandChildParam(GrandChildParam& grandChildParam)
@@ -42,11 +42,11 @@ private:
     static const uint32_t ITEM_EXTRA_PARAM;
 };
 
-const bool     GrandChildParamTest::ITEM_CHOICE_HOLDER_HAS_ITEM = true;
-const uint16_t GrandChildParamTest::ITEM_PARAM = 0xAABB;
-const uint32_t GrandChildParamTest::ITEM_EXTRA_PARAM = 0x11223344;
+const bool     ParameterizedTypesGrandChildParamTest::ITEM_CHOICE_HOLDER_HAS_ITEM = true;
+const uint16_t ParameterizedTypesGrandChildParamTest::ITEM_PARAM = 0xAABB;
+const uint32_t ParameterizedTypesGrandChildParamTest::ITEM_EXTRA_PARAM = 0x11223344;
 
-TEST_F(GrandChildParamTest, write)
+TEST_F(ParameterizedTypesGrandChildParamTest, write)
 {
     GrandChildParam grandChildParam;
     fillGrandChildParam(grandChildParam);
