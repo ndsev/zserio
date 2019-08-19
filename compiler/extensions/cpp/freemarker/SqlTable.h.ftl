@@ -87,11 +87,11 @@ public:
     {
     public:
         ~Reader() = default;
-        Reader(const Reader& other) = delete;
-        Reader& operator=(const Reader& other) = delete;
+        Reader(const Reader&) = delete;
+        Reader& operator=(const Reader&) = delete;
 
-        Reader(Reader&& other) = default;
-        Reader& operator=(Reader&& other) = default;
+        Reader(Reader&&) = default;
+        Reader& operator=(Reader&&) = default;
 
         bool hasNext() const noexcept;
         Row next();
