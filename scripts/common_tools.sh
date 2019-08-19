@@ -180,7 +180,7 @@ detect_python_virtualenv_activate()
         ACTIVATE="${PYTHON_VIRTUALENV_ROOT}/Scripts/activate"
     fi
 
-    eval ${PYTHON_VIRTUALENV_ACTIVATE_OUT}="${ACTIVATE}"
+    eval ${PYTHON_VIRTUALENV_ACTIVATE_OUT}="'${ACTIVATE}'"
 }
 
 # Activate python virtualenv.
@@ -197,14 +197,14 @@ activate_python_virtualenv()
     local PYTHON_VIRTUALENV_ACTIVATE
     detect_python_virtualenv_activate "${PYTHON_VIRTUALENV_ROOT}" PYTHON_VIRTUALENV_ACTIVATE
 
-    if [ ! -z ${PYTHON_VIRTUALENV} ] ; then # forced python virtualenv
+    if [ ! -z "${PYTHON_VIRTUALENV}" ] ; then # forced python virtualenv
         if [ -z "${PYTHON_VIRTUALENV_ACTIVATE}" ] ; then
             stderr_echo "Failed to find virtualenv activate script in '${PYTHON_VIRTUALENV_ROOT}'!"
             return 1
         fi
     else
         if [ -z "${PYTHON_VIRTUALENV_ACTIVATE}" ] ; then
-            ${PYTHON} -m virtualenv -p ${PYTHON} "${PYTHON_VIRTUALENV_ROOT}"
+            "${PYTHON}" -m virtualenv -p "${PYTHON}" "${PYTHON_VIRTUALENV_ROOT}"
             if [ $? -ne 0 ] ; then
                 stderr_echo "Failed to create virtualenv!"
                 return 1
@@ -244,7 +244,8 @@ activate_python_virtualenv()
     else
         check_python_requirements python STANDARD_REQUIREMENTS[@] 2> /dev/null
         if [ $? -ne 0 ] ; then
-            pip install ${STANDARD_REQUIREMENTS[@]}
+            # don't use only pip because this does not support spaces in path (https://github.com/pypa/pip/issues/923)
+            python -m pip install ${STANDARD_REQUIREMENTS[@]}
             if [ $? -ne 0 ] ; then
                 stderr_echo "Failed to install python requirements!"
                 return 1
@@ -418,7 +419,8 @@ convert_to_absolute_path()
     fi
 
     pushd "${DIR_TO_CONVERT}" > /dev/null
-    local ABSOLUTE_PATH="`pwd`"
+    # don't use "`pwd`" here because it does not work if path contains spaces
+    local ABSOLUTE_PATH="'`pwd`'"
     popd > /dev/null
 
     if [ -n "${FILE_TO_CONVERT}" ] ; then

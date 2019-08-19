@@ -84,7 +84,7 @@ install_python_runtime()
     mkdir -p "${PYTHON_RUNTIME_DOC_BUILD_DIR}"
     pushd "${PYTHON_RUNTIME_DOC_BUILD_DIR}" > /dev/null
 
-    cp ${PYTHON_RUNTIME_ROOT}/doc/* .
+    cp "${PYTHON_RUNTIME_ROOT}/doc/"* .
     if [ $? -ne 0 ] ; then
         stderr_echo "Failed to get python doc configuration!"
         popd > /dev/null
@@ -473,13 +473,13 @@ main()
         local ACTION_DESCRIPTION="Building"
     fi
 
-    local ANT_PROPS=("-Dzserio.build_dir=${ZSERIO_BUILD_DIR}"
-                     "-Dzserio.install_dir=${ZSERIO_DISTR_DIR}"
-                     "-Dzserio_extensions.build_dir=${ZSERIO_BUILD_DIR}/compiler/extensions"
-                     "-Dzserio_extensions.install_dir=${ZSERIO_DISTR_DIR}/zserio_libs"
-                     "-Dzserio_runtimes.build_dir=${ZSERIO_BUILD_DIR}/runtime_libs"
-                     "-Dzserio_runtimes.install_dir=${ZSERIO_DISTR_DIR}/runtime_libs"
-                     "-Dzserio_core.jar_file=${ZSERIO_BUILD_DIR}/compiler/core/jar/zserio_core.jar")
+    local ANT_PROPS=(-Dzserio.build_dir="${ZSERIO_BUILD_DIR}"
+                     -Dzserio.install_dir="${ZSERIO_DISTR_DIR}"
+                     -Dzserio_extensions.build_dir="${ZSERIO_BUILD_DIR}/compiler/extensions"
+                     -Dzserio_extensions.install_dir="${ZSERIO_DISTR_DIR}/zserio_libs"
+                     -Dzserio_runtimes.build_dir="${ZSERIO_BUILD_DIR}/runtime_libs"
+                     -Dzserio_runtimes.install_dir="${ZSERIO_DISTR_DIR}/runtime_libs"
+                     -Dzserio_core.jar_file="${ZSERIO_BUILD_DIR}/compiler/core/jar/zserio_core.jar")
 
     # build Zserio Ant task
     if [[ ${PARAM_ANT_TASK} == 1 ]] ; then
@@ -520,8 +520,8 @@ main()
         echo
         local CMAKELISTS_DIR="${ZSERIO_PROJECT_ROOT}/compiler/extensions/cpp/runtime"
         local CPP_BUILD_DIR="${ZSERIO_BUILD_DIR}/runtime_libs/cpp"
-        local CMAKE_ARGS=("-DCMAKE_INSTALL_PREFIX=${ZSERIO_DISTR_DIR}/runtime_libs"
-                          "-DZSERIO_RUNTIME_INCLUDE_INSPECTOR=ON")
+        local CMAKE_ARGS=(-DCMAKE_INSTALL_PREFIX="${ZSERIO_DISTR_DIR}/runtime_libs"
+                          -DZSERIO_RUNTIME_INCLUDE_INSPECTOR=ON)
         local CTEST_ARGS=()
         compile_cpp "${ZSERIO_PROJECT_ROOT}" "${CPP_BUILD_DIR}" "${CMAKELISTS_DIR}" PARAM_CPP_TARGET_ARRAY[@] \
                     CMAKE_ARGS[@] CTEST_ARGS[@] ${CPP_TARGET}
@@ -548,7 +548,7 @@ main()
         echo
         local CMAKELISTS_DIR="${ZSERIO_PROJECT_ROOT}/compiler/extensions/cpp98/runtime"
         local CPP_BUILD_DIR="${ZSERIO_BUILD_DIR}/runtime_libs/cpp98"
-        local CMAKE_ARGS=("-DCMAKE_INSTALL_PREFIX=${ZSERIO_DISTR_DIR}/runtime_libs")
+        local CMAKE_ARGS=(-DCMAKE_INSTALL_PREFIX="${ZSERIO_DISTR_DIR}/runtime_libs")
         local CTEST_ARGS=()
         compile_cpp "${ZSERIO_PROJECT_ROOT}" "${CPP_BUILD_DIR}" "${CMAKELISTS_DIR}" PARAM_CPP98_TARGET_ARRAY[@] \
                     CMAKE_ARGS[@] CTEST_ARGS[@] ${CPP_TARGET}

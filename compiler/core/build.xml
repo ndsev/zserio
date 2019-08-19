@@ -74,7 +74,7 @@ findbugs.home_dir       - Location of the findbugs tool. If not set, findbugs is
                 <classpath>
                     <pathelement location="${3rdparty.jar_dir}/${3rdparty.antlr4.jar_file_name}"/>
                 </classpath>
-                <arg line="-o @{outputdirectory}"/>
+                <arg line="-o '@{outputdirectory}'"/>
                 <arg line="-package @{package}"/>
                 <arg value="@{target}"/>
                 <arg line="-no-listener -visitor"/>
