@@ -23,6 +23,8 @@ abstract class CppDefaultEmitter extends DefaultEmitter
     @Override
     public void beginPackage(Package pkg) throws ZserioEmitException
     {
+        packageSourceFileName = pkg.getLocation().getFileName();
+
         if (packageMapper == null)
             packageMapper = new PackageMapper(pkg, extensionParameters.getTopLevelPackageNameList());
     }
@@ -86,18 +88,27 @@ abstract class CppDefaultEmitter extends DefaultEmitter
                     throws ZserioEmitException
     {
         final File outDir = new File(outPathName, packageName.toFilesystemPath());
-        final String outDirName = outDir.getName();
         final boolean amalgamate = (getWithSourcesAmalgamation() && requestAmalgamate);
-        final String outFileNameWithoutExtension = (amalgamate) ? convertDirNameToCamelCase(outDirName) :
-            outFileNameRoot;
+        final String outFileNameWithoutExtension = (amalgamate) ? getAmalgamFileNameRoot() : outFileNameRoot;
         final File outputFile = new File(outDir, outFileNameWithoutExtension + outputExtension);
         FreeMarkerUtil.processTemplate(CPP_TEMPLATE_LOCATION + templateName, templateData, outputFile,
                 amalgamate);
     }
 
-    private String convertDirNameToCamelCase(String dirName)
+    private String getAmalgamFileNameRoot()
     {
-        final String[] words = dirName.split("_");
+        // strip possible directory
+        final int lastSlashIndex = packageSourceFileName.lastIndexOf(File.separatorChar);
+        final String sourceFileName = (lastSlashIndex == -1) ? packageSourceFileName :
+            packageSourceFileName.substring(lastSlashIndex + 1);
+
+        // strip extensions from source file name
+        final int firstDotIndex = sourceFileName.indexOf('.');
+        final String sourceFileNameRoot = (firstDotIndex == -1) ? sourceFileName :
+            sourceFileName.substring(0, firstDotIndex);
+
+        // convert main part of source file name to camel case
+        final String[] words = sourceFileNameRoot.split("_");
         final StringBuilder builder = new StringBuilder();
         for (String word : words)
             builder.append(Character.toString(word.charAt(0)).toUpperCase(Locale.ENGLISH) + word.substring(1));
@@ -113,4 +124,5 @@ abstract class CppDefaultEmitter extends DefaultEmitter
     private final Parameters extensionParameters;
 
     private PackageMapper packageMapper = null;
+    private String packageSourceFileName = "DefaultAmalgam"; // default value should have never been used
 }
