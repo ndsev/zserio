@@ -56,6 +56,56 @@ TEST_F(SimpleStructureTest, bitStreamReaderConstructor)
     ASSERT_EQ(numberC, simpleStructure.getNumberC());
 }
 
+TEST_F(SimpleStructureTest, copyConstructor)
+{
+    const uint8_t numberA = 0x07;
+    const uint8_t numberB = 0xFF;
+    const uint8_t numberC = 0x7F;
+    SimpleStructure simpleStructure(numberA, numberB, numberC);
+    SimpleStructure simpleStructureCopy(simpleStructure);
+    ASSERT_EQ(numberA, simpleStructureCopy.getNumberA());
+    ASSERT_EQ(numberB, simpleStructureCopy.getNumberB());
+    ASSERT_EQ(numberC, simpleStructureCopy.getNumberC());
+}
+
+TEST_F(SimpleStructureTest, assignmentOperator)
+{
+    const uint8_t numberA = 0x07;
+    const uint8_t numberB = 0xFF;
+    const uint8_t numberC = 0x7F;
+    SimpleStructure simpleStructure(numberA, numberB, numberC);
+    SimpleStructure simpleStructureCopy;
+    simpleStructureCopy = simpleStructure;
+    ASSERT_EQ(numberA, simpleStructureCopy.getNumberA());
+    ASSERT_EQ(numberB, simpleStructureCopy.getNumberB());
+    ASSERT_EQ(numberC, simpleStructureCopy.getNumberC());
+}
+
+TEST_F(SimpleStructureTest, moveConstructor)
+{
+    const uint8_t numberA = 0x07;
+    const uint8_t numberB = 0xFF;
+    const uint8_t numberC = 0x7F;
+    SimpleStructure simpleStructure(numberA, numberB, numberC);
+    SimpleStructure simpleStructureMoved(std::move(simpleStructure));
+    ASSERT_EQ(numberA, simpleStructureMoved.getNumberA());
+    ASSERT_EQ(numberB, simpleStructureMoved.getNumberB());
+    ASSERT_EQ(numberC, simpleStructureMoved.getNumberC());
+}
+
+TEST_F(SimpleStructureTest, moveAssignmentOperator)
+{
+    const uint8_t numberA = 0x07;
+    const uint8_t numberB = 0xFF;
+    const uint8_t numberC = 0x7F;
+    SimpleStructure simpleStructure(numberA, numberB, numberC);
+    SimpleStructure simpleStructureMoved;
+    simpleStructureMoved = std::move(simpleStructure);
+    ASSERT_EQ(numberA, simpleStructureMoved.getNumberA());
+    ASSERT_EQ(numberB, simpleStructureMoved.getNumberB());
+    ASSERT_EQ(numberC, simpleStructureMoved.getNumberC());
+}
+
 TEST_F(SimpleStructureTest, getSetNumberA)
 {
     SimpleStructure simpleStructure;

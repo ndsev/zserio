@@ -25,6 +25,7 @@ class in_place_storage
 {
 public:
     in_place_storage() {}
+    ~in_place_storage() = default;
 
     in_place_storage(const in_place_storage&) = delete;
     in_place_storage& operator=(const in_place_storage&) = delete;
@@ -72,14 +73,14 @@ class heap_storage
 public:
     heap_storage() : m_heap(nullptr) {}
 
-    heap_storage(const heap_storage&) = delete;
-    heap_storage& operator=(const heap_storage&) = delete;
-
     ~heap_storage()
     {
         delete [] m_heap;
         m_heap = nullptr;
     }
+
+    heap_storage(const heap_storage&) = delete;
+    heap_storage& operator=(const heap_storage&) = delete;
 
     heap_storage(heap_storage&& other)
     {

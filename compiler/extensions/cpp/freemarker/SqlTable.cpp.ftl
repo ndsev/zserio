@@ -27,10 +27,6 @@ ${name}::${name}(::zserio::SqliteConnection& db, const ::std::string& tableName,
 {
 }
 
-${name}::~${name}()
-{
-}
-
 <#if withWriterCode>
 void ${name}::createTable()
 {

@@ -145,6 +145,45 @@ TEST_F(SimpleUnionTest, fieldConstructor)
     }
 }
 
+TEST_F(SimpleUnionTest, copyConstructor)
+{
+    SimpleUnion simpleUnion(CASE1_FIELD);
+    ASSERT_EQ(CASE1_FIELD, simpleUnion.getCase1Field());
+
+    SimpleUnion simpleUnionCopy(simpleUnion);
+    ASSERT_EQ(CASE1_FIELD, simpleUnionCopy.getCase1Field());
+}
+
+
+TEST_F(SimpleUnionTest, assignmentOperator)
+{
+    SimpleUnion simpleUnion(CASE2_FIELD);
+    ASSERT_EQ(CASE2_FIELD, simpleUnion.getCase2Field());
+
+    SimpleUnion simpleUnionCopy;
+    simpleUnionCopy = simpleUnion;
+    ASSERT_EQ(CASE2_FIELD, simpleUnionCopy.getCase2Field());
+}
+
+TEST_F(SimpleUnionTest, moveConstructor)
+{
+    SimpleUnion simpleUnion(CASE3_FIELD);
+    ASSERT_EQ(CASE3_FIELD, simpleUnion.getCase3Field());
+
+    SimpleUnion simpleUnionMoved(std::move(simpleUnion));
+    ASSERT_EQ(CASE3_FIELD, simpleUnionMoved.getCase3Field());
+}
+
+TEST_F(SimpleUnionTest, moveAssignmentOperator)
+{
+    SimpleUnion simpleUnion(CASE4_FIELD, SimpleUnion::CHOICE_case4Field);
+    ASSERT_EQ(CASE4_FIELD, simpleUnion.getCase4Field());
+
+    SimpleUnion simpleUnionMoved;
+    simpleUnionMoved = std::move(simpleUnion);
+    ASSERT_EQ(CASE4_FIELD, simpleUnionMoved.getCase4Field());
+}
+
 TEST_F(SimpleUnionTest, choiceTag)
 {
     SimpleUnion simpleUnion;

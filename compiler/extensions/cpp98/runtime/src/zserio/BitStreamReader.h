@@ -39,7 +39,7 @@ public:
     private:
         // disable copy constructor and assignment operator
         ReaderContext(const ReaderContext& other);
-        void operator=(const ReaderContext& other);
+        ReaderContext& operator=(const ReaderContext& other);
 
         void Init();
     };

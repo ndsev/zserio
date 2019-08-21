@@ -238,7 +238,7 @@ public:
                 ${rpc.requestTypeFullName}, ${rpc.responseTypeFullName}>* server_split_streamer) = 0;
 
     private:
-            void BaseClassMustBeDerivedFromService(const Service *service) {}
+        void BaseClassMustBeDerivedFromService(const Service *service) {}
     };
 
     </#if>

@@ -24,6 +24,40 @@ TEST(EmptyStructureTest, bitStreamReaderConstructor)
     ASSERT_EQ(0, emptyStructure.bitSizeOf());
 }
 
+TEST(EmptyStructureTest, copyConstructor)
+{
+    EmptyStructure emptyStructure;
+    EmptyStructure emptyStructureCopy(emptyStructure);
+    ASSERT_EQ(0, emptyStructure.bitSizeOf());
+    ASSERT_EQ(0, emptyStructureCopy.bitSizeOf());
+}
+
+TEST(EmptyStructureTest, assignmentOperator)
+{
+    EmptyStructure emptyStructure;
+    EmptyStructure emptyStructureCopy;
+    emptyStructureCopy = emptyStructure;
+    ASSERT_EQ(0, emptyStructure.bitSizeOf());
+    ASSERT_EQ(0, emptyStructureCopy.bitSizeOf());
+}
+
+TEST(EmptyStructureTest, moveConstructor)
+{
+    EmptyStructure emptyStructure;
+    ASSERT_EQ(0, emptyStructure.bitSizeOf());
+    EmptyStructure emptyStructureMoved(std::move(emptyStructure));
+    ASSERT_EQ(0, emptyStructureMoved.bitSizeOf());
+}
+
+TEST(EmptyStructureTest, moveAssignmentOperator)
+{
+    EmptyStructure emptyStructure;
+    ASSERT_EQ(0, emptyStructure.bitSizeOf());
+    EmptyStructure emptyStructureMoved;
+    emptyStructureMoved = std::move(emptyStructure);
+    ASSERT_EQ(0, emptyStructureMoved.bitSizeOf());
+}
+
 TEST(EmptyStructureTest, bitSizeOf)
 {
     EmptyStructure emptyStructure;

@@ -87,6 +87,7 @@ public:
     {
     public:
         ~Reader() = default;
+
         Reader(const Reader&) = delete;
         Reader& operator=(const Reader&) = delete;
 
@@ -111,8 +112,16 @@ public:
         int m_lastResult;
     };
 
-    ${name}(::zserio::SqliteConnection& db, const ::std::string& tableName, const ::std::string& attachedDbName = "");
-    ~${name}();
+    ${name}(::zserio::SqliteConnection& db, const ::std::string& tableName,
+            const ::std::string& attachedDbName = "");
+
+    ~${name}() = default;
+
+    ${name}(const ${name}&) = delete;
+    ${name}& operator=(const ${name}&) = delete;
+
+    ${name}(${name}&&) = delete;
+    ${name}& operator=(${name}&&) = delete;
 <#if withWriterCode>
 
     void createTable();

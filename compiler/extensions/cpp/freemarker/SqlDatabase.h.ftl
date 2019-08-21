@@ -30,6 +30,12 @@ public:
 
     ~${name}();
 
+    ${name}(const ${name}&) = delete;
+    ${name}& operator=(const ${name}&) = delete;
+
+    ${name}(${name}&&) = delete;
+    ${name}& operator=(${name}&&) = delete;
+
     sqlite3* connection() noexcept;
 
 <#list fields as field>

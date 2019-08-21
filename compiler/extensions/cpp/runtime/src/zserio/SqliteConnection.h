@@ -18,6 +18,13 @@ public:
 
     explicit SqliteConnection(sqlite3* connection = NULL, ConnectionType connectionType = INTERNAL_CONNECTION);
     ~SqliteConnection();
+
+    SqliteConnection(const SqliteConnection&) = delete;
+    SqliteConnection& operator=(const SqliteConnection&) = delete;
+
+    SqliteConnection(SqliteConnection&&) = delete;
+    SqliteConnection& operator=(SqliteConnection&&) = delete;
+
     void reset(sqlite3* connection = NULL, ConnectionType connectionType = INTERNAL_CONNECTION);
 
     ConnectionType getConnectionType() const;
@@ -29,10 +36,6 @@ public:
     void endTransaction(bool wasTransactionStarted);
 
 private:
-    // disable copy constructor and assignment operator
-    SqliteConnection(const SqliteConnection&);
-    SqliteConnection& operator=(const SqliteConnection&);
-
     sqlite3* m_connection;
     ConnectionType m_connectionType;
 };

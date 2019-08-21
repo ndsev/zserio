@@ -298,7 +298,7 @@ TEST_F(WithoutWriterCode, checkGeoMapTableMethods)
 
     assertMethodPresent(type, "GeoMapTable(::zserio::SqliteConnection&",
             "GeoMapTable::GeoMapTable(::zserio::SqliteConnection&");
-    assertMethodPresent(type, "~GeoMapTable(", "GeoMapTable::~GeoMapTable(");
+    assertMethodPresent(type, "~GeoMapTable() = default", ""); // default, i.e. nothing in cpp
     assertMethodPresent(type, "Reader createReader(", "Reader GeoMapTable::createReader(");
 }
 
@@ -311,7 +311,7 @@ TEST_F(WithoutWriterCode, checkWorldDbMethods)
 
     assertMethodPresent(type, "WorldDb(const std::string&", "WorldDb::WorldDb(const std::string&");
     assertMethodPresent(type, "WorldDb(sqlite3*", "WorldDb::WorldDb(sqlite3*");
-    assertMethodPresent(type, "~WorldDb(", "WorldDb::~WorldDb(");
+    assertMethodPresent(type, "~WorldDb()", "WorldDb::~WorldDb(");
     assertMethodPresent(type, "sqlite3* connection(", "sqlite3* WorldDb::connection(");
     assertMethodPresent(type, "GeoMapTable& getEurope(", "GeoMapTable& WorldDb::getEurope(");
     assertMethodPresent(type, "GeoMapTable& getAmerica(", "GeoMapTable& WorldDb::getAmerica(");

@@ -32,6 +32,8 @@ public:
     </#if>
 </#if>
     <@compound_read_constructor_declaration compoundConstructorsData/>
+
+    ~${name}() = default;
 <#if needs_compound_initialization(compoundConstructorsData) || has_field_with_initialization(fieldList)>
 
     <@compound_copy_constructor_declaration compoundConstructorsData/>
@@ -39,6 +41,13 @@ public:
 
     <@compound_move_constructor_declaration compoundConstructorsData/>
     <@compound_move_assignment_operator_declaration compoundConstructorsData/>
+<#else>
+
+    ${name}(const ${name}&) = default;
+    ${name}& operator=(const ${name}&) = default;
+
+    ${name}(${name}&&) = default;
+    ${name}& operator=(${name}&&) = default;
 </#if>
 <#if needs_compound_initialization(compoundConstructorsData) || needsChildrenInitialization>
 
