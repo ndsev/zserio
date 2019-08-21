@@ -122,7 +122,7 @@ public:
 </#if>
 
 private:
-    <@declare_inner_classes fieldList/>
+    <@inner_classes_declaration fieldList/>
     <@compound_parameter_members compoundParametersData/>
     <@compound_constructor_members compoundConstructorsData/>
     ChoiceTag m_choiceTag;

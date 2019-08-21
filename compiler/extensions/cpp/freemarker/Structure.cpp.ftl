@@ -53,28 +53,27 @@ void ${name}::initializeChildren()
 </#if>
 <@compound_parameter_accessors_definition name, compoundParametersData/>
 <#list fieldList as field>
-    <#assign fieldOrOptional=field.optional!field>
     <#if needs_field_getter(field)>
-${fieldOrOptional.cppTypeName}& ${name}::${field.getterName}()
+${field.cppTypeName}& ${name}::${field.getterName}()
 {
     return <@field_member_name field.name/>;
 }
 
     </#if>
-${fieldOrOptional.cppArgumentTypeName} ${name}::${field.getterName}() const
+${field.cppArgumentTypeName} ${name}::${field.getterName}() const
 {
     return <@field_member_name field.name/>;
 }
 
     <#if needs_field_setter(field)>
-void ${name}::${field.setterName}(${fieldOrOptional.cppArgumentTypeName} <@field_argument_name field.name/>)
+void ${name}::${field.setterName}(${field.cppArgumentTypeName} <@field_argument_name field.name/>)
 {
     <@field_member_name field.name/> = <@field_argument_name field.name/>;
 }
 
     </#if>
     <#if needs_field_rvalue_setter(field)>
-void ${name}::${field.setterName}(${fieldOrOptional.cppTypeName}&& <@field_argument_name field.name/>)
+void ${name}::${field.setterName}(${field.cppTypeName}&& <@field_argument_name field.name/>)
 {
     <@field_member_name field.name/> = std::move(<@field_argument_name field.name/>);
 }

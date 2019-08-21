@@ -102,12 +102,11 @@ public:
 </#if>
 
 private:
-    <@declare_inner_classes fieldList/>
+    <@inner_classes_declaration fieldList/>
     <@compound_parameter_members compoundParametersData/>
     <@compound_constructor_members compoundConstructorsData/>
 <#list fieldList as field>
-    <#if field.optional??>${field.optional.cppTypeName}<#else>${field.cppTypeName}</#if> <#rt>
-            <#lt><@field_member_name field.name/>;
+    ${field.cppTypeName} <@field_member_name field.name/>;
 </#list>
 };
 

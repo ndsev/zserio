@@ -25,9 +25,10 @@ ${I}}
 <#macro compound_read_field_inner field compoundName indent>
     <#local I>${""?left_pad(indent * 4)}</#local>
     <@compound_read_field_prolog field, compoundName, indent/>
+    <#local cppTypeName><#if field.optional??>${field.optional.cppRawTypeName}<#else>${field.cppTypeName}</#if></#local>
     <#if field.array??>
         <#if field.usesAnyHolder || field.optional??>
-${I}<@compound_field_storage field/> = ${field.cppTypeName}();
+${I}<@compound_field_storage field/> = ${cppTypeName}();
         </#if>
 ${I}zserio::read<@array_runtime_function_suffix field, true/><#rt>
         <#lt>(<@array_traits field, true/>, <@compound_get_field field/>, in<#rt>
@@ -35,17 +36,17 @@ ${I}zserio::read<@array_runtime_function_suffix field, true/><#rt>
         <#lt><#if field.offset?? && field.offset.containsIndex>, <@offset_checker_name field.name/>(*this)</#if><#rt>
         <#lt>);
     <#elseif field.runtimeFunction??>
-${I}<@compound_field_storage field/> = static_cast<${field.cppTypeName}>(in.read${field.runtimeFunction.suffix}(${field.runtimeFunction.arg!}));
+${I}<@compound_field_storage field/> = static_cast<${cppTypeName}>(in.read${field.runtimeFunction.suffix}(${field.runtimeFunction.arg!}));
     <#elseif field.isEnum>
-${I}<@compound_field_storage field/> = zserio::read<${field.cppTypeName}>(in);
+${I}<@compound_field_storage field/> = zserio::read<${cppTypeName}>(in);
     <#else>
         <#-- compound -->
         <#local compoundParamsArguments><@compound_field_compound_ctor_params field.compound, false/></#local>
         <#local constructorArguments>in<#if compoundParamsArguments?has_content>, ${compoundParamsArguments}</#if></#local>
         <#if field.usesAnyHolder || field.optional??>
-${I}<@compound_field_storage field/> = ${field.cppTypeName}(${constructorArguments});
+${I}<@compound_field_storage field/> = ${cppTypeName}(${constructorArguments});
         <#else>
-${I}<@field_member_name field.name/> = ${field.cppTypeName}(${constructorArguments});<#-- TODO: initialize and then read! -->
+${I}<@field_member_name field.name/> = ${cppTypeName}(${constructorArguments});<#-- TODO: initialize and then read! -->
         </#if>
     </#if>
     <@compound_check_constraint_field field, compoundName, indent/>
@@ -173,16 +174,17 @@ ${I}}
 <#macro compound_check_range_field field compoundName indent>
     <#local I>${""?left_pad(indent * 4)}</#local>
     <#if field.withRangeCheckCode>
+        <#local cppTypeName><#if field.optional??>${field.optional.cppRawTypeName}<#else>${field.cppTypeName}</#if></#local>
         <#if field.integerRange?? && !field.integerRange.hasFullRange>
 ${I}// check range
             <#local fieldValue><@compound_get_field field/></#local>
 ${I}{
-        <@compound_check_range_value fieldValue, field.name, compoundName, field.cppTypeName,
-                field.integerRange, indent + 1/>
+        <@compound_check_range_value fieldValue, field.name, compoundName, cppTypeName, field.integerRange,
+                indent + 1/>
 ${I}}
         <#elseif field.array?? && field.array.elementIntegerRange?? && !field.array.elementIntegerRange.hasFullRange>
 ${I}// check ranges
-${I}for (${field.cppTypeName}::const_iterator it = <@compound_get_field field/>.begin(); <#rt>
+${I}for (${cppTypeName}::const_iterator it = <@compound_get_field field/>.begin(); <#rt>
             <#lt>it != <@compound_get_field field/>.end(); ++it)
 ${I}{
         <@compound_check_range_value "*it", field.name, compoundName, field.array.elementCppTypeName,
@@ -304,7 +306,8 @@ class ${compoundName}::<@element_factory_name field.name/>
 public:
     explicit <@element_factory_name field.name/>(${compoundName}& owner) : m_owner(owner) {}
 
-    void create(${field.cppTypeName}& array, zserio::BitStreamReader& in, size_t index) const
+    <#local cppTypeName><#if field.optional??>${field.optional.cppRawTypeName}<#else>${field.cppTypeName}</#if></#local>
+    void create(${cppTypeName}& array, zserio::BitStreamReader& in, size_t index) const
     {
         (void)index;
         array.emplace_back(in<#if extraConstructorArguments?has_content>, ${extraConstructorArguments}</#if>);
@@ -353,7 +356,7 @@ public:
 };
 </#macro>
 
-<#macro declare_inner_classes fieldList>
+<#macro inner_classes_declaration fieldList>
     <#local hasAny=false/>
     <#list fieldList as field>
         <#if field.array??>
@@ -458,23 +461,21 @@ ${I}endBitPosition = <@compound_get_field field/>.initializeOffsets(endBitPositi
 </#macro>
 
 <#macro compound_field_accessors_declaration field>
-    <#local fieldOrOptional=field.optional!field>
     <#if needs_field_getter(field)>
-    ${fieldOrOptional.cppTypeName}& ${field.getterName}();
+    ${field.cppTypeName}& ${field.getterName}();
     </#if>
-    ${fieldOrOptional.cppArgumentTypeName} ${field.getterName}() const;
+    ${field.cppArgumentTypeName} ${field.getterName}() const;
     <#if needs_field_setter(field)>
-    void ${field.setterName}(${fieldOrOptional.cppArgumentTypeName} <@field_argument_name field.name/>);
+    void ${field.setterName}(${field.cppArgumentTypeName} <@field_argument_name field.name/>);
     </#if>
     <#if needs_field_rvalue_setter(field)>
-    void ${field.setterName}(${fieldOrOptional.cppTypeName}&& <@field_argument_name field.name/>);
+    void ${field.setterName}(${field.cppTypeName}&& <@field_argument_name field.name/>);
     </#if>
 </#macro>
 
 <#macro compound_field_getter_definition field compoundName returnFieldMacroName>
     <#if field.withWriterCode && (field.optional?? || !field.isSimpleType)>
-    <#local fieldOrOptional=field.optional!field>
-${fieldOrOptional.cppTypeName}& ${compoundName}::${field.getterName}()
+${field.cppTypeName}& ${compoundName}::${field.getterName}()
 {
 <@.vars[returnFieldMacroName] field/>
 }
@@ -483,8 +484,7 @@ ${fieldOrOptional.cppTypeName}& ${compoundName}::${field.getterName}()
 </#macro>
 
 <#macro compound_field_const_getter_definition field compoundName returnFieldMacroName>
-    <#local fieldOrOptional=field.optional!field>
-${fieldOrOptional.cppArgumentTypeName} ${compoundName}::${field.getterName}() const
+${field.cppArgumentTypeName} ${compoundName}::${field.getterName}() const
 {
 <@.vars[returnFieldMacroName] field/>
 }
@@ -493,8 +493,7 @@ ${fieldOrOptional.cppArgumentTypeName} ${compoundName}::${field.getterName}() co
 
 <#macro compound_field_setter_definition field compoundName setFieldMacroName>
     <#if field.withWriterCode>
-    <#local fieldOrOptional=field.optional!field>
-void ${compoundName}::${field.setterName}(${fieldOrOptional.cppArgumentTypeName} <@field_argument_name field.name/>)
+void ${compoundName}::${field.setterName}(${field.cppArgumentTypeName} <@field_argument_name field.name/>)
 {
 <@.vars[setFieldMacroName] field/>
 }
@@ -504,8 +503,7 @@ void ${compoundName}::${field.setterName}(${fieldOrOptional.cppArgumentTypeName}
 
 <#macro compound_field_rvalue_setter_definition field compoundName setFieldMacroName>
     <#if field.withWriterCode && !field.isSimpleType><#-- no sense to move an optional holding a simple type -->
-    <#local fieldOrOptional=field.optional!field>
-void ${compoundName}::${field.setterName}(${fieldOrOptional.cppTypeName}&& <@field_argument_name field.name/>)
+void ${compoundName}::${field.setterName}(${field.cppTypeName}&& <@field_argument_name field.name/>)
 {
 <@.vars[setFieldMacroName] field/>
 }
