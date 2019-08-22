@@ -83,6 +83,18 @@ foreach(subproject ${SUBPROJECTS})
     add_subdirectory(${subdirectory})
 endforeach()
 
+if (NOT TEST_SOURCES_LIST)
+    if (NOT TEST_DEPENDENCIES_LIST)
+        message(FATAL_ERROR "Test filter '${ZSERIO_TEST_NAME}' doesn't match any test!")
+    endif ()
+
+    set(EMPTY_TEST_HELPER_CONTENT
+        "#include \"gtest/gtest.h\"\nTEST(EmptyTestHelper, Success)\n{\n    ASSERT_TRUE(true)\;\n}\n"
+    )
+    file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/EmptyTestHelper.cpp ${EMPTY_TEST_HELPER_CONTENT})
+    set(TEST_SOURCES_LIST ${CMAKE_CURRENT_BINARY_DIR}/EmptyTestHelper.cpp)
+endif ()
+
 add_executable(${PROJECT_NAME} ${TEST_SOURCES_LIST})
 
 target_link_libraries(${PROJECT_NAME} gtest_main ${TEST_DEPENDENCIES_LIST})
