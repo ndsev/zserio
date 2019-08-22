@@ -72,10 +72,10 @@ public class CppExtension implements Extension
         emitters.add(new ConstEmitter(outputDir, parameters));
         emitters.add(new SubtypeEmitter(outputDir, parameters));
         emitters.add(new EnumerationEmitter(outputDir, parameters));
-        emitters.add(new ServiceEmitter(outputDir, parameters));
         emitters.add(new StructureEmitter(outputDir, parameters));
         emitters.add(new ChoiceEmitter(outputDir, parameters));
         emitters.add(new UnionEmitter(outputDir, parameters));
+        emitters.add(new ServiceWarningEmitter(outputDir, parameters));
 
         // emit C++98 code
         for (Emitter cppEmitter: emitters)

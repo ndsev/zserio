@@ -23,7 +23,6 @@ import zserio.emit.common.ExpressionFormatter;
 import zserio.emit.common.ZserioEmitException;
 import zserio.emit.cpp98.types.CppNativeType;
 import zserio.emit.cpp98.types.NativeArrayType;
-import zserio.emit.cpp98.types.NativeEnumType;
 import zserio.emit.cpp98.types.NativeIntegralType;
 import zserio.emit.cpp98.types.NativeOptionalHolderType;
 

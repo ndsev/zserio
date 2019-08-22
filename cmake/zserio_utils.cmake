@@ -41,6 +41,7 @@ endfunction()
 #   ZSERIO_CORE_DIR zserio_core_dir
 #   ZSERIO_OPTIONS ... (optional)
 #   IGNORE_WARNINGS ON|OFF (optional, default OFF)
+#   ZSERIO_LOG_FILENAME (optional)
 #
 # Only the files mentioned in OUT_FILES will be added to the static library target.
 # OUT_FILES can be EMPTY if no output should be generated.
@@ -59,7 +60,8 @@ function(zserio_add_library)
             (ARG STREQUAL OUT_FILES) OR
             (ARG STREQUAL ZSERIO_CORE_DIR) OR
             (ARG STREQUAL ZSERIO_OPTIONS) OR
-            (ARG STREQUAL IGNORE_WARNINGS))
+            (ARG STREQUAL IGNORE_WARNINGS) OR
+            (ARG STREQUAL ZSERIO_LOG_FILENAME))
             if (DEFINED VALUE_${ARG})
                 message(FATAL_ERROR "Option ${ARG} used multiple times!")
             endif ()
@@ -107,6 +109,7 @@ function(zserio_add_library)
             -DCORE_DIR=${VALUE_ZSERIO_CORE_DIR} -DOUT_DIR=${VALUE_OUT_DIR}
             -DSOURCE_DIR=${VALUE_SOURCE_DIR} -DMAIN_SOURCE=${VALUE_MAIN_SOURCE}
             -DOPTIONS="${VALUE_ZSERIO_OPTIONS}" -DIGNORE_WARNINGS=${VALUE_IGNORE_WARNINGS}
+            -DLOG_FILENAME="${VALUE_ZSERIO_LOG_FILENAME}"
             -P ${CMAKE_MODULE_PATH}/zserio_tool.cmake
         ${TOUCH_EMPTY_COMMAND}
         DEPENDS ${ALL_SOURCES} ${VALUE_ZSERIO_CORE_DIR}/zserio_core.jar

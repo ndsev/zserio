@@ -1,12 +1,12 @@
-if (GRPC_ENABLED)
+if (GRPC_ENABLED AND ${ZSERIO_CPP_STANDARD} STREQUAL c++11)
     set(ZSERIO_GEN_DIR ${CMAKE_CURRENT_BINARY_DIR}/gen)
     set(ZSERIO_GENERATED_SOURCES
-        ${ZSERIO_GEN_DIR}/service_types/simple_service/SimpleService.h
-        ${ZSERIO_GEN_DIR}/service_types/simple_service/SimpleService.cpp
         ${ZSERIO_GEN_DIR}/service_types/simple_service/Response.h
         ${ZSERIO_GEN_DIR}/service_types/simple_service/Response.cpp
         ${ZSERIO_GEN_DIR}/service_types/simple_service/Request.h
         ${ZSERIO_GEN_DIR}/service_types/simple_service/Request.cpp
+        ${ZSERIO_GEN_DIR}/service_types/simple_service/SimpleService.h
+        ${ZSERIO_GEN_DIR}/service_types/simple_service/SimpleService.cpp
 
         ${ZSERIO_GEN_DIR}/service_types/streaming_service/Age.cpp
         ${ZSERIO_GEN_DIR}/service_types/streaming_service/Age.h
