@@ -55,6 +55,9 @@ protected:
                 Title::DEVELOPER);
     }
 
+    static const char   EMPTY_EMPLOYEE_NAME[];
+    static uint16_t     EMPTY_EMPLOYEE_SALARY;
+
     static const char   EMPLOYEE_TEAM_LEAD_NAME[];
     static uint16_t     EMPLOYEE_TEAM_LEAD_SALARY;
 
@@ -68,6 +71,9 @@ protected:
     static const size_t EMPTY_EMPLOYEE_BIT_SIZE;
     static const size_t TEAM_LEAD_BIT_SIZE;
 };
+
+const char  OptionalArrayRecursionTest::EMPTY_EMPLOYEE_NAME[] = "";
+uint16_t    OptionalArrayRecursionTest::EMPTY_EMPLOYEE_SALARY = 0;
 
 const char  OptionalArrayRecursionTest::EMPLOYEE_TEAM_LEAD_NAME[] = "Nico";
 uint16_t    OptionalArrayRecursionTest::EMPLOYEE_TEAM_LEAD_SALARY = 2000;
@@ -87,7 +93,7 @@ const size_t OptionalArrayRecursionTest::TEAM_LEAD_BIT_SIZE = EMPTY_EMPLOYEE_BIT
 
 TEST_F(OptionalArrayRecursionTest, hasTeamMembers)
 {
-    Employee teamLead;
+    Employee teamLead(EMPTY_EMPLOYEE_NAME, EMPTY_EMPLOYEE_SALARY, Title::DEVELOPER, zserio::NullOpt);
     ASSERT_FALSE(teamLead.hasTeamMembers());
 
     fillTeamLead(teamLead);
@@ -96,7 +102,7 @@ TEST_F(OptionalArrayRecursionTest, hasTeamMembers)
 
 TEST_F(OptionalArrayRecursionTest, bitSizeOf)
 {
-    Employee teamLead;
+    Employee teamLead(EMPTY_EMPLOYEE_NAME, EMPTY_EMPLOYEE_SALARY, Title::DEVELOPER, zserio::NullOpt);
     ASSERT_EQ(EMPTY_EMPLOYEE_BIT_SIZE, teamLead.bitSizeOf());
 
     fillTeamLead(teamLead);
@@ -105,7 +111,7 @@ TEST_F(OptionalArrayRecursionTest, bitSizeOf)
 
 TEST_F(OptionalArrayRecursionTest, initializeOffsets)
 {
-    Employee teamLead;
+    Employee teamLead(EMPTY_EMPLOYEE_NAME, EMPTY_EMPLOYEE_SALARY, Title::DEVELOPER, zserio::NullOpt);
     const size_t bitPosition = 1;
     ASSERT_EQ(bitPosition + EMPTY_EMPLOYEE_BIT_SIZE, teamLead.initializeOffsets(bitPosition));
 
