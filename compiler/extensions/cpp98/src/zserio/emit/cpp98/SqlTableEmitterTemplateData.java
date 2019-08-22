@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
+import zserio.ast.BooleanType;
 import zserio.ast.EnumType;
 import zserio.ast.Parameter;
 import zserio.ast.TypeReference;
@@ -23,7 +24,6 @@ import zserio.emit.common.sql.types.NativeIntegerType;
 import zserio.emit.common.sql.types.NativeRealType;
 import zserio.emit.common.sql.types.SqlNativeType;
 import zserio.emit.cpp98.types.CppNativeType;
-import zserio.emit.cpp98.types.NativeBooleanType;
 import zserio.emit.cpp98.types.NativeEnumType;
 import zserio.tools.HashUtil;
 
@@ -196,7 +196,7 @@ public class SqlTableEmitterTemplateData extends UserTypeTemplateData
                         cppSqlIndirectExpressionFormatter, table, field, parameter, includeCollector));
             }
 
-            isBoolean = nativeFieldType instanceof NativeBooleanType;
+            isBoolean = fieldBaseType instanceof BooleanType;
             enumData = createEnumTemplateData(cppNativeTypeMapper, fieldBaseType);
             sqlTypeData = new SqlTypeTemplateData(sqlNativeTypeMapper, field);
         }
