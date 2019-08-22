@@ -34,6 +34,12 @@ set(ZSERIO_GENERATED_SOURCES
     ${ZSERIO_GEN_DIR}/sql_tables/multiple_pk_table/MultiplePkTable.cpp
     ${ZSERIO_GEN_DIR}/sql_tables/multiple_pk_table/MultiplePkTable.h
 
+    ${ZSERIO_GEN_DIR}/sql_tables/subtyped_enum_field_table/SubtypedEnumFieldTable.cpp
+    ${ZSERIO_GEN_DIR}/sql_tables/subtyped_enum_field_table/SubtypedEnumFieldTable.h
+    ${ZSERIO_GEN_DIR}/sql_tables/subtyped_enum_field_table/SubtypedEnum.h
+    ${ZSERIO_GEN_DIR}/sql_tables/subtyped_enum_field_table/TestEnum.cpp
+    ${ZSERIO_GEN_DIR}/sql_tables/subtyped_enum_field_table/TestEnum.h
+
     ${ZSERIO_GEN_DIR}/sql_tables/subtyped_table/Student.cpp
     ${ZSERIO_GEN_DIR}/sql_tables/subtyped_table/Student.h
     ${ZSERIO_GEN_DIR}/sql_tables/subtyped_table/SubtypedTable.h
@@ -64,6 +70,8 @@ if (NOT ${ZSERIO_CPP_STANDARD} STREQUAL c++11)
         ${ZSERIO_GEN_DIR}/sql_tables/multiple_pk_table/MultiplePkTableRow.h
         ${ZSERIO_GEN_DIR}/sql_tables/subtyped_table/TestTableRow.cpp
         ${ZSERIO_GEN_DIR}/sql_tables/subtyped_table/TestTableRow.h
+        ${ZSERIO_GEN_DIR}/sql_tables/subtyped_enum_field_table/SubtypedEnumFieldTableRow.cpp
+        ${ZSERIO_GEN_DIR}/sql_tables/subtyped_enum_field_table/SubtypedEnumFieldTableRow.h
         ${ZSERIO_GEN_DIR}/sql_tables/without_pk_table/WithoutPkTableRow.cpp
         ${ZSERIO_GEN_DIR}/sql_tables/without_pk_table/WithoutPkTableRow.h
     )
@@ -88,6 +96,7 @@ add_test_sources(
     ${ZSERIO_CPP_DIR}/ComplexTableTest.cpp
     ${ZSERIO_CPP_DIR}/ConstParamTableTest.cpp
     ${ZSERIO_CPP_DIR}/MultiplePkTableTest.cpp
+    ${ZSERIO_CPP_DIR}/SubtypedEnumFieldTableTest.cpp
     ${ZSERIO_CPP_DIR}/SubtypedTableTest.cpp
     ${ZSERIO_CPP_DIR}/WithoutPkTableTest.cpp
 )

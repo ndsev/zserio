@@ -5,7 +5,9 @@ import java.util.List;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
+import zserio.ast.EnumType;
 import zserio.ast.Parameter;
+import zserio.ast.TypeReference;
 import zserio.ast.ZserioType;
 import zserio.ast.ZserioTypeUtil;
 import zserio.ast.Expression;
@@ -173,6 +175,7 @@ public class SqlTableEmitterTemplateData extends UserTypeTemplateData
                 SqlTableType table, Field field, IncludeCollector includeCollector) throws ZserioEmitException
         {
             final ZserioType fieldType = field.getFieldType();
+            final ZserioType fieldBaseType = TypeReference.resolveBaseType(fieldType);
             final CppNativeType nativeFieldType = cppNativeTypeMapper.getCppType(fieldType);
             includeCollector.addHeaderIncludesForType(nativeFieldType);
 
@@ -194,7 +197,7 @@ public class SqlTableEmitterTemplateData extends UserTypeTemplateData
             }
 
             isBoolean = nativeFieldType instanceof NativeBooleanType;
-            enumData = createEnumTemplateData(nativeFieldType);
+            enumData = createEnumTemplateData(cppNativeTypeMapper, fieldBaseType);
             sqlTypeData = new SqlTypeTemplateData(sqlNativeTypeMapper, field);
         }
 
@@ -362,12 +365,14 @@ public class SqlTableEmitterTemplateData extends UserTypeTemplateData
             private final boolean isReal;
         }
 
-        private EnumTemplateData createEnumTemplateData(CppNativeType nativeType)
+        private EnumTemplateData createEnumTemplateData(CppNativeTypeMapper cppNativeTypeMapper,
+                ZserioType fieldBaseType) throws ZserioEmitException
         {
-            if (!(nativeType instanceof NativeEnumType)) // TODO: Test for subtyped enum!!!
+            if (!(fieldBaseType instanceof EnumType))
                 return null;
 
-            return new EnumTemplateData((NativeEnumType)nativeType);
+            final CppNativeType nativeEnumType = cppNativeTypeMapper.getCppType(fieldBaseType);
+            return new EnumTemplateData((NativeEnumType)nativeEnumType);
         }
 
         private final String name;
