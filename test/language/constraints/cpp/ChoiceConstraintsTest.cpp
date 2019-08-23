@@ -46,9 +46,7 @@ TEST_F(ChoiceConstraintsTest, readCorrectConstraints)
     const uint8_t* writeBuffer = writer.getWriteBuffer(writeBufferByteSize);
     zserio::BitStreamReader reader(writeBuffer, writeBufferByteSize);
 
-    ChoiceConstraints choiceConstraints;
-    choiceConstraints.initialize(selector);
-    choiceConstraints.read(reader);
+    const ChoiceConstraints choiceConstraints(reader, selector);
     ASSERT_EQ(selector, choiceConstraints.getSelector());
     ASSERT_EQ(value8, choiceConstraints.getValue8());
 }
@@ -63,9 +61,7 @@ TEST_F(ChoiceConstraintsTest, readWrongValue8Constraint)
     const uint8_t* writeBuffer = writer.getWriteBuffer(writeBufferByteSize);
     zserio::BitStreamReader reader(writeBuffer, writeBufferByteSize);
 
-    ChoiceConstraints choiceConstraints;
-    choiceConstraints.initialize(selector);
-    ASSERT_THROW(choiceConstraints.read(reader), zserio::CppRuntimeException);
+    ASSERT_THROW(ChoiceConstraints choiceConstraints(reader, selector), zserio::CppRuntimeException);
 }
 
 TEST_F(ChoiceConstraintsTest, readWrongValue16Constraint)
@@ -78,9 +74,7 @@ TEST_F(ChoiceConstraintsTest, readWrongValue16Constraint)
     const uint8_t* writeBuffer = writer.getWriteBuffer(writeBufferByteSize);
     zserio::BitStreamReader reader(writeBuffer, writeBufferByteSize);
 
-    ChoiceConstraints choiceConstraints;
-    choiceConstraints.initialize(selector);
-    ASSERT_THROW(choiceConstraints.read(reader), zserio::CppRuntimeException);
+    ASSERT_THROW(ChoiceConstraints choiceConstraints(reader, selector), zserio::CppRuntimeException);
 }
 
 TEST_F(ChoiceConstraintsTest, writeCorrectConstraints)
@@ -97,7 +91,7 @@ TEST_F(ChoiceConstraintsTest, writeCorrectConstraints)
     size_t writeBufferByteSize;
     const uint8_t* writeBuffer = writer.getWriteBuffer(writeBufferByteSize);
     zserio::BitStreamReader reader(writeBuffer, writeBufferByteSize);
-    ChoiceConstraints readChoiceConstraints(reader, selector);
+    const ChoiceConstraints readChoiceConstraints(reader, selector);
     ASSERT_EQ(selector, readChoiceConstraints.getSelector());
     ASSERT_EQ(value16, readChoiceConstraints.getValue16());
     ASSERT_TRUE(choiceConstraints == readChoiceConstraints);

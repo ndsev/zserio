@@ -237,16 +237,13 @@ TEST_F(UInt64ParamChoiceTest, hashCode)
 TEST_F(UInt64ParamChoiceTest, read)
 {
     const uint64_t selector = VARIANT_A_SELECTOR;
-    UInt64ParamChoice uint64ParamChoice;
-    uint64ParamChoice.initialize(selector);
-
     zserio::BitStreamWriter writer;
     const int8_t value = 99;
     writeUInt64ParamChoiceToByteArray(writer, selector, value);
     size_t writeBufferByteSize;
     const uint8_t* writeBuffer = writer.getWriteBuffer(writeBufferByteSize);
     zserio::BitStreamReader reader(writeBuffer, writeBufferByteSize);
-    uint64ParamChoice.read(reader);
+    const UInt64ParamChoice uint64ParamChoice(reader, selector);
 
     ASSERT_EQ(selector, uint64ParamChoice.getSelector());
     ASSERT_EQ(value, uint64ParamChoice.getA());

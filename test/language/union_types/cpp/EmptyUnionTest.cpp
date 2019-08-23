@@ -63,8 +63,7 @@ TEST(EmptyUnionTest, hashCode)
 TEST(EmptyUnionTest, read)
 {
     zserio::BitStreamReader reader(NULL, 0);
-    EmptyUnion emptyUnion;
-    emptyUnion.read(reader);
+    const EmptyUnion emptyUnion(reader);
     ASSERT_EQ(EmptyUnion::UNDEFINED_CHOICE, emptyUnion.choiceTag());
     ASSERT_EQ(0, emptyUnion.bitSizeOf());
 }

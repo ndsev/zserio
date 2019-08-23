@@ -241,16 +241,13 @@ TEST_F(EnumParamChoiceTest, hashCode)
 TEST_F(EnumParamChoiceTest, read)
 {
     const Selector selector = Selector::BLACK;
-    EnumParamChoice enumParamChoice;
-    enumParamChoice.initialize(selector);
-
     zserio::BitStreamWriter writer;
     const int8_t value = 99;
     writeEnumParamChoiceToByteArray(writer, selector, value);
     size_t writeBufferByteSize;
     const uint8_t* writeBuffer = writer.getWriteBuffer(writeBufferByteSize);
     zserio::BitStreamReader reader(writeBuffer, writeBufferByteSize);
-    enumParamChoice.read(reader);
+    const EnumParamChoice enumParamChoice(reader, selector);
 
     ASSERT_EQ(selector, enumParamChoice.getSelector());
     ASSERT_EQ(value, enumParamChoice.getBlack());

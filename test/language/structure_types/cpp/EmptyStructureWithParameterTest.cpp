@@ -164,9 +164,7 @@ TEST(EmptyStructureWithParameterTest, hashCode)
 TEST(EmptyStructureWithParameterTest, read)
 {
     zserio::BitStreamReader reader(NULL, 0);
-
-    EmptyStructureWithParameter emptyStructureWithParameter;
-    emptyStructureWithParameter.read(reader);
+    const EmptyStructureWithParameter emptyStructureWithParameter(reader, 1);
     ASSERT_EQ(0, emptyStructureWithParameter.bitSizeOf());
 }
 

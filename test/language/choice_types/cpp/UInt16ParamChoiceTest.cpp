@@ -274,16 +274,13 @@ TEST_F(UInt16ParamChoiceTest, hashCode)
 TEST_F(UInt16ParamChoiceTest, read)
 {
     const uint16_t tag = VARIANT_A_SELECTOR;
-    UInt16ParamChoice uint16ParamChoice;
-    uint16ParamChoice.initialize(tag);
-
     zserio::BitStreamWriter writer;
     const int8_t value = 99;
     writeUInt16ParamChoiceToByteArray(writer, tag, value);
     size_t writeBufferByteSize;
     const uint8_t* writeBuffer = writer.getWriteBuffer(writeBufferByteSize);
     zserio::BitStreamReader reader(writeBuffer, writeBufferByteSize);
-    uint16ParamChoice.read(reader);
+    const UInt16ParamChoice uint16ParamChoice(reader, tag);
 
     ASSERT_EQ(tag, uint16ParamChoice.getTag());
     ASSERT_EQ(value, uint16ParamChoice.getA());

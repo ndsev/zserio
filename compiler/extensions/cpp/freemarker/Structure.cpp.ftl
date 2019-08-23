@@ -22,10 +22,47 @@
 <@namespace_begin package.path/>
 
 <@define_inner_classes fieldList/>
-<#-- TODO empty ctor must be only if withWriterCode if reader ctor won't need empty ctors -->
-<@compound_constructor_definition compoundConstructorsData/>
+<#macro empty_constructor_field_initialization>
+    <#assign needsComma=false>
+    <#list fieldList as field>
+        <#-- string types are not simple types but can have default value (initializer) -->
+        <#if field.isSimpleType || field.initializer??>
+            <#assign needsEmptyConstructorInitMacro=true>
+            <#if needsComma>
+                <#lt>,
+            </#if>
+        <@field_member_name field.name/>(<#if field.initializer??>${field.initializer}<#else>${field.cppTypeName}()</#if>)<#rt>
+            <#assign needsComma=true>
+        </#if>
+    </#list>
+    <#if needsComma>
 
-<@compound_read_constructor_definition compoundConstructorsData/>
+    </#if>
+</#macro>
+<#if withWriterCode>
+    <#assign needsEmptyConstructorInitMacro=false>
+    <#list fieldList as field>
+        <#if field.isSimpleType || field.initializer??>
+            <#assign needsEmptyConstructorInitMacro=true>
+            <#break>
+        </#if>
+    </#list>
+    <#assign emptyConstructorInitMacroName><#if needsEmptyConstructorInitMacro>empty_constructor_field_initialization</#if></#assign>
+    <@compound_constructor_definition compoundConstructorsData, emptyConstructorInitMacroName/>
+
+</#if>
+<#macro read_constructor_field_initialization>
+    <#list fieldList as field>
+        <@field_member_name field.name/>(${field.readerName}(in))<#if field?has_next>,</#if>
+    </#list>
+</#macro>
+<#macro read_constructor_field_constraints>
+    <#list fieldList as field>
+        <@compound_check_constraint_field field, name, 1/>
+    </#list>
+</#macro>
+<#assign readConstructorInitMacroName><#if fieldList?has_content>read_constructor_field_initialization</#if></#assign>
+<@compound_read_constructor_definition compoundConstructorsData, readConstructorInitMacroName, "read_constructor_field_constraints"/>
 
 <#if needs_compound_initialization(compoundConstructorsData) || has_field_with_initialization(fieldList)>
 <@compound_copy_constructor_definition compoundConstructorsData/>
@@ -209,25 +246,6 @@ int ${name}::hashCode() const
 </#list>
     return result;
 }
-
-<#assign needsReadNewLines=false/>
-<#list fieldList as field>
-    <#if has_field_any_read_check_code(field, name, 2)>
-        <#assign needsReadNewLines=true/>
-        <#break>
-    </#if>
-</#list>
-void ${name}::read(zserio::BitStreamReader&<#if fieldList?has_content> in</#if>)
-{
-<#if fieldList?has_content>
-    <#list fieldList as field>
-    <@compound_read_field field, name, 1/>
-        <#if field?has_next && needsReadNewLines>
-
-        </#if>
-    </#list>
-</#if>
-}
 <#if withWriterCode>
 
 <#assign hasPreWriteAction=needsChildrenInitialization || hasFieldWithOffset/>
@@ -255,5 +273,19 @@ void ${name}::write(zserio::BitStreamWriter&<#if fieldList?has_content> out</#if
     </#if>
 }
 </#if>
+<#list fieldList as field>
+<#assign needsReadNewLines=false/> <#-- TODO TBR?!? -->
+<#list fieldList as field>
+    <#if has_field_any_read_check_code(field, name, 2)>
+        <#assign needsReadNewLines=true/>
+        <#break>
+    </#if>
+</#list>
+
+${field.cppTypeName} ${name}::${field.readerName}(zserio::BitStreamReader& in)
+{
+    <@compound_read_field field, name, 1/>
+}
+</#list>
 
 <@namespace_end package.path/>

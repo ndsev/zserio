@@ -17,6 +17,8 @@ ${I}if (in.readBool())
 ${I}{
         <@compound_read_field_inner field, compoundName, indent + 1/>
 ${I}}
+${I}
+${I}return ${field.cppTypeName}();
     <#else>
     <@compound_read_field_inner field, compoundName, indent/>
     </#if>
@@ -27,29 +29,25 @@ ${I}}
     <@compound_read_field_prolog field, compoundName, indent/>
     <#local cppTypeName><#if field.optional??>${field.optional.cppRawTypeName}<#else>${field.cppTypeName}</#if></#local>
     <#if field.array??>
-        <#if field.usesAnyHolder || field.optional??>
-${I}<@compound_field_storage field/> = ${cppTypeName}();
-        </#if>
-${I}zserio::read<@array_runtime_function_suffix field, true/><#rt>
-        <#lt>(<@array_traits field, true/>, <@compound_get_field field/>, in<#rt>
+${I}${cppTypeName} readArray;
+${I}zserio::read<@array_runtime_function_suffix field, true/>(<@array_traits field, true/>, readArray, in<#rt>
         <#lt><#if field.array.length??>, ${field.array.length}</#if><#rt>
         <#lt><#if field.offset?? && field.offset.containsIndex>, <@offset_checker_name field.name/>(*this)</#if><#rt>
         <#lt>);
+${I}
+${I}return <#if field.usesAnyHolder>zserio::AnyHolder(</#if>readArray<#if field.usesAnyHolder>)</#if>;
     <#elseif field.runtimeFunction??>
-${I}<@compound_field_storage field/> = static_cast<${cppTypeName}>(in.read${field.runtimeFunction.suffix}(${field.runtimeFunction.arg!}));
+${I}return <#if field.usesAnyHolder>zserio::AnyHolder(</#if><#rt>
+            static_cast<${cppTypeName}>(in.read${field.runtimeFunction.suffix}(${field.runtimeFunction.arg!}))<#t>
+            <#lt><#if field.usesAnyHolder>)</#if>;
     <#elseif field.isEnum>
-${I}<@compound_field_storage field/> = zserio::read<${cppTypeName}>(in);
+${I}return <#if field.usesAnyHolder>zserio::AnyHolder(</#if>zserio::read<${cppTypeName}>(in)<#if field.usesAnyHolder>)</#if>;
     <#else>
         <#-- compound -->
         <#local compoundParamsArguments><@compound_field_compound_ctor_params field.compound, false/></#local>
         <#local constructorArguments>in<#if compoundParamsArguments?has_content>, ${compoundParamsArguments}</#if></#local>
-        <#if field.usesAnyHolder || field.optional??>
-${I}<@compound_field_storage field/> = ${cppTypeName}(${constructorArguments});
-        <#else>
-${I}<@field_member_name field.name/> = ${cppTypeName}(${constructorArguments});<#-- TODO: initialize and then read! -->
-        </#if>
+${I}return <#if field.usesAnyHolder>zserio::AnyHolder(</#if>${cppTypeName}(${constructorArguments})<#if field.usesAnyHolder>)</#if>;
     </#if>
-    <@compound_check_constraint_field field, compoundName, indent/>
 </#macro>
 
 <#macro compound_field_compound_ctor_params compound useIndirectExpression>
@@ -509,10 +507,6 @@ void ${compoundName}::${field.setterName}(${field.cppTypeName}&& <@field_argumen
 }
 
     </#if>
-</#macro>
-
-<#macro compound_field_storage field>
-    <#if field.usesAnyHolder>m_objectChoice<#else><@field_member_name field.name/></#if><#t>
 </#macro>
 
 <#macro compound_get_field field>

@@ -169,8 +169,7 @@ TEST(EmptyUnionWithParameterTest, hashCode)
 TEST(EmptyUnionWithParameterTest, read)
 {
     zserio::BitStreamReader reader(NULL, 0);
-    EmptyUnionWithParameter emptyUnionWithParameter;
-    emptyUnionWithParameter.read(reader);
+    const EmptyUnionWithParameter emptyUnionWithParameter(reader, 1);
     ASSERT_EQ(EmptyUnionWithParameter::UNDEFINED_CHOICE, emptyUnionWithParameter.choiceTag());
     ASSERT_EQ(0, emptyUnionWithParameter.bitSizeOf());
 }

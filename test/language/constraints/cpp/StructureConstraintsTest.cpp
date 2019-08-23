@@ -13,7 +13,6 @@ namespace constraints
 namespace structure_constraints
 {
 
-
 class StructureConstraintsTest : public ::testing::Test
 {
 protected:
@@ -34,8 +33,7 @@ TEST_F(StructureConstraintsTest, readCorrectConstraints)
     const uint8_t* writeBuffer = writer.getWriteBuffer(writeBufferByteSize);
     zserio::BitStreamReader reader(writeBuffer, writeBufferByteSize);
 
-    StructureConstraints structureConstraints;
-    structureConstraints.read(reader);
+    const StructureConstraints structureConstraints(reader);
     ASSERT_EQ(BasicColor::BLACK, structureConstraints.getBlackColor());
     ASSERT_EQ(BasicColor::WHITE, structureConstraints.getWhiteColor());
     ASSERT_EQ(ExtendedColor::PURPLE, structureConstraints.getPurpleColor());
@@ -49,8 +47,7 @@ TEST_F(StructureConstraintsTest, readWrongBlackConstraint)
     const uint8_t* writeBuffer = writer.getWriteBuffer(writeBufferByteSize);
     zserio::BitStreamReader reader(writeBuffer, writeBufferByteSize);
 
-    StructureConstraints structureConstraints;
-    ASSERT_THROW(structureConstraints.read(reader), zserio::CppRuntimeException);
+    ASSERT_THROW(StructureConstraints structureConstraints(reader), zserio::CppRuntimeException);
 }
 
 TEST_F(StructureConstraintsTest, readWrongWhiteConstraint)
@@ -61,8 +58,7 @@ TEST_F(StructureConstraintsTest, readWrongWhiteConstraint)
     const uint8_t* writeBuffer = writer.getWriteBuffer(writeBufferByteSize);
     zserio::BitStreamReader reader(writeBuffer, writeBufferByteSize);
 
-    StructureConstraints structureConstraints;
-    ASSERT_THROW(structureConstraints.read(reader), zserio::CppRuntimeException);
+    ASSERT_THROW(StructureConstraints structureConstraints(reader), zserio::CppRuntimeException);
 }
 
 TEST_F(StructureConstraintsTest, readWrongPurpleConstraint)
@@ -73,8 +69,7 @@ TEST_F(StructureConstraintsTest, readWrongPurpleConstraint)
     const uint8_t* writeBuffer = writer.getWriteBuffer(writeBufferByteSize);
     zserio::BitStreamReader reader(writeBuffer, writeBufferByteSize);
 
-    StructureConstraints structureConstraints;
-    ASSERT_THROW(structureConstraints.read(reader), zserio::CppRuntimeException);
+    ASSERT_THROW(StructureConstraints structureConstraints(reader), zserio::CppRuntimeException);
 }
 
 TEST_F(StructureConstraintsTest, writeCorrectConstraints)
@@ -90,7 +85,7 @@ TEST_F(StructureConstraintsTest, writeCorrectConstraints)
     size_t writeBufferByteSize;
     const uint8_t* writeBuffer = writer.getWriteBuffer(writeBufferByteSize);
     zserio::BitStreamReader reader(writeBuffer, writeBufferByteSize);
-    StructureConstraints readStructureConstraints(reader);
+    const StructureConstraints readStructureConstraints(reader);
     ASSERT_EQ(BasicColor::BLACK, readStructureConstraints.getBlackColor());
     ASSERT_EQ(BasicColor::WHITE, readStructureConstraints.getWhiteColor());
     ASSERT_EQ(ExtendedColor::PURPLE, readStructureConstraints.getPurpleColor());

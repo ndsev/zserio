@@ -50,8 +50,7 @@ TEST_F(UInt64OffsetTest, read)
     const uint8_t* buffer = writer.getWriteBuffer(bufferSize);
     BitStreamReader reader(buffer, bufferSize);
 
-    UInt64Offset uint64Offset;
-    uint64Offset.read(reader);
+    const UInt64Offset uint64Offset(reader);
     ASSERT_EQ(OFFSET, uint64Offset.getOffset());
 }
 
@@ -63,8 +62,7 @@ TEST_F(UInt64OffsetTest, readWrongOffsets)
     const uint8_t* buffer = writer.getWriteBuffer(bufferSize);
     BitStreamReader reader(buffer, bufferSize);
 
-    UInt64Offset uint64Offset;
-    ASSERT_THROW(uint64Offset.read(reader), CppRuntimeException);
+    ASSERT_THROW(UInt64Offset uint64Offset(reader), CppRuntimeException);
 }
 
 TEST_F(UInt64OffsetTest, bitSizeOf)

@@ -11,12 +11,9 @@
 #include <zserio/BitPositionUtil.h>
 #include <zserio/BitSizeOfCalculator.h>
 #include <zserio/BitFieldUtil.h>
-<#list fieldList as field>
-    <#if field.constraint??>
+<#if has_field_with_constraint(fieldList)>
 #include <zserio/ConstraintException.h>
-        <#break>
-    </#if>
-</#list>
+</#if>
 <@system_includes cppSystemIncludes, false/>
 
 #include "<@include_path package.path, "${name}.h"/>"
@@ -25,10 +22,28 @@
 <@namespace_begin package.path/>
 
 <@define_inner_classes fieldList/>
-<#-- TODO empty ctor must be only if withWriterCode if reader ctor won't need empty ctors -->
-<@compound_constructor_definition compoundConstructorsData/>
+<#if withWriterCode>
+    <@compound_constructor_definition compoundConstructorsData/>
 
-<@compound_read_constructor_definition compoundConstructorsData/>
+</#if>
+<#macro read_constructor_field_initialization>
+        m_objectChoice(readObject(in))
+</#macro>
+<#macro choice_constraint_member member>
+    <#if member.compoundField??>
+        <@compound_check_constraint_field member.compoundField, name, 2/>
+    <#else>
+        // empty
+    </#if>
+</#macro>
+<#macro read_constructor_field_constraints>
+    <#if has_field_with_constraint(fieldList)>
+        <@choice_switch "choice_constraint_member", true/>
+    </#if>
+</#macro>
+<#assign readConstructorInitMacroName><#if fieldList?has_content>read_constructor_field_initialization</#if></#assign>
+<@compound_read_constructor_definition compoundConstructorsData, readConstructorInitMacroName,
+        "read_constructor_field_constraints"/>
 
 <#if needs_compound_initialization(compoundConstructorsData) || has_field_with_initialization(fieldList)>
 <@compound_copy_constructor_definition compoundConstructorsData/>
@@ -210,7 +225,7 @@ bool ${name}::operator==(const ${name}& other) const
 
     <@compound_parameter_comparison_with_any_holder compoundParametersData/>
     <#if fieldList?has_content>
-    <@choice_switch "choice_compare_member" false/>
+    <@choice_switch "choice_compare_member", false/>
     <#else>
     return true;
     </#if>
@@ -235,20 +250,6 @@ int ${name}::hashCode() const
 
     return result;
 }
-
-<#macro choice_read_member member>
-    <#if member.compoundField??>
-        <@compound_read_field member.compoundField, name, 2/>
-    <#else>
-        // empty
-    </#if>
-</#macro>
-void ${name}::read(zserio::BitStreamReader&<#if fieldList?has_content> in</#if>)
-{
-<#if fieldList?has_content>
-    <@choice_switch "choice_read_member"/>
-</#if>
-}
 <#if withWriterCode>
 
 <#macro choice_write_member member>
@@ -269,6 +270,22 @@ void ${name}::write(zserio::BitStreamWriter&<#if fieldList?has_content> out</#if
         </#if>
     <@choice_switch "choice_write_member"/>
     </#if>
+}
+</#if>
+<#if fieldList?has_content>
+
+<#macro choice_read_member member>
+    <#if member.compoundField??>
+        {
+            <@compound_read_field member.compoundField, name, 3/>
+        }
+    <#else>
+        // empty
+    </#if>
+</#macro>
+zserio::AnyHolder ${name}::readObject(zserio::BitStreamReader& in)
+{
+    <@choice_switch "choice_read_member", false/>
 }
 </#if>
 

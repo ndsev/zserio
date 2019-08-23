@@ -240,16 +240,13 @@ TEST_F(FullEnumParamChoiceTest, hashCode)
 TEST_F(FullEnumParamChoiceTest, read)
 {
     const Selector selector = Selector::BLACK;
-    FullEnumParamChoice fullEnumParamChoice;
-    fullEnumParamChoice.initialize(selector);
-
     zserio::BitStreamWriter writer;
     const int8_t value = 99;
     writeFullEnumParamChoiceToByteArray(writer, selector, value);
     size_t writeBufferByteSize;
     const uint8_t* writeBuffer = writer.getWriteBuffer(writeBufferByteSize);
     zserio::BitStreamReader reader(writeBuffer, writeBufferByteSize);
-    fullEnumParamChoice.read(reader);
+    FullEnumParamChoice fullEnumParamChoice(reader, selector);
 
     ASSERT_EQ(selector, fullEnumParamChoice.getSelector());
     ASSERT_EQ(value, fullEnumParamChoice.getBlack());

@@ -23,18 +23,37 @@
 <@namespace_begin package.path/>
 
 <@define_inner_classes fieldList/>
-<#-- TODO empty ctor must be only if withWriterCode if reader ctor won't need empty ctors -->
-${name}::${name}() noexcept :
-    <#assign constructorMembersInitialization><@compound_constructor_members_initialization compoundConstructorsData/></#assign>
-    <#if constructorMembersInitialization?has_content>
-        ${constructorMembersInitialization}, m_choiceTag(UNDEFINED_CHOICE)
+<#macro empty_constructor_field_initialization>
+        m_choiceTag(UNDEFINED_CHOICE)
+</#macro>
+<#if withWriterCode>
+    <@compound_constructor_definition compoundConstructorsData, "empty_constructor_field_initialization"/>
+
+</#if>
+<#macro read_constructor_field_initialization>
+    <#if fieldList?has_content>
+        m_choiceTag(static_cast<ChoiceTag>(zserio::convertVarUInt64ToInt32(in.readVarUInt64()))),
+        m_objectChoice(readObject(in))
     <#else>
         m_choiceTag(UNDEFINED_CHOICE)
     </#if>
-{
-}
-
-<@compound_read_constructor_definition compoundConstructorsData/>
+</#macro>
+<#macro read_constructor_field_constraints>
+    <#if has_field_with_constraint(fieldList)>
+    switch (m_choiceTag)
+    {
+        <#list fieldList as field>
+    case <@choice_tag_name field/>:
+        <@compound_check_constraint_field field, name, 2/>
+        break;
+        </#list>
+    default:
+        throw zserio::CppRuntimeException("No match in union ${name}!");
+    }
+    </#if>
+</#macro>
+<@compound_read_constructor_definition compoundConstructorsData, "read_constructor_field_initialization",
+        "read_constructor_field_constraints"/>
 
 <#if needs_compound_initialization(compoundConstructorsData) || has_field_with_initialization(fieldList)>
 ${name}::${name}(<#rt>
@@ -240,26 +259,6 @@ int ${name}::hashCode() const
 
     return result;
 }
-
-void ${name}::read(zserio::BitStreamReader&<#if fieldList?has_content> in</#if>)
-{
-<#if fieldList?has_content>
-    m_choiceTag = static_cast<ChoiceTag>(zserio::convertVarUInt64ToInt32(in.readVarUInt64()));
-
-    switch (m_choiceTag)
-    {
-    <#list fieldList as field>
-    case <@choice_tag_name field/>:
-        <@compound_read_field field, name, 2/>
-        break;
-    </#list>
-    default:
-        throw zserio::CppRuntimeException("No match in union ${name}!");
-    }
-<#else>
-    m_choiceTag = UNDEFINED_CHOICE;
-</#if>
-}
 <#if withWriterCode>
 
 size_t ${name}::initializeOffsets(size_t bitPosition)
@@ -308,6 +307,23 @@ void ${name}::write(zserio::BitStreamWriter&<#if fieldList?has_content> out</#if
         throw zserio::CppRuntimeException("No match in union ${name}!");
     }
     </#if>
+}
+</#if>
+<#if fieldList?has_content>
+
+zserio::AnyHolder ${name}::readObject(zserio::BitStreamReader& in)
+{
+    switch (m_choiceTag)
+    {
+        <#list fieldList as field>
+    case <@choice_tag_name field/>:
+        {
+            <@compound_read_field field, name, 3/>
+        }
+        </#list>
+    default:
+        throw zserio::CppRuntimeException("No match in union ${name}!");
+    }
 }
 </#if>
 

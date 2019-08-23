@@ -22,9 +22,8 @@
 class ${name}
 {
 public:
-<#-- TODO empty ctor must be only if withWriterCode if reader ctor won't need empty ctors -->
-    <@compound_constructor_declaration compoundConstructorsData/>
 <#if withWriterCode>
+    <@compound_constructor_declaration compoundConstructorsData/>
     <#if fieldList?has_content>
 
     <@compound_fields_constructor_template compoundConstructorsData/>
@@ -72,15 +71,18 @@ public:
 
     bool operator==(const ${name}& other) const;
     int hashCode() const;
-
-    void read(zserio::BitStreamReader& in);
 <#if withWriterCode>
+
     void write(zserio::BitStreamWriter& out,
             zserio::PreWriteAction preWriteAction = zserio::ALL_PRE_WRITE_ACTIONS);
 </#if>
 
 private:
     <@inner_classes_declaration fieldList/>
+<#if fieldList?has_content>
+    zserio::AnyHolder readObject(zserio::BitStreamReader& in);
+
+</#if>
     <@compound_parameter_members compoundParametersData/>
     <@compound_constructor_members compoundConstructorsData/>
     zserio::AnyHolder m_objectChoice;

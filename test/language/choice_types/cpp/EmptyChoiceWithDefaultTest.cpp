@@ -137,10 +137,7 @@ TEST(EmptyChoiceWithDefaultTest, read)
 {
     const uint8_t selector = 1;
     zserio::BitStreamReader reader(NULL, 0);
-
-    EmptyChoiceWithDefault emptyChoiceWithDefault;
-    emptyChoiceWithDefault.initialize(selector);
-    emptyChoiceWithDefault.read(reader);
+    const EmptyChoiceWithDefault emptyChoiceWithDefault(reader, selector);
     ASSERT_EQ(selector, emptyChoiceWithDefault.getSelector());
     ASSERT_EQ(0, emptyChoiceWithDefault.bitSizeOf());
 }

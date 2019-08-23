@@ -214,16 +214,13 @@ TEST_F(BoolParamChoiceTest, hashCode)
 TEST_F(BoolParamChoiceTest, read)
 {
     const bool selector = true;
-    BoolParamChoice boolParamChoice;
-    boolParamChoice.initialize(selector);
-
     zserio::BitStreamWriter writer;
     const int8_t value = 99;
     writeBoolParamChoiceToByteArray(writer, selector, value);
     size_t writeBufferByteSize;
     const uint8_t* writeBuffer = writer.getWriteBuffer(writeBufferByteSize);
     zserio::BitStreamReader reader(writeBuffer, writeBufferByteSize);
-    boolParamChoice.read(reader);
+    const BoolParamChoice boolParamChoice(reader, selector);
 
     ASSERT_EQ(selector, boolParamChoice.getSelector());
     ASSERT_EQ(value, boolParamChoice.getBlack());

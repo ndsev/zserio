@@ -60,6 +60,7 @@ public class CompoundFieldTemplateData
 
         getterName = AccessorNameFormatter.getGetterName(field);
         setterName = AccessorNameFormatter.getSetterName(field);
+        readerName = AccessorNameFormatter.getReaderName(field);
 
         integerRange = createIntegerRange(cppNativeTypeMapper, fieldType, cppExpressionFormatter);
 
@@ -121,6 +122,11 @@ public class CompoundFieldTemplateData
     public String getSetterName()
     {
         return setterName;
+    }
+
+    public String getReaderName()
+    {
+        return readerName;
     }
 
     public IntegerRange getIntegerRange()
@@ -642,6 +648,7 @@ public class CompoundFieldTemplateData
     private final String                        zserioTypeName;
     private final String                        getterName;
     private final String                        setterName;
+    private final String                        readerName;
     private final IntegerRange                  integerRange;
     private final String                        alignmentValue;
     private final String                        initializer;

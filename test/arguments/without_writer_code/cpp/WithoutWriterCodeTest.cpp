@@ -167,10 +167,10 @@ TEST_F(WithoutWriterCode, checkExtraParamUnionMethods)
 {
     const char* type = "ExtraParamUnion";
 
+    assertMethodNotPresent(type, " ExtraParamUnion()", "ExtraParamUnion::ExtraParamUnion()");
     assertMethodNotPresent(type, "size_t initializeOffsets(", "size_t ExtraParamUnion::initializeOffsets(");
     assertMethodNotPresent(type, "void write(", "void ExtraParamUnion::write(");
 
-    assertMethodPresent(type, "ExtraParamUnion()", "ExtraParamUnion::ExtraParamUnion()");
     assertMethodPresent(type, "ExtraParamUnion(zserio::BitStreamReader&",
             "ExtraParamUnion::ExtraParamUnion(zserio::BitStreamReader&");
     assertMethodPresent(type, "ChoiceTag choiceTag(", "ChoiceTag ExtraParamUnion::choiceTag(");
@@ -179,17 +179,16 @@ TEST_F(WithoutWriterCode, checkExtraParamUnionMethods)
     assertMethodPresent(type, "size_t bitSizeOf(", "size_t ExtraParamUnion::bitSizeOf(");
     assertMethodPresent(type, "bool operator==(", "bool ExtraParamUnion::operator==(");
     assertMethodPresent(type, "int hashCode(", "int ExtraParamUnion::hashCode(");
-    assertMethodPresent(type, "void read(", "void ExtraParamUnion::read(");
 }
 
 TEST_F(WithoutWriterCode, checkItemMethods)
 {
     const char* type = "Item";
 
+    assertMethodNotPresent(type, " Item()", "Item::Item()");
     assertMethodNotPresent(type, "size_t initializeOffsets(", "size_t Item::initializeOffsets(");
     assertMethodNotPresent(type, "void write(", "void Item::write(");
 
-    assertMethodPresent(type, "Item()", "Item::Item()");
     assertMethodPresent(type, "Item(zserio::BitStreamReader&", "Item::Item(zserio::BitStreamReader&");
     assertMethodPresent(type, "Item(const Item&", "Item::Item(const Item&");
     assertMethodPresent(type, "Item& operator=(const Item&", "Item& Item::operator=(const Item&");
@@ -203,17 +202,16 @@ TEST_F(WithoutWriterCode, checkItemMethods)
     assertMethodPresent(type, "size_t bitSizeOf(", "size_t Item::bitSizeOf(");
     assertMethodPresent(type, "bool operator==(", "bool Item::operator==(");
     assertMethodPresent(type, "int hashCode(", "int Item::hashCode(");
-    assertMethodPresent(type, "void read(", "void Item::read(");
 }
 
 TEST_F(WithoutWriterCode, checkItemChoiceMethods)
 {
     const char* type = "ItemChoice";
 
+    assertMethodNotPresent(type, " ItemChoice()", "ItemChoice::ItemChoice()");
     assertMethodNotPresent(type, "size_t initializeOffsets(", "size_t ItemChoice::initializeOffsets(");
     assertMethodNotPresent(type, "void write(", "void ItemChoice::write(");
 
-    assertMethodPresent(type, "ItemChoice()", "ItemChoice::ItemChoice()");
     assertMethodPresent(type, "ItemChoice(zserio::BitStreamReader&",
             "ItemChoice::ItemChoice(zserio::BitStreamReader&");
     assertMethodPresent(type, "ItemChoice(const ItemChoice&", "ItemChoice::ItemChoice(const ItemChoice&");
@@ -232,17 +230,16 @@ TEST_F(WithoutWriterCode, checkItemChoiceMethods)
     assertMethodPresent(type, "size_t bitSizeOf(", "size_t ItemChoice::bitSizeOf(");
     assertMethodPresent(type, "bool operator==(", "bool ItemChoice::operator==(");
     assertMethodPresent(type, "int hashCode(", "int ItemChoice::hashCode(");
-    assertMethodPresent(type, "void read(", "void ItemChoice::read(");
 }
 
 TEST_F(WithoutWriterCode, checkItemChoiceHolderMethods)
 {
     const char* type = "ItemChoiceHolder";
 
+    assertMethodNotPresent(type, " ItemChoiceHolder()", "ItemChoiceHolder::ItemChoiceHolder()");
     assertMethodNotPresent(type, "size_t initializeOffsets(", "size_t ItemChoiceHolder::initializeOffsets(");
     assertMethodNotPresent(type, "void write(", "void ItemChoiceHolder::write(");
 
-    assertMethodPresent(type, "ItemChoiceHolder()", "ItemChoiceHolder::ItemChoiceHolder()");
     assertMethodPresent(type, "ItemChoiceHolder(zserio::BitStreamReader&",
             "ItemChoiceHolder::ItemChoiceHolder(zserio::BitStreamReader&");
     assertMethodPresent(type, "ItemChoiceHolder(const ItemChoiceHolder&",
@@ -259,17 +256,16 @@ TEST_F(WithoutWriterCode, checkItemChoiceHolderMethods)
     assertMethodPresent(type, "size_t bitSizeOf(", "size_t ItemChoiceHolder::bitSizeOf(");
     assertMethodPresent(type, "bool operator==(", "bool ItemChoiceHolder::operator==(");
     assertMethodPresent(type, "int hashCode(", "int ItemChoiceHolder::hashCode(");
-    assertMethodPresent(type, "void read(", "void ItemChoiceHolder::read(");
 }
 
 TEST_F(WithoutWriterCode, checkTileMethods)
 {
     const char* type = "Tile";
 
+    assertMethodNotPresent(type, " Tile()", "Tile::Tile()");
     assertMethodNotPresent(type, "size_t initializeOffsets(", "size_t Tile::initializeOffsets(");
     assertMethodNotPresent(type, "void write(", "void Tile::write(");
 
-    assertMethodPresent(type, "Tile()", "Tile::Tile()");
     assertMethodPresent(type, "Tile(zserio::BitStreamReader&", "Tile::Tile(zserio::BitStreamReader&");
     assertMethodPresent(type, "void initializeChildren(", "void Tile::initializeChildren(");
     assertMethodPresent(type, "uint8_t getVersion(", "uint8_t Tile::getVersion(");
@@ -279,7 +275,6 @@ TEST_F(WithoutWriterCode, checkTileMethods)
     assertMethodPresent(type, "size_t bitSizeOf(", "size_t Tile::bitSizeOf(");
     assertMethodPresent(type, "bool operator==(", "bool Tile::operator==");
     assertMethodPresent(type, "int hashCode(", "int Tile::hashCode(");
-    assertMethodPresent(type, "void read(", "void Tile::read(");
 }
 
 TEST_F(WithoutWriterCode, checkGeoMapTableMethods)
