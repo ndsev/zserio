@@ -42,7 +42,7 @@ size_t bitSizeOf(const ARRAY_TRAITS& arrayTraits, const std::vector<typename ARR
         size_t bitPosition)
 {
     if (ARRAY_TRAITS::IS_BITSIZEOF_CONSTANT)
-        return arrayTraits.bitSizeOf(bitPosition, typename ARRAY_TRAITS::type()) * array.size();
+        return array.empty() ? 0 : arrayTraits.bitSizeOf(bitPosition, array.at(0)) * array.size();
 
     size_t endBitPosition = bitPosition;
     for (const typename ARRAY_TRAITS::type& element : array)
@@ -59,7 +59,7 @@ size_t bitSizeOfAligned(const ARRAY_TRAITS& arrayTraits, const std::vector<typen
     const size_t arraySize = array.size();
     if (ARRAY_TRAITS::IS_BITSIZEOF_CONSTANT && arraySize > 0)
     {
-        const size_t elementBitSize = arrayTraits.bitSizeOf(bitPosition, typename ARRAY_TRAITS::type());
+        const size_t elementBitSize = arrayTraits.bitSizeOf(bitPosition, array.at(0));
         endBitPosition = alignTo(NUM_BITS_PER_BYTE, endBitPosition);
         endBitPosition += (arraySize - 1) * alignTo(NUM_BITS_PER_BYTE, elementBitSize) + elementBitSize;
     }
@@ -99,8 +99,8 @@ size_t initializeOffsets(const ARRAY_TRAITS& arrayTraits, std::vector<typename A
 {
     if (ARRAY_TRAITS::IS_BITSIZEOF_CONSTANT)
     {
-        const size_t elementBitSize = arrayTraits.bitSizeOf(bitPosition, typename ARRAY_TRAITS::type());
-        return bitPosition + elementBitSize * array.size();
+        return bitPosition +
+                (array.empty() ? 0 : array.size() * arrayTraits.bitSizeOf(bitPosition, array.at(0)));
     }
 
     size_t endBitPosition = bitPosition;
