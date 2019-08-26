@@ -9,6 +9,9 @@ set(ZSERIO_GENERATED_SOURCES
     ${ZSERIO_GEN_DIR}/constraints/structure_constraints/ExtendedColor.h
     ${ZSERIO_GEN_DIR}/constraints/structure_constraints/StructureConstraints.cpp
     ${ZSERIO_GEN_DIR}/constraints/structure_constraints/StructureConstraints.h
+
+    ${ZSERIO_GEN_DIR}/constraints/union_constraints/UnionConstraints.cpp
+    ${ZSERIO_GEN_DIR}/constraints/union_constraints/UnionConstraints.h
 )
 
 zserio_add_library(TARGET constraints_zs
@@ -23,6 +26,7 @@ zserio_add_library(TARGET constraints_zs
 add_test_sources(
     ${ZSERIO_CPP_DIR}/ChoiceConstraintsTest.cpp
     ${ZSERIO_CPP_DIR}/StructureConstraintsTest.cpp
+    ${ZSERIO_CPP_DIR}/UnionConstraintsTest.cpp
 )
 
 add_test_dependencies(constraints_zs)

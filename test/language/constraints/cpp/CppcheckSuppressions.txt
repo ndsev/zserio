@@ -2,3 +2,4 @@
 uninitMemberVar:*/ChoiceConstraints.cpp
 uninitMemberVar:*/ChoiceConstraints.h
 uninitMemberVar:*/StructureConstraints.cpp
+uninitMemberVar:*/UnionConstraints.cpp
