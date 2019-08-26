@@ -138,7 +138,6 @@ private:
 };
 <@namespace_end package.path/>
 <#if needsRpcTraits>
-
     <@grpc_serialization_traits fullName/>
 </#if>
 

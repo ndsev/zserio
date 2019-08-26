@@ -2,6 +2,7 @@
 <#include "Service.cpp.inc.ftl">
 <@file_header generatorDescription/>
 
+#include <grpcpp/impl/codegen/completion_queue.h>
 #include <grpcpp/impl/codegen/async_stream.h>
 #include <grpcpp/impl/codegen/async_unary_call.h>
 #include <grpcpp/impl/codegen/channel_interface.h>
