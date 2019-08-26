@@ -7,6 +7,10 @@
 namespace zserio
 {
 
+/**
+ * Utilities for conversion of a given value to string.
+ * \{
+ */
 template <typename T>
 std::string convertToString(T value)
 {
@@ -33,6 +37,7 @@ std::string convertToString<unsigned int>(unsigned int value);
 
 template <>
 std::string convertToString<int>(int value);
+/** \} */
 
 } // namespace zserio
 

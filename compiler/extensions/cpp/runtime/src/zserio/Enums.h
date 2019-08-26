@@ -14,39 +14,103 @@
 namespace zserio
 {
 
+/**
+ * Enum traits for Zserio enums.
+ */
 template <typename T>
 struct EnumTraits
 {
 };
 
+/**
+ * Gets ordinal number of the given enum item.
+ *
+ * \param value Enum item.
+ *
+ * \return Ordinal number of the enum item.
+ */
 template <typename T>
 size_t enumToOrdinal(T value);
 
+/**
+ * Converts the given raw value to an appropriate enum item.
+ *
+ * \param rawValue Raw value of the proper underlying type.
+ *
+ * \return Enum item corresponding to the rawValue.
+ *
+ * \throw CppRuntimeException when the rawValue doesn't match to any enum item.
+ */
 template <typename T>
 T valueToEnum(typename std::underlying_type<T>::type rawValue);
 
+/**
+ * Gets the underlying raw value of the given enum item.
+ *
+ * \param value Enum item.
+ *
+ * \return Raw value.
+ */
 template <typename T>
 constexpr typename std::underlying_type<T>::type enumToValue(T value)
 {
     return static_cast<typename std::underlying_type<T>::type>(value);
 }
 
+/**
+ * Gets the name of the given enum item.
+ *
+ * \param value Enum item.
+ *
+ * \return Name of the enum item.
+ */
 template <typename T>
 const char* enumToString(T value)
 {
     return zserio::EnumTraits<T>::names[enumToOrdinal(value)];
 }
 
-// Be aware that T can be varuint, so bitSizeOf and initializeOffsets cannot return constant value.
+/**
+ * Gets bit size of the given enum item.
+ *
+ * Note that T can be varuint, so bitSizeOf cannot return constant value and depends on the concrete item.
+ *
+ * \param value Enum item.
+ *
+ * \return Bit size of the enum item.
+ */
 template <typename T>
 size_t bitSizeOf(T value);
 
+/**
+ * Initializes offsets for the enum item.
+ *
+ * Note that T can be varuint, so initializeOffsets cannot return constant value and
+ * depends on the concrete item.
+ *
+ * \param bitPosition Current bit position.
+ * \param value Enum item.
+ *
+ * \return Updated bit position which points to the first bit after the enum item.
+ */
 template <typename T>
 size_t initializeOffsets(size_t bitPosition, T value);
 
+/**
+ * Reads an enum item.
+ *
+ * \param in Bit stream reader.
+ *
+ * \return Enum item read from the bit stream.
+ */
 template <typename T>
 T read(zserio::BitStreamReader& in);
 
+/**
+ * Writes the enum item to the given bit stream.
+ *
+ * \param out Bit stream writer.
+ */
 template <typename T>
 void write(BitStreamWriter& out, T value);
 

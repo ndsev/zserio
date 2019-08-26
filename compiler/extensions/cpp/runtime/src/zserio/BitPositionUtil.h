@@ -6,6 +6,9 @@
 namespace zserio
 {
 
+/**
+ * Constant defining num bits per a single byte (8).
+ */
 static const size_t NUM_BITS_PER_BYTE = 8;
 
 size_t alignTo(size_t alignmentValue, size_t bitPosition);

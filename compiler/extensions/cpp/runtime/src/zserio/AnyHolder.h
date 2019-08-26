@@ -11,19 +11,25 @@
 namespace zserio
 {
 
+/**
+ * Type safe container for single values of any type which doesn't need RTTI.
+ */
 class AnyHolder
 {
 public:
+    /**
+     * Empty constructor.
+     */
     AnyHolder()
     {
         m_untypedHolder.heap = NULL;
     }
 
-    ~AnyHolder()
-    {
-        clearHolder();
-    }
-
+    /**
+     * Constructor from any value.
+     *
+     * \param value Value of any type to hold. Supports move semantic.
+     */
     template <typename T,
             typename std::enable_if<!std::is_same<typename std::decay<T>::type, AnyHolder>::value, int>::type = 0>
     explicit AnyHolder(T&& value)
@@ -32,29 +38,30 @@ public:
         set(std::forward<T>(value));
     }
 
-    AnyHolder(AnyHolder&& other)
+    /**
+     * Destructor.
+     */
+    ~AnyHolder()
     {
-        m_untypedHolder.heap = NULL;
-        move(std::move(other));
+        clearHolder();
     }
 
+    /**
+     * Copy constructor.
+     *
+     * \param other Any holder to copy.
+     */
     AnyHolder(const AnyHolder& other)
     {
         m_untypedHolder.heap = NULL;
         copy(other);
     }
 
-    AnyHolder& operator=(AnyHolder&& other)
-    {
-        if (this != &other)
-        {
-            clearHolder();
-            move(std::move(other));
-        }
-
-        return *this;
-    }
-
+    /**
+     * Copy assignment operator.
+     *
+     * \param other Any holder to copy.
+     */
     AnyHolder& operator=(const AnyHolder& other)
     {
         if (this != &other)
@@ -66,6 +73,38 @@ public:
         return *this;
     }
 
+    /**
+     * Move constructor.
+     *
+     * \param other Any holder to move from.
+     */
+    AnyHolder(AnyHolder&& other)
+    {
+        m_untypedHolder.heap = NULL;
+        move(std::move(other));
+    }
+
+    /**
+     * Move assignment operator.
+     *
+     * \param other Any holder to move from.
+     */
+    AnyHolder& operator=(AnyHolder&& other)
+    {
+        if (this != &other)
+        {
+            clearHolder();
+            move(std::move(other));
+        }
+
+        return *this;
+    }
+
+    /**
+     * Value assignment operator.
+     *
+     * \param value Any value to assign. Supports move semantic.
+     */
     template <typename T,
             typename std::enable_if<!std::is_same<typename std::decay<T>::type, AnyHolder>::value, int>::type = 0>
     AnyHolder& operator=(T&& value)
@@ -75,17 +114,32 @@ public:
         return *this;
     }
 
+    /**
+     * Resets the holder.
+     */
     void reset()
     {
         clearHolder();
     }
 
+    /**
+     * Sets any value to the holder.
+     *
+     * \param value Any value to set. Supports move semantic.
+     */
     template <typename T>
     void set(T&& value)
     {
         createHolder<typename std::decay<T>::type>()->set(std::forward<T>(value));
     }
 
+    /**
+     * Gets value of the given type.
+     *
+     * \return Reference to value of the requested type if the type match to the stored value.
+     *
+     * \throw CppRuntimeException if the requested type doesn't match to the stored value.
+     */
     template <typename T>
     T& get()
     {
@@ -93,6 +147,13 @@ public:
         return getHolder<T>()->get();
     }
 
+    /**
+     * Gets value of the given type.
+     *
+     * \return Value of the requested type if the type match to the stored value.
+     *
+     * \throw CppRuntimeException if the requested type doesn't match to the stored value.
+     */
     template <typename T>
     const T& get() const
     {
@@ -100,12 +161,22 @@ public:
         return getHolder<T>()->get();
     }
 
+    /**
+     * Check whether the holder holds the given type.
+     *
+     * \return True if the stored value is of the given type, false otherwise.
+     */
     template <typename T>
     bool isType() const
     {
         return hasHolder() && getUntypedHolder()->isType(TypeIdHolder::get<T>());
     }
 
+    /**
+     * Checks whether the holder has any value.
+     *
+     * \return True if the holder has assigned any value, false otherwise.
+     */
     bool hasValue() const
     {
         return hasHolder() && getUntypedHolder()->isSet();

@@ -13,6 +13,9 @@ namespace zserio
 class ISqliteDatabaseReader
 {
 public:
+    /**
+     * Virtual destructor.
+     */
     virtual ~ISqliteDatabaseReader() {}
 
     /**

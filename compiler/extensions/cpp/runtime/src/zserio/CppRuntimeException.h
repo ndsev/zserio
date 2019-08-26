@@ -7,9 +7,17 @@
 namespace zserio
 {
 
+/**
+ * Exception throw when an error within the Zserio C++ runtime library occurs.
+ */
 class CppRuntimeException : public std::runtime_error
 {
 public:
+    /**
+     * Constructor.
+     *
+     * \param message Description of the error.
+     */
     explicit CppRuntimeException(const std::string& message) : std::runtime_error(message) {}
 };
 
