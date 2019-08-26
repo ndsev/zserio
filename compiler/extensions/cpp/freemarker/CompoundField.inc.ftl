@@ -666,17 +666,17 @@ ${I};
     <#local I>${""?left_pad(indent * 4)}</#local>
     <#list fieldList as field>
         <#if field.usesAnyHolder>
-            ${I}ZSERIO_T&& value<#t>
+${I}ZSERIO_T&& value<#t>
             <#break/>
         <#else>
             <#if field.isSimpleType>
                 <#if field.optional??>
-                    ${I}${field.optional.cppArgumentTypeName}<#t>
+${I}${field.optional.cppArgumentTypeName}<#t>
                 <#else>
-                    ${I}${field.cppArgumentTypeName}<#t>
+${I}${field.cppArgumentTypeName}<#t>
                 </#if>
             <#else>
-                ${I}ZSERIO_T_${field.name}&&<#t>
+${I}ZSERIO_T_${field.name}&&<#t>
             </#if>
             <#lt> <@field_argument_name field.name/><#rt>
             <#if field?has_next>
