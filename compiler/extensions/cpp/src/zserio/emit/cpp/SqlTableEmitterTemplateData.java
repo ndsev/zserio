@@ -444,7 +444,7 @@ public class SqlTableEmitterTemplateData extends UserTypeTemplateData
                 return isReal;
             }
 
-            private final String  name;
+            private final String name;
             private final boolean isBlob;
             private final boolean isInteger;
             private final boolean isReal;

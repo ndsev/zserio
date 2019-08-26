@@ -171,8 +171,8 @@ TEST_F(WithoutWriterCode, checkExtraParamUnionMethods)
     assertMethodNotPresent(type, "size_t initializeOffsets(", "size_t ExtraParamUnion::initializeOffsets(");
     assertMethodNotPresent(type, "void write(", "void ExtraParamUnion::write(");
 
-    assertMethodPresent(type, "ExtraParamUnion(zserio::BitStreamReader&",
-            "ExtraParamUnion::ExtraParamUnion(zserio::BitStreamReader&");
+    assertMethodPresent(type, "ExtraParamUnion(::zserio::BitStreamReader&",
+            "ExtraParamUnion::ExtraParamUnion(::zserio::BitStreamReader&");
     assertMethodPresent(type, "ChoiceTag choiceTag(", "ChoiceTag ExtraParamUnion::choiceTag(");
     assertMethodPresent(type, "uint16_t getValue16(", "uint16_t ExtraParamUnion::getValue16(");
     assertMethodPresent(type, "uint32_t getValue32(", "uint32_t ExtraParamUnion::getValue32(");
@@ -189,7 +189,7 @@ TEST_F(WithoutWriterCode, checkItemMethods)
     assertMethodNotPresent(type, "size_t initializeOffsets(", "size_t Item::initializeOffsets(");
     assertMethodNotPresent(type, "void write(", "void Item::write(");
 
-    assertMethodPresent(type, "Item(zserio::BitStreamReader&", "Item::Item(zserio::BitStreamReader&");
+    assertMethodPresent(type, "Item(::zserio::BitStreamReader&", "Item::Item(::zserio::BitStreamReader&");
     assertMethodPresent(type, "Item(const Item&", "Item::Item(const Item&");
     assertMethodPresent(type, "Item& operator=(const Item&", "Item& Item::operator=(const Item&");
     assertMethodPresent(type, "Item(Item&&", "Item::Item(Item&&");
@@ -212,8 +212,8 @@ TEST_F(WithoutWriterCode, checkItemChoiceMethods)
     assertMethodNotPresent(type, "size_t initializeOffsets(", "size_t ItemChoice::initializeOffsets(");
     assertMethodNotPresent(type, "void write(", "void ItemChoice::write(");
 
-    assertMethodPresent(type, "ItemChoice(zserio::BitStreamReader&",
-            "ItemChoice::ItemChoice(zserio::BitStreamReader&");
+    assertMethodPresent(type, "ItemChoice(::zserio::BitStreamReader&",
+            "ItemChoice::ItemChoice(::zserio::BitStreamReader&");
     assertMethodPresent(type, "ItemChoice(const ItemChoice&", "ItemChoice::ItemChoice(const ItemChoice&");
     assertMethodPresent(type, "ItemChoice& operator=(const ItemChoice&",
             "ItemChoice& ItemChoice::operator=(const ItemChoice&");
@@ -240,8 +240,8 @@ TEST_F(WithoutWriterCode, checkItemChoiceHolderMethods)
     assertMethodNotPresent(type, "size_t initializeOffsets(", "size_t ItemChoiceHolder::initializeOffsets(");
     assertMethodNotPresent(type, "void write(", "void ItemChoiceHolder::write(");
 
-    assertMethodPresent(type, "ItemChoiceHolder(zserio::BitStreamReader&",
-            "ItemChoiceHolder::ItemChoiceHolder(zserio::BitStreamReader&");
+    assertMethodPresent(type, "ItemChoiceHolder(::zserio::BitStreamReader&",
+            "ItemChoiceHolder::ItemChoiceHolder(::zserio::BitStreamReader&");
     assertMethodPresent(type, "ItemChoiceHolder(const ItemChoiceHolder&",
             "ItemChoiceHolder::ItemChoiceHolder(const ItemChoiceHolder&");
     assertMethodPresent(type, "ItemChoiceHolder& operator=(const ItemChoiceHolder&",
@@ -266,7 +266,7 @@ TEST_F(WithoutWriterCode, checkTileMethods)
     assertMethodNotPresent(type, "size_t initializeOffsets(", "size_t Tile::initializeOffsets(");
     assertMethodNotPresent(type, "void write(", "void Tile::write(");
 
-    assertMethodPresent(type, "Tile(zserio::BitStreamReader&", "Tile::Tile(zserio::BitStreamReader&");
+    assertMethodPresent(type, "Tile(::zserio::BitStreamReader&", "Tile::Tile(::zserio::BitStreamReader&");
     assertMethodPresent(type, "void initializeChildren(", "void Tile::initializeChildren(");
     assertMethodPresent(type, "uint8_t getVersion(", "uint8_t Tile::getVersion(");
     assertMethodPresent(type, "uint32_t getNumElementsOffset(", "uint32_t Tile::getNumElementsOffset(");
@@ -304,7 +304,7 @@ TEST_F(WithoutWriterCode, checkWorldDbMethods)
     assertMethodNotPresent(type,"void createSchema(", "void WorldDb::createSchema(");
     assertMethodNotPresent(type, "void deleteSchema(", "void WorldDb::deleteSchema(");
 
-    assertMethodPresent(type, "WorldDb(const std::string&", "WorldDb::WorldDb(const std::string&");
+    assertMethodPresent(type, "WorldDb(const ::std::string&", "WorldDb::WorldDb(const ::std::string&");
     assertMethodPresent(type, "WorldDb(sqlite3*", "WorldDb::WorldDb(sqlite3*");
     assertMethodPresent(type, "~WorldDb()", "WorldDb::~WorldDb(");
     assertMethodPresent(type, "sqlite3* connection(", "sqlite3* WorldDb::connection(");

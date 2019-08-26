@@ -30,7 +30,7 @@ ${I}return ${field.cppTypeName}();
     <#local cppTypeName><#if field.optional??>${field.optional.cppRawTypeName}<#else>${field.cppTypeName}</#if></#local>
     <#if field.array??>
 ${I}${cppTypeName} readField;
-${I}zserio::read<@array_runtime_function_suffix field, true/>(<@array_traits field, true/>, readField, in<#rt>
+${I}::zserio::read<@array_runtime_function_suffix field, true/>(<@array_traits field, true/>, readField, in<#rt>
         <#lt><#if field.array.length??>, ${field.array.length}</#if><#rt>
         <#lt><#if field.offset?? && field.offset.containsIndex>, <@offset_checker_name field.name/>(*this)</#if><#rt>
         <#lt>);
@@ -38,7 +38,7 @@ ${I}zserio::read<@array_runtime_function_suffix field, true/>(<@array_traits fie
     <#elseif field.runtimeFunction??>
         <#local readCommand>static_cast<${cppTypeName}>(in.read${field.runtimeFunction.suffix}(${field.runtimeFunction.arg!}))</#local>
     <#elseif field.isEnum>
-        <#local readCommand>zserio::read<${cppTypeName}>(in)</#local>
+        <#local readCommand>::zserio::read<${cppTypeName}>(in)</#local>
     <#else>
         <#-- compound -->
         <#local compoundParamsArguments><@compound_field_compound_ctor_params field.compound, false/></#local>
@@ -51,9 +51,9 @@ ${I}const ${cppTypeName} readField = ${readCommand};
         </#if>
     <@compound_check_constraint_field field, name, "Read", indent/>
 ${I}
-${I}return <#if field.usesAnyHolder>zserio::AnyHolder(</#if>readField<#if field.usesAnyHolder>)</#if>;
+${I}return <#if field.usesAnyHolder>::zserio::AnyHolder(</#if>readField<#if field.usesAnyHolder>)</#if>;
     <#else>
-${I}return <#if field.usesAnyHolder>zserio::AnyHolder(</#if>${readCommand}<#if field.usesAnyHolder>)</#if>;
+${I}return <#if field.usesAnyHolder>::zserio::AnyHolder(</#if>${readCommand}<#if field.usesAnyHolder>)</#if>;
     </#if>
 </#macro>
 
@@ -78,21 +78,21 @@ ${I}in.alignTo(UINT32_C(8));
 <#macro compound_check_offset_field field compoundName actionName bitPositionName indent>
     <#local I>${""?left_pad(indent * 4)}</#local>
 ${I}// check offset
-${I}if (${bitPositionName} != zserio::bytesToBits(${field.offset.getter}))
+${I}if (${bitPositionName} != ::zserio::bytesToBits(${field.offset.getter}))
 ${I}{
-${I}    throw zserio::CppRuntimeException("${actionName}: Wrong offset for field ${compoundName}.${field.name}: " +
-${I}            zserio::convertToString(${bitPositionName}) + " != " +
-${I}            zserio::convertToString(zserio::bytesToBits(${field.offset.getter})) + "!");
+${I}    throw ::zserio::CppRuntimeException("${actionName}: Wrong offset for field ${compoundName}.${field.name}: " +
+${I}            ::zserio::convertToString(${bitPositionName}) + " != " +
+${I}            ::zserio::convertToString(::zserio::bytesToBits(${field.offset.getter})) + "!");
 ${I}}
 </#macro>
 
 <#macro compound_pre_write_actions needsChildrenInitialization hasFieldWithOffset>
     <#if needsChildrenInitialization>
-    if ((preWriteAction & zserio::PRE_WRITE_INITIALIZE_CHILDREN) != 0)
+    if ((preWriteAction & ::zserio::PRE_WRITE_INITIALIZE_CHILDREN) != 0)
         initializeChildren();
     </#if>
     <#if hasFieldWithOffset>
-    if ((preWriteAction & zserio::PRE_WRITE_INITIALIZE_OFFSETS) != 0)
+    if ((preWriteAction & ::zserio::PRE_WRITE_INITIALIZE_OFFSETS) != 0)
         initializeOffsets(out.getBitPosition());
     </#if>
 </#macro>
@@ -129,14 +129,14 @@ ${I}}
 ${I}out.write${field.runtimeFunction.suffix}(<@compound_get_field field/><#if field.runtimeFunction.arg??>,<#rt>
         <#lt> ${field.runtimeFunction.arg}</#if>);
     <#elseif field.array??>
-${I}zserio::write<@array_runtime_function_suffix field/><#rt>
+${I}::zserio::write<@array_runtime_function_suffix field/><#rt>
         <#lt>(<@array_traits field/>, <@compound_get_field field/>, out<#rt>
         <#lt><#if field.offset?? && field.offset.containsIndex>, <@offset_checker_name field.name/>(*this)</#if><#rt>
         <#lt>);
     <#elseif field.isEnum>
-${I}zserio::write(out, <@compound_get_field field/>);
+${I}::zserio::write(out, <@compound_get_field field/>);
     <#else>
-${I}<@compound_get_field field/>.write(out, zserio::NO_PRE_WRITE_ACTION);
+${I}<@compound_get_field field/>.write(out, ::zserio::NO_PRE_WRITE_ACTION);
     </#if>
 </#macro>
 
@@ -161,7 +161,7 @@ ${I}out.alignTo(UINT32_C(8));
                 <#lt>${field.constraint.writeConstraint}</#if></#local>
 ${I}// check constraint
 ${I}if (<#if field.optional??>(<@field_optional_condition field/>) && </#if>!(${constraintExpresssion}))
-${I}    throw zserio::ConstraintException("${actionName}: Constraint violated at ${compoundName}.${field.name}!");
+${I}    throw ::zserio::ConstraintException("${actionName}: Constraint violated at ${compoundName}.${field.name}!");
     </#if>
 </#macro>
 
@@ -171,9 +171,9 @@ ${I}    throw zserio::ConstraintException("${actionName}: Constraint violated at
 ${I}// check array length
 ${I}if (<@compound_get_field field/>.size() != static_cast<size_t>(${field.array.length}))
 ${I}{
-${I}    throw zserio::CppRuntimeException("Write: Wrong array length for field ${compoundName}.${field.name}: " +
-${I}            zserio::convertToString(<@compound_get_field field/>.size()) + " != " +
-${I}            zserio::convertToString(static_cast<size_t>(${field.array.length})) + "!");
+${I}    throw ::zserio::CppRuntimeException("Write: Wrong array length for field ${compoundName}.${field.name}: " +
+${I}            ::zserio::convertToString(<@compound_get_field field/>.size()) + " != " +
+${I}            ::zserio::convertToString(static_cast<size_t>(${field.array.length})) + "!");
 ${I}}
     </#if>
 </#macro>
@@ -209,18 +209,18 @@ ${I}}
         <#local lengthVarName>length</#local>
 ${I}const int ${lengthVarName} = ${integerRange.bitFieldLength};
 ${I}const ${cppTypeName} ${lowerBoundVarName} = static_cast<${cppTypeName}><#rt>
-        <#lt>(zserio::getBitFieldLowerBound(${lengthVarName}, <#if integerRange.checkLowerBound>true<#else>false</#if>));
+        <#lt>(::zserio::getBitFieldLowerBound(${lengthVarName}, <#if integerRange.checkLowerBound>true<#else>false</#if>));
 ${I}const ${cppTypeName} ${upperBoundVarName} = static_cast<${cppTypeName}><#rt>
-        <#lt>(zserio::getBitFieldUpperBound(${lengthVarName}, <#if integerRange.checkLowerBound>true<#else>false</#if>));
+        <#lt>(::zserio::getBitFieldUpperBound(${lengthVarName}, <#if integerRange.checkLowerBound>true<#else>false</#if>));
     <#else>
 ${I}const ${cppTypeName} ${lowerBoundVarName} = ${integerRange.lowerBound};
 ${I}const ${cppTypeName} ${upperBoundVarName} = ${integerRange.upperBound};
     </#if>
 ${I}if (<#if integerRange.checkLowerBound>${value} < ${lowerBoundVarName} || </#if>${value} > ${upperBoundVarName})
-${I}    throw zserio::CppRuntimeException("Value " + zserio::convertToString(${value}) +
+${I}    throw ::zserio::CppRuntimeException("Value " + ::zserio::convertToString(${value}) +
 ${I}            " of ${compoundName}.${valueName} exceeds the range of <" +
-${I}            zserio::convertToString(${lowerBoundVarName}) + ".." +
-${I}            zserio::convertToString(${upperBoundVarName}) + ">!");
+${I}            ::zserio::convertToString(${lowerBoundVarName}) + ".." +
+${I}            ::zserio::convertToString(${upperBoundVarName}) + ">!");
 </#macro>
 
 <#macro array_traits field isInRead=false>
@@ -267,9 +267,9 @@ public:
     void checkOffset(size_t index, size_t byteOffset) const
     {
         if (byteOffset != ${field.offset.indirectGetter})
-            throw zserio::CppRuntimeException("Wrong offset for field ${compoundName}.${field.name}: " +
-                    zserio::convertToString(byteOffset) + " != " +
-                    zserio::convertToString(${field.offset.indirectGetter}) + "!");
+            throw ::zserio::CppRuntimeException("Wrong offset for field ${compoundName}.${field.name}: " +
+                    ::zserio::convertToString(byteOffset) + " != " +
+                    ::zserio::convertToString(${field.offset.indirectGetter}) + "!");
     }
 
 private:
@@ -314,7 +314,7 @@ public:
     explicit <@element_factory_name field.name/>(${compoundName}& owner) : m_owner(owner) {}
 
     <#local cppTypeName><#if field.optional??>${field.optional.cppRawTypeName}<#else>${field.cppTypeName}</#if></#local>
-    void create(${cppTypeName}& array, zserio::BitStreamReader& in, size_t index) const
+    void create(${cppTypeName}& array, ::zserio::BitStreamReader& in, size_t index) const
     {
         (void)index;
         array.emplace_back(in<#if extraConstructorArguments?has_content>, ${extraConstructorArguments}</#if>);
@@ -436,14 +436,14 @@ public:
 <#macro compound_bitsizeof_field field indent>
     <#local I>${""?left_pad(indent * 4)}</#local>
     <#if field.array??>
-${I}endBitPosition += zserio::bitSizeOf<@array_runtime_function_suffix field/>(<@array_traits field/>, <#rt>
+${I}endBitPosition += ::zserio::bitSizeOf<@array_runtime_function_suffix field/>(<@array_traits field/>, <#rt>
         <#lt><@compound_get_field field/>, endBitPosition);
     <#elseif field.isEnum>
-${I}endBitPosition += zserio::bitSizeOf(<@compound_get_field field/>);
+${I}endBitPosition += ::zserio::bitSizeOf(<@compound_get_field field/>);
     <#elseif field.bitSizeValue??>
 ${I}endBitPosition += ${field.bitSizeValue};
     <#elseif field.runtimeFunction??>
-${I}endBitPosition += zserio::bitSizeOf${field.runtimeFunction.suffix}(<@compound_get_field field/>);
+${I}endBitPosition += ::zserio::bitSizeOf${field.runtimeFunction.suffix}(<@compound_get_field field/>);
     <#else>
 ${I}endBitPosition += <@compound_get_field field/>.bitSizeOf(endBitPosition);
     </#if>
@@ -452,16 +452,16 @@ ${I}endBitPosition += <@compound_get_field field/>.bitSizeOf(endBitPosition);
 <#macro compound_initialize_offsets_field field indent>
     <#local I>${""?left_pad(indent * 4)}</#local>
     <#if field.array??>
-${I}endBitPosition = zserio::initializeOffsets<@array_runtime_function_suffix field/><#rt>
+${I}endBitPosition = ::zserio::initializeOffsets<@array_runtime_function_suffix field/><#rt>
         <#lt>(<@array_traits field/>, <@compound_get_field field/>, endBitPosition<#rt>
         <#lt><#if field.offset?? && field.offset.containsIndex>, <@offset_initializer_name field.name/>(*this)</#if><#rt>
         <#lt>);
     <#elseif field.isEnum>
-${I}endBitPosition = zserio::initializeOffsets(endBitPosition, <@compound_get_field field/>);
+${I}endBitPosition = ::zserio::initializeOffsets(endBitPosition, <@compound_get_field field/>);
     <#elseif field.bitSizeValue??>
 ${I}endBitPosition += ${field.bitSizeValue};
     <#elseif field.runtimeFunction??>
-${I}endBitPosition += zserio::bitSizeOf${field.runtimeFunction.suffix}(<@compound_get_field field/>);
+${I}endBitPosition += ::zserio::bitSizeOf${field.runtimeFunction.suffix}(<@compound_get_field field/>);
     <#else>
 ${I}endBitPosition = <@compound_get_field field/>.initializeOffsets(endBitPosition);
     </#if>
@@ -540,22 +540,22 @@ ${I}<@field_member_name field.name/>(other.<@field_member_name field.name/>)<#if
 <#macro compound_move_constructor_initializer_field field hasNext indent>
     <#local I>${""?left_pad(indent * 4)}</#local>
     <#if field.usesAnyHolder>
-${I}m_objectChoice(std::move(other.m_objectChoice))
+${I}m_objectChoice(::std::move(other.m_objectChoice))
     <#else>
-${I}<@field_member_name field.name/>(std::move(other.<@field_member_name field.name/>))<#if hasNext>,</#if>
+${I}<@field_member_name field.name/>(::std::move(other.<@field_member_name field.name/>))<#if hasNext>,</#if>
     </#if>
 </#macro>
 
 <#macro compound_field_constructor_initializer_field field hasNext indent>
     <#local I>${""?left_pad(indent * 4)}</#local>
     <#if field.usesAnyHolder>
-${I}m_objectChoice(std::forward<ZSERIO_T>(value))
+${I}m_objectChoice(::std::forward<ZSERIO_T>(value))
     <#else>
 ${I}<@field_member_name field.name/>(<#rt>
         <#if field.isSimpleType>
             <@field_argument_name field.name/><#t>
         <#else>
-            std::forward<ZSERIO_T_${field.name}>(<@field_argument_name field.name/>)<#t>
+            ::std::forward<ZSERIO_T_${field.name}>(<@field_argument_name field.name/>)<#t>
         </#if>
         <#lt>)<#if hasNext>,</#if>
     </#if>
@@ -573,9 +573,9 @@ ${I}<@field_member_name field.name/> = other.<@field_member_name field.name/>;
 <#macro compound_move_assignment_field field indent>
     <#local I>${""?left_pad(indent * 4)}</#local>
     <#if field.usesAnyHolder>
-${I}m_objectChoice = std::move(other.m_objectChoice);
+${I}m_objectChoice = ::std::move(other.m_objectChoice);
     <#else>
-${I}<@field_member_name field.name/> = std::move(other.<@field_member_name field.name/>);
+${I}<@field_member_name field.name/> = ::std::move(other.<@field_member_name field.name/>);
     </#if>
 </#macro>
 
@@ -595,11 +595,11 @@ ${I}<@field_member_name field.name/> = std::move(other.<@field_member_name field
         </#if>
     <#elseif field.array?? && field.array.elementCompound??>
         <#if needs_compound_field_initialization(field.array.elementCompound)>
-            <#local initializeCommand>zserio::initializeElements(<#rt>
+            <#local initializeCommand>::zserio::initializeElements(<#rt>
                     <#lt><@compound_get_field field/>, <#rt>
                     <#lt><@element_initializer_name field.name/>(*this));</#local>
         <#elseif field.array.elementCompound.needsChildrenInitialization>
-            <#local initializeCommand>zserio::initializeElements(<#rt>
+            <#local initializeCommand>::zserio::initializeElements(<#rt>
                     <#lt><@compound_get_field field/>, <#rt>
                     <#lt><@element_children_initializer_name field.name/>());</#local>
         </#if>
@@ -650,11 +650,11 @@ ${I};
         <#if firstTemplateArgName != "">
             <#if numTemplateArgs == 1>
     template <${templateArgList},
-            typename std::enable_if<!std::is_same<typename std::decay<${firstTemplateArgName}>::type, ${compoundName}>::value,
+            typename ::std::enable_if<!::std::is_same<typename ::std::decay<${firstTemplateArgName}>::type, ${compoundName}>::value,
                     int>::type = 0>
             <#else>
     template <${templateArgList},
-            typename std::enable_if<!std::is_same<typename std::decay<${firstTemplateArgName}>::type, ::zserio::BitStreamReader>::value,
+            typename ::std::enable_if<!::std::is_same<typename ::std::decay<${firstTemplateArgName}>::type, ::zserio::BitStreamReader>::value,
                     int>::type = 0>
             </#if>
         <#else>

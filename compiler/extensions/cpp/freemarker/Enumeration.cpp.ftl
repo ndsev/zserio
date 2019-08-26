@@ -10,8 +10,8 @@
 <@namespace_begin ["zserio"]/>
 
 // This is full specialization of enumeration traits and methods for ${name} enumeration.
-constexpr std::array<const char*, ${items?size}> EnumTraits<${fullName}>::names;
-constexpr std::array<${fullName}, ${items?size}> EnumTraits<${fullName}>::values;
+constexpr ::std::array<const char*, ${items?size}> EnumTraits<${fullName}>::names;
+constexpr ::std::array<${fullName}, ${items?size}> EnumTraits<${fullName}>::values;
 
 template <>
 size_t enumToOrdinal(${fullName} value)
@@ -23,14 +23,14 @@ size_t enumToOrdinal(${fullName} value)
         return ${item?index};
 </#list>
     default:
-        throw zserio::CppRuntimeException("Unknown value for enumeration ${name}: " +
-                zserio::convertToString(static_cast<${baseCppTypeName}>(value)) + "!");
+        throw ::zserio::CppRuntimeException("Unknown value for enumeration ${name}: " +
+                ::zserio::convertToString(static_cast<${baseCppTypeName}>(value)) + "!");
     }
 }
 
 template <>
 ${fullName} valueToEnum(
-        typename std::underlying_type<${fullName}>::type rawValue)
+        typename ::std::underlying_type<${fullName}>::type rawValue)
 {
     switch (rawValue)
     {
@@ -39,8 +39,8 @@ ${fullName} valueToEnum(
 </#list>
         return ${fullName}(rawValue);
     default:
-        throw zserio::CppRuntimeException("Unknown value for enumeration ${name}: " +
-                zserio::convertToString(rawValue) + "!");
+        throw ::zserio::CppRuntimeException("Unknown value for enumeration ${name}: " +
+                ::zserio::convertToString(rawValue) + "!");
     }
 }
 
@@ -50,7 +50,7 @@ size_t bitSizeOf(${fullName}<#if !runtimeFunction.arg??> value</#if>)
 <#if runtimeFunction.arg??>
     return ${runtimeFunction.arg};
 <#else>
-    return zserio::bitSizeOf${runtimeFunction.suffix}(zserio::enumToValue(value));
+    return ::zserio::bitSizeOf${runtimeFunction.suffix}(::zserio::enumToValue(value));
 </#if>
 }
 <#if withWriterCode>
@@ -63,10 +63,10 @@ size_t initializeOffsets(size_t bitPosition, ${fullName} value)
 </#if>
 
 template <>
-${fullName} read(zserio::BitStreamReader& in)
+${fullName} read(::zserio::BitStreamReader& in)
 {
     return valueToEnum<${fullName}>(
-            static_cast<typename std::underlying_type<${fullName}>::type>(
+            static_cast<typename ::std::underlying_type<${fullName}>::type>(
                     in.read${runtimeFunction.suffix}(${runtimeFunction.arg!})));
 }
 <#if withWriterCode>

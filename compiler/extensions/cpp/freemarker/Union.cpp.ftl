@@ -31,7 +31,7 @@
 </#if>
 <#macro read_constructor_field_initialization>
     <#if fieldList?has_content>
-        m_choiceTag(static_cast<ChoiceTag>(zserio::convertVarUInt64ToInt32(in.readVarUInt64()))),
+        m_choiceTag(static_cast<ChoiceTag>(::zserio::convertVarUInt64ToInt32(in.readVarUInt64()))),
         m_objectChoice(readObject(in))
     <#else>
         m_choiceTag(UNDEFINED_CHOICE)
@@ -120,7 +120,7 @@ void ${name}::initializeChildren()
         break;
         </#list>
     default:
-        throw zserio::CppRuntimeException("No match in union ${name}!");
+        throw ::zserio::CppRuntimeException("No match in union ${name}!");
     }
     </#if>
     <@compound_initialize_children_epilog_definition compoundConstructorsData/>
@@ -158,7 +158,7 @@ void ${name}::${field.setterName}(${field.cppArgumentTypeName} <@field_argument_
 void ${name}::${field.setterName}(${field.cppTypeName}&& <@field_argument_name field.name/>)
 {
     m_choiceTag = <@choice_tag_name field/>;
-    m_objectChoice = std::move(<@field_argument_name field.name/>);
+    m_objectChoice = ::std::move(<@field_argument_name field.name/>);
 }
 
     </#if>
@@ -169,7 +169,7 @@ size_t ${name}::bitSizeOf(size_t<#if fieldList?has_content> bitPosition</#if>) c
 <#if fieldList?has_content>
     size_t endBitPosition = bitPosition;
 
-    endBitPosition += zserio::bitSizeOfVarUInt64(static_cast<uint64_t>(m_choiceTag));
+    endBitPosition += ::zserio::bitSizeOfVarUInt64(static_cast<uint64_t>(m_choiceTag));
 
     switch (m_choiceTag)
     {
@@ -179,7 +179,7 @@ size_t ${name}::bitSizeOf(size_t<#if fieldList?has_content> bitPosition</#if>) c
         break;
     </#list>
     default:
-        throw zserio::CppRuntimeException("No match in union ${name}!");
+        throw ::zserio::CppRuntimeException("No match in union ${name}!");
     }
 
     return endBitPosition - bitPosition;
@@ -220,10 +220,10 @@ bool ${name}::operator==(const ${name}& other) const
 
 int ${name}::hashCode() const
 {
-    int result = zserio::HASH_SEED;
+    int result = ::zserio::HASH_SEED;
 
     <@compound_parameter_hash_code compoundParametersData/>
-    result = zserio::calcHashCode(result, static_cast<uint32_t>(m_choiceTag));
+    result = ::zserio::calcHashCode(result, static_cast<uint32_t>(m_choiceTag));
 <#if fieldList?has_content>
     if (m_objectChoice.hasValue())
     {
@@ -231,7 +231,7 @@ int ${name}::hashCode() const
         {
         <#list fieldList as field>
         case <@choice_tag_name field/>:
-            result = zserio::calcHashCode(result, m_objectChoice.get<${field.cppTypeName}>());
+            result = ::zserio::calcHashCode(result, m_objectChoice.get<${field.cppTypeName}>());
             break;
         </#list>
         default:
@@ -250,7 +250,7 @@ size_t ${name}::initializeOffsets(size_t bitPosition)
     <#if fieldList?has_content>
     size_t endBitPosition = bitPosition;
 
-    endBitPosition += zserio::bitSizeOfVarUInt64(static_cast<uint64_t>(m_choiceTag));
+    endBitPosition += ::zserio::bitSizeOfVarUInt64(static_cast<uint64_t>(m_choiceTag));
 
     switch (m_choiceTag)
     {
@@ -260,7 +260,7 @@ size_t ${name}::initializeOffsets(size_t bitPosition)
         break;
         </#list>
     default:
-        throw zserio::CppRuntimeException("No match in union ${name}!");
+        throw ::zserio::CppRuntimeException("No match in union ${name}!");
     }
 
     return endBitPosition;
@@ -270,8 +270,8 @@ size_t ${name}::initializeOffsets(size_t bitPosition)
 }
 
 <#assign hasPreWriteAction=needsChildrenInitialization || hasFieldWithOffset/>
-void ${name}::write(zserio::BitStreamWriter&<#if fieldList?has_content> out</#if>, <#rt>
-        zserio::PreWriteAction<#if hasPreWriteAction> preWriteAction</#if>)<#lt>
+void ${name}::write(::zserio::BitStreamWriter&<#if fieldList?has_content> out</#if>, <#rt>
+        ::zserio::PreWriteAction<#if hasPreWriteAction> preWriteAction</#if>)<#lt>
 {
     <#if fieldList?has_content>
         <#if hasPreWriteAction>
@@ -288,14 +288,14 @@ void ${name}::write(zserio::BitStreamWriter&<#if fieldList?has_content> out</#if
         break;
         </#list>
     default:
-        throw zserio::CppRuntimeException("No match in union ${name}!");
+        throw ::zserio::CppRuntimeException("No match in union ${name}!");
     }
     </#if>
 }
 </#if>
 <#if fieldList?has_content>
 
-zserio::AnyHolder ${name}::readObject(zserio::BitStreamReader& in)
+::zserio::AnyHolder ${name}::readObject(::zserio::BitStreamReader& in)
 {
     switch (m_choiceTag)
     {
@@ -307,7 +307,7 @@ zserio::AnyHolder ${name}::readObject(zserio::BitStreamReader& in)
         break;
         </#list>
     default:
-        throw zserio::CppRuntimeException("No match in union ${name}!");
+        throw ::zserio::CppRuntimeException("No match in union ${name}!");
     }
 }
 </#if>

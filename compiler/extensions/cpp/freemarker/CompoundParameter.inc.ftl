@@ -59,7 +59,7 @@ ${I}${parameterType} <@parameter_argument_name compoundParameter.name/><#rt>
 ${compoundParameter.cppTypeName}& ${compoundName}::${compoundParameter.getterName}()
 {
     if (!m_isInitialized)
-        throw zserio::CppRuntimeException("Parameter ${compoundParameter.name} of compound ${compoundName} "
+        throw ::zserio::CppRuntimeException("Parameter ${compoundParameter.name} of compound ${compoundName} "
                 "is not initialized!");
 
     return *<@parameter_member_name compoundParameter.name/>;
@@ -69,7 +69,7 @@ ${compoundParameter.cppTypeName}& ${compoundName}::${compoundParameter.getterNam
 ${compoundParameter.cppArgumentTypeName} ${compoundName}::${compoundParameter.getterName}() const
 {
     if (!m_isInitialized)
-        throw zserio::CppRuntimeException("Parameter ${compoundParameter.name} of compound ${compoundName} "
+        throw ::zserio::CppRuntimeException("Parameter ${compoundParameter.name} of compound ${compoundName} "
                 "is not initialized!");
 
     return <#if !compoundParameter.isSimpleType>*</#if><@parameter_member_name compoundParameter.name/>;
@@ -111,6 +111,6 @@ ${compoundParameter.cppArgumentTypeName} ${compoundName}::${compoundParameter.ge
 
 <#macro compound_parameter_hash_code compoundParametersData>
     <#list compoundParametersData.list as compoundParameter>
-    result = zserio::calcHashCode(result, ${compoundParameter.getterName}());
+    result = ::zserio::calcHashCode(result, ${compoundParameter.getterName}());
     </#list>
 </#macro>

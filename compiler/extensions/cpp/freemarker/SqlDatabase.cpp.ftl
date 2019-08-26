@@ -10,33 +10,33 @@
 <#if withWriterCode>
     <#assign hasWithoutRowIdTable=sql_db_has_without_rowid_table(fields)/>
 </#if>
-${name}::${name}(const std::string& fileName, const TRelocationMap& tableToDbFileNameRelocationMap)
+${name}::${name}(const ::std::string& fileName, const TRelocationMap& tableToDbFileNameRelocationMap)
 {
     sqlite3 *internalConnection = NULL;
     const int sqliteOpenMode = SQLITE_OPEN_URI | <#rt>
             <#lt><#if withWriterCode>SQLITE_OPEN_CREATE | SQLITE_OPEN_READWRITE<#else>SQLITE_OPEN_READONLY</#if>;
     const int result = sqlite3_open_v2(fileName.c_str(), &internalConnection, sqliteOpenMode, NULL);
     if (result != SQLITE_OK)
-        throw zserio::SqliteException("${name}::open(): can't open DB " + fileName, result);
+        throw ::zserio::SqliteException("${name}::open(): can't open DB " + fileName, result);
 
-    m_db.reset(internalConnection, zserio::SqliteConnection::INTERNAL_CONNECTION);
+    m_db.reset(internalConnection, ::zserio::SqliteConnection::INTERNAL_CONNECTION);
 
     TRelocationMap tableToAttachedDbNameRelocationMap;
-    std::map<std::string, std::string> dbFileNameToAttachedDbNameMap;
+    ::std::map<::std::string, ::std::string> dbFileNameToAttachedDbNameMap;
     for (TRelocationMap::const_iterator relocationIt = tableToDbFileNameRelocationMap.begin();
             relocationIt != tableToDbFileNameRelocationMap.end(); ++relocationIt)
     {
-        const std::string& tableName = relocationIt->first;
-        const std::string& fileName = relocationIt->second;
-        std::map<std::string, std::string>::const_iterator attachedDbIt =
+        const ::std::string& tableName = relocationIt->first;
+        const ::std::string& fileName = relocationIt->second;
+        ::std::map<::std::string, ::std::string>::const_iterator attachedDbIt =
                 dbFileNameToAttachedDbNameMap.find(fileName);
         if(attachedDbIt == dbFileNameToAttachedDbNameMap.end())
         {
-            const std::string attachedDbName = std::string(databaseName()) + "_" + tableName;
+            const ::std::string attachedDbName = ::std::string(databaseName()) + "_" + tableName;
             attachDatabase(fileName, attachedDbName);
-            attachedDbIt = dbFileNameToAttachedDbNameMap.insert(std::make_pair(fileName, attachedDbName)).first;
+            attachedDbIt = dbFileNameToAttachedDbNameMap.insert(::std::make_pair(fileName, attachedDbName)).first;
         }
-        tableToAttachedDbNameRelocationMap.insert(std::make_pair(tableName, attachedDbIt->second));
+        tableToAttachedDbNameRelocationMap.insert(::std::make_pair(tableName, attachedDbIt->second));
     }
 
     initTables(tableToAttachedDbNameRelocationMap);
@@ -44,7 +44,7 @@ ${name}::${name}(const std::string& fileName, const TRelocationMap& tableToDbFil
 
 ${name}::${name}(sqlite3* externalConnection, const TRelocationMap& tableToAttachedDbNameRelocationMap)
 {
-    m_db.reset(externalConnection, zserio::SqliteConnection::EXTERNAL_CONNECTION);
+    m_db.reset(externalConnection, ::zserio::SqliteConnection::EXTERNAL_CONNECTION);
     initTables(tableToAttachedDbNameRelocationMap);
 }
 
@@ -78,7 +78,7 @@ void ${name}::createSchema()
     m_db.endTransaction(wasTransactionStarted);
 }
 
-void ${name}::createSchema(const std::set<std::string>&<#if hasWithoutRowIdTable> withoutRowIdTableNamesBlackList</#if>)
+void ${name}::createSchema(const ::std::set<::std::string>&<#if hasWithoutRowIdTable> withoutRowIdTableNamesBlackList</#if>)
 {
     <#if hasWithoutRowIdTable>
     const bool wasTransactionStarted = m_db.startTransaction();
@@ -125,9 +125,9 @@ constexpr const char* ${name}::<@sql_db_table_name_getter field/> noexcept
 }
 
 </#list>
-const std::array<const char*, ${fields?size}>& ${name}::tableNames() noexcept
+const ::std::array<const char*, ${fields?size}>& ${name}::tableNames() noexcept
 {
-    static constexpr std::array<const char*, ${fields?size}> names =
+    static constexpr ::std::array<const char*, ${fields?size}> names =
     {
 <#list fields as field>
         <@sql_db_table_name_getter field/><#if !field?is_last>,</#if>
@@ -156,9 +156,9 @@ void ${name}::initTables(const TRelocationMap& tableToAttachedDbNameRelocationMa
 </#list>
 }
 
-void ${name}::attachDatabase(const std::string& fileName, const std::string& attachedDbName)
+void ${name}::attachDatabase(const ::std::string& fileName, const ::std::string& attachedDbName)
 {
-    std::string sqlQuery = "ATTACH DATABASE '";
+    ::std::string sqlQuery = "ATTACH DATABASE '";
     sqlQuery += fileName;
     sqlQuery += "' AS ";
     sqlQuery += attachedDbName;
@@ -170,10 +170,10 @@ void ${name}::attachDatabase(const std::string& fileName, const std::string& att
 
 void ${name}::detachDatabases()
 {
-    for (std::vector<std::string>::const_iterator attachedDbIt = m_attachedDbList.begin();
+    for (::std::vector<::std::string>::const_iterator attachedDbIt = m_attachedDbList.begin();
             attachedDbIt != m_attachedDbList.end(); ++attachedDbIt)
     {
-        const std::string sqlQuery = "DETACH DATABASE " + *attachedDbIt;
+        const ::std::string sqlQuery = "DETACH DATABASE " + *attachedDbIt;
         m_db.executeUpdate(sqlQuery);
     }
     m_attachedDbList.clear();

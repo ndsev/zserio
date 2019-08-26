@@ -76,7 +76,7 @@
         break;
                 </#if>
             <#else>
-        throw zserio::CppRuntimeException("No match in choice ${name}!");
+        throw ::zserio::CppRuntimeException("No match in choice ${name}!");
             </#if>
         </#if>
     }
@@ -99,7 +99,7 @@
             <#if defaultMember??>
         <@.vars[memberActionMacroName] defaultMember/>
             <#else>
-        throw zserio::CppRuntimeException("No match in choice ${name}!");
+        throw ::zserio::CppRuntimeException("No match in choice ${name}!");
             </#if>
     }
         </#if>
@@ -146,7 +146,7 @@ void ${name}::${field.setterName}(${field.cppArgumentTypeName} <@field_argument_
     <#if needs_field_rvalue_setter(field)>
 void ${name}::${field.setterName}(${field.cppTypeName}&& <@field_argument_name field.name/>)
 {
-    m_objectChoice = std::move(<@field_argument_name field.name/>);
+    m_objectChoice = ::std::move(<@field_argument_name field.name/>);
 }
 
     </#if>
@@ -220,14 +220,14 @@ bool ${name}::operator==(const ${name}& other) const
 <#macro choice_hash_code_member member>
     <#if member.compoundField??>
         if (m_objectChoice.hasValue())
-            result = zserio::calcHashCode(result, m_objectChoice.get<${member.compoundField.cppTypeName}>());
+            result = ::zserio::calcHashCode(result, m_objectChoice.get<${member.compoundField.cppTypeName}>());
     <#else>
         // empty
     </#if>
 </#macro>
 int ${name}::hashCode() const
 {
-    int result = zserio::HASH_SEED;
+    int result = ::zserio::HASH_SEED;
 
     <@compound_parameter_hash_code compoundParametersData/>
     <#if fieldList?has_content>
@@ -246,8 +246,8 @@ int ${name}::hashCode() const
     </#if>
 </#macro>
 <#assign hasPreWriteAction=needsChildrenInitialization || hasFieldWithOffset/>
-void ${name}::write(zserio::BitStreamWriter&<#if fieldList?has_content> out</#if>, <#rt>
-        zserio::PreWriteAction<#if hasPreWriteAction> preWriteAction</#if>)<#lt>
+void ${name}::write(::zserio::BitStreamWriter&<#if fieldList?has_content> out</#if>, <#rt>
+        ::zserio::PreWriteAction<#if hasPreWriteAction> preWriteAction</#if>)<#lt>
 {
     <#if fieldList?has_content>
         <#if hasPreWriteAction>
@@ -269,7 +269,7 @@ void ${name}::write(zserio::BitStreamWriter&<#if fieldList?has_content> out</#if
         // empty
     </#if>
 </#macro>
-zserio::AnyHolder ${name}::readObject(zserio::BitStreamReader& in)
+::zserio::AnyHolder ${name}::readObject(::zserio::BitStreamReader& in)
 {
     <@choice_switch "choice_read_member", false/>
 }

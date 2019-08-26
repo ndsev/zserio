@@ -301,8 +301,8 @@ public class CompoundFieldTemplateData
             private final String indirectExpression;
         }
 
-        private final ArrayList<InstantiatedParameterData>  instantiatedParameters;
-        private final boolean                               needsChildrenInitialization;
+        private final ArrayList<InstantiatedParameterData> instantiatedParameters;
+        private final boolean needsChildrenInitialization;
     }
 
     public static class Constraint
@@ -372,12 +372,12 @@ public class CompoundFieldTemplateData
             return typeName;
         }
 
-        private final String    getter;
-        private final String    indirectGetter;
-        private final String    setter;
-        private final String    indirectSetter;
-        private final String    typeName;
-        private final boolean   containsIndex;
+        private final String getter;
+        private final String indirectGetter;
+        private final String setter;
+        private final String indirectSetter;
+        private final String typeName;
+        private final boolean containsIndex;
     }
 
     public static class IntegerRange
@@ -430,11 +430,11 @@ public class CompoundFieldTemplateData
             return upperBound;
         }
 
-        private final String    bitFieldLength;
-        private final boolean   hasFullRange;
-        private final boolean   checkLowerBound;
-        private final String    lowerBound;
-        private final String    upperBound;
+        private final String bitFieldLength;
+        private final boolean hasFullRange;
+        private final boolean checkLowerBound;
+        private final String lowerBound;
+        private final String upperBound;
     }
 
     public static class Array
@@ -527,17 +527,17 @@ public class CompoundFieldTemplateData
             return cppExpressionFormatter.formatGetter(lengthExpression);
         }
 
-        private final String        traitsName;
-        private final boolean       hasTemplatedTraits;
-        private final boolean       isImplicit;
-        private final String        length;
-        private final String        indirectLength;
-        private final String        elementZserioTypeName;
-        private final String        elementCppTypeName;
-        private final boolean       requiresElementFactory;
-        private final String        elementBitSizeValue;
-        private final Compound      elementCompound;
-        private final IntegerRange  elementIntegerRange;
+        private final String traitsName;
+        private final boolean hasTemplatedTraits;
+        private final boolean isImplicit;
+        private final String length;
+        private final String indirectLength;
+        private final String elementZserioTypeName;
+        private final String elementCppTypeName;
+        private final boolean requiresElementFactory;
+        private final String elementBitSizeValue;
+        private final Compound elementCompound;
+        private final IntegerRange elementIntegerRange;
     }
 
     private static Optional createOptional(Field field, ZserioType baseFieldType, CompoundType parentType,
@@ -670,26 +670,26 @@ public class CompoundFieldTemplateData
             return null;
     }
 
-    private final Optional                      optional;
-    private final Compound                      compound;
-    private final String                        name;
-    private final String                        cppTypeName;
-    private final String                        cppArgumentTypeName;
-    private final String                        zserioTypeName;
-    private final String                        getterName;
-    private final String                        setterName;
-    private final String                        readerName;
-    private final IntegerRange                  integerRange;
-    private final String                        alignmentValue;
-    private final String                        initializer;
-    private final boolean                       usesAnyHolder;
-    private final boolean                       isSimpleType;
-    private final boolean                       isEnum;
-    private final Constraint                    constraint;
-    private final Offset                        offset;
-    private final Array                         array;
-    private final RuntimeFunctionTemplateData   runtimeFunction;
-    private final String                        bitSizeValue;
-    private final boolean                       withWriterCode;
-    private final boolean                       withRangeCheckCode;
+    private final Optional optional;
+    private final Compound compound;
+    private final String name;
+    private final String cppTypeName;
+    private final String cppArgumentTypeName;
+    private final String zserioTypeName;
+    private final String getterName;
+    private final String setterName;
+    private final String readerName;
+    private final IntegerRange integerRange;
+    private final String alignmentValue;
+    private final String initializer;
+    private final boolean usesAnyHolder;
+    private final boolean isSimpleType;
+    private final boolean isEnum;
+    private final Constraint constraint;
+    private final Offset offset;
+    private final Array array;
+    private final RuntimeFunctionTemplateData runtimeFunction;
+    private final String bitSizeValue;
+    private final boolean withWriterCode;
+    private final boolean withRangeCheckCode;
 }

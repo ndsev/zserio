@@ -17,7 +17,7 @@ public:
         ::grpc::Slice slice(msgByteSize); // allocates memory
         uint8_t* writeBuffer = const_cast<uint8_t*>(slice.begin());
 
-        zserio::BitStreamWriter writer(writeBuffer, msgByteSize);
+        ::zserio::BitStreamWriter writer(writeBuffer, msgByteSize);
         msg.write(writer);
 
         *buffer = ::grpc::ByteBuffer(&slice, 1);
@@ -28,25 +28,25 @@ public:
 
     static Status Deserialize(ByteBuffer* buffer, ${fullName}* msg)
     {
-        std::vector<::grpc::Slice> slices;
+        ::std::vector<::grpc::Slice> slices;
         buffer->Dump(&slices);
 
         if (slices.size() == 1)
         {
             // optimization without need to copy data
             const ::grpc::Slice& slice = slices.at(0);
-            zserio::BitStreamReader reader(slice.begin(), slice.size());
+            ::zserio::BitStreamReader reader(slice.begin(), slice.size());
 
             msg->read(reader);
 
             return ::grpc::Status::OK;
         }
 
-        std::vector<uint8_t> joinedBuffer;
-        for (std::vector<::grpc::Slice>::const_iterator it = slices.begin(); it != slices.end(); ++it)
+        ::std::vector<uint8_t> joinedBuffer;
+        for (::std::vector<::grpc::Slice>::const_iterator it = slices.begin(); it != slices.end(); ++it)
             joinedBuffer.insert(joinedBuffer.end(), it->begin(), it->end());
 
-        zserio::BitStreamReader reader(&joinedBuffer[0], joinedBuffer.size());
+        ::zserio::BitStreamReader reader(&joinedBuffer[0], joinedBuffer.size());
 
         msg->read(reader);
 

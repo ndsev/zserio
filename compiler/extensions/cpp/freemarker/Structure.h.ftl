@@ -90,14 +90,14 @@ public:
     int hashCode() const;
 <#if withWriterCode>
 
-    void write(zserio::BitStreamWriter& out,
-            zserio::PreWriteAction preWriteAction = zserio::ALL_PRE_WRITE_ACTIONS);
+    void write(::zserio::BitStreamWriter& out,
+            ::zserio::PreWriteAction preWriteAction = ::zserio::ALL_PRE_WRITE_ACTIONS);
 </#if>
 
 private:
     <@inner_classes_declaration fieldList/>
 <#list fieldList as field>
-    ${field.cppTypeName} ${field.readerName}(zserio::BitStreamReader& in);
+    ${field.cppTypeName} ${field.readerName}(::zserio::BitStreamReader& in);
     <#if !field?has_next>
 
     </#if>

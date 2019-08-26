@@ -166,13 +166,13 @@ public class CppExpressionFormattingPolicy extends DefaultExpressionFormattingPo
     @Override
     public UnaryExpressionFormatting getSum(Expression expr)
     {
-        return new UnaryExpressionFormatting("zserio::sum(", ")");
+        return new UnaryExpressionFormatting("::zserio::sum(", ")");
     }
 
     @Override
     public UnaryExpressionFormatting getValueOf(Expression expr)
     {
-        return new UnaryExpressionFormatting("zserio::enumToValue(", ")");
+        return new UnaryExpressionFormatting("::zserio::enumToValue(", ")");
     }
 
     @Override
@@ -180,7 +180,7 @@ public class CppExpressionFormattingPolicy extends DefaultExpressionFormattingPo
     {
         includeCollector.addCppSystemIncludes(BUILD_IN_OPERATORS_INCLUDE);
 
-        return new UnaryExpressionFormatting("zserio::getNumBits(", ")");
+        return new UnaryExpressionFormatting("::zserio::getNumBits(", ")");
     }
 
     @Override

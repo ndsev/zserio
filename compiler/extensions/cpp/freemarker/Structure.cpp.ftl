@@ -106,7 +106,7 @@ void ${name}::${field.setterName}(${field.cppArgumentTypeName} <@field_argument_
     <#if needs_field_rvalue_setter(field)>
 void ${name}::${field.setterName}(${field.cppTypeName}&& <@field_argument_name field.name/>)
 {
-    <@field_member_name field.name/> = std::move(<@field_argument_name field.name/>);
+    <@field_member_name field.name/> = ::std::move(<@field_argument_name field.name/>);
 }
 
     </#if>
@@ -122,14 +122,14 @@ bool ${name}::${field.optional.indicatorName}() const
 <#macro structure_align_field field indent>
     <#local I>${""?left_pad(indent * 4)}</#local>
     <#if field.alignmentValue??>
-${I}endBitPosition = zserio::alignTo(${field.alignmentValue}, endBitPosition);
+${I}endBitPosition = ::zserio::alignTo(${field.alignmentValue}, endBitPosition);
     </#if>
     <#if field.offset??>
         <#if field.offset.containsIndex>
 ${I}if (<@compound_get_field field/>.size() > 0)
-${I}    endBitPosition = zserio::alignTo(zserio::NUM_BITS_PER_BYTE, endBitPosition);
+${I}    endBitPosition = ::zserio::alignTo(::zserio::NUM_BITS_PER_BYTE, endBitPosition);
         <#else>
-${I}endBitPosition = zserio::alignTo(zserio::NUM_BITS_PER_BYTE, endBitPosition);
+${I}endBitPosition = ::zserio::alignTo(::zserio::NUM_BITS_PER_BYTE, endBitPosition);
         </#if>
     </#if>
 </#macro>
@@ -169,7 +169,7 @@ size_t ${name}::bitSizeOf(size_t<#if fieldList?has_content> bitPosition</#if>) c
     <#if field.offset?? && !field.offset.containsIndex>
     <#local I>${""?left_pad(indent * 4)}</#local>
 ${I}{
-${I}    const ${field.offset.typeName} value = (${field.offset.typeName})zserio::bitsToBytes(endBitPosition);
+${I}    const ${field.offset.typeName} value = (${field.offset.typeName})::zserio::bitsToBytes(endBitPosition);
 ${I}    ${field.offset.setter};
 ${I}}
     </#if>
@@ -224,15 +224,15 @@ bool ${name}::operator==(const ${name}&<#if compoundParametersData.list?has_cont
 
 int ${name}::hashCode() const
 {
-    int result = zserio::HASH_SEED;
+    int result = ::zserio::HASH_SEED;
 
     <@compound_parameter_hash_code compoundParametersData/>
 <#list fieldList as field>
     <#if field.optional?? && field.optional.clause??>
     if (${field.optional.clause})
-        result = zserio::calcHashCode(result, <@field_member_name field.name/>);
+        result = ::zserio::calcHashCode(result, <@field_member_name field.name/>);
     <#else>
-    result = zserio::calcHashCode(result, <@field_member_name field.name/>);
+    result = ::zserio::calcHashCode(result, <@field_member_name field.name/>);
     </#if>
     <#if !field?has_next>
 
@@ -250,8 +250,8 @@ int ${name}::hashCode() const
         <#break>
     </#if>
 </#list>
-void ${name}::write(zserio::BitStreamWriter&<#if fieldList?has_content> out</#if>, <#rt>
-        zserio::PreWriteAction<#if hasPreWriteAction> preWriteAction</#if>)<#lt>
+void ${name}::write(::zserio::BitStreamWriter&<#if fieldList?has_content> out</#if>, <#rt>
+        ::zserio::PreWriteAction<#if hasPreWriteAction> preWriteAction</#if>)<#lt>
 {
     <#if fieldList?has_content>
         <#if hasPreWriteAction>
@@ -269,7 +269,7 @@ void ${name}::write(zserio::BitStreamWriter&<#if fieldList?has_content> out</#if
 </#if>
 <#list fieldList as field>
 
-${field.cppTypeName} ${name}::${field.readerName}(zserio::BitStreamReader& in)
+${field.cppTypeName} ${name}::${field.readerName}(::zserio::BitStreamReader& in)
 {
     <@compound_read_field field, name, 1/>
 }

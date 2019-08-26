@@ -72,19 +72,19 @@ public:
     int hashCode() const;
 <#if withWriterCode>
 
-    void write(zserio::BitStreamWriter& out,
-            zserio::PreWriteAction preWriteAction = zserio::ALL_PRE_WRITE_ACTIONS);
+    void write(::zserio::BitStreamWriter& out,
+            ::zserio::PreWriteAction preWriteAction = ::zserio::ALL_PRE_WRITE_ACTIONS);
 </#if>
 
 private:
     <@inner_classes_declaration fieldList/>
 <#if fieldList?has_content>
-    zserio::AnyHolder readObject(zserio::BitStreamReader& in);
+    ::zserio::AnyHolder readObject(::zserio::BitStreamReader& in);
 
 </#if>
     <@compound_parameter_members compoundParametersData/>
     <@compound_constructor_members compoundConstructorsData/>
-    zserio::AnyHolder m_objectChoice;
+    ::zserio::AnyHolder m_objectChoice;
 };
 <@namespace_end package.path/>
 

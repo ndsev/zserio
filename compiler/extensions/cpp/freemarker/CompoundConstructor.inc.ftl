@@ -32,7 +32,7 @@ ${compoundConstructorsData.compoundName}::${compoundConstructorsData.compoundNam
 
 <#macro compound_read_constructor_declaration compoundConstructorsData>
     <#local constructorArgumentTypeList><@compound_constructor_argument_type_list compoundConstructorsData, 3/></#local>
-    explicit ${compoundConstructorsData.compoundName}(zserio::BitStreamReader& in<#rt>
+    explicit ${compoundConstructorsData.compoundName}(::zserio::BitStreamReader& in<#rt>
     <#if constructorArgumentTypeList?has_content>
             <#lt>,
             ${constructorArgumentTypeList}<#t>
@@ -47,7 +47,7 @@ ${compoundConstructorsData.compoundName}::${compoundConstructorsData.compoundNam
             has_field_with_initialization(compoundConstructorsData.fieldList) ||
             memberInitializationMacroName != ""/>
 ${compoundConstructorsData.compoundName}::${compoundConstructorsData.compoundName}(<#rt>
-        <#lt>zserio::BitStreamReader&<#if compoundConstructorsData.fieldList?has_content> in</#if><#rt>
+        <#lt>::zserio::BitStreamReader&<#if compoundConstructorsData.fieldList?has_content> in</#if><#rt>
     <#if constructorArgumentTypeList?has_content>
         <#lt>,
         ${constructorArgumentTypeList}<#t>

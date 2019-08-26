@@ -114,5 +114,5 @@ public class CompoundFunctionTemplateData
         private final String resultExpression;
     }
 
-    private final List<CompoundFunction>    compoundFunctionList;
+    private final List<CompoundFunction> compoundFunctionList;
 }

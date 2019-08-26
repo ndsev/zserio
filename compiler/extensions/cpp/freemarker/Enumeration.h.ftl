@@ -26,14 +26,14 @@ enum class ${name} : ${baseCppTypeName}
 template <>
 struct EnumTraits<${fullName}>
 {
-    static constexpr std::array<const char*, ${items?size}> names =
+    static constexpr ::std::array<const char*, ${items?size}> names =
     {{
 <#list items as item>
         "${item.name}"<#if item?has_next>,</#if>
 </#list>
     }};
 
-    static constexpr std::array<${fullName}, ${items?size}> values =
+    static constexpr ::std::array<${fullName}, ${items?size}> values =
     {{
 <#list items as item>
         ${item.fullName}<#if item?has_next>,</#if>
@@ -46,7 +46,7 @@ size_t enumToOrdinal<${fullName}>(${fullName} value);
 
 template <>
 ${fullName} valueToEnum<${fullName}>(
-        typename std::underlying_type<${fullName}>::type rawValue);
+        typename ::std::underlying_type<${fullName}>::type rawValue);
 
 template <>
 size_t bitSizeOf<${fullName}>(${fullName}<#if !runtimeFunction.arg??> value</#if>);
@@ -57,7 +57,7 @@ size_t initializeOffsets<${fullName}>(size_t bitPosition, ${fullName} value);
 </#if>
 
 template <>
-${fullName} read<${fullName}>(zserio::BitStreamReader& in);
+${fullName} read<${fullName}>(::zserio::BitStreamReader& in);
 <#if withWriterCode>
 
 template <>

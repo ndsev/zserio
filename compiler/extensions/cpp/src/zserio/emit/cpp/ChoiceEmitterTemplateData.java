@@ -112,7 +112,7 @@ public class ChoiceEmitterTemplateData extends CompoundTypeTemplateData
             return compoundField;
         }
 
-        private final List<String>              expressionList;
+        private final List<String> expressionList;
         private final CompoundFieldTemplateData compoundField;
     }
 
@@ -139,9 +139,9 @@ public class ChoiceEmitterTemplateData extends CompoundTypeTemplateData
         private final CompoundFieldTemplateData compoundField;
     }
 
-    private final String                            selectorExpression;
-    private final String                            selectorExpressionTypeName;
-    private final List<CaseMember>                  caseMemberList;
-    private final DefaultMember                     defaultMember;
-    private final boolean                           isDefaultUnreachable;
+    private final String selectorExpression;
+    private final String selectorExpressionTypeName;
+    private final List<CaseMember> caseMemberList;
+    private final DefaultMember defaultMember;
+    private final boolean isDefaultUnreachable;
 }

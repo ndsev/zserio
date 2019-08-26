@@ -55,14 +55,14 @@ public:
     class Stub final : public StubInterface
     {
     public:
-        explicit Stub(const std::shared_ptr<::grpc::ChannelInterface>& channel);
+        explicit Stub(const ::std::shared_ptr<::grpc::ChannelInterface>& channel);
 
 <#list rpcList as rpc>
         <@stub_header_public rpc/>
 
 </#list>
     private:
-        std::shared_ptr<::grpc::ChannelInterface> channel_;
+        ::std::shared_ptr<::grpc::ChannelInterface> channel_;
 <#list rpcList as rpc>
 
         <@stub_header_private rpc/>
@@ -73,7 +73,7 @@ public:
 </#list>
     };
 
-    static std::unique_ptr<Stub> NewStub(const std::shared_ptr<::grpc::ChannelInterface>& channel,
+    static ::std::unique_ptr<Stub> NewStub(const ::std::shared_ptr<::grpc::ChannelInterface>& channel,
             const ::grpc::StubOptions& options = ::grpc::StubOptions());
 
     <#-- Server side - base -->
@@ -170,9 +170,9 @@ public:
                     ${rpc.requestTypeFullName}, ${rpc.responseTypeFullName}> StreamUnaryHandler;
 
             ::grpc::Service::MarkMethodStreamed(${rpc?index},
-                    new StreamUnaryHandler(std::bind(
+                    new StreamUnaryHandler(::std::bind(
                             &WithStreamedUnaryMethod_${rpc.name}<BaseClass>::Streamed${rpc.name},
-                            this, std::placeholders::_1, std::placeholders::_2)));
+                            this, ::std::placeholders::_1, ::std::placeholders::_2)));
         }
 
         ~WithStreamedUnaryMethod_${rpc.name}() override
@@ -214,9 +214,9 @@ public:
                     ${rpc.requestTypeFullName}, ${rpc.responseTypeFullName}> SplitServerStreamingHandler;
 
             ::grpc::Service::MarkMethodStreamed(${rpc?index},
-                    new SplitServerStreamingHandler(std::bind(
+                    new SplitServerStreamingHandler(::std::bind(
                             &WithSplitStreamingMethod_${rpc.name}<BaseClass>::Streamed${rpc.name},
-                            this, std::placeholders::_1, std::placeholders::_2)));
+                            this, ::std::placeholders::_1, ::std::placeholders::_2)));
         }
 
         ~WithSplitStreamingMethod_${rpc.name}() override
