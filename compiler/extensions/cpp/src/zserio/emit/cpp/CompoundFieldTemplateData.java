@@ -20,6 +20,7 @@ import zserio.ast.TypeInstantiation;
 import zserio.ast.TypeInstantiation.InstantiatedParameter;
 import zserio.ast.TypeReference;
 import zserio.emit.common.ExpressionFormatter;
+import zserio.emit.common.ExpressionFormattingPolicy;
 import zserio.emit.common.ZserioEmitException;
 import zserio.emit.cpp.types.CppNativeType;
 import zserio.emit.cpp.types.NativeArrayType;
@@ -72,7 +73,7 @@ public class CompoundFieldTemplateData
         isSimpleType = fieldNativeType.isSimpleType();
         isEnum = baseFieldType instanceof EnumType;
 
-        constraint = createConstraint(field, cppExpressionFormatter);
+        constraint = createConstraint(field, cppNativeTypeMapper, cppExpressionFormatter, includeCollector);
 
         offset = createOffset(field, cppNativeTypeMapper, cppExpressionFormatter,
                 cppIndirectExpressionFormatter);
@@ -159,7 +160,7 @@ public class CompoundFieldTemplateData
         return isEnum;
     }
 
-    public String getConstraint()
+    public Constraint getConstraint()
     {
         return constraint;
     }
@@ -302,6 +303,29 @@ public class CompoundFieldTemplateData
 
         private final ArrayList<InstantiatedParameterData>  instantiatedParameters;
         private final boolean                               needsChildrenInitialization;
+    }
+
+    public static class Constraint
+    {
+        public Constraint(Expression constraintExpression, ExpressionFormatter cppExpressionFormatter,
+                ExpressionFormatter cppConstraintExpressionFormatter) throws ZserioEmitException
+        {
+            writeConstraint = cppExpressionFormatter.formatGetter(constraintExpression);
+            readConstraint = cppConstraintExpressionFormatter.formatGetter(constraintExpression);
+        }
+
+        public String getWriteConstraint()
+        {
+            return writeConstraint;
+        }
+
+        public String getReadConstraint()
+        {
+            return readConstraint;
+        }
+
+        private final String writeConstraint;
+        private final String readConstraint;
     }
 
     public static class Offset
@@ -561,14 +585,20 @@ public class CompoundFieldTemplateData
         return cppExpressionFormatter.formatGetter(initializerExpression);
     }
 
-    private static String createConstraint(Field field, ExpressionFormatter cppExpressionFormatter)
-            throws ZserioEmitException
+    private static Constraint createConstraint(Field field, CppNativeTypeMapper cppNativeTypeMapper,
+            ExpressionFormatter cppExpressionFormatter, IncludeCollector includeCollector)
+                    throws ZserioEmitException
     {
         final Expression constraintExpression = field.getConstraintExpr();
         if (constraintExpression == null)
             return null;
 
-        return cppExpressionFormatter.formatGetter(constraintExpression);
+        final CppConstraintExpressionFormattingPolicy expressionFormattingPolicy =
+                new CppConstraintExpressionFormattingPolicy(cppNativeTypeMapper, includeCollector, field);
+        final ExpressionFormatter cppConstaintExpressionFormatter =
+                new ExpressionFormatter(expressionFormattingPolicy);
+
+        return new Constraint(constraintExpression, cppExpressionFormatter, cppConstaintExpressionFormatter);
     }
 
     private static Offset createOffset(Field field, CppNativeTypeMapper cppNativeTypeMapper,
@@ -655,7 +685,7 @@ public class CompoundFieldTemplateData
     private final boolean                       usesAnyHolder;
     private final boolean                       isSimpleType;
     private final boolean                       isEnum;
-    private final String                        constraint;
+    private final Constraint                    constraint;
     private final Offset                        offset;
     private final Array                         array;
     private final RuntimeFunctionTemplateData   runtimeFunction;

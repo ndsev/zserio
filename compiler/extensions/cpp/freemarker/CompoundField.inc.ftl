@@ -29,24 +29,31 @@ ${I}return ${field.cppTypeName}();
     <@compound_read_field_prolog field, compoundName, indent/>
     <#local cppTypeName><#if field.optional??>${field.optional.cppRawTypeName}<#else>${field.cppTypeName}</#if></#local>
     <#if field.array??>
-${I}${cppTypeName} readArray;
-${I}zserio::read<@array_runtime_function_suffix field, true/>(<@array_traits field, true/>, readArray, in<#rt>
+${I}${cppTypeName} readField;
+${I}zserio::read<@array_runtime_function_suffix field, true/>(<@array_traits field, true/>, readField, in<#rt>
         <#lt><#if field.array.length??>, ${field.array.length}</#if><#rt>
         <#lt><#if field.offset?? && field.offset.containsIndex>, <@offset_checker_name field.name/>(*this)</#if><#rt>
         <#lt>);
-${I}
-${I}return <#if field.usesAnyHolder>zserio::AnyHolder(</#if>readArray<#if field.usesAnyHolder>)</#if>;
+        <#local readCommand="readField"/>
     <#elseif field.runtimeFunction??>
-${I}return <#if field.usesAnyHolder>zserio::AnyHolder(</#if><#rt>
-            static_cast<${cppTypeName}>(in.read${field.runtimeFunction.suffix}(${field.runtimeFunction.arg!}))<#t>
-            <#lt><#if field.usesAnyHolder>)</#if>;
+        <#local readCommand>static_cast<${cppTypeName}>(in.read${field.runtimeFunction.suffix}(${field.runtimeFunction.arg!}))</#local>
     <#elseif field.isEnum>
-${I}return <#if field.usesAnyHolder>zserio::AnyHolder(</#if>zserio::read<${cppTypeName}>(in)<#if field.usesAnyHolder>)</#if>;
+        <#local readCommand>zserio::read<${cppTypeName}>(in)</#local>
     <#else>
         <#-- compound -->
         <#local compoundParamsArguments><@compound_field_compound_ctor_params field.compound, false/></#local>
         <#local constructorArguments>in<#if compoundParamsArguments?has_content>, ${compoundParamsArguments}</#if></#local>
-${I}return <#if field.usesAnyHolder>zserio::AnyHolder(</#if>${cppTypeName}(${constructorArguments})<#if field.usesAnyHolder>)</#if>;
+        <#local readCommand>${cppTypeName}(${constructorArguments})</#local>
+    </#if>
+    <#if field.constraint??>
+        <#if !field.array??>
+${I}const ${cppTypeName} readField = ${readCommand};
+        </#if>
+    <@compound_check_constraint_field field, name, "Read", indent/>
+${I}
+${I}return <#if field.usesAnyHolder>zserio::AnyHolder(</#if>readField<#if field.usesAnyHolder>)</#if>;
+    <#else>
+${I}return <#if field.usesAnyHolder>zserio::AnyHolder(</#if>${readCommand}<#if field.usesAnyHolder>)</#if>;
     </#if>
 </#macro>
 
@@ -142,17 +149,19 @@ ${I}out.alignTo(${field.alignmentValue});
 ${I}out.alignTo(UINT32_C(8));
     <@compound_check_offset_field field, compoundName, "Write", "out.getBitPosition()", indent/>
     </#if>
-    <@compound_check_constraint_field field, compoundName, indent/>
+    <@compound_check_constraint_field field, compoundName, "Write", indent/>
     <@compound_check_array_length_field field, compoundName, indent/>
     <@compound_check_range_field field, compoundName, indent/>
 </#macro>
 
-<#macro compound_check_constraint_field field compoundName indent>
+<#macro compound_check_constraint_field field compoundName actionName indent>
     <#local I>${""?left_pad(indent * 4)}</#local>
     <#if field.constraint??>
+        <#local constraintExpresssion><#if actionName=="Read">${field.constraint.readConstraint}<#else><#rt>
+                <#lt>${field.constraint.writeConstraint}</#if></#local>
 ${I}// check constraint
-${I}if (<#if field.optional??>(<@field_optional_condition field/>) && </#if>!(${field.constraint}))
-${I}    throw zserio::ConstraintException("Constraint violated at ${compoundName}.${field.name}!");
+${I}if (<#if field.optional??>(<@field_optional_condition field/>) && </#if>!(${constraintExpresssion}))
+${I}    throw zserio::ConstraintException("${actionName}: Constraint violated at ${compoundName}.${field.name}!");
     </#if>
 </#macro>
 
@@ -710,26 +719,12 @@ ${I};
     <#return false>
 </#function>
 
-<#function has_field_any_read_check_code field compoundName indent>
-    <#local checkCode>
-        <#if field.offset?? && !field.offset.containsIndex>
-    <@compound_check_offset_field field, compoundName, "Read", "in.getBitPosition()", indent/>
-        </#if>
-    <@compound_check_constraint_field field, compoundName, indent/>
-    </#local>
-    <#if checkCode == "">
-        <#return false>
-    </#if>
-
-    <#return true>
-</#function>
-
 <#function has_field_any_write_check_code field compoundName indent>
     <#local checkCode>
         <#if field.offset?? && !field.offset.containsIndex>
     <@compound_check_offset_field field, compoundName, "Write", "out.getBitPosition()", indent/>
         </#if>
-    <@compound_check_constraint_field field, compoundName, indent/>
+    <@compound_check_constraint_field field, compoundName, "Write", indent/>
     <@compound_check_array_length_field field, compoundName, indent/>
     <@compound_check_range_field field, compoundName, indent/>
     </#local>

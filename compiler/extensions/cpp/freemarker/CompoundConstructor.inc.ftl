@@ -40,7 +40,7 @@ ${compoundConstructorsData.compoundName}::${compoundConstructorsData.compoundNam
     <#lt>);
 </#macro>
 
-<#macro compound_read_constructor_definition compoundConstructorsData memberInitializationMacroName memberConstraintsMacroName>
+<#macro compound_read_constructor_definition compoundConstructorsData memberInitializationMacroName>
     <#local constructorArgumentTypeList><@compound_constructor_argument_type_list compoundConstructorsData, 2/></#local>
     <#local hasInitializers=constructorArgumentTypeList?has_content ||
             needs_compound_initialization(compoundConstructorsData) ||
@@ -70,7 +70,6 @@ ${compoundConstructorsData.compoundName}::${compoundConstructorsData.compoundNam
         <@.vars[memberInitializationMacroName]/>
     </#if>
 {
-    <@.vars[memberConstraintsMacroName]/>
 }
 </#macro>
 

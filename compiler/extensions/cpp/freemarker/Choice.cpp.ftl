@@ -29,21 +29,8 @@
 <#macro read_constructor_field_initialization>
         m_objectChoice(readObject(in))
 </#macro>
-<#macro choice_constraint_member member>
-    <#if member.compoundField??>
-        <@compound_check_constraint_field member.compoundField, name, 2/>
-    <#else>
-        // empty
-    </#if>
-</#macro>
-<#macro read_constructor_field_constraints>
-    <#if has_field_with_constraint(fieldList)>
-        <@choice_switch "choice_constraint_member", true/>
-    </#if>
-</#macro>
 <#assign readConstructorInitMacroName><#if fieldList?has_content>read_constructor_field_initialization</#if></#assign>
-<@compound_read_constructor_definition compoundConstructorsData, readConstructorInitMacroName,
-        "read_constructor_field_constraints"/>
+<@compound_read_constructor_definition compoundConstructorsData, readConstructorInitMacroName/>
 
 <#if needs_compound_initialization(compoundConstructorsData) || has_field_with_initialization(fieldList)>
 <@compound_copy_constructor_definition compoundConstructorsData/>

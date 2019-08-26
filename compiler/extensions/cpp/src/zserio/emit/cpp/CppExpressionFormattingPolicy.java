@@ -208,6 +208,15 @@ public class CppExpressionFormattingPolicy extends DefaultExpressionFormattingPo
         return "";
     }
 
+    protected void formatFieldGetter(StringBuilder result, Field field)
+    {
+        result.append(AccessorNameFormatter.getGetterName(field));
+        result.append(CPP_GETTER_FUNCTION_CALL);
+
+        if (field.getIsOptional())
+            result.append(CPP_GETTER_OPTIONAL_VALUE);
+    }
+
     private void formatIdentifierForType(StringBuilder result, String symbol, boolean isFirstInDot,
             ZserioType identifierType) throws ZserioEmitException
     {
@@ -343,11 +352,7 @@ public class CppExpressionFormattingPolicy extends DefaultExpressionFormattingPo
         }
         else
         {
-            result.append(AccessorNameFormatter.getGetterName(field));
-            result.append(CPP_GETTER_FUNCTION_CALL);
-
-            if (field.getIsOptional())
-                result.append(CPP_GETTER_OPTIONAL_VALUE);
+            formatFieldGetter(result, field);
         }
     }
 

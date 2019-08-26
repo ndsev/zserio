@@ -56,13 +56,8 @@
         <@field_member_name field.name/>(${field.readerName}(in))<#if field?has_next>,</#if>
     </#list>
 </#macro>
-<#macro read_constructor_field_constraints>
-    <#list fieldList as field>
-        <@compound_check_constraint_field field, name, 1/>
-    </#list>
-</#macro>
 <#assign readConstructorInitMacroName><#if fieldList?has_content>read_constructor_field_initialization</#if></#assign>
-<@compound_read_constructor_definition compoundConstructorsData, readConstructorInitMacroName, "read_constructor_field_constraints"/>
+<@compound_read_constructor_definition compoundConstructorsData, readConstructorInitMacroName/>
 
 <#if needs_compound_initialization(compoundConstructorsData) || has_field_with_initialization(fieldList)>
 <@compound_copy_constructor_definition compoundConstructorsData/>
@@ -274,13 +269,6 @@ void ${name}::write(zserio::BitStreamWriter&<#if fieldList?has_content> out</#if
 }
 </#if>
 <#list fieldList as field>
-<#assign needsReadNewLines=false/> <#-- TODO TBR?!? -->
-<#list fieldList as field>
-    <#if has_field_any_read_check_code(field, name, 2)>
-        <#assign needsReadNewLines=true/>
-        <#break>
-    </#if>
-</#list>
 
 ${field.cppTypeName} ${name}::${field.readerName}(zserio::BitStreamReader& in)
 {
