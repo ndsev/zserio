@@ -14,11 +14,10 @@
 <#if has_field_with_constraint(fieldList)>
 #include <zserio/ConstraintException.h>
 </#if>
-<@system_includes cppSystemIncludes, false/>
+<@system_includes cppSystemIncludes/>
 
 #include "<@include_path package.path, "${name}.h"/>"
 <@user_includes cppUserIncludes, false/>
-
 <@namespace_begin package.path/>
 
 <@define_inner_classes fieldList/>
@@ -275,5 +274,4 @@ ${field.cppTypeName} ${name}::${field.readerName}(zserio::BitStreamReader& in)
     <@compound_read_field field, name, 1/>
 }
 </#list>
-
 <@namespace_end package.path/>

@@ -5,7 +5,6 @@
 #include "zserio/SqliteException.h"
 
 #include "<@include_path package.path, "${name}.h"/>"
-
 <@namespace_begin package.path/>
 
 <#if withWriterCode>
@@ -179,5 +178,4 @@ void ${name}::detachDatabases()
     }
     m_attachedDbList.clear();
 }
-
 <@namespace_end package.path/>

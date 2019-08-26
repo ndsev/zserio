@@ -4,7 +4,6 @@
 
 <@include_guard_begin package.path, name/>
 
-<@user_includes headerUserIncludes, true/>
 #include <grpcpp/impl/codegen/async_generic_service.h>
 #include <grpcpp/impl/codegen/async_stream.h>
 #include <grpcpp/impl/codegen/async_unary_call.h>
@@ -14,6 +13,7 @@
 #include <grpcpp/impl/codegen/status.h>
 #include <grpcpp/impl/codegen/stub_options.h>
 #include <grpcpp/impl/codegen/sync_stream.h>
+<@user_includes headerUserIncludes/>
 
 namespace grpc
 {
@@ -24,7 +24,6 @@ class ServerCompletionQueue;
 class ServerContext;
 
 } // namespace grpc
-
 <@namespace_begin package.path/>
 
 class ${name} final
@@ -248,7 +247,6 @@ public:
     <#-- Server side - typedef for controlled both unary and server-side streaming -->
     <@typedef_streamed_service noOrResponseOnlyStreamingRpcList/>
 };
-
 <@namespace_end package.path/>
 
 <@include_guard_end package.path, name/>

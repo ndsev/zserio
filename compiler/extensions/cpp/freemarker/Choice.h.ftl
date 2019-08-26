@@ -14,9 +14,8 @@
 #include <zserio/BitStreamWriter.h>
 #include <zserio/AnyHolder.h>
 #include <zserio/PreWriteAction.h>
-<@system_includes headerSystemIncludes, false/>
-
-<@user_includes headerUserIncludes, true/>
+<@system_includes headerSystemIncludes/>
+<@user_includes headerUserIncludes/>
 <@namespace_begin package.path/>
 
 class ${name}
@@ -87,7 +86,6 @@ private:
     <@compound_constructor_members compoundConstructorsData/>
     zserio::AnyHolder m_objectChoice;
 };
-
 <@namespace_end package.path/>
 
 <@include_guard_end package.path, name/>

@@ -22,22 +22,19 @@
     <#t>${typeName}
 </#macro>
 
-<#macro system_includes includeFiles, autoNewLine>
+<#macro system_includes includeFiles>
     <#list includeFiles as include>
 #include <${include}>
     </#list>
+</#macro>
+
+<#macro user_includes includeFiles autoNewLine=true>
     <#if includeFiles?has_content && autoNewLine>
 
     </#if>
-</#macro>
-
-<#macro user_includes includeFiles, autoNewLine>
     <#list includeFiles as include>
 #include "${include}"
     </#list>
-    <#if includeFiles?has_content && autoNewLine>
-
-    </#if>
 </#macro>
 
 <#macro include_guard_begin packagePath typeName>
@@ -50,16 +47,22 @@
 </#macro>
 
 <#macro namespace_begin packagePath>
-    <#list packagePath as namespace>
+    <#if packagePath?has_content>
+
+        <#list packagePath as namespace>
 namespace ${namespace}
 {
-    </#list>
+        </#list>
+    </#if>
 </#macro>
 
 <#macro namespace_end packagePath>
-    <#list packagePath?reverse as namespace>
+    <#if packagePath?has_content>
+
+        <#list packagePath?reverse as namespace>
 } // namespace ${namespace}
-    </#list>
+        </#list>
+    </#if>
 </#macro>
 
 <#macro anonymous_namespace_begin>

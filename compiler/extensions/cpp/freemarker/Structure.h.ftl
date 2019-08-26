@@ -15,16 +15,13 @@
 #include <zserio/BitStreamReader.h>
 #include <zserio/BitStreamWriter.h>
 #include <zserio/PreWriteAction.h>
-<@system_includes headerSystemIncludes, false/>
-
-<@user_includes headerUserIncludes, true/>
+<@system_includes headerSystemIncludes/>
+<@user_includes headerUserIncludes/>
 <#if isRecursive>
 <@namespace_begin package.path/>
 
 class ${name};
-
 <@namespace_end package.path/>
-
 <@namespace_begin ["zserio", "detail"]/>
 
 template <>
@@ -32,9 +29,7 @@ struct is_optimized_in_place<${fullName}>
 {
     static const bool value = false;
 };
-
 <@namespace_end ["zserio", "detail"]/>
-
 </#if>
 <@namespace_begin package.path/>
 
@@ -113,7 +108,6 @@ private:
     ${field.cppTypeName} <@field_member_name field.name/>;
 </#list>
 };
-
 <@namespace_end package.path/>
 <@grpc_serialization_traits needsRpcTraits fullName/>
 

@@ -18,9 +18,8 @@
 #include <zserio/CppRuntimeException.h>
 #include <zserio/StringConvertUtil.h>
 #include <zserio/PreWriteAction.h>
-<@system_includes headerSystemIncludes, false/>
-
-<@user_includes headerUserIncludes, true/>
+<@system_includes headerSystemIncludes/>
+<@user_includes headerUserIncludes/>
 <@namespace_begin package.path/>
 
 class ${name}
@@ -130,7 +129,6 @@ private:
     ChoiceTag m_choiceTag;
     zserio::AnyHolder m_objectChoice;
 };
-
 <@namespace_end package.path/>
 <@grpc_serialization_traits needsRpcTraits fullName/>
 

@@ -1,7 +1,6 @@
 <#include "FileHeader.inc.ftl">
 <#macro grpc_serialization_traits needsRpcTraits fullName>
     <#if needsRpcTraits>
-
 <@namespace_begin ["grpc"]/>
 
 template <>
@@ -54,7 +53,6 @@ public:
         return ::grpc::Status::OK;
     }
 };
-
 <@namespace_end ["grpc"]/>
 
     </#if>

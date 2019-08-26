@@ -9,8 +9,7 @@
 <#if !bitSize??>
 #include <zserio/BitSizeOfCalculator.h>
 </#if>
-<@system_includes headerSystemIncludes, false/>
-
+<@system_includes headerSystemIncludes/>
 <@user_includes headerUserIncludes, true/>
 <@namespace_begin package.path/>
 
@@ -20,12 +19,10 @@ enum class ${name} : ${baseCppTypeName}
     ${item.name} = ${item.value}<#if item?has_next>,</#if>
 </#list>
 };
-
 <@namespace_end package.path/>
-
-// This is full specialization for ${name} enumeration.
 <@namespace_begin ["zserio"]/>
 
+// This is full specialization of enumeration traits and methods for ${name} enumeration.
 template <>
 struct EnumTraits<${fullName}>
 {
@@ -66,7 +63,6 @@ ${fullName} read<${fullName}>(zserio::BitStreamReader& in);
 template <>
 void write<${fullName}>(BitStreamWriter& out, ${fullName} value);
 </#if>
-
 <@namespace_end ["zserio"]/>
 
 <@include_guard_end package.path, name/>

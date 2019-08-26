@@ -2,9 +2,6 @@
 <#include "Service.cpp.inc.ftl">
 <@file_header generatorDescription/>
 
-#include "<@include_path package.path, "${name}.h"/>"
-
-<@user_includes cppUserIncludes, true/>
 #include <grpcpp/impl/codegen/async_stream.h>
 #include <grpcpp/impl/codegen/async_unary_call.h>
 #include <grpcpp/impl/codegen/channel_interface.h>
@@ -14,6 +11,8 @@
 #include <grpcpp/impl/codegen/service_type.h>
 #include <grpcpp/impl/codegen/sync_stream.h>
 
+#include "<@include_path package.path, "${name}.h"/>"
+<@user_includes cppUserIncludes, false/>
 <@namespace_begin package.path/>
 
 static const char* ${name}_method_names[] =
@@ -67,5 +66,4 @@ ${name}::Service::~Service()
 <#list rpcList as rpc>
 <@service_unimplemented_method name, rpc/>
 </#list>
-
 <@namespace_end package.path/>

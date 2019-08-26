@@ -8,11 +8,10 @@
 <#if withWriterCode>
 #include <zserio/BitStreamWriter.h>
 </#if>
-<@system_includes cppSystemIncludes, false/>
+<@system_includes cppSystemIncludes/>
 
 #include "<@include_path package.path, "${name}.h"/>"
 <@user_includes cppUserIncludes, false/>
-
 <@namespace_begin package.path/>
 
 <#assign hasBlobField=sql_table_has_blob_field(fields)/>
@@ -431,5 +430,4 @@ void ${name}::Row::reinitializeBlobs()
         </#list>
 }
 </#if>
-
 <@namespace_end package.path/>

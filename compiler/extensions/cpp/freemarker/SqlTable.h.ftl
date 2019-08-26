@@ -8,13 +8,11 @@
 #include <vector>
 #include <string>
 #include <sqlite3.h>
-<@system_includes headerSystemIncludes, false/>
+<@system_includes headerSystemIncludes/>
 #include <zserio/SqliteConnection.h>
 #include <zserio/SqliteFinalizer.h>
 #include <zserio/OptionalHolder.h>
-
-<@user_includes headerUserIncludes, false/>
-
+<@user_includes headerUserIncludes/>
 <@namespace_begin package.path/>
 
 <#assign needsParameterProvider=explicitParameters?has_content/>
@@ -154,7 +152,6 @@ private:
     const ::std::string m_name;
     const ::std::string m_attachedDbName;
 };
-
 <@namespace_end package.path/>
 
 <@include_guard_end package.path, name/>

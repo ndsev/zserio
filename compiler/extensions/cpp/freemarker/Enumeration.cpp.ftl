@@ -3,14 +3,13 @@
 
 #include <zserio/StringConvertUtil.h>
 #include <zserio/CppRuntimeException.h>
-<@system_includes cppSystemIncludes, false/>
+<@system_includes cppSystemIncludes/>
 
 #include "<@include_path package.path, "${name}.h"/>"
 <@user_includes cppUserIncludes, false/>
-
-// This is full specialization for ${name} enumeration.
 <@namespace_begin ["zserio"]/>
 
+// This is full specialization of enumeration traits and methods for ${name} enumeration.
 constexpr std::array<const char*, ${items?size}> EnumTraits<${fullName}>::names;
 constexpr std::array<${fullName}, ${items?size}> EnumTraits<${fullName}>::values;
 
@@ -79,5 +78,4 @@ void write<${fullName}>(BitStreamWriter& out, ${fullName} value)
             <#lt><#if runtimeFunction.arg??>, ${runtimeFunction.arg}</#if>);
 }
 </#if>
-
 <@namespace_end ["zserio"]/>
