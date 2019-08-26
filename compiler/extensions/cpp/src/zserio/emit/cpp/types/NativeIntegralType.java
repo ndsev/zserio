@@ -39,7 +39,7 @@ public class NativeIntegralType extends CppNativeType
     {
         checkRange(value);
 
-        // TODO not to compare strings
+        // TODO Not to compare strings. The same implementation is in formatting policy.
         final String stringValue = value.toString();
 
         // Special work around for INT64_MIN: this literal can't be written as a single number without a warning

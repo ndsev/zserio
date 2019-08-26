@@ -1,6 +1,5 @@
 <#include "FileHeader.inc.ftl">
-<#macro grpc_serialization_traits needsRpcTraits fullName>
-    <#if needsRpcTraits>
+<#macro grpc_serialization_traits fullName>
 <@namespace_begin ["grpc"]/>
 
 template <>
@@ -54,6 +53,4 @@ public:
     }
 };
 <@namespace_end ["grpc"]/>
-
-    </#if>
 </#macro>

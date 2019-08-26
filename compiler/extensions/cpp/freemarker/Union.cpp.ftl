@@ -116,7 +116,7 @@ void ${name}::initializeChildren()
     {
         <#list fieldList as field>
     case <@choice_tag_name field/>:
-        <@compound_initialize_children_field field, name, 2, true/>
+        <@compound_initialize_children_field field, 2, true/>
         break;
         </#list>
     default:

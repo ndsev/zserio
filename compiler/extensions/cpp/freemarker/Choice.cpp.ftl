@@ -107,7 +107,7 @@
 </#macro>
 <#macro choice_initialize_children_member member>
     <#if member.compoundField??>
-        <@compound_initialize_children_field member.compoundField, name, 2/>
+        <@compound_initialize_children_field member.compoundField, 2/>
     <#else>
         // empty
     </#if>

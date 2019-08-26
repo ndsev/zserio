@@ -583,8 +583,7 @@ ${I}<@field_member_name field.name/> = ::std::move(other.<@field_member_name fie
     void initializeChildren();
 </#macro>
 
-<#-- TODO: is compoundName needed?! -->
-<#macro compound_initialize_children_field field compoundName indent mayNotBeEmptyCommand=false>
+<#macro compound_initialize_children_field field indent mayNotBeEmptyCommand=false>
     <#local I>${""?left_pad(indent * 4)}</#local>
     <#if field.compound??>
         <#if needs_compound_field_initialization(field.compound)>

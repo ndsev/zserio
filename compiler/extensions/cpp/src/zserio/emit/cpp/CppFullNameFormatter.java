@@ -17,7 +17,6 @@ public final class CppFullNameFormatter
      */
     public static String getFullName(PackageName packageName)
     {
-        // TODO: Is it ok to have also ::std::vector / ::std::string? It shall work but seems strange...
         return (packageName.isEmpty() ? "" : CPP_NAMESPACE_SEPARATOR) +
                 packageName.toString(CPP_NAMESPACE_SEPARATOR);
     }

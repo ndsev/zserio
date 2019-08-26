@@ -76,7 +76,7 @@
 void ${name}::initializeChildren()
 {
     <#list fieldList as field>
-    <@compound_initialize_children_field field, name, 1/>
+    <@compound_initialize_children_field field, 1/>
     </#list>
     <@compound_initialize_children_epilog_definition compoundConstructorsData/>
 }

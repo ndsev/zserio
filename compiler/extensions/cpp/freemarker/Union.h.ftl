@@ -10,7 +10,12 @@
 
 <#if withWriterCode>
 #include <type_traits>
-
+</#if>
+<#if needsRpcTraits>
+#include <vector>
+#include <grpcpp/impl/codegen/serialization_traits.h>
+#include <grpcpp/impl/codegen/status.h>
+#include <grpcpp/impl/codegen/byte_buffer.h>
 </#if>
 #include <zserio/BitStreamReader.h>
 #include <zserio/BitStreamWriter.h>
@@ -130,6 +135,9 @@ private:
     ::zserio::AnyHolder m_objectChoice;
 };
 <@namespace_end package.path/>
-<@grpc_serialization_traits needsRpcTraits fullName/>
+<#if needsRpcTraits>
+
+    <@grpc_serialization_traits fullName/>
+</#if>
 
 <@include_guard_end package.path, name/>
