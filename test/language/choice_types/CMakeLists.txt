@@ -10,6 +10,11 @@ set(ZSERIO_GENERATED_SOURCES
     ${ZSERIO_GEN_DIR}/choice_types/choice_with_array/Data8.cpp
     ${ZSERIO_GEN_DIR}/choice_types/choice_with_array/Data8.h
 
+    ${ZSERIO_GEN_DIR}/choice_types/default_empty_choice/DefaultEmptyChoice.cpp
+    ${ZSERIO_GEN_DIR}/choice_types/default_empty_choice/DefaultEmptyChoice.h
+    ${ZSERIO_GEN_DIR}/choice_types/default_empty_choice/VariantA.h
+    ${ZSERIO_GEN_DIR}/choice_types/default_empty_choice/VariantB.h
+
     ${ZSERIO_GEN_DIR}/choice_types/empty_choice/EmptyChoice.cpp
     ${ZSERIO_GEN_DIR}/choice_types/empty_choice/EmptyChoice.h
 
@@ -70,6 +75,7 @@ zserio_add_library(TARGET choice_types_zs
 add_test_sources(
     ${ZSERIO_CPP_DIR}/BoolParamChoiceTest.cpp
     ${ZSERIO_CPP_DIR}/ChoiceWithArrayTest.cpp
+    ${ZSERIO_CPP_DIR}/DefaultEmptyChoiceTest.cpp
     ${ZSERIO_CPP_DIR}/EmptyChoiceTest.cpp
     ${ZSERIO_CPP_DIR}/EmptyChoiceWithCaseTest.cpp
     ${ZSERIO_CPP_DIR}/EmptyChoiceWithDefaultTest.cpp

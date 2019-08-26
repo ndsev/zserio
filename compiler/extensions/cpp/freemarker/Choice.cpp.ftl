@@ -273,7 +273,7 @@ void ${name}::write(::zserio::BitStreamWriter&<#if fieldList?has_content> out</#
             <@compound_read_field member.compoundField, name, 3/>
         }
     <#else>
-        // empty
+        return ::zserio::AnyHolder();
     </#if>
 </#macro>
 ::zserio::AnyHolder ${name}::readObject(::zserio::BitStreamReader& in)

@@ -2,6 +2,8 @@
 uninitMemberVar:*/BoolParamChoice.cpp
 uninitMemberVar:*/BoolParamChoice.h
 uninitMemberVar:*/Data8.cpp
+uninitMemberVar:*/DefaultEmptyChoice.cpp
+uninitMemberVar:*/DefaultEmptyChoice.h
 uninitMemberVar:*/TestChoice.cpp
 uninitMemberVar:*/TestChoice.h
 uninitMemberVar:*/EmptyChoice.cpp
