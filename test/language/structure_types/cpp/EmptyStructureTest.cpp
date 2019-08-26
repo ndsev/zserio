@@ -89,7 +89,9 @@ TEST(EmptyStructureTest, hashCode)
 TEST(EmptyStructureTest, read)
 {
     zserio::BitStreamReader reader(NULL, 0);
-    const EmptyStructure emptyStructure(reader);
+
+    EmptyStructure emptyStructure;
+    emptyStructure.read(reader);
     ASSERT_EQ(0, emptyStructure.bitSizeOf());
 }
 

@@ -280,7 +280,9 @@ TEST_F(UInt16ParamChoiceTest, read)
     size_t writeBufferByteSize;
     const uint8_t* writeBuffer = writer.getWriteBuffer(writeBufferByteSize);
     zserio::BitStreamReader reader(writeBuffer, writeBufferByteSize);
-    const UInt16ParamChoice uint16ParamChoice(reader, tag);
+    UInt16ParamChoice uint16ParamChoice;
+    uint16ParamChoice.initialize(tag);
+    uint16ParamChoice.read(reader);
 
     ASSERT_EQ(tag, uint16ParamChoice.getTag());
     ASSERT_EQ(value, uint16ParamChoice.getA());

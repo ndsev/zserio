@@ -236,6 +236,13 @@ int ${name}::hashCode() const
 
     return result;
 }
+
+void ${name}::read(::zserio::BitStreamReader&<#if fieldList?has_content> in</#if>)
+{
+<#if fieldList?has_content>
+    m_objectChoice = readObject(in);
+</#if>
+}
 <#if withWriterCode>
 
 <#macro choice_write_member member>

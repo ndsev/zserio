@@ -70,8 +70,9 @@ public:
 
     bool operator==(const ${name}& other) const;
     int hashCode() const;
-<#if withWriterCode>
 
+    void read(::zserio::BitStreamReader& in);
+<#if withWriterCode>
     void write(::zserio::BitStreamWriter& out,
             ::zserio::PreWriteAction preWriteAction = ::zserio::ALL_PRE_WRITE_ACTIONS);
 </#if>

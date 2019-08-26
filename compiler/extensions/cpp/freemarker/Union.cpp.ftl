@@ -31,7 +31,7 @@
 </#if>
 <#macro read_constructor_field_initialization>
     <#if fieldList?has_content>
-        m_choiceTag(static_cast<ChoiceTag>(::zserio::convertVarUInt64ToInt32(in.readVarUInt64()))),
+        m_choiceTag(readChoiceTag(in)),
         m_objectChoice(readObject(in))
     <#else>
         m_choiceTag(UNDEFINED_CHOICE)
@@ -187,6 +187,32 @@ size_t ${name}::bitSizeOf(size_t<#if fieldList?has_content> bitPosition</#if>) c
     return 0;
 </#if>
 }
+<#if withWriterCode>
+
+size_t ${name}::initializeOffsets(size_t bitPosition)
+{
+    <#if fieldList?has_content>
+    size_t endBitPosition = bitPosition;
+
+    endBitPosition += ::zserio::bitSizeOfVarUInt64(static_cast<uint64_t>(m_choiceTag));
+
+    switch (m_choiceTag)
+    {
+        <#list fieldList as field>
+    case <@choice_tag_name field/>:
+        <@compound_initialize_offsets_field field, 2/>
+        break;
+        </#list>
+    default:
+        throw ::zserio::CppRuntimeException("No match in union ${name}!");
+    }
+
+    return endBitPosition;
+    <#else>
+    return bitPosition;
+    </#if>
+}
+</#if>
 
 bool ${name}::operator==(const ${name}& other) const
 {
@@ -243,31 +269,15 @@ int ${name}::hashCode() const
 
     return result;
 }
-<#if withWriterCode>
 
-size_t ${name}::initializeOffsets(size_t bitPosition)
+void ${name}::read(::zserio::BitStreamReader&<#if fieldList?has_content> in</#if>)
 {
-    <#if fieldList?has_content>
-    size_t endBitPosition = bitPosition;
-
-    endBitPosition += ::zserio::bitSizeOfVarUInt64(static_cast<uint64_t>(m_choiceTag));
-
-    switch (m_choiceTag)
-    {
-        <#list fieldList as field>
-    case <@choice_tag_name field/>:
-        <@compound_initialize_offsets_field field, 2/>
-        break;
-        </#list>
-    default:
-        throw ::zserio::CppRuntimeException("No match in union ${name}!");
-    }
-
-    return endBitPosition;
-    <#else>
-    return bitPosition;
-    </#if>
+<#if fieldList?has_content>
+    m_choiceTag = readChoiceTag(in);
+    m_objectChoice = readObject(in);
+</#if>
 }
+<#if withWriterCode>
 
 <#assign hasPreWriteAction=needsChildrenInitialization || hasFieldWithOffset/>
 void ${name}::write(::zserio::BitStreamWriter&<#if fieldList?has_content> out</#if>, <#rt>
@@ -294,6 +304,11 @@ void ${name}::write(::zserio::BitStreamWriter&<#if fieldList?has_content> out</#
 }
 </#if>
 <#if fieldList?has_content>
+
+${name}::ChoiceTag ${name}::readChoiceTag(::zserio::BitStreamReader& in)
+{
+    return static_cast<${name}::ChoiceTag>(::zserio::convertVarUInt64ToInt32(in.readVarUInt64()));
+}
 
 ::zserio::AnyHolder ${name}::readObject(::zserio::BitStreamReader& in)
 {

@@ -220,7 +220,9 @@ TEST_F(BoolParamChoiceTest, read)
     size_t writeBufferByteSize;
     const uint8_t* writeBuffer = writer.getWriteBuffer(writeBufferByteSize);
     zserio::BitStreamReader reader(writeBuffer, writeBufferByteSize);
-    const BoolParamChoice boolParamChoice(reader, selector);
+    BoolParamChoice boolParamChoice;
+    boolParamChoice.initialize(selector);
+    boolParamChoice.read(reader);
 
     ASSERT_EQ(selector, boolParamChoice.getSelector());
     ASSERT_EQ(value, boolParamChoice.getBlack());

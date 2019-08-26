@@ -247,7 +247,9 @@ TEST_F(EnumParamChoiceTest, read)
     size_t writeBufferByteSize;
     const uint8_t* writeBuffer = writer.getWriteBuffer(writeBufferByteSize);
     zserio::BitStreamReader reader(writeBuffer, writeBufferByteSize);
-    const EnumParamChoice enumParamChoice(reader, selector);
+    EnumParamChoice enumParamChoice;
+    enumParamChoice.initialize(selector);
+    enumParamChoice.read(reader);
 
     ASSERT_EQ(selector, enumParamChoice.getSelector());
     ASSERT_EQ(value, enumParamChoice.getBlack());

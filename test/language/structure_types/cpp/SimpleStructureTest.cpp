@@ -210,7 +210,8 @@ TEST_F(SimpleStructureTest, read)
     const uint8_t* writeBuffer = writer.getWriteBuffer(writeBufferByteSize);
     zserio::BitStreamReader reader(writeBuffer, writeBufferByteSize);
 
-    const SimpleStructure simpleStructure(reader);
+    SimpleStructure simpleStructure;
+    simpleStructure.read(reader);
     ASSERT_EQ(numberA, simpleStructure.getNumberA());
     ASSERT_EQ(numberB, simpleStructure.getNumberB());
     ASSERT_EQ(numberC, simpleStructure.getNumberC());

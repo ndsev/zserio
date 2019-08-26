@@ -242,8 +242,10 @@ TEST_F(UInt64ParamChoiceTest, read)
     writeUInt64ParamChoiceToByteArray(writer, selector, value);
     size_t writeBufferByteSize;
     const uint8_t* writeBuffer = writer.getWriteBuffer(writeBufferByteSize);
+    UInt64ParamChoice uint64ParamChoice;
+    uint64ParamChoice.initialize(selector);
     zserio::BitStreamReader reader(writeBuffer, writeBufferByteSize);
-    const UInt64ParamChoice uint64ParamChoice(reader, selector);
+    uint64ParamChoice.read(reader);
 
     ASSERT_EQ(selector, uint64ParamChoice.getSelector());
     ASSERT_EQ(value, uint64ParamChoice.getA());

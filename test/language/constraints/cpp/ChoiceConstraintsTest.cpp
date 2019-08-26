@@ -46,7 +46,10 @@ TEST_F(ChoiceConstraintsTest, readCorrectConstraints)
     const uint8_t* writeBuffer = writer.getWriteBuffer(writeBufferByteSize);
     zserio::BitStreamReader reader(writeBuffer, writeBufferByteSize);
 
-    const ChoiceConstraints choiceConstraints(reader, selector);
+    ChoiceConstraints choiceConstraints;
+    choiceConstraints.initialize(selector);
+    choiceConstraints.read(reader);
+
     ASSERT_EQ(selector, choiceConstraints.getSelector());
     ASSERT_EQ(value8, choiceConstraints.getValue8());
 }
@@ -61,7 +64,9 @@ TEST_F(ChoiceConstraintsTest, readWrongValue8Constraint)
     const uint8_t* writeBuffer = writer.getWriteBuffer(writeBufferByteSize);
     zserio::BitStreamReader reader(writeBuffer, writeBufferByteSize);
 
-    ASSERT_THROW(ChoiceConstraints choiceConstraints(reader, selector), zserio::CppRuntimeException);
+    ChoiceConstraints choiceConstraints;
+    choiceConstraints.initialize(selector);
+    ASSERT_THROW(choiceConstraints.read(reader), zserio::CppRuntimeException);
 }
 
 TEST_F(ChoiceConstraintsTest, readWrongValue16Constraint)
@@ -74,7 +79,9 @@ TEST_F(ChoiceConstraintsTest, readWrongValue16Constraint)
     const uint8_t* writeBuffer = writer.getWriteBuffer(writeBufferByteSize);
     zserio::BitStreamReader reader(writeBuffer, writeBufferByteSize);
 
-    ASSERT_THROW(ChoiceConstraints choiceConstraints(reader, selector), zserio::CppRuntimeException);
+    ChoiceConstraints choiceConstraints;
+    choiceConstraints.initialize(selector);
+    ASSERT_THROW(choiceConstraints.read(reader), zserio::CppRuntimeException);
 }
 
 TEST_F(ChoiceConstraintsTest, writeCorrectConstraints)

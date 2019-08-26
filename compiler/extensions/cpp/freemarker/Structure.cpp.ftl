@@ -240,6 +240,13 @@ int ${name}::hashCode() const
 </#list>
     return result;
 }
+
+void ${name}::read(::zserio::BitStreamReader&<#if fieldList?has_content> in</#if>)
+{
+<#list fieldList as field>
+    <@field_member_name field.name/> = ${field.readerName}(in);
+</#list>
+}
 <#if withWriterCode>
 
 <#assign hasPreWriteAction=needsChildrenInitialization || hasFieldWithOffset/>

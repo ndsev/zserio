@@ -245,8 +245,10 @@ TEST_F(FullEnumParamChoiceTest, read)
     writeFullEnumParamChoiceToByteArray(writer, selector, value);
     size_t writeBufferByteSize;
     const uint8_t* writeBuffer = writer.getWriteBuffer(writeBufferByteSize);
+    FullEnumParamChoice fullEnumParamChoice;
+    fullEnumParamChoice.initialize(selector);
     zserio::BitStreamReader reader(writeBuffer, writeBufferByteSize);
-    FullEnumParamChoice fullEnumParamChoice(reader, selector);
+    fullEnumParamChoice.read(reader);
 
     ASSERT_EQ(selector, fullEnumParamChoice.getSelector());
     ASSERT_EQ(value, fullEnumParamChoice.getBlack());

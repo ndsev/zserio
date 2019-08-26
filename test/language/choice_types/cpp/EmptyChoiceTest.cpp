@@ -136,8 +136,10 @@ TEST(EmptyChoiceTest, hashCode)
 TEST(EmptyChoiceTest, read)
 {
     const uint8_t selector = 1;
+    EmptyChoice emptyChoice;
+    emptyChoice.initialize(selector);
     zserio::BitStreamReader reader(NULL, 0);
-    const EmptyChoice emptyChoice(reader, selector);
+    emptyChoice.read(reader);
     ASSERT_EQ(selector, emptyChoice.getSelector());
     ASSERT_EQ(0, emptyChoice.bitSizeOf());
 }

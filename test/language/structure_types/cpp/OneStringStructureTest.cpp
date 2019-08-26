@@ -172,7 +172,8 @@ TEST_F(OneStringStructureTest, read)
     const uint8_t* writeBuffer = writer.getWriteBuffer(writeBufferByteSize);
     zserio::BitStreamReader reader(writeBuffer, writeBufferByteSize);
 
-    const OneStringStructure oneStringStructure(reader);
+    OneStringStructure oneStringStructure;
+    oneStringStructure.read(reader);
     ASSERT_EQ(ONE_STRING, oneStringStructure.getOneString());
 }
 
