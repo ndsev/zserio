@@ -47,7 +47,7 @@ TEST(ParamStructureSubtypeTest, TestSubtype)
     // ParameterizedSubtypeStruct's accessors
     ASSERT_TRUE(isCodeInFilePresent(
             "language/subtypes/gen/subtypes/param_structure_subtype/ParameterizedSubtypeStruct.h",
-            "#include \"subtypes/param_structure_subtype/ParameterizedSubtype.h\""));
+            "#include <subtypes/param_structure_subtype/ParameterizedSubtype.h>"));
 
     ASSERT_TRUE(isCodeInFilePresent(
             "language/subtypes/gen/subtypes/param_structure_subtype/ParameterizedSubtypeStruct.h",
