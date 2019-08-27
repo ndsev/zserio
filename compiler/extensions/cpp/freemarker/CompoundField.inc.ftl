@@ -754,3 +754,10 @@ ${I}ZSERIO_T_${field.name}&&<#t>
     </#if>
     <#return false>
 </#function>
+
+<#function needs_field_read_local_variable field>
+    <#if field.array?? || field.constraint??>
+        <#return true>
+    </#if>
+    <#return false>
+</#function>

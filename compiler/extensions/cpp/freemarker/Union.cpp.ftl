@@ -316,10 +316,13 @@ ${name}::ChoiceTag ${name}::readChoiceTag(::zserio::BitStreamReader& in)
     {
         <#list fieldList as field>
     case <@choice_tag_name field/>:
+            <#if needs_field_read_local_variable(field)>
         {
             <@compound_read_field field, name, 3/>
         }
-        break;
+            <#else>
+        <@compound_read_field field, name, 2/>
+            </#if>
         </#list>
     default:
         throw ::zserio::CppRuntimeException("No match in union ${name}!");

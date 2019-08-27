@@ -269,9 +269,13 @@ void ${name}::write(::zserio::BitStreamWriter&<#if fieldList?has_content> out</#
 
 <#macro choice_read_member member>
     <#if member.compoundField??>
+        <#if needs_field_read_local_variable(member.compoundField)>
         {
             <@compound_read_field member.compoundField, name, 3/>
         }
+        <#else>
+        <@compound_read_field member.compoundField, name, 2/>
+        </#if>
     <#else>
         return ::zserio::AnyHolder();
     </#if>
