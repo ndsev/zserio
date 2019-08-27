@@ -24,6 +24,7 @@ The following shows Zserio compiler command line syntax:
 ```
 java -jar zserio.jar
     [-cpp <output directory>]
+    [-cppStandard <standard>]
     [-doc <output directory>]
     [-h,--help]
     [-java <output directory>]
@@ -32,11 +33,8 @@ java -jar zserio.jar
     [-setDotExecutable <dotExec>]
     [-setDotLinksPrefix <prefix>]
     [-setTopLevelPackage <package>]
-    [-showAst]
-    [-showDocAst <input file>]
     [-src <source directory>]
     [-v,--version]
-    [-withInspectorCode|-withoutInspectorCode]
     [-withGrpcCode|-withoutGrpcCode]
     [-withRangeCheckCode|-withoutRangeCheckCode]
     [-withSourcesAmalgamation|-withoutSourcesAmalgamation]
@@ -58,6 +56,11 @@ and try to read the imported package from `foo\bar.zs`.
 **`-cpp`**
 
 Zserio will generate C++ API into a given output directory.
+
+**`-cppStandard`**
+
+Specifies C++ standard for which Zserio will generate C++ API. If omitted, Zserio will generate API for C++11
+standard. Only C++ standards "c++11" or "c++98" are supported.
 
 **`-doc`**
 
@@ -107,15 +110,6 @@ Sets the top level package for generated Java sources and top level namespace fo
 > Parameter `-setTopLevelPackage appl.Zserio` forces all generated Java sources to be in the package
 > `appl.Zserio` and all generated C++ sources to be in the namespace `appl::Zserio`.
 
-**`-showAst`**
-
-Shows the generated ANTLR Abstract Syntax Tree (AST) after compilation.
-
-**`-showDocAst`**
-
-Shows the generated ANTLR Abstract Syntax Tree (AST) for documentation comment stored in the specified text
-input file.
-
 **`-src`**
 
 Defines the root directory for the input file and all imported packages. If this option is missing, the default
@@ -129,11 +123,6 @@ directories as in the Java `CLASSPATH` is not supported.
 **`-v`, `--version`**
 
 Shows the version of the Zserio tool.
-
-**`-withInspectorCode|-withoutInspectorCode`**
-
-Enables/disables generation of the C++ API extension which can be used for Zserio data inspection. Currently,
-extension for Zserio data inspection is not supported by Java API. By default is disabled.
 
 **`-withGrpcCode|-withoutGrpcCode`**
 
