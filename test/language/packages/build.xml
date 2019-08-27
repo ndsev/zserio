@@ -14,6 +14,7 @@
         <testGen testName="packages" zsFile="empty_file.zs"/>
         <testGen testName="packages" zsFile="default_package.zs"/>
         <testGen testName="packages" zsFile="packages.zs"/>
+        <testGen testName="packages" zsFile="package_name_conflict.zs"/>
     </target>
 
     <target name="gen.checkWarnings" depends="gen">

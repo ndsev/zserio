@@ -4,7 +4,7 @@
 
 #include "zserio/SqliteException.h"
 
-#include "<@include_path package.path, "${name}.h"/>"
+<@user_include package.path, "${name}.h"/>
 <@namespace_begin package.path/>
 
 <#if withWriterCode>
@@ -134,7 +134,7 @@ const ::std::array<const char*, ${fields?size}>& ${name}::tableNames() noexcept
 </#list>
     };
 
-    return names; 
+    return names;
 }
 
 void ${name}::initTables(const TRelocationMap& tableToAttachedDbNameRelocationMap)

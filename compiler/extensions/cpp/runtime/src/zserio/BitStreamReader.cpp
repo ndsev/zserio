@@ -1,12 +1,12 @@
 #include <limits>
 #include <fstream>
 
-#include "BitStreamException.h"
-#include "CppRuntimeException.h"
-#include "StringConvertUtil.h"
-#include "FloatUtil.h"
-#include "BitStreamReader.h"
-#include "VarUInt64Util.h"
+#include "zserio/BitStreamException.h"
+#include "zserio/CppRuntimeException.h"
+#include "zserio/StringConvertUtil.h"
+#include "zserio/FloatUtil.h"
+#include "zserio/BitStreamReader.h"
+#include "zserio/VarUInt64Util.h"
 
 namespace zserio
 {

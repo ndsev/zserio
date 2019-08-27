@@ -1,13 +1,13 @@
 #include <cstring>
 #include <fstream>
 
-#include "BitStreamException.h"
-#include "CppRuntimeException.h"
-#include "StringConvertUtil.h"
-#include "BitPositionUtil.h"
-#include "BitSizeOfCalculator.h"
-#include "FloatUtil.h"
-#include "BitStreamWriter.h"
+#include "zserio/BitStreamException.h"
+#include "zserio/CppRuntimeException.h"
+#include "zserio/StringConvertUtil.h"
+#include "zserio/BitPositionUtil.h"
+#include "zserio/BitSizeOfCalculator.h"
+#include "zserio/FloatUtil.h"
+#include "zserio/BitStreamWriter.h"
 
 namespace zserio
 {

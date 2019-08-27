@@ -1,6 +1,6 @@
 #include <string>
 
-#include "StringConvertUtil.h"
+#include "zserio/StringConvertUtil.h"
 
 namespace zserio
 {

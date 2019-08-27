@@ -1,6 +1,6 @@
-#include "CppRuntimeException.h"
-#include "StringConvertUtil.h"
-#include "BitFieldUtil.h"
+#include "zserio/CppRuntimeException.h"
+#include "zserio/StringConvertUtil.h"
+#include "zserio/BitFieldUtil.h"
 
 namespace zserio
 {

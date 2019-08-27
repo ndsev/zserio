@@ -4,8 +4,8 @@
 #include <cstddef>
 #include <type_traits>
 
-#include "CppRuntimeException.h"
-#include "Types.h"
+#include "zserio/CppRuntimeException.h"
+#include "zserio/Types.h"
 
 namespace zserio
 {

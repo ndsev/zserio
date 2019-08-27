@@ -1,7 +1,7 @@
 #ifndef ZSERIO_VARUINT64_UTIL_H_INC
 #define ZSERIO_VARUINT64_UTIL_H_INC
 
-#include "Types.h"
+#include "zserio/Types.h"
 
 namespace zserio
 {

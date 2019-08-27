@@ -15,11 +15,12 @@
     <#t><@camel_case_to_underscores typeName/>_H
 </#macro>
 
-<#macro include_path packagePath typeName>
+<#macro user_include packagePath typeName>
+    #include <<#t>
     <#list packagePath as namespace>
         <#t>${namespace}/<#rt>
     </#list>
-    <#t>${typeName}
+    <#lt>${typeName}>
 </#macro>
 
 <#macro system_includes includeFiles>
@@ -33,7 +34,7 @@
 
     </#if>
     <#list includeFiles as include>
-#include "${include}"
+#include <${include}>
     </#list>
 </#macro>
 

@@ -4,7 +4,7 @@
 #include <cstddef>
 #include <string>
 
-#include "Types.h"
+#include "zserio/Types.h"
 
 namespace zserio
 {

@@ -1,9 +1,9 @@
 #include <limits>
 
-#include "CppRuntimeException.h"
-#include "StringConvertUtil.h"
-#include "BitPositionUtil.h"
-#include "BitSizeOfCalculator.h"
+#include "zserio/CppRuntimeException.h"
+#include "zserio/StringConvertUtil.h"
+#include "zserio/BitPositionUtil.h"
+#include "zserio/BitSizeOfCalculator.h"
 
 namespace zserio
 {

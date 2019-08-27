@@ -4,7 +4,7 @@
 #include <string>
 #include <set>
 
-#include "ISqliteDatabaseReader.h"
+#include "zserio/ISqliteDatabaseReader.h"
 
 namespace zserio
 {

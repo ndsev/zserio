@@ -2,7 +2,7 @@
 #define ZSERIO_SQL_CONNECTION_H_INC
 
 #include "sqlite3.h"
-#include "SqliteException.h"
+#include "zserio/SqliteException.h"
 
 namespace zserio
 {

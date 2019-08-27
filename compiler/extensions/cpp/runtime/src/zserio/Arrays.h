@@ -4,14 +4,14 @@
 #include <type_traits>
 #include <vector>
 
-#include "BitStreamWriter.h"
-#include "BitStreamReader.h"
-#include "BitPositionUtil.h"
-#include "VarUInt64Util.h"
-#include "BitStreamException.h"
-#include "PreWriteAction.h"
-#include "BitSizeOfCalculator.h"
-#include "Enums.h"
+#include "zserio/BitStreamWriter.h"
+#include "zserio/BitStreamReader.h"
+#include "zserio/BitPositionUtil.h"
+#include "zserio/VarUInt64Util.h"
+#include "zserio/BitStreamException.h"
+#include "zserio/PreWriteAction.h"
+#include "zserio/BitSizeOfCalculator.h"
+#include "zserio/Enums.h"
 
 namespace zserio
 {

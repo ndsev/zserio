@@ -3,7 +3,7 @@
 
 #include <cstddef>
 
-#include "Types.h"
+#include "zserio/Types.h"
 
 namespace zserio
 {

@@ -17,7 +17,7 @@
 </#if>
 <@system_includes cppSystemIncludes/>
 
-#include "<@include_path package.path, "${name}.h"/>"
+<@user_include package.path, "${name}.h"/>
 <@user_includes cppUserIncludes, true/>
 <@namespace_begin package.path/>
 

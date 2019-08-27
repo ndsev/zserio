@@ -1,7 +1,7 @@
 #ifndef ZSERIO_FLOAT_UTIL_H_INC
 #define ZSERIO_FLOAT_UTIL_H_INC
 
-#include "Types.h"
+#include "zserio/Types.h"
 
 /**
  * The module provides help methods for manipulation with float numbers.

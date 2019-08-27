@@ -5,7 +5,7 @@
 #include <string>
 #include <vector>
 
-#include "Types.h"
+#include "zserio/Types.h"
 
 namespace zserio
 {

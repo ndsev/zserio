@@ -4,7 +4,7 @@
 #include <string>
 #include <sqlite3.h>
 
-#include "CppRuntimeException.h"
+#include "zserio/CppRuntimeException.h"
 
 namespace zserio
 {

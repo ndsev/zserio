@@ -3,7 +3,7 @@
 
 #include <string>
 
-#include "CppRuntimeException.h"
+#include "zserio/CppRuntimeException.h"
 
 namespace zserio
 {

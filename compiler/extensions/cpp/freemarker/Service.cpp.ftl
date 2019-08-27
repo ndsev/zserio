@@ -12,7 +12,7 @@
 #include <grpcpp/impl/codegen/service_type.h>
 #include <grpcpp/impl/codegen/sync_stream.h>
 
-#include "<@include_path package.path, "${name}.h"/>"
+<@user_include package.path, "${name}.h"/>
 <@user_includes cppUserIncludes, false/>
 <@namespace_begin package.path/>
 

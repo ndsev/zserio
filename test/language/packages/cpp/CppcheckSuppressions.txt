@@ -11,3 +11,4 @@ uninitMemberVar:*/SimpleParamStructure.h
 uninitMemberVar:*/SimpleStructure.cpp
 uninitMemberVar:*/TopStructure.cpp
 uninitMemberVar:*/TopStructure.h
+uninitMemberVar:*/package_name_conflict/Blob.cpp

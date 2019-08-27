@@ -4,9 +4,9 @@
 #include <cstddef>
 #include <type_traits>
 
-#include "CppRuntimeException.h"
-#include "OptionalHolder.h"
-#include "Types.h"
+#include "zserio/CppRuntimeException.h"
+#include "zserio/OptionalHolder.h"
+#include "zserio/Types.h"
 
 namespace zserio
 {

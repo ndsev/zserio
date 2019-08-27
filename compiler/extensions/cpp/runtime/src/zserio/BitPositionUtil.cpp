@@ -1,6 +1,6 @@
-#include "CppRuntimeException.h"
-#include "StringConvertUtil.h"
-#include "BitPositionUtil.h"
+#include "zserio/CppRuntimeException.h"
+#include "zserio/StringConvertUtil.h"
+#include "zserio/BitPositionUtil.h"
 
 namespace zserio
 {

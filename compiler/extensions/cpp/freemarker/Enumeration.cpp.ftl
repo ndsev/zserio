@@ -5,7 +5,7 @@
 #include <zserio/CppRuntimeException.h>
 <@system_includes cppSystemIncludes/>
 
-#include "<@include_path package.path, "${name}.h"/>"
+<@user_include package.path, "${name}.h"/>
 <@user_includes cppUserIncludes, false/>
 <@namespace_begin ["zserio"]/>
 

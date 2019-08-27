@@ -5,11 +5,11 @@
 #include <string>
 #include <vector>
 
-#include "Types.h"
-#include "FloatUtil.h"
-#include "Arrays.h"
-#include "Enums.h"
-#include "OptionalHolder.h"
+#include "zserio/Types.h"
+#include "zserio/FloatUtil.h"
+#include "zserio/Arrays.h"
+#include "zserio/Enums.h"
+#include "zserio/OptionalHolder.h"
 
 namespace zserio
 {

@@ -1,8 +1,8 @@
 #include <limits>
 
-#include "CppRuntimeException.h"
-#include "StringConvertUtil.h"
-#include "VarUInt64Util.h"
+#include "zserio/CppRuntimeException.h"
+#include "zserio/StringConvertUtil.h"
+#include "zserio/VarUInt64Util.h"
 
 namespace zserio
 {
