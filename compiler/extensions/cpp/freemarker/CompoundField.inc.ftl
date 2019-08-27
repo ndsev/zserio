@@ -379,7 +379,7 @@ public:
                 <#local hasAny=true/>
     class <@element_factory_name field.name/>;
                 <#if field.array.elementCompound??>
-                    <#if needs_compound_field_initialization(field.array.elementCompound)>
+                    <#if needs_field_initialization(field.array.elementCompound)>
                         <#local hasAny=true/>
     class <@element_initializer_name field.name/>;
                     <#elseif field.array.elementCompound.needsChildrenInitialization>
@@ -395,7 +395,7 @@ public:
     </#if>
 </#macro>
 
-<#macro define_inner_classes fieldList>
+<#macro inner_classes_definition fieldList>
     <#list fieldList as field>
         <#if field.array??>
             <#if field.offset?? && field.offset.containsIndex>
@@ -410,7 +410,7 @@ public:
 <@define_element_factory name, field/>
 
                 <#if field.array.elementCompound??>
-                    <#if needs_compound_field_initialization(field.array.elementCompound)>
+                    <#if needs_field_initialization(field.array.elementCompound)>
 <@define_element_initializer name, field/>
 
                     <#elseif field.array.elementCompound.needsChildrenInitialization>
@@ -421,16 +421,6 @@ public:
             </#if>
         </#if>
     </#list>
-</#macro>
-
-<#macro array_element_bit_size array>
-    <#if array.requiresElementBitSize>
-        , ${array.elementBitSizeValue}<#t>
-    <#elseif array.offset?? && array.offset.containsIndex && !array.requiresElementFactory>
-        <#-- non-ObjectArrays require a dummy 0 for numBits argument when offset checker is used -->
-        , 0<#t>
-    </#if>
-    <#-- else: no argument needed -->
 </#macro>
 
 <#macro compound_bitsizeof_field field indent>
@@ -586,14 +576,14 @@ ${I}<@field_member_name field.name/> = ::std::move(other.<@field_member_name fie
 <#macro compound_initialize_children_field field indent mayNotBeEmptyCommand=false>
     <#local I>${""?left_pad(indent * 4)}</#local>
     <#if field.compound??>
-        <#if needs_compound_field_initialization(field.compound)>
+        <#if needs_field_initialization(field.compound)>
             <#local initializeCommand><@compound_get_field field/>.initialize(<#rt>
                     <#lt><@compound_field_compound_ctor_params field.compound, false/>);</#local>
         <#elseif field.compound.needsChildrenInitialization>
             <#local initializeCommand><@compound_get_field field/>.initializeChildren();</#local>
         </#if>
     <#elseif field.array?? && field.array.elementCompound??>
-        <#if needs_compound_field_initialization(field.array.elementCompound)>
+        <#if needs_field_initialization(field.array.elementCompound)>
             <#local initializeCommand>::zserio::initializeElements(<#rt>
                     <#lt><@compound_get_field field/>, <#rt>
                     <#lt><@element_initializer_name field.name/>(*this));</#local>
@@ -695,8 +685,8 @@ ${I}ZSERIO_T_${field.name}&&<#t>
     <#return false>
 </#function>
 
-<#function needs_compound_field_initialization compoundField>
-    <#if compoundField.instantiatedParameters?has_content>
+<#function needs_field_initialization field>
+    <#if field.instantiatedParameters?has_content>
         <#return true>
     </#if>
     <#return false>
@@ -705,12 +695,12 @@ ${I}ZSERIO_T_${field.name}&&<#t>
 <#function has_field_with_initialization fieldList>
     <#list fieldList as field>
         <#if field.compound??>
-            <#if needs_compound_field_initialization(field.compound)>
+            <#if needs_field_initialization(field.compound)>
                 <#return true>
             </#if>
         <#elseif field.array??>
             <#if field.array.elementCompound?? &&
-                    needs_compound_field_initialization(field.array.elementCompound)>
+                    needs_field_initialization(field.array.elementCompound)>
                 <#return true>
             </#if>
         </#if>
@@ -718,7 +708,7 @@ ${I}ZSERIO_T_${field.name}&&<#t>
     <#return false>
 </#function>
 
-<#function has_field_any_write_check_code field compoundName indent>
+<#function needs_field_any_write_check_code field compoundName indent>
     <#local checkCode>
         <#if field.offset?? && !field.offset.containsIndex>
     <@compound_check_offset_field field, compoundName, "Write", "out.getBitPosition()", indent/>

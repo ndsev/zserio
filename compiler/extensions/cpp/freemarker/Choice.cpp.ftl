@@ -20,7 +20,7 @@
 <@user_includes cppUserIncludes, false/>
 <@namespace_begin package.path/>
 
-<@define_inner_classes fieldList/>
+<@inner_classes_definition fieldList/>
 <#if withWriterCode>
     <@compound_constructor_definition compoundConstructorsData/>
 

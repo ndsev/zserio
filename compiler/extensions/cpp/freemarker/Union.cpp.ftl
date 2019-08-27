@@ -21,7 +21,7 @@
 <@user_includes cppUserIncludes, true/>
 <@namespace_begin package.path/>
 
-<@define_inner_classes fieldList/>
+<@inner_classes_definition fieldList/>
 <#macro empty_constructor_field_initialization>
         m_choiceTag(UNDEFINED_CHOICE)
 </#macro>

@@ -64,12 +64,3 @@ namespace ${namespace}
         </#list>
     </#if>
 </#macro>
-
-<#macro anonymous_namespace_begin>
-namespace
-{
-</#macro>
-
-<#macro anonymous_namespace_end>
-} // namespace
-</#macro>

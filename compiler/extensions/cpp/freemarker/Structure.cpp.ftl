@@ -20,7 +20,7 @@
 <@user_includes cppUserIncludes, false/>
 <@namespace_begin package.path/>
 
-<@define_inner_classes fieldList/>
+<@inner_classes_definition fieldList/>
 <#macro empty_constructor_field_initialization>
     <#assign needsComma=false>
     <#list fieldList as field>
@@ -252,7 +252,7 @@ void ${name}::read(::zserio::BitStreamReader&<#if fieldList?has_content> in</#if
 <#assign hasPreWriteAction=needsChildrenInitialization || hasFieldWithOffset/>
 <#assign needsWriteNewLines=false/>
 <#list fieldList as field>
-    <#if has_field_any_write_check_code(field, name, 2)>
+    <#if needs_field_any_write_check_code(field, name, 2)>
         <#assign needsWriteNewLines=true/>
         <#break>
     </#if>

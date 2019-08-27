@@ -22,14 +22,6 @@ ${compoundConstructorsData.compoundName}::${compoundConstructorsData.compoundNam
 }
 </#macro>
 
-<#macro compound_constructor_members_initialization compoundConstructorsData>
-    <#if needs_compound_initialization(compoundConstructorsData)>
-        m_isInitialized(false)<#t>
-    <#elseif has_field_with_initialization(compoundConstructorsData.fieldList)>
-        m_areChildrenInitialized(false)<#t>
-    </#if>
-</#macro>
-
 <#macro compound_read_constructor_declaration compoundConstructorsData>
     <#local constructorArgumentTypeList><@compound_constructor_argument_type_list compoundConstructorsData, 3/></#local>
     explicit ${compoundConstructorsData.compoundName}(::zserio::BitStreamReader& in<#rt>

@@ -14,16 +14,13 @@
 #include <grpcpp/impl/codegen/stub_options.h>
 #include <grpcpp/impl/codegen/sync_stream.h>
 <@user_includes headerUserIncludes/>
-
-namespace grpc
-{
+<@namespace_begin ["grpc"]/>
 
 class CompletionQueue;
 class Channel;
 class ServerCompletionQueue;
 class ServerContext;
-
-} // namespace grpc
+<@namespace_end ["grpc"]/>
 <@namespace_begin package.path/>
 
 class ${name} final
