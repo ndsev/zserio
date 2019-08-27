@@ -20,7 +20,6 @@ import zserio.ast.TypeInstantiation;
 import zserio.ast.TypeInstantiation.InstantiatedParameter;
 import zserio.ast.TypeReference;
 import zserio.emit.common.ExpressionFormatter;
-import zserio.emit.common.ExpressionFormattingPolicy;
 import zserio.emit.common.ZserioEmitException;
 import zserio.emit.cpp.types.CppNativeType;
 import zserio.emit.cpp.types.NativeArrayType;

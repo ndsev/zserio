@@ -391,7 +391,7 @@ class CommandLineArguments implements Serializable
     private static final String OptionNameWithGrpcCode = "withGrpcCode";
     private static final String OptionNameWithoutGrpcCode = "withoutGrpcCode";
     private static final String OptionNameWithInspectorCode = "withInspectorCode";
-    private static final String OptionNameWithoutInspectorCode = "withoutInspectorCode";
+//    private static final String OptionNameWithoutInspectorCode = "withoutInspectorCode";
     private static final String OptionNameWithRangeCheckCode = "withRangeCheckCode";
     private static final String OptionNameWithoutRangeCheckCode = "withoutRangeCheckCode";
     private static final String OptionNameWithSourcesAmalgamation = "withSourcesAmalgamation";
