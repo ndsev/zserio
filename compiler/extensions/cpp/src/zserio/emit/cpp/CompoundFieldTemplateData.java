@@ -56,7 +56,6 @@ public class CompoundFieldTemplateData
         name = field.getName();
         cppTypeName = fieldNativeType.getFullName();
         cppArgumentTypeName = fieldNativeType.getArgumentTypeName();
-        zserioTypeName = ZserioTypeUtil.getFullName(fieldType);
 
         getterName = AccessorNameFormatter.getGetterName(field);
         setterName = AccessorNameFormatter.getSetterName(field);
@@ -107,11 +106,6 @@ public class CompoundFieldTemplateData
     public String getCppArgumentTypeName()
     {
         return cppArgumentTypeName;
-    }
-
-    public String getZserioTypeName()
-    {
-        return zserioTypeName;
     }
 
     public String getGetterName()
@@ -204,7 +198,6 @@ public class CompoundFieldTemplateData
                 cppExpressionFormatter.formatGetter(optionalClauseExpression);
             this.indicatorName = indicatorName;
             cppRawTypeName = fieldNativeType.getFullName();
-            cppRawArgumentTypeName = fieldNativeType.getArgumentTypeName();
             this.isRecursive = isRecursive;
         }
 
@@ -223,11 +216,6 @@ public class CompoundFieldTemplateData
             return cppRawTypeName;
         }
 
-        public String getCppRawArgumentTypeName()
-        {
-            return cppRawArgumentTypeName;
-        }
-
         public boolean getIsRecursive()
         {
             return isRecursive;
@@ -236,7 +224,6 @@ public class CompoundFieldTemplateData
         private final String clause;
         private final String indicatorName;
         private final String cppRawTypeName;
-        private final String cppRawArgumentTypeName;
         private final boolean isRecursive;
     }
 
@@ -449,8 +436,6 @@ public class CompoundFieldTemplateData
             hasTemplatedTraits = nativeType.hasTemplatedTraits();
             isImplicit = baseType.isImplicit();
             length = createLength(baseType, cppExpressionFormatter);
-            indirectLength = createLength(baseType, cppIndirectExpressionFormatter);
-            elementZserioTypeName = ZserioTypeUtil.getFullName(elementType);
             elementCppTypeName = cppNativeTypeMapper.getCppType(elementType).getFullName();
             requiresElementFactory = nativeType.requiresElementFactory();
             elementBitSizeValue = nativeType.requiresElementBitSize()
@@ -479,16 +464,6 @@ public class CompoundFieldTemplateData
         public String getLength()
         {
             return length;
-        }
-
-        public String getIndirectLength()
-        {
-            return indirectLength;
-        }
-
-        public String getElementZserioTypeName()
-        {
-            return elementZserioTypeName;
         }
 
         public String getElementCppTypeName()
@@ -530,8 +505,6 @@ public class CompoundFieldTemplateData
         private final boolean hasTemplatedTraits;
         private final boolean isImplicit;
         private final String length;
-        private final String indirectLength;
-        private final String elementZserioTypeName;
         private final String elementCppTypeName;
         private final boolean requiresElementFactory;
         private final String elementBitSizeValue;
@@ -674,7 +647,6 @@ public class CompoundFieldTemplateData
     private final String name;
     private final String cppTypeName;
     private final String cppArgumentTypeName;
-    private final String zserioTypeName;
     private final String getterName;
     private final String setterName;
     private final String readerName;

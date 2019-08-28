@@ -8,9 +8,4 @@ public class NativeBooleanType extends CppNativeType
     {
         super(PackageName.EMPTY, "bool");
     }
-
-    public String formatLiteral(boolean value)
-    {
-        return (value) ? "true" : "false";
-    }
 }

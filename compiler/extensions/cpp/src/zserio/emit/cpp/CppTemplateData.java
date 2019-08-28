@@ -13,26 +13,17 @@ public abstract class CppTemplateData implements IncludeCollector
     {
         generatorDescription = "Zserio C++ extension version " + CppExtensionVersion.VERSION_STRING;
 
-        final PackageMapper cppPackageMapper = context.getCppPackageMapper();
-        final PackageName rootPackageName = cppPackageMapper.getRootPackageName();
-        rootPackage = new PackageTemplateData(rootPackageName);
         withWriterCode = context.getWithWriterCode();
 
         headerSystemIncludes = new TreeSet<String>();
         headerUserIncludes = new TreeSet<String>();
         cppUserIncludes = new TreeSet<String>();
         cppSystemIncludes = new TreeSet<String>();
-        forwardDeclarations = new TreeSet<ForwardDeclarationTemplateData>();
     }
 
     public String getGeneratorDescription()
     {
         return generatorDescription;
-    }
-
-    public PackageTemplateData getRootPackage()
-    {
-        return rootPackage;
     }
 
     public boolean getWithWriterCode()
@@ -48,14 +39,6 @@ public abstract class CppTemplateData implements IncludeCollector
     public Iterable<String> getHeaderUserIncludes()
     {
         return headerUserIncludes;
-    }
-
-    /**
-     * A sequence of types to be forward-declared in the generated H.
-     */
-    public Iterable<ForwardDeclarationTemplateData> getForwardDeclarations()
-    {
-        return forwardDeclarations;
     }
 
     /**
@@ -91,12 +74,6 @@ public abstract class CppTemplateData implements IncludeCollector
     public void addHeaderUserIncludes(Collection<String> userIncludes)
     {
         headerUserIncludes.addAll(userIncludes);
-    }
-
-    @Override
-    public void addHeaderForwardDeclarationsForType(CppNativeType nativeType)
-    {
-        forwardDeclarations.add(new ForwardDeclarationTemplateData(nativeType));
     }
 
     @Override
@@ -144,7 +121,6 @@ public abstract class CppTemplateData implements IncludeCollector
     }
 
     private final String generatorDescription;
-    private final PackageTemplateData rootPackage;
 
     private final boolean withWriterCode;
 
@@ -152,5 +128,4 @@ public abstract class CppTemplateData implements IncludeCollector
     private final TreeSet<String> headerUserIncludes;
     private final TreeSet<String> cppUserIncludes;
     private final TreeSet<String> cppSystemIncludes;
-    private final TreeSet<ForwardDeclarationTemplateData> forwardDeclarations;
 }

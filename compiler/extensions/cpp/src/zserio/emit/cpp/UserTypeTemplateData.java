@@ -29,11 +29,6 @@ public class UserTypeTemplateData extends CppTemplateData
         return packageData;
     }
 
-    protected CppNativeType getNativeType()
-    {
-        return nativeType;
-    }
-
     private final CppNativeType nativeType;
     private final PackageTemplateData packageData;
 }

@@ -33,12 +33,6 @@ public class HeaderIncludeCollectorAdapter implements IncludeCollector
     }
 
     @Override
-    public void addHeaderForwardDeclarationsForType(CppNativeType nativeType)
-    {
-        includeCollector.addHeaderForwardDeclarationsForType(nativeType);
-    }
-
-    @Override
     public void addCppIncludesForType(CppNativeType nativeType)
     {
         includeCollector.addHeaderIncludesForType(nativeType);

@@ -202,7 +202,6 @@ public class SqlTableEmitterTemplateData extends UserTypeTemplateData
             cppTypeName = nativeFieldType.getFullName();
             optionalCppTypeName = nativeOptionalHolder.getFullName();
             optionalCppArgumentTypeName = nativeOptionalHolder.getArgumentTypeName();
-            zserioTypeName = ZserioTypeUtil.getFullName(fieldType);
             final Expression sqlConstraintExpr = field.getSqlConstraint().getTranslatedFieldConstraintExpr();
             sqlConstraint = (sqlConstraintExpr == null) ? null :
                 cppExpressionFormatter.formatGetter(sqlConstraintExpr);
@@ -252,11 +251,6 @@ public class SqlTableEmitterTemplateData extends UserTypeTemplateData
         public String getOptionalCppArgumentTypeName()
         {
             return optionalCppArgumentTypeName;
-        }
-
-        public String getZserioTypeName()
-        {
-            return zserioTypeName;
         }
 
         public String getSqlConstraint()
@@ -328,24 +322,12 @@ public class SqlTableEmitterTemplateData extends UserTypeTemplateData
 
                 final Expression argumentExpression = instantiatedParameter.getArgumentExpression();
                 isExplicit = argumentExpression.isExplicitVariable();
-                tableName = tableType.getName();
-                fieldName = field.getName();
                 definitionName = parameter.getName();
                 cppTypeName = parameterNativeType.getFullName();
                 isSimpleType = parameterNativeType.isSimpleType();
                 expression = cppSqlIndirectExpressionFormatter.formatGetter(argumentExpression);
                 requiresOwnerContext = argumentExpression.requiresOwnerContext();
                 getterName = AccessorNameFormatter.getGetterName(parameter);
-            }
-
-            public String getTableName()
-            {
-                return tableName;
-            }
-
-            public String getFieldName()
-            {
-                return fieldName;
             }
 
             public String getDefinitionName()
@@ -383,8 +365,6 @@ public class SqlTableEmitterTemplateData extends UserTypeTemplateData
                 return getterName;
             }
 
-            private final String tableName;
-            private final String fieldName;
             private final String definitionName;
             private final String cppTypeName;
             private final boolean isSimpleType;
@@ -463,7 +443,6 @@ public class SqlTableEmitterTemplateData extends UserTypeTemplateData
         private final String cppTypeName;
         private final String optionalCppTypeName;
         private final String optionalCppArgumentTypeName;
-        private final String zserioTypeName;
         private final String sqlConstraint;
         private final boolean isVirtual;
         private final String getterName;
