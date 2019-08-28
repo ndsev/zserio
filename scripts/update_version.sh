@@ -45,6 +45,9 @@ update_version()
         return 1
     fi
 
+    local CPP_RUNTIME_DOXYFILE="${ZSERIO_SOURCE_DIR}/extensions/cpp/runtime/doc/doxyfile"
+    update_version_in_file "${CPP_RUNTIME_DOXYFILE}" "${NEW_VERSION_STRING}"
+
     return 0
 }
 
