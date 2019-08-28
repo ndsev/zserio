@@ -110,6 +110,7 @@ T read(zserio::BitStreamReader& in);
  * Writes the enum item to the given bit stream.
  *
  * \param out Bit stream writer.
+ * \param value Enum item to write.
  */
 template <typename T>
 void write(BitStreamWriter& out, T value);

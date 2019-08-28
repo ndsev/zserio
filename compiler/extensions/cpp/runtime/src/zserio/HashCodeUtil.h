@@ -19,6 +19,8 @@ namespace zserio
     /**
      * Gets initial hash code calculated from the given seed value.
      *
+     * \param seedValue Seed value (current hash code).
+     *
      * \return Hash code.
      */
     inline int calcHashCodeFirstTerm(int seedValue)
@@ -173,7 +175,7 @@ namespace zserio
      * Calculates hash code of the given string value using the given seed value.
      *
      * \param seedValue Seed value (current hash code).
-     * \param value Value for which to calculate the hash code.
+     * \param stringValue Value for which to calculate the hash code.
      *
      * \return Calculated hash code.
      */
@@ -190,7 +192,7 @@ namespace zserio
      * Calculates hash code of the given enum item using the given seed value.
      *
      * \param seedValue Seed value (current hash code).
-     * \param value Enum item for which to calculate the hash code.
+     * \param enumValue Enum item for which to calculate the hash code.
      *
      * \return Calculated hash code.
      */
@@ -205,7 +207,7 @@ namespace zserio
      * Calculates hash code of the given Zserio object (structure, choice, ...) using the given seed value.
      *
      * \param seedValue Seed value (current hash code).
-     * \param value Object for which to calculate the hash code.
+     * \param object Object for which to calculate the hash code.
      *
      * \return Calculated hash code.
      */
@@ -220,7 +222,7 @@ namespace zserio
      * Calculates hash code of the given Zserio array using the given seed value.
      *
      * \param seedValue Seed value (current hash code).
-     * \param value Array for which to calculate the hash code.
+     * \param array Array for which to calculate the hash code.
      *
      * \return Calculated hash code.
      */
@@ -240,7 +242,7 @@ namespace zserio
      * Calculates hash code of the given Zserio optional field using the given seed value.
      *
      * \param seedValue Seed value (current hash code).
-     * \param value Optional field for which to calculate the hash code.
+     * \param optionalHolder Optional field for which to calculate the hash code.
      *
      * \return Calculated hash code.
      */

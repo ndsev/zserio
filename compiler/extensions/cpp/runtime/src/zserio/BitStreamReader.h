@@ -68,9 +68,9 @@ public:
         bool hasInternalBuffer; /**< Whether the reader has internal buffer. True when reading from file. */
 
         BitCache cache; /**< Bit cache to optimize bit reading. */
-        uint8_t cacheNumBits; /** Num bits available in the bit cache. */
+        uint8_t cacheNumBits; /**< Num bits available in the bit cache. */
 
-        BitPosType bitIndex; /** Current bit index. */
+        BitPosType bitIndex; /**< Current bit index. */
 
     private:
         void Init();
@@ -212,7 +212,7 @@ public:
     /**
      * Reads bool as a single bit.
      *
-     * \retrun Read bool value.
+     * \return Read bool value.
      */
     bool readBool();
 
@@ -233,7 +233,7 @@ public:
     /**
      * Moves current bit position to perform the requested bit alignment.
      *
-     * \param Size of the alignment in bits.
+     * \param alignment Size of the alignment in bits.
      */
     void alignTo(size_t alignment);
 

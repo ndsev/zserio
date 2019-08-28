@@ -61,6 +61,8 @@ public:
      * Copy assignment operator.
      *
      * \param other Any holder to copy.
+     *
+     * \return Reference to this.
      */
     AnyHolder& operator=(const AnyHolder& other)
     {
@@ -88,6 +90,8 @@ public:
      * Move assignment operator.
      *
      * \param other Any holder to move from.
+     *
+     * \return Reference to this.
      */
     AnyHolder& operator=(AnyHolder&& other)
     {
@@ -104,6 +108,8 @@ public:
      * Value assignment operator.
      *
      * \param value Any value to assign. Supports move semantic.
+     *
+     * \return Reference to this.
      */
     template <typename T,
             typename std::enable_if<!std::is_same<typename std::decay<T>::type, AnyHolder>::value, int>::type = 0>

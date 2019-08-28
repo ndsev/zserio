@@ -28,6 +28,9 @@ public:
 
     /**
      * Constructor from externally allocated buffer.
+     *
+     * \param buffer External buffer to use.
+     * \param bufferByteSize Size of the buffer in bytes.
      */
     explicit BitStreamWriter(uint8_t* buffer, size_t bufferByteSize);
 
@@ -180,16 +183,20 @@ public:
     /**
      * Moves current bit position to perform the requested bit alignment.
      *
-     * \param Size of the alignment in bits.
+     * \param alignment Size of the alignment in bits.
      */
     void alignTo(size_t alignment);
 
-    /** Gets whether the writer has assigned a write buffer. */
+    /**
+     * Gets whether the writer has assigned a write buffer.
+     *
+     * \return True when a buffer is assigned. False otherwise.
+     */
     bool hasWriteBuffer() const { return m_hasInternalBuffer || m_buffer != NULL; }
     /**
      * Gets the write buffer.
      *
-     * \param writeBuffeByseSize Output parameter which will be set to the write buffer byte size.
+     * \param writeBufferByteSize Output parameter which will be set to the write buffer byte size.
      *
      * \return Pointer to the beginning of write buffer.
      */

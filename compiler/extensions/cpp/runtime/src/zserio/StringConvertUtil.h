@@ -9,6 +9,11 @@ namespace zserio
 
 /**
  * Utilities for conversion of a given value to string.
+ *
+ * \param value Value to convert.
+ *
+ * \return String representation of the given value.
+ *
  * \{
  */
 template <typename T>

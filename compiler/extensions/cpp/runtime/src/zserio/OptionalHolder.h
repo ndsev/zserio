@@ -15,6 +15,11 @@ namespace zserio
  */
 struct NullOptType
 {
+    /**
+     * Explicit constructor from int.
+     *
+     * \see https://en.cppreference.com/w/cpp/utility/optional/nullopt_t
+     */
     explicit constexpr NullOptType(int) {}
 };
 
@@ -538,6 +543,7 @@ struct is_optimized_in_place
 
 /**
  * Optimized optional storgage where storage is choosen using is_optimized_in_place trait.
+ *
  * \{
  */
 template <typename T, bool IS_IN_PLACE>
@@ -551,9 +557,7 @@ struct optimized_optional_storage<T, false>
 {
     typedef detail::heap_storage<T> type;
 };
-/**
- * \}
- */
+/** \} */
 
 } // namespace detail
 

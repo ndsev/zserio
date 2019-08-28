@@ -169,6 +169,7 @@ size_t initializeOffsets(const ARRAY_TRAITS& arrayTraits, std::vector<typename A
  * \param arrayTraits Array traits which know how to initialize offsets of a single element.
  * \param array Array to initialize offsets for.
  * \param bitPosition Current bit position.
+ * \param offsetInitializer Initializer which initializes offsets for each element.
  *
  * \return Updated bit position which points to the first bit after the array.
  */
@@ -213,6 +214,7 @@ size_t initializeOffsetsAuto(const ARRAY_TRAITS& arrayTraits, std::vector<typena
  * \param arrayTraits Array traits which know how to initialize offsets of a single element.
  * \param array Array to initialize offsets for.
  * \param bitPosition Current bit position.
+ * \param offsetInitializer Initializer which initializes offsets for each element.
  *
  * \return Updated bit position which points to the first bit after the array.
  */
@@ -272,7 +274,6 @@ void readAligned(const ARRAY_TRAITS& arrayTraits, std::vector<typename ARRAY_TRA
  * \param arrayTraits Array traits which know how to read a single element.
  * \param array Array to read to.
  * \param in Bit stream reader.
- * \param size Size of the array to read.
  */
 template <typename ARRAY_TRAITS>
 void readAuto(const ARRAY_TRAITS& arrayTraits, std::vector<typename ARRAY_TRAITS::type>& array,
@@ -288,7 +289,6 @@ void readAuto(const ARRAY_TRAITS& arrayTraits, std::vector<typename ARRAY_TRAITS
  * \param arrayTraits Array traits which know how to read a single element.
  * \param array Array to read to.
  * \param in Bit stream reader.
- * \param size Size of the array to read.
  * \param offsetChecker Offset checker used to check offsets before reading.
  */
 template <typename ARRAY_TRAITS, typename OFFSET_CHECKER>
@@ -1010,7 +1010,7 @@ struct VarIntNNArrayTraits<uint64_t>
 template <typename T>
 struct VarIntArrayTraits;
 
-/*
+/**
  * Array traits specialization for Zserio varint type.
  */
 template <>
@@ -1070,7 +1070,7 @@ struct VarIntArrayTraits<int64_t>
     static const bool IS_BITSIZEOF_CONSTANT = false;
 };
 
-/*
+/**
  * Array traits specialization for Zserio varuint type.
  */
 template <>
@@ -1130,7 +1130,7 @@ struct VarIntArrayTraits<uint64_t>
     static const bool IS_BITSIZEOF_CONSTANT = false;
 };
 
-/*
+/**
  * Array traits for Zserio float16 type.
  */
 struct Float16ArrayTraits
@@ -1187,7 +1187,7 @@ struct Float16ArrayTraits
     static const bool IS_BITSIZEOF_CONSTANT = true;
 };
 
-/*
+/**
  * Array traits for Zserio float32 type.
  */
 struct Float32ArrayTraits
@@ -1244,7 +1244,7 @@ struct Float32ArrayTraits
     static const bool IS_BITSIZEOF_CONSTANT = true;
 };
 
-/*
+/**
  * Array traits for Zserio float64 type.
  */
 struct Float64ArrayTraits
@@ -1301,7 +1301,7 @@ struct Float64ArrayTraits
     static const bool IS_BITSIZEOF_CONSTANT = true;
 };
 
-/*
+/**
  * Array traits for Zserio bool type.
  */
 struct BoolArrayTraits
@@ -1358,7 +1358,7 @@ struct BoolArrayTraits
     static const bool IS_BITSIZEOF_CONSTANT = true;
 };
 
-/*
+/**
  * Array traits for Zserio string type.
  */
 struct StringArrayTraits
@@ -1417,7 +1417,7 @@ struct StringArrayTraits
     static const bool IS_BITSIZEOF_CONSTANT = false;
 };
 
-/*
+/**
  * Array traits for Zserio enumeration type.
  */
 template <typename T>
@@ -1478,7 +1478,7 @@ struct EnumArrayTraits
     static const bool IS_BITSIZEOF_CONSTANT = false;
 };
 
-/*
+/**
  * Array traits of Zserio structure, choice and union types.
  */
 template <typename T, typename ELEMENT_FACTORY = void>
@@ -1513,7 +1513,7 @@ private:
     const ELEMENT_FACTORY& m_elementFactory;
 };
 
-/*
+/**
  * Array traits for Zserio structure, choice and union types.
  */
 template <typename T>

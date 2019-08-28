@@ -2,6 +2,7 @@ PROJECT_NAME           = Zserio
 PROJECT_NUMBER         = 1.2.0
 PROJECT_BRIEF          = "C++ runtime library"
 OUTPUT_DIRECTORY       = .
+DISTRIBUTE_GROUP_DOC   = YES
 
 EXTRACT_LOCAL_CLASSES  = NO
 
@@ -14,6 +15,7 @@ WARN_LOGFILE           = doxygen-err.log
 
 INPUT                  = $(ZSERIO_CPP_RUNTIME_SOURCES)
 RECURSIVE              = YES
+EXCLUDE_SYMBOLS        = detail
 
 SOURCE_BROWSER         = YES
 
