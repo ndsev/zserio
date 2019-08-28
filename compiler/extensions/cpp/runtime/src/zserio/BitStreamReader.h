@@ -47,11 +47,11 @@ public:
          * Copying and moving is disallowed!
          * \{
          */
-        ReaderContext(const ReaderContext& other) = delete;
-        ReaderContext& operator=(const ReaderContext& other) = delete;
+        ReaderContext(const ReaderContext&) = delete;
+        ReaderContext& operator=(const ReaderContext&) = delete;
 
-        ReaderContext(const ReaderContext&& other) = delete;
-        ReaderContext& operator=(const ReaderContext&& other) = delete;
+        ReaderContext(const ReaderContext&&) = delete;
+        ReaderContext& operator=(const ReaderContext&&) = delete;
         /**
          * \}
          */

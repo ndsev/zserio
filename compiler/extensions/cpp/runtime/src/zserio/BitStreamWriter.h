@@ -43,11 +43,11 @@ public:
      * Copying and moving is disallowed!
      * \{
      */
-    BitStreamWriter(const BitStreamWriter& other) = delete;
-    BitStreamWriter& operator=(const BitStreamWriter& other) = delete;
+    BitStreamWriter(const BitStreamWriter&) = delete;
+    BitStreamWriter& operator=(const BitStreamWriter&) = delete;
 
-    BitStreamWriter(const BitStreamWriter&& other) = delete;
-    BitStreamWriter& operator=(BitStreamWriter&& other) = delete;
+    BitStreamWriter(const BitStreamWriter&&) = delete;
+    BitStreamWriter& operator=(BitStreamWriter&&) = delete;
     /**
      * \}
      */
