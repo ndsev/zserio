@@ -159,20 +159,6 @@ public class Float64Array extends NumericArrayBase<Double>
     }
 
     /**
-     * Sums up all values of an array.
-     *
-     * @return Sum of all array values.
-     */
-    public double sum()
-    {
-        double sumValue = 0.0f;
-        for (final double value : data)
-            sumValue += value;
-
-        return sumValue;
-    }
-
-    /**
      * Writes array to bit stream.
      *
      * @param writer Bit stream where to write.

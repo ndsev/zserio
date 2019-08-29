@@ -70,11 +70,6 @@ public class ShortArrayFactory implements ArrayFactory
             return array.bitSizeOf(bitPosition, numBits);
         }
 
-        public int sum()
-        {
-            return array.sum();
-        }
-
         public ArrayWrapper subRange(int offset, int length)
         {
             return new ShortArrayWrapper((ShortArray)array.subRange(offset, length));

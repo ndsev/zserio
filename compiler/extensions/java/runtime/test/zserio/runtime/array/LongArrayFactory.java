@@ -61,11 +61,6 @@ public class LongArrayFactory implements ArrayFactory
             return array.bitSizeOf(bitPosition, numBits);
         }
 
-        public int sum()
-        {
-            return array.sum();
-        }
-
         public ArrayWrapper subRange(int offset, int length)
         {
             return new LongArrayWrapper((LongArray)array.subRange(offset, length));

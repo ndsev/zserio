@@ -503,10 +503,6 @@ public class Expression extends AstNodeBase
                     evaluateLengthOfOperator();         // lengthofExpression
                     break;
 
-                case ZserioParser.SUM:
-                    evaluateSumOperator();              // sumExpression
-                    break;
-
                 case ZserioParser.VALUEOF:
                     evaluateValueOfOperator();          // valueofExpression
                     break;
@@ -902,15 +898,6 @@ public class Expression extends AstNodeBase
 
         expressionType = ExpressionType.INTEGER;
         // length of result has default expressionIntegerValue
-    }
-
-    private void evaluateSumOperator()
-    {
-        if (!(operand1.zserioType instanceof ArrayType))
-            throw new ParserException(operand1, "'" + operand1.text + "' is not an array!");
-
-        final ArrayType arrayType = (ArrayType)operand1.zserioType;
-        evaluateExpressionType(arrayType.getElementType());
     }
 
     private void evaluateValueOfOperator()

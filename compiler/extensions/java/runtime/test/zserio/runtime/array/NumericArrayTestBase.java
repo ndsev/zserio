@@ -76,16 +76,6 @@ public abstract class NumericArrayTestBase
     }
 
     @Test
-    public void sum() throws Exception
-    {
-        final ArrayWrapper array = createFilledArray();
-
-        final int expectedSum = (array.length() - 1)*array.length() / 2;
-
-        assertEquals(expectedSum, array.sum());
-    }
-
-    @Test
     public void subRange()
     {
         final ArrayWrapper array = factory.create(LENGTH);

@@ -15,7 +15,6 @@ public interface ArrayWrapper extends Iterable<Long>
     long elementAt(int index);
     int length();
     int bitSizeOf(long bitPosition, int numBits);
-    int sum();
     ArrayWrapper subRange(int offset, int length);
     int hashCode();
     public boolean equals(Object other);

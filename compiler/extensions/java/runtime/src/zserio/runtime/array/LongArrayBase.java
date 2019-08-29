@@ -112,24 +112,6 @@ abstract class LongArrayBase extends NumericArrayBase<Long>
         return false;
     }
 
-    /**
-     * Sums up all values of an array.
-     *
-     * @return Sum of all array values.
-     */
-    public int sum()
-    {
-        long retVal = 0;
-        for (long value : data)
-            retVal += value;
-
-        if (retVal > Integer.MAX_VALUE)
-            throw new ZserioError("LongArrayBase: Result " + retVal + " of sum() is too big for an " +
-                    "integer value.");
-
-        return (int)retVal;
-    }
-
     @Override
     protected Long boxedElementAt(int index)
     {

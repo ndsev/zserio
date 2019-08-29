@@ -33,17 +33,6 @@ void initializeElements(std::vector<T>& array, const ELEMENT_INITIALIZER& elemen
     }
 }
 
-// TODO: remove
-template <typename T>
-T sum(const std::vector<T>& array)
-{
-    T summation = T();
-    for (const T& element : array)
-        summation += element;
-
-    return summation;
-}
-
 /**
  * Calculates bit size of the given array using the given array traits.
  *

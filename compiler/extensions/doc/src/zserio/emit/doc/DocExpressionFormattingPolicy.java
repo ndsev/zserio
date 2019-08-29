@@ -118,12 +118,6 @@ public class DocExpressionFormattingPolicy extends DefaultExpressionFormattingPo
     }
 
     @Override
-    public UnaryExpressionFormatting getSum(Expression expr)
-    {
-        return new UnaryExpressionFormatting("sum(", ")");
-    }
-
-    @Override
     public UnaryExpressionFormatting getValueOf(Expression expr)
     {
         return new UnaryExpressionFormatting("valueof(" + ")");

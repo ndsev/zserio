@@ -129,7 +129,6 @@ public class ZserioLexerTest
                 "string " +
                 "struct " +
                 "subtype " +
-                "sum " +
                 "uint16 " +
                 "uint32 " +
                 "uint64 " +
@@ -188,7 +187,6 @@ public class ZserioLexerTest
         checkToken(lexer, ZserioLexer.STRING);
         checkToken(lexer, ZserioLexer.STRUCTURE);
         checkToken(lexer, ZserioLexer.SUBTYPE);
-        checkToken(lexer, ZserioLexer.SUM);
         checkToken(lexer, ZserioLexer.UINT16);
         checkToken(lexer, ZserioLexer.UINT32);
         checkToken(lexer, ZserioLexer.UINT64);

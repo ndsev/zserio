@@ -764,24 +764,6 @@ struct LengthOfOperator
 };
 ```
 
-#### sum Operator
-
-The `sum` operator is defined for arrays with integer element type (this includes bit fields). `sum(a)`
-evaluates to the sum of all elements of the array `a`.
-
-**Example**
-```
-struct SumOperator
-{
-    uint8   fixedArray[10];
-
-    function uint16 getSumFixedArray()
-    {
-        return sum(fixedArray);
-    }
-};
-```
-
 #### valueof Operator
 
 The `valueof` operator may be applied to an enumeration type and returns the actual enumeration value as
@@ -878,7 +860,7 @@ have the highest precedence and are evaluated first. All operators on the same l
 and are evaluated left to right, except ternary operator which are evaluated right to left.
 
 - `()`, `[]`, `.`
-- `lengthof` `sum` `valueof` `numbits`
+- `lengthof` `valueof` `numbits`
 - unary `+` `-` `~` `!`
 - `*` `/` `%`
 - `+` `-`

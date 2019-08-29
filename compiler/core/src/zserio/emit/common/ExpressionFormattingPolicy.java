@@ -183,7 +183,6 @@ public interface ExpressionFormattingPolicy
     public UnaryExpressionFormatting getLeftParenthesis(Expression expr);
     public UnaryExpressionFormatting getFunctionCall(Expression expr);
     public UnaryExpressionFormatting getLengthOf(Expression expr);
-    public UnaryExpressionFormatting getSum(Expression expr);
     public UnaryExpressionFormatting getValueOf(Expression expr);
     public UnaryExpressionFormatting getNumBits(Expression expr);
 

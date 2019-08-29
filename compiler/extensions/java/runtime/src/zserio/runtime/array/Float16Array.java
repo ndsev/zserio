@@ -156,20 +156,6 @@ public class Float16Array extends NumericArrayBase<Float>
     }
 
     /**
-     * Sums up all values of an array.
-     *
-     * @return Sum of all array values.
-     */
-    public float sum()
-    {
-        float sumValue = 0.0f;
-        for (final float value : data)
-            sumValue += value;
-
-        return sumValue;
-    }
-
-    /**
      * Writes array to bit stream.
      *
      * @param writer Bit stream where to write.

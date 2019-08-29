@@ -54,7 +54,6 @@ protected:
         AutoAlignedInitializeOffsetsTest(array, AUTO_LENGTH_BIT_SIZE + alignedBitSize);
         EqualOperatorTest(array);
         HashCodeTest(array);
-        SumTest(array);
         ReadTest(array);
         AutoReadTest(array);
         AlignedReadTest(array);
@@ -191,18 +190,6 @@ private:
     {
         // check only if hashCode exists
         EXPECT_TRUE(array.hashCode() != 0);
-    }
-
-    template<typename ARRAY_TYPE>
-    void SumTest(const ARRAY_TYPE& array)
-    {
-        typedef typename ARRAY_TYPE::element_type element_type;
-
-        element_type sum = element_type();
-        for (typename ARRAY_TYPE::const_iterator it = array.begin(); it != array.end(); ++it)
-            sum += *it;
-
-        EXPECT_EQ(sum, array.sum());
     }
 
     template <class ARRAY_TYPE>

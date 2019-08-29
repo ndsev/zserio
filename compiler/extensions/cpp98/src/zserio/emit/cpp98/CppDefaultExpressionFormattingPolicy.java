@@ -164,12 +164,6 @@ public abstract class CppDefaultExpressionFormattingPolicy extends DefaultExpres
     }
 
     @Override
-    public UnaryExpressionFormatting getSum(Expression expr)
-    {
-        return new UnaryExpressionFormatting("", ".sum()");
-    }
-
-    @Override
     public UnaryExpressionFormatting getValueOf(Expression expr)
     {
         return new UnaryExpressionFormatting("", "");

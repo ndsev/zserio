@@ -90,13 +90,6 @@ public class Float32ArrayTest
     }
 
     @Test
-    public void sum() throws Exception
-    {
-        final float expectedSum = 1024 * 1.0f;
-        assertEquals(expectedSum, float32Array.sum(), Float.MIN_VALUE);
-    }
-
-    @Test
     public void testBitsizeof()
     {
         assertEquals(32768, float32Array.bitSizeOf(0));

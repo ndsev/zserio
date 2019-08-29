@@ -112,24 +112,6 @@ abstract class IntArrayBase extends NumericArrayBase<Integer>
         return false;
     }
 
-    /**
-     * Sums up all values of an array.
-     *
-     * @return Sum of all array values.
-     */
-    public int sum()
-    {
-        long retVal = 0;
-        for (int value : data)
-            retVal += value;
-
-        if (retVal > Integer.MAX_VALUE)
-            throw new ZserioError("IntArrayBase: Result " + retVal + " of sum() is too big for an " +
-                    "integer value.");
-
-        return (int)retVal;
-    }
-
     @Override
     protected Integer boxedElementAt(int index)
     {

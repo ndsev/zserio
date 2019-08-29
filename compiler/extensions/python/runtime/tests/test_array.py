@@ -177,7 +177,6 @@ class ArrayTest(unittest.TestCase):
         self._testGetItem(arrayTraits, array1Values)
         self._testSetItem(arrayTraits, array1Values)
         self._testGetRawArray(arrayTraits, array1Values, array2Values)
-        self._testSum(arrayTraits, array1Values)
         self._testBitSizeOf(arrayTraits, array1Values, array1BitSizeOf, array1AlignedBitSizeOf)
         self._testInitializeOffsets(arrayTraits, array1Values, array1BitSizeOf, array1AlignedBitSizeOf)
         self._testRead(arrayTraits, array1Values)
@@ -234,16 +233,6 @@ class ArrayTest(unittest.TestCase):
         array3 = Array(arrayTraits, array1Values)
         self.assertNotEqual(array1.getRawArray(), array2.getRawArray())
         self.assertEqual(array1.getRawArray(), array3.getRawArray())
-
-    def _testSum(self, arrayTraits, arrayValues):
-        array = Array(arrayTraits, arrayValues)
-        rawArray = array.getRawArray()
-        if rawArray:
-            expectedSum = rawArray[0]
-            if isinstance(expectedSum, int): # sum supports numeric types only
-                for element in rawArray[1:]:
-                    expectedSum = expectedSum + element
-                self.assertEqual(expectedSum, sum(array))
 
     def _testBitSizeOf(self, arrayTraits, arrayValues, expectedBitSize, expectedAlignedBitSize):
         array = Array(arrayTraits, arrayValues)

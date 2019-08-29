@@ -75,9 +75,6 @@ set(ZSERIO_GENERATED_SOURCES
     ${ZSERIO_GEN_DIR}/expressions/string_type/StringTypeExpression.cpp
     ${ZSERIO_GEN_DIR}/expressions/string_type/StringTypeExpression.h
 
-    ${ZSERIO_GEN_DIR}/expressions/sum_operator/SumFunction.cpp
-    ${ZSERIO_GEN_DIR}/expressions/sum_operator/SumFunction.h
-
     ${ZSERIO_GEN_DIR}/expressions/uint64_type/UInt64TypeExpression.cpp
     ${ZSERIO_GEN_DIR}/expressions/uint64_type/UInt64TypeExpression.h
 
@@ -123,7 +120,6 @@ add_test_sources(
     ${ZSERIO_CPP_DIR}/ParenthesisTest.cpp
     ${ZSERIO_CPP_DIR}/QuestionMarkTest.cpp
     ${ZSERIO_CPP_DIR}/StringTypeTest.cpp
-    ${ZSERIO_CPP_DIR}/SumOperatorTest.cpp
     ${ZSERIO_CPP_DIR}/UInt64TypeTest.cpp
     ${ZSERIO_CPP_DIR}/UsedBeforeTypeTest.cpp
     ${ZSERIO_CPP_DIR}/ValueOfOperatorTest.cpp

@@ -545,13 +545,6 @@ public class ZserioAstBuilder extends ZserioParserBaseVisitor<Object>
     }
 
     @Override
-    public Object visitSumExpression(ZserioParser.SumExpressionContext ctx)
-    {
-        final Expression operand1 = (Expression)visit(ctx.expression());
-        return new Expression(ctx.getStart(), currentPackage, ctx.operator, operand1);
-    }
-
-    @Override
     public Object visitValueofExpression(ZserioParser.ValueofExpressionContext ctx)
     {
         final Expression operand1 = (Expression)visit(ctx.expression());

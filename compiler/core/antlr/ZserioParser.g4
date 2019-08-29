@@ -270,7 +270,6 @@ expression
     |   expression operator=LBRACKET expression RBRACKET                            # arrayExpression
     |   expression operator=DOT id                                                  # dotExpression
     |   operator=LENGTHOF LPAREN expression RPAREN                                  # lengthofExpression
-    |   operator=SUM LPAREN expression RPAREN                                       # sumExpression
     |   operator=VALUEOF LPAREN expression RPAREN                                   # valueofExpression
     |   operator=NUMBITS LPAREN expression RPAREN                                   # numbitsExpression
     |   operator=(PLUS | MINUS | BANG | TILDE) expression                           # unaryExpression

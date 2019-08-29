@@ -233,10 +233,6 @@ public class ExpressionFormatter
                 formatting = policy.getLengthOf(expr);
                 break;
 
-            case ZserioParser.SUM:
-                formatting = policy.getSum(expr);
-                break;
-
             case ZserioParser.VALUEOF:
                 formatting = policy.getValueOf(expr);
                 break;

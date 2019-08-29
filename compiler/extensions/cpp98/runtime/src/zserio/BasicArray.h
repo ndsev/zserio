@@ -61,11 +61,6 @@ public:
 #endif // ZSERIO_RUNTIME_INCLUDE_INSPECTOR
 
     // Zserio interface
-    typename ArrayBase<ARRAY_TRAITS>::element_type sum() const
-    {
-        return ArrayBase<ARRAY_TRAITS>::sumImpl();
-    }
-
     int hashCode() const
     {
         return ArrayBase<ARRAY_TRAITS>::hashCodeImpl();

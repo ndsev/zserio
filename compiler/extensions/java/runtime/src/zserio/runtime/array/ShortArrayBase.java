@@ -112,24 +112,6 @@ abstract class ShortArrayBase extends NumericArrayBase<Short>
         return false;
     }
 
-    /**
-     * Sums up all values of an array.
-     *
-     * @return Sum of all array values.
-     */
-    public int sum()
-    {
-        long retVal = 0;
-        for (short value : data)
-            retVal += value;
-
-        if (retVal > Integer.MAX_VALUE)
-            throw new ZserioError("ShortArrayBase: Result " + retVal + " of sum() is too big for an " +
-                    "integer value.");
-
-        return (int)retVal;
-    }
-
     @Override
     protected Short boxedElementAt(int index)
     {

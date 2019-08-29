@@ -19,7 +19,6 @@ import expressions.parameterized_array_type.*;
 import expressions.parenthesis.*;
 import expressions.question_mark.*;
 import expressions.string_type.*;
-import expressions.sum_operator.*;
 import expressions.uint64_type.*;
 import expressions.used_before_type.*;
 import expressions.valueof_operator.*;

@@ -76,7 +76,6 @@ STREAM              : 'stream' ;
 STRING              : 'string' ;
 STRUCTURE           : 'struct' ;
 SUBTYPE             : 'subtype' ;
-SUM                 : 'sum' ;
 UINT16              : 'uint16' ;
 UINT32              : 'uint32' ;
 UINT64              : 'uint64' ;

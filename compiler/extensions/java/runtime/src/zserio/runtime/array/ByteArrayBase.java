@@ -110,21 +110,6 @@ abstract class ByteArrayBase extends NumericArrayBase<Byte>
         return false;
     }
 
-    /**
-     * Sums up all values of an array.
-     *
-     * @return Sum of all array values.
-     */
-    public int sum()
-    {
-        int sumValue = 0;
-        for (final byte value : data)
-        {
-            sumValue += value;
-        }
-        return sumValue;
-    }
-
     @Override
     protected Byte boxedElementAt(int index)
     {

@@ -2,7 +2,6 @@
 #define ZSERIO_ARRAY_BASE_H_INC
 
 #include <cstddef>
-#include <numeric>
 
 #include "Container.h"
 #include "HashCodeUtil.h"
@@ -61,11 +60,6 @@ protected:
             elementInitializer.initialize(*it, index);
             index++;
         }
-    }
-
-    element_type sumImpl() const
-    {
-        return std::accumulate(container_type::begin(), container_type::end(), element_type());
     }
 
     int hashCodeImpl() const
