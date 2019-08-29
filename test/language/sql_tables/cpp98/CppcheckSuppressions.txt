@@ -2,5 +2,6 @@
 noExplicitConstructor:*/TestEnum.h
 
 // suppress "Member variable 'X' is not initialized in the constructor."
+uninitMemberVar:*/ParameterizedArray.cpp
 uninitMemberVar:*/ParameterizedBlob.cpp
 uninitMemberVar:*/TestBlob.cpp

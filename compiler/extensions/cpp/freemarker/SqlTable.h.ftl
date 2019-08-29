@@ -16,7 +16,6 @@
 <@namespace_begin package.path/>
 
 <#assign needsParameterProvider=explicitParameters?has_content/>
-<#assign needsChildrenInitialization=(hasImplicitParameters || explicitParameters?has_content)/>
 <#assign hasBlobField=sql_table_has_blob_field(fields)/>
 class ${name}
 {

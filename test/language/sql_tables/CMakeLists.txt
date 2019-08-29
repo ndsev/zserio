@@ -1,5 +1,12 @@
 set(ZSERIO_GEN_DIR ${CMAKE_CURRENT_BINARY_DIR}/gen)
 set(ZSERIO_GENERATED_SOURCES
+    ${ZSERIO_GEN_DIR}/sql_tables/blob_field_with_children_initialization_table/BlobFieldWithChildrenInitializationTable.cpp
+    ${ZSERIO_GEN_DIR}/sql_tables/blob_field_with_children_initialization_table/BlobFieldWithChildrenInitializationTable.h
+    ${ZSERIO_GEN_DIR}/sql_tables/blob_field_with_children_initialization_table/BlobWithChildrenInitialization.cpp
+    ${ZSERIO_GEN_DIR}/sql_tables/blob_field_with_children_initialization_table/BlobWithChildrenInitialization.h
+    ${ZSERIO_GEN_DIR}/sql_tables/blob_field_with_children_initialization_table/ParameterizedArray.cpp
+    ${ZSERIO_GEN_DIR}/sql_tables/blob_field_with_children_initialization_table/ParameterizedArray.h
+
     ${ZSERIO_GEN_DIR}/sql_tables/blob_param_table/BlobParamTable.cpp
     ${ZSERIO_GEN_DIR}/sql_tables/blob_param_table/BlobParamTable.h
     ${ZSERIO_GEN_DIR}/sql_tables/blob_param_table/Parameters.cpp
@@ -60,6 +67,8 @@ set(ZSERIO_GENERATED_SOURCES
 if (NOT ${ZSERIO_CPP_STANDARD} STREQUAL c++11)
     set(ZSERIO_GENERATED_SOURCES
         ${ZSERIO_GENERATED_SOURCES}
+        ${ZSERIO_GEN_DIR}/sql_tables/blob_field_with_children_initialization_table/BlobFieldWithChildrenInitializationTableRow.cpp
+        ${ZSERIO_GEN_DIR}/sql_tables/blob_field_with_children_initialization_table/BlobFieldWithChildrenInitializationTableRow.h
         ${ZSERIO_GEN_DIR}/sql_tables/blob_param_table/BlobParamTableRow.cpp
         ${ZSERIO_GEN_DIR}/sql_tables/blob_param_table/BlobParamTableRow.h
         ${ZSERIO_GEN_DIR}/sql_tables/blob_offsets_param_table/BlobOffsetsParamTableRow.cpp
@@ -96,6 +105,7 @@ zserio_add_library(TARGET sql_tables_zs
 target_include_directories(sql_tables_zs SYSTEM PRIVATE ${SQLITE_INCDIR})
 
 add_test_sources(
+    ${ZSERIO_CPP_DIR}/BlobFieldWithChildrenInitializationTableTest.cpp
     ${ZSERIO_CPP_DIR}/BlobParamTableTest.cpp
     ${ZSERIO_CPP_DIR}/BlobOffsetsParamTableTest.cpp
     ${ZSERIO_CPP_DIR}/ColumnParamTableTest.cpp

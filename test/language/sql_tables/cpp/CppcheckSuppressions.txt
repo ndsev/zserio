@@ -1,4 +1,8 @@
 // suppress "Member variable 'X' is not initialized in the constructor."
+uninitMemberVar:*/blob_field_with_children_initialization_table/BlobWithChildrenInitialization.cpp
+uninitMemberVar:*/blob_field_with_children_initialization_table/BlobWithChildrenInitialization.h
+uninitMemberVar:*/blob_field_with_children_initialization_table/ParameterizedArray.cpp
+uninitMemberVar:*/blob_field_with_children_initialization_table/ParameterizedArray.h
 uninitMemberVar:*/blob_offsets_param_table/ParameterizedBlob.cpp
 uninitMemberVar:*/blob_offsets_param_table/ParameterizedBlob.h
 uninitMemberVar:*/blob_param_table/ParameterizedBlob.cpp

@@ -14,8 +14,8 @@
 <@user_includes cppUserIncludes, false/>
 <@namespace_begin package.path/>
 
-<#assign hasBlobField=sql_table_has_blob_field(fields)/>
 <#assign needsParameterProvider=explicitParameters?has_content/>
+<#assign hasBlobField=sql_table_has_blob_field(fields)/>
 <#if withWriterCode>
     <#assign hasNonVirtualField=sql_table_has_non_virtual_field(fields)/>
 </#if>
