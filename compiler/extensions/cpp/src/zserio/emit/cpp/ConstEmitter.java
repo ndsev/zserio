@@ -14,8 +14,8 @@ public class ConstEmitter extends CppDefaultEmitter
     @Override
     public void beginConst(ConstType constType) throws ZserioEmitException
     {
-        final ConstEmitterTemplateData templateData = new ConstEmitterTemplateData(getTemplateDataContext(),
-                constType);
+        final ConstEmitterTemplateData templateData = new ConstEmitterTemplateData(
+                getTemplateDataContext(), constType);
         processHeaderTemplate(TEMPLATE_HEADER_NAME, templateData, constType);
     }
 

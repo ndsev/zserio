@@ -13,16 +13,15 @@ namespace constraints
 namespace structure_constraints
 {
 
-
 class StructureConstraintsTest : public ::testing::Test
 {
 protected:
     void writeStructureConstraintsToByteArray(zserio::BitStreamWriter& writer, BasicColor blackColor,
             BasicColor whiteColor, ExtendedColor purpleColor)
     {
-        writer.writeBits(blackColor.getValue(), 8);
-        writer.writeBits(whiteColor.getValue(), 8);
-        writer.writeBits(purpleColor.getValue(), 16);
+        writer.writeBits(zserio::enumToValue(blackColor), 8);
+        writer.writeBits(zserio::enumToValue(whiteColor), 8);
+        writer.writeBits(zserio::enumToValue(purpleColor), 16);
     }
 };
 
@@ -90,7 +89,7 @@ TEST_F(StructureConstraintsTest, writeCorrectConstraints)
     size_t writeBufferByteSize;
     const uint8_t* writeBuffer = writer.getWriteBuffer(writeBufferByteSize);
     zserio::BitStreamReader reader(writeBuffer, writeBufferByteSize);
-    StructureConstraints readStructureConstraints(reader);
+    const StructureConstraints readStructureConstraints(reader);
     ASSERT_EQ(BasicColor::BLACK, readStructureConstraints.getBlackColor());
     ASSERT_EQ(BasicColor::WHITE, readStructureConstraints.getWhiteColor());
     ASSERT_EQ(ExtendedColor::PURPLE, readStructureConstraints.getPurpleColor());

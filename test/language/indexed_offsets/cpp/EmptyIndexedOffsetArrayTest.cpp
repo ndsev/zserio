@@ -21,7 +21,7 @@ protected:
 
     void checkEmptyIndexedOffsetArray(const EmptyIndexedOffsetArray& emptyIndexedOffsetArray)
     {
-        const zserio::UInt32Array& offsets = emptyIndexedOffsetArray.getOffsets();
+        const std::vector<uint32_t>& offsets = emptyIndexedOffsetArray.getOffsets();
         const size_t expectedNumElements = NUM_ELEMENTS;
         ASSERT_EQ(expectedNumElements, offsets.size());
 
@@ -31,7 +31,7 @@ protected:
         const uint8_t expectedField = FIELD_VALUE;
         ASSERT_EQ(expectedField, emptyIndexedOffsetArray.getField());
 
-        const zserio::UInt8Array& data = emptyIndexedOffsetArray.getData();
+        const std::vector<uint8_t>& data = emptyIndexedOffsetArray.getData();
         ASSERT_EQ(expectedNumElements, data.size());
     }
 

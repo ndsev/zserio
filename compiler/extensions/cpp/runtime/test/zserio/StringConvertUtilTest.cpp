@@ -5,7 +5,7 @@
 namespace zserio
 {
 
-TEST(StringConvertUtilTest, SimpleTypes)
+TEST(StringConvertUtilTest, simpleTypes)
 {
     const bool boolValue = true;
     const std::string boolValueInString = convertToString(boolValue);

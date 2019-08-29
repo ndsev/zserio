@@ -39,11 +39,11 @@ protected:
 
     void checkOffsets(const Int14IndexedOffsetArray& int14IndexedOffsetArray, uint16_t offsetShift)
     {
-        const zserio::UInt32Array& offsets = int14IndexedOffsetArray.getOffsets();
+        const std::vector<uint32_t>& offsets = int14IndexedOffsetArray.getOffsets();
         const size_t expectedNumElements = NUM_ELEMENTS;
         ASSERT_EQ(expectedNumElements, offsets.size());
         uint32_t expectedOffset = ELEMENT0_OFFSET + offsetShift;
-        for (zserio::UInt32Array::const_iterator it = offsets.begin(); it != offsets.end(); ++it)
+        for (std::vector<uint32_t>::const_iterator it = offsets.begin(); it != offsets.end(); ++it)
         {
             ASSERT_EQ(expectedOffset, *it);
             expectedOffset += ALIGNED_ELEMENT_BYTE_SIZE;
@@ -58,7 +58,7 @@ protected:
         const uint8_t expectedSpacer = SPACER_VALUE;
         ASSERT_EQ(expectedSpacer, int14IndexedOffsetArray.getSpacer());
 
-        const zserio::Int16Array& data = int14IndexedOffsetArray.getData();
+        const std::vector<int16_t>& data = int14IndexedOffsetArray.getData();
         const size_t expectedNumElements = NUM_ELEMENTS;
         ASSERT_EQ(expectedNumElements, data.size());
         for (uint8_t i = 0; i < NUM_ELEMENTS; ++i)
@@ -67,7 +67,7 @@ protected:
 
     void fillInt14IndexedOffsetArray(Int14IndexedOffsetArray& int14IndexedOffsetArray, bool createWrongOffsets)
     {
-        zserio::UInt32Array& offsets = int14IndexedOffsetArray.getOffsets();
+        std::vector<uint32_t>& offsets = int14IndexedOffsetArray.getOffsets();
         offsets.reserve(NUM_ELEMENTS);
         const uint32_t wrongOffset = WRONG_OFFSET;
         uint32_t currentOffset = ELEMENT0_OFFSET;
@@ -81,7 +81,7 @@ protected:
         }
         int14IndexedOffsetArray.setSpacer(SPACER_VALUE);
 
-        zserio::Int16Array& data = int14IndexedOffsetArray.getData();
+        std::vector<int16_t>& data = int14IndexedOffsetArray.getData();
         data.reserve(NUM_ELEMENTS);
         for (uint8_t i = 0; i < NUM_ELEMENTS; ++i)
             data.push_back(i);

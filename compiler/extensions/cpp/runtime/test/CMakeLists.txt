@@ -18,10 +18,8 @@ include(sqlite_utils)
 sqlite_add_library(${ZSERIO_PROJECT_ROOT})
 
 set(ZSERIO_CPP_RUNTIME_TEST_SRCS
-    zserio/AlignedStorageTest.cpp
     zserio/AnyHolderTest.cpp
-    zserio/BasicArrayTest.cpp
-    zserio/BitFieldArrayTest.cpp
+    zserio/ArraysTest.cpp
     zserio/BitFieldUtilTest.cpp
     zserio/BitPositionUtilTest.cpp
     zserio/BitSizeOfCalculatorTest.cpp
@@ -30,25 +28,14 @@ set(ZSERIO_CPP_RUNTIME_TEST_SRCS
     zserio/BitStreamToFileTest.cpp
     zserio/BitStreamWriterTest.cpp
     zserio/BuildInOperatorsTest.cpp
-    zserio/ContainerTest.cpp
+    zserio/EnumsTest.cpp
     zserio/FloatUtilTest.cpp
     zserio/HashCodeUtilTest.cpp
-    zserio/ObjectArrayTest.cpp
     zserio/OptionalHolderTest.cpp
     zserio/SqliteConnectionTest.cpp
     zserio/StringConvertUtilTest.cpp
-    zserio/StringHolderTest.cpp
     zserio/VarUInt64UtilTest.cpp
 )
-
-if (ZSERIO_RUNTIME_INCLUDE_INSPECTOR)
-    set(ZSERIO_CPP_RUNTIME_TEST_SRCS
-        ${ZSERIO_CPP_RUNTIME_TEST_SRCS}
-        zserio/inspector/BlobInspectorTreeTest.cpp
-        zserio/inspector/BlobInspectorTreeUtilTest.cpp
-        zserio/inspector/BlobInspectorValueTest.cpp
-    )
-endif ()
 
 add_executable(${PROJECT_NAME} ${ZSERIO_CPP_RUNTIME_TEST_SRCS})
 target_include_directories(${PROJECT_NAME} PRIVATE ../src)

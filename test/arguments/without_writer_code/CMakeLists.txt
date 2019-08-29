@@ -4,8 +4,6 @@ set(ZSERIO_GENERATED_SOURCES
     ${ZSERIO_GEN_DIR}/without_writer_code/ExtraParamUnion.h
     ${ZSERIO_GEN_DIR}/without_writer_code/GeoMapTable.cpp
     ${ZSERIO_GEN_DIR}/without_writer_code/GeoMapTable.h
-    ${ZSERIO_GEN_DIR}/without_writer_code/GeoMapTableRow.cpp
-    ${ZSERIO_GEN_DIR}/without_writer_code/GeoMapTableRow.h
     ${ZSERIO_GEN_DIR}/without_writer_code/ItemChoice.cpp
     ${ZSERIO_GEN_DIR}/without_writer_code/ItemChoice.h
     ${ZSERIO_GEN_DIR}/without_writer_code/ItemChoiceHolder.cpp
@@ -20,19 +18,27 @@ set(ZSERIO_GENERATED_SOURCES
     ${ZSERIO_GEN_DIR}/without_writer_code/WorldDb.h
 )
 
+if (NOT ${ZSERIO_CPP_STANDARD} STREQUAL c++11)
+    set(ZSERIO_GENERATED_SOURCES
+        ${ZSERIO_GENERATED_SOURCES}
+        ${ZSERIO_GEN_DIR}/without_writer_code/GeoMapTableRow.cpp
+        ${ZSERIO_GEN_DIR}/without_writer_code/GeoMapTableRow.h
+    )
+endif ()
+
 zserio_add_library(TARGET without_writer_code_zs
     SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/zs
     MAIN_SOURCE without_writer_code.zs
     OUT_DIR ${ZSERIO_GEN_DIR}
     OUT_FILES ${ZSERIO_GENERATED_SOURCES}
     ZSERIO_CORE_DIR ${ZSERIO_JAR_DIR}
-    ZSERIO_OPTIONS -withoutWriterCode -withoutSourcesAmalgamation
+    ZSERIO_OPTIONS -withoutWriterCode -withoutSourcesAmalgamation -cppStandard ${ZSERIO_CPP_STANDARD}
 )
 
 target_include_directories(without_writer_code_zs SYSTEM PRIVATE ${SQLITE_INCDIR})
 
 add_test_sources(
-    cpp/WithoutWriterCodeTest.cpp
+    ${ZSERIO_CPP_DIR}/WithoutWriterCodeTest.cpp
 )
 
 add_test_dependencies(without_writer_code_zs)

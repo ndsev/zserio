@@ -33,6 +33,23 @@ TEST_F(OneStringStructureTest, emptyConstructor)
     ASSERT_EQ("", oneStringStructure.getOneString());
 }
 
+TEST_F(OneStringStructureTest, fieldConstructor)
+{
+    {
+        const char* str = "test";
+        OneStringStructure oneStringStructure(str);
+        ASSERT_EQ(str, oneStringStructure.getOneString());
+    }
+
+    {
+        std::string movedString(1000, 'a'); // long enough to prevent small string optimization
+        const void* ptr = movedString.data();
+        OneStringStructure oneStringStructure(std::move(movedString));
+        const void* movedPtr= oneStringStructure.getOneString().data();
+        ASSERT_EQ(ptr, movedPtr);
+    }
+}
+
 TEST_F(OneStringStructureTest, bitStreamReaderConstructor)
 {
     zserio::BitStreamWriter writer;
@@ -44,10 +61,64 @@ TEST_F(OneStringStructureTest, bitStreamReaderConstructor)
     ASSERT_EQ(ONE_STRING, oneStringStructure.getOneString());
 }
 
+// we shall test also generated 'default' methods!
+TEST_F(OneStringStructureTest, copyConstructor)
+{
+    const char* str = "test";
+    OneStringStructure oneStringStructure(str);
+    OneStringStructure oneStringStructureCopy(oneStringStructure);
+    ASSERT_EQ(str, oneStringStructure.getOneString());
+    ASSERT_EQ(str, oneStringStructureCopy.getOneString());
+}
+
+// we shall test also generated 'default' methods!
+TEST_F(OneStringStructureTest, copyAssignmentOperator)
+{
+    const char* str = "test";
+    OneStringStructure oneStringStructure(str);
+    OneStringStructure oneStringStructureCopy;
+    oneStringStructureCopy = oneStringStructure;
+    ASSERT_EQ(str, oneStringStructure.getOneString());
+    ASSERT_EQ(str, oneStringStructureCopy.getOneString());
+}
+
+// we shall test also generated 'default' methods!
+TEST_F(OneStringStructureTest, moveConstructor)
+{;
+    OneStringStructure oneStringStructure(std::string(1000, 'a'));
+    const void* ptr = oneStringStructure.getOneString().data();
+    OneStringStructure movedOneStringStructure(std::move(oneStringStructure));
+    const void* movedPtr = movedOneStringStructure.getOneString().data();
+    ASSERT_EQ(ptr, movedPtr);
+    ASSERT_EQ(std::string(1000, 'a'), movedOneStringStructure.getOneString());
+}
+
+// we shall test also generated 'default' methods!
+TEST_F(OneStringStructureTest, moveAssignmentOperator)
+{;
+    OneStringStructure oneStringStructure(std::string(1000, 'a'));
+    const void* ptr = oneStringStructure.getOneString().data();
+    OneStringStructure movedOneStringStructure;
+    movedOneStringStructure = std::move(oneStringStructure);
+    const void* movedPtr = movedOneStringStructure.getOneString().data();
+    ASSERT_EQ(ptr, movedPtr);
+    ASSERT_EQ(std::string(1000, 'a'), movedOneStringStructure.getOneString());
+}
+
 TEST_F(OneStringStructureTest, getSetOneString)
 {
     OneStringStructure oneStringStructure;
     oneStringStructure.setOneString(ONE_STRING);
+    ASSERT_EQ(ONE_STRING, oneStringStructure.getOneString());
+
+    std::string movedString(1000, 'a'); // long enough to prevent small string optimization
+    const void* ptr = movedString.data();
+    oneStringStructure.setOneString(std::move(movedString));
+    const void* movedPtr = oneStringStructure.getOneString().data();
+    ASSERT_EQ(ptr, movedPtr);
+
+    std::string& value = oneStringStructure.getOneString();
+    value = ONE_STRING;
     ASSERT_EQ(ONE_STRING, oneStringStructure.getOneString());
 }
 

@@ -7,7 +7,6 @@
 
 #include "sql_constraints/TestDb.h"
 #include "sql_constraints/ConstraintsTable.h"
-#include "sql_constraints/ConstraintsTableRow.h"
 #include "sql_constraints/ConstraintsConstant.h"
 
 namespace sql_constraints
@@ -56,8 +55,8 @@ const uint8_t SqlConstraintsTest::WRONG_OCTAL_ESCAPE_CONST = 0;
 TEST_F(SqlConstraintsTest, withoutSql)
 {
     ConstraintsTable& constraintsTable = m_database->getConstraintsTable();
-    ConstraintsTableRow row;
-    row.setNullWithoutSql();
+    ConstraintsTable::Row row;
+    row.setWithoutSql(zserio::NullOpt);
     row.setSqlNotNull(1);
     row.setSqlDefaultNull(1);
     row.setSqlNull(1);
@@ -66,7 +65,7 @@ TEST_F(SqlConstraintsTest, withoutSql)
     row.setSqlCheckUnicodeEscape(UNICODE_ESCAPE_CONST);
     row.setSqlCheckHexEscape(HEX_ESCAPE_CONST);
     row.setSqlCheckOctalEscape(OCTAL_ESCAPE_CONST);
-    std::vector<ConstraintsTableRow> rows;
+    std::vector<ConstraintsTable::Row> rows;
     rows.push_back(row);
     ASSERT_THROW(constraintsTable.write(rows), zserio::SqliteException);
 }
@@ -74,9 +73,9 @@ TEST_F(SqlConstraintsTest, withoutSql)
 TEST_F(SqlConstraintsTest, sqlNotNull)
 {
     ConstraintsTable& constraintsTable = m_database->getConstraintsTable();
-    ConstraintsTableRow row;
+    ConstraintsTable::Row row;
     row.setWithoutSql(1);
-    row.setNullSqlNotNull();
+    row.setSqlNotNull(zserio::NullOpt);
     row.setSqlDefaultNull(1);
     row.setSqlNull(1);
     row.setSqlCheckConstant(1);
@@ -84,7 +83,7 @@ TEST_F(SqlConstraintsTest, sqlNotNull)
     row.setSqlCheckUnicodeEscape(UNICODE_ESCAPE_CONST);
     row.setSqlCheckHexEscape(HEX_ESCAPE_CONST);
     row.setSqlCheckOctalEscape(OCTAL_ESCAPE_CONST);
-    std::vector<ConstraintsTableRow> rows;
+    std::vector<ConstraintsTable::Row> rows;
     rows.push_back(row);
     ASSERT_THROW(constraintsTable.write(rows), zserio::SqliteException);
 }
@@ -92,17 +91,17 @@ TEST_F(SqlConstraintsTest, sqlNotNull)
 TEST_F(SqlConstraintsTest, sqlDefaultNull)
 {
     ConstraintsTable& constraintsTable = m_database->getConstraintsTable();
-    ConstraintsTableRow row;
+    ConstraintsTable::Row row;
     row.setWithoutSql(1);
     row.setSqlNotNull(1);
-    row.setNullSqlDefaultNull();
+    row.setSqlDefaultNull(zserio::NullOpt);
     row.setSqlNull(1);
     row.setSqlCheckConstant(1);
     row.setSqlCheckEnum(ConstraintsEnum::VALUE1);
     row.setSqlCheckUnicodeEscape(UNICODE_ESCAPE_CONST);
     row.setSqlCheckHexEscape(HEX_ESCAPE_CONST);
     row.setSqlCheckOctalEscape(OCTAL_ESCAPE_CONST);
-    std::vector<ConstraintsTableRow> rows;
+    std::vector<ConstraintsTable::Row> rows;
     rows.push_back(row);
     ASSERT_NO_THROW(constraintsTable.write(rows));
 }
@@ -110,17 +109,17 @@ TEST_F(SqlConstraintsTest, sqlDefaultNull)
 TEST_F(SqlConstraintsTest, sqlNull)
 {
     ConstraintsTable& constraintsTable = m_database->getConstraintsTable();
-    ConstraintsTableRow row;
+    ConstraintsTable::Row row;
     row.setWithoutSql(1);
     row.setSqlNotNull(1);
     row.setSqlDefaultNull(1);
-    row.setNullSqlNull();
+    row.setSqlNull(zserio::NullOpt);
     row.setSqlCheckConstant(1);
     row.setSqlCheckEnum(ConstraintsEnum::VALUE1);
     row.setSqlCheckUnicodeEscape(UNICODE_ESCAPE_CONST);
     row.setSqlCheckHexEscape(HEX_ESCAPE_CONST);
     row.setSqlCheckOctalEscape(OCTAL_ESCAPE_CONST);
-    std::vector<ConstraintsTableRow> rows;
+    std::vector<ConstraintsTable::Row> rows;
     rows.push_back(row);
     ASSERT_NO_THROW(constraintsTable.write(rows));
 }
@@ -128,7 +127,7 @@ TEST_F(SqlConstraintsTest, sqlNull)
 TEST_F(SqlConstraintsTest, sqlCheckConstant)
 {
     ConstraintsTable& constraintsTable = m_database->getConstraintsTable();
-    ConstraintsTableRow row;
+    ConstraintsTable::Row row;
     row.setWithoutSql(1);
     row.setSqlNotNull(1);
     row.setSqlDefaultNull(1);
@@ -138,7 +137,7 @@ TEST_F(SqlConstraintsTest, sqlCheckConstant)
     row.setSqlCheckUnicodeEscape(UNICODE_ESCAPE_CONST);
     row.setSqlCheckHexEscape(HEX_ESCAPE_CONST);
     row.setSqlCheckOctalEscape(OCTAL_ESCAPE_CONST);
-    std::vector<ConstraintsTableRow> rows;
+    std::vector<ConstraintsTable::Row> rows;
     rows.push_back(row);
     ASSERT_THROW(constraintsTable.write(rows), zserio::SqliteException);
 }
@@ -146,7 +145,7 @@ TEST_F(SqlConstraintsTest, sqlCheckConstant)
 TEST_F(SqlConstraintsTest, sqlCheckEnum)
 {
     ConstraintsTable& constraintsTable = m_database->getConstraintsTable();
-    ConstraintsTableRow row;
+    ConstraintsTable::Row row;
     row.setWithoutSql(1);
     row.setSqlNotNull(1);
     row.setSqlDefaultNull(1);
@@ -156,7 +155,7 @@ TEST_F(SqlConstraintsTest, sqlCheckEnum)
     row.setSqlCheckUnicodeEscape(UNICODE_ESCAPE_CONST);
     row.setSqlCheckHexEscape(HEX_ESCAPE_CONST);
     row.setSqlCheckOctalEscape(OCTAL_ESCAPE_CONST);
-    std::vector<ConstraintsTableRow> rows;
+    std::vector<ConstraintsTable::Row> rows;
     rows.push_back(row);
     ASSERT_THROW(constraintsTable.write(rows), zserio::SqliteException);
 }
@@ -164,7 +163,7 @@ TEST_F(SqlConstraintsTest, sqlCheckEnum)
 TEST_F(SqlConstraintsTest, sqlCheckUnicodeEscape)
 {
     ConstraintsTable& constraintsTable = m_database->getConstraintsTable();
-    ConstraintsTableRow row;
+    ConstraintsTable::Row row;
     row.setWithoutSql(1);
     row.setSqlNotNull(1);
     row.setSqlDefaultNull(1);
@@ -174,7 +173,7 @@ TEST_F(SqlConstraintsTest, sqlCheckUnicodeEscape)
     row.setSqlCheckUnicodeEscape(WRONG_UNICODE_ESCAPE_CONST);
     row.setSqlCheckHexEscape(HEX_ESCAPE_CONST);
     row.setSqlCheckOctalEscape(OCTAL_ESCAPE_CONST);
-    std::vector<ConstraintsTableRow> rows;
+    std::vector<ConstraintsTable::Row> rows;
     rows.push_back(row);
     ASSERT_THROW(constraintsTable.write(rows), zserio::SqliteException);
 }
@@ -182,7 +181,7 @@ TEST_F(SqlConstraintsTest, sqlCheckUnicodeEscape)
 TEST_F(SqlConstraintsTest, sqlCheckHexEscape)
 {
     ConstraintsTable& constraintsTable = m_database->getConstraintsTable();
-    ConstraintsTableRow row;
+    ConstraintsTable::Row row;
     row.setWithoutSql(1);
     row.setSqlNotNull(1);
     row.setSqlDefaultNull(1);
@@ -192,7 +191,7 @@ TEST_F(SqlConstraintsTest, sqlCheckHexEscape)
     row.setSqlCheckUnicodeEscape(UNICODE_ESCAPE_CONST);
     row.setSqlCheckHexEscape(WRONG_HEX_ESCAPE_CONST);
     row.setSqlCheckOctalEscape(OCTAL_ESCAPE_CONST);
-    std::vector<ConstraintsTableRow> rows;
+    std::vector<ConstraintsTable::Row> rows;
     rows.push_back(row);
     ASSERT_THROW(constraintsTable.write(rows), zserio::SqliteException);
 }
@@ -200,7 +199,7 @@ TEST_F(SqlConstraintsTest, sqlCheckHexEscape)
 TEST_F(SqlConstraintsTest, sqlCheckOctalEscape)
 {
     ConstraintsTable& constraintsTable = m_database->getConstraintsTable();
-    ConstraintsTableRow row;
+    ConstraintsTable::Row row;
     row.setWithoutSql(1);
     row.setSqlNotNull(1);
     row.setSqlDefaultNull(1);
@@ -210,7 +209,7 @@ TEST_F(SqlConstraintsTest, sqlCheckOctalEscape)
     row.setSqlCheckUnicodeEscape(UNICODE_ESCAPE_CONST);
     row.setSqlCheckHexEscape(HEX_ESCAPE_CONST);
     row.setSqlCheckOctalEscape(WRONG_OCTAL_ESCAPE_CONST);
-    std::vector<ConstraintsTableRow> rows;
+    std::vector<ConstraintsTable::Row> rows;
     rows.push_back(row);
     ASSERT_THROW(constraintsTable.write(rows), zserio::SqliteException);
 }

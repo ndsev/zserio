@@ -18,7 +18,7 @@ protected:
     ElementList createElementList(int length, bool lastWrong = false)
     {
         ElementList list;
-        zserio::ObjectArray<Element>& elements = list.getElements();
+        std::vector<Element>& elements = list.getElements();
         elements.reserve(length);
         for (int i = 0; i < length; ++i)
         {

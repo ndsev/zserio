@@ -19,14 +19,14 @@ zserio_add_library(TARGET structure_types_zs
     OUT_DIR ${ZSERIO_GEN_DIR}
     OUT_FILES ${ZSERIO_GENERATED_SOURCES}
     ZSERIO_CORE_DIR ${ZSERIO_JAR_DIR}
-    ZSERIO_OPTIONS -withoutSourcesAmalgamation
+    ZSERIO_OPTIONS -withoutSourcesAmalgamation -cppStandard ${ZSERIO_CPP_STANDARD}
 )
 
 add_test_sources(
-    cpp/EmptyStructureTest.cpp
-    cpp/EmptyStructureWithParameterTest.cpp
-    cpp/OneStringStructureTest.cpp
-    cpp/SimpleStructureTest.cpp
+    ${ZSERIO_CPP_DIR}/EmptyStructureTest.cpp
+    ${ZSERIO_CPP_DIR}/EmptyStructureWithParameterTest.cpp
+    ${ZSERIO_CPP_DIR}/OneStringStructureTest.cpp
+    ${ZSERIO_CPP_DIR}/SimpleStructureTest.cpp
 )
 
 add_test_dependencies(structure_types_zs)

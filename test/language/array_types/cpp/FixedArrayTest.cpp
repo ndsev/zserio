@@ -24,7 +24,7 @@ protected:
 
 TEST_F(FixedArrayTest, bitSizeOf)
 {
-    zserio::UInt8Array uint8Array;
+    std::vector<uint8_t> uint8Array;
     uint8Array.reserve(FIXED_ARRAY_LENGTH);
     for (size_t i = 0; i < FIXED_ARRAY_LENGTH; ++i)
         uint8Array.push_back(static_cast<uint8_t>(i));
@@ -37,7 +37,7 @@ TEST_F(FixedArrayTest, bitSizeOf)
 
 TEST_F(FixedArrayTest, initializeOffsets)
 {
-    zserio::UInt8Array uint8Array;
+    std::vector<uint8_t> uint8Array;
     uint8Array.reserve(FIXED_ARRAY_LENGTH);
     for (size_t i = 0; i < FIXED_ARRAY_LENGTH; ++i)
         uint8Array.push_back(static_cast<uint8_t>(i));
@@ -57,7 +57,7 @@ TEST_F(FixedArrayTest, read)
     zserio::BitStreamReader reader(writeBuffer, writeBufferByteSize);
     FixedArray fixedArray(reader);
 
-    const zserio::UInt8Array& uint8Array = fixedArray.getUint8Array();
+    const std::vector<uint8_t>& uint8Array = fixedArray.getUint8Array();
     const size_t numElements = FIXED_ARRAY_LENGTH;
     ASSERT_EQ(numElements, uint8Array.size());
     for (size_t i = 0; i < numElements; ++i)
@@ -66,7 +66,7 @@ TEST_F(FixedArrayTest, read)
 
 TEST_F(FixedArrayTest, write)
 {
-    zserio::UInt8Array uint8Array;
+    std::vector<uint8_t> uint8Array;
     uint8Array.reserve(FIXED_ARRAY_LENGTH);
     for (size_t i = 0; i < FIXED_ARRAY_LENGTH; ++i)
         uint8Array.push_back(static_cast<uint8_t>(i));
@@ -80,7 +80,7 @@ TEST_F(FixedArrayTest, write)
     const uint8_t* writeBuffer = writer.getWriteBuffer(writeBufferByteSize);
     zserio::BitStreamReader reader(writeBuffer, writeBufferByteSize);
     FixedArray readFixedArray(reader);
-    const zserio::UInt8Array& readUint8Array = readFixedArray.getUint8Array();
+    const std::vector<uint8_t>& readUint8Array = readFixedArray.getUint8Array();
     const size_t numElements = FIXED_ARRAY_LENGTH;
     ASSERT_EQ(numElements, readUint8Array.size());
     for (size_t i = 0; i < numElements; ++i)
@@ -89,7 +89,7 @@ TEST_F(FixedArrayTest, write)
 
 TEST_F(FixedArrayTest, writeWrongArray)
 {
-    zserio::UInt8Array uint8Array;
+    std::vector<uint8_t> uint8Array;
     const size_t wrongArrayLength = FIXED_ARRAY_LENGTH + 1;
     uint8Array.reserve(wrongArrayLength);
     for (size_t i = 0; i < wrongArrayLength; ++i)

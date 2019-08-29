@@ -15,8 +15,8 @@ class EnumDefinedByConstant : public ::testing::Test
 TEST_F(EnumDefinedByConstant, lightColor)
 {
     ASSERT_EQ(1, WHITE_COLOR);
-    ASSERT_EQ(WHITE_COLOR, Colors::White);
-    ASSERT_EQ(Colors::White + 1, Colors::Black);
+    ASSERT_EQ(WHITE_COLOR, zserio::enumToValue(Colors::White));
+    ASSERT_EQ(zserio::enumToValue(Colors::White) + 1, zserio::enumToValue(Colors::Black));
 }
 
 } // namespace enum_defined_by_constant

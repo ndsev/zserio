@@ -11,7 +11,7 @@ namespace choice_types
 namespace empty_choice
 {
 
-TEST(EmptyChoiceTest, selectorConstructor)
+TEST(EmptyChoiceTest, emptyConstructor)
 {
     EmptyChoice emptyChoice;
     ASSERT_THROW(emptyChoice.getSelector(), zserio::CppRuntimeException);
@@ -38,15 +38,41 @@ TEST(EmptyChoiceTest, copyConstructor)
     ASSERT_EQ(0, emptyChoiceCopy.bitSizeOf());
 }
 
-TEST(EmptyChoiceTest, operatorAssignment)
+TEST(EmptyChoiceTest, assignmentOperator)
 {
     const uint8_t selector = 1;
 
     EmptyChoice emptyChoice;
     emptyChoice.initialize(selector);
-    const EmptyChoice emptyChoiceCopy = emptyChoice;
+    EmptyChoice emptyChoiceCopy;
+    emptyChoiceCopy = emptyChoice;
     ASSERT_EQ(selector, emptyChoiceCopy.getSelector());
     ASSERT_EQ(0, emptyChoiceCopy.bitSizeOf());
+}
+
+TEST(EmptyChoiceTest, moveConstructor)
+{
+    const uint8_t selector = 1;
+
+    EmptyChoice emptyChoice;
+    emptyChoice.initialize(selector);
+    // note that it doesn't ensure that move ctor was called
+    const EmptyChoice emptyChoiceMoved(std::move(emptyChoice));
+    ASSERT_EQ(selector, emptyChoiceMoved.getSelector());
+    ASSERT_EQ(0, emptyChoiceMoved.bitSizeOf());
+}
+
+TEST(EmptyChoiceTest, moveAssignmentOperator)
+{
+    const uint8_t selector = 1;
+
+    EmptyChoice emptyChoice;
+    emptyChoice.initialize(selector);
+    // note that it doesn't ensure that move ctor was called
+    EmptyChoice emptyChoiceMove;
+    emptyChoiceMove = std::move(emptyChoice);
+    ASSERT_EQ(selector, emptyChoiceMove.getSelector());
+    ASSERT_EQ(0, emptyChoiceMove.bitSizeOf());
 }
 
 TEST(EmptyChoiceTest, initialize)
@@ -110,10 +136,9 @@ TEST(EmptyChoiceTest, hashCode)
 TEST(EmptyChoiceTest, read)
 {
     const uint8_t selector = 1;
-    zserio::BitStreamReader reader(NULL, 0);
-
     EmptyChoice emptyChoice;
     emptyChoice.initialize(selector);
+    zserio::BitStreamReader reader(NULL, 0);
     emptyChoice.read(reader);
     ASSERT_EQ(selector, emptyChoice.getSelector());
     ASSERT_EQ(0, emptyChoice.bitSizeOf());

@@ -41,11 +41,11 @@ protected:
 
     void checkOffsets(const AutoIndexedOffsetArray& autoIndexedOffsetArray, uint16_t offsetShift)
     {
-        const zserio::UInt32Array& offsets = autoIndexedOffsetArray.getOffsets();
+        const std::vector<uint32_t>& offsets = autoIndexedOffsetArray.getOffsets();
         const size_t expectedNumElements = NUM_ELEMENTS;
         ASSERT_EQ(expectedNumElements, offsets.size());
         uint32_t expectedOffset = ELEMENT0_OFFSET + offsetShift;
-        for (zserio::UInt32Array::const_iterator it = offsets.begin(); it != offsets.end(); ++it)
+        for (std::vector<uint32_t>::const_iterator it = offsets.begin(); it != offsets.end(); ++it)
         {
             ASSERT_EQ(expectedOffset, *it);
             expectedOffset += ALIGNED_ELEMENT_BYTE_SIZE;
@@ -60,7 +60,7 @@ protected:
         const uint8_t expectedSpacer = SPACER_VALUE;
         ASSERT_EQ(expectedSpacer, autoIndexedOffsetArray.getSpacer());
 
-        const zserio::UInt8Array& data = autoIndexedOffsetArray.getData();
+        const std::vector<uint8_t>& data = autoIndexedOffsetArray.getData();
         const size_t expectedNumElements = NUM_ELEMENTS;
         ASSERT_EQ(expectedNumElements, data.size());
         for (uint8_t i = 0; i < NUM_ELEMENTS; ++i)
@@ -69,7 +69,7 @@ protected:
 
     void fillAutoIndexedOffsetArray(AutoIndexedOffsetArray& autoIndexedOffsetArray, bool createWrongOffsets)
     {
-        zserio::UInt32Array& offsets = autoIndexedOffsetArray.getOffsets();
+        std::vector<uint32_t>& offsets = autoIndexedOffsetArray.getOffsets();
         offsets.reserve(NUM_ELEMENTS);
         const uint32_t wrongOffset = WRONG_OFFSET;
         uint32_t currentOffset = ELEMENT0_OFFSET;
@@ -83,7 +83,7 @@ protected:
         }
         autoIndexedOffsetArray.setSpacer(SPACER_VALUE);
 
-        zserio::UInt8Array& data = autoIndexedOffsetArray.getData();
+        std::vector<uint8_t>& data = autoIndexedOffsetArray.getData();
         data.reserve(NUM_ELEMENTS);
         for (uint8_t i = 0; i < NUM_ELEMENTS; ++i)
             data.push_back(i % 64);

@@ -15,15 +15,15 @@ class OptionalRecursionTest : public ::testing::Test
 protected:
     void fillBlock(Block& block, const uint8_t* blockData, size_t blockDataSize)
     {
-        block.initialize(static_cast<uint8_t>(blockDataSize));
-
-        zserio::UInt8Array dataBytes;
+        std::vector<uint8_t> dataBytes;
         dataBytes.reserve(blockDataSize);
         for (size_t i = 0; i < blockDataSize; ++i)
             dataBytes.push_back(static_cast<uint8_t>(blockData[i]));
         block.setDataBytes(dataBytes);
 
         block.setBlockTerminator(0);
+
+        block.initialize(static_cast<uint8_t>(blockDataSize));
     }
 
     void fillBlock(Block& block1, const uint8_t* block1Data, size_t block1DataSize, const uint8_t* block2Data,
@@ -32,9 +32,7 @@ protected:
         Block block2;
         fillBlock(block2, block2Data, block2DataSize);
 
-        block1.initialize(static_cast<uint8_t>(block1DataSize));
-
-        zserio::UInt8Array dataBytes;
+        std::vector<uint8_t> dataBytes;
         dataBytes.reserve(block1DataSize);
         for (size_t i = 0; i < block1DataSize; ++i)
             dataBytes.push_back(static_cast<uint8_t>(block1Data[i]));
@@ -42,6 +40,8 @@ protected:
 
         block1.setBlockTerminator(static_cast<uint8_t>(block2DataSize));
         block1.setNextData(block2);
+
+        block1.initialize(static_cast<uint8_t>(block1DataSize));
     }
 
     size_t getBlockBitSize(size_t blockDataSize)
@@ -116,15 +116,8 @@ TEST_F(OptionalRecursionTest, initializeOffsets)
 
 TEST_F(OptionalRecursionTest, operatorEquality)
 {
-    Block emptyBlock1;
-    emptyBlock1.initialize(0);
-    Block emptyBlock2;
-    emptyBlock2.initialize(0);
-    ASSERT_TRUE(emptyBlock1 == emptyBlock2);
-
     Block block1;
     fillBlock(block1, BLOCK1_DATA, sizeof(BLOCK1_DATA));
-    ASSERT_FALSE(block1 == emptyBlock1);
 
     Block block2;
     fillBlock(block2, BLOCK1_DATA, sizeof(BLOCK1_DATA));
@@ -137,15 +130,8 @@ TEST_F(OptionalRecursionTest, operatorEquality)
 
 TEST_F(OptionalRecursionTest, hashCode)
 {
-    Block emptyBlock1;
-    emptyBlock1.initialize(0);
-    Block emptyBlock2;
-    emptyBlock2.initialize(0);
-    ASSERT_EQ(emptyBlock1.hashCode(), emptyBlock2.hashCode());
-
     Block block1;
     fillBlock(block1, BLOCK1_DATA, sizeof(BLOCK1_DATA));
-    ASSERT_NE(block1.hashCode(), emptyBlock1.hashCode());
 
     Block block2;
     fillBlock(block2, BLOCK1_DATA, sizeof(BLOCK1_DATA));

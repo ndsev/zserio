@@ -14,10 +14,19 @@ namespace empty_union_with_parameter
 TEST(EmptyUnionWithParameterTest, emptyConstructor)
 {
     EmptyUnionWithParameter emptyUnionWithParameter;
-    ASSERT_EQ(EmptyUnionWithParameter::CHOICE_UNDEFINED, emptyUnionWithParameter.choiceTag());
+    ASSERT_EQ(EmptyUnionWithParameter::UNDEFINED_CHOICE, emptyUnionWithParameter.choiceTag());
     ASSERT_EQ(0, emptyUnionWithParameter.bitSizeOf());
 
     ASSERT_THROW(emptyUnionWithParameter.getParam(), zserio::CppRuntimeException);
+}
+
+TEST(EmptyUnionWithParameterTest, bitStreamReaderConstructor)
+{
+    zserio::BitStreamReader reader(NULL, 0);
+    EmptyUnionWithParameter emptyUnionWithParameter(reader, 1);
+    ASSERT_EQ(1, emptyUnionWithParameter.getParam());
+    ASSERT_EQ(EmptyUnionWithParameter::UNDEFINED_CHOICE, emptyUnionWithParameter.choiceTag());
+    ASSERT_EQ(0, emptyUnionWithParameter.bitSizeOf());
 }
 
 TEST(EmptyUnionWithParameterTest, copyConstructor)
@@ -47,6 +56,48 @@ TEST(EmptyUnionWithParameterTest, assignmentOperator)
     ASSERT_EQ(emptyUnionWithParameter.getParam(), emptyUnionAssignWithParameter.getParam());
 }
 
+TEST(EmptyUnionWithParameterTest, moveConstructor)
+{
+    {
+        EmptyUnionWithParameter emptyUnionWithParameter;
+        ASSERT_THROW(emptyUnionWithParameter.getParam(), zserio::CppRuntimeException);
+
+        EmptyUnionWithParameter emptyUnionMoveWithParameter(std::move(emptyUnionWithParameter));
+        ASSERT_THROW(emptyUnionMoveWithParameter.getParam(), zserio::CppRuntimeException);
+    }
+
+    {
+        EmptyUnionWithParameter emptyUnionWithParameter;
+        emptyUnionWithParameter.initialize(1);
+        ASSERT_EQ(1, emptyUnionWithParameter.getParam());
+
+        EmptyUnionWithParameter emptyUnionMoveWithParameter(std::move(emptyUnionWithParameter));
+        ASSERT_EQ(1, emptyUnionMoveWithParameter.getParam());
+    }
+}
+
+TEST(EmptyUnionWithParameterTest, moveAssignmentOperator)
+{
+    {
+        EmptyUnionWithParameter emptyUnionWithParameter;
+        ASSERT_THROW(emptyUnionWithParameter.getParam(), zserio::CppRuntimeException);
+
+        EmptyUnionWithParameter emptyUnionAssignWithParameter;
+        emptyUnionAssignWithParameter = std::move(emptyUnionWithParameter);
+        ASSERT_THROW(emptyUnionAssignWithParameter.getParam(), zserio::CppRuntimeException);
+    }
+
+    {
+        EmptyUnionWithParameter emptyUnionWithParameter;
+        emptyUnionWithParameter.initialize(1);
+        ASSERT_EQ(1, emptyUnionWithParameter.getParam());
+
+        EmptyUnionWithParameter emptyUnionAssignWithParameter;
+        emptyUnionAssignWithParameter = std::move(emptyUnionWithParameter);
+        ASSERT_EQ(1, emptyUnionAssignWithParameter.getParam());
+    }
+}
+
 TEST(EmptyUnionWithParameterTest, initialize)
 {
     EmptyUnionWithParameter emptyUnionWithParameter;
@@ -54,19 +105,18 @@ TEST(EmptyUnionWithParameterTest, initialize)
     ASSERT_EQ(1, emptyUnionWithParameter.getParam());
 }
 
-TEST(EmptyUnionWithParameterTest, bitStreamReaderConstructor)
+TEST(EmptyUnionWithParameterTest, isInitialized)
 {
-    zserio::BitStreamReader reader(NULL, 0);
-    EmptyUnionWithParameter emptyUnionWithParameter(reader, 1);
-    ASSERT_EQ(1, emptyUnionWithParameter.getParam());
-    ASSERT_EQ(EmptyUnionWithParameter::CHOICE_UNDEFINED, emptyUnionWithParameter.choiceTag());
-    ASSERT_EQ(0, emptyUnionWithParameter.bitSizeOf());
+    EmptyUnionWithParameter emptyUnionWithParameter;
+    ASSERT_FALSE(emptyUnionWithParameter.isInitialized());
+    emptyUnionWithParameter.initialize(1);
+    ASSERT_TRUE(emptyUnionWithParameter.isInitialized());
 }
 
 TEST(EmptyUnionWithParameterTest, choiceTag)
 {
     EmptyUnionWithParameter emptyUnionWithParameter;
-    ASSERT_EQ(EmptyUnionWithParameter::CHOICE_UNDEFINED, emptyUnionWithParameter.choiceTag());
+    ASSERT_EQ(EmptyUnionWithParameter::UNDEFINED_CHOICE, emptyUnionWithParameter.choiceTag());
 }
 
 TEST(EmptyUnionWithParameterTest, bitSizeOf)
@@ -121,7 +171,7 @@ TEST(EmptyUnionWithParameterTest, read)
     zserio::BitStreamReader reader(NULL, 0);
     EmptyUnionWithParameter emptyUnionWithParameter;
     emptyUnionWithParameter.read(reader);
-    ASSERT_EQ(EmptyUnionWithParameter::CHOICE_UNDEFINED, emptyUnionWithParameter.choiceTag());
+    ASSERT_EQ(EmptyUnionWithParameter::UNDEFINED_CHOICE, emptyUnionWithParameter.choiceTag());
     ASSERT_EQ(0, emptyUnionWithParameter.bitSizeOf());
 }
 

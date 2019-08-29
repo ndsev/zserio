@@ -10,10 +10,14 @@ import zserio.emit.cpp.CppFullNameFormatter;
 
 public abstract class CppNativeType implements NativeType
 {
+    public CppNativeType(PackageName packageName, String name)
+    {
+        this(packageName, name, packageName.isEmpty());
+    }
+
     public CppNativeType(PackageName packageName, String name, boolean simpleType)
     {
         this.packageName = packageName;
-        this.namespace = CppFullNameFormatter.getFullName(packageName);
         this.name = name;
         this.systemIncludeFiles = new TreeSet<String>();
         this.userIncludeFiles = new TreeSet<String>();
@@ -30,14 +34,6 @@ public abstract class CppNativeType implements NativeType
     public String getName()
     {
         return name;
-    }
-
-    /**
-     * Return the namespace that contains this type.
-     */
-    public String getNamespace()
-    {
-        return namespace;
     }
 
     /**
@@ -116,7 +112,6 @@ public abstract class CppNativeType implements NativeType
     }
 
     private final PackageName packageName;
-    private final String namespace;
     private final String name;
     private final SortedSet<String> systemIncludeFiles;
     private final SortedSet<String> userIncludeFiles;

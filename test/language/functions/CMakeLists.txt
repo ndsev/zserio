@@ -57,18 +57,18 @@ zserio_add_library(TARGET functions_zs
     OUT_DIR ${ZSERIO_GEN_DIR}
     OUT_FILES ${ZSERIO_GENERATED_SOURCES}
     ZSERIO_CORE_DIR ${ZSERIO_JAR_DIR}
-    ZSERIO_OPTIONS -withoutSourcesAmalgamation
+    ZSERIO_OPTIONS -withoutSourcesAmalgamation -cppStandard ${ZSERIO_CPP_STANDARD}
 )
 
 add_test_sources(
-    cpp/ChoiceArrayTest.cpp
-    cpp/StructureArrayTest.cpp
-    cpp/StructureArrayParamTest.cpp
-    cpp/StructureOptionalTest.cpp
-    cpp/StructureParamTest.cpp
-    cpp/StructureParentChildValueTest.cpp
-    cpp/StructureValueTest.cpp
-    cpp/UnionArrayTest.cpp
+    ${ZSERIO_CPP_DIR}/ChoiceArrayTest.cpp
+    ${ZSERIO_CPP_DIR}/StructureArrayTest.cpp
+    ${ZSERIO_CPP_DIR}/StructureArrayParamTest.cpp
+    ${ZSERIO_CPP_DIR}/StructureOptionalTest.cpp
+    ${ZSERIO_CPP_DIR}/StructureParamTest.cpp
+    ${ZSERIO_CPP_DIR}/StructureParentChildValueTest.cpp
+    ${ZSERIO_CPP_DIR}/StructureValueTest.cpp
+    ${ZSERIO_CPP_DIR}/UnionArrayTest.cpp
 )
 
 add_test_dependencies(functions_zs)

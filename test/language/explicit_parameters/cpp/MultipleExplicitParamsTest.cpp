@@ -30,16 +30,15 @@ public:
     }
 
 protected:
-    void fillMultipleParamsTableRow(MultipleParamsTableRow& row, uint32_t id, const std::string& name)
+    void fillMultipleParamsTableRow(MultipleParamsTable::Row& row, uint32_t id, const std::string& name)
     {
         row.setId(id);
         row.setName(name);
 
         TestBlob testBlob1;
-        testBlob1.initialize(MULTIPLE_PARAMS_COUNT1, MULTIPLE_PARAMS_COUNT2);
         {
-            zserio::UInt8Array& values8 = testBlob1.getValues8();
-            zserio::UInt16Array& values16 = testBlob1.getValues16();
+            std::vector<uint8_t>& values8 = testBlob1.getValues8();
+            std::vector<uint16_t>& values16 = testBlob1.getValues16();
             for (uint32_t i = 0; i < MULTIPLE_PARAMS_COUNT1; ++i)
                 values8.push_back(static_cast<uint8_t>(id));
             for (uint32_t i = 0; i < MULTIPLE_PARAMS_COUNT2; ++i)
@@ -48,10 +47,9 @@ protected:
         row.setBlob1(testBlob1);
 
         TestBlob testBlob2;
-        testBlob2.initialize(MULTIPLE_PARAMS_COUNT, MULTIPLE_PARAMS_COUNT);
         {
-            zserio::UInt8Array& values8 = testBlob2.getValues8();
-            zserio::UInt16Array& values16 = testBlob2.getValues16();
+            std::vector<uint8_t>& values8 = testBlob2.getValues8();
+            std::vector<uint16_t>& values16 = testBlob2.getValues16();
             for (uint32_t i = 0; i < MULTIPLE_PARAMS_COUNT; ++i)
             {
                 values8.push_back(static_cast<uint8_t>(id + 1));
@@ -61,10 +59,9 @@ protected:
         row.setBlob2(testBlob2);
 
         TestBlob testBlob3;
-        testBlob3.initialize(MULTIPLE_PARAMS_COUNT1, MULTIPLE_PARAMS_COUNT1);
         {
-            zserio::UInt8Array& values8 = testBlob3.getValues8();
-            zserio::UInt16Array& values16 = testBlob3.getValues16();
+            std::vector<uint8_t>& values8 = testBlob3.getValues8();
+            std::vector<uint16_t>& values16 = testBlob3.getValues16();
             for (uint32_t i = 0; i < MULTIPLE_PARAMS_COUNT1; ++i)
             {
                 values8.push_back(static_cast<uint8_t>(id + 2));
@@ -74,19 +71,20 @@ protected:
         row.setBlob3(testBlob3);
     }
 
-    void fillMultipleParamsTableRows(std::vector<MultipleParamsTableRow>& rows)
+    void fillMultipleParamsTableRows(std::vector<MultipleParamsTable::Row>& rows)
     {
         rows.clear();
         for (uint32_t id = 0; id < NUM_MULTIPLE_PARAMS_ROWS; ++id)
         {
             const std::string name = "Name" + zserio::convertToString(id);
-            MultipleParamsTableRow row;
+            MultipleParamsTable::Row row;
             fillMultipleParamsTableRow(row, id, name);
             rows.push_back(row);
         }
     }
 
-    static void checkMultipleParamsTableRow(const MultipleParamsTableRow& row1, const MultipleParamsTableRow& row2)
+    static void checkMultipleParamsTableRow(const MultipleParamsTable::Row& row1,
+            const MultipleParamsTable::Row& row2)
     {
         ASSERT_EQ(row1.getId(), row2.getId());
         ASSERT_EQ(row1.getName(), row2.getName());
@@ -94,13 +92,14 @@ protected:
         ASSERT_EQ(row1.getBlob2(), row2.getBlob2());
         ASSERT_EQ(row1.getBlob3(), row2.getBlob3());
 
-        // check reused explicit count1 parameter
-        ASSERT_EQ(row2.getBlob1().getCount8(), row2.getBlob3().getCount8());
-        ASSERT_EQ(row2.getBlob1().getCount8(), row2.getBlob3().getCount16());
+        // check reused explicit parameters
+        ASSERT_EQ((*row2.getBlob1()).getCount8(), (*row2.getBlob3()).getCount8());
+        ASSERT_EQ((*row2.getBlob1()).getCount8(), (*row2.getBlob3()).getCount16());
+        ASSERT_EQ((*row2.getBlob2()).getCount8(), (*row2.getBlob2()).getCount16());
     }
 
-    static void checkMultipleParamsTableRows(const std::vector<MultipleParamsTableRow>& rows1,
-            const std::vector<MultipleParamsTableRow>& rows2)
+    static void checkMultipleParamsTableRows(const std::vector<MultipleParamsTable::Row>& rows1,
+            const std::vector<MultipleParamsTable::Row>& rows2)
     {
         ASSERT_EQ(rows1.size(), rows2.size());
         for (size_t i = 0; i < rows1.size(); ++i)
@@ -110,17 +109,17 @@ protected:
     class MultipleParamsTableParameterProvider : public MultipleParamsTable::IParameterProvider
     {
     public:
-        virtual uint32_t getCount1(sqlite3_stmt&)
+        virtual uint32_t getCount1(MultipleParamsTable::Row&)
         {
             return MULTIPLE_PARAMS_COUNT1;
         }
 
-        virtual uint32_t getCount2(sqlite3_stmt&)
+        virtual uint32_t getCount2(MultipleParamsTable::Row&)
         {
             return MULTIPLE_PARAMS_COUNT2;
         }
 
-        virtual uint32_t getCount(sqlite3_stmt&)
+        virtual uint32_t getCount(MultipleParamsTable::Row&)
         {
             return MULTIPLE_PARAMS_COUNT;
         }
@@ -147,13 +146,16 @@ TEST_F(MultipleExplicitParamsTest, readWithoutCondition)
 {
     MultipleParamsTable& multipleParamsTable = m_database->getMultipleParamsTable();
 
-    std::vector<MultipleParamsTableRow> writtenRows;
-    fillMultipleParamsTableRows(writtenRows);
-    multipleParamsTable.write(writtenRows);
-
     MultipleParamsTableParameterProvider parameterProvider;
-    std::vector<MultipleParamsTableRow> readRows;
-    multipleParamsTable.read(parameterProvider, readRows);
+    std::vector<MultipleParamsTable::Row> writtenRows;
+    fillMultipleParamsTableRows(writtenRows);
+    multipleParamsTable.write(parameterProvider, writtenRows);
+
+    MultipleParamsTable::Reader reader = multipleParamsTable.createReader(parameterProvider);
+
+    std::vector<MultipleParamsTable::Row> readRows;
+    while (reader.hasNext())
+        readRows.push_back(reader.next());
     checkMultipleParamsTableRows(writtenRows, readRows);
 }
 
@@ -161,40 +163,42 @@ TEST_F(MultipleExplicitParamsTest, readWithCondition)
 {
     MultipleParamsTable& multipleParamsTable = m_database->getMultipleParamsTable();
 
-    std::vector<MultipleParamsTableRow> writtenRows;
-    fillMultipleParamsTableRows(writtenRows);
-    multipleParamsTable.write(writtenRows);
-
     MultipleParamsTableParameterProvider parameterProvider;
+    std::vector<MultipleParamsTable::Row> writtenRows;
+    fillMultipleParamsTableRows(writtenRows);
+    multipleParamsTable.write(parameterProvider, writtenRows);
+
     const std::string condition = "name='Name1'";
-    std::vector<MultipleParamsTableRow> readRows;
-    multipleParamsTable.read(parameterProvider, condition, readRows);
-    ASSERT_EQ(1, readRows.size());
+    MultipleParamsTable::Reader reader = multipleParamsTable.createReader(parameterProvider, condition);
+
+    ASSERT_TRUE(reader.hasNext());
+    MultipleParamsTable::Row readRow = reader.next();
+    ASSERT_FALSE(reader.hasNext());
 
     const size_t expectedRowNum = 1;
-    checkMultipleParamsTableRow(writtenRows[expectedRowNum], readRows[0]);
+    checkMultipleParamsTableRow(writtenRows[expectedRowNum], readRow);
 }
 
 TEST_F(MultipleExplicitParamsTest, update)
 {
     MultipleParamsTable& multipleParamsTable = m_database->getMultipleParamsTable();
 
-    std::vector<MultipleParamsTableRow> writtenRows;
+    MultipleParamsTableParameterProvider parameterProvider;
+    std::vector<MultipleParamsTable::Row> writtenRows;
     fillMultipleParamsTableRows(writtenRows);
-    multipleParamsTable.write(writtenRows);
+    multipleParamsTable.write(parameterProvider, writtenRows);
 
     const uint64_t updateRowId = 3;
-    MultipleParamsTableRow updateRow;
+    MultipleParamsTable::Row updateRow;
     fillMultipleParamsTableRow(updateRow, updateRowId, "UpdatedName");
     const std::string updateCondition = "id=" + zserio::convertToString(updateRowId);
-    multipleParamsTable.update(updateRow, updateCondition);
+    multipleParamsTable.update(parameterProvider, updateRow, updateCondition);
 
-    MultipleParamsTableParameterProvider parameterProvider;
-    std::vector<MultipleParamsTableRow> readRows;
-    multipleParamsTable.read(parameterProvider, updateCondition, readRows);
-    ASSERT_EQ(1, readRows.size());
-
-    checkMultipleParamsTableRow(updateRow, readRows[0]);
+    MultipleParamsTable::Reader reader = multipleParamsTable.createReader(parameterProvider, updateCondition);
+    ASSERT_TRUE(reader.hasNext());
+    MultipleParamsTable::Row readRow = reader.next();
+    ASSERT_FALSE(reader.hasNext());
+    checkMultipleParamsTableRow(updateRow, readRow);
 }
 
 } // namespace multiple_explicit_params

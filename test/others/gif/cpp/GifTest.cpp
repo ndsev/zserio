@@ -29,9 +29,9 @@ protected:
         return result;
     }
 
-    void convertUInt8ArrayToString(const zserio::UInt8Array& array, std::string& outputString)
+    void convertUInt8ArrayToString(const std::vector<uint8_t>& array, std::string& outputString)
     {
-        for (zserio::UInt8Array::const_iterator it = array.begin(); it != array.end(); ++it)
+        for (std::vector<uint8_t>::const_iterator it = array.begin(); it != array.end(); ++it)
             outputString.append(1, static_cast<char>(*it));
     }
 };

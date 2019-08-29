@@ -1,0 +1,4 @@
+// suppress "Member variable 'X' is not initialized in the constructor."
+uninitMemberVar:*/TestBlob.cpp
+uninitMemberVar:*/TestBlob.h
+uninitMemberVar:*/Header.cpp

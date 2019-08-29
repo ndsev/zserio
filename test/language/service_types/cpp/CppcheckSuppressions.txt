@@ -1,0 +1,19 @@
+// suppress "Member variable 'X' is not initialized in the constructor."
+uninitMemberVar:*/complex_types_service/CMYKModel.cpp
+uninitMemberVar:*/complex_types_service/ColorModelChoice.cpp
+uninitMemberVar:*/complex_types_service/ColorModelChoice.h
+uninitMemberVar:*/complex_types_service/LengthResponse.cpp
+uninitMemberVar:*/complex_types_service/RGBModel.cpp
+uninitMemberVar:*/complex_types_service/Request.cpp
+uninitMemberVar:*/complex_types_service/Request.h
+uninitMemberVar:*/complex_types_service/RequestData.cpp
+uninitMemberVar:*/complex_types_service/RequestData.h
+uninitMemberVar:*/complex_types_service/Response.cpp
+uninitMemberVar:*/complex_types_service/Response.h
+uninitMemberVar:*/complex_types_service/ResponseData.cpp
+uninitMemberVar:*/complex_types_service/ResponseData.h
+uninitMemberVar:*/simple_service/Request.cpp
+uninitMemberVar:*/simple_service/Response.cpp
+uninitMemberVar:*/streaming_service/Age.cpp
+uninitMemberVar:*/streaming_service/Num.cpp
+uninitMemberVar:*/streaming_service/User.cpp

@@ -26,11 +26,14 @@ protected:
         ASSERT_EQ(variableBitRangeCheckCompound, readVariableBitRangeCheckCompound);
     }
 
-    static const uint8_t    NUM_BITS = 10;
-
-    static const uint64_t   VARIABLE_BIT_LOWER_BOUND = UINT64_C(0);
-    static const uint64_t   VARIABLE_BIT_UPPER_BOUND = (UINT64_C(1) << NUM_BITS) - 1;
+    static const uint8_t NUM_BITS;
+    static const uint64_t VARIABLE_BIT_LOWER_BOUND;
+    static const uint64_t VARIABLE_BIT_UPPER_BOUND;
 };
+
+const uint8_t VariableBitRangeCheckTest::NUM_BITS = 10;
+const uint64_t VariableBitRangeCheckTest::VARIABLE_BIT_LOWER_BOUND = UINT64_C(0);
+const uint64_t VariableBitRangeCheckTest::VARIABLE_BIT_UPPER_BOUND = (UINT64_C(1) << NUM_BITS) - 1;
 
 TEST_F(VariableBitRangeCheckTest, variableBitLowerBound)
 {

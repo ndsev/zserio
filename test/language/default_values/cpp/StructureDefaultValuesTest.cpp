@@ -21,7 +21,7 @@ TEST(StructureDefaultValuesTest, checkDefaultBoolValue)
 TEST(StructureDefaultValuesTest, checkDefaultBit4Value)
 {
     StructureDefaultValues structureDefaultValues;
-    ASSERT_EQ(0x0F, structureDefaultValues.getBit4Value());
+    ASSERT_EQ(0x0F, *structureDefaultValues.getBit4Value());
 }
 
 TEST(StructureDefaultValuesTest, checkDefaultInt16Value)

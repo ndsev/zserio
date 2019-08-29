@@ -4,6 +4,7 @@
 
 #include "zserio/BitStreamWriter.h"
 #include "zserio/BitStreamReader.h"
+#include "zserio/StringConvertUtil.h"
 
 #include "member_access/access_within_type/Message.h"
 
@@ -32,7 +33,7 @@ protected:
         ASSERT_EQ(expectedVersionValue, message.getHeader().getVersion());
         ASSERT_EQ(numSentences, message.getHeader().getNumSentences());
 
-        const zserio::StringArray& sentences = message.getSentences();
+        const std::vector<std::string>& sentences = message.getSentences();
         ASSERT_EQ(numSentences, sentences.size());
         for (uint16_t i = 0; i < numSentences; ++i)
         {
@@ -48,7 +49,7 @@ protected:
         header.setNumSentences(numSentences);
 
         const uint16_t numStrings = (wrongArrayLength) ? numSentences - 1 : numSentences;
-        zserio::StringArray& sentences = message.getSentences();
+        std::vector<std::string>& sentences = message.getSentences();
         sentences.reserve(numStrings);
         for (uint16_t i = 0; i < numStrings; ++i)
             sentences.push_back(getSentence(i));

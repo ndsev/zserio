@@ -15,29 +15,27 @@
     <#t><@camel_case_to_underscores typeName/>_H
 </#macro>
 
-<#macro include_path packagePath typeName>
+<#macro user_include packagePath typeName>
+    #include <<#t>
     <#list packagePath as namespace>
         <#t>${namespace}/<#rt>
     </#list>
-    <#t>${typeName}
+    <#lt>${typeName}>
 </#macro>
 
-<#macro system_includes includeFiles, autoNewLine>
+<#macro system_includes includeFiles>
     <#list includeFiles as include>
 #include <${include}>
     </#list>
-    <#if includeFiles?has_content && autoNewLine>
-
-    </#if>
 </#macro>
 
-<#macro user_includes includeFiles, autoNewLine>
-    <#list includeFiles as include>
-#include "${include}"
-    </#list>
+<#macro user_includes includeFiles autoNewLine=true>
     <#if includeFiles?has_content && autoNewLine>
 
     </#if>
+    <#list includeFiles as include>
+#include <${include}>
+    </#list>
 </#macro>
 
 <#macro include_guard_begin packagePath typeName>
@@ -50,23 +48,20 @@
 </#macro>
 
 <#macro namespace_begin packagePath>
-    <#list packagePath as namespace>
+    <#if packagePath?has_content>
+
+        <#list packagePath as namespace>
 namespace ${namespace}
 {
-    </#list>
+        </#list>
+    </#if>
 </#macro>
 
 <#macro namespace_end packagePath>
-    <#list packagePath?reverse as namespace>
+    <#if packagePath?has_content>
+
+        <#list packagePath?reverse as namespace>
 } // namespace ${namespace}
-    </#list>
-</#macro>
-
-<#macro anonymous_namespace_begin>
-namespace
-{
-</#macro>
-
-<#macro anonymous_namespace_end>
-} // namespace
+        </#list>
+    </#if>
 </#macro>

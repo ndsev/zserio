@@ -25,9 +25,12 @@ protected:
         ASSERT_EQ(int8RangeCheckCompound, readInt8RangeCheckCompound);
     }
 
-    static const int8_t     INT8_LOWER_BOUND = INT8_C(-128);
-    static const int8_t     INT8_UPPER_BOUND = INT8_C(127);
+    static const int8_t INT8_LOWER_BOUND;
+    static const int8_t INT8_UPPER_BOUND;
 };
+
+const int8_t Int8RangeCheckTest::INT8_LOWER_BOUND = INT8_C(-128);
+const int8_t Int8RangeCheckTest::INT8_UPPER_BOUND = INT8_C(127);
 
 TEST_F(Int8RangeCheckTest, int8LowerBound)
 {

@@ -4,48 +4,78 @@ import java.math.BigInteger;
 import zserio.ast.PackageName;
 import zserio.emit.common.ZserioEmitException;
 
-public abstract class NativeIntegralType extends CppNativeType
+public class NativeIntegralType extends CppNativeType
 {
-    public NativeIntegralType(PackageName packageName, String name, String includeFileName)
+    public NativeIntegralType(int numBits, boolean isSigned)
     {
-        super(packageName, name, true);
-        if (includeFileName != null)
-            addSystemIncludeFile(includeFileName);
+        super(PackageName.EMPTY, getCppTypeName(numBits, isSigned));
+        addSystemIncludeFile(STDINT_INCLUDE);
+
+        this.numBits = numBits;
+        this.isSigned = isSigned;
+        if (isSigned)
+        {
+            lowerBound = BigInteger.ONE.shiftLeft(numBits - 1).negate();
+            upperBound = BigInteger.ONE.shiftLeft(numBits - 1).subtract(BigInteger.ONE);
+        }
+        else
+        {
+            lowerBound = BigInteger.ZERO;
+            upperBound = BigInteger.ONE.shiftLeft(numBits).subtract(BigInteger.ONE);
+        }
     }
 
-    public NativeIntegralType(PackageName packageName, String name)
+    public BigInteger getLowerBound()
     {
-        this(packageName, name, null);
+        return lowerBound;
     }
 
-    /**
-     * A simplified version of formatLiteral() that accepts a BigInteger value.
-     *
-     * @param value Value to format.
-     * @return String representing a native literal for the value.
-     */
+    public BigInteger getUpperBound()
+    {
+        return upperBound;
+    }
+
     public String formatLiteral(BigInteger value) throws ZserioEmitException
     {
         checkRange(value);
-        return formatLiteral(value.toString());
+
+        // TODO Not to compare strings. The same implementation is in formatting policy.
+        final String stringValue = value.toString();
+
+        // Special work around for INT64_MIN: this literal can't be written as a single number without a warning
+        if (stringValue.equals(INT64_MIN))
+            return "INT64_MIN";
+
+        // ... and another special case: on 32 bit machines INT32_C(-2147483648) fails
+        // (it evaluates to 2147483648, at least with gcc 4.4.3)
+        if (stringValue.equals(INT32_MIN) && numBits <= 32)
+            return "INT32_MIN";
+
+        // use stdint.h's (U)INTn_C() macro
+        final StringBuilder sb = new StringBuilder();
+
+        if (!isSigned)
+            sb.append('U');
+        sb.append("INT");
+        sb.append(numBits);
+        sb.append("_C(");
+        sb.append(stringValue);
+        sb.append(')');
+        return sb.toString();
     }
 
-    public abstract BigInteger getLowerBound();
-    public abstract BigInteger getUpperBound();
-    public abstract boolean isSigned();
-    public abstract int getBitCount();
+    private static String getCppTypeName(int numBits, boolean isSigned)
+    {
+        StringBuilder buffer = new StringBuilder();
 
-    /**
-     * Format a literal for native type using already converted raw number.
-     *
-     * The string can be a C++ hexadecimal- or octal-style string, e.g.:
-     * "0x123" or "0123".
-     *
-     * @param rawValue The formatted number.
-     * @return Valid Java literal for the value.
-     * @throws ZserioEmitException
-     */
-    protected abstract String formatLiteral(String rawValue) throws ZserioEmitException;
+        if (!isSigned)
+            buffer.append('u');
+        buffer.append("int");
+        buffer.append(numBits);
+        buffer.append("_t");
+
+        return buffer.toString();
+    }
 
     private void checkRange(BigInteger value) throws ZserioEmitException
     {
@@ -55,4 +85,13 @@ public abstract class NativeIntegralType extends CppNativeType
             throw new ZserioEmitException("Literal " + value + " out of range for native type: " +
                     lowerBound + ".." + upperBound);
     }
+
+    private final int numBits;
+    private final boolean isSigned;
+    private final BigInteger lowerBound;
+    private final BigInteger upperBound;
+
+    private final static String STDINT_INCLUDE = "zserio/Types.h";
+    private final static String INT64_MIN = "-9223372036854775808";
+    private final static String INT32_MIN = "-2147483648";
 }

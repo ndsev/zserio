@@ -42,6 +42,20 @@ TEST_F(BoolParamChoiceTest, bitStreamReaderConstructor)
     ASSERT_EQ(value, boolParamChoice.getBlack());
 }
 
+TEST_F(BoolParamChoiceTest, fieldConstructor)
+{
+    const bool selector = true;
+    const int8_t value = 99;
+    BoolParamChoice boolParamChoice(value);
+    boolParamChoice.initialize(selector);
+    ASSERT_EQ(selector, boolParamChoice.getSelector());
+    ASSERT_EQ(value, boolParamChoice.getBlack());
+
+    BoolParamChoice other(value);
+    other.initialize(selector);
+    ASSERT_EQ(boolParamChoice, other);
+}
+
 TEST_F(BoolParamChoiceTest, copyConstructor)
 {
     const bool selector = true;
@@ -50,12 +64,12 @@ TEST_F(BoolParamChoiceTest, copyConstructor)
     const int8_t value = 99;
     boolParamChoice.setBlack(value);
 
-    const BoolParamChoice boolParamChoiceCopy(boolParamChoice);
+    BoolParamChoice boolParamChoiceCopy(boolParamChoice);
     ASSERT_EQ(selector, boolParamChoiceCopy.getSelector());
     ASSERT_EQ(value, boolParamChoiceCopy.getBlack());
 }
 
-TEST_F(BoolParamChoiceTest, operatorAssignment)
+TEST_F(BoolParamChoiceTest, assignmentOperator)
 {
     const bool selector = false;
     BoolParamChoice boolParamChoice;
@@ -63,9 +77,39 @@ TEST_F(BoolParamChoiceTest, operatorAssignment)
     const int16_t value = 234;
     boolParamChoice.setGrey(value);
 
-    const BoolParamChoice boolParamChoiceCopy = boolParamChoice;
+    BoolParamChoice boolParamChoiceCopy;
+    boolParamChoiceCopy = boolParamChoice;
     ASSERT_EQ(selector, boolParamChoiceCopy.getSelector());
     ASSERT_EQ(value, boolParamChoiceCopy.getGrey());
+}
+
+TEST_F(BoolParamChoiceTest, moveConstructor)
+{
+    const bool selector = true;
+    BoolParamChoice boolParamChoice;
+    boolParamChoice.initialize(selector);
+    const int8_t value = 99;
+    boolParamChoice.setBlack(value);
+
+    // note that it doesn't ensure that move ctor was called
+    const BoolParamChoice boolParamChoiceMoved(std::move(boolParamChoice));
+    ASSERT_EQ(selector, boolParamChoiceMoved.getSelector());
+    ASSERT_EQ(value, boolParamChoiceMoved.getBlack());
+}
+
+TEST_F(BoolParamChoiceTest, moveAssignmentOperator)
+{
+    const bool selector = false;
+    BoolParamChoice boolParamChoice;
+    boolParamChoice.initialize(selector);
+    const int16_t value = 234;
+    boolParamChoice.setGrey(value);
+
+    // note that it doesn't ensure that move ctor was called
+    BoolParamChoice boolParamChoiceMoved;
+    boolParamChoiceMoved = std::move(boolParamChoice);
+    ASSERT_EQ(selector, boolParamChoiceMoved.getSelector());
+    ASSERT_EQ(value, boolParamChoiceMoved.getGrey());
 }
 
 TEST_F(BoolParamChoiceTest, initialize)
@@ -168,15 +212,14 @@ TEST_F(BoolParamChoiceTest, hashCode)
 TEST_F(BoolParamChoiceTest, read)
 {
     const bool selector = true;
-    BoolParamChoice boolParamChoice;
-    boolParamChoice.initialize(selector);
-
     zserio::BitStreamWriter writer;
     const int8_t value = 99;
     writeBoolParamChoiceToByteArray(writer, selector, value);
     size_t writeBufferByteSize;
     const uint8_t* writeBuffer = writer.getWriteBuffer(writeBufferByteSize);
     zserio::BitStreamReader reader(writeBuffer, writeBufferByteSize);
+    BoolParamChoice boolParamChoice;
+    boolParamChoice.initialize(selector);
     boolParamChoice.read(reader);
 
     ASSERT_EQ(selector, boolParamChoice.getSelector());

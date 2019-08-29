@@ -3,10 +3,33 @@
 
 #include "gtest/gtest.h"
 
+namespace
+{
+
+enum class Color : uint8_t
+{
+    NONE = UINT8_C(0),
+    RED = UINT8_C(2),
+    BLUE = UINT8_C(3),
+    BLACK = UINT8_C(7)
+};
+
+class DummyObject
+{
+public:
+    explicit DummyObject(int hashCode) : m_hashCode(hashCode) {}
+    int hashCode() const { return m_hashCode; }
+
+private:
+    int m_hashCode;
+};
+
+} // namespace
+
 namespace zserio
 {
 
-TEST(HashCodeUtilTest, SimpleTypes)
+TEST(HashCodeUtilTest, simpleTypes)
 {
     const int hashSeed = 1;
 
@@ -49,24 +72,69 @@ TEST(HashCodeUtilTest, SimpleTypes)
             calcHashCode(hashSeed, doubleValue));
 }
 
-TEST(HashCodeUtilTest, StringType)
+TEST(HashCodeUtilTest, stringType)
 {
     const int hashSeed = 1;
     const std::string stringValue = "0";
     EXPECT_EQ(HASH_PRIME_NUMBER + '0', calcHashCode(hashSeed, stringValue));
 }
 
-struct DummyObject
-{
-    DummyObject() {}
-    int hashCode() const { return 10; }
-};
-
-TEST(HashCodeUtilTest, ObjectType)
+TEST(HashCodeUtilTest, enumType)
 {
     const int hashSeed = 1;
-    const DummyObject objectValue;
+    EXPECT_EQ(HASH_PRIME_NUMBER + enumToValue(Color::NONE), calcHashCode(hashSeed, Color::NONE));
+    EXPECT_EQ(HASH_PRIME_NUMBER + enumToValue(Color::RED), calcHashCode(hashSeed, Color::RED));
+    EXPECT_EQ(HASH_PRIME_NUMBER + enumToValue(Color::BLUE), calcHashCode(hashSeed, Color::BLUE));
+    EXPECT_EQ(HASH_PRIME_NUMBER + enumToValue(Color::BLACK), calcHashCode(hashSeed, Color::BLACK));
+}
+
+TEST(HashCodeUtilTest, objectType)
+{
+    const int hashSeed = 1;
+    const DummyObject objectValue(10);
     EXPECT_EQ(HASH_PRIME_NUMBER + 10, calcHashCode(hashSeed, objectValue));
+}
+
+TEST(HashCodeUtilTest, simpleOptionalHolderType)
+{
+    const int hashSeed = 1;
+    const OptionalHolder<uint8_t> optionalHolder(3);
+    EXPECT_EQ(HASH_PRIME_NUMBER + 3, calcHashCode(hashSeed, optionalHolder));
+}
+
+TEST(HashCodeUtilTest, objectOptionalHolderType)
+{
+    const int hashSeed = 1;
+    const OptionalHolder<DummyObject> optionalHolder(DummyObject(3));
+    EXPECT_EQ(HASH_PRIME_NUMBER + 3, calcHashCode(hashSeed, optionalHolder));
+}
+
+TEST(HashCodeUtilTest, simpleArrayType)
+{
+    const int hashSeed = 1;
+    const std::vector<uint8_t> array = {3, 7};
+    EXPECT_EQ((HASH_PRIME_NUMBER + 3) * HASH_PRIME_NUMBER + 7, calcHashCode(hashSeed, array));
+}
+
+TEST(HashCodeUtilTest, objectArrayType)
+{
+    const int hashSeed = 1;
+    const std::vector<DummyObject> array = {DummyObject(3), DummyObject(7)};
+    EXPECT_EQ((HASH_PRIME_NUMBER + 3) * HASH_PRIME_NUMBER + 7, calcHashCode(hashSeed, array));
+}
+
+TEST(HashCodeUtilTest, optionalSimpleArrayType)
+{
+    const int hashSeed = 1;
+    const OptionalHolder<std::vector<uint32_t>> optionalArray = {{3, 7}};
+    EXPECT_EQ((HASH_PRIME_NUMBER + 3) * HASH_PRIME_NUMBER + 7, calcHashCode(hashSeed, optionalArray));
+}
+
+TEST(HashCodeUtilTest, optionalObjectArrayType)
+{
+    const int hashSeed = 1;
+    const OptionalHolder<std::vector<DummyObject>> optionalArray = {{DummyObject(3), DummyObject(7)}};
+    EXPECT_EQ((HASH_PRIME_NUMBER + 3) * HASH_PRIME_NUMBER + 7, calcHashCode(hashSeed, optionalArray));
 }
 
 } // namespace zserio

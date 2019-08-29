@@ -12,11 +12,11 @@ zserio_add_library(TARGET member_access_zs
     OUT_DIR ${ZSERIO_GEN_DIR}
     OUT_FILES ${ZSERIO_GENERATED_SOURCES}
     ZSERIO_CORE_DIR ${ZSERIO_JAR_DIR}
-    ZSERIO_OPTIONS -withoutSourcesAmalgamation
+    ZSERIO_OPTIONS -withoutSourcesAmalgamation -cppStandard ${ZSERIO_CPP_STANDARD}
 )
 
 add_test_sources(
-    cpp/AccessWithinTypeTest.cpp
+    ${ZSERIO_CPP_DIR}/AccessWithinTypeTest.cpp
 )
 
 add_test_dependencies(member_access_zs)

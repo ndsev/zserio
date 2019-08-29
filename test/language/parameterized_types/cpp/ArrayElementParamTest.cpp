@@ -16,7 +16,7 @@ protected:
     void fillDatabase(Database& database)
     {
         database.setNumBlocks(NUM_BLOCKS);
-        zserio::ObjectArray<BlockHeader>& headers = database.getHeaders();
+        std::vector<BlockHeader>& headers = database.getHeaders();
         for (uint16_t i = 0; i < NUM_BLOCKS; ++i)
         {
             BlockHeader blockHeader;
@@ -25,11 +25,11 @@ protected:
             headers.push_back(blockHeader);
         }
 
-        zserio::ObjectArray<Block>& blocks = database.getBlocks();
-        for (zserio::ObjectArray<BlockHeader>::iterator it = headers.begin(); it != headers.end(); ++it)
+        std::vector<Block>& blocks = database.getBlocks();
+        for (std::vector<BlockHeader>::iterator it = headers.begin(); it != headers.end(); ++it)
         {
             Block block;
-            zserio::Int64Array& items = block.getItems();
+            std::vector<int64_t>& items = block.getItems();
             const uint16_t numItems = it->getNumItems();
             for (uint16_t j = 0; j < numItems; ++j)
                 items.push_back(j * 2);
@@ -43,7 +43,7 @@ protected:
 
         ASSERT_EQ(numBlocks, reader.readBits(16));
 
-        const zserio::ObjectArray<BlockHeader>& headers = database.getHeaders();
+        const std::vector<BlockHeader>& headers = database.getHeaders();
         uint32_t expectedOffset = FIRST_BYTE_OFFSET;
         for (uint16_t i = 0; i < numBlocks; ++i)
         {
@@ -53,11 +53,11 @@ protected:
             expectedOffset += 8 * numItems;
         }
 
-        const zserio::ObjectArray<Block>& blocks = database.getBlocks();
+        const std::vector<Block>& blocks = database.getBlocks();
         for (uint16_t i = 0; i < numBlocks; ++i)
         {
             const uint16_t numItems = headers.at(i).getNumItems();
-            const zserio::Int64Array& items = blocks.at(i).getItems();
+            const std::vector<int64_t>& items = blocks.at(i).getItems();
             for (uint16_t j = 0; j < numItems; ++j)
                 ASSERT_EQ(items.at(j), reader.readBits64(64));
         }
@@ -71,6 +71,53 @@ private:
 const uint16_t ParameterizedTypesArrayElementParamTest::NUM_BLOCKS = 3;
 const uint32_t ParameterizedTypesArrayElementParamTest::FIRST_BYTE_OFFSET =
         2 + ParameterizedTypesArrayElementParamTest::NUM_BLOCKS * (2 + 4);
+
+TEST_F(ParameterizedTypesArrayElementParamTest, fieldConstructor)
+{
+    Database database;
+    fillDatabase(database);
+    // initialize because Block::operator== touches header parameter (see last assert)
+    database.initializeChildren();
+
+    auto headers = database.getHeaders();
+    auto blocks = database.getBlocks();
+
+    void* headersPtr = headers.data();
+    void* blocksPtr = blocks.data();
+
+    // headers are moved, blocks copied
+    Database newDatabase(database.getNumBlocks(), std::move(headers), blocks);
+    ASSERT_EQ(headersPtr, newDatabase.getHeaders().data());
+    ASSERT_NE(blocksPtr, newDatabase.getBlocks().data());
+    ASSERT_EQ(blocks, newDatabase.getBlocks());
+}
+
+TEST_F(ParameterizedTypesArrayElementParamTest, moveConstructor)
+{
+    Database database;
+    fillDatabase(database);
+
+    void* headersPtr = database.getHeaders().data();
+    void* blocksPtr = database.getBlocks().data();
+
+    Database movedDatabase(std::move(database));
+    ASSERT_EQ(headersPtr, movedDatabase.getHeaders().data());
+    ASSERT_EQ(blocksPtr, movedDatabase.getBlocks().data());
+}
+
+TEST_F(ParameterizedTypesArrayElementParamTest, moveAssignmentOperator)
+{
+    Database database;
+    fillDatabase(database);
+
+    void* headersPtr = database.getHeaders().data();
+    void* blocksPtr = database.getBlocks().data();
+
+    Database movedDatabase;
+    movedDatabase = std::move(database);
+    ASSERT_EQ(headersPtr, movedDatabase.getHeaders().data());
+    ASSERT_EQ(blocksPtr, movedDatabase.getBlocks().data());
+}
 
 TEST_F(ParameterizedTypesArrayElementParamTest, write)
 {

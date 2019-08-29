@@ -48,13 +48,13 @@ namespace
 
 static const char SQLITE3_MEM_DB[] = ":memory:";
 
-TEST(SqliteConnectionTest, CtorEmpty)
+TEST(SqliteConnectionTest, emptyConstructor)
 {
     SqliteConnection db;
     ASSERT_EQ(NULL, db.getConnection());
 }
 
-TEST(SqliteConnectionTest, CtorExternal)
+TEST(SqliteConnectionTest, externalConstuctor)
 {
     sqlite3 *externalConnection = NULL;
     int result = sqlite3_open(SQLITE3_MEM_DB, &externalConnection);
@@ -72,7 +72,7 @@ TEST(SqliteConnectionTest, CtorExternal)
     ASSERT_EQ(SQLITE_OK, sqlite3_shutdown());
 }
 
-TEST(SqliteConnectionTest, CtorInternal)
+TEST(SqliteConnectionTest, internalConstructor)
 {
     sqlite3* internalConnection = NULL;
     int result = sqlite3_open(SQLITE3_MEM_DB, &internalConnection);
@@ -90,7 +90,7 @@ TEST(SqliteConnectionTest, CtorInternal)
     ASSERT_EQ(SQLITE_OK, sqlite3_shutdown());
 }
 
-TEST(SqliteConnectionTest, CtorDefaultInternal)
+TEST(SqliteConnectionTest, defaultInternalConstructor)
 {
     sqlite3* internalConnection = NULL;
     int result = sqlite3_open(SQLITE3_MEM_DB, &internalConnection);
@@ -106,7 +106,7 @@ TEST(SqliteConnectionTest, CtorDefaultInternal)
     ASSERT_EQ(SQLITE_OK, sqlite3_shutdown());
 }
 
-TEST(SqliteConnectionTest, ResetExternal)
+TEST(SqliteConnectionTest, resetExternal)
 {
     sqlite3 *externalConnection = NULL;
     int result = sqlite3_open(SQLITE3_MEM_DB, &externalConnection);
@@ -126,7 +126,7 @@ TEST(SqliteConnectionTest, ResetExternal)
     ASSERT_EQ(SQLITE_OK, sqlite3_shutdown());
 }
 
-TEST(SqliteConnectionTest, ResetInternal)
+TEST(SqliteConnectionTest, resetInternal)
 {
     sqlite3* internalConnection = NULL;
     int result = sqlite3_open(SQLITE3_MEM_DB, &internalConnection);
@@ -143,7 +143,7 @@ TEST(SqliteConnectionTest, ResetInternal)
     ASSERT_EQ(SQLITE_OK, sqlite3_shutdown());
 }
 
-TEST(SqliteConnectionTest, ResetDefaultInternal)
+TEST(SqliteConnectionTest, resetDefaultInternal)
 {
     sqlite3* internalConnection = NULL;
     int result = sqlite3_open(SQLITE3_MEM_DB, &internalConnection);
@@ -160,7 +160,7 @@ TEST(SqliteConnectionTest, ResetDefaultInternal)
     ASSERT_EQ(SQLITE_OK, sqlite3_shutdown());
 }
 
-TEST(SqliteConnectionTest, DoubleResetExternal)
+TEST(SqliteConnectionTest, doubleResetExternal)
 {
     sqlite3 *externalConnection1 = NULL;
     int result = sqlite3_open(SQLITE3_MEM_DB, &externalConnection1);
@@ -190,7 +190,7 @@ TEST(SqliteConnectionTest, DoubleResetExternal)
     ASSERT_EQ(SQLITE_OK, sqlite3_shutdown());
 }
 
-TEST(SqliteConnectionTest, DoubleResetInternal)
+TEST(SqliteConnectionTest, doubleResetInternal)
 {
     sqlite3 *internalConnection1 = NULL;
     int result = sqlite3_open(SQLITE3_MEM_DB, &internalConnection1);
@@ -214,7 +214,7 @@ TEST(SqliteConnectionTest, DoubleResetInternal)
     ASSERT_EQ(SQLITE_OK, sqlite3_shutdown());
 }
 
-TEST(SqliteConnectionTest, GetConnection)
+TEST(SqliteConnectionTest, getConnection)
 {
     sqlite3 *internalConnection = NULL;
     int result = sqlite3_open(SQLITE3_MEM_DB, &internalConnection);
@@ -229,7 +229,7 @@ TEST(SqliteConnectionTest, GetConnection)
     ASSERT_EQ(SQLITE_OK, sqlite3_shutdown());
 }
 
-TEST(SqliteConnectionTest, GetConnectionType)
+TEST(SqliteConnectionTest, getConnectionType)
 {
     sqlite3 *internalConnection = NULL;
     int result = sqlite3_open(SQLITE3_MEM_DB, &internalConnection);
@@ -246,7 +246,7 @@ TEST(SqliteConnectionTest, GetConnectionType)
     ASSERT_EQ(SqliteConnection::EXTERNAL_CONNECTION, db.getConnectionType());
 }
 
-TEST(SqliteConnectionTest, Reset)
+TEST(SqliteConnectionTest, reset)
 {
     sqlite3 *internalConnection = NULL;
     int result = sqlite3_open(SQLITE3_MEM_DB, &internalConnection);
@@ -262,7 +262,7 @@ TEST(SqliteConnectionTest, Reset)
     ASSERT_EQ(SQLITE_OK, sqlite3_shutdown());
 }
 
-TEST(SqliteConnectionTest, ExecuteUpdate)
+TEST(SqliteConnectionTest, executeUpdate)
 {
     sqlite3 *internalConnection = NULL;
     int result = sqlite3_open(SQLITE3_MEM_DB, &internalConnection);
@@ -287,7 +287,7 @@ TEST(SqliteConnectionTest, ExecuteUpdate)
     ASSERT_EQ(SQLITE_OK, sqlite3_shutdown());
 }
 
-TEST(SqliteConnectionTest, ExecuteUpdateOnReadOnlyDatabase)
+TEST(SqliteConnectionTest, executeUpdateOnReadOnlyDatabase)
 {
     sqlite3 *internalConnection = NULL;
     int result = sqlite3_open_v2(SQLITE3_MEM_DB, &internalConnection, SQLITE_OPEN_READONLY, NULL);
@@ -298,7 +298,7 @@ TEST(SqliteConnectionTest, ExecuteUpdateOnReadOnlyDatabase)
     ASSERT_THROW(db.executeUpdate("CREATE TABLE Foo AS SELECT 1"), SqliteException);
 }
 
-TEST(SqliteConnectionTest, PrepareStatement)
+TEST(SqliteConnectionTest, prepareStatement)
 {
     sqlite3 *internalConnection = NULL;
     int result = sqlite3_open(SQLITE3_MEM_DB, &internalConnection);

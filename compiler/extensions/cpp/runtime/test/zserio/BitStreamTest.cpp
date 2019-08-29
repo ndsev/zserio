@@ -20,8 +20,8 @@ public:
     }
 
 protected:
-    template<typename T, size_t N, typename U>
-    void BitStreamValuesTest(T (&values)[N], void (BitStreamWriter::*writerMethod)(U value),
+    template <typename T, size_t N, typename U>
+    void testBitStreamValues(const T (&values)[N], void (BitStreamWriter::*writerMethod)(U value),
                              T (BitStreamReader::*readerMethod)())
     {
         for (size_t i = 0; i < N; ++i)
@@ -38,14 +38,14 @@ protected:
     static const size_t bufferSize = 256;
 
 private:
-    uint8_t         m_byteBuffer[bufferSize];
+    uint8_t m_byteBuffer[bufferSize];
 
 protected:
     BitStreamWriter m_writer;
     BitStreamReader m_reader;
 };
 
-TEST_F(BitStreamTest, Bits)
+TEST_F(BitStreamTest, readBits)
 {
     m_writer.writeBits(1, 1);
     m_writer.writeBits(2, 2);
@@ -60,7 +60,7 @@ TEST_F(BitStreamTest, Bits)
     ASSERT_EQ(7, m_reader.readBits(3));
 }
 
-TEST_F(BitStreamTest, Bits64)
+TEST_F(BitStreamTest, readBits64)
 {
     m_writer.writeBits(1, 1);
     m_writer.writeBits64(UINT64_C(42424242424242), 48);
@@ -71,7 +71,7 @@ TEST_F(BitStreamTest, Bits64)
     ASSERT_EQ(UINT64_C(0xFFFFFFFFFFFFFFFE), m_reader.readBits64(64));
 }
 
-TEST_F(BitStreamTest, SignedBits)
+TEST_F(BitStreamTest, readSignedBits)
 {
     m_writer.writeSignedBits(-1, 5);
     m_writer.writeSignedBits(3, 12);
@@ -82,7 +82,7 @@ TEST_F(BitStreamTest, SignedBits)
     ASSERT_EQ(-142, m_reader.readSignedBits(9));
 }
 
-TEST_F(BitStreamTest, SignedBits64)
+TEST_F(BitStreamTest, readSignedBits64)
 {
     m_writer.writeSignedBits64(INT64_C(1), 4);
     m_writer.writeSignedBits64(INT64_C(-1), 48);
@@ -95,7 +95,7 @@ TEST_F(BitStreamTest, SignedBits64)
     ASSERT_EQ(INT64_C(-820816), m_reader.readSignedBits64(32));
 }
 
-TEST_F(BitStreamTest, AlignedBytes)
+TEST_F(BitStreamTest, alignedBytes)
 {
     // reads aligned data directly from buffer, bit cache should remain empty
     m_writer.writeBits(UINT8_C(0xCA), 8);
@@ -117,9 +117,9 @@ TEST_F(BitStreamTest, AlignedBytes)
     ASSERT_EQ(UINT64_C(0xCAFEC0DEDEADFACE), m_reader.readBits64(64));
 }
 
-TEST_F(BitStreamTest, VarInt64)
+TEST_F(BitStreamTest, readVarInt64)
 {
-    int64_t values[] =
+    const int64_t values[] =
     {
         0,
         -262144,
@@ -149,12 +149,13 @@ TEST_F(BitStreamTest, VarInt64)
         ( INT64_C(1) << (6+7+7+7 +7+7+7 ) ),
         ( INT64_C(1) << (6+7+7+7 +7+7+7+8 ) ) - 1
     };
-    BitStreamValuesTest(values, &BitStreamWriter::writeVarInt64, &BitStreamReader::readVarInt64);
+
+    testBitStreamValues(values, &BitStreamWriter::writeVarInt64, &BitStreamReader::readVarInt64);
 }
 
-TEST_F(BitStreamTest, VarInt32)
+TEST_F(BitStreamTest, readVarInt32)
 {
-    int32_t values[] =
+    const int32_t values[] =
     {
         0,
         -65536,
@@ -172,12 +173,13 @@ TEST_F(BitStreamTest, VarInt32)
         ( INT32_C(1) << ( 6+7+7 ) ),
         ( INT32_C(1) << ( 6+7+7+8 ) ) - 1,
     };
-    BitStreamValuesTest(values, &BitStreamWriter::writeVarInt32, &BitStreamReader::readVarInt32);
+
+    testBitStreamValues(values, &BitStreamWriter::writeVarInt32, &BitStreamReader::readVarInt32);
 }
 
-TEST_F(BitStreamTest, VarInt16)
+TEST_F(BitStreamTest, readVarInt16)
 {
-    int16_t values[] =
+    const int16_t values[] =
     {
         0,
         -8192,
@@ -189,12 +191,13 @@ TEST_F(BitStreamTest, VarInt16)
         ( INT16_C(1) << ( 6 ) ),
         ( INT16_C(1) << ( 6+8 ) ) - 1,
     };
-    BitStreamValuesTest(values, &BitStreamWriter::writeVarInt16, &BitStreamReader::readVarInt16);
+
+    testBitStreamValues(values, &BitStreamWriter::writeVarInt16, &BitStreamReader::readVarInt16);
 }
 
-TEST_F(BitStreamTest, VarUInt64)
+TEST_F(BitStreamTest, readVarUInt64)
 {
-    uint64_t values[] =
+    const uint64_t values[] =
     {
         0,
         262144,
@@ -224,12 +227,13 @@ TEST_F(BitStreamTest, VarUInt64)
         ( UINT64_C(1) << ( 7+7+7+7 +7+7+7 ) ),
         ( UINT64_C(1) << ( 7+7+7+7 +7+7+7+8 ) ) - 1,
     };
-    BitStreamValuesTest(values, &BitStreamWriter::writeVarUInt64, &BitStreamReader::readVarUInt64);
+
+    testBitStreamValues(values, &BitStreamWriter::writeVarUInt64, &BitStreamReader::readVarUInt64);
 }
 
-TEST_F(BitStreamTest, VarUInt32)
+TEST_F(BitStreamTest, readVarUInt32)
 {
-    uint32_t values[] =
+    const uint32_t values[] =
     {
         0,
         65536,
@@ -247,12 +251,13 @@ TEST_F(BitStreamTest, VarUInt32)
         ( UINT32_C(1) << ( 7+7+7 ) ),
         ( UINT32_C(1) << ( 7+7+7+8 ) ) - 1,
     };
-    BitStreamValuesTest(values, &BitStreamWriter::writeVarUInt32, &BitStreamReader::readVarUInt32);
+
+    testBitStreamValues(values, &BitStreamWriter::writeVarUInt32, &BitStreamReader::readVarUInt32);
 }
 
-TEST_F(BitStreamTest, VarUInt16)
+TEST_F(BitStreamTest, readVarUInt16)
 {
-    uint16_t values[] =
+    const uint16_t values[] =
     {
         0,
         8192,
@@ -264,12 +269,13 @@ TEST_F(BitStreamTest, VarUInt16)
         ( UINT16_C(1) << ( 6 ) ),
         ( UINT16_C(1) << ( 6+8 ) ) - 1,
     };
-    BitStreamValuesTest(values, &BitStreamWriter::writeVarUInt16, &BitStreamReader::readVarUInt16);
+
+    testBitStreamValues(values, &BitStreamWriter::writeVarUInt16, &BitStreamReader::readVarUInt16);
 }
 
-TEST_F(BitStreamTest, VarInt)
+TEST_F(BitStreamTest, readVarInt)
 {
-    int64_t values[] =
+    const int64_t values[] =
     {
         // 1 byte
         0,
@@ -322,82 +328,83 @@ TEST_F(BitStreamTest, VarInt)
         INT64_MIN,
     };
 
-    BitStreamValuesTest(values, &BitStreamWriter::writeVarInt, &BitStreamReader::readVarInt);
+    testBitStreamValues(values, &BitStreamWriter::writeVarInt, &BitStreamReader::readVarInt);
 }
 
-TEST_F(BitStreamTest, VarUInt)
+TEST_F(BitStreamTest, readVarUInt)
 {
-    uint64_t values[] =
+    const uint64_t values[] =
     {
         // 1 byte
         0,
         1,
-        (INT64_C(1) << 7) - 1,
+        (UINT64_C(1) << 7) - 1,
         // 2 bytes
-        (INT64_C(1) << 7),
-        (INT64_C(1) << 14) - 1,
+        (UINT64_C(1) << 7),
+        (UINT64_C(1) << 14) - 1,
         // 3 bytes
-        (INT64_C(1) << 14),
-        (INT64_C(1) << 21) - 1,
+        (UINT64_C(1) << 14),
+        (UINT64_C(1) << 21) - 1,
         // 4 bytes
-        (INT64_C(1) << 21),
-        (INT64_C(1) << 28) - 1,
+        (UINT64_C(1) << 21),
+        (UINT64_C(1) << 28) - 1,
         // 5 bytes
-        (INT64_C(1) << 28),
-        (INT64_C(1) << 35) - 1,
+        (UINT64_C(1) << 28),
+        (UINT64_C(1) << 35) - 1,
         // 6 bytes
-        (INT64_C(1) << 35),
-        (INT64_C(1) << 42) - 1,
+        (UINT64_C(1) << 35),
+        (UINT64_C(1) << 42) - 1,
         // 7 bytes
-        (INT64_C(1) << 42),
-        (INT64_C(1) << 49) - 1,
+        (UINT64_C(1) << 42),
+        (UINT64_C(1) << 49) - 1,
         // 8 bytes
-        (INT64_C(1) << 49),
-        (INT64_C(1) << 56) - 1,
+        (UINT64_C(1) << 49),
+        (UINT64_C(1) << 56) - 1,
         // 9 bytes
-        (INT64_C(1) << 56),
+        (UINT64_C(1) << 56),
         UINT64_MAX
     };
 
-    BitStreamValuesTest(values, &BitStreamWriter::writeVarUInt, &BitStreamReader::readVarUInt);
+    testBitStreamValues(values, &BitStreamWriter::writeVarUInt, &BitStreamReader::readVarUInt);
 }
 
-TEST_F(BitStreamTest, Float16)
+TEST_F(BitStreamTest, readFloat16)
 {
-    float values[] = { 2.0, -2.0, 0.6171875, 0.875, 9.875, 42.5 };
-    BitStreamValuesTest(values, &BitStreamWriter::writeFloat16, &BitStreamReader::readFloat16);
+    const float values[] = { 2.0, -2.0, 0.6171875, 0.875, 9.875, 42.5 };
+    testBitStreamValues(values, &BitStreamWriter::writeFloat16, &BitStreamReader::readFloat16);
 }
 
-TEST_F(BitStreamTest, Float32)
+TEST_F(BitStreamTest, readFloat32)
 {
-    float values[] = { 2.0, -2.0, 0.6171875, 0.875, 9.875, 42.5 };
-    BitStreamValuesTest(values, &BitStreamWriter::writeFloat32, &BitStreamReader::readFloat32);
+    const float values[] = { 2.0, -2.0, 0.6171875, 0.875, 9.875, 42.5 };
+    testBitStreamValues(values, &BitStreamWriter::writeFloat32, &BitStreamReader::readFloat32);
 }
 
-TEST_F(BitStreamTest, Float64)
+TEST_F(BitStreamTest, readFloat64)
 {
-    double values[] = { 2.0, -2.0, 0.6171875, 0.875, 9.875, 42.5 };
-    BitStreamValuesTest(values, &BitStreamWriter::writeFloat64, &BitStreamReader::readFloat64);
+    const double values[] = { 2.0, -2.0, 0.6171875, 0.875, 9.875, 42.5 };
+    testBitStreamValues(values, &BitStreamWriter::writeFloat64, &BitStreamReader::readFloat64);
 }
 
-TEST_F(BitStreamTest, String)
+TEST_F(BitStreamTest, readString)
 {
-    std::string values[] =
+    const std::string values[] =
     {
         "Hello World",
         "\n\t%^@(*aAzZ01234569$%^!?<>[]](){}-=+~:;/|\\\"\'Hello World2\0nonWrittenPart",
         "Price: \xE2\x82\xAC 3 what's this? -> \xC2\xA2" /* '€' '¢' */
     };
-    BitStreamValuesTest(values, &BitStreamWriter::writeString, &BitStreamReader::readString);
+
+    testBitStreamValues(values, &BitStreamWriter::writeString, &BitStreamReader::readString);
 }
 
-TEST_F(BitStreamTest, Bool)
+TEST_F(BitStreamTest, readBool)
 {
-    bool values[] = {true, false};
-    BitStreamValuesTest(values, &BitStreamWriter::writeBool, &BitStreamReader::readBool);
+    const bool values[] = {true, false};
+    testBitStreamValues(values, &BitStreamWriter::writeBool, &BitStreamReader::readBool);
 }
 
-TEST_F(BitStreamTest, SetBitPosition)
+TEST_F(BitStreamTest, setBitPosition)
 {
     ASSERT_EQ(0, m_writer.getBitPosition());
     m_writer.writeBits(1, 1);
@@ -427,7 +434,7 @@ TEST_F(BitStreamTest, SetBitPosition)
     ASSERT_EQ(7, m_reader.getBitPosition());
 }
 
-TEST_F(BitStreamTest, AlignTo)
+TEST_F(BitStreamTest, alignTo)
 {
     m_writer.writeBits(1, 1);
     m_writer.alignTo(4);

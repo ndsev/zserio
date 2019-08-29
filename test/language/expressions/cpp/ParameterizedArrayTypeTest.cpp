@@ -13,7 +13,7 @@ TEST(ParameterizedArrayTypeTest, bitSizeOfWithOptional)
 {
     ParameterizedArrayHolder parameterizedArrayHolder;
     const size_t arrayLength = 2;
-    zserio::ObjectArray<ParameterizedArrayElement> array;
+    std::vector<ParameterizedArrayElement> array;
     array.reserve(arrayLength);
     for (size_t i = 1; i <= arrayLength; ++i)
     {
@@ -36,7 +36,7 @@ TEST(ParameterizedArrayTypeTest, bitSizeOfWithoutOptional)
 {
     ParameterizedArrayHolder parameterizedArrayHolder;
     const size_t arrayLength = 2;
-    zserio::ObjectArray<ParameterizedArrayElement> array;
+    std::vector<ParameterizedArrayElement> array;
     array.reserve(arrayLength);
     for (size_t i = 1; i <= arrayLength; ++i)
     {

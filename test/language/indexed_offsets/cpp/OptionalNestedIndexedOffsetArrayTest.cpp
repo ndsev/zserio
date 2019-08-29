@@ -36,7 +36,7 @@ protected:
                     writer.writeBits(wrongOffset, 32);
                 else
                     writer.writeBits(currentOffset, 32);
-                currentOffset += static_cast<uint32_t>(zserio::getBitSizeOfString(m_data[i]) / 8);
+                currentOffset += static_cast<uint32_t>(zserio::bitSizeOfString(m_data[i]) / 8);
             }
 
             // already aligned
@@ -50,13 +50,13 @@ protected:
     void checkOffsets(const OptionalNestedIndexedOffsetArray& optionalNestedIndexedOffsetArray, uint16_t offsetShift)
     {
         const int16_t length = optionalNestedIndexedOffsetArray.getHeader().getLength();
-        const zserio::UInt32Array& offsets = optionalNestedIndexedOffsetArray.getHeader().getOffsets();
+        const std::vector<uint32_t>& offsets = optionalNestedIndexedOffsetArray.getHeader().getOffsets();
         ASSERT_EQ(length, offsets.size());
         uint32_t expectedOffset = ELEMENT0_OFFSET + offsetShift;
         for (uint8_t i = 0; i < length; ++i)
         {
             ASSERT_EQ(expectedOffset, offsets[i]);
-            expectedOffset += static_cast<uint32_t>(zserio::getBitSizeOfString(m_data[i]) / 8);
+            expectedOffset += static_cast<uint32_t>(zserio::bitSizeOfString(m_data[i]) / 8);
         }
     }
 
@@ -70,7 +70,7 @@ protected:
 
         if (length > 0)
         {
-            const zserio::StringArray& data = optionalNestedIndexedOffsetArray.getData();
+            const std::vector<std::string>& data = *optionalNestedIndexedOffsetArray.getData();
             ASSERT_EQ(length, data.size());
             for (uint8_t i = 0; i < length; ++i)
                 ASSERT_EQ(m_data[i], data[i]);
@@ -85,7 +85,7 @@ protected:
     {
         Header& header = optionalNestedIndexedOffsetArray.getHeader();
         header.setLength(length);
-        zserio::UInt32Array& offsets = header.getOffsets();
+        std::vector<uint32_t>& offsets = header.getOffsets();
         offsets.reserve(length);
         const uint32_t wrongOffset = WRONG_OFFSET;
         uint32_t currentOffset = ELEMENT0_OFFSET;
@@ -95,7 +95,7 @@ protected:
                 offsets.push_back(wrongOffset);
             else
                 offsets.push_back(currentOffset);
-            currentOffset += static_cast<uint32_t>(zserio::getBitSizeOfString(m_data[i]) / 8);
+            currentOffset += static_cast<uint32_t>(zserio::bitSizeOfString(m_data[i]) / 8);
         }
 
         if (length > 0)
@@ -111,7 +111,7 @@ protected:
         {
             // already aligned
             for (short i = 0; i < length; ++i)
-                bitSize += zserio::getBitSizeOfString(m_data[i]);
+                bitSize += zserio::bitSizeOfString(m_data[i]);
         }
         bitSize += 6;
 
@@ -125,7 +125,7 @@ protected:
 
     static const uint8_t    FIELD_VALUE = 63;
 
-    zserio::StringArray m_data;
+    std::vector<std::string> m_data;
 };
 
 TEST_F(OptionalNestedIndexedOffsetArrayTest, readWithOptional)

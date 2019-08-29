@@ -1,0 +1,12 @@
+// suppress "Member variable 'X' is not initialized in the constructor."
+uninitMemberVar:*/AutoIndexedOffsetArray.cpp
+uninitMemberVar:*/Bit5IndexedOffsetArray.cpp
+uninitMemberVar:*/BoolIndexedOffsetArray.cpp
+uninitMemberVar:*/Compound.cpp
+uninitMemberVar:*/CompoundIndexedOffsetArray.cpp
+uninitMemberVar:*/EmptyIndexedOffsetArray.cpp
+uninitMemberVar:*/Header.cpp
+uninitMemberVar:*/Int14IndexedOffsetArray.cpp
+uninitMemberVar:*/OptionalIndexedOffsetArray.cpp
+uninitMemberVar:*/OptionalNestedIndexedOffsetArray.cpp
+uninitMemberVar:*/VarInt32IndexedOffsetArray.cpp

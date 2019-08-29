@@ -17,7 +17,7 @@ protected:
     {
         autoArrayRecursion.setId(0);
 
-        zserio::ObjectArray<AutoArrayRecursion>& autoArray = autoArrayRecursion.getAutoArrayRecursion();
+        std::vector<AutoArrayRecursion>& autoArray = autoArrayRecursion.getAutoArrayRecursion();
         for (size_t i = 1; i <= numElements; ++i)
         {
             AutoArrayRecursion element;
@@ -45,7 +45,7 @@ protected:
     void checkAutoArrayRecursion(const AutoArrayRecursion& autoArrayRecursion, size_t numElements)
     {
         ASSERT_EQ(0, autoArrayRecursion.getId());
-        const zserio::ObjectArray<AutoArrayRecursion>& autoArray = autoArrayRecursion.getAutoArrayRecursion();
+        const std::vector<AutoArrayRecursion>& autoArray = autoArrayRecursion.getAutoArrayRecursion();
         ASSERT_EQ(numElements, autoArray.size());
         for (size_t i = 1; i <= numElements; ++i)
         {

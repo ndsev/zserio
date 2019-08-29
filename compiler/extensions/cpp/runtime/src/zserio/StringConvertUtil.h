@@ -7,7 +7,16 @@
 namespace zserio
 {
 
-template<typename T>
+/**
+ * Utilities for conversion of a given value to string.
+ *
+ * \param value Value to convert.
+ *
+ * \return String representation of the given value.
+ *
+ * \{
+ */
+template <typename T>
 std::string convertToString(T value)
 {
     std::stringstream stream;
@@ -16,23 +25,24 @@ std::string convertToString(T value)
     return stream.str();
 }
 
-template<>
+template <>
 std::string convertToString<bool>(bool value);
 
-template<>
+template <>
 std::string convertToString<char>(char value);
 
-template<>
+template <>
 std::string convertToString<signed char>(signed char value);
 
-template<>
+template <>
 std::string convertToString<unsigned char>(unsigned char value);
 
-template<>
+template <>
 std::string convertToString<unsigned int>(unsigned int value);
 
-template<>
+template <>
 std::string convertToString<int>(int value);
+/** \} */
 
 } // namespace zserio
 

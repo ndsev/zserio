@@ -4,7 +4,6 @@
 
 #include "zserio/BitStreamWriter.h"
 #include "zserio/BitStreamReader.h"
-#include "zserio/ObjectArray.h"
 
 #include "functions/structure_array_param/ChildStructure.h"
 #include "functions/structure_array_param/ParentStructure.h"
@@ -29,7 +28,7 @@ protected:
     {
         parentStructure.setNumChildren(NUM_CHILDREN);
 
-        zserio::ObjectArray<ChildStructure>& children = parentStructure.getChildren();
+        std::vector<ChildStructure>& children = parentStructure.getChildren();
         for (uint8_t i = 0; i < NUM_CHILDREN; ++i)
         {
             ChildStructure child;

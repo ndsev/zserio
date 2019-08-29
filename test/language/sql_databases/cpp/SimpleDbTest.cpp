@@ -131,10 +131,9 @@ TEST_F(SimpleDbTest, databaseName)
     ASSERT_EQ(m_worldDbName, WorldDb::databaseName());
 }
 
-TEST_F(SimpleDbTest, fillTableNames)
+TEST_F(SimpleDbTest, tableNames)
 {
-    std::vector<std::string> tableNames;
-    WorldDb::fillTableNames(tableNames);
+    std::vector<std::string> tableNames(WorldDb::tableNames().begin(), WorldDb::tableNames().end());
 
     std::vector<std::string> expectedTableNames;
     expectedTableNames.push_back(m_europeTableName);

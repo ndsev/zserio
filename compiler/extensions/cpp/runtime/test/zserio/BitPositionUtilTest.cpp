@@ -6,7 +6,7 @@
 namespace zserio
 {
 
-TEST(BitPositionUtilTest, AlignTo)
+TEST(BitPositionUtilTest, alignTo)
 {
     const size_t bitPosition = 5;
     EXPECT_EQ(5, alignTo(0, bitPosition));
@@ -20,7 +20,7 @@ TEST(BitPositionUtilTest, AlignTo)
     EXPECT_EQ(8, alignTo(8, bitPosition));
 }
 
-TEST(BitPositionUtilTest, BitsToBytes)
+TEST(BitPositionUtilTest, bitsToBytes)
 {
     EXPECT_EQ(0, bitsToBytes(0));
     EXPECT_EQ(1, bitsToBytes(8));
@@ -28,7 +28,7 @@ TEST(BitPositionUtilTest, BitsToBytes)
     EXPECT_EQ(2, bitsToBytes(16));
 }
 
-TEST(BitPositionUtilTest, BytesToBits)
+TEST(BitPositionUtilTest, bytesToBits)
 {
     EXPECT_EQ(0, bytesToBits(0));
     EXPECT_EQ(8, bytesToBits(1));

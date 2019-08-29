@@ -7,56 +7,6 @@
 namespace zserio
 {
 
-TEST(AnyHolderTest, CopyConstructor)
-{
-    AnyHolder any;
-    const int intValue = 0xDEAD;
-    any.set(intValue);
-
-    AnyHolder anyCopy(any);
-    EXPECT_EQ(intValue, anyCopy.get<int>());
-    EXPECT_THROW(anyCopy.get<float>(), CppRuntimeException);
-}
-
-TEST(AnyHolderTest, AssignmentOperator)
-{
-    AnyHolder any;
-    const int intValue = 0xDEAD;
-    any.set(intValue);
-
-    AnyHolder anyCopy = any;
-    EXPECT_EQ(intValue, anyCopy.get<int>());
-    EXPECT_THROW(anyCopy.get<float>(), CppRuntimeException);
-}
-
-TEST(AnyHolderTest, EqualOperator)
-{
-    AnyHolder any1;
-    const int intValue1 = 0xDEAD;
-    any1.set(intValue1);
-
-    AnyHolder any2;
-    const int intValue2 = 0xDEAD;
-    any2.set(intValue2);
-
-    AnyHolder any3;
-    const int intValue3 = 0xBEEF;
-    any3.set(intValue3);
-
-    AnyHolder any4;
-    const float floatValue = 10.0;
-    any4.set(floatValue);
-
-    AnyHolder any5;
-    AnyHolder any6;
-
-    EXPECT_TRUE(any1 == any2);
-    EXPECT_FALSE(any1 == any3);
-    EXPECT_FALSE(any1 == any4);
-    EXPECT_FALSE(any1 == any5);
-    EXPECT_TRUE(any5 == any6);
-}
-
 class DummyObject
 {
 public:
@@ -64,96 +14,259 @@ public:
     int getValue() const { return m_value; }
     void setValue(int value) { m_value = value; }
 
-    int hashCode() const { return 10; }
     bool operator==(const DummyObject& other) const { return m_value == other.m_value; }
 
 private:
     int m_value;
 };
 
-TEST(AnyHolderTest, UnitializedGet)
+TEST(AnyHolderTest, emptyConstructor)
+{
+    AnyHolder any;
+    ASSERT_FALSE(any.hasValue());
+}
+
+TEST(AnyHolderTest, lvalueConstructor)
+{
+    std::vector<int> values{1, 2, 3};
+    void* origAddress = &values[0];
+
+    AnyHolder any{values};
+
+    const std::vector<int>& anyValues = any.get<std::vector<int>>();
+    ASSERT_NE(origAddress, &anyValues[0]);
+    ASSERT_EQ(values, anyValues);
+}
+
+TEST(AnyHolderTest, rvalueConstructor)
+{
+    std::vector<int> values{1, 2, 3};
+    std::vector<int> origValues{values};
+    void* origAddress = &values[0];
+
+    AnyHolder any{std::move(values)};
+
+    const std::vector<int>& anyValues = any.get<std::vector<int>>();
+    ASSERT_EQ(origAddress, &anyValues[0]);
+    ASSERT_EQ(origValues, anyValues);
+}
+
+TEST(AnyHolderTest, copyConstructor)
+{
+    AnyHolder any;
+    const int intValue = 0xDEAD;
+    any.set(intValue);
+
+    AnyHolder anyCopy(any);
+    ASSERT_EQ(intValue, anyCopy.get<int>());
+    ASSERT_THROW(anyCopy.get<float>(), CppRuntimeException);
+
+    // check that vector is not moved to copiedAny
+    std::vector<int> values{1, 2, 3};
+    std::vector<int> origValues{values};
+    void* origAddress = &values[0];
+    any = std::move(values);
+    std::vector<int>& anyValues = any.get<std::vector<int>>();
+    ASSERT_EQ(origAddress, &anyValues[0]);
+
+    AnyHolder copiedAny{any};
+
+    const std::vector<int>& copiedAnyValues = copiedAny.get<std::vector<int>>();
+    ASSERT_NE(origAddress, &copiedAnyValues[0]);
+    ASSERT_EQ(origValues, copiedAnyValues);
+}
+
+TEST(AnyHolderTest, copyAssignmentOperator)
+{
+    AnyHolder any;
+    const int intValue = 0xDEAD;
+    any.set(intValue);
+
+    AnyHolder anyCopy = any;
+    ASSERT_EQ(intValue, anyCopy.get<int>());
+    ASSERT_THROW(anyCopy.get<float>(), CppRuntimeException);
+
+    // check that vector is not moved to copiedAny
+    std::vector<int> values{1, 2, 3};
+    std::vector<int> origValues{values};
+    void* origAddress = &values[0];
+    any = std::move(values);
+    std::vector<int>& anyValues = any.get<std::vector<int>>();
+    ASSERT_EQ(origAddress, &anyValues[0]);
+
+    AnyHolder copiedAny;
+    copiedAny = any;
+
+    const std::vector<int>& copiedAnyValues = copiedAny.get<std::vector<int>>();
+    ASSERT_NE(origAddress, &copiedAnyValues[0]);
+    ASSERT_EQ(origValues, copiedAnyValues);
+}
+
+TEST(AnyHolderTest, moveConstructorValueOnHeap)
+{
+    std::vector<int> values{1, 2, 3};
+    std::vector<int> origValues{values};
+    void* origAddress = &values[0];
+    AnyHolder any{std::move(values)};
+
+    AnyHolder movedAny{std::move(any)};
+    ASSERT_TRUE(movedAny.isType<std::vector<int>>());
+
+    const std::vector<int>& movedAnyValues = movedAny.get<std::vector<int>>();
+    ASSERT_EQ(origAddress, &movedAnyValues[0]);
+    ASSERT_EQ(origValues, movedAnyValues);
+}
+
+TEST(AnyHolderTest, moveConstructorValueInPlace)
+{
+    uint32_t value = 10;
+    AnyHolder any(value);
+
+    AnyHolder movedAny{std::move(any)};
+    ASSERT_TRUE(movedAny.isType<uint32_t>());
+    uint32_t& movedValue = movedAny.get<uint32_t>();
+    ASSERT_EQ(value, movedValue);
+
+    movedValue = 20;
+    AnyHolder otherMoved{std::move(movedAny)};
+    ASSERT_TRUE(otherMoved.isType<uint32_t>());
+    ASSERT_EQ(20, otherMoved.get<uint32_t>());
+}
+
+TEST(AnyHolderTest, moveAssignmentOperatorValueOnHeap)
+{
+    std::vector<int> values{1, 2, 3};
+    std::vector<int> origValues{values};
+    void* origAddress = &values[0];
+    AnyHolder any{std::move(values)};
+
+    AnyHolder movedAny;
+    movedAny = std::move(any);
+
+    const std::vector<int>& movedAnyValues = movedAny.get<std::vector<int>>();
+    ASSERT_EQ(origAddress, &movedAnyValues[0]);
+    ASSERT_EQ(origValues, movedAnyValues);
+}
+
+TEST(AnyHolderTest, moveAssignmentOperatorValueInPlace)
+{
+    uint32_t value = 10;
+    AnyHolder any(value);
+
+    AnyHolder movedAny;
+    movedAny = std::move(any);
+    ASSERT_TRUE(movedAny.isType<uint32_t>());
+    uint32_t& movedValue = movedAny.get<uint32_t>();
+    ASSERT_EQ(value, movedValue);
+
+    movedValue = 20;
+    AnyHolder otherMoved;
+    otherMoved = std::move(movedAny);
+    ASSERT_TRUE(otherMoved.isType<uint32_t>());
+    ASSERT_EQ(20, otherMoved.get<uint32_t>());
+}
+
+TEST(AnyHolderTest, lvalueAssignmentOperator)
+{
+    std::vector<int> values{1, 2, 3};
+    void* origAddress = &values[0];
+    AnyHolder any;
+    any = values;
+
+    const std::vector<int>& anyValues = any.get<std::vector<int>>();
+    ASSERT_NE(origAddress, &anyValues[0]);
+    ASSERT_EQ(values, anyValues);
+}
+
+TEST(AnyHolderTest, rvalueAssignmentOperator)
+{
+    std::vector<int> values{1, 2, 3};
+    std::vector<int> origValues{values};
+    void* origAddress = &values[0];
+    AnyHolder any;
+    any = std::move(values);
+
+    std::vector<int>& anyValues = any.get<std::vector<int>>();
+    ASSERT_EQ(origAddress, &anyValues[0]);
+    ASSERT_EQ(origValues, anyValues);
+}
+
+TEST(AnyHolderTest, reset)
+{
+    AnyHolder any{std::vector<int>{1, 2, 3}};
+    ASSERT_TRUE(any.hasValue());
+    ASSERT_EQ(1, any.get<std::vector<int>>()[0]);
+
+    any.reset();
+    ASSERT_FALSE(any.hasValue());
+
+    any = std::vector<int>{3, 2, 1};
+    ASSERT_TRUE(any.hasValue());
+    ASSERT_EQ(3, any.get<std::vector<int>>()[0]);
+
+    any.reset();
+    ASSERT_FALSE(any.hasValue());
+}
+
+TEST(AnyHolderTest, unitializedGet)
 {
     AnyHolder any;
     ASSERT_THROW(any.get<int>(), zserio::CppRuntimeException);
 }
 
-TEST(AnyHolderTest, SetGet)
+TEST(AnyHolderTest, setGet)
 {
     AnyHolder any;
 
     const int intValue = 0xDEAD;
     any.set(intValue);
-    EXPECT_EQ(intValue, any.get<int>());
-    EXPECT_THROW(any.get<float>(), CppRuntimeException);
+    ASSERT_EQ(intValue, any.get<int>());
+    ASSERT_THROW(any.get<float>(), CppRuntimeException);
 
     const float floatValue = 3.14f;
     any.set(floatValue);
-    EXPECT_THROW(any.get<int>(), CppRuntimeException);
-    EXPECT_EQ(floatValue, any.get<float>());
+    ASSERT_THROW(any.get<int>(), CppRuntimeException);
+    ASSERT_EQ(floatValue, any.get<float>());
 
     DummyObject objectValue;
     objectValue.setValue(0xDEAD);
     any.set(objectValue);
-    EXPECT_THROW(any.get<float>(), CppRuntimeException);
+    ASSERT_THROW(any.get<float>(), CppRuntimeException);
     const DummyObject& readObjectValueConst = any.get<DummyObject>();
-    EXPECT_EQ(objectValue.getValue(), readObjectValueConst.getValue());
+    ASSERT_EQ(objectValue.getValue(), readObjectValueConst.getValue());
     DummyObject& readObjectValue = any.get<DummyObject>();
-    EXPECT_EQ(objectValue.getValue(), readObjectValue.getValue());
+    ASSERT_EQ(objectValue.getValue(), readObjectValue.getValue());
 }
 
-TEST(AnyHolderTest, PointerSetGet)
+TEST(AnyHolderTest, isType)
 {
     AnyHolder any;
-
-    const int intValue = 0xDEAD;
-    any.reset(new (any.getResetStorage<int>()) int(intValue));
-    EXPECT_EQ(intValue, any.get<int>());
-    EXPECT_THROW(any.get<float>(), CppRuntimeException);
-
-    const float floatValue = 3.14f;
-    any.reset(new (any.getResetStorage<float>()) float(floatValue));
-    EXPECT_THROW(any.get<int>(), CppRuntimeException);
-    EXPECT_EQ(floatValue, any.get<float>());
-
-    DummyObject objectValue;
-    objectValue.setValue(0xDEAD);
-    any.reset(new (any.getResetStorage<DummyObject>()) DummyObject(objectValue));
-    EXPECT_THROW(any.get<float>(), CppRuntimeException);
-    const DummyObject& readObjectValueConst = any.get<DummyObject>();
-    EXPECT_EQ(objectValue.getValue(), readObjectValueConst.getValue());
-    DummyObject& readObjectValue = any.get<DummyObject>();
-    EXPECT_EQ(objectValue.getValue(), readObjectValue.getValue());
-}
-
-TEST(AnyHolderTest, IsType)
-{
-    AnyHolder any;
-    EXPECT_FALSE(any.isType<int>());
+    ASSERT_FALSE(any.isType<int>());
 
     const int intValue = 0xDEAD;
     any.set(intValue);
-    EXPECT_TRUE(any.isType<int>());
+    ASSERT_TRUE(any.isType<int>());
 
     const float floatValue = 3.14f;
     any.set(floatValue);
-    EXPECT_TRUE(any.isType<float>());
-    EXPECT_FALSE(any.isType<int>());
+    ASSERT_TRUE(any.isType<float>());
+    ASSERT_FALSE(any.isType<int>());
 }
 
-TEST(AnyHolderTest, IsSet)
+TEST(AnyHolderTest, hasValue)
 {
     AnyHolder any;
-    EXPECT_FALSE(any.isSet());
+    ASSERT_FALSE(any.hasValue());
 
     const int intValue = 0xDEAD;
     any.set(intValue);
-    EXPECT_TRUE(any.isSet());
+    ASSERT_TRUE(any.hasValue());
 
-    any.reset<int>();
-    EXPECT_FALSE(any.isSet());
+    any.reset();
+    ASSERT_FALSE(any.hasValue());
 }
 
-TEST(AnyHolderTest, ConstGet)
+TEST(AnyHolderTest, constGet)
 {
     AnyHolder any;
 
@@ -161,16 +274,7 @@ TEST(AnyHolderTest, ConstGet)
     any.set(intValue);
 
     const AnyHolder constAny(any);
-    EXPECT_EQ(intValue, constAny.get<int>());
-}
-
-TEST(AnyHolderTest, HashCode)
-{
-    AnyHolder any;
-    const int intValue = 10;
-    EXPECT_EQ(HASH_PRIME_NUMBER * HASH_SEED, any.hashCode());
-    any.set(intValue);
-    EXPECT_EQ(HASH_PRIME_NUMBER * HASH_SEED + intValue, any.hashCode());
+    ASSERT_EQ(intValue, constAny.get<int>());
 }
 
 } // namespace zserio

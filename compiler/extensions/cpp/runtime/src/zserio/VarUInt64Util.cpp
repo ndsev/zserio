@@ -1,8 +1,8 @@
 #include <limits>
 
-#include "CppRuntimeException.h"
-#include "StringConvertUtil.h"
-#include "VarUInt64Util.h"
+#include "zserio/CppRuntimeException.h"
+#include "zserio/StringConvertUtil.h"
+#include "zserio/VarUInt64Util.h"
 
 namespace zserio
 {
@@ -19,9 +19,9 @@ namespace
     }
 }
 
-int convertVarUInt64ToInt(uint64_t value)
+int32_t convertVarUInt64ToInt32(uint64_t value)
 {
-    return convertVarUInt64<int>(value);
+    return convertVarUInt64<int32_t>(value);
 }
 
 size_t convertVarUInt64ToArraySize(uint64_t value)

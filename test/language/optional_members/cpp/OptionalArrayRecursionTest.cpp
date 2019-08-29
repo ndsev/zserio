@@ -25,7 +25,7 @@ protected:
     {
         fillEmployee(teamLead, EMPLOYEE_TEAM_LEAD_NAME, EMPLOYEE_TEAM_LEAD_SALARY, Title::TEAM_LEAD);
 
-        zserio::ObjectArray<Employee> teamMembers;
+        std::vector<Employee> teamMembers;
         Employee teamMember1;
         fillEmployee(teamMember1, EMPLOYEE_DEVELOPER1_NAME, EMPLOYEE_DEVELOPER1_SALARY, Title::DEVELOPER);
         teamMembers.push_back(teamMember1);
@@ -42,7 +42,7 @@ protected:
     {
         ASSERT_EQ(name, reader.readString());
         ASSERT_EQ(salary, reader.readBits(16));
-        ASSERT_EQ(title, reader.readBits(8));
+        ASSERT_EQ(zserio::enumToValue(title), reader.readBits(8));
     }
 
     void checkTeamLeadInBitStream(zserio::BitStreamReader& reader)
@@ -54,6 +54,9 @@ protected:
         checkEmployeeInBitStream(reader, EMPLOYEE_DEVELOPER2_NAME, EMPLOYEE_DEVELOPER2_SALARY,
                 Title::DEVELOPER);
     }
+
+    static const char   EMPTY_EMPLOYEE_NAME[];
+    static uint16_t     EMPTY_EMPLOYEE_SALARY;
 
     static const char   EMPLOYEE_TEAM_LEAD_NAME[];
     static uint16_t     EMPLOYEE_TEAM_LEAD_SALARY;
@@ -68,6 +71,9 @@ protected:
     static const size_t EMPTY_EMPLOYEE_BIT_SIZE;
     static const size_t TEAM_LEAD_BIT_SIZE;
 };
+
+const char  OptionalArrayRecursionTest::EMPTY_EMPLOYEE_NAME[] = "";
+uint16_t    OptionalArrayRecursionTest::EMPTY_EMPLOYEE_SALARY = 0;
 
 const char  OptionalArrayRecursionTest::EMPLOYEE_TEAM_LEAD_NAME[] = "Nico";
 uint16_t    OptionalArrayRecursionTest::EMPLOYEE_TEAM_LEAD_SALARY = 2000;
@@ -87,7 +93,7 @@ const size_t OptionalArrayRecursionTest::TEAM_LEAD_BIT_SIZE = EMPTY_EMPLOYEE_BIT
 
 TEST_F(OptionalArrayRecursionTest, hasTeamMembers)
 {
-    Employee teamLead;
+    Employee teamLead(EMPTY_EMPLOYEE_NAME, EMPTY_EMPLOYEE_SALARY, Title::DEVELOPER, zserio::NullOpt);
     ASSERT_FALSE(teamLead.hasTeamMembers());
 
     fillTeamLead(teamLead);
@@ -96,7 +102,7 @@ TEST_F(OptionalArrayRecursionTest, hasTeamMembers)
 
 TEST_F(OptionalArrayRecursionTest, bitSizeOf)
 {
-    Employee teamLead;
+    Employee teamLead(EMPTY_EMPLOYEE_NAME, EMPTY_EMPLOYEE_SALARY, Title::DEVELOPER, zserio::NullOpt);
     ASSERT_EQ(EMPTY_EMPLOYEE_BIT_SIZE, teamLead.bitSizeOf());
 
     fillTeamLead(teamLead);
@@ -105,7 +111,7 @@ TEST_F(OptionalArrayRecursionTest, bitSizeOf)
 
 TEST_F(OptionalArrayRecursionTest, initializeOffsets)
 {
-    Employee teamLead;
+    Employee teamLead(EMPTY_EMPLOYEE_NAME, EMPTY_EMPLOYEE_SALARY, Title::DEVELOPER, zserio::NullOpt);
     const size_t bitPosition = 1;
     ASSERT_EQ(bitPosition + EMPTY_EMPLOYEE_BIT_SIZE, teamLead.initializeOffsets(bitPosition));
 
@@ -117,11 +123,8 @@ TEST_F(OptionalArrayRecursionTest, operatorEquality)
 {
     Employee teamLead1;
     Employee teamLead2;
-    ASSERT_TRUE(teamLead1 == teamLead2);
 
     fillTeamLead(teamLead1);
-    ASSERT_FALSE(teamLead1 == teamLead2);
-
     fillTeamLead(teamLead2);
     ASSERT_TRUE(teamLead1 == teamLead2);
 }
@@ -130,11 +133,8 @@ TEST_F(OptionalArrayRecursionTest, hashCode)
 {
     Employee teamLead1;
     Employee teamLead2;
-    ASSERT_EQ(teamLead1.hashCode(), teamLead2.hashCode());
 
     fillTeamLead(teamLead1);
-    ASSERT_NE(teamLead1.hashCode(), teamLead2.hashCode());
-
     fillTeamLead(teamLead2);
     ASSERT_EQ(teamLead1.hashCode(), teamLead2.hashCode());
 }
@@ -176,7 +176,7 @@ TEST_F(OptionalArrayRecursionTest, writeTeamLead)
     ASSERT_EQ(EMPLOYEE_TEAM_LEAD_SALARY, readTeamLead.getSalary());
     ASSERT_EQ(Title::TEAM_LEAD, readTeamLead.getTitle());
     ASSERT_TRUE(readTeamLead.hasTeamMembers());
-    zserio::ObjectArray<Employee> teamMembers = readTeamLead.getTeamMembers();
+    std::vector<Employee> teamMembers = *readTeamLead.getTeamMembers();
     ASSERT_EQ(NUM_DEVELOPERS, teamMembers.size());
 }
 

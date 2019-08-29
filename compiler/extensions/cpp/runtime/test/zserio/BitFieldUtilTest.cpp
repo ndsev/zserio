@@ -7,7 +7,7 @@
 namespace zserio
 {
 
-TEST(BitFieldUtilTest, GetBitFieldLowerBound)
+TEST(BitFieldUtilTest, getBitFieldLowerBound)
 {
     EXPECT_THROW(getBitFieldLowerBound(0, true), CppRuntimeException);
     EXPECT_THROW(getBitFieldLowerBound(65, true), CppRuntimeException);
@@ -32,7 +32,7 @@ TEST(BitFieldUtilTest, GetBitFieldLowerBound)
     EXPECT_EQ(UINT64_C(0), getBitFieldLowerBound(63, false));
 }
 
-TEST(BitFieldUtilTest, GetBitFieldUpperBound)
+TEST(BitFieldUtilTest, getBitFieldUpperBound)
 {
     EXPECT_THROW(getBitFieldUpperBound(0, true), CppRuntimeException);
     EXPECT_THROW(getBitFieldUpperBound(65, true), CppRuntimeException);

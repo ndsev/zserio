@@ -4,7 +4,6 @@
 
 #include "zserio/BitStreamWriter.h"
 #include "zserio/BitStreamReader.h"
-#include "zserio/ObjectArray.h"
 
 #include "functions/choice_array/Inner.h"
 #include "functions/choice_array/Item.h"
@@ -68,7 +67,7 @@ protected:
     {
         OuterArray outerArray;
         outerArray.setNumElements(NUM_ITEM_ELEMENTS);
-        zserio::ObjectArray<Item>& values = outerArray.getValues();
+        std::vector<Item>& values = outerArray.getValues();
         values.assign(&m_items[0], &m_items[NUM_ITEM_ELEMENTS]);
         inner.setOuterArray(outerArray);
 
@@ -133,9 +132,13 @@ private:
     Item m_items[NUM_ITEM_ELEMENTS];
     Item m_explicitItem;
 
-    static const uint8_t ELEMENT_A_FOR_EXTRA_VALUE = 20;
-    static const int32_t EXTRA_VALUE = 4711;
+    static const uint8_t ELEMENT_A_FOR_EXTRA_VALUE;
+    static const int32_t EXTRA_VALUE;
 };
+
+const uint16_t FunctionsChoiceArrayTest::NUM_ITEM_ELEMENTS;
+const uint8_t FunctionsChoiceArrayTest::ELEMENT_A_FOR_EXTRA_VALUE = 20;
+const int32_t FunctionsChoiceArrayTest::EXTRA_VALUE = 4711;
 
 TEST_F(FunctionsChoiceArrayTest, checkChoiceArrayFunctionElement0)
 {

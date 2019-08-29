@@ -3,7 +3,7 @@ package zserio.emit.cpp;
 /**
  * A special formatting policy to be used in generated SQL tables which need indirect references.
  */
-public class CppSqlIndirectExpressionFormattingPolicy extends CppDefaultExpressionFormattingPolicy
+public class CppSqlIndirectExpressionFormattingPolicy extends CppExpressionFormattingPolicy
 {
     public CppSqlIndirectExpressionFormattingPolicy(CppNativeTypeMapper cppNativeTypeMapper,
             IncludeCollector includeCollector)
@@ -17,5 +17,5 @@ public class CppSqlIndirectExpressionFormattingPolicy extends CppDefaultExpressi
         return SQL_INDIRECT_PREFIX;
     }
 
-    private static final String SQL_INDIRECT_PREFIX = "row";
+    private static final String SQL_INDIRECT_PREFIX = "*row";
 }

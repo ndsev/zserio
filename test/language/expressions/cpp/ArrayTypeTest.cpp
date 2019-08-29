@@ -13,7 +13,7 @@ TEST(ArrayTypeTest, bitSizeOfWithOptional)
 {
     ArrayTypeExpression arrayTypeExpression;
     const size_t arrayLength = 2;
-    zserio::Int8Array array(arrayLength);
+    std::vector<int8_t> array(arrayLength);
     arrayTypeExpression.setArray(array);
     arrayTypeExpression.setIsZerosArrayValid(true);
 
@@ -25,7 +25,7 @@ TEST(ArrayTypeTest, bitSizeOfWithoutOptional)
 {
     ArrayTypeExpression arrayTypeExpression;
     const size_t arrayLength = 2;
-    zserio::Int8Array array;
+    std::vector<int8_t> array;
     array.reserve(arrayLength);
     for (size_t i = 1; i <= arrayLength; ++i)
         array.push_back(static_cast<int8_t>(i));

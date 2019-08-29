@@ -1,6 +1,6 @@
 #include <string>
 
-#include "StringConvertUtil.h"
+#include "zserio/StringConvertUtil.h"
 
 namespace zserio
 {
@@ -41,37 +41,37 @@ static std::string convertIntToString(unsigned int value, bool isNegative)
     return std::string(bufferEnd, buffer + BUFFER_SIZE - bufferEnd);
 }
 
-template<>
+template <>
 std::string convertToString<bool>(bool value)
 {
     return value ? "true" : "false";
 }
 
-template<>
+template <>
 std::string convertToString<char>(char value)
 {
     return convertToString<int>(static_cast<int>(value));
 }
 
-template<>
+template <>
 std::string convertToString<signed char>(signed char value)
 {
     return convertToString<int>(static_cast<int>(value));
 }
 
-template<>
+template <>
 std::string convertToString<unsigned char>(unsigned char value)
 {
     return convertToString<unsigned int>(static_cast<unsigned int>(value));
 }
 
-template<>
+template <>
 std::string convertToString<unsigned int>(unsigned int value)
 {
     return convertIntToString(value, false);
 }
 
-template<>
+template <>
 std::string convertToString<int>(int value)
 {
     unsigned int absValue = static_cast<unsigned int>(value);

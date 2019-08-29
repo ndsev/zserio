@@ -13,7 +13,7 @@ namespace empty_union
 TEST(EmptyUnionTest, emptyConstructor)
 {
     EmptyUnion emptyUnion;
-    ASSERT_EQ(EmptyUnion::CHOICE_UNDEFINED, emptyUnion.choiceTag());
+    ASSERT_EQ(EmptyUnion::UNDEFINED_CHOICE, emptyUnion.choiceTag());
     ASSERT_EQ(0, emptyUnion.bitSizeOf());
 }
 
@@ -22,14 +22,14 @@ TEST(EmptyUnionTest, bitStreamReaderConstructor)
     zserio::BitStreamReader reader(NULL, 0);
 
     EmptyUnion emptyUnion(reader);
-    ASSERT_EQ(EmptyUnion::CHOICE_UNDEFINED, emptyUnion.choiceTag());
+    ASSERT_EQ(EmptyUnion::UNDEFINED_CHOICE, emptyUnion.choiceTag());
     ASSERT_EQ(0, emptyUnion.bitSizeOf());
 }
 
 TEST(EmptyUnionTest, choiceTag)
 {
     EmptyUnion emptyUnion;
-    ASSERT_EQ(EmptyUnion::CHOICE_UNDEFINED, emptyUnion.choiceTag());
+    ASSERT_EQ(EmptyUnion::UNDEFINED_CHOICE, emptyUnion.choiceTag());
 }
 
 TEST(EmptyUnionTest, bitSizeOf)
@@ -65,7 +65,7 @@ TEST(EmptyUnionTest, read)
     zserio::BitStreamReader reader(NULL, 0);
     EmptyUnion emptyUnion;
     emptyUnion.read(reader);
-    ASSERT_EQ(EmptyUnion::CHOICE_UNDEFINED, emptyUnion.choiceTag());
+    ASSERT_EQ(EmptyUnion::UNDEFINED_CHOICE, emptyUnion.choiceTag());
     ASSERT_EQ(0, emptyUnion.bitSizeOf());
 }
 

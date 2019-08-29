@@ -1,7 +1,7 @@
 #ifndef ZSERIO_BUILD_IN_OPERATORS_H_INC
 #define ZSERIO_BUILD_IN_OPERATORS_H_INC
 
-#include "Types.h"
+#include "zserio/Types.h"
 
 namespace zserio
 {
@@ -22,9 +22,9 @@ namespace zserio
  * <tt>numbits(8) = 3</tt>
  * <tt>numbits(16) = 4</tt>
  *
- * @param numValues The number of different values from which to calculate number of bits.
+ * \param numValues The number of different values from which to calculate number of bits.
  *
- * @return Number of bis required to encode <tt>numValues</tt> different values.
+ * \return Number of bis required to encode <tt>numValues</tt> different values.
  */
 uint8_t getNumBits(uint64_t numValues);
 

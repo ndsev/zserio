@@ -1,7 +1,7 @@
 #ifndef ZSERIO_FLOAT_UTIL_H_INC
 #define ZSERIO_FLOAT_UTIL_H_INC
 
-#include "Types.h"
+#include "zserio/Types.h"
 
 /**
  * The module provides help methods for manipulation with float numbers.
@@ -12,7 +12,6 @@
  * - single precision float point format (https://en.wikipedia.org/wiki/Single-precision_floating-point_format)
  * - double precision float point format (https://en.wikipedia.org/wiki/Double-precision_floating-point_format)
  */
-
 namespace zserio
 {
     /**

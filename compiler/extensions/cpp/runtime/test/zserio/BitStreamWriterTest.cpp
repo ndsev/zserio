@@ -26,13 +26,13 @@ protected:
 
     static const size_t externalBufferSize = 512;
 
-    uint8_t             m_externalBuffer[externalBufferSize];
+    uint8_t m_externalBuffer[externalBufferSize];
 };
 
-TEST_F(BitStreamWriterTest, WriteBits)
+TEST_F(BitStreamWriterTest, writeBits)
 {
     // check invalid bitlength acceptance
-    uint8_t numBits[] = { 255, 0, 33 };
+    const uint8_t numBits[] = { 255, 0, 33 };
     for (size_t i = 0; i < sizeof(numBits) / sizeof(numBits[0]); ++i)
     {
         ASSERT_THROW(m_writer.writeBits(1, numBits[i]), CppRuntimeException);
@@ -49,10 +49,10 @@ TEST_F(BitStreamWriterTest, WriteBits)
     }
 }
 
-TEST_F(BitStreamWriterTest, WriteBits64)
+TEST_F(BitStreamWriterTest, writeBits64)
 {
     // check invalid bitlength acceptance
-    uint8_t numBits[] = { 255, 0, 65 };
+    const uint8_t numBits[] = { 255, 0, 65 };
     for (size_t i = 0; i < sizeof(numBits) / sizeof(numBits[0]); ++i)
     {
         ASSERT_THROW(m_writer.writeBits64(1, numBits[i]), CppRuntimeException);
@@ -69,10 +69,10 @@ TEST_F(BitStreamWriterTest, WriteBits64)
     }
 }
 
-TEST_F(BitStreamWriterTest, WriteSignedBits)
+TEST_F(BitStreamWriterTest, writeSignedBits)
 {
     // check invalid bitlength acceptance
-    uint8_t numBits[] = { 255, 0, 33 };
+    const uint8_t numBits[] = { 255, 0, 33 };
     for (size_t i = 0; i < sizeof(numBits) / sizeof(numBits[0]); ++i)
     {
         ASSERT_THROW(m_writer.writeSignedBits(1, numBits[i]), CppRuntimeException);
@@ -95,10 +95,10 @@ TEST_F(BitStreamWriterTest, WriteSignedBits)
     }
 }
 
-TEST_F(BitStreamWriterTest, WriteSignedBits64)
+TEST_F(BitStreamWriterTest, writeSignedBits64)
 {
     // check invalid bitlength acceptance
-    uint8_t numBits[] = { 255, 0, 65 };
+    const uint8_t numBits[] = { 255, 0, 65 };
     for (size_t i = 0; i < sizeof(numBits) / sizeof(numBits[0]); ++i)
     {
         ASSERT_THROW(m_writer.writeSignedBits64(1, numBits[i]), CppRuntimeException);
@@ -121,55 +121,55 @@ TEST_F(BitStreamWriterTest, WriteSignedBits64)
     }
 }
 
-TEST_F(BitStreamWriterTest, WriteVarInt64)
+TEST_F(BitStreamWriterTest, writeVarInt64)
 {
     // check value out of range
     const int64_t outOfRangeValue = ((int64_t) 1) << ( 6 + 7 + 7 + 7 + 7 + 7 + 7 + 8);
     ASSERT_THROW(m_writer.writeVarInt64(outOfRangeValue), CppRuntimeException);
 }
 
-TEST_F(BitStreamWriterTest, WriteVarInt32)
+TEST_F(BitStreamWriterTest, writeVarInt32)
 {
     // check value out of range
     const int32_t outOfRangeValue = ((int32_t) 1) << (6 + 7 + 7 + 8);
     ASSERT_THROW(m_writer.writeVarInt32(outOfRangeValue), CppRuntimeException);
 }
 
-TEST_F(BitStreamWriterTest, WriteVarInt16)
+TEST_F(BitStreamWriterTest, writeVarInt16)
 {
     // check value out of range
     const int16_t outOfRangeValue = ((int16_t) 1) << (6 + 8);
     ASSERT_THROW(m_writer.writeVarInt16(outOfRangeValue), CppRuntimeException);
 }
 
-TEST_F(BitStreamWriterTest, WriteVarUInt64)
+TEST_F(BitStreamWriterTest, writeVarUInt64)
 {
     // check value out of range
     const uint64_t outOfRangeValue = ((uint64_t) 1) << (7 + 7 + 7 + 7 + 7 + 7 + 7 + 8);
     ASSERT_THROW(m_writer.writeVarUInt64(outOfRangeValue), CppRuntimeException);
 }
 
-TEST_F(BitStreamWriterTest, WriteVarUInt32)
+TEST_F(BitStreamWriterTest, writeVarUInt32)
 {
     // check value out of range
     const uint32_t outOfRangeValue = ((uint32_t) 1) << (7 + 7 + 7 + 8);
     ASSERT_THROW(m_writer.writeVarUInt32(outOfRangeValue), CppRuntimeException);
 }
 
-TEST_F(BitStreamWriterTest, WriteVarUInt16)
+TEST_F(BitStreamWriterTest, writeVarUInt16)
 {
     // check value out of range
     const uint16_t outOfRangeValue = ((uint16_t) 1) << (7 + 8);
     ASSERT_THROW(m_writer.writeVarUInt16(outOfRangeValue), CppRuntimeException);
 }
 
-TEST_F(BitStreamWriterTest, WriteVarInt)
+TEST_F(BitStreamWriterTest, writeVarInt)
 {
     ASSERT_NO_THROW(m_writer.writeVarInt(INT64_MIN));
     ASSERT_NO_THROW(m_writer.writeVarInt(INT64_MAX));
 }
 
-TEST_F(BitStreamWriterTest, WriteVarUInt)
+TEST_F(BitStreamWriterTest, writeVarUInt)
 {
     ASSERT_NO_THROW(m_writer.writeVarUInt(0));
     ASSERT_NO_THROW(m_writer.writeVarUInt(UINT64_MAX));

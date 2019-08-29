@@ -16,7 +16,7 @@ class EnumParamChoiceTest : public ::testing::Test
 protected:
     void writeEnumParamChoiceToByteArray(zserio::BitStreamWriter& writer, Selector selector, int32_t value)
     {
-        switch (selector.getValue())
+        switch (selector)
         {
         case Selector::BLACK:
             writer.writeSignedBits(value, 8);
@@ -57,6 +57,17 @@ TEST_F(EnumParamChoiceTest, bitStreamReaderConstructor)
     ASSERT_EQ(value, enumParamChoice.getBlack());
 }
 
+TEST_F(EnumParamChoiceTest, fieldConstructor)
+{
+    const Selector selector = Selector::BLACK;
+    const int8_t value = 99;
+    EnumParamChoice enumParamChoice(value);
+    enumParamChoice.initialize(selector);
+    ASSERT_EQ(selector, enumParamChoice.getSelector());
+    ASSERT_EQ(value, enumParamChoice.getBlack());
+    ASSERT_THROW(enumParamChoice.getGrey(), zserio::CppRuntimeException);
+}
+
 TEST_F(EnumParamChoiceTest, copyConstructor)
 {
     const Selector selector = Selector::BLACK;
@@ -70,7 +81,7 @@ TEST_F(EnumParamChoiceTest, copyConstructor)
     ASSERT_EQ(value, enumParamChoiceCopy.getBlack());
 }
 
-TEST_F(EnumParamChoiceTest, operatorAssignment)
+TEST_F(EnumParamChoiceTest, assignmentOperator)
 {
     const Selector selector = Selector::GREY;
     EnumParamChoice enumParamChoice;
@@ -78,9 +89,39 @@ TEST_F(EnumParamChoiceTest, operatorAssignment)
     const int16_t value = 234;
     enumParamChoice.setGrey(value);
 
-    const EnumParamChoice enumParamChoiceCopy = enumParamChoice;
+    EnumParamChoice enumParamChoiceCopy;
+    enumParamChoiceCopy = enumParamChoice;
     ASSERT_EQ(selector, enumParamChoiceCopy.getSelector());
     ASSERT_EQ(value, enumParamChoiceCopy.getGrey());
+}
+
+TEST_F(EnumParamChoiceTest, moveCopyConstructor)
+{
+    const Selector selector = Selector::BLACK;
+    EnumParamChoice enumParamChoice;
+    enumParamChoice.initialize(selector);
+    const int8_t value = 99;
+    enumParamChoice.setBlack(value);
+
+    // note that it doesn't ensure that move ctor was called
+    const EnumParamChoice enumParamChoiceMoved(std::move(enumParamChoice));
+    ASSERT_EQ(selector, enumParamChoiceMoved.getSelector());
+    ASSERT_EQ(value, enumParamChoiceMoved.getBlack());
+}
+
+TEST_F(EnumParamChoiceTest, moveAssignmentOperator)
+{
+    const Selector selector = Selector::GREY;
+    EnumParamChoice enumParamChoice;
+    enumParamChoice.initialize(selector);
+    const int16_t value = 234;
+    enumParamChoice.setGrey(value);
+
+    // note that it doesn't ensure that move ctor was called
+    EnumParamChoice enumParamChoiceMoved;
+    enumParamChoiceMoved = std::move(enumParamChoice);
+    ASSERT_EQ(selector, enumParamChoiceMoved.getSelector());
+    ASSERT_EQ(value, enumParamChoiceMoved.getGrey());
 }
 
 TEST_F(EnumParamChoiceTest, initialize)
@@ -200,15 +241,14 @@ TEST_F(EnumParamChoiceTest, hashCode)
 TEST_F(EnumParamChoiceTest, read)
 {
     const Selector selector = Selector::BLACK;
-    EnumParamChoice enumParamChoice;
-    enumParamChoice.initialize(selector);
-
     zserio::BitStreamWriter writer;
     const int8_t value = 99;
     writeEnumParamChoiceToByteArray(writer, selector, value);
     size_t writeBufferByteSize;
     const uint8_t* writeBuffer = writer.getWriteBuffer(writeBufferByteSize);
     zserio::BitStreamReader reader(writeBuffer, writeBufferByteSize);
+    EnumParamChoice enumParamChoice;
+    enumParamChoice.initialize(selector);
     enumParamChoice.read(reader);
 
     ASSERT_EQ(selector, enumParamChoice.getSelector());

@@ -16,25 +16,13 @@ public class SqlTableEmitter extends CppDefaultEmitter
     {
         if (getWithSqlCode())
         {
-            final String tableRowName = sqlTableType.getName() + TABLE_ROW_SUFFIX_NAME;
             final Object tableTemplateData = new SqlTableEmitterTemplateData(getTemplateDataContext(),
-                    sqlTableType, tableRowName);
+                    sqlTableType);
             processHeaderTemplate(TABLE_TEMPLATE_HEADER_NAME, tableTemplateData, sqlTableType);
             processSourceTemplate(TABLE_TEMPLATE_SOURCE_NAME, tableTemplateData, sqlTableType);
-
-            final Object tableRowTemplateData = new SqlTableRowEmitterTemplateData(getTemplateDataContext(),
-                    sqlTableType, tableRowName);
-            processHeaderTemplate(TABLE_ROW_TEMPLATE_HEADER_NAME, tableRowTemplateData, sqlTableType,
-                    tableRowName);
-            processSourceTemplate(TABLE_ROW_TEMPLATE_SOURCE_NAME, tableRowTemplateData, sqlTableType,
-                    tableRowName);
         }
     }
 
     private static final String TABLE_TEMPLATE_SOURCE_NAME = "SqlTable.cpp.ftl";
     private static final String TABLE_TEMPLATE_HEADER_NAME = "SqlTable.h.ftl";
-    private static final String TABLE_ROW_TEMPLATE_SOURCE_NAME = "SqlTableRow.cpp.ftl";
-    private static final String TABLE_ROW_TEMPLATE_HEADER_NAME = "SqlTableRow.h.ftl";
-
-    private static final String TABLE_ROW_SUFFIX_NAME = "Row";
 }

@@ -26,9 +26,12 @@ protected:
         ASSERT_EQ(optionalBit31RangeCheckCompound, readOptionalBit31RangeCheckCompound);
     }
 
-    static const uint32_t   OPTIONAL_BIT31_LOWER_BOUND = UINT32_C(0);
-    static const uint32_t   OPTIONAL_BIT31_UPPER_BOUND = UINT32_C(2147483647);
+    static const uint32_t OPTIONAL_BIT31_LOWER_BOUND;
+    static const uint32_t OPTIONAL_BIT31_UPPER_BOUND;
 };
+
+const uint32_t OptionalBit31RangeCheckTest::OPTIONAL_BIT31_LOWER_BOUND = UINT32_C(0);
+const uint32_t OptionalBit31RangeCheckTest::OPTIONAL_BIT31_UPPER_BOUND = UINT32_C(2147483647);
 
 TEST_F(OptionalBit31RangeCheckTest, optionalBit31LowerBound)
 {

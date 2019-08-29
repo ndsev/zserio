@@ -1,12 +1,12 @@
-if (GRPC_ENABLED)
+if (GRPC_ENABLED AND ${ZSERIO_CPP_STANDARD} STREQUAL c++11)
     set(ZSERIO_GEN_DIR ${CMAKE_CURRENT_BINARY_DIR}/gen)
     set(ZSERIO_GENERATED_SOURCES
-        ${ZSERIO_GEN_DIR}/service_types/simple_service/SimpleService.h
-        ${ZSERIO_GEN_DIR}/service_types/simple_service/SimpleService.cpp
         ${ZSERIO_GEN_DIR}/service_types/simple_service/Response.h
         ${ZSERIO_GEN_DIR}/service_types/simple_service/Response.cpp
         ${ZSERIO_GEN_DIR}/service_types/simple_service/Request.h
         ${ZSERIO_GEN_DIR}/service_types/simple_service/Request.cpp
+        ${ZSERIO_GEN_DIR}/service_types/simple_service/SimpleService.h
+        ${ZSERIO_GEN_DIR}/service_types/simple_service/SimpleService.cpp
 
         ${ZSERIO_GEN_DIR}/service_types/streaming_service/Age.cpp
         ${ZSERIO_GEN_DIR}/service_types/streaming_service/Age.h
@@ -50,15 +50,15 @@ if (GRPC_ENABLED)
         OUT_DIR ${ZSERIO_GEN_DIR}
         OUT_FILES ${ZSERIO_GENERATED_SOURCES}
         ZSERIO_CORE_DIR ${ZSERIO_JAR_DIR}
-        ZSERIO_OPTIONS -withoutSourcesAmalgamation
+        ZSERIO_OPTIONS -withoutSourcesAmalgamation -cppStandard ${ZSERIO_CPP_STANDARD}
     )
 
     target_include_directories(service_types_zs SYSTEM PRIVATE ${GRPC_INCDIR})
 
     add_test_sources(
-        cpp/SimpleServiceTest.cpp
-        cpp/StreamingServiceTest.cpp
-        cpp/ComplexTypesServiceTest.cpp
+        ${ZSERIO_CPP_DIR}/SimpleServiceTest.cpp
+        ${ZSERIO_CPP_DIR}/StreamingServiceTest.cpp
+        ${ZSERIO_CPP_DIR}/ComplexTypesServiceTest.cpp
     )
 
     add_test_dependencies(service_types_zs)

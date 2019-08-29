@@ -23,7 +23,7 @@ protected:
 TEST_F(ImplicitArrayTest, bitSizeOf)
 {
     const size_t numElements = 55;
-    zserio::UInt8Array uint8Array;
+    std::vector<uint8_t> uint8Array;
     uint8Array.reserve(numElements);
     for (size_t i = 0; i < numElements; ++i)
         uint8Array.push_back(static_cast<uint8_t>(i));
@@ -37,7 +37,7 @@ TEST_F(ImplicitArrayTest, bitSizeOf)
 TEST_F(ImplicitArrayTest, initializeOffsets)
 {
     const size_t numElements = 55;
-    zserio::UInt8Array uint8Array;
+    std::vector<uint8_t> uint8Array;
     uint8Array.reserve(numElements);
     for (size_t i = 0; i < numElements; ++i)
         uint8Array.push_back(static_cast<uint8_t>(i));
@@ -58,7 +58,7 @@ TEST_F(ImplicitArrayTest, read)
     zserio::BitStreamReader reader(writeBuffer, writeBufferByteSize);
     ImplicitArray implicitArray(reader);
 
-    const zserio::UInt8Array& uint8Array = implicitArray.getUint8Array();
+    const std::vector<uint8_t>& uint8Array = implicitArray.getUint8Array();
     ASSERT_EQ(numElements, uint8Array.size());
     for (size_t i = 0; i < numElements; ++i)
         ASSERT_EQ(i, uint8Array[i]);
@@ -67,7 +67,7 @@ TEST_F(ImplicitArrayTest, read)
 TEST_F(ImplicitArrayTest, write)
 {
     const size_t numElements = 55;
-    zserio::UInt8Array uint8Array;
+    std::vector<uint8_t> uint8Array;
     uint8Array.reserve(numElements);
     for (size_t i = 0; i < numElements; ++i)
         uint8Array.push_back(static_cast<uint8_t>(i));
@@ -81,7 +81,7 @@ TEST_F(ImplicitArrayTest, write)
     const uint8_t* writeBuffer = writer.getWriteBuffer(writeBufferByteSize);
     zserio::BitStreamReader reader(writeBuffer, writeBufferByteSize);
     ImplicitArray readImplicitArray(reader);
-    const zserio::UInt8Array& readUint8Array = readImplicitArray.getUint8Array();
+    const std::vector<uint8_t>& readUint8Array = readImplicitArray.getUint8Array();
     ASSERT_EQ(numElements, readUint8Array.size());
     for (size_t i = 0; i < numElements; ++i)
         ASSERT_EQ(i, readUint8Array[i]);

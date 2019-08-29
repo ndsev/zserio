@@ -4,7 +4,6 @@
 
 #include "zserio/BitStreamWriter.h"
 #include "zserio/BitStreamReader.h"
-#include "zserio/ObjectArray.h"
 
 #include "functions/union_array/Inner.h"
 #include "functions/union_array/Item.h"
@@ -62,7 +61,7 @@ protected:
     {
         OuterArray outerArray;
         outerArray.setNumElements(NUM_ITEM_ELEMENTS);
-        zserio::ObjectArray<Item>& values = outerArray.getValues();
+        std::vector<Item>& values = outerArray.getValues();
         values.assign(&m_items[0], &m_items[NUM_ITEM_ELEMENTS]);
         inner.setOuterArray(outerArray);
 

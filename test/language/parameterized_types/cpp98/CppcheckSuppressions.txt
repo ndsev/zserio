@@ -1,0 +1,7 @@
+// suppress "Member variable 'X' is not initialized in the constructor."
+uninitMemberVar:*/Block.cpp
+uninitMemberVar:*/Compound.cpp
+uninitMemberVar:*/Field.cpp
+uninitMemberVar:*/Item.cpp
+uninitMemberVar:*/ItemChoice.cpp
+uninitMemberVar:*/SubtypedBitfieldParam.cpp

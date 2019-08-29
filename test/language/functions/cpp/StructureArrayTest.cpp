@@ -4,7 +4,6 @@
 
 #include "zserio/BitStreamWriter.h"
 #include "zserio/BitStreamReader.h"
-#include "zserio/ObjectArray.h"
 
 #include "functions/structure_array/Item.h"
 #include "functions/structure_array/StructureArray.h"
@@ -47,7 +46,7 @@ protected:
     {
         structureArray.setNumElements(NUM_ITEM_ELEMENTS);
 
-        zserio::ObjectArray<Item>& values = structureArray.getValues();
+        std::vector<Item>& values = structureArray.getValues();
         values.assign(&m_items[0], &m_items[NUM_ITEM_ELEMENTS]);
 
         structureArray.setPos(pos);

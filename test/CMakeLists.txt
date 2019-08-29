@@ -17,6 +17,13 @@ set(CPPCHECK_HOME "" CACHE PATH "Home directory of cppcheck tool. If empty, cppc
 set(ZSERIO_PROJECT_ROOT "${CMAKE_CURRENT_SOURCE_DIR}/..")
 set(ZSERIO_RELEASE_ROOT "${ZSERIO_PROJECT_ROOT}/distr" CACHE PATH "Root directory of Zserio release binaries.")
 set(ZSERIO_TEST_NAME "*" CACHE STRING "Example test name to run. Empty means all example tests.")
+set(ZSERIO_CPP_STANDARD "c++11" CACHE STRING "C++ standard for generated sources to use.")
+set_property(CACHE ZSERIO_CPP_STANDARD PROPERTY STRINGS "c++11" "c++98")
+if ("${ZSERIO_CPP_STANDARD}" STREQUAL "c++98")
+    set(ZSERIO_CPP_DIR "cpp98")
+else ()
+    set(ZSERIO_CPP_DIR "cpp")
+endif ()
 
 # add gtest library
 set(CMAKE_MODULE_PATH ${ZSERIO_PROJECT_ROOT}/cmake)
@@ -32,6 +39,9 @@ compiler_set_pthread()
 compiler_set_static_clibs()
 compiler_set_warnings()
 compiler_set_warnings_as_errors()
+if (ZSERIO_CPP_STANDARD STREQUAL "c++11")
+    set(CMAKE_CXX_STANDARD 11)
+endif ()
 
 # add SQLite3 for testing
 include(sqlite_utils)
@@ -48,7 +58,7 @@ endif ()
 # add zserio runtime library
 include(zserio_utils)
 set(ZSERIO_JAR_DIR "${ZSERIO_RELEASE_ROOT}/zserio_libs")
-set(ZSERIO_RUNTIME_LIBRARY_DIR "${ZSERIO_RELEASE_ROOT}/runtime_libs/cpp")
+set(ZSERIO_RUNTIME_LIBRARY_DIR "${ZSERIO_RELEASE_ROOT}/runtime_libs/${ZSERIO_CPP_DIR}")
 zserio_add_runtime_library(RUNTIME_LIBRARY_DIR "${ZSERIO_RUNTIME_LIBRARY_DIR}" INCLUDE_INSPECTOR ON)
 
 # functions to set globals called by included CMake lists
@@ -73,6 +83,18 @@ foreach(subproject ${SUBPROJECTS})
     add_subdirectory(${subdirectory})
 endforeach()
 
+if (NOT TEST_SOURCES_LIST)
+    if (NOT TEST_DEPENDENCIES_LIST)
+        message(FATAL_ERROR "Test filter '${ZSERIO_TEST_NAME}' doesn't match any test!")
+    endif ()
+
+    set(EMPTY_TEST_HELPER_CONTENT
+        "#include \"gtest/gtest.h\"\nTEST(EmptyTestHelper, Success)\n{\n    ASSERT_TRUE(true)\;\n}\n"
+    )
+    file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/EmptyTestHelper.cpp ${EMPTY_TEST_HELPER_CONTENT})
+    set(TEST_SOURCES_LIST ${CMAKE_CURRENT_BINARY_DIR}/EmptyTestHelper.cpp)
+endif ()
+
 add_executable(${PROJECT_NAME} ${TEST_SOURCES_LIST})
 
 target_link_libraries(${PROJECT_NAME} gtest_main ${TEST_DEPENDENCIES_LIST})
@@ -91,5 +113,7 @@ gtest_add_tests(${PROJECT_NAME} "--gtest_output=xml" ${TEST_SOURCES_LIST})
 
 # add cppcheck custom command
 include(cppcheck_utils)
+set(SUPPRESSION_FILE_NAME "${CMAKE_CURRENT_SOURCE_DIR}/${ZSERIO_CPP_DIR}/CppcheckSuppressions.txt")
 cppcheck_add_custom_command(TARGET ${PROJECT_NAME}
-                            SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}")
+                            SOURCE_DIR "${TEST_SOURCES_LIST}"
+                            SUPPRESSION_FILE "${SUPPRESSION_FILE_NAME}")

@@ -1,32 +1,42 @@
+<#macro parameter_member_name paramName>
+    m_${paramName}_<#t>
+</#macro>
+
+<#macro parameter_argument_name paramName>
+    ${paramName}_<#t>
+</#macro>
+
 <#macro compound_parameter_constructor_initializers compoundParametersData, indent, trailingComma>
     <#local I>${""?left_pad(indent * 4)}</#local>
     <#list compoundParametersData.list as compoundParameter>
     <#local parameterNamePrefix><#if !compoundParameter.isSimpleType>&</#if></#local>
-${I}m_${compoundParameter.name}(${parameterNamePrefix}${compoundParameter.name})<#if compoundParameter_has_next || trailingComma>,</#if>
+${I}<@parameter_member_name compoundParameter.name/>(${parameterNamePrefix}<@parameter_argument_name compoundParameter.name/>)<#if compoundParameter?has_next || trailingComma>,</#if>
     </#list>
 </#macro>
 
 <#macro compound_parameter_initialize compoundParametersData, indent>
     <#local I>${""?left_pad(indent * 4)}</#local>
     <#list compoundParametersData.list as compoundParameter>
-${I}m_${compoundParameter.name} = <#if !compoundParameter.isSimpleType>&</#if>${compoundParameter.name};
+${I}<@parameter_member_name compoundParameter.name/> = <#if !compoundParameter.isSimpleType>&</#if><@parameter_argument_name compoundParameter.name/>;
     </#list>
 </#macro>
 
 <#macro compound_parameter_copy_argument_list compoundParametersData>
     <#list compoundParametersData.list as compoundParameter>
-        <#if !compoundParameter.isSimpleType>*(</#if>_other.m_${compoundParameter.name}<#t>
-            <#if !compoundParameter.isSimpleType>)</#if><#if compoundParameter_has_next>, </#if><#t>
+        <#if !compoundParameter.isSimpleType>*(</#if>other.<@parameter_member_name compoundParameter.name/><#t>
+            <#if !compoundParameter.isSimpleType>)</#if><#if compoundParameter?has_next>, </#if><#t>
     </#list>
 </#macro>
 
 <#macro compound_parameter_constructor_type_list compoundParametersData, indent>
     <#local I>${""?left_pad(indent * 4)}</#local>
     <#list compoundParametersData.list as compoundParameter>
-
     <#local parameterType><#if compoundParametersData.withWriterCode && !compoundParameter.isSimpleType><#rt>
-        ${compoundParameter.cppTypeName}&<#else>${compoundParameter.cppArgumentTypeName}</#if></#local>
-${I}${parameterType} ${compoundParameter.name}<#if compoundParameter_has_next>,</#if><#rt>
+        <#lt>${compoundParameter.cppTypeName}&<#else>${compoundParameter.cppArgumentTypeName}</#if></#local>
+${I}${parameterType} <@parameter_argument_name compoundParameter.name/><#rt>
+        <#if compoundParameter?has_next>
+            <#lt>,
+        </#if>
     </#list>
 </#macro>
 
@@ -49,20 +59,20 @@ ${I}${parameterType} ${compoundParameter.name}<#if compoundParameter_has_next>,<
 ${compoundParameter.cppTypeName}& ${compoundName}::${compoundParameter.getterName}()
 {
     if (!m_isInitialized)
-        throw zserio::CppRuntimeException("Parameter ${compoundParameter.name} of compound ${compoundName} "
+        throw ::zserio::CppRuntimeException("Parameter ${compoundParameter.name} of compound ${compoundName} "
                 "is not initialized!");
 
-    return *m_${compoundParameter.name};
+    return *<@parameter_member_name compoundParameter.name/>;
 }
 
         </#if>
 ${compoundParameter.cppArgumentTypeName} ${compoundName}::${compoundParameter.getterName}() const
 {
     if (!m_isInitialized)
-        throw zserio::CppRuntimeException("Parameter ${compoundParameter.name} of compound ${compoundName} "
+        throw ::zserio::CppRuntimeException("Parameter ${compoundParameter.name} of compound ${compoundName} "
                 "is not initialized!");
 
-    return <#if !compoundParameter.isSimpleType>*</#if>m_${compoundParameter.name};
+    return <#if !compoundParameter.isSimpleType>*</#if><@parameter_member_name compoundParameter.name/>;
 }
 
     </#list>
@@ -73,18 +83,33 @@ ${compoundParameter.cppArgumentTypeName} ${compoundName}::${compoundParameter.ge
     <#list compoundParametersData.list as compoundParameter>
     <#local parameterCppTypeName><#if compoundParameter.isSimpleType>${compoundParameter.cppArgumentTypeName}<#else><#rt>
         <#lt><#if !compoundParametersData.withWriterCode>const </#if>${compoundParameter.cppTypeName}*</#if></#local>
-    ${parameterCppTypeName} m_${compoundParameter.name};
+    ${parameterCppTypeName} <@parameter_member_name compoundParameter.name/>;
     </#list>
 </#macro>
 
 <#macro compound_parameter_comparison compoundParametersData, trailingAnd>
     <#list compoundParametersData.list as compoundParameter>
-                (${compoundParameter.getterName}() == _other.${compoundParameter.getterName}())<#if compoundParameter_has_next || trailingAnd> &&<#else>;</#if>
+                (${compoundParameter.getterName}() == other.${compoundParameter.getterName}())<#if compoundParameter?has_next || trailingAnd> &&<#else>;</#if>
     </#list>
+</#macro>
+
+<#macro compound_parameter_comparison_with_any_holder compoundParametersData>
+    <#if compoundParametersData.list?has_content>
+    if (<#rt>
+    <#list compoundParametersData.list as compoundParameter>
+        <#if !compoundParameter?is_first>            </#if>!(${compoundParameter.getterName}() == other.${compoundParameter.getterName}())<#t>
+        <#if compoundParameter?has_next>
+            <#lt>||
+        </#if>
+    </#list>
+    <#lt>)
+        return false;
+
+    </#if>
 </#macro>
 
 <#macro compound_parameter_hash_code compoundParametersData>
     <#list compoundParametersData.list as compoundParameter>
-    _result = zserio::calcHashCode(_result, ${compoundParameter.getterName}());
+    result = ::zserio::calcHashCode(result, ${compoundParameter.getterName}());
     </#list>
 </#macro>

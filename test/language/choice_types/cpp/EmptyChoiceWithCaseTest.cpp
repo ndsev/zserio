@@ -11,7 +11,7 @@ namespace choice_types
 namespace empty_choice_with_case
 {
 
-TEST(EmptyChoiceWithCaseTest, selectorConstructor)
+TEST(EmptyChoiceWithCaseTest, emptyConstructor)
 {
     EmptyChoiceWithCase emptyChoiceWithCase;
     ASSERT_THROW(emptyChoiceWithCase.getSelector(), zserio::CppRuntimeException);
@@ -38,15 +38,41 @@ TEST(EmptyChoiceWithCaseTest, copyConstructor)
     ASSERT_EQ(0, emptyChoiceWithCaseCopy.bitSizeOf());
 }
 
-TEST(EmptyChoiceWithCaseTest, operatorAssignment)
+TEST(EmptyChoiceWithCaseTest, assignmentOperator)
 {
     const uint8_t selector = 1;
 
     EmptyChoiceWithCase emptyChoiceWithCase;
     emptyChoiceWithCase.initialize(selector);
-    const EmptyChoiceWithCase emptyChoiceWithCaseCopy = emptyChoiceWithCase;
+    EmptyChoiceWithCase emptyChoiceWithCaseCopy;
+    emptyChoiceWithCaseCopy = emptyChoiceWithCase;
     ASSERT_EQ(selector, emptyChoiceWithCaseCopy.getSelector());
     ASSERT_EQ(0, emptyChoiceWithCaseCopy.bitSizeOf());
+}
+
+TEST(EmptyChoiceWithCaseTest, moveConstructor)
+{
+    const uint8_t selector = 1;
+
+    EmptyChoiceWithCase emptyChoiceWithCase;
+    emptyChoiceWithCase.initialize(selector);
+    // note that it doesn't ensure that move ctor was called
+    const EmptyChoiceWithCase emptyChoiceWithCaseMoved(std::move(emptyChoiceWithCase));
+    ASSERT_EQ(selector, emptyChoiceWithCaseMoved.getSelector());
+    ASSERT_EQ(0, emptyChoiceWithCaseMoved.bitSizeOf());
+}
+
+TEST(EmptyChoiceWithCaseTest, moveAssignmentOperator)
+{
+    const uint8_t selector = 1;
+
+    EmptyChoiceWithCase emptyChoiceWithCase;
+    emptyChoiceWithCase.initialize(selector);
+    // note that it doesn't ensure that move ctor was called
+    EmptyChoiceWithCase emptyChoiceWithCaseMoved;
+    emptyChoiceWithCaseMoved = std::move(emptyChoiceWithCase);
+    ASSERT_EQ(selector, emptyChoiceWithCaseMoved.getSelector());
+    ASSERT_EQ(0, emptyChoiceWithCaseMoved.bitSizeOf());
 }
 
 TEST(EmptyChoiceWithCaseTest, initialize)
@@ -110,10 +136,9 @@ TEST(EmptyChoiceWithCaseTest, hashCode)
 TEST(EmptyChoiceWithCaseTest, read)
 {
     const uint8_t selector = 1;
-    zserio::BitStreamReader reader(NULL, 0);
-
     EmptyChoiceWithCase emptyChoiceWithCase;
     emptyChoiceWithCase.initialize(selector);
+    zserio::BitStreamReader reader(NULL, 0);
     emptyChoiceWithCase.read(reader);
     ASSERT_EQ(selector, emptyChoiceWithCase.getSelector());
     ASSERT_EQ(0, emptyChoiceWithCase.bitSizeOf());

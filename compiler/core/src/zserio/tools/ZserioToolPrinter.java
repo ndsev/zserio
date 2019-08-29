@@ -58,6 +58,16 @@ public class ZserioToolPrinter
     }
 
     /**
+     * Prints warning.
+     *
+     * @param text Text of the warning to print.
+     */
+    public static void printWarning(String text)
+    {
+        printWarning(null, 0, 0, text);
+    }
+
+    /**
      * Prints error which is localized by AST node location.
      *
      * @param astNodeLocation AST node location.

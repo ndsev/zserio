@@ -13,7 +13,6 @@ namespace sql_virtual_columns
 namespace simple_virtual_columns
 {
 
-
 class SimpleVirtualColumnsTest : public ::testing::Test
 {
 public:
@@ -31,31 +30,32 @@ public:
     }
 
 protected:
-    static void fillSimpleVirtualColumnsTableRow(SimpleVirtualColumnsTableRow& row, const std::string& content)
+    static void fillSimpleVirtualColumnsTableRow(SimpleVirtualColumnsTable::Row& row,
+            const std::string& content)
     {
         row.setContent(content);
     }
 
-    static void fillSimpleVirtualColumnsTableRows(std::vector<SimpleVirtualColumnsTableRow>& rows)
+    static void fillSimpleVirtualColumnsTableRows(std::vector<SimpleVirtualColumnsTable::Row>& rows)
     {
         rows.clear();
         for (int32_t id = 0; id < NUM_TABLE_ROWS; ++id)
         {
             const std::string content = "Content" + zserio::convertToString(id);
-            SimpleVirtualColumnsTableRow row;
+            SimpleVirtualColumnsTable::Row row;
             fillSimpleVirtualColumnsTableRow(row, content);
             rows.push_back(row);
         }
     }
 
-    static void checkSimpleVirtualColumnsTableRow(const SimpleVirtualColumnsTableRow& row1,
-            const SimpleVirtualColumnsTableRow& row2)
+    static void checkSimpleVirtualColumnsTableRow(const SimpleVirtualColumnsTable::Row& row1,
+            const SimpleVirtualColumnsTable::Row& row2)
     {
         ASSERT_EQ(row1.getContent(), row2.getContent());
     }
 
-    static void checkSimpleVirtualColumnsTableRows(const std::vector<SimpleVirtualColumnsTableRow>& rows1,
-            const std::vector<SimpleVirtualColumnsTableRow>& rows2)
+    static void checkSimpleVirtualColumnsTableRows(const std::vector<SimpleVirtualColumnsTable::Row>& rows1,
+            const std::vector<SimpleVirtualColumnsTable::Row>& rows2)
     {
         ASSERT_EQ(rows1.size(), rows2.size());
         for (size_t i = 0; i < rows1.size(); ++i)
@@ -143,12 +143,14 @@ TEST_F(SimpleVirtualColumnsTest, readWithoutCondition)
 {
     SimpleVirtualColumnsTable& testTable = m_database->getSimpleVirtualColumnsTable();
 
-    std::vector<SimpleVirtualColumnsTableRow> writtenRows;
+    std::vector<SimpleVirtualColumnsTable::Row> writtenRows;
     fillSimpleVirtualColumnsTableRows(writtenRows);
     testTable.write(writtenRows);
 
-    std::vector<SimpleVirtualColumnsTableRow> readRows;
-    testTable.read(readRows);
+    std::vector<SimpleVirtualColumnsTable::Row> readRows;
+    auto reader = testTable.createReader();
+    while (reader.hasNext())
+        readRows.push_back(reader.next());
     checkSimpleVirtualColumnsTableRows(writtenRows, readRows);
 }
 
@@ -156,13 +158,15 @@ TEST_F(SimpleVirtualColumnsTest, readWithCondition)
 {
     SimpleVirtualColumnsTable& testTable = m_database->getSimpleVirtualColumnsTable();
 
-    std::vector<SimpleVirtualColumnsTableRow> writtenRows;
+    std::vector<SimpleVirtualColumnsTable::Row> writtenRows;
     fillSimpleVirtualColumnsTableRows(writtenRows);
     testTable.write(writtenRows);
 
     const std::string condition = "content='Content1'";
-    std::vector<SimpleVirtualColumnsTableRow> readRows;
-    testTable.read(condition, readRows);
+    std::vector<SimpleVirtualColumnsTable::Row> readRows;
+    auto reader = testTable.createReader(condition);
+    while (reader.hasNext())
+        readRows.push_back(reader.next());
     ASSERT_EQ(1, readRows.size());
 
     const size_t expectedRowNum = 1;
@@ -173,19 +177,21 @@ TEST_F(SimpleVirtualColumnsTest, update)
 {
     SimpleVirtualColumnsTable& testTable = m_database->getSimpleVirtualColumnsTable();
 
-    std::vector<SimpleVirtualColumnsTableRow> writtenRows;
+    std::vector<SimpleVirtualColumnsTable::Row> writtenRows;
     fillSimpleVirtualColumnsTableRows(writtenRows);
     testTable.write(writtenRows);
 
     const std::string updateContent = "UpdatedContent";
-    SimpleVirtualColumnsTableRow updateRow;
+    SimpleVirtualColumnsTable::Row updateRow;
     fillSimpleVirtualColumnsTableRow(updateRow, updateContent);
     const std::string updateCondition = "content='Content3'";
     testTable.update(updateRow, updateCondition);
 
-    std::vector<SimpleVirtualColumnsTableRow> readRows;
+    std::vector<SimpleVirtualColumnsTable::Row> readRows;
     const std::string readCondition = "content='" + updateContent + "'";
-    testTable.read(readCondition, readRows);
+    auto reader = testTable.createReader(readCondition);
+    while (reader.hasNext())
+        readRows.push_back(reader.next());
     ASSERT_EQ(1, readRows.size());
 
     checkSimpleVirtualColumnsTableRow(updateRow, readRows[0]);

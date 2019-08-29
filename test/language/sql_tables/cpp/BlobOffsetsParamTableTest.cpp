@@ -31,28 +31,23 @@ public:
     }
 
 protected:
-    static void fillBlobOffsetsParamTableRow(BlobOffsetsParamTableRow& row, uint32_t blobId,
+    static void fillBlobOffsetsParamTableRow(BlobOffsetsParamTable::Row& row, uint32_t blobId,
             const std::string& name)
     {
         row.setBlobId(blobId);
         row.setName(name);
 
-        row.setOffsetsHolder(OffsetsHolder()); // row does not have its columns initialized
-        row.getOffsetsHolder().getOffsets().resize(ARRAY_SIZE);
+        const uint32_t array_size = 1 + blobId;
+        row.setOffsetsHolder(OffsetsHolder(std::vector<uint32_t>(array_size)));
 
         row.setBlob(ParameterizedBlob());
-        ParameterizedBlob& parameterizedBlob = row.getBlob();
-        parameterizedBlob.initialize(row.getOffsetsHolder());
-        zserio::UInt32Array& array = parameterizedBlob.getArray();
-        for (uint32_t i = 0; i < ARRAY_SIZE; ++i)
+        ParameterizedBlob& parameterizedBlob = *row.getBlob();
+        std::vector<uint32_t>& array = parameterizedBlob.getArray();
+        for (uint32_t i = 0; i < array_size; ++i)
             array.push_back(i);
-
-        // we must initialize offsets manually since offsetsHolder is written first to the sqlite table
-        // note that we must use the blob instance which is already in the row!
-        parameterizedBlob.initializeOffsets(0);
     }
 
-    static void fillBlobOffsetsParamTableRows(std::vector<BlobOffsetsParamTableRow>& rows)
+    static void fillBlobOffsetsParamTableRows(std::vector<BlobOffsetsParamTable::Row>& rows)
     {
         rows.clear();
         rows.resize(NUM_BLOB_OFFSETS_PARAM_TABLE_ROWS);
@@ -63,7 +58,8 @@ protected:
         }
     }
 
-    static void checkBlobOffsetsParamTableRow(const BlobOffsetsParamTableRow& row1, const BlobOffsetsParamTableRow& row2)
+    static void checkBlobOffsetsParamTableRow(const BlobOffsetsParamTable::Row& row1,
+            const BlobOffsetsParamTable::Row& row2)
     {
         ASSERT_EQ(row1.getBlobId(), row2.getBlobId());
         ASSERT_EQ(row1.getName(), row2.getName());
@@ -71,8 +67,8 @@ protected:
         ASSERT_EQ(row1.getBlob(), row2.getBlob());
     }
 
-    static void checkBlobOffsetsParamTableRows(const std::vector<BlobOffsetsParamTableRow>& rows1,
-            const std::vector<BlobOffsetsParamTableRow>& rows2)
+    static void checkBlobOffsetsParamTableRows(const std::vector<BlobOffsetsParamTable::Row>& rows1,
+            const std::vector<BlobOffsetsParamTable::Row>& rows2)
     {
         ASSERT_EQ(rows1.size(), rows2.size());
         for (size_t i = 0; i < rows1.size(); ++i)
@@ -110,7 +106,6 @@ protected:
 
     static const char DB_FILE_NAME[];
 
-    static const uint32_t ARRAY_SIZE;
     static const uint32_t NUM_BLOB_OFFSETS_PARAM_TABLE_ROWS;
 
     sql_tables::TestDb* m_database;
@@ -118,7 +113,6 @@ protected:
 
 const char BlobOffsetsParamTableTest::DB_FILE_NAME[] = "blob_offsets_param_table_test.sqlite";
 
-const uint32_t BlobOffsetsParamTableTest::ARRAY_SIZE = 10;
 const uint32_t BlobOffsetsParamTableTest::NUM_BLOB_OFFSETS_PARAM_TABLE_ROWS = 20;
 
 TEST_F(BlobOffsetsParamTableTest, deleteTable)
@@ -137,15 +131,15 @@ TEST_F(BlobOffsetsParamTableTest, readWithoutCondition)
 {
     BlobOffsetsParamTable& testTable = m_database->getBlobOffsetsParamTable();
 
-    std::vector<BlobOffsetsParamTableRow> writtenRows;
+    std::vector<BlobOffsetsParamTable::Row> writtenRows;
     fillBlobOffsetsParamTableRows(writtenRows);
     testTable.write(writtenRows);
 
-    std::vector<BlobOffsetsParamTableRow> readRows;
-    // we must use reserve to prevent dangling pointer to offsetsHolder in parameterizedBlob
-    // once std::vector is reallocated!
-    readRows.reserve(NUM_BLOB_OFFSETS_PARAM_TABLE_ROWS);
-    testTable.read(readRows);
+    std::vector<BlobOffsetsParamTable::Row> readRows;
+    BlobOffsetsParamTable::Reader reader = testTable.createReader();
+    while (reader.hasNext())
+        readRows.push_back(reader.next());
+
     checkBlobOffsetsParamTableRows(writtenRows, readRows);
 }
 
@@ -153,14 +147,15 @@ TEST_F(BlobOffsetsParamTableTest, readWithCondition)
 {
     BlobOffsetsParamTable& testTable = m_database->getBlobOffsetsParamTable();
 
-    std::vector<BlobOffsetsParamTableRow> writtenRows;
+    std::vector<BlobOffsetsParamTable::Row> writtenRows;
     fillBlobOffsetsParamTableRows(writtenRows);
     testTable.write(writtenRows);
 
     const std::string condition = "name='Name1'";
-    std::vector<BlobOffsetsParamTableRow> readRows;
-    // reserve not needed since we expect only a single row
-    testTable.read(condition, readRows);
+    std::vector<BlobOffsetsParamTable::Row> readRows;
+    BlobOffsetsParamTable::Reader reader = testTable.createReader(condition);
+    while (reader.hasNext())
+        readRows.push_back(reader.next());
     ASSERT_EQ(1, readRows.size());
 
     const size_t expectedRowNum = 1;
@@ -171,19 +166,20 @@ TEST_F(BlobOffsetsParamTableTest, update)
 {
     BlobOffsetsParamTable& testTable = m_database->getBlobOffsetsParamTable();
 
-    std::vector<BlobOffsetsParamTableRow> writtenRows;
+    std::vector<BlobOffsetsParamTable::Row> writtenRows;
     fillBlobOffsetsParamTableRows(writtenRows);
     testTable.write(writtenRows);
 
     const uint64_t updateRowId = 3;
-    BlobOffsetsParamTableRow updateRow;
+    BlobOffsetsParamTable::Row updateRow;
     fillBlobOffsetsParamTableRow(updateRow, updateRowId, "UpdatedName");
     const std::string updateCondition = "blobId=" + zserio::convertToString(updateRowId);
     testTable.update(updateRow, updateCondition);
 
-    std::vector<BlobOffsetsParamTableRow> readRows;
-    // reserve not needed since we expect only a single row
-    testTable.read(updateCondition, readRows);
+    std::vector<BlobOffsetsParamTable::Row> readRows;
+    BlobOffsetsParamTable::Reader reader = testTable.createReader(updateCondition);
+    while (reader.hasNext())
+        readRows.push_back(reader.next());
     ASSERT_EQ(1, readRows.size());
 
     checkBlobOffsetsParamTableRow(updateRow, readRows[0]);

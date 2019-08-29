@@ -14,8 +14,10 @@ namespace simple_structure
 class SetTopLevelPackageTest : public ::testing::Test
 {
 protected:
-    static const size_t SIMPLE_STRUCTURE_BIT_SIZE = 18;
+    static const size_t SIMPLE_STRUCTURE_BIT_SIZE;
 };
+
+const size_t SetTopLevelPackageTest::SIMPLE_STRUCTURE_BIT_SIZE = 18;
 
 TEST_F(SetTopLevelPackageTest, emptyConstructor)
 {

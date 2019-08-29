@@ -1,0 +1,59 @@
+<project name="identifiers_error" basedir="." default="run">
+    <testProperties testPath="errors/identifiers_error" testName="identifiers_error"/>
+
+    <target name="prepare">
+        <testPrepare testName="identifiers_error"/>
+    </target>
+
+    <target name="gen.check" depends="prepare">
+        <testGenCheck testName="identifiers_error"/>
+    </target>
+
+    <target name="gen" depends="gen.check" unless="identifiers_error.zs.gen_is_uptodate">
+        <testGenClean testName="identifiers_error"/>
+        <testGen testName="identifiers_error" zsFile="zserio.zs" ignoreErrors="true"/>
+        <testGen testName="identifiers_error" zsFile="zserio_prefix_package_name_error.zs" ignoreErrors="true"/>
+
+        <testGen testName="identifiers_error" zsFile="prefix_zserio/array_field_name_error.zs" ignoreErrors="true"/>
+        <testGen testName="identifiers_error" zsFile="prefix_zserio/choice_name_error.zs" ignoreErrors="true"/>
+        <testGen testName="identifiers_error" zsFile="prefix_zserio/const_name_error.zs" ignoreErrors="true"/>
+        <testGen testName="identifiers_error" zsFile="prefix_zserio/field_name_error.zs" ignoreErrors="true"/>
+        <testGen testName="identifiers_error" zsFile="prefix_zserio/function_name_error.zs" ignoreErrors="true"/>
+        <testGen testName="identifiers_error" zsFile="prefix_zserio/parameter_name_error.zs" ignoreErrors="true"/>
+        <testGen testName="identifiers_error" zsFile="prefix_zserio/struct_name_error.zs" ignoreErrors="true"/>
+        <testGen testName="identifiers_error" zsFile="prefix_zserio/subtype_name_error.zs" ignoreErrors="true"/>
+        <testGen testName="identifiers_error" zsFile="prefix_zserio/union_name_error.zs" ignoreErrors="true"/>
+        <testGen testName="identifiers_error" zsFile="prefix_zserio/zserio_subpackage_name_error.zs"
+                ignoreErrors="true"/>
+
+        <testGen testName="identifiers_error" zsFile="defined_name/defined_type_field_name_error.zs"
+                ignoreErrors="true"/>
+
+        <testGen testName="identifiers_error" zsFile="reserved_keywords/cpp_keyword_field_name_error.zs"
+                ignoreErrors="true"/>
+        <testGen testName="identifiers_error" zsFile="reserved_keywords/cpp_keyword_struct_name_error.zs"
+                ignoreErrors="true"/>
+        <testGen testName="identifiers_error" zsFile="reserved_keywords/java_keyword_field_name_error.zs"
+                ignoreErrors="true"/>
+        <testGen testName="identifiers_error" zsFile="reserved_keywords/python_keyword_field_name_error.zs"
+                ignoreErrors="true"/>
+        <testGen testName="identifiers_error" zsFile="reserved_keywords/zserio_keyword_field_name_error.zs"
+                ignoreErrors="true"/>
+    </target>
+
+    <target name="compile" depends="gen">
+        <testCompile testName="identifiers_error" srcPath="${identifiers_error.base_dir}/java"/>
+    </target>
+
+    <target name="findbugs" depends="compile" if="findbugs.home_dir">
+        <testFindbugs testName="identifiers_error" srcPath="${identifiers_error.base_dir}/java"/>
+    </target>
+
+    <target name="run" depends="findbugs">
+        <testRun testName="identifiers_error"/>
+    </target>
+
+    <target name="clean">
+        <testClean testName="identifiers_error"/>
+    </target>
+</project>

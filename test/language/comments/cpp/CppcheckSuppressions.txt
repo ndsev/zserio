@@ -1,0 +1,5 @@
+// suppress "Member variable 'X' is not initialized in the constructor."
+uninitMemberVar:*/struct_comments/DirectionStructure.cpp
+uninitMemberVar:*/struct_comments/DirectionStructure.h
+uninitMemberVar:*/unknown_tag/Test.cpp
+uninitMemberVar:*/unknown_tag_matching_prefix/Test.cpp

@@ -29,7 +29,7 @@ public class CompoundConstructorTemplateData
         return fieldList;
     }
 
-    private final String                            compoundName;
-    private final CompoundParameterTemplateData     compoundParametersData;
-    private final List<CompoundFieldTemplateData>   fieldList;
+    private final String compoundName;
+    private final CompoundParameterTemplateData compoundParametersData;
+    private final List<CompoundFieldTemplateData> fieldList;
 }

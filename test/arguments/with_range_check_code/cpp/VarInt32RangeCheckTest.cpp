@@ -25,9 +25,12 @@ protected:
         ASSERT_EQ(varInt32RangeCheckCompound, readVarInt32RangeCheckCompound);
     }
 
-    static const int32_t    VARINT32_LOWER_BOUND = -((INT32_C(1) << 28) - 1);
-    static const int32_t    VARINT32_UPPER_BOUND = (INT32_C(1) << 28) - 1;
+    static const int32_t VARINT32_LOWER_BOUND;
+    static const int32_t VARINT32_UPPER_BOUND;
 };
+
+const int32_t VarInt32RangeCheckTest::VARINT32_LOWER_BOUND = -((INT32_C(1) << 28) - 1);
+const int32_t VarInt32RangeCheckTest::VARINT32_UPPER_BOUND = (INT32_C(1) << 28) - 1;
 
 TEST_F(VarInt32RangeCheckTest, varInt32LowerBound)
 {

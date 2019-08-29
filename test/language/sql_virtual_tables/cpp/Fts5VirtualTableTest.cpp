@@ -30,34 +30,34 @@ public:
     }
 
 protected:
-    static void fillFts5VirtualTableRow(Fts5VirtualTableRow& row, const std::string& title,
+    static void fillFts5VirtualTableRow(Fts5VirtualTable::Row& row, const std::string& title,
             const std::string& body)
     {
         row.setTitle(title);
         row.setBody(body);
     }
 
-    static void fillFts5VirtualTableRows(std::vector<Fts5VirtualTableRow>& rows)
+    static void fillFts5VirtualTableRows(std::vector<Fts5VirtualTable::Row>& rows)
     {
         rows.clear();
         for (int32_t id = 0; id < NUM_VIRTUAL_TABLE_ROWS; ++id)
         {
             const std::string title = "Title" + zserio::convertToString(id);
             const std::string body = "Body" + zserio::convertToString(id);
-            Fts5VirtualTableRow row;
+            Fts5VirtualTable::Row row;
             fillFts5VirtualTableRow(row, title, body);
             rows.push_back(row);
         }
     }
 
-    static void checkFts5VirtualTableRow(const Fts5VirtualTableRow& row1, const Fts5VirtualTableRow& row2)
+    static void checkFts5VirtualTableRow(const Fts5VirtualTable::Row& row1, const Fts5VirtualTable::Row& row2)
     {
         ASSERT_EQ(row1.getTitle(), row2.getTitle());
         ASSERT_EQ(row1.getBody(), row2.getBody());
     }
 
-    static void checkFts5VirtualTableRows(const std::vector<Fts5VirtualTableRow>& rows1,
-            const std::vector<Fts5VirtualTableRow>& rows2)
+    static void checkFts5VirtualTableRows(const std::vector<Fts5VirtualTable::Row>& rows1,
+            const std::vector<Fts5VirtualTable::Row>& rows2)
     {
         ASSERT_EQ(rows1.size(), rows2.size());
         for (size_t i = 0; i < rows1.size(); ++i)
@@ -119,12 +119,14 @@ TEST_F(Fts5VirtualTableTest, readWithoutCondition)
 {
     Fts5VirtualTable& testTable = m_database->getFts5VirtualTable();
 
-    std::vector<Fts5VirtualTableRow> writtenRows;
+    std::vector<Fts5VirtualTable::Row> writtenRows;
     fillFts5VirtualTableRows(writtenRows);
     testTable.write(writtenRows);
 
-    std::vector<Fts5VirtualTableRow> readRows;
-    testTable.read(readRows);
+    std::vector<Fts5VirtualTable::Row> readRows;
+    auto reader = testTable.createReader();
+    while (reader.hasNext())
+        readRows.push_back(reader.next());
     checkFts5VirtualTableRows(writtenRows, readRows);
 }
 
@@ -132,13 +134,15 @@ TEST_F(Fts5VirtualTableTest, readWithCondition)
 {
     Fts5VirtualTable& testTable = m_database->getFts5VirtualTable();
 
-    std::vector<Fts5VirtualTableRow> writtenRows;
+    std::vector<Fts5VirtualTable::Row> writtenRows;
     fillFts5VirtualTableRows(writtenRows);
     testTable.write(writtenRows);
 
     const std::string condition = "body='Body1'";
-    std::vector<Fts5VirtualTableRow> readRows;
-    testTable.read(condition, readRows);
+    std::vector<Fts5VirtualTable::Row> readRows;
+    auto reader = testTable.createReader(condition);
+    while (reader.hasNext())
+        readRows.push_back(reader.next());
     ASSERT_EQ(1, readRows.size());
 
     const size_t expectedRowNum = 1;
@@ -149,18 +153,20 @@ TEST_F(Fts5VirtualTableTest, update)
 {
     Fts5VirtualTable& testTable = m_database->getFts5VirtualTable();
 
-    std::vector<Fts5VirtualTableRow> writtenRows;
+    std::vector<Fts5VirtualTable::Row> writtenRows;
     fillFts5VirtualTableRows(writtenRows);
     testTable.write(writtenRows);
 
     const std::string updateTitle = "Title3";
-    Fts5VirtualTableRow updateRow;
+    Fts5VirtualTable::Row updateRow;
     fillFts5VirtualTableRow(updateRow, updateTitle, "UpdatedName");
     const std::string updateCondition = "title='" + updateTitle + "'";
     testTable.update(updateRow, updateCondition);
 
-    std::vector<Fts5VirtualTableRow> readRows;
-    testTable.read(updateCondition, readRows);
+    std::vector<Fts5VirtualTable::Row> readRows;
+    auto reader = testTable.createReader(updateCondition);
+    while (reader.hasNext())
+        readRows.push_back(reader.next());
     ASSERT_EQ(1, readRows.size());
 
     checkFts5VirtualTableRow(updateRow, readRows[0]);

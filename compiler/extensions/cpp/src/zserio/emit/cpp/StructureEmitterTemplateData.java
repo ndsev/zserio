@@ -1,30 +1,21 @@
 package zserio.emit.cpp;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import zserio.ast.StructureType;
 import zserio.emit.common.ZserioEmitException;
 
 public class StructureEmitterTemplateData extends CompoundTypeTemplateData
 {
-    public StructureEmitterTemplateData(TemplateDataContext context, StructureType structureType)
-            throws ZserioEmitException
+    public StructureEmitterTemplateData(TemplateDataContext context, StructureType structureType,
+            boolean usedInRpc) throws ZserioEmitException
     {
         super(context, structureType);
-
-        nonOptionalSimpleFieldList = new ArrayList<CompoundFieldTemplateData>();
-        for (CompoundFieldTemplateData fieldTemplateData : getFieldList())
-        {
-            if (fieldTemplateData.getOptional() == null && fieldTemplateData.getIsSimpleType())
-                nonOptionalSimpleFieldList.add(fieldTemplateData);
-        }
+        needsRpcTraits = usedInRpc;
     }
 
-    public Iterable<CompoundFieldTemplateData> getNonOptionalSimpleFieldList()
+    public boolean getNeedsRpcTraits()
     {
-        return nonOptionalSimpleFieldList;
+        return needsRpcTraits;
     }
 
-    private final List<CompoundFieldTemplateData>   nonOptionalSimpleFieldList;
+    private final boolean needsRpcTraits;
 }

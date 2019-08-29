@@ -49,11 +49,11 @@ protected:
 const size_t UInt64ArrayOffsetTest::ARRAY_SIZE = 13;
 const size_t UInt64ArrayOffsetTest::VALUES_SIZE = 42;
 const size_t UInt64ArrayOffsetTest::FIRST_OFFSET =
-        bitsToBytes(getBitSizeOfVarUInt64(VALUES_SIZE)) +
+        bitsToBytes(bitSizeOfVarUInt64(VALUES_SIZE)) +
         8 * VALUES_SIZE +
-        bitsToBytes(getBitSizeOfVarUInt64(ARRAY_SIZE)) +
+        bitsToBytes(bitSizeOfVarUInt64(ARRAY_SIZE)) +
         ARRAY_SIZE +
-        bitsToBytes(getBitSizeOfVarUInt64(VALUES_SIZE));
+        bitsToBytes(bitSizeOfVarUInt64(VALUES_SIZE));
 const size_t UInt64ArrayOffsetTest::BIT_SIZE = bytesToBits(FIRST_OFFSET + 4 * VALUES_SIZE);
 
 TEST_F(UInt64ArrayOffsetTest, read)
@@ -159,7 +159,7 @@ TEST_F(UInt64ArrayOffsetTest, writeWithPosition)
 TEST_F(UInt64ArrayOffsetTest, writeWrongOffsets)
 {
     UInt64ArrayOffset uint64ArrayOffset;
-    UInt64Array& offsets = uint64ArrayOffset.getOffsets();
+    std::vector<uint64_t>& offsets = uint64ArrayOffset.getOffsets();
     for (size_t i = 0; i < VALUES_SIZE; ++i)
         offsets.push_back(FIRST_OFFSET + i * 4 + (i == VALUES_SIZE - 1 ? 1 : 0));
     uint64ArrayOffset.getArray().resize(ARRAY_SIZE);

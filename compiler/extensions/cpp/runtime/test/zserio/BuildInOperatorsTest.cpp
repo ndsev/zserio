@@ -5,7 +5,7 @@
 namespace zserio
 {
 
-TEST(BuildInOperatorsTest, GetNumBits)
+TEST(BuildInOperatorsTest, getNumBits)
 {
     EXPECT_EQ(0, getNumBits(0));
     EXPECT_EQ(1, getNumBits(1));

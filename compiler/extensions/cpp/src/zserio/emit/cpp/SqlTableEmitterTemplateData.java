@@ -5,7 +5,11 @@ import java.util.List;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
+import zserio.ast.BooleanType;
+import zserio.ast.CompoundType;
+import zserio.ast.EnumType;
 import zserio.ast.Parameter;
+import zserio.ast.TypeReference;
 import zserio.ast.ZserioType;
 import zserio.ast.ZserioTypeUtil;
 import zserio.ast.Expression;
@@ -21,18 +25,15 @@ import zserio.emit.common.sql.types.NativeIntegerType;
 import zserio.emit.common.sql.types.NativeRealType;
 import zserio.emit.common.sql.types.SqlNativeType;
 import zserio.emit.cpp.types.CppNativeType;
-import zserio.emit.cpp.types.NativeBooleanType;
-import zserio.emit.cpp.types.NativeEnumType;
+import zserio.emit.cpp.types.NativeOptionalHolderType;
 import zserio.tools.HashUtil;
 
 public class SqlTableEmitterTemplateData extends UserTypeTemplateData
 {
-    public SqlTableEmitterTemplateData(TemplateDataContext context, SqlTableType tableType, String tableRowName)
+    public SqlTableEmitterTemplateData(TemplateDataContext context, SqlTableType tableType)
             throws ZserioEmitException
     {
         super(context, tableType);
-
-        rowName = tableRowName;
 
         final CppNativeTypeMapper cppNativeTypeMapper = context.getCppNativeTypeMapper();
         final ExpressionFormatter cppExpressionFormatter = context.getExpressionFormatter(this);
@@ -49,11 +50,17 @@ public class SqlTableEmitterTemplateData extends UserTypeTemplateData
                 context.getSqlIndirectExpressionFormatter(this);
         final SqlNativeTypeMapper sqlNativeTypeMapper = new SqlNativeTypeMapper();
         explicitParameters = new TreeSet<ExplicitParameterTemplateData>();
+        boolean hasImplicitParameters = false;
+        boolean requiresOwnerContext = false;
         for (Field tableField : tableFields)
         {
             final FieldTemplateData field = new FieldTemplateData(cppNativeTypeMapper, cppExpressionFormatter,
                     cppSqlIndirectExpressionFormatter, sqlNativeTypeMapper, tableType, tableField, this);
             fields.add(field);
+
+            if (field.getHasImplicitParameters())
+                hasImplicitParameters = true;
+
             for (FieldTemplateData.ParameterTemplateData parameterTemplateData : field.getTypeParameters())
             {
                 if (parameterTemplateData.getIsExplicit())
@@ -64,13 +71,15 @@ public class SqlTableEmitterTemplateData extends UserTypeTemplateData
                     explicitParameters.add(new ExplicitParameterTemplateData(expression, cppTypeName,
                             isSimpleType));
                 }
+                else
+                {
+                    if (parameterTemplateData.getRequiresOwnerContext())
+                        requiresOwnerContext = true;
+                }
             }
         }
-    }
-
-    public String getRowName()
-    {
-        return rowName;
+        this.hasImplicitParameters = hasImplicitParameters;
+        this.requiresOwnerContext = requiresOwnerContext;
     }
 
     public Iterable<FieldTemplateData> getFields()
@@ -81,6 +90,16 @@ public class SqlTableEmitterTemplateData extends UserTypeTemplateData
     public Iterable<ExplicitParameterTemplateData> getExplicitParameters()
     {
         return explicitParameters;
+    }
+
+    public boolean getHasImplicitParameters()
+    {
+        return hasImplicitParameters;
+    }
+
+    public boolean getRequiresOwnerContext()
+    {
+        return requiresOwnerContext;
     }
 
     public String getSqlConstraint()
@@ -173,29 +192,45 @@ public class SqlTableEmitterTemplateData extends UserTypeTemplateData
                 SqlTableType table, Field field, IncludeCollector includeCollector) throws ZserioEmitException
         {
             final ZserioType fieldType = field.getFieldType();
+            final ZserioType fieldBaseType = TypeReference.resolveBaseType(fieldType);
             final CppNativeType nativeFieldType = cppNativeTypeMapper.getCppType(fieldType);
             includeCollector.addHeaderIncludesForType(nativeFieldType);
 
+            final NativeOptionalHolderType nativeOptionalHolder = new NativeOptionalHolderType(nativeFieldType);
+
             name = field.getName();
             cppTypeName = nativeFieldType.getFullName();
-            zserioTypeName = ZserioTypeUtil.getFullName(fieldType);
+            optionalCppTypeName = nativeOptionalHolder.getFullName();
+            optionalCppArgumentTypeName = nativeOptionalHolder.getArgumentTypeName();
             final Expression sqlConstraintExpr = field.getSqlConstraint().getTranslatedFieldConstraintExpr();
             sqlConstraint = (sqlConstraintExpr == null) ? null :
                 cppExpressionFormatter.formatGetter(sqlConstraintExpr);
             isVirtual = field.getIsVirtual();
 
+            getterName = AccessorNameFormatter.getGetterName(field);
+            setterName = AccessorNameFormatter.getSetterName(field);
+
             typeParameters = new ArrayList<ParameterTemplateData>();
             final List<TypeInstantiation.InstantiatedParameter> parameters =
                     field.getInstantiatedParameters();
+            boolean hasImplicitParameters = false;
             for (TypeInstantiation.InstantiatedParameter parameter : parameters)
             {
-                typeParameters.add(new ParameterTemplateData(cppNativeTypeMapper,
-                        cppSqlIndirectExpressionFormatter, table, field, parameter, includeCollector));
+                final ParameterTemplateData parameterTemplateData = new ParameterTemplateData(
+                        cppNativeTypeMapper, cppSqlIndirectExpressionFormatter,
+                        table, field, parameter, includeCollector);
+                typeParameters.add(parameterTemplateData);
+                if (!parameterTemplateData.getIsExplicit())
+                    hasImplicitParameters = true;
             }
+            this.hasImplicitParameters = hasImplicitParameters;
 
-            isBoolean = nativeFieldType instanceof NativeBooleanType;
-            enumData = createEnumTemplateData(nativeFieldType);
+            isSimpleType = nativeFieldType.isSimpleType();
+            isBoolean = fieldBaseType instanceof BooleanType;
+            enumData = createEnumTemplateData(cppNativeTypeMapper, fieldBaseType);
             sqlTypeData = new SqlTypeTemplateData(sqlNativeTypeMapper, field);
+            needsChildrenInitialization = (fieldBaseType instanceof CompoundType) &&
+                    ((CompoundType)fieldBaseType).needsChildrenInitialization();
         }
 
         public String getName()
@@ -208,9 +243,14 @@ public class SqlTableEmitterTemplateData extends UserTypeTemplateData
             return cppTypeName;
         }
 
-        public String getZserioTypeName()
+        public String getOptionalCppTypeName()
         {
-            return zserioTypeName;
+            return optionalCppTypeName;
+        }
+
+        public String getOptionalCppArgumentTypeName()
+        {
+            return optionalCppArgumentTypeName;
         }
 
         public String getSqlConstraint()
@@ -223,9 +263,29 @@ public class SqlTableEmitterTemplateData extends UserTypeTemplateData
             return isVirtual;
         }
 
+        public String getGetterName()
+        {
+            return getterName;
+        }
+
+        public String getSetterName()
+        {
+            return setterName;
+        }
+
         public Iterable<ParameterTemplateData> getTypeParameters()
         {
             return typeParameters;
+        }
+
+        public boolean getHasImplicitParameters()
+        {
+            return hasImplicitParameters;
+        }
+
+        public boolean getIsSimpleType()
+        {
+            return isSimpleType;
         }
 
         public boolean getIsBoolean()
@@ -243,6 +303,11 @@ public class SqlTableEmitterTemplateData extends UserTypeTemplateData
             return sqlTypeData;
         }
 
+        public boolean getNeedsChildrenInitialization()
+        {
+            return needsChildrenInitialization;
+        }
+
         public static class ParameterTemplateData
         {
             public ParameterTemplateData(CppNativeTypeMapper cppNativeTypeMapper,
@@ -257,22 +322,12 @@ public class SqlTableEmitterTemplateData extends UserTypeTemplateData
 
                 final Expression argumentExpression = instantiatedParameter.getArgumentExpression();
                 isExplicit = argumentExpression.isExplicitVariable();
-                tableName = tableType.getName();
-                fieldName = field.getName();
                 definitionName = parameter.getName();
                 cppTypeName = parameterNativeType.getFullName();
                 isSimpleType = parameterNativeType.isSimpleType();
                 expression = cppSqlIndirectExpressionFormatter.formatGetter(argumentExpression);
-            }
-
-            public String getTableName()
-            {
-                return tableName;
-            }
-
-            public String getFieldName()
-            {
-                return fieldName;
+                requiresOwnerContext = argumentExpression.requiresOwnerContext();
+                getterName = AccessorNameFormatter.getGetterName(parameter);
             }
 
             public String getDefinitionName()
@@ -300,20 +355,33 @@ public class SqlTableEmitterTemplateData extends UserTypeTemplateData
                 return expression;
             }
 
-            private final String tableName;
-            private final String fieldName;
+            public boolean getRequiresOwnerContext()
+            {
+                return requiresOwnerContext;
+            }
+
+            public String getGetterName()
+            {
+                return getterName;
+            }
+
             private final String definitionName;
             private final String cppTypeName;
             private final boolean isSimpleType;
             private final boolean isExplicit;
             private final String expression;
+            private final boolean requiresOwnerContext;
+            private final String getterName;
         }
 
         public static class EnumTemplateData
         {
-            public EnumTemplateData(NativeEnumType nativeEnumType)
+            public EnumTemplateData(CppNativeTypeMapper cppNativeTypeMapper, EnumType enumType)
+                    throws ZserioEmitException
             {
-                baseCppTypeName = nativeEnumType.getBaseType().getFullName();
+                final CppNativeType nativeBaseType =
+                        cppNativeTypeMapper.getCppType(enumType.getIntegerBaseType());
+                baseCppTypeName = nativeBaseType.getFullName();
             }
 
             public String getBaseCppTypeName()
@@ -356,34 +424,42 @@ public class SqlTableEmitterTemplateData extends UserTypeTemplateData
                 return isReal;
             }
 
-            private final String  name;
+            private final String name;
             private final boolean isBlob;
             private final boolean isInteger;
             private final boolean isReal;
         }
 
-        private EnumTemplateData createEnumTemplateData(CppNativeType nativeType)
+        private EnumTemplateData createEnumTemplateData(CppNativeTypeMapper cppNativeTypeMapper,
+                ZserioType fieldBaseType) throws ZserioEmitException
         {
-            if (!(nativeType instanceof NativeEnumType))
+            if (!(fieldBaseType instanceof EnumType))
                 return null;
 
-            return new EnumTemplateData((NativeEnumType)nativeType);
+            return new EnumTemplateData(cppNativeTypeMapper, (EnumType)fieldBaseType);
         }
 
         private final String name;
         private final String cppTypeName;
-        private final String zserioTypeName;
+        private final String optionalCppTypeName;
+        private final String optionalCppArgumentTypeName;
         private final String sqlConstraint;
         private final boolean isVirtual;
+        private final String getterName;
+        private final String setterName;
         private final List<ParameterTemplateData> typeParameters;
+        private final boolean hasImplicitParameters;
         private final boolean isBoolean;
         private final EnumTemplateData enumData;
         private final SqlTypeTemplateData sqlTypeData;
+        private final boolean isSimpleType;
+        private final boolean needsChildrenInitialization;
     }
 
-    private final String rowName;
     private final List<FieldTemplateData> fields;
     private final SortedSet<ExplicitParameterTemplateData> explicitParameters;
+    private final boolean hasImplicitParameters;
+    private final boolean requiresOwnerContext;
     private final String sqlConstraint;
     private final String virtualTableUsing;
     private final boolean needsTypesInSchema;

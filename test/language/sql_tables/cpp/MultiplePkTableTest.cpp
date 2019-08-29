@@ -30,34 +30,34 @@ public:
     }
 
 protected:
-    static void fillMultiplePkTableRow(MultiplePkTableRow& row, int32_t blobId, const std::string& name)
+    static void fillMultiplePkTableRow(MultiplePkTable::Row& row, int32_t blobId, const std::string& name)
     {
         row.setBlobId(blobId);
         row.setAge(10);
         row.setName(name);
     }
 
-    static void fillMultiplePkTableRows(std::vector<MultiplePkTableRow>& rows)
+    static void fillMultiplePkTableRows(std::vector<MultiplePkTable::Row>& rows)
     {
         rows.clear();
         for (int32_t blobId = 0; blobId < NUM_MULTIPLE_PK_TABLE_ROWS; ++blobId)
         {
             const std::string name = "Name" + zserio::convertToString(blobId);
-            MultiplePkTableRow row;
+            MultiplePkTable::Row row;
             fillMultiplePkTableRow(row, blobId, name);
             rows.push_back(row);
         }
     }
 
-    static void checkMultiplePkTableRow(const MultiplePkTableRow& row1, const MultiplePkTableRow& row2)
+    static void checkMultiplePkTableRow(const MultiplePkTable::Row& row1, const MultiplePkTable::Row& row2)
     {
         ASSERT_EQ(row1.getBlobId(), row2.getBlobId());
         ASSERT_EQ(row1.getAge(), row2.getAge());
         ASSERT_EQ(row1.getName(), row2.getName());
     }
 
-    static void checkMultiplePkTableRows(const std::vector<MultiplePkTableRow>& rows1,
-            const std::vector<MultiplePkTableRow>& rows2)
+    static void checkMultiplePkTableRows(const std::vector<MultiplePkTable::Row>& rows1,
+            const std::vector<MultiplePkTable::Row>& rows2)
     {
         ASSERT_EQ(rows1.size(), rows2.size());
         for (size_t i = 0; i < rows1.size(); ++i)
@@ -120,12 +120,15 @@ TEST_F(MultiplePkTableTest, readWithoutCondition)
 {
     MultiplePkTable& testTable = m_database->getMultiplePkTable();
 
-    std::vector<MultiplePkTableRow> writtenRows;
+    std::vector<MultiplePkTable::Row> writtenRows;
     fillMultiplePkTableRows(writtenRows);
     testTable.write(writtenRows);
 
-    std::vector<MultiplePkTableRow> readRows;
-    testTable.read(readRows);
+    std::vector<MultiplePkTable::Row> readRows;
+    MultiplePkTable::Reader reader = testTable.createReader();
+    while (reader.hasNext())
+        readRows.push_back(reader.next());
+
     checkMultiplePkTableRows(writtenRows, readRows);
 }
 
@@ -133,13 +136,15 @@ TEST_F(MultiplePkTableTest, readWithCondition)
 {
     MultiplePkTable& testTable = m_database->getMultiplePkTable();
 
-    std::vector<MultiplePkTableRow> writtenRows;
+    std::vector<MultiplePkTable::Row> writtenRows;
     fillMultiplePkTableRows(writtenRows);
     testTable.write(writtenRows);
 
     const std::string condition = "name='Name1'";
-    std::vector<MultiplePkTableRow> readRows;
-    testTable.read(condition, readRows);
+    std::vector<MultiplePkTable::Row> readRows;
+    MultiplePkTable::Reader reader = testTable.createReader(condition);
+    while (reader.hasNext())
+        readRows.push_back(reader.next());
     ASSERT_EQ(1, readRows.size());
 
     const size_t expectedRowNum = 1;
@@ -150,18 +155,20 @@ TEST_F(MultiplePkTableTest, update)
 {
     MultiplePkTable& testTable = m_database->getMultiplePkTable();
 
-    std::vector<MultiplePkTableRow> writtenRows;
+    std::vector<MultiplePkTable::Row> writtenRows;
     fillMultiplePkTableRows(writtenRows);
     testTable.write(writtenRows);
 
     const int32_t updateRowId = 3;
-    MultiplePkTableRow updateRow;
+    MultiplePkTable::Row updateRow;
     fillMultiplePkTableRow(updateRow, updateRowId, "UpdatedName");
     const std::string updateCondition = "blobId=" + zserio::convertToString(updateRowId);
     testTable.update(updateRow, updateCondition);
 
-    std::vector<MultiplePkTableRow> readRows;
-    testTable.read(updateCondition, readRows);
+    std::vector<MultiplePkTable::Row> readRows;
+    MultiplePkTable::Reader reader = testTable.createReader(updateCondition);
+    while (reader.hasNext())
+        readRows.push_back(reader.next());
     ASSERT_EQ(1, readRows.size());
 
     checkMultiplePkTableRow(updateRow, readRows[0]);

@@ -26,11 +26,14 @@ protected:
         ASSERT_EQ(variableIntRangeCheckCompound, readVariableIntRangeCheckCompound);
     }
 
-    static const uint8_t    NUM_BITS = 10;
-
-    static const int64_t    VARIABLE_INT_LOWER_BOUND = -(INT64_C(1) << (NUM_BITS - 1));
-    static const int64_t    VARIABLE_INT_UPPER_BOUND = (INT64_C(1) << (NUM_BITS - 1)) - 1;
+    static const uint8_t NUM_BITS;
+    static const int64_t VARIABLE_INT_LOWER_BOUND;
+    static const int64_t VARIABLE_INT_UPPER_BOUND;
 };
+
+const uint8_t VariableIntRangeCheckTest::NUM_BITS = 10;
+const int64_t VariableIntRangeCheckTest::VARIABLE_INT_LOWER_BOUND = -(INT64_C(1) << (NUM_BITS - 1));
+const int64_t VariableIntRangeCheckTest::VARIABLE_INT_UPPER_BOUND = (INT64_C(1) << (NUM_BITS - 1)) - 1;
 
 TEST_F(VariableIntRangeCheckTest, variableIntLowerBound)
 {

@@ -18,253 +18,463 @@ protected:
         int getValue() const { return m_value; }
         void setValue(int value) { m_value = value; }
 
-        int hashCode() const { return 10; }
         bool operator==(const DummyObject& other) const { return m_value == other.m_value; }
 
     private:
         int m_value;
     };
 
-    template <template<class> class OPTIONAL_HOLDER>
+    template <template <class> class OPTIONAL_HOLDER>
+    void emptyConstructorTest()
+    {
+        OPTIONAL_HOLDER<int> optional;
+        ASSERT_FALSE(optional.hasValue());
+    }
+
+    template <template <class> class OPTIONAL_HOLDER>
+    void nullOptConstructorTest()
+    {
+        OPTIONAL_HOLDER<int> optional{zserio::NullOpt};
+        ASSERT_FALSE(optional.hasValue());
+    }
+
+    template <template <class> class OPTIONAL_HOLDER>
+    void lvalueConstructorTest()
+    {
+        std::vector<int> values{1, 2, 3};
+        void* origAddress = &values[0];
+        OPTIONAL_HOLDER<std::vector<int>> optional{values};
+        ASSERT_NE(origAddress, &(*optional)[0]);
+        ASSERT_EQ(values, *optional);
+
+        // check initializer list
+        OPTIONAL_HOLDER<std::vector<int>> optionalFromList{{1, 2, 3}};
+        std::vector<int> listValues{1, 2, 3};
+        ASSERT_EQ(listValues, *optionalFromList);
+    }
+
+    template <template <class> class OPTIONAL_HOLDER>
+    void rvalueConstructorTest()
+    {
+        std::vector<int> values{1, 2, 3};
+        std::vector<int> origValues{values};
+        void* origAddress = &values[0];
+        OPTIONAL_HOLDER<std::vector<int>> optional{std::move(values)};
+        ASSERT_EQ(origAddress, &(*optional)[0]);
+        ASSERT_EQ(origValues, *optional);
+    }
+
+    template <template <class> class OPTIONAL_HOLDER>
     void copyConstructorTest()
     {
         OPTIONAL_HOLDER<int> optional;
-        EXPECT_THROW(optional.get(), CppRuntimeException);
+        ASSERT_THROW(*optional, CppRuntimeException);
         const int intValue = 0xDEAD;
-        optional.set(intValue);
+        optional = intValue;
 
         OPTIONAL_HOLDER<int> optionalCopy(optional);
-        EXPECT_EQ(intValue, optionalCopy.get());
+        ASSERT_EQ(intValue, *optionalCopy);
+
+        OPTIONAL_HOLDER<std::vector<int>> optionalVector{std::vector<int>{1, 2, 3}};
+        void* origAddress = &(*optionalVector)[0];
+        OPTIONAL_HOLDER<std::vector<int>> optionalVectorCopy{optionalVector};
+        ASSERT_NE(origAddress, &(*optionalVectorCopy)[0]);
+        ASSERT_EQ(*optionalVector, *optionalVectorCopy);
     }
 
-    template <template<class> class OPTIONAL_HOLDER>
-    void assignmentOperatorTest()
+    template <template <class> class OPTIONAL_HOLDER>
+    void copyAssignmentOperatorTest()
     {
         OPTIONAL_HOLDER<int> optional;
-        EXPECT_THROW(optional.get(), CppRuntimeException);
+        ASSERT_THROW(*optional, CppRuntimeException);
         const int intValue = 0xDEAD;
-        optional.set(intValue);
+        optional = intValue;
 
-        OPTIONAL_HOLDER<int> optionalCopy = optional;
-        EXPECT_EQ(intValue, optionalCopy.get());
+        OPTIONAL_HOLDER<int> optionalCopy;
+        optionalCopy = optional;
+        ASSERT_EQ(intValue, *optionalCopy);
+
+        OPTIONAL_HOLDER<std::vector<int>> optionalVector{std::vector<int>{1, 2, 3}};
+        void* origAddress = &(*optionalVector)[0];
+        OPTIONAL_HOLDER<std::vector<int>> optionalVectorCopy;
+        optionalVectorCopy = optionalVector;
+        ASSERT_NE(origAddress, &(*optionalVectorCopy)[0]);
+        ASSERT_EQ(*optionalVector, *optionalVectorCopy);
     }
 
-    template <template<class> class OPTIONAL_HOLDER>
+    template <template <class> class OPTIONAL_HOLDER>
+    void moveConstructorTest()
+    {
+        OPTIONAL_HOLDER<std::vector<int>> optionalVector{std::vector<int>{ 1, 2, 3 }};
+        std::vector<int> origValues{*optionalVector};
+        void* origAddress = &(*optionalVector)[0];
+        OPTIONAL_HOLDER<std::vector<int>> optionalVectorMoved{std::move(optionalVector)};
+        ASSERT_EQ(origAddress, &(*optionalVectorMoved)[0]);
+        ASSERT_EQ(origValues, *optionalVectorMoved);
+    }
+
+    template <template <class> class OPTIONAL_HOLDER>
+    void moveAssignmentOperatorTest()
+    {
+        OPTIONAL_HOLDER<std::vector<int>> optionalVector{std::vector<int>{ 1, 2, 3 }};
+        std::vector<int> origValues{*optionalVector};
+        void* origAddress = &(*optionalVector)[0];
+        OPTIONAL_HOLDER<std::vector<int>> optionalVectorMoved;
+        optionalVectorMoved = std::move(optionalVector);
+        ASSERT_EQ(origAddress, &(*optionalVectorMoved)[0]);
+        ASSERT_EQ(origValues, *optionalVectorMoved);
+    }
+
+    template <template <class> class OPTIONAL_HOLDER>
+    void lvalueAssignmentOperatorTest()
+    {
+        std::vector<int> values{ 1, 2, 3 };
+        void* origAddress = &values[0];
+        OPTIONAL_HOLDER<std::vector<int>> optional;
+        optional = values;
+        ASSERT_NE(origAddress, &(*optional)[0]);
+        ASSERT_EQ(values, *optional);
+    }
+
+    template <template <class> class OPTIONAL_HOLDER>
+    void rvalueAssignmentOperatorTest()
+    {
+        std::vector<int> values{ 1, 2, 3 };
+        std::vector<int> origValues{values};
+        void* origAddress = &values[0];
+        OPTIONAL_HOLDER<std::vector<int>> optional;
+        optional = std::move(values);
+        ASSERT_EQ(origAddress, &(*optional)[0]);
+        ASSERT_EQ(origValues, *optional);
+    }
+
+    template <template <class> class OPTIONAL_HOLDER>
+    void resetTest()
+    {
+        OPTIONAL_HOLDER<std::vector<int>> optional{std::vector<int>{1, 2, 3}};
+        ASSERT_TRUE(optional.hasValue());
+        ASSERT_EQ(1, (*optional)[0]);
+
+        optional.reset();
+        ASSERT_FALSE(optional.hasValue());
+
+        optional = std::vector<int>{3, 2, 1};
+        ASSERT_TRUE(optional.hasValue());
+        ASSERT_EQ(3, (*optional)[0]);
+
+        optional.reset();
+        ASSERT_FALSE(optional.hasValue());
+    }
+
+    template <template <class> class OPTIONAL_HOLDER>
     void equalOperatorTest()
     {
         OPTIONAL_HOLDER<int> optional1;
-        optional1.set(0xDEAD);
+        optional1 = 0xDEAD;
         OPTIONAL_HOLDER<int> optional2;
-        optional2.set(0xDEAD);
+        optional2 = 0xDEAD;
         OPTIONAL_HOLDER<int> optional3;
-        optional3.set(0xBEEF);
+        optional3 = 0xBEEF;
         OPTIONAL_HOLDER<int> optional4;
 
-        EXPECT_EQ(true, optional1 == optional2);
-        EXPECT_EQ(false, optional1 == optional3);
-        EXPECT_EQ(false, optional1 == optional4);
+        ASSERT_EQ(true, optional1 == optional2);
+        ASSERT_EQ(false, optional1 == optional3);
+        ASSERT_EQ(false, optional1 == optional4);
     }
 
-    template <template<class> class OPTIONAL_HOLDER>
+    template <template <class> class OPTIONAL_HOLDER>
     void setGetTest()
     {
         OPTIONAL_HOLDER<int> optionalInt;
-        EXPECT_THROW(optionalInt.get(), CppRuntimeException);
+        ASSERT_THROW(*optionalInt, CppRuntimeException);
         const int intValue = 0xDEAD;
-        optionalInt.set(intValue);
-        EXPECT_EQ(intValue, optionalInt.get());
+        optionalInt = intValue;
+        ASSERT_EQ(intValue, *optionalInt);
 
         OPTIONAL_HOLDER<float> optionalFloat;
-        EXPECT_THROW(optionalFloat.get(), CppRuntimeException);
+        ASSERT_THROW(*optionalFloat, CppRuntimeException);
         const float floatValue = 3.14f;
-        optionalFloat.set(floatValue);
-        EXPECT_EQ(floatValue, optionalFloat.get());
+        optionalFloat = floatValue;
+        ASSERT_EQ(floatValue, optionalFloat.value());
 
         OPTIONAL_HOLDER<DummyObject> optionalObject;
-        EXPECT_THROW(optionalObject.get(), CppRuntimeException);
+        ASSERT_THROW(*optionalObject, CppRuntimeException);
         DummyObject objectValue;
         objectValue.setValue(intValue);
-        optionalObject.set(objectValue);
-        const DummyObject& readObjectValueConst = optionalObject.get();
-        EXPECT_EQ(intValue, readObjectValueConst.getValue());
-        DummyObject& readObjectValue = optionalObject.get();
-        EXPECT_EQ(intValue, readObjectValue.getValue());
+        optionalObject = objectValue;
+        const DummyObject& readObjectValueConst = *optionalObject;
+        ASSERT_EQ(intValue, readObjectValueConst.getValue());
+        DummyObject& readObjectValue = *optionalObject;
+        ASSERT_EQ(intValue, readObjectValue.getValue());
+        ASSERT_EQ(intValue, optionalObject->getValue());
     }
 
-    template <template<class> class OPTIONAL_HOLDER>
-    void pointerSetGetTest()
+    template <template <class> class OPTIONAL_HOLDER>
+    void hasValueTest()
     {
         OPTIONAL_HOLDER<int> optionalInt;
-        EXPECT_THROW(optionalInt.get(), CppRuntimeException);
-        const int intValue = 0xDEAD;
-        optionalInt.reset(new (optionalInt.getResetStorage()) int(intValue));
-        EXPECT_EQ(intValue, optionalInt.get());
+        ASSERT_THROW(*optionalInt, CppRuntimeException);
+        ASSERT_EQ(false, optionalInt.hasValue());
 
-        OPTIONAL_HOLDER<float> optionalFloat;
-        EXPECT_THROW(optionalFloat.get(), CppRuntimeException);
-        const float floatValue = 3.14f;
-        optionalFloat.reset(new (optionalFloat.getResetStorage()) float(floatValue));
-        EXPECT_EQ(floatValue, optionalFloat.get());
-
-        OPTIONAL_HOLDER<DummyObject> optionalObject;
-        EXPECT_THROW(optionalObject.get(), CppRuntimeException);
-        optionalObject.reset(new (optionalObject.getResetStorage()) DummyObject(intValue));
-        const DummyObject& readObjectValueConst = optionalObject.get();
-        EXPECT_EQ(intValue, readObjectValueConst.getValue());
-        DummyObject& readObjectValue = optionalObject.get();
-        EXPECT_EQ(intValue, readObjectValue.getValue());
+        optionalInt = 0xDEAD;
+        ASSERT_EQ(true, optionalInt.hasValue());
     }
 
-    template <template<class> class OPTIONAL_HOLDER>
-    void isSetTest()
-    {
-        OPTIONAL_HOLDER<int> optionalInt;
-        EXPECT_THROW(optionalInt.get(), CppRuntimeException);
-        EXPECT_EQ(false, optionalInt.isSet());
-
-        optionalInt.set(0xDEAD);
-        EXPECT_EQ(true, optionalInt.isSet());
-    }
-
-    template <template<class> class OPTIONAL_HOLDER>
+    template <template <class> class OPTIONAL_HOLDER>
     void constGetTest()
     {
         const int intValue = 0xDEAD;
         OPTIONAL_HOLDER<int> optional;
-        optional.set(intValue);
+        optional = intValue;
         const OPTIONAL_HOLDER<int> constOptional(optional);
-        EXPECT_EQ(intValue, constOptional.get());
-    }
+        ASSERT_EQ(intValue, *constOptional);
+        ASSERT_EQ(intValue, constOptional.value());
 
-    template <template<class> class OPTIONAL_HOLDER>
-    void hashCodeTest()
-    {
-        const int intValue = 10;
-        OPTIONAL_HOLDER<int> optional;
-        EXPECT_EQ(HASH_PRIME_NUMBER * HASH_SEED, optional.hashCode());
-        optional.set(intValue);
-        EXPECT_EQ(HASH_PRIME_NUMBER * HASH_SEED + intValue, optional.hashCode());
+        DummyObject objectValue;
+        objectValue.setValue(intValue);
+        OPTIONAL_HOLDER<DummyObject> optionalObject{objectValue};
+        ASSERT_EQ(intValue, optionalObject->getValue());
     }
 };
 
-TEST_F(OptionalHolderTest, InPlaceCopyConstructor)
+TEST_F(OptionalHolderTest, inPlaceEmptyConstructor)
+{
+    emptyConstructorTest<InPlaceOptionalHolder>();
+}
+
+TEST_F(OptionalHolderTest, inPlaceNullOptConstructor)
+{
+    nullOptConstructorTest<InPlaceOptionalHolder>();
+}
+
+TEST_F(OptionalHolderTest, inPlaceLvalueConstructor)
+{
+    lvalueConstructorTest<InPlaceOptionalHolder>();
+}
+
+TEST_F(OptionalHolderTest, inPlaceRvalueConstructor)
+{
+    rvalueConstructorTest<InPlaceOptionalHolder>();
+}
+
+TEST_F(OptionalHolderTest, inPlaceCopyConstructor)
 {
     copyConstructorTest<InPlaceOptionalHolder>();
 }
 
-TEST_F(OptionalHolderTest, InPlaceAssignmentOperator)
+TEST_F(OptionalHolderTest, inPlaceCopyAssignmentOperator)
 {
-    assignmentOperatorTest<InPlaceOptionalHolder>();
+    copyAssignmentOperatorTest<InPlaceOptionalHolder>();
 }
 
-TEST_F(OptionalHolderTest, InPlaceEqualOperator)
+TEST_F(OptionalHolderTest, inPlaceMoveConstructor)
+{
+    moveConstructorTest<InPlaceOptionalHolder>();
+}
+
+TEST_F(OptionalHolderTest, inPlaceMoveAssignmentOperator)
+{
+    moveAssignmentOperatorTest<InPlaceOptionalHolder>();
+}
+
+TEST_F(OptionalHolderTest, inPlaceLvalueAssignmentOperator)
+{
+    lvalueAssignmentOperatorTest<InPlaceOptionalHolder>();
+}
+
+TEST_F(OptionalHolderTest, inPlaceRvalueAssignmentOperator)
+{
+    rvalueAssignmentOperatorTest<InPlaceOptionalHolder>();
+}
+
+TEST_F(OptionalHolderTest, inPlaceReset)
+{
+    resetTest<InPlaceOptionalHolder>();
+}
+
+TEST_F(OptionalHolderTest, inPlaceEqualOperator)
 {
     equalOperatorTest<InPlaceOptionalHolder>();
 }
 
-TEST_F(OptionalHolderTest, InPlaceSetGet)
+TEST_F(OptionalHolderTest, inPlaceSetGet)
 {
     setGetTest<InPlaceOptionalHolder>();
 }
 
-TEST_F(OptionalHolderTest, InPlacePointerSetGet)
+TEST_F(OptionalHolderTest, inPlaceHasValue)
 {
-    pointerSetGetTest<InPlaceOptionalHolder>();
+    hasValueTest<InPlaceOptionalHolder>();
 }
 
-TEST_F(OptionalHolderTest, InPlaceIsSet)
-{
-    isSetTest<InPlaceOptionalHolder>();
-}
-
-TEST_F(OptionalHolderTest, InPlaceConstGet)
+TEST_F(OptionalHolderTest, inPlaceConstGet)
 {
     constGetTest<InPlaceOptionalHolder>();
 }
 
-TEST_F(OptionalHolderTest, InPlaceHashCode)
+TEST_F(OptionalHolderTest, inPlaceHashCode)
 {
     constGetTest<InPlaceOptionalHolder>();
 }
 
-TEST_F(OptionalHolderTest, HeapCopyConstructor)
+TEST_F(OptionalHolderTest, heapEmptyConstructor)
+{
+    emptyConstructorTest<HeapOptionalHolder>();
+}
+
+TEST_F(OptionalHolderTest, heapNullOptConstructor)
+{
+    nullOptConstructorTest<HeapOptionalHolder>();
+}
+
+TEST_F(OptionalHolderTest, heapLvalueConstructor)
+{
+    lvalueConstructorTest<HeapOptionalHolder>();
+}
+
+TEST_F(OptionalHolderTest, heapRvalueConstructor)
+{
+    rvalueConstructorTest<HeapOptionalHolder>();
+}
+
+TEST_F(OptionalHolderTest, heapCopyConstructor)
 {
     copyConstructorTest<HeapOptionalHolder>();
 }
 
-TEST_F(OptionalHolderTest, HeapAssignmentOperator)
+TEST_F(OptionalHolderTest, heapCopyAssignmentOperator)
 {
-    assignmentOperatorTest<HeapOptionalHolder>();
+    copyAssignmentOperatorTest<HeapOptionalHolder>();
 }
 
-TEST_F(OptionalHolderTest, HeapEqualOperator)
+TEST_F(OptionalHolderTest, heapMoveConstructor)
+{
+    moveConstructorTest<HeapOptionalHolder>();
+}
+
+TEST_F(OptionalHolderTest, heapMoveAssignmentOperator)
+{
+    moveAssignmentOperatorTest<HeapOptionalHolder>();
+}
+
+TEST_F(OptionalHolderTest, heapLvalueAssignmentOperator)
+{
+    lvalueAssignmentOperatorTest<HeapOptionalHolder>();
+}
+
+TEST_F(OptionalHolderTest, heapRvalueAssignmentOperator)
+{
+    rvalueAssignmentOperatorTest<HeapOptionalHolder>();
+}
+
+TEST_F(OptionalHolderTest, heapReset)
+{
+    resetTest<HeapOptionalHolder>();
+}
+
+TEST_F(OptionalHolderTest, heapEqualOperator)
 {
     equalOperatorTest<HeapOptionalHolder>();
 }
 
-TEST_F(OptionalHolderTest, HeapSetGet)
+TEST_F(OptionalHolderTest, heapSetGet)
 {
     setGetTest<HeapOptionalHolder>();
 }
 
-TEST_F(OptionalHolderTest, HeapPointerSetGet)
+TEST_F(OptionalHolderTest, heapHasValue)
 {
-    pointerSetGetTest<HeapOptionalHolder>();
+    hasValueTest<HeapOptionalHolder>();
 }
 
-TEST_F(OptionalHolderTest, HeapIsSet)
-{
-    isSetTest<HeapOptionalHolder>();
-}
-
-TEST_F(OptionalHolderTest, HeapConstGet)
+TEST_F(OptionalHolderTest, heapConstGet)
 {
     constGetTest<HeapOptionalHolder>();
 }
 
-TEST_F(OptionalHolderTest, HeapHashCode)
+TEST_F(OptionalHolderTest, heapHashCode)
 {
     constGetTest<HeapOptionalHolder>();
 }
 
-TEST_F(OptionalHolderTest, OptimizedCopyConstructor)
+TEST_F(OptionalHolderTest, optimizedEmptyConstructor)
 {
-    copyConstructorTest<OptimizedOptionalHolder>();
+    emptyConstructorTest<OptionalHolder>();
 }
 
-TEST_F(OptionalHolderTest, OptimizedAssignmentOperator)
+TEST_F(OptionalHolderTest, optimizedNullOptConstructor)
 {
-    assignmentOperatorTest<OptimizedOptionalHolder>();
+    nullOptConstructorTest<OptionalHolder>();
 }
 
-TEST_F(OptionalHolderTest, OptimizedEqualOperator)
+TEST_F(OptionalHolderTest, optimizedLvalueConstructor)
 {
-    equalOperatorTest<OptimizedOptionalHolder>();
+    lvalueConstructorTest<OptionalHolder>();
 }
 
-TEST_F(OptionalHolderTest, OptimizedSetGet)
+TEST_F(OptionalHolderTest, optimizedRvalueConstructor)
 {
-    setGetTest<OptimizedOptionalHolder>();
+    rvalueConstructorTest<OptionalHolder>();
 }
 
-TEST_F(OptionalHolderTest, OptimizedPointerSetGet)
+TEST_F(OptionalHolderTest, optimizedCopyConstructor)
 {
-    pointerSetGetTest<OptimizedOptionalHolder>();
+    copyConstructorTest<OptionalHolder>();
 }
 
-TEST_F(OptionalHolderTest, OptimizedIsSet)
+TEST_F(OptionalHolderTest, optimizedCopyAssignmentOperator)
 {
-    isSetTest<OptimizedOptionalHolder>();
+    copyAssignmentOperatorTest<OptionalHolder>();
 }
 
-TEST_F(OptionalHolderTest, OptimizedConstGet)
+TEST_F(OptionalHolderTest, optimizedMoveConstructor)
 {
-    constGetTest<OptimizedOptionalHolder>();
+    moveConstructorTest<OptionalHolder>();
 }
 
-TEST_F(OptionalHolderTest, OptimizedHashCode)
+TEST_F(OptionalHolderTest, optimizedMoveAssignmentOperator)
 {
-    constGetTest<OptimizedOptionalHolder>();
+    moveAssignmentOperatorTest<OptionalHolder>();
+}
+
+TEST_F(OptionalHolderTest, optimizedLvalueAssignmentOperator)
+{
+    lvalueAssignmentOperatorTest<OptionalHolder>();
+}
+
+TEST_F(OptionalHolderTest, optimizedRvalueAssignmentOperator)
+{
+    rvalueAssignmentOperatorTest<OptionalHolder>();
+}
+
+TEST_F(OptionalHolderTest, optimizedReset)
+{
+    resetTest<OptionalHolder>();
+}
+
+TEST_F(OptionalHolderTest, optimizedEqualOperator)
+{
+    equalOperatorTest<OptionalHolder>();
+}
+
+TEST_F(OptionalHolderTest, optimizedSetGet)
+{
+    setGetTest<OptionalHolder>();
+}
+
+TEST_F(OptionalHolderTest, optimizedHasValue)
+{
+    hasValueTest<OptionalHolder>();
+}
+
+TEST_F(OptionalHolderTest, optimizedConstGet)
+{
+    constGetTest<OptionalHolder>();
+}
+
+TEST_F(OptionalHolderTest, optimizedHashCode)
+{
+    constGetTest<OptionalHolder>();
 }
 
 } // namespace zserio

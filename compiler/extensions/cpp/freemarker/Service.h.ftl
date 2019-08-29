@@ -4,9 +4,6 @@
 
 <@include_guard_begin package.path, name/>
 
-#include "<@include_path rootPackage.path, "GrpcSerializationTraits.h"/>"
-
-<@user_includes headerUserIncludes, true/>
 #include <grpcpp/impl/codegen/async_generic_service.h>
 #include <grpcpp/impl/codegen/async_stream.h>
 #include <grpcpp/impl/codegen/async_unary_call.h>
@@ -16,17 +13,14 @@
 #include <grpcpp/impl/codegen/status.h>
 #include <grpcpp/impl/codegen/stub_options.h>
 #include <grpcpp/impl/codegen/sync_stream.h>
-
-namespace grpc
-{
+<@user_includes headerUserIncludes/>
+<@namespace_begin ["grpc"]/>
 
 class CompletionQueue;
 class Channel;
 class ServerCompletionQueue;
 class ServerContext;
-
-} // namespace grpc
-
+<@namespace_end ["grpc"]/>
 <@namespace_begin package.path/>
 
 class ${name} final
@@ -58,14 +52,14 @@ public:
     class Stub final : public StubInterface
     {
     public:
-        explicit Stub(const std::shared_ptr<::grpc::ChannelInterface>& channel);
+        explicit Stub(const ::std::shared_ptr<::grpc::ChannelInterface>& channel);
 
 <#list rpcList as rpc>
         <@stub_header_public rpc/>
 
 </#list>
     private:
-        std::shared_ptr<::grpc::ChannelInterface> channel_;
+        ::std::shared_ptr<::grpc::ChannelInterface> channel_;
 <#list rpcList as rpc>
 
         <@stub_header_private rpc/>
@@ -76,7 +70,7 @@ public:
 </#list>
     };
 
-    static std::unique_ptr<Stub> NewStub(const std::shared_ptr<::grpc::ChannelInterface>& channel,
+    static ::std::unique_ptr<Stub> NewStub(const ::std::shared_ptr<::grpc::ChannelInterface>& channel,
             const ::grpc::StubOptions& options = ::grpc::StubOptions());
 
     <#-- Server side - base -->
@@ -173,9 +167,9 @@ public:
                     ${rpc.requestTypeFullName}, ${rpc.responseTypeFullName}> StreamUnaryHandler;
 
             ::grpc::Service::MarkMethodStreamed(${rpc?index},
-                    new StreamUnaryHandler(std::bind(
+                    new StreamUnaryHandler(::std::bind(
                             &WithStreamedUnaryMethod_${rpc.name}<BaseClass>::Streamed${rpc.name},
-                            this, std::placeholders::_1, std::placeholders::_2)));
+                            this, ::std::placeholders::_1, ::std::placeholders::_2)));
         }
 
         ~WithStreamedUnaryMethod_${rpc.name}() override
@@ -217,9 +211,9 @@ public:
                     ${rpc.requestTypeFullName}, ${rpc.responseTypeFullName}> SplitServerStreamingHandler;
 
             ::grpc::Service::MarkMethodStreamed(${rpc?index},
-                    new SplitServerStreamingHandler(std::bind(
+                    new SplitServerStreamingHandler(::std::bind(
                             &WithSplitStreamingMethod_${rpc.name}<BaseClass>::Streamed${rpc.name},
-                            this, std::placeholders::_1, std::placeholders::_2)));
+                            this, ::std::placeholders::_1, ::std::placeholders::_2)));
         }
 
         ~WithSplitStreamingMethod_${rpc.name}() override
@@ -240,7 +234,7 @@ public:
                 ${rpc.requestTypeFullName}, ${rpc.responseTypeFullName}>* server_split_streamer) = 0;
 
     private:
-            void BaseClassMustBeDerivedFromService(const Service *service) {}
+        void BaseClassMustBeDerivedFromService(const Service *service) {}
     };
 
     </#if>
@@ -250,7 +244,6 @@ public:
     <#-- Server side - typedef for controlled both unary and server-side streaming -->
     <@typedef_streamed_service noOrResponseOnlyStreamingRpcList/>
 };
-
 <@namespace_end package.path/>
 
 <@include_guard_end package.path, name/>

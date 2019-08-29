@@ -12,6 +12,9 @@ set(ZSERIO_GENERATED_SOURCES
 
     ${ZSERIO_GEN_DIR}/constraints/array_lengthof_constraint/ArrayLengthofConstraint.cpp
     ${ZSERIO_GEN_DIR}/constraints/array_lengthof_constraint/ArrayLengthofConstraint.h
+
+    ${ZSERIO_GEN_DIR}/constraints/union_constraints/UnionConstraints.cpp
+    ${ZSERIO_GEN_DIR}/constraints/union_constraints/UnionConstraints.h
 )
 
 zserio_add_library(TARGET constraints_zs
@@ -20,13 +23,14 @@ zserio_add_library(TARGET constraints_zs
     OUT_DIR ${ZSERIO_GEN_DIR}
     OUT_FILES ${ZSERIO_GENERATED_SOURCES}
     ZSERIO_CORE_DIR ${ZSERIO_JAR_DIR}
-    ZSERIO_OPTIONS -withoutSourcesAmalgamation
+    ZSERIO_OPTIONS -withoutSourcesAmalgamation -cppStandard ${ZSERIO_CPP_STANDARD}
 )
 
 add_test_sources(
-    cpp/ArrayLengthofConstraintTest.cpp
-    cpp/ChoiceConstraintsTest.cpp
-    cpp/StructureConstraintsTest.cpp
+    ${ZSERIO_CPP_DIR}/ArrayLengthofConstraintTest.cpp
+    ${ZSERIO_CPP_DIR}/ChoiceConstraintsTest.cpp
+    ${ZSERIO_CPP_DIR}/StructureConstraintsTest.cpp
+    ${ZSERIO_CPP_DIR}/UnionConstraintsTest.cpp
 )
 
 add_test_dependencies(constraints_zs)

@@ -28,7 +28,7 @@ protected:
 TEST_F(VariableArrayTest, bitSizeOf)
 {
     const size_t numElements = 33;
-    zserio::ObjectArray<TestStructure> compoundArray;
+    std::vector<TestStructure> compoundArray;
     compoundArray.reserve(numElements);
     for (size_t i = 0; i < numElements; ++i)
     {
@@ -50,7 +50,7 @@ TEST_F(VariableArrayTest, bitSizeOf)
 TEST_F(VariableArrayTest, initializeOffsets)
 {
     const size_t numElements = 33;
-    zserio::ObjectArray<TestStructure> compoundArray;
+    std::vector<TestStructure> compoundArray;
     compoundArray.reserve(numElements);
     for (size_t i = 0; i < numElements; ++i)
     {
@@ -80,7 +80,7 @@ TEST_F(VariableArrayTest, read)
     VariableArray variableArray(reader);
 
     ASSERT_EQ(numElements, static_cast<size_t>(variableArray.getNumElements()));
-    const zserio::ObjectArray<TestStructure>& compoundArray = variableArray.getCompoundArray();
+    const std::vector<TestStructure>& compoundArray = variableArray.getCompoundArray();
     ASSERT_EQ(numElements, compoundArray.size());
     for (size_t i = 0; i < numElements; ++i)
     {
@@ -92,7 +92,7 @@ TEST_F(VariableArrayTest, read)
 TEST_F(VariableArrayTest, write)
 {
     const size_t numElements = 33;
-    zserio::ObjectArray<TestStructure> compoundArray;
+    std::vector<TestStructure> compoundArray;
     compoundArray.reserve(numElements);
     for (size_t i = 0; i < numElements; ++i)
     {
@@ -112,7 +112,7 @@ TEST_F(VariableArrayTest, write)
     const uint8_t* writeBuffer = writer.getWriteBuffer(writeBufferByteSize);
     zserio::BitStreamReader reader(writeBuffer, writeBufferByteSize);
     VariableArray readVariableArray(reader);
-    const zserio::ObjectArray<TestStructure>& readCompoundArray = readVariableArray.getCompoundArray();
+    const std::vector<TestStructure>& readCompoundArray = readVariableArray.getCompoundArray();
     ASSERT_EQ(numElements, readCompoundArray.size());
     for (size_t i = 0; i < numElements; ++i)
     {
@@ -124,7 +124,7 @@ TEST_F(VariableArrayTest, write)
 TEST_F(VariableArrayTest, writeWrongArray)
 {
     const size_t numElements = 33;
-    zserio::ObjectArray<TestStructure> compoundArray;
+    std::vector<TestStructure> compoundArray;
     compoundArray.reserve(numElements);
     for (size_t i = 0; i < numElements; ++i)
     {

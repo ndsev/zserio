@@ -42,6 +42,14 @@ public class ArrayTypesErrorTest
     }
 
     @Test
+    public void implicitArrayWithIndexedOffsets()
+    {
+        final String error = "implicit_array_with_indexed_offsets_error.zs:22:9: " +
+                "Implicit arrays cannot have indexed offsets!";
+        assertTrue(zserioErrors.isPresent(error));
+    }
+
+    @Test
     public void wrongArrayLengthType()
     {
         final String error = "wrong_array_length_type_error.zs:6:21: Invalid length expression for array. " +

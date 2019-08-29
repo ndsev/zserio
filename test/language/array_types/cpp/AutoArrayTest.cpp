@@ -22,7 +22,7 @@ protected:
 
     void checkBitSizeOf(size_t numElements)
     {
-        zserio::UInt8Array uint8Array;
+        std::vector<uint8_t> uint8Array;
         uint8Array.reserve(numElements);
         for (size_t i = 0; i < numElements; ++i)
             uint8Array.push_back(static_cast<uint8_t>(i));
@@ -36,7 +36,7 @@ protected:
 
     void checkInitializeOffsets(size_t numElements)
     {
-        zserio::UInt8Array uint8Array;
+        std::vector<uint8_t> uint8Array;
         uint8Array.reserve(numElements);
         for (size_t i = 0; i < numElements; ++i)
             uint8Array.push_back(static_cast<uint8_t>(i));
@@ -57,7 +57,7 @@ protected:
         zserio::BitStreamReader reader(writeBuffer, writeBufferByteSize);
         AutoArray autoArray(reader);
 
-        const zserio::UInt8Array& uint8Array = autoArray.getUint8Array();
+        const std::vector<uint8_t>& uint8Array = autoArray.getUint8Array();
         ASSERT_EQ(numElements, uint8Array.size());
         for (size_t i = 0; i < numElements; ++i)
             ASSERT_EQ(i, uint8Array[i]);
@@ -65,7 +65,7 @@ protected:
 
     void checkWrite(size_t numElements)
     {
-        zserio::UInt8Array uint8Array;
+        std::vector<uint8_t> uint8Array;
         uint8Array.reserve(numElements);
         for (size_t i = 0; i < numElements; ++i)
             uint8Array.push_back(static_cast<uint8_t>(i));
@@ -79,7 +79,7 @@ protected:
         const uint8_t* writeBuffer = writer.getWriteBuffer(writeBufferByteSize);
         zserio::BitStreamReader reader(writeBuffer, writeBufferByteSize);
         AutoArray readAutoArray(reader);
-        const zserio::UInt8Array& readUint8Array = readAutoArray.getUint8Array();
+        const std::vector<uint8_t>& readUint8Array = readAutoArray.getUint8Array();
         ASSERT_EQ(numElements, readUint8Array.size());
         for (size_t i = 0; i < numElements; ++i)
             ASSERT_EQ(i, readUint8Array[i]);

@@ -18,18 +18,24 @@ public class CompoundTypeTemplateData extends UserTypeTemplateData
         final List<Field> fieldTypeList = compoundType.getFields();
         fieldList = new ArrayList<CompoundFieldTemplateData>(fieldTypeList.size());
         final boolean withWriterCode = context.getWithWriterCode();
+        final boolean withRangeCheckCode = context.getWithRangeCheckCode();
         final CppNativeTypeMapper cppNativeTypeMapper = context.getCppNativeTypeMapper();
         final ExpressionFormatter cppExpressionFormatter = context.getExpressionFormatter(this);
         final ExpressionFormatter cppIndirectExpressionFormatter =
                 context.getOwnerIndirectExpressionFormatter(this);
+        boolean isRecursive = false;
         for (Field fieldType : fieldTypeList)
         {
             final CompoundFieldTemplateData data = new CompoundFieldTemplateData(cppNativeTypeMapper,
                     compoundType, fieldType, cppExpressionFormatter, cppIndirectExpressionFormatter,
-                    this, withWriterCode);
+                    this, withWriterCode, withRangeCheckCode);
 
             fieldList.add(data);
+            if (data.getOptional() != null && data.getOptional().getIsRecursive())
+                isRecursive = true;
         }
+
+        this.isRecursive = isRecursive;
 
         compoundParametersData = new CompoundParameterTemplateData(cppNativeTypeMapper, compoundType, this,
                 withWriterCode);
@@ -39,7 +45,6 @@ public class CompoundTypeTemplateData extends UserTypeTemplateData
                 compoundParametersData, fieldList);
 
         needsChildrenInitialization = compoundType.needsChildrenInitialization();
-        withRangeCheckCode = context.getWithRangeCheckCode();
         hasFieldWithOffset = compoundType.hasFieldWithOffset();
     }
 
@@ -68,22 +73,22 @@ public class CompoundTypeTemplateData extends UserTypeTemplateData
         return needsChildrenInitialization;
     }
 
-    public boolean getWithRangeCheckCode()
-    {
-        return withRangeCheckCode;
-    }
-
     public boolean getHasFieldWithOffset()
     {
         return hasFieldWithOffset;
     }
 
-    private final List<CompoundFieldTemplateData>   fieldList;
-    private final CompoundParameterTemplateData     compoundParametersData;
-    private final CompoundFunctionTemplateData      compoundFunctionsData;
-    private final CompoundConstructorTemplateData   compoundConstructorsData;
+    public boolean getIsRecursive()
+    {
+        return isRecursive;
+    }
+
+    private final List<CompoundFieldTemplateData> fieldList;
+    private final CompoundParameterTemplateData compoundParametersData;
+    private final CompoundFunctionTemplateData compoundFunctionsData;
+    private final CompoundConstructorTemplateData compoundConstructorsData;
 
     private final boolean needsChildrenInitialization;
-    private final boolean withRangeCheckCode;
     private final boolean hasFieldWithOffset;
+    private final boolean isRecursive;
 }

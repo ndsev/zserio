@@ -77,13 +77,13 @@ public class CompoundParameterTemplateData
             return isSimpleType;
         }
 
-        private final String    name;
-        private final String    cppTypeName;
-        private final String    cppArgumentTypeName;
-        private final String    getterName;
-        private final boolean   isSimpleType;
+        private final String name;
+        private final String cppTypeName;
+        private final String cppArgumentTypeName;
+        private final String getterName;
+        private final boolean isSimpleType;
     }
 
-    private final List<CompoundParameter>   compoundParameterList;
-    private final boolean   withWriterCode;
+    private final List<CompoundParameter> compoundParameterList;
+    private final boolean withWriterCode;
 }

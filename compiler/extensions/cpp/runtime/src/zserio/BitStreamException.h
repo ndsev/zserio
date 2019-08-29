@@ -3,14 +3,22 @@
 
 #include <string>
 
-#include "CppRuntimeException.h"
+#include "zserio/CppRuntimeException.h"
 
 namespace zserio
 {
 
+/**
+ * Exception thrown from BitStreamReader or BitStreamWriter in case of an error.
+ */
 class BitStreamException : public CppRuntimeException
 {
 public:
+    /**
+     * Constructor.
+     *
+     * \param message Description of the error.
+     */
     explicit BitStreamException(const std::string& message) : CppRuntimeException(message) {}
 };
 

@@ -1,0 +1,20 @@
+// suppress "Member variable 'X' is not initialized in the constructor."
+uninitMemberVar:*/Bit4RangeCheckCompound.cpp
+uninitMemberVar:*/ChoiceBit4RangeCheckCompound.cpp
+uninitMemberVar:*/ChoiceBit4RangeCheckCompound.h
+uninitMemberVar:*/Int4RangeCheckCompound.cpp
+uninitMemberVar:*/Int7ArrayRangeCheckCompound.cpp
+uninitMemberVar:*/Int8RangeCheckCompound.cpp
+uninitMemberVar:*/OptionalBit31RangeCheckCompound.cpp
+uninitMemberVar:*/UInt8RangeCheckCompound.cpp
+uninitMemberVar:*/UnionInt4RangeCheckCompound.cpp
+uninitMemberVar:*/VariableBitRangeCheckCompound.cpp
+uninitMemberVar:*/VariableIntRangeCheckCompound.cpp
+uninitMemberVar:*/VarInt16RangeCheckCompound.cpp
+uninitMemberVar:*/VarInt32RangeCheckCompound.cpp
+uninitMemberVar:*/VarInt64RangeCheckCompound.cpp
+uninitMemberVar:*/VarIntRangeCheckCompound.cpp
+uninitMemberVar:*/VarUInt16RangeCheckCompound.cpp
+uninitMemberVar:*/VarUInt32RangeCheckCompound.cpp
+uninitMemberVar:*/VarUInt64RangeCheckCompound.cpp
+uninitMemberVar:*/VarUIntRangeCheckCompound.cpp

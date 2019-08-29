@@ -5,7 +5,6 @@ import java.util.List;
 
 import zserio.ast.CompoundType;
 import zserio.ast.ZserioType;
-import zserio.ast.ZserioTypeUtil;
 import zserio.ast.FunctionType;
 import zserio.emit.common.ExpressionFormatter;
 import zserio.emit.common.ZserioEmitException;
@@ -20,8 +19,10 @@ public class CompoundFunctionTemplateData
         compoundFunctionList = new ArrayList<CompoundFunction>();
         final Iterable<FunctionType> compoundFunctionTypeList = compoundType.getFunctions();
         for (FunctionType compoundFunctionType : compoundFunctionTypeList)
+        {
             compoundFunctionList.add(new CompoundFunction(compoundFunctionType, cppNativeTypeMapper,
-                                                          cppExpressionFormatter, includeCollector));
+                    cppExpressionFormatter, includeCollector));
+        }
     }
 
     public Iterable<CompoundFunction> getList()
@@ -38,9 +39,7 @@ public class CompoundFunctionTemplateData
             final ZserioType returnZserioType = functionType.getReturnType();
             final CppNativeType returnNativeType = cppNativeTypeMapper.getCppType(returnZserioType);
             returnTypeName = returnNativeType.getFullName();
-            zserioReturnTypeName = ZserioTypeUtil.getFullName(returnZserioType);
             name = AccessorNameFormatter.getFunctionName(functionType);
-            zserioName = functionType.getName();
             resultExpression = cppExpressionFormatter.formatGetter(functionType.getResultExpression());
             addIncludes(includeCollector, returnNativeType);
         }
@@ -50,19 +49,9 @@ public class CompoundFunctionTemplateData
             return returnTypeName;
         }
 
-        public String getZserioReturnTypeName()
-        {
-            return zserioReturnTypeName;
-        }
-
         public String getName()
         {
             return name;
-        }
-
-        public String getZserioName()
-        {
-            return zserioName;
         }
 
         public String getResultExpression()
@@ -108,11 +97,9 @@ public class CompoundFunctionTemplateData
         }
 
         private final String returnTypeName;
-        private final String zserioReturnTypeName;
         private final String name;
-        private final String zserioName;
         private final String resultExpression;
     }
 
-    private final List<CompoundFunction>    compoundFunctionList;
+    private final List<CompoundFunction> compoundFunctionList;
 }

@@ -2,7 +2,6 @@
 
 #include "zserio/BitStreamWriter.h"
 #include "zserio/BitStreamReader.h"
-#include "zserio/BitFieldArray.h"
 
 #include "optional_members/auto_optional/Container.h"
 
@@ -78,7 +77,6 @@ TEST_F(AutoOptionalTest, operatorEquality)
 {
     Container container1;
     Container container2;
-    ASSERT_TRUE(container1 == container2);
 
     container1.setNonOptionalInt(NON_OPTIONAL_INT_VALUE);
     container1.setAutoOptionalInt(AUTO_OPTIONAL_INT_VALUE);
@@ -93,7 +91,6 @@ TEST_F(AutoOptionalTest, hashCode)
 {
     Container container1;
     Container container2;
-    ASSERT_EQ(container1.hashCode(), container2.hashCode());
 
     container1.setNonOptionalInt(NON_OPTIONAL_INT_VALUE);
     container1.setAutoOptionalInt(AUTO_OPTIONAL_INT_VALUE);
@@ -131,7 +128,7 @@ TEST_F(AutoOptionalTest, write)
     Container readContainerOptional(readerOptional);
     ASSERT_EQ(NON_OPTIONAL_INT_VALUE, readContainerOptional.getNonOptionalInt());
     ASSERT_TRUE(readContainerOptional.hasAutoOptionalInt());
-    ASSERT_EQ(AUTO_OPTIONAL_INT_VALUE, readContainerOptional.getAutoOptionalInt());
+    ASSERT_EQ(AUTO_OPTIONAL_INT_VALUE, *readContainerOptional.getAutoOptionalInt());
 }
 
 } // namespace auto_optional

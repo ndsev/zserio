@@ -4,7 +4,6 @@
 
 #include "zserio/BitStreamWriter.h"
 #include "zserio/BitStreamReader.h"
-#include "zserio/ObjectArray.h"
 
 #include "functions/structure_value/CustomVarInt.h"
 #include "functions/structure_value/CustomVarList.h"

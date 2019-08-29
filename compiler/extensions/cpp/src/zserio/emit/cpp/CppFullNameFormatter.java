@@ -17,7 +17,8 @@ public final class CppFullNameFormatter
      */
     public static String getFullName(PackageName packageName)
     {
-        return packageName.toString(CPP_NAMESPACE_SEPARATOR);
+        return (packageName.isEmpty() ? "" : CPP_NAMESPACE_SEPARATOR) +
+                packageName.toString(CPP_NAMESPACE_SEPARATOR);
     }
 
     /**
@@ -30,8 +31,7 @@ public final class CppFullNameFormatter
      */
     public static String getFullName(PackageName packageName, String typeName)
     {
-        return StringJoinUtil.joinStrings(getFullName(packageName), typeName,
-                CPP_NAMESPACE_SEPARATOR);
+        return StringJoinUtil.joinStrings(getFullName(packageName), typeName, CPP_NAMESPACE_SEPARATOR);
     }
 
     /**

@@ -49,7 +49,7 @@ protected:
         const uint8_t expectedNumElements = NUM_ELEMENTS;
         ASSERT_EQ(expectedNumElements, nestedOffsetArrayStructure.getNumElements());
 
-        const zserio::ObjectArray<NestedOffsetStructure>& nestedOffsetStructureList =
+        const std::vector<NestedOffsetStructure>& nestedOffsetStructureList =
                 nestedOffsetArrayStructure.getNestedOffsetStructureList();
         ASSERT_EQ(expectedNumElements, nestedOffsetStructureList.size());
         for (short i = 0; i < NUM_ELEMENTS; ++i)
@@ -79,7 +79,7 @@ protected:
         NestedOffsetUnion nestedOffsetUnion;
         NestedOffsetArrayStructure nestedOffsetArrayStructure;
         nestedOffsetArrayStructure.setNumElements(NUM_ELEMENTS);
-        zserio::ObjectArray<NestedOffsetStructure>& nestedOffsetStructureList =
+        std::vector<NestedOffsetStructure>& nestedOffsetStructureList =
                 nestedOffsetArrayStructure.getNestedOffsetStructureList();
         nestedOffsetStructureList.reserve(NUM_ELEMENTS);
         for (short i = 0; i < NUM_ELEMENTS; ++i)

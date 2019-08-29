@@ -1,20 +1,20 @@
 #ifndef ZSERIO_VARUINT64_UTIL_H_INC
 #define ZSERIO_VARUINT64_UTIL_H_INC
 
-#include "Types.h"
+#include "zserio/Types.h"
 
 namespace zserio
 {
     /**
-     * Converts uint64_t read from varuint64 to signed integer. Used e.g. for conversion to enum values.
+     * Converts uint64_t read from varuint64 to int32_t. Used for conversion to ChoiceTag enum in unions.
      *
      * \param value Value stored in varuint64 to convert.
      *
-     * \return int Signed integer converted from varuint64.
+     * \return int32_t Signed 32-bit integer converted from varuint64.
      *
-     * \throw CppRuntimeException when input value is not convertible to int.
+     * \throw CppRuntimeException when input value is not convertible to int32_t.
      */
-    int convertVarUInt64ToInt(uint64_t value);
+    int32_t convertVarUInt64ToInt32(uint64_t value);
 
     /**
      * Converts uint64_t read from varuint64 to array size of type size_t.

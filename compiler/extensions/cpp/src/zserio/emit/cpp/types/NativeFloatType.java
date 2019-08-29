@@ -6,6 +6,6 @@ public class NativeFloatType extends CppNativeType
 {
     public NativeFloatType()
     {
-        super(PackageName.EMPTY, "float", true);
+        super(PackageName.EMPTY, "float");
     }
 }

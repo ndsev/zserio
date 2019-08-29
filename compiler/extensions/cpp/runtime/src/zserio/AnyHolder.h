@@ -2,35 +2,68 @@
 #define ZSERIO_ANY_HOLDER_H_INC
 
 #include <cstddef>
+#include <type_traits>
 
-#include "CppRuntimeException.h"
-#include "HashCodeUtil.h"
-#include "OptionalHolder.h"
-#include "AlignedStorage.h"
-#include "Types.h"
+#include "zserio/CppRuntimeException.h"
+#include "zserio/OptionalHolder.h"
+#include "zserio/Types.h"
 
 namespace zserio
 {
 
+/**
+ * Type safe container for single values of any type which doesn't need RTTI.
+ */
 class AnyHolder
 {
 public:
-    AnyHolder() : m_isInPlace(false)
+    /**
+     * Empty constructor.
+     */
+    AnyHolder()
     {
         m_untypedHolder.heap = NULL;
     }
 
+    /**
+     * Constructor from any value.
+     *
+     * \param value Value of any type to hold. Supports move semantic.
+     */
+    template <typename T,
+            typename std::enable_if<!std::is_same<typename std::decay<T>::type, AnyHolder>::value, int>::type = 0>
+    explicit AnyHolder(T&& value)
+    {
+        m_untypedHolder.heap = NULL;
+        set(std::forward<T>(value));
+    }
+
+    /**
+     * Destructor.
+     */
     ~AnyHolder()
     {
         clearHolder();
     }
 
-    AnyHolder(const AnyHolder& other) : m_isInPlace(false)
+    /**
+     * Copy constructor.
+     *
+     * \param other Any holder to copy.
+     */
+    AnyHolder(const AnyHolder& other)
     {
         m_untypedHolder.heap = NULL;
         copy(other);
     }
 
+    /**
+     * Copy assignment operator.
+     *
+     * \param other Any holder to copy.
+     *
+     * \return Reference to this.
+     */
     AnyHolder& operator=(const AnyHolder& other)
     {
         if (this != &other)
@@ -42,61 +75,117 @@ public:
         return *this;
     }
 
-    bool operator==(const AnyHolder& other) const
+    /**
+     * Move constructor.
+     *
+     * \param other Any holder to move from.
+     */
+    AnyHolder(AnyHolder&& other)
+    {
+        m_untypedHolder.heap = NULL;
+        move(std::move(other));
+    }
+
+    /**
+     * Move assignment operator.
+     *
+     * \param other Any holder to move from.
+     *
+     * \return Reference to this.
+     */
+    AnyHolder& operator=(AnyHolder&& other)
     {
         if (this != &other)
         {
-            const bool hasLeftHolder = hasHolder();
-            const bool hasRightHolder = other.hasHolder();
-            if (hasLeftHolder && hasRightHolder)
-                return getUntypedHolder()->compare(*(other.getUntypedHolder()));
-
-            return !hasLeftHolder && !hasRightHolder;
+            clearHolder();
+            move(std::move(other));
         }
 
-        return true;
+        return *this;
     }
 
-    template<typename T> void* getResetStorage()
+    /**
+     * Value assignment operator.
+     *
+     * \param value Any value to assign. Supports move semantic.
+     *
+     * \return Reference to this.
+     */
+    template <typename T,
+            typename std::enable_if<!std::is_same<typename std::decay<T>::type, AnyHolder>::value, int>::type = 0>
+    AnyHolder& operator=(T&& value)
     {
-        return createHolder<T>()->getResetStorage();
+        set(std::forward<T>(value));
+
+        return *this;
     }
 
-    template<typename T> void reset(T* value = NULL)
+    /**
+     * Resets the holder.
+     */
+    void reset()
     {
-        createHolder<T>()->reset(value);
+        clearHolder();
     }
 
-    template<typename T> void set(const T& value)
+    /**
+     * Sets any value to the holder.
+     *
+     * \param value Any value to set. Supports move semantic.
+     */
+    template <typename T>
+    void set(T&& value)
     {
-        createHolder<T>()->set(value);
+        createHolder<typename std::decay<T>::type>()->set(std::forward<T>(value));
     }
 
-    template<typename T> T& get()
+    /**
+     * Gets value of the given type.
+     *
+     * \return Reference to value of the requested type if the type match to the stored value.
+     *
+     * \throw CppRuntimeException if the requested type doesn't match to the stored value.
+     */
+    template <typename T>
+    T& get()
     {
         checkType<T>();
         return getHolder<T>()->get();
     }
 
-    template<typename T> const T& get() const
+    /**
+     * Gets value of the given type.
+     *
+     * \return Value of the requested type if the type match to the stored value.
+     *
+     * \throw CppRuntimeException if the requested type doesn't match to the stored value.
+     */
+    template <typename T>
+    const T& get() const
     {
         checkType<T>();
         return getHolder<T>()->get();
     }
 
-    template<typename T> bool isType() const
+    /**
+     * Check whether the holder holds the given type.
+     *
+     * \return True if the stored value is of the given type, false otherwise.
+     */
+    template <typename T>
+    bool isType() const
     {
         return hasHolder() && getUntypedHolder()->isType(TypeIdHolder::get<T>());
     }
 
-    bool isSet() const
+    /**
+     * Checks whether the holder has any value.
+     *
+     * \return True if the holder has assigned any value, false otherwise.
+     */
+    bool hasValue() const
     {
         return hasHolder() && getUntypedHolder()->isSet();
-    }
-
-    int hashCode() const
-    {
-        return (hasHolder()) ? getUntypedHolder()->hashCode() : calcHashCode(HASH_SEED, 0);
     }
 
 private:
@@ -120,9 +209,8 @@ private:
         virtual ~IHolder() {}
         virtual bool isSet() const = 0;
         virtual IHolder* clone(void* storage) const = 0;
-        virtual bool compare(const IHolder& other) const = 0;
+        virtual void move(void* storage) = 0;
         virtual bool isType(TypeIdHolder::type_id typeId) const = 0;
-        virtual int hashCode() const = 0;
     };
 
     template <typename T>
@@ -131,34 +219,30 @@ private:
     public:
         Holder() {}
 
-        void* getResetStorage()
+        void reset()
         {
-            return m_typedHolder.getResetStorage();
+            m_typedHolder.reset();
         }
 
-        void reset(T* value = NULL)
+        template <typename U = T>
+        void set(U&& value)
         {
-            m_typedHolder.reset(value);
-        }
-
-        void set(const T& value)
-        {
-            m_typedHolder.reset(new (m_typedHolder.getResetStorage()) T(value));
+            m_typedHolder = std::forward<U>(value);
         }
 
         T& get()
         {
-            return m_typedHolder.get();
+            return m_typedHolder.value();
         }
 
         const T& get() const
         {
-            return m_typedHolder.get();
+            return m_typedHolder.value();
         }
 
         virtual bool isSet() const
         {
-            return m_typedHolder.isSet();
+            return m_typedHolder.hasValue();
         }
 
         virtual IHolder* clone(void* storage) const
@@ -169,9 +253,10 @@ private:
             return holder;
         }
 
-        virtual bool compare(const IHolder& other) const
+        virtual void move(void* storage)
         {
-            return m_typedHolder == (static_cast<const Holder<T>*>(&other))->m_typedHolder;
+            Holder<T>* holder = new (storage) Holder<T>();
+            holder->m_typedHolder = std::move(m_typedHolder);
         }
 
         virtual bool isType(TypeIdHolder::type_id typeId) const
@@ -179,13 +264,8 @@ private:
             return TypeIdHolder::get<T>() == typeId;
         }
 
-        virtual int hashCode() const
-        {
-            return m_typedHolder.hashCode();
-        }
-
     private:
-        InPlaceOptionalHolder<T>    m_typedHolder;
+        InPlaceOptionalHolder<T> m_typedHolder;
     };
 
     void copy(const AnyHolder& other)
@@ -202,12 +282,30 @@ private:
         }
     }
 
+    void move(AnyHolder&& other)
+    {
+        if (other.m_isInPlace)
+        {
+            other.getUntypedHolder()->move(&m_untypedHolder.inPlace);
+            m_isInPlace = true;
+            reinterpret_cast<IHolder*>(&other.m_untypedHolder.inPlace)->~IHolder();
+            other.m_isInPlace = false;
+        }
+        else
+        {
+            m_untypedHolder.heap = other.m_untypedHolder.heap;
+        }
+
+        other.m_untypedHolder.heap = NULL;
+    }
+
     void clearHolder()
     {
         if (m_isInPlace)
         {
             reinterpret_cast<IHolder*>(&m_untypedHolder.inPlace)->~IHolder();
             m_isInPlace = false;
+            m_untypedHolder.heap = NULL;
         }
         else
         {
@@ -224,7 +322,8 @@ private:
         return (m_isInPlace || m_untypedHolder.heap != NULL);
     }
 
-    template<typename T> Holder<T>* createHolder()
+    template <typename T>
+    Holder<T>* createHolder()
     {
         if (hasHolder())
         {
@@ -249,18 +348,21 @@ private:
         return holder;
     }
 
-    template<typename T> void checkType() const
+    template <typename T>
+    void checkType() const
     {
         if (!isType<T>())
             throw CppRuntimeException("Bad type in AnyHolder");
     }
 
-    template<typename T> Holder<T>* getHolder()
+    template <typename T>
+    Holder<T>* getHolder()
     {
         return static_cast<Holder<T>*>(getUntypedHolder());
     }
 
-    template<typename T> const Holder<T>* getHolder() const
+    template <typename T>
+    const Holder<T>* getHolder() const
     {
         return static_cast<const Holder<T>*>(getUntypedHolder());
     }
@@ -278,14 +380,15 @@ private:
 
     union UntypedHolder
     {
-        typedef unsigned char MaxInPlaceType[sizeof(void*) + 3 * sizeof(uint64_t) - sizeof(bool)];
+        // 2 * sizeof(void*) for T + sizeof(void*) for Holder's vptr
+        typedef std::aligned_storage<3 * sizeof(void*), alignof(void*)>::type MaxInPlaceType;
 
-        IHolder*                                heap;
-        AlignedStorage<MaxInPlaceType>::type    inPlace;
+        IHolder* heap;
+        MaxInPlaceType inPlace;
     };
 
     UntypedHolder   m_untypedHolder;
-    bool            m_isInPlace;
+    bool            m_isInPlace = false;
 };
 
 } // namespace zserio

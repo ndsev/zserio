@@ -1,34 +1,48 @@
 <#include "CompoundField.inc.ftl">
 <#include "CompoundParameter.inc.ftl">
 <#macro compound_constructor_declaration compoundConstructorsData>
-    ${compoundConstructorsData.compoundName}();
+    ${compoundConstructorsData.compoundName}() noexcept;
 </#macro>
 
-<#macro compound_constructor_members_initialization compoundConstructorsData>
+<#macro compound_constructor_definition compoundConstructorsData memberInitializationMacroName="">
+    <#local hasInitializers= needs_compound_initialization(compoundConstructorsData) ||
+            has_field_with_initialization(compoundConstructorsData.fieldList) ||
+            memberInitializationMacroName != ""/>
+${compoundConstructorsData.compoundName}::${compoundConstructorsData.compoundName}() noexcept<#rt>
+    <#lt><#if hasInitializers> :</#if>
     <#if needs_compound_initialization(compoundConstructorsData)>
-        m_isInitialized(false)<#t>
+        m_isInitialized(false)<#if memberInitializationMacroName != "">,</#if>
     <#elseif has_field_with_initialization(compoundConstructorsData.fieldList)>
-        m_areChildrenInitialized(false)<#t>
+        m_areChildrenInitialized(false)<#if memberInitializationMacroName != "">,</#if>
     </#if>
+    <#if memberInitializationMacroName != "">
+        <@.vars[memberInitializationMacroName]/>
+    </#if>
+{
+}
 </#macro>
 
 <#macro compound_read_constructor_declaration compoundConstructorsData>
     <#local constructorArgumentTypeList><@compound_constructor_argument_type_list compoundConstructorsData, 3/></#local>
-    <#if !constructorArgumentTypeList?has_content>explicit </#if>${compoundConstructorsData.compoundName}(zserio::BitStreamReader& _in<#rt>
+    explicit ${compoundConstructorsData.compoundName}(::zserio::BitStreamReader& in<#rt>
     <#if constructorArgumentTypeList?has_content>
-        ,${constructorArgumentTypeList}<#t>
+            <#lt>,
+            ${constructorArgumentTypeList}<#t>
     </#if>
     <#lt>);
 </#macro>
 
-<#macro compound_read_constructor_definition compoundConstructorsData>
+<#macro compound_read_constructor_definition compoundConstructorsData memberInitializationMacroName>
     <#local constructorArgumentTypeList><@compound_constructor_argument_type_list compoundConstructorsData, 2/></#local>
     <#local hasInitializers=constructorArgumentTypeList?has_content ||
             needs_compound_initialization(compoundConstructorsData) ||
-            has_field_with_initialization(compoundConstructorsData.fieldList)/>
-${compoundConstructorsData.compoundName}::${compoundConstructorsData.compoundName}(zserio::BitStreamReader& _in<#rt>
+            has_field_with_initialization(compoundConstructorsData.fieldList) ||
+            memberInitializationMacroName != ""/>
+${compoundConstructorsData.compoundName}::${compoundConstructorsData.compoundName}(<#rt>
+        <#lt>::zserio::BitStreamReader&<#if compoundConstructorsData.fieldList?has_content> in</#if><#rt>
     <#if constructorArgumentTypeList?has_content>
-        ,${constructorArgumentTypeList}<#t>
+        <#lt>,
+        ${constructorArgumentTypeList}<#t>
     </#if>
     <#if hasInitializers>
         <#lt>) :
@@ -40,64 +54,47 @@ ${compoundConstructorsData.compoundName}::${compoundConstructorsData.compoundNam
                 needs_compound_initialization(compoundConstructorsData)/>
     </#if>
     <#if needs_compound_initialization(compoundConstructorsData)>
-        m_isInitialized(true)
+        m_isInitialized(true)<#if memberInitializationMacroName != "">,</#if>
     <#elseif has_field_with_initialization(compoundConstructorsData.fieldList)>
-        m_areChildrenInitialized(true)
+        m_areChildrenInitialized(true)<#if memberInitializationMacroName != "">,</#if>
+    </#if>
+    <#if memberInitializationMacroName != "">
+        <@.vars[memberInitializationMacroName]/>
     </#if>
 {
-    read(_in);
 }
 </#macro>
 
-<#macro compound_read_tree_constructor_declaration compoundConstructorsData>
-    <#local constructorArgumentTypeList><@compound_constructor_argument_type_list compoundConstructorsData, 3/></#local>
-    <#if !constructorArgumentTypeList?has_content>explicit </#if>${compoundConstructorsData.compoundName}(const zserio::BlobInspectorTree& _tree<#rt>
-    <#if constructorArgumentTypeList?has_content>
-        ,${constructorArgumentTypeList}<#t>
-    </#if>
-    <#lt>);
-</#macro>
-
-<#macro compound_read_tree_constructor_definition compoundConstructorsData>
-    <#local constructorArgumentTypeList><@compound_constructor_argument_type_list compoundConstructorsData, 2/></#local>
-    <#local hasInitializers=constructorArgumentTypeList?has_content ||
-            needs_compound_initialization(compoundConstructorsData) ||
-            has_field_with_initialization(compoundConstructorsData.fieldList)/>
-${compoundConstructorsData.compoundName}::${compoundConstructorsData.compoundName}(const zserio::BlobInspectorTree& _tree<#rt>
-    <#if constructorArgumentTypeList?has_content>
-        ,${constructorArgumentTypeList}<#t>
-    </#if>
-    <#if hasInitializers>
-        <#lt>) :
-    <#else>
-        <#lt>)
-    </#if>
-    <#if constructorArgumentTypeList?has_content>
-        <@compound_parameter_constructor_initializers compoundConstructorsData.compoundParametersData, 2,
-                needs_compound_initialization(compoundConstructorsData)/>
-    </#if>
-    <#if needs_compound_initialization(compoundConstructorsData)>
-        m_isInitialized(true)
-    <#elseif has_field_with_initialization(compoundConstructorsData.fieldList)>
-        m_areChildrenInitialized(true)
-    </#if>
-{
-    read(_tree);
-}
+<#macro compound_fields_constructor_template compoundConstructorsData>
+    <@compound_field_constructor_template_arg_list compoundConstructorsData.compoundName,
+            compoundConstructorsData.fieldList/>
+    explicit ${compoundConstructorsData.compoundName}(
+            <#lt><@compound_field_constructor_type_list compoundConstructorsData.fieldList, 3/>) :
+            <#if needs_compound_initialization(compoundConstructorsData)>
+            m_isInitialized(false)<#if compoundConstructorsData.fieldList?has_content>,</#if>
+            </#if>
+        <#list compoundConstructorsData.fieldList as field>
+            <@compound_field_constructor_initializer_field field, field?has_next, 3/>
+            <#if field.usesAnyHolder>
+                <#break>
+            </#if>
+        </#list>
+    {
+    }
 </#macro>
 
 <#macro compound_copy_constructor_declaration compoundConstructorsData>
-    ${compoundConstructorsData.compoundName}(const ${compoundConstructorsData.compoundName}& _other);
+    ${compoundConstructorsData.compoundName}(const ${compoundConstructorsData.compoundName}& other);
 </#macro>
 
 <#macro compound_copy_initialization compoundConstructorsData>
     <#if needs_compound_initialization(compoundConstructorsData)>
-    if (_other.m_isInitialized)
+    if (other.m_isInitialized)
         initialize(<@compound_initialize_copy_argument_list compoundConstructorsData/>);
     else
         m_isInitialized = false;
     <#elseif has_field_with_initialization(compoundConstructorsData.fieldList)>
-    if (_other.m_areChildrenInitialized)
+    if (other.m_areChildrenInitialized)
         initializeChildren();
     else
         m_areChildrenInitialized = false;
@@ -106,9 +103,9 @@ ${compoundConstructorsData.compoundName}::${compoundConstructorsData.compoundNam
 
 <#macro compound_copy_constructor_definition compoundConstructorsData>
 ${compoundConstructorsData.compoundName}::${compoundConstructorsData.compoundName}(<#rt>
-    <#lt>const ${compoundConstructorsData.compoundName}& _other)<#if compoundConstructorsData.fieldList?has_content> :</#if>
+    <#lt>const ${compoundConstructorsData.compoundName}& other)<#if compoundConstructorsData.fieldList?has_content> :</#if>
     <#list compoundConstructorsData.fieldList as field>
-        <@compound_copy_constructor_initializer_field field, field_has_next, 2/>
+        <@compound_copy_constructor_initializer_field field, field?has_next, 2/>
         <#if field.usesAnyHolder>
             <#break>
         </#if>
@@ -119,12 +116,12 @@ ${compoundConstructorsData.compoundName}::${compoundConstructorsData.compoundNam
 </#macro>
 
 <#macro compound_assignment_operator_declaration compoundConstructorsData>
-    ${compoundConstructorsData.compoundName}& operator=(const ${compoundConstructorsData.compoundName}& _other);
+    ${compoundConstructorsData.compoundName}& operator=(const ${compoundConstructorsData.compoundName}& other);
 </#macro>
 
 <#macro compound_assignment_operator_definition compoundConstructorsData>
 ${compoundConstructorsData.compoundName}& ${compoundConstructorsData.compoundName}::operator=(<#rt>
-    <#lt>const ${compoundConstructorsData.compoundName}& _other)
+    <#lt>const ${compoundConstructorsData.compoundName}& other)
 {
     <#list compoundConstructorsData.fieldList as field>
         <@compound_assignment_field field, 1/>
@@ -138,14 +135,58 @@ ${compoundConstructorsData.compoundName}& ${compoundConstructorsData.compoundNam
 }
 </#macro>
 
+<#macro compound_move_constructor_declaration compoundConstructorsData>
+    ${compoundConstructorsData.compoundName}(${compoundConstructorsData.compoundName}&& other);
+</#macro>
+
+<#macro compound_move_constructor_definition compoundConstructorsData>
+${compoundConstructorsData.compoundName}::${compoundConstructorsData.compoundName}(<#rt>
+    <#lt>${compoundConstructorsData.compoundName}&& other)<#if compoundConstructorsData.fieldList?has_content> :</#if>
+    <#list compoundConstructorsData.fieldList as field>
+        <@compound_move_constructor_initializer_field field, field?has_next, 2/>
+        <#if field.usesAnyHolder>
+            <#break>
+        </#if>
+    </#list>
+{
+    <@compound_copy_initialization compoundConstructorsData/>
+}
+</#macro>
+
+<#macro compound_move_assignment_operator_declaration compoundConstructorsData>
+    ${compoundConstructorsData.compoundName}& operator=(${compoundConstructorsData.compoundName}&& other);
+</#macro>
+
+<#macro compound_move_assignment_operator_definition compoundConstructorsData>
+${compoundConstructorsData.compoundName}& ${compoundConstructorsData.compoundName}::operator=(<#rt>
+    <#lt>${compoundConstructorsData.compoundName}&& other)
+{
+    <#list compoundConstructorsData.fieldList as field>
+        <@compound_move_assignment_field field, 1/>
+        <#if field.usesAnyHolder>
+            <#break>
+        </#if>
+    </#list>
+    <@compound_copy_initialization compoundConstructorsData/>
+
+    return *this;
+}
+</#macro>
+
 <#macro compound_initialize_declaration compoundConstructorsData>
     <#local constructorArgumentTypeList><@compound_constructor_argument_type_list compoundConstructorsData, 3/></#local>
-    void initialize(${constructorArgumentTypeList});
+    void initialize(<#rt>
+    <#if constructorArgumentTypeList?has_content>
+
+    </#if>
+            <#lt>${constructorArgumentTypeList});
+    bool isInitialized() const;
 </#macro>
 
 <#macro compound_initialize_definition compoundConstructorsData needsChildrenInitialization>
     <#local constructorArgumentTypeList><@compound_constructor_argument_type_list compoundConstructorsData, 2/></#local>
-void ${compoundConstructorsData.compoundName}::initialize(${constructorArgumentTypeList})
+void ${compoundConstructorsData.compoundName}::initialize(
+        <#lt>${constructorArgumentTypeList})
 {
     <@compound_parameter_initialize compoundConstructorsData.compoundParametersData, 1/>
     m_isInitialized = true;
@@ -153,6 +194,11 @@ void ${compoundConstructorsData.compoundName}::initialize(${constructorArgumentT
 
     initializeChildren();
     </#if>
+}
+
+bool ${compoundConstructorsData.compoundName}::isInitialized() const
+{
+    return m_isInitialized;
 }
 </#macro>
 
@@ -164,7 +210,7 @@ void ${compoundConstructorsData.compoundName}::initialize(${constructorArgumentT
     </#if>
 </#macro>
 
-<#macro compound_constructor_argument_type_list compoundConstructorsData, indent>
+<#macro compound_constructor_argument_type_list compoundConstructorsData indent>
     <@compound_parameter_constructor_type_list compoundConstructorsData.compoundParametersData, indent/>
 </#macro>
 

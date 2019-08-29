@@ -7,6 +7,14 @@ set(ZSERIO_GENERATED_SOURCES
     ${ZSERIO_GEN_DIR}/parameterized_types/array_element_param/Database.cpp
     ${ZSERIO_GEN_DIR}/parameterized_types/array_element_param/Database.h
 
+    ${ZSERIO_GEN_DIR}/parameterized_types/compound_and_field_with_same_param/Param.h
+    ${ZSERIO_GEN_DIR}/parameterized_types/compound_and_field_with_same_param/Field.cpp
+    ${ZSERIO_GEN_DIR}/parameterized_types/compound_and_field_with_same_param/Field.h
+    ${ZSERIO_GEN_DIR}/parameterized_types/compound_and_field_with_same_param/Compound.cpp
+    ${ZSERIO_GEN_DIR}/parameterized_types/compound_and_field_with_same_param/Compound.h
+    ${ZSERIO_GEN_DIR}/parameterized_types/compound_and_field_with_same_param/SameParamTest.cpp
+    ${ZSERIO_GEN_DIR}/parameterized_types/compound_and_field_with_same_param/SameParamTest.h
+
     ${ZSERIO_GEN_DIR}/parameterized_types/grand_child_param/GrandChildParam.cpp
     ${ZSERIO_GEN_DIR}/parameterized_types/grand_child_param/GrandChildParam.h
     ${ZSERIO_GEN_DIR}/parameterized_types/grand_child_param/Item.cpp
@@ -32,14 +40,15 @@ zserio_add_library(TARGET parameterized_types_zs
     OUT_DIR ${ZSERIO_GEN_DIR}
     OUT_FILES ${ZSERIO_GENERATED_SOURCES}
     ZSERIO_CORE_DIR ${ZSERIO_JAR_DIR}
-    ZSERIO_OPTIONS -withoutSourcesAmalgamation
+    ZSERIO_OPTIONS -withoutSourcesAmalgamation -cppStandard ${ZSERIO_CPP_STANDARD}
 )
 
 add_test_sources(
-    cpp/ArrayElementParamTest.cpp
-    cpp/GrandChildParamTest.cpp
-    cpp/SimpleParamTest.cpp
-    cpp/SubtypedBitfieldParamTest.cpp
+    ${ZSERIO_CPP_DIR}/ArrayElementParamTest.cpp
+    ${ZSERIO_CPP_DIR}/CompoundAndFieldWithSameParamTest.cpp
+    ${ZSERIO_CPP_DIR}/GrandChildParamTest.cpp
+    ${ZSERIO_CPP_DIR}/SimpleParamTest.cpp
+    ${ZSERIO_CPP_DIR}/SubtypedBitfieldParamTest.cpp
 )
 
 add_test_dependencies(parameterized_types_zs)

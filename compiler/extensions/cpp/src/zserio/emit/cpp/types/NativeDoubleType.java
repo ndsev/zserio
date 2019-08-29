@@ -6,6 +6,6 @@ public class NativeDoubleType extends CppNativeType
 {
     public NativeDoubleType()
     {
-        super(PackageName.EMPTY, "double", true);
+        super(PackageName.EMPTY, "double");
     }
 }

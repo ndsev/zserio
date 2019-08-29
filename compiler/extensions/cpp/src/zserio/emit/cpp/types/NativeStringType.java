@@ -6,7 +6,7 @@ public class NativeStringType extends CppNativeType
 {
     public NativeStringType()
     {
-        super(STD_PACKAGE_NAME, "string", false);
+        super(STD_PACKAGE_NAME, "string");
         addSystemIncludeFile("string");
     }
 

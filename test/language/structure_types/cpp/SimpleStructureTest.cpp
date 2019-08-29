@@ -26,10 +26,18 @@ protected:
 
 TEST_F(SimpleStructureTest, emptyConstructor)
 {
-    SimpleStructure simpleStructure;
-    ASSERT_EQ(0, simpleStructure.getNumberA());
-    ASSERT_EQ(0, simpleStructure.getNumberB());
-    ASSERT_EQ(0, simpleStructure.getNumberC());
+    SimpleStructure simpleStructure; // just no-throw test
+}
+
+TEST_F(SimpleStructureTest, fieldConstructor)
+{
+    const uint8_t numberA = 0x07;
+    const uint8_t numberB = 0xFF;
+    const uint8_t numberC = 0x7F;
+    SimpleStructure simpleStructure(numberA, numberB, numberC);
+    ASSERT_EQ(numberA, simpleStructure.getNumberA());
+    ASSERT_EQ(numberB, simpleStructure.getNumberB());
+    ASSERT_EQ(numberC, simpleStructure.getNumberC());
 }
 
 TEST_F(SimpleStructureTest, bitStreamReaderConstructor)
@@ -46,6 +54,56 @@ TEST_F(SimpleStructureTest, bitStreamReaderConstructor)
     ASSERT_EQ(numberA, simpleStructure.getNumberA());
     ASSERT_EQ(numberB, simpleStructure.getNumberB());
     ASSERT_EQ(numberC, simpleStructure.getNumberC());
+}
+
+TEST_F(SimpleStructureTest, copyConstructor)
+{
+    const uint8_t numberA = 0x07;
+    const uint8_t numberB = 0xFF;
+    const uint8_t numberC = 0x7F;
+    SimpleStructure simpleStructure(numberA, numberB, numberC);
+    SimpleStructure simpleStructureCopy(simpleStructure);
+    ASSERT_EQ(numberA, simpleStructureCopy.getNumberA());
+    ASSERT_EQ(numberB, simpleStructureCopy.getNumberB());
+    ASSERT_EQ(numberC, simpleStructureCopy.getNumberC());
+}
+
+TEST_F(SimpleStructureTest, assignmentOperator)
+{
+    const uint8_t numberA = 0x07;
+    const uint8_t numberB = 0xFF;
+    const uint8_t numberC = 0x7F;
+    SimpleStructure simpleStructure(numberA, numberB, numberC);
+    SimpleStructure simpleStructureCopy;
+    simpleStructureCopy = simpleStructure;
+    ASSERT_EQ(numberA, simpleStructureCopy.getNumberA());
+    ASSERT_EQ(numberB, simpleStructureCopy.getNumberB());
+    ASSERT_EQ(numberC, simpleStructureCopy.getNumberC());
+}
+
+TEST_F(SimpleStructureTest, moveConstructor)
+{
+    const uint8_t numberA = 0x07;
+    const uint8_t numberB = 0xFF;
+    const uint8_t numberC = 0x7F;
+    SimpleStructure simpleStructure(numberA, numberB, numberC);
+    SimpleStructure simpleStructureMoved(std::move(simpleStructure));
+    ASSERT_EQ(numberA, simpleStructureMoved.getNumberA());
+    ASSERT_EQ(numberB, simpleStructureMoved.getNumberB());
+    ASSERT_EQ(numberC, simpleStructureMoved.getNumberC());
+}
+
+TEST_F(SimpleStructureTest, moveAssignmentOperator)
+{
+    const uint8_t numberA = 0x07;
+    const uint8_t numberB = 0xFF;
+    const uint8_t numberC = 0x7F;
+    SimpleStructure simpleStructure(numberA, numberB, numberC);
+    SimpleStructure simpleStructureMoved;
+    simpleStructureMoved = std::move(simpleStructure);
+    ASSERT_EQ(numberA, simpleStructureMoved.getNumberA());
+    ASSERT_EQ(numberB, simpleStructureMoved.getNumberB());
+    ASSERT_EQ(numberC, simpleStructureMoved.getNumberC());
 }
 
 TEST_F(SimpleStructureTest, getSetNumberA)
@@ -103,7 +161,7 @@ TEST_F(SimpleStructureTest, operatorEquality)
 {
     SimpleStructure simpleStructure1;
     SimpleStructure simpleStructure2;
-    ASSERT_TRUE(simpleStructure1 == simpleStructure2);
+    // empty ctors leave the structures in "undefined" states
 
     const uint8_t numberA = 0x03;
     const uint8_t numberB = 0xDE;
@@ -124,7 +182,7 @@ TEST_F(SimpleStructureTest, hashCode)
 {
     SimpleStructure simpleStructure1;
     SimpleStructure simpleStructure2;
-    ASSERT_EQ(simpleStructure1.hashCode(), simpleStructure2.hashCode());
+    // empty ctors leave the structures in "undefined" states
 
     const uint8_t numberA = 0x04;
     const uint8_t numberB = 0xCD;

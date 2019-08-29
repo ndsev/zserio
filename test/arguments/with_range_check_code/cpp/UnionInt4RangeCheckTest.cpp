@@ -25,9 +25,12 @@ protected:
         ASSERT_EQ(unionInt4RangeCheckCompound, readUnionInt4RangeCheckCompound);
     }
 
-    static const int8_t     INT4_LOWER_BOUND = INT8_C(-8);
-    static const int8_t     INT4_UPPER_BOUND = INT8_C(7);
+    static const int8_t INT4_LOWER_BOUND;
+    static const int8_t INT4_UPPER_BOUND;
 };
+
+const int8_t UnionInt4RangeCheckTest::INT4_LOWER_BOUND = INT8_C(-8);
+const int8_t UnionInt4RangeCheckTest::INT4_UPPER_BOUND = INT8_C(7);
 
 TEST_F(UnionInt4RangeCheckTest, unionInt4LowerBound)
 {

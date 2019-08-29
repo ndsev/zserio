@@ -16,7 +16,7 @@ protected:
         Int7ArrayRangeCheckCompound int7ArrayRangeCheckCompound;
         const uint16_t numElements = 1;
         int7ArrayRangeCheckCompound.setNumElements(numElements);
-        zserio::Int8Array& array = int7ArrayRangeCheckCompound.getArray();
+        std::vector<int8_t>& array = int7ArrayRangeCheckCompound.getArray();
         array.push_back(value);
 
         zserio::BitStreamWriter writer;
@@ -28,9 +28,12 @@ protected:
         ASSERT_EQ(int7ArrayRangeCheckCompound, readInt7ArrayRangeCheckCompound);
     }
 
-    static const int8_t     INT7_LOWER_BOUND = INT8_C(-64);
-    static const int8_t     INT7_UPPER_BOUND = INT8_C(63);
+    static const int8_t INT7_LOWER_BOUND;
+    static const int8_t INT7_UPPER_BOUND;
 };
+
+const int8_t Int7ArrayRangeCheckTest::INT7_LOWER_BOUND = INT8_C(-64);
+const int8_t Int7ArrayRangeCheckTest::INT7_UPPER_BOUND = INT8_C(63);
 
 TEST_F(Int7ArrayRangeCheckTest, int7ArrayLowerBound)
 {

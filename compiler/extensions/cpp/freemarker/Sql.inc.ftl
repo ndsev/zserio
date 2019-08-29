@@ -16,17 +16,6 @@
     <#return false>
 </#function>
 
-<#function sql_table_needs_inspector_parameter_provider fields>
-    <#list fields as field>
-        <#if field.sqlTypeData.isBlob>
-            <#list field.typeParameters as parameter>
-                <#return true>
-            </#list>
-        </#if>
-    </#list>
-    <#return false>
-</#function>
-
 <#function sql_db_has_without_rowid_table fields>
     <#list fields as field>
         <#if field.isWithoutRowIdTable>
@@ -40,8 +29,12 @@
     tableName${field.name?cap_first}()<#t>
 </#macro>
 
-<#macro sql_db_field_member_name field>
+<#macro sql_field_member_name field>
     m_${field.name}_<#t>
+</#macro>
+
+<#macro sql_field_argument_name field>
+    ${field.name}_<#t>
 </#macro>
 
 <#function sql_strip_quotes string>

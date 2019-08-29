@@ -12,7 +12,7 @@ namespace sum_operator
 TEST(SumOperatorTest, GetSumFixedArray)
 {
     SumFunction sumFunction;
-    zserio::UInt8Array fixedArray;
+    std::vector<uint8_t> fixedArray;
     uint16_t expectedSum = 0;
     for (uint8_t i = 1; i <= 10; ++i)
     {

@@ -21,10 +21,11 @@ protected:
 
 private:
     static const size_t bufferSize = 16;
+
     uint8_t m_byteBuffer[bufferSize];
 };
 
-TEST_F(BitStreamReaderTest, ReadBits)
+TEST_F(BitStreamReaderTest, readBits)
 {
     // check invalid bitlength acceptance
     uint8_t numBits[] = { 255, 33 };
@@ -37,7 +38,7 @@ TEST_F(BitStreamReaderTest, ReadBits)
     ASSERT_EQ(0, m_reader.readBits(0));
 }
 
-TEST_F(BitStreamReaderTest, ReadBits64)
+TEST_F(BitStreamReaderTest, readBits64)
 {
     // check invalid bit length acceptance
     uint8_t numBits[] = { 255, 65 };
@@ -50,7 +51,7 @@ TEST_F(BitStreamReaderTest, ReadBits64)
     ASSERT_EQ(0, m_reader.readBits64(0));
 }
 
-TEST_F(BitStreamReaderTest, ReadSignedBits)
+TEST_F(BitStreamReaderTest, readSignedBits)
 {
     // check invalid bit length acceptance
     uint8_t numBits[] = { 255, 33 };
@@ -63,7 +64,7 @@ TEST_F(BitStreamReaderTest, ReadSignedBits)
     ASSERT_EQ(0, m_reader.readSignedBits(0));
 }
 
-TEST_F(BitStreamReaderTest, ReadSignedBits64)
+TEST_F(BitStreamReaderTest, readSignedBits64)
 {
     // check invalid bit length acceptance
     uint8_t numBits[] = { 255, 65 };

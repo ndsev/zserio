@@ -1,0 +1,125 @@
+<!--
+
+Ant build.xml for Zserio C++98 Extension.
+
+Zserio C++98 Extension is implemented as Java service which can be dynamically loaded by Zserio core during
+runtime. It generates C++98 API.
+
+The following external properties can be set:
+
+zserio_extensions.build_dir   - Zserio extensions build directory.
+                                Default is "../../../build/compiler/extensions".
+zserio_extensions.install_dir - Zserio extensions install directory.
+                                Default is "../../../distr/zserio_libs".
+zserio_cpp98.build_dir        - Directory where to put generated files.
+                                Default is "${zserio_extensions.build_dir}/cpp98".
+zserio_cpp98.install_dir      - Directory where to install Zserio C++98 Extension jar file.
+                                Default is "${zserio_extensions.install_dir}".
+zserio_core.jar_file          - Zserio core jar file used for classpath.
+                                Default is "${zserio_extensions.build_dir}/../core/jar/zserio_core.jar".
+findbugs.home_dir             - Location of the findbugs tool. If not set, findbugs is not run.
+
+-->
+<project name="zserio_cpp98" basedir="." default="jar">
+    <dirname property="zserio_cpp98.base_dir" file="${ant.file.zserio_cpp98}"/>
+
+    <property name="zserio_cpp98.zserio_root" value="${zserio_cpp98.base_dir}/../../.."/>
+
+    <property name="zserio_extensions.build_dir" value="${zserio_cpp98.zserio_root}/build/compiler/extensions"/>
+    <property name="zserio_extensions.install_dir" value="${zserio_cpp98.zserio_root}/distr/zserio_libs"/>
+    <property name="zserio_cpp98.build_dir" value="${zserio_extensions.build_dir}/cpp98"/>
+    <property name="zserio_cpp98.install_dir" value="${zserio_extensions.install_dir}"/>
+    <property name="zserio_core.jar_file" value="${zserio_extensions.build_dir}/../core/jar/zserio_core.jar"/>
+
+    <property name="zserio_cpp98.src_dir" value="${zserio_cpp98.base_dir}/src"/>
+    <property name="zserio_cpp98.classes_dir" value="${zserio_cpp98.build_dir}/classes"/>
+    <property name="zserio_cpp98.findbugs.out_dir" value="${zserio_cpp98.build_dir}/findbugs"/>
+
+    <property name="zserio_cpp98.jar_dir" value="${zserio_cpp98.build_dir}/jar"/>
+    <property name="zserio_cpp98.jar_file" value="${zserio_cpp98.jar_dir}/zserio_cpp98.jar"/>
+
+    <!-- Zserio C++98 extension version. -->
+    <loadfile
+        encoding="UTF-8"
+        property="zserio_cpp98.version"
+        srcFile="${basedir}/src/zserio/emit/cpp98/CppExtensionVersion.java">
+        <filterchain>
+            <striplinebreaks/>
+            <tokenfilter>
+                <replaceregex
+                    pattern='.*VERSION_STRING\s*=\s*"([0-9]+.[0-9]+.[0-9]+(-[A-Za-z0-9]+)?)".*'
+                    replace="\1"/>
+            </tokenfilter>
+        </filterchain>
+    </loadfile>
+
+    <target name="clean">
+        <delete dir="${zserio_cpp98.build_dir}"/>
+    </target>
+
+    <target name="compile">
+        <mkdir dir="${zserio_cpp98.classes_dir}"/>
+        <depend srcDir="${zserio_cpp98.src_dir}" destDir="${zserio_cpp98.classes_dir}"
+            cache="${zserio_cpp98.build_dir}/depend-cache"/>
+
+        <path id="zserio_cpp98.classpath_zserio_core">
+            <pathelement location="${zserio_core.jar_file}"/>
+        </path>
+
+        <javac srcdir="${zserio_cpp98.src_dir}" destdir="${zserio_cpp98.classes_dir}" debug="on"
+            encoding="utf8" includeAntRuntime="false">
+            <compilerarg value="-Xlint:all"/>
+            <compilerarg value="-Werror"/>
+            <classpath>
+                <path refid="zserio_cpp98.classpath_zserio_core"/>
+            </classpath>
+        </javac>
+    </target>
+
+    <target name="jar" depends="compile">
+        <mkdir dir="${zserio_cpp98.jar_dir}"/>
+        <copy todir="${zserio_cpp98.build_dir}/metainf" overwrite="true">
+            <fileset dir="${zserio_cpp98.base_dir}/metainf"/>
+        </copy>
+        <jar destfile="${zserio_cpp98.jar_file}">
+            <fileset dir="${zserio_cpp98.classes_dir}">
+                <include name="zserio/**"/>
+            </fileset>
+            <zipfileset dir="${zserio_cpp98.base_dir}/freemarker" includes="*.ftl"
+                prefix="freemarker/cpp98"/>
+            <manifest>
+                <attribute name="Implementation-Version" value="${zserio_cpp98.version}"/>
+            </manifest>
+            <metainf dir="${zserio_cpp98.build_dir}/metainf" includes="**/*"/>
+        </jar>
+    </target>
+
+    <target name="install" depends="jar">
+        <mkdir dir="${zserio_cpp98.install_dir}"/>
+        <copy file="${zserio_cpp98.jar_file}" todir="${zserio_cpp98.install_dir}" overwrite="true"/>
+    </target>
+
+    <target name="findbugs" depends="install" if="findbugs.home_dir">
+        <mkdir dir="${zserio_cpp98.findbugs.out_dir}"/>
+        <taskdef name="findbugs" classpath="${findbugs.home_dir}/lib/findbugs-ant.jar"
+            classname="edu.umd.cs.findbugs.anttask.FindBugsTask"/>
+        <findbugs home="${findbugs.home_dir}"
+            output="html"
+            outputFile="${zserio_cpp98.findbugs.out_dir}/findbugs.html"
+            reportLevel="low"
+            errorProperty="zserio_cpp98.is_failed"
+            warningsProperty="zserio_cpp98.is_failed">
+            <sourcePath>
+                <dirset dir="${zserio_cpp98.src_dir}"/>
+            </sourcePath>
+            <fileset dir="${zserio_cpp98.classes_dir}"/>
+            <auxClasspath>
+                <path refid="zserio_cpp98.classpath_zserio_core"/>
+            </auxClasspath>
+        </findbugs>
+        <fail message="FindBugs found some issues!" if="zserio_cpp98.is_failed"/>
+    </target>
+
+    <target name="test" depends="findbugs">
+    </target>
+</project>

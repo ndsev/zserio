@@ -12,69 +12,52 @@ namespace enum_used_by_enum
 class EnumUsedByEnumTest : public ::testing::Test
 {
 protected:
-    static const uint8_t VALUE_NONE          = 0x00;
-    static const uint8_t VALUE_LIGHT_RED     = 0x01;
-    static const uint8_t VALUE_LIGHT_GREEN   = 0x02;
-    static const uint8_t VALUE_LIGHT_BLUE    = 0x03;
-    static const uint8_t VALUE_LIGHT_PINK    = 0x04;
-    static const uint8_t VALUE_DARK_RED      = 0x11;
-    static const uint8_t VALUE_DARK_GREEN    = 0x12;
-    static const uint8_t VALUE_DARK_BLUE     = 0x13;
-    static const uint8_t VALUE_DARK_PINK     = 0x14;
+    static const uint8_t VALUE_NONE;
+    static const uint8_t VALUE_LIGHT_RED;
+    static const uint8_t VALUE_LIGHT_GREEN;
+    static const uint8_t VALUE_LIGHT_BLUE;
+    static const uint8_t VALUE_LIGHT_PINK;
+    static const uint8_t VALUE_DARK_RED;
+    static const uint8_t VALUE_DARK_GREEN;
+    static const uint8_t VALUE_DARK_BLUE;
+    static const uint8_t VALUE_DARK_PINK;
 };
+
+const uint8_t EnumUsedByEnumTest::VALUE_NONE          = 0x00;
+const uint8_t EnumUsedByEnumTest::VALUE_LIGHT_RED     = 0x01;
+const uint8_t EnumUsedByEnumTest::VALUE_LIGHT_GREEN   = 0x02;
+const uint8_t EnumUsedByEnumTest::VALUE_LIGHT_BLUE    = 0x03;
+const uint8_t EnumUsedByEnumTest::VALUE_LIGHT_PINK    = 0x04;
+const uint8_t EnumUsedByEnumTest::VALUE_DARK_RED      = 0x11;
+const uint8_t EnumUsedByEnumTest::VALUE_DARK_GREEN    = 0x12;
+const uint8_t EnumUsedByEnumTest::VALUE_DARK_BLUE     = 0x13;
+const uint8_t EnumUsedByEnumTest::VALUE_DARK_PINK     = 0x14;
 
 TEST_F(EnumUsedByEnumTest, lightColor)
 {
-    uint8_t expectedEnumValue = VALUE_LIGHT_RED;
-    ASSERT_EQ(expectedEnumValue, LightColor::LIGHT_RED);
-
-    expectedEnumValue = VALUE_LIGHT_GREEN;
-    ASSERT_EQ(expectedEnumValue, LightColor::LIGHT_GREEN);
-
-    expectedEnumValue = VALUE_LIGHT_BLUE;
-    ASSERT_EQ(expectedEnumValue, LightColor::LIGHT_BLUE);
+    ASSERT_EQ(VALUE_LIGHT_RED, zserio::enumToValue(LightColor::LIGHT_RED));
+    ASSERT_EQ(VALUE_LIGHT_GREEN, zserio::enumToValue(LightColor::LIGHT_GREEN));
+    ASSERT_EQ(VALUE_LIGHT_BLUE, zserio::enumToValue(LightColor::LIGHT_BLUE));
 }
 
 TEST_F(EnumUsedByEnumTest, darkColor)
 {
-    uint8_t expectedEnumValue = VALUE_DARK_RED;
-    ASSERT_EQ(expectedEnumValue, DarkColor::DARK_RED);
-
-    expectedEnumValue = VALUE_DARK_GREEN;
-    ASSERT_EQ(expectedEnumValue, DarkColor::DARK_GREEN);
-
-    expectedEnumValue = VALUE_DARK_BLUE;
-    ASSERT_EQ(expectedEnumValue, DarkColor::DARK_BLUE);
+    ASSERT_EQ(VALUE_DARK_RED, zserio::enumToValue(DarkColor::DARK_RED));
+    ASSERT_EQ(VALUE_DARK_GREEN, zserio::enumToValue(DarkColor::DARK_GREEN));
+    ASSERT_EQ(VALUE_DARK_BLUE, zserio::enumToValue(DarkColor::DARK_BLUE));
 }
 
 TEST_F(EnumUsedByEnumTest, color)
 {
-    uint8_t expectedEnumValue = VALUE_NONE;
-    ASSERT_EQ(expectedEnumValue, Color::NONE);
-
-    expectedEnumValue = VALUE_LIGHT_RED;
-    ASSERT_EQ(expectedEnumValue, Color::LIGHT_RED);
-
-    expectedEnumValue = VALUE_LIGHT_GREEN;
-    ASSERT_EQ(expectedEnumValue, Color::LIGHT_GREEN);
-
-    expectedEnumValue = VALUE_LIGHT_BLUE;
-    ASSERT_EQ(expectedEnumValue, Color::LIGHT_BLUE);
-
-    expectedEnumValue = VALUE_LIGHT_PINK;
-    ASSERT_EQ(expectedEnumValue, Color::LIGHT_PINK);
-
-    expectedEnumValue = VALUE_DARK_RED;
-    ASSERT_EQ(expectedEnumValue, Color::DARK_RED);
-
-    expectedEnumValue = VALUE_DARK_GREEN;
-    ASSERT_EQ(expectedEnumValue, Color::DARK_GREEN);
-
-    expectedEnumValue = VALUE_DARK_BLUE;
-    ASSERT_EQ(expectedEnumValue, Color::DARK_BLUE);
-
-    expectedEnumValue = VALUE_DARK_PINK;
-    ASSERT_EQ(expectedEnumValue, Color::DARK_PINK);
+    ASSERT_EQ(VALUE_NONE, zserio::enumToValue(Color::NONE));
+    ASSERT_EQ(VALUE_LIGHT_RED, zserio::enumToValue(Color::LIGHT_RED));
+    ASSERT_EQ(VALUE_LIGHT_GREEN, zserio::enumToValue(Color::LIGHT_GREEN));
+    ASSERT_EQ(VALUE_LIGHT_BLUE, zserio::enumToValue(Color::LIGHT_BLUE));
+    ASSERT_EQ(VALUE_LIGHT_PINK, zserio::enumToValue(Color::LIGHT_PINK));
+    ASSERT_EQ(VALUE_DARK_RED, zserio::enumToValue(Color::DARK_RED));
+    ASSERT_EQ(VALUE_DARK_GREEN, zserio::enumToValue(Color::DARK_GREEN));
+    ASSERT_EQ(VALUE_DARK_BLUE, zserio::enumToValue(Color::DARK_BLUE));
+    ASSERT_EQ(VALUE_DARK_PINK, zserio::enumToValue(Color::DARK_PINK));
 }
 
 } // namespace enum_used_by_enum

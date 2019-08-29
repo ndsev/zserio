@@ -4,7 +4,6 @@
 
 #include "zserio/BitStreamWriter.h"
 #include "zserio/BitStreamReader.h"
-#include "zserio/ObjectArray.h"
 
 #include "functions/structure_param/MetresConverter.h"
 #include "functions/structure_param/MetresConverterCaller.h"

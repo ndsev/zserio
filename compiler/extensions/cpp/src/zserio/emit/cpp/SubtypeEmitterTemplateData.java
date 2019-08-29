@@ -3,18 +3,16 @@ package zserio.emit.cpp;
 import zserio.ast.Subtype;
 import zserio.emit.common.ZserioEmitException;
 import zserio.emit.cpp.types.CppNativeType;
-import zserio.emit.cpp.types.NativeSubType;
 
 public class SubtypeEmitterTemplateData extends UserTypeTemplateData
 {
-    public SubtypeEmitterTemplateData(TemplateDataContext context, Subtype type) throws ZserioEmitException
+    public SubtypeEmitterTemplateData(TemplateDataContext context, Subtype subtype) throws ZserioEmitException
     {
-        super(context, type);
+        super(context, subtype);
 
         final CppNativeTypeMapper cppNativeTypeMapper = context.getCppNativeTypeMapper();
-        final NativeSubType nativeType = cppNativeTypeMapper.getCppSubType(type);
-        final CppNativeType targetNativeType = nativeType.getTargetType();
 
+        final CppNativeType targetNativeType = cppNativeTypeMapper.getCppType(subtype.getTargetType());
         addHeaderIncludesForType(targetNativeType);
 
         targetCppTypeName = targetNativeType.getFullName();

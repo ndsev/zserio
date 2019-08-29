@@ -1,0 +1,7 @@
+// suppress "Member variable 'X' is not initialized in the constructor."
+uninitMemberVar:*/ExtraParamUnion.cpp
+uninitMemberVar:*/Item.cpp
+uninitMemberVar:*/ItemChoice.cpp
+uninitMemberVar:*/ItemChoiceHolder.cpp
+uninitMemberVar:*/Tile.cpp
+

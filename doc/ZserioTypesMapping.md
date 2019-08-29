@@ -46,7 +46,7 @@ string          | `String`               | `std::string` | `string`    |
 
 ## Array Types
 
-Zserio element type | Java type                                 | C++ type
+Zserio element type | Java type                                 | C++98 type
 ------------------- | ----------------------------------------- | ---------------------------
 uint8               | `zserio.runtime.array.UnsignedByteArray`  | `zserio::UnsignedByteArray`
 uint16              | `zserio.runtime.array.UnsignedShortArray` | `zserio::UnsignedShortArray`
@@ -79,5 +79,7 @@ bool                | `zserio.runtime.array.BoolArray`          | `zserio::BoolA
 string              | `zserio.runtime.array.StringArray`        | `zserio::StringArray`
 struct              | `zserio.runtime.array.ObjectArray`        | `zserio::ObjectArray`
 choice              | `zserio.runtime.array.ObjectArray`        | `zserio::ObjectArray`
+
+> C++11 uses STL vector.
 
 > Python uses native arrays.

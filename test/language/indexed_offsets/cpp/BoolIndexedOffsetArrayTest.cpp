@@ -39,11 +39,11 @@ protected:
 
     void checkOffsets(const BoolIndexedOffsetArray& boolIndexedOffsetArray, uint16_t offsetShift)
     {
-        const zserio::UInt32Array& offsets = boolIndexedOffsetArray.getOffsets();
+        const std::vector<uint32_t>& offsets = boolIndexedOffsetArray.getOffsets();
         const size_t expectedNumElements = NUM_ELEMENTS;
         ASSERT_EQ(expectedNumElements, offsets.size());
         uint32_t expectedOffset = ELEMENT0_OFFSET + offsetShift;
-        for (zserio::UInt32Array::const_iterator it = offsets.begin(); it != offsets.end(); ++it)
+        for (std::vector<uint32_t>::const_iterator it = offsets.begin(); it != offsets.end(); ++it)
         {
             ASSERT_EQ(expectedOffset, *it);
             expectedOffset += ALIGNED_ELEMENT_BYTE_SIZE;
@@ -58,7 +58,7 @@ protected:
         const uint8_t expectedSpacer = SPACER_VALUE;
         ASSERT_EQ(expectedSpacer, boolIndexedOffsetArray.getSpacer());
 
-        const zserio::BoolArray& data = boolIndexedOffsetArray.getData();
+        const std::vector<bool>& data = boolIndexedOffsetArray.getData();
         const size_t expectedNumElements = NUM_ELEMENTS;
         ASSERT_EQ(expectedNumElements, data.size());
         for (uint8_t i = 0; i < NUM_ELEMENTS; ++i)
@@ -67,7 +67,7 @@ protected:
 
     void fillBoolIndexedOffsetArray(BoolIndexedOffsetArray& boolIndexedOffsetArray, bool createWrongOffsets)
     {
-        zserio::UInt32Array& offsets = boolIndexedOffsetArray.getOffsets();
+        std::vector<uint32_t>& offsets = boolIndexedOffsetArray.getOffsets();
         offsets.reserve(NUM_ELEMENTS);
         const uint32_t wrongOffset = WRONG_OFFSET;
         uint32_t currentOffset = ELEMENT0_OFFSET;
@@ -81,7 +81,7 @@ protected:
         }
         boolIndexedOffsetArray.setSpacer(SPACER_VALUE);
 
-        zserio::BoolArray& data = boolIndexedOffsetArray.getData();
+        std::vector<bool>& data = boolIndexedOffsetArray.getData();
         data.reserve(NUM_ELEMENTS);
         for (uint8_t i = 0; i < NUM_ELEMENTS; ++i)
             data.push_back((i & 0x01) ? true : false);

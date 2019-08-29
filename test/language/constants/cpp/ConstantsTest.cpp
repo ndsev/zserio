@@ -314,7 +314,7 @@ TEST(ConstantsTest, constantDefinedByEnum)
 
 TEST(ConstantsTest, constantDefinedByEnumValueof)
 {
-    ASSERT_EQ(Colors::BLACK, DEFAULT_PEN_COLOR_VALUE);
+    ASSERT_EQ(zserio::enumToValue(Colors::BLACK), DEFAULT_PEN_COLOR_VALUE);
 }
 
 TEST(ConstantsTest, subtypeToInt25Constant)

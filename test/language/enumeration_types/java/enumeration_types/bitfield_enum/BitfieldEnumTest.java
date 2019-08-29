@@ -23,14 +23,14 @@ public class BitfieldEnumTest
     public void getValue()
     {
         final Color color = Color.BLUE;
-        assertEquals(3, color.getValue());
+        assertEquals(BLUE_VALUE, color.getValue());
     }
 
     @Test
     public void getGenericValue()
     {
-        final Color color = Color.BLACK;
-        assertEquals(Byte.valueOf((byte)7) , color.getGenericValue());
+        final Color color = Color.GREEN;
+        assertEquals(Byte.valueOf(GREEN_VALUE), color.getGenericValue());
     }
 
     @Test
@@ -43,7 +43,7 @@ public class BitfieldEnumTest
     @Test
     public void write() throws IOException
     {
-        final Color color = Color.BLACK;
+        final Color color = Color.GREEN;
         final ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter();
         color.write(writer);
         final BitStreamReader reader = new ByteArrayBitStreamReader(writer.toByteArray());
@@ -54,17 +54,17 @@ public class BitfieldEnumTest
     @Test
     public void toEnum()
     {
-        Color color = Color.toEnum((byte)0);
+        Color color = Color.toEnum(NONE_VALUE);
         assertEquals(Color.NONE, color);
 
-        color = Color.toEnum((byte)2);
+        color = Color.toEnum(RED_VALUE);
         assertEquals(Color.RED, color);
 
-        color = Color.toEnum((byte)3);
+        color = Color.toEnum(BLUE_VALUE);
         assertEquals(Color.BLUE, color);
 
-        color = Color.toEnum((byte)7);
-        assertEquals(Color.BLACK, color);
+        color = Color.toEnum(GREEN_VALUE);
+        assertEquals(Color.GREEN, color);
     }
 
     @Test(expected=IllegalArgumentException.class)
@@ -74,4 +74,9 @@ public class BitfieldEnumTest
     }
 
     private static int BITFIELD_ENUM_BITSIZEOF = 3;
+
+    private static byte NONE_VALUE = 0;
+    private static byte RED_VALUE = 2;
+    private static byte BLUE_VALUE = 3;
+    private static byte GREEN_VALUE = 7;
 }

@@ -1,6 +1,7 @@
 set(ZSERIO_GEN_DIR_PACKAGES ${CMAKE_CURRENT_BINARY_DIR}/gen_packages)
 set(ZSERIO_GEN_DIR_EMPTY_FILE ${CMAKE_CURRENT_BINARY_DIR}/gen_empty_file)
 set(ZSERIO_GEN_DIR_DEFAULT_PACKAGE ${CMAKE_CURRENT_BINARY_DIR}/gen_default_package)
+set(ZSERIO_GEN_DIR_PACKAGE_NAME_CONFLICT ${CMAKE_CURRENT_BINARY_DIR}/gen_package_name_conflict)
 
 set(ZSERIO_GENERATED_SOURCES_PACKAGES
     ${ZSERIO_GEN_DIR_PACKAGES}/cyclic_imports/bottom/BottomColour.cpp
@@ -40,13 +41,24 @@ set(ZSERIO_GENERATED_SOURCES_DEFAULT_PACKAGE
     ${ZSERIO_GEN_DIR_DEFAULT_PACKAGE}/default_package_import/top/TopStructure.h
 )
 
+set(ZSERIO_GENERATED_SOURCES_PACKAGE_NAME_CONFLICT
+    ${ZSERIO_GEN_DIR_PACKAGE_NAME_CONFLICT}/package_name_conflict/PackageNameConflict.cpp
+    ${ZSERIO_GEN_DIR_PACKAGE_NAME_CONFLICT}/package_name_conflict/PackageNameConflict.h
+    ${ZSERIO_GEN_DIR_PACKAGE_NAME_CONFLICT}/package_name_conflict/PackageNameConflictInner.cpp
+    ${ZSERIO_GEN_DIR_PACKAGE_NAME_CONFLICT}/package_name_conflict/PackageNameConflictInner.h
+    ${ZSERIO_GEN_DIR_PACKAGE_NAME_CONFLICT}/package_name_conflict/Blob.cpp
+    ${ZSERIO_GEN_DIR_PACKAGE_NAME_CONFLICT}/package_name_conflict/Blob.h
+    ${ZSERIO_GEN_DIR_PACKAGE_NAME_CONFLICT}/package_name_conflict/package_name_conflict/Blob.cpp
+    ${ZSERIO_GEN_DIR_PACKAGE_NAME_CONFLICT}/package_name_conflict/package_name_conflict/Blob.h
+)
+
 zserio_add_library(TARGET packages_zs
     SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/zs
     MAIN_SOURCE packages.zs
     OUT_DIR ${ZSERIO_GEN_DIR_PACKAGES}
     OUT_FILES ${ZSERIO_GENERATED_SOURCES_PACKAGES}
     ZSERIO_CORE_DIR ${ZSERIO_JAR_DIR}
-    ZSERIO_OPTIONS -withoutSourcesAmalgamation
+    ZSERIO_OPTIONS -withoutSourcesAmalgamation -cppStandard ${ZSERIO_CPP_STANDARD}
 )
 
 zserio_add_library(TARGET empty_file_zs
@@ -55,6 +67,7 @@ zserio_add_library(TARGET empty_file_zs
     OUT_DIR ${ZSERIO_GEN_DIR_EMPTY_FILE}
     OUT_FILES EMPTY
     ZSERIO_CORE_DIR ${ZSERIO_JAR_DIR}
+    ZSERIO_OPTIONS -cppStandard ${ZSERIO_CPP_STANDARD}
 )
 
 zserio_add_library(TARGET default_package_zs
@@ -63,12 +76,29 @@ zserio_add_library(TARGET default_package_zs
     OUT_DIR ${ZSERIO_GEN_DIR_DEFAULT_PACKAGE}
     OUT_FILES ${ZSERIO_GENERATED_SOURCES_DEFAULT_PACKAGE}
     ZSERIO_CORE_DIR ${ZSERIO_JAR_DIR}
-    ZSERIO_OPTIONS -withoutSourcesAmalgamation
+    ZSERIO_OPTIONS -withoutSourcesAmalgamation -cppStandard ${ZSERIO_CPP_STANDARD}
 )
 
 add_test_sources(
-    cpp/DefaultPackageTest.cpp
+    ${ZSERIO_CPP_DIR}/DefaultPackageTest.cpp
 )
 
 add_test_dependencies(packages_zs)
 add_test_dependencies(default_package_zs)
+
+if (${ZSERIO_CPP_STANDARD} STREQUAL c++11)
+    zserio_add_library(TARGET package_name_conflict_zs
+        SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/zs
+        MAIN_SOURCE package_name_conflict.zs
+        OUT_DIR ${ZSERIO_GEN_DIR_PACKAGE_NAME_CONFLICT}
+        OUT_FILES ${ZSERIO_GENERATED_SOURCES_PACKAGE_NAME_CONFLICT}
+        ZSERIO_CORE_DIR ${ZSERIO_JAR_DIR}
+        ZSERIO_OPTIONS -withoutSourcesAmalgamation -cppStandard ${ZSERIO_CPP_STANDARD}
+    )
+
+    add_test_sources(
+        ${ZSERIO_CPP_DIR}/PackageNameConflictTest.cpp
+    )
+
+    add_test_dependencies(package_name_conflict_zs)
+endif ()

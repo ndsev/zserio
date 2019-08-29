@@ -35,7 +35,7 @@ protected:
 
         ASSERT_EQ(FORCED_ALIGNMENT_VALUE, autoArrayHolder.getForceAlignment());
 
-        const zserio::Int8Array& autoArray = autoArrayHolder.getAutoArray();
+        const std::vector<int8_t>& autoArray = autoArrayHolder.getAutoArray();
         ASSERT_EQ(AUTO_ARRAY_LENGTH, autoArray.size());
         for (size_t i = 0; i < AUTO_ARRAY_LENGTH; ++i)
             ASSERT_EQ(i, autoArray[i]);
@@ -50,7 +50,7 @@ protected:
 
         autoArrayHolder.setForceAlignment(FORCED_ALIGNMENT_VALUE);
 
-        zserio::Int8Array autoArray;
+        std::vector<int8_t> autoArray;
         autoArray.reserve(AUTO_ARRAY_LENGTH);
         for (size_t i = 0; i < AUTO_ARRAY_LENGTH; ++i)
             autoArray.push_back(static_cast<int8_t>(i));

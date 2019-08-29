@@ -1,13 +1,13 @@
 #include <cstring>
 #include <fstream>
 
-#include "BitStreamException.h"
-#include "CppRuntimeException.h"
-#include "StringConvertUtil.h"
-#include "BitPositionUtil.h"
-#include "BitSizeOfCalculator.h"
-#include "FloatUtil.h"
-#include "BitStreamWriter.h"
+#include "zserio/BitStreamException.h"
+#include "zserio/CppRuntimeException.h"
+#include "zserio/StringConvertUtil.h"
+#include "zserio/BitPositionUtil.h"
+#include "zserio/BitSizeOfCalculator.h"
+#include "zserio/FloatUtil.h"
+#include "zserio/BitStreamWriter.h"
 
 namespace zserio
 {
@@ -177,42 +177,42 @@ void BitStreamWriter::writeVarInt64(int64_t data)
 {
     static const uint8_t valBitsVarInt64[] = { 6, 7, 7, 7, 7, 7, 7, 8 };
     writeVarNum(data, valBitsVarInt64, sizeof(valBitsVarInt64) / sizeof(valBitsVarInt64[0]),
-            getBitSizeOfVarInt64(data));
+            zserio::bitSizeOfVarInt64(data));
 }
 
 void BitStreamWriter::writeVarInt32(int32_t data)
 {
     static const uint8_t valBitsVarInt32[] = { 6, 7, 7, 8 };
     writeVarNum(data, valBitsVarInt32, sizeof(valBitsVarInt32) / sizeof(valBitsVarInt32[0]),
-            getBitSizeOfVarInt32(data));
+            zserio::bitSizeOfVarInt32(data));
 }
 
 void BitStreamWriter::writeVarInt16(int16_t data)
 {
     static const uint8_t valBitsVarInt16[] = { 6, 8 };
     writeVarNum(data, valBitsVarInt16, sizeof(valBitsVarInt16) / sizeof(valBitsVarInt16[0]),
-            getBitSizeOfVarInt16(data));
+            zserio::bitSizeOfVarInt16(data));
 }
 
 void BitStreamWriter::writeVarUInt64(uint64_t data)
 {
     static const uint8_t valBitsVarUInt64[] = { 7, 7, 7, 7, 7, 7, 7, 8 };
     writeVarAbsNum(data, false, valBitsVarUInt64, sizeof(valBitsVarUInt64) / sizeof(valBitsVarUInt64[0]),
-            getBitSizeOfVarUInt64(data));
+            zserio::bitSizeOfVarUInt64(data));
 }
 
 void BitStreamWriter::writeVarUInt32(uint32_t data)
 {
     static const uint8_t valBitsVarUInt32[] = { 7, 7, 7, 8 };
     writeVarAbsNum(data, false, valBitsVarUInt32, sizeof(valBitsVarUInt32) / sizeof(valBitsVarUInt32[0]),
-            getBitSizeOfVarUInt32(data));
+            zserio::bitSizeOfVarUInt32(data));
 }
 
 void BitStreamWriter::writeVarUInt16(uint16_t data)
 {
     static const uint8_t valBitsVarUInt16[] = { 7, 8 };
     writeVarAbsNum(data, false, valBitsVarUInt16, sizeof(valBitsVarUInt16) / sizeof(valBitsVarUInt16[0]),
-            getBitSizeOfVarUInt16(data));
+            zserio::bitSizeOfVarUInt16(data));
 }
 
 void BitStreamWriter::writeVarInt(int64_t data)
@@ -222,14 +222,14 @@ void BitStreamWriter::writeVarInt(int64_t data)
         writeBits(0x80, 8); // INT64_MIN is encoded as -0
     else
         writeVarNum(data, valBitsVarInt, sizeof(valBitsVarInt) / sizeof(valBitsVarInt[0]),
-                getBitSizeOfVarInt(data));
+                zserio::bitSizeOfVarInt(data));
 }
 
 void BitStreamWriter::writeVarUInt(uint64_t data)
 {
     static const uint8_t valBitsVarUInt[] = { 7, 7, 7, 7, 7, 7, 7, 7, 8 };
     writeVarAbsNum(data, false, valBitsVarUInt, sizeof(valBitsVarUInt) / sizeof(valBitsVarUInt[0]),
-            getBitSizeOfVarUInt(data));
+            zserio::bitSizeOfVarUInt(data));
 }
 
 void BitStreamWriter::writeFloat16(float data)

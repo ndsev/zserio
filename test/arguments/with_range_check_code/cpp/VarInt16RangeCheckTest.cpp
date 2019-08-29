@@ -25,9 +25,12 @@ protected:
         ASSERT_EQ(varInt16RangeCheckCompound, readVarInt16RangeCheckCompound);
     }
 
-    static const int16_t    VARINT16_LOWER_BOUND = -((INT16_C(1) << 14) - 1);
-    static const int16_t    VARINT16_UPPER_BOUND = (INT16_C(1) << 14) - 1;
+    static const int16_t VARINT16_LOWER_BOUND;
+    static const int16_t VARINT16_UPPER_BOUND;
 };
+
+const int16_t VarInt16RangeCheckTest::VARINT16_LOWER_BOUND = -((INT16_C(1) << 14) - 1);
+const int16_t VarInt16RangeCheckTest::VARINT16_UPPER_BOUND = (INT16_C(1) << 14) - 1;
 
 TEST_F(VarInt16RangeCheckTest, varInt16LowerBound)
 {

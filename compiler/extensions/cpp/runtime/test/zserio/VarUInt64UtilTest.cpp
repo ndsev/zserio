@@ -9,13 +9,13 @@
 namespace zserio
 {
 
-TEST(VarUInt64UtilTest, convertVarUInt64ToInt)
+TEST(VarUInt64UtilTest, convertVarUInt64ToInt32)
 {
-    EXPECT_NO_THROW(convertVarUInt64ToInt(0));
-    EXPECT_NO_THROW(convertVarUInt64ToInt(std::numeric_limits<int>::max()));
-    EXPECT_THROW(convertVarUInt64ToInt(
-            static_cast<uint64_t>(std::numeric_limits<int>::max()) + 1), CppRuntimeException);
-    EXPECT_THROW(convertVarUInt64ToInt(std::numeric_limits<uint32_t>::max()), CppRuntimeException);
+    EXPECT_NO_THROW(convertVarUInt64ToInt32(0));
+    EXPECT_NO_THROW(convertVarUInt64ToInt32(std::numeric_limits<int32_t>::max()));
+    EXPECT_THROW(convertVarUInt64ToInt32(
+            static_cast<uint64_t>(std::numeric_limits<int32_t>::max()) + 1), CppRuntimeException);
+    EXPECT_THROW(convertVarUInt64ToInt32(std::numeric_limits<uint32_t>::max()), CppRuntimeException);
 }
 
 TEST(VarUInt64UtilTest, convertVarUInt64ToArraySize)

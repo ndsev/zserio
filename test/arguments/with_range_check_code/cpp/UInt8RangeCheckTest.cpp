@@ -25,9 +25,12 @@ protected:
         ASSERT_EQ(uint8RangeCheckCompound, readUInt8RangeCheckCompound);
     }
 
-    static const uint8_t    UINT8_LOWER_BOUND = UINT8_C(0);
-    static const uint8_t    UINT8_UPPER_BOUND = UINT8_C(255);
+    static const uint8_t UINT8_LOWER_BOUND;
+    static const uint8_t UINT8_UPPER_BOUND;
 };
+
+const uint8_t UInt8RangeCheckTest::UINT8_LOWER_BOUND = UINT8_C(0);
+const uint8_t UInt8RangeCheckTest::UINT8_UPPER_BOUND = UINT8_C(255);
 
 TEST_F(UInt8RangeCheckTest, uint8LowerBound)
 {

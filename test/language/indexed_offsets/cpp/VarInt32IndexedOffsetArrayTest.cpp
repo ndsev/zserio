@@ -23,7 +23,7 @@ protected:
                 writer.writeBits(wrongOffset, 32);
             else
                 writer.writeBits(currentOffset, 32);
-            currentOffset += static_cast<uint32_t>(zserio::getBitSizeOfVarInt32(i) / 8);
+            currentOffset += static_cast<uint32_t>(zserio::bitSizeOfVarInt32(i) / 8);
         }
 
         writer.writeBits(SPACER_VALUE, 1);
@@ -35,7 +35,7 @@ protected:
 
     void checkOffsets(const VarInt32IndexedOffsetArray& varint32IndexedOffsetArray, uint16_t offsetShift)
     {
-        const zserio::UInt32Array& offsets = varint32IndexedOffsetArray.getOffsets();
+        const std::vector<uint32_t>& offsets = varint32IndexedOffsetArray.getOffsets();
         const size_t expectedNumElements = NUM_ELEMENTS;
         ASSERT_EQ(expectedNumElements, offsets.size());
         uint32_t expectedOffset = ELEMENT0_OFFSET + offsetShift;
@@ -43,7 +43,7 @@ protected:
         {
             const int offset = offsets[i];
             ASSERT_EQ(expectedOffset, offset);
-            expectedOffset += static_cast<uint32_t>(zserio::getBitSizeOfVarInt32(offset) / 8);
+            expectedOffset += static_cast<uint32_t>(zserio::bitSizeOfVarInt32(offset) / 8);
         }
     }
 
@@ -55,7 +55,7 @@ protected:
         const uint8_t expectedSpacer = SPACER_VALUE;
         ASSERT_EQ(expectedSpacer, varint32IndexedOffsetArray.getSpacer());
 
-        const zserio::VarInt32Array& data = varint32IndexedOffsetArray.getData();
+        const std::vector<int32_t>& data = varint32IndexedOffsetArray.getData();
         const size_t expectedNumElements = NUM_ELEMENTS;
         ASSERT_EQ(expectedNumElements, data.size());
         for (uint8_t i = 0; i < NUM_ELEMENTS; ++i)
@@ -65,7 +65,7 @@ protected:
     void fillVarInt32IndexedOffsetArray(VarInt32IndexedOffsetArray& varint32IndexedOffsetArray,
             bool createWrongOffsets)
     {
-        zserio::UInt32Array& offsets = varint32IndexedOffsetArray.getOffsets();
+        std::vector<uint32_t>& offsets = varint32IndexedOffsetArray.getOffsets();
         offsets.reserve(NUM_ELEMENTS);
         const uint32_t wrongOffset = WRONG_OFFSET;
         uint32_t currentOffset = ELEMENT0_OFFSET;
@@ -75,11 +75,11 @@ protected:
                 offsets.push_back(wrongOffset);
             else
                 offsets.push_back(currentOffset);
-            currentOffset += static_cast<uint32_t>(zserio::getBitSizeOfVarInt32(i));
+            currentOffset += static_cast<uint32_t>(zserio::bitSizeOfVarInt32(i));
         }
         varint32IndexedOffsetArray.setSpacer(SPACER_VALUE);
 
-        zserio::VarInt32Array& data = varint32IndexedOffsetArray.getData();
+        std::vector<int32_t>& data = varint32IndexedOffsetArray.getData();
         data.reserve(NUM_ELEMENTS);
         for (uint8_t i = 0; i < NUM_ELEMENTS; ++i)
             data.push_back(i);
@@ -89,7 +89,7 @@ protected:
     {
         size_t bitSize = ELEMENT0_OFFSET * 8;
         for (short i = 0; i < NUM_ELEMENTS; ++i)
-            bitSize += zserio::getBitSizeOfVarInt32(i);
+            bitSize += zserio::bitSizeOfVarInt32(i);
 
         return bitSize;
     }

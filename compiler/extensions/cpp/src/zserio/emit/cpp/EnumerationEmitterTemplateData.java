@@ -3,12 +3,9 @@ package zserio.emit.cpp;
 import java.util.ArrayList;
 import java.util.List;
 
-import zserio.ast.BitFieldType;
-import zserio.ast.ZserioTypeUtil;
 import zserio.ast.EnumItem;
 import zserio.ast.EnumType;
 import zserio.ast.IntegerType;
-import zserio.ast.StdIntegerType;
 import zserio.emit.common.ExpressionFormatter;
 import zserio.emit.common.ZserioEmitException;
 import zserio.emit.cpp.types.NativeIntegralType;
@@ -20,7 +17,6 @@ public class EnumerationEmitterTemplateData extends UserTypeTemplateData
     {
         super(context, enumType);
 
-        // add const type includes
         final CppNativeTypeMapper cppNativeTypeMapper = context.getCppNativeTypeMapper();
 
         final IntegerType enumBaseType = enumType.getIntegerBaseType();
@@ -28,9 +24,7 @@ public class EnumerationEmitterTemplateData extends UserTypeTemplateData
         addHeaderIncludesForType(nativeBaseType);
 
         baseCppTypeName = nativeBaseType.getFullName();
-        zserioTypeName = ZserioTypeUtil.getFullName(enumType);
 
-        bitSize = createBitSize(enumType);
         final ExpressionFormatter cppExpressionFormatter = context.getExpressionFormatter(this);
         runtimeFunction = CppRuntimeFunctionDataCreator.createData(enumBaseType, cppExpressionFormatter);
 
@@ -43,16 +37,6 @@ public class EnumerationEmitterTemplateData extends UserTypeTemplateData
     public String getBaseCppTypeName()
     {
         return baseCppTypeName;
-    }
-
-    public String getZserioTypeName()
-    {
-        return zserioTypeName;
-    }
-
-    public String getBitSize()
-    {
-        return bitSize;
     }
 
     public RuntimeFunctionTemplateData getRuntimeFunction()
@@ -71,6 +55,8 @@ public class EnumerationEmitterTemplateData extends UserTypeTemplateData
                 throws ZserioEmitException
         {
             name = enumItem.getName();
+            fullName = CppFullNameFormatter.getFullName(enumType.getPackage().getPackageName(),
+                    enumType.getName(), enumItem.getName());
             value = nativeBaseType.formatLiteral(enumItem.getValue());
         }
 
@@ -79,35 +65,22 @@ public class EnumerationEmitterTemplateData extends UserTypeTemplateData
             return name;
         }
 
+        public String getFullName()
+        {
+            return fullName;
+        }
+
         public String getValue()
         {
             return value;
         }
 
         private final String name;
+        private final String fullName;
         private final String value;
     };
 
-    private static String createBitSize(EnumType enumType) throws ZserioEmitException
-    {
-        final IntegerType integerBaseType = enumType.getIntegerBaseType();
-        Integer bitSize = null;
-        if (integerBaseType instanceof StdIntegerType)
-        {
-            bitSize = ((StdIntegerType)integerBaseType).getBitSize();
-        }
-        else if (integerBaseType instanceof BitFieldType)
-        {
-            bitSize = ((BitFieldType)integerBaseType).getBitSize();
-        }
-
-        return (bitSize != null) ? CppLiteralFormatter.formatUInt8Literal(bitSize) : null;
-    }
-
     private final String baseCppTypeName;
-    private final String zserioTypeName;
-    private final String bitSize;
-
-    private final RuntimeFunctionTemplateData   runtimeFunction;
-    private final List<EnumItemData>            items;
+    private final RuntimeFunctionTemplateData runtimeFunction;
+    private final List<EnumItemData> items;
 }

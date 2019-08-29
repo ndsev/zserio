@@ -31,7 +31,7 @@ public:
     }
 
 protected:
-    static void fillConstParamTableRow(ConstParamTableRow& row, uint32_t blobId, const std::string& name)
+    static void fillConstParamTableRow(ConstParamTable::Row& row, uint32_t blobId, const std::string& name)
     {
         row.setBlobId(blobId);
         row.setName(name);
@@ -42,27 +42,27 @@ protected:
         row.setBlob(parameterizedBlob);
     }
 
-    static void fillConstParamTableRows(std::vector<ConstParamTableRow>& rows)
+    static void fillConstParamTableRows(std::vector<ConstParamTable::Row>& rows)
     {
         rows.clear();
         for (uint32_t blobId = 0; blobId < NUM_CONST_PARAM_TABLE_ROWS; ++blobId)
         {
             const std::string name = "Name" + zserio::convertToString(blobId);
-            ConstParamTableRow row;
+            ConstParamTable::Row row;
             fillConstParamTableRow(row, blobId, name);
             rows.push_back(row);
         }
     }
 
-    static void checkConstParamTableRow(const ConstParamTableRow& row1, const ConstParamTableRow& row2)
+    static void checkConstParamTableRow(const ConstParamTable::Row& row1, const ConstParamTable::Row& row2)
     {
         ASSERT_EQ(row1.getBlobId(), row2.getBlobId());
         ASSERT_EQ(row1.getName(), row2.getName());
         ASSERT_EQ(row1.getBlob(), row2.getBlob());
     }
 
-    static void checkConstParamTableRows(const std::vector<ConstParamTableRow>& rows1,
-            const std::vector<ConstParamTableRow>& rows2)
+    static void checkConstParamTableRows(const std::vector<ConstParamTable::Row>& rows1,
+            const std::vector<ConstParamTable::Row>& rows2)
     {
         ASSERT_EQ(rows1.size(), rows2.size());
         for (size_t i = 0; i < rows1.size(); ++i)
@@ -129,12 +129,15 @@ TEST_F(ConstParamTableTest, readWithoutCondition)
 {
     ConstParamTable& testTable = m_database->getConstParamTable();
 
-    std::vector<ConstParamTableRow> writtenRows;
+    std::vector<ConstParamTable::Row> writtenRows;
     fillConstParamTableRows(writtenRows);
     testTable.write(writtenRows);
 
-    std::vector<ConstParamTableRow> readRows;
-    testTable.read(readRows);
+    std::vector<ConstParamTable::Row> readRows;
+    auto reader = testTable.createReader();
+    while (reader.hasNext())
+        readRows.push_back(reader.next());
+
     checkConstParamTableRows(writtenRows, readRows);
 }
 
@@ -142,13 +145,15 @@ TEST_F(ConstParamTableTest, readWithCondition)
 {
     ConstParamTable& testTable = m_database->getConstParamTable();
 
-    std::vector<ConstParamTableRow> writtenRows;
+    std::vector<ConstParamTable::Row> writtenRows;
     fillConstParamTableRows(writtenRows);
     testTable.write(writtenRows);
 
     const std::string condition = "name='Name1'";
-    std::vector<ConstParamTableRow> readRows;
-    testTable.read(condition, readRows);
+    std::vector<ConstParamTable::Row> readRows;
+    auto reader = testTable.createReader(condition);
+    while (reader.hasNext())
+        readRows.push_back(reader.next());
     ASSERT_EQ(1, readRows.size());
 
     const size_t expectedRowNum = 1;
@@ -159,18 +164,20 @@ TEST_F(ConstParamTableTest, update)
 {
     ConstParamTable& testTable = m_database->getConstParamTable();
 
-    std::vector<ConstParamTableRow> writtenRows;
+    std::vector<ConstParamTable::Row> writtenRows;
     fillConstParamTableRows(writtenRows);
     testTable.write(writtenRows);
 
     const uint64_t updateRowId = 3;
-    ConstParamTableRow updateRow;
+    ConstParamTable::Row updateRow;
     fillConstParamTableRow(updateRow, updateRowId, "UpdatedName");
     const std::string updateCondition = "blobId=" + zserio::convertToString(updateRowId);
     testTable.update(updateRow, updateCondition);
 
-    std::vector<ConstParamTableRow> readRows;
-    testTable.read(updateCondition, readRows);
+    std::vector<ConstParamTable::Row> readRows;
+    auto reader = testTable.createReader(updateCondition);
+    while (reader.hasNext())
+        readRows.push_back(reader.next());
     ASSERT_EQ(1, readRows.size());
 
     checkConstParamTableRow(updateRow, readRows[0]);

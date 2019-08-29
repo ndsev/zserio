@@ -1,6 +1,7 @@
 package zserio.emit.cpp;
 
 import zserio.ast.ArrayType;
+import zserio.ast.IntegerType;
 import zserio.ast.PackageName;
 import zserio.ast.UnionType;
 import zserio.ast.BitFieldType;
@@ -12,7 +13,6 @@ import zserio.ast.ZserioAstDefaultVisitor;
 import zserio.ast.ZserioType;
 import zserio.ast.EnumType;
 import zserio.ast.FloatType;
-import zserio.ast.IntegerType;
 import zserio.ast.ServiceType;
 import zserio.ast.StructureType;
 import zserio.ast.SqlDatabaseType;
@@ -27,23 +27,16 @@ import zserio.emit.common.PackageMapper;
 import zserio.emit.common.ZserioEmitException;
 import zserio.emit.cpp.types.CppNativeType;
 import zserio.emit.cpp.types.NativeArrayType;
+import zserio.emit.cpp.types.NativeBitfieldArrayType;
 import zserio.emit.cpp.types.NativeBooleanType;
-import zserio.emit.cpp.types.NativeCompoundType;
-import zserio.emit.cpp.types.NativeConstType;
 import zserio.emit.cpp.types.NativeDoubleType;
-import zserio.emit.cpp.types.NativeEnumType;
 import zserio.emit.cpp.types.NativeFloatType;
-import zserio.emit.cpp.types.NativeHeapOptionalHolderType;
-import zserio.emit.cpp.types.NativeInPlaceOptionalHolderType;
-import zserio.emit.cpp.types.NativeIntegralArrayType;
 import zserio.emit.cpp.types.NativeIntegralType;
 import zserio.emit.cpp.types.NativeObjectArrayType;
-import zserio.emit.cpp.types.NativeOptimizedOptionalHolderType;
 import zserio.emit.cpp.types.NativeOptionalHolderType;
-import zserio.emit.cpp.types.NativeServiceType;
-import zserio.emit.cpp.types.NativeStdIntType;
 import zserio.emit.cpp.types.NativeStringType;
-import zserio.emit.cpp.types.NativeSubType;
+import zserio.emit.cpp.types.NativeUserType;
+import zserio.emit.cpp.types.NativeCompoundType;
 
 public class CppNativeTypeMapper
 {
@@ -87,36 +80,6 @@ public class CppNativeTypeMapper
     }
 
     /**
-     * Returns a C++ type that can hold an instance of given optional Zserio type or Zserio compound type.
-     *
-     * @param type                  Zserio type for mapping to C++ type.
-     * @param isOptionalField       true if the given Zserio type is optional.
-     * @param useHeapOptionalHolder true to force mapping to the heap optional holder.
-     *
-     * @return C++ optional holder type which can hold a given Zserio type.
-     *
-     * @throws ZserioEmitException If the Zserio type cannot be mapped to C++ optional holder type.
-     */
-    public NativeOptionalHolderType getCppOptionalHolderType(ZserioType type, boolean isOptionalField,
-            boolean useHeapOptionalHolder) throws ZserioEmitException
-    {
-        final CppNativeType rawType = getCppType(type);
-
-        NativeOptionalHolderType nativeOptionalType;
-        if (!isOptionalField || rawType.isSimpleType())
-            nativeOptionalType = new NativeInPlaceOptionalHolderType(ZSERIO_RUNTIME_PACKAGE_NAME,
-                    ZSERIO_RUNTIME_INCLUDE_PREFIX, rawType);
-        else if (useHeapOptionalHolder)
-            nativeOptionalType = new NativeHeapOptionalHolderType(ZSERIO_RUNTIME_PACKAGE_NAME,
-                    ZSERIO_RUNTIME_INCLUDE_PREFIX, rawType);
-        else
-            nativeOptionalType = new NativeOptimizedOptionalHolderType(ZSERIO_RUNTIME_PACKAGE_NAME,
-                    ZSERIO_RUNTIME_INCLUDE_PREFIX, rawType);
-
-        return nativeOptionalType;
-    }
-
-    /**
      * Returns a C++ integer type that can hold an instance of given Zserio integer type.
      *
      * @param type Zserio integer type for mapping to C++ integer type.
@@ -137,23 +100,19 @@ public class CppNativeTypeMapper
     }
 
     /**
-     * Returns a C++ subtype that can hold an instance of given Zserio subtype.
+     * Returns a C++ type that can hold an instance of given optional Zserio type or Zserio compound type.
      *
-     * @param type Zserio subtype for mapping to C++ subtype.
+     * @param type Zserio type for mapping to C++ type.
      *
-     * @return C++ subtype which can hold a Zserio subtype.
+     * @return C++ optional holder type which can hold a given Zserio type.
      *
-     * @throws ZserioEmitException If the Zserio subtype cannot be mapped to any C++ subtype.
+     * @throws ZserioEmitException If the Zserio type cannot be mapped to C++ optional holder type.
      */
-    public NativeSubType getCppSubType(Subtype type) throws ZserioEmitException
+    public NativeOptionalHolderType getCppOptionalHolderType(ZserioType type) throws ZserioEmitException
     {
-        final CppNativeType nativeType = getCppType(type);
+        final CppNativeType wrappedType = getCppType(type);
 
-        if (!(nativeType instanceof NativeSubType))
-            throw new ZserioEmitException("Unhandled subtype '" + type.getClass().getName() +
-                    "' in CppNativeTypeMapper!");
-
-        return (NativeSubType)nativeType;
+        return new NativeOptionalHolderType(wrappedType);
     }
 
     private String getIncludePathRoot(PackageName packageName)
@@ -171,12 +130,6 @@ public class CppNativeTypeMapper
 
     private static abstract class TypeMapperVisitor extends ZserioAstDefaultVisitor
     {
-        @Override
-        public void visitBitFieldType(BitFieldType type)
-        {
-            mapBitfieldType(type);
-        }
-
         @Override
         public void visitStdIntegerType(StdIntegerType type)
         {
@@ -197,7 +150,6 @@ public class CppNativeTypeMapper
                 mapUnsignedIntegralType(nBits, variable);
         }
 
-        protected abstract void mapBitfieldType(BitFieldType type);
         protected abstract void mapSignedIntegralType(int nBits, boolean variable);
         protected abstract void mapUnsignedIntegralType(int nBits, boolean variable);
     }
@@ -235,7 +187,16 @@ public class CppNativeTypeMapper
         @Override
         public void visitEnumType(EnumType type)
         {
-            mapObjectArray();
+            // use the original type so that subtype is kept
+            try
+            {
+                final CppNativeType nativeElementType = CppNativeTypeMapper.this.getCppType(originalType);
+                cppType = new NativeArrayType(nativeElementType, "EnumArrayTraits", true);
+            }
+            catch (ZserioEmitException exception)
+            {
+                thrownException = exception;
+            }
         }
 
         @Override
@@ -285,9 +246,17 @@ public class CppNativeTypeMapper
         }
 
         @Override
-        protected void mapBitfieldType(BitFieldType type)
+        public void visitBitFieldType(BitFieldType type)
         {
-            mapIntegralType(type.getMaxBitSize(), type.isSigned(), false);
+            try
+            {
+                final CppNativeType nativeElementType = CppNativeTypeMapper.this.getCppType(type);
+                cppType = new NativeBitfieldArrayType(nativeElementType);
+            }
+            catch (ZserioEmitException exception)
+            {
+                thrownException = exception;
+            }
         }
 
         @Override
@@ -375,8 +344,7 @@ public class CppNativeTypeMapper
             // use the original type so that subtype is kept
             try
             {
-                cppType = new NativeObjectArrayType(ZSERIO_RUNTIME_PACKAGE_NAME,
-                        ZSERIO_RUNTIME_INCLUDE_PREFIX, CppNativeTypeMapper.this.getCppType(originalType));
+                cppType = new NativeObjectArrayType(CppNativeTypeMapper.this.getCppType(originalType));
             }
             catch (ZserioEmitException exception)
             {
@@ -457,11 +425,12 @@ public class CppNativeTypeMapper
         {
             try
             {
-                final CppNativeType nativeTargetType = CppNativeTypeMapper.this.getCppType(type.getConstType());
                 final PackageName packageName = cppPackageMapper.getPackageName(type);
+                final CppNativeType nativeTargetType = CppNativeTypeMapper.this.getCppType(type.getConstType());
                 final String name = type.getName();
                 final String includeFileName = getIncludePath(packageName, name);
-                cppType = new NativeConstType(packageName, type.getName(), includeFileName, nativeTargetType);
+                cppType = new NativeUserType(packageName, type.getName(), includeFileName,
+                        nativeTargetType.isSimpleType());
             }
             catch (ZserioEmitException exception)
             {
@@ -472,18 +441,10 @@ public class CppNativeTypeMapper
         @Override
         public void visitEnumType(EnumType type)
         {
-            try
-            {
-                final NativeIntegralType nativeBaseType = getCppIntegralType(type.getIntegerBaseType());
-                final PackageName packageName = cppPackageMapper.getPackageName(type);
-                final String name = type.getName();
-                final String includeFileName = getIncludePath(packageName, name);
-                cppType = new NativeEnumType(packageName, name, includeFileName, nativeBaseType);
-            }
-            catch (ZserioEmitException exception)
-            {
-                thrownException = exception;
-            }
+            final PackageName packageName = cppPackageMapper.getPackageName(type);
+            final String name = type.getName();
+            final String includeFileName = getIncludePath(packageName, name);
+            cppType = new NativeUserType(packageName, name, includeFileName, true);
         }
 
         @Override
@@ -511,7 +472,7 @@ public class CppNativeTypeMapper
             final PackageName packageName = cppPackageMapper.getPackageName(type);
             final String name = type.getName();
             final String includeFileName = getIncludePath(packageName, name);
-            cppType = new NativeServiceType(packageName, name, includeFileName);
+            cppType = new NativeUserType(packageName, name, includeFileName, false);
         }
 
         @Override
@@ -548,7 +509,8 @@ public class CppNativeTypeMapper
                 final PackageName packageName = cppPackageMapper.getPackageName(type);
                 final String name = type.getName();
                 final String includeFileName = getIncludePath(packageName, name);
-                cppType = new NativeSubType(packageName, name, includeFileName, nativeTargetType);
+                cppType = new NativeUserType(packageName, name, includeFileName,
+                        nativeTargetType.isSimpleType());
             }
             catch (ZserioEmitException exception)
             {
@@ -573,7 +535,7 @@ public class CppNativeTypeMapper
         }
 
         @Override
-        protected void mapBitfieldType(BitFieldType type)
+        public void visitBitFieldType(BitFieldType type)
         {
             mapIntegralType(type.getMaxBitSize(), type.isSigned(), false);
         }
@@ -669,76 +631,67 @@ public class CppNativeTypeMapper
     private final static String INCLUDE_DIR_SEPARATOR = "/";
     private final static String HEADER_SUFFIX = ".h";
 
-    private final static PackageName ZSERIO_RUNTIME_PACKAGE_NAME =
-            new PackageName.Builder().addId("zserio").get();
-    private final static String ZSERIO_RUNTIME_INCLUDE_PREFIX = "zserio" + INCLUDE_DIR_SEPARATOR;
-    private final static String BIT_FIELD_ARRAY_H = ZSERIO_RUNTIME_INCLUDE_PREFIX + "BitFieldArray" +
-            HEADER_SUFFIX;
-    private final static String BASIC_ARRAY_H = ZSERIO_RUNTIME_INCLUDE_PREFIX + "BasicArray" + HEADER_SUFFIX;
-
     private final static NativeBooleanType booleanType = new NativeBooleanType();
     private final static NativeStringType stringType = new NativeStringType();
 
     private final static NativeFloatType floatType = new NativeFloatType();
     private final static NativeDoubleType doubleType = new NativeDoubleType();
 
-    private final static NativeStdIntType uint8Type = new NativeStdIntType(8, false);
-    private final static NativeStdIntType uint16Type = new NativeStdIntType(16, false);
-    private final static NativeStdIntType uint32Type = new NativeStdIntType(32, false);
-    private final static NativeStdIntType uint64Type = new NativeStdIntType(64, false);
+    private final static NativeIntegralType uint8Type = new NativeIntegralType(8, false);
+    private final static NativeIntegralType uint16Type = new NativeIntegralType(16, false);
+    private final static NativeIntegralType uint32Type = new NativeIntegralType(32, false);
+    private final static NativeIntegralType uint64Type = new NativeIntegralType(64, false);
 
-    private final static NativeStdIntType int8Type = new NativeStdIntType(8, true);
-    private final static NativeStdIntType int16Type = new NativeStdIntType(16, true);
-    private final static NativeStdIntType int32Type = new NativeStdIntType(32, true);
-    private final static NativeStdIntType int64Type = new NativeStdIntType(64, true);
+    private final static NativeIntegralType int8Type = new NativeIntegralType(8, true);
+    private final static NativeIntegralType int16Type = new NativeIntegralType(16, true);
+    private final static NativeIntegralType int32Type = new NativeIntegralType(32, true);
+    private final static NativeIntegralType int64Type = new NativeIntegralType(64, true);
 
     private final static NativeArrayType booleanArrayType =
-        new NativeArrayType(ZSERIO_RUNTIME_PACKAGE_NAME, "BoolArray", BASIC_ARRAY_H, booleanType);
+            new NativeArrayType(booleanType, "BoolArrayTraits", false);
     private final static NativeArrayType stdStringArrayType =
-        new NativeArrayType(ZSERIO_RUNTIME_PACKAGE_NAME, "StringArray", BASIC_ARRAY_H, stringType);
+            new NativeArrayType(stringType, "StringArrayTraits", false);
 
     private final static NativeArrayType float16ArrayType =
-        new NativeArrayType(ZSERIO_RUNTIME_PACKAGE_NAME, "Float16Array", BASIC_ARRAY_H, floatType);
+            new NativeArrayType(floatType, "Float16ArrayTraits", false);
     private final static NativeArrayType float32ArrayType =
-            new NativeArrayType(ZSERIO_RUNTIME_PACKAGE_NAME, "Float32Array", BASIC_ARRAY_H, floatType);
+            new NativeArrayType(floatType, "Float32ArrayTraits", false);
     private final static NativeArrayType float64ArrayType =
-            new NativeArrayType(ZSERIO_RUNTIME_PACKAGE_NAME, "Float64Array", BASIC_ARRAY_H, doubleType);
+            new NativeArrayType(doubleType, "Float64ArrayTraits", false);
 
     private final static NativeArrayType int8ArrayType =
-        new NativeIntegralArrayType(ZSERIO_RUNTIME_PACKAGE_NAME, "Int8Array", BIT_FIELD_ARRAY_H, int8Type);
+            new NativeArrayType(int8Type, "StdIntArrayTraits", true);
     private final static NativeArrayType int16ArrayType =
-        new NativeIntegralArrayType(ZSERIO_RUNTIME_PACKAGE_NAME, "Int16Array", BIT_FIELD_ARRAY_H, int16Type);
+            new NativeArrayType(int16Type, "StdIntArrayTraits", true);
     private final static NativeArrayType int32ArrayType =
-        new NativeIntegralArrayType(ZSERIO_RUNTIME_PACKAGE_NAME, "Int32Array", BIT_FIELD_ARRAY_H, int32Type);
+            new NativeArrayType(int32Type, "StdIntArrayTraits", true);
     private final static NativeArrayType int64ArrayType =
-        new NativeIntegralArrayType(ZSERIO_RUNTIME_PACKAGE_NAME, "Int64Array", BIT_FIELD_ARRAY_H, int64Type);
+            new NativeArrayType(int64Type, "StdIntArrayTraits", true);
 
     private final static NativeArrayType uint8ArrayType =
-        new NativeIntegralArrayType(ZSERIO_RUNTIME_PACKAGE_NAME, "UInt8Array", BIT_FIELD_ARRAY_H, uint8Type);
+            new NativeArrayType(uint8Type, "StdIntArrayTraits", true);
     private final static NativeArrayType uint16ArrayType =
-        new NativeIntegralArrayType(ZSERIO_RUNTIME_PACKAGE_NAME, "UInt16Array", BIT_FIELD_ARRAY_H, uint16Type);
+            new NativeArrayType(uint16Type, "StdIntArrayTraits", true);
     private final static NativeArrayType uint32ArrayType =
-        new NativeIntegralArrayType(ZSERIO_RUNTIME_PACKAGE_NAME, "UInt32Array", BIT_FIELD_ARRAY_H, uint32Type);
+            new NativeArrayType(uint32Type, "StdIntArrayTraits", true);
     private final static NativeArrayType uint64ArrayType =
-        new NativeIntegralArrayType(ZSERIO_RUNTIME_PACKAGE_NAME, "UInt64Array", BIT_FIELD_ARRAY_H, uint64Type);
+            new NativeArrayType(uint64Type, "StdIntArrayTraits", true);
 
     private final static NativeArrayType varInt16ArrayType =
-        new NativeArrayType(ZSERIO_RUNTIME_PACKAGE_NAME, "VarInt16Array", BASIC_ARRAY_H, int16Type);
-    private final static NativeArrayType varUInt16ArrayType =
-        new NativeArrayType(ZSERIO_RUNTIME_PACKAGE_NAME, "VarUInt16Array", BASIC_ARRAY_H, uint16Type);
-
+            new NativeArrayType(int16Type, "VarIntNNArrayTraits", true);
     private final static NativeArrayType varInt32ArrayType =
-        new NativeArrayType(ZSERIO_RUNTIME_PACKAGE_NAME, "VarInt32Array", BASIC_ARRAY_H, int32Type);
-    private final static NativeArrayType varUInt32ArrayType =
-        new NativeArrayType(ZSERIO_RUNTIME_PACKAGE_NAME, "VarUInt32Array", BASIC_ARRAY_H, uint32Type);
-
+            new NativeArrayType(int32Type, "VarIntNNArrayTraits", true);
     private final static NativeArrayType varInt64ArrayType =
-        new NativeArrayType(ZSERIO_RUNTIME_PACKAGE_NAME, "VarInt64Array", BASIC_ARRAY_H, int64Type);
-    private final static NativeArrayType varUInt64ArrayType =
-        new NativeArrayType(ZSERIO_RUNTIME_PACKAGE_NAME, "VarUInt64Array", BASIC_ARRAY_H, uint64Type);
-
+            new NativeArrayType(int64Type, "VarIntNNArrayTraits", true);
     private final static NativeArrayType varIntArrayType =
-        new NativeArrayType(ZSERIO_RUNTIME_PACKAGE_NAME, "VarIntArray", BASIC_ARRAY_H, int64Type);
+            new NativeArrayType(int64Type, "VarIntArrayTraits", true);
+
+    private final static NativeArrayType varUInt16ArrayType =
+            new NativeArrayType(uint16Type, "VarIntNNArrayTraits", true);
+    private final static NativeArrayType varUInt32ArrayType =
+            new NativeArrayType(uint32Type, "VarIntNNArrayTraits", true);
+    private final static NativeArrayType varUInt64ArrayType =
+            new NativeArrayType(uint64Type, "VarIntNNArrayTraits", true);
     private final static NativeArrayType varUIntArrayType =
-        new NativeArrayType(ZSERIO_RUNTIME_PACKAGE_NAME, "VarUIntArray", BASIC_ARRAY_H, uint64Type);
+            new NativeArrayType(uint64Type, "VarIntArrayTraits", true);
 }

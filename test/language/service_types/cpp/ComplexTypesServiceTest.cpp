@@ -97,9 +97,9 @@ public:
     }
 
 private:
-    void rgbToCmyk(const zserio::ObjectArray<ColorModelChoice>& data, Response& response)
+    void rgbToCmyk(const std::vector<ColorModelChoice>& data, Response& response)
     {
-        response.getData().setCmykData(zserio::ObjectArray<CMYKModel>());
+        response.getData().setCmykData(std::vector<CMYKModel>());
         auto& cmykData = response.getData().getCmykData();
         cmykData.resize(response.getLength());
         for (uint32_t i = 0; i < response.getLength(); ++i)
@@ -114,9 +114,9 @@ private:
         }
     }
 
-    void cmykToRgb(const zserio::ObjectArray<ColorModelChoice>& data, Response& response)
+    void cmykToRgb(const std::vector<ColorModelChoice>& data, Response& response)
     {
-        response.getData().setRgbData(zserio::ObjectArray<RGBModel>());
+        response.getData().setRgbData(std::vector<RGBModel>());
         auto& rgbData = response.getData().getRgbData();
         rgbData.resize(response.getLength());
         for (uint32_t i = 0; i < response.getLength(); ++i)

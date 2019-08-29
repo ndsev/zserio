@@ -25,9 +25,12 @@ protected:
         ASSERT_EQ(bit4RangeCheckCompound, readBit4RangeCheckCompound);
     }
 
-    static const uint8_t    BIT4_LOWER_BOUND = UINT8_C(0);
-    static const uint8_t    BIT4_UPPER_BOUND = UINT8_C(15);
+    static const uint8_t BIT4_LOWER_BOUND;
+    static const uint8_t BIT4_UPPER_BOUND;
 };
+
+const uint8_t Bit4RangeCheckTest::BIT4_LOWER_BOUND = UINT8_C(0);
+const uint8_t Bit4RangeCheckTest::BIT4_UPPER_BOUND = UINT8_C(15);
 
 TEST_F(Bit4RangeCheckTest, bit4LowerBound)
 {

@@ -4,7 +4,7 @@ package zserio.emit.cpp;
  * A special formatting policy to be used in generated helper classes (e.g. factories) which need indirect
  * references.
  */
-public class CppOwnerIndirectExpressionFormattingPolicy extends CppDefaultExpressionFormattingPolicy
+public class CppOwnerIndirectExpressionFormattingPolicy extends CppExpressionFormattingPolicy
 {
     public CppOwnerIndirectExpressionFormattingPolicy(CppNativeTypeMapper cppNativeTypeMapper,
             IncludeCollector includeCollector)

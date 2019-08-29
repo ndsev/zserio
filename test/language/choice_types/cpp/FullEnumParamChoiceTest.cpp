@@ -16,7 +16,7 @@ class FullEnumParamChoiceTest : public ::testing::Test
 protected:
     void writeFullEnumParamChoiceToByteArray(zserio::BitStreamWriter& writer, Selector selector, int32_t value)
     {
-        switch (selector.getValue())
+        switch (selector)
         {
         case Selector::BLACK:
             writer.writeSignedBits(value, 8);
@@ -57,6 +57,16 @@ TEST_F(FullEnumParamChoiceTest, bitStreamReaderConstructor)
     ASSERT_EQ(value, fullEnumParamChoice.getBlack());
 }
 
+TEST_F(FullEnumParamChoiceTest, fieldConstructor)
+{
+    const Selector selector = Selector::BLACK;
+    const int8_t value = 99;
+    FullEnumParamChoice fullEnumParamChoice(value);
+    fullEnumParamChoice.initialize(selector);
+    ASSERT_EQ(selector, fullEnumParamChoice.getSelector());
+    ASSERT_EQ(value, fullEnumParamChoice.getBlack());
+}
+
 TEST_F(FullEnumParamChoiceTest, copyConstructor)
 {
     const Selector selector = Selector::BLACK;
@@ -70,7 +80,7 @@ TEST_F(FullEnumParamChoiceTest, copyConstructor)
     ASSERT_EQ(value, fullEnumParamChoiceCopy.getBlack());
 }
 
-TEST_F(FullEnumParamChoiceTest, operatorAssignment)
+TEST_F(FullEnumParamChoiceTest, assignmentOperator)
 {
     const Selector selector = Selector::GREY;
     FullEnumParamChoice fullEnumParamChoice;
@@ -78,9 +88,39 @@ TEST_F(FullEnumParamChoiceTest, operatorAssignment)
     const int16_t value = 234;
     fullEnumParamChoice.setGrey(value);
 
-    const FullEnumParamChoice fullEnumParamChoiceCopy = fullEnumParamChoice;
+    FullEnumParamChoice fullEnumParamChoiceCopy;
+    fullEnumParamChoiceCopy = fullEnumParamChoice;
     ASSERT_EQ(selector, fullEnumParamChoiceCopy.getSelector());
     ASSERT_EQ(value, fullEnumParamChoiceCopy.getGrey());
+}
+
+TEST_F(FullEnumParamChoiceTest, moveConstructor)
+{
+    const Selector selector = Selector::BLACK;
+    FullEnumParamChoice fullEnumParamChoice;
+    fullEnumParamChoice.initialize(selector);
+    const int8_t value = 99;
+    fullEnumParamChoice.setBlack(value);
+
+    // note that it doesn't ensure that move ctor was called
+    const FullEnumParamChoice fullEnumParamChoiceMoved(std::move(fullEnumParamChoice));
+    ASSERT_EQ(selector, fullEnumParamChoiceMoved.getSelector());
+    ASSERT_EQ(value, fullEnumParamChoiceMoved.getBlack());
+}
+
+TEST_F(FullEnumParamChoiceTest, moveAssignmentOperator)
+{
+    const Selector selector = Selector::GREY;
+    FullEnumParamChoice fullEnumParamChoice;
+    fullEnumParamChoice.initialize(selector);
+    const int16_t value = 234;
+    fullEnumParamChoice.setGrey(value);
+
+    // note that it doesn't ensure that move ctor was called
+    FullEnumParamChoice fullEnumParamChoiceMoved;
+    fullEnumParamChoiceMoved = std::move(fullEnumParamChoice);
+    ASSERT_EQ(selector, fullEnumParamChoiceMoved.getSelector());
+    ASSERT_EQ(value, fullEnumParamChoiceMoved.getGrey());
 }
 
 TEST_F(FullEnumParamChoiceTest, initialize)
@@ -200,14 +240,13 @@ TEST_F(FullEnumParamChoiceTest, hashCode)
 TEST_F(FullEnumParamChoiceTest, read)
 {
     const Selector selector = Selector::BLACK;
-    FullEnumParamChoice fullEnumParamChoice;
-    fullEnumParamChoice.initialize(selector);
-
     zserio::BitStreamWriter writer;
     const int8_t value = 99;
     writeFullEnumParamChoiceToByteArray(writer, selector, value);
     size_t writeBufferByteSize;
     const uint8_t* writeBuffer = writer.getWriteBuffer(writeBufferByteSize);
+    FullEnumParamChoice fullEnumParamChoice;
+    fullEnumParamChoice.initialize(selector);
     zserio::BitStreamReader reader(writeBuffer, writeBufferByteSize);
     fullEnumParamChoice.read(reader);
 

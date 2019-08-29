@@ -31,38 +31,37 @@ public:
     }
 
 protected:
-    static void fillColumnParamTableRow(ColumnParamTableRow& row, uint32_t blobId, const std::string& name)
+    static void fillColumnParamTableRow(ColumnParamTable::Row& row, uint32_t blobId, const std::string& name)
     {
         row.setBlobId(blobId);
         row.setName(name);
 
         ParameterizedBlob parameterizedBlob;
         parameterizedBlob.setValue(PARAMETERIZED_BLOB_VALUE);
-        parameterizedBlob.initialize(blobId / 2);
         row.setBlob(parameterizedBlob);
     }
 
-    static void fillColumnParamTableRows(std::vector<ColumnParamTableRow>& rows)
+    static void fillColumnParamTableRows(std::vector<ColumnParamTable::Row>& rows)
     {
         rows.clear();
         for (uint32_t blobId = 0; blobId < NUM_COLUMN_PARAM_TABLE_ROWS; ++blobId)
         {
             const std::string name = "Name" + zserio::convertToString(blobId);
-            ColumnParamTableRow row;
+            ColumnParamTable::Row row;
             fillColumnParamTableRow(row, blobId, name);
             rows.push_back(row);
         }
     }
 
-    static void checkColumnParamTableRow(const ColumnParamTableRow& row1, const ColumnParamTableRow& row2)
+    static void checkColumnParamTableRow(const ColumnParamTable::Row& row1, const ColumnParamTable::Row& row2)
     {
         ASSERT_EQ(row1.getBlobId(), row2.getBlobId());
         ASSERT_EQ(row1.getName(), row2.getName());
         ASSERT_EQ(row1.getBlob(), row2.getBlob());
     }
 
-    static void checkColumnParamTableRows(const std::vector<ColumnParamTableRow>& rows1,
-            const std::vector<ColumnParamTableRow>& rows2)
+    static void checkColumnParamTableRows(const std::vector<ColumnParamTable::Row>& rows1,
+            const std::vector<ColumnParamTable::Row>& rows2)
     {
         ASSERT_EQ(rows1.size(), rows2.size());
         for (size_t i = 0; i < rows1.size(); ++i)
@@ -127,12 +126,15 @@ TEST_F(ColumnParamTableTest, readWithoutCondition)
 {
     ColumnParamTable& testTable = m_database->getColumnParamTable();
 
-    std::vector<ColumnParamTableRow> writtenRows;
+    std::vector<ColumnParamTable::Row> writtenRows;
     fillColumnParamTableRows(writtenRows);
     testTable.write(writtenRows);
 
-    std::vector<ColumnParamTableRow> readRows;
-    testTable.read(readRows);
+    std::vector<ColumnParamTable::Row> readRows;
+    auto reader = testTable.createReader();
+    while (reader.hasNext())
+        readRows.push_back(reader.next());
+
     checkColumnParamTableRows(writtenRows, readRows);
 }
 
@@ -140,13 +142,15 @@ TEST_F(ColumnParamTableTest, readWithCondition)
 {
     ColumnParamTable& testTable = m_database->getColumnParamTable();
 
-    std::vector<ColumnParamTableRow> writtenRows;
+    std::vector<ColumnParamTable::Row> writtenRows;
     fillColumnParamTableRows(writtenRows);
     testTable.write(writtenRows);
 
     const std::string condition = "name='Name1'";
-    std::vector<ColumnParamTableRow> readRows;
-    testTable.read(condition, readRows);
+    std::vector<ColumnParamTable::Row> readRows;
+    auto reader = testTable.createReader(condition);
+    while (reader.hasNext())
+        readRows.push_back(reader.next());
     ASSERT_EQ(1, readRows.size());
 
     const size_t expectedRowNum = 1;
@@ -157,18 +161,20 @@ TEST_F(ColumnParamTableTest, update)
 {
     ColumnParamTable& testTable = m_database->getColumnParamTable();
 
-    std::vector<ColumnParamTableRow> writtenRows;
+    std::vector<ColumnParamTable::Row> writtenRows;
     fillColumnParamTableRows(writtenRows);
     testTable.write(writtenRows);
 
     const uint64_t updateRowId = 3;
-    ColumnParamTableRow updateRow;
+    ColumnParamTable::Row updateRow;
     fillColumnParamTableRow(updateRow, updateRowId, "UpdatedName");
     const std::string updateCondition = "blobId=" + zserio::convertToString(updateRowId);
     testTable.update(updateRow, updateCondition);
 
-    std::vector<ColumnParamTableRow> readRows;
-    testTable.read(updateCondition, readRows);
+    std::vector<ColumnParamTable::Row> readRows;
+    auto reader = testTable.createReader(updateCondition);
+    while (reader.hasNext())
+        readRows.push_back(reader.next());
     ASSERT_EQ(1, readRows.size());
 
     checkColumnParamTableRow(updateRow, readRows[0]);

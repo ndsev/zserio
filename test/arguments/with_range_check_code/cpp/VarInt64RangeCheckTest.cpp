@@ -25,9 +25,12 @@ protected:
         ASSERT_EQ(varInt64RangeCheckCompound, readVarInt64RangeCheckCompound);
     }
 
-    static const int64_t    VARINT64_LOWER_BOUND = -((INT64_C(1) << 56) - 1);
-    static const int64_t    VARINT64_UPPER_BOUND = (INT64_C(1) << 56) - 1;
+    static const int64_t VARINT64_LOWER_BOUND;
+    static const int64_t VARINT64_UPPER_BOUND;
 };
+
+const int64_t VarInt64RangeCheckTest::VARINT64_LOWER_BOUND = -((INT64_C(1) << 56) - 1);
+const int64_t VarInt64RangeCheckTest::VARINT64_UPPER_BOUND = (INT64_C(1) << 56) - 1;
 
 TEST_F(VarInt64RangeCheckTest, varInt64LowerBound)
 {

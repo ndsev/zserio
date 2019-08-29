@@ -16,11 +16,12 @@ public class ConstEmitterTemplateData extends UserTypeTemplateData
                 new HeaderIncludeCollectorAdapter(this));
 
         name = constType.getName();
+
         CppNativeType nativeTargetType = cppNativeTypeMapper.getCppType(constType.getConstType());
+        addHeaderIncludesForType(nativeTargetType);
+
         cppTypeName = nativeTargetType.getFullName();
         value = cppExpressionFormatter.formatGetter(constType.getValueExpression());
-
-        addHeaderIncludesForType(nativeTargetType);
     }
 
     public String getName()

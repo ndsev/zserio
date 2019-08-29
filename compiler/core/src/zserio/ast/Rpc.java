@@ -63,9 +63,9 @@ public class Rpc extends AstNodeWithDoc
      *
      * @return Request type of this RPC method.
      */
-    public ZserioType getRequestType()
+    public CompoundType getRequestType()
     {
-        return requestType;
+        return requestCompoundType;
     }
 
     /**
@@ -83,9 +83,9 @@ public class Rpc extends AstNodeWithDoc
      *
      * @return Response type of this RPC method.
      */
-    public ZserioType getResponseType()
+    public CompoundType getResponseType()
     {
-        return responseType;
+        return responseCompoundType;
     }
 
     /**
@@ -99,15 +99,34 @@ public class Rpc extends AstNodeWithDoc
     }
 
     /**
+     * Evaluates the RPC method.
+     */
+    void evaluate()
+    {
+        responseCompoundType = resolveCompoundType(responseType);
+        requestCompoundType = resolveCompoundType(requestType);
+    }
+
+    /**
      * Checks the RPC call.
      */
     void check()
     {
-        checkUsedType(responseType);
-        checkUsedType(requestType);
+        checkUsedType(responseType, responseCompoundType);
+        checkUsedType(requestType, requestCompoundType);
     }
 
-    private void checkUsedType(ZserioType type)
+    private void checkUsedType(ZserioType type, CompoundType compoundType)
+    {
+        if (compoundType.getParameters().size() > 0)
+            throw new ParserException(type, "Only non-parameterized compound types can be used in RPC calls, " +
+                    "'" + type.getName() + "' is a parameterized type!");
+
+        if (compoundType instanceof SqlTableType)
+            throw new ParserException(type, "SQL table '" + type.getName() + "' cannot be used in RPC call");
+    }
+
+    private CompoundType resolveCompoundType(ZserioType type)
     {
         final ZserioType resolvedBaseType = TypeReference.resolveBaseType(type);
 
@@ -115,13 +134,7 @@ public class Rpc extends AstNodeWithDoc
             throw new ParserException(type, "Only non-parameterized compound types can be used in RPC calls, " +
                     "'" + type.getName() + "' is not a compound type!");
 
-        final CompoundType compoundType = (CompoundType)resolvedBaseType;
-        if (compoundType.getParameters().size() > 0)
-            throw new ParserException(type, "Only non-parameterized compound types can be used in RPC calls, " +
-                    "'" + type.getName() + "' is a parameterized type!");
-
-        if (resolvedBaseType instanceof SqlTableType)
-            throw new ParserException(type, "SQL table '" + type.getName() + "' cannot be used in RPC call");
+        return (CompoundType)resolvedBaseType;
     }
 
     private final String name;
@@ -129,4 +142,7 @@ public class Rpc extends AstNodeWithDoc
     private final boolean responseStreaming;
     private final ZserioType requestType;
     private final boolean requestStreaming;
+
+    private CompoundType responseCompoundType = null;
+    private CompoundType requestCompoundType = null;
 }

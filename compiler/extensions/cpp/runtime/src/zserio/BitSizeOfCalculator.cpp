@@ -1,9 +1,9 @@
 #include <limits>
 
-#include "CppRuntimeException.h"
-#include "StringConvertUtil.h"
-#include "BitPositionUtil.h"
-#include "BitSizeOfCalculator.h"
+#include "zserio/CppRuntimeException.h"
+#include "zserio/StringConvertUtil.h"
+#include "zserio/BitPositionUtil.h"
+#include "zserio/BitSizeOfCalculator.h"
 
 namespace zserio
 {
@@ -94,7 +94,7 @@ static const uint64_t VarUIntMaxValues[] =
 };
 static const size_t VarUIntMaxNumValues = sizeof(VarUIntMaxValues) / sizeof(VarUIntMaxValues[0]);
 
-static size_t getBitSizeOfVarIntImpl(uint64_t value, const uint64_t* maxValues, size_t numMaxValues)
+static size_t bitSizeOfVarIntImpl(uint64_t value, const uint64_t* maxValues, size_t numMaxValues)
 {
     const uint64_t* maxValue = maxValues;
     size_t byteSize = 1;
@@ -114,60 +114,61 @@ static size_t getBitSizeOfVarIntImpl(uint64_t value, const uint64_t* maxValues, 
     return bytesToBits(byteSize);
 }
 
-template<typename T>
+template <typename T>
 static uint64_t convertToAbsValue(T value)
 {
     return static_cast<uint64_t>((value < 0) ? -value : value);
 }
 
-size_t getBitSizeOfVarInt16(int16_t value)
+size_t bitSizeOfVarInt16(int16_t value)
 {
-    return getBitSizeOfVarIntImpl(convertToAbsValue(value), VarInt16MaxValues, VarInt16MaxNumValues);
+    return bitSizeOfVarIntImpl(convertToAbsValue(value), VarInt16MaxValues, VarInt16MaxNumValues);
 }
 
-size_t getBitSizeOfVarInt32(int32_t value)
+size_t bitSizeOfVarInt32(int32_t value)
 {
-    return getBitSizeOfVarIntImpl(convertToAbsValue(value), VarInt32MaxValues, VarInt32MaxNumValues);
+    return bitSizeOfVarIntImpl(convertToAbsValue(value), VarInt32MaxValues, VarInt32MaxNumValues);
 }
 
-size_t getBitSizeOfVarInt64(int64_t value)
+size_t bitSizeOfVarInt64(int64_t value)
 {
-    return getBitSizeOfVarIntImpl(convertToAbsValue(value), VarInt64MaxValues, VarInt64MaxNumValues);
+    return bitSizeOfVarIntImpl(convertToAbsValue(value), VarInt64MaxValues, VarInt64MaxNumValues);
 }
 
-size_t getBitSizeOfVarUInt16(uint16_t value)
+size_t bitSizeOfVarUInt16(uint16_t value)
 {
-    return getBitSizeOfVarIntImpl(value, VarUInt16MaxValues, VarUInt16MaxNumValues);
+    return bitSizeOfVarIntImpl(value, VarUInt16MaxValues, VarUInt16MaxNumValues);
 }
 
-size_t getBitSizeOfVarUInt32(uint32_t value)
+size_t bitSizeOfVarUInt32(uint32_t value)
 {
-    return getBitSizeOfVarIntImpl(value, VarUInt32MaxValues, VarUInt32MaxNumValues);
+    return bitSizeOfVarIntImpl(value, VarUInt32MaxValues, VarUInt32MaxNumValues);
 }
 
-size_t getBitSizeOfVarUInt64(uint64_t value)
+size_t bitSizeOfVarUInt64(uint64_t value)
 {
-    return getBitSizeOfVarIntImpl(value, VarUInt64MaxValues, VarUInt64MaxNumValues);
+    return bitSizeOfVarIntImpl(value, VarUInt64MaxValues, VarUInt64MaxNumValues);
 }
 
-size_t getBitSizeOfVarInt(int64_t value)
+size_t bitSizeOfVarInt(int64_t value)
 {
     if (value == INT64_MIN)
         return 8; // INT64_MIN is stored as -0
-    return getBitSizeOfVarIntImpl(convertToAbsValue(value), VarIntMaxValues, VarIntMaxNumValues);
+
+    return bitSizeOfVarIntImpl(convertToAbsValue(value), VarIntMaxValues, VarIntMaxNumValues);
 }
 
-size_t getBitSizeOfVarUInt(uint64_t value)
+size_t bitSizeOfVarUInt(uint64_t value)
 {
-    return getBitSizeOfVarIntImpl(value, VarUIntMaxValues, VarUIntMaxNumValues);
+    return bitSizeOfVarIntImpl(value, VarUIntMaxValues, VarUIntMaxNumValues);
 }
 
-size_t getBitSizeOfString(const std::string& value)
+size_t bitSizeOfString(const std::string& value)
 {
     const size_t stringSize = value.size();
 
     // the string consists of varuint64 for size followed by the UTF-8 encoded string
-    return getBitSizeOfVarUInt64(static_cast<uint64_t>(stringSize)) + bytesToBits(stringSize);
+    return bitSizeOfVarUInt64(static_cast<uint64_t>(stringSize)) + bytesToBits(stringSize);
 }
 
 } // namespace zserio

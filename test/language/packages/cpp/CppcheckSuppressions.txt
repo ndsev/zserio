@@ -1,0 +1,14 @@
+// suppress "Member variable 'X' is not initialized in the constructor."
+uninitMemberVar:*/BottomStructure.cpp
+uninitMemberVar:*/Coordinate.cpp
+uninitMemberVar:*/Coordinate.h
+uninitMemberVar:*/Child.cpp
+uninitMemberVar:*/DefaultPackageStructure.cpp
+uninitMemberVar:*/DefaultPackageStructure.h
+uninitMemberVar:*/MiddleStructure.cpp
+uninitMemberVar:*/SimpleParamStructure.cpp
+uninitMemberVar:*/SimpleParamStructure.h
+uninitMemberVar:*/SimpleStructure.cpp
+uninitMemberVar:*/TopStructure.cpp
+uninitMemberVar:*/TopStructure.h
+uninitMemberVar:*/package_name_conflict/Blob.cpp

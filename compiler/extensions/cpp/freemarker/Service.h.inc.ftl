@@ -5,7 +5,7 @@
 
         typedef ::grpc::ClientAsyncResponseReaderInterface<${rpc.responseTypeFullName}> <#rt>
                 <#lt>IClientAsync${rpc.name}Reader;
-        typedef std::unique_ptr<IClientAsync${rpc.name}Reader> IClientAsync${rpc.name}ReaderPtr;
+        typedef ::std::unique_ptr<IClientAsync${rpc.name}Reader> IClientAsync${rpc.name}ReaderPtr;
 
         IClientAsync${rpc.name}ReaderPtr Async${rpc.name}(::grpc::ClientContext* context,
                 const ${rpc.requestTypeFullName}& request, ::grpc::CompletionQueue* cq)
@@ -20,7 +20,7 @@
         }
     <#elseif rpc.requestOnlyStreaming>
         typedef ::grpc::ClientWriterInterface<${rpc.requestTypeFullName}> IClient${rpc.name}Writer;
-        typedef std::unique_ptr<IClient${rpc.name}Writer> IClient${rpc.name}WriterPtr;
+        typedef ::std::unique_ptr<IClient${rpc.name}Writer> IClient${rpc.name}WriterPtr;
 
         IClient${rpc.name}WriterPtr ${rpc.name}(
                 ::grpc::ClientContext* context, ${rpc.responseTypeFullName}* response)
@@ -29,7 +29,7 @@
         }
 
         typedef ::grpc::ClientAsyncWriterInterface<${rpc.requestTypeFullName}> IClientAsync${rpc.name}Writer;
-        typedef std::unique_ptr<IClientAsync${rpc.name}Writer> IClientAsync${rpc.name}WriterPtr;
+        typedef ::std::unique_ptr<IClientAsync${rpc.name}Writer> IClientAsync${rpc.name}WriterPtr;
 
         IClientAsync${rpc.name}WriterPtr Async${rpc.name}(
                 ::grpc::ClientContext* context, ${rpc.responseTypeFullName}* response,
@@ -46,7 +46,7 @@
         }
     <#elseif rpc.responseOnlyStreaming>
         typedef ::grpc::ClientReaderInterface<${rpc.responseTypeFullName}> IClient${rpc.name}Reader;
-        typedef std::unique_ptr<IClient${rpc.name}Reader> IClient${rpc.name}ReaderPtr;
+        typedef ::std::unique_ptr<IClient${rpc.name}Reader> IClient${rpc.name}ReaderPtr;
 
         IClient${rpc.name}ReaderPtr ${rpc.name}(::grpc::ClientContext* context,
                 const ${rpc.requestTypeFullName}& request)
@@ -55,7 +55,7 @@
         }
 
         typedef ::grpc::ClientAsyncReaderInterface<${rpc.responseTypeFullName}> IClientAsync${rpc.name}Reader;
-        typedef std::unique_ptr<IClientAsync${rpc.name}Reader> IClientAsync${rpc.name}ReaderPtr;
+        typedef ::std::unique_ptr<IClientAsync${rpc.name}Reader> IClientAsync${rpc.name}ReaderPtr;
 
         IClientAsync${rpc.name}ReaderPtr Async${rpc.name}(::grpc::ClientContext* context,
                 const ${rpc.requestTypeFullName}& request, ::grpc::CompletionQueue* cq, void* tag)
@@ -71,7 +71,7 @@
     <#else><#-- bidi streaming -->
         typedef ::grpc::ClientReaderWriterInterface<
                 ${rpc.requestTypeFullName}, ${rpc.responseTypeFullName}> IClient${rpc.name}ReaderWriter;
-        typedef std::unique_ptr<IClient${rpc.name}ReaderWriter> IClient${rpc.name}ReaderWriterPtr;
+        typedef ::std::unique_ptr<IClient${rpc.name}ReaderWriter> IClient${rpc.name}ReaderWriterPtr;
 
         IClient${rpc.name}ReaderWriterPtr ${rpc.name}(::grpc::ClientContext* context)
         {
@@ -80,7 +80,7 @@
 
         typedef ::grpc::ClientAsyncReaderWriterInterface<
                 ${rpc.requestTypeFullName}, ${rpc.responseTypeFullName}> IClientAsync${rpc.name}ReaderWriter;
-        typedef std::unique_ptr<IClientAsync${rpc.name}ReaderWriter> IClientAsync${rpc.name}ReaderWriterPtr;
+        typedef ::std::unique_ptr<IClientAsync${rpc.name}ReaderWriter> IClientAsync${rpc.name}ReaderWriterPtr;
 
         IClientAsync${rpc.name}ReaderWriterPtr Async${rpc.name}(::grpc::ClientContext* context,
                 ::grpc::CompletionQueue* cq, void* tag)
@@ -130,7 +130,7 @@
                 const ${rpc.requestTypeFullName}& request, ${rpc.responseTypeFullName}* response) override;
 
         typedef ::grpc::ClientAsyncResponseReader<${rpc.responseTypeFullName}> ClientAsync${rpc.name}Reader;
-        typedef std::unique_ptr<ClientAsync${rpc.name}Reader> ClientAsync${rpc.name}ReaderPtr;
+        typedef ::std::unique_ptr<ClientAsync${rpc.name}Reader> ClientAsync${rpc.name}ReaderPtr;
 
         ClientAsync${rpc.name}ReaderPtr Async${rpc.name}(::grpc::ClientContext* context,
                 const ${rpc.requestTypeFullName}& request, ::grpc::CompletionQueue* cq)
@@ -145,7 +145,7 @@
         }
     <#elseif rpc.requestOnlyStreaming>
         typedef ::grpc::ClientWriter<${rpc.requestTypeFullName}> Client${rpc.name}Writer;
-        typedef std::unique_ptr<Client${rpc.name}Writer> Client${rpc.name}WriterPtr;
+        typedef ::std::unique_ptr<Client${rpc.name}Writer> Client${rpc.name}WriterPtr;
 
         Client${rpc.name}WriterPtr ${rpc.name}(::grpc::ClientContext* context,
                 ${rpc.responseTypeFullName}* response)
@@ -154,7 +154,7 @@
         }
 
         typedef ::grpc::ClientAsyncWriter<${rpc.requestTypeFullName}> ClientAsync${rpc.name}Writer;
-        typedef std::unique_ptr<ClientAsync${rpc.name}Writer> ClientAsync${rpc.name}WriterPtr;
+        typedef ::std::unique_ptr<ClientAsync${rpc.name}Writer> ClientAsync${rpc.name}WriterPtr;
 
         ClientAsync${rpc.name}WriterPtr Async${rpc.name}(::grpc::ClientContext* context,
                 ${rpc.responseTypeFullName}* response, ::grpc::CompletionQueue* cq, void* tag)
@@ -169,7 +169,7 @@
         }
     <#elseif rpc.responseOnlyStreaming>
         typedef ::grpc::ClientReader<${rpc.responseTypeFullName}> Client${rpc.name}Reader;
-        typedef std::unique_ptr<Client${rpc.name}Reader> Client${rpc.name}ReaderPtr;
+        typedef ::std::unique_ptr<Client${rpc.name}Reader> Client${rpc.name}ReaderPtr;
 
         Client${rpc.name}ReaderPtr ${rpc.name}(::grpc::ClientContext* context,
                 const ${rpc.requestTypeFullName}& request)
@@ -178,7 +178,7 @@
         }
 
         typedef ::grpc::ClientAsyncReader<${rpc.responseTypeFullName}> ClientAsync${rpc.name}Reader;
-        typedef std::unique_ptr<ClientAsync${rpc.name}Reader> ClientAsync${rpc.name}ReaderPtr;
+        typedef ::std::unique_ptr<ClientAsync${rpc.name}Reader> ClientAsync${rpc.name}ReaderPtr;
 
         ClientAsync${rpc.name}ReaderPtr Async${rpc.name}(::grpc::ClientContext* context,
                 const ${rpc.requestTypeFullName}& request, ::grpc::CompletionQueue* cq, void* tag)
@@ -194,7 +194,7 @@
     <#else><#-- bidi streaming -->
         typedef ::grpc::ClientReaderWriter<
                 ${rpc.requestTypeFullName}, ${rpc.responseTypeFullName}> Client${rpc.name}ReaderWriter;
-        typedef std::unique_ptr<Client${rpc.name}ReaderWriter> Client${rpc.name}ReaderWriterPtr;
+        typedef ::std::unique_ptr<Client${rpc.name}ReaderWriter> Client${rpc.name}ReaderWriterPtr;
 
         Client${rpc.name}ReaderWriterPtr ${rpc.name}(::grpc::ClientContext* context)
         {
@@ -203,7 +203,7 @@
 
         typedef ::grpc::ClientAsyncReaderWriter<
                 ${rpc.requestTypeFullName}, ${rpc.responseTypeFullName}> ClientAsync${rpc.name}ReaderWriter;
-        typedef std::unique_ptr<ClientAsync${rpc.name}ReaderWriter> ClientAsync${rpc.name}ReaderWriterPtr;
+        typedef ::std::unique_ptr<ClientAsync${rpc.name}ReaderWriter> ClientAsync${rpc.name}ReaderWriterPtr;
 
         ClientAsync${rpc.name}ReaderWriterPtr Async${rpc.name}(::grpc::ClientContext* context,
                 ::grpc::CompletionQueue* cq, void* tag)
@@ -464,7 +464,7 @@
     </#list>
         Service<#t>
     <#list rpcList as rpc>
-        <#lt><#if rpc?index != 0> </#if>><#rt>
+        <#lt>><#rt>
     </#list>
         <#lt> AsyncService;
 </#macro>
@@ -476,7 +476,7 @@
     </#list>
         Service<#t>
     <#list noStreamingRpcList as rpc>
-        <#lt><#if rpc?index != 0> </#if>><#rt>
+        <#lt>><#rt>
     </#list>
         <#lt> StreamedUnaryService;
 </#macro>
@@ -488,7 +488,7 @@
     </#list>
         Service<#t>
     <#list responseOnlyStreamingRpcList as rpc>
-        <#lt><#if rpc?index != 0> </#if>><#rt>
+        <#lt>><#rt>
     </#list>
         <#lt> SplitStreamedService;
 </#macro>
@@ -506,7 +506,7 @@
     </#list>
         Service<#t>
     <#list noOrResponseOnlyStreamingRpcList as rpc>
-        <#lt><#if rpc?index != 0> </#if>><#rt>
+        <#lt>><#rt>
     </#list>
         <#lt> StreamedService;
 </#macro>

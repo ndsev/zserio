@@ -180,7 +180,7 @@ detect_python_virtualenv_activate()
         ACTIVATE="${PYTHON_VIRTUALENV_ROOT}/Scripts/activate"
     fi
 
-    eval ${PYTHON_VIRTUALENV_ACTIVATE_OUT}="${ACTIVATE}"
+    eval ${PYTHON_VIRTUALENV_ACTIVATE_OUT}="'${ACTIVATE}'"
 }
 
 # Activate python virtualenv.
@@ -197,14 +197,14 @@ activate_python_virtualenv()
     local PYTHON_VIRTUALENV_ACTIVATE
     detect_python_virtualenv_activate "${PYTHON_VIRTUALENV_ROOT}" PYTHON_VIRTUALENV_ACTIVATE
 
-    if [ ! -z ${PYTHON_VIRTUALENV} ] ; then # forced python virtualenv
+    if [ ! -z "${PYTHON_VIRTUALENV}" ] ; then # forced python virtualenv
         if [ -z "${PYTHON_VIRTUALENV_ACTIVATE}" ] ; then
             stderr_echo "Failed to find virtualenv activate script in '${PYTHON_VIRTUALENV_ROOT}'!"
             return 1
         fi
     else
         if [ -z "${PYTHON_VIRTUALENV_ACTIVATE}" ] ; then
-            ${PYTHON} -m virtualenv -p ${PYTHON} "${PYTHON_VIRTUALENV_ROOT}"
+            "${PYTHON}" -m virtualenv -p "${PYTHON}" "${PYTHON_VIRTUALENV_ROOT}"
             if [ $? -ne 0 ] ; then
                 stderr_echo "Failed to create virtualenv!"
                 return 1
@@ -244,7 +244,8 @@ activate_python_virtualenv()
     else
         check_python_requirements python STANDARD_REQUIREMENTS[@] 2> /dev/null
         if [ $? -ne 0 ] ; then
-            pip install ${STANDARD_REQUIREMENTS[@]}
+            # don't use only pip because this does not support spaces in path (https://github.com/pypa/pip/issues/923)
+            python -m pip install ${STANDARD_REQUIREMENTS[@]}
             if [ $? -ne 0 ] ; then
                 stderr_echo "Failed to install python requirements!"
                 return 1
@@ -418,7 +419,8 @@ convert_to_absolute_path()
     fi
 
     pushd "${DIR_TO_CONVERT}" > /dev/null
-    local ABSOLUTE_PATH="`pwd`"
+    # don't use "`pwd`" here because it does not work if path contains spaces
+    local ABSOLUTE_PATH="'`pwd`'"
     popd > /dev/null
 
     if [ -n "${FILE_TO_CONVERT}" ] ; then
@@ -510,8 +512,8 @@ compile_cpp()
 
     local TARGET
     for TARGET in "${TARGETS[@]}" ; do
-        compile_cpp_for_target "${ZSERIO_PROJECT_ROOT}" "${BUILD_DIR}/cpp-${TARGET}" "${CMAKELISTS_DIR}" "${TARGET}" \
-                               CMAKE_ARGS[@] CTEST_ARGS[@] "${MAKE_TARGET}"
+        compile_cpp_for_target "${ZSERIO_PROJECT_ROOT}" "${BUILD_DIR}/${TARGET}" "${CMAKELISTS_DIR}" \
+                               "${TARGET}" CMAKE_ARGS[@] CTEST_ARGS[@] "${MAKE_TARGET}"
         if [ $? -ne 0 ] ; then
             return 1
         fi
@@ -545,6 +547,17 @@ compile_cpp_for_target()
                     "-DCPPCHECK_HOME=${CPPCHECK_HOME}")
     fi
 
+    # detect build type
+    local BUILD_TYPE="Release"
+    local BUILD_TYPE_LOWER_CASE="release"
+    if [[ "${CMAKE_EXTRA_ARGS}" == *"-DCMAKE_BUILD_TYPE=Debug"* ||
+          "${CMAKE_EXTRA_ARGS}" == *"-DCMAKE_BUILD_TYPE=debug"* ]] ; then
+        BUILD_TYPE="Debug";
+        BUILD_TYPE_LOWER_CASE="debug"
+    fi
+
+    BUILD_DIR="${BUILD_DIR}/${BUILD_TYPE_LOWER_CASE}"
+
     mkdir -p "${BUILD_DIR}"
     pushd "${BUILD_DIR}" > /dev/null
 
@@ -552,8 +565,8 @@ compile_cpp_for_target()
 
     # resolve CMake generator
     if [[ ${TARGET} == *"-msvc" ]] ; then
-        local CMAKE_BUILD_CONFIG="--config Release"
-        CTEST_ARGS+=("-C Release")
+        local CMAKE_BUILD_CONFIG="--config ${BUILD_TYPE}"
+        CTEST_ARGS+=("-C ${BUILD_TYPE}")
         if [[ ${MAKE_TARGET} == "all" ]] ; then
             CMAKE_BUILD_TARGET="ALL_BUILD" # all target doesn't exist in MSVC solution
         fi

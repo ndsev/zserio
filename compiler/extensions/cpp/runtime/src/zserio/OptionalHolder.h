@@ -2,233 +2,586 @@
 #define ZSERIO_OPTIONAL_HOLDER_H_INC
 
 #include <cstddef>
+#include <type_traits>
 
-#include "CppRuntimeException.h"
-#include "HashCodeUtil.h"
-#include "AlignedStorage.h"
-#include "Types.h"
+#include "zserio/CppRuntimeException.h"
+#include "zserio/Types.h"
 
 namespace zserio
 {
 
+/**
+ * Helper type for specification of an unset optional holder.
+ */
+struct NullOptType
+{
+    /**
+     * Explicit constructor from int.
+     *
+     * \see https://en.cppreference.com/w/cpp/utility/optional/nullopt_t
+     */
+    explicit constexpr NullOptType(int) {}
+};
+
+/**
+ * Constant used to convenient specification of an unset optional holder.
+ */
+constexpr NullOptType NullOpt{int()};
+
 namespace detail
 {
 
+/**
+ * In place storage for optional holder.
+ */
 template <typename T>
 class in_place_storage
 {
 public:
+    /**
+     * Constructor.
+     */
     in_place_storage() {}
 
+    /**
+     * Destructor.
+     */
+    ~in_place_storage() = default;
+
+    /** Copying is disabled. */
+    /** \{ */
+    in_place_storage(const in_place_storage&) = delete;
+    in_place_storage& operator=(const in_place_storage&) = delete;
+    /** \} */
+
+    /**
+     * Move constructor.
+     *
+     * \param other Other storage to move.
+     */
+    in_place_storage(in_place_storage&& other)
+    {
+        move(std::move(other));
+    }
+
+    /**
+     * Move assignment operator.
+     *
+     * \param other Other storage to move.
+     *
+     * \return Reference to the current storage.
+     */
+    in_place_storage& operator=(in_place_storage&& other)
+    {
+        move(std::move(other));
+
+        return *this;
+    }
+
+    /**
+     * Gets pointer to the underlying in-place memory.
+     *
+     * \return Pointer to the storage.
+     */
     void* getStorage()
     {
         return &m_inPlace;
     }
 
+    /**
+     * Gets pointer to the stored object.
+     *
+     * \return Pointer to the object.
+     */
     T* getObject()
     {
         return reinterpret_cast<T*>(&m_inPlace);
     }
 
+    /**
+     * Gets pointer to the stored object.
+     *
+     * \return Const pointer to the object.
+     */
     const T* getObject() const
     {
         return reinterpret_cast<const T*>(&m_inPlace);
     }
 
 private:
-    // disable copy constructor and assignment operator
-    in_place_storage(const in_place_storage&);
-    in_place_storage& operator=(const in_place_storage&);
+    void move(in_place_storage&& other)
+    {
+        new (&m_inPlace) T(std::move(*other.getObject()));
+        other.getObject()->~T(); // ensure that destructor of object in original storage is called
+    }
 
-    typename AlignedStorage<T>::type m_inPlace;
+    typename std::aligned_storage<sizeof(T), alignof(T)>::type m_inPlace;
 };
 
+/**
+ * Heap storage for optional holder.
+ */
 template <typename T>
 class heap_storage
 {
 public:
-    heap_storage() : m_heap(NULL) {}
+    /**
+     * Constructor.
+     */
+    heap_storage() : m_heap(nullptr) {}
 
+    /**
+     * Destructor.
+     */
     ~heap_storage()
     {
         delete [] m_heap;
-        m_heap = NULL;
+        m_heap = nullptr;
     }
 
+    /**
+     * Copying is disallowed.
+     * \{
+     */
+    heap_storage(const heap_storage&) = delete;
+    heap_storage& operator=(const heap_storage&) = delete;
+    /** \} */
+
+    /**
+     * Move constructor.
+     *
+     * \param other Other storage to move.
+     */
+    heap_storage(heap_storage&& other)
+    {
+        move(std::move(other));
+    }
+
+    /**
+     * Move assignment operator.
+     *
+     * \param other Other storage to move.
+     *
+     * \return Reference to the current storage.
+     */
+    heap_storage& operator=(heap_storage&& other)
+    {
+        move(std::move(other));
+
+        return *this;
+    }
+
+    /**
+     * Gets pointer to the underlying on-heap memory.
+     *
+     * Allocates the memory if it's not yet allocated.
+     *
+     * \return Pointer to the storage.
+     */
     void* getStorage()
     {
-        if (m_heap == NULL)
+        if (m_heap == nullptr)
             m_heap = new unsigned char [sizeof(T)];
 
         return m_heap;
     }
 
-    T* getObject()
-    {
-        return reinterpret_cast<T*>(m_heap);
-    }
-
+    /**
+     * Gets pointer to the stored object.
+     *
+     * \return Const pointer to the object.
+     */
     const T* getObject() const
     {
         return reinterpret_cast<const T*>(m_heap);
     }
 
+    /**
+     * Gets pointer to the stored object.
+     *
+     * \return Pointer to the object.
+     */
+    T* getObject()
+    {
+        return reinterpret_cast<T*>(m_heap);
+    }
+
 private:
-    // disable copy constructor and assignment operator
-    heap_storage(const heap_storage&);
-    heap_storage& operator=(const heap_storage&);
+    void move(heap_storage&& other)
+    {
+        m_heap = other.m_heap;
+        other.m_heap = nullptr;
+    }
 
     unsigned char* m_heap;
 };
 
-template<typename T, typename STORAGE>
+/**
+ * Optional holder implementation for Zserio which allows usage of both heap and in place storage.
+ */
+template <typename T, typename STORAGE>
 class optional_holder
 {
 public:
-    optional_holder() : m_isSet(false) {}
+    /**
+     * Empty constructor which creates an unset holder.
+     */
+    constexpr optional_holder() noexcept
+    {}
 
-    optional_holder(const optional_holder<T, STORAGE>& other) : m_isSet(false)
+    /**
+     * Constructor from zserio::NullOpt constant to create an unset holder.
+     */
+    constexpr optional_holder(NullOptType) noexcept
+    {}
+
+    /**
+     * Constructor from a given value.
+     *
+     * \param value Value to store in the holder.
+     */
+    optional_holder(const T& value)
     {
-        copy(other);
+        new (getStorage()) T(value);
+        m_hasValue = true;
     }
 
+    /**
+     * Constructor from a given value passed by rvalue reference.
+     *
+     * \param value Value to store in the holder.
+     */
+    optional_holder(T&& value)
+    {
+        new (getStorage()) T(std::move(value));
+        m_hasValue = true;
+    }
+
+    /**
+     * Copy constructor.
+     *
+     * \param other Other holder to copy.
+     */
+    optional_holder(const optional_holder<T, STORAGE>& other)
+    {
+        if (other.hasValue())
+        {
+            new (getStorage()) T(*other.m_storage.getObject());
+            m_hasValue = true;
+        }
+    }
+
+    /**
+     * Move constructor.
+     *
+     * \param other Other holder to move.
+     */
+    optional_holder(optional_holder<T, STORAGE>&& other)
+    {
+        if (other.hasValue())
+        {
+            m_storage = std::move(other.m_storage);
+            other.m_hasValue = false;
+            m_hasValue = true;
+        }
+    }
+
+    /**
+     * Destructor.
+     */
     ~optional_holder()
     {
         reset();
     }
 
+    /**
+     * Assignment operator.
+     *
+     * \param other Other holder to copy-assign.
+     *
+     * \return Reference to the current holder.
+     */
     optional_holder<T, STORAGE>& operator=(const optional_holder<T, STORAGE>& other)
     {
         if (this != &other)
-            copy(other);
+        {
+            reset();
+            if (other.hasValue())
+            {
+                new (getStorage()) T(*other.m_storage.getObject());
+                m_hasValue = true;
+            }
+        }
 
         return *this;
     }
 
+    /**
+     * Move assignment operator.
+     *
+     * \param other Other holder to move-assign.
+     *
+     * \return Reference to the current holder.
+     */
+    optional_holder& operator=(optional_holder<T, STORAGE>&& other)
+    {
+        if (this != &other)
+        {
+            reset();
+            if (other.hasValue())
+            {
+                m_storage = std::move(other.m_storage);
+                other.m_hasValue = false;
+                m_hasValue = true;
+            }
+        }
+
+        return *this;
+    }
+
+    /**
+     * Assignment operator from value.
+     *
+     * \param value Value to assign.
+     *
+     * \return Reference to the current holder.
+     */
+    optional_holder& operator=(const T& value)
+    {
+        set(value);
+
+        return *this;
+    }
+
+    /**
+     * Assignment operator from rvalue reference to value.
+     *
+     * \param value Value to move-assign.
+     *
+     * \return Reference to the current holder.
+     */
+    optional_holder& operator=(T&& value)
+    {
+        set(std::move(value));
+
+        return *this;
+    }
+
+    /**
+     * Operator equality.
+     *
+     * \param other Other holder to compare.
+     *
+     * \return True when the other holder has same value as this. False otherwise.
+     */
     bool operator==(const optional_holder<T, STORAGE>& other) const
     {
         if (this != &other)
         {
-            if (isSet() && other.isSet())
+            if (hasValue() && other.hasValue())
                 return *(m_storage.getObject()) == *(other.m_storage.getObject());
 
-            return (!isSet() && !other.isSet());
+            return (!hasValue() && !other.hasValue());
         }
 
         return true;
     }
 
-    void* getResetStorage()
+    /**
+     * Bool operator.
+     *
+     * Evaluates to true when this holder has assigned any value.
+     */
+    explicit operator bool() const noexcept
     {
-        reset();
-        return m_storage.getStorage();
+        return hasValue();
     }
 
-    void reset(T* value = NULL)
+    /**
+     * Dereference operator *.
+     *
+     * \return Const reference to the assigned value.
+     *
+     * \throw CppRuntimeException when the holder is unset.
+     */
+    const T& operator*() const
     {
-        if (value == NULL)
+        return *get();
+    }
+
+    /**
+     * Dereference operator *.
+     *
+     * \return Reference to the assigned value.
+     *
+     * \throw CppRuntimeException when the holder is unset.
+     */
+    T& operator*()
+    {
+        return *get();
+    }
+
+    /**
+     * Dereference operator ->.
+     *
+     * \return Const reference to the assigned value.
+     *
+     * \throw CppRuntimeException when the holder is unset.
+     */
+    const T* operator->() const
+    {
+        return get();
+    }
+
+    /**
+     * Dereference operator ->.
+     *
+     * \return Reference to the assigned value.
+     *
+     * \throw CppRuntimeException when the holder is unset.
+     */
+    T* operator->()
+    {
+        return get();
+    }
+
+    /**
+     * Resets the current holder (switch to the unset state).
+     */
+    void reset() noexcept
+    {
+        if (hasValue())
         {
-            if (isSet())
-            {
-                m_storage.getObject()->~T();
-                m_isSet = false;
-            }
-        }
-        else
-        {
-            if (isSet())
-                throw CppRuntimeException("Invalid usage of OptionalHolder reset method!");
-            m_isSet = true;
+            m_storage.getObject()->~T();
+            m_hasValue = false;
         }
     }
 
-    void set(const T& value)
+    /**
+     * Gets held value.
+     *
+     * \return Const reference to the assigned value.
+     *
+     * \throw CppRuntimeException when the holder is unset.
+     */
+    const T& value() const
     {
-        reset(new (getResetStorage()) T(value));
+        return *get();
     }
 
-    T& get()
+    /**
+     * Gets held value.
+     *
+     * \return Reference to the assigned value.
+     *
+     * \throw CppRuntimeException when the holder is unset.
+     */
+    T& value()
     {
-        checkIsSet();
-        return *(m_storage.getObject());
+        return *get();
     }
 
-    const T& get() const
+    /**
+     * Gets whether the holder has any value.
+     *
+     * \return True when this holder has assigned any value. False otherwise.
+     */
+    bool hasValue() const noexcept
     {
-        checkIsSet();
-        return *(m_storage.getObject());
-    }
-
-    bool isSet() const
-    {
-        return m_isSet;
-    }
-
-    int hashCode() const
-    {
-        int result = HASH_SEED;
-        if (isSet())
-            result = calcHashCode(result, *(m_storage.getObject()));
-        else
-            result = calcHashCode(result, 0);
-
-        return result;
+        return m_hasValue;
     }
 
 private:
-    void copy(const optional_holder<T, STORAGE>& other)
+    template <typename U = T>
+    void set(U&& value)
     {
-        if (other.isSet())
-            set(*(other.m_storage.getObject()));
-        else
-            reset();
+        reset();
+        new (getStorage()) T(std::forward<U>(value));
+        m_hasValue = true;
     }
 
-    void checkIsSet() const
+    T* get()
     {
-        if (!isSet())
+        checkHasValue();
+        return m_storage.getObject();
+    }
+
+    const T* get() const
+    {
+        checkHasValue();
+        return m_storage.getObject();
+    }
+
+    void* getStorage()
+    {
+        return m_storage.getStorage();
+    }
+
+    void checkHasValue() const
+    {
+        if (!hasValue())
             throw CppRuntimeException("Trying to access value of non-present optional field!");
     }
 
     STORAGE m_storage;
-    bool    m_isSet;
+    bool    m_hasValue = false;
 };
 
+/**
+ * Trait constaining a logic which decides what storage is used.
+ *
+ * In place storage is used for small types, heap logic is used for bigger types.
+ *
+ * Generated code can specialize this template to force a storage type for a particular type.
+ * It can be necessary e.g. for recursive types where it's not possible to calculate sizeof in compile time.
+ */
 template <typename T>
 struct is_optimized_in_place
 {
     static const bool value = (sizeof(in_place_storage<T>) <= 8 * sizeof(uint64_t) - sizeof(bool));
 };
 
+/**
+ * Optimized optional storgage where storage is choosen using is_optimized_in_place trait.
+ *
+ * \{
+ */
 template <typename T, bool IS_IN_PLACE>
-struct optimized_optional_holder
+struct optimized_optional_storage
 {
-    typedef optional_holder<T, detail::in_place_storage<T> > type;
+    typedef detail::in_place_storage<T> type;
 };
 
 template <typename T>
-struct optimized_optional_holder<T, false>
+struct optimized_optional_storage<T, false>
 {
-    typedef optional_holder<T, detail::heap_storage<T> > type;
+    typedef detail::heap_storage<T> type;
 };
+/** \} */
 
 } // namespace detail
 
+/**
+ * Optional holder which uses in place storage.
+ */
 template <typename T>
-class InPlaceOptionalHolder : public detail::optional_holder<T, detail::in_place_storage<T> >
-{
-};
+using InPlaceOptionalHolder = detail::optional_holder<T, detail::in_place_storage<T>>;
 
+/**
+ * Optional holder which uses heap storage.
+ */
 template <typename T>
-class HeapOptionalHolder : public detail::optional_holder<T, detail::heap_storage<T> >
-{
-};
+using HeapOptionalHolder = detail::optional_holder<T, detail::heap_storage<T>>;
 
+// Be aware that if OptionalHolder is defined by typename, C++ compiler will have problem with template
+// function overload, see HashCodeUtil.h (overloads for objects and for OptionalHolder).
+/**
+ * Optional holder which decides in compile time which storage is used - in place for small types and
+ * heap for bigger ones.
+ */
 template <typename T>
-class OptimizedOptionalHolder :
-        public detail::optimized_optional_holder<T, detail::is_optimized_in_place<T>::value>::type
-{
-};
+using OptionalHolder = detail::optional_holder<
+        T, typename detail::optimized_optional_storage<T, detail::is_optimized_in_place<T>::value>::type>;
 
 } // namespace zserio
 

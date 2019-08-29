@@ -2,6 +2,7 @@
 
 #include "zserio/BitStreamWriter.h"
 #include "zserio/BitStreamReader.h"
+#include "zserio/CppRuntimeException.h"
 
 #include "offsets/bit_offset/BitOffset.h"
 

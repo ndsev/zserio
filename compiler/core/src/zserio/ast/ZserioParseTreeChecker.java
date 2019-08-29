@@ -11,6 +11,7 @@ import java.nio.charset.CharsetDecoder;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Set;
 
 import zserio.antlr.ZserioParser;
@@ -71,9 +72,14 @@ public class ZserioParseTreeChecker extends ZserioParserBaseVisitor<Void>
 
         // because of index expression check we must know if we are in array
         if (ctx.fieldTypeId().fieldArrayRange() != null)
+        {
             isInArrayField = true;
+            if (ctx.fieldTypeId().IMPLICIT() != null)
+                isInImplicitArrayField = true;
+        }
         visitChildren(ctx);
         isInArrayField = false;
+        isInImplicitArrayField = false;
 
         return null;
     }
@@ -81,8 +87,8 @@ public class ZserioParseTreeChecker extends ZserioParserBaseVisitor<Void>
     @Override
     public Void visitFieldOffset(ZserioParser.FieldOffsetContext ctx)
     {
-        // index expression is allowed if we are in array
-        if (isInArrayField)
+        // index expression in offsets is allowed if we are in array which is not implicit
+        if (isInArrayField && !isInImplicitArrayField)
             isIndexAllowed = true;
         visitChildren(ctx);
         isIndexAllowed = false;
@@ -139,8 +145,18 @@ public class ZserioParseTreeChecker extends ZserioParserBaseVisitor<Void>
     {
         // this check allows index expressions only for arrays in field offsets or parameters
         if (!isIndexAllowed)
-            throw new ParserException(ctx.INDEX().getSymbol(),
-                    "Index operator is not allowed in this context!");
+        {
+            if (isInImplicitArrayField)
+            {
+                throw new ParserException(ctx.INDEX().getSymbol(),
+                        "Implicit arrays cannot have indexed offsets!");
+            }
+            else
+            {
+                throw new ParserException(ctx.INDEX().getSymbol(),
+                        "Index operator is not allowed in this context!");
+            }
+        }
 
         return visitChildren(ctx);
     }
@@ -153,6 +169,10 @@ public class ZserioParseTreeChecker extends ZserioParserBaseVisitor<Void>
             throw new ParserException(ctx.getStart(), "'" + id +
                     "' is a reserved keyword and may not be used here!");
 
+        if (id.toLowerCase(Locale.ENGLISH).startsWith("zserio"))
+            throw new ParserException(ctx.getStart(),
+                    "ZSERIO (case insensitive) is a reserved prefix and cannot be used in identifiers!");
+
         return null;
     }
 
@@ -164,7 +184,7 @@ public class ZserioParseTreeChecker extends ZserioParserBaseVisitor<Void>
             throw new ParserException(ctx.EXPLICIT().getSymbol(),
                     "Explicit keyword is allowed only in SQL tables!");
 
-        // index expression is allowed if we are in array
+        // index expression in type instantiation is allowed if we are in array
         if (isInArrayField)
             isIndexAllowed = true;
         visitChildren(ctx);
@@ -296,6 +316,7 @@ public class ZserioParseTreeChecker extends ZserioParserBaseVisitor<Void>
 
     /** Flags used to allow index operator only in offsets or arguments in array fields. */
     private boolean isInArrayField = false;
+    private boolean isInImplicitArrayField = false;
     private boolean isIndexAllowed = false;
 
     /** Flag used to allow explicit keyword only for SQL tables. */

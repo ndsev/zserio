@@ -30,40 +30,39 @@ public:
     }
 
 protected:
-    void fillSameAsFieldTableRow(SameAsFieldTableRow& row, uint32_t id, const std::string& name)
+    void fillSameAsFieldTableRow(SameAsFieldTable::Row& row, uint32_t id, const std::string& name)
     {
         row.setId(id);
         row.setName(name);
         row.setCount(SAME_AS_FIELD_TABLE_COUNT);
 
         TestBlob testBlob;
-        testBlob.initialize(SAME_AS_FIELD_TABLE_COUNT);
-        zserio::UInt8Array& values = testBlob.getValues();
+        std::vector<uint8_t>& values = testBlob.getValues();
         for (uint32_t i = 0; i < SAME_AS_FIELD_TABLE_COUNT; ++i)
             values.push_back(static_cast<uint8_t>(id));
         row.setBlob(testBlob);
 
         TestBlob testBlobExplicit;
-        testBlobExplicit.initialize(SAME_AS_FIELD_TABLE_COUNT_EXPLICIT);
-        zserio::UInt8Array& valuesExplicit = testBlobExplicit.getValues();
+        std::vector<uint8_t>& valuesExplicit = testBlobExplicit.getValues();
         for (uint32_t i = 0; i < SAME_AS_FIELD_TABLE_COUNT_EXPLICIT; ++i)
             valuesExplicit.push_back(static_cast<uint8_t>(id + 1));
         row.setBlobExplicit(testBlobExplicit);
     }
 
-    void fillSameAsFieldTableRows(std::vector<SameAsFieldTableRow>& rows)
+    void fillSameAsFieldTableRows(std::vector<SameAsFieldTable::Row>& rows)
     {
         rows.clear();
+        rows.reserve(NUM_SAME_AS_FIELD_TABLE_ROWS);
         for (uint32_t id = 0; id < NUM_SAME_AS_FIELD_TABLE_ROWS; ++id)
         {
             const std::string name = "Name" + zserio::convertToString(id);
-            SameAsFieldTableRow row;
+            SameAsFieldTable::Row row;
             fillSameAsFieldTableRow(row, id, name);
             rows.push_back(row);
         }
     }
 
-    static void checkSameAsFieldTableRow(const SameAsFieldTableRow& row1, const SameAsFieldTableRow& row2)
+    static void checkSameAsFieldTableRow(const SameAsFieldTable::Row& row1, const SameAsFieldTable::Row& row2)
     {
         ASSERT_EQ(row1.getId(), row2.getId());
         ASSERT_EQ(row1.getName(), row2.getName());
@@ -72,8 +71,8 @@ protected:
         ASSERT_EQ(row1.getBlobExplicit(), row2.getBlobExplicit());
     }
 
-    static void checkSameAsFieldTableRows(const std::vector<SameAsFieldTableRow>& rows1,
-            const std::vector<SameAsFieldTableRow>& rows2)
+    static void checkSameAsFieldTableRows(const std::vector<SameAsFieldTable::Row>& rows1,
+            const std::vector<SameAsFieldTable::Row>& rows2)
     {
         ASSERT_EQ(rows1.size(), rows2.size());
         for (size_t i = 0; i < rows1.size(); ++i)
@@ -83,7 +82,7 @@ protected:
     class SameAsFieldTableParameterProvider : public SameAsFieldTable::IParameterProvider
     {
     public:
-        virtual uint32_t getCount(sqlite3_stmt&)
+        virtual uint32_t getCount(SameAsFieldTable::Row&)
         {
             return SAME_AS_FIELD_TABLE_COUNT_EXPLICIT;
         }
@@ -108,13 +107,16 @@ TEST_F(ExplicitSameAsFieldTest, readWithoutCondition)
 {
     SameAsFieldTable& sameAsFieldTable = m_database->getSameAsFieldTable();
 
-    std::vector<SameAsFieldTableRow> writtenRows;
-    fillSameAsFieldTableRows(writtenRows);
-    sameAsFieldTable.write(writtenRows);
-
     SameAsFieldTableParameterProvider parameterProvider;
-    std::vector<SameAsFieldTableRow> readRows;
-    sameAsFieldTable.read(parameterProvider, readRows);
+    std::vector<SameAsFieldTable::Row> writtenRows;
+    fillSameAsFieldTableRows(writtenRows);
+    sameAsFieldTable.write(parameterProvider, writtenRows);
+
+    SameAsFieldTable::Reader reader = sameAsFieldTable.createReader(parameterProvider);
+
+    std::vector<SameAsFieldTable::Row> readRows;
+    while (reader.hasNext())
+        readRows.push_back(reader.next());
     checkSameAsFieldTableRows(writtenRows, readRows);
 }
 
@@ -122,40 +124,42 @@ TEST_F(ExplicitSameAsFieldTest, readWithCondition)
 {
     SameAsFieldTable& sameAsFieldTable = m_database->getSameAsFieldTable();
 
-    std::vector<SameAsFieldTableRow> writtenRows;
-    fillSameAsFieldTableRows(writtenRows);
-    sameAsFieldTable.write(writtenRows);
-
     SameAsFieldTableParameterProvider parameterProvider;
+    std::vector<SameAsFieldTable::Row> writtenRows;
+    fillSameAsFieldTableRows(writtenRows);
+    sameAsFieldTable.write(parameterProvider, writtenRows);
+
     const std::string condition = "name='Name1'";
-    std::vector<SameAsFieldTableRow> readRows;
-    sameAsFieldTable.read(parameterProvider, condition, readRows);
-    ASSERT_EQ(1, readRows.size());
+    SameAsFieldTable::Reader reader = sameAsFieldTable.createReader(parameterProvider, condition);
+
+    ASSERT_TRUE(reader.hasNext());
+    SameAsFieldTable::Row readRow = reader.next();
+    ASSERT_FALSE(reader.hasNext());
 
     const size_t expectedRowNum = 1;
-    checkSameAsFieldTableRow(writtenRows[expectedRowNum], readRows[0]);
+    checkSameAsFieldTableRow(writtenRows[expectedRowNum], readRow);
 }
 
 TEST_F(ExplicitSameAsFieldTest, update)
 {
     SameAsFieldTable& sameAsFieldTable = m_database->getSameAsFieldTable();
 
-    std::vector<SameAsFieldTableRow> writtenRows;
+    SameAsFieldTableParameterProvider parameterProvider;
+    std::vector<SameAsFieldTable::Row> writtenRows;
     fillSameAsFieldTableRows(writtenRows);
-    sameAsFieldTable.write(writtenRows);
+    sameAsFieldTable.write(parameterProvider, writtenRows);
 
     const uint64_t updateRowId = 3;
-    SameAsFieldTableRow updateRow;
+    SameAsFieldTable::Row updateRow;
     fillSameAsFieldTableRow(updateRow, updateRowId, "UpdatedName");
     const std::string updateCondition = "id=" + zserio::convertToString(updateRowId);
-    sameAsFieldTable.update(updateRow, updateCondition);
+    sameAsFieldTable.update(parameterProvider, updateRow, updateCondition);
 
-    SameAsFieldTableParameterProvider parameterProvider;
-    std::vector<SameAsFieldTableRow> readRows;
-    sameAsFieldTable.read(parameterProvider, updateCondition, readRows);
-    ASSERT_EQ(1, readRows.size());
-
-    checkSameAsFieldTableRow(updateRow, readRows[0]);
+    SameAsFieldTable::Reader reader = sameAsFieldTable.createReader(parameterProvider, updateCondition);
+    ASSERT_TRUE(reader.hasNext());
+    SameAsFieldTable::Row readRow = reader.next();
+    ASSERT_FALSE(reader.hasNext());
+    checkSameAsFieldTableRow(updateRow, readRow);
 }
 
 } // namespace explicit_same_as_field

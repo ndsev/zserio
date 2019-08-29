@@ -66,9 +66,9 @@ public class SqlDatabaseEmitterTemplateData extends UserTypeTemplateData
             return isWithoutRowIdTable;
         }
 
-        private final String  name;
-        private final String  cppTypeName;
-        private final String  getterName;
+        private final String name;
+        private final String cppTypeName;
+        private final String getterName;
         private final boolean isWithoutRowIdTable;
     }
 

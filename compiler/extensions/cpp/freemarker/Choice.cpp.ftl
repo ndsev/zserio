@@ -11,74 +11,34 @@
 #include <zserio/BitPositionUtil.h>
 #include <zserio/BitSizeOfCalculator.h>
 #include <zserio/BitFieldUtil.h>
-<#list fieldList as field>
-    <#if field.constraint??>
+<#if has_field_with_constraint(fieldList)>
 #include <zserio/ConstraintException.h>
-        <#break>
-    </#if>
-</#list>
-<#if withInspectorCode>
-#include <zserio/inspector/BlobInspectorTreeUtil.h>
 </#if>
-<@system_includes cppSystemIncludes, true/>
+<@system_includes cppSystemIncludes/>
 
-#include "<@include_path package.path, "${name}.h"/>"
-<#if withInspectorCode>
-#include "<@include_path rootPackage.path, "InspectorZserioTypeNames.h"/>"
-#include "<@include_path rootPackage.path, "InspectorZserioNames.h"/>"
-</#if>
+<@user_include package.path, "${name}.h"/>
 <@user_includes cppUserIncludes, false/>
-
 <@namespace_begin package.path/>
 
-<#assign hasAnonymousNamespace=false/>
-<#list fieldList as field>
-    <#if field.array?? && field.array.requiresElementFactory>
-        <#if !hasAnonymousNamespace>
-            <#assign hasAnonymousNamespace=true/>
-<@anonymous_namespace_begin/>
-
-        </#if>
-<@define_element_factory name, field/>
-
-        <#if field.array.elementCompound??>
-            <#if needs_compound_field_initialization(field.array.elementCompound)>
-<@define_element_initializer name, field/>
-
-            <#elseif field.array.elementCompound.needsChildrenInitialization>
-<@define_element_children_initializer name, field/>
-
-            </#if>
-        </#if>
-    </#if>
-</#list>
-<#if hasAnonymousNamespace>
-<@anonymous_namespace_end/>
-
-</#if>
+<@inner_classes_definition fieldList/>
 <#if withWriterCode>
-${name}::${name}()<#rt>
-    <#assign constructorMembersInitialization><@compound_constructor_members_initialization compoundConstructorsData/></#assign>
-    <#if constructorMembersInitialization?has_content>
-        <#lt> :
-        ${constructorMembersInitialization}
-    <#else>
-
-    </#if>
-{
-}
+    <@compound_constructor_definition compoundConstructorsData/>
 
 </#if>
-<@compound_read_constructor_definition compoundConstructorsData/>
+<#macro read_constructor_field_initialization>
+        m_objectChoice(readObject(in))
+</#macro>
+<#assign readConstructorInitMacroName><#if fieldList?has_content>read_constructor_field_initialization</#if></#assign>
+<@compound_read_constructor_definition compoundConstructorsData, readConstructorInitMacroName/>
 
-<#if withInspectorCode>
-<@compound_read_tree_constructor_definition compoundConstructorsData/>
-
-</#if>
 <#if needs_compound_initialization(compoundConstructorsData) || has_field_with_initialization(fieldList)>
 <@compound_copy_constructor_definition compoundConstructorsData/>
 
 <@compound_assignment_operator_definition compoundConstructorsData/>
+
+<@compound_move_constructor_definition compoundConstructorsData/>
+
+<@compound_move_assignment_operator_definition compoundConstructorsData/>
 
 </#if>
 <#if needs_compound_initialization(compoundConstructorsData)>
@@ -87,14 +47,14 @@ ${name}::${name}()<#rt>
 </#if>
 <#macro choice_selector_condition expressionList>
     <#if expressionList?size == 1>
-        _selector == ${expressionList?first}<#t>
+        selector == ${expressionList?first}<#t>
     <#else>
         <#list expressionList as expression>
-        (_selector == ${expression})<#if expression_has_next> || </#if><#t>
+        (selector == ${expression})<#if expression?has_next> || </#if><#t>
         </#list>
     </#if>
 </#macro>
-<#macro choice_switch memberActionMacroName>
+<#macro choice_switch memberActionMacroName needsBreak=true>
     <#local useSwitch = selectorExpressionTypeName != "bool"/>
     <#if useSwitch>
     switch (${selectorExpression})
@@ -104,24 +64,28 @@ ${name}::${name}()<#rt>
     case ${expression}:
             </#list>
         <@.vars[memberActionMacroName] caseMember/>
+            <#if needsBreak>
         break;
+            </#if>
         </#list>
         <#if !isDefaultUnreachable>
     default:
             <#if defaultMember??>
         <@.vars[memberActionMacroName] defaultMember/>
+                <#if needsBreak>
         break;
+                </#if>
             <#else>
-        throw zserio::CppRuntimeException("No match in choice ${name}!");
+        throw ::zserio::CppRuntimeException("No match in choice ${name}!");
             </#if>
         </#if>
     }
     <#else>
-    const ${selectorExpressionTypeName} _selector = ${selectorExpression};
+    const ${selectorExpressionTypeName} selector = ${selectorExpression};
 
         <#list caseMemberList as caseMember>
-            <#if caseMember_has_next || !isDefaultUnreachable>
-    <#if caseMember_index != 0>else </#if>if (<@choice_selector_condition caseMember.expressionList/>)
+            <#if caseMember?has_next || !isDefaultUnreachable>
+    <#if caseMember?index != 0>else </#if>if (<@choice_selector_condition caseMember.expressionList/>)
             <#else>
     else
             </#if>
@@ -135,7 +99,7 @@ ${name}::${name}()<#rt>
             <#if defaultMember??>
         <@.vars[memberActionMacroName] defaultMember/>
             <#else>
-        throw zserio::CppRuntimeException("No match in choice ${name}!");
+        throw ::zserio::CppRuntimeException("No match in choice ${name}!");
             </#if>
     }
         </#if>
@@ -143,7 +107,7 @@ ${name}::${name}()<#rt>
 </#macro>
 <#macro choice_initialize_children_member member>
     <#if member.compoundField??>
-        <@compound_initialize_children_field member.compoundField, name, 2/>
+        <@compound_initialize_children_field member.compoundField, 2/>
     <#else>
         // empty
     </#if>
@@ -160,10 +124,32 @@ void ${name}::initializeChildren()
 </#if>
 <@compound_parameter_accessors_definition name, compoundParametersData/>
 <#list fieldList as field>
-<@compound_field_getter_definition field name "compound_return_field"/>
-<@compound_field_const_getter_definition field name "compound_return_field"/>
-<@compound_field_setter_definition field name "compound_set_field"/>
+    <#if needs_field_getter(field)>
+${field.cppTypeName}& ${name}::${field.getterName}()
+{
+    return m_objectChoice.get<${field.cppTypeName}>();
+}
 
+    </#if>
+${field.cppArgumentTypeName} ${name}::${field.getterName}() const
+{
+    return m_objectChoice.get<${field.cppTypeName}>();
+}
+
+    <#if needs_field_setter(field)>
+void ${name}::${field.setterName}(${field.cppArgumentTypeName} <@field_argument_name field.name/>)
+{
+    m_objectChoice = <@field_argument_name field.name/>;
+}
+
+    </#if>
+    <#if needs_field_rvalue_setter(field)>
+void ${name}::${field.setterName}(${field.cppTypeName}&& <@field_argument_name field.name/>)
+{
+    m_objectChoice = ::std::move(<@field_argument_name field.name/>);
+}
+
+    </#if>
 </#list>
 <@compound_functions_definition name, compoundFunctionsData/>
 <#macro choice_bitsizeof_member member>
@@ -173,14 +159,14 @@ void ${name}::initializeChildren()
         // empty
     </#if>
 </#macro>
-size_t ${name}::bitSizeOf(size_t<#if fieldList?has_content> _bitPosition</#if>) const
+size_t ${name}::bitSizeOf(size_t<#if fieldList?has_content> bitPosition</#if>) const
 {
 <#if fieldList?has_content>
-    size_t _endBitPosition = _bitPosition;
+    size_t endBitPosition = bitPosition;
 
     <@choice_switch "choice_bitsizeof_member"/>
 
-    return _endBitPosition - _bitPosition;
+    return endBitPosition - bitPosition;
 <#else>
     return 0;
 </#if>
@@ -194,145 +180,109 @@ size_t ${name}::bitSizeOf(size_t<#if fieldList?has_content> _bitPosition</#if>) 
         // empty
     </#if>
 </#macro>
-size_t ${name}::initializeOffsets(size_t _bitPosition)
+size_t ${name}::initializeOffsets(size_t bitPosition)
 {
     <#if fieldList?has_content>
-    size_t _endBitPosition = _bitPosition;
+    size_t endBitPosition = bitPosition;
 
     <@choice_switch "choice_initialize_offsets_member"/>
 
-    return _endBitPosition;
+    return endBitPosition;
     <#else>
-    return _bitPosition;
+    return bitPosition;
     </#if>
 }
 </#if>
 
-bool ${name}::operator==(const ${name}& _other) const
+<#macro choice_compare_member member>
+    <#if member.compoundField??>
+        return (!m_objectChoice.hasValue() && !other.m_objectChoice.hasValue()) ||
+                (m_objectChoice.hasValue() && other.m_objectChoice.hasValue() &&
+                m_objectChoice.get<${member.compoundField.cppTypeName}>() == <#rt>
+                <#lt>other.m_objectChoice.get<${member.compoundField.cppTypeName}>());
+    <#else>
+        return true; // empty
+    </#if>
+</#macro>
+bool ${name}::operator==(const ${name}& other) const
 {
-    if (this != &_other)
-    {
-        return
-                <@compound_parameter_comparison compoundParametersData, true/>
-                (m_objectChoice == _other.m_objectChoice);
-    }
+    if (this == &other)
+        return true;
 
+    <@compound_parameter_comparison_with_any_holder compoundParametersData/>
+    <#if fieldList?has_content>
+    <@choice_switch "choice_compare_member", false/>
+    <#else>
     return true;
+    </#if>
 }
 
+<#macro choice_hash_code_member member>
+    <#if member.compoundField??>
+        if (m_objectChoice.hasValue())
+            result = ::zserio::calcHashCode(result, m_objectChoice.get<${member.compoundField.cppTypeName}>());
+    <#else>
+        // empty
+    </#if>
+</#macro>
 int ${name}::hashCode() const
 {
-    int _result = zserio::HASH_SEED;
+    int result = ::zserio::HASH_SEED;
 
     <@compound_parameter_hash_code compoundParametersData/>
-    _result = zserio::calcHashCode(_result, m_objectChoice);
+    <#if fieldList?has_content>
+    <@choice_switch "choice_hash_code_member"/>
+    </#if>
 
-    return _result;
+    return result;
 }
 
-<#macro choice_read_member member>
-    <#if member.compoundField??>
-        <@compound_read_field member.compoundField, name, 2/>
-        <@compound_check_constraint_field member.compoundField, name, 2/>
-    <#else>
-        // empty
-    </#if>
-</#macro>
-void ${name}::read(zserio::BitStreamReader&<#if fieldList?has_content> _in</#if>)
+void ${name}::read(::zserio::BitStreamReader&<#if fieldList?has_content> in</#if>)
 {
 <#if fieldList?has_content>
-    <@choice_switch "choice_read_member"/>
+    m_objectChoice = readObject(in);
 </#if>
 }
-<#if withInspectorCode>
-
-<#macro choice_read_tree_member member>
-    <#if member.compoundField??>
-        {
-            const size_t _treeFieldIndex = 0;
-            <@compound_read_tree_field member.compoundField, false, name, 3/>
-            <@compound_check_constraint_field member.compoundField, name, 3/>
-        }
-    <#else>
-        // empty
-    </#if>
-</#macro>
-void ${name}::read(const zserio::BlobInspectorTree&<#if fieldList?has_content> _tree</#if>)
-{
-<#if fieldList?has_content>
-    <@choice_switch "choice_read_tree_member"/>
-</#if>
-}
-</#if>
-<#assign needsRangeCheck=withRangeCheckCode && has_field_with_range_check(fieldList)/>
 <#if withWriterCode>
 
 <#macro choice_write_member member>
     <#if member.compoundField??>
-        <@compound_check_constraint_field member.compoundField, name, 2/>
         <@compound_write_field member.compoundField, name, 2/>
     <#else>
         // empty
     </#if>
 </#macro>
-<#assign hasPreWriteAction=needsRangeCheck || needsChildrenInitialization || hasFieldWithOffset/>
-void ${name}::write(zserio::BitStreamWriter&<#if fieldList?has_content> _out</#if>, <#rt>
-        zserio::PreWriteAction<#if hasPreWriteAction> _preWriteAction</#if>)<#lt>
+<#assign hasPreWriteAction=needsChildrenInitialization || hasFieldWithOffset/>
+void ${name}::write(::zserio::BitStreamWriter&<#if fieldList?has_content> out</#if>, <#rt>
+        ::zserio::PreWriteAction<#if hasPreWriteAction> preWriteAction</#if>)<#lt>
 {
     <#if fieldList?has_content>
         <#if hasPreWriteAction>
-    <@compound_pre_write_actions needsRangeCheck, needsChildrenInitialization, hasFieldWithOffset/>
+    <@compound_pre_write_actions needsChildrenInitialization, hasFieldWithOffset/>
 
         </#if>
     <@choice_switch "choice_write_member"/>
     </#if>
 }
 </#if>
-<#if withInspectorCode>
+<#if fieldList?has_content>
 
-<#macro choice_write_tree_member member>
+<#macro choice_read_member member>
     <#if member.compoundField??>
+        <#if needs_field_read_local_variable(member.compoundField)>
         {
-            <@compound_check_constraint_field member.compoundField, name, 3/>
-            <@compound_write_tree_field member.compoundField, name, rootPackage.name, 3/>
+            <@compound_read_field member.compoundField, name, 3/>
         }
-    <#else>
-        // empty
-    </#if>
-</#macro>
-void ${name}::write(zserio::BitStreamWriter&<#if fieldList?has_content> _out</#if>, <#rt>
-        zserio::BlobInspectorTree&<#if fieldList?has_content || compoundFunctionsData.list?has_content> _tree</#if>,<#lt>
-        zserio::PreWriteAction<#if hasPreWriteAction> _preWriteAction</#if>)
-{
-    <#if fieldList?has_content>
-        <#if hasPreWriteAction>
-    <@compound_pre_write_actions needsRangeCheck, needsChildrenInitialization, hasFieldWithOffset/>
-
-        </#if>
-    <@choice_switch "choice_write_tree_member"/>
-    </#if>
-    <@compound_functions_write_tree rootPackage.name, compoundFunctionsData/>
-}
-</#if>
-<#macro choice_check_ranges_member member>
-    <#if member.compoundField??>
-        <#if needs_field_range_check(member.compoundField)>
-        {
-            <@compound_check_range_field member.compoundField, name, 3/>
-        }
+        <#else>
+        <@compound_read_field member.compoundField, name, 2/>
         </#if>
     <#else>
-        // empty
+        return ::zserio::AnyHolder();
     </#if>
 </#macro>
-<#if needsRangeCheck>
-
-void ${name}::checkRanges()
+::zserio::AnyHolder ${name}::readObject(::zserio::BitStreamReader& in)
 {
-    <#if fieldList?has_content>
-    <@choice_switch "choice_check_ranges_member"/>
-    </#if>
+    <@choice_switch "choice_read_member", false/>
 }
 </#if>
-
 <@namespace_end package.path/>

@@ -2,37 +2,120 @@
 #define ZSERIO_SQL_CONNECTION_H_INC
 
 #include "sqlite3.h"
-#include "SqliteException.h"
+#include "zserio/SqliteException.h"
 
 namespace zserio
 {
 
+/**
+ * Helper class to keep sqlite3 connection and ensure its safe destruction.
+ *
+ * The class also provides simple interface to execute SQLite queries.
+ */
 class SqliteConnection
 {
 public:
+    /**
+     * Connection type.
+     */
     enum ConnectionType
     {
-        INTERNAL_CONNECTION,
-        EXTERNAL_CONNECTION
+        INTERNAL_CONNECTION, /**< Internal connection which must be released in destructor. */
+        EXTERNAL_CONNECTION /**< External connection managed from outside. */
     };
 
+    /**
+     * Constructor.
+     *
+     * \param connection Pointer to the SQLite connection.
+     * \param connectionType Type of the connection. Default is INTERNAL_CONNECTION.
+     */
     explicit SqliteConnection(sqlite3* connection = NULL, ConnectionType connectionType = INTERNAL_CONNECTION);
+
+    /**
+     * Destructor.
+     */
     ~SqliteConnection();
+
+    /**
+     * Copying and moving is disallowed!
+     * \{
+     */
+    SqliteConnection(const SqliteConnection&) = delete;
+    SqliteConnection& operator=(const SqliteConnection&) = delete;
+
+    SqliteConnection(SqliteConnection&&) = delete;
+    SqliteConnection& operator=(SqliteConnection&&) = delete;
+    /** \} */
+
+    /**
+     * Resets the connection.
+     *
+     * \param connection New connection to set. Default is NULL - i.e. unset.
+     * \param connectionType Type of the new connection.
+     */
     void reset(sqlite3* connection = NULL, ConnectionType connectionType = INTERNAL_CONNECTION);
 
+    /**
+     * Gets the current connection type.
+     *
+     * When connection is NULL, the connection type is insignificant.
+     *
+     * \return Connection type.
+     */
     ConnectionType getConnectionType() const;
+
+    /**
+     * Gets the current connection.
+     *
+     * \return SQLite connection.
+     */
     sqlite3* getConnection();
+
+    /**
+     * Executes a query which doesn't need to return anything - e.g. DML.
+     *
+     * \param query The query string.
+     */
     void executeUpdate(const std::string& query);
+
+    /**
+     * Prepares the SQLite statement for the given query.
+     *
+     * Note that the user is responsible to proper statement finalization using sqlite3_finalize!
+     *
+     * \param query The query string.
+     *
+     * \return Prepared SQLite statement.
+     */
     sqlite3_stmt* prepareStatement(const std::string& query);
 
+    /**
+     * Starts a new transaction if a transaction is not already started.
+     *
+     * \return True when the new transaction was started. False when a transaction is already started.
+     */
     bool startTransaction();
+
+    /**
+     * Terminates the current transaction.
+     *
+     * The parameter wasTransactionStarted is used for convenience since it's then easier to write code
+     * which uses transactions.
+     *
+     * \code{.cpp}
+     * bool wasTransactionStarted = connection.startTransaction(); // transaction may be already started
+     * // execute queries
+     * // ...
+     * // terminates the transaction only if it was started by the corresponding startTransaction call.
+     * connection.endTransaction(wasTransactionStarted);
+     * \endcode
+     *
+     * \param wasTransactionStarted When false, the call does actually nothing.
+     */
     void endTransaction(bool wasTransactionStarted);
 
 private:
-    // disable copy constructor and assignment operator
-    SqliteConnection(const SqliteConnection&);
-    SqliteConnection& operator=(const SqliteConnection&);
-
     sqlite3* m_connection;
     ConnectionType m_connectionType;
 };

@@ -2,6 +2,7 @@
 
 #include "zserio/BitStreamWriter.h"
 #include "zserio/BitStreamReader.h"
+#include "zserio/CppRuntimeException.h"
 
 #include "parameterized_types/simple_param/Item.h"
 
@@ -56,6 +57,23 @@ TEST_F(ParameterizedTypesSimpleParamTest, emptyConstructor)
     ASSERT_FALSE(item.hasExtraParam());
 }
 
+TEST_F(ParameterizedTypesSimpleParamTest, fieldConstructor)
+{
+    {
+        Item item(ITEM_PARAM, zserio::NullOpt);
+        ASSERT_FALSE(item.isInitialized());
+        item.initialize(LOWER_VERSION);
+        ASSERT_FALSE(item.hasExtraParam());
+    }
+    {
+        Item item(ITEM_PARAM, ITEM_EXTRA_PARAM);
+        ASSERT_FALSE(item.isInitialized());
+        item.initialize(HIGHER_VERSION);
+        ASSERT_TRUE(item.hasExtraParam());
+        ASSERT_EQ(ITEM_EXTRA_PARAM, *item.getExtraParam());
+    }
+}
+
 TEST_F(ParameterizedTypesSimpleParamTest, bitStreamReaderConstructor)
 {
     const uint32_t version = HIGHER_VERSION;
@@ -71,7 +89,7 @@ TEST_F(ParameterizedTypesSimpleParamTest, bitStreamReaderConstructor)
     ASSERT_EQ(version, item.getVersion());
     ASSERT_EQ(itemParam, item.getParam());
     ASSERT_TRUE(item.hasExtraParam());
-    ASSERT_EQ(itemExtraParam, item.getExtraParam());
+    ASSERT_EQ(itemExtraParam, *item.getExtraParam());
 }
 
 TEST_F(ParameterizedTypesSimpleParamTest, copyConstructor)
@@ -100,6 +118,28 @@ TEST_F(ParameterizedTypesSimpleParamTest, operatorAssignment)
     item.initialize(HIGHER_VERSION);
     const Item itemCopy2 = item;
     ASSERT_EQ(item.getVersion(), itemCopy2.getVersion());
+}
+
+TEST_F(ParameterizedTypesSimpleParamTest, moveConstructor)
+{
+    Item item(ITEM_PARAM, zserio::NullOpt);
+    item.initialize(LOWER_VERSION);
+
+    Item movedItem(std::move(item));
+    ASSERT_EQ(ITEM_PARAM, movedItem.getParam());
+    ASSERT_FALSE(movedItem.hasExtraParam());
+}
+
+TEST_F(ParameterizedTypesSimpleParamTest, moveAssignmentOperator)
+{
+    Item item(ITEM_PARAM, ITEM_EXTRA_PARAM);
+    item.initialize(HIGHER_VERSION);
+
+    Item movedItem;
+    movedItem = std::move(item);
+    ASSERT_EQ(ITEM_PARAM, movedItem.getParam());
+    ASSERT_TRUE(movedItem.hasExtraParam());
+    ASSERT_EQ(ITEM_EXTRA_PARAM, *movedItem.getExtraParam());
 }
 
 TEST_F(ParameterizedTypesSimpleParamTest, bitSizeOf)
@@ -137,13 +177,13 @@ TEST_F(ParameterizedTypesSimpleParamTest, initializeOffsets)
 
 TEST_F(ParameterizedTypesSimpleParamTest, operatorEquality)
 {
-    Item item1;
+    Item item1(ITEM_PARAM, ITEM_EXTRA_PARAM);
     item1.initialize(LOWER_VERSION);
-    Item item2;
+    Item item2(ITEM_PARAM, ITEM_EXTRA_PARAM);
     item2.initialize(LOWER_VERSION);
     ASSERT_TRUE(item1 == item2);
 
-    Item item3;
+    Item item3(ITEM_PARAM, ITEM_EXTRA_PARAM);
     item3.initialize(HIGHER_VERSION);
 
     ASSERT_FALSE(item2 == item3);
@@ -151,13 +191,13 @@ TEST_F(ParameterizedTypesSimpleParamTest, operatorEquality)
 
 TEST_F(ParameterizedTypesSimpleParamTest, hashCode)
 {
-    Item item1;
+    Item item1(ITEM_PARAM, ITEM_EXTRA_PARAM);
     item1.initialize(LOWER_VERSION);
-    Item item2;
+    Item item2(ITEM_PARAM, ITEM_EXTRA_PARAM);
     item2.initialize(LOWER_VERSION);
     ASSERT_EQ(item1.hashCode(), item2.hashCode());
 
-    Item item3;
+    Item item3(ITEM_PARAM, ITEM_EXTRA_PARAM);
     item3.initialize(HIGHER_VERSION);
     ASSERT_TRUE(item2.hashCode() != item3.hashCode());
 }
@@ -183,5 +223,5 @@ TEST_F(ParameterizedTypesSimpleParamTest, write)
     ASSERT_EQ(item, readItem);
 }
 
-} // namespace compound_param
+} // namespace simple_param
 } // namespace parameterized_types

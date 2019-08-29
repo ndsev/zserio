@@ -38,8 +38,8 @@ TEST(ParamStructureSubtypeTest, TestSubtype)
     ParameterizedSubtypeStruct s;
     ParameterizedSubtype& parameterizedSubtype = s.getParameterizedSubtype();
     ParameterizedStruct& parameterizedStruct = s.getParameterizedSubtype();
-    zserio::ObjectArray<ParameterizedSubtype>& parameterizedSubtypeArray = s.getParameterizedSubtypeArray();
-    zserio::ObjectArray<ParameterizedStruct>& parameterizedStructArray = s.getParameterizedSubtypeArray();
+    std::vector<ParameterizedSubtype>& parameterizedSubtypeArray = s.getParameterizedSubtypeArray();
+    std::vector<ParameterizedStruct>& parameterizedStructArray = s.getParameterizedSubtypeArray();
     ASSERT_EQ(&parameterizedSubtype, &parameterizedStruct);
     ASSERT_EQ(&parameterizedSubtypeArray, &parameterizedStructArray);
 
@@ -47,31 +47,35 @@ TEST(ParamStructureSubtypeTest, TestSubtype)
     // ParameterizedSubtypeStruct's accessors
     ASSERT_TRUE(isCodeInFilePresent(
             "language/subtypes/gen/subtypes/param_structure_subtype/ParameterizedSubtypeStruct.h",
-            "#include \"subtypes/param_structure_subtype/ParameterizedSubtype.h\""));
+            "#include <subtypes/param_structure_subtype/ParameterizedSubtype.h>"));
 
     ASSERT_TRUE(isCodeInFilePresent(
             "language/subtypes/gen/subtypes/param_structure_subtype/ParameterizedSubtypeStruct.h",
-            "subtypes::param_structure_subtype::ParameterizedSubtype& getParameterizedSubtype()"));
+            "::subtypes::param_structure_subtype::ParameterizedSubtype& getParameterizedSubtype()"));
     ASSERT_TRUE(isCodeInFilePresent(
             "language/subtypes/gen/subtypes/param_structure_subtype/ParameterizedSubtypeStruct.h",
-            "const subtypes::param_structure_subtype::ParameterizedSubtype& getParameterizedSubtype() const"));
+            "const ::subtypes::param_structure_subtype::ParameterizedSubtype& getParameterizedSubtype() const"));
     ASSERT_TRUE(isCodeInFilePresent(
             "language/subtypes/gen/subtypes/param_structure_subtype/ParameterizedSubtypeStruct.h",
             "void setParameterizedSubtype"
-                "(const subtypes::param_structure_subtype::ParameterizedSubtype& parameterizedSubtype)"));
+                "(const ::subtypes::param_structure_subtype::ParameterizedSubtype& parameterizedSubtype_)"));
 
     ASSERT_TRUE(isCodeInFilePresent(
             "language/subtypes/gen/subtypes/param_structure_subtype/ParameterizedSubtypeStruct.h",
-            "zserio::ObjectArray<subtypes::param_structure_subtype::ParameterizedSubtype>& "
+            "::std::vector<::subtypes::param_structure_subtype::ParameterizedSubtype>& "
                 "getParameterizedSubtypeArray()"));
     ASSERT_TRUE(isCodeInFilePresent(
             "language/subtypes/gen/subtypes/param_structure_subtype/ParameterizedSubtypeStruct.h",
-            "const zserio::ObjectArray<subtypes::param_structure_subtype::ParameterizedSubtype>& "
+            "const ::std::vector<::subtypes::param_structure_subtype::ParameterizedSubtype>& "
                 "getParameterizedSubtypeArray() const"));
     ASSERT_TRUE(isCodeInFilePresent(
             "language/subtypes/gen/subtypes/param_structure_subtype/ParameterizedSubtypeStruct.h",
-            "void setParameterizedSubtypeArray(const zserio::ObjectArray<subtypes::param_structure_subtype::"
-                "ParameterizedSubtype>& parameterizedSubtypeArray)"));
+            "void setParameterizedSubtypeArray(const ::std::vector<::subtypes::param_structure_subtype::"
+                "ParameterizedSubtype>& parameterizedSubtypeArray_)"));
+    ASSERT_TRUE(isCodeInFilePresent(
+            "language/subtypes/gen/subtypes/param_structure_subtype/ParameterizedSubtypeStruct.h",
+            "void setParameterizedSubtypeArray(::std::vector<::subtypes::param_structure_subtype::"
+                "ParameterizedSubtype>&& parameterizedSubtypeArray_)"));
 }
 
 } // namespace param_structure_subtype

@@ -1,160 +1,81 @@
 <#include "FileHeader.inc.ftl">
-<#include "InstantiateTemplate.inc.ftl">
-<#if withInspectorCode>
-    <#include "Inspector.inc.ftl">
-</#if>
 <@file_header generatorDescription/>
 
-#include <zserio/BitSizeOfCalculator.h>
-#include <zserio/CppRuntimeException.h>
 #include <zserio/StringConvertUtil.h>
-<#if withInspectorCode>
-#include <zserio/inspector/BlobInspectorTreeUtil.h>
-</#if>
-<@system_includes cppSystemIncludes, false/>
+#include <zserio/CppRuntimeException.h>
+<@system_includes cppSystemIncludes/>
 
-#include "<@include_path package.path, "${name}.h"/>"
-<#if withInspectorCode>
-#include "<@include_path rootPackage.path, "InspectorZserioTypeNames.h"/>"
-#include "<@include_path rootPackage.path, "InspectorZserioNames.h"/>"
-</#if>
+<@user_include package.path, "${name}.h"/>
 <@user_includes cppUserIncludes, false/>
+<@namespace_begin ["zserio"]/>
 
-<@namespace_begin package.path/>
+// This is full specialization of enumeration traits and methods for ${name} enumeration.
+constexpr ::std::array<const char*, ${items?size}> EnumTraits<${fullName}>::names;
+constexpr ::std::array<${fullName}, ${items?size}> EnumTraits<${fullName}>::values;
 
-${name}::${name}() : m_value(${items?first.name})
+template <>
+size_t enumToOrdinal(${fullName} value)
 {
-}
-
-${name}::${name}(e_${name} value) : m_value(value)
-{
-}
-
-${name}::${name}(zserio::BitStreamReader& _in)
-{
-    read(_in);
-}
-
-<#if withInspectorCode>
-
-${name}::${name}(const zserio::BlobInspectorTree& _tree)
-{
-    read(_tree);
-}
-</#if>
-${name}::operator e_${name}() const
-{
-    return m_value;
-}
-
-${baseCppTypeName} ${name}::getValue() const
-{
-    return m_value;
-}
-
-size_t ${name}::bitSizeOf(size_t) const
-{
-<#if bitSize??>
-    return ${bitSize};
-<#else>
-    return zserio::getBitSizeOf${runtimeFunction.suffix}(m_value);
-</#if>
-}
-<#if withWriterCode>
-
-size_t ${name}::initializeOffsets(size_t _bitPosition) const
-{
-    return _bitPosition + bitSizeOf(_bitPosition);
-}
-</#if>
-
-bool ${name}::operator==(const ${name}& other) const
-{
-    return m_value == other.m_value;
-}
-
-bool ${name}::operator==(e_${name} other) const
-{
-    return m_value == other;
-}
-
-int ${name}::hashCode() const
-{
-    return zserio::calcHashCode(zserio::HASH_SEED, static_cast<${baseCppTypeName}>(m_value));
-}
-
-void ${name}::read(zserio::BitStreamReader& _in)
-{
-    m_value = toEnum(_in.read${runtimeFunction.suffix}(${runtimeFunction.arg!}));
-}
-<#if withInspectorCode>
-
-void ${name}::read(const zserio::BlobInspectorTree& _tree)
-{
-    const zserio::BlobInspectorNode _node = zserio::getBlobInspectorNode(_tree, 0,
-            zserio::BlobInspectorNode::NT_VALUE);
-    ${baseCppTypeName} _enumValue;
-    std::string _enumSymbol;
-    _node.getValue().get(_enumValue, _enumSymbol);
-    const ${name} _readEnum(toEnum(_enumValue));
-    if (_enumSymbol != _readEnum.toString())
-    {
-        throw zserio::CppRuntimeException("Read: Wrong enumeration symbol for enumeration ${name}: " +
-                _enumSymbol + " != " + _readEnum.toString() + "!");
-    }
-
-    m_value = _readEnum;
-}
-</#if>
-<#if withWriterCode>
-
-void ${name}::write(zserio::BitStreamWriter& _out, zserio::PreWriteAction) const
-{
-    _out.write${runtimeFunction.suffix}(<#rt>
-            <#lt><@instantiate_template "static_cast", baseCppTypeName/>(m_value)<#rt>
-            <#lt><#if runtimeFunction.arg??>, ${runtimeFunction.arg}</#if>);
-}
-    <#if withInspectorCode>
-
-void ${name}::write(zserio::BitStreamWriter& _out, zserio::BlobInspectorTree& _tree,
-        zserio::PreWriteAction _preWriteAction) const
-{
-    zserio::BlobInspectorNode& _node = _tree.createChild(zserio::BlobInspectorNode::NT_VALUE,
-            ${rootPackage.name}::InspectorZserioTypeNames::<@inspector_zserio_type_name zserioTypeName/>,
-            ${rootPackage.name}::InspectorZserioNames::<@inspector_zserio_name name/>);
-    const size_t _startBitPosition = _out.getBitPosition();
-    _node.getValue().set(getValue(), toString());
-    write(_out, _preWriteAction);
-    _node.setZserioDescriptor(_startBitPosition, _out.getBitPosition());
-}
-    </#if>
-</#if>
-
-const char* ${name}::toString() const
-{
-    switch (m_value)
+    switch (value)
     {
 <#list items as item>
-    case ${item.name}:
-        return "${item.name}";
+    case ${item.fullName}:
+        return ${item?index};
 </#list>
     default:
-        return "UNKNOWN";
+        throw ::zserio::CppRuntimeException("Unknown value for enumeration ${name}: " +
+                ::zserio::convertToString(static_cast<${baseCppTypeName}>(value)) + "!");
     }
 }
 
-${name} ${name}::toEnum(${baseCppTypeName} rawValue)
+template <>
+${fullName} valueToEnum(
+        typename ::std::underlying_type<${fullName}>::type rawValue)
 {
     switch (rawValue)
     {
 <#list items as item>
     case ${item.value}:
-        return ${item.name};
 </#list>
+        return ${fullName}(rawValue);
     default:
-        throw zserio::CppRuntimeException("Unknown value for enumeration ${name}: " +
-                zserio::convertToString(rawValue) + "!");
+        throw ::zserio::CppRuntimeException("Unknown value for enumeration ${name}: " +
+                ::zserio::convertToString(rawValue) + "!");
     }
 }
 
-<@namespace_end package.path/>
+template <>
+size_t bitSizeOf(${fullName}<#if !runtimeFunction.arg??> value</#if>)
+{
+<#if runtimeFunction.arg??>
+    return ${runtimeFunction.arg};
+<#else>
+    return ::zserio::bitSizeOf${runtimeFunction.suffix}(::zserio::enumToValue(value));
+</#if>
+}
+<#if withWriterCode>
+
+template <>
+size_t initializeOffsets(size_t bitPosition, ${fullName} value)
+{
+    return bitPosition + bitSizeOf(value);
+}
+</#if>
+
+template <>
+${fullName} read(::zserio::BitStreamReader& in)
+{
+    return valueToEnum<${fullName}>(
+            static_cast<typename ::std::underlying_type<${fullName}>::type>(
+                    in.read${runtimeFunction.suffix}(${runtimeFunction.arg!})));
+}
+<#if withWriterCode>
+
+template <>
+void write<${fullName}>(BitStreamWriter& out, ${fullName} value)
+{
+    out.write${runtimeFunction.suffix}(enumToValue(value)<#rt>
+            <#lt><#if runtimeFunction.arg??>, ${runtimeFunction.arg}</#if>);
+}
+</#if>
+<@namespace_end ["zserio"]/>

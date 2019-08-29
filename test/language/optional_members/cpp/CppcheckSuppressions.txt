@@ -1,0 +1,10 @@
+// suppress "Member variable 'X' is not initialized in the constructor."
+uninitMemberVar:*/BlackColor.cpp
+uninitMemberVar:*/BlackColor.h
+uninitMemberVar:*/Block.cpp
+uninitMemberVar:*/Block.h
+uninitMemberVar:*/Container.cpp
+uninitMemberVar:*/Container.h
+uninitMemberVar:*/Data8.cpp
+uninitMemberVar:*/Employee.cpp
+uninitMemberVar:*/TestStruct.cpp

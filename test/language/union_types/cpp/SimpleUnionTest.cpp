@@ -54,19 +54,19 @@ const uint16_t SimpleUnionTest::CASE2_FIELD = 65535;
 const std::string SimpleUnionTest::CASE3_FIELD = "SimpleUnion";
 const int8_t SimpleUnionTest::CASE4_FIELD = 42;
 const size_t SimpleUnionTest::UNION_CASE1_BIT_SIZE =
-        zserio::getBitSizeOfVarUInt64(SimpleUnion::CHOICE_case1Field) + 8;
+        zserio::bitSizeOfVarUInt64(SimpleUnion::CHOICE_case1Field) + 8;
 const size_t SimpleUnionTest::UNION_CASE2_BIT_SIZE =
-        zserio::getBitSizeOfVarUInt64(SimpleUnion::CHOICE_case2Field) + 16;
+        zserio::bitSizeOfVarUInt64(SimpleUnion::CHOICE_case2Field) + 16;
 const size_t SimpleUnionTest::UNION_CASE3_BIT_SIZE =
-        zserio::getBitSizeOfVarUInt64(SimpleUnion::CHOICE_case3Field) +
-        zserio::getBitSizeOfString(SimpleUnionTest::CASE3_FIELD);
+        zserio::bitSizeOfVarUInt64(SimpleUnion::CHOICE_case3Field) +
+        zserio::bitSizeOfString(SimpleUnionTest::CASE3_FIELD);
 const size_t SimpleUnionTest::UNION_CASE4_BIT_SIZE =
-        zserio::getBitSizeOfVarUInt64(SimpleUnion::CHOICE_case4Field) + 8;
+        zserio::bitSizeOfVarUInt64(SimpleUnion::CHOICE_case4Field) + 8;
 
 TEST_F(SimpleUnionTest, emptyConstructor)
 {
     SimpleUnion simpleUnion;
-    ASSERT_EQ(SimpleUnion::CHOICE_UNDEFINED, simpleUnion.choiceTag());
+    ASSERT_EQ(SimpleUnion::UNDEFINED_CHOICE, simpleUnion.choiceTag());
     ASSERT_THROW(simpleUnion.bitSizeOf(), zserio::CppRuntimeException);
 }
 
@@ -110,10 +110,84 @@ TEST_F(SimpleUnionTest, bitStreamReaderConstructor)
     }
 }
 
+TEST_F(SimpleUnionTest, fieldConstructor)
+{
+    {
+        SimpleUnion simpleUnion(CASE1_FIELD);
+        ASSERT_EQ(CASE1_FIELD, simpleUnion.getCase1Field());
+    }
+    {
+        SimpleUnion simpleUnion(CASE1_FIELD, SimpleUnion::CHOICE_case1Field);
+        ASSERT_EQ(CASE1_FIELD, simpleUnion.getCase1Field());
+    }
+    {
+        SimpleUnion simpleUnion(CASE2_FIELD);
+        ASSERT_EQ(CASE2_FIELD, simpleUnion.getCase2Field());
+    }
+    {
+        SimpleUnion simpleUnion(CASE3_FIELD);
+        ASSERT_EQ(CASE3_FIELD, simpleUnion.getCase3Field());
+    }
+    {
+        std::string movedString(1000, 'a'); // long enough to prevent small string optimization
+        const void* ptr = movedString.data();
+        SimpleUnion simpleUnion(std::move(movedString));
+        const void* movedPtr = simpleUnion.getCase3Field().data();
+        ASSERT_EQ(ptr, movedPtr);
+    }
+    {
+        SimpleUnion simpleUnion(CASE4_FIELD, SimpleUnion::CHOICE_case4Field);
+        ASSERT_EQ(CASE4_FIELD, simpleUnion.getCase4Field());
+    }
+    {
+        ASSERT_THROW(SimpleUnion(CASE1_FIELD, SimpleUnion::CHOICE_case2Field), zserio::CppRuntimeException);
+        ASSERT_THROW(SimpleUnion(CASE1_FIELD, SimpleUnion::CHOICE_case3Field), zserio::CppRuntimeException);
+    }
+}
+
+TEST_F(SimpleUnionTest, copyConstructor)
+{
+    SimpleUnion simpleUnion(CASE1_FIELD);
+    ASSERT_EQ(CASE1_FIELD, simpleUnion.getCase1Field());
+
+    SimpleUnion simpleUnionCopy(simpleUnion);
+    ASSERT_EQ(CASE1_FIELD, simpleUnionCopy.getCase1Field());
+}
+
+
+TEST_F(SimpleUnionTest, assignmentOperator)
+{
+    SimpleUnion simpleUnion(CASE2_FIELD);
+    ASSERT_EQ(CASE2_FIELD, simpleUnion.getCase2Field());
+
+    SimpleUnion simpleUnionCopy;
+    simpleUnionCopy = simpleUnion;
+    ASSERT_EQ(CASE2_FIELD, simpleUnionCopy.getCase2Field());
+}
+
+TEST_F(SimpleUnionTest, moveConstructor)
+{
+    SimpleUnion simpleUnion(CASE3_FIELD);
+    ASSERT_EQ(CASE3_FIELD, simpleUnion.getCase3Field());
+
+    SimpleUnion simpleUnionMoved(std::move(simpleUnion));
+    ASSERT_EQ(CASE3_FIELD, simpleUnionMoved.getCase3Field());
+}
+
+TEST_F(SimpleUnionTest, moveAssignmentOperator)
+{
+    SimpleUnion simpleUnion(CASE4_FIELD, SimpleUnion::CHOICE_case4Field);
+    ASSERT_EQ(CASE4_FIELD, simpleUnion.getCase4Field());
+
+    SimpleUnion simpleUnionMoved;
+    simpleUnionMoved = std::move(simpleUnion);
+    ASSERT_EQ(CASE4_FIELD, simpleUnionMoved.getCase4Field());
+}
+
 TEST_F(SimpleUnionTest, choiceTag)
 {
     SimpleUnion simpleUnion;
-    ASSERT_EQ(SimpleUnion::CHOICE_UNDEFINED, simpleUnion.choiceTag());
+    ASSERT_EQ(SimpleUnion::UNDEFINED_CHOICE, simpleUnion.choiceTag());
     simpleUnion.setCase1Field(CASE1_FIELD);
     ASSERT_EQ(SimpleUnion::CHOICE_case1Field, simpleUnion.choiceTag());
     simpleUnion.setCase2Field(CASE2_FIELD);
@@ -142,6 +216,15 @@ TEST_F(SimpleUnionTest, getCase3Field)
 {
     SimpleUnion simpleUnion;
     simpleUnion.setCase3Field(CASE3_FIELD);
+    ASSERT_EQ(CASE3_FIELD, simpleUnion.getCase3Field());
+
+    std::string movedString(1000, 'a'); // long enough to prevent small string optimization
+    const void* ptr = movedString.data();
+    simpleUnion.setCase3Field(std::move(movedString));
+    const void* movedPtr = simpleUnion.getCase3Field().data();
+    ASSERT_EQ(ptr, movedPtr);
+    std::string& case3 = simpleUnion.getCase3Field();
+    case3 = CASE3_FIELD;
     ASSERT_EQ(CASE3_FIELD, simpleUnion.getCase3Field());
 }
 

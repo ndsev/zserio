@@ -23,39 +23,23 @@ public:
             m_europeDbFileName("db_with_relocation_test_europe.sqlite"),
             m_americaDbFileName("db_with_relocation_test_america.sqlite"),
             m_relocatedSlovakiaTableName("slovakia"),
-            m_relocatedCzechiaTableName("czechia"),
-            m_europeDb(NULL), m_americaDb(NULL)
+            m_relocatedCzechiaTableName("czechia")
     {
         std::remove(m_europeDbFileName.c_str());
         std::remove(m_americaDbFileName.c_str());
 
-        try
-        {
-            m_europeDb = new EuropeDb(m_europeDbFileName);
-            m_europeDb->createSchema();
+        m_europeDb.reset(new EuropeDb(m_europeDbFileName));
+        m_europeDb->createSchema();
 
-            AmericaDb::TRelocationMap tableToDbFileNameRelocationMap;
-            tableToDbFileNameRelocationMap.insert(std::make_pair(m_relocatedSlovakiaTableName, m_europeDbFileName));
-            tableToDbFileNameRelocationMap.insert(std::make_pair(m_relocatedCzechiaTableName, m_europeDbFileName));
-            m_americaDb = new AmericaDb(m_americaDbFileName, tableToDbFileNameRelocationMap);
-            m_americaDb->createSchema();
+        AmericaDb::TRelocationMap tableToDbFileNameRelocationMap;
+        tableToDbFileNameRelocationMap.insert(std::make_pair(m_relocatedSlovakiaTableName, m_europeDbFileName));
+        tableToDbFileNameRelocationMap.insert(std::make_pair(m_relocatedCzechiaTableName, m_europeDbFileName));
+        m_americaDb.reset(new AmericaDb(m_americaDbFileName, tableToDbFileNameRelocationMap));
+        m_americaDb->createSchema();
 
-            m_attachedDatabasesNames.insert("main");
-            m_attachedDatabasesNames.insert("AmericaDb_" + m_relocatedSlovakiaTableName);
-            m_attachedDatabasesNames.insert("AmericaDb_" + m_relocatedCzechiaTableName);
-        }
-        catch (...)
-        {
-            delete m_europeDb;
-            delete m_americaDb;
-            throw;
-        }
-    }
-
-    ~DbWithRelocationTest()
-    {
-        delete m_europeDb;
-        delete m_americaDb;
+        m_attachedDatabasesNames.insert("main");
+        m_attachedDatabasesNames.insert("AmericaDb_" + m_relocatedSlovakiaTableName);
+        m_attachedDatabasesNames.insert("AmericaDb_" + m_relocatedCzechiaTableName);
     }
 
 protected:
@@ -92,8 +76,8 @@ protected:
     const std::string m_relocatedSlovakiaTableName;
     const std::string m_relocatedCzechiaTableName;
 
-    EuropeDb* m_europeDb;
-    AmericaDb* m_americaDb;
+    std::unique_ptr<EuropeDb> m_europeDb;
+    std::unique_ptr<AmericaDb> m_americaDb;
 
     std::set<std::string> m_attachedDatabasesNames;
 };
@@ -119,8 +103,8 @@ TEST_F(DbWithRelocationTest, relocatedSlovakiaTable)
 
     // write to relocated table
     int32_t updateTileId = 1;
-    std::vector<CountryMapTableRow> writtenRows(1);
-    CountryMapTableRow& row = writtenRows.back();
+    std::vector<CountryMapTable::Row> writtenRows(1);
+    CountryMapTable::Row& row = writtenRows.back();
     row.setTileId(updateTileId);
     Tile writtenTile;
     writtenTile.setVersion('a');
@@ -130,7 +114,7 @@ TEST_F(DbWithRelocationTest, relocatedSlovakiaTable)
     relocatedTable.write(writtenRows);
 
     // update it
-    CountryMapTableRow updateRow;
+    CountryMapTable::Row updateRow;
     updateRow.setTileId(updateTileId);
     Tile updatedTile;
     updatedTile.setVersion('b');
@@ -140,8 +124,10 @@ TEST_F(DbWithRelocationTest, relocatedSlovakiaTable)
     relocatedTable.update(updateRow, updateCondition);
 
     // read it back
-    std::vector<CountryMapTableRow> readRows;
-    relocatedTable.read(readRows);
+    std::vector<CountryMapTable::Row> readRows;
+    CountryMapTable::Reader reader = relocatedTable.createReader();
+    while (reader.hasNext())
+        readRows.push_back(reader.next());
 
     ASSERT_EQ(1, readRows.size());
     ASSERT_EQ(updateRow.getTileId(), readRows.front().getTileId());
@@ -155,8 +141,8 @@ TEST_F(DbWithRelocationTest, relocatedCzechiaTable)
 
     // write to relocated table
     int32_t updateTileId = 1;
-    std::vector<CountryMapTableRow> writtenRows(1);
-    CountryMapTableRow& row = writtenRows.back();
+    std::vector<CountryMapTable::Row> writtenRows(1);
+    CountryMapTable::Row& row = writtenRows.back();
     row.setTileId(updateTileId);
     Tile writtenTile;
     writtenTile.setVersion('c');
@@ -166,7 +152,7 @@ TEST_F(DbWithRelocationTest, relocatedCzechiaTable)
     relocatedTable.write(writtenRows);
 
     // update it
-    CountryMapTableRow updateRow;
+    CountryMapTable::Row updateRow;
     updateRow.setTileId(updateTileId);
     Tile updatedTile;
     updatedTile.setVersion('d');
@@ -176,8 +162,10 @@ TEST_F(DbWithRelocationTest, relocatedCzechiaTable)
     relocatedTable.update(updateRow, updateCondition);
 
     // read it back
-    std::vector<CountryMapTableRow> readRows;
-    relocatedTable.read(readRows);
+    std::vector<CountryMapTable::Row> readRows;
+    CountryMapTable::Reader reader = relocatedTable.createReader();
+    while (reader.hasNext())
+        readRows.push_back(reader.next());
 
     ASSERT_EQ(1, readRows.size());
     ASSERT_EQ(updateRow.getTileId(), readRows.front().getTileId());

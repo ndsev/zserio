@@ -22,8 +22,6 @@ public:
 
         m_database = new ExplicitParametersDb(DB_FILE_NAME);
         m_database->createSchema();
-        m_header.setCount(BLOB_PARAM_TABLE_HEADER_COUNT);
-        m_blob.setCount(BLOB_PARAM_TABLE_BLOB_COUNT);
     }
 
     ~ExplicitBlobParamTest()
@@ -32,34 +30,55 @@ public:
     }
 
 protected:
-    void fillBlobParamTableRow(BlobParamTableRow& row, uint32_t id, const std::string& name)
+    class BlobParamTableParameterProvider : public BlobParamTable::IParameterProvider
+    {
+    public:
+        BlobParamTableParameterProvider()
+        {
+            m_header.setCount(BLOB_PARAM_TABLE_HEADER_COUNT);
+            m_blob.setCount(BLOB_PARAM_TABLE_BLOB_COUNT);
+        }
+
+        virtual Header& getHeader(BlobParamTable::Row&)
+        {
+            return m_header;
+        }
+
+        virtual Header& getBlob(BlobParamTable::Row&)
+        {
+            return m_blob;
+        }
+
+    private:
+        Header m_header;
+        Header m_blob;
+    };
+
+    void fillBlobParamTableRow(BlobParamTable::Row& row, uint32_t id, const std::string& name)
     {
         row.setId(id);
         row.setName(name);
 
         TestBlob testBlob1;
-        testBlob1.initialize(m_header);
-        zserio::UInt8Array& values1 = testBlob1.getValues();
+        std::vector<uint8_t>& values1 = testBlob1.getValues();
         for (uint32_t i = 0; i < BLOB_PARAM_TABLE_HEADER_COUNT; ++i)
             values1.push_back(static_cast<uint8_t>(id));
         row.setBlob1(testBlob1);
 
         TestBlob testBlob2;
-        testBlob2.initialize(m_blob);
-        zserio::UInt8Array& values2 = testBlob2.getValues();
+        std::vector<uint8_t>& values2 = testBlob2.getValues();
         for (uint32_t i = 0; i < BLOB_PARAM_TABLE_BLOB_COUNT; ++i)
             values2.push_back(static_cast<uint8_t>(id + 1));
         row.setBlob2(testBlob2);
 
         TestBlob testBlob3;
-        testBlob3.initialize(m_header);
-        zserio::UInt8Array& values3 = testBlob3.getValues();
+        std::vector<uint8_t>& values3 = testBlob3.getValues();
         for (uint32_t i = 0; i < BLOB_PARAM_TABLE_HEADER_COUNT; ++i)
             values3.push_back(static_cast<uint8_t>(id + 2));
         row.setBlob3(testBlob3);
     }
 
-    void fillBlobParamTableRows(std::vector<BlobParamTableRow>& rows)
+    void fillBlobParamTableRows(std::vector<BlobParamTable::Row>& rows)
     {
         rows.clear();
         rows.resize(NUM_BLOB_PARAM_TABLE_ROWS);
@@ -70,7 +89,7 @@ protected:
         }
     }
 
-    static void checkBlobParamTableRow(const BlobParamTableRow& row1, const BlobParamTableRow& row2)
+    static void checkBlobParamTableRow(const BlobParamTable::Row& row1, const BlobParamTable::Row& row2)
     {
         ASSERT_EQ(row1.getId(), row2.getId());
         ASSERT_EQ(row1.getName(), row2.getName());
@@ -78,47 +97,21 @@ protected:
         ASSERT_EQ(row1.getBlob2(), row2.getBlob2());
         ASSERT_EQ(row1.getBlob3(), row2.getBlob3());
 
-        // check reused explicit header parameter
-        ASSERT_EQ(row2.getBlob1().getBlob(), row2.getBlob3().getBlob());
+        // check reused explicit parameters
+        ASSERT_EQ((*row2.getBlob1()).getBlob().getCount(), (*row2.getBlob3()).getBlob().getCount());
         // check that even address of the reused explicit header parameter is the same!
-        ASSERT_EQ(&row2.getBlob1().getBlob(), &row2.getBlob3().getBlob());
+        ASSERT_EQ((*row2.getBlob1()).getBlob(), (*row2.getBlob3()).getBlob());
     }
 
-    static void checkBlobParamTableRows(const std::vector<BlobParamTableRow>& rows1,
-            const std::vector<BlobParamTableRow>& rows2)
+    static void checkBlobParamTableRows(const std::vector<BlobParamTable::Row>& rows1,
+            const std::vector<BlobParamTable::Row>& rows2)
     {
         ASSERT_EQ(rows1.size(), rows2.size());
         for (size_t i = 0; i < rows1.size(); ++i)
             checkBlobParamTableRow(rows1[i], rows2[i]);
     }
 
-    class BlobParamTableParameterProvider : public BlobParamTable::IParameterProvider
-    {
-    public:
-        BlobParamTableParameterProvider()
-        {
-            m_header.setCount(BLOB_PARAM_TABLE_HEADER_COUNT);
-            m_blob.setCount(BLOB_PARAM_TABLE_BLOB_COUNT);
-        }
-
-        virtual Header& getHeader(sqlite3_stmt&)
-        {
-            return m_header;
-        }
-
-        virtual Header& getBlob(sqlite3_stmt&)
-        {
-            return m_blob;
-        }
-
-    private:
-        Header m_header;
-        Header m_blob;
-    };
-
     ExplicitParametersDb* m_database;
-    Header m_header;
-    Header m_blob;
 
     static const char DB_FILE_NAME[];
 
@@ -137,13 +130,16 @@ TEST_F(ExplicitBlobParamTest, readWithoutCondition)
 {
     BlobParamTable& blobParamTable = m_database->getBlobParamTable();
 
-    std::vector<BlobParamTableRow> writtenRows;
-    fillBlobParamTableRows(writtenRows);
-    blobParamTable.write(writtenRows);
-
     BlobParamTableParameterProvider parameterProvider;
-    std::vector<BlobParamTableRow> readRows;
-    blobParamTable.read(parameterProvider, readRows);
+    std::vector<BlobParamTable::Row> writtenRows;
+    fillBlobParamTableRows(writtenRows);
+    blobParamTable.write(parameterProvider, writtenRows);
+
+    BlobParamTable::Reader reader = blobParamTable.createReader(parameterProvider);
+
+    std::vector<BlobParamTable::Row> readRows;
+    while (reader.hasNext())
+        readRows.push_back(reader.next());
     checkBlobParamTableRows(writtenRows, readRows);
 }
 
@@ -151,40 +147,42 @@ TEST_F(ExplicitBlobParamTest, readWithCondition)
 {
     BlobParamTable& blobParamTable = m_database->getBlobParamTable();
 
-    std::vector<BlobParamTableRow> writtenRows;
-    fillBlobParamTableRows(writtenRows);
-    blobParamTable.write(writtenRows);
-
     BlobParamTableParameterProvider parameterProvider;
+    std::vector<BlobParamTable::Row> writtenRows;
+    fillBlobParamTableRows(writtenRows);
+    blobParamTable.write(parameterProvider, writtenRows);
+
     const std::string condition = "name='Name1'";
-    std::vector<BlobParamTableRow> readRows;
-    blobParamTable.read(parameterProvider, condition, readRows);
-    ASSERT_EQ(1, readRows.size());
+    BlobParamTable::Reader reader = blobParamTable.createReader(parameterProvider, condition);
+
+    ASSERT_TRUE(reader.hasNext());
+    BlobParamTable::Row readRow = reader.next();
+    ASSERT_FALSE(reader.hasNext());
 
     const size_t expectedRowNum = 1;
-    checkBlobParamTableRow(writtenRows[expectedRowNum], readRows[0]);
+    checkBlobParamTableRow(writtenRows[expectedRowNum], readRow);
 }
 
 TEST_F(ExplicitBlobParamTest, update)
 {
     BlobParamTable& blobParamTable = m_database->getBlobParamTable();
 
-    std::vector<BlobParamTableRow> writtenRows;
+    BlobParamTableParameterProvider parameterProvider;
+    std::vector<BlobParamTable::Row> writtenRows;
     fillBlobParamTableRows(writtenRows);
-    blobParamTable.write(writtenRows);
+    blobParamTable.write(parameterProvider, writtenRows);
 
     const uint64_t updateRowId = 3;
-    BlobParamTableRow updateRow;
+    BlobParamTable::Row updateRow;
     fillBlobParamTableRow(updateRow, updateRowId, "UpdatedName");
     const std::string updateCondition = "id=" + zserio::convertToString(updateRowId);
-    blobParamTable.update(updateRow, updateCondition);
+    blobParamTable.update(parameterProvider, updateRow, updateCondition);
 
-    BlobParamTableParameterProvider parameterProvider;
-    std::vector<BlobParamTableRow> readRows;
-    blobParamTable.read(parameterProvider, updateCondition, readRows);
-    ASSERT_EQ(1, readRows.size());
-
-    checkBlobParamTableRow(updateRow, readRows[0]);
+    BlobParamTable::Reader reader = blobParamTable.createReader(parameterProvider, updateCondition);
+    ASSERT_TRUE(reader.hasNext());
+    BlobParamTable::Row readRow = reader.next();
+    ASSERT_FALSE(reader.hasNext());
+    checkBlobParamTableRow(updateRow, readRow);
 }
 
 } // namespace explicit_blob_param

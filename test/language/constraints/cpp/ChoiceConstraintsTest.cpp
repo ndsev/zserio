@@ -23,12 +23,18 @@ protected:
             writer.writeBits(value16, 16);
     }
 
-    static const uint8_t VALUE8_CORRECT_CONSTRAINT = 1;
-    static const uint8_t VALUE8_WRONG_CONSTRAINT = 0;
+    static const uint8_t VALUE8_CORRECT_CONSTRAINT;
+    static const uint8_t VALUE8_WRONG_CONSTRAINT;
 
-    static const uint16_t VALUE16_CORRECT_CONSTRAINT = 256;
-    static const uint16_t VALUE16_WRONG_CONSTRAINT = 255;
+    static const uint16_t VALUE16_CORRECT_CONSTRAINT;
+    static const uint16_t VALUE16_WRONG_CONSTRAINT;
 };
+
+const uint8_t ChoiceConstraintsTest::VALUE8_CORRECT_CONSTRAINT = 1;
+const uint8_t ChoiceConstraintsTest::VALUE8_WRONG_CONSTRAINT = 0;
+
+const uint16_t ChoiceConstraintsTest::VALUE16_CORRECT_CONSTRAINT = 256;
+const uint16_t ChoiceConstraintsTest::VALUE16_WRONG_CONSTRAINT = 255;
 
 TEST_F(ChoiceConstraintsTest, readCorrectConstraints)
 {
@@ -43,6 +49,7 @@ TEST_F(ChoiceConstraintsTest, readCorrectConstraints)
     ChoiceConstraints choiceConstraints;
     choiceConstraints.initialize(selector);
     choiceConstraints.read(reader);
+
     ASSERT_EQ(selector, choiceConstraints.getSelector());
     ASSERT_EQ(value8, choiceConstraints.getValue8());
 }
@@ -91,7 +98,7 @@ TEST_F(ChoiceConstraintsTest, writeCorrectConstraints)
     size_t writeBufferByteSize;
     const uint8_t* writeBuffer = writer.getWriteBuffer(writeBufferByteSize);
     zserio::BitStreamReader reader(writeBuffer, writeBufferByteSize);
-    ChoiceConstraints readChoiceConstraints(reader, selector);
+    const ChoiceConstraints readChoiceConstraints(reader, selector);
     ASSERT_EQ(selector, readChoiceConstraints.getSelector());
     ASSERT_EQ(value16, readChoiceConstraints.getValue16());
     ASSERT_TRUE(choiceConstraints == readChoiceConstraints);

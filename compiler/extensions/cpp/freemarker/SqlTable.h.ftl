@@ -4,35 +4,31 @@
 
 <@include_guard_begin package.path, name/>
 
+#include <memory>
 #include <vector>
 #include <string>
 #include <sqlite3.h>
-<@system_includes headerSystemIncludes, false/>
+<@system_includes headerSystemIncludes/>
 #include <zserio/SqliteConnection.h>
-<#if withInspectorCode>
-#include <zserio/BitStreamReader.h>
-#include <zserio/BitStreamWriter.h>
-#include <zserio/inspector/BlobInspectorTree.h>
-</#if>
-
-<#if withInspectorCode>
-#include "<@include_path rootPackage.path, "ISqlTableInspector.h"/>"
-</#if>
-#include "<@include_path package.path, "${rowName}.h"/>"
-<@user_includes headerUserIncludes, false/>
-
+#include <zserio/SqliteFinalizer.h>
+#include <zserio/OptionalHolder.h>
+<@user_includes headerUserIncludes/>
 <@namespace_begin package.path/>
 
 <#assign needsParameterProvider=explicitParameters?has_content/>
-class ${name}<#if withInspectorCode> : public ${rootPackage.name}::ISqlTableInspector</#if>
+<#assign needsChildrenInitialization=(hasImplicitParameters || explicitParameters?has_content)/>
+<#assign hasBlobField=sql_table_has_blob_field(fields)/>
+class ${name}
 {
 public:
 <#if needsParameterProvider>
+    class Row;
+
     class IParameterProvider
     {
     public:
         <#list explicitParameters as parameter>
-        virtual <@sql_parameter_provider_return_type parameter/> <@sql_parameter_provider_getter_name parameter/>(sqlite3_stmt& statement) = 0;
+        virtual <@sql_parameter_provider_return_type parameter/> <@sql_parameter_provider_getter_name parameter/>(Row& currentRow) = 0;
         </#list>
 
         virtual ~IParameterProvider()
@@ -40,8 +36,90 @@ public:
     };
 
 </#if>
-    ${name}(zserio::SqliteConnection& db, const std::string& tableName, const std::string& attachedDbName = "");
-    ~${name}();
+    class Row
+    {
+    public:
+<#if hasImplicitParameters>
+        Row() = default;
+        ~Row() = default;
+
+        Row(const Row& other);
+        Row& operator=(const Row& other);
+
+        Row(Row&& other);
+        Row& operator=(Row&& other);
+
+</#if>
+<#list fields as field>
+    <#if !field.isSimpleType>
+        ${field.optionalCppTypeName}& ${field.getterName}();
+    </#if>
+        const ${field.optionalCppTypeName}& ${field.getterName}() const;
+        void ${field.setterName}(${field.optionalCppArgumentTypeName} <@sql_field_argument_name field/>);
+    <#if !field.isSimpleType>
+        void ${field.setterName}(${field.optionalCppTypeName}&& <@sql_field_argument_name field/>);
+    </#if>
+
+</#list>
+<#if withWriterCode>
+    <#if needsChildrenInitialization>
+        void initializeChildren(<#if needsParameterProvider>IParameterProvider& parameterProvider</#if>);
+
+    </#if>
+    <#if hasBlobField>
+        void initializeOffsets();
+
+    </#if>
+</#if>
+    private:
+<#if hasImplicitParameters>
+        void reinitializeBlobs();
+
+</#if>
+<#list fields as field>
+        ${field.optionalCppTypeName} <@sql_field_member_name field/>;
+</#list>
+    };
+
+    class Reader
+    {
+    public:
+        ~Reader() = default;
+
+        Reader(const Reader&) = delete;
+        Reader& operator=(const Reader&) = delete;
+
+        Reader(Reader&&) = default;
+        Reader& operator=(Reader&&) = default;
+
+        bool hasNext() const noexcept;
+        Row next();
+
+    private:
+        explicit Reader(::zserio::SqliteConnection& db, <#rt>
+                <#lt><#if needsParameterProvider>IParameterProvider& parameterProvider, </#if><#rt>
+                <#lt>const ::std::string& sqlQuery);
+        friend class ${name};
+
+        void makeStep();
+
+<#if needsParameterProvider>
+        IParameterProvider& m_parameterProvider;
+</#if>
+        ::std::unique_ptr<sqlite3_stmt, ::zserio::SqliteFinalizer> m_stmt;
+        int m_lastResult;
+    };
+
+    ${name}(::zserio::SqliteConnection& db, const ::std::string& tableName,
+            const ::std::string& attachedDbName = "");
+
+    ~${name}() = default;
+
+    ${name}(const ${name}&) = delete;
+    ${name}& operator=(const ${name}&) = delete;
+
+    ${name}(${name}&&) = delete;
+    ${name}& operator=(${name}&&) = delete;
 <#if withWriterCode>
 
     void createTable();
@@ -51,42 +129,29 @@ public:
     void deleteTable();
 </#if>
 
-    void read(<#if needsParameterProvider>IParameterProvider& parameterProvider, </#if>std::vector<${rowName}>& rows) const;
-    void read(<#if needsParameterProvider>IParameterProvider& parameterProvider, </#if>const std::string& condition,
-            std::vector<${rowName}>& rows) const;
+    Reader createReader(<#if needsParameterProvider>IParameterProvider& parameterProvider, </#if><#rt>
+            <#lt>const ::std::string& condition = "") const;
 <#if withWriterCode>
-    void write(std::vector<${rowName}>& rows);
-    void update(${rowName}& row, const std::string& whereCondition);
-</#if>
-<#if withInspectorCode>
-
-    virtual bool convertBitStreamToBlobTree(const std::string& blobName, zserio::BitStreamReader& reader,
-            ${rootPackage.name}::IInspectorParameterProvider& parameterProvider,
-            zserio::BlobInspectorTree& tree) const;
-    virtual bool convertBlobTreeToBitStream(const std::string& blobName,
-            const zserio::BlobInspectorTree& tree,
-            ${rootPackage.name}::IInspectorParameterProvider& parameterProvider,
-            zserio::BitStreamWriter& writer) const;
-    virtual bool doesBlobExist(const std::string& blobName) const;
+    void write(<#if needsParameterProvider>IParameterProvider& parameterProvider, </#if><#rt>
+            <#lt>::std::vector<Row>& rows);
+    void update(<#if needsParameterProvider>IParameterProvider& parameterProvider, </#if><#rt>
+            <#lt>Row& row, const ::std::string& whereCondition);
 </#if>
 
 private:
-    static void readRow(<#if needsParameterProvider>IParameterProvider& parameterProvider, </#if><#rt>
-            <#lt>sqlite3_stmt& statement,
-            std::vector<${rowName}>& rows);
 <#if withWriterCode>
-    static void writeRow(${rowName}& row, sqlite3_stmt& statement);
+    static void writeRow(<#if needsParameterProvider>IParameterProvider& parameterProvider, </#if><#rt>
+            <#lt>Row& row, sqlite3_stmt& statement);
 
-    void appendCreateTableToQuery(std::string& sqlQuery);
+    void appendCreateTableToQuery(::std::string& sqlQuery);
+
 </#if>
+    void appendTableNameToQuery(::std::string& sqlQuery) const;
 
-    void appendTableNameToQuery(std::string& sqlQuery) const;
-
-    zserio::SqliteConnection& m_db;
-    const std::string m_name;
-    const std::string m_attachedDbName;
+    ::zserio::SqliteConnection& m_db;
+    const ::std::string m_name;
+    const ::std::string m_attachedDbName;
 };
-
 <@namespace_end package.path/>
 
 <@include_guard_end package.path, name/>

@@ -12,8 +12,6 @@ final class TemplateDataContext
         cppNativeTypeMapper = new CppNativeTypeMapper(cppPackageMapper);
         this.cppPackageMapper = cppPackageMapper;
         withWriterCode = extensionParameters.getWithWriterCode();
-        withInspectorCode = extensionParameters.getWithInspectorCode();
-        withValidationCode = extensionParameters.getWithValidationCode();
         withRangeCheckCode = extensionParameters.getWithRangeCheckCode();
     }
 
@@ -56,16 +54,6 @@ final class TemplateDataContext
         return withWriterCode;
     }
 
-    public boolean getWithInspectorCode()
-    {
-        return withInspectorCode;
-    }
-
-    public boolean getWithValidationCode()
-    {
-        return withValidationCode;
-    }
-
     public boolean getWithRangeCheckCode()
     {
         return withRangeCheckCode;
@@ -75,7 +63,5 @@ final class TemplateDataContext
     private final PackageMapper cppPackageMapper;
 
     private final boolean withWriterCode;
-    private final boolean withInspectorCode;
-    private final boolean withValidationCode;
     private final boolean withRangeCheckCode;
 }
