@@ -31,6 +31,22 @@ public:
     }
 
 protected:
+    static void fillBlobParamTableRowWithNullValues(BlobParamTableRow& row, uint32_t blobId)
+    {
+        row.setBlobId(blobId);
+        row.setNullName();
+        row.setNullParameters();
+        row.setNullBlob();
+    }
+
+    static void fillBlobParamTableRowsWithNullValues(std::vector<BlobParamTableRow>& rows)
+    {
+        rows.clear();
+        rows.resize(NUM_BLOB_PARAM_TABLE_ROWS);
+        for (uint32_t blobId = 0; blobId < NUM_BLOB_PARAM_TABLE_ROWS; ++blobId)
+            fillBlobParamTableRowWithNullValues(rows[blobId], blobId);
+    }
+
     static void fillBlobParamTableRow(BlobParamTableRow& row, uint32_t blobId, const std::string& name)
     {
         row.setBlobId(blobId);
@@ -135,6 +151,22 @@ TEST_F(BlobParamTableTest, readWithoutCondition)
 
     std::vector<BlobParamTableRow> writtenRows;
     fillBlobParamTableRows(writtenRows);
+    testTable.write(writtenRows);
+
+    std::vector<BlobParamTableRow> readRows;
+    // we must use reserve to prevent dangling pointer to parameters in parameterizedBlob
+    // once std::vector is reallocated!
+    readRows.reserve(NUM_BLOB_PARAM_TABLE_ROWS);
+    testTable.read(readRows);
+    checkBlobParamTableRows(writtenRows, readRows);
+}
+
+TEST_F(BlobParamTableTest, readWithoutConditionWithNullValues)
+{
+    BlobParamTable& testTable = m_database->getBlobParamTable();
+
+    std::vector<BlobParamTableRow> writtenRows;
+    fillBlobParamTableRowsWithNullValues(writtenRows);
     testTable.write(writtenRows);
 
     std::vector<BlobParamTableRow> readRows;

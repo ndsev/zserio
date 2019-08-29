@@ -175,6 +175,23 @@ TEST_F(BlobParamTableTest, readWithoutCondition)
     checkBlobParamTableRows(writtenRows, readRows);
 }
 
+
+TEST_F(BlobParamTableTest, readWithoutConditionWithNullValues)
+{
+    BlobParamTable& testTable = m_database->getBlobParamTable();
+
+    std::vector<BlobParamTable::Row> writtenRows;
+    fillBlobParamTableRowsWithNullValues(writtenRows);
+    testTable.write(writtenRows);
+
+    std::vector<BlobParamTable::Row> readRows;
+    BlobParamTable::Reader reader = testTable.createReader();
+    while (reader.hasNext())
+        readRows.push_back(reader.next());
+
+    checkBlobParamTableRows(writtenRows, readRows);
+}
+
 TEST_F(BlobParamTableTest, readWithCondition)
 {
     BlobParamTable& testTable = m_database->getBlobParamTable();
@@ -215,22 +232,6 @@ TEST_F(BlobParamTableTest, update)
     ASSERT_EQ(1, readRows.size());
 
     checkBlobParamTableRow(updateRow, readRows[0]);
-}
-
-TEST_F(BlobParamTableTest, nullValues)
-{
-    BlobParamTable& testTable = m_database->getBlobParamTable();
-
-    std::vector<BlobParamTable::Row> writtenRows;
-    fillBlobParamTableRowsWithNullValues(writtenRows);
-    testTable.write(writtenRows);
-
-    std::vector<BlobParamTable::Row> readRows;
-    BlobParamTable::Reader reader = testTable.createReader();
-    while (reader.hasNext())
-        readRows.push_back(reader.next());
-
-    checkBlobParamTableRows(writtenRows, readRows);
 }
 
 } // namespace blob_param_table

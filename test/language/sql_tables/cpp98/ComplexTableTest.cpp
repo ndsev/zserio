@@ -31,6 +31,30 @@ public:
     }
 
 protected:
+    static void fillComplexTableRowWithNullValues(ComplexTableRow& row, uint64_t blobId)
+    {
+        row.setBlobId(blobId);
+        row.setNullAge();
+        row.setNullName();
+        row.setNullIsValid();
+        row.setNullSalary();
+        row.setNullBonus();
+        row.setNullValue();
+        row.setNullColor();
+        row.setNullBlob();
+    }
+
+    static void fillComplexTableRowsWithNullValues(std::vector<ComplexTableRow>& rows)
+    {
+        rows.clear();
+        for (uint64_t blobId = 0; blobId < NUM_COMPLEX_TABLE_ROWS; ++blobId)
+        {
+            ComplexTableRow row;
+            fillComplexTableRowWithNullValues(row, blobId);
+            rows.push_back(row);
+        }
+    }
+
     static void fillComplexTableRow(ComplexTableRow& row, uint64_t blobId, const std::string& name)
     {
         row.setBlobId(blobId);
@@ -83,6 +107,28 @@ protected:
         ASSERT_EQ(rows1.size(), rows2.size());
         for (size_t i = 0; i < rows1.size(); ++i)
             checkComplexTableRow(rows1[i], rows2[i]);
+    }
+
+    static void checkComplexTableRowWithNullValues(const ComplexTableRow& row1, const ComplexTableRow& row2)
+    {
+        ASSERT_EQ(row1.getBlobId(), row2.getBlobId());
+
+        ASSERT_TRUE(row2.isNullAge());
+        ASSERT_TRUE(row2.isNullName());
+        ASSERT_TRUE(row2.isNullIsValid());
+        ASSERT_TRUE(row2.isNullSalary());
+        ASSERT_TRUE(row2.isNullBonus());
+        ASSERT_TRUE(row2.isNullValue());
+        ASSERT_TRUE(row2.isNullColor());
+        ASSERT_TRUE(row2.isNullBlob());
+    }
+
+    static void checkComplexTableRowsWithNullValues(const std::vector<ComplexTableRow>& rows1,
+            const std::vector<ComplexTableRow>& rows2)
+    {
+        ASSERT_EQ(rows1.size(), rows2.size());
+        for (size_t i = 0; i < rows1.size(); ++i)
+            checkComplexTableRowWithNullValues(rows1[i], rows2[i]);
     }
 
     bool isTableInDb()
@@ -161,6 +207,20 @@ TEST_F(ComplexTableTest, readWithoutCondition)
     std::vector<ComplexTableRow> readRows;
     testTable.read(parameterProvider, readRows);
     checkComplexTableRows(writtenRows, readRows);
+}
+
+TEST_F(ComplexTableTest, readWithoutConditionWithNullValues)
+{
+    ComplexTable& testTable = m_database->getComplexTable();
+
+    std::vector<ComplexTableRow> writtenRows;
+    fillComplexTableRowsWithNullValues(writtenRows);
+    testTable.write(writtenRows);
+
+    ComplexTableParameterProvider parameterProvider;
+    std::vector<ComplexTableRow> readRows;
+    testTable.read(parameterProvider, readRows);
+    checkComplexTableRowsWithNullValues(writtenRows, readRows);
 }
 
 TEST_F(ComplexTableTest, readWithCondition)

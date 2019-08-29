@@ -212,6 +212,23 @@ TEST_F(ComplexTableTest, readWithoutCondition)
     checkComplexTableRows(writtenRows, readRows);
 }
 
+TEST_F(ComplexTableTest, readWithoutConditionWithNullValues)
+{
+    ComplexTable& testTable = m_database->getComplexTable();
+    ComplexTableParameterProvider parameterProvider;
+
+    std::vector<ComplexTable::Row> writtenRows;
+    fillComplexTableRowsWithNullValues(writtenRows);
+    testTable.write(parameterProvider, writtenRows);
+
+    std::vector<ComplexTable::Row> readRows;
+    auto reader = testTable.createReader(parameterProvider);
+    while (reader.hasNext())
+        readRows.push_back(reader.next());
+
+    checkComplexTableRowsWithNullValues(writtenRows, readRows);
+}
+
 TEST_F(ComplexTableTest, readWithCondition)
 {
     ComplexTable& testTable = m_database->getComplexTable();
@@ -256,23 +273,6 @@ TEST_F(ComplexTableTest, update)
     ASSERT_EQ(1, readRows.size());
 
     checkComplexTableRow(updateRow, readRows[0]);
-}
-
-TEST_F(ComplexTableTest, nullValues)
-{
-    ComplexTable& testTable = m_database->getComplexTable();
-    ComplexTableParameterProvider parameterProvider;
-
-    std::vector<ComplexTable::Row> writtenRows;
-    fillComplexTableRowsWithNullValues(writtenRows);
-    testTable.write(parameterProvider, writtenRows);
-
-    std::vector<ComplexTable::Row> readRows;
-    auto reader = testTable.createReader(parameterProvider);
-    while (reader.hasNext())
-        readRows.push_back(reader.next());
-
-    checkComplexTableRowsWithNullValues(writtenRows, readRows);
 }
 
 } // namespace complex_table
