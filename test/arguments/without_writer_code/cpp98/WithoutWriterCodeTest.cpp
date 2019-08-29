@@ -88,8 +88,22 @@ protected:
         writer.writeBits(VERSION, 8);
         writer.writeBits(5, 32); // numElementsOffset
         writer.writeBits(NUM_ELEMENTS, 32);
+
+        // offsets
+        size_t offset = zserio::bitsToBytes(writer.getBitPosition()) + 4 * NUM_ELEMENTS;
         for (uint32_t i = 0; i < NUM_ELEMENTS; ++i)
         {
+            writer.writeBits(static_cast<uint32_t>(offset), 32);
+            const bool hasItem = i % 2 == 0;
+            if (hasItem)
+                offset += 8;
+            else
+                offset += 3;
+        }
+
+        for (uint32_t i = 0; i < NUM_ELEMENTS; ++i)
+        {
+            writer.alignTo(8); // aligned because of indexed offsets
             // ItemChoiceHolder
             const bool hasItem = i % 2 == 0; // hasItem == true for even elements
             writer.writeBool(hasItem);
