@@ -4,6 +4,7 @@
 
 #include "zserio/BitStreamWriter.h"
 #include "zserio/BitStreamReader.h"
+#include "zserio/ObjectArray.h"
 
 #include "functions/structure_parent_child_value/ParentValue.h"
 

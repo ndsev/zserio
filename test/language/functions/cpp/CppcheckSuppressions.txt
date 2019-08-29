@@ -20,6 +20,7 @@ uninitMemberVar:*/structure_param/MetresConverter.cpp
 uninitMemberVar:*/structure_param/MetresConverter.h
 uninitMemberVar:*/structure_param/MetresConverterCaller.cpp
 uninitMemberVar:*/structure_param/MetresConverterCaller.h
+uninitMemberVar:*/structure_parent_child_value/ChildValue.cpp
 uninitMemberVar:*/structure_value/CustomVarInt.cpp
 uninitMemberVar:*/union_array/Inner.cpp
 uninitMemberVar:*/union_array/Inner.h
