@@ -16,7 +16,6 @@
 
 <#assign hasBlobField=sql_table_has_blob_field(fields)/>
 <#assign needsParameterProvider=explicitParameters?has_content/>
-<#assign needsChildrenInitialization=(hasImplicitParameters || explicitParameters?has_content)/>
 <#if withWriterCode>
     <#assign hasNonVirtualField=sql_table_has_non_virtual_field(fields)/>
 </#if>
@@ -369,21 +368,26 @@ void ${name}::Row::initializeChildren(<#if needsParameterProvider>IParameterProv
 
         </#if>
         <#list fields as field>
-            <#if field.typeParameters?has_content>
-    <@sql_field_member_name field/>->initialize(
-                <#list field.typeParameters as parameter>
-                    <#if parameter.isExplicit>
-            parameterProvider.<@sql_parameter_provider_getter_name parameter/>(row)<#rt>
-                    <#else>
-            ${parameter.expression}<#rt>
-                    </#if>
-                    <#if parameter?has_next>
-            <#lt>,
-                    </#if>
-                </#list>
-            <#lt>);
-            <#elseif field.needsChildrenInitialization>
-            <@sql_field_member_name field/>->initializeChildren();
+            <#if field.typeParameters?has_content || field.needsChildrenInitialization>
+    if (<@sql_field_member_name field/>)
+    {
+                <#if field.typeParameters?has_content>
+        <@sql_field_member_name field/>->initialize(
+                    <#list field.typeParameters as parameter>
+                        <#if parameter.isExplicit>
+                parameterProvider.<@sql_parameter_provider_getter_name parameter/>(row)<#rt>
+                        <#else>
+                ${parameter.expression}<#rt>
+                        </#if>
+                        <#if parameter?has_next>
+                <#lt>,
+                        </#if>
+                    </#list>
+                <#lt>);
+                <#else>
+        <@sql_field_member_name field/>->initializeChildren();
+                </#if>
+    }
             </#if>
         </#list>
 }
@@ -411,7 +415,7 @@ void ${name}::Row::reinitializeBlobs()
     </#if>
         <#list fields as field>
             <#if field.hasImplicitParameters>
-    if (<@sql_field_member_name field/>->isInitialized())
+    if (<@sql_field_member_name field/> && <@sql_field_member_name field/>->isInitialized())
     {
         <@sql_field_member_name field/>->initialize(
                 <#list field.typeParameters as parameter>

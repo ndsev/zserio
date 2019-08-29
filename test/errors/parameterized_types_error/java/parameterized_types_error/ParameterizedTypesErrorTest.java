@@ -20,7 +20,6 @@ public class ParameterizedTypesErrorTest
     @Test
     public void noArguments()
     {
-        // TODO:
         final String error = "no_arguments_error.zs:10:21: missing ':' at 'parameterized'";
         assertTrue(zserioErrors.isPresent(error));
     }

@@ -4,7 +4,6 @@ import java.util.Collection;
 import java.util.TreeSet;
 
 import zserio.ast.PackageName;
-import zserio.emit.common.PackageMapper;
 import zserio.emit.cpp.types.CppNativeType;
 
 public abstract class CppTemplateData implements IncludeCollector

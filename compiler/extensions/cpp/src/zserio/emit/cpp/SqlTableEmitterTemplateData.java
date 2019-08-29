@@ -11,7 +11,6 @@ import zserio.ast.EnumType;
 import zserio.ast.Parameter;
 import zserio.ast.TypeReference;
 import zserio.ast.ZserioType;
-import zserio.ast.ZserioTypeUtil;
 import zserio.ast.Expression;
 import zserio.ast.Field;
 import zserio.ast.SqlConstraint;
@@ -80,6 +79,7 @@ public class SqlTableEmitterTemplateData extends UserTypeTemplateData
         }
         this.hasImplicitParameters = hasImplicitParameters;
         this.requiresOwnerContext = requiresOwnerContext;
+        this.needsChildrenInitialization = tableType.needsChildrenInitialization();
     }
 
     public Iterable<FieldTemplateData> getFields()
@@ -100,6 +100,11 @@ public class SqlTableEmitterTemplateData extends UserTypeTemplateData
     public boolean getRequiresOwnerContext()
     {
         return requiresOwnerContext;
+    }
+
+    public boolean getNeedsChildrenInitialization()
+    {
+        return needsChildrenInitialization;
     }
 
     public String getSqlConstraint()
@@ -460,6 +465,7 @@ public class SqlTableEmitterTemplateData extends UserTypeTemplateData
     private final SortedSet<ExplicitParameterTemplateData> explicitParameters;
     private final boolean hasImplicitParameters;
     private final boolean requiresOwnerContext;
+    private final boolean needsChildrenInitialization;
     private final String sqlConstraint;
     private final String virtualTableUsing;
     private final boolean needsTypesInSchema;

@@ -70,17 +70,26 @@ protected:
         rows.resize(NUM_BLOB_PARAM_TABLE_ROWS);
         for (uint32_t blobId = 0; blobId < NUM_BLOB_PARAM_TABLE_ROWS; ++blobId)
         {
-            const std::string name = "Name" + zserio::convertToString(blobId);
-            fillBlobParamTableRow(rows[blobId], blobId, name);
+            fillBlobParamTableRow(rows[blobId], blobId, "Name" + zserio::convertToString(blobId));
         }
     }
 
     static void checkBlobParamTableRow(const BlobParamTableRow& row1, const BlobParamTableRow& row2)
     {
-        ASSERT_EQ(row1.getBlobId(), row2.getBlobId());
-        ASSERT_EQ(row1.getName(), row2.getName());
-        ASSERT_EQ(row1.getParameters(), row2.getParameters());
-        ASSERT_EQ(row1.getBlob(), row2.getBlob());
+        if (row1.isNullName())
+            ASSERT_TRUE(row2.isNullName());
+        else
+            ASSERT_EQ(row1.getName(), row2.getName());
+
+        if (row1.isNullParameters())
+            ASSERT_TRUE(row2.isNullParameters());
+        else
+            ASSERT_EQ(row1.getParameters(), row2.getParameters());
+
+        if (row1.isNullBlob())
+            ASSERT_TRUE(row2.isNullBlob());
+        else
+            ASSERT_EQ(row1.getBlob(), row2.getBlob());
     }
 
     static void checkBlobParamTableRows(const std::vector<BlobParamTableRow>& rows1,
