@@ -70,7 +70,7 @@ TEST_F(ArrayLengthofConstraintTest, readWrongLengthGreater)
 TEST_F(ArrayLengthofConstraintTest, writeCorrectLength)
 {
     ArrayLengthofConstraint arrayLengthofConstraint;
-    std::vector<uint32_t>& array = arrayLengthofConstraint.getArray();
+    zserio::UInt32Array& array = arrayLengthofConstraint.getArray();
     array.resize(CORRECT_LENGTH);
     for (size_t i = 0; i < CORRECT_LENGTH; ++i)
         array[i] = static_cast<uint32_t>(i);
@@ -89,7 +89,7 @@ TEST_F(ArrayLengthofConstraintTest, writeCorrectLength)
 TEST_F(ArrayLengthofConstraintTest, writeWrongLengthLess)
 {
     ArrayLengthofConstraint arrayLengthofConstraint;
-    std::vector<uint32_t>& array = arrayLengthofConstraint.getArray();
+    zserio::UInt32Array& array = arrayLengthofConstraint.getArray();
     array.resize(WRONG_LENGTH_LESS);
     for (size_t i = 0; i < WRONG_LENGTH_LESS; ++i)
         array[i] = static_cast<uint32_t>(i);
@@ -101,7 +101,7 @@ TEST_F(ArrayLengthofConstraintTest, writeWrongLengthLess)
 TEST_F(ArrayLengthofConstraintTest, writeWrongLengthGreater)
 {
     ArrayLengthofConstraint arrayLengthofConstraint;
-    std::vector<uint32_t>& array = arrayLengthofConstraint.getArray();
+    zserio::UInt32Array& array = arrayLengthofConstraint.getArray();
     array.resize(WRONG_LENGTH_GREATER);
     for (size_t i = 0; i < WRONG_LENGTH_GREATER; ++i)
         array[i] = static_cast<uint32_t>(i);
