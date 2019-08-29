@@ -30,7 +30,12 @@ update_version()
     local NEW_VERSION_STRING="${1}"; shift
 
     # find all files with version
-    local VERSION_FILES=`${FIND} ${ZSERIO_SOURCE_DIR} -iname "*Version*"`
+    local PYTHON_RUNTIME_VERSION_FILE="${ZSERIO_SOURCE_DIR}/extensions/python/runtime/src/zserio/__init__.py"
+    local CPP_RUNTIME_DOXYFILE="${ZSERIO_SOURCE_DIR}/extensions/cpp/runtime/doc/doxyfile"
+    local FOUND_VERSION_FILES=`${FIND} ${ZSERIO_SOURCE_DIR} -iname "*Version*"`
+    local VERSION_FILES="${FOUND_VERSION_FILES[@]}
+                         ${PYTHON_RUNTIME_VERSION_FILE}
+                         ${CPP_RUNTIME_DOXYFILE}"
     for VERSION_FILE in ${VERSION_FILES}
     do
         update_version_in_file "${VERSION_FILE}" "${NEW_VERSION_STRING}"
@@ -38,15 +43,9 @@ update_version()
             return 1
         fi
     done
-
-    local PYTHON_RUNTIME_VERSION_FILE="${ZSERIO_SOURCE_DIR}/extensions/python/runtime/src/zserio/__init__.py"
-    update_version_in_file "${PYTHON_RUNTIME_VERSION_FILE}" "${NEW_VERSION_STRING}"
-    if [ $? -ne 0 ] ; then
-        return 1
-    fi
-
-    local CPP_RUNTIME_DOXYFILE="${ZSERIO_SOURCE_DIR}/extensions/cpp/runtime/doc/doxyfile"
-    update_version_in_file "${CPP_RUNTIME_DOXYFILE}" "${NEW_VERSION_STRING}"
+    local VERSION_FILES_ARRAY=(${VERSION_FILES})
+    echo
+    echo "Total number of updated files: ${#VERSION_FILES_ARRAY[@]}"
 
     return 0
 }
