@@ -22,16 +22,8 @@ struct Line
 {
     TYPE xOffset;
     TYPE yOffset;
-    COORD<TYPE>(xOffset, yOffset) points[];
+    COORD(xOffset, yOffset) points[];
 };
 
-subtype Line<Coordinate2D, uint32> Line2D;
-subtype Line<Coordinate2D, uint8> SmallLine2D;
-
-template <COORD>
-struct Shape
-{
-    COORD(0, 0) points[];
-};
-
-subtype Shape<Coordinate2D<uint32>> Shape2D; /** Optionally we might need to use '> >' like in old c++. */
+subtype Line<Coordinate2D<uint32>, uint32> Line2D;
+subtype Line<Coordinate2D<uint8>, uint8> SmallLine2D;
