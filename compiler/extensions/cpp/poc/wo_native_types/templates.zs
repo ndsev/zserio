@@ -6,14 +6,14 @@ struct Coordinate2D(TYPE xOffset, TYPE yOffset)
     TYPE x;
     TYPE y;
 
-    function TYPE getX()
+    function uint32 getX()
     {
-        return x + xOffset;
+        return x.value + xOffset.value;
     }
 
-    function TYPE getY()
+    function uint32 getY()
     {
-        return y + yOffset;
+        return y.value + yOffset.value;
     }
 };
 
@@ -24,7 +24,7 @@ struct Line
     TYPE yOffset;
     COORD(xOffset, yOffset) points[];
 };
-*/
+
 struct U32
 {
     uint32 value;

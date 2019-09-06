@@ -165,14 +165,14 @@ public:
         m_y_ = std::move(y_);
     }
 
-    ZSERIO_T_ARG_TYPE funcGetX() const
+    uint32_t funcGetX() const
     {
-        return static_cast<ZSERIO_T_ARG_TYPE>(getX() + getXOffset());
+        return static_cast<uint32_t>(getX().getValue() + getXOffset().getValue());
     }
 
-    ZSERIO_T_ARG_TYPE funcGetY() const
+    uint32_t funcGetY() const
     {
-        return static_cast<ZSERIO_T_ARG_TYPE>(getY() + getYOffset());
+        return static_cast<uint32_t>(getY().getValue() + getYOffset().getValue());
     }
 
     size_t bitSizeOf(size_t bitPosition = 0) const

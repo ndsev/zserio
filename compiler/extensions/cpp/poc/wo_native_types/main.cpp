@@ -11,6 +11,7 @@ using namespace templates;
 int main()
 {
     Coordinate2D<U32> coord2D;
+    coord2D.funcGetX();
 
     Line<Coordinate2D<U32>, U32> line;
 
