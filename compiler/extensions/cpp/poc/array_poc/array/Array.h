@@ -19,7 +19,6 @@
 #include <zserio/BitSizeOfCalculator.h>
 #include <zserio/BitFieldUtil.h>
 #include <zserio/Types.h>
-#include <zserio/Templates.h>
 
 namespace array
 {

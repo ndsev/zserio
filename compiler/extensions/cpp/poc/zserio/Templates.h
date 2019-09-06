@@ -64,9 +64,6 @@ struct StringWrapper
 
 struct UInt32Wrapper
 {
-    typedef uint32 type;
-    typedef StdIntArrayTraits<uint32_t> array_traits;
-
     explicit UInt32Wrapper(BitStreamReader& in) :
             m_value(in.readBits(32))
     {}
@@ -106,6 +103,51 @@ struct UInt32Wrapper
     }
 
     uint32_t m_value;
+};
+
+template <typename ENUM>
+struct EnumWrapper
+{
+    explicit EnumWrapper(BitStreamReader& in)
+    :   ::zserio::read<ENUM>(in)
+    {
+    }
+
+    UInt32Wrapper(ENUM value) :
+            m_value(value)
+    {}
+
+    size_t bitSizeOf(size_t bitPosition)
+    {
+        return ::zserio::bitSizeOf(m_value);
+    }
+
+    size_t initializeOffsets(size_t bitPosition)
+    {
+        return ::zserio::initializeOffsets(bitPosition, m_value);
+    }
+
+    void read(BitStreamReader& in)
+    {
+        m_value = ::zserio::read<ENUM>(in);
+    }
+
+    void write(BitStreamWriter& out, zserio::PreWriteAction)
+    {
+        ::zserio::write(out, m_value);
+    }
+
+    operator const ENUM&() const
+    {
+        return m_value;
+    }
+
+    operator ENUM&()
+    {
+        return m_value;
+    }
+
+    ENUM m_value;
 };
 
 } // namespace zserio
