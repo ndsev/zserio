@@ -109,6 +109,22 @@ public class Expression extends AstNodeBase
      *
      * @param locationToken   Token which denotes expression location in the sources.
      * @param pkg             Package to which the expression belongs.
+     * @param expressionType  Expression token type.
+     * @param expressionText  Expression token text.
+     * @param operand1        Left operand of the expression.
+     * @param operand2        Right operand of the expression.
+     */
+    public Expression(Token locationToken, Package pkg, int expressionType, String expressionText,
+            Expression operand1, Expression operand2)
+    {
+        this(locationToken, pkg, expressionType, expressionText, ExpressionFlag.NONE, operand1, operand2, null);
+    }
+
+    /**
+     * Constructor.
+     *
+     * @param locationToken   Token which denotes expression location in the sources.
+     * @param pkg             Package to which the expression belongs.
      * @param expressionToken Token to construct expression from.
      * @param expressionFlag  Flag for the expression.
      * @param operand1        Left operand of the expression.
@@ -673,14 +689,21 @@ public class Expression extends AstNodeBase
         needsBigIntegerCastingToNative = true;
     }
 
-    private Expression(Token locationToken, Package pkg, Token expressionToken, ExpressionFlag expressionFlag,
-            Expression operand1, Expression operand2, Expression operand3)
+    private Expression(Token locationToken, Package pkg, Token expressionToken,
+            ExpressionFlag expressionFlag, Expression operand1, Expression operand2, Expression operand3)
+    {
+        this(expressionToken, pkg, expressionToken.getType(), expressionToken.getText(), expressionFlag,
+                operand1, operand2, operand3);
+    }
+
+    private Expression(Token locationToken, Package pkg, int expressionType, String expressionText,
+            ExpressionFlag expressionFlag, Expression operand1, Expression operand2, Expression operand3)
     {
         super(locationToken);
 
         this.pkg = pkg;
-        type = expressionToken.getType();
-        text = extractTokenText(expressionToken);
+        type = expressionType;
+        text = stripExpressionText(expressionType, expressionText);
         this.expressionFlag = expressionFlag;
         this.operand1 = operand1;
         this.operand2 = operand2;
@@ -1337,32 +1360,31 @@ public class Expression extends AstNodeBase
         EVALUATED
     };
 
-    private static String extractTokenText(Token expressionToken)
+    private static String stripExpressionText(int expressionType, String expressionText)
     {
-        String tokenText = expressionToken.getText();
-        switch (expressionToken.getType())
+        switch (expressionType)
         {
             case ZserioParser.BINARY_LITERAL:
-                tokenText = stripBinaryLiteral(tokenText);
+                expressionText = stripBinaryLiteral(expressionText);
                 break;
 
             case ZserioParser.OCTAL_LITERAL:
-                tokenText = stripOctalLiteral(tokenText);
+                expressionText = stripOctalLiteral(expressionText);
                 break;
 
             case ZserioParser.HEXADECIMAL_LITERAL:
-                tokenText = stripHexadecimalLiteral(tokenText);
+                expressionText = stripHexadecimalLiteral(expressionText);
                 break;
 
             case ZserioParser.FLOAT_LITERAL:
-                tokenText = stripFloatLiteral(tokenText);
+                expressionText = stripFloatLiteral(expressionText);
                 break;
 
             default:
                 break;
         }
 
-        return tokenText;
+        return expressionText;
     }
 
     private static String stripBinaryLiteral(String binaryLiteral)

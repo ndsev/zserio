@@ -18,6 +18,13 @@ public class SyntaxErrorTest
     }
 
     @Test
+    public void rshiftWithSpace()
+    {
+        final String error = "rshift_with_space_error:3:31: Operator >> cannot contain spaces!";
+        assertTrue(zserioErrors.isPresent(error));
+    }
+
+    @Test
     public void unexpectedEofInArrayLength()
     {
         final String error = "unexpected_eof_in_array_length_error.zs:6:1: " +

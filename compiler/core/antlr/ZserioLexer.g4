@@ -31,7 +31,6 @@ QUESTIONMARK    : '?' ;
 RBRACE          : '}' ;
 RBRACKET        : ']' ;
 RPAREN          : ')' ;
-RSHIFT          : '>>' ;
 SEMICOLON       : ';' ;
 TILDE           : '~' ;
 XOR             : '^' ;

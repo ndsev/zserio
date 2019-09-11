@@ -42,7 +42,6 @@ public class ZserioLexerTest
                 "} " +
                 "] " +
                 ") " +
-                ">> " +
                 "; " +
                 "~ " +
                 "^\n"
@@ -78,7 +77,6 @@ public class ZserioLexerTest
         checkToken(lexer, ZserioLexer.RBRACE);
         checkToken(lexer, ZserioLexer.RBRACKET);
         checkToken(lexer, ZserioLexer.RPAREN);
-        checkToken(lexer, ZserioLexer.RSHIFT);
         checkToken(lexer, ZserioLexer.SEMICOLON);
         checkToken(lexer, ZserioLexer.TILDE);
         checkToken(lexer, ZserioLexer.XOR);

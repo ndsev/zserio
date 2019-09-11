@@ -148,7 +148,7 @@ public class ZserioAstBuilder extends ZserioParserBaseVisitor<Object>
     {
         final String name = ctx.id().getText();
 
-        final List<Parameter> parameters = visitParameterList(ctx.parameterList());
+        final List<Parameter> parameters = visitTypeParameters(ctx.typeParameters());
 
         final List<Field> fields = new ArrayList<Field>();
         for (ZserioParser.StructureFieldDefinitionContext fieldCtx : ctx.structureFieldDefinition())
@@ -235,7 +235,7 @@ public class ZserioAstBuilder extends ZserioParserBaseVisitor<Object>
     {
         final String name = ctx.id().getText();
 
-        final List<Parameter> parameters = visitParameterList(ctx.parameterList());
+        final List<Parameter> parameters = visitTypeParameters(ctx.typeParameters());
 
         final Expression selectorExpression = (Expression)visit(ctx.expression());
 
@@ -309,7 +309,7 @@ public class ZserioAstBuilder extends ZserioParserBaseVisitor<Object>
     {
         final String name = ctx.id().getText();
 
-        final List<Parameter> parameters = visitParameterList(ctx.parameterList());
+        final List<Parameter> parameters = visitTypeParameters(ctx.typeParameters());
 
         final List<Field> fields = new ArrayList<Field>();
         for (ZserioParser.UnionFieldDefinitionContext fieldCtx : ctx.unionFieldDefinition())
@@ -442,8 +442,8 @@ public class ZserioAstBuilder extends ZserioParserBaseVisitor<Object>
         final String name = ctx.id().getText();
 
         List<Rpc> rpcs = new ArrayList<Rpc>();
-        for (ZserioParser.RpcDeclarationContext rpcDeclarationCtx : ctx.rpcDeclaration())
-            rpcs.add(visitRpcDeclaration(rpcDeclarationCtx));
+        for (ZserioParser.RpcDefinitionContext rpcDefinitionCtx : ctx.rpcDefinition())
+            rpcs.add(visitRpcDefinition(rpcDefinitionCtx));
 
         final DocComment docComment = docCommentManager.findDocComment(ctx);
 
@@ -454,7 +454,7 @@ public class ZserioAstBuilder extends ZserioParserBaseVisitor<Object>
     }
 
     @Override
-    public Rpc visitRpcDeclaration(ZserioParser.RpcDeclarationContext ctx)
+    public Rpc visitRpcDefinition(ZserioParser.RpcDefinitionContext ctx)
     {
         final boolean responseStreaming = ctx.rpcTypeName(0).STREAM() != null;
         final ZserioType responseType = visitQualifiedName(ctx.rpcTypeName(0).qualifiedName());
@@ -484,7 +484,7 @@ public class ZserioAstBuilder extends ZserioParserBaseVisitor<Object>
     }
 
     @Override
-    public List<Parameter> visitParameterList(ZserioParser.ParameterListContext ctx)
+    public List<Parameter> visitTypeParameters(ZserioParser.TypeParametersContext ctx)
     {
         List<Parameter> parameters = new ArrayList<Parameter>();
         if (ctx != null)
@@ -586,7 +586,20 @@ public class ZserioAstBuilder extends ZserioParserBaseVisitor<Object>
     {
         final Expression operand1 = (Expression)visit(ctx.expression(0));
         final Expression operand2 = (Expression)visit(ctx.expression(1));
-        return new Expression(ctx.getStart(), currentPackage, ctx.operator, operand1, operand2);
+
+        int tokenType = ctx.operator.getType();
+        if (tokenType == ZserioParser.GT)
+        {
+            tokenType = ZserioParser.RSHIFT;
+
+            // check that there is not space between the two '>'
+            if (ctx.GT().get(0).getSymbol().getCharPositionInLine() + 1 !=
+                    ctx.GT().get(1).getSymbol().getCharPositionInLine())
+                throw new ParserException(ctx.GT().get(0).getSymbol(), "Operator >> cannot contain spaces!");
+        }
+        final String tokenText = tokenType == ZserioParser.RSHIFT ? RSHIFT_OPERATOR : ctx.operator.getText();
+
+        return new Expression(ctx.getStart(), currentPackage, tokenType, tokenText, operand1, operand2);
     }
 
     @Override
@@ -690,13 +703,13 @@ public class ZserioAstBuilder extends ZserioParserBaseVisitor<Object>
         if (ctx.builtinType() != null)
             return (ZserioType)visitBuiltinType(ctx.builtinType());
 
-        final boolean hasArguments = ctx.typeArgumentList() != null;
+        final boolean hasArguments = ctx.typeArguments() != null;
         final TypeReference typeReference = visitQualifiedName(ctx.qualifiedName(), !hasArguments);
 
         if (hasArguments)
         {
             final List<Expression> arguments = new ArrayList<Expression>();
-            for (ZserioParser.TypeArgumentContext typeArgumentCtx : ctx.typeArgumentList().typeArgument())
+            for (ZserioParser.TypeArgumentContext typeArgumentCtx : ctx.typeArguments().typeArgument())
                 arguments.add(visitTypeArgument(typeArgumentCtx));
             return new TypeInstantiation(ctx.getStart(), typeReference, arguments);
         }
@@ -825,4 +838,6 @@ public class ZserioAstBuilder extends ZserioParserBaseVisitor<Object>
     private Package currentPackage = null;
     private LinkedHashMap<String, ZserioType> localTypes = null;
     private boolean isInDotExpression = false;
+
+    private static final String RSHIFT_OPERATOR = ">>";
 }
