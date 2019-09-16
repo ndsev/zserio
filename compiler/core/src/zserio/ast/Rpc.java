@@ -1,7 +1,5 @@
 package zserio.ast;
 
-import org.antlr.v4.runtime.Token;
-
 import zserio.antlr.util.ParserException;
 
 
@@ -13,7 +11,7 @@ public class Rpc extends AstNodeWithDoc
     /**
      * Constructor.
      *
-     * @param token             ANTLR4 token to localize AST node in the sources.
+     * @param location          AST node location.
      * @param name              Name of the RPC call.
      * @param responseType      Zserio type of the response.
      * @param responseStreaming True if response streaming is requested.
@@ -21,10 +19,10 @@ public class Rpc extends AstNodeWithDoc
      * @param requestStreaming  True if request streaming is requested.
      * @param docComment        Documentation comment belonging to this node.
      */
-    public Rpc(Token token, String name, ZserioType responseType, boolean responseStreaming,
+    public Rpc(AstLocation location, String name, ZserioType responseType, boolean responseStreaming,
             ZserioType requestType, boolean requestStreaming, DocComment docComment)
     {
-        super(token, docComment);
+        super(location, docComment);
 
         this.name = name;
         this.responseType = responseType;

@@ -9,8 +9,6 @@ import java.util.Locale;
 import java.util.Map;
 
 import org.antlr.v4.runtime.CommonToken;
-import org.antlr.v4.runtime.Token;
-
 import zserio.antlr.ZserioParser;
 import zserio.antlr.util.ParserException;
 
@@ -22,12 +20,12 @@ public class SqlConstraint extends AstNodeBase
     /**
      * Constructor.
      *
-     * @param token         ANTLR4 token to localize AST node in the sources.
+     * @param location      AST node location.
      * @param constaintExpr Constraint expression.
      */
-    public SqlConstraint(Token token, Expression constraintExpr)
+    public SqlConstraint(AstLocation location, Expression constraintExpr)
     {
-        super(token);
+        super(location);
 
         this.constraintExpr = constraintExpr;
     }

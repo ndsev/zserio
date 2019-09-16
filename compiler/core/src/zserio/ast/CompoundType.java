@@ -3,8 +3,6 @@ package zserio.ast;
 import java.util.Collections;
 import java.util.List;
 
-import org.antlr.v4.runtime.Token;
-
 import zserio.antlr.util.ParserException;
 import zserio.ast.Package;
 import zserio.ast.Scope;
@@ -21,7 +19,7 @@ public abstract class CompoundType extends AstNodeWithDoc implements ZserioScope
     /**
      * Constructor.
      *
-     * @param token      ANTLR4 token to localize AST node in the sources.
+     * @param location AST node location.
      * @param pkg        Package to which belongs the compound type.
      * @param name       Name of the compound type.
      * @param parameters List of parameters for the compound type.
@@ -29,10 +27,10 @@ public abstract class CompoundType extends AstNodeWithDoc implements ZserioScope
      * @param functions  List of all functions of the compound type.
      * @param docComment Documentation comment belonging to this node.
      */
-    CompoundType(Token token, Package pkg, String name, List<Parameter> parameters, List<Field> fields,
+    CompoundType(AstLocation location, Package pkg, String name, List<Parameter> parameters, List<Field> fields,
             List<FunctionType> functions, DocComment docComment)
     {
-        super(token, docComment);
+        super(location, docComment);
 
         this.pkg = pkg;
         this.name = name;

@@ -1,7 +1,5 @@
 package zserio.ast;
 
-import org.antlr.v4.runtime.Token;
-
 import zserio.antlr.util.ParserException;
 
 /**
@@ -14,15 +12,15 @@ public class ArrayType extends AstNodeBase implements ZserioType
     /**
      * Constructor.
      *
-     * @param location         ANTLR4 token to localize AST node in the sources.
+     * @param location         AST node location.
      * @param elementType      Zserio type of the array element.
      * @param lengthExpression Length expression associated to the array.
      * @param isImplicit       True for implicit arrays.
      */
-    public ArrayType(Token token, ZserioType elementType, Expression lengthExpression,
+    public ArrayType(AstLocation location, ZserioType elementType, Expression lengthExpression,
             boolean isImplicit)
     {
-        super(token);
+        super(location);
 
         this.elementType = elementType;
         this.lengthExpression = lengthExpression;

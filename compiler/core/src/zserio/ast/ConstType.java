@@ -1,7 +1,5 @@
 package zserio.ast;
 
-import org.antlr.v4.runtime.Token;
-
 import zserio.antlr.util.ParserException;
 import zserio.tools.HashUtil;
 
@@ -15,17 +13,17 @@ public class ConstType extends AstNodeWithDoc implements ZserioType, Comparable<
     /**
      * Constructor.
      *
-     * @param token           ANTLR4 token to localize AST node in the sources.
+     * @param location        AST node location.
      * @param pkg             Package to which belongs the constant type.
      * @param constType       Zserio type of the constant.
      * @param name            Name of the constant type.
      * @param valueExpression Value expression associated to the constant type.
      * @param docComment      Documentation comment belonging to this node.
      */
-    public ConstType(Token token, Package pkg, ZserioType constType, String name, Expression valueExpression,
+    public ConstType(AstLocation location, Package pkg, ZserioType constType, String name, Expression valueExpression,
             DocComment docComment)
     {
-        super(token, docComment);
+        super(location, docComment);
 
         this.pkg = pkg;
         this.constType = constType;

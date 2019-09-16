@@ -16,7 +16,7 @@ public abstract class BuiltInType extends AstNodeBase implements ZserioType
      */
     public BuiltInType(Token token)
     {
-        super(token);
+        super(new AstLocation(token));
         this.name = token.getText();
     }
 

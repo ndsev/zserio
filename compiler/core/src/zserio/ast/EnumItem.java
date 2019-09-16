@@ -2,8 +2,6 @@ package zserio.ast;
 
 import java.math.BigInteger;
 
-import org.antlr.v4.runtime.Token;
-
 import zserio.antlr.util.ParserException;
 
 /**
@@ -14,14 +12,14 @@ public class EnumItem extends AstNodeWithDoc
     /**
      * Constructor.
      *
-     * @param token           ANTLR4 token to localize AST node in the sources.
+     * @param location        AST node location.
      * @param name            Name of the enumeration item.
      * @param valueExpression Expression value of the enumeration item.
      * @param docComment      Documentation comment belonging to this node.
      */
-    public EnumItem(Token token, String name, Expression valueExpression, DocComment docComment)
+    public EnumItem(AstLocation location, String name, Expression valueExpression, DocComment docComment)
     {
-        super(token, docComment);
+        super(location, docComment);
 
         this.name = name;
         this.valueExpression = valueExpression;

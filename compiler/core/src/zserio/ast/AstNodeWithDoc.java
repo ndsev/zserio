@@ -1,7 +1,5 @@
 package zserio.ast;
 
-import org.antlr.v4.runtime.Token;
-
 /**
  * AST node which can have documentation comment.
  */
@@ -10,12 +8,12 @@ public abstract class AstNodeWithDoc extends AstNodeBase
     /**
      * Constructor.
      *
-     * @param token Token to construct from.
+     * @param location   AST node location.
      * @param docComment Documentation comment belonging to this node.
      */
-    public AstNodeWithDoc(Token token, DocComment docComment)
+    public AstNodeWithDoc(AstLocation location, DocComment docComment)
     {
-        super(token);
+        super(location);
 
         this.docComment = docComment;
     }

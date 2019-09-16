@@ -7,8 +7,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.antlr.v4.runtime.Token;
-
 import zserio.antlr.util.ParserException;
 import zserio.ast.TypeInstantiation.InstantiatedParameter;
 import zserio.tools.ZserioToolPrinter;
@@ -23,7 +21,7 @@ public class SqlTableType extends CompoundType
     /**
      * Constructor.
      *
-     * @param token           ANTLR4 token to localize AST node in the sources.
+     * @param location              AST node location.
      * @param pkg             Package to which belongs the SQL table type.
      * @param name            Name of the SQL table type.
      * @param sqlUsingId      SQL using id associated to the SQL table type.
@@ -32,10 +30,10 @@ public class SqlTableType extends CompoundType
      * @param sqlWithoutRowId SQL without row id associated to the SQL table type.
      * @param docComment      Documentation comment belonging to this node.
      */
-    public SqlTableType(Token token, Package pkg, String name, String sqlUsingId, List<Field> fields,
+    public SqlTableType(AstLocation location, Package pkg, String name, String sqlUsingId, List<Field> fields,
             SqlConstraint sqlConstraint, boolean sqlWithoutRowId, DocComment docComment)
     {
-        super(token, pkg, name, new ArrayList<Parameter>(), fields, new ArrayList<FunctionType>(), docComment);
+        super(location, pkg, name, new ArrayList<Parameter>(), fields, new ArrayList<FunctionType>(), docComment);
 
         this.sqlUsingId = sqlUsingId;
         this.sqlConstraint = sqlConstraint;

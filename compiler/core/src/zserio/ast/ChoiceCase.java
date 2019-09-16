@@ -3,8 +3,6 @@ package zserio.ast;
 import java.util.Collections;
 import java.util.List;
 
-import org.antlr.v4.runtime.Token;
-
 /**
  * AST node for cases defined by choice types.
  */
@@ -13,13 +11,13 @@ public class ChoiceCase extends AstNodeBase
     /**
      * Constructor.
      *
-     * @param token           ANTLR4 token to localize AST node in the sources.
+     * @param location        AST node location.
      * @param caseExpressions List of all case expressions associated to this choice case.
      * @param caseField       Case field associated to this choice case or null if it's not defined.
      */
-    public ChoiceCase(Token token, List<ChoiceCaseExpression> caseExpressions, Field caseField)
+    public ChoiceCase(AstLocation location, List<ChoiceCaseExpression> caseExpressions, Field caseField)
     {
-        super(token);
+        super(location);
 
         this.caseExpressions = caseExpressions;
         this.caseField = caseField;

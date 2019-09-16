@@ -4,8 +4,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import org.antlr.v4.runtime.Token;
-
 import zserio.antlr.util.ParserException;
 
 /**
@@ -21,13 +19,13 @@ public class TypeInstantiation extends AstNodeBase implements ZserioType
     /**
      * Constructor.
      *
-     * @param token          ANTLR4 token to localize AST node in the sources.
+     * @param location       AST node location.
      * @param referencedType Zserio type of the parameterized type.
      * @param arguments      List of all arguments which belong to the parameterized type.
      */
-    TypeInstantiation(Token token, TypeReference referencedType, List<Expression> arguments)
+    TypeInstantiation(AstLocation location, TypeReference referencedType, List<Expression> arguments)
     {
-        super(token);
+        super(location);
 
         this.referencedType = referencedType;
         this.arguments = arguments;

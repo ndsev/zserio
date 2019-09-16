@@ -1,7 +1,5 @@
 package zserio.ast;
 
-import org.antlr.v4.runtime.Token;
-
 import zserio.antlr.util.ParserException;
 import zserio.ast.TypeReference;
 import zserio.ast.ZserioType;
@@ -14,15 +12,15 @@ import zserio.ast.ZserioType;
 public class Subtype extends AstNodeWithDoc implements ZserioType
 {
     /**
-     * @param token      ANTLR4 token to localize AST node in the sources.
+     * @param location   AST node location.
      * @param pkg        Package to which belongs the subtype.
      * @param targetType Zserio type which belongs to the subtype.
      * @param name       Name of the subtype.
      * @param docComment Documentation comment belonging to this node.
      */
-    public Subtype(Token token, Package pkg, ZserioType targetType, String name, DocComment docComment)
+    public Subtype(AstLocation location, Package pkg, ZserioType targetType, String name, DocComment docComment)
     {
-        super(token, docComment);
+        super(location, docComment);
 
         this.pkg = pkg;
         this.targetType = targetType;

@@ -2,8 +2,6 @@ package zserio.ast;
 
 import java.util.List;
 
-import org.antlr.v4.runtime.Token;
-
 
 /**
  * AST node for Union types.
@@ -15,7 +13,7 @@ public class UnionType extends CompoundType
     /**
      * Constructor.
      *
-     * @param token      ANTLR4 token to localize AST node in the sources.
+     * @param location              AST node location.
      * @param pkg        Package to which belongs the union type.
      * @param name       Name of the union type.
      * @param parameters List of parameters for the union type.
@@ -23,10 +21,10 @@ public class UnionType extends CompoundType
      * @param functions  List of all functions of the union type.
      * @param docComment Documentation comment belonging to this node.
      */
-    public UnionType(Token token, Package pkg, String name, List<Parameter> parameters, List<Field> fields,
+    public UnionType(AstLocation location, Package pkg, String name, List<Parameter> parameters, List<Field> fields,
             List<FunctionType> functions, DocComment docComment)
     {
-        super(token, pkg, name, parameters, fields, functions, docComment);
+        super(location pkg, name, parameters, fields, functions, docComment);
     }
 
     @Override

@@ -36,7 +36,7 @@ public class Expression extends AstNodeBase
      */
     public Expression(Token expressionToken, Package pkg)
     {
-        this(expressionToken, pkg, expressionToken, ExpressionFlag.NONE, null, null, null);
+        this(new AstLocation(expressionToken), pkg, expressionToken, ExpressionFlag.NONE, null, null, null);
     }
 
     /**
@@ -48,108 +48,108 @@ public class Expression extends AstNodeBase
      */
     public Expression(Token expressionToken, Package pkg, ExpressionFlag expressionFlag)
     {
-        this(expressionToken, pkg, expressionToken, expressionFlag, null, null, null);
+        this(new AstLocation(expressionToken), pkg, expressionToken, expressionFlag, null, null, null);
     }
 
     /**
      * Constructor.
      *
-     * @param locationToken   Token which denotes expression location in the sources.
+     * @param location        AST node location.
      * @param pkg             Package to which the expression belongs.
      * @param expressionToken Token to construct expression from.
      */
-    public Expression(Token locationToken, Package pkg, Token expressionToken)
+    public Expression(AstLocation location, Package pkg, Token expressionToken)
     {
-        this(locationToken, pkg, expressionToken, ExpressionFlag.NONE, null, null, null);
+        this(location, pkg, expressionToken, ExpressionFlag.NONE, null, null, null);
     }
 
     /**
      * Constructor.
      *
-     * @param locationToken   Token which denotes expression location in the sources.
+     * @param location        AST node location.
      * @param pkg             Package to which the expression belongs.
      * @param expressionToken Token to construct expression from.
      * @param expressionFlag  Flag for the expression.
      */
-    public Expression(Token locationToken, Package pkg, Token expressionToken, ExpressionFlag expressionFlag)
+    public Expression(AstLocation location, Package pkg, Token expressionToken, ExpressionFlag expressionFlag)
     {
-        this(locationToken, pkg, expressionToken, expressionFlag, null, null, null);
+        this(location, pkg, expressionToken, expressionFlag, null, null, null);
     }
 
     /**
      * Constructor.
      *
-     * @param locationToken   Token which denotes expression location in the sources.
+     * @param location        AST node location.
      * @param pkg             Package to which the expression belongs.
      * @param expressionToken Token to construct expression from.
      * @param operand1        Left operand of the expression.
      */
-    public Expression(Token locationToken, Package pkg, Token expressionToken, Expression operand1)
+    public Expression(AstLocation location, Package pkg, Token expressionToken, Expression operand1)
     {
-        this(locationToken, pkg, expressionToken, ExpressionFlag.NONE, operand1, null, null);
+        this(location, pkg, expressionToken, ExpressionFlag.NONE, operand1, null, null);
     }
 
     /**
      * Constructor.
      *
-     * @param locationToken   Token which denotes expression location in the sources.
+     * @param location        AST node location.
      * @param pkg             Package to which the expression belongs.
      * @param expressionToken Token to construct expression from.
      * @param operand1        Left operand of the expression.
      * @param operand2        Right operand of the expression.
      */
-    public Expression(Token locationToken, Package pkg, Token expressionToken, Expression operand1,
+    public Expression(AstLocation location, Package pkg, Token expressionToken, Expression operand1,
             Expression operand2)
     {
-        this(locationToken, pkg, expressionToken, ExpressionFlag.NONE, operand1, operand2, null);
+        this(location, pkg, expressionToken, ExpressionFlag.NONE, operand1, operand2, null);
     }
 
     /**
      * Constructor.
      *
-     * @param locationToken   Token which denotes expression location in the sources.
+     * @param location        AST node location.
      * @param pkg             Package to which the expression belongs.
      * @param expressionType  Expression token type.
      * @param expressionText  Expression token text.
      * @param operand1        Left operand of the expression.
      * @param operand2        Right operand of the expression.
      */
-    public Expression(Token locationToken, Package pkg, int expressionType, String expressionText,
+    public Expression(AstLocation location, Package pkg, int expressionType, String expressionText,
             Expression operand1, Expression operand2)
     {
-        this(locationToken, pkg, expressionType, expressionText, ExpressionFlag.NONE, operand1, operand2, null);
+        this(location, pkg, expressionType, expressionText, ExpressionFlag.NONE, operand1, operand2, null);
     }
 
     /**
      * Constructor.
      *
-     * @param locationToken   Token which denotes expression location in the sources.
+     * @param location        AST node location.
      * @param pkg             Package to which the expression belongs.
      * @param expressionToken Token to construct expression from.
      * @param expressionFlag  Flag for the expression.
      * @param operand1        Left operand of the expression.
      * @param operand2        Right operand of the expression.
      */
-    public Expression(Token locationToken, Package pkg, Token expressionToken, ExpressionFlag expressionFlag,
+    public Expression(AstLocation location, Package pkg, Token expressionToken, ExpressionFlag expressionFlag,
             Expression operand1, Expression operand2)
     {
-        this(locationToken, pkg, expressionToken, expressionFlag, operand1, operand2, null);
+        this(location, pkg, expressionToken, expressionFlag, operand1, operand2, null);
     }
 
     /**
      * Constructor.
      *
-     * @param locationToken   Token which denotes expression location in the sources.
+     * @param location        AST node location.
      * @param pkg             Package to which the expression belongs.
      * @param expressionToken Token to construct expression from.
      * @param operand1        Left operand of the ternary expression.
      * @param operand2        Middle operand of the ternary expression.
      * @param operand3        Right operand of the ternary expression.
      */
-    public Expression(Token locationToken, Package pkg, Token expressionToken, Expression operand1,
+    public Expression(AstLocation location, Package pkg, Token expressionToken, Expression operand1,
             Expression operand2, Expression operand3)
     {
-        this(locationToken, pkg, expressionToken, ExpressionFlag.NONE, operand1, operand2, operand3);
+        this(location, pkg, expressionToken, ExpressionFlag.NONE, operand1, operand2, operand3);
     }
 
     @Override
@@ -689,17 +689,17 @@ public class Expression extends AstNodeBase
         needsBigIntegerCastingToNative = true;
     }
 
-    private Expression(Token locationToken, Package pkg, Token expressionToken,
+    private Expression(AstLocation location, Package pkg, Token expressionToken,
             ExpressionFlag expressionFlag, Expression operand1, Expression operand2, Expression operand3)
     {
-        this(expressionToken, pkg, expressionToken.getType(), expressionToken.getText(), expressionFlag,
+        this(location, pkg, expressionToken.getType(), expressionToken.getText(), expressionFlag,
                 operand1, operand2, operand3);
     }
 
-    private Expression(Token locationToken, Package pkg, int expressionType, String expressionText,
+    private Expression(AstLocation location, Package pkg, int expressionType, String expressionText,
             ExpressionFlag expressionFlag, Expression operand1, Expression operand2, Expression operand3)
     {
-        super(locationToken);
+        super(location);
 
         this.pkg = pkg;
         type = expressionType;

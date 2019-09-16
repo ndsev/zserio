@@ -9,8 +9,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 
-import org.antlr.v4.runtime.Token;
-
 import zserio.antlr.util.ParserException;
 import zserio.tools.HashUtil;
 import zserio.tools.ZserioToolPrinter;
@@ -25,16 +23,16 @@ public class Package extends AstNodeWithDoc
     /**
      * Constructor.
      *
-     * @param token       ANTLR4 token to localize AST node in the sources.
+     * @param location    AST node location.
      * @param packageName Name of the package.
      * @param imports     List of all imports defined in the package.
      * @param localTypes  Map of all available local types defined in the package.
      * @param docComment  Documentation comment belonging to this node.
      */
-    public Package(Token token, PackageName packageName, List<Import> imports,
+    public Package(AstLocation location, PackageName packageName, List<Import> imports,
             LinkedHashMap<String, ZserioType> localTypes, DocComment docComment)
     {
-        super(token, docComment);
+        super(location, docComment);
 
         this.packageName = packageName;
         this.imports = imports;

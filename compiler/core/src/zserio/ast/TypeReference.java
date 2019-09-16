@@ -1,7 +1,5 @@
 package zserio.ast;
 
-import org.antlr.v4.runtime.Token;
-
 import zserio.antlr.util.ParserException;
 
 /**
@@ -17,16 +15,16 @@ public class TypeReference extends AstNodeBase implements ZserioType
     /**
      * Constructor.
      *
-     * @param token                     ANTLR4 token to localize AST node in the sources.
+     * @param location                  AST node location.
      * @param ownerPackage              Package of the type reference owner.
      * @param referencedPackageName     Package name which the reference points to.
      * @param referencedTypeName        Type name which the reference points to.
      * @param checkIfNeedsParameters    True if check if the referenced type needs parameters.
      */
-    public TypeReference(Token token, Package ownerPackage, PackageName referencedPackageName,
+    public TypeReference(AstLocation location, Package ownerPackage, PackageName referencedPackageName,
             String referencedTypeName, boolean checkIfNeedsParameters)
     {
-        super(token);
+        super(location);
 
         this.ownerPackage = ownerPackage;
         this.referencedPackageName = referencedPackageName;

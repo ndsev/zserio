@@ -3,8 +3,6 @@ package zserio.ast;
 import java.util.Collections;
 import java.util.List;
 
-import org.antlr.v4.runtime.Token;
-
 import zserio.tools.HashUtil;
 
 /**
@@ -17,15 +15,15 @@ public class ServiceType extends AstNodeWithDoc implements ZserioScopedType, Com
     /**
      * Constructor.
      *
-     * @param token      ANTLR4 token to localize AST node in the sources.
+     * @param location   AST node location.
      * @param pkg        Package to which belongs the service type.
      * @param name       Name of the service type.
      * @param rpcs       List of all RPCs which belong to the service type.
      * @param docComment Documentation comment belonging to this node.
      */
-    public ServiceType(Token token, Package pkg, String name, List<Rpc> rpcs, DocComment docComment)
+    public ServiceType(AstLocation location, Package pkg, String name, List<Rpc> rpcs, DocComment docComment)
     {
-        super(token, docComment);
+        super(location, docComment);
 
         this.pkg = pkg;
         this.name = name;

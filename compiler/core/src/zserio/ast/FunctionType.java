@@ -2,8 +2,6 @@ package zserio.ast;
 
 import java.util.Set;
 
-import org.antlr.v4.runtime.Token;
-
 import zserio.tools.ZserioToolPrinter;
 
 /**
@@ -16,17 +14,17 @@ public class FunctionType extends AstNodeWithDoc implements ZserioType
     /**
      * Constructor.
      *
-     * @param token            ANTLR4 token to localize AST node in the sources.
+     * @param location         AST node location.
      * @param pkg              Package to which belongs the function type.
      * @param returnType       Zserio type of the function return value.
      * @param name             Name of the function type.
      * @param resultExpression Result expression of the function type.
-     * @param docComment      Documentation comment belonging to this node.
+     * @param docComment       Documentation comment belonging to this node.
      */
-    public FunctionType(Token token, Package pkg, ZserioType returnType, String name,
+    public FunctionType(AstLocation location, Package pkg, ZserioType returnType, String name,
             Expression resultExpression, DocComment docComment)
     {
-        super(token, docComment);
+        super(location, docComment);
 
         this.pkg = pkg;
         this.returnType = returnType;

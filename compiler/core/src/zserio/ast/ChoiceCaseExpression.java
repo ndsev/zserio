@@ -1,7 +1,5 @@
 package zserio.ast;
 
-import org.antlr.v4.runtime.Token;
-
 /**
  * Choice case expression which can have its own documentation comment.
  */
@@ -10,13 +8,13 @@ public class ChoiceCaseExpression extends AstNodeWithDoc
     /**
      * Constructor.
      *
-     * @param token ANTLR4 token to localize AST node in the sources.
+     * @param location   AST node location.
      * @param expression Case expression.
      * @param docComment Documentation comment belonging to the case expression.
      */
-    public ChoiceCaseExpression(Token token, Expression expression, DocComment docComment)
+    public ChoiceCaseExpression(AstLocation location, Expression expression, DocComment docComment)
     {
-        super(token, docComment);
+        super(location, docComment);
 
         this.expression = expression;
     }

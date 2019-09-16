@@ -5,8 +5,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
-import org.antlr.v4.runtime.Token;
-
 import zserio.antlr.util.ParserException;
 import zserio.tools.ZserioToolPrinter;
 
@@ -20,7 +18,7 @@ public class ChoiceType extends CompoundType
     /**
      * Constructor.
      *
-     * @param token              ANTLR4 token to localize AST node in the sources.
+     * @param location              AST node location.
      * @param pkg                Package to which belongs the choice type.
      * @param name               Name of the choice type.
      * @param parameters         List of parameters for the choice type.
@@ -30,11 +28,11 @@ public class ChoiceType extends CompoundType
      * @param functions          List of all functions of the choice type.
      * @param docComment         Documentation comment belonging to this node.
      */
-    public ChoiceType(Token token, Package pkg, String name, List<Parameter> parameters,
+    public ChoiceType(AstLocation location, Package pkg, String name, List<Parameter> parameters,
             Expression selectorExpression, List<ChoiceCase> choiceCases, ChoiceDefault choiceDefault,
             List<FunctionType> functions, DocComment docComment)
     {
-        super(token, pkg, name, parameters, getChoiceFields(choiceCases, choiceDefault), functions, docComment);
+        super(location, pkg, name, parameters, getChoiceFields(choiceCases, choiceDefault), functions, docComment);
 
         this.selectorExpression = selectorExpression;
         this.choiceCases = choiceCases;
