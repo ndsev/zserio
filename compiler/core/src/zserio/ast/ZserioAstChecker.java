@@ -63,6 +63,9 @@ public class ZserioAstChecker extends ZserioAstWalker
     @Override
     public void visitStructureType(StructureType structureType)
     {
+        if (!structureType.getTemplateParameters().isEmpty())
+            return;
+
         structureType.visitChildren(this);
         definedTypes.add(structureType);
         structureType.check();
@@ -71,6 +74,9 @@ public class ZserioAstChecker extends ZserioAstWalker
     @Override
     public void visitChoiceType(ChoiceType choiceType)
     {
+        if (!choiceType.getTemplateParameters().isEmpty())
+            return;
+
         choiceType.visitChildren(this);
         definedTypes.add(choiceType);
         choiceType.check();
@@ -79,6 +85,9 @@ public class ZserioAstChecker extends ZserioAstWalker
     @Override
     public void visitUnionType(UnionType unionType)
     {
+        if (!unionType.getTemplateParameters().isEmpty())
+            return;
+
         unionType.visitChildren(this);
         definedTypes.add(unionType);
         unionType.check();
@@ -95,6 +104,9 @@ public class ZserioAstChecker extends ZserioAstWalker
     @Override
     public void visitSqlTableType(SqlTableType sqlTableType)
     {
+        if (!sqlTableType.getTemplateParameters().isEmpty())
+            return;
+
         sqlTableType.visitChildren(this);
         definedTypes.add(sqlTableType);
         sqlTableType.check();

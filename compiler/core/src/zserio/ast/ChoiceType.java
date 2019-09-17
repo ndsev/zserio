@@ -13,26 +13,28 @@ import zserio.tools.ZserioToolPrinter;
  *
  * Choice types are Zserio types as well.
  */
-public class ChoiceType extends CompoundType
+public class ChoiceType extends TemplatableCompoundType
 {
     /**
      * Constructor.
      *
      * @param location              AST node location.
-     * @param pkg                Package to which belongs the choice type.
-     * @param name               Name of the choice type.
-     * @param parameters         List of parameters for the choice type.
-     * @param selectorExpression Selector expression of the choice type.
-     * @param choiceCases        List of all choice cases.
-     * @param choiceDefault      Choice default case or null if default case is not defined.
-     * @param functions          List of all functions of the choice type.
-     * @param docComment         Documentation comment belonging to this node.
+     * @param pkg                   Package to which belongs the choice type.
+     * @param name                  Name of the choice type.
+     * @param templateParameters    List of template parameters.
+     * @param typeParameters        List of parameters for the choice type.
+     * @param selectorExpression    Selector expression of the choice type.
+     * @param choiceCases           List of all choice cases.
+     * @param choiceDefault         Choice default case or null if default case is not defined.
+     * @param functions             List of all functions of the choice type.
+     * @param docComment            Documentation comment belonging to this node.
      */
-    public ChoiceType(AstLocation location, Package pkg, String name, List<Parameter> parameters,
-            Expression selectorExpression, List<ChoiceCase> choiceCases, ChoiceDefault choiceDefault,
-            List<FunctionType> functions, DocComment docComment)
+    public ChoiceType(AstLocation location, Package pkg, String name, List<String> templateParameters,
+            List<Parameter> typeParameters, Expression selectorExpression, List<ChoiceCase> choiceCases,
+            ChoiceDefault choiceDefault, List<FunctionType> functions, DocComment docComment)
     {
-        super(location, pkg, name, parameters, getChoiceFields(choiceCases, choiceDefault), functions, docComment);
+        super(location, pkg, name, templateParameters, typeParameters, getChoiceFields(choiceCases, choiceDefault),
+                functions, docComment);
 
         this.selectorExpression = selectorExpression;
         this.choiceCases = choiceCases;
@@ -48,7 +50,7 @@ public class ChoiceType extends CompoundType
     @Override
     public void visitChildren(ZserioAstVisitor visitor)
     {
-        for (Parameter parameter : getParameters())
+        for (Parameter parameter : getTypeParameters())
             parameter.accept(visitor);
 
         selectorExpression.accept(visitor);
@@ -64,6 +66,13 @@ public class ChoiceType extends CompoundType
 
         if (getDocComment() != null)
             getDocComment().accept(visitor);
+    }
+
+    @Override
+    ChoiceType instantiateImpl(String name, List<ZserioType> templateArguemnts)
+    {
+        // TODO[Mi-L@]:
+        return null;
     }
 
     /**

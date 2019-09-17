@@ -61,6 +61,7 @@ import zserio.ast.DocTagParam;
 import zserio.ast.DocTagSee;
 import zserio.ast.DocTagTodo;
 import zserio.ast.DocText;
+import zserio.ast.ZserioTemplatableType;
 import zserio.ast.ZserioType;
 import zserio.emit.common.ZserioEmitException;
 
@@ -457,6 +458,24 @@ public class XmlAstWriter implements ZserioAstVisitor
         final Element xmlElement = xmlDoc.createElement("DOC_TEXT");
         xmlElement.setAttribute("text", docText.getText());
         visitAstNode(docText, xmlElement);
+    }
+
+    private void visitZserioType(ZserioTemplatableType zserioTemplatableType, String xmlElementName)
+    {
+        final Element xmlElement = xmlDoc.createElement(xmlElementName);
+        xmlElement.setAttribute("name", zserioTemplatableType.getName());
+
+        final StringBuilder templateParameters = new StringBuilder();
+        for (String templateParameter : zserioTemplatableType.getTemplateParameters())
+        {
+            if (templateParameters.length() != 0)
+                templateParameters.append(", ");
+            templateParameters.append(templateParameter);
+        }
+        if (templateParameters.length() > 0)
+            xmlElement.setAttribute("template_parameters", templateParameters.toString());
+
+        visitAstNode(zserioTemplatableType, xmlElement);
     }
 
     private void visitZserioType(ZserioType zserioType, String xmlElementName)

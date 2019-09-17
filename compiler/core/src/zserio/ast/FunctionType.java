@@ -1,5 +1,6 @@
 package zserio.ast;
 
+import java.util.List;
 import java.util.Set;
 
 import zserio.tools.ZserioToolPrinter;
@@ -100,6 +101,12 @@ public class FunctionType extends AstNodeWithDoc implements ZserioType
                             "unconditional optional fields.");
             }
         }
+    }
+
+    FunctionType instantiate(List<String> templateParameters, List<ZserioType> templateArguments)
+    {
+        // TODO[Mi-L@]:
+        return this;
     }
 
     private final Package pkg;

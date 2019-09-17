@@ -23,6 +23,7 @@ import zserio.ast.ZserioAstChecker;
 import zserio.ast.ZserioAstEvaluator;
 import zserio.ast.ZserioAstResolver;
 import zserio.ast.ZserioAstScopeSetter;
+import zserio.ast.ZserioAstTemplator;
 import zserio.ast.ZserioParseTreeChecker;
 import zserio.emit.common.ZserioEmitException;
 
@@ -140,6 +141,9 @@ public class ZserioTool
         parseImportedPackages(astBuilderVisitor, parsedPackage);
 
         final Root rootNode = astBuilderVisitor.getAst();
+
+        final ZserioAstTemplator templator = new ZserioAstTemplator();
+        rootNode.accept(templator);
 
         final ZserioAstScopeSetter scopeSetter = new ZserioAstScopeSetter();
         rootNode.accept(scopeSetter);

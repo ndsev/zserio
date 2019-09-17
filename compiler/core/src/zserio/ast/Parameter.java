@@ -1,5 +1,7 @@
 package zserio.ast;
 
+import java.util.List;
+
 /**
  * AST node for a parameter defined in the parameterized compound types.
  */
@@ -50,6 +52,17 @@ public class Parameter extends AstNodeBase
     public String getName()
     {
         return name;
+    }
+
+    Parameter instantiate(List<String> templateParameters, List<ZserioType> templateArguments)
+    {
+        int index = templateParameters.indexOf(parameterType.getName());
+        final ZserioType instantiatedParameterType = (index != -1) ? templateArguments.get(index) :
+                parameterType;
+
+        // TODO[Mi-L@]: What if parameter is a tempalte? How it works?
+
+        return new Parameter(getLocation(), instantiatedParameterType, getName());
     }
 
     private final ZserioType parameterType;

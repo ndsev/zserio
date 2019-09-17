@@ -19,6 +19,8 @@ public class ZserioAstScopeSetter extends ZserioAstWalker
         currentScope = defaultScope;
         expressionScopes.clear();
         fillExpressionScopes = false;
+
+        visitInstantiations(structureType);
     }
 
     @Override
@@ -53,7 +55,7 @@ public class ZserioAstScopeSetter extends ZserioAstWalker
         currentScope = choiceType.getScope();
         fillExpressionScopes = true;
 
-        for (Parameter parameter : choiceType.getParameters())
+        for (Parameter parameter : choiceType.getTypeParameters())
             parameter.accept(this);
 
         currentChoiceOrUnionScope = currentScope;
@@ -76,6 +78,8 @@ public class ZserioAstScopeSetter extends ZserioAstWalker
         currentScope = defaultScope;
         expressionScopes.clear();
         fillExpressionScopes = false;
+
+        visitInstantiations(choiceType);
     }
 
     @Override
@@ -101,7 +105,7 @@ public class ZserioAstScopeSetter extends ZserioAstWalker
         currentScope = unionType.getScope();
         fillExpressionScopes = true;
 
-        for (Parameter parameter : unionType.getParameters())
+        for (Parameter parameter : unionType.getTypeParameters())
             parameter.accept(this);
 
         currentChoiceOrUnionScope = currentScope;
@@ -119,6 +123,8 @@ public class ZserioAstScopeSetter extends ZserioAstWalker
         currentScope = defaultScope;
         expressionScopes.clear();
         fillExpressionScopes = false;
+
+        visitInstantiations(unionType);
     }
 
     @Override
@@ -146,6 +152,8 @@ public class ZserioAstScopeSetter extends ZserioAstWalker
         sqlTableType.visitChildren(this);
 
         currentScope = defaultScope;
+
+        visitInstantiations(sqlTableType);
     }
 
     @Override
@@ -223,6 +231,12 @@ public class ZserioAstScopeSetter extends ZserioAstWalker
             field.getConstraintExpr().accept(this);
 
         currentScope.removeSymbol(field.getName());
+    }
+
+    private void visitInstantiations(ZserioTemplatableType template)
+    {
+        for (ZserioTemplatableType instantiation : template.getInstantiations())
+            instantiation.accept(this);
     }
 
     private final Scope defaultScope = new Scope((ZserioScopedType)null);

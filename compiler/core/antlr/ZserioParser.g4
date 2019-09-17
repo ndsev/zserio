@@ -54,7 +54,7 @@ subtypeDeclaration
 // STRUCTURE
 
 structureDeclaration
-    :   STRUCTURE id typeParameters?
+    :   STRUCTURE id templateParameters? typeParameters?
         LBRACE
         structureFieldDefinition*
         functionDefinition*
@@ -105,7 +105,7 @@ fieldConstraint
 // CHOICE
 
 choiceDeclaration
-    :   CHOICE id typeParameters ON expression
+    :   CHOICE id templateParameters? typeParameters ON expression
         LBRACE
         choiceCases*
         choiceDefault?
@@ -134,7 +134,7 @@ choiceFieldDefinition
 // UNION
 
 unionDeclaration
-    :   UNION id typeParameters?
+    :   UNION id templateParameters? typeParameters?
         LBRACE
         unionFieldDefinition*
         functionDefinition*
@@ -165,7 +165,7 @@ enumItem
 // SQL TABLE
 
 sqlTableDeclaration
-    :   SQL_TABLE id (USING id)?
+    :   SQL_TABLE id templateParameters? (USING id)?
         LBRACE
         sqlTableFieldDefinition*
         sqlConstraintDefinition?
@@ -225,7 +225,7 @@ rpcDefinition
     ;
 
 rpcTypeName
-    :   STREAM? qualifiedName
+    :   STREAM? qualifiedName templateArguments?
     ;
 
 
@@ -260,6 +260,17 @@ typeParameters
 
 parameterDefinition
     :   typeName id
+    ;
+
+
+// TEMPLATES
+
+templateParameters
+    :   LT id (COMMA id)* GT
+    ;
+
+templateArguments
+    :   LT typeName (COMMA typeName)* GT
     ;
 
 
@@ -310,12 +321,12 @@ id
 
 typeName
     :   builtinType
-    |   qualifiedName
+    |   qualifiedName templateArguments?
     ;
 
 typeReference
     :   builtinType
-    |   qualifiedName typeArguments?
+    |   qualifiedName templateArguments? typeArguments?
     ;
 
 builtinType

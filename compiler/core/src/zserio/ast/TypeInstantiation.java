@@ -152,7 +152,7 @@ public class TypeInstantiation extends AstNodeBase implements ZserioType
             baseType = (CompoundType)resolvedReferencedType;
 
             // check if referenced type is a parameterized type
-            final List<Parameter> parameters = baseType.getParameters();
+            final List<Parameter> parameters = baseType.getTypeParameters();
             final int numParameters = parameters.size();
             if (numParameters == 0)
                 throw new ParserException(referencedType, "Parameterized type instantiation '" + getName() +

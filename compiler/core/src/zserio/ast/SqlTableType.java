@@ -16,24 +16,27 @@ import zserio.tools.ZserioToolPrinter;
  *
  * SQL Ttypes are Zserio types as well.
  */
-public class SqlTableType extends CompoundType
+public class SqlTableType extends TemplatableCompoundType
 {
     /**
      * Constructor.
      *
      * @param location              AST node location.
-     * @param pkg             Package to which belongs the SQL table type.
-     * @param name            Name of the SQL table type.
-     * @param sqlUsingId      SQL using id associated to the SQL table type.
-     * @param fields          List of all fields of to the SQL table type.
-     * @param sqlConstraint   SQL constraint of the SQL table type.
-     * @param sqlWithoutRowId SQL without row id associated to the SQL table type.
-     * @param docComment      Documentation comment belonging to this node.
+     * @param pkg                   Package to which belongs the SQL table type.
+     * @param name                  Name of the SQL table type.
+     * @param templateParameters    List of template parameters.
+     * @param sqlUsingId            SQL using id associated to the SQL table type.
+     * @param fields                List of all fields of to the SQL table type.
+     * @param sqlConstraint         SQL constraint of the SQL table type.
+     * @param sqlWithoutRowId       SQL without row id associated to the SQL table type.
+     * @param docComment            Documentation comment belonging to this node.
      */
-    public SqlTableType(AstLocation location, Package pkg, String name, String sqlUsingId, List<Field> fields,
-            SqlConstraint sqlConstraint, boolean sqlWithoutRowId, DocComment docComment)
+    public SqlTableType(AstLocation location, Package pkg, String name, List<String> templateParameters,
+            String sqlUsingId, List<Field> fields, SqlConstraint sqlConstraint, boolean sqlWithoutRowId,
+            DocComment docComment)
     {
-        super(location, pkg, name, new ArrayList<Parameter>(), fields, new ArrayList<FunctionType>(), docComment);
+        super(location, pkg, name, templateParameters, new ArrayList<Parameter>(), fields,
+                new ArrayList<FunctionType>(), docComment);
 
         this.sqlUsingId = sqlUsingId;
         this.sqlConstraint = sqlConstraint;
@@ -53,6 +56,13 @@ public class SqlTableType extends CompoundType
 
         if (sqlConstraint != null)
             sqlConstraint.accept(visitor);
+    }
+
+    @Override
+    SqlTableType instantiateImpl(String name, List<ZserioType> templateArguemnts)
+    {
+        // TODO[Mi-L@]:
+        return null;
     }
 
     /**

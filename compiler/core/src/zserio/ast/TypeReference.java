@@ -1,5 +1,7 @@
 package zserio.ast;
 
+import java.util.List;
+
 import zserio.antlr.util.ParserException;
 
 /**
@@ -19,16 +21,18 @@ public class TypeReference extends AstNodeBase implements ZserioType
      * @param ownerPackage              Package of the type reference owner.
      * @param referencedPackageName     Package name which the reference points to.
      * @param referencedTypeName        Type name which the reference points to.
+     * @param templateArguments         Template arguments for the referenced type.
      * @param checkIfNeedsParameters    True if check if the referenced type needs parameters.
      */
     public TypeReference(AstLocation location, Package ownerPackage, PackageName referencedPackageName,
-            String referencedTypeName, boolean checkIfNeedsParameters)
+            String referencedTypeName, List<ZserioType> templateArguments, boolean checkIfNeedsParameters)
     {
         super(location);
 
         this.ownerPackage = ownerPackage;
         this.referencedPackageName = referencedPackageName;
         this.referencedTypeName = referencedTypeName;
+        this.templateArguments = templateArguments;
         this.checkIfNeedsParameters = checkIfNeedsParameters;
     }
 
@@ -36,6 +40,13 @@ public class TypeReference extends AstNodeBase implements ZserioType
     public void accept(ZserioAstVisitor visitor)
     {
         visitor.visitTypeReference(this);
+    }
+
+    @Override
+    public void visitChildren(ZserioAstVisitor visitor)
+    {
+        for (ZserioType templateArgument : this.templateArguments)
+            templateArgument.accept(visitor);
     }
 
     @Override
@@ -80,6 +91,13 @@ public class TypeReference extends AstNodeBase implements ZserioType
         if (referencedType instanceof SqlDatabaseType)
             throw new ParserException(this, "Invalid usage of SQL database '" + referencedType.getName() +
                     "' as a type!");
+
+        if (referencedType instanceof ZserioTemplatableType)
+        {
+            ZserioTemplatableType template = (ZserioTemplatableType)referencedType;
+            if (!template.getTemplateParameters().isEmpty())
+                referencedType = template.getInstantiation(templateArguments);
+        }
     }
 
     /**
@@ -93,11 +111,26 @@ public class TypeReference extends AstNodeBase implements ZserioType
             if (referencedBaseType instanceof CompoundType)
             {
                 final CompoundType referencedCompoundType = (CompoundType)referencedBaseType;
-                if (referencedCompoundType.getParameters().size() > 0)
+                if (referencedCompoundType.getTypeParameters().size() > 0)
                     throw new ParserException(this, "Referenced type '" + referencedTypeName +
                             "' is defined as parameterized type!");
             }
         }
+    }
+
+    List<ZserioType> getTemplateArguments()
+    {
+        return templateArguments;
+    }
+
+    PackageName getReferencedPackageName()
+    {
+        return referencedPackageName;
+    }
+
+    String getReferencedTypeName()
+    {
+        return referencedTypeName;
     }
 
     /**
@@ -143,6 +176,7 @@ public class TypeReference extends AstNodeBase implements ZserioType
     private final Package ownerPackage;
     private final PackageName referencedPackageName;
     private final String referencedTypeName;
+    private final List<ZserioType> templateArguments;
     private final boolean checkIfNeedsParameters;
 
     private ZserioType referencedType = null;

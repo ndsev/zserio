@@ -116,7 +116,7 @@ public class Rpc extends AstNodeWithDoc
 
     private void checkUsedType(ZserioType type, CompoundType compoundType)
     {
-        if (compoundType.getParameters().size() > 0)
+        if (compoundType.getTypeParameters().size() > 0)
             throw new ParserException(type, "Only non-parameterized compound types can be used in RPC calls, " +
                     "'" + type.getName() + "' is a parameterized type!");
 

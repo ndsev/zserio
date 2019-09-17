@@ -312,6 +312,27 @@ public class Field extends AstNodeWithDoc
             throw new ParserException(this, "'" + getName() + "' is a defined type in this package!");
     }
 
+    Field instantiate(List<String> templateParameters, List<ZserioType> templateArguments)
+    {
+        int index = templateParameters.indexOf(fieldType.getName()); // TODO[Mi-L@]: check pacakge
+        final ZserioType instantiatedFieldType = (index != -1) ? templateArguments.get(index) : fieldType;
+
+        final Expression alignmentExpr = this.alignmentExpr == null ? null :
+                this.alignmentExpr.instantiate(templateParameters, templateArguments);
+        final Expression offsetExpr = this.offsetExpr == null ? null :
+                this.offsetExpr.instantiate(templateParameters, templateArguments);
+        final Expression initializerExpr = this.initializerExpr == null ? null :
+            this.initializerExpr.instantiate(templateParameters, templateArguments);
+        final Expression optionalClauseExpr = this.optionalClauseExpr == null ? null :
+            this.optionalClauseExpr.instantiate(templateParameters, templateArguments);
+        final Expression constraintExpr = this.constraintExpr == null ? null :
+            this.constraintExpr.instantiate(templateParameters, templateArguments);
+
+        return new Field(getLocation(), instantiatedFieldType, name, isAutoOptional, alignmentExpr,
+                offsetExpr, initializerExpr, optionalClauseExpr, constraintExpr, isVirtual, sqlConstraint,
+                getDocComment());
+    }
+
     private Field(AstLocation location, ZserioType fieldType, String name, boolean isAutoOptional,
             Expression alignmentExpr, Expression offsetExpr, Expression initializerExpr,
             Expression optionalClauseExpr, Expression constraintExpr, boolean isVirtual,

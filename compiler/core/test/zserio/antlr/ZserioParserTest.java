@@ -60,6 +60,13 @@ public class ZserioParserTest
     }
 
     @Test
+    public void templateParameters()
+    {
+        checkParseTree("templateParameters", "<TYPE1, TYPE2>",
+                "(templateParameters < (id TYPE1) , (id TYPE2) >)");
+    }
+
+    @Test
     public void typeParameters()
     {
         checkParseTree("typeParameters", "(uint32 id1, bool id2)",
@@ -103,6 +110,12 @@ public class ZserioParserTest
         checkParseTree("fieldTypeId", "uint32 value[22]",
                 "(fieldTypeId (typeReference (builtinType (intType uint32))) (id value) " +
                         "(fieldArrayRange [ (expression (literal 22)) ]))");
+        checkParseTree("fieldTypeId", "Parameterized(param) field",
+                "(fieldTypeId (typeReference (qualifiedName (id Parameterized)) " +
+                        "(typeArguments ( (typeArgument (expression (id param))) ))) (id field))");
+        checkParseTree("fieldTypeId", "Template<uint32> field",
+                "(fieldTypeId (typeReference (qualifiedName (id Template)) " +
+                        "(templateArguments < (typeReference (builtinType (intType uint32))) >)) (id field))");
 
         assertParseError("fieldTypeId", "uint32 bool", "mismatched input 'bool' expecting ID");
     }

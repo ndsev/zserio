@@ -98,6 +98,12 @@ public class ZserioAstResolver extends ZserioAstWalker
         docTagSee.visitChildren(this);
     }
 
+    private void visitType(TemplatableCompoundType templatableCompoundType)
+    {
+        if (templatableCompoundType.getTemplateParameters().isEmpty())
+            visitType((CompoundType)templatableCompoundType);
+    }
+
     private void visitType(CompoundType compoundType)
     {
         currentScopedType = compoundType;
