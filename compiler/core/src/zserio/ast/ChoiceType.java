@@ -68,13 +68,6 @@ public class ChoiceType extends TemplatableCompoundType
             getDocComment().accept(visitor);
     }
 
-    @Override
-    ChoiceType instantiateImpl(String name, List<ZserioType> templateArguemnts)
-    {
-        // TODO[Mi-L@]:
-        return null;
-    }
-
     /**
      * Gets selector expression.
      *
@@ -133,6 +126,35 @@ public class ChoiceType extends TemplatableCompoundType
             fields.add(choiceDefault.getField());
 
         return fields;
+    }
+
+    @Override
+    ChoiceType instantiateImpl(String name, List<ZserioType> templateArguments)
+    {
+        final List<Parameter> instantiatedTypeParameters = new ArrayList<Parameter>();
+        for (Parameter typeParameter : getTypeParameters())
+        {
+            instantiatedTypeParameters.add(
+                    typeParameter.instantiate(getTemplateParameters(), templateArguments));
+        }
+
+        final Expression instantiatedSelectorExpression =
+                getSelectorExpression().instantiate(getTemplateParameters(), templateArguments);
+
+        final List<ChoiceCase> instantiatedChoiceCases = new ArrayList<ChoiceCase>();
+        for (ChoiceCase choiceCase: getChoiceCases())
+            instantiatedChoiceCases.add(choiceCase.instantiate(getTemplateParameters(), templateArguments));
+
+        final ChoiceDefault instantiatedChoiceDefault = getChoiceDefault() == null ? null :
+            getChoiceDefault().instantiate(getTemplateParameters(), templateArguments);
+
+        final List<FunctionType> instantiatedFunctions = new ArrayList<FunctionType>();
+        for (FunctionType function : getFunctions())
+            instantiatedFunctions.add(function.instantiate(getTemplateParameters(), templateArguments));
+
+        return new ChoiceType(getLocation(), getPackage(), name, new ArrayList<String>(),
+                instantiatedTypeParameters, instantiatedSelectorExpression, instantiatedChoiceCases,
+                instantiatedChoiceDefault, instantiatedFunctions, getDocComment());
     }
 
     @Override

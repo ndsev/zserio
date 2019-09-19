@@ -1,28 +1,15 @@
 package zserio.ast;
 
-import java.util.Map;
-
 /**
  * Implementation of ZserioAstVisitor which manages resolving phase.
  */
 public class ZserioAstResolver extends ZserioAstWalker
 {
     @Override
-    public void visitRoot(Root root)
-    {
-        packageNameMap = root.getPackageNameMap();
-
-        root.visitChildren(this);
-
-        packageNameMap = null;
-    }
-
-    @Override
     public void visitPackage(Package pkg)
     {
         currentPackage = pkg;
 
-        pkg.resolve(packageNameMap);
         pkg.visitChildren(this);
 
         currentPackage = null;
@@ -102,6 +89,8 @@ public class ZserioAstResolver extends ZserioAstWalker
     {
         if (templatableCompoundType.getTemplateParameters().isEmpty())
             visitType((CompoundType)templatableCompoundType);
+        else
+            visitInstantiations(templatableCompoundType);
     }
 
     private void visitType(CompoundType compoundType)
@@ -124,7 +113,11 @@ public class ZserioAstResolver extends ZserioAstWalker
         currentScopedType = null;
     }
 
-    private Map<PackageName, Package> packageNameMap = null;
+    private void visitInstantiations(ZserioTemplatableType template)
+    {
+        for (ZserioTemplatableType instantiation : template.getInstantiations())
+            instantiation.accept(this);
+    }
 
     private Package currentPackage = null;
     private CompoundType currentCompoundType = null;

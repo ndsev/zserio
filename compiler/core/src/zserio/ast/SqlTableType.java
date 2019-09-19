@@ -59,10 +59,14 @@ public class SqlTableType extends TemplatableCompoundType
     }
 
     @Override
-    SqlTableType instantiateImpl(String name, List<ZserioType> templateArguemnts)
+    SqlTableType instantiateImpl(String name, List<ZserioType> templateArguments)
     {
-        // TODO[Mi-L@]:
-        return null;
+        final List<Field> instantiatedFields = new ArrayList<Field>();
+        for (Field field : getFields())
+            instantiatedFields.add(field.instantiate(getTemplateParameters(), templateArguments));
+
+        return new SqlTableType(getLocation(), getPackage(), name, new ArrayList<String>(), sqlUsingId,
+                instantiatedFields, getSqlConstraint(), isWithoutRowId(), getDocComment());
     }
 
     /**

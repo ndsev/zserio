@@ -314,23 +314,23 @@ public class Field extends AstNodeWithDoc
 
     Field instantiate(List<String> templateParameters, List<ZserioType> templateArguments)
     {
-        int index = templateParameters.indexOf(fieldType.getName()); // TODO[Mi-L@]: check pacakge
-        final ZserioType instantiatedFieldType = (index != -1) ? templateArguments.get(index) : fieldType;
+        final ZserioType instantiatedFieldType = (fieldType instanceof TypeReference) ?
+                ((TypeReference)fieldType).instantiate(templateParameters, templateArguments) : fieldType;
 
-        final Expression alignmentExpr = this.alignmentExpr == null ? null :
-                this.alignmentExpr.instantiate(templateParameters, templateArguments);
-        final Expression offsetExpr = this.offsetExpr == null ? null :
-                this.offsetExpr.instantiate(templateParameters, templateArguments);
-        final Expression initializerExpr = this.initializerExpr == null ? null :
-            this.initializerExpr.instantiate(templateParameters, templateArguments);
-        final Expression optionalClauseExpr = this.optionalClauseExpr == null ? null :
-            this.optionalClauseExpr.instantiate(templateParameters, templateArguments);
-        final Expression constraintExpr = this.constraintExpr == null ? null :
-            this.constraintExpr.instantiate(templateParameters, templateArguments);
+        final Expression instantiatedAlignmentExpr = getAlignmentExpr() == null ? null :
+                getAlignmentExpr().instantiate(templateParameters, templateArguments);
+        final Expression instantiatedOffsetExpr = getOffsetExpr() == null ? null :
+                getOffsetExpr().instantiate(templateParameters, templateArguments);
+        final Expression instantiatedInitializerExpr = getInitializerExpr() == null ? null :
+            getInitializerExpr().instantiate(templateParameters, templateArguments);
+        final Expression instantiatedOptionalClauseExpr = getOptionalClauseExpr() == null ? null :
+            getOptionalClauseExpr().instantiate(templateParameters, templateArguments);
+        final Expression instantiatedConstraintExpr = getConstraintExpr() == null ? null :
+            getConstraintExpr().instantiate(templateParameters, templateArguments);
 
-        return new Field(getLocation(), instantiatedFieldType, name, isAutoOptional, alignmentExpr,
-                offsetExpr, initializerExpr, optionalClauseExpr, constraintExpr, isVirtual, sqlConstraint,
-                getDocComment());
+        return new Field(getLocation(), instantiatedFieldType, name, isAutoOptional, instantiatedAlignmentExpr,
+                instantiatedOffsetExpr, instantiatedInitializerExpr, instantiatedOptionalClauseExpr,
+                instantiatedConstraintExpr, isVirtual, sqlConstraint, getDocComment());
     }
 
     private Field(AstLocation location, ZserioType fieldType, String name, boolean isAutoOptional,

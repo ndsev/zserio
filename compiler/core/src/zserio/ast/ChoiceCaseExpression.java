@@ -1,5 +1,7 @@
 package zserio.ast;
 
+import java.util.List;
+
 /**
  * Choice case expression which can have its own documentation comment.
  */
@@ -41,6 +43,14 @@ public class ChoiceCaseExpression extends AstNodeWithDoc
     public Expression getExpression()
     {
         return expression;
+    }
+
+    ChoiceCaseExpression instantiate(List<String> templateParameters, List<ZserioType> templateArguments)
+    {
+        final Expression instantiatedExpression =
+                getExpression().instantiate(templateParameters, templateArguments);
+
+        return new ChoiceCaseExpression(getLocation(), instantiatedExpression, getDocComment());
     }
 
     private final Expression expression;

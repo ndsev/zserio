@@ -1,5 +1,7 @@
 package zserio.ast;
 
+import java.util.List;
+
 
 /**
  * AST node for default case defined by choice types.
@@ -43,6 +45,14 @@ public class ChoiceDefault extends AstNodeWithDoc
     public Field getField()
     {
         return defaultField;
+    }
+
+    ChoiceDefault instantiate(List<String> templateParameters, List<ZserioType> templateArguments)
+    {
+        final Field instantiatedDefaultField = defaultField == null ? null :
+                defaultField.instantiate(templateParameters, templateArguments);
+
+        return new ChoiceDefault(getLocation(), instantiatedDefaultField, getDocComment());
     }
 
     private final Field defaultField;

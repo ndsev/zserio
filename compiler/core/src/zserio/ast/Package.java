@@ -119,17 +119,13 @@ public class Package extends AstNodeWithDoc
     }
 
     /**
-     * Resolves this package.
+     * Imports types to this package.
      *
-     * This method
-     *
-     * - resolves all imports which belong to this package
-     * - resolves all type references which belong to this package
-     * - resolves all subtypes which belong to this package
+     * This method resolves all imports which belong to this package
      *
      * @param packageNameMap Map of all available package name to the package object.
      */
-    void resolve(Map<PackageName, Package> packageNameMap)
+    void importTypes(Map<PackageName, Package> packageNameMap)
     {
         for (Import importedNode : imports)
         {

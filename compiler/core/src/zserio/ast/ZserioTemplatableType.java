@@ -22,7 +22,7 @@ public interface ZserioTemplatableType extends ZserioType
      *
      * @param templateArguments Actual template parameters.
      */
-    public void instantiate(List<ZserioType> templateArguments);
+    public ZserioTemplatableType instantiate(List<ZserioType> templateArguments);
 
     /**
      * Gets all template's instantiations.

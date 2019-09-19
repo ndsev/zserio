@@ -1,6 +1,7 @@
 package zserio.emit.xml;
 
 import java.io.File;
+import java.util.List;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -485,6 +486,20 @@ public class XmlAstWriter implements ZserioAstVisitor
         visitAstNode(zserioType, xmlElement);
     }
 
+    private void visitAstNode(ZserioTemplatableType templatable, Element xmlElement)
+    {
+        currentXmlElement.appendChild(xmlElement);
+
+        final Element oldCurrentXmlElement = currentXmlElement;
+        currentXmlElement = xmlElement;
+
+        templatable.visitChildren(this);
+
+        visitInstantiations(templatable.getInstantiations());
+
+        currentXmlElement = oldCurrentXmlElement;
+    }
+
     private void visitAstNode(AstNode node, Element xmlElement)
     {
         currentXmlElement.appendChild(xmlElement);
@@ -504,6 +519,24 @@ public class XmlAstWriter implements ZserioAstVisitor
         currentXmlElement = packageElement;
         node.visitChildren(this);
         currentXmlElement = oldCurrentXmlElement;
+    }
+
+    private void visitInstantiations(List<ZserioTemplatableType> instantiations)
+    {
+        if (instantiations.isEmpty())
+            return;
+
+        final Element instantiationsXmlElemnets = xmlDoc.createElement("INSTANTIATIONS");
+
+        final Element oldCurrentXmlElement = currentXmlElement;
+        currentXmlElement = instantiationsXmlElemnets;
+
+        for (ZserioTemplatableType instantiation : instantiations)
+            instantiation.accept(this);
+
+        currentXmlElement = oldCurrentXmlElement;
+
+        currentXmlElement.appendChild(instantiationsXmlElemnets);
     }
 
     private Document xmlDoc = null;

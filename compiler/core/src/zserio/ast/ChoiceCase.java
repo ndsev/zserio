@@ -1,5 +1,6 @@
 package zserio.ast;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -56,6 +57,21 @@ public class ChoiceCase extends AstNodeBase
     public Field getField()
     {
         return caseField;
+    }
+
+    ChoiceCase instantiate(List<String> templateParameters, List<ZserioType> templateArguments)
+    {
+        final Field instantiatedCaseField = caseField == null ? null :
+                caseField.instantiate(templateParameters, templateArguments);
+
+        final List<ChoiceCaseExpression> instantiatedCaseExpressions = new ArrayList<ChoiceCaseExpression>();
+        for (ChoiceCaseExpression choiceCaseExpression : caseExpressions)
+        {
+            instantiatedCaseExpressions.add(
+                    choiceCaseExpression.instantiate(templateParameters, templateArguments));
+        }
+
+        return new ChoiceCase(getLocation(), instantiatedCaseExpressions, instantiatedCaseField);
     }
 
     private final List<ChoiceCaseExpression> caseExpressions;

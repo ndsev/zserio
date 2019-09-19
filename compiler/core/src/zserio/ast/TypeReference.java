@@ -1,5 +1,6 @@
 package zserio.ast;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import zserio.antlr.util.ParserException;
@@ -92,6 +93,7 @@ public class TypeReference extends AstNodeBase implements ZserioType
             throw new ParserException(this, "Invalid usage of SQL database '" + referencedType.getName() +
                     "' as a type!");
 
+        // TODO[Mi-L@]: What if it is a subtype to a template?
         if (referencedType instanceof ZserioTemplatableType)
         {
             ZserioTemplatableType template = (ZserioTemplatableType)referencedType;
@@ -116,6 +118,39 @@ public class TypeReference extends AstNodeBase implements ZserioType
                             "' is defined as parameterized type!");
             }
         }
+    }
+
+    ZserioType instantiate(List<String> templateParameters, List<ZserioType> templateArguments)
+    {
+        if (getReferencedPackageName().isEmpty()) // may be a template parameter
+        {
+            final int index = templateParameters.indexOf(getReferencedTypeName());
+            if (index != -1)
+            {
+                if (!getTemplateArguments().isEmpty()) // TODO[Mi-L@]: Improve message!
+                    throw new ParserException(this, "Template parameter cannot be used as a template!");
+
+                return templateArguments.get(index);
+            }
+        }
+
+        // instantiate template arguments first
+        final List<ZserioType> instantiatedTemplateArguments = new ArrayList<ZserioType>();
+        for (ZserioType templateArgument : getTemplateArguments())
+        {
+            if (templateArgument instanceof TypeReference)
+            {
+                instantiatedTemplateArguments.add(((TypeReference)templateArgument).instantiate(
+                        templateParameters, templateArguments));
+            }
+            else
+            {
+                instantiatedTemplateArguments.add(templateArgument);
+            }
+        }
+
+        return new TypeReference(getLocation(), ownerPackage, getReferencedPackageName(),
+                getReferencedTypeName(), instantiatedTemplateArguments, checkIfNeedsParameters);
     }
 
     List<ZserioType> getTemplateArguments()

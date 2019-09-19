@@ -43,20 +43,23 @@ public class StructureType extends TemplatableCompoundType
     @Override
     StructureType instantiateImpl(String name, List<ZserioType> templateArguments)
     {
-        final List<Field> fields = new ArrayList<Field>();
-        for (Field field : getFields())
-            fields.add(field.instantiate(getTemplateParameters(), templateArguments));
-
-        final List<FunctionType> functions = new ArrayList<FunctionType>();
-        for (FunctionType function : getFunctions())
-            functions.add(function.instantiate(getTemplateParameters(), templateArguments));
-
-        final List<Parameter> typeParameters = new ArrayList<Parameter>();
+        final List<Parameter> instantiatedTypeParameters = new ArrayList<Parameter>();
         for (Parameter typeParameter : getTypeParameters())
-            typeParameters.add(typeParameter.instantiate(getTemplateParameters(), templateArguments));
+        {
+            instantiatedTypeParameters.add(
+                    typeParameter.instantiate(getTemplateParameters(), templateArguments));
+        }
 
-        return new StructureType(getLocation(), getPackage(), name.toString(),
-                new ArrayList<String>(), typeParameters, fields, functions, getDocComment());
+        final List<Field> instantiatedFields = new ArrayList<Field>();
+        for (Field field : getFields())
+            instantiatedFields.add(field.instantiate(getTemplateParameters(), templateArguments));
+
+        final List<FunctionType> instantiatedFunctions = new ArrayList<FunctionType>();
+        for (FunctionType function : getFunctions())
+            instantiatedFunctions.add(function.instantiate(getTemplateParameters(), templateArguments));
+
+        return new StructureType(getLocation(), getPackage(), name, new ArrayList<String>(),
+                instantiatedTypeParameters, instantiatedFields, instantiatedFunctions, getDocComment());
     }
 
     @Override

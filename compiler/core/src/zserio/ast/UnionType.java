@@ -1,5 +1,6 @@
 package zserio.ast;
 
+import java.util.ArrayList;
 import java.util.List;
 
 
@@ -36,10 +37,22 @@ public class UnionType extends TemplatableCompoundType
     }
 
     @Override
-    UnionType instantiateImpl(String name, List<ZserioType> templateArguemnts)
+    UnionType instantiateImpl(String name, List<ZserioType> templateArguments)
     {
-        // TODO[Mi-L@]:
-        return null;
+        final List<Parameter> instantiatedTypeParameters = new ArrayList<Parameter>();
+        for (Parameter typeParameter : getTypeParameters())
+            instantiatedTypeParameters.add(typeParameter.instantiate(getTemplateParameters(), templateArguments));
+
+        final List<Field> instantiatedFields = new ArrayList<Field>();
+        for (Field field : getFields())
+            instantiatedFields.add(field.instantiate(getTemplateParameters(), templateArguments));
+
+        final List<FunctionType> instantiatedFunctions = new ArrayList<FunctionType>();
+        for (FunctionType function : getFunctions())
+            instantiatedFunctions.add(function.instantiate(getTemplateParameters(), templateArguments));
+
+        return new UnionType(getLocation(), getPackage(), name, new ArrayList<String>(),
+                instantiatedTypeParameters, instantiatedFields, instantiatedFunctions, getDocComment());
     }
 
     @Override
