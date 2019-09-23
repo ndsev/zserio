@@ -1,6 +1,5 @@
 package zserio.emit.doc;
 
-import java.io.Serializable;
 import java.util.Comparator;
 import java.util.Iterator;
 
@@ -9,7 +8,7 @@ import java.util.Iterator;
  *
  * @param <T> Type of the element of the sequence. The type itself must implement Comparable&lt;T&gt;.
  */
-class IterableComparator<T extends Comparable<T>> implements Comparator<Iterable<T>>, Serializable
+class IterableComparator<T extends Comparable<T>> implements Comparator<Iterable<T>>
 {
     @Override
     public int compare(Iterable<T> a, Iterable<T> b)
@@ -32,6 +31,4 @@ class IterableComparator<T extends Comparable<T>> implements Comparator<Iterable
         // the lengths of the sequences differs -> shorter is "smaller"
         return iteratorA.hasNext() ? +1 : -1;
     }
-
-    private static final long serialVersionUID = 1L;
 }

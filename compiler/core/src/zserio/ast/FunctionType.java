@@ -105,8 +105,14 @@ public class FunctionType extends AstNodeWithDoc implements ZserioType
 
     FunctionType instantiate(List<String> templateParameters, List<ZserioType> templateArguments)
     {
-        // TODO[Mi-L@]:
-        return this;
+        final ZserioType instantiatedReturnType = (returnType instanceof TypeReference) ?
+                ((TypeReference)returnType).instantiate(templateParameters, templateArguments) : returnType;
+
+        final Expression instantiatedResultExpression =
+                resultExpression.instantiate(templateParameters, templateArguments);
+
+        return new FunctionType(getLocation(), getPackage(), instantiatedReturnType, name,
+                instantiatedResultExpression, getDocComment());
     }
 
     private final Package pkg;

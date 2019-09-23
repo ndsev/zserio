@@ -1,7 +1,6 @@
 package zserio.ast;
 
 import java.io.File;
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -14,14 +13,14 @@ import zserio.tools.StringJoinUtil;
  * Package name has in Zserio the format 'ID.ID.ID'. This class holds list of all 'ID's. This is used for
  * example by Package, Import, TypeReference or SymbolReference.
  */
-public class PackageName implements Comparable<PackageName>, Serializable
+public class PackageName implements Comparable<PackageName>
 {
     /**
      * Package name builder. Used to build an immutable package name.
      *
      * The built package name is cached within the builder until a next change is made.
      */
-    public static final class Builder implements Serializable
+    public static final class Builder
     {
         /**
          * Gets the built package name.
@@ -97,7 +96,6 @@ public class PackageName implements Comparable<PackageName>, Serializable
 
         private final List<String> idList = new ArrayList<String>();
         private PackageName cachedPackageName = null;
-        private static final long serialVersionUID = 4652468631166184740L;
     }
 
     @Override
@@ -177,8 +175,6 @@ public class PackageName implements Comparable<PackageName>, Serializable
 
     /** Empty package name constant. */
     public static final PackageName EMPTY = new PackageName(new ArrayList<String>());
-
-    private static final long serialVersionUID = -4965489451342750477L;
 
     private static final String PACKAGE_NAME_SEPARATOR = ".";
 
