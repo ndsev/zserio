@@ -56,11 +56,8 @@ public class Parameter extends AstNodeBase
 
     Parameter instantiate(List<String> templateParameters, List<ZserioType> templateArguments)
     {
-        int index = templateParameters.indexOf(parameterType.getName());
-        final ZserioType instantiatedParameterType = (index != -1) ? templateArguments.get(index) :
-                parameterType;
-
-        // TODO[Mi-L@]: What if parameter is a tempalte? How it works?
+        final ZserioType instantiatedParameterType =
+                ZserioTypeUtil.instantiate(parameterType, templateParameters, templateArguments);
 
         return new Parameter(getLocation(), instantiatedParameterType, getName());
     }

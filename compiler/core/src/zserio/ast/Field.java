@@ -314,8 +314,8 @@ public class Field extends AstNodeWithDoc
 
     Field instantiate(List<String> templateParameters, List<ZserioType> templateArguments)
     {
-        final ZserioType instantiatedFieldType = (fieldType instanceof TypeReference) ?
-                ((TypeReference)fieldType).instantiate(templateParameters, templateArguments) : fieldType;
+        final ZserioType instantiatedFieldType =
+                ZserioTypeUtil.instantiate(fieldType, templateParameters, templateArguments);
 
         final Expression instantiatedAlignmentExpr = getAlignmentExpr() == null ? null :
                 getAlignmentExpr().instantiate(templateParameters, templateArguments);

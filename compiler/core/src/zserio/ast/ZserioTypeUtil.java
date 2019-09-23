@@ -1,5 +1,7 @@
 package zserio.ast;
 
+import java.util.List;
+
 import zserio.tools.StringJoinUtil;
 
 /**
@@ -35,6 +37,19 @@ public class ZserioTypeUtil
         return type instanceof BuiltInType ||
                (type instanceof ArrayType && TypeReference.resolveBaseType(
                         ((ArrayType)type).getElementType()) instanceof BuiltInType);
+    }
+
+    static ZserioType instantiate(ZserioType zserioType, List<String> templateParameters,
+            List<ZserioType> templateArguments)
+    {
+        if (zserioType instanceof ArrayType)
+            return ((ArrayType)zserioType).instantiate(templateParameters, templateArguments);
+        else if (zserioType instanceof TypeInstantiation)
+            return ((TypeInstantiation)zserioType).instantiate(templateParameters, templateArguments);
+        else if (zserioType instanceof TypeReference)
+            return ((TypeReference)zserioType).instantiate(templateParameters, templateArguments);
+        else
+            return zserioType;
     }
 
     private static final String FULL_NAME_SEPARATOR = ".";

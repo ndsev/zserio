@@ -186,6 +186,22 @@ public class TypeInstantiation extends AstNodeBase implements ZserioType
         }
     }
 
+    TypeInstantiation instantiate(List<String> templateParameters, List<ZserioType> templateArguments)
+    {
+        final ZserioType instantiatedReferencedType =
+                referencedType.instantiate(templateParameters, templateArguments);
+        if (!(instantiatedReferencedType instanceof TypeReference)) // TODO[Mi-L@]: Improve message!
+            throw new ParserException(instantiatedReferencedType, instantiatedReferencedType.getName() +
+                    " cannot be used as a parameterized type!");
+
+        final List<Expression> instantiatedArguments = new ArrayList<Expression>();
+        for (Expression expression : arguments)
+            instantiatedArguments.add(expression.instantiate(templateParameters, templateArguments));
+
+        return new TypeInstantiation(getLocation(), (TypeReference)instantiatedReferencedType,
+                instantiatedArguments);
+    }
+
     private final TypeReference referencedType;
     private final List<Expression> arguments;
 

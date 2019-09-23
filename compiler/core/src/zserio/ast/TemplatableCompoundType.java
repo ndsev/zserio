@@ -44,8 +44,11 @@ abstract class TemplatableCompoundType extends CompoundType implements ZserioTem
     @Override
     public ZserioTemplatableType instantiate(List<ZserioType> templateArguments) // TODO[Mi-L@]: Why public?
     {
-        if (getTemplateParameters().size() != templateArguments.size()) // TODO[Mi-L@]: Improve message!
-            throw new ParserException(this, "Wrong number of template arguments!");
+        if (getTemplateParameters().size() != templateArguments.size())
+        {
+            throw new ParserException(this, "Wrong number of template arguments! Expecting " +
+                    getTemplateParameters().size() + ", got " + templateArguments.size());
+        }
 
         final List<TemplateArgument> wrappedTemplateArguments = wrapTemplateArguments(templateArguments);
 
@@ -69,7 +72,6 @@ abstract class TemplatableCompoundType extends CompoundType implements ZserioTem
     @Override
     public List<ZserioTemplatableType> getInstantiations()
     {
-        // TODO[Mi-L@]: Do we really need List? Isn't Collection enough? Do we need it public?
         return Collections.unmodifiableList(new ArrayList<ZserioTemplatableType>(instantiationsMap.values()));
     }
 
@@ -78,7 +80,7 @@ abstract class TemplatableCompoundType extends CompoundType implements ZserioTem
     {
         final ZserioTemplatableType instantiation =
                 instantiationsMap.get(wrapTemplateArguments(templateArguments));
-        if (instantiation == null)
+        if (instantiation == null) // this should not occur!
             throw new ParserException(this, "No instantiation found!"); // TODO[Mi-L@]: Improve message!
 
         return instantiation;
@@ -110,39 +112,31 @@ abstract class TemplatableCompoundType extends CompoundType implements ZserioTem
 
     private void checkInstantiationName(List<TemplateArgument> templateArguments, String name)
     {
-        // TODO[Mi-L@]: Improve message!
-        if (!instantiationsNamesSet.add(name))
+        if (!instantiationsNamesSet.add(name)) // TODO[Mi-L@]: Improve message!
             throw new ParserException(this, "Clash in instantiations name found: '" + name + "'!");
     }
 
     private List<TemplateArgument> wrapTemplateArguments(List<ZserioType> templateArguments)
     {
-        List<TemplateArgument> wrappedTemplateArguments = new ArrayList<TemplateArgument>();
+        final List<TemplateArgument> wrappedTemplateArguments = new ArrayList<TemplateArgument>();
         for (ZserioType templateArgument : templateArguments)
-            wrappedTemplateArguments.add(new TemplateArgument(getPackage(), templateArgument));
+            wrappedTemplateArguments.add(new TemplateArgument(templateArgument));
 
         return wrappedTemplateArguments;
     }
 
     private static class TemplateArgument
     {
-        public TemplateArgument(Package ownerPackage, ZserioType templateArgument)
+        public TemplateArgument(ZserioType templateArgument)
         {
-            this.ownerPackage = ownerPackage;
-
             if (templateArgument instanceof TypeReference)
             {
                 final TypeReference referencedArgument = (TypeReference)templateArgument;
-                final ZserioType type = ownerPackage.getVisibleType(
-                        referencedArgument.getReferencedPackageName(),
-                        referencedArgument.getReferencedTypeName());
-                if (type == null) // TODO[Mi-L@]: Improve message, add test.
-                    throw new ParserException(templateArgument, "Cannot find template argument type!");
 
-                packageName = type.getPackage().getPackageName();
-                typeName = type.getName();
+                packageName = referencedArgument.getReferencedPackageName();
+                typeName = referencedArgument.getReferencedTypeName();
                 for (ZserioType argument: referencedArgument.getTemplateArguments())
-                    templateArguments.add(new TemplateArgument(ownerPackage, argument));
+                    templateArguments.add(new TemplateArgument(argument));
             }
             else
             {
@@ -179,18 +173,14 @@ abstract class TemplatableCompoundType extends CompoundType implements ZserioTem
         @Override
         public String toString()
         {
-            StringJoinUtil.Joiner joiner = new StringJoinUtil.Joiner(NAME_SEPARATOR);
-            // TODO[Mi-L@]: Check the logic of omitting the package name!
-            if (ownerPackage.getPackageName() != packageName)
-                joiner.append(packageName.toString(NAME_SEPARATOR));
+            final StringJoinUtil.Joiner joiner = new StringJoinUtil.Joiner(NAME_SEPARATOR);
+            joiner.append(packageName.toString(NAME_SEPARATOR));
             joiner.append(typeName);
             for (TemplateArgument templateArgument : templateArguments)
                 joiner.append(templateArgument.toString());
 
             return joiner.toString();
         }
-
-        private final Package ownerPackage;
 
         private final PackageName packageName;
         private final String typeName;

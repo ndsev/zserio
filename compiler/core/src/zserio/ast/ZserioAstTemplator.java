@@ -51,9 +51,7 @@ public class ZserioAstTemplator extends ZserioAstWalker
     {
         if (!typeReference.getTemplateArguments().isEmpty()) // if is a template instantiation
         {
-            // instantiate possible instantiations in template arguments first!
-            // TODO[Mi-L@]: This is needed when the template argument is not used in the template,
-            //              otherwise it is instantiated correctly. Is it ok?
+            // instantiate instantiations in template arguments
             for (ZserioType templateArgument : typeReference.getTemplateArguments())
                 templateArgument.accept(this);
 

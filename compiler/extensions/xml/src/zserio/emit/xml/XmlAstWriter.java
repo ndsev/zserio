@@ -482,12 +482,15 @@ public class XmlAstWriter implements ZserioAstVisitor
     private void visitZserioType(ZserioType zserioType, String xmlElementName)
     {
         final Element xmlElement = xmlDoc.createElement(xmlElementName);
-        xmlElement.setAttribute("name", zserioType.getName());
+        xmlElement.setAttribute("name", getZserioTypeName(zserioType));
         visitAstNode(zserioType, xmlElement);
     }
 
     private void visitAstNode(ZserioTemplatableType templatable, Element xmlElement)
     {
+        if (!templatable.getTemplateParameters().isEmpty())
+            inTemplateDeclaration = true;
+
         currentXmlElement.appendChild(xmlElement);
 
         final Element oldCurrentXmlElement = currentXmlElement;
@@ -498,6 +501,8 @@ public class XmlAstWriter implements ZserioAstVisitor
         visitInstantiations(templatable.getInstantiations());
 
         currentXmlElement = oldCurrentXmlElement;
+
+        inTemplateDeclaration = false;
     }
 
     private void visitAstNode(AstNode node, Element xmlElement)
@@ -539,7 +544,22 @@ public class XmlAstWriter implements ZserioAstVisitor
         currentXmlElement.appendChild(instantiationsXmlElemnets);
     }
 
+    private String getZserioTypeName(ZserioType zserioType)
+    {
+        // TODO[Mi-L@]: May not be needed after TypeRefrence refactoring
+        if (inTemplateDeclaration)
+        {
+            if (zserioType instanceof ArrayType)
+            {
+                return ((ArrayType)zserioType).getElementType().getName() + "[]";
+            }
+        }
+
+        return zserioType.getName();
+    }
+
     private Document xmlDoc = null;
     private Element currentXmlElement = null;
     private String rootExprElementName = null;
+    private boolean inTemplateDeclaration = false;
 }

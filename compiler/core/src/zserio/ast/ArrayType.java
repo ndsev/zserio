@@ -1,5 +1,7 @@
 package zserio.ast;
 
+import java.util.List;
+
 import zserio.antlr.util.ParserException;
 
 /**
@@ -104,6 +106,17 @@ public class ArrayType extends AstNodeBase implements ZserioType
                 throw new ParserException(lengthExpression,
                         "Invalid length expression for array. Length must be integer!");
         }
+    }
+
+    ArrayType instantiate(List<String> templateParameters, List<ZserioType> templateArguments)
+    {
+        final ZserioType instantiatedElementType =
+                ZserioTypeUtil.instantiate(elementType, templateParameters, templateArguments);
+
+        final Expression instantiatedLengthExpression = lengthExpression == null ? null :
+                lengthExpression.instantiate(templateParameters, templateArguments);
+
+        return new ArrayType(getLocation(), instantiatedElementType, instantiatedLengthExpression, isImplicit);
     }
 
     private final ZserioType elementType;
