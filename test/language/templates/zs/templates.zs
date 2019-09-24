@@ -8,3 +8,4 @@ import templates.templated_choice_selector.*;
 import templates.templated_choice_enum_selector.*;
 import templates.templated_type_argument.*;
 import templates.recursive_template.*;
+import templates.templated_union_field.*;
