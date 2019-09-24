@@ -100,7 +100,7 @@ public class TypeInstantiation extends AstNodeBase implements ZserioType
         /**
          * Constructor from argument expression and parameter.
          *
-         * @param argumentexpression Argument expression used for parameter instantiation.
+         * @param argumentExpression Argument expression used for parameter instantiation.
          * @param parameter          The parameter as used in the definition of the parameterized compound type.
          */
         public InstantiatedParameter(Expression argumentExpression, Parameter parameter)
@@ -190,7 +190,9 @@ public class TypeInstantiation extends AstNodeBase implements ZserioType
     {
         final ZserioType instantiatedReferencedType =
                 referencedType.instantiate(templateParameters, templateArguments);
-        if (!(instantiatedReferencedType instanceof TypeReference)) // TODO[Mi-L@]: Improve message!
+        // TODO[Mi-L@]: How to postpone the error to the resolve phase?
+        //              Can we make a type reference for built-in types?
+        if (!(instantiatedReferencedType instanceof TypeReference))
             throw new ParserException(instantiatedReferencedType, instantiatedReferencedType.getName() +
                     " cannot be used as a parameterized type!");
 

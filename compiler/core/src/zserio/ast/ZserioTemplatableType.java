@@ -14,6 +14,8 @@ public interface ZserioTemplatableType extends ZserioType
      */
     public List<String> getTemplateParameters();
 
+
+    // TODO[Mi-L@]: Should be public?
     /**
      * Instantiates the template with actual template parameters (i.e. arguments).
      * The instantiated type is stored within the instantiations list which can be accessed by

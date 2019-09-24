@@ -1,0 +1,36 @@
+<project name="templates" basedir="." default="run">
+    <testProperties testPath="language/templates" testName="templates"/>
+
+    <target name="prepare">
+        <testPrepare testName="templates"/>
+    </target>
+
+    <target name="gen.check" depends="prepare">
+        <testGenCheck testName="templates"/>
+    </target>
+
+    <target name="gen" depends="gen.check" unless="templates.zs.gen_is_uptodate">
+        <testGenClean testName="templates"/>
+        <testGen testName="templates" zsFile="templates.zs"/>
+    </target>
+
+    <target name="gen.checkWarnings" depends="gen">
+        <testGenCheckWarnings testName="templates"/>
+    </target>
+
+    <target name="compile" depends="gen.checkWarnings">
+        <testCompile testName="templates"/>
+    </target>
+
+    <target name="findbugs" depends="compile" if="findbugs.home_dir">
+        <testFindbugs testName="templates"/>
+    </target>
+
+    <target name="run" depends="findbugs">
+        <testRun testname="templates"/>
+    </target>
+
+    <target name="clean">
+        <testClean testName="templates"/>
+    </target>
+</project>

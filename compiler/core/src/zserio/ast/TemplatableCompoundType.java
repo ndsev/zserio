@@ -42,12 +42,13 @@ abstract class TemplatableCompoundType extends CompoundType implements ZserioTem
     }
 
     @Override
-    public ZserioTemplatableType instantiate(List<ZserioType> templateArguments) // TODO[Mi-L@]: Why public?
+    public ZserioTemplatableType instantiate(List<ZserioType> templateArguments)
     {
         if (getTemplateParameters().size() != templateArguments.size())
         {
-            throw new ParserException(this, "Wrong number of template arguments! Expecting " +
-                    getTemplateParameters().size() + ", got " + templateArguments.size());
+            throw new ParserException(this, "Wrong number of template arguments for template '" +
+                    getName() + "'! Expecting " +
+                    getTemplateParameters().size() + ", got " + templateArguments.size() + "!");
         }
 
         final List<TemplateArgument> wrappedTemplateArguments = wrapTemplateArguments(templateArguments);
