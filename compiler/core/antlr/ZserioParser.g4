@@ -206,7 +206,7 @@ sqlDatabaseFieldDefinition
     ;
 
 sqlTableReference
-    :   qualifiedName
+    :   qualifiedName templateArguments?
     ;
 
 

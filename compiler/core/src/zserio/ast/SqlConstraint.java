@@ -161,6 +161,14 @@ public class SqlConstraint extends AstNodeBase
         translatedFieldConstraintExpr = createTranslatedFieldConstraintExpr(translatedConstraint);
     }
 
+    SqlConstraint instantiate(List<String> templateParameters, List<ZserioType> templateArguments)
+    {
+        final Expression instantiatedConstraintExpr =
+                getConstraintExpr().instantiate(templateParameters, templateArguments);
+
+        return new SqlConstraint(getLocation(), instantiatedConstraintExpr);
+    }
+
     private void resolveConstraintReferences(CompoundType compoundType, String sqlConstraintString)
     {
         int startIndex = 0;

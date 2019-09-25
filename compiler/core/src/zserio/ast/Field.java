@@ -322,15 +322,18 @@ public class Field extends AstNodeWithDoc
         final Expression instantiatedOffsetExpr = getOffsetExpr() == null ? null :
                 getOffsetExpr().instantiate(templateParameters, templateArguments);
         final Expression instantiatedInitializerExpr = getInitializerExpr() == null ? null :
-            getInitializerExpr().instantiate(templateParameters, templateArguments);
+                getInitializerExpr().instantiate(templateParameters, templateArguments);
         final Expression instantiatedOptionalClauseExpr = getOptionalClauseExpr() == null ? null :
-            getOptionalClauseExpr().instantiate(templateParameters, templateArguments);
+                getOptionalClauseExpr().instantiate(templateParameters, templateArguments);
         final Expression instantiatedConstraintExpr = getConstraintExpr() == null ? null :
-            getConstraintExpr().instantiate(templateParameters, templateArguments);
+                getConstraintExpr().instantiate(templateParameters, templateArguments);
+
+        final SqlConstraint instantiatedSqlConstraint = getSqlConstraint() == null ? null :
+                getSqlConstraint().instantiate(templateParameters, templateArguments);
 
         return new Field(getLocation(), instantiatedFieldType, name, isAutoOptional, instantiatedAlignmentExpr,
                 instantiatedOffsetExpr, instantiatedInitializerExpr, instantiatedOptionalClauseExpr,
-                instantiatedConstraintExpr, isVirtual, sqlConstraint, getDocComment());
+                instantiatedConstraintExpr, isVirtual, instantiatedSqlConstraint, getDocComment());
     }
 
     private Field(AstLocation location, ZserioType fieldType, String name, boolean isAutoOptional,

@@ -457,12 +457,19 @@ public class ZserioAstBuilder extends ZserioParserBaseVisitor<Object>
     public Field visitSqlDatabaseFieldDefinition(ZserioParser.SqlDatabaseFieldDefinitionContext ctx)
     {
         final AstLocation location = new AstLocation(ctx.getStart());
-        final ZserioType type = visitQualifiedName(ctx.sqlTableReference().qualifiedName());
+        final ZserioType type = visitSqlTableReference(ctx.sqlTableReference());
         final String name = ctx.id().getText();
 
         final DocComment docComment = docCommentManager.findDocComment(ctx);
 
         return new Field(location, type, name, docComment);
+    }
+
+    @Override
+    public TypeReference visitSqlTableReference(ZserioParser.SqlTableReferenceContext ctx)
+    {
+        final List<ZserioType> templateArguments = visitTemplateArguments(ctx.templateArguments());
+        return visitQualifiedName(ctx.qualifiedName(), templateArguments);
     }
 
     @Override
