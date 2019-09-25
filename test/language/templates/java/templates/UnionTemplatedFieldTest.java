@@ -14,41 +14,41 @@ import zserio.runtime.io.BitStreamWriter;
 import zserio.runtime.io.FileBitStreamReader;
 import zserio.runtime.io.FileBitStreamWriter;
 
-import templates.templated_union_field.TemplatedUnionField;
-import templates.templated_union_field.TemplatedUnion_uint16_uint32;
-import templates.templated_union_field.TemplatedUnion_float32_float64;
-import templates.templated_union_field.TemplatedUnion_Compound_uint16_Compound_uint32;
-import templates.templated_union_field.Compound_uint16;
-import templates.templated_union_field.Compound_Compound_uint16;
+import templates.union_templated_field.UnionTemplatedField;
+import templates.union_templated_field.TemplatedUnion_uint16_uint32;
+import templates.union_templated_field.TemplatedUnion_float32_float64;
+import templates.union_templated_field.TemplatedUnion_Compound_uint16_Compound_uint32;
+import templates.union_templated_field.Compound_uint16;
+import templates.union_templated_field.Compound_Compound_uint16;
 
-public class TemplatedUnionFieldTest
+public class UnionTemplatedFieldTest
 {
     @Test
     public void readWrite() throws IOException
     {
-        final TemplatedUnionField templatedUnionField = new TemplatedUnionField();
+        final UnionTemplatedField unionTemplatedField = new UnionTemplatedField();
 
         final TemplatedUnion_uint16_uint32 uintUnion = new TemplatedUnion_uint16_uint32();
         uintUnion.setField1(42);
-        templatedUnionField.setUintUnion(uintUnion);
+        unionTemplatedField.setUintUnion(uintUnion);
 
         final TemplatedUnion_float32_float64 floatUnion = new TemplatedUnion_float32_float64();
         floatUnion.setField2(42.0f);
-        templatedUnionField.setFloatUnion(floatUnion);
+        unionTemplatedField.setFloatUnion(floatUnion);
 
         final TemplatedUnion_Compound_uint16_Compound_uint32 compoundUnion =
                 new TemplatedUnion_Compound_uint16_Compound_uint32();
         compoundUnion.setField3(new Compound_Compound_uint16(new Compound_uint16(13)));
-        templatedUnionField.setCompoundUnion(compoundUnion);
+        unionTemplatedField.setCompoundUnion(compoundUnion);
 
         final BitStreamWriter writer = new FileBitStreamWriter(TEST_FILE);
-        templatedUnionField.write(writer);
+        unionTemplatedField.write(writer);
         writer.close();
         final BitStreamReader reader = new FileBitStreamReader(TEST_FILE);
 
-        final TemplatedUnionField readTemplatedUnionField = new TemplatedUnionField(reader);
+        final UnionTemplatedField readUnionTemplatedField = new UnionTemplatedField(reader);
         reader.close();
-        assertTrue(templatedUnionField.equals(readTemplatedUnionField));
+        assertTrue(unionTemplatedField.equals(readUnionTemplatedField));
     }
 
     private static final File TEST_FILE = new File("test.bin");

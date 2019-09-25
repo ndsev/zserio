@@ -1,4 +1,4 @@
-package templates.templated_field;
+package templates.struct_templated_field;
 
 struct Field<T>
 {
@@ -10,7 +10,7 @@ struct Compound
     uint32 value;
 };
 
-struct TemplatedField
+struct StructTemplatedField
 {
     Field<uint32>   uint32Field;
     Field<Compound> compoundField;

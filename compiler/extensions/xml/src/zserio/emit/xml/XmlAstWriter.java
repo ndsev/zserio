@@ -546,7 +546,7 @@ public class XmlAstWriter implements ZserioAstVisitor
 
     private String getZserioTypeName(ZserioType zserioType)
     {
-        // TODO[Mi-L@]: May not be needed after TypeRefrence refactoring.
+        // TODO[Mi-L@]: May not be needed after TypeReference refactoring.
         if (inTemplateDeclaration)
         {
             if (zserioType instanceof ArrayType)

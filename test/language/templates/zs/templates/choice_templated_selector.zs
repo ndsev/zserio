@@ -1,4 +1,4 @@
-package templates.templated_choice_selector;
+package templates.choice_templated_selector;
 
 choice TemplatedChoice<T>(T selector) on selector
 {
@@ -10,7 +10,7 @@ choice TemplatedChoice<T>(T selector) on selector
         string stringField;
 };
 
-struct TemplatedChoiceSelector
+struct ChoiceTemplatedSelector
 {
     uint16 selector16;
     uint32 selector32;

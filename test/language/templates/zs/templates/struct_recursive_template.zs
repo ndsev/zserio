@@ -1,11 +1,11 @@
-package templates.recursive_template;
+package templates.struct_recursive_template;
 
 struct Compound<T>
 {
     T value;
 };
 
-struct RecursiveTemplate
+struct StructRecursiveTemplate
 {
     Compound<Compound<uint32>> compound1;
     Compound<Compound<Compound<string>>> compound2;

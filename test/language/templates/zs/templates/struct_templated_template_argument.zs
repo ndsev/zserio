@@ -1,4 +1,4 @@
-package templates.templated_template_argument;
+package templates.struct_templated_template_argument;
 
 struct Field<T>
 {
@@ -10,7 +10,7 @@ struct Compound<T>
     T value;
 };
 
-struct TemplatedTemplateArgument
+struct StructTemplatedTemplateArgument
 {
     Field<Compound<uint32>> compoundField;
 };

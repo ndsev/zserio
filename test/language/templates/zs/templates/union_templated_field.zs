@@ -1,4 +1,4 @@
-package templates.templated_union_field;
+package templates.union_templated_field;
 
 union TemplatedUnion<T1, T2>
 {
@@ -12,7 +12,7 @@ struct Compound<T>
     T value;
 };
 
-struct TemplatedUnionField
+struct UnionTemplatedField
 {
     TemplatedUnion<uint16, uint32> uintUnion;
     TemplatedUnion<float32, float64> floatUnion;

@@ -14,37 +14,37 @@ import zserio.runtime.io.BitStreamWriter;
 import zserio.runtime.io.FileBitStreamReader;
 import zserio.runtime.io.FileBitStreamWriter;
 
-import templates.templated_choice_selector.TemplatedChoiceSelector;
-import templates.templated_choice_selector.TemplatedChoice_uint32;
-import templates.templated_choice_selector.TemplatedChoice_uint16;
+import templates.choice_templated_selector.ChoiceTemplatedSelector;
+import templates.choice_templated_selector.TemplatedChoice_uint32;
+import templates.choice_templated_selector.TemplatedChoice_uint16;
 
-public class TemplatedChoiceSelectorTest
+public class ChoiceTemplatedSelectorTest
 {
     @Test
     public void readWrite() throws IOException
     {
         final int selector16 = 0;
         final int selector32 = 2;
-        TemplatedChoiceSelector templatedChoiceSelector = new TemplatedChoiceSelector();
-        templatedChoiceSelector.setSelector16(selector16);
-        templatedChoiceSelector.setSelector32(selector32);
+        ChoiceTemplatedSelector choiceTemplatedSelector = new ChoiceTemplatedSelector();
+        choiceTemplatedSelector.setSelector16(selector16);
+        choiceTemplatedSelector.setSelector32(selector32);
 
         TemplatedChoice_uint16 uint16Choice = new TemplatedChoice_uint16(selector16);
         uint16Choice.setUint16Field(42);
-        templatedChoiceSelector.setUint16Choice(uint16Choice);
+        choiceTemplatedSelector.setUint16Choice(uint16Choice);
 
         TemplatedChoice_uint32 uint32Choice = new TemplatedChoice_uint32(selector32);
         uint32Choice.setStringField("string");
-        templatedChoiceSelector.setUint32Choice(uint32Choice);
+        choiceTemplatedSelector.setUint32Choice(uint32Choice);
 
         final BitStreamWriter writer = new FileBitStreamWriter(TEST_FILE);
-        templatedChoiceSelector.write(writer);
+        choiceTemplatedSelector.write(writer);
         writer.close();
         final BitStreamReader reader = new FileBitStreamReader(TEST_FILE);
 
-        TemplatedChoiceSelector readTemplatedChoiceSelector = new TemplatedChoiceSelector(reader);
+        ChoiceTemplatedSelector readChoiceTemplatedSelector = new ChoiceTemplatedSelector(reader);
         reader.close();
-        assertTrue(templatedChoiceSelector.equals(readTemplatedChoiceSelector));
+        assertTrue(choiceTemplatedSelector.equals(readChoiceTemplatedSelector));
     }
 
     private static final File TEST_FILE = new File("test.bin");

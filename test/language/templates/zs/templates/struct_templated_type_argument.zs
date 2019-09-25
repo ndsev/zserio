@@ -1,4 +1,4 @@
-package templates.templated_type_argument;
+package templates.struct_templated_type_argument;
 
 struct ParamHolder<T>
 {
@@ -12,7 +12,7 @@ paramHolder.param:
     uint32 id;
 };
 
-struct TemplatedTypeArgument
+struct StructTemplatedTypeArgument
 {
     ParamHolder<uint32> paramHolder;
     Parameterized<uint32>(paramHolder) parameterized;

@@ -14,36 +14,36 @@ import zserio.runtime.io.BitStreamWriter;
 import zserio.runtime.io.FileBitStreamReader;
 import zserio.runtime.io.FileBitStreamWriter;
 
-import templates.templated_choice_field.TemplatedChoiceField;
-import templates.templated_choice_field.TemplatedChoice_uint32_uint16;
-import templates.templated_choice_field.TemplatedChoice_Compound_uint32_uint16;
-import templates.templated_choice_field.Compound_uint32;
+import templates.choice_templated_field.ChoiceTemplatedField;
+import templates.choice_templated_field.TemplatedChoice_uint32_uint16;
+import templates.choice_templated_field.TemplatedChoice_Compound_uint32_uint16;
+import templates.choice_templated_field.Compound_uint32;
 
-public class TemplatedChoiceFieldTest
+public class ChoiceTemplatedFieldTest
 {
     @Test
     public void readWrite() throws IOException
     {
         final long selector = 0;
-        TemplatedChoiceField templatedChoiceField = new TemplatedChoiceField();
-        templatedChoiceField.setSelector(selector);
+        ChoiceTemplatedField choiceTemplatedField = new ChoiceTemplatedField();
+        choiceTemplatedField.setSelector(selector);
 
         TemplatedChoice_uint32_uint16 choice1 = new TemplatedChoice_uint32_uint16(selector);
         choice1.setTemplatedField1(42);
-        templatedChoiceField.setChoice1(choice1);
+        choiceTemplatedField.setChoice1(choice1);
 
         TemplatedChoice_Compound_uint32_uint16 choice2 = new TemplatedChoice_Compound_uint32_uint16(selector);
         choice2.setTemplatedField1(new Compound_uint32(42));
-        templatedChoiceField.setChoice2(choice2);
+        choiceTemplatedField.setChoice2(choice2);
 
         final BitStreamWriter writer = new FileBitStreamWriter(TEST_FILE);
-        templatedChoiceField.write(writer);
+        choiceTemplatedField.write(writer);
         writer.close();
         final BitStreamReader reader = new FileBitStreamReader(TEST_FILE);
 
-        TemplatedChoiceField readTemplatedChoiceField = new TemplatedChoiceField(reader);
+        ChoiceTemplatedField readChoiceTemplatedField = new ChoiceTemplatedField(reader);
         reader.close();
-        assertTrue(templatedChoiceField.equals(readTemplatedChoiceField));
+        assertTrue(choiceTemplatedField.equals(readChoiceTemplatedField));
     }
 
     private static final File TEST_FILE = new File("test.bin");

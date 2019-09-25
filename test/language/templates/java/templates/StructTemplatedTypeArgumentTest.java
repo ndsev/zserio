@@ -14,31 +14,31 @@ import zserio.runtime.io.BitStreamWriter;
 import zserio.runtime.io.FileBitStreamReader;
 import zserio.runtime.io.FileBitStreamWriter;
 
-import templates.templated_type_argument.TemplatedTypeArgument;
-import templates.templated_type_argument.ParamHolder_uint32;
-import templates.templated_type_argument.Parameterized_uint32;
+import templates.struct_templated_type_argument.StructTemplatedTypeArgument;
+import templates.struct_templated_type_argument.ParamHolder_uint32;
+import templates.struct_templated_type_argument.Parameterized_uint32;
 
-public class TemplatedTypeArgumentTest
+public class StructTemplatedTypeArgumentTest
 {
     @Test
     public void readWrite() throws IOException
     {
-        final TemplatedTypeArgument templatedTypeArgument = new TemplatedTypeArgument();
+        final StructTemplatedTypeArgument structTemplatedTypeArgument = new StructTemplatedTypeArgument();
         final ParamHolder_uint32 paramHolder = new ParamHolder_uint32(42);
-        templatedTypeArgument.setParamHolder(paramHolder);
+        structTemplatedTypeArgument.setParamHolder(paramHolder);
         final Parameterized_uint32 parameterized = new Parameterized_uint32(paramHolder);
         parameterized.setDescription("description");
         parameterized.setId(13);
-        templatedTypeArgument.setParameterized(parameterized);
+        structTemplatedTypeArgument.setParameterized(parameterized);
 
         final BitStreamWriter writer = new FileBitStreamWriter(TEST_FILE);
-        templatedTypeArgument.write(writer);
+        structTemplatedTypeArgument.write(writer);
         writer.close();
         final BitStreamReader reader = new FileBitStreamReader(TEST_FILE);
 
-        final TemplatedTypeArgument readTemplatedTypeArgument = new TemplatedTypeArgument(reader);
+        final StructTemplatedTypeArgument readStructTemplatedTypeArgument = new StructTemplatedTypeArgument(reader);
         reader.close();
-        assertTrue(templatedTypeArgument.equals(readTemplatedTypeArgument));
+        assertTrue(structTemplatedTypeArgument.equals(readStructTemplatedTypeArgument));
     }
 
     private static final File TEST_FILE = new File("test.bin");

@@ -1,4 +1,4 @@
-package templates.templated_choice_enum_selector;
+package templates.choice_templated_enum_selector;
 
 enum uint8 EnumFromZero
 {
@@ -24,7 +24,7 @@ choice TemplatedChoice<T>(T selector) on selector
         string stringField;
 };
 
-struct TemplatedChoiceEnumSelector
+struct ChoiceTemplatedEnumSelector
 {
     EnumFromZero selectorFromZero;
     EnumFromOne selectorFromOne;

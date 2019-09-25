@@ -1,4 +1,4 @@
-package templates.template_in_template;
+package templates.struct_template_in_template;
 
 struct Field<T>
 {
@@ -10,7 +10,7 @@ struct Compound<T>
     T value;
 };
 
-struct TemplateInTemplate
+struct StructTemplateInTemplate
 {
     Field<uint32> uint32Field;
     Field<string> stringField;

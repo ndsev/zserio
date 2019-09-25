@@ -1,12 +1,13 @@
 package templates;
 
-import templates.templated_field.*;
-import templates.templated_template_argument.*;
-import templates.template_in_template.*;
-import templates.templated_choice_field.*;
-import templates.templated_choice_selector.*;
-import templates.templated_choice_enum_selector.*;
-import templates.templated_type_argument.*;
-import templates.recursive_template.*;
-import templates.templated_union_field.*;
-import templates.templated_sql_table.*;
+import templates.choice_templated_enum_selector.*;
+import templates.choice_templated_field.*;
+import templates.choice_templated_selector.*;
+import templates.function_templated_return_type.*;
+import templates.sql_table_templated_field.*;
+import templates.struct_recursive_template.*;
+import templates.struct_template_in_template.*;
+import templates.struct_templated_field.*;
+import templates.struct_templated_template_argument.*;
+import templates.struct_templated_type_argument.*;
+import templates.union_templated_field.*;

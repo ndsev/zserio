@@ -14,39 +14,39 @@ import zserio.runtime.io.BitStreamWriter;
 import zserio.runtime.io.FileBitStreamReader;
 import zserio.runtime.io.FileBitStreamWriter;
 
-import templates.templated_choice_enum_selector.TemplatedChoiceEnumSelector;
-import templates.templated_choice_enum_selector.TemplatedChoice_EnumFromZero;
-import templates.templated_choice_enum_selector.TemplatedChoice_EnumFromOne;
-import templates.templated_choice_enum_selector.EnumFromZero;
-import templates.templated_choice_enum_selector.EnumFromOne;
+import templates.choice_templated_enum_selector.ChoiceTemplatedEnumSelector;
+import templates.choice_templated_enum_selector.TemplatedChoice_EnumFromZero;
+import templates.choice_templated_enum_selector.TemplatedChoice_EnumFromOne;
+import templates.choice_templated_enum_selector.EnumFromZero;
+import templates.choice_templated_enum_selector.EnumFromOne;
 
-public class TemplatedChoiceEnumSelectorTest
+public class ChoiceTemplatedEnumSelectorTest
 {
     @Test
     public void readWrite() throws IOException
     {
         final EnumFromZero selectorFromZero = EnumFromZero.ONE;
         final EnumFromOne selectorFromOne = EnumFromOne.THREE;
-        TemplatedChoiceEnumSelector templatedChoiceEnumSelector = new TemplatedChoiceEnumSelector();
-        templatedChoiceEnumSelector.setSelectorFromZero(selectorFromZero);
-        templatedChoiceEnumSelector.setSelectorFromOne(selectorFromOne);
+        ChoiceTemplatedEnumSelector choiceTemplatedEnumSelector = new ChoiceTemplatedEnumSelector();
+        choiceTemplatedEnumSelector.setSelectorFromZero(selectorFromZero);
+        choiceTemplatedEnumSelector.setSelectorFromOne(selectorFromOne);
 
         TemplatedChoice_EnumFromZero fromZeroChoice = new TemplatedChoice_EnumFromZero(selectorFromZero);
         fromZeroChoice.setUint16Field(42);
-        templatedChoiceEnumSelector.setFromZeroChoice(fromZeroChoice);
+        choiceTemplatedEnumSelector.setFromZeroChoice(fromZeroChoice);
 
         TemplatedChoice_EnumFromOne fromOneChoice = new TemplatedChoice_EnumFromOne(selectorFromOne);
         fromOneChoice.setStringField("string");
-        templatedChoiceEnumSelector.setFromOneChoice(fromOneChoice);
+        choiceTemplatedEnumSelector.setFromOneChoice(fromOneChoice);
 
         final BitStreamWriter writer = new FileBitStreamWriter(TEST_FILE);
-        templatedChoiceEnumSelector.write(writer);
+        choiceTemplatedEnumSelector.write(writer);
         writer.close();
         final BitStreamReader reader = new FileBitStreamReader(TEST_FILE);
 
-        TemplatedChoiceEnumSelector readTemplatedChoiceEnumSelector = new TemplatedChoiceEnumSelector(reader);
+        ChoiceTemplatedEnumSelector readChoiceTemplatedEnumSelector = new ChoiceTemplatedEnumSelector(reader);
         reader.close();
-        assertTrue(templatedChoiceEnumSelector.equals(readTemplatedChoiceEnumSelector));
+        assertTrue(choiceTemplatedEnumSelector.equals(readChoiceTemplatedEnumSelector));
     }
 
     private static final File TEST_FILE = new File("test.bin");

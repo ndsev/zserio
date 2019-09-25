@@ -1,4 +1,4 @@
-package templates.templated_sql_table;
+package templates.sql_table_templated_field;
 
 sql_table TemplatedTable<T>
 {
@@ -18,7 +18,7 @@ union Union
     string  valueString;
 };
 
-sql_database TemplatedSqlTableDb
+sql_database SqlTableTemplatedFieldDb
 {
     TemplatedTable<uint32>  uint32Table;
     TemplatedTable<Union>   unionTable;

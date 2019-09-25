@@ -1,4 +1,4 @@
-package templates.templated_choice_field;
+package templates.choice_templated_field;
 
 choice TemplatedChoice<T1, T2>(uint32 selector) on selector
 {
@@ -15,7 +15,7 @@ struct Compound<T>
     T value;
 };
 
-struct TemplatedChoiceField
+struct ChoiceTemplatedField
 {
     uint32 selector;
     TemplatedChoice<uint32, uint16>(selector) choice1;

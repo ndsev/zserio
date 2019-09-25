@@ -22,16 +22,16 @@ import zserio.runtime.io.BitStreamWriter;
 import zserio.runtime.io.FileBitStreamReader;
 import zserio.runtime.io.FileBitStreamWriter;
 
-import templates.templated_sql_table.TemplatedSqlTableDb;
-import templates.templated_sql_table.TemplatedTable_uint32;
-import templates.templated_sql_table.TemplatedTable_Union;
-import templates.templated_sql_table.TemplatedTable_uint32Row;
-import templates.templated_sql_table.TemplatedTable_UnionRow;
-import templates.templated_sql_table.Data_uint32;
-import templates.templated_sql_table.Data_Union;
-import templates.templated_sql_table.Union;
+import templates.sql_table_templated_field.SqlTableTemplatedFieldDb;
+import templates.sql_table_templated_field.TemplatedTable_uint32;
+import templates.sql_table_templated_field.TemplatedTable_Union;
+import templates.sql_table_templated_field.TemplatedTable_uint32Row;
+import templates.sql_table_templated_field.TemplatedTable_UnionRow;
+import templates.sql_table_templated_field.Data_uint32;
+import templates.sql_table_templated_field.Data_Union;
+import templates.sql_table_templated_field.Union;
 
-public class TemplatedSqlTableTest
+public class SqlTableTemplatedFieldTest
 {
 
     @BeforeClass
@@ -49,10 +49,10 @@ public class TemplatedSqlTableTest
     @Test
     public void readWrite() throws IOException, SQLException
     {
-        final TemplatedSqlTableDb templatedSqlTableDb = new TemplatedSqlTableDb(DB_FILE_NAME);
-        templatedSqlTableDb.createSchema();
+        final SqlTableTemplatedFieldDb sqlTableTemplatedFieldDb = new SqlTableTemplatedFieldDb(DB_FILE_NAME);
+        sqlTableTemplatedFieldDb.createSchema();
 
-        final TemplatedTable_uint32 uint32Table = templatedSqlTableDb.getUint32Table();
+        final TemplatedTable_uint32 uint32Table = sqlTableTemplatedFieldDb.getUint32Table();
         final List<TemplatedTable_uint32Row> uint32TableRows = new ArrayList<TemplatedTable_uint32Row>();
         final TemplatedTable_uint32Row uint32Row1 = new TemplatedTable_uint32Row();
         uint32Row1.setId(0);
@@ -60,7 +60,7 @@ public class TemplatedSqlTableTest
         uint32TableRows.add(uint32Row1);
         uint32Table.write(uint32TableRows);
 
-        final TemplatedTable_Union unionTable = templatedSqlTableDb.getUnionTable();
+        final TemplatedTable_Union unionTable = sqlTableTemplatedFieldDb.getUnionTable();
         final List<TemplatedTable_UnionRow> unionTableRows = new ArrayList<TemplatedTable_UnionRow>();
         final TemplatedTable_UnionRow unionRow1 = new TemplatedTable_UnionRow();
         unionRow1.setId(13);
@@ -70,14 +70,19 @@ public class TemplatedSqlTableTest
         unionTableRows.add(unionRow1);
         unionTable.write(unionTableRows);
 
-        templatedSqlTableDb.close();
+        sqlTableTemplatedFieldDb.close();
 
-        final TemplatedSqlTableDb readTemplatedSqlTableDb = new TemplatedSqlTableDb(DB_FILE_NAME);
-        final List<TemplatedTable_uint32Row> readUint32TableRows = readTemplatedSqlTableDb.getUint32Table().read();
-        final List<TemplatedTable_UnionRow> readUnionTableRows = readTemplatedSqlTableDb.getUnionTable().read();
+        final SqlTableTemplatedFieldDb readSqlTableTemplatedFieldDb =
+                new SqlTableTemplatedFieldDb(DB_FILE_NAME);
+        final List<TemplatedTable_uint32Row> readUint32TableRows =
+                readSqlTableTemplatedFieldDb.getUint32Table().read();
+        final List<TemplatedTable_UnionRow> readUnionTableRows =
+                readSqlTableTemplatedFieldDb.getUnionTable().read();
 
         assertEqualUint32Rows(uint32TableRows, readUint32TableRows);
         assertEqualUnionRows(unionTableRows, readUnionTableRows);
+
+        readSqlTableTemplatedFieldDb.close();
     }
 
     static void assertEqualUint32Rows(List<TemplatedTable_uint32Row> rows1, List<TemplatedTable_uint32Row> rows2)
@@ -110,6 +115,6 @@ public class TemplatedSqlTableTest
         assertEquals(row1.getData(), row2.getData());
     }
 
-    private static final String DB_FILE_NAME = "templated_sql_table_test.sqlite";
+    private static final String DB_FILE_NAME = "sql_table_test_templated_field.sqlite";
     private final File dbFile = new File(DB_FILE_NAME);
 }
