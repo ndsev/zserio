@@ -694,14 +694,12 @@ public class Expression extends AstNodeBase
         if (operand1 == null)
         {
             String instantiatedText = text;
-            if (type == ZserioParser.ID && (expressionFlag == ExpressionFlag.IS_DOT_LEFT_OPERAND_ID ||
-                    expressionFlag != ExpressionFlag.IS_DOT_RIGHT_OPERAND_ID))
+            if (type == ZserioParser.ID)
             {
                 int index = templateParameters.indexOf(text);
                 if (index != -1)
                     instantiatedText = templateArguments.get(index).getName();
             }
-            // TODO[Mi-L@]: What if template argument is not only ID but is a DOT or something else?!
 
             return new Expression(getLocation(), pkg, type, instantiatedText, expressionFlag,
                     operand1, operand2, operand3);
@@ -711,7 +709,7 @@ public class Expression extends AstNodeBase
             return new Expression(getLocation(), pkg, type, text, expressionFlag,
                     operand1.instantiate(templateParameters, templateArguments),
                     operand2 == null ? null : operand2.instantiate(templateParameters, templateArguments),
-                    operand3 == null ? null : operand2.instantiate(templateParameters, templateArguments));
+                    operand3 == null ? null : operand3.instantiate(templateParameters, templateArguments));
         }
     }
 
