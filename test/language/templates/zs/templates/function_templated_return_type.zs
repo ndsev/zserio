@@ -21,4 +21,5 @@ struct FunctionTemplatedReturnType
     bool                             hasHolder;
     TestStructure<uint32>(hasHolder) uint32Test;
     TestStructure<string>(hasHolder) stringTest;
+    TestStructure<float32>(false)    floatTest;
 };
