@@ -55,6 +55,17 @@ set(ZSERIO_GENERATED_SOURCES
     ${ZSERIO_GEN_DIR}/templates/sql_table_templated_field/Data_uint32.cpp
     ${ZSERIO_GEN_DIR}/templates/sql_table_templated_field/Data_uint32.h
 
+    ${ZSERIO_GEN_DIR}/templates/struct_full_name_template_argument/storage/Storage.cpp
+    ${ZSERIO_GEN_DIR}/templates/struct_full_name_template_argument/storage/Storage.h
+    ${ZSERIO_GEN_DIR}/templates/struct_full_name_template_argument/TemplatedStruct_templates_struct_full_name_template_argument_storage_Storage.cpp
+    ${ZSERIO_GEN_DIR}/templates/struct_full_name_template_argument/TemplatedStruct_templates_struct_full_name_template_argument_storage_Storage.h
+    ${ZSERIO_GEN_DIR}/templates/struct_full_name_template_argument/TemplatedStruct_Storage.cpp
+    ${ZSERIO_GEN_DIR}/templates/struct_full_name_template_argument/TemplatedStruct_Storage.h
+    ${ZSERIO_GEN_DIR}/templates/struct_full_name_template_argument/StructFullNameTemplateArgument.cpp
+    ${ZSERIO_GEN_DIR}/templates/struct_full_name_template_argument/StructFullNameTemplateArgument.h
+    ${ZSERIO_GEN_DIR}/templates/struct_full_name_template_argument/Storage.cpp
+    ${ZSERIO_GEN_DIR}/templates/struct_full_name_template_argument/Storage.h
+
     ${ZSERIO_GEN_DIR}/templates/struct_recursive_template/StructRecursiveTemplate.cpp
     ${ZSERIO_GEN_DIR}/templates/struct_recursive_template/StructRecursiveTemplate.h
     ${ZSERIO_GEN_DIR}/templates/struct_recursive_template/Compound_uint32.cpp
@@ -149,6 +160,7 @@ add_test_sources(
     ${ZSERIO_CPP_DIR}/ChoiceTemplatedSelectorTest.cpp
     ${ZSERIO_CPP_DIR}/FunctionTemplatedReturnTypeTest.cpp
     ${ZSERIO_CPP_DIR}/SqlTableTemplatedFieldTest.cpp
+    ${ZSERIO_CPP_DIR}/StructFullNameTemplateArgumentTest.cpp
     ${ZSERIO_CPP_DIR}/StructRecursiveTemplateTest.cpp
     ${ZSERIO_CPP_DIR}/StructTemplatedFieldTest.cpp
     ${ZSERIO_CPP_DIR}/StructTemplatedTemplateArgumentTest.cpp

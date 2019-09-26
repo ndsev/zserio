@@ -41,6 +41,7 @@ uninitMemberVar:*/function_templated_return_type/TestStructure_uint32.cpp
 uninitMemberVar:*/function_templated_return_type/TestStructure_uint32.cpp
 uninitMemberVar:*/sql_table_templated_field/Data_uint32.cpp
 uninitMemberVar:*/sql_table_templated_field/Union.cpp
+uninitMemberVar:*/struct_full_name_template_argument/storage/Storage.cpp
 uninitMemberVar:*/struct_recursive_template/Compound_uint32.cpp
 uninitMemberVar:*/struct_template_in_template/Compound_uint32.cpp
 uninitMemberVar:*/struct_templated_field/Compound.cpp

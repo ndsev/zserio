@@ -5,6 +5,7 @@ import templates.choice_templated_field.*;
 import templates.choice_templated_selector.*;
 import templates.function_templated_return_type.*;
 import templates.sql_table_templated_field.*;
+import templates.struct_full_name_template_argument.*;
 import templates.struct_recursive_template.*;
 import templates.struct_template_in_template.*;
 import templates.struct_templated_field.*;
