@@ -694,15 +694,36 @@ public class Expression extends AstNodeBase
         if (operand1 == null)
         {
             String instantiatedText = text;
-            if (type == ZserioParser.ID)
+            if (type == ZserioParser.ID && expressionFlag != ExpressionFlag.IS_EXPLICIT)
             {
-                int index = templateParameters.indexOf(text);
-                if (index != -1)
-                    instantiatedText = templateArguments.get(index).getName();
+                if (expressionFlag == ExpressionFlag.IS_DOT_LEFT_OPERAND_ID ||
+                        expressionFlag != ExpressionFlag.IS_DOT_RIGHT_OPERAND_ID)
+                {
+                    // expression is single ID or is left dot operand
+                    final int index = templateParameters.indexOf(text);
+                    if (index != -1)
+                    {
+                        // template parameter has been found
+                        final ZserioType templateArgumentType = templateArguments.get(index);
+                        instantiatedText = templateArgumentType.getName();
+                        if (templateArgumentType instanceof TypeReference)
+                        {
+                            // found template argument is type reference
+                            final TypeReference templateArgumentReference = (TypeReference)templateArgumentType;
+                            final PackageName templateArgumentPackage =
+                                    templateArgumentReference.getReferencedPackageName();
+                            if (!templateArgumentPackage.isEmpty())
+                            {
+                                // found template argument is type reference with specified package
+                                return createInstantiationTree(templateArgumentPackage,
+                                        templateArgumentReference.getName());
+                            }
+                        }
+                    }
+                }
             }
 
-            return new Expression(getLocation(), pkg, type, instantiatedText, expressionFlag,
-                    operand1, operand2, operand3);
+            return new Expression(getLocation(), pkg, type, instantiatedText, expressionFlag, null, null, null);
         }
         else
         {
@@ -711,6 +732,26 @@ public class Expression extends AstNodeBase
                     operand2 == null ? null : operand2.instantiate(templateParameters, templateArguments),
                     operand3 == null ? null : operand3.instantiate(templateParameters, templateArguments));
         }
+    }
+
+    private Expression createInstantiationTree(PackageName templateArgumentPackage, String templateArgumentName)
+    {
+        final List<String> templateArgumentPackageIds = templateArgumentPackage.getIdList();
+        Expression operand1 = new Expression(getLocation(), pkg, ZserioParser.ID,
+                templateArgumentPackageIds.get(0), ExpressionFlag.IS_DOT_LEFT_OPERAND_ID, null, null, null);
+        final List<String> expressionIds = new ArrayList<String>(templateArgumentPackageIds);
+        expressionIds.add(templateArgumentName);
+        for (int i = 1; i < expressionIds.size(); i++)
+        {
+            final Expression operand2 = new Expression(getLocation(), pkg, ZserioParser.ID,
+                    expressionIds.get(i), ExpressionFlag.IS_DOT_RIGHT_OPERAND_ID, null, null, null);
+            final Expression dotOperand = new Expression(getLocation(), pkg, ZserioParser.DOT, ".",
+                    (i + 1 == expressionIds.size()) ? ExpressionFlag.IS_TOP_LEVEL_DOT : ExpressionFlag.NONE,
+                    operand1, operand2, null);
+            operand1 = dotOperand;
+        }
+
+        return operand1;
     }
 
     private Expression(AstLocation location, Package pkg, Token expressionToken,

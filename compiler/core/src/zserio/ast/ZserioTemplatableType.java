@@ -7,6 +7,7 @@ import java.util.List;
  */
 public interface ZserioTemplatableType extends ZserioType
 {
+    // TODO[mikir] Should we use 'public' everywhere?
     /**
      * Gets list of template parameters.
      *

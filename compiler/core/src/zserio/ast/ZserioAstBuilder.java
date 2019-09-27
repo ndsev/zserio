@@ -567,8 +567,10 @@ public class ZserioAstBuilder extends ZserioParserBaseVisitor<Object>
         final ArrayList<ZserioType> templateArguments = new ArrayList<ZserioType>();
         if (ctx != null)
         {
+            isTemplateArgument = true;
             for (ZserioParser.TypeNameContext typeNameCtx : ctx.typeName())
                 templateArguments.add(visitTypeName(typeNameCtx));
+            isTemplateArgument = false;
         }
         return templateArguments;
     }
@@ -837,7 +839,7 @@ public class ZserioAstBuilder extends ZserioParserBaseVisitor<Object>
         final String referencedTypeName = getTypeNameId(ctx.id()).getText();
 
         final TypeReference typeReference = new TypeReference(location, currentPackage, referencedPackageName,
-                referencedTypeName, templateArguments, checkIfNeedsParameters);
+                referencedTypeName, templateArguments, isTemplateArgument, checkIfNeedsParameters);
 
         return typeReference;
     }
@@ -947,6 +949,7 @@ public class ZserioAstBuilder extends ZserioParserBaseVisitor<Object>
     private Package currentPackage = null;
     private LinkedHashMap<String, ZserioType> localTypes = null;
     private boolean isInDotExpression = false;
+    private boolean isTemplateArgument = false;
 
     private static final String RSHIFT_OPERATOR = ">>";
 }

@@ -18,15 +18,17 @@ public class TypeReference extends AstNodeBase implements ZserioType
     /**
      * Constructor.
      *
-     * @param location                  AST node location.
-     * @param ownerPackage              Package of the type reference owner.
-     * @param referencedPackageName     Package name which the reference points to.
-     * @param referencedTypeName        Type name which the reference points to.
-     * @param templateArguments         Template arguments for the referenced type.
-     * @param checkIfNeedsParameters    True if check if the referenced type needs parameters.
+     * @param location               AST node location.
+     * @param ownerPackage           Package of the type reference owner.
+     * @param referencedPackageName  Package name which the reference points to.
+     * @param referencedTypeName     Type name which the reference points to.
+     * @param templateArguments      Template arguments for the referenced type.
+     * @param isTemplateArgument     True if the type reference is template argument.
+     * @param checkIfNeedsParameters True if check if the referenced type needs parameters.
      */
     public TypeReference(AstLocation location, Package ownerPackage, PackageName referencedPackageName,
-            String referencedTypeName, List<ZserioType> templateArguments, boolean checkIfNeedsParameters)
+            String referencedTypeName, List<ZserioType> templateArguments, boolean isTemplateArgument,
+            boolean checkIfNeedsParameters)
     {
         super(location);
 
@@ -34,6 +36,7 @@ public class TypeReference extends AstNodeBase implements ZserioType
         this.referencedPackageName = referencedPackageName;
         this.referencedTypeName = referencedTypeName;
         this.templateArguments = templateArguments;
+        this.isTemplateArgument = isTemplateArgument;
         this.checkIfNeedsParameters = checkIfNeedsParameters;
     }
 
@@ -46,7 +49,7 @@ public class TypeReference extends AstNodeBase implements ZserioType
     @Override
     public void visitChildren(ZserioAstVisitor visitor)
     {
-        for (ZserioType templateArgument : this.templateArguments)
+        for (ZserioType templateArgument : templateArguments)
             templateArgument.accept(visitor);
     }
 
@@ -86,7 +89,7 @@ public class TypeReference extends AstNodeBase implements ZserioType
             throw new ParserException(this, "Unresolved referenced type '" + referencedTypeName + "'!");
 
         // check referenced type
-        if (referencedType instanceof ConstType)
+        if (referencedType instanceof ConstType && !isTemplateArgument)
             throw new ParserException(this, "Invalid usage of constant '" + referencedType.getName() +
                     "' as a type!");
         if (referencedType instanceof SqlDatabaseType)
@@ -150,7 +153,8 @@ public class TypeReference extends AstNodeBase implements ZserioType
         }
 
         return new TypeReference(getLocation(), ownerPackage, getReferencedPackageName(),
-                getReferencedTypeName(), instantiatedTemplateArguments, checkIfNeedsParameters);
+                getReferencedTypeName(), instantiatedTemplateArguments, isTemplateArgument,
+                checkIfNeedsParameters);
     }
 
     List<ZserioType> getTemplateArguments()
@@ -163,6 +167,7 @@ public class TypeReference extends AstNodeBase implements ZserioType
         return referencedPackageName;
     }
 
+    /* TODO[mikir] redundant with getName() */
     String getReferencedTypeName()
     {
         return referencedTypeName;
@@ -212,6 +217,7 @@ public class TypeReference extends AstNodeBase implements ZserioType
     private final PackageName referencedPackageName;
     private final String referencedTypeName;
     private final List<ZserioType> templateArguments;
+    private final boolean isTemplateArgument;
     private final boolean checkIfNeedsParameters;
 
     private ZserioType referencedType = null;

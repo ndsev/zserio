@@ -2,6 +2,7 @@ package zserio.ast;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import zserio.tools.HashUtil;
@@ -162,9 +163,9 @@ public class PackageName implements Comparable<PackageName>
      *
      * @return List of identifiers in the package name.
      */
-    public Iterable<String> getIdList()
+    public List<String> getIdList()
     {
-        return idList;
+        return Collections.unmodifiableList(idList);
     }
 
     private PackageName(List<String> idList)
