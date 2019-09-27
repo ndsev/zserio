@@ -49,7 +49,7 @@ public class SqlTablesErrorTest
     @Test
     public void parameterizedTable()
     {
-        final String error = "parameterized_table_error.zs:3:20: mismatched input '(' expecting {'{', 'using'}";
+        final String error = "parameterized_table_error.zs:3:20: mismatched input '(' expecting {"; //...
         assertTrue(zserioErrors.isPresent(error));
     }
 
