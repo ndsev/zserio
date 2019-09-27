@@ -27,6 +27,38 @@ set(ZSERIO_GENERATED_SOURCES
     ${ZSERIO_GEN_DIR}/templates/choice_templated_field/ChoiceTemplatedField.cpp
     ${ZSERIO_GEN_DIR}/templates/choice_templated_field/ChoiceTemplatedField.h
 
+    ${ZSERIO_GEN_DIR}/templates/expression_const_template_argument/ConstTemplateArgumentHolder.cpp
+    ${ZSERIO_GEN_DIR}/templates/expression_const_template_argument/ConstTemplateArgumentHolder.h
+    ${ZSERIO_GEN_DIR}/templates/expression_const_template_argument/ConstTemplateArgument_LENGTH.cpp
+    ${ZSERIO_GEN_DIR}/templates/expression_const_template_argument/ConstTemplateArgument_LENGTH.h
+    ${ZSERIO_GEN_DIR}/templates/expression_const_template_argument/LENGTH.h
+
+    ${ZSERIO_GEN_DIR}/templates/expression_enum_template_argument/Color.cpp
+    ${ZSERIO_GEN_DIR}/templates/expression_enum_template_argument/Color.h
+    ${ZSERIO_GEN_DIR}/templates/expression_enum_template_argument/EnumTemplateArgument_Color.cpp
+    ${ZSERIO_GEN_DIR}/templates/expression_enum_template_argument/EnumTemplateArgument_Color.h
+    ${ZSERIO_GEN_DIR}/templates/expression_enum_template_argument/EnumTemplateArgumentHolder.cpp
+    ${ZSERIO_GEN_DIR}/templates/expression_enum_template_argument/EnumTemplateArgumentHolder.h
+
+    ${ZSERIO_GEN_DIR}/templates/expression_enum_template_argument_conflict/E.cpp
+    ${ZSERIO_GEN_DIR}/templates/expression_enum_template_argument_conflict/E.h
+    ${ZSERIO_GEN_DIR}/templates/expression_enum_template_argument_conflict/EnumTemplateArgumentConflictHolder.cpp
+    ${ZSERIO_GEN_DIR}/templates/expression_enum_template_argument_conflict/EnumTemplateArgumentConflictHolder.h
+    ${ZSERIO_GEN_DIR}/templates/expression_enum_template_argument_conflict/EnumTemplateArgumentConflict_Letters.cpp
+    ${ZSERIO_GEN_DIR}/templates/expression_enum_template_argument_conflict/EnumTemplateArgumentConflict_Letters.h
+    ${ZSERIO_GEN_DIR}/templates/expression_enum_template_argument_conflict/Letters.cpp
+    ${ZSERIO_GEN_DIR}/templates/expression_enum_template_argument_conflict/Letters.h
+
+    ${ZSERIO_GEN_DIR}/templates/expression_full_enum_template_argument/color/Color.cpp
+    ${ZSERIO_GEN_DIR}/templates/expression_full_enum_template_argument/color/Color.h
+    ${ZSERIO_GEN_DIR}/templates/expression_full_enum_template_argument/Color.cpp
+    ${ZSERIO_GEN_DIR}/templates/expression_full_enum_template_argument/Color.h
+    ${ZSERIO_GEN_DIR}/templates/expression_full_enum_template_argument/FullEnumTemplateArgument_Color.cpp
+    ${ZSERIO_GEN_DIR}/templates/expression_full_enum_template_argument/FullEnumTemplateArgument_Color.h
+    ${ZSERIO_GEN_DIR}/templates/expression_full_enum_template_argument/FullEnumTemplateArgumentHolder.cpp
+    ${ZSERIO_GEN_DIR}/templates/expression_full_enum_template_argument/FullEnumTemplateArgument_templates_expression_full_enum_template_argument_color_Color.cpp
+    ${ZSERIO_GEN_DIR}/templates/expression_full_enum_template_argument/FullEnumTemplateArgument_templates_expression_full_enum_template_argument_color_Color.h
+
     ${ZSERIO_GEN_DIR}/templates/function_templated_return_type/TestStructure_uint32.cpp
     ${ZSERIO_GEN_DIR}/templates/function_templated_return_type/TestStructure_uint32.h
     ${ZSERIO_GEN_DIR}/templates/function_templated_return_type/TestStructure_string.cpp
@@ -158,6 +190,10 @@ add_test_sources(
     ${ZSERIO_CPP_DIR}/ChoiceTemplatedEnumSelectorTest.cpp
     ${ZSERIO_CPP_DIR}/ChoiceTemplatedFieldTest.cpp
     ${ZSERIO_CPP_DIR}/ChoiceTemplatedSelectorTest.cpp
+    ${ZSERIO_CPP_DIR}/ExpressionConstTemplateArgumentTest.cpp
+    ${ZSERIO_CPP_DIR}/ExpressionEnumTemplateArgumentTest.cpp
+    ${ZSERIO_CPP_DIR}/ExpressionEnumTemplateArgumentConflictTest.cpp
+    ${ZSERIO_CPP_DIR}/ExpressionFullEnumTemplateArgumentTest.cpp
     ${ZSERIO_CPP_DIR}/FunctionTemplatedReturnTypeTest.cpp
     ${ZSERIO_CPP_DIR}/SqlTableTemplatedFieldTest.cpp
     ${ZSERIO_CPP_DIR}/StructFullNameTemplateArgumentTest.cpp
