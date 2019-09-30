@@ -851,8 +851,7 @@ public class Expression extends AstNodeBase
         {
             final AstLocation location = getLocation();
             throw new ParserException(functionResultExpression, e.getMessage() +
-                    " Found in function '" + functionType.getName() + "' called from here: " +
-                    location.getFileName() + ":" + location.getLine() + ":" + location.getColumn());
+                    " Found in function '" + functionType.getName() + "' called from here: " + location);
         }
 
         evaluateExpressionType(functionType.getReturnType());

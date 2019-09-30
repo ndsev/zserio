@@ -2,6 +2,8 @@ package zserio.ast;
 
 import org.antlr.v4.runtime.Token;
 
+import zserio.tools.StringJoinUtil;
+
 /**
  * Location in AST.
  */
@@ -65,7 +67,16 @@ public class AstLocation
         return column;
     }
 
+    @Override
+    public String toString()
+    {
+        return fileName == null ? "" : StringJoinUtil.joinStrings(fileName, Integer.toString(line),
+                Integer.toString(column), LOCATION_SEPARATOR);
+    }
+
     private final String fileName;
     private final int line;
     private final int column;
+
+    private static final String LOCATION_SEPARATOR = ":";
 }

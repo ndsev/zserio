@@ -52,5 +52,11 @@ public class ZserioTypeUtil
             return zserioType;
     }
 
+    static String getReferencedFullName(TypeReference typeReference)
+    {
+        return StringJoinUtil.joinStrings(typeReference.getReferencedPackageName().toString(),
+                typeReference.getReferencedTypeName(), FULL_NAME_SEPARATOR);
+    }
+
     private static final String FULL_NAME_SEPARATOR = ".";
 }

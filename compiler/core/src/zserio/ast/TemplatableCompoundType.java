@@ -3,11 +3,8 @@ package zserio.ast;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
-
 import zserio.antlr.util.ParserException;
 import zserio.tools.HashUtil;
 import zserio.tools.StringJoinUtil;
@@ -42,8 +39,9 @@ abstract class TemplatableCompoundType extends CompoundType implements ZserioTem
     }
 
     @Override
-    public ZserioTemplatableType instantiate(List<ZserioType> templateArguments)
+    public ZserioTemplatableType instantiate(TypeReference instantiationReference)
     {
+        final List<ZserioType> templateArguments = instantiationReference.getTemplateArguments();
         if (getTemplateParameters().size() != templateArguments.size())
         {
             throw new ParserException(this, "Wrong number of template arguments for template '" +
@@ -60,11 +58,12 @@ abstract class TemplatableCompoundType extends CompoundType implements ZserioTem
         if (instantiation == null)
         {
             final String name = getInstantiationNameImpl(wrappedTemplateArguments);
-            checkInstantiationName(wrappedTemplateArguments, name);
+            checkInstantiationName(wrappedTemplateArguments, name, instantiationReference.getLocation());
             instantiation = instantiateImpl(name, templateArguments);
-            // TODO[Mi-L@]: We should probably remember also the instantiation reference (for error reporting)?
+            instantiation.instantiationReference = instantiationReference;
             instantiation.template = this;
             instantiationsMap.put(wrappedTemplateArguments, instantiation);
+            instantiationsNamesMap.put(name, instantiation);
         }
 
         return instantiation;
@@ -81,9 +80,6 @@ abstract class TemplatableCompoundType extends CompoundType implements ZserioTem
     {
         final ZserioTemplatableType instantiation =
                 instantiationsMap.get(wrapTemplateArguments(templateArguments));
-        if (instantiation == null) // this should not occur!
-            throw new ParserException(this, "No instantiation found!"); // TODO[Mi-L@]: Improve message!
-
         return instantiation;
     }
 
@@ -111,10 +107,17 @@ abstract class TemplatableCompoundType extends CompoundType implements ZserioTem
         return nameBuilder.toString();
     }
 
-    private void checkInstantiationName(List<TemplateArgument> templateArguments, String name)
+    private void checkInstantiationName(List<TemplateArgument> templateArguments, String name,
+            AstLocation instantiationLocation)
     {
-        if (!instantiationsNamesSet.add(name)) // TODO[Mi-L@]: Improve message!
-            throw new ParserException(this, "Clash in instantiations name found: '" + name + "'!");
+        final TemplatableCompoundType prevInstantiation = instantiationsNamesMap.get(name);
+        if (prevInstantiation != null)
+        {
+            throw new ParserException(this, "Instantiation name '" + name + "' already exits!\n" +
+                    "First instantiated here: " + prevInstantiation.instantiationReference.getLocation() +
+                            "\n" +
+                    "Instantiated here: " + instantiationLocation);
+        }
     }
 
     private List<TemplateArgument> wrapTemplateArguments(List<ZserioType> templateArguments)
@@ -198,8 +201,10 @@ abstract class TemplatableCompoundType extends CompoundType implements ZserioTem
     private final List<String> templateParameters;
     private final Map<List<TemplateArgument>, TemplatableCompoundType> instantiationsMap =
             new HashMap<List<TemplateArgument>, TemplatableCompoundType>();
-    private final Set<String> instantiationsNamesSet = new HashSet<String>();
-    private ZserioTemplatableType template = null;
+    private final Map<String, TemplatableCompoundType> instantiationsNamesMap =
+            new HashMap<String, TemplatableCompoundType>();
+    private TypeReference instantiationReference = null;
+    private TemplatableCompoundType template = null;
 
     private static final String NAME_SEPARATOR = "_";
 }

@@ -23,9 +23,9 @@ public interface ZserioTemplatableType extends ZserioType
      * getTemplateInstantiations(). If the template with same arguments is already instantiated,
      * nothing is done.
      *
-     * @param templateArguments Actual template parameters.
+     * @param instantiationReference Reference to the actual template instantiation.
      */
-    public ZserioTemplatableType instantiate(List<ZserioType> templateArguments);
+    public ZserioTemplatableType instantiate(TypeReference instantiationReference);
 
     /**
      * Gets all template's instantiations.

@@ -55,20 +55,25 @@ public class ZserioAstTemplator extends ZserioAstWalker
             for (ZserioType templateArgument : typeReference.getTemplateArguments())
                 templateArgument.accept(this);
 
-            ZserioType type = currentPackage.getVisibleType(
+            final ZserioType type = currentPackage.getVisibleType(
                     typeReference.getReferencedPackageName(), typeReference.getReferencedTypeName());
-            if (type != null && type instanceof ZserioTemplatableType)
+            if (type == null)
             {
-                ZserioTemplatableType template = (ZserioTemplatableType)type;
-                if (template.getTemplateParameters().isEmpty()) // TODO[Mi-L@]: Improve message!
-                    throw new ParserException(typeReference, "Not a template!");
-
-                ZserioTemplatableType instantiation =
-                        template.instantiate(typeReference.getTemplateArguments());
-                instantiation.accept(this);
+                // TODO[Mi-L@]: The same error comes from TypeReference.resolve(). How to share it?
+                throw new ParserException(typeReference, "Unresolved referenced type '" +
+                        ZserioTypeUtil.getReferencedFullName(typeReference) + "'!");
             }
-            else // TODO[Mi-L@]: Improve message, maybe just not a templatable type.
-                throw new ParserException(typeReference, "Not a type!");
+
+            if (!(type instanceof ZserioTemplatableType) ||
+                    ((ZserioTemplatableType)type).getTemplateParameters().isEmpty())
+            {
+                throw new ParserException(typeReference,
+                        "'" + ZserioTypeUtil.getReferencedFullName(typeReference) + "' is not a template!");
+            }
+
+            final ZserioTemplatableType template = (ZserioTemplatableType)type;
+            final ZserioTemplatableType instantiation = template.instantiate(typeReference);
+            instantiation.accept(this);
         }
     }
 

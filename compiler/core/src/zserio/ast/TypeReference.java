@@ -86,7 +86,10 @@ public class TypeReference extends AstNodeBase implements ZserioType
         // resolve referenced type
         referencedType = ownerPackage.getVisibleType(this, referencedPackageName, referencedTypeName);
         if (referencedType == null)
-            throw new ParserException(this, "Unresolved referenced type '" + referencedTypeName + "'!");
+        {
+            throw new ParserException(this, "Unresolved referenced type '" +
+                    ZserioTypeUtil.getReferencedFullName(this) + "'!");
+        }
 
         // check referenced type
         if (referencedType instanceof ConstType && !isTemplateArgument)
@@ -101,7 +104,16 @@ public class TypeReference extends AstNodeBase implements ZserioType
         {
             ZserioTemplatableType template = (ZserioTemplatableType)referencedType;
             if (!template.getTemplateParameters().isEmpty())
+            {
                 referencedType = template.getInstantiation(templateArguments);
+                if (referencedType == null)
+                {
+                    // this should not occur!
+                    throw new ParserException(this, "Template '" +
+                            ZserioTypeUtil.getReferencedFullName(this) + "' not properly instantiated! " +
+                            "Please report a bug.");
+                }
+            }
         }
     }
 
