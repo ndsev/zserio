@@ -13,7 +13,7 @@ class ExpressionFullTemplateArgumentTest(unittest.TestCase):
         colorExternal = (self.api.FullTemplateArgument_templates_expression_full_template_argument_color_Color.
                          fromFields(False, 10))
         fullTemplateArgumentHolder = self.api.FullTemplateArgumentHolder.fromFields(colorInternal,
-                                                                                            colorExternal)
+                                                                                    colorExternal)
         self.assertTrue(fullTemplateArgumentHolder.getTemplateArgumentInternal().hasExpressionField())
         self.assertFalse(fullTemplateArgumentHolder.getTemplateArgumentExternal().hasExpressionField())
 
