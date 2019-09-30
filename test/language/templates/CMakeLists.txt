@@ -49,15 +49,15 @@ set(ZSERIO_GENERATED_SOURCES
     ${ZSERIO_GEN_DIR}/templates/expression_enum_template_argument_conflict/Letters.cpp
     ${ZSERIO_GEN_DIR}/templates/expression_enum_template_argument_conflict/Letters.h
 
-    ${ZSERIO_GEN_DIR}/templates/expression_full_enum_template_argument/color/Color.cpp
-    ${ZSERIO_GEN_DIR}/templates/expression_full_enum_template_argument/color/Color.h
-    ${ZSERIO_GEN_DIR}/templates/expression_full_enum_template_argument/Color.cpp
-    ${ZSERIO_GEN_DIR}/templates/expression_full_enum_template_argument/Color.h
-    ${ZSERIO_GEN_DIR}/templates/expression_full_enum_template_argument/FullEnumTemplateArgument_Color.cpp
-    ${ZSERIO_GEN_DIR}/templates/expression_full_enum_template_argument/FullEnumTemplateArgument_Color.h
-    ${ZSERIO_GEN_DIR}/templates/expression_full_enum_template_argument/FullEnumTemplateArgumentHolder.cpp
-    ${ZSERIO_GEN_DIR}/templates/expression_full_enum_template_argument/FullEnumTemplateArgument_templates_expression_full_enum_template_argument_color_Color.cpp
-    ${ZSERIO_GEN_DIR}/templates/expression_full_enum_template_argument/FullEnumTemplateArgument_templates_expression_full_enum_template_argument_color_Color.h
+    ${ZSERIO_GEN_DIR}/templates/expression_full_template_argument/color/Color.cpp
+    ${ZSERIO_GEN_DIR}/templates/expression_full_template_argument/color/Color.h
+    ${ZSERIO_GEN_DIR}/templates/expression_full_template_argument/Color.cpp
+    ${ZSERIO_GEN_DIR}/templates/expression_full_template_argument/Color.h
+    ${ZSERIO_GEN_DIR}/templates/expression_full_template_argument/FullTemplateArgument_Color.cpp
+    ${ZSERIO_GEN_DIR}/templates/expression_full_template_argument/FullTemplateArgument_Color.h
+    ${ZSERIO_GEN_DIR}/templates/expression_full_template_argument/FullTemplateArgumentHolder.cpp
+    ${ZSERIO_GEN_DIR}/templates/expression_full_template_argument/FullTemplateArgument_templates_expression_full_template_argument_color_Color.cpp
+    ${ZSERIO_GEN_DIR}/templates/expression_full_template_argument/FullTemplateArgument_templates_expression_full_template_argument_color_Color.h
 
     ${ZSERIO_GEN_DIR}/templates/function_templated_return_type/TestStructure_uint32.cpp
     ${ZSERIO_GEN_DIR}/templates/function_templated_return_type/TestStructure_uint32.h
@@ -193,7 +193,7 @@ add_test_sources(
     ${ZSERIO_CPP_DIR}/ExpressionConstTemplateArgumentTest.cpp
     ${ZSERIO_CPP_DIR}/ExpressionEnumTemplateArgumentTest.cpp
     ${ZSERIO_CPP_DIR}/ExpressionEnumTemplateArgumentConflictTest.cpp
-    ${ZSERIO_CPP_DIR}/ExpressionFullEnumTemplateArgumentTest.cpp
+    ${ZSERIO_CPP_DIR}/ExpressionFullTemplateArgumentTest.cpp
     ${ZSERIO_CPP_DIR}/FunctionTemplatedReturnTypeTest.cpp
     ${ZSERIO_CPP_DIR}/SqlTableTemplatedFieldTest.cpp
     ${ZSERIO_CPP_DIR}/StructFullNameTemplateArgumentTest.cpp

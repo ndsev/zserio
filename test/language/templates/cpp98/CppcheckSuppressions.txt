@@ -14,5 +14,5 @@ noExplicitConstructor:*/choice_templated_enum_selector/EnumFromZero.h
 noExplicitConstructor:*/expression_enum_template_argument/Color.h
 noExplicitConstructor:*/expression_enum_template_argument_conflict/E.h
 noExplicitConstructor:*/expression_enum_template_argument_conflict/Letters.h
-noExplicitConstructor:*/expression_full_enum_template_argument/Color.h
-noExplicitConstructor:*/expression_full_enum_template_argument/color/Color.h
+noExplicitConstructor:*/expression_full_template_argument/Color.h
+noExplicitConstructor:*/expression_full_template_argument/color/Color.h
