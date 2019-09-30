@@ -16,6 +16,6 @@ struct FullTemplateArgument<E>
 
 struct FullTemplateArgumentHolder
 {
-    FullTemplateArgument<Color> TemplateArgumentInternal;
-    FullTemplateArgument<templates.expression_full_template_argument.color.Color> TemplateArgumentExternal;
+    FullTemplateArgument<Color> templateArgumentInternal;
+    FullTemplateArgument<templates.expression_full_template_argument.color.Color> templateArgumentExternal;
 };
