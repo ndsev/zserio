@@ -1,5 +1,8 @@
 package zserio.ast;
 
+import zserio.antlr.util.ParserException;
+import zserio.tools.ZserioToolPrinter;
+
 /**
  * Implementation of ZserioAstVisitor which manages resolving phase.
  */
@@ -116,7 +119,18 @@ public class ZserioAstResolver extends ZserioAstWalker
     private void visitInstantiations(ZserioTemplatableType template)
     {
         for (ZserioTemplatableType instantiation : template.getInstantiations())
-            instantiation.accept(this);
+        {
+            try
+            {
+                instantiation.accept(this);
+            }
+            catch (ParserException e)
+            {
+                ZserioToolPrinter.printError(instantiation.getInstantiationLocation(),
+                        "In instantiation of '" + template.getName() + "' required from here");
+                throw e;
+            }
+        }
     }
 
     private Package currentPackage = null;

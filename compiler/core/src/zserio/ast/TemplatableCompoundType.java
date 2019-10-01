@@ -8,6 +8,7 @@ import java.util.Map;
 import zserio.antlr.util.ParserException;
 import zserio.tools.HashUtil;
 import zserio.tools.StringJoinUtil;
+import zserio.tools.ZserioToolPrinter;
 
 abstract class TemplatableCompoundType extends CompoundType implements ZserioTemplatableType
 {
@@ -89,6 +90,12 @@ abstract class TemplatableCompoundType extends CompoundType implements ZserioTem
         return template;
     }
 
+    @Override
+    public AstLocation getInstantiationLocation()
+    {
+        return instantiationReference == null ? null : instantiationReference.getLocation();
+    }
+
     String getInstantiationName(List<ZserioType> templateArguments)
     {
         return getInstantiationNameImpl(wrapTemplateArguments(templateArguments));
@@ -113,10 +120,11 @@ abstract class TemplatableCompoundType extends CompoundType implements ZserioTem
         final TemplatableCompoundType prevInstantiation = instantiationsNamesMap.get(name);
         if (prevInstantiation != null)
         {
-            throw new ParserException(this, "Instantiation name '" + name + "' already exits!\n" +
-                    "First instantiated here: " + prevInstantiation.instantiationReference.getLocation() +
-                            "\n" +
-                    "Instantiated here: " + instantiationLocation);
+            ZserioToolPrinter.printError(instantiationLocation,
+                    "In instantiation of '" + getName() + "' required from here");
+            ZserioToolPrinter.printError(prevInstantiation.getInstantiationLocation(),
+                    "First instantiated from here");
+            throw new ParserException(this, "Instantiation name '" + name + "' already exits!");
         }
     }
 

@@ -20,26 +20,33 @@ public class FunctionsErrorTest
     @Test
     public void compoundFieldNotAvailable()
     {
-        final String error = "compound_field_not_available_error.zs:17:16: " +
-                "Unresolved symbol 'header2' within expression scope! " +
-                "Found in function 'hasOptional2' called from here:";
+        String error = "compound_field_not_available_error.zs:7:23: " +
+                "In function 'hasOptional2' called from here";
+        assertTrue(zserioErrors.isPresent(error));
+
+        error = "compound_field_not_available_error.zs:17:16: " +
+                "Unresolved symbol 'header2' within expression scope!";
         assertTrue(zserioErrors.isPresent(error));
     }
 
     @Test
     public void differentScopes()
     {
-        final String error = "different_scopes_error.zs:20:16: " +
-                "Unresolved symbol 'val3' within expression scope! " +
-                "Found in function 'getValue' called from here:";
+        String error = "different_scopes_error.zs:15:27: In function 'getValue' called from here";
+        assertTrue(zserioErrors.isPresent(error));
+
+        error = "different_scopes_error.zs:20:55: Unresolved symbol 'val3' within expression scope!";
         assertTrue(zserioErrors.isPresent(error));
     }
 
     @Test
     public void fieldNotAvailable()
     {
-        final String error = "field_not_available_error.zs:17:16: Unresolved symbol " +
-                "'hasSpecialData' within expression scope! Found in function 'hasSpecial' called from here:";
+        String error = "field_not_available_error.zs:7:28: In function 'hasSpecial' called from here";
+        assertTrue(zserioErrors.isPresent(error));
+
+        error = "field_not_available_error.zs:17:16: " +
+                "Unresolved symbol 'hasSpecialData' within expression scope!";
         assertTrue(zserioErrors.isPresent(error));
     }
 

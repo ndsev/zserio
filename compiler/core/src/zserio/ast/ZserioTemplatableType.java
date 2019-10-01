@@ -49,4 +49,11 @@ public interface ZserioTemplatableType extends ZserioType
      * @return Template of the current instantiation.
      */
     public ZserioTemplatableType getTemplate();
+
+    /**
+     * Gets location of the current instantiation.
+     *
+     * @return Location.
+     */
+    public AstLocation getInstantiationLocation();
 }

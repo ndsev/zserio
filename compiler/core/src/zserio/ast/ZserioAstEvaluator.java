@@ -2,6 +2,9 @@ package zserio.ast;
 
 import java.util.List;
 
+import zserio.antlr.util.ParserException;
+import zserio.tools.ZserioToolPrinter;
+
 /**
  * Implementation of ZserioAstVisitor which manages evaluating phase.
  */
@@ -144,7 +147,18 @@ public class ZserioAstEvaluator extends ZserioAstWalker
     private void visitInstantiations(ZserioTemplatableType template)
     {
         for (ZserioTemplatableType instantiation : template.getInstantiations())
-            instantiation.accept(this);
+        {
+            try
+            {
+                instantiation.accept(this);
+            }
+            catch (ParserException e)
+            {
+                ZserioToolPrinter.printError(instantiation.getInstantiationLocation(),
+                        "In instantiation of '" + template.getName() + "' required from here");
+                throw e;
+            }
+        }
     }
 
     private final Scope evaluationScope;

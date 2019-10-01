@@ -11,9 +11,14 @@
 
     <target name="gen" depends="gen.check" unless="templates_error.zs.gen_is_uptodate">
         <testGenClean testName="templates_error"/>
+        <testGen testName="templates_error" zsFile="constant_used_as_type_error.zs" ignoreErrors="true"/>
+        <testGen testName="templates_error" zsFile="constraint_expression_expects_constant_error.zs"
+                ignoreErrors="true"/>
         <testGen testName="templates_error" zsFile="enum_not_a_template_error.zs" ignoreErrors="true"/>
         <testGen testName="templates_error" zsFile="instantiation_name_clash_error.zs" ignoreErrors="true"/>
+        <testGen testName="templates_error" zsFile="missing_type_parameters_error.zs" ignoreErrors="true"/>
         <testGen testName="templates_error" zsFile="parameterized_builtin_type_error.zs" ignoreErrors="true"/>
+        <testGen testName="templates_error" zsFile="parameterized_compound_type_error.zs" ignoreErrors="true"/>
         <testGen testName="templates_error" zsFile="templatable_not_a_template_error.zs" ignoreErrors="true"/>
         <testGen testName="templates_error" zsFile="templated_template_parameter_error.zs" ignoreErrors="true"/>
         <testGen testName="templates_error" zsFile="unresolved_reference_error.zs" ignoreErrors="true"/>

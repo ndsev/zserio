@@ -142,10 +142,22 @@ public class TypeReference extends AstNodeBase implements ZserioType
             final int index = templateParameters.indexOf(getReferencedTypeName());
             if (index != -1)
             {
-                if (!getTemplateArguments().isEmpty()) // TODO[Mi-L@]: Improve message!
+                if (!getTemplateArguments().isEmpty())
                     throw new ParserException(this, "Template parameter cannot be used as a template!");
 
-                return templateArguments.get(index);
+                final ZserioType templateArgument = templateArguments.get(index);
+                if (templateArgument instanceof TypeReference)
+                {
+                    // TODO[Mi-L@]: Consider redesign of the two flags (how to get rid of them).
+                    // flags isTemplateArgument and checkIfNeedsParameters must be taken over from this!
+                    final TypeReference referencedTemplateArgument = (TypeReference)templateArgument;
+                    return new TypeReference(getLocation(), referencedTemplateArgument.ownerPackage,
+                            referencedTemplateArgument.referencedPackageName,
+                            referencedTemplateArgument.referencedTypeName,
+                            referencedTemplateArgument.templateArguments,
+                            isTemplateArgument, checkIfNeedsParameters);
+                }
+                return templateArgument;
             }
         }
 
