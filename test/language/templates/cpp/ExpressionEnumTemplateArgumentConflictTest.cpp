@@ -10,9 +10,9 @@ namespace expression_enum_template_argument_conflict
 TEST(ExpressionEnumTemplateArgumentConflictTest, readWrite)
 {
     const EnumTemplateArgumentConflict_Letters enumTemplateArgumentConflict_Letters(false, 10);
-    EnumTemplateArgumentConflictHolder enumTemplateArgumentConflictHolder(enumTemplateArgumentConflict_Letters);
-    ASSERT_TRUE(enumTemplateArgumentConflictHolder.getEnumTemplateArgumentConflict().hasExpressionField());
+    ASSERT_TRUE(enumTemplateArgumentConflict_Letters.hasExpressionField());
 
+    EnumTemplateArgumentConflictHolder enumTemplateArgumentConflictHolder(enumTemplateArgumentConflict_Letters);
     zserio::BitStreamWriter writer;
     enumTemplateArgumentConflictHolder.write(writer);
     size_t bufferSize = 0;

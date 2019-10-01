@@ -23,10 +23,10 @@ public class ExpressionEnumTemplateArgumentTest
     public void readWrite() throws IOException
     {
         final EnumTemplateArgument_Color enumTemplateArgument_Color = new EnumTemplateArgument_Color(false, 10);
+        assertTrue(enumTemplateArgument_Color.hasExpressionField());
+
         final EnumTemplateArgumentHolder enumTemplateArgumentHolder =
                 new EnumTemplateArgumentHolder(enumTemplateArgument_Color);
-        assertTrue(enumTemplateArgumentHolder.getEnumTemplateArgument().hasExpressionField());
-
         final BitStreamWriter writer = new FileBitStreamWriter(TEST_FILE);
         enumTemplateArgumentHolder.write(writer);
         writer.close();

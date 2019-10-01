@@ -19,8 +19,8 @@ public class DocElement extends AstNodeBase
     /**
      * Constructor from see tag.
      *
-     * @param location  ANTLR4 token to localize AST node in the sources.
-     * @param seeTag    See tag.
+     * @param location AST node location.
+     * @param seeTag   See tag.
      */
     public DocElement(AstLocation location, DocTagSee seeTag)
     {
@@ -30,8 +30,8 @@ public class DocElement extends AstNodeBase
     /**
      * Constructor from todo tag.
      *
-     * @param location  ANTLR4 token to localize AST node in the sources.
-     * @param todoTag   Todo tag.
+     * @param location AST node location.
+     * @param todoTag  Todo tag.
      */
     public DocElement(AstLocation location, DocTagTodo todoTag)
     {
@@ -41,8 +41,8 @@ public class DocElement extends AstNodeBase
     /**
      * Constructor from param tag.
      *
-     * @param location  ANTLR4 token to localize AST node in the sources.
-     * @param paramTag   Param tag.
+     * @param location AST node location.
+     * @param paramTag Param tag.
      */
     public DocElement(AstLocation location, DocTagParam paramTag)
     {
@@ -52,7 +52,7 @@ public class DocElement extends AstNodeBase
     /**
      * Constructor from deprecated tag.
      *
-     * @param location      ANTLR4 token to localize AST node in the sources.
+     * @param location      AST node location.
      * @param deprecatedTag Deprecated tag.
      */
     public DocElement(AstLocation location, DocTagDeprecated deprecatedTag)

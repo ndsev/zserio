@@ -10,9 +10,9 @@ import zserio.tools.StringJoinUtil;
 public class AstLocation
 {
     /**
-     * Constructor.
+     * Constructor from grammar token.
      *
-     * @param token ANTLR4 token to localize AST node in the sources.
+     * @param token Grammar token to localize AST node in the sources.
      */
     public AstLocation(Token token)
     {
@@ -30,6 +30,13 @@ public class AstLocation
         }
     }
 
+    /**
+     * Constructor from file name and position.
+     *
+     * @param fileName           File name of the source.
+     * @param line               Line number of the position in the source file.
+     * @param charPositionInLine Character position in the source line.
+     */
     public AstLocation(String fileName, int line, int charPositionInLine)
     {
         this.fileName = fileName;

@@ -2,8 +2,6 @@ package zserio.ast;
 
 import java.math.BigInteger;
 
-import org.antlr.v4.runtime.Token;
-
 import zserio.antlr.ZserioParser;
 
 /**
@@ -14,15 +12,17 @@ import zserio.antlr.ZserioParser;
 public class VarIntegerType extends IntegerType
 {
     /**
-     * Constructor from ANTLR4 token.
+     * Constructor from AST node location, the name and the token type.
      *
-     * @param token Token to construct from.
+     * @param location  AST node location.
+     * @param name      Name of the AST node taken from grammar.
+     * @param tokenType Grammar token type.
      */
-    public VarIntegerType(Token token)
+    public VarIntegerType(AstLocation location, String name, int tokenType)
     {
-        super(token);
+        super(location, name);
 
-        switch (token.getType())
+        switch (tokenType)
         {
         case ZserioParser.VARUINT16:
             isSigned = false;

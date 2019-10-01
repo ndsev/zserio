@@ -8,7 +8,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
-import org.antlr.v4.runtime.CommonToken;
 import zserio.antlr.ZserioParser;
 import zserio.antlr.util.ParserException;
 
@@ -332,9 +331,8 @@ public class SqlConstraint extends AstNodeBase
 
     private static Expression createStringLiteralExpression(Package pkg, String stringLiteral)
     {
-        final CommonToken stringLiteralToken = new CommonToken(ZserioParser.STRING_LITERAL, stringLiteral);
-
-        return new Expression(null, pkg, stringLiteralToken);
+        return new Expression(null, pkg, ZserioParser.STRING_LITERAL, stringLiteral,
+                Expression.ExpressionFlag.NONE);
     }
 
     private static final String PRIMARY_KEY_CONSTRAINT = "PRIMARY KEY";

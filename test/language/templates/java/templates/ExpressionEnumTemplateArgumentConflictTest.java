@@ -24,10 +24,10 @@ public class ExpressionEnumTemplateArgumentConflictTest
     {
         final EnumTemplateArgumentConflict_Letters enumTemplateArgumentConflict_Letters =
                 new EnumTemplateArgumentConflict_Letters(false, 10);
+        assertTrue(enumTemplateArgumentConflict_Letters.hasExpressionField());
+
         final EnumTemplateArgumentConflictHolder enumTemplateArgumentConflictHolder =
                 new EnumTemplateArgumentConflictHolder(enumTemplateArgumentConflict_Letters);
-        assertTrue(enumTemplateArgumentConflictHolder.getEnumTemplateArgumentConflict().hasExpressionField());
-
         final BitStreamWriter writer = new FileBitStreamWriter(TEST_FILE);
         enumTemplateArgumentConflictHolder.write(writer);
         writer.close();

@@ -12,10 +12,10 @@ TEST(ExpressionEnumTemplateArgumentConflictTest, readWrite)
     EnumTemplateArgumentConflict_Letters enumTemplateArgumentConflict_Letters;
     enumTemplateArgumentConflict_Letters.setBoolField(false);
     enumTemplateArgumentConflict_Letters.setExpressionField(10);
+    ASSERT_TRUE(enumTemplateArgumentConflict_Letters.hasExpressionField());
+
     EnumTemplateArgumentConflictHolder enumTemplateArgumentConflictHolder;
     enumTemplateArgumentConflictHolder.setEnumTemplateArgumentConflict(enumTemplateArgumentConflict_Letters);
-    ASSERT_TRUE(enumTemplateArgumentConflictHolder.getEnumTemplateArgumentConflict().hasExpressionField());
-
     zserio::BitStreamWriter writer;
     enumTemplateArgumentConflictHolder.write(writer);
     size_t bufferSize = 0;

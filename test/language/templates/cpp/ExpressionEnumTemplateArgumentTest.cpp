@@ -10,9 +10,9 @@ namespace expression_enum_template_argument
 TEST(ExpressionEnumTemplateArgumentTest, readWrite)
 {
     const EnumTemplateArgument_Color enumTemplateArgument_Color(false, 10);
-    EnumTemplateArgumentHolder enumTemplateArgumentHolder(enumTemplateArgument_Color);
-    ASSERT_TRUE(enumTemplateArgumentHolder.getEnumTemplateArgument().hasExpressionField());
+    ASSERT_TRUE(enumTemplateArgument_Color.hasExpressionField());
 
+    EnumTemplateArgumentHolder enumTemplateArgumentHolder(enumTemplateArgument_Color);
     zserio::BitStreamWriter writer;
     enumTemplateArgumentHolder.write(writer);
     size_t bufferSize = 0;

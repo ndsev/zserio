@@ -29,6 +29,7 @@ uninitMemberVar:*/choice_templated_selector/TemplatedChoice_uint16.cpp
 uninitMemberVar:*/choice_templated_selector/TemplatedChoice_uint16.cpp
 uninitMemberVar:*/choice_templated_selector/TemplatedChoice_uint32.cpp
 uninitMemberVar:*/choice_templated_selector/TemplatedChoice_uint32.cpp
+uninitMemberVar:*/expression_const_template_argument/ConstTemplateArgument_LENGTH.cpp
 uninitMemberVar:*/expression_enum_template_argument/EnumTemplateArgument_Color.cpp
 uninitMemberVar:*/expression_enum_template_argument_conflict/EnumTemplateArgumentConflict_Letters.cpp
 uninitMemberVar:*/expression_full_template_argument/FullTemplateArgument_Color.cpp

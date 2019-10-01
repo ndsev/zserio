@@ -21,7 +21,7 @@ import zserio.tools.InputFileManager;
 import zserio.tools.ZserioToolPrinter;
 
 /**
- * Visitor which checks ANTLR4 parse tree semantics.
+ * Visitor which checks grammar parse tree semantics.
  */
 public class ZserioParseTreeChecker extends ZserioParserBaseVisitor<Void>
 {

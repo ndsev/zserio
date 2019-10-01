@@ -6,8 +6,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.antlr.v4.runtime.Token;
-
 import zserio.antlr.ZserioParser;
 import zserio.antlr.util.ParserException;
 
@@ -31,125 +29,77 @@ public class Expression extends AstNodeBase
     /**
      * Constructor.
      *
-     * @param expressionToken Token to construct expression from.
-     * @param pkg             Package to which the expression belongs.
-     */
-    public Expression(Token expressionToken, Package pkg)
-    {
-        this(new AstLocation(expressionToken), pkg, expressionToken, ExpressionFlag.NONE, null, null, null);
-    }
-
-    /**
-     * Constructor.
-     *
-     * @param expressionToken Token to construct expression from.
-     * @param pkg             Package to which the expression belongs.
-     * @param expressionFlag  Flag for the expression.
-     */
-    public Expression(Token expressionToken, Package pkg, ExpressionFlag expressionFlag)
-    {
-        this(new AstLocation(expressionToken), pkg, expressionToken, expressionFlag, null, null, null);
-    }
-
-    /**
-     * Constructor.
-     *
-     * @param location        AST node location.
-     * @param pkg             Package to which the expression belongs.
-     * @param expressionToken Token to construct expression from.
-     */
-    public Expression(AstLocation location, Package pkg, Token expressionToken)
-    {
-        this(location, pkg, expressionToken, ExpressionFlag.NONE, null, null, null);
-    }
-
-    /**
-     * Constructor.
-     *
-     * @param location        AST node location.
-     * @param pkg             Package to which the expression belongs.
-     * @param expressionToken Token to construct expression from.
-     * @param expressionFlag  Flag for the expression.
-     */
-    public Expression(AstLocation location, Package pkg, Token expressionToken, ExpressionFlag expressionFlag)
-    {
-        this(location, pkg, expressionToken, expressionFlag, null, null, null);
-    }
-
-    /**
-     * Constructor.
-     *
-     * @param location        AST node location.
-     * @param pkg             Package to which the expression belongs.
-     * @param expressionToken Token to construct expression from.
-     * @param operand1        Left operand of the expression.
-     */
-    public Expression(AstLocation location, Package pkg, Token expressionToken, Expression operand1)
-    {
-        this(location, pkg, expressionToken, ExpressionFlag.NONE, operand1, null, null);
-    }
-
-    /**
-     * Constructor.
-     *
-     * @param location        AST node location.
-     * @param pkg             Package to which the expression belongs.
-     * @param expressionToken Token to construct expression from.
-     * @param operand1        Left operand of the expression.
-     * @param operand2        Right operand of the expression.
-     */
-    public Expression(AstLocation location, Package pkg, Token expressionToken, Expression operand1,
-            Expression operand2)
-    {
-        this(location, pkg, expressionToken, ExpressionFlag.NONE, operand1, operand2, null);
-    }
-
-    /**
-     * Constructor.
-     *
-     * @param location        AST node location.
-     * @param pkg             Package to which the expression belongs.
-     * @param expressionType  Expression token type.
-     * @param expressionText  Expression token text.
-     * @param operand1        Left operand of the expression.
-     * @param operand2        Right operand of the expression.
+     * @param location       AST node location.
+     * @param pkg            Package to which the expression belongs.
+     * @param expressionType Expression grammar token type.
+     * @param expressionText Expression grammar token text.
+     * @param expressionFlag Flag for the expression.
      */
     public Expression(AstLocation location, Package pkg, int expressionType, String expressionText,
-            Expression operand1, Expression operand2)
+            ExpressionFlag expressionFlag)
     {
-        this(location, pkg, expressionType, expressionText, ExpressionFlag.NONE, operand1, operand2, null);
+        this(location, pkg, expressionType, expressionText, expressionFlag, null, null, null);
     }
 
     /**
      * Constructor.
      *
-     * @param location        AST node location.
-     * @param pkg             Package to which the expression belongs.
-     * @param expressionToken Token to construct expression from.
-     * @param expressionFlag  Flag for the expression.
-     * @param operand1        Left operand of the expression.
-     * @param operand2        Right operand of the expression.
+     * @param location       AST node location.
+     * @param pkg            Package to which the expression belongs.
+     * @param expressionType Expression grammar token type.
+     * @param expressionText Expression grammar token text.
+     * @param expressionFlag Flag for the expression.
+     * @param operand1       Operand of the expression.
      */
-    public Expression(AstLocation location, Package pkg, Token expressionToken, ExpressionFlag expressionFlag,
-            Expression operand1, Expression operand2)
+    public Expression(AstLocation location, Package pkg, int expressionType, String expressionText,
+            ExpressionFlag expressionFlag, Expression operand1)
     {
-        this(location, pkg, expressionToken, expressionFlag, operand1, operand2, null);
+        this(location, pkg, expressionType, expressionText, expressionFlag, operand1, null, null);
     }
 
     /**
      * Constructor.
      *
-     * @param location        AST node location.
-     * @param pkg             Package to which the expression belongs.
-     * @param expressionToken Token to construct expression from.
-     * @param operand1        Left operand of the ternary expression.
-     * @param operand2        Middle operand of the ternary expression.
-     * @param operand3        Right operand of the ternary expression.
+     * @param location       AST node location.
+     * @param pkg            Package to which the expression belongs.
+     * @param expressionType Expression grammar token type.
+     * @param expressionText Expression grammar token text.
+     * @param expressionFlag Flag for the expression.
+     * @param operand1       Left operand of the expression.
+     * @param operand2       Right operand of the expression.
      */
-    public Expression(AstLocation location, Package pkg, Token expressionToken, Expression operand1,
-            Expression operand2, Expression operand3)
+    public Expression(AstLocation location, Package pkg, int expressionType, String expressionText,
+            ExpressionFlag expressionFlag, Expression operand1, Expression operand2)
     {
-        this(location, pkg, expressionToken, ExpressionFlag.NONE, operand1, operand2, operand3);
+        this(location, pkg, expressionType, expressionText, expressionFlag, operand1, operand2, null);
+    }
+
+    /**
+     * Constructor.
+     *
+     * @param location       AST node location.
+     * @param pkg            Package to which the expression belongs.
+     * @param expressionType Expression grammar token type.
+     * @param expressionText Expression grammar token text.
+     * @param expressionFlag Flag for the expression.
+     * @param operand1       Left operand of the expression.
+     * @param operand2       Middle operand of the expression.
+     * @param operand3       Right operand of the expression.
+     */
+    public Expression(AstLocation location, Package pkg, int expressionType, String expressionText,
+            ExpressionFlag expressionFlag, Expression operand1, Expression operand2, Expression operand3)
+    {
+        super(location);
+
+        this.pkg = pkg;
+        type = expressionType;
+        text = stripExpressionText(expressionType, expressionText);
+        this.expressionFlag = expressionFlag;
+        this.operand1 = operand1;
+        this.operand2 = operand2;
+        this.operand3 = operand3;
+
+        initialize();
     }
 
     @Override
@@ -196,7 +146,7 @@ public class Expression extends AstNodeBase
      *
      * This method should not be public but it is used by expression formatters at the moment.
      *
-     * @return Expression type given by ANTLR4.
+     * @return Expression type given by grammar.
      */
     public int getType()
     {
@@ -208,7 +158,7 @@ public class Expression extends AstNodeBase
      *
      * This method should not be public but it is used by expression formatters at the moment.
      *
-     * @return Expression text given by ANTLR4.
+     * @return Expression text given by grammar.
      */
     public String getText()
     {
@@ -752,29 +702,6 @@ public class Expression extends AstNodeBase
         }
 
         return operand1;
-    }
-
-    private Expression(AstLocation location, Package pkg, Token expressionToken,
-            ExpressionFlag expressionFlag, Expression operand1, Expression operand2, Expression operand3)
-    {
-        this(location, pkg, expressionToken.getType(), expressionToken.getText(), expressionFlag,
-                operand1, operand2, operand3);
-    }
-
-    private Expression(AstLocation location, Package pkg, int expressionType, String expressionText,
-            ExpressionFlag expressionFlag, Expression operand1, Expression operand2, Expression operand3)
-    {
-        super(location);
-
-        this.pkg = pkg;
-        type = expressionType;
-        text = stripExpressionText(expressionType, expressionText);
-        this.expressionFlag = expressionFlag;
-        this.operand1 = operand1;
-        this.operand2 = operand2;
-        this.operand3 = operand3;
-
-        initialize();
     }
 
     @SuppressWarnings("unchecked")

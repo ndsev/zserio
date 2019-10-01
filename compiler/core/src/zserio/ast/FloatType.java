@@ -1,7 +1,5 @@
 package zserio.ast;
 
-import org.antlr.v4.runtime.Token;
-
 import zserio.antlr.ZserioParser;
 
 /**
@@ -12,15 +10,17 @@ import zserio.antlr.ZserioParser;
 public class FloatType extends BuiltInType implements FixedSizeType
 {
     /**
-     * Constructor from ANTLR4 token.
+     * Constructor from AST node location, the name and the token type.
      *
-     * @param token Token to construct from.
+     * @param location  AST node location.
+     * @param name      Name of the AST node taken from grammar.
+     * @param tokenType Grammar token type.
      */
-    public FloatType(Token token)
+    public FloatType(AstLocation location, String name, int tokenType)
     {
-        super(token);
+        super(location, name);
 
-        switch (token.getType())
+        switch (tokenType)
         {
         case ZserioParser.FLOAT16:
             bitSize = 16;

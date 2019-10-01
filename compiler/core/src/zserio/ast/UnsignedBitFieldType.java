@@ -2,8 +2,6 @@ package zserio.ast;
 
 import java.math.BigInteger;
 
-import org.antlr.v4.runtime.Token;
-
 /**
  * AST node for built-in unsigned bit field Integer types.
  *
@@ -12,14 +10,15 @@ import org.antlr.v4.runtime.Token;
 public class UnsignedBitFieldType extends BitFieldType
 {
     /**
-     * Constructor from ANTLR4 token.
+     * Constructor from AST node location, the name and the expression length
      *
-     * @param token            Token to construct from.
-     * @param lengthExpression Length expression associated with this unsigned bit field type.
+     * @param location         AST node location.
+     * @param name             Name of the AST node taken from grammar.
+     * @param lengthExpression Length expression associated with this bit field type.
      */
-    public UnsignedBitFieldType(Token token, Expression lengthExpression)
+    public UnsignedBitFieldType(AstLocation location, String name, Expression lengthExpression)
     {
-        super(token, lengthExpression);
+        super(location, name, lengthExpression);
     }
 
     @Override
@@ -49,6 +48,12 @@ public class UnsignedBitFieldType extends BitFieldType
     int getMaxBitFieldBits()
     {
         return MAX_UNSIGNED_BITFIELD_BITS;
+    }
+
+    @Override
+    UnsignedBitFieldType instantiate(Expression instantiatedLengthExpression)
+    {
+        return new UnsignedBitFieldType(getLocation(), getName(), instantiatedLengthExpression);
     }
 
     private static final int MAX_UNSIGNED_BITFIELD_BITS = 63;

@@ -11,11 +11,10 @@ class ExpressionEnumTemplateArgumentConflictTest(unittest.TestCase):
     def testReadWrite(self):
         enumTemplateArgumentConflict_Letters = self.api.EnumTemplateArgumentConflict_Letters.fromFields(False,
                                                                                                         10)
+        self.assertTrue(enumTemplateArgumentConflict_Letters.hasExpressionField())
+
         enumTemplateArgumentConflictHolder = (self.api.EnumTemplateArgumentConflictHolder.
                                               fromFields(enumTemplateArgumentConflict_Letters))
-        self.assertTrue(enumTemplateArgumentConflictHolder.getEnumTemplateArgumentConflict().
-                        hasExpressionField())
-
         writer = zserio.BitStreamWriter()
         enumTemplateArgumentConflictHolder.write(writer)
         reader = zserio.BitStreamReader(writer.getByteArray())

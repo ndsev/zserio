@@ -9,7 +9,7 @@ enum uint8 EnumFromZero
 
 enum uint32 EnumFromOne
 {
-    ONE=1,
+    ONE = 1,
     TWO,
     THREE
 };
@@ -18,7 +18,7 @@ choice TemplatedChoice<T>(T selector) on selector
 {
     case ONE:
         uint16 uint16Field;
-    case T.TWO:
+    case T.TWO: // check template in case expression
         uint32 uint32Field;
     case THREE:
         string stringField;

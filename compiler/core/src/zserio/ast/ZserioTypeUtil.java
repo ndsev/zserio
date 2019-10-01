@@ -48,6 +48,8 @@ public class ZserioTypeUtil
             return ((TypeInstantiation)zserioType).instantiate(templateParameters, templateArguments);
         else if (zserioType instanceof TypeReference)
             return ((TypeReference)zserioType).instantiate(templateParameters, templateArguments);
+        else if (zserioType instanceof BitFieldType)
+            return ((BitFieldType)zserioType).instantiate(templateParameters, templateArguments);
         else
             return zserioType;
     }

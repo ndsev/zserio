@@ -25,13 +25,14 @@ public class ExpressionFullTemplateArgumentTest
     public void readWrite() throws IOException
     {
         final FullTemplateArgument_Color colorInternal = new FullTemplateArgument_Color(false, 10);
+        assertTrue(colorInternal.hasExpressionField());
+
         final FullTemplateArgument_templates_expression_full_template_argument_color_Color colorExternal =
                 new FullTemplateArgument_templates_expression_full_template_argument_color_Color(false, 10);
+        assertFalse(colorExternal.hasExpressionField());
+
         final FullTemplateArgumentHolder fullTemplateArgumentHolder =
                 new FullTemplateArgumentHolder(colorInternal, colorExternal);
-        assertTrue(fullTemplateArgumentHolder.getTemplateArgumentInternal().hasExpressionField());
-        assertFalse(fullTemplateArgumentHolder.getTemplateArgumentExternal().hasExpressionField());
-
         final BitStreamWriter writer = new FileBitStreamWriter(TEST_FILE);
         fullTemplateArgumentHolder.write(writer);
         writer.close();
