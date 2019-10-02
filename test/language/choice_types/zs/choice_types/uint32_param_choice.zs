@@ -1,15 +1,16 @@
-package choice_types.uint16_param_choice;
+package choice_types.uint32_param_choice;
 
 subtype int8  VariantA;
 subtype int16 VariantB;
 subtype int32 VariantC;
 
-choice UInt16ParamChoice(uint16 selector) on selector
+// Type uint32 has been chosen intentionally because of Java (switch on long is not supported).
+choice UInt32ParamChoice(uint32 selector) on selector
 {
     case 1:
         VariantA  a;
 
-    case 2:
+    case 2: 
     case 3:
     case 4:
         VariantB  b;

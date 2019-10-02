@@ -22,34 +22,34 @@ public class UInt16ParamChoiceTest
     @Test
     public void containerConstructor()
     {
-        final int tag = VARIANT_A_SELECTOR;
-        final UInt16ParamChoice uint16ParamChoice = new UInt16ParamChoice(tag);
-        assertEquals(tag, uint16ParamChoice.getTag());
+        final int selector = VARIANT_A_SELECTOR;
+        final UInt16ParamChoice uint16ParamChoice = new UInt16ParamChoice(selector);
+        assertEquals(selector, uint16ParamChoice.getSelector());
     }
 
     @Test
     public void fileConstructor() throws IOException, ZserioError
     {
-        final int tag = VARIANT_A_SELECTOR;
+        final int selector = VARIANT_A_SELECTOR;
         final File file = new File("test.bin");
         final int value = 99;
-        writeUInt16ParamChoiceToFile(file, tag, value);
-        final UInt16ParamChoice uint16ParamChoice = new UInt16ParamChoice(file, tag);
-        assertEquals(tag, uint16ParamChoice.getTag());
+        writeUInt16ParamChoiceToFile(file, selector, value);
+        final UInt16ParamChoice uint16ParamChoice = new UInt16ParamChoice(file, selector);
+        assertEquals(selector, uint16ParamChoice.getSelector());
         assertEquals((byte)value, uint16ParamChoice.getA());
     }
 
     @Test
     public void bitStreamReaderConstructor() throws IOException, ZserioError
     {
-        final int tag = VARIANT_B_SELECTOR1;
+        final int selector = VARIANT_B_SELECTOR1;
         final File file = new File("test.bin");
         final int value = 234;
-        writeUInt16ParamChoiceToFile(file, tag, value);
+        writeUInt16ParamChoiceToFile(file, selector, value);
         final BitStreamReader stream = new FileBitStreamReader(file);
-        final UInt16ParamChoice uint16ParamChoice = new UInt16ParamChoice(stream, tag);
+        final UInt16ParamChoice uint16ParamChoice = new UInt16ParamChoice(stream, selector);
         stream.close();
-        assertEquals(tag, uint16ParamChoice.getTag());
+        assertEquals(selector, uint16ParamChoice.getSelector());
         assertEquals((short)value, uint16ParamChoice.getB());
     }
 
@@ -76,11 +76,11 @@ public class UInt16ParamChoiceTest
     }
 
     @Test
-    public void getTag()
+    public void getSelector()
     {
-        final int tag = EMPTY_SELECTOR2;
-        final UInt16ParamChoice uint16ParamChoice = new UInt16ParamChoice(tag);
-        assertEquals(tag, uint16ParamChoice.getTag());
+        final int selector = EMPTY_SELECTOR2;
+        final UInt16ParamChoice uint16ParamChoice = new UInt16ParamChoice(selector);
+        assertEquals(selector, uint16ParamChoice.getSelector());
     }
 
     @Test
@@ -223,11 +223,11 @@ public class UInt16ParamChoiceTest
         assertEquals(intValueC, readUInt16ParamChoiceC.getC());
     }
 
-    private void writeUInt16ParamChoiceToFile(File file, int tag, int value) throws IOException
+    private void writeUInt16ParamChoiceToFile(File file, int selector, int value) throws IOException
     {
         final FileImageOutputStream stream = new FileImageOutputStream(file);
 
-        switch (tag)
+        switch (selector)
         {
         case 1:
             stream.writeByte(value);

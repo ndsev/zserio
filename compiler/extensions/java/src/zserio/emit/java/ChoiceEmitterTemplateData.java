@@ -1,5 +1,6 @@
 package zserio.emit.java;
 
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -11,7 +12,6 @@ import zserio.ast.Expression;
 import zserio.ast.Field;
 import zserio.emit.common.ExpressionFormatter;
 import zserio.emit.common.ZserioEmitException;
-import zserio.emit.java.types.JavaNativeType;
 
 public final class ChoiceEmitterTemplateData extends CompoundTypeTemplateData
 {
@@ -23,12 +23,13 @@ public final class ChoiceEmitterTemplateData extends CompoundTypeTemplateData
         final ExpressionFormatter javaExpressionFormatter = context.getJavaExpressionFormatter();
         final Expression expression = choiceType.getSelectorExpression();
         selectorExpression = javaExpressionFormatter.formatGetter(expression);
+        isSelectorExpressionBoolean = expression.getExprType() == Expression.ExpressionType.BOOLEAN;
+        final BigInteger selectorUpperBound = expression.getIntegerUpperBound();
+        isSelectorExpressionBigInteger = expression.needsBigInteger();
+        isSelectorExpressionLong = (isSelectorExpressionBigInteger == false && selectorUpperBound != null &&
+                selectorUpperBound.compareTo(BigInteger.valueOf(Integer.MAX_VALUE)) > 0);
 
         final JavaNativeTypeMapper javaNativeTypeMapper = context.getJavaNativeTypeMapper();
-        final JavaNativeType expressionNativeType =
-                javaNativeTypeMapper.getJavaType(expression.getExprZserioType());
-        selectorExpressionTypeName = expressionNativeType.getFullName();
-
         final boolean withWriterCode = context.getWithWriterCode();
         final boolean withRangeCheckCode = context.getWithRangeCheckCode();
         caseMemberList = new ArrayList<CaseMember>();
@@ -59,9 +60,19 @@ public final class ChoiceEmitterTemplateData extends CompoundTypeTemplateData
         return selectorExpression;
     }
 
-    public String getSelectorExpressionTypeName()
+    public boolean getIsSelectorExpressionBoolean()
     {
-        return selectorExpressionTypeName;
+        return isSelectorExpressionBoolean;
+    }
+
+    public boolean getIsSelectorExpressionBigInteger()
+    {
+        return isSelectorExpressionBigInteger;
+    }
+
+    public boolean getIsSelectorExpressionLong()
+    {
+        return isSelectorExpressionLong;
     }
 
     public Iterable<CaseMember> getCaseMemberList()
@@ -157,7 +168,9 @@ public final class ChoiceEmitterTemplateData extends CompoundTypeTemplateData
     }
 
     private final String            selectorExpression;
-    private final String            selectorExpressionTypeName;
+    private final boolean           isSelectorExpressionBoolean;
+    private final boolean           isSelectorExpressionBigInteger;
+    private final boolean           isSelectorExpressionLong;
     private final List<CaseMember>  caseMemberList;
     private final DefaultMember     defaultMember;
     private final boolean           isDefaultUnreachable;

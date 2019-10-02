@@ -46,15 +46,17 @@ test_python()
     echo
 
     python "${TEST_FILE}" "${TEST_ARGS[@]}" --pylint_rcfile="${PYLINT_RCFILE}"
-    if [ $? -ne 0 ] ; then
+    local PYTHON_RESULT=$?
+    if [ ${PYTHON_RESULT} -ne 0 ] ; then
+        stderr_echo "Running python failed with return code ${PYTHON_RESULT}!"
         return 1
     fi
 
-    echo "Running pylint on python test utilites."
+    echo "Running pylint on python test utilities."
 
     local PYLINT_ARGS=("--disable=missing-docstring")
     run_pylint "${PYLINT_RCFILE}" PYLINT_ARGS[@] "${TEST_FILE}" "${TEST_SRC_DIR}/utils/python"/*
-    if [ $? -ne 0 ]; then
+    if [ $? -ne 0 ] ; then
         return 1
     fi
 
