@@ -45,9 +45,12 @@ class Scope
      */
     public void setSymbol(String name, AstNode node)
     {
-        final Object symbolObject = symbolTable.put(name, node);
-        if (symbolObject != null)
+        // TODO[Mi-L@]: Consider introducing of TemplateParameter AstNode to prevent null value in the
+        //              symbolTable. Consider reverting the optimized insertion.
+        if (symbolTable.containsKey(name))
             throw new ParserException(node, "'" + name + "' is already defined in this scope!");
+
+        symbolTable.put(name, node);
     }
 
     /**

@@ -3,6 +3,9 @@ package zserio.ast;
 import java.util.ArrayList;
 import java.util.List;
 
+import zserio.antlr.util.ParserException;
+import zserio.tools.ZserioToolPrinter;
+
 /**
  * Implementation of ZserioAstVisitor which handles scopes of symbols.
  */
@@ -13,6 +16,8 @@ public class ZserioAstScopeSetter extends ZserioAstWalker
     {
         currentScope = structureType.getScope();
         fillExpressionScopes = true;
+
+        addTemplateParameters(structureType);
 
         structureType.visitChildren(this);
 
@@ -54,6 +59,8 @@ public class ZserioAstScopeSetter extends ZserioAstWalker
     {
         currentScope = choiceType.getScope();
         fillExpressionScopes = true;
+
+        addTemplateParameters(choiceType);
 
         for (Parameter parameter : choiceType.getTypeParameters())
             parameter.accept(this);
@@ -105,6 +112,8 @@ public class ZserioAstScopeSetter extends ZserioAstWalker
         currentScope = unionType.getScope();
         fillExpressionScopes = true;
 
+        addTemplateParameters(unionType);
+
         for (Parameter parameter : unionType.getTypeParameters())
             parameter.accept(this);
 
@@ -148,6 +157,8 @@ public class ZserioAstScopeSetter extends ZserioAstWalker
     public void visitSqlTableType(SqlTableType sqlTableType)
     {
         currentScope = sqlTableType.getScope();
+
+        addTemplateParameters(sqlTableType);
 
         sqlTableType.visitChildren(this);
 
@@ -233,10 +244,28 @@ public class ZserioAstScopeSetter extends ZserioAstWalker
         currentScope.removeSymbol(field.getName());
     }
 
-    private void visitInstantiations(ZserioTemplatableType template)
+    private void visitInstantiations(ZserioTemplatableType templatable)
     {
-        for (ZserioTemplatableType instantiation : template.getInstantiations())
-            instantiation.accept(this);
+        for (ZserioTemplatableType instantiation : templatable.getInstantiations())
+        {
+            try
+            {
+                instantiation.accept(this);
+            }
+            catch (ParserException e)
+            {
+                // TODO[Mi-L@]: This should never happen since scope errors are caught directly in the template.
+                ZserioToolPrinter.printError(instantiation.getInstantiationLocation(),
+                        "In instantiation of '" + templatable.getName() + "' required from here");
+                throw e;
+            }
+        }
+    }
+
+    private void addTemplateParameters(ZserioTemplatableType templatable)
+    {
+        for (String templateParameter : templatable.getTemplateParameters())
+            currentScope.setSymbol(templateParameter, null);
     }
 
     private final Scope defaultScope = new Scope((ZserioScopedType)null);

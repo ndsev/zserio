@@ -14,14 +14,23 @@
         <testGen testName="templates_error" zsFile="constant_used_as_type_error.zs" ignoreErrors="true"/>
         <testGen testName="templates_error" zsFile="constraint_expression_expects_constant_error.zs"
                 ignoreErrors="true"/>
+        <testGen testName="templates_error" zsFile="duplicated_field_name_error.zs" ignoreErrors="true"/>
         <testGen testName="templates_error" zsFile="enum_not_a_template_error.zs" ignoreErrors="true"/>
         <testGen testName="templates_error" zsFile="instantiation_name_clash_error.zs" ignoreErrors="true"/>
         <testGen testName="templates_error" zsFile="missing_type_parameters_error.zs" ignoreErrors="true"/>
         <testGen testName="templates_error" zsFile="parameterized_builtin_type_error.zs" ignoreErrors="true"/>
         <testGen testName="templates_error" zsFile="parameterized_compound_type_error.zs" ignoreErrors="true"/>
+        <testGen testName="templates_error" zsFile="symbol_with_template_parameter_clash_error.zs"
+                ignoreErrors="true"/>
+        <testGen testName="templates_error" zsFile="symbol_with_type_name_clash_error.zs" ignoreErrors="true"/>
         <testGen testName="templates_error" zsFile="templatable_not_a_template_error.zs" ignoreErrors="true"/>
         <testGen testName="templates_error" zsFile="templated_template_parameter_error.zs" ignoreErrors="true"/>
-        <testGen testName="templates_error" zsFile="unresolved_reference_error.zs" ignoreErrors="true"/>
+        <testGen testName="templates_error" zsFile="unresolved_reference_in_template_error.zs"
+                ignoreErrors="true"/>
+        <testGen testName="templates_error" zsFile="unresolved_template_instantiation_error.zs"
+                ignoreErrors="true"/>
+        <testGen testName="templates_error" zsFile="unresolved_template_instantiation_in_template_error.zs"
+                ignoreErrors="true"/>
         <testGen testName="templates_error" zsFile="wrong_number_of_arguments_error.zs" ignoreErrors="true"/>
     </target>
 

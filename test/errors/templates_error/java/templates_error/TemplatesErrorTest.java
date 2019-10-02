@@ -41,6 +41,13 @@ public class TemplatesErrorTest
     }
 
     @Test
+    public void duplicatedFieldName()
+    {
+        final String error = "duplicated_field_name_error.zs:6:7: 'value' is already defined in this scope!";
+        assertTrue(zserioErrors.isPresent(error));
+    }
+
+    @Test
     public void enumNotATemplate()
     {
         final String error = "enum_not_a_template_error.zs:11:5: 'Enumeration' is not a template!";
@@ -95,6 +102,25 @@ public class TemplatesErrorTest
     }
 
     @Test
+    public void symbolWithTemplateParameterClash()
+    {
+        final String error = "symbol_with_template_parameter_clash_error.zs:5:12: " +
+                "'T' is already defined in this scope!";
+        assertTrue(zserioErrors.isPresent(error));
+    }
+
+    @Test
+    public void symbolWithTypeNameClash()
+    {
+        String error = "symbol_with_type_name_clash_error.zs:15:5: " +
+                "In instantiation of 'TestStruct' required from here";
+        assertTrue(zserioErrors.isPresent(error));
+
+        error = "symbol_with_type_name_clash_error.zs:5:7: 'Field' is a defined type in this package!";
+        assertTrue(zserioErrors.isPresent(error));
+    }
+
+    @Test
     public void templatableNotATemplate()
     {
         final String error = "templatable_not_a_template_error.zs:10:5: 'Templatable' is not a template!";
@@ -110,9 +136,34 @@ public class TemplatesErrorTest
     }
 
     @Test
-    public void unresolvedReference()
+    public void unresolvedReferenceInTemplate()
     {
-        final String error = "unresolved_reference_error.zs:5:5: Unresolved referenced type 'TemplatedStruct'!";
+        String error = "unresolved_reference_in_template_error.zs:10:5: " +
+                "In instantiation of 'TestStruct' required from here";
+        assertTrue(zserioErrors.isPresent(error));
+
+        error = "unresolved_reference_in_template_error.zs:5:5: Unresolved referenced type 'Unresolved'!";
+        assertTrue(zserioErrors.isPresent(error));
+    }
+
+    @Test
+    public void unresolvedTemplateInstantiation()
+    {
+        final String error = "unresolved_template_instantiation_error.zs:5:5: " +
+                "Unresolved referenced type 'TemplatedStruct'!";
+        assertTrue(zserioErrors.isPresent(error));
+    }
+
+    @Test
+    public void unresolvedTemplateInstantiationInTemplate()
+    {
+        // TODO[Mi-L@]: Try to add multiple levels! (more "In instantiation of ...")
+        String error = "unresolved_template_instantiation_in_template_error.zs:10:5: " +
+                "In instantiation of 'TestStruct' required from here";
+        assertTrue(zserioErrors.isPresent(error));
+
+        error = "unresolved_template_instantiation_in_template_error.zs:5:5: " +
+                "Unresolved referenced type 'Unresolved'!";
         assertTrue(zserioErrors.isPresent(error));
     }
 
