@@ -105,6 +105,12 @@ public class TypeReference extends AstNodeBase implements ZserioType
             final TemplatableType template = (TemplatableType)referencedType;
             if (!template.getTemplateParameters().isEmpty())
             {
+                if (templateArguments.isEmpty())
+                {
+                    throw new ParserException(this,
+                            "Missing template arguments for template '" + getName() + "'!");
+                }
+
                 referencedType = template.getInstantiation(templateArguments);
                 if (referencedType == null)
                 {

@@ -56,18 +56,20 @@ abstract class TemplatableType extends DocumentableAstNode implements ZserioTemp
     }
 
     /**
+     * Instantiates the referenced template using the given instantiation reference.
      *
-     * @param instantiationReference
-     * @return
+     * @param instantiationReference Instantiation reference.
+     *
+     * @return Instantiated template.
      */
     ZserioTemplatableType instantiate(TypeReference instantiationReference)
     {
         final List<ZserioType> templateArguments = instantiationReference.getTemplateArguments();
-        if (getTemplateParameters().size() != templateArguments.size())
+        if (templateParameters.size() != templateArguments.size())
         {
-            throw new ParserException(this, "Wrong number of template arguments for template '" +
-                    getName() + "'! Expecting " +
-                    getTemplateParameters().size() + ", got " + templateArguments.size() + "!");
+            throw new ParserException(instantiationReference,
+                    "Wrong number of template arguments for template '" + getName() + "'! Expecting " +
+                    templateParameters.size() + ", got " + templateArguments.size() + "!");
         }
 
         final List<TemplateArgument> wrappedTemplateArguments = wrapTemplateArguments(templateArguments);
@@ -90,6 +92,13 @@ abstract class TemplatableType extends DocumentableAstNode implements ZserioTemp
         return instantiation;
     }
 
+    /**
+     * Returns instantiation name for the actual template parameters.
+     *
+     * @param templateArguments Actual template parameters.
+     *
+     * @return Instantiation name.
+     */
     String getInstantiationName(List<ZserioType> templateArguments)
     {
         return getInstantiationNameImpl(wrapTemplateArguments(templateArguments));
@@ -104,7 +113,6 @@ abstract class TemplatableType extends DocumentableAstNode implements ZserioTemp
      */
     ZserioTemplatableType getInstantiation(List<ZserioType> templateArguments)
     {
-        // TODO[Mi-L@]: Check if number arguments match number of parameters!
         return instantiationsMap.get(wrapTemplateArguments(templateArguments));
     }
 

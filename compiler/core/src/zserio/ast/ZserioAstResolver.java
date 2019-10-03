@@ -106,18 +106,6 @@ public class ZserioAstResolver extends ZserioAstWalker
         }
     }
 
-    private void visitType(TemplatableType templatableType)
-    {
-        if (templatableType.getTemplateParameters().isEmpty())
-        {
-            visitType((ZserioScopedType)templatableType);
-        }
-        else
-        {
-            visitInstantiations(templatableType);
-        }
-    }
-
     private void visitType(ZserioScopedType scopedType)
     {
         currentScopedType = scopedType;

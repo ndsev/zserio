@@ -70,6 +70,14 @@ public class TemplatesErrorTest
     }
 
     @Test
+    public void missingTemplateArguments()
+    {
+        final String error = "missing_template_arguments_error.zs:10:5: " +
+                "Missing template arguments for template 'TestStruct'!";
+        assertTrue(zserioErrors.isPresent(error));
+    }
+
+    @Test
     public void missingTypeParameters()
     {
         String error = "missing_type_parameters_error.zs:15:5: " +
@@ -170,7 +178,7 @@ public class TemplatesErrorTest
     @Test
     public void wrongNumberOfArguments()
     {
-        final String error = "wrong_number_of_arguments_error.zs:3:8: " +
+        final String error = "wrong_number_of_arguments_error.zs:11:5: " +
                 "Wrong number of template arguments for template 'TestStruct'! Expecting 2, got 1!";
         assertTrue(zserioErrors.isPresent(error));
     }
