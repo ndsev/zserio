@@ -9,18 +9,18 @@ class UInt16ParamChoiceTest(unittest.TestCase):
         cls.api = getZserioApi(__file__, "choice_types.zs").uint16_param_choice
 
     def testSelectorConstructor(self):
-        tag = self.VARIANT_A_SELECTOR
-        uint16ParamChoice = self.api.UInt16ParamChoice(tag)
-        self.assertEqual(tag, uint16ParamChoice.getTag())
+        selector = self.VARIANT_A_SELECTOR
+        uint16ParamChoice = self.api.UInt16ParamChoice(selector)
+        self.assertEqual(selector, uint16ParamChoice.getSelector())
 
     def testFromReader(self):
-        tag = self.VARIANT_B_SELECTOR1
+        selector = self.VARIANT_B_SELECTOR1
         value = 234
         writer = zserio.BitStreamWriter()
-        UInt16ParamChoiceTest._writeUInt16ParamChoiceToStream(writer, tag, value)
+        UInt16ParamChoiceTest._writeUInt16ParamChoiceToStream(writer, selector, value)
         reader = zserio.BitStreamReader(writer.getByteArray())
-        uint16ParamChoice = self.api.UInt16ParamChoice.fromReader(reader, tag)
-        self.assertEqual(tag, uint16ParamChoice.getTag())
+        uint16ParamChoice = self.api.UInt16ParamChoice.fromReader(reader, selector)
+        self.assertEqual(selector, uint16ParamChoice.getSelector())
         self.assertEqual(value, uint16ParamChoice.getB())
 
     def testEq(self):
@@ -55,10 +55,10 @@ class UInt16ParamChoiceTest(unittest.TestCase):
         uint16ParamChoice2.setA(diffValue)
         self.assertTrue(hash(uint16ParamChoice1) != hash(uint16ParamChoice2))
 
-    def testGetTag(self):
-        tag = self.EMPTY_SELECTOR2
-        uint16ParamChoice = self.api.UInt16ParamChoice(tag)
-        self.assertEqual(tag, uint16ParamChoice.getTag())
+    def testGetSelector(self):
+        selector = self.EMPTY_SELECTOR2
+        uint16ParamChoice = self.api.UInt16ParamChoice(selector)
+        self.assertEqual(selector, uint16ParamChoice.getSelector())
 
     def testGetSetA(self):
         uint16ParamChoice = self.api.UInt16ParamChoice(self.VARIANT_A_SELECTOR)
@@ -146,12 +146,12 @@ class UInt16ParamChoiceTest(unittest.TestCase):
         self.assertEqual(uint16ParamChoiceC, readUInt16ParamChoiceC)
 
     @staticmethod
-    def _writeUInt16ParamChoiceToStream(writer, tag, value):
-        if tag == 1:
+    def _writeUInt16ParamChoiceToStream(writer, selector, value):
+        if selector == 1:
             writer.writeSignedBits(value, 8)
-        elif tag in (2, 3, 4):
+        elif selector in (2, 3, 4):
             writer.writeSignedBits(value, 16)
-        elif tag in (5, 6):
+        elif selector in (5, 6):
             pass
         else:
             writer.writeSignedBits(value, 32)

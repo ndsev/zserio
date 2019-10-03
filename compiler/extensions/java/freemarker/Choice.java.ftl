@@ -43,9 +43,8 @@ public class ${name} implements <#if withWriterCode>InitializeOffsetsWriter, </#
         return bitSizeOf(0);
     }
 
-<#assign isSelectorBigInteger = selectorExpressionTypeName == "java.math.BigInteger">
 <#macro choice_selector_condition caseList>
-    <#if isSelectorBigInteger>
+    <#if isSelectorExpressionBigInteger>
         <#list caseList as case>
             <#if case_index != 0>
  ||
@@ -57,11 +56,11 @@ __selector == (${case.expressionForIf})<#if case_has_next> || </#if><#rt>
         </#list>
     </#if>
 </#macro>
-<#assign useSwitch = selectorExpressionTypeName != "long" && selectorExpressionTypeName != "boolean" &&
-        !isSelectorBigInteger>
+<#assign isSwitchAllowed = !isSelectorExpressionBoolean && !isSelectorExpressionBigInteger &&
+        !isSelectorExpressionLong>
 <#macro choice_switch memberActionMacroName indent>
     <#local I>${""?left_pad(indent * 4)}</#local>
-    <#if useSwitch>
+    <#if isSwitchAllowed>
 ${I}switch (${selectorExpression})
 ${I}{
         <#list caseMemberList as caseMember>
@@ -82,7 +81,13 @@ ${I}    throw new ZserioError("No match in choice ${name}: " + ${selectorExpress
         </#if>
 ${I}}
     <#else>
-${I}final ${selectorExpressionTypeName} __selector = ${selectorExpression};
+        <#if isSelectorExpressionBoolean>
+${I}final boolean __selector = ${selectorExpression};
+        <#elseif isSelectorExpressionLong>
+${I}final long __selector = ${selectorExpression};
+        <#else>
+${I}final java.math.BigInteger __selector = ${selectorExpression};
+        </#if>
 
         <#list caseMemberList as caseMember>
             <#if caseMember_has_next || !isDefaultUnreachable>
@@ -206,7 +211,7 @@ ${I}}
 <#macro choice_initialize_offsets_member member indent>
     <#local I>${""?left_pad(indent * 4)}</#local>
     <#if member.compoundField??>
-        <#if useSwitch>
+        <#if isSwitchAllowed>
 ${I}{
         <@compound_field_initialize_offsets member.compoundField, indent + 1/>
 ${I}}

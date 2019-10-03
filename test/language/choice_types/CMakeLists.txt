@@ -32,6 +32,9 @@ set(ZSERIO_GENERATED_SOURCES
     ${ZSERIO_GEN_DIR}/choice_types/enum_param_choice/Selector.h
     ${ZSERIO_GEN_DIR}/choice_types/enum_param_choice/White.h
 
+    ${ZSERIO_GEN_DIR}/choice_types/expression_selector_choice/ExpressionSelectorChoice.cpp
+    ${ZSERIO_GEN_DIR}/choice_types/expression_selector_choice/ExpressionSelectorChoice.h
+
     ${ZSERIO_GEN_DIR}/choice_types/full_enum_param_choice/Black.h
     ${ZSERIO_GEN_DIR}/choice_types/full_enum_param_choice/FullEnumParamChoice.cpp
     ${ZSERIO_GEN_DIR}/choice_types/full_enum_param_choice/FullEnumParamChoice.h
@@ -55,6 +58,12 @@ set(ZSERIO_GENERATED_SOURCES
     ${ZSERIO_GEN_DIR}/choice_types/uint16_param_choice/VariantA.h
     ${ZSERIO_GEN_DIR}/choice_types/uint16_param_choice/VariantB.h
     ${ZSERIO_GEN_DIR}/choice_types/uint16_param_choice/VariantC.h
+
+    ${ZSERIO_GEN_DIR}/choice_types/uint32_param_choice/UInt32ParamChoice.cpp
+    ${ZSERIO_GEN_DIR}/choice_types/uint32_param_choice/UInt32ParamChoice.h
+    ${ZSERIO_GEN_DIR}/choice_types/uint32_param_choice/VariantA.h
+    ${ZSERIO_GEN_DIR}/choice_types/uint32_param_choice/VariantB.h
+    ${ZSERIO_GEN_DIR}/choice_types/uint32_param_choice/VariantC.h
 
     ${ZSERIO_GEN_DIR}/choice_types/uint64_param_choice/UInt64ParamChoice.cpp
     ${ZSERIO_GEN_DIR}/choice_types/uint64_param_choice/UInt64ParamChoice.h
@@ -80,6 +89,7 @@ add_test_sources(
     ${ZSERIO_CPP_DIR}/EmptyChoiceWithCaseTest.cpp
     ${ZSERIO_CPP_DIR}/EmptyChoiceWithDefaultTest.cpp
     ${ZSERIO_CPP_DIR}/EnumParamChoiceTest.cpp
+    ${ZSERIO_CPP_DIR}/ExpressionSelectorChoiceTest.cpp
     ${ZSERIO_CPP_DIR}/FullEnumParamChoiceTest.cpp
     ${ZSERIO_CPP_DIR}/FunctionReturningLiteralSelectorChoiceTest.cpp
     ${ZSERIO_CPP_DIR}/FunctionSelectorChoiceTest.cpp

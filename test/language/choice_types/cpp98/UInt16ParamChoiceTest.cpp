@@ -13,9 +13,9 @@ namespace uint16_param_choice
 class UIn16ParamChoiceTest : public ::testing::Test
 {
 protected:
-    void writeUIn16ParamChoiceToByteArray(zserio::BitStreamWriter& writer, uint16_t tag, int32_t value)
+    void writeUIn16ParamChoiceToByteArray(zserio::BitStreamWriter& writer, uint16_t selector, int32_t value)
     {
-        switch (tag)
+        switch (selector)
         {
         case 1:
             writer.writeSignedBits(value, 8);
@@ -57,66 +57,66 @@ const uint16_t UIn16ParamChoiceTest::VARIANT_C_SELECTOR = 7;
 TEST_F(UIn16ParamChoiceTest, emptyConstructor)
 {
     UInt16ParamChoice uin16ParamChoice;
-    ASSERT_THROW(uin16ParamChoice.getTag(), zserio::CppRuntimeException);
+    ASSERT_THROW(uin16ParamChoice.getSelector(), zserio::CppRuntimeException);
 }
 
 TEST_F(UIn16ParamChoiceTest, bitStreamReaderConstructor)
 {
-    const uint16_t tag = VARIANT_A_SELECTOR;
+    const uint16_t selector = VARIANT_A_SELECTOR;
     zserio::BitStreamWriter writer;
     const int8_t value = 99;
-    writeUIn16ParamChoiceToByteArray(writer, tag, value);
+    writeUIn16ParamChoiceToByteArray(writer, selector, value);
     size_t writeBufferByteSize;
     const uint8_t* writeBuffer = writer.getWriteBuffer(writeBufferByteSize);
     zserio::BitStreamReader reader(writeBuffer, writeBufferByteSize);
 
-    const UInt16ParamChoice uin16ParamChoice(reader, tag);
-    ASSERT_EQ(tag, uin16ParamChoice.getTag());
+    const UInt16ParamChoice uin16ParamChoice(reader, selector);
+    ASSERT_EQ(selector, uin16ParamChoice.getSelector());
     ASSERT_EQ(value, uin16ParamChoice.getA());
 }
 
 TEST_F(UIn16ParamChoiceTest, copyConstructor)
 {
-    const uint16_t tag = VARIANT_A_SELECTOR;
+    const uint16_t selector = VARIANT_A_SELECTOR;
     UInt16ParamChoice uin16ParamChoice;
-    uin16ParamChoice.initialize(tag);
+    uin16ParamChoice.initialize(selector);
 
     const VariantA value = 99;
     uin16ParamChoice.setA(value);
 
     const UInt16ParamChoice uin16ParamChoiceCopy(uin16ParamChoice);
-    ASSERT_EQ(tag, uin16ParamChoiceCopy.getTag());
+    ASSERT_EQ(selector, uin16ParamChoiceCopy.getSelector());
     ASSERT_EQ(value, uin16ParamChoiceCopy.getA());
 }
 
 TEST_F(UIn16ParamChoiceTest, operatorAssignment)
 {
-    const uint16_t tag = VARIANT_B_SELECTOR3;
+    const uint16_t selector = VARIANT_B_SELECTOR3;
     UInt16ParamChoice uin16ParamChoice;
-    uin16ParamChoice.initialize(tag);
+    uin16ParamChoice.initialize(selector);
 
     const VariantB value = 234;
     uin16ParamChoice.setB(value);
 
     const UInt16ParamChoice uin16ParamChoiceCopy = uin16ParamChoice;
-    ASSERT_EQ(tag, uin16ParamChoiceCopy.getTag());
+    ASSERT_EQ(selector, uin16ParamChoiceCopy.getSelector());
     ASSERT_EQ(value, uin16ParamChoiceCopy.getB());
 }
 
 TEST_F(UIn16ParamChoiceTest, initialize)
 {
-    const uint16_t tag = EMPTY_SELECTOR1;
+    const uint16_t selector = EMPTY_SELECTOR1;
     UInt16ParamChoice uin16ParamChoice;
-    uin16ParamChoice.initialize(tag);
-    ASSERT_EQ(tag, uin16ParamChoice.getTag());
+    uin16ParamChoice.initialize(selector);
+    ASSERT_EQ(selector, uin16ParamChoice.getSelector());
 }
 
-TEST_F(UIn16ParamChoiceTest, getTag)
+TEST_F(UIn16ParamChoiceTest, getSelector)
 {
-    const uint16_t tag = EMPTY_SELECTOR2;
+    const uint16_t selector = EMPTY_SELECTOR2;
     UInt16ParamChoice uin16ParamChoice;
-    uin16ParamChoice.initialize(tag);
-    ASSERT_EQ(tag, uin16ParamChoice.getTag());
+    uin16ParamChoice.initialize(selector);
+    ASSERT_EQ(selector, uin16ParamChoice.getSelector());
 }
 
 TEST_F(UIn16ParamChoiceTest, getSetA)
@@ -190,11 +190,11 @@ TEST_F(UIn16ParamChoiceTest, initializeOffsets)
 
 TEST_F(UIn16ParamChoiceTest, operatorEquality)
 {
-    const uint16_t tag = VARIANT_A_SELECTOR;
+    const uint16_t selector = VARIANT_A_SELECTOR;
     UInt16ParamChoice uin16ParamChoice1;
-    uin16ParamChoice1.initialize(tag);
+    uin16ParamChoice1.initialize(selector);
     UInt16ParamChoice uin16ParamChoice2;
-    uin16ParamChoice2.initialize(tag);
+    uin16ParamChoice2.initialize(selector);
     ASSERT_TRUE(uin16ParamChoice1 == uin16ParamChoice2);
 
     const VariantA valueA = 99;
@@ -211,11 +211,11 @@ TEST_F(UIn16ParamChoiceTest, operatorEquality)
 
 TEST_F(UIn16ParamChoiceTest, hashCode)
 {
-    const uint16_t tag = VARIANT_A_SELECTOR;
+    const uint16_t selector = VARIANT_A_SELECTOR;
     UInt16ParamChoice uin16ParamChoice1;
-    uin16ParamChoice1.initialize(tag);
+    uin16ParamChoice1.initialize(selector);
     UInt16ParamChoice uin16ParamChoice2;
-    uin16ParamChoice2.initialize(tag);
+    uin16ParamChoice2.initialize(selector);
     ASSERT_EQ(uin16ParamChoice1.hashCode(), uin16ParamChoice2.hashCode());
 
     const VariantA valueA = 99;
@@ -232,27 +232,27 @@ TEST_F(UIn16ParamChoiceTest, hashCode)
 
 TEST_F(UIn16ParamChoiceTest, read)
 {
-    const uint16_t tag = VARIANT_A_SELECTOR;
+    const uint16_t selector = VARIANT_A_SELECTOR;
     UInt16ParamChoice uin16ParamChoice;
-    uin16ParamChoice.initialize(tag);
+    uin16ParamChoice.initialize(selector);
 
     zserio::BitStreamWriter writer;
     const int8_t value = 99;
-    writeUIn16ParamChoiceToByteArray(writer, tag, value);
+    writeUIn16ParamChoiceToByteArray(writer, selector, value);
     size_t writeBufferByteSize;
     const uint8_t* writeBuffer = writer.getWriteBuffer(writeBufferByteSize);
     zserio::BitStreamReader reader(writeBuffer, writeBufferByteSize);
     uin16ParamChoice.read(reader);
 
-    ASSERT_EQ(tag, uin16ParamChoice.getTag());
+    ASSERT_EQ(selector, uin16ParamChoice.getSelector());
     ASSERT_EQ(value, uin16ParamChoice.getA());
 }
 
 TEST_F(UIn16ParamChoiceTest, write)
 {
-    const uint16_t tagA = VARIANT_A_SELECTOR;
+    const uint16_t selectorA = VARIANT_A_SELECTOR;
     UInt16ParamChoice uin16ParamChoice;
-    uin16ParamChoice.initialize(tagA);
+    uin16ParamChoice.initialize(selectorA);
 
     const VariantA valueA = 99;
     uin16ParamChoice.setA(valueA);
@@ -261,11 +261,11 @@ TEST_F(UIn16ParamChoiceTest, write)
     size_t writeBufferByteSizeA;
     const uint8_t* writeBufferA = writerA.getWriteBuffer(writeBufferByteSizeA);
     zserio::BitStreamReader readerA(writeBufferA, writeBufferByteSizeA);
-    UInt16ParamChoice readUIn16ParamChoiceA(readerA, tagA);
+    UInt16ParamChoice readUIn16ParamChoiceA(readerA, selectorA);
     ASSERT_EQ(valueA, readUIn16ParamChoiceA.getA());
 
-    const uint16_t tagB = VARIANT_B_SELECTOR2;
-    uin16ParamChoice.initialize(tagB);
+    const uint16_t selectorB = VARIANT_B_SELECTOR2;
+    uin16ParamChoice.initialize(selectorB);
     const VariantB valueB = 234;
     uin16ParamChoice.setB(valueB);
     zserio::BitStreamWriter writerB;
@@ -273,11 +273,11 @@ TEST_F(UIn16ParamChoiceTest, write)
     size_t writeBufferByteSizeB;
     const uint8_t* writeBufferB = writerB.getWriteBuffer(writeBufferByteSizeB);
     zserio::BitStreamReader readerB(writeBufferB, writeBufferByteSizeB);
-    UInt16ParamChoice readUIn16ParamChoiceB(readerB, tagB);
+    UInt16ParamChoice readUIn16ParamChoiceB(readerB, selectorB);
     ASSERT_EQ(valueB, readUIn16ParamChoiceB.getB());
 
-    const uint16_t tagC= VARIANT_C_SELECTOR;
-    uin16ParamChoice.initialize(tagC);
+    const uint16_t selectorC= VARIANT_C_SELECTOR;
+    uin16ParamChoice.initialize(selectorC);
     const VariantC valueC = 65535;
     uin16ParamChoice.setC(valueC);
     zserio::BitStreamWriter writerC;
@@ -285,7 +285,7 @@ TEST_F(UIn16ParamChoiceTest, write)
     size_t writeBufferByteSizeC;
     const uint8_t* writeBufferC = writerC.getWriteBuffer(writeBufferByteSizeC);
     zserio::BitStreamReader readerC(writeBufferC, writeBufferByteSizeC);
-    UInt16ParamChoice readUIn16ParamChoiceC(readerC, tagC);
+    UInt16ParamChoice readUIn16ParamChoiceC(readerC, selectorC);
     ASSERT_EQ(valueC, readUIn16ParamChoiceC.getC());
 }
 

@@ -55,8 +55,7 @@
     </#if>
 </#macro>
 <#macro choice_switch memberActionMacroName needsBreak=true>
-    <#local useSwitch = selectorExpressionTypeName != "bool"/>
-    <#if useSwitch>
+    <#if !isSelectorExpressionBoolean>
     switch (${selectorExpression})
     {
         <#list caseMemberList as caseMember>
@@ -81,7 +80,7 @@
         </#if>
     }
     <#else>
-    const ${selectorExpressionTypeName} selector = ${selectorExpression};
+    const bool selector = ${selectorExpression};
 
         <#list caseMemberList as caseMember>
             <#if caseMember?has_next || !isDefaultUnreachable>

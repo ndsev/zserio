@@ -11,10 +11,14 @@ uninitMemberVar:*/EmptyChoiceWithCase.cpp
 uninitMemberVar:*/EmptyChoiceWithDefault.cpp
 uninitMemberVar:*/EnumParamChoice.cpp
 uninitMemberVar:*/EnumParamChoice.h
+uninitMemberVar:*/ExpressionSelectorChoice.cpp
+uninitMemberVar:*/ExpressionSelectorChoice.h
 uninitMemberVar:*/FullEnumParamChoice.cpp
 uninitMemberVar:*/FullEnumParamChoice.h
 uninitMemberVar:*/Selector.cpp
 uninitMemberVar:*/UInt16ParamChoice.cpp
 uninitMemberVar:*/UInt16ParamChoice.h
+uninitMemberVar:*/UInt32ParamChoice.cpp
+uninitMemberVar:*/UInt32ParamChoice.h
 uninitMemberVar:*/UInt64ParamChoice.cpp
 uninitMemberVar:*/UInt64ParamChoice.h

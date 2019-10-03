@@ -11,7 +11,6 @@ import zserio.ast.Expression;
 import zserio.ast.Field;
 import zserio.emit.common.ExpressionFormatter;
 import zserio.emit.common.ZserioEmitException;
-import zserio.emit.cpp.types.CppNativeType;
 
 public class ChoiceEmitterTemplateData extends CompoundTypeTemplateData
 {
@@ -25,10 +24,7 @@ public class ChoiceEmitterTemplateData extends CompoundTypeTemplateData
 
         final Expression expression = choiceType.getSelectorExpression();
         selectorExpression = cppExpressionFormatter.formatGetter(expression);
-
-        final CppNativeType expressionNativeType =
-                cppNativeTypeMapper.getCppType(expression.getExprZserioType());
-        selectorExpressionTypeName = expressionNativeType.getFullName();
+        isSelectorExpressionBoolean = expression.getExprType() == Expression.ExpressionType.BOOLEAN;
 
         caseMemberList = new ArrayList<CaseMember>();
         final boolean withWriterCode = context.getWithWriterCode();
@@ -63,9 +59,9 @@ public class ChoiceEmitterTemplateData extends CompoundTypeTemplateData
         return selectorExpression;
     }
 
-    public String getSelectorExpressionTypeName()
+    public boolean getIsSelectorExpressionBoolean()
     {
-        return selectorExpressionTypeName;
+        return isSelectorExpressionBoolean;
     }
 
     public Iterable<CaseMember> getCaseMemberList()
@@ -140,7 +136,7 @@ public class ChoiceEmitterTemplateData extends CompoundTypeTemplateData
     }
 
     private final String selectorExpression;
-    private final String selectorExpressionTypeName;
+    private final boolean isSelectorExpressionBoolean;
     private final List<CaseMember> caseMemberList;
     private final DefaultMember defaultMember;
     private final boolean isDefaultUnreachable;
