@@ -140,11 +140,19 @@ public class TypeReference extends AstNodeBase implements ZserioType
         }
     }
 
-    ZserioType instantiate(List<String> templateParameters, List<ZserioType> templateArguments)
+    /**
+     * Instantiate the type reference.
+     *
+     * @param templateParameters Template parameters.
+     * @param templateArguments Template arguments.
+     *
+     * @return New type reference instantiated from this using the given template arguments.
+     */
+    ZserioType instantiate(List<TemplateParameter> templateParameters, List<ZserioType> templateArguments)
     {
         if (getReferencedPackageName().isEmpty()) // may be a template parameter
         {
-            final int index = templateParameters.indexOf(getReferencedTypeName());
+            final int index = TemplateParameter.indexOf(templateParameters, getReferencedTypeName());
             if (index != -1)
             {
                 if (!getTemplateArguments().isEmpty())

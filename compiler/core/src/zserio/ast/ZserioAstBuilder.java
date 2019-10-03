@@ -154,7 +154,7 @@ public class ZserioAstBuilder extends ZserioParserBaseVisitor<Object>
         final AstLocation location = new AstLocation(ctx.id().getStart());
         final String name = ctx.id().getText();
 
-        final List<String> templateParameters = visitTemplateParameters(ctx.templateParameters());
+        final List<TemplateParameter> templateParameters = visitTemplateParameters(ctx.templateParameters());
 
         final List<Parameter> typeParameters = visitTypeParameters(ctx.typeParameters());
 
@@ -249,7 +249,7 @@ public class ZserioAstBuilder extends ZserioParserBaseVisitor<Object>
         final AstLocation location = new AstLocation(ctx.id().getStart());
         final String name = ctx.id().getText();
 
-        final List<String> templateParameters = visitTemplateParameters(ctx.templateParameters());
+        final List<TemplateParameter> templateParameters = visitTemplateParameters(ctx.templateParameters());
 
         final List<Parameter> typeParameters = visitTypeParameters(ctx.typeParameters());
 
@@ -331,7 +331,7 @@ public class ZserioAstBuilder extends ZserioParserBaseVisitor<Object>
         final AstLocation location = new AstLocation(ctx.id().getStart());
         final String name = ctx.id().getText();
 
-        final List<String> templateParameters = visitTemplateParameters(ctx.templateParameters());
+        final List<TemplateParameter> templateParameters = visitTemplateParameters(ctx.templateParameters());
 
         final List<Parameter> typeParameters = visitTypeParameters(ctx.typeParameters());
 
@@ -388,7 +388,7 @@ public class ZserioAstBuilder extends ZserioParserBaseVisitor<Object>
         final AstLocation location = new AstLocation(ctx.id(0).getStart());
         final String name = ctx.id(0).getText();
 
-        final List<String> templateParameters = visitTemplateParameters(ctx.templateParameters());
+        final List<TemplateParameter> templateParameters = visitTemplateParameters(ctx.templateParameters());
 
         final String sqlUsingId = ctx.id(1) != null ? ctx.id(1).getText() : null;
         final List<Field> fields = new ArrayList<Field>();
@@ -557,14 +557,15 @@ public class ZserioAstBuilder extends ZserioParserBaseVisitor<Object>
     }
 
     @Override
-    public List<String> visitTemplateParameters(ZserioParser.TemplateParametersContext ctx)
+    public List<TemplateParameter> visitTemplateParameters(ZserioParser.TemplateParametersContext ctx)
     {
-        final List<String> parameters = new ArrayList<String>();
+        final List<TemplateParameter> parameters = new ArrayList<TemplateParameter>();
         if (ctx != null)
         {
             for (ZserioParser.IdContext idCtx : ctx.id())
             {
-                parameters.add(idCtx.getText());
+                final AstLocation location = new AstLocation(idCtx.getStart());
+                parameters.add(new TemplateParameter(location, idCtx.getText()));
             }
         }
         return parameters;

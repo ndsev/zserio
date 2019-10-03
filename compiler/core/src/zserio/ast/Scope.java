@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import zserio.antlr.util.ParserException;
+import zserio.tools.ZserioToolPrinter;
 
 /**
  * This class represents a lexical scope which maps symbol names to objects.
@@ -45,12 +46,13 @@ class Scope
      */
     public void setSymbol(String name, AstNode node)
     {
-        // TODO[Mi-L@]: Consider introducing of TemplateParameter AstNode to prevent null value in the
-        //              symbolTable. Consider reverting the optimized insertion.
-        if (symbolTable.containsKey(name))
+        final AstNode prevSymbol = symbolTable.put(name, node);
+        if (prevSymbol != null)
+        {
+            // TODO[Mi-L@]: Fix order of messages.
+            ZserioToolPrinter.printError(prevSymbol.getLocation(), "First defined here");
             throw new ParserException(node, "'" + name + "' is already defined in this scope!");
-
-        symbolTable.put(name, node);
+        }
     }
 
     /**

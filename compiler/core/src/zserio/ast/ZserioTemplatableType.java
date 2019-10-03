@@ -12,7 +12,7 @@ public interface ZserioTemplatableType extends ZserioScopedType
      *
      * @return List of template parameters.
      */
-    public List<String> getTemplateParameters();
+    public List<TemplateParameter> getTemplateParameters();
 
     /**
      * Gets all template's instantiations.

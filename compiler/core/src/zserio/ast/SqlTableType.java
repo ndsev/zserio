@@ -31,9 +31,9 @@ public class SqlTableType extends CompoundType
      * @param sqlWithoutRowId       SQL without row id associated to the SQL table type.
      * @param docComment            Documentation comment belonging to this node.
      */
-    public SqlTableType(AstLocation location, Package pkg, String name, List<String> templateParameters,
-            String sqlUsingId, List<Field> fields, SqlConstraint sqlConstraint, boolean sqlWithoutRowId,
-            DocComment docComment)
+    public SqlTableType(AstLocation location, Package pkg, String name,
+            List<TemplateParameter> templateParameters, String sqlUsingId, List<Field> fields,
+            SqlConstraint sqlConstraint, boolean sqlWithoutRowId, DocComment docComment)
     {
         super(location, pkg, name, templateParameters, new ArrayList<Parameter>(), fields,
                 new ArrayList<FunctionType>(), docComment);
@@ -65,8 +65,8 @@ public class SqlTableType extends CompoundType
         for (Field field : getFields())
             instantiatedFields.add(field.instantiate(getTemplateParameters(), templateArguments));
 
-        return new SqlTableType(getLocation(), getPackage(), name, new ArrayList<String>(), sqlUsingId,
-                instantiatedFields, getSqlConstraint(), isWithoutRowId(), getDocComment());
+        return new SqlTableType(getLocation(), getPackage(), name, new ArrayList<TemplateParameter>(),
+                sqlUsingId, instantiatedFields, getSqlConstraint(), isWithoutRowId(), getDocComment());
     }
 
     /**

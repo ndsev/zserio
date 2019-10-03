@@ -312,7 +312,15 @@ public class Field extends DocumentableAstNode
             throw new ParserException(this, "'" + getName() + "' is a defined type in this package!");
     }
 
-    Field instantiate(List<String> templateParameters, List<ZserioType> templateArguments)
+    /**
+     * Instantiate the field.
+     *
+     * @param templateParameters Template parameters.
+     * @param templateArguments Template arguments.
+     *
+     * @return New field instantiated from this using the given template arguments.
+     */
+    Field instantiate(List<TemplateParameter> templateParameters, List<ZserioType> templateArguments)
     {
         final ZserioType instantiatedFieldType =
                 ZserioTypeUtil.instantiate(fieldType, templateParameters, templateArguments);

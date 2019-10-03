@@ -54,7 +54,15 @@ public class Parameter extends AstNodeBase
         return name;
     }
 
-    Parameter instantiate(List<String> templateParameters, List<ZserioType> templateArguments)
+    /**
+     * Instantiate the type parameter.
+     *
+     * @param templateParameters Template parameters.
+     * @param templateArguments Template arguments.
+     *
+     * @return New type parameter instantiated from this using the given template arguments.
+     */
+    Parameter instantiate(List<TemplateParameter> templateParameters, List<ZserioType> templateArguments)
     {
         final ZserioType instantiatedParameterType =
                 ZserioTypeUtil.instantiate(parameterType, templateParameters, templateArguments);

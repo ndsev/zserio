@@ -160,7 +160,15 @@ public class SqlConstraint extends AstNodeBase
         translatedFieldConstraintExpr = createTranslatedFieldConstraintExpr(translatedConstraint);
     }
 
-    SqlConstraint instantiate(List<String> templateParameters, List<ZserioType> templateArguments)
+    /**
+     * Instantiate the sql constraint.
+     *
+     * @param templateParameters Template parameters.
+     * @param templateArguments Template arguments.
+     *
+     * @return New sql constraint instantiated from this using the given template arguments.
+     */
+    SqlConstraint instantiate(List<TemplateParameter> templateParameters, List<ZserioType> templateArguments)
     {
         final Expression instantiatedConstraintExpr =
                 getConstraintExpr().instantiate(templateParameters, templateArguments);

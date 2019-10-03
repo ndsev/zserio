@@ -59,7 +59,15 @@ public class ChoiceCase extends AstNodeBase
         return caseField;
     }
 
-    ChoiceCase instantiate(List<String> templateParameters, List<ZserioType> templateArguments)
+    /**
+     * Instantiate the choice case.
+     *
+     * @param templateParameters Template parameters.
+     * @param templateArguments Template arguments.
+     *
+     * @return New choice case instantiated from this using the given template arguments.
+     */
+    ChoiceCase instantiate(List<TemplateParameter> templateParameters, List<ZserioType> templateArguments)
     {
         final Field instantiatedCaseField = caseField == null ? null :
                 caseField.instantiate(templateParameters, templateArguments);

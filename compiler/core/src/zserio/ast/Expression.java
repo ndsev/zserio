@@ -640,7 +640,15 @@ public class Expression extends AstNodeBase
         needsBigIntegerCastingToNative = true;
     }
 
-    Expression instantiate(List<String> templateParameters, List<ZserioType> templateArguments)
+    /**
+     * Instantiate the expression.
+     *
+     * @param templateParameters Template parameters.
+     * @param templateArguments Template arguments.
+     *
+     * @return New expression instantiated from this using the given template arguments.
+     */
+    Expression instantiate(List<TemplateParameter> templateParameters, List<ZserioType> templateArguments)
     {
         if (operand1 == null)
         {
@@ -651,7 +659,7 @@ public class Expression extends AstNodeBase
                         expressionFlag != ExpressionFlag.IS_DOT_RIGHT_OPERAND_ID)
                 {
                     // expression is single ID or is left dot operand
-                    final int index = templateParameters.indexOf(text);
+                    final int index = TemplateParameter.indexOf(templateParameters, text);
                     if (index != -1)
                     {
                         // template parameter has been found

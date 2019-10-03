@@ -47,7 +47,15 @@ public class ChoiceDefault extends DocumentableAstNode
         return defaultField;
     }
 
-    ChoiceDefault instantiate(List<String> templateParameters, List<ZserioType> templateArguments)
+    /**
+     * Instantiate the choice default.
+     *
+     * @param templateParameters Template parameters.
+     * @param templateArguments Template arguments.
+     *
+     * @return New choice default instantiated from this using the given template arguments.
+     */
+    ChoiceDefault instantiate(List<TemplateParameter> templateParameters, List<ZserioType> templateArguments)
     {
         final Field instantiatedDefaultField = defaultField == null ? null :
                 defaultField.instantiate(templateParameters, templateArguments);

@@ -264,8 +264,8 @@ public class ZserioAstScopeSetter extends ZserioAstWalker
 
     private void addTemplateParameters(ZserioTemplatableType templatable)
     {
-        for (String templateParameter : templatable.getTemplateParameters())
-            currentScope.setSymbol(templateParameter, null);
+        for (TemplateParameter templateParameter : templatable.getTemplateParameters())
+            currentScope.setSymbol(templateParameter.getName(), templateParameter);
     }
 
     private final Scope defaultScope = new Scope((ZserioScopedType)null);

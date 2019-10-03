@@ -25,7 +25,7 @@ public class SqlDatabaseType extends CompoundType
     public SqlDatabaseType(AstLocation location, Package pkg, String name, List<Field> fields,
             DocComment docComment)
     {
-        super(location, pkg, name, new ArrayList<String>(), new ArrayList<Parameter>(), fields,
+        super(location, pkg, name, new ArrayList<TemplateParameter>(), new ArrayList<Parameter>(), fields,
                 new ArrayList<FunctionType>(), docComment);
     }
 

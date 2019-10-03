@@ -23,7 +23,7 @@ public class UnionType extends CompoundType
      * @param functions             List of all functions of the union type.
      * @param docComment            Documentation comment belonging to this node.
      */
-    public UnionType(AstLocation location, Package pkg, String name, List<String> templateParameters,
+    public UnionType(AstLocation location, Package pkg, String name, List<TemplateParameter> templateParameters,
             List<Parameter> typeParameters, List<Field> fields, List<FunctionType> functions,
             DocComment docComment)
     {
@@ -51,7 +51,7 @@ public class UnionType extends CompoundType
         for (FunctionType function : getFunctions())
             instantiatedFunctions.add(function.instantiate(getTemplateParameters(), templateArguments));
 
-        return new UnionType(getLocation(), getPackage(), name, new ArrayList<String>(),
+        return new UnionType(getLocation(), getPackage(), name, new ArrayList<TemplateParameter>(),
                 instantiatedTypeParameters, instantiatedFields, instantiatedFunctions, getDocComment());
     }
 

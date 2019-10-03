@@ -186,7 +186,16 @@ public class TypeInstantiation extends AstNodeBase implements ZserioType
         }
     }
 
-    TypeInstantiation instantiate(List<String> templateParameters, List<ZserioType> templateArguments)
+    /**
+     * Instantiate the parameterized type instantiation.
+     *
+     * @param templateParameters Template parameters.
+     * @param templateArguments Template arguments.
+     *
+     * @return New parameterized type instantiation instantiated from this using the given template arguments.
+     */
+    TypeInstantiation instantiate(List<TemplateParameter> templateParameters,
+            List<ZserioType> templateArguments)
     {
         final ZserioType instantiatedReferencedType =
                 referencedType.instantiate(templateParameters, templateArguments);

@@ -24,7 +24,8 @@ abstract class TemplatableType extends DocumentableAstNode implements ZserioTemp
      * @param functions List of all functions of the compound type.
      * @param docComment Documentation comment belonging to this node.
      */
-    public TemplatableType(AstLocation location, List<String> templateParameters, DocComment docComment)
+    public TemplatableType(AstLocation location, List<TemplateParameter> templateParameters,
+            DocComment docComment)
     {
         super(location, docComment);
 
@@ -32,7 +33,7 @@ abstract class TemplatableType extends DocumentableAstNode implements ZserioTemp
     }
 
     @Override
-    public List<String> getTemplateParameters()
+    public List<TemplateParameter> getTemplateParameters()
     {
         return templateParameters;
     }
@@ -221,7 +222,7 @@ abstract class TemplatableType extends DocumentableAstNode implements ZserioTemp
         private final List<TemplateArgument> templateArguments = new ArrayList<TemplateArgument>();
     }
 
-    private final List<String> templateParameters;
+    private final List<TemplateParameter> templateParameters;
     private final Map<List<TemplateArgument>, TemplatableType> instantiationsMap =
             new HashMap<List<TemplateArgument>, TemplatableType>();
     private final Map<String, TemplatableType> instantiationsNamesMap =

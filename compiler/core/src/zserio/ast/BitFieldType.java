@@ -122,7 +122,15 @@ public abstract class BitFieldType extends IntegerType
         }
     }
 
-    BitFieldType instantiate(List<String> templateParameters, List<ZserioType> templateArguments)
+    /**
+     * Instantiate the bitfield type.
+     *
+     * @param templateParameters Template parameters.
+     * @param templateArguments Template arguments.
+     *
+     * @return New bitfield type instantiated from this using the given template arguments.
+     */
+    BitFieldType instantiate(List<TemplateParameter> templateParameters, List<ZserioType> templateArguments)
     {
         final Expression instantiatedLengthExpression = getLengthExpression().instantiate(templateParameters,
                 templateArguments);

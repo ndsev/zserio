@@ -29,12 +29,13 @@ public class ChoiceType extends CompoundType
      * @param functions             List of all functions of the choice type.
      * @param docComment            Documentation comment belonging to this node.
      */
-    public ChoiceType(AstLocation location, Package pkg, String name, List<String> templateParameters,
-            List<Parameter> typeParameters, Expression selectorExpression, List<ChoiceCase> choiceCases,
-            ChoiceDefault choiceDefault, List<FunctionType> functions, DocComment docComment)
+    public ChoiceType(AstLocation location, Package pkg, String name,
+            List<TemplateParameter> templateParameters, List<Parameter> typeParameters,
+            Expression selectorExpression, List<ChoiceCase> choiceCases, ChoiceDefault choiceDefault,
+            List<FunctionType> functions, DocComment docComment)
     {
-        super(location, pkg, name, templateParameters, typeParameters, getChoiceFields(choiceCases, choiceDefault),
-                functions, docComment);
+        super(location, pkg, name, templateParameters, typeParameters,
+                getChoiceFields(choiceCases, choiceDefault), functions, docComment);
 
         this.selectorExpression = selectorExpression;
         this.choiceCases = choiceCases;
@@ -152,7 +153,7 @@ public class ChoiceType extends CompoundType
         for (FunctionType function : getFunctions())
             instantiatedFunctions.add(function.instantiate(getTemplateParameters(), templateArguments));
 
-        return new ChoiceType(getLocation(), getPackage(), name, new ArrayList<String>(),
+        return new ChoiceType(getLocation(), getPackage(), name, new ArrayList<TemplateParameter>(),
                 instantiatedTypeParameters, instantiatedSelectorExpression, instantiatedChoiceCases,
                 instantiatedChoiceDefault, instantiatedFunctions, getDocComment());
     }

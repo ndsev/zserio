@@ -103,7 +103,15 @@ public class FunctionType extends DocumentableAstNode implements ZserioType
         }
     }
 
-    FunctionType instantiate(List<String> templateParameters, List<ZserioType> templateArguments)
+    /**
+     * Instantiate the function type.
+     *
+     * @param templateParameters Template parameters.
+     * @param templateArguments Template arguments.
+     *
+     * @return New function type instantiated from this using the given template arguments.
+     */
+    FunctionType instantiate(List<TemplateParameter> templateParameters, List<ZserioType> templateArguments)
     {
         final ZserioType instantiatedReturnType =
                 ZserioTypeUtil.instantiate(returnType, templateParameters, templateArguments);

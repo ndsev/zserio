@@ -39,7 +39,15 @@ public class ZserioTypeUtil
                         ((ArrayType)type).getElementType()) instanceof BuiltInType);
     }
 
-    static ZserioType instantiate(ZserioType zserioType, List<String> templateParameters,
+    /**
+     * Instantiate the zserio type. This is a helper to handle different ways of zserio types referencing.
+     *
+     * @param templateParameters Template parameters.
+     * @param templateArguments Template arguments.
+     *
+     * @return New zserio type instantiated from this using the given template arguments.
+     */
+    static ZserioType instantiate(ZserioType zserioType, List<TemplateParameter> templateParameters,
             List<ZserioType> templateArguments)
     {
         if (zserioType instanceof ArrayType)

@@ -108,7 +108,15 @@ public class ArrayType extends AstNodeBase implements ZserioType
         }
     }
 
-    ArrayType instantiate(List<String> templateParameters, List<ZserioType> templateArguments)
+    /**
+     * Instantiate the array type.
+     *
+     * @param templateParameters Template parameters.
+     * @param templateArguments Template arguments.
+     *
+     * @return New array type instantiated from this using the given template arguments.
+     */
+    ArrayType instantiate(List<TemplateParameter> templateParameters, List<ZserioType> templateArguments)
     {
         final ZserioType instantiatedElementType =
                 ZserioTypeUtil.instantiate(elementType, templateParameters, templateArguments);

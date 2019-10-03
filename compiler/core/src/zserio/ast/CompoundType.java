@@ -27,7 +27,7 @@ public abstract class CompoundType extends TemplatableType implements Comparable
      * @param functions List of all functions of the compound type.
      * @param docComment Documentation comment belonging to this node.
      */
-    CompoundType(AstLocation location, Package pkg, String name, List<String> templateParameters,
+    CompoundType(AstLocation location, Package pkg, String name, List<TemplateParameter> templateParameters,
             List<Parameter> typeParameters, List<Field> fields, List<FunctionType> functions,
             DocComment docComment)
     {
