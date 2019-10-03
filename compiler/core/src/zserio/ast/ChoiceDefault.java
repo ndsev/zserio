@@ -6,7 +6,7 @@ import java.util.List;
 /**
  * AST node for default case defined by choice types.
  */
-public class ChoiceDefault extends AstNodeWithDoc
+public class ChoiceDefault extends DocumentableAstNode
 {
     /**
      * Constructor.

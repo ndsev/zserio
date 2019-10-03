@@ -65,14 +65,14 @@ public class ZserioAstTemplator extends ZserioAstWalker
                         ZserioTypeUtil.getReferencedFullName(typeReference) + "'!");
             }
 
-            if (!(type instanceof ZserioTemplatableType) ||
-                    ((ZserioTemplatableType)type).getTemplateParameters().isEmpty())
+            if (!(type instanceof TemplatableType) ||
+                    ((TemplatableType)type).getTemplateParameters().isEmpty())
             {
                 throw new ParserException(typeReference,
                         "'" + ZserioTypeUtil.getReferencedFullName(typeReference) + "' is not a template!");
             }
 
-            final ZserioTemplatableType template = (ZserioTemplatableType)type;
+            final TemplatableType template = (TemplatableType)type;
             final ZserioTemplatableType instantiation = template.instantiate(typeReference);
 
             try

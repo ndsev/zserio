@@ -6,7 +6,7 @@ import zserio.antlr.util.ParserException;
 /**
  * AST node for RPC calls.
  */
-public class Rpc extends AstNodeWithDoc
+public class Rpc extends DocumentableAstNode
 {
     /**
      * Constructor.

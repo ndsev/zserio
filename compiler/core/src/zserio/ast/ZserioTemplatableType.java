@@ -5,27 +5,14 @@ import java.util.List;
 /**
  * The interface for all Zserio types which can be templated.
  */
-public interface ZserioTemplatableType extends ZserioType
+public interface ZserioTemplatableType extends ZserioScopedType
 {
-    // TODO[mikir] Should we use 'public' everywhere?
     /**
      * Gets list of template parameters.
      *
      * @return List of template parameters.
      */
     public List<String> getTemplateParameters();
-
-
-    // TODO[Mi-L@]: Should be public?
-    /**
-     * Instantiates the template with actual template parameters (i.e. arguments).
-     * The instantiated type is stored within the instantiations list which can be accessed by
-     * getTemplateInstantiations(). If the template with same arguments is already instantiated,
-     * nothing is done.
-     *
-     * @param instantiationReference Reference to the actual template instantiation.
-     */
-    public ZserioTemplatableType instantiate(TypeReference instantiationReference);
 
     /**
      * Gets all template's instantiations.
@@ -35,25 +22,16 @@ public interface ZserioTemplatableType extends ZserioType
     public List<ZserioTemplatableType> getInstantiations();
 
     /**
-     * Gets the template instantiation for the given arguments.
-     *
-     * @param templateArguments Template arguments.
-     *
-     * @return Template instantiation.
-     */
-    public ZserioTemplatableType getInstantiation(List<ZserioType> templateArguments);
-
-    /**
      * Gets original template used for instantiation.
      *
-     * @return Template of the current instantiation.
+     * @return Template of the current instantiation or null when this is not an instantiation.
      */
     public ZserioTemplatableType getTemplate();
 
     /**
      * Gets location of the current instantiation.
      *
-     * @return Location.
+     * @return Location of the current instantiation or null when this is not an instantiation.
      */
     public AstLocation getInstantiationLocation();
 }

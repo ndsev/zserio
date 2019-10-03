@@ -25,8 +25,8 @@ public class SqlDatabaseType extends CompoundType
     public SqlDatabaseType(AstLocation location, Package pkg, String name, List<Field> fields,
             DocComment docComment)
     {
-        super(location, pkg, name, new ArrayList<Parameter>(), fields, new ArrayList<FunctionType>(),
-                docComment);
+        super(location, pkg, name, new ArrayList<String>(), new ArrayList<Parameter>(), fields,
+                new ArrayList<FunctionType>(), docComment);
     }
 
     @Override
@@ -49,5 +49,11 @@ public class SqlDatabaseType extends CompoundType
                 throw new ParserException(databaseField,
                         "Field '" + databaseField.getName() + "' is not a sql table!");
         }
+    }
+
+    @Override
+    SqlDatabaseType instantiateImpl(String name, List<ZserioType> templateArguments)
+    {
+        throw new InternalError("SqlDatabaseType is not templatable!");
     }
 }

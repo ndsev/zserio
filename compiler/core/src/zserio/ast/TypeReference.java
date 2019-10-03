@@ -100,18 +100,17 @@ public class TypeReference extends AstNodeBase implements ZserioType
                     "' as a type!");
 
         // TODO[Mi-L@]: What if it is a subtype to a template?
-        if (referencedType instanceof ZserioTemplatableType)
+        if (referencedType instanceof TemplatableType)
         {
-            ZserioTemplatableType template = (ZserioTemplatableType)referencedType;
+            final TemplatableType template = (TemplatableType)referencedType;
             if (!template.getTemplateParameters().isEmpty())
             {
                 referencedType = template.getInstantiation(templateArguments);
                 if (referencedType == null)
                 {
                     // this should not occur!
-                    throw new ParserException(this, "Template '" +
-                            ZserioTypeUtil.getReferencedFullName(this) + "' not properly instantiated! " +
-                            "Please report a bug.");
+                    throw new InternalError("Template '" + ZserioTypeUtil.getReferencedFullName(this) +
+                            "' is not properly instantiated!");
                 }
             }
         }

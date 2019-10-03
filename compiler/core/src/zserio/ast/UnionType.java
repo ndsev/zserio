@@ -9,7 +9,7 @@ import java.util.List;
  *
  * Union types are Zserio types as well.
  */
-public class UnionType extends TemplatableCompoundType
+public class UnionType extends CompoundType
 {
     /**
      * Constructor.

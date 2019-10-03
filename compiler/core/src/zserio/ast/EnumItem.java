@@ -7,7 +7,7 @@ import zserio.antlr.util.ParserException;
 /**
  * AST node for items defined by enumeration types.
  */
-public class EnumItem extends AstNodeWithDoc
+public class EnumItem extends DocumentableAstNode
 {
     /**
      * Constructor.

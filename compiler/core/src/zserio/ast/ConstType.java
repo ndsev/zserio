@@ -8,7 +8,7 @@ import zserio.tools.HashUtil;
  *
  * Constant types are Zserio types as well.
  */
-public class ConstType extends AstNodeWithDoc implements ZserioType, Comparable<ConstType>
+public class ConstType extends DocumentableAstNode implements ZserioType, Comparable<ConstType>
 {
     /**
      * Constructor.

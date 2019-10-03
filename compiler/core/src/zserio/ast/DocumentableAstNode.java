@@ -3,7 +3,7 @@ package zserio.ast;
 /**
  * AST node which can have documentation comment.
  */
-public abstract class AstNodeWithDoc extends AstNodeBase
+public abstract class DocumentableAstNode extends AstNodeBase
 {
     /**
      * Constructor.
@@ -11,7 +11,7 @@ public abstract class AstNodeWithDoc extends AstNodeBase
      * @param location   AST node location.
      * @param docComment Documentation comment belonging to this node.
      */
-    public AstNodeWithDoc(AstLocation location, DocComment docComment)
+    public DocumentableAstNode(AstLocation location, DocComment docComment)
     {
         super(location);
 

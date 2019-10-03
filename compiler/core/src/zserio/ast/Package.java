@@ -18,7 +18,7 @@ import zserio.tools.ZserioToolPrinter;
  *
  * Package is represented by one translation unit (one source file).
  */
-public class Package extends AstNodeWithDoc
+public class Package extends DocumentableAstNode
 {
     /**
      * Constructor.

@@ -5,7 +5,7 @@ import java.util.List;
 /**
  * Choice case expression which can have its own documentation comment.
  */
-public class ChoiceCaseExpression extends AstNodeWithDoc
+public class ChoiceCaseExpression extends DocumentableAstNode
 {
     /**
      * Constructor.

@@ -13,7 +13,7 @@ import zserio.antlr.util.ParserException;
  *
  * This field is used by all Compound types (structure types, choice types, ...).
  */
-public class Field extends AstNodeWithDoc
+public class Field extends DocumentableAstNode
 {
     /**
      * Constructor from Structure types.

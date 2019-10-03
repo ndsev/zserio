@@ -6,7 +6,6 @@ import java.util.List;
 import zserio.antlr.util.ParserException;
 import zserio.ast.Package;
 import zserio.ast.Scope;
-import zserio.ast.ZserioScopedType;
 import zserio.tools.HashUtil;
 
 /**
@@ -14,7 +13,7 @@ import zserio.tools.HashUtil;
  *
  * This is an abstract class for all Compound Zserio types (structure types, choice types, ...).
  */
-public abstract class CompoundType extends AstNodeWithDoc implements ZserioScopedType, Comparable<CompoundType>
+public abstract class CompoundType extends TemplatableType implements Comparable<CompoundType>
 {
     /**
      * Constructor.
@@ -22,15 +21,17 @@ public abstract class CompoundType extends AstNodeWithDoc implements ZserioScope
      * @param location AST node location.
      * @param pkg Package to which belongs the compound type.
      * @param name Name of the compound type.
+     * @param templateParameters List of template parameters.
      * @param typeParameters List of parameters for the compound type.
      * @param fields List of all fields of the compound type.
      * @param functions List of all functions of the compound type.
      * @param docComment Documentation comment belonging to this node.
      */
-    CompoundType(AstLocation location, Package pkg, String name, List<Parameter> typeParameters, List<Field> fields,
-            List<FunctionType> functions, DocComment docComment)
+    CompoundType(AstLocation location, Package pkg, String name, List<String> templateParameters,
+            List<Parameter> typeParameters, List<Field> fields, List<FunctionType> functions,
+            DocComment docComment)
     {
-        super(location, docComment);
+        super(location, templateParameters, docComment);
 
         this.pkg = pkg;
         this.name = name;

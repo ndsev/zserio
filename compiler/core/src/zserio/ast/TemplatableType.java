@@ -10,7 +10,7 @@ import zserio.tools.HashUtil;
 import zserio.tools.StringJoinUtil;
 import zserio.tools.ZserioToolPrinter;
 
-abstract class TemplatableCompoundType extends CompoundType implements ZserioTemplatableType
+abstract class TemplatableType extends DocumentableAstNode implements ZserioTemplatableType
 {
     /**
      * Constructor.
@@ -18,17 +18,15 @@ abstract class TemplatableCompoundType extends CompoundType implements ZserioTem
      * @param location AST node location.
      * @param pkg Package to which belongs the compound type.
      * @param name Name of the compound type.
-     * @param templateParameters List of template parameteres.
+     * @param templateParameters List of template parameters.
      * @param typeParameters List of parameters for the compound type.
      * @param fields List of all fields of the compound type.
      * @param functions List of all functions of the compound type.
      * @param docComment Documentation comment belonging to this node.
      */
-    TemplatableCompoundType(AstLocation location, Package pkg, String name, List<String> templateParameters,
-            List<Parameter> typeParameters, List<Field> fields, List<FunctionType> functions,
-            DocComment docComment)
+    public TemplatableType(AstLocation location, List<String> templateParameters, DocComment docComment)
     {
-        super(location, pkg, name, typeParameters, fields, functions, docComment);
+        super(location, docComment);
 
         this.templateParameters = templateParameters;
     }
@@ -40,48 +38,9 @@ abstract class TemplatableCompoundType extends CompoundType implements ZserioTem
     }
 
     @Override
-    public ZserioTemplatableType instantiate(TypeReference instantiationReference)
-    {
-        final List<ZserioType> templateArguments = instantiationReference.getTemplateArguments();
-        if (getTemplateParameters().size() != templateArguments.size())
-        {
-            throw new ParserException(this, "Wrong number of template arguments for template '" +
-                    getName() + "'! Expecting " +
-                    getTemplateParameters().size() + ", got " + templateArguments.size() + "!");
-        }
-
-        final List<TemplateArgument> wrappedTemplateArguments = wrapTemplateArguments(templateArguments);
-
-        // TODO[Mi-L@]: Currently we doesn't resolve subtypes. But it might be possible to do so.
-        //              So currently template instantiation for a subtype argument will be different
-        //              than instantiation for the base type.
-        TemplatableCompoundType instantiation = instantiationsMap.get(wrappedTemplateArguments);
-        if (instantiation == null)
-        {
-            final String name = getInstantiationNameImpl(wrappedTemplateArguments);
-            checkInstantiationName(wrappedTemplateArguments, name, instantiationReference.getLocation());
-            instantiation = instantiateImpl(name, templateArguments);
-            instantiation.instantiationReference = instantiationReference;
-            instantiation.template = this;
-            instantiationsMap.put(wrappedTemplateArguments, instantiation);
-            instantiationsNamesMap.put(name, instantiation);
-        }
-
-        return instantiation;
-    }
-
-    @Override
     public List<ZserioTemplatableType> getInstantiations()
     {
         return Collections.unmodifiableList(new ArrayList<ZserioTemplatableType>(instantiationsMap.values()));
-    }
-
-    @Override
-    public ZserioTemplatableType getInstantiation(List<ZserioType> templateArguments)
-    {
-        final ZserioTemplatableType instantiation =
-                instantiationsMap.get(wrapTemplateArguments(templateArguments));
-        return instantiation;
     }
 
     @Override
@@ -96,10 +55,65 @@ abstract class TemplatableCompoundType extends CompoundType implements ZserioTem
         return instantiationReference == null ? null : instantiationReference.getLocation();
     }
 
+    /**
+     *
+     * @param instantiationReference
+     * @return
+     */
+    ZserioTemplatableType instantiate(TypeReference instantiationReference)
+    {
+        final List<ZserioType> templateArguments = instantiationReference.getTemplateArguments();
+        if (getTemplateParameters().size() != templateArguments.size())
+        {
+            throw new ParserException(this, "Wrong number of template arguments for template '" +
+                    getName() + "'! Expecting " +
+                    getTemplateParameters().size() + ", got " + templateArguments.size() + "!");
+        }
+
+        final List<TemplateArgument> wrappedTemplateArguments = wrapTemplateArguments(templateArguments);
+
+        // TODO[Mi-L@]: Currently we doesn't resolve subtypes. But it might be possible to do so.
+        //              So currently template instantiation for a subtype argument will be different
+        //              than instantiation for the base type.
+        TemplatableType instantiation = instantiationsMap.get(wrappedTemplateArguments);
+        if (instantiation == null)
+        {
+            final String name = getInstantiationNameImpl(wrappedTemplateArguments);
+            checkInstantiationName(wrappedTemplateArguments, name, instantiationReference.getLocation());
+            instantiation = instantiateImpl(name, templateArguments);
+            instantiation.instantiationReference = instantiationReference;
+            instantiation.template = this;
+            instantiationsMap.put(wrappedTemplateArguments, instantiation);
+            instantiationsNamesMap.put(name, instantiation);
+        }
+
+        return instantiation;
+    }
+
     String getInstantiationName(List<ZserioType> templateArguments)
     {
         return getInstantiationNameImpl(wrapTemplateArguments(templateArguments));
     }
+
+    /**
+     * Gets the template instantiation for the given arguments.
+     *
+     * @param templateArguments Template arguments.
+     *
+     * @return Template instantiation if exists, null otherwise.
+     */
+    ZserioTemplatableType getInstantiation(List<ZserioType> templateArguments)
+    {
+        // TODO[Mi-L@]: Check if number arguments match number of parameters!
+        return instantiationsMap.get(wrapTemplateArguments(templateArguments));
+    }
+
+    /**
+     * Concrete implementation of template instantiation.
+     *
+     * @param templateArguemnts Actual template parameters.
+     */
+    abstract TemplatableType instantiateImpl(String name, List<ZserioType> templateArguemnts);
 
     private String getInstantiationNameImpl(List<TemplateArgument> wrappedTemplateArguments)
     {
@@ -117,7 +131,7 @@ abstract class TemplatableCompoundType extends CompoundType implements ZserioTem
     private void checkInstantiationName(List<TemplateArgument> templateArguments, String name,
             AstLocation instantiationLocation)
     {
-        final TemplatableCompoundType prevInstantiation = instantiationsNamesMap.get(name);
+        final ZserioTemplatableType prevInstantiation = instantiationsNamesMap.get(name);
         if (prevInstantiation != null)
         {
             ZserioToolPrinter.printError(instantiationLocation,
@@ -199,20 +213,13 @@ abstract class TemplatableCompoundType extends CompoundType implements ZserioTem
         private final List<TemplateArgument> templateArguments = new ArrayList<TemplateArgument>();
     }
 
-    /**
-     * Concrete implementation of template instantiation.
-     *
-     * @param templateArguemnts Actual template parameters.
-     */
-    abstract TemplatableCompoundType instantiateImpl(String name, List<ZserioType> templateArguemnts);
-
     private final List<String> templateParameters;
-    private final Map<List<TemplateArgument>, TemplatableCompoundType> instantiationsMap =
-            new HashMap<List<TemplateArgument>, TemplatableCompoundType>();
-    private final Map<String, TemplatableCompoundType> instantiationsNamesMap =
-            new HashMap<String, TemplatableCompoundType>();
+    private final Map<List<TemplateArgument>, TemplatableType> instantiationsMap =
+            new HashMap<List<TemplateArgument>, TemplatableType>();
+    private final Map<String, TemplatableType> instantiationsNamesMap =
+            new HashMap<String, TemplatableType>();
     private TypeReference instantiationReference = null;
-    private TemplatableCompoundType template = null;
+    private TemplatableType template = null;
 
     private static final String NAME_SEPARATOR = "_";
 }

@@ -88,23 +88,34 @@ public class ZserioAstResolver extends ZserioAstWalker
         docTagSee.visitChildren(this);
     }
 
-    private void visitType(TemplatableCompoundType templatableCompoundType)
-    {
-        if (templatableCompoundType.getTemplateParameters().isEmpty())
-            visitType((CompoundType)templatableCompoundType);
-        else
-            visitInstantiations(templatableCompoundType);
-    }
-
     private void visitType(CompoundType compoundType)
     {
-        currentScopedType = compoundType;
-        currentCompoundType = compoundType;
+        if (compoundType.getTemplateParameters().isEmpty())
+        {
+            currentScopedType = compoundType;
+            currentCompoundType = compoundType;
 
-        compoundType.visitChildren(this);
+            compoundType.visitChildren(this);
 
-        currentScopedType = null;
-        currentCompoundType = null;
+            currentScopedType = null;
+            currentCompoundType = null;
+        }
+        else
+        {
+            visitInstantiations(compoundType);
+        }
+    }
+
+    private void visitType(TemplatableType templatableType)
+    {
+        if (templatableType.getTemplateParameters().isEmpty())
+        {
+            visitType((ZserioScopedType)templatableType);
+        }
+        else
+        {
+            visitInstantiations(templatableType);
+        }
     }
 
     private void visitType(ZserioScopedType scopedType)

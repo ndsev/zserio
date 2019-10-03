@@ -14,7 +14,7 @@ import zserio.antlr.util.ParserException;
  *
  * Enumeration types are Zserio types as well.
  */
-public class EnumType extends AstNodeWithDoc implements ZserioScopedType
+public class EnumType extends DocumentableAstNode implements ZserioScopedType
 {
     /**
      * Constructor.

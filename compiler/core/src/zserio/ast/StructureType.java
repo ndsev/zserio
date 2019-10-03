@@ -13,7 +13,7 @@ import zserio.tools.ZserioToolPrinter;
  *
  * Structure types are Zserio types as well.
  */
-public class StructureType extends TemplatableCompoundType
+public class StructureType extends CompoundType
 {
     /**
      * Constructor.

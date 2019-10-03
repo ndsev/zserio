@@ -10,7 +10,7 @@ import zserio.tools.ZserioToolPrinter;
  *
  * Function types are Zserio types as well.
  */
-public class FunctionType extends AstNodeWithDoc implements ZserioType
+public class FunctionType extends DocumentableAstNode implements ZserioType
 {
     /**
      * Constructor.

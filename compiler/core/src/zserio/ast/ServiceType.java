@@ -10,7 +10,7 @@ import zserio.tools.HashUtil;
  *
  * Service types are Zserio types as well.
  */
-public class ServiceType extends AstNodeWithDoc implements ZserioScopedType, Comparable<ServiceType>
+public class ServiceType extends DocumentableAstNode implements ZserioScopedType, Comparable<ServiceType>
 {
     /**
      * Constructor.
