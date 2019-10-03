@@ -1,8 +1,8 @@
 // suppress "Member variable 'X' is not initialized in the constructor."
 uninitMemberVar:*/choice_templated_field/TemplatedChoice_Compound_uint32_uint16.cpp
 uninitMemberVar:*/choice_templated_field/TemplatedChoice_uint32_uint16.cpp
-uninitMemberVar:*/choice_templated_selector/TemplatedChoice_uint16.cpp
-uninitMemberVar:*/choice_templated_selector/TemplatedChoice_uint32.cpp
+uninitMemberVar:*/choice_templated_selector/TemplatedChoice_uint16_SHIFT16.cpp
+uninitMemberVar:*/choice_templated_selector/TemplatedChoice_uint32_SHIFT32.cpp
 uninitMemberVar:*/function_templated_return_type/TestStructure_float32.cpp
 uninitMemberVar:*/function_templated_return_type/TestStructure_string.cpp
 uninitMemberVar:*/function_templated_return_type/TestStructure_uint32.cpp

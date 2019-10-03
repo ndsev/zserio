@@ -11,9 +11,9 @@ TEST(ChoiceTemplatedSelectorTest, readWrite)
 {
     ChoiceTemplatedSelector choiceTemplatedSelector;
     choiceTemplatedSelector.setSelector16(0);
-    choiceTemplatedSelector.setSelector32(2);
-    choiceTemplatedSelector.setUint16Choice(TemplatedChoice_uint16{static_cast<uint16_t>(42)});
-    choiceTemplatedSelector.setUint32Choice(TemplatedChoice_uint32{std::string{"string"}});
+    choiceTemplatedSelector.setSelector32(1);
+    choiceTemplatedSelector.setUint16Choice(TemplatedChoice_uint16_SHIFT16{static_cast<uint16_t>(42)});
+    choiceTemplatedSelector.setUint32Choice(TemplatedChoice_uint32_SHIFT32{std::string{"string"}});
 
     zserio::BitStreamWriter writer;
     choiceTemplatedSelector.write(writer);

@@ -13,10 +13,12 @@ set(ZSERIO_GENERATED_SOURCES
 
     ${ZSERIO_GEN_DIR}/templates/choice_templated_selector/ChoiceTemplatedSelector.cpp
     ${ZSERIO_GEN_DIR}/templates/choice_templated_selector/ChoiceTemplatedSelector.h
-    ${ZSERIO_GEN_DIR}/templates/choice_templated_selector/TemplatedChoice_uint32.cpp
-    ${ZSERIO_GEN_DIR}/templates/choice_templated_selector/TemplatedChoice_uint32.h
-    ${ZSERIO_GEN_DIR}/templates/choice_templated_selector/TemplatedChoice_uint16.cpp
-    ${ZSERIO_GEN_DIR}/templates/choice_templated_selector/TemplatedChoice_uint16.h
+    ${ZSERIO_GEN_DIR}/templates/choice_templated_selector/SHIFT16.h
+    ${ZSERIO_GEN_DIR}/templates/choice_templated_selector/SHIFT32.h
+    ${ZSERIO_GEN_DIR}/templates/choice_templated_selector/TemplatedChoice_uint16_SHIFT16.cpp
+    ${ZSERIO_GEN_DIR}/templates/choice_templated_selector/TemplatedChoice_uint16_SHIFT16.h
+    ${ZSERIO_GEN_DIR}/templates/choice_templated_selector/TemplatedChoice_uint32_SHIFT32.cpp
+    ${ZSERIO_GEN_DIR}/templates/choice_templated_selector/TemplatedChoice_uint32_SHIFT32.h
 
     ${ZSERIO_GEN_DIR}/templates/choice_templated_field/TemplatedChoice_uint32_uint16.cpp
     ${ZSERIO_GEN_DIR}/templates/choice_templated_field/TemplatedChoice_uint32_uint16.h
