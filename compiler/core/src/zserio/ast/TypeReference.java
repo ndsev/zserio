@@ -207,12 +207,6 @@ public class TypeReference extends AstNodeBase implements ZserioType
         return referencedTypeName;
     }
 
-    // TODO[Mi-L@]: Remove when type reference resolving is refactored!
-    Package getOwnerPackage()
-    {
-        return ownerPackage;
-    }
-
     /**
      * Resolves base type from type reference or subtype.
      *

@@ -1,7 +1,6 @@
 package zserio.ast;
 
 import zserio.antlr.util.ParserException;
-import zserio.ast.Package;
 import zserio.tools.ZserioToolPrinter;
 
 /**
@@ -12,16 +11,6 @@ public class ZserioAstTemplator extends ZserioAstWalker
     public ZserioAstTemplator(ZserioAstTypeResolver typeResolver)
     {
         this.typeResolver = typeResolver;
-    }
-    
-    @Override
-    public void visitPackage(Package currentPackage)
-    {
-        this.currentPackage = currentPackage;
-
-        currentPackage.visitChildren(this);
-
-        this.currentPackage = null;
     }
 
     @Override
@@ -61,15 +50,7 @@ public class ZserioAstTemplator extends ZserioAstWalker
             for (ZserioType templateArgument : typeReference.getTemplateArguments())
                 templateArgument.accept(this);
 
-            final ZserioType type = currentPackage.getVisibleType(
-                    typeReference.getReferencedPackageName(), typeReference.getReferencedTypeName());
-            if (type == null)
-            {
-                // TODO[Mi-L@]: The same error comes from TypeReference.resolve(). How to share it?
-                throw new ParserException(typeReference, "Unresolved referenced type '" +
-                        ZserioTypeUtil.getReferencedFullName(typeReference) + "'!");
-            }
-
+            final ZserioType type = typeReference.getReferencedType();
             if (!(type instanceof TemplatableType) ||
                     ((TemplatableType)type).getTemplateParameters().isEmpty())
             {
@@ -78,25 +59,26 @@ public class ZserioAstTemplator extends ZserioAstWalker
             }
 
             final TemplatableType template = (TemplatableType)type;
-            final ZserioTemplatableType instantiation = template.instantiate(typeReference);
+            final TemplatableType.InstantiationResult instantiationResult = template.instantiate(typeReference);
+            final ZserioTemplatableType instantiation = instantiationResult.getInstantiation();
             typeReference.resolveInstantiation(instantiation);
 
-            // TODO[mikir] How to check if this is new or not
-            try
+            if (instantiationResult.isNewInstance())
             {
-                instantiation.accept(typeResolver);
-                instantiation.accept(this);
-            }
-            catch (ParserException e)
-            {
-                ZserioToolPrinter.printError(instantiation.getInstantiationLocation(),
-                        "In instantiation of '" + template.getName() + "' required from here");
-                throw e;
+                try
+                {
+                    instantiation.accept(typeResolver);
+                    instantiation.accept(this);
+                }
+                catch (ParserException e)
+                {
+                    ZserioToolPrinter.printError(instantiation.getInstantiationLocation(),
+                            "In instantiation of '" + template.getName() + "' required from here");
+                    throw e;
+                }
             }
         }
     }
 
     private final ZserioAstTypeResolver typeResolver;
-
-    private Package currentPackage = null;
 }

@@ -73,9 +73,9 @@ abstract class TemplatableType extends DocumentableAstNode implements ZserioTemp
      *
      * @param instantiationReference Instantiation reference.
      *
-     * @return Instantiated template.
+     * @return Instantiation result.
      */
-    ZserioTemplatableType instantiate(TypeReference instantiationReference)
+    InstantiationResult instantiate(TypeReference instantiationReference)
     {
         final List<ZserioType> templateArguments = instantiationReference.getTemplateArguments();
         if (templateParameters.size() != templateArguments.size())
@@ -91,6 +91,7 @@ abstract class TemplatableType extends DocumentableAstNode implements ZserioTemp
         //              So currently template instantiation for a subtype argument will be different
         //              than instantiation for the base type.
         TemplatableType instantiation = instantiationsMap.get(wrappedTemplateArguments);
+        boolean isNewInstance = false;
         if (instantiation == null)
         {
             final String name = getInstantiationNameImpl(wrappedTemplateArguments);
@@ -100,9 +101,10 @@ abstract class TemplatableType extends DocumentableAstNode implements ZserioTemp
             instantiation.template = this;
             instantiationsMap.put(wrappedTemplateArguments, instantiation);
             instantiationsNamesMap.put(name, instantiation);
+            isNewInstance = true;
         }
 
-        return instantiation;
+        return new InstantiationResult(instantiation, isNewInstance);
     }
 
     /**
@@ -123,6 +125,47 @@ abstract class TemplatableType extends DocumentableAstNode implements ZserioTemp
      * @param templateArguemnts Actual template parameters.
      */
     abstract TemplatableType instantiateImpl(String name, List<ZserioType> templateArguemnts);
+
+    /**
+     * Definition of result returned from instantiate() method.
+     */
+    static final class InstantiationResult
+    {
+        /**
+         * Constructor.
+         *
+         * @param instantiation Instantiation type to create from.
+         * @param isNewInstance Flag if this instantiation is newly created.
+         */
+        public InstantiationResult(ZserioTemplatableType instantiation, boolean isNewInstance)
+        {
+            this.instantiation = instantiation;
+            this.isNewInstance = isNewInstance;
+        }
+
+        /**
+         * Gets instantiation type.
+         *
+         * @return Instantiation type.
+         */
+        public ZserioTemplatableType getInstantiation()
+        {
+            return instantiation;
+        }
+
+        /**
+         * Gets new instance flag.
+         *
+         * @return True if the instantiation is newly created.
+         */
+        public boolean isNewInstance()
+        {
+            return isNewInstance;
+        }
+
+        private final ZserioTemplatableType instantiation;
+        private final boolean isNewInstance;
+    }
 
     private String getInstantiationNameImpl(List<TemplateArgument> wrappedTemplateArguments)
     {
@@ -172,16 +215,7 @@ abstract class TemplatableType extends DocumentableAstNode implements ZserioTemp
                 typeName = referencedArgument.getReferencedTypeName();
                 for (ZserioType argument: referencedArgument.getTemplateArguments())
                     templateArguments.add(new TemplateArgument(argument));
-
-                // TODO[Mi-L@]: Use getPackage().getPackageName() when resolving is refactored.
-                Package ownerPackage = referencedArgument.getOwnerPackage();
-                final ZserioType resolvedArgument = ownerPackage.getVisibleType(packageName, typeName);
-                if (resolvedArgument == null)
-                {
-                    throw new ParserException(referencedArgument, "Unresolved referenced type '" +
-                            ZserioTypeUtil.getReferencedFullName(referencedArgument) + "'!");
-                }
-                resolvedPackageName = resolvedArgument.getPackage().getPackageName();
+                resolvedPackageName = referencedArgument.getPackage().getPackageName();
             }
             else
             {
