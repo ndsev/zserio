@@ -55,6 +55,22 @@ public class TemplatesErrorTest
     }
 
     @Test
+    public void instantiationNameClashAcrossPackages()
+    {
+        String error = "instantiation_name_clash_across_packages_error/pkg2.zs:12:5: " +
+                "In instantiation of 'TestStruct' required from here";
+        assertTrue(zserioErrors.isPresent(error));
+
+        error = "instantiation_name_clash_across_packages_error/pkg1.zs:12:5: " +
+                "First instantiated from here";
+        assertTrue(zserioErrors.isPresent(error));
+
+        error = "instantiation_name_clash_across_packages_error/test_struct.zs:3:8: " +
+                "Instantiation name 'TestStruct_Test' already exits!";
+        assertTrue(zserioErrors.isPresent(error));
+    }
+
+    @Test
     public void instantiationNameClash()
     {
         String error = "instantiation_name_clash_error.zs:32:5: " +

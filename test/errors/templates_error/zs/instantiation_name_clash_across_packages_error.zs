@@ -1,0 +1,4 @@
+package instantiation_name_clash_across_packages_error;
+
+import instantiation_name_clash_across_packages_error.pkg1.*;
+import instantiation_name_clash_across_packages_error.pkg2.*;

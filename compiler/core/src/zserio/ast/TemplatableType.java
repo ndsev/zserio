@@ -184,11 +184,22 @@ abstract class TemplatableType extends DocumentableAstNode implements ZserioTemp
                 typeName = referencedArgument.getReferencedTypeName();
                 for (ZserioType argument: referencedArgument.getTemplateArguments())
                     templateArguments.add(new TemplateArgument(argument));
+
+                // TODO[Mi-L@]: Use getPackage().getPackageName() when resolving is refactored.
+                Package ownerPackage = referencedArgument.getOwnerPackage();
+                final ZserioType resolvedArgument = ownerPackage.getVisibleType(packageName, typeName);
+                if (resolvedArgument == null)
+                {
+                    throw new ParserException(referencedArgument, "Unresolved referenced type '" +
+                            ZserioTypeUtil.getReferencedFullName(referencedArgument) + "'!");
+                }
+                resolvedPackageName = resolvedArgument.getPackage().getPackageName();
             }
             else
             {
                 // built-in type
                 packageName = PackageName.EMPTY;
+                resolvedPackageName = packageName;
                 typeName = templateArgument.getName();
             }
         }
@@ -203,7 +214,8 @@ abstract class TemplatableType extends DocumentableAstNode implements ZserioTemp
                 return true;
 
             final TemplateArgument otherArgument = (TemplateArgument)other;
-            return packageName.equals(otherArgument.packageName) && typeName.equals(otherArgument.typeName) &&
+            return resolvedPackageName.equals(otherArgument.resolvedPackageName) &&
+                    typeName.equals(otherArgument.typeName) &&
                     templateArguments.equals(otherArgument.templateArguments);
         }
 
@@ -211,7 +223,7 @@ abstract class TemplatableType extends DocumentableAstNode implements ZserioTemp
         public int hashCode()
         {
             int hash = HashUtil.HASH_SEED;
-            hash = HashUtil.hash(hash, packageName);
+            hash = HashUtil.hash(hash, resolvedPackageName);
             hash = HashUtil.hash(hash, typeName);
             hash = HashUtil.hash(hash, templateArguments);
             return hash;
@@ -229,6 +241,7 @@ abstract class TemplatableType extends DocumentableAstNode implements ZserioTemp
             return joiner.toString();
         }
 
+        private final PackageName resolvedPackageName;
         private final PackageName packageName;
         private final String typeName;
         private final List<TemplateArgument> templateArguments = new ArrayList<TemplateArgument>();
