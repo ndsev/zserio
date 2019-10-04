@@ -34,10 +34,10 @@ public class EnumItem extends DocumentableAstNode
     @Override
     public void visitChildren(ZserioAstVisitor visitor)
     {
+        super.visitChildren(visitor);
+
         if (valueExpression != null)
             valueExpression.accept(visitor);
-
-        super.visitChildren(visitor);
     }
 
     /**

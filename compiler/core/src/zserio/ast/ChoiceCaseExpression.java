@@ -30,9 +30,9 @@ public class ChoiceCaseExpression extends DocumentableAstNode
     @Override
     public void visitChildren(ZserioAstVisitor visitor)
     {
-        expression.accept(visitor);
-
         super.visitChildren(visitor);
+
+        expression.accept(visitor);
     }
 
     /**

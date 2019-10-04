@@ -51,6 +51,12 @@ public class ChoiceType extends CompoundType
     @Override
     public void visitChildren(ZserioAstVisitor visitor)
     {
+        if (getDocComment() != null)
+            getDocComment().accept(visitor);
+
+        for (TemplateParameter templateParameter : getTemplateParameters())
+            templateParameter.accept(visitor);
+
         for (Parameter parameter : getTypeParameters())
             parameter.accept(visitor);
 
@@ -64,9 +70,6 @@ public class ChoiceType extends CompoundType
 
         for (FunctionType function : getFunctions())
             function.accept(visitor);
-
-        if (getDocComment() != null)
-            getDocComment().accept(visitor);
     }
 
     /**

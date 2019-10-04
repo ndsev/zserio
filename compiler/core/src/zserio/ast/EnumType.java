@@ -46,11 +46,11 @@ public class EnumType extends DocumentableAstNode implements ZserioScopedType
     @Override
     public void visitChildren(ZserioAstVisitor visitor)
     {
+        super.visitChildren(visitor);
+
         enumType.accept(visitor);
         for (EnumItem enumItem : enumItems)
             enumItem.accept(visitor);
-
-        super.visitChildren(visitor);
     }
 
     @Override

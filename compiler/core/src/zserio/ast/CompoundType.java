@@ -43,6 +43,8 @@ public abstract class CompoundType extends TemplatableType implements Comparable
     @Override
     public void visitChildren(ZserioAstVisitor visitor)
     {
+        super.visitChildren(visitor);
+
         for (Parameter parameter : typeParameters)
             parameter.accept(visitor);
 
@@ -51,8 +53,6 @@ public abstract class CompoundType extends TemplatableType implements Comparable
 
         for (FunctionType function : functions)
             function.accept(visitor);
-
-        super.visitChildren(visitor);
     }
 
     @Override

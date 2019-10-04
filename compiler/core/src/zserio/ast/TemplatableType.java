@@ -10,6 +10,9 @@ import zserio.tools.HashUtil;
 import zserio.tools.StringJoinUtil;
 import zserio.tools.ZserioToolPrinter;
 
+/**
+ * AST abstract node for all templatable types.
+ */
 abstract class TemplatableType extends DocumentableAstNode implements ZserioTemplatableType
 {
     /**
@@ -30,6 +33,15 @@ abstract class TemplatableType extends DocumentableAstNode implements ZserioTemp
         super(location, docComment);
 
         this.templateParameters = templateParameters;
+    }
+
+    @Override
+    public void visitChildren(ZserioAstVisitor visitor)
+    {
+        super.visitChildren(visitor);
+
+        for (TemplateParameter templateParameter : templateParameters)
+            templateParameter.accept(visitor);
     }
 
     @Override

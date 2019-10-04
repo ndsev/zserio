@@ -51,6 +51,7 @@ import zserio.ast.StringType;
 import zserio.ast.StructureType;
 import zserio.ast.Subtype;
 import zserio.ast.SymbolReference;
+import zserio.ast.TemplateParameter;
 import zserio.ast.TypeInstantiation;
 import zserio.ast.TypeReference;
 import zserio.ast.UnionType;
@@ -378,6 +379,14 @@ public class XmlAstWriter implements ZserioAstVisitor
     }
 
     @Override
+    public void visitTemplateParameter(TemplateParameter templateParameter)
+    {
+        final Element xmlElement = xmlDoc.createElement("TEMPLATE_PARAMETER");
+        xmlElement.setAttribute("name", templateParameter.getName());
+        visitAstNode(templateParameter, xmlElement);
+    }
+
+    @Override
     public void visitDocComment(DocComment docComment)
     {
         visitAstNode(docComment, "DOC_COMMENT");
@@ -465,17 +474,8 @@ public class XmlAstWriter implements ZserioAstVisitor
     {
         final Element xmlElement = xmlDoc.createElement(xmlElementName);
         xmlElement.setAttribute("name", zserioTemplatableType.getName());
-
-        final StringBuilder templateParameters = new StringBuilder();
-        for (String templateParameter : zserioTemplatableType.getTemplateParameters())
-        {
-            if (templateParameters.length() != 0)
-                templateParameters.append(", ");
-            templateParameters.append(templateParameter);
-        }
-        if (templateParameters.length() > 0)
-            xmlElement.setAttribute("template_parameters", templateParameters.toString());
-
+        if (!zserioTemplatableType.getTemplateParameters().isEmpty())
+            xmlElement.setAttribute("isTemplate", "true");
         visitAstNode(zserioTemplatableType, xmlElement);
     }
 

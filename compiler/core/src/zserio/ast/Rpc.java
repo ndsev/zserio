@@ -40,10 +40,10 @@ public class Rpc extends DocumentableAstNode
     @Override
     public void visitChildren(ZserioAstVisitor visitor)
     {
+        super.visitChildren(visitor);
+
         responseType.accept(visitor);
         requestType.accept(visitor);
-
-        super.visitChildren(visitor);
     }
 
     /**

@@ -40,10 +40,10 @@ public class ConstType extends DocumentableAstNode implements ZserioType, Compar
     @Override
     public void visitChildren(ZserioAstVisitor visitor)
     {
+        super.visitChildren(visitor);
+
         constType.accept(visitor);
         valueExpression.accept(visitor);
-
-        super.visitChildren(visitor);
     }
 
     @Override

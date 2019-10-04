@@ -36,9 +36,9 @@ public class Subtype extends DocumentableAstNode implements ZserioType
     @Override
     public void visitChildren(ZserioAstVisitor visitor)
     {
-        targetType.accept(visitor);
-
         super.visitChildren(visitor);
+
+        targetType.accept(visitor);
     }
 
     @Override

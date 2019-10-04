@@ -48,13 +48,13 @@ public class Package extends DocumentableAstNode
     @Override
     public void visitChildren(ZserioAstVisitor visitor)
     {
+        super.visitChildren(visitor);
+
         for (Import packageImport : imports)
             packageImport.accept(visitor);
 
         for (ZserioType type : localTypes.values())
             type.accept(visitor);
-
-        super.visitChildren(visitor);
     }
 
     /**

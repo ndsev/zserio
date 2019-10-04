@@ -88,6 +88,8 @@ public class Field extends DocumentableAstNode
     @Override
     public void visitChildren(ZserioAstVisitor visitor)
     {
+        super.visitChildren(visitor);
+
         fieldType.accept(visitor);
         if (alignmentExpr != null)
             alignmentExpr.accept(visitor);
@@ -101,8 +103,6 @@ public class Field extends DocumentableAstNode
             constraintExpr.accept(visitor);
         if (sqlConstraint != null)
             sqlConstraint.accept(visitor);
-
-        super.visitChildren(visitor);
     }
 
     /**

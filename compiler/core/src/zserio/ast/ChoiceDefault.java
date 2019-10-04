@@ -31,10 +31,10 @@ public class ChoiceDefault extends DocumentableAstNode
     @Override
     public void visitChildren(ZserioAstVisitor visitor)
     {
+        super.visitChildren(visitor);
+
         if (defaultField != null)
             defaultField.accept(visitor);
-
-        super.visitChildren(visitor);
     }
 
     /**

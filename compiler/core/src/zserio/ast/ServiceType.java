@@ -39,10 +39,10 @@ public class ServiceType extends DocumentableAstNode implements ZserioScopedType
     @Override
     public void visitChildren(ZserioAstVisitor visitor)
     {
+        super.visitChildren(visitor);
+
         for (Rpc rpc : rpcs)
             rpc.accept(visitor);
-
-        super.visitChildren(visitor);
     }
 
     @Override

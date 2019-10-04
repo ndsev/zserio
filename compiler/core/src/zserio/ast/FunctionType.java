@@ -42,10 +42,10 @@ public class FunctionType extends DocumentableAstNode implements ZserioType
     @Override
     public void visitChildren(ZserioAstVisitor visitor)
     {
+        super.visitChildren(visitor);
+
         returnType.accept(visitor);
         resultExpression.accept(visitor);
-
-        super.visitChildren(visitor);
     }
 
     @Override
