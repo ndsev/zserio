@@ -2,7 +2,6 @@ package zserio.ast;
 
 import java.math.BigInteger;
 
-import zserio.antlr.util.ParserException;
 
 /**
  * AST node for items defined by enumeration types.

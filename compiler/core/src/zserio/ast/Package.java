@@ -9,7 +9,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 
-import zserio.antlr.util.ParserException;
 import zserio.tools.HashUtil;
 import zserio.tools.ZserioToolPrinter;
 

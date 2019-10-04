@@ -7,8 +7,6 @@ import java.util.List;
 import java.util.Set;
 
 import zserio.antlr.ZserioParser;
-import zserio.antlr.util.ParserException;
-import zserio.tools.ZserioToolPrinter;
 
 /**
  * AST node for expressions defined in the language.
@@ -787,9 +785,10 @@ public class Expression extends AstNodeBase
         {
             final AstLocation location = getLocation();
 
-            ZserioToolPrinter.printError(location, "In function '" + functionType.getName() + "' " +
+            final ParserStackedException stackedException = new ParserStackedException(e);
+            stackedException.pushMessage(location, "In function '" + functionType.getName() + "' " +
                     "called from here");
-            throw e;
+            throw stackedException;
         }
 
         evaluateExpressionType(functionType.getReturnType());

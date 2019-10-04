@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import zserio.antlr.util.ParserException;
 
 /**
  * AST node for Parameterized Type Instantiations.

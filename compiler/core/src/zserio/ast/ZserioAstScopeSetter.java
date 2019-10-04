@@ -3,9 +3,6 @@ package zserio.ast;
 import java.util.ArrayList;
 import java.util.List;
 
-import zserio.antlr.util.ParserException;
-import zserio.tools.ZserioToolPrinter;
-
 /**
  * Implementation of ZserioAstVisitor which handles scopes of symbols.
  */
@@ -255,9 +252,10 @@ public class ZserioAstScopeSetter extends ZserioAstWalker
             catch (ParserException e)
             {
                 // TODO[Mi-L@]: This should never happen since scope errors are caught directly in the template.
-                ZserioToolPrinter.printError(instantiation.getInstantiationLocation(),
+                final ParserStackedException stackedException = new ParserStackedException(e);
+                stackedException.pushMessage(instantiation.getInstantiationLocation(),
                         "In instantiation of '" + templatable.getName() + "' required from here");
-                throw e;
+                throw stackedException;
             }
         }
     }

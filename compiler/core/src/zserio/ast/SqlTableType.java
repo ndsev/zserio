@@ -7,7 +7,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import zserio.antlr.util.ParserException;
 import zserio.ast.TypeInstantiation.InstantiatedParameter;
 import zserio.tools.ZserioToolPrinter;
 

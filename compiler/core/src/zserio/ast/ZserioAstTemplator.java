@@ -1,7 +1,5 @@
 package zserio.ast;
 
-import zserio.antlr.util.ParserException;
-import zserio.tools.ZserioToolPrinter;
 
 /**
  * Implementation of ZserioAstVisitor which handles templates instantiation.
@@ -72,9 +70,10 @@ public class ZserioAstTemplator extends ZserioAstWalker
                 }
                 catch (ParserException e)
                 {
-                    ZserioToolPrinter.printError(instantiation.getInstantiationLocation(),
-                            "In instantiation of '" + template.getName() + "' required from here");
-                    throw e;
+                    final ParserStackedException stackedException = new ParserStackedException(e);
+                    stackedException.pushMessage(instantiation.getInstantiationLocation(),
+                                "In instantiation of '" + template.getName() + "' required from here");
+                    throw stackedException;
                 }
             }
         }

@@ -3,7 +3,6 @@ package zserio.ast;
 import java.util.ArrayList;
 import java.util.List;
 
-import zserio.antlr.util.ParserException;
 
 /**
  * AST node for Type References.

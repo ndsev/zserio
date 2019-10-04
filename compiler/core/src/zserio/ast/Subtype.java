@@ -1,6 +1,5 @@
 package zserio.ast;
 
-import zserio.antlr.util.ParserException;
 import zserio.ast.TypeReference;
 import zserio.ast.ZserioType;
 

@@ -3,7 +3,6 @@ package zserio.ast;
 import java.util.HashMap;
 import java.util.Map;
 
-import zserio.antlr.util.ParserException;
 import zserio.tools.ZserioToolPrinter;
 
 /**

@@ -5,10 +5,8 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import zserio.antlr.util.ParserException;
 import zserio.tools.HashUtil;
 import zserio.tools.StringJoinUtil;
-import zserio.tools.ZserioToolPrinter;
 
 /**
  * AST abstract node for all templatable types.
@@ -186,11 +184,13 @@ abstract class TemplatableType extends DocumentableAstNode implements ZserioTemp
         final ZserioTemplatableType prevInstantiation = instantiationsNamesMap.get(name);
         if (prevInstantiation != null)
         {
-            ZserioToolPrinter.printError(instantiationLocation,
-                    "In instantiation of '" + getName() + "' required from here");
-            ZserioToolPrinter.printError(prevInstantiation.getInstantiationLocation(),
+            final ParserStackedException stackedException = new ParserStackedException(getLocation(),
+                    "Instantiation name '" + name + "' already exits!");
+            stackedException.pushMessage(prevInstantiation.getInstantiationLocation(),
                     "First instantiated from here");
-            throw new ParserException(this, "Instantiation name '" + name + "' already exits!");
+            stackedException.pushMessage(instantiationLocation,
+                    "In instantiation of '" + getName() + "' required from here");
+            throw stackedException;
         }
     }
 

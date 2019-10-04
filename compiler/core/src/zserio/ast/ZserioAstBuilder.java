@@ -11,7 +11,6 @@ import org.antlr.v4.runtime.tree.ParseTree;
 
 import zserio.antlr.ZserioParser;
 import zserio.antlr.ZserioParserBaseVisitor;
-import zserio.antlr.util.ParserException;
 
 /**
  * Implementation of ZserioParserBaseVisitor which builds Zserio AST.

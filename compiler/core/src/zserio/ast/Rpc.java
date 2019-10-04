@@ -1,6 +1,5 @@
 package zserio.ast;
 
-import zserio.antlr.util.ParserException;
 
 
 /**

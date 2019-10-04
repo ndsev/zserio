@@ -1,8 +1,5 @@
 package zserio.ast;
 
-import zserio.antlr.util.ParserException;
-import zserio.tools.ZserioToolPrinter;
-
 /**
  * Implementation of ZserioAstVisitor which resolves symbols for SQL constraints and see documentation tags.
  */
@@ -111,9 +108,10 @@ public class ZserioAstSymbolResolver extends ZserioAstWalker
             }
             catch (ParserException e)
             {
-                ZserioToolPrinter.printError(instantiation.getInstantiationLocation(),
+                final ParserStackedException stackedException = new ParserStackedException(e);
+                stackedException.pushMessage(instantiation.getInstantiationLocation(),
                         "In instantiation of '" + template.getName() + "' required from here");
-                throw e;
+                throw stackedException;
             }
         }
     }

@@ -9,7 +9,6 @@ import java.util.Locale;
 import java.util.Map;
 
 import zserio.antlr.ZserioParser;
-import zserio.antlr.util.ParserException;
 
 /**
  * AST node for SQL constraints.

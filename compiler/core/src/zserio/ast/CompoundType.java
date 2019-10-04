@@ -3,7 +3,6 @@ package zserio.ast;
 import java.util.Collections;
 import java.util.List;
 
-import zserio.antlr.util.ParserException;
 import zserio.ast.Package;
 import zserio.ast.Scope;
 import zserio.tools.HashUtil;

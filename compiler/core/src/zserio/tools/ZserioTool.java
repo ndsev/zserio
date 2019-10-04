@@ -13,10 +13,11 @@ import org.apache.commons.cli.ParseException;
 import zserio.antlr.ZserioLexer;
 import zserio.antlr.ZserioParser;
 import zserio.antlr.util.ParseErrorListener;
-import zserio.antlr.util.ParserException;
 import zserio.ast.Import;
 import zserio.ast.Package;
 import zserio.ast.PackageName;
+import zserio.ast.ParserException;
+import zserio.ast.ParserStackedException;
 import zserio.ast.Root;
 import zserio.ast.ZserioAstBuilder;
 import zserio.ast.ZserioAstChecker;
@@ -69,6 +70,13 @@ public class ZserioTool
         catch (ZserioEmitException exception)
         {
             ZserioToolPrinter.printError(exception.getMessage());
+            return false;
+        }
+        catch (ParserStackedException exception)
+        {
+            for (ParserStackedException.Message message : exception.getMessageStack())
+                ZserioToolPrinter.printError(message.getLocation(), message.getMessage());
+            ZserioToolPrinter.printError(exception.getLocation(), exception.getMessage());
             return false;
         }
         catch (ParserException exception)

@@ -5,7 +5,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import zserio.antlr.util.ParserException;
 import zserio.tools.ZserioToolPrinter;
 
 /**
@@ -189,9 +188,10 @@ public class ZserioAstChecker extends ZserioAstWalker
             }
             catch (ParserException e)
             {
-                ZserioToolPrinter.printError(instantiation.getInstantiationLocation(),
+                final ParserStackedException stackedException = new ParserStackedException(e);
+                stackedException.pushMessage(instantiation.getInstantiationLocation(),
                         "In instantiation of '" + template.getName() + "' required from here");
-                throw e;
+                throw stackedException;
             }
         }
     }
