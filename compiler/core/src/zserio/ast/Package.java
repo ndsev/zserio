@@ -308,7 +308,7 @@ public class Package extends DocumentableAstNode
     private final PackageName packageName;
     private final List<Import> imports;
 
-    // this must be a LinkedHashMap because of 'Cyclic dependency' error checked in ZserioAstResolver
+    // this must be a LinkedHashMap because of 'Cyclic dependency' error checked in ZserioAstTypeResolver
     private final LinkedHashMap<String, ZserioType> localTypes;
 
     private final Set<Package> importedPackages = new HashSet<Package>();

@@ -21,10 +21,10 @@ import zserio.ast.Root;
 import zserio.ast.ZserioAstBuilder;
 import zserio.ast.ZserioAstChecker;
 import zserio.ast.ZserioAstEvaluator;
-import zserio.ast.ZserioAstResolver;
+import zserio.ast.ZserioAstSymbolResolver;
 import zserio.ast.ZserioAstScopeSetter;
 import zserio.ast.ZserioAstTemplator;
-import zserio.ast.ZserioAstTypeImporter;
+import zserio.ast.ZserioAstTypeResolver;
 import zserio.ast.ZserioParseTreeChecker;
 import zserio.emit.common.ZserioEmitException;
 
@@ -143,17 +143,17 @@ public class ZserioTool
 
         final Root rootNode = astBuilderVisitor.getAst();
 
-        final ZserioAstTypeImporter typeImporter = new ZserioAstTypeImporter();
-        rootNode.accept(typeImporter);
+        final ZserioAstTypeResolver typeResolver = new ZserioAstTypeResolver();
+        rootNode.accept(typeResolver);
 
-        final ZserioAstTemplator templator = new ZserioAstTemplator();
+        final ZserioAstTemplator templator = new ZserioAstTemplator(typeResolver);
         rootNode.accept(templator);
 
         final ZserioAstScopeSetter scopeSetter = new ZserioAstScopeSetter();
         rootNode.accept(scopeSetter);
 
-        final ZserioAstResolver resolver = new ZserioAstResolver();
-        rootNode.accept(resolver);
+        final ZserioAstSymbolResolver symbolResolver = new ZserioAstSymbolResolver();
+        rootNode.accept(symbolResolver);
 
         final ZserioAstEvaluator evaluator = new ZserioAstEvaluator();
         rootNode.accept(evaluator);

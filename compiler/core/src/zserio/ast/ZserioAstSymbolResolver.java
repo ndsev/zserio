@@ -4,9 +4,9 @@ import zserio.antlr.util.ParserException;
 import zserio.tools.ZserioToolPrinter;
 
 /**
- * Implementation of ZserioAstVisitor which manages resolving phase.
+ * Implementation of ZserioAstVisitor which resolves symbols for SQL constraints and see documentation tags.
  */
-public class ZserioAstResolver extends ZserioAstWalker
+public class ZserioAstSymbolResolver extends ZserioAstWalker
 {
     @Override
     public void visitPackage(Package pkg)
@@ -16,13 +16,6 @@ public class ZserioAstResolver extends ZserioAstWalker
         pkg.visitChildren(this);
 
         currentPackage = null;
-    }
-
-    @Override
-    public void visitSubtype(Subtype subtype)
-    {
-        subtype.resolve();
-        subtype.visitChildren(this);
     }
 
     @Override
@@ -72,13 +65,6 @@ public class ZserioAstResolver extends ZserioAstWalker
     {
         sqlConstraint.resolve(currentCompoundType);
         sqlConstraint.visitChildren(this);
-    }
-
-    @Override
-    public void visitTypeReference(TypeReference typeReference)
-    {
-        typeReference.resolve();
-        typeReference.visitChildren(this);
     }
 
     @Override

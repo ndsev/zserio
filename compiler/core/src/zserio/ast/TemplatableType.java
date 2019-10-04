@@ -118,18 +118,6 @@ abstract class TemplatableType extends DocumentableAstNode implements ZserioTemp
     }
 
     /**
-     * Gets the template instantiation for the given arguments.
-     *
-     * @param templateArguments Template arguments.
-     *
-     * @return Template instantiation if exists, null otherwise.
-     */
-    ZserioTemplatableType getInstantiation(List<ZserioType> templateArguments)
-    {
-        return instantiationsMap.get(wrapTemplateArguments(templateArguments));
-    }
-
-    /**
      * Concrete implementation of template instantiation.
      *
      * @param templateArguemnts Actual template parameters.

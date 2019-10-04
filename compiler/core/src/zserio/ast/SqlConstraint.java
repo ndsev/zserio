@@ -184,7 +184,7 @@ public class SqlConstraint extends AstNodeBase
         {
             translatedConstraintStrings.add(sqlConstraintString.substring(startIndex, referenceIndex));
 
-            final int endIndex = findEndOfConstraintReference2(sqlConstraintString, referenceIndex + 1);
+            final int endIndex = findEndOfConstraintReference(sqlConstraintString, referenceIndex + 1);
             final String referencedText = sqlConstraintString.substring(referenceIndex + 1, endIndex);
             final SymbolReference symbolReference = new SymbolReference(this, referencedText);
             symbolReference.resolve(compoundType.getPackage(), compoundType);
@@ -199,7 +199,7 @@ public class SqlConstraint extends AstNodeBase
             translatedConstraintStrings.add(sqlConstraintString.substring(startIndex));
     }
 
-    private static int findEndOfConstraintReference2(String sqlConstrainString, int startIndex)
+    private static int findEndOfConstraintReference(String sqlConstrainString, int startIndex)
     {
         int endIndex = startIndex;
         while (endIndex < sqlConstrainString.length())

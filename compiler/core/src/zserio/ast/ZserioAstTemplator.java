@@ -9,6 +9,11 @@ import zserio.tools.ZserioToolPrinter;
  */
 public class ZserioAstTemplator extends ZserioAstWalker
 {
+    public ZserioAstTemplator(ZserioAstTypeResolver typeResolver)
+    {
+        this.typeResolver = typeResolver;
+    }
+    
     @Override
     public void visitPackage(Package currentPackage)
     {
@@ -74,9 +79,12 @@ public class ZserioAstTemplator extends ZserioAstWalker
 
             final TemplatableType template = (TemplatableType)type;
             final ZserioTemplatableType instantiation = template.instantiate(typeReference);
+            typeReference.resolveInstantiation(instantiation);
 
+            // TODO[mikir] How to check if this is new or not
             try
             {
+                instantiation.accept(typeResolver);
                 instantiation.accept(this);
             }
             catch (ParserException e)
@@ -87,6 +95,8 @@ public class ZserioAstTemplator extends ZserioAstWalker
             }
         }
     }
+
+    private final ZserioAstTypeResolver typeResolver;
 
     private Package currentPackage = null;
 }

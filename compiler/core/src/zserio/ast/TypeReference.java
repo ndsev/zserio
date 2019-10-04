@@ -98,28 +98,25 @@ public class TypeReference extends AstNodeBase implements ZserioType
         if (referencedType instanceof SqlDatabaseType)
             throw new ParserException(this, "Invalid usage of SQL database '" + referencedType.getName() +
                     "' as a type!");
-
-        // TODO[Mi-L@]: What if it is a subtype to a template?
         if (referencedType instanceof TemplatableType)
         {
             final TemplatableType template = (TemplatableType)referencedType;
-            if (!template.getTemplateParameters().isEmpty())
-            {
-                if (templateArguments.isEmpty())
-                {
-                    throw new ParserException(this,
-                            "Missing template arguments for template '" + getName() + "'!");
-                }
-
-                referencedType = template.getInstantiation(templateArguments);
-                if (referencedType == null)
-                {
-                    // this should not occur!
-                    throw new InternalError("Template '" + ZserioTypeUtil.getReferencedFullName(this) +
-                            "' is not properly instantiated!");
-                }
-            }
+            if (!template.getTemplateParameters().isEmpty() && templateArguments.isEmpty())
+                throw new ParserException(this,
+                        "Missing template arguments for template '" + getName() + "'!");
         }
+    }
+
+    /**
+     * Resolves this reference to the created template instantiation.
+     *
+     * This is called from ZserioAstTemplator during template instantiations.
+     *
+     * @param instantiation Template instantiation to which this reference is resolved.
+     */
+    void resolveInstantiation(ZserioTemplatableType instantiation)
+    {
+        referencedType = instantiation;
     }
 
     /**
