@@ -20,34 +20,34 @@ public class FunctionsErrorTest
     @Test
     public void compoundFieldNotAvailable()
     {
-        String error = "compound_field_not_available_error.zs:7:23: " +
-                "In function 'hasOptional2' called from here";
-        assertTrue(zserioErrors.isPresent(error));
-
-        error = "compound_field_not_available_error.zs:17:16: " +
-                "Unresolved symbol 'header2' within expression scope!";
-        assertTrue(zserioErrors.isPresent(error));
+        final String errors[] =
+        {
+            "compound_field_not_available_error.zs:7:23: In function 'hasOptional2' called from here",
+            "compound_field_not_available_error.zs:17:16: Unresolved symbol 'header2' within expression scope!"
+        };
+        assertTrue(zserioErrors.isPresent(errors));
     }
 
     @Test
     public void differentScopes()
     {
-        String error = "different_scopes_error.zs:15:27: In function 'getValue' called from here";
-        assertTrue(zserioErrors.isPresent(error));
-
-        error = "different_scopes_error.zs:20:55: Unresolved symbol 'val3' within expression scope!";
-        assertTrue(zserioErrors.isPresent(error));
+        final String errors[] =
+        {
+            "different_scopes_error.zs:15:27: In function 'getValue' called from here",
+            "different_scopes_error.zs:20:55: Unresolved symbol 'val3' within expression scope!"
+        };
+        assertTrue(zserioErrors.isPresent(errors));
     }
 
     @Test
     public void fieldNotAvailable()
     {
-        String error = "field_not_available_error.zs:7:28: In function 'hasSpecial' called from here";
-        assertTrue(zserioErrors.isPresent(error));
-
-        error = "field_not_available_error.zs:17:16: " +
-                "Unresolved symbol 'hasSpecialData' within expression scope!";
-        assertTrue(zserioErrors.isPresent(error));
+        final String errors[] =
+        {
+            "field_not_available_error.zs:7:28: In function 'hasSpecial' called from here",
+            "field_not_available_error.zs:17:16: Unresolved symbol 'hasSpecialData' within expression scope!"
+        };
+        assertTrue(zserioErrors.isPresent(errors));
     }
 
     @Test

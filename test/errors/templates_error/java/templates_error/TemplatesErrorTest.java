@@ -20,24 +20,25 @@ public class TemplatesErrorTest
     @Test
     public void constUsedAsType()
     {
-        String error = "constant_used_as_type_error.zs:12:5: " +
-                "In instantiation of 'TestStruct' required from here";
-        assertTrue(zserioErrors.isPresent(error));
-
-        error = "constant_used_as_type_error.zs:5:5: Invalid usage of constant 'CONST' as a type!";
-        assertTrue(zserioErrors.isPresent(error));
+        final String errors[] =
+        {
+            "constant_used_as_type_error.zs:12:5: In instantiation of 'TestStruct' required from here",
+            "constant_used_as_type_error.zs:5:5: Invalid usage of constant 'CONST' as a type!"
+        };
+        assertTrue(zserioErrors.isPresent(errors));
     }
 
     @Test
     public void constraintExpressionsExpectsConstant()
     {
-        String error = "constraint_expression_expects_constant_error.zs:10:5: " +
-                "In instantiation of 'TestStruct' required from here";
-        assertTrue(zserioErrors.isPresent(error));
-
-        error = "constraint_expression_expects_constant_error.zs:5:27: " +
-                "Unresolved symbol 'uint32' within expression scope!";
-        assertTrue(zserioErrors.isPresent(error));
+        final String errors[] =
+        {
+            "constraint_expression_expects_constant_error.zs:10:5: " +
+                    "In instantiation of 'TestStruct' required from here",
+            "constraint_expression_expects_constant_error.zs:5:27: " +
+                    "Unresolved symbol 'uint32' within expression scope!"
+        };
+        assertTrue(zserioErrors.isPresent(errors));
     }
 
     @Test
@@ -55,34 +56,45 @@ public class TemplatesErrorTest
     }
 
     @Test
+    public void fieldNotAvailableInFunction()
+    {
+        final String errors[] =
+        {
+            "field_not_available_in_function_error.zs:21:5: " +
+                    "In instantiation of 'TestStruct' required from here",
+            "field_not_available_in_function_error.zs:16:5: " +
+                    "In instantiation of 'FieldNotAvailable' required from here",
+            "field_not_available_in_function_error.zs:5:30: In function 'getField2' called from here",
+            "field_not_available_in_function_error.zs:10:16: " +
+                    "Unresolved symbol 'field2' within expression scope!"
+        };
+        assertTrue(zserioErrors.isPresent(errors));
+    }
+
+    @Test
     public void instantiationNameClashAcrossPackages()
     {
-        String error = "pkg2.zs:12:5: " +
-                "In instantiation of 'TestStruct' required from here";
-        assertTrue(zserioErrors.isPresent(error));
-
-        error = "pkg1.zs:12:5: " +
-                "First instantiated from here";
-        assertTrue(zserioErrors.isPresent(error));
-
-        error = "test_struct.zs:3:8: " +
-                "Instantiation name 'TestStruct_Test' already exits!";
-        assertTrue(zserioErrors.isPresent(error));
+        final String errors[] =
+        {
+            "pkg2.zs:12:5: In instantiation of 'TestStruct' required from here",
+            "pkg1.zs:12:5:     First instantiated here",
+            "test_struct.zs:3:8: Instantiation name 'TestStruct_Test' already exits!"
+        };
+        assertTrue(zserioErrors.isPresent(errors));
     }
 
     @Test
     public void instantiationNameClash()
     {
-        String error = "instantiation_name_clash_error.zs:32:5: " +
-                "In instantiation of 'Template' required from here";
-        assertTrue(zserioErrors.isPresent(error));
-
-        error = "instantiation_name_clash_error.zs:31:5: First instantiated from here";
-        assertTrue(zserioErrors.isPresent(error));
-
-        error = "instantiation_name_clash_error.zs:23:8: " +
-                "Instantiation name 'Template_A_B_C' already exits!";
-        assertTrue(zserioErrors.isPresent(error));
+        final String errors[] =
+        {
+            "instantiation_name_clash_error.zs:38:5: In instantiation of 'TestStruct' required from here",
+            "instantiation_name_clash_error.zs:33:5: In instantiation of 'Template' required from here",
+            "instantiation_name_clash_error.zs:32:5:     First instantiated here",
+            "instantiation_name_clash_error.zs:38:5:     Required in instantiation of 'TestStruct' from here",
+            "instantiation_name_clash_error.zs:23:8: Instantiation name 'Template_A_B_C' already exits!"
+        };
+        assertTrue(zserioErrors.isPresent(errors));
     }
 
     @Test
@@ -96,13 +108,13 @@ public class TemplatesErrorTest
     @Test
     public void missingTypeParameters()
     {
-        String error = "missing_type_parameters_error.zs:15:5: " +
-                "In instantiation of 'TestStruct' required from here";
-        assertTrue(zserioErrors.isPresent(error));
-
-        error = "missing_type_parameters_error.zs:5:5: " +
-                "Referenced type 'Parameterized' is defined as parameterized type!";
-        assertTrue(zserioErrors.isPresent(error));
+        final String errors[] =
+        {
+            "missing_type_parameters_error.zs:15:5: In instantiation of 'TestStruct' required from here",
+            "missing_type_parameters_error.zs:5:5: " +
+                    "Referenced type 'Parameterized' is defined as parameterized type!"
+        };
+        assertTrue(zserioErrors.isPresent(errors));
     }
 
     @Test
@@ -116,13 +128,13 @@ public class TemplatesErrorTest
     @Test
     public void parameterizedCompoundType()
     {
-        String error = "parameterized_compound_type_error.zs:16:5: " +
-                "In instantiation of 'TestStruct' required from here";
-        assertTrue(zserioErrors.isPresent(error));
-
-        error = "parameterized_compound_type_error.zs:11:5: " +
-                "Parameterized type instantiation 'Compound()' does not refer to a parameterized type!";
-        assertTrue(zserioErrors.isPresent(error));
+        final String errors[] =
+        {
+            "parameterized_compound_type_error.zs:16:5: In instantiation of 'TestStruct' required from here",
+            "parameterized_compound_type_error.zs:11:5: " +
+                    "Parameterized type instantiation 'Compound()' does not refer to a parameterized type!",
+        };
+        assertTrue(zserioErrors.isPresent(errors));
     }
 
     @Test
@@ -136,12 +148,12 @@ public class TemplatesErrorTest
     @Test
     public void symbolWithTypeNameClash()
     {
-        String error = "symbol_with_type_name_clash_error.zs:15:5: " +
-                "In instantiation of 'TestStruct' required from here";
-        assertTrue(zserioErrors.isPresent(error));
-
-        error = "symbol_with_type_name_clash_error.zs:5:7: 'Field' is a defined type in this package!";
-        assertTrue(zserioErrors.isPresent(error));
+        final String errors[] =
+        {
+            "symbol_with_type_name_clash_error.zs:15:5: In instantiation of 'TestStruct' required from here",
+            "symbol_with_type_name_clash_error.zs:5:7: 'Field' is a defined type in this package!"
+        };
+        assertTrue(zserioErrors.isPresent(errors));
     }
 
     @Test
@@ -162,12 +174,13 @@ public class TemplatesErrorTest
     @Test
     public void unresolvedReferenceInTemplate()
     {
-        String error = "unresolved_reference_in_template_error.zs:10:5: " +
-                "In instantiation of 'TestStruct' required from here";
-        assertTrue(zserioErrors.isPresent(error));
-
-        error = "unresolved_reference_in_template_error.zs:5:5: Unresolved referenced type 'Unresolved'!";
-        assertTrue(zserioErrors.isPresent(error));
+        final String errors[] =
+        {
+            "unresolved_reference_in_template_error.zs:10:5: " +
+                    "In instantiation of 'TestStruct' required from here",
+            "unresolved_reference_in_template_error.zs:5:5: Unresolved referenced type 'Unresolved'!",
+        };
+        assertTrue(zserioErrors.isPresent(errors));
     }
 
     @Test
@@ -181,14 +194,16 @@ public class TemplatesErrorTest
     @Test
     public void unresolvedTemplateInstantiationInTemplate()
     {
-        // TODO[Mi-L@]: Try to add multiple levels! (more "In instantiation of ...")
-        String error = "unresolved_template_instantiation_in_template_error.zs:10:5: " +
-                "In instantiation of 'TestStruct' required from here";
-        assertTrue(zserioErrors.isPresent(error));
-
-        error = "unresolved_template_instantiation_in_template_error.zs:5:5: " +
-                "Unresolved referenced type 'Unresolved'!";
-        assertTrue(zserioErrors.isPresent(error));
+        final String errors[] =
+        {
+            "unresolved_template_instantiation_in_template_error.zs:15:5: " +
+                    "In instantiation of 'TestStruct' required from here",
+            "unresolved_template_instantiation_in_template_error.zs:10:5: " +
+                    "In instantiation of 'InnerStruct' required from here",
+            "unresolved_template_instantiation_in_template_error.zs:5:5: " +
+                    "Unresolved referenced type 'Unresolved'!"
+        };
+        assertTrue(zserioErrors.isPresent(errors));
     }
 
     @Test

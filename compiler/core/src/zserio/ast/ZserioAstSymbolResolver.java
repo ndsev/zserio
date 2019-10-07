@@ -108,10 +108,7 @@ public class ZserioAstSymbolResolver extends ZserioAstWalker
             }
             catch (ParserException e)
             {
-                final ParserStackedException stackedException = new ParserStackedException(e);
-                stackedException.pushMessage(instantiation.getInstantiationLocation(),
-                        "In instantiation of '" + template.getName() + "' required from here");
-                throw stackedException;
+                throw new InstantiationException(e, instantiation.getInstantiationReferenceStack());
             }
         }
     }

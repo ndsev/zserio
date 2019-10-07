@@ -1,8 +1,10 @@
 package zserio.ast;
 
+import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import zserio.tools.HashUtil;
@@ -61,9 +63,9 @@ abstract class TemplatableType extends DocumentableAstNode implements ZserioTemp
     }
 
     @Override
-    public AstLocation getInstantiationLocation()
+    public Iterable<TypeReference> getInstantiationReferenceStack()
     {
-        return instantiationReference == null ? null : instantiationReference.getLocation();
+        return instantiationReferenceStack.clone();
     }
 
     /**
@@ -73,36 +75,44 @@ abstract class TemplatableType extends DocumentableAstNode implements ZserioTemp
      *
      * @return Instantiation result.
      */
-    InstantiationResult instantiate(TypeReference instantiationReference)
+    InstantiationResult instantiate(ArrayDeque<TypeReference> instantiationReferenceStack)
     {
-        final List<ZserioType> templateArguments = instantiationReference.getTemplateArguments();
-        if (templateParameters.size() != templateArguments.size())
+        try
         {
-            throw new ParserException(instantiationReference,
-                    "Wrong number of template arguments for template '" + getName() + "'! Expecting " +
-                    templateParameters.size() + ", got " + templateArguments.size() + "!");
+            final TypeReference instantiationReference = instantiationReferenceStack.peek();
+            final List<ZserioType> templateArguments = instantiationReference.getTemplateArguments();
+            if (templateParameters.size() != templateArguments.size())
+            {
+                throw new ParserException(instantiationReference,
+                        "Wrong number of template arguments for template '" + getName() + "'! Expecting " +
+                        templateParameters.size() + ", got " + templateArguments.size() + "!");
+            }
+
+            final List<TemplateArgument> wrappedTemplateArguments = wrapTemplateArguments(templateArguments);
+
+            // TODO[Mi-L@]: Currently we doesn't resolve subtypes. But it might be possible to do so.
+            //              So currently template instantiation for a subtype argument will be different
+            //              than instantiation for the base type.
+            TemplatableType instantiation = instantiationsMap.get(wrappedTemplateArguments);
+            boolean isNewInstance = false;
+            if (instantiation == null)
+            {
+                final String name = getInstantiationNameImpl(wrappedTemplateArguments);
+                checkInstantiationName(wrappedTemplateArguments, name, instantiationReference.getLocation());
+                instantiation = instantiateImpl(name, templateArguments);
+                instantiation.instantiationReferenceStack = instantiationReferenceStack.clone();
+                instantiation.template = this;
+                instantiationsMap.put(wrappedTemplateArguments, instantiation);
+                instantiationsNamesMap.put(name, instantiation);
+                isNewInstance = true;
+            }
+
+            return new InstantiationResult(instantiation, isNewInstance);
         }
-
-        final List<TemplateArgument> wrappedTemplateArguments = wrapTemplateArguments(templateArguments);
-
-        // TODO[Mi-L@]: Currently we doesn't resolve subtypes. But it might be possible to do so.
-        //              So currently template instantiation for a subtype argument will be different
-        //              than instantiation for the base type.
-        TemplatableType instantiation = instantiationsMap.get(wrappedTemplateArguments);
-        boolean isNewInstance = false;
-        if (instantiation == null)
+        catch (ParserException e)
         {
-            final String name = getInstantiationNameImpl(wrappedTemplateArguments);
-            checkInstantiationName(wrappedTemplateArguments, name, instantiationReference.getLocation());
-            instantiation = instantiateImpl(name, templateArguments);
-            instantiation.instantiationReference = instantiationReference;
-            instantiation.template = this;
-            instantiationsMap.put(wrappedTemplateArguments, instantiation);
-            instantiationsNamesMap.put(name, instantiation);
-            isNewInstance = true;
+            throw new InstantiationException(e,  instantiationReferenceStack);
         }
-
-        return new InstantiationResult(instantiation, isNewInstance);
     }
 
     /**
@@ -181,15 +191,23 @@ abstract class TemplatableType extends DocumentableAstNode implements ZserioTemp
     private void checkInstantiationName(List<TemplateArgument> templateArguments, String name,
             AstLocation instantiationLocation)
     {
-        final ZserioTemplatableType prevInstantiation = instantiationsNamesMap.get(name);
+        final TemplatableType prevInstantiation = instantiationsNamesMap.get(name);
         if (prevInstantiation != null)
         {
             final ParserStackedException stackedException = new ParserStackedException(getLocation(),
                     "Instantiation name '" + name + "' already exits!");
-            stackedException.pushMessage(prevInstantiation.getInstantiationLocation(),
-                    "First instantiated from here");
-            stackedException.pushMessage(instantiationLocation,
-                    "In instantiation of '" + getName() + "' required from here");
+
+            final Iterator<TypeReference> descendingIterator =
+                    prevInstantiation.instantiationReferenceStack.descendingIterator();
+            while (descendingIterator.hasNext())
+            {
+                final TypeReference instantiationReference = descendingIterator.next();
+                stackedException.pushMessage(instantiationReference.getLocation(),
+                        descendingIterator.hasNext()
+                                ? "    Required in instantiation of '" + instantiationReference.getName() +
+                                        "' from here"
+                                : "    First instantiated here");
+            }
             throw stackedException;
         }
     }
@@ -274,7 +292,7 @@ abstract class TemplatableType extends DocumentableAstNode implements ZserioTemp
             new HashMap<List<TemplateArgument>, TemplatableType>();
     private final Map<String, TemplatableType> instantiationsNamesMap =
             new HashMap<String, TemplatableType>();
-    private TypeReference instantiationReference = null;
+    private ArrayDeque<TypeReference> instantiationReferenceStack = null;
     private TemplatableType template = null;
 
     private static final String NAME_SEPARATOR = "_";

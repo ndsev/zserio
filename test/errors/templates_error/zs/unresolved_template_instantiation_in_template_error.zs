@@ -1,8 +1,13 @@
 package unresolved_template_instantiation_in_template_error;
 
-struct TestStruct<T>
+struct InnerStruct<T>
 {
     Unresolved<T> value;
+};
+
+struct TestStruct<T>
+{
+    InnerStruct<T> value;
 };
 
 struct UnresolvedTemplateInstantiationInTemplate

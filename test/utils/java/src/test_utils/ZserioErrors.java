@@ -24,13 +24,32 @@ public class ZserioErrors
      *
      * @param error Error to check.
      *
-     * @return true if given Zserio error is present, otherwise false.
+     * @return true if given Zserio error is present, false otherwise.
      */
     public boolean isPresent(String error)
     {
         for (String zserioError : zserioErrors)
             if (zserioError.contains(error))
                 return true;
+
+        return false;
+    }
+
+    /**
+     * Checks if given errors are present in the given order.
+     *
+     * @param errors List of errors defining the requested order.
+     *
+     * @return true if given errors are present in right order, false otherwise.
+     */
+    public boolean isPresent(String[] errors)
+    {
+        for (int i = 0, j = 0; i < zserioErrors.size(); ++i)
+        {
+            final String error = errors[j];
+            if (zserioErrors.get(i).contains(error) && ++j == errors.length)
+                return true;
+        }
 
         return false;
     }

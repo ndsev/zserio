@@ -29,9 +29,9 @@ public interface ZserioTemplatableType extends ZserioScopedType
     public ZserioTemplatableType getTemplate();
 
     /**
-     * Gets location of the current instantiation.
+     * Gets stack of instantiations leading to this instantiation.
      *
-     * @return Location of the current instantiation or null when this is not an instantiation.
+     * @return Stack of type references.
      */
-    public AstLocation getInstantiationLocation();
+    public Iterable<TypeReference> getInstantiationReferenceStack();
 }

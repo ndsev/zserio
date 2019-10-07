@@ -71,8 +71,8 @@ public class ParserStackedException extends ParserException
             return message;
         }
 
-        private final transient AstLocation location;
-        private final transient String message;
+        private final AstLocation location;
+        private final String message;
     }
 
     /**

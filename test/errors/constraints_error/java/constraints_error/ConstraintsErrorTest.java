@@ -7,6 +7,8 @@ import org.junit.Test;
 
 import java.io.IOException;
 
+import java.util.Arrays;
+
 import test_utils.ZserioErrors;
 
 public class ConstraintsErrorTest
@@ -20,13 +22,13 @@ public class ConstraintsErrorTest
     @Test
     public void fieldInFunctionNotAvailableError()
     {
-        String error = "field_in_function_not_available_error.zs:7:26: " +
-                "In function 'checkSpecial' called from here";
-        assertTrue(zserioErrors.isPresent(error));
-
-        error = "field_in_function_not_available_error.zs:17:31: " +
-                "Unresolved symbol 'specialMinValue' within expression scope!";
-        assertTrue(zserioErrors.isPresent(error));
+        final String errors[] =
+        {
+            "field_in_function_not_available_error.zs:7:26: In function 'checkSpecial' called from here",
+            "field_in_function_not_available_error.zs:17:31: " +
+                    "Unresolved symbol 'specialMinValue' within expression scope!"
+        };
+        assertTrue(zserioErrors.isPresent(errors));
     }
 
     @Test

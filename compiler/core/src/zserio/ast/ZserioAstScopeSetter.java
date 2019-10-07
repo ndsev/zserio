@@ -252,10 +252,7 @@ public class ZserioAstScopeSetter extends ZserioAstWalker
             catch (ParserException e)
             {
                 // TODO[Mi-L@]: This should never happen since scope errors are caught directly in the template.
-                final ParserStackedException stackedException = new ParserStackedException(e);
-                stackedException.pushMessage(instantiation.getInstantiationLocation(),
-                        "In instantiation of '" + templatable.getName() + "' required from here");
-                throw stackedException;
+                throw new InstantiationException(e, instantiation.getInstantiationReferenceStack());
             }
         }
     }

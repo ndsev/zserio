@@ -1,5 +1,6 @@
 package zserio.ast;
 
+import java.util.ArrayDeque;
 
 /**
  * Implementation of ZserioAstVisitor which handles templates instantiation.
@@ -52,32 +53,41 @@ public class ZserioAstTemplator extends ZserioAstWalker
             if (!(type instanceof TemplatableType) ||
                     ((TemplatableType)type).getTemplateParameters().isEmpty())
             {
-                throw new ParserException(typeReference,
-                        "'" + ZserioTypeUtil.getReferencedFullName(typeReference) + "' is not a template!");
+                throw new InstantiationException(typeReference.getLocation(),
+                        "'" + ZserioTypeUtil.getReferencedFullName(typeReference) + "' is not a template!",
+                        instantiationReferenceStack);
             }
 
-            final TemplatableType template = (TemplatableType)type;
-            final TemplatableType.InstantiationResult instantiationResult = template.instantiate(typeReference);
-            final ZserioTemplatableType instantiation = instantiationResult.getInstantiation();
-            typeReference.resolveInstantiation(instantiation);
-
-            if (instantiationResult.isNewInstance())
+            try
             {
-                try
+                final TemplatableType template = (TemplatableType)type;
+
+                instantiationReferenceStack.push(typeReference);
+                final TemplatableType.InstantiationResult instantiationResult =
+                        template.instantiate(instantiationReferenceStack);
+                final ZserioTemplatableType instantiation = instantiationResult.getInstantiation();
+                typeReference.resolveInstantiation(instantiation);
+
+                if (instantiationResult.isNewInstance())
                 {
-                    instantiation.accept(typeResolver);
+                    try
+                    {
+                        instantiation.accept(typeResolver);
+                    }
+                    catch (ParserException e)
+                    {
+                        throw new InstantiationException(e, instantiationReferenceStack);
+                    }
                     instantiation.accept(this);
                 }
-                catch (ParserException e)
-                {
-                    final ParserStackedException stackedException = new ParserStackedException(e);
-                    stackedException.pushMessage(instantiation.getInstantiationLocation(),
-                                "In instantiation of '" + template.getName() + "' required from here");
-                    throw stackedException;
-                }
+            }
+            finally
+            {
+                instantiationReferenceStack.pop();
             }
         }
     }
 
     private final ZserioAstTypeResolver typeResolver;
+    private final ArrayDeque<TypeReference> instantiationReferenceStack = new ArrayDeque<TypeReference>();
 }
