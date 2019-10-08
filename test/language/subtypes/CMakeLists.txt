@@ -17,6 +17,19 @@ set(ZSERIO_GENERATED_SOURCES
     ${ZSERIO_GEN_DIR}/subtypes/structure_subtype/TestStructure.cpp
     ${ZSERIO_GEN_DIR}/subtypes/structure_subtype/TestStructure.h
 
+    ${ZSERIO_GEN_DIR}/subtypes/template_argument_subtype/AnotherCompoundType.h
+    ${ZSERIO_GEN_DIR}/subtypes/template_argument_subtype/AnotherUInt32Type.h
+    ${ZSERIO_GEN_DIR}/subtypes/template_argument_subtype/Compound.cpp
+    ${ZSERIO_GEN_DIR}/subtypes/template_argument_subtype/Compound.h
+    ${ZSERIO_GEN_DIR}/subtypes/template_argument_subtype/CompoundType.h
+    ${ZSERIO_GEN_DIR}/subtypes/template_argument_subtype/Field_Compound.cpp
+    ${ZSERIO_GEN_DIR}/subtypes/template_argument_subtype/Field_Compound.h
+    ${ZSERIO_GEN_DIR}/subtypes/template_argument_subtype/Field_uint32.cpp
+    ${ZSERIO_GEN_DIR}/subtypes/template_argument_subtype/Field_uint32.h
+    ${ZSERIO_GEN_DIR}/subtypes/template_argument_subtype/TemplateArgumentStructure.cpp
+    ${ZSERIO_GEN_DIR}/subtypes/template_argument_subtype/TemplateArgumentStructure.h
+    ${ZSERIO_GEN_DIR}/subtypes/template_argument_subtype/UInt32Type.h
+
     ${ZSERIO_GEN_DIR}/subtypes/uint16_subtype/Identifier.h
     ${ZSERIO_GEN_DIR}/subtypes/uint16_subtype/TestStructure.cpp
     ${ZSERIO_GEN_DIR}/subtypes/uint16_subtype/TestStructure.h
@@ -35,6 +48,7 @@ add_test_sources(
     ${ZSERIO_CPP_DIR}/EnumSubtypeTest.cpp
     ${ZSERIO_CPP_DIR}/ParamStructureSubtypeTest.cpp
     ${ZSERIO_CPP_DIR}/StructureSubtypeTest.cpp
+    ${ZSERIO_CPP_DIR}/TemplateArgumentSubtypeTest.cpp
     ${ZSERIO_CPP_DIR}/UInt16SubtypeTest.cpp
 )
 

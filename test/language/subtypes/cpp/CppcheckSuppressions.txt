@@ -1,4 +1,6 @@
 // suppress "Member variable 'X' is not initialized in the constructor."
+uninitMemberVar:*/Compound.cpp
+uninitMemberVar:*/Field_uint32.cpp
 uninitMemberVar:*/ParameterizedStruct.cpp
 uninitMemberVar:*/ParameterizedStruct.h
 uninitMemberVar:*/ParameterizedSubtypeStruct.cpp

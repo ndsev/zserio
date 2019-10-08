@@ -12,7 +12,7 @@ namespace subtypes
 namespace enum_subtype
 {
 
-TEST(EnumSubtypeTest, TestSubtype)
+TEST(EnumSubtypeTest, testSubtype)
 {
     ASSERT_EQ(Color::BLACK, CONST_BLACK);
 }

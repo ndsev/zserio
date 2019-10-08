@@ -88,18 +88,17 @@ abstract class TemplatableType extends DocumentableAstNode implements ZserioTemp
                         templateParameters.size() + ", got " + templateArguments.size() + "!");
             }
 
-            final List<TemplateArgument> wrappedTemplateArguments = wrapTemplateArguments(templateArguments);
+            final List<ZserioType> resolvedTemplateArguments = resolveTemplateArguments(templateArguments);
+            final List<TemplateArgument> wrappedTemplateArguments =
+                    wrapTemplateArguments(resolvedTemplateArguments);
 
-            // TODO[Mi-L@]: Currently we doesn't resolve subtypes. But it might be possible to do so.
-            //              So currently template instantiation for a subtype argument will be different
-            //              than instantiation for the base type.
             TemplatableType instantiation = instantiationsMap.get(wrappedTemplateArguments);
             boolean isNewInstance = false;
             if (instantiation == null)
             {
                 final String name = getInstantiationNameImpl(wrappedTemplateArguments);
                 checkInstantiationName(wrappedTemplateArguments, name, instantiationReference.getLocation());
-                instantiation = instantiateImpl(name, templateArguments);
+                instantiation = instantiateImpl(name, resolvedTemplateArguments);
                 instantiation.instantiationReferenceStack = instantiationReferenceStack.clone();
                 instantiation.template = this;
                 instantiationsMap.put(wrappedTemplateArguments, instantiation);
@@ -130,9 +129,9 @@ abstract class TemplatableType extends DocumentableAstNode implements ZserioTemp
     /**
      * Concrete implementation of template instantiation.
      *
-     * @param templateArguemnts Actual template parameters.
+     * @param templateArguments Actual template parameters.
      */
-    abstract TemplatableType instantiateImpl(String name, List<ZserioType> templateArguemnts);
+    abstract TemplatableType instantiateImpl(String name, List<ZserioType> templateArguments);
 
     /**
      * Definition of result returned from instantiate() method.
@@ -212,6 +211,29 @@ abstract class TemplatableType extends DocumentableAstNode implements ZserioTemp
         }
     }
 
+    private List<ZserioType> resolveTemplateArguments(List<ZserioType> templateArguments)
+    {
+        final List<ZserioType> resolvedTemplateArguments = new ArrayList<ZserioType>();
+        for (ZserioType templateArgument : templateArguments)
+        {
+            // resolve subtypes, instantiation for subtype arguments must be the same than for base types
+            ZserioType resolvedTemplateArgument = templateArgument;
+            while (resolvedTemplateArgument instanceof TypeReference)
+            {
+                final ZserioType referencedTypeArgument =
+                        ((TypeReference)resolvedTemplateArgument).getReferencedType();
+                if (referencedTypeArgument instanceof Subtype)
+                    resolvedTemplateArgument = ((Subtype)(referencedTypeArgument)).getTargetType();
+                else
+                    break;
+            }
+
+            resolvedTemplateArguments.add(resolvedTemplateArgument);
+        }
+
+        return resolvedTemplateArguments;
+    }
+
     private List<TemplateArgument> wrapTemplateArguments(List<ZserioType> templateArguments)
     {
         final List<TemplateArgument> wrappedTemplateArguments = new ArrayList<TemplateArgument>();
@@ -228,7 +250,6 @@ abstract class TemplatableType extends DocumentableAstNode implements ZserioTemp
             if (templateArgument instanceof TypeReference)
             {
                 final TypeReference referencedArgument = (TypeReference)templateArgument;
-
                 packageName = referencedArgument.getReferencedPackageName();
                 typeName = referencedArgument.getReferencedTypeName();
                 for (ZserioType argument: referencedArgument.getTemplateArguments())

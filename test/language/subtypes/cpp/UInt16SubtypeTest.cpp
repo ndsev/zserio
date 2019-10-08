@@ -11,7 +11,7 @@ namespace subtypes
 namespace uint16_subtype
 {
 
-TEST(UInt16SubtypeTest, TestSubtype)
+TEST(UInt16SubtypeTest, testSubtype)
 {
     const Identifier identifier = 0xFFFF;
     TestStructure testStructure;
