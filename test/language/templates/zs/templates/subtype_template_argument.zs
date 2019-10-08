@@ -1,4 +1,4 @@
-package subtypes.template_argument_subtype;
+package templates.subtype_template_argument;
 
 struct Compound
 {
@@ -16,7 +16,7 @@ subtype UInt32Type AnotherUInt32Type;
 subtype Compound CompoundType;
 subtype CompoundType AnotherCompoundType;
 
-struct TemplateArgumentStructure
+struct SubtypeTemplateArgument
 {
     Field<AnotherUInt32Type>    anotherUint32TypeField;
     Field<UInt32Type>           uint32TypeField;

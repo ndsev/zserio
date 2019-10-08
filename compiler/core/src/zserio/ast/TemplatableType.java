@@ -216,18 +216,14 @@ abstract class TemplatableType extends DocumentableAstNode implements ZserioTemp
         final List<ZserioType> resolvedTemplateArguments = new ArrayList<ZserioType>();
         for (ZserioType templateArgument : templateArguments)
         {
-            // resolve subtypes, instantiation for subtype arguments must be the same than for base types
             ZserioType resolvedTemplateArgument = templateArgument;
-            while (resolvedTemplateArgument instanceof TypeReference)
+            if (templateArgument instanceof TypeReference)
             {
-                final ZserioType referencedTypeArgument =
-                        ((TypeReference)resolvedTemplateArgument).getReferencedType();
-                if (referencedTypeArgument instanceof Subtype)
-                    resolvedTemplateArgument = ((Subtype)(referencedTypeArgument)).getTargetType();
-                else
-                    break;
+                final ZserioType referencedTemplateArgument =
+                        ((TypeReference)templateArgument).getReferencedType();
+                if (referencedTemplateArgument instanceof Subtype)
+                    resolvedTemplateArgument = ((Subtype)referencedTemplateArgument).getBaseTypeReference();
             }
-
             resolvedTemplateArguments.add(resolvedTemplateArgument);
         }
 
@@ -251,7 +247,7 @@ abstract class TemplatableType extends DocumentableAstNode implements ZserioTemp
             {
                 final TypeReference referencedArgument = (TypeReference)templateArgument;
                 packageName = referencedArgument.getReferencedPackageName();
-                typeName = referencedArgument.getReferencedTypeName();
+                typeName = referencedArgument.getName();
                 for (ZserioType argument: referencedArgument.getTemplateArguments())
                     templateArguments.add(new TemplateArgument(argument));
                 resolvedPackageName = referencedArgument.getPackage().getPackageName();

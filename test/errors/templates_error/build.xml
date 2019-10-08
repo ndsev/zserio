@@ -21,6 +21,7 @@
         <testGen testName="templates_error" zsFile="instantiation_name_clash_across_packages_error.zs"
                 ignoreErrors="true"/>
         <testGen testName="templates_error" zsFile="instantiation_name_clash_error.zs" ignoreErrors="true"/>
+        <testGen testName="templates_error" zsFile="instantiation_via_subtype_error.zs" ignoreErrors="true"/>
         <testGen testName="templates_error" zsFile="missing_template_arguments_error.zs" ignoreErrors="true"/>
         <testGen testName="templates_error" zsFile="missing_type_parameters_error.zs" ignoreErrors="true"/>
         <testGen testName="templates_error" zsFile="parameterized_builtin_type_error.zs" ignoreErrors="true"/>

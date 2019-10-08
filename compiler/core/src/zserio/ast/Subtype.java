@@ -57,30 +57,31 @@ public class Subtype extends DocumentableAstNode implements ZserioType
      *
      * @return Type referenced by this subtype.
      */
+    // TODO[Mi-L@]: Rename to getReferencedType
     public ZserioType getTargetType()
     {
         return targetType;
     }
 
     /**
-     * Gets target base type.
+     * Gets reference to the base type.
      *
-     * @return Resolved base type of the target type.
+     * @return Reference to base type of the target type.
      */
-    public ZserioType getTargetBaseType()
+    public ZserioType getBaseTypeReference()
     {
-        return targetBaseType;
+        return baseTypeReference;
     }
 
     /**
      * Resolves the subtype to a defined type called at the end of linking phase.
      *
-     * @return Resolved base type of this subtype.
+     * @return Resolved reference to base type of this subtype.
      */
     ZserioType resolve()
     {
         if (resolvingState == ResolvingState.RESOLVED)
-            return targetBaseType;
+            return baseTypeReference;
 
         // detect cycles in subtype definitions
         if (resolvingState == ResolvingState.RESOLVING)
@@ -97,18 +98,18 @@ public class Subtype extends DocumentableAstNode implements ZserioType
 
             final ZserioType referencedTargetType = targetTypeReference.getReferencedType();
             if (referencedTargetType instanceof Subtype)
-                targetBaseType = ((Subtype)referencedTargetType).resolve();
+                baseTypeReference = ((Subtype)referencedTargetType).resolve();
             else
-                targetBaseType = referencedTargetType;
+                baseTypeReference = targetTypeReference;
         }
         else // built-in type
         {
-            targetBaseType = targetType;
+            baseTypeReference = targetType;
         }
 
         resolvingState = ResolvingState.RESOLVED;
 
-        return targetBaseType;
+        return baseTypeReference;
     }
 
     private enum ResolvingState
@@ -123,5 +124,5 @@ public class Subtype extends DocumentableAstNode implements ZserioType
     private final String name;
 
     private ResolvingState resolvingState = ResolvingState.UNRESOLVED;
-    private ZserioType targetBaseType = null;
+    private ZserioType baseTypeReference = null;
 }

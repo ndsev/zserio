@@ -531,17 +531,17 @@ public class XmlAstWriter implements ZserioAstVisitor
         if (instantiations.isEmpty())
             return;
 
-        final Element instantiationsXmlElemnets = xmlDoc.createElement("INSTANTIATIONS");
+        final Element instantiationsXmlElements = xmlDoc.createElement("INSTANTIATIONS");
 
         final Element oldCurrentXmlElement = currentXmlElement;
-        currentXmlElement = instantiationsXmlElemnets;
+        currentXmlElement = instantiationsXmlElements;
 
         for (ZserioTemplatableType instantiation : instantiations)
             instantiation.accept(this);
 
         currentXmlElement = oldCurrentXmlElement;
 
-        currentXmlElement.appendChild(instantiationsXmlElemnets);
+        currentXmlElement.appendChild(instantiationsXmlElements);
     }
 
     private String getZserioTypeName(ZserioType zserioType)

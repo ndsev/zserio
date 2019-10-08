@@ -15,4 +15,7 @@ import templates.struct_template_in_template.*;
 import templates.struct_templated_field.*;
 import templates.struct_templated_template_argument.*;
 import templates.struct_templated_type_argument.*;
+import templates.subtype_template_argument.*;
+import templates.subtype_template_with_builtin.*;
+import templates.subtype_template_with_compound.*;
 import templates.union_templated_field.*;

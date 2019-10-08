@@ -98,6 +98,17 @@ public class TemplatesErrorTest
     }
 
     @Test
+    public void instantiationViaSubtype()
+    {
+        final String errors[] =
+        {
+            "instantiation_via_subtype_error.zs:13:9: In instantiation of 'TestStructure' required from here",
+            "instantiation_via_subtype_error.zs:9:16: Unexpected dot expression 'field'!"
+        };
+        assertTrue(zserioErrors.isPresent(errors));
+    }
+
+    @Test
     public void missingTemplateArguments()
     {
         final String error = "missing_template_arguments_error.zs:10:5: " +

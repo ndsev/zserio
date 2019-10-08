@@ -251,7 +251,7 @@ public class ZserioAstScopeSetter extends ZserioAstWalker
             }
             catch (ParserException e)
             {
-                // TODO[Mi-L@]: This should never happen since scope errors are caught directly in the template.
+                // This should never happen since scope errors are caught directly in the template declaration.
                 throw new InstantiationException(e, instantiation.getInstantiationReferenceStack());
             }
         }

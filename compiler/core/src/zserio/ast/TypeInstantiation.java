@@ -198,8 +198,7 @@ public class TypeInstantiation extends AstNodeBase implements ZserioType
     {
         final ZserioType instantiatedReferencedType =
                 referencedType.instantiate(templateParameters, templateArguments);
-        // TODO[Mi-L@]: How to postpone the error to the resolve phase?
-        //              Can we make a type reference for built-in types?
+        // TODO[Mi-L@]: Should this be here or in type reference?
         if (!(instantiatedReferencedType instanceof TypeReference))
             throw new ParserException(instantiatedReferencedType, instantiatedReferencedType.getName() +
                     " cannot be used as a parameterized type!");

@@ -46,6 +46,10 @@ uninitMemberVar:*/struct_templated_type_argument/Parameterized_uint32.cpp
 uninitMemberVar:*/struct_templated_type_argument/Parameterized_uint32.h
 uninitMemberVar:*/struct_templated_type_argument/StructTemplatedTypeArgument.cpp
 uninitMemberVar:*/struct_templated_type_argument/StructTemplatedTypeArgument.h
+uninitMemberVar:*/subtype_template_argument/Compound.cpp
+uninitMemberVar:*/subtype_template_argument/Field_uint32.cpp
+uninitMemberVar:*/subtype_template_with_builtin/TestStructure_uint32.cpp
+uninitMemberVar:*/subtype_template_with_compound/Compound.cpp
 uninitMemberVar:*/union_templated_field/Compound_float32.cpp
 uninitMemberVar:*/union_templated_field/Compound_uint16.cpp
 uninitMemberVar:*/union_templated_field/Compound_uint32.cpp

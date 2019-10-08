@@ -149,6 +149,33 @@ set(ZSERIO_GENERATED_SOURCES
     ${ZSERIO_GEN_DIR}/templates/struct_template_in_template/Compound_string.cpp
     ${ZSERIO_GEN_DIR}/templates/struct_template_in_template/Compound_string.h
 
+    ${ZSERIO_GEN_DIR}/templates/subtype_template_argument/AnotherCompoundType.h
+    ${ZSERIO_GEN_DIR}/templates/subtype_template_argument/AnotherUInt32Type.h
+    ${ZSERIO_GEN_DIR}/templates/subtype_template_argument/Compound.cpp
+    ${ZSERIO_GEN_DIR}/templates/subtype_template_argument/Compound.h
+    ${ZSERIO_GEN_DIR}/templates/subtype_template_argument/CompoundType.h
+    ${ZSERIO_GEN_DIR}/templates/subtype_template_argument/Field_Compound.cpp
+    ${ZSERIO_GEN_DIR}/templates/subtype_template_argument/Field_Compound.h
+    ${ZSERIO_GEN_DIR}/templates/subtype_template_argument/Field_uint32.cpp
+    ${ZSERIO_GEN_DIR}/templates/subtype_template_argument/Field_uint32.h
+    ${ZSERIO_GEN_DIR}/templates/subtype_template_argument/SubtypeTemplateArgument.cpp
+    ${ZSERIO_GEN_DIR}/templates/subtype_template_argument/SubtypeTemplateArgument.h
+    ${ZSERIO_GEN_DIR}/templates/subtype_template_argument/UInt32Type.h
+
+    ${ZSERIO_GEN_DIR}/templates/subtype_template_with_builtin/TestStructure_uint32.cpp
+    ${ZSERIO_GEN_DIR}/templates/subtype_template_with_builtin/TestStructure_uint32.h
+    ${ZSERIO_GEN_DIR}/templates/subtype_template_with_builtin/TestStructureSubtype.h
+    ${ZSERIO_GEN_DIR}/templates/subtype_template_with_builtin/SubtypeTemplateWithBuiltin.cpp
+    ${ZSERIO_GEN_DIR}/templates/subtype_template_with_builtin/SubtypeTemplateWithBuiltin.h
+
+    ${ZSERIO_GEN_DIR}/templates/subtype_template_with_compound/TestStructure_Compound_TemplateCompound_Compound.cpp
+    ${ZSERIO_GEN_DIR}/templates/subtype_template_with_compound/TestStructure_Compound_TemplateCompound_Compound.h
+    ${ZSERIO_GEN_DIR}/templates/subtype_template_with_compound/TemplateCompound_Compound.cpp
+    ${ZSERIO_GEN_DIR}/templates/subtype_template_with_compound/TemplateCompound_Compound.h
+    ${ZSERIO_GEN_DIR}/templates/subtype_template_with_compound/SubtypeTemplateWithCompound.h
+    ${ZSERIO_GEN_DIR}/templates/subtype_template_with_compound/Compound.cpp
+    ${ZSERIO_GEN_DIR}/templates/subtype_template_with_compound/Compound.h
+
     ${ZSERIO_GEN_DIR}/templates/union_templated_field/UnionTemplatedField.cpp
     ${ZSERIO_GEN_DIR}/templates/union_templated_field/UnionTemplatedField.h
     ${ZSERIO_GEN_DIR}/templates/union_templated_field/TemplatedUnion_uint16_uint32.cpp
@@ -204,6 +231,9 @@ add_test_sources(
     ${ZSERIO_CPP_DIR}/StructTemplatedTemplateArgumentTest.cpp
     ${ZSERIO_CPP_DIR}/StructTemplatedTypeArgumentTest.cpp
     ${ZSERIO_CPP_DIR}/StructTemplateInTemplateTest.cpp
+    ${ZSERIO_CPP_DIR}/SubtypeTemplateArgumentTest.cpp
+    ${ZSERIO_CPP_DIR}/SubtypeTemplateWithBuiltinTest.cpp
+    ${ZSERIO_CPP_DIR}/SubtypeTemplateWithCompoundTest.cpp
     ${ZSERIO_CPP_DIR}/UnionTemplatedFieldTest.cpp
 )
 

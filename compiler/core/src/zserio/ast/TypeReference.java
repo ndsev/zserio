@@ -148,7 +148,7 @@ public class TypeReference extends AstNodeBase implements ZserioType
     {
         if (getReferencedPackageName().isEmpty()) // may be a template parameter
         {
-            final int index = TemplateParameter.indexOf(templateParameters, getReferencedTypeName());
+            final int index = TemplateParameter.indexOf(templateParameters, referencedTypeName);
             if (index != -1)
             {
                 if (!getTemplateArguments().isEmpty())
@@ -185,25 +185,28 @@ public class TypeReference extends AstNodeBase implements ZserioType
             }
         }
 
-        return new TypeReference(getLocation(), ownerPackage, getReferencedPackageName(),
-                getReferencedTypeName(), instantiatedTemplateArguments, isTemplateArgument,
-                checkIfNeedsParameters);
+        return new TypeReference(getLocation(), ownerPackage, referencedPackageName, referencedTypeName,
+                instantiatedTemplateArguments, isTemplateArgument, checkIfNeedsParameters);
     }
 
+    /**
+     * Gets actual template parameters - i.e. template arguments.
+     *
+     * @return List of template arguments.
+     */
     List<ZserioType> getTemplateArguments()
     {
         return templateArguments;
     }
 
+    /**
+     * Gets referenced package name corresponding to what is actually in Zserio source code.
+     *
+     * @return Referenced package name.
+     */
     PackageName getReferencedPackageName()
     {
         return referencedPackageName;
-    }
-
-    /* TODO[mikir] redundant with getName() */
-    String getReferencedTypeName()
-    {
-        return referencedTypeName;
     }
 
     /**
@@ -224,7 +227,11 @@ public class TypeReference extends AstNodeBase implements ZserioType
             baseType = ((TypeReference)baseType).referencedType;
 
         if (baseType instanceof Subtype)
-            baseType = ((Subtype)baseType).getTargetBaseType();
+        {
+            baseType = ((Subtype)baseType).getBaseTypeReference();
+            if (baseType instanceof TypeReference)
+                baseType = ((TypeReference)baseType).referencedType;
+        }
 
         return baseType;
     }
