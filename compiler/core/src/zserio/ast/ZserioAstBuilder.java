@@ -78,7 +78,12 @@ public class ZserioAstBuilder extends ZserioParserBaseVisitor<Object>
             final String typeName = type.getName();
             final ZserioType addedType = localTypes.put(typeName, type);
             if (addedType != null)
-                throw new ParserException(type, "'" + typeName + "' is already defined in this package!");
+            {
+                final ParserStackedException stackedException = new ParserStackedException(
+                        type.getLocation(), "'" + typeName + "' is already defined in this package!");
+                stackedException.pushMessage(addedType.getLocation(), "    First defined here");
+                throw stackedException;
+            }
         }
 
         localTypes = null;

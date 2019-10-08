@@ -35,8 +35,12 @@ public class SqlTablesErrorTest
     @Test
     public void duplicatedFieldName()
     {
-        final String error = "duplicated_field_name_error.zs:7:13: 'columnA' is already defined in this scope!";
-        assertTrue(zserioErrors.isPresent(error));
+        final String errors[] =
+        {
+            "duplicated_field_name_error.zs:5:13:     First defined here",
+            "duplicated_field_name_error.zs:7:13: 'columnA' is already defined in this scope!"
+        };
+        assertTrue(zserioErrors.isPresent(errors));
     }
 
     @Test

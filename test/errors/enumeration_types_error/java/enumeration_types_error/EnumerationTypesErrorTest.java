@@ -52,8 +52,12 @@ public class EnumerationTypesErrorTest
     @Test
     public void duplicatedEnumItem()
     {
-        final String error = "duplicated_enum_item_error.zs:7:5: 'DARK_RED' is already defined in this scope!";
-        assertTrue(zserioErrors.isPresent(error));
+        final String errors[] =
+        {
+            "duplicated_enum_item_error.zs:6:5:     First defined here",
+            "duplicated_enum_item_error.zs:7:5: 'DARK_RED' is already defined in this scope!"
+        };
+        assertTrue(zserioErrors.isPresent(errors));
     }
 
     @Test

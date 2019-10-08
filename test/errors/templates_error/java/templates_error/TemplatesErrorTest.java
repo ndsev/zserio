@@ -44,8 +44,12 @@ public class TemplatesErrorTest
     @Test
     public void duplicatedFieldName()
     {
-        final String error = "duplicated_field_name_error.zs:6:7: 'value' is already defined in this scope!";
-        assertTrue(zserioErrors.isPresent(error));
+        final String errors[] =
+        {
+            "duplicated_field_name_error.zs:5:7:     First defined here",
+            "duplicated_field_name_error.zs:6:7: 'value' is already defined in this scope!"
+        };
+        assertTrue(zserioErrors.isPresent(errors));
     }
 
     @Test
@@ -151,9 +155,12 @@ public class TemplatesErrorTest
     @Test
     public void symbolWithTemplateParameterClash()
     {
-        final String error = "symbol_with_template_parameter_clash_error.zs:5:12: " +
-                "'T' is already defined in this scope!";
-        assertTrue(zserioErrors.isPresent(error));
+        final String errors[] =
+        {
+            "symbol_with_template_parameter_clash_error.zs:3:19:     First defined here",
+            "symbol_with_template_parameter_clash_error.zs:5:12: 'T' is already defined in this scope!"
+        };
+        assertTrue(zserioErrors.isPresent(errors));
     }
 
     @Test
