@@ -1,23 +1,23 @@
 package zserio.ast;
 
-import org.antlr.v4.runtime.Token;
+import java.util.List;
 
 
 /**
  * AST node for default case defined by choice types.
  */
-public class ChoiceDefault extends AstNodeWithDoc
+public class ChoiceDefault extends DocumentableAstNode
 {
     /**
      * Constructor.
      *
-     * @param token        ANTLR4 token to localize AST node in the sources.
+     * @param location     AST node location.
      * @param defaultField Default field associated to this default case or null if it's not defined.
      * @param docComment   Documentation comment belonging to this node.
      */
-    public ChoiceDefault(Token token, Field defaultField, DocComment docComment)
+    public ChoiceDefault(AstLocation location, Field defaultField, DocComment docComment)
     {
-        super(token, docComment);
+        super(location, docComment);
 
         this.defaultField = defaultField;
     }
@@ -31,10 +31,10 @@ public class ChoiceDefault extends AstNodeWithDoc
     @Override
     public void visitChildren(ZserioAstVisitor visitor)
     {
+        super.visitChildren(visitor);
+
         if (defaultField != null)
             defaultField.accept(visitor);
-
-        super.visitChildren(visitor);
     }
 
     /**
@@ -45,6 +45,22 @@ public class ChoiceDefault extends AstNodeWithDoc
     public Field getField()
     {
         return defaultField;
+    }
+
+    /**
+     * Instantiate the choice default.
+     *
+     * @param templateParameters Template parameters.
+     * @param templateArguments Template arguments.
+     *
+     * @return New choice default instantiated from this using the given template arguments.
+     */
+    ChoiceDefault instantiate(List<TemplateParameter> templateParameters, List<ZserioType> templateArguments)
+    {
+        final Field instantiatedDefaultField = defaultField == null ? null :
+                defaultField.instantiate(templateParameters, templateArguments);
+
+        return new ChoiceDefault(getLocation(), instantiatedDefaultField, getDocComment());
     }
 
     private final Field defaultField;

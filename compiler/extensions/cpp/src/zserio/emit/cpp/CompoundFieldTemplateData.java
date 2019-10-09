@@ -11,7 +11,6 @@ import zserio.ast.BitFieldType;
 import zserio.ast.ChoiceType;
 import zserio.ast.CompoundType;
 import zserio.ast.ZserioType;
-import zserio.ast.ZserioTypeUtil;
 import zserio.ast.Expression;
 import zserio.ast.Field;
 import zserio.ast.FixedSizeType;

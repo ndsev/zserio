@@ -9,9 +9,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 
-import org.antlr.v4.runtime.Token;
-
-import zserio.antlr.util.ParserException;
 import zserio.tools.HashUtil;
 import zserio.tools.ZserioToolPrinter;
 
@@ -20,21 +17,21 @@ import zserio.tools.ZserioToolPrinter;
  *
  * Package is represented by one translation unit (one source file).
  */
-public class Package extends AstNodeWithDoc
+public class Package extends DocumentableAstNode
 {
     /**
      * Constructor.
      *
-     * @param token       ANTLR4 token to localize AST node in the sources.
+     * @param location    AST node location.
      * @param packageName Name of the package.
      * @param imports     List of all imports defined in the package.
      * @param localTypes  Map of all available local types defined in the package.
      * @param docComment  Documentation comment belonging to this node.
      */
-    public Package(Token token, PackageName packageName, List<Import> imports,
+    public Package(AstLocation location, PackageName packageName, List<Import> imports,
             LinkedHashMap<String, ZserioType> localTypes, DocComment docComment)
     {
-        super(token, docComment);
+        super(location, docComment);
 
         this.packageName = packageName;
         this.imports = imports;
@@ -50,13 +47,13 @@ public class Package extends AstNodeWithDoc
     @Override
     public void visitChildren(ZserioAstVisitor visitor)
     {
+        super.visitChildren(visitor);
+
         for (Import packageImport : imports)
             packageImport.accept(visitor);
 
         for (ZserioType type : localTypes.values())
             type.accept(visitor);
-
-        super.visitChildren(visitor);
     }
 
     /**
@@ -121,17 +118,13 @@ public class Package extends AstNodeWithDoc
     }
 
     /**
-     * Resolves this package.
+     * Imports types to this package.
      *
-     * This method
-     *
-     * - resolves all imports which belong to this package
-     * - resolves all type references which belong to this package
-     * - resolves all subtypes which belong to this package
+     * This method resolves all imports which belong to this package
      *
      * @param packageNameMap Map of all available package name to the package object.
      */
-    void resolve(Map<PackageName, Package> packageNameMap)
+    void importTypes(Map<PackageName, Package> packageNameMap)
     {
         for (Import importedNode : imports)
         {
@@ -314,7 +307,7 @@ public class Package extends AstNodeWithDoc
     private final PackageName packageName;
     private final List<Import> imports;
 
-    // this must be a LinkedHashMap because of 'Cyclic dependency' error checked in ZserioAstResolver
+    // this must be a LinkedHashMap because of 'Cyclic dependency' error checked in ZserioAstTypeResolver
     private final LinkedHashMap<String, ZserioType> localTypes;
 
     private final Set<Package> importedPackages = new HashSet<Package>();

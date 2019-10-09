@@ -1,38 +1,18 @@
 package zserio.ast;
 
-import java.util.Map;
-
 /**
- * Implementation of ZserioAstVisitor which manages resolving phase.
+ * Implementation of ZserioAstVisitor which resolves symbols for SQL constraints and see documentation tags.
  */
-public class ZserioAstResolver extends ZserioAstWalker
+public class ZserioAstSymbolResolver extends ZserioAstWalker
 {
-    @Override
-    public void visitRoot(Root root)
-    {
-        packageNameMap = root.getPackageNameMap();
-
-        root.visitChildren(this);
-
-        packageNameMap = null;
-    }
-
     @Override
     public void visitPackage(Package pkg)
     {
         currentPackage = pkg;
 
-        pkg.resolve(packageNameMap);
         pkg.visitChildren(this);
 
         currentPackage = null;
-    }
-
-    @Override
-    public void visitSubtype(Subtype subtype)
-    {
-        subtype.resolve();
-        subtype.visitChildren(this);
     }
 
     @Override
@@ -85,13 +65,6 @@ public class ZserioAstResolver extends ZserioAstWalker
     }
 
     @Override
-    public void visitTypeReference(TypeReference typeReference)
-    {
-        typeReference.resolve();
-        typeReference.visitChildren(this);
-    }
-
-    @Override
     public void visitDocTagSee(DocTagSee docTagSee)
     {
         docTagSee.resolve(currentPackage, currentScopedType);
@@ -100,13 +73,20 @@ public class ZserioAstResolver extends ZserioAstWalker
 
     private void visitType(CompoundType compoundType)
     {
-        currentScopedType = compoundType;
-        currentCompoundType = compoundType;
+        if (compoundType.getTemplateParameters().isEmpty())
+        {
+            currentScopedType = compoundType;
+            currentCompoundType = compoundType;
 
-        compoundType.visitChildren(this);
+            compoundType.visitChildren(this);
 
-        currentScopedType = null;
-        currentCompoundType = null;
+            currentScopedType = null;
+            currentCompoundType = null;
+        }
+        else
+        {
+            visitInstantiations(compoundType);
+        }
     }
 
     private void visitType(ZserioScopedType scopedType)
@@ -118,7 +98,20 @@ public class ZserioAstResolver extends ZserioAstWalker
         currentScopedType = null;
     }
 
-    private Map<PackageName, Package> packageNameMap = null;
+    private void visitInstantiations(ZserioTemplatableType template)
+    {
+        for (ZserioTemplatableType instantiation : template.getInstantiations())
+        {
+            try
+            {
+                instantiation.accept(this);
+            }
+            catch (ParserException e)
+            {
+                throw new InstantiationException(e, instantiation.getInstantiationReferenceStack());
+            }
+        }
+    }
 
     private Package currentPackage = null;
     private CompoundType currentCompoundType = null;

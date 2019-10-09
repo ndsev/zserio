@@ -132,6 +132,10 @@ public class ZserioAstDefaultVisitor implements ZserioAstVisitor
     {}
 
     @Override
+    public void visitTemplateParameter(TemplateParameter templateParameter)
+    {}
+
+    @Override
     public void visitDocComment(DocComment docComment)
     {}
 

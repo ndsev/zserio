@@ -4,9 +4,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import org.antlr.v4.runtime.Token;
-
-import zserio.antlr.util.ParserException;
 
 /**
  * AST node for Parameterized Type Instantiations.
@@ -21,13 +18,13 @@ public class TypeInstantiation extends AstNodeBase implements ZserioType
     /**
      * Constructor.
      *
-     * @param token          ANTLR4 token to localize AST node in the sources.
+     * @param location       AST node location.
      * @param referencedType Zserio type of the parameterized type.
      * @param arguments      List of all arguments which belong to the parameterized type.
      */
-    TypeInstantiation(Token token, TypeReference referencedType, List<Expression> arguments)
+    TypeInstantiation(AstLocation location, TypeReference referencedType, List<Expression> arguments)
     {
-        super(token);
+        super(location);
 
         this.referencedType = referencedType;
         this.arguments = arguments;
@@ -102,7 +99,7 @@ public class TypeInstantiation extends AstNodeBase implements ZserioType
         /**
          * Constructor from argument expression and parameter.
          *
-         * @param argumentexpression Argument expression used for parameter instantiation.
+         * @param argumentExpression Argument expression used for parameter instantiation.
          * @param parameter          The parameter as used in the definition of the parameterized compound type.
          */
         public InstantiatedParameter(Expression argumentExpression, Parameter parameter)
@@ -154,7 +151,7 @@ public class TypeInstantiation extends AstNodeBase implements ZserioType
             baseType = (CompoundType)resolvedReferencedType;
 
             // check if referenced type is a parameterized type
-            final List<Parameter> parameters = baseType.getParameters();
+            final List<Parameter> parameters = baseType.getTypeParameters();
             final int numParameters = parameters.size();
             if (numParameters == 0)
                 throw new ParserException(referencedType, "Parameterized type instantiation '" + getName() +
@@ -186,6 +183,32 @@ public class TypeInstantiation extends AstNodeBase implements ZserioType
                         instantiatedParameter.getParameter().getParameterType()));
             }
         }
+    }
+
+    /**
+     * Instantiate the parameterized type instantiation.
+     *
+     * @param templateParameters Template parameters.
+     * @param templateArguments Template arguments.
+     *
+     * @return New parameterized type instantiation instantiated from this using the given template arguments.
+     */
+    TypeInstantiation instantiate(List<TemplateParameter> templateParameters,
+            List<ZserioType> templateArguments)
+    {
+        final ZserioType instantiatedReferencedType =
+                referencedType.instantiate(templateParameters, templateArguments);
+        // TODO[Mi-L@]: Should this be here or in type reference?
+        if (!(instantiatedReferencedType instanceof TypeReference))
+            throw new ParserException(instantiatedReferencedType, instantiatedReferencedType.getName() +
+                    " cannot be used as a parameterized type!");
+
+        final List<Expression> instantiatedArguments = new ArrayList<Expression>();
+        for (Expression expression : arguments)
+            instantiatedArguments.add(expression.instantiate(templateParameters, templateArguments));
+
+        return new TypeInstantiation(getLocation(), (TypeReference)instantiatedReferencedType,
+                instantiatedArguments);
     }
 
     private final TypeReference referencedType;

@@ -2,8 +2,6 @@ package zserio.ast;
 
 import java.math.BigInteger;
 
-import org.antlr.v4.runtime.Token;
-
 /**
  * AST abstract node for all Integer types.
  *
@@ -13,13 +11,14 @@ import org.antlr.v4.runtime.Token;
 public abstract class IntegerType extends BuiltInType
 {
     /**
-     * Constructor from ANTLR4 token.
+     * Constructor from AST node location and the name.
      *
-     * @param token Token to construct from.
+     * @param location AST node location.
+     * @param name     Name of the AST node taken from grammar.
      */
-    public IntegerType(Token token)
+    public IntegerType(AstLocation location, String name)
     {
-        super(token);
+        super(location, name);
     }
 
     /**

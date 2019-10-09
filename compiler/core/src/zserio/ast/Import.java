@@ -1,7 +1,5 @@
 package zserio.ast;
 
-import org.antlr.v4.runtime.Token;
-
 /**
  * AST node for import defined in the package.
  */
@@ -10,13 +8,13 @@ public class Import extends AstNodeBase
     /**
      * Constructor.
      *
-     * @param token               ANTLR4 token to localize AST node in the sources.
+     * @param location            AST node location.
      * @param importedPackageName Imported package name.
      * @param importedTypeName    Imported package type name or null for package type import.
      */
-    public Import(Token token, PackageName importedPackageName, String importedTypeName)
+    public Import(AstLocation location, PackageName importedPackageName, String importedTypeName)
     {
-        super(token);
+        super(location);
 
         this.importedPackageName = importedPackageName;
         this.importedTypeName = importedTypeName;

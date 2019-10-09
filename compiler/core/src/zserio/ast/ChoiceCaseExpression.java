@@ -1,22 +1,22 @@
 package zserio.ast;
 
-import org.antlr.v4.runtime.Token;
+import java.util.List;
 
 /**
  * Choice case expression which can have its own documentation comment.
  */
-public class ChoiceCaseExpression extends AstNodeWithDoc
+public class ChoiceCaseExpression extends DocumentableAstNode
 {
     /**
      * Constructor.
      *
-     * @param token ANTLR4 token to localize AST node in the sources.
+     * @param location   AST node location.
      * @param expression Case expression.
      * @param docComment Documentation comment belonging to the case expression.
      */
-    public ChoiceCaseExpression(Token token, Expression expression, DocComment docComment)
+    public ChoiceCaseExpression(AstLocation location, Expression expression, DocComment docComment)
     {
-        super(token, docComment);
+        super(location, docComment);
 
         this.expression = expression;
     }
@@ -30,9 +30,9 @@ public class ChoiceCaseExpression extends AstNodeWithDoc
     @Override
     public void visitChildren(ZserioAstVisitor visitor)
     {
-        expression.accept(visitor);
-
         super.visitChildren(visitor);
+
+        expression.accept(visitor);
     }
 
     /**
@@ -43,6 +43,23 @@ public class ChoiceCaseExpression extends AstNodeWithDoc
     public Expression getExpression()
     {
         return expression;
+    }
+
+    /**
+     * Instantiate the choice case expression.
+     *
+     * @param templateParameters Template parameters.
+     * @param templateArguments Template arguments.
+     *
+     * @return New choice case expression instantiated from this using the given template arguments.
+     */
+    ChoiceCaseExpression instantiate(List<TemplateParameter> templateParameters,
+            List<ZserioType> templateArguments)
+    {
+        final Expression instantiatedExpression =
+                getExpression().instantiate(templateParameters, templateArguments);
+
+        return new ChoiceCaseExpression(getLocation(), instantiatedExpression, getDocComment());
     }
 
     private final Expression expression;

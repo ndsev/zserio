@@ -11,7 +11,7 @@ public final class CompoundParameterTemplateData
 {
     public CompoundParameterTemplateData(CompoundType compoundType) throws ZserioEmitException
     {
-        final List<Parameter> compoundParameterTypeList = compoundType.getParameters();
+        final List<Parameter> compoundParameterTypeList = compoundType.getTypeParameters();
         compoundParameterList = new ArrayList<CompoundParameter>(compoundParameterTypeList.size());
         for (Parameter compoundParameterType : compoundParameterTypeList)
             compoundParameterList.add(new CompoundParameter(compoundParameterType));

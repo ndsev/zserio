@@ -1,7 +1,6 @@
 package zserio.tools;
 
 import java.io.File;
-import java.io.Serializable;
 
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
@@ -15,7 +14,7 @@ import org.apache.commons.cli.DefaultParser;
 /**
  * The class to handle all command line arguments of Zserio Tool.
  */
-class CommandLineArguments implements Serializable
+class CommandLineArguments
 {
     /**
      * Empty constructor.
@@ -381,8 +380,6 @@ class CommandLineArguments implements Serializable
             inputFileName = null;
         }
     }
-
-    private static final long serialVersionUID = -1L;
 
     private static final String OptionNameHelpShort = "h";
     private static final String OptionNameSource = "src";

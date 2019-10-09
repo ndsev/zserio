@@ -1,8 +1,6 @@
 package zserio.tools;
 
 import java.io.File;
-import java.io.Serializable;
-
 import java.util.HashSet;
 import java.util.Set;
 
@@ -11,7 +9,7 @@ import zserio.ast.PackageName;
 /**
  * The manager which holds all Zserio input file names.
  */
-public class InputFileManager implements Serializable
+public class InputFileManager
 {
     /**
      * Constructor from command line arguments.
@@ -82,8 +80,6 @@ public class InputFileManager implements Serializable
 
         return (srcPathName == null) ? inputFileName : new File(srcPathName, inputFileName).toString();
     }
-
-    private static final long serialVersionUID = -1L;
 
     private final CommandLineArguments commandLineArguments;
     private final Set<String> inputFiles = new HashSet<String>();

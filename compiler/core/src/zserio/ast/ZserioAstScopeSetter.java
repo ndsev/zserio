@@ -14,11 +14,15 @@ public class ZserioAstScopeSetter extends ZserioAstWalker
         currentScope = structureType.getScope();
         fillExpressionScopes = true;
 
+        addTemplateParameters(structureType);
+
         structureType.visitChildren(this);
 
         currentScope = defaultScope;
         expressionScopes.clear();
         fillExpressionScopes = false;
+
+        visitInstantiations(structureType);
     }
 
     @Override
@@ -53,7 +57,9 @@ public class ZserioAstScopeSetter extends ZserioAstWalker
         currentScope = choiceType.getScope();
         fillExpressionScopes = true;
 
-        for (Parameter parameter : choiceType.getParameters())
+        addTemplateParameters(choiceType);
+
+        for (Parameter parameter : choiceType.getTypeParameters())
             parameter.accept(this);
 
         currentChoiceOrUnionScope = currentScope;
@@ -76,6 +82,8 @@ public class ZserioAstScopeSetter extends ZserioAstWalker
         currentScope = defaultScope;
         expressionScopes.clear();
         fillExpressionScopes = false;
+
+        visitInstantiations(choiceType);
     }
 
     @Override
@@ -101,7 +109,9 @@ public class ZserioAstScopeSetter extends ZserioAstWalker
         currentScope = unionType.getScope();
         fillExpressionScopes = true;
 
-        for (Parameter parameter : unionType.getParameters())
+        addTemplateParameters(unionType);
+
+        for (Parameter parameter : unionType.getTypeParameters())
             parameter.accept(this);
 
         currentChoiceOrUnionScope = currentScope;
@@ -119,6 +129,8 @@ public class ZserioAstScopeSetter extends ZserioAstWalker
         currentScope = defaultScope;
         expressionScopes.clear();
         fillExpressionScopes = false;
+
+        visitInstantiations(unionType);
     }
 
     @Override
@@ -143,9 +155,13 @@ public class ZserioAstScopeSetter extends ZserioAstWalker
     {
         currentScope = sqlTableType.getScope();
 
+        addTemplateParameters(sqlTableType);
+
         sqlTableType.visitChildren(this);
 
         currentScope = defaultScope;
+
+        visitInstantiations(sqlTableType);
     }
 
     @Override
@@ -223,6 +239,28 @@ public class ZserioAstScopeSetter extends ZserioAstWalker
             field.getConstraintExpr().accept(this);
 
         currentScope.removeSymbol(field.getName());
+    }
+
+    private void visitInstantiations(ZserioTemplatableType templatable)
+    {
+        for (ZserioTemplatableType instantiation : templatable.getInstantiations())
+        {
+            try
+            {
+                instantiation.accept(this);
+            }
+            catch (ParserException e)
+            {
+                // This should never happen since scope errors are caught directly in the template declaration.
+                throw new InstantiationException(e, instantiation.getInstantiationReferenceStack());
+            }
+        }
+    }
+
+    private void addTemplateParameters(ZserioTemplatableType templatable)
+    {
+        for (TemplateParameter templateParameter : templatable.getTemplateParameters())
+            currentScope.setSymbol(templateParameter.getName(), templateParameter);
     }
 
     private final Scope defaultScope = new Scope((ZserioScopedType)null);

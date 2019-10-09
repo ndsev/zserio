@@ -60,10 +60,17 @@ public class ZserioParserTest
     }
 
     @Test
-    public void parameterList()
+    public void templateParameters()
     {
-        checkParseTree("parameterList", "(uint32 id1, bool id2)",
-                "(parameterList ( (parameterDefinition (typeName (builtinType (intType uint32))) (id id1)) , " +
+        checkParseTree("templateParameters", "<TYPE1, TYPE2>",
+                "(templateParameters < (id TYPE1) , (id TYPE2) >)");
+    }
+
+    @Test
+    public void typeParameters()
+    {
+        checkParseTree("typeParameters", "(uint32 id1, bool id2)",
+                "(typeParameters ( (parameterDefinition (typeName (builtinType (intType uint32))) (id id1)) , " +
                         "(parameterDefinition (typeName (builtinType (boolType bool))) (id id2)) ))");
     }
 
@@ -103,6 +110,12 @@ public class ZserioParserTest
         checkParseTree("fieldTypeId", "uint32 value[22]",
                 "(fieldTypeId (typeReference (builtinType (intType uint32))) (id value) " +
                         "(fieldArrayRange [ (expression (literal 22)) ]))");
+        checkParseTree("fieldTypeId", "Parameterized(param) field",
+                "(fieldTypeId (typeReference (qualifiedName (id Parameterized)) " +
+                        "(typeArguments ( (typeArgument (expression (id param))) ))) (id field))");
+        checkParseTree("fieldTypeId", "Template<uint32> field",
+                "(fieldTypeId (typeReference (qualifiedName (id Template)) " +
+                        "(templateArguments < (typeName (builtinType (intType uint32))) >)) (id field))");
 
         assertParseError("fieldTypeId", "uint32 bool", "mismatched input 'bool' expecting ID");
     }
@@ -238,19 +251,19 @@ public class ZserioParserTest
     }
 
     @Test
-    public void rpcDeclaration()
+    public void rpcDefinition()
     {
-        checkParseTree("rpcDeclaration", "rpc Response method(Request);",
-                "(rpcDeclaration rpc (rpcTypeName (qualifiedName (id Response))) (id method) " +
+        checkParseTree("rpcDefinition", "rpc Response method(Request);",
+                "(rpcDefinition rpc (rpcTypeName (qualifiedName (id Response))) (id method) " +
                         "( (rpcTypeName (qualifiedName (id Request))) ) ;)");
-        checkParseTree("rpcDeclaration", "rpc stream Response method(Request);",
-                "(rpcDeclaration rpc (rpcTypeName stream (qualifiedName (id Response))) (id method) " +
+        checkParseTree("rpcDefinition", "rpc stream Response method(Request);",
+                "(rpcDefinition rpc (rpcTypeName stream (qualifiedName (id Response))) (id method) " +
                         "( (rpcTypeName (qualifiedName (id Request))) ) ;)");
-        checkParseTree("rpcDeclaration", "rpc Response method(stream Request);",
-                "(rpcDeclaration rpc (rpcTypeName (qualifiedName (id Response))) (id method) " +
+        checkParseTree("rpcDefinition", "rpc Response method(stream Request);",
+                "(rpcDefinition rpc (rpcTypeName (qualifiedName (id Response))) (id method) " +
                         "( (rpcTypeName stream (qualifiedName (id Request))) ) ;)");
-        checkParseTree("rpcDeclaration", "rpc stream Response method(stream Request);",
-                "(rpcDeclaration rpc (rpcTypeName stream (qualifiedName (id Response))) (id method) " +
+        checkParseTree("rpcDefinition", "rpc stream Response method(stream Request);",
+                "(rpcDefinition rpc (rpcTypeName stream (qualifiedName (id Response))) (id method) " +
                         "( (rpcTypeName stream (qualifiedName (id Request))) ) ;)");
     }
 

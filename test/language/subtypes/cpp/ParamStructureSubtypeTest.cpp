@@ -32,7 +32,7 @@ namespace
     }
 }
 
-TEST(ParamStructureSubtypeTest, TestSubtype)
+TEST(ParamStructureSubtypeTest, testSubtype)
 {
     // just check that ParameterizedSubtype is defined and that it's same as the ParameterizedStruct
     ParameterizedSubtypeStruct s;

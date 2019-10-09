@@ -63,25 +63,46 @@ public class ZserioAstChecker extends ZserioAstWalker
     @Override
     public void visitStructureType(StructureType structureType)
     {
-        structureType.visitChildren(this);
-        definedTypes.add(structureType);
-        structureType.check();
+        if (structureType.getTemplateParameters().isEmpty())
+        {
+            structureType.visitChildren(this);
+            definedTypes.add(structureType);
+            structureType.check();
+        }
+        else
+        {
+            visitInstantiations(structureType);
+        }
     }
 
     @Override
     public void visitChoiceType(ChoiceType choiceType)
     {
-        choiceType.visitChildren(this);
-        definedTypes.add(choiceType);
-        choiceType.check();
+        if (choiceType.getTemplateParameters().isEmpty())
+        {
+            choiceType.visitChildren(this);
+            definedTypes.add(choiceType);
+            choiceType.check();
+        }
+        else
+        {
+            visitInstantiations(choiceType);
+        }
     }
 
     @Override
     public void visitUnionType(UnionType unionType)
     {
-        unionType.visitChildren(this);
-        definedTypes.add(unionType);
-        unionType.check();
+        if (unionType.getTemplateParameters().isEmpty())
+        {
+            unionType.visitChildren(this);
+            definedTypes.add(unionType);
+            unionType.check();
+        }
+        else
+        {
+            visitInstantiations(unionType);
+        }
     }
 
     @Override
@@ -95,9 +116,16 @@ public class ZserioAstChecker extends ZserioAstWalker
     @Override
     public void visitSqlTableType(SqlTableType sqlTableType)
     {
-        sqlTableType.visitChildren(this);
-        definedTypes.add(sqlTableType);
-        sqlTableType.check();
+        if (sqlTableType.getTemplateParameters().isEmpty())
+        {
+            sqlTableType.visitChildren(this);
+            definedTypes.add(sqlTableType);
+            sqlTableType.check();
+        }
+        else
+        {
+            visitInstantiations(sqlTableType);
+        }
     }
 
     @Override
@@ -148,6 +176,21 @@ public class ZserioAstChecker extends ZserioAstWalker
         typeReference.visitChildren(this);
         addUsedType(typeReference.getReferencedType());
         typeReference.check();
+    }
+
+    private void visitInstantiations(ZserioTemplatableType template)
+    {
+        for (ZserioTemplatableType instantiation : template.getInstantiations())
+        {
+            try
+            {
+                instantiation.accept(this);
+            }
+            catch (ParserException e)
+            {
+                throw new InstantiationException(e, instantiation.getInstantiationReferenceStack());
+            }
+        }
     }
 
     private void addUsedType(ZserioType usedType)

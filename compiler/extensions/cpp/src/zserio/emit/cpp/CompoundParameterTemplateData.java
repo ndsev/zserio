@@ -14,7 +14,7 @@ public class CompoundParameterTemplateData
     public CompoundParameterTemplateData(CppNativeTypeMapper cppNativeTypeMapper, CompoundType compoundType,
             IncludeCollector includeCollector, boolean withWriterCode) throws ZserioEmitException
     {
-        final List<Parameter> compoundParameterTypeList = compoundType.getParameters();
+        final List<Parameter> compoundParameterTypeList = compoundType.getTypeParameters();
         compoundParameterList = new ArrayList<CompoundParameter>(compoundParameterTypeList.size());
         for (Parameter compoundParameterType : compoundParameterTypeList)
         {

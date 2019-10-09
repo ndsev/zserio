@@ -2,15 +2,17 @@ package zserio.ast;
 
 import org.antlr.v4.runtime.Token;
 
+import zserio.tools.StringJoinUtil;
+
 /**
  * Location in AST.
  */
 public class AstLocation
 {
     /**
-     * Constructor.
+     * Constructor from grammar token.
      *
-     * @param token ANTLR4 token to localize AST node in the sources.
+     * @param token Grammar token to localize AST node in the sources.
      */
     public AstLocation(Token token)
     {
@@ -28,6 +30,13 @@ public class AstLocation
         }
     }
 
+    /**
+     * Constructor from file name and position.
+     *
+     * @param fileName           File name of the source.
+     * @param line               Line number of the position in the source file.
+     * @param charPositionInLine Character position in the source line.
+     */
     public AstLocation(String fileName, int line, int charPositionInLine)
     {
         this.fileName = fileName;
@@ -65,7 +74,16 @@ public class AstLocation
         return column;
     }
 
+    @Override
+    public String toString()
+    {
+        return fileName == null ? "" : StringJoinUtil.joinStrings(fileName, Integer.toString(line),
+                Integer.toString(column), LOCATION_SEPARATOR);
+    }
+
     private final String fileName;
     private final int line;
     private final int column;
+
+    private static final String LOCATION_SEPARATOR = ":";
 }

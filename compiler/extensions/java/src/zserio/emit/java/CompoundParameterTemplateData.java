@@ -24,7 +24,7 @@ public final class CompoundParameterTemplateData
         compoundName = compoundType.getName();
         this.withWriterCode = withWriterCode;
 
-        final List<Parameter> compoundParameterTypeList = compoundType.getParameters();
+        final List<Parameter> compoundParameterTypeList = compoundType.getTypeParameters();
         compoundParameterList = new ArrayList<CompoundParameter>(compoundParameterTypeList.size());
         for (Parameter compoundParameterType : compoundParameterTypeList)
             compoundParameterList.add(new CompoundParameter(javaNativeTypeMapper, compoundParameterType));

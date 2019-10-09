@@ -1,5 +1,7 @@
 package zserio.ast;
 
+import java.util.List;
+
 import zserio.tools.StringJoinUtil;
 
 /**
@@ -35,6 +37,35 @@ public class ZserioTypeUtil
         return type instanceof BuiltInType ||
                (type instanceof ArrayType && TypeReference.resolveBaseType(
                         ((ArrayType)type).getElementType()) instanceof BuiltInType);
+    }
+
+    /**
+     * Instantiate the zserio type. This is a helper to handle different ways of zserio types referencing.
+     *
+     * @param templateParameters Template parameters.
+     * @param templateArguments Template arguments.
+     *
+     * @return New zserio type instantiated from this using the given template arguments.
+     */
+    static ZserioType instantiate(ZserioType zserioType, List<TemplateParameter> templateParameters,
+            List<ZserioType> templateArguments)
+    {
+        if (zserioType instanceof ArrayType)
+            return ((ArrayType)zserioType).instantiate(templateParameters, templateArguments);
+        else if (zserioType instanceof TypeInstantiation)
+            return ((TypeInstantiation)zserioType).instantiate(templateParameters, templateArguments);
+        else if (zserioType instanceof TypeReference)
+            return ((TypeReference)zserioType).instantiate(templateParameters, templateArguments);
+        else if (zserioType instanceof BitFieldType)
+            return ((BitFieldType)zserioType).instantiate(templateParameters, templateArguments);
+        else
+            return zserioType;
+    }
+
+    static String getReferencedFullName(TypeReference typeReference)
+    {
+        return StringJoinUtil.joinStrings(typeReference.getReferencedPackageName().toString(),
+                typeReference.getName(), FULL_NAME_SEPARATOR);
     }
 
     private static final String FULL_NAME_SEPARATOR = ".";

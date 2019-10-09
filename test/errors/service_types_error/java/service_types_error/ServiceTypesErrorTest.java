@@ -37,8 +37,12 @@ public class ServiceTypesErrorTest
     @Test
     public void duplicatedRpc()
     {
-        final String error = "duplicated_rpc_error.zs:21:18: 'powerOfTwo' is already defined in this scope!";
-        assertTrue(zserioErrors.isPresent(error));
+        final String errors[] =
+        {
+            "duplicated_rpc_error.zs:20:18:     First defined here",
+            "duplicated_rpc_error.zs:21:18: 'powerOfTwo' is already defined in this scope!"
+        };
+        assertTrue(zserioErrors.isPresent(errors));
     }
 
     @Test

@@ -3,7 +3,6 @@ package zserio.ast;
 import java.math.BigInteger;
 import java.util.Locale;
 
-import zserio.antlr.util.ParserException;
 
 /**
  * This class implements various utilities on Expression type.

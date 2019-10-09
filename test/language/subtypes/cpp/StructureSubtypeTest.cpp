@@ -12,7 +12,7 @@ namespace subtypes
 namespace structure_subtype
 {
 
-TEST(StructureSubtypeTest, TestSubtype)
+TEST(StructureSubtypeTest, testSubtype)
 {
     const uint32_t identifier = 0xFFFF;
     const std::string name = "Name";

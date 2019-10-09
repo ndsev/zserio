@@ -1,6 +1,7 @@
 package zserio.emit.xml;
 
 import java.io.File;
+import java.util.List;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -50,6 +51,7 @@ import zserio.ast.StringType;
 import zserio.ast.StructureType;
 import zserio.ast.Subtype;
 import zserio.ast.SymbolReference;
+import zserio.ast.TemplateParameter;
 import zserio.ast.TypeInstantiation;
 import zserio.ast.TypeReference;
 import zserio.ast.UnionType;
@@ -61,6 +63,7 @@ import zserio.ast.DocTagParam;
 import zserio.ast.DocTagSee;
 import zserio.ast.DocTagTodo;
 import zserio.ast.DocText;
+import zserio.ast.ZserioTemplatableType;
 import zserio.ast.ZserioType;
 import zserio.emit.common.ZserioEmitException;
 
@@ -376,6 +379,14 @@ public class XmlAstWriter implements ZserioAstVisitor
     }
 
     @Override
+    public void visitTemplateParameter(TemplateParameter templateParameter)
+    {
+        final Element xmlElement = xmlDoc.createElement("TEMPLATE_PARAMETER");
+        xmlElement.setAttribute("name", templateParameter.getName());
+        visitAstNode(templateParameter, xmlElement);
+    }
+
+    @Override
     public void visitDocComment(DocComment docComment)
     {
         visitAstNode(docComment, "DOC_COMMENT");
@@ -459,11 +470,39 @@ public class XmlAstWriter implements ZserioAstVisitor
         visitAstNode(docText, xmlElement);
     }
 
+    private void visitZserioType(ZserioTemplatableType zserioTemplatableType, String xmlElementName)
+    {
+        final Element xmlElement = xmlDoc.createElement(xmlElementName);
+        xmlElement.setAttribute("name", zserioTemplatableType.getName());
+        if (!zserioTemplatableType.getTemplateParameters().isEmpty())
+            xmlElement.setAttribute("isTemplate", "true");
+        visitAstNode(zserioTemplatableType, xmlElement);
+    }
+
     private void visitZserioType(ZserioType zserioType, String xmlElementName)
     {
         final Element xmlElement = xmlDoc.createElement(xmlElementName);
-        xmlElement.setAttribute("name", zserioType.getName());
+        xmlElement.setAttribute("name", getZserioTypeName(zserioType));
         visitAstNode(zserioType, xmlElement);
+    }
+
+    private void visitAstNode(ZserioTemplatableType templatable, Element xmlElement)
+    {
+        if (!templatable.getTemplateParameters().isEmpty())
+            inTemplateDeclaration = true;
+
+        currentXmlElement.appendChild(xmlElement);
+
+        final Element oldCurrentXmlElement = currentXmlElement;
+        currentXmlElement = xmlElement;
+
+        templatable.visitChildren(this);
+
+        visitInstantiations(templatable.getInstantiations());
+
+        currentXmlElement = oldCurrentXmlElement;
+
+        inTemplateDeclaration = false;
     }
 
     private void visitAstNode(AstNode node, Element xmlElement)
@@ -487,7 +526,40 @@ public class XmlAstWriter implements ZserioAstVisitor
         currentXmlElement = oldCurrentXmlElement;
     }
 
+    private void visitInstantiations(List<ZserioTemplatableType> instantiations)
+    {
+        if (instantiations.isEmpty())
+            return;
+
+        final Element instantiationsXmlElements = xmlDoc.createElement("INSTANTIATIONS");
+
+        final Element oldCurrentXmlElement = currentXmlElement;
+        currentXmlElement = instantiationsXmlElements;
+
+        for (ZserioTemplatableType instantiation : instantiations)
+            instantiation.accept(this);
+
+        currentXmlElement = oldCurrentXmlElement;
+
+        currentXmlElement.appendChild(instantiationsXmlElements);
+    }
+
+    private String getZserioTypeName(ZserioType zserioType)
+    {
+        // TODO[Mi-L@]: May not be needed after TypeReference refactoring.
+        if (inTemplateDeclaration)
+        {
+            if (zserioType instanceof ArrayType)
+            {
+                return ((ArrayType)zserioType).getElementType().getName() + "[]";
+            }
+        }
+
+        return zserioType.getName();
+    }
+
     private Document xmlDoc = null;
     private Element currentXmlElement = null;
     private String rootExprElementName = null;
+    private boolean inTemplateDeclaration = false;
 }

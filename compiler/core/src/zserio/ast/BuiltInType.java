@@ -1,7 +1,5 @@
 package zserio.ast;
 
-import org.antlr.v4.runtime.Token;
-
 /**
  * AST abstract node for all built-in types.
  *
@@ -10,14 +8,15 @@ import org.antlr.v4.runtime.Token;
 public abstract class BuiltInType extends AstNodeBase implements ZserioType
 {
     /**
-     * Constructor from ANTLR4 token.
+     * Constructor from AST node location and the name.
      *
-     * @param token Token to construct from.
+     * @param location AST node location.
+     * @param name     Name of the AST node taken from grammar.
      */
-    public BuiltInType(Token token)
+    public BuiltInType(AstLocation location, String name)
     {
-        super(token);
-        this.name = token.getText();
+        super(location);
+        this.name = name;
     }
 
     @Override

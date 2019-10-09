@@ -33,5 +33,6 @@ class IterableComparator<T extends Comparable<T>> implements Comparator<Iterable
         return iteratorA.hasNext() ? +1 : -1;
     }
 
+    // serializable to satisfy FindBugs
     private static final long serialVersionUID = 1L;
 }

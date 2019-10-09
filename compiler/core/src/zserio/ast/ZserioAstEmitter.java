@@ -92,7 +92,10 @@ public class ZserioAstEmitter extends ZserioAstWalker
     {
         try
         {
-            emitter.beginStructure(structureType);
+            if (structureType.getTemplateParameters().isEmpty())
+                emitter.beginStructure(structureType);
+            else
+                visitInstantiations(structureType);
         }
         catch (ZserioEmitException e)
         {
@@ -105,7 +108,10 @@ public class ZserioAstEmitter extends ZserioAstWalker
     {
         try
         {
-            emitter.beginChoice(choiceType);
+            if (choiceType.getTemplateParameters().isEmpty())
+                emitter.beginChoice(choiceType);
+            else
+                visitInstantiations(choiceType);
         }
         catch (ZserioEmitException e)
         {
@@ -118,7 +124,10 @@ public class ZserioAstEmitter extends ZserioAstWalker
     {
         try
         {
-            emitter.beginUnion(unionType);
+            if (unionType.getTemplateParameters().isEmpty())
+                emitter.beginUnion(unionType);
+            else
+                visitInstantiations(unionType);
         }
         catch (ZserioEmitException e)
         {
@@ -144,7 +153,10 @@ public class ZserioAstEmitter extends ZserioAstWalker
     {
         try
         {
-            emitter.beginSqlTable(sqlTableType);
+            if (sqlTableType.getTemplateParameters().isEmpty())
+                emitter.beginSqlTable(sqlTableType);
+            else
+                visitInstantiations(sqlTableType);
         }
         catch (ZserioEmitException e)
         {
@@ -176,6 +188,12 @@ public class ZserioAstEmitter extends ZserioAstWalker
         {
             throw new UncheckedZserioEmitException(e);
         }
+    }
+
+    private void visitInstantiations(ZserioTemplatableType template)
+    {
+        for (ZserioTemplatableType instantiation : template.getInstantiations())
+            instantiation.accept(this);
     }
 
     static class UncheckedZserioEmitException extends RuntimeException

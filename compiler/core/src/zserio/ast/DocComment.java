@@ -3,8 +3,6 @@ package zserio.ast;
 import java.util.Collections;
 import java.util.List;
 
-import org.antlr.v4.runtime.Token;
-
 /**
  * Class representing a single documentation comment.
  */
@@ -13,12 +11,12 @@ public class DocComment extends AstNodeBase
     /**
      * Constructor.
      *
-     * @param token        ANTLR4 token to localize AST node in the sources.
+     * @param location     AST node location.
      * @param paragraphs   Doc comment paragraphs.
      */
-    public DocComment(Token token, List<DocParagraph> paragraphs)
+    public DocComment(AstLocation location, List<DocParagraph> paragraphs)
     {
-        super(token);
+        super(location);
 
         this.paragraphs = paragraphs;
     }

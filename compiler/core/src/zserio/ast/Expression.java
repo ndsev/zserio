@@ -6,10 +6,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.antlr.v4.runtime.Token;
-
 import zserio.antlr.ZserioParser;
-import zserio.antlr.util.ParserException;
 
 /**
  * AST node for expressions defined in the language.
@@ -31,109 +28,77 @@ public class Expression extends AstNodeBase
     /**
      * Constructor.
      *
-     * @param expressionToken Token to construct expression from.
-     * @param pkg             Package to which the expression belongs.
+     * @param location       AST node location.
+     * @param pkg            Package to which the expression belongs.
+     * @param expressionType Expression grammar token type.
+     * @param expressionText Expression grammar token text.
+     * @param expressionFlag Flag for the expression.
      */
-    public Expression(Token expressionToken, Package pkg)
+    public Expression(AstLocation location, Package pkg, int expressionType, String expressionText,
+            ExpressionFlag expressionFlag)
     {
-        this(expressionToken, pkg, expressionToken, ExpressionFlag.NONE, null, null, null);
+        this(location, pkg, expressionType, expressionText, expressionFlag, null, null, null);
     }
 
     /**
      * Constructor.
      *
-     * @param expressionToken Token to construct expression from.
-     * @param pkg             Package to which the expression belongs.
-     * @param expressionFlag  Flag for the expression.
+     * @param location       AST node location.
+     * @param pkg            Package to which the expression belongs.
+     * @param expressionType Expression grammar token type.
+     * @param expressionText Expression grammar token text.
+     * @param expressionFlag Flag for the expression.
+     * @param operand1       Operand of the expression.
      */
-    public Expression(Token expressionToken, Package pkg, ExpressionFlag expressionFlag)
+    public Expression(AstLocation location, Package pkg, int expressionType, String expressionText,
+            ExpressionFlag expressionFlag, Expression operand1)
     {
-        this(expressionToken, pkg, expressionToken, expressionFlag, null, null, null);
+        this(location, pkg, expressionType, expressionText, expressionFlag, operand1, null, null);
     }
 
     /**
      * Constructor.
      *
-     * @param locationToken   Token which denotes expression location in the sources.
-     * @param pkg             Package to which the expression belongs.
-     * @param expressionToken Token to construct expression from.
+     * @param location       AST node location.
+     * @param pkg            Package to which the expression belongs.
+     * @param expressionType Expression grammar token type.
+     * @param expressionText Expression grammar token text.
+     * @param expressionFlag Flag for the expression.
+     * @param operand1       Left operand of the expression.
+     * @param operand2       Right operand of the expression.
      */
-    public Expression(Token locationToken, Package pkg, Token expressionToken)
+    public Expression(AstLocation location, Package pkg, int expressionType, String expressionText,
+            ExpressionFlag expressionFlag, Expression operand1, Expression operand2)
     {
-        this(locationToken, pkg, expressionToken, ExpressionFlag.NONE, null, null, null);
+        this(location, pkg, expressionType, expressionText, expressionFlag, operand1, operand2, null);
     }
 
     /**
      * Constructor.
      *
-     * @param locationToken   Token which denotes expression location in the sources.
-     * @param pkg             Package to which the expression belongs.
-     * @param expressionToken Token to construct expression from.
-     * @param expressionFlag  Flag for the expression.
+     * @param location       AST node location.
+     * @param pkg            Package to which the expression belongs.
+     * @param expressionType Expression grammar token type.
+     * @param expressionText Expression grammar token text.
+     * @param expressionFlag Flag for the expression.
+     * @param operand1       Left operand of the expression.
+     * @param operand2       Middle operand of the expression.
+     * @param operand3       Right operand of the expression.
      */
-    public Expression(Token locationToken, Package pkg, Token expressionToken, ExpressionFlag expressionFlag)
+    public Expression(AstLocation location, Package pkg, int expressionType, String expressionText,
+            ExpressionFlag expressionFlag, Expression operand1, Expression operand2, Expression operand3)
     {
-        this(locationToken, pkg, expressionToken, expressionFlag, null, null, null);
-    }
+        super(location);
 
-    /**
-     * Constructor.
-     *
-     * @param locationToken   Token which denotes expression location in the sources.
-     * @param pkg             Package to which the expression belongs.
-     * @param expressionToken Token to construct expression from.
-     * @param operand1        Left operand of the expression.
-     */
-    public Expression(Token locationToken, Package pkg, Token expressionToken, Expression operand1)
-    {
-        this(locationToken, pkg, expressionToken, ExpressionFlag.NONE, operand1, null, null);
-    }
+        this.pkg = pkg;
+        type = expressionType;
+        text = stripExpressionText(expressionType, expressionText);
+        this.expressionFlag = expressionFlag;
+        this.operand1 = operand1;
+        this.operand2 = operand2;
+        this.operand3 = operand3;
 
-    /**
-     * Constructor.
-     *
-     * @param locationToken   Token which denotes expression location in the sources.
-     * @param pkg             Package to which the expression belongs.
-     * @param expressionToken Token to construct expression from.
-     * @param operand1        Left operand of the expression.
-     * @param operand2        Right operand of the expression.
-     */
-    public Expression(Token locationToken, Package pkg, Token expressionToken, Expression operand1,
-            Expression operand2)
-    {
-        this(locationToken, pkg, expressionToken, ExpressionFlag.NONE, operand1, operand2, null);
-    }
-
-    /**
-     * Constructor.
-     *
-     * @param locationToken   Token which denotes expression location in the sources.
-     * @param pkg             Package to which the expression belongs.
-     * @param expressionToken Token to construct expression from.
-     * @param expressionFlag  Flag for the expression.
-     * @param operand1        Left operand of the expression.
-     * @param operand2        Right operand of the expression.
-     */
-    public Expression(Token locationToken, Package pkg, Token expressionToken, ExpressionFlag expressionFlag,
-            Expression operand1, Expression operand2)
-    {
-        this(locationToken, pkg, expressionToken, expressionFlag, operand1, operand2, null);
-    }
-
-    /**
-     * Constructor.
-     *
-     * @param locationToken   Token which denotes expression location in the sources.
-     * @param pkg             Package to which the expression belongs.
-     * @param expressionToken Token to construct expression from.
-     * @param operand1        Left operand of the ternary expression.
-     * @param operand2        Middle operand of the ternary expression.
-     * @param operand3        Right operand of the ternary expression.
-     */
-    public Expression(Token locationToken, Package pkg, Token expressionToken, Expression operand1,
-            Expression operand2, Expression operand3)
-    {
-        this(locationToken, pkg, expressionToken, ExpressionFlag.NONE, operand1, operand2, operand3);
+        initialize();
     }
 
     @Override
@@ -180,7 +145,7 @@ public class Expression extends AstNodeBase
      *
      * This method should not be public but it is used by expression formatters at the moment.
      *
-     * @return Expression type given by ANTLR4.
+     * @return Expression type given by grammar.
      */
     public int getType()
     {
@@ -192,7 +157,7 @@ public class Expression extends AstNodeBase
      *
      * This method should not be public but it is used by expression formatters at the moment.
      *
-     * @return Expression text given by ANTLR4.
+     * @return Expression text given by grammar.
      */
     public String getText()
     {
@@ -673,20 +638,77 @@ public class Expression extends AstNodeBase
         needsBigIntegerCastingToNative = true;
     }
 
-    private Expression(Token locationToken, Package pkg, Token expressionToken, ExpressionFlag expressionFlag,
-            Expression operand1, Expression operand2, Expression operand3)
+    /**
+     * Instantiate the expression.
+     *
+     * @param templateParameters Template parameters.
+     * @param templateArguments Template arguments.
+     *
+     * @return New expression instantiated from this using the given template arguments.
+     */
+    Expression instantiate(List<TemplateParameter> templateParameters, List<ZserioType> templateArguments)
     {
-        super(locationToken);
+        if (operand1 == null)
+        {
+            String instantiatedText = text;
+            if (type == ZserioParser.ID && expressionFlag != ExpressionFlag.IS_EXPLICIT)
+            {
+                if (expressionFlag == ExpressionFlag.IS_DOT_LEFT_OPERAND_ID ||
+                        expressionFlag != ExpressionFlag.IS_DOT_RIGHT_OPERAND_ID)
+                {
+                    // expression is single ID or is left dot operand
+                    final int index = TemplateParameter.indexOf(templateParameters, text);
+                    if (index != -1)
+                    {
+                        // template parameter has been found
+                        final ZserioType templateArgumentType = templateArguments.get(index);
+                        instantiatedText = templateArgumentType.getName();
+                        if (templateArgumentType instanceof TypeReference)
+                        {
+                            // found template argument is type reference
+                            final TypeReference templateArgumentReference = (TypeReference)templateArgumentType;
+                            final PackageName templateArgumentPackage =
+                                    templateArgumentReference.getReferencedPackageName();
+                            if (!templateArgumentPackage.isEmpty())
+                            {
+                                // found template argument is type reference with specified package
+                                return createInstantiationTree(templateArgumentPackage,
+                                        templateArgumentReference.getName());
+                            }
+                        }
+                    }
+                }
+            }
 
-        this.pkg = pkg;
-        type = expressionToken.getType();
-        text = extractTokenText(expressionToken);
-        this.expressionFlag = expressionFlag;
-        this.operand1 = operand1;
-        this.operand2 = operand2;
-        this.operand3 = operand3;
+            return new Expression(getLocation(), pkg, type, instantiatedText, expressionFlag, null, null, null);
+        }
+        else
+        {
+            return new Expression(getLocation(), pkg, type, text, expressionFlag,
+                    operand1.instantiate(templateParameters, templateArguments),
+                    operand2 == null ? null : operand2.instantiate(templateParameters, templateArguments),
+                    operand3 == null ? null : operand3.instantiate(templateParameters, templateArguments));
+        }
+    }
 
-        initialize();
+    private Expression createInstantiationTree(PackageName templateArgumentPackage, String templateArgumentName)
+    {
+        final List<String> templateArgumentPackageIds = templateArgumentPackage.getIdList();
+        Expression operand1 = new Expression(getLocation(), pkg, ZserioParser.ID,
+                templateArgumentPackageIds.get(0), ExpressionFlag.IS_DOT_LEFT_OPERAND_ID, null, null, null);
+        final List<String> expressionIds = new ArrayList<String>(templateArgumentPackageIds);
+        expressionIds.add(templateArgumentName);
+        for (int i = 1; i < expressionIds.size(); i++)
+        {
+            final Expression operand2 = new Expression(getLocation(), pkg, ZserioParser.ID,
+                    expressionIds.get(i), ExpressionFlag.IS_DOT_RIGHT_OPERAND_ID, null, null, null);
+            final Expression dotOperand = new Expression(getLocation(), pkg, ZserioParser.DOT, ".",
+                    (i + 1 == expressionIds.size()) ? ExpressionFlag.IS_TOP_LEVEL_DOT : ExpressionFlag.NONE,
+                    operand1, operand2, null);
+            operand1 = dotOperand;
+        }
+
+        return operand1;
     }
 
     @SuppressWarnings("unchecked")
@@ -762,9 +784,11 @@ public class Expression extends AstNodeBase
         catch (ParserException e)
         {
             final AstLocation location = getLocation();
-            throw new ParserException(functionResultExpression, e.getMessage() +
-                    " Found in function '" + functionType.getName() + "' called from here: " +
-                    location.getFileName() + ":" + location.getLine() + ":" + location.getColumn());
+
+            final ParserStackedException stackedException = new ParserStackedException(e);
+            stackedException.pushMessage(location, "In function '" + functionType.getName() + "' " +
+                    "called from here");
+            throw stackedException;
         }
 
         evaluateExpressionType(functionType.getReturnType());
@@ -1337,32 +1361,31 @@ public class Expression extends AstNodeBase
         EVALUATED
     };
 
-    private static String extractTokenText(Token expressionToken)
+    private static String stripExpressionText(int expressionType, String expressionText)
     {
-        String tokenText = expressionToken.getText();
-        switch (expressionToken.getType())
+        switch (expressionType)
         {
             case ZserioParser.BINARY_LITERAL:
-                tokenText = stripBinaryLiteral(tokenText);
+                expressionText = stripBinaryLiteral(expressionText);
                 break;
 
             case ZserioParser.OCTAL_LITERAL:
-                tokenText = stripOctalLiteral(tokenText);
+                expressionText = stripOctalLiteral(expressionText);
                 break;
 
             case ZserioParser.HEXADECIMAL_LITERAL:
-                tokenText = stripHexadecimalLiteral(tokenText);
+                expressionText = stripHexadecimalLiteral(expressionText);
                 break;
 
             case ZserioParser.FLOAT_LITERAL:
-                tokenText = stripFloatLiteral(tokenText);
+                expressionText = stripFloatLiteral(expressionText);
                 break;
 
             default:
                 break;
         }
 
-        return tokenText;
+        return expressionText;
     }
 
     private static String stripBinaryLiteral(String binaryLiteral)

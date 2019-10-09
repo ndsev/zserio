@@ -5,9 +5,6 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.antlr.v4.runtime.Token;
-
-import zserio.antlr.util.ParserException;
 
 
 /**
@@ -15,12 +12,12 @@ import zserio.antlr.util.ParserException;
  *
  * This field is used by all Compound types (structure types, choice types, ...).
  */
-public class Field extends AstNodeWithDoc
+public class Field extends DocumentableAstNode
 {
     /**
      * Constructor from Structure types.
      *
-     * @param token              ANTLR4 token to localize AST node in the sources.
+     * @param location           AST node location.
      * @param fieldType          Field type.
      * @param name               Field name.
      * @param isAutoOptional     Auto optional flag.
@@ -31,54 +28,54 @@ public class Field extends AstNodeWithDoc
      * @param constraintExpr     Constraint expression or null if it's not defined.
      * @param docComment         Documentation comment belonging to this node.
      */
-    public Field(Token token, ZserioType fieldType, String name, boolean isAutoOptional,
+    public Field(AstLocation location, ZserioType fieldType, String name, boolean isAutoOptional,
             Expression alignmentExpr, Expression offsetExpr, Expression initializerExpr,
             Expression optionalClauseExpr, Expression constraintExpr, DocComment docComment)
     {
-        this(token, fieldType, name, isAutoOptional, alignmentExpr, offsetExpr, initializerExpr,
+        this(location, fieldType, name, isAutoOptional, alignmentExpr, offsetExpr, initializerExpr,
                 optionalClauseExpr, constraintExpr, false, null, docComment);
     }
 
     /**
      * Constructor from Choice and Union types.
      *
-     * @param token              ANTLR4 token to localize AST node in the sources.
+     * @param location           AST node location.
      * @param fieldType          Field type.
      * @param name               Field name.
      * @param constraintExpr     Constraint expression or null if it's not defined.
      * @param docComment         Documentation comment belonging to this node.
      */
-    public Field(Token token, ZserioType fieldType, String name, Expression constraintExpr,
+    public Field(AstLocation location, ZserioType fieldType, String name, Expression constraintExpr,
             DocComment docComment)
     {
-        this(token, fieldType, name, false, null, null, null, null, constraintExpr, false, null, docComment);
+        this(location, fieldType, name, false, null, null, null, null, constraintExpr, false, null, docComment);
     }
 
     /**
      * Constructor from SQL Table types.
      *
-     * @param token         ANTLR4 token to localize AST node in the sources.
+     * @param location      AST node location.
      * @param fieldType     Field type.
      * @param name          Field name.
      * @param isVirtual     True if field is virtual.
      * @param sqlConstraint SQL constraint or null if it's not defined.
      */
-    public Field(Token token, ZserioType fieldType, String name, boolean isVirtual, SqlConstraint sqlConstraint,
+    public Field(AstLocation location, ZserioType fieldType, String name, boolean isVirtual, SqlConstraint sqlConstraint,
             DocComment docComment)
     {
-        this(token, fieldType, name, false, null, null, null, null, null, isVirtual, sqlConstraint, docComment);
+        this(location, fieldType, name, false, null, null, null, null, null, isVirtual, sqlConstraint, docComment);
     }
 
     /**
      * Constructor from SQL Database types.
      *
-     * @param token     ANTLR4 token to localize AST node in the sources.
+     * @param location  AST node location.
      * @param fieldType Field type.
      * @param name      Field name.
      */
-    public Field(Token token, ZserioType fieldType, String name, DocComment docComment)
+    public Field(AstLocation location, ZserioType fieldType, String name, DocComment docComment)
     {
-        this(token, fieldType, name, false, null, null, null, null, null, false, null, docComment);
+        this(location, fieldType, name, false, null, null, null, null, null, false, null, docComment);
     }
 
     @Override
@@ -90,6 +87,8 @@ public class Field extends AstNodeWithDoc
     @Override
     public void visitChildren(ZserioAstVisitor visitor)
     {
+        super.visitChildren(visitor);
+
         fieldType.accept(visitor);
         if (alignmentExpr != null)
             alignmentExpr.accept(visitor);
@@ -103,8 +102,6 @@ public class Field extends AstNodeWithDoc
             constraintExpr.accept(visitor);
         if (sqlConstraint != null)
             sqlConstraint.accept(visitor);
-
-        super.visitChildren(visitor);
     }
 
     /**
@@ -314,12 +311,44 @@ public class Field extends AstNodeWithDoc
             throw new ParserException(this, "'" + getName() + "' is a defined type in this package!");
     }
 
-    private Field(Token token, ZserioType fieldType, String name, boolean isAutoOptional,
+    /**
+     * Instantiate the field.
+     *
+     * @param templateParameters Template parameters.
+     * @param templateArguments Template arguments.
+     *
+     * @return New field instantiated from this using the given template arguments.
+     */
+    Field instantiate(List<TemplateParameter> templateParameters, List<ZserioType> templateArguments)
+    {
+        final ZserioType instantiatedFieldType =
+                ZserioTypeUtil.instantiate(fieldType, templateParameters, templateArguments);
+
+        final Expression instantiatedAlignmentExpr = getAlignmentExpr() == null ? null :
+                getAlignmentExpr().instantiate(templateParameters, templateArguments);
+        final Expression instantiatedOffsetExpr = getOffsetExpr() == null ? null :
+                getOffsetExpr().instantiate(templateParameters, templateArguments);
+        final Expression instantiatedInitializerExpr = getInitializerExpr() == null ? null :
+                getInitializerExpr().instantiate(templateParameters, templateArguments);
+        final Expression instantiatedOptionalClauseExpr = getOptionalClauseExpr() == null ? null :
+                getOptionalClauseExpr().instantiate(templateParameters, templateArguments);
+        final Expression instantiatedConstraintExpr = getConstraintExpr() == null ? null :
+                getConstraintExpr().instantiate(templateParameters, templateArguments);
+
+        final SqlConstraint instantiatedSqlConstraint = getSqlConstraint() == null ? null :
+                getSqlConstraint().instantiate(templateParameters, templateArguments);
+
+        return new Field(getLocation(), instantiatedFieldType, name, isAutoOptional, instantiatedAlignmentExpr,
+                instantiatedOffsetExpr, instantiatedInitializerExpr, instantiatedOptionalClauseExpr,
+                instantiatedConstraintExpr, isVirtual, instantiatedSqlConstraint, getDocComment());
+    }
+
+    private Field(AstLocation location, ZserioType fieldType, String name, boolean isAutoOptional,
             Expression alignmentExpr, Expression offsetExpr, Expression initializerExpr,
             Expression optionalClauseExpr, Expression constraintExpr, boolean isVirtual,
             SqlConstraint sqlConstraint, DocComment docComment)
     {
-        super(token, docComment);
+        super(location, docComment);
 
         this.fieldType = fieldType;
         this.name = name;

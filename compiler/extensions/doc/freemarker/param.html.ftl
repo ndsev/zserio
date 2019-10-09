@@ -1,8 +1,8 @@
 <#macro parameterlist type>
-  <#assign params = type.parameters>
+  <#assign params = type.typeParameters>
   <#if (params?size > 0)>
     (<#t>
-    <#list type.parameters as param>
+    <#list params as param>
       <@linkedtype toLinkedType(param.parameterType)/> ${param.name}<#t>
       <#if param_has_next>, </#if><#t>
     </#list>

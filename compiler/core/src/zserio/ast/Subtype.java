@@ -1,8 +1,5 @@
 package zserio.ast;
 
-import org.antlr.v4.runtime.Token;
-
-import zserio.antlr.util.ParserException;
 import zserio.ast.TypeReference;
 import zserio.ast.ZserioType;
 
@@ -11,18 +8,18 @@ import zserio.ast.ZserioType;
  *
  * Subtypes are Zserio types as well.
  */
-public class Subtype extends AstNodeWithDoc implements ZserioType
+public class Subtype extends DocumentableAstNode implements ZserioType
 {
     /**
-     * @param token      ANTLR4 token to localize AST node in the sources.
+     * @param location   AST node location.
      * @param pkg        Package to which belongs the subtype.
      * @param targetType Zserio type which belongs to the subtype.
      * @param name       Name of the subtype.
      * @param docComment Documentation comment belonging to this node.
      */
-    public Subtype(Token token, Package pkg, ZserioType targetType, String name, DocComment docComment)
+    public Subtype(AstLocation location, Package pkg, ZserioType targetType, String name, DocComment docComment)
     {
-        super(token, docComment);
+        super(location, docComment);
 
         this.pkg = pkg;
         this.targetType = targetType;
@@ -38,9 +35,9 @@ public class Subtype extends AstNodeWithDoc implements ZserioType
     @Override
     public void visitChildren(ZserioAstVisitor visitor)
     {
-        targetType.accept(visitor);
-
         super.visitChildren(visitor);
+
+        targetType.accept(visitor);
     }
 
     @Override
@@ -60,30 +57,31 @@ public class Subtype extends AstNodeWithDoc implements ZserioType
      *
      * @return Type referenced by this subtype.
      */
+    // TODO[Mi-L@]: Rename to getReferencedType
     public ZserioType getTargetType()
     {
         return targetType;
     }
 
     /**
-     * Gets target base type.
+     * Gets reference to the base type.
      *
-     * @return Resolved base type of the target type.
+     * @return Reference to base type of the target type.
      */
-    public ZserioType getTargetBaseType()
+    public ZserioType getBaseTypeReference()
     {
-        return targetBaseType;
+        return baseTypeReference;
     }
 
     /**
      * Resolves the subtype to a defined type called at the end of linking phase.
      *
-     * @return Resolved base type of this subtype.
+     * @return Resolved reference to base type of this subtype.
      */
     ZserioType resolve()
     {
         if (resolvingState == ResolvingState.RESOLVED)
-            return targetBaseType;
+            return baseTypeReference;
 
         // detect cycles in subtype definitions
         if (resolvingState == ResolvingState.RESOLVING)
@@ -100,18 +98,18 @@ public class Subtype extends AstNodeWithDoc implements ZserioType
 
             final ZserioType referencedTargetType = targetTypeReference.getReferencedType();
             if (referencedTargetType instanceof Subtype)
-                targetBaseType = ((Subtype)referencedTargetType).resolve();
+                baseTypeReference = ((Subtype)referencedTargetType).resolve();
             else
-                targetBaseType = referencedTargetType;
+                baseTypeReference = targetTypeReference;
         }
         else // built-in type
         {
-            targetBaseType = targetType;
+            baseTypeReference = targetType;
         }
 
         resolvingState = ResolvingState.RESOLVED;
 
-        return targetBaseType;
+        return baseTypeReference;
     }
 
     private enum ResolvingState
@@ -126,5 +124,5 @@ public class Subtype extends AstNodeWithDoc implements ZserioType
     private final String name;
 
     private ResolvingState resolvingState = ResolvingState.UNRESOLVED;
-    private ZserioType targetBaseType = null;
+    private ZserioType baseTypeReference = null;
 }

@@ -1,8 +1,7 @@
 package zserio.ast;
 
-import org.antlr.v4.runtime.Token;
+import java.util.List;
 
-import zserio.antlr.util.ParserException;
 
 /**
  * AST node for Array types.
@@ -14,15 +13,15 @@ public class ArrayType extends AstNodeBase implements ZserioType
     /**
      * Constructor.
      *
-     * @param location         ANTLR4 token to localize AST node in the sources.
+     * @param location         AST node location.
      * @param elementType      Zserio type of the array element.
      * @param lengthExpression Length expression associated to the array.
      * @param isImplicit       True for implicit arrays.
      */
-    public ArrayType(Token token, ZserioType elementType, Expression lengthExpression,
+    public ArrayType(AstLocation location, ZserioType elementType, Expression lengthExpression,
             boolean isImplicit)
     {
-        super(token);
+        super(location);
 
         this.elementType = elementType;
         this.lengthExpression = lengthExpression;
@@ -106,6 +105,25 @@ public class ArrayType extends AstNodeBase implements ZserioType
                 throw new ParserException(lengthExpression,
                         "Invalid length expression for array. Length must be integer!");
         }
+    }
+
+    /**
+     * Instantiate the array type.
+     *
+     * @param templateParameters Template parameters.
+     * @param templateArguments Template arguments.
+     *
+     * @return New array type instantiated from this using the given template arguments.
+     */
+    ArrayType instantiate(List<TemplateParameter> templateParameters, List<ZserioType> templateArguments)
+    {
+        final ZserioType instantiatedElementType =
+                ZserioTypeUtil.instantiate(elementType, templateParameters, templateArguments);
+
+        final Expression instantiatedLengthExpression = lengthExpression == null ? null :
+                lengthExpression.instantiate(templateParameters, templateArguments);
+
+        return new ArrayType(getLocation(), instantiatedElementType, instantiatedLengthExpression, isImplicit);
     }
 
     private final ZserioType elementType;

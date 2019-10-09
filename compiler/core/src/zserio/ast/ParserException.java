@@ -1,12 +1,9 @@
-package zserio.antlr.util;
+package zserio.ast;
 
 import org.antlr.v4.runtime.Token;
 
-import zserio.ast.AstLocation;
-import zserio.ast.AstNode;
-
 /**
- * Unchecked exception which is used during parsing in zserio.
+ * Unchecked exception which is used during parsing in Zserio.
  *
  * This exception is unchecked because it is used by visitors.
  */
@@ -56,6 +53,6 @@ public class ParserException extends RuntimeException
         return location;
     }
 
-    private transient AstLocation location;
+    private final transient AstLocation location;
     private static final long serialVersionUID = -2149318704048979392L;
 }

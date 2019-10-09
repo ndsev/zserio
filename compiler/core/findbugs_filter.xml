@@ -15,4 +15,9 @@
             <Method name="setFileName"/>
         </Or>
     </Match>
+    <Match>
+        <Bug pattern="SE_TRANSIENT_FIELD_NOT_RESTORED"/>
+        <Class name="zserio.ast.ParserStackedException"/>
+        <Field name="messageStack"/>
+    </Match>
 </FindBugsFilter>

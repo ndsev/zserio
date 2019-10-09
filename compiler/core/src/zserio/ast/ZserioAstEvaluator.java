@@ -26,26 +26,51 @@ public class ZserioAstEvaluator extends ZserioAstWalker
     }
 
     @Override
+    public void visitStructureType(StructureType structureType)
+    {
+        if (structureType.getTemplateParameters().isEmpty())
+            structureType.visitChildren(this);
+        else
+            visitInstantiations(structureType);
+    }
+
+    @Override
     public void visitChoiceType(ChoiceType choiceType)
     {
-        // force selector expression evaluation
-        final Expression selectorExpression = choiceType.getSelectorExpression();
-        selectorExpression.accept(this);
-
-        // extend scope for case expressions to support enumeration values if necessary
-        final ZserioType selectorExprZserioType = selectorExpression.getExprZserioType();
-        if (selectorExprZserioType instanceof EnumType)
+        if (choiceType.getTemplateParameters().isEmpty())
         {
-            final Scope enumScope = ((EnumType)selectorExprZserioType).getScope();
-            for (ChoiceCase choiceCase : choiceType.getChoiceCases())
-            {
-                final List<ChoiceCaseExpression> caseExpressions = choiceCase.getExpressions();
-                for (ChoiceCaseExpression caseExpression : caseExpressions)
-                    caseExpression.getExpression().addEvaluationScope(enumScope);
-            }
-        }
+            // force selector expression evaluation
+            final Expression selectorExpression = choiceType.getSelectorExpression();
+            selectorExpression.accept(this);
 
-        choiceType.visitChildren(this);
+            // extend scope for case expressions to support enumeration values if necessary
+            final ZserioType selectorExprZserioType = selectorExpression.getExprZserioType();
+            if (selectorExprZserioType instanceof EnumType)
+            {
+                final Scope enumScope = ((EnumType)selectorExprZserioType).getScope();
+                for (ChoiceCase choiceCase : choiceType.getChoiceCases())
+                {
+                    final List<ChoiceCaseExpression> caseExpressions = choiceCase.getExpressions();
+                    for (ChoiceCaseExpression caseExpression : caseExpressions)
+                        caseExpression.getExpression().addEvaluationScope(enumScope);
+                }
+            }
+
+            choiceType.visitChildren(this);
+        }
+        else
+        {
+            visitInstantiations(choiceType);
+        }
+    }
+
+    @Override
+    public void visitUnionType(UnionType unionType)
+    {
+        if (unionType.getTemplateParameters().isEmpty())
+            unionType.visitChildren(this);
+        else
+            visitInstantiations(unionType);
     }
 
     @Override
@@ -60,6 +85,15 @@ public class ZserioAstEvaluator extends ZserioAstWalker
     {
         enumItem.visitChildren(this);
         enumItem.evaluate();
+    }
+
+    @Override
+    public void visitSqlTableType(SqlTableType sqlTableType)
+    {
+        if (sqlTableType.getTemplateParameters().isEmpty())
+            sqlTableType.visitChildren(this);
+        else
+            visitInstantiations(sqlTableType);
     }
 
     @Override
@@ -105,6 +139,21 @@ public class ZserioAstEvaluator extends ZserioAstWalker
     {
         rpc.visitChildren(this);
         rpc.evaluate();
+    }
+
+    private void visitInstantiations(ZserioTemplatableType template)
+    {
+        for (ZserioTemplatableType instantiation : template.getInstantiations())
+        {
+            try
+            {
+                instantiation.accept(this);
+            }
+            catch (ParserException e)
+            {
+                throw new InstantiationException(e, instantiation.getInstantiationReferenceStack());
+            }
+        }
     }
 
     private final Scope evaluationScope;

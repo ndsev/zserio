@@ -5,6 +5,7 @@ options
     tokenVocab=ZserioLexer;
 }
 
+tokens { RSHIFT }
 
 // PACKAGE (main rule)
 
@@ -53,7 +54,7 @@ subtypeDeclaration
 // STRUCTURE
 
 structureDeclaration
-    :   STRUCTURE id parameterList?
+    :   STRUCTURE id templateParameters? typeParameters?
         LBRACE
         structureFieldDefinition*
         functionDefinition*
@@ -104,7 +105,7 @@ fieldConstraint
 // CHOICE
 
 choiceDeclaration
-    :   CHOICE id parameterList ON expression
+    :   CHOICE id templateParameters? typeParameters ON expression
         LBRACE
         choiceCases*
         choiceDefault?
@@ -133,7 +134,7 @@ choiceFieldDefinition
 // UNION
 
 unionDeclaration
-    :   UNION id parameterList?
+    :   UNION id templateParameters? typeParameters?
         LBRACE
         unionFieldDefinition*
         functionDefinition*
@@ -164,7 +165,7 @@ enumItem
 // SQL TABLE
 
 sqlTableDeclaration
-    :   SQL_TABLE id (USING id)?
+    :   SQL_TABLE id templateParameters? (USING id)?
         LBRACE
         sqlTableFieldDefinition*
         sqlConstraintDefinition?
@@ -205,7 +206,7 @@ sqlDatabaseFieldDefinition
     ;
 
 sqlTableReference
-    :   qualifiedName
+    :   qualifiedName templateArguments?
     ;
 
 
@@ -214,17 +215,17 @@ sqlTableReference
 serviceDefinition
     :   SERVICE id
         LBRACE
-        rpcDeclaration*
+        rpcDefinition*
         RBRACE
         SEMICOLON
     ;
 
-rpcDeclaration
+rpcDefinition
     :   RPC rpcTypeName id LPAREN rpcTypeName RPAREN SEMICOLON
     ;
 
 rpcTypeName
-    :   STREAM? qualifiedName
+    :   STREAM? qualifiedName templateArguments?
     ;
 
 
@@ -253,12 +254,23 @@ functionBody
 
 // PARAMETERS
 
-parameterList
+typeParameters
     :   LPAREN parameterDefinition (COMMA parameterDefinition)* RPAREN
     ;
 
 parameterDefinition
     :   typeName id
+    ;
+
+
+// TEMPLATES
+
+templateParameters
+    :   LT id (COMMA id)* GT
+    ;
+
+templateArguments
+    :   LT typeName (COMMA typeName)* GT
     ;
 
 
@@ -275,7 +287,7 @@ expression
     |   operator=(PLUS | MINUS | BANG | TILDE) expression                           # unaryExpression
     |   expression operator=(MULTIPLY | DIVIDE | MODULO) expression                 # multiplicativeExpression
     |   expression operator=(PLUS | MINUS) expression                               # additiveExpression
-    |   expression operator=(LSHIFT | RSHIFT) expression                            # shiftExpression
+    |   expression (operator=LSHIFT | operator=GT GT) expression                    # shiftExpression
     |   expression operator=(LT | LE | GT | GE) expression                          # relationalExpression
     |   expression operator=(EQ | NE) expression                                    # equalityExpression
     |   expression operator=AND expression                                          # bitwiseAndExpression
@@ -309,12 +321,12 @@ id
 
 typeName
     :   builtinType
-    |   qualifiedName
+    |   qualifiedName templateArguments?
     ;
 
 typeReference
     :   builtinType
-    |   qualifiedName typeArgumentList?
+    |   qualifiedName templateArguments? typeArguments?
     ;
 
 builtinType
@@ -331,7 +343,7 @@ qualifiedName
     :   id (DOT id)*
     ;
 
-typeArgumentList
+typeArguments
     :   LPAREN typeArgument (COMMA typeArgument)* RPAREN
     ;
 

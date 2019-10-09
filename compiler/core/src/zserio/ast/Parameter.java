@@ -1,6 +1,6 @@
 package zserio.ast;
 
-import org.antlr.v4.runtime.Token;
+import java.util.List;
 
 /**
  * AST node for a parameter defined in the parameterized compound types.
@@ -10,13 +10,13 @@ public class Parameter extends AstNodeBase
     /**
      * Constructor.
      *
-     * @param token         ANTLR4 token to localize AST node in the sources.
+     * @param location      AST node location.
      * @param parameterType Zserio type of the parameter.
      * @param name          Name of the parameter.
      */
-    public Parameter(Token token, ZserioType parameterType, String name)
+    public Parameter(AstLocation location, ZserioType parameterType, String name)
     {
-        super(token);
+        super(location);
 
         this.parameterType = parameterType;
         this.name = name;
@@ -52,6 +52,22 @@ public class Parameter extends AstNodeBase
     public String getName()
     {
         return name;
+    }
+
+    /**
+     * Instantiate the type parameter.
+     *
+     * @param templateParameters Template parameters.
+     * @param templateArguments Template arguments.
+     *
+     * @return New type parameter instantiated from this using the given template arguments.
+     */
+    Parameter instantiate(List<TemplateParameter> templateParameters, List<ZserioType> templateArguments)
+    {
+        final ZserioType instantiatedParameterType =
+                ZserioTypeUtil.instantiate(parameterType, templateParameters, templateArguments);
+
+        return new Parameter(getLocation(), instantiatedParameterType, getName());
     }
 
     private final ZserioType parameterType;

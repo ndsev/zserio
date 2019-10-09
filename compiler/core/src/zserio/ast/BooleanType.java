@@ -1,7 +1,5 @@
 package zserio.ast;
 
-import org.antlr.v4.runtime.Token;
-
 /**
  * AST node for Boolean types.
  *
@@ -10,13 +8,14 @@ import org.antlr.v4.runtime.Token;
 public class BooleanType extends BuiltInType implements FixedSizeType
 {
     /**
-     * Constructor from ANTLR4 token.
+     * Constructor from AST node location and the name.
      *
-     * @param token Token to construct from.
+     * @param location AST node location.
+     * @param name     Name of the AST node taken from grammar.
      */
-    public BooleanType(Token token)
+    public BooleanType(AstLocation location, String name)
     {
-        super(token);
+        super(location, name);
     }
 
     @Override

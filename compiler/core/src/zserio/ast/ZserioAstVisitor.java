@@ -223,6 +223,13 @@ public interface ZserioAstVisitor
     void visitFloatType(FloatType floatType);
 
     /**
+     * Visits template parameter.
+     *
+     * @param templateParameter Template parameter AST node.
+     */
+    void visitTemplateParameter(TemplateParameter templateParameter);
+
+    /**
      * Visits a documentation comment.
      *
      * @param docComment Documentation comment AST node.

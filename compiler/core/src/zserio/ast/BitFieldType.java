@@ -1,10 +1,8 @@
 package zserio.ast;
 
 import java.math.BigInteger;
+import java.util.List;
 
-import org.antlr.v4.runtime.Token;
-
-import zserio.antlr.util.ParserException;
 
 /**
  * AST abstract node for all bit field Integer types.
@@ -15,14 +13,15 @@ import zserio.antlr.util.ParserException;
 public abstract class BitFieldType extends IntegerType
 {
     /**
-     * Constructor from ANTLR4 token.
+     * Constructor from AST node location, the name and the expression length
      *
-     * @param token            Token to construct from.
+     * @param location         AST node location.
+     * @param name             Name of the AST node taken from grammar.
      * @param lengthExpression Length expression associated with this bit field type.
      */
-    public BitFieldType(Token token, Expression lengthExpression)
+    public BitFieldType(AstLocation location, String name, Expression lengthExpression)
     {
-        super(token);
+        super(location, name);
 
         this.lengthExpression = lengthExpression;
     }
@@ -122,7 +121,24 @@ public abstract class BitFieldType extends IntegerType
         }
     }
 
+    /**
+     * Instantiate the bitfield type.
+     *
+     * @param templateParameters Template parameters.
+     * @param templateArguments Template arguments.
+     *
+     * @return New bitfield type instantiated from this using the given template arguments.
+     */
+    BitFieldType instantiate(List<TemplateParameter> templateParameters, List<ZserioType> templateArguments)
+    {
+        final Expression instantiatedLengthExpression = getLengthExpression().instantiate(templateParameters,
+                templateArguments);
+
+        return instantiate(instantiatedLengthExpression);
+    }
+
     abstract int getMaxBitFieldBits();
+    abstract BitFieldType instantiate(Expression instantiatedLengthExpression);
 
     private final Expression lengthExpression;
 

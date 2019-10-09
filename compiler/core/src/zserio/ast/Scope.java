@@ -3,8 +3,6 @@ package zserio.ast;
 import java.util.HashMap;
 import java.util.Map;
 
-import zserio.antlr.util.ParserException;
-
 /**
  * This class represents a lexical scope which maps symbol names to objects.
  *
@@ -45,9 +43,14 @@ class Scope
      */
     public void setSymbol(String name, AstNode node)
     {
-        final Object symbolObject = symbolTable.put(name, node);
-        if (symbolObject != null)
-            throw new ParserException(node, "'" + name + "' is already defined in this scope!");
+        final AstNode prevSymbol = symbolTable.put(name, node);
+        if (prevSymbol != null)
+        {
+            final ParserStackedException stackedException = new ParserStackedException(node.getLocation(),
+                    "'" + name + "' is already defined in this scope!");
+            stackedException.pushMessage(prevSymbol.getLocation(), "    First defined here");
+            throw stackedException;
+        }
     }
 
     /**

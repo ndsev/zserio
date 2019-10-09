@@ -3,12 +3,8 @@ package zserio.ast;
 import java.util.Collections;
 import java.util.List;
 
-import org.antlr.v4.runtime.Token;
-
-import zserio.antlr.util.ParserException;
 import zserio.ast.Package;
 import zserio.ast.Scope;
-import zserio.ast.ZserioScopedType;
 import zserio.tools.HashUtil;
 
 /**
@@ -16,27 +12,29 @@ import zserio.tools.HashUtil;
  *
  * This is an abstract class for all Compound Zserio types (structure types, choice types, ...).
  */
-public abstract class CompoundType extends AstNodeWithDoc implements ZserioScopedType, Comparable<CompoundType>
+public abstract class CompoundType extends TemplatableType implements Comparable<CompoundType>
 {
     /**
      * Constructor.
      *
-     * @param token      ANTLR4 token to localize AST node in the sources.
-     * @param pkg        Package to which belongs the compound type.
-     * @param name       Name of the compound type.
-     * @param parameters List of parameters for the compound type.
-     * @param fields     List of all fields of the compound type.
-     * @param functions  List of all functions of the compound type.
+     * @param location AST node location.
+     * @param pkg Package to which belongs the compound type.
+     * @param name Name of the compound type.
+     * @param templateParameters List of template parameters.
+     * @param typeParameters List of parameters for the compound type.
+     * @param fields List of all fields of the compound type.
+     * @param functions List of all functions of the compound type.
      * @param docComment Documentation comment belonging to this node.
      */
-    CompoundType(Token token, Package pkg, String name, List<Parameter> parameters, List<Field> fields,
-            List<FunctionType> functions, DocComment docComment)
+    CompoundType(AstLocation location, Package pkg, String name, List<TemplateParameter> templateParameters,
+            List<Parameter> typeParameters, List<Field> fields, List<FunctionType> functions,
+            DocComment docComment)
     {
-        super(token, docComment);
+        super(location, templateParameters, docComment);
 
         this.pkg = pkg;
         this.name = name;
-        this.parameters = parameters;
+        this.typeParameters = typeParameters;
         this.fields = fields;
         this.functions = functions;
     }
@@ -44,7 +42,9 @@ public abstract class CompoundType extends AstNodeWithDoc implements ZserioScope
     @Override
     public void visitChildren(ZserioAstVisitor visitor)
     {
-        for (Parameter parameter : parameters)
+        super.visitChildren(visitor);
+
+        for (Parameter parameter : typeParameters)
             parameter.accept(visitor);
 
         for (Field field : fields)
@@ -52,8 +52,6 @@ public abstract class CompoundType extends AstNodeWithDoc implements ZserioScope
 
         for (FunctionType function : functions)
             function.accept(visitor);
-
-        super.visitChildren(visitor);
     }
 
     @Override
@@ -119,15 +117,15 @@ public abstract class CompoundType extends AstNodeWithDoc implements ZserioScope
     }
 
     /**
-     * Gets all parameters associated to this compound type.
+     * Gets all type parameters associated to this compound type.
      *
      * Parameters are ordered according to their definition in Zserio source file.
      *
-     * @return List of parameters which this compound type contains.
+     * @return List of type parameters which this compound type contains.
      */
-    public List<Parameter> getParameters()
+    public List<Parameter> getTypeParameters()
     {
-        return Collections.unmodifiableList(parameters);
+        return Collections.unmodifiableList(typeParameters);
     }
 
     /**
@@ -159,7 +157,7 @@ public abstract class CompoundType extends AstNodeWithDoc implements ZserioScope
             {
                 final CompoundType childCompoundType = (CompoundType)fieldBaseType;
                 // compound type can have itself as an optional field
-                if (!childCompoundType.getParameters().isEmpty() ||
+                if (!childCompoundType.getTypeParameters().isEmpty() ||
                         (childCompoundType != this && childCompoundType.needsChildrenInitialization()))
                     return true;
             }
@@ -262,6 +260,6 @@ public abstract class CompoundType extends AstNodeWithDoc implements ZserioScope
     private final String name;
 
     private final List<Field> fields;
-    private final List<Parameter> parameters;
+    private final List<Parameter> typeParameters;
     private final List<FunctionType> functions;
 }

@@ -1,12 +1,10 @@
 package zserio.ast;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.antlr.v4.runtime.Token;
-
-import zserio.antlr.util.ParserException;
 import zserio.tools.ZserioToolPrinter;
 
 /**
@@ -19,24 +17,48 @@ public class StructureType extends CompoundType
     /**
      * Constructor.
      *
-     * @param token      ANTLR4 token to localize AST node in the sources.
-     * @param pkg        Package to which belongs the structure type.
-     * @param name       Name of the structure type.
-     * @param parameters List of parameters for the structure type.
-     * @param fields     List of all fields of the structure type.
-     * @param functions  List of all functions of the structure type.
+     * @param location AST node location.
+     * @param pkg Package to which belongs the structure type.
+     * @param name Name of the structure type.
+     * @param templateParameters List of template parameters.
+     * @param typeParameters List of parameters for the structure type.
+     * @param fields List of all fields of the structure type.
+     * @param functions List of all functions of the structure type.
      * @param docComment Documentation comment belonging to this node.
      */
-    public StructureType(Token token, Package pkg, String name, List<Parameter> parameters, List<Field> fields,
+    public StructureType(AstLocation location, Package pkg, String name,
+            List<TemplateParameter> templateParameters, List<Parameter> typeParameters, List<Field> fields,
             List<FunctionType> functions, DocComment docComment)
     {
-        super(token, pkg, name, parameters, fields, functions, docComment);
+        super(location, pkg, name, templateParameters, typeParameters, fields, functions, docComment);
     }
 
     @Override
     public void accept(ZserioAstVisitor visitor)
     {
         visitor.visitStructureType(this);
+    }
+
+    @Override
+    StructureType instantiateImpl(String name, List<ZserioType> templateArguments)
+    {
+        final List<Parameter> instantiatedTypeParameters = new ArrayList<Parameter>();
+        for (Parameter typeParameter : getTypeParameters())
+        {
+            instantiatedTypeParameters.add(
+                    typeParameter.instantiate(getTemplateParameters(), templateArguments));
+        }
+
+        final List<Field> instantiatedFields = new ArrayList<Field>();
+        for (Field field : getFields())
+            instantiatedFields.add(field.instantiate(getTemplateParameters(), templateArguments));
+
+        final List<FunctionType> instantiatedFunctions = new ArrayList<FunctionType>();
+        for (FunctionType function : getFunctions())
+            instantiatedFunctions.add(function.instantiate(getTemplateParameters(), templateArguments));
+
+        return new StructureType(getLocation(), getPackage(), name, new ArrayList<TemplateParameter>(),
+                instantiatedTypeParameters, instantiatedFields, instantiatedFunctions, getDocComment());
     }
 
     @Override

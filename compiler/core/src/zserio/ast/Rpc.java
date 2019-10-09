@@ -1,19 +1,16 @@
 package zserio.ast;
 
-import org.antlr.v4.runtime.Token;
-
-import zserio.antlr.util.ParserException;
 
 
 /**
  * AST node for RPC calls.
  */
-public class Rpc extends AstNodeWithDoc
+public class Rpc extends DocumentableAstNode
 {
     /**
      * Constructor.
      *
-     * @param token             ANTLR4 token to localize AST node in the sources.
+     * @param location          AST node location.
      * @param name              Name of the RPC call.
      * @param responseType      Zserio type of the response.
      * @param responseStreaming True if response streaming is requested.
@@ -21,10 +18,10 @@ public class Rpc extends AstNodeWithDoc
      * @param requestStreaming  True if request streaming is requested.
      * @param docComment        Documentation comment belonging to this node.
      */
-    public Rpc(Token token, String name, ZserioType responseType, boolean responseStreaming,
+    public Rpc(AstLocation location, String name, ZserioType responseType, boolean responseStreaming,
             ZserioType requestType, boolean requestStreaming, DocComment docComment)
     {
-        super(token, docComment);
+        super(location, docComment);
 
         this.name = name;
         this.responseType = responseType;
@@ -42,10 +39,10 @@ public class Rpc extends AstNodeWithDoc
     @Override
     public void visitChildren(ZserioAstVisitor visitor)
     {
+        super.visitChildren(visitor);
+
         responseType.accept(visitor);
         requestType.accept(visitor);
-
-        super.visitChildren(visitor);
     }
 
     /**
@@ -118,7 +115,7 @@ public class Rpc extends AstNodeWithDoc
 
     private void checkUsedType(ZserioType type, CompoundType compoundType)
     {
-        if (compoundType.getParameters().size() > 0)
+        if (compoundType.getTypeParameters().size() > 0)
             throw new ParserException(type, "Only non-parameterized compound types can be used in RPC calls, " +
                     "'" + type.getName() + "' is a parameterized type!");
 

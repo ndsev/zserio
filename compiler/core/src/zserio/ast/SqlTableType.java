@@ -7,9 +7,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.antlr.v4.runtime.Token;
-
-import zserio.antlr.util.ParserException;
 import zserio.ast.TypeInstantiation.InstantiatedParameter;
 import zserio.tools.ZserioToolPrinter;
 
@@ -23,19 +20,22 @@ public class SqlTableType extends CompoundType
     /**
      * Constructor.
      *
-     * @param token           ANTLR4 token to localize AST node in the sources.
-     * @param pkg             Package to which belongs the SQL table type.
-     * @param name            Name of the SQL table type.
-     * @param sqlUsingId      SQL using id associated to the SQL table type.
-     * @param fields          List of all fields of to the SQL table type.
-     * @param sqlConstraint   SQL constraint of the SQL table type.
-     * @param sqlWithoutRowId SQL without row id associated to the SQL table type.
-     * @param docComment      Documentation comment belonging to this node.
+     * @param location              AST node location.
+     * @param pkg                   Package to which belongs the SQL table type.
+     * @param name                  Name of the SQL table type.
+     * @param templateParameters    List of template parameters.
+     * @param sqlUsingId            SQL using id associated to the SQL table type.
+     * @param fields                List of all fields of to the SQL table type.
+     * @param sqlConstraint         SQL constraint of the SQL table type.
+     * @param sqlWithoutRowId       SQL without row id associated to the SQL table type.
+     * @param docComment            Documentation comment belonging to this node.
      */
-    public SqlTableType(Token token, Package pkg, String name, String sqlUsingId, List<Field> fields,
+    public SqlTableType(AstLocation location, Package pkg, String name,
+            List<TemplateParameter> templateParameters, String sqlUsingId, List<Field> fields,
             SqlConstraint sqlConstraint, boolean sqlWithoutRowId, DocComment docComment)
     {
-        super(token, pkg, name, new ArrayList<Parameter>(), fields, new ArrayList<FunctionType>(), docComment);
+        super(location, pkg, name, templateParameters, new ArrayList<Parameter>(), fields,
+                new ArrayList<FunctionType>(), docComment);
 
         this.sqlUsingId = sqlUsingId;
         this.sqlConstraint = sqlConstraint;
@@ -55,6 +55,17 @@ public class SqlTableType extends CompoundType
 
         if (sqlConstraint != null)
             sqlConstraint.accept(visitor);
+    }
+
+    @Override
+    SqlTableType instantiateImpl(String name, List<ZserioType> templateArguments)
+    {
+        final List<Field> instantiatedFields = new ArrayList<Field>();
+        for (Field field : getFields())
+            instantiatedFields.add(field.instantiate(getTemplateParameters(), templateArguments));
+
+        return new SqlTableType(getLocation(), getPackage(), name, new ArrayList<TemplateParameter>(),
+                sqlUsingId, instantiatedFields, getSqlConstraint(), isWithoutRowId(), getDocComment());
     }
 
     /**

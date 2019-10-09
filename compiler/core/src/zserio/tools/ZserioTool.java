@@ -13,16 +13,19 @@ import org.apache.commons.cli.ParseException;
 import zserio.antlr.ZserioLexer;
 import zserio.antlr.ZserioParser;
 import zserio.antlr.util.ParseErrorListener;
-import zserio.antlr.util.ParserException;
 import zserio.ast.Import;
 import zserio.ast.Package;
 import zserio.ast.PackageName;
+import zserio.ast.ParserException;
+import zserio.ast.ParserStackedException;
 import zserio.ast.Root;
 import zserio.ast.ZserioAstBuilder;
 import zserio.ast.ZserioAstChecker;
 import zserio.ast.ZserioAstEvaluator;
-import zserio.ast.ZserioAstResolver;
+import zserio.ast.ZserioAstSymbolResolver;
 import zserio.ast.ZserioAstScopeSetter;
+import zserio.ast.ZserioAstTemplator;
+import zserio.ast.ZserioAstTypeResolver;
 import zserio.ast.ZserioParseTreeChecker;
 import zserio.emit.common.ZserioEmitException;
 
@@ -67,6 +70,13 @@ public class ZserioTool
         catch (ZserioEmitException exception)
         {
             ZserioToolPrinter.printError(exception.getMessage());
+            return false;
+        }
+        catch (ParserStackedException exception)
+        {
+            for (ParserStackedException.Message message : exception.getMessageStack())
+                ZserioToolPrinter.printError(message.getLocation(), message.getMessage());
+            ZserioToolPrinter.printError(exception.getLocation(), exception.getMessage());
             return false;
         }
         catch (ParserException exception)
@@ -141,11 +151,17 @@ public class ZserioTool
 
         final Root rootNode = astBuilderVisitor.getAst();
 
+        final ZserioAstTypeResolver typeResolver = new ZserioAstTypeResolver();
+        rootNode.accept(typeResolver);
+
+        final ZserioAstTemplator templator = new ZserioAstTemplator(typeResolver);
+        rootNode.accept(templator);
+
         final ZserioAstScopeSetter scopeSetter = new ZserioAstScopeSetter();
         rootNode.accept(scopeSetter);
 
-        final ZserioAstResolver resolver = new ZserioAstResolver();
-        rootNode.accept(resolver);
+        final ZserioAstSymbolResolver symbolResolver = new ZserioAstSymbolResolver();
+        rootNode.accept(symbolResolver);
 
         final ZserioAstEvaluator evaluator = new ZserioAstEvaluator();
         rootNode.accept(evaluator);

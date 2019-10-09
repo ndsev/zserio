@@ -8,11 +8,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
-import org.antlr.v4.runtime.CommonToken;
-import org.antlr.v4.runtime.Token;
-
 import zserio.antlr.ZserioParser;
-import zserio.antlr.util.ParserException;
 
 /**
  * AST node for SQL constraints.
@@ -22,12 +18,12 @@ public class SqlConstraint extends AstNodeBase
     /**
      * Constructor.
      *
-     * @param token         ANTLR4 token to localize AST node in the sources.
+     * @param location      AST node location.
      * @param constaintExpr Constraint expression.
      */
-    public SqlConstraint(Token token, Expression constraintExpr)
+    public SqlConstraint(AstLocation location, Expression constraintExpr)
     {
-        super(token);
+        super(location);
 
         this.constraintExpr = constraintExpr;
     }
@@ -163,6 +159,22 @@ public class SqlConstraint extends AstNodeBase
         translatedFieldConstraintExpr = createTranslatedFieldConstraintExpr(translatedConstraint);
     }
 
+    /**
+     * Instantiate the sql constraint.
+     *
+     * @param templateParameters Template parameters.
+     * @param templateArguments Template arguments.
+     *
+     * @return New sql constraint instantiated from this using the given template arguments.
+     */
+    SqlConstraint instantiate(List<TemplateParameter> templateParameters, List<ZserioType> templateArguments)
+    {
+        final Expression instantiatedConstraintExpr =
+                getConstraintExpr().instantiate(templateParameters, templateArguments);
+
+        return new SqlConstraint(getLocation(), instantiatedConstraintExpr);
+    }
+
     private void resolveConstraintReferences(CompoundType compoundType, String sqlConstraintString)
     {
         int startIndex = 0;
@@ -171,7 +183,7 @@ public class SqlConstraint extends AstNodeBase
         {
             translatedConstraintStrings.add(sqlConstraintString.substring(startIndex, referenceIndex));
 
-            final int endIndex = findEndOfConstraintReference2(sqlConstraintString, referenceIndex + 1);
+            final int endIndex = findEndOfConstraintReference(sqlConstraintString, referenceIndex + 1);
             final String referencedText = sqlConstraintString.substring(referenceIndex + 1, endIndex);
             final SymbolReference symbolReference = new SymbolReference(this, referencedText);
             symbolReference.resolve(compoundType.getPackage(), compoundType);
@@ -186,7 +198,7 @@ public class SqlConstraint extends AstNodeBase
             translatedConstraintStrings.add(sqlConstraintString.substring(startIndex));
     }
 
-    private static int findEndOfConstraintReference2(String sqlConstrainString, int startIndex)
+    private static int findEndOfConstraintReference(String sqlConstrainString, int startIndex)
     {
         int endIndex = startIndex;
         while (endIndex < sqlConstrainString.length())
@@ -326,9 +338,8 @@ public class SqlConstraint extends AstNodeBase
 
     private static Expression createStringLiteralExpression(Package pkg, String stringLiteral)
     {
-        final CommonToken stringLiteralToken = new CommonToken(ZserioParser.STRING_LITERAL, stringLiteral);
-
-        return new Expression(null, pkg, stringLiteralToken);
+        return new Expression(null, pkg, ZserioParser.STRING_LITERAL, stringLiteral,
+                Expression.ExpressionFlag.NONE);
     }
 
     private static final String PRIMARY_KEY_CONSTRAINT = "PRIMARY KEY";

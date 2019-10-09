@@ -1,9 +1,8 @@
 package zserio.ast;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-
-import org.antlr.v4.runtime.Token;
 
 /**
  * AST node for cases defined by choice types.
@@ -13,13 +12,13 @@ public class ChoiceCase extends AstNodeBase
     /**
      * Constructor.
      *
-     * @param token           ANTLR4 token to localize AST node in the sources.
+     * @param location        AST node location.
      * @param caseExpressions List of all case expressions associated to this choice case.
      * @param caseField       Case field associated to this choice case or null if it's not defined.
      */
-    public ChoiceCase(Token token, List<ChoiceCaseExpression> caseExpressions, Field caseField)
+    public ChoiceCase(AstLocation location, List<ChoiceCaseExpression> caseExpressions, Field caseField)
     {
-        super(token);
+        super(location);
 
         this.caseExpressions = caseExpressions;
         this.caseField = caseField;
@@ -58,6 +57,29 @@ public class ChoiceCase extends AstNodeBase
     public Field getField()
     {
         return caseField;
+    }
+
+    /**
+     * Instantiate the choice case.
+     *
+     * @param templateParameters Template parameters.
+     * @param templateArguments Template arguments.
+     *
+     * @return New choice case instantiated from this using the given template arguments.
+     */
+    ChoiceCase instantiate(List<TemplateParameter> templateParameters, List<ZserioType> templateArguments)
+    {
+        final Field instantiatedCaseField = caseField == null ? null :
+                caseField.instantiate(templateParameters, templateArguments);
+
+        final List<ChoiceCaseExpression> instantiatedCaseExpressions = new ArrayList<ChoiceCaseExpression>();
+        for (ChoiceCaseExpression choiceCaseExpression : caseExpressions)
+        {
+            instantiatedCaseExpressions.add(
+                    choiceCaseExpression.instantiate(templateParameters, templateArguments));
+        }
+
+        return new ChoiceCase(getLocation(), instantiatedCaseExpressions, instantiatedCaseField);
     }
 
     private final List<ChoiceCaseExpression> caseExpressions;
