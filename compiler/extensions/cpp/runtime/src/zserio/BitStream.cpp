@@ -60,13 +60,54 @@ size_t bitSizeOf(const BitStream& bitStream, size_t) // bitPosition is always ig
 
 void read(BitStream& bitStream, BitStreamReader& in)
 {
-    // TODO[mikir]
     const size_t bitStreamSize = zserio::convertVarUInt64ToArraySize(in.readVarUInt64());
+    const std::function<void(BitStreamReader&)>& readFunc = bitStream.getReadFunc();
+    if (readFunc)
+    {
+        const bool isReaderByteAligned = ((in.getBitPosition() & 0x07) == 0);
+        BitStreamBuffer bitStreamBuffer = (isReaderByteAligned) ? in.readEmplaceBuffer(bitStreamSize) :
+                in.readBuffer(bitStreamSize);
+        BitStreamReader innerReader(bitStreamBuffer);
+        bitStream.readFunc(innerReader);
+    }
+    else
+    {
+        BitStreamBuffer bitStreamBuffer = in.readBuffer(bitSize);
+        bitStream.setBuffer(bitStreamBuffer); // TODO
+    }
 }
 
 void write(const BitStream& bitStream, BitStreamWriter& out)
 {
-    // TODO[mikir]
+    const std::function<size_t(size_t)>& bitSizeOfFunc = bitStream.getBitSizeOfFunc();
+    const std::function<void(BitStreamWriter&, PreWriteAction)>& writeFunc = bitStream.getWriteFunc();
+    if (bitSizeOfFunc && writeFunc)
+    {
+        const size_t bitStreamSize = bitStream.bitSizeOfFunc(0);
+        out.writeVarUInt64(static_cast<uint64_t>(bitStreamSize));
+
+        const bool isWriterByteAligned = ((out.getBitPosition() & 0x07) == 0);
+        BitStreamBuffer bitStreamBuffer = (isWriterByteAligned) ? out.getInnerBuffer(bitStreamSize) :
+        if (isWriterByteAligned)
+        {
+            BitStreamBuffer bitStreamBuffer = out.reserveBuffer(bitStreamSize);
+            BitStreamWriter innerWriter(bitStreamBuffer);
+            bitStream.writeFunc(innerWriter, NO_PRE_WRITE_ACTION);
+        }
+        else
+        {
+            BitStreamBuffer bitStreamBuffer(bitStreamSize);
+            BitStreamWriter innerWriter(bitStreamBuffer);
+            bitStream.writeFunc(innerWriter, NO_PRE_WRITE_ACTION);
+            out.writeBuffer(innerWriter.getBuffer());
+        }
+    }
+    else
+    {
+        BitStreamBuffer bitStreamBuffer = bitStream.getBuffer();
+        out.writeVarUInt64(static_cast<uint64_t>(bitStreamBuffer.getBitSize());
+        out.writeBuffer(bitStreamBuffer);
+    }
 }
 
 } // namespace zserio

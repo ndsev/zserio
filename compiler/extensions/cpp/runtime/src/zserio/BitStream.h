@@ -7,7 +7,7 @@
 #include "zserio/Types.h"
 #include "zserio/BitStreamReader.h"
 #include "zserio/BitStreamWriter.h"
-#include <zserio/PreWriteAction.h>
+#include "zserio/PreWriteAction.h"
 
 namespace zserio
 {
