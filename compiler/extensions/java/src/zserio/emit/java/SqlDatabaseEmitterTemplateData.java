@@ -47,10 +47,12 @@ public final  class SqlDatabaseEmitterTemplateData extends UserTypeTemplateData
         public DatabaseFieldData(JavaNativeTypeMapper javaNativeTypeMapper, Field field)
                 throws ZserioEmitException
         {
+            final TypeReference fieldTypeReference = field.getTypeInstantiation().getTypeReference();
+            final ZserioType fieldBaseType = fieldTypeReference.getBaseType();
+            javaTypeName = javaNativeTypeMapper.getJavaType(fieldTypeReference).getFullName();
+
             name = field.getName();
-            javaTypeName = javaNativeTypeMapper.getJavaType(field.getFieldType()).getFullName();
             getterName = AccessorNameFormatter.getGetterName(field);
-            final ZserioType fieldBaseType = TypeReference.resolveBaseType(field.getFieldReferencedType());
             if (fieldBaseType instanceof SqlTableType)
             {
                 SqlTableType tableType = (SqlTableType)fieldBaseType;
@@ -93,7 +95,9 @@ public final  class SqlDatabaseEmitterTemplateData extends UserTypeTemplateData
         {
             for (Field tableField : tableType.getFields())
             {
-                for (InstantiatedParameter instantiatedParam : tableField.getInstantiatedParameters())
+                final List<InstantiatedParameter> instantiatedParameters =
+                        tableField.getTypeInstantiation().getInstantiatedParameters();
+                for (InstantiatedParameter instantiatedParam : instantiatedParameters)
                 {
                     if (instantiatedParam.getArgumentExpression().isExplicitVariable())
                         return true;

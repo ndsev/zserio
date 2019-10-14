@@ -12,20 +12,20 @@ public class ConstType extends DocumentableAstNode implements ZserioType, Compar
     /**
      * Constructor.
      *
-     * @param location        AST node location.
-     * @param pkg             Package to which belongs the constant type.
-     * @param constType       Zserio type of the constant.
-     * @param name            Name of the constant type.
-     * @param valueExpression Value expression associated to the constant type.
-     * @param docComment      Documentation comment belonging to this node.
+     * @param location               AST node location.
+     * @param pkg                    Package to which belongs the constant type.
+     * @param constTypeInstantiation Type instantiation of the constant.
+     * @param name                   Name of the constant type.
+     * @param valueExpression        Value expression associated to the constant type.
+     * @param docComment             Documentation comment belonging to this node.
      */
-    public ConstType(AstLocation location, Package pkg, ZserioType constType, String name, Expression valueExpression,
-            DocComment docComment)
+    public ConstType(AstLocation location, Package pkg, TypeInstantiation constTypeInstantiation, String name,
+            Expression valueExpression, DocComment docComment)
     {
         super(location, docComment);
 
         this.pkg = pkg;
-        this.constType = constType;
+        this.constTypeInstantiation = constTypeInstantiation;
         this.name = name;
         this.valueExpression = valueExpression;
     }
@@ -41,7 +41,7 @@ public class ConstType extends DocumentableAstNode implements ZserioType, Compar
     {
         super.visitChildren(visitor);
 
-        constType.accept(visitor);
+        constTypeInstantiation.accept(visitor);
         valueExpression.accept(visitor);
     }
 
@@ -81,13 +81,13 @@ public class ConstType extends DocumentableAstNode implements ZserioType, Compar
     }
 
     /**
-     * Gets unresolved Zserio type.
+     * Gets reference to the type of this constant.
      *
-     * @return Unresolved Zserio type.
+     * @return Type reference.
      */
-    public ZserioType getConstType()
+    public TypeReference getTypeReference()
     {
-        return constType;
+        return constTypeInstantiation.getTypeReference();
     }
 
     /**
@@ -106,9 +106,8 @@ public class ConstType extends DocumentableAstNode implements ZserioType, Compar
     void check()
     {
         // check base type
-        final ZserioType resolvedTypeReference = TypeReference.resolveType(constType);
-        final ZserioType baseType = TypeReference.resolveBaseType(resolvedTypeReference);
-        if (!ZserioTypeUtil.isBuiltIn(baseType) && !(baseType instanceof EnumType))
+        final ZserioType baseType = constTypeInstantiation.getTypeReference().getBaseType();
+        if (!(baseType instanceof BuiltInType) && !(baseType instanceof EnumType))
             throw new ParserException(this, "Constants can be defined only for built-in types and enums!");
 
         // check expression type
@@ -119,7 +118,7 @@ public class ConstType extends DocumentableAstNode implements ZserioType, Compar
     }
 
     private final Package pkg;
-    private final ZserioType constType;
+    private final TypeInstantiation constTypeInstantiation;
     private final String name;
     private final Expression valueExpression;
 }

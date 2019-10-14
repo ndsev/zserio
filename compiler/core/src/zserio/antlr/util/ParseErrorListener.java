@@ -10,6 +10,7 @@ import org.antlr.v4.runtime.misc.ParseCancellationException;
 import zserio.antlr.ZserioParser;
 import zserio.ast.AstLocation;
 import zserio.ast.ParserException;
+import zserio.ast.ParserStackedException;
 
 /**
  * ANTLR4 error listener implementation which terminates parsing in case of an parsing error.
@@ -21,12 +22,14 @@ public class ParseErrorListener extends BaseErrorListener
             int line, int charPositionInLine, String msg,
             RecognitionException e) throws ParseCancellationException
     {
+        final AstLocation location = new AstLocation(recognizer.getInputStream().getSourceName(), line,
+                charPositionInLine);
         if (e instanceof InputMismatchException && isKeyword(e.getOffendingToken()))
         {
-            final String message = msg + " ('" + e.getOffendingToken().getText() +
-                    "' is a reserved keyword)!";
-            throw new ParserException(new AstLocation(recognizer.getInputStream().getSourceName(), line,
-                    charPositionInLine), message);
+            final ParserStackedException stackedException = new ParserStackedException(location,
+                    "'" + e.getOffendingToken().getText() + "' is a reserved keyword!");
+            stackedException.pushMessage(location,  msg);
+            throw stackedException;
         }
         else
         {
@@ -47,3 +50,4 @@ public class ParseErrorListener extends BaseErrorListener
         return false;
     }
 }
+

@@ -5,7 +5,6 @@ import java.io.IOException;
 
 import zserio.ast.CompoundType;
 import zserio.ast.ConstType;
-import zserio.ast.ZserioType;
 import zserio.ast.Expression;
 import zserio.emit.common.ExpressionFormatter;
 import zserio.emit.common.ZserioEmitException;
@@ -117,8 +116,7 @@ public class ConstTypeEmitter extends DefaultHtmlEmitter
         if (consttype == null)
             throw new RuntimeException("getConstType() called before emit()!");
 
-        ZserioType constType = consttype.getConstType();
-        LinkedType linkedType = new LinkedType(constType);
+        LinkedType linkedType = new LinkedType(consttype.getTypeReference());
         return linkedType;
     }
 

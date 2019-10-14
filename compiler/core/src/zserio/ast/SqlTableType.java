@@ -35,7 +35,7 @@ public class SqlTableType extends CompoundType
             SqlConstraint sqlConstraint, boolean sqlWithoutRowId, DocComment docComment)
     {
         super(location, pkg, name, templateParameters, new ArrayList<Parameter>(), fields,
-                new ArrayList<FunctionType>(), docComment);
+                new ArrayList<Function>(), docComment);
 
         this.sqlUsingId = sqlUsingId;
         this.sqlConstraint = sqlConstraint;
@@ -58,7 +58,7 @@ public class SqlTableType extends CompoundType
     }
 
     @Override
-    SqlTableType instantiateImpl(String name, List<ZserioType> templateArguments)
+    SqlTableType instantiateImpl(String name, List<TypeReference> templateArguments)
     {
         final List<Field> instantiatedFields = new ArrayList<Field>();
         for (Field field : getFields())
@@ -158,7 +158,8 @@ public class SqlTableType extends CompoundType
 
         for (Field tableField : getFields())
         {
-            final List<InstantiatedParameter> instantiatedParameters = tableField.getInstantiatedParameters();
+            final List<InstantiatedParameter> instantiatedParameters =
+                    tableField.getTypeInstantiation().getInstantiatedParameters();
             for (InstantiatedParameter instantiatedParam : instantiatedParameters)
             {
                 final Expression argumentExpression = instantiatedParam.getArgumentExpression();
@@ -166,7 +167,7 @@ public class SqlTableType extends CompoundType
                 {
                     final Parameter param = instantiatedParam.getParameter();
                     final String paramName = param.getName();
-                    final ZserioType type = TypeReference.resolveBaseType(param.getParameterType());
+                    final ZserioType type = param.getTypeReference().getBaseType();
                     final String typeName = ZserioTypeUtil.getFullName(type);
 
                     final AbstractMap.SimpleEntry<String, Expression> prevEntry = paramTypeMap.get(paramName);
@@ -285,7 +286,7 @@ public class SqlTableType extends CompoundType
             for (Field primaryKeyField : sqlPrimaryKeyFields)
             {
                 final ZserioType fieldBaseType =
-                        TypeReference.resolveBaseType(primaryKeyField.getFieldType());
+                        primaryKeyField.getTypeInstantiation().getTypeReference().getBaseType();
                 if (fieldBaseType instanceof BooleanType || fieldBaseType instanceof IntegerType)
                     ZserioToolPrinter.printWarning(this, "Single integer primary key in without rowid " +
                             "table '" + getName() + "' brings performance drop.");

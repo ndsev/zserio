@@ -17,7 +17,7 @@ public class ConstEmitterTemplateData extends UserTypeTemplateData
 
         name = constType.getName();
 
-        CppNativeType nativeTargetType = cppNativeTypeMapper.getCppType(constType.getConstType());
+        CppNativeType nativeTargetType = cppNativeTypeMapper.getCppType(constType.getTypeReference());
         addHeaderIncludesForType(nativeTargetType);
 
         cppTypeName = nativeTargetType.getFullName();

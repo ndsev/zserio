@@ -20,7 +20,7 @@ public class ConstantsErrorTest
     @Test
     public void choiceTypeConstant()
     {
-        final String error = "choice_type_constant_error.zs:11:14: " +
+        final String error = "choice_type_constant_error.zs:11:17: " +
                 "Constants can be defined only for built-in types and enums!";
         assertTrue(zserioErrors.isPresent(error));
     }
@@ -60,9 +60,12 @@ public class ConstantsErrorTest
     @Test
     public void invalidConstantName()
     {
-        final String error = "invalid_constant_name_error.zs:4:13: " +
-                "mismatched input 'align' expecting ID ('align' is a reserved keyword)!";
-        assertTrue(zserioErrors.isPresent(error));
+        final String errors[] =
+        {
+            "invalid_constant_name_error.zs:4:13: mismatched input 'align' expecting {", // ...
+            "invalid_constant_name_error.zs:4:13: 'align' is a reserved keyword!"
+        };
+        assertTrue(zserioErrors.isPresent(errors));
     }
 
     @Test

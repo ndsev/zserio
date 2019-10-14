@@ -51,11 +51,11 @@ public class ZserioParseTreeChecker extends ZserioParserBaseVisitor<Void>
             return null;
 
         // this must be checked now to avoid obscure errors if package is not stored in the same file name
-       final PackageName packageName = createPackageName(ctx.qualifiedName().id());
+        final PackageName packageName = createPackageName(ctx.id());
         final String expectedFileFullName = inputFileManager.getFileFullName(packageName);
         final String fileFullName = ctx.getStart().getInputStream().getSourceName();
         if (!expectedFileFullName.equals(fileFullName))
-            throw new ParserException(ctx.qualifiedName().getStart(), "Package '" + packageName.toString() +
+            throw new ParserException(ctx.id(0).getStart(), "Package '" + packageName.toString() +
                     "' does not match to the source file name!");
 
         return visitChildren(ctx);

@@ -20,9 +20,12 @@ public class UnionTypesErrorTest
     @Test
     public void optionalMember()
     {
-        final String error = "optional_field_error.zs:6:18: " +
-                "mismatched input 'if' expecting {':', '[', ';'} ('if' is a reserved keyword)!";
-        assertTrue(zserioErrors.isPresent(error));
+        final String errors[] =
+        {
+            "optional_field_error.zs:6:18: mismatched input 'if' expecting {", // ...
+            "optional_field_error.zs:6:18: 'if' is a reserved keyword!"
+        };
+        assertTrue(zserioErrors.isPresent(errors));
     }
 
     @Test

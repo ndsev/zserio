@@ -15,7 +15,6 @@ import zserio.ast.StdIntegerType;
 import zserio.ast.StringType;
 import zserio.ast.StructureType;
 import zserio.ast.Subtype;
-import zserio.ast.TypeInstantiation;
 import zserio.ast.TypeReference;
 import zserio.ast.UnionType;
 import zserio.ast.VarIntegerType;
@@ -27,9 +26,9 @@ import zserio.emit.python.types.NativeArrayType;
 import zserio.emit.python.types.NativeBuiltinType;
 import zserio.emit.python.types.NativeFixedSizeIntArrayType;
 import zserio.emit.python.types.NativeObjectArrayType;
+import zserio.emit.python.types.NativeSubtype;
 import zserio.emit.python.types.NativeUserType;
 import zserio.emit.python.types.PythonNativeType;
-
 
 public class PythonNativeTypeMapper
 {
@@ -44,6 +43,21 @@ public class PythonNativeTypeMapper
     }
 
     /**
+     * Returns a Python type that can hold an instance of referenced Zserio type.
+     *
+     * @param typeReference Reference to the Zserio type.
+     *
+     * @return  Python type which can hold referenced Zserio type.
+     *
+     * @throws ZserioEmitException If the referenced Zserio type cannot be mapped to any Python type.
+     */
+    public PythonNativeType getPythonType(TypeReference typeReference) throws ZserioEmitException
+    {
+        // don't resolve subtypes so that the subtype name (Python imports) will be used
+        return getPythonType(typeReference.getType());
+    }
+
+    /**
      * Returns a Python type that can hold an instance of given Zserio type.
      *
      * @param type Zserio type for mapping to Python type.
@@ -54,21 +68,22 @@ public class PythonNativeTypeMapper
      */
     public PythonNativeType getPythonType(ZserioType type) throws ZserioEmitException
     {
-        // don't resolve subtypes so that the subtype name (Python imports) will be used
-        final ZserioType resolvedType = TypeReference.resolveType(type);
-
         final TypeMapperVisitor visitor = new TypeMapperVisitor(pythonPackageMapper);
-        resolvedType.accept(visitor);
+        type.accept(visitor);
+
+        final ZserioEmitException thrownException = visitor.getThrownException();
+        if (thrownException != null)
+            throw thrownException;
 
         final PythonNativeType nativeType = visitor.getPythonType();
         if (nativeType == null)
-            throw new ZserioEmitException("Unhandled type '" + resolvedType.getClass().getName() +
+            throw new ZserioEmitException("Unhandled type '" + type.getClass().getName() +
                     "' in PythonNativeTypeMapper!");
 
         return nativeType;
     }
 
-    private static class TypeMapperVisitor extends ZserioAstDefaultVisitor
+    private class TypeMapperVisitor extends ZserioAstDefaultVisitor
     {
         public TypeMapperVisitor(PackageMapper pythonPackageMapper)
         {
@@ -80,12 +95,19 @@ public class PythonNativeTypeMapper
             return pythonType;
         }
 
+        public ZserioEmitException getThrownException()
+        {
+            return thrownException;
+        }
+
         @Override
         public void visitArrayType(ArrayType type)
         {
-            final ZserioType resolvedElementBaseType = TypeReference.resolveBaseType(type.getElementType());
+            // use base type since we just need to know whether it's an object array or built-in type array
+            final ZserioType elementBaseType =
+                    type.getElementTypeInstantiation().getTypeReference().getBaseType();
             final ArrayTypeMapperVisitor visitor = new ArrayTypeMapperVisitor();
-            resolvedElementBaseType.accept(visitor);
+            elementBaseType.accept(visitor);
             pythonType = visitor.getPythonArrayType();
         }
 
@@ -166,13 +188,17 @@ public class PythonNativeTypeMapper
         @Override
         public void visitSubtype(Subtype type)
         {
-            pythonType = mapUserType(type);
-        }
-
-        @Override
-        public void visitTypeInstantiation(TypeInstantiation type)
-        {
-            pythonType = mapUserType(type.getBaseType());
+            try
+            {
+                final PackageName packageName = pythonPackageMapper.getPackageName(type);
+                final PythonNativeType nativeTargetBaseType =
+                        PythonNativeTypeMapper.this.getPythonType(type.getTypeReference().getBaseType());
+                pythonType = new NativeSubtype(packageName, type.getName(), nativeTargetBaseType);
+            }
+            catch (ZserioEmitException exception)
+            {
+                thrownException = exception;
+            }
         }
 
         @Override
@@ -194,6 +220,7 @@ public class PythonNativeTypeMapper
         }
 
         private PythonNativeType pythonType;
+        private ZserioEmitException thrownException = null;
         private final PackageMapper pythonPackageMapper;
     }
 
@@ -269,12 +296,6 @@ public class PythonNativeTypeMapper
 
         @Override
         public void visitStructureType(StructureType type)
-        {
-            pythonArrayType = new NativeObjectArrayType("ObjectArrayTraits");
-        }
-
-        @Override
-        public void visitTypeInstantiation(TypeInstantiation type)
         {
             pythonArrayType = new NativeObjectArrayType("ObjectArrayTraits");
         }

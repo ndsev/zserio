@@ -10,6 +10,7 @@ import org.antlr.v4.runtime.RecognitionException;
 import org.antlr.v4.runtime.Recognizer;
 import org.antlr.v4.runtime.misc.ParseCancellationException;
 import org.antlr.v4.runtime.tree.ParseTree;
+
 import static org.junit.Assert.*;
 import org.junit.Test;
 
@@ -25,7 +26,7 @@ public class ZserioParserTest
     public void packageDeclaration()
     {
         checkParseTree("packageNameDefinition", "package test.pkg;",
-                "(packageNameDefinition package (qualifiedName (id test) . (id pkg)) ;)");
+                "(packageNameDefinition package (id test) . (id pkg) ;)");
 
         assertParseError("packageDeclaration", "package test.*;", "mismatched input '*' expecting ID");
     }
@@ -48,15 +49,15 @@ public class ZserioParserTest
     public void constDeclaration()
     {
         checkParseTree("constDeclaration", "const uint32 C = 10;",
-                "(constDeclaration const (typeName (builtinType (intType uint32))) (id C) = " +
-                        "(expression (literal 10)) ;)");
+                "(constDeclaration const (typeInstantiation (typeReference (builtinType (intType uint32)))) " +
+                        "(id C) = (expression (literal 10)) ;)");
     }
 
     @Test
     public void subtypeDeclaration()
     {
         checkParseTree("subtypeDeclaration", "subtype uint32 Subtype;",
-                "(subtypeDeclaration subtype (typeName (builtinType (intType uint32))) (id Subtype) ;)");
+                "(subtypeDeclaration subtype (typeReference (builtinType (intType uint32))) (id Subtype) ;)");
     }
 
     @Test
@@ -70,8 +71,9 @@ public class ZserioParserTest
     public void typeParameters()
     {
         checkParseTree("typeParameters", "(uint32 id1, bool id2)",
-                "(typeParameters ( (parameterDefinition (typeName (builtinType (intType uint32))) (id id1)) , " +
-                        "(parameterDefinition (typeName (builtinType (boolType bool))) (id id2)) ))");
+                "(typeParameters ( " +
+                        "(parameterDefinition (typeReference (builtinType (intType uint32))) (id id1)) , " +
+                        "(parameterDefinition (typeReference (builtinType (boolType bool))) (id id2)) ))");
     }
 
     @Test
@@ -94,30 +96,30 @@ public class ZserioParserTest
         checkParseTree("fieldOffset", "id1.id2:",
                 "(fieldOffset (expression (expression (id id1)) . (id id2)) :)");
 
-        assertParseError("fieldOffset", "uint32:", "mismatched input 'uint32' expecting {"); // expression
+        assertParseError("fieldOffset", "uint32:", "mismatched input 'uint32' expecting {"); // ...
     }
 
     @Test
     public void fieldTypeId()
     {
         checkParseTree("fieldTypeId", "uint32 value",
-                "(fieldTypeId (typeReference (builtinType (intType uint32))) (id value))");
+                "(fieldTypeId (typeInstantiation (typeReference (builtinType (intType uint32)))) (id value))");
         checkParseTree("fieldTypeId", "uint32 value",
-                "(fieldTypeId (typeReference (builtinType (intType uint32))) (id value))");
+                "(fieldTypeId (typeInstantiation (typeReference (builtinType (intType uint32)))) (id value))");
         checkParseTree("fieldTypeId", "implicit uint32 value[]",
-                "(fieldTypeId implicit (typeReference (builtinType (intType uint32))) (id value) " +
-                        "(fieldArrayRange [ ]))");
+                "(fieldTypeId implicit (typeInstantiation (typeReference (builtinType (intType uint32)))) " +
+                        "(id value) (fieldArrayRange [ ]))");
         checkParseTree("fieldTypeId", "uint32 value[22]",
-                "(fieldTypeId (typeReference (builtinType (intType uint32))) (id value) " +
+                "(fieldTypeId (typeInstantiation (typeReference (builtinType (intType uint32)))) (id value) " +
                         "(fieldArrayRange [ (expression (literal 22)) ]))");
         checkParseTree("fieldTypeId", "Parameterized(param) field",
-                "(fieldTypeId (typeReference (qualifiedName (id Parameterized)) " +
+                "(fieldTypeId (typeInstantiation (typeReference (qualifiedName (id Parameterized))) " +
                         "(typeArguments ( (typeArgument (expression (id param))) ))) (id field))");
         checkParseTree("fieldTypeId", "Template<uint32> field",
-                "(fieldTypeId (typeReference (qualifiedName (id Template)) " +
-                        "(templateArguments < (typeName (builtinType (intType uint32))) >)) (id field))");
+                "(fieldTypeId (typeInstantiation (typeReference (qualifiedName (id Template)) " +
+                        "(templateArguments < (typeReference (builtinType (intType uint32))) >))) (id field))");
 
-        assertParseError("fieldTypeId", "uint32 bool", "mismatched input 'bool' expecting ID");
+        assertParseError("fieldTypeId", "uint32 bool", "mismatched input 'bool' expecting {"); // ...
     }
 
     @Test
@@ -153,7 +155,8 @@ public class ZserioParserTest
                 "(structureFieldDefinition " +
                         "(fieldAlignment align ( 10 ) :) " +
                         "(fieldOffset (expression (id offset)) :) " +
-                        "(fieldTypeId (typeReference (builtinType (intType uint32))) (id value)) " +
+                        "(fieldTypeId (typeInstantiation (typeReference (builtinType (intType uint32)))) " +
+                                "(id value)) " +
                         "(fieldInitializer = (expression (literal 10))) " +
                         "(fieldOptionalClause if (expression (id hasValue))) " +
                         "(fieldConstraint : (expression (expression (id value)) > " +
@@ -161,7 +164,8 @@ public class ZserioParserTest
                 ";)");
         checkParseTree("structureFieldDefinition", "optional string description;",
                 "(structureFieldDefinition optional " +
-                "(fieldTypeId (typeReference (builtinType (stringType string))) (id description)) ;)");
+                "(fieldTypeId (typeInstantiation (typeReference (builtinType (stringType string)))) " +
+                        "(id description)) ;)");
     }
 
     @Test
@@ -169,8 +173,8 @@ public class ZserioParserTest
     {
         checkParseTree("choiceCases", "case 10: uint32 field;",
                 "(choiceCases (choiceCase case (expression (literal 10)) :) " +
-                "(choiceFieldDefinition (fieldTypeId (typeReference (builtinType (intType uint32))) " +
-                        "(id field))) ;)");
+                "(choiceFieldDefinition (fieldTypeId (typeInstantiation (typeReference (builtinType " +
+                        "(intType uint32)))) (id field))) ;)");
         checkParseTree("choiceCases",
                 "case 10:\n" +
                 "case 11:\n" +
@@ -180,8 +184,8 @@ public class ZserioParserTest
                 "(choiceCase case (expression (literal 10)) :) " +
                 "(choiceCase case (expression (literal 11)) :) " +
                 "(choiceCase case (expression (literal 22)) :) " +
-                "(choiceFieldDefinition (fieldTypeId (typeReference (builtinType (stringType string))) " +
-                        "(id value))) ;)");
+                "(choiceFieldDefinition (fieldTypeId (typeInstantiation (typeReference " +
+                        "(builtinType (stringType string)))) (id value))) ;)");
     }
 
     @Test
@@ -189,21 +193,21 @@ public class ZserioParserTest
     {
         checkParseTree("choiceDefault", "default: int8 field;",
                 "(choiceDefault default : " +
-                "(choiceFieldDefinition (fieldTypeId (typeReference (builtinType (intType int8))) " +
-                        "(id field))) ;)");
+                "(choiceFieldDefinition (fieldTypeId (typeInstantiation (typeReference " +
+                        "(builtinType (intType int8)))) (id field))) ;)");
     }
 
     @Test
     public void enumDeclaration()
     {
         checkParseTree("enumDeclaration", "enum uint8 E { ONE = 1, TWO };",
-                "(enumDeclaration enum (typeName (builtinType (intType uint8))) (id E) " +
+                "(enumDeclaration enum (typeReference (builtinType (intType uint8))) (id E) " +
                 "{ (enumItem (id ONE) = (expression (literal 1))) , " +
                         "(enumItem (id TWO)) } ;)");
 
         // trailing COMMA is allowed!
         checkParseTree("enumDeclaration", "enum uint8 E { ONE = 1, TWO, };",
-                "(enumDeclaration enum (typeName (builtinType (intType uint8))) (id E) { " +
+                "(enumDeclaration enum (typeReference (builtinType (intType uint8))) (id E) { " +
                         "(enumItem (id ONE) = (expression (literal 1))) , " +
                         "(enumItem (id TWO)) , " +
                 "} ;)");
@@ -213,15 +217,16 @@ public class ZserioParserTest
     public void sqlTableFieldDefinition()
     {
         checkParseTree("sqlTableFieldDefinition", "uint32 field;",
-                "(sqlTableFieldDefinition (typeReference (builtinType (intType uint32))) (id field) ;)");
-
-        checkParseTree("sqlTableFieldDefinition", "sql_virtual uint32 field;",
-                "(sqlTableFieldDefinition sql_virtual (typeReference (builtinType (intType uint32))) " +
+                "(sqlTableFieldDefinition (typeInstantiation (typeReference (builtinType (intType uint32)))) " +
                         "(id field) ;)");
 
+        checkParseTree("sqlTableFieldDefinition", "sql_virtual uint32 field;",
+                "(sqlTableFieldDefinition sql_virtual (typeInstantiation (typeReference " +
+                            "(builtinType (intType uint32)))) (id field) ;)");
+
         checkParseTree("sqlTableFieldDefinition", "uint32 field sql \"PRIMARY KEY\";",
-                "(sqlTableFieldDefinition (typeReference (builtinType (intType uint32))) (id field) " +
-                        "(sqlConstraint sql \"PRIMARY KEY\") ;)");
+                "(sqlTableFieldDefinition (typeInstantiation (typeReference (builtinType (intType uint32)))) " +
+                        "(id field) (sqlConstraint sql \"PRIMARY KEY\") ;)");
     };
 
     @Test
@@ -242,36 +247,38 @@ public class ZserioParserTest
     public void sqlDatabaseFieldDefinition()
     {
         checkParseTree("sqlDatabaseFieldDefinition", "SomeTable someTable;",
-                "(sqlDatabaseFieldDefinition (sqlTableReference (qualifiedName (id SomeTable))) " +
-                        "(id someTable) ;)");
+                "(sqlDatabaseFieldDefinition (typeInstantiation (typeReference (qualifiedName " +
+                        "(id SomeTable)))) (id someTable) ;)");
 
         checkParseTree("sqlDatabaseFieldDefinition", "org.pkg.SomeTable someTable;",
-                "(sqlDatabaseFieldDefinition (sqlTableReference " +
-                        "(qualifiedName (id org) . (id pkg) . (id SomeTable))) (id someTable) ;)");
+                "(sqlDatabaseFieldDefinition (typeInstantiation (typeReference " +
+                        "(qualifiedName (id org) . (id pkg) . (id SomeTable)))) (id someTable) ;)");
     }
 
     @Test
     public void rpcDefinition()
     {
         checkParseTree("rpcDefinition", "rpc Response method(Request);",
-                "(rpcDefinition rpc (rpcTypeName (qualifiedName (id Response))) (id method) " +
-                        "( (rpcTypeName (qualifiedName (id Request))) ) ;)");
+                "(rpcDefinition rpc (rpcTypeReference (typeReference (qualifiedName (id Response)))) " +
+                        "(id method) ( (rpcTypeReference (typeReference (qualifiedName (id Request)))) ) ;)");
         checkParseTree("rpcDefinition", "rpc stream Response method(Request);",
-                "(rpcDefinition rpc (rpcTypeName stream (qualifiedName (id Response))) (id method) " +
-                        "( (rpcTypeName (qualifiedName (id Request))) ) ;)");
+                "(rpcDefinition rpc (rpcTypeReference stream (typeReference (qualifiedName (id Response)))) " +
+                        "(id method) ( (rpcTypeReference (typeReference (qualifiedName (id Request)))) ) ;)");
         checkParseTree("rpcDefinition", "rpc Response method(stream Request);",
-                "(rpcDefinition rpc (rpcTypeName (qualifiedName (id Response))) (id method) " +
-                        "( (rpcTypeName stream (qualifiedName (id Request))) ) ;)");
+                "(rpcDefinition rpc (rpcTypeReference (typeReference (qualifiedName (id Response)))) " +
+                        "(id method) " +
+                        "( (rpcTypeReference stream (typeReference (qualifiedName (id Request)))) ) ;)");
         checkParseTree("rpcDefinition", "rpc stream Response method(stream Request);",
-                "(rpcDefinition rpc (rpcTypeName stream (qualifiedName (id Response))) (id method) " +
-                        "( (rpcTypeName stream (qualifiedName (id Request))) ) ;)");
+                "(rpcDefinition rpc (rpcTypeReference stream (typeReference (qualifiedName (id Response)))) " +
+                        "(id method) " +
+                        "( (rpcTypeReference stream (typeReference (qualifiedName (id Request)))) ) ;)");
     }
 
     @Test
     public void functionDefinition()
     {
         checkParseTree("functionDefinition", "function RetType testFunc() { return 0; }",
-                "(functionDefinition function (functionType (typeName (qualifiedName (id RetType)))) " +
+                "(functionDefinition function (functionType (typeReference (qualifiedName (id RetType)))) " +
                         "(functionName (id testFunc)) ( ) " +
                         "(functionBody { return (expression (literal 0)) ; }))");
         assertParseError("functionDefinition", "function Parameterized() testFunc() { return 0; }",

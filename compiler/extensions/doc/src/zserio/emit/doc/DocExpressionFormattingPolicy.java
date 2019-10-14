@@ -1,11 +1,6 @@
 package zserio.emit.doc;
 
-import zserio.ast.ZserioType;
-import zserio.ast.EnumItem;
-import zserio.ast.EnumType;
 import zserio.ast.Expression;
-import zserio.ast.Field;
-import zserio.ast.Parameter;
 import zserio.emit.common.DefaultExpressionFormattingPolicy;
 
 public class DocExpressionFormattingPolicy extends DefaultExpressionFormattingPolicy
@@ -67,42 +62,9 @@ public class DocExpressionFormattingPolicy extends DefaultExpressionFormattingPo
     @Override
     public String getIdentifier(Expression expr, boolean isLastInDot, boolean isSetter)
     {
-        String symbol = expr.getText();
-        String res = (expr.isExplicitVariable()) ? "explicit " : "";
+        final String symbol = expr.getText();
 
-        Object obj = expr.getExprSymbolObject();
-        if (obj instanceof EnumType)
-        {
-            EnumType enumeration = (EnumType) obj;
-            res += enumeration.getName();
-        }
-        else if (obj instanceof ZserioType)
-        {
-            res += symbol;
-        }
-        else if (obj instanceof Parameter)
-        {
-            Parameter param = (Parameter) obj;
-            String pName = param.getName();
-            res += pName;
-        }
-        else if (obj instanceof Field)
-        {
-            Field field = (Field) obj;
-            res += field.getName();
-        }
-        else if (obj instanceof EnumItem)
-        {
-            EnumItem item = (EnumItem) obj;
-            String value = item.getName();
-            res += value;
-        }
-        else
-        {
-            res += symbol;
-        }
-
-        return res;
+        return (expr.isExplicitVariable()) ? "explicit " + symbol : symbol;
     }
 
     @Override

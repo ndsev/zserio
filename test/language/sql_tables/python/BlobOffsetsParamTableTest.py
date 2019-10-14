@@ -79,7 +79,7 @@ class BlobOffsetsParamTableTest(unittest.TestCase):
     def _createBlobOffsetsParamTableRow(self, blobId, name):
         offsetsHolder = self.api.blob_offsets_param_table.OffsetsHolder.fromFields([0] * self.ARRAY_SIZE)
 
-        array = [i for i in range(self.ARRAY_SIZE)]
+        array = list(range(self.ARRAY_SIZE))
         blob = self.api.blob_offsets_param_table.ParameterizedBlob.fromFields(offsetsHolder, array)
 
         # we must initialize offsets manually since offsetsHolder is written first to the sqlite table

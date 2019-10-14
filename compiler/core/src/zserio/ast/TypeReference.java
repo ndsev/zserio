@@ -1,33 +1,26 @@
 package zserio.ast;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
-
-/**
- * AST node for Type References.
- *
- * A Type Reference is either a simple name or a sequence of simple names separated by dots referring to
- * a nested type, e.g. {@code Outer.Inner}.
- *
- * Type references are Zserio types as well.
- */
-public class TypeReference extends AstNodeBase implements ZserioType
+public class TypeReference extends AstNodeBase
 {
-    /**
-     * Constructor.
-     *
-     * @param location               AST node location.
-     * @param ownerPackage           Package of the type reference owner.
-     * @param referencedPackageName  Package name which the reference points to.
-     * @param referencedTypeName     Type name which the reference points to.
-     * @param templateArguments      Template arguments for the referenced type.
-     * @param isTemplateArgument     True if the type reference is template argument.
-     * @param checkIfNeedsParameters True if check if the referenced type needs parameters.
-     */
+    public TypeReference(AstLocation location, Package ownerPackage, BuiltInType builtinType,
+            boolean isTemplateArgument)
+    {
+        super(location);
+
+        this.ownerPackage = ownerPackage;
+        referencedPackageName = PackageName.EMPTY;
+        referencedTypeName = builtinType.getName();
+        templateArguments = new ArrayList<TypeReference>();
+        this.isTemplateArgument = isTemplateArgument;
+        type = builtinType;
+    }
+
     public TypeReference(AstLocation location, Package ownerPackage, PackageName referencedPackageName,
-            String referencedTypeName, List<ZserioType> templateArguments, boolean isTemplateArgument,
-            boolean checkIfNeedsParameters)
+            String referencedTypeName, List<TypeReference> templateArguments, boolean isTemplateArgument)
     {
         super(location);
 
@@ -36,7 +29,6 @@ public class TypeReference extends AstNodeBase implements ZserioType
         this.referencedTypeName = referencedTypeName;
         this.templateArguments = templateArguments;
         this.isTemplateArgument = isTemplateArgument;
-        this.checkIfNeedsParameters = checkIfNeedsParameters;
     }
 
     @Override
@@ -48,33 +40,38 @@ public class TypeReference extends AstNodeBase implements ZserioType
     @Override
     public void visitChildren(ZserioAstVisitor visitor)
     {
-        for (ZserioType templateArgument : templateArguments)
+        if (type instanceof BuiltInType)
+            ((BuiltInType)type).accept(visitor);
+
+        for (TypeReference templateArgument : templateArguments)
             templateArgument.accept(visitor);
     }
 
-    @Override
-    public Package getPackage()
+    public ZserioType getType()
     {
-        if (referencedType == null)
-            return null;
-
-        return referencedType.getPackage();
+        return type;
     }
 
-    @Override
-    public String getName()
+    public ZserioType getBaseType()
+    {
+        if (type instanceof Subtype)
+            return ((Subtype)type).getBaseTypeReference().getType();
+        return type;
+    }
+
+    public List<TypeReference> getTemplateArguments()
+    {
+        return Collections.unmodifiableList(templateArguments);
+    }
+
+    public PackageName getReferencedPackageName()
+    {
+        return referencedPackageName;
+    }
+
+    public String getReferencedTypeName()
     {
         return referencedTypeName;
-    }
-
-    /**
-     * Gets referenced type.
-     *
-     * @return Referenced type.
-     */
-    public ZserioType getReferencedType()
-    {
-        return referencedType;
     }
 
     /**
@@ -82,58 +79,39 @@ public class TypeReference extends AstNodeBase implements ZserioType
      */
     void resolve()
     {
+        // TODO[Mi-L@][typeref] Hack for built-in types.
+        //                      Note that instantiated templates are also resolved, but we don't know yet how
+        //                      to instantiate TypeReferenced pointing to instantiated template.
+        if (type instanceof BuiltInType)
+            return; // already resolved
+
         // resolve referenced type
-        referencedType = ownerPackage.getVisibleType(this, referencedPackageName, referencedTypeName);
-        if (referencedType == null)
+        type = ownerPackage.getVisibleType(this, referencedPackageName, referencedTypeName);
+        if (type == null)
         {
             throw new ParserException(this, "Unresolved referenced type '" +
                     ZserioTypeUtil.getReferencedFullName(this) + "'!");
         }
 
         // check referenced type
-        if (referencedType instanceof ConstType && !isTemplateArgument)
-            throw new ParserException(this, "Invalid usage of constant '" + referencedType.getName() +
+        if (type instanceof ConstType && !isTemplateArgument)
+            throw new ParserException(this, "Invalid usage of constant '" + type.getName() +
                     "' as a type!");
-        if (referencedType instanceof SqlDatabaseType)
-            throw new ParserException(this, "Invalid usage of SQL database '" + referencedType.getName() +
+        if (type instanceof SqlDatabaseType)
+            throw new ParserException(this, "Invalid usage of SQL database '" + type.getName() +
                     "' as a type!");
-        if (referencedType instanceof TemplatableType)
+        if (type instanceof TemplatableType)
         {
-            final TemplatableType template = (TemplatableType)referencedType;
+            final TemplatableType template = (TemplatableType)type;
             if (!template.getTemplateParameters().isEmpty() && templateArguments.isEmpty())
                 throw new ParserException(this,
-                        "Missing template arguments for template '" + getName() + "'!");
+                        "Missing template arguments for template '" + getReferencedTypeName() + "'!");
         }
     }
 
-    /**
-     * Resolves this reference to the created template instantiation.
-     *
-     * This is called from ZserioAstTemplator during template instantiations.
-     *
-     * @param instantiation Template instantiation to which this reference is resolved.
-     */
     void resolveInstantiation(ZserioTemplatableType instantiation)
     {
-        referencedType = instantiation;
-    }
-
-    /**
-     * Checks the type reference.
-     */
-    void check()
-    {
-        if (checkIfNeedsParameters)
-        {
-            final ZserioType referencedBaseType = resolveBaseType(referencedType);
-            if (referencedBaseType instanceof CompoundType)
-            {
-                final CompoundType referencedCompoundType = (CompoundType)referencedBaseType;
-                if (referencedCompoundType.getTypeParameters().size() > 0)
-                    throw new ParserException(this, "Referenced type '" + referencedTypeName +
-                            "' is defined as parameterized type!");
-            }
-        }
+        type = instantiation;
     }
 
     /**
@@ -144,7 +122,7 @@ public class TypeReference extends AstNodeBase implements ZserioType
      *
      * @return New type reference instantiated from this using the given template arguments.
      */
-    ZserioType instantiate(List<TemplateParameter> templateParameters, List<ZserioType> templateArguments)
+    TypeReference instantiate(List<TemplateParameter> templateParameters, List<TypeReference> templateArguments)
     {
         if (getReferencedPackageName().isEmpty()) // may be a template parameter
         {
@@ -154,111 +132,62 @@ public class TypeReference extends AstNodeBase implements ZserioType
                 if (!getTemplateArguments().isEmpty())
                     throw new ParserException(this, "Template parameter cannot be used as a template!");
 
-                final ZserioType templateArgument = templateArguments.get(index);
-                if (templateArgument instanceof TypeReference)
-                {
-                    // TODO[Mi-L@]: Consider redesign of the two flags (how to get rid of them).
-                    // flags isTemplateArgument and checkIfNeedsParameters must be taken over from this!
-                    final TypeReference referencedTemplateArgument = (TypeReference)templateArgument;
-                    return new TypeReference(getLocation(), referencedTemplateArgument.ownerPackage,
-                            referencedTemplateArgument.referencedPackageName,
-                            referencedTemplateArgument.referencedTypeName,
-                            referencedTemplateArgument.templateArguments,
-                            isTemplateArgument, checkIfNeedsParameters);
-                }
-                return templateArgument;
+                final TypeReference templateArgument = templateArguments.get(index);
+
+                // TODO[Mi-L@]: Consider redesign of the isTemplateArgument flag (how to get rid of it).
+                // flag isTemplateArgument must be taken over from this!
+                return templateArgument.instantiateImpl(getLocation(), templateArgument.templateArguments,
+                        isTemplateArgument, templateParameters, templateArguments);
             }
         }
 
         // instantiate template arguments first
-        final List<ZserioType> instantiatedTemplateArguments = new ArrayList<ZserioType>();
-        for (ZserioType templateArgument : getTemplateArguments())
+        final List<TypeReference> instantiatedTemplateArguments = new ArrayList<TypeReference>();
+        for (TypeReference templateArgument : getTemplateArguments())
         {
-            if (templateArgument instanceof TypeReference)
+            instantiatedTemplateArguments.add(
+                    templateArgument.instantiate(templateParameters, templateArguments));
+        }
+
+        return instantiateImpl(getLocation(), instantiatedTemplateArguments, isTemplateArgument,
+                templateParameters, templateArguments);
+    }
+
+    private TypeReference instantiateImpl(AstLocation location,
+            List<TypeReference> instantiatedTemplateArguments, boolean isTemplateArgument,
+            List<TemplateParameter> templateParameters, List<TypeReference> passedTemplateArguments)
+    {
+        if (type instanceof BuiltInType) // TODO[Mi-L@][typeref] Hack for built-in types.
+        {
+            if (type instanceof BitFieldType)
             {
-                instantiatedTemplateArguments.add(((TypeReference)templateArgument).instantiate(
-                        templateParameters, templateArguments));
+                return new TypeReference(location, ownerPackage,
+                        ((BitFieldType)type).instantiate(templateParameters, passedTemplateArguments),
+                        isTemplateArgument);
+            }
+            else if (type instanceof ArrayType)
+            {
+                return new TypeReference(location, ownerPackage,
+                        ((ArrayType)type).instantiate(templateParameters, passedTemplateArguments),
+                        isTemplateArgument);
             }
             else
             {
-                instantiatedTemplateArguments.add(templateArgument);
+                return new TypeReference(location, ownerPackage, (BuiltInType)type, isTemplateArgument);
             }
         }
-
-        return new TypeReference(getLocation(), ownerPackage, referencedPackageName, referencedTypeName,
-                instantiatedTemplateArguments, isTemplateArgument, checkIfNeedsParameters);
-    }
-
-    /**
-     * Gets actual template parameters - i.e. template arguments.
-     *
-     * @return List of template arguments.
-     */
-    List<ZserioType> getTemplateArguments()
-    {
-        return templateArguments;
-    }
-
-    /**
-     * Gets referenced package name corresponding to what is actually in Zserio source code.
-     *
-     * @return Referenced package name.
-     */
-    PackageName getReferencedPackageName()
-    {
-        return referencedPackageName;
-    }
-
-    /**
-     * Resolves base type from type reference or subtype.
-     *
-     * Note that this method does not resolve ArrayType and TypeInstantiation.
-     *
-     * @param type Generic Zserio type to resolve.
-     *
-     * @return The input parameter 'type' if 'type' is not type reference or subtype, otherwise base type of
-     *         the type reference or subtype specified by input parameter 'type'.
-     */
-    static public ZserioType resolveBaseType(ZserioType type)
-    {
-        ZserioType baseType = type;
-
-        if (baseType instanceof TypeReference)
-            baseType = ((TypeReference)baseType).referencedType;
-
-        if (baseType instanceof Subtype)
+        else
         {
-            baseType = ((Subtype)baseType).getBaseTypeReference();
-            if (baseType instanceof TypeReference)
-                baseType = ((TypeReference)baseType).referencedType;
+            return new TypeReference(location, ownerPackage, referencedPackageName, referencedTypeName,
+                    instantiatedTemplateArguments, isTemplateArgument);
         }
-
-        return baseType;
-    }
-
-    /**
-     * Resolves referenced type from type reference.
-     *
-     * @param type Generic Zserio type to resolve.
-     *
-     * @return The input parameter 'type' if 'type' is not type reference, otherwise referenced type of
-     *         the type reference specified by input parameter 'type'.
-     */
-    static public ZserioType resolveType(ZserioType type)
-    {
-        ZserioType resolvedType = type;
-        if (resolvedType instanceof TypeReference)
-            resolvedType = ((TypeReference)resolvedType).referencedType;
-
-        return resolvedType;
     }
 
     private final Package ownerPackage;
     private final PackageName referencedPackageName;
     private final String referencedTypeName;
-    private final List<ZserioType> templateArguments;
+    private final List<TypeReference> templateArguments;
     private final boolean isTemplateArgument;
-    private final boolean checkIfNeedsParameters;
 
-    private ZserioType referencedType = null;
+    private ZserioType type = null;
 }

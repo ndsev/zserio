@@ -56,7 +56,7 @@
       <#assign array = getFieldEmitter(caseMember.compoundField).arrayRange!"">
       <#assign opt = caseMember.compoundField.optionalClause!"">
       <#assign c = caseMember.compoundField.constraint!"">
-            <@linkedtype toLinkedType(caseMember.compoundField.fieldType)/><@arglist caseMember.compoundField/>
+            <@linkedtype toLinkedType(caseMember.compoundField.typeInstantiation)/><@arglist caseMember.compoundField/>
           </td>
           <td valign="bottom">
             <a href="#${fname}" class="fieldLink">${fname}</a>${array}${opt}${c};
@@ -81,7 +81,7 @@
       <#assign array = getFieldEmitter(choiceData.defaultMember.compoundField).arrayRange!"">
       <#assign opt = choiceData.defaultMember.compoundField.optionalClause!"">
       <#assign c = choiceData.defaultMember.compoundField.constraint!"">
-            <@linkedtype toLinkedType(choiceData.defaultMember.compoundField.fieldType)/><@arglist choiceData.defaultMember.compoundField/>
+            <@linkedtype toLinkedType(choiceData.defaultMember.compoundField.typeInstantiation)/><@arglist choiceData.defaultMember.compoundField/>
           </td>
           <td valign="bottom">
             <a href="#${fname}" class="fieldLink">${fname}</a>${array}${opt}${c};

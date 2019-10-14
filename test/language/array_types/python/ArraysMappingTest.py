@@ -9,7 +9,7 @@ class ArraysMappingTest(unittest.TestCase):
 
     def testUnsignedIntegerArrays(self):
         arraysMapping = self.api.ArraysMapping()
-        intArray = [i for i in range(self.FIXED_ARRAY_LENGTH)]
+        intArray = list(range(self.FIXED_ARRAY_LENGTH))
 
         arraysMapping.setUint8Array(intArray)
         arraysMapping.setUint16Array(intArray)
@@ -18,7 +18,7 @@ class ArraysMappingTest(unittest.TestCase):
 
     def testSignedIntegerArrays(self):
         arraysMapping = self.api.ArraysMapping()
-        intArray = [i for i in range(self.FIXED_ARRAY_LENGTH)]
+        intArray = list(range(self.FIXED_ARRAY_LENGTH))
 
         arraysMapping.setInt8Array(intArray)
         arraysMapping.setInt16Array(intArray)
@@ -27,7 +27,7 @@ class ArraysMappingTest(unittest.TestCase):
 
     def testUnsignedBitfieldArrays(self):
         arraysMapping = self.api.ArraysMapping()
-        intArray = [i for i in range(self.FIXED_ARRAY_LENGTH)]
+        intArray = list(range(self.FIXED_ARRAY_LENGTH))
 
         arraysMapping.setBitfield8Array(intArray)
         arraysMapping.setBitfield16Array(intArray)
@@ -41,7 +41,7 @@ class ArraysMappingTest(unittest.TestCase):
 
     def testSignedBitfieldArrays(self):
         arraysMapping = self.api.ArraysMapping()
-        intArray = [i for i in range(self.FIXED_ARRAY_LENGTH)]
+        intArray = list(range(self.FIXED_ARRAY_LENGTH))
 
         arraysMapping.setIntfield8Array(intArray)
         arraysMapping.setIntfield16Array(intArray)
@@ -63,7 +63,7 @@ class ArraysMappingTest(unittest.TestCase):
 
     def testVariableUnsignedIntegerArrays(self):
         arraysMapping = self.api.ArraysMapping()
-        intArray = [i for i in range(self.FIXED_ARRAY_LENGTH)]
+        intArray = list(range(self.FIXED_ARRAY_LENGTH))
 
         arraysMapping.setVaruint16Array(intArray)
         arraysMapping.setVaruint32Array(intArray)
@@ -72,7 +72,7 @@ class ArraysMappingTest(unittest.TestCase):
 
     def testVariableSignedIntegerArrays(self):
         arraysMapping = self.api.ArraysMapping()
-        intArray = [i for i in range(self.FIXED_ARRAY_LENGTH)]
+        intArray = list(range(self.FIXED_ARRAY_LENGTH))
 
         arraysMapping.setVarint16Array(intArray)
         arraysMapping.setVarint32Array(intArray)

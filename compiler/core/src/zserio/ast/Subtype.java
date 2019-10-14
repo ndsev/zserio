@@ -1,6 +1,5 @@
 package zserio.ast;
 
-import zserio.ast.TypeReference;
 import zserio.ast.ZserioType;
 
 /**
@@ -11,18 +10,19 @@ import zserio.ast.ZserioType;
 public class Subtype extends DocumentableAstNode implements ZserioType
 {
     /**
-     * @param location   AST node location.
-     * @param pkg        Package to which belongs the subtype.
-     * @param targetType Zserio type which belongs to the subtype.
-     * @param name       Name of the subtype.
-     * @param docComment Documentation comment belonging to this node.
+     * @param location            AST node location.
+     * @param pkg                 Package to which belongs the subtype.
+     * @param targetTypeReference Type reference to the target type.
+     * @param name                Name of the subtype.
+     * @param docComment          Documentation comment belonging to this node.
      */
-    public Subtype(AstLocation location, Package pkg, ZserioType targetType, String name, DocComment docComment)
+    public Subtype(AstLocation location, Package pkg, TypeReference targetTypeReference,
+            String name, DocComment docComment)
     {
         super(location, docComment);
 
         this.pkg = pkg;
-        this.targetType = targetType;
+        this.typeReference = targetTypeReference;
         this.name = name;
     }
 
@@ -37,7 +37,7 @@ public class Subtype extends DocumentableAstNode implements ZserioType
     {
         super.visitChildren(visitor);
 
-        targetType.accept(visitor);
+        typeReference.accept(visitor);
     }
 
     @Override
@@ -53,14 +53,13 @@ public class Subtype extends DocumentableAstNode implements ZserioType
     }
 
     /**
-     * Gets the target type.
+     * Gets the target type reference.
      *
-     * @return Type referenced by this subtype.
+     * @return Type reference to the target type.
      */
-    // TODO[Mi-L@]: Rename to getReferencedType
-    public ZserioType getTargetType()
+    public TypeReference getTypeReference()
     {
-        return targetType;
+        return typeReference;
     }
 
     /**
@@ -68,7 +67,7 @@ public class Subtype extends DocumentableAstNode implements ZserioType
      *
      * @return Reference to base type of the target type.
      */
-    public ZserioType getBaseTypeReference()
+    public TypeReference getBaseTypeReference()
     {
         return baseTypeReference;
     }
@@ -78,7 +77,7 @@ public class Subtype extends DocumentableAstNode implements ZserioType
      *
      * @return Resolved reference to base type of this subtype.
      */
-    ZserioType resolve()
+    TypeReference resolve()
     {
         if (resolvingState == ResolvingState.RESOLVED)
             return baseTypeReference;
@@ -90,22 +89,11 @@ public class Subtype extends DocumentableAstNode implements ZserioType
 
         resolvingState = ResolvingState.RESOLVING;
 
-        // base type can be only type reference or a defined type.
-        if (targetType instanceof TypeReference)
-        {
-            final TypeReference targetTypeReference = (TypeReference)targetType;
-            targetTypeReference.resolve(); // make sure the type reference is resolved
-
-            final ZserioType referencedTargetType = targetTypeReference.getReferencedType();
-            if (referencedTargetType instanceof Subtype)
-                baseTypeReference = ((Subtype)referencedTargetType).resolve();
-            else
-                baseTypeReference = targetTypeReference;
-        }
-        else // built-in type
-        {
-            baseTypeReference = targetType;
-        }
+        typeReference.resolve(); // make sure the type reference is resolved
+        if (typeReference.getType() instanceof Subtype)
+            baseTypeReference = ((Subtype)typeReference.getType()).resolve();
+        else
+            baseTypeReference = typeReference;
 
         resolvingState = ResolvingState.RESOLVED;
 
@@ -120,9 +108,9 @@ public class Subtype extends DocumentableAstNode implements ZserioType
     };
 
     private final Package pkg;
-    private final ZserioType targetType;
+    private final TypeReference typeReference;
     private final String name;
 
     private ResolvingState resolvingState = ResolvingState.UNRESOLVED;
-    private ZserioType baseTypeReference = null;
+    private TypeReference baseTypeReference = null;
 }

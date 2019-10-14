@@ -28,7 +28,7 @@ public class ArrayTypesErrorTest
     @Test
     public void implicitArrayNotLast()
     {
-        final String error = "implicit_array_not_last_error.zs:5:5: Implicit array must be defined at the " +
+        final String error = "implicit_array_not_last_error.zs:5:21: Implicit array must be defined at the " +
                 "end of structure!";
         assertTrue(zserioErrors.isPresent(error));
     }

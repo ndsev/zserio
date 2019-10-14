@@ -27,15 +27,23 @@ public class ParameterizedTypesErrorTest
     @Test
     public void noParameters()
     {
-        final String error = "no_parameters_error.zs:3:21: mismatched input ')' expecting {";
+        final String error = "no_parameters_error.zs:3:21: mismatched input ')' expecting {"; // ...
         assertTrue(zserioErrors.isPresent(error));
     }
 
     @Test
-    public void referencedNonCompoundType()
+    public void referencedBuiltInType()
     {
-        final String error = "referenced_non_compound_type_error.zs:8:5: " +
-                "Parameterized type instantiation 'Item()' does not refer to a compound type!";
+        final String error = "referenced_builtin_type_error.zs:8:5: " +
+                "Referenced type 'Item' is not a parameterized type!";
+        assertTrue(zserioErrors.isPresent(error));
+    }
+
+    @Test
+    public void referencedEnumType()
+    {
+        final String error = "referenced_enum_type_error.zs:12:5: " +
+                "Referenced type 'Item' is not a parameterized type!";
         assertTrue(zserioErrors.isPresent(error));
     }
 
@@ -43,7 +51,7 @@ public class ParameterizedTypesErrorTest
     public void referencedNonParameterizedType()
     {
         final String error = "referenced_non_parameterized_type_error.zs:12:5: " +
-                "Parameterized type instantiation 'Item()' does not refer to a parameterized type!";
+                "Referenced type 'Item' is not a parameterized type!";
         assertTrue(zserioErrors.isPresent(error));
     }
 
@@ -75,7 +83,7 @@ public class ParameterizedTypesErrorTest
     public void wrongNumberOfArguments()
     {
         final String error = "wrong_number_of_arguments_error.zs:13:5: " +
-                "Parameterized type instantiation 'Item()' has wrong number of arguments (1 != 2)!";
+                "Parameterized type instantiation 'Item' has wrong number of arguments! Expecting 1, got 2!";
         assertTrue(zserioErrors.isPresent(error));
     }
 

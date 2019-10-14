@@ -4,30 +4,14 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-
-/**
- * AST node for Parameterized Type Instantiations.
- *
- * Parameterized Type Instantiations are type references to parameterized types with given arguments. All others
- * type references are modeled by AST node TypeReference.
- *
- * Parameterized type instantiations are Zserio types as well.
- */
-public class TypeInstantiation extends AstNodeBase implements ZserioType
+public class TypeInstantiation extends AstNodeBase
 {
-    /**
-     * Constructor.
-     *
-     * @param location       AST node location.
-     * @param referencedType Zserio type of the parameterized type.
-     * @param arguments      List of all arguments which belong to the parameterized type.
-     */
-    TypeInstantiation(AstLocation location, TypeReference referencedType, List<Expression> arguments)
+    public TypeInstantiation(AstLocation location, TypeReference typeReference, List<Expression> typeArguments)
     {
         super(location);
 
-        this.referencedType = referencedType;
-        this.arguments = arguments;
+        this.typeReference = typeReference;
+        this.typeArguments = typeArguments;
     }
 
     @Override
@@ -39,41 +23,14 @@ public class TypeInstantiation extends AstNodeBase implements ZserioType
     @Override
     public void visitChildren(ZserioAstVisitor visitor)
     {
-        referencedType.accept(visitor);
-        for (Expression argument : arguments)
-            argument.accept(visitor);
+        typeReference.accept(visitor);
+        for (Expression typeArgument : typeArguments)
+            typeArgument.accept(visitor);
     }
 
-    @Override
-    public Package getPackage()
+    public TypeReference getTypeReference()
     {
-        return baseType.getPackage();
-    }
-
-    @Override
-    public String getName()
-    {
-        return referencedType.getName() + "()";
-    }
-
-    /**
-     * Gets the type to which this type instantiation refers.
-     *
-     * @return Type referenced by this instantiation.
-     */
-    public ZserioType getReferencedType()
-    {
-        return referencedType;
-    }
-
-    /**
-     * Gets the compound type to which this type instantiation refers.
-     *
-     * @return Base type of this type instantiation.
-     */
-    public CompoundType getBaseType()
-    {
-        return baseType;
+        return typeReference;
     }
 
     /**
@@ -133,44 +90,62 @@ public class TypeInstantiation extends AstNodeBase implements ZserioType
         private final Parameter parameter;
     }
 
-    /**
-     * Evaluates base type of this type instantiation.
-     *
-     * This method can be called from Expression.evaluate() method if some expression refers to the type
-     * instantiation before its definition. Therefore 'isEvaluated' check is necessary.
-     */
+    TypeInstantiation instantiate(List<TemplateParameter> templateParameters,
+            List<TypeReference> templateArguments)
+    {
+        final TypeReference instantiatedTypeReference =
+                typeReference.instantiate(templateParameters, templateArguments);
+
+        final List<Expression> instantiatedTypeArguments = new ArrayList<Expression>();
+        for (Expression expression : typeArguments)
+            instantiatedTypeArguments.add(expression.instantiate(templateParameters, templateArguments));
+
+        return new TypeInstantiation(getLocation(), instantiatedTypeReference, instantiatedTypeArguments);
+    }
+
     void evaluate()
     {
         if (!isEvaluated)
         {
             // check if referenced type is a compound type
-            final ZserioType resolvedReferencedType = TypeReference.resolveBaseType(referencedType);
-            if (!(resolvedReferencedType instanceof CompoundType))
-                throw new ParserException(referencedType, "Parameterized type instantiation '" + getName() +
-                        "' does not refer to a compound type!");
-            baseType = (CompoundType)resolvedReferencedType;
+            final ZserioType baseType = typeReference.getBaseType();
+            final boolean isParameterized =
+                    baseType instanceof CompoundType && !((CompoundType)baseType).getTypeParameters().isEmpty();
+            if (isParameterized)
+            {
+                final CompoundType baseCompoundType = (CompoundType)baseType;
+                // check if referenced type is a parameterized type
+                final List<Parameter> typeParameters = baseCompoundType.getTypeParameters();
+                if (typeArguments.size() == 0)
+                {
+                    throw new ParserException(typeReference, "Referenced type '" +
+                            ZserioTypeUtil.getReferencedFullName(typeReference) +
+                            "' is defined as parameterized type!");
+                }
+                if (typeArguments.size() != typeParameters.size())
+                {
+                    throw new ParserException(typeReference, "Parameterized type instantiation '" +
+                            ZserioTypeUtil.getReferencedFullName(typeReference) +
+                            "' has wrong number of arguments! " +
+                            "Expecting " + typeArguments.size() + ", got " + typeParameters.size() + "!");
+                }
 
-            // check if referenced type is a parameterized type
-            final List<Parameter> parameters = baseType.getTypeParameters();
-            final int numParameters = parameters.size();
-            if (numParameters == 0)
-                throw new ParserException(referencedType, "Parameterized type instantiation '" + getName() +
-                        "' does not refer to a parameterized type!");
-            if (arguments.size() != numParameters)
-                throw new ParserException(referencedType, "Parameterized type instantiation '" + getName() +
-                        "' has wrong number of arguments (" + arguments.size() + " != " + numParameters + ")!");
-
-            // fill instantiated parameter list
-            for (int i = 0; i < numParameters; i++)
-                instantiatedParameters.add(new InstantiatedParameter(arguments.get(i), parameters.get(i)));
-
+                // fill instantiated parameter list
+                for (int i = 0; i < typeParameters.size(); i++)
+                {
+                    instantiatedParameters.add(new InstantiatedParameter(
+                            typeArguments.get(i), typeParameters.get(i)));
+                }
+            }
+            else if (!typeArguments.isEmpty())
+            {
+                throw new ParserException(typeReference, "Referenced type '" +
+                        ZserioTypeUtil.getReferencedFullName(typeReference) + "' is not a parameterized type!");
+            }
             isEvaluated = true;
         }
     }
 
-    /**
-     * Checks base type of this type instantiation.
-     */
     void check()
     {
         // check all argument types in instantiated parameter list
@@ -179,42 +154,15 @@ public class TypeInstantiation extends AstNodeBase implements ZserioType
             final Expression argumentExpression = instantiatedParameter.getArgumentExpression();
             if (!argumentExpression.isExplicitVariable())
             {
-                ExpressionUtil.checkExpressionType(argumentExpression, TypeReference.resolveBaseType(
-                        instantiatedParameter.getParameter().getParameterType()));
+                ExpressionUtil.checkExpressionType(argumentExpression,
+                        instantiatedParameter.getParameter().getTypeReference().getBaseType());
             }
         }
     }
 
-    /**
-     * Instantiate the parameterized type instantiation.
-     *
-     * @param templateParameters Template parameters.
-     * @param templateArguments Template arguments.
-     *
-     * @return New parameterized type instantiation instantiated from this using the given template arguments.
-     */
-    TypeInstantiation instantiate(List<TemplateParameter> templateParameters,
-            List<ZserioType> templateArguments)
-    {
-        final ZserioType instantiatedReferencedType =
-                referencedType.instantiate(templateParameters, templateArguments);
-        // TODO[Mi-L@]: Should this be here or in type reference?
-        if (!(instantiatedReferencedType instanceof TypeReference))
-            throw new ParserException(instantiatedReferencedType, instantiatedReferencedType.getName() +
-                    " cannot be used as a parameterized type!");
-
-        final List<Expression> instantiatedArguments = new ArrayList<Expression>();
-        for (Expression expression : arguments)
-            instantiatedArguments.add(expression.instantiate(templateParameters, templateArguments));
-
-        return new TypeInstantiation(getLocation(), (TypeReference)instantiatedReferencedType,
-                instantiatedArguments);
-    }
-
-    private final TypeReference referencedType;
-    private final List<Expression> arguments;
+    private final TypeReference typeReference;
+    private final List<Expression> typeArguments;
 
     private boolean isEvaluated = false;
-    private CompoundType baseType = null;
     private final List<InstantiatedParameter> instantiatedParameters = new ArrayList<InstantiatedParameter>();
 }

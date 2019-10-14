@@ -35,13 +35,15 @@ public class SqlDatabaseEmitterTemplateData extends UserTypeTemplateData
         public DatabaseField(CppNativeTypeMapper cppNativeTypeMapper, Field field,
                 IncludeCollector includeCollector) throws ZserioEmitException
         {
-            final CppNativeType nativeFieldType = cppNativeTypeMapper.getCppType(field.getFieldType());
+            final TypeReference fieldTypeReference = field.getTypeInstantiation().getTypeReference();
+            final ZserioType fieldBaseType = fieldTypeReference.getBaseType();
+
+            final CppNativeType nativeFieldType = cppNativeTypeMapper.getCppType(fieldTypeReference);
             includeCollector.addHeaderIncludesForType(nativeFieldType);
 
             name = field.getName();
             cppTypeName = nativeFieldType.getFullName();
             getterName = AccessorNameFormatter.getGetterName(field);
-            final ZserioType fieldBaseType = TypeReference.resolveBaseType(field.getFieldType());
             isWithoutRowIdTable = (fieldBaseType instanceof SqlTableType) ?
                     ((SqlTableType)fieldBaseType).isWithoutRowId() : false;
         }

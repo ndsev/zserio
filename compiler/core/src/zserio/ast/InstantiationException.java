@@ -40,8 +40,8 @@ public class InstantiationException extends ParserStackedException
     {
         for (TypeReference instantiationReference : instantiationReferenceStack)
         {
-            pushMessage(instantiationReference.getLocation(),
-                    "In instantiation of '" + instantiationReference.getName() + "' required from here");
+            pushMessage(instantiationReference.getLocation(), "In instantiation of '" +
+                    instantiationReference.getReferencedTypeName() + "' required from here");
         }
     }
 

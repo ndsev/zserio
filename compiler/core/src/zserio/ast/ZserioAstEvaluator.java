@@ -114,13 +114,6 @@ public class ZserioAstEvaluator extends ZserioAstWalker
     }
 
     @Override
-    public void visitArrayType(ArrayType arrayType)
-    {
-        arrayType.visitChildren(this);
-        arrayType.evaluate();
-    }
-
-    @Override
     public void visitTypeInstantiation(TypeInstantiation typeInstantiation)
     {
         typeInstantiation.visitChildren(this);
@@ -132,13 +125,6 @@ public class ZserioAstEvaluator extends ZserioAstWalker
     {
         bitFieldType.visitChildren(this);
         bitFieldType.evaluate();
-    }
-
-    @Override
-    public void visitRpc(Rpc rpc)
-    {
-        rpc.visitChildren(this);
-        rpc.evaluate();
     }
 
     private void visitInstantiations(ZserioTemplatableType template)

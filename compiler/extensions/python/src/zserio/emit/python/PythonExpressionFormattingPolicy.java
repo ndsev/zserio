@@ -1,14 +1,12 @@
 package zserio.emit.python;
 
-import zserio.ast.ConstType;
 import zserio.ast.EnumItem;
 import zserio.ast.EnumType;
 import zserio.ast.Expression;
 import zserio.ast.Field;
-import zserio.ast.FunctionType;
+import zserio.ast.Function;
 import zserio.ast.Package;
 import zserio.ast.Parameter;
-import zserio.ast.Subtype;
 import zserio.ast.ZserioType;
 import zserio.emit.common.ZserioEmitException;
 import zserio.emit.common.ExpressionFormattingPolicy;
@@ -94,16 +92,15 @@ public class PythonExpressionFormattingPolicy implements ExpressionFormattingPol
         final StringBuilder result = new StringBuilder();
         final String symbol = expr.getText();
         final Object resolvedSymbol = expr.getExprSymbolObject();
-        final ZserioType resolvedType = expr.getExprZserioType();
-        final boolean isFirstInDot = (expr.getExprZserioType() != null); // first in a dot expression
         if (resolvedSymbol instanceof ZserioType)
         {
             // package identifiers are part of this Zserio type
-            formatIdentifierForType(result, symbol, isFirstInDot, (ZserioType)resolvedSymbol);
+            formatTypeIdentifier(result, (ZserioType)resolvedSymbol);
         }
         else if (!(resolvedSymbol instanceof Package))
         {
-            formatIdentifierForSymbol(result, symbol, isFirstInDot, resolvedSymbol, resolvedType, isSetter);
+            formatSymbolIdentifier(result, symbol, expr.isMostLeftId(), resolvedSymbol,
+                    expr.getExprZserioType(), isSetter);
         }
 
         return result.toString();
@@ -312,10 +309,10 @@ public class PythonExpressionFormattingPolicy implements ExpressionFormattingPol
         return new TernaryExpressionFormattingPython(expr, "(", ") if (", ") else (", ")");
     }
 
-    protected void formatFieldAccessor(StringBuilder result, boolean isFirstInDot, Field field,
+    protected void formatFieldAccessor(StringBuilder result, boolean isMostLeftId, Field field,
             boolean isSetter)
     {
-        if (isFirstInDot)
+        if (isMostLeftId)
             result.append(PYTHON_FUNCTION_CALL_PREFIX);
 
         if (isSetter)
@@ -330,91 +327,71 @@ public class PythonExpressionFormattingPolicy implements ExpressionFormattingPol
         }
     }
 
-    private void formatIdentifierForType(StringBuilder result, String symbol, boolean isFirstInDot,
-            ZserioType identifierType) throws ZserioEmitException
+    private void formatParameterAccessor(StringBuilder result, boolean isMostLeftId, Parameter param)
     {
-        if (identifierType instanceof Subtype)
+        if (isMostLeftId)
+            result.append(PYTHON_FUNCTION_CALL_PREFIX);
+
+        result.append(AccessorNameFormatter.getGetterName(param));
+        result.append(PYTHON_GETTER_FUNCTION_CALL);
+    }
+
+    private void formatEnumItem(StringBuilder result, boolean isMostLeftId, EnumItem enumItem,
+            ZserioType exprType) throws ZserioEmitException
+    {
+        // emit whole name if this is the first symbol in dot subtree, otherwise emit only enum short name
+        if (isMostLeftId && exprType instanceof EnumType)
         {
-            // subtype
-            final Subtype subtype = (Subtype)identifierType;
-            final PythonNativeType nativeSubtype = pythonNativeTypeMapper.getPythonType(subtype);
-            importCollector.importType(nativeSubtype);
-            result.append(nativeSubtype.getFullName());
-        }
-        else if (identifierType instanceof EnumType)
-        {
-            // [EnumType].ENUM_ITEM
-            final EnumType enumType = (EnumType)identifierType;
+            final EnumType enumType = (EnumType)exprType;
             final PythonNativeType nativeEnumType = pythonNativeTypeMapper.getPythonType(enumType);
             importCollector.importType(nativeEnumType);
             result.append(nativeEnumType.getFullName());
+            result.append(".");
         }
-        else if (identifierType instanceof ConstType)
-        {
-            // [ConstName]
-            final ConstType constType = (ConstType)identifierType;
-            final PythonNativeType nativeConstType = pythonNativeTypeMapper.getPythonType(constType);
-            importCollector.importType(nativeConstType);
-            result.append(nativeConstType.getFullName());
-        }
-        else if (identifierType instanceof FunctionType)
-        {
-            // [functionCall]()
-            final FunctionType functionType = (FunctionType)identifierType;
-            if (isFirstInDot)
-                result.append(PYTHON_FUNCTION_CALL_PREFIX);
-            result.append(AccessorNameFormatter.getFunctionName(functionType));
-        }
-        else
-        {
-            result.append(symbol);
-        }
+        result.append(enumItem.getName());
     }
 
-    private void formatIdentifierForSymbol(StringBuilder result, String symbol, boolean isFirstInDot,
-            Object resolvedSymbol, ZserioType resolvedType, boolean isSetter) throws ZserioEmitException
+    private void formatTypeIdentifier(StringBuilder result, ZserioType resolvedType) throws ZserioEmitException
+    {
+        final PythonNativeType resolvedNativeType = pythonNativeTypeMapper.getPythonType(resolvedType);
+        importCollector.importType(resolvedNativeType);
+        result.append(resolvedNativeType.getFullName());
+    }
+
+    private void formatSymbolIdentifier(StringBuilder result, String symbol, boolean isMostLeftId,
+            Object resolvedSymbol, ZserioType exprType, boolean isSetter) throws ZserioEmitException
     {
         if (resolvedSymbol instanceof Parameter)
         {
+            // [Parameter]
             final Parameter param = (Parameter)resolvedSymbol;
-            formatParameterAccessor(result, isFirstInDot, param, isSetter);
+            formatParameterAccessor(result, isMostLeftId, param);
         }
         else if (resolvedSymbol instanceof Field)
         {
+            // [Field]
             final Field field = (Field)resolvedSymbol;
-            formatFieldAccessor(result, isFirstInDot, field, isSetter);
+            formatFieldAccessor(result, isMostLeftId, field, isSetter);
         }
         else if (resolvedSymbol instanceof EnumItem)
         {
             // EnumType.[ENUM_ITEM]
-            // emit the whole name if this is the first symbol in this dot subtree, otherwise emit only the
-            // enum short name
-            final EnumItem item = (EnumItem)resolvedSymbol;
-            if (isFirstInDot && resolvedType instanceof EnumType)
-            {
-                final EnumType enumType = (EnumType)resolvedType;
-                final PythonNativeType nativeEnumType = pythonNativeTypeMapper.getPythonType(enumType);
-                importCollector.importType(nativeEnumType);
-                result.append(nativeEnumType.getFullName());
-                result.append(".");
-            }
-            result.append(item.getName());
+            final EnumItem enumItem = (EnumItem)resolvedSymbol;
+            formatEnumItem(result, isMostLeftId, enumItem, exprType);
+        }
+        else if (resolvedSymbol instanceof Function)
+        {
+            // [functionCall]()
+            final Function function = (Function)resolvedSymbol;
+            if (isMostLeftId)
+                result.append(PYTHON_FUNCTION_CALL_PREFIX);
+            result.append(AccessorNameFormatter.getFunctionName(function));
         }
         else
         {
             // this could happen for "explicit identifier" expressions
             result.append(symbol);
         }
-    }
-
-    private void formatParameterAccessor(StringBuilder result, boolean isFirstInDot, Parameter param,
-            boolean isSetter)
-    {
-        if (isFirstInDot)
-            result.append(PYTHON_FUNCTION_CALL_PREFIX);
-
-        result.append(AccessorNameFormatter.getGetterName(param));
-        result.append(PYTHON_GETTER_FUNCTION_CALL);
     }
 
     private static class TernaryExpressionFormattingPython extends TernaryExpressionFormatting

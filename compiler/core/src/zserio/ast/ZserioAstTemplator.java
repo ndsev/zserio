@@ -46,10 +46,10 @@ public class ZserioAstTemplator extends ZserioAstWalker
         if (!typeReference.getTemplateArguments().isEmpty()) // if is a template instantiation
         {
             // instantiate instantiations in template arguments
-            for (ZserioType templateArgument : typeReference.getTemplateArguments())
+            for (TypeReference templateArgument : typeReference.getTemplateArguments())
                 templateArgument.accept(this);
 
-            final ZserioType type = typeReference.getReferencedType();
+            final ZserioType type = typeReference.getType();
             if (!(type instanceof TemplatableType) ||
                     ((TemplatableType)type).getTemplateParameters().isEmpty())
             {
@@ -85,6 +85,10 @@ public class ZserioAstTemplator extends ZserioAstWalker
             {
                 instantiationReferenceStack.pop();
             }
+        }
+        else
+        {
+            typeReference.visitChildren(this);
         }
     }
 

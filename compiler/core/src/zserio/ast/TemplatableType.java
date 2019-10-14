@@ -80,7 +80,7 @@ abstract class TemplatableType extends DocumentableAstNode implements ZserioTemp
         try
         {
             final TypeReference instantiationReference = instantiationReferenceStack.peek();
-            final List<ZserioType> templateArguments = instantiationReference.getTemplateArguments();
+            final List<TypeReference> templateArguments = instantiationReference.getTemplateArguments();
             if (templateParameters.size() != templateArguments.size())
             {
                 throw new ParserException(instantiationReference,
@@ -88,7 +88,7 @@ abstract class TemplatableType extends DocumentableAstNode implements ZserioTemp
                         templateParameters.size() + ", got " + templateArguments.size() + "!");
             }
 
-            final List<ZserioType> resolvedTemplateArguments = resolveTemplateArguments(templateArguments);
+            final List<TypeReference> resolvedTemplateArguments = resolveTemplateArguments(templateArguments);
             final List<TemplateArgument> wrappedTemplateArguments =
                     wrapTemplateArguments(resolvedTemplateArguments);
 
@@ -121,7 +121,7 @@ abstract class TemplatableType extends DocumentableAstNode implements ZserioTemp
      *
      * @return Instantiation name.
      */
-    String getInstantiationName(List<ZserioType> templateArguments)
+    String getInstantiationName(List<TypeReference> templateArguments)
     {
         return getInstantiationNameImpl(wrapTemplateArguments(templateArguments));
     }
@@ -131,7 +131,7 @@ abstract class TemplatableType extends DocumentableAstNode implements ZserioTemp
      *
      * @param templateArguments Actual template parameters.
      */
-    abstract TemplatableType instantiateImpl(String name, List<ZserioType> templateArguments);
+    abstract TemplatableType instantiateImpl(String name, List<TypeReference> templateArguments);
 
     /**
      * Definition of result returned from instantiate() method.
@@ -203,37 +203,33 @@ abstract class TemplatableType extends DocumentableAstNode implements ZserioTemp
                 final TypeReference instantiationReference = descendingIterator.next();
                 stackedException.pushMessage(instantiationReference.getLocation(),
                         descendingIterator.hasNext()
-                                ? "    Required in instantiation of '" + instantiationReference.getName() +
-                                        "' from here"
+                                ? "    Required in instantiation of '" +
+                                        instantiationReference.getReferencedTypeName() + "' from here"
                                 : "    First instantiated here");
             }
             throw stackedException;
         }
     }
 
-    private List<ZserioType> resolveTemplateArguments(List<ZserioType> templateArguments)
+    private List<TypeReference> resolveTemplateArguments(List<TypeReference> templateArguments)
     {
-        final List<ZserioType> resolvedTemplateArguments = new ArrayList<ZserioType>();
-        for (ZserioType templateArgument : templateArguments)
+        final List<TypeReference> resolvedTemplateArguments = new ArrayList<TypeReference>();
+        for (TypeReference templateArgument : templateArguments)
         {
-            ZserioType resolvedTemplateArgument = templateArgument;
-            if (templateArgument instanceof TypeReference)
-            {
-                final ZserioType referencedTemplateArgument =
-                        ((TypeReference)templateArgument).getReferencedType();
-                if (referencedTemplateArgument instanceof Subtype)
-                    resolvedTemplateArgument = ((Subtype)referencedTemplateArgument).getBaseTypeReference();
-            }
+            TypeReference resolvedTemplateArgument = templateArgument;
+            final ZserioType referencedTemplateArgument = templateArgument.getType();
+            if (referencedTemplateArgument instanceof Subtype)
+                resolvedTemplateArgument = ((Subtype)referencedTemplateArgument).getBaseTypeReference();
             resolvedTemplateArguments.add(resolvedTemplateArgument);
         }
 
         return resolvedTemplateArguments;
     }
 
-    private List<TemplateArgument> wrapTemplateArguments(List<ZserioType> templateArguments)
+    private List<TemplateArgument> wrapTemplateArguments(List<TypeReference> templateArguments)
     {
         final List<TemplateArgument> wrappedTemplateArguments = new ArrayList<TemplateArgument>();
-        for (ZserioType templateArgument : templateArguments)
+        for (TypeReference templateArgument : templateArguments)
             wrappedTemplateArguments.add(new TemplateArgument(templateArgument));
 
         return wrappedTemplateArguments;
@@ -241,24 +237,19 @@ abstract class TemplatableType extends DocumentableAstNode implements ZserioTemp
 
     private static class TemplateArgument
     {
-        public TemplateArgument(ZserioType templateArgument)
+        public TemplateArgument(TypeReference templateArgument)
         {
-            if (templateArgument instanceof TypeReference)
-            {
-                final TypeReference referencedArgument = (TypeReference)templateArgument;
-                packageName = referencedArgument.getReferencedPackageName();
-                typeName = referencedArgument.getName();
-                for (ZserioType argument: referencedArgument.getTemplateArguments())
-                    templateArguments.add(new TemplateArgument(argument));
-                resolvedPackageName = referencedArgument.getPackage().getPackageName();
-            }
+            packageName = templateArgument.getReferencedPackageName();
+            typeName = templateArgument.getReferencedTypeName();
+            for (TypeReference argument: templateArgument.getTemplateArguments())
+                templateArguments.add(new TemplateArgument(argument));
+
+            // TODO[Mi-L@]: Get rid of getPackage() on ZserioType interface!
+            //              ZserioType can have only reference to the package name.
+            if (templateArgument.getType() instanceof BuiltInType)
+                resolvedPackageName = PackageName.EMPTY;
             else
-            {
-                // built-in type
-                packageName = PackageName.EMPTY;
-                resolvedPackageName = packageName;
-                typeName = templateArgument.getName();
-            }
+                resolvedPackageName = templateArgument.getType().getPackage().getPackageName();
         }
 
         @Override

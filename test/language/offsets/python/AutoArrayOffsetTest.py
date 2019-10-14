@@ -98,7 +98,7 @@ class AutoArrayOffsetTest(unittest.TestCase):
 
     def _createAutoArrayHolder(self, createWrongOffset):
         autoArrayOffset = self.WRONG_AUTO_ARRAY_OFFSET if createWrongOffset else self.AUTO_ARRAY_OFFSET
-        autoArray = [i for i in range(self.AUTO_ARRAY_LENGTH)]
+        autoArray = list(range(self.AUTO_ARRAY_LENGTH))
 
         return self.api.AutoArrayHolder.fromFields(autoArrayOffset, self.FORCED_ALIGNMENT_VALUE, autoArray)
 

@@ -4,8 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import zserio.ast.CompoundType;
-import zserio.ast.ZserioType;
-import zserio.ast.FunctionType;
+import zserio.ast.TypeReference;
+import zserio.ast.Function;
 import zserio.emit.common.ExpressionFormatter;
 import zserio.emit.common.ZserioEmitException;
 
@@ -15,10 +15,12 @@ public final class CompoundFunctionTemplateData
             ExpressionFormatter javaExpressionFormatter) throws ZserioEmitException
     {
         compoundFunctionList = new ArrayList<CompoundFunction>();
-        final Iterable<FunctionType> compoundFunctionTypeList = compoundType.getFunctions();
-        for (FunctionType compoundFunctionType : compoundFunctionTypeList)
-            compoundFunctionList.add(new CompoundFunction(javaNativeTypeMapper, compoundFunctionType,
-                                                          javaExpressionFormatter));
+        final Iterable<Function> functionList = compoundType.getFunctions();
+        for (Function compoundFunction : functionList)
+        {
+            compoundFunctionList.add(new CompoundFunction(javaNativeTypeMapper, compoundFunction,
+                    javaExpressionFormatter));
+        }
     }
 
     public Iterable<CompoundFunction> getList()
@@ -28,13 +30,13 @@ public final class CompoundFunctionTemplateData
 
     public static class CompoundFunction
     {
-        public CompoundFunction(JavaNativeTypeMapper javaNativeTypeMapper, FunctionType functionType,
+        public CompoundFunction(JavaNativeTypeMapper javaNativeTypeMapper, Function function,
                 ExpressionFormatter javaExpressionFormatter) throws ZserioEmitException
         {
-            final ZserioType returnZserioType = functionType.getReturnType();
-            returnTypeName = javaNativeTypeMapper.getJavaType(returnZserioType).getFullName();
-            name = AccessorNameFormatter.getFunctionName(functionType);
-            resultExpression = javaExpressionFormatter.formatGetter(functionType.getResultExpression());
+            final TypeReference returnTypeReference = function.getReturnTypeReference();
+            returnTypeName = javaNativeTypeMapper.getJavaType(returnTypeReference).getFullName();
+            name = AccessorNameFormatter.getFunctionName(function);
+            resultExpression = javaExpressionFormatter.formatGetter(function.getResultExpression());
         }
 
         public String getReturnTypeName()

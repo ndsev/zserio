@@ -3,7 +3,7 @@
   <#if (params?size > 0)>
     (<#t>
     <#list params as param>
-      <@linkedtype toLinkedType(param.parameterType)/> ${param.name}<#t>
+      <@linkedtype toLinkedType(param.typeReference.type)/> ${param.name}<#t>
       <#if param_has_next>, </#if><#t>
     </#list>
     )<#t>

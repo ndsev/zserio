@@ -6,6 +6,7 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 
 import zserio.ast.Parameter;
+import zserio.ast.TypeInstantiation.InstantiatedParameter;
 import zserio.ast.ZserioType;
 import zserio.ast.EnumType;
 import zserio.ast.Expression;
@@ -170,8 +171,10 @@ public final class SqlTableEmitterTemplateData extends UserTypeTemplateData
                 ExpressionFormatter javaSqlIndirectExpressionFormatter, SqlNativeTypeMapper sqlNativeTypeMapper,
                 SqlTableType parentType, Field field) throws ZserioEmitException
         {
-            final ZserioType baseType = TypeReference.resolveBaseType(field.getFieldType());
-            final JavaNativeType nativeType = javaNativeTypeMapper.getJavaType(baseType);
+            final TypeInstantiation fieldTypeInstantiation = field.getTypeInstantiation();
+            final TypeReference fieldTypeReference = fieldTypeInstantiation.getTypeReference();
+            final ZserioType fieldBaseType = fieldTypeReference.getBaseType();
+            final JavaNativeType nativeType = javaNativeTypeMapper.getJavaType(fieldTypeReference);
 
             name = field.getName();
             javaTypeName = nativeType.getFullName();
@@ -179,15 +182,10 @@ public final class SqlTableEmitterTemplateData extends UserTypeTemplateData
                     ((NativeIntegralType)nativeType).requiresBigInt() : false;
             typeParameters = new ArrayList<ParameterTemplateData>();
 
-            if (baseType instanceof TypeInstantiation)
+            for (InstantiatedParameter parameter : fieldTypeInstantiation.getInstantiatedParameters())
             {
-                final TypeInstantiation typeInstantiation = ((TypeInstantiation)baseType);
-                for (TypeInstantiation.InstantiatedParameter instantiatedParameter :
-                        typeInstantiation.getInstantiatedParameters())
-                {
-                    typeParameters.add(new ParameterTemplateData(javaNativeTypeMapper,
-                            javaSqlIndirectExpressionFormatter, parentType, instantiatedParameter));
-                }
+                typeParameters.add(new ParameterTemplateData(javaNativeTypeMapper,
+                        javaSqlIndirectExpressionFormatter, parentType, parameter));
             }
 
             isVirtual = field.getIsVirtual();
@@ -201,7 +199,7 @@ public final class SqlTableEmitterTemplateData extends UserTypeTemplateData
             // enumerations are rangeable for SQL
             enumData = createEnumTemplateData(nativeType);
             final ZserioType rangeCheckType = (enumData != null) ?
-                    ((EnumType)baseType).getIntegerBaseType() : baseType;
+                    ((EnumType)fieldBaseType).getIntegerBaseType() : fieldBaseType;
             rangeCheckData = new RangeCheckTemplateData(javaNativeTypeMapper, rangeCheckType,
                     javaExpressionFormatter);
             sqlTypeData = new SqlTypeTemplateData(sqlNativeTypeMapper, field);
@@ -273,7 +271,7 @@ public final class SqlTableEmitterTemplateData extends UserTypeTemplateData
                 expression = javaSqlIndirectExpressionFormatter.formatGetter(argumentExpression);
                 final Parameter parameter = instantiatedParameter.getParameter();
                 definitionName = parameter.getName();
-                javaTypeName = javaNativeTypeMapper.getJavaType(parameter.getParameterType()).getFullName();
+                javaTypeName = javaNativeTypeMapper.getJavaType(parameter.getTypeReference()).getFullName();
             }
 
             public boolean getIsExplicit()
@@ -322,7 +320,8 @@ public final class SqlTableEmitterTemplateData extends UserTypeTemplateData
             public SqlTypeTemplateData(SqlNativeTypeMapper sqlNativeTypeMapper, Field field)
                     throws ZserioEmitException
             {
-                final SqlNativeType sqlNativeType = sqlNativeTypeMapper.getSqlType(field.getFieldType());
+                final SqlNativeType sqlNativeType = sqlNativeTypeMapper.getSqlType(
+                        field.getTypeInstantiation().getTypeReference());
                 name = sqlNativeType.getFullName();
                 traditionalName = sqlNativeType.getTraditionalName();
                 isBlob = sqlNativeType instanceof NativeBlobType;

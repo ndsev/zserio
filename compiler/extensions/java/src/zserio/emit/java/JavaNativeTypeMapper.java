@@ -18,7 +18,6 @@ import zserio.ast.SqlDatabaseType;
 import zserio.ast.SqlTableType;
 import zserio.ast.StdIntegerType;
 import zserio.ast.StringType;
-import zserio.ast.TypeInstantiation;
 import zserio.ast.TypeReference;
 import zserio.ast.UnionType;
 import zserio.ast.VarIntegerType;
@@ -65,6 +64,21 @@ final class JavaNativeTypeMapper
     }
 
     /**
+     * Returns a Java type that can hold an instance of referenced Zserio type.
+     *
+     * @param typeReference Reference to the Zserio type.
+     *
+     * @return  Java type which can hold referenced Zserio type.
+     *
+     * @throws ZserioEmitException If the referenced Zserio type cannot be mapped to any Java type.
+     */
+    public JavaNativeType getJavaType(TypeReference typeReference) throws ZserioEmitException
+    {
+        // always resolve subtypes
+        return getJavaType(typeReference.getBaseType());
+    }
+
+    /**
      * Returns a Java type that can hold an instance of given Zserio type.
      *
      * This can be a primitive type (e.g. byte) if it suffices.
@@ -95,14 +109,15 @@ final class JavaNativeTypeMapper
      * the wrapper class (e.g. Byte).
      *
      * @param javaPackageMapper Package mapper to use for Java package mapping.
-     * @param type              Zserio type.
+     * @param typeReference     Reference to the Zserio type.
      *
-     * @return JavaNativeType that is derived from Object and can hold values of the given Zserio type.
+     * @return JavaNativeType that is derived from Object and can hold values of the referenced Zserio type.
      *
-     * @throws ZserioEmitException If the Zserio type cannot be mapped to any Java type.
+     * @throws ZserioEmitException If the referenced zserio type cannot be mapped to any Java type.
      */
-    public JavaNativeType getNullableJavaType(ZserioType type) throws ZserioEmitException
+    public JavaNativeType getNullableJavaType(TypeReference typeReference) throws ZserioEmitException
     {
+        final ZserioType type = typeReference.getBaseType();
         final ZserioTypeMapperVisitor visitor = visitType(javaPackageMapper, type);
 
         final JavaNativeType nativeNullableType = visitor.getJavaNullableType();
@@ -141,7 +156,6 @@ final class JavaNativeTypeMapper
     private ZserioTypeMapperVisitor visitType(PackageMapper javaPackageMapper, ZserioType type)
             throws ZserioEmitException
     {
-        type = TypeReference.resolveBaseType(type);
         final ZserioTypeMapperVisitor visitor = new ZserioTypeMapperVisitor(javaPackageMapper);
         type.accept(visitor);
 
@@ -247,13 +261,6 @@ final class JavaNativeTypeMapper
         public void visitStructureType(StructureType type)
         {
             mapObjectArray(type);
-        }
-
-        @Override
-        public void visitTypeInstantiation(TypeInstantiation type)
-        {
-            final CompoundType baseType = type.getBaseType();
-            mapObjectArray(baseType);
         }
 
         @Override
@@ -411,10 +418,11 @@ final class JavaNativeTypeMapper
         @Override
         public void visitArrayType(ArrayType type)
         {
-            final ZserioType elementType = TypeReference.resolveBaseType(type.getElementType());
+            final ZserioType elementBaseType =
+                    type.getElementTypeInstantiation().getTypeReference().getBaseType();
             final ArrayElementTypeMapperVisitor arrayVisitor = new ArrayElementTypeMapperVisitor();
 
-            TypeReference.resolveBaseType(elementType).accept(arrayVisitor);
+            elementBaseType.accept(arrayVisitor);
             javaType = arrayVisitor.getJavaNullableType();
             javaNullableType = javaType;
             thrownException = arrayVisitor.getThrownException();
@@ -439,7 +447,7 @@ final class JavaNativeTypeMapper
             try
             {
                 final JavaNativeType nativeTargetType =
-                        JavaNativeTypeMapper.this.getJavaType(type.getConstType());
+                        JavaNativeTypeMapper.this.getJavaType(type.getTypeReference());
                 final PackageName packageName = javaPackageMapper.getPackageName(type);
                 final String name = type.getName();
                 javaType = new NativeConstType(packageName, name, nativeTargetType);
@@ -521,12 +529,6 @@ final class JavaNativeTypeMapper
         public void visitStructureType(StructureType type)
         {
             mapCompoundType(type);
-        }
-
-        @Override
-        public void visitTypeInstantiation(TypeInstantiation type)
-        {
-            mapCompoundType(type.getBaseType());
         }
 
         @Override

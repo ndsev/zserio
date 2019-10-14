@@ -36,14 +36,14 @@ public final  class SqlDatabaseEmitterTemplateData extends UserTypeTemplateData
         public DatabaseFieldData(PythonNativeTypeMapper pythonNativeTypeMapper, Field field,
                 ImportCollector importCollector) throws ZserioEmitException
         {
-            name = field.getName();
-
-            final PythonNativeType nativeType = pythonNativeTypeMapper.getPythonType(field.getFieldType());
+            final TypeReference fieldTypeReference = field.getTypeInstantiation().getTypeReference();
+            final ZserioType fieldBaseType = fieldTypeReference.getBaseType();
+            final PythonNativeType nativeType = pythonNativeTypeMapper.getPythonType(fieldTypeReference);
             importCollector.importType(nativeType);
-            pythonTypeName = nativeType.getFullName();
 
+            name = field.getName();
+            pythonTypeName = nativeType.getFullName();
             getterName = AccessorNameFormatter.getGetterName(field);
-            final ZserioType fieldBaseType = TypeReference.resolveBaseType(field.getFieldReferencedType());
             isWithoutRowIdTable = (fieldBaseType instanceof SqlTableType) ?
                     ((SqlTableType)fieldBaseType).isWithoutRowId() : false;
         }

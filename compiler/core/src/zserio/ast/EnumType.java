@@ -18,20 +18,20 @@ public class EnumType extends DocumentableAstNode implements ZserioScopedType
     /**
      * Constructor.
      *
-     * @param location   AST node location.
-     * @param pkg        Package to which belongs the enumeration type.
-     * @param enumType   Zserio type of the enumeration.
-     * @param name       Name of the enumeration type.
-     * @param enumItems  List of all items which belong to the enumeration type.
-     * @param docComment Documentation comment belonging to this node.
+     * @param location          AST node location.
+     * @param pkg               Package to which belongs the enumeration type.
+     * @param enumTypeReference Type reference to the enumeration type.
+     * @param name              Name of the enumeration type.
+     * @param enumItems         List of all items which belong to the enumeration type.
+     * @param docComment        Documentation comment belonging to this node.
      */
-    public EnumType(AstLocation location, Package pkg, ZserioType enumType, String name, List<EnumItem> enumItems,
-            DocComment docComment)
+    public EnumType(AstLocation location, Package pkg, TypeReference enumTypeReference, String name,
+            List<EnumItem> enumItems, DocComment docComment)
     {
         super(location, docComment);
 
         this.pkg = pkg;
-        this.enumType = enumType;
+        this.enumTypeReference = enumTypeReference;
         this.name = name;
         this.enumItems = enumItems;
     }
@@ -47,7 +47,7 @@ public class EnumType extends DocumentableAstNode implements ZserioScopedType
     {
         super.visitChildren(visitor);
 
-        enumType.accept(visitor);
+        enumTypeReference.accept(visitor);
         for (EnumItem enumItem : enumItems)
             enumItem.accept(visitor);
     }
@@ -87,7 +87,7 @@ public class EnumType extends DocumentableAstNode implements ZserioScopedType
      */
     public ZserioType getEnumType()
     {
-        return enumType;
+        return enumTypeReference.getType();
     }
 
     /**
@@ -113,7 +113,7 @@ public class EnumType extends DocumentableAstNode implements ZserioScopedType
         if (!isEvaluated)
         {
             // fill resolved enumeration type
-            final ZserioType baseType = TypeReference.resolveBaseType(enumType);
+            final ZserioType baseType = enumTypeReference.getBaseType();
             if (!(baseType instanceof IntegerType))
                 throw new ParserException(this, "Enumeration '" + this.getName() + "' has forbidden type " +
                         baseType.getName() + "!");
@@ -172,7 +172,7 @@ public class EnumType extends DocumentableAstNode implements ZserioScopedType
     private final Scope scope = new Scope(this);
 
     private final Package pkg;
-    private final ZserioType enumType;
+    private final TypeReference enumTypeReference;
     private final String name;
     private final List<EnumItem> enumItems;
 

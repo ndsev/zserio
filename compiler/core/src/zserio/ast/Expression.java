@@ -211,6 +211,18 @@ public class Expression extends AstNodeBase
     }
 
     /**
+     * Checks if the expression is most left identifier.
+     *
+     * @return Returns true if expression is not explicit and is dot left operand or single identifier.
+     */
+    public boolean isMostLeftId()
+    {
+        return (!isExplicitVariable() && type == ZserioParser.ID &&
+                (expressionFlag == ExpressionFlag.IS_DOT_LEFT_OPERAND_ID ||
+                expressionFlag != ExpressionFlag.IS_DOT_RIGHT_OPERAND_ID));
+    }
+
+    /**
      * Defines evaluated type of the expression.
      */
     public enum ExpressionType
@@ -265,7 +277,7 @@ public class Expression extends AstNodeBase
      *
      * @return Returns the identifier symbol object for the expression.
      */
-    public Object getExprSymbolObject()
+    public AstNode getExprSymbolObject()
     {
         return symbolObject;
     }
@@ -320,7 +332,7 @@ public class Expression extends AstNodeBase
      *
      * @return Set of objects of given class referenced from the expression.
      */
-    public <T extends Object> Set<T> getReferencedSymbolObjects(Class<? extends T> clazz)
+    public <T extends AstNode> Set<T> getReferencedSymbolObjects(Class<? extends T> clazz)
     {
         final Set<T> referencedSymbolObjects = new HashSet<T>();
         addReferencedSymbolObject(referencedSymbolObjects, clazz);
@@ -347,7 +359,7 @@ public class Expression extends AstNodeBase
             return true;
 
         // check if expression contains a function type
-        if (!(getReferencedSymbolObjects(FunctionType.class).isEmpty()))
+        if (!(getReferencedSymbolObjects(Function.class).isEmpty()))
             return true;
 
         return false;
@@ -646,37 +658,27 @@ public class Expression extends AstNodeBase
      *
      * @return New expression instantiated from this using the given template arguments.
      */
-    Expression instantiate(List<TemplateParameter> templateParameters, List<ZserioType> templateArguments)
+    Expression instantiate(List<TemplateParameter> templateParameters, List<TypeReference> templateArguments)
     {
         if (operand1 == null)
         {
             String instantiatedText = text;
-            if (type == ZserioParser.ID && expressionFlag != ExpressionFlag.IS_EXPLICIT)
+            if (isMostLeftId())
             {
-                if (expressionFlag == ExpressionFlag.IS_DOT_LEFT_OPERAND_ID ||
-                        expressionFlag != ExpressionFlag.IS_DOT_RIGHT_OPERAND_ID)
+                // expression is single ID or is left dot operand
+                final int index = TemplateParameter.indexOf(templateParameters, text);
+                if (index != -1)
                 {
-                    // expression is single ID or is left dot operand
-                    final int index = TemplateParameter.indexOf(templateParameters, text);
-                    if (index != -1)
+                    // template parameter has been found
+                    final TypeReference templateArgument= templateArguments.get(index);
+                    final PackageName templateArgumentPackage = templateArgument.getReferencedPackageName();
+                    if (!templateArgumentPackage.isEmpty())
                     {
-                        // template parameter has been found
-                        final ZserioType templateArgumentType = templateArguments.get(index);
-                        instantiatedText = templateArgumentType.getName();
-                        if (templateArgumentType instanceof TypeReference)
-                        {
-                            // found template argument is type reference
-                            final TypeReference templateArgumentReference = (TypeReference)templateArgumentType;
-                            final PackageName templateArgumentPackage =
-                                    templateArgumentReference.getReferencedPackageName();
-                            if (!templateArgumentPackage.isEmpty())
-                            {
-                                // found template argument is type reference with specified package
-                                return createInstantiationTree(templateArgumentPackage,
-                                        templateArgumentReference.getName());
-                            }
-                        }
+                        // found template argument is type reference with specified package
+                        return createInstantiationTree(templateArgumentPackage,
+                                templateArgument.getReferencedTypeName());
                     }
+                    instantiatedText = templateArgument.getReferencedTypeName();
                 }
             }
 
@@ -712,8 +714,8 @@ public class Expression extends AstNodeBase
     }
 
     @SuppressWarnings("unchecked")
-    private <T extends Object> void addReferencedSymbolObject(Set<T> referencedObjectList,
-            Class<? extends Object> elementClass)
+    private <T extends AstNode> void addReferencedSymbolObject(Set<T> referencedObjectList,
+            Class<? extends AstNode> elementClass)
     {
         if (symbolObject != null && elementClass.isInstance(symbolObject))
             referencedObjectList.add((T)symbolObject);
@@ -757,18 +759,19 @@ public class Expression extends AstNodeBase
     private void evaluateParenthesizedExpression()
     {
         expressionType = operand1.expressionType;
-        zserioType = operand1.zserioType;
         expressionIntegerValue = operand1.expressionIntegerValue;
+        zserioType = operand1.zserioType;
+        symbolObject = operand1.symbolObject;
         unresolvedIdentifiers = operand1.unresolvedIdentifiers;
     }
 
     private void evaluateFunctionCallExpression(Scope forcedEvaluationScope)
     {
-        if (!(operand1.zserioType instanceof FunctionType))
+        if (!(operand1.symbolObject instanceof Function))
             throw new ParserException(operand1, "'" + operand1.text + "' is not a function!");
 
-        final FunctionType functionType = (FunctionType)operand1.zserioType;
-        final Expression functionResultExpression = functionType.getResultExpression();
+        final Function function = (Function)operand1.symbolObject;
+        final Expression functionResultExpression = function.getResultExpression();
 
         // function expression should know only symbols available on a place of the function call:
         // - if it's called within its owner object, it can see only symbols defined before the call
@@ -786,12 +789,12 @@ public class Expression extends AstNodeBase
             final AstLocation location = getLocation();
 
             final ParserStackedException stackedException = new ParserStackedException(e);
-            stackedException.pushMessage(location, "In function '" + functionType.getName() + "' " +
+            stackedException.pushMessage(location, "In function '" + function.getName() + "' " +
                     "called from here");
             throw stackedException;
         }
 
-        evaluateExpressionType(functionType.getReturnType());
+        evaluateExpressionType(function.getReturnTypeReference());
         expressionIntegerValue = functionResultExpression.expressionIntegerValue;
     }
 
@@ -804,7 +807,7 @@ public class Expression extends AstNodeBase
             throw new ParserException(operand2, "Integer expression expected!");
 
         final ArrayType arrayType = (ArrayType)operand1.zserioType;
-        evaluateExpressionType(arrayType.getElementType());
+        evaluateExpressionType(arrayType.getElementTypeInstantiation());
     }
 
     private void evaluateDotExpression()
@@ -869,7 +872,7 @@ public class Expression extends AstNodeBase
         final EnumType enumType = (EnumType)(operand1.zserioType);
         final Scope enumScope = enumType.getScope();
         final String dotOperand = operand2.text;
-        final Object enumSymbol = enumScope.getSymbol(dotOperand);
+        final AstNode enumSymbol = enumScope.getSymbol(dotOperand);
         if (!(enumSymbol instanceof EnumItem))
             throw new ParserException(this, "'" + dotOperand + "' undefined in enumeration '" +
                     enumType.getName() + "'!");
@@ -884,7 +887,7 @@ public class Expression extends AstNodeBase
         final CompoundType compoundType = (CompoundType)(operand1.zserioType);
         final Scope compoundScope = compoundType.getScope();
         final String dotOperand = operand2.text;
-        final Object compoundSymbol = compoundScope.getSymbol(dotOperand);
+        final AstNode compoundSymbol = compoundScope.getSymbol(dotOperand);
         if (compoundSymbol == null)
             throw new ParserException(this, "'" + dotOperand + "' undefined in compound '" +
                     compoundType.getName() + "'!");
@@ -893,20 +896,15 @@ public class Expression extends AstNodeBase
         symbolObject = compoundSymbol;
         if (compoundSymbol instanceof Field)
         {
-            evaluateExpressionType(((Field)compoundSymbol).getFieldType());
+            evaluateExpressionType(((Field)compoundSymbol).getTypeInstantiation());
         }
         else if (compoundSymbol instanceof Parameter)
         {
-            evaluateExpressionType(((Parameter)compoundSymbol).getParameterType());
+            evaluateExpressionType(((Parameter)compoundSymbol).getTypeReference());
         }
-        else if (compoundSymbol instanceof FunctionType)
+        else if (compoundSymbol instanceof Function)
         {
             // function type, we must wait for "()"
-            zserioType = (FunctionType)compoundSymbol;
-        }
-        else if (compoundSymbol instanceof CompoundType)
-        {
-            evaluateExpressionType((CompoundType)compoundSymbol);
         }
         else
         {
@@ -1166,7 +1164,7 @@ public class Expression extends AstNodeBase
             // explicit identifier does not have to be evaluated
             if (expressionFlag != ExpressionFlag.IS_EXPLICIT)
             {
-                final Object identifierSymbol = forcedEvaluationScope.getSymbol(text);
+                final AstNode identifierSymbol = forcedEvaluationScope.getSymbol(text);
                 if (identifierSymbol == null)
                 {
                     // it still can be a type
@@ -1201,19 +1199,18 @@ public class Expression extends AstNodeBase
     {
         symbolObject = identifierType;
 
-        // resolve type
-        final ZserioType resolvedType = TypeReference.resolveBaseType(identifierType);
-
-        if (resolvedType instanceof EnumType)
+        final ZserioType baseType = (identifierType instanceof Subtype) ?
+                ((Subtype)identifierType).getBaseTypeReference().getType() : identifierType;
+        if (baseType instanceof EnumType)
         {
-            // enumeration type, we must wait for field and dot
-            zserioType = resolvedType;
+            // enumeration type, we must wait for enumeration item and dot
+            zserioType = baseType;
         }
-        else if (resolvedType instanceof ConstType)
+        else if (baseType instanceof ConstType)
         {
             // constant type
-            final ConstType constType = (ConstType)resolvedType;
-            evaluateExpressionType(constType.getConstType());
+            final ConstType constType = (ConstType)baseType;
+            evaluateExpressionType(constType.getTypeReference());
 
             // call evaluation explicitly because this const does not have to be evaluated yet
             final ZserioAstEvaluator evaluator = new ZserioAstEvaluator();
@@ -1224,27 +1221,26 @@ public class Expression extends AstNodeBase
         }
         else
         {
-            throw new ParserException(this, "Type '" + resolvedType.getName() + "' (" +
-                    resolvedType.getClass() + ") is not allowed here!");
+            throw new ParserException(this, "Type '" + baseType.getName() + "' (" +
+                    baseType.getClass() + ") is not allowed here!");
         }
     }
 
-    private void evaluateIdentifierSymbol(Object identifierSymbol, Scope forcedEvaluationScope,
+    private void evaluateIdentifierSymbol(AstNode identifierSymbol, Scope forcedEvaluationScope,
             String identifier)
     {
         symbolObject = identifierSymbol;
         if (identifierSymbol instanceof Field)
         {
-            evaluateExpressionType(((Field)identifierSymbol).getFieldType());
+            evaluateExpressionType(((Field)identifierSymbol).getTypeInstantiation());
         }
         else if (identifierSymbol instanceof Parameter)
         {
-            evaluateExpressionType(((Parameter)identifierSymbol).getParameterType());
+            evaluateExpressionType(((Parameter)identifierSymbol).getTypeReference());
         }
-        else if (identifierSymbol instanceof FunctionType)
+        else if (identifierSymbol instanceof Function)
         {
             // function type, we must wait for "()"
-            zserioType = (FunctionType)identifierSymbol;
         }
         else if (identifierSymbol instanceof EnumItem)
         {
@@ -1273,23 +1269,24 @@ public class Expression extends AstNodeBase
         }
     }
 
+    private void evaluateExpressionType(TypeInstantiation typeInstantiation)
+    {
+        // call evaluation explicitly because this type instantiation does not have to be evaluated yet
+        final ZserioAstEvaluator evaluator = new ZserioAstEvaluator();
+        typeInstantiation.accept(evaluator);
+        evaluateExpressionType(typeInstantiation.getTypeReference());
+    }
+
+    private void evaluateExpressionType(TypeReference typeReference)
+    {
+        evaluateExpressionType(typeReference.getType());
+    }
+
     private void evaluateExpressionType(ZserioType type)
     {
-        // resolved instantiated type
-        ZserioType resolvedType = type;
-        if (resolvedType instanceof TypeInstantiation)
-        {
-            // call evaluation explicitly because this type instantiation does not have to be evaluated yet
-            final TypeInstantiation typeInstantiation = (TypeInstantiation)resolvedType;
-            final ZserioAstEvaluator evaluator = new ZserioAstEvaluator();
-            typeInstantiation.accept(evaluator);
-            resolvedType = typeInstantiation.getReferencedType();
-        }
-
-        // resolve type reference
-        resolvedType = TypeReference.resolveBaseType(resolvedType);
-
-        if (resolvedType instanceof EnumType)
+        final ZserioType baseType = (type instanceof Subtype) ?
+                ((Subtype)type).getBaseTypeReference().getType() : type;
+        if (baseType instanceof EnumType)
         {
             expressionType = ExpressionType.ENUM;
             if (symbolObject instanceof EnumItem)
@@ -1297,20 +1294,20 @@ public class Expression extends AstNodeBase
                 // call evaluation explicitly because this enumeration item does not have to be evaluated yet
                 final EnumItem enumItem = (EnumItem)symbolObject;
                 final ZserioAstEvaluator evaluator = new ZserioAstEvaluator();
-                ((EnumType)resolvedType).accept(evaluator);
+                ((EnumType)baseType).accept(evaluator);
 
                 // set integer value according to this enumeration item
                 expressionIntegerValue = new ExpressionIntegerValue(enumItem.getValue());
             }
         }
-        else if (resolvedType instanceof IntegerType)
+        else if (baseType instanceof IntegerType)
         {
             expressionType = ExpressionType.INTEGER;
-            final IntegerType integerType = (IntegerType)resolvedType;
-            if (resolvedType instanceof BitFieldType)
+            final IntegerType integerType = (IntegerType)baseType;
+            if (baseType instanceof BitFieldType)
             {
                 // call evaluation explicitly because this length does not have to be evaluated yet
-                final BitFieldType bitFieldType = (BitFieldType)resolvedType;
+                final BitFieldType bitFieldType = (BitFieldType)baseType;
                 final ZserioAstEvaluator evaluator = new ZserioAstEvaluator();
                 bitFieldType.accept(evaluator);
             }
@@ -1319,19 +1316,19 @@ public class Expression extends AstNodeBase
             if (lowerBound != null && upperBound != null)
                 expressionIntegerValue = new ExpressionIntegerValue(lowerBound, upperBound);
         }
-        else if (resolvedType instanceof FloatType)
+        else if (baseType instanceof FloatType)
         {
             expressionType = ExpressionType.FLOAT;
         }
-        else if (resolvedType instanceof StringType)
+        else if (baseType instanceof StringType)
         {
             expressionType = ExpressionType.STRING;
         }
-        else if (resolvedType instanceof BooleanType)
+        else if (baseType instanceof BooleanType)
         {
             expressionType = ExpressionType.BOOLEAN;
         }
-        else if (resolvedType instanceof CompoundType)
+        else if (baseType instanceof CompoundType)
         {
             expressionType = ExpressionType.COMPOUND;
         }
@@ -1340,17 +1337,17 @@ public class Expression extends AstNodeBase
             expressionType = ExpressionType.UNKNOWN;
         }
 
-        zserioType = resolvedType;
+        zserioType = baseType;
     }
 
     private void initialize()
     {
         evaluationState = EvaluationState.NOT_EVALUATED;
         expressionType = ExpressionType.UNKNOWN;
-        zserioType = null;
         expressionIntegerValue = new ExpressionIntegerValue();
-        unresolvedIdentifiers = new ArrayList<Expression>();
+        zserioType = null;
         symbolObject = null;
+        unresolvedIdentifiers = new ArrayList<Expression>();
         needsBigIntegerCastingToNative = false;
     }
 
@@ -1441,10 +1438,10 @@ public class Expression extends AstNodeBase
     private EvaluationState evaluationState;
 
     private ExpressionType expressionType;
-    private ZserioType zserioType;
     private ExpressionIntegerValue expressionIntegerValue;
+    private ZserioType zserioType;
+    private AstNode symbolObject;
     private List<Expression> unresolvedIdentifiers;
-    private Object symbolObject;
 
     private boolean needsBigIntegerCastingToNative;
 }

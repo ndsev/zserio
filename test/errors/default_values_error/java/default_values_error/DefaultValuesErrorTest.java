@@ -21,7 +21,7 @@ public class DefaultValuesErrorTest
     public void arrayInitializerError()
     {
         final String error = "array_initializer_error.zs:5:24: Wrong type of value expression " +
-                "(integer cannot be assigned to int8[])!";
+                "(integer cannot be assigned to array type)!";
         assertTrue(zserioErrors.isPresent(error));
     }
 

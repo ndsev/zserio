@@ -31,30 +31,34 @@ import zserio.emit.java.types.NativeObjectArrayType;
 public final class CompoundFieldTemplateData
 {
     public CompoundFieldTemplateData(JavaNativeTypeMapper javaNativeTypeMapper, boolean withWriterCode,
-            boolean withRangeCheckCode, CompoundType parentType, Field fieldType,
+            boolean withRangeCheckCode, CompoundType parentType, Field field,
             ExpressionFormatter javaExpressionFormatter) throws ZserioEmitException
     {
-        name = fieldType.getName();
+        final TypeInstantiation fieldTypeInstantiation = field.getTypeInstantiation();
+        final TypeReference fieldTypeReference = fieldTypeInstantiation.getTypeReference();
+        final ZserioType fieldBaseType = fieldTypeReference.getBaseType();
+
+        name = field.getName();
 
         // this must be the first one because we need to determine isTypeNullable
-        optional = createOptional(fieldType, javaExpressionFormatter);
+        optional = createOptional(field, javaExpressionFormatter);
 
         final boolean isTypeNullable = (optional != null);
-        final ZserioType baseType = TypeReference.resolveBaseType(fieldType.getFieldType());
-        final JavaNativeType nativeType = (isTypeNullable) ?
-                javaNativeTypeMapper.getNullableJavaType(baseType) : javaNativeTypeMapper.getJavaType(baseType);
+        final JavaNativeType nativeType = (isTypeNullable)
+                ? javaNativeTypeMapper.getNullableJavaType(fieldTypeReference)
+                : javaNativeTypeMapper.getJavaType(fieldTypeReference);
 
         javaTypeName = nativeType.getFullName();
-        javaNullableTypeName = javaNativeTypeMapper.getNullableJavaType(baseType).getFullName();
+        javaNullableTypeName = javaNativeTypeMapper.getNullableJavaType(fieldTypeReference).getFullName();
 
-        getterName = AccessorNameFormatter.getGetterName(fieldType);
-        setterName = AccessorNameFormatter.getSetterName(fieldType);
+        getterName = AccessorNameFormatter.getGetterName(field);
+        setterName = AccessorNameFormatter.getSetterName(field);
 
-        rangeCheckData = new RangeCheckTemplateData(javaNativeTypeMapper, withRangeCheckCode, name, baseType,
-                isTypeNullable, javaExpressionFormatter);
+        rangeCheckData = new RangeCheckTemplateData(javaNativeTypeMapper, withRangeCheckCode, name,
+                fieldBaseType, isTypeNullable, javaExpressionFormatter);
 
-        alignmentValue = createAlignmentValue(fieldType, javaExpressionFormatter);
-        initializer = createInitializer(fieldType, javaExpressionFormatter);
+        alignmentValue = createAlignmentValue(field, javaExpressionFormatter);
+        initializer = createInitializer(field, javaExpressionFormatter);
 
         usesObjectChoice = (parentType instanceof ChoiceType) || (parentType instanceof UnionType);
 
@@ -66,16 +70,16 @@ public final class CompoundFieldTemplateData
         isSimpleType = nativeType.isSimple();
         isObjectArray = nativeType instanceof NativeObjectArrayType;
 
-        constraint = createConstraint(fieldType, javaExpressionFormatter);
+        constraint = createConstraint(field, javaExpressionFormatter);
 
-        bitSize = new BitSize(baseType, javaNativeTypeMapper, javaExpressionFormatter);
-        offset = createOffset(fieldType, javaNativeTypeMapper, javaExpressionFormatter);
-        array = createArray(nativeType, baseType, parentType, javaNativeTypeMapper, withWriterCode,
+        bitSize = new BitSize(fieldBaseType, javaNativeTypeMapper, javaExpressionFormatter);
+        offset = createOffset(field, javaNativeTypeMapper, javaExpressionFormatter);
+        array = createArray(nativeType, fieldBaseType, parentType, javaNativeTypeMapper, withWriterCode,
                 javaExpressionFormatter);
-        runtimeFunction = JavaRuntimeFunctionDataCreator.createData(baseType, javaExpressionFormatter,
+        runtimeFunction = JavaRuntimeFunctionDataCreator.createData(fieldBaseType, javaExpressionFormatter,
                 javaNativeTypeMapper);
         compound = createCompound(javaNativeTypeMapper, withWriterCode, javaExpressionFormatter, parentType,
-                baseType);
+                fieldTypeInstantiation);
     }
 
     public String getName()
@@ -309,26 +313,29 @@ public final class CompoundFieldTemplateData
 
     public static class Array
     {
-        public Array(NativeArrayType nativeType, ArrayType baseType, CompoundType parentType,
+        public Array(NativeArrayType nativeType, ArrayType arrayType, CompoundType parentType,
                 JavaNativeTypeMapper javaNativeTypeMapper, boolean withWriterCode,
                 ExpressionFormatter javaExpressionFormatter) throws ZserioEmitException
         {
-            isImplicit = baseType.isImplicit();
-            length = createLength(baseType, javaExpressionFormatter);
-            final ZserioType elementType = TypeReference.resolveBaseType(baseType.getElementType());
-            final JavaNativeType elementNativeType = javaNativeTypeMapper.getJavaType(elementType);
+            final TypeInstantiation elementTypeInstantiation = arrayType.getElementTypeInstantiation();
+            final TypeReference elementTypeReference = elementTypeInstantiation.getTypeReference();
+            final ZserioType elementBaseType = elementTypeReference.getBaseType();
+
+            isImplicit = arrayType.isImplicit();
+            length = createLength(arrayType, javaExpressionFormatter);
+            final JavaNativeType elementNativeType = javaNativeTypeMapper.getJavaType(elementBaseType);
             elementJavaTypeName = elementNativeType.getFullName();
 
             requiresElementBitSize = nativeType.requiresElementBitSize();
             requiresElementFactory = nativeType.requiresElementFactory();
-            requiresParentContext = createRequiresParentContext(baseType);
+            requiresParentContext = createRequiresParentContext(elementTypeInstantiation);
 
-            generateListSetter = createGenerateListSetter(elementType);
+            generateListSetter = createGenerateListSetter(elementTypeInstantiation);
 
-            elementBitSize = new BitSize(elementType, javaNativeTypeMapper, javaExpressionFormatter);
+            elementBitSize = new BitSize(elementBaseType, javaNativeTypeMapper, javaExpressionFormatter);
             isElementEnum = elementNativeType instanceof NativeEnumType;
             elementCompound = createCompound(javaNativeTypeMapper, withWriterCode, javaExpressionFormatter,
-                    parentType, elementType);
+                    parentType, elementTypeInstantiation);
         }
 
         public boolean getIsImplicit()
@@ -391,33 +398,29 @@ public final class CompoundFieldTemplateData
             return javaExpressionFormatter.formatGetter(lengthExpression);
         }
 
-        private static boolean createRequiresParentContext(ArrayType arrayType)
+        private static boolean createRequiresParentContext(TypeInstantiation elementTypeInstantiation)
         {
             /*
              * Array length expression (Foo field[expr];) is not needed here because it's handled by the array
              * class itself, it's not propagated to the array factory.
              * But an array can be composed of type instantiations and these need to be handled.
              */
-            ZserioType baseType = TypeReference.resolveBaseType(arrayType.getElementType());
-
-            if (baseType instanceof TypeInstantiation)
+            for (InstantiatedParameter instantiatedParameter :
+                    elementTypeInstantiation.getInstantiatedParameters())
             {
-                final TypeInstantiation typeInstantiation = (TypeInstantiation)baseType;
-                for (TypeInstantiation.InstantiatedParameter instantiatedParameter :
-                        typeInstantiation.getInstantiatedParameters())
-                {
-                    if (instantiatedParameter.getArgumentExpression().requiresOwnerContext())
-                        return true;
-                }
+                if (instantiatedParameter.getArgumentExpression().requiresOwnerContext())
+                    return true;
             }
 
             return false;
         }
 
-        private static boolean createGenerateListSetter(ZserioType elementType)
+        private static boolean createGenerateListSetter(TypeInstantiation elementTypeInstantiation)
         {
-            return elementType instanceof CompoundType || elementType instanceof EnumType ||
-                elementType instanceof TypeInstantiation;
+            // TODO[Mi-L@][typeref] Check!
+            final ZserioType elementBaseType = elementTypeInstantiation.getTypeReference().getBaseType();
+            return elementBaseType instanceof CompoundType || elementBaseType instanceof EnumType ||
+                    !elementTypeInstantiation.getInstantiatedParameters().isEmpty();
         }
 
         private final boolean       isImplicit;
@@ -462,8 +465,10 @@ public final class CompoundFieldTemplateData
                     ExpressionFormatter javaExpressionFormatter, InstantiatedParameter instantiatedParameter)
                             throws ZserioEmitException
             {
-                final ZserioType parameterType = instantiatedParameter.getParameter().getParameterType();
-                final JavaNativeType nativeParameterType = javaNativeTypeMapper.getJavaType(parameterType);
+                final TypeReference parameterTypeReference =
+                        instantiatedParameter.getParameter().getTypeReference();
+                final JavaNativeType nativeParameterType =
+                        javaNativeTypeMapper.getJavaType(parameterTypeReference);
                 javaTypeName = nativeParameterType.getFullName();
                 isSimpleType = nativeParameterType.isSimple();
                 expression = javaExpressionFormatter.formatGetter(
@@ -493,42 +498,42 @@ public final class CompoundFieldTemplateData
         final ArrayList<InstantiatedParameterData>  instantiatedParameters;
     }
 
-    private static Optional createOptional(Field fieldType, ExpressionFormatter javaExpressionFormatter)
+    private static Optional createOptional(Field field, ExpressionFormatter javaExpressionFormatter)
             throws ZserioEmitException
     {
-        if (!fieldType.getIsOptional())
+        if (!field.isOptional())
             return null;
 
-        final Expression optionalClauseExpression = fieldType.getOptionalClauseExpr();
-        final String indicatorName = AccessorNameFormatter.getIndicatorName(fieldType);
+        final Expression optionalClauseExpression = field.getOptionalClauseExpr();
+        final String indicatorName = AccessorNameFormatter.getIndicatorName(field);
 
         return new Optional(optionalClauseExpression, indicatorName, javaExpressionFormatter);
     }
 
-    private static String createInitializer(Field fieldType, ExpressionFormatter javaExpressionFormatter)
+    private static String createInitializer(Field field, ExpressionFormatter javaExpressionFormatter)
             throws ZserioEmitException
     {
-        final Expression initializerExpression = fieldType.getInitializerExpr();
+        final Expression initializerExpression = field.getInitializerExpr();
         if (initializerExpression == null)
             return null;
 
         return javaExpressionFormatter.formatGetter(initializerExpression);
     }
 
-    private static String createAlignmentValue(Field fieldType, ExpressionFormatter javaExpressionFormatter)
+    private static String createAlignmentValue(Field field, ExpressionFormatter javaExpressionFormatter)
             throws ZserioEmitException
     {
-        final Expression alignmentExpression = fieldType.getAlignmentExpr();
+        final Expression alignmentExpression = field.getAlignmentExpr();
         if (alignmentExpression == null)
             return null;
 
         return javaExpressionFormatter.formatGetter(alignmentExpression);
     }
 
-    private static String createConstraint(Field fieldType, ExpressionFormatter javaExpressionFormatter)
+    private static String createConstraint(Field field, ExpressionFormatter javaExpressionFormatter)
             throws ZserioEmitException
     {
-        final Expression constraintExpression = fieldType.getConstraintExpr();
+        final Expression constraintExpression = field.getConstraintExpr();
         if (constraintExpression == null)
             return null;
 
@@ -561,14 +566,12 @@ public final class CompoundFieldTemplateData
     }
 
     private static Compound createCompound(JavaNativeTypeMapper javaNativeTypeMapper, boolean withWriterCode,
-            ExpressionFormatter javaExpressionFormatter, CompoundType owner, ZserioType baseType)
-                    throws ZserioEmitException
+            ExpressionFormatter javaExpressionFormatter, CompoundType owner,
+            TypeInstantiation fieldTypeInstantiation) throws ZserioEmitException
     {
-        if (baseType instanceof CompoundType)
-            return new Compound(javaNativeTypeMapper, withWriterCode, owner, (CompoundType)baseType);
-        else if (baseType instanceof TypeInstantiation)
+        if (fieldTypeInstantiation.getTypeReference().getBaseType() instanceof CompoundType)
             return new Compound(javaNativeTypeMapper, withWriterCode, javaExpressionFormatter, owner,
-                    (TypeInstantiation)baseType);
+                    fieldTypeInstantiation);
         else
             return null;
     }

@@ -135,9 +135,12 @@ public class TemplatesErrorTest
     @Test
     public void parameterizedBuiltinType()
     {
-        final String error = "parameterized_builtin_type_error.zs:11:16: " +
-                "uint32 cannot be used as a parameterized type!";
-        assertTrue(zserioErrors.isPresent(error));
+        final String errors[] =
+        {
+            "parameterized_builtin_type_error.zs:11:5: In instantiation of 'TestStruct' required from here",
+            "parameterized_builtin_type_error.zs:6:5: Referenced type 'uint32' is not a parameterized type!"
+        };
+        assertTrue(zserioErrors.isPresent(errors));
     }
 
     @Test
@@ -147,7 +150,7 @@ public class TemplatesErrorTest
         {
             "parameterized_compound_type_error.zs:16:5: In instantiation of 'TestStruct' required from here",
             "parameterized_compound_type_error.zs:11:5: " +
-                    "Parameterized type instantiation 'Compound()' does not refer to a parameterized type!",
+                    "Referenced type 'Compound' is not a parameterized type!"
         };
         assertTrue(zserioErrors.isPresent(errors));
     }

@@ -28,7 +28,7 @@ public class SyntaxErrorTest
     public void unexpectedEofInArrayLength()
     {
         final String error = "unexpected_eof_in_array_length_error.zs:6:1: " +
-                "mismatched input '<EOF>' expecting {"; //...
+                "mismatched input '<EOF>' expecting {"; // ...
         assertTrue(zserioErrors.isPresent(error));
     }
 
@@ -36,7 +36,7 @@ public class SyntaxErrorTest
     public void unexpectedEofInConstDefinition()
     {
         final String error = "unexpected_eof_in_const_definition_error.zs:4:1: " +
-                "mismatched input '<EOF>' expecting {"; //...
+                "mismatched input '<EOF>' expecting {"; // ...
         assertTrue(zserioErrors.isPresent(error));
     }
 
@@ -44,7 +44,7 @@ public class SyntaxErrorTest
     public void unexpectedEofInFieldDefinition()
     {
         final String error = "unexpected_eof_in_field_definition_error.zs:6:1: " +
-                "mismatched input '<EOF>' expecting ID";
+                "mismatched input '<EOF>' expecting {"; // ...
         assertTrue(zserioErrors.isPresent(error));
     }
 
@@ -52,7 +52,7 @@ public class SyntaxErrorTest
     public void unexpectedEofInParameterizedFieldDefinition()
     {
         final String error = "unexpected_eof_in_parameterized_field_definition_error.zs:11:1: " +
-                "mismatched input '<EOF>' expecting {',', ')'}";
+                "mismatched input '<EOF>' expecting {"; // ...
         assertTrue(zserioErrors.isPresent(error));
     }
 
@@ -60,7 +60,7 @@ public class SyntaxErrorTest
     public void unexpectedEofInStructDefinition()
     {
         final String error = "unexpected_eof_in_struct_definition_error.zs:6:1: " +
-                "extraneous input '<EOF>' expecting {"; //...
+                "extraneous input '<EOF>' expecting {"; // ...
         assertTrue(zserioErrors.isPresent(error));
     }
 

@@ -13,7 +13,7 @@ class ParamStructureSubtypeTest(unittest.TestCase):
         length = 2
         parameterizedSubtypeStruct.setLength(length)
 
-        parameterizedSubtype = self.api.ParameterizedSubtype.fromFields(length, [i for i in range(length)])
+        parameterizedSubtype = self.api.ParameterizedSubtype.fromFields(length, list(range(length)))
         parameterizedSubtypeStruct.setParameterizedSubtype(parameterizedSubtype)
         self.assertEqual(parameterizedSubtype, parameterizedSubtypeStruct.getParameterizedSubtype())
 

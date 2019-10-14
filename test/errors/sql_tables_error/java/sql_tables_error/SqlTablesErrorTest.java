@@ -20,7 +20,7 @@ public class SqlTablesErrorTest
     @Test
     public void databaseArrayField()
     {
-        final String error = "database_array_field_error.zs:21:38: mismatched input '[' expecting {';', 'sql'}";
+        final String error = "database_array_field_error.zs:21:38: mismatched input '[' expecting {"; // ...
         assertTrue(zserioErrors.isPresent(error));
     }
 
@@ -53,15 +53,14 @@ public class SqlTablesErrorTest
     @Test
     public void parameterizedTable()
     {
-        final String error = "parameterized_table_error.zs:3:20: mismatched input '(' expecting {"; //...
+        final String error = "parameterized_table_error.zs:3:20: mismatched input '(' expecting {"; // ...
         assertTrue(zserioErrors.isPresent(error));
     }
 
     @Test
     public void tableFieldConstraint()
     {
-        final String error = "table_field_constraint_error.zs:7:38: " +
-                "mismatched input ':' expecting {';', 'sql'}";
+        final String error = "table_field_constraint_error.zs:7:38: mismatched input ':' expecting {"; // ...
         assertTrue(zserioErrors.isPresent(error));
     }
 
@@ -76,7 +75,7 @@ public class SqlTablesErrorTest
     @Test
     public void tableArrayField()
     {
-        final String error = "table_array_field_error.zs:16:31: mismatched input '[' expecting {';', 'sql'}";
+        final String error = "table_array_field_error.zs:16:31: mismatched input '[' expecting {"; // ...
         assertTrue(zserioErrors.isPresent(error));
     }
 

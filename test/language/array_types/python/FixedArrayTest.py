@@ -9,14 +9,14 @@ class FixedArrayTest(unittest.TestCase):
         cls.api = getZserioApi(__file__, "array_types.zs").fixed_array
 
     def testBitSizeOf(self):
-        uint8Array = [i for i in range(self.FIXED_ARRAY_LENGTH)]
+        uint8Array = list(range(self.FIXED_ARRAY_LENGTH))
         fixedArray = self.api.FixedArray.fromFields(uint8Array)
         bitPosition = 2
         fixedArrayBitSize = self.FIXED_ARRAY_LENGTH * 8
         self.assertEqual(fixedArrayBitSize, fixedArray.bitSizeOf(bitPosition))
 
     def testInitializeOffsets(self):
-        uint8Array = [i for i in range(self.FIXED_ARRAY_LENGTH)]
+        uint8Array = list(range(self.FIXED_ARRAY_LENGTH))
         fixedArray = self.api.FixedArray.fromFields(uint8Array)
         bitPosition = 2
         expectedEndBitPosition = bitPosition + self.FIXED_ARRAY_LENGTH * 8
@@ -34,7 +34,7 @@ class FixedArrayTest(unittest.TestCase):
             self.assertEqual(i, uint8Array[i])
 
     def testWrite(self):
-        uint8Array = [i for i in range(self.FIXED_ARRAY_LENGTH)]
+        uint8Array = list(range(self.FIXED_ARRAY_LENGTH))
         fixedArray = self.api.FixedArray.fromFields(uint8Array)
         writer = zserio.BitStreamWriter()
         fixedArray.write(writer)
@@ -47,7 +47,7 @@ class FixedArrayTest(unittest.TestCase):
             self.assertEqual(i, readUint8Array[i])
 
     def testWriteWrongArray(self):
-        uint8Array = [i for i in range(self.FIXED_ARRAY_LENGTH + 1)]
+        uint8Array = list(range(self.FIXED_ARRAY_LENGTH + 1))
         fixedArray = self.api.FixedArray.fromFields(uint8Array)
         writer = zserio.BitStreamWriter()
         with self.assertRaises(zserio.PythonRuntimeException):

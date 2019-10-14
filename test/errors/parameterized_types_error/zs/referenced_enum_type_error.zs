@@ -1,6 +1,10 @@
-package referenced_non_compound_type_error;
+package referenced_enum_type_error;
 
-subtype uint32 Item;
+enum uint32 Item
+{
+    ONE,
+    TWO
+};
 
 struct ItemHolder
 {

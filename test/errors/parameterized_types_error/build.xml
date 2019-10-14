@@ -15,7 +15,9 @@
             ignoreErrors="true"/>
         <testGen testName="parameterized_types_error" zsFile="no_parameters_error.zs"
             ignoreErrors="true"/>
-        <testGen testName="parameterized_types_error" zsFile="referenced_non_compound_type_error.zs"
+        <testGen testName="parameterized_types_error" zsFile="referenced_builtin_type_error.zs"
+            ignoreErrors="true"/>
+        <testGen testName="parameterized_types_error" zsFile="referenced_enum_type_error.zs"
             ignoreErrors="true"/>
         <testGen testName="parameterized_types_error" zsFile="referenced_non_parameterized_type_error.zs"
             ignoreErrors="true"/>

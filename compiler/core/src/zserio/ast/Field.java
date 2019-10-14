@@ -1,11 +1,7 @@
 package zserio.ast;
 
 import java.math.BigInteger;
-import java.util.Collections;
-import java.util.LinkedList;
 import java.util.List;
-
-
 
 /**
  * AST node for compound fields.
@@ -18,7 +14,7 @@ public class Field extends DocumentableAstNode
      * Constructor from Structure types.
      *
      * @param location           AST node location.
-     * @param fieldType          Field type.
+     * @param typeInstantiation  Field type instantiation.
      * @param name               Field name.
      * @param isAutoOptional     Auto optional flag.
      * @param alignmentExpr      Alignment expression or null if it's not defined.
@@ -28,54 +24,58 @@ public class Field extends DocumentableAstNode
      * @param constraintExpr     Constraint expression or null if it's not defined.
      * @param docComment         Documentation comment belonging to this node.
      */
-    public Field(AstLocation location, ZserioType fieldType, String name, boolean isAutoOptional,
-            Expression alignmentExpr, Expression offsetExpr, Expression initializerExpr,
+    public Field(AstLocation location, TypeInstantiation typeInstantiation, String name, boolean isAutoOptional,
+            Expression alignmentExpr, Expression offsetExpr,Expression initializerExpr,
             Expression optionalClauseExpr, Expression constraintExpr, DocComment docComment)
     {
-        this(location, fieldType, name, isAutoOptional, alignmentExpr, offsetExpr, initializerExpr,
+        this(location, typeInstantiation, name, isAutoOptional, alignmentExpr, offsetExpr, initializerExpr,
                 optionalClauseExpr, constraintExpr, false, null, docComment);
     }
 
     /**
      * Constructor from Choice and Union types.
      *
-     * @param location           AST node location.
-     * @param fieldType          Field type.
-     * @param name               Field name.
-     * @param constraintExpr     Constraint expression or null if it's not defined.
-     * @param docComment         Documentation comment belonging to this node.
+     * @param location               AST node location.
+     * @param fieldTypeInstantiation Field type instantiation.
+     * @param name                   Field name.
+     * @param constraintExpr         Constraint expression or null if it's not defined.
+     * @param docComment             Documentation comment belonging to this node.
      */
-    public Field(AstLocation location, ZserioType fieldType, String name, Expression constraintExpr,
-            DocComment docComment)
+    public Field(AstLocation location, TypeInstantiation fieldTypeInstantiation, String name,
+            Expression constraintExpr, DocComment docComment)
     {
-        this(location, fieldType, name, false, null, null, null, null, constraintExpr, false, null, docComment);
+        this(location, fieldTypeInstantiation, name, false, null, null, null, null, constraintExpr, false, null,
+                docComment);
     }
 
     /**
      * Constructor from SQL Table types.
      *
-     * @param location      AST node location.
-     * @param fieldType     Field type.
-     * @param name          Field name.
-     * @param isVirtual     True if field is virtual.
-     * @param sqlConstraint SQL constraint or null if it's not defined.
+     * @param location               AST node location.
+     * @param fieldTypeInstantiation Field type instantiation.
+     * @param name                   Field name.
+     * @param isVirtual              True if field is virtual.
+     * @param sqlConstraint          SQL constraint or null if it's not defined.
      */
-    public Field(AstLocation location, ZserioType fieldType, String name, boolean isVirtual, SqlConstraint sqlConstraint,
-            DocComment docComment)
+    public Field(AstLocation location, TypeInstantiation fieldTypeInstantiation, String name, boolean isVirtual,
+            SqlConstraint sqlConstraint, DocComment docComment)
     {
-        this(location, fieldType, name, false, null, null, null, null, null, isVirtual, sqlConstraint, docComment);
+        this(location, fieldTypeInstantiation, name, false, null, null, null, null, null, isVirtual,
+                sqlConstraint, docComment);
     }
 
     /**
      * Constructor from SQL Database types.
      *
-     * @param location  AST node location.
-     * @param fieldType Field type.
-     * @param name      Field name.
+     * @param location               AST node location.
+     * @param fieldTypeInstantiation Field type instantiation.
+     * @param name                   Field name.
      */
-    public Field(AstLocation location, ZserioType fieldType, String name, DocComment docComment)
+    public Field(AstLocation location, TypeInstantiation fieldTypeInstantiation, String name,
+            DocComment docComment)
     {
-        this(location, fieldType, name, false, null, null, null, null, null, false, null, docComment);
+        this(location, fieldTypeInstantiation, name, false, null, null, null, null, null, false, null,
+                docComment);
     }
 
     @Override
@@ -89,7 +89,7 @@ public class Field extends DocumentableAstNode
     {
         super.visitChildren(visitor);
 
-        fieldType.accept(visitor);
+        typeInstantiation.accept(visitor);
         if (alignmentExpr != null)
             alignmentExpr.accept(visitor);
         if (offsetExpr != null)
@@ -105,57 +105,13 @@ public class Field extends DocumentableAstNode
     }
 
     /**
-     * Gets Zserio type associated with the field.
+     * Gets the field's type instantiation.
      *
-     * @return Zserio type associated with the field as has been specified in Zserio.
+     * @return Type instantiation.
      */
-    public ZserioType getFieldType()
+    public TypeInstantiation getTypeInstantiation()
     {
-        return fieldType;
-    }
-
-    /**
-     * Gets referenced Zserio type associated with the field.
-     *
-     * In case that the field is an array, this methods gets the element type.
-     * If the type is a an instantiation, it returns it's referenced type.
-     *
-     * Result is either a built-in type or a type reference.
-     *
-     * @return Referenced Zserio type associated with the field.
-     */
-    public ZserioType getFieldReferencedType()
-    {
-        ZserioType referencedType = fieldType;
-
-        // get array element type
-        if (fieldType instanceof ArrayType)
-            referencedType = ((ArrayType)referencedType).getElementType();
-
-        // get instantiated type
-        if (referencedType instanceof TypeInstantiation)
-            referencedType = ((TypeInstantiation)referencedType).getReferencedType();
-
-        return referencedType;
-    }
-
-    /**
-     * Gets a list of parameters used in the field.
-     *
-     * This method is useful only for fields of type "type instantiation" as no other fields can have
-     * parameters.
-     *
-     * The order of the returned items is the order of the parameters.
-     *
-     * @return A list of parameters or empty list if a field has no parameters.
-     */
-    public List<TypeInstantiation.InstantiatedParameter> getInstantiatedParameters()
-    {
-        final ZserioType resolvedFieldType = TypeReference.resolveType(fieldType);
-        if (!(resolvedFieldType instanceof TypeInstantiation))
-            return Collections.unmodifiableList(new LinkedList<TypeInstantiation.InstantiatedParameter>());
-
-        return ((TypeInstantiation)resolvedFieldType).getInstantiatedParameters();
+        return typeInstantiation;
     }
 
     /**
@@ -171,10 +127,10 @@ public class Field extends DocumentableAstNode
     /**
      * Gets flag which indicates if the field is optional.
      *
-     * @return true if the field is has been defined using "optional" keyword in Zserio or if the field
+     * @return True if the field has been defined using "optional" keyword in Zserio or if the field
      *         has optional clause.
      */
-    public boolean getIsOptional()
+    public boolean isOptional()
     {
         return isAutoOptional || optionalClauseExpr != null;
     }
@@ -257,11 +213,29 @@ public class Field extends DocumentableAstNode
      */
     void check(Package pkg)
     {
+        // check offset expression type
+        if (offsetExpr != null)
+        {
+            final ZserioType exprZserioType = offsetExpr.getExprZserioType();
+            if (!(exprZserioType instanceof IntegerType) || ((IntegerType)exprZserioType).isSigned())
+                throw new ParserException(offsetExpr, "Offset expression for field '" + getName() +
+                        "' is not an unsigned integer type!");
+        }
+
+        // check alignment expression type
+        if (alignmentExpr != null)
+        {
+            final BigInteger alignmentValue = alignmentExpr.getIntegerValue();
+            if (alignmentValue == null || alignmentValue.compareTo(BigInteger.ZERO) < 0)
+                throw new ParserException(alignmentExpr, "Alignment expression for field '" + getName() +
+                        "' is not positive integer!");
+        }
+
         // check initializer expression type
         if (initializerExpr != null)
         {
             // check expression type
-            final ZserioType fieldBaseType = TypeReference.resolveBaseType(fieldType);
+            final ZserioType fieldBaseType = typeInstantiation.getTypeReference().getBaseType();
             ExpressionUtil.checkExpressionType(initializerExpr, fieldBaseType);
 
             // check if expression requires owner context (contains field, parameter or function)
@@ -288,24 +262,6 @@ public class Field extends DocumentableAstNode
                         getName() + "' is not boolean!");
         }
 
-        // check offset expression type
-        if (offsetExpr != null)
-        {
-            final ZserioType exprZserioType = offsetExpr.getExprZserioType();
-            if (!(exprZserioType instanceof IntegerType) || ((IntegerType)exprZserioType).isSigned())
-                throw new ParserException(offsetExpr, "Offset expression for field '" + getName() +
-                        "' is not an unsigned integer type!");
-        }
-
-        // check alignment expression type
-        if (alignmentExpr != null)
-        {
-            final BigInteger alignmentValue = alignmentExpr.getIntegerValue();
-            if (alignmentValue == null || alignmentValue.compareTo(BigInteger.ZERO) < 0)
-                throw new ParserException(alignmentExpr, "Alignment expression for field '" + getName() +
-                        "' is not positive integer!");
-        }
-
         // check field name
         if (pkg.getVisibleType(this, PackageName.EMPTY, getName()) != null)
             throw new ParserException(this, "'" + getName() + "' is a defined type in this package!");
@@ -319,10 +275,10 @@ public class Field extends DocumentableAstNode
      *
      * @return New field instantiated from this using the given template arguments.
      */
-    Field instantiate(List<TemplateParameter> templateParameters, List<ZserioType> templateArguments)
+    Field instantiate(List<TemplateParameter> templateParameters, List<TypeReference> templateArguments)
     {
-        final ZserioType instantiatedFieldType =
-                ZserioTypeUtil.instantiate(fieldType, templateParameters, templateArguments);
+        final TypeInstantiation instantiatedTypeInstantiation =
+                typeInstantiation.instantiate(templateParameters, templateArguments);
 
         final Expression instantiatedAlignmentExpr = getAlignmentExpr() == null ? null :
                 getAlignmentExpr().instantiate(templateParameters, templateArguments);
@@ -338,19 +294,20 @@ public class Field extends DocumentableAstNode
         final SqlConstraint instantiatedSqlConstraint = getSqlConstraint() == null ? null :
                 getSqlConstraint().instantiate(templateParameters, templateArguments);
 
-        return new Field(getLocation(), instantiatedFieldType, name, isAutoOptional, instantiatedAlignmentExpr,
-                instantiatedOffsetExpr, instantiatedInitializerExpr, instantiatedOptionalClauseExpr,
-                instantiatedConstraintExpr, isVirtual, instantiatedSqlConstraint, getDocComment());
+        return new Field(getLocation(), instantiatedTypeInstantiation, name, isAutoOptional,
+                instantiatedAlignmentExpr, instantiatedOffsetExpr, instantiatedInitializerExpr,
+                instantiatedOptionalClauseExpr, instantiatedConstraintExpr,
+                isVirtual, instantiatedSqlConstraint, getDocComment());
     }
 
-    private Field(AstLocation location, ZserioType fieldType, String name, boolean isAutoOptional,
-            Expression alignmentExpr, Expression offsetExpr, Expression initializerExpr,
+    private Field(AstLocation location, TypeInstantiation typeInstantiation, String name,
+            boolean isAutoOptional, Expression alignmentExpr, Expression offsetExpr, Expression initializerExpr,
             Expression optionalClauseExpr, Expression constraintExpr, boolean isVirtual,
             SqlConstraint sqlConstraint, DocComment docComment)
     {
         super(location, docComment);
 
-        this.fieldType = fieldType;
+        this.typeInstantiation = typeInstantiation;
         this.name = name;
         this.isAutoOptional = isAutoOptional;
 
@@ -364,7 +321,7 @@ public class Field extends DocumentableAstNode
         this.sqlConstraint = sqlConstraint;
     }
 
-    private final ZserioType fieldType;
+    private final TypeInstantiation typeInstantiation;
     private final String name;
     private final boolean isAutoOptional;
 

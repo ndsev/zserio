@@ -3,7 +3,7 @@ package zserio.emit.java;
 import java.util.Locale;
 
 import zserio.ast.Field;
-import zserio.ast.FunctionType;
+import zserio.ast.Function;
 import zserio.ast.Parameter;
 
 /**
@@ -62,13 +62,13 @@ final class AccessorNameFormatter
     /**
      * Returns the name of function accessor.
      *
-     * @param functionType The zserio function for which to get accessor.
+     * @param function The zserio function for which to get accessor.
      *
      * @return Function accessor name.
      */
-    public static String getFunctionName(FunctionType functionType)
+    public static String getFunctionName(Function function)
     {
-        return getAccessorName(FUNCTION_NAME_PREFIX, functionType.getName());
+        return getAccessorName(FUNCTION_NAME_PREFIX, function.getName());
     }
 
     private static String getAccessorName(String accessorNamePrefix, String memberName)

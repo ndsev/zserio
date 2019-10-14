@@ -60,9 +60,12 @@ public class FunctionsErrorTest
     @Test
     public void functionWithParameter()
     {
-        final String error = "function_with_parameter_error.zs:7:38: " +
-                "mismatched input 'int32' expecting ')' ('int32' is a reserved keyword)!";
-        assertTrue(zserioErrors.isPresent(error));
+        final String errors[] =
+        {
+            "function_with_parameter_error.zs:7:38: mismatched input 'int32' expecting ')'",
+            "function_with_parameter_error.zs:7:38: 'int32' is a reserved keyword!"
+        };
+        assertTrue(zserioErrors.isPresent(errors));
     }
 
     @Test

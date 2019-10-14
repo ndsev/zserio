@@ -3,7 +3,7 @@ package zserio.emit.python;
 import java.util.Locale;
 
 import zserio.ast.Field;
-import zserio.ast.FunctionType;
+import zserio.ast.Function;
 import zserio.ast.Parameter;
 
 public class AccessorNameFormatter
@@ -28,9 +28,9 @@ public class AccessorNameFormatter
         return getAccessorName(INDICATOR_NAME_PREFIX, field.getName());
     }
 
-    public static String getFunctionName(FunctionType functionType)
+    public static String getFunctionName(Function function)
     {
-        return getAccessorName(FUNCTION_NAME_PREFIX, functionType.getName());
+        return getAccessorName(FUNCTION_NAME_PREFIX, function.getName());
     }
 
     public static String getSqlColumnName(Field field)

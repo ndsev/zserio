@@ -12,8 +12,6 @@ import zserio.ast.Expression;
 import zserio.ast.Field;
 import zserio.ast.StdIntegerType;
 import zserio.ast.Subtype;
-import zserio.ast.TypeInstantiation;
-import zserio.ast.TypeReference;
 import zserio.ast.VarIntegerType;
 import zserio.emit.common.ExpressionFormatter;
 import zserio.emit.common.ZserioEmitException;
@@ -39,9 +37,7 @@ public class TypeNameEmitter
     public String getArrayRange(Field f) throws ZserioEmitException
     {
         String result = null;
-        ZserioType type = f.getFieldType();
-
-        type = TypeReference.resolveType(type);
+        final ZserioType type = f.getTypeInstantiation().getTypeReference().getType();
         if (type instanceof ArrayType)
         {
             result = "[";
@@ -149,26 +145,14 @@ public class TypeNameEmitter
         {
             result = ((ServiceType)t).getName();
         }
-        else if (t instanceof TypeInstantiation)
-        {
-            TypeInstantiation inst = (TypeInstantiation) t;
-            CompoundType compound = inst.getBaseType();
-            result = compound.getName();
-        }
         else if (t instanceof ArrayType)
         {
             // don't HTML-escape the result - it gets escaped in the call
-            return getTypeName(TypeReference.resolveBaseType(((ArrayType) t).getElementType()));
-        }
-        else if (t instanceof TypeReference)
-        {
-            TypeReference reference = (TypeReference) t;
-            result = reference.getName();
+            return getTypeName(((ArrayType) t).getElementTypeInstantiation().getTypeReference().getBaseType());
         }
         else
         {
-            ZserioType res = TypeReference.resolveType(t);
-            result = res.getName();
+            result = t.getName();
         }
 
         return StringHtmlUtil.escapeForHtml(result);

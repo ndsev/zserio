@@ -32,16 +32,18 @@ public class CompoundFieldTemplateData
             ExpressionFormatter cppIndirectExpressionFormatter, IncludeCollector includeCollector,
             boolean withWriterCode, boolean withRangeCheckCode) throws ZserioEmitException
     {
-        final ZserioType fieldType = TypeReference.resolveType(field.getFieldType());
-        final ZserioType baseFieldType = TypeReference.resolveBaseType(fieldType);
+        final TypeInstantiation fieldTypeInstantiation = field.getTypeInstantiation();
+        final TypeReference fieldTypeReference = fieldTypeInstantiation.getTypeReference();
+        final ZserioType fieldType = fieldTypeReference.getType();
+        final ZserioType fieldBaseType = fieldTypeReference.getBaseType();
 
-        CppNativeType fieldNativeType = cppNativeTypeMapper.getCppType(fieldType);
+        CppNativeType fieldNativeType = cppNativeTypeMapper.getCppType(fieldTypeReference);
         includeCollector.addHeaderIncludesForType(fieldNativeType);
-        if (field.getIsOptional())
+        if (field.isOptional())
         {
-            optional = createOptional(field, baseFieldType, parentType, fieldNativeType,
+            optional = createOptional(field, fieldBaseType, parentType, fieldNativeType,
                     cppExpressionFormatter);
-            fieldNativeType = cppNativeTypeMapper.getCppOptionalHolderType(fieldType);
+            fieldNativeType = cppNativeTypeMapper.getCppOptionalHolderType(fieldTypeReference);
             includeCollector.addHeaderIncludesForType(fieldNativeType);
         }
         else
@@ -50,7 +52,7 @@ public class CompoundFieldTemplateData
         }
 
         compound = createCompound(cppNativeTypeMapper, cppExpressionFormatter, cppIndirectExpressionFormatter,
-                parentType, baseFieldType, withWriterCode);
+                parentType, fieldTypeInstantiation, withWriterCode);
 
         name = field.getName();
         cppTypeName = fieldNativeType.getFullName();
@@ -68,16 +70,16 @@ public class CompoundFieldTemplateData
         usesAnyHolder = (parentType instanceof ChoiceType) || (parentType instanceof UnionType);
 
         isSimpleType = fieldNativeType.isSimpleType();
-        isEnum = baseFieldType instanceof EnumType;
+        isEnum = fieldBaseType instanceof EnumType;
 
         constraint = createConstraint(field, cppNativeTypeMapper, cppExpressionFormatter, includeCollector);
 
         offset = createOffset(field, cppNativeTypeMapper, cppExpressionFormatter,
                 cppIndirectExpressionFormatter);
-        array = createArray(fieldNativeType, baseFieldType, parentType, cppNativeTypeMapper,
-                cppExpressionFormatter, cppIndirectExpressionFormatter, withWriterCode);
-        runtimeFunction = CppRuntimeFunctionDataCreator.createData(baseFieldType, cppExpressionFormatter);
-        bitSizeValue = createBitSizeValue(baseFieldType, cppExpressionFormatter);
+        array = createArray(fieldNativeType, fieldBaseType, parentType, cppNativeTypeMapper,
+                cppExpressionFormatter, cppIndirectExpressionFormatter, includeCollector, withWriterCode);
+        runtimeFunction = CppRuntimeFunctionDataCreator.createData(fieldBaseType, cppExpressionFormatter);
+        bitSizeValue = createBitSizeValue(fieldBaseType, cppExpressionFormatter);
         this.withWriterCode = withWriterCode;
         this.withRangeCheckCode = withRangeCheckCode;
     }
@@ -228,19 +230,15 @@ public class CompoundFieldTemplateData
 
     public static class Compound
     {
-        public Compound(CppNativeTypeMapper cppNativeTypeMapper, CompoundType owner,
-                CompoundType compoundFieldType, boolean withWriterCode)
-        {
-            instantiatedParameters = new ArrayList<InstantiatedParameterData>(0);
-            needsChildrenInitialization = compoundFieldType.needsChildrenInitialization();
-        }
-
         public Compound(CppNativeTypeMapper cppNativeTypeMapper, ExpressionFormatter cppExpressionFormatter,
                 ExpressionFormatter cppIndirectExpressionFormatter, CompoundType owner,
-                TypeInstantiation compoundFieldType, boolean withWriterCode) throws ZserioEmitException
+                TypeInstantiation compoundFieldInstantiation, boolean withWriterCode) throws ZserioEmitException
         {
-            final CompoundType baseType = compoundFieldType.getBaseType();
-            final List<InstantiatedParameter> parameters = compoundFieldType.getInstantiatedParameters();
+            // TODO[Mi-L@][typeref] ParameterizedTypeInstantiation could hold the base compound type.
+            final CompoundType baseType =
+                    (CompoundType)compoundFieldInstantiation.getTypeReference().getBaseType();
+            final List<InstantiatedParameter> parameters =
+                    compoundFieldInstantiation.getInstantiatedParameters();
             instantiatedParameters = new ArrayList<InstantiatedParameterData>(parameters.size());
             for (InstantiatedParameter parameter : parameters)
             {
@@ -424,25 +422,30 @@ public class CompoundFieldTemplateData
 
     public static class Array
     {
-        public Array(NativeArrayType nativeType, ArrayType baseType, CompoundType parentType,
+        public Array(NativeArrayType nativeType, ArrayType arrayType, CompoundType parentType,
                 CppNativeTypeMapper cppNativeTypeMapper, ExpressionFormatter cppExpressionFormatter,
-                ExpressionFormatter cppIndirectExpressionFormatter, boolean withWriterCode)
-                        throws ZserioEmitException
+                ExpressionFormatter cppIndirectExpressionFormatter, IncludeCollector includeCollector,
+                boolean withWriterCode) throws ZserioEmitException
         {
-            final ZserioType elementType = TypeReference.resolveBaseType(baseType.getElementType());
+            final TypeInstantiation elementTypeInstantiation = arrayType.getElementTypeInstantiation();
+            final TypeReference elementTypeReference = elementTypeInstantiation.getTypeReference();
+            final ZserioType elementBaseType = elementTypeReference.getBaseType();
 
             traitsName = nativeType.getArrayTraitsName();
             hasTemplatedTraits = nativeType.hasTemplatedTraits();
-            isImplicit = baseType.isImplicit();
-            length = createLength(baseType, cppExpressionFormatter);
-            elementCppTypeName = cppNativeTypeMapper.getCppType(elementType).getFullName();
+            isImplicit = arrayType.isImplicit();
+            length = createLength(arrayType, cppExpressionFormatter);
+            final CppNativeType elementNativeType = cppNativeTypeMapper.getCppType(elementTypeReference);
+            elementCppTypeName = elementNativeType.getFullName();
+            includeCollector.addHeaderIncludesForType(elementNativeType);
             requiresElementFactory = nativeType.requiresElementFactory();
             elementBitSizeValue = nativeType.requiresElementBitSize()
-                    ? createBitSizeValue(elementType, cppExpressionFormatter)
+                    ? createBitSizeValue(elementBaseType, cppExpressionFormatter)
                     : null;
             elementCompound = createCompound(cppNativeTypeMapper, cppExpressionFormatter,
-                    cppIndirectExpressionFormatter, parentType, elementType, withWriterCode);
-            elementIntegerRange = createIntegerRange(cppNativeTypeMapper, elementType, cppExpressionFormatter);
+                    cppIndirectExpressionFormatter, parentType, elementTypeInstantiation, withWriterCode);
+            elementIntegerRange = createIntegerRange(cppNativeTypeMapper, elementBaseType,
+                    cppExpressionFormatter);
         }
 
         public String getTraitsName()
@@ -515,10 +518,7 @@ public class CompoundFieldTemplateData
             CppNativeType fieldNativeType, ExpressionFormatter cppExpressionFormatter)
                     throws ZserioEmitException
     {
-        ZserioType fieldInstantiatedType = baseFieldType;
-        if (baseFieldType instanceof TypeInstantiation)
-            fieldInstantiatedType = ((TypeInstantiation)baseFieldType).getBaseType();
-        final boolean isRecursive = fieldInstantiatedType == parentType;
+        final boolean isRecursive = baseFieldType == parentType;
 
         final Expression optionalClauseExpression = field.getOptionalClauseExpr();
         final String indicatorName = AccessorNameFormatter.getIndicatorName(field);
@@ -587,7 +587,7 @@ public class CompoundFieldTemplateData
     private static Array createArray(CppNativeType cppNativeType, ZserioType baseType,
             CompoundType parentType, CppNativeTypeMapper cppNativeTypeMapper,
             ExpressionFormatter cppExpressionFormatter, ExpressionFormatter cppIndirectExpressionFormatter,
-            boolean withWriterCode) throws ZserioEmitException
+            IncludeCollector includeCollector, boolean withWriterCode) throws ZserioEmitException
     {
         if (!(baseType instanceof ArrayType))
             return null;
@@ -600,7 +600,7 @@ public class CompoundFieldTemplateData
                     "' and native type '" + cppNativeType.getClass() + "'!");
 
         return new Array((NativeArrayType)cppNativeType, (ArrayType)baseType, parentType, cppNativeTypeMapper,
-                cppExpressionFormatter, cppIndirectExpressionFormatter, withWriterCode);
+                cppExpressionFormatter, cppIndirectExpressionFormatter, includeCollector, withWriterCode);
     }
 
     static String createBitSizeValue(ZserioType baseFieldType, ExpressionFormatter cppExpressionFormatter)
@@ -630,15 +630,18 @@ public class CompoundFieldTemplateData
 
     private static Compound createCompound(CppNativeTypeMapper cppNativeTypeMapper,
             ExpressionFormatter cppExpressionFormatter, ExpressionFormatter cppIndirectExpressionFormatter,
-            CompoundType owner, ZserioType baseFieldType, boolean withWriterCode) throws ZserioEmitException
+            CompoundType owner, TypeInstantiation fieldTypeInstantiation, boolean withWriterCode)
+                    throws ZserioEmitException
     {
-        if (baseFieldType instanceof CompoundType)
-            return new Compound(cppNativeTypeMapper, owner, (CompoundType)baseFieldType, withWriterCode);
-        else if (baseFieldType instanceof TypeInstantiation)
+        if (fieldTypeInstantiation.getTypeReference().getBaseType() instanceof CompoundType)
+        {
             return new Compound(cppNativeTypeMapper, cppExpressionFormatter, cppIndirectExpressionFormatter,
-                    owner, (TypeInstantiation)baseFieldType, withWriterCode);
+                    owner, fieldTypeInstantiation, withWriterCode);
+        }
         else
+        {
             return null;
+        }
     }
 
     private final Optional optional;

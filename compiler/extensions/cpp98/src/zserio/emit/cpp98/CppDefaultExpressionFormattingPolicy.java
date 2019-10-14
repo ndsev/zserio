@@ -4,9 +4,8 @@ import java.math.BigInteger;
 import java.util.Arrays;
 import java.util.List;
 
-import zserio.ast.ConstType;
-import zserio.ast.FunctionType;
-import zserio.ast.Subtype;
+import zserio.ast.AstNode;
+import zserio.ast.Function;
 import zserio.ast.ZserioType;
 import zserio.ast.EnumItem;
 import zserio.ast.EnumType;
@@ -17,6 +16,7 @@ import zserio.ast.Parameter;
 import zserio.emit.common.DefaultExpressionFormattingPolicy;
 import zserio.emit.common.StringEscapeConverter;
 import zserio.emit.common.ZserioEmitException;
+import zserio.emit.cpp98.AccessorNameFormatter;
 import zserio.emit.cpp98.types.CppNativeType;
 
 /**
@@ -138,13 +138,17 @@ public abstract class CppDefaultExpressionFormattingPolicy extends DefaultExpres
         // first try Zserio types then try identifier symbol objects
         final StringBuilder result = new StringBuilder();
         final String symbol = expr.getText();
-        final Object resolvedSymbol = expr.getExprSymbolObject();
-        final ZserioType resolvedType = expr.getExprZserioType();
-        final boolean isFirstInDot = (expr.getExprZserioType() != null);
+        final AstNode resolvedSymbol = expr.getExprSymbolObject();
         if (resolvedSymbol instanceof ZserioType)
-            formatIdentifierForType(result, symbol, isFirstInDot, (ZserioType)resolvedSymbol);
-        else if (!(resolvedSymbol instanceof Package))
-            formatIdentifierForSymbol(result, symbol, isFirstInDot, resolvedSymbol, resolvedType, isSetter);
+        {
+            formatTypeIdentifier(result, (ZserioType)resolvedSymbol);
+        }
+        else
+        {
+            if (!(resolvedSymbol instanceof Package))
+                formatSymbolIdentifier(result, symbol, expr.isMostLeftId(), resolvedSymbol,
+                        expr.getExprZserioType(), isSetter);
+        }
 
         // ignore package identifiers, they will be a part of the following Zserio type
 
@@ -199,72 +203,40 @@ public abstract class CppDefaultExpressionFormattingPolicy extends DefaultExpres
 
     protected abstract String getAccessPrefixForCompoundType();
 
-    private void formatIdentifierForType(StringBuilder result, String symbol, boolean isFirstInDot,
-            ZserioType identifierType) throws ZserioEmitException
+    private void formatTypeIdentifier(StringBuilder result, ZserioType resolvedType)
+            throws ZserioEmitException
     {
-        if (identifierType instanceof Subtype)
-        {
-            // subtype
-            final Subtype subtype = (Subtype)identifierType;
-            final CppNativeType nativeEnumType = cppNativeTypeMapper.getCppType(subtype);
-            result.append(nativeEnumType.getFullName());
-            includeCollector.addCppIncludesForType(nativeEnumType);
-        }
-        else if (identifierType instanceof EnumType)
-        {
-            // [EnumType].ENUM_ITEM
-            final EnumType enumType = (EnumType)identifierType;
-            final CppNativeType nativeEnumType = cppNativeTypeMapper.getCppType(enumType);
-            result.append(nativeEnumType.getFullName());
-            includeCollector.addCppIncludesForType(nativeEnumType);
-        }
-        else if (identifierType instanceof ConstType)
-        {
-            // [ConstName]
-            final ConstType constantType = (ConstType)identifierType;
-            final CppNativeType nativeConstType = cppNativeTypeMapper.getCppType(constantType);
-            result.append(nativeConstType.getFullName());
-            includeCollector.addCppIncludesForType(nativeConstType);
-        }
-        else if (identifierType instanceof FunctionType)
-        {
-            // [functionCall]()
-            final FunctionType functionType = (FunctionType)identifierType;
-            result.append(AccessorNameFormatter.getFunctionName(functionType));
-        }
-        else
-        {
-            result.append(symbol);
-        }
+        final CppNativeType nativeSubtype = cppNativeTypeMapper.getCppType(resolvedType);
+        result.append(nativeSubtype.getFullName());
+        includeCollector.addCppIncludesForType(nativeSubtype);
     }
 
-    private void formatIdentifierForSymbol(StringBuilder result, String symbol, boolean isFirstInDot,
-            Object resolvedSymbol, ZserioType resolvedType, boolean isSetter) throws ZserioEmitException
+    private void formatSymbolIdentifier(StringBuilder result, String symbol, boolean isMostLeftId,
+            AstNode resolvedSymbol, ZserioType exprType, boolean isSetter) throws ZserioEmitException
     {
         if (resolvedSymbol instanceof Parameter)
         {
+            // [Parameter]
             final Parameter param = (Parameter)resolvedSymbol;
-            formatParameterAccessor(result, isFirstInDot, param, isSetter);
+            formatParameterAccessor(result, isMostLeftId, param);
         }
         else if (resolvedSymbol instanceof Field)
         {
+            // [Field]
             final Field field = (Field)resolvedSymbol;
-            formatFieldAccessor(result, isFirstInDot, field, isSetter);
+            formatFieldAccessor(result, isMostLeftId, field, isSetter);
         }
         else if (resolvedSymbol instanceof EnumItem)
         {
             // EnumType.[ENUM_ITEM]
-            // emit the whole name if this is the first symbol in this dot subtree, otherwise emit only the
-            // enum short name
-            final EnumItem item = (EnumItem)resolvedSymbol;
-            if (isFirstInDot && resolvedType instanceof EnumType)
-            {
-                final EnumType enumType = (EnumType)resolvedType;
-                final CppNativeType nativeEnumType = cppNativeTypeMapper.getCppType(enumType);
-                result.append(nativeEnumType.getFullName());
-                result.append("::");
-            }
-            result.append(item.getName());
+            final EnumItem enumItem = (EnumItem)resolvedSymbol;
+            formatEnumItem(result, isMostLeftId, enumItem, exprType);
+        }
+        else if (resolvedSymbol instanceof Function)
+        {
+            // [FunctionCall]()
+            final Function function = (Function)resolvedSymbol;
+            result.append(AccessorNameFormatter.getFunctionName(function));
         }
         else
         {
@@ -304,22 +276,13 @@ public abstract class CppDefaultExpressionFormattingPolicy extends DefaultExpres
         return (accessPrefix.isEmpty()) ? accessPrefix : accessPrefix + ".";
     }
 
-    private void formatParameterAccessor(StringBuilder result, boolean isFirstInDot, Parameter param,
-            boolean isSetter)
+    private void formatParameterAccessor(StringBuilder result, boolean isFirstInDot, Parameter param)
     {
         if (isFirstInDot)
             result.append(getAccessPrefix());
 
-        if (isSetter)
-        {
-            result.append(AccessorNameFormatter.getSetterName(param));
-            result.append(CPP_SETTER_FUNCTION_CALL);
-        }
-        else
-        {
-            result.append(AccessorNameFormatter.getGetterName(param));
-            result.append(CPP_GETTER_FUNCTION_CALL);
-        }
+        result.append(AccessorNameFormatter.getGetterName(param));
+        result.append(CPP_GETTER_FUNCTION_CALL);
     }
 
     private void formatFieldAccessor(StringBuilder result, boolean isFirstInDot, Field field, boolean isSetter)
@@ -337,6 +300,21 @@ public abstract class CppDefaultExpressionFormattingPolicy extends DefaultExpres
             result.append(AccessorNameFormatter.getGetterName(field));
             result.append(CPP_GETTER_FUNCTION_CALL);
         }
+    }
+
+    private void formatEnumItem(StringBuilder result, boolean isMostLeftId, EnumItem enumItem,
+            ZserioType exprType) throws ZserioEmitException
+    {
+        // emit whole name if this is the first symbol in dot subtree, otherwise emit only enum short name
+        if (isMostLeftId && exprType instanceof EnumType)
+        {
+            final EnumType enumType = (EnumType)exprType;
+            final CppNativeType nativeEnumType = cppNativeTypeMapper.getCppType(enumType);
+            result.append(nativeEnumType.getFullName());
+            result.append("::");
+        }
+
+        result.append(enumItem.getName());
     }
 
     private String getMinIntWorkaround(boolean isNegative, BigInteger literalValue)

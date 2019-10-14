@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import zserio.ast.CompoundType;
-import zserio.ast.ZserioType;
 import zserio.ast.Parameter;
 import zserio.emit.common.ExpressionFormatter;
 import zserio.emit.common.ZserioEmitException;
@@ -51,8 +50,7 @@ public final class CompoundParameterTemplateData
                 throws ZserioEmitException
         {
             name = parameter.getName();
-            final ZserioType type = parameter.getParameterType();
-            JavaNativeType nativeType = javaNativeTypeMapper.getJavaType(type);
+            JavaNativeType nativeType = javaNativeTypeMapper.getJavaType(parameter.getTypeReference());
             javaTypeName = nativeType.getFullName();
             getterName = AccessorNameFormatter.getGetterName(parameter);
             isBool = nativeType instanceof NativeBooleanType;

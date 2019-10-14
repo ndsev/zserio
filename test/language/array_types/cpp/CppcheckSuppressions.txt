@@ -1,5 +1,6 @@
 // suppress "Member variable 'X' is not initialized in the constructor."
 uninitMemberVar:*/ArraysMapping.cpp
 uninitMemberVar:*/AutoArrayRecursion.cpp
+uninitMemberVar:*/SubtypedStructVariableArray.cpp
 uninitMemberVar:*/TestStructure.cpp
 uninitMemberVar:*/VariableArray.cpp

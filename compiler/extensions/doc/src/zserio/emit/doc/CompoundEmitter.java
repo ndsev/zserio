@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import zserio.ast.ArrayType;
+import zserio.ast.AstNode;
 import zserio.ast.ChoiceCase;
 import zserio.ast.ChoiceCaseExpression;
 import zserio.ast.ChoiceDefault;
@@ -18,13 +19,12 @@ import zserio.ast.EnumItem;
 import zserio.ast.EnumType;
 import zserio.ast.Expression;
 import zserio.ast.Field;
-import zserio.ast.FunctionType;
+import zserio.ast.Function;
 import zserio.ast.StructureType;
 import zserio.ast.SqlConstraint;
 import zserio.ast.SqlDatabaseType;
 import zserio.ast.SqlTableType;
 import zserio.ast.TypeInstantiation;
-import zserio.ast.TypeReference;
 import zserio.ast.UnionType;
 import zserio.emit.common.ExpressionFormatter;
 import zserio.emit.common.ZserioEmitException;
@@ -68,7 +68,6 @@ public class CompoundEmitter extends DefaultHtmlEmitter
             return null;
 
         ZserioType type = compound;
-        type = TypeReference.resolveType(type);
         LinkedType linkedType = new LinkedType(type);
         return linkedType;
     }
@@ -88,20 +87,20 @@ public class CompoundEmitter extends DefaultHtmlEmitter
 
     public static class FunctionEmitter
     {
-        public FunctionEmitter(FunctionType fctn, ExpressionFormatter expressionFormatter)
+        public FunctionEmitter(Function fctn, ExpressionFormatter expressionFormatter)
         {
             function = fctn;
             this.expressionFormatter = expressionFormatter;
         }
 
-        public FunctionType getFuntionType()
+        public Function getFuntionType()
         {
             return function;
         }
 
         public String getReturnTypeName() throws ZserioEmitException
         {
-            String returnTypeName = TypeNameEmitter.getTypeName(function.getReturnType());
+            String returnTypeName = TypeNameEmitter.getTypeName(function.getReturnTypeReference().getType());
             return returnTypeName;
         }
 
@@ -111,7 +110,7 @@ public class CompoundEmitter extends DefaultHtmlEmitter
         }
 
         private final ExpressionFormatter expressionFormatter;
-        private final FunctionType function;
+        private final Function function;
     }
 
     public FieldEmitter getFieldEmitter( Field f ) throws ZserioEmitException
@@ -144,24 +143,19 @@ public class CompoundEmitter extends DefaultHtmlEmitter
 
         public boolean getIsAutoOptional()
         {
-            return field.getIsOptional() && field.getOptionalClauseExpr() == null;
+            return field.isOptional() && field.getOptionalClauseExpr() == null;
         }
 
         public boolean getIsArrayImplicit()
         {
-            ZserioType type = field.getFieldType();
-            type = TypeReference.resolveType(type);
+            final ZserioType type = field.getTypeInstantiation().getTypeReference().getType();
 
             return (type instanceof ArrayType) ? ((ArrayType)type).isImplicit() : false;
         }
 
         public LinkedType getType()
         {
-            ZserioType type = field.getFieldType();
-            type = TypeReference.resolveType(type);
-            if (type instanceof ArrayType)
-                type = TypeReference.resolveType(((ArrayType) type).getElementType());
-            LinkedType linkedType = new LinkedType(type);
+            LinkedType linkedType = new LinkedType(field.getTypeInstantiation());
             return linkedType;
         }
 
@@ -207,26 +201,17 @@ public class CompoundEmitter extends DefaultHtmlEmitter
 
         public List<Expression> getArguments()
         {
-            ZserioType type = field.getFieldType();
-            type = TypeReference.resolveType(type);
-            while (type instanceof ArrayType)
-                type = TypeReference.resolveType(((ArrayType) type).getElementType());
-            if (type instanceof TypeInstantiation)
+            final ZserioType type = field.getTypeInstantiation().getTypeReference().getType();
+            final TypeInstantiation inst = (type instanceof ArrayType) ?
+                    ((ArrayType)type).getElementTypeInstantiation() : field.getTypeInstantiation();
+            final List<Expression> arguments = new ArrayList<Expression>();
+            for (TypeInstantiation.InstantiatedParameter instantiatedParameter :
+                    inst.getInstantiatedParameters())
             {
-                TypeInstantiation inst = (TypeInstantiation) type;
-                final List<Expression> arguments = new ArrayList<Expression>();
-                for (TypeInstantiation.InstantiatedParameter instantiatedParameter :
-                        inst.getInstantiatedParameters())
-                {
-                    arguments.add(instantiatedParameter.getArgumentExpression());
-                }
+                arguments.add(instantiatedParameter.getArgumentExpression());
+            }
 
-                return arguments;
-            }
-            else
-            {
-                return null;
-            }
+            return arguments;
         }
 
         public boolean getHasAlignment()
@@ -253,7 +238,7 @@ public class CompoundEmitter extends DefaultHtmlEmitter
         public FieldLinkedType( Field field )
         {
             this.field = field;
-            this.linkedType = new LinkedType( field.getFieldType() );
+            this.linkedType = new LinkedType(field.getTypeInstantiation());
         }
 
         public Field getField()
@@ -273,7 +258,7 @@ public class CompoundEmitter extends DefaultHtmlEmitter
         this.compound = compnd;
         docCommentTemplateData = new DocCommentTemplateData(compnd.getDocComment());
         functions.clear();
-        for (FunctionType fctn : compnd.getFunctions())
+        for (Function fctn : compnd.getFunctions())
         {
             FunctionEmitter fe = new FunctionEmitter(fctn, getExpressionFormatter());
             functions.add(fe);
@@ -460,10 +445,9 @@ public class CompoundEmitter extends DefaultHtmlEmitter
         return functions;
     }
 
-    public LinkedType toLinkedType(ZserioType type1)
+    public LinkedType toLinkedType(AstNode node)
     {
-        ZserioType type2 = TypeReference.resolveType(type1);
-        LinkedType linkedType = new LinkedType(type2);
+        LinkedType linkedType = new LinkedType(node);
         return linkedType;
     }
 

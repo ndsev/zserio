@@ -21,7 +21,8 @@ public class ServiceTypesErrorTest
     public void builtinType()
     {
         final String error = "builtin_type_error.zs:10:29: " +
-                "mismatched input 'int32' expecting {'stream', ID} ('int32' is a reserved keyword)!";
+                "Only non-parameterized compound types can be used in RPC calls, " +
+                "'int32' is not a compound type!";
         assertTrue(zserioErrors.isPresent(error));
     }
 

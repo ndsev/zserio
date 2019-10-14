@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import zserio.ast.CompoundType;
-import zserio.ast.FunctionType;
+import zserio.ast.Function;
 import zserio.emit.common.ExpressionFormatter;
 import zserio.emit.common.ZserioEmitException;
 
@@ -14,9 +14,9 @@ public final class CompoundFunctionTemplateData
             ExpressionFormatter pythonExpressionFormatter) throws ZserioEmitException
     {
         compoundFunctionList = new ArrayList<CompoundFunction>();
-        final Iterable<FunctionType> compoundFunctionTypeList = compoundType.getFunctions();
-        for (FunctionType compoundFunctionType : compoundFunctionTypeList)
-            compoundFunctionList.add(new CompoundFunction(compoundFunctionType, pythonExpressionFormatter));
+        final Iterable<Function> functionList = compoundType.getFunctions();
+        for (Function function : functionList)
+            compoundFunctionList.add(new CompoundFunction(function, pythonExpressionFormatter));
     }
 
     public Iterable<CompoundFunction> getList()
@@ -26,11 +26,11 @@ public final class CompoundFunctionTemplateData
 
     public static class CompoundFunction
     {
-        public CompoundFunction(FunctionType functionType, ExpressionFormatter pythonExpressionFormatter)
+        public CompoundFunction(Function function, ExpressionFormatter pythonExpressionFormatter)
                 throws ZserioEmitException
         {
-            name = AccessorNameFormatter.getFunctionName(functionType);
-            resultExpression = pythonExpressionFormatter.formatGetter(functionType.getResultExpression());
+            name = AccessorNameFormatter.getFunctionName(function);
+            resultExpression = pythonExpressionFormatter.formatGetter(function.getResultExpression());
         }
 
         public String getName()

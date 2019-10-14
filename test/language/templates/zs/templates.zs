@@ -3,6 +3,7 @@ package templates;
 import templates.choice_templated_enum_selector.*;
 import templates.choice_templated_field.*;
 import templates.choice_templated_selector.*;
+import templates.expression_const_after_nested_template_argument.*;
 import templates.expression_const_template_argument.*;
 import templates.expression_enum_template_argument.*;
 import templates.expression_enum_template_argument_conflict.*;

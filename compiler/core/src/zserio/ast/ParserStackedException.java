@@ -13,7 +13,7 @@ public class ParserStackedException extends ParserException
      * @param location AST location where the error occurred.
      * @param message  The main message for the error.
      */
-    ParserStackedException(AstLocation location, String message)
+    public ParserStackedException(AstLocation location, String message)
     {
         super(location, message);
         messageStack = new ArrayDeque<Message>();
@@ -24,7 +24,7 @@ public class ParserStackedException extends ParserException
      *
      * @param exception The main parser exception containing the main error message.
      */
-    ParserStackedException(ParserException exception)
+    public ParserStackedException(ParserException exception)
     {
         super(exception.getLocation(), exception.getMessage()); // the main error message
 
@@ -81,7 +81,7 @@ public class ParserStackedException extends ParserException
      * @param location AST location where the error occurred.
      * @param message  The extended message for the error.
      */
-    void pushMessage(AstLocation location, String message)
+    public void pushMessage(AstLocation location, String message)
     {
         messageStack.push(new Message(location, message));
     }

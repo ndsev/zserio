@@ -36,7 +36,7 @@ import zserio.ast.EnumType;
 import zserio.ast.Expression;
 import zserio.ast.Field;
 import zserio.ast.FloatType;
-import zserio.ast.FunctionType;
+import zserio.ast.Function;
 import zserio.ast.Import;
 import zserio.ast.Parameter;
 import zserio.ast.Root;
@@ -210,15 +210,14 @@ public class XmlAstWriter implements ZserioAstVisitor
     {
         final Element fieldXmlElement = xmlDoc.createElement("FIELD");
         fieldXmlElement.setAttribute("name", field.getName());
-        if (field.getIsOptional())
+        if (field.isOptional())
             fieldXmlElement.setAttribute("isOptional", "true");
 
         currentXmlElement.appendChild(fieldXmlElement);
         final Element oldCurrentXmlElement = currentXmlElement;
         currentXmlElement = fieldXmlElement;
 
-        final ZserioType fieldType = field.getFieldType();
-        fieldType.accept(this);
+        field.getTypeInstantiation().accept(this);
 
         final Expression alignmentExpr = field.getAlignmentExpr();
         if (alignmentExpr != null)
@@ -301,9 +300,9 @@ public class XmlAstWriter implements ZserioAstVisitor
     }
 
     @Override
-    public void visitFunctionType(FunctionType functionType)
+    public void visitFunction(Function function)
     {
-        visitZserioType(functionType, "FUNCTION");
+        visitAstNode(function, "FUNCTION");
     }
 
     @Override
@@ -325,21 +324,28 @@ public class XmlAstWriter implements ZserioAstVisitor
     }
 
     @Override
-    public void visitArrayType(ArrayType arrayType)
-    {
-        visitZserioType(arrayType, "ARRAY");
-    }
-
-    @Override
     public void visitTypeInstantiation(TypeInstantiation typeInstantiation)
     {
-        visitZserioType(typeInstantiation, "TYPE_INSTANTIATION");
+        visitAstNode(typeInstantiation, "TYPE_INSTANTIATION");
     }
 
     @Override
     public void visitTypeReference(TypeReference typeReference)
     {
-        visitZserioType(typeReference, "TYPE_REFERENCE");
+        final Element xmlElement = xmlDoc.createElement("TYPE_REFERENCE");
+        if (!typeReference.getReferencedPackageName().isEmpty())
+        {
+            xmlElement.setAttribute("referencedPackageName",
+                    typeReference.getReferencedPackageName().toString());
+        }
+        xmlElement.setAttribute("referencedTypeName", typeReference.getReferencedTypeName());
+        visitAstNode(typeReference, xmlElement);
+    }
+
+    @Override
+    public void visitArrayType(ArrayType arrayType)
+    {
+        visitZserioType(arrayType, "ARRAY");
     }
 
     @Override
@@ -482,27 +488,19 @@ public class XmlAstWriter implements ZserioAstVisitor
     private void visitZserioType(ZserioType zserioType, String xmlElementName)
     {
         final Element xmlElement = xmlDoc.createElement(xmlElementName);
-        xmlElement.setAttribute("name", getZserioTypeName(zserioType));
+        xmlElement.setAttribute("name", zserioType.getName());
         visitAstNode(zserioType, xmlElement);
     }
 
     private void visitAstNode(ZserioTemplatableType templatable, Element xmlElement)
     {
-        if (!templatable.getTemplateParameters().isEmpty())
-            inTemplateDeclaration = true;
-
         currentXmlElement.appendChild(xmlElement);
 
         final Element oldCurrentXmlElement = currentXmlElement;
         currentXmlElement = xmlElement;
-
         templatable.visitChildren(this);
-
         visitInstantiations(templatable.getInstantiations());
-
         currentXmlElement = oldCurrentXmlElement;
-
-        inTemplateDeclaration = false;
     }
 
     private void visitAstNode(AstNode node, Element xmlElement)
@@ -544,22 +542,7 @@ public class XmlAstWriter implements ZserioAstVisitor
         currentXmlElement.appendChild(instantiationsXmlElements);
     }
 
-    private String getZserioTypeName(ZserioType zserioType)
-    {
-        // TODO[Mi-L@]: May not be needed after TypeReference refactoring.
-        if (inTemplateDeclaration)
-        {
-            if (zserioType instanceof ArrayType)
-            {
-                return ((ArrayType)zserioType).getElementType().getName() + "[]";
-            }
-        }
-
-        return zserioType.getName();
-    }
-
     private Document xmlDoc = null;
     private Element currentXmlElement = null;
     private String rootExprElementName = null;
-    private boolean inTemplateDeclaration = false;
 }

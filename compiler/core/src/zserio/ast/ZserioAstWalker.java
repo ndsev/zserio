@@ -123,9 +123,9 @@ public class ZserioAstWalker implements ZserioAstVisitor
     }
 
     @Override
-    public void visitFunctionType(FunctionType functionType)
+    public void visitFunction(Function function)
     {
-        functionType.visitChildren(this);
+        function.visitChildren(this);
     }
 
     @Override
@@ -141,9 +141,9 @@ public class ZserioAstWalker implements ZserioAstVisitor
     }
 
     @Override
-    public void visitArrayType(ArrayType arrayType)
+    public void visitTypeReference(TypeReference typeReference)
     {
-        arrayType.visitChildren(this);
+        typeReference.visitChildren(this);
     }
 
     @Override
@@ -153,9 +153,9 @@ public class ZserioAstWalker implements ZserioAstVisitor
     }
 
     @Override
-    public void visitTypeReference(TypeReference typeReference)
+    public void visitArrayType(ArrayType arrayType)
     {
-        typeReference.visitChildren(this);
+        arrayType.visitChildren(this);
     }
 
     @Override

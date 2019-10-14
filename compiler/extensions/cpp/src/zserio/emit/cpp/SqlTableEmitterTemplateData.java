@@ -9,6 +9,7 @@ import zserio.ast.BooleanType;
 import zserio.ast.CompoundType;
 import zserio.ast.EnumType;
 import zserio.ast.Parameter;
+import zserio.ast.TypeInstantiation.InstantiatedParameter;
 import zserio.ast.TypeReference;
 import zserio.ast.ZserioType;
 import zserio.ast.Expression;
@@ -196,9 +197,10 @@ public class SqlTableEmitterTemplateData extends UserTypeTemplateData
                 ExpressionFormatter cppSqlIndirectExpressionFormatter, SqlNativeTypeMapper sqlNativeTypeMapper,
                 SqlTableType table, Field field, IncludeCollector includeCollector) throws ZserioEmitException
         {
-            final ZserioType fieldType = field.getFieldType();
-            final ZserioType fieldBaseType = TypeReference.resolveBaseType(fieldType);
-            final CppNativeType nativeFieldType = cppNativeTypeMapper.getCppType(fieldType);
+            final TypeInstantiation fieldTypeInstantiation = field.getTypeInstantiation();
+            final TypeReference fieldTypeReference = fieldTypeInstantiation.getTypeReference();
+            final ZserioType fieldBaseType = fieldTypeReference.getBaseType();
+            final CppNativeType nativeFieldType = cppNativeTypeMapper.getCppType(fieldTypeReference);
             includeCollector.addHeaderIncludesForType(nativeFieldType);
 
             final NativeOptionalHolderType nativeOptionalHolder = new NativeOptionalHolderType(nativeFieldType);
@@ -216,10 +218,8 @@ public class SqlTableEmitterTemplateData extends UserTypeTemplateData
             setterName = AccessorNameFormatter.getSetterName(field);
 
             typeParameters = new ArrayList<ParameterTemplateData>();
-            final List<TypeInstantiation.InstantiatedParameter> parameters =
-                    field.getInstantiatedParameters();
             boolean hasImplicitParameters = false;
-            for (TypeInstantiation.InstantiatedParameter parameter : parameters)
+            for (InstantiatedParameter parameter : fieldTypeInstantiation.getInstantiatedParameters())
             {
                 final ParameterTemplateData parameterTemplateData = new ParameterTemplateData(
                         cppNativeTypeMapper, cppSqlIndirectExpressionFormatter,
@@ -322,7 +322,7 @@ public class SqlTableEmitterTemplateData extends UserTypeTemplateData
             {
                 final Parameter parameter = instantiatedParameter.getParameter();
                 final CppNativeType parameterNativeType =
-                        cppNativeTypeMapper.getCppType(parameter.getParameterType());
+                        cppNativeTypeMapper.getCppType(parameter.getTypeReference());
                 includeCollector.addHeaderIncludesForType(parameterNativeType);
 
                 final Expression argumentExpression = instantiatedParameter.getArgumentExpression();
@@ -402,7 +402,8 @@ public class SqlTableEmitterTemplateData extends UserTypeTemplateData
             public SqlTypeTemplateData(SqlNativeTypeMapper sqlNativeTypeMapper, Field field)
                     throws ZserioEmitException
             {
-                final SqlNativeType sqlNativeType = sqlNativeTypeMapper.getSqlType(field.getFieldType());
+                final SqlNativeType sqlNativeType = sqlNativeTypeMapper.getSqlType(
+                        field.getTypeInstantiation().getTypeReference());
                 name = sqlNativeType.getFullName();
                 isBlob = sqlNativeType instanceof NativeBlobType;
                 isInteger = sqlNativeType instanceof NativeIntegerType;

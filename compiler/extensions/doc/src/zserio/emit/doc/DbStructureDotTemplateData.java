@@ -8,7 +8,6 @@ import java.util.TreeMap;
 import zserio.ast.Field;
 import zserio.ast.SqlDatabaseType;
 import zserio.ast.SqlTableType;
-import zserio.ast.TypeReference;
 import zserio.emit.common.ZserioEmitException;
 
 /**
@@ -69,8 +68,8 @@ public class DbStructureDotTemplateData
             final Iterable<Field> databaseFieldList = databaseType.getFields();
             for (Field databaseField : databaseFieldList)
             {
-                final SqlTableType tableType = (SqlTableType)TypeReference.resolveType(
-                        databaseField.getFieldType());
+                final SqlTableType tableType =
+                        (SqlTableType)databaseField.getTypeInstantiation().getTypeReference().getType();
                 final String tableName = databaseField.getName();
                 nameToSqlTableTypeMap.put(tableName, tableType);
             }
@@ -180,7 +179,8 @@ public class DbStructureDotTemplateData
         public TableFieldTemplateData(Field fieldType, boolean isPrimaryKey)
         {
             name = StringHtmlUtil.escapeForHtml(fieldType.getName());
-            typeName = StringHtmlUtil.escapeForHtml(fieldType.getFieldType().getName());
+            typeName = StringHtmlUtil.escapeForHtml(
+                    fieldType.getTypeInstantiation().getTypeReference().getType().getName());
             this.isPrimaryKey = isPrimaryKey;
             isNullAllowed = fieldType.getSqlConstraint().isNullAllowed();
         }

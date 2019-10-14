@@ -2,14 +2,14 @@ package zserio.emit.java;
 
 import java.math.BigInteger;
 
-import zserio.ast.ConstType;
-import zserio.ast.FunctionType;
-import zserio.ast.TypeReference;
+import zserio.ast.AstNode;
+import zserio.ast.Subtype;
 import zserio.ast.ZserioType;
 import zserio.ast.EnumItem;
 import zserio.ast.EnumType;
 import zserio.ast.Expression;
 import zserio.ast.Field;
+import zserio.ast.Function;
 import zserio.ast.Package;
 import zserio.ast.Parameter;
 import zserio.emit.common.DefaultExpressionFormattingPolicy;
@@ -145,26 +145,25 @@ public abstract class JavaDefaultExpressionFormattingPolicy extends DefaultExpre
     {
         // check if casting to BigInteger is necessary
         final String symbol = expr.getText();
-        final Object resolvedSymbol = expr.getExprSymbolObject();
-        final boolean isFirstInDot = (expr.getExprZserioType() != null);
+        final boolean isMostLeftId = expr.isMostLeftId();
         final StringBuilder result = new StringBuilder();
         final BigInteger exprUpperBound = expr.getIntegerUpperBound();
         final boolean isMappedToBigInteger = (exprUpperBound != null &&
                 exprUpperBound.compareTo(BigInteger.valueOf(Long.MAX_VALUE)) > 0);
         final boolean needsCastingToBigInteger = (!isMappedToBigInteger && expr.needsBigInteger());
-        if (isFirstInDot && needsCastingToBigInteger)
+        if (isMostLeftId && needsCastingToBigInteger)
             result.append(BIG_INTEGER + ".valueOf(");
 
         // ignore package identifiers, they will be a part of the following Zserio type
+        final AstNode resolvedSymbol = expr.getExprSymbolObject();
         if (resolvedSymbol instanceof ZserioType)
         {
-            // Zserio types
-            formatTypeIdentifier(result, symbol, isFirstInDot, (ZserioType)resolvedSymbol);
+            formatTypeIdentifier(result, (ZserioType)resolvedSymbol);
         }
-        else if (!(resolvedSymbol instanceof Package))
+        else
         {
-            // identifier symbol objects
-            formatSymbolIdentifier(result, symbol, isFirstInDot, resolvedSymbol, isSetter);
+            if (!(resolvedSymbol instanceof Package))
+                formatSymbolIdentifier(result, symbol, isMostLeftId, resolvedSymbol, isSetter);
         }
 
         // finish casting to BigInteger
@@ -422,40 +421,47 @@ public abstract class JavaDefaultExpressionFormattingPolicy extends DefaultExpre
     protected abstract String getDotSeparatorForEnumItem();
     protected abstract String getAccessPrefixForCompoundType();
 
-    private void formatAccessorCall(StringBuilder result, String accessor, boolean isSetter)
+    private void formatParameterAccessor(StringBuilder result, boolean isMostLeftId, Parameter param)
     {
-        result.append(accessor);
-        if (isSetter)
-            result.append("(__value)");
-        else
-            result.append("()");
+        if (isMostLeftId)
+            result.append(getAccessPrefix());
+
+        result.append(AccessorNameFormatter.getGetterName(param));
+        result.append(JAVA_GETTER_FUNCTION_CALL);
     }
 
-    private void formatTypeIdentifier(StringBuilder result, String symbol, boolean isFirstInDot,
-            ZserioType identifierType) throws ZserioEmitException
+    private void formatFieldAccessor(StringBuilder result, boolean isMostLeftId, Field field, boolean isSetter)
     {
-        // we need to resolve subtypes because Java does not support them
-        final ZserioType resolvedType = TypeReference.resolveBaseType(identifierType);
-        if (resolvedType instanceof EnumType)
+        if (isMostLeftId)
+            result.append(getAccessPrefix());
+
+        if (isSetter)
         {
-            // [EnumType].ENUM_ITEM
-            result.append(getIdentifierForTypeEnum((EnumType)resolvedType, javaNativeTypeMapper));
-        }
-        else if (resolvedType instanceof ConstType)
-        {
-            // [ConstName]
-            final JavaNativeType javaType = javaNativeTypeMapper.getJavaType(resolvedType);
-            result.append(javaType.getFullName());
-        }
-        else if (resolvedType instanceof FunctionType)
-        {
-            // [functionCall]()
-            final FunctionType functionType = (FunctionType)resolvedType;
-            result.append(AccessorNameFormatter.getFunctionName(functionType));
+            result.append(AccessorNameFormatter.getSetterName(field));
+            result.append(JAVA_SETTER_FUNCTION_CALL);
         }
         else
         {
-            result.append(symbol);
+            result.append(AccessorNameFormatter.getGetterName(field));
+            result.append(JAVA_GETTER_FUNCTION_CALL);
+        }
+    }
+
+    private void formatTypeIdentifier(StringBuilder result, ZserioType resolvedType)
+            throws ZserioEmitException
+    {
+        // we need to resolve subtypes because Java does not support them
+        final ZserioType baseType = (resolvedType instanceof Subtype) ?
+                ((Subtype)resolvedType).getBaseTypeReference().getType() : resolvedType;
+        if (baseType instanceof EnumType)
+        {
+            // [EnumType].ENUM_ITEM
+            result.append(getIdentifierForTypeEnum((EnumType)baseType, javaNativeTypeMapper));
+        }
+        else
+        {
+            final JavaNativeType javaType = javaNativeTypeMapper.getJavaType(baseType);
+            result.append(javaType.getFullName());
         }
     }
 
@@ -466,29 +472,28 @@ public abstract class JavaDefaultExpressionFormattingPolicy extends DefaultExpre
         return (accessPrefix.isEmpty()) ? accessPrefix : accessPrefix + ".";
     }
 
-    private void formatSymbolIdentifier(StringBuilder result, String symbol, boolean isFirstInDot,
-            Object resolvedSymbol, boolean isSetter)
+    private void formatSymbolIdentifier(StringBuilder result, String symbol, boolean isMostLeftId,
+            AstNode resolvedSymbol, boolean isSetter)
     {
         if (resolvedSymbol instanceof Parameter)
         {
             final Parameter param = (Parameter)resolvedSymbol;
-            final String accessor = AccessorNameFormatter.getGetterName(param);
-            if (isFirstInDot)
-                result.append(getAccessPrefix());
-            formatAccessorCall(result, accessor, isSetter);
+            formatParameterAccessor(result, isMostLeftId, param);
         }
         else if (resolvedSymbol instanceof Field)
         {
             final Field field = (Field)resolvedSymbol;
-            final String accessor = isSetter ? AccessorNameFormatter.getSetterName(field) :
-                    AccessorNameFormatter.getGetterName(field);
-            if (isFirstInDot)
-                result.append(getAccessPrefix());
-            formatAccessorCall(result, accessor, isSetter);
+            formatFieldAccessor(result, isMostLeftId, field, isSetter);
         }
         else if (resolvedSymbol instanceof EnumItem)
         {
             result.append(getIdentifierForEnumItem((EnumItem)resolvedSymbol));
+        }
+        else if (resolvedSymbol instanceof Function)
+        {
+            // [functionCall]()
+            final Function function = (Function)resolvedSymbol;
+            result.append(AccessorNameFormatter.getFunctionName(function));
         }
         else
         {
@@ -518,6 +523,9 @@ public abstract class JavaDefaultExpressionFormattingPolicy extends DefaultExpre
     {
         return "new " + BIG_INTEGER + "(\"" + value + "\"";
     }
+
+    private final static String JAVA_GETTER_FUNCTION_CALL = "()";
+    private final static String JAVA_SETTER_FUNCTION_CALL = "(__value)";
 
     private final static String JAVA_LONG_LITERAL_SUFFIX = "L";
     private final static String JAVA_HEXADECIMAL_LITERAL_PREFIX = "0x";

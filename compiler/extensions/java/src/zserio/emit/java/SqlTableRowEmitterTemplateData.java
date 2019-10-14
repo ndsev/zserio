@@ -3,7 +3,6 @@ package zserio.emit.java;
 import java.util.ArrayList;
 import java.util.List;
 
-import zserio.ast.ZserioType;
 import zserio.ast.Field;
 import zserio.ast.SqlTableType;
 import zserio.ast.TypeReference;
@@ -51,11 +50,11 @@ public final class SqlTableRowEmitterTemplateData extends JavaTemplateData
         public FieldTemplateData(JavaNativeTypeMapper javaNativeTypeMapper, Field field)
                 throws ZserioEmitException
         {
-            final ZserioType baseType = TypeReference.resolveBaseType(field.getFieldType());
+            final TypeReference fieldTypeReference = field.getTypeInstantiation().getTypeReference();
             name = field.getName();
-            final JavaNativeType nativeType = javaNativeTypeMapper.getJavaType(baseType);
+            final JavaNativeType nativeType = javaNativeTypeMapper.getJavaType(fieldTypeReference);
             javaTypeName = nativeType.getFullName();
-            javaNullableTypeName = javaNativeTypeMapper.getNullableJavaType(baseType).getFullName();
+            javaNullableTypeName = javaNativeTypeMapper.getNullableJavaType(fieldTypeReference).getFullName();
             isBool = nativeType instanceof NativeBooleanType;
         }
 

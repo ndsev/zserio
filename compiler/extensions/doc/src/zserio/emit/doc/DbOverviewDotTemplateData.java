@@ -7,7 +7,6 @@ import zserio.ast.ZserioType;
 import zserio.ast.ZserioTypeUtil;
 import zserio.ast.SqlDatabaseType;
 import zserio.ast.SqlTableType;
-import zserio.ast.TypeReference;
 import zserio.emit.common.ZserioEmitException;
 
 /**
@@ -61,7 +60,7 @@ public class DbOverviewDotTemplateData
             tableList = new ArrayList<Table>();
             for (zserio.ast.Field field : databaseFieldTypeList)
             {
-                final ZserioType fieldType = TypeReference.resolveType(field.getFieldType());
+                final ZserioType fieldType = field.getTypeInstantiation().getTypeReference().getType();
                 tableList.add(new Table((SqlTableType) fieldType, databaseType.getName(),
                               field.getName(), docRootPath));
             }

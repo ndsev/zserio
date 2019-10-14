@@ -20,9 +20,12 @@ public class IndexOperatorsErrorTest
     @Test
     public void alignmentExpression()
     {
-        final String error = "alignment_expression_error.zs:5:7: " +
-                "mismatched input '@index' expecting DECIMAL_LITERAL ('@index' is a reserved keyword)!";
-        assertTrue(zserioErrors.isPresent(error));
+        final String errors[] =
+        {
+            "alignment_expression_error.zs:5:7: mismatched input '@index' expecting DECIMAL_LITERAL",
+            "alignment_expression_error.zs:5:7: '@index' is a reserved keyword!"
+        };
+        assertTrue(zserioErrors.isPresent(errors));
     }
 
     @Test

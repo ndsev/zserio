@@ -11,14 +11,14 @@ public class Parameter extends AstNodeBase
      * Constructor.
      *
      * @param location      AST node location.
-     * @param parameterType Zserio type of the parameter.
+     * @param typeReference Reference to the type of the parameter.
      * @param name          Name of the parameter.
      */
-    public Parameter(AstLocation location, ZserioType parameterType, String name)
+    public Parameter(AstLocation location, TypeReference typeReference, String name)
     {
         super(location);
 
-        this.parameterType = parameterType;
+        this.typeReference = typeReference;
         this.name = name;
     }
 
@@ -31,17 +31,17 @@ public class Parameter extends AstNodeBase
     @Override
     public void visitChildren(ZserioAstVisitor visitor)
     {
-        parameterType.accept(visitor);
+        typeReference.accept(visitor);
     }
 
     /**
-     * Gets parameter Zserio type.
+     * Gets reference to the parameter's type.
      *
-     * @return Parameter type.
+     * @return Type reference.
      */
-    public ZserioType getParameterType()
+    public TypeReference getTypeReference()
     {
-        return parameterType;
+        return typeReference;
     }
 
     /**
@@ -62,14 +62,14 @@ public class Parameter extends AstNodeBase
      *
      * @return New type parameter instantiated from this using the given template arguments.
      */
-    Parameter instantiate(List<TemplateParameter> templateParameters, List<ZserioType> templateArguments)
+    Parameter instantiate(List<TemplateParameter> templateParameters, List<TypeReference> templateArguments)
     {
-        final ZserioType instantiatedParameterType =
-                ZserioTypeUtil.instantiate(parameterType, templateParameters, templateArguments);
+        final TypeReference instantiatedTypeReference =
+                typeReference.instantiate(templateParameters, templateArguments);
 
-        return new Parameter(getLocation(), instantiatedParameterType, getName());
+        return new Parameter(getLocation(), instantiatedTypeReference, getName());
     }
 
-    private final ZserioType parameterType;
+    private final TypeReference typeReference;
     private final String name;
 }

@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import zserio.ast.CompoundType;
-import zserio.ast.ZserioType;
 import zserio.ast.Parameter;
 import zserio.emit.common.ZserioEmitException;
 import zserio.emit.cpp98.types.CppNativeType;
@@ -41,8 +40,7 @@ public class CompoundParameterTemplateData
         public CompoundParameter(CppNativeTypeMapper cppNativeTypeMapper, Parameter parameter,
                 IncludeCollector includeCollector) throws ZserioEmitException
         {
-            final ZserioType type = parameter.getParameterType();
-            final CppNativeType cppNativeType = cppNativeTypeMapper.getCppType(type);
+            final CppNativeType cppNativeType = cppNativeTypeMapper.getCppType(parameter.getTypeReference());
             includeCollector.addHeaderIncludesForType(cppNativeType);
 
             name = parameter.getName();

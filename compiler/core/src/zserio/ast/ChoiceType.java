@@ -31,7 +31,7 @@ public class ChoiceType extends CompoundType
     public ChoiceType(AstLocation location, Package pkg, String name,
             List<TemplateParameter> templateParameters, List<Parameter> typeParameters,
             Expression selectorExpression, List<ChoiceCase> choiceCases, ChoiceDefault choiceDefault,
-            List<FunctionType> functions, DocComment docComment)
+            List<Function> functions, DocComment docComment)
     {
         super(location, pkg, name, templateParameters, typeParameters,
                 getChoiceFields(choiceCases, choiceDefault), functions, docComment);
@@ -67,7 +67,7 @@ public class ChoiceType extends CompoundType
         if (choiceDefault != null)
             choiceDefault.accept(visitor);
 
-        for (FunctionType function : getFunctions())
+        for (Function function : getFunctions())
             function.accept(visitor);
     }
 
@@ -132,7 +132,7 @@ public class ChoiceType extends CompoundType
     }
 
     @Override
-    ChoiceType instantiateImpl(String name, List<ZserioType> templateArguments)
+    ChoiceType instantiateImpl(String name, List<TypeReference> templateArguments)
     {
         final List<Parameter> instantiatedTypeParameters = new ArrayList<Parameter>();
         for (Parameter typeParameter : getTypeParameters())
@@ -151,8 +151,8 @@ public class ChoiceType extends CompoundType
         final ChoiceDefault instantiatedChoiceDefault = getChoiceDefault() == null ? null :
             getChoiceDefault().instantiate(getTemplateParameters(), templateArguments);
 
-        final List<FunctionType> instantiatedFunctions = new ArrayList<FunctionType>();
-        for (FunctionType function : getFunctions())
+        final List<Function> instantiatedFunctions = new ArrayList<Function>();
+        for (Function function : getFunctions())
             instantiatedFunctions.add(function.instantiate(getTemplateParameters(), templateArguments));
 
         return new ChoiceType(getLocation(), getPackage(), name, new ArrayList<TemplateParameter>(),
@@ -255,7 +255,8 @@ public class ChoiceType extends CompoundType
         final ZserioType selectorExpressionType = selectorExpression.getExprZserioType();
         if (selectorExpressionType instanceof EnumType)
         {
-            final EnumType resolvedEnumType = (EnumType)TypeReference.resolveType(selectorExpressionType);
+            final EnumType resolvedEnumType = (EnumType)selectorExpressionType;
+
             final List<EnumItem> availableEnumItems = resolvedEnumType.getItems();
             final List<EnumItem> unhandledEnumItems = new ArrayList<EnumItem>(resolvedEnumType.getItems());
 

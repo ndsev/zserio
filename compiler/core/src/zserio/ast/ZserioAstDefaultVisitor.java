@@ -84,7 +84,7 @@ public class ZserioAstDefaultVisitor implements ZserioAstVisitor
     {}
 
     @Override
-    public void visitFunctionType(FunctionType functionType)
+    public void visitFunction(Function function)
     {}
 
     @Override
@@ -96,7 +96,7 @@ public class ZserioAstDefaultVisitor implements ZserioAstVisitor
     {}
 
     @Override
-    public void visitArrayType(ArrayType arrayType)
+    public void visitTypeReference(TypeReference typeReference)
     {}
 
     @Override
@@ -104,7 +104,7 @@ public class ZserioAstDefaultVisitor implements ZserioAstVisitor
     {}
 
     @Override
-    public void visitTypeReference(TypeReference typeReference)
+    public void visitArrayType(ArrayType arrayType)
     {}
 
     @Override

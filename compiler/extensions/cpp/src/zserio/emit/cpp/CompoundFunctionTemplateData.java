@@ -4,8 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import zserio.ast.CompoundType;
-import zserio.ast.ZserioType;
-import zserio.ast.FunctionType;
+import zserio.ast.TypeReference;
+import zserio.ast.Function;
 import zserio.emit.common.ExpressionFormatter;
 import zserio.emit.common.ZserioEmitException;
 import zserio.emit.cpp.types.CppNativeType;
@@ -17,10 +17,10 @@ public class CompoundFunctionTemplateData
                     throws ZserioEmitException
     {
         compoundFunctionList = new ArrayList<CompoundFunction>();
-        final Iterable<FunctionType> compoundFunctionTypeList = compoundType.getFunctions();
-        for (FunctionType compoundFunctionType : compoundFunctionTypeList)
+        final Iterable<Function> functionList = compoundType.getFunctions();
+        for (Function function : functionList)
         {
-            compoundFunctionList.add(new CompoundFunction(compoundFunctionType, cppNativeTypeMapper,
+            compoundFunctionList.add(new CompoundFunction(function, cppNativeTypeMapper,
                     cppExpressionFormatter, includeCollector));
         }
     }
@@ -32,15 +32,15 @@ public class CompoundFunctionTemplateData
 
     public static class CompoundFunction
     {
-        public CompoundFunction(FunctionType functionType, CppNativeTypeMapper cppNativeTypeMapper,
+        public CompoundFunction(Function function, CppNativeTypeMapper cppNativeTypeMapper,
                 ExpressionFormatter cppExpressionFormatter, IncludeCollector includeCollector)
                         throws ZserioEmitException
         {
-            final ZserioType returnZserioType = functionType.getReturnType();
-            final CppNativeType returnNativeType = cppNativeTypeMapper.getCppType(returnZserioType);
+            final TypeReference returnTypeReference = function.getReturnTypeReference();
+            final CppNativeType returnNativeType = cppNativeTypeMapper.getCppType(returnTypeReference);
             returnTypeName = returnNativeType.getFullName();
-            name = AccessorNameFormatter.getFunctionName(functionType);
-            resultExpression = cppExpressionFormatter.formatGetter(functionType.getResultExpression());
+            name = AccessorNameFormatter.getFunctionName(function);
+            resultExpression = cppExpressionFormatter.formatGetter(function.getResultExpression());
             addIncludes(includeCollector, returnNativeType);
         }
 

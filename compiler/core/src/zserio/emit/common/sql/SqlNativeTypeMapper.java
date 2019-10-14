@@ -38,18 +38,21 @@ public class SqlNativeTypeMapper
      *
      * @throws ZserioEmitException Throws in case of internal error.
      */
-    public SqlNativeType getSqlType(ZserioType type) throws ZserioEmitException
+    public SqlNativeType getSqlType(TypeReference typeReference) throws ZserioEmitException
     {
         // resolve all the way through subtypes to the base type
-        type = TypeReference.resolveBaseType(type);
+        final ZserioType baseType = typeReference.getBaseType();
 
         final TypeMapperVisitor visitor = new TypeMapperVisitor();
-        type.accept(visitor);
+        baseType.accept(visitor);
         final SqlNativeType nativeType = visitor.getSqlType();
 
         if (nativeType == null)
-            throw new ZserioEmitException("Unexpected element '" + ZserioTypeUtil.getFullName(type) +
-                    "' of type '" + type.getClass() + "' in SqlNativeTypeMapper!");
+        {
+            throw new ZserioEmitException("Unexpected element '" +
+                    ZserioTypeUtil.getFullName(typeReference.getType()) +
+                    "' of type '" + baseType.getClass() + "' in SqlNativeTypeMapper!");
+        }
 
         return nativeType;
     }

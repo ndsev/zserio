@@ -17,7 +17,7 @@ packageDeclaration
     ;
 
 packageNameDefinition
-    :   PACKAGE qualifiedName SEMICOLON
+    :   PACKAGE id (DOT id)* SEMICOLON
     ;
 
 importDeclaration
@@ -39,15 +39,15 @@ typeDeclaration
 
 // CONST
 
-constDeclaration
-    :   CONST typeName id ASSIGN expression SEMICOLON
+constDeclaration // TODO[Mi-L@][typeref]: Think again whether it should by TypeInstantiation or TypeReference!
+    :   CONST typeInstantiation id ASSIGN expression SEMICOLON
     ;
 
 
 // SUBTYPE
 
 subtypeDeclaration
-    :   SUBTYPE typeName id SEMICOLON
+    :   SUBTYPE typeReference id SEMICOLON
     ;
 
 
@@ -82,7 +82,7 @@ fieldOffset
     ;
 
 fieldTypeId
-    :   IMPLICIT? typeReference id fieldArrayRange?
+    :   IMPLICIT? typeInstantiation id fieldArrayRange?
     ;
 
 fieldArrayRange
@@ -150,7 +150,7 @@ unionFieldDefinition
 // ENUM
 
 enumDeclaration
-    :   ENUM typeName id
+    :   ENUM typeReference id
         LBRACE
         enumItem (COMMA enumItem)* COMMA?
         RBRACE
@@ -175,7 +175,7 @@ sqlTableDeclaration
     ;
 
 sqlTableFieldDefinition
-    :   SQL_VIRTUAL? typeReference id sqlConstraint? SEMICOLON
+    :   SQL_VIRTUAL? typeInstantiation id sqlConstraint? SEMICOLON
     ;
 
 sqlConstraintDefinition
@@ -202,11 +202,7 @@ sqlDatabaseDefinition
     ;
 
 sqlDatabaseFieldDefinition
-    :   sqlTableReference id SEMICOLON
-    ;
-
-sqlTableReference
-    :   qualifiedName templateArguments?
+    :   typeInstantiation id SEMICOLON // TODO[Mi-L@]: Check that it's a table somewhere!
     ;
 
 
@@ -221,11 +217,11 @@ serviceDefinition
     ;
 
 rpcDefinition
-    :   RPC rpcTypeName id LPAREN rpcTypeName RPAREN SEMICOLON
+    :   RPC rpcTypeReference id LPAREN rpcTypeReference RPAREN SEMICOLON
     ;
 
-rpcTypeName
-    :   STREAM? qualifiedName templateArguments?
+rpcTypeReference
+    :   STREAM? typeReference // TODO[Mi-L@]: Check that it's a non-parameterized compound
     ;
 
 
@@ -238,7 +234,7 @@ functionDefinition
     ;
 
 functionType
-    :   typeName // function doesn't need to specify parameters of parameterized types
+    :   typeReference
     ;
 
 functionName
@@ -259,7 +255,7 @@ typeParameters
     ;
 
 parameterDefinition
-    :   typeName id
+    :   typeReference id
     ;
 
 
@@ -270,7 +266,7 @@ templateParameters
     ;
 
 templateArguments
-    :   LT typeName (COMMA typeName)* GT
+    :   LT typeReference (COMMA typeReference)* GT
     ;
 
 
@@ -319,14 +315,13 @@ id
 
 // TYPES
 
-typeName
+typeReference
     :   builtinType
     |   qualifiedName templateArguments?
     ;
 
-typeReference
-    :   builtinType
-    |   qualifiedName templateArguments? typeArguments?
+typeInstantiation
+    :   typeReference typeArguments?
     ;
 
 builtinType

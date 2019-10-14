@@ -60,7 +60,7 @@ public class ZserioAstBuilder extends ZserioParserBaseVisitor<Object>
 
         // package instance
         final ParserRuleContext packageLocationCtx = ctx.packageNameDefinition() != null
-                ? ctx.packageNameDefinition().qualifiedName() : ctx;
+                ? ctx.packageNameDefinition().id(0) : ctx;
         final AstLocation packageLocation = new AstLocation(packageLocationCtx.getStart());
         localTypes = new LinkedHashMap<String, ZserioType>();
         currentPackage = new Package(packageLocation, packageName, imports, localTypes,
@@ -97,7 +97,7 @@ public class ZserioAstBuilder extends ZserioParserBaseVisitor<Object>
     public PackageName visitPackageNameDefinition(ZserioParser.PackageNameDefinitionContext ctx)
     {
         if (ctx != null)
-            return createPackageName(ctx.qualifiedName().id());
+            return createPackageName(ctx.id());
         else
             return PackageName.EMPTY; // default package
     }
@@ -126,14 +126,14 @@ public class ZserioAstBuilder extends ZserioParserBaseVisitor<Object>
     public ConstType visitConstDeclaration(ZserioParser.ConstDeclarationContext ctx)
     {
         final AstLocation location = new AstLocation(ctx.id().getStart());
-        final ZserioType type = visitTypeName(ctx.typeName());
+        final TypeInstantiation typeInstantiation = visitTypeInstantiation(ctx.typeInstantiation());
         final String name = ctx.id().getText();
         final Expression valueExpression = (Expression)visit(ctx.expression());
 
         final DocComment docComment = docCommentManager.findDocComment(ctx);
 
-        final ConstType constType = new ConstType(location, currentPackage, type, name, valueExpression,
-                docComment);
+        final ConstType constType = new ConstType(location, currentPackage, typeInstantiation, name,
+                valueExpression, docComment);
 
         return constType;
     }
@@ -142,12 +142,12 @@ public class ZserioAstBuilder extends ZserioParserBaseVisitor<Object>
     public Subtype visitSubtypeDeclaration(ZserioParser.SubtypeDeclarationContext ctx)
     {
         final AstLocation location = new AstLocation(ctx.id().getStart());
-        final ZserioType targetType = visitTypeName(ctx.typeName());
+        final TypeReference targetTypeReference = visitTypeReference(ctx.typeReference());
         final String name = ctx.id().getText();
 
         final DocComment docComment = docCommentManager.findDocComment(ctx);
 
-        final Subtype subtype = new Subtype(location, currentPackage, targetType, name, docComment);
+        final Subtype subtype = new Subtype(location, currentPackage, targetTypeReference, name, docComment);
 
         return subtype;
     }
@@ -166,7 +166,7 @@ public class ZserioAstBuilder extends ZserioParserBaseVisitor<Object>
         for (ZserioParser.StructureFieldDefinitionContext fieldCtx : ctx.structureFieldDefinition())
             fields.add(visitStructureFieldDefinition(fieldCtx));
 
-        final List<FunctionType> functions = new ArrayList<FunctionType>();
+        final List<Function> functions = new ArrayList<Function>();
         for (ZserioParser.FunctionDefinitionContext functionDefinitionCtx : ctx.functionDefinition())
             functions.add(visitFunctionDefinition(functionDefinitionCtx));
 
@@ -181,9 +181,7 @@ public class ZserioAstBuilder extends ZserioParserBaseVisitor<Object>
     @Override
     public Field visitStructureFieldDefinition(ZserioParser.StructureFieldDefinitionContext ctx)
     {
-        final AstLocation location = new AstLocation(ctx.fieldTypeId().id().getStart());
-        final ZserioType type = getFieldType(ctx.fieldTypeId());
-        final String name = ctx.fieldTypeId().id().getText();
+        final FieldTypeId fieldTypeId = visitFieldTypeId(ctx.fieldTypeId());
         final boolean isAutoOptional = ctx.OPTIONAL() != null;
 
         final Expression alignmentExpr = visitFieldAlignment(ctx.fieldAlignment());
@@ -194,8 +192,9 @@ public class ZserioAstBuilder extends ZserioParserBaseVisitor<Object>
 
         final DocComment docComment = docCommentManager.findDocComment(ctx);
 
-        return new Field(location, type, name, isAutoOptional, alignmentExpr, offsetExpr, initializerExpr,
-                optionalClauseExpr, constraintExpr, docComment);
+        return new Field(fieldTypeId.getLocation(), fieldTypeId.getTypeInstantation(), fieldTypeId.getName(),
+                isAutoOptional, alignmentExpr, offsetExpr, initializerExpr, optionalClauseExpr, constraintExpr,
+                docComment);
     }
 
     @Override
@@ -265,7 +264,7 @@ public class ZserioAstBuilder extends ZserioParserBaseVisitor<Object>
 
         final ChoiceDefault choiceDefault = visitChoiceDefault(ctx.choiceDefault());
 
-        final List<FunctionType> functions = new ArrayList<FunctionType>();
+        final List<Function> functions = new ArrayList<Function>();
         for (ZserioParser.FunctionDefinitionContext functionDefinitionCtx : ctx.functionDefinition())
             functions.add(visitFunctionDefinition(functionDefinitionCtx));
 
@@ -318,15 +317,13 @@ public class ZserioAstBuilder extends ZserioParserBaseVisitor<Object>
         if (ctx == null)
             return null;
 
-        final ZserioType type = getFieldType(ctx.fieldTypeId());
-        final ParserRuleContext nameCtx = ctx.fieldTypeId().id();
-        final AstLocation location = new AstLocation(nameCtx.getStart());
-        final String name = nameCtx.getText();
+        final FieldTypeId fieldTypeId = visitFieldTypeId(ctx.fieldTypeId());
         final Expression constraintExpr = visitFieldConstraint(ctx.fieldConstraint());
 
         final DocComment docComment = docCommentManager.findDocComment(ctx);
 
-        return new Field(location, type, name, constraintExpr, docComment);
+        return new Field(fieldTypeId.getLocation(), fieldTypeId.getTypeInstantation(), fieldTypeId.getName(),
+                constraintExpr, docComment);
     }
 
     @Override
@@ -343,7 +340,7 @@ public class ZserioAstBuilder extends ZserioParserBaseVisitor<Object>
         for (ZserioParser.UnionFieldDefinitionContext fieldCtx : ctx.unionFieldDefinition())
             fields.add(visitChoiceFieldDefinition(fieldCtx.choiceFieldDefinition()));
 
-        final List<FunctionType> functions = new ArrayList<FunctionType>();
+        final List<Function> functions = new ArrayList<Function>();
         for (ZserioParser.FunctionDefinitionContext functionDefinitionCtx : ctx.functionDefinition())
             functions.add(visitFunctionDefinition(functionDefinitionCtx));
 
@@ -359,7 +356,7 @@ public class ZserioAstBuilder extends ZserioParserBaseVisitor<Object>
     public EnumType visitEnumDeclaration(ZserioParser.EnumDeclarationContext ctx)
     {
         final AstLocation location = new AstLocation(ctx.id().getStart());
-        final ZserioType zserioEnumType = visitTypeName(ctx.typeName());
+        final TypeReference enumTypeReference = visitTypeReference(ctx.typeReference());
         final String name = ctx.id().getText();
         final List<EnumItem> enumItems = new ArrayList<EnumItem>();
         for (ZserioParser.EnumItemContext enumItemCtx : ctx.enumItem())
@@ -367,7 +364,7 @@ public class ZserioAstBuilder extends ZserioParserBaseVisitor<Object>
 
         final DocComment docComment = docCommentManager.findDocComment(ctx);
 
-        final EnumType enumType = new EnumType(location, currentPackage, zserioEnumType, name, enumItems,
+        final EnumType enumType = new EnumType(location, currentPackage, enumTypeReference, name, enumItems,
                 docComment);
 
         return enumType;
@@ -415,13 +412,13 @@ public class ZserioAstBuilder extends ZserioParserBaseVisitor<Object>
     {
         final AstLocation location = new AstLocation(ctx.id().getStart());
         final boolean isVirtual = ctx.SQL_VIRTUAL() != null;
-        final ZserioType type = visitTypeReference(ctx.typeReference());
+        final TypeInstantiation typeInstantiation = visitTypeInstantiation(ctx.typeInstantiation());
         final String name = ctx.id().getText();
         final SqlConstraint sqlConstraint = visitSqlConstraint(ctx.sqlConstraint());
 
         final DocComment docComment = docCommentManager.findDocComment(ctx);
 
-        return new Field(location, type, name, isVirtual, (sqlConstraint == null) ?
+        return new Field(location, typeInstantiation, name, isVirtual, (sqlConstraint == null) ?
                 SqlConstraint.createDefaultFieldConstraint(currentPackage) : sqlConstraint, docComment);
     }
 
@@ -470,19 +467,12 @@ public class ZserioAstBuilder extends ZserioParserBaseVisitor<Object>
     public Field visitSqlDatabaseFieldDefinition(ZserioParser.SqlDatabaseFieldDefinitionContext ctx)
     {
         final AstLocation location = new AstLocation(ctx.getStart());
-        final ZserioType type = visitSqlTableReference(ctx.sqlTableReference());
+        final TypeInstantiation fieldTypeInstantiation = visitTypeInstantiation(ctx.typeInstantiation());
         final String name = ctx.id().getText();
 
         final DocComment docComment = docCommentManager.findDocComment(ctx);
 
-        return new Field(location, type, name, docComment);
-    }
-
-    @Override
-    public TypeReference visitSqlTableReference(ZserioParser.SqlTableReferenceContext ctx)
-    {
-        final List<ZserioType> templateArguments = visitTemplateArguments(ctx.templateArguments());
-        return visitQualifiedName(ctx.qualifiedName(), templateArguments);
+        return new Field(location, fieldTypeInstantiation, name, docComment);
     }
 
     @Override
@@ -507,38 +497,31 @@ public class ZserioAstBuilder extends ZserioParserBaseVisitor<Object>
     {
         final AstLocation location = new AstLocation(ctx.id().getStart());
 
-        final boolean responseStreaming = ctx.rpcTypeName(0).STREAM() != null;
-        final List<ZserioType> responseTemplateArguments =
-                visitTemplateArguments(ctx.rpcTypeName(0).templateArguments());
-        final ZserioType responseType =
-                visitQualifiedName(ctx.rpcTypeName(0).qualifiedName(), responseTemplateArguments);
+        final boolean responseStreaming = ctx.rpcTypeReference(0).STREAM() != null;
+        final TypeReference responseTypeReference = visitTypeReference(ctx.rpcTypeReference(0).typeReference());
 
         final String name = ctx.id().getText();
 
-        final boolean requestStreaming = ctx.rpcTypeName(1).STREAM() != null;
-        final List<ZserioType> requestTemplateArguments =
-                visitTemplateArguments(ctx.rpcTypeName(1).templateArguments());
-        final ZserioType requestType =
-                visitQualifiedName(ctx.rpcTypeName(1).qualifiedName(), requestTemplateArguments);
+        final boolean requestStreaming = ctx.rpcTypeReference(1).STREAM() != null;
+        final TypeReference requestTypeReference = visitTypeReference(ctx.rpcTypeReference(1).typeReference());
 
         final DocComment docComment = docCommentManager.findDocComment(ctx);
 
-        return new Rpc(location, name, responseType, responseStreaming, requestType,
+        return new Rpc(location, name, responseTypeReference, responseStreaming, requestTypeReference,
                 requestStreaming, docComment);
     }
 
     @Override
-    public FunctionType visitFunctionDefinition(ZserioParser.FunctionDefinitionContext ctx)
+    public Function visitFunctionDefinition(ZserioParser.FunctionDefinitionContext ctx)
     {
         final AstLocation location = new AstLocation(ctx.functionName().getStart());
-        final ZserioType returnType = visitTypeName(ctx.functionType().typeName());
+        final TypeReference returnTypeReference = visitTypeReference(ctx.functionType().typeReference());
         final String name = ctx.functionName().getText();
         final Expression resultExpression = (Expression)visit(ctx.functionBody().expression());
 
         final DocComment docComment = docCommentManager.findDocComment(ctx);
 
-        return new FunctionType(location, currentPackage, returnType, name,
-                resultExpression, docComment);
+        return new Function(location, returnTypeReference, name, resultExpression, docComment);
     }
 
     @Override
@@ -557,7 +540,7 @@ public class ZserioAstBuilder extends ZserioParserBaseVisitor<Object>
     public Object visitParameterDefinition(ZserioParser.ParameterDefinitionContext ctx)
     {
         final AstLocation location = new AstLocation(ctx.id().getStart());
-        return new Parameter(location, visitTypeName(ctx.typeName()), ctx.id().getText());
+        return new Parameter(location, visitTypeReference(ctx.typeReference()), ctx.id().getText());
     }
 
     @Override
@@ -576,15 +559,16 @@ public class ZserioAstBuilder extends ZserioParserBaseVisitor<Object>
     }
 
     @Override
-    public List<ZserioType> visitTemplateArguments(ZserioParser.TemplateArgumentsContext ctx)
+    public List<TypeReference> visitTemplateArguments(ZserioParser.TemplateArgumentsContext ctx)
     {
-        final ArrayList<ZserioType> templateArguments = new ArrayList<ZserioType>();
+        final ArrayList<TypeReference> templateArguments = new ArrayList<TypeReference>();
         if (ctx != null)
         {
+            final boolean origIsTemplateArgument = isTemplateArgument;
             isTemplateArgument = true;
-            for (ZserioParser.TypeNameContext typeNameCtx : ctx.typeName())
-                templateArguments.add(visitTypeName(typeNameCtx));
-            isTemplateArgument = false;
+            for (ZserioParser.TypeReferenceContext typeReferenceCtx : ctx.typeReference())
+                templateArguments.add(visitTypeReference(typeReferenceCtx));
+            isTemplateArgument = origIsTemplateArgument;
         }
         return templateArguments;
     }
@@ -845,66 +829,50 @@ public class ZserioAstBuilder extends ZserioParserBaseVisitor<Object>
     }
 
     @Override
-    public ZserioType visitTypeName(ZserioParser.TypeNameContext ctx)
+    public QualifiedName visitQualifiedName(ZserioParser.QualifiedNameContext ctx)
     {
-        if (ctx.builtinType() != null)
-            return (ZserioType)visitBuiltinType(ctx.builtinType());
-
-        final List<ZserioType> templateArguments = visitTemplateArguments(ctx.templateArguments());
-
-        return visitQualifiedName(ctx.qualifiedName(), templateArguments);
+        final PackageName referencedPackageName =
+                createPackageName(getPackageNameIds(ctx.id()));
+        final String referencedTypeName = getTypeNameId(ctx.id()).getText();
+        return new QualifiedName(referencedPackageName, referencedTypeName);
     }
 
     @Override
-    public ZserioType visitTypeReference(ZserioParser.TypeReferenceContext ctx)
-    {
-        if (ctx.builtinType() != null)
-            return (ZserioType)visitBuiltinType(ctx.builtinType());
-
-        final List<ZserioType> templateArguments = visitTemplateArguments(ctx.templateArguments());
-
-        final boolean hasArguments = ctx.typeArguments() != null;
-        final TypeReference typeReference = visitQualifiedName(ctx.qualifiedName(), templateArguments,
-                !hasArguments);
-
-        if (hasArguments)
-        {
-            final AstLocation location = new AstLocation(ctx.getStart());
-            final List<Expression> arguments = new ArrayList<Expression>();
-            for (ZserioParser.TypeArgumentContext typeArgumentCtx : ctx.typeArguments().typeArgument())
-                arguments.add(visitTypeArgument(typeArgumentCtx));
-            return new TypeInstantiation(location, typeReference, arguments);
-        }
-        else
-        {
-            return typeReference;
-        }
-    }
-
-    @Override
-    public TypeReference visitQualifiedName(ZserioParser.QualifiedNameContext ctx)
-    {
-        return visitQualifiedName(ctx, new ArrayList<ZserioType>());
-    }
-
-    public TypeReference visitQualifiedName(ZserioParser.QualifiedNameContext ctx,
-            List<ZserioType> templateArguments)
-    {
-        return visitQualifiedName(ctx, templateArguments, false);
-    }
-
-    public TypeReference visitQualifiedName(ZserioParser.QualifiedNameContext ctx,
-            List<ZserioType> templateArguments, boolean checkIfNeedsParameters)
+    public TypeReference visitTypeReference(ZserioParser.TypeReferenceContext ctx)
     {
         final AstLocation location = new AstLocation(ctx.getStart());
-        final PackageName referencedPackageName = createPackageName(
-                getPackageNameIds(ctx.id()));
-        final String referencedTypeName = getTypeNameId(ctx.id()).getText();
 
-        final TypeReference typeReference = new TypeReference(location, currentPackage, referencedPackageName,
-                referencedTypeName, templateArguments, isTemplateArgument, checkIfNeedsParameters);
+        if (ctx.builtinType() != null)
+        {
+            return new TypeReference(location, currentPackage,
+                    (BuiltInType)visitBuiltinType(ctx.builtinType()), isTemplateArgument);
+        }
 
-        return typeReference;
+        final List<TypeReference> templateArguments = visitTemplateArguments(ctx.templateArguments());
+        final QualifiedName qualifiedName = visitQualifiedName(ctx.qualifiedName());
+
+        return new TypeReference(location, currentPackage, qualifiedName.getReferencedPackageName(),
+                qualifiedName.getReferencedTypeName(), templateArguments, isTemplateArgument);
+    }
+
+    @Override
+    public TypeInstantiation visitTypeInstantiation(ZserioParser.TypeInstantiationContext ctx)
+    {
+        final AstLocation location = new AstLocation(ctx.getStart());
+        return new TypeInstantiation(location, visitTypeReference(ctx.typeReference()),
+                visitTypeArguments(ctx.typeArguments()));
+    }
+
+    @Override
+    public List<Expression> visitTypeArguments(ZserioParser.TypeArgumentsContext ctx)
+    {
+        final List<Expression> typeArguments = new ArrayList<Expression>();
+        if (ctx != null)
+        {
+            for (ZserioParser.TypeArgumentContext typeArgumentCtx : ctx.typeArgument())
+                typeArguments.add(visitTypeArgument(typeArgumentCtx));
+        }
+        return typeArguments;
     }
 
     @Override
@@ -1022,17 +990,81 @@ public class ZserioAstBuilder extends ZserioParserBaseVisitor<Object>
         return qualifiedName.get(qualifiedName.size() - 1);
     }
 
-    private ZserioType getFieldType(ZserioParser.FieldTypeIdContext ctx)
+    @Override
+    public FieldTypeId visitFieldTypeId(ZserioParser.FieldTypeIdContext ctx)
     {
-        final AstLocation location = new AstLocation(ctx.getStart());
-        final ZserioType type = visitTypeReference(ctx.typeReference());
-        if (ctx.fieldArrayRange() == null)
-            return type;
+        final AstLocation location = new AstLocation(ctx.id().getStart());
+        TypeInstantiation typeInstantiation = visitTypeInstantiation(ctx.typeInstantiation());
+        final String name = ctx.id().getText();
 
-        final ZserioParser.ExpressionContext exprCtx = ctx.fieldArrayRange().expression();
-        final Expression lengthExpression = (exprCtx != null) ? (Expression)visit(exprCtx) : null;
+        final boolean isArray = ctx.fieldArrayRange() != null;
+        if (isArray)
+        {
+            final boolean isImplicit = ctx.IMPLICIT() != null;
+            final ZserioParser.ExpressionContext exprCtx = ctx.fieldArrayRange().expression();
+            final Expression lengthExpression = (exprCtx != null) ? (Expression)visit(exprCtx) : null;
+            final AstLocation arrayTypeLocation = new AstLocation(ctx.getStart());
+            final ArrayType arrayType = new ArrayType(arrayTypeLocation, typeInstantiation, isImplicit,
+                    lengthExpression);
+            final TypeReference arrayTypeReference =
+                    new TypeReference(arrayTypeLocation, currentPackage, arrayType, isTemplateArgument);
+            // TODO[Mi-L@][typeref] Introduce ArrayTypeInstantiation.
+            typeInstantiation = new TypeInstantiation(arrayTypeLocation, arrayTypeReference,
+                    visitTypeArguments(null));
+        }
 
-        return new ArrayType(location, type, lengthExpression, ctx.IMPLICIT() != null);
+        return new FieldTypeId(location, typeInstantiation, name);
+    }
+
+    private static class FieldTypeId
+    {
+        public FieldTypeId(AstLocation location, TypeInstantiation typeInstantiation, String name)
+        {
+            this.location = location;
+            this.typeInstantiation = typeInstantiation;
+            this.name = name;
+        }
+
+        public AstLocation getLocation()
+        {
+            return location;
+        }
+
+        public TypeInstantiation getTypeInstantation()
+        {
+            return typeInstantiation;
+        }
+
+        public String getName()
+        {
+            return name;
+        }
+
+        private final AstLocation location;
+        private final TypeInstantiation typeInstantiation;
+        private final String name;
+    }
+
+    private static class QualifiedName
+    {
+        public QualifiedName(PackageName referencedPackageName, String referencedTypeName)
+        {
+            this.referencedPackageName = referencedPackageName;
+            this.referencedTypeName = referencedTypeName;
+        }
+
+        public PackageName getReferencedPackageName()
+        {
+            return referencedPackageName;
+        }
+
+        public String getReferencedTypeName()
+        {
+            return referencedTypeName;
+        }
+
+        private final PackageName referencedPackageName;
+        private final String referencedTypeName;
     }
 
     private final DocCommentManager docCommentManager = new DocCommentManager();

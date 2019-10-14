@@ -7,12 +7,12 @@ import zserio.ast.ChoiceType;
 import zserio.ast.CompoundType;
 import zserio.ast.EnumType;
 import zserio.ast.Field;
-import zserio.ast.FunctionType;
+import zserio.ast.Function;
 import zserio.ast.Root;
 import zserio.ast.SqlTableType;
 import zserio.ast.StructureType;
-import zserio.ast.TypeReference;
 import zserio.ast.UnionType;
+import zserio.ast.ZserioType;
 import zserio.emit.common.ZserioEmitException;
 import zserio.tools.Parameters;
 
@@ -56,7 +56,8 @@ public class InspectorZserioNamesEmitter extends CppDefaultEmitter
             for (Field field : sqlTableType.getFields())
             {
                 // we need only compound types from tables
-                if (TypeReference.resolveBaseType(field.getFieldReferencedType()) instanceof CompoundType)
+                final ZserioType fieldBaseType = field.getTypeInstantiation().getTypeReference().getBaseType();
+                if (fieldBaseType instanceof CompoundType)
                     fields.add(field);
             }
         }
@@ -65,10 +66,10 @@ public class InspectorZserioNamesEmitter extends CppDefaultEmitter
     @Override
     public void endRoot(Root root) throws ZserioEmitException
     {
-        if (!fields.isEmpty() || !functionTypes.isEmpty() || !enumTypes.isEmpty())
+        if (!fields.isEmpty() || !functions.isEmpty() || !enumTypes.isEmpty())
         {
             final InspectorZserioNamesTemplateData namesTemplateData =
-                    new InspectorZserioNamesTemplateData(getTemplateDataContext(), fields, functionTypes,
+                    new InspectorZserioNamesTemplateData(getTemplateDataContext(), fields, functions,
                             enumTypes);
             processHeaderTemplateToRootDir(NAMES_TEMPLATE_HEADER_NAME, namesTemplateData,
                     NAMES_OUTPUT_FILE_NAME_ROOT);
@@ -76,7 +77,7 @@ public class InspectorZserioNamesEmitter extends CppDefaultEmitter
                     NAMES_OUTPUT_FILE_NAME_ROOT);
 
             final InspectorZserioTypeNamesTemplateData typeNamesTemplateData =
-                    new InspectorZserioTypeNamesTemplateData(getTemplateDataContext(), fields, functionTypes,
+                    new InspectorZserioTypeNamesTemplateData(getTemplateDataContext(), fields, functions,
                             enumTypes);
             processHeaderTemplateToRootDir(TYPE_NAMES_TEMPLATE_HEADER_NAME, typeNamesTemplateData,
                     TYPE_NAMES_OUTPUT_FILE_NAME_ROOT);
@@ -91,7 +92,7 @@ public class InspectorZserioNamesEmitter extends CppDefaultEmitter
         if (getWithInspectorCode())
         {
             fields.addAll(compoundType.getFields());
-            functionTypes.addAll(compoundType.getFunctions());
+            functions.addAll(compoundType.getFunctions());
         }
     }
 
@@ -104,6 +105,6 @@ public class InspectorZserioNamesEmitter extends CppDefaultEmitter
     private static final String TYPE_NAMES_OUTPUT_FILE_NAME_ROOT = "InspectorZserioTypeNames";
 
     private final List<Field> fields = new ArrayList<Field>();
-    private final List<FunctionType> functionTypes = new ArrayList<FunctionType>();
+    private final List<Function> functions = new ArrayList<Function>();
     private final List<EnumType> enumTypes = new ArrayList<EnumType>();
 }

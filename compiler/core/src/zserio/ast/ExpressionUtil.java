@@ -61,9 +61,12 @@ class ExpressionUtil
         }
 
         if (isTypeMismatch)
+        {
+            final String typeName = (type instanceof ArrayType) ? "array type" : type.getName();
             throw new ParserException(expression, "Wrong type of value expression (" +
                     expression.getExprType().toString().toLowerCase(Locale.ENGLISH) +
-                    " cannot be assigned to " + type.getName() + ")!");
+                    " cannot be assigned to " + typeName + ")!");
+        }
     }
 
     /**

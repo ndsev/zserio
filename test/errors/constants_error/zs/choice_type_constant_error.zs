@@ -8,4 +8,4 @@ choice Choice(int32 selector) on selector
         int16 defaultCase;
 };
 
-const Choice choiceConst = 0;
+const Choice(0) choiceConst = 0;

@@ -8,7 +8,7 @@ import zserio.ast.ConstType;
 import zserio.ast.ServiceType;
 import zserio.ast.EnumType;
 import zserio.ast.FloatType;
-import zserio.ast.FunctionType;
+import zserio.ast.Function;
 import zserio.ast.StructureType;
 import zserio.ast.SqlDatabaseType;
 import zserio.ast.SqlTableType;
@@ -64,7 +64,7 @@ public class HtmlModuleNameSuffixVisitor extends ZserioAstDefaultVisitor
     }
 
     @Override
-    public void visitFunctionType(FunctionType type)
+    public void visitFunction(Function type)
     {
         htmlModuleNameSuffix = "FUNCTION";
     }

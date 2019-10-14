@@ -4,9 +4,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import zserio.ast.CompoundType;
-import zserio.ast.ZserioType;
+import zserio.ast.Function;
+import zserio.ast.TypeReference;
 import zserio.ast.ZserioTypeUtil;
-import zserio.ast.FunctionType;
 import zserio.emit.common.ExpressionFormatter;
 import zserio.emit.common.ZserioEmitException;
 import zserio.emit.cpp98.types.CppNativeType;
@@ -18,10 +18,12 @@ public class CompoundFunctionTemplateData
                     throws ZserioEmitException
     {
         compoundFunctionList = new ArrayList<CompoundFunction>();
-        final Iterable<FunctionType> compoundFunctionTypeList = compoundType.getFunctions();
-        for (FunctionType compoundFunctionType : compoundFunctionTypeList)
-            compoundFunctionList.add(new CompoundFunction(compoundFunctionType, cppNativeTypeMapper,
-                                                          cppExpressionFormatter, includeCollector));
+        final Iterable<Function> functionList = compoundType.getFunctions();
+        for (Function function : functionList)
+        {
+            compoundFunctionList.add(new CompoundFunction(function, cppNativeTypeMapper,
+                    cppExpressionFormatter, includeCollector));
+        }
     }
 
     public Iterable<CompoundFunction> getList()
@@ -31,17 +33,17 @@ public class CompoundFunctionTemplateData
 
     public static class CompoundFunction
     {
-        public CompoundFunction(FunctionType functionType, CppNativeTypeMapper cppNativeTypeMapper,
+        public CompoundFunction(Function function, CppNativeTypeMapper cppNativeTypeMapper,
                 ExpressionFormatter cppExpressionFormatter, IncludeCollector includeCollector)
                         throws ZserioEmitException
         {
-            final ZserioType returnZserioType = functionType.getReturnType();
-            final CppNativeType returnNativeType = cppNativeTypeMapper.getCppType(returnZserioType);
+            final TypeReference returnTypeReference = function.getReturnTypeReference();
+            final CppNativeType returnNativeType = cppNativeTypeMapper.getCppType(returnTypeReference);
             returnTypeName = returnNativeType.getFullName();
-            zserioReturnTypeName = ZserioTypeUtil.getFullName(returnZserioType);
-            name = AccessorNameFormatter.getFunctionName(functionType);
-            zserioName = functionType.getName();
-            resultExpression = cppExpressionFormatter.formatGetter(functionType.getResultExpression());
+            zserioReturnTypeName = ZserioTypeUtil.getFullName(returnTypeReference.getType());
+            name = AccessorNameFormatter.getFunctionName(function);
+            zserioName = function.getName();
+            resultExpression = cppExpressionFormatter.formatGetter(function.getResultExpression());
             addIncludes(includeCollector, returnNativeType);
         }
 

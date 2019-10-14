@@ -81,9 +81,12 @@ public class ChoiceTypesErrorTest
     @Test
     public void multipleDefaults()
     {
-        final String error = "multiple_defaults_error.zs:14:5: " +
-                "mismatched input 'default' expecting {'}', 'function'}";
-        assertTrue(zserioErrors.isPresent(error));
+        final String errors[] =
+        {
+            "multiple_defaults_error.zs:14:5: mismatched input 'default' expecting {", // ...
+            "multiple_defaults_error.zs:14:5: 'default' is a reserved keyword!"
+        };
+        assertTrue(zserioErrors.isPresent(errors));
     }
 
     @Test
@@ -97,8 +100,12 @@ public class ChoiceTypesErrorTest
     @Test
     public void optionalMember()
     {
-        final String error = "optional_member_error.zs:6:29: mismatched input 'if' expecting {':', '[', ';'}";
-        assertTrue(zserioErrors.isPresent(error));
+        final String errors[] =
+        {
+            "optional_member_error.zs:6:29: mismatched input 'if' expecting {", // ...
+            "optional_member_error.zs:6:29: 'if' is a reserved keyword!"
+        };
+        assertTrue(zserioErrors.isPresent(errors));
     }
 
     @Test

@@ -24,7 +24,7 @@ public class UnionType extends CompoundType
      * @param docComment            Documentation comment belonging to this node.
      */
     public UnionType(AstLocation location, Package pkg, String name, List<TemplateParameter> templateParameters,
-            List<Parameter> typeParameters, List<Field> fields, List<FunctionType> functions,
+            List<Parameter> typeParameters, List<Field> fields, List<Function> functions,
             DocComment docComment)
     {
         super(location, pkg, name, templateParameters, typeParameters, fields, functions, docComment);
@@ -37,7 +37,7 @@ public class UnionType extends CompoundType
     }
 
     @Override
-    UnionType instantiateImpl(String name, List<ZserioType> templateArguments)
+    UnionType instantiateImpl(String name, List<TypeReference> templateArguments)
     {
         final List<Parameter> instantiatedTypeParameters = new ArrayList<Parameter>();
         for (Parameter typeParameter : getTypeParameters())
@@ -47,8 +47,8 @@ public class UnionType extends CompoundType
         for (Field field : getFields())
             instantiatedFields.add(field.instantiate(getTemplateParameters(), templateArguments));
 
-        final List<FunctionType> instantiatedFunctions = new ArrayList<FunctionType>();
-        for (FunctionType function : getFunctions())
+        final List<Function> instantiatedFunctions = new ArrayList<Function>();
+        for (Function function : getFunctions())
             instantiatedFunctions.add(function.instantiate(getTemplateParameters(), templateArguments));
 
         return new UnionType(getLocation(), getPackage(), name, new ArrayList<TemplateParameter>(),

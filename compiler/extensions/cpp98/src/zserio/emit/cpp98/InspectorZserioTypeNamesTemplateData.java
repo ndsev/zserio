@@ -5,41 +5,43 @@ import java.util.Set;
 import java.util.TreeSet;
 
 import zserio.ast.ArrayType;
+import zserio.ast.Function;
 import zserio.ast.ZserioType;
 import zserio.ast.ZserioTypeUtil;
 import zserio.ast.EnumType;
 import zserio.ast.Field;
-import zserio.ast.FunctionType;
 import zserio.ast.TypeReference;
 
 public class InspectorZserioTypeNamesTemplateData extends CppTemplateData
 {
     public InspectorZserioTypeNamesTemplateData(TemplateDataContext context, List<Field> fields,
-            List<FunctionType> functionTypes, List<EnumType> enumTypes)
+            List<Function> functions, List<EnumType> enumTypes)
     {
         super(context);
 
         zserioTypeNames = new TreeSet<String>();
         for (Field field : fields)
         {
-            final ZserioType fieldType = TypeReference.resolveType(field.getFieldType());
+            final TypeReference fieldTypeReference = field.getTypeInstantiation().getTypeReference();
+            final ZserioType fieldType = fieldTypeReference.getType();
             final String zserioTypeName = ZserioTypeUtil.getFullName(fieldType);
             zserioTypeNames.add(zserioTypeName);
 
             // add element type names for arrays as well
-            final ZserioType baseFieldType = TypeReference.resolveBaseType(fieldType);
-            if (baseFieldType instanceof ArrayType)
+            final ZserioType fieldBaseType = fieldTypeReference.getBaseType();
+            if (fieldBaseType instanceof ArrayType)
             {
-                final ArrayType arrayType = (ArrayType)baseFieldType;
-                final ZserioType elementType = TypeReference.resolveBaseType(arrayType.getElementType());
+                final ArrayType arrayType = (ArrayType)fieldBaseType;
+                final ZserioType elementType =
+                        arrayType.getElementTypeInstantiation().getTypeReference().getType();
                 final String elementZserioTypeName = ZserioTypeUtil.getFullName(elementType);
                 zserioTypeNames.add(elementZserioTypeName);
             }
         }
 
-        for (FunctionType functionType : functionTypes)
+        for (Function function : functions)
         {
-            final ZserioType returnZserioType = functionType.getReturnType();
+            final ZserioType returnZserioType = function.getReturnTypeReference().getType();
             final String zserioReturnTypeName = ZserioTypeUtil.getFullName(returnZserioType);
             zserioTypeNames.add(zserioReturnTypeName);
         }

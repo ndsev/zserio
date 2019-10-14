@@ -10,25 +10,23 @@ import zserio.tools.ZserioToolPrinter;
  *
  * Function types are Zserio types as well.
  */
-public class FunctionType extends DocumentableAstNode implements ZserioType
+public class Function extends DocumentableAstNode
 {
     /**
      * Constructor.
      *
-     * @param location         AST node location.
-     * @param pkg              Package to which belongs the function type.
-     * @param returnType       Zserio type of the function return value.
-     * @param name             Name of the function type.
-     * @param resultExpression Result expression of the function type.
-     * @param docComment       Documentation comment belonging to this node.
+     * @param location           AST node location.
+     * @param returnTypeRefernce Type reference to the function return type.
+     * @param name               Name of the function type.
+     * @param resultExpression   Result expression of the function type.
+     * @param docComment         Documentation comment belonging to this node.
      */
-    public FunctionType(AstLocation location, Package pkg, ZserioType returnType, String name,
+    public Function(AstLocation location, TypeReference returnTypeReference, String name,
             Expression resultExpression, DocComment docComment)
     {
         super(location, docComment);
 
-        this.pkg = pkg;
-        this.returnType = returnType;
+        this.returnTypeReference = returnTypeReference;
         this.name = name;
         this.resultExpression = resultExpression;
     }
@@ -36,7 +34,7 @@ public class FunctionType extends DocumentableAstNode implements ZserioType
     @Override
     public void accept(ZserioAstVisitor visitor)
     {
-        visitor.visitFunctionType(this);
+        visitor.visitFunction(this);
     }
 
     @Override
@@ -44,30 +42,28 @@ public class FunctionType extends DocumentableAstNode implements ZserioType
     {
         super.visitChildren(visitor);
 
-        returnType.accept(visitor);
+        returnTypeReference.accept(visitor);
         resultExpression.accept(visitor);
     }
 
-    @Override
-    public Package getPackage()
-    {
-        return pkg;
-    }
-
-    @Override
+    /**
+     * Gets function name.
+     *
+     * @return Function name.
+     */
     public String getName()
     {
         return name;
     }
 
     /**
-     * Gets unresolved function return Zserio type.
+     * Gets reference to the function's return type.
      *
-     * @return Unresolved Zserio type defining the function return type.
+     * @return Type reference.
      */
-    public ZserioType getReturnType()
+    public TypeReference getReturnTypeReference()
     {
-        return returnType;
+        return returnTypeReference;
     }
 
     /**
@@ -86,9 +82,7 @@ public class FunctionType extends DocumentableAstNode implements ZserioType
     void check()
     {
         // check result expression type
-        final ZserioType resolvedTypeReference = TypeReference.resolveType(returnType);
-        final ZserioType resolvedReturnType = TypeReference.resolveBaseType(resolvedTypeReference);
-        ExpressionUtil.checkExpressionType(resultExpression, resolvedReturnType);
+        ExpressionUtil.checkExpressionType(resultExpression, returnTypeReference.getBaseType());
 
         // check usage of unconditional optional fields (this is considered as a warning)
         if (!resultExpression.containsFunctionCall() && !resultExpression.containsTernaryOperator())
@@ -96,7 +90,7 @@ public class FunctionType extends DocumentableAstNode implements ZserioType
             final Set<Field> referencedFields = resultExpression.getReferencedSymbolObjects(Field.class);
             for (Field referencedField : referencedFields)
             {
-                if (referencedField.getIsOptional())
+                if (referencedField.isOptional())
                     ZserioToolPrinter.printWarning(resultExpression, "Function '" + name + "' contains " +
                             "unconditional optional fields.");
             }
@@ -111,20 +105,19 @@ public class FunctionType extends DocumentableAstNode implements ZserioType
      *
      * @return New function type instantiated from this using the given template arguments.
      */
-    FunctionType instantiate(List<TemplateParameter> templateParameters, List<ZserioType> templateArguments)
+    Function instantiate(List<TemplateParameter> templateParameters, List<TypeReference> templateArguments)
     {
-        final ZserioType instantiatedReturnType =
-                ZserioTypeUtil.instantiate(returnType, templateParameters, templateArguments);
+        final TypeReference instantiatedReturnTypeReference =
+                returnTypeReference.instantiate(templateParameters, templateArguments);
 
         final Expression instantiatedResultExpression =
                 resultExpression.instantiate(templateParameters, templateArguments);
 
-        return new FunctionType(getLocation(), getPackage(), instantiatedReturnType, name,
+        return new Function(getLocation(), instantiatedReturnTypeReference, name,
                 instantiatedResultExpression, getDocComment());
     }
 
-    private final Package pkg;
-    private final ZserioType returnType;
+    private final TypeReference returnTypeReference;
     private final String name;
     private final Expression resultExpression;
 }

@@ -8,6 +8,7 @@ import zserio.ast.Field;
 import zserio.ast.Parameter;
 import zserio.ast.SqlTableType;
 import zserio.ast.TypeInstantiation;
+import zserio.ast.TypeInstantiation.InstantiatedParameter;
 import zserio.emit.common.ExpressionFormatter;
 import zserio.emit.common.ZserioEmitException;
 import zserio.emit.cpp98.types.CppNativeType;
@@ -28,7 +29,9 @@ public class InspectorParameterProviderTemplateData extends CppTemplateData
         {
             for (Field field : sqlTableType.getFields())
             {
-                for (TypeInstantiation.InstantiatedParameter parameter : field.getInstantiatedParameters())
+                final List<InstantiatedParameter> instantiatedParameters =
+                        field.getTypeInstantiation().getInstantiatedParameters();
+                for (TypeInstantiation.InstantiatedParameter parameter : instantiatedParameters)
                 {
                     if (parameter.getArgumentExpression().isExplicitVariable())
                     {
@@ -63,7 +66,7 @@ public class InspectorParameterProviderTemplateData extends CppTemplateData
         {
             final Parameter parameter = instantiatedParameter.getParameter();
             final CppNativeType parameterNativeType =
-                    cppNativeTypeMapper.getCppType(parameter.getParameterType());
+                    cppNativeTypeMapper.getCppType(parameter.getTypeReference());
             includeCollector.addHeaderIncludesForType(parameterNativeType);
 
             tableName = tableType.getName();
@@ -162,7 +165,7 @@ public class InspectorParameterProviderTemplateData extends CppTemplateData
         {
             final Parameter parameter = instantiatedParameter.getParameter();
             final CppNativeType parameterNativeType =
-                    cppNativeTypeMapper.getCppType(parameter.getParameterType());
+                    cppNativeTypeMapper.getCppType(parameter.getTypeReference());
             includeCollector.addHeaderIncludesForType(parameterNativeType);
             final Expression argumentExpression = instantiatedParameter.getArgumentExpression();
 

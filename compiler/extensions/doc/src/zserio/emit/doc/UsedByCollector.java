@@ -8,6 +8,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import zserio.ast.ArrayType;
+import zserio.ast.BuiltInType;
 import zserio.ast.ChoiceCase;
 import zserio.ast.ChoiceCaseExpression;
 import zserio.ast.ChoiceType;
@@ -22,10 +24,8 @@ import zserio.ast.SqlDatabaseType;
 import zserio.ast.SqlTableType;
 import zserio.ast.StructureType;
 import zserio.ast.Subtype;
-import zserio.ast.TypeReference;
 import zserio.ast.UnionType;
 import zserio.ast.ZserioType;
-import zserio.ast.ZserioTypeUtil;
 import zserio.emit.common.DefaultEmitter;
 
 /**
@@ -36,13 +36,13 @@ public class UsedByCollector extends DefaultEmitter
     @Override
     public void beginConst(ConstType constType)
     {
-        storeType(constType, constType.getConstType());
+        storeType(constType, constType.getTypeReference().getType());
     }
 
     @Override
     public void beginSubtype(Subtype subtype)
     {
-        storeType(subtype, subtype.getTargetType());
+        storeType(subtype, subtype.getTypeReference().getType());
     }
 
     @Override
@@ -168,18 +168,22 @@ public class UsedByCollector extends DefaultEmitter
         return (usedByChoices != null) ? Collections.unmodifiableList(usedByChoices) : EMPTY_CHOICE_TYPE_LIST;
     }
 
-    private static void addTypeToUsedTypes(ZserioType unresolvedUsedType, List<ZserioType> usedTypes)
+    private static void addTypeToUsedTypes(ZserioType usedType, List<ZserioType> usedTypes)
     {
-        final ZserioType resolvedUsedType = TypeReference.resolveType(unresolvedUsedType);
-        if (!ZserioTypeUtil.isBuiltIn(resolvedUsedType))
-            usedTypes.add(resolvedUsedType);
+        if (!(usedType instanceof BuiltInType))
+            usedTypes.add(usedType);
     }
 
     private List<ZserioType> getUsedTypesForCompoundType(CompoundType compoundType)
     {
         final List<ZserioType> usedTypes = new ArrayList<ZserioType>();
         for (Field field : compoundType.getFields())
-            addTypeToUsedTypes(field.getFieldReferencedType(), usedTypes);
+        {
+            ZserioType fieldType = field.getTypeInstantiation().getTypeReference().getType();
+            if (fieldType instanceof ArrayType)
+                fieldType = ((ArrayType)fieldType).getElementTypeInstantiation().getTypeReference().getType();
+            addTypeToUsedTypes(fieldType, usedTypes);
+        }
 
         return usedTypes;
     }

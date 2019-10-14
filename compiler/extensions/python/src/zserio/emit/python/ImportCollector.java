@@ -6,4 +6,5 @@ public interface ImportCollector
 {
     void importPackage(String packageName);
     void importType(PythonNativeType nativeType);
+    void importUsedType(PythonNativeType nativeType);
 }

@@ -26,13 +26,13 @@ class OptionalArrayTest(unittest.TestCase):
         numElements = 6
         test = self.api.TestStruct()
         test.setHasData8(False)
-        test.setData16([i for i in range(numElements)])
+        test.setData16(list(range(numElements)))
         self.assertEqual(numElements, len(test.getData16()))
 
     def testAutoData16(self):
         numElements = 7
         test = self.api.TestStruct()
         self.assertFalse(test.hasAutoData16())
-        test.setAutoData16([i for i in range(numElements)])
+        test.setAutoData16(list(range(numElements)))
         self.assertTrue(test.hasAutoData16())
         self.assertEqual(numElements, len(test.getAutoData16()))

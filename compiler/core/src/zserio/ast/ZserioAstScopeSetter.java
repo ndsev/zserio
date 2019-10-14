@@ -28,7 +28,7 @@ public class ZserioAstScopeSetter extends ZserioAstWalker
     @Override
     public void visitField(Field field)
     {
-        field.getFieldType().accept(this);
+        field.getTypeInstantiation().accept(this);
 
         if (field.getAlignmentExpr() != null)
             field.getAlignmentExpr().accept(this);
@@ -76,7 +76,7 @@ public class ZserioAstScopeSetter extends ZserioAstWalker
         currentScope = currentChoiceOrUnionScope;
         currentChoiceOrUnionScope = null;
 
-        for (FunctionType function : choiceType.getFunctions())
+        for (Function function : choiceType.getFunctions())
             function.accept(this);
 
         currentScope = defaultScope;
@@ -123,8 +123,8 @@ public class ZserioAstScopeSetter extends ZserioAstWalker
         currentScope = currentChoiceOrUnionScope;
         currentChoiceOrUnionScope = null;
 
-        for (FunctionType function : unionType.getFunctions())
-            visitFunctionType(function);
+        for (Function function : unionType.getFunctions())
+            visitFunction(function);
 
         currentScope = defaultScope;
         expressionScopes.clear();
@@ -193,20 +193,14 @@ public class ZserioAstScopeSetter extends ZserioAstWalker
     }
 
     @Override
-    public void visitArrayType(ArrayType arrayType)
-    {
-        arrayType.visitChildren(this);
-    }
-
-    @Override
-    public void visitFunctionType(FunctionType functionType)
+    public void visitFunction(Function function)
     {
         for (Scope expressionScope : expressionScopes)
-            expressionScope.setSymbol(functionType.getName(), functionType);
+            expressionScope.setSymbol(function.getName(), function);
 
-        functionType.visitChildren(this);
+        function.visitChildren(this);
 
-        currentScope.setSymbol(functionType.getName(), functionType);
+        currentScope.setSymbol(function.getName(), function);
     }
 
     @Override
@@ -228,9 +222,15 @@ public class ZserioAstScopeSetter extends ZserioAstWalker
         expression.setEvaluationScope(expressionScope);
     }
 
+    @Override
+    public void visitArrayType(ArrayType arrayType)
+    {
+        arrayType.visitChildren(this);
+    }
+
     private void visitChoiceField(Field field)
     {
-        field.getFieldType().accept(this);
+        field.getTypeInstantiation().accept(this);
 
         currentScope.setSymbol(field.getName(), field);
         currentChoiceOrUnionScope.setSymbol(field.getName(), field);

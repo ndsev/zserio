@@ -54,7 +54,7 @@ test_python()
 
     echo "Running pylint on python test utilities."
 
-    local PYLINT_ARGS=("--disable=missing-docstring")
+    local PYLINT_ARGS=("--disable=missing-docstring,import-outside-toplevel")
     run_pylint "${PYLINT_RCFILE}" PYLINT_ARGS[@] "${TEST_FILE}" "${TEST_SRC_DIR}/utils/python"/*
     if [ $? -ne 0 ] ; then
         return 1

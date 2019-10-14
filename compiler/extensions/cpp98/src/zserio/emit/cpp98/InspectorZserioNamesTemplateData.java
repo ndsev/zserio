@@ -6,12 +6,12 @@ import java.util.TreeSet;
 
 import zserio.ast.EnumType;
 import zserio.ast.Field;
-import zserio.ast.FunctionType;
+import zserio.ast.Function;
 
 public class InspectorZserioNamesTemplateData extends CppTemplateData
 {
     public InspectorZserioNamesTemplateData(TemplateDataContext context, List<Field> fields,
-            List<FunctionType> functionTypes, List<EnumType> enumTypes)
+            List<Function> functions, List<EnumType> enumTypes)
     {
         super(context);
 
@@ -19,7 +19,7 @@ public class InspectorZserioNamesTemplateData extends CppTemplateData
         for (Field field : fields)
             zserioNames.add(field.getName());
 
-        for (FunctionType functionType : functionTypes)
+        for (Function functionType : functions)
             zserioNames.add(functionType.getName());
 
         // This is needed because all enumerations have theirs own 'tree' write method which needs Zserio

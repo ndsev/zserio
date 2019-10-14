@@ -136,8 +136,10 @@ public class SqlTableEmitterTemplateData extends UserTypeTemplateData
                 SqlNativeTypeMapper sqlNativeTypeMapper, SqlTableType parentType, Field field,
                 ImportCollector importCollector) throws ZserioEmitException
         {
-            final ZserioType baseType = TypeReference.resolveBaseType(field.getFieldType());
-            final PythonNativeType nativeType = pythonNativeTypeMapper.getPythonType(baseType);
+            final TypeInstantiation fieldTypeInstantiation = field.getTypeInstantiation();
+            final TypeReference fieldTypeReference = fieldTypeInstantiation.getTypeReference();
+            final ZserioType fieldBaseType = fieldTypeReference.getBaseType();
+            final PythonNativeType nativeType = pythonNativeTypeMapper.getPythonType(fieldTypeReference);
             importCollector.importType(nativeType);
 
             name = field.getName();
@@ -146,15 +148,11 @@ public class SqlTableEmitterTemplateData extends UserTypeTemplateData
             isVirtual = field.getIsVirtual();
             parameters = new ArrayList<ParameterTemplateData>();
 
-            if (baseType instanceof TypeInstantiation)
+            for (TypeInstantiation.InstantiatedParameter instantiatedParameter :
+                    fieldTypeInstantiation.getInstantiatedParameters())
             {
-                final TypeInstantiation typeInstantiation = ((TypeInstantiation)baseType);
-                for (TypeInstantiation.InstantiatedParameter instantiatedParameter :
-                        typeInstantiation.getInstantiatedParameters())
-                {
-                    parameters.add(new ParameterTemplateData(pythonSqlIndirectExpressionFormatter, parentType,
-                            instantiatedParameter));
-                }
+                parameters.add(new ParameterTemplateData(pythonSqlIndirectExpressionFormatter, parentType,
+                        instantiatedParameter));
             }
 
             final SqlConstraint sqlConstraintType = field.getSqlConstraint();
@@ -162,7 +160,7 @@ public class SqlTableEmitterTemplateData extends UserTypeTemplateData
             sqlConstraint = (sqlConstraintExpr == null) ? null :
                 pythonExpressionFormatter.formatGetter(sqlConstraintExpr);
 
-            enumData = (baseType instanceof EnumType) ? new EnumTemplateData(nativeType) : null;
+            enumData = (fieldBaseType instanceof EnumType) ? new EnumTemplateData(nativeType) : null;
             sqlTypeData = new SqlTypeTemplateData(sqlNativeTypeMapper, field);
         }
 
@@ -221,7 +219,8 @@ public class SqlTableEmitterTemplateData extends UserTypeTemplateData
             public SqlTypeTemplateData(SqlNativeTypeMapper sqlNativeTypeMapper, Field field)
                     throws ZserioEmitException
             {
-                final SqlNativeType sqlNativeType = sqlNativeTypeMapper.getSqlType(field.getFieldType());
+                final SqlNativeType sqlNativeType = sqlNativeTypeMapper.getSqlType(
+                        field.getTypeInstantiation().getTypeReference());
                 name = sqlNativeType.getFullName();
                 isBlob = sqlNativeType instanceof NativeBlobType;
             }

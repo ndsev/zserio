@@ -1,7 +1,5 @@
 package zserio.ast;
 
-import java.util.List;
-
 import zserio.tools.StringJoinUtil;
 
 /**
@@ -18,7 +16,7 @@ public class ZserioTypeUtil
      */
     public static String getFullName(ZserioType type)
     {
-        if (ZserioTypeUtil.isBuiltIn(type))
+        if (type instanceof BuiltInType)
             return type.getName();
 
         return StringJoinUtil.joinStrings(type.getPackage().getPackageName().toString(), type.getName(),
@@ -26,46 +24,16 @@ public class ZserioTypeUtil
     }
 
     /**
-     * Checks if given type is build-in type (int8, int8[], int16, int16[], etc...).
+     * Return the full zserio name as is referenced in the type reference.
      *
-     * @param type Zserio type to check.
+     * @param typeReference Type reference.
      *
-     * @return true if given type is build-in type, otherwise false.
+     * @return Full zserio name.
      */
-    public static boolean isBuiltIn(ZserioType type)
-    {
-        return type instanceof BuiltInType ||
-               (type instanceof ArrayType && TypeReference.resolveBaseType(
-                        ((ArrayType)type).getElementType()) instanceof BuiltInType);
-    }
-
-    /**
-     * Instantiate the zserio type. This is a helper to handle different ways of zserio types referencing.
-     *
-     * @param templateParameters Template parameters.
-     * @param templateArguments Template arguments.
-     *
-     * @return New zserio type instantiated from this using the given template arguments.
-     */
-    static ZserioType instantiate(ZserioType zserioType, List<TemplateParameter> templateParameters,
-            List<ZserioType> templateArguments)
-    {
-        if (zserioType instanceof ArrayType)
-            return ((ArrayType)zserioType).instantiate(templateParameters, templateArguments);
-        else if (zserioType instanceof TypeInstantiation)
-            return ((TypeInstantiation)zserioType).instantiate(templateParameters, templateArguments);
-        else if (zserioType instanceof TypeReference)
-            return ((TypeReference)zserioType).instantiate(templateParameters, templateArguments);
-        else if (zserioType instanceof BitFieldType)
-            return ((BitFieldType)zserioType).instantiate(templateParameters, templateArguments);
-        else
-            return zserioType;
-    }
-
     static String getReferencedFullName(TypeReference typeReference)
     {
         return StringJoinUtil.joinStrings(typeReference.getReferencedPackageName().toString(),
-                typeReference.getName(), FULL_NAME_SEPARATOR);
+                typeReference.getReferencedTypeName(), FULL_NAME_SEPARATOR);
     }
 
     private static final String FULL_NAME_SEPARATOR = ".";

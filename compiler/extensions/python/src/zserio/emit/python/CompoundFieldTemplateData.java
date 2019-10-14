@@ -25,34 +25,36 @@ import zserio.emit.python.types.PythonNativeType;
 public final class CompoundFieldTemplateData
 {
     public CompoundFieldTemplateData(PythonNativeTypeMapper pythonNativeTypeMapper, boolean withRangeCheckCode,
-            CompoundType parentType, Field fieldType, ExpressionFormatter pythonExpressionFormatter,
+            CompoundType parentType, Field field, ExpressionFormatter pythonExpressionFormatter,
             ImportCollector importCollector) throws ZserioEmitException
     {
-        name = fieldType.getName();
+        name = field.getName();
 
-        final ZserioType baseType = TypeReference.resolveBaseType(fieldType.getFieldType());
-        final PythonNativeType nativeType = pythonNativeTypeMapper.getPythonType(baseType);
+        final TypeInstantiation fieldTypeInstantiation = field.getTypeInstantiation();
+        final TypeReference fieldTypeReference = fieldTypeInstantiation.getTypeReference();
+        final ZserioType fieldBaseType = fieldTypeReference.getBaseType();
+        final PythonNativeType nativeType = pythonNativeTypeMapper.getPythonType(fieldTypeReference);
         importCollector.importType(nativeType);
         pythonTypeName = nativeType.getFullName();
 
-        getterName = AccessorNameFormatter.getGetterName(fieldType);
-        setterName = AccessorNameFormatter.getSetterName(fieldType);
+        getterName = AccessorNameFormatter.getGetterName(field);
+        setterName = AccessorNameFormatter.getSetterName(field);
 
-        rangeCheck = createRangeCheck(baseType, withRangeCheckCode, pythonExpressionFormatter);
-        optional = createOptional(fieldType, pythonExpressionFormatter);
+        rangeCheck = createRangeCheck(fieldBaseType, withRangeCheckCode, pythonExpressionFormatter);
+        optional = createOptional(field, pythonExpressionFormatter);
 
-        alignmentValue = createAlignmentValue(fieldType, pythonExpressionFormatter);
-        initializer = createInitializer(fieldType, pythonExpressionFormatter);
-        constraint = createConstraint(fieldType, pythonExpressionFormatter);
+        alignmentValue = createAlignmentValue(field, pythonExpressionFormatter);
+        initializer = createInitializer(field, pythonExpressionFormatter);
+        constraint = createConstraint(field, pythonExpressionFormatter);
 
         usesChoiceMember = (parentType instanceof ChoiceType) || (parentType instanceof UnionType);
 
-        bitSize = new BitSize(baseType, pythonExpressionFormatter);
-        offset = createOffset(fieldType, pythonExpressionFormatter);
-        array = createArray(nativeType, baseType, pythonNativeTypeMapper, pythonExpressionFormatter,
+        bitSize = new BitSize(fieldBaseType, pythonExpressionFormatter);
+        offset = createOffset(field, pythonExpressionFormatter);
+        array = createArray(nativeType, fieldBaseType, pythonNativeTypeMapper, pythonExpressionFormatter,
                 importCollector);
-        runtimeFunction = PythonRuntimeFunctionDataCreator.createData(baseType, pythonExpressionFormatter);
-        compound = createCompound(pythonExpressionFormatter, baseType);
+        runtimeFunction = PythonRuntimeFunctionDataCreator.createData(fieldBaseType, pythonExpressionFormatter);
+        compound = createCompound(pythonExpressionFormatter, fieldTypeInstantiation);
     }
 
     public String getName()
@@ -289,7 +291,7 @@ public final class CompoundFieldTemplateData
 
     public static class Array
     {
-        public Array(NativeArrayType nativeType, ArrayType baseType,
+        public Array(NativeArrayType nativeType, ArrayType arrayType,
                 PythonNativeTypeMapper pythonNativeTypeMapper, ExpressionFormatter pythonExpressionFormatter,
                 ImportCollector importCollector) throws ZserioEmitException
         {
@@ -297,15 +299,18 @@ public final class CompoundFieldTemplateData
             requiresElementBitSize = nativeType.getRequiresElementBitSize();
             requiresElementCreator = nativeType.getRequiresElementCreator();
 
-            isImplicit = baseType.isImplicit();
-            length = createLength(baseType, pythonExpressionFormatter);
+            isImplicit = arrayType.isImplicit();
+            length = createLength(arrayType, pythonExpressionFormatter);
 
-            final ZserioType elementType = TypeReference.resolveBaseType(baseType.getElementType());
-            final PythonNativeType elementNativeType = pythonNativeTypeMapper.getPythonType(elementType);
+            final TypeInstantiation elementTypeInstantiation = arrayType.getElementTypeInstantiation();
+            final TypeReference elementTypeReference = elementTypeInstantiation.getTypeReference();
+            final ZserioType elementBaseType = elementTypeReference.getBaseType();
+            final PythonNativeType elementNativeType =
+                    pythonNativeTypeMapper.getPythonType(elementTypeReference);
             importCollector.importType(elementNativeType);
             elementPythonTypeName = elementNativeType.getFullName();
-            elementBitSize = new BitSize(elementType, pythonExpressionFormatter);
-            elementCompound = createCompound(pythonExpressionFormatter, elementType);
+            elementBitSize = new BitSize(elementBaseType, pythonExpressionFormatter);
+            elementCompound = createCompound(pythonExpressionFormatter, elementTypeInstantiation);
         }
 
         public String getTraitsName()
@@ -451,42 +456,42 @@ public final class CompoundFieldTemplateData
         return null;
     }
 
-    private static Optional createOptional(Field fieldType, ExpressionFormatter pythonExpressionFormatter)
+    private static Optional createOptional(Field field, ExpressionFormatter pythonExpressionFormatter)
             throws ZserioEmitException
     {
-        if (!fieldType.getIsOptional())
+        if (!field.isOptional())
             return null;
 
-        final Expression optionalClauseExpression = fieldType.getOptionalClauseExpr();
-        final String indicatorName = AccessorNameFormatter.getIndicatorName(fieldType);
+        final Expression optionalClauseExpression = field.getOptionalClauseExpr();
+        final String indicatorName = AccessorNameFormatter.getIndicatorName(field);
 
         return new Optional(optionalClauseExpression, indicatorName, pythonExpressionFormatter);
     }
 
-    private static String createAlignmentValue(Field fieldType, ExpressionFormatter pythonExpressionFormatter)
+    private static String createAlignmentValue(Field field, ExpressionFormatter pythonExpressionFormatter)
             throws ZserioEmitException
     {
-        final Expression alignmentExpression = fieldType.getAlignmentExpr();
+        final Expression alignmentExpression = field.getAlignmentExpr();
         if (alignmentExpression == null)
             return null;
 
         return pythonExpressionFormatter.formatGetter(alignmentExpression);
     }
 
-    private static String createInitializer(Field fieldType, ExpressionFormatter pythonExpressionFormatter)
+    private static String createInitializer(Field field, ExpressionFormatter pythonExpressionFormatter)
             throws ZserioEmitException
     {
-        final Expression initializerExpression = fieldType.getInitializerExpr();
+        final Expression initializerExpression = field.getInitializerExpr();
         if (initializerExpression == null)
             return null;
 
         return pythonExpressionFormatter.formatGetter(initializerExpression);
     }
 
-    private static String createConstraint(Field fieldType, ExpressionFormatter pythonExpressionFormatter)
+    private static String createConstraint(Field field, ExpressionFormatter pythonExpressionFormatter)
             throws ZserioEmitException
     {
-        final Expression constraintExpression = fieldType.getConstraintExpr();
+        final Expression constraintExpression = field.getConstraintExpr();
         if (constraintExpression == null)
             return null;
 
@@ -518,13 +523,11 @@ public final class CompoundFieldTemplateData
                 pythonExpressionFormatter, importCollector);
     }
 
-    private static Compound createCompound(ExpressionFormatter pythonExpressionFormatter, ZserioType baseType)
-                    throws ZserioEmitException
+    private static Compound createCompound(ExpressionFormatter pythonExpressionFormatter,
+            TypeInstantiation fieldTypeInstantiation) throws ZserioEmitException
     {
-        if (baseType instanceof CompoundType)
-            return new Compound((CompoundType)baseType);
-        else if (baseType instanceof TypeInstantiation)
-            return new Compound(pythonExpressionFormatter, (TypeInstantiation)baseType);
+        if (fieldTypeInstantiation.getTypeReference().getBaseType() instanceof CompoundType)
+            return new Compound(pythonExpressionFormatter, fieldTypeInstantiation);
         else
             return null;
     }

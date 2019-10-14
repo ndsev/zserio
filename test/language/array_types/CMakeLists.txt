@@ -19,6 +19,16 @@ set(ZSERIO_GENERATED_SOURCES
     ${ZSERIO_GEN_DIR}/array_types/implicit_array/ImplicitArray.cpp
     ${ZSERIO_GEN_DIR}/array_types/implicit_array/ImplicitArray.h
 
+    ${ZSERIO_GEN_DIR}/array_types/subtyped_builtin_auto_array/ArrayElement.h
+    ${ZSERIO_GEN_DIR}/array_types/subtyped_builtin_auto_array/SubtypedBuiltinAutoArray.cpp
+    ${ZSERIO_GEN_DIR}/array_types/subtyped_builtin_auto_array/SubtypedBuiltinAutoArray.h
+
+    ${ZSERIO_GEN_DIR}/array_types/subtyped_struct_variable_array/ArrayElement.h
+    ${ZSERIO_GEN_DIR}/array_types/subtyped_struct_variable_array/SubtypedStructVariableArray.cpp
+    ${ZSERIO_GEN_DIR}/array_types/subtyped_struct_variable_array/SubtypedStructVariableArray.h
+    ${ZSERIO_GEN_DIR}/array_types/subtyped_struct_variable_array/TestStructure.cpp
+    ${ZSERIO_GEN_DIR}/array_types/subtyped_struct_variable_array/TestStructure.h
+
     ${ZSERIO_GEN_DIR}/array_types/variable_array/VariableArray.cpp
     ${ZSERIO_GEN_DIR}/array_types/variable_array/VariableArray.h
     ${ZSERIO_GEN_DIR}/array_types/variable_array/TestStructure.cpp
@@ -40,6 +50,8 @@ add_test_sources(
     ${ZSERIO_CPP_DIR}/AutoArrayTest.cpp
     ${ZSERIO_CPP_DIR}/FixedArrayTest.cpp
     ${ZSERIO_CPP_DIR}/ImplicitArrayTest.cpp
+    ${ZSERIO_CPP_DIR}/SubtypedBuiltinAutoArrayTest.cpp
+    ${ZSERIO_CPP_DIR}/SubtypedStructVariableArrayTest.cpp
     ${ZSERIO_CPP_DIR}/VariableArrayTest.cpp
 )
 

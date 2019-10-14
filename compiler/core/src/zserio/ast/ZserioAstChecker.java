@@ -57,7 +57,7 @@ public class ZserioAstChecker extends ZserioAstWalker
     {
         subtype.visitChildren(this);
         definedTypes.add(subtype);
-        addUsedType(subtype.getTargetType());
+        addUsedType(subtype.getTypeReference().getType());
     }
 
     @Override
@@ -150,17 +150,10 @@ public class ZserioAstChecker extends ZserioAstWalker
     }
 
     @Override
-    public void visitFunctionType(FunctionType functionType)
+    public void visitFunction(Function function)
     {
-        functionType.visitChildren(this);
-        functionType.check();
-    }
-
-    @Override
-    public void visitArrayType(ArrayType arrayType)
-    {
-        arrayType.visitChildren(this);
-        arrayType.check();
+        function.visitChildren(this);
+        function.check();
     }
 
     @Override
@@ -174,8 +167,14 @@ public class ZserioAstChecker extends ZserioAstWalker
     public void visitTypeReference(TypeReference typeReference)
     {
         typeReference.visitChildren(this);
-        addUsedType(typeReference.getReferencedType());
-        typeReference.check();
+        addUsedType(typeReference.getType());
+    }
+
+    @Override
+    public void visitArrayType(ArrayType arrayType)
+    {
+        arrayType.visitChildren(this);
+        arrayType.check();
     }
 
     private void visitInstantiations(ZserioTemplatableType template)
@@ -195,9 +194,8 @@ public class ZserioAstChecker extends ZserioAstWalker
 
     private void addUsedType(ZserioType usedType)
     {
-        final ZserioType referencedType = TypeReference.resolveType(usedType);
-        if (!ZserioTypeUtil.isBuiltIn(referencedType))
-            usedTypeNames.add(ZserioTypeUtil.getFullName(referencedType));
+        if (!(usedType instanceof BuiltInType))
+            usedTypeNames.add(ZserioTypeUtil.getFullName(usedType));
     }
 
     private final boolean checkUnusedTypes;

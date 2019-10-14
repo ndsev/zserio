@@ -28,7 +28,7 @@ public class StructureType extends CompoundType
      */
     public StructureType(AstLocation location, Package pkg, String name,
             List<TemplateParameter> templateParameters, List<Parameter> typeParameters, List<Field> fields,
-            List<FunctionType> functions, DocComment docComment)
+            List<Function> functions, DocComment docComment)
     {
         super(location, pkg, name, templateParameters, typeParameters, fields, functions, docComment);
     }
@@ -40,7 +40,7 @@ public class StructureType extends CompoundType
     }
 
     @Override
-    StructureType instantiateImpl(String name, List<ZserioType> templateArguments)
+    StructureType instantiateImpl(String name, List<TypeReference> templateArguments)
     {
         final List<Parameter> instantiatedTypeParameters = new ArrayList<Parameter>();
         for (Parameter typeParameter : getTypeParameters())
@@ -53,8 +53,8 @@ public class StructureType extends CompoundType
         for (Field field : getFields())
             instantiatedFields.add(field.instantiate(getTemplateParameters(), templateArguments));
 
-        final List<FunctionType> instantiatedFunctions = new ArrayList<FunctionType>();
-        for (FunctionType function : getFunctions())
+        final List<Function> instantiatedFunctions = new ArrayList<Function>();
+        for (Function function : getFunctions())
             instantiatedFunctions.add(function.instantiate(getTemplateParameters(), templateArguments));
 
         return new StructureType(getLocation(), getPackage(), name, new ArrayList<TemplateParameter>(),
@@ -89,13 +89,16 @@ public class StructureType extends CompoundType
         final int numFields = fields.size();
         for (int i = 0; i < numFields; ++i)
         {
-            final ZserioType fieldType = fields.get(i).getFieldType();
-            if (fieldType instanceof ArrayType)
+            final Field field = fields.get(i);
+            final ZserioType fieldBaseType = field.getTypeInstantiation().getTypeReference().getBaseType();
+            if (fieldBaseType instanceof ArrayType)
             {
-                final ArrayType arrayField = (ArrayType)fieldType;
-                if (arrayField.isImplicit() && i != (numFields - 1))
-                    throw new ParserException(arrayField, "Implicit array must be defined at the end " +
-                            "of structure!");
+                final ArrayType fieldArrayType = (ArrayType)fieldBaseType;
+                if (fieldArrayType.isImplicit() && i != (numFields - 1))
+                {
+                    throw new ParserException(field,
+                            "Implicit array must be defined at the end of structure!");
+                }
             }
         }
     }
@@ -109,7 +112,7 @@ public class StructureType extends CompoundType
         Field referencedOptionalField = null;
         for (Field referencedField : referencedFields)
         {
-            if (referencedField.getIsOptional())
+            if (referencedField.isOptional())
             {
                 if (referencedOptionalField == null)
                 {
@@ -126,7 +129,7 @@ public class StructureType extends CompoundType
         if (referencedOptionalField != null)
         {
             // there is at least one parameter which is optional field
-            if (!field.getIsOptional())
+            if (!field.isOptional())
             {
                 // but this field is not optional => ERROR
                 throw new ParserException(field, "Parameterized field '" + field.getName() +
@@ -149,7 +152,7 @@ public class StructureType extends CompoundType
     private static Set<Field> getReferencedParameterFields(Field field)
     {
         final Iterable<TypeInstantiation.InstantiatedParameter> instantiatedParameters =
-                field.getInstantiatedParameters();
+                field.getTypeInstantiation().getInstantiatedParameters();
         final Set<Field> referencedFields = new HashSet<Field>();
         for (TypeInstantiation.InstantiatedParameter instantiatedParameter : instantiatedParameters)
         {

@@ -37,7 +37,7 @@ class ArrayLengthofConstraintTest(unittest.TestCase):
 
     def testWriteCorrectConstraints(self):
         arrayLengthofConstraint = self.api.ArrayLengthofConstraint()
-        arrayLengthofConstraint.setArray([i for i in range(self.CORRECT_LENGTH)])
+        arrayLengthofConstraint.setArray(list(range(self.CORRECT_LENGTH)))
 
         writer = zserio.BitStreamWriter()
         arrayLengthofConstraint.write(writer)
@@ -48,7 +48,7 @@ class ArrayLengthofConstraintTest(unittest.TestCase):
 
     def testWriteWrongLengthLess(self):
         arrayLengthofConstraint = self.api.ArrayLengthofConstraint()
-        arrayLengthofConstraint.setArray([i for i in range(self.WRONG_LENGTH_LESS)])
+        arrayLengthofConstraint.setArray(list(range(self.WRONG_LENGTH_LESS)))
 
         writer = zserio.BitStreamWriter()
         with self.assertRaises(zserio.PythonRuntimeException):
@@ -56,7 +56,7 @@ class ArrayLengthofConstraintTest(unittest.TestCase):
 
     def testWriteWrongLengthGreater(self):
         arrayLengthofConstraint = self.api.ArrayLengthofConstraint()
-        arrayLengthofConstraint.setArray([i for i in range(self.WRONG_LENGTH_GREATER)])
+        arrayLengthofConstraint.setArray(list(range(self.WRONG_LENGTH_GREATER)))
 
         writer = zserio.BitStreamWriter()
         with self.assertRaises(zserio.PythonRuntimeException):

@@ -141,9 +141,9 @@ public interface ZserioAstVisitor
     /**
      * Visits function definition.
      *
-     * @param functionType Function AST node.
+     * @param function Function AST node.
      */
-    void visitFunctionType(FunctionType functionType);
+    void visitFunction(Function function);
 
     /**
      * Visits parameter definition.
@@ -160,11 +160,11 @@ public interface ZserioAstVisitor
     void visitExpression(Expression expresssion);
 
     /**
-     * Visits array definition.
+     * Visits type reference.
      *
-     * @param arrayType Array AST node.
+     * @param typeReference Type reference AST node.
      */
-    void visitArrayType(ArrayType arrayType);
+    void visitTypeReference(TypeReference typeReference);
 
     /**
      * Visits type instantiation.
@@ -174,11 +174,11 @@ public interface ZserioAstVisitor
     void visitTypeInstantiation(TypeInstantiation typeInstantiation);
 
     /**
-     * Visits type reference.
+     * Visits array type.
      *
-     * @param typeReference Type reference AST node.
+     * @param arrayType Array type AST node.
      */
-    void visitTypeReference(TypeReference typeReference);
+    void visitArrayType(ArrayType arrayType);
 
     /**
      * Visits reference to built-in standard integer type.

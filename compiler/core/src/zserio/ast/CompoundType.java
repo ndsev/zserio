@@ -27,7 +27,7 @@ public abstract class CompoundType extends TemplatableType implements Comparable
      * @param docComment Documentation comment belonging to this node.
      */
     CompoundType(AstLocation location, Package pkg, String name, List<TemplateParameter> templateParameters,
-            List<Parameter> typeParameters, List<Field> fields, List<FunctionType> functions,
+            List<Parameter> typeParameters, List<Field> fields, List<Function> functions,
             DocComment docComment)
     {
         super(location, templateParameters, docComment);
@@ -50,7 +50,7 @@ public abstract class CompoundType extends TemplatableType implements Comparable
         for (Field field : fields)
             field.accept(visitor);
 
-        for (FunctionType function : functions)
+        for (Function function : functions)
             function.accept(visitor);
     }
 
@@ -135,11 +135,13 @@ public abstract class CompoundType extends TemplatableType implements Comparable
      *
      * @return List of functions which this compound type contains.
      */
-    public List<FunctionType> getFunctions()
+    public List<Function> getFunctions()
     {
         return Collections.unmodifiableList(functions);
     }
 
+    // TODO[Mi-L@] These methods should not be part of this AST node. Move to some utilities or let generators
+    //             to make it by themselves.
     /**
      * Checks if this compound type needs children initialization method.
      *
@@ -152,7 +154,12 @@ public abstract class CompoundType extends TemplatableType implements Comparable
     {
         for (Field field : fields)
         {
-            final ZserioType fieldBaseType = TypeReference.resolveBaseType(field.getFieldReferencedType());
+            ZserioType fieldBaseType = field.getTypeInstantiation().getTypeReference().getBaseType();
+            if (fieldBaseType instanceof ArrayType)
+            {
+                final ArrayType arrayType = (ArrayType)fieldBaseType;
+                fieldBaseType = arrayType.getElementTypeInstantiation().getTypeReference().getBaseType();
+            }
             if (fieldBaseType instanceof CompoundType)
             {
                 final CompoundType childCompoundType = (CompoundType)fieldBaseType;
@@ -178,7 +185,12 @@ public abstract class CompoundType extends TemplatableType implements Comparable
             if (field.getOffsetExpr() != null)
                 return true;
 
-            final ZserioType fieldBaseType = TypeReference.resolveBaseType(field.getFieldReferencedType());
+            ZserioType fieldBaseType = field.getTypeInstantiation().getTypeReference().getBaseType();
+            if (fieldBaseType instanceof ArrayType)
+            {
+                final ArrayType arrayType = (ArrayType)fieldBaseType;
+                fieldBaseType = arrayType.getElementTypeInstantiation().getTypeReference().getBaseType();
+            }
             if (fieldBaseType instanceof CompoundType)
             {
                 final CompoundType childCompoundType = (CompoundType)fieldBaseType;
@@ -208,7 +220,12 @@ public abstract class CompoundType extends TemplatableType implements Comparable
         // check if fields are not sql tables
         for (Field field : fields)
         {
-            final ZserioType fieldBaseType = TypeReference.resolveBaseType(field.getFieldReferencedType());
+            ZserioType fieldBaseType = field.getTypeInstantiation().getTypeReference().getBaseType();
+            if (fieldBaseType instanceof ArrayType)
+            {
+                final ArrayType arrayType = (ArrayType)fieldBaseType;
+                fieldBaseType = arrayType.getElementTypeInstantiation().getTypeReference().getBaseType();
+            }
             if (fieldBaseType instanceof SqlTableType)
                 throw new ParserException(field, "Field '" + field.getName() +
                         "' cannot be a sql table!");
@@ -220,14 +237,10 @@ public abstract class CompoundType extends TemplatableType implements Comparable
         // check recursive fields which are not arrays
         for (Field field : fields)
         {
-            if (!field.getIsOptional())
+            final ZserioType fieldBaseType = field.getTypeInstantiation().getTypeReference().getBaseType();
+            if (!field.isOptional() && !(fieldBaseType instanceof ArrayType))
             {
-                ZserioType fieldType = field.getFieldType();
-                if (fieldType instanceof TypeInstantiation)
-                    fieldType = ((TypeInstantiation)fieldType).getReferencedType();
-                fieldType = TypeReference.resolveBaseType(fieldType);
-
-                if (fieldType == this)
+                if (fieldBaseType == this)
                 {
                     // this field is not array or optional and it is recursive
                     throw new ParserException(field, "Field '" + field.getName() +
@@ -241,7 +254,12 @@ public abstract class CompoundType extends TemplatableType implements Comparable
     {
         for (Field field : inner.fields)
         {
-            final ZserioType fieldBaseType = TypeReference.resolveBaseType(field.getFieldReferencedType());
+            ZserioType fieldBaseType = field.getTypeInstantiation().getTypeReference().getBaseType();
+            if (fieldBaseType instanceof ArrayType)
+            {
+                final ArrayType arrayType = (ArrayType)fieldBaseType;
+                fieldBaseType = arrayType.getElementTypeInstantiation().getTypeReference().getBaseType();
+            }
             if (fieldBaseType instanceof CompoundType)
             {
                 final CompoundType childCompoundType = (CompoundType)fieldBaseType;
@@ -261,5 +279,5 @@ public abstract class CompoundType extends TemplatableType implements Comparable
 
     private final List<Field> fields;
     private final List<Parameter> typeParameters;
-    private final List<FunctionType> functions;
+    private final List<Function> functions;
 }

@@ -14,7 +14,7 @@ public final class ConstEmitterTemplateData extends UserTypeTemplateData
         final JavaNativeTypeMapper javaNativeTypeMapper = context.getJavaNativeTypeMapper();
         final ExpressionFormatter javaExpressionFormatter = context.getJavaExpressionFormatter();
 
-        final JavaNativeType nativeTargetType = javaNativeTypeMapper.getJavaType(constType.getConstType());
+        final JavaNativeType nativeTargetType = javaNativeTypeMapper.getJavaType(constType.getTypeReference());
         javaTypeName = nativeTargetType.getFullName();
 
         value = javaExpressionFormatter.formatGetter(constType.getValueExpression());

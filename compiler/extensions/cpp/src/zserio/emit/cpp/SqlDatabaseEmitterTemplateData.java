@@ -3,11 +3,11 @@ package zserio.emit.cpp;
 import java.util.ArrayList;
 import java.util.List;
 
+import zserio.ast.TypeReference;
 import zserio.ast.ZserioType;
 import zserio.ast.Field;
 import zserio.ast.SqlDatabaseType;
 import zserio.ast.SqlTableType;
-import zserio.ast.TypeReference;
 import zserio.emit.common.ZserioEmitException;
 import zserio.emit.cpp.types.CppNativeType;
 
@@ -35,13 +35,15 @@ public class SqlDatabaseEmitterTemplateData extends UserTypeTemplateData
         public DatabaseField(CppNativeTypeMapper cppNativeTypeMapper, Field field,
                 IncludeCollector includeCollector) throws ZserioEmitException
         {
-            final CppNativeType nativeFieldType = cppNativeTypeMapper.getCppType(field.getFieldType());
+            final TypeReference fieldTypeReference = field.getTypeInstantiation().getTypeReference();
+            final ZserioType fieldBaseType = fieldTypeReference.getBaseType();
+
+            final CppNativeType nativeFieldType = cppNativeTypeMapper.getCppType(fieldTypeReference);
             includeCollector.addHeaderIncludesForType(nativeFieldType);
 
             name = field.getName();
             cppTypeName = nativeFieldType.getFullName();
             getterName = AccessorNameFormatter.getGetterName(field);
-            final ZserioType fieldBaseType = TypeReference.resolveBaseType(field.getFieldType());
             isWithoutRowIdTable = (fieldBaseType instanceof SqlTableType) ?
                     ((SqlTableType)fieldBaseType).isWithoutRowId() : false;
         }

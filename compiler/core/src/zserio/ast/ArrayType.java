@@ -2,30 +2,29 @@ package zserio.ast;
 
 import java.util.List;
 
-
 /**
- * AST node for Array types.
+ * AST node for array types.
  *
  * Array types are Zserio types as well.
  */
-public class ArrayType extends AstNodeBase implements ZserioType
+public class ArrayType extends BuiltInType
 {
     /**
-     * Constructor.
+     * Array type
      *
-     * @param location         AST node location.
-     * @param elementType      Zserio type of the array element.
-     * @param lengthExpression Length expression associated to the array.
-     * @param isImplicit       True for implicit arrays.
+     * @param location                 AST node location.
+     * @param elementTypeInstantiation Instantiation of the element type.
+     * @param isImplicit               Whether this is an implicit array.
+     * @param lengthExpression         Length expression.
      */
-    public ArrayType(AstLocation location, ZserioType elementType, Expression lengthExpression,
-            boolean isImplicit)
+    public ArrayType(AstLocation location, TypeInstantiation elementTypeInstantiation, boolean isImplicit,
+            Expression lengthExpression)
     {
-        super(location);
+        super(location, "[]");
 
-        this.elementType = elementType;
-        this.lengthExpression = lengthExpression;
+        this.elementTypeInstantiation = elementTypeInstantiation;
         this.isImplicit = isImplicit;
+        this.lengthExpression = lengthExpression;
     }
 
     @Override
@@ -37,47 +36,27 @@ public class ArrayType extends AstNodeBase implements ZserioType
     @Override
     public void visitChildren(ZserioAstVisitor visitor)
     {
-        elementType.accept(visitor);
+        elementTypeInstantiation.accept(visitor);
         if (lengthExpression != null)
             lengthExpression.accept(visitor);
     }
 
-    @Override
-    public Package getPackage()
-    {
-        return elementBaseType.getPackage();
-    }
-
-    @Override
-    public String getName()
-    {
-        return elementBaseType.getName() + "[]";
-    }
-
     /**
-     * Gets unresolved Zserio type of this array element.
+     * Gets instantiation of the element type.
      *
-     * @return Unresolved Zserio type of this array element.
+     * @return Type instantiation.
      */
-    public ZserioType getElementType()
+    public TypeInstantiation getElementTypeInstantiation()
     {
-        return elementType;
+        return elementTypeInstantiation;
     }
 
     /**
-     * Gets expression which represents array length.
+     * Gets whether the array is an implicit array.
      *
-     * @return Array length expression or null if this array is implicit.
-     */
-    public Expression getLengthExpression()
-    {
-        return lengthExpression;
-    }
-
-    /**
-     * Checks if the array is implicit.
+     * \note Implicit arrays have no length expression.
      *
-     * @return true if the array is implicit, otherwise false.
+     * @return True if the array is implicit, false otherwise.
      */
     public boolean isImplicit()
     {
@@ -85,12 +64,13 @@ public class ArrayType extends AstNodeBase implements ZserioType
     }
 
     /**
-     * Evaluates the array type.
+     * Gets length expression.
+     *
+     * @return Array length expression or null when this is an implicit or auto array.
      */
-    void evaluate()
+    public Expression getLengthExpression()
     {
-        // resolve element base type
-        elementBaseType = TypeReference.resolveBaseType(elementType);
+        return lengthExpression;
     }
 
     /**
@@ -102,33 +82,32 @@ public class ArrayType extends AstNodeBase implements ZserioType
         if (lengthExpression != null)
         {
             if (lengthExpression.getExprType() != Expression.ExpressionType.INTEGER)
+            {
                 throw new ParserException(lengthExpression,
                         "Invalid length expression for array. Length must be integer!");
+            }
         }
     }
 
     /**
-     * Instantiate the array type.
+     * Instantiate the field.
      *
      * @param templateParameters Template parameters.
      * @param templateArguments Template arguments.
      *
-     * @return New array type instantiated from this using the given template arguments.
+     * @return New field instantiated from this using the given template arguments.
      */
-    ArrayType instantiate(List<TemplateParameter> templateParameters, List<ZserioType> templateArguments)
+    ArrayType instantiate(List<TemplateParameter> templateParameters, List<TypeReference> templateArguments)
     {
-        final ZserioType instantiatedElementType =
-                ZserioTypeUtil.instantiate(elementType, templateParameters, templateArguments);
-
-        final Expression instantiatedLengthExpression = lengthExpression == null ? null :
-                lengthExpression.instantiate(templateParameters, templateArguments);
-
-        return new ArrayType(getLocation(), instantiatedElementType, instantiatedLengthExpression, isImplicit);
+        final TypeInstantiation instantiatedElementTypeInstantiation =
+                elementTypeInstantiation.instantiate(templateParameters, templateArguments);
+        final Expression instantiatedLengthExpression = getLengthExpression() == null ? null :
+                getLengthExpression().instantiate(templateParameters, templateArguments);
+        return new ArrayType(getLocation(), instantiatedElementTypeInstantiation, isImplicit,
+                instantiatedLengthExpression);
     }
 
-    private final ZserioType elementType;
-    private final Expression lengthExpression;
-    private final boolean isImplicit;
-
-    private ZserioType elementBaseType = null;
+    final TypeInstantiation elementTypeInstantiation;
+    final boolean isImplicit;
+    final Expression lengthExpression;
 }

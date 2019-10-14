@@ -84,8 +84,7 @@ public class SubtypeEmitter extends DefaultHtmlEmitter
         if (subtype == null)
             throw new RuntimeException("getTargetType() called before emit()!");
 
-        ZserioType targetType = subtype.getTargetType();
-        LinkedType linkedType = new LinkedType(targetType);
+        LinkedType linkedType = new LinkedType(subtype.getTypeReference());
         return linkedType;
     }
 

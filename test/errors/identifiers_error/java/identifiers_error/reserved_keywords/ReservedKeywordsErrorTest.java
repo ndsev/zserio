@@ -52,9 +52,12 @@ public class ReservedKeywordsErrorTest
     @Test
     public void zserioKeywordFieldName()
     {
-        final String error = "zserio_keyword_field_name_error.zs:6:11: " +
-                "mismatched input 'varint' expecting ID ('varint' is a reserved keyword)!";
-        assertTrue(zserioErrors.isPresent(error));
+        final String errors[] =
+        {
+            "zserio_keyword_field_name_error.zs:6:11: mismatched input 'varint' expecting {", // ...
+            "zserio_keyword_field_name_error.zs:6:11: 'varint' is a reserved keyword!"
+        };
+        assertTrue(zserioErrors.isPresent(errors));
     }
 
     private static ZserioErrors zserioErrors;

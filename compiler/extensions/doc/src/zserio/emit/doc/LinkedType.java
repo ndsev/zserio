@@ -1,10 +1,11 @@
 package zserio.emit.doc;
 
 import zserio.ast.ArrayType;
+import zserio.ast.AstNode;
+import zserio.ast.BuiltInType;
 import zserio.ast.ChoiceType;
 import zserio.ast.ConstType;
 import zserio.ast.ServiceType;
-import zserio.ast.ZserioTypeUtil;
 import zserio.ast.EnumType;
 import zserio.ast.StructureType;
 import zserio.ast.SqlDatabaseType;
@@ -24,88 +25,98 @@ public class LinkedType
     private String category = "";
 
 
-    public LinkedType(ZserioType type)
+    public LinkedType(AstNode node)
     {
-        this.type = type;
         this.isDoubleDefinedType = false;
-        init();
+        init(node);
     }
 
-    public LinkedType(ZserioType type, boolean isDoubleDefinedType)
+    public LinkedType(AstNode node, boolean isDoubleDefinedType)
     {
-        this.type = type;
         this.isDoubleDefinedType = isDoubleDefinedType;
-        init();
+        init(node);
     }
 
-    private void init()
+    private void init(AstNode node)
     {
-        while (type instanceof ArrayType)
+        if (node instanceof TypeInstantiation)
         {
-            type = TypeReference.resolveBaseType(((ArrayType) type).getElementType());
+            final TypeInstantiation inst = (TypeInstantiation)node;
+            node = (inst.getInstantiatedParameters().isEmpty()) ? inst.getTypeReference().getType() : inst;
+            if (node instanceof ArrayType)
+            {
+                final TypeInstantiation arrayElementInst = ((ArrayType)node).getElementTypeInstantiation();
+                node = (arrayElementInst.getInstantiatedParameters().isEmpty()) ?
+                        arrayElementInst.getTypeReference().getType() : arrayElementInst;
+            }
+        }
+
+        while (node instanceof ArrayType)
+        {
+            node = ((ArrayType) node).getElementTypeInstantiation().getTypeReference().getBaseType();
             style = "arrayLink";
             category += "array of ";
         }
 
-        if (ZserioTypeUtil.isBuiltIn(type))
+        if (node instanceof BuiltInType)
         {
             style = "noStyle";
         }
         else
         {
-            // generate styles depending on the field type
+            // generate styles depending on the ast node
 
-            if (type instanceof StructureType)
+            if (node instanceof StructureType)
             {
                 style = "structureLink";
                 category += createTitle("Structure");
             }
-            else if (type instanceof ChoiceType)
+            else if (node instanceof ChoiceType)
             {
                 style = "choiceLink";
                 category += createTitle("Choice");
             }
-            else if (type instanceof UnionType)
+            else if (node instanceof UnionType)
             {
                 style = "unionLink";
                 category += createTitle("Union");
             }
-            else if (type instanceof EnumType)
+            else if (node instanceof EnumType)
             {
                 style = "enumLink";
                 category += createTitle("Enum");
             }
-            else if (type instanceof Subtype)
+            else if (node instanceof Subtype)
             {
                 style = "subtypeLink";
                 category += createTitle("Subtype");
             }
-            else if (type instanceof ConstType)
+            else if (node instanceof ConstType)
             {
                 style = "consttypeLink";
                 category += createTitle("Consttype");
             }
-            else if (type instanceof SqlTableType)
+            else if (node instanceof SqlTableType)
             {
                 style = "sqlTableLink";
                 category += createTitle("SQL Table");
             }
-            else if (type instanceof SqlDatabaseType)
+            else if (node instanceof SqlDatabaseType)
             {
                 style = "sqlDBLink";
                 category += createTitle("SQL Database");
             }
-            else if (type instanceof ServiceType)
+            else if (node instanceof ServiceType)
             {
                 style = "serviceLink";
                 category += createTitle("Service");
             }
-            else if (type instanceof TypeInstantiation)
+            else if (node instanceof TypeInstantiation)
             {
                 style = "instantLink";
                 category += createTitle("TypeInstantiation");
             }
-            else if (type instanceof TypeReference)
+            else if (node instanceof TypeReference)
             {
                 style = "referenceLink";
                 category += createTitle("TypeReference");
@@ -115,6 +126,15 @@ public class LinkedType
                 style = "noStyle";
             }
         }
+
+        if (node instanceof ZserioType)
+            this.type = (ZserioType)node;
+        else if (node instanceof TypeInstantiation)
+            this.type = ((TypeInstantiation)node).getTypeReference().getType();
+        else if (node instanceof TypeReference)
+            this.type = ((TypeReference)node).getType();
+        else
+            this.type = null;
     }
 
     private String createTitle(String cat)
@@ -138,15 +158,6 @@ public class LinkedType
         String hyperlinkName = TypeNameEmitter.getTypeName(type) + "_";
 
         ZserioType ti  = type;
-        if (type instanceof TypeReference)
-        {
-            ti = TypeReference.resolveType(type);
-        }
-        else if (ti instanceof TypeInstantiation)
-        {
-            ti = ((TypeInstantiation) ti).getBaseType();
-        }
-
         HtmlModuleNameSuffixVisitor suffixVisitor = new HtmlModuleNameSuffixVisitor();
         ti.accept(suffixVisitor);
         hyperlinkName += suffixVisitor.getSuffix();
@@ -166,7 +177,7 @@ public class LinkedType
 
     public boolean getIsBuiltIn()
     {
-        return ZserioTypeUtil.isBuiltIn(type);
+        return (type instanceof BuiltInType);
     }
 
     public String getPackageName()

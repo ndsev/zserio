@@ -20,7 +20,6 @@ import zserio.ast.SqlTableType;
 import zserio.ast.StdIntegerType;
 import zserio.ast.StringType;
 import zserio.ast.Subtype;
-import zserio.ast.TypeInstantiation;
 import zserio.ast.TypeReference;
 import zserio.ast.VarIntegerType;
 import zserio.emit.common.PackageMapper;
@@ -51,6 +50,21 @@ public class CppNativeTypeMapper
     }
 
     /**
+     * Returns a C++ type that can hold an instance of referenced Zserio type.
+     *
+     * @param typeReference Reference to the Zserio type.
+     *
+     * @return  C++ type which can hold referenced Zserio type.
+     *
+     * @throws ZserioEmitException If the referenced Zserio type cannot be mapped to any C++ type.
+     */
+    public CppNativeType getCppType(TypeReference typeReference) throws ZserioEmitException
+    {
+        // don't resolve subtypes so that the subtype name (C++ typedef) will be used
+        return getCppType(typeReference.getType());
+    }
+
+    /**
      * Returns a C++ type that can hold an instance of given Zserio type.
      *
      * @param type Zserio type for mapping to C++ type.
@@ -61,11 +75,8 @@ public class CppNativeTypeMapper
      */
     public CppNativeType getCppType(ZserioType type) throws ZserioEmitException
     {
-        // don't resolve subtypes so that the subtype name (C++ typedef) will be used
-        final ZserioType resolvedType = TypeReference.resolveType(type);
-
         final ZserioTypeMapperVisitor visitor = new ZserioTypeMapperVisitor();
-        resolvedType.accept(visitor);
+        type.accept(visitor);
 
         final ZserioEmitException thrownException = visitor.getThrownException();
         if (thrownException != null)
@@ -73,7 +84,7 @@ public class CppNativeTypeMapper
 
         final CppNativeType nativeType = visitor.getCppType();
         if (nativeType == null)
-            throw new ZserioEmitException("Unhandled type '" + resolvedType.getClass().getName() +
+            throw new ZserioEmitException("Unhandled type '" + type.getClass().getName() +
                     "' in CppNativeTypeMapper!");
 
         return nativeType;
@@ -82,18 +93,18 @@ public class CppNativeTypeMapper
     /**
      * Returns a C++ integer type that can hold an instance of given Zserio integer type.
      *
-     * @param type Zserio integer type for mapping to C++ integer type.
+     * @param integerType Zserio integer type for mapping to C++ integer type.
      *
      * @return C++ integer type which can hold a Zserio integer type.
      *
      * @throws ZserioEmitException If the Zserio integer type cannot be mapped to any C++ integer type.
      */
-    public NativeIntegralType getCppIntegralType(IntegerType type) throws ZserioEmitException
+    public NativeIntegralType getCppIntegralType(IntegerType integerType) throws ZserioEmitException
     {
-        final CppNativeType nativeType = getCppType(type);
+        final CppNativeType nativeType = getCppType(integerType);
 
         if (!(nativeType instanceof NativeIntegralType))
-            throw new ZserioEmitException("Unhandled integral type '" + type.getClass().getName() +
+            throw new ZserioEmitException("Unhandled integral type '" + integerType.getName() +
                     "' in CppNativeTypeMapper!");
 
         return (NativeIntegralType)nativeType;
@@ -102,14 +113,17 @@ public class CppNativeTypeMapper
     /**
      * Returns a C++ type that can hold an instance of given optional Zserio type or Zserio compound type.
      *
-     * @param type Zserio type for mapping to C++ type.
+     * @param type Reference to the zserio type for mapping to C++ type.
      *
-     * @return C++ optional holder type which can hold a given Zserio type.
+     * @return C++ optional holder type which can hold the referenced Zserio type.
      *
-     * @throws ZserioEmitException If the Zserio type cannot be mapped to C++ optional holder type.
+     * @throws ZserioEmitException If the referenced Zserio type cannot be mapped to C++ optional holder type.
      */
-    public NativeOptionalHolderType getCppOptionalHolderType(ZserioType type) throws ZserioEmitException
+    public NativeOptionalHolderType getCppOptionalHolderType(TypeReference typeReference)
+            throws ZserioEmitException
     {
+        // don't resolve subtypes so that the subtype name (C++ typedef) will be used
+        final ZserioType type = typeReference.getType();
         final CppNativeType wrappedType = getCppType(type);
 
         return new NativeOptionalHolderType(wrappedType);
@@ -158,8 +172,7 @@ public class CppNativeTypeMapper
     {
         public ArrayElementTypeMapperVisitor(ZserioType originalType)
         {
-            // resolve instantiations, but don't resolve subtype
-            this.originalType = TypeReference.resolveType(originalType);
+            this.originalType = originalType;
         }
 
         public CppNativeType getCppType()
@@ -229,12 +242,6 @@ public class CppNativeTypeMapper
 
         @Override
         public void visitStructureType(StructureType type)
-        {
-            mapObjectArray();
-        }
-
-        @Override
-        public void visitTypeInstantiation(TypeInstantiation type)
         {
             mapObjectArray();
         }
@@ -373,8 +380,9 @@ public class CppNativeTypeMapper
         @Override
         public void visitArrayType(ArrayType type)
         {
+            final TypeReference elementTypeReference = type.getElementTypeInstantiation().getTypeReference();
             // don't resolve subtype yet so that the element mapper visitor is given the original type
-            final ZserioType elementType = TypeReference.resolveType(type.getElementType());
+            final ZserioType elementType = elementTypeReference.getType();
 
             final ArrayElementTypeMapperVisitor arrayVisitor = new ArrayElementTypeMapperVisitor(elementType);
 
@@ -403,7 +411,7 @@ public class CppNativeTypeMapper
              *
              * the field ids should be backed by ObjectArray<MyID> (not ObjectArray<Foo>).
              */
-            TypeReference.resolveBaseType(elementType).accept(arrayVisitor);
+            elementTypeReference.getBaseType().accept(arrayVisitor);
             cppType = arrayVisitor.getCppType();
             thrownException = arrayVisitor.getThrownException();
         }
@@ -426,7 +434,8 @@ public class CppNativeTypeMapper
             try
             {
                 final PackageName packageName = cppPackageMapper.getPackageName(type);
-                final CppNativeType nativeTargetType = CppNativeTypeMapper.this.getCppType(type.getConstType());
+                final CppNativeType nativeTargetType =
+                        CppNativeTypeMapper.this.getCppType(type.getTypeReference());
                 final String name = type.getName();
                 final String includeFileName = getIncludePath(packageName, name);
                 cppType = new NativeUserType(packageName, type.getName(), includeFileName,
@@ -502,10 +511,10 @@ public class CppNativeTypeMapper
         @Override
         public void visitSubtype(Subtype type)
         {
-            final ZserioType targetType = type.getTargetType();
             try
             {
-                final CppNativeType nativeTargetType = CppNativeTypeMapper.this.getCppType(targetType);
+                final CppNativeType nativeTargetType =
+                        CppNativeTypeMapper.this.getCppType(type.getTypeReference());
                 final PackageName packageName = cppPackageMapper.getPackageName(type);
                 final String name = type.getName();
                 final String includeFileName = getIncludePath(packageName, name);
@@ -516,16 +525,6 @@ public class CppNativeTypeMapper
             {
                 thrownException = exception;
             }
-        }
-
-        @Override
-        public void visitTypeInstantiation(TypeInstantiation type)
-        {
-            final ZserioType resolvedReferencedType = TypeReference.resolveType(type.getReferencedType());
-            if (resolvedReferencedType instanceof Subtype)
-                visitSubtype((Subtype)resolvedReferencedType);
-            else
-                mapCompoundType(type.getBaseType());
         }
 
         @Override
