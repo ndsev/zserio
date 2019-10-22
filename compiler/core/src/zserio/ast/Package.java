@@ -3,6 +3,7 @@ package zserio.ast;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -74,6 +75,71 @@ public class Package extends DocumentableAstNode
     public List<Import> getImports()
     {
         return Collections.unmodifiableList(imports);
+    }
+
+    /**
+     * Adds a new type to this package.
+     *
+     * @param type Zserio type to add.
+     */
+    void addType(ZserioType type)
+    {
+        final ZserioType addedType = localTypes.put(type.getName(), type);
+        if (addedType != null)
+        {
+            final ParserStackedException stackedException = new ParserStackedException(
+                    type.getLocation(), "'" + type.getName() + "' is already defined in this package!");
+            stackedException.pushMessage(addedType.getLocation(), "    First defined here");
+            throw stackedException;
+        }
+    }
+
+    /**
+     * Adds a new template instantiation to this package.
+     *
+     * @param name          Name of the generated template instantiation.
+     * @param instantiation Template instantiation.
+     */
+    void addTemplateInstantiation(String name, TemplatableType instantiation)
+    {
+        final ZserioType addedType = localTypes.get(name);
+        if (addedType != null)
+        {
+            final ParserStackedException stackedException = new ParserStackedException(
+                    instantiation.getLocation(), "'" + name + "' is already defined in this package!");
+            stackedException.pushMessage(addedType.getLocation(), "    First defined here");
+            throw stackedException;
+        }
+
+        final TemplatableType addedInstantiation = templateInstantiations.put(name, instantiation);
+        if (addedInstantiation != null)
+        {
+            final ParserStackedException stackedException = new ParserStackedException(
+                    instantiation.getLocation(),
+                    "Instantiation name '" + name + "' already exits!");
+
+            final Iterator<TypeReference> descendingIterator =
+                    addedInstantiation.getInstantiationReferenceStack().descendingIterator();
+            while (descendingIterator.hasNext())
+            {
+                final TypeReference instantiationReference = descendingIterator.next();
+                if (descendingIterator.hasNext())
+                {
+                    stackedException.pushMessage(instantiationReference.getLocation(),
+                            "    Required in instantiation of '" +
+                                    instantiationReference.getReferencedTypeName() + "' from here");
+                }
+                else
+                {
+                    stackedException.pushMessage(instantiationReference.getLocation(),
+                            addedInstantiation.getTemplate() == instantiation.getTemplate()
+                                    ? "    First instantiated here"
+                                    : "    First seen in instantiation of '" +
+                                            instantiationReference.getReferencedTypeName() + "' from here");
+                }
+            }
+            throw stackedException;
+        }
     }
 
     /**
@@ -309,6 +375,8 @@ public class Package extends DocumentableAstNode
 
     // this must be a LinkedHashMap because of 'Cyclic dependency' error checked in ZserioAstTypeResolver
     private final LinkedHashMap<String, ZserioType> localTypes;
+    private final LinkedHashMap<String, TemplatableType> templateInstantiations =
+            new LinkedHashMap<String, TemplatableType>();
 
     private final Set<Package> importedPackages = new HashSet<Package>();
     // this must be a TreeSet because of 'Ambiguous type reference' error checked in getVisibleType()

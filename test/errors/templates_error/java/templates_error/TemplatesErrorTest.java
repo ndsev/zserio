@@ -102,6 +102,21 @@ public class TemplatesErrorTest
     }
 
     @Test
+    public void instantiationNameClashOtherTemplate()
+    {
+        final String errors[] =
+        {
+            "instantiation_name_clash_other_template_error.zs:21:5: " +
+                    "In instantiation of 'Test' required from here",
+            "instantiation_name_clash_other_template_error.zs:20:5: " +
+                    "    First seen in instantiation of 'Test_A' from here",
+            "instantiation_name_clash_other_template_error.zs:8:8: " +
+                    "Instantiation name 'Test_A_uint32' already exits!"
+        };
+        assertTrue(zserioErrors.isPresent(errors));
+    };
+
+    @Test
     public void instantiationViaSubtype()
     {
         final String errors[] =

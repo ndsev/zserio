@@ -12,7 +12,7 @@ tokens { RSHIFT }
 packageDeclaration
     :   packageNameDefinition?
         importDeclaration*
-        typeDeclaration*
+        languageDirective*
         EOF
     ;
 
@@ -22,6 +22,10 @@ packageNameDefinition
 
 importDeclaration
     :   IMPORT id DOT (id DOT)* (id | MULTIPLY) SEMICOLON
+    ;
+
+languageDirective
+    :   typeDeclaration
     ;
 
 typeDeclaration
@@ -39,7 +43,7 @@ typeDeclaration
 
 // CONST
 
-constDeclaration // TODO[Mi-L@][typeref]: Think again whether it should by TypeInstantiation or TypeReference!
+constDeclaration
     :   CONST typeInstantiation id ASSIGN expression SEMICOLON
     ;
 

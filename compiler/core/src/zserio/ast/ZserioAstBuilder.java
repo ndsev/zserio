@@ -72,18 +72,10 @@ public class ZserioAstBuilder extends ZserioParserBaseVisitor<Object>
         }
 
         // types declarations
-        for (ZserioParser.TypeDeclarationContext typeCtx : ctx.typeDeclaration())
+        for (ZserioParser.LanguageDirectiveContext directiveCtx : ctx.languageDirective())
         {
-            ZserioType type = (ZserioType)visitTypeDeclaration(typeCtx);
-            final String typeName = type.getName();
-            final ZserioType addedType = localTypes.put(typeName, type);
-            if (addedType != null)
-            {
-                final ParserStackedException stackedException = new ParserStackedException(
-                        type.getLocation(), "'" + typeName + "' is already defined in this package!");
-                stackedException.pushMessage(addedType.getLocation(), "    First defined here");
-                throw stackedException;
-            }
+            ZserioType type = (ZserioType)visitTypeDeclaration(directiveCtx.typeDeclaration());
+            currentPackage.addType(type);
         }
 
         localTypes = null;

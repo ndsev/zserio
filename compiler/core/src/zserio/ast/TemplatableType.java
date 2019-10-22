@@ -4,7 +4,6 @@ import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import zserio.tools.HashUtil;
@@ -63,7 +62,7 @@ abstract class TemplatableType extends DocumentableAstNode implements ZserioTemp
     }
 
     @Override
-    public Iterable<TypeReference> getInstantiationReferenceStack()
+    public ArrayDeque<TypeReference> getInstantiationReferenceStack()
     {
         return instantiationReferenceStack.clone();
     }
@@ -97,10 +96,10 @@ abstract class TemplatableType extends DocumentableAstNode implements ZserioTemp
             if (instantiation == null)
             {
                 final String name = getInstantiationNameImpl(wrappedTemplateArguments);
-                checkInstantiationName(wrappedTemplateArguments, name, instantiationReference.getLocation());
                 instantiation = instantiateImpl(name, resolvedTemplateArguments);
                 instantiation.instantiationReferenceStack = instantiationReferenceStack.clone();
                 instantiation.template = this;
+                instantiation.getPackage().addTemplateInstantiation(name, instantiation);
                 instantiationsMap.put(wrappedTemplateArguments, instantiation);
                 instantiationsNamesMap.put(name, instantiation);
                 isNewInstance = true;
@@ -185,30 +184,6 @@ abstract class TemplatableType extends DocumentableAstNode implements ZserioTemp
         }
 
         return nameBuilder.toString();
-    }
-
-    private void checkInstantiationName(List<TemplateArgument> templateArguments, String name,
-            AstLocation instantiationLocation)
-    {
-        final TemplatableType prevInstantiation = instantiationsNamesMap.get(name);
-        if (prevInstantiation != null)
-        {
-            final ParserStackedException stackedException = new ParserStackedException(getLocation(),
-                    "Instantiation name '" + name + "' already exits!");
-
-            final Iterator<TypeReference> descendingIterator =
-                    prevInstantiation.instantiationReferenceStack.descendingIterator();
-            while (descendingIterator.hasNext())
-            {
-                final TypeReference instantiationReference = descendingIterator.next();
-                stackedException.pushMessage(instantiationReference.getLocation(),
-                        descendingIterator.hasNext()
-                                ? "    Required in instantiation of '" +
-                                        instantiationReference.getReferencedTypeName() + "' from here"
-                                : "    First instantiated here");
-            }
-            throw stackedException;
-        }
     }
 
     private List<TypeReference> resolveTemplateArguments(List<TypeReference> templateArguments)
