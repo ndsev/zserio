@@ -23,7 +23,6 @@ public class CompoundTypeTemplateData extends UserTypeTemplateData
         final ExpressionFormatter cppExpressionFormatter = context.getExpressionFormatter(this);
         final ExpressionFormatter cppIndirectExpressionFormatter =
                 context.getOwnerIndirectExpressionFormatter(this);
-        boolean isRecursive = false;
         for (Field fieldType : fieldTypeList)
         {
             final CompoundFieldTemplateData data = new CompoundFieldTemplateData(cppNativeTypeMapper,
@@ -31,11 +30,7 @@ public class CompoundTypeTemplateData extends UserTypeTemplateData
                     this, withWriterCode, withRangeCheckCode);
 
             fieldList.add(data);
-            if (data.getOptional() != null && data.getOptional().getIsRecursive())
-                isRecursive = true;
         }
-
-        this.isRecursive = isRecursive;
 
         compoundParametersData = new CompoundParameterTemplateData(cppNativeTypeMapper, compoundType, this,
                 withWriterCode);
@@ -80,11 +75,6 @@ public class CompoundTypeTemplateData extends UserTypeTemplateData
         return hasFieldWithOffset;
     }
 
-    public boolean getIsRecursive()
-    {
-        return isRecursive;
-    }
-
     private final List<CompoundFieldTemplateData> fieldList;
     private final CompoundParameterTemplateData compoundParametersData;
     private final CompoundFunctionTemplateData compoundFunctionsData;
@@ -92,5 +82,4 @@ public class CompoundTypeTemplateData extends UserTypeTemplateData
 
     private final boolean needsChildrenInitialization;
     private final boolean hasFieldWithOffset;
-    private final boolean isRecursive;
 }

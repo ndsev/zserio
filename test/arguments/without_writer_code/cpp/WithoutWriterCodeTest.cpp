@@ -137,8 +137,8 @@ protected:
         const Item& item0 = itemChoice0.getItem();
         ASSERT_EQ(PARAMS[0], item0.getParam());
         ASSERT_EQ(ItemType::WITH_EXTRA_PARAM, item0.getItemType());
-        ASSERT_EQ(ExtraParamUnion::CHOICE_value32, item0.getExtraParam().value().choiceTag());
-        ASSERT_EQ(EXTRA_PARAM, item0.getExtraParam().value().getValue32());
+        ASSERT_EQ(ExtraParamUnion::CHOICE_value32, item0.getExtraParam().choiceTag());
+        ASSERT_EQ(EXTRA_PARAM, item0.getExtraParam().getValue32());
 
         // element 1
         ASSERT_FALSE(data[1].getHasItem());

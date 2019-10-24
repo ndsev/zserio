@@ -209,9 +209,6 @@ public class CppExpressionFormattingPolicy extends DefaultExpressionFormattingPo
     {
         result.append(AccessorNameFormatter.getGetterName(field));
         result.append(CPP_GETTER_FUNCTION_CALL);
-
-        if (field.isOptional())
-            result.append(CPP_GETTER_OPTIONAL_VALUE);
     }
 
     private void formatTypeIdentifier(StringBuilder result, ZserioType resolvedType)
@@ -346,7 +343,6 @@ public class CppExpressionFormattingPolicy extends DefaultExpressionFormattingPo
 
     private final static String CPP_GETTER_FUNCTION_CALL = "()";
     private final static String CPP_SETTER_FUNCTION_CALL = "(value)";
-    private final static String CPP_GETTER_OPTIONAL_VALUE = ".value()";
 
     private final static List<String> BUILD_IN_OPERATORS_INCLUDE = Arrays.asList("zserio/BuildInOperators.h");
 

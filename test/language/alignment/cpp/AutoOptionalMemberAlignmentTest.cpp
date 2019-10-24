@@ -32,7 +32,7 @@ protected:
     {
         if (hasAutoOptional)
         {
-            ASSERT_EQ(autoOptionalField, *autoOptionalMemberAlignment.getAutoOptionalField());
+            ASSERT_EQ(autoOptionalField, autoOptionalMemberAlignment.getAutoOptionalField());
             ASSERT_TRUE(autoOptionalMemberAlignment.hasAutoOptionalField());
         }
         else

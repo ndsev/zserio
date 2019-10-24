@@ -33,6 +33,11 @@ public class AccessorNameFormatter
         return getAccessorName(SETTER_NAME_PREFIX, param.getName());
     }
 
+    public static String getResetterName(Field field)
+    {
+        return getAccessorName(RESETTER_NAME_PREFIX, field.getName());
+    }
+
     public static String getIndicatorName(Field field)
     {
         return getAccessorName(INDICATOR_NAME_PREFIX, field.getName());
@@ -60,6 +65,7 @@ public class AccessorNameFormatter
     private final static String GETTER_NAME_PREFIX = "get";
     private final static String SETTER_NAME_PREFIX = "set";
     private final static String READER_NAME_PREFIX = "read";
+    private final static String RESETTER_NAME_PREFIX = "reset";
     private final static String INDICATOR_NAME_PREFIX = "has";
     private final static String FUNCTION_NAME_PREFIX = "func";
 }

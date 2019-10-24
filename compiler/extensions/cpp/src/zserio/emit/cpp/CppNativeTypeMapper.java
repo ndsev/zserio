@@ -32,7 +32,6 @@ import zserio.emit.cpp.types.NativeDoubleType;
 import zserio.emit.cpp.types.NativeFloatType;
 import zserio.emit.cpp.types.NativeIntegralType;
 import zserio.emit.cpp.types.NativeObjectArrayType;
-import zserio.emit.cpp.types.NativeOptionalHolderType;
 import zserio.emit.cpp.types.NativeStringType;
 import zserio.emit.cpp.types.NativeUserType;
 import zserio.emit.cpp.types.NativeCompoundType;
@@ -108,25 +107,6 @@ public class CppNativeTypeMapper
                     "' in CppNativeTypeMapper!");
 
         return (NativeIntegralType)nativeType;
-    }
-
-    /**
-     * Returns a C++ type that can hold an instance of given optional Zserio type or Zserio compound type.
-     *
-     * @param type Reference to the zserio type for mapping to C++ type.
-     *
-     * @return C++ optional holder type which can hold the referenced Zserio type.
-     *
-     * @throws ZserioEmitException If the referenced Zserio type cannot be mapped to C++ optional holder type.
-     */
-    public NativeOptionalHolderType getCppOptionalHolderType(TypeReference typeReference)
-            throws ZserioEmitException
-    {
-        // don't resolve subtypes so that the subtype name (C++ typedef) will be used
-        final ZserioType type = typeReference.getType();
-        final CppNativeType wrappedType = getCppType(type);
-
-        return new NativeOptionalHolderType(wrappedType);
     }
 
     private String getIncludePathRoot(PackageName packageName)

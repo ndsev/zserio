@@ -42,6 +42,26 @@ const int32_t AutoOptionalTest::AUTO_OPTIONAL_INT_VALUE = 0x0BEEFBEF;
 const size_t AutoOptionalTest::CONTAINER_BIT_SIZE_WITHOUT_OPTIONAL = 32 + 1;
 const size_t AutoOptionalTest::CONTAINER_BIT_SIZE_WITH_OPTIONAL = 32 + 1 + 32;
 
+TEST_F(AutoOptionalTest, fieldConstructor)
+{
+    const Container containerWithOptional(NON_OPTIONAL_INT_VALUE, AUTO_OPTIONAL_INT_VALUE);
+    ASSERT_TRUE(containerWithOptional.hasAutoOptionalInt());
+    ASSERT_EQ(AUTO_OPTIONAL_INT_VALUE, containerWithOptional.getAutoOptionalInt());
+
+    const Container containerWithoutOptional(NON_OPTIONAL_INT_VALUE, zserio::NullOpt);
+    ASSERT_FALSE(containerWithoutOptional.hasAutoOptionalInt());
+}
+
+TEST_F(AutoOptionalTest, resetAutoOptionalInt)
+{
+    Container container;
+    container.setAutoOptionalInt(AUTO_OPTIONAL_INT_VALUE);
+    ASSERT_TRUE(container.hasAutoOptionalInt());
+
+    container.resetAutoOptionalInt();
+    ASSERT_FALSE(container.hasAutoOptionalInt());
+}
+
 TEST_F(AutoOptionalTest, hasAutoOptionalInt)
 {
     Container container;
@@ -128,7 +148,7 @@ TEST_F(AutoOptionalTest, write)
     Container readContainerOptional(readerOptional);
     ASSERT_EQ(NON_OPTIONAL_INT_VALUE, readContainerOptional.getNonOptionalInt());
     ASSERT_TRUE(readContainerOptional.hasAutoOptionalInt());
-    ASSERT_EQ(AUTO_OPTIONAL_INT_VALUE, *readContainerOptional.getAutoOptionalInt());
+    ASSERT_EQ(AUTO_OPTIONAL_INT_VALUE, readContainerOptional.getAutoOptionalInt());
 }
 
 } // namespace auto_optional

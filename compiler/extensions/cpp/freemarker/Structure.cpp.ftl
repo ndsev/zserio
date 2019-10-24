@@ -24,13 +24,12 @@
 <#macro empty_constructor_field_initialization>
     <#assign needsComma=false>
     <#list fieldList as field>
-        <#-- string types are not simple types but can have default value (initializer) -->
-        <#if field.isSimpleType || field.initializer??>
+        <#if field.initializer?? || (field.isSimpleType && !(field.optional??))>
             <#assign needsEmptyConstructorInitMacro=true>
             <#if needsComma>
                 <#lt>,
             </#if>
-        <@field_member_name field.name/>(<#if field.initializer??>${field.initializer}<#else>${field.cppTypeName}()</#if>)<#rt>
+        <@field_member_name field/>(<#if field.initializer??>${field.initializer}<#else>${field.cppTypeName}()</#if>)<#rt>
             <#assign needsComma=true>
         </#if>
     </#list>
@@ -41,7 +40,7 @@
 <#if withWriterCode>
     <#assign needsEmptyConstructorInitMacro=false>
     <#list fieldList as field>
-        <#if field.isSimpleType || field.initializer??>
+        <#if field.initializer?? || (field.isSimpleType && !(field.optional??))>
             <#assign needsEmptyConstructorInitMacro=true>
             <#break>
         </#if>
@@ -52,7 +51,7 @@
 </#if>
 <#macro read_constructor_field_initialization>
     <#list fieldList as field>
-        <@field_member_name field.name/>(${field.readerName}(in))<#if field?has_next>,</#if>
+        <@field_member_name field/>(${field.readerName}(in))<#if field?has_next>,</#if>
     </#list>
 </#macro>
 <#assign readConstructorInitMacroName><#if fieldList?has_content>read_constructor_field_initialization</#if></#assign>
@@ -87,30 +86,35 @@ void ${name}::initializeChildren()
     <#if needs_field_getter(field)>
 ${field.cppTypeName}& ${name}::${field.getterName}()
 {
-    return <@field_member_name field.name/>;
+    return <@compound_get_field field/>;
 }
 
     </#if>
 ${field.cppArgumentTypeName} ${name}::${field.getterName}() const
 {
-    return <@field_member_name field.name/>;
+    return <@compound_get_field field/>;
 }
 
     <#if needs_field_setter(field)>
-void ${name}::${field.setterName}(${field.cppArgumentTypeName} <@field_argument_name field.name/>)
+void ${name}::${field.setterName}(${field.cppArgumentTypeName} <@field_argument_name field/>)
 {
-    <@field_member_name field.name/> = <@field_argument_name field.name/>;
+    <@field_member_name field/> = <@field_argument_name field/>;
 }
 
     </#if>
     <#if needs_field_rvalue_setter(field)>
-void ${name}::${field.setterName}(${field.cppTypeName}&& <@field_argument_name field.name/>)
+void ${name}::${field.setterName}(${field.cppTypeName}&& <@field_argument_name field/>)
 {
-    <@field_member_name field.name/> = ::std::move(<@field_argument_name field.name/>);
+    <@field_member_name field/> = ::std::move(<@field_argument_name field/>);
 }
 
     </#if>
     <#if field.optional??>
+void ${name}::${field.optional.resetterName}()
+{
+    <@field_member_name field/>.reset();
+}
+
 bool ${name}::${field.optional.indicatorName}() const
 {
     return (<@field_optional_condition field/>);
@@ -211,9 +215,9 @@ bool ${name}::operator==(const ${name}&<#if compoundParametersData.list?has_cont
                 <@compound_parameter_comparison compoundParametersData, fieldList?has_content/>
     <#list fieldList as field>
         <#if field.optional?? && field.optional.clause??>
-                (!(${field.optional.clause}) || <@field_member_name field.name/> == other.<@field_member_name field.name/>)<#if field?has_next> &&<#else>;</#if>
+                (!(${field.optional.clause}) || <@field_member_name field/> == other.<@field_member_name field/>)<#if field?has_next> &&<#else>;</#if>
         <#else>
-                (<@field_member_name field.name/> == other.<@field_member_name field.name/>)<#if field?has_next> &&<#else>;</#if>
+                (<@field_member_name field/> == other.<@field_member_name field/>)<#if field?has_next> &&<#else>;</#if>
         </#if>
     </#list>
     }
@@ -230,9 +234,9 @@ int ${name}::hashCode() const
 <#list fieldList as field>
     <#if field.optional?? && field.optional.clause??>
     if (${field.optional.clause})
-        result = ::zserio::calcHashCode(result, <@field_member_name field.name/>);
+        result = ::zserio::calcHashCode(result, <@field_member_name field/>);
     <#else>
-    result = ::zserio::calcHashCode(result, <@field_member_name field.name/>);
+    result = ::zserio::calcHashCode(result, <@field_member_name field/>);
     </#if>
     <#if !field?has_next>
 
@@ -244,7 +248,7 @@ int ${name}::hashCode() const
 void ${name}::read(::zserio::BitStreamReader&<#if fieldList?has_content> in</#if>)
 {
 <#list fieldList as field>
-    <@field_member_name field.name/> = ${field.readerName}(in);
+    <@field_member_name field/> = ${field.readerName}(in);
 </#list>
 }
 <#if withWriterCode>
@@ -276,7 +280,7 @@ void ${name}::write(::zserio::BitStreamWriter&<#if fieldList?has_content> out</#
 </#if>
 <#list fieldList as field>
 
-${field.cppTypeName} ${name}::${field.readerName}(::zserio::BitStreamReader& in)
+<@field_type_name field/> ${name}::${field.readerName}(::zserio::BitStreamReader& in)
 {
     <@compound_read_field field, name, 1/>
 }

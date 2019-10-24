@@ -34,7 +34,7 @@ protected:
 
         if (hasOptional)
         {
-            ASSERT_EQ(optionalField, *optionalMemberAlignment.getOptionalField());
+            ASSERT_EQ(optionalField, optionalMemberAlignment.getOptionalField());
             ASSERT_TRUE(optionalMemberAlignment.hasOptionalField());
         }
         else

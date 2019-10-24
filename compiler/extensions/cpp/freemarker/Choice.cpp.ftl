@@ -136,16 +136,16 @@ ${field.cppArgumentTypeName} ${name}::${field.getterName}() const
 }
 
     <#if needs_field_setter(field)>
-void ${name}::${field.setterName}(${field.cppArgumentTypeName} <@field_argument_name field.name/>)
+void ${name}::${field.setterName}(${field.cppArgumentTypeName} <@field_argument_name field/>)
 {
-    m_objectChoice = <@field_argument_name field.name/>;
+    m_objectChoice = <@field_argument_name field/>;
 }
 
     </#if>
     <#if needs_field_rvalue_setter(field)>
-void ${name}::${field.setterName}(${field.cppTypeName}&& <@field_argument_name field.name/>)
+void ${name}::${field.setterName}(${field.cppTypeName}&& <@field_argument_name field/>)
 {
-    m_objectChoice = ::std::move(<@field_argument_name field.name/>);
+    m_objectChoice = ::std::move(<@field_argument_name field/>);
 }
 
     </#if>

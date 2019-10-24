@@ -70,7 +70,7 @@ protected:
 
         if (length > 0)
         {
-            const std::vector<std::string>& data = *optionalNestedIndexedOffsetArray.getData();
+            const std::vector<std::string>& data = optionalNestedIndexedOffsetArray.getData();
             ASSERT_EQ(length, data.size());
             for (uint8_t i = 0; i < length; ++i)
                 ASSERT_EQ(m_data[i], data[i]);

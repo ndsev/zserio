@@ -79,6 +79,17 @@ protected:
 const uint8_t OptionalRecursionTest::BLOCK1_DATA[] = {1, 2, 3, 4, 5, 6};
 const uint8_t OptionalRecursionTest::BLOCK2_DATA[] = {10, 9, 8, 7};
 
+TEST_F(OptionalRecursionTest, resetNextData)
+{
+    Block block12;
+    fillBlock(block12, BLOCK1_DATA, sizeof(BLOCK1_DATA), BLOCK2_DATA, sizeof(BLOCK2_DATA));
+    ASSERT_TRUE(block12.hasNextData());
+
+    ASSERT_NO_THROW(block12.getNextData());
+    block12.resetNextData();
+    ASSERT_THROW(block12.getNextData(), zserio::CppRuntimeException);
+}
+
 TEST_F(OptionalRecursionTest, hasNextData)
 {
     Block block1;

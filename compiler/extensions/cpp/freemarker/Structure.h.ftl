@@ -20,9 +20,12 @@
 #include <zserio/BitStreamReader.h>
 #include <zserio/BitStreamWriter.h>
 #include <zserio/PreWriteAction.h>
+<#if has_optional_field(fieldList)>
+#include <zserio/OptionalHolder.h>
+</#if>
 <@system_includes headerSystemIncludes/>
 <@user_includes headerUserIncludes/>
-<#if isRecursive>
+<#if has_optional_recursive_field(fieldList)>
 <@namespace_begin package.path/>
 
 class ${name};
@@ -81,6 +84,7 @@ public:
 <#list fieldList as field>
     <@compound_field_accessors_declaration field/>
     <#if field.optional??>
+    void ${field.optional.resetterName}();
     bool ${field.optional.indicatorName}() const;
     </#if>
 
@@ -103,7 +107,7 @@ public:
 private:
     <@inner_classes_declaration fieldList/>
 <#list fieldList as field>
-    ${field.cppTypeName} ${field.readerName}(::zserio::BitStreamReader& in);
+    <@field_type_name field/> ${field.readerName}(::zserio::BitStreamReader& in);
     <#if !field?has_next>
 
     </#if>
@@ -111,7 +115,7 @@ private:
     <@compound_parameter_members compoundParametersData/>
     <@compound_constructor_members compoundConstructorsData/>
 <#list fieldList as field>
-    ${field.cppTypeName} <@field_member_name field.name/>;
+    <@field_type_name field/> <@field_member_name field/>;
 </#list>
 };
 <@namespace_end package.path/>

@@ -1,9 +1,17 @@
-<#macro field_member_name fieldName>
-    m_${fieldName}_<#t>
+<#macro field_member_name field>
+    m_${field.name}_<#t>
 </#macro>
 
-<#macro field_argument_name fieldName>
-    ${fieldName}_<#t>
+<#macro field_argument_name field>
+    ${field.name}_<#t>
+</#macro>
+
+<#macro field_type_name field>
+    <#if field.optional??>
+        ::zserio::OptionalHolder<${field.cppTypeName}><#t>
+    <#else>
+        ${field.cppTypeName}<#t>
+    </#if>
 </#macro>
 
 <#macro compound_read_field field compoundName indent>
@@ -18,7 +26,7 @@ ${I}{
         <@compound_read_field_inner field, compoundName, indent + 1/>
 ${I}}
 ${I}
-${I}return ${field.cppTypeName}();
+${I}return ::zserio::NullOpt;
     <#else>
     <@compound_read_field_inner field, compoundName, indent/>
     </#if>
@@ -27,27 +35,26 @@ ${I}return ${field.cppTypeName}();
 <#macro compound_read_field_inner field compoundName indent>
     <#local I>${""?left_pad(indent * 4)}</#local>
     <@compound_read_field_prolog field, compoundName, indent/>
-    <#local cppTypeName><#if field.optional??>${field.optional.cppRawTypeName}<#else>${field.cppTypeName}</#if></#local>
     <#if field.array??>
-${I}${cppTypeName} readField;
+${I}${field.cppTypeName} readField;
 ${I}::zserio::read<@array_runtime_function_suffix field, true/>(<@array_traits field, true/>, readField, in<#rt>
         <#lt><#if field.array.length??>, ${field.array.length}</#if><#rt>
         <#lt><#if field.offset?? && field.offset.containsIndex>, <@offset_checker_name field.name/>(*this)</#if><#rt>
         <#lt>);
         <#local readCommand="readField"/>
     <#elseif field.runtimeFunction??>
-        <#local readCommand>static_cast<${cppTypeName}>(in.read${field.runtimeFunction.suffix}(${field.runtimeFunction.arg!}))</#local>
+        <#local readCommand>static_cast<${field.cppTypeName}>(in.read${field.runtimeFunction.suffix}(${field.runtimeFunction.arg!}))</#local>
     <#elseif field.isEnum>
-        <#local readCommand>::zserio::read<${cppTypeName}>(in)</#local>
+        <#local readCommand>::zserio::read<${field.cppTypeName}>(in)</#local>
     <#else>
         <#-- compound -->
         <#local compoundParamsArguments><@compound_field_compound_ctor_params field.compound, false/></#local>
         <#local constructorArguments>in<#if compoundParamsArguments?has_content>, ${compoundParamsArguments}</#if></#local>
-        <#local readCommand>${cppTypeName}(${constructorArguments})</#local>
+        <#local readCommand>${field.cppTypeName}(${constructorArguments})</#local>
     </#if>
     <#if field.constraint??>
         <#if !field.array??>
-${I}const ${cppTypeName} readField = ${readCommand};
+${I}const ${field.cppTypeName} readField = ${readCommand};
         </#if>
     <@compound_check_constraint_field field, name, "Read", indent/>
 ${I}
@@ -98,7 +105,7 @@ ${I}}
 </#macro>
 
 <#macro field_optional_condition field>
-    <#if field.optional.clause??>${field.optional.clause}<#else><@field_member_name field.name/>.hasValue()</#if><#t>
+    <#if field.optional.clause??>${field.optional.clause}<#else><@field_member_name field/>.hasValue()</#if><#t>
 </#macro>
 
 <#macro compound_write_field field compoundName indent>
@@ -181,17 +188,16 @@ ${I}}
 <#macro compound_check_range_field field compoundName indent>
     <#local I>${""?left_pad(indent * 4)}</#local>
     <#if field.withRangeCheckCode>
-        <#local cppTypeName><#if field.optional??>${field.optional.cppRawTypeName}<#else>${field.cppTypeName}</#if></#local>
         <#if field.integerRange?? && !field.integerRange.hasFullRange>
 ${I}// check range
             <#local fieldValue><@compound_get_field field/></#local>
 ${I}{
-        <@compound_check_range_value fieldValue, field.name, compoundName, cppTypeName, field.integerRange,
+        <@compound_check_range_value fieldValue, field.name, compoundName, field.cppTypeName, field.integerRange,
                 indent + 1/>
 ${I}}
         <#elseif field.array?? && field.array.elementIntegerRange?? && !field.array.elementIntegerRange.hasFullRange>
 ${I}// check ranges
-${I}for (${cppTypeName}::const_iterator it = <@compound_get_field field/>.begin(); <#rt>
+${I}for (${field.cppTypeName}::const_iterator it = <@compound_get_field field/>.begin(); <#rt>
             <#lt>it != <@compound_get_field field/>.end(); ++it)
 ${I}{
         <@compound_check_range_value "*it", field.name, compoundName, field.array.elementCppTypeName,
@@ -313,8 +319,7 @@ class ${compoundName}::<@element_factory_name field.name/>
 public:
     explicit <@element_factory_name field.name/>(${compoundName}& owner) : m_owner(owner) {}
 
-    <#local cppTypeName><#if field.optional??>${field.optional.cppRawTypeName}<#else>${field.cppTypeName}</#if></#local>
-    void create(${cppTypeName}& array, ::zserio::BitStreamReader& in, size_t index) const
+    void create(${field.cppTypeName}& array, ::zserio::BitStreamReader& in, size_t index) const
     {
         (void)index;
         array.emplace_back(in<#if extraConstructorArguments?has_content>, ${extraConstructorArguments}</#if>);
@@ -463,15 +468,15 @@ ${I}endBitPosition = <@compound_get_field field/>.initializeOffsets(endBitPositi
     </#if>
     ${field.cppArgumentTypeName} ${field.getterName}() const;
     <#if needs_field_setter(field)>
-    void ${field.setterName}(${field.cppArgumentTypeName} <@field_argument_name field.name/>);
+    void ${field.setterName}(${field.cppArgumentTypeName} <@field_argument_name field/>);
     </#if>
     <#if needs_field_rvalue_setter(field)>
-    void ${field.setterName}(${field.cppTypeName}&& <@field_argument_name field.name/>);
+    void ${field.setterName}(${field.cppTypeName}&& <@field_argument_name field/>);
     </#if>
 </#macro>
 
 <#macro compound_field_getter_definition field compoundName returnFieldMacroName>
-    <#if field.withWriterCode && (field.optional?? || !field.isSimpleType)>
+    <#if field.withWriterCode && !field.isSimpleType>
 ${field.cppTypeName}& ${compoundName}::${field.getterName}()
 {
 <@.vars[returnFieldMacroName] field/>
@@ -490,7 +495,7 @@ ${field.cppArgumentTypeName} ${compoundName}::${field.getterName}() const
 
 <#macro compound_field_setter_definition field compoundName setFieldMacroName>
     <#if field.withWriterCode>
-void ${compoundName}::${field.setterName}(${field.cppArgumentTypeName} <@field_argument_name field.name/>)
+void ${compoundName}::${field.setterName}(${field.cppArgumentTypeName} <@field_argument_name field/>)
 {
 <@.vars[setFieldMacroName] field/>
 }
@@ -500,7 +505,7 @@ void ${compoundName}::${field.setterName}(${field.cppArgumentTypeName} <@field_a
 
 <#macro compound_field_rvalue_setter_definition field compoundName setFieldMacroName>
     <#if field.withWriterCode && !field.isSimpleType><#-- no sense to move an optional holding a simple type -->
-void ${compoundName}::${field.setterName}(${field.cppTypeName}&& <@field_argument_name field.name/>)
+void ${compoundName}::${field.setterName}(${field.cppTypeName}&& <@field_argument_name field/>)
 {
 <@.vars[setFieldMacroName] field/>
 }
@@ -512,9 +517,9 @@ void ${compoundName}::${field.setterName}(${field.cppTypeName}&& <@field_argumen
     <#if field.usesAnyHolder>
         m_objectChoice.get<${field.cppTypeName}>()<#t>
     <#elseif field.optional??>
-        <@field_member_name field.name/>.value()<#t>
+        <@field_member_name field/>.value()<#t>
     <#else>
-        <@field_member_name field.name/><#t>
+        <@field_member_name field/><#t>
     </#if>
 </#macro>
 
@@ -523,7 +528,7 @@ void ${compoundName}::${field.setterName}(${field.cppTypeName}&& <@field_argumen
     <#if field.usesAnyHolder>
 ${I}m_objectChoice(other.m_objectChoice)
     <#else>
-${I}<@field_member_name field.name/>(other.<@field_member_name field.name/>)<#if hasNext>,</#if>
+${I}<@field_member_name field/>(other.<@field_member_name field/>)<#if hasNext>,</#if>
     </#if>
 </#macro>
 
@@ -532,7 +537,7 @@ ${I}<@field_member_name field.name/>(other.<@field_member_name field.name/>)<#if
     <#if field.usesAnyHolder>
 ${I}m_objectChoice(::std::move(other.m_objectChoice))
     <#else>
-${I}<@field_member_name field.name/>(::std::move(other.<@field_member_name field.name/>))<#if hasNext>,</#if>
+${I}<@field_member_name field/>(::std::move(other.<@field_member_name field/>))<#if hasNext>,</#if>
     </#if>
 </#macro>
 
@@ -541,11 +546,11 @@ ${I}<@field_member_name field.name/>(::std::move(other.<@field_member_name field
     <#if field.usesAnyHolder>
 ${I}m_objectChoice(::std::forward<ZSERIO_T>(value))
     <#else>
-${I}<@field_member_name field.name/>(<#rt>
+${I}<@field_member_name field/>(<#rt>
         <#if field.isSimpleType>
-            <@field_argument_name field.name/><#t>
+            <@field_argument_name field/><#t>
         <#else>
-            ::std::forward<ZSERIO_T_${field.name}>(<@field_argument_name field.name/>)<#t>
+            ::std::forward<ZSERIO_T_${field.name}>(<@field_argument_name field/>)<#t>
         </#if>
         <#lt>)<#if hasNext>,</#if>
     </#if>
@@ -556,7 +561,7 @@ ${I}<@field_member_name field.name/>(<#rt>
     <#if field.usesAnyHolder>
 ${I}m_objectChoice = other.m_objectChoice;
     <#else>
-${I}<@field_member_name field.name/> = other.<@field_member_name field.name/>;
+${I}<@field_member_name field/> = other.<@field_member_name field/>;
     </#if>
 </#macro>
 
@@ -565,7 +570,7 @@ ${I}<@field_member_name field.name/> = other.<@field_member_name field.name/>;
     <#if field.usesAnyHolder>
 ${I}m_objectChoice = ::std::move(other.m_objectChoice);
     <#else>
-${I}<@field_member_name field.name/> = ::std::move(other.<@field_member_name field.name/>);
+${I}<@field_member_name field/> = ::std::move(other.<@field_member_name field/>);
     </#if>
 </#macro>
 
@@ -620,7 +625,7 @@ ${I};
                 <#local firstTemplateArgName="ZSERIO_T"/>
                 <#break/>
             <#else>
-                <#if !field.isSimpleType>
+                <#if !field.isSimpleType || field.optional??>
                     <#if numTemplateArgs != 0>
             <#lt>,
             typename ZSERIO_T_${field.name}<#rt>
@@ -659,22 +664,36 @@ ${I};
 ${I}ZSERIO_T&& value<#t>
             <#break/>
         <#else>
-            <#if field.isSimpleType>
-                <#if field.optional??>
-${I}${field.optional.cppArgumentTypeName}<#t>
-                <#else>
-${I}${field.cppArgumentTypeName}<#t>
-                </#if>
-            <#else>
+            <#if !field.isSimpleType || field.optional??>
 ${I}ZSERIO_T_${field.name}&&<#t>
+            <#else>
+${I}${field.cppArgumentTypeName}<#t>
             </#if>
-            <#lt> <@field_argument_name field.name/><#rt>
+            <#lt> <@field_argument_name field/><#rt>
             <#if field?has_next>
                 <#lt>,
             </#if>
         </#if>
     </#list>
 </#macro>
+
+<#function has_optional_field fieldList>
+    <#list fieldList as field>
+        <#if field.optional??>
+            <#return true>
+        </#if>
+    </#list>
+    <#return false>
+</#function>
+
+<#function has_optional_recursive_field fieldList>
+    <#list fieldList as field>
+        <#if field.optional?? && field.optional.isRecursive>
+            <#return true>
+        </#if>
+    </#list>
+    <#return false>
+</#function>
 
 <#function has_field_with_constraint fieldList>
     <#list fieldList as field>
@@ -725,7 +744,7 @@ ${I}ZSERIO_T_${field.name}&&<#t>
 </#function>
 
 <#function needs_field_getter field>
-    <#if field.withWriterCode && (field.optional?? || !field.isSimpleType)>
+    <#if field.withWriterCode && !field.isSimpleType>
         <#return true>
     </#if>
     <#return false>
@@ -739,7 +758,7 @@ ${I}ZSERIO_T_${field.name}&&<#t>
 </#function>
 
 <#function needs_field_rvalue_setter field>
-    <#if field.withWriterCode && (field.optional?? || !field.isSimpleType)>
+    <#if field.withWriterCode && !field.isSimpleType>
         <#return true>
     </#if>
     <#return false>

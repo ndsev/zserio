@@ -91,32 +91,43 @@ const size_t OptionalArrayRecursionTest::TEAM_LEAD_BIT_SIZE = EMPTY_EMPLOYEE_BIT
         (sizeof(OptionalArrayRecursionTest::EMPLOYEE_DEVELOPER1_NAME) - 1) * 8 +
         (sizeof(OptionalArrayRecursionTest::EMPLOYEE_DEVELOPER2_NAME) - 1) * 8;
 
+TEST_F(OptionalArrayRecursionTest, resetTeamMembers)
+{
+    Employee employee;
+    fillTeamLead(employee);
+    ASSERT_TRUE(employee.hasTeamMembers());
+
+    ASSERT_NO_THROW(employee.getTeamMembers());
+    employee.resetTeamMembers();
+    ASSERT_THROW(employee.getTeamMembers(), zserio::CppRuntimeException);
+}
+
 TEST_F(OptionalArrayRecursionTest, hasTeamMembers)
 {
-    Employee teamLead(EMPTY_EMPLOYEE_NAME, EMPTY_EMPLOYEE_SALARY, Title::DEVELOPER, zserio::NullOpt);
-    ASSERT_FALSE(teamLead.hasTeamMembers());
+    Employee employee(EMPTY_EMPLOYEE_NAME, EMPTY_EMPLOYEE_SALARY, Title::DEVELOPER, zserio::NullOpt);
+    ASSERT_FALSE(employee.hasTeamMembers());
 
-    fillTeamLead(teamLead);
-    ASSERT_TRUE(teamLead.hasTeamMembers());
+    fillTeamLead(employee);
+    ASSERT_TRUE(employee.hasTeamMembers());
 }
 
 TEST_F(OptionalArrayRecursionTest, bitSizeOf)
 {
-    Employee teamLead(EMPTY_EMPLOYEE_NAME, EMPTY_EMPLOYEE_SALARY, Title::DEVELOPER, zserio::NullOpt);
-    ASSERT_EQ(EMPTY_EMPLOYEE_BIT_SIZE, teamLead.bitSizeOf());
+    Employee employee(EMPTY_EMPLOYEE_NAME, EMPTY_EMPLOYEE_SALARY, Title::DEVELOPER, zserio::NullOpt);
+    ASSERT_EQ(EMPTY_EMPLOYEE_BIT_SIZE, employee.bitSizeOf());
 
-    fillTeamLead(teamLead);
-    ASSERT_EQ(TEAM_LEAD_BIT_SIZE, teamLead.bitSizeOf());
+    fillTeamLead(employee);
+    ASSERT_EQ(TEAM_LEAD_BIT_SIZE, employee.bitSizeOf());
 }
 
 TEST_F(OptionalArrayRecursionTest, initializeOffsets)
 {
-    Employee teamLead(EMPTY_EMPLOYEE_NAME, EMPTY_EMPLOYEE_SALARY, Title::DEVELOPER, zserio::NullOpt);
+    Employee employee(EMPTY_EMPLOYEE_NAME, EMPTY_EMPLOYEE_SALARY, Title::DEVELOPER, zserio::NullOpt);
     const size_t bitPosition = 1;
-    ASSERT_EQ(bitPosition + EMPTY_EMPLOYEE_BIT_SIZE, teamLead.initializeOffsets(bitPosition));
+    ASSERT_EQ(bitPosition + EMPTY_EMPLOYEE_BIT_SIZE, employee.initializeOffsets(bitPosition));
 
-    fillTeamLead(teamLead);
-    ASSERT_EQ(bitPosition + TEAM_LEAD_BIT_SIZE, teamLead.initializeOffsets(bitPosition));
+    fillTeamLead(employee);
+    ASSERT_EQ(bitPosition + TEAM_LEAD_BIT_SIZE, employee.initializeOffsets(bitPosition));
 }
 
 TEST_F(OptionalArrayRecursionTest, operatorEquality)
@@ -176,7 +187,7 @@ TEST_F(OptionalArrayRecursionTest, writeTeamLead)
     ASSERT_EQ(EMPLOYEE_TEAM_LEAD_SALARY, readTeamLead.getSalary());
     ASSERT_EQ(Title::TEAM_LEAD, readTeamLead.getTitle());
     ASSERT_TRUE(readTeamLead.hasTeamMembers());
-    std::vector<Employee> teamMembers = *readTeamLead.getTeamMembers();
+    std::vector<Employee> teamMembers = readTeamLead.getTeamMembers();
     ASSERT_EQ(NUM_DEVELOPERS, teamMembers.size());
 }
 

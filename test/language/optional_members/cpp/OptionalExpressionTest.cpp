@@ -45,6 +45,31 @@ const uint8_t OptionalExpressionTest::NUM_BLACK_TONES = 2;
 const size_t OptionalExpressionTest::CONTAINER_BIT_SIZE_WITHOUT_OPTIONAL = 8;
 const size_t OptionalExpressionTest::CONTAINER_BIT_SIZE_WITH_OPTIONAL = 8 + 8 + 32 * NUM_BLACK_TONES;
 
+TEST_F(OptionalExpressionTest, fieldConstructor)
+{
+    BlackColor blackColor;
+    fillBlackColor(blackColor, NUM_BLACK_TONES);
+    const Container containerWithOptionals(BasicColor::BLACK, NUM_BLACK_TONES, blackColor);
+    ASSERT_TRUE(containerWithOptionals.hasNumBlackTones());
+    ASSERT_TRUE(containerWithOptionals.hasBlackColor());
+
+    const Container containerWithoutOptionals(BasicColor::WHITE, zserio::NullOpt, zserio::NullOpt);
+    ASSERT_FALSE(containerWithoutOptionals.hasNumBlackTones());
+    ASSERT_FALSE(containerWithoutOptionals.hasBlackColor());
+}
+
+TEST_F(OptionalExpressionTest, resetNumBlackTones)
+{
+    Container container;
+    container.setBasicColor(BasicColor::BLACK);
+    container.setNumBlackTones(NUM_BLACK_TONES);
+    ASSERT_TRUE(container.hasNumBlackTones());
+
+    ASSERT_NO_THROW(container.getNumBlackTones());
+    container.resetNumBlackTones();
+    ASSERT_THROW(container.getNumBlackTones(), zserio::CppRuntimeException);
+}
+
 TEST_F(OptionalExpressionTest, hasNumBlackTones)
 {
     Container container;
@@ -55,7 +80,21 @@ TEST_F(OptionalExpressionTest, hasNumBlackTones)
     const uint8_t numBlackTones = NUM_BLACK_TONES;
     container.setNumBlackTones(numBlackTones);
     ASSERT_TRUE(container.hasNumBlackTones());
-    ASSERT_EQ(numBlackTones, *container.getNumBlackTones());
+    ASSERT_EQ(numBlackTones, container.getNumBlackTones());
+}
+
+TEST_F(OptionalExpressionTest, resetBlackColor)
+{
+    Container container;
+    container.setBasicColor(BasicColor::BLACK);
+    BlackColor blackColor;
+    fillBlackColor(blackColor, NUM_BLACK_TONES);
+    container.setBlackColor(blackColor);
+    ASSERT_TRUE(container.hasBlackColor());
+
+    ASSERT_NO_THROW(container.getBlackColor());
+    container.resetBlackColor();
+    ASSERT_THROW(container.getBlackColor(), zserio::CppRuntimeException);
 }
 
 TEST_F(OptionalExpressionTest, hasBlackColor)
@@ -171,9 +210,9 @@ TEST_F(OptionalExpressionTest, write)
     ASSERT_EQ(BasicColor::BLACK, readContainerBlack.getBasicColor());
     ASSERT_TRUE(readContainerBlack.hasNumBlackTones());
     ASSERT_TRUE(readContainerBlack.hasBlackColor());
-    ASSERT_EQ(numBlackTones, *readContainerBlack.getNumBlackTones());
-    ASSERT_EQ(numBlackTones, readContainerBlack.getBlackColor()->getNumBlackTones());
-    ASSERT_EQ(blackColor.getTones(), readContainerBlack.getBlackColor()->getTones());
+    ASSERT_EQ(numBlackTones, readContainerBlack.getNumBlackTones());
+    ASSERT_EQ(numBlackTones, readContainerBlack.getBlackColor().getNumBlackTones());
+    ASSERT_EQ(blackColor.getTones(), readContainerBlack.getBlackColor().getTones());
 }
 
 } // namespace optional_expression

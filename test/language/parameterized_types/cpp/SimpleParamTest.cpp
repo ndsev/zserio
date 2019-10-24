@@ -70,7 +70,7 @@ TEST_F(ParameterizedTypesSimpleParamTest, fieldConstructor)
         ASSERT_FALSE(item.isInitialized());
         item.initialize(HIGHER_VERSION);
         ASSERT_TRUE(item.hasExtraParam());
-        ASSERT_EQ(ITEM_EXTRA_PARAM, *item.getExtraParam());
+        ASSERT_EQ(ITEM_EXTRA_PARAM, item.getExtraParam());
     }
 }
 
@@ -89,7 +89,7 @@ TEST_F(ParameterizedTypesSimpleParamTest, bitStreamReaderConstructor)
     ASSERT_EQ(version, item.getVersion());
     ASSERT_EQ(itemParam, item.getParam());
     ASSERT_TRUE(item.hasExtraParam());
-    ASSERT_EQ(itemExtraParam, *item.getExtraParam());
+    ASSERT_EQ(itemExtraParam, item.getExtraParam());
 }
 
 TEST_F(ParameterizedTypesSimpleParamTest, copyConstructor)
@@ -139,7 +139,7 @@ TEST_F(ParameterizedTypesSimpleParamTest, moveAssignmentOperator)
     movedItem = std::move(item);
     ASSERT_EQ(ITEM_PARAM, movedItem.getParam());
     ASSERT_TRUE(movedItem.hasExtraParam());
-    ASSERT_EQ(ITEM_EXTRA_PARAM, *movedItem.getExtraParam());
+    ASSERT_EQ(ITEM_EXTRA_PARAM, movedItem.getExtraParam());
 }
 
 TEST_F(ParameterizedTypesSimpleParamTest, bitSizeOf)

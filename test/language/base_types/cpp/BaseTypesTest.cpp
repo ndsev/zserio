@@ -185,7 +185,7 @@ TEST_F(BaseTypesTest, variableIntfieldType)
 {
     const int16_t maxVariableIntfieldType = std::numeric_limits<int16_t>::max();
     m_baseTypes.setVariableIntfieldType(maxVariableIntfieldType);
-    const int16_t variableIntfieldType = *m_baseTypes.getVariableIntfieldType();
+    const int16_t variableIntfieldType = m_baseTypes.getVariableIntfieldType();
     ASSERT_EQ(maxVariableIntfieldType, variableIntfieldType);
 }
 

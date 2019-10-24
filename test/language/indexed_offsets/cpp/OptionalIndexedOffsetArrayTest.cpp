@@ -69,7 +69,7 @@ protected:
 
         if (hasOptional)
         {
-            const std::vector<std::string>& data = *optionalIndexedOffsetArray.getData();
+            const std::vector<std::string>& data = optionalIndexedOffsetArray.getData();
             const size_t expectedNumElements = NUM_ELEMENTS;
             ASSERT_EQ(expectedNumElements, data.size());
             for (uint8_t i = 0; i < NUM_ELEMENTS; ++i)
