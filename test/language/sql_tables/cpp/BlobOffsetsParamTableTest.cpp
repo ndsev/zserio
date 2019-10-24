@@ -41,7 +41,7 @@ protected:
         row.setOffsetsHolder(OffsetsHolder(std::vector<uint32_t>(array_size)));
 
         row.setBlob(ParameterizedBlob());
-        ParameterizedBlob& parameterizedBlob = *row.getBlob();
+        ParameterizedBlob& parameterizedBlob = row.getBlob();
         std::vector<uint32_t>& array = parameterizedBlob.getArray();
         for (uint32_t i = 0; i < array_size; ++i)
             array.push_back(i);

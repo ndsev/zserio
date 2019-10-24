@@ -34,9 +34,9 @@ protected:
     static void fillBlobParamTableRowWithNullValues(BlobParamTable::Row& row, uint32_t blobId)
     {
         row.setBlobId(blobId);
-        row.setName(zserio::NullOpt);
-        row.setParameters(zserio::NullOpt);
-        row.setBlob(zserio::NullOpt);
+        row.resetName();
+        row.resetParameters();
+        row.resetBlob();
     }
 
     static void fillBlobParamTableRowsWithNullValues(std::vector<BlobParamTable::Row>& rows)
@@ -83,20 +83,20 @@ protected:
     {
         ASSERT_EQ(row1.getBlobId(), row2.getBlobId());
 
-        if (row1.getName())
+        if (row1.hasName() && row2.hasName())
             ASSERT_EQ(row1.getName(), row2.getName());
         else
-            ASSERT_FALSE(row2.getName());
+            ASSERT_EQ(row1.hasName(), row2.hasName());
 
-        if (row1.getParameters())
+        if (row1.hasParameters() && row2.hasParameters())
             ASSERT_EQ(row1.getParameters(), row2.getParameters());
         else
-            ASSERT_FALSE(row2.getParameters());
+            ASSERT_EQ(row1.hasParameters(), row2.hasParameters());
 
-        if (row1.getBlob())
+        if (row1.hasBlob() && row2.hasBlob())
             ASSERT_EQ(row1.getBlob(), row2.getBlob());
         else
-            ASSERT_FALSE(row2.getBlob());
+            ASSERT_EQ(row1.hasBlob(), row2.hasBlob());
     }
 
     static void checkBlobParamTableRows(const std::vector<BlobParamTable::Row>& rows1,

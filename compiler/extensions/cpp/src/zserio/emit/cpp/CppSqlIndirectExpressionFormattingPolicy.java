@@ -17,5 +17,5 @@ public class CppSqlIndirectExpressionFormattingPolicy extends CppExpressionForma
         return SQL_INDIRECT_PREFIX;
     }
 
-    private static final String SQL_INDIRECT_PREFIX = "*row";
+    private static final String SQL_INDIRECT_PREFIX = "row";
 }

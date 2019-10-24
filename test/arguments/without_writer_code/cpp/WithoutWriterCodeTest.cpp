@@ -353,8 +353,8 @@ TEST_F(WithoutWriterCode, readWorldDb)
     GeoMapTable::Row europeRow = europeReader.next();
     ASSERT_FALSE(europeReader.hasNext());
 
-    ASSERT_EQ(TILE_ID_EUROPE, europeRow.getTileId().value());
-    checkTile(europeRow.getTile().value());
+    ASSERT_EQ(TILE_ID_EUROPE, europeRow.getTileId());
+    checkTile(europeRow.getTile());
 
     const GeoMapTable& america = worldDb.getAmerica();
     GeoMapTable::Reader americaReader = america.createReader();
@@ -362,8 +362,8 @@ TEST_F(WithoutWriterCode, readWorldDb)
     GeoMapTable::Row americaRow = americaReader.next();
     ASSERT_FALSE(americaReader.hasNext());
 
-    ASSERT_EQ(TILE_ID_AMERICA, americaRow.getTileId().value());
-    checkTile(americaRow.getTile().value());
+    ASSERT_EQ(TILE_ID_AMERICA, americaRow.getTileId());
+    checkTile(americaRow.getTile());
 }
 
 } // namespace without_writer_code

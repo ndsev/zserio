@@ -93,9 +93,9 @@ protected:
         ASSERT_EQ(row1.getBlob3(), row2.getBlob3());
 
         // check reused explicit parameters
-        ASSERT_EQ((*row2.getBlob1()).getCount8(), (*row2.getBlob3()).getCount8());
-        ASSERT_EQ((*row2.getBlob1()).getCount8(), (*row2.getBlob3()).getCount16());
-        ASSERT_EQ((*row2.getBlob2()).getCount8(), (*row2.getBlob2()).getCount16());
+        ASSERT_EQ(row2.getBlob1().getCount8(), row2.getBlob3().getCount8());
+        ASSERT_EQ(row2.getBlob1().getCount8(), row2.getBlob3().getCount16());
+        ASSERT_EQ(row2.getBlob2().getCount8(), row2.getBlob2().getCount16());
     }
 
     static void checkMultipleParamsTableRows(const std::vector<MultipleParamsTable::Row>& rows1,

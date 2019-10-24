@@ -106,8 +106,8 @@ target_include_directories(sql_tables_zs SYSTEM PRIVATE ${SQLITE_INCDIR})
 
 add_test_sources(
     ${ZSERIO_CPP_DIR}/BlobFieldWithChildrenInitializationTableTest.cpp
-    ${ZSERIO_CPP_DIR}/BlobParamTableTest.cpp
     ${ZSERIO_CPP_DIR}/BlobOffsetsParamTableTest.cpp
+    ${ZSERIO_CPP_DIR}/BlobParamTableTest.cpp
     ${ZSERIO_CPP_DIR}/ColumnParamTableTest.cpp
     ${ZSERIO_CPP_DIR}/ComplexTableTest.cpp
     ${ZSERIO_CPP_DIR}/ConstParamTableTest.cpp

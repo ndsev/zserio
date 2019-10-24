@@ -228,27 +228,27 @@ void ${name}::writeRow(<#if needsParameterProvider>IParameterProvider& parameter
 
     <#list fields as field>
     // field ${field.name}
-    if (!row.${field.getterName}())
+    if (!row.${field.indicatorName}())
     {
         result = sqlite3_bind_null(&statement, ${field?index + 1});
     }
     else
     {
         <#if field.sqlTypeData.isBlob>
-        ${field.cppTypeName}& blob = *row.${field.getterName}();
+        ${field.cppTypeName}& blob = row.${field.getterName}();
         ::zserio::BitStreamWriter writer;
         blob.write(writer, ::zserio::NO_PRE_WRITE_ACTION);
         size_t blobDataLength;
         const uint8_t* blobData = writer.getWriteBuffer(blobDataLength);
         result = sqlite3_bind_blob(&statement, ${field?index + 1}, blobData, static_cast<int>(blobDataLength), SQLITE_TRANSIENT);
         <#elseif field.sqlTypeData.isInteger>
-        const int64_t intValue = static_cast<int64_t>(*row.${field.getterName}());
+        const int64_t intValue = static_cast<int64_t>(row.${field.getterName}());
         result = sqlite3_bind_int64(&statement, ${field?index + 1}, intValue);
         <#elseif field.sqlTypeData.isReal>
-        const ${field.cppTypeName} realValue = *row.${field.getterName}();
+        const ${field.cppTypeName} realValue = row.${field.getterName}();
         result = sqlite3_bind_double(&statement, ${field?index + 1}, static_cast<double>(realValue));
         <#else>
-        const ${field.cppTypeName}& stringValue = *row.${field.getterName}();
+        const ${field.cppTypeName}& stringValue = row.${field.getterName}();
         result = sqlite3_bind_text(&statement, ${field?index + 1}, stringValue.c_str(), -1, SQLITE_TRANSIENT);
         </#if>
     }
@@ -335,28 +335,38 @@ ${name}::Row& ${name}::Row::operator=(Row&& other)
 <#list fields as field>
 <#if !field.isSimpleType>
 
-${field.optionalCppTypeName}& ${name}::Row::${field.getterName}()
+${field.cppTypeName}& ${name}::Row::${field.getterName}()
 {
-    return <@sql_field_member_name field/>;
+    return <@sql_field_member_name field/>.value();
 }
 </#if>
 
-const ${field.optionalCppTypeName}& ${name}::Row::${field.getterName}() const
+${field.cppArgumentTypeName} ${name}::Row::${field.getterName}() const
 {
-    return <@sql_field_member_name field/>;
+    return <@sql_field_member_name field/>.value();
 }
 
-void ${name}::Row::${field.setterName}(${field.optionalCppArgumentTypeName} <@sql_field_argument_name field/>)
+void ${name}::Row::${field.setterName}(${field.cppArgumentTypeName} <@sql_field_argument_name field/>)
 {
     <@sql_field_member_name field/> = <@sql_field_argument_name field/>;
 }
 <#if !field.isSimpleType>
 
-void ${name}::Row::${field.setterName}(${field.optionalCppTypeName}&& <@sql_field_argument_name field/>)
+void ${name}::Row::${field.setterName}(${field.cppTypeName}&& <@sql_field_argument_name field/>)
 {
     <@sql_field_member_name field/> = ::std::move(<@sql_field_argument_name field/>);
 }
 </#if>
+
+void ${name}::Row::${field.resetterName}()
+{
+    <@sql_field_member_name field/>.reset();
+}
+
+bool ${name}::Row::${field.indicatorName}() const
+{
+    return <@sql_field_member_name field/>.hasValue();
+}
 </#list>
 <#if withWriterCode>
     <#if needsChildrenInitialization>

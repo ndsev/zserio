@@ -98,9 +98,9 @@ protected:
         ASSERT_EQ(row1.getBlob3(), row2.getBlob3());
 
         // check reused explicit parameters
-        ASSERT_EQ((*row2.getBlob1()).getBlob().getCount(), (*row2.getBlob3()).getBlob().getCount());
+        ASSERT_EQ(row2.getBlob1().getBlob().getCount(), row2.getBlob3().getBlob().getCount());
         // check that even address of the reused explicit header parameter is the same!
-        ASSERT_EQ((*row2.getBlob1()).getBlob(), (*row2.getBlob3()).getBlob());
+        ASSERT_EQ(row2.getBlob1().getBlob(), row2.getBlob3().getBlob());
     }
 
     static void checkBlobParamTableRows(const std::vector<BlobParamTable::Row>& rows1,

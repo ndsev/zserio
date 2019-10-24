@@ -56,7 +56,7 @@ TEST_F(SqlConstraintsTest, withoutSql)
 {
     ConstraintsTable& constraintsTable = m_database->getConstraintsTable();
     ConstraintsTable::Row row;
-    row.setWithoutSql(zserio::NullOpt);
+    row.resetWithoutSql();
     row.setSqlNotNull(1);
     row.setSqlDefaultNull(1);
     row.setSqlNull(1);
@@ -75,7 +75,7 @@ TEST_F(SqlConstraintsTest, sqlNotNull)
     ConstraintsTable& constraintsTable = m_database->getConstraintsTable();
     ConstraintsTable::Row row;
     row.setWithoutSql(1);
-    row.setSqlNotNull(zserio::NullOpt);
+    row.resetSqlNotNull();
     row.setSqlDefaultNull(1);
     row.setSqlNull(1);
     row.setSqlCheckConstant(1);
@@ -94,7 +94,7 @@ TEST_F(SqlConstraintsTest, sqlDefaultNull)
     ConstraintsTable::Row row;
     row.setWithoutSql(1);
     row.setSqlNotNull(1);
-    row.setSqlDefaultNull(zserio::NullOpt);
+    row.resetSqlDefaultNull();
     row.setSqlNull(1);
     row.setSqlCheckConstant(1);
     row.setSqlCheckEnum(ConstraintsEnum::VALUE1);
@@ -113,7 +113,7 @@ TEST_F(SqlConstraintsTest, sqlNull)
     row.setWithoutSql(1);
     row.setSqlNotNull(1);
     row.setSqlDefaultNull(1);
-    row.setSqlNull(zserio::NullOpt);
+    row.resetSqlNull();
     row.setSqlCheckConstant(1);
     row.setSqlCheckEnum(ConstraintsEnum::VALUE1);
     row.setSqlCheckUnicodeEscape(UNICODE_ESCAPE_CONST);

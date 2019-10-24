@@ -75,7 +75,7 @@ protected:
         ASSERT_EQ(row1.getBlob3(), row2.getBlob3());
 
         // check reused explicit count parameter
-        ASSERT_EQ((*row2.getBlob1()).getCount(), (*row2.getBlob3()).getCount());
+        ASSERT_EQ(row2.getBlob1().getCount(), row2.getBlob3().getCount());
     }
 
     static void checkSimpleParamTableRows(const std::vector<SimpleParamTable::Row>& rows1,

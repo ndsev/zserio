@@ -25,7 +25,6 @@ import zserio.emit.common.sql.types.NativeIntegerType;
 import zserio.emit.common.sql.types.NativeRealType;
 import zserio.emit.common.sql.types.SqlNativeType;
 import zserio.emit.cpp.types.CppNativeType;
-import zserio.emit.cpp.types.NativeOptionalHolderType;
 import zserio.tools.HashUtil;
 
 public class SqlTableEmitterTemplateData extends UserTypeTemplateData
@@ -203,12 +202,9 @@ public class SqlTableEmitterTemplateData extends UserTypeTemplateData
             final CppNativeType nativeFieldType = cppNativeTypeMapper.getCppType(fieldTypeReference);
             includeCollector.addHeaderIncludesForType(nativeFieldType);
 
-            final NativeOptionalHolderType nativeOptionalHolder = new NativeOptionalHolderType(nativeFieldType);
-
             name = field.getName();
             cppTypeName = nativeFieldType.getFullName();
-            optionalCppTypeName = nativeOptionalHolder.getFullName();
-            optionalCppArgumentTypeName = nativeOptionalHolder.getArgumentTypeName();
+            cppArgumentTypeName = nativeFieldType.getArgumentTypeName();
             final Expression sqlConstraintExpr = field.getSqlConstraint().getTranslatedFieldConstraintExpr();
             sqlConstraint = (sqlConstraintExpr == null) ? null :
                 cppExpressionFormatter.formatGetter(sqlConstraintExpr);
@@ -216,6 +212,8 @@ public class SqlTableEmitterTemplateData extends UserTypeTemplateData
 
             getterName = AccessorNameFormatter.getGetterName(field);
             setterName = AccessorNameFormatter.getSetterName(field);
+            resetterName = AccessorNameFormatter.getResetterName(field);
+            indicatorName = AccessorNameFormatter.getIndicatorName(field);
 
             typeParameters = new ArrayList<ParameterTemplateData>();
             boolean hasImplicitParameters = false;
@@ -248,14 +246,9 @@ public class SqlTableEmitterTemplateData extends UserTypeTemplateData
             return cppTypeName;
         }
 
-        public String getOptionalCppTypeName()
+        public String getCppArgumentTypeName()
         {
-            return optionalCppTypeName;
-        }
-
-        public String getOptionalCppArgumentTypeName()
-        {
-            return optionalCppArgumentTypeName;
+            return cppArgumentTypeName;
         }
 
         public String getSqlConstraint()
@@ -276,6 +269,16 @@ public class SqlTableEmitterTemplateData extends UserTypeTemplateData
         public String getSetterName()
         {
             return setterName;
+        }
+
+        public String getResetterName()
+        {
+            return resetterName;
+        }
+
+        public String getIndicatorName()
+        {
+            return indicatorName;
         }
 
         public Iterable<ParameterTemplateData> getTypeParameters()
@@ -447,12 +450,13 @@ public class SqlTableEmitterTemplateData extends UserTypeTemplateData
 
         private final String name;
         private final String cppTypeName;
-        private final String optionalCppTypeName;
-        private final String optionalCppArgumentTypeName;
+        private final String cppArgumentTypeName;
         private final String sqlConstraint;
         private final boolean isVirtual;
         private final String getterName;
         private final String setterName;
+        private final String resetterName;
+        private final String indicatorName;
         private final List<ParameterTemplateData> typeParameters;
         private final boolean hasImplicitParameters;
         private final boolean isBoolean;

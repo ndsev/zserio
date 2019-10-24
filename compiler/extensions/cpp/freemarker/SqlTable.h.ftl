@@ -51,13 +51,15 @@ public:
 </#if>
 <#list fields as field>
     <#if !field.isSimpleType>
-        ${field.optionalCppTypeName}& ${field.getterName}();
+        ${field.cppTypeName}& ${field.getterName}();
     </#if>
-        const ${field.optionalCppTypeName}& ${field.getterName}() const;
-        void ${field.setterName}(${field.optionalCppArgumentTypeName} <@sql_field_argument_name field/>);
+        ${field.cppArgumentTypeName} ${field.getterName}() const;
+        void ${field.setterName}(${field.cppArgumentTypeName} <@sql_field_argument_name field/>);
     <#if !field.isSimpleType>
-        void ${field.setterName}(${field.optionalCppTypeName}&& <@sql_field_argument_name field/>);
+        void ${field.setterName}(${field.cppTypeName}&& <@sql_field_argument_name field/>);
     </#if>
+        void ${field.resetterName}();
+        bool ${field.indicatorName}() const;
 
 </#list>
 <#if withWriterCode>
@@ -76,7 +78,7 @@ public:
 
 </#if>
 <#list fields as field>
-        ${field.optionalCppTypeName} <@sql_field_member_name field/>;
+        ::zserio::OptionalHolder<${field.cppTypeName}> <@sql_field_member_name field/>;
 </#list>
     };
 
