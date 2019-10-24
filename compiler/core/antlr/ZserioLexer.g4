@@ -53,6 +53,7 @@ IF                  : 'if' ;
 IMPLICIT            : 'implicit' ;
 IMPORT              : 'import' ;
 INDEX               : '@index' ;
+INSTANTIATE         : 'instantiate' ;
 INT_FIELD           : 'int' ; // signed bitfield
 INT16               : 'int16' ;
 INT32               : 'int32' ;

@@ -6,6 +6,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
 import zserio.tools.HashUtil;
 import zserio.tools.StringJoinUtil;
 
@@ -18,12 +19,7 @@ abstract class TemplatableType extends DocumentableAstNode implements ZserioTemp
      * Constructor.
      *
      * @param location AST node location.
-     * @param pkg Package to which belongs the compound type.
-     * @param name Name of the compound type.
      * @param templateParameters List of template parameters.
-     * @param typeParameters List of parameters for the compound type.
-     * @param fields List of all fields of the compound type.
-     * @param functions List of all functions of the compound type.
      * @param docComment Documentation comment belonging to this node.
      */
     public TemplatableType(AstLocation location, List<TemplateParameter> templateParameters,
@@ -52,7 +48,7 @@ abstract class TemplatableType extends DocumentableAstNode implements ZserioTemp
     @Override
     public List<ZserioTemplatableType> getInstantiations()
     {
-        return Collections.unmodifiableList(new ArrayList<ZserioTemplatableType>(instantiationsMap.values()));
+        return Collections.unmodifiableList(new ArrayList<ZserioTemplatableType>(instantiationMap.values()));
     }
 
     @Override
@@ -74,12 +70,13 @@ abstract class TemplatableType extends DocumentableAstNode implements ZserioTemp
      *
      * @return Instantiation result.
      */
-    InstantiationResult instantiate(ArrayDeque<TypeReference> instantiationReferenceStack)
+    InstantiationResult instantiate(ArrayDeque<TypeReference> instantiationReferenceStack,
+            Package instantiationPackage, String instantiationName)
     {
         try
         {
             final TypeReference instantiationReference = instantiationReferenceStack.peek();
-            final List<TypeReference> templateArguments = instantiationReference.getTemplateArguments();
+            final List<TemplateArgument> templateArguments = instantiationReference.getTemplateArguments();
             if (templateParameters.size() != templateArguments.size())
             {
                 throw new ParserException(instantiationReference,
@@ -87,21 +84,20 @@ abstract class TemplatableType extends DocumentableAstNode implements ZserioTemp
                         templateParameters.size() + ", got " + templateArguments.size() + "!");
             }
 
-            final List<TypeReference> resolvedTemplateArguments = resolveTemplateArguments(templateArguments);
-            final List<TemplateArgument> wrappedTemplateArguments =
-                    wrapTemplateArguments(resolvedTemplateArguments);
+            final InstantiationMapKey key = new InstantiationMapKey(
+                    instantiationPackage.getPackageName(), templateArguments);
 
-            TemplatableType instantiation = instantiationsMap.get(wrappedTemplateArguments);
+            TemplatableType instantiation = instantiationMap.get(key);
             boolean isNewInstance = false;
             if (instantiation == null)
             {
-                final String name = getInstantiationNameImpl(wrappedTemplateArguments);
-                instantiation = instantiateImpl(name, resolvedTemplateArguments);
+                final String name = instantiationName != null ? instantiationName :
+                        generateInstantiationName(templateArguments);
+                instantiation = instantiateImpl(name, templateArguments, instantiationPackage);
                 instantiation.instantiationReferenceStack = instantiationReferenceStack.clone();
                 instantiation.template = this;
-                instantiation.getPackage().addTemplateInstantiation(name, instantiation);
-                instantiationsMap.put(wrappedTemplateArguments, instantiation);
-                instantiationsNamesMap.put(name, instantiation);
+                instantiationPackage.addTemplateInstantiation(name, instantiation);
+                instantiationMap.put(key, instantiation);
                 isNewInstance = true;
             }
 
@@ -114,23 +110,14 @@ abstract class TemplatableType extends DocumentableAstNode implements ZserioTemp
     }
 
     /**
-     * Returns instantiation name for the actual template parameters.
-     *
-     * @param templateArguments Actual template parameters.
-     *
-     * @return Instantiation name.
-     */
-    String getInstantiationName(List<TypeReference> templateArguments)
-    {
-        return getInstantiationNameImpl(wrapTemplateArguments(templateArguments));
-    }
-
-    /**
      * Concrete implementation of template instantiation.
      *
-     * @param templateArguments Actual template parameters.
+     * @param name                 Name to use as instantiation name.
+     * @param templateArguments    Actual template parameters.
+     * @parma instantiationPackage Package where to instantiate the template.
      */
-    abstract TemplatableType instantiateImpl(String name, List<TypeReference> templateArguments);
+    abstract TemplatableType instantiateImpl(String name, List<TemplateArgument> templateArguments,
+            Package instantiationPackage);
 
     /**
      * Definition of result returned from instantiate() method.
@@ -173,110 +160,81 @@ abstract class TemplatableType extends DocumentableAstNode implements ZserioTemp
         private final boolean isNewInstance;
     }
 
-    private String getInstantiationNameImpl(List<TemplateArgument> wrappedTemplateArguments)
+    private static class InstantiationMapKey
     {
-        final StringBuilder nameBuilder = new StringBuilder(getName());
-
-        for (TemplateArgument templateArgument : wrappedTemplateArguments)
+        public InstantiationMapKey(PackageName instantiationPackageName,
+                List<TemplateArgument> templateArguments)
         {
-            nameBuilder.append(NAME_SEPARATOR);
-            nameBuilder.append(templateArgument.toString());
-        }
-
-        return nameBuilder.toString();
-    }
-
-    private List<TypeReference> resolveTemplateArguments(List<TypeReference> templateArguments)
-    {
-        final List<TypeReference> resolvedTemplateArguments = new ArrayList<TypeReference>();
-        for (TypeReference templateArgument : templateArguments)
-        {
-            TypeReference resolvedTemplateArgument = templateArgument;
-            final ZserioType referencedTemplateArgument = templateArgument.getType();
-            if (referencedTemplateArgument instanceof Subtype)
-                resolvedTemplateArgument = ((Subtype)referencedTemplateArgument).getBaseTypeReference();
-            resolvedTemplateArguments.add(resolvedTemplateArgument);
-        }
-
-        return resolvedTemplateArguments;
-    }
-
-    private List<TemplateArgument> wrapTemplateArguments(List<TypeReference> templateArguments)
-    {
-        final List<TemplateArgument> wrappedTemplateArguments = new ArrayList<TemplateArgument>();
-        for (TypeReference templateArgument : templateArguments)
-            wrappedTemplateArguments.add(new TemplateArgument(templateArgument));
-
-        return wrappedTemplateArguments;
-    }
-
-    private static class TemplateArgument
-    {
-        public TemplateArgument(TypeReference templateArgument)
-        {
-            packageName = templateArgument.getReferencedPackageName();
-            typeName = templateArgument.getReferencedTypeName();
-            for (TypeReference argument: templateArgument.getTemplateArguments())
-                templateArguments.add(new TemplateArgument(argument));
-
-            // TODO[Mi-L@]: Get rid of getPackage() on ZserioType interface!
-            //              ZserioType can have only reference to the package name.
-            if (templateArgument.getType() instanceof BuiltInType)
-                resolvedPackageName = PackageName.EMPTY;
-            else
-                resolvedPackageName = templateArgument.getType().getPackage().getPackageName();
+            this.instantiationPackageName = instantiationPackageName;
+            this.templateArguments = templateArguments;
         }
 
         @Override
         public boolean equals(Object other)
         {
-            if (!(other instanceof TemplateArgument))
+            if (!(other instanceof InstantiationMapKey))
                 return false;
 
             if (this == other)
                 return true;
 
-            final TemplateArgument otherArgument = (TemplateArgument)other;
-            return resolvedPackageName.equals(otherArgument.resolvedPackageName) &&
-                    typeName.equals(otherArgument.typeName) &&
-                    templateArguments.equals(otherArgument.templateArguments);
+            final InstantiationMapKey otherKey = (InstantiationMapKey)other;
+            return instantiationPackageName.equals(otherKey.instantiationPackageName) &&
+                    templateArguments.equals(otherKey.templateArguments);
         }
 
         @Override
         public int hashCode()
         {
             int hash = HashUtil.HASH_SEED;
-            hash = HashUtil.hash(hash, resolvedPackageName);
-            hash = HashUtil.hash(hash, typeName);
+            hash = HashUtil.hash(hash, instantiationPackageName);
             hash = HashUtil.hash(hash, templateArguments);
             return hash;
         }
 
-        @Override
-        public String toString()
+        private final PackageName instantiationPackageName;
+        private final List<TemplateArgument> templateArguments;
+    }
+
+    private String generateInstantiationName(List<TemplateArgument> templateArguments)
+    {
+        final StringBuilder nameBuilder = new StringBuilder(getName());
+
+        appendTemplateArgumentsToName(nameBuilder, templateArguments);
+
+        return nameBuilder.toString();
+    }
+
+    private void appendTemplateArgumentsToName(StringBuilder nameBuilder,
+            List<TemplateArgument> templateArguments)
+    {
+        for (TemplateArgument templateArgument : templateArguments)
         {
-            final StringJoinUtil.Joiner joiner = new StringJoinUtil.Joiner(NAME_SEPARATOR);
-            joiner.append(packageName.toString(NAME_SEPARATOR));
-            joiner.append(typeName);
-            for (TemplateArgument templateArgument : templateArguments)
-                joiner.append(templateArgument.toString());
-
-            return joiner.toString();
+            nameBuilder.append(TEMPLATE_NAME_SEPARATOR);
+            appendTemplateArgumentToName(nameBuilder, templateArgument);
         }
+    }
 
-        private final PackageName resolvedPackageName;
-        private final PackageName packageName;
-        private final String typeName;
-        private final List<TemplateArgument> templateArguments = new ArrayList<TemplateArgument>();
+    private void appendTemplateArgumentToName(StringBuilder nameBuilder, TemplateArgument templateArgument)
+    {
+        TypeReference typeReference = templateArgument.getTypeReference();
+        final ZserioType type = typeReference.getType();
+        if (type instanceof Subtype)
+            typeReference = ((Subtype)type).getBaseTypeReference();
+
+        final StringJoinUtil.Joiner joiner = new StringJoinUtil.Joiner(TEMPLATE_NAME_SEPARATOR);
+        joiner.append(typeReference.getReferencedPackageName().toString(TEMPLATE_NAME_SEPARATOR));
+        joiner.append(typeReference.getReferencedTypeName());
+        nameBuilder.append(joiner.toString());
+
+        appendTemplateArgumentsToName(nameBuilder, templateArgument.getTypeReference().getTemplateArguments());
     }
 
     private final List<TemplateParameter> templateParameters;
-    private final Map<List<TemplateArgument>, TemplatableType> instantiationsMap =
-            new HashMap<List<TemplateArgument>, TemplatableType>();
-    private final Map<String, TemplatableType> instantiationsNamesMap =
-            new HashMap<String, TemplatableType>();
+    private final Map<InstantiationMapKey, TemplatableType> instantiationMap =
+            new HashMap<InstantiationMapKey, TemplatableType>();
     private ArrayDeque<TypeReference> instantiationReferenceStack = null;
     private TemplatableType template = null;
 
-    private static final String NAME_SEPARATOR = "_";
+    private static final String TEMPLATE_NAME_SEPARATOR = "_";
 }

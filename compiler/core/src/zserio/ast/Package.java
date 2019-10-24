@@ -29,14 +29,12 @@ public class Package extends DocumentableAstNode
      * @param localTypes  Map of all available local types defined in the package.
      * @param docComment  Documentation comment belonging to this node.
      */
-    public Package(AstLocation location, PackageName packageName, List<Import> imports,
-            LinkedHashMap<String, ZserioType> localTypes, DocComment docComment)
+    public Package(AstLocation location, PackageName packageName, List<Import> imports, DocComment docComment)
     {
         super(location, docComment);
 
         this.packageName = packageName;
         this.imports = imports;
-        this.localTypes = localTypes;
     }
 
     @Override
@@ -92,13 +90,15 @@ public class Package extends DocumentableAstNode
             stackedException.pushMessage(addedType.getLocation(), "    First defined here");
             throw stackedException;
         }
+        if (type instanceof InstantiateType)
+            localInstantiations.add((InstantiateType)type);
     }
 
     /**
      * Adds a new template instantiation to this package.
      *
-     * @param name          Name of the generated template instantiation.
-     * @param instantiation Template instantiation.
+     * @param name              Name of the generated template instantiation.
+     * @param instantiation     Template instantiation.
      */
     void addTemplateInstantiation(String name, TemplatableType instantiation)
     {
@@ -181,6 +181,22 @@ public class Package extends DocumentableAstNode
         final List<ZserioType> foundTypes = getAllVisibleTypes(typePackageName, typeName);
 
         return (foundTypes.size() == 1) ? foundTypes.get(0) : null;
+    }
+
+    Set<InstantiateType> getVisibleInstantiations()
+    {
+        Set<InstantiateType> visibleInstantitaions =
+                new HashSet<InstantiateType>(localInstantiations);
+        for (Package pkg : importedPackages)
+            visibleInstantitaions.addAll(pkg.getVisibleInstantiations());
+        for (SingleTypeName singleType : importedSingleTypes)
+        {
+            final Package singleTypePackage = singleType.getPackageType();
+            final ZserioType type = singleTypePackage.localTypes.get(singleType.getTypeName());
+            if (type instanceof InstantiateType)
+                visibleInstantitaions.add((InstantiateType)type);
+        }
+        return visibleInstantitaions;
     }
 
     /**
@@ -374,7 +390,8 @@ public class Package extends DocumentableAstNode
     private final List<Import> imports;
 
     // this must be a LinkedHashMap because of 'Cyclic dependency' error checked in ZserioAstTypeResolver
-    private final LinkedHashMap<String, ZserioType> localTypes;
+    private final LinkedHashMap<String, ZserioType> localTypes = new LinkedHashMap<String, ZserioType>();
+    private final HashSet<InstantiateType> localInstantiations = new HashSet<InstantiateType>();
     private final LinkedHashMap<String, TemplatableType> templateInstantiations =
             new LinkedHashMap<String, TemplatableType>();
 

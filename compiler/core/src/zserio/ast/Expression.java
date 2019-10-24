@@ -658,7 +658,8 @@ public class Expression extends AstNodeBase
      *
      * @return New expression instantiated from this using the given template arguments.
      */
-    Expression instantiate(List<TemplateParameter> templateParameters, List<TypeReference> templateArguments)
+    Expression instantiate(List<TemplateParameter> templateParameters,
+            List<TemplateArgument> templateArguments)
     {
         if (operand1 == null)
         {
@@ -670,15 +671,17 @@ public class Expression extends AstNodeBase
                 if (index != -1)
                 {
                     // template parameter has been found
-                    final TypeReference templateArgument= templateArguments.get(index);
-                    final PackageName templateArgumentPackage = templateArgument.getReferencedPackageName();
+                    final TypeReference templateArgumentReference =
+                            templateArguments.get(index).getTypeReference();
+                    final PackageName templateArgumentPackage =
+                            templateArgumentReference.getReferencedPackageName();
                     if (!templateArgumentPackage.isEmpty())
                     {
                         // found template argument is type reference with specified package
                         return createInstantiationTree(templateArgumentPackage,
-                                templateArgument.getReferencedTypeName());
+                                templateArgumentReference.getReferencedTypeName());
                     }
-                    instantiatedText = templateArgument.getReferencedTypeName();
+                    instantiatedText = templateArgumentReference.getReferencedTypeName();
                 }
             }
 

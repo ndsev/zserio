@@ -105,7 +105,7 @@ public class Function extends DocumentableAstNode
      *
      * @return New function type instantiated from this using the given template arguments.
      */
-    Function instantiate(List<TemplateParameter> templateParameters, List<TypeReference> templateArguments)
+    Function instantiate(List<TemplateParameter> templateParameters, List<TemplateArgument> templateArguments)
     {
         final TypeReference instantiatedReturnTypeReference =
                 returnTypeReference.instantiate(templateParameters, templateArguments);

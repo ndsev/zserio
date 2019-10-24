@@ -275,7 +275,7 @@ public class Field extends DocumentableAstNode
      *
      * @return New field instantiated from this using the given template arguments.
      */
-    Field instantiate(List<TemplateParameter> templateParameters, List<TypeReference> templateArguments)
+    Field instantiate(List<TemplateParameter> templateParameters, List<TemplateArgument> templateArguments)
     {
         final TypeInstantiation instantiatedTypeInstantiation =
                 typeInstantiation.instantiate(templateParameters, templateArguments);

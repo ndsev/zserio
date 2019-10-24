@@ -58,8 +58,17 @@ public class ZserioAstTypeResolver extends ZserioAstWalker
     @Override
     public void visitTypeReference(TypeReference typeReference)
     {
-        typeReference.resolve();
+        typeReference.resolve(isTemplateArgument);
         typeReference.visitChildren(this);
+    }
+
+    @Override
+    public void visitTemplateArgument(TemplateArgument templateArgument)
+    {
+        final boolean origIsTemplateArgument = isTemplateArgument;
+        isTemplateArgument = true;
+        templateArgument.visitChildren(this);
+        isTemplateArgument = origIsTemplateArgument;
     }
 
     private void visitType(TemplatableType templatableType)
@@ -70,4 +79,5 @@ public class ZserioAstTypeResolver extends ZserioAstWalker
     }
 
     private Map<PackageName, Package> packageNameMap = null;
+    private boolean isTemplateArgument = false;
 }

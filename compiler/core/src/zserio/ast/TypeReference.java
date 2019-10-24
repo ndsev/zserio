@@ -4,23 +4,40 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+/**
+ * AST node for type reference.
+ */
 public class TypeReference extends AstNodeBase
 {
-    public TypeReference(AstLocation location, Package ownerPackage, BuiltInType builtinType,
-            boolean isTemplateArgument)
+    /**
+     * Constructor from built-in type.
+     *
+     * @param location           AST node location.
+     * @param ownerPackage       Owner package.
+     * @param builtinType        Built-in type to be referenced.
+     */
+    public TypeReference(AstLocation location, Package ownerPackage, BuiltInType builtinType)
     {
         super(location);
 
         this.ownerPackage = ownerPackage;
         referencedPackageName = PackageName.EMPTY;
         referencedTypeName = builtinType.getName();
-        templateArguments = new ArrayList<TypeReference>();
-        this.isTemplateArgument = isTemplateArgument;
+        templateArguments = new ArrayList<TemplateArgument>();
         type = builtinType;
     }
 
+    /**
+     * Constructor from a user defined type.
+     *
+     * @param location               AST node location.
+     * @param ownerPackage           Owner package.
+     * @param referencedPackageName  Referenced package name.
+     * @param referencedTypeName     Name of the referenced type.
+     * @param templateArguments      List of template arguments used for the referenced template instantiation.
+     */
     public TypeReference(AstLocation location, Package ownerPackage, PackageName referencedPackageName,
-            String referencedTypeName, List<TypeReference> templateArguments, boolean isTemplateArgument)
+            String referencedTypeName, List<TemplateArgument> templateArguments)
     {
         super(location);
 
@@ -28,7 +45,6 @@ public class TypeReference extends AstNodeBase
         this.referencedPackageName = referencedPackageName;
         this.referencedTypeName = referencedTypeName;
         this.templateArguments = templateArguments;
-        this.isTemplateArgument = isTemplateArgument;
     }
 
     @Override
@@ -43,15 +59,25 @@ public class TypeReference extends AstNodeBase
         if (type instanceof BuiltInType)
             ((BuiltInType)type).accept(visitor);
 
-        for (TypeReference templateArgument : templateArguments)
+        for (TemplateArgument templateArgument : templateArguments)
             templateArgument.accept(visitor);
     }
 
+    /**
+     * Gets the referenced type.
+     *
+     * @return Zserio type which is referenced by this type reference.
+     */
     public ZserioType getType()
     {
         return type;
     }
 
+    /**
+     * Gets the referenced base type - i.e. the type got by resolving subtypes.
+     *
+     * @return Zserio base type which is referenced by this type reference.
+     */
     public ZserioType getBaseType()
     {
         if (type instanceof Subtype)
@@ -59,16 +85,31 @@ public class TypeReference extends AstNodeBase
         return type;
     }
 
-    public List<TypeReference> getTemplateArguments()
+    /**
+     * Gets template arguments.
+     *
+     * @return Actual template parameters.
+     */
+    public List<TemplateArgument> getTemplateArguments()
     {
         return Collections.unmodifiableList(templateArguments);
     }
 
+    /**
+     * Gets referenced package name.
+     *
+     * @return Package name.
+     */
     public PackageName getReferencedPackageName()
     {
         return referencedPackageName;
     }
 
+    /**
+     * Gets referenced type name.
+     *
+     * @return Type name.
+     */
     public String getReferencedTypeName()
     {
         return referencedTypeName;
@@ -77,7 +118,7 @@ public class TypeReference extends AstNodeBase
     /**
      * Resolves this reference to the corresponding referenced type.
      */
-    void resolve()
+    void resolve(boolean isTemplateArgument)
     {
         // TODO[Mi-L@][typeref] Hack for built-in types.
         //                      Note that instantiated templates are also resolved, but we don't know yet how
@@ -109,6 +150,11 @@ public class TypeReference extends AstNodeBase
         }
     }
 
+    /**
+     * Resolves the type instantiation.
+     *
+     * @param instantiation Type instantiation to resolve this reference to.
+     */
     void resolveInstantiation(ZserioTemplatableType instantiation)
     {
         type = instantiation;
@@ -122,7 +168,8 @@ public class TypeReference extends AstNodeBase
      *
      * @return New type reference instantiated from this using the given template arguments.
      */
-    TypeReference instantiate(List<TemplateParameter> templateParameters, List<TypeReference> templateArguments)
+    TypeReference instantiate(List<TemplateParameter> templateParameters,
+            List<TemplateArgument> templateArguments)
     {
         if (getReferencedPackageName().isEmpty()) // may be a template parameter
         {
@@ -132,62 +179,57 @@ public class TypeReference extends AstNodeBase
                 if (!getTemplateArguments().isEmpty())
                     throw new ParserException(this, "Template parameter cannot be used as a template!");
 
-                final TypeReference templateArgument = templateArguments.get(index);
+                final TypeReference typeReference = templateArguments.get(index).getTypeReference();
 
-                // TODO[Mi-L@]: Consider redesign of the isTemplateArgument flag (how to get rid of it).
-                // flag isTemplateArgument must be taken over from this!
-                return templateArgument.instantiateImpl(getLocation(), templateArgument.templateArguments,
-                        isTemplateArgument, templateParameters, templateArguments);
+                return typeReference.instantiateImpl(getLocation(), typeReference.templateArguments,
+                        templateParameters, templateArguments);
             }
         }
 
         // instantiate template arguments first
-        final List<TypeReference> instantiatedTemplateArguments = new ArrayList<TypeReference>();
-        for (TypeReference templateArgument : getTemplateArguments())
+        final List<TemplateArgument> instantiatedTemplateArguments = new ArrayList<TemplateArgument>();
+        for (TemplateArgument templateArgument : getTemplateArguments())
         {
             instantiatedTemplateArguments.add(
                     templateArgument.instantiate(templateParameters, templateArguments));
         }
 
-        return instantiateImpl(getLocation(), instantiatedTemplateArguments, isTemplateArgument,
+        return instantiateImpl(getLocation(), instantiatedTemplateArguments,
                 templateParameters, templateArguments);
     }
 
     private TypeReference instantiateImpl(AstLocation location,
-            List<TypeReference> instantiatedTemplateArguments, boolean isTemplateArgument,
-            List<TemplateParameter> templateParameters, List<TypeReference> passedTemplateArguments)
+            List<TemplateArgument> instantiatedTemplateArguments,
+            List<TemplateParameter> templateParameters, List<TemplateArgument> passedTemplateArguments)
     {
         if (type instanceof BuiltInType) // TODO[Mi-L@][typeref] Hack for built-in types.
         {
             if (type instanceof BitFieldType)
             {
                 return new TypeReference(location, ownerPackage,
-                        ((BitFieldType)type).instantiate(templateParameters, passedTemplateArguments),
-                        isTemplateArgument);
+                        ((BitFieldType)type).instantiate(templateParameters, passedTemplateArguments));
             }
             else if (type instanceof ArrayType)
             {
                 return new TypeReference(location, ownerPackage,
-                        ((ArrayType)type).instantiate(templateParameters, passedTemplateArguments),
-                        isTemplateArgument);
+                        ((ArrayType)type).instantiate(templateParameters, passedTemplateArguments));
             }
             else
             {
-                return new TypeReference(location, ownerPackage, (BuiltInType)type, isTemplateArgument);
+                return new TypeReference(location, ownerPackage, (BuiltInType)type);
             }
         }
         else
         {
             return new TypeReference(location, ownerPackage, referencedPackageName, referencedTypeName,
-                    instantiatedTemplateArguments, isTemplateArgument);
+                    instantiatedTemplateArguments);
         }
     }
 
     private final Package ownerPackage;
     private final PackageName referencedPackageName;
     private final String referencedTypeName;
-    private final List<TypeReference> templateArguments;
-    private final boolean isTemplateArgument;
+    private final List<TemplateArgument> templateArguments;
 
     private ZserioType type = null;
 }

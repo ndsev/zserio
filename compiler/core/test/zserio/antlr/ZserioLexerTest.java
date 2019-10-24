@@ -104,6 +104,7 @@ public class ZserioLexerTest
                 "if " +
                 "implicit " +
                 "import " +
+                "instantiate " +
                 "@index " +
                 "int " +
                 "int16 " +
@@ -162,6 +163,7 @@ public class ZserioLexerTest
         checkToken(lexer, ZserioLexer.IF);
         checkToken(lexer, ZserioLexer.IMPLICIT);
         checkToken(lexer, ZserioLexer.IMPORT);
+        checkToken(lexer, ZserioLexer.INSTANTIATE);
         checkToken(lexer, ZserioLexer.INDEX);
         checkToken(lexer, ZserioLexer.INT_FIELD);
         checkToken(lexer, ZserioLexer.INT16);

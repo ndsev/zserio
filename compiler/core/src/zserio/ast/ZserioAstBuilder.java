@@ -62,9 +62,7 @@ public class ZserioAstBuilder extends ZserioParserBaseVisitor<Object>
         final ParserRuleContext packageLocationCtx = ctx.packageNameDefinition() != null
                 ? ctx.packageNameDefinition().id(0) : ctx;
         final AstLocation packageLocation = new AstLocation(packageLocationCtx.getStart());
-        localTypes = new LinkedHashMap<String, ZserioType>();
-        currentPackage = new Package(packageLocation, packageName, imports, localTypes,
-                docComment);
+        currentPackage = new Package(packageLocation, packageName, imports, docComment);
         if (packageNameMap.put(currentPackage.getPackageName(), currentPackage) != null)
         {
             // translation unit package already exists, this could happen only for default packages
@@ -78,7 +76,6 @@ public class ZserioAstBuilder extends ZserioParserBaseVisitor<Object>
             currentPackage.addType(type);
         }
 
-        localTypes = null;
         final Package unitPackage = currentPackage;
         currentPackage = null;
 
@@ -551,18 +548,32 @@ public class ZserioAstBuilder extends ZserioParserBaseVisitor<Object>
     }
 
     @Override
-    public List<TypeReference> visitTemplateArguments(ZserioParser.TemplateArgumentsContext ctx)
+    public List<TemplateArgument> visitTemplateArguments(ZserioParser.TemplateArgumentsContext ctx)
     {
-        final ArrayList<TypeReference> templateArguments = new ArrayList<TypeReference>();
+        final ArrayList<TemplateArgument> templateArguments = new ArrayList<TemplateArgument>();
         if (ctx != null)
         {
-            final boolean origIsTemplateArgument = isTemplateArgument;
-            isTemplateArgument = true;
-            for (ZserioParser.TypeReferenceContext typeReferenceCtx : ctx.typeReference())
-                templateArguments.add(visitTypeReference(typeReferenceCtx));
-            isTemplateArgument = origIsTemplateArgument;
+            for (ZserioParser.TemplateArgumentContext templateArgumentCtx : ctx.templateArgument())
+                templateArguments.add(visitTemplateArgument(templateArgumentCtx));
         }
         return templateArguments;
+    }
+
+    @Override
+    public TemplateArgument visitTemplateArgument(ZserioParser.TemplateArgumentContext ctx)
+    {
+        final AstLocation location = new AstLocation(ctx.getStart());
+        final TypeReference typeReference = visitTypeReference(ctx.typeReference());
+        return new TemplateArgument(location, typeReference);
+    }
+
+    @Override
+    public InstantiateType visitInstantiateDeclaration(ZserioParser.InstantiateDeclarationContext ctx)
+    {
+        final AstLocation location = new AstLocation(ctx.id().getStart());
+        final TypeReference typeReference = visitTypeReference(ctx.typeReference());
+        final String name = ctx.id().getText();
+        return new InstantiateType(location, currentPackage, typeReference, name);
     }
 
     @Override
@@ -837,14 +848,14 @@ public class ZserioAstBuilder extends ZserioParserBaseVisitor<Object>
         if (ctx.builtinType() != null)
         {
             return new TypeReference(location, currentPackage,
-                    (BuiltInType)visitBuiltinType(ctx.builtinType()), isTemplateArgument);
+                    (BuiltInType)visitBuiltinType(ctx.builtinType()));
         }
 
-        final List<TypeReference> templateArguments = visitTemplateArguments(ctx.templateArguments());
+        final List<TemplateArgument> templateArguments = visitTemplateArguments(ctx.templateArguments());
         final QualifiedName qualifiedName = visitQualifiedName(ctx.qualifiedName());
 
         return new TypeReference(location, currentPackage, qualifiedName.getReferencedPackageName(),
-                qualifiedName.getReferencedTypeName(), templateArguments, isTemplateArgument);
+                qualifiedName.getReferencedTypeName(), templateArguments);
     }
 
     @Override
@@ -999,7 +1010,7 @@ public class ZserioAstBuilder extends ZserioParserBaseVisitor<Object>
             final ArrayType arrayType = new ArrayType(arrayTypeLocation, typeInstantiation, isImplicit,
                     lengthExpression);
             final TypeReference arrayTypeReference =
-                    new TypeReference(arrayTypeLocation, currentPackage, arrayType, isTemplateArgument);
+                    new TypeReference(arrayTypeLocation, currentPackage, arrayType);
             // TODO[Mi-L@][typeref] Introduce ArrayTypeInstantiation.
             typeInstantiation = new TypeInstantiation(arrayTypeLocation, arrayTypeReference,
                     visitTypeArguments(null));
@@ -1064,9 +1075,7 @@ public class ZserioAstBuilder extends ZserioParserBaseVisitor<Object>
             new LinkedHashMap<PackageName, Package>();
 
     private Package currentPackage = null;
-    private LinkedHashMap<String, ZserioType> localTypes = null;
     private boolean isInDotExpression = false;
-    private boolean isTemplateArgument = false;
 
     private static final String RSHIFT_OPERATOR = ">>";
 }

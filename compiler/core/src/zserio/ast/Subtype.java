@@ -89,7 +89,7 @@ public class Subtype extends DocumentableAstNode implements ZserioType
 
         resolvingState = ResolvingState.RESOLVING;
 
-        typeReference.resolve(); // make sure the type reference is resolved
+        typeReference.resolve(false); // make sure the type reference is resolved
         if (typeReference.getType() instanceof Subtype)
             baseTypeReference = ((Subtype)typeReference.getType()).resolve();
         else
