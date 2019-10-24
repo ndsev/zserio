@@ -68,7 +68,15 @@ public class ZserioAstTypeResolver extends ZserioAstWalker
         final boolean origIsTemplateArgument = isTemplateArgument;
         isTemplateArgument = true;
         templateArgument.visitChildren(this);
+        templateArgument.resolve();
         isTemplateArgument = origIsTemplateArgument;
+    }
+
+    @Override
+    public void visitInstantiateType(InstantiateType instantiateType)
+    {
+        instantiateType.visitChildren(this);
+        instantiateType.resolve();
     }
 
     private void visitType(TemplatableType templatableType)

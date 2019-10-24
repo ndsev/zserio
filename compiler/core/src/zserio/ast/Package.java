@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -91,7 +92,7 @@ public class Package extends DocumentableAstNode
             throw stackedException;
         }
         if (type instanceof InstantiateType)
-            localInstantiations.add((InstantiateType)type);
+            localInstantiateTypes.add((InstantiateType)type);
     }
 
     /**
@@ -103,7 +104,7 @@ public class Package extends DocumentableAstNode
     void addTemplateInstantiation(String name, TemplatableType instantiation)
     {
         final ZserioType addedType = localTypes.get(name);
-        if (addedType != null)
+        if (addedType != null && !(addedType instanceof InstantiateType))
         {
             final ParserStackedException stackedException = new ParserStackedException(
                     instantiation.getLocation(), "'" + name + "' is already defined in this package!");
@@ -183,20 +184,20 @@ public class Package extends DocumentableAstNode
         return (foundTypes.size() == 1) ? foundTypes.get(0) : null;
     }
 
-    Set<InstantiateType> getVisibleInstantiations()
+    Set<InstantiateType> getVisibleInstantiateTypes()
     {
-        Set<InstantiateType> visibleInstantitaions =
-                new HashSet<InstantiateType>(localInstantiations);
+        Set<InstantiateType> visibleInstantitateTypes =
+                new HashSet<InstantiateType>(localInstantiateTypes);
         for (Package pkg : importedPackages)
-            visibleInstantitaions.addAll(pkg.getVisibleInstantiations());
+            visibleInstantitateTypes.addAll(pkg.getVisibleInstantiateTypes());
         for (SingleTypeName singleType : importedSingleTypes)
         {
             final Package singleTypePackage = singleType.getPackageType();
             final ZserioType type = singleTypePackage.localTypes.get(singleType.getTypeName());
             if (type instanceof InstantiateType)
-                visibleInstantitaions.add((InstantiateType)type);
+                visibleInstantitateTypes.add((InstantiateType)type);
         }
-        return visibleInstantitaions;
+        return visibleInstantitateTypes;
     }
 
     /**
@@ -391,7 +392,7 @@ public class Package extends DocumentableAstNode
 
     // this must be a LinkedHashMap because of 'Cyclic dependency' error checked in ZserioAstTypeResolver
     private final LinkedHashMap<String, ZserioType> localTypes = new LinkedHashMap<String, ZserioType>();
-    private final HashSet<InstantiateType> localInstantiations = new HashSet<InstantiateType>();
+    private final Set<InstantiateType> localInstantiateTypes = new LinkedHashSet<InstantiateType>();
     private final LinkedHashMap<String, TemplatableType> templateInstantiations =
             new LinkedHashMap<String, TemplatableType>();
 

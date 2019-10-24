@@ -55,29 +55,27 @@ public class TemplateArgument extends AstNodeBase
 
         final TemplateArgument otherArgument = (TemplateArgument)other;
 
-        final ZserioType baseType = typeReference.getBaseType();
-        final PackageName packageName = baseType instanceof BuiltInType ?
-                PackageName.EMPTY : baseType.getPackage().getPackageName();
+        final PackageName packageName = referencedBaseType instanceof BuiltInType ?
+                PackageName.EMPTY : referencedBaseType.getPackage().getPackageName();
 
-        final ZserioType otherBaseType = otherArgument.typeReference.getBaseType();
+        final ZserioType otherBaseType = otherArgument.referencedBaseType;
         final PackageName otherPackageName = otherBaseType instanceof BuiltInType ?
                 PackageName.EMPTY : otherBaseType.getPackage().getPackageName();
 
         return packageName.equals(otherPackageName) &&
-                baseType.getName().equals(otherBaseType.getName()) &&
+                referencedBaseType.getName().equals(otherBaseType.getName()) &&
                 typeReference.getTemplateArguments().equals(otherArgument.typeReference.getTemplateArguments());
     }
 
     @Override
     public int hashCode()
     {
-        final ZserioType baseType = typeReference.getBaseType();
-        final PackageName packageName = baseType instanceof BuiltInType ?
-                PackageName.EMPTY : baseType.getPackage().getPackageName();
+        final PackageName packageName = referencedBaseType instanceof BuiltInType ?
+                PackageName.EMPTY : referencedBaseType.getPackage().getPackageName();
 
         int hash = HashUtil.HASH_SEED;
         hash = HashUtil.hash(hash, packageName);
-        hash = HashUtil.hash(hash, baseType.getName());
+        hash = HashUtil.hash(hash, referencedBaseType.getName());
         hash = HashUtil.hash(hash, typeReference.getTemplateArguments());
         return hash;
     }
@@ -99,5 +97,17 @@ public class TemplateArgument extends AstNodeBase
         return new TemplateArgument(getLocation(), instantiatedTypeReference);
     }
 
+    /**
+     * Resolves template argument.
+     */
+    void resolve()
+    {
+        // we need to "remember" the referenced base type because in case the argument is a template
+        // instantiation, the type reference will be resolved further during the template instantiation
+        referencedBaseType = typeReference.getBaseType();
+    }
+
     private final TypeReference typeReference;
+
+    private ZserioType referencedBaseType = null;
 }

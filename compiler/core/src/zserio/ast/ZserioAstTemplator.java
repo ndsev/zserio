@@ -1,6 +1,7 @@
 package zserio.ast;
 
 import java.util.ArrayDeque;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -16,9 +17,9 @@ public class ZserioAstTemplator extends ZserioAstWalker
     public void visitPackage(Package pkg)
     {
         currentPackage = pkg;
-        visibleInstantiations = currentPackage.getVisibleInstantiations();
+        visibleInstantiateTypes = currentPackage.getVisibleInstantiateTypes();
         pkg.visitChildren(this);
-        visibleInstantiations = null;
+        visibleInstantiateTypes = null;
         currentPackage = null;
     }
 
@@ -102,25 +103,49 @@ public class ZserioAstTemplator extends ZserioAstWalker
 
     private TemplatableType.InstantiationResult instantiate(TemplatableType template)
     {
-
-        final InstantiateType templateInstantiation = getMatchingInstantiation(template);
-        if (templateInstantiation != null)
+        final InstantiateType instantiateType = getMatchingInstantiateType(template);
+        if (instantiateType != null)
         {
-            final Package instantiationPackage = templateInstantiation.getPackage();
-            final String instantiationName = templateInstantiation.getName();
+            final Package instantiationPackage = instantiateType.getPackage();
+            final String instantiationName = instantiateType.getName();
             return template.instantiate(instantiationReferenceStack, instantiationPackage, instantiationName);
         }
         return template.instantiate(instantiationReferenceStack, template.getPackage(), null);
     }
 
-    private InstantiateType getMatchingInstantiation(TemplatableType template)
+    private InstantiateType getMatchingInstantiateType(TemplatableType template)
     {
-        return null; // TODO[Mi-L@]
+        InstantiateType matchingInstantiateType = null;
+        final List<TemplateArgument> templateArguments =
+                instantiationReferenceStack.peek().getTemplateArguments();
+        for (InstantiateType instantiateType : visibleInstantiateTypes)
+        {
+            final TemplatableType instantiateTemplate = instantiateType.getTemplate();
+            final PackageName instantiatePackageName = instantiateTemplate.getPackage().getPackageName();
+            final PackageName templatePackageName = template.getPackage().getPackageName();
+            if (instantiatePackageName.equals(templatePackageName) &&
+                    instantiateTemplate.getName().equals(template.getName()) &&
+                    instantiateType.getTypeReference().getTemplateArguments().equals(templateArguments))
+            {
+                if (matchingInstantiateType != null)
+                {
+                    final ParserStackedException stackedException = new ParserStackedException(
+                            instantiateType.getLocation(), "Ambiguous instantiate of template '" +
+                            ZserioTypeUtil.getReferencedFullName(instantiateType.getTypeReference()));
+                    stackedException.pushMessage(matchingInstantiateType.getLocation(),
+                            "    first requested here");
+                    throw stackedException;
+                }
+                matchingInstantiateType = instantiateType;
+            }
+        }
+
+        return matchingInstantiateType;
     }
 
     private final ZserioAstTypeResolver typeResolver;
     private final ArrayDeque<TypeReference> instantiationReferenceStack = new ArrayDeque<TypeReference>();
 
     private Package currentPackage = null;
-    private Set<InstantiateType> visibleInstantiations = null;
+    private Set<InstantiateType> visibleInstantiateTypes = null;
 }
