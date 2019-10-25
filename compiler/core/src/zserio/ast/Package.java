@@ -3,7 +3,6 @@ package zserio.ast;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -53,8 +52,6 @@ public class Package extends DocumentableAstNode
 
         for (ZserioType type : localTypes.values())
             type.accept(visitor);
-
-        // TODO[Mi-L@] Should we visit template instantiations from here?!
     }
 
     /**
@@ -95,54 +92,6 @@ public class Package extends DocumentableAstNode
     }
 
     /**
-     * Adds a new template instantiation to this package.
-     *
-     * @param name            Name of the generated template instantiation.
-     * @param instantiation   Template instantiation.
-     * @param instantiateType Explicit request for instantiation.
-     */
-    void addTemplateInstantiation(String name, TemplatableType instantiation, InstantiateType instantiateType)
-    {
-        final ZserioType addedType = localTypes.get(name);
-        if (addedType != null && addedType != instantiateType)
-        {
-            final ParserStackedException stackedException = new ParserStackedException(
-                    instantiation.getLocation(), "'" + name + "' is already defined in this package!");
-            stackedException.pushMessage(addedType.getLocation(), "    First defined here");
-            throw stackedException;
-        }
-
-        final TemplatableType addedInstantiation = templateInstantiations.put(name, instantiation);
-        if (addedInstantiation != null)
-        {
-            final ParserStackedException stackedException = new ParserStackedException(
-                    instantiation.getLocation(), "Instantiation name '" + name + "' already exits!");
-
-            final Iterator<TypeReference> descendingIterator =
-                    addedInstantiation.getInstantiationReferenceStack().descendingIterator();
-            while (descendingIterator.hasNext())
-            {
-                final TypeReference instantiationReference = descendingIterator.next();
-                if (descendingIterator.hasNext())
-                {
-                    stackedException.pushMessage(instantiationReference.getLocation(),
-                            "    Required in instantiation of '" +
-                                    instantiationReference.getReferencedTypeName() + "' from here");
-                }
-                else
-                {
-                    stackedException.pushMessage(instantiationReference.getLocation(),
-                            addedInstantiation.getTemplate() == instantiation.getTemplate()
-                                    ? "    First instantiated here"
-                                    : "    First seen in instantiation of '" +
-                                            instantiationReference.getReferencedTypeName() + "' from here");
-                }
-            }
-            throw stackedException;
-        }
-    }
-
-    /**
      * Gets Zserio type for given type name with its package if it's visible for this package.
      *
      * @param ownerNode       AST node which holds type to resolve (used for ParserException).
@@ -157,10 +106,11 @@ public class Package extends DocumentableAstNode
         final int numFoundTypes = foundTypes.size();
         if (numFoundTypes > 1)
         {
-            final String firstPackageName = foundTypes.get(0).getPackage().getPackageName().toString();
-            final String secondPackageName = foundTypes.get(1).getPackage().getPackageName().toString();
-            throw new ParserException(ownerNode, "Ambiguous type reference '" + typeName +
-                    "' found in packages '" + firstPackageName + "' and '" + secondPackageName + "'!");
+            final ParserStackedException stackedException = new ParserStackedException(ownerNode.getLocation(),
+                    "Ambiguous type reference '" + typeName + "'");
+            for (ZserioType foundType : foundTypes)
+                stackedException.pushMessage(foundType.getLocation(), "    Found here");
+            throw stackedException;
         }
 
         return (numFoundTypes == 1) ? foundTypes.get(0) : null;
@@ -256,6 +206,18 @@ public class Package extends DocumentableAstNode
                 }
             }
         }
+    }
+
+    /**
+     * Gets local type matching the given name.
+     *
+     * @param name Name of the local type to find.
+     *
+     * @return Local type matching the given name or null.
+     */
+    ZserioType getLocalType(String name)
+    {
+        return getLocalType(PackageName.EMPTY, name);
     }
 
     /**
@@ -443,8 +405,6 @@ public class Package extends DocumentableAstNode
 
     // this must be a LinkedHashMap because of 'Cyclic dependency' error checked in ZserioAstTypeResolver
     private final LinkedHashMap<String, ZserioType> localTypes = new LinkedHashMap<String, ZserioType>();
-    private final LinkedHashMap<String, TemplatableType> templateInstantiations =
-            new LinkedHashMap<String, TemplatableType>();
 
     private final Set<Package> importedPackages = new HashSet<Package>();
     // this must be a TreeSet because of 'Ambiguous type reference' error checked in getVisibleType()

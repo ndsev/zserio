@@ -12,14 +12,14 @@ public class TemplateArgument extends AstNodeBase
     /**
      * Constructor.
      *
-     * @param location     AST node location.
-     * @param typeRefrence Referenced type which is a template argument.
+     * @param location      AST node location.
+     * @param typeReference Referenced type which is a template argument.
      */
-    public TemplateArgument(AstLocation location, TypeReference typeRefrence)
+    public TemplateArgument(AstLocation location, TypeReference typeReference)
     {
         super(location);
 
-        this.typeReference = typeRefrence;
+        this.typeReference = typeReference;
     }
 
     @Override
