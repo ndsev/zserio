@@ -5,7 +5,6 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -54,6 +53,8 @@ public class Package extends DocumentableAstNode
 
         for (ZserioType type : localTypes.values())
             type.accept(visitor);
+
+        // TODO[Mi-L@] Should we visit template instantiations from here?!
     }
 
     /**
@@ -91,20 +92,19 @@ public class Package extends DocumentableAstNode
             stackedException.pushMessage(addedType.getLocation(), "    First defined here");
             throw stackedException;
         }
-        if (type instanceof InstantiateType)
-            localInstantiateTypes.add((InstantiateType)type);
     }
 
     /**
      * Adds a new template instantiation to this package.
      *
-     * @param name              Name of the generated template instantiation.
-     * @param instantiation     Template instantiation.
+     * @param name            Name of the generated template instantiation.
+     * @param instantiation   Template instantiation.
+     * @param instantiateType Explicit request for instantiation.
      */
-    void addTemplateInstantiation(String name, TemplatableType instantiation)
+    void addTemplateInstantiation(String name, TemplatableType instantiation, InstantiateType instantiateType)
     {
         final ZserioType addedType = localTypes.get(name);
-        if (addedType != null && !(addedType instanceof InstantiateType))
+        if (addedType != null && addedType != instantiateType)
         {
             final ParserStackedException stackedException = new ParserStackedException(
                     instantiation.getLocation(), "'" + name + "' is already defined in this package!");
@@ -116,8 +116,7 @@ public class Package extends DocumentableAstNode
         if (addedInstantiation != null)
         {
             final ParserStackedException stackedException = new ParserStackedException(
-                    instantiation.getLocation(),
-                    "Instantiation name '" + name + "' already exits!");
+                    instantiation.getLocation(), "Instantiation name '" + name + "' already exits!");
 
             final Iterator<TypeReference> descendingIterator =
                     addedInstantiation.getInstantiationReferenceStack().descendingIterator();
@@ -182,22 +181,6 @@ public class Package extends DocumentableAstNode
         final List<ZserioType> foundTypes = getAllVisibleTypes(typePackageName, typeName);
 
         return (foundTypes.size() == 1) ? foundTypes.get(0) : null;
-    }
-
-    Set<InstantiateType> getVisibleInstantiateTypes()
-    {
-        Set<InstantiateType> visibleInstantitateTypes =
-                new HashSet<InstantiateType>(localInstantiateTypes);
-        for (Package pkg : importedPackages)
-            visibleInstantitateTypes.addAll(pkg.getVisibleInstantiateTypes());
-        for (SingleTypeName singleType : importedSingleTypes)
-        {
-            final Package singleTypePackage = singleType.getPackageType();
-            final ZserioType type = singleTypePackage.localTypes.get(singleType.getTypeName());
-            if (type instanceof InstantiateType)
-                visibleInstantitateTypes.add((InstantiateType)type);
-        }
-        return visibleInstantitateTypes;
     }
 
     /**
@@ -273,6 +256,74 @@ public class Package extends DocumentableAstNode
                 }
             }
         }
+    }
+
+    /**
+     * Gets explicit instantiation request visible in the package which matches to the given template and
+     * arguments.
+     *
+     * @param template          Template which is being instantiated.
+     * @param templateArguments Current template arguments.
+     *
+     * @return Matching instantiation type or null.
+     */
+    InstantiateType getVisibleInstantiateType(TemplatableType template,
+            List<TemplateArgument> templateArguments)
+    {
+        InstantiateType matchingInstantiateType = null;
+        return getVisibleInstantiateType(template, templateArguments, matchingInstantiateType);
+    }
+
+    private InstantiateType getVisibleInstantiateType(TemplatableType template,
+            List<TemplateArgument> templateArguments, InstantiateType matchingInstantiateType)
+    {
+        for (ZserioType type : localTypes.values())
+        {
+            matchingInstantiateType = matchInstantiateType(template, templateArguments, type,
+                    matchingInstantiateType);
+        }
+        for (Package pkg : importedPackages)
+        {
+            matchingInstantiateType = pkg.getVisibleInstantiateType(template, templateArguments,
+                    matchingInstantiateType);
+        }
+        for (SingleTypeName singleType : importedSingleTypes)
+        {
+            final Package singleTypePackage = singleType.getPackageType();
+            final ZserioType type = singleTypePackage.localTypes.get(singleType.getTypeName());
+            matchingInstantiateType = matchInstantiateType(template, templateArguments, type,
+                    matchingInstantiateType);
+        }
+        return matchingInstantiateType;
+    }
+
+    private InstantiateType matchInstantiateType(TemplatableType template,
+            List<TemplateArgument> templateArguments, ZserioType type, InstantiateType matchingInstantiateType)
+    {
+        if (type instanceof InstantiateType)
+        {
+            final InstantiateType instantiateType = (InstantiateType)type;
+            final TemplatableType instantiateTemplate = instantiateType.getTemplate();
+
+            final String templateFullName = ZserioTypeUtil.getFullName(template);
+            final String instantiateTempalteFullName = ZserioTypeUtil.getFullName(instantiateTemplate);
+
+            if (templateFullName.equals(instantiateTempalteFullName) &&
+                    templateArguments.equals(instantiateType.getTypeReference().getTemplateArguments()))
+            {
+                if (matchingInstantiateType != null)
+                {
+                    final ParserStackedException stackedException = new ParserStackedException(
+                            instantiateType.getLocation(), "Ambiguous request to instantiate template '" +
+                            ZserioTypeUtil.getReferencedFullName(instantiateType.getTypeReference()) + "'!");
+                    stackedException.pushMessage(matchingInstantiateType.getLocation(),
+                            "    First requested here");
+                    throw stackedException;
+                }
+                return instantiateType;
+            }
+        }
+        return matchingInstantiateType;
     }
 
     private List<ZserioType> getAllVisibleTypes(PackageName typePackageName, String typeName)
@@ -392,7 +443,6 @@ public class Package extends DocumentableAstNode
 
     // this must be a LinkedHashMap because of 'Cyclic dependency' error checked in ZserioAstTypeResolver
     private final LinkedHashMap<String, ZserioType> localTypes = new LinkedHashMap<String, ZserioType>();
-    private final Set<InstantiateType> localInstantiateTypes = new LinkedHashSet<InstantiateType>();
     private final LinkedHashMap<String, TemplatableType> templateInstantiations =
             new LinkedHashMap<String, TemplatableType>();
 

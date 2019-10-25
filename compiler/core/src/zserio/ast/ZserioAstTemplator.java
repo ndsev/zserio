@@ -1,8 +1,6 @@
 package zserio.ast;
 
 import java.util.ArrayDeque;
-import java.util.List;
-import java.util.Set;
 
 /**
  * Implementation of ZserioAstVisitor which handles templates instantiation.
@@ -17,9 +15,7 @@ public class ZserioAstTemplator extends ZserioAstWalker
     public void visitPackage(Package pkg)
     {
         currentPackage = pkg;
-        visibleInstantiateTypes = currentPackage.getVisibleInstantiateTypes();
         pkg.visitChildren(this);
-        visibleInstantiateTypes = null;
         currentPackage = null;
     }
 
@@ -103,49 +99,14 @@ public class ZserioAstTemplator extends ZserioAstWalker
 
     private TemplatableType.InstantiationResult instantiate(TemplatableType template)
     {
-        final InstantiateType instantiateType = getMatchingInstantiateType(template);
-        if (instantiateType != null)
-        {
-            final Package instantiationPackage = instantiateType.getPackage();
-            final String instantiationName = instantiateType.getName();
-            return template.instantiate(instantiationReferenceStack, instantiationPackage, instantiationName);
-        }
-        return template.instantiate(instantiationReferenceStack, template.getPackage(), null);
-    }
+        final InstantiateType instantiateType = currentPackage.getVisibleInstantiateType(template,
+                instantiationReferenceStack.peek().getTemplateArguments());
 
-    private InstantiateType getMatchingInstantiateType(TemplatableType template)
-    {
-        InstantiateType matchingInstantiateType = null;
-        final List<TemplateArgument> templateArguments =
-                instantiationReferenceStack.peek().getTemplateArguments();
-        for (InstantiateType instantiateType : visibleInstantiateTypes)
-        {
-            final TemplatableType instantiateTemplate = instantiateType.getTemplate();
-            final PackageName instantiatePackageName = instantiateTemplate.getPackage().getPackageName();
-            final PackageName templatePackageName = template.getPackage().getPackageName();
-            if (instantiatePackageName.equals(templatePackageName) &&
-                    instantiateTemplate.getName().equals(template.getName()) &&
-                    instantiateType.getTypeReference().getTemplateArguments().equals(templateArguments))
-            {
-                if (matchingInstantiateType != null)
-                {
-                    final ParserStackedException stackedException = new ParserStackedException(
-                            instantiateType.getLocation(), "Ambiguous instantiate of template '" +
-                            ZserioTypeUtil.getReferencedFullName(instantiateType.getTypeReference()));
-                    stackedException.pushMessage(matchingInstantiateType.getLocation(),
-                            "    first requested here");
-                    throw stackedException;
-                }
-                matchingInstantiateType = instantiateType;
-            }
-        }
-
-        return matchingInstantiateType;
+        return template.instantiate(instantiationReferenceStack, instantiateType);
     }
 
     private final ZserioAstTypeResolver typeResolver;
     private final ArrayDeque<TypeReference> instantiationReferenceStack = new ArrayDeque<TypeReference>();
 
     private Package currentPackage = null;
-    private Set<InstantiateType> visibleInstantiateTypes = null;
 }

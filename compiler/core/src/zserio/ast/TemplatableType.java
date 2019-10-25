@@ -67,11 +67,12 @@ abstract class TemplatableType extends DocumentableAstNode implements ZserioTemp
      * Instantiates the referenced template using the given instantiation reference.
      *
      * @param instantiationReference Instantiation reference.
+     * @param instantiateType        Explicit request for instantiation. Can be null.
      *
      * @return Instantiation result.
      */
     InstantiationResult instantiate(ArrayDeque<TypeReference> instantiationReferenceStack,
-            Package instantiationPackage, String instantiationName)
+            InstantiateType instantiateType)
     {
         try
         {
@@ -84,6 +85,9 @@ abstract class TemplatableType extends DocumentableAstNode implements ZserioTemp
                         templateParameters.size() + ", got " + templateArguments.size() + "!");
             }
 
+            final Package instantiationPackage = instantiateType != null ?
+                    instantiateType.getPackage() : getPackage();
+
             final InstantiationMapKey key = new InstantiationMapKey(
                     instantiationPackage.getPackageName(), templateArguments);
 
@@ -91,12 +95,12 @@ abstract class TemplatableType extends DocumentableAstNode implements ZserioTemp
             boolean isNewInstance = false;
             if (instantiation == null)
             {
-                final String name = instantiationName != null ? instantiationName :
-                        generateInstantiationName(templateArguments);
+                final String name = instantiateType != null ?
+                        instantiateType.getName() : generateInstantiationName(templateArguments);
                 instantiation = instantiateImpl(name, templateArguments, instantiationPackage);
                 instantiation.instantiationReferenceStack = instantiationReferenceStack.clone();
                 instantiation.template = this;
-                instantiationPackage.addTemplateInstantiation(name, instantiation);
+                instantiationPackage.addTemplateInstantiation(name, instantiation, instantiateType);
                 instantiationMap.put(key, instantiation);
                 isNewInstance = true;
             }
