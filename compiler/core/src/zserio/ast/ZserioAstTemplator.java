@@ -78,6 +78,9 @@ public class ZserioAstTemplator extends ZserioAstWalker
                 instantiationReferenceStack.push(typeReference);
                 final ZserioTemplatableType instantiation = instantiate(template);
                 typeReference.resolveInstantiation(instantiation);
+
+                // instantiate templates within the instantiation
+                instantiation.accept(this);
             }
             finally
             {
@@ -92,49 +95,46 @@ public class ZserioAstTemplator extends ZserioAstWalker
 
     private TemplatableType instantiate(TemplatableType template)
     {
-        final TypeReference instantiationReference = instantiationReferenceStack.peek();
-        final List<TemplateArgument> templateArguments = instantiationReference.getTemplateArguments();
-        final InstantiateType instantiateType = currentPackage.getVisibleInstantiateType(template,
-                templateArguments);
-        final Package instantiationPackage = instantiateType != null ?
-                instantiateType.getPackage() : template.getPackage();
-        final String instantiationName = instantiateType != null ?
-                instantiateType.getName() : generateInstantiationName(template, instantiationReference);
-
-        // try to find previous instantiation first
-        final InstantiationMapKey key = new InstantiationMapKey(
-                instantiationPackage.getPackageName(), instantiationName);
-        final TemplatableType previousInstantiation = findPreviousInstantiation(
-                template, instantiationReference, key);
-        if (previousInstantiation != null)
-            return previousInstantiation;
-
-        // instantiate the template
-        final TemplatableType instantiation =
-                template.instantiate(instantiationReferenceStack, instantiationPackage, instantiationName);
-        instantiationMap.put(key, instantiation);
-
-        // resolve types within the instantiation
         try
         {
+            final TypeReference instantiationReference = instantiationReferenceStack.peek();
+            final List<TemplateArgument> templateArguments = instantiationReference.getTemplateArguments();
+            final InstantiateType instantiateType = currentPackage.getVisibleInstantiateType(template,
+                    templateArguments);
+            final Package instantiationPackage = instantiateType != null ?
+                    instantiateType.getPackage() : template.getPackage();
+            final String instantiationName = instantiateType != null ?
+                    instantiateType.getName() : generateInstantiationName(template, templateArguments);
+
+            // try to find previous instantiation first
+            final InstantiationMapKey key = new InstantiationMapKey(
+                    instantiationPackage.getPackageName(), instantiationName);
+            final TemplatableType previousInstantiation = findPreviousInstantiation(
+                    template, templateArguments, key);
+            if (previousInstantiation != null)
+                return previousInstantiation;
+
+            // instantiate the template
+            final TemplatableType instantiation =
+                    template.instantiate(instantiationReferenceStack, instantiationPackage, instantiationName);
+            instantiationMap.put(key, instantiation);
+
+            // resolve types within the instantiation
             instantiation.accept(typeResolver);
+
+            return instantiation;
         }
         catch (ParserException e)
         {
             throw new InstantiationException(e, instantiationReferenceStack);
         }
-
-        // instantiate templates within the instantiation
-        instantiation.accept(this);
-
-        return instantiation;
     }
 
-    private String generateInstantiationName(TemplatableType template, TypeReference instantiationReference)
+    private String generateInstantiationName(TemplatableType template, List<TemplateArgument> templateArguments)
     {
         final StringBuilder nameBuilder = new StringBuilder(template.getName());
 
-        appendTemplateArgumentsToName(nameBuilder, instantiationReference.getTemplateArguments());
+        appendTemplateArgumentsToName(nameBuilder, templateArguments);
 
         final String generatedName = nameBuilder.toString();
 
@@ -143,7 +143,7 @@ public class ZserioAstTemplator extends ZserioAstWalker
         if (localType != null)
         {
             final ParserStackedException stackedException = new ParserStackedException(
-                    instantiationReference.getLocation(),
+                    template.getLocation(),
                     "'" + generatedName + "' is already defined in package '" +
                     template.getPackage().getPackageName() + "'!");
             stackedException.pushMessage(localType.getLocation(), "    First defined here");
@@ -179,17 +179,19 @@ public class ZserioAstTemplator extends ZserioAstWalker
     }
 
     private TemplatableType findPreviousInstantiation(TemplatableType template,
-            TypeReference instantiationReference, InstantiationMapKey key)
+            List<TemplateArgument> templateArguments, InstantiationMapKey key)
     {
         final TemplatableType previousInstantiation = instantiationMap.get(key);
         if (previousInstantiation != null)
         {
             // check that the template arguments fit
-            if (!instantiationReference.getTemplateArguments().equals(
+            final String templateFullName = ZserioTypeUtil.getFullName(template);
+            final String prevTemplateFullName = ZserioTypeUtil.getFullName(previousInstantiation.getTemplate());
+            if (!templateFullName.equals(prevTemplateFullName) || !templateArguments.equals(
                     previousInstantiation.getInstantiationReferenceStack().peek().getTemplateArguments()))
             {
                 final ParserStackedException stackedException = new ParserStackedException(
-                        instantiationReference.getLocation(),
+                        template.getLocation(),
                         "Instantiation name '" + key.getName() + "' already exits!");
 
                 final Iterator<TypeReference> descendingIterator =

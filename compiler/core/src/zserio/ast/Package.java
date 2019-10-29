@@ -268,9 +268,9 @@ public class Package extends DocumentableAstNode
             final TemplatableType instantiateTemplate = instantiateType.getTemplate();
 
             final String templateFullName = ZserioTypeUtil.getFullName(template);
-            final String instantiateTempalteFullName = ZserioTypeUtil.getFullName(instantiateTemplate);
+            final String instantiateTemplateFullName = ZserioTypeUtil.getFullName(instantiateTemplate);
 
-            if (templateFullName.equals(instantiateTempalteFullName) &&
+            if (templateFullName.equals(instantiateTemplateFullName) &&
                     templateArguments.equals(instantiateType.getTypeReference().getTemplateArguments()))
             {
                 if (matchingInstantiateType != null)

@@ -69,28 +69,21 @@ abstract class TemplatableType extends DocumentableAstNode implements ZserioTemp
     TemplatableType instantiate(ArrayDeque<TypeReference> instantiationReferenceStack,
             Package instantiationPackage, String instantiationName)
     {
-        try
+        final TypeReference instantiationReference = instantiationReferenceStack.peek();
+        final List<TemplateArgument> templateArguments = instantiationReference.getTemplateArguments();
+        if (templateParameters.size() != templateArguments.size())
         {
-            final TypeReference instantiationReference = instantiationReferenceStack.peek();
-            final List<TemplateArgument> templateArguments = instantiationReference.getTemplateArguments();
-            if (templateParameters.size() != templateArguments.size())
-            {
-                throw new ParserException(instantiationReference,
-                        "Wrong number of template arguments for template '" + getName() + "'! Expecting " +
-                        templateParameters.size() + ", got " + templateArguments.size() + "!");
-            }
+            throw new ParserException(instantiationReference,
+                    "Wrong number of template arguments for template '" + getName() + "'! Expecting " +
+                    templateParameters.size() + ", got " + templateArguments.size() + "!");
+        }
 
-            TemplatableType instantiation = instantiateImpl(instantiationName, templateArguments,
-                    instantiationPackage);
-            instantiation.instantiationReferenceStack = instantiationReferenceStack.clone();
-            instantiation.template = this;
-            instantiations.add(instantiation);
-            return instantiation;
-        }
-        catch (ParserException e)
-        {
-            throw new InstantiationException(e,  instantiationReferenceStack);
-        }
+        TemplatableType instantiation = instantiateImpl(instantiationName, templateArguments,
+                instantiationPackage);
+        instantiation.instantiationReferenceStack = instantiationReferenceStack.clone();
+        instantiation.template = this;
+        instantiations.add(instantiation);
+        return instantiation;
     }
 
     /**

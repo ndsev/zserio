@@ -18,10 +18,24 @@
         <testGen testName="templates_error" zsFile="enum_not_a_template_error.zs" ignoreErrors="true"/>
         <testGen testName="templates_error" zsFile="field_not_available_in_function_error.zs"
                 ignoreErrors="true"/>
+        <testGen testName="templates_error" zsFile="instantiate_duplicated_error.zs" ignoreErrors="true"/>
+        <testGen testName="templates_error" zsFile="instantiate_duplicated_name_error.zs" ignoreErrors="true"/>
+        <testGen testName="templates_error" zsFile="instantiate_duplicated_via_import_error.zs"
+                ignoreErrors="true"/>
+        <testGen testName="templates_error" zsFile="instantiate_missing_template_arguments_error.zs"
+                ignoreErrors="true"/>
+        <testGen testName="templates_error" zsFile="instantiate_name_clash_error.zs" ignoreErrors="true"/>
+        <testGen testName="templates_error" zsFile="instantiate_name_clash_with_template_error.zs"
+                ignoreErrors="true"/>
+        <testGen testName="templates_error" zsFile="instantiate_name_clash_with_type_error.zs"
+                ignoreErrors="true"/>
+        <testGen testName="templates_error" zsFile="instantiate_no_template_error.zs" ignoreErrors="true"/>
         <testGen testName="templates_error" zsFile="instantiation_name_clash_across_packages_error.zs"
                 ignoreErrors="true"/>
         <testGen testName="templates_error" zsFile="instantiation_name_clash_error.zs" ignoreErrors="true"/>
         <testGen testName="templates_error" zsFile="instantiation_name_clash_other_template_error.zs"
+                ignoreErrors="true"/>
+        <testGen testName="templates_error" zsFile="instantiation_name_clash_with_type_error.zs"
                 ignoreErrors="true"/>
         <testGen testName="templates_error" zsFile="instantiation_via_subtype_error.zs" ignoreErrors="true"/>
         <testGen testName="templates_error" zsFile="missing_template_arguments_error.zs" ignoreErrors="true"/>
