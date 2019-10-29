@@ -39,6 +39,15 @@ public class LinkedType
 
     private void init(AstNode node)
     {
+        if (node instanceof ZserioType)
+            this.type = (ZserioType)node;
+        else if (node instanceof TypeInstantiation)
+            this.type = ((TypeInstantiation)node).getTypeReference().getType();
+        else if (node instanceof TypeReference)
+            this.type = ((TypeReference)node).getType();
+        else
+            this.type = null;
+
         if (node instanceof TypeInstantiation)
         {
             final TypeInstantiation inst = (TypeInstantiation)node;
@@ -126,15 +135,6 @@ public class LinkedType
                 style = "noStyle";
             }
         }
-
-        if (node instanceof ZserioType)
-            this.type = (ZserioType)node;
-        else if (node instanceof TypeInstantiation)
-            this.type = ((TypeInstantiation)node).getTypeReference().getType();
-        else if (node instanceof TypeReference)
-            this.type = ((TypeReference)node).getType();
-        else
-            this.type = null;
     }
 
     private String createTitle(String cat)
