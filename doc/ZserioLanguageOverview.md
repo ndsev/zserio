@@ -44,6 +44,8 @@ described in zserio, giving the developer overall control of the data schema use
 
 [Packages and Imports](#packages-and-imports)
 
+[Templates](#templates)
+
 [SQLite Extension](#sqlite-extension)
 
 [GRPC Extension](#grpc-extension)
@@ -1212,6 +1214,138 @@ but should be avoided. The zserio parser takes care to parse each source file ju
 
 [top](#language-guide)
 
+## Templates
+
+### Motivation
+
+Although basic zserio language features provides a strong tool for binary data modeling, there might be
+situations when reducing duplications using generic programming would bring high benefits for the users.
+
+The basic stone of generic programming in zserio are templates that allow zserio compound types (structure
+types, choice types, union types) to operate with generic types. Such generic types are called template
+parameters and they will be specified later during template instatiation as template arguments.
+
+Because zserio must check correctness of all template instantiations and because zserio should support
+generators to almost any kind of programming language (even to language which does not support templates),
+the template instantiations must be resolved during zserio compilation.
+
+Zserio templates got inspiration from C++ class templates concept and borrowed syntax from Java generics.
+
+### Compound Type Templates
+
+The compound type template is defined by normal compound type declaration together with template parameters
+denoted by signs `<>`:
+
+**Example**
+
+```
+struct Field<T>
+{
+    T value;
+};
+```
+
+This example defines structure type template with one template parameter called `T`. The template
+parameter can be used anywhere as a generic type within lexical scope of the structure. This generic type will
+be specified during template instantiation as follows:
+
+**Example**
+
+```
+struct StructTemplatedField
+{
+    Field<uint32> uint32Field;
+};
+```
+
+This example instantiates the template `Field` using argument `uint32`. From the zserio language point of view,
+the previous structure type template example is actually the same as the following "no-generics-programming"
+example:
+
+**Example**
+
+```
+struct Field_uint32
+{
+    uint32 value;
+};
+
+struct StructTemplatedField
+{
+    Field_uint32 uint32Field;
+};
+```
+
+### Parameterized Type Templates
+
+Parameterized types templates are supported with the very similar syntax. The parameterized types parameters
+can be template instantiations as well. The following example shows inituitive syntax for parameterized type
+templates:
+
+**Example**
+
+```
+struct ParamHolder<T>
+{
+    T param;
+};
+
+struct Parameterized<T>(ParamHolder<T> paramHolder)
+{
+    string  description;
+paramHolder.param:
+    uint32  id;
+};
+
+struct StructTemplatedTypeArgument
+{
+    ParamHolder<uint32>                 paramHolder;
+    Parameterized<uint32>(paramHolder)  parameterized;
+};
+```
+
+### Templated Template Arguments
+
+Templated template arguments are supported sa well. In another words, template arguments can be another
+template instantiations. The following example shows syntax for templated template arguments:
+
+**Example**
+
+```
+struct Field<T>
+{
+    T value;
+};
+
+struct Compound<T>
+{
+    T value;
+};
+
+struct StructTemplatedTemplateArgument
+{
+    Field<Compound<uint32>> compoundField;
+};
+```
+
+### Template Subtypes
+
+Subtypes can be used for aliasing template types similarly to normal zserio types. The following example shows
+the usage:
+
+**Example**
+
+```
+struct TestStructure<T>
+{
+    T value;
+};
+
+subtype TestStructure<uint32> TestStructureSubtype; 
+```
+
+[top](#language-guide)
+
 ## SQLite Extension
 
 ### Motivation
@@ -1243,7 +1377,7 @@ extension, [*SQLite*](https://www.sqlite.org).
 
 Assuming that the tile BLOBs have a reasonable size, each tile can be decoded on the fly to access
 the individual members within the tile. For seamless modelling of this hybrid approach, we decided to add
-relational extensions for SQLite to zserio. Some SQL concepts have been translated to szerio, others are
+relational extensions for SQLite to zserio. Some SQL concepts have been translated to zserio, others are
 transparent to zserio and can be embedded as literal strings to be passed to the SQLite engine.
 
 ### SQLite Tables
@@ -1301,6 +1435,9 @@ sql_table BusinessLocationTable
     sql "PRIMARY KEY(businessId, catId)";
 };
 ```
+
+SQL table types can be templated using the same syntax as other zserio compound types, see
+[templates](#templates).
 
 For the mapping of zserio types to SQL types, refer to [SQL Types Mapping](#sqlite-types-mapping).
 
