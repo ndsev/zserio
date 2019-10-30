@@ -25,7 +25,7 @@ ${I}if (in.readBool())
 ${I}{
         <@compound_read_field_inner field, compoundName, indent + 1/>
 ${I}}
-${I}
+
 ${I}return ::zserio::NullOpt;
     <#else>
     <@compound_read_field_inner field, compoundName, indent/>
@@ -547,10 +547,10 @@ ${I}<@field_member_name field/>(::std::move(other.<@field_member_name field/>))<
 ${I}m_objectChoice(::std::forward<ZSERIO_T>(value))
     <#else>
 ${I}<@field_member_name field/>(<#rt>
-        <#if field.isSimpleType>
-            <@field_argument_name field/><#t>
-        <#else>
+        <#if !field.isSimpleType || field.optional??>
             ::std::forward<ZSERIO_T_${field.name}>(<@field_argument_name field/>)<#t>
+        <#else>
+            <@field_argument_name field/><#t>
         </#if>
         <#lt>)<#if hasNext>,</#if>
     </#if>
