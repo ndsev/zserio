@@ -190,10 +190,23 @@ public class ZserioAstEmitter extends ZserioAstWalker
         }
     }
 
+    @Override
+    public void visitInstantiateType(InstantiateType instantiateType)
+    {
+        final TemplatableType instantiation = (TemplatableType)instantiateType.getTypeReference().getType();
+        // emit only explicit instantiations moved to a different package
+        if (instantiateType.getPackage() != instantiation.getTemplate().getPackage())
+            instantiation.accept(this);
+    }
+
     private void visitInstantiations(ZserioTemplatableType template)
     {
         for (ZserioTemplatableType instantiation : template.getInstantiations())
-            instantiation.accept(this);
+        {
+            // emit only instantiations in the current package
+            if (template.getPackage() == instantiation.getPackage())
+                instantiation.accept(this);
+        }
     }
 
     static class UncheckedZserioEmitException extends RuntimeException

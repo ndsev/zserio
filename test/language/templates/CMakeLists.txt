@@ -69,6 +69,69 @@ set(ZSERIO_GENERATED_SOURCES
     ${ZSERIO_GEN_DIR}/templates/expression_full_template_argument/FullTemplateArgument_templates_expression_full_template_argument_color_Color.cpp
     ${ZSERIO_GEN_DIR}/templates/expression_full_template_argument/FullTemplateArgument_templates_expression_full_template_argument_color_Color.h
 
+    ${ZSERIO_GEN_DIR}/templates/instantiate_imported/pkg
+    ${ZSERIO_GEN_DIR}/templates/instantiate_imported/Test_string.cpp
+    ${ZSERIO_GEN_DIR}/templates/instantiate_imported/Test_string.h
+    ${ZSERIO_GEN_DIR}/templates/instantiate_imported/InstantiateImported.cpp
+    ${ZSERIO_GEN_DIR}/templates/instantiate_imported/InstantiateImported.h
+    ${ZSERIO_GEN_DIR}/templates/instantiate_imported/pkg/U32.cpp
+    ${ZSERIO_GEN_DIR}/templates/instantiate_imported/pkg/U32.h
+
+    ${ZSERIO_GEN_DIR}/templates/instantiate_nested_template/TStr.cpp
+    ${ZSERIO_GEN_DIR}/templates/instantiate_nested_template/TStr.h
+    ${ZSERIO_GEN_DIR}/templates/instantiate_nested_template/NStr.cpp
+    ${ZSERIO_GEN_DIR}/templates/instantiate_nested_template/NStr.h
+    ${ZSERIO_GEN_DIR}/templates/instantiate_nested_template/InstantiateNestedTemplate.cpp
+    ${ZSERIO_GEN_DIR}/templates/instantiate_nested_template/InstantiateNestedTemplate.h
+
+    ${ZSERIO_GEN_DIR}/templates/instantiate_not_imported/InstantiateNotImported.cpp
+    ${ZSERIO_GEN_DIR}/templates/instantiate_not_imported/InstantiateNotImported.h
+    ${ZSERIO_GEN_DIR}/templates/instantiate_not_imported/pkg/U32.cpp
+    ${ZSERIO_GEN_DIR}/templates/instantiate_not_imported/pkg/U32.h
+    ${ZSERIO_GEN_DIR}/templates/instantiate_not_imported/pkg/Test_uint32.cpp
+    ${ZSERIO_GEN_DIR}/templates/instantiate_not_imported/pkg/Test_uint32.h
+    ${ZSERIO_GEN_DIR}/templates/instantiate_not_imported/pkg/Test_string.cpp
+    ${ZSERIO_GEN_DIR}/templates/instantiate_not_imported/pkg/Test_string.h
+
+    ${ZSERIO_GEN_DIR}/templates/instantiate_only_nested/N32.cpp
+    ${ZSERIO_GEN_DIR}/templates/instantiate_only_nested/N32.h
+    ${ZSERIO_GEN_DIR}/templates/instantiate_only_nested/InstantiateOnlyNested.cpp
+    ${ZSERIO_GEN_DIR}/templates/instantiate_only_nested/InstantiateOnlyNested.h
+    ${ZSERIO_GEN_DIR}/templates/instantiate_only_nested/pkg/Test_uint32.cpp
+    ${ZSERIO_GEN_DIR}/templates/instantiate_only_nested/pkg/Test_uint32.h
+
+    ${ZSERIO_GEN_DIR}/templates/instantiate_simple/U32.cpp
+    ${ZSERIO_GEN_DIR}/templates/instantiate_simple/U32.h
+    ${ZSERIO_GEN_DIR}/templates/instantiate_simple/InstantiateSimple.cpp
+    ${ZSERIO_GEN_DIR}/templates/instantiate_simple/InstantiateSimple.h
+
+    ${ZSERIO_GEN_DIR}/templates/instantiate_sql_table/U32Table.cpp
+    ${ZSERIO_GEN_DIR}/templates/instantiate_sql_table/U32Table.h
+
+    ${ZSERIO_GEN_DIR}/templates/instantiate_unused/U32.cpp
+    ${ZSERIO_GEN_DIR}/templates/instantiate_unused/U32.h
+
+    ${ZSERIO_GEN_DIR}/templates/instantiate_via_import/InstantiateViaImport.cpp
+    ${ZSERIO_GEN_DIR}/templates/instantiate_via_import/InstantiateViaImport.h
+    ${ZSERIO_GEN_DIR}/templates/instantiate_via_import/pkg/U32.cpp
+    ${ZSERIO_GEN_DIR}/templates/instantiate_via_import/pkg/U32.h
+    ${ZSERIO_GEN_DIR}/templates/instantiate_via_import/pkg/Test_string.cpp
+    ${ZSERIO_GEN_DIR}/templates/instantiate_via_import/pkg/Test_string.h
+
+    ${ZSERIO_GEN_DIR}/templates/instantiate_via_single_import/InstantiateViaSingleImport.cpp
+    ${ZSERIO_GEN_DIR}/templates/instantiate_via_single_import/InstantiateViaSingleImport.h
+    ${ZSERIO_GEN_DIR}/templates/instantiate_via_single_import/pkg/U32.cpp
+    ${ZSERIO_GEN_DIR}/templates/instantiate_via_single_import/pkg/U32.h
+    ${ZSERIO_GEN_DIR}/templates/instantiate_via_single_import/pkg/Test_string.cpp
+    ${ZSERIO_GEN_DIR}/templates/instantiate_via_single_import/pkg/Test_string.h
+
+    ${ZSERIO_GEN_DIR}/templates/instantiate_vs_default/TStr.cpp
+    ${ZSERIO_GEN_DIR}/templates/instantiate_vs_default/TStr.h
+    ${ZSERIO_GEN_DIR}/templates/instantiate_vs_default/InstantiateVsDefault.cpp
+    ${ZSERIO_GEN_DIR}/templates/instantiate_vs_default/InstantiateVsDefault.h
+    ${ZSERIO_GEN_DIR}/templates/instantiate_vs_default/pkg/Test_uint32.cpp
+    ${ZSERIO_GEN_DIR}/templates/instantiate_vs_default/pkg/Test_uint32.h
+
     ${ZSERIO_GEN_DIR}/templates/function_templated_return_type/TestStructure_uint32.cpp
     ${ZSERIO_GEN_DIR}/templates/function_templated_return_type/TestStructure_uint32.h
     ${ZSERIO_GEN_DIR}/templates/function_templated_return_type/TestStructure_string.cpp
@@ -205,6 +268,8 @@ set(ZSERIO_GENERATED_SOURCES
 if (NOT ${ZSERIO_CPP_STANDARD} STREQUAL c++11)
     set(ZSERIO_GENERATED_SOURCES
         ${ZSERIO_GENERATED_SOURCES}
+        ${ZSERIO_GEN_DIR}/templates/instantiate_sql_table/U32TableRow.cpp
+        ${ZSERIO_GEN_DIR}/templates/instantiate_sql_table/U32TableRow.h
         ${ZSERIO_GEN_DIR}/templates/sql_table_templated_field/TemplatedTable_UnionRow.cpp
         ${ZSERIO_GEN_DIR}/templates/sql_table_templated_field/TemplatedTable_UnionRow.h
         ${ZSERIO_GEN_DIR}/templates/sql_table_templated_field/TemplatedTable_uint32Row.cpp
@@ -232,6 +297,16 @@ add_test_sources(
     ${ZSERIO_CPP_DIR}/ExpressionEnumTemplateArgumentTest.cpp
     ${ZSERIO_CPP_DIR}/ExpressionEnumTemplateArgumentConflictTest.cpp
     ${ZSERIO_CPP_DIR}/ExpressionFullTemplateArgumentTest.cpp
+    ${ZSERIO_CPP_DIR}/InstantiateImportedTest.cpp
+    ${ZSERIO_CPP_DIR}/InstantiateNestedTemplateTest.cpp
+    ${ZSERIO_CPP_DIR}/InstantiateNotImportedTest.cpp
+    ${ZSERIO_CPP_DIR}/InstantiateOnlyNestedTest.cpp
+    ${ZSERIO_CPP_DIR}/InstantiateSimpleTest.cpp
+    ${ZSERIO_CPP_DIR}/InstantiateSqlTableTest.cpp
+    ${ZSERIO_CPP_DIR}/InstantiateUnusedTest.cpp
+    ${ZSERIO_CPP_DIR}/InstantiateViaImportTest.cpp
+    ${ZSERIO_CPP_DIR}/InstantiateViaSingleImportTest.cpp
+    ${ZSERIO_CPP_DIR}/InstantiateVsDefaultTest.cpp
     ${ZSERIO_CPP_DIR}/FunctionTemplatedReturnTypeTest.cpp
     ${ZSERIO_CPP_DIR}/SqlTableTemplatedFieldTest.cpp
     ${ZSERIO_CPP_DIR}/StructFullNameTemplateArgumentTest.cpp

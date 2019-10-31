@@ -24,6 +24,15 @@ uninitMemberVar:*/expression_enum_template_argument/EnumTemplateArgument_Color.c
 uninitMemberVar:*/expression_enum_template_argument_conflict/EnumTemplateArgumentConflict_Letters.cpp
 uninitMemberVar:*/expression_full_template_argument/FullTemplateArgument_Color.cpp
 uninitMemberVar:*/expression_full_template_argument/FullTemplateArgument_templates_expression_full_template_argument_color_Color.cpp
+uninitMemberVar:*/instantiate_imported/pkg/U32.cpp
+uninitMemberVar:*/instantiate_not_imported/pkg/Test_uint32.cpp
+uninitMemberVar:*/instantiate_not_imported/pkg/U32.cpp
+uninitMemberVar:*/instantiate_only_nested/N32.cpp
+uninitMemberVar:*/instantiate_simple/U32.cpp
+uninitMemberVar:*/instantiate_unused/U32.cpp
+uninitMemberVar:*/instantiate_via_import/pkg/U32.cpp
+uninitMemberVar:*/instantiate_via_single_import/pkg/U32.cpp
+uninitMemberVar:*/instantiate_vs_default/pkg/Test_uint32.cpp
 uninitMemberVar:*/function_templated_return_type/TestStructure_string.h
 uninitMemberVar:*/function_templated_return_type/TestStructure_uint32.h
 uninitMemberVar:*/function_templated_return_type/FunctionTemplatedReturnType.cpp

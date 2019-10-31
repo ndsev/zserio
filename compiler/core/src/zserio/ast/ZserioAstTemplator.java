@@ -78,9 +78,6 @@ public class ZserioAstTemplator extends ZserioAstWalker
                 instantiationReferenceStack.push(typeReference);
                 final ZserioTemplatableType instantiation = instantiate(template);
                 typeReference.resolveInstantiation(instantiation);
-
-                // instantiate templates within the instantiation
-                instantiation.accept(this);
             }
             finally
             {
@@ -115,14 +112,21 @@ public class ZserioAstTemplator extends ZserioAstWalker
                 return previousInstantiation;
 
             // instantiate the template
-            final TemplatableType instantiation =
+            final TemplatableType newInstantiation =
                     template.instantiate(instantiationReferenceStack, instantiationPackage, instantiationName);
-            instantiationMap.put(key, instantiation);
+            instantiationMap.put(key, newInstantiation);
 
             // resolve types within the instantiation
-            instantiation.accept(typeResolver);
+            newInstantiation.accept(typeResolver);
 
-            return instantiation;
+            // instantiate templates within the instantiation
+            newInstantiation.accept(this);
+
+            return newInstantiation;
+        }
+        catch (InstantiationException e)
+        {
+            throw e;
         }
         catch (ParserException e)
         {
