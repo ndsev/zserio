@@ -1,6 +1,7 @@
 package zserio.emit.cpp98;
 
 import zserio.ast.ArrayType;
+import zserio.ast.InstantiateType;
 import zserio.ast.PackageName;
 import zserio.ast.UnionType;
 import zserio.ast.BitFieldType;
@@ -34,6 +35,7 @@ import zserio.emit.cpp98.types.NativeEnumType;
 import zserio.emit.cpp98.types.NativeFloatType;
 import zserio.emit.cpp98.types.NativeHeapOptionalHolderType;
 import zserio.emit.cpp98.types.NativeInPlaceOptionalHolderType;
+import zserio.emit.cpp98.types.NativeInstantiateType;
 import zserio.emit.cpp98.types.NativeIntegralArrayType;
 import zserio.emit.cpp98.types.NativeIntegralType;
 import zserio.emit.cpp98.types.NativeObjectArrayType;
@@ -569,6 +571,15 @@ public class CppNativeTypeMapper
         public void visitUnionType(UnionType type)
         {
             mapCompoundType(type);
+        }
+
+        @Override
+        public void visitInstantiateType(InstantiateType type)
+        {
+            final PackageName packageName = cppPackageMapper.getPackageName(type);
+            final String name = type.getName(); // note that name is same as the referenced type name
+            final String includeFileName = getIncludePath(packageName, name);
+            cppType = new NativeInstantiateType(packageName, name, includeFileName);
         }
 
         @Override

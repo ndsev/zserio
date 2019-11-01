@@ -7,6 +7,7 @@ import zserio.ast.ChoiceType;
 import zserio.ast.ConstType;
 import zserio.ast.EnumType;
 import zserio.ast.FloatType;
+import zserio.ast.InstantiateType;
 import zserio.ast.PackageName;
 import zserio.ast.ServiceType;
 import zserio.ast.SqlDatabaseType;
@@ -199,6 +200,12 @@ public class PythonNativeTypeMapper
             {
                 thrownException = exception;
             }
+        }
+
+        @Override
+        public void visitInstantiateType(InstantiateType type)
+        {
+            pythonType = mapUserType(type);
         }
 
         @Override
