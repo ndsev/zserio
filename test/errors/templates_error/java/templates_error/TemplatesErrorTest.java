@@ -112,6 +112,13 @@ public class TemplatesErrorTest
     }
 
     @Test
+    public void instantiateInstantiate()
+    {
+        final String error = "instantiate_instantiate_error.zs:8:26: 'T32' is not a template!";
+        assertTrue(zserioErrors.isPresent(error));
+    }
+
+    @Test
     public void instantiateMissingTemplateArguments()
     {
         final String error = "instantiate_missing_template_arguments_error.zs:8:13: " +
@@ -158,6 +165,13 @@ public class TemplatesErrorTest
     public void instantiateNoTemplate()
     {
         final String error = "instantiate_no_template_error.zs:3:8: 'Test' is not a template!";
+        assertTrue(zserioErrors.isPresent(error));
+    }
+
+    @Test
+    public void instantiateSubtype()
+    {
+        final String error = "instantiate_subtype_error.zs:8:22: 'T32' is not a template!";
         assertTrue(zserioErrors.isPresent(error));
     }
 
