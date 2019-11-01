@@ -34,7 +34,7 @@ public class CompoundFieldTemplateData
         final TypeInstantiation fieldTypeInstantiation = field.getTypeInstantiation();
         final TypeReference fieldTypeReference = fieldTypeInstantiation.getTypeReference();
         final ZserioType fieldType = fieldTypeReference.getType();
-        final ZserioType fieldBaseType = fieldTypeReference.getBaseType();
+        final ZserioType fieldBaseType = fieldTypeReference.getBaseTypeReference().getType();
 
         final CppNativeType fieldNativeType = cppNativeTypeMapper.getCppType(fieldTypeReference);
         includeCollector.addHeaderIncludesForType(fieldNativeType);
@@ -224,8 +224,9 @@ public class CompoundFieldTemplateData
                 TypeInstantiation compoundFieldInstantiation, boolean withWriterCode) throws ZserioEmitException
         {
             // TODO[Mi-L@][typeref] ParameterizedTypeInstantiation could hold the base compound type.
-            final CompoundType baseType =
-                    (CompoundType)compoundFieldInstantiation.getTypeReference().getBaseType();
+            final TypeReference baseTypeReference =
+                    compoundFieldInstantiation.getTypeReference().getBaseTypeReference();
+            final CompoundType baseType = (CompoundType)baseTypeReference.getType();
             final List<InstantiatedParameter> parameters =
                     compoundFieldInstantiation.getInstantiatedParameters();
             instantiatedParameters = new ArrayList<InstantiatedParameterData>(parameters.size());
@@ -418,7 +419,7 @@ public class CompoundFieldTemplateData
         {
             final TypeInstantiation elementTypeInstantiation = arrayType.getElementTypeInstantiation();
             final TypeReference elementTypeReference = elementTypeInstantiation.getTypeReference();
-            final ZserioType elementBaseType = elementTypeReference.getBaseType();
+            final ZserioType elementBaseType = elementTypeReference.getBaseTypeReference().getType();
 
             traitsName = nativeType.getArrayTraitsName();
             hasTemplatedTraits = nativeType.hasTemplatedTraits();
@@ -619,7 +620,7 @@ public class CompoundFieldTemplateData
             CompoundType owner, TypeInstantiation fieldTypeInstantiation, boolean withWriterCode)
                     throws ZserioEmitException
     {
-        if (fieldTypeInstantiation.getTypeReference().getBaseType() instanceof CompoundType)
+        if (fieldTypeInstantiation.getTypeReference().getBaseTypeReference().getType() instanceof CompoundType)
         {
             return new Compound(cppNativeTypeMapper, cppExpressionFormatter, cppIndirectExpressionFormatter,
                     owner, fieldTypeInstantiation, withWriterCode);

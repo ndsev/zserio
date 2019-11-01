@@ -74,15 +74,17 @@ public class TypeReference extends AstNodeBase
     }
 
     /**
-     * Gets the referenced base type - i.e. the type got by resolving subtypes.
+     * Gets base type reference - i.e. the type reference got by resolving subtypes.
      *
-     * @return Zserio base type which is referenced by this type reference.
+     * @return Type reference to Zserio base type.
      */
-    public ZserioType getBaseType()
+    public TypeReference getBaseTypeReference()
     {
         if (type instanceof Subtype)
-            return ((Subtype)type).getBaseTypeReference().getType();
-        return type;
+            return ((Subtype)type).getBaseTypeReference();
+        if (type instanceof InstantiateType)
+            return ((InstantiateType)type).getTypeReference();
+        return this;
     }
 
     /**

@@ -154,11 +154,14 @@ public abstract class CompoundType extends TemplatableType implements Comparable
     {
         for (Field field : fields)
         {
-            ZserioType fieldBaseType = field.getTypeInstantiation().getTypeReference().getBaseType();
+            ZserioType fieldBaseType =
+                    field.getTypeInstantiation().getTypeReference().getBaseTypeReference().getType();
             if (fieldBaseType instanceof ArrayType)
             {
                 final ArrayType arrayType = (ArrayType)fieldBaseType;
-                fieldBaseType = arrayType.getElementTypeInstantiation().getTypeReference().getBaseType();
+                final TypeReference fieldBaseTypeReference =
+                        arrayType.getElementTypeInstantiation().getTypeReference().getBaseTypeReference();
+                fieldBaseType = fieldBaseTypeReference.getType();
             }
             if (fieldBaseType instanceof CompoundType)
             {
@@ -185,11 +188,14 @@ public abstract class CompoundType extends TemplatableType implements Comparable
             if (field.getOffsetExpr() != null)
                 return true;
 
-            ZserioType fieldBaseType = field.getTypeInstantiation().getTypeReference().getBaseType();
+            ZserioType fieldBaseType =
+                    field.getTypeInstantiation().getTypeReference().getBaseTypeReference().getType();
             if (fieldBaseType instanceof ArrayType)
             {
                 final ArrayType arrayType = (ArrayType)fieldBaseType;
-                fieldBaseType = arrayType.getElementTypeInstantiation().getTypeReference().getBaseType();
+                final TypeReference fieldBaseTypeReference =
+                        arrayType.getElementTypeInstantiation().getTypeReference().getBaseTypeReference();
+                fieldBaseType = fieldBaseTypeReference.getType();
             }
             if (fieldBaseType instanceof CompoundType)
             {
@@ -220,11 +226,14 @@ public abstract class CompoundType extends TemplatableType implements Comparable
         // check if fields are not sql tables
         for (Field field : fields)
         {
-            ZserioType fieldBaseType = field.getTypeInstantiation().getTypeReference().getBaseType();
+            ZserioType fieldBaseType =
+                    field.getTypeInstantiation().getTypeReference().getBaseTypeReference().getType();
             if (fieldBaseType instanceof ArrayType)
             {
                 final ArrayType arrayType = (ArrayType)fieldBaseType;
-                fieldBaseType = arrayType.getElementTypeInstantiation().getTypeReference().getBaseType();
+                final TypeReference fieldBaseTypeReference =
+                        arrayType.getElementTypeInstantiation().getTypeReference().getBaseTypeReference();
+                fieldBaseType = fieldBaseTypeReference.getType();
             }
             if (fieldBaseType instanceof SqlTableType)
                 throw new ParserException(field, "Field '" + field.getName() +
@@ -237,7 +246,8 @@ public abstract class CompoundType extends TemplatableType implements Comparable
         // check recursive fields which are not arrays
         for (Field field : fields)
         {
-            final ZserioType fieldBaseType = field.getTypeInstantiation().getTypeReference().getBaseType();
+            final ZserioType fieldBaseType =
+                    field.getTypeInstantiation().getTypeReference().getBaseTypeReference().getType();
             if (!field.isOptional() && !(fieldBaseType instanceof ArrayType))
             {
                 if (fieldBaseType == this)
@@ -254,11 +264,14 @@ public abstract class CompoundType extends TemplatableType implements Comparable
     {
         for (Field field : inner.fields)
         {
-            ZserioType fieldBaseType = field.getTypeInstantiation().getTypeReference().getBaseType();
+            ZserioType fieldBaseType =
+                    field.getTypeInstantiation().getTypeReference().getBaseTypeReference().getType();
             if (fieldBaseType instanceof ArrayType)
             {
                 final ArrayType arrayType = (ArrayType)fieldBaseType;
-                fieldBaseType = arrayType.getElementTypeInstantiation().getTypeReference().getBaseType();
+                final TypeReference fieldBaseTypeReference =
+                        arrayType.getElementTypeInstantiation().getTypeReference().getBaseTypeReference();
+                fieldBaseType = fieldBaseTypeReference.getType();
             }
             if (fieldBaseType instanceof CompoundType)
             {

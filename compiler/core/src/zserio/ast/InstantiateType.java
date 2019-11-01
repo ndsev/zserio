@@ -62,15 +62,16 @@ public class InstantiateType extends AstNodeBase implements ZserioType
      */
     void resolve()
     {
-        final ZserioType baseType = typeReference.getBaseType();
-        if (!(baseType instanceof TemplatableType) ||
-                ((TemplatableType)baseType).getTemplateParameters().isEmpty())
+        // don't use base type reference since instantiate type can be defined only for a template instantiation
+        final ZserioType type = typeReference.getType();
+        if (!(type instanceof TemplatableType) ||
+                ((TemplatableType)type).getTemplateParameters().isEmpty())
         {
-            throw new ParserException(baseType,
+            throw new ParserException(type,
                     "'" + ZserioTypeUtil.getReferencedFullName(typeReference) + "' is not a template!");
         }
 
-        template = (TemplatableType)baseType;
+        template = (TemplatableType)type;
     }
 
     /**

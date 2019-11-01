@@ -82,7 +82,8 @@ public class Function extends DocumentableAstNode
     void check()
     {
         // check result expression type
-        ExpressionUtil.checkExpressionType(resultExpression, returnTypeReference.getBaseType());
+        ExpressionUtil.checkExpressionType(resultExpression,
+                returnTypeReference.getBaseTypeReference().getType());
 
         // check usage of unconditional optional fields (this is considered as a warning)
         if (!resultExpression.containsFunctionCall() && !resultExpression.containsTernaryOperator())

@@ -235,7 +235,8 @@ public class Field extends DocumentableAstNode
         if (initializerExpr != null)
         {
             // check expression type
-            final ZserioType fieldBaseType = typeInstantiation.getTypeReference().getBaseType();
+            final ZserioType fieldBaseType =
+                    typeInstantiation.getTypeReference().getBaseTypeReference().getType();
             ExpressionUtil.checkExpressionType(initializerExpr, fieldBaseType);
 
             // check if expression requires owner context (contains field, parameter or function)

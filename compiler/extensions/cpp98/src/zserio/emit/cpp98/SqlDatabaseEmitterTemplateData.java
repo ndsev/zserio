@@ -36,7 +36,7 @@ public class SqlDatabaseEmitterTemplateData extends UserTypeTemplateData
                 IncludeCollector includeCollector) throws ZserioEmitException
         {
             final TypeReference fieldTypeReference = field.getTypeInstantiation().getTypeReference();
-            final ZserioType fieldBaseType = fieldTypeReference.getBaseType();
+            final ZserioType fieldBaseType = fieldTypeReference.getBaseTypeReference().getType();
 
             final CppNativeType nativeFieldType = cppNativeTypeMapper.getCppType(fieldTypeReference);
             includeCollector.addHeaderIncludesForType(nativeFieldType);

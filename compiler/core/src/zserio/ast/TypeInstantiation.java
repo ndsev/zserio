@@ -134,7 +134,7 @@ public class TypeInstantiation extends AstNodeBase
         if (!isEvaluated)
         {
             // check if referenced type is a compound type
-            final ZserioType baseType = typeReference.getBaseType();
+            final ZserioType baseType = typeReference.getBaseTypeReference().getType();
             final boolean isParameterized =
                     baseType instanceof CompoundType && !((CompoundType)baseType).getTypeParameters().isEmpty();
             if (isParameterized)
@@ -183,8 +183,9 @@ public class TypeInstantiation extends AstNodeBase
             final Expression argumentExpression = instantiatedParameter.getArgumentExpression();
             if (!argumentExpression.isExplicitVariable())
             {
-                ExpressionUtil.checkExpressionType(argumentExpression,
-                        instantiatedParameter.getParameter().getTypeReference().getBaseType());
+                final TypeReference parameterBaseTypeReference =
+                        instantiatedParameter.getParameter().getTypeReference().getBaseTypeReference();
+                ExpressionUtil.checkExpressionType(argumentExpression, parameterBaseTypeReference.getType());
             }
         }
     }

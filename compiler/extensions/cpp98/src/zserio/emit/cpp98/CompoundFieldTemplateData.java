@@ -36,7 +36,7 @@ public class CompoundFieldTemplateData
         final TypeInstantiation fieldTypeInstantiation = field.getTypeInstantiation();
         final TypeReference fieldTypeReference = fieldTypeInstantiation.getTypeReference();
         final ZserioType fieldType = fieldTypeReference.getType();
-        final ZserioType fieldBaseType = fieldTypeReference.getBaseType();
+        final ZserioType fieldBaseType = fieldTypeReference.getBaseTypeReference().getType();
 
         optional = createOptional(field, cppExpressionFormatter);
         compound = createCompound(cppNativeTypeMapper, cppExpressionFormatter, cppIndirectExpressionFormatter,
@@ -213,8 +213,9 @@ public class CompoundFieldTemplateData
                 TypeInstantiation compoundFieldInstantiation, boolean withWriterCode) throws ZserioEmitException
         {
             // TODO[Mi-L@][typeref] ParameterizedTypeInstantiation could hold the base compound type.
-            final CompoundType baseType =
-                    (CompoundType)compoundFieldInstantiation.getTypeReference().getBaseType();
+            final TypeReference baseTypeReference =
+                    compoundFieldInstantiation.getTypeReference().getBaseTypeReference();
+            final CompoundType baseType = (CompoundType)baseTypeReference.getType();
             final List<InstantiatedParameter> parameters =
                     compoundFieldInstantiation.getInstantiatedParameters();
             instantiatedParameters = new ArrayList<InstantiatedParameterData>(parameters.size());
@@ -383,7 +384,8 @@ public class CompoundFieldTemplateData
                         throws ZserioEmitException
         {
             final TypeInstantiation elementTypeInstantiation = arrayType.getElementTypeInstantiation();
-            final ZserioType elementBaseType = elementTypeInstantiation.getTypeReference().getBaseType();
+            final ZserioType elementBaseType =
+                    elementTypeInstantiation.getTypeReference().getBaseTypeReference().getType();
 
             isImplicit = arrayType.isImplicit();
             length = createLength(arrayType, cppExpressionFormatter);
@@ -605,7 +607,7 @@ public class CompoundFieldTemplateData
             CompoundType owner, TypeInstantiation fieldTypeInstantiation, boolean withWriterCode)
                     throws ZserioEmitException
     {
-        if (fieldTypeInstantiation.getTypeReference().getBaseType() instanceof CompoundType)
+        if (fieldTypeInstantiation.getTypeReference().getBaseTypeReference().getType() instanceof CompoundType)
             return new Compound(cppNativeTypeMapper, cppExpressionFormatter, cppIndirectExpressionFormatter,
                     owner, fieldTypeInstantiation, withWriterCode);
         else
@@ -616,7 +618,7 @@ public class CompoundFieldTemplateData
             CompoundType parentType, boolean isOptionalField, CppNativeTypeMapper cppNativeTypeMapper,
             IncludeCollector includeCollector) throws ZserioEmitException
     {
-        final ZserioType fieldBaseType = fieldTypeReference.getBaseType();
+        final ZserioType fieldBaseType = fieldTypeReference.getBaseTypeReference().getType();
         final boolean isCompoundField = (fieldBaseType instanceof CompoundType);
         if (!isOptionalField && !isCompoundField)
             return null;

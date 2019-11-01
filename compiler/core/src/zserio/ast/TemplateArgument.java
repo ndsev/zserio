@@ -104,7 +104,7 @@ public class TemplateArgument extends AstNodeBase
     {
         // we need to "remember" the referenced base type because in case the argument is a template
         // instantiation, the type reference will be resolved further during the template instantiation
-        referencedBaseType = typeReference.getBaseType();
+        referencedBaseType = typeReference.getBaseTypeReference().getType();
     }
 
     private final TypeReference typeReference;

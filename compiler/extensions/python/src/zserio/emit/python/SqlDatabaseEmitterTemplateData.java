@@ -37,7 +37,7 @@ public final  class SqlDatabaseEmitterTemplateData extends UserTypeTemplateData
                 ImportCollector importCollector) throws ZserioEmitException
         {
             final TypeReference fieldTypeReference = field.getTypeInstantiation().getTypeReference();
-            final ZserioType fieldBaseType = fieldTypeReference.getBaseType();
+            final ZserioType fieldBaseType = fieldTypeReference.getBaseTypeReference().getType();
             final PythonNativeType nativeType = pythonNativeTypeMapper.getPythonType(fieldTypeReference);
             importCollector.importType(nativeType);
 

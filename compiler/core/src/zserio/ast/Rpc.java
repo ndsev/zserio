@@ -63,7 +63,7 @@ public class Rpc extends DocumentableAstNode
      */
     public CompoundType getRequestType()
     {
-        return (CompoundType)requestTypeReference.getBaseType();
+        return (CompoundType)requestTypeReference.getBaseTypeReference().getType();
     }
 
     /**
@@ -83,7 +83,7 @@ public class Rpc extends DocumentableAstNode
      */
     public CompoundType getResponseType()
     {
-        return (CompoundType)responseTypeReference.getBaseType();
+        return (CompoundType)responseTypeReference.getBaseTypeReference().getType();
     }
 
     /**
@@ -107,7 +107,7 @@ public class Rpc extends DocumentableAstNode
 
     private void checkUsedType(TypeReference typeReference)
     {
-        final ZserioType referencedBaseType = typeReference.getBaseType();
+        final ZserioType referencedBaseType = typeReference.getBaseTypeReference().getType();
         if (!(referencedBaseType instanceof CompoundType))
         {
             throw new ParserException(typeReference,

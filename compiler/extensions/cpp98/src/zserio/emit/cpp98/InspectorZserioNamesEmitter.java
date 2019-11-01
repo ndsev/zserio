@@ -56,7 +56,8 @@ public class InspectorZserioNamesEmitter extends CppDefaultEmitter
             for (Field field : sqlTableType.getFields())
             {
                 // we need only compound types from tables
-                final ZserioType fieldBaseType = field.getTypeInstantiation().getTypeReference().getBaseType();
+                final ZserioType fieldBaseType =
+                        field.getTypeInstantiation().getTypeReference().getBaseTypeReference().getType();
                 if (fieldBaseType instanceof CompoundType)
                     fields.add(field);
             }

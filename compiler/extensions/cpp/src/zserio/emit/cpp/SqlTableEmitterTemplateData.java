@@ -198,7 +198,7 @@ public class SqlTableEmitterTemplateData extends UserTypeTemplateData
         {
             final TypeInstantiation fieldTypeInstantiation = field.getTypeInstantiation();
             final TypeReference fieldTypeReference = fieldTypeInstantiation.getTypeReference();
-            final ZserioType fieldBaseType = fieldTypeReference.getBaseType();
+            final ZserioType fieldBaseType = fieldTypeReference.getBaseTypeReference().getType();
             final CppNativeType nativeFieldType = cppNativeTypeMapper.getCppType(fieldTypeReference);
             includeCollector.addHeaderIncludesForType(nativeFieldType);
 

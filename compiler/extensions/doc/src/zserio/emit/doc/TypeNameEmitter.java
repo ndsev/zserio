@@ -6,6 +6,7 @@ import zserio.ast.CompoundType;
 import zserio.ast.ConstType;
 import zserio.ast.ServiceType;
 import zserio.ast.SqlConstraint;
+import zserio.ast.TypeReference;
 import zserio.ast.ZserioType;
 import zserio.ast.EnumType;
 import zserio.ast.Expression;
@@ -148,7 +149,9 @@ public class TypeNameEmitter
         else if (t instanceof ArrayType)
         {
             // don't HTML-escape the result - it gets escaped in the call
-            return getTypeName(((ArrayType) t).getElementTypeInstantiation().getTypeReference().getBaseType());
+            final TypeReference elementBaseTypeReference =
+                    ((ArrayType)t).getElementTypeInstantiation().getTypeReference().getBaseTypeReference();
+            return getTypeName(elementBaseTypeReference.getType());
         }
         else
         {

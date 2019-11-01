@@ -443,7 +443,7 @@ public class CppNativeTypeMapper
              *
              * the field ids should be backed by ObjectArray<MyID> (not ObjectArray<Foo>).
              */
-            elementTypeReference.getBaseType().accept(arrayVisitor);
+            elementTypeReference.getBaseTypeReference().getType().accept(arrayVisitor);
             cppType = arrayVisitor.getCppType();
             thrownException = arrayVisitor.getThrownException();
         }

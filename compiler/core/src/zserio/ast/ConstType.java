@@ -106,7 +106,7 @@ public class ConstType extends DocumentableAstNode implements ZserioType, Compar
     void check()
     {
         // check base type
-        final ZserioType baseType = constTypeInstantiation.getTypeReference().getBaseType();
+        final ZserioType baseType = constTypeInstantiation.getTypeReference().getBaseTypeReference().getType();
         if (!(baseType instanceof BuiltInType) && !(baseType instanceof EnumType))
             throw new ParserException(this, "Constants can be defined only for built-in types and enums!");
 

@@ -91,7 +91,8 @@ public class StructureType extends CompoundType
         for (int i = 0; i < numFields; ++i)
         {
             final Field field = fields.get(i);
-            final ZserioType fieldBaseType = field.getTypeInstantiation().getTypeReference().getBaseType();
+            final ZserioType fieldBaseType =
+                    field.getTypeInstantiation().getTypeReference().getBaseTypeReference().getType();
             if (fieldBaseType instanceof ArrayType)
             {
                 final ArrayType fieldArrayType = (ArrayType)fieldBaseType;

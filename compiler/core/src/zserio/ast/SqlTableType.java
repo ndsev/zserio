@@ -168,7 +168,7 @@ public class SqlTableType extends CompoundType
                 {
                     final Parameter param = instantiatedParam.getParameter();
                     final String paramName = param.getName();
-                    final ZserioType type = param.getTypeReference().getBaseType();
+                    final ZserioType type = param.getTypeReference().getBaseTypeReference().getType();
                     final String typeName = ZserioTypeUtil.getFullName(type);
 
                     final AbstractMap.SimpleEntry<String, Expression> prevEntry = paramTypeMap.get(paramName);
@@ -286,8 +286,9 @@ public class SqlTableType extends CompoundType
         {
             for (Field primaryKeyField : sqlPrimaryKeyFields)
             {
-                final ZserioType fieldBaseType =
-                        primaryKeyField.getTypeInstantiation().getTypeReference().getBaseType();
+                final TypeReference fieldBaseTypeReference =
+                        primaryKeyField.getTypeInstantiation().getTypeReference().getBaseTypeReference();
+                final ZserioType fieldBaseType = fieldBaseTypeReference.getType();
                 if (fieldBaseType instanceof BooleanType || fieldBaseType instanceof IntegerType)
                     ZserioToolPrinter.printWarning(this, "Single integer primary key in without rowid " +
                             "table '" + getName() + "' brings performance drop.");

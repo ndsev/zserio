@@ -41,7 +41,7 @@ public class SqlNativeTypeMapper
     public SqlNativeType getSqlType(TypeReference typeReference) throws ZserioEmitException
     {
         // resolve all the way through subtypes to the base type
-        final ZserioType baseType = typeReference.getBaseType();
+        final ZserioType baseType = typeReference.getBaseTypeReference().getType();
 
         final TypeMapperVisitor visitor = new TypeMapperVisitor();
         baseType.accept(visitor);

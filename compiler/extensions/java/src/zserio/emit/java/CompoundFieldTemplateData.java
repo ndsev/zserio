@@ -36,7 +36,7 @@ public final class CompoundFieldTemplateData
     {
         final TypeInstantiation fieldTypeInstantiation = field.getTypeInstantiation();
         final TypeReference fieldTypeReference = fieldTypeInstantiation.getTypeReference();
-        final ZserioType fieldBaseType = fieldTypeReference.getBaseType();
+        final ZserioType fieldBaseType = fieldTypeReference.getBaseTypeReference().getType();
 
         name = field.getName();
 
@@ -319,7 +319,7 @@ public final class CompoundFieldTemplateData
         {
             final TypeInstantiation elementTypeInstantiation = arrayType.getElementTypeInstantiation();
             final TypeReference elementTypeReference = elementTypeInstantiation.getTypeReference();
-            final ZserioType elementBaseType = elementTypeReference.getBaseType();
+            final ZserioType elementBaseType = elementTypeReference.getBaseTypeReference().getType();
 
             isImplicit = arrayType.isImplicit();
             length = createLength(arrayType, javaExpressionFormatter);
@@ -417,8 +417,9 @@ public final class CompoundFieldTemplateData
 
         private static boolean createGenerateListSetter(TypeInstantiation elementTypeInstantiation)
         {
-            // TODO[Mi-L@][typeref] Check!
-            final ZserioType elementBaseType = elementTypeInstantiation.getTypeReference().getBaseType();
+            final TypeReference elementBaseTypeReference =
+                    elementTypeInstantiation.getTypeReference().getBaseTypeReference();
+            final ZserioType elementBaseType = elementBaseTypeReference.getType();
             return elementBaseType instanceof CompoundType || elementBaseType instanceof EnumType ||
                     !elementTypeInstantiation.getInstantiatedParameters().isEmpty();
         }
@@ -569,7 +570,7 @@ public final class CompoundFieldTemplateData
             ExpressionFormatter javaExpressionFormatter, CompoundType owner,
             TypeInstantiation fieldTypeInstantiation) throws ZserioEmitException
     {
-        if (fieldTypeInstantiation.getTypeReference().getBaseType() instanceof CompoundType)
+        if (fieldTypeInstantiation.getTypeReference().getBaseTypeReference().getType() instanceof CompoundType)
             return new Compound(javaNativeTypeMapper, withWriterCode, javaExpressionFormatter, owner,
                     fieldTypeInstantiation);
         else

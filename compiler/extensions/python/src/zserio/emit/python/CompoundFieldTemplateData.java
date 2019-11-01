@@ -32,7 +32,7 @@ public final class CompoundFieldTemplateData
 
         final TypeInstantiation fieldTypeInstantiation = field.getTypeInstantiation();
         final TypeReference fieldTypeReference = fieldTypeInstantiation.getTypeReference();
-        final ZserioType fieldBaseType = fieldTypeReference.getBaseType();
+        final ZserioType fieldBaseType = fieldTypeReference.getBaseTypeReference().getType();
         final PythonNativeType nativeType = pythonNativeTypeMapper.getPythonType(fieldTypeReference);
         importCollector.importType(nativeType);
         pythonTypeName = nativeType.getFullName();
@@ -304,7 +304,7 @@ public final class CompoundFieldTemplateData
 
             final TypeInstantiation elementTypeInstantiation = arrayType.getElementTypeInstantiation();
             final TypeReference elementTypeReference = elementTypeInstantiation.getTypeReference();
-            final ZserioType elementBaseType = elementTypeReference.getBaseType();
+            final ZserioType elementBaseType = elementTypeReference.getBaseTypeReference().getType();
             final PythonNativeType elementNativeType =
                     pythonNativeTypeMapper.getPythonType(elementTypeReference);
             importCollector.importType(elementNativeType);
@@ -526,7 +526,7 @@ public final class CompoundFieldTemplateData
     private static Compound createCompound(ExpressionFormatter pythonExpressionFormatter,
             TypeInstantiation fieldTypeInstantiation) throws ZserioEmitException
     {
-        if (fieldTypeInstantiation.getTypeReference().getBaseType() instanceof CompoundType)
+        if (fieldTypeInstantiation.getTypeReference().getBaseTypeReference().getType() instanceof CompoundType)
             return new Compound(pythonExpressionFormatter, fieldTypeInstantiation);
         else
             return null;
