@@ -6,6 +6,7 @@
 #include <vector>
 
 #include "zserio/Types.h"
+#include "zserio/BitBuffer.h"
 
 namespace zserio
 {
@@ -33,6 +34,9 @@ public:
      * \param bufferByteSize Size of the buffer in bytes.
      */
     explicit BitStreamWriter(uint8_t* buffer, size_t bufferByteSize);
+
+    /* TODO[mikir] */
+    explicit BitStreamWriter(BitBuffer& bitBuffer);
 
     /**
      * Destructor.
@@ -165,6 +169,12 @@ public:
      * \param data Bool to write.
      */
     void writeBool(bool data);
+
+    /* TODO[mikir] */
+    void writeBitBuffer(const BitBuffer& bitBuffer);
+
+    /* TODO[mikir] */
+    BitBuffer reserveBitBufferInPlace(size_t bitSize);
 
     /**
      * Gets current bit position.

@@ -23,22 +23,22 @@ void SimpleStructure::setNumberA(uint8_t numberA_)
     m_numberA_ = numberA_;
 }
 
-::zserio::BitStream& SimpleStructure::getExternalStructure()
+::zserio::Bits& SimpleStructure::getExternalStructure()
 {
     return m_externalStructure_;
 }
 
-const ::zserio::BitStream& SimpleStructure::getExternalStructure() const
+const ::zserio::Bits& SimpleStructure::getExternalStructure() const
 {
     return m_externalStructure_;
 }
 
-void SimpleStructure::setExternalStructure(const ::zserio::BitStream& externalStructure_)
+void SimpleStructure::setExternalStructure(const ::zserio::Bits& externalStructure_)
 {
     m_externalStructure_ = externalStructure_;
 }
 
-void SimpleStructure::setExternalStructure(::zserio::BitStream&& externalStructure_)
+void SimpleStructure::setExternalStructure(::zserio::Bits&& externalStructure_)
 {
     m_externalStructure_ = ::std::move(externalStructure_);
 }
@@ -81,7 +81,7 @@ bool SimpleStructure::operator==(const SimpleStructure& other) const
     {
         return
                 (m_numberA_ == other.m_numberA_) &&
-//TODO[mikir]                (m_externalStructure_ == other.m_externalStructure_) &&
+                (m_externalStructure_ == other.m_externalStructure_) &&
                 (m_numberC_ == other.m_numberC_);
     }
 
@@ -93,7 +93,7 @@ int SimpleStructure::hashCode() const
     int result = ::zserio::HASH_SEED;
 
     result = ::zserio::calcHashCode(result, m_numberA_);
-//TODO[mikir]    result = ::zserio::calcHashCode(result, m_externalStructure_);
+    result = ::zserio::calcHashCode(result, m_externalStructure_);
     result = ::zserio::calcHashCode(result, m_numberC_);
 
     return result;

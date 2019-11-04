@@ -20,14 +20,16 @@ project(ZserioCppRuntime)
 
 set(ZSERIO_CPP_RUNTIME_LIB_SRCS
     zserio/Arrays.h
+    zserio/BitBuffer.h
+    zserio/BitBuffer.cpp
     zserio/BitFieldUtil.cpp
     zserio/BitFieldUtil.h
     zserio/BitPositionUtil.cpp
     zserio/BitPositionUtil.h
+    zserio/Bits.cpp
+    zserio/Bits.h
     zserio/BitSizeOfCalculator.cpp
     zserio/BitSizeOfCalculator.h
-    zserio/BitStream.cpp
-    zserio/BitStream.h
     zserio/BitStreamException.h
     zserio/BitStreamReader.cpp
     zserio/BitStreamReader.h

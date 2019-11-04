@@ -1,11 +1,11 @@
 struct SimpleStructure
 {
-    bit:3     numberA;
-    bitstream externalStructure;
-    bit:7     numberC;
+    bit:3   numberA;
+    bits    externalStructure;
+    bit:7   numberC;
 };
 
 struct ExternalStructure
 {
-    uint8     numberB;
+    uint8   numberB;
 };

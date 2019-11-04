@@ -10,10 +10,12 @@ int main()
 
     const uint8_t numberA = 0x03;
     const uint8_t numberC = 0x3F;
-    SimpleStructure simpleStructure(numberA, ::zserio::BitStream(externalStructure), numberC);
+    SimpleStructure simpleStructure1(numberA, ::zserio::Bits(externalStructure), numberC);
+    std::cout << "bitSizeOf = " << simpleStructure1.bitSizeOf() << std::endl;
 
-    std::cout << "NumberA = " << std::hex << (unsigned)simpleStructure.getNumberA() << std::endl;
-    std::cout << "NumberC = " << std::hex << (unsigned)simpleStructure.getNumberC() << std::endl;
+    ::zserio::BitBuffer bitBuffer(10);
+    SimpleStructure simpleStructure2(numberA, ::zserio::Bits(bitBuffer), numberC);
+    std::cout << "bitSizeOf = " << simpleStructure2.bitSizeOf() << std::endl;
 
     return 0;
 }

@@ -5,6 +5,7 @@
 #include <string>
 
 #include "zserio/Types.h"
+#include "zserio/BitBuffer.h"
 
 namespace zserio
 {
@@ -27,9 +28,9 @@ public:
          * Constructor.
          *
          * \param buffer Pointer to the buffer to read.
-         * \param bufferByteSize Size of the buffer in bytes.
+         * \param bufferBitSize Size of the buffer in bits.
          */
-        ReaderContext(const uint8_t* buffer, size_t bufferByteSize);
+        explicit ReaderContext(const uint8_t* buffer, size_t bufferBitSize);
 
         /**
          * Constructor from the file name.
@@ -82,7 +83,10 @@ public:
      * \param buffer Pointer to the buffer to read.
      * \param bufferByteSize Size of the buffer in bytes.
      */
-    BitStreamReader(const uint8_t* buffer, size_t bufferByteSize);
+    explicit BitStreamReader(const uint8_t* buffer, size_t bufferByteSize);
+
+    /* TODO[mikir] */
+    explicit BitStreamReader(const BitBuffer& bitBuffer);
 
     /**
      * Constructor from the file name.
@@ -112,7 +116,6 @@ public:
      * \return Read bits.
      */
     uint64_t readBits64(uint8_t numBits = 64);
-
 
     /**
      * Reads signed bits up to 32-bits.
@@ -201,7 +204,6 @@ public:
      */
     double readFloat64();
 
-
     /**
      * Reads an UTF-8 string.
      *
@@ -215,6 +217,12 @@ public:
      * \return Read bool value.
      */
     bool readBool();
+
+    /* TODO[mikir] */
+    BitBuffer readBitBuffer(size_t bitSize);
+
+    /* TODO[mikir] */
+    BitBuffer readBitBufferInPlace(size_t bitSize);
 
     /**
      * Gets current bit position.

@@ -10,6 +10,7 @@
 #include "zserio/Arrays.h"
 #include "zserio/Enums.h"
 #include "zserio/OptionalHolder.h"
+#include "zserio/Bits.h"
 
 namespace zserio
 {
@@ -184,6 +185,22 @@ namespace zserio
         int result = seedValue;
         for (std::string::value_type element : stringValue)
             result = calcHashCode(result, element);
+
+        return result;
+    }
+
+    /* TODO[mikir] */
+    inline int calcHashCode(int seedValue, const Bits& bits)
+    {
+        const std::function<int()>& hashCodeFunc = bits.getHashCodeFunc();
+        if (hashCodeFunc)
+            return calcHashCode(seedValue, hashCodeFunc());
+
+        size_t bitSize;
+        const uint8_t* buffer = bits.getBitBuffer().get(bitSize);
+        int result = seedValue;
+        for (const uint8_t* p = buffer; p < buffer + bitSize; ++p)
+            result = calcHashCode(result, *p);
 
         return result;
     }
