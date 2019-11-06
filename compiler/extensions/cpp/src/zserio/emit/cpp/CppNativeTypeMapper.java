@@ -1,6 +1,7 @@
 package zserio.emit.cpp;
 
 import zserio.ast.ArrayType;
+import zserio.ast.InstantiateType;
 import zserio.ast.IntegerType;
 import zserio.ast.PackageName;
 import zserio.ast.UnionType;
@@ -391,7 +392,7 @@ public class CppNativeTypeMapper
              *
              * the field ids should be backed by ObjectArray<MyID> (not ObjectArray<Foo>).
              */
-            elementTypeReference.getBaseType().accept(arrayVisitor);
+            elementTypeReference.getBaseTypeReference().getType().accept(arrayVisitor);
             cppType = arrayVisitor.getCppType();
             thrownException = arrayVisitor.getThrownException();
         }
@@ -511,6 +512,15 @@ public class CppNativeTypeMapper
         public void visitUnionType(UnionType type)
         {
             mapCompoundType(type);
+        }
+
+        @Override
+        public void visitInstantiateType(InstantiateType type)
+        {
+            final PackageName packageName = cppPackageMapper.getPackageName(type);
+            final String name = type.getName(); // note that name is same as the referenced type name
+            final String includeFileName = getIncludePath(packageName, name);
+            cppType = new NativeUserType(packageName, name, includeFileName, false);
         }
 
         @Override

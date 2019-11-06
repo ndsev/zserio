@@ -62,7 +62,9 @@ public class LinkedType
 
         while (node instanceof ArrayType)
         {
-            node = ((ArrayType) node).getElementTypeInstantiation().getTypeReference().getBaseType();
+            final TypeReference elementBaseTypeReference =
+                    ((ArrayType)node).getElementTypeInstantiation().getTypeReference().getBaseTypeReference();
+            node = elementBaseTypeReference.getType();
             style = "arrayLink";
             category += "array of ";
         }

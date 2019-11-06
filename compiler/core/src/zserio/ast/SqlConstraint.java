@@ -167,7 +167,8 @@ public class SqlConstraint extends AstNodeBase
      *
      * @return New sql constraint instantiated from this using the given template arguments.
      */
-    SqlConstraint instantiate(List<TemplateParameter> templateParameters, List<TypeReference> templateArguments)
+    SqlConstraint instantiate(List<TemplateParameter> templateParameters,
+            List<TemplateArgument> templateArguments)
     {
         final Expression instantiatedConstraintExpr =
                 getConstraintExpr().instantiate(templateParameters, templateArguments);

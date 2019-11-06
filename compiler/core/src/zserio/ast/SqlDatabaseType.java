@@ -44,7 +44,7 @@ public class SqlDatabaseType extends CompoundType
         for (Field databaseField : getFields())
         {
             final ZserioType fieldBaseType =
-                    databaseField.getTypeInstantiation().getTypeReference().getBaseType();
+                    databaseField.getTypeInstantiation().getTypeReference().getBaseTypeReference().getType();
             if (!(fieldBaseType instanceof SqlTableType))
             {
                 throw new ParserException(databaseField,
@@ -54,7 +54,8 @@ public class SqlDatabaseType extends CompoundType
     }
 
     @Override
-    SqlDatabaseType instantiateImpl(String name, List<TypeReference> templateArguments)
+    SqlDatabaseType instantiateImpl(String name, List<TemplateArgument> templateArguments,
+            Package instantiationPackage)
     {
         throw new InternalError("SqlDatabaseType is not templatable!");
     }

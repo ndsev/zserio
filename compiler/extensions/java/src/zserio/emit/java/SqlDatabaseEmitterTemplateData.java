@@ -48,7 +48,7 @@ public final  class SqlDatabaseEmitterTemplateData extends UserTypeTemplateData
                 throws ZserioEmitException
         {
             final TypeReference fieldTypeReference = field.getTypeInstantiation().getTypeReference();
-            final ZserioType fieldBaseType = fieldTypeReference.getBaseType();
+            final ZserioType fieldBaseType = fieldTypeReference.getBaseTypeReference().getType();
             javaTypeName = javaNativeTypeMapper.getJavaType(fieldTypeReference).getFullName();
 
             name = field.getName();

@@ -38,6 +38,7 @@ import zserio.ast.Field;
 import zserio.ast.FloatType;
 import zserio.ast.Function;
 import zserio.ast.Import;
+import zserio.ast.InstantiateType;
 import zserio.ast.Parameter;
 import zserio.ast.Root;
 import zserio.ast.Package;
@@ -51,6 +52,7 @@ import zserio.ast.StringType;
 import zserio.ast.StructureType;
 import zserio.ast.Subtype;
 import zserio.ast.SymbolReference;
+import zserio.ast.TemplateArgument;
 import zserio.ast.TemplateParameter;
 import zserio.ast.TypeInstantiation;
 import zserio.ast.TypeReference;
@@ -390,6 +392,18 @@ public class XmlAstWriter implements ZserioAstVisitor
         final Element xmlElement = xmlDoc.createElement("TEMPLATE_PARAMETER");
         xmlElement.setAttribute("name", templateParameter.getName());
         visitAstNode(templateParameter, xmlElement);
+    }
+
+    @Override
+    public void visitTemplateArgument(TemplateArgument templateArgument)
+    {
+        visitAstNode(templateArgument, "TEMPLATE_ARGUMENT");
+    }
+
+    @Override
+    public void visitInstantiateType(InstantiateType instantiateType)
+    {
+        visitZserioType(instantiateType, "INSTANTIATE_TYPE");
     }
 
     @Override

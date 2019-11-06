@@ -4,8 +4,18 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+/**
+ * AST node fopr type instantiation.
+ */
 public class TypeInstantiation extends AstNodeBase
 {
+    /**
+     * Constructor.
+     *
+     * @param location      AST node location.
+     * @param typeReference Reference to the instantiated type definition.
+     * @param typeArguments Arguments for the type instantiation.
+     */
     public TypeInstantiation(AstLocation location, TypeReference typeReference, List<Expression> typeArguments)
     {
         super(location);
@@ -28,6 +38,11 @@ public class TypeInstantiation extends AstNodeBase
             typeArgument.accept(visitor);
     }
 
+    /**
+     * Gets reference to the instantiated type definition.
+     *
+     * @return Type reference.
+     */
     public TypeReference getTypeReference()
     {
         return typeReference;
@@ -90,8 +105,16 @@ public class TypeInstantiation extends AstNodeBase
         private final Parameter parameter;
     }
 
+    /**
+     * Instantiate the type instantiation.
+     *
+     * @param templateParameters Template parameters.
+     * @param templateArguments  Template arguments.
+     *
+     * @return New type instantiation instantiated from this using the given template arguments.
+     */
     TypeInstantiation instantiate(List<TemplateParameter> templateParameters,
-            List<TypeReference> templateArguments)
+            List<TemplateArgument> templateArguments)
     {
         final TypeReference instantiatedTypeReference =
                 typeReference.instantiate(templateParameters, templateArguments);
@@ -103,12 +126,15 @@ public class TypeInstantiation extends AstNodeBase
         return new TypeInstantiation(getLocation(), instantiatedTypeReference, instantiatedTypeArguments);
     }
 
+    /**
+     * Evaluates the type instantiation.
+     */
     void evaluate()
     {
         if (!isEvaluated)
         {
             // check if referenced type is a compound type
-            final ZserioType baseType = typeReference.getBaseType();
+            final ZserioType baseType = typeReference.getBaseTypeReference().getType();
             final boolean isParameterized =
                     baseType instanceof CompoundType && !((CompoundType)baseType).getTypeParameters().isEmpty();
             if (isParameterized)
@@ -146,6 +172,9 @@ public class TypeInstantiation extends AstNodeBase
         }
     }
 
+    /**
+     * Checks the type instantiation.
+     */
     void check()
     {
         // check all argument types in instantiated parameter list
@@ -154,8 +183,9 @@ public class TypeInstantiation extends AstNodeBase
             final Expression argumentExpression = instantiatedParameter.getArgumentExpression();
             if (!argumentExpression.isExplicitVariable())
             {
-                ExpressionUtil.checkExpressionType(argumentExpression,
-                        instantiatedParameter.getParameter().getTypeReference().getBaseType());
+                final TypeReference parameterBaseTypeReference =
+                        instantiatedParameter.getParameter().getTypeReference().getBaseTypeReference();
+                ExpressionUtil.checkExpressionType(argumentExpression, parameterBaseTypeReference.getType());
             }
         }
     }

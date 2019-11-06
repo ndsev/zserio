@@ -17,6 +17,12 @@ set(ZSERIO_GENERATED_SOURCES
     ${ZSERIO_GEN_DIR}/subtypes/structure_subtype/TestStructure.cpp
     ${ZSERIO_GEN_DIR}/subtypes/structure_subtype/TestStructure.h
 
+    ${ZSERIO_GEN_DIR}/subtypes/subtype_imported/SubtypeImported.cpp
+    ${ZSERIO_GEN_DIR}/subtypes/subtype_imported/SubtypeImported.h
+    ${ZSERIO_GEN_DIR}/subtypes/subtype_imported/Test.cpp
+    ${ZSERIO_GEN_DIR}/subtypes/subtype_imported/Test.h
+    ${ZSERIO_GEN_DIR}/subtypes/subtype_imported/pkg/SubTest.h
+
     ${ZSERIO_GEN_DIR}/subtypes/uint16_subtype/Identifier.h
     ${ZSERIO_GEN_DIR}/subtypes/uint16_subtype/TestStructure.cpp
     ${ZSERIO_GEN_DIR}/subtypes/uint16_subtype/TestStructure.h
@@ -35,6 +41,7 @@ add_test_sources(
     ${ZSERIO_CPP_DIR}/EnumSubtypeTest.cpp
     ${ZSERIO_CPP_DIR}/ParamStructureSubtypeTest.cpp
     ${ZSERIO_CPP_DIR}/StructureSubtypeTest.cpp
+    ${ZSERIO_CPP_DIR}/SubtypeImportedTest.cpp
     ${ZSERIO_CPP_DIR}/UInt16SubtypeTest.cpp
 )
 

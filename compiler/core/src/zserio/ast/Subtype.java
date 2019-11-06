@@ -74,43 +74,31 @@ public class Subtype extends DocumentableAstNode implements ZserioType
 
     /**
      * Resolves the subtype to a defined type called at the end of linking phase.
-     *
-     * @return Resolved reference to base type of this subtype.
      */
-    TypeReference resolve()
+    void resolve()
     {
-        if (resolvingState == ResolvingState.RESOLVED)
-            return baseTypeReference;
+        if (isResolved)
+            return;
 
-        // detect cycles in subtype definitions
-        if (resolvingState == ResolvingState.RESOLVING)
-            throw new ParserException(this, "Cyclic dependency detected in subtype '" +
-                    getName() + "' definition!");
-
-        resolvingState = ResolvingState.RESOLVING;
-
-        typeReference.resolve(); // make sure the type reference is resolved
-        if (typeReference.getType() instanceof Subtype)
-            baseTypeReference = ((Subtype)typeReference.getType()).resolve();
+        final ZserioType referencedType = typeReference.getType();
+        if (referencedType instanceof Subtype)
+        {
+            baseTypeReference = ((Subtype)referencedType).getBaseTypeReference();
+        }
+        else if (referencedType instanceof InstantiateType)
+        {
+            baseTypeReference = ((InstantiateType)referencedType).getTypeReference();
+        }
         else
             baseTypeReference = typeReference;
 
-        resolvingState = ResolvingState.RESOLVED;
-
-        return baseTypeReference;
+        isResolved = true;
     }
-
-    private enum ResolvingState
-    {
-        UNRESOLVED,
-        RESOLVING,
-        RESOLVED
-    };
 
     private final Package pkg;
     private final TypeReference typeReference;
     private final String name;
 
-    private ResolvingState resolvingState = ResolvingState.UNRESOLVED;
     private TypeReference baseTypeReference = null;
+    private boolean isResolved = false;
 }

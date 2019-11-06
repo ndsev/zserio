@@ -201,6 +201,18 @@ public class ZserioAstWalker implements ZserioAstVisitor
     }
 
     @Override
+    public void visitTemplateArgument(TemplateArgument templateArgument)
+    {
+        templateArgument.visitChildren(this);
+    }
+
+    @Override
+    public void visitInstantiateType(InstantiateType templateInstantiation)
+    {
+        templateInstantiation.visitChildren(this);
+    }
+
+    @Override
     public void visitDocComment(DocComment docComment)
     {
         docComment.visitChildren(this);

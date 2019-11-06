@@ -62,7 +62,8 @@ public class Parameter extends AstNodeBase
      *
      * @return New type parameter instantiated from this using the given template arguments.
      */
-    Parameter instantiate(List<TemplateParameter> templateParameters, List<TypeReference> templateArguments)
+    Parameter instantiate(List<TemplateParameter> templateParameters,
+            List<TemplateArgument> templateArguments)
     {
         final TypeReference instantiatedTypeReference =
                 typeReference.instantiate(templateParameters, templateArguments);

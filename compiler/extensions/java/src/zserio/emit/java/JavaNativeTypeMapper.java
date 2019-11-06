@@ -75,7 +75,7 @@ final class JavaNativeTypeMapper
     public JavaNativeType getJavaType(TypeReference typeReference) throws ZserioEmitException
     {
         // always resolve subtypes
-        return getJavaType(typeReference.getBaseType());
+        return getJavaType(typeReference.getBaseTypeReference().getType());
     }
 
     /**
@@ -117,7 +117,7 @@ final class JavaNativeTypeMapper
      */
     public JavaNativeType getNullableJavaType(TypeReference typeReference) throws ZserioEmitException
     {
-        final ZserioType type = typeReference.getBaseType();
+        final ZserioType type = typeReference.getBaseTypeReference().getType();
         final ZserioTypeMapperVisitor visitor = visitType(javaPackageMapper, type);
 
         final JavaNativeType nativeNullableType = visitor.getJavaNullableType();
@@ -419,7 +419,7 @@ final class JavaNativeTypeMapper
         public void visitArrayType(ArrayType type)
         {
             final ZserioType elementBaseType =
-                    type.getElementTypeInstantiation().getTypeReference().getBaseType();
+                    type.getElementTypeInstantiation().getTypeReference().getBaseTypeReference().getType();
             final ArrayElementTypeMapperVisitor arrayVisitor = new ArrayElementTypeMapperVisitor();
 
             elementBaseType.accept(arrayVisitor);

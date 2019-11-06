@@ -1,6 +1,7 @@
 package zserio.ast;
 
-import java.util.Map;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Implementation of ZserioAstVisitor which manages type resolving phase.
@@ -8,27 +9,27 @@ import java.util.Map;
 public class ZserioAstTypeResolver extends ZserioAstWalker
 {
     @Override
-    public void visitRoot(Root root)
-    {
-        packageNameMap = root.getPackageNameMap();
-
-        root.visitChildren(this);
-
-        packageNameMap = null;
-    }
-
-    @Override
-    public void visitPackage(Package pkg)
-    {
-        pkg.importTypes(packageNameMap);
-        pkg.visitChildren(this);
-    }
-
-    @Override
     public void visitSubtype(Subtype subtype)
     {
-        subtype.resolve();
+        if (!subtypesOnStack.isEmpty() && subtypesOnStack.get(0).equals(subtype))
+        {
+            final ParserStackedException stackedException = new ParserStackedException(subtype.getLocation(),
+                    "Cyclic dependency detected in subtype '" + subtype.getName() + "' definition!");
+            for (int i = 1; i < subtypesOnStack.size(); ++i)
+            {
+                final Subtype subtypeOnStack = subtypesOnStack.get(i);
+                stackedException.pushMessage(subtypeOnStack.getLocation(),
+                        "    Through subtype '" + subtypeOnStack.getName() + "' here");
+            }
+            throw stackedException;
+        }
+
+        subtypesOnStack.add(subtype);
+
         subtype.visitChildren(this);
+        subtype.resolve();
+
+        subtypesOnStack.remove(subtypesOnStack.size() - 1);
     }
 
     @Override
@@ -58,8 +59,30 @@ public class ZserioAstTypeResolver extends ZserioAstWalker
     @Override
     public void visitTypeReference(TypeReference typeReference)
     {
-        typeReference.resolve();
         typeReference.visitChildren(this);
+        typeReference.resolve(isTemplateArgument);
+
+        // make sure that typeReference.getBaseTypeReference() can be called after this resolve
+        final ZserioType type = typeReference.getType();
+        if (type instanceof Subtype || type instanceof InstantiateType)
+            type.accept(this);
+    }
+
+    @Override
+    public void visitTemplateArgument(TemplateArgument templateArgument)
+    {
+        final boolean origIsTemplateArgument = isTemplateArgument;
+        isTemplateArgument = true;
+        templateArgument.visitChildren(this);
+        templateArgument.resolve();
+        isTemplateArgument = origIsTemplateArgument;
+    }
+
+    @Override
+    public void visitInstantiateType(InstantiateType instantiateType)
+    {
+        instantiateType.visitChildren(this);
+        instantiateType.resolve();
     }
 
     private void visitType(TemplatableType templatableType)
@@ -69,5 +92,7 @@ public class ZserioAstTypeResolver extends ZserioAstWalker
             templatableType.visitChildren(this);
     }
 
-    private Map<PackageName, Package> packageNameMap = null;
+    private boolean isTemplateArgument = false;
+
+    private List<Subtype> subtypesOnStack = new ArrayList<Subtype>();
 }

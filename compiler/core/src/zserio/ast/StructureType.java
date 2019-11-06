@@ -40,7 +40,8 @@ public class StructureType extends CompoundType
     }
 
     @Override
-    StructureType instantiateImpl(String name, List<TypeReference> templateArguments)
+    StructureType instantiateImpl(String name, List<TemplateArgument> templateArguments,
+            Package instantiationPackage)
     {
         final List<Parameter> instantiatedTypeParameters = new ArrayList<Parameter>();
         for (Parameter typeParameter : getTypeParameters())
@@ -57,7 +58,7 @@ public class StructureType extends CompoundType
         for (Function function : getFunctions())
             instantiatedFunctions.add(function.instantiate(getTemplateParameters(), templateArguments));
 
-        return new StructureType(getLocation(), getPackage(), name, new ArrayList<TemplateParameter>(),
+        return new StructureType(getLocation(), instantiationPackage, name, new ArrayList<TemplateParameter>(),
                 instantiatedTypeParameters, instantiatedFields, instantiatedFunctions, getDocComment());
     }
 
@@ -90,7 +91,8 @@ public class StructureType extends CompoundType
         for (int i = 0; i < numFields; ++i)
         {
             final Field field = fields.get(i);
-            final ZserioType fieldBaseType = field.getTypeInstantiation().getTypeReference().getBaseType();
+            final ZserioType fieldBaseType =
+                    field.getTypeInstantiation().getTypeReference().getBaseTypeReference().getType();
             if (fieldBaseType instanceof ArrayType)
             {
                 final ArrayType fieldArrayType = (ArrayType)fieldBaseType;

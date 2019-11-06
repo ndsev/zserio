@@ -115,6 +115,6 @@ public class SqlTableTemplatedFieldTest
         assertEquals(row1.getData(), row2.getData());
     }
 
-    private static final String DB_FILE_NAME = "sql_table_test_templated_field.sqlite";
+    private static final String DB_FILE_NAME = "sql_table_templated_field.sqlite";
     private final File dbFile = new File(DB_FILE_NAME);
 }

@@ -38,6 +38,7 @@ typeDeclaration
     |   sqlTableDeclaration
     |   sqlDatabaseDefinition
     |   serviceDefinition
+    |   instantiateDeclaration
     ;
 
 
@@ -270,7 +271,15 @@ templateParameters
     ;
 
 templateArguments
-    :   LT typeReference (COMMA typeReference)* GT
+    :   LT templateArgument (COMMA templateArgument)* GT
+    ;
+
+templateArgument
+    :   typeReference
+    ;
+
+instantiateDeclaration
+    :   INSTANTIATE typeReference id SEMICOLON
     ;
 
 

@@ -230,6 +230,20 @@ public interface ZserioAstVisitor
     void visitTemplateParameter(TemplateParameter templateParameter);
 
     /**
+     * Visits template argument.
+     *
+     * @param templateArgument Template argument AST node.
+     */
+    void visitTemplateArgument(TemplateArgument templateArgument);
+
+    /**
+     * Visits template instantiation.
+     *
+     * @param templateInstantiation Template instantiation AST node.
+     */
+    void visitInstantiateType(InstantiateType templateInstantiation);
+
+    /**
      * Visits a documentation comment.
      *
      * @param docComment Documentation comment AST node.

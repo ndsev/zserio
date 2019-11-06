@@ -136,6 +136,16 @@ public class ZserioAstDefaultVisitor implements ZserioAstVisitor
     {}
 
     @Override
+    public void visitTemplateArgument(TemplateArgument templateArgument)
+    {}
+
+    @Override
+    public void visitInstantiateType(InstantiateType templateInstantiation)
+    {
+        templateInstantiation.visitChildren(this);
+    }
+
+    @Override
     public void visitDocComment(DocComment docComment)
     {}
 

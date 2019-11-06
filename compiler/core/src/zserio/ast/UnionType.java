@@ -37,7 +37,8 @@ public class UnionType extends CompoundType
     }
 
     @Override
-    UnionType instantiateImpl(String name, List<TypeReference> templateArguments)
+    UnionType instantiateImpl(String name, List<TemplateArgument> templateArguments,
+            Package instantiationPackage)
     {
         final List<Parameter> instantiatedTypeParameters = new ArrayList<Parameter>();
         for (Parameter typeParameter : getTypeParameters())
@@ -51,7 +52,7 @@ public class UnionType extends CompoundType
         for (Function function : getFunctions())
             instantiatedFunctions.add(function.instantiate(getTemplateParameters(), templateArguments));
 
-        return new UnionType(getLocation(), getPackage(), name, new ArrayList<TemplateParameter>(),
+        return new UnionType(getLocation(), instantiationPackage, name, new ArrayList<TemplateParameter>(),
                 instantiatedTypeParameters, instantiatedFields, instantiatedFunctions, getDocComment());
     }
 

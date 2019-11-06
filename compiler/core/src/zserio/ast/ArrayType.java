@@ -97,7 +97,7 @@ public class ArrayType extends BuiltInType
      *
      * @return New field instantiated from this using the given template arguments.
      */
-    ArrayType instantiate(List<TemplateParameter> templateParameters, List<TypeReference> templateArguments)
+    ArrayType instantiate(List<TemplateParameter> templateParameters, List<TemplateArgument> templateArguments)
     {
         final TypeInstantiation instantiatedElementTypeInstantiation =
                 elementTypeInstantiation.instantiate(templateParameters, templateArguments);

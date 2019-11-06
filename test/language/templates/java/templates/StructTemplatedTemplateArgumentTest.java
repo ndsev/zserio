@@ -23,7 +23,8 @@ public class StructTemplatedTemplateArgumentTest
     @Test
     public void readWrite() throws IOException
     {
-        StructTemplatedTemplateArgument structTemplatedTemplateArgument = new StructTemplatedTemplateArgument();
+        final StructTemplatedTemplateArgument structTemplatedTemplateArgument =
+                new StructTemplatedTemplateArgument();
         structTemplatedTemplateArgument.setCompoundField(new Field_Compound_uint32(new Compound_uint32(42)));
 
         final BitStreamWriter writer = new FileBitStreamWriter(TEST_FILE);

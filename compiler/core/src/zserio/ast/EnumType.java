@@ -113,7 +113,7 @@ public class EnumType extends DocumentableAstNode implements ZserioScopedType
         if (!isEvaluated)
         {
             // fill resolved enumeration type
-            final ZserioType baseType = enumTypeReference.getBaseType();
+            final ZserioType baseType = enumTypeReference.getBaseTypeReference().getType();
             if (!(baseType instanceof IntegerType))
                 throw new ParserException(this, "Enumeration '" + this.getName() + "' has forbidden type " +
                         baseType.getName() + "!");

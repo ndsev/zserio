@@ -82,7 +82,8 @@ public class Function extends DocumentableAstNode
     void check()
     {
         // check result expression type
-        ExpressionUtil.checkExpressionType(resultExpression, returnTypeReference.getBaseType());
+        ExpressionUtil.checkExpressionType(resultExpression,
+                returnTypeReference.getBaseTypeReference().getType());
 
         // check usage of unconditional optional fields (this is considered as a warning)
         if (!resultExpression.containsFunctionCall() && !resultExpression.containsTernaryOperator())
@@ -105,7 +106,7 @@ public class Function extends DocumentableAstNode
      *
      * @return New function type instantiated from this using the given template arguments.
      */
-    Function instantiate(List<TemplateParameter> templateParameters, List<TypeReference> templateArguments)
+    Function instantiate(List<TemplateParameter> templateParameters, List<TemplateArgument> templateArguments)
     {
         final TypeReference instantiatedReturnTypeReference =
                 returnTypeReference.instantiate(templateParameters, templateArguments);

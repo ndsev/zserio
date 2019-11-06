@@ -76,6 +76,113 @@ public class TemplatesErrorTest
     }
 
     @Test
+    public void instantiateDuplicated()
+    {
+        final String errors[] =
+        {
+            "instantiate_duplicated_error.zs:8:13: In instantiation of 'Test' required from here",
+            "instantiate_duplicated_error.zs:8:26:     First requested here",
+            "instantiate_duplicated_error.zs:9:26: Ambiguous request to instantiate template 'Test'!"
+        };
+        assertTrue(zserioErrors.isPresent(errors));
+    }
+
+    @Test
+    public void instantiateDuplicatedName()
+    {
+        final String errors[] =
+        {
+            "instantiate_duplicated_name_error.zs:8:26:     First defined here",
+            "instantiate_duplicated_name_error.zs:9:27: 'Str' is already defined in this package!"
+        };
+        assertTrue(zserioErrors.isPresent(errors));
+    }
+
+    @Test
+    public void instantiateDuplicatedViaImport()
+    {
+        final String errors[] =
+        {
+            "instantiate_duplicated_via_import_error.zs:5:13: In instantiation of 'Test' required from here",
+            "instantiate_duplicated_via_import_error.zs:5:26:     First requested here",
+            "pkg.zs:8:26: Ambiguous request to instantiate template 'Test'!"
+        };
+        assertTrue(zserioErrors.isPresent(errors));
+    }
+
+    @Test
+    public void instantiateMissingTemplateArguments()
+    {
+        final String error = "instantiate_missing_template_arguments_error.zs:8:13: " +
+                "Missing template arguments for template 'Test'!";
+        assertTrue(zserioErrors.isPresent(error));
+    }
+
+    @Test
+    public void instantiateNameClash()
+    {
+        final String errors[] =
+        {
+            "instantiate_name_clash_error.zs:13:26:     First defined here",
+            "instantiate_name_clash_error.zs:14:27: 'U32' is already defined in this package!"
+        };
+        assertTrue(zserioErrors.isPresent(errors));
+    }
+
+    @Test
+    public void instantiateNameClashWithTemplate()
+    {
+        final String errors[] =
+        {
+            "instantiate_name_clash_with_template_error.zs:10:5: In instantiation of 'Test' required from here",
+            "instantiate_name_clash_with_template_error.zs:13:26:     First defined here",
+            "instantiate_name_clash_with_template_error.zs:3:8: " +
+                    "'Test_uint32' is already defined in package 'instantiate_name_clash_with_template_error'!"
+        };
+        assertTrue(zserioErrors.isPresent(errors));
+    }
+
+    @Test
+    public void instantiateNameClashWithType()
+    {
+        final String errors[] =
+        {
+            "instantiate_name_clash_with_type_error.zs:3:8:     First defined here",
+            "instantiate_name_clash_with_type_error.zs:13:26: 'Other' is already defined in this package!"
+        };
+        assertTrue(zserioErrors.isPresent(errors));
+    }
+
+    @Test
+    public void instantiateNoTemplate()
+    {
+        final String error = "instantiate_no_template_error.zs:3:8: 'Test' is not a template!";
+        assertTrue(zserioErrors.isPresent(error));
+    }
+
+    @Test
+    public void instantiateSubtype()
+    {
+        final String error = "instantiate_subtype_error.zs:8:22: 'T32' is not a template!";
+        assertTrue(zserioErrors.isPresent(error));
+    }
+
+    @Test
+    public void instantiateTypeInInstantiate()
+    {
+        final String error = "instantiate_type_in_instantiate_error.zs:8:26: 'T32' is not a template!";
+        assertTrue(zserioErrors.isPresent(error));
+    }
+
+    @Test
+    public void instantiateTypeIsSqlTable()
+    {
+        final String error = "instantiate_type_is_sql_table_error.zs:13:14: " +
+                "Field 'field' cannot be a sql table!";
+        assertTrue(zserioErrors.isPresent(error));
+    }
+
+    @Test
     public void instantiationNameClashAcrossPackages()
     {
         final String errors[] =
@@ -112,6 +219,19 @@ public class TemplatesErrorTest
                     "    First seen in instantiation of 'Test_A' from here",
             "instantiation_name_clash_other_template_error.zs:8:8: " +
                     "Instantiation name 'Test_A_uint32' already exits!"
+        };
+        assertTrue(zserioErrors.isPresent(errors));
+    };
+
+    @Test
+    public void instantiationNameClashWithType()
+    {
+        final String errors[] =
+        {
+            "instantiation_name_clash_with_type_error.zs:15:5: In instantiation of 'Test' required from here",
+            "instantiation_name_clash_with_type_error.zs:3:8:     First defined here",
+            "instantiation_name_clash_with_type_error.zs:8:8: " +
+                    "'Test_uint32' is already defined in package 'instantiation_name_clash_with_type_error'!",
         };
         assertTrue(zserioErrors.isPresent(errors));
     };

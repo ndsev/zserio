@@ -28,7 +28,7 @@ public class InspectorZserioTypeNamesTemplateData extends CppTemplateData
             zserioTypeNames.add(zserioTypeName);
 
             // add element type names for arrays as well
-            final ZserioType fieldBaseType = fieldTypeReference.getBaseType();
+            final ZserioType fieldBaseType = fieldTypeReference.getBaseTypeReference().getType();
             if (fieldBaseType instanceof ArrayType)
             {
                 final ArrayType arrayType = (ArrayType)fieldBaseType;

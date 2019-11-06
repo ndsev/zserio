@@ -20,9 +20,13 @@ public class PackagesErrorTest
     @Test
     public void ambiguousSimpleType()
     {
-        final String error = "ambiguous_single_type_error.zs:13:5: Ambiguous type reference 'SimpleTable' " +
-                "found in packages 'simple_database' and 'complex_database'!";
-        assertTrue(zserioErrors.isPresent(error));
+        final String errors[] =
+        {
+            "complex_database.zs:3:11:     Found here",
+            "simple_database.zs:3:11:     Found here",
+            "ambiguous_single_type_error.zs:13:5: Ambiguous type reference 'SimpleTable'"
+        };
+        assertTrue(zserioErrors.isPresent(errors));
     }
 
     @Test

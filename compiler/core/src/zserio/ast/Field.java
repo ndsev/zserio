@@ -235,7 +235,8 @@ public class Field extends DocumentableAstNode
         if (initializerExpr != null)
         {
             // check expression type
-            final ZserioType fieldBaseType = typeInstantiation.getTypeReference().getBaseType();
+            final ZserioType fieldBaseType =
+                    typeInstantiation.getTypeReference().getBaseTypeReference().getType();
             ExpressionUtil.checkExpressionType(initializerExpr, fieldBaseType);
 
             // check if expression requires owner context (contains field, parameter or function)
@@ -275,7 +276,7 @@ public class Field extends DocumentableAstNode
      *
      * @return New field instantiated from this using the given template arguments.
      */
-    Field instantiate(List<TemplateParameter> templateParameters, List<TypeReference> templateArguments)
+    Field instantiate(List<TemplateParameter> templateParameters, List<TemplateArgument> templateArguments)
     {
         final TypeInstantiation instantiatedTypeInstantiation =
                 typeInstantiation.instantiate(templateParameters, templateArguments);

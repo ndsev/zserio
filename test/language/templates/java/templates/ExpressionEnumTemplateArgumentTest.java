@@ -32,7 +32,8 @@ public class ExpressionEnumTemplateArgumentTest
         writer.close();
         final BitStreamReader reader = new FileBitStreamReader(TEST_FILE);
 
-        final EnumTemplateArgumentHolder readEnumTemplateArgumentHolder = new EnumTemplateArgumentHolder(reader);
+        final EnumTemplateArgumentHolder readEnumTemplateArgumentHolder =
+                new EnumTemplateArgumentHolder(reader);
         reader.close();
         assertTrue(enumTemplateArgumentHolder.equals(readEnumTemplateArgumentHolder));
     }

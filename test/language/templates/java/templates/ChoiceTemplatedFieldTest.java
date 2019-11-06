@@ -25,14 +25,14 @@ public class ChoiceTemplatedFieldTest
     public void readWrite() throws IOException
     {
         final long selector = 0;
-        ChoiceTemplatedField choiceTemplatedField = new ChoiceTemplatedField();
+        final ChoiceTemplatedField choiceTemplatedField = new ChoiceTemplatedField();
         choiceTemplatedField.setSelector(selector);
 
-        TemplatedChoice_uint32_uint16 choice1 = new TemplatedChoice_uint32_uint16(selector);
+        final TemplatedChoice_uint32_uint16 choice1 = new TemplatedChoice_uint32_uint16(selector);
         choice1.setTemplatedField1(42);
         choiceTemplatedField.setChoice1(choice1);
 
-        TemplatedChoice_Compound_uint32_uint16 choice2 = new TemplatedChoice_Compound_uint32_uint16(selector);
+        final TemplatedChoice_Compound_uint32_uint16 choice2 = new TemplatedChoice_Compound_uint32_uint16(selector);
         choice2.setTemplatedField1(new Compound_uint32(42));
         choiceTemplatedField.setChoice2(choice2);
 

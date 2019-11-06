@@ -7,6 +7,7 @@ import zserio.ast.ChoiceType;
 import zserio.ast.ConstType;
 import zserio.ast.EnumType;
 import zserio.ast.FloatType;
+import zserio.ast.InstantiateType;
 import zserio.ast.PackageName;
 import zserio.ast.ServiceType;
 import zserio.ast.SqlDatabaseType;
@@ -105,7 +106,7 @@ public class PythonNativeTypeMapper
         {
             // use base type since we just need to know whether it's an object array or built-in type array
             final ZserioType elementBaseType =
-                    type.getElementTypeInstantiation().getTypeReference().getBaseType();
+                    type.getElementTypeInstantiation().getTypeReference().getBaseTypeReference().getType();
             final ArrayTypeMapperVisitor visitor = new ArrayTypeMapperVisitor();
             elementBaseType.accept(visitor);
             pythonType = visitor.getPythonArrayType();
@@ -191,14 +192,20 @@ public class PythonNativeTypeMapper
             try
             {
                 final PackageName packageName = pythonPackageMapper.getPackageName(type);
-                final PythonNativeType nativeTargetBaseType =
-                        PythonNativeTypeMapper.this.getPythonType(type.getTypeReference().getBaseType());
+                final PythonNativeType nativeTargetBaseType = PythonNativeTypeMapper.this.getPythonType(
+                        type.getTypeReference().getBaseTypeReference().getType());
                 pythonType = new NativeSubtype(packageName, type.getName(), nativeTargetBaseType);
             }
             catch (ZserioEmitException exception)
             {
                 thrownException = exception;
             }
+        }
+
+        @Override
+        public void visitInstantiateType(InstantiateType type)
+        {
+            pythonType = mapUserType(type);
         }
 
         @Override

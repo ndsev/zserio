@@ -658,7 +658,8 @@ public class Expression extends AstNodeBase
      *
      * @return New expression instantiated from this using the given template arguments.
      */
-    Expression instantiate(List<TemplateParameter> templateParameters, List<TypeReference> templateArguments)
+    Expression instantiate(List<TemplateParameter> templateParameters,
+            List<TemplateArgument> templateArguments)
     {
         if (operand1 == null)
         {
@@ -670,15 +671,17 @@ public class Expression extends AstNodeBase
                 if (index != -1)
                 {
                     // template parameter has been found
-                    final TypeReference templateArgument= templateArguments.get(index);
-                    final PackageName templateArgumentPackage = templateArgument.getReferencedPackageName();
+                    final TypeReference templateArgumentReference =
+                            templateArguments.get(index).getTypeReference();
+                    final PackageName templateArgumentPackage =
+                            templateArgumentReference.getReferencedPackageName();
                     if (!templateArgumentPackage.isEmpty())
                     {
                         // found template argument is type reference with specified package
                         return createInstantiationTree(templateArgumentPackage,
-                                templateArgument.getReferencedTypeName());
+                                templateArgumentReference.getReferencedTypeName());
                     }
-                    instantiatedText = templateArgument.getReferencedTypeName();
+                    instantiatedText = templateArgumentReference.getReferencedTypeName();
                 }
             }
 
@@ -1199,8 +1202,7 @@ public class Expression extends AstNodeBase
     {
         symbolObject = identifierType;
 
-        final ZserioType baseType = (identifierType instanceof Subtype) ?
-                ((Subtype)identifierType).getBaseTypeReference().getType() : identifierType;
+        final ZserioType baseType = getBaseType(identifierType);
         if (baseType instanceof EnumType)
         {
             // enumeration type, we must wait for enumeration item and dot
@@ -1284,8 +1286,7 @@ public class Expression extends AstNodeBase
 
     private void evaluateExpressionType(ZserioType type)
     {
-        final ZserioType baseType = (type instanceof Subtype) ?
-                ((Subtype)type).getBaseTypeReference().getType() : type;
+        final ZserioType baseType = getBaseType(type);
         if (baseType instanceof EnumType)
         {
             expressionType = ExpressionType.ENUM;
@@ -1338,6 +1339,16 @@ public class Expression extends AstNodeBase
         }
 
         zserioType = baseType;
+    }
+
+    private ZserioType getBaseType(ZserioType type)
+    {
+        if (type instanceof Subtype)
+            return ((Subtype)type).getBaseTypeReference().getType();
+        else if (type instanceof InstantiateType)
+            return ((InstantiateType)type).getTypeReference().getType();
+        else
+            return type;
     }
 
     private void initialize()
