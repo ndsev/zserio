@@ -1202,8 +1202,7 @@ public class Expression extends AstNodeBase
     {
         symbolObject = identifierType;
 
-        final ZserioType baseType = (identifierType instanceof Subtype) ?
-                ((Subtype)identifierType).getBaseTypeReference().getType() : identifierType;
+        final ZserioType baseType = getBaseType(identifierType);
         if (baseType instanceof EnumType)
         {
             // enumeration type, we must wait for enumeration item and dot
@@ -1287,8 +1286,7 @@ public class Expression extends AstNodeBase
 
     private void evaluateExpressionType(ZserioType type)
     {
-        final ZserioType baseType = (type instanceof Subtype) ?
-                ((Subtype)type).getBaseTypeReference().getType() : type;
+        final ZserioType baseType = getBaseType(type);
         if (baseType instanceof EnumType)
         {
             expressionType = ExpressionType.ENUM;
@@ -1341,6 +1339,16 @@ public class Expression extends AstNodeBase
         }
 
         zserioType = baseType;
+    }
+
+    private ZserioType getBaseType(ZserioType type)
+    {
+        if (type instanceof Subtype)
+            return ((Subtype)type).getBaseTypeReference().getType();
+        else if (type instanceof InstantiateType)
+            return ((InstantiateType)type).getTypeReference().getType();
+        else
+            return type;
     }
 
     private void initialize()

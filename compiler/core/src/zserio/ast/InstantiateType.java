@@ -62,6 +62,9 @@ public class InstantiateType extends AstNodeBase implements ZserioType
      */
     void resolve()
     {
+        if (isResolved)
+            return;
+
         // don't use base type reference since instantiate type can be defined only for a template instantiation
         final ZserioType type = typeReference.getType();
         if (!(type instanceof TemplatableType) ||
@@ -72,6 +75,7 @@ public class InstantiateType extends AstNodeBase implements ZserioType
         }
 
         template = (TemplatableType)type;
+        isResolved = true;
     }
 
     /**
@@ -89,4 +93,5 @@ public class InstantiateType extends AstNodeBase implements ZserioType
     private final String name;
 
     private TemplatableType template = null;
+    private boolean isResolved = false;
 }

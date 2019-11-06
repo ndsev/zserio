@@ -6,6 +6,10 @@ uninitMemberVar:*/choice_templated_selector/TemplatedChoice_uint32_SHIFT32.cpp
 uninitMemberVar:*/function_templated_return_type/TestStructure_float32.cpp
 uninitMemberVar:*/function_templated_return_type/TestStructure_string.cpp
 uninitMemberVar:*/function_templated_return_type/TestStructure_uint32.cpp
+uninitMemberVar:*/instantiate_type_as_choice_field/InstantiateTypeAsChoiceField.cpp
+uninitMemberVar:*/instantiate_type_as_parameter/Parameterized_P32.cpp
+uninitMemberVar:*/instantiate_type_on_parameterized_template/Parameterized.cpp
+uninitMemberVar:*/instantiate_type_on_parameterized_template/TestP.cpp
 uninitMemberVar:*/struct_templated_type_argument/Parameterized_uint32.cpp
 
 // suppress "Class 'X' has a constructor with 1 argument that is not explicit."

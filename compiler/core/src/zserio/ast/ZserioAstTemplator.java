@@ -59,24 +59,27 @@ public class ZserioAstTemplator extends ZserioAstWalker
     {
         if (!typeReference.getTemplateArguments().isEmpty()) // if is a template instantiation
         {
-            // instantiate instantiations in template arguments
-            for (TemplateArgument templateArgument : typeReference.getTemplateArguments())
-                templateArgument.accept(this);
-
             final ZserioType type = typeReference.getType();
-            if (!(type instanceof TemplatableType) ||
-                    ((TemplatableType)type).getTemplateParameters().isEmpty())
+            final TemplatableType templatable = (type instanceof TemplatableType) ?
+                    (TemplatableType)type : null;
+            if (templatable != null && templatable.getTemplate() != null)
+                return; // already instantiated
+
+            if (templatable == null || templatable.getTemplateParameters().isEmpty())
             {
                 throw new InstantiationException(typeReference.getLocation(),
                         "'" + ZserioTypeUtil.getReferencedFullName(typeReference) + "' is not a template!",
                         instantiationReferenceStack);
             }
 
+            // instantiate instantiations in template arguments
+            for (TemplateArgument templateArgument : typeReference.getTemplateArguments())
+                templateArgument.accept(this);
+
             try
             {
-                final TemplatableType template = (TemplatableType)type;
                 instantiationReferenceStack.push(typeReference);
-                final ZserioTemplatableType instantiation = instantiate(template);
+                final ZserioTemplatableType instantiation = instantiate(templatable);
                 typeReference.resolveInstantiation(instantiation);
             }
             finally
@@ -170,16 +173,27 @@ public class ZserioAstTemplator extends ZserioAstWalker
     private void appendTemplateArgumentToName(StringBuilder nameBuilder, TemplateArgument templateArgument)
     {
         TypeReference typeReference = templateArgument.getTypeReference();
-        final ZserioType type = typeReference.getType();
+        ZserioType type = typeReference.getType();
         if (type instanceof Subtype)
+        {
             typeReference = ((Subtype)type).getBaseTypeReference();
+            type = typeReference.getType();
+        }
 
         final StringJoinUtil.Joiner joiner = new StringJoinUtil.Joiner(TEMPLATE_NAME_SEPARATOR);
         joiner.append(typeReference.getReferencedPackageName().toString(TEMPLATE_NAME_SEPARATOR));
-        joiner.append(typeReference.getReferencedTypeName());
-        nameBuilder.append(joiner.toString());
 
-        appendTemplateArgumentsToName(nameBuilder, templateArgument.getTypeReference().getTemplateArguments());
+        if (type instanceof TemplatableType && ((TemplatableType)type).getTemplate() != null)
+        {
+            // append instantiation name
+            joiner.append(type.getName());
+            nameBuilder.append(joiner.toString());
+        }
+        else
+        {
+            joiner.append(typeReference.getReferencedTypeName());
+            nameBuilder.append(joiner.toString());
+        }
     }
 
     private TemplatableType findPreviousInstantiation(TemplatableType template,

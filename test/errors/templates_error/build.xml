@@ -22,7 +22,6 @@
         <testGen testName="templates_error" zsFile="instantiate_duplicated_name_error.zs" ignoreErrors="true"/>
         <testGen testName="templates_error" zsFile="instantiate_duplicated_via_import_error.zs"
                 ignoreErrors="true"/>
-        <testGen testName="templates_error" zsFile="instantiate_instantiate_error.zs" ignoreErrors="true"/>
         <testGen testName="templates_error" zsFile="instantiate_missing_template_arguments_error.zs"
                 ignoreErrors="true"/>
         <testGen testName="templates_error" zsFile="instantiate_name_clash_error.zs" ignoreErrors="true"/>
@@ -32,6 +31,10 @@
                 ignoreErrors="true"/>
         <testGen testName="templates_error" zsFile="instantiate_no_template_error.zs" ignoreErrors="true"/>
         <testGen testName="templates_error" zsFile="instantiate_subtype_error.zs" ignoreErrors="true"/>
+        <testGen testName="templates_error" zsFile="instantiate_type_in_instantiate_error.zs"
+                ignoreErrors="true"/>
+        <testGen testName="templates_error" zsFile="instantiate_type_is_sql_table_error.zs"
+                ignoreErrors="true"/>
         <testGen testName="templates_error" zsFile="instantiation_name_clash_across_packages_error.zs"
                 ignoreErrors="true"/>
         <testGen testName="templates_error" zsFile="instantiation_name_clash_error.zs" ignoreErrors="true"/>

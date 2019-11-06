@@ -232,8 +232,7 @@ public class Package extends DocumentableAstNode
     InstantiateType getVisibleInstantiateType(TemplatableType template,
             List<TemplateArgument> templateArguments)
     {
-        InstantiateType matchingInstantiateType = null;
-        return getVisibleInstantiateType(template, templateArguments, matchingInstantiateType);
+        return getVisibleInstantiateType(template, templateArguments, null);
     }
 
     private InstantiateType getVisibleInstantiateType(TemplatableType template,

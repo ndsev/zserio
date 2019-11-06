@@ -24,7 +24,7 @@ public class ExpressionConstAfterNestedTemplateArgumentTest
     @Test
     public void readWrite() throws IOException
     {
-        ObjectArray<Element_uint32> array = new ObjectArray<Element_uint32>(3);
+        final ObjectArray<Element_uint32> array = new ObjectArray<Element_uint32>(3);
         array.setElementAt(new Element_uint32(1), 0);
         array.setElementAt(new Element_uint32(2), 1);
         array.setElementAt(new Element_uint32(3), 2);

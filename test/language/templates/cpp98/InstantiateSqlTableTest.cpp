@@ -32,8 +32,8 @@ TEST(InstantiateSqlTableTest, instantiationOfU32Table)
     u32Table.read(readRows);
     ASSERT_EQ(1, readRows.size());
 
-    ASSERT_EQ(13, readRows[0].getId());
-    ASSERT_EQ(std::string("info"), readRows[0].getInfo());
+    ASSERT_EQ(13, readRows.at(0).getId());
+    ASSERT_EQ(std::string("info"), readRows.at(0).getInfo());
 }
 
 } // namespace instantiate_sql_table

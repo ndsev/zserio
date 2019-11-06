@@ -21,7 +21,7 @@ public class InstantiateUnusedTest
     @Test
     public void readWrite() throws IOException
     {
-        U32 u32 = new U32(13); // check that unused template is instantiated via the instantiate command
+        final U32 u32 = new U32(13); // check that unused template is instantiated via the instantiate command
 
         final BitStreamWriter writer = new FileBitStreamWriter(TEST_FILE);
         u32.write(writer);

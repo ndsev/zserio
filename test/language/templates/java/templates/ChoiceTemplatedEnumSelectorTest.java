@@ -27,15 +27,15 @@ public class ChoiceTemplatedEnumSelectorTest
     {
         final EnumFromZero selectorFromZero = EnumFromZero.ONE;
         final EnumFromOne selectorFromOne = EnumFromOne.THREE;
-        ChoiceTemplatedEnumSelector choiceTemplatedEnumSelector = new ChoiceTemplatedEnumSelector();
+        final ChoiceTemplatedEnumSelector choiceTemplatedEnumSelector = new ChoiceTemplatedEnumSelector();
         choiceTemplatedEnumSelector.setSelectorFromZero(selectorFromZero);
         choiceTemplatedEnumSelector.setSelectorFromOne(selectorFromOne);
 
-        TemplatedChoice_EnumFromZero fromZeroChoice = new TemplatedChoice_EnumFromZero(selectorFromZero);
+        final TemplatedChoice_EnumFromZero fromZeroChoice = new TemplatedChoice_EnumFromZero(selectorFromZero);
         fromZeroChoice.setUint16Field(42);
         choiceTemplatedEnumSelector.setFromZeroChoice(fromZeroChoice);
 
-        TemplatedChoice_EnumFromOne fromOneChoice = new TemplatedChoice_EnumFromOne(selectorFromOne);
+        final TemplatedChoice_EnumFromOne fromOneChoice = new TemplatedChoice_EnumFromOne(selectorFromOne);
         fromOneChoice.setStringField("string");
         choiceTemplatedEnumSelector.setFromOneChoice(fromOneChoice);
 

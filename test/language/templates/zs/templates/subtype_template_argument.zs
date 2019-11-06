@@ -11,10 +11,7 @@ struct Field<T>
 };
 
 subtype uint32 UInt32Type;
-subtype UInt32Type AnotherUInt32Type;
-
 subtype Compound CompoundType;
-subtype CompoundType AnotherCompoundType;
 
 struct SubtypeTemplateArgument
 {
@@ -26,3 +23,7 @@ struct SubtypeTemplateArgument
     Field<CompoundType>         compoundTypeField;
     Field<Compound>             compoundField;
 };
+
+// define at the end to check correct template argument resolution in resolve phase!
+subtype UInt32Type AnotherUInt32Type;
+subtype CompoundType AnotherCompoundType;

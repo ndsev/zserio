@@ -3,4 +3,5 @@ uninitMemberVar:*/ParameterizedStruct.cpp
 uninitMemberVar:*/ParameterizedStruct.h
 uninitMemberVar:*/ParameterizedSubtypeStruct.cpp
 uninitMemberVar:*/ParameterizedSubtypeStruct.h
+uninitMemberVar:*/subtype_imported/Test.cpp
 uninitMemberVar:*/TestStructure.cpp

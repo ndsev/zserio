@@ -25,6 +25,7 @@ public class TypeReference extends AstNodeBase
         referencedTypeName = builtinType.getName();
         templateArguments = new ArrayList<TemplateArgument>();
         type = builtinType;
+        isResolved = true; // TODO[Mi-L@][typeref] Hack for built-in types.
     }
 
     /**
@@ -122,11 +123,8 @@ public class TypeReference extends AstNodeBase
      */
     void resolve(boolean isTemplateArgument)
     {
-        // TODO[Mi-L@][typeref] Hack for built-in types.
-        //                      Note that instantiated templates are also resolved, but we don't know yet how
-        //                      to instantiate TypeReferenced pointing to instantiated template.
-        if (type instanceof BuiltInType)
-            return; // already resolved
+        if (isResolved)
+            return;
 
         // resolve referenced type
         type = ownerPackage.getVisibleType(this, referencedPackageName, referencedTypeName);
@@ -150,6 +148,8 @@ public class TypeReference extends AstNodeBase
                 throw new ParserException(this,
                         "Missing template arguments for template '" + getReferencedTypeName() + "'!");
         }
+
+        isResolved = true;
     }
 
     /**
@@ -234,4 +234,5 @@ public class TypeReference extends AstNodeBase
     private final List<TemplateArgument> templateArguments;
 
     private ZserioType type = null;
+    private boolean isResolved = false;
 }

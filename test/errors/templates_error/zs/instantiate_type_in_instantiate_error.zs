@@ -1,4 +1,4 @@
-package instantiate_instantiate_error;
+package instantiate_type_in_instantiate_error;
 
 struct Test<T>
 {

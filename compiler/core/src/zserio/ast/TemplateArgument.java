@@ -102,12 +102,17 @@ public class TemplateArgument extends AstNodeBase
      */
     void resolve()
     {
-        // we need to "remember" the referenced base type because in case the argument is a template
-        // instantiation, the type reference will be resolved further during the template instantiation
+        if (isResolved)
+            return;
+
+        // We need to "remember" the referenced base type because in case the argument is a template
+        // instantiation, the type reference will be resolved further during the template instantiation.
         referencedBaseType = typeReference.getBaseTypeReference().getType();
+        isResolved = true;
     }
 
     private final TypeReference typeReference;
 
     private ZserioType referencedBaseType = null;
+    private boolean isResolved = false;
 }
