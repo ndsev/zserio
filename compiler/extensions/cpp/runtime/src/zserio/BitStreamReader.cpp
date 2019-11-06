@@ -700,8 +700,9 @@ bool BitStreamReader::readBool()
     return readBitsImpl(m_context, 1) != 0;
 }
 
-BitBuffer BitStreamReader::readBitBuffer(size_t bitSize)
+BitBuffer BitStreamReader::readBitBuffer()
 {
+    const size_t bitSize = convertVarUInt64ToArraySize(readVarUInt64());
     const BitPosType beginBitPosition = getBitPosition();
     if ((beginBitPosition & 0x07) != 0)
     {
@@ -726,8 +727,9 @@ BitBuffer BitStreamReader::readBitBuffer(size_t bitSize)
     return BitBuffer(m_context.buffer + beginBitPosition / 8, bitSize);
 }
 
-BitBuffer BitStreamReader::readBitBufferInPlace(size_t bitSize)
+BitBuffer BitStreamReader::readBitBufferInPlace()
 {
+    const size_t bitSize = convertVarUInt64ToArraySize(readVarUInt64());
     const BitPosType beginBitPosition = getBitPosition();
     if ((beginBitPosition & 0x07) != 0)
         throw BitStreamException("BitStreamReader: Attempt to read bit buffer in place from unaligned stream!");

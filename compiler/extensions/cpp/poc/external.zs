@@ -1,7 +1,7 @@
 struct SimpleStructure
 {
     bit:3   numberA;
-    bits    externalStructure;
+    extern  externalStructure;
     bit:7   numberC;
 };
 

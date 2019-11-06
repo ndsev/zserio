@@ -219,10 +219,10 @@ public:
     bool readBool();
 
     /* TODO[mikir] */
-    BitBuffer readBitBuffer(size_t bitSize);
+    BitBuffer readBitBuffer();
 
     /* TODO[mikir] */
-    BitBuffer readBitBufferInPlace(size_t bitSize);
+    BitBuffer readBitBufferInPlace();
 
     /**
      * Gets current bit position.

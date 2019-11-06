@@ -4,7 +4,7 @@
 #include <zserio/BitStreamReader.h>
 #include <zserio/BitStreamWriter.h>
 #include <zserio/PreWriteAction.h>
-#include <zserio/Bits.h>
+#include <zserio/BitBuffer.h>
 #include <zserio/Types.h>
 
 class SimpleStructure
@@ -38,10 +38,10 @@ public:
     uint8_t getNumberA() const;
     void setNumberA(uint8_t numberA_);
 
-    ::zserio::Bits& getExternalStructure();
-    const ::zserio::Bits& getExternalStructure() const;
-    void setExternalStructure(const ::zserio::Bits& externalStructure_);
-    void setExternalStructure(::zserio::Bits&& externalStructure_);
+    ::zserio::BitBuffer& getExternalStructure();
+    const ::zserio::BitBuffer& getExternalStructure() const;
+    void setExternalStructure(const ::zserio::BitBuffer& externalStructure_);
+    void setExternalStructure(::zserio::BitBuffer&& externalStructure_);
 
     uint8_t getNumberB() const;
     void setNumberB(uint8_t externalStructure_);
@@ -61,11 +61,11 @@ public:
 
 private:
     uint8_t readNumberA(::zserio::BitStreamReader& in);
-    void readExternalStructure(::zserio::BitStreamReader& in);
+    ::zserio::BitBuffer readExternalStructure(::zserio::BitStreamReader& in);
     uint8_t readNumberC(::zserio::BitStreamReader& in);
 
     uint8_t m_numberA_;
-    ::zserio::Bits m_externalStructure_;
+    ::zserio::BitBuffer m_externalStructure_;
     uint8_t m_numberC_;
 };
 

@@ -171,4 +171,9 @@ size_t bitSizeOfString(const std::string& value)
     return bitSizeOfVarUInt64(static_cast<uint64_t>(stringSize)) + bytesToBits(stringSize);
 }
 
+size_t bitSizeOfBitBuffer(const BitBuffer& bitBuffer)
+{
+    return bitBuffer.getBitSize();
+}
+
 } // namespace zserio

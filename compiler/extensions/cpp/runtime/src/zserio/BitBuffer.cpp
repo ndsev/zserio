@@ -1,4 +1,5 @@
 #include <utility>
+#include <cstring>
 
 #include "zserio/BitBuffer.h"
 
@@ -24,7 +25,7 @@ BitBuffer::BitBuffer(std::vector<uint8_t>&& buffer, size_t lastByteBits) :
 }
 
 
-BitBuffer::BitBuffer(uint8_t* buffer, size_t bitSize) :
+BitBuffer::BitBuffer(const uint8_t* buffer, size_t bitSize) :
         m_internalBuffer(buffer, buffer + (bitSize + 7) / 8 + 1), m_bitSize(bitSize)
 {
 }
@@ -32,6 +33,30 @@ BitBuffer::BitBuffer(uint8_t* buffer, size_t bitSize) :
 BitBuffer::BitBuffer(uint8_t* buffer, size_t bitSize, InPlaceType) : m_externalBuffer(buffer),
         m_bitSize(bitSize)
 {
+}
+
+bool BitBuffer::operator==(const BitBuffer& other) const
+{
+    if (this != &other)
+    {
+        const size_t bitSize = getBitSize();
+        if (bitSize != other.getBitSize())
+            return false;
+
+        const size_t byteSize = bitSize / 8;
+        const size_t restBitSize = bitSize - 8 * byteSize;
+        if (memcmp(getBuffer(), other.getBuffer(), byteSize) != 0)
+            return false;
+
+        if (restBitSize > 0)
+        {
+            const uint8_t restBitMask = 0xFF >> (8 - restBitSize);
+            if ( (*(getBuffer() + byteSize) & restBitMask) != (*(other.getBuffer() + byteSize) & restBitMask) )
+                return false;
+        }
+    }
+
+    return true;
 }
 
 const uint8_t* BitBuffer::get(size_t& bitSize) const

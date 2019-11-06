@@ -23,22 +23,22 @@ void SimpleStructure::setNumberA(uint8_t numberA_)
     m_numberA_ = numberA_;
 }
 
-::zserio::Bits& SimpleStructure::getExternalStructure()
+::zserio::BitBuffer& SimpleStructure::getExternalStructure()
 {
     return m_externalStructure_;
 }
 
-const ::zserio::Bits& SimpleStructure::getExternalStructure() const
+const ::zserio::BitBuffer& SimpleStructure::getExternalStructure() const
 {
     return m_externalStructure_;
 }
 
-void SimpleStructure::setExternalStructure(const ::zserio::Bits& externalStructure_)
+void SimpleStructure::setExternalStructure(const ::zserio::BitBuffer& externalStructure_)
 {
     m_externalStructure_ = externalStructure_;
 }
 
-void SimpleStructure::setExternalStructure(::zserio::Bits&& externalStructure_)
+void SimpleStructure::setExternalStructure(::zserio::BitBuffer&& externalStructure_)
 {
     m_externalStructure_ = ::std::move(externalStructure_);
 }
@@ -58,7 +58,7 @@ size_t SimpleStructure::bitSizeOf(size_t bitPosition) const
     size_t endBitPosition = bitPosition;
 
     endBitPosition += UINT8_C(3);
-    endBitPosition += ::zserio::bitSizeOf(m_externalStructure_, bitPosition);
+    endBitPosition += ::zserio::bitSizeOfBitBuffer(m_externalStructure_);
     endBitPosition += UINT8_C(7);
 
     return endBitPosition - bitPosition;
@@ -69,7 +69,7 @@ size_t SimpleStructure::initializeOffsets(size_t bitPosition)
     size_t endBitPosition = bitPosition;
 
     endBitPosition += UINT8_C(3);
-    endBitPosition += ::zserio::bitSizeOf(m_externalStructure_, bitPosition);
+    endBitPosition += ::zserio::bitSizeOfBitBuffer(m_externalStructure_);
     endBitPosition += UINT8_C(7);
 
     return endBitPosition;
@@ -102,14 +102,14 @@ int SimpleStructure::hashCode() const
 void SimpleStructure::read(::zserio::BitStreamReader& in)
 {
     m_numberA_ = readNumberA(in);
-    readExternalStructure(in);
+    m_externalStructure_ = readExternalStructure(in);
     m_numberC_ = readNumberC(in);
 }
 
 void SimpleStructure::write(::zserio::BitStreamWriter& out, ::zserio::PreWriteAction)
 {
     out.writeBits(m_numberA_, 3);
-    ::zserio::write(m_externalStructure_, out);
+    out.writeBitBuffer(m_externalStructure_);
     out.writeBits(m_numberC_, 7);
 }
 
@@ -118,9 +118,9 @@ uint8_t SimpleStructure::readNumberA(::zserio::BitStreamReader& in)
     return static_cast<uint8_t>(in.readBits(3));
 }
 
-void SimpleStructure::readExternalStructure(::zserio::BitStreamReader& in)
+::zserio::BitBuffer SimpleStructure::readExternalStructure(::zserio::BitStreamReader& in)
 {
-    ::zserio::read(m_externalStructure_, in);
+    return in.readBitBuffer();
 }
 
 uint8_t SimpleStructure::readNumberC(::zserio::BitStreamReader& in)

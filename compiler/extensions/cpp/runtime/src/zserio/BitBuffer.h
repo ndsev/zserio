@@ -26,7 +26,7 @@ public:
     explicit BitBuffer(size_t bitSize);
     explicit BitBuffer(std::vector<uint8_t>& buffer, size_t lastByteBits = 8);
     explicit BitBuffer(std::vector<uint8_t>&& buffer, size_t lastByteBits = 8);
-    explicit BitBuffer(uint8_t* buffer, size_t bitSize);
+    explicit BitBuffer(const uint8_t* buffer, size_t bitSize);
     explicit BitBuffer(uint8_t* buffer, size_t bitSize, InPlaceType);
 
     ~BitBuffer() = default;
@@ -36,6 +36,8 @@ public:
 
     BitBuffer(BitBuffer&&) = default;
     BitBuffer& operator=(BitBuffer&&) = default;
+
+    bool operator==(const BitBuffer& other) const;
 
     const uint8_t* get(size_t& bitSize) const;
     uint8_t* get(size_t& bitSize);

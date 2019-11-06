@@ -5,6 +5,7 @@
 #include <string>
 
 #include "zserio/Types.h"
+#include "zserio/BitBuffer.h"
 
 namespace zserio
 {
@@ -89,6 +90,9 @@ size_t bitSizeOfVarUInt(uint64_t value);
  * \return Bit size of the current string value.
  */
 size_t bitSizeOfString(const std::string& value);
+
+/* TODO[mikir] */
+size_t bitSizeOfBitBuffer(const BitBuffer& bitBuffer);
 
 } // namespace zserio
 

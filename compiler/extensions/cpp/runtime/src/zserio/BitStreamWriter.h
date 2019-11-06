@@ -211,6 +211,8 @@ public:
      * \return Pointer to the beginning of write buffer.
      */
     const uint8_t* getWriteBuffer(size_t& writeBufferByteSize) const;
+    /* TODO[mikir] */
+    const uint8_t* getWriteBuffer() const;
 
     /**
      * Writes the underlying write buffer to file.
