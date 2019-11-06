@@ -105,8 +105,7 @@ public class TemplatesErrorTest
         {
             "instantiate_duplicated_via_import_error.zs:5:13: In instantiation of 'Test' required from here",
             "instantiate_duplicated_via_import_error.zs:5:26:     First requested here",
-            "instantiate_duplicated_via_import_error/pkg.zs:8:26: " +
-                    "Ambiguous request to instantiate template 'Test'!"
+            "pkg.zs:8:26: Ambiguous request to instantiate template 'Test'!"
         };
         assertTrue(zserioErrors.isPresent(errors));
     }
