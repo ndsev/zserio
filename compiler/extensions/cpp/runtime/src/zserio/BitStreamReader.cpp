@@ -705,7 +705,6 @@ BitBuffer BitStreamReader::readBitBuffer()
 {
     const size_t bitSize = convertVarUInt64ToArraySize(readVarUInt64());
     size_t numBytesToRead = bitSize / 8;
-    const size_t numRestBits = bitSize - numBytesToRead * 8;
     BitBuffer bitBuffer(bitSize);
     uint8_t* buffer = bitBuffer.getBuffer();
     const BitPosType beginBitPosition = getBitPosition();
@@ -727,6 +726,7 @@ BitBuffer BitStreamReader::readBitBuffer()
         buffer += numBytesToRead;
     }
 
+    const uint8_t numRestBits = static_cast<uint8_t>(bitSize - numBytesToRead * 8);
     if (numRestBits > 0)
         *buffer = static_cast<uint8_t>(readBits(numRestBits));
 

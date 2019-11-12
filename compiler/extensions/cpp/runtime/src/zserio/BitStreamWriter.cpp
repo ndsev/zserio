@@ -277,7 +277,6 @@ void BitStreamWriter::writeBitBuffer(const BitBuffer& bitBuffer)
 
     const uint8_t* buffer = bitBuffer.getBuffer();
     size_t numBytesToWrite = bitSize / 8;
-    const size_t numRestBits = bitSize - numBytesToWrite * 8;
     const BitPosType beginBitPosition = getBitPosition();
     if ((beginBitPosition & 0x07) != 0)
     {
@@ -297,6 +296,7 @@ void BitStreamWriter::writeBitBuffer(const BitBuffer& bitBuffer)
         buffer += numBytesToWrite;
     }
 
+    const uint8_t numRestBits = static_cast<uint8_t>(bitSize - numBytesToWrite * 8);
     if (numRestBits > 0)
         writeUnsignedBits(*buffer, numRestBits);
 }
