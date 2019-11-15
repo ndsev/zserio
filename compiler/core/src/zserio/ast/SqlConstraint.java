@@ -254,22 +254,30 @@ public class SqlConstraint extends AstNodeBase
                 final Map.Entry<SymbolReference, String> referenceEntry =
                         constraintReferences.get(numUsedReferences);
                 final SymbolReference symbolReference = referenceEntry.getKey();
-                final ZserioType referencedType = symbolReference.getReferencedType();
-                final Object referencedSymbol = symbolReference.getReferencedSymbol();
-                String resolvedReferencedText;
-                if (referencedType instanceof ConstType)
+                final AstNode referencedSymbol = symbolReference.getReferencedSymbol();
+
+                // used to call evaluation explicitly because the symbol does not have to be evaluated yet
+                final ZserioAstEvaluator evaluator = new ZserioAstEvaluator();
+
+                if (referencedSymbol instanceof Constant)
                 {
-                    final ConstType referencedConstType = (ConstType)referencedType;
-                    final BigInteger value = referencedConstType.getValueExpression().getIntegerValue();
+                    final Constant referencedConstant = (Constant)referencedSymbol;
+                    referencedConstant.accept(evaluator);
+
+                    final BigInteger value = referencedConstant.getValueExpression().getIntegerValue();
                     if (value == null)
                         throw new ParserException(this, "Reference '" + referenceEntry.getValue() +
                                 "' refers to non-integer constant!");
 
-                    resolvedReferencedText = value.toString();
+                    stringBuilder.append(value.toString());
                 }
                 else if (referencedSymbol instanceof EnumItem)
                 {
-                    resolvedReferencedText = ((EnumItem)referencedSymbol).getValue().toString();
+                    // referenced type should be the EnumType
+                    final ZserioType referencedEnumType = symbolReference.getReferencedType();
+                    referencedEnumType.accept(evaluator);
+
+                    stringBuilder.append(((EnumItem)referencedSymbol).getValue().toString());
                 }
                 else
                 {
@@ -277,7 +285,6 @@ public class SqlConstraint extends AstNodeBase
                             "' does refer to neither enumeration type nor constant!");
                 }
 
-                stringBuilder.append(resolvedReferencedText);
                 numUsedReferences++;
             }
         }

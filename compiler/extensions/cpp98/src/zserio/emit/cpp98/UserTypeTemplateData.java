@@ -10,7 +10,7 @@ public class UserTypeTemplateData extends CppTemplateData
     {
         super(context);
 
-        nativeType = context.getCppNativeTypeMapper().getCppType(type);
+        nativeType = context.getCppNativeMapper().getCppType(type);
         name = nativeType.getName();
         packageData = new PackageTemplateData(nativeType);
     }

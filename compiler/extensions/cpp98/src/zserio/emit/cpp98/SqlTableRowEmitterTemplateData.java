@@ -18,15 +18,15 @@ public class SqlTableRowEmitterTemplateData extends CppTemplateData
 
         name = tableRowName;
 
-        final CppNativeTypeMapper cppNativeTypeMapper = context.getCppNativeTypeMapper();
-        final CppNativeType nativeType = cppNativeTypeMapper.getCppType(tableType);
+        final CppNativeMapper cppNativeMapper = context.getCppNativeMapper();
+        final CppNativeType nativeType = cppNativeMapper.getCppType(tableType);
         packageData = new PackageTemplateData(nativeType);
 
         final List<Field> tableFields = tableType.getFields();
         fields = new ArrayList<FieldTemplateData>(tableFields.size());
         for (Field tableField : tableFields)
         {
-            final FieldTemplateData field = new FieldTemplateData(cppNativeTypeMapper, tableField, this);
+            final FieldTemplateData field = new FieldTemplateData(cppNativeMapper, tableField, this);
             fields.add(field);
         }
     }
@@ -48,11 +48,11 @@ public class SqlTableRowEmitterTemplateData extends CppTemplateData
 
     public static class FieldTemplateData
     {
-        public FieldTemplateData(CppNativeTypeMapper cppNativeTypeMapper, Field field,
+        public FieldTemplateData(CppNativeMapper cppNativeMapper, Field field,
                 IncludeCollector includeCollector) throws ZserioEmitException
         {
             final TypeReference fieldTypeReference = field.getTypeInstantiation().getTypeReference();
-            final CppNativeType nativeFieldType = cppNativeTypeMapper.getCppType(fieldTypeReference);
+            final CppNativeType nativeFieldType = cppNativeMapper.getCppType(fieldTypeReference);
             includeCollector.addHeaderIncludesForType(nativeFieldType);
 
             name = field.getName();

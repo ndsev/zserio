@@ -14,7 +14,7 @@ public class ServiceEmitterTemplateData extends UserTypeTemplateData
     {
         super(context, serviceType);
 
-        final CppNativeTypeMapper cppTypeMapper = context.getCppNativeTypeMapper();
+        final CppNativeMapper cppTypeMapper = context.getCppNativeMapper();
         Iterable<Rpc> rpcList = serviceType.getRpcList();
         for (Rpc rpc : rpcList)
         {
@@ -58,7 +58,7 @@ public class ServiceEmitterTemplateData extends UserTypeTemplateData
 
     public static class RpcTemplateData
     {
-        public RpcTemplateData(CppNativeTypeMapper typeMapper, Rpc rpc) throws ZserioEmitException
+        public RpcTemplateData(CppNativeMapper typeMapper, Rpc rpc) throws ZserioEmitException
         {
             name = rpc.getName();
 

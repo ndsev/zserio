@@ -34,7 +34,7 @@ public class SqlTableEmitterTemplateData extends UserTypeTemplateData
     {
         super(context, tableType);
 
-        final CppNativeTypeMapper cppNativeTypeMapper = context.getCppNativeTypeMapper();
+        final CppNativeMapper cppNativeMapper = context.getCppNativeMapper();
         final ExpressionFormatter cppExpressionFormatter = context.getExpressionFormatter(this);
         final SqlConstraint sqlConstraintType = tableType.getSqlConstraint();
         sqlConstraint = (sqlConstraintType == null) ? null :
@@ -53,7 +53,7 @@ public class SqlTableEmitterTemplateData extends UserTypeTemplateData
         boolean requiresOwnerContext = false;
         for (Field tableField : tableFields)
         {
-            final FieldTemplateData field = new FieldTemplateData(cppNativeTypeMapper, cppExpressionFormatter,
+            final FieldTemplateData field = new FieldTemplateData(cppNativeMapper, cppExpressionFormatter,
                     cppSqlIndirectExpressionFormatter, sqlNativeTypeMapper, tableType, tableField, this);
             fields.add(field);
 
@@ -191,7 +191,7 @@ public class SqlTableEmitterTemplateData extends UserTypeTemplateData
 
     public static class FieldTemplateData
     {
-        public FieldTemplateData(CppNativeTypeMapper cppNativeTypeMapper,
+        public FieldTemplateData(CppNativeMapper cppNativeMapper,
                 ExpressionFormatter cppExpressionFormatter,
                 ExpressionFormatter cppSqlIndirectExpressionFormatter, SqlNativeTypeMapper sqlNativeTypeMapper,
                 SqlTableType table, Field field, IncludeCollector includeCollector) throws ZserioEmitException
@@ -199,7 +199,7 @@ public class SqlTableEmitterTemplateData extends UserTypeTemplateData
             final TypeInstantiation fieldTypeInstantiation = field.getTypeInstantiation();
             final TypeReference fieldTypeReference = fieldTypeInstantiation.getTypeReference();
             final ZserioType fieldBaseType = fieldTypeReference.getBaseTypeReference().getType();
-            final CppNativeType nativeFieldType = cppNativeTypeMapper.getCppType(fieldTypeReference);
+            final CppNativeType nativeFieldType = cppNativeMapper.getCppType(fieldTypeReference);
             includeCollector.addHeaderIncludesForType(nativeFieldType);
 
             name = field.getName();
@@ -220,7 +220,7 @@ public class SqlTableEmitterTemplateData extends UserTypeTemplateData
             for (InstantiatedParameter parameter : fieldTypeInstantiation.getInstantiatedParameters())
             {
                 final ParameterTemplateData parameterTemplateData = new ParameterTemplateData(
-                        cppNativeTypeMapper, cppSqlIndirectExpressionFormatter,
+                        cppNativeMapper, cppSqlIndirectExpressionFormatter,
                         table, field, parameter, includeCollector);
                 typeParameters.add(parameterTemplateData);
                 if (!parameterTemplateData.getIsExplicit())
@@ -230,7 +230,7 @@ public class SqlTableEmitterTemplateData extends UserTypeTemplateData
 
             isSimpleType = nativeFieldType.isSimpleType();
             isBoolean = fieldBaseType instanceof BooleanType;
-            enumData = createEnumTemplateData(cppNativeTypeMapper, fieldBaseType);
+            enumData = createEnumTemplateData(cppNativeMapper, fieldBaseType);
             sqlTypeData = new SqlTypeTemplateData(sqlNativeTypeMapper, field);
             needsChildrenInitialization = (fieldBaseType instanceof CompoundType) &&
                     ((CompoundType)fieldBaseType).needsChildrenInitialization();
@@ -318,14 +318,14 @@ public class SqlTableEmitterTemplateData extends UserTypeTemplateData
 
         public static class ParameterTemplateData
         {
-            public ParameterTemplateData(CppNativeTypeMapper cppNativeTypeMapper,
+            public ParameterTemplateData(CppNativeMapper cppNativeMapper,
                     ExpressionFormatter cppSqlIndirectExpressionFormatter, SqlTableType tableType, Field field,
                     TypeInstantiation.InstantiatedParameter instantiatedParameter,
                     IncludeCollector includeCollector) throws ZserioEmitException
             {
                 final Parameter parameter = instantiatedParameter.getParameter();
                 final CppNativeType parameterNativeType =
-                        cppNativeTypeMapper.getCppType(parameter.getTypeReference());
+                        cppNativeMapper.getCppType(parameter.getTypeReference());
                 includeCollector.addHeaderIncludesForType(parameterNativeType);
 
                 final Expression argumentExpression = instantiatedParameter.getArgumentExpression();
@@ -384,11 +384,11 @@ public class SqlTableEmitterTemplateData extends UserTypeTemplateData
 
         public static class EnumTemplateData
         {
-            public EnumTemplateData(CppNativeTypeMapper cppNativeTypeMapper, EnumType enumType)
+            public EnumTemplateData(CppNativeMapper cppNativeMapper, EnumType enumType)
                     throws ZserioEmitException
             {
                 final CppNativeType nativeBaseType =
-                        cppNativeTypeMapper.getCppType(enumType.getIntegerBaseType());
+                        cppNativeMapper.getCppType(enumType.getIntegerBaseType());
                 baseCppTypeName = nativeBaseType.getFullName();
             }
 
@@ -439,13 +439,13 @@ public class SqlTableEmitterTemplateData extends UserTypeTemplateData
             private final boolean isReal;
         }
 
-        private EnumTemplateData createEnumTemplateData(CppNativeTypeMapper cppNativeTypeMapper,
+        private EnumTemplateData createEnumTemplateData(CppNativeMapper cppNativeMapper,
                 ZserioType fieldBaseType) throws ZserioEmitException
         {
             if (!(fieldBaseType instanceof EnumType))
                 return null;
 
-            return new EnumTemplateData(cppNativeTypeMapper, (EnumType)fieldBaseType);
+            return new EnumTemplateData(cppNativeMapper, (EnumType)fieldBaseType);
         }
 
         private final String name;

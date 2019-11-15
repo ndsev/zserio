@@ -21,17 +21,17 @@ final public class PythonFullNameFormatter
     }
 
     /**
-     * Constructs full Python name from package name and type name.
+     * Constructs full Python name from package name and type or symbol name.
      *
      * @param packageName Package name.
-     * @param typeName    Type name.
+     * @param name        Type or symbol name.
      *
-     * @return Full type name.
+     * @return Full name.
      */
-    public static String getFullName(PackageName packageName, String typeName)
+    public static String getFullName(PackageName packageName, String name)
     {
-        final String moduleName = typeName;
-        return StringJoinUtil.joinStrings(getFullName(packageName), moduleName, typeName,
+        final String moduleName = name;
+        return StringJoinUtil.joinStrings(getFullName(packageName), moduleName, name,
                 PYTHON_PACKAGE_SEPARATOR);
     }
 

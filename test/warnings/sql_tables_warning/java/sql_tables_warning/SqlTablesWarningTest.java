@@ -20,7 +20,7 @@ public class SqlTablesWarningTest
     @Test
     public void badOrderedPrimaryKey()
     {
-        final String warning = "bad_ordered_primary_key_warning.zs:9:5: " +
+        final String warning = "bad_ordered_primary_key_warning.zs:9:9: " +
                 "Primary key column 'classId' is in bad order in sql table 'BadOrderedPrimaryKeyTable'.";
         assertTrue(zserioWarnings.isPresent(warning));
     }
@@ -28,7 +28,7 @@ public class SqlTablesWarningTest
     @Test
     public void duplicatedPrimaryKey()
     {
-        final String warning = "duplicated_primary_key_warning.zs:6:29: " +
+        final String warning = "duplicated_primary_key_warning.zs:6:33: " +
                 "Duplicated primary key column 'classId' in sql table 'DuplicatedPrimaryKeyTable'.";
         assertTrue(zserioWarnings.isPresent(warning));
     }
@@ -36,7 +36,7 @@ public class SqlTablesWarningTest
     @Test
     public void multiplePrimaryKeys()
     {
-        final String warning = "multiple_primary_keys_warning.zs:9:5: " +
+        final String warning = "multiple_primary_keys_warning.zs:9:9: " +
                 "Multiple primary keys in sql table 'MultiplePrimaryKeysTable'.";
         assertTrue(zserioWarnings.isPresent(warning));
     }
@@ -52,7 +52,7 @@ public class SqlTablesWarningTest
     @Test
     public void notFirstPrimaryKey()
     {
-        final String warning = "not_first_primary_key_warning.zs:6:29: " +
+        final String warning = "not_first_primary_key_warning.zs:6:33: " +
                 "Primary key column 'classId' is not the first one in sql table 'NotFirstPrimaryKeyTable'.";
         assertTrue(zserioWarnings.isPresent(warning));
     }

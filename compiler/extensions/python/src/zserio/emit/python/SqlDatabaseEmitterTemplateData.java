@@ -18,10 +18,10 @@ public final  class SqlDatabaseEmitterTemplateData extends UserTypeTemplateData
     {
         super(context, databaseType);
 
-        final PythonNativeTypeMapper pythonNativeTypeMapper = context.getPythonNativeTypeMapper();
+        final PythonNativeMapper pythonNativeMapper = context.getPythonNativeMapper();
         fields = new ArrayList<DatabaseFieldData>();
         for (Field field: databaseType.getFields())
-            fields.add(new DatabaseFieldData(pythonNativeTypeMapper, field, this));
+            fields.add(new DatabaseFieldData(pythonNativeMapper, field, this));
 
         importPackage("apsw");
     }
@@ -33,12 +33,12 @@ public final  class SqlDatabaseEmitterTemplateData extends UserTypeTemplateData
 
     public static class DatabaseFieldData
     {
-        public DatabaseFieldData(PythonNativeTypeMapper pythonNativeTypeMapper, Field field,
+        public DatabaseFieldData(PythonNativeMapper pythonNativeMapper, Field field,
                 ImportCollector importCollector) throws ZserioEmitException
         {
             final TypeReference fieldTypeReference = field.getTypeInstantiation().getTypeReference();
             final ZserioType fieldBaseType = fieldTypeReference.getBaseTypeReference().getType();
-            final PythonNativeType nativeType = pythonNativeTypeMapper.getPythonType(fieldTypeReference);
+            final PythonNativeType nativeType = pythonNativeMapper.getPythonType(fieldTypeReference);
             importCollector.importType(nativeType);
 
             name = field.getName();

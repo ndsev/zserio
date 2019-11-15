@@ -4,9 +4,10 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import zserio.ast.AstNode;
 import zserio.ast.ChoiceType;
 import zserio.ast.CompoundType;
-import zserio.ast.ConstType;
+import zserio.ast.Constant;
 import zserio.ast.DocComment;
 import zserio.ast.EnumItem;
 import zserio.ast.EnumType;
@@ -16,7 +17,6 @@ import zserio.ast.StructureType;
 import zserio.ast.SqlDatabaseType;
 import zserio.ast.SqlTableType;
 import zserio.ast.Subtype;
-import zserio.ast.ZserioType;
 import zserio.ast.UnionType;
 import zserio.emit.common.ZserioEmitException;
 import freemarker.template.Template;
@@ -38,7 +38,7 @@ public class DeprecatedEmitter extends DefaultHtmlEmitter
     {
         private Field         field;
         private CompoundType  fieldOwner;
-        private ZserioType type;
+        private AstNode       type;
 
         private EnumType      enumType;
         private EnumItem      enumItem;
@@ -53,7 +53,7 @@ public class DeprecatedEmitter extends DefaultHtmlEmitter
             this.fieldOwner = fieldOwner;
         }
 
-        public Item( ZserioType type )
+        public Item( AstNode type )
         {
             this.type = type;
         }
@@ -94,12 +94,12 @@ public class DeprecatedEmitter extends DefaultHtmlEmitter
             return fieldOwner;
         }
 
-        public CompoundEmitter.FieldLinkedType getFieldLinkedType()
+        public CompoundEmitter.FieldLinkedType getFieldLinkedType() throws ZserioEmitException
         {
             return new CompoundEmitter.FieldLinkedType( field );
         }
 
-        public LinkedType getFieldCompoundLinkedType()
+        public LinkedType getFieldCompoundLinkedType() throws ZserioEmitException
         {
             return new LinkedType(fieldOwner);
         }
@@ -118,7 +118,7 @@ public class DeprecatedEmitter extends DefaultHtmlEmitter
             return enumType;
         }
 
-        public LinkedType getEnumLinkedType()
+        public LinkedType getEnumLinkedType() throws ZserioEmitException
         {
             return new LinkedType( enumType );
         }
@@ -127,14 +127,14 @@ public class DeprecatedEmitter extends DefaultHtmlEmitter
          *  FIELD NOR ENUMITEM
          */
 
-        public ZserioType getType()
+        public String getPackageName() throws ZserioEmitException
         {
-            return type;
+            return DocEmitterTools.getZserioPackageName(type).toString();
         }
 
-        public LinkedType getLinkedType()
+        public LinkedType getLinkedType() throws ZserioEmitException
         {
-            return new LinkedType( getType() );
+            return new LinkedType( type );
         }
     }; // class Item
 
@@ -144,11 +144,11 @@ public class DeprecatedEmitter extends DefaultHtmlEmitter
     }
 
     @Override
-    public void beginConst(ConstType constType) throws ZserioEmitException
+    public void beginConst(Constant constant) throws ZserioEmitException
     {
-        if (getIsDeprecated(constType.getDocComment()))
+        if (getIsDeprecated(constant.getDocComment()))
         {
-            Item item = new Item(constType);
+            Item item = new Item(constant);
             items.add(item);
         }
     }

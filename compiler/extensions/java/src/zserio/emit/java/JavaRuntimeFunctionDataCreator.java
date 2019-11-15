@@ -14,10 +14,10 @@ import zserio.emit.common.ZserioEmitException;
 public class JavaRuntimeFunctionDataCreator
 {
     public static RuntimeFunctionTemplateData createData(ZserioType type,
-            ExpressionFormatter javaExpressionFormatter, JavaNativeTypeMapper javaNativeTypeMapper)
+            ExpressionFormatter javaExpressionFormatter, JavaNativeMapper javaNativeMapper)
                     throws ZserioEmitException
     {
-        final Visitor visitor = new Visitor(javaExpressionFormatter, javaNativeTypeMapper);
+        final Visitor visitor = new Visitor(javaExpressionFormatter, javaNativeMapper);
         type.accept(visitor);
 
         final ZserioEmitException thrownException = visitor.getThrownException();
@@ -30,10 +30,10 @@ public class JavaRuntimeFunctionDataCreator
 
     private static class Visitor extends ZserioAstDefaultVisitor
     {
-        public Visitor(ExpressionFormatter javaExpressionFormatter, JavaNativeTypeMapper javaNativeTypeMapper)
+        public Visitor(ExpressionFormatter javaExpressionFormatter, JavaNativeMapper javaNativeMapper)
         {
             this.javaExpressionFormatter = javaExpressionFormatter;
-            this.javaNativeTypeMapper = javaNativeTypeMapper;
+            this.javaNativeMapper = javaNativeMapper;
         }
 
         public RuntimeFunctionTemplateData getTemplateData()
@@ -171,11 +171,11 @@ public class JavaRuntimeFunctionDataCreator
 
         private String getJavaReadTypeName(ZserioType type) throws ZserioEmitException
         {
-            return javaNativeTypeMapper.getJavaType(type).getFullName();
+            return javaNativeMapper.getJavaType(type).getFullName();
         }
 
         private final ExpressionFormatter javaExpressionFormatter;
-        private final JavaNativeTypeMapper javaNativeTypeMapper;
+        private final JavaNativeMapper javaNativeMapper;
 
         private RuntimeFunctionTemplateData templateData = null;
         private ZserioEmitException thrownException = null;

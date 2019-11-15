@@ -19,7 +19,7 @@ public class ChoiceEmitterTemplateData extends CompoundTypeTemplateData
     {
         super(context, choiceType);
 
-        final PythonNativeTypeMapper pythonNativeTypeMapper = context.getPythonNativeTypeMapper();
+        final PythonNativeMapper pythonNativeMapper = context.getPythonNativeMapper();
 
         final ExpressionFormatter pythonExpressionFormatter = context.getPythonExpressionFormatter(this);
         final Expression selectorExpression = choiceType.getSelectorExpression();
@@ -29,14 +29,14 @@ public class ChoiceEmitterTemplateData extends CompoundTypeTemplateData
         final Iterable<ChoiceCase> choiceCases = choiceType.getChoiceCases();
         for (ChoiceCase choiceCase : choiceCases)
         {
-            caseMemberList.add(new CaseMember(choiceType, choiceCase, pythonNativeTypeMapper,
+            caseMemberList.add(new CaseMember(choiceType, choiceCase, pythonNativeMapper,
                     getWithRangeCheckCode(), pythonExpressionFormatter, this));
         }
 
         final ChoiceDefault choiceDefault = choiceType.getChoiceDefault();
         if (choiceDefault != null)
         {
-            defaultMember = new DefaultMember(choiceType, choiceDefault, pythonNativeTypeMapper,
+            defaultMember = new DefaultMember(choiceType, choiceDefault, pythonNativeMapper,
                     getWithRangeCheckCode(), pythonExpressionFormatter, this);
         }
         else
@@ -70,7 +70,7 @@ public class ChoiceEmitterTemplateData extends CompoundTypeTemplateData
     public static class CaseMember
     {
         public CaseMember(ChoiceType choiceType, ChoiceCase choiceCase,
-                PythonNativeTypeMapper pythonNativeTypeMapper, boolean withRangeCheckCode,
+                PythonNativeMapper pythonNativeMapper, boolean withRangeCheckCode,
                 ExpressionFormatter expressionFormatter, ImportCollector importCollector)
                         throws ZserioEmitException
         {
@@ -81,7 +81,7 @@ public class ChoiceEmitterTemplateData extends CompoundTypeTemplateData
 
             final Field fieldType = choiceCase.getField();
             compoundField = (fieldType != null) ?
-                    new CompoundFieldTemplateData(pythonNativeTypeMapper, withRangeCheckCode, choiceType,
+                    new CompoundFieldTemplateData(pythonNativeMapper, withRangeCheckCode, choiceType,
                             fieldType, expressionFormatter, importCollector) : null;
         }
 
@@ -102,13 +102,13 @@ public class ChoiceEmitterTemplateData extends CompoundTypeTemplateData
     public static class DefaultMember
     {
         public DefaultMember(ChoiceType choiceType, ChoiceDefault choiceDefault,
-                PythonNativeTypeMapper pythonNativeTypeMapper, boolean withRangeCheckCode,
+                PythonNativeMapper pythonNativeMapper, boolean withRangeCheckCode,
                 ExpressionFormatter expressionFormatter, ImportCollector importCollector)
                         throws ZserioEmitException
         {
             final Field fieldType = choiceDefault.getField();
             compoundField = (fieldType != null) ?
-                    new CompoundFieldTemplateData(pythonNativeTypeMapper, withRangeCheckCode, choiceType,
+                    new CompoundFieldTemplateData(pythonNativeMapper, withRangeCheckCode, choiceType,
                             fieldType, expressionFormatter, importCollector) : null;
         }
 

@@ -27,9 +27,9 @@ public class ZserioAstWalker implements ZserioAstVisitor
     }
 
     @Override
-    public void visitConstType(ConstType constType)
+    public void visitConstant(Constant constant)
     {
-        constType.visitChildren(this);
+        constant.visitChildren(this);
     }
 
     @Override

@@ -62,7 +62,7 @@ public class CompoundEmitter extends DefaultHtmlEmitter
         return compound == null ? "" : compound.getName();
     }
 
-    public LinkedType getLinkedType()
+    public LinkedType getLinkedType() throws ZserioEmitException
     {
         if (compound == null)
             return null;
@@ -153,7 +153,7 @@ public class CompoundEmitter extends DefaultHtmlEmitter
             return (type instanceof ArrayType) ? ((ArrayType)type).isImplicit() : false;
         }
 
-        public LinkedType getType()
+        public LinkedType getType() throws ZserioEmitException
         {
             LinkedType linkedType = new LinkedType(field.getTypeInstantiation());
             return linkedType;
@@ -235,7 +235,7 @@ public class CompoundEmitter extends DefaultHtmlEmitter
         private final Field field;
         private final LinkedType linkedType;
 
-        public FieldLinkedType( Field field )
+        public FieldLinkedType( Field field ) throws ZserioEmitException
         {
             this.field = field;
             this.linkedType = new LinkedType(field.getTypeInstantiation());
@@ -445,7 +445,7 @@ public class CompoundEmitter extends DefaultHtmlEmitter
         return functions;
     }
 
-    public LinkedType toLinkedType(AstNode node)
+    public LinkedType toLinkedType(AstNode node) throws ZserioEmitException
     {
         LinkedType linkedType = new LinkedType(node);
         return linkedType;

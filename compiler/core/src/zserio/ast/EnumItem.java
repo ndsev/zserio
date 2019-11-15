@@ -2,7 +2,6 @@ package zserio.ast;
 
 import java.math.BigInteger;
 
-
 /**
  * AST node for items defined by enumeration types.
  */

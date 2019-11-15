@@ -1,7 +1,7 @@
 package zserio.emit.doc;
 
 import zserio.ast.ChoiceType;
-import zserio.ast.ConstType;
+import zserio.ast.Constant;
 import zserio.ast.EnumType;
 import zserio.ast.Root;
 import zserio.ast.ServiceType;
@@ -17,7 +17,7 @@ public class ContentEmitter extends DefaultHtmlEmitter
     private final CompoundEmitter compoundEmitter;
     private final EnumerationEmitter enumerationEmitter;
     private final SubtypeEmitter subtypeEmitter;
-    private final ConstTypeEmitter constTypeEmitter;
+    private final ConstantEmitter constantEmitter;
     private final ServiceEmitter serviceEmitter;
 
     public ContentEmitter(String outputPath, boolean withSvgDiagrams, UsedByCollector usedByCollector)
@@ -27,7 +27,7 @@ public class ContentEmitter extends DefaultHtmlEmitter
         compoundEmitter = new CompoundEmitter(outputPath, withSvgDiagrams, usedByCollector);
         enumerationEmitter = new EnumerationEmitter(outputPath, withSvgDiagrams, usedByCollector);
         subtypeEmitter = new SubtypeEmitter(outputPath, withSvgDiagrams, usedByCollector);
-        constTypeEmitter = new ConstTypeEmitter(outputPath, withSvgDiagrams, usedByCollector);
+        constantEmitter = new ConstantEmitter(outputPath, withSvgDiagrams, usedByCollector);
         serviceEmitter = new ServiceEmitter(outputPath, withSvgDiagrams);
     }
 
@@ -38,9 +38,9 @@ public class ContentEmitter extends DefaultHtmlEmitter
     }
 
     @Override
-    public void beginConst(ConstType constType) throws ZserioEmitException
+    public void beginConst(Constant constant) throws ZserioEmitException
     {
-        constTypeEmitter.emit(constType);
+        constantEmitter.emit(constant);
     }
 
     @Override

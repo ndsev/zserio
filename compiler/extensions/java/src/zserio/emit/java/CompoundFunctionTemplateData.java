@@ -11,14 +11,14 @@ import zserio.emit.common.ZserioEmitException;
 
 public final class CompoundFunctionTemplateData
 {
-    public CompoundFunctionTemplateData(JavaNativeTypeMapper javaNativeTypeMapper, CompoundType compoundType,
+    public CompoundFunctionTemplateData(JavaNativeMapper javaNativeMapper, CompoundType compoundType,
             ExpressionFormatter javaExpressionFormatter) throws ZserioEmitException
     {
         compoundFunctionList = new ArrayList<CompoundFunction>();
         final Iterable<Function> functionList = compoundType.getFunctions();
         for (Function compoundFunction : functionList)
         {
-            compoundFunctionList.add(new CompoundFunction(javaNativeTypeMapper, compoundFunction,
+            compoundFunctionList.add(new CompoundFunction(javaNativeMapper, compoundFunction,
                     javaExpressionFormatter));
         }
     }
@@ -30,11 +30,11 @@ public final class CompoundFunctionTemplateData
 
     public static class CompoundFunction
     {
-        public CompoundFunction(JavaNativeTypeMapper javaNativeTypeMapper, Function function,
+        public CompoundFunction(JavaNativeMapper javaNativeMapper, Function function,
                 ExpressionFormatter javaExpressionFormatter) throws ZserioEmitException
         {
             final TypeReference returnTypeReference = function.getReturnTypeReference();
-            returnTypeName = javaNativeTypeMapper.getJavaType(returnTypeReference).getFullName();
+            returnTypeName = javaNativeMapper.getJavaType(returnTypeReference).getFullName();
             name = AccessorNameFormatter.getFunctionName(function);
             resultExpression = javaExpressionFormatter.formatGetter(function.getResultExpression());
         }

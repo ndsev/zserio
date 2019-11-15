@@ -18,13 +18,25 @@ public class PackagesErrorTest
     }
 
     @Test
-    public void ambiguousSimpleType()
+    public void ambiguousSingleSymbolImport()
     {
         final String errors[] =
         {
-            "complex_database.zs:3:11:     Found here",
-            "simple_database.zs:3:11:     Found here",
-            "ambiguous_single_type_error.zs:13:5: Ambiguous type reference 'SimpleTable'"
+            "imported.zs:3:14:     Found here",
+            "ambiguous_single_symbol_import_error.zs:5:14:     Found here",
+            "ambiguous_single_symbol_import_error.zs:9:20: Ambiguous symbol 'CONST'"
+        };
+        assertTrue(zserioErrors.isPresent(errors));
+    }
+
+    @Test
+    public void ambiguousSingleTypeImport()
+    {
+        final String errors[] =
+        {
+            "imported.zs:3:8:     Found here",
+            "ambiguous_single_type_import_error.zs:5:8:     Found here",
+            "ambiguous_single_type_import_error.zs:12:5: Ambiguous type reference 'Structure'"
         };
         assertTrue(zserioErrors.isPresent(errors));
     }
@@ -40,7 +52,7 @@ public class PackagesErrorTest
     public void importedUnknownSingleType()
     {
         final String error = "imported_unknown_single_type_error.zs:4:8: " +
-                "Unknown type 'UnknownTable' in imported package 'simple_database'!";
+                "Unresolved import of 'simple_database.UnknownTable'!";
         assertTrue(zserioErrors.isPresent(error));
     }
 

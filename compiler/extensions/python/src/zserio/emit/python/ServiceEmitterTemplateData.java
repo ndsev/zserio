@@ -16,7 +16,7 @@ public final class ServiceEmitterTemplateData extends UserTypeTemplateData
     {
         super(context, serviceType);
 
-        final PythonNativeTypeMapper pythonTypeMapper = context.getPythonNativeTypeMapper();
+        final PythonNativeMapper pythonTypeMapper = context.getPythonNativeMapper();
 
         final PythonNativeType nativeServiceType = pythonTypeMapper.getPythonType(serviceType);
         packageName = PythonFullNameFormatter.getFullName(nativeServiceType.getPackageName());
@@ -44,7 +44,7 @@ public final class ServiceEmitterTemplateData extends UserTypeTemplateData
 
     public static class RpcTemplateData
     {
-        public RpcTemplateData(PythonNativeTypeMapper typeMapper, Rpc rpc, ImportCollector importCollector)
+        public RpcTemplateData(PythonNativeMapper typeMapper, Rpc rpc, ImportCollector importCollector)
                 throws ZserioEmitException
         {
             name = rpc.getName();

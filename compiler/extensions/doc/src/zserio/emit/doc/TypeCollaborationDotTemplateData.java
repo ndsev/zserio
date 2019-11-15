@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import zserio.ast.AstNode;
 import zserio.ast.ZserioType;
 import zserio.emit.common.ZserioEmitException;
 
@@ -24,25 +25,25 @@ public class TypeCollaborationDotTemplateData
      *
      * @throws ZserioEmitException Throws in case of any internal error.
      */
-    public TypeCollaborationDotTemplateData(ZserioType zserioType, Iterable<ZserioType> usedZserioTypes,
-            Iterable<ZserioType> usedByZserioTypes, String docRootPath) throws ZserioEmitException
+    public TypeCollaborationDotTemplateData(AstNode zserioType, Iterable<AstNode> usedZserioTypes,
+            Iterable<AstNode> usedByZserioTypes, String docRootPath) throws ZserioEmitException
     {
-        typeName = zserioType.getName();
+        typeName = DocEmitterTools.getZserioName(zserioType);
         packageList = new PackageList();
         relationList = new ArrayList<Relation>();
 
         addType(zserioType, packageList, docRootPath);
 
-        for (ZserioType usedZserioType : usedZserioTypes)
+        for (AstNode usedZserioType : usedZserioTypes)
         {
             addType(usedZserioType, packageList, docRootPath);
-            relationList.add(new Relation(typeName, usedZserioType.getName()));
+            relationList.add(new Relation(typeName, DocEmitterTools.getZserioName(usedZserioType)));
         }
 
-        for (ZserioType usedByZserioType : usedByZserioTypes)
+        for (AstNode usedByZserioType : usedByZserioTypes)
         {
             addType(usedByZserioType, packageList, docRootPath);
-            relationList.add(new Relation(usedByZserioType.getName(), typeName));
+            relationList.add(new Relation(DocEmitterTools.getZserioName(usedByZserioType), typeName));
         }
     }
 
@@ -180,13 +181,13 @@ public class TypeCollaborationDotTemplateData
         private final String    typeNameTo;
     }
 
-    private void addType(ZserioType zserioType, PackageList packageList, String docRootPath)
+    private void addType(AstNode zserioType, PackageList packageList, String docRootPath)
             throws ZserioEmitException
     {
-        final String packageName = zserioType.getPackage().getPackageName().toString();
+        final String packageName = DocEmitterTools.getZserioPackageName(zserioType).toString();
         Package packageInst = packageList.add(packageName);
 
-        final String name = zserioType.getName();
+        final String name = DocEmitterTools.getZserioName(zserioType);
         final String docUrl = DocEmitterTools.getDocUrlFromType(docRootPath, zserioType);
         packageInst.addType(new Type(name, docUrl));
     }

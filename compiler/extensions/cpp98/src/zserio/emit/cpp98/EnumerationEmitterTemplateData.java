@@ -21,10 +21,10 @@ public class EnumerationEmitterTemplateData extends UserTypeTemplateData
         super(context, enumType);
 
         // add const type includes
-        final CppNativeTypeMapper cppNativeTypeMapper = context.getCppNativeTypeMapper();
+        final CppNativeMapper cppNativeMapper = context.getCppNativeMapper();
 
         final IntegerType enumBaseType = enumType.getIntegerBaseType();
-        final NativeIntegralType nativeBaseType = cppNativeTypeMapper.getCppIntegralType(enumBaseType);
+        final NativeIntegralType nativeBaseType = cppNativeMapper.getCppIntegralType(enumBaseType);
         addHeaderIncludesForType(nativeBaseType);
 
         baseCppTypeName = nativeBaseType.getFullName();
@@ -37,7 +37,7 @@ public class EnumerationEmitterTemplateData extends UserTypeTemplateData
         final List<EnumItem> enumItems = enumType.getItems();
         items = new ArrayList<EnumItemData>(enumItems.size());
         for (EnumItem enumItem : enumItems)
-            items.add(new EnumItemData(nativeBaseType, enumType, enumItem));
+            items.add(new EnumItemData(nativeBaseType, enumItem));
     }
 
     public String getBaseCppTypeName()
@@ -67,7 +67,7 @@ public class EnumerationEmitterTemplateData extends UserTypeTemplateData
 
     public static class EnumItemData
     {
-        public EnumItemData(NativeIntegralType nativeBaseType, EnumType enumType, EnumItem enumItem)
+        public EnumItemData(NativeIntegralType nativeBaseType, EnumItem enumItem)
                 throws ZserioEmitException
         {
             name = enumItem.getName();

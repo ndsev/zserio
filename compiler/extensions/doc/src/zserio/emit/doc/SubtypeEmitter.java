@@ -6,10 +6,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import zserio.ast.CompoundType;
-import zserio.ast.ConstType;
+import zserio.ast.Constant;
 import zserio.ast.ServiceType;
 import zserio.ast.Subtype;
-import zserio.ast.ZserioType;
 import zserio.emit.common.ZserioEmitException;
 import freemarker.template.Template;
 import freemarker.template.TemplateException;
@@ -79,7 +78,7 @@ public class SubtypeEmitter extends DefaultHtmlEmitter
         return subtype.getPackage().getPackageName().toString();
     }
 
-    public LinkedType getTargetType()
+    public LinkedType getTargetType() throws ZserioEmitException
     {
         if (subtype == null)
             throw new RuntimeException("getTargetType() called before emit()!");
@@ -101,15 +100,15 @@ public class SubtypeEmitter extends DefaultHtmlEmitter
         return docCommentTemplateData.getIsDeprecated();
     }
 
-    public List<LinkedType> getConstInstances()
+    public List<LinkedType> getConstInstances() throws ZserioEmitException
     {
         if (subtype == null)
             throw new RuntimeException("getConstInstances() called before emit()!");
 
         List<LinkedType> results = new ArrayList<LinkedType>();
-        for (ZserioType type : usedByCollector.getUsedByTypes(subtype, ConstType.class))
+        for (Constant constant : usedByCollector.getUsedByTypes(subtype, Constant.class))
         {
-            results.add( new LinkedType(type) );
+            results.add( new LinkedType(constant) );
         }
         return results;
     }

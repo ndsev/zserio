@@ -2,9 +2,11 @@ package zserio.emit.cpp98;
 
 import java.math.BigInteger;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import zserio.ast.AstNode;
+import zserio.ast.Constant;
 import zserio.ast.Function;
 import zserio.ast.ZserioType;
 import zserio.ast.EnumItem;
@@ -17,6 +19,7 @@ import zserio.emit.common.DefaultExpressionFormattingPolicy;
 import zserio.emit.common.StringEscapeConverter;
 import zserio.emit.common.ZserioEmitException;
 import zserio.emit.cpp98.AccessorNameFormatter;
+import zserio.emit.cpp98.symbols.CppNativeSymbol;
 import zserio.emit.cpp98.types.CppNativeType;
 
 /**
@@ -28,10 +31,10 @@ import zserio.emit.cpp98.types.CppNativeType;
  */
 public abstract class CppDefaultExpressionFormattingPolicy extends DefaultExpressionFormattingPolicy
 {
-    public CppDefaultExpressionFormattingPolicy(CppNativeTypeMapper cppNativeTypeMapper,
+    public CppDefaultExpressionFormattingPolicy(CppNativeMapper cppNativeMapper,
             IncludeCollector includeCollector)
     {
-        this.cppNativeTypeMapper = cppNativeTypeMapper;
+        this.cppNativeMapper = cppNativeMapper;
         this.includeCollector = includeCollector;
     }
 
@@ -206,7 +209,7 @@ public abstract class CppDefaultExpressionFormattingPolicy extends DefaultExpres
     private void formatTypeIdentifier(StringBuilder result, ZserioType resolvedType)
             throws ZserioEmitException
     {
-        final CppNativeType nativeSubtype = cppNativeTypeMapper.getCppType(resolvedType);
+        final CppNativeType nativeSubtype = cppNativeMapper.getCppType(resolvedType);
         result.append(nativeSubtype.getFullName());
         includeCollector.addCppIncludesForType(nativeSubtype);
     }
@@ -237,6 +240,12 @@ public abstract class CppDefaultExpressionFormattingPolicy extends DefaultExpres
             // [FunctionCall]()
             final Function function = (Function)resolvedSymbol;
             result.append(AccessorNameFormatter.getFunctionName(function));
+        }
+        else if (resolvedSymbol instanceof Constant)
+        {
+            // [Constant]
+            final Constant constant = (Constant)resolvedSymbol;
+            formatConstant(result, constant);
         }
         else
         {
@@ -309,12 +318,19 @@ public abstract class CppDefaultExpressionFormattingPolicy extends DefaultExpres
         if (isMostLeftId && exprType instanceof EnumType)
         {
             final EnumType enumType = (EnumType)exprType;
-            final CppNativeType nativeEnumType = cppNativeTypeMapper.getCppType(enumType);
+            final CppNativeType nativeEnumType = cppNativeMapper.getCppType(enumType);
             result.append(nativeEnumType.getFullName());
             result.append("::");
         }
 
         result.append(enumItem.getName());
+    }
+
+    private void formatConstant(StringBuilder result, Constant constant) throws ZserioEmitException
+    {
+        final CppNativeSymbol nativeSymbol = cppNativeMapper.getCppSymbol(constant);
+        result.append(nativeSymbol.getFullName());
+        includeCollector.addCppUserIncludes(Collections.singleton(nativeSymbol.getIncludeFile()));
     }
 
     private String getMinIntWorkaround(boolean isNegative, BigInteger literalValue)
@@ -331,7 +347,7 @@ public abstract class CppDefaultExpressionFormattingPolicy extends DefaultExpres
         return workaround;
     }
 
-    private final CppNativeTypeMapper cppNativeTypeMapper;
+    private final CppNativeMapper cppNativeMapper;
     private final IncludeCollector includeCollector;
 
     private final static String CPP_GETTER_FUNCTION_CALL = "()";

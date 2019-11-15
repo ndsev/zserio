@@ -7,7 +7,7 @@ import zserio.ast.Rpc;
 import zserio.ast.ServiceType;
 import zserio.ast.ZserioType;
 import zserio.emit.common.ZserioEmitException;
-import zserio.emit.java.JavaNativeTypeMapper;
+import zserio.emit.java.JavaNativeMapper;
 
 public final class ServiceEmitterTemplateData extends UserTypeTemplateData
 {
@@ -18,7 +18,7 @@ public final class ServiceEmitterTemplateData extends UserTypeTemplateData
 
         className = serviceType.getName() + "Grpc";
 
-        final JavaNativeTypeMapper javaTypeMapper = context.getJavaNativeTypeMapper();
+        final JavaNativeMapper javaTypeMapper = context.getJavaNativeMapper();
         final Iterable<Rpc> rpcList = serviceType.getRpcList();
         for (Rpc rpc : rpcList)
         {
@@ -67,7 +67,7 @@ public final class ServiceEmitterTemplateData extends UserTypeTemplateData
 
     public static class RpcTemplateData
     {
-        public RpcTemplateData(JavaNativeTypeMapper typeMapper, Rpc rpc) throws ZserioEmitException
+        public RpcTemplateData(JavaNativeMapper typeMapper, Rpc rpc) throws ZserioEmitException
         {
             name = rpc.getName();
 

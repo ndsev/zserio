@@ -7,10 +7,10 @@ import zserio.ast.Field;
  */
 public class PythonSqlIndirectExpressionFormattingPolicy extends PythonExpressionFormattingPolicy
 {
-    public PythonSqlIndirectExpressionFormattingPolicy(PythonNativeTypeMapper pythonNativeTypeMapper,
+    public PythonSqlIndirectExpressionFormattingPolicy(PythonNativeMapper pythonNativeMapper,
             ImportCollector importCollector)
     {
-        super(pythonNativeTypeMapper, importCollector);
+        super(pythonNativeMapper, importCollector);
     }
 
     @Override

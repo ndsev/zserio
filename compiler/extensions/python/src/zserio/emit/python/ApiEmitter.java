@@ -3,7 +3,7 @@ package zserio.emit.python;
 import java.util.TreeMap;
 
 import zserio.ast.ChoiceType;
-import zserio.ast.ConstType;
+import zserio.ast.Constant;
 import zserio.ast.EnumType;
 import zserio.ast.Package;
 import zserio.ast.PackageName;
@@ -57,9 +57,9 @@ public class ApiEmitter extends PythonDefaultEmitter
     }
 
     @Override
-    public void beginConst(ConstType constType) throws ZserioEmitException
+    public void beginConst(Constant constant) throws ZserioEmitException
     {
-        addTypeMapping(constType);
+        addSymbolMapping(constant.getName(), constant.getPackage().getPackageName());
     }
 
     @Override
@@ -154,6 +154,17 @@ public class ApiEmitter extends PythonDefaultEmitter
         if (packageTemplateData == null)
             throw new ZserioEmitException("ApiEmitter: Package not yet mapped!");
         packageTemplateData.addType(zserioType);
+    }
+
+    private void addSymbolMapping(String zserioSymbolName, PackageName zserioPackageName)
+            throws ZserioEmitException
+    {
+        final PackageMapper packageMapper = getTemplateDataContext().getPythonPackageMapper();
+        final PackageName packageName = packageMapper.getPackageName(zserioPackageName);
+        final ApiEmitterTemplateData packageTemplateData = packageMapping.get(packageName);
+        if (packageTemplateData == null)
+            throw new ZserioEmitException("ApiEmitter: Package not yet mapped!");
+        packageTemplateData.addSymbol(zserioSymbolName);
     }
 
     private static final String API_TEMPLATE = "api.py.ftl";

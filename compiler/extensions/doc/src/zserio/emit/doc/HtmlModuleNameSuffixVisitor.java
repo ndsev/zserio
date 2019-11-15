@@ -4,7 +4,7 @@ import zserio.ast.ArrayType;
 import zserio.ast.BitFieldType;
 import zserio.ast.BooleanType;
 import zserio.ast.ChoiceType;
-import zserio.ast.ConstType;
+import zserio.ast.Constant;
 import zserio.ast.ServiceType;
 import zserio.ast.EnumType;
 import zserio.ast.FloatType;
@@ -46,9 +46,9 @@ public class HtmlModuleNameSuffixVisitor extends ZserioAstDefaultVisitor
     }
 
     @Override
-    public void visitConstType(ConstType type)
+    public void visitConstant(Constant constant)
     {
-        htmlModuleNameSuffix = "CONSTTYPE";
+        htmlModuleNameSuffix = "CONSTANT";
     }
 
     @Override

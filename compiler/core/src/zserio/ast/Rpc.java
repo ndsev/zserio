@@ -1,7 +1,5 @@
 package zserio.ast;
 
-
-
 /**
  * AST node for RPC calls.
  */

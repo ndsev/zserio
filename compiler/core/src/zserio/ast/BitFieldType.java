@@ -3,7 +3,6 @@ package zserio.ast;
 import java.math.BigInteger;
 import java.util.List;
 
-
 /**
  * AST abstract node for all bit field Integer types.
  *

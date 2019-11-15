@@ -9,15 +9,15 @@ final class TemplateDataContext
 {
     public TemplateDataContext(Parameters extensionParameters, PackageMapper cppPackageMapper)
     {
-        cppNativeTypeMapper = new CppNativeTypeMapper(cppPackageMapper);
+        cppNativeMapper = new CppNativeMapper(cppPackageMapper);
         this.cppPackageMapper = cppPackageMapper;
         withWriterCode = extensionParameters.getWithWriterCode();
         withRangeCheckCode = extensionParameters.getWithRangeCheckCode();
     }
 
-    public CppNativeTypeMapper getCppNativeTypeMapper()
+    public CppNativeMapper getCppNativeMapper()
     {
-        return cppNativeTypeMapper;
+        return cppNativeMapper;
     }
 
     public PackageMapper getCppPackageMapper()
@@ -28,7 +28,7 @@ final class TemplateDataContext
     public ExpressionFormatter getExpressionFormatter(IncludeCollector includeCollector)
     {
         final ExpressionFormattingPolicy expressionFormattingPolicy =
-                new CppExpressionFormattingPolicy(cppNativeTypeMapper, includeCollector);
+                new CppExpressionFormattingPolicy(cppNativeMapper, includeCollector);
 
         return new ExpressionFormatter(expressionFormattingPolicy);
     }
@@ -36,7 +36,7 @@ final class TemplateDataContext
     public ExpressionFormatter getOwnerIndirectExpressionFormatter(IncludeCollector includeCollector)
     {
         final ExpressionFormattingPolicy expressionFormattingPolicy =
-                new CppOwnerIndirectExpressionFormattingPolicy(cppNativeTypeMapper, includeCollector);
+                new CppOwnerIndirectExpressionFormattingPolicy(cppNativeMapper, includeCollector);
 
         return new ExpressionFormatter(expressionFormattingPolicy);
     }
@@ -44,7 +44,7 @@ final class TemplateDataContext
     public ExpressionFormatter getSqlIndirectExpressionFormatter(IncludeCollector includeCollector)
     {
         final ExpressionFormattingPolicy expressionFormattingPolicy =
-                new CppSqlIndirectExpressionFormattingPolicy(cppNativeTypeMapper, includeCollector);
+                new CppSqlIndirectExpressionFormattingPolicy(cppNativeMapper, includeCollector);
 
         return new ExpressionFormatter(expressionFormattingPolicy);
     }
@@ -59,7 +59,7 @@ final class TemplateDataContext
         return withRangeCheckCode;
     }
 
-    private final CppNativeTypeMapper cppNativeTypeMapper;
+    private final CppNativeMapper cppNativeMapper;
     private final PackageMapper cppPackageMapper;
 
     private final boolean withWriterCode;

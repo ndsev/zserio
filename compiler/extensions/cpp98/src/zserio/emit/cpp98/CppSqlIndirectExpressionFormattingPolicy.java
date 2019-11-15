@@ -5,10 +5,10 @@ package zserio.emit.cpp98;
  */
 public class CppSqlIndirectExpressionFormattingPolicy extends CppDefaultExpressionFormattingPolicy
 {
-    public CppSqlIndirectExpressionFormattingPolicy(CppNativeTypeMapper cppNativeTypeMapper,
+    public CppSqlIndirectExpressionFormattingPolicy(CppNativeMapper cppNativeMapper,
             IncludeCollector includeCollector)
     {
-        super(cppNativeTypeMapper, includeCollector);
+        super(cppNativeMapper, includeCollector);
     }
 
     @Override

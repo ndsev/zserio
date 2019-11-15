@@ -3,6 +3,7 @@ package zserio.emit.java;
 import java.math.BigInteger;
 
 import zserio.ast.AstNode;
+import zserio.ast.Constant;
 import zserio.ast.Subtype;
 import zserio.ast.ZserioType;
 import zserio.ast.EnumItem;
@@ -15,6 +16,7 @@ import zserio.ast.Parameter;
 import zserio.emit.common.DefaultExpressionFormattingPolicy;
 import zserio.emit.common.StringEscapeConverter;
 import zserio.emit.common.ZserioEmitException;
+import zserio.emit.java.symbols.JavaNativeSymbol;
 import zserio.emit.java.types.JavaNativeType;
 
 /**
@@ -26,9 +28,9 @@ import zserio.emit.java.types.JavaNativeType;
  */
 public abstract class JavaDefaultExpressionFormattingPolicy extends DefaultExpressionFormattingPolicy
 {
-    public JavaDefaultExpressionFormattingPolicy(JavaNativeTypeMapper javaNativeTypeMapper)
+    public JavaDefaultExpressionFormattingPolicy(JavaNativeMapper javaNativeMapper)
     {
-        this.javaNativeTypeMapper = javaNativeTypeMapper;
+        this.javaNativeMapper = javaNativeMapper;
     }
 
     // atom expressions formatting
@@ -416,7 +418,7 @@ public abstract class JavaDefaultExpressionFormattingPolicy extends DefaultExpre
     // getQuestionMark() is ok from the base class
 
     protected abstract String getIdentifierForTypeEnum(EnumType resolvedType,
-            JavaNativeTypeMapper javaNativeTypeMapper) throws ZserioEmitException;
+            JavaNativeMapper javaNativeMapper) throws ZserioEmitException;
     protected abstract String getIdentifierForEnumItem(EnumItem enumItem);
     protected abstract String getDotSeparatorForEnumItem();
     protected abstract String getAccessPrefixForCompoundType();
@@ -456,11 +458,11 @@ public abstract class JavaDefaultExpressionFormattingPolicy extends DefaultExpre
         if (baseType instanceof EnumType)
         {
             // [EnumType].ENUM_ITEM
-            result.append(getIdentifierForTypeEnum((EnumType)baseType, javaNativeTypeMapper));
+            result.append(getIdentifierForTypeEnum((EnumType)baseType, javaNativeMapper));
         }
         else
         {
-            final JavaNativeType javaType = javaNativeTypeMapper.getJavaType(baseType);
+            final JavaNativeType javaType = javaNativeMapper.getJavaType(baseType);
             result.append(javaType.getFullName());
         }
     }
@@ -473,7 +475,7 @@ public abstract class JavaDefaultExpressionFormattingPolicy extends DefaultExpre
     }
 
     private void formatSymbolIdentifier(StringBuilder result, String symbol, boolean isMostLeftId,
-            AstNode resolvedSymbol, boolean isSetter)
+            AstNode resolvedSymbol, boolean isSetter) throws ZserioEmitException
     {
         if (resolvedSymbol instanceof Parameter)
         {
@@ -495,11 +497,22 @@ public abstract class JavaDefaultExpressionFormattingPolicy extends DefaultExpre
             final Function function = (Function)resolvedSymbol;
             result.append(AccessorNameFormatter.getFunctionName(function));
         }
+        else if (resolvedSymbol instanceof Constant)
+        {
+            final Constant constant = (Constant)resolvedSymbol;
+            formatConstant(result, constant);
+        }
         else
         {
             // this could happen for "explicit identifier" expressions
             result.append(symbol);
         }
+    }
+
+    private void formatConstant(StringBuilder result, Constant constant) throws ZserioEmitException
+    {
+        JavaNativeSymbol nativeSymbol = javaNativeMapper.getJavaSymbol(constant);
+        result.append(nativeSymbol.getFullName());
     }
 
     private String getIntegerLiteralSuffix(BigInteger literalValue, boolean isNegative)
@@ -535,5 +548,5 @@ public abstract class JavaDefaultExpressionFormattingPolicy extends DefaultExpre
     private final static String DECIMAL_LITERAL_ABS_INT64_MIN = "9223372036854775808";
     private final static String BIG_INTEGER = "java.math.BigInteger";
 
-    private final JavaNativeTypeMapper javaNativeTypeMapper;
+    private final JavaNativeMapper javaNativeMapper;
 }

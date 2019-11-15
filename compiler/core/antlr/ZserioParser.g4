@@ -25,12 +25,12 @@ importDeclaration
     ;
 
 languageDirective
-    :   typeDeclaration
+    :   constDeclaration
+    |   typeDeclaration
     ;
 
 typeDeclaration
-    :   constDeclaration
-    |   subtypeDeclaration
+    :   subtypeDeclaration
     |   structureDeclaration
     |   choiceDeclaration
     |   unionDeclaration
@@ -207,7 +207,7 @@ sqlDatabaseDefinition
     ;
 
 sqlDatabaseFieldDefinition
-    :   typeInstantiation id SEMICOLON // TODO[Mi-L@]: Check that it's a table somewhere!
+    :   typeInstantiation id SEMICOLON
     ;
 
 
@@ -226,7 +226,7 @@ rpcDefinition
     ;
 
 rpcTypeReference
-    :   STREAM? typeReference // TODO[Mi-L@]: Check that it's a non-parameterized compound
+    :   STREAM? typeReference
     ;
 
 

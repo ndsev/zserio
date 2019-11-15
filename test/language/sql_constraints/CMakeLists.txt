@@ -7,6 +7,9 @@ set(ZSERIO_GENERATED_SOURCES
     ${ZSERIO_GEN_DIR}/sql_constraints/ConstraintsTable.h
     ${ZSERIO_GEN_DIR}/sql_constraints/TestDb.cpp
     ${ZSERIO_GEN_DIR}/sql_constraints/TestDb.h
+    ${ZSERIO_GEN_DIR}/sql_constraints/constraints/ImportedConstant.h
+    ${ZSERIO_GEN_DIR}/sql_constraints/constraints/ImportedEnum.cpp
+    ${ZSERIO_GEN_DIR}/sql_constraints/constraints/ImportedEnum.h
 )
 
 if (NOT ${ZSERIO_CPP_STANDARD} STREQUAL c++11)

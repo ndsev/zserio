@@ -7,25 +7,25 @@ import zserio.tools.HashUtil;
  *
  * Constant types are Zserio types as well.
  */
-public class ConstType extends DocumentableAstNode implements ZserioType, Comparable<ConstType>
+public class Constant extends DocumentableAstNode implements Comparable<Constant>
 {
     /**
      * Constructor.
      *
-     * @param location               AST node location.
-     * @param pkg                    Package to which belongs the constant type.
-     * @param constTypeInstantiation Type instantiation of the constant.
-     * @param name                   Name of the constant type.
-     * @param valueExpression        Value expression associated to the constant type.
-     * @param docComment             Documentation comment belonging to this node.
+     * @param location          AST node location.
+     * @param pkg               Package to which belongs the constant type.
+     * @param typeInstantiation Type instantiation of the constant.
+     * @param name              Name of the constant type.
+     * @param valueExpression   Value expression associated to the constant type.
+     * @param docComment        Documentation comment belonging to this node.
      */
-    public ConstType(AstLocation location, Package pkg, TypeInstantiation constTypeInstantiation, String name,
+    public Constant(AstLocation location, Package pkg, TypeInstantiation typeInstantiation, String name,
             Expression valueExpression, DocComment docComment)
     {
         super(location, docComment);
 
         this.pkg = pkg;
-        this.constTypeInstantiation = constTypeInstantiation;
+        this.typeInstantiation = typeInstantiation;
         this.name = name;
         this.valueExpression = valueExpression;
     }
@@ -33,7 +33,7 @@ public class ConstType extends DocumentableAstNode implements ZserioType, Compar
     @Override
     public void accept(ZserioAstVisitor visitor)
     {
-        visitor.visitConstType(this);
+        visitor.visitConstant(this);
     }
 
     @Override
@@ -41,24 +41,12 @@ public class ConstType extends DocumentableAstNode implements ZserioType, Compar
     {
         super.visitChildren(visitor);
 
-        constTypeInstantiation.accept(visitor);
+        typeInstantiation.accept(visitor);
         valueExpression.accept(visitor);
     }
 
     @Override
-    public String getName()
-    {
-        return name;
-    }
-
-    @Override
-    public Package getPackage()
-    {
-        return pkg;
-    }
-
-    @Override
-    public int compareTo(ConstType other)
+    public int compareTo(Constant other)
     {
         return getName().compareTo(other.getName());
     }
@@ -66,10 +54,10 @@ public class ConstType extends DocumentableAstNode implements ZserioType, Compar
     @Override
     public boolean equals(Object other)
     {
-        if ( !(other instanceof ConstType) )
+        if ( !(other instanceof Constant) )
             return false;
 
-        return (this == other) || compareTo((ConstType)other) == 0;
+        return (this == other) || compareTo((Constant)other) == 0;
     }
 
     @Override
@@ -81,13 +69,33 @@ public class ConstType extends DocumentableAstNode implements ZserioType, Compar
     }
 
     /**
+     * Gets the package in which this constant is defined.
+     *
+     * @return The package in which this constant is defined.
+     */
+    public Package getPackage()
+    {
+        return pkg;
+    }
+
+    /**
+     * Gets the name of the constant.
+     *
+     * @return Constant name.
+     */
+    public String getName()
+    {
+        return name;
+    }
+
+    /**
      * Gets reference to the type of this constant.
      *
      * @return Type reference.
      */
     public TypeReference getTypeReference()
     {
-        return constTypeInstantiation.getTypeReference();
+        return typeInstantiation.getTypeReference();
     }
 
     /**
@@ -106,7 +114,7 @@ public class ConstType extends DocumentableAstNode implements ZserioType, Compar
     void check()
     {
         // check base type
-        final ZserioType baseType = constTypeInstantiation.getTypeReference().getBaseTypeReference().getType();
+        final ZserioType baseType = typeInstantiation.getTypeReference().getBaseTypeReference().getType();
         if (!(baseType instanceof BuiltInType) && !(baseType instanceof EnumType))
             throw new ParserException(this, "Constants can be defined only for built-in types and enums!");
 
@@ -115,10 +123,20 @@ public class ConstType extends DocumentableAstNode implements ZserioType, Compar
 
         // check integer constant range
         ExpressionUtil.checkIntegerExpressionRange(valueExpression, baseType, name);
+
+        // check constant name
+        final ZserioType definedType = pkg.getVisibleType(this, PackageName.EMPTY, getName());
+        if (definedType != null)
+        {
+            final ParserStackedException stackedException = new ParserStackedException(getLocation(),
+                    "'" + getName() + "' is a defined type in this package!");
+            stackedException.pushMessage(definedType.getLocation(), "    First defined here!");
+            throw stackedException;
+        }
     }
 
     private final Package pkg;
-    private final TypeInstantiation constTypeInstantiation;
+    private final TypeInstantiation typeInstantiation;
     private final String name;
     private final Expression valueExpression;
 }

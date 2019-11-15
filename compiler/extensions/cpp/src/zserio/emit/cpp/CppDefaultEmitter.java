@@ -39,8 +39,15 @@ abstract class CppDefaultEmitter extends DefaultEmitter
     protected void processHeaderTemplate(String templateName, Object templateData, ZserioType zserioType)
             throws ZserioEmitException
     {
-        processTemplate(templateName, templateData, packageMapper.getPackageName(zserioType),
-                zserioType.getName(), CPP_HEADER_EXTENSION, false);
+        processHeaderTemplate(templateName, templateData, zserioType.getPackage().getPackageName(),
+                zserioType.getName());
+    }
+
+    protected void processHeaderTemplate(String templateName, Object templateData,
+            PackageName zserioPackageName, String outFileName) throws ZserioEmitException
+    {
+        processTemplate(templateName, templateData, packageMapper.getPackageName(zserioPackageName),
+                outFileName, CPP_HEADER_EXTENSION, false);
     }
 
     protected TemplateDataContext getTemplateDataContext()

@@ -264,8 +264,14 @@ public class Field extends DocumentableAstNode
         }
 
         // check field name
-        if (pkg.getVisibleType(this, PackageName.EMPTY, getName()) != null)
-            throw new ParserException(this, "'" + getName() + "' is a defined type in this package!");
+        final ZserioType definedType = pkg.getVisibleType(this, PackageName.EMPTY, getName());
+        if (definedType != null)
+        {
+            final ParserStackedException stackedException = new ParserStackedException(getLocation(),
+                    "'" + getName() + "' is a defined type in this package!");
+            stackedException.pushMessage(definedType.getLocation(), "    First defined here!");
+            throw stackedException;
+        }
     }
 
     /**

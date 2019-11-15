@@ -6,7 +6,7 @@ import zserio.ast.CompoundType;
 
 public class CompoundConstructorTemplateData
 {
-    public CompoundConstructorTemplateData(CppNativeTypeMapper cppNativeTypeMapper, CompoundType compoundType,
+    public CompoundConstructorTemplateData(CppNativeMapper cppNativeMapper, CompoundType compoundType,
             CompoundParameterTemplateData compoundParametersData, List<CompoundFieldTemplateData> fieldList)
     {
         compoundName = compoundType.getName();

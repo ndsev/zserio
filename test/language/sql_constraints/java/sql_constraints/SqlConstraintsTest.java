@@ -15,6 +15,9 @@ import org.junit.rules.ExpectedException;
 import test_utils.FileUtil;
 import test_utils.JdbcUtil;
 
+import sql_constraints.constraints.ImportedConstant;
+import sql_constraints.constraints.ImportedEnum;
+
 public class SqlConstraintsTest
 {
     @BeforeClass
@@ -52,15 +55,8 @@ public class SqlConstraintsTest
 
         final ConstraintsTable constraintsTable = database.getConstraintsTable();
         final ConstraintsTableRow row = new ConstraintsTableRow();
+        fillRow(row);
         row.setNullWithoutSql();
-        row.setSqlNotNull(1);
-        row.setSqlDefaultNull(1);
-        row.setSqlNull(1);
-        row.setSqlCheckConstant(1);
-        row.setSqlCheckEnum(ConstraintsEnum.VALUE1);
-        row.setSqlCheckUnicodeEscape(UNICODE_ESCAPE_CONST);
-        row.setSqlCheckHexEscape(HEX_ESCAPE_CONST);
-        row.setSqlCheckOctalEscape(OCTAL_ESCAPE_CONST);
         constraintsTable.write(Arrays.asList(row));
     }
 
@@ -72,15 +68,8 @@ public class SqlConstraintsTest
 
         final ConstraintsTable constraintsTable = database.getConstraintsTable();
         final ConstraintsTableRow row = new ConstraintsTableRow();
-        row.setWithoutSql(1);
+        fillRow(row);
         row.setNullSqlNotNull();
-        row.setSqlDefaultNull(1);
-        row.setSqlNull(1);
-        row.setSqlCheckConstant(1);
-        row.setSqlCheckEnum(ConstraintsEnum.VALUE1);
-        row.setSqlCheckUnicodeEscape(UNICODE_ESCAPE_CONST);
-        row.setSqlCheckHexEscape(HEX_ESCAPE_CONST);
-        row.setSqlCheckOctalEscape(OCTAL_ESCAPE_CONST);
         constraintsTable.write(Arrays.asList(row));
     }
 
@@ -89,15 +78,8 @@ public class SqlConstraintsTest
     {
         final ConstraintsTable constraintsTable = database.getConstraintsTable();
         final ConstraintsTableRow row = new ConstraintsTableRow();
-        row.setWithoutSql(1);
-        row.setSqlNotNull(1);
+        fillRow(row);
         row.setNullSqlDefaultNull();
-        row.setSqlNull(1);
-        row.setSqlCheckConstant(1);
-        row.setSqlCheckEnum(ConstraintsEnum.VALUE1);
-        row.setSqlCheckUnicodeEscape(UNICODE_ESCAPE_CONST);
-        row.setSqlCheckHexEscape(HEX_ESCAPE_CONST);
-        row.setSqlCheckOctalEscape(OCTAL_ESCAPE_CONST);
         constraintsTable.write(Arrays.asList(row));
     }
 
@@ -106,15 +88,8 @@ public class SqlConstraintsTest
     {
         final ConstraintsTable constraintsTable = database.getConstraintsTable();
         final ConstraintsTableRow row = new ConstraintsTableRow();
-        row.setWithoutSql(1);
-        row.setSqlNotNull(1);
-        row.setSqlDefaultNull(1);
+        fillRow(row);
         row.setNullSqlNull();
-        row.setSqlCheckConstant(1);
-        row.setSqlCheckEnum(ConstraintsEnum.VALUE1);
-        row.setSqlCheckUnicodeEscape(UNICODE_ESCAPE_CONST);
-        row.setSqlCheckHexEscape(HEX_ESCAPE_CONST);
-        row.setSqlCheckOctalEscape(OCTAL_ESCAPE_CONST);
         constraintsTable.write(Arrays.asList(row));
     }
 
@@ -126,15 +101,21 @@ public class SqlConstraintsTest
 
         final ConstraintsTable constraintsTable = database.getConstraintsTable();
         final ConstraintsTableRow row = new ConstraintsTableRow();
-        row.setWithoutSql(1);
-        row.setSqlNotNull(1);
-        row.setSqlDefaultNull(1);
-        row.setSqlNull(1);
+        fillRow(row);
         row.setSqlCheckConstant(ConstraintsConstant.ConstraintsConstant);
-        row.setSqlCheckEnum(ConstraintsEnum.VALUE1);
-        row.setSqlCheckUnicodeEscape(UNICODE_ESCAPE_CONST);
-        row.setSqlCheckHexEscape(HEX_ESCAPE_CONST);
-        row.setSqlCheckOctalEscape(OCTAL_ESCAPE_CONST);
+        constraintsTable.write(Arrays.asList(row));
+    }
+
+    @Test
+    public void sqlCheckImportedConstant() throws IOException, SQLException
+    {
+        expectedException.expect(SQLException.class);
+        expectedException.expectMessage("CHECK constraint failed: constraintsTable");
+
+        final ConstraintsTable constraintsTable = database.getConstraintsTable();
+        final ConstraintsTableRow row = new ConstraintsTableRow();
+        fillRow(row);
+        row.setSqlCheckImportedConstant(ImportedConstant.ImportedConstant);
         constraintsTable.write(Arrays.asList(row));
     }
 
@@ -146,15 +127,21 @@ public class SqlConstraintsTest
 
         final ConstraintsTable constraintsTable = database.getConstraintsTable();
         final ConstraintsTableRow row = new ConstraintsTableRow();
-        row.setWithoutSql(1);
-        row.setSqlNotNull(1);
-        row.setSqlDefaultNull(1);
-        row.setSqlNull(1);
-        row.setSqlCheckConstant(1);
+        fillRow(row);
         row.setSqlCheckEnum(ConstraintsEnum.VALUE2);
-        row.setSqlCheckUnicodeEscape(UNICODE_ESCAPE_CONST);
-        row.setSqlCheckHexEscape(HEX_ESCAPE_CONST);
-        row.setSqlCheckOctalEscape(OCTAL_ESCAPE_CONST);
+        constraintsTable.write(Arrays.asList(row));
+    }
+
+    @Test
+    public void sqlCheckImportedEnum() throws IOException, SQLException
+    {
+        expectedException.expect(SQLException.class);
+        expectedException.expectMessage("CHECK constraint failed: constraintsTable");
+
+        final ConstraintsTable constraintsTable = database.getConstraintsTable();
+        final ConstraintsTableRow row = new ConstraintsTableRow();
+        fillRow(row);
+        row.setSqlCheckImportedEnum(ImportedEnum.TWO);
         constraintsTable.write(Arrays.asList(row));
     }
 
@@ -166,15 +153,8 @@ public class SqlConstraintsTest
 
         final ConstraintsTable constraintsTable = database.getConstraintsTable();
         final ConstraintsTableRow row = new ConstraintsTableRow();
-        row.setWithoutSql(1);
-        row.setSqlNotNull(1);
-        row.setSqlDefaultNull(1);
-        row.setSqlNull(1);
-        row.setSqlCheckConstant(1);
-        row.setSqlCheckEnum(ConstraintsEnum.VALUE1);
+        fillRow(row);
         row.setSqlCheckUnicodeEscape(WRONG_UNICODE_ESCAPE_CONST);
-        row.setSqlCheckHexEscape(HEX_ESCAPE_CONST);
-        row.setSqlCheckOctalEscape(OCTAL_ESCAPE_CONST);
         constraintsTable.write(Arrays.asList(row));
     }
 
@@ -186,15 +166,8 @@ public class SqlConstraintsTest
 
         final ConstraintsTable constraintsTable = database.getConstraintsTable();
         final ConstraintsTableRow row = new ConstraintsTableRow();
-        row.setWithoutSql(1);
-        row.setSqlNotNull(1);
-        row.setSqlDefaultNull(1);
-        row.setSqlNull(1);
-        row.setSqlCheckConstant(1);
-        row.setSqlCheckEnum(ConstraintsEnum.VALUE1);
-        row.setSqlCheckUnicodeEscape(UNICODE_ESCAPE_CONST);
+        fillRow(row);
         row.setSqlCheckHexEscape(WRONG_HEX_ESCAPE_CONST);
-        row.setSqlCheckOctalEscape(OCTAL_ESCAPE_CONST);
         constraintsTable.write(Arrays.asList(row));
     }
 
@@ -206,16 +179,24 @@ public class SqlConstraintsTest
 
         final ConstraintsTable constraintsTable = database.getConstraintsTable();
         final ConstraintsTableRow row = new ConstraintsTableRow();
+        fillRow(row);
+        row.setSqlCheckOctalEscape(WRONG_OCTAL_ESCAPE_CONST);
+        constraintsTable.write(Arrays.asList(row));
+    }
+
+    private void fillRow(ConstraintsTableRow row)
+    {
         row.setWithoutSql(1);
         row.setSqlNotNull(1);
         row.setSqlDefaultNull(1);
         row.setSqlNull(1);
         row.setSqlCheckConstant(1);
+        row.setSqlCheckImportedConstant(1);
         row.setSqlCheckEnum(ConstraintsEnum.VALUE1);
+        row.setSqlCheckImportedEnum(ImportedEnum.ONE);
         row.setSqlCheckUnicodeEscape(UNICODE_ESCAPE_CONST);
         row.setSqlCheckHexEscape(HEX_ESCAPE_CONST);
-        row.setSqlCheckOctalEscape(WRONG_OCTAL_ESCAPE_CONST);
-        constraintsTable.write(Arrays.asList(row));
+        row.setSqlCheckOctalEscape(OCTAL_ESCAPE_CONST);
     }
 
     private static final String FILE_NAME = "sql_constraints_test.sqlite";

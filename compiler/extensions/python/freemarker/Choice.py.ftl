@@ -2,7 +2,7 @@
 <#include "CompoundParameter.inc.ftl">
 <#include "CompoundField.inc.ftl"/>
 <@file_header generatorDescription/>
-<@all_imports packageImports typeImports/>
+<@all_imports packageImports symbolImports typeImports/>
 <#macro choice_selector_condition expressionList>
     <#if expressionList?size == 1>
 selector == (${expressionList?first})<#rt>

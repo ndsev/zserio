@@ -20,7 +20,7 @@ public class ZserioAstDefaultVisitor implements ZserioAstVisitor
     {}
 
     @Override
-    public void visitConstType(ConstType constType)
+    public void visitConstant(Constant constant)
     {}
 
     @Override

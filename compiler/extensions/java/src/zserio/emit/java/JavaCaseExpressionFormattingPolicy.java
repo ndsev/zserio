@@ -12,13 +12,13 @@ import zserio.ast.EnumType;
  */
 public class JavaCaseExpressionFormattingPolicy extends JavaDefaultExpressionFormattingPolicy
 {
-    public JavaCaseExpressionFormattingPolicy(JavaNativeTypeMapper javaNativeTypeMapper)
+    public JavaCaseExpressionFormattingPolicy(JavaNativeMapper javaNativeMapper)
     {
-        super(javaNativeTypeMapper);
+        super(javaNativeMapper);
     }
 
     @Override
-    protected String getIdentifierForTypeEnum(EnumType resolvedType, JavaNativeTypeMapper javaNativeTypeMapper)
+    protected String getIdentifierForTypeEnum(EnumType resolvedType, JavaNativeMapper javaNativeMapper)
     {
         return "";
     }

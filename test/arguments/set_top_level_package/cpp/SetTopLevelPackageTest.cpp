@@ -17,12 +17,13 @@ protected:
     static const size_t SIMPLE_STRUCTURE_BIT_SIZE;
 };
 
-const size_t SetTopLevelPackageTest::SIMPLE_STRUCTURE_BIT_SIZE = 18;
+const size_t SetTopLevelPackageTest::SIMPLE_STRUCTURE_BIT_SIZE = 26;
 
 TEST_F(SetTopLevelPackageTest, emptyConstructor)
 {
     SimpleStructure simpleStructure;
     const size_t expectedBitSize = SIMPLE_STRUCTURE_BIT_SIZE;
+    simpleStructure.initializeChildren();
     ASSERT_EQ(expectedBitSize, simpleStructure.bitSizeOf());
 }
 

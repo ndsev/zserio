@@ -7,10 +7,10 @@ package zserio.emit.cpp98;
  */
 public class CppExpressionFormattingPolicy extends CppDefaultExpressionFormattingPolicy
 {
-    public CppExpressionFormattingPolicy(CppNativeTypeMapper cppNativeTypeMapper,
+    public CppExpressionFormattingPolicy(CppNativeMapper cppNativeMapper,
             IncludeCollector includeCollector)
     {
-        super(cppNativeTypeMapper, includeCollector);
+        super(cppNativeMapper, includeCollector);
     }
 
     @Override

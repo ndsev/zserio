@@ -1,11 +1,12 @@
 package zserio.emit.java;
 
 import zserio.ast.ArrayType;
+import zserio.ast.AstNode;
 import zserio.ast.BitFieldType;
 import zserio.ast.BooleanType;
 import zserio.ast.ChoiceType;
 import zserio.ast.CompoundType;
-import zserio.ast.ConstType;
+import zserio.ast.Constant;
 import zserio.ast.PackageName;
 import zserio.ast.ServiceType;
 import zserio.ast.ZserioAstDefaultVisitor;
@@ -24,6 +25,7 @@ import zserio.ast.VarIntegerType;
 import zserio.emit.common.NativeType;
 import zserio.emit.common.PackageMapper;
 import zserio.emit.common.ZserioEmitException;
+import zserio.emit.java.symbols.JavaNativeSymbol;
 import zserio.emit.java.types.JavaNativeType;
 import zserio.emit.java.types.NativeArrayType;
 import zserio.emit.java.types.NativeBigIntegerArrayType;
@@ -31,7 +33,6 @@ import zserio.emit.java.types.NativeBooleanType;
 import zserio.emit.java.types.NativeByteArrayType;
 import zserio.emit.java.types.NativeByteType;
 import zserio.emit.java.types.NativeCompoundType;
-import zserio.emit.java.types.NativeConstType;
 import zserio.emit.java.types.NativeDoubleType;
 import zserio.emit.java.types.NativeEnumType;
 import zserio.emit.java.types.NativeFloatType;
@@ -51,16 +52,39 @@ import zserio.emit.java.types.NativeUnsignedLongArrayType;
 import zserio.emit.java.types.NativeUnsignedLongType;
 import zserio.emit.java.types.NativeUnsignedShortArrayType;
 
-final class JavaNativeTypeMapper
+final class JavaNativeMapper
 {
     /**
      * Constructor.
      *
      * @param javaPackageMapper The Java package mapper to construct from.
      */
-    public JavaNativeTypeMapper(PackageMapper javaPackageMapper)
+    public JavaNativeMapper(PackageMapper javaPackageMapper)
     {
         this.javaPackageMapper = javaPackageMapper;
+    }
+
+    /**
+     * Returns a Java symbol that can hold an instance of Zserio symbol.
+     *
+     * @param symbol Zserio symbol.
+     *
+     * @return Java symbol.
+     *
+     * @throws ZserioEmitException If the Zserio symbol cannot be mapped to any Java symbol.
+     */
+    public JavaNativeSymbol getJavaSymbol(AstNode symbol) throws ZserioEmitException
+    {
+        if (symbol instanceof Constant)
+        {
+            final Constant constant = (Constant)symbol;
+            final PackageName packageName = javaPackageMapper.getPackageName(constant.getPackage());
+            final String name = constant.getName();
+            return new JavaNativeSymbol(packageName, name);
+        }
+        else
+            throw new ZserioEmitException("Unhandled symbol '" + symbol.getClass().getName() +
+                    "' in JavaNativeMapper!");
     }
 
     /**
@@ -97,7 +121,7 @@ final class JavaNativeTypeMapper
         final JavaNativeType nativeType = visitor.getJavaType();
         if (nativeType == null)
             throw new ZserioEmitException("Unhandled type '" + type.getClass().getName() +
-                    "' in JavaNativeTypeMapper!");
+                    "' in JavaNativeMapper!");
 
         return nativeType;
     }
@@ -123,7 +147,7 @@ final class JavaNativeTypeMapper
         final JavaNativeType nativeNullableType = visitor.getJavaNullableType();
         if (nativeNullableType == null)
             throw new ZserioEmitException("Unhandled type '" + type.getClass().getName() +
-                    "' in JavaNativeTypeMapper!");
+                    "' in JavaNativeMapper!");
 
         return nativeNullableType;
     }
@@ -148,7 +172,7 @@ final class JavaNativeTypeMapper
 
         if (!(javaType instanceof NativeIntegralType))
             throw new ZserioEmitException("Unhandled integral type '" + type.getClass().getName() +
-                    "' in JavaNativeTypeMapper!");
+                    "' in JavaNativeMapper!");
 
         return (NativeIntegralType)javaType;
     }
@@ -439,24 +463,6 @@ final class JavaNativeTypeMapper
         public void visitChoiceType(ChoiceType type)
         {
             mapCompoundType(type);
-        }
-
-        @Override
-        public void visitConstType(ConstType type)
-        {
-            try
-            {
-                final JavaNativeType nativeTargetType =
-                        JavaNativeTypeMapper.this.getJavaType(type.getTypeReference());
-                final PackageName packageName = javaPackageMapper.getPackageName(type);
-                final String name = type.getName();
-                javaType = new NativeConstType(packageName, name, nativeTargetType);
-                javaNullableType = javaType;
-            }
-            catch (ZserioEmitException exception)
-            {
-                thrownException = exception;
-            }
         }
 
         @Override

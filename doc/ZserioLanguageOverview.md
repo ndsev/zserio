@@ -1162,10 +1162,10 @@ A package provides a lexical scope for types. Type names must be unique within a
 may be defined in more than one package. If a type named `Coordinate` is defined in package `com.acme.foo`, the
 type can be globally identified by its fully qualified name `com.acme.foo.Coordinate`, which is obtained by
 prefixing the type name with the name of the defining package, joined by a dot. Another package
-`com.acme.foo.bar` may also define a type named `Coordinate`, having the fully qualified name
+`com.acme.bar` may also define a type named `Coordinate`, having the fully qualified name
 `com.acme.bar.Coordinate`.
 
-By default, types from other packages are not visible in the current package, unless there are imported
+By default, types from other packages are not visible in the current package, unless they are imported
 explicitly. The package and import syntax and semantics follow the Java example.
 
 **Example**
@@ -1177,10 +1177,10 @@ import common.geometry.*;
 import common.featuretypes.*;
 ```
 
-Import declarations only have any effect when there is a reference to a type name not defined in the current
-package. If package map defines its own `Coordinate` type, any reference to that within package `map` will be
-resolved to the local type `map.Coordinate`, even when one or more of the imported packages also define a type
-named `Coordinate`.
+Import declarations only have any effect when there is a reference to a type or symbol not defined in the
+current package. If package map defines its own `Coordinate` type, any reference to that within package `map`
+will be resolved to the local type `map.Coordinate`, even when one or more of the imported packages also define
+a type named `Coordinate`.
 
 On the other hand, if package `map` references a `Coordinate` type but does not define it, the import
 declarations are used to resolve that type in one of the imported packages. In that case, the referenced type
@@ -1192,15 +1192,15 @@ It is always possible to use the fully qualified name of a type, e.g. `com.acme.
 possible to import a type with the same name (e.g. `Coordinate`) from more than one package or to import a type
 with the same name as a type defined locally.
 
-Individual types can be imported using their fully qualified name:
+Individual types or symbols can be imported using their fully qualified name:
 
 ```
 import common.geometry.Geometry;
 ```
 
 This single import has precedence over any wildcard import. It prevents an ambiguity with
-`common.featuretypes.Geometry`. It is possible to import the same type name from different packages but then
-each usage of such type must be fully qualified. Using the unqualified type name in this situation results in
+`common.featuretypes.Geometry`. It is possible to import the same type from different packages but then
+each usage of such type must be fully qualified. Using the unqualified name in this situation results in
 a compilation error as the type is ambiguous.
 
 ### Packages and Files
@@ -1223,7 +1223,7 @@ situations when reducing duplications using generic programming would bring high
 
 The basic stone of generic programming in zserio are templates that allow zserio compound types (structure
 types, choice types, union types) to operate with generic types. Such generic types are called template
-parameters and they will be specified later during template instatiation as template arguments.
+parameters and they will be specified later during template instantiation as template arguments.
 
 Because zserio must check correctness of all template instantiations and because zserio should support
 generators to almost any kind of programming language (even to language which does not support templates),
@@ -1279,7 +1279,7 @@ struct StructTemplatedField
 ### Parameterized Type Templates
 
 Parameterized types templates are supported with the very similar syntax. The parameterized types parameters
-can be template instantiations as well. The following example shows inituitive syntax for parameterized type
+can be template instantiations as well. The following example shows intuitive syntax for parameterized type
 templates:
 
 **Example**
@@ -1341,7 +1341,7 @@ struct TestStructure<T>
     T value;
 };
 
-subtype TestStructure<uint32> TestStructureSubtype; 
+subtype TestStructure<uint32> TestStructureSubtype;
 ```
 
 [top](#language-guide)

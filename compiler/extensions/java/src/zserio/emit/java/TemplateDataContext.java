@@ -10,18 +10,18 @@ final class TemplateDataContext
             PackageMapper javaPackageMapper)
     {
         javaMajorVersion = javaParameters.getJavaMajorVersion();
-        javaNativeTypeMapper = new JavaNativeTypeMapper(javaPackageMapper);
+        javaNativeMapper = new JavaNativeMapper(javaPackageMapper);
         javaRootPackageName = JavaFullNameFormatter.getFullName(javaPackageMapper.getRootPackageName());
 
-        final JavaExpressionFormattingPolicy policy = new JavaExpressionFormattingPolicy(javaNativeTypeMapper);
+        final JavaExpressionFormattingPolicy policy = new JavaExpressionFormattingPolicy(javaNativeMapper);
         javaExpressionFormatter = new ExpressionFormatter(policy);
 
         final JavaCaseExpressionFormattingPolicy casePolicy =
-                new JavaCaseExpressionFormattingPolicy(javaNativeTypeMapper);
+                new JavaCaseExpressionFormattingPolicy(javaNativeMapper);
         javaCaseExpressionFormatter = new ExpressionFormatter(casePolicy);
 
         final JavaSqlIndirectExpressionFormattingPolicy sqlIndirectPolicy =
-                new JavaSqlIndirectExpressionFormattingPolicy(javaNativeTypeMapper);
+                new JavaSqlIndirectExpressionFormattingPolicy(javaNativeMapper);
         javaSqlIndirectExpressionFormatter = new ExpressionFormatter(sqlIndirectPolicy);
 
         withWriterCode = extensionParameters.getWithWriterCode();
@@ -34,9 +34,9 @@ final class TemplateDataContext
         return javaMajorVersion;
     }
 
-    public JavaNativeTypeMapper getJavaNativeTypeMapper()
+    public JavaNativeMapper getJavaNativeMapper()
     {
-        return javaNativeTypeMapper;
+        return javaNativeMapper;
     }
 
     public String getJavaRootPackageName()
@@ -75,7 +75,7 @@ final class TemplateDataContext
     }
 
     private final String javaMajorVersion;
-    private final JavaNativeTypeMapper javaNativeTypeMapper;
+    private final JavaNativeMapper javaNativeMapper;
     private final String javaRootPackageName;
 
     private final ExpressionFormatter javaExpressionFormatter;

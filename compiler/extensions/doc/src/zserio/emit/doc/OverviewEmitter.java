@@ -10,8 +10,9 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
 
+import zserio.ast.AstNode;
 import zserio.ast.ChoiceType;
-import zserio.ast.ConstType;
+import zserio.ast.Constant;
 import zserio.ast.EnumType;
 import zserio.ast.Package;
 import zserio.ast.Root;
@@ -21,7 +22,6 @@ import zserio.ast.SqlTableType;
 import zserio.ast.StructureType;
 import zserio.ast.Subtype;
 import zserio.ast.UnionType;
-import zserio.ast.ZserioType;
 import zserio.emit.common.ZserioEmitException;
 import zserio.tools.StringJoinUtil;
 import freemarker.template.Template;
@@ -44,11 +44,11 @@ public class OverviewEmitter extends DefaultHtmlEmitter
     {
         try
         {
-            for (Map.Entry<Package, List<ZserioType>> packageEntry : packages.entrySet())
+            for (Map.Entry<Package, List<AstNode>> packageEntry : packages.entrySet())
             {
-                for (ZserioType type : packageEntry.getValue())
+                for (AstNode type : packageEntry.getValue())
                 {
-                    final String typeName = type.getName();
+                    final String typeName = DocEmitterTools.getZserioName(type);
                     boolean isDoubleDefinedType = Boolean.TRUE.equals(doubleTypeNames.get(typeName));
                     LinkedType linkedType = new LinkedType(type, isDoubleDefinedType);
                     typeMap.put(getFullTypeName(typeName, packageEntry.getKey()), linkedType);
@@ -79,15 +79,15 @@ public class OverviewEmitter extends DefaultHtmlEmitter
     public void beginPackage(Package packageToken) throws ZserioEmitException
     {
         super.beginPackage(packageToken);
-        localTypes = new ArrayList<ZserioType>();
+        localTypes = new ArrayList<AstNode>();
     }
 
     @Override
     public void endPackage(Package packageToken) throws ZserioEmitException
     {
-        for (ZserioType type : localTypes)
+        for (AstNode type : localTypes)
         {
-            final String typeName = type.getName();
+            final String typeName = DocEmitterTools.getZserioName(type);
             if (doubleTypeNames.containsKey(typeName))
                 doubleTypeNames.put(typeName, true);
             else
@@ -100,9 +100,9 @@ public class OverviewEmitter extends DefaultHtmlEmitter
     }
 
     @Override
-    public void beginConst(ConstType constType) throws ZserioEmitException
+    public void beginConst(Constant constant) throws ZserioEmitException
     {
-        localTypes.add(constType);
+        localTypes.add(constant);
     }
 
     @Override
@@ -181,6 +181,6 @@ public class OverviewEmitter extends DefaultHtmlEmitter
     private final Map<String, LinkedType> typeMap = new TreeMap<String, LinkedType>();
     private final Map<String, Boolean> doubleTypeNames = new HashMap<String, Boolean>();
     private final HashSet<String> packageNames = new HashSet<String>();
-    private final Map<Package, List<ZserioType>> packages = new HashMap<Package, List<ZserioType>>();
-    private List<ZserioType> localTypes = new ArrayList<ZserioType>();
+    private final Map<Package, List<AstNode>> packages = new HashMap<Package, List<AstNode>>();
+    private List<AstNode> localTypes = new ArrayList<AstNode>();
 }

@@ -8,6 +8,7 @@ import zserio.ast.EnumType;
 import zserio.ast.IntegerType;
 import zserio.emit.common.ExpressionFormatter;
 import zserio.emit.common.ZserioEmitException;
+import zserio.emit.cpp.types.CppNativeType;
 import zserio.emit.cpp.types.NativeIntegralType;
 
 public class EnumerationEmitterTemplateData extends UserTypeTemplateData
@@ -17,10 +18,12 @@ public class EnumerationEmitterTemplateData extends UserTypeTemplateData
     {
         super(context, enumType);
 
-        final CppNativeTypeMapper cppNativeTypeMapper = context.getCppNativeTypeMapper();
+        final CppNativeMapper cppNativeMapper = context.getCppNativeMapper();
+
+        final CppNativeType nativeEnumType = cppNativeMapper.getCppType(enumType);
 
         final IntegerType enumBaseType = enumType.getIntegerBaseType();
-        final NativeIntegralType nativeBaseType = cppNativeTypeMapper.getCppIntegralType(enumBaseType);
+        final NativeIntegralType nativeBaseType = cppNativeMapper.getCppIntegralType(enumBaseType);
         addHeaderIncludesForType(nativeBaseType);
 
         baseCppTypeName = nativeBaseType.getFullName();
@@ -31,7 +34,7 @@ public class EnumerationEmitterTemplateData extends UserTypeTemplateData
         final List<EnumItem> enumItems = enumType.getItems();
         items = new ArrayList<EnumItemData>(enumItems.size());
         for (EnumItem enumItem : enumItems)
-            items.add(new EnumItemData(nativeBaseType, enumType, enumItem));
+            items.add(new EnumItemData(nativeBaseType, nativeEnumType, enumItem));
     }
 
     public String getBaseCppTypeName()
@@ -51,12 +54,12 @@ public class EnumerationEmitterTemplateData extends UserTypeTemplateData
 
     public static class EnumItemData
     {
-        public EnumItemData(NativeIntegralType nativeBaseType, EnumType enumType, EnumItem enumItem)
+        public EnumItemData(NativeIntegralType nativeBaseType, CppNativeType nativeEnumType, EnumItem enumItem)
                 throws ZserioEmitException
         {
             name = enumItem.getName();
-            fullName = CppFullNameFormatter.getFullName(enumType.getPackage().getPackageName(),
-                    enumType.getName(), enumItem.getName());
+            fullName = CppFullNameFormatter.getFullName(nativeEnumType.getPackageName(),
+                    nativeEnumType.getName(), enumItem.getName());
             value = nativeBaseType.formatLiteral(enumItem.getValue());
         }
 

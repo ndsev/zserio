@@ -2,6 +2,9 @@ package zserio.emit.doc;
 
 import java.io.File;
 
+import zserio.ast.AstNode;
+import zserio.ast.Constant;
+import zserio.ast.PackageName;
 import zserio.ast.ZserioType;
 import zserio.ast.SqlDatabaseType;
 import zserio.emit.common.ZserioEmitException;
@@ -16,10 +19,12 @@ public class DocEmitterTools
      * Returns the directory name where to store the HTML file.
      *
      * @param type The ZserioType from which to generate the directory name.
+     *
+     * @throws ZserioEmitException Throws in case of any internal error.
      */
-    public static String getDirectoryNameFromType(ZserioType type)
+    public static String getDirectoryNameFromType(AstNode type) throws ZserioEmitException
     {
-        return type.getPackage().getPackageName().toString();
+        return getZserioPackageName(type).toString();
     }
 
     /**
@@ -29,7 +34,7 @@ public class DocEmitterTools
      *
      * @throws ZserioEmitException Throws in case of any internal error.
      */
-    public static String getHtmlFileNameFromType(ZserioType type) throws ZserioEmitException
+    public static String getHtmlFileNameFromType(AstNode type) throws ZserioEmitException
     {
         return getFileNameFromType(type, "html");
     }
@@ -41,7 +46,7 @@ public class DocEmitterTools
      *
      * @throws ZserioEmitException Throws in case of any internal error.
      */
-    public static String getDotFileNameFromType(ZserioType type) throws ZserioEmitException
+    public static String getDotFileNameFromType(AstNode type) throws ZserioEmitException
     {
         return getFileNameFromType(type, "dot");
     }
@@ -53,7 +58,7 @@ public class DocEmitterTools
      *
      * @throws ZserioEmitException Throws in case of any internal error.
      */
-    public static String getSvgFileNameFromType(ZserioType type) throws ZserioEmitException
+    public static String getSvgFileNameFromType(AstNode type) throws ZserioEmitException
     {
         return getFileNameFromType(type, "svg");
     }
@@ -65,7 +70,7 @@ public class DocEmitterTools
      *
      * @throws ZserioEmitException Throws in case of any internal error.
      */
-    public static String getUrlNameFromType(ZserioType type) throws ZserioEmitException
+    public static String getUrlNameFromType(AstNode type) throws ZserioEmitException
     {
         return ".." + URLDirSeparator + getDirectoryNameFromType(type) +
                 URLDirSeparator + getHtmlFileNameFromType(type);
@@ -79,7 +84,7 @@ public class DocEmitterTools
      *
      * @throws ZserioEmitException Throws in case of any internal error.
      */
-    public static String getUrlNameFromTypeAndFieldName(ZserioType type, String fieldName)
+    public static String getUrlNameFromTypeAndFieldName(AstNode type, String fieldName)
             throws ZserioEmitException
     {
         String urlName = getUrlNameFromType(type);
@@ -99,7 +104,7 @@ public class DocEmitterTools
      *
      * @throws ZserioEmitException Throws in case of any internal error.
      */
-    public static String getDocUrlFromType(String docRootPath, ZserioType type) throws ZserioEmitException
+    public static String getDocUrlFromType(String docRootPath, AstNode type) throws ZserioEmitException
     {
         if (docRootPath == null)
             return null;
@@ -173,7 +178,7 @@ public class DocEmitterTools
      *
      * @throws ZserioEmitException Throws in case of any internal error.
      */
-    public static File getTypeCollaborationDotFile(String docRootPath, ZserioType type)
+    public static File getTypeCollaborationDotFile(String docRootPath, AstNode type)
             throws ZserioEmitException
     {
         return new File(StringJoinUtil.joinStrings(docRootPath, typeCollaborationDirectory,
@@ -191,7 +196,7 @@ public class DocEmitterTools
      *
      * @throws ZserioEmitException Throws in case of any internal error.
      */
-    public static File getTypeCollaborationSvgFile(String docRootPath, ZserioType type)
+    public static File getTypeCollaborationSvgFile(String docRootPath, AstNode type)
             throws ZserioEmitException
     {
         return new File(StringJoinUtil.joinStrings(docRootPath, typeCollaborationDirectory,
@@ -209,7 +214,7 @@ public class DocEmitterTools
      *
      * @throws ZserioEmitException Throws in case of any internal error.
      */
-    public static String getTypeCollaborationSvgUrl(String docRootPath, ZserioType type)
+    public static String getTypeCollaborationSvgUrl(String docRootPath, AstNode type)
             throws ZserioEmitException
     {
         final String svgFileNameBase = StringJoinUtil.joinStrings(typeCollaborationDirectory,
@@ -236,12 +241,52 @@ public class DocEmitterTools
         return databaseColorList[databaseIndex % databaseColorList.length];
     }
 
-    private static String getFileNameFromType(ZserioType type, String extensionName) throws ZserioEmitException
+    /**
+     * Common package name getter for Zserio types and symbols.
+     *
+     * @param node AST node which represents either Zserio type or global symbol.
+     *
+     * @return Zserio package name.
+     */
+    public static PackageName getZserioPackageName(AstNode node) throws ZserioEmitException
+    {
+        if (node instanceof ZserioType)
+        {
+            return ((ZserioType)node).getPackage().getPackageName();
+        }
+        if (node instanceof Constant)
+        {
+            return ((Constant)node).getPackage().getPackageName();
+        }
+        throw new ZserioEmitException("Unhanled Zserio type or symbol '" + node.getClass().getName() + "'!");
+    }
+
+    /**
+     * Common name getter for Zserio types and symbols.
+     *
+     * @param node AST node which represents either Zserio type or global symbol.
+     *
+     * @return Zserio name.
+     */
+    public static String getZserioName(AstNode node) throws ZserioEmitException
+    {
+        if (node instanceof ZserioType)
+        {
+            return ((ZserioType)node).getName();
+        }
+        if (node instanceof Constant)
+        {
+            return ((Constant)node).getName();
+        }
+        throw new ZserioEmitException("Unhanled Zserio type or symbol '" + node.getClass().getName() + "'!");
+    }
+
+    private static String getFileNameFromType(AstNode type, String extensionName) throws ZserioEmitException
     {
         HtmlModuleNameSuffixVisitor suffixVisitor = new HtmlModuleNameSuffixVisitor();
         type.accept(suffixVisitor);
 
-        return type.getName() + "_" + suffixVisitor.getSuffix() + "." + extensionName;
+        return getZserioName(type) + "_" + suffixVisitor.getSuffix() + "." + extensionName;
     }
 
     private static final String docDirectory = "content";

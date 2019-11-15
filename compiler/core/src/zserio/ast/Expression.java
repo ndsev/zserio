@@ -843,30 +843,57 @@ public class Expression extends AstNodeBase
         for (Expression unresolvedIdentifier : operand1.unresolvedIdentifiers)
             op1UnresolvedPackageNameBuilder.addId(unresolvedIdentifier.text);
 
-        final ZserioType identifierType = pkg.getVisibleType(op1UnresolvedPackageNameBuilder.get(),
+        Package identifierPackage = null;
+        final AstNode identifierSymbol = pkg.getVisibleSymbol(this, op1UnresolvedPackageNameBuilder.get(),
                 operand2.text);
-        if (identifierType == null)
+        if (identifierSymbol != null)
         {
-            // identifier still not found
-            if (expressionFlag == ExpressionFlag.IS_TOP_LEVEL_DOT)
+            symbolObject = identifierSymbol;
+            operand2.symbolObject = identifierSymbol;
+            if (identifierSymbol instanceof Constant)
             {
-                // and we are top level dot
-                throw new ParserException(this, "Unresolved symbol '" +
-                        op1UnresolvedPackageNameBuilder.get().toString() + "' within expression scope!");
+                Constant constant = (Constant)identifierSymbol;
+                evaluateConstant(constant);
+                identifierPackage = constant.getPackage();
             }
-
-            // this can happened for long package name, we must wait for dot
-            unresolvedIdentifiers.addAll(operand1.unresolvedIdentifiers);
-            unresolvedIdentifiers.add(operand2);
+            else
+            {
+                throw new ParserException(this, "Symbol '" + operand2.text + "' (" +
+                        identifierSymbol.getClass() + ") is not allowed here!");
+            }
         }
         else
         {
-            evaluateIdentifierType(identifierType);
+            final ZserioType identifierType = pkg.getVisibleType(this, op1UnresolvedPackageNameBuilder.get(),
+                    operand2.text);
+            if (identifierType == null)
+            {
+                // identifier still not found
+                if (expressionFlag == ExpressionFlag.IS_TOP_LEVEL_DOT)
+                {
+                    // and we are top level dot
+                    throw new ParserException(this, "Unresolved symbol '" +
+                            op1UnresolvedPackageNameBuilder.get().toString() + "' within expression scope!");
+                }
 
+                // this can happened for long package name, we must wait for dot
+                unresolvedIdentifiers.addAll(operand1.unresolvedIdentifiers);
+                unresolvedIdentifiers.add(operand2);
+            }
+            else
+            {
+                // this is used by formatters (operand2 was not evaluated)
+                operand2.symbolObject = identifierType;
+                evaluateIdentifierType(identifierType);
+                identifierPackage = identifierType.getPackage();
+            }
+        }
+
+        if (identifierPackage != null)
+        {
             // set symbolObject to all unresolved identifier expressions (needed for formatters)
             for (Expression unresolvedIdentifier : operand1.unresolvedIdentifiers)
-                unresolvedIdentifier.symbolObject = identifierType.getPackage();
-            operand2.symbolObject = identifierType; // this is used by formatters (operand2 was not evaluated)
+                unresolvedIdentifier.symbolObject = identifierPackage;
         }
     }
 
@@ -1167,11 +1194,13 @@ public class Expression extends AstNodeBase
             // explicit identifier does not have to be evaluated
             if (expressionFlag != ExpressionFlag.IS_EXPLICIT)
             {
-                final AstNode identifierSymbol = forcedEvaluationScope.getSymbol(text);
+                AstNode identifierSymbol = forcedEvaluationScope.getSymbol(text);
+                if (identifierSymbol == null) // try package "global" scope
+                    identifierSymbol = pkg.getVisibleSymbol(this, PackageName.EMPTY, text);
                 if (identifierSymbol == null)
                 {
                     // it still can be a type
-                    final ZserioType identifierType = pkg.getVisibleType(PackageName.EMPTY, text);
+                    final ZserioType identifierType = pkg.getVisibleType(this, PackageName.EMPTY, text);
                     if (identifierType == null)
                     {
                         // identifier not found
@@ -1207,19 +1236,6 @@ public class Expression extends AstNodeBase
         {
             // enumeration type, we must wait for enumeration item and dot
             zserioType = baseType;
-        }
-        else if (baseType instanceof ConstType)
-        {
-            // constant type
-            final ConstType constType = (ConstType)baseType;
-            evaluateExpressionType(constType.getTypeReference());
-
-            // call evaluation explicitly because this const does not have to be evaluated yet
-            final ZserioAstEvaluator evaluator = new ZserioAstEvaluator();
-            constType.accept(evaluator);
-
-            final Expression constValueExpression = constType.getValueExpression();
-            expressionIntegerValue = constValueExpression.expressionIntegerValue;
         }
         else
         {
@@ -1264,11 +1280,28 @@ public class Expression extends AstNodeBase
             // if this enumeration item is in own enum, leave it unresolved (we have problem with it because
             // such enumeration items cannot be evaluated yet)
         }
+        else if (identifierSymbol instanceof Constant)
+        {
+            evaluateConstant((Constant)identifierSymbol);
+        }
         else
         {
             throw new ParserException(this, "Symbol '" + identifier + "' (" +
                     identifierSymbol.getClass() + ") is not allowed here!");
         }
+    }
+
+    private void evaluateConstant(Constant constant)
+    {
+        // constant type
+        evaluateExpressionType(constant.getTypeReference());
+
+        // call evaluation explicitly because this const does not have to be evaluated yet
+        final ZserioAstEvaluator evaluator = new ZserioAstEvaluator();
+        constant.accept(evaluator);
+
+        final Expression constValueExpression = constant.getValueExpression();
+        expressionIntegerValue = constValueExpression.expressionIntegerValue;
     }
 
     private void evaluateExpressionType(TypeInstantiation typeInstantiation)

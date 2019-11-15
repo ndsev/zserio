@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import zserio.ast.AstNode;
 import zserio.ast.ZserioType;
 import zserio.ast.Package;
 import zserio.emit.common.ExpressionFormatter;
@@ -98,7 +99,7 @@ abstract public class DefaultHtmlEmitter extends DefaultDocEmitter
         emit("doc/index.html.ftl", "index.html");
     }
 
-    public void openOutputFileFromType(ZserioType type) throws ZserioEmitException
+    public void openOutputFileFromType(AstNode type) throws ZserioEmitException
     {
         File outputDir = new File(directory, DocEmitterTools.getDirectoryNameFromType(type));
         openOutputFile(outputDir, DocEmitterTools.getHtmlFileNameFromType(type));

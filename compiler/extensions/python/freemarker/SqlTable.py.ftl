@@ -1,6 +1,6 @@
 <#include "FileHeader.inc.ftl"/>
 <@file_header generatorDescription/>
-<@all_imports packageImports typeImports/>
+<@all_imports packageImports symbolImports typeImports/>
 <#assign hasBlobField = false/>
 <#list fields as field>
     <#if field.sqlTypeData.isBlob>

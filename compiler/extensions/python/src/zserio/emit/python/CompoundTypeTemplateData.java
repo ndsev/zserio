@@ -16,7 +16,7 @@ public class CompoundTypeTemplateData extends UserTypeTemplateData
         super(context, compoundType);
 
         withRangeCheckCode = context.getWithRangeCheckCode();
-        final PythonNativeTypeMapper javaNativeTypeMapper = context.getPythonNativeTypeMapper();
+        final PythonNativeMapper javaNativeTypeMapper = context.getPythonNativeMapper();
         final ExpressionFormatter pythonExpressionFormatter = context.getPythonExpressionFormatter(this);
         compoundParametersData = new CompoundParameterTemplateData(compoundType);
         compoundFunctionsData = new CompoundFunctionTemplateData(compoundType, pythonExpressionFormatter);

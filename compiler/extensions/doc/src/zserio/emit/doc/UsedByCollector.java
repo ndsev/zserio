@@ -9,12 +9,13 @@ import java.util.Map;
 import java.util.Set;
 
 import zserio.ast.ArrayType;
+import zserio.ast.AstNode;
 import zserio.ast.BuiltInType;
 import zserio.ast.ChoiceCase;
 import zserio.ast.ChoiceCaseExpression;
 import zserio.ast.ChoiceType;
 import zserio.ast.CompoundType;
-import zserio.ast.ConstType;
+import zserio.ast.Constant;
 import zserio.ast.EnumItem;
 import zserio.ast.EnumType;
 import zserio.ast.Field;
@@ -34,9 +35,9 @@ import zserio.emit.common.DefaultEmitter;
 public class UsedByCollector extends DefaultEmitter
 {
     @Override
-    public void beginConst(ConstType constType)
+    public void beginConst(Constant constant)
     {
-        storeType(constType, constType.getTypeReference().getType());
+        storeType(constant, constant.getTypeReference().getType());
     }
 
     @Override
@@ -54,7 +55,7 @@ public class UsedByCollector extends DefaultEmitter
     @Override
     public void beginChoice(ChoiceType choiceType)
     {
-        final List<ZserioType> usedTypes = getUsedTypesForCompoundType(choiceType);
+        final List<AstNode> usedTypes = getUsedTypesForCompoundType(choiceType);
         addTypeToUsedTypes(choiceType.getSelectorExpression().getExprZserioType(), usedTypes);
         storeType(choiceType, usedTypes);
 
@@ -96,7 +97,7 @@ public class UsedByCollector extends DefaultEmitter
     @Override
     public void beginService(ServiceType serviceType)
     {
-        final List<ZserioType> usedTypes = new ArrayList<ZserioType>();
+        final List<AstNode> usedTypes = new ArrayList<AstNode>();
         for (Rpc rpc : serviceType.getRpcList())
         {
             addTypeToUsedTypes(rpc.getRequestType(), usedTypes);
@@ -110,7 +111,7 @@ public class UsedByCollector extends DefaultEmitter
      *
      * @return Map which maps zserio types to set of used by zserio types.
      */
-    public Map<ZserioType, Set<ZserioType>> getUsedByTypeMap()
+    public Map<AstNode, Set<AstNode>> getUsedByTypeMap()
     {
         return Collections.unmodifiableMap(usedByTypeMap);
     }
@@ -122,9 +123,9 @@ public class UsedByCollector extends DefaultEmitter
      *
      * @return List of all zserio types used by a given type.
      */
-    public List<ZserioType> getUsedTypes(ZserioType type)
+    public List<AstNode> getUsedTypes(AstNode type)
     {
-        final List<ZserioType> usedTypes = usedTypeMap.get(type);
+        final List<AstNode> usedTypes = usedTypeMap.get(type);
 
         return (usedTypes != null) ? Collections.unmodifiableList(usedTypes) : EMPTY_ZSERIO_TYPE_LIST;
     }
@@ -138,13 +139,13 @@ public class UsedByCollector extends DefaultEmitter
      * @return List of zserio types which use given zserio type.
      */
     @SuppressWarnings("unchecked")
-    public <T extends ZserioType> List<T> getUsedByTypes(ZserioType type, Class<? extends T> usedByTypeClass)
+    public <T extends AstNode> List<T> getUsedByTypes(AstNode type, Class<? extends T> usedByTypeClass)
     {
-        final Set<ZserioType> usedByTypes = usedByTypeMap.get(type);
+        final Set<AstNode> usedByTypes = usedByTypeMap.get(type);
         final List<T> usedByList = new ArrayList<T>();
         if (usedByTypes != null)
         {
-            for (ZserioType usedByType : usedByTypes)
+            for (AstNode usedByType : usedByTypes)
             {
                 if (usedByTypeClass.isInstance(usedByType))
                     usedByList.add((T)usedByType);
@@ -168,15 +169,15 @@ public class UsedByCollector extends DefaultEmitter
         return (usedByChoices != null) ? Collections.unmodifiableList(usedByChoices) : EMPTY_CHOICE_TYPE_LIST;
     }
 
-    private static void addTypeToUsedTypes(ZserioType usedType, List<ZserioType> usedTypes)
+    private static void addTypeToUsedTypes(AstNode usedType, List<AstNode> usedTypes)
     {
         if (!(usedType instanceof BuiltInType))
             usedTypes.add(usedType);
     }
 
-    private List<ZserioType> getUsedTypesForCompoundType(CompoundType compoundType)
+    private List<AstNode> getUsedTypesForCompoundType(CompoundType compoundType)
     {
-        final List<ZserioType> usedTypes = new ArrayList<ZserioType>();
+        final List<AstNode> usedTypes = new ArrayList<AstNode>();
         for (Field field : compoundType.getFields())
         {
             ZserioType fieldType = field.getTypeInstantiation().getTypeReference().getType();
@@ -188,35 +189,35 @@ public class UsedByCollector extends DefaultEmitter
         return usedTypes;
     }
 
-    private void storeType(ZserioType type, ZserioType unresolvedUsedType)
+    private void storeType(AstNode node, ZserioType unresolvedUsedType)
     {
-        final List<ZserioType> usedTypes = new ArrayList<ZserioType>();
+        final List<AstNode> usedTypes = new ArrayList<AstNode>();
         addTypeToUsedTypes(unresolvedUsedType, usedTypes);
-        storeType(type, usedTypes);
+        storeType(node, usedTypes);
     }
 
-    private void storeType(ZserioType type, List<ZserioType> usedTypes)
+    private void storeType(AstNode node, List<AstNode> usedTypes)
     {
-        usedTypeMap.put(type, usedTypes);
+        usedTypeMap.put(node, usedTypes);
         boolean isEmpty = true;
-        for (ZserioType usedType : usedTypes)
+        for (AstNode usedType : usedTypes)
         {
-            final Set<ZserioType> usedByTypeSet = createUsedByTypeSet(usedType);
-            usedByTypeSet.add(type);
+            final Set<AstNode> usedByTypeSet = createUsedByTypeSet(usedType);
+            usedByTypeSet.add(node);
             isEmpty = false;
         }
 
         if (!isEmpty)
-            createUsedByTypeSet(type);
+            createUsedByTypeSet(node);
     }
 
-    private Set<ZserioType> createUsedByTypeSet(ZserioType type)
+    private Set<AstNode> createUsedByTypeSet(AstNode node)
     {
-        Set<ZserioType> usedByTypeSet = usedByTypeMap.get(type);
+        Set<AstNode> usedByTypeSet = usedByTypeMap.get(node);
         if (usedByTypeSet == null)
         {
-            usedByTypeSet = new LinkedHashSet<ZserioType>();
-            usedByTypeMap.put(type, usedByTypeSet);
+            usedByTypeSet = new LinkedHashSet<AstNode>();
+            usedByTypeMap.put(node, usedByTypeSet);
         }
 
         return usedByTypeSet;
@@ -234,13 +235,13 @@ public class UsedByCollector extends DefaultEmitter
         usedByChoices.add(choiceType);
     }
 
-    private static final List<ZserioType> EMPTY_ZSERIO_TYPE_LIST =
-            Collections.unmodifiableList(new ArrayList<ZserioType>());
+    private static final List<AstNode> EMPTY_ZSERIO_TYPE_LIST =
+            Collections.unmodifiableList(new ArrayList<AstNode>());
     private static final List<ChoiceType> EMPTY_CHOICE_TYPE_LIST =
             Collections.unmodifiableList(new ArrayList<ChoiceType>());
 
-    private final Map<ZserioType, Set<ZserioType>> usedByTypeMap = new HashMap<ZserioType, Set<ZserioType>>();
-    private final Map<ZserioType, List<ZserioType>> usedTypeMap = new HashMap<ZserioType, List<ZserioType>>();
+    private final Map<AstNode, Set<AstNode>> usedByTypeMap = new HashMap<AstNode, Set<AstNode>>();
+    private final Map<AstNode, List<AstNode>> usedTypeMap = new HashMap<AstNode, List<AstNode>>();
     private final Map<EnumItem, List<ChoiceType>> enumItemUsedByChoiceMap =
             new HashMap<EnumItem, List<ChoiceType>>();
 }

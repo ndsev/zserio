@@ -50,6 +50,9 @@ public class Package extends DocumentableAstNode
         for (Import packageImport : imports)
             packageImport.accept(visitor);
 
+        for (AstNode symbol : localSymbols.values())
+            symbol.accept(visitor);
+
         for (ZserioType type : localTypes.values())
             type.accept(visitor);
     }
@@ -92,17 +95,35 @@ public class Package extends DocumentableAstNode
     }
 
     /**
+     * Adds a new global symbol to this package.
+     *
+     * @param name   Symbol name.
+     * @param symbol Symbol AST node.
+     */
+    void addSymbol(String name, AstNode symbol)
+    {
+        final AstNode addedSymbol = localSymbols.put(name, symbol);
+        if (addedSymbol != null)
+        {
+            final ParserStackedException stackedException = new ParserStackedException(
+                    symbol.getLocation(), "'" + name + "' is already defined in this package!");
+            stackedException.pushMessage(addedSymbol.getLocation(), "    First defined here");
+            throw stackedException;
+        }
+    }
+
+    /**
      * Gets Zserio type for given type name with its package if it's visible for this package.
      *
-     * @param ownerNode       AST node which holds type to resolve (used for ParserException).
-     * @param typePackageName Package name of the type to resolve.
-     * @param typeName        Type name to resolve.
+     * @param ownerNode   AST node which holds type to resolve (used for ParserException).
+     * @param packageName Package name of the type to resolve.
+     * @param typeName    Type name to resolve.
      *
      * @return Zserio type if given type name is visible for this package or null if given type name is unknown.
      */
-    ZserioType getVisibleType(AstNode ownerNode, PackageName typePackageName, String typeName)
+    ZserioType getVisibleType(AstNode ownerNode, PackageName packageName, String typeName)
     {
-        final List<ZserioType> foundTypes = getAllVisibleTypes(typePackageName, typeName);
+        final List<ZserioType> foundTypes = getAllVisibleTypes(packageName, typeName);
         final int numFoundTypes = foundTypes.size();
         if (numFoundTypes > 1)
         {
@@ -117,20 +138,29 @@ public class Package extends DocumentableAstNode
     }
 
     /**
-     * Gets Zserio type for given type name with its package if it's visible for this package.
+     * Gets a global symbol if it's visible in this package.
      *
-     * This method does not throw exception in case of ambiguous type. It just returns null in this case.
+     * This method does not throw exception in case of ambiguous symbol. It just returns null in this case.
      *
-     * @param typePackageName Package name of the type to resolve.
-     * @param typeName        Type name to resolve.
+     * @param ownerNode   AST node which holds symbol to resolve (used for ParserException).
+     * @param packageName Package name where the symbol is defined.
+     * @param symbolName  Symbol name to resolve.
      *
-     * @return Zserio type if given type name is visible for this package or null if given type name is unknown.
+     * @return Symbol AST node if the symbol is visible in this package or null if the symbol is unknown.
      */
-    ZserioType getVisibleType(PackageName typePackageName, String typeName)
+    AstNode getVisibleSymbol(AstNode ownerNode, PackageName packageName, String symbolName)
     {
-        final List<ZserioType> foundTypes = getAllVisibleTypes(typePackageName, typeName);
-
-        return (foundTypes.size() == 1) ? foundTypes.get(0) : null;
+        final List<AstNode> foundSymbols = getAllVisibleSymbols(packageName, symbolName);
+        final int numFoundTypes = foundSymbols.size();
+        if (numFoundTypes > 1)
+        {
+            final ParserStackedException stackedException = new ParserStackedException(ownerNode.getLocation(),
+                    "Ambiguous symbol '" + symbolName + "'");
+            for (AstNode foundSymbol : foundSymbols)
+                stackedException.pushMessage(foundSymbol.getLocation(), "    Found here");
+            throw stackedException;
+        }
+        return (numFoundTypes == 1) ? foundSymbols.get(0) : null;
     }
 
     /**
@@ -140,7 +170,7 @@ public class Package extends DocumentableAstNode
      *
      * @param packageNameMap Map of all available package name to the package object.
      */
-    void importTypes(Map<PackageName, Package> packageNameMap)
+    void processImports(Map<PackageName, Package> packageNameMap)
     {
         for (Import importedNode : imports)
         {
@@ -152,57 +182,64 @@ public class Package extends DocumentableAstNode
                 throw new ParserException(importedNode, "Default package cannot be imported!");
             }
 
-            final String importedTypeName = importedNode.getImportedTypeName();
-            if (importedTypeName == null)
+            final String importedName = importedNode.getImportedName();
+            if (importedName == null)
             {
                 // this is package import
                 if (importedPackages.contains(importedPackage))
                     ZserioToolPrinter.printWarning(importedNode, "Duplicated import of package '" +
                             importedPackageName.toString() + "'.");
 
-                // check redundant single type imports
-                final List<SingleTypeName> redundantSingleTypeImports = new ArrayList<SingleTypeName>();
-                for (SingleTypeName importedSingleType : importedSingleTypes)
+                // check redundant single imports
+                final List<SingleImport> redundantSingleImports = new ArrayList<SingleImport>();
+                for (SingleImport singleImport : singleImports)
                 {
-                    if (importedSingleType.getPackageType().getPackageName().equals(importedPackageName))
+                    if (singleImport.getPackage().getPackageName().equals(importedPackageName))
                     {
                         ZserioToolPrinter.printWarning(importedNode, "Import of package '" +
-                                importedPackageName.toString() + "' overwrites single type import '" +
-                                importedSingleType.getTypeName() + "'.");
-                        redundantSingleTypeImports.add(importedSingleType);
+                                importedPackageName.toString() + "' overwrites single import of '" +
+                                ZserioTypeUtil.getFullName(importedPackageName, singleImport.getName()) + "'.");
+                        redundantSingleImports.add(singleImport);
                     }
                 }
 
-                // remove all redundant single type imports to avoid ambiguous error
-                for (SingleTypeName redundantSingleTypeImport : redundantSingleTypeImports)
-                    importedSingleTypes.remove(redundantSingleTypeImport);
+                // remove all redundant single imports to avoid ambiguous error
+                for (SingleImport redundantSingleImport : redundantSingleImports)
+                    singleImports.remove(redundantSingleImport);
 
                 importedPackages.add(importedPackage);
             }
             else
             {
-                // this is single type import
+                // this is single import
                 if (importedPackages.contains(importedPackage))
                 {
-                    ZserioToolPrinter.printWarning(importedNode, "Single type '" + importedTypeName +
-                            "' imported already by package import.");
-                    // don't add it to imported single types because this type would become ambiguous
+                    ZserioToolPrinter.printWarning(importedNode, "Single import of '" +
+                            ZserioTypeUtil.getFullName(importedPackageName, importedName) +
+                            "' already covered by package import.");
+                    // don't add it to imported single imports because this type would become ambiguous
                 }
                 else
                 {
-                    final SingleTypeName importedSingleType = new SingleTypeName(importedPackage,
-                            importedTypeName);
-                    if (importedSingleTypes.contains(importedSingleType))
-                        ZserioToolPrinter.printWarning(importedNode, "Duplicated import of type '" +
-                                importedTypeName + "'.");
+                    final SingleImport singleImport = new SingleImport(importedPackage,
+                            importedName);
+                    if (singleImports.contains(singleImport))
+                        ZserioToolPrinter.printWarning(importedNode, "Duplicated import of '" +
+                                ZserioTypeUtil.getFullName(importedPackageName, importedName) + "'.");
 
-                    final ZserioType importedZserioType = importedPackage.getLocalType(importedPackageName,
-                            importedTypeName);
-                    if (importedZserioType == null)
-                        throw new ParserException(importedNode, "Unknown type '" + importedTypeName +
-                                "' in imported package '" + importedPackageName + "'!");
+                    final AstNode importedSymbol = importedPackage.getLocalSymbol(importedPackageName,
+                            importedName);
+                    if (importedSymbol == null)
+                    {
+                        final ZserioType importedZserioType = importedPackage.getLocalType(importedPackageName,
+                                importedName);
+                        if (importedZserioType == null)
 
-                    importedSingleTypes.add(importedSingleType);
+                            throw new ParserException(importedNode, "Unresolved import of '" +
+                                    ZserioTypeUtil.getFullName(importedPackageName, importedName) + "'!");
+                    }
+
+                    singleImports.add(singleImport);
                 }
             }
         }
@@ -248,10 +285,10 @@ public class Package extends DocumentableAstNode
             matchingInstantiateType = pkg.getVisibleInstantiateType(template, templateArguments,
                     matchingInstantiateType);
         }
-        for (SingleTypeName singleType : importedSingleTypes)
+        for (SingleImport singleType : singleImports)
         {
-            final Package singleTypePackage = singleType.getPackageType();
-            final ZserioType type = singleTypePackage.localTypes.get(singleType.getTypeName());
+            final Package singleTypePackage = singleType.getPackage();
+            final ZserioType type = singleTypePackage.localTypes.get(singleType.getName());
             matchingInstantiateType = matchInstantiateType(template, templateArguments, type,
                     matchingInstantiateType);
         }
@@ -287,19 +324,18 @@ public class Package extends DocumentableAstNode
         return matchingInstantiateType;
     }
 
-    private List<ZserioType> getAllVisibleTypes(PackageName typePackageName, String typeName)
+    private List<ZserioType> getAllVisibleTypes(PackageName packageName, String typeName)
     {
         final List<ZserioType> foundTypes = new ArrayList<ZserioType>();
-        final ZserioType foundLocalType = getLocalType(typePackageName, typeName);
+        final ZserioType foundLocalType = getLocalType(packageName, typeName);
         if (foundLocalType != null)
-        {
             foundTypes.add(foundLocalType);
-        }
-        else
+        foundTypes.addAll(getTypesFromSingleImports(packageName, typeName));
+
+        if (foundTypes.isEmpty())
         {
             // because we must check for ambiguous types, we must collect all found types
-            foundTypes.addAll(getTypesFromImportedPackages(typePackageName, typeName));
-            foundTypes.addAll(getTypesFromImportedSingleTypes(typePackageName, typeName));
+            foundTypes.addAll(getTypesFromImportedPackages(packageName, typeName));
         }
 
         return foundTypes;
@@ -327,15 +363,15 @@ public class Package extends DocumentableAstNode
         return foundTypes;
     }
 
-    private List<ZserioType> getTypesFromImportedSingleTypes(PackageName typePackageName, String typeName)
+    private List<ZserioType> getTypesFromSingleImports(PackageName typePackageName, String typeName)
     {
         final List<ZserioType> foundTypes = new ArrayList<ZserioType>();
-        for (SingleTypeName importedSingleType : importedSingleTypes)
+        for (SingleImport importedSingleType : singleImports)
         {
             // don't exit the loop if something has been found, we need to check for ambiguities
-            if (typeName.equals(importedSingleType.getTypeName()))
+            if (typeName.equals(importedSingleType.getName()))
             {
-                final Package importedPackage = importedSingleType.getPackageType();
+                final Package importedPackage = importedSingleType.getPackage();
                 final ZserioType importedType = importedPackage.getLocalType(typePackageName, typeName);
                 if (importedType != null)
                     foundTypes.add(importedType);
@@ -345,22 +381,79 @@ public class Package extends DocumentableAstNode
         return foundTypes;
     }
 
-    private static class SingleTypeName implements Comparable<SingleTypeName>
+    private List<AstNode> getAllVisibleSymbols(PackageName packageName, String symbolName)
     {
-        public SingleTypeName(Package packageType, String typeName)
+        final List<AstNode> foundSymbols = new ArrayList<AstNode>();
+        final AstNode foundLocalSymbol = getLocalSymbol(packageName, symbolName);
+        if (foundLocalSymbol != null)
+            foundSymbols.add(foundLocalSymbol);
+        foundSymbols.addAll(getSymbolsFromSingleImports(packageName, symbolName));
+
+        if (foundSymbols.isEmpty())
         {
-            this.packageType = packageType;
-            this.typeName = typeName;
+            // because we must check for ambiguous types, we must collect all found types
+            foundSymbols.addAll(getSymbolsFromImportedPackages(packageName, symbolName));
+        }
+
+        return foundSymbols;
+    }
+
+    private AstNode getLocalSymbol(PackageName packageName, String symbolName)
+    {
+        if (!packageName.isEmpty() && !packageName.equals(getPackageName()))
+            return null;
+
+        return localSymbols.get(symbolName);
+    }
+
+    private List<AstNode> getSymbolsFromImportedPackages(PackageName packageName, String symbolName)
+    {
+        final List<AstNode> foundSymbols = new ArrayList<AstNode>();
+        for (Package importedPackage : importedPackages)
+        {
+            // don't exit the loop if something has been found, we need to check for ambiguities
+            final AstNode importedSymbol = importedPackage.getLocalSymbol(packageName, symbolName);
+            if (importedSymbol!= null)
+                foundSymbols.add(importedSymbol);
+        }
+
+        return foundSymbols;
+    }
+
+    private List<AstNode> getSymbolsFromSingleImports(PackageName packageName, String symbolName)
+    {
+        final List<AstNode> foundSymbols = new ArrayList<AstNode>();
+        for (SingleImport singleImport : singleImports)
+        {
+            // don't exit the loop if something has been found, we need to check for ambiguities
+            if (symbolName.equals(singleImport.getName()))
+            {
+                final Package importedPackage = singleImport.getPackage();
+                final AstNode importedSymbol = importedPackage.getLocalSymbol(packageName, symbolName);
+                if (importedSymbol != null)
+                    foundSymbols.add(importedSymbol);
+            }
+        }
+
+        return foundSymbols;
+    }
+
+    private static class SingleImport implements Comparable<SingleImport>
+    {
+        public SingleImport(Package pkg, String name)
+        {
+            this.pkg = pkg;
+            this.name = name;
         }
 
         @Override
-        public int compareTo(SingleTypeName other)
+        public int compareTo(SingleImport other)
         {
-            final int result = typeName.compareTo(other.typeName);
+            final int result = name.compareTo(other.name);
             if (result != 0)
                 return result;
 
-            return packageType.getPackageName().compareTo(other.packageType.getPackageName());
+            return pkg.getPackageName().compareTo(other.pkg.getPackageName());
         }
 
         @Override
@@ -369,8 +462,8 @@ public class Package extends DocumentableAstNode
             if (this == other)
                 return true;
 
-            if (other instanceof SingleTypeName)
-                return compareTo((SingleTypeName)other) == 0;
+            if (other instanceof SingleImport)
+                return compareTo((SingleImport)other) == 0;
 
             return false;
         }
@@ -379,24 +472,24 @@ public class Package extends DocumentableAstNode
         public int hashCode()
         {
             int hash = HashUtil.HASH_SEED;
-            hash = HashUtil.hash(hash, typeName);
-            hash = HashUtil.hash(hash, packageType.getPackageName());
+            hash = HashUtil.hash(hash, name);
+            hash = HashUtil.hash(hash, pkg.getPackageName());
 
             return hash;
         }
 
-        public Package getPackageType()
+        public Package getPackage()
         {
-            return packageType;
+            return pkg;
         }
 
-        public String getTypeName()
+        public String getName()
         {
-            return typeName;
+            return name;
         }
 
-        private final Package packageType;
-        private final String typeName;
+        private final Package pkg;
+        private final String name;
     }
 
     private final PackageName packageName;
@@ -405,7 +498,10 @@ public class Package extends DocumentableAstNode
     // this must be a LinkedHashMap because of 'Cyclic dependency' error checked in ZserioAstTypeResolver
     private final LinkedHashMap<String, ZserioType> localTypes = new LinkedHashMap<String, ZserioType>();
 
+    // global symbols defined within this package
+    final Map<String, AstNode> localSymbols = new LinkedHashMap<String, AstNode>();
+
     private final Set<Package> importedPackages = new HashSet<Package>();
     // this must be a TreeSet because of 'Ambiguous type reference' error checked in getVisibleType()
-    private final Set<SingleTypeName> importedSingleTypes = new TreeSet<SingleTypeName>();
+    private final Set<SingleImport> singleImports = new TreeSet<SingleImport>();
 }

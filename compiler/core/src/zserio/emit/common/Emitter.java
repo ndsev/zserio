@@ -1,7 +1,7 @@
 package zserio.emit.common;
 
 import zserio.ast.ChoiceType;
-import zserio.ast.ConstType;
+import zserio.ast.Constant;
 import zserio.ast.EnumType;
 import zserio.ast.Import;
 import zserio.ast.Package;
@@ -71,13 +71,13 @@ public interface Emitter
     public void beginImport(Import importNode) throws ZserioEmitException;
 
     /**
-     * Called when ConstType AST node begins.
+     * Called when Constant AST node begins.
      *
-     * @param constType Current ConstType AST node.
+     * @param constant Current Constant AST node.
      *
      * @throws In case of any internal error of the extension.
      */
-    public void beginConst(ConstType constType) throws ZserioEmitException;
+    public void beginConst(Constant constant) throws ZserioEmitException;
 
     /**
      * Called when Subtype AST node begins.

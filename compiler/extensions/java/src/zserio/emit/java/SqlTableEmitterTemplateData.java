@@ -44,11 +44,11 @@ public final class SqlTableEmitterTemplateData extends UserTypeTemplateData
         needsTypesInSchema = tableType.needsTypesInSchema();
         isWithoutRowId = tableType.isWithoutRowId();
 
-        final JavaNativeTypeMapper javaNativeTypeMapper = context.getJavaNativeTypeMapper();
+        final JavaNativeMapper javaNativeMapper = context.getJavaNativeMapper();
         final SqlNativeTypeMapper sqlNativeTypeMapper = new SqlNativeTypeMapper();
         for (Field field: tableType.getFields())
         {
-            final FieldTemplateData fieldData = new FieldTemplateData(javaNativeTypeMapper,
+            final FieldTemplateData fieldData = new FieldTemplateData(javaNativeMapper,
                     javaExpressionFormatter, context.getJavaSqlIndirectExpressionFormatter(),
                     sqlNativeTypeMapper, tableType, field);
             fields.add(fieldData);
@@ -166,7 +166,7 @@ public final class SqlTableEmitterTemplateData extends UserTypeTemplateData
 
     public static class FieldTemplateData
     {
-        public FieldTemplateData(JavaNativeTypeMapper javaNativeTypeMapper,
+        public FieldTemplateData(JavaNativeMapper javaNativeMapper,
                 ExpressionFormatter javaExpressionFormatter,
                 ExpressionFormatter javaSqlIndirectExpressionFormatter, SqlNativeTypeMapper sqlNativeTypeMapper,
                 SqlTableType parentType, Field field) throws ZserioEmitException
@@ -174,7 +174,7 @@ public final class SqlTableEmitterTemplateData extends UserTypeTemplateData
             final TypeInstantiation fieldTypeInstantiation = field.getTypeInstantiation();
             final TypeReference fieldTypeReference = fieldTypeInstantiation.getTypeReference();
             final ZserioType fieldBaseType = fieldTypeReference.getBaseTypeReference().getType();
-            final JavaNativeType nativeType = javaNativeTypeMapper.getJavaType(fieldTypeReference);
+            final JavaNativeType nativeType = javaNativeMapper.getJavaType(fieldTypeReference);
 
             name = field.getName();
             javaTypeName = nativeType.getFullName();
@@ -184,7 +184,7 @@ public final class SqlTableEmitterTemplateData extends UserTypeTemplateData
 
             for (InstantiatedParameter parameter : fieldTypeInstantiation.getInstantiatedParameters())
             {
-                typeParameters.add(new ParameterTemplateData(javaNativeTypeMapper,
+                typeParameters.add(new ParameterTemplateData(javaNativeMapper,
                         javaSqlIndirectExpressionFormatter, parentType, parameter));
             }
 
@@ -200,7 +200,7 @@ public final class SqlTableEmitterTemplateData extends UserTypeTemplateData
             enumData = createEnumTemplateData(nativeType);
             final ZserioType rangeCheckType = (enumData != null) ?
                     ((EnumType)fieldBaseType).getIntegerBaseType() : fieldBaseType;
-            rangeCheckData = new RangeCheckTemplateData(javaNativeTypeMapper, rangeCheckType,
+            rangeCheckData = new RangeCheckTemplateData(javaNativeMapper, rangeCheckType,
                     javaExpressionFormatter);
             sqlTypeData = new SqlTypeTemplateData(sqlNativeTypeMapper, field);
         }
@@ -262,7 +262,7 @@ public final class SqlTableEmitterTemplateData extends UserTypeTemplateData
 
         public static class ParameterTemplateData
         {
-            public ParameterTemplateData(JavaNativeTypeMapper javaNativeTypeMapper,
+            public ParameterTemplateData(JavaNativeMapper javaNativeMapper,
                     ExpressionFormatter javaSqlIndirectExpressionFormatter, SqlTableType tableType,
                     TypeInstantiation.InstantiatedParameter instantiatedParameter) throws ZserioEmitException
             {
@@ -271,7 +271,7 @@ public final class SqlTableEmitterTemplateData extends UserTypeTemplateData
                 expression = javaSqlIndirectExpressionFormatter.formatGetter(argumentExpression);
                 final Parameter parameter = instantiatedParameter.getParameter();
                 definitionName = parameter.getName();
-                javaTypeName = javaNativeTypeMapper.getJavaType(parameter.getTypeReference()).getFullName();
+                javaTypeName = javaNativeMapper.getJavaType(parameter.getTypeReference()).getFullName();
             }
 
             public boolean getIsExplicit()

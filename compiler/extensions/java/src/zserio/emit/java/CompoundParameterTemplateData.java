@@ -16,7 +16,7 @@ import zserio.emit.java.types.NativeLongType;
 
 public final class CompoundParameterTemplateData
 {
-    public CompoundParameterTemplateData(JavaNativeTypeMapper javaNativeTypeMapper, boolean withRangeCheckCode,
+    public CompoundParameterTemplateData(JavaNativeMapper javaNativeMapper, boolean withRangeCheckCode,
             boolean withWriterCode, CompoundType compoundType, ExpressionFormatter javaExpressionFormatter)
                     throws ZserioEmitException
     {
@@ -26,7 +26,7 @@ public final class CompoundParameterTemplateData
         final List<Parameter> compoundParameterTypeList = compoundType.getTypeParameters();
         compoundParameterList = new ArrayList<CompoundParameter>(compoundParameterTypeList.size());
         for (Parameter compoundParameterType : compoundParameterTypeList)
-            compoundParameterList.add(new CompoundParameter(javaNativeTypeMapper, compoundParameterType));
+            compoundParameterList.add(new CompoundParameter(javaNativeMapper, compoundParameterType));
     }
 
     public Iterable<CompoundParameter> getList()
@@ -46,11 +46,11 @@ public final class CompoundParameterTemplateData
 
     public static class CompoundParameter
     {
-        public CompoundParameter(JavaNativeTypeMapper javaNativeTypeMapper, Parameter parameter)
+        public CompoundParameter(JavaNativeMapper javaNativeMapper, Parameter parameter)
                 throws ZserioEmitException
         {
             name = parameter.getName();
-            JavaNativeType nativeType = javaNativeTypeMapper.getJavaType(parameter.getTypeReference());
+            JavaNativeType nativeType = javaNativeMapper.getJavaType(parameter.getTypeReference());
             javaTypeName = nativeType.getFullName();
             getterName = AccessorNameFormatter.getGetterName(parameter);
             isBool = nativeType instanceof NativeBooleanType;

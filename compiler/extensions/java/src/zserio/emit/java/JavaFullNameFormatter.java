@@ -21,16 +21,16 @@ final public class JavaFullNameFormatter
     }
 
     /**
-     * Constructs full Java name from package name and type name.
+     * Constructs full Java name from package name and type or symbol name.
      *
      * @param packageName Package name.
-     * @param typeName    Type name.
+     * @param name        Type or symbol name.
      *
-     * @return Full type name.
+     * @return Full name.
      */
-    public static String getFullName(PackageName packageName, String typeName)
+    public static String getFullName(PackageName packageName, String name)
     {
-        return StringJoinUtil.joinStrings(getFullName(packageName), typeName,
+        return StringJoinUtil.joinStrings(getFullName(packageName), name,
                 JAVA_PACKAGE_SEPARATOR);
     }
 

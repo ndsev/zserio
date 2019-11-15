@@ -1,5 +1,6 @@
 package zserio.emit.cpp98;
 
+import zserio.ast.PackageName;
 import zserio.ast.ZserioType;
 import zserio.emit.common.CodeDefaultEmitter;
 import zserio.emit.common.ZserioEmitException;
@@ -24,6 +25,13 @@ abstract class CppDefaultEmitter extends CodeDefaultEmitter
             throws ZserioEmitException
     {
         super.processTemplate(templateName, templateData, zserioType, CPP_HEADER_EXTENSION, false);
+    }
+
+    protected void processHeaderTemplate(String templateName, Object templateData,
+            PackageName zserioPackageName, String outFileName) throws ZserioEmitException
+    {
+        super.processTemplate(templateName, templateData, getPackageMapper().getPackageName(zserioPackageName),
+                outFileName, CPP_HEADER_EXTENSION, false);
     }
 
     protected void processSourceTemplate(String templateName, Object templateData, ZserioType zserioType,

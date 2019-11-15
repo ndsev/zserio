@@ -4,14 +4,27 @@ set(ZSERIO_GEN_DIR_DEFAULT_PACKAGE ${CMAKE_CURRENT_BINARY_DIR}/gen_default_packa
 set(ZSERIO_GEN_DIR_PACKAGE_NAME_CONFLICT ${CMAKE_CURRENT_BINARY_DIR}/gen_package_name_conflict)
 
 set(ZSERIO_GENERATED_SOURCES_PACKAGES
+    ${ZSERIO_GEN_DIR_PACKAGES}/ambiguous_imports/first_colour/Colour.cpp
+    ${ZSERIO_GEN_DIR_PACKAGES}/ambiguous_imports/first_colour/Colour.h
+    ${ZSERIO_GEN_DIR_PACKAGES}/ambiguous_imports/second_colour/Colour.cpp
+    ${ZSERIO_GEN_DIR_PACKAGES}/ambiguous_imports/second_colour/Colour.h
+    ${ZSERIO_GEN_DIR_PACKAGES}/ambiguous_imports/top/TopStructure.cpp
+    ${ZSERIO_GEN_DIR_PACKAGES}/ambiguous_imports/top/TopStructure.h
+
     ${ZSERIO_GEN_DIR_PACKAGES}/cyclic_imports/bottom/BottomColour.cpp
     ${ZSERIO_GEN_DIR_PACKAGES}/cyclic_imports/bottom/BottomColour.h
     ${ZSERIO_GEN_DIR_PACKAGES}/cyclic_imports/bottom/BottomStructure.cpp
     ${ZSERIO_GEN_DIR_PACKAGES}/cyclic_imports/bottom/BottomStructure.h
     ${ZSERIO_GEN_DIR_PACKAGES}/cyclic_imports/middle/MiddleStructure.cpp
     ${ZSERIO_GEN_DIR_PACKAGES}/cyclic_imports/middle/MiddleStructure.h
+    ${ZSERIO_GEN_DIR_PACKAGES}/cyclic_imports/top/GREEN.h
     ${ZSERIO_GEN_DIR_PACKAGES}/cyclic_imports/top/TopStructure.cpp
     ${ZSERIO_GEN_DIR_PACKAGES}/cyclic_imports/top/TopStructure.h
+
+    ${ZSERIO_GEN_DIR_PACKAGES}/import_name_conflict/colour/Colour.cpp
+    ${ZSERIO_GEN_DIR_PACKAGES}/import_name_conflict/colour/Colour.h
+    ${ZSERIO_GEN_DIR_PACKAGES}/import_name_conflict/top/TopStructure.cpp
+    ${ZSERIO_GEN_DIR_PACKAGES}/import_name_conflict/top/TopStructure.h
 
     ${ZSERIO_GEN_DIR_PACKAGES}/package_import/first/Coordinate.cpp
     ${ZSERIO_GEN_DIR_PACKAGES}/package_import/first/Coordinate.h
@@ -22,14 +35,28 @@ set(ZSERIO_GENERATED_SOURCES_PACKAGES
     ${ZSERIO_GEN_DIR_PACKAGES}/package_import/top/TopStructure.cpp
     ${ZSERIO_GEN_DIR_PACKAGES}/package_import/top/TopStructure.h
 
-    ${ZSERIO_GEN_DIR_PACKAGES}/single_type_import/imported/SimpleParamStructure.cpp
-    ${ZSERIO_GEN_DIR_PACKAGES}/single_type_import/imported/SimpleParamStructure.h
-    ${ZSERIO_GEN_DIR_PACKAGES}/single_type_import/imported/SimpleStructure.cpp
-    ${ZSERIO_GEN_DIR_PACKAGES}/single_type_import/imported/SimpleStructure.h
-    ${ZSERIO_GEN_DIR_PACKAGES}/single_type_import/top/SimpleParamStructure.cpp
-    ${ZSERIO_GEN_DIR_PACKAGES}/single_type_import/top/SimpleParamStructure.h
-    ${ZSERIO_GEN_DIR_PACKAGES}/single_type_import/top/TopStructure.cpp
-    ${ZSERIO_GEN_DIR_PACKAGES}/single_type_import/top/TopStructure.h
+    ${ZSERIO_GEN_DIR_PACKAGES}/single_import_conflict/imported/CONST_A.h
+    ${ZSERIO_GEN_DIR_PACKAGES}/single_import_conflict/imported/CONST_B.h
+    ${ZSERIO_GEN_DIR_PACKAGES}/single_import_conflict/imported/SimpleParamStructure.cpp
+    ${ZSERIO_GEN_DIR_PACKAGES}/single_import_conflict/imported/SimpleParamStructure.h
+    ${ZSERIO_GEN_DIR_PACKAGES}/single_import_conflict/imported/SimpleStructure.cpp
+    ${ZSERIO_GEN_DIR_PACKAGES}/single_import_conflict/imported/SimpleStructure.h
+    ${ZSERIO_GEN_DIR_PACKAGES}/single_import_conflict/top/CONST_A.h
+    ${ZSERIO_GEN_DIR_PACKAGES}/single_import_conflict/top/SimpleParamStructure.cpp
+    ${ZSERIO_GEN_DIR_PACKAGES}/single_import_conflict/top/SimpleParamStructure.h
+    ${ZSERIO_GEN_DIR_PACKAGES}/single_import_conflict/top/TopStructure.cpp
+    ${ZSERIO_GEN_DIR_PACKAGES}/single_import_conflict/top/TopStructure.h
+
+    ${ZSERIO_GEN_DIR_PACKAGES}/single_import_precedence/pkg/CONST_A.h
+    ${ZSERIO_GEN_DIR_PACKAGES}/single_import_precedence/pkg/Structure.cpp
+    ${ZSERIO_GEN_DIR_PACKAGES}/single_import_precedence/pkg/Structure.h
+    ${ZSERIO_GEN_DIR_PACKAGES}/single_import_precedence/single/CONST_A.h
+    ${ZSERIO_GEN_DIR_PACKAGES}/single_import_precedence/single/Structure.cpp
+    ${ZSERIO_GEN_DIR_PACKAGES}/single_import_precedence/single/Structure.h
+    ${ZSERIO_GEN_DIR_PACKAGES}/single_import_precedence/top/Parameterized.cpp
+    ${ZSERIO_GEN_DIR_PACKAGES}/single_import_precedence/top/Parameterized.h
+    ${ZSERIO_GEN_DIR_PACKAGES}/single_import_precedence/top/SingleImportPrecedence.cpp
+    ${ZSERIO_GEN_DIR_PACKAGES}/single_import_precedence/top/SingleImportPrecedence.h
 )
 
 set(ZSERIO_GENERATED_SOURCES_DEFAULT_PACKAGE

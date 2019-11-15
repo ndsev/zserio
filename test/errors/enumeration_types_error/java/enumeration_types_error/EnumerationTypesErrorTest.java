@@ -36,7 +36,7 @@ public class EnumerationTypesErrorTest
     @Test
     public void cyclicDefinitionUsingConstant()
     {
-        final String error = "cyclic_definition_using_constant_error.zs:8:13: Cyclic dependency detected in " +
+        final String error = "cyclic_definition_using_constant_error.zs:11:35: Cyclic dependency detected in " +
                 "expression evaluation!";
         assertTrue(zserioErrors.isPresent(error));
     }

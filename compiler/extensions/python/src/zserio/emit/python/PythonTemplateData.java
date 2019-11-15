@@ -3,6 +3,7 @@ package zserio.emit.python;
 import java.util.TreeSet;
 
 import zserio.ast.PackageName;
+import zserio.emit.python.symbols.PythonNativeSymbol;
 import zserio.emit.python.types.NativeSubtype;
 import zserio.emit.python.types.PythonNativeType;
 import zserio.emit.python.types.NativeUserType;
@@ -30,15 +31,26 @@ public class PythonTemplateData implements ImportCollector
         return packageImports;
     }
 
-    public Iterable<TypeImportTemplateData> getTypeImports()
+    public Iterable<ImportTemplateData> getTypeImports()
     {
         return typeImports;
+    }
+
+    public Iterable<ImportTemplateData> getSymbolImports()
+    {
+        return symbolImports;
     }
 
     @Override
     public void importPackage(String packageName)
     {
         packageImports.add(packageName);
+    }
+
+    @Override
+    public void importSymbol(PythonNativeSymbol nativeSymbol)
+    {
+        symbolImports.add(new ImportTemplateData(nativeSymbol));
     }
 
     @Override
@@ -51,22 +63,29 @@ public class PythonTemplateData implements ImportCollector
             typeToCheck = ((NativeSubtype)typeToCheck).getNativeTargetBaseType();
 
         if (typeToCheck instanceof NativeUserType)
-            typeImports.add(new TypeImportTemplateData(nativeType));
+            typeImports.add(new ImportTemplateData(nativeType));
     }
 
     @Override
     public void importUsedType(PythonNativeType nativeType)
     {
         if (nativeType instanceof NativeUserType)
-            typeImports.add(new TypeImportTemplateData(nativeType));
+            typeImports.add(new ImportTemplateData(nativeType));
     }
 
-    public static class TypeImportTemplateData implements Comparable<TypeImportTemplateData>
+    public static class ImportTemplateData implements Comparable<ImportTemplateData>
     {
-        public TypeImportTemplateData(PythonNativeType nativeType)
+        public ImportTemplateData(PythonNativeType nativeType)
         {
             this.packageName = nativeType.getPackageName();
             this.moduleName = nativeType.getName();
+            this.packagePath = PythonFullNameFormatter.getFullName(packageName);
+        }
+
+        public ImportTemplateData(PythonNativeSymbol nativeSymbol)
+        {
+            this.packageName = nativeSymbol.getPackageName();
+            this.moduleName = nativeSymbol.getName();
             this.packagePath = PythonFullNameFormatter.getFullName(packageName);
         }
 
@@ -83,11 +102,11 @@ public class PythonTemplateData implements ImportCollector
         @Override
         public boolean equals(Object otherObject)
         {
-            if (!(otherObject instanceof TypeImportTemplateData))
+            if (!(otherObject instanceof ImportTemplateData))
                     return false;
 
             // packagePath and moduleName uniquely define the type import
-            TypeImportTemplateData other = (TypeImportTemplateData)otherObject;
+            ImportTemplateData other = (ImportTemplateData)otherObject;
             return packageName.equals(other.packageName) && moduleName.equals(other.moduleName);
         }
 
@@ -103,7 +122,7 @@ public class PythonTemplateData implements ImportCollector
         }
 
         @Override
-        public int compareTo(TypeImportTemplateData other)
+        public int compareTo(ImportTemplateData other)
         {
             // packagePath and moduleName uniquely define the type import
             int result = packageName.compareTo(other.packageName);
@@ -123,5 +142,6 @@ public class PythonTemplateData implements ImportCollector
     private final boolean withWriterCode;
 
     private final TreeSet<String> packageImports = new TreeSet<String>();
-    private final TreeSet<TypeImportTemplateData> typeImports = new TreeSet<TypeImportTemplateData>();
+    private final TreeSet<ImportTemplateData> typeImports = new TreeSet<ImportTemplateData>();
+    private final TreeSet<ImportTemplateData> symbolImports = new TreeSet<ImportTemplateData>();
 }
