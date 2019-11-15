@@ -300,7 +300,7 @@ BitStreamReader::ReaderContext::ReaderContext(const uint8_t* buffer, size_t buff
 {
     Init();
 
-    const size_t bufferByteSize = (bufferBitSize + 7) / 8 + 1;
+    const size_t bufferByteSize = (bufferBitSize + 7) / 8;
     if (bufferByteSize > MAX_BUFFER_SIZE)
         throw CppRuntimeException("BitStreamReader: Buffer size exceeded limit '" +
             convertToString(MAX_BUFFER_SIZE) + "' bytes!");

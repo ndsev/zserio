@@ -1,6 +1,8 @@
 #include <utility>
 #include <cstring>
 
+#include "zserio/CppRuntimeException.h"
+#include "zserio/StringConvertUtil.h"
 #include "zserio/BitBuffer.h"
 
 namespace zserio
@@ -14,15 +16,36 @@ BitBuffer::BitBuffer(size_t bitSize) : m_buffer((bitSize + 7) / 8), m_bitSize(bi
 {
 }
 
-BitBuffer::BitBuffer(const std::vector<uint8_t>& buffer, size_t lastByteBits) :
-        BitBuffer(&buffer[0], (buffer.size() - 1) * 8 + ((lastByteBits <= 8) ? lastByteBits : 8))
+BitBuffer::BitBuffer(const std::vector<uint8_t>& buffer) :
+        BitBuffer(buffer, 8 * buffer.size())
 {
 }
 
-BitBuffer::BitBuffer(std::vector<uint8_t>&& buffer, size_t lastByteBits) :
-        m_buffer(std::move(buffer)),
-        m_bitSize((m_buffer.size() - 1) * 8 + ((lastByteBits <= 8) ? lastByteBits : 8))
+BitBuffer::BitBuffer(const std::vector<uint8_t>& buffer, size_t bitSize) :
+        m_bitSize(bitSize)
 {
+    const size_t byteSize = (bitSize + 7) / 8;
+    if (buffer.size() < byteSize)
+        throw CppRuntimeException("BitBuffer: Bit size " + convertToString(bitSize) +
+                " out of range for given vector byte size " + convertToString(buffer.size()) + "!");
+
+    m_buffer.assign(&buffer[0], &buffer[0] + byteSize);
+    maskLastByte();
+}
+
+BitBuffer::BitBuffer(std::vector<uint8_t>&& buffer) :
+        BitBuffer(std::move(buffer), 8 * buffer.size())
+{
+}
+
+BitBuffer::BitBuffer(std::vector<uint8_t>&& buffer, size_t bitSize) :
+        m_buffer(std::move(buffer)), m_bitSize(bitSize)
+{
+    const size_t byteSize = (bitSize + 7) / 8;
+    if (m_buffer.size() < byteSize)
+        throw CppRuntimeException("BitBuffer: Bit size " + convertToString(bitSize) +
+                " out of range for given vector byte size " + convertToString(buffer.size()) + "!");
+
     maskLastByte();
 }
 

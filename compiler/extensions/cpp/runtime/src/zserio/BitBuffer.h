@@ -34,18 +34,36 @@ public:
     /**
      * Constructor from STL vector.
      *
-     * \param buffer STL vector of all bytes from which the bit buffer should be created.
-     * \param lastByteBits Number of less significant bits of the last byte to use.
+     * \param buffer STL vector of bytes from which the bit buffer should be created.
      */
-    explicit BitBuffer(const std::vector<uint8_t>& buffer, size_t lastByteBits = 8);
+    explicit BitBuffer(const std::vector<uint8_t>& buffer);
+
+    /**
+     * Constructor from STL vector and bit size.
+     *
+     * \param buffer STL vector of bytes from which the bit buffer should be created.
+     * \param bitSize Number of bits stored in buffer to use.
+     *
+     * \throw CppRuntimeException If given bit size is ouf of range for given vector.
+     */
+    explicit BitBuffer(const std::vector<uint8_t>& buffer, size_t bitSize);
 
     /**
      * Constructor from moved STL vector.
      *
-     * \param buffer STL vector of all bytes from which the bit buffer should be created.
-     * \param lastByteBits Number of less significant bits of the last byte to use.
+     * \param buffer STL vector of bytes from which the bit buffer should be created.
      */
-    explicit BitBuffer(std::vector<uint8_t>&& buffer, size_t lastByteBits = 8);
+    explicit BitBuffer(std::vector<uint8_t>&& buffer);
+
+    /**
+     * Constructor from moved STL vector and bit size.
+     *
+     * \param buffer STL vector of bytes from which the bit buffer should be created.
+     * \param bitSize Number of bits stored in buffer to use.
+     *
+     * \throw CppRuntimeException If given bit size is ouf of range for given vector.
+     */
+    explicit BitBuffer(std::vector<uint8_t>&& buffer, size_t bitSize);
 
     /**
      * Constructor from raw pointer.
