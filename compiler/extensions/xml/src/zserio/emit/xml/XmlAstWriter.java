@@ -25,7 +25,7 @@ import zserio.ast.ChoiceCase;
 import zserio.ast.ChoiceCaseExpression;
 import zserio.ast.ChoiceDefault;
 import zserio.ast.ChoiceType;
-import zserio.ast.ConstType;
+import zserio.ast.Constant;
 import zserio.ast.DocElement;
 import zserio.ast.DocLine;
 import zserio.ast.DocLineElement;
@@ -148,16 +148,18 @@ public class XmlAstWriter implements ZserioAstVisitor
         final Element xmlElement = xmlDoc.createElement("IMPORT");
         xmlElement.setAttribute("importedPackageName", unitImport.getImportedPackageName().toString());
 
-        final String importedTypeName = unitImport.getImportedTypeName();
-        if (importedTypeName != null)
-            xmlElement.setAttribute("importedTypeName", importedTypeName);
+        final String importedName = unitImport.getImportedName();
+        if (importedName != null)
+            xmlElement.setAttribute("importedName", importedName);
         visitAstNode(unitImport, xmlElement);
     }
 
     @Override
-    public void visitConstType(ConstType constType)
+    public void visitConstant(Constant constant)
     {
-        visitZserioType(constType, "CONST");
+        final Element xmlElement = xmlDoc.createElement("CONST");
+        xmlElement.setAttribute("name", constant.getName());
+        visitAstNode(constant, xmlElement);
     }
 
     @Override
@@ -299,7 +301,9 @@ public class XmlAstWriter implements ZserioAstVisitor
     @Override
     public void visitRpc(Rpc rpc)
     {
-        visitAstNode(rpc, "RPC");
+        final Element xmlElement = xmlDoc.createElement("RPC");
+        xmlElement.setAttribute("name", rpc.getName());
+        visitAstNode(rpc, xmlElement);
     }
 
     @Override
@@ -536,11 +540,11 @@ public class XmlAstWriter implements ZserioAstVisitor
 
     private void visitAstNode(AstNode node, String xmlElementName)
     {
-        final Element packageElement = xmlDoc.createElement(xmlElementName);
-        currentXmlElement.appendChild(packageElement);
+        final Element element = xmlDoc.createElement(xmlElementName);
+        currentXmlElement.appendChild(element);
 
         final Element oldCurrentXmlElement = currentXmlElement;
-        currentXmlElement = packageElement;
+        currentXmlElement = element;
         node.visitChildren(this);
         currentXmlElement = oldCurrentXmlElement;
     }

@@ -12,7 +12,7 @@ import zserio.emit.cpp.types.CppNativeType;
 
 public class CompoundFunctionTemplateData
 {
-    public CompoundFunctionTemplateData(CppNativeTypeMapper cppNativeTypeMapper, CompoundType compoundType,
+    public CompoundFunctionTemplateData(CppNativeMapper cppNativeMapper, CompoundType compoundType,
             ExpressionFormatter cppExpressionFormatter, IncludeCollector includeCollector)
                     throws ZserioEmitException
     {
@@ -20,7 +20,7 @@ public class CompoundFunctionTemplateData
         final Iterable<Function> functionList = compoundType.getFunctions();
         for (Function function : functionList)
         {
-            compoundFunctionList.add(new CompoundFunction(function, cppNativeTypeMapper,
+            compoundFunctionList.add(new CompoundFunction(function, cppNativeMapper,
                     cppExpressionFormatter, includeCollector));
         }
     }
@@ -32,12 +32,12 @@ public class CompoundFunctionTemplateData
 
     public static class CompoundFunction
     {
-        public CompoundFunction(Function function, CppNativeTypeMapper cppNativeTypeMapper,
+        public CompoundFunction(Function function, CppNativeMapper cppNativeMapper,
                 ExpressionFormatter cppExpressionFormatter, IncludeCollector includeCollector)
                         throws ZserioEmitException
         {
             final TypeReference returnTypeReference = function.getReturnTypeReference();
-            final CppNativeType returnNativeType = cppNativeTypeMapper.getCppType(returnTypeReference);
+            final CppNativeType returnNativeType = cppNativeMapper.getCppType(returnTypeReference);
             returnTypeName = returnNativeType.getFullName();
             name = AccessorNameFormatter.getFunctionName(function);
             resultExpression = cppExpressionFormatter.formatGetter(function.getResultExpression());

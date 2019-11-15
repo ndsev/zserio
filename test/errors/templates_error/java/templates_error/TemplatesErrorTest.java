@@ -22,8 +22,7 @@ public class TemplatesErrorTest
     {
         final String errors[] =
         {
-            "constant_used_as_type_error.zs:12:5: In instantiation of 'TestStruct' required from here",
-            "constant_used_as_type_error.zs:5:5: Invalid usage of constant 'CONST' as a type!"
+            "constant_used_as_type_error.zs:12:16: Unresolved referenced type 'CONST'!"
         };
         assertTrue(zserioErrors.isPresent(errors));
     }

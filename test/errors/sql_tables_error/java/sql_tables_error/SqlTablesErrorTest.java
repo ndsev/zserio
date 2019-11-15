@@ -89,7 +89,7 @@ public class SqlTablesErrorTest
     @Test
     public void unknownPrimaryKeyColumn()
     {
-        final String error = "unknown_primary_key_column_error.zs:9:5: " +
+        final String error = "unknown_primary_key_column_error.zs:9:9: " +
                 "Primary key column 'unknownColumn' not found in sql table 'TestTable'!";
         assertTrue(zserioErrors.isPresent(error));
     }
@@ -97,7 +97,7 @@ public class SqlTablesErrorTest
     @Test
     public void unknownUniqueColumn()
     {
-        final String error = "unknown_unique_column_error.zs:9:5: " +
+        final String error = "unknown_unique_column_error.zs:9:9: " +
                 "Unique column 'unknownColumn' not found in sql table 'TestTable'!";
         assertTrue(zserioErrors.isPresent(error));
     }

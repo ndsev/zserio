@@ -41,7 +41,7 @@
       <#elseif item.isEnumItem>
         <li><span class="deprecatedDetail">enum-item</span> ${item.enumType.package.packageName}.<@linkedtype item.enumLinkedType/>.${item.enumItem.name}</li>
       <#else>
-        <li><span class="deprecatedDetail">type</span> ${item.type.package.packageName}.<@linkedtype item.linkedType/></li>
+        <li><span class="deprecatedDetail">type</span> ${item.packageName}.<@linkedtype item.linkedType/></li>
       </#if>
     </#list>
   <#else>

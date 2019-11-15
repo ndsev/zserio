@@ -5,9 +5,9 @@ package zserio.emit.java;
  */
 public class JavaSqlIndirectExpressionFormattingPolicy extends JavaExpressionFormattingPolicy
 {
-    public JavaSqlIndirectExpressionFormattingPolicy(JavaNativeTypeMapper javaNativeTypeMapper)
+    public JavaSqlIndirectExpressionFormattingPolicy(JavaNativeMapper javaNativeMapper)
     {
-        super(javaNativeTypeMapper);
+        super(javaNativeMapper);
     }
 
     @Override

@@ -1,4 +1,8 @@
-package single_type_import.imported;
+package single_import_conflict.imported;
+
+const uint32 CONST_A = 42;
+const uint32 CONST_B = 0;
+
 
 struct SimpleStructure
 {

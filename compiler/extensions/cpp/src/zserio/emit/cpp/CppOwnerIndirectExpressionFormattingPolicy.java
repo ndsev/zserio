@@ -6,10 +6,10 @@ package zserio.emit.cpp;
  */
 public class CppOwnerIndirectExpressionFormattingPolicy extends CppExpressionFormattingPolicy
 {
-    public CppOwnerIndirectExpressionFormattingPolicy(CppNativeTypeMapper cppNativeTypeMapper,
+    public CppOwnerIndirectExpressionFormattingPolicy(CppNativeMapper cppNativeMapper,
             IncludeCollector includeCollector)
     {
-        super(cppNativeTypeMapper, includeCollector);
+        super(cppNativeMapper, includeCollector);
     }
 
     @Override

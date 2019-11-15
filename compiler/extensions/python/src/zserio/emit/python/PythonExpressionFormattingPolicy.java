@@ -1,5 +1,6 @@
 package zserio.emit.python;
 
+import zserio.ast.Constant;
 import zserio.ast.EnumItem;
 import zserio.ast.EnumType;
 import zserio.ast.Expression;
@@ -10,14 +11,15 @@ import zserio.ast.Parameter;
 import zserio.ast.ZserioType;
 import zserio.emit.common.ZserioEmitException;
 import zserio.emit.common.ExpressionFormattingPolicy;
+import zserio.emit.python.symbols.PythonNativeSymbol;
 import zserio.emit.python.types.PythonNativeType;
 
 public class PythonExpressionFormattingPolicy implements ExpressionFormattingPolicy
 {
-    public PythonExpressionFormattingPolicy(PythonNativeTypeMapper pythonNativeTypeMapper,
+    public PythonExpressionFormattingPolicy(PythonNativeMapper pythonNativeMapper,
             ImportCollector importCollector)
     {
-        this.pythonNativeTypeMapper = pythonNativeTypeMapper;
+        this.pythonNativeMapper = pythonNativeMapper;
         this.importCollector = importCollector;
     }
 
@@ -343,7 +345,7 @@ public class PythonExpressionFormattingPolicy implements ExpressionFormattingPol
         if (isMostLeftId && exprType instanceof EnumType)
         {
             final EnumType enumType = (EnumType)exprType;
-            final PythonNativeType nativeEnumType = pythonNativeTypeMapper.getPythonType(enumType);
+            final PythonNativeType nativeEnumType = pythonNativeMapper.getPythonType(enumType);
             importCollector.importType(nativeEnumType);
             result.append(nativeEnumType.getFullName());
             result.append(".");
@@ -353,7 +355,7 @@ public class PythonExpressionFormattingPolicy implements ExpressionFormattingPol
 
     private void formatTypeIdentifier(StringBuilder result, ZserioType resolvedType) throws ZserioEmitException
     {
-        final PythonNativeType resolvedNativeType = pythonNativeTypeMapper.getPythonType(resolvedType);
+        final PythonNativeType resolvedNativeType = pythonNativeMapper.getPythonType(resolvedType);
         importCollector.importType(resolvedNativeType);
         result.append(resolvedNativeType.getFullName());
     }
@@ -387,11 +389,23 @@ public class PythonExpressionFormattingPolicy implements ExpressionFormattingPol
                 result.append(PYTHON_FUNCTION_CALL_PREFIX);
             result.append(AccessorNameFormatter.getFunctionName(function));
         }
+        else if (resolvedSymbol instanceof Constant)
+        {
+            final Constant constant = (Constant)resolvedSymbol;
+            formatConstant(result, constant);
+        }
         else
         {
             // this could happen for "explicit identifier" expressions
             result.append(symbol);
         }
+    }
+
+    private void formatConstant(StringBuilder result, Constant constant) throws ZserioEmitException
+    {
+        final PythonNativeSymbol nativeSymbol = pythonNativeMapper.getPythonSymbol(constant);
+        result.append(nativeSymbol.getFullName());
+        importCollector.importSymbol(nativeSymbol);
     }
 
     private static class TernaryExpressionFormattingPython extends TernaryExpressionFormatting
@@ -415,7 +429,7 @@ public class PythonExpressionFormattingPolicy implements ExpressionFormattingPol
         }
     }
 
-    private final PythonNativeTypeMapper pythonNativeTypeMapper;
+    private final PythonNativeMapper pythonNativeMapper;
     private final ImportCollector importCollector;
 
     private final static String PYTHON_BINARY_LITERAL_PREFIX = "0b";

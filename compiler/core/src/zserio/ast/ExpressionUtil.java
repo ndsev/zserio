@@ -3,7 +3,6 @@ package zserio.ast;
 import java.math.BigInteger;
 import java.util.Locale;
 
-
 /**
  * This class implements various utilities on Expression type.
  */

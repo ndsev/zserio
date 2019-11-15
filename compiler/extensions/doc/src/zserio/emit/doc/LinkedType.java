@@ -4,7 +4,7 @@ import zserio.ast.ArrayType;
 import zserio.ast.AstNode;
 import zserio.ast.BuiltInType;
 import zserio.ast.ChoiceType;
-import zserio.ast.ConstType;
+import zserio.ast.Constant;
 import zserio.ast.ServiceType;
 import zserio.ast.EnumType;
 import zserio.ast.StructureType;
@@ -19,25 +19,25 @@ import zserio.emit.common.ZserioEmitException;
 
 public class LinkedType
 {
-    private ZserioType type;
+    private AstNode type;
     private final boolean isDoubleDefinedType;
     private String style;
     private String category = "";
 
 
-    public LinkedType(AstNode node)
+    public LinkedType(AstNode node) throws ZserioEmitException
     {
         this.isDoubleDefinedType = false;
         init(node);
     }
 
-    public LinkedType(AstNode node, boolean isDoubleDefinedType)
+    public LinkedType(AstNode node, boolean isDoubleDefinedType) throws ZserioEmitException
     {
         this.isDoubleDefinedType = isDoubleDefinedType;
         init(node);
     }
 
-    private void init(AstNode node)
+    private void init(AstNode node) throws ZserioEmitException
     {
         if (node instanceof ZserioType)
             this.type = (ZserioType)node;
@@ -46,7 +46,7 @@ public class LinkedType
         else if (node instanceof TypeReference)
             this.type = ((TypeReference)node).getType();
         else
-            this.type = null;
+            this.type = node;
 
         if (node instanceof TypeInstantiation)
         {
@@ -102,10 +102,10 @@ public class LinkedType
                 style = "subtypeLink";
                 category += createTitle("Subtype");
             }
-            else if (node instanceof ConstType)
+            else if (node instanceof Constant)
             {
-                style = "consttypeLink";
-                category += createTitle("Consttype");
+                style = "constantLink";
+                category += createTitle("Constant");
             }
             else if (node instanceof SqlTableType)
             {
@@ -139,12 +139,12 @@ public class LinkedType
         }
     }
 
-    private String createTitle(String cat)
+    private String createTitle(String cat) throws ZserioEmitException
     {
         String packageName = "";
         if (isDoubleDefinedType)
         {
-            packageName = ", defined in: " + type.getPackage().getPackageName();
+            packageName = ", defined in: " + DocEmitterTools.getZserioPackageName(type);
         }
         return cat + packageName;
     }
@@ -159,7 +159,7 @@ public class LinkedType
     {
         String hyperlinkName = TypeNameEmitter.getTypeName(type) + "_";
 
-        ZserioType ti  = type;
+        AstNode ti  = type;
         HtmlModuleNameSuffixVisitor suffixVisitor = new HtmlModuleNameSuffixVisitor();
         ti.accept(suffixVisitor);
         hyperlinkName += suffixVisitor.getSuffix();
@@ -182,17 +182,12 @@ public class LinkedType
         return (type instanceof BuiltInType);
     }
 
-    public String getPackageName()
+    public String getPackageName() throws ZserioEmitException
     {
-        String result = "";
-        if( type.getPackage()!=null )
-        {
-            result = type.getPackage().getPackageName().toString();
-        }
-        return result;
+        return DocEmitterTools.getZserioPackageName(type).toString();
     }
 
-    public String getPackageNameAsID()
+    public String getPackageNameAsID() throws ZserioEmitException
     {
         return getPackageName().replace('.', '_');
     }

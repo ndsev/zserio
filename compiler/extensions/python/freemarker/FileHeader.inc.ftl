@@ -16,10 +16,20 @@ import <#if typeImport.packagePath?has_content>${typeImport.packagePath}.</#if>$
     </#list>
 </#macro>
 
-<#macro all_imports packageImports typeImports>
+<#macro symbol_imports symbolImports>
+    <#list symbolImports as symbolImport>
+import <#if symbolImport.packagePath?has_content>${symbolImport.packagePath}.</#if>${symbolImport.moduleName}
+    </#list>
+</#macro>
+
+<#macro all_imports packageImports typeImports symbolImports>
     <#if packageImports?has_content>
 
 <@package_imports packageImports/>
+    </#if>
+    <#if symbolImports?has_content>
+
+<@symbol_imports symbolImports/>
     </#if>
     <#if typeImports?has_content>
 

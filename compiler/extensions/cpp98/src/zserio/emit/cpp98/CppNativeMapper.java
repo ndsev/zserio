@@ -1,18 +1,19 @@
 package zserio.emit.cpp98;
 
 import zserio.ast.ArrayType;
+import zserio.ast.AstNode;
+import zserio.ast.Constant;
 import zserio.ast.InstantiateType;
-import zserio.ast.ExternType;
 import zserio.ast.PackageName;
 import zserio.ast.UnionType;
 import zserio.ast.BitFieldType;
 import zserio.ast.BooleanType;
 import zserio.ast.ChoiceType;
 import zserio.ast.CompoundType;
-import zserio.ast.ConstType;
 import zserio.ast.ZserioAstDefaultVisitor;
 import zserio.ast.ZserioType;
 import zserio.ast.EnumType;
+import zserio.ast.ExternType;
 import zserio.ast.FloatType;
 import zserio.ast.IntegerType;
 import zserio.ast.ServiceType;
@@ -26,11 +27,11 @@ import zserio.ast.TypeReference;
 import zserio.ast.VarIntegerType;
 import zserio.emit.common.PackageMapper;
 import zserio.emit.common.ZserioEmitException;
+import zserio.emit.cpp98.symbols.CppNativeSymbol;
 import zserio.emit.cpp98.types.CppNativeType;
 import zserio.emit.cpp98.types.NativeArrayType;
 import zserio.emit.cpp98.types.NativeBooleanType;
 import zserio.emit.cpp98.types.NativeCompoundType;
-import zserio.emit.cpp98.types.NativeConstType;
 import zserio.emit.cpp98.types.NativeDoubleType;
 import zserio.emit.cpp98.types.NativeEnumType;
 import zserio.emit.cpp98.types.NativeFloatType;
@@ -48,16 +49,42 @@ import zserio.emit.cpp98.types.NativeStringType;
 import zserio.emit.cpp98.types.NativeSubType;
 import zserio.tools.ZserioToolPrinter;
 
-public class CppNativeTypeMapper
+public class CppNativeMapper
 {
     /**
      * Constructor from package mapper.
      *
      * @param cppPackageMapper Package mapper to construct from.
      */
-    public CppNativeTypeMapper(PackageMapper cppPackageMapper)
+    public CppNativeMapper(PackageMapper cppPackageMapper)
     {
         this.cppPackageMapper = cppPackageMapper;
+    }
+
+    /**
+     * Returns a C++ symbol that can hold an instance of Zserio symbol.
+     *
+     * @param symbol Zserio symbol.
+     *
+     * @return C++ symbol.
+     *
+     * @throws ZserioEmitException If the Zserio symbol cannot be mapped to any C++ symbol.
+     */
+    public CppNativeSymbol getCppSymbol(AstNode symbol) throws ZserioEmitException
+    {
+        if (symbol instanceof Constant)
+        {
+            final Constant constant = (Constant)symbol;
+            final PackageName packageName = cppPackageMapper.getPackageName(constant.getPackage());
+            final String name = constant.getName();
+            final String includeFileName = getIncludePath(packageName, name);
+            return new CppNativeSymbol(packageName, name, includeFileName);
+        }
+        else
+        {
+            throw new ZserioEmitException("Unhandled symbol '" + symbol.getClass().getName() +
+                    "' in CppNativeMapper!");
+        }
     }
 
     /**
@@ -166,7 +193,7 @@ public class CppNativeTypeMapper
 
         if (!(nativeType instanceof NativeIntegralType))
             throw new ZserioEmitException("Unhandled integral type '" + type.getClass().getName() +
-                    "' in CppNativeTypeMapper!");
+                    "' in CppNativeMapper!");
 
         return (NativeIntegralType)nativeType;
     }
@@ -186,7 +213,7 @@ public class CppNativeTypeMapper
 
         if (!(nativeType instanceof NativeSubType))
             throw new ZserioEmitException("Unhandled subtype '" + type.getClass().getName() +
-                    "' in CppNativeTypeMapper!");
+                    "' in CppNativeMapper!");
 
         return (NativeSubType)nativeType;
     }
@@ -405,7 +432,7 @@ public class CppNativeTypeMapper
             try
             {
                 cppType = new NativeObjectArrayType(ZSERIO_RUNTIME_PACKAGE_NAME,
-                        ZSERIO_RUNTIME_INCLUDE_PREFIX, CppNativeTypeMapper.this.getCppType(originalType));
+                        ZSERIO_RUNTIME_INCLUDE_PREFIX, CppNativeMapper.this.getCppType(originalType));
             }
             catch (ZserioEmitException exception)
             {
@@ -483,24 +510,6 @@ public class CppNativeTypeMapper
         }
 
         @Override
-        public void visitConstType(ConstType type)
-        {
-            try
-            {
-                final PackageName packageName = cppPackageMapper.getPackageName(type);
-                final CppNativeType nativeTargetType =
-                        CppNativeTypeMapper.this.getCppType(type.getTypeReference());
-                final String name = type.getName();
-                final String includeFileName = getIncludePath(packageName, name);
-                cppType = new NativeConstType(packageName, type.getName(), includeFileName, nativeTargetType);
-            }
-            catch (ZserioEmitException exception)
-            {
-                thrownException = exception;
-            }
-        }
-
-        @Override
         public void visitEnumType(EnumType type)
         {
             try
@@ -575,7 +584,7 @@ public class CppNativeTypeMapper
             try
             {
                 final CppNativeType nativeTargetType =
-                        CppNativeTypeMapper.this.getCppType(type.getTypeReference());
+                        CppNativeMapper.this.getCppType(type.getTypeReference());
                 final PackageName packageName = cppPackageMapper.getPackageName(type);
                 final String name = type.getName();
                 final String includeFileName = getIncludePath(packageName, name);

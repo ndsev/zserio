@@ -18,24 +18,24 @@ public class CompoundTypeTemplateData extends UserTypeTemplateData
         final List<Field> fieldTypeList = compoundType.getFields();
         fieldList = new ArrayList<CompoundFieldTemplateData>(fieldTypeList.size());
         final boolean withWriterCode = context.getWithWriterCode();
-        final CppNativeTypeMapper cppNativeTypeMapper = context.getCppNativeTypeMapper();
+        final CppNativeMapper cppNativeMapper = context.getCppNativeMapper();
         final ExpressionFormatter cppExpressionFormatter = context.getExpressionFormatter(this);
         final ExpressionFormatter cppIndirectExpressionFormatter =
                 context.getOwnerIndirectExpressionFormatter(this);
         for (Field fieldType : fieldTypeList)
         {
-            final CompoundFieldTemplateData data = new CompoundFieldTemplateData(cppNativeTypeMapper,
+            final CompoundFieldTemplateData data = new CompoundFieldTemplateData(cppNativeMapper,
                     compoundType, fieldType, cppExpressionFormatter, cppIndirectExpressionFormatter,
                     this, withWriterCode);
 
             fieldList.add(data);
         }
 
-        compoundParametersData = new CompoundParameterTemplateData(cppNativeTypeMapper, compoundType, this,
+        compoundParametersData = new CompoundParameterTemplateData(cppNativeMapper, compoundType, this,
                 withWriterCode);
-        compoundFunctionsData = new CompoundFunctionTemplateData(cppNativeTypeMapper, compoundType,
+        compoundFunctionsData = new CompoundFunctionTemplateData(cppNativeMapper, compoundType,
                 cppExpressionFormatter, this);
-        compoundConstructorsData = new CompoundConstructorTemplateData(cppNativeTypeMapper, compoundType,
+        compoundConstructorsData = new CompoundConstructorTemplateData(cppNativeMapper, compoundType,
                 compoundParametersData, fieldList);
 
         needsChildrenInitialization = compoundType.needsChildrenInitialization();

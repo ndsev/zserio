@@ -19,7 +19,7 @@ public class ChoiceEmitterTemplateData extends CompoundTypeTemplateData
     {
         super(context, choiceType);
 
-        final CppNativeTypeMapper cppNativeTypeMapper = context.getCppNativeTypeMapper();
+        final CppNativeMapper cppNativeMapper = context.getCppNativeMapper();
         final ExpressionFormatter cppExpressionFormatter = context.getExpressionFormatter(this);
 
         final Expression expression = choiceType.getSelectorExpression();
@@ -33,14 +33,14 @@ public class ChoiceEmitterTemplateData extends CompoundTypeTemplateData
         final Iterable<ChoiceCase> choiceCaseTypes = choiceType.getChoiceCases();
         for (ChoiceCase choiceCaseType : choiceCaseTypes)
         {
-            caseMemberList.add(new CaseMember(cppNativeTypeMapper, choiceType, choiceCaseType,
+            caseMemberList.add(new CaseMember(cppNativeMapper, choiceType, choiceCaseType,
                     cppExpressionFormatter, cppIndirectExpressionFormatter, this, withWriterCode));
         }
 
         final ChoiceDefault choiceDefaultType = choiceType.getChoiceDefault();
         if (choiceDefaultType != null)
         {
-            defaultMember = new DefaultMember(cppNativeTypeMapper, choiceType, choiceDefaultType,
+            defaultMember = new DefaultMember(cppNativeMapper, choiceType, choiceDefaultType,
                     cppExpressionFormatter, cppIndirectExpressionFormatter, this, withWriterCode);
         }
         else
@@ -78,7 +78,7 @@ public class ChoiceEmitterTemplateData extends CompoundTypeTemplateData
 
     public static class CaseMember
     {
-        public CaseMember(CppNativeTypeMapper cppNativeTypeMapper, ChoiceType choiceType,
+        public CaseMember(CppNativeMapper cppNativeMapper, ChoiceType choiceType,
                 ChoiceCase choiceCaseType, ExpressionFormatter cppExpressionFormatter,
                 ExpressionFormatter cppIndirectExpressionFormatter, IncludeCollector includeCollector,
                 boolean withWriterCode) throws ZserioEmitException
@@ -89,7 +89,7 @@ public class ChoiceEmitterTemplateData extends CompoundTypeTemplateData
                 expressionList.add(cppExpressionFormatter.formatGetter(caseExpression.getExpression()));
 
             final Field fieldType = choiceCaseType.getField();
-            compoundField = (fieldType != null) ? new CompoundFieldTemplateData(cppNativeTypeMapper,
+            compoundField = (fieldType != null) ? new CompoundFieldTemplateData(cppNativeMapper,
                     choiceType, fieldType, cppExpressionFormatter,
                     cppIndirectExpressionFormatter, includeCollector, withWriterCode) : null;
         }
@@ -110,14 +110,14 @@ public class ChoiceEmitterTemplateData extends CompoundTypeTemplateData
 
     public static class DefaultMember
     {
-        public DefaultMember(CppNativeTypeMapper cppNativeTypeMapper,
+        public DefaultMember(CppNativeMapper cppNativeMapper,
                 ChoiceType choiceType, ChoiceDefault choiceDefaultType,
                 ExpressionFormatter cppExpressionFormatter, ExpressionFormatter cppIndirectExpressionFormatter,
                 IncludeCollector includeCollector, boolean withWriterCode) throws ZserioEmitException
         {
             final Field fieldType = choiceDefaultType.getField();
             compoundField = (fieldType != null) ? new CompoundFieldTemplateData(
-                    cppNativeTypeMapper, choiceType, fieldType, cppExpressionFormatter,
+                    cppNativeMapper, choiceType, fieldType, cppExpressionFormatter,
                     cppIndirectExpressionFormatter, includeCollector, withWriterCode) : null;
         }
 

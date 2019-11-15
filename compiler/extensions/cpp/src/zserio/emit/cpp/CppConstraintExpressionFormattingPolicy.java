@@ -9,10 +9,10 @@ import zserio.ast.Field;
  */
 public class CppConstraintExpressionFormattingPolicy extends CppExpressionFormattingPolicy
 {
-    public CppConstraintExpressionFormattingPolicy(CppNativeTypeMapper cppNativeTypeMapper,
+    public CppConstraintExpressionFormattingPolicy(CppNativeMapper cppNativeMapper,
             IncludeCollector includeCollector, Field constraintField)
     {
-        super(cppNativeTypeMapper, includeCollector);
+        super(cppNativeMapper, includeCollector);
 
         this.constraintField = constraintField;
     }

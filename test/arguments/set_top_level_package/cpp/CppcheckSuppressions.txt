@@ -1,2 +1,5 @@
 // suppress "Member variable 'X' is not initialized in the constructor."
 uninitMemberVar:*/SimpleStructure.cpp
+uninitMemberVar:*/SimpleStructure.h
+uninitMemberVar:*/SimpleChoice.cpp
+uninitMemberVar:*/SimpleChoice.h

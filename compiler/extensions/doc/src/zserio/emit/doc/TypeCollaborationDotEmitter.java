@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.util.Map;
 import java.util.Set;
 
+import zserio.ast.AstNode;
 import zserio.ast.Root;
 import zserio.ast.ZserioType;
 import zserio.emit.common.ZserioEmitException;
@@ -44,9 +45,9 @@ public class TypeCollaborationDotEmitter extends DefaultDocEmitter
 
     private void emitDotDiagrams() throws ZserioEmitException
     {
-        for (Map.Entry<ZserioType, Set<ZserioType> > entry : usedByCollector.getUsedByTypeMap().entrySet())
+        for (Map.Entry<AstNode, Set<AstNode> > entry : usedByCollector.getUsedByTypeMap().entrySet())
         {
-            final ZserioType type = entry.getKey();
+            final AstNode type = entry.getKey();
             final File outputFile = DocEmitterTools.getTypeCollaborationDotFile(docPath, type);
 
             TypeCollaborationDotTemplateData templateData = new TypeCollaborationDotTemplateData(type,

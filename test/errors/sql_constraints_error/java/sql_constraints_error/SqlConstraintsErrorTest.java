@@ -20,15 +20,15 @@ public class SqlConstraintsErrorTest
     @Test
     public void invalidTypeReference()
     {
-        final String error = "invalid_type_reference_error.zs:8:34: Referenced symbol type " +
-                "'ConstraintsConstant' can't refer to 'wrongFieldName'!";
+        final String error = "invalid_type_reference_error.zs:8:38: " +
+                "Unresolved referenced symbol 'ConstraintsConstant.wrongFieldName'!";
         assertTrue(zserioErrors.isPresent(error));
     }
 
     @Test
     public void nonIntegerConstantReference()
     {
-        final String error = "non_integer_constant_reference_error.zs:8:34: Reference 'ConstraintsConstant' " +
+        final String error = "non_integer_constant_reference_error.zs:8:38: Reference 'ConstraintsConstant' " +
                 "refers to non-integer constant!";
         assertTrue(zserioErrors.isPresent(error));
     }
@@ -36,7 +36,7 @@ public class SqlConstraintsErrorTest
     @Test
     public void unresolvedReference()
     {
-        final String error = "unresolved_reference_error.zs:8:34: Unresolved referenced symbol " +
+        final String error = "unresolved_reference_error.zs:8:38: Unresolved referenced symbol " +
                 "'ConstraintsConstant' for type 'ConstraintsTable'!";
         assertTrue(zserioErrors.isPresent(error));
     }
@@ -44,7 +44,7 @@ public class SqlConstraintsErrorTest
     @Test
     public void unresolvedSymbol()
     {
-        final String error = "unresolved_symbol_error.zs:12:34: Unresolved referenced symbol 'VALUE3' for " +
+        final String error = "unresolved_symbol_error.zs:12:38: Unresolved referenced symbol 'VALUE3' for " +
                 "type 'ConstraintsEnum'!";
         assertTrue(zserioErrors.isPresent(error));
     }
@@ -52,7 +52,7 @@ public class SqlConstraintsErrorTest
     @Test
     public void wrongTypeReference()
     {
-        final String error = "wrong_type_reference_error.zs:11:34: Reference 'ConstraintsConstant' does " +
+        final String error = "wrong_type_reference_error.zs:11:38: Reference 'ConstraintsConstant' does " +
                 "refer to neither enumeration type nor constant!";
         assertTrue(zserioErrors.isPresent(error));
     }

@@ -24,7 +24,7 @@ import zserio.emit.python.types.PythonNativeType;
 
 public final class CompoundFieldTemplateData
 {
-    public CompoundFieldTemplateData(PythonNativeTypeMapper pythonNativeTypeMapper, boolean withRangeCheckCode,
+    public CompoundFieldTemplateData(PythonNativeMapper pythonNativeMapper, boolean withRangeCheckCode,
             CompoundType parentType, Field field, ExpressionFormatter pythonExpressionFormatter,
             ImportCollector importCollector) throws ZserioEmitException
     {
@@ -33,7 +33,7 @@ public final class CompoundFieldTemplateData
         final TypeInstantiation fieldTypeInstantiation = field.getTypeInstantiation();
         final TypeReference fieldTypeReference = fieldTypeInstantiation.getTypeReference();
         final ZserioType fieldBaseType = fieldTypeReference.getBaseTypeReference().getType();
-        final PythonNativeType nativeType = pythonNativeTypeMapper.getPythonType(fieldTypeReference);
+        final PythonNativeType nativeType = pythonNativeMapper.getPythonType(fieldTypeReference);
         importCollector.importType(nativeType);
         pythonTypeName = nativeType.getFullName();
 
@@ -51,7 +51,7 @@ public final class CompoundFieldTemplateData
 
         bitSize = new BitSize(fieldBaseType, pythonExpressionFormatter);
         offset = createOffset(field, pythonExpressionFormatter);
-        array = createArray(nativeType, fieldBaseType, pythonNativeTypeMapper, pythonExpressionFormatter,
+        array = createArray(nativeType, fieldBaseType, pythonNativeMapper, pythonExpressionFormatter,
                 importCollector);
         runtimeFunction = PythonRuntimeFunctionDataCreator.createData(fieldBaseType, pythonExpressionFormatter);
         compound = createCompound(pythonExpressionFormatter, fieldTypeInstantiation);
@@ -292,7 +292,7 @@ public final class CompoundFieldTemplateData
     public static class Array
     {
         public Array(NativeArrayType nativeType, ArrayType arrayType,
-                PythonNativeTypeMapper pythonNativeTypeMapper, ExpressionFormatter pythonExpressionFormatter,
+                PythonNativeMapper pythonNativeMapper, ExpressionFormatter pythonExpressionFormatter,
                 ImportCollector importCollector) throws ZserioEmitException
         {
             traitsName = nativeType.getTraitsName();
@@ -306,7 +306,7 @@ public final class CompoundFieldTemplateData
             final TypeReference elementTypeReference = elementTypeInstantiation.getTypeReference();
             final ZserioType elementBaseType = elementTypeReference.getBaseTypeReference().getType();
             final PythonNativeType elementNativeType =
-                    pythonNativeTypeMapper.getPythonType(elementTypeReference);
+                    pythonNativeMapper.getPythonType(elementTypeReference);
             importCollector.importType(elementNativeType);
             elementPythonTypeName = elementNativeType.getFullName();
             elementBitSize = new BitSize(elementBaseType, pythonExpressionFormatter);
@@ -509,7 +509,7 @@ public final class CompoundFieldTemplateData
     }
 
     private static Array createArray(PythonNativeType nativeType, ZserioType baseType,
-            PythonNativeTypeMapper pythonNativeTypeMapper, ExpressionFormatter pythonExpressionFormatter,
+            PythonNativeMapper pythonNativeMapper, ExpressionFormatter pythonExpressionFormatter,
             ImportCollector importCollector) throws ZserioEmitException
     {
         if (!(baseType instanceof ArrayType))
@@ -519,7 +519,7 @@ public final class CompoundFieldTemplateData
             throw new ZserioEmitException("Inconsistent base type '" + baseType.getClass() +
                     "' and native type '" + nativeType.getClass() + "'!");
 
-        return new Array((NativeArrayType)nativeType, (ArrayType)baseType, pythonNativeTypeMapper,
+        return new Array((NativeArrayType)nativeType, (ArrayType)baseType, pythonNativeMapper,
                 pythonExpressionFormatter, importCollector);
     }
 

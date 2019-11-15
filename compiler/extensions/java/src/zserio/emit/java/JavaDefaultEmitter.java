@@ -1,5 +1,6 @@
 package zserio.emit.java;
 
+import zserio.ast.PackageName;
 import zserio.ast.ZserioType;
 import zserio.emit.common.CodeDefaultEmitter;
 import zserio.emit.common.ZserioEmitException;
@@ -26,6 +27,13 @@ abstract class JavaDefaultEmitter extends CodeDefaultEmitter
     {
         super.processTemplate(templateName, templateData, zserioType, outFileName, JAVA_SOURCE_EXTENSION,
                 false);
+    }
+
+    protected void processTemplate(String templateName, Object templateData, PackageName zserioPackageName,
+            String outFileName) throws ZserioEmitException
+    {
+        super.processTemplate(templateName,  templateData, getPackageMapper().getPackageName(zserioPackageName),
+                outFileName, JAVA_SOURCE_EXTENSION, false);
     }
 
     protected void processTemplateToRootDir(String templateName, Object templateData, String outFileName)

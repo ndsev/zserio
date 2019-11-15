@@ -4,22 +4,22 @@ import java.io.File;
 import java.io.IOException;
 
 import zserio.ast.CompoundType;
-import zserio.ast.ConstType;
+import zserio.ast.Constant;
 import zserio.ast.Expression;
 import zserio.emit.common.ExpressionFormatter;
 import zserio.emit.common.ZserioEmitException;
 import freemarker.template.Template;
 import freemarker.template.TemplateException;
 
-public class ConstTypeEmitter extends DefaultHtmlEmitter
+public class ConstantEmitter extends DefaultHtmlEmitter
 {
-    private ConstType consttype;
+    private Constant constant;
     private DocCommentTemplateData docCommentTemplateData;
     private final String docPath;
     private final boolean withSvgDiagrams;
     private final UsedByCollector usedByCollector;
 
-    public ConstTypeEmitter(String outputPath, boolean withSvgDiagrams, UsedByCollector usedByCollector)
+    public ConstantEmitter(String outputPath, boolean withSvgDiagrams, UsedByCollector usedByCollector)
     {
         super(outputPath);
         docPath = outputPath;
@@ -28,12 +28,12 @@ public class ConstTypeEmitter extends DefaultHtmlEmitter
         this.usedByCollector = usedByCollector;
     }
 
-    public void emit(ConstType constType) throws ZserioEmitException
+    public void emit(Constant constant) throws ZserioEmitException
     {
-        this.consttype = constType;
-        docCommentTemplateData = new DocCommentTemplateData(consttype.getDocComment());
+        this.constant = constant;
+        docCommentTemplateData = new DocCommentTemplateData(constant.getDocComment());
         containers.clear();
-        for (CompoundType compound : usedByCollector.getUsedByTypes(consttype, CompoundType.class))
+        for (CompoundType compound : usedByCollector.getUsedByTypes(constant, CompoundType.class))
         {
             CompoundEmitter ce = new CompoundEmitter(compound);
             containers.add(ce);
@@ -44,7 +44,7 @@ public class ConstTypeEmitter extends DefaultHtmlEmitter
         {
             Template tpl = cfg.getTemplate("doc/const.html.ftl");
             setCurrentFolder(CONTENT_FOLDER);
-            openOutputFileFromType(consttype);
+            openOutputFileFromType(constant);
             tpl.process(this, writer);
             writer.close();
         }
@@ -66,9 +66,9 @@ public class ConstTypeEmitter extends DefaultHtmlEmitter
     @Override
     public String getPackageName()
     {
-        if( consttype != null )
+        if( constant != null )
         {
-            return consttype.getPackage().getPackageName().toString();
+            return constant.getPackage().getPackageName().toString();
         }
 
         return "";
@@ -76,9 +76,9 @@ public class ConstTypeEmitter extends DefaultHtmlEmitter
 
     public String getTypeName()
     {
-        if( consttype != null )
+        if( constant != null )
         {
-            return consttype.getName();
+            return constant.getName();
         }
 
         return "";
@@ -86,9 +86,9 @@ public class ConstTypeEmitter extends DefaultHtmlEmitter
 
     public String getTypeValue() throws ZserioEmitException
     {
-        if( consttype != null )
+        if( constant != null )
         {
-            final Expression valueExpression = consttype.getValueExpression();
+            final Expression valueExpression = constant.getValueExpression();
             final DocExpressionFormattingPolicy policy = new DocExpressionFormattingPolicy();
             final ExpressionFormatter expressionFormatter = new ExpressionFormatter(policy);
 
@@ -111,17 +111,17 @@ public class ConstTypeEmitter extends DefaultHtmlEmitter
         return docCommentTemplateData.getIsDeprecated();
     }
 
-    public LinkedType getConstType()
+    public LinkedType getConstType() throws ZserioEmitException
     {
-        if (consttype == null)
+        if (constant == null)
             throw new RuntimeException("getConstType() called before emit()!");
 
-        LinkedType linkedType = new LinkedType(consttype.getTypeReference());
+        LinkedType linkedType = new LinkedType(constant.getTypeReference());
         return linkedType;
     }
 
     public String getCollaborationDiagramSvgFileName() throws ZserioEmitException
     {
-        return (withSvgDiagrams) ? DocEmitterTools.getTypeCollaborationSvgUrl(docPath, consttype) : null;
+        return (withSvgDiagrams) ? DocEmitterTools.getTypeCollaborationSvgUrl(docPath, constant) : null;
     }
 }

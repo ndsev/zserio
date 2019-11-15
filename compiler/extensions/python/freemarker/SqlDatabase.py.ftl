@@ -1,6 +1,6 @@
 <#include "FileHeader.inc.ftl"/>
 <@file_header generatorDescription/>
-<@all_imports packageImports typeImports/>
+<@all_imports packageImports symbolImports typeImports/>
 <#if withWriterCode>
     <#assign hasWithoutRowIdTable=false/>
     <#list fields as field>

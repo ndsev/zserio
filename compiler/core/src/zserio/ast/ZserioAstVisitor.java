@@ -27,11 +27,11 @@ public interface ZserioAstVisitor
     void visitImport(Import importNode);
 
     /**
-     * Visits constant type definition.
+     * Visits constant definition.
      *
-     * @param constType Constant AST node.
+     * @param constant Constant AST node.
      */
-    void visitConstType(ConstType constType);
+    void visitConstant(Constant constant);
 
     /**
      * Visits subtype declaration.

@@ -60,7 +60,7 @@ public class ZserioAstTypeResolver extends ZserioAstWalker
     public void visitTypeReference(TypeReference typeReference)
     {
         typeReference.visitChildren(this);
-        typeReference.resolve(isTemplateArgument);
+        typeReference.resolve();
 
         // make sure that typeReference.getBaseTypeReference() can be called after this resolve
         final ZserioType type = typeReference.getType();
@@ -71,11 +71,8 @@ public class ZserioAstTypeResolver extends ZserioAstWalker
     @Override
     public void visitTemplateArgument(TemplateArgument templateArgument)
     {
-        final boolean origIsTemplateArgument = isTemplateArgument;
-        isTemplateArgument = true;
         templateArgument.visitChildren(this);
         templateArgument.resolve();
-        isTemplateArgument = origIsTemplateArgument;
     }
 
     @Override
@@ -91,8 +88,6 @@ public class ZserioAstTypeResolver extends ZserioAstWalker
         if (templatableType.getTemplateParameters().isEmpty())
             templatableType.visitChildren(this);
     }
-
-    private boolean isTemplateArgument = false;
 
     private List<Subtype> subtypesOnStack = new ArrayList<Subtype>();
 }

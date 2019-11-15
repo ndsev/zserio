@@ -18,11 +18,11 @@ public class SqlDatabaseEmitterTemplateData extends UserTypeTemplateData
     {
         super(context, databaseType);
 
-        final CppNativeTypeMapper cppNativeTypeMapper = context.getCppNativeTypeMapper();
+        final CppNativeMapper cppNativeMapper = context.getCppNativeMapper();
         final List<Field> dbFields = databaseType.getFields();
         fields = new ArrayList<DatabaseField>(dbFields.size());
         for (Field dbField : dbFields)
-            fields.add(new DatabaseField(cppNativeTypeMapper, dbField, this));
+            fields.add(new DatabaseField(cppNativeMapper, dbField, this));
     }
 
     public Iterable<DatabaseField> getFields()
@@ -32,13 +32,13 @@ public class SqlDatabaseEmitterTemplateData extends UserTypeTemplateData
 
     public static class DatabaseField
     {
-        public DatabaseField(CppNativeTypeMapper cppNativeTypeMapper, Field field,
+        public DatabaseField(CppNativeMapper cppNativeMapper, Field field,
                 IncludeCollector includeCollector) throws ZserioEmitException
         {
             final TypeReference fieldTypeReference = field.getTypeInstantiation().getTypeReference();
             final ZserioType fieldBaseType = fieldTypeReference.getBaseTypeReference().getType();
 
-            final CppNativeType nativeFieldType = cppNativeTypeMapper.getCppType(fieldTypeReference);
+            final CppNativeType nativeFieldType = cppNativeMapper.getCppType(fieldTypeReference);
             includeCollector.addHeaderIncludesForType(nativeFieldType);
 
             name = field.getName();

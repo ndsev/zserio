@@ -121,7 +121,7 @@ public class TypeReference extends AstNodeBase
     /**
      * Resolves this reference to the corresponding referenced type.
      */
-    void resolve(boolean isTemplateArgument)
+    void resolve()
     {
         if (isResolved)
             return;
@@ -135,9 +135,6 @@ public class TypeReference extends AstNodeBase
         }
 
         // check referenced type
-        if (type instanceof ConstType && !isTemplateArgument)
-            throw new ParserException(this, "Invalid usage of constant '" + type.getName() +
-                    "' as a type!");
         if (type instanceof SqlDatabaseType)
             throw new ParserException(this, "Invalid usage of SQL database '" + type.getName() +
                     "' as a type!");

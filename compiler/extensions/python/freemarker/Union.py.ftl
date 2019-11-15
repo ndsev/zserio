@@ -2,7 +2,7 @@
 <#include "CompoundParameter.inc.ftl">
 <#include "CompoundField.inc.ftl"/>
 <@file_header generatorDescription/>
-<@all_imports packageImports typeImports/>
+<@all_imports packageImports symbolImports typeImports/>
 
 <#assign constructorParamList><@compound_constructor_parameters compoundParametersData/></#assign>
 class ${name}:

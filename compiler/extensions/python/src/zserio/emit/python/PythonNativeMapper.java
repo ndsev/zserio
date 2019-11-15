@@ -1,10 +1,11 @@
 package zserio.emit.python;
 
 import zserio.ast.ArrayType;
+import zserio.ast.AstNode;
 import zserio.ast.BitFieldType;
 import zserio.ast.BooleanType;
 import zserio.ast.ChoiceType;
-import zserio.ast.ConstType;
+import zserio.ast.Constant;
 import zserio.ast.EnumType;
 import zserio.ast.FloatType;
 import zserio.ast.InstantiateType;
@@ -23,6 +24,7 @@ import zserio.ast.ZserioAstDefaultVisitor;
 import zserio.ast.ZserioType;
 import zserio.emit.common.PackageMapper;
 import zserio.emit.common.ZserioEmitException;
+import zserio.emit.python.symbols.PythonNativeSymbol;
 import zserio.emit.python.types.NativeArrayType;
 import zserio.emit.python.types.NativeBuiltinType;
 import zserio.emit.python.types.NativeFixedSizeIntArrayType;
@@ -31,16 +33,39 @@ import zserio.emit.python.types.NativeSubtype;
 import zserio.emit.python.types.NativeUserType;
 import zserio.emit.python.types.PythonNativeType;
 
-public class PythonNativeTypeMapper
+public class PythonNativeMapper
 {
     /**
      * Constructor from package mapper.
      *
      * @param PythonPackageMapper Package mapper to construct from.
      */
-    public PythonNativeTypeMapper(PackageMapper pythonPackageMapper)
+    public PythonNativeMapper(PackageMapper pythonPackageMapper)
     {
         this.pythonPackageMapper = pythonPackageMapper;
+    }
+
+    /**
+     * Returns a Python symbol that can hold an instance of Zserio symbol.
+     *
+     * @param symbol Zserio symbol.
+     *
+     * @return Python symbol.
+     *
+     * @throws ZserioEmitException If the Zserio symbol cannot be mapped to any Python symbol.
+     */
+    public PythonNativeSymbol getPythonSymbol(AstNode symbol) throws ZserioEmitException
+    {
+        if (symbol instanceof Constant)
+        {
+            final Constant constant = (Constant)symbol;
+            final PackageName packageName = pythonPackageMapper.getPackageName(constant.getPackage());
+            final String name = constant.getName();
+            return new PythonNativeSymbol(packageName, name);
+        }
+        else
+            throw new ZserioEmitException("Unhandled symbol '" + symbol.getClass().getName() +
+                    "' in PythonNativeMapper!");
     }
 
     /**
@@ -79,7 +104,7 @@ public class PythonNativeTypeMapper
         final PythonNativeType nativeType = visitor.getPythonType();
         if (nativeType == null)
             throw new ZserioEmitException("Unhandled type '" + type.getClass().getName() +
-                    "' in PythonNativeTypeMapper!");
+                    "' in PythonNativeMapper!");
 
         return nativeType;
     }
@@ -122,13 +147,6 @@ public class PythonNativeTypeMapper
         public void visitChoiceType(ChoiceType type)
         {
             pythonType = mapUserType(type);
-        }
-
-        @Override
-        public void visitConstType(ConstType type)
-        {
-            final PackageName packageName = pythonPackageMapper.getPackageName(type);
-            pythonType = new NativeUserType(packageName, type.getName());
         }
 
         @Override
@@ -192,7 +210,7 @@ public class PythonNativeTypeMapper
             try
             {
                 final PackageName packageName = pythonPackageMapper.getPackageName(type);
-                final PythonNativeType nativeTargetBaseType = PythonNativeTypeMapper.this.getPythonType(
+                final PythonNativeType nativeTargetBaseType = PythonNativeMapper.this.getPythonType(
                         type.getTypeReference().getBaseTypeReference().getType());
                 pythonType = new NativeSubtype(packageName, type.getName(), nativeTargetBaseType);
             }

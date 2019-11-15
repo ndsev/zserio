@@ -1,6 +1,6 @@
 package zserio.emit.java;
 
-import zserio.ast.ConstType;
+import zserio.ast.Constant;
 import zserio.emit.common.ZserioEmitException;
 import zserio.tools.Parameters;
 
@@ -12,12 +12,13 @@ class ConstEmitter extends JavaDefaultEmitter
     }
 
     @Override
-    public void beginConst(ConstType constType) throws ZserioEmitException
+    public void beginConst(Constant constant) throws ZserioEmitException
     {
         final ConstEmitterTemplateData templateData =
-                new ConstEmitterTemplateData(getTemplateDataContext(), constType);
-        processTemplate(TEMPLATE_NAME, templateData, constType);
+                new ConstEmitterTemplateData(getTemplateDataContext(), constant);
+        processTemplate(TEMPLATE_NAME, templateData, constant.getPackage().getPackageName(),
+                constant.getName());
     }
 
-    private static final String TEMPLATE_NAME = "ConstType.java.ftl";
+    private static final String TEMPLATE_NAME = "Constant.java.ftl";
 }

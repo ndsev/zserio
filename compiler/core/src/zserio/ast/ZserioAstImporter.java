@@ -5,7 +5,7 @@ import java.util.Map;
 /**
  * Implementation of ZserioAstVisitor which manages type importing phase.
  */
-public class ZserioAstTypeImporter extends ZserioAstWalker
+public class ZserioAstImporter extends ZserioAstWalker
 {
     @Override
     public void visitRoot(Root root)
@@ -20,7 +20,7 @@ public class ZserioAstTypeImporter extends ZserioAstWalker
     @Override
     public void visitPackage(Package pkg)
     {
-        pkg.importTypes(packageNameMap);
+        pkg.processImports(packageNameMap);
     }
 
     private Map<PackageName, Package> packageNameMap = null;

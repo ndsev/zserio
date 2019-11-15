@@ -10,14 +10,14 @@ public class Import extends AstNodeBase
      *
      * @param location            AST node location.
      * @param importedPackageName Imported package name.
-     * @param importedTypeName    Imported package type name or null for package type import.
+     * @param importedName        Imported name or null for full package import.
      */
-    public Import(AstLocation location, PackageName importedPackageName, String importedTypeName)
+    public Import(AstLocation location, PackageName importedPackageName, String importedName)
     {
         super(location);
 
         this.importedPackageName = importedPackageName;
-        this.importedTypeName = importedTypeName;
+        this.importedName = importedName;
     }
 
     @Override
@@ -37,15 +37,15 @@ public class Import extends AstNodeBase
     }
 
     /**
-     * Gets the type name specified by the import.
+     * Gets the name specified by the import.
      *
-     * @return Type name for single type import or null for package type import.
+     * @return Name for single import or null for full package import.
      */
-    public String getImportedTypeName()
+    public String getImportedName()
     {
-        return importedTypeName;
+        return importedName;
     }
 
     private final PackageName importedPackageName;
-    private final String importedTypeName;
+    private final String importedName;
 }

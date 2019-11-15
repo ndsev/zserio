@@ -69,12 +69,8 @@ public class ZserioAstBuilder extends ZserioParserBaseVisitor<Object>
             throw new ParserException(currentPackage, "Multiple default packages are not allowed!");
         }
 
-        // types declarations
-        for (ZserioParser.LanguageDirectiveContext directiveCtx : ctx.languageDirective())
-        {
-            ZserioType type = (ZserioType)visitTypeDeclaration(directiveCtx.typeDeclaration());
-            currentPackage.addType(type);
-        }
+        for (ZserioParser.LanguageDirectiveContext languageDirectiveCtx : ctx.languageDirective())
+            visitLanguageDirective(languageDirectiveCtx);
 
         final Package unitPackage = currentPackage;
         currentPackage = null;
@@ -95,24 +91,32 @@ public class ZserioAstBuilder extends ZserioParserBaseVisitor<Object>
     public Import visitImportDeclaration(ZserioParser.ImportDeclarationContext ctx)
     {
         final AstLocation location = new AstLocation(ctx.id(0).getStart());
-        String importedTypeName = null;
+        String importedSymbolName = null;
         PackageName importedPackageName = null;
 
         if (ctx.MULTIPLY() == null)
         {
             importedPackageName = createPackageName(getPackageNameIds(ctx.id()));
-            importedTypeName = getTypeNameId(ctx.id()).getText();
+            importedSymbolName = getSymbolNameId(ctx.id()).getText();
         }
         else
         {
             importedPackageName = createPackageName(ctx.id());
         }
 
-        return new Import(location, importedPackageName, importedTypeName);
+        return new Import(location, importedPackageName, importedSymbolName);
     }
 
     @Override
-    public ConstType visitConstDeclaration(ZserioParser.ConstDeclarationContext ctx)
+    public ZserioType visitTypeDeclaration(ZserioParser.TypeDeclarationContext ctx)
+    {
+        ZserioType type = (ZserioType)super.visitTypeDeclaration(ctx);
+        currentPackage.addType(type);
+        return type;
+    }
+
+    @Override
+    public Constant visitConstDeclaration(ZserioParser.ConstDeclarationContext ctx)
     {
         final AstLocation location = new AstLocation(ctx.id().getStart());
         final TypeInstantiation typeInstantiation = visitTypeInstantiation(ctx.typeInstantiation());
@@ -121,10 +125,12 @@ public class ZserioAstBuilder extends ZserioParserBaseVisitor<Object>
 
         final DocComment docComment = docCommentManager.findDocComment(ctx);
 
-        final ConstType constType = new ConstType(location, currentPackage, typeInstantiation, name,
+        final Constant constant = new Constant(location, currentPackage, typeInstantiation, name,
                 valueExpression, docComment);
 
-        return constType;
+        currentPackage.addSymbol(name, constant);
+
+        return constant;
     }
 
     @Override
@@ -426,13 +432,12 @@ public class ZserioAstBuilder extends ZserioParserBaseVisitor<Object>
         if (ctx == null)
             return null;
 
-        final AstLocation location = new AstLocation(ctx.getStart());
         final Token constraintExprToken = ctx.STRING_LITERAL().getSymbol();
         final AstLocation constraintExprLocation = new AstLocation(constraintExprToken);
         final Expression constraintExpr = new Expression(constraintExprLocation, currentPackage,
                 constraintExprToken.getType(), constraintExprToken.getText(), Expression.ExpressionFlag.NONE);
 
-        return new SqlConstraint(location, constraintExpr);
+        return new SqlConstraint(constraintExprLocation, constraintExpr);
     }
 
     @Override
@@ -836,7 +841,7 @@ public class ZserioAstBuilder extends ZserioParserBaseVisitor<Object>
     {
         final PackageName referencedPackageName =
                 createPackageName(getPackageNameIds(ctx.id()));
-        final String referencedTypeName = getTypeNameId(ctx.id()).getText();
+        final String referencedTypeName = getSymbolNameId(ctx.id()).getText();
         return new QualifiedName(referencedPackageName, referencedTypeName);
     }
 
@@ -997,9 +1002,9 @@ public class ZserioAstBuilder extends ZserioParserBaseVisitor<Object>
         return qualifiedName.subList(0, qualifiedName.size() - 1);
     }
 
-    private ZserioParser.IdContext getTypeNameId(List<ZserioParser.IdContext> qualifiedName)
+    private ZserioParser.IdContext getSymbolNameId(List<ZserioParser.IdContext> idList)
     {
-        return qualifiedName.get(qualifiedName.size() - 1);
+        return idList.get(idList.size() - 1);
     }
 
     @Override

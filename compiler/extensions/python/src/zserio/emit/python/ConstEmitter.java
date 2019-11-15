@@ -1,6 +1,6 @@
 package zserio.emit.python;
 
-import zserio.ast.ConstType;
+import zserio.ast.Constant;
 import zserio.emit.common.ZserioEmitException;
 import zserio.tools.Parameters;
 
@@ -12,11 +12,12 @@ public class ConstEmitter extends PythonDefaultEmitter
     }
 
     @Override
-    public void beginConst(ConstType constType) throws ZserioEmitException
+    public void beginConst(Constant constant) throws ZserioEmitException
     {
-        final Object templateData = new ConstEmitterTemplateData(getTemplateDataContext(), constType);
-        processSourceTemplate(TEMPLATE_SOURCE_NAME, templateData, constType);
+        final Object templateData = new ConstEmitterTemplateData(getTemplateDataContext(), constant);
+        processSourceTemplate(TEMPLATE_SOURCE_NAME, templateData, constant.getPackage().getPackageName(),
+                constant.getName());
     }
 
-    private static final String TEMPLATE_SOURCE_NAME = "Const.py.ftl";
+    private static final String TEMPLATE_SOURCE_NAME = "Constant.py.ftl";
 }

@@ -6,13 +6,13 @@ import zserio.emit.common.ZserioEmitException;
 
 public final class CompoundConstructorTemplateData
 {
-    public CompoundConstructorTemplateData(JavaNativeTypeMapper javaNativeTypeMapper, boolean withRangeCheckCode,
+    public CompoundConstructorTemplateData(JavaNativeMapper javaNativeMapper, boolean withRangeCheckCode,
             boolean withWriterCode, CompoundType compoundType, ExpressionFormatter javaExpressionFormatter)
                     throws ZserioEmitException
     {
         compoundName = compoundType.getName();
         this.withWriterCode = withWriterCode;
-        compoundParametersData = new CompoundParameterTemplateData(javaNativeTypeMapper, withRangeCheckCode,
+        compoundParametersData = new CompoundParameterTemplateData(javaNativeMapper, withRangeCheckCode,
                 withWriterCode, compoundType, javaExpressionFormatter);
     }
 

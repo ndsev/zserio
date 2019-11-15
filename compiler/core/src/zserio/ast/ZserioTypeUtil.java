@@ -19,12 +19,11 @@ public class ZserioTypeUtil
         if (type instanceof BuiltInType)
             return type.getName();
 
-        return StringJoinUtil.joinStrings(type.getPackage().getPackageName().toString(), type.getName(),
-                FULL_NAME_SEPARATOR);
+        return getFullName(type.getPackage().getPackageName(), type.getName());
     }
 
     /**
-     * Return the full zserio name as is referenced in the type reference.
+     * Returns the full zserio name as is referenced in the type reference.
      *
      * @param typeReference Type reference.
      *
@@ -32,8 +31,20 @@ public class ZserioTypeUtil
      */
     static String getReferencedFullName(TypeReference typeReference)
     {
-        return StringJoinUtil.joinStrings(typeReference.getReferencedPackageName().toString(),
-                typeReference.getReferencedTypeName(), FULL_NAME_SEPARATOR);
+        return getFullName(typeReference.getReferencedPackageName(), typeReference.getReferencedTypeName());
+    }
+
+    /**
+     * Returns the full zserio name.
+     *
+     * @param packageName Package name.
+     * @param name        Type or symbol name.
+     *
+     * @return Full zserio name.
+     */
+    static String getFullName(PackageName packageName, String name)
+    {
+        return StringJoinUtil.joinStrings(packageName.toString(), name, FULL_NAME_SEPARATOR);
     }
 
     private static final String FULL_NAME_SEPARATOR = ".";

@@ -1,6 +1,6 @@
 package templates.expression_full_template_argument;
 
-import templates.expression_full_template_argument.color.Color;
+import templates.expression_full_template_argument.color.*;
 
 enum uint8 Color
 {

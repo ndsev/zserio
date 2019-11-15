@@ -13,12 +13,12 @@ set(ZSERIO_GENERATED_SOURCES
 
     ${ZSERIO_GEN_DIR}/templates/choice_templated_selector/ChoiceTemplatedSelector.cpp
     ${ZSERIO_GEN_DIR}/templates/choice_templated_selector/ChoiceTemplatedSelector.h
-    ${ZSERIO_GEN_DIR}/templates/choice_templated_selector/SHIFT16.h
-    ${ZSERIO_GEN_DIR}/templates/choice_templated_selector/SHIFT32.h
-    ${ZSERIO_GEN_DIR}/templates/choice_templated_selector/TemplatedChoice_uint16_SHIFT16.cpp
-    ${ZSERIO_GEN_DIR}/templates/choice_templated_selector/TemplatedChoice_uint16_SHIFT16.h
-    ${ZSERIO_GEN_DIR}/templates/choice_templated_selector/TemplatedChoice_uint32_SHIFT32.cpp
-    ${ZSERIO_GEN_DIR}/templates/choice_templated_selector/TemplatedChoice_uint32_SHIFT32.h
+    ${ZSERIO_GEN_DIR}/templates/choice_templated_selector/Shift16.h
+    ${ZSERIO_GEN_DIR}/templates/choice_templated_selector/Shift32.h
+    ${ZSERIO_GEN_DIR}/templates/choice_templated_selector/TemplatedChoice_uint16_Shift16.cpp
+    ${ZSERIO_GEN_DIR}/templates/choice_templated_selector/TemplatedChoice_uint16_Shift16.h
+    ${ZSERIO_GEN_DIR}/templates/choice_templated_selector/TemplatedChoice_uint32_Shift32.cpp
+    ${ZSERIO_GEN_DIR}/templates/choice_templated_selector/TemplatedChoice_uint32_Shift32.h
 
     ${ZSERIO_GEN_DIR}/templates/choice_templated_field/TemplatedChoice_uint32_uint16.cpp
     ${ZSERIO_GEN_DIR}/templates/choice_templated_field/TemplatedChoice_uint32_uint16.h
@@ -28,20 +28,6 @@ set(ZSERIO_GENERATED_SOURCES
     ${ZSERIO_GEN_DIR}/templates/choice_templated_field/Compound_uint32.h
     ${ZSERIO_GEN_DIR}/templates/choice_templated_field/ChoiceTemplatedField.cpp
     ${ZSERIO_GEN_DIR}/templates/choice_templated_field/ChoiceTemplatedField.h
-
-    ${ZSERIO_GEN_DIR}/templates/expression_const_after_nested_template_argument/SIZE.h
-    ${ZSERIO_GEN_DIR}/templates/expression_const_after_nested_template_argument/Element_uint32.cpp
-    ${ZSERIO_GEN_DIR}/templates/expression_const_after_nested_template_argument/Element_uint32.h
-    ${ZSERIO_GEN_DIR}/templates/expression_const_after_nested_template_argument/ConstAfterNested.cpp
-    ${ZSERIO_GEN_DIR}/templates/expression_const_after_nested_template_argument/ConstAfterNested.h
-    ${ZSERIO_GEN_DIR}/templates/expression_const_after_nested_template_argument/Compound_Element_uint32_SIZE.cpp
-    ${ZSERIO_GEN_DIR}/templates/expression_const_after_nested_template_argument/Compound_Element_uint32_SIZE.h
-
-    ${ZSERIO_GEN_DIR}/templates/expression_const_template_argument/ConstTemplateArgumentHolder.cpp
-    ${ZSERIO_GEN_DIR}/templates/expression_const_template_argument/ConstTemplateArgumentHolder.h
-    ${ZSERIO_GEN_DIR}/templates/expression_const_template_argument/ConstTemplateArgument_LENGTH.cpp
-    ${ZSERIO_GEN_DIR}/templates/expression_const_template_argument/ConstTemplateArgument_LENGTH.h
-    ${ZSERIO_GEN_DIR}/templates/expression_const_template_argument/LENGTH.h
 
     ${ZSERIO_GEN_DIR}/templates/expression_enum_template_argument/Color.cpp
     ${ZSERIO_GEN_DIR}/templates/expression_enum_template_argument/Color.h
@@ -349,8 +335,6 @@ add_test_sources(
     ${ZSERIO_CPP_DIR}/ChoiceTemplatedEnumSelectorTest.cpp
     ${ZSERIO_CPP_DIR}/ChoiceTemplatedFieldTest.cpp
     ${ZSERIO_CPP_DIR}/ChoiceTemplatedSelectorTest.cpp
-    ${ZSERIO_CPP_DIR}/ExpressionConstAfterNestedTemplateArgumentTest.cpp
-    ${ZSERIO_CPP_DIR}/ExpressionConstTemplateArgumentTest.cpp
     ${ZSERIO_CPP_DIR}/ExpressionEnumTemplateArgumentTest.cpp
     ${ZSERIO_CPP_DIR}/ExpressionEnumTemplateArgumentConflictTest.cpp
     ${ZSERIO_CPP_DIR}/ExpressionFullTemplateArgumentTest.cpp

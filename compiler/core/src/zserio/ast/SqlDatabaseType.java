@@ -3,8 +3,6 @@ package zserio.ast;
 import java.util.ArrayList;
 import java.util.List;
 
-
-
 /**
  * AST node for SQL Database types.
  *

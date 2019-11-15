@@ -1,9 +1,10 @@
 package zserio.emit.doc;
 
 import zserio.ast.ArrayType;
+import zserio.ast.AstNode;
 import zserio.ast.BitFieldType;
 import zserio.ast.CompoundType;
-import zserio.ast.ConstType;
+import zserio.ast.Constant;
 import zserio.ast.ServiceType;
 import zserio.ast.SqlConstraint;
 import zserio.ast.TypeReference;
@@ -105,7 +106,7 @@ public class TypeNameEmitter
       return field.getIsVirtual();
     }
 
-    public static String getTypeName(ZserioType t) throws ZserioEmitException
+    public static String getTypeName(AstNode t) throws ZserioEmitException
     {
         String result = null;
 
@@ -137,9 +138,9 @@ public class TypeNameEmitter
             Subtype subtype = (Subtype) t;
             result = subtype.getName();
         }
-        else if (t instanceof ConstType)
+        else if (t instanceof Constant)
         {
-            ConstType consttype = (ConstType) t;
+            Constant consttype = (Constant) t;
             result = consttype.getName();
         }
         else if (t instanceof ServiceType)
@@ -153,9 +154,13 @@ public class TypeNameEmitter
                     ((ArrayType)t).getElementTypeInstantiation().getTypeReference().getBaseTypeReference();
             return getTypeName(elementBaseTypeReference.getType());
         }
+        else if (t instanceof ZserioType)
+        {
+            result = ((ZserioType)t).getName();
+        }
         else
         {
-            result = t.getName();
+            throw new ZserioEmitException("Unexpected zserio type or symbol '" + t.getClass().getName() + "'!");
         }
 
         return StringHtmlUtil.escapeForHtml(result);

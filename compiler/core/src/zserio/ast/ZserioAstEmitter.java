@@ -62,11 +62,11 @@ public class ZserioAstEmitter extends ZserioAstWalker
     }
 
     @Override
-    public void visitConstType(ConstType constType)
+    public void visitConstant(Constant constant)
     {
         try
         {
-            emitter.beginConst(constType);
+            emitter.beginConst(constant);
         }
         catch (ZserioEmitException e)
         {

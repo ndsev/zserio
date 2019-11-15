@@ -21,7 +21,7 @@ public class InspectorParameterProviderTemplateData extends CppTemplateData
     {
         super(context);
 
-        final CppNativeTypeMapper cppNativeTypeMapper = context.getCppNativeTypeMapper();
+        final CppNativeMapper cppNativeMapper = context.getCppNativeMapper();
         final ExpressionFormatter cppSqlIndirectExpressionFormatter =
                 context.getSqlIndirectExpressionFormatter(this);
 
@@ -35,12 +35,12 @@ public class InspectorParameterProviderTemplateData extends CppTemplateData
                 {
                     if (parameter.getArgumentExpression().isExplicitVariable())
                     {
-                        explicitParameters.add(new ExplicitParameterTemplateData(cppNativeTypeMapper,
+                        explicitParameters.add(new ExplicitParameterTemplateData(cppNativeMapper,
                                 cppSqlIndirectExpressionFormatter, sqlTableType, field, parameter, this));
                     }
                     else
                     {
-                        parameters.add(new ParameterTemplateData(cppNativeTypeMapper, sqlTableType, field,
+                        parameters.add(new ParameterTemplateData(cppNativeMapper, sqlTableType, field,
                                 parameter, this));
                     }
                 }
@@ -60,13 +60,13 @@ public class InspectorParameterProviderTemplateData extends CppTemplateData
 
     public static class ParameterTemplateData implements Comparable<ParameterTemplateData>
     {
-        public ParameterTemplateData(CppNativeTypeMapper cppNativeTypeMapper, SqlTableType tableType,
+        public ParameterTemplateData(CppNativeMapper cppNativeMapper, SqlTableType tableType,
                 Field field, TypeInstantiation.InstantiatedParameter instantiatedParameter,
                 IncludeCollector includeCollector) throws ZserioEmitException
         {
             final Parameter parameter = instantiatedParameter.getParameter();
             final CppNativeType parameterNativeType =
-                    cppNativeTypeMapper.getCppType(parameter.getTypeReference());
+                    cppNativeMapper.getCppType(parameter.getTypeReference());
             includeCollector.addHeaderIncludesForType(parameterNativeType);
 
             tableName = tableType.getName();
@@ -158,14 +158,14 @@ public class InspectorParameterProviderTemplateData extends CppTemplateData
 
     public static class ExplicitParameterTemplateData implements Comparable<ExplicitParameterTemplateData>
     {
-        public ExplicitParameterTemplateData(CppNativeTypeMapper cppNativeTypeMapper,
+        public ExplicitParameterTemplateData(CppNativeMapper cppNativeMapper,
                 ExpressionFormatter cppSqlIndirectExpressionFormatter, SqlTableType tableType, Field field,
                 TypeInstantiation.InstantiatedParameter instantiatedParameter,
                 IncludeCollector includeCollector) throws ZserioEmitException
         {
             final Parameter parameter = instantiatedParameter.getParameter();
             final CppNativeType parameterNativeType =
-                    cppNativeTypeMapper.getCppType(parameter.getTypeReference());
+                    cppNativeMapper.getCppType(parameter.getTypeReference());
             includeCollector.addHeaderIncludesForType(parameterNativeType);
             final Expression argumentExpression = instantiatedParameter.getArgumentExpression();
 

@@ -21,6 +21,13 @@ abstract class PythonDefaultEmitter extends CodeDefaultEmitter
         super.processTemplate(templateName, templateData, zserioType, PYTHON_SOURCE_EXTENSION, false);
     }
 
+    protected void processSourceTemplate(String templateName, Object templateData,
+            PackageName zserioPackageName, String outFileName) throws ZserioEmitException
+    {
+        super.processTemplate(templateName, templateData, getPackageMapper().getPackageName(zserioPackageName),
+                outFileName, PYTHON_SOURCE_EXTENSION, false);
+    }
+
     protected void processTemplate(String templateName, Object templateData, PackageName packageName,
             String outFileNameRoot) throws ZserioEmitException
     {

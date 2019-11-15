@@ -2,7 +2,6 @@ package zserio.ast;
 
 import java.util.List;
 
-
 /**
  * AST node for default case defined by choice types.
  */

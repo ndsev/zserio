@@ -14,8 +14,6 @@ public class ZserioAstScopeSetter extends ZserioAstWalker
         currentScope = structureType.getScope();
         fillExpressionScopes = true;
 
-        addTemplateParameters(structureType);
-
         structureType.visitChildren(this);
 
         currentScope = defaultScope;
@@ -56,8 +54,6 @@ public class ZserioAstScopeSetter extends ZserioAstWalker
     {
         currentScope = choiceType.getScope();
         fillExpressionScopes = true;
-
-        addTemplateParameters(choiceType);
 
         for (Parameter parameter : choiceType.getTypeParameters())
             parameter.accept(this);
@@ -109,8 +105,6 @@ public class ZserioAstScopeSetter extends ZserioAstWalker
         currentScope = unionType.getScope();
         fillExpressionScopes = true;
 
-        addTemplateParameters(unionType);
-
         for (Parameter parameter : unionType.getTypeParameters())
             parameter.accept(this);
 
@@ -154,8 +148,6 @@ public class ZserioAstScopeSetter extends ZserioAstWalker
     public void visitSqlTableType(SqlTableType sqlTableType)
     {
         currentScope = sqlTableType.getScope();
-
-        addTemplateParameters(sqlTableType);
 
         sqlTableType.visitChildren(this);
 
@@ -228,6 +220,13 @@ public class ZserioAstScopeSetter extends ZserioAstWalker
         arrayType.visitChildren(this);
     }
 
+    @Override
+    public void visitTemplateParameter(TemplateParameter templateParameter)
+    {
+        templateParameter.visitChildren(this);
+        currentScope.setSymbol(templateParameter.getName(), templateParameter);
+    }
+
     private void visitChoiceField(Field field)
     {
         field.getTypeInstantiation().accept(this);
@@ -255,12 +254,6 @@ public class ZserioAstScopeSetter extends ZserioAstWalker
                 throw new InstantiationException(e, instantiation.getInstantiationReferenceStack());
             }
         }
-    }
-
-    private void addTemplateParameters(ZserioTemplatableType templatable)
-    {
-        for (TemplateParameter templateParameter : templatable.getTemplateParameters())
-            currentScope.setSymbol(templateParameter.getName(), templateParameter);
     }
 
     private final Scope defaultScope = new Scope((ZserioScopedType)null);

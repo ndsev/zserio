@@ -15,8 +15,8 @@ import zserio.runtime.io.FileBitStreamReader;
 import zserio.runtime.io.FileBitStreamWriter;
 
 import templates.choice_templated_selector.ChoiceTemplatedSelector;
-import templates.choice_templated_selector.TemplatedChoice_uint32_SHIFT32;
-import templates.choice_templated_selector.TemplatedChoice_uint16_SHIFT16;
+import templates.choice_templated_selector.TemplatedChoice_uint32_Shift32;
+import templates.choice_templated_selector.TemplatedChoice_uint16_Shift16;
 
 public class ChoiceTemplatedSelectorTest
 {
@@ -29,11 +29,11 @@ public class ChoiceTemplatedSelectorTest
         choiceTemplatedSelector.setSelector16(selector16);
         choiceTemplatedSelector.setSelector32(selector32);
 
-        final TemplatedChoice_uint16_SHIFT16 uint16Choice = new TemplatedChoice_uint16_SHIFT16(selector16);
+        final TemplatedChoice_uint16_Shift16 uint16Choice = new TemplatedChoice_uint16_Shift16(selector16);
         uint16Choice.setUint16Field(42);
         choiceTemplatedSelector.setUint16Choice(uint16Choice);
 
-        final TemplatedChoice_uint32_SHIFT32 uint32Choice = new TemplatedChoice_uint32_SHIFT32(selector32);
+        final TemplatedChoice_uint32_Shift32 uint32Choice = new TemplatedChoice_uint32_Shift32(selector32);
         uint32Choice.setStringField("string");
         choiceTemplatedSelector.setUint32Choice(uint32Choice);
 

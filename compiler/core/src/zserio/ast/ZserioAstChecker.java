@@ -46,10 +46,10 @@ public class ZserioAstChecker extends ZserioAstWalker
     }
 
     @Override
-    public void visitConstType(ConstType constType)
+    public void visitConstant(Constant constant)
     {
-        constType.visitChildren(this);
-        constType.check();
+        constant.visitChildren(this);
+        constant.check();
     }
 
     @Override

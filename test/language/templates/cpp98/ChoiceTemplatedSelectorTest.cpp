@@ -12,9 +12,9 @@ TEST(ChoiceTemplatedSelectorTest, readWrite)
     ChoiceTemplatedSelector choiceTemplatedSelector;
     choiceTemplatedSelector.setSelector16(0);
     choiceTemplatedSelector.setSelector32(1);
-    TemplatedChoice_uint16_SHIFT16& uint16Choice = choiceTemplatedSelector.getUint16Choice();
+    TemplatedChoice_uint16_Shift16& uint16Choice = choiceTemplatedSelector.getUint16Choice();
     uint16Choice.setUint16Field(42);
-    TemplatedChoice_uint32_SHIFT32& uint32Choice = choiceTemplatedSelector.getUint32Choice();
+    TemplatedChoice_uint32_Shift32& uint32Choice = choiceTemplatedSelector.getUint32Choice();
     uint32Choice.setStringField("string");
 
     zserio::BitStreamWriter writer;

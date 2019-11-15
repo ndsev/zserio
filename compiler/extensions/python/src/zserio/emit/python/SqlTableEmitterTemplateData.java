@@ -36,11 +36,11 @@ public class SqlTableEmitterTemplateData extends UserTypeTemplateData
         needsTypesInSchema = sqlTableType.needsTypesInSchema();
         isWithoutRowId = sqlTableType.isWithoutRowId();
 
-        final PythonNativeTypeMapper pythonNativeTypeMapper = context.getPythonNativeTypeMapper();
+        final PythonNativeMapper pythonNativeMapper = context.getPythonNativeMapper();
         final SqlNativeTypeMapper sqlNativeTypeMapper = new SqlNativeTypeMapper();
         for (Field field: sqlTableType.getFields())
         {
-            final FieldTemplateData fieldData = new FieldTemplateData(pythonNativeTypeMapper,
+            final FieldTemplateData fieldData = new FieldTemplateData(pythonNativeMapper,
                     pythonExpressionFormatter, context.getPythonSqlIndirectExpressionFormatter(this),
                     sqlNativeTypeMapper, sqlTableType, field, this);
             fields.add(fieldData);
@@ -130,7 +130,7 @@ public class SqlTableEmitterTemplateData extends UserTypeTemplateData
 
     public static class FieldTemplateData
     {
-        public FieldTemplateData(PythonNativeTypeMapper pythonNativeTypeMapper,
+        public FieldTemplateData(PythonNativeMapper pythonNativeMapper,
                 ExpressionFormatter pythonExpressionFormatter,
                 ExpressionFormatter pythonSqlIndirectExpressionFormatter,
                 SqlNativeTypeMapper sqlNativeTypeMapper, SqlTableType parentType, Field field,
@@ -139,7 +139,7 @@ public class SqlTableEmitterTemplateData extends UserTypeTemplateData
             final TypeInstantiation fieldTypeInstantiation = field.getTypeInstantiation();
             final TypeReference fieldTypeReference = fieldTypeInstantiation.getTypeReference();
             final ZserioType fieldBaseType = fieldTypeReference.getBaseTypeReference().getType();
-            final PythonNativeType nativeType = pythonNativeTypeMapper.getPythonType(fieldTypeReference);
+            final PythonNativeType nativeType = pythonNativeMapper.getPythonType(fieldTypeReference);
             importCollector.importType(nativeType);
 
             name = field.getName();

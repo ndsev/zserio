@@ -1,26 +1,35 @@
 package zserio.emit.cpp98;
 
-import zserio.ast.ConstType;
+import zserio.ast.Constant;
 import zserio.emit.common.ExpressionFormatter;
 import zserio.emit.common.ZserioEmitException;
+import zserio.emit.cpp98.symbols.CppNativeSymbol;
 import zserio.emit.cpp98.types.CppNativeType;
 
-public class ConstEmitterTemplateData extends UserTypeTemplateData
+public class ConstEmitterTemplateData extends CppTemplateData
 {
-    public ConstEmitterTemplateData(TemplateDataContext context, ConstType constType) throws ZserioEmitException
+    public ConstEmitterTemplateData(TemplateDataContext context, Constant constant) throws ZserioEmitException
     {
-        super(context, constType);
+        super(context);
 
-        final CppNativeTypeMapper cppNativeTypeMapper = context.getCppNativeTypeMapper();
+        final CppNativeMapper cppNativeMapper = context.getCppNativeMapper();
         final ExpressionFormatter cppExpressionFormatter = context.getExpressionFormatter(
                 new HeaderIncludeCollectorAdapter(this));
 
-        name = constType.getName();
-        CppNativeType nativeTargetType = cppNativeTypeMapper.getCppType(constType.getTypeReference());
-        cppTypeName = nativeTargetType.getFullName();
-        value = cppExpressionFormatter.formatGetter(constType.getValueExpression());
+        final CppNativeSymbol constantNativeSymbol = cppNativeMapper.getCppSymbol(constant);
+        packageData = new PackageTemplateData(constantNativeSymbol.getPackageName());
+        name = constantNativeSymbol.getName();
 
+        final CppNativeType nativeTargetType = cppNativeMapper.getCppType(constant.getTypeReference());
         addHeaderIncludesForType(nativeTargetType);
+
+        cppTypeName = nativeTargetType.getFullName();
+        value = cppExpressionFormatter.formatGetter(constant.getValueExpression());
+    }
+
+    public PackageTemplateData getPackage()
+    {
+        return packageData;
     }
 
     public String getName()
@@ -38,7 +47,8 @@ public class ConstEmitterTemplateData extends UserTypeTemplateData
         return value;
     }
 
-    private final String cppTypeName;
+    private final PackageTemplateData packageData;
     private final String name;
+    private final String cppTypeName;
     private final String value;
 }

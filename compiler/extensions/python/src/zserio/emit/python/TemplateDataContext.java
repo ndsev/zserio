@@ -9,15 +9,15 @@ final class TemplateDataContext
 {
     public TemplateDataContext(Parameters extensionParameters, PackageMapper pythonPackageMapper)
     {
-        pythonNativeTypeMapper = new PythonNativeTypeMapper(pythonPackageMapper);
+        pythonNativeMapper = new PythonNativeMapper(pythonPackageMapper);
         this.pythonPackageMapper = pythonPackageMapper;
         withWriterCode = extensionParameters.getWithWriterCode();
         withRangeCheckCode = extensionParameters.getWithRangeCheckCode();
     }
 
-    public PythonNativeTypeMapper getPythonNativeTypeMapper()
+    public PythonNativeMapper getPythonNativeMapper()
     {
-        return pythonNativeTypeMapper;
+        return pythonNativeMapper;
     }
 
     public PackageMapper getPythonPackageMapper()
@@ -28,7 +28,7 @@ final class TemplateDataContext
     public ExpressionFormatter getPythonExpressionFormatter(ImportCollector importCollector)
     {
         final ExpressionFormattingPolicy expressionFormattingPolicy =
-                new PythonExpressionFormattingPolicy(pythonNativeTypeMapper, importCollector);
+                new PythonExpressionFormattingPolicy(pythonNativeMapper, importCollector);
 
         return new ExpressionFormatter(expressionFormattingPolicy);
     }
@@ -36,7 +36,7 @@ final class TemplateDataContext
     public ExpressionFormatter getPythonSqlIndirectExpressionFormatter(ImportCollector importCollector)
     {
         final ExpressionFormattingPolicy expressionFormattingPolicy =
-                new PythonSqlIndirectExpressionFormattingPolicy(pythonNativeTypeMapper, importCollector);
+                new PythonSqlIndirectExpressionFormattingPolicy(pythonNativeMapper, importCollector);
 
         return new ExpressionFormatter(expressionFormattingPolicy);
     }
@@ -51,7 +51,7 @@ final class TemplateDataContext
         return withRangeCheckCode;
     }
 
-    private final PythonNativeTypeMapper pythonNativeTypeMapper;
+    private final PythonNativeMapper pythonNativeMapper;
     private final PackageMapper pythonPackageMapper;
 
     private final boolean withWriterCode;

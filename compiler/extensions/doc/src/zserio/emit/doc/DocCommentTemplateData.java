@@ -201,8 +201,16 @@ public class DocCommentTemplateData
         {
             alias = docTagSee.getLinkAlias();
             final SymbolReference linkSymbolReference = docTagSee.getLinkSymbolReference();
-            url = DocEmitterTools.getUrlNameFromTypeAndFieldName(linkSymbolReference.getReferencedType(),
-                    linkSymbolReference.getReferencedSymbolName());
+
+            if (linkSymbolReference.getReferencedType() == null)
+            {
+                url = DocEmitterTools.getUrlNameFromType(linkSymbolReference.getReferencedSymbol());
+            }
+            else
+            {
+                url = DocEmitterTools.getUrlNameFromTypeAndFieldName(linkSymbolReference.getReferencedType(),
+                        linkSymbolReference.getReferencedSymbolName());
+            }
         }
 
         public String getUrl()

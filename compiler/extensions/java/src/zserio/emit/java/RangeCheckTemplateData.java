@@ -14,13 +14,13 @@ import zserio.emit.java.types.NativeIntegralType;
 
 public final class RangeCheckTemplateData
 {
-    public RangeCheckTemplateData(JavaNativeTypeMapper javaNativeTypeMapper, boolean withRangeCheckCode,
+    public RangeCheckTemplateData(JavaNativeMapper javaNativeMapper, boolean withRangeCheckCode,
             String valueNameToCheck, ZserioType typeToCheck, boolean isTypeNullable,
             ExpressionFormatter javaExpressionFormatter) throws ZserioEmitException
     {
         if (withRangeCheckCode)
         {
-            final CommonRangeData commonRangeData = createCommonRangeData(javaNativeTypeMapper, typeToCheck,
+            final CommonRangeData commonRangeData = createCommonRangeData(javaNativeMapper, typeToCheck,
                     javaExpressionFormatter);
             // in setters, don't do range check if Zserio type has the same bounds as their native type
             if (commonRangeData != null && (commonRangeData.checkLowerBound || commonRangeData.checkUpperBound))
@@ -41,11 +41,11 @@ public final class RangeCheckTemplateData
         sqlRangeData = null;
     }
 
-    public RangeCheckTemplateData(JavaNativeTypeMapper javaNativeTypeMapper, ZserioType typeToCheck,
+    public RangeCheckTemplateData(JavaNativeMapper javaNativeMapper, ZserioType typeToCheck,
             ExpressionFormatter javaExpressionFormatter) throws ZserioEmitException
     {
         setterRangeData = null;
-        final CommonRangeData commonRangeData = createCommonRangeData(javaNativeTypeMapper, typeToCheck,
+        final CommonRangeData commonRangeData = createCommonRangeData(javaNativeMapper, typeToCheck,
                 javaExpressionFormatter);
         // in SQL, don't do range check (u)int64 and variable-length bit fields
         if (commonRangeData != null && !commonRangeData.is64BitType &&
@@ -214,7 +214,7 @@ public final class RangeCheckTemplateData
         private final String                    upperBound;
     }
 
-    private static CommonRangeData createCommonRangeData(JavaNativeTypeMapper javaNativeTypeMapper,
+    private static CommonRangeData createCommonRangeData(JavaNativeMapper javaNativeMapper,
             ZserioType typeToCheck, ExpressionFormatter javaExpressionFormatter) throws ZserioEmitException
     {
         // don't do range check for non-integer type
@@ -223,7 +223,7 @@ public final class RangeCheckTemplateData
         if (typeToCheck instanceof IntegerType)
         {
             integerType = (IntegerType)typeToCheck;
-            nativeType = javaNativeTypeMapper.getJavaIntegralType(integerType);
+            nativeType = javaNativeMapper.getJavaIntegralType(integerType);
 
             // don't do range check for BigInt
             if (nativeType.requiresBigInt())

@@ -12,16 +12,16 @@ import zserio.emit.java.types.JavaNativeType;
  */
 public class JavaExpressionFormattingPolicy extends JavaDefaultExpressionFormattingPolicy
 {
-    public JavaExpressionFormattingPolicy(JavaNativeTypeMapper javaNativeTypeMapper)
+    public JavaExpressionFormattingPolicy(JavaNativeMapper javaNativeMapper)
     {
-        super(javaNativeTypeMapper);
+        super(javaNativeMapper);
     }
 
     @Override
-    protected String getIdentifierForTypeEnum(EnumType resolvedType, JavaNativeTypeMapper javaNativeTypeMapper)
+    protected String getIdentifierForTypeEnum(EnumType resolvedType, JavaNativeMapper javaNativeMapper)
             throws ZserioEmitException
     {
-        final JavaNativeType javaType = javaNativeTypeMapper.getJavaType(resolvedType);
+        final JavaNativeType javaType = javaNativeMapper.getJavaType(resolvedType);
 
         return javaType.getFullName();
     }

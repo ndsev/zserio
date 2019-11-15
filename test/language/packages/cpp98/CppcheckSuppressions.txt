@@ -2,6 +2,7 @@
 uninitMemberVar:*/Coordinate.cpp
 uninitMemberVar:*/SimpleParamStructure.cpp
 uninitMemberVar:*/DefaultPackageStructure.cpp
+uninitMemberVar:*/single_import_precedence/top/Parameterized.cpp
 
 // suppress "Class 'X' has a constructor with 1 argument that is not explicit."
 noExplicitConstructor:*/Colour.h

@@ -21,19 +21,19 @@ public final class EnumerationEmitterTemplateData extends UserTypeTemplateData
     {
         super(context, enumType);
 
-        final JavaNativeTypeMapper javaNativeTypeMapper = context.getJavaNativeTypeMapper();
+        final JavaNativeMapper javaNativeMapper = context.getJavaNativeMapper();
         final IntegerType enumBaseType = enumType.getIntegerBaseType();
-        final NativeIntegralType nativeIntegralType = javaNativeTypeMapper.getJavaIntegralType(enumBaseType);
+        final NativeIntegralType nativeIntegralType = javaNativeMapper.getJavaIntegralType(enumBaseType);
         baseJavaTypeName = nativeIntegralType.getFullName();
 
         bitSize = createBitSize(enumType);
 
         runtimeFunction = JavaRuntimeFunctionDataCreator.createData(enumBaseType,
-                context.getJavaExpressionFormatter(), javaNativeTypeMapper);
+                context.getJavaExpressionFormatter(), javaNativeMapper);
 
         items = new ArrayList<EnumItemData>();
         for (EnumItem item: enumType.getItems())
-            items.add(new EnumItemData(javaNativeTypeMapper, enumType, item));
+            items.add(new EnumItemData(javaNativeMapper, enumType, item));
     }
 
     public String getBaseJavaTypeName()
@@ -74,13 +74,13 @@ public final class EnumerationEmitterTemplateData extends UserTypeTemplateData
 
     public static class EnumItemData
     {
-        public EnumItemData(JavaNativeTypeMapper javaNativeTypeMapper, EnumType enumType, EnumItem enumItem)
+        public EnumItemData(JavaNativeMapper javaNativeMapper, EnumType enumType, EnumItem enumItem)
                 throws ZserioEmitException
         {
             name = enumItem.getName();
 
             final NativeIntegralType nativeIntegralType =
-                    (NativeIntegralType)javaNativeTypeMapper.getJavaType(enumType.getIntegerBaseType());
+                    (NativeIntegralType)javaNativeMapper.getJavaType(enumType.getIntegerBaseType());
             value = nativeIntegralType.formatLiteral(enumItem.getValue());
         }
 

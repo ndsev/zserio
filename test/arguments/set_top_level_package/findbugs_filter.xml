@@ -1,0 +1,13 @@
+<FindBugsFilter>
+    <Match>
+        <!-- Same code in different switch clauses. -->
+        <Or>
+            <Class name="~.*SimpleChoice.*"/>
+        </Or>
+        <Or>
+            <Method name="bitSizeOf"/>
+            <Method name="initializeOffsets"/>
+        </Or>
+        <Bug code="DB"/>
+    </Match>
+</FindBugsFilter>

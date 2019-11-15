@@ -17,15 +17,15 @@ public final class SqlTableRowEmitterTemplateData extends JavaTemplateData
     {
         super(context);
 
-        final JavaNativeTypeMapper javaNativeTypeMapper = context.getJavaNativeTypeMapper();
-        final JavaNativeType javaType = javaNativeTypeMapper.getJavaType(tableType);
+        final JavaNativeMapper javaNativeMapper = context.getJavaNativeMapper();
+        final JavaNativeType javaType = javaNativeMapper.getJavaType(tableType);
         packageName = JavaFullNameFormatter.getFullName(javaType.getPackageName());
 
         name = tableRowName;
 
         for (Field field: tableType.getFields())
         {
-            final FieldTemplateData fieldData = new FieldTemplateData(javaNativeTypeMapper, field);
+            final FieldTemplateData fieldData = new FieldTemplateData(javaNativeMapper, field);
             fields.add(fieldData);
         }
     }
@@ -47,14 +47,14 @@ public final class SqlTableRowEmitterTemplateData extends JavaTemplateData
 
     public static class FieldTemplateData
     {
-        public FieldTemplateData(JavaNativeTypeMapper javaNativeTypeMapper, Field field)
+        public FieldTemplateData(JavaNativeMapper javaNativeMapper, Field field)
                 throws ZserioEmitException
         {
             final TypeReference fieldTypeReference = field.getTypeInstantiation().getTypeReference();
             name = field.getName();
-            final JavaNativeType nativeType = javaNativeTypeMapper.getJavaType(fieldTypeReference);
+            final JavaNativeType nativeType = javaNativeMapper.getJavaType(fieldTypeReference);
             javaTypeName = nativeType.getFullName();
-            javaNullableTypeName = javaNativeTypeMapper.getNullableJavaType(fieldTypeReference).getFullName();
+            javaNullableTypeName = javaNativeMapper.getNullableJavaType(fieldTypeReference).getFullName();
             isBool = nativeType instanceof NativeBooleanType;
         }
 

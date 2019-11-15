@@ -10,7 +10,7 @@ public class UserTypeTemplateData extends PythonTemplateData
     {
         super(context);
 
-        final PythonNativeType nativeType = context.getPythonNativeTypeMapper().getPythonType(type);
+        final PythonNativeType nativeType = context.getPythonNativeMapper().getPythonType(type);
         name = nativeType.getName();
     }
 

@@ -12,3 +12,8 @@ uninitMemberVar:*/SimpleStructure.cpp
 uninitMemberVar:*/TopStructure.cpp
 uninitMemberVar:*/TopStructure.h
 uninitMemberVar:*/package_name_conflict/Blob.cpp
+uninitMemberVar:*/single_import_precedence/single/Structure.cpp
+uninitMemberVar:*/single_import_precedence/top/Parameterized.cpp
+uninitMemberVar:*/single_import_precedence/top/Parameterized.h
+uninitMemberVar:*/single_import_precedence/top/SingleImportPrecedence.cpp
+uninitMemberVar:*/single_import_precedence/top/SingleImportPrecedence.h

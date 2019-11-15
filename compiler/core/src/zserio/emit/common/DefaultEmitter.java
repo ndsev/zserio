@@ -1,7 +1,7 @@
 package zserio.emit.common;
 
 import zserio.ast.ChoiceType;
-import zserio.ast.ConstType;
+import zserio.ast.Constant;
 import zserio.ast.EnumType;
 import zserio.ast.Import;
 import zserio.ast.Package;
@@ -41,7 +41,7 @@ public abstract class DefaultEmitter implements Emitter
     {}
 
     @Override
-    public void beginConst(ConstType constType) throws ZserioEmitException
+    public void beginConst(Constant constType) throws ZserioEmitException
     {}
 
     @Override

@@ -54,7 +54,7 @@ a.noStyle
     color:red;
 }
 
-a.consttypeLink
+a.constantLink
 {
     text-decoration:underline;
     color:gray;
