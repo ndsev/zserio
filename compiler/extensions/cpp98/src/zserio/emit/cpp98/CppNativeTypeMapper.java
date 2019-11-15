@@ -96,7 +96,14 @@ public class CppNativeTypeMapper
         final CppNativeType nativeType = visitor.getCppType();
         if (nativeType == null)
         {
-            if (type instanceof ExternType)
+            ZserioType elementType = type;
+            if (type instanceof ArrayType)
+            {
+                final ArrayType arrayType = (ArrayType)type;
+                elementType = arrayType.getElementTypeInstantiation().getTypeReference().getBaseTypeReference().
+                        getType();
+            }
+            if (elementType instanceof ExternType)
             {
                 ZserioToolPrinter.printError(type.getLocation(),
                         "'extern' type is not supported by the legacy C++98 emitter!");
