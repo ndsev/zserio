@@ -1,8 +1,11 @@
 package zserio.emit.cpp98;
 
 import zserio.ast.ArrayType;
+<<<<<<< HEAD
 import zserio.ast.InstantiateType;
+=======
 import zserio.ast.ExternType;
+>>>>>>> d8d9fee... [#70] Implement extern keyword for C++ emitter
 import zserio.ast.PackageName;
 import zserio.ast.UnionType;
 import zserio.ast.BitFieldType;

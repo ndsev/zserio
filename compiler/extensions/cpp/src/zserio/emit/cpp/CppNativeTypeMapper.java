@@ -2,6 +2,7 @@ package zserio.emit.cpp;
 
 import zserio.ast.ArrayType;
 import zserio.ast.InstantiateType;
+import zserio.ast.ExternType;
 import zserio.ast.IntegerType;
 import zserio.ast.PackageName;
 import zserio.ast.UnionType;
@@ -30,6 +31,7 @@ import zserio.emit.cpp.types.NativeArrayType;
 import zserio.emit.cpp.types.NativeBitfieldArrayType;
 import zserio.emit.cpp.types.NativeBooleanType;
 import zserio.emit.cpp.types.NativeDoubleType;
+import zserio.emit.cpp.types.NativeBitBufferType;
 import zserio.emit.cpp.types.NativeFloatType;
 import zserio.emit.cpp.types.NativeIntegralType;
 import zserio.emit.cpp.types.NativeObjectArrayType;
@@ -213,6 +215,12 @@ public class CppNativeTypeMapper
             default:
                 break;
             }
+        }
+
+        @Override
+        public void visitExternType(ExternType externType)
+        {
+            cppType = bitBufferArrayType;
         }
 
         @Override
@@ -457,6 +465,12 @@ public class CppNativeTypeMapper
         }
 
         @Override
+        public void visitExternType(ExternType type)
+        {
+            cppType = bitBufferType;
+        }
+
+        @Override
         public void visitServiceType(ServiceType type)
         {
             final PackageName packageName = cppPackageMapper.getPackageName(type);
@@ -626,6 +640,8 @@ public class CppNativeTypeMapper
     private final static NativeFloatType floatType = new NativeFloatType();
     private final static NativeDoubleType doubleType = new NativeDoubleType();
 
+    private final static NativeBitBufferType bitBufferType = new NativeBitBufferType();
+
     private final static NativeIntegralType uint8Type = new NativeIntegralType(8, false);
     private final static NativeIntegralType uint16Type = new NativeIntegralType(16, false);
     private final static NativeIntegralType uint32Type = new NativeIntegralType(32, false);
@@ -647,6 +663,9 @@ public class CppNativeTypeMapper
             new NativeArrayType(floatType, "Float32ArrayTraits", false);
     private final static NativeArrayType float64ArrayType =
             new NativeArrayType(doubleType, "Float64ArrayTraits", false);
+
+    private final static NativeArrayType bitBufferArrayType =
+            new NativeArrayType(bitBufferType, "BitBufferArrayTraits", false);
 
     private final static NativeArrayType int8ArrayType =
             new NativeArrayType(int8Type, "StdIntArrayTraits", true);

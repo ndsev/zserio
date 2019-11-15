@@ -1,4 +1,5 @@
 #include <limits>
+#include <cstring>
 #include <fstream>
 
 #include "zserio/BitStreamException.h"
@@ -703,40 +704,33 @@ bool BitStreamReader::readBool()
 BitBuffer BitStreamReader::readBitBuffer()
 {
     const size_t bitSize = convertVarUInt64ToArraySize(readVarUInt64());
+    size_t numBytesToRead = bitSize / 8;
+    const size_t numRestBits = bitSize - numBytesToRead * 8;
+    BitBuffer bitBuffer(bitSize);
+    uint8_t* buffer = bitBuffer.getBuffer();
     const BitPosType beginBitPosition = getBitPosition();
     if ((beginBitPosition & 0x07) != 0)
     {
-        size_t numBytesToRead = bitSize / 8;
-        const size_t numRestBits = bitSize - numBytesToRead * 8;
-        BitBuffer bitBuffer(bitSize);
-        uint8_t* buffer = bitBuffer.getBuffer();
+        // we are not aligned to byte
         while (numBytesToRead > 0)
         {
             *buffer = static_cast<uint8_t>(readBits(8));
+            buffer++;
             numBytesToRead--;
         }
-
-        if (numRestBits > 0)
-            *buffer = static_cast<uint8_t>(readBits(numRestBits));
-
-        return bitBuffer;
+    }
+    else
+    {
+        // we are aligned to byte
+        memcpy(buffer, m_context.buffer + beginBitPosition / 8, numBytesToRead);
+        setBitPosition(beginBitPosition + numBytesToRead * 8);
+        buffer += numBytesToRead;
     }
 
-    setBitPosition(beginBitPosition + bitSize);
+    if (numRestBits > 0)
+        *buffer = static_cast<uint8_t>(readBits(numRestBits));
 
-    return BitBuffer(m_context.buffer + beginBitPosition / 8, bitSize);
-}
-
-BitBuffer BitStreamReader::readBitBufferInPlace()
-{
-    const size_t bitSize = convertVarUInt64ToArraySize(readVarUInt64());
-    const BitPosType beginBitPosition = getBitPosition();
-    if ((beginBitPosition & 0x07) != 0)
-        throw BitStreamException("BitStreamReader: Attempt to read bit buffer in place from unaligned stream!");
-
-    setBitPosition(beginBitPosition + bitSize);
-
-    return BitBuffer(m_context.buffer + beginBitPosition / 8, bitSize, InPlace);
+    return bitBuffer;
 }
 
 void BitStreamReader::setBitPosition(BitPosType position)

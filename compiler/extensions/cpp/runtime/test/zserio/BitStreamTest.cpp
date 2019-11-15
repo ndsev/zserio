@@ -404,6 +404,17 @@ TEST_F(BitStreamTest, readBool)
     testBitStreamValues(values, &BitStreamWriter::writeBool, &BitStreamReader::readBool);
 }
 
+TEST_F(BitStreamTest, readBitBuffer)
+{
+    const BitBuffer values[] =
+    {
+        BitBuffer(std::vector<uint8_t>({0xAB, 0x07}), 3),
+        BitBuffer(std::vector<uint8_t>({0xAB, 0xCD, 0x7F}), 7)
+    };
+
+    testBitStreamValues(values, &BitStreamWriter::writeBitBuffer, &BitStreamReader::readBitBuffer);
+}
+
 TEST_F(BitStreamTest, setBitPosition)
 {
     ASSERT_EQ(0, m_writer.getBitPosition());

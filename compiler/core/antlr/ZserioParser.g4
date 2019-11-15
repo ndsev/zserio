@@ -124,7 +124,7 @@ choiceCases
     ;
 
 choiceCase
-    : CASE expression COLON
+    :   CASE expression COLON
     ;
 
 choiceDefault
@@ -345,6 +345,7 @@ builtinType
     |   boolType
     |   stringType
     |   floatType
+    |   externType
     ;
 
 qualifiedName
@@ -407,4 +408,8 @@ floatType
     :   FLOAT16
     |   FLOAT32
     |   FLOAT64
+    ;
+
+externType
+    :   EXTERN
     ;

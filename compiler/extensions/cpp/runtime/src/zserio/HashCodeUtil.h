@@ -189,23 +189,21 @@ namespace zserio
         return result;
     }
 
-    /* TODO[mikir] */
+    /**
+     * Calculates hash code of the given bit buffer using the given seed value.
+     *
+     * \param seedValue Seed value (current hash code).
+     * \param bitBuffer Bit buffer for which to calculate the hash code.
+     *
+     * \return Calculated hash code.
+     */
     inline int calcHashCode(int seedValue, const BitBuffer& bitBuffer)
     {
-        size_t bitSize;
-        const uint8_t* buffer = bitBuffer.get(bitSize);
+        const uint8_t* buffer = bitBuffer.getBuffer();
+        const size_t byteSize = bitBuffer.getByteSize();
         int result = seedValue;
-        const size_t byteSize = bitSize / 8;
-        const size_t restBitSize = bitSize - 8 * byteSize;
-        const uint8_t* p = buffer;
-        while (p < buffer + byteSize)
-            result = calcHashCode(result, *p++);
-
-        if (restBitSize > 0)
-        {
-            const uint8_t restBitMask = 0xFF >> (8 - restBitSize);
-            result = calcHashCode(result, restBitMask);
-        }
+        for (const uint8_t* p = buffer; p < buffer + byteSize; p++)
+            result = calcHashCode(result, *p);
 
         return result;
     }

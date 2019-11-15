@@ -975,6 +975,15 @@ public class ZserioAstBuilder extends ZserioParserBaseVisitor<Object>
         return new FloatType(location, token.getText(), token.getType());
     }
 
+    @Override
+    public ExternType visitExternType(ZserioParser.ExternTypeContext ctx)
+    {
+        final Token token = ctx.getStart();
+        final AstLocation location = new AstLocation(token);
+
+        return new ExternType(location, token.getText());
+    }
+
     private PackageName createPackageName(List<ZserioParser.IdContext> ids)
     {
         final PackageName.Builder packageNameBuilder = new PackageName.Builder();

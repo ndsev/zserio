@@ -273,7 +273,7 @@ void BitStreamWriter::writeBool(bool data)
 void BitStreamWriter::writeBitBuffer(const BitBuffer& bitBuffer)
 {
     const size_t bitSize = bitBuffer.getBitSize();
-    BitStreamWriter::writeVarUInt64(bitSize);
+    writeVarUInt64(bitSize);
 
     const uint8_t* buffer = bitBuffer.getBuffer();
     size_t numBytesToWrite = bitSize / 8;
@@ -281,6 +281,7 @@ void BitStreamWriter::writeBitBuffer(const BitBuffer& bitBuffer)
     const BitPosType beginBitPosition = getBitPosition();
     if ((beginBitPosition & 0x07) != 0)
     {
+        // we are not aligned to byte
         while (numBytesToWrite > 0)
         {
             writeUnsignedBits(*buffer, 8);
@@ -290,26 +291,14 @@ void BitStreamWriter::writeBitBuffer(const BitBuffer& bitBuffer)
     }
     else
     {
-        setBitPosition(beginBitPosition + numBytesToWrite * 8);
+        // we are aligned to byte
         memcpy(m_buffer + beginBitPosition / 8, buffer, numBytesToWrite);
+        setBitPosition(beginBitPosition + numBytesToWrite * 8);
         buffer += numBytesToWrite;
     }
 
     if (numRestBits > 0)
         writeUnsignedBits(*buffer, numRestBits);
-}
-
-BitBuffer BitStreamWriter::reserveBitBufferInPlace(size_t bitSize)
-{
-    BitStreamWriter::writeVarUInt64(bitSize);
-    const BitPosType beginBitPosition = getBitPosition();
-    if ((beginBitPosition & 0x07) != 0)
-        throw BitStreamException("BitStreamWriter: Attempt to reserve bit buffer in place from unaligned "
-                "stream!");
-
-    setBitPosition(beginBitPosition + bitSize);
-
-    return BitBuffer(m_buffer + beginBitPosition / 8, bitSize, InPlace);
 }
 
 void BitStreamWriter::setBitPosition(BitPosType position)
@@ -336,11 +325,6 @@ const uint8_t* BitStreamWriter::getWriteBuffer(size_t& writeBufferByteSize) cons
 {
     writeBufferByteSize = m_bufferBitSize / 8;
 
-    return getWriteBuffer();
-}
-
-const uint8_t* BitStreamWriter::getWriteBuffer() const
-{
     return m_buffer;
 }
 

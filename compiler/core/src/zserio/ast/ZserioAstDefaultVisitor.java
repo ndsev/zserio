@@ -132,6 +132,10 @@ public class ZserioAstDefaultVisitor implements ZserioAstVisitor
     {}
 
     @Override
+    public void visitExternType(ExternType externType)
+    {}
+
+    @Override
     public void visitTemplateParameter(TemplateParameter templateParameter)
     {}
 

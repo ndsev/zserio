@@ -240,4 +240,15 @@ TEST(BitSizeOfCalculatorTest, bitSizeOfString)
     EXPECT_EQ((2 + testStringLength) * 8, bitSizeOfString(testString));
 }
 
+TEST(BitSizeOfCalculatorTest, bitSizeOfBitBuffer)
+{
+    EXPECT_EQ(8 + 8, bitSizeOfBitBuffer(BitBuffer(std::vector<uint8_t>({0xAB, 0x03}), 0)));
+    EXPECT_EQ(8 + 11, bitSizeOfBitBuffer(BitBuffer(std::vector<uint8_t>({0xAB, 0x03}), 3)));
+    EXPECT_EQ(8 + 16, bitSizeOfBitBuffer(BitBuffer(std::vector<uint8_t>({0xAB, 0xCD}), 8)));
+    EXPECT_EQ(8 + 16, bitSizeOfBitBuffer(BitBuffer(std::vector<uint8_t>({0xAB, 0xCD}), 9)));
+
+    EXPECT_EQ(8 + 15 * 8 + 7, bitSizeOfBitBuffer(BitBuffer(std::vector<uint8_t>(16), 7)));
+    EXPECT_EQ(16 + 16 * 8, bitSizeOfBitBuffer(BitBuffer(std::vector<uint8_t>(16), 8)));
+}
+
 } // namespace zserio

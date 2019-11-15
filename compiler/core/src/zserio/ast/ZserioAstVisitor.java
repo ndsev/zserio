@@ -223,6 +223,13 @@ public interface ZserioAstVisitor
     void visitFloatType(FloatType floatType);
 
     /**
+     * Visits reference to built-in extern type.
+     *
+     * @param externType Extern type AST node.
+     */
+    void visitExternType(ExternType externType);
+
+    /**
      * Visits template parameter.
      *
      * @param templateParameter Template parameter AST node.

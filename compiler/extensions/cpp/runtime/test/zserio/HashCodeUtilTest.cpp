@@ -79,6 +79,13 @@ TEST(HashCodeUtilTest, stringType)
     EXPECT_EQ(HASH_PRIME_NUMBER + '0', calcHashCode(hashSeed, stringValue));
 }
 
+TEST(HashCodeUtilTest, bitBufferType)
+{
+    const int hashSeed = 1;
+    const BitBuffer bitBuffer(std::vector<uint8_t>({'0'}));
+    EXPECT_EQ(HASH_PRIME_NUMBER + '0', calcHashCode(hashSeed, bitBuffer));
+}
+
 TEST(HashCodeUtilTest, enumType)
 {
     const int hashSeed = 1;

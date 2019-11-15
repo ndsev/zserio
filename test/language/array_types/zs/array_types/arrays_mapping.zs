@@ -73,8 +73,11 @@ struct ArraysMapping
     // string arrays
     string                      stringArray[5];
 
+    // extern array
+    extern                      externArray[5];
+
     // compound array
-    TestStructure                compoundArray[5];
+    TestStructure               compoundArray[5];
 
     // enumeration array
     TestEnum                    enumArray[5];

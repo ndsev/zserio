@@ -310,4 +310,12 @@ TEST_F(BaseTypesTest, stringType)
     ASSERT_TRUE(stringType.compare(testString) == 0);
 }
 
+TEST_F(BaseTypesTest, externType)
+{
+    const zserio::BitBuffer testExtern(10);
+    m_baseTypes.setExternType(testExtern);
+    const zserio::BitBuffer& externType = m_baseTypes.getExternType();
+    ASSERT_EQ(testExtern, externType);
+}
+
 } // namespace base_types

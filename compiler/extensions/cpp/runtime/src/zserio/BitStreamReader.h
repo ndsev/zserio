@@ -65,7 +65,7 @@ public:
         };
 
         uint8_t* buffer; /**< Buffer to read from. */
-        BitPosType bufferBitSize; /**< Size of the buffer in bytes. */
+        BitPosType bufferBitSize; /**< Size of the buffer in bits. */
         bool hasInternalBuffer; /**< Whether the reader has internal buffer. True when reading from file. */
 
         BitCache cache; /**< Bit cache to optimize bit reading. */
@@ -78,14 +78,18 @@ public:
     };
 
     /**
-     * Constructor.
+     * Constructor from raw buffer.
      *
      * \param buffer Pointer to the buffer to read.
      * \param bufferByteSize Size of the buffer in bytes.
      */
     explicit BitStreamReader(const uint8_t* buffer, size_t bufferByteSize);
 
-    /* TODO[mikir] */
+    /**
+     * Constructor from bit buffer.
+     *
+     * \param buffer Bit buffer to read from.
+     */
     explicit BitStreamReader(const BitBuffer& bitBuffer);
 
     /**
@@ -218,11 +222,12 @@ public:
      */
     bool readBool();
 
-    /* TODO[mikir] */
+    /**
+     * Reads a bit buffer.
+     *
+     * \return Read bit buffer.
+     */
     BitBuffer readBitBuffer();
-
-    /* TODO[mikir] */
-    BitBuffer readBitBufferInPlace();
 
     /**
      * Gets current bit position.

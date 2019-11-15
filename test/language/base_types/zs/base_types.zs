@@ -66,6 +66,9 @@ struct BaseTypes
 
     // string types
     string          stringType;
+
+    // extern type
+    extern          externType;
 };
 
 const uint8 NUM_BITS = 8;
