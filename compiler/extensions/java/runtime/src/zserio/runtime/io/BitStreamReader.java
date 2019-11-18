@@ -237,6 +237,15 @@ public interface BitStreamReader extends BitStreamCloseable
     BigInteger readVarUInt() throws IOException;
 
     /**
+     * Reads a bit buffer from the bit stream.
+     *
+     * @return Read bit buffer.
+     *
+     * @throws IOException If reading failed.
+     */
+    BitBuffer readBitBuffer() throws IOException;
+
+    /**
      * Gets the current bit position.
      *
      * @return Current bit position counted from zero.

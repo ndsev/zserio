@@ -15,7 +15,7 @@ public class FileBitStreamReader extends ByteArrayBitStreamReader
      *
      * @param filename File name to create bit stream reader from.
      *
-     * @throws IOException If file manipulation error occured.
+     * @throws IOException If file manipulation error occurred.
      */
     public FileBitStreamReader(final String filename) throws IOException
     {
@@ -27,7 +27,7 @@ public class FileBitStreamReader extends ByteArrayBitStreamReader
      *
      * @param file File to create bit stream reader from.
      *
-     * @throws IOException If file manipulation error occured.
+     * @throws IOException If file manipulation error occurred.
      */
     public FileBitStreamReader(final File file) throws IOException
     {

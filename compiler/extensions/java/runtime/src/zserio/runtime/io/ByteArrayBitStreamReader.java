@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.math.BigInteger;
 
 import zserio.runtime.FloatUtil;
+import zserio.runtime.VarUInt64Util;
 
 /**
  * A bit stream reader using byte array.
@@ -15,12 +16,24 @@ public class ByteArrayBitStreamReader extends ByteArrayBitStreamBase implements 
     /**
      * Constructs object containing given bytes with a given byte order.
      *
-     * @param bytes     Array of bytes to construct from.
+     * @param bytes Array of bytes to construct from.
      */
     public ByteArrayBitStreamReader(final byte[] bytes)
     {
         this.buffer = new byte[bytes.length];
         System.arraycopy(bytes, 0, this.buffer, 0, bytes.length);
+        this.lastByteBits = 8;
+    }
+
+    /**
+     * Constructs object using given bit buffer.
+     *
+     * @param bitBuffer Bit buffer to construct from.
+     */
+    public ByteArrayBitStreamReader(final BitBuffer bitBuffer)
+    {
+        this.buffer = bitBuffer.getBuffer();
+        this.lastByteBits = (byte)(8 * (long)bitBuffer.getByteSize() - bitBuffer.getBitSize());
     }
 
     @Override
@@ -75,6 +88,10 @@ public class ByteArrayBitStreamReader extends ByteArrayBitStreamBase implements 
         }
 
         bitOffset = nextBitOffset;
+
+        if (bytePosition + 1 == buffer.length && bitOffset > lastByteBits)
+            throw new IOException("ByteArrayBitStreamReader: Unable to read bit on offset position " +
+                    (bitOffset - 1) + ". It's beyond end of the stream with length " + lastByteBits + " bits.");
 
         return accum;
     }
@@ -391,6 +408,32 @@ public class ByteArrayBitStreamReader extends ByteArrayBitStreamBase implements 
     }
 
     @Override
+    public BitBuffer readBitBuffer() throws IOException
+    {
+        final int bitSize = VarUInt64Util.convertVarUInt64ToInt(readVarUInt64());
+        final int numBytesToRead = bitSize / 8;
+        final byte numRestBits = (byte)(bitSize - numBytesToRead * 8);
+        final int byteSize = (bitSize + 7) / 8;
+        final byte[] readBuffer = new byte[byteSize];
+        if (bitOffset != 0)
+        {
+            // we are not aligned to byte
+            for (int i = 0; i < numBytesToRead; ++i)
+                readBuffer[i] = (byte)(readSignedBits(8));
+        }
+        else
+        {
+            // we are aligned to byte
+            read(readBuffer, 0, numBytesToRead);
+        }
+
+        if (numRestBits != 0)
+            readBuffer[numBytesToRead] = (byte)(readBits(numRestBits));
+
+        return new BitBuffer(readBuffer, bitSize);
+    }
+
+    @Override
     public void alignTo(final int alignVal) throws IOException
     {
         final long offset = getBitPosition() % alignVal;
@@ -577,4 +620,5 @@ public class ByteArrayBitStreamReader extends ByteArrayBitStreamBase implements 
      * The underlying byte array.
      */
     private final byte[] buffer;
+    private final byte lastByteBits;
 }

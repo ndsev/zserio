@@ -2,6 +2,7 @@ package zserio.emit.java;
 
 import zserio.ast.BitFieldType;
 import zserio.ast.BooleanType;
+import zserio.ast.ExternType;
 import zserio.ast.ZserioAstDefaultVisitor;
 import zserio.ast.ZserioType;
 import zserio.ast.FloatType;
@@ -56,6 +57,12 @@ public class JavaRuntimeFunctionDataCreator
         public void visitFloatType(FloatType type)
         {
             templateData = new RuntimeFunctionTemplateData("Float" + type.getBitSize());
+        }
+
+        @Override
+        public void visitExternType(ExternType type)
+        {
+            templateData = new RuntimeFunctionTemplateData("BitBuffer");
         }
 
         @Override

@@ -9,6 +9,7 @@ import array_types.arrays_mapping.TestStructure;
 import array_types.arrays_mapping.TestEnum;
 
 import zserio.runtime.array.BigIntegerArray;
+import zserio.runtime.array.BitBufferArray;
 import zserio.runtime.array.BoolArray;
 import zserio.runtime.array.ByteArray;
 import zserio.runtime.array.Float16Array;
@@ -166,6 +167,15 @@ public class ArraysMappingTest
         final StringArray stringArray = new StringArray(FIXED_ARRAY_LENGTH);
         arraysMapping.setStringArray(stringArray);
         assertEquals(FIXED_ARRAY_LENGTH, arraysMapping.getStringArray().length());
+    }
+
+    @Test
+    public void externArrays()
+    {
+        ArraysMapping arraysMapping = new ArraysMapping();
+        final BitBufferArray externArray = new BitBufferArray(FIXED_ARRAY_LENGTH);
+        arraysMapping.setExternArray(externArray);
+        assertEquals(FIXED_ARRAY_LENGTH, arraysMapping.getExternArray().length());
     }
 
     @Test

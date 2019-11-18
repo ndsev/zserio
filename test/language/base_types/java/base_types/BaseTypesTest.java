@@ -6,6 +6,8 @@ import java.math.BigInteger;
 
 import org.junit.Test;
 
+import zserio.runtime.io.BitBuffer;
+
 public class BaseTypesTest
 {
     @Test
@@ -326,6 +328,15 @@ public class BaseTypesTest
         baseTypes.setStringType(testString);
         final String stringType = baseTypes.getStringType();
         assertTrue(stringType.equals(testString));
+    }
+
+    @Test
+    public void externType()
+    {
+        final BitBuffer testExtern = new BitBuffer(new byte[]{(byte)0xCD, (byte)0x03}, (byte)2);
+        baseTypes.setExternType(testExtern);
+        final BitBuffer externType = baseTypes.getExternType();
+        assertTrue(externType.equals(testExtern));
     }
 
     private final BaseTypes baseTypes = new BaseTypes();

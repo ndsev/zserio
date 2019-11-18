@@ -6,6 +6,8 @@ import java.math.BigInteger;
 
 import org.junit.Test;
 
+import zserio.runtime.io.BitBuffer;
+
 public class BitSizeOfCalculatorTest
 {
     @Test
@@ -215,5 +217,27 @@ public class BitSizeOfCalculatorTest
         final int testStringLength = 1 << 7;
         final String testString = new String(new char[testStringLength]);
         assertEquals((2 + testStringLength) * 8, BitSizeOfCalculator.getBitSizeOfString(testString));
+    }
+
+    @Test
+    public void getBitSizeOfBitBuffer()
+    {
+        final BitBuffer testBitBuffer1 = new BitBuffer(new byte[]{(byte)0xAB, (byte)0x03}, 8);
+        assertEquals(8 + 8, BitSizeOfCalculator.getBitSizeOfBitBuffer(testBitBuffer1));
+
+        final BitBuffer testBitBuffer2 = new BitBuffer(new byte[]{(byte)0xAB, (byte)0x03}, 11);
+        assertEquals(8 + 11, BitSizeOfCalculator.getBitSizeOfBitBuffer(testBitBuffer2));
+
+        final BitBuffer testBitBuffer3 = new BitBuffer(new byte[]{(byte)0xAB, (byte)0xCD}, 16);
+        assertEquals(8 + 16, BitSizeOfCalculator.getBitSizeOfBitBuffer(testBitBuffer3));
+
+        final BitBuffer testBitBuffer4 = new BitBuffer(new byte[]{(byte)0xAB, (byte)0xCD});
+        assertEquals(8 + 16, BitSizeOfCalculator.getBitSizeOfBitBuffer(testBitBuffer4));
+
+        final BitBuffer testBitBuffer5 = new BitBuffer(new byte[16], 127);
+        assertEquals(8 + 15 * 8 + 7, BitSizeOfCalculator.getBitSizeOfBitBuffer(testBitBuffer5));
+
+        final BitBuffer testBitBuffer6 = new BitBuffer(new byte[16], 128);
+        assertEquals(16 + 16 * 8, BitSizeOfCalculator.getBitSizeOfBitBuffer(testBitBuffer6));
     }
 }

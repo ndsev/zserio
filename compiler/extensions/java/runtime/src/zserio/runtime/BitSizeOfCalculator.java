@@ -3,6 +3,8 @@ package zserio.runtime;
 import java.io.IOException;
 import java.math.BigInteger;
 
+import zserio.runtime.io.BitBuffer;
+
 /**
  * The class provides common methods to calculate bit size of an variable stored in the bit stream.
  */
@@ -325,7 +327,7 @@ public class BitSizeOfCalculator
      *
      * @return Length of Zserio string value in bits.
      *
-     * @throws ZserioError Throws if given string is too long for string type.
+     * @throws ZserioError Throws if given string is too long.
      */
     public static int getBitSizeOfString(String value) throws ZserioError
     {
@@ -333,6 +335,23 @@ public class BitSizeOfCalculator
 
         // the string consists of varuint64 for size followed by the UTF-8 encoded string
         return getBitSizeOfVarUInt64(stringBytes) + (int)BitPositionUtil.bytesToBits(stringBytes);
+    }
+
+    /**
+     * Gets the bit size of bit buffer which is stored in bit stream.
+     *
+     * @param bitBuffer Bit buffer for calculation.
+     *
+     * @return Length of bit buffer in bits.
+     *
+     * @throws ZserioError Throws if given bit buffer is too long.
+     */
+    public static int getBitSizeOfBitBuffer(BitBuffer bitBuffer) throws ZserioError
+    {
+        final long bitBufferSize = bitBuffer.getBitSize();
+
+        // bit buffer consists of varuint64 for bit size followed by the bits
+        return getBitSizeOfVarUInt64(bitBufferSize) + (int)bitBufferSize;
     }
 
     private static long sizeOfString(final String str)
