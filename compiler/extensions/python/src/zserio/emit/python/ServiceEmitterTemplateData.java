@@ -19,7 +19,8 @@ public final class ServiceEmitterTemplateData extends UserTypeTemplateData
         final PythonNativeMapper pythonTypeMapper = context.getPythonNativeMapper();
 
         final PythonNativeType nativeServiceType = pythonTypeMapper.getPythonType(serviceType);
-        packageName = PythonFullNameFormatter.getFullName(nativeServiceType.getPackageName());
+        // keep Zserio default formatting to ensure that all languages have same name of rpc methods
+        servicePackageName = nativeServiceType.getPackageName().toString();
 
         final Iterable<Rpc> rpcList = serviceType.getRpcList();
         for (Rpc rpc : rpcList)
@@ -32,9 +33,9 @@ public final class ServiceEmitterTemplateData extends UserTypeTemplateData
         importPackage("grpc");
     }
 
-    public String getPackageName()
+    public String getServicePackageName()
     {
-        return packageName;
+        return servicePackageName;
     }
 
     public Iterable<RpcTemplateData> getRpcList()
@@ -94,6 +95,6 @@ public final class ServiceEmitterTemplateData extends UserTypeTemplateData
         private final String requestStreaming;
     }
 
-    private final String packageName;
+    private final String servicePackageName;
     private final List<RpcTemplateData> rpcList = new ArrayList<RpcTemplateData>();
 }

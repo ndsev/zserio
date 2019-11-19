@@ -1,3 +1,4 @@
+#include <fstream>
 #include <memory>
 #include <grpcpp/grpcpp.h>
 
@@ -9,6 +10,27 @@ namespace service_types
 {
 namespace simple_service
 {
+
+namespace
+{
+    bool isStringInFilePresent(const char* filename, const char* str)
+    {
+        std::ifstream file(filename);
+        bool isPresent = false;
+        std::string line;
+        while (std::getline(file, line))
+        {
+            if (line.find(str) != std::string::npos)
+            {
+                isPresent = true;
+                break;
+            }
+        }
+        file.close();
+
+        return isPresent;
+    }
+}
 
 class Client
 {
@@ -102,7 +124,24 @@ private:
 
 protected:
     Client client;
+
+    static const char* SIMPLE_SERVICE_CPP;
 };
+
+const char* SimpleServiceTest::SIMPLE_SERVICE_CPP =
+        "language/service_types/gen/service_types/simple_service/SimpleService.cpp";
+
+TEST_F(SimpleServiceTest, serviceName)
+{
+    ASSERT_EQ(std::string("service_types.simple_service.SimpleService"),
+            SimpleService::service_full_name());
+}
+
+TEST_F(SimpleServiceTest, rpcMethodName)
+{
+    ASSERT_TRUE(isStringInFilePresent(SIMPLE_SERVICE_CPP,
+            "\"/service_types.simple_service.SimpleService/powerOfTwo\""));
+}
 
 TEST_F(SimpleServiceTest, powerOfTwo)
 {

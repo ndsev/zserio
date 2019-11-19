@@ -37,6 +37,20 @@ public class SimpleServiceTest
     }
 
     @Test
+    public void serviceName()
+    {
+        assertEquals("service_types.simple_service.SimpleService", SimpleServiceGrpc.SERVICE_NAME);
+    }
+
+    @Test
+    public void rpcMethodName()
+    {
+        // note that in java there is no leading slash (while it is a must in other languages)
+        assertEquals("service_types.simple_service.SimpleService/powerOfTwo",
+                SimpleServiceGrpc.getPowerOfTwoMethod().getFullMethodName());
+    }
+
+    @Test
     public void powerOfTwo()
     {
         assertEquals(BigInteger.valueOf(169), client.powerOfTwo(13));

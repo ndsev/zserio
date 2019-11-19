@@ -50,6 +50,16 @@ class SimpleServiceTest(unittest.TestCase):
         self.client = None
 
     @unittest.skipUnless(TEST_ARGS["grpc"], "GRPC is not enabled")
+    def testServiceName(self):
+        self.assertEqual("service_types.simple_service.SimpleService",
+                         self.server._state.generic_handlers[0].service_name())
+
+    @unittest.skipUnless(TEST_ARGS["grpc"], "GRPC is not enabled")
+    def testRpcMethodName(self):
+        self.assertEqual("/service_types.simple_service.SimpleService/powerOfTwo",
+                         list(self.server._state.generic_handlers[0]._method_handlers)[0])
+
+    @unittest.skipUnless(TEST_ARGS["grpc"], "GRPC is not enabled")
     def testPowerOfTwo(self):
         self.assertEqual(169, self.client.powerOfTwo(13))
         self.assertEqual(169, self.client.powerOfTwo(-13))

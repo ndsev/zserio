@@ -50,8 +50,8 @@
         "static io.grpc.stub.ServerCalls.asyncUnimplementedStreamingCall"
 ]/>
 </#if>
-<#assign packagePrefix>
-    <#if packageName?has_content>${packageName}.</#if><#t>
+<#assign servicePackagePrefix>
+    <#if servicePackageName?has_content>${servicePackageName}.</#if><#t>
 </#assign>
 
 <@class_header generatorDescription/>
@@ -61,7 +61,7 @@ public final class ${className}
     {
     }
 
-    public static final String SERVICE_NAME = "${packagePrefix}${name}";
+    public static final String SERVICE_NAME = "${servicePackagePrefix}${name}";
 
 <#list rpcList as rpc>
     private static volatile <@method_descriptor rpc/> <@get_rpc_method rpc/>;
@@ -87,7 +87,7 @@ public final class ${className}
                             <#lt><@marshaller rpc.responseTypeFullName, 7/>;
 
                     ${className}.<@get_rpc_method rpc/> = <@get_rpc_method rpc/> =
-                            <#lt><@method_descriptor_builder packagePrefix, name, rpc, 7/>;
+                            <#lt><@method_descriptor_builder servicePackagePrefix, name, rpc, 7/>;
                 }
             }
         }

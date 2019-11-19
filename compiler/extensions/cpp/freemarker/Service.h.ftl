@@ -28,7 +28,7 @@ class ${name} final
 public:
     static constexpr char const* service_full_name()
     {
-        return "<#if package.name?has_content>${package.name}.</#if>${name}";
+        return "<#if servicePackageName?has_content>${servicePackageName}.</#if>${name}";
     }
 
     class StubInterface
@@ -107,8 +107,10 @@ public:
     };
 
 </#list>
+<#if rpcList?has_content>
     <@typedef_async_service rpcList/>
 
+</#if>
 <#list rpcList as rpc>
     <#-- Server side - Generic -->
     template <class BaseClass>
@@ -196,8 +198,10 @@ public:
 
     </#if>
 </#list>
+<#if noStreamingRpcList?has_content>
     <@typedef_streamed_unary_service noStreamingRpcList/>
 
+</#if>
 <#list rpcList as rpc>
     <#-- Server side - controlled server-side streaming -->
     <#if rpc.responseOnlyStreaming>
@@ -239,10 +243,14 @@ public:
 
     </#if>
 </#list>
+<#if responseOnlyStreamingRpcList?has_content>
     <@typedef_split_streamed_service responseOnlyStreamingRpcList/>
 
+</#if>
+<#if noOrResponseOnlyStreamingRpcList?has_content>
     <#-- Server side - typedef for controlled both unary and server-side streaming -->
     <@typedef_streamed_service noOrResponseOnlyStreamingRpcList/>
+</#if>
 };
 <@namespace_end package.path/>
 

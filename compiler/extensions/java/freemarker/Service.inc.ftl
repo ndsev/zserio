@@ -19,7 +19,7 @@ ${I}                "${packagePrefix}${service}", "${rpc.name}"))
 ${I}        .setSampledToLocalTracing(true)
 ${I}        .setRequestMarshaller(requestMarshaller)
 ${I}        .setResponseMarshaller(responseMarshaller)
-${I}        .build();<#rt>
+${I}        .build()<#rt>
 </#macro>
 
 <#macro marshaller typeFullName indent>

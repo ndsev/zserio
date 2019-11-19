@@ -6,6 +6,7 @@ import zserio.ast.ServiceType;
 import zserio.ast.Rpc;
 import zserio.ast.ZserioType;
 import zserio.emit.common.ZserioEmitException;
+import zserio.emit.cpp.types.CppNativeType;
 
 public class ServiceEmitterTemplateData extends UserTypeTemplateData
 {
@@ -15,6 +16,11 @@ public class ServiceEmitterTemplateData extends UserTypeTemplateData
         super(context, serviceType);
 
         final CppNativeMapper cppTypeMapper = context.getCppNativeMapper();
+
+        final CppNativeType nativeServiceType = cppTypeMapper.getCppType(serviceType);
+        // keep Zserio default formatting to ensure that all languages have same name of rpc methods
+        servicePackageName = nativeServiceType.getPackageName().toString();
+
         Iterable<Rpc> rpcList = serviceType.getRpcList();
         for (Rpc rpc : rpcList)
         {
@@ -34,6 +40,11 @@ public class ServiceEmitterTemplateData extends UserTypeTemplateData
                 noOrResponseOnlyStreamingRpcList.add(templateData);
             }
         }
+    }
+
+    public String getServicePackageName()
+    {
+        return servicePackageName;
     }
 
     public Iterable<RpcTemplateData> getRpcList()
@@ -108,6 +119,7 @@ public class ServiceEmitterTemplateData extends UserTypeTemplateData
         private final boolean hasRequestStreaming;
     }
 
+    private final String servicePackageName;
     private final List<RpcTemplateData> rpcList = new ArrayList<RpcTemplateData>();
     private final List<RpcTemplateData> noStreamingRpcList = new ArrayList<RpcTemplateData>();
     private final List<RpcTemplateData> responseOnlyStreamingRpcList = new ArrayList<RpcTemplateData>();

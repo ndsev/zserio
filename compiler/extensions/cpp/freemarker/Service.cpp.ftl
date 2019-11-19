@@ -19,7 +19,7 @@
 static const char* ${name}_method_names[] =
 {
 <#list rpcList as rpc>
-    "/<#if package.name?has_content>${package.name}.</#if>${name}/${rpc.name}"<#if rpc?has_next>,</#if>
+    "/<#if servicePackageName?has_content>${servicePackageName}.</#if>${name}/${rpc.name}"<#if rpc?has_next>,</#if>
 </#list>
 };
 

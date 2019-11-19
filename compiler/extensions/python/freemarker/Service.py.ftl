@@ -2,8 +2,8 @@
 <@file_header generatorDescription/>
 <@all_imports packageImports symbolImports typeImports/>
 
-<#assign packagePrefix>
-    <#if packageName?has_content>${packageName}.</#if><#t>
+<#assign servicePackagePrefix>
+    <#if servicePackageName?has_content>${servicePackageName}.</#if><#t>
 </#assign>
 class ${name}Stub():
     def __init__(self, channel):
@@ -19,7 +19,7 @@ class ${name}Stub():
             return ${rpc.responseTypeFullName}.fromReader(reader)
 
         self.${rpc.name} = channel.${rpc.requestStreaming}_${rpc.responseStreaming}(
-            '/${packagePrefix}${name}/${rpc.name}',
+            '/${servicePackagePrefix}${name}/${rpc.name}',
             request_serializer=${rpc.name}_request_serializer,
             response_deserializer=${rpc.name}_response_deserializer
         )
@@ -68,5 +68,5 @@ def add_${name}Servicer_to_server(servicer, server):
 </#list>
     }
 
-    generic_handler = grpc.method_handlers_generic_handler('${packagePrefix}${name}', rpc_method_handlers)
+    generic_handler = grpc.method_handlers_generic_handler('${servicePackagePrefix}${name}', rpc_method_handlers)
     server.add_generic_rpc_handlers((generic_handler,))

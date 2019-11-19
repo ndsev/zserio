@@ -8,6 +8,7 @@ import zserio.ast.ServiceType;
 import zserio.ast.ZserioType;
 import zserio.emit.common.ZserioEmitException;
 import zserio.emit.java.JavaNativeMapper;
+import zserio.emit.java.types.JavaNativeType;
 
 public final class ServiceEmitterTemplateData extends UserTypeTemplateData
 {
@@ -19,6 +20,11 @@ public final class ServiceEmitterTemplateData extends UserTypeTemplateData
         className = serviceType.getName() + "Grpc";
 
         final JavaNativeMapper javaTypeMapper = context.getJavaNativeMapper();
+
+        final JavaNativeType nativeServiceType = javaTypeMapper.getJavaType(serviceType);
+        // keep Zserio default formatting to ensure that all languages have same name of rpc methods
+        servicePackageName = nativeServiceType.getPackageName().toString();
+
         final Iterable<Rpc> rpcList = serviceType.getRpcList();
         for (Rpc rpc : rpcList)
         {
@@ -43,6 +49,11 @@ public final class ServiceEmitterTemplateData extends UserTypeTemplateData
     public String getClassName()
     {
         return className;
+    }
+
+    public String getServicePackageName()
+    {
+        return servicePackageName;
     }
 
     public boolean getHasNoStreamingRpc()
@@ -123,6 +134,7 @@ public final class ServiceEmitterTemplateData extends UserTypeTemplateData
     }
 
     private final String className;
+    private final String servicePackageName;
     private final List<RpcTemplateData> rpcList = new ArrayList<RpcTemplateData>();
     private boolean hasNoStreamingRpc;
     private boolean hasRequestOnlyStreamingRpc;
