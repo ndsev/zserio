@@ -1,5 +1,7 @@
 import unittest
 
+import zserio
+
 from testutils import getZserioApi
 
 class ArraysMappingTest(unittest.TestCase):
@@ -90,6 +92,12 @@ class ArraysMappingTest(unittest.TestCase):
         stringArray = ["Test" + str(i) for i in range(self.FIXED_ARRAY_LENGTH)]
 
         arraysMapping.setStringArray(stringArray)
+
+    def testExternArrays(self):
+        arraysMapping = self.api.ArraysMapping()
+        externArray = [zserio.bitbuffer.BitBuffer(bytes([0xCD, 0x03]), 10)
+                       for i in range(self.FIXED_ARRAY_LENGTH)]
+        arraysMapping.setExternArray(externArray)
 
     def testCompoundArray(self):
         arraysMapping = self.api.ArraysMapping()

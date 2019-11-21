@@ -7,7 +7,7 @@ from zserio.bitsizeof import (getBitSizeOfVarUInt16, getBitSizeOfVarUInt32,
                               getBitSizeOfVarUInt64, getBitSizeOfVarUInt,
                               getBitSizeOfVarInt16, getBitSizeOfVarInt32,
                               getBitSizeOfVarInt64, getBitSizeOfVarInt,
-                              getBitSizeOfString)
+                              getBitSizeOfString, getBitSizeOfBitBuffer)
 from zserio.hashcode import calcHashCode, HASH_SEED
 from zserio.exception import PythonRuntimeException
 
@@ -983,6 +983,59 @@ class BoolArrayTraits():
         """
 
         writer.writeBool(value)
+
+class BitBufferArrayTraits():
+    """
+    Array traits for Zserio extern bit buffer type.
+    """
+
+    HAS_BITSIZEOF_CONSTANT = False
+
+    @staticmethod
+    def bitSizeOf(_bitPosition, value):
+        """
+        Returns length of Zserio extern bit buffer type stored in the bit stream in bits.
+
+        :param _bitPosition: Not used.
+        :param value: Zserio extern bit buffer type value.
+        :returns: Length of given Zserio string type in bits.
+        """
+
+        return getBitSizeOfBitBuffer(value)
+
+    @staticmethod
+    def initializeOffsets(bitPosition, value):
+        """
+        Initializes indexed offsets for Zserio extern bit buffer type.
+
+        :param bitPosition: Current bit stream position.
+        :param value: Zserio extern bit buffer type value.
+        :returns: Updated bit stream position which points to the first bit after Zserio extern bit buffer type.
+        """
+
+        return bitPosition + BitBufferArrayTraits.bitSizeOf(bitPosition, value)
+
+    @staticmethod
+    def read(reader, _index):
+        """
+        Reads Zserio extern bit buffer type from the bit stream.
+
+        :param reader: Bit stream from which to read.
+        :param _index: Not used.
+        """
+
+        return reader.readBitBuffer()
+
+    @staticmethod
+    def write(writer, value):
+        """
+        Writes Zserio extern bit buffer type to the bit stream.
+
+        :param writer: Bit stream where to write.
+        :param value: Zserio extern bit buffer type to write.
+        """
+
+        writer.writeBitBuffer(value)
 
 class ObjectArrayTraits():
     """

@@ -7,6 +7,7 @@ import zserio.ast.BooleanType;
 import zserio.ast.ChoiceType;
 import zserio.ast.Constant;
 import zserio.ast.EnumType;
+import zserio.ast.ExternType;
 import zserio.ast.FloatType;
 import zserio.ast.InstantiateType;
 import zserio.ast.PackageName;
@@ -26,6 +27,7 @@ import zserio.emit.common.PackageMapper;
 import zserio.emit.common.ZserioEmitException;
 import zserio.emit.python.symbols.PythonNativeSymbol;
 import zserio.emit.python.types.NativeArrayType;
+import zserio.emit.python.types.NativeBitBufferType;
 import zserio.emit.python.types.NativeBuiltinType;
 import zserio.emit.python.types.NativeFixedSizeIntArrayType;
 import zserio.emit.python.types.NativeObjectArrayType;
@@ -64,8 +66,10 @@ public class PythonNativeMapper
             return new PythonNativeSymbol(packageName, name);
         }
         else
+        {
             throw new ZserioEmitException("Unhandled symbol '" + symbol.getClass().getName() +
                     "' in PythonNativeMapper!");
+        }
     }
 
     /**
@@ -160,6 +164,12 @@ public class PythonNativeMapper
         public void visitFloatType(FloatType type)
         {
             pythonType = floatType;
+        }
+
+        @Override
+        public void visitExternType(ExternType type)
+        {
+            pythonType = bitBufferType;
         }
 
         @Override
@@ -259,19 +269,19 @@ public class PythonNativeMapper
         @Override
         public void visitBooleanType(BooleanType type)
         {
-            pythonArrayType = new NativeArrayType("BoolArrayTraits");
+            pythonArrayType = boolArrayType;
         }
 
         @Override
         public void visitChoiceType(ChoiceType type)
         {
-            pythonArrayType = new NativeObjectArrayType("ObjectArrayTraits");
+            pythonArrayType = objectArrayType;
         }
 
         @Override
         public void visitEnumType(EnumType type)
         {
-            pythonArrayType = new NativeObjectArrayType("ObjectArrayTraits");
+            pythonArrayType = objectArrayType;
         }
 
         @Override
@@ -280,15 +290,15 @@ public class PythonNativeMapper
             switch (type.getBitSize())
             {
             case 16:
-                pythonArrayType = new NativeArrayType("Float16ArrayTraits");
+                pythonArrayType = float16ArrayType;
                 break;
 
             case 32:
-                pythonArrayType = new NativeArrayType("Float32ArrayTraits");
+                pythonArrayType = float32ArrayType;
                 break;
 
             case 64:
-                pythonArrayType = new NativeArrayType("Float64ArrayTraits");
+                pythonArrayType = float64ArrayType;
                 break;
 
             default:
@@ -298,59 +308,63 @@ public class PythonNativeMapper
         }
 
         @Override
+        public void visitExternType(ExternType type)
+        {
+            pythonArrayType = bitBufferArrayType;
+        }
+
+        @Override
         public void visitBitFieldType(BitFieldType type)
         {
             if (type.isSigned())
-                pythonArrayType = new NativeFixedSizeIntArrayType("SignedBitFieldArrayTraits");
+                pythonArrayType = signedBitFieldArrayType;
             else
-                pythonArrayType = new NativeFixedSizeIntArrayType("BitFieldArrayTraits");
+                pythonArrayType = bitFieldArrayType;
         }
 
         @Override
         public void visitStdIntegerType(StdIntegerType type)
         {
-            pythonArrayType = new NativeFixedSizeIntArrayType((type.isSigned()) ? "SignedBitFieldArrayTraits"
-                    : "BitFieldArrayTraits");
+            pythonArrayType = (type.isSigned()) ? signedBitFieldArrayType : bitFieldArrayType;
         }
 
         @Override
         public void visitStringType(StringType type)
         {
-            pythonArrayType = new NativeArrayType("StringArrayTraits");
+            pythonArrayType = stringArrayType;
         }
 
         @Override
         public void visitStructureType(StructureType type)
         {
-            pythonArrayType = new NativeObjectArrayType("ObjectArrayTraits");
+            pythonArrayType = objectArrayType;
         }
 
         @Override
         public void visitUnionType(UnionType type)
         {
-            pythonArrayType = new NativeObjectArrayType("ObjectArrayTraits");
+            pythonArrayType = objectArrayType;
         }
 
         @Override
         public void visitVarIntegerType(VarIntegerType type)
         {
-            final String unsignedPrefix = type.isSigned() ? "" : "U";
             switch (type.getMaxBitSize())
             {
             case 16:
-                pythonArrayType = new NativeArrayType("Var" + unsignedPrefix + "Int16ArrayTraits");
+                pythonArrayType = (type.isSigned()) ? varInt16ArrayType : varUInt16ArrayType;
                 break;
 
             case 32:
-                pythonArrayType = new NativeArrayType("Var" + unsignedPrefix + "Int32ArrayTraits");
+                pythonArrayType = (type.isSigned()) ? varInt32ArrayType : varUInt32ArrayType;
                 break;
 
             case 64:
-                pythonArrayType = new NativeArrayType("Var" + unsignedPrefix + "Int64ArrayTraits");
+                pythonArrayType = (type.isSigned()) ? varInt64ArrayType : varUInt64ArrayType;
                 break;
 
             case 72:
-                pythonArrayType = new NativeArrayType("Var" + unsignedPrefix + "IntArrayTraits");
+                pythonArrayType = (type.isSigned()) ? varIntArrayType : varUIntArrayType;
                 break;
 
             default:
@@ -363,8 +377,30 @@ public class PythonNativeMapper
     }
 
     private final PackageMapper pythonPackageMapper;
+
     private final static PythonNativeType boolType = new NativeBuiltinType("bool");
     private final static PythonNativeType intType = new NativeBuiltinType("int");
     private final static PythonNativeType strType = new NativeBuiltinType("str");
     private final static PythonNativeType floatType = new NativeBuiltinType("float");
+    private final static PythonNativeType bitBufferType = new NativeBitBufferType();
+
+    private final static NativeArrayType boolArrayType = new NativeArrayType("BoolArrayTraits");
+    private final static NativeArrayType objectArrayType = new NativeObjectArrayType("ObjectArrayTraits");
+    private final static NativeArrayType float16ArrayType = new NativeArrayType("Float16ArrayTraits");
+    private final static NativeArrayType float32ArrayType = new NativeArrayType("Float32ArrayTraits");
+    private final static NativeArrayType float64ArrayType = new NativeArrayType("Float64ArrayTraits");
+    private final static NativeArrayType bitBufferArrayType = new NativeArrayType("BitBufferArrayTraits");
+    private final static NativeArrayType signedBitFieldArrayType =
+            new NativeFixedSizeIntArrayType("SignedBitFieldArrayTraits");
+    private final static NativeArrayType bitFieldArrayType =
+            new NativeFixedSizeIntArrayType("BitFieldArrayTraits");
+    private final static NativeArrayType stringArrayType = new NativeArrayType("StringArrayTraits");
+    private final static NativeArrayType varInt16ArrayType = new NativeArrayType("VarInt16ArrayTraits");
+    private final static NativeArrayType varInt32ArrayType = new NativeArrayType("VarInt32ArrayTraits");
+    private final static NativeArrayType varInt64ArrayType = new NativeArrayType("VarInt64ArrayTraits");
+    private final static NativeArrayType varIntArrayType = new NativeArrayType("VarIntArrayTraits");
+    private final static NativeArrayType varUInt16ArrayType = new NativeArrayType("VarUInt16ArrayTraits");
+    private final static NativeArrayType varUInt32ArrayType = new NativeArrayType("VarUInt32ArrayTraits");
+    private final static NativeArrayType varUInt64ArrayType = new NativeArrayType("VarUInt64ArrayTraits");
+    private final static NativeArrayType varUIntArrayType = new NativeArrayType("VarUIntArrayTraits");
 }

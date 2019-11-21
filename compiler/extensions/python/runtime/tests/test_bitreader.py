@@ -1,10 +1,16 @@
 import unittest
 
+from zserio.bitbuffer import BitBuffer
 from zserio.bitreader import BitStreamReader
 from zserio.bitsizeof import INT64_MIN
 from zserio.exception import PythonRuntimeException
 
 class BitStreamReaderTest(unittest.TestCase):
+
+    def testFromBitBuffer(self):
+        bitBuffer = BitBuffer(bytes([0x0B, 0xAB, 0xE0]), 19)
+        reader = BitStreamReader.fromBitBuffer(bitBuffer)
+        self.assertEqual(BitBuffer(bytes([0xAB, 0x07]), 11), reader.readBitBuffer())
 
     def testReadBits(self):
         data = [0, 1, 255, 128, 127]
@@ -135,6 +141,13 @@ class BitStreamReaderTest(unittest.TestCase):
         self.assertEqual(False, reader.readBool())
         with self.assertRaises(PythonRuntimeException):
             reader.readBool()
+
+    def testReadBitBuffer(self):
+        reader = BitStreamReader(bytes(b'\x0B\xAB\xE1\xE0\x1F\xC0'))
+        self.assertEqual(BitBuffer(bytes([0xAB, 0x07]), 11), reader.readBitBuffer())
+        self.assertEqual(BitBuffer(bytes([0x00, 0x7F]), 15), reader.readBitBuffer())
+        with self.assertRaises(PythonRuntimeException):
+            reader.readBitBuffer()
 
     def testGetBitPosition(self):
         reader = BitStreamReader(bytes(1))

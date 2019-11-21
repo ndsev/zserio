@@ -2,6 +2,7 @@
 The module implements abstraction for reading data to the bit stream.
 """
 
+from zserio.bitbuffer import BitBuffer
 from zserio.bitsizeof import INT64_MIN
 from zserio.exception import PythonRuntimeException
 from zserio.float import convertUInt16ToFloat, convertUInt32ToFloat, convertUInt64ToFloat
@@ -21,6 +22,19 @@ class BitStreamReader:
         self._buffer = buffer
         self._bitPosition = 0
         self._bitSize = len(buffer) * 8
+
+    @classmethod
+    def fromBitBuffer(cls, bitBuffer):
+        """
+        Constructs bit stream reader from bit buffer.
+
+        :param bitBuffer: Bit buffer to read as a bit stream.
+        """
+
+        instance = cls(bitBuffer.getBuffer())
+        instance._bitSize = bitBuffer.getBitSize()
+
+        return instance
 
     @classmethod
     def fromFile(cls, filename):
@@ -410,6 +424,35 @@ class BitStreamReader:
         """
 
         return self.readBits(1) != 0
+
+    def readBitBuffer(self):
+        """
+        Reads a bit buffer from the stream.
+
+        :return: Read bit buffer.
+        :raises PythonRuntimeException: If the reading goes behind the stream.
+        """
+
+        bitSize = self.readVarUInt64()
+        numBytesToRead = bitSize // 8
+        numRestBits = bitSize - numBytesToRead * 8
+        byteSize = (bitSize + 7) // 8
+        readBuffer = bytearray(byteSize)
+        beginBitPosition = self._bitPosition
+        if (beginBitPosition & 0x07) != 0:
+            # we are not aligned to byte
+            for i in range(numBytesToRead):
+                readBuffer[i] = self.readBits(8)
+        else:
+            # we are aligned to byte
+            self.setBitPosition(beginBitPosition + numBytesToRead * 8)
+            beginBytePosition = beginBitPosition // 8
+            readBuffer[0:numBytesToRead] = self._buffer[beginBytePosition:beginBytePosition + numBytesToRead]
+
+        if numRestBits != 0:
+            readBuffer[numBytesToRead] = self.readBits(numRestBits)
+
+        return BitBuffer(readBuffer, bitSize)
 
     def getBitPosition(self):
         """

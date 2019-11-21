@@ -1,10 +1,11 @@
 import unittest
 
+from zserio.bitbuffer import BitBuffer
 from zserio.bitsizeof import (getBitSizeOfVarInt16, getBitSizeOfVarInt32,
                               getBitSizeOfVarInt64, getBitSizeOfVarInt,
                               getBitSizeOfVarUInt16, getBitSizeOfVarUInt32,
                               getBitSizeOfVarUInt64, getBitSizeOfVarUInt,
-                              getBitSizeOfString)
+                              getBitSizeOfString, getBitSizeOfBitBuffer)
 from zserio.exception import PythonRuntimeException
 from zserio.limits import INT64_MIN
 
@@ -255,3 +256,22 @@ class BitSizeOfTest(unittest.TestCase):
         testStringLength = 1 << 7 # 2 bytes per character!
         testString = (b'\xc2\xAB' * testStringLength).decode("utf-8")
         self.assertEqual((2 + 2 * testStringLength) * 8, getBitSizeOfString(testString))
+
+    def testGetBitSizeOfBitBuffer(self):
+        testBitBuffer1 = BitBuffer([0xAB, 0x03], 8)
+        self.assertEqual(8 + 8, getBitSizeOfBitBuffer(testBitBuffer1))
+
+        testBitBuffer2 = BitBuffer([0xAB, 0x03], 11)
+        self.assertEqual(8 + 11, getBitSizeOfBitBuffer(testBitBuffer2))
+
+        testBitBuffer3 = BitBuffer([0xAB, 0xCD], 16)
+        self.assertEqual(8 + 16, getBitSizeOfBitBuffer(testBitBuffer3))
+
+        testBitBuffer4 = BitBuffer([0xAB, 0xCD])
+        self.assertEqual(8 + 16, getBitSizeOfBitBuffer(testBitBuffer4))
+
+        testBitBuffer5 = BitBuffer(16 * [1], 127)
+        self.assertEqual(8 + 15 * 8 + 7, getBitSizeOfBitBuffer(testBitBuffer5))
+
+        testBitBuffer6 = BitBuffer(16 * [1], 128)
+        self.assertEqual(16 + 16 * 8, getBitSizeOfBitBuffer(testBitBuffer6))
