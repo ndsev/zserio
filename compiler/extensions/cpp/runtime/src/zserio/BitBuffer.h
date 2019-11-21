@@ -13,8 +13,7 @@ namespace zserio
  * Class which holds any bit sequence.
  *
  * Because bit buffer size does not have to be byte aligned (divisible by 8), it's possible that not all bits
- * of the last byte are used. In this case, only less significant bits of the corresponded size are used
- * and all other bits are set to zero (are cleared by constructor).
+ * of the last byte are used. In this case, only less significant bits of the corresponded size are used.
  */
 class BitBuffer
 {
@@ -44,7 +43,7 @@ public:
      * \param buffer STL vector of bytes from which the bit buffer should be created.
      * \param bitSize Number of bits stored in buffer to use.
      *
-     * \throw CppRuntimeException If given bit size is ouf of range for given vector.
+     * \throw CppRuntimeException If given bit size is out of range for given vector.
      */
     explicit BitBuffer(const std::vector<uint8_t>& buffer, size_t bitSize);
 
@@ -61,7 +60,7 @@ public:
      * \param buffer STL vector of bytes from which the bit buffer should be created.
      * \param bitSize Number of bits stored in buffer to use.
      *
-     * \throw CppRuntimeException If given bit size is ouf of range for given vector.
+     * \throw CppRuntimeException If given bit size is out of range for given vector.
      */
     explicit BitBuffer(std::vector<uint8_t>&& buffer, size_t bitSize);
 
@@ -96,22 +95,11 @@ public:
     bool operator==(const BitBuffer& other) const;
 
     /**
-     * Gets the underlying buffer together with bit size.
+     * Calculates hash code of the bit buffer.
      *
-     * \param bitSize Bit buffer size in bytes to fill.
-     *
-     * \return Pointer to the constant underlying buffer.
+     * \return Calculated hash code.
      */
-    const uint8_t* get(size_t& bitSize) const;
-
-    /**
-     * Gets the underlying buffer together with bit size.
-     *
-     * \param bitSize Bit buffer size in bytes to fill.
-     *
-     * \return Pointer to the underlying buffer.
-     */
-    uint8_t* get(size_t& bitSize);
+    int hashCode() const;
 
     /**
      * Gets the underlying buffer.
@@ -144,7 +132,7 @@ public:
     size_t getByteSize() const;
 
 private:
-    void maskLastByte();
+    uint8_t getMaskedLastByte() const;
 
     std::vector<uint8_t> m_buffer;
     size_t m_bitSize;

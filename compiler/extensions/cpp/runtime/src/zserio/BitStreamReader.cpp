@@ -722,8 +722,8 @@ BitBuffer BitStreamReader::readBitBuffer()
     else
     {
         // we are aligned to byte
-        memcpy(buffer, m_context.buffer + beginBitPosition / 8, numBytesToRead);
         setBitPosition(beginBitPosition + numBytesToRead * 8);
+        memcpy(buffer, m_context.buffer + beginBitPosition / 8, numBytesToRead);
         buffer += numBytesToRead;
     }
 

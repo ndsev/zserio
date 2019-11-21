@@ -292,8 +292,8 @@ void BitStreamWriter::writeBitBuffer(const BitBuffer& bitBuffer)
     else
     {
         // we are aligned to byte
-        memcpy(m_buffer + beginBitPosition / 8, buffer, numBytesToWrite);
         setBitPosition(beginBitPosition + numBytesToWrite * 8);
+        memcpy(m_buffer + beginBitPosition / 8, buffer, numBytesToWrite);
         buffer += numBytesToWrite;
     }
 

@@ -157,34 +157,37 @@ TEST(BitBufferTest, equalOperator)
     const BitBuffer bitBuffer4(std::vector<uint8_t>({0xAB, 0x03}), bitSize);
     ASSERT_FALSE(bitBuffer1 == bitBuffer4);
 
-    const BitBuffer bitBuffer5(std::vector<uint8_t>({0xAB, 0xCD}));
+    const BitBuffer bitBuffer5(std::vector<uint8_t>({0xBA, 0x07}), bitSize);
     ASSERT_FALSE(bitBuffer1 == bitBuffer5);
+
+    const BitBuffer bitBuffer6(std::vector<uint8_t>({0xAB}));
+    ASSERT_FALSE(bitBuffer1 == bitBuffer6);
+
+    const BitBuffer bitBuffer7;
+    ASSERT_FALSE(bitBuffer1 == bitBuffer7);
 }
 
-TEST(BitBufferTest, constGet)
+TEST(BitBufferTest, hashCode)
 {
     const size_t bitSize = 11;
-    const std::vector<uint8_t> buffer = {0xAB, 0x03};
-    const BitBuffer bitBuffer(buffer, bitSize);
+    const BitBuffer bitBuffer1(std::vector<uint8_t>({0xAB, 0x07}), bitSize);
+    const BitBuffer bitBuffer2(std::vector<uint8_t>({0xAB, 0x0F}), bitSize);
+    ASSERT_EQ(bitBuffer1.hashCode(), bitBuffer2.hashCode());
 
-    size_t readBitSize;
-    const uint8_t* readBuffer = bitBuffer.get(readBitSize);
-    ASSERT_EQ(bitSize, readBitSize);
-    for (uint8_t element : buffer)
-        ASSERT_EQ(element, *readBuffer++);
-}
+    const BitBuffer bitBuffer3(std::vector<uint8_t>({0xAB, 0xFF}), bitSize);
+    ASSERT_EQ(bitBuffer1.hashCode(), bitBuffer3.hashCode());
 
-TEST(BitBufferTest, get)
-{
-    const size_t bitSize = 11;
-    const std::vector<uint8_t> buffer = {0xAB, 0x03};
-    BitBuffer bitBuffer(buffer, bitSize);
+    const BitBuffer bitBuffer4(std::vector<uint8_t>({0xAB, 0x03}), bitSize);
+    ASSERT_NE(bitBuffer1.hashCode(), bitBuffer4.hashCode());
 
-    size_t readBitSize;
-    uint8_t* readBuffer = bitBuffer.get(readBitSize);
-    ASSERT_EQ(bitSize, readBitSize);
-    for (uint8_t element : buffer)
-        ASSERT_EQ(element, *readBuffer++);
+    const BitBuffer bitBuffer5(std::vector<uint8_t>({0xBA, 0x07}), bitSize);
+    ASSERT_NE(bitBuffer1.hashCode(), bitBuffer5.hashCode());
+
+    const BitBuffer bitBuffer6(std::vector<uint8_t>({0xAB}));
+    ASSERT_NE(bitBuffer1.hashCode(), bitBuffer6.hashCode());
+
+    const BitBuffer bitBuffer7;
+    ASSERT_NE(bitBuffer1.hashCode(), bitBuffer7.hashCode());
 }
 
 TEST(BitBufferTest, constGetBuffer)

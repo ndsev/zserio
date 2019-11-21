@@ -10,7 +10,6 @@
 #include "zserio/Arrays.h"
 #include "zserio/Enums.h"
 #include "zserio/OptionalHolder.h"
-#include "zserio/BitBuffer.h"
 
 namespace zserio
 {
@@ -185,25 +184,6 @@ namespace zserio
         int result = seedValue;
         for (std::string::value_type element : stringValue)
             result = calcHashCode(result, element);
-
-        return result;
-    }
-
-    /**
-     * Calculates hash code of the given bit buffer using the given seed value.
-     *
-     * \param seedValue Seed value (current hash code).
-     * \param bitBuffer Bit buffer for which to calculate the hash code.
-     *
-     * \return Calculated hash code.
-     */
-    inline int calcHashCode(int seedValue, const BitBuffer& bitBuffer)
-    {
-        const uint8_t* buffer = bitBuffer.getBuffer();
-        const size_t byteSize = bitBuffer.getByteSize();
-        int result = seedValue;
-        for (const uint8_t* p = buffer; p < buffer + byteSize; p++)
-            result = calcHashCode(result, *p);
 
         return result;
     }
