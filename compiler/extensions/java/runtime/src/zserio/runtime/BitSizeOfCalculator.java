@@ -225,6 +225,15 @@ public class BitSizeOfCalculator
         return bitSize;
     }
 
+    /**
+     * Gets the bit size of varint value which is stored in bit stream.
+     *
+     * @param value varint value for calculation.
+     *
+     * @return Length of varint value in bits.
+     *
+     * @throws ZserioError Throws if given value is out of range for varint type.
+     */
     public static int getBitSizeOfVarInt(long value)
     {
         if (value == Long.MIN_VALUE)
@@ -273,6 +282,15 @@ public class BitSizeOfCalculator
         return bitSize;
     }
 
+    /**
+     * Gets the bit size of varuint value which is stored in bit stream.
+     *
+     * @param value varuint value for calculation.
+     *
+     * @return Length of varuint value in bits.
+     *
+     * @throws ZserioError Throws if given value is out of range for varuint type.
+     */
     public static int getBitSizeOfVarUInt(BigInteger value) throws ZserioError
     {
         if (value.compareTo(BigInteger.ZERO) == -1 || value.compareTo(VARUINT_MAX) == 1)

@@ -52,8 +52,7 @@ public class BitBuffer
 
         final BitBuffer other = (BitBuffer)obj;
 
-        final long bitSize = getBitSize();
-        if (bitSize != other.getBitSize())
+        if (bitSize != other.bitSize)
             return false;
 
         final int byteSize = getByteSize();

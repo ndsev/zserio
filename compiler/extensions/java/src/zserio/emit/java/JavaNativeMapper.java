@@ -715,7 +715,6 @@ final class JavaNativeMapper
     private final static NativeUnsignedLongType unsignedLongType = new NativeUnsignedLongType();
 
     // zserio.runtime arrays
-
     private final static NativeArrayType boolArrayType = new NativeArrayType("BoolArray");
 
     private final static NativeArrayType stdStringArrayType = new NativeArrayType("StringArray");
