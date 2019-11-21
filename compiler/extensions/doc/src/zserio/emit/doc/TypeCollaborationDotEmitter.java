@@ -7,7 +7,6 @@ import java.util.Set;
 
 import zserio.ast.AstNode;
 import zserio.ast.Root;
-import zserio.ast.ZserioType;
 import zserio.emit.common.ZserioEmitException;
 import freemarker.template.Configuration;
 import freemarker.template.Template;

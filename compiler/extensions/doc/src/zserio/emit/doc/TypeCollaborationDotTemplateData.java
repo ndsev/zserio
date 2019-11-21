@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.Map;
 
 import zserio.ast.AstNode;
-import zserio.ast.ZserioType;
 import zserio.emit.common.ZserioEmitException;
 
 /**
