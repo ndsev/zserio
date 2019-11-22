@@ -18,7 +18,7 @@ BitBuffer::BitBuffer(size_t bitSize) : m_buffer((bitSize + 7) / 8), m_bitSize(bi
 }
 
 BitBuffer::BitBuffer(const std::vector<uint8_t>& buffer) :
-        BitBuffer(buffer, 8 * buffer.size())
+        m_buffer(buffer), m_bitSize(8 * buffer.size())
 {
 }
 
@@ -30,11 +30,11 @@ BitBuffer::BitBuffer(const std::vector<uint8_t>& buffer, size_t bitSize) :
         throw CppRuntimeException("BitBuffer: Bit size " + convertToString(bitSize) +
                 " out of range for given vector byte size " + convertToString(buffer.size()) + "!");
 
-    m_buffer.assign(&buffer[0], &buffer[0] + byteSize);
+    m_buffer.assign(buffer.data(), buffer.data() + byteSize);
 }
 
 BitBuffer::BitBuffer(std::vector<uint8_t>&& buffer) :
-        BitBuffer(std::move(buffer), 8 * buffer.size())
+        m_buffer(std::move(buffer)), m_bitSize(8 * m_buffer.size())
 {
 }
 
@@ -96,12 +96,12 @@ int BitBuffer::hashCode() const
 
 const uint8_t* BitBuffer::getBuffer() const
 {
-    return &m_buffer[0];
+    return m_buffer.data();
 }
 
 uint8_t* BitBuffer::getBuffer()
 {
-    return &m_buffer[0];
+    return m_buffer.data();
 }
 
 size_t BitBuffer::getBitSize() const

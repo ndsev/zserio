@@ -56,7 +56,7 @@ TEST(BitBufferTest, vectorMoveConstructor)
 {
     const size_t byteSize = 2;
     std::vector<uint8_t> buffer(byteSize);
-    const uint8_t* bufferStart = &buffer[0];
+    const uint8_t* bufferStart = buffer.data();
     const BitBuffer bitBuffer(std::move(buffer));
     ASSERT_EQ(8 * byteSize, bitBuffer.getBitSize());
     ASSERT_EQ(bufferStart, bitBuffer.getBuffer());
@@ -66,7 +66,7 @@ TEST(BitBufferTest, vectorBitSizeMoveConstructor)
 {
     const size_t bitSize = 11;
     std::vector<uint8_t> buffer((bitSize + 7) / 8);
-    const uint8_t* bufferStart = &buffer[0];
+    const uint8_t* bufferStart = buffer.data();
     const BitBuffer bitBuffer(std::move(buffer), bitSize);
     ASSERT_EQ(bitSize, bitBuffer.getBitSize());
     ASSERT_EQ(bufferStart, bitBuffer.getBuffer());
@@ -79,12 +79,12 @@ TEST(BitBufferTest, rawPointerConstructor)
 {
     const size_t bitSize = 11;
     const std::vector<uint8_t> buffer((bitSize + 7) / 8);
-    const BitBuffer bitBuffer(&buffer[0], bitSize);
+    const BitBuffer bitBuffer(buffer.data(), bitSize);
     ASSERT_EQ(bitSize, bitBuffer.getBitSize());
 
     const size_t emptyBitSize = 0;
     const std::vector<uint8_t> emptyBuffer;
-    const BitBuffer emptyBitBuffer(&emptyBuffer[0], emptyBitSize);
+    const BitBuffer emptyBitBuffer(emptyBuffer.data(), emptyBitSize);
     ASSERT_EQ(emptyBitSize, emptyBitBuffer.getBitSize());
 }
 
