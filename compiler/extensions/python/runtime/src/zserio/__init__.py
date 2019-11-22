@@ -20,4 +20,4 @@ import zserio.float
 import zserio.hashcode
 import zserio.limits
 
-VERSION_STRING = "1.4.0-pre1"
+VERSION_STRING = "1.4.0-pre2"
