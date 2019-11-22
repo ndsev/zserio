@@ -361,6 +361,31 @@ public class ByteArrayBitStreamWriter extends ByteArrayBitStreamBase implements 
     }
 
     @Override
+    public void writeBitBuffer(final BitBuffer bitBuffer) throws IOException
+    {
+        final long bitSize = bitBuffer.getBitSize();
+        writeVarUInt64(bitSize);
+
+        final byte[] writeBuffer = bitBuffer.getBuffer();
+        final int numBytesToWrite = (int)(bitSize / 8);
+        final byte numRestBits = (byte)(bitSize - (long)numBytesToWrite * 8);
+        if (bitOffset != 0)
+        {
+            // we are not aligned to byte
+            for (int i = 0; i < numBytesToWrite; ++i)
+                writeSignedBits(writeBuffer[i], 8);
+        }
+        else
+        {
+            // we are aligned to byte
+            write(writeBuffer, 0, numBytesToWrite);
+        }
+
+        if (numRestBits > 0)
+            writeBits(writeBuffer[numBytesToWrite], numRestBits);
+    }
+
+    @Override
     public void alignTo(final int alignVal) throws IOException
     {
         final long offset = getBitPosition() % alignVal;

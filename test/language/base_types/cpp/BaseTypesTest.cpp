@@ -143,10 +143,10 @@ TEST_F(BaseTypesTest, variableBitfieldType)
 
 TEST_F(BaseTypesTest, variableBitfield8Type)
 {
-    const uint8_t maxBitfield8Type = std::numeric_limits<uint8_t>::max();
-    m_baseTypes.setBitfield8Type(maxBitfield8Type);
-    const uint8_t bitfield8Type = m_baseTypes.getBitfield8Type();
-    ASSERT_EQ(maxBitfield8Type, bitfield8Type);
+    const uint8_t maxVariableBitfield8Type = std::numeric_limits<uint8_t>::max();
+    m_baseTypes.setVariableBitfield8Type(maxVariableBitfield8Type);
+    const uint8_t variableBitfield8Type = m_baseTypes.getVariableBitfield8Type();
+    ASSERT_EQ(maxVariableBitfield8Type, variableBitfield8Type);
 }
 
 TEST_F(BaseTypesTest, intfield8Type)
@@ -191,10 +191,10 @@ TEST_F(BaseTypesTest, variableIntfieldType)
 
 TEST_F(BaseTypesTest, variableIntfield8Type)
 {
-    const int8_t maxIntfield8Type = std::numeric_limits<int8_t>::max();
-    m_baseTypes.setIntfield8Type(maxIntfield8Type);
-    const int8_t intfield8Type = m_baseTypes.getIntfield8Type();
-    ASSERT_EQ(maxIntfield8Type, intfield8Type);
+    const int8_t maxVariableIntfield8Type = std::numeric_limits<int8_t>::max();
+    m_baseTypes.setVariableIntfield8Type(maxVariableIntfield8Type);
+    const int8_t variableIntfield8Type = m_baseTypes.getVariableIntfield8Type();
+    ASSERT_EQ(maxVariableIntfield8Type, variableIntfield8Type);
 }
 
 TEST_F(BaseTypesTest, float16Type)
@@ -308,6 +308,108 @@ TEST_F(BaseTypesTest, stringType)
     m_baseTypes.setStringType(testString);
     const std::string& stringType = m_baseTypes.getStringType();
     ASSERT_TRUE(stringType.compare(testString) == 0);
+}
+
+TEST_F(BaseTypesTest, externType)
+{
+    const zserio::BitBuffer testExtern(std::vector<uint8_t>({0xCD, 0x03}), 10);
+    m_baseTypes.setExternType(testExtern);
+    const zserio::BitBuffer& externType = m_baseTypes.getExternType();
+    ASSERT_EQ(testExtern, externType);
+}
+
+TEST_F(BaseTypesTest, bitSizeOf)
+{
+    m_baseTypes.setBoolType(true);
+    m_baseTypes.setUint8Type(1);
+    m_baseTypes.setUint16Type(std::numeric_limits<uint16_t>::max());
+    m_baseTypes.setUint32Type(std::numeric_limits<uint32_t>::max());
+    m_baseTypes.setUint64Type(std::numeric_limits<uint64_t>::max());
+    m_baseTypes.setInt8Type(std::numeric_limits<int8_t>::max());
+    m_baseTypes.setInt16Type(std::numeric_limits<int16_t>::max());
+    m_baseTypes.setInt32Type(std::numeric_limits<int32_t>::max());
+    m_baseTypes.setInt64Type(std::numeric_limits<int64_t>::max());
+    m_baseTypes.setBitfield7Type(UINT8_C(0x7F));
+    m_baseTypes.setBitfield8Type(std::numeric_limits<uint8_t>::max());
+    m_baseTypes.setBitfield15Type(UINT16_C(0x7FFF));
+    m_baseTypes.setBitfield16Type(std::numeric_limits<uint16_t>::max());
+    m_baseTypes.setBitfield31Type(UINT32_C(0x7FFFFFFF));
+    m_baseTypes.setBitfield32Type(std::numeric_limits<uint32_t>::max());
+    m_baseTypes.setBitfield63Type(UINT64_C(0x7FFFFFFFFFFFFFFF));
+    m_baseTypes.setVariableBitfieldType(1);
+    m_baseTypes.setVariableBitfield8Type(std::numeric_limits<uint8_t>::max());
+    m_baseTypes.setIntfield8Type(std::numeric_limits<int8_t>::max());
+    m_baseTypes.setIntfield16Type(std::numeric_limits<int16_t>::max());
+    m_baseTypes.setIntfield32Type(std::numeric_limits<int32_t>::max());
+    m_baseTypes.setIntfield64Type(std::numeric_limits<int64_t>::max());
+    m_baseTypes.setVariableIntfieldType(1);
+    m_baseTypes.setVariableIntfield8Type(std::numeric_limits<int8_t>::max());
+    m_baseTypes.setFloat16Type(std::numeric_limits<float>::max());
+    m_baseTypes.setFloat32Type(std::numeric_limits<float>::max());
+    m_baseTypes.setFloat64Type(std::numeric_limits<double>::max());
+    m_baseTypes.setVaruint16Type((UINT16_C(1) << 15) - 1);
+    m_baseTypes.setVaruint32Type((UINT32_C(1) << 29) - 1);
+    m_baseTypes.setVaruint64Type((UINT64_C(1) << 57) - 1);
+    m_baseTypes.setVaruintType(UINT64_MAX);
+    m_baseTypes.setVarint16Type((INT16_C(1) << 14) - 1);
+    m_baseTypes.setVarint32Type((INT32_C(1) << 28) - 1);
+    m_baseTypes.setVarint64Type((INT64_C(1) << 56) - 1);
+    m_baseTypes.setVarintType(INT64_MAX);
+    m_baseTypes.setStringType("TEST");
+    m_baseTypes.setExternType(zserio::BitBuffer(std::vector<uint8_t>({0xCD, 0x03}), 10));
+    const size_t expectedBitSizeOf = 1102;
+    ASSERT_EQ(expectedBitSizeOf, m_baseTypes.bitSizeOf());
+}
+
+TEST_F(BaseTypesTest, readWrite)
+{
+    m_baseTypes.setBoolType(true);
+    m_baseTypes.setUint8Type(8);
+    m_baseTypes.setUint16Type(std::numeric_limits<uint16_t>::max());
+    m_baseTypes.setUint32Type(std::numeric_limits<uint32_t>::max());
+    m_baseTypes.setUint64Type(std::numeric_limits<uint64_t>::max());
+    m_baseTypes.setInt8Type(std::numeric_limits<int8_t>::max());
+    m_baseTypes.setInt16Type(std::numeric_limits<int16_t>::max());
+    m_baseTypes.setInt32Type(std::numeric_limits<int32_t>::max());
+    m_baseTypes.setInt64Type(std::numeric_limits<int64_t>::max());
+    m_baseTypes.setBitfield7Type(UINT8_C(0x7F));
+    m_baseTypes.setBitfield8Type(std::numeric_limits<uint8_t>::max());
+    m_baseTypes.setBitfield15Type(UINT16_C(0x7FFF));
+    m_baseTypes.setBitfield16Type(std::numeric_limits<uint16_t>::max());
+    m_baseTypes.setBitfield31Type(UINT32_C(0x7FFFFFFF));
+    m_baseTypes.setBitfield32Type(std::numeric_limits<uint32_t>::max());
+    m_baseTypes.setBitfield63Type(UINT64_C(0x7FFFFFFFFFFFFFFF));
+    m_baseTypes.setVariableBitfieldType(std::numeric_limits<uint8_t>::max());
+    m_baseTypes.setVariableBitfield8Type(std::numeric_limits<uint8_t>::max());
+    m_baseTypes.setIntfield8Type(std::numeric_limits<int8_t>::max());
+    m_baseTypes.setIntfield16Type(std::numeric_limits<int16_t>::max());
+    m_baseTypes.setIntfield32Type(std::numeric_limits<int32_t>::max());
+    m_baseTypes.setIntfield64Type(std::numeric_limits<int64_t>::max());
+    m_baseTypes.setVariableIntfieldType(std::numeric_limits<int8_t>::max());
+    m_baseTypes.setVariableIntfield8Type(std::numeric_limits<int8_t>::max());
+    m_baseTypes.setFloat16Type(1.0f);
+    m_baseTypes.setFloat32Type(std::numeric_limits<float>::max());
+    m_baseTypes.setFloat64Type(std::numeric_limits<double>::max());
+    m_baseTypes.setVaruint16Type((UINT16_C(1) << 15) - 1);
+    m_baseTypes.setVaruint32Type((UINT32_C(1) << 29) - 1);
+    m_baseTypes.setVaruint64Type((UINT64_C(1) << 57) - 1);
+    m_baseTypes.setVaruintType(UINT64_MAX);
+    m_baseTypes.setVarint16Type((INT16_C(1) << 14) - 1);
+    m_baseTypes.setVarint32Type((INT32_C(1) << 28) - 1);
+    m_baseTypes.setVarint64Type((INT64_C(1) << 56) - 1);
+    m_baseTypes.setVarintType(INT64_MAX);
+    m_baseTypes.setStringType("TEST");
+    m_baseTypes.setExternType(zserio::BitBuffer(std::vector<uint8_t>({0xCD, 0x03}), 10));
+
+    zserio::BitStreamWriter writer;
+    m_baseTypes.write(writer);
+    size_t bufferSize;
+    const uint8_t* buffer = writer.getWriteBuffer(bufferSize);
+
+    zserio::BitStreamReader reader(buffer, bufferSize);
+    const BaseTypes readBaseTypes(reader);
+
+    ASSERT_TRUE(m_baseTypes == readBaseTypes);
 }
 
 } // namespace base_types

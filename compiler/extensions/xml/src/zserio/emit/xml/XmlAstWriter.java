@@ -34,6 +34,7 @@ import zserio.ast.DocTagDeprecated;
 import zserio.ast.EnumItem;
 import zserio.ast.EnumType;
 import zserio.ast.Expression;
+import zserio.ast.ExternType;
 import zserio.ast.Field;
 import zserio.ast.FloatType;
 import zserio.ast.Function;
@@ -388,6 +389,12 @@ public class XmlAstWriter implements ZserioAstVisitor
     public void visitFloatType(FloatType floatType)
     {
         visitZserioType(floatType, "FLOAT");
+    }
+
+    @Override
+    public void visitExternType(ExternType externType)
+    {
+        visitZserioType(externType, "EXTERN");
     }
 
     @Override

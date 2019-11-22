@@ -45,6 +45,7 @@ CONST               : 'const' ;
 DEFAULT             : 'default' ;
 ENUM                : 'enum' ;
 EXPLICIT            : 'explicit' ;
+EXTERN              : 'extern' ;
 FLOAT16             : 'float16' ;
 FLOAT32             : 'float32' ;
 FLOAT64             : 'float64' ;

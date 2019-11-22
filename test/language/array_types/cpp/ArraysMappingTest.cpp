@@ -97,10 +97,16 @@ TEST_F(ArraysMappingTest, boolArray)
     arraysMapping.setBoolArray(std::vector<bool>(fixedArrayLength));
 }
 
-TEST_F(ArraysMappingTest, stringArrays)
+TEST_F(ArraysMappingTest, stringArray)
 {
     ArraysMapping arraysMapping;
     arraysMapping.setStringArray(std::vector<std::string>(fixedArrayLength));
+}
+
+TEST_F(ArraysMappingTest, externArray)
+{
+    ArraysMapping arraysMapping;
+    arraysMapping.setExternArray(std::vector<zserio::BitBuffer>(fixedArrayLength));
 }
 
 TEST_F(ArraysMappingTest, compoundArray)

@@ -3,7 +3,6 @@ package zserio.runtime.array;
 import java.util.Arrays;
 import java.util.List;
 
-import zserio.runtime.ZserioError;
 import zserio.runtime.Mapping;
 import zserio.runtime.Util;
 

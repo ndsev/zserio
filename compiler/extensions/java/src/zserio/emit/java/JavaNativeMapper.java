@@ -7,6 +7,7 @@ import zserio.ast.BooleanType;
 import zserio.ast.ChoiceType;
 import zserio.ast.CompoundType;
 import zserio.ast.Constant;
+import zserio.ast.ExternType;
 import zserio.ast.PackageName;
 import zserio.ast.ServiceType;
 import zserio.ast.ZserioAstDefaultVisitor;
@@ -29,6 +30,7 @@ import zserio.emit.java.symbols.JavaNativeSymbol;
 import zserio.emit.java.types.JavaNativeType;
 import zserio.emit.java.types.NativeArrayType;
 import zserio.emit.java.types.NativeBigIntegerArrayType;
+import zserio.emit.java.types.NativeBitBufferType;
 import zserio.emit.java.types.NativeBooleanType;
 import zserio.emit.java.types.NativeByteArrayType;
 import zserio.emit.java.types.NativeByteType;
@@ -276,6 +278,12 @@ final class JavaNativeMapper
         }
 
         @Override
+        public void visitExternType(ExternType externType)
+        {
+            javaNullableType = bitBufferArrayType;
+        }
+
+        @Override
         public void visitStringType(StringType type)
         {
             javaNullableType = stdStringArrayType;
@@ -504,6 +512,13 @@ final class JavaNativeMapper
         }
 
         @Override
+        public void visitExternType(ExternType externType)
+        {
+            javaType = bitBufferType;
+            javaNullableType = bitBufferType;
+        }
+
+        @Override
         public void visitServiceType(ServiceType type)
         {
             final PackageName packageName = javaPackageMapper.getPackageName(type);
@@ -686,6 +701,8 @@ final class JavaNativeMapper
     private final static NativeDoubleType doubleType = new NativeDoubleType(false);
     private final static NativeDoubleType doubleNullableType = new NativeDoubleType(true);
 
+    private final static NativeBitBufferType bitBufferType = new NativeBitBufferType();
+
     // integral types
     private final static NativeByteType byteType = new NativeByteType(false);
     private final static NativeByteType byteNullableType = new NativeByteType(true);
@@ -698,7 +715,6 @@ final class JavaNativeMapper
     private final static NativeUnsignedLongType unsignedLongType = new NativeUnsignedLongType();
 
     // zserio.runtime arrays
-
     private final static NativeArrayType boolArrayType = new NativeArrayType("BoolArray");
 
     private final static NativeArrayType stdStringArrayType = new NativeArrayType("StringArray");
@@ -706,6 +722,8 @@ final class JavaNativeMapper
     private final static NativeArrayType float16ArrayType = new NativeArrayType("Float16Array");
     private final static NativeArrayType float32ArrayType = new NativeArrayType("Float32Array");
     private final static NativeArrayType float64ArrayType = new NativeArrayType("Float64Array");
+
+    private final static NativeArrayType bitBufferArrayType = new NativeArrayType("BitBufferArray");
 
     private final static NativeByteArrayType byteArrayType = new NativeByteArrayType();
     private final static NativeUnsignedByteArrayType unsignedByteArrayType = new NativeUnsignedByteArrayType();

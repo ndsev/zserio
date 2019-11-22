@@ -20,6 +20,7 @@ sqlite_add_library(${ZSERIO_PROJECT_ROOT})
 set(ZSERIO_CPP_RUNTIME_TEST_SRCS
     zserio/AnyHolderTest.cpp
     zserio/ArraysTest.cpp
+    zserio/BitBufferTest.cpp
     zserio/BitFieldUtilTest.cpp
     zserio/BitPositionUtilTest.cpp
     zserio/BitSizeOfCalculatorTest.cpp

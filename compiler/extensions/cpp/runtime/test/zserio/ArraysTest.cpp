@@ -646,6 +646,16 @@ TEST_F(ArraysTest, stringArray)
     testArray(StringArrayTraits(), array, elementBitSize);
 }
 
+TEST_F(ArraysTest, bitBufferArray)
+{
+    const size_t bitBufferLengthBitSize = 8;
+    const size_t bitBufferBitSize = 10;
+    const size_t elementBitSize = bitBufferLengthBitSize + bitBufferBitSize;
+    std::vector<BitBuffer> array = {BitBuffer(bitBufferBitSize), BitBuffer(bitBufferBitSize),
+            BitBuffer(bitBufferBitSize)};
+    testArray(BitBufferArrayTraits(), array, elementBitSize);
+}
+
 TEST_F(ArraysTest, enumArray)
 {
     std::vector<DummyEnum> array = {DummyEnum::VALUE1, DummyEnum::VALUE2, DummyEnum::VALUE3};

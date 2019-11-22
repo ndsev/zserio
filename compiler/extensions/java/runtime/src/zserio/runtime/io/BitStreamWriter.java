@@ -209,13 +209,23 @@ public interface BitStreamWriter extends BitStreamCloseable
      */
     void writeVarInt(final long value) throws IOException;
 
-    /** Writes an unsigned variable integer value to the underlying storage.
+    /**
+     * Writes an unsigned variable integer value to the underlying storage.
      *
      * @param value BigInteger value to write.
      *
      * @throws IOException If the writing failed.
      */
     void writeVarUInt(final BigInteger value) throws IOException;
+
+    /**
+     * Writes a bit buffer to the underlying storage.
+     *
+     * @param bitBuffer Bit buffer to write.
+     *
+     * @throws IOException If the writing failed.
+     */
+    void writeBitBuffer(final BitBuffer bitBuffer) throws IOException;
 
     /**
      * Gets the current bit position.

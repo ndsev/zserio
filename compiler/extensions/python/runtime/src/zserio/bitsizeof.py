@@ -11,6 +11,7 @@ def getBitSizeOfVarInt16(value):
 
     :param value: Value to use for bit size calculation.
     :returns: Bit size of the value.
+    :raises PythonRuntimeException: Throws if given value is out of range for varint16 type.
     """
 
     return _getBitSizeOfVarIntImpl(value, VARINT16_MAX_VALUES, signed=True)
@@ -21,6 +22,7 @@ def getBitSizeOfVarInt32(value):
 
     :param value: Value to use for bit size calculation.
     :returns: Bit size of the value.
+    :raises PythonRuntimeException: Throws if given value is out of range for varint32 type.
     """
 
     return _getBitSizeOfVarIntImpl(value, VARINT32_MAX_VALUES, signed=True)
@@ -31,6 +33,7 @@ def getBitSizeOfVarInt64(value):
 
     :param value: Value to use for bit size calculation.
     :returns: Bit size of the value.
+    :raises PythonRuntimeException: Throws if given value is out of range for varint64 type.
     """
 
     return _getBitSizeOfVarIntImpl(value, VARINT64_MAX_VALUES, signed=True)
@@ -41,6 +44,7 @@ def getBitSizeOfVarInt(value):
 
     :param value: Value to use for bit size calculation.
     :returns: Bit size of the value.
+    :raises PythonRuntimeException: Throws if given value is out of range for varint type.
     """
 
     if value == INT64_MIN:
@@ -53,6 +57,7 @@ def getBitSizeOfVarUInt16(value):
 
     :param value: Value to use for bit size calculation.
     :returns: Bit size of the value.
+    :raises PythonRuntimeException: Throws if given value is out of range for varuint16 type.
     """
 
     return _getBitSizeOfVarIntImpl(value, VARUINT16_MAX_VALUES, signed=False)
@@ -63,6 +68,7 @@ def getBitSizeOfVarUInt32(value):
 
     :param value: Value to use for bit size calculation.
     :returns: Bit size of the value.
+    :raises PythonRuntimeException: Throws if given value is out of range for varuint32 type.
     """
 
     return _getBitSizeOfVarIntImpl(value, VARUINT32_MAX_VALUES, signed=False)
@@ -73,6 +79,7 @@ def getBitSizeOfVarUInt64(value):
 
     :param value: Value to use for bit size calculation.
     :returns: Bit size of the value.
+    :raises PythonRuntimeException: Throws if given value is out of range for varuint64 type.
     """
 
     return _getBitSizeOfVarIntImpl(value, VARUINT64_MAX_VALUES, signed=False)
@@ -83,6 +90,7 @@ def getBitSizeOfVarUInt(value):
 
     :param value: Value to use for bit size calculation.
     :returns: Bit size of the value.
+    :raises PythonRuntimeException: Throws if given value is out of range for varuint type.
     """
 
     return _getBitSizeOfVarIntImpl(value, VARUINT_MAX_VALUES, signed=False)
@@ -92,10 +100,24 @@ def getBitSizeOfString(string):
     Gets bit size of string.
 
     :param string: String value to use for bit size calculation.
+    :raises PythonRuntimeException: Throws if given string is too long.
     """
 
     stringBytes = string.encode("utf-8")
     return getBitSizeOfVarUInt64(len(stringBytes)) + len(stringBytes) * 8
+
+def getBitSizeOfBitBuffer(bitBuffer):
+    """
+    Gets the bit size of bit buffer which is stored in bit stream.
+
+    :param bitBuffer: Bit buffer for calculation.
+    :returns: Length of bit buffer in bits.
+    :raises PythonRuntimeException: Throws if given bit buffer is too long.
+    """
+    bitBufferSize = bitBuffer.getBitSize()
+
+    # bit buffer consists of varuint64 for bit size followed by the bits
+    return getBitSizeOfVarUInt64(bitBufferSize) + bitBufferSize
 
 def _getBitSizeOfVarIntImpl(value, maxValues, *, signed):
     if signed or value >= 0:

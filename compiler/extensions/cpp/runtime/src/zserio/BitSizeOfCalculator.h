@@ -5,6 +5,7 @@
 #include <string>
 
 #include "zserio/Types.h"
+#include "zserio/BitBuffer.h"
 
 namespace zserio
 {
@@ -82,13 +83,22 @@ size_t bitSizeOfVarInt(int64_t value);
 size_t bitSizeOfVarUInt(uint64_t value);
 
 /**
- * Calculates bit size of Zserio string type.
+ * Calculates bit size of the string.
  *
- * \param value String value.
+ * \param stringValue String for which to calculate bit size.
  *
- * \return Bit size of the current string value.
+ * \return Bit size of the given string.
  */
-size_t bitSizeOfString(const std::string& value);
+size_t bitSizeOfString(const std::string& stringValue);
+
+/**
+ * Calculates bit size of the bit buffer.
+ *
+ * \param bitBuffer Bit buffer for which to calculate bit size.
+ *
+ * \return Bit size of the given bit buffer.
+ */
+size_t bitSizeOfBitBuffer(const BitBuffer& bitBuffer);
 
 } // namespace zserio
 

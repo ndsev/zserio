@@ -374,6 +374,20 @@ public class ByteArrayBitStreamTest
     }
 
     @Test
+    public void bitBuffer() throws Exception
+    {
+        BitBuffer values[] =
+        {
+            new BitBuffer(new byte[]{(byte)0xAB, (byte)0x07}, 11),
+            new BitBuffer(new byte[]{(byte)0xAB, (byte)0xCD, (byte)0x7F}, 23)
+        };
+
+        Method writeMethod = ByteArrayBitStreamWriter.class.getMethod("writeBitBuffer", BitBuffer.class);
+        Method readMethod = ByteArrayBitStreamReader.class.getMethod("readBitBuffer");
+        testImpl(writeMethod, readMethod, values, 7);
+    }
+
+    @Test
     public void string() throws Exception
     {
         String values[] =

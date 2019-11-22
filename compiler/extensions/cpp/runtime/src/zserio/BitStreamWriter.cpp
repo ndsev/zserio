@@ -114,23 +114,28 @@ static const int64_t MAX_I64_VALUES[] =
     0x0fffffffffffffffLL,  0x1fffffffffffffffLL,  0x3fffffffffffffffLL, 0x7fffffffffffffffLL
 };
 
-BitStreamWriter::BitStreamWriter()
-  : m_buffer(NULL),
-    m_bitIndex(0),
-    m_bufferBitSize(0),
-    m_hasInternalBuffer(true),
-    m_internalBuffer()
+BitStreamWriter::BitStreamWriter() :
+        m_buffer(NULL),
+        m_bitIndex(0),
+        m_bufferBitSize(0),
+        m_hasInternalBuffer(true),
+        m_internalBuffer()
 {
 }
 
-BitStreamWriter::BitStreamWriter(uint8_t* buffer, size_t bufferByteSize)
-  : m_buffer(buffer),
-    m_bitIndex(0),
-    m_bufferBitSize(bufferByteSize * 8),
-    m_hasInternalBuffer(false),
-    m_internalBuffer()
+BitStreamWriter::BitStreamWriter(uint8_t* buffer, size_t bufferByteSize) :
+        m_buffer(buffer),
+        m_bitIndex(0),
+        m_bufferBitSize(bufferByteSize * 8),
+        m_hasInternalBuffer(false),
+        m_internalBuffer()
 {
     std::memset(m_buffer, 0, bufferByteSize);
+}
+
+BitStreamWriter::BitStreamWriter(BitBuffer& bitBuffer) :
+        BitStreamWriter(bitBuffer.getBuffer(), bitBuffer.getBitSize())
+{
 }
 
 BitStreamWriter::~BitStreamWriter()
@@ -263,6 +268,37 @@ void BitStreamWriter::writeString(const std::string& data)
 void BitStreamWriter::writeBool(bool data)
 {
     BitStreamWriter::writeBits((data ? 1 : 0), 1);
+}
+
+void BitStreamWriter::writeBitBuffer(const BitBuffer& bitBuffer)
+{
+    const size_t bitSize = bitBuffer.getBitSize();
+    writeVarUInt64(bitSize);
+
+    const uint8_t* buffer = bitBuffer.getBuffer();
+    size_t numBytesToWrite = bitSize / 8;
+    const uint8_t numRestBits = static_cast<uint8_t>(bitSize - numBytesToWrite * 8);
+    const BitPosType beginBitPosition = getBitPosition();
+    if ((beginBitPosition & 0x07) != 0)
+    {
+        // we are not aligned to byte
+        while (numBytesToWrite > 0)
+        {
+            writeUnsignedBits(*buffer, 8);
+            buffer++;
+            numBytesToWrite--;
+        }
+    }
+    else
+    {
+        // we are aligned to byte
+        setBitPosition(beginBitPosition + numBytesToWrite * 8);
+        memcpy(m_buffer + beginBitPosition / 8, buffer, numBytesToWrite);
+        buffer += numBytesToWrite;
+    }
+
+    if (numRestBits > 0)
+        writeUnsignedBits(*buffer, numRestBits);
 }
 
 void BitStreamWriter::setBitPosition(BitPosType position)

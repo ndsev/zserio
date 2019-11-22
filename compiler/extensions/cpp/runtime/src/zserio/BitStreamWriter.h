@@ -6,6 +6,7 @@
 #include <vector>
 
 #include "zserio/Types.h"
+#include "zserio/BitBuffer.h"
 
 namespace zserio
 {
@@ -27,12 +28,19 @@ public:
     BitStreamWriter();
 
     /**
-     * Constructor from externally allocated buffer.
+     * Constructor from externally allocated byte buffer.
      *
-     * \param buffer External buffer to use.
+     * \param buffer External byte buffer to create from.
      * \param bufferByteSize Size of the buffer in bytes.
      */
     explicit BitStreamWriter(uint8_t* buffer, size_t bufferByteSize);
+
+    /**
+     * Constructor from externally allocated bit buffer.
+     *
+     * \param bitBuffer External bit buffer to create from.
+     */
+    explicit BitStreamWriter(BitBuffer& bitBuffer);
 
     /**
      * Destructor.
@@ -153,7 +161,7 @@ public:
     void writeFloat64(double data);
 
     /**
-     * Writes UTF-8 string..
+     * Writes UTF-8 string.
      *
      * \param data String to write.
      */
@@ -165,6 +173,13 @@ public:
      * \param data Bool to write.
      */
     void writeBool(bool data);
+
+    /**
+     * Writes bit buffer.
+     *
+     * \param bitBuffer Bit buffer to write.
+     */
+    void writeBitBuffer(const BitBuffer& bitBuffer);
 
     /**
      * Gets current bit position.

@@ -2,9 +2,18 @@ package base_types;
 
 import static org.junit.Assert.*;
 
+import java.io.File;
+import java.io.IOException;
+
 import java.math.BigInteger;
 
 import org.junit.Test;
+
+import zserio.runtime.io.BitBuffer;
+import zserio.runtime.io.BitStreamReader;
+import zserio.runtime.io.BitStreamWriter;
+import zserio.runtime.io.FileBitStreamReader;
+import zserio.runtime.io.FileBitStreamWriter;
 
 public class BaseTypesTest
 {
@@ -29,7 +38,7 @@ public class BaseTypesTest
     @Test
     public void uint32Type()
     {
-        final long maxUint32Type = (long)0xFFFFFFFF;
+        final long maxUint32Type = (long)0xFFFFFFFFL;
         baseTypes.setUint32Type(maxUint32Type);
         final long uint32Type = baseTypes.getUint32Type();
         assertEquals(maxUint32Type, uint32Type);
@@ -124,7 +133,7 @@ public class BaseTypesTest
     @Test
     public void bitField32Type()
     {
-        final long maxBitfield32Type = (long)0xFFFFFFFF;
+        final long maxBitfield32Type = (long)0xFFFFFFFFL;
         baseTypes.setBitfield32Type(maxBitfield32Type);
         final long bitfieldType = baseTypes.getBitfield32Type();
         assertEquals(maxBitfield32Type, bitfieldType);
@@ -151,10 +160,10 @@ public class BaseTypesTest
     @Test
     public void variableBitField8Type()
     {
-        final short maxBitfield8Type = (short)0xFF;
-        baseTypes.setBitfield8Type(maxBitfield8Type);
-        final short bitfieldType = baseTypes.getBitfield8Type();
-        assertEquals(maxBitfield8Type, bitfieldType);
+        final short maxVariableBitfield8Type = (short)0xFF;
+        baseTypes.setVariableBitfield8Type(maxVariableBitfield8Type);
+        final short variableBitfieldType = baseTypes.getVariableBitfield8Type();
+        assertEquals(maxVariableBitfield8Type, variableBitfieldType);
     }
 
     @Test
@@ -200,9 +209,9 @@ public class BaseTypesTest
     @Test
     public void variableIntField8Type()
     {
-        baseTypes.setIntfield8Type(Byte.MAX_VALUE);
-        final byte intField8Type = baseTypes.getIntfield8Type();
-        assertEquals(Byte.MAX_VALUE, intField8Type);
+        baseTypes.setVariableIntfield8Type(Byte.MAX_VALUE);
+        final byte variableIntField8Type = baseTypes.getVariableIntfield8Type();
+        assertEquals(Byte.MAX_VALUE, variableIntField8Type);
     }
 
     @Test
@@ -241,7 +250,7 @@ public class BaseTypesTest
     @Test
     public void varuint32Type()
     {
-        final int maxVaruint32Type = ((int)1 << 31) - 1;
+        final int maxVaruint32Type = ((int)1 << 29) - 1;
         baseTypes.setVaruint32Type(maxVaruint32Type);
         final int varuint32Type = baseTypes.getVaruint32Type();
         assertEquals(maxVaruint32Type, varuint32Type);
@@ -250,7 +259,7 @@ public class BaseTypesTest
     @Test
     public void varuint64Type()
     {
-        final long maxVaruint64Type = ((long)1 << 63) - 1;
+        final long maxVaruint64Type = ((long)1 << 57) - 1;
         baseTypes.setVaruint64Type(maxVaruint64Type);
         final long varuint64Type = baseTypes.getVaruint64Type();
         assertEquals(maxVaruint64Type, varuint64Type);
@@ -282,7 +291,7 @@ public class BaseTypesTest
     @Test
     public void varint32Type()
     {
-        final int maxVarint32Type = ((int)1 << 30) - 1;
+        final int maxVarint32Type = ((int)1 << 28) - 1;
         baseTypes.setVarint32Type(maxVarint32Type);
         final int varint32Type = baseTypes.getVarint32Type();
         assertEquals(maxVarint32Type, varint32Type);
@@ -291,7 +300,7 @@ public class BaseTypesTest
     @Test
     public void varint64Type()
     {
-        final long maxVarint64Type = ((long)1 << 62) - 1;
+        final long maxVarint64Type = ((long)1 << 56) - 1;
         baseTypes.setVarint64Type(maxVarint64Type);
         final long varint64Type = baseTypes.getVarint64Type();
         assertEquals(maxVarint64Type, varint64Type);
@@ -325,8 +334,114 @@ public class BaseTypesTest
         final String testString = "TEST";
         baseTypes.setStringType(testString);
         final String stringType = baseTypes.getStringType();
-        assertTrue(stringType.equals(testString));
+        assertEquals(testString, stringType);
+    }
+
+    @Test
+    public void externType()
+    {
+        final BitBuffer testExtern = new BitBuffer(new byte[]{(byte)0xCD, (byte)0x03}, 10);
+        baseTypes.setExternType(testExtern);
+        final BitBuffer externType = baseTypes.getExternType();
+        assertEquals(testExtern, externType);
+    }
+
+    @Test
+    public void bitSizeOf()
+    {
+        baseTypes.setBoolType(true);
+        baseTypes.setUint8Type((short)1);
+        baseTypes.setUint16Type((int)0xFFFF);
+        baseTypes.setUint32Type((long)0xFFFFFFFFL);
+        baseTypes.setUint64Type(BigInteger.TEN);
+        baseTypes.setInt8Type(Byte.MAX_VALUE);
+        baseTypes.setInt16Type(Short.MAX_VALUE);
+        baseTypes.setInt32Type(Integer.MAX_VALUE);
+        baseTypes.setInt64Type(Long.MAX_VALUE);
+        baseTypes.setBitfield7Type((byte)0x7F);
+        baseTypes.setBitfield8Type((short)0xFF);
+        baseTypes.setBitfield15Type((short)0x7FFF);
+        baseTypes.setBitfield16Type((int)0xFFFF);
+        baseTypes.setBitfield31Type((int)0x7FFFFFFF);
+        baseTypes.setBitfield32Type((long)0xFFFFFFFFL);
+        baseTypes.setBitfield63Type((long)0x7FFFFFFFFFFFFFFFL);
+        baseTypes.setVariableBitfieldType((long)1);
+        baseTypes.setVariableBitfield8Type((short)0xFF);
+        baseTypes.setIntfield8Type(Byte.MAX_VALUE);
+        baseTypes.setIntfield16Type(Short.MAX_VALUE);
+        baseTypes.setIntfield32Type(Integer.MAX_VALUE);
+        baseTypes.setIntfield64Type(Long.MAX_VALUE);
+        baseTypes.setVariableIntfieldType((short)1);
+        baseTypes.setVariableIntfield8Type(Byte.MAX_VALUE);
+        baseTypes.setFloat16Type(Float.MAX_VALUE);
+        baseTypes.setFloat32Type(Float.MAX_VALUE);
+        baseTypes.setFloat64Type(Double.MAX_VALUE);
+        baseTypes.setVaruint16Type((short)(((short)1 << 15) - 1));
+        baseTypes.setVaruint32Type(((int)1 << 29) - 1);
+        baseTypes.setVaruint64Type(((long)1 << 57) - 1);
+        baseTypes.setVaruintType(BigInteger.ONE.shiftLeft(64).subtract(BigInteger.ONE));
+        baseTypes.setVarint16Type((short)(((short)1 << 14) - 1));
+        baseTypes.setVarint32Type(((int)1 << 28) - 1);
+        baseTypes.setVarint64Type(((long)1 << 56) - 1);
+        baseTypes.setVarintType(Long.MAX_VALUE);
+        baseTypes.setStringType("TEST");
+        baseTypes.setExternType(new BitBuffer(new byte[]{(byte)0xCD, (byte)0x03}, 10));
+        final int expectedBitSizeOf = 1102;
+        assertEquals(expectedBitSizeOf, baseTypes.bitSizeOf());
+    }
+
+    @Test
+    public void readWrite() throws IOException
+    {
+        baseTypes.setBoolType(true);
+        baseTypes.setUint8Type((short)8);
+        baseTypes.setUint16Type((int)0xFFFF);
+        baseTypes.setUint32Type((long)0xFFFFFFFFL);
+        baseTypes.setUint64Type(BigInteger.TEN);
+        baseTypes.setInt8Type(Byte.MAX_VALUE);
+        baseTypes.setInt16Type(Short.MAX_VALUE);
+        baseTypes.setInt32Type(Integer.MAX_VALUE);
+        baseTypes.setInt64Type(Long.MAX_VALUE);
+        baseTypes.setBitfield7Type((byte)0x7F);
+        baseTypes.setBitfield8Type((short)0xFF);
+        baseTypes.setBitfield15Type((short)0x7FFF);
+        baseTypes.setBitfield16Type((int)0xFFFF);
+        baseTypes.setBitfield31Type((int)0x7FFFFFFF);
+        baseTypes.setBitfield32Type((long)0xFFFFFFFFL);
+        baseTypes.setBitfield63Type((long)0x7FFFFFFFFFFFFFFFL);
+        baseTypes.setVariableBitfieldType(0xFF);
+        baseTypes.setVariableBitfield8Type((short)0xFF);
+        baseTypes.setIntfield8Type(Byte.MAX_VALUE);
+        baseTypes.setIntfield16Type(Short.MAX_VALUE);
+        baseTypes.setIntfield32Type(Integer.MAX_VALUE);
+        baseTypes.setIntfield64Type(Long.MAX_VALUE);
+        baseTypes.setVariableIntfieldType((short)Byte.MAX_VALUE);
+        baseTypes.setVariableIntfield8Type(Byte.MAX_VALUE);
+        baseTypes.setFloat16Type(1.0f);
+        baseTypes.setFloat32Type(Float.MAX_VALUE);
+        baseTypes.setFloat64Type(Double.MAX_VALUE);
+        baseTypes.setVaruint16Type((short)(((short)1 << 15) - 1));
+        baseTypes.setVaruint32Type(((int)1 << 29) - 1);
+        baseTypes.setVaruint64Type(((long)1 << 57) - 1);
+        baseTypes.setVaruintType(BigInteger.ONE.shiftLeft(64).subtract(BigInteger.ONE));
+        baseTypes.setVarint16Type((short)(((short)1 << 14) - 1));
+        baseTypes.setVarint32Type(((int)1 << 28) - 1);
+        baseTypes.setVarint64Type(((long)1 << 56) - 1);
+        baseTypes.setVarintType(Long.MAX_VALUE);
+        baseTypes.setStringType("TEST");
+        baseTypes.setExternType(new BitBuffer(new byte[]{(byte)0xCD, (byte)0x03}, 10));
+
+        final BitStreamWriter writer = new FileBitStreamWriter(TEST_FILE);
+        baseTypes.write(writer);
+        writer.close();
+        final BitStreamReader reader = new FileBitStreamReader(TEST_FILE);
+
+        final BaseTypes readBaseTypes = new BaseTypes(reader);
+        reader.close();
+        assertEquals(baseTypes, readBaseTypes);
     }
 
     private final BaseTypes baseTypes = new BaseTypes();
+
+    private static final File TEST_FILE = new File("test.bin");
 }

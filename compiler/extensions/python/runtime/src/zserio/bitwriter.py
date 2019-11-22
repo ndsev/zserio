@@ -206,6 +206,33 @@ class BitStreamWriter:
 
         self.writeBits(1 if value else 0, 1)
 
+    def writeBitBuffer(self, bitBuffer):
+        """
+        Writes a bit buffer to the underlying storage. Length of the bit buffer is written as varuint64
+        at the beginning.
+
+        :param bitBuffer: Bit buffer to write.
+        """
+
+        bitSize = bitBuffer.getBitSize()
+        self.writeVarUInt64(bitSize)
+
+        writeBuffer = bitBuffer.getBuffer()
+        numBytesToWrite = bitSize // 8
+        numRestBits = bitSize - numBytesToWrite * 8
+        beginBitPosition = self._bitPosition
+        if (beginBitPosition & 0x07) != 0:
+            # we are not aligned to byte
+            for i in range(numBytesToWrite):
+                self.writeBits(writeBuffer[i], 8)
+        else:
+            # we are aligned to byte
+            self._byteArray += writeBuffer[0:numBytesToWrite]
+            self._bitPosition += numBytesToWrite * 8
+
+        if numRestBits > 0:
+            self.writeBits(writeBuffer[numBytesToWrite], numRestBits)
+
     def getByteArray(self):
         """
         Gets internal bytearray.

@@ -20,6 +20,8 @@ project(ZserioCppRuntime)
 
 set(ZSERIO_CPP_RUNTIME_LIB_SRCS
     zserio/Arrays.h
+    zserio/BitBuffer.h
+    zserio/BitBuffer.cpp
     zserio/BitFieldUtil.cpp
     zserio/BitFieldUtil.h
     zserio/BitPositionUtil.cpp

@@ -45,6 +45,11 @@ bool
 string
 ```
 
+**External Types**
+```
+extern
+```
+
 **Constants**
 ```
 const bit:1 FALSE = 0;
@@ -223,6 +228,8 @@ struct Field<T>
 {
     T value;
 };
+
+instantiate Field<uint32> Field32;
 
 struct Compound<T>
 {

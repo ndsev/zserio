@@ -278,7 +278,7 @@ public class PythonExpressionFormattingPolicy implements ExpressionFormattingPol
     @Override
     public BinaryExpressionFormatting getDivide(Expression expr)
     {
-        return new BinaryExpressionFormatting(" / ");
+        return new BinaryExpressionFormatting(" // ");
     }
 
     @Override

@@ -13,6 +13,7 @@ import zserio.ast.CompoundType;
 import zserio.ast.ZserioAstDefaultVisitor;
 import zserio.ast.ZserioType;
 import zserio.ast.EnumType;
+import zserio.ast.ExternType;
 import zserio.ast.FloatType;
 import zserio.ast.IntegerType;
 import zserio.ast.ServiceType;
@@ -46,6 +47,7 @@ import zserio.emit.cpp98.types.NativeServiceType;
 import zserio.emit.cpp98.types.NativeStdIntType;
 import zserio.emit.cpp98.types.NativeStringType;
 import zserio.emit.cpp98.types.NativeSubType;
+import zserio.tools.ZserioToolPrinter;
 
 public class CppNativeMapper
 {
@@ -79,8 +81,10 @@ public class CppNativeMapper
             return new CppNativeSymbol(packageName, name, includeFileName);
         }
         else
+        {
             throw new ZserioEmitException("Unhandled symbol '" + symbol.getClass().getName() +
                     "' in CppNativeMapper!");
+        }
     }
 
     /**
@@ -118,8 +122,26 @@ public class CppNativeMapper
 
         final CppNativeType nativeType = visitor.getCppType();
         if (nativeType == null)
-            throw new ZserioEmitException("Unhandled type '" + type.getClass().getName() +
-                    "' in CppNativeMapper!");
+        {
+            ZserioType elementType = type;
+            if (type instanceof ArrayType)
+            {
+                final ArrayType arrayType = (ArrayType)type;
+                elementType = arrayType.getElementTypeInstantiation().getTypeReference().getBaseTypeReference().
+                        getType();
+            }
+            if (elementType instanceof ExternType)
+            {
+                ZserioToolPrinter.printError(type.getLocation(),
+                        "'extern' type is not supported by the legacy C++98 emitter!");
+                throw new ZserioEmitException("Unknown 'extern' type!");
+            }
+            else
+            {
+                throw new ZserioEmitException("Unhandled type '" + type.getClass().getName() +
+                        "' in CppNativeTypeMapper!");
+            }
+        }
 
         return nativeType;
     }

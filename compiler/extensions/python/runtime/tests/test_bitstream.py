@@ -1,5 +1,6 @@
 import unittest
 
+from zserio.bitbuffer import BitBuffer
 from zserio.bitreader import BitStreamReader
 from zserio.bitsizeof import INT64_MIN
 from zserio.bitwriter import BitStreamWriter
@@ -358,6 +359,14 @@ class BitStreamTest(unittest.TestCase):
         ]
 
         self._testImpl(BitStreamWriter.writeBool, BitStreamReader.readBool, values, 1)
+
+    def testBitBuffer(self):
+        values = [
+            BitBuffer(bytes([0xAB, 0x07]), 11),
+            BitBuffer(bytes([0xAB, 0xCD, 0x7F]), 23)
+        ]
+
+        self._testImpl(BitStreamWriter.writeBitBuffer, BitStreamReader.readBitBuffer, values, 7)
 
     def testBitPosition(self):
         writer = BitStreamWriter()

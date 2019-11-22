@@ -5,6 +5,7 @@
 #include <string>
 
 #include "zserio/Types.h"
+#include "zserio/BitBuffer.h"
 
 namespace zserio
 {
@@ -27,9 +28,9 @@ public:
          * Constructor.
          *
          * \param buffer Pointer to the buffer to read.
-         * \param bufferByteSize Size of the buffer in bytes.
+         * \param bufferBitSize Size of the buffer in bits.
          */
-        ReaderContext(const uint8_t* buffer, size_t bufferByteSize);
+        explicit ReaderContext(const uint8_t* buffer, size_t bufferBitSize);
 
         /**
          * Constructor from the file name.
@@ -64,7 +65,7 @@ public:
         };
 
         uint8_t* buffer; /**< Buffer to read from. */
-        BitPosType bufferBitSize; /**< Size of the buffer in bytes. */
+        BitPosType bufferBitSize; /**< Size of the buffer in bits. */
         bool hasInternalBuffer; /**< Whether the reader has internal buffer. True when reading from file. */
 
         BitCache cache; /**< Bit cache to optimize bit reading. */
@@ -77,12 +78,19 @@ public:
     };
 
     /**
-     * Constructor.
+     * Constructor from raw buffer.
      *
      * \param buffer Pointer to the buffer to read.
      * \param bufferByteSize Size of the buffer in bytes.
      */
-    BitStreamReader(const uint8_t* buffer, size_t bufferByteSize);
+    explicit BitStreamReader(const uint8_t* buffer, size_t bufferByteSize);
+
+    /**
+     * Constructor from bit buffer.
+     *
+     * \param buffer Bit buffer to read from.
+     */
+    explicit BitStreamReader(const BitBuffer& bitBuffer);
 
     /**
      * Constructor from the file name.
@@ -112,7 +120,6 @@ public:
      * \return Read bits.
      */
     uint64_t readBits64(uint8_t numBits = 64);
-
 
     /**
      * Reads signed bits up to 32-bits.
@@ -201,7 +208,6 @@ public:
      */
     double readFloat64();
 
-
     /**
      * Reads an UTF-8 string.
      *
@@ -215,6 +221,13 @@ public:
      * \return Read bool value.
      */
     bool readBool();
+
+    /**
+     * Reads a bit buffer.
+     *
+     * \return Read bit buffer.
+     */
+    BitBuffer readBitBuffer();
 
     /**
      * Gets current bit position.

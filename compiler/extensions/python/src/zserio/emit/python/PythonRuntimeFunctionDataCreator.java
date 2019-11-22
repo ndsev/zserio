@@ -2,6 +2,7 @@ package zserio.emit.python;
 
 import zserio.ast.BitFieldType;
 import zserio.ast.BooleanType;
+import zserio.ast.ExternType;
 import zserio.ast.FloatType;
 import zserio.ast.StdIntegerType;
 import zserio.ast.StringType;
@@ -54,6 +55,12 @@ final class PythonRuntimeFunctionDataCreator
         public void visitFloatType(FloatType type)
         {
             templateData = new RuntimeFunctionTemplateData("Float" + type.getBitSize());
+        }
+
+        @Override
+        public void visitExternType(ExternType type)
+        {
+            templateData = new RuntimeFunctionTemplateData("BitBuffer");
         }
 
         @Override

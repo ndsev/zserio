@@ -1407,6 +1407,65 @@ struct StringArrayTraits
 };
 
 /**
+ * Array traits for Zserio extern bit buffer type.
+ */
+struct BitBufferArrayTraits
+{
+    /** Type of the single array element. */
+    typedef zserio::BitBuffer type;
+
+    /**
+     * Calculates bit size of the array element.
+     *
+     * \param value Element's value.
+     *
+     * \return Bit size of the array element.
+     */
+    static size_t bitSizeOf(size_t, const type& value)
+    {
+        return zserio::bitSizeOfBitBuffer(value);
+    }
+
+    /**
+     * Initializes indexed offsets of the single array element.
+     *
+     * \param bitPosition Current bit position.
+     * \param value Element's value.
+     *
+     * \return Updated bit position which points to the first bit after the array element.
+     */
+    static size_t initializeOffsets(size_t bitPosition, const type& value)
+    {
+        return bitPosition + bitSizeOf(bitPosition, value);
+    }
+
+    /**
+     * Reads the single array element.
+     *
+     * \param array Array to read the element to.
+     * \param in Bit stream reader.
+     */
+    static void read(std::vector<type>& array, BitStreamReader& in, size_t)
+    {
+        array.push_back(in.readBitBuffer());
+    }
+
+    /**
+     * Writes the single array element.
+     *
+     * \param out Bit stream writer.
+     * \param value Element's value to write.
+     */
+    static void write(BitStreamWriter& out, type value)
+    {
+        out.writeBitBuffer(value);
+    }
+
+    /** Determines whether the bit size of the single element is constant. */
+    static const bool IS_BITSIZEOF_CONSTANT = false;
+};
+
+/**
  * Array traits for Zserio enumeration type.
  */
 template <typename T>

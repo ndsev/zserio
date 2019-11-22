@@ -195,6 +195,12 @@ public class ZserioAstWalker implements ZserioAstVisitor
     }
 
     @Override
+    public void visitExternType(ExternType externType)
+    {
+        externType.visitChildren(this);
+    }
+
+    @Override
     public void visitTemplateParameter(TemplateParameter templateParameter)
     {
         templateParameter.visitChildren(this);

@@ -1,5 +1,6 @@
 import unittest
 
+from zserio.bitbuffer import BitBuffer
 from zserio.bitwriter import (BitStreamWriter,
                               VARINT16_NUM_BITS, VARINT32_NUM_BITS, VARINT64_NUM_BITS, VARINT_NUM_BITS,
                               VARUINT16_NUM_BITS, VARUINT32_NUM_BITS, VARUINT64_NUM_BITS, VARUINT_NUM_BITS)
@@ -182,6 +183,13 @@ class BitStreamWriterTest(unittest.TestCase):
         writer.writeBool(False)
         self.assertEqual(6, writer.getBitPosition())
         self.assertEqual(b'\xA8', writer.getByteArray())
+
+    def testWriteBitBuffer(self):
+        writer = BitStreamWriter()
+        writer.writeBitBuffer(BitBuffer(bytes([0xAB, 0x07]), 11))
+        writer.writeBitBuffer(BitBuffer(bytes([0x00, 0x7F]), 15))
+        self.assertEqual(8 + 11 + 8 + 15, writer.getBitPosition())
+        self.assertEqual(b'\x0B\xAB\xE1\xE0\x1F\xC0', writer.getByteArray())
 
     def testGetByteArray(self):
         writer = BitStreamWriter()
