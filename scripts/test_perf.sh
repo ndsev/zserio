@@ -470,6 +470,8 @@ test()
     local SWITCH_NUM_ITERATIONS="$1"; shift
     local SWITCH_TEST_CONFIG="$1"; shift
 
+    convert_to_absolute_path "${SWITCH_BLOB_PATH}" SWITCH_BLOB_PATH
+
     # unpack testing release
     local UNPACKED_ZSERIO_RELEASE_DIR
     unpack_release "${TEST_OUT_DIR}" "${ZSERIO_RELEASE_DIR}" "${ZSERIO_VERSION}" UNPACKED_ZSERIO_RELEASE_DIR
