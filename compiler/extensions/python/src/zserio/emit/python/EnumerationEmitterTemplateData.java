@@ -3,11 +3,11 @@ package zserio.emit.python;
 import java.util.ArrayList;
 import java.util.List;
 
-import zserio.ast.BitFieldType;
+import zserio.ast.DynamicBitFieldInstantiation;
 import zserio.ast.EnumItem;
 import zserio.ast.EnumType;
-import zserio.ast.IntegerType;
-import zserio.ast.StdIntegerType;
+import zserio.ast.FixedSizeType;
+import zserio.ast.TypeInstantiation;
 import zserio.emit.common.ExpressionFormatter;
 import zserio.emit.common.ZserioEmitException;
 
@@ -18,13 +18,14 @@ public class EnumerationEmitterTemplateData extends UserTypeTemplateData
     {
         super(context, enumType);
 
-        final IntegerType enumBaseType = enumType.getIntegerBaseType();
-        bitSize = createBitSize(enumBaseType);
+        final TypeInstantiation enumTypeInstantiation = enumType.getTypeInstantiation();
+        bitSize = createBitSize(enumTypeInstantiation);
         if (bitSize == null)
             importPackage("zserio");
 
         final ExpressionFormatter pythonExpressionFormatter = context.getPythonExpressionFormatter(this);
-        runtimeFunction = PythonRuntimeFunctionDataCreator.createData(enumBaseType, pythonExpressionFormatter);
+        runtimeFunction = PythonRuntimeFunctionDataCreator.createData(
+                enumTypeInstantiation, pythonExpressionFormatter);
 
         final List<EnumItem> enumItems = enumType.getItems();
         items = new ArrayList<EnumItemData>(enumItems.size());
@@ -69,14 +70,22 @@ public class EnumerationEmitterTemplateData extends UserTypeTemplateData
         private final String value;
     }
 
-    private static String createBitSize(IntegerType enumBaseType)
+    private static String createBitSize(TypeInstantiation typeInstantiation)
     {
-        if (enumBaseType instanceof StdIntegerType)
-            return PythonLiteralFormatter.formatDecimalLiteral(((StdIntegerType)enumBaseType).getBitSize());
-        else if (enumBaseType instanceof BitFieldType)
-            return PythonLiteralFormatter.formatDecimalLiteral(((BitFieldType)enumBaseType).getBitSize());
+        if (typeInstantiation.getBaseType() instanceof FixedSizeType)
+        {
+            return PythonLiteralFormatter.formatDecimalLiteral(
+                    ((FixedSizeType)typeInstantiation.getBaseType()).getBitSize());
+        }
+        else if (typeInstantiation instanceof DynamicBitFieldInstantiation)
+        {
+            return PythonLiteralFormatter.formatDecimalLiteral(
+                    ((DynamicBitFieldInstantiation)typeInstantiation).getMaxBitSize());
+        }
         else
+        {
             return null;
+        }
     }
 
     private final String bitSize;

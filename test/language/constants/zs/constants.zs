@@ -84,7 +84,7 @@ const Colors        DEFAULT_PEN_COLOR = Colors.BLACK;
 const int32         DEFAULT_PEN_COLOR_VALUE = valueof(Colors.BLACK);
 
 // subtype to intfield
-subtype int<25> Int25Subtype;
+subtype int:25 Int25Subtype;
 const Int25Subtype SUBTYPE_INT25_CONSTANT = 25;
 
 // constant defined by subtyped enum value

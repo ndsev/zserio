@@ -14,8 +14,8 @@
             (${rangeData.name} < __lowerBound<#if rangeData.checkUpperBound> || ${rangeData.name} > __upperBound</#if>)<#t>
             <#if rangeData.isTypeNullable>)</#if><#lt>
             throw new ZserioError("Value " + ${rangeData.name} +
-                    " of ${compoundName}.${rangeData.name} exceeds the range of " +
-                    __lowerBound + ".." + __upperBound + "!");
+                    " of ${compoundName}.${rangeData.name} exceeds the range of <" +
+                    __lowerBound + ".." + __upperBound + ">!");
 
     </#if>
 </#macro>

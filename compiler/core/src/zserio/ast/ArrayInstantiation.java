@@ -1,0 +1,118 @@
+package zserio.ast;
+
+import java.util.List;
+
+/**
+ * AST node for array type instantiation.
+ */
+public class ArrayInstantiation extends TypeInstantiation
+{
+    /**
+     * Constructor.
+     *
+     * @param location             AST node location.
+     * @param typeReference        Reference to the instantiated type definition.
+     * @param elementTypeArguments Arguments for the type instantiation.
+     * @param isImplicit           Whether this is an implicit array.
+     * @param lengthExpression     Array length expression.
+     */
+    public ArrayInstantiation(AstLocation location, TypeReference typeReference,
+            TypeInstantiation elementTypeInstantiation, boolean isImplicit, Expression lengthExpression)
+    {
+        super(location, typeReference);
+
+        this.elementTypeInstantiation = elementTypeInstantiation;
+        this.isImplicit = isImplicit;
+        this.lengthExpression = lengthExpression;
+    }
+
+    @Override
+    public void visitChildren(ZserioAstVisitor visitor)
+    {
+        super.visitChildren(visitor);
+
+        elementTypeInstantiation.accept(visitor);
+        if (lengthExpression != null)
+            lengthExpression.accept(visitor);
+    }
+
+    /**
+     * Gets type instantiation for array elements.
+     *
+     * @return Type instantiation.
+     */
+    public TypeInstantiation getElementTypeInstantiation()
+    {
+        return elementTypeInstantiation;
+    }
+
+    /**
+     * Gets whether the array is an implicit array.
+     *
+     * \note Implicit arrays have no length expression.
+     *
+     * @return True if the array is implicit, false otherwise.
+     */
+    public boolean isImplicit()
+    {
+        return isImplicit;
+    }
+
+    /**
+     * Gets length expression.
+     *
+     * @return Array length expression or null when this is an implicit or auto array.
+     */
+    public Expression getLengthExpression()
+    {
+        return lengthExpression;
+    }
+
+    @Override
+    public ArrayType getBaseType()
+    {
+        return (ArrayType)super.getBaseType();
+    }
+
+    @Override
+    ArrayInstantiation instantiateImpl(List<TemplateParameter> templateParameters,
+            List<TemplateArgument> templateArguments, TypeReference instantiatedTypeReference)
+    {
+        final TypeInstantiation instantiatedElementTypeInstantiation =
+                elementTypeInstantiation.instantiate(templateParameters, templateArguments);
+        final Expression instantiatedLengthExpression = getLengthExpression() == null ? null :
+                getLengthExpression().instantiate(templateParameters, templateArguments);
+
+        return new ArrayInstantiation(getLocation(), instantiatedTypeReference,
+                instantiatedElementTypeInstantiation, isImplicit, instantiatedLengthExpression);
+    }
+
+    @Override
+    void resolve()
+    {
+        if (!(super.getBaseType() instanceof ArrayType))
+        {
+            throw new ParserException(getTypeReference(), "Referenced type '" +
+                    ZserioTypeUtil.getReferencedFullName(getTypeReference()) +
+                    "' is not an array type!");
+        }
+    }
+
+    @Override
+    void check()
+    {
+        // check length expression
+        if (lengthExpression != null)
+        {
+            if (lengthExpression.getExprType() != Expression.ExpressionType.INTEGER)
+            {
+                throw new ParserException(lengthExpression,
+                        "Invalid length expression for array. Length must be integer!");
+            }
+        }
+    }
+
+    private final TypeInstantiation elementTypeInstantiation;
+    private final boolean isImplicit;
+    private final Expression lengthExpression;
+}

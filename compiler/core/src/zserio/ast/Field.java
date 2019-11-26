@@ -235,16 +235,14 @@ public class Field extends DocumentableAstNode
         if (initializerExpr != null)
         {
             // check expression type
-            final ZserioType fieldBaseType =
-                    typeInstantiation.getTypeReference().getBaseTypeReference().getType();
-            ExpressionUtil.checkExpressionType(initializerExpr, fieldBaseType);
+            ExpressionUtil.checkExpressionType(initializerExpr, typeInstantiation);
 
             // check if expression requires owner context (contains field, parameter or function)
             if (initializerExpr.requiresOwnerContext())
                 throw new ParserException(initializerExpr, "Initializer must be a constant expression!");
 
             // check integer initializer range
-            ExpressionUtil.checkIntegerExpressionRange(initializerExpr, fieldBaseType, name);
+            ExpressionUtil.checkIntegerExpressionRange(initializerExpr, typeInstantiation, name);
         }
 
         // check optional expression type

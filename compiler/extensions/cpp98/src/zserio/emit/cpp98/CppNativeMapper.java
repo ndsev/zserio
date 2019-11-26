@@ -1,21 +1,23 @@
 package zserio.emit.cpp98;
 
-import zserio.ast.ArrayType;
+import zserio.ast.ArrayInstantiation;
 import zserio.ast.AstNode;
 import zserio.ast.Constant;
+import zserio.ast.DynamicBitFieldInstantiation;
+import zserio.ast.DynamicBitFieldType;
+import zserio.ast.ExternType;
+import zserio.ast.FixedBitFieldType;
 import zserio.ast.InstantiateType;
 import zserio.ast.PackageName;
+import zserio.ast.TypeInstantiation;
 import zserio.ast.UnionType;
-import zserio.ast.BitFieldType;
 import zserio.ast.BooleanType;
 import zserio.ast.ChoiceType;
 import zserio.ast.CompoundType;
 import zserio.ast.ZserioAstDefaultVisitor;
 import zserio.ast.ZserioType;
 import zserio.ast.EnumType;
-import zserio.ast.ExternType;
 import zserio.ast.FloatType;
-import zserio.ast.IntegerType;
 import zserio.ast.ServiceType;
 import zserio.ast.StructureType;
 import zserio.ast.SqlDatabaseType;
@@ -90,11 +92,31 @@ public class CppNativeMapper
     /**
      * Returns a C++ type that can hold an instance of referenced Zserio type.
      *
+     * @param typeInstantiation Instantiation of Zserio type.
+     *
+     * @return C++ type which can hold the Zserio type.
+     *
+     * @throws ZserioEmitException If the Zserio type cannot be mapped to any C++ type.
+     */
+    public CppNativeType getCppType(TypeInstantiation typeInstantiation) throws ZserioEmitException
+    {
+        if (typeInstantiation instanceof ArrayInstantiation)
+            return mapArray((ArrayInstantiation)typeInstantiation);
+        else if (typeInstantiation instanceof DynamicBitFieldInstantiation)
+            return mapDynamicBitField((DynamicBitFieldInstantiation)typeInstantiation);
+
+        // don't resolve subtypes so that the subtype name (C++ typedef) will be used
+        return getCppType(typeInstantiation.getType());
+    }
+
+    /**
+     * Returns a C++ type that can hold an instance of referenced Zserio type.
+     *
      * @param typeReference Reference to the Zserio type.
      *
-     * @return  C++ type which can hold referenced Zserio type.
+     * @return  C++ type which can hold the Zserio type.
      *
-     * @throws ZserioEmitException If the referenced Zserio type cannot be mapped to any C++ type.
+     * @throws ZserioEmitException If the Zserio type cannot be mapped to any C++ type.
      */
     public CppNativeType getCppType(TypeReference typeReference) throws ZserioEmitException
     {
@@ -123,24 +145,8 @@ public class CppNativeMapper
         final CppNativeType nativeType = visitor.getCppType();
         if (nativeType == null)
         {
-            ZserioType elementType = type;
-            if (type instanceof ArrayType)
-            {
-                final ArrayType arrayType = (ArrayType)type;
-                elementType = arrayType.getElementTypeInstantiation().getTypeReference().getBaseTypeReference().
-                        getType();
-            }
-            if (elementType instanceof ExternType)
-            {
-                ZserioToolPrinter.printError(type.getLocation(),
-                        "'extern' type is not supported by the legacy C++98 emitter!");
-                throw new ZserioEmitException("Unknown 'extern' type!");
-            }
-            else
-            {
-                throw new ZserioEmitException("Unhandled type '" + type.getClass().getName() +
-                        "' in CppNativeTypeMapper!");
-            }
+            throw new ZserioEmitException("Unhandled type '" + type.getClass().getName() +
+                    "' in CppNativeMapper!");
         }
 
         return nativeType;
@@ -149,7 +155,7 @@ public class CppNativeMapper
     /**
      * Returns a C++ type that can hold an instance of given optional Zserio type or Zserio compound type.
      *
-     * @param type                  Zserio type for mapping to C++ type.
+     * @param typeInstantiation     Instantiation of Zserio type for mapping to C++ type.
      * @param isOptionalField       true if the given Zserio type is optional.
      * @param useHeapOptionalHolder true to force mapping to the heap optional holder.
      *
@@ -157,12 +163,10 @@ public class CppNativeMapper
      *
      * @throws ZserioEmitException If the Zserio type cannot be mapped to C++ optional holder type.
      */
-    public NativeOptionalHolderType getCppOptionalHolderType(TypeReference typeReference, boolean isOptionalField,
-            boolean useHeapOptionalHolder) throws ZserioEmitException
+    public NativeOptionalHolderType getCppOptionalHolderType(TypeInstantiation typeInstantiation,
+            boolean isOptionalField, boolean useHeapOptionalHolder) throws ZserioEmitException
     {
-        // don't resolve subtypes so that the subtype name (C++ typedef) will be used
-        final ZserioType type = typeReference.getType();
-        final CppNativeType rawType = getCppType(type);
+        final CppNativeType rawType = getCppType(typeInstantiation);
 
         NativeOptionalHolderType nativeOptionalType;
         if (!isOptionalField || rawType.isSimpleType())
@@ -181,19 +185,28 @@ public class CppNativeMapper
     /**
      * Returns a C++ integer type that can hold an instance of given Zserio integer type.
      *
-     * @param type Zserio integer type for mapping to C++ integer type.
+     * @param typeInstantiation Instantiation of zserio integer type for mapping to C++ integer type.
      *
      * @return C++ integer type which can hold a Zserio integer type.
      *
      * @throws ZserioEmitException If the Zserio integer type cannot be mapped to any C++ integer type.
      */
-    public NativeIntegralType getCppIntegralType(IntegerType type) throws ZserioEmitException
+    public NativeIntegralType getCppIntegralType(TypeInstantiation typeInstantiation) throws ZserioEmitException
     {
-        final CppNativeType nativeType = getCppType(type);
+        CppNativeType nativeType = null;
+        if (typeInstantiation instanceof DynamicBitFieldInstantiation)
+        {
+            nativeType = mapDynamicBitField((DynamicBitFieldInstantiation)typeInstantiation);
+        }
+        else
+        {
+            // use the base type to get the integral type (i.e. to resolve subtype)
+            nativeType = getCppType(typeInstantiation.getBaseType());
+        }
 
         if (!(nativeType instanceof NativeIntegralType))
-            throw new ZserioEmitException("Unhandled integral type '" + type.getClass().getName() +
-                    "' in CppNativeMapper!");
+            throw new ZserioEmitException("Unhandled integral type '" +
+                    typeInstantiation.getBaseType().getClass().getName() + "' in CppNativeMapper!");
 
         return (NativeIntegralType)nativeType;
     }
@@ -218,6 +231,119 @@ public class CppNativeMapper
         return (NativeSubType)nativeType;
     }
 
+    private CppNativeType mapArray(ArrayInstantiation instantiation) throws ZserioEmitException
+    {
+        final TypeInstantiation elementInstantiation = instantiation.getElementTypeInstantiation();
+        if (elementInstantiation instanceof DynamicBitFieldInstantiation)
+            return mapDynamicBitFieldArray((DynamicBitFieldInstantiation)elementInstantiation);
+
+        final ArrayElementTypeMapperVisitor arrayVisitor =
+                new ArrayElementTypeMapperVisitor(elementInstantiation);
+
+        /* Call visitor on the resolved type.
+         *
+         * This is required so that for subtypes of the simple types the correct array class is used,
+         * e.g.:
+         *
+         * subtype uint8 MyID;
+         * Compound
+         * {
+         *     MyID ids[10];
+         * };
+         *
+         * must use UnsignedByteArray for the field ids whereas for the code:
+         *
+         * Foo
+         * {
+         *     uint8 blah;
+         * };
+         * subtype Foo MyID;
+         * Compound
+         * {
+         *     MyID ids[10];
+         * }
+         *
+         * the field ids should be backed by ObjectArray<MyID> (not ObjectArray<Foo>).
+         */
+        elementInstantiation.getBaseType().accept(arrayVisitor);
+
+        final ZserioEmitException thrownException = arrayVisitor.getThrownException();
+        if (thrownException != null)
+            throw thrownException;
+
+        final CppNativeType nativeType = arrayVisitor.getCppType();
+        if (nativeType == null)
+        {
+            throw new ZserioEmitException("Unhandled type '" +
+                    elementInstantiation.getBaseType().getClass().getName() + "' in CppNativeMapper!");
+        }
+
+        return nativeType;
+    }
+
+    private static CppNativeType mapDynamicBitField(DynamicBitFieldInstantiation instantiation)
+            throws ZserioEmitException
+    {
+        final boolean isSigned = instantiation.getBaseType().isSigned();
+        final int numBits = instantiation.getMaxBitSize();
+        return isSigned ? mapSignedIntegralType(numBits) : mapUnsignedIntegralType(numBits);
+    }
+
+    private static CppNativeType mapDynamicBitFieldArray(DynamicBitFieldInstantiation instantiation)
+    {
+        final boolean isSigned = instantiation.getBaseType().isSigned();
+        final int numBits = instantiation.getMaxBitSize();
+        return isSigned ? mapSignedIntegralArray(numBits) : mapUnsignedIntegralArray(numBits);
+    }
+
+    private static CppNativeType mapSignedIntegralType(int numBits)
+    {
+        if (numBits <= 8)
+            return int8Type;
+        else if (numBits <= 16)
+            return int16Type;
+        else if (numBits <= 32)
+            return int32Type;
+        else
+            return int64Type;
+    }
+
+    private static CppNativeType mapUnsignedIntegralType(int numBits)
+    {
+        if (numBits <= 8)
+            return uint8Type;
+        else if (numBits <= 16)
+            return uint16Type;
+        else if (numBits <= 32)
+            return uint32Type;
+        else
+            return uint64Type;
+    }
+
+    private static CppNativeType mapSignedIntegralArray(int numBits)
+    {
+        if (numBits <= 8)
+            return int8ArrayType;
+        else if (numBits <= 16)
+            return int16ArrayType;
+        else if (numBits <= 32)
+            return int32ArrayType;
+        else // this could be > 64 (int8 foo; bit<foo> a;) but values above 64 explode at runtime
+            return int64ArrayType;
+    }
+
+    private static CppNativeType mapUnsignedIntegralArray(int numBits)
+    {
+        if (numBits <= 8)
+            return uint8ArrayType;
+        else if (numBits <= 16)
+            return uint16ArrayType;
+        else if (numBits <= 32)
+            return uint32ArrayType;
+        else // this could be > 64 (int8 foo; bit<foo> a;) but values above 64 explode at runtime
+            return uint64ArrayType;
+    }
+
     private String getIncludePathRoot(PackageName packageName)
     {
         if (packageName.isEmpty())
@@ -233,10 +359,29 @@ public class CppNativeMapper
 
     private static abstract class TypeMapperVisitor extends ZserioAstDefaultVisitor
     {
-        @Override
-        public void visitBitFieldType(BitFieldType type)
+        public ZserioEmitException getThrownException()
         {
-            mapBitfieldType(type);
+            return thrownException;
+        }
+
+        @Override
+        public void visitExternType(ExternType type)
+        {
+            ZserioToolPrinter.printError(type.getLocation(),
+                    "'extern' type is not supported by the legacy C++98 emitter!");
+            setThrownException(new ZserioEmitException("Unknown 'extern' type!"));
+        }
+
+        @Override
+        public void visitFixedBitFieldType(FixedBitFieldType type)
+        {
+            mapIntegralType(type.getBitSize(), type.isSigned(), false);
+        }
+
+        @Override
+        public void visitDynamicBitFieldType(DynamicBitFieldType type)
+        {
+            mapIntegralType(type.getMaxBitSize(), type.isSigned(), false);
         }
 
         @Override
@@ -259,27 +404,28 @@ public class CppNativeMapper
                 mapUnsignedIntegralType(nBits, variable);
         }
 
-        protected abstract void mapBitfieldType(BitFieldType type);
+        protected void setThrownException(ZserioEmitException exception)
+        {
+            thrownException = exception;
+        }
+
         protected abstract void mapSignedIntegralType(int nBits, boolean variable);
         protected abstract void mapUnsignedIntegralType(int nBits, boolean variable);
+
+        private ZserioEmitException thrownException = null;
     }
 
     private class ArrayElementTypeMapperVisitor extends TypeMapperVisitor
     {
-        public ArrayElementTypeMapperVisitor(ZserioType originalType)
+        public ArrayElementTypeMapperVisitor(TypeInstantiation originalInstantiation)
         {
             // resolve instantiations, but don't resolve subtype
-            this.originalType = originalType;
+            this.originalInstantiation = originalInstantiation;
         }
 
         public CppNativeType getCppType()
         {
             return cppType;
-        }
-
-        public ZserioEmitException getThrownException()
-        {
-            return thrownException;
         }
 
         @Override
@@ -341,12 +487,6 @@ public class CppNativeMapper
         }
 
         @Override
-        protected void mapBitfieldType(BitFieldType type)
-        {
-            mapIntegralType(type.getMaxBitSize(), type.isSigned(), false);
-        }
-
-        @Override
         protected void mapSignedIntegralType(int nBits, boolean variable)
         {
             if (variable)
@@ -375,14 +515,7 @@ public class CppNativeMapper
             }
             else
             {
-                if (nBits <= 8)
-                    cppType = int8ArrayType;
-                else if (nBits <= 16)
-                    cppType = int16ArrayType;
-                else if (nBits <= 32)
-                    cppType = int32ArrayType;
-                else // this could be > 64 (int8 foo; bit<foo> a;) but values above 64 explode at runtime
-                    cppType = int64ArrayType;
+                cppType = CppNativeMapper.mapSignedIntegralArray(nBits);
             }
         }
 
@@ -415,14 +548,7 @@ public class CppNativeMapper
             }
             else
             {
-                if (nBits <= 8)
-                    cppType = uint8ArrayType;
-                else if (nBits <= 16)
-                    cppType = uint16ArrayType;
-                else if (nBits <= 32)
-                    cppType = uint32ArrayType;
-                else // this could be > 64 (int8 foo; bit<foo> a;) but values above 64 explode at runtime
-                    cppType = uint64ArrayType;
+                cppType = mapUnsignedIntegralArray(nBits);
             }
         }
 
@@ -432,18 +558,17 @@ public class CppNativeMapper
             try
             {
                 cppType = new NativeObjectArrayType(ZSERIO_RUNTIME_PACKAGE_NAME,
-                        ZSERIO_RUNTIME_INCLUDE_PREFIX, CppNativeMapper.this.getCppType(originalType));
+                        ZSERIO_RUNTIME_INCLUDE_PREFIX, CppNativeMapper.this.getCppType(originalInstantiation));
             }
             catch (ZserioEmitException exception)
             {
-                thrownException = exception;
+                setThrownException(exception);
             }
         }
 
-        private final ZserioType originalType;
+        private final TypeInstantiation originalInstantiation;
 
         private CppNativeType cppType = null;
-        private ZserioEmitException thrownException = null;
     }
 
     private class ZserioTypeMapperVisitor extends TypeMapperVisitor
@@ -451,50 +576,6 @@ public class CppNativeMapper
         public CppNativeType getCppType()
         {
             return cppType;
-        }
-
-        public ZserioEmitException getThrownException()
-        {
-            return thrownException;
-        }
-
-        @Override
-        public void visitArrayType(ArrayType type)
-        {
-            final TypeReference elementTypeReference = type.getElementTypeInstantiation().getTypeReference();
-            // don't resolve subtype yet so that the element mapper visitor is given the original type
-            final ZserioType elementType = elementTypeReference.getType();
-
-            final ArrayElementTypeMapperVisitor arrayVisitor = new ArrayElementTypeMapperVisitor(elementType);
-
-            /* Call visitor on the resolved type.
-             *
-             * This is required so that for subtypes of the simple types the correct array class is used,
-             * e.g.:
-             *
-             * subtype uint8 MyID;
-             * Compound
-             * {
-             *     MyID ids[10];
-             * };
-             *
-             * must use UnsignedByteArray for the field ids whereas for the code:
-             *
-             * Foo
-             * {
-             *     uint8 blah;
-             * };
-             * subtype Foo MyID;
-             * Compound
-             * {
-             *     MyID ids[10];
-             * }
-             *
-             * the field ids should be backed by ObjectArray<MyID> (not ObjectArray<Foo>).
-             */
-            elementTypeReference.getBaseTypeReference().getType().accept(arrayVisitor);
-            cppType = arrayVisitor.getCppType();
-            thrownException = arrayVisitor.getThrownException();
         }
 
         @Override
@@ -514,7 +595,7 @@ public class CppNativeMapper
         {
             try
             {
-                final NativeIntegralType nativeBaseType = getCppIntegralType(type.getIntegerBaseType());
+                final NativeIntegralType nativeBaseType = getCppIntegralType(type.getTypeInstantiation());
                 final PackageName packageName = cppPackageMapper.getPackageName(type);
                 final String name = type.getName();
                 final String includeFileName = getIncludePath(packageName, name);
@@ -522,7 +603,7 @@ public class CppNativeMapper
             }
             catch (ZserioEmitException exception)
             {
-                thrownException = exception;
+                setThrownException(exception);
             }
         }
 
@@ -592,7 +673,7 @@ public class CppNativeMapper
             }
             catch (ZserioEmitException exception)
             {
-                thrownException = exception;
+                setThrownException(exception);
             }
         }
 
@@ -609,12 +690,6 @@ public class CppNativeMapper
             final String name = type.getName(); // note that name is same as the referenced type name
             final String includeFileName = getIncludePath(packageName, name);
             cppType = new NativeInstantiateType(packageName, name, includeFileName);
-        }
-
-        @Override
-        protected void mapBitfieldType(BitFieldType type)
-        {
-            mapIntegralType(type.getMaxBitSize(), type.isSigned(), false);
         }
 
         @Override
@@ -638,19 +713,13 @@ public class CppNativeMapper
                     break;
 
                 default:
+                    // shall not occur!
                     break;
                 }
             }
             else
             {
-                if (nBits <= 8)
-                    cppType = int8Type;
-                else if (nBits <= 16)
-                    cppType = int16Type;
-                else if (nBits <= 32)
-                    cppType = int32Type;
-                else // this could be > 64 (int8 foo; bit<foo> a;) but if we're above 64, we explode at runtime
-                    cppType = int64Type;
+                cppType = CppNativeMapper.mapSignedIntegralType(nBits);
             }
         }
 
@@ -675,19 +744,13 @@ public class CppNativeMapper
                     break;
 
                 default:
+                    // shall not occur!
                     break;
                 }
             }
             else
             {
-                if (nBits <= 8)
-                    cppType = uint8Type;
-                else if (nBits <= 16)
-                    cppType = uint16Type;
-                else if (nBits <= 32)
-                    cppType = uint32Type;
-                else // this could be > 64 (int8 foo; bit<foo> a;) but if we're above 64, we explode at runtime
-                    cppType = uint64Type;
+                cppType = CppNativeMapper.mapUnsignedIntegralType(nBits);
             }
         }
 
@@ -700,7 +763,6 @@ public class CppNativeMapper
         }
 
         private CppNativeType cppType = null;
-        private ZserioEmitException thrownException = null;
     }
 
     private final PackageMapper cppPackageMapper;

@@ -3,12 +3,13 @@ package zserio.emit.java;
 import java.util.ArrayList;
 import java.util.List;
 
-import zserio.ast.TypeInstantiation.InstantiatedParameter;
+import zserio.ast.ParameterizedTypeInstantiation;
+import zserio.ast.ParameterizedTypeInstantiation.InstantiatedParameter;
+import zserio.ast.TypeInstantiation;
 import zserio.ast.ZserioType;
 import zserio.ast.Field;
 import zserio.ast.SqlDatabaseType;
 import zserio.ast.SqlTableType;
-import zserio.ast.TypeReference;
 import zserio.emit.common.ZserioEmitException;
 
 public final  class SqlDatabaseEmitterTemplateData extends UserTypeTemplateData
@@ -47,9 +48,9 @@ public final  class SqlDatabaseEmitterTemplateData extends UserTypeTemplateData
         public DatabaseFieldData(JavaNativeMapper javaNativeMapper, Field field)
                 throws ZserioEmitException
         {
-            final TypeReference fieldTypeReference = field.getTypeInstantiation().getTypeReference();
-            final ZserioType fieldBaseType = fieldTypeReference.getBaseTypeReference().getType();
-            javaTypeName = javaNativeMapper.getJavaType(fieldTypeReference).getFullName();
+            final TypeInstantiation fieldTypeInstantiation = field.getTypeInstantiation();
+            final ZserioType fieldBaseType = fieldTypeInstantiation.getBaseType();
+            javaTypeName = javaNativeMapper.getJavaType(fieldTypeInstantiation).getFullName();
 
             name = field.getName();
             getterName = AccessorNameFormatter.getGetterName(field);
@@ -95,12 +96,18 @@ public final  class SqlDatabaseEmitterTemplateData extends UserTypeTemplateData
         {
             for (Field tableField : tableType.getFields())
             {
-                final List<InstantiatedParameter> instantiatedParameters =
-                        tableField.getTypeInstantiation().getInstantiatedParameters();
-                for (InstantiatedParameter instantiatedParam : instantiatedParameters)
+                final TypeInstantiation fieldInstantiation = tableField.getTypeInstantiation();
+                if (fieldInstantiation instanceof ParameterizedTypeInstantiation)
                 {
-                    if (instantiatedParam.getArgumentExpression().isExplicitVariable())
-                        return true;
+                    final ParameterizedTypeInstantiation parameterizedInstantiation =
+                            (ParameterizedTypeInstantiation)fieldInstantiation;
+                    final List<InstantiatedParameter> instantiatedParameters =
+                            parameterizedInstantiation.getInstantiatedParameters();
+                    for (InstantiatedParameter instantiatedParam : instantiatedParameters)
+                    {
+                        if (instantiatedParam.getArgumentExpression().isExplicitVariable())
+                            return true;
+                    }
                 }
             }
 

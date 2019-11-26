@@ -171,9 +171,15 @@ public class ZserioAstWalker implements ZserioAstVisitor
     }
 
     @Override
-    public void visitBitFieldType(BitFieldType bitFieldType)
+    public void visitFixedBitFieldType(FixedBitFieldType fixedBitFieldType)
     {
-        bitFieldType.visitChildren(this);
+        fixedBitFieldType.visitChildren(this);
+    }
+
+    @Override
+    public void visitDynamicBitFieldType(DynamicBitFieldType dynamicBitFieldType)
+    {
+        dynamicBitFieldType.visitChildren(this);
     }
 
     @Override

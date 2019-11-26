@@ -4,19 +4,19 @@ import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
 
-import zserio.ast.ArrayType;
-import zserio.ast.BitFieldType;
+import zserio.ast.ArrayInstantiation;
 import zserio.ast.ChoiceType;
 import zserio.ast.CompoundType;
+import zserio.ast.DynamicBitFieldInstantiation;
 import zserio.ast.IntegerType;
+import zserio.ast.ParameterizedTypeInstantiation;
+import zserio.ast.ParameterizedTypeInstantiation.InstantiatedParameter;
 import zserio.ast.UnionType;
 import zserio.ast.ZserioType;
 import zserio.ast.Expression;
 import zserio.ast.Field;
 import zserio.ast.FixedSizeType;
 import zserio.ast.TypeInstantiation;
-import zserio.ast.TypeInstantiation.InstantiatedParameter;
-import zserio.ast.TypeReference;
 import zserio.emit.common.ExpressionFormatter;
 import zserio.emit.common.ZserioEmitException;
 import zserio.emit.python.types.NativeArrayType;
@@ -31,16 +31,14 @@ public final class CompoundFieldTemplateData
         name = field.getName();
 
         final TypeInstantiation fieldTypeInstantiation = field.getTypeInstantiation();
-        final TypeReference fieldTypeReference = fieldTypeInstantiation.getTypeReference();
-        final ZserioType fieldBaseType = fieldTypeReference.getBaseTypeReference().getType();
-        final PythonNativeType nativeType = pythonNativeMapper.getPythonType(fieldTypeReference);
+        final PythonNativeType nativeType = pythonNativeMapper.getPythonType(fieldTypeInstantiation);
         importCollector.importType(nativeType);
         pythonTypeName = nativeType.getFullName();
 
         getterName = AccessorNameFormatter.getGetterName(field);
         setterName = AccessorNameFormatter.getSetterName(field);
 
-        rangeCheck = createRangeCheck(fieldBaseType, withRangeCheckCode, pythonExpressionFormatter);
+        rangeCheck = createRangeCheck(fieldTypeInstantiation, withRangeCheckCode, pythonExpressionFormatter);
         optional = createOptional(field, pythonExpressionFormatter);
 
         alignmentValue = createAlignmentValue(field, pythonExpressionFormatter);
@@ -49,11 +47,12 @@ public final class CompoundFieldTemplateData
 
         usesChoiceMember = (parentType instanceof ChoiceType) || (parentType instanceof UnionType);
 
-        bitSize = new BitSize(fieldBaseType, pythonExpressionFormatter);
+        bitSize = new BitSize(fieldTypeInstantiation, pythonExpressionFormatter);
         offset = createOffset(field, pythonExpressionFormatter);
-        array = createArray(nativeType, fieldBaseType, pythonNativeMapper, pythonExpressionFormatter,
+        array = createArray(nativeType, fieldTypeInstantiation, pythonNativeMapper, pythonExpressionFormatter,
                 importCollector);
-        runtimeFunction = PythonRuntimeFunctionDataCreator.createData(fieldBaseType, pythonExpressionFormatter);
+        runtimeFunction = PythonRuntimeFunctionDataCreator.createData(
+                fieldTypeInstantiation, pythonExpressionFormatter);
         compound = createCompound(pythonExpressionFormatter, fieldTypeInstantiation);
     }
 
@@ -163,11 +162,12 @@ public final class CompoundFieldTemplateData
 
     public static class BitFieldWithExpression
     {
-        public BitFieldWithExpression(BitFieldType bitFieldType,
+        public BitFieldWithExpression(DynamicBitFieldInstantiation dynamicBitFieldInstantiation,
                 ExpressionFormatter pythonExpressionFormatter) throws ZserioEmitException
         {
-            lengthExpression = createBitFieldLengthExpression(bitFieldType, pythonExpressionFormatter);
-            isSigned = bitFieldType.isSigned();
+            lengthExpression = pythonExpressionFormatter.formatGetter(
+                    dynamicBitFieldInstantiation.getLengthExpression());
+            isSigned = dynamicBitFieldInstantiation.getBaseType().isSigned();
         }
 
         public String getLengthExpression()
@@ -178,13 +178,6 @@ public final class CompoundFieldTemplateData
         public boolean getIsSigned()
         {
             return isSigned;
-        }
-
-        private static String createBitFieldLengthExpression(BitFieldType bitFieldType,
-                ExpressionFormatter pythonExpressionFormatter) throws ZserioEmitException
-        {
-            final Expression lengthExpression = bitFieldType.getLengthExpression();
-            return pythonExpressionFormatter.formatGetter(lengthExpression);
         }
 
         private final String lengthExpression;
@@ -217,12 +210,12 @@ public final class CompoundFieldTemplateData
 
     public static class BitSize
     {
-        public BitSize(ZserioType type, ExpressionFormatter pythonExpressionFormatter)
+        public BitSize(TypeInstantiation typeInstantiation, ExpressionFormatter pythonExpressionFormatter)
                 throws ZserioEmitException
         {
-            value = createValue(type, pythonExpressionFormatter);
+            value = createValue(typeInstantiation, pythonExpressionFormatter);
             runtimeFunction = (value != null) ? null :
-                PythonRuntimeFunctionDataCreator.createData(type, pythonExpressionFormatter);
+                PythonRuntimeFunctionDataCreator.createData(typeInstantiation, pythonExpressionFormatter);
         }
 
         public String getValue()
@@ -235,21 +228,21 @@ public final class CompoundFieldTemplateData
             return runtimeFunction;
         }
 
-        private static String createValue(ZserioType type, ExpressionFormatter pythonExpressionFormatter)
-                throws ZserioEmitException
+        private static String createValue(TypeInstantiation typeInstantiation,
+                ExpressionFormatter pythonExpressionFormatter) throws ZserioEmitException
         {
             String bitSizeOfValue = null;
-            if (type instanceof FixedSizeType)
+            if (typeInstantiation.getBaseType() instanceof FixedSizeType)
             {
                 bitSizeOfValue = PythonLiteralFormatter.formatDecimalLiteral(
-                        ((FixedSizeType)type).getBitSize());
+                        ((FixedSizeType)typeInstantiation.getBaseType()).getBitSize());
             }
-            else if (type instanceof BitFieldType)
+            else if (typeInstantiation instanceof DynamicBitFieldInstantiation)
             {
-                final BitFieldType bitFieldType = (BitFieldType)type;
-                final Integer bitSize = bitFieldType.getBitSize();
-                bitSizeOfValue = (bitSize != null) ? PythonLiteralFormatter.formatDecimalLiteral(bitSize) :
-                    pythonExpressionFormatter.formatGetter(bitFieldType.getLengthExpression());
+                final DynamicBitFieldInstantiation dynamicBitFieldInstantiation =
+                        (DynamicBitFieldInstantiation)typeInstantiation;
+                bitSizeOfValue = pythonExpressionFormatter.formatGetter(
+                        dynamicBitFieldInstantiation.getLengthExpression());
             }
 
             return bitSizeOfValue;
@@ -291,7 +284,7 @@ public final class CompoundFieldTemplateData
 
     public static class Array
     {
-        public Array(NativeArrayType nativeType, ArrayType arrayType,
+        public Array(NativeArrayType nativeType, ArrayInstantiation arrayInstantiation,
                 PythonNativeMapper pythonNativeMapper, ExpressionFormatter pythonExpressionFormatter,
                 ImportCollector importCollector) throws ZserioEmitException
         {
@@ -299,17 +292,15 @@ public final class CompoundFieldTemplateData
             requiresElementBitSize = nativeType.getRequiresElementBitSize();
             requiresElementCreator = nativeType.getRequiresElementCreator();
 
-            isImplicit = arrayType.isImplicit();
-            length = createLength(arrayType, pythonExpressionFormatter);
+            isImplicit = arrayInstantiation.isImplicit();
+            length = createLength(arrayInstantiation, pythonExpressionFormatter);
 
-            final TypeInstantiation elementTypeInstantiation = arrayType.getElementTypeInstantiation();
-            final TypeReference elementTypeReference = elementTypeInstantiation.getTypeReference();
-            final ZserioType elementBaseType = elementTypeReference.getBaseTypeReference().getType();
+            final TypeInstantiation elementTypeInstantiation = arrayInstantiation.getElementTypeInstantiation();
             final PythonNativeType elementNativeType =
-                    pythonNativeMapper.getPythonType(elementTypeReference);
+                    pythonNativeMapper.getPythonType(elementTypeInstantiation);
             importCollector.importType(elementNativeType);
             elementPythonTypeName = elementNativeType.getFullName();
-            elementBitSize = new BitSize(elementBaseType, pythonExpressionFormatter);
+            elementBitSize = new BitSize(elementTypeInstantiation, pythonExpressionFormatter);
             elementCompound = createCompound(pythonExpressionFormatter, elementTypeInstantiation);
         }
 
@@ -353,10 +344,10 @@ public final class CompoundFieldTemplateData
             return elementCompound;
         }
 
-        private static String createLength(ArrayType arrayType, ExpressionFormatter pythonExpressionFormatter)
-                throws ZserioEmitException
+        private static String createLength(ArrayInstantiation arrayInstantiation,
+                ExpressionFormatter pythonExpressionFormatter) throws ZserioEmitException
         {
-            final Expression lengthExpression = arrayType.getLengthExpression();
+            final Expression lengthExpression = arrayInstantiation.getLengthExpression();
             if (lengthExpression == null)
                 return null;
 
@@ -375,15 +366,15 @@ public final class CompoundFieldTemplateData
 
     public static class Compound
     {
-        public Compound(CompoundType compoundFieldType)
+        public Compound()
         {
             instantiatedParameters = new ArrayList<InstantiatedParameterData>(0);
         }
 
-        public Compound(ExpressionFormatter pythonExpressionFormatter, TypeInstantiation compoundFieldType)
-                throws ZserioEmitException
+        public Compound(ExpressionFormatter pythonExpressionFormatter,
+                ParameterizedTypeInstantiation parameterizedInstantiation) throws ZserioEmitException
         {
-            final List<InstantiatedParameter> parameters = compoundFieldType.getInstantiatedParameters();
+            final List<InstantiatedParameter> parameters = parameterizedInstantiation.getInstantiatedParameters();
             instantiatedParameters = new ArrayList<InstantiatedParameterData>(parameters.size());
             for (InstantiatedParameter parameter : parameters)
                 instantiatedParameters.add(new InstantiatedParameterData(pythonExpressionFormatter, parameter));
@@ -421,39 +412,38 @@ public final class CompoundFieldTemplateData
         final List<InstantiatedParameterData> instantiatedParameters;
     }
 
-    private static RangeCheck createRangeCheck(ZserioType type, boolean withRangeCheckCode,
+    private static RangeCheck createRangeCheck(TypeInstantiation typeInstantiation, boolean withRangeCheckCode,
             ExpressionFormatter pythonExpressionFormatter) throws ZserioEmitException
     {
+        final ZserioType baseType = typeInstantiation.getBaseType();
+
         // don't do range check for non-integer type
-        if (!withRangeCheckCode || !(type instanceof IntegerType))
+        if (!withRangeCheckCode || !(baseType instanceof IntegerType))
             return null;
 
-        final IntegerType integerType = (IntegerType)type;
-        final BitFieldWithExpression bitFieldWithExpression = createBitFieldWithExpression(type,
+        final IntegerType integerType = (IntegerType)baseType;
+        final BitFieldWithExpression bitFieldWithExpression = createBitFieldWithExpression(typeInstantiation,
                 pythonExpressionFormatter);
 
-        final BigInteger zserioLowerBound = integerType.getLowerBound();
+        final BigInteger zserioLowerBound = integerType.getLowerBound(typeInstantiation);
         final String lowerBound = zserioLowerBound != null ?
                 PythonLiteralFormatter.formatDecimalLiteral(zserioLowerBound) : null;
 
-        final BigInteger zserioUpperBound = integerType.getUpperBound();
+        final BigInteger zserioUpperBound = integerType.getUpperBound(typeInstantiation);
         final String upperBound = zserioUpperBound != null ?
                 PythonLiteralFormatter.formatDecimalLiteral(zserioUpperBound) : null;
 
         return new RangeCheck(bitFieldWithExpression, lowerBound, upperBound);
     }
 
-    private static BitFieldWithExpression createBitFieldWithExpression(ZserioType type,
+    private static BitFieldWithExpression createBitFieldWithExpression(TypeInstantiation typeInstantiation,
             ExpressionFormatter pythonExpressionFormatter) throws ZserioEmitException
     {
-        if (type instanceof BitFieldType)
-        {
-            final BitFieldType bitFieldType = (BitFieldType)type;
-            if (bitFieldType.getBitSize() == null)
-                return new BitFieldWithExpression(bitFieldType, pythonExpressionFormatter);
-        }
+        if (!(typeInstantiation instanceof DynamicBitFieldInstantiation))
+            return null;
 
-        return null;
+        return new BitFieldWithExpression(
+                (DynamicBitFieldInstantiation)typeInstantiation, pythonExpressionFormatter);
     }
 
     private static Optional createOptional(Field field, ExpressionFormatter pythonExpressionFormatter)
@@ -508,26 +498,30 @@ public final class CompoundFieldTemplateData
         return new Offset(offsetExpression, pythonExpressionFormatter);
     }
 
-    private static Array createArray(PythonNativeType nativeType, ZserioType baseType,
+    private static Array createArray(PythonNativeType nativeType, TypeInstantiation typeInstantiation,
             PythonNativeMapper pythonNativeMapper, ExpressionFormatter pythonExpressionFormatter,
             ImportCollector importCollector) throws ZserioEmitException
     {
-        if (!(baseType instanceof ArrayType))
+        if (!(typeInstantiation instanceof ArrayInstantiation))
             return null;
 
         if (!(nativeType instanceof NativeArrayType))
-            throw new ZserioEmitException("Inconsistent base type '" + baseType.getClass() +
-                    "' and native type '" + nativeType.getClass() + "'!");
+        {
+            throw new ZserioEmitException("Inconsistent base type '" + typeInstantiation.getClass().getName() +
+                    "' and native type '" + nativeType.getClass().getName() + "'!");
+        }
 
-        return new Array((NativeArrayType)nativeType, (ArrayType)baseType, pythonNativeMapper,
+        return new Array((NativeArrayType)nativeType, (ArrayInstantiation)typeInstantiation, pythonNativeMapper,
                 pythonExpressionFormatter, importCollector);
     }
 
     private static Compound createCompound(ExpressionFormatter pythonExpressionFormatter,
-            TypeInstantiation fieldTypeInstantiation) throws ZserioEmitException
+            TypeInstantiation typeInstantiation) throws ZserioEmitException
     {
-        if (fieldTypeInstantiation.getTypeReference().getBaseTypeReference().getType() instanceof CompoundType)
-            return new Compound(pythonExpressionFormatter, fieldTypeInstantiation);
+        if (typeInstantiation instanceof ParameterizedTypeInstantiation)
+            return new Compound(pythonExpressionFormatter, (ParameterizedTypeInstantiation)typeInstantiation);
+        else if (typeInstantiation.getBaseType() instanceof CompoundType)
+            return new Compound();
         else
             return null;
     }

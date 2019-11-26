@@ -3,17 +3,18 @@ package zserio.emit.java;
 import java.util.ArrayList;
 import java.util.List;
 
-import zserio.ast.ArrayType;
-import zserio.ast.BitFieldType;
 import zserio.ast.ChoiceType;
 import zserio.ast.CompoundType;
+import zserio.ast.ParameterizedTypeInstantiation;
+import zserio.ast.ParameterizedTypeInstantiation.InstantiatedParameter;
+import zserio.ast.ArrayInstantiation;
+import zserio.ast.DynamicBitFieldInstantiation;
 import zserio.ast.ZserioType;
 import zserio.ast.EnumType;
 import zserio.ast.Expression;
 import zserio.ast.Field;
 import zserio.ast.FixedSizeType;
 import zserio.ast.TypeInstantiation;
-import zserio.ast.TypeInstantiation.InstantiatedParameter;
 import zserio.ast.TypeReference;
 import zserio.ast.UnionType;
 import zserio.emit.common.ExpressionFormatter;
@@ -35,8 +36,6 @@ public final class CompoundFieldTemplateData
             ExpressionFormatter javaExpressionFormatter) throws ZserioEmitException
     {
         final TypeInstantiation fieldTypeInstantiation = field.getTypeInstantiation();
-        final TypeReference fieldTypeReference = fieldTypeInstantiation.getTypeReference();
-        final ZserioType fieldBaseType = fieldTypeReference.getBaseTypeReference().getType();
 
         name = field.getName();
 
@@ -45,17 +44,17 @@ public final class CompoundFieldTemplateData
 
         final boolean isTypeNullable = (optional != null);
         final JavaNativeType nativeType = (isTypeNullable)
-                ? javaNativeMapper.getNullableJavaType(fieldTypeReference)
-                : javaNativeMapper.getJavaType(fieldTypeReference);
+                ? javaNativeMapper.getNullableJavaType(fieldTypeInstantiation)
+                : javaNativeMapper.getJavaType(fieldTypeInstantiation);
 
         javaTypeName = nativeType.getFullName();
-        javaNullableTypeName = javaNativeMapper.getNullableJavaType(fieldTypeReference).getFullName();
+        javaNullableTypeName = javaNativeMapper.getNullableJavaType(fieldTypeInstantiation).getFullName();
 
         getterName = AccessorNameFormatter.getGetterName(field);
         setterName = AccessorNameFormatter.getSetterName(field);
 
         rangeCheckData = new RangeCheckTemplateData(javaNativeMapper, withRangeCheckCode, name,
-                fieldBaseType, isTypeNullable, javaExpressionFormatter);
+                fieldTypeInstantiation, isTypeNullable, javaExpressionFormatter);
 
         alignmentValue = createAlignmentValue(field, javaExpressionFormatter);
         initializer = createInitializer(field, javaExpressionFormatter);
@@ -72,12 +71,12 @@ public final class CompoundFieldTemplateData
 
         constraint = createConstraint(field, javaExpressionFormatter);
 
-        bitSize = new BitSize(fieldBaseType, javaNativeMapper, javaExpressionFormatter);
+        bitSize = new BitSize(fieldTypeInstantiation, javaNativeMapper, javaExpressionFormatter);
         offset = createOffset(field, javaNativeMapper, javaExpressionFormatter);
-        array = createArray(nativeType, fieldBaseType, parentType, javaNativeMapper, withWriterCode,
+        array = createArray(nativeType, fieldTypeInstantiation, parentType, javaNativeMapper, withWriterCode,
                 javaExpressionFormatter);
-        runtimeFunction = JavaRuntimeFunctionDataCreator.createData(fieldBaseType, javaExpressionFormatter,
-                javaNativeMapper);
+        runtimeFunction = JavaRuntimeFunctionDataCreator.createData(fieldTypeInstantiation,
+                javaExpressionFormatter, javaNativeMapper);
         compound = createCompound(javaNativeMapper, withWriterCode, javaExpressionFormatter, parentType,
                 fieldTypeInstantiation);
     }
@@ -223,12 +222,13 @@ public final class CompoundFieldTemplateData
 
     public static class BitSize
     {
-        public BitSize(ZserioType type, JavaNativeMapper javaNativeMapper,
+        public BitSize(TypeInstantiation typeInstantiation, JavaNativeMapper javaNativeMapper,
                 ExpressionFormatter javaExpressionFormatter) throws ZserioEmitException
         {
-            value = createValue(type, javaExpressionFormatter);
+            value = createValue(typeInstantiation, javaExpressionFormatter);
             runtimeFunction = (value != null) ? null :
-                JavaRuntimeFunctionDataCreator.createData(type, javaExpressionFormatter, javaNativeMapper);
+                    JavaRuntimeFunctionDataCreator.createData(
+                            typeInstantiation, javaExpressionFormatter, javaNativeMapper);
         }
 
         public String getValue()
@@ -241,23 +241,24 @@ public final class CompoundFieldTemplateData
             return runtimeFunction;
         }
 
-        private static String createValue(ZserioType type, ExpressionFormatter javaExpressionFormatter)
-                throws ZserioEmitException
+        private static String createValue(TypeInstantiation typeInstantiation,
+                ExpressionFormatter javaExpressionFormatter) throws ZserioEmitException
         {
-            String bitSizeOfValue = null;
-            if (type instanceof FixedSizeType)
+            String value = null;
+            if (typeInstantiation.getBaseType() instanceof FixedSizeType)
             {
-                bitSizeOfValue = JavaLiteralFormatter.formatDecimalLiteral(((FixedSizeType)type).getBitSize());
+                value = JavaLiteralFormatter.formatDecimalLiteral(
+                        ((FixedSizeType)typeInstantiation.getBaseType()).getBitSize());
             }
-            else if (type instanceof BitFieldType)
+            else if (typeInstantiation instanceof DynamicBitFieldInstantiation)
             {
-                final BitFieldType bitFieldType = (BitFieldType)type;
-                final Integer bitSize = bitFieldType.getBitSize();
-                bitSizeOfValue = (bitSize != null) ? JavaLiteralFormatter.formatDecimalLiteral(bitSize) :
-                    javaExpressionFormatter.formatGetter(bitFieldType.getLengthExpression());
+                final DynamicBitFieldInstantiation dynamicBitFieldInstantiation =
+                        (DynamicBitFieldInstantiation)typeInstantiation;
+                value = javaExpressionFormatter.formatGetter(
+                        dynamicBitFieldInstantiation.getLengthExpression());
             }
 
-            return bitSizeOfValue;
+            return value;
         }
 
         private final String                        value;
@@ -313,17 +314,15 @@ public final class CompoundFieldTemplateData
 
     public static class Array
     {
-        public Array(NativeArrayType nativeType, ArrayType arrayType, CompoundType parentType,
+        public Array(NativeArrayType nativeType, ArrayInstantiation arrayInstantiation, CompoundType parentType,
                 JavaNativeMapper javaNativeMapper, boolean withWriterCode,
                 ExpressionFormatter javaExpressionFormatter) throws ZserioEmitException
         {
-            final TypeInstantiation elementTypeInstantiation = arrayType.getElementTypeInstantiation();
-            final TypeReference elementTypeReference = elementTypeInstantiation.getTypeReference();
-            final ZserioType elementBaseType = elementTypeReference.getBaseTypeReference().getType();
+            final TypeInstantiation elementTypeInstantiation = arrayInstantiation.getElementTypeInstantiation();
 
-            isImplicit = arrayType.isImplicit();
-            length = createLength(arrayType, javaExpressionFormatter);
-            final JavaNativeType elementNativeType = javaNativeMapper.getJavaType(elementBaseType);
+            isImplicit = arrayInstantiation.isImplicit();
+            length = createLength(arrayInstantiation, javaExpressionFormatter);
+            final JavaNativeType elementNativeType = javaNativeMapper.getJavaType(elementTypeInstantiation);
             elementJavaTypeName = elementNativeType.getFullName();
 
             requiresElementBitSize = nativeType.requiresElementBitSize();
@@ -332,7 +331,7 @@ public final class CompoundFieldTemplateData
 
             generateListSetter = createGenerateListSetter(elementTypeInstantiation);
 
-            elementBitSize = new BitSize(elementBaseType, javaNativeMapper, javaExpressionFormatter);
+            elementBitSize = new BitSize(elementTypeInstantiation, javaNativeMapper, javaExpressionFormatter);
             isElementEnum = elementNativeType instanceof NativeEnumType;
             elementCompound = createCompound(javaNativeMapper, withWriterCode, javaExpressionFormatter,
                     parentType, elementTypeInstantiation);
@@ -388,10 +387,10 @@ public final class CompoundFieldTemplateData
             return elementCompound;
         }
 
-        private static String createLength(ArrayType arrayType, ExpressionFormatter javaExpressionFormatter)
-                throws ZserioEmitException
+        private static String createLength(ArrayInstantiation arrayInstantiation,
+                ExpressionFormatter javaExpressionFormatter) throws ZserioEmitException
         {
-            final Expression lengthExpression = arrayType.getLengthExpression();
+            final Expression lengthExpression = arrayInstantiation.getLengthExpression();
             if (lengthExpression == null)
                 return null;
 
@@ -405,11 +404,16 @@ public final class CompoundFieldTemplateData
              * class itself, it's not propagated to the array factory.
              * But an array can be composed of type instantiations and these need to be handled.
              */
-            for (InstantiatedParameter instantiatedParameter :
-                    elementTypeInstantiation.getInstantiatedParameters())
+            if (elementTypeInstantiation instanceof ParameterizedTypeInstantiation)
             {
-                if (instantiatedParameter.getArgumentExpression().requiresOwnerContext())
-                    return true;
+                final ParameterizedTypeInstantiation parameterizedInstantiation =
+                        (ParameterizedTypeInstantiation)elementTypeInstantiation;
+                for (InstantiatedParameter instantiatedParameter :
+                        parameterizedInstantiation.getInstantiatedParameters())
+                {
+                    if (instantiatedParameter.getArgumentExpression().requiresOwnerContext())
+                        return true;
+                }
             }
 
             return false;
@@ -417,11 +421,18 @@ public final class CompoundFieldTemplateData
 
         private static boolean createGenerateListSetter(TypeInstantiation elementTypeInstantiation)
         {
-            final TypeReference elementBaseTypeReference =
-                    elementTypeInstantiation.getTypeReference().getBaseTypeReference();
-            final ZserioType elementBaseType = elementBaseTypeReference.getType();
+            final ZserioType elementBaseType = elementTypeInstantiation.getBaseType();
+
+            boolean hasParameters = false;
+            if (elementTypeInstantiation instanceof ParameterizedTypeInstantiation)
+            {
+                final ParameterizedTypeInstantiation parameterizedInstantiation =
+                        (ParameterizedTypeInstantiation)elementTypeInstantiation;
+                hasParameters = !parameterizedInstantiation.getInstantiatedParameters().isEmpty();
+            }
+
             return elementBaseType instanceof CompoundType || elementBaseType instanceof EnumType ||
-                    !elementTypeInstantiation.getInstantiatedParameters().isEmpty();
+                    hasParameters;
         }
 
         private final boolean       isImplicit;
@@ -438,17 +449,16 @@ public final class CompoundFieldTemplateData
 
     public static class Compound
     {
-        public Compound(JavaNativeMapper javaNativeMapper, boolean withWriterCode,
-                CompoundType owner, CompoundType compoundFieldType)
+        public Compound()
         {
             instantiatedParameters = new ArrayList<InstantiatedParameterData>(0);
         }
 
         public Compound(JavaNativeMapper javaNativeMapper, boolean withWriterCode,
                 ExpressionFormatter javaExpressionFormatter, CompoundType owner,
-                TypeInstantiation compoundFieldType) throws ZserioEmitException
+                ParameterizedTypeInstantiation typeInstantiation) throws ZserioEmitException
         {
-            final List<InstantiatedParameter> parameters = compoundFieldType.getInstantiatedParameters();
+            final List<InstantiatedParameter> parameters = typeInstantiation.getInstantiatedParameters();
             instantiatedParameters = new ArrayList<InstantiatedParameterData>(parameters.size());
             for (InstantiatedParameter parameter : parameters)
                 instantiatedParameters.add(new InstantiatedParameterData(javaNativeMapper,
@@ -551,30 +561,41 @@ public final class CompoundFieldTemplateData
         return new Offset(offsetExpression, javaNativeMapper, javaExpressionFormatter);
     }
 
-    private static Array createArray(JavaNativeType nativeType, ZserioType baseType, CompoundType parentType,
-            JavaNativeMapper javaNativeMapper, boolean withWriterCode,
+    private static Array createArray(JavaNativeType nativeType, TypeInstantiation typeInstantiation,
+            CompoundType parentType, JavaNativeMapper javaNativeMapper, boolean withWriterCode,
             ExpressionFormatter javaExpressionFormatter) throws ZserioEmitException
     {
         if (!(nativeType instanceof NativeArrayType))
             return null;
 
-        if (!(baseType instanceof ArrayType))
-            throw new ZserioEmitException("Inconsistent base type '" + baseType.getClass() +
-                    "' and native type '" + nativeType.getClass() + "'!");
+        if (!(typeInstantiation instanceof ArrayInstantiation))
+        {
+            throw new ZserioEmitException("Inconsistent instantiation '" +
+                    typeInstantiation.getClass().getName() + "' and native type '" +
+                    nativeType.getClass().getName() + "'!");
+        }
 
-        return new Array((NativeArrayType)nativeType, (ArrayType)baseType, parentType, javaNativeMapper,
-                withWriterCode, javaExpressionFormatter);
+        return new Array((NativeArrayType)nativeType, (ArrayInstantiation)typeInstantiation, parentType,
+                javaNativeMapper, withWriterCode, javaExpressionFormatter);
     }
 
     private static Compound createCompound(JavaNativeMapper javaNativeMapper, boolean withWriterCode,
             ExpressionFormatter javaExpressionFormatter, CompoundType owner,
-            TypeInstantiation fieldTypeInstantiation) throws ZserioEmitException
+            TypeInstantiation typeInstantiation) throws ZserioEmitException
     {
-        if (fieldTypeInstantiation.getTypeReference().getBaseTypeReference().getType() instanceof CompoundType)
+        if (typeInstantiation instanceof ParameterizedTypeInstantiation)
+        {
             return new Compound(javaNativeMapper, withWriterCode, javaExpressionFormatter, owner,
-                    fieldTypeInstantiation);
+                    (ParameterizedTypeInstantiation)typeInstantiation);
+        }
+        else if (typeInstantiation.getBaseType() instanceof CompoundType)
+        {
+            return new Compound();
+        }
         else
+        {
             return null;
+        }
     }
 
     private final String                        name;

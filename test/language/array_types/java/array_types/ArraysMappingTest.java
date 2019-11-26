@@ -75,7 +75,7 @@ public class ArraysMappingTest
         arraysMapping.setBitfield32Array(new UnsignedIntArray(FIXED_ARRAY_LENGTH));
         arraysMapping.setBitfield63Array(new UnsignedLongArray(FIXED_ARRAY_LENGTH));
         arraysMapping.setUint8Value((short)8);
-        arraysMapping.setVariableBitfieldLongArray(new UnsignedLongArray(FIXED_ARRAY_LENGTH));
+        arraysMapping.setVariableBitfieldLongArray(new BigIntegerArray(FIXED_ARRAY_LENGTH));
         arraysMapping.setVariableBitfieldIntArray(new UnsignedIntArray(FIXED_ARRAY_LENGTH));
         arraysMapping.setVariableBitfieldShortArray(new UnsignedShortArray(FIXED_ARRAY_LENGTH));
 

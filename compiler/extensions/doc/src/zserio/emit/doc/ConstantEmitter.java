@@ -116,7 +116,7 @@ public class ConstantEmitter extends DefaultHtmlEmitter
         if (constant == null)
             throw new RuntimeException("getConstType() called before emit()!");
 
-        LinkedType linkedType = new LinkedType(constant.getTypeReference());
+        LinkedType linkedType = new LinkedType(constant.getTypeInstantiation());
         return linkedType;
     }
 

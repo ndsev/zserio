@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import zserio.ast.ArrayType;
+import zserio.ast.ArrayInstantiation;
 import zserio.ast.AstNode;
 import zserio.ast.BuiltInType;
 import zserio.ast.ChoiceCase;
@@ -25,6 +25,7 @@ import zserio.ast.SqlDatabaseType;
 import zserio.ast.SqlTableType;
 import zserio.ast.StructureType;
 import zserio.ast.Subtype;
+import zserio.ast.TypeInstantiation;
 import zserio.ast.UnionType;
 import zserio.ast.ZserioType;
 import zserio.emit.common.DefaultEmitter;
@@ -37,7 +38,7 @@ public class UsedByCollector extends DefaultEmitter
     @Override
     public void beginConst(Constant constant)
     {
-        storeType(constant, constant.getTypeReference().getType());
+        storeType(constant, constant.getTypeInstantiation().getType());
     }
 
     @Override
@@ -79,7 +80,7 @@ public class UsedByCollector extends DefaultEmitter
     @Override
     public void beginEnumeration(EnumType enumType)
     {
-        storeType(enumType, enumType.getEnumType());
+        storeType(enumType, enumType.getTypeInstantiation().getType());
     }
 
     @Override
@@ -180,10 +181,10 @@ public class UsedByCollector extends DefaultEmitter
         final List<AstNode> usedTypes = new ArrayList<AstNode>();
         for (Field field : compoundType.getFields())
         {
-            ZserioType fieldType = field.getTypeInstantiation().getTypeReference().getType();
-            if (fieldType instanceof ArrayType)
-                fieldType = ((ArrayType)fieldType).getElementTypeInstantiation().getTypeReference().getType();
-            addTypeToUsedTypes(fieldType, usedTypes);
+            TypeInstantiation instantiation = field.getTypeInstantiation();
+            if (instantiation instanceof ArrayInstantiation)
+                instantiation = ((ArrayInstantiation)instantiation).getElementTypeInstantiation();
+            addTypeToUsedTypes(instantiation.getType(), usedTypes);
         }
 
         return usedTypes;

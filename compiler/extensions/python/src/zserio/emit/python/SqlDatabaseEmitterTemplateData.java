@@ -3,11 +3,11 @@ package zserio.emit.python;
 import java.util.ArrayList;
 import java.util.List;
 
+import zserio.ast.TypeInstantiation;
 import zserio.ast.ZserioType;
 import zserio.ast.Field;
 import zserio.ast.SqlDatabaseType;
 import zserio.ast.SqlTableType;
-import zserio.ast.TypeReference;
 import zserio.emit.common.ZserioEmitException;
 import zserio.emit.python.types.PythonNativeType;
 
@@ -36,9 +36,9 @@ public final  class SqlDatabaseEmitterTemplateData extends UserTypeTemplateData
         public DatabaseFieldData(PythonNativeMapper pythonNativeMapper, Field field,
                 ImportCollector importCollector) throws ZserioEmitException
         {
-            final TypeReference fieldTypeReference = field.getTypeInstantiation().getTypeReference();
-            final ZserioType fieldBaseType = fieldTypeReference.getBaseTypeReference().getType();
-            final PythonNativeType nativeType = pythonNativeMapper.getPythonType(fieldTypeReference);
+            final TypeInstantiation fieldTypeInstantiation = field.getTypeInstantiation();
+            final ZserioType fieldBaseType = fieldTypeInstantiation.getBaseType();
+            final PythonNativeType nativeType = pythonNativeMapper.getPythonType(fieldTypeInstantiation);
             importCollector.importType(nativeType);
 
             name = field.getName();

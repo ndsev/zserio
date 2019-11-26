@@ -24,14 +24,14 @@ public abstract class IntegerType extends BuiltInType
     /**
      * Gets upper bound for this integer type.
      *
-     * @return Upper bound or null if bit size of this integer type is unknown during compilation time.
+     * @return Upper bound.
      */
     public abstract BigInteger getUpperBound();
 
     /**
      * Gets lower bound for this integer type.
      *
-     * @return Lower bound or null if bit size of this integer type is unknown during compilation time.
+     * @return Lower bound.
      */
     public abstract BigInteger getLowerBound();
 
@@ -41,4 +41,34 @@ public abstract class IntegerType extends BuiltInType
      * @return true if this integer type is signed.
      */
     public abstract boolean isSigned();
+
+    /**
+     * Gets upper bound for this integer type with respect to the given instantiation.
+     *
+     * @param instantiation Instantiation of this integer type.
+     *
+     * @return Actual upper bound.
+     */
+    public BigInteger getUpperBound(TypeInstantiation instantiation)
+    {
+        if (instantiation instanceof DynamicBitFieldInstantiation)
+            return ((DynamicBitFieldInstantiation)instantiation).getUpperBound();
+
+        return getUpperBound();
+    }
+
+    /**
+     * Gets lower bound for this integer type with respect to the give instantiation.
+     *
+     * @param instantiation Instantiation of this integer type.
+     *
+     * @return Actual lower bound.
+     */
+    public BigInteger getLowerBound(TypeInstantiation instantiation)
+    {
+        if (instantiation instanceof DynamicBitFieldInstantiation)
+            return ((DynamicBitFieldInstantiation)instantiation).getLowerBound();
+
+        return getLowerBound();
+    }
 }

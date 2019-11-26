@@ -12,7 +12,7 @@ import zserio.ast.CompoundType;
 import zserio.ast.EnumItem;
 import zserio.ast.EnumType;
 import zserio.ast.Expression;
-import zserio.ast.ZserioType;
+import zserio.ast.TypeInstantiation;
 import zserio.emit.common.ExpressionFormatter;
 import zserio.emit.common.ZserioEmitException;
 import zserio.tools.HashUtil;
@@ -95,8 +95,8 @@ public class EnumerationEmitter extends DefaultHtmlEmitter
         if (enumeration == null)
             throw new RuntimeException("getEnumType() called before emit()!");
 
-        ZserioType enumType = enumeration.getEnumType();
-        String enumTypeName = TypeNameEmitter.getTypeName(enumType);
+        TypeInstantiation enumTypeInstantiation = enumeration.getTypeInstantiation();
+        String enumTypeName = TypeNameEmitter.getTypeName(enumTypeInstantiation);
         return enumTypeName;
     }
 

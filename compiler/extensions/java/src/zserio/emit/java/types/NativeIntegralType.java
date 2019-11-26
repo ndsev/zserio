@@ -61,7 +61,6 @@ abstract public class NativeIntegralType extends JavaNativeType
 
     private void checkRange(BigInteger value) throws ZserioEmitException
     {
-
         final BigInteger lowerBound = getLowerBound();
         final BigInteger upperBound = getUpperBound();
         if ((value.compareTo(getLowerBound()) < 0) || (value.compareTo(getUpperBound()) > 0))

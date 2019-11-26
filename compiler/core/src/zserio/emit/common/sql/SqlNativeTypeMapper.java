@@ -1,15 +1,15 @@
 package zserio.emit.common.sql;
 
-import zserio.ast.BitFieldType;
 import zserio.ast.BooleanType;
 import zserio.ast.ChoiceType;
+import zserio.ast.DynamicBitFieldType;
 import zserio.ast.EnumType;
+import zserio.ast.FixedBitFieldType;
 import zserio.ast.FloatType;
 import zserio.ast.StdIntegerType;
 import zserio.ast.StringType;
 import zserio.ast.StructureType;
 import zserio.ast.TypeInstantiation;
-import zserio.ast.TypeReference;
 import zserio.ast.UnionType;
 import zserio.ast.VarIntegerType;
 import zserio.ast.ZserioAstDefaultVisitor;
@@ -38,10 +38,10 @@ public class SqlNativeTypeMapper
      *
      * @throws ZserioEmitException Throws in case of internal error.
      */
-    public SqlNativeType getSqlType(TypeReference typeReference) throws ZserioEmitException
+    public SqlNativeType getSqlType(TypeInstantiation typeInstantiation) throws ZserioEmitException
     {
         // resolve all the way through subtypes to the base type
-        final ZserioType baseType = typeReference.getBaseTypeReference().getType();
+        final ZserioType baseType = typeInstantiation.getBaseType();
 
         final TypeMapperVisitor visitor = new TypeMapperVisitor();
         baseType.accept(visitor);
@@ -50,7 +50,7 @@ public class SqlNativeTypeMapper
         if (nativeType == null)
         {
             throw new ZserioEmitException("Unexpected element '" +
-                    ZserioTypeUtil.getFullName(typeReference.getType()) +
+                    ZserioTypeUtil.getFullName(typeInstantiation.getType()) +
                     "' of type '" + baseType.getClass() + "' in SqlNativeTypeMapper!");
         }
 
@@ -94,13 +94,25 @@ public class SqlNativeTypeMapper
         }
 
         @Override
-        public void visitBitFieldType(BitFieldType type)
+        public void visitStdIntegerType(StdIntegerType type)
         {
             sqlType = integerType;
         }
 
         @Override
-        public void visitStdIntegerType(StdIntegerType type)
+        public void visitVarIntegerType(VarIntegerType type)
+        {
+            sqlType = integerType;
+        }
+
+        @Override
+        public void visitFixedBitFieldType(FixedBitFieldType fixedFieldTypeType)
+        {
+            sqlType = integerType;
+        }
+
+        @Override
+        public void visitDynamicBitFieldType(DynamicBitFieldType dynamicBitFieldType)
         {
             sqlType = integerType;
         }
@@ -127,12 +139,6 @@ public class SqlNativeTypeMapper
         public void visitUnionType(UnionType type)
         {
             sqlType = blobType;
-        }
-
-        @Override
-        public void visitVarIntegerType(VarIntegerType type)
-        {
-            sqlType = integerType;
         }
 
         private SqlNativeType sqlType = null;

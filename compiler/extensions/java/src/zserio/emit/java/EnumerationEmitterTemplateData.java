@@ -3,11 +3,12 @@ package zserio.emit.java;
 import java.util.ArrayList;
 import java.util.List;
 
-import zserio.ast.BitFieldType;
+import zserio.ast.DynamicBitFieldInstantiation;
 import zserio.ast.EnumItem;
 import zserio.ast.EnumType;
+import zserio.ast.FixedSizeType;
 import zserio.ast.IntegerType;
-import zserio.ast.StdIntegerType;
+import zserio.ast.TypeInstantiation;
 import zserio.emit.common.ZserioEmitException;
 import zserio.emit.java.types.NativeIntegralType;
 
@@ -21,14 +22,15 @@ public final class EnumerationEmitterTemplateData extends UserTypeTemplateData
     {
         super(context, enumType);
 
+        final TypeInstantiation enumTypeInstantiation = enumType.getTypeInstantiation();
         final JavaNativeMapper javaNativeMapper = context.getJavaNativeMapper();
-        final IntegerType enumBaseType = enumType.getIntegerBaseType();
-        final NativeIntegralType nativeIntegralType = javaNativeMapper.getJavaIntegralType(enumBaseType);
+        final NativeIntegralType nativeIntegralType =
+                javaNativeMapper.getJavaIntegralType(enumTypeInstantiation);
         baseJavaTypeName = nativeIntegralType.getFullName();
 
         bitSize = createBitSize(enumType);
 
-        runtimeFunction = JavaRuntimeFunctionDataCreator.createData(enumBaseType,
+        runtimeFunction = JavaRuntimeFunctionDataCreator.createData(enumTypeInstantiation,
                 context.getJavaExpressionFormatter(), javaNativeMapper);
 
         items = new ArrayList<EnumItemData>();
@@ -58,15 +60,16 @@ public final class EnumerationEmitterTemplateData extends UserTypeTemplateData
 
     private static String createBitSize(EnumType enumType) throws ZserioEmitException
     {
+        final TypeInstantiation typeInstantiation = enumType.getTypeInstantiation();
         final IntegerType integerBaseType = enumType.getIntegerBaseType();
         Integer bitSize = null;
-        if (integerBaseType instanceof StdIntegerType)
+        if (integerBaseType instanceof FixedSizeType)
         {
-            bitSize = ((StdIntegerType)integerBaseType).getBitSize();
+            bitSize = ((FixedSizeType)integerBaseType).getBitSize();
         }
-        else if (integerBaseType instanceof BitFieldType)
+        else if (typeInstantiation instanceof DynamicBitFieldInstantiation)
         {
-            bitSize = ((BitFieldType)integerBaseType).getBitSize();
+            bitSize = ((DynamicBitFieldInstantiation)typeInstantiation).getMaxBitSize();
         }
 
         return (bitSize != null) ? JavaLiteralFormatter.formatDecimalLiteral(bitSize) : null;
@@ -80,7 +83,7 @@ public final class EnumerationEmitterTemplateData extends UserTypeTemplateData
             name = enumItem.getName();
 
             final NativeIntegralType nativeIntegralType =
-                    (NativeIntegralType)javaNativeMapper.getJavaType(enumType.getIntegerBaseType());
+                    (NativeIntegralType)javaNativeMapper.getJavaType(enumType.getTypeInstantiation());
             value = nativeIntegralType.formatLiteral(enumItem.getValue());
         }
 

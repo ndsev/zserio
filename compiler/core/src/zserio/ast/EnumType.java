@@ -18,18 +18,18 @@ public class EnumType extends DocumentableAstNode implements ZserioScopedType
      *
      * @param location          AST node location.
      * @param pkg               Package to which belongs the enumeration type.
-     * @param enumTypeReference Type reference to the enumeration type.
+     * @param typeInstantiation Type instantiation of the enumeration type.
      * @param name              Name of the enumeration type.
      * @param enumItems         List of all items which belong to the enumeration type.
      * @param docComment        Documentation comment belonging to this node.
      */
-    public EnumType(AstLocation location, Package pkg, TypeReference enumTypeReference, String name,
+    public EnumType(AstLocation location, Package pkg, TypeInstantiation typeInstantiation, String name,
             List<EnumItem> enumItems, DocComment docComment)
     {
         super(location, docComment);
 
         this.pkg = pkg;
-        this.enumTypeReference = enumTypeReference;
+        this.typeInstantiation = typeInstantiation;
         this.name = name;
         this.enumItems = enumItems;
     }
@@ -45,7 +45,7 @@ public class EnumType extends DocumentableAstNode implements ZserioScopedType
     {
         super.visitChildren(visitor);
 
-        enumTypeReference.accept(visitor);
+        typeInstantiation.accept(visitor);
         for (EnumItem enumItem : enumItems)
             enumItem.accept(visitor);
     }
@@ -79,13 +79,13 @@ public class EnumType extends DocumentableAstNode implements ZserioScopedType
     }
 
     /**
-     * Gets unresolved enumeration Zserio type.
+     * Gets the enum's type instantiation.
      *
-     * @return Unresolved enumeration Zserio type.
+     * @return Type instantiation.
      */
-    public ZserioType getEnumType()
+    public TypeInstantiation getTypeInstantiation()
     {
-        return enumTypeReference.getType();
+        return typeInstantiation;
     }
 
     /**
@@ -111,7 +111,7 @@ public class EnumType extends DocumentableAstNode implements ZserioScopedType
         if (!isEvaluated)
         {
             // fill resolved enumeration type
-            final ZserioType baseType = enumTypeReference.getBaseTypeReference().getType();
+            final ZserioType baseType = typeInstantiation.getBaseType();
             if (!(baseType instanceof IntegerType))
                 throw new ParserException(this, "Enumeration '" + this.getName() + "' has forbidden type " +
                         baseType.getName() + "!");
@@ -146,7 +146,7 @@ public class EnumType extends DocumentableAstNode implements ZserioScopedType
         for (EnumItem enumItem : enumItems)
         {
             if (enumItem.getValueExpression() != null)
-                ExpressionUtil.checkExpressionType(enumItem.getValueExpression(), getIntegerBaseType());
+                ExpressionUtil.checkExpressionType(enumItem.getValueExpression(), typeInstantiation);
 
             // check if enumeration item value is not duplicated
             final BigInteger enumItemValue = enumItem.getValue();
@@ -158,19 +158,21 @@ public class EnumType extends DocumentableAstNode implements ZserioScopedType
             }
 
             // check enumeration item values boundaries
-            final BigInteger lowerBound = integerBaseType.getLowerBound();
-            final BigInteger upperBound = integerBaseType.getUpperBound();
+            final BigInteger lowerBound = integerBaseType.getLowerBound(typeInstantiation);
+            final BigInteger upperBound = integerBaseType.getUpperBound(typeInstantiation);
             if (enumItemValue.compareTo(lowerBound) < 0 || enumItemValue.compareTo(upperBound) > 0)
+            {
                 throw new ParserException(enumItem.getValueExpression(), "Enumeration item '" +
                         enumItem.getName() + "' has value (" + enumItemValue + ") out of range <" +
                         lowerBound + "," + upperBound + ">!");
+            }
         }
     }
 
     private final Scope scope = new Scope(this);
 
     private final Package pkg;
-    private final TypeReference enumTypeReference;
+    private final TypeInstantiation typeInstantiation;
     private final String name;
     private final List<EnumItem> enumItems;
 

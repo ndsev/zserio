@@ -1,9 +1,11 @@
 package zserio.emit.cpp98;
 
-import zserio.ast.BitFieldType;
 import zserio.ast.BooleanType;
+import zserio.ast.DynamicBitFieldInstantiation;
+import zserio.ast.DynamicBitFieldType;
+import zserio.ast.FixedBitFieldType;
+import zserio.ast.TypeInstantiation;
 import zserio.ast.ZserioAstDefaultVisitor;
-import zserio.ast.ZserioType;
 import zserio.ast.FloatType;
 import zserio.ast.StdIntegerType;
 import zserio.ast.StringType;
@@ -18,27 +20,50 @@ public class CppRuntimeFunctionDataCreator
      *
      * @throws ZserioEmitException Throws in case of wrong passed Zserio type.
      */
-    public static RuntimeFunctionTemplateData createData(ZserioType type,
+    public static RuntimeFunctionTemplateData createData(TypeInstantiation typeInstantiation,
             ExpressionFormatter cppExpressionFormatter) throws ZserioEmitException
     {
-        final Visitor visitor = new Visitor(cppExpressionFormatter);
-        type.accept(visitor);
+        if (typeInstantiation instanceof DynamicBitFieldInstantiation)
+        {
+            return mapDynamicBitField((DynamicBitFieldInstantiation)typeInstantiation, cppExpressionFormatter);
+        }
+        else
+        {
+            final Visitor visitor = new Visitor();
+            typeInstantiation.getBaseType().accept(visitor);
 
-        final ZserioEmitException thrownException = visitor.getThrownException();
-        if (thrownException != null)
-            throw thrownException;
+            final ZserioEmitException thrownException = visitor.getThrownException();
+            if (thrownException != null)
+                throw thrownException;
 
-        // template data can be null, this need to be handled specially in template
-        return visitor.getTemplateData();
+            // template data can be null, this need to be handled specially in template
+            return visitor.getTemplateData();
+        }
+    }
+
+    private static RuntimeFunctionTemplateData mapDynamicBitField(DynamicBitFieldInstantiation instantiation,
+            ExpressionFormatter cppExpressionFormatter) throws ZserioEmitException
+    {
+        final DynamicBitFieldType type = instantiation.getBaseType();
+        final String suffix = getSuffixForIntegralType(instantiation.getMaxBitSize(), type.isSigned());
+        final String arg = cppExpressionFormatter.formatGetter(instantiation.getLengthExpression());
+        return new RuntimeFunctionTemplateData(suffix, arg);
+    }
+
+    private static String getSuffixForIntegralType(int maxBitCount, boolean signed)
+    {
+        if (maxBitCount <= 32)
+        {
+            return signed ? "SignedBits" : "Bits";
+        }
+        else
+        {
+            return signed ? "SignedBits64" : "Bits64";
+        }
     }
 
     private static class Visitor extends ZserioAstDefaultVisitor
     {
-        public Visitor(ExpressionFormatter cppExpressionFormatter)
-        {
-            this.cppExpressionFormatter = cppExpressionFormatter;
-        }
-
         public RuntimeFunctionTemplateData getTemplateData()
         {
             return templateData;
@@ -62,25 +87,15 @@ public class CppRuntimeFunctionDataCreator
         }
 
         @Override
-        public void visitBitFieldType(BitFieldType type)
+        public void visitFixedBitFieldType(FixedBitFieldType type)
         {
-            handleBitFieldType(type);
+            handleFixedIntegerType(type.getBitSize(), type.isSigned());
         }
 
         @Override
         public void visitStdIntegerType(StdIntegerType type)
         {
-            final int bitCount = type.getBitSize();
-            final String suffix = getSuffixForIntegralType(bitCount, type.isSigned());
-            try
-            {
-                final String arg = CppLiteralFormatter.formatUInt8Literal(bitCount);
-                templateData = new RuntimeFunctionTemplateData(suffix, arg);
-            }
-            catch (ZserioEmitException exception)
-            {
-                thrownException = exception;
-            }
+            handleFixedIntegerType(type.getBitSize(), type.isSigned());
         }
 
         @Override
@@ -105,12 +120,12 @@ public class CppRuntimeFunctionDataCreator
             templateData = new RuntimeFunctionTemplateData(sb.toString());
         }
 
-        private void handleBitFieldType(BitFieldType type)
+        private void handleFixedIntegerType(int bitSize, boolean isSigned)
         {
-            final String suffix = getSuffixForIntegralType(type.getMaxBitSize(), type.isSigned());
+            final String suffix = getSuffixForIntegralType(bitSize, isSigned);
             try
             {
-                final String arg = cppExpressionFormatter.formatGetter(type.getLengthExpression());
+                final String arg = CppLiteralFormatter.formatUInt8Literal(bitSize);
                 templateData = new RuntimeFunctionTemplateData(suffix, arg);
             }
             catch (ZserioEmitException exception)
@@ -118,20 +133,6 @@ public class CppRuntimeFunctionDataCreator
                 thrownException = exception;
             }
         }
-
-        private static String getSuffixForIntegralType(int maxBitCount, boolean signed)
-        {
-            if (maxBitCount <= 32)
-            {
-                return signed ? "SignedBits" : "Bits";
-            }
-            else
-            {
-                return signed ? "SignedBits64" : "Bits64";
-            }
-        }
-
-        private final ExpressionFormatter cppExpressionFormatter;
 
         private RuntimeFunctionTemplateData templateData = null;
         private ZserioEmitException thrownException = null;

@@ -211,13 +211,13 @@ ${I}}
     <#local I>${""?left_pad(indent * 4)}</#local>
     <#local lowerBoundVarName>lowerBound</#local>
     <#local upperBoundVarName>upperBound</#local>
-    <#if !integerRange.lowerBound?? || !integerRange.upperBound??>
+    <#if integerRange.bitFieldLength??>
         <#local lengthVarName>length</#local>
-${I}const int ${lengthVarName} = ${integerRange.bitFieldLength};
+${I}const size_t ${lengthVarName} = ${integerRange.bitFieldLength};
 ${I}const ${cppTypeName} ${lowerBoundVarName} = static_cast<${cppTypeName}><#rt>
-        <#lt>(::zserio::getBitFieldLowerBound(${lengthVarName}, <#if integerRange.checkLowerBound>true<#else>false</#if>));
+        <#lt>(::zserio::getBitFieldLowerBound(${lengthVarName}, <#if integerRange.isSigned>true<#else>false</#if>));
 ${I}const ${cppTypeName} ${upperBoundVarName} = static_cast<${cppTypeName}><#rt>
-        <#lt>(::zserio::getBitFieldUpperBound(${lengthVarName}, <#if integerRange.checkLowerBound>true<#else>false</#if>));
+        <#lt>(::zserio::getBitFieldUpperBound(${lengthVarName}, <#if integerRange.isSigned>true<#else>false</#if>));
     <#else>
 ${I}const ${cppTypeName} ${lowerBoundVarName} = ${integerRange.lowerBound};
 ${I}const ${cppTypeName} ${upperBoundVarName} = ${integerRange.upperBound};

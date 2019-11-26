@@ -5,7 +5,7 @@ import java.util.List;
 
 import zserio.ast.Field;
 import zserio.ast.SqlTableType;
-import zserio.ast.TypeReference;
+import zserio.ast.TypeInstantiation;
 import zserio.emit.common.ZserioEmitException;
 import zserio.emit.java.types.JavaNativeType;
 import zserio.emit.java.types.NativeBooleanType;
@@ -50,11 +50,11 @@ public final class SqlTableRowEmitterTemplateData extends JavaTemplateData
         public FieldTemplateData(JavaNativeMapper javaNativeMapper, Field field)
                 throws ZserioEmitException
         {
-            final TypeReference fieldTypeReference = field.getTypeInstantiation().getTypeReference();
+            final TypeInstantiation fieldTypeInstantiation = field.getTypeInstantiation();
             name = field.getName();
-            final JavaNativeType nativeType = javaNativeMapper.getJavaType(fieldTypeReference);
+            final JavaNativeType nativeType = javaNativeMapper.getJavaType(fieldTypeInstantiation);
             javaTypeName = nativeType.getFullName();
-            javaNullableTypeName = javaNativeMapper.getNullableJavaType(fieldTypeReference).getFullName();
+            javaNullableTypeName = javaNativeMapper.getNullableJavaType(fieldTypeInstantiation).getFullName();
             isBool = nativeType instanceof NativeBooleanType;
         }
 

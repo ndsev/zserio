@@ -195,11 +195,18 @@ public interface ZserioAstVisitor
     void visitVarIntegerType(VarIntegerType varIntegerType);
 
     /**
-     * Visits reference to built-in bit field type.
+     * Visits reference to built-in fixed bit field type.
      *
-     * @param bitFieldType Bit field type AST node.
+     * @param fixedBitFieldType Fixed bit field type AST node.
      */
-    void visitBitFieldType(BitFieldType bitFieldType);
+    void visitFixedBitFieldType(FixedBitFieldType fixedBitFieldType);
+
+    /**
+     * Visits reference to built-in dynamic bit field type.
+     *
+     * @param dynamicBitFieldType Dynamic bit field type AST node.
+     */
+    void visitDynamicBitFieldType(DynamicBitFieldType dynamicBitFieldType);
 
     /**
      * Visits reference to built-in boolean type.

@@ -1,48 +1,57 @@
 package zserio.emit.python;
 
-import zserio.ast.BitFieldType;
 import zserio.ast.BooleanType;
+import zserio.ast.DynamicBitFieldInstantiation;
 import zserio.ast.ExternType;
+import zserio.ast.FixedBitFieldType;
+import zserio.ast.FixedSizeType;
 import zserio.ast.FloatType;
 import zserio.ast.StdIntegerType;
 import zserio.ast.StringType;
+import zserio.ast.TypeInstantiation;
 import zserio.ast.VarIntegerType;
 import zserio.ast.ZserioAstDefaultVisitor;
-import zserio.ast.ZserioType;
 import zserio.emit.common.ExpressionFormatter;
 import zserio.emit.common.ZserioEmitException;
 
 final class PythonRuntimeFunctionDataCreator
 {
-    public static RuntimeFunctionTemplateData createData(ZserioType type,
+    public static RuntimeFunctionTemplateData createData(TypeInstantiation typeInstantiation,
             ExpressionFormatter pythonExpressionFormatter) throws ZserioEmitException
     {
-        final Visitor visitor = new Visitor(pythonExpressionFormatter);
-        type.accept(visitor);
+        if (typeInstantiation instanceof DynamicBitFieldInstantiation)
+        {
+            return mapDynamicBitField(
+                    (DynamicBitFieldInstantiation)typeInstantiation, pythonExpressionFormatter);
+        }
+        else
+        {
+            final Visitor visitor = new Visitor();
+            typeInstantiation.getBaseType().accept(visitor);
 
-        final ZserioEmitException thrownException = visitor.getThrownException();
-        if (thrownException != null)
-            throw thrownException;
+            // template data can be null, this need to be handled specially in template
+            return visitor.getTemplateData();
+        }
+    }
 
-        // template data can be null, this need to be handled specially in template
-        return visitor.getTemplateData();
+    private static RuntimeFunctionTemplateData mapDynamicBitField(DynamicBitFieldInstantiation instantiation,
+            ExpressionFormatter pythonExpressionFormatter) throws ZserioEmitException
+    {
+        final String suffix = getSuffixForIntegralType(instantiation.getBaseType().isSigned());
+        final String arg = pythonExpressionFormatter.formatGetter(instantiation.getLengthExpression());
+        return new RuntimeFunctionTemplateData(suffix, arg);
+    }
+
+    private static String getSuffixForIntegralType(boolean signed)
+    {
+        return signed ? "SignedBits" : "Bits";
     }
 
     private static class Visitor extends ZserioAstDefaultVisitor
     {
-        public Visitor(ExpressionFormatter pythonExpressionFormatter)
-        {
-            this.pythonExpressionFormatter = pythonExpressionFormatter;
-        }
-
         public RuntimeFunctionTemplateData getTemplateData()
         {
             return templateData;
-        }
-
-        public ZserioEmitException getThrownException()
-        {
-            return thrownException;
         }
 
         @Override
@@ -64,18 +73,15 @@ final class PythonRuntimeFunctionDataCreator
         }
 
         @Override
-        public void visitBitFieldType(BitFieldType type)
+        public void visitFixedBitFieldType(FixedBitFieldType type)
         {
-            handleBitFieldType(type);
+            handleFixedIntegerType(type, type.isSigned());
         }
 
         @Override
         public void visitStdIntegerType(StdIntegerType type)
         {
-            final int bitCount = type.getBitSize();
-            final String suffix = getSuffixForIntegralType(type.isSigned());
-            final String arg = PythonLiteralFormatter.formatDecimalLiteral(bitCount);
-            templateData = new RuntimeFunctionTemplateData(suffix, arg);
+            handleFixedIntegerType(type, type.isSigned());
         }
 
         @Override
@@ -100,27 +106,14 @@ final class PythonRuntimeFunctionDataCreator
             templateData = new RuntimeFunctionTemplateData(sb.toString());
         }
 
-        private void handleBitFieldType(BitFieldType type)
+        private void handleFixedIntegerType(FixedSizeType type, boolean isSigned)
         {
-            final String suffix = getSuffixForIntegralType(type.isSigned());
-            try
-            {
-                final String arg = pythonExpressionFormatter.formatGetter(type.getLengthExpression());
-                templateData = new RuntimeFunctionTemplateData(suffix, arg);
-            }
-            catch (ZserioEmitException exception)
-            {
-                thrownException = exception;
-            }
+            final int bitCount = type.getBitSize();
+            final String suffix = getSuffixForIntegralType(isSigned);
+            final String arg = PythonLiteralFormatter.formatDecimalLiteral(bitCount);
+            templateData = new RuntimeFunctionTemplateData(suffix, arg);
         }
 
-        private static String getSuffixForIntegralType(boolean signed)
-        {
-            return signed ? "SignedBits" : "Bits";
-        }
-
-        private final ExpressionFormatter pythonExpressionFormatter;
         private RuntimeFunctionTemplateData templateData = null;
-        private ZserioEmitException thrownException = null;
     }
 }

@@ -1,13 +1,15 @@
 package zserio.emit.doc;
 
-import zserio.ast.ArrayType;
+import zserio.ast.ArrayInstantiation;
 import zserio.ast.AstNode;
-import zserio.ast.BitFieldType;
 import zserio.ast.CompoundType;
 import zserio.ast.Constant;
+import zserio.ast.DynamicBitFieldInstantiation;
+import zserio.ast.DynamicBitFieldType;
+import zserio.ast.FixedBitFieldType;
 import zserio.ast.ServiceType;
 import zserio.ast.SqlConstraint;
-import zserio.ast.TypeReference;
+import zserio.ast.TypeInstantiation;
 import zserio.ast.ZserioType;
 import zserio.ast.EnumType;
 import zserio.ast.Expression;
@@ -39,11 +41,11 @@ public class TypeNameEmitter
     public String getArrayRange(Field f) throws ZserioEmitException
     {
         String result = null;
-        final ZserioType type = f.getTypeInstantiation().getTypeReference().getType();
-        if (type instanceof ArrayType)
+        final TypeInstantiation typeInstantiation = f.getTypeInstantiation();
+        if (typeInstantiation instanceof ArrayInstantiation)
         {
             result = "[";
-            Expression expr = ((ArrayType) type).getLengthExpression();
+            Expression expr = ((ArrayInstantiation)typeInstantiation).getLengthExpression();
             if (expr != null)
             {
                 result += expressionFormatter.formatGetter(expr);
@@ -110,18 +112,39 @@ public class TypeNameEmitter
     {
         String result = null;
 
-        // t = TypeReference.resolveType(t);
+        if (t instanceof ArrayInstantiation)
+        {
+            // don't HTML-escape the result - it gets escaped in the call
+            final TypeInstantiation elementTypeInstantiation =
+                    ((ArrayInstantiation)t).getElementTypeInstantiation();
+            return getTypeName(elementTypeInstantiation);
+        }
+        else if (t instanceof DynamicBitFieldInstantiation)
+        {
+            return StringHtmlUtil.escapeForHtml(getTypeName((DynamicBitFieldInstantiation)t));
+        }
+        else if (t instanceof TypeInstantiation)
+        {
+            // use the underlying type bellow
+            t = ((TypeInstantiation)t).getType();
+        }
+
         if (t instanceof StdIntegerType)
         {
-          result = getTypeName((StdIntegerType) t);
+            result = getTypeName((StdIntegerType) t);
         }
         else if (t instanceof VarIntegerType)
         {
-          result = getTypeName((VarIntegerType) t);
+            result = getTypeName((VarIntegerType) t);
         }
-        else if (t instanceof BitFieldType)
+        else if (t instanceof FixedBitFieldType)
         {
-            result = getTypeName((BitFieldType) t);
+            result = getTypeName((FixedBitFieldType) t);
+        }
+        else if (t instanceof DynamicBitFieldType)
+        {
+            // used only when no instantiation is available
+            result = getTypeName((DynamicBitFieldType) t);
         }
         else if (t instanceof CompoundType)
         {
@@ -147,13 +170,6 @@ public class TypeNameEmitter
         {
             result = ((ServiceType)t).getName();
         }
-        else if (t instanceof ArrayType)
-        {
-            // don't HTML-escape the result - it gets escaped in the call
-            final TypeReference elementBaseTypeReference =
-                    ((ArrayType)t).getElementTypeInstantiation().getTypeReference().getBaseTypeReference();
-            return getTypeName(elementBaseTypeReference.getType());
-        }
         else if (t instanceof ZserioType)
         {
             result = ((ZserioType)t).getName();
@@ -176,11 +192,18 @@ public class TypeNameEmitter
         return t.getName();
     }
 
-    private static String getTypeName(BitFieldType t) throws ZserioEmitException
+    private static String getTypeName(FixedBitFieldType t) throws ZserioEmitException
+    {
+        final String rawName = (t.isSigned()) ? "int" : "bit";
+
+        return rawName + ":" + t.getBitSize();
+    }
+
+    private static String getTypeName(DynamicBitFieldInstantiation t) throws ZserioEmitException
     {
         String rawName = "", parameterizedName = "";
 
-        rawName = (t.isSigned()) ? "int" : "bit";
+        rawName = getTypeName(t.getBaseType());
 
         final DocExpressionFormattingPolicy policy = new DocExpressionFormattingPolicy();
         final ExpressionFormatter expressionFormatter = new ExpressionFormatter(policy);
@@ -189,6 +212,11 @@ public class TypeNameEmitter
         parameterizedName = "<" + parameterizedName + ">";
 
         return rawName + parameterizedName;
+    }
+
+    private static String getTypeName(DynamicBitFieldType t) throws ZserioEmitException
+    {
+        return (t.isSigned()) ? "int" : "bit";
     }
 
     private final ExpressionFormatter expressionFormatter;

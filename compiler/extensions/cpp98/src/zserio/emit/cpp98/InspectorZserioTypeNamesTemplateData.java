@@ -4,13 +4,13 @@ import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 
-import zserio.ast.ArrayType;
+import zserio.ast.ArrayInstantiation;
 import zserio.ast.Function;
+import zserio.ast.TypeInstantiation;
 import zserio.ast.ZserioType;
 import zserio.ast.ZserioTypeUtil;
 import zserio.ast.EnumType;
 import zserio.ast.Field;
-import zserio.ast.TypeReference;
 
 public class InspectorZserioTypeNamesTemplateData extends CppTemplateData
 {
@@ -22,18 +22,16 @@ public class InspectorZserioTypeNamesTemplateData extends CppTemplateData
         zserioTypeNames = new TreeSet<String>();
         for (Field field : fields)
         {
-            final TypeReference fieldTypeReference = field.getTypeInstantiation().getTypeReference();
-            final ZserioType fieldType = fieldTypeReference.getType();
+            final TypeInstantiation fieldTypeInstantiation = field.getTypeInstantiation();
+            final ZserioType fieldType = fieldTypeInstantiation.getType();
             final String zserioTypeName = ZserioTypeUtil.getFullName(fieldType);
             zserioTypeNames.add(zserioTypeName);
 
             // add element type names for arrays as well
-            final ZserioType fieldBaseType = fieldTypeReference.getBaseTypeReference().getType();
-            if (fieldBaseType instanceof ArrayType)
+            if (fieldTypeInstantiation instanceof ArrayInstantiation)
             {
-                final ArrayType arrayType = (ArrayType)fieldBaseType;
-                final ZserioType elementType =
-                        arrayType.getElementTypeInstantiation().getTypeReference().getType();
+                final ArrayInstantiation arrayInstantiation = (ArrayInstantiation)fieldTypeInstantiation;
+                final ZserioType elementType = arrayInstantiation.getElementTypeInstantiation().getType();
                 final String elementZserioTypeName = ZserioTypeUtil.getFullName(elementType);
                 zserioTypeNames.add(elementZserioTypeName);
             }

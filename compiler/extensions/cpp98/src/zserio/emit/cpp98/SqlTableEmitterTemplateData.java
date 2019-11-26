@@ -8,7 +8,8 @@ import java.util.TreeSet;
 import zserio.ast.BooleanType;
 import zserio.ast.EnumType;
 import zserio.ast.Parameter;
-import zserio.ast.TypeReference;
+import zserio.ast.ParameterizedTypeInstantiation;
+import zserio.ast.ParameterizedTypeInstantiation.InstantiatedParameter;
 import zserio.ast.ZserioType;
 import zserio.ast.ZserioTypeUtil;
 import zserio.ast.Expression;
@@ -175,26 +176,28 @@ public class SqlTableEmitterTemplateData extends UserTypeTemplateData
                 SqlTableType table, Field field, IncludeCollector includeCollector) throws ZserioEmitException
         {
             final TypeInstantiation fieldTypeInstantiation = field.getTypeInstantiation();
-            final TypeReference fieldTypeReference = fieldTypeInstantiation.getTypeReference();
-            final ZserioType fieldBaseType = fieldTypeReference.getBaseTypeReference().getType();
-            final CppNativeType nativeFieldType = cppNativeMapper.getCppType(fieldTypeReference);
+            final ZserioType fieldBaseType = fieldTypeInstantiation.getBaseType();
+            final CppNativeType nativeFieldType = cppNativeMapper.getCppType(fieldTypeInstantiation);
             includeCollector.addHeaderIncludesForType(nativeFieldType);
 
             name = field.getName();
             cppTypeName = nativeFieldType.getFullName();
-            zserioTypeName = ZserioTypeUtil.getFullName(fieldTypeReference.getType());
+            zserioTypeName = ZserioTypeUtil.getFullName(fieldTypeInstantiation.getType());
             final Expression sqlConstraintExpr = field.getSqlConstraint().getTranslatedFieldConstraintExpr();
             sqlConstraint = (sqlConstraintExpr == null) ? null :
                 cppExpressionFormatter.formatGetter(sqlConstraintExpr);
             isVirtual = field.getIsVirtual();
 
             typeParameters = new ArrayList<ParameterTemplateData>();
-            final List<TypeInstantiation.InstantiatedParameter> parameters =
-                    fieldTypeInstantiation.getInstantiatedParameters();
-            for (TypeInstantiation.InstantiatedParameter parameter : parameters)
+            if (fieldTypeInstantiation instanceof ParameterizedTypeInstantiation)
             {
-                typeParameters.add(new ParameterTemplateData(cppNativeMapper,
-                        cppSqlIndirectExpressionFormatter, table, field, parameter, includeCollector));
+                final ParameterizedTypeInstantiation parameterizedInstantiation =
+                        (ParameterizedTypeInstantiation)fieldTypeInstantiation;
+                for (InstantiatedParameter parameter : parameterizedInstantiation.getInstantiatedParameters())
+                {
+                    typeParameters.add(new ParameterTemplateData(cppNativeMapper,
+                            cppSqlIndirectExpressionFormatter, table, field, parameter, includeCollector));
+                }
             }
 
             isBoolean = fieldBaseType instanceof BooleanType;
@@ -251,7 +254,7 @@ public class SqlTableEmitterTemplateData extends UserTypeTemplateData
         {
             public ParameterTemplateData(CppNativeMapper cppNativeMapper,
                     ExpressionFormatter cppSqlIndirectExpressionFormatter, SqlTableType tableType, Field field,
-                    TypeInstantiation.InstantiatedParameter instantiatedParameter,
+                    InstantiatedParameter instantiatedParameter,
                     IncludeCollector includeCollector) throws ZserioEmitException
             {
                 final Parameter parameter = instantiatedParameter.getParameter();
@@ -334,7 +337,7 @@ public class SqlTableEmitterTemplateData extends UserTypeTemplateData
                     throws ZserioEmitException
             {
                 final SqlNativeType sqlNativeType = sqlNativeTypeMapper.getSqlType(
-                        field.getTypeInstantiation().getTypeReference());
+                        field.getTypeInstantiation());
                 name = sqlNativeType.getFullName();
                 isBlob = sqlNativeType instanceof NativeBlobType;
                 isInteger = sqlNativeType instanceof NativeIntegerType;

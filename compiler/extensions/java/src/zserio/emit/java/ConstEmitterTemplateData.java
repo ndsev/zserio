@@ -19,7 +19,7 @@ public final class ConstEmitterTemplateData extends JavaTemplateData
         packageName = JavaFullNameFormatter.getFullName(constantNativeSymbol.getPackageName());
         name = constantNativeSymbol.getName();
 
-        final JavaNativeType nativeTargetType = javaNativeMapper.getJavaType(constant.getTypeReference());
+        final JavaNativeType nativeTargetType = javaNativeMapper.getJavaType(constant.getTypeInstantiation());
         javaTypeName = nativeTargetType.getFullName();
 
         value = javaExpressionFormatter.formatGetter(constant.getValueExpression());

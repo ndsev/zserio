@@ -89,14 +89,14 @@ public class Constant extends DocumentableAstNode implements Comparable<Constant
     }
 
     /**
-     * Gets reference to the type of this constant.
+     * Gets the constant's type instantiation.
      *
-     * @return Type reference.
+     * @return Type instantiation.
      */
-    public TypeReference getTypeReference()
+    public TypeInstantiation getTypeInstantiation()
     {
-        return typeInstantiation.getTypeReference();
-    }
+        return typeInstantiation;
+   }
 
     /**
      * Gets expression which represents constant value.
@@ -114,15 +114,15 @@ public class Constant extends DocumentableAstNode implements Comparable<Constant
     void check()
     {
         // check base type
-        final ZserioType baseType = typeInstantiation.getTypeReference().getBaseTypeReference().getType();
+        final ZserioType baseType = typeInstantiation.getBaseType();
         if (!(baseType instanceof BuiltInType) && !(baseType instanceof EnumType))
             throw new ParserException(this, "Constants can be defined only for built-in types and enums!");
 
         // check expression type
-        ExpressionUtil.checkExpressionType(valueExpression, baseType);
+        ExpressionUtil.checkExpressionType(valueExpression, typeInstantiation);
 
         // check integer constant range
-        ExpressionUtil.checkIntegerExpressionRange(valueExpression, baseType, name);
+        ExpressionUtil.checkIntegerExpressionRange(valueExpression, typeInstantiation, name);
 
         // check constant name
         final ZserioType definedType = pkg.getVisibleType(this, PackageName.EMPTY, getName());

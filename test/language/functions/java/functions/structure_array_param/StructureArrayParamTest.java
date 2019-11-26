@@ -4,6 +4,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
+import java.math.BigInteger;
 import java.util.Arrays;
 import java.util.List;
 
@@ -41,7 +42,7 @@ public class StructureArrayParamTest
 
         for (ChildStructure childStructure : CHILDREN)
         {
-            writer.writeBits(childStructure.getValue(), childStructure.getBitSize());
+            writer.writeBigInteger(childStructure.getValue(), childStructure.getBitSize());
         }
 
         writer.close();
@@ -63,8 +64,8 @@ public class StructureArrayParamTest
 
     private static final List<ChildStructure> CHILDREN = Arrays.asList
     (
-        new ChildStructure(CHILD_BIT_SIZE, 0xAABB),
-        new ChildStructure(CHILD_BIT_SIZE, 0xCCDD)
+        new ChildStructure(CHILD_BIT_SIZE, BigInteger.valueOf(0xAABB)),
+        new ChildStructure(CHILD_BIT_SIZE, BigInteger.valueOf(0xCCDD))
     );
 
     private static final short NUM_CHILDREN = (short)CHILDREN.size();

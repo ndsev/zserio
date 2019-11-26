@@ -19,7 +19,6 @@ import org.w3c.dom.Element;
 
 import zserio.ast.ArrayType;
 import zserio.ast.AstNode;
-import zserio.ast.BitFieldType;
 import zserio.ast.BooleanType;
 import zserio.ast.ChoiceCase;
 import zserio.ast.ChoiceCaseExpression;
@@ -31,11 +30,13 @@ import zserio.ast.DocLine;
 import zserio.ast.DocLineElement;
 import zserio.ast.DocMultiline;
 import zserio.ast.DocTagDeprecated;
+import zserio.ast.DynamicBitFieldType;
 import zserio.ast.EnumItem;
 import zserio.ast.EnumType;
 import zserio.ast.Expression;
 import zserio.ast.ExternType;
 import zserio.ast.Field;
+import zserio.ast.FixedBitFieldType;
 import zserio.ast.FloatType;
 import zserio.ast.Function;
 import zserio.ast.Import;
@@ -368,9 +369,15 @@ public class XmlAstWriter implements ZserioAstVisitor
     }
 
     @Override
-    public void visitBitFieldType(BitFieldType bitFieldType)
+    public void visitFixedBitFieldType(FixedBitFieldType bitFieldType)
     {
-        visitZserioType(bitFieldType, "BIT_FIELD");
+        visitZserioType(bitFieldType, "FIXED_BIT_FIELD");
+    }
+
+    @Override
+    public void visitDynamicBitFieldType(DynamicBitFieldType bitFieldType)
+    {
+        visitZserioType(bitFieldType, "DYNAMIC_BIT_FIELD");
     }
 
     @Override

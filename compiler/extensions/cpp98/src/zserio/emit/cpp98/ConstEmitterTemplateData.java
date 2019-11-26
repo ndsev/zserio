@@ -20,7 +20,7 @@ public class ConstEmitterTemplateData extends CppTemplateData
         packageData = new PackageTemplateData(constantNativeSymbol.getPackageName());
         name = constantNativeSymbol.getName();
 
-        final CppNativeType nativeTargetType = cppNativeMapper.getCppType(constant.getTypeReference());
+        final CppNativeType nativeTargetType = cppNativeMapper.getCppType(constant.getTypeInstantiation());
         addHeaderIncludesForType(nativeTargetType);
 
         cppTypeName = nativeTargetType.getFullName();

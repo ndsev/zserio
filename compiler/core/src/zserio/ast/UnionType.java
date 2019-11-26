@@ -23,8 +23,7 @@ public class UnionType extends CompoundType
      * @param docComment            Documentation comment belonging to this node.
      */
     public UnionType(AstLocation location, Package pkg, String name, List<TemplateParameter> templateParameters,
-            List<Parameter> typeParameters, List<Field> fields, List<Function> functions,
-            DocComment docComment)
+            List<Parameter> typeParameters, List<Field> fields, List<Function> functions, DocComment docComment)
     {
         super(location, pkg, name, templateParameters, typeParameters, fields, functions, docComment);
     }

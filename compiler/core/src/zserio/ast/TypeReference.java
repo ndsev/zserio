@@ -203,20 +203,7 @@ public class TypeReference extends AstNodeBase
     {
         if (type instanceof BuiltInType) // TODO[Mi-L@][typeref] Hack for built-in types.
         {
-            if (type instanceof BitFieldType)
-            {
-                return new TypeReference(location, ownerPackage,
-                        ((BitFieldType)type).instantiate(templateParameters, passedTemplateArguments));
-            }
-            else if (type instanceof ArrayType)
-            {
-                return new TypeReference(location, ownerPackage,
-                        ((ArrayType)type).instantiate(templateParameters, passedTemplateArguments));
-            }
-            else
-            {
-                return new TypeReference(location, ownerPackage, (BuiltInType)type);
-            }
+            return new TypeReference(location, ownerPackage, (BuiltInType)type);
         }
         else
         {

@@ -3,12 +3,13 @@ package zserio.emit.cpp98;
 import java.util.ArrayList;
 import java.util.List;
 
-import zserio.ast.BitFieldType;
+import zserio.ast.DynamicBitFieldInstantiation;
+import zserio.ast.FixedSizeType;
+import zserio.ast.TypeInstantiation;
 import zserio.ast.ZserioTypeUtil;
 import zserio.ast.EnumItem;
 import zserio.ast.EnumType;
 import zserio.ast.IntegerType;
-import zserio.ast.StdIntegerType;
 import zserio.emit.common.ExpressionFormatter;
 import zserio.emit.common.ZserioEmitException;
 import zserio.emit.cpp98.types.NativeIntegralType;
@@ -23,8 +24,8 @@ public class EnumerationEmitterTemplateData extends UserTypeTemplateData
         // add const type includes
         final CppNativeMapper cppNativeMapper = context.getCppNativeMapper();
 
-        final IntegerType enumBaseType = enumType.getIntegerBaseType();
-        final NativeIntegralType nativeBaseType = cppNativeMapper.getCppIntegralType(enumBaseType);
+        final TypeInstantiation enumTypeInstantiation = enumType.getTypeInstantiation();
+        final NativeIntegralType nativeBaseType = cppNativeMapper.getCppIntegralType(enumTypeInstantiation);
         addHeaderIncludesForType(nativeBaseType);
 
         baseCppTypeName = nativeBaseType.getFullName();
@@ -32,7 +33,8 @@ public class EnumerationEmitterTemplateData extends UserTypeTemplateData
 
         bitSize = createBitSize(enumType);
         final ExpressionFormatter cppExpressionFormatter = context.getExpressionFormatter(this);
-        runtimeFunction = CppRuntimeFunctionDataCreator.createData(enumBaseType, cppExpressionFormatter);
+        runtimeFunction = CppRuntimeFunctionDataCreator.createData(
+                enumTypeInstantiation, cppExpressionFormatter);
 
         final List<EnumItem> enumItems = enumType.getItems();
         items = new ArrayList<EnumItemData>(enumItems.size());
@@ -90,15 +92,16 @@ public class EnumerationEmitterTemplateData extends UserTypeTemplateData
 
     private static String createBitSize(EnumType enumType) throws ZserioEmitException
     {
+        final TypeInstantiation instantiation = enumType.getTypeInstantiation();
         final IntegerType integerBaseType = enumType.getIntegerBaseType();
         Integer bitSize = null;
-        if (integerBaseType instanceof StdIntegerType)
+        if (integerBaseType instanceof FixedSizeType)
         {
-            bitSize = ((StdIntegerType)integerBaseType).getBitSize();
+            bitSize = ((FixedSizeType)integerBaseType).getBitSize();
         }
-        else if (integerBaseType instanceof BitFieldType)
+        else if (instantiation instanceof DynamicBitFieldInstantiation)
         {
-            bitSize = ((BitFieldType)integerBaseType).getBitSize();
+            bitSize = ((DynamicBitFieldInstantiation)instantiation).getMaxBitSize();
         }
 
         return (bitSize != null) ? CppLiteralFormatter.formatUInt8Literal(bitSize) : null;

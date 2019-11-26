@@ -351,7 +351,7 @@ public class ZserioAstBuilder extends ZserioParserBaseVisitor<Object>
     public EnumType visitEnumDeclaration(ZserioParser.EnumDeclarationContext ctx)
     {
         final AstLocation location = new AstLocation(ctx.id().getStart());
-        final TypeReference enumTypeReference = visitTypeReference(ctx.typeReference());
+        final TypeInstantiation enumTypeInstantiation = visitTypeInstantiation(ctx.typeInstantiation());
         final String name = ctx.id().getText();
         final List<EnumItem> enumItems = new ArrayList<EnumItem>();
         for (ZserioParser.EnumItemContext enumItemCtx : ctx.enumItem())
@@ -359,7 +359,7 @@ public class ZserioAstBuilder extends ZserioParserBaseVisitor<Object>
 
         final DocComment docComment = docCommentManager.findDocComment(ctx);
 
-        final EnumType enumType = new EnumType(location, currentPackage, enumTypeReference, name, enumItems,
+        final EnumType enumType = new EnumType(location, currentPackage, enumTypeInstantiation, name, enumItems,
                 docComment);
 
         return enumType;
@@ -867,19 +867,26 @@ public class ZserioAstBuilder extends ZserioParserBaseVisitor<Object>
     public TypeInstantiation visitTypeInstantiation(ZserioParser.TypeInstantiationContext ctx)
     {
         final AstLocation location = new AstLocation(ctx.getStart());
-        return new TypeInstantiation(location, visitTypeReference(ctx.typeReference()),
-                visitTypeArguments(ctx.typeArguments()));
+        final TypeReference typeReference = visitTypeReference(ctx.typeReference());
+        if (ctx.typeArguments() != null)
+        {
+            return new ParameterizedTypeInstantiation(location, typeReference,
+                    visitTypeArguments(ctx.typeArguments()));
+        }
+        if (ctx.dynamicLengthArgument() != null)
+        {
+            final Expression lengthExpression = (Expression)visit(ctx.dynamicLengthArgument().expression());
+            return new DynamicBitFieldInstantiation(location, typeReference, lengthExpression);
+        }
+        return new TypeInstantiation(location, typeReference);
     }
 
     @Override
     public List<Expression> visitTypeArguments(ZserioParser.TypeArgumentsContext ctx)
     {
         final List<Expression> typeArguments = new ArrayList<Expression>();
-        if (ctx != null)
-        {
-            for (ZserioParser.TypeArgumentContext typeArgumentCtx : ctx.typeArgument())
-                typeArguments.add(visitTypeArgument(typeArgumentCtx));
-        }
+        for (ZserioParser.TypeArgumentContext typeArgumentCtx : ctx.typeArgument())
+            typeArguments.add(visitTypeArgument(typeArgumentCtx));
         return typeArguments;
     }
 
@@ -919,38 +926,23 @@ public class ZserioAstBuilder extends ZserioParserBaseVisitor<Object>
     }
 
     @Override
-    public UnsignedBitFieldType visitUnsignedBitFieldType(ZserioParser.UnsignedBitFieldTypeContext ctx)
+    public FixedBitFieldType visitFixedBitFieldType(ZserioParser.FixedBitFieldTypeContext ctx)
     {
         final Token token = ctx.getStart();
         final AstLocation location = new AstLocation(token);
-        final Expression lengthExpression = visitBitFieldLength(ctx.bitFieldLength());
+        final boolean isSigned = (ctx.INT_FIELD() != null);
 
-        return new UnsignedBitFieldType(location, token.getText(), lengthExpression);
+        return new FixedBitFieldType(location, token.getText(), isSigned, ctx.DECIMAL_LITERAL().getText());
     }
 
     @Override
-    public SignedBitFieldType visitSignedBitFieldType(ZserioParser.SignedBitFieldTypeContext ctx)
+    public DynamicBitFieldType visitDynamicBitFieldType(ZserioParser.DynamicBitFieldTypeContext ctx)
     {
         final Token token = ctx.getStart();
         final AstLocation location = new AstLocation(token);
-        final Expression lengthExpression = visitBitFieldLength(ctx.bitFieldLength());
+        final boolean isSigned = (ctx.INT_FIELD() != null);
 
-        return new SignedBitFieldType(location, token.getText(), lengthExpression);
-    }
-
-    @Override
-    public Expression visitBitFieldLength(ZserioParser.BitFieldLengthContext ctx)
-    {
-        if (ctx.DECIMAL_LITERAL() != null)
-        {
-            final Token token = ctx.DECIMAL_LITERAL().getSymbol();
-            final AstLocation location = new AstLocation(token);
-
-            return new Expression(location, currentPackage, token.getType(), token.getText(),
-                    Expression.ExpressionFlag.NONE);
-        }
-
-        return (Expression)visit(ctx.expression());
+        return new DynamicBitFieldType(location, token.getText(), isSigned);
     }
 
     @Override
@@ -1021,13 +1013,11 @@ public class ZserioAstBuilder extends ZserioParserBaseVisitor<Object>
             final ZserioParser.ExpressionContext exprCtx = ctx.fieldArrayRange().expression();
             final Expression lengthExpression = (exprCtx != null) ? (Expression)visit(exprCtx) : null;
             final AstLocation arrayTypeLocation = new AstLocation(ctx.getStart());
-            final ArrayType arrayType = new ArrayType(arrayTypeLocation, typeInstantiation, isImplicit,
-                    lengthExpression);
+            final ArrayType arrayType = new ArrayType(arrayTypeLocation);
             final TypeReference arrayTypeReference =
                     new TypeReference(arrayTypeLocation, currentPackage, arrayType);
-            // TODO[Mi-L@][typeref] Introduce ArrayTypeInstantiation.
-            typeInstantiation = new TypeInstantiation(arrayTypeLocation, arrayTypeReference,
-                    visitTypeArguments(null));
+            typeInstantiation = new ArrayInstantiation(arrayTypeLocation, arrayTypeReference,
+                    typeInstantiation, isImplicit, lengthExpression);
         }
 
         return new FieldTypeId(location, typeInstantiation, name);

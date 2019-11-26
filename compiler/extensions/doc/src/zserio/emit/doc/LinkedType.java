@@ -1,10 +1,11 @@
 package zserio.emit.doc;
 
-import zserio.ast.ArrayType;
+import zserio.ast.ArrayInstantiation;
 import zserio.ast.AstNode;
 import zserio.ast.BuiltInType;
 import zserio.ast.ChoiceType;
 import zserio.ast.Constant;
+import zserio.ast.ParameterizedTypeInstantiation;
 import zserio.ast.ServiceType;
 import zserio.ast.EnumType;
 import zserio.ast.StructureType;
@@ -19,11 +20,10 @@ import zserio.emit.common.ZserioEmitException;
 
 public class LinkedType
 {
-    private AstNode type;
+    private AstNode astNode;
     private final boolean isDoubleDefinedType;
     private String style;
     private String category = "";
-
 
     public LinkedType(AstNode node) throws ZserioEmitException
     {
@@ -40,33 +40,23 @@ public class LinkedType
     private void init(AstNode node) throws ZserioEmitException
     {
         if (node instanceof ZserioType)
-            this.type = (ZserioType)node;
-        else if (node instanceof TypeInstantiation)
-            this.type = ((TypeInstantiation)node).getTypeReference().getType();
+            this.astNode = (ZserioType)node;
         else if (node instanceof TypeReference)
-            this.type = ((TypeReference)node).getType();
+            this.astNode = ((TypeReference)node).getType();
         else
-            this.type = node;
+            this.astNode = node;
 
         if (node instanceof TypeInstantiation)
         {
-            final TypeInstantiation inst = (TypeInstantiation)node;
-            node = (inst.getInstantiatedParameters().isEmpty()) ? inst.getTypeReference().getType() : inst;
-            if (node instanceof ArrayType)
+            if (node instanceof ArrayInstantiation)
             {
-                final TypeInstantiation arrayElementInst = ((ArrayType)node).getElementTypeInstantiation();
-                node = (arrayElementInst.getInstantiatedParameters().isEmpty()) ?
-                        arrayElementInst.getTypeReference().getType() : arrayElementInst;
+                node  = ((ArrayInstantiation)node).getElementTypeInstantiation();
+                style = "arrayLink";
+                category += "array of ";
             }
-        }
 
-        while (node instanceof ArrayType)
-        {
-            final TypeReference elementBaseTypeReference =
-                    ((ArrayType)node).getElementTypeInstantiation().getTypeReference().getBaseTypeReference();
-            node = elementBaseTypeReference.getType();
-            style = "arrayLink";
-            category += "array of ";
+            if ((!(node instanceof ParameterizedTypeInstantiation)))
+                node = ((TypeInstantiation)node).getType();
         }
 
         if (node instanceof BuiltInType)
@@ -122,7 +112,7 @@ public class LinkedType
                 style = "serviceLink";
                 category += createTitle("Service");
             }
-            else if (node instanceof TypeInstantiation)
+            else if (node instanceof TypeInstantiation) // only when it's a parameterized type
             {
                 style = "instantLink";
                 category += createTitle("TypeInstantiation");
@@ -144,24 +134,23 @@ public class LinkedType
         String packageName = "";
         if (isDoubleDefinedType)
         {
-            packageName = ", defined in: " + DocEmitterTools.getZserioPackageName(type);
+            packageName = ", defined in: " + getPackageName();
         }
         return cat + packageName;
     }
 
     public String getName() throws ZserioEmitException
     {
-        String typeName = TypeNameEmitter.getTypeName(type);
+        String typeName = TypeNameEmitter.getTypeName(astNode);
         return typeName;
     }
 
     public String getHyperlinkName() throws ZserioEmitException
     {
-        String hyperlinkName = TypeNameEmitter.getTypeName(type) + "_";
+        String hyperlinkName = TypeNameEmitter.getTypeName(astNode) + "_";
 
-        AstNode ti  = type;
         HtmlModuleNameSuffixVisitor suffixVisitor = new HtmlModuleNameSuffixVisitor();
-        ti.accept(suffixVisitor);
+        astNode.accept(suffixVisitor);
         hyperlinkName += suffixVisitor.getSuffix();
 
         return hyperlinkName;
@@ -179,12 +168,19 @@ public class LinkedType
 
     public boolean getIsBuiltIn()
     {
-        return (type instanceof BuiltInType);
+        AstNode node = astNode;
+        if (node instanceof TypeInstantiation)
+        {
+            if (node instanceof ArrayInstantiation)
+                node = ((ArrayInstantiation) node).getElementTypeInstantiation();
+            node = ((TypeInstantiation)node).getType();
+        }
+        return (node instanceof BuiltInType);
     }
 
     public String getPackageName() throws ZserioEmitException
     {
-        return DocEmitterTools.getZserioPackageName(type).toString();
+        return DocEmitterTools.getZserioPackageName(astNode).toString();
     }
 
     public String getPackageNameAsID() throws ZserioEmitException

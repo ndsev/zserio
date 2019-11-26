@@ -5,6 +5,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import zserio.ast.ParameterizedTypeInstantiation.InstantiatedParameter;
 import zserio.tools.ZserioToolPrinter;
 
 /**
@@ -91,12 +92,11 @@ public class StructureType extends CompoundType
         for (int i = 0; i < numFields; ++i)
         {
             final Field field = fields.get(i);
-            final ZserioType fieldBaseType =
-                    field.getTypeInstantiation().getTypeReference().getBaseTypeReference().getType();
-            if (fieldBaseType instanceof ArrayType)
+            final TypeInstantiation fieldTypeInstantiation = field.getTypeInstantiation();
+            if (fieldTypeInstantiation instanceof ArrayInstantiation)
             {
-                final ArrayType fieldArrayType = (ArrayType)fieldBaseType;
-                if (fieldArrayType.isImplicit() && i != (numFields - 1))
+                final ArrayInstantiation arrayTypeInstantiation = (ArrayInstantiation)fieldTypeInstantiation;
+                if (arrayTypeInstantiation.isImplicit() && i != (numFields - 1))
                 {
                     throw new ParserException(field,
                             "Implicit array must be defined at the end of structure!");
@@ -153,13 +153,17 @@ public class StructureType extends CompoundType
 
     private static Set<Field> getReferencedParameterFields(Field field)
     {
-        final Iterable<TypeInstantiation.InstantiatedParameter> instantiatedParameters =
-                field.getTypeInstantiation().getInstantiatedParameters();
         final Set<Field> referencedFields = new HashSet<Field>();
-        for (TypeInstantiation.InstantiatedParameter instantiatedParameter : instantiatedParameters)
+        final TypeInstantiation fieldTypeInstantiation = field.getTypeInstantiation();
+        if (fieldTypeInstantiation instanceof ParameterizedTypeInstantiation)
         {
-            final Expression argumentExpression = instantiatedParameter.getArgumentExpression();
-            referencedFields.addAll(argumentExpression.getReferencedSymbolObjects(Field.class));
+            final Iterable<InstantiatedParameter> instantiatedParameters =
+                    ((ParameterizedTypeInstantiation)fieldTypeInstantiation).getInstantiatedParameters();
+            for (InstantiatedParameter instantiatedParameter : instantiatedParameters)
+            {
+                final Expression argumentExpression = instantiatedParameter.getArgumentExpression();
+                referencedFields.addAll(argumentExpression.getReferencedSymbolObjects(Field.class));
+            }
         }
 
         return referencedFields;

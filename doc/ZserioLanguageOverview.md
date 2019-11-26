@@ -20,7 +20,7 @@ described in zserio, giving the developer overall control of the data schema use
 
 [Literals](#literals)
 
-[Base Types](#base-types)
+[Built-in Types](#built-in-types)
 
 [Constants](#constants)
 
@@ -79,11 +79,11 @@ Signing literals can be defined by `-` or `+` prefix. Signs are not applicable f
 
 [top](#language-guide)
 
-## Base Types
+## Built-in Types
 
-### Integer Base Types
+### Integer Built-in Types
 
-Zserio supports the following integer base types
+Zserio supports the following integer built-in types
 
 Sign     | Types
 -------- | -------------------------------------
@@ -114,8 +114,8 @@ The colon must be followed by a positive integer literal, which indicates the le
 The length should not exceed 63 bits. An unsigned bit field type corresponds to an unsigned integer of the
 given length. Thus, `bit:16` and `uint16` are equivalent. The value range of `bit:n` is 0..2<sup>n</sup>-1.
 
-Unsigned bitfield types of variable length can be specified as `bit<expr>`, where `expr` is an expression
-of integer type to be evaluated at run-time and should not exceed 63 bits.
+Unsigned bitfield types of variable length (dynamic unsigned bitfield types) can be specified as `bit<expr>`,
+where `expr` is an expression of integer type to be evaluated at run-time and should not exceed 64 bits.
 
 #### Signed Bit Field Types
 
@@ -126,8 +126,8 @@ The length should not exceed 64 bits. A signed bit field type corresponds to a s
 length. Thus, `int:16` and `int16` are equivalent. The value range of `int:n`
 is -2<sup>n-1</sup>..2<sup>n-1</sup>-1.
 
-Signed bitfield types of variable length bit field types can be specified as `int<expr>`, where `expr` is
-an expression of integer type to be evaluated at run-time and should not exceed 64 bits.
+Signed bitfield types of variable length (dynamic signed bitfield types) can be specified as `int<expr>`,
+where `expr` is an expression of integer type to be evaluated at run-time and should not exceed 64 bits.
 
 ### Floating Point Types
 
@@ -245,8 +245,8 @@ struct TestStructure
 
 ### Extern Type
 
-External type is a zserio base type which format is not known by zserio. It is handled as arbitrary bit sequence
-which is passed to application for further processing. It is denoted by zserio keyword `extern`. It is
+External type is a zserio built-in type which format is not known by zserio. It is handled as arbitrary bit
+sequence which is passed to application for further processing. It is denoted by zserio keyword `extern`. It is
 represented by a number of bits (stored as a varuint64) followed by a bit sequence.
 
 **Example**
@@ -267,7 +267,7 @@ A constant is an immutable named value. The syntax and behavior is similar to C 
 follows:
 
 ```
-const base-type NAME = literal;
+const built-in-type NAME = literal;
 ```
 
 **Example**

@@ -120,13 +120,6 @@ public class ZserioAstEvaluator extends ZserioAstWalker
         typeInstantiation.evaluate();
     }
 
-    @Override
-    public void visitBitFieldType(BitFieldType bitFieldType)
-    {
-        bitFieldType.visitChildren(this);
-        bitFieldType.evaluate();
-    }
-
     private void visitInstantiations(ZserioTemplatableType template)
     {
         for (ZserioTemplatableType instantiation : template.getInstantiations())

@@ -68,8 +68,7 @@ public class DbStructureDotTemplateData
             final Iterable<Field> databaseFieldList = databaseType.getFields();
             for (Field databaseField : databaseFieldList)
             {
-                final SqlTableType tableType =
-                        (SqlTableType)databaseField.getTypeInstantiation().getTypeReference().getType();
+                final SqlTableType tableType = (SqlTableType)databaseField.getTypeInstantiation().getType();
                 final String tableName = databaseField.getName();
                 nameToSqlTableTypeMap.put(tableName, tableType);
             }
@@ -179,8 +178,7 @@ public class DbStructureDotTemplateData
         public TableFieldTemplateData(Field fieldType, boolean isPrimaryKey)
         {
             name = StringHtmlUtil.escapeForHtml(fieldType.getName());
-            typeName = StringHtmlUtil.escapeForHtml(
-                    fieldType.getTypeInstantiation().getTypeReference().getType().getName());
+            typeName = StringHtmlUtil.escapeForHtml(fieldType.getTypeInstantiation().getType().getName());
             this.isPrimaryKey = isPrimaryKey;
             isNullAllowed = fieldType.getSqlConstraint().isNullAllowed();
         }

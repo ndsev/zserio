@@ -155,7 +155,7 @@ unionFieldDefinition
 // ENUM
 
 enumDeclaration
-    :   ENUM typeReference id
+    :   ENUM typeInstantiation id
         LBRACE
         enumItem (COMMA enumItem)* COMMA?
         RBRACE
@@ -334,14 +334,14 @@ typeReference
     ;
 
 typeInstantiation
-    :   typeReference typeArguments?
+    :   typeReference (typeArguments | dynamicLengthArgument)?
     ;
 
 builtinType
     :   intType
     |   varintType
-    |   unsignedBitFieldType
-    |   signedBitFieldType
+    |   fixedBitFieldType
+    |   dynamicBitFieldType
     |   boolType
     |   stringType
     |   floatType
@@ -359,6 +359,10 @@ typeArguments
 typeArgument
     :   EXPLICIT id
     |   expression
+    ;
+
+dynamicLengthArgument
+    :   LT expression GT
     ;
 
 intType
@@ -383,17 +387,12 @@ varintType
     |   VARUINT64
     ;
 
-unsignedBitFieldType
-    :   BIT_FIELD bitFieldLength
+fixedBitFieldType
+    :   (BIT_FIELD | INT_FIELD) COLON DECIMAL_LITERAL
     ;
 
-signedBitFieldType
-    :   INT_FIELD bitFieldLength
-    ;
-
-bitFieldLength
-    :   COLON DECIMAL_LITERAL
-    |   LT expression GT
+dynamicBitFieldType
+    :   (BIT_FIELD | INT_FIELD)
     ;
 
 boolType

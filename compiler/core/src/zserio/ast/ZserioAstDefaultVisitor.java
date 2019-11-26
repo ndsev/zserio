@@ -116,7 +116,11 @@ public class ZserioAstDefaultVisitor implements ZserioAstVisitor
     {}
 
     @Override
-    public void visitBitFieldType(BitFieldType bitFieldType)
+    public void visitFixedBitFieldType(FixedBitFieldType fixedFieldTypeType)
+    {}
+
+    @Override
+    public void visitDynamicBitFieldType(DynamicBitFieldType dynamicBitFieldType)
     {}
 
     @Override

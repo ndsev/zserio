@@ -7,7 +7,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import zserio.ast.TypeInstantiation.InstantiatedParameter;
+import zserio.ast.ParameterizedTypeInstantiation.InstantiatedParameter;
 import zserio.tools.ZserioToolPrinter;
 
 /**
@@ -159,8 +159,15 @@ public class SqlTableType extends CompoundType
 
         for (Field tableField : getFields())
         {
+            final TypeInstantiation fieldTypeInstantiation = tableField.getTypeInstantiation();
+            if (!(fieldTypeInstantiation instanceof ParameterizedTypeInstantiation))
+                continue;
+
+            final ParameterizedTypeInstantiation parameterizedInstantiation =
+                    (ParameterizedTypeInstantiation)fieldTypeInstantiation;
+
             final List<InstantiatedParameter> instantiatedParameters =
-                    tableField.getTypeInstantiation().getInstantiatedParameters();
+                    parameterizedInstantiation.getInstantiatedParameters();
             for (InstantiatedParameter instantiatedParam : instantiatedParameters)
             {
                 final Expression argumentExpression = instantiatedParam.getArgumentExpression();
@@ -168,8 +175,8 @@ public class SqlTableType extends CompoundType
                 {
                     final Parameter param = instantiatedParam.getParameter();
                     final String paramName = param.getName();
-                    final ZserioType type = param.getTypeReference().getBaseTypeReference().getType();
-                    final String typeName = ZserioTypeUtil.getFullName(type);
+                    final ZserioType baseType = param.getTypeReference().getBaseTypeReference().getType();
+                    final String typeName = ZserioTypeUtil.getFullName(baseType);
 
                     final AbstractMap.SimpleEntry<String, Expression> prevEntry = paramTypeMap.get(paramName);
                     if (prevEntry != null)
@@ -286,9 +293,7 @@ public class SqlTableType extends CompoundType
         {
             for (Field primaryKeyField : sqlPrimaryKeyFields)
             {
-                final TypeReference fieldBaseTypeReference =
-                        primaryKeyField.getTypeInstantiation().getTypeReference().getBaseTypeReference();
-                final ZserioType fieldBaseType = fieldBaseTypeReference.getType();
+                final ZserioType fieldBaseType = primaryKeyField.getTypeInstantiation().getBaseType();
                 if (fieldBaseType instanceof BooleanType || fieldBaseType instanceof IntegerType)
                     ZserioToolPrinter.printWarning(this, "Single integer primary key in without rowid " +
                             "table '" + getName() + "' brings performance drop.");

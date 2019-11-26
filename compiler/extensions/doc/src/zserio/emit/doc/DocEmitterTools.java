@@ -2,9 +2,11 @@ package zserio.emit.doc;
 
 import java.io.File;
 
+import zserio.ast.ArrayInstantiation;
 import zserio.ast.AstNode;
 import zserio.ast.Constant;
 import zserio.ast.PackageName;
+import zserio.ast.TypeInstantiation;
 import zserio.ast.ZserioType;
 import zserio.ast.SqlDatabaseType;
 import zserio.emit.common.ZserioEmitException;
@@ -250,6 +252,13 @@ public class DocEmitterTools
      */
     public static PackageName getZserioPackageName(AstNode node) throws ZserioEmitException
     {
+        if (node instanceof TypeInstantiation)
+        {
+            if (node instanceof ArrayInstantiation)
+                node = ((ArrayInstantiation)node).getElementTypeInstantiation();
+            node = ((TypeInstantiation)node).getType();
+        }
+
         if (node instanceof ZserioType)
         {
             return ((ZserioType)node).getPackage().getPackageName();

@@ -202,13 +202,16 @@ public class ZserioParserTest
     public void enumDeclaration()
     {
         checkParseTree("enumDeclaration", "enum uint8 E { ONE = 1, TWO };",
-                "(enumDeclaration enum (typeReference (builtinType (intType uint8))) (id E) " +
-                "{ (enumItem (id ONE) = (expression (literal 1))) , " +
-                        "(enumItem (id TWO)) } ;)");
+                "(enumDeclaration enum (typeInstantiation (typeReference (builtinType (intType uint8)))) " +
+                "(id E) { " +
+                        "(enumItem (id ONE) = (expression (literal 1))) , " +
+                        "(enumItem (id TWO)) " +
+                "} ;)");
 
         // trailing COMMA is allowed!
         checkParseTree("enumDeclaration", "enum uint8 E { ONE = 1, TWO, };",
-                "(enumDeclaration enum (typeReference (builtinType (intType uint8))) (id E) { " +
+                "(enumDeclaration enum (typeInstantiation (typeReference (builtinType (intType uint8)))) " +
+                "(id E) { " +
                         "(enumItem (id ONE) = (expression (literal 1))) , " +
                         "(enumItem (id TWO)) , " +
                 "} ;)");

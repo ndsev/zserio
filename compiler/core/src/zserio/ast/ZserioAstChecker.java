@@ -170,13 +170,6 @@ public class ZserioAstChecker extends ZserioAstWalker
         addUsedType(typeReference.getType());
     }
 
-    @Override
-    public void visitArrayType(ArrayType arrayType)
-    {
-        arrayType.visitChildren(this);
-        arrayType.check();
-    }
-
     private void visitInstantiations(ZserioTemplatableType template)
     {
         for (ZserioTemplatableType instantiation : template.getInstantiations())

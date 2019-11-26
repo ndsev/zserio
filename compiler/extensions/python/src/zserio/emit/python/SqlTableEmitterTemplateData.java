@@ -8,10 +8,11 @@ import java.util.TreeSet;
 import zserio.ast.EnumType;
 import zserio.ast.Expression;
 import zserio.ast.Field;
+import zserio.ast.ParameterizedTypeInstantiation;
+import zserio.ast.ParameterizedTypeInstantiation.InstantiatedParameter;
 import zserio.ast.SqlConstraint;
 import zserio.ast.SqlTableType;
 import zserio.ast.TypeInstantiation;
-import zserio.ast.TypeReference;
 import zserio.ast.ZserioType;
 import zserio.emit.common.ExpressionFormatter;
 import zserio.emit.common.ZserioEmitException;
@@ -137,9 +138,8 @@ public class SqlTableEmitterTemplateData extends UserTypeTemplateData
                 ImportCollector importCollector) throws ZserioEmitException
         {
             final TypeInstantiation fieldTypeInstantiation = field.getTypeInstantiation();
-            final TypeReference fieldTypeReference = fieldTypeInstantiation.getTypeReference();
-            final ZserioType fieldBaseType = fieldTypeReference.getBaseTypeReference().getType();
-            final PythonNativeType nativeType = pythonNativeMapper.getPythonType(fieldTypeReference);
+            final ZserioType fieldBaseType = fieldTypeInstantiation.getBaseType();
+            final PythonNativeType nativeType = pythonNativeMapper.getPythonType(fieldTypeInstantiation);
             importCollector.importType(nativeType);
 
             name = field.getName();
@@ -148,11 +148,16 @@ public class SqlTableEmitterTemplateData extends UserTypeTemplateData
             isVirtual = field.getIsVirtual();
             parameters = new ArrayList<ParameterTemplateData>();
 
-            for (TypeInstantiation.InstantiatedParameter instantiatedParameter :
-                    fieldTypeInstantiation.getInstantiatedParameters())
+            if (fieldTypeInstantiation instanceof ParameterizedTypeInstantiation)
             {
-                parameters.add(new ParameterTemplateData(pythonSqlIndirectExpressionFormatter, parentType,
-                        instantiatedParameter));
+                final ParameterizedTypeInstantiation parameterizedInstantiation =
+                        (ParameterizedTypeInstantiation)fieldTypeInstantiation;
+                for (InstantiatedParameter instantiatedParameter :
+                        parameterizedInstantiation.getInstantiatedParameters())
+                {
+                    parameters.add(new ParameterTemplateData(pythonSqlIndirectExpressionFormatter, parentType,
+                            instantiatedParameter));
+                }
             }
 
             final SqlConstraint sqlConstraintType = field.getSqlConstraint();
@@ -220,7 +225,7 @@ public class SqlTableEmitterTemplateData extends UserTypeTemplateData
                     throws ZserioEmitException
             {
                 final SqlNativeType sqlNativeType = sqlNativeTypeMapper.getSqlType(
-                        field.getTypeInstantiation().getTypeReference());
+                        field.getTypeInstantiation());
                 name = sqlNativeType.getFullName();
                 isBlob = sqlNativeType instanceof NativeBlobType;
             }
@@ -242,7 +247,7 @@ public class SqlTableEmitterTemplateData extends UserTypeTemplateData
         public static class ParameterTemplateData
         {
             public ParameterTemplateData(ExpressionFormatter pythonSqlIndirectExpressionFormatter,
-                    SqlTableType tableType, TypeInstantiation.InstantiatedParameter instantiatedParameter)
+                    SqlTableType tableType, InstantiatedParameter instantiatedParameter)
                             throws ZserioEmitException
             {
                 final Expression argumentExpression = instantiatedParameter.getArgumentExpression();

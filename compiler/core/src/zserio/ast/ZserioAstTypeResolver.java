@@ -69,6 +69,13 @@ public class ZserioAstTypeResolver extends ZserioAstWalker
     }
 
     @Override
+    public void visitTypeInstantiation(TypeInstantiation typeInstantiation)
+    {
+        typeInstantiation.visitChildren(this);
+        typeInstantiation.resolve();
+    }
+
+    @Override
     public void visitTemplateArgument(TemplateArgument templateArgument)
     {
         templateArgument.visitChildren(this);

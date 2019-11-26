@@ -1,0 +1,42 @@
+<project name="builtin_types_error" basedir="." default="run">
+    <testProperties testPath="errors/builtin_types_error" testName="builtin_types_error"/>
+
+    <target name="prepare">
+        <testPrepare testName="builtin_types_error"/>
+    </target>
+
+    <target name="gen.check" depends="prepare">
+        <testGenCheck testName="builtin_types_error"/>
+    </target>
+
+    <target name="gen" depends="gen.check" unless="builtin_types_error.zs.gen_is_uptodate">
+        <testGenClean testName="builtin_types_error"/>
+        <testGen testName="builtin_types_error" zsFile="bitfield_cyclic_definition_error.zs"
+            ignoreErrors="true"/>
+        <testGen testName="builtin_types_error" zsFile="bitfield_invalid_length_type_error.zs"
+            ignoreErrors="true"/>
+        <testGen testName="builtin_types_error" zsFile="bitfield_length_field_not_available_error.zs"
+            ignoreErrors="true"/>
+        <testGen testName="builtin_types_error" zsFile="bitfield_unknown_length_error.zs" ignoreErrors="true"/>
+        <testGen testName="builtin_types_error" zsFile="bitfield0_error.zs" ignoreErrors="true"/>
+        <testGen testName="builtin_types_error" zsFile="bitfield65_error.zs" ignoreErrors="true"/>
+        <testGen testName="builtin_types_error" zsFile="intfield0_error.zs" ignoreErrors="true"/>
+        <testGen testName="builtin_types_error" zsFile="intfield65_error.zs" ignoreErrors="true"/>
+    </target>
+
+    <target name="compile" depends="gen">
+        <testCompile testName="builtin_types_error" srcPath="${builtin_types_error.base_dir}/java"/>
+    </target>
+
+    <target name="findbugs" depends="compile" if="findbugs.home_dir">
+        <testFindbugs testName="builtin_types_error" srcPath="${builtin_types_error.base_dir}/java"/>
+    </target>
+
+    <target name="run" depends="findbugs">
+        <testRun testName="builtin_types_error"/>
+    </target>
+
+    <target name="clean">
+        <testClean testName="builtin_types_error"/>
+    </target>
+</project>

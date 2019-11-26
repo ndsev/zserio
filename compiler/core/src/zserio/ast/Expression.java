@@ -428,14 +428,6 @@ public class Expression extends AstNodeBase
     /**
      * This method evaluates one expression.
      *
-     * Method fills up the following expression properties:
-     *
-     *   expressionType
-     *   zserioType
-     *   expressionIntegerValue
-     *   unresolvedIdentifiers
-     *   symbolObject
-     *
      * It is supposed that the previous expression properties have been set to initialization values
      * (set by constructor).
      *
@@ -765,6 +757,7 @@ public class Expression extends AstNodeBase
         expressionIntegerValue = operand1.expressionIntegerValue;
         zserioType = operand1.zserioType;
         symbolObject = operand1.symbolObject;
+        symbolInstantiation = operand1.symbolInstantiation;
         unresolvedIdentifiers = operand1.unresolvedIdentifiers;
     }
 
@@ -803,14 +796,14 @@ public class Expression extends AstNodeBase
 
     private void evaluateArrayElement()
     {
-        if (!(operand1.zserioType instanceof ArrayType))
+        if (!(operand1.symbolInstantiation instanceof ArrayInstantiation))
             throw new ParserException(operand1, "'" + operand1.text + "' is not an array!");
 
         if (operand2.expressionType != ExpressionType.INTEGER)
             throw new ParserException(operand2, "Integer expression expected!");
 
-        final ArrayType arrayType = (ArrayType)operand1.zserioType;
-        evaluateExpressionType(arrayType.getElementTypeInstantiation());
+        final ArrayInstantiation arrayInstantiation = (ArrayInstantiation)operand1.symbolInstantiation;
+        evaluateExpressionType(arrayInstantiation.getElementTypeInstantiation());
     }
 
     private void evaluateDotExpression()
@@ -1294,7 +1287,7 @@ public class Expression extends AstNodeBase
     private void evaluateConstant(Constant constant)
     {
         // constant type
-        evaluateExpressionType(constant.getTypeReference());
+        evaluateExpressionType(constant.getTypeInstantiation());
 
         // call evaluation explicitly because this const does not have to be evaluated yet
         final ZserioAstEvaluator evaluator = new ZserioAstEvaluator();
@@ -1309,7 +1302,8 @@ public class Expression extends AstNodeBase
         // call evaluation explicitly because this type instantiation does not have to be evaluated yet
         final ZserioAstEvaluator evaluator = new ZserioAstEvaluator();
         typeInstantiation.accept(evaluator);
-        evaluateExpressionType(typeInstantiation.getTypeReference());
+        symbolInstantiation = typeInstantiation;
+        evaluateExpressionType(typeInstantiation.getType());
     }
 
     private void evaluateExpressionType(TypeReference typeReference)
@@ -1338,17 +1332,25 @@ public class Expression extends AstNodeBase
         {
             expressionType = ExpressionType.INTEGER;
             final IntegerType integerType = (IntegerType)baseType;
-            if (baseType instanceof BitFieldType)
+            if (symbolInstantiation instanceof DynamicBitFieldInstantiation)
             {
+                final DynamicBitFieldInstantiation dynamicBitFieldInstantiation =
+                        (DynamicBitFieldInstantiation)symbolInstantiation;
+
                 // call evaluation explicitly because this length does not have to be evaluated yet
-                final BitFieldType bitFieldType = (BitFieldType)baseType;
                 final ZserioAstEvaluator evaluator = new ZserioAstEvaluator();
-                bitFieldType.accept(evaluator);
-            }
-            final BigInteger lowerBound = integerType.getLowerBound();
-            final BigInteger upperBound = integerType.getUpperBound();
-            if (lowerBound != null && upperBound != null)
+                dynamicBitFieldInstantiation.accept(evaluator);
+                final BigInteger lowerBound = dynamicBitFieldInstantiation.getLowerBound();
+                final BigInteger upperBound = dynamicBitFieldInstantiation.getUpperBound();
                 expressionIntegerValue = new ExpressionIntegerValue(lowerBound, upperBound);
+            }
+            else
+            {
+                // unknown instantiation, get the type's fixed limits
+                final BigInteger lowerBound = integerType.getLowerBound();
+                final BigInteger upperBound = integerType.getUpperBound();
+                expressionIntegerValue = new ExpressionIntegerValue(lowerBound, upperBound);
+            }
         }
         else if (baseType instanceof FloatType)
         {
@@ -1391,6 +1393,7 @@ public class Expression extends AstNodeBase
         expressionIntegerValue = new ExpressionIntegerValue();
         zserioType = null;
         symbolObject = null;
+        symbolInstantiation = null;
         unresolvedIdentifiers = new ArrayList<Expression>();
         needsBigIntegerCastingToNative = false;
     }
@@ -1485,6 +1488,7 @@ public class Expression extends AstNodeBase
     private ExpressionIntegerValue expressionIntegerValue;
     private ZserioType zserioType;
     private AstNode symbolObject;
+    private TypeInstantiation symbolInstantiation;
     private List<Expression> unresolvedIdentifiers;
 
     private boolean needsBigIntegerCastingToNative;

@@ -6,9 +6,10 @@ import java.util.TreeSet;
 import zserio.ast.Expression;
 import zserio.ast.Field;
 import zserio.ast.Parameter;
+import zserio.ast.ParameterizedTypeInstantiation;
+import zserio.ast.ParameterizedTypeInstantiation.InstantiatedParameter;
 import zserio.ast.SqlTableType;
 import zserio.ast.TypeInstantiation;
-import zserio.ast.TypeInstantiation.InstantiatedParameter;
 import zserio.emit.common.ExpressionFormatter;
 import zserio.emit.common.ZserioEmitException;
 import zserio.emit.cpp98.types.CppNativeType;
@@ -29,19 +30,25 @@ public class InspectorParameterProviderTemplateData extends CppTemplateData
         {
             for (Field field : sqlTableType.getFields())
             {
-                final List<InstantiatedParameter> instantiatedParameters =
-                        field.getTypeInstantiation().getInstantiatedParameters();
-                for (TypeInstantiation.InstantiatedParameter parameter : instantiatedParameters)
+                final TypeInstantiation fieldTypeInstantiation = field.getTypeInstantiation();
+                if (fieldTypeInstantiation instanceof ParameterizedTypeInstantiation)
                 {
-                    if (parameter.getArgumentExpression().isExplicitVariable())
+                    final ParameterizedTypeInstantiation parameterizedTypeInstantiation =
+                            (ParameterizedTypeInstantiation)fieldTypeInstantiation;
+                    final List<InstantiatedParameter> instantiatedParameters =
+                            parameterizedTypeInstantiation.getInstantiatedParameters();
+                    for (InstantiatedParameter parameter : instantiatedParameters)
                     {
-                        explicitParameters.add(new ExplicitParameterTemplateData(cppNativeMapper,
-                                cppSqlIndirectExpressionFormatter, sqlTableType, field, parameter, this));
-                    }
-                    else
-                    {
-                        parameters.add(new ParameterTemplateData(cppNativeMapper, sqlTableType, field,
-                                parameter, this));
+                        if (parameter.getArgumentExpression().isExplicitVariable())
+                        {
+                            explicitParameters.add(new ExplicitParameterTemplateData(cppNativeMapper,
+                                    cppSqlIndirectExpressionFormatter, sqlTableType, field, parameter, this));
+                        }
+                        else
+                        {
+                            parameters.add(new ParameterTemplateData(cppNativeMapper, sqlTableType, field,
+                                    parameter, this));
+                        }
                     }
                 }
             }
@@ -61,7 +68,7 @@ public class InspectorParameterProviderTemplateData extends CppTemplateData
     public static class ParameterTemplateData implements Comparable<ParameterTemplateData>
     {
         public ParameterTemplateData(CppNativeMapper cppNativeMapper, SqlTableType tableType,
-                Field field, TypeInstantiation.InstantiatedParameter instantiatedParameter,
+                Field field, InstantiatedParameter instantiatedParameter,
                 IncludeCollector includeCollector) throws ZserioEmitException
         {
             final Parameter parameter = instantiatedParameter.getParameter();
@@ -160,7 +167,7 @@ public class InspectorParameterProviderTemplateData extends CppTemplateData
     {
         public ExplicitParameterTemplateData(CppNativeMapper cppNativeMapper,
                 ExpressionFormatter cppSqlIndirectExpressionFormatter, SqlTableType tableType, Field field,
-                TypeInstantiation.InstantiatedParameter instantiatedParameter,
+                InstantiatedParameter instantiatedParameter,
                 IncludeCollector includeCollector) throws ZserioEmitException
         {
             final Parameter parameter = instantiatedParameter.getParameter();

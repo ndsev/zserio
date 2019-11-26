@@ -4,10 +4,11 @@ import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
 
-import zserio.ast.ArrayType;
+import zserio.ast.ArrayInstantiation;
+import zserio.ast.DynamicBitFieldInstantiation;
 import zserio.ast.EnumType;
+import zserio.ast.ParameterizedTypeInstantiation;
 import zserio.ast.UnionType;
-import zserio.ast.BitFieldType;
 import zserio.ast.ChoiceType;
 import zserio.ast.CompoundType;
 import zserio.ast.ZserioType;
@@ -16,8 +17,7 @@ import zserio.ast.Field;
 import zserio.ast.FixedSizeType;
 import zserio.ast.IntegerType;
 import zserio.ast.TypeInstantiation;
-import zserio.ast.TypeInstantiation.InstantiatedParameter;
-import zserio.ast.TypeReference;
+import zserio.ast.ParameterizedTypeInstantiation.InstantiatedParameter;
 import zserio.emit.common.ExpressionFormatter;
 import zserio.emit.common.ZserioEmitException;
 import zserio.emit.cpp.types.CppNativeType;
@@ -32,11 +32,9 @@ public class CompoundFieldTemplateData
             boolean withWriterCode, boolean withRangeCheckCode) throws ZserioEmitException
     {
         final TypeInstantiation fieldTypeInstantiation = field.getTypeInstantiation();
-        final TypeReference fieldTypeReference = fieldTypeInstantiation.getTypeReference();
-        final ZserioType fieldType = fieldTypeReference.getType();
-        final ZserioType fieldBaseType = fieldTypeReference.getBaseTypeReference().getType();
+        final ZserioType fieldBaseType = fieldTypeInstantiation.getBaseType();
 
-        final CppNativeType fieldNativeType = cppNativeMapper.getCppType(fieldTypeReference);
+        final CppNativeType fieldNativeType = cppNativeMapper.getCppType(fieldTypeInstantiation);
         includeCollector.addHeaderIncludesForType(fieldNativeType);
 
         optional = (field.isOptional()) ?
@@ -52,7 +50,7 @@ public class CompoundFieldTemplateData
         setterName = AccessorNameFormatter.getSetterName(field);
         readerName = AccessorNameFormatter.getReaderName(field);
 
-        integerRange = createIntegerRange(cppNativeMapper, fieldType, cppExpressionFormatter);
+        integerRange = createIntegerRange(cppNativeMapper, fieldTypeInstantiation, cppExpressionFormatter);
 
         alignmentValue = createAlignmentValue(field, cppExpressionFormatter);
         initializer = createInitializer(field, cppExpressionFormatter);
@@ -66,10 +64,11 @@ public class CompoundFieldTemplateData
 
         offset = createOffset(field, cppNativeMapper, cppExpressionFormatter,
                 cppIndirectExpressionFormatter);
-        array = createArray(fieldNativeType, fieldBaseType, parentType, cppNativeMapper,
+        array = createArray(fieldNativeType, fieldTypeInstantiation, parentType, cppNativeMapper,
                 cppExpressionFormatter, cppIndirectExpressionFormatter, includeCollector, withWriterCode);
-        runtimeFunction = CppRuntimeFunctionDataCreator.createData(fieldBaseType, cppExpressionFormatter);
-        bitSizeValue = createBitSizeValue(fieldBaseType, cppExpressionFormatter);
+        runtimeFunction = CppRuntimeFunctionDataCreator.createData(fieldTypeInstantiation,
+                cppExpressionFormatter);
+        bitSizeValue = createBitSizeValue(fieldTypeInstantiation, cppExpressionFormatter);
         this.withWriterCode = withWriterCode;
         this.withRangeCheckCode = withRangeCheckCode;
     }
@@ -221,14 +220,12 @@ public class CompoundFieldTemplateData
     {
         public Compound(CppNativeMapper cppNativeMapper, ExpressionFormatter cppExpressionFormatter,
                 ExpressionFormatter cppIndirectExpressionFormatter, CompoundType owner,
-                TypeInstantiation compoundFieldInstantiation, boolean withWriterCode) throws ZserioEmitException
+                ParameterizedTypeInstantiation parameterizedTypeInstantiation,
+                boolean withWriterCode) throws ZserioEmitException
         {
-            // TODO[Mi-L@][typeref] ParameterizedTypeInstantiation could hold the base compound type.
-            final TypeReference baseTypeReference =
-                    compoundFieldInstantiation.getTypeReference().getBaseTypeReference();
-            final CompoundType baseType = (CompoundType)baseTypeReference.getType();
+            final CompoundType baseType = parameterizedTypeInstantiation.getBaseType();
             final List<InstantiatedParameter> parameters =
-                    compoundFieldInstantiation.getInstantiatedParameters();
+                    parameterizedTypeInstantiation.getInstantiatedParameters();
             instantiatedParameters = new ArrayList<InstantiatedParameterData>(parameters.size());
             for (InstantiatedParameter parameter : parameters)
             {
@@ -236,6 +233,14 @@ public class CompoundFieldTemplateData
                         cppIndirectExpressionFormatter, parameter));
             }
 
+
+            needsChildrenInitialization = baseType.needsChildrenInitialization();
+        }
+
+        public Compound(TypeInstantiation typeInstantiation)
+        {
+            instantiatedParameters = new ArrayList<InstantiatedParameterData>();
+            final CompoundType baseType = (CompoundType)typeInstantiation.getBaseType();
             needsChildrenInitialization = baseType.needsChildrenInitialization();
         }
 
@@ -355,32 +360,38 @@ public class CompoundFieldTemplateData
 
     public static class IntegerRange
     {
-        public IntegerRange(CppNativeMapper cppNativeMapper, IntegerType typeToCheck,
+        public IntegerRange(CppNativeMapper cppNativeMapper, TypeInstantiation typeInstantiation,
                 ExpressionFormatter cppExpressionFormatter) throws ZserioEmitException
         {
-            bitFieldLength = !(typeToCheck instanceof BitFieldType) ? null :
-                    cppExpressionFormatter.formatGetter(((BitFieldType)typeToCheck).getLengthExpression());
+            IntegerType typeToCheck = (IntegerType)typeInstantiation.getBaseType();
+            bitFieldLength = getDynamicBitFieldLength(typeInstantiation, cppExpressionFormatter);
+            isSigned = typeToCheck.isSigned();
 
-            final NativeIntegralType nativeType = cppNativeMapper.getCppIntegralType(typeToCheck);
-            final BigInteger zserioLowerBound = typeToCheck.getLowerBound();
+            final NativeIntegralType nativeType = cppNativeMapper.getCppIntegralType(typeInstantiation);
+            final BigInteger zserioLowerBound = typeToCheck.getLowerBound(typeInstantiation);
             final BigInteger nativeLowerBound = nativeType.getLowerBound();
-            checkLowerBound = zserioLowerBound == null || nativeLowerBound.compareTo(zserioLowerBound) < 0;
+            checkLowerBound = (bitFieldLength != null && isSigned) ||
+                    nativeLowerBound.compareTo(zserioLowerBound) < 0;
 
-            final BigInteger zserioUpperBound = typeToCheck.getUpperBound();
+            final BigInteger zserioUpperBound = typeToCheck.getUpperBound(typeInstantiation);
             final BigInteger nativeUpperBound = nativeType.getUpperBound();
-            final boolean checkUpperBound = zserioUpperBound == null ||
-                    nativeUpperBound.compareTo(zserioUpperBound) > 0;
+            final boolean checkUpperBound = nativeUpperBound.compareTo(zserioUpperBound) > 0;
 
-            // Zserio types that have the same bounds as their native type are not checked
-            hasFullRange = !checkLowerBound && !checkUpperBound;
+            // fixed Zserio types that have the same bounds as their native type are not checked
+            hasFullRange = (bitFieldLength == null) && !checkLowerBound && !checkUpperBound;
 
-            lowerBound = zserioLowerBound != null ? nativeType.formatLiteral(zserioLowerBound) : null;
-            upperBound = zserioUpperBound != null ? nativeType.formatLiteral(zserioUpperBound) : null;
+            lowerBound = nativeType.formatLiteral(zserioLowerBound);
+            upperBound = nativeType.formatLiteral(zserioUpperBound);
         }
 
         public String getBitFieldLength()
         {
             return bitFieldLength;
+        }
+
+        public boolean getIsSigned()
+        {
+            return isSigned;
         }
 
         public boolean getHasFullRange()
@@ -403,7 +414,19 @@ public class CompoundFieldTemplateData
             return upperBound;
         }
 
+        private static String getDynamicBitFieldLength(TypeInstantiation instantiation,
+                ExpressionFormatter cppExpressionFormatter) throws ZserioEmitException
+        {
+            if (!(instantiation instanceof DynamicBitFieldInstantiation))
+                return null;
+
+            final DynamicBitFieldInstantiation dynamicBitFieldInstantiation =
+                    (DynamicBitFieldInstantiation)instantiation;
+            return cppExpressionFormatter.formatGetter(dynamicBitFieldInstantiation.getLengthExpression());
+        }
+
         private final String bitFieldLength;
+        private final boolean isSigned;
         private final boolean hasFullRange;
         private final boolean checkLowerBound;
         private final String lowerBound;
@@ -412,29 +435,27 @@ public class CompoundFieldTemplateData
 
     public static class Array
     {
-        public Array(NativeArrayType nativeType, ArrayType arrayType, CompoundType parentType,
-                CppNativeMapper cppNativeMapper, ExpressionFormatter cppExpressionFormatter,
-                ExpressionFormatter cppIndirectExpressionFormatter, IncludeCollector includeCollector,
-                boolean withWriterCode) throws ZserioEmitException
+        public Array(NativeArrayType nativeType, ArrayInstantiation arrayInstantiation,
+                CompoundType parentType, CppNativeMapper cppNativeMapper,
+                ExpressionFormatter cppExpressionFormatter, ExpressionFormatter cppIndirectExpressionFormatter,
+                IncludeCollector includeCollector, boolean withWriterCode) throws ZserioEmitException
         {
-            final TypeInstantiation elementTypeInstantiation = arrayType.getElementTypeInstantiation();
-            final TypeReference elementTypeReference = elementTypeInstantiation.getTypeReference();
-            final ZserioType elementBaseType = elementTypeReference.getBaseTypeReference().getType();
+            final TypeInstantiation elementTypeInstantiation = arrayInstantiation.getElementTypeInstantiation();
 
             traitsName = nativeType.getArrayTraitsName();
             hasTemplatedTraits = nativeType.hasTemplatedTraits();
-            isImplicit = arrayType.isImplicit();
-            length = createLength(arrayType, cppExpressionFormatter);
-            final CppNativeType elementNativeType = cppNativeMapper.getCppType(elementTypeReference);
+            isImplicit = arrayInstantiation.isImplicit();
+            length = createLength(arrayInstantiation, cppExpressionFormatter);
+            final CppNativeType elementNativeType = cppNativeMapper.getCppType(elementTypeInstantiation);
             elementCppTypeName = elementNativeType.getFullName();
             includeCollector.addHeaderIncludesForType(elementNativeType);
             requiresElementFactory = nativeType.requiresElementFactory();
             elementBitSizeValue = nativeType.requiresElementBitSize()
-                    ? createBitSizeValue(elementBaseType, cppExpressionFormatter)
+                    ? createBitSizeValue(elementTypeInstantiation, cppExpressionFormatter)
                     : null;
             elementCompound = createCompound(cppNativeMapper, cppExpressionFormatter,
                     cppIndirectExpressionFormatter, parentType, elementTypeInstantiation, withWriterCode);
-            elementIntegerRange = createIntegerRange(cppNativeMapper, elementBaseType,
+            elementIntegerRange = createIntegerRange(cppNativeMapper, elementTypeInstantiation,
                     cppExpressionFormatter);
         }
 
@@ -483,10 +504,10 @@ public class CompoundFieldTemplateData
             return elementIntegerRange;
         }
 
-        private static String createLength(ArrayType arrayType, ExpressionFormatter cppExpressionFormatter)
-                throws ZserioEmitException
+        private static String createLength(ArrayInstantiation arrayInstantiation,
+                ExpressionFormatter cppExpressionFormatter) throws ZserioEmitException
         {
-            final Expression lengthExpression = arrayType.getLengthExpression();
+            final Expression lengthExpression = arrayInstantiation.getLengthExpression();
             if (lengthExpression == null)
                 return null;
 
@@ -518,12 +539,13 @@ public class CompoundFieldTemplateData
     }
 
     private static IntegerRange createIntegerRange(CppNativeMapper cppNativeMapper,
-            ZserioType typeToCheck, ExpressionFormatter cppExpressionFormatter) throws ZserioEmitException
+            TypeInstantiation typeInstantiation,
+            ExpressionFormatter cppExpressionFormatter) throws ZserioEmitException
     {
-        if (!(typeToCheck instanceof IntegerType))
+        if (!(typeInstantiation.getBaseType() instanceof IntegerType))
             return null;
 
-        return new IntegerRange(cppNativeMapper, (IntegerType)typeToCheck, cppExpressionFormatter);
+        return new IntegerRange(cppNativeMapper, typeInstantiation, cppExpressionFormatter);
     }
 
     private static String createAlignmentValue(Field field, ExpressionFormatter cppExpressionFormatter)
@@ -574,38 +596,40 @@ public class CompoundFieldTemplateData
                 cppIndirectExpressionFormatter);
     }
 
-    private static Array createArray(CppNativeType cppNativeType, ZserioType baseType,
+    private static Array createArray(CppNativeType cppNativeType, TypeInstantiation typeInstantiation,
             CompoundType parentType, CppNativeMapper cppNativeMapper,
             ExpressionFormatter cppExpressionFormatter, ExpressionFormatter cppIndirectExpressionFormatter,
             IncludeCollector includeCollector, boolean withWriterCode) throws ZserioEmitException
     {
-        if (!(baseType instanceof ArrayType))
+        if (!(typeInstantiation instanceof ArrayInstantiation))
             return null;
 
         if (!(cppNativeType instanceof NativeArrayType))
-            throw new ZserioEmitException("Inconsistent base type '" + baseType.getClass() +
-                    "' and native type '" + cppNativeType.getClass() + "'!");
+        {
+            throw new ZserioEmitException("Inconsistent instantiation '" +
+                    typeInstantiation.getClass().getName() + "' and native type '" +
+                    cppNativeType.getClass().getName() + "'!");
+        }
 
-        return new Array((NativeArrayType)cppNativeType, (ArrayType)baseType, parentType, cppNativeMapper,
-                cppExpressionFormatter, cppIndirectExpressionFormatter, includeCollector, withWriterCode);
+        return new Array((NativeArrayType)cppNativeType, (ArrayInstantiation)typeInstantiation, parentType,
+                cppNativeMapper, cppExpressionFormatter, cppIndirectExpressionFormatter, includeCollector,
+                withWriterCode);
     }
 
-    static String createBitSizeValue(ZserioType baseFieldType, ExpressionFormatter cppExpressionFormatter)
-            throws ZserioEmitException
+    static String createBitSizeValue(TypeInstantiation instantiation,
+            ExpressionFormatter cppExpressionFormatter) throws ZserioEmitException
     {
         String value;
-        if (baseFieldType instanceof FixedSizeType)
+        if (instantiation.getBaseType() instanceof FixedSizeType)
         {
-            value = CppLiteralFormatter.formatUInt8Literal(((FixedSizeType)baseFieldType).getBitSize());
+            value = CppLiteralFormatter.formatUInt8Literal(
+                    ((FixedSizeType)instantiation.getBaseType()).getBitSize());
         }
-        else if (baseFieldType instanceof BitFieldType)
+        else if (instantiation instanceof DynamicBitFieldInstantiation)
         {
-            final BitFieldType bitFieldType = (BitFieldType)baseFieldType;
-            final Integer bitSize = bitFieldType.getBitSize();
-            if (bitSize != null)
-                value = CppLiteralFormatter.formatUInt8Literal(bitSize);
-            else
-                value = cppExpressionFormatter.formatGetter(bitFieldType.getLengthExpression());
+            final DynamicBitFieldInstantiation dynamicBitFieldInstantiation =
+                    (DynamicBitFieldInstantiation)instantiation;
+            value = cppExpressionFormatter.formatGetter(dynamicBitFieldInstantiation.getLengthExpression());
         }
         else
         {
@@ -617,13 +641,17 @@ public class CompoundFieldTemplateData
 
     private static Compound createCompound(CppNativeMapper cppNativeMapper,
             ExpressionFormatter cppExpressionFormatter, ExpressionFormatter cppIndirectExpressionFormatter,
-            CompoundType owner, TypeInstantiation fieldTypeInstantiation, boolean withWriterCode)
+            CompoundType owner, TypeInstantiation typeInstantiation, boolean withWriterCode)
                     throws ZserioEmitException
     {
-        if (fieldTypeInstantiation.getTypeReference().getBaseTypeReference().getType() instanceof CompoundType)
+        if (typeInstantiation instanceof ParameterizedTypeInstantiation)
         {
             return new Compound(cppNativeMapper, cppExpressionFormatter, cppIndirectExpressionFormatter,
-                    owner, fieldTypeInstantiation, withWriterCode);
+                    owner, (ParameterizedTypeInstantiation)typeInstantiation, withWriterCode);
+        }
+        if (typeInstantiation.getBaseType() instanceof CompoundType)
+        {
+            return new Compound(typeInstantiation);
         }
         else
         {
