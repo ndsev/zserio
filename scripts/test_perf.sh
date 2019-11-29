@@ -181,10 +181,11 @@ generate_cpp_files()
     local LOG_PATH="${BUILD_DIR}/PerformanceTest.log"
 
     # use host paths in generated files
-    posix_to_host_path "${ZSERIO_PROJECT_ROOT}" HOST_ZSERIO_ROOT
-    posix_to_host_path "${ZSERIO_RELEASE}" HOST_ZSERIO_RELEASE
-    posix_to_host_path "${LOG_PATH}" HOST_LOG_PATH
-    posix_to_host_path "${BLOB_PATH}" HOST_BLOB_PATH
+    local DISABLE_SLASHES_CONVERSION=1
+    posix_to_host_path "${ZSERIO_PROJECT_ROOT}" HOST_ZSERIO_ROOT ${DISABLE_SLASHES_CONVERSION}
+    posix_to_host_path "${ZSERIO_RELEASE}" HOST_ZSERIO_RELEASE ${DISABLE_SLASHES_CONVERSION}
+    posix_to_host_path "${LOG_PATH}" HOST_LOG_PATH ${DISABLE_SLASHES_CONVERSION}
+    posix_to_host_path "${BLOB_PATH}" HOST_BLOB_PATH ${DISABLE_SLASHES_CONVERSION}
 
     if [[ "${GENERATOR}" == "cpp" ]] ; then
         local CPP_STANDARD="11"
