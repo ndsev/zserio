@@ -60,13 +60,14 @@ generate_java_files()
         <jar destfile="\${test_perf.jar_file}" basedir="\${test_perf.classes_dir}">
             <manifest>
                 <attribute name="Main-Class" value="PerformanceTest"/>
-                <attribute name="Class-Path" value="\${runtime.jar_file}"/>
+                <!-- If classpath contains full path, it must begin with '/' or '\' because of Windows! -->
+                <attribute name="Class-Path" value="/\${runtime.jar_file}"/>
             </manifest>
         </jar>
     </target>
 
     <target name="run" depends="jar">
-        <java jar="\${test_perf.jar_file}" fork="true">
+        <java jar="\${test_perf.jar_file}" fork="true" failonerror="true">
             <arg file="${HOST_LOG_PATH}"/>
             <arg file="${HOST_BLOB_PATH}"/>
             <arg value="${NUM_ITERATIONS}"/>
@@ -241,7 +242,6 @@ EOF
 #include <fstream>
 #include <iostream>
 #include <iomanip>
-#include <stdint.h>
 
 #include <zserio/BitStreamReader.h>
 #include <zserio/BitStreamWriter.h>
@@ -529,7 +529,6 @@ test()
         generate_cpp_files "${ZSERIO_PROJECT_ROOT}" "${UNPACKED_ZSERIO_RELEASE_DIR}" "${TEST_OUT_DIR}/cpp" \
                            "${SWITCH_BLOB_NAME}" "${SWITCH_BLOB_PATH}" ${SWITCH_NUM_ITERATIONS} \
                            ${SWITCH_TEST_CONFIG} "cpp"
-
         local CMAKE_ARGS=()
         local CTEST_ARGS=()
         compile_cpp "${ZSERIO_PROJECT_ROOT}" "${TEST_OUT_DIR}/cpp" "${TEST_OUT_DIR}/cpp" \
