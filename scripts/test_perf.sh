@@ -27,7 +27,8 @@ generate_java_files()
     <property name="zserio.release_dir" location="${HOST_ZSERIO_RELEASE}"/>
 
     <property name="runtime.jar_dir" location="\${zserio.release_dir}/runtime_libs/java"/>
-    <property name="runtime.jar_file" location="\${runtime.jar_dir}/zserio_runtime.jar"/>
+    <property name="runtime.jar_file_name" value="zserio_runtime.jar"/>
+    <property name="runtime.jar_file" location="\${runtime.jar_dir}/\${runtime.jar_file_name}"/>
 
     <property name="test_perf.build_dir" location="${HOST_BUILD_DIR}"/>
     <property name="test_perf.classes_dir" location="\${test_perf.build_dir}/classes"/>
@@ -57,11 +58,11 @@ generate_java_files()
     </target>
 
     <target name="jar" depends="compile">
+        <copy file="\${runtime.jar_file}" todir="\${test_perf.jar_dir}"/>
         <jar destfile="\${test_perf.jar_file}" basedir="\${test_perf.classes_dir}">
             <manifest>
                 <attribute name="Main-Class" value="PerformanceTest"/>
-                <!-- If classpath contains full path, it must begin with '/' or '\' because of Windows! -->
-                <attribute name="Class-Path" value="/\${runtime.jar_file}"/>
+                <attribute name="Class-Path" value="\${runtime.jar_file_name}"/>
             </manifest>
         </jar>
     </target>
@@ -214,7 +215,6 @@ include(compiler_utils)
 compiler_set_pthread()
 compiler_set_static_clibs()
 compiler_set_warnings()
-compiler_set_warnings_as_errors()
 
 # setup C++11
 set(CMAKE_CXX_STANDARD ${CPP_STANDARD})

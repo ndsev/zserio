@@ -3,7 +3,7 @@ include(compiler_utils)
 # A function to create gtest static library.
 function(gtest_add_library GTEST_ROOT)
     if (WIN32)
-        # CMake with mingw detects that pthreads are available but this triggeres schizophrenia in gtest
+        # CMake with mingw detects that pthreads are available but this triggers schizophrenia in gtest
         # where in gtest-port.h AutoHandle is not defined (because GTEST_HAS_PTHREAD is set) but then it's
         # required later (because GTEST_OS_WINDOWS).
         # GTEST_HAS_PTHREAD is automatically set by find_package(Threads) but this can be disabled by
