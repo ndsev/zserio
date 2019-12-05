@@ -113,7 +113,7 @@ public class DynamicBitFieldInstantiation extends TypeInstantiation
         {
             // check length expression
             if (lengthExpression.getExprType() != Expression.ExpressionType.INTEGER)
-                throw new ParserException(lengthExpression, "Invalid length expression for bitfield. " +
+                throw new ParserException(lengthExpression, "Invalid length expression for bit field. " +
                         "Length must be integer!");
 
             final DynamicBitFieldType type = getBaseType();

@@ -29,7 +29,7 @@ public class BuiltInTypesErrorTest
     public void bitfieldInvalidLengthType()
     {
         final String error = "bitfield_invalid_length_type_error.zs:6:9: Invalid length expression for " +
-                "bitfield. Length must be integer!";
+                "bit field. Length must be integer!";
         assertTrue(zserioErrors.isPresent(error));
     }
 
@@ -52,7 +52,7 @@ public class BuiltInTypesErrorTest
     @Test
     public void bitfield0()
     {
-        final String error = "bitfield0_error.zs:5:9: Invalid length '0' for the dynamic bitfield. " +
+        final String error = "bitfield0_error.zs:5:9: Invalid length '0' for the dynamic bit field. " +
                 "Length must be within range [1,64]!";
         assertTrue(zserioErrors.isPresent(error));
     }
@@ -60,7 +60,7 @@ public class BuiltInTypesErrorTest
     @Test
     public void bitfield65()
     {
-        final String error = "bitfield65_error.zs:5:9: Invalid length '65' for the dynamic bitfield. " +
+        final String error = "bitfield65_error.zs:5:9: Invalid length '65' for the dynamic bit field. " +
                 "Length must be within range [1,64]!";
         assertTrue(zserioErrors.isPresent(error));
     }
@@ -68,7 +68,7 @@ public class BuiltInTypesErrorTest
     @Test
     public void intfield0()
     {
-        final String error = "intfield0_error.zs:5:9: Invalid length '0' for the dynamic bitfield. " +
+        final String error = "intfield0_error.zs:5:9: Invalid length '0' for the dynamic bit field. " +
                 "Length must be within range [1,64]!";
         assertTrue(zserioErrors.isPresent(error));
     }
@@ -76,7 +76,7 @@ public class BuiltInTypesErrorTest
     @Test
     public void intfield65()
     {
-        final String error = "intfield65_error.zs:5:9: Invalid length '65' for the dynamic bitfield. " +
+        final String error = "intfield65_error.zs:5:9: Invalid length '65' for the dynamic bit field. " +
                 "Length must be within range [1,64]!";
         assertTrue(zserioErrors.isPresent(error));
     }
