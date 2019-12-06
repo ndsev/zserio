@@ -234,7 +234,7 @@ public class SqlTableEmitterTemplateData extends UserTypeTemplateData
 
             isSimpleType = nativeFieldType.isSimpleType();
             isBoolean = fieldBaseType instanceof BooleanType;
-            enumData = createEnumTemplateData(cppNativeMapper, fieldBaseType);
+            enumData = createEnumTemplateData(cppNativeMapper, fieldBaseType, includeCollector);
             sqlTypeData = new SqlTypeTemplateData(sqlNativeTypeMapper, field);
             needsChildrenInitialization = (fieldBaseType instanceof CompoundType) &&
                     ((CompoundType)fieldBaseType).needsChildrenInitialization();
@@ -388,11 +388,12 @@ public class SqlTableEmitterTemplateData extends UserTypeTemplateData
 
         public static class EnumTemplateData
         {
-            public EnumTemplateData(CppNativeMapper cppNativeMapper, EnumType enumType)
-                    throws ZserioEmitException
+            public EnumTemplateData(CppNativeMapper cppNativeMapper, EnumType enumType,
+                    IncludeCollector includeCollector) throws ZserioEmitException
             {
                 final CppNativeType nativeBaseType =
-                        cppNativeMapper.getCppType(enumType.getIntegerBaseType());
+                        cppNativeMapper.getCppType(enumType.getTypeInstantiation());
+                includeCollector.addCppIncludesForType(nativeBaseType);
                 baseCppTypeName = nativeBaseType.getFullName();
             }
 
@@ -444,12 +445,12 @@ public class SqlTableEmitterTemplateData extends UserTypeTemplateData
         }
 
         private EnumTemplateData createEnumTemplateData(CppNativeMapper cppNativeMapper,
-                ZserioType fieldBaseType) throws ZserioEmitException
+                ZserioType fieldBaseType, IncludeCollector includeCollector) throws ZserioEmitException
         {
             if (!(fieldBaseType instanceof EnumType))
                 return null;
 
-            return new EnumTemplateData(cppNativeMapper, (EnumType)fieldBaseType);
+            return new EnumTemplateData(cppNativeMapper, (EnumType)fieldBaseType, includeCollector);
         }
 
         private final String name;

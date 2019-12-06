@@ -38,6 +38,11 @@ set(ZSERIO_GENERATED_SOURCES
     ${ZSERIO_GEN_DIR}/sql_tables/const_param_table/ParameterizedBlob.cpp
     ${ZSERIO_GEN_DIR}/sql_tables/const_param_table/ParameterizedBlob.h
 
+    ${ZSERIO_GEN_DIR}/sql_tables/dynamic_bit_field_enum_field_table/DynamicBitFieldEnumFieldTable.cpp
+    ${ZSERIO_GEN_DIR}/sql_tables/dynamic_bit_field_enum_field_table/DynamicBitFieldEnumFieldTable.h
+    ${ZSERIO_GEN_DIR}/sql_tables/dynamic_bit_field_enum_field_table/TestEnum.cpp
+    ${ZSERIO_GEN_DIR}/sql_tables/dynamic_bit_field_enum_field_table/TestEnum.h
+
     ${ZSERIO_GEN_DIR}/sql_tables/multiple_pk_table/MultiplePkTable.cpp
     ${ZSERIO_GEN_DIR}/sql_tables/multiple_pk_table/MultiplePkTable.h
 
@@ -79,6 +84,8 @@ if (NOT ${ZSERIO_CPP_STANDARD} STREQUAL c++11)
         ${ZSERIO_GEN_DIR}/sql_tables/complex_table/ComplexTableRow.h
         ${ZSERIO_GEN_DIR}/sql_tables/const_param_table/ConstParamTableRow.cpp
         ${ZSERIO_GEN_DIR}/sql_tables/const_param_table/ConstParamTableRow.h
+        ${ZSERIO_GEN_DIR}/sql_tables/dynamic_bit_field_enum_field_table/DynamicBitFieldEnumFieldTableRow.cpp
+        ${ZSERIO_GEN_DIR}/sql_tables/dynamic_bit_field_enum_field_table/DynamicBitFieldEnumFieldTableRow.h
         ${ZSERIO_GEN_DIR}/sql_tables/multiple_pk_table/MultiplePkTableRow.cpp
         ${ZSERIO_GEN_DIR}/sql_tables/multiple_pk_table/MultiplePkTableRow.h
         ${ZSERIO_GEN_DIR}/sql_tables/subtyped_table/TestTableRow.cpp
@@ -111,6 +118,7 @@ add_test_sources(
     ${ZSERIO_CPP_DIR}/ColumnParamTableTest.cpp
     ${ZSERIO_CPP_DIR}/ComplexTableTest.cpp
     ${ZSERIO_CPP_DIR}/ConstParamTableTest.cpp
+    ${ZSERIO_CPP_DIR}/DynamicBitFieldEnumFieldTableTest.cpp
     ${ZSERIO_CPP_DIR}/MultiplePkTableTest.cpp
     ${ZSERIO_CPP_DIR}/SubtypedBoolFieldTableTest.cpp
     ${ZSERIO_CPP_DIR}/SubtypedEnumFieldTableTest.cpp

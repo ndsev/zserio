@@ -6,10 +6,10 @@ import java.util.List;
 import zserio.ast.DynamicBitFieldInstantiation;
 import zserio.ast.FixedSizeType;
 import zserio.ast.TypeInstantiation;
+import zserio.ast.ZserioType;
 import zserio.ast.ZserioTypeUtil;
 import zserio.ast.EnumItem;
 import zserio.ast.EnumType;
-import zserio.ast.IntegerType;
 import zserio.emit.common.ExpressionFormatter;
 import zserio.emit.common.ZserioEmitException;
 import zserio.emit.cpp98.types.NativeIntegralType;
@@ -92,16 +92,16 @@ public class EnumerationEmitterTemplateData extends UserTypeTemplateData
 
     private static String createBitSize(EnumType enumType) throws ZserioEmitException
     {
-        final TypeInstantiation instantiation = enumType.getTypeInstantiation();
-        final IntegerType integerBaseType = enumType.getIntegerBaseType();
+        final TypeInstantiation typeInstantiation = enumType.getTypeInstantiation();
+        final ZserioType baseType = typeInstantiation.getBaseType();
         Integer bitSize = null;
-        if (integerBaseType instanceof FixedSizeType)
+        if (baseType instanceof FixedSizeType)
         {
-            bitSize = ((FixedSizeType)integerBaseType).getBitSize();
+            bitSize = ((FixedSizeType)baseType).getBitSize();
         }
-        else if (instantiation instanceof DynamicBitFieldInstantiation)
+        else if (typeInstantiation instanceof DynamicBitFieldInstantiation)
         {
-            bitSize = ((DynamicBitFieldInstantiation)instantiation).getMaxBitSize();
+            bitSize = ((DynamicBitFieldInstantiation)typeInstantiation).getMaxBitSize();
         }
 
         return (bitSize != null) ? CppLiteralFormatter.formatUInt8Literal(bitSize) : null;

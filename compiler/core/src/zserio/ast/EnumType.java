@@ -89,16 +89,6 @@ public class EnumType extends DocumentableAstNode implements ZserioScopedType
     }
 
     /**
-     * Gets enumeration integer type.
-     *
-     * @return Enumeration integer type.
-     */
-    public IntegerType getIntegerBaseType()
-    {
-        return integerBaseType;
-    }
-
-    /**
      * Evaluates all enumeration item value expressions of the enumeration type.
      *
      * This method can be called from Expression.evaluate() method if some expression refers to enumeration
@@ -115,7 +105,6 @@ public class EnumType extends DocumentableAstNode implements ZserioScopedType
             if (!(baseType instanceof IntegerType))
                 throw new ParserException(this, "Enumeration '" + this.getName() + "' has forbidden type " +
                         baseType.getName() + "!");
-            integerBaseType = (IntegerType)baseType;
 
             // evaluate enumeration values
             BigInteger defaultEnumItemValue = BigInteger.ZERO;
@@ -158,6 +147,7 @@ public class EnumType extends DocumentableAstNode implements ZserioScopedType
             }
 
             // check enumeration item values boundaries
+            final IntegerType integerBaseType = (IntegerType)typeInstantiation.getBaseType();
             final BigInteger lowerBound = integerBaseType.getLowerBound(typeInstantiation);
             final BigInteger upperBound = integerBaseType.getUpperBound(typeInstantiation);
             if (enumItemValue.compareTo(lowerBound) < 0 || enumItemValue.compareTo(upperBound) > 0)
@@ -177,5 +167,4 @@ public class EnumType extends DocumentableAstNode implements ZserioScopedType
     private final List<EnumItem> enumItems;
 
     private boolean isEvaluated = false;
-    private IntegerType integerBaseType = null;
 }
