@@ -10,14 +10,14 @@ namespace bitmask_types
 namespace uint8_bitmask
 {
 
-const Emotions Emotions::SAD(0x01);
-const Emotions Emotions::CHEERY(0x02);
-const Emotions Emotions::UNHAPPY(0x04);
-const Emotions Emotions::HAPPY(0x08);
-const Emotions Emotions::SANE(0x10);
-const Emotions Emotions::MAD(0x20);
-const Emotions Emotions::ALIVE(0x40);
-const Emotions Emotions::DEAD(0x80);
+const Emotions Emotions::Values::SAD = Emotions(0x01);
+const Emotions Emotions::Values::CHEERY = Emotions(0x02);
+const Emotions Emotions::Values::UNHAPPY = Emotions(0x04);
+const Emotions Emotions::Values::HAPPY = Emotions(0x08);
+const Emotions Emotions::Values::SANE = Emotions(0x10);
+const Emotions Emotions::Values::MAD = Emotions(0x20);
+const Emotions Emotions::Values::ALIVE = Emotions(0x40);
+const Emotions Emotions::Values::DEAD = Emotions(0x80);
 
 Emotions::Emotions() : m_value(0)
 {
@@ -30,11 +30,6 @@ Emotions::Emotions(underlying_type value) : m_value(value)
 Emotions::Emotions(zserio::BitStreamReader& _in)
 {
     read(_in);
-}
-
-Emotions::operator underlying_type() const
-{
-    return m_value;
 }
 
 uint8_t Emotions::getValue() const
@@ -82,21 +77,21 @@ void Emotions::write(zserio::BitStreamWriter& _out, zserio::PreWriteAction) cons
 std::string Emotions::toString() const
 {
     std::string result("");
-    if ( (*this & Emotions::SAD) == Emotions::SAD )
+    if ( (*this & Emotions::Values::SAD) == Emotions::Values::SAD )
         result += "SAD";
-    if ( (*this & Emotions::CHEERY) == Emotions::CHEERY )
+    if ( (*this & Emotions::Values::CHEERY) == Emotions::Values::CHEERY )
         result += (result.empty()) ? "CHEERY" : " | CHEERY";
-    if ( (*this & Emotions::UNHAPPY) == Emotions::UNHAPPY )
+    if ( (*this & Emotions::Values::UNHAPPY) == Emotions::Values::UNHAPPY )
         result += (result.empty()) ? "UNHAPPY" : " | UNHAPPY";
-    if ( (*this & Emotions::HAPPY) == Emotions::HAPPY )
+    if ( (*this & Emotions::Values::HAPPY) == Emotions::Values::HAPPY )
         result += (result.empty()) ? "HAPPY" : " | HAPPY";
-    if ( (*this & Emotions::SANE) == Emotions::SANE )
+    if ( (*this & Emotions::Values::SANE) == Emotions::Values::SANE )
         result += (result.empty()) ? "SANE" : " | SANE";
-    if ( (*this & Emotions::MAD) == Emotions::MAD )
+    if ( (*this & Emotions::Values::MAD) == Emotions::Values::MAD )
         result += (result.empty()) ? "MAD" : " | MAD";
-    if ( (*this & Emotions::ALIVE) == Emotions::ALIVE )
+    if ( (*this & Emotions::Values::ALIVE) == Emotions::Values::ALIVE )
         result += (result.empty()) ? "ALIVE" : " | ALIVE";
-    if ( (*this & Emotions::DEAD) == Emotions::DEAD )
+    if ( (*this & Emotions::Values::DEAD) == Emotions::Values::DEAD )
         result += (result.empty()) ? "DEAD" : " | DEAD";
 
     return result.empty() ? "NONE" : result;

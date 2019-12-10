@@ -4,21 +4,21 @@ if __name__ == "__main__":
     print(Emotions())
     print(~Emotions())
 
-    print(Emotions.SAD)
-    print(Emotions.CHEERY)
-    print(Emotions.UNHAPPY)
-    print(Emotions.HAPPY)
-    print(Emotions.SANE)
-    print(Emotions.MAD)
-    print(Emotions.ALIVE)
-    print(Emotions.DEAD)
+    print(Emotions.Values.SAD)
+    print(Emotions.Values.CHEERY)
+    print(Emotions.Values.UNHAPPY)
+    print(Emotions.Values.HAPPY)
+    print(Emotions.Values.SANE)
+    print(Emotions.Values.MAD)
+    print(Emotions.Values.ALIVE)
+    print(Emotions.Values.DEAD)
 
-    emotion = Emotions.SAD | Emotions.CHEERY
+    emotion = Emotions.Values.SAD | Emotions.Values.CHEERY
     print(emotion)
 
-    emotion2 = Emotions.ALIVE | Emotions.DEAD
+    emotion2 = Emotions.Values.ALIVE | Emotions.Values.DEAD
     emotion = emotion | emotion2
     print(emotion)
 
-    emotion = emotion & ~Emotions.DEAD
+    emotion &= ~Emotions.Values.DEAD
     print(emotion)

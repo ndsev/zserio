@@ -4,26 +4,26 @@ public class BitMaskTest
 {
     public static void main(String args[])
     {
-        System.out.println("emotion: " + new Emotions());
-        System.out.println("emotion: " + new Emotions().not());
+        System.out.println(new Emotions());
+        System.out.println(new Emotions().not());
 
-        System.out.println("emotion: " + Emotions.SAD.toString());
-        System.out.println("emotion: " + Emotions.CHEERY.toString());
-        System.out.println("emotion: " + Emotions.UNHAPPY.toString());
-        System.out.println("emotion: " + Emotions.HAPPY.toString());
-        System.out.println("emotion: " + Emotions.SANE.toString());
-        System.out.println("emotion: " + Emotions.MAD.toString());
-        System.out.println("emotion: " + Emotions.ALIVE.toString());
-        System.out.println("emotion: " + Emotions.DEAD.toString());
+        System.out.println(Emotions.Values.SAD.toString());
+        System.out.println(Emotions.Values.CHEERY.toString());
+        System.out.println(Emotions.Values.UNHAPPY.toString());
+        System.out.println(Emotions.Values.HAPPY.toString());
+        System.out.println(Emotions.Values.SANE.toString());
+        System.out.println(Emotions.Values.MAD.toString());
+        System.out.println(Emotions.Values.ALIVE.toString());
+        System.out.println(Emotions.Values.DEAD.toString());
 
-        Emotions emotion = Emotions.SAD.or(Emotions.CHEERY);
-        System.out.println("emotion: " + emotion.toString());
+        Emotions emotion = Emotions.Values.SAD.or(Emotions.Values.CHEERY);
+        System.out.println(emotion.toString());
 
-        Emotions emotion2 = Emotions.ALIVE.or(Emotions.DEAD);
+        Emotions emotion2 = Emotions.Values.ALIVE.or(Emotions.Values.DEAD);
         emotion = emotion.or(emotion2);
-        System.out.println("emotion: " + emotion.toString());
+        System.out.println(emotion.toString());
 
-        emotion = emotion.and(Emotions.DEAD.not());
-        System.out.println("emotion: " + emotion.toString());
+        emotion = emotion.and(Emotions.Values.DEAD.not());
+        System.out.println(emotion.toString());
     }
 }

@@ -20,14 +20,17 @@ class Emotions
 public:
     typedef uint8_t underlying_type;
 
-    static const Emotions SAD;
-    static const Emotions CHEERY;
-    static const Emotions UNHAPPY;
-    static const Emotions HAPPY;
-    static const Emotions SANE;
-    static const Emotions MAD;
-    static const Emotions ALIVE;
-    static const Emotions DEAD;
+    struct Values
+    {
+        static const Emotions SAD;
+        static const Emotions CHEERY;
+        static const Emotions UNHAPPY;
+        static const Emotions HAPPY;
+        static const Emotions SANE;
+        static const Emotions MAD;
+        static const Emotions ALIVE;
+        static const Emotions DEAD;
+    };
 
     Emotions();
     explicit Emotions(underlying_type value);

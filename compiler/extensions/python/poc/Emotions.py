@@ -11,21 +11,21 @@ class Emotions(object):
 
     def __str__(self):
         result = ""
-        if self._value & Emotions.SAD._value == Emotions.SAD._value:
+        if self._value & Emotions.Values.SAD._value == Emotions.Values.SAD._value:
             result += "SAD" if not result else " | SAD"
-        if self._value & Emotions.CHEERY._value == Emotions.CHEERY._value:
+        if self._value & Emotions.Values.CHEERY._value == Emotions.Values.CHEERY._value:
             result += "CHEERY" if not result else " | CHEERY"
-        if self._value & Emotions.UNHAPPY._value == Emotions.UNHAPPY._value:
+        if self._value & Emotions.Values.UNHAPPY._value == Emotions.Values.UNHAPPY._value:
             result += "UNHAPPY" if not result else " | UNHAPPY"
-        if self._value & Emotions.HAPPY._value == Emotions.HAPPY._value:
+        if self._value & Emotions.Values.HAPPY._value == Emotions.Values.HAPPY._value:
             result += "HAPPY" if not result else " | HAPPY"
-        if self._value & Emotions.SANE._value == Emotions.SANE._value:
+        if self._value & Emotions.Values.SANE._value == Emotions.Values.SANE._value:
             result += "SANE" if not result else " | SANE"
-        if self._value & Emotions.MAD._value == Emotions.MAD._value:
+        if self._value & Emotions.Values.MAD._value == Emotions.Values.MAD._value:
             result += "MAD" if not result else " | MAD"
-        if self._value & Emotions.ALIVE._value == Emotions.ALIVE._value:
+        if self._value & Emotions.Values.ALIVE._value == Emotions.Values.ALIVE._value:
             result += "ALIVE" if not result else " | ALIVE"
-        if self._value & Emotions.DEAD._value == Emotions.DEAD._value:
+        if self._value & Emotions.Values.DEAD._value == Emotions.Values.DEAD._value:
             result += "DEAD" if not result else " | DEAD"
         if not result:
             result = "NONE"
@@ -43,14 +43,16 @@ class Emotions(object):
     def __xor__(self, other):
         return Emotions._fromValue(self._value ^ other._value)
 
-
     _NUM_BITS=8
 
-Emotions.SAD = Emotions._fromValue(0x01)
-Emotions.CHEERY = Emotions._fromValue(0x02)
-Emotions.UNHAPPY = Emotions._fromValue(0x04)
-Emotions.HAPPY = Emotions._fromValue(0x08)
-Emotions.SANE = Emotions._fromValue(0x10)
-Emotions.MAD = Emotions._fromValue(0x20)
-Emotions.ALIVE = Emotions._fromValue(0x40)
-Emotions.DEAD = Emotions._fromValue(0x80)
+    class Values():
+        pass
+
+Emotions.Values.SAD = Emotions._fromValue(0x01)
+Emotions.Values.CHEERY = Emotions._fromValue(0x02)
+Emotions.Values.UNHAPPY = Emotions._fromValue(0x04)
+Emotions.Values.HAPPY = Emotions._fromValue(0x08)
+Emotions.Values.SANE = Emotions._fromValue(0x10)
+Emotions.Values.MAD = Emotions._fromValue(0x20)
+Emotions.Values.ALIVE = Emotions._fromValue(0x40)
+Emotions.Values.DEAD = Emotions._fromValue(0x80)
