@@ -312,16 +312,16 @@ ${I}__result = Util.HASH_PRIME_NUMBER * __result + ((${field.name} == null) ? 0 
 <#macro define_field_helper_classes compoundName field>
     <#if field.array??>
         <#if field.offset?? && field.offset.containsIndex>
+
             <@define_offset_checker compoundName, field/>
-
             <#if withWriterCode>
-                <@define_offset_setter name, field/>
 
+                <@define_offset_setter name, field/>
             </#if>
         </#if>
         <#if field.array.requiresElementFactory>
-            <@define_element_factory field/>
 
+            <@define_element_factory field/>
         </#if>
     </#if>
 </#macro>

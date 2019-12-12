@@ -225,10 +225,10 @@ public class ${name} implements <#if withWriterCode>InitializeOffsetsWriter, </#
     public static final int <@choice_tag_name field/> = ${field_index};
 </#list>
     public static final int CHOICE_UNDEFINED = -1;
-
 <#list fieldList as field>
     <@define_field_helper_classes name, field/>
 </#list>
+
 <@compound_parameter_members compoundParametersData/>
     private Object __objectChoice;
     private int __choiceTag = CHOICE_UNDEFINED;

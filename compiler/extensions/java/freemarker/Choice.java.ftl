@@ -274,10 +274,10 @@ ${I}// empty
     </#if>
     }
 </#if>
-
 <#list fieldList as field>
     <@define_field_helper_classes name, field/>
 </#list>
-<@compound_parameter_members compoundParametersData/>
+
+    <@compound_parameter_members compoundParametersData/>
     private Object __objectChoice;
 }

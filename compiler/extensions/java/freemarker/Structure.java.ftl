@@ -289,19 +289,21 @@ ${I}}
     </#if>
     }
 </#if>
-
 <#if hasFieldWithConstraint>
+
     private void __checkConstraints() throws ZserioError
     {
     <#list fieldList as field>
         <@compound_check_constraint_field field, name, 2/>
     </#list>
     }
-
 </#if>
 <#list fieldList as field>
     <@define_field_helper_classes name, field/>
 </#list>
+<#if compoundParametersData.list?has_content || fieldList?has_content>
+
+</#if>
 <@compound_parameter_members compoundParametersData/>
 <#list fieldList as field>
     private ${field.javaTypeName} ${field.name}<#if field.initializer??> = ${field.initializer}</#if>;
