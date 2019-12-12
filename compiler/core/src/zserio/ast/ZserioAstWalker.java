@@ -63,6 +63,12 @@ public class ZserioAstWalker implements ZserioAstVisitor
     }
 
     @Override
+    public void visitBitmaskType(BitmaskType bitmaskType)
+    {
+        bitmaskType.visitChildren(this);
+    }
+
+    @Override
     public void visitSqlTableType(SqlTableType sqlTableType)
     {
         sqlTableType.visitChildren(this);
@@ -108,6 +114,12 @@ public class ZserioAstWalker implements ZserioAstVisitor
     public void visitEnumItem(EnumItem enumItem)
     {
         enumItem.visitChildren(this);
+    }
+
+    @Override
+    public void visitBitmaskValue(BitmaskValue bitmaskValue)
+    {
+        bitmaskValue.visitChildren(this);
     }
 
     @Override

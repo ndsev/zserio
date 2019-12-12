@@ -248,6 +248,9 @@ public class Expression extends AstNodeBase
         /** Expression which result is enumeration type. */
         ENUM,
 
+        /** Expression which result is bitmask type. */
+        BITMASK,
+
         /** Expression which result is compound type. */
         COMPOUND
     };
@@ -818,6 +821,11 @@ public class Expression extends AstNodeBase
             // left operand is enumeration type
             evaluateEnumDotExpression();
         }
+        else if (operand1.zserioType instanceof BitmaskType)
+        {
+            // left operand is bitmask type
+            evaluateBitmaskDotExpression();
+        }
         else if (operand1.zserioType instanceof CompoundType)
         {
             // left operand is compound type
@@ -897,12 +905,31 @@ public class Expression extends AstNodeBase
         final String dotOperand = operand2.text;
         final AstNode enumSymbol = enumScope.getSymbol(dotOperand);
         if (!(enumSymbol instanceof EnumItem))
+        {
             throw new ParserException(this, "'" + dotOperand + "' undefined in enumeration '" +
                     enumType.getName() + "'!");
+        }
 
         operand2.symbolObject = enumSymbol; // this is used by formatters (operand2 was not evaluated)
         symbolObject = enumSymbol;
         evaluateExpressionType(enumType);
+    }
+
+    private void evaluateBitmaskDotExpression()
+    {
+        final BitmaskType bitmaskType = (BitmaskType)(operand1.zserioType);
+        final Scope bitmaskScope = bitmaskType.getScope();
+        final String dotOperand = operand2.text;
+        final AstNode bitmaskSymbol = bitmaskScope.getSymbol(dotOperand);
+        if (!(bitmaskSymbol instanceof BitmaskValue))
+        {
+            throw new ParserException(this, "'" + dotOperand + "' undefined in bitmask '" +
+                    bitmaskType.getName() + "'!");
+        }
+
+        operand2.symbolObject = bitmaskSymbol; // this is used by formatters (operand2 was not evaluated)
+        symbolObject = bitmaskSymbol;
+        evaluateExpressionType(bitmaskType);
     }
 
     private void evaluateCompoundDotExpression()
@@ -947,8 +974,8 @@ public class Expression extends AstNodeBase
 
     private void evaluateValueOfOperator()
     {
-        if (operand1.expressionType != ExpressionType.ENUM)
-            throw new ParserException(operand1, "'" + operand1.text + "' is not an enumeration item!");
+        if (operand1.expressionType != ExpressionType.ENUM && operand1.expressionType != ExpressionType.BITMASK)
+            throw new ParserException(operand1, "'" + operand1.text + "' can be only enumeration or bitmask!");
 
         expressionType = ExpressionType.INTEGER;
         expressionIntegerValue = operand1.expressionIntegerValue;
@@ -993,10 +1020,10 @@ public class Expression extends AstNodeBase
     private void evaluateBitNotExpression()
     {
         final Expression op1 = op1();
-        if (op1.expressionType != ExpressionType.INTEGER)
-            throw new ParserException(this, "Integer expression expected!");
+        if (op1.expressionType != ExpressionType.INTEGER && op1.expressionType != ExpressionType.BITMASK)
+            throw new ParserException(this, "Integer or bitmask expression expected!");
 
-        expressionType = ExpressionType.INTEGER;
+        expressionType = op1.expressionType;
         expressionIntegerValue = op1.expressionIntegerValue.not();
     }
 
@@ -1065,11 +1092,13 @@ public class Expression extends AstNodeBase
 
     private void evaluateBitExpression()
     {
-        if (operand1.expressionType != ExpressionType.INTEGER ||
-                operand2.expressionType != ExpressionType.INTEGER)
-            throw new ParserException(this, "Integer expressions expected!");
+        expressionType = operand1.expressionType;
 
-        expressionType = ExpressionType.INTEGER;
+        if (operand1.expressionType != operand2.expressionType ||
+                (operand1.expressionType != ExpressionType.INTEGER &&
+                operand1.expressionType != ExpressionType.BITMASK))
+            throw new ParserException(this, "Integer or bitmask expressions expected!");
+
         switch (type)
         {
             case ZserioParser.LSHIFT:
@@ -1225,9 +1254,9 @@ public class Expression extends AstNodeBase
         symbolObject = identifierType;
 
         final ZserioType baseType = getBaseType(identifierType);
-        if (baseType instanceof EnumType)
+        if (baseType instanceof EnumType || baseType instanceof BitmaskType)
         {
-            // enumeration type, we must wait for enumeration item and dot
+            // enumeration or bitmask type, we must wait for enumeration item or bitmask value and dot
             zserioType = baseType;
         }
         else
@@ -1272,6 +1301,27 @@ public class Expression extends AstNodeBase
             }
             // if this enumeration item is in own enum, leave it unresolved (we have problem with it because
             // such enumeration items cannot be evaluated yet)
+        }
+        else if (identifierSymbol instanceof BitmaskValue)
+        {
+            // bitmask value
+            // (this can happen for bitmask choices where bitmask is visible or for bitmask itself)
+            final ZserioType scopeOwner = forcedEvaluationScope.getOwner();
+            if (scopeOwner instanceof ChoiceType)
+            {
+                // this bitmaks value is in choice with bitmask type selector
+                final ChoiceType bitmaskChoice = (ChoiceType)scopeOwner;
+                final Expression selectorExpression = bitmaskChoice.getSelectorExpression();
+                final ZserioType selectorExprZserioType = selectorExpression.getExprZserioType();
+                if (selectorExprZserioType instanceof BitmaskType)
+                {
+                    final BitmaskType bitmaskType = (BitmaskType)selectorExprZserioType;
+                    zserioType = bitmaskType;
+                    evaluateExpressionType(bitmaskType);
+                }
+            }
+            // if this bitmask vlaue is in own bitmask, leave it unresolved (we have problem with it because
+            // such bitmask values cannot be evaluated yet)
         }
         else if (identifierSymbol instanceof Constant)
         {
@@ -1326,6 +1376,20 @@ public class Expression extends AstNodeBase
 
                 // set integer value according to this enumeration item
                 expressionIntegerValue = new ExpressionIntegerValue(enumItem.getValue());
+            }
+        }
+        else if (baseType instanceof BitmaskType)
+        {
+            expressionType = ExpressionType.BITMASK;
+            if (symbolObject instanceof BitmaskValue)
+            {
+                // call evaluation explicitly because this bitmask value does not have to be evaluated yet
+                final BitmaskValue bitmaskValue = (BitmaskValue)symbolObject;
+                final ZserioAstEvaluator evaluator = new ZserioAstEvaluator();
+                ((BitmaskType)baseType).accept(evaluator);
+
+                // set integer value according to this bitmask value
+                expressionIntegerValue = new ExpressionIntegerValue(bitmaskValue.getValue());
             }
         }
         else if (baseType instanceof IntegerType)

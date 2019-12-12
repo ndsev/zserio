@@ -145,6 +145,23 @@ public class ZserioAstScopeSetter extends ZserioAstWalker
     }
 
     @Override
+    public void visitBitmaskType(BitmaskType bitmaskType)
+    {
+        currentScope = bitmaskType.getScope();
+
+        bitmaskType.visitChildren(this);
+
+        currentScope = defaultScope;
+    }
+
+    @Override
+    public void visitBitmaskValue(BitmaskValue bitmaskValue)
+    {
+        bitmaskValue.visitChildren(this);
+        currentScope.setSymbol(bitmaskValue.getName(), bitmaskValue);
+    }
+
+    @Override
     public void visitSqlTableType(SqlTableType sqlTableType)
     {
         currentScope = sqlTableType.getScope();

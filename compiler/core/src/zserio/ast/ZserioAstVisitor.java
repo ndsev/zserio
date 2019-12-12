@@ -69,6 +69,13 @@ public interface ZserioAstVisitor
     void visitEnumType(EnumType enumType);
 
     /**
+     * Visits bitmask type declaration.
+     *
+     * @param bitmaskType Bitmask AST node.
+     */
+    void visitBitmaskType(BitmaskType bitmaskType);
+
+    /**
      * Visits SQL table declaration.
      *
      * @param sqlTableType SQL table AST node.
@@ -123,6 +130,13 @@ public interface ZserioAstVisitor
      * @param enumItem Enum item AST node.
      */
     void visitEnumItem(EnumItem enumItem);
+
+    /**
+     * Visits bitmask named value definition.
+     *
+     * @param bitmaskValue Bitmask named value AST node.
+     */
+    void visitBitmaskValue(BitmaskValue bitmaskValue);
 
     /**
      * Visits SQL constraint definition.

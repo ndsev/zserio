@@ -43,16 +43,18 @@ public class ZserioAstEvaluator extends ZserioAstWalker
             final Expression selectorExpression = choiceType.getSelectorExpression();
             selectorExpression.accept(this);
 
-            // extend scope for case expressions to support enumeration values if necessary
+            // extend scope for case expressions to support enumeration items and bitmask values if necessary
             final ZserioType selectorExprZserioType = selectorExpression.getExprZserioType();
-            if (selectorExprZserioType instanceof EnumType)
+            if (selectorExprZserioType instanceof EnumType || selectorExprZserioType instanceof BitmaskType)
             {
-                final Scope enumScope = ((EnumType)selectorExprZserioType).getScope();
+                final Scope additionalScope = ((ZserioScopedType)selectorExprZserioType).getScope();
+                final AddEvaluationScopeVisitor addScopeVisitor =
+                        new AddEvaluationScopeVisitor(additionalScope);
                 for (ChoiceCase choiceCase : choiceType.getChoiceCases())
                 {
                     final List<ChoiceCaseExpression> caseExpressions = choiceCase.getExpressions();
                     for (ChoiceCaseExpression caseExpression : caseExpressions)
-                        caseExpression.getExpression().addEvaluationScope(enumScope);
+                        caseExpression.getExpression().accept(addScopeVisitor);
                 }
             }
 
@@ -85,6 +87,20 @@ public class ZserioAstEvaluator extends ZserioAstWalker
     {
         enumItem.visitChildren(this);
         enumItem.evaluate();
+    }
+
+    @Override
+    public void visitBitmaskType(BitmaskType bitmaskType)
+    {
+        bitmaskType.visitChildren(this);
+        bitmaskType.evaluate();
+    }
+
+    @Override
+    public void visitBitmaskValue(BitmaskValue bitmaskValue)
+    {
+        bitmaskValue.visitChildren(this);
+        bitmaskValue.evaluate();
     }
 
     @Override
@@ -133,6 +149,23 @@ public class ZserioAstEvaluator extends ZserioAstWalker
                 throw new InstantiationException(e, instantiation.getInstantiationReferenceStack());
             }
         }
+    }
+
+    private static final class AddEvaluationScopeVisitor extends ZserioAstWalker
+    {
+        public AddEvaluationScopeVisitor(Scope additionalEvaluationScope)
+        {
+            this.additionalEvaluationScope = additionalEvaluationScope;
+        }
+
+        @Override
+        public void visitExpression(Expression expression)
+        {
+            expression.visitChildren(this);
+            expression.addEvaluationScope(additionalEvaluationScope);
+        }
+
+        private final Scope additionalEvaluationScope;
     }
 
     private final Scope evaluationScope;

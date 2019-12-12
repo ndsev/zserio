@@ -202,7 +202,8 @@ public class ChoiceType extends CompoundType
         final Expression.ExpressionType selectorExpressionType = selectorExpression.getExprType();
         if (selectorExpressionType != Expression.ExpressionType.INTEGER &&
             selectorExpressionType != Expression.ExpressionType.BOOLEAN &&
-            selectorExpressionType != Expression.ExpressionType.ENUM)
+            selectorExpressionType != Expression.ExpressionType.ENUM &&
+            selectorExpressionType != Expression.ExpressionType.BITMASK)
             throw new ParserException(this, "Choice '" + getName() + "' uses forbidden " +
                     selectorExpressionType.name() + " selector!");
     }

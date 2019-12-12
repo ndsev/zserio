@@ -379,6 +379,37 @@ public class ZserioAstBuilder extends ZserioParserBaseVisitor<Object>
     }
 
     @Override
+    public BitmaskType visitBitmaskDeclaration(ZserioParser.BitmaskDeclarationContext ctx)
+    {
+        final AstLocation location = new AstLocation(ctx.id().getStart());
+        final TypeInstantiation typeInstantiation = visitTypeInstantiation(ctx.typeInstantiation());
+        final String name = ctx.id().getText();
+        final List<BitmaskValue> bitmaskValues = new ArrayList<BitmaskValue>();
+        for (ZserioParser.BitmaskValueContext bitmaskValueCtx : ctx.bitmaskValue())
+            bitmaskValues.add(visitBitmaskValue(bitmaskValueCtx));
+
+        final DocComment docComment = docCommentManager.findDocComment(ctx);
+
+        final BitmaskType enumType = new BitmaskType(location, currentPackage, typeInstantiation, name,
+                bitmaskValues, docComment);
+
+        return enumType;
+    }
+
+    @Override
+    public BitmaskValue visitBitmaskValue(ZserioParser.BitmaskValueContext ctx)
+    {
+        final AstLocation location = new AstLocation(ctx.getStart());
+        final String name = ctx.id().getText();
+        final ZserioParser.ExpressionContext exprCtx = ctx.expression();
+        final Expression valueExpression = (exprCtx != null) ? (Expression)visit(exprCtx) : null;
+
+        final DocComment docComment = docCommentManager.findDocComment(ctx);
+
+        return new BitmaskValue(location, name, valueExpression, docComment);
+    }
+
+    @Override
     public SqlTableType visitSqlTableDeclaration(ZserioParser.SqlTableDeclarationContext ctx)
     {
         final AstLocation location = new AstLocation(ctx.id(0).getStart());

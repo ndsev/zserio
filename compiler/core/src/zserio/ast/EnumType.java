@@ -152,8 +152,10 @@ public class EnumType extends DocumentableAstNode implements ZserioScopedType
             final BigInteger upperBound = integerBaseType.getUpperBound(typeInstantiation);
             if (enumItemValue.compareTo(lowerBound) < 0 || enumItemValue.compareTo(upperBound) > 0)
             {
-                throw new ParserException(enumItem.getValueExpression(), "Enumeration item '" +
-                        enumItem.getName() + "' has value (" + enumItemValue + ") out of range <" +
+                final AstLocation location = enumItem.getValueExpression() != null ?
+                        enumItem.getValueExpression().getLocation() : enumItem.getLocation();
+                throw new ParserException(location, "Enumeration item '" + enumItem.getName() +
+                        "' has value (" + enumItemValue + ") out of range <" +
                         lowerBound + "," + upperBound + ">!");
             }
         }
