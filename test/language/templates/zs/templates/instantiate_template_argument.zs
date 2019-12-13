@@ -12,7 +12,7 @@ struct Other<T>
 
 struct InstantiateTemplateArgument
 {
-    // note that Test<string> should be named as Str, therefor the generated name for Other<Test<string>>
+    // note that Test<string> should be named as Str, therefore the generated name for Other<Test<string>>
     // should be Other_Str, not Other_Test_string
     Other<Test<string>> other;
 };

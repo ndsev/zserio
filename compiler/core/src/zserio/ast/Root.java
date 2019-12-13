@@ -16,7 +16,7 @@ public class Root extends AstNodeBase
     /**
      * Constructor.
      *
-     * @param packageNameMap   Map of all available packages.
+     * @param packageNameMap Map of all available packages.
      */
     public Root(LinkedHashMap<PackageName, Package> packageNameMap)
     {

@@ -7,7 +7,6 @@ import java.util.List;
 import java.util.Map;
 
 import zserio.tools.HashUtil;
-import zserio.tools.StringJoinUtil;
 
 /**
  * Implementation of ZserioAstVisitor which handles templates instantiation.
@@ -19,6 +18,13 @@ public class ZserioAstTemplator extends ZserioAstWalker
         this.typeResolver = typeResolver;
     }
 
+    @Override
+    public void visitRoot(Root root)
+    {
+        root.visitChildren(this);
+    }
+
+    @Override
     public void visitPackage(Package pkg)
     {
         currentPackage = pkg;
@@ -60,31 +66,39 @@ public class ZserioAstTemplator extends ZserioAstWalker
         if (!typeReference.getTemplateArguments().isEmpty()) // if is a template instantiation
         {
             final ZserioType type = typeReference.getType();
-            final TemplatableType templatable = (type instanceof TemplatableType) ?
-                    (TemplatableType)type : null;
-            if (templatable != null && templatable.getTemplate() != null)
-                return; // already instantiated
-
-            if (templatable == null || templatable.getTemplateParameters().isEmpty())
+            if (!(type instanceof TemplatableType))
             {
                 throw new InstantiationException(typeReference.getLocation(),
-                        "'" + ZserioTypeUtil.getReferencedFullName(typeReference) + "' is not a template!",
-                        instantiationReferenceStack);
+                        "'" + ZserioTypeUtil.getReferencedFullName(typeReference) +
+                        "' is not a templatable type!", instantiationReferenceStack);
             }
 
-            // instantiate instantiations in template arguments
-            for (TemplateArgument templateArgument : typeReference.getTemplateArguments())
-                templateArgument.accept(this);
+            final TemplatableType templatable = (TemplatableType)type;
 
-            try
+            if (templatable.getTemplate() == null)
             {
-                instantiationReferenceStack.push(typeReference);
-                final ZserioTemplatableType instantiation = instantiate(templatable);
-                typeReference.resolveInstantiation(instantiation);
-            }
-            finally
-            {
-                instantiationReferenceStack.pop();
+                // hasn't instantiated yet
+                if (templatable.getTemplateParameters().isEmpty())
+                {
+                    throw new InstantiationException(typeReference.getLocation(),
+                            "'" + ZserioTypeUtil.getReferencedFullName(typeReference) + "' is not a template!",
+                            instantiationReferenceStack);
+                }
+
+                // template is not instantiated yet => instantiate instantiations in template arguments
+                for (TemplateArgument templateArgument : typeReference.getTemplateArguments())
+                    templateArgument.accept(this);
+
+                try
+                {
+                    instantiationReferenceStack.push(typeReference);
+                    final ZserioTemplatableType instantiation = instantiate(templatable);
+                    typeReference.resolveInstantiation(instantiation);
+                }
+                finally
+                {
+                    instantiationReferenceStack.pop();
+                }
             }
         }
         else
@@ -101,23 +115,54 @@ public class ZserioAstTemplator extends ZserioAstWalker
             final List<TemplateArgument> templateArguments = instantiationReference.getTemplateArguments();
             final InstantiateType instantiateType = currentPackage.getVisibleInstantiateType(template,
                     templateArguments);
-            final Package instantiationPackage = instantiateType != null ?
+            final boolean hasExplicitInstantiation = (instantiateType != null);
+            final Package instantiationPackage = hasExplicitInstantiation ?
                     instantiateType.getPackage() : template.getPackage();
-            final String instantiationName = instantiateType != null ?
-                    instantiateType.getName() : generateInstantiationName(template, templateArguments);
+            final String instantiationShortName = hasExplicitInstantiation ?
+                    instantiateType.getName() : generateShortInstantiationName(template, templateArguments);
+            final String instantiationFullName = generateFullInstantiationName(template, templateArguments);
 
             // try to find previous instantiation first
-            final InstantiationMapKey key = new InstantiationMapKey(
-                    instantiationPackage.getPackageName(), instantiationName);
-            final TemplatableType previousInstantiation = findPreviousInstantiation(
-                    template, templateArguments, key);
-            if (previousInstantiation != null)
-                return previousInstantiation;
+            String instantiationName = instantiationShortName;
+            InstantiationMapKey key = new InstantiationMapKey(instantiationPackage.getPackageName(),
+                    instantiationName);
+            InstantiationMapValue previousValue = instantiationMap.get(key);
+            if (previousValue != null)
+            {
+                // previous instantiation has been found => check full name which is unique
+                if (previousValue.getFullName().equals(instantiationFullName))
+                    return previousValue.getTemplatableType();
+
+                // short instantiation name clash => try hashing
+                if (!previousValue.hasExplicitInstantiation())
+                {
+                    // rename the previous one using hash
+                    final String previousInstantiationName = createHashedShortInstantionName(
+                            instantiationShortName, previousValue.getFullName());
+                    setInstantiationName(previousValue.getTemplatableType(), previousInstantiationName,
+                            previousValue.hasExplicitInstantiation());
+
+                    // check it again with hashed short instantiation name
+                    instantiationName = createHashedShortInstantionName(instantiationShortName,
+                            instantiationFullName);
+                    key = new InstantiationMapKey(instantiationPackage.getPackageName(), instantiationName);
+                    previousValue = instantiationMap.get(key);
+
+                    if (previousValue != null)
+                        throwInstantiationNameClash(template, previousValue.getTemplatableType(),
+                                key.getShortName());
+                }
+            }
 
             // instantiate the template
-            final TemplatableType newInstantiation =
-                    template.instantiate(instantiationReferenceStack, instantiationPackage, instantiationName);
-            instantiationMap.put(key, newInstantiation);
+            final TemplatableType newInstantiation = template.instantiate(instantiationReferenceStack,
+                    instantiationPackage);
+            final InstantiationMapValue value = new InstantiationMapValue(newInstantiation,
+                    instantiationFullName, hasExplicitInstantiation);
+            instantiationMap.put(key, value);
+
+            // resolve instantiation name
+            setInstantiationName(newInstantiation, instantiationName, hasExplicitInstantiation);
 
             // resolve types within the instantiation
             newInstantiation.accept(typeResolver);
@@ -137,116 +182,133 @@ public class ZserioAstTemplator extends ZserioAstWalker
         }
     }
 
-    private String generateInstantiationName(TemplatableType template, List<TemplateArgument> templateArguments)
+    private String generateFullInstantiationName(TemplatableType template,
+            List<TemplateArgument> templateArguments)
+    {
+        return generateInstantiationName(template, templateArguments, false);
+    }
+
+    private String generateShortInstantiationName(TemplatableType template,
+            List<TemplateArgument> templateArguments)
+    {
+        return generateInstantiationName(template, templateArguments, true);
+    }
+
+    private String generateInstantiationName(TemplatableType template, List<TemplateArgument> templateArguments,
+            boolean generateShortName)
     {
         final StringBuilder nameBuilder = new StringBuilder(template.getName());
+        for (TemplateArgument templateArgument : templateArguments)
+        {
+            ZserioType type = templateArgument.getTypeReference().getType();
+            if (type instanceof Subtype)
+            {
+                // resolves subtypes only => template inst must be called after base type or instantiate type
+                type = ((Subtype)type).getBaseTypeReference().getType();
+            }
 
-        appendTemplateArgumentsToName(nameBuilder, templateArguments);
+            if (!generateShortName && !(type instanceof BuiltInType))
+            {
+                final PackageName typePackageName = type.getPackage().getPackageName();
+                if (!typePackageName.isEmpty())
+                {
+                    nameBuilder.append(TEMPLATE_NAME_SEPARATOR);
+                    nameBuilder.append(typePackageName.toString(TEMPLATE_NAME_SEPARATOR));
+                }
+            }
 
-        final String generatedName = nameBuilder.toString();
+            nameBuilder.append(TEMPLATE_NAME_SEPARATOR);
+            nameBuilder.append(type.getName());
+        }
 
-        // check if generated name doesn't clash with a local type
-        final ZserioType localType = template.getPackage().getLocalType(generatedName);
+        if (generateShortName)
+        {
+            // check if generated name is not too long (leave space to append hash in case of clash)
+            final int maxNameLengthWithoutHash = MAX_TEMPLATE_NAME_LENGTH - 8 - 1;
+            if (nameBuilder.length() > maxNameLengthWithoutHash)
+            {
+                nameBuilder.delete(maxNameLengthWithoutHash - 1, nameBuilder.length());
+                nameBuilder.append(TEMPLATE_NAME_SEPARATOR);
+            }
+        }
+
+        return nameBuilder.toString();
+    }
+
+    private void setInstantiationName(TemplatableType template, String instantiationName,
+            boolean hasExplicitInstantiation)
+    {
+        if (!hasExplicitInstantiation)
+            checkInstantiationName(template, instantiationName);
+        template.resolveInstantiationName(instantiationName);
+    }
+
+    private void checkInstantiationName(TemplatableType template, String instantiationName)
+    {
+        final ZserioType localType = template.getPackage().getLocalType(instantiationName);
         if (localType != null)
         {
             final ParserStackedException stackedException = new ParserStackedException(
-                    template.getLocation(),
-                    "'" + generatedName + "' is already defined in package '" +
+                    template.getLocation(), "'" + instantiationName + "' is already defined in package '" +
                     template.getPackage().getPackageName() + "'!");
             stackedException.pushMessage(localType.getLocation(), "    First defined here");
             throw stackedException;
         }
-
-        return generatedName;
     }
 
-    private void appendTemplateArgumentsToName(StringBuilder nameBuilder,
-            List<TemplateArgument> templateArguments)
+    private String createHashedShortInstantionName(String shortInstantiationName, String fullInstantiationName)
     {
-        for (TemplateArgument templateArgument : templateArguments)
-        {
-            nameBuilder.append(TEMPLATE_NAME_SEPARATOR);
-            appendTemplateArgumentToName(nameBuilder, templateArgument);
-        }
+        // calculate our hash code not to depend on Java hashCode implementation (which might differ)
+        int fullNameHash = HashUtil.HASH_SEED;
+        final int textLength = fullInstantiationName.length();
+        for (int i = 0; i < textLength; i++)
+            fullNameHash = HashUtil.hash(fullNameHash, fullInstantiationName.charAt(i));
+
+        // append hash of full name to the short name
+        final String generatedNameHash = String.format("%08X", fullNameHash);
+        final StringBuilder nameBuilder = new StringBuilder(shortInstantiationName);
+        nameBuilder.append(TEMPLATE_NAME_SEPARATOR);
+        nameBuilder.append(generatedNameHash);
+
+        return nameBuilder.toString();
     }
 
-    private void appendTemplateArgumentToName(StringBuilder nameBuilder, TemplateArgument templateArgument)
+    private void throwInstantiationNameClash(TemplatableType template, TemplatableType previousInstantiation,
+        String previousInstantiationName)
     {
-        TypeReference typeReference = templateArgument.getTypeReference();
-        ZserioType type = typeReference.getType();
-        if (type instanceof Subtype)
-        {
-            typeReference = ((Subtype)type).getBaseTypeReference();
-            type = typeReference.getType();
-        }
+        final ParserStackedException stackedException = new ParserStackedException(template.getLocation(),
+                "Instantiation name '" + previousInstantiationName + "' already exits!");
 
-        final StringJoinUtil.Joiner joiner = new StringJoinUtil.Joiner(TEMPLATE_NAME_SEPARATOR);
-        joiner.append(typeReference.getReferencedPackageName().toString(TEMPLATE_NAME_SEPARATOR));
-
-        if (type instanceof TemplatableType && ((TemplatableType)type).getTemplate() != null)
+        final Iterator<TypeReference> descendingIterator =
+                previousInstantiation.getInstantiationReferenceStack().descendingIterator();
+        while (descendingIterator.hasNext())
         {
-            // append instantiation name
-            joiner.append(type.getName());
-            nameBuilder.append(joiner.toString());
-        }
-        else
-        {
-            joiner.append(typeReference.getReferencedTypeName());
-            nameBuilder.append(joiner.toString());
-        }
-    }
-
-    private TemplatableType findPreviousInstantiation(TemplatableType template,
-            List<TemplateArgument> templateArguments, InstantiationMapKey key)
-    {
-        final TemplatableType previousInstantiation = instantiationMap.get(key);
-        if (previousInstantiation != null)
-        {
-            // check that the template arguments fit
-            final String templateFullName = ZserioTypeUtil.getFullName(template);
-            final String prevTemplateFullName = ZserioTypeUtil.getFullName(previousInstantiation.getTemplate());
-            if (!templateFullName.equals(prevTemplateFullName) || !templateArguments.equals(
-                    previousInstantiation.getInstantiationReferenceStack().peek().getTemplateArguments()))
+            final TypeReference prevInstantiationReference = descendingIterator.next();
+            if (descendingIterator.hasNext())
             {
-                final ParserStackedException stackedException = new ParserStackedException(
-                        template.getLocation(),
-                        "Instantiation name '" + key.getName() + "' already exits!");
-
-                final Iterator<TypeReference> descendingIterator =
-                        previousInstantiation.getInstantiationReferenceStack().descendingIterator();
-                while (descendingIterator.hasNext())
-                {
-                    final TypeReference prevInstantiationReference = descendingIterator.next();
-                    if (descendingIterator.hasNext())
-                    {
-                        stackedException.pushMessage(prevInstantiationReference.getLocation(),
-                                "    Required in instantiation of '" +
-                                        prevInstantiationReference.getReferencedTypeName() + "' from here");
-                    }
-                    else
-                    {
-                        final String message = previousInstantiation.getTemplate() == template
-                                ? "    First instantiated here"
-                                : "    First seen in instantiation of '" +
-                                        prevInstantiationReference.getReferencedTypeName() + "' from here";
-                        stackedException.pushMessage(prevInstantiationReference.getLocation(), message);
-                    }
-                }
-                throw stackedException;
+                stackedException.pushMessage(prevInstantiationReference.getLocation(),
+                        "    Required in instantiation of '" +
+                                prevInstantiationReference.getReferencedTypeName() + "' from here");
             }
-
-            return previousInstantiation;
+            else
+            {
+                final String message = previousInstantiation.getTemplate() == template
+                        ? "    First instantiated here"
+                        : "    First seen in instantiation of '" +
+                                prevInstantiationReference.getReferencedTypeName() + "' from here";
+                stackedException.pushMessage(prevInstantiationReference.getLocation(), message);
+            }
         }
 
-        return null;
+        throw stackedException;
     }
 
     private static class InstantiationMapKey
     {
-        public InstantiationMapKey(PackageName packageName, String name)
+        public InstantiationMapKey(PackageName packageName, String shortName)
         {
             this.packageName = packageName;
-            this.name = name;
+            this.shortName = shortName;
         }
 
         @Override
@@ -260,7 +322,7 @@ public class ZserioAstTemplator extends ZserioAstWalker
 
             final InstantiationMapKey otherKey = (InstantiationMapKey)other;
             return packageName.equals(otherKey.packageName) &&
-                    name.equals(otherKey.name);
+                    shortName.equals(otherKey.shortName);
         }
 
         @Override
@@ -268,25 +330,59 @@ public class ZserioAstTemplator extends ZserioAstWalker
         {
             int hash = HashUtil.HASH_SEED;
             hash = HashUtil.hash(hash, packageName);
-            hash = HashUtil.hash(hash, name);
+            hash = HashUtil.hash(hash, shortName);
+
             return hash;
         }
 
-        public String getName()
+        public String getShortName()
         {
-            return name;
+            return shortName;
         }
 
         private final PackageName packageName;
-        private final String name;
+        private final String shortName;
     }
+
+    private static class InstantiationMapValue
+    {
+        public InstantiationMapValue(TemplatableType templatableType, String fullName,
+                boolean hasExplicitInstantiation)
+        {
+            this.templatableType = templatableType;
+            this.fullName = fullName;
+            this.hasExplicitInstantiation = hasExplicitInstantiation;
+        }
+
+        public TemplatableType getTemplatableType()
+        {
+            return templatableType;
+        }
+
+        public String getFullName()
+        {
+            return fullName;
+        }
+
+        public boolean hasExplicitInstantiation()
+        {
+            return hasExplicitInstantiation;
+        }
+
+        private final TemplatableType templatableType;
+        private final String fullName;
+        private final boolean hasExplicitInstantiation;
+    }
+
+    private static final String TEMPLATE_NAME_SEPARATOR = "_";
+    // Common file systems have maximum file name length limited to 255. Besides of that very long names are
+    // real pain for users. We should deal with this somehow.
+    private static final int MAX_TEMPLATE_NAME_LENGTH = 96;
 
     private final ZserioAstTypeResolver typeResolver;
     private final ArrayDeque<TypeReference> instantiationReferenceStack = new ArrayDeque<TypeReference>();
-    private final Map<InstantiationMapKey, TemplatableType> instantiationMap =
-            new HashMap<InstantiationMapKey, TemplatableType>();
-
-    private static final String TEMPLATE_NAME_SEPARATOR = "_";
+    private final Map<InstantiationMapKey, InstantiationMapValue> instantiationMap =
+            new HashMap<InstantiationMapKey, InstantiationMapValue>();
 
     private Package currentPackage = null;
 }

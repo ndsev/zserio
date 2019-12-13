@@ -66,6 +66,7 @@ public class InstantiateType extends AstNodeBase implements ZserioType
             return;
 
         // don't use base type reference since instantiate type can be defined only for a template instantiation
+        // TODO[mikir] subtypes are not resolved, fix it with the TemplateArgument redesign
         final ZserioType type = typeReference.getType();
         if (!(type instanceof TemplatableType) ||
                 ((TemplatableType)type).getTemplateParameters().isEmpty())

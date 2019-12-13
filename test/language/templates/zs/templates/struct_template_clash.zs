@@ -1,4 +1,4 @@
-package instantiation_name_clash_error;
+package templates.struct_template_clash;
 
 struct A_B
 {
@@ -7,7 +7,7 @@ struct A_B
 
 struct B_C
 {
-    uint32 value;
+    string value;
 };
 
 struct A
@@ -17,7 +17,7 @@ struct A
 
 struct C
 {
-    uint32 value;
+    float32 value;
 };
 
 struct Template<T1, T2>

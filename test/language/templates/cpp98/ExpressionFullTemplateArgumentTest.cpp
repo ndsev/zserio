@@ -9,12 +9,12 @@ namespace expression_full_template_argument
 
 TEST(ExpressionFullTemplateArgumentTest, readWrite)
 {
-    FullTemplateArgument_Color colorInternal;
+    FullTemplateArgument_Color_7C6F461F colorInternal;
     colorInternal.setBoolField(false);
     colorInternal.setExpressionField(10);
     ASSERT_TRUE(colorInternal.hasExpressionField());
 
-    FullTemplateArgument_templates_expression_full_template_argument_color_Color colorExternal;
+    FullTemplateArgument_Color_6066EE71 colorExternal;
     colorExternal.setBoolField(false);
     colorExternal.setExpressionField(10);
     ASSERT_FALSE(colorExternal.hasExpressionField());

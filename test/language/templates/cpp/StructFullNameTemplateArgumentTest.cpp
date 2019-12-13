@@ -11,9 +11,9 @@ TEST(StructFullNameTemplateArgumentTest, readWrite)
 {
     StructFullNameTemplateArgument structFullNameTemplateArgument;
     structFullNameTemplateArgument.setStructExternal(
-            TemplatedStruct_templates_struct_full_name_template_argument_storage_Storage{storage::Storage{42}});
+            TemplatedStruct_Storage_08C0ED6D{storage::Storage{42}});
     structFullNameTemplateArgument.setStructInternal(
-            TemplatedStruct_Storage{Storage{std::string{"string"}}});
+            TemplatedStruct_Storage_A3A4B101{Storage{std::string{"string"}}});
 
     zserio::BitStreamWriter writer;
     structFullNameTemplateArgument.write(writer);

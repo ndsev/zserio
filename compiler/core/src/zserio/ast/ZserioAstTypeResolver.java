@@ -96,5 +96,5 @@ public class ZserioAstTypeResolver extends ZserioAstWalker
             templatableType.visitChildren(this);
     }
 
-    private List<Subtype> subtypesOnStack = new ArrayList<Subtype>();
+    private final List<Subtype> subtypesOnStack = new ArrayList<Subtype>();
 }

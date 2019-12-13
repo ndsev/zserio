@@ -132,8 +132,7 @@ public class ChoiceType extends CompoundType
     }
 
     @Override
-    ChoiceType instantiateImpl(String name, List<TemplateArgument> templateArguments,
-            Package instantiationPackage)
+    ChoiceType instantiateImpl(List<TemplateArgument> templateArguments, Package instantiationPackage)
     {
         final List<Parameter> instantiatedTypeParameters = new ArrayList<Parameter>();
         for (Parameter typeParameter : getTypeParameters())
@@ -156,9 +155,9 @@ public class ChoiceType extends CompoundType
         for (Function function : getFunctions())
             instantiatedFunctions.add(function.instantiate(getTemplateParameters(), templateArguments));
 
-        return new ChoiceType(getLocation(), instantiationPackage, name, new ArrayList<TemplateParameter>(),
-                instantiatedTypeParameters, instantiatedSelectorExpression, instantiatedChoiceCases,
-                instantiatedChoiceDefault, instantiatedFunctions, getDocComment());
+        return new ChoiceType(getLocation(), instantiationPackage, getName(),
+                new ArrayList<TemplateParameter>(), instantiatedTypeParameters, instantiatedSelectorExpression,
+                instantiatedChoiceCases, instantiatedChoiceDefault, instantiatedFunctions, getDocComment());
     }
 
     @Override

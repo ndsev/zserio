@@ -58,16 +58,22 @@ abstract class TemplatableType extends DocumentableAstNode implements ZserioTemp
         return instantiationReferenceStack.clone();
     }
 
+    @Override
+    public String getInstantiationName()
+    {
+        return instantiationName;
+    }
+
     /**
      * Instantiates the referenced template using the given instantiation reference.
      *
-     * @param instantiationReference Instantiation reference.
-     * @param instantiateType        Explicit request for instantiation. Can be null.
+     * @param instantiationReferenceStack Stack of instantiations leading to this instantiation.
+     * @param instantiationPackage        Package where the template should be instantiated.
      *
      * @return Instantiated template.
      */
     TemplatableType instantiate(ArrayDeque<TypeReference> instantiationReferenceStack,
-            Package instantiationPackage, String instantiationName)
+            Package instantiationPackage)
     {
         final TypeReference instantiationReference = instantiationReferenceStack.peek();
         final List<TemplateArgument> templateArguments = instantiationReference.getTemplateArguments();
@@ -78,8 +84,7 @@ abstract class TemplatableType extends DocumentableAstNode implements ZserioTemp
                     templateParameters.size() + ", got " + templateArguments.size() + "!");
         }
 
-        TemplatableType instantiation = instantiateImpl(instantiationName, templateArguments,
-                instantiationPackage);
+        TemplatableType instantiation = instantiateImpl(templateArguments, instantiationPackage);
         instantiation.instantiationReferenceStack = instantiationReferenceStack.clone();
         instantiation.template = this;
         instantiations.add(instantiation);
@@ -87,17 +92,27 @@ abstract class TemplatableType extends DocumentableAstNode implements ZserioTemp
     }
 
     /**
+     * Sets the unique name in the package for the instantiation.
+     *
+     * @param instantiationName Instantiation name unique in the package where template is located.
+     */
+    void resolveInstantiationName(String instantiationName)
+    {
+        this.instantiationName = instantiationName;
+    }
+
+    /**
      * Concrete implementation of template instantiation.
      *
-     * @param name                 Name to use as instantiation name.
      * @param templateArguments    Actual template parameters.
      * @parma instantiationPackage Package where to instantiate the template.
      */
-    abstract TemplatableType instantiateImpl(String name, List<TemplateArgument> templateArguments,
+    abstract TemplatableType instantiateImpl(List<TemplateArgument> templateArguments,
             Package instantiationPackage);
 
     private final List<TemplateParameter> templateParameters;
     private final List<ZserioTemplatableType> instantiations = new ArrayList<ZserioTemplatableType>();
     private ArrayDeque<TypeReference> instantiationReferenceStack = null;
     private TemplatableType template = null;
+    private String instantiationName = null;
 }

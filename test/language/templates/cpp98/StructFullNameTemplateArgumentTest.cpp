@@ -10,10 +10,9 @@ namespace struct_full_name_template_argument
 TEST(StructFullNameTemplateArgumentTest, readWrite)
 {
     StructFullNameTemplateArgument structFullNameTemplateArgument;
-    TemplatedStruct_templates_struct_full_name_template_argument_storage_Storage& externalStruct =
-            structFullNameTemplateArgument.getStructExternal();
+    TemplatedStruct_Storage_08C0ED6D& externalStruct = structFullNameTemplateArgument.getStructExternal();
     externalStruct.getStorage().setData(42);
-    TemplatedStruct_Storage& internalStruct = structFullNameTemplateArgument.getStructInternal();
+    TemplatedStruct_Storage_A3A4B101& internalStruct = structFullNameTemplateArgument.getStructInternal();
     internalStruct.getStorage().setData("string");
 
     zserio::BitStreamWriter writer;

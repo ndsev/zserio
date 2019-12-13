@@ -49,11 +49,12 @@ set(ZSERIO_GENERATED_SOURCES
     ${ZSERIO_GEN_DIR}/templates/expression_full_template_argument/color/Color.h
     ${ZSERIO_GEN_DIR}/templates/expression_full_template_argument/Color.cpp
     ${ZSERIO_GEN_DIR}/templates/expression_full_template_argument/Color.h
-    ${ZSERIO_GEN_DIR}/templates/expression_full_template_argument/FullTemplateArgument_Color.cpp
-    ${ZSERIO_GEN_DIR}/templates/expression_full_template_argument/FullTemplateArgument_Color.h
+    ${ZSERIO_GEN_DIR}/templates/expression_full_template_argument/FullTemplateArgument_Color_7C6F461F.cpp
+    ${ZSERIO_GEN_DIR}/templates/expression_full_template_argument/FullTemplateArgument_Color_7C6F461F.h
+    ${ZSERIO_GEN_DIR}/templates/expression_full_template_argument/FullTemplateArgument_Color_6066EE71.cpp
+    ${ZSERIO_GEN_DIR}/templates/expression_full_template_argument/FullTemplateArgument_Color_6066EE71.h
     ${ZSERIO_GEN_DIR}/templates/expression_full_template_argument/FullTemplateArgumentHolder.cpp
-    ${ZSERIO_GEN_DIR}/templates/expression_full_template_argument/FullTemplateArgument_templates_expression_full_template_argument_color_Color.cpp
-    ${ZSERIO_GEN_DIR}/templates/expression_full_template_argument/FullTemplateArgument_templates_expression_full_template_argument_color_Color.h
+    ${ZSERIO_GEN_DIR}/templates/expression_full_template_argument/FullTemplateArgumentHolder.h
 
     ${ZSERIO_GEN_DIR}/templates/instantiate_imported/pkg
     ${ZSERIO_GEN_DIR}/templates/instantiate_imported/Test_string.cpp
@@ -199,16 +200,43 @@ set(ZSERIO_GENERATED_SOURCES
     ${ZSERIO_GEN_DIR}/templates/sql_table_templated_field/Data_uint32.cpp
     ${ZSERIO_GEN_DIR}/templates/sql_table_templated_field/Data_uint32.h
 
+    ${ZSERIO_GEN_DIR}/templates/struct_full_and_short_template_argument/templated_struct/Storage.cpp
+    ${ZSERIO_GEN_DIR}/templates/struct_full_and_short_template_argument/templated_struct/Storage.h
+    ${ZSERIO_GEN_DIR}/templates/struct_full_and_short_template_argument/templated_struct/StructShortNameTemplateArgument.cpp
+    ${ZSERIO_GEN_DIR}/templates/struct_full_and_short_template_argument/templated_struct/StructShortNameTemplateArgument.h
+    ${ZSERIO_GEN_DIR}/templates/struct_full_and_short_template_argument/templated_struct/TemplatedStruct_Storage.cpp
+    ${ZSERIO_GEN_DIR}/templates/struct_full_and_short_template_argument/templated_struct/TemplatedStruct_Storage.h
+    ${ZSERIO_GEN_DIR}/templates/struct_full_and_short_template_argument/StructFullNameTemplateArgument.cpp
+    ${ZSERIO_GEN_DIR}/templates/struct_full_and_short_template_argument/StructFullNameTemplateArgument.h
+
     ${ZSERIO_GEN_DIR}/templates/struct_full_name_template_argument/storage/Storage.cpp
     ${ZSERIO_GEN_DIR}/templates/struct_full_name_template_argument/storage/Storage.h
-    ${ZSERIO_GEN_DIR}/templates/struct_full_name_template_argument/TemplatedStruct_templates_struct_full_name_template_argument_storage_Storage.cpp
-    ${ZSERIO_GEN_DIR}/templates/struct_full_name_template_argument/TemplatedStruct_templates_struct_full_name_template_argument_storage_Storage.h
-    ${ZSERIO_GEN_DIR}/templates/struct_full_name_template_argument/TemplatedStruct_Storage.cpp
-    ${ZSERIO_GEN_DIR}/templates/struct_full_name_template_argument/TemplatedStruct_Storage.h
-    ${ZSERIO_GEN_DIR}/templates/struct_full_name_template_argument/StructFullNameTemplateArgument.cpp
-    ${ZSERIO_GEN_DIR}/templates/struct_full_name_template_argument/StructFullNameTemplateArgument.h
     ${ZSERIO_GEN_DIR}/templates/struct_full_name_template_argument/Storage.cpp
     ${ZSERIO_GEN_DIR}/templates/struct_full_name_template_argument/Storage.h
+    ${ZSERIO_GEN_DIR}/templates/struct_full_name_template_argument/StructFullNameTemplateArgument.cpp
+    ${ZSERIO_GEN_DIR}/templates/struct_full_name_template_argument/StructFullNameTemplateArgument.h
+    ${ZSERIO_GEN_DIR}/templates/struct_full_name_template_argument/TemplatedStruct_Storage_08C0ED6D.cpp
+    ${ZSERIO_GEN_DIR}/templates/struct_full_name_template_argument/TemplatedStruct_Storage_08C0ED6D.h
+    ${ZSERIO_GEN_DIR}/templates/struct_full_name_template_argument/TemplatedStruct_Storage_A3A4B101.cpp
+    ${ZSERIO_GEN_DIR}/templates/struct_full_name_template_argument/TemplatedStruct_Storage_A3A4B101.h
+
+    ${ZSERIO_GEN_DIR}/templates/struct_long_template_argument/StructLongTemplateArgument.cpp
+    ${ZSERIO_GEN_DIR}/templates/struct_long_template_argument/StructLongTemplateArgument.h
+    ${ZSERIO_GEN_DIR}/templates/struct_long_template_argument/TemplatedStruct_ThisIsVeryVeryVeryLongNamedStructure_ThisIsVeryVeryVeryLongNamedStruct_.cpp
+    ${ZSERIO_GEN_DIR}/templates/struct_long_template_argument/TemplatedStruct_ThisIsVeryVeryVeryLongNamedStructure_ThisIsVeryVeryVeryLongNamedStruct_.h
+    ${ZSERIO_GEN_DIR}/templates/struct_long_template_argument/ThisIsVeryVeryVeryLongNamedStructure.cpp
+    ${ZSERIO_GEN_DIR}/templates/struct_long_template_argument/ThisIsVeryVeryVeryLongNamedStructure.h
+
+    ${ZSERIO_GEN_DIR}/templates/struct_long_template_argument_clash/StructLongTemplateArgumentClash.cpp
+    ${ZSERIO_GEN_DIR}/templates/struct_long_template_argument_clash/StructLongTemplateArgumentClash.h
+    ${ZSERIO_GEN_DIR}/templates/struct_long_template_argument_clash/TemplatedStruct_ThisIsVeryVeryVeryLongNamedStructure_ThisIsVeryVeryVeryLongNamedStruct__1B45EF08.cpp
+    ${ZSERIO_GEN_DIR}/templates/struct_long_template_argument_clash/TemplatedStruct_ThisIsVeryVeryVeryLongNamedStructure_ThisIsVeryVeryVeryLongNamedStruct__1B45EF08.h
+    ${ZSERIO_GEN_DIR}/templates/struct_long_template_argument_clash/TemplatedStruct_ThisIsVeryVeryVeryLongNamedStructure_ThisIsVeryVeryVeryLongNamedStruct__619A1B35.cpp
+    ${ZSERIO_GEN_DIR}/templates/struct_long_template_argument_clash/TemplatedStruct_ThisIsVeryVeryVeryLongNamedStructure_ThisIsVeryVeryVeryLongNamedStruct__619A1B35.h
+    ${ZSERIO_GEN_DIR}/templates/struct_long_template_argument_clash/ThisIsVeryVeryVeryLongNamedStructure.cpp
+    ${ZSERIO_GEN_DIR}/templates/struct_long_template_argument_clash/ThisIsVeryVeryVeryLongNamedStructure.h
+    ${ZSERIO_GEN_DIR}/templates/struct_long_template_argument_clash/ThisIsVeryVeryVeryLongNamedStructure_.cpp
+    ${ZSERIO_GEN_DIR}/templates/struct_long_template_argument_clash/ThisIsVeryVeryVeryLongNamedStructure_.h
 
     ${ZSERIO_GEN_DIR}/templates/struct_recursive_template/StructRecursiveTemplate.cpp
     ${ZSERIO_GEN_DIR}/templates/struct_recursive_template/StructRecursiveTemplate.h
@@ -222,6 +250,45 @@ set(ZSERIO_GENERATED_SOURCES
     ${ZSERIO_GEN_DIR}/templates/struct_recursive_template/Compound_Compound_string.h
     ${ZSERIO_GEN_DIR}/templates/struct_recursive_template/Compound_Compound_Compound_string.cpp
     ${ZSERIO_GEN_DIR}/templates/struct_recursive_template/Compound_Compound_Compound_string.h
+
+    ${ZSERIO_GEN_DIR}/templates/struct_template_clash/A.cpp
+    ${ZSERIO_GEN_DIR}/templates/struct_template_clash/A.h
+    ${ZSERIO_GEN_DIR}/templates/struct_template_clash/A_B.cpp
+    ${ZSERIO_GEN_DIR}/templates/struct_template_clash/A_B.h
+    ${ZSERIO_GEN_DIR}/templates/struct_template_clash/B_C.cpp
+    ${ZSERIO_GEN_DIR}/templates/struct_template_clash/B_C.h
+    ${ZSERIO_GEN_DIR}/templates/struct_template_clash/C.cpp
+    ${ZSERIO_GEN_DIR}/templates/struct_template_clash/C.h
+    ${ZSERIO_GEN_DIR}/templates/struct_template_clash/InstantiationNameClash.cpp
+    ${ZSERIO_GEN_DIR}/templates/struct_template_clash/InstantiationNameClash.h
+    ${ZSERIO_GEN_DIR}/templates/struct_template_clash/Template_A_B_C_5EB4E3FC.cpp
+    ${ZSERIO_GEN_DIR}/templates/struct_template_clash/Template_A_B_C_5EB4E3FC.h
+    ${ZSERIO_GEN_DIR}/templates/struct_template_clash/Template_A_B_C_7FE93D34.cpp
+    ${ZSERIO_GEN_DIR}/templates/struct_template_clash/Template_A_B_C_7FE93D34.h
+    ${ZSERIO_GEN_DIR}/templates/struct_template_clash/TestStruct_uint32.cpp
+    ${ZSERIO_GEN_DIR}/templates/struct_template_clash/TestStruct_uint32.h
+
+    ${ZSERIO_GEN_DIR}/templates/struct_template_clash_across_packages/pkg1/InstantiationInPkg1.cpp
+    ${ZSERIO_GEN_DIR}/templates/struct_template_clash_across_packages/pkg1/InstantiationInPkg1.h
+    ${ZSERIO_GEN_DIR}/templates/struct_template_clash_across_packages/pkg1/Test.cpp
+    ${ZSERIO_GEN_DIR}/templates/struct_template_clash_across_packages/pkg1/Test.h
+    ${ZSERIO_GEN_DIR}/templates/struct_template_clash_across_packages/pkg2/InstantiationInPkg2.cpp
+    ${ZSERIO_GEN_DIR}/templates/struct_template_clash_across_packages/pkg2/InstantiationInPkg2.h
+    ${ZSERIO_GEN_DIR}/templates/struct_template_clash_across_packages/pkg2/Test.cpp
+    ${ZSERIO_GEN_DIR}/templates/struct_template_clash_across_packages/pkg2/Test.h
+    ${ZSERIO_GEN_DIR}/templates/struct_template_clash_across_packages/test_struct/TestStruct_Test_67B82BA5.cpp
+    ${ZSERIO_GEN_DIR}/templates/struct_template_clash_across_packages/test_struct/TestStruct_Test_67B82BA5.h
+    ${ZSERIO_GEN_DIR}/templates/struct_template_clash_across_packages/test_struct/TestStruct_Test_639610D0.cpp
+    ${ZSERIO_GEN_DIR}/templates/struct_template_clash_across_packages/test_struct/TestStruct_Test_639610D0.h
+
+    ${ZSERIO_GEN_DIR}/templates/struct_template_clash_other_template/A_uint32.cpp
+    ${ZSERIO_GEN_DIR}/templates/struct_template_clash_other_template/A_uint32.h
+    ${ZSERIO_GEN_DIR}/templates/struct_template_clash_other_template/InstantiationNameClashOtherTemplate.cpp
+    ${ZSERIO_GEN_DIR}/templates/struct_template_clash_other_template/InstantiationNameClashOtherTemplate.h
+    ${ZSERIO_GEN_DIR}/templates/struct_template_clash_other_template/Test_A_uint32_5D68B0C2.cpp
+    ${ZSERIO_GEN_DIR}/templates/struct_template_clash_other_template/Test_A_uint32_5D68B0C2.h
+    ${ZSERIO_GEN_DIR}/templates/struct_template_clash_other_template/Test_A_uint32_FA82A3B7.cpp
+    ${ZSERIO_GEN_DIR}/templates/struct_template_clash_other_template/Test_A_uint32_FA82A3B7.h
 
     ${ZSERIO_GEN_DIR}/templates/struct_templated_field/StructTemplatedField.cpp
     ${ZSERIO_GEN_DIR}/templates/struct_templated_field/StructTemplatedField.h
@@ -359,8 +426,14 @@ add_test_sources(
     ${ZSERIO_CPP_DIR}/InstantiateVsDefaultTest.cpp
     ${ZSERIO_CPP_DIR}/FunctionTemplatedReturnTypeTest.cpp
     ${ZSERIO_CPP_DIR}/SqlTableTemplatedFieldTest.cpp
+    ${ZSERIO_CPP_DIR}/StructFullAndShortTemplateArgumentTest.cpp
     ${ZSERIO_CPP_DIR}/StructFullNameTemplateArgumentTest.cpp
+    ${ZSERIO_CPP_DIR}/StructLongTemplateArgumentTest.cpp
+    ${ZSERIO_CPP_DIR}/StructLongTemplateArgumentClashTest.cpp
     ${ZSERIO_CPP_DIR}/StructRecursiveTemplateTest.cpp
+    ${ZSERIO_CPP_DIR}/StructTemplateClashTest.cpp
+    ${ZSERIO_CPP_DIR}/StructTemplateClashAcrossPackagesTest.cpp
+    ${ZSERIO_CPP_DIR}/StructTemplateClashOtherTemplateTest.cpp
     ${ZSERIO_CPP_DIR}/StructTemplatedFieldTest.cpp
     ${ZSERIO_CPP_DIR}/StructTemplatedTemplateArgumentTest.cpp
     ${ZSERIO_CPP_DIR}/StructTemplatedTypeArgumentTest.cpp

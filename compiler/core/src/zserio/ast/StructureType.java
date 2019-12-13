@@ -41,8 +41,7 @@ public class StructureType extends CompoundType
     }
 
     @Override
-    StructureType instantiateImpl(String name, List<TemplateArgument> templateArguments,
-            Package instantiationPackage)
+    StructureType instantiateImpl(List<TemplateArgument> templateArguments, Package instantiationPackage)
     {
         final List<Parameter> instantiatedTypeParameters = new ArrayList<Parameter>();
         for (Parameter typeParameter : getTypeParameters())
@@ -59,8 +58,9 @@ public class StructureType extends CompoundType
         for (Function function : getFunctions())
             instantiatedFunctions.add(function.instantiate(getTemplateParameters(), templateArguments));
 
-        return new StructureType(getLocation(), instantiationPackage, name, new ArrayList<TemplateParameter>(),
-                instantiatedTypeParameters, instantiatedFields, instantiatedFunctions, getDocComment());
+        return new StructureType(getLocation(), instantiationPackage, getName(),
+                new ArrayList<TemplateParameter>(), instantiatedTypeParameters, instantiatedFields,
+                instantiatedFunctions, getDocComment());
     }
 
     @Override

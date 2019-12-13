@@ -9,9 +9,9 @@ namespace expression_full_template_argument
 
 TEST(ExpressionFullTemplateArgumentTest, readWrite)
 {
-    const FullTemplateArgument_Color colorInternal(false, 10);
+    const FullTemplateArgument_Color_7C6F461F colorInternal(false, 10);
     ASSERT_TRUE(colorInternal.hasExpressionField());
-    const FullTemplateArgument_templates_expression_full_template_argument_color_Color colorExternal(false, 10);
+    const FullTemplateArgument_Color_6066EE71 colorExternal(false, 10);
     ASSERT_FALSE(colorExternal.hasExpressionField());
 
     FullTemplateArgumentHolder fullTemplateArgumentHolder(colorInternal, colorExternal);

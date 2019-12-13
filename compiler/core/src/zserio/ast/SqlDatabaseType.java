@@ -51,8 +51,7 @@ public class SqlDatabaseType extends CompoundType
     }
 
     @Override
-    SqlDatabaseType instantiateImpl(String name, List<TemplateArgument> templateArguments,
-            Package instantiationPackage)
+    SqlDatabaseType instantiateImpl(List<TemplateArgument> templateArguments, Package instantiationPackage)
     {
         throw new InternalError("SqlDatabaseType is not templatable!");
     }

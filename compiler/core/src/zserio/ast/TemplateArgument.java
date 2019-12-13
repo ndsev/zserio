@@ -44,6 +44,7 @@ public class TemplateArgument extends AstNodeBase
         return typeReference;
     }
 
+    // TODO[mikir] This should be sorted out because here it shouldn't be solved typeReference equality.
     @Override
     public boolean equals(Object other)
     {
@@ -55,33 +56,27 @@ public class TemplateArgument extends AstNodeBase
 
         final TemplateArgument otherArgument = (TemplateArgument)other;
 
-        final PackageName packageName = referencedBaseType instanceof BuiltInType ?
-                PackageName.EMPTY : referencedBaseType.getPackage().getPackageName();
+        final String referencedBaseTypeFullName = ZserioTypeUtil.getFullName(referencedBaseType);
+        final String otherReferencedBaseTypeFullName =
+                ZserioTypeUtil.getFullName(otherArgument.referencedBaseType);
 
-        final ZserioType otherBaseType = otherArgument.referencedBaseType;
-        final PackageName otherPackageName = otherBaseType instanceof BuiltInType ?
-                PackageName.EMPTY : otherBaseType.getPackage().getPackageName();
-
-        return packageName.equals(otherPackageName) &&
-                referencedBaseType.getName().equals(otherBaseType.getName()) &&
+        return referencedBaseTypeFullName.equals(otherReferencedBaseTypeFullName) &&
                 typeReference.getTemplateArguments().equals(otherArgument.typeReference.getTemplateArguments());
     }
 
     @Override
     public int hashCode()
     {
-        final PackageName packageName = referencedBaseType instanceof BuiltInType ?
-                PackageName.EMPTY : referencedBaseType.getPackage().getPackageName();
-
         int hash = HashUtil.HASH_SEED;
-        hash = HashUtil.hash(hash, packageName);
-        hash = HashUtil.hash(hash, referencedBaseType.getName());
-        hash = HashUtil.hash(hash, typeReference.getTemplateArguments());
+        hash = HashUtil.hash(hash, ZserioTypeUtil.getFullName(referencedBaseType));
+        for (TemplateArgument templateArgument : typeReference.getTemplateArguments())
+            hash = HashUtil.hash(hash, templateArgument);
+
         return hash;
     }
 
     /**
-     * Instantiate the type reference.
+     * Instantiates the type argument.
      *
      * @param templateParameters Template parameters.
      * @param templateArguments Template arguments.
@@ -107,6 +102,9 @@ public class TemplateArgument extends AstNodeBase
 
         // We need to "remember" the referenced base type because in case the argument is a template
         // instantiation, the type reference will be resolved further during the template instantiation.
+        // TODO[mikir] This is needed only because of getVisibleInstantiateType, should be done somehow better.
+        // One possible solution can be to move this logic to InstantiateType. This type should store original
+        // referecies.
         referencedBaseType = typeReference.getBaseTypeReference().getType();
         isResolved = true;
     }

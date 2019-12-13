@@ -10,10 +10,8 @@ class StructFullNameTemplateArgumentTest(unittest.TestCase):
 
     def testReadWrite(self):
         structFullNameTemplateArgument = self.api.StructFullNameTemplateArgument.fromFields(
-            self.api.TemplatedStruct_templates_struct_full_name_template_argument_storage_Storage.fromFields(
-                self.api.storage.Storage.fromFields(42)
-            ),
-            self.api.TemplatedStruct_Storage.fromFields(self.api.Storage.fromFields("string"))
+            self.api.TemplatedStruct_Storage_08C0ED6D.fromFields(self.api.storage.Storage.fromFields(42)),
+            self.api.TemplatedStruct_Storage_A3A4B101.fromFields(self.api.Storage.fromFields("string"))
         )
 
         writer = zserio.BitStreamWriter()

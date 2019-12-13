@@ -20,8 +20,8 @@ uninitMemberVar:*/choice_templated_selector/TemplatedChoice_uint32_Shift32.cpp
 uninitMemberVar:*/choice_templated_selector/TemplatedChoice_uint32_Shift32.h
 uninitMemberVar:*/expression_enum_template_argument_conflict/EnumTemplateArgumentConflict_Letters.cpp
 uninitMemberVar:*/expression_enum_template_argument/EnumTemplateArgument_Color.cpp
-uninitMemberVar:*/expression_full_template_argument/FullTemplateArgument_Color.cpp
-uninitMemberVar:*/expression_full_template_argument/FullTemplateArgument_templates_expression_full_template_argument_color_Color.cpp
+uninitMemberVar:*/expression_full_template_argument/FullTemplateArgument_Color_6066EE71.cpp
+uninitMemberVar:*/expression_full_template_argument/FullTemplateArgument_Color_7C6F461F.cpp
 uninitMemberVar:*/function_templated_return_type/FunctionTemplatedReturnType.cpp
 uninitMemberVar:*/function_templated_return_type/FunctionTemplatedReturnType.h
 uninitMemberVar:*/function_templated_return_type/Holder_float32.cpp
@@ -62,6 +62,14 @@ uninitMemberVar:*/sql_table_templated_field/Data_uint32.cpp
 uninitMemberVar:*/sql_table_templated_field/Union.cpp
 uninitMemberVar:*/struct_full_name_template_argument/storage/Storage.cpp
 uninitMemberVar:*/struct_recursive_template/Compound_uint32.cpp
+uninitMemberVar:*/struct_long_template_argument_clash/ThisIsVeryVeryVeryLongNamedStructure_.cpp
+uninitMemberVar:*/struct_template_clash/A.cpp
+uninitMemberVar:*/struct_template_clash/A_B.cpp
+uninitMemberVar:*/struct_template_clash/C.cpp
+uninitMemberVar:*/struct_template_clash/TestStruct_uint32.cpp
+uninitMemberVar:*/struct_template_clash_across_packages/pkg1/Test.cpp
+uninitMemberVar:*/struct_template_clash_other_template/A_uint32.cpp
+uninitMemberVar:*/struct_template_clash_other_template/Test_A_uint32_FA82A3B7.cpp
 uninitMemberVar:*/struct_template_in_template/Compound_uint32.cpp
 uninitMemberVar:*/struct_templated_field/Compound.cpp
 uninitMemberVar:*/struct_templated_field/Field_uint32.cpp
@@ -81,4 +89,3 @@ uninitMemberVar:*/union_templated_field/Compound_uint32.cpp
 uninitMemberVar:*/union_templated_field/TemplatedUnion_Compound_uint16_Compound_uint32.cpp
 uninitMemberVar:*/union_templated_field/TemplatedUnion_float32_float64.cpp
 uninitMemberVar:*/union_templated_field/TemplatedUnion_uint16_uint32.cpp
-

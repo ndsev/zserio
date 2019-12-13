@@ -58,15 +58,15 @@ public class SqlTableType extends CompoundType
     }
 
     @Override
-    SqlTableType instantiateImpl(String name, List<TemplateArgument> templateArguments,
-            Package instantiationPackage)
+    SqlTableType instantiateImpl(List<TemplateArgument> templateArguments, Package instantiationPackage)
     {
         final List<Field> instantiatedFields = new ArrayList<Field>();
         for (Field field : getFields())
             instantiatedFields.add(field.instantiate(getTemplateParameters(), templateArguments));
 
-        return new SqlTableType(getLocation(), instantiationPackage, name, new ArrayList<TemplateParameter>(),
-                sqlUsingId, instantiatedFields, getSqlConstraint(), isWithoutRowId(), getDocComment());
+        return new SqlTableType(getLocation(), instantiationPackage, getName(),
+                new ArrayList<TemplateParameter>(), sqlUsingId, instantiatedFields, getSqlConstraint(),
+                isWithoutRowId(), getDocComment());
     }
 
     /**

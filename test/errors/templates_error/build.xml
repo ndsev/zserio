@@ -35,11 +35,6 @@
                 ignoreErrors="true"/>
         <testGen testName="templates_error" zsFile="instantiate_type_is_sql_table_error.zs"
                 ignoreErrors="true"/>
-        <testGen testName="templates_error" zsFile="instantiation_name_clash_across_packages_error.zs"
-                ignoreErrors="true"/>
-        <testGen testName="templates_error" zsFile="instantiation_name_clash_error.zs" ignoreErrors="true"/>
-        <testGen testName="templates_error" zsFile="instantiation_name_clash_other_template_error.zs"
-                ignoreErrors="true"/>
         <testGen testName="templates_error" zsFile="instantiation_name_clash_with_type_error.zs"
                 ignoreErrors="true"/>
         <testGen testName="templates_error" zsFile="instantiation_via_subtype_error.zs" ignoreErrors="true"/>

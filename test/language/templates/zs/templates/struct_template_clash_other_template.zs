@@ -1,4 +1,4 @@
-package instantiation_name_clash_other_template_error;
+package templates.struct_template_clash_other_template;
 
 struct Test_A<T>
 {

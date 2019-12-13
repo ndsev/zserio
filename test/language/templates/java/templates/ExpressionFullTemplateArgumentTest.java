@@ -15,20 +15,20 @@ import zserio.runtime.io.FileBitStreamReader;
 import zserio.runtime.io.FileBitStreamWriter;
 
 import templates.expression_full_template_argument.FullTemplateArgumentHolder;
-import templates.expression_full_template_argument.FullTemplateArgument_Color;
-import templates.expression_full_template_argument.
-        FullTemplateArgument_templates_expression_full_template_argument_color_Color;
+import templates.expression_full_template_argument.FullTemplateArgument_Color_7C6F461F;
+import templates.expression_full_template_argument.FullTemplateArgument_Color_6066EE71;
 
 public class ExpressionFullTemplateArgumentTest
 {
     @Test
     public void readWrite() throws IOException
     {
-        final FullTemplateArgument_Color colorInternal = new FullTemplateArgument_Color(false, 10);
+        final FullTemplateArgument_Color_7C6F461F colorInternal =
+                new FullTemplateArgument_Color_7C6F461F(false, 10);
         assertTrue(colorInternal.hasExpressionField());
 
-        final FullTemplateArgument_templates_expression_full_template_argument_color_Color colorExternal =
-                new FullTemplateArgument_templates_expression_full_template_argument_color_Color(false, 10);
+        final FullTemplateArgument_Color_6066EE71 colorExternal =
+                new FullTemplateArgument_Color_6066EE71(false, 10);
         assertFalse(colorExternal.hasExpressionField());
 
         final FullTemplateArgumentHolder fullTemplateArgumentHolder =

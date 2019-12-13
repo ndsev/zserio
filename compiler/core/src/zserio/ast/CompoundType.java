@@ -95,7 +95,10 @@ public abstract class CompoundType extends TemplatableType implements Comparable
     @Override
     public String getName()
     {
-        return name;
+        // if this is a template instantiation, return its name
+        final String instantiationName = getInstantiationName();
+
+        return (instantiationName != null) ? instantiationName : name;
     }
 
     @Override
