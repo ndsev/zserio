@@ -2,6 +2,7 @@ package zserio.emit.doc;
 
 import zserio.ast.ArrayInstantiation;
 import zserio.ast.AstNode;
+import zserio.ast.BitmaskType;
 import zserio.ast.BuiltInType;
 import zserio.ast.ChoiceType;
 import zserio.ast.Constant;
@@ -86,6 +87,11 @@ public class LinkedType
             {
                 style = "enumLink";
                 category += createTitle("Enum");
+            }
+            else if (node instanceof BitmaskType)
+            {
+                style = "bitmaskLink";
+                category += createTitle("Bitmask");
             }
             else if (node instanceof Subtype)
             {

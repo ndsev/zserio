@@ -11,6 +11,7 @@ import java.util.Set;
 import java.util.TreeMap;
 
 import zserio.ast.AstNode;
+import zserio.ast.BitmaskType;
 import zserio.ast.ChoiceType;
 import zserio.ast.Constant;
 import zserio.ast.EnumType;
@@ -133,6 +134,12 @@ public class OverviewEmitter extends DefaultHtmlEmitter
     public void beginEnumeration(EnumType enumType) throws ZserioEmitException
     {
         localTypes.add(enumType);
+    }
+
+    @Override
+    public void beginBitmask(BitmaskType bitmaskType) throws ZserioEmitException
+    {
+        localTypes.add(bitmaskType);
     }
 
     @Override

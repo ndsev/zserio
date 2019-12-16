@@ -5,6 +5,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import zserio.ast.AstNode;
+import zserio.ast.BitmaskType;
+import zserio.ast.BitmaskValue;
 import zserio.ast.ChoiceType;
 import zserio.ast.CompoundType;
 import zserio.ast.Constant;
@@ -43,6 +45,9 @@ public class DeprecatedEmitter extends DefaultHtmlEmitter
         private EnumType      enumType;
         private EnumItem      enumItem;
 
+        private BitmaskType   bitmaskType;
+        private BitmaskValue  bitmaskValue;
+
         /**
          *  Constructors
          */
@@ -65,6 +70,11 @@ public class DeprecatedEmitter extends DefaultHtmlEmitter
             this.enumType = enumType;
         }
 
+        public Item(BitmaskValue bitmaskValue, BitmaskType bitmaskType)
+        {
+            this.bitmaskValue = bitmaskValue;
+            this.bitmaskType = bitmaskType;
+        }
 
         /**
          *  What kind of Zserio-element the item represents
@@ -78,6 +88,11 @@ public class DeprecatedEmitter extends DefaultHtmlEmitter
         public boolean getIsEnumItem()
         {
             return (enumItem!=null) && (enumType!=null);
+        }
+
+        public boolean getIsBitmaskValue()
+        {
+            return bitmaskValue != null;
         }
 
         /**
@@ -121,6 +136,25 @@ public class DeprecatedEmitter extends DefaultHtmlEmitter
         public LinkedType getEnumLinkedType() throws ZserioEmitException
         {
             return new LinkedType( enumType );
+        }
+
+        /**
+         * IS BITMASK VALUE
+         */
+
+        public BitmaskValue getBitmaskValue()
+        {
+            return bitmaskValue;
+        }
+
+        public BitmaskType getBitmaskType()
+        {
+            return bitmaskType;
+        }
+
+        public LinkedType getBitmaskLinkedType() throws ZserioEmitException
+        {
+            return new LinkedType(bitmaskType);
         }
 
         /**
@@ -211,12 +245,30 @@ public class DeprecatedEmitter extends DefaultHtmlEmitter
             items.add(item);
         }
 
-        // handleEnumItems( EnumType et )
         for (EnumItem ei : enumType.getItems())
         {
             if (getIsDeprecated(ei.getDocComment()))
             {
                 Item item = new Item(ei, enumType);
+                items.add(item);
+            }
+        }
+    }
+
+    @Override
+    public void beginBitmask(BitmaskType bitmaskType) throws ZserioEmitException
+    {
+        if (getIsDeprecated(bitmaskType.getDocComment()))
+        {
+            Item item = new Item(bitmaskType);
+            items.add(item);
+        }
+
+        for (BitmaskValue bitmaskValue : bitmaskType.getValues())
+        {
+            if (getIsDeprecated(bitmaskValue.getDocComment()))
+            {
+                Item item = new Item(bitmaskValue, bitmaskType);
                 items.add(item);
             }
         }

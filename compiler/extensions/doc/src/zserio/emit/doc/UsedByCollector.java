@@ -10,6 +10,8 @@ import java.util.Set;
 
 import zserio.ast.ArrayInstantiation;
 import zserio.ast.AstNode;
+import zserio.ast.BitmaskType;
+import zserio.ast.BitmaskValue;
 import zserio.ast.BuiltInType;
 import zserio.ast.ChoiceCase;
 import zserio.ast.ChoiceCaseExpression;
@@ -67,6 +69,8 @@ public class UsedByCollector extends DefaultEmitter
                 final Object symbolObject = choiceCaseExpression.getExpression().getExprSymbolObject();
                 if (symbolObject instanceof EnumItem)
                     addEnumItemToUsedByMap((EnumItem)symbolObject, choiceType);
+                else if (symbolObject instanceof BitmaskValue)
+                    addBitmaskValueToUsedByMap((BitmaskValue)symbolObject, choiceType);
             }
         }
     }
@@ -81,6 +85,12 @@ public class UsedByCollector extends DefaultEmitter
     public void beginEnumeration(EnumType enumType)
     {
         storeType(enumType, enumType.getTypeInstantiation().getType());
+    }
+
+    @Override
+    public void beginBitmask(BitmaskType bitmaskType)
+    {
+        storeType(bitmaskType, bitmaskType.getTypeInstantiation().getType());
     }
 
     @Override
@@ -170,6 +180,20 @@ public class UsedByCollector extends DefaultEmitter
         return (usedByChoices != null) ? Collections.unmodifiableList(usedByChoices) : EMPTY_CHOICE_TYPE_LIST;
     }
 
+    /**
+     * Gets choice types which use given bitmask value.
+     *
+     * @param bitmaskValue Bitmask value for which to return a list.
+     *
+     * @return List of choice types which use given enumeration item.
+     */
+    public List<ChoiceType> getUsedByChoices(BitmaskValue bitmaskValue)
+    {
+        final List<ChoiceType> usedByChoices = bitmaskValueUsedByChoiceMap.get(bitmaskValue);
+
+        return (usedByChoices != null) ? Collections.unmodifiableList(usedByChoices) : EMPTY_CHOICE_TYPE_LIST;
+    }
+
     private static void addTypeToUsedTypes(AstNode usedType, List<AstNode> usedTypes)
     {
         if (!(usedType instanceof BuiltInType))
@@ -236,6 +260,18 @@ public class UsedByCollector extends DefaultEmitter
         usedByChoices.add(choiceType);
     }
 
+    private void addBitmaskValueToUsedByMap(BitmaskValue bitmaskValue, ChoiceType choiceType)
+    {
+        List<ChoiceType> usedByChoices = bitmaskValueUsedByChoiceMap.get(bitmaskValue);
+        if (usedByChoices == null)
+        {
+            usedByChoices = new ArrayList<ChoiceType>();
+            bitmaskValueUsedByChoiceMap.put(bitmaskValue, usedByChoices);
+        }
+
+        usedByChoices.add(choiceType);
+    }
+
     private static final List<AstNode> EMPTY_ZSERIO_TYPE_LIST =
             Collections.unmodifiableList(new ArrayList<AstNode>());
     private static final List<ChoiceType> EMPTY_CHOICE_TYPE_LIST =
@@ -245,4 +281,6 @@ public class UsedByCollector extends DefaultEmitter
     private final Map<AstNode, List<AstNode>> usedTypeMap = new HashMap<AstNode, List<AstNode>>();
     private final Map<EnumItem, List<ChoiceType>> enumItemUsedByChoiceMap =
             new HashMap<EnumItem, List<ChoiceType>>();
+    private final Map<BitmaskValue, List<ChoiceType>> bitmaskValueUsedByChoiceMap =
+            new HashMap<BitmaskValue, List<ChoiceType>>();
 }

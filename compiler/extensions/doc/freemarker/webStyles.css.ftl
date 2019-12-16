@@ -36,7 +36,8 @@ a.fieldLink:focus
     text-decoration:underline;
 }
 
-a.enumLink
+a.enumLink,
+a.bitmaskLink
 {
     text-decoration:underline;
     color:green;

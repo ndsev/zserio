@@ -2,6 +2,7 @@ package zserio.emit.doc;
 
 import zserio.ast.ArrayInstantiation;
 import zserio.ast.AstNode;
+import zserio.ast.BitmaskType;
 import zserio.ast.CompoundType;
 import zserio.ast.Constant;
 import zserio.ast.DynamicBitFieldInstantiation;
@@ -155,6 +156,11 @@ public class TypeNameEmitter
         {
             EnumType enumeration = (EnumType) t;
             result = enumeration.getName();
+        }
+        else if (t instanceof BitmaskType)
+        {
+            BitmaskType bitmask = (BitmaskType) t;
+            result = bitmask.getName();
         }
         else if (t instanceof Subtype)
         {

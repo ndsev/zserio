@@ -149,6 +149,19 @@ public class ZserioAstEmitter extends ZserioAstWalker
     }
 
     @Override
+    public void visitBitmaskType(BitmaskType bitmaskType)
+    {
+        try
+        {
+            emitter.beginBitmask(bitmaskType);
+        }
+        catch (ZserioEmitException e)
+        {
+            throw new UncheckedZserioEmitException(e);
+        }
+    }
+
+    @Override
     public void visitSqlTableType(SqlTableType sqlTableType)
     {
         try

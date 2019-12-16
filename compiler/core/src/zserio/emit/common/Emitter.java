@@ -1,5 +1,6 @@
 package zserio.emit.common;
 
+import zserio.ast.BitmaskType;
 import zserio.ast.ChoiceType;
 import zserio.ast.Constant;
 import zserio.ast.EnumType;
@@ -123,6 +124,15 @@ public interface Emitter
      * @throws In case of any internal error of the extension.
      */
     public void beginEnumeration(EnumType enumType) throws ZserioEmitException;
+
+    /**
+     * Called when BitmaskType AST node begins.
+     *
+     * @param bitmaskType Current BitmaskType AST node.
+     *
+     * @throws In case of any internal error of the extension.
+     */
+    public void beginBitmask(BitmaskType bitmaskType) throws ZserioEmitException;
 
     /**
      * Called when SqlTableType AST node begins.

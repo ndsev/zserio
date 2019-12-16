@@ -1,6 +1,7 @@
 package zserio.emit.doc;
 
 import zserio.ast.ArrayInstantiation;
+import zserio.ast.BitmaskType;
 import zserio.ast.BooleanType;
 import zserio.ast.ChoiceType;
 import zserio.ast.Constant;
@@ -50,6 +51,12 @@ public class HtmlModuleNameSuffixVisitor extends ZserioAstDefaultVisitor
     public void visitEnumType(EnumType type)
     {
         htmlModuleNameSuffix = "ENUM";
+    }
+
+    @Override
+    public void visitBitmaskType(BitmaskType type)
+    {
+        htmlModuleNameSuffix = "BITMASK";
     }
 
     @Override
