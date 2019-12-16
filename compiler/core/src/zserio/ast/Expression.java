@@ -975,7 +975,7 @@ public class Expression extends AstNodeBase
     private void evaluateValueOfOperator()
     {
         if (operand1.expressionType != ExpressionType.ENUM && operand1.expressionType != ExpressionType.BITMASK)
-            throw new ParserException(operand1, "'" + operand1.text + "' can be only enumeration or bitmask!");
+            throw new ParserException(operand1, "'" + operand1.text + "' is not an enumeration or bitmask!");
 
         expressionType = ExpressionType.INTEGER;
         expressionIntegerValue = operand1.expressionIntegerValue;
@@ -1095,9 +1095,13 @@ public class Expression extends AstNodeBase
         expressionType = operand1.expressionType;
 
         if (operand1.expressionType != operand2.expressionType ||
-                (operand1.expressionType != ExpressionType.INTEGER &&
-                operand1.expressionType != ExpressionType.BITMASK))
+                (expressionType != ExpressionType.INTEGER &&
+                expressionType != ExpressionType.BITMASK))
             throw new ParserException(this, "Integer or bitmask expressions expected!");
+
+        if ((type == ZserioParser.LSHIFT || type == ZserioParser.RSHIFT) &&
+                expressionType != ExpressionType.INTEGER)
+            throw new ParserException(this, "Integer expressions expected!");
 
         switch (type)
         {

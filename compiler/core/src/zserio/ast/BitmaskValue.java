@@ -90,10 +90,14 @@ public class BitmaskValue extends DocumentableAstNode
         {
             if (valueExpression != null)
             {
-                if (valueExpression.getExprType() != Expression.ExpressionType.INTEGER ||
-                        (value = valueExpression.getIntegerValue()).compareTo(BigInteger.ZERO) == -1)
+                if (valueExpression.getExprType() != Expression.ExpressionType.INTEGER)
                     throw new ParserException(valueExpression, "Bitmask value '" + getName() +
-                            "(" + value + ")' is not an unsigned integer!");
+                            "' is not an integral type!");
+
+                value = valueExpression.getIntegerValue();
+                if (value.compareTo(BigInteger.ZERO) == -1)
+                    throw new ParserException(valueExpression, "Bitmask value '" + getName() +
+                            "(" + value + ") cannot be negative!");
             }
 
             isEvaluated = true;
