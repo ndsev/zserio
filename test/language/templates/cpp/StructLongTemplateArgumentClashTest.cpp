@@ -9,11 +9,11 @@ namespace struct_long_template_argument_clash
 
 TEST(StructLongTemplateArgumentClashTest, readWrite)
 {
-    const TemplatedStruct_ThisIsVeryVeryVeryLongNamedStructure_ThisIsVeryVeryVeryLongNamedStruct__619A1B35 t1(
+    const TemplatedStruct_ThisIsVeryVeryVeryLongNamedStructure_ThisIsVeryVeryVery_619A1B35 t1(
             ThisIsVeryVeryVeryLongNamedStructure("StringT"),
             ThisIsVeryVeryVeryLongNamedStructure("StringU"),
             ThisIsVeryVeryVeryLongNamedStructure("StringV"));
-    const TemplatedStruct_ThisIsVeryVeryVeryLongNamedStructure_ThisIsVeryVeryVeryLongNamedStruct__1B45EF08 t2(
+    const TemplatedStruct_ThisIsVeryVeryVeryLongNamedStructure_ThisIsVeryVeryVery_1B45EF08 t2(
             ThisIsVeryVeryVeryLongNamedStructure("StringT"),
             ThisIsVeryVeryVeryLongNamedStructure("StringU"),
             ThisIsVeryVeryVeryLongNamedStructure_(42));

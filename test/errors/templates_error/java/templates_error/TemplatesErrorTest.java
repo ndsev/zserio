@@ -75,6 +75,21 @@ public class TemplatesErrorTest
     }
 
     @Test
+    public void hashedTemplateNameClash()
+    {
+        final String errors[] =
+        {
+            "hashed_template_name_clash_error.zs:21:5: " +
+                    "In instantiation of 'Test' required from here",
+            "hashed_template_name_clash_error.zs:25:8: " +
+                    "    First defined here",
+            "hashed_template_name_clash_error.zs:8:8: " +
+                    "'Test_A_uint32_F2945EA9' is already defined in package 'hashed_template_name_clash_error'!"
+        };
+        assertTrue(zserioErrors.isPresent(errors));
+    }
+
+    @Test
     public void instantiateDuplicated()
     {
         final String errors[] =
@@ -129,19 +144,6 @@ public class TemplatesErrorTest
     }
 
     @Test
-    public void instantiateNameClashWithTemplate()
-    {
-        final String errors[] =
-        {
-            "instantiate_name_clash_with_template_error.zs:13:5: In instantiation of 'Test' required from here",
-            "instantiate_name_clash_with_template_error.zs:9:26:     First defined here",
-            "instantiate_name_clash_with_template_error.zs:3:8: " +
-                    "'Test_uint32' is already defined in package 'instantiate_name_clash_with_template_error'!"
-        };
-        assertTrue(zserioErrors.isPresent(errors));
-    }
-
-    @Test
     public void instantiateNameClashWithType()
     {
         final String errors[] =
@@ -180,19 +182,6 @@ public class TemplatesErrorTest
                 "Field 'field' cannot be a sql table!";
         assertTrue(zserioErrors.isPresent(error));
     }
-
-    @Test
-    public void instantiationNameClashWithType()
-    {
-        final String errors[] =
-        {
-            "instantiation_name_clash_with_type_error.zs:15:5: In instantiation of 'Test' required from here",
-            "instantiation_name_clash_with_type_error.zs:3:8:     First defined here",
-            "instantiation_name_clash_with_type_error.zs:8:8: " +
-                    "'Test_uint32' is already defined in package 'instantiation_name_clash_with_type_error'!",
-        };
-        assertTrue(zserioErrors.isPresent(errors));
-    };
 
     @Test
     public void instantiationViaSubtype()

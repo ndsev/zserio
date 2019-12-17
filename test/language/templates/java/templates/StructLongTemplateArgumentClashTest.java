@@ -18,22 +18,22 @@ import templates.struct_long_template_argument_clash.StructLongTemplateArgumentC
 import templates.struct_long_template_argument_clash.ThisIsVeryVeryVeryLongNamedStructure;
 import templates.struct_long_template_argument_clash.ThisIsVeryVeryVeryLongNamedStructure_;
 import templates.struct_long_template_argument_clash.
-        TemplatedStruct_ThisIsVeryVeryVeryLongNamedStructure_ThisIsVeryVeryVeryLongNamedStruct__619A1B35;
+        TemplatedStruct_ThisIsVeryVeryVeryLongNamedStructure_ThisIsVeryVeryVery_619A1B35;
 import templates.struct_long_template_argument_clash.
-        TemplatedStruct_ThisIsVeryVeryVeryLongNamedStructure_ThisIsVeryVeryVeryLongNamedStruct__1B45EF08;
+        TemplatedStruct_ThisIsVeryVeryVeryLongNamedStructure_ThisIsVeryVeryVery_1B45EF08;
 
 public class StructLongTemplateArgumentClashTest
 {
     @Test
     public void readWrite() throws IOException
     {
-        final TemplatedStruct_ThisIsVeryVeryVeryLongNamedStructure_ThisIsVeryVeryVeryLongNamedStruct__619A1B35 t1 =
-                new TemplatedStruct_ThisIsVeryVeryVeryLongNamedStructure_ThisIsVeryVeryVeryLongNamedStruct__619A1B35(
+        final TemplatedStruct_ThisIsVeryVeryVeryLongNamedStructure_ThisIsVeryVeryVery_619A1B35 t1 =
+                new TemplatedStruct_ThisIsVeryVeryVeryLongNamedStructure_ThisIsVeryVeryVery_619A1B35(
                         new ThisIsVeryVeryVeryLongNamedStructure("StringT"),
                         new ThisIsVeryVeryVeryLongNamedStructure("StringU"),
                         new ThisIsVeryVeryVeryLongNamedStructure("StringV"));
-        final TemplatedStruct_ThisIsVeryVeryVeryLongNamedStructure_ThisIsVeryVeryVeryLongNamedStruct__1B45EF08 t2 =
-                new TemplatedStruct_ThisIsVeryVeryVeryLongNamedStructure_ThisIsVeryVeryVeryLongNamedStruct__1B45EF08(
+        final TemplatedStruct_ThisIsVeryVeryVeryLongNamedStructure_ThisIsVeryVeryVery_1B45EF08 t2 =
+                new TemplatedStruct_ThisIsVeryVeryVeryLongNamedStructure_ThisIsVeryVeryVery_1B45EF08(
                         new ThisIsVeryVeryVeryLongNamedStructure("StringT"),
                         new ThisIsVeryVeryVeryLongNamedStructure("StringU"),
                         new ThisIsVeryVeryVeryLongNamedStructure_(42));

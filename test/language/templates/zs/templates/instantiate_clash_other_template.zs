@@ -1,4 +1,4 @@
-package instantiate_name_clash_with_template_error;
+package templates.instantiate_clash_other_template;
 
 struct Test<T>
 {
@@ -8,7 +8,7 @@ struct Test<T>
 // This should be the first one to check that Test<uint32> instantiation won't use hash name alternative.
 instantiate Test<string> Test_uint32;
 
-struct InstantiateNameClashWithTemplateError
+struct InstantiateClashOtherTemplate
 {
-    Test<uint32> t;
+    Test<uint32> test;
 };

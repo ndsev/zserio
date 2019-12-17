@@ -56,6 +56,13 @@ set(ZSERIO_GENERATED_SOURCES
     ${ZSERIO_GEN_DIR}/templates/expression_full_template_argument/FullTemplateArgumentHolder.cpp
     ${ZSERIO_GEN_DIR}/templates/expression_full_template_argument/FullTemplateArgumentHolder.h
 
+    ${ZSERIO_GEN_DIR}/templates/instantiate_clash_other_template/InstantiateClashOtherTemplate.cpp
+    ${ZSERIO_GEN_DIR}/templates/instantiate_clash_other_template/InstantiateClashOtherTemplate.h
+    ${ZSERIO_GEN_DIR}/templates/instantiate_clash_other_template/Test_uint32.cpp
+    ${ZSERIO_GEN_DIR}/templates/instantiate_clash_other_template/Test_uint32.h
+    ${ZSERIO_GEN_DIR}/templates/instantiate_clash_other_template/Test_uint32_99604043.cpp
+    ${ZSERIO_GEN_DIR}/templates/instantiate_clash_other_template/Test_uint32_99604043.h
+
     ${ZSERIO_GEN_DIR}/templates/instantiate_imported/pkg
     ${ZSERIO_GEN_DIR}/templates/instantiate_imported/Test_string.cpp
     ${ZSERIO_GEN_DIR}/templates/instantiate_imported/Test_string.h
@@ -222,17 +229,17 @@ set(ZSERIO_GENERATED_SOURCES
 
     ${ZSERIO_GEN_DIR}/templates/struct_long_template_argument/StructLongTemplateArgument.cpp
     ${ZSERIO_GEN_DIR}/templates/struct_long_template_argument/StructLongTemplateArgument.h
-    ${ZSERIO_GEN_DIR}/templates/struct_long_template_argument/TemplatedStruct_ThisIsVeryVeryVeryLongNamedStructure_ThisIsVeryVeryVeryLongNamedStruct_.cpp
-    ${ZSERIO_GEN_DIR}/templates/struct_long_template_argument/TemplatedStruct_ThisIsVeryVeryVeryLongNamedStructure_ThisIsVeryVeryVeryLongNamedStruct_.h
+    ${ZSERIO_GEN_DIR}/templates/struct_long_template_argument/TemplatedStruct_ThisIsVeryVeryVeryLongNamedStructure_ThisIsVeryVeryVeryLongName_.cpp
+    ${ZSERIO_GEN_DIR}/templates/struct_long_template_argument/TemplatedStruct_ThisIsVeryVeryVeryLongNamedStructure_ThisIsVeryVeryVeryLongName_.h
     ${ZSERIO_GEN_DIR}/templates/struct_long_template_argument/ThisIsVeryVeryVeryLongNamedStructure.cpp
     ${ZSERIO_GEN_DIR}/templates/struct_long_template_argument/ThisIsVeryVeryVeryLongNamedStructure.h
 
     ${ZSERIO_GEN_DIR}/templates/struct_long_template_argument_clash/StructLongTemplateArgumentClash.cpp
     ${ZSERIO_GEN_DIR}/templates/struct_long_template_argument_clash/StructLongTemplateArgumentClash.h
-    ${ZSERIO_GEN_DIR}/templates/struct_long_template_argument_clash/TemplatedStruct_ThisIsVeryVeryVeryLongNamedStructure_ThisIsVeryVeryVeryLongNamedStruct__1B45EF08.cpp
-    ${ZSERIO_GEN_DIR}/templates/struct_long_template_argument_clash/TemplatedStruct_ThisIsVeryVeryVeryLongNamedStructure_ThisIsVeryVeryVeryLongNamedStruct__1B45EF08.h
-    ${ZSERIO_GEN_DIR}/templates/struct_long_template_argument_clash/TemplatedStruct_ThisIsVeryVeryVeryLongNamedStructure_ThisIsVeryVeryVeryLongNamedStruct__619A1B35.cpp
-    ${ZSERIO_GEN_DIR}/templates/struct_long_template_argument_clash/TemplatedStruct_ThisIsVeryVeryVeryLongNamedStructure_ThisIsVeryVeryVeryLongNamedStruct__619A1B35.h
+    ${ZSERIO_GEN_DIR}/templates/struct_long_template_argument_clash/TemplatedStruct_ThisIsVeryVeryVeryLongNamedStructure_ThisIsVeryVeryVery_1B45EF08.cpp
+    ${ZSERIO_GEN_DIR}/templates/struct_long_template_argument_clash/TemplatedStruct_ThisIsVeryVeryVeryLongNamedStructure_ThisIsVeryVeryVery_1B45EF08.h
+    ${ZSERIO_GEN_DIR}/templates/struct_long_template_argument_clash/TemplatedStruct_ThisIsVeryVeryVeryLongNamedStructure_ThisIsVeryVeryVery_619A1B35.cpp
+    ${ZSERIO_GEN_DIR}/templates/struct_long_template_argument_clash/TemplatedStruct_ThisIsVeryVeryVeryLongNamedStructure_ThisIsVeryVeryVery_619A1B35.h
     ${ZSERIO_GEN_DIR}/templates/struct_long_template_argument_clash/ThisIsVeryVeryVeryLongNamedStructure.cpp
     ${ZSERIO_GEN_DIR}/templates/struct_long_template_argument_clash/ThisIsVeryVeryVeryLongNamedStructure.h
     ${ZSERIO_GEN_DIR}/templates/struct_long_template_argument_clash/ThisIsVeryVeryVeryLongNamedStructure_.cpp
@@ -289,6 +296,13 @@ set(ZSERIO_GENERATED_SOURCES
     ${ZSERIO_GEN_DIR}/templates/struct_template_clash_other_template/Test_A_uint32_5D68B0C2.h
     ${ZSERIO_GEN_DIR}/templates/struct_template_clash_other_template/Test_A_uint32_FA82A3B7.cpp
     ${ZSERIO_GEN_DIR}/templates/struct_template_clash_other_template/Test_A_uint32_FA82A3B7.h
+
+    ${ZSERIO_GEN_DIR}/templates/struct_template_clash_other_type/InstantiationNameClashOtherType.cpp
+    ${ZSERIO_GEN_DIR}/templates/struct_template_clash_other_type/InstantiationNameClashOtherType.h
+    ${ZSERIO_GEN_DIR}/templates/struct_template_clash_other_type/Test_uint32.cpp
+    ${ZSERIO_GEN_DIR}/templates/struct_template_clash_other_type/Test_uint32.h
+    ${ZSERIO_GEN_DIR}/templates/struct_template_clash_other_type/Test_uint32_99604043.cpp
+    ${ZSERIO_GEN_DIR}/templates/struct_template_clash_other_type/Test_uint32_99604043.h
 
     ${ZSERIO_GEN_DIR}/templates/struct_templated_field/StructTemplatedField.cpp
     ${ZSERIO_GEN_DIR}/templates/struct_templated_field/StructTemplatedField.h
@@ -405,6 +419,7 @@ add_test_sources(
     ${ZSERIO_CPP_DIR}/ExpressionEnumTemplateArgumentTest.cpp
     ${ZSERIO_CPP_DIR}/ExpressionEnumTemplateArgumentConflictTest.cpp
     ${ZSERIO_CPP_DIR}/ExpressionFullTemplateArgumentTest.cpp
+    ${ZSERIO_CPP_DIR}/InstantiateClashOtherTemplateTest.cpp
     ${ZSERIO_CPP_DIR}/InstantiateImportedTest.cpp
     ${ZSERIO_CPP_DIR}/InstantiateNestedTemplateTest.cpp
     ${ZSERIO_CPP_DIR}/InstantiateNotImportedTest.cpp
@@ -434,6 +449,7 @@ add_test_sources(
     ${ZSERIO_CPP_DIR}/StructTemplateClashTest.cpp
     ${ZSERIO_CPP_DIR}/StructTemplateClashAcrossPackagesTest.cpp
     ${ZSERIO_CPP_DIR}/StructTemplateClashOtherTemplateTest.cpp
+    ${ZSERIO_CPP_DIR}/StructTemplateClashOtherTypeTest.cpp
     ${ZSERIO_CPP_DIR}/StructTemplatedFieldTest.cpp
     ${ZSERIO_CPP_DIR}/StructTemplatedTemplateArgumentTest.cpp
     ${ZSERIO_CPP_DIR}/StructTemplatedTypeArgumentTest.cpp

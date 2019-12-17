@@ -32,6 +32,7 @@ uninitMemberVar:*/function_templated_return_type/TestStructure_string.cpp
 uninitMemberVar:*/function_templated_return_type/TestStructure_string.h
 uninitMemberVar:*/function_templated_return_type/TestStructure_uint32.cpp
 uninitMemberVar:*/function_templated_return_type/TestStructure_uint32.h
+uninitMemberVar:*/instantiate_clash_other_template/Test_uint32_99604043.cpp
 uninitMemberVar:*/instantiate_imported/pkg/U32.cpp
 uninitMemberVar:*/instantiate_not_imported/pkg/Test_uint32.cpp
 uninitMemberVar:*/instantiate_not_imported/pkg/U32.cpp
@@ -70,6 +71,7 @@ uninitMemberVar:*/struct_template_clash/TestStruct_uint32.cpp
 uninitMemberVar:*/struct_template_clash_across_packages/pkg1/Test.cpp
 uninitMemberVar:*/struct_template_clash_other_template/A_uint32.cpp
 uninitMemberVar:*/struct_template_clash_other_template/Test_A_uint32_FA82A3B7.cpp
+uninitMemberVar:*/struct_template_clash_other_type/Test_uint32_99604043.cpp
 uninitMemberVar:*/struct_template_in_template/Compound_uint32.cpp
 uninitMemberVar:*/struct_templated_field/Compound.cpp
 uninitMemberVar:*/struct_templated_field/Field_uint32.cpp

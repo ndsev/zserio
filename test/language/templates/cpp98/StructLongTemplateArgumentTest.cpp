@@ -15,7 +15,7 @@ TEST(StructLongTemplateArgumentTest, readWrite)
     field2.setData("StringU");
     ThisIsVeryVeryVeryLongNamedStructure field3;
     field3.setData("StringV");
-    TemplatedStruct_ThisIsVeryVeryVeryLongNamedStructure_ThisIsVeryVeryVeryLongNamedStruct_ templ;
+    TemplatedStruct_ThisIsVeryVeryVeryLongNamedStructure_ThisIsVeryVeryVeryLongName_ templ;
     templ.setField1(field1);
     templ.setField1(field2);
     templ.setField1(field3);

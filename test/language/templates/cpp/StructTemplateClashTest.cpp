@@ -11,7 +11,7 @@ TEST(StructTemplateClashTest, readWrite)
 {
     const TestStruct_uint32 testStruct_uint32(
             42,
-            Template_A_B_C_7FE93D34(A_B(1), 2.0),
+            Template_A_B_C_7FE93D34(A_B(1), true),
             Template_A_B_C_5EB4E3FC(A(1), "string"));
     InstantiationNameClash instantiationNameClash(testStruct_uint32);
 

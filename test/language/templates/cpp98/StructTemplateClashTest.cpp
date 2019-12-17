@@ -15,7 +15,7 @@ TEST(StructTemplateClashTest, readWrite)
     A_B a_b;
     a_b.setValue(1);
     C c;
-    c.setValue(2.0);
+    c.setValue(true);
     Template_A_B_C_7FE93D34 T1;
     T1.setValue1(a_b);
     T1.setValue2(c);

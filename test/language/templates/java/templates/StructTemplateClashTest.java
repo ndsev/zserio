@@ -30,7 +30,7 @@ public class StructTemplateClashTest
     {
         final TestStruct_uint32 testStruct_uint32 = new TestStruct_uint32(
                 42,
-                new Template_A_B_C_7FE93D34(new A_B(1), new C(2.0f)),
+                new Template_A_B_C_7FE93D34(new A_B(1), new C(true)),
                 new Template_A_B_C_5EB4E3FC(new A(1), new B_C("string")));
         final InstantiationNameClash instantiationNameClash = new InstantiationNameClash(testStruct_uint32);
 

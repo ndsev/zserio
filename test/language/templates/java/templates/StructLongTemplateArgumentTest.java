@@ -17,15 +17,15 @@ import zserio.runtime.io.FileBitStreamWriter;
 import templates.struct_long_template_argument.StructLongTemplateArgument;
 import templates.struct_long_template_argument.ThisIsVeryVeryVeryLongNamedStructure;
 import templates.struct_long_template_argument.
-        TemplatedStruct_ThisIsVeryVeryVeryLongNamedStructure_ThisIsVeryVeryVeryLongNamedStruct_;
+        TemplatedStruct_ThisIsVeryVeryVeryLongNamedStructure_ThisIsVeryVeryVeryLongName_;
 
 public class StructLongTemplateArgumentTest
 {
     @Test
     public void readWrite() throws IOException
     {
-        final TemplatedStruct_ThisIsVeryVeryVeryLongNamedStructure_ThisIsVeryVeryVeryLongNamedStruct_ templ =
-                new TemplatedStruct_ThisIsVeryVeryVeryLongNamedStructure_ThisIsVeryVeryVeryLongNamedStruct_(
+        final TemplatedStruct_ThisIsVeryVeryVeryLongNamedStructure_ThisIsVeryVeryVeryLongName_ templ =
+                new TemplatedStruct_ThisIsVeryVeryVeryLongNamedStructure_ThisIsVeryVeryVeryLongName_(
                         new ThisIsVeryVeryVeryLongNamedStructure("StringT"),
                         new ThisIsVeryVeryVeryLongNamedStructure("StringU"),
                         new ThisIsVeryVeryVeryLongNamedStructure("StringV"));

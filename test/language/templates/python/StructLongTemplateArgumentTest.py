@@ -10,7 +10,7 @@ class StructLongTemplateArgumentTest(unittest.TestCase):
 
     def testReadWrite(self):
         templ = self.api.\
-            TemplatedStruct_ThisIsVeryVeryVeryLongNamedStructure_ThisIsVeryVeryVeryLongNamedStruct_.fromFields(
+            TemplatedStruct_ThisIsVeryVeryVeryLongNamedStructure_ThisIsVeryVeryVeryLongName_.fromFields(
                 self.api.ThisIsVeryVeryVeryLongNamedStructure.fromFields("StringT"),
                 self.api.ThisIsVeryVeryVeryLongNamedStructure.fromFields("StringU"),
                 self.api.ThisIsVeryVeryVeryLongNamedStructure.fromFields("StringV"))
