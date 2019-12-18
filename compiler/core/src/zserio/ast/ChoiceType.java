@@ -169,6 +169,7 @@ public class ChoiceType extends CompoundType
         isChoiceDefaultUnreachable = checkUnreachableDefault();
         checkSelectorType();
         checkCaseTypes();
+        // TODO[Mi-L@]: checkBitmaskCases();
         checkEnumerationCases();
         checkDuplicatedCases();
     }

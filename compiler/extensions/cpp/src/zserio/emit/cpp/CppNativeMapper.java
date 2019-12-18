@@ -2,6 +2,7 @@ package zserio.emit.cpp;
 
 import zserio.ast.ArrayInstantiation;
 import zserio.ast.AstNode;
+import zserio.ast.BitmaskType;
 import zserio.ast.Constant;
 import zserio.ast.DynamicBitFieldInstantiation;
 import zserio.ast.DynamicBitFieldType;
@@ -334,6 +335,21 @@ public class CppNativeMapper
         }
 
         @Override
+        public void visitBitmaskType(BitmaskType type)
+        {
+            try
+            {
+                // use the original instantiation so that subtype is kept
+                final CppNativeType nativeElementType = CppNativeMapper.this.getCppType(originalInstantiation);
+                cppType = new NativeArrayType(nativeElementType, "BitmaskArrayTraits", true);
+            }
+            catch (ZserioEmitException exception)
+            {
+                thrownException = exception;
+            }
+        }
+
+        @Override
         public void visitFloatType(FloatType type)
         {
             switch (type.getBitSize())
@@ -534,6 +550,15 @@ public class CppNativeMapper
             final String name = type.getName();
             final String includeFileName = getIncludePath(packageName, name);
             cppType = new NativeUserType(packageName, name, includeFileName, true);
+        }
+
+        @Override
+        public void visitBitmaskType(BitmaskType type)
+        {
+            final PackageName packageName = cppPackageMapper.getPackageName(type);
+            final String name = type.getName();
+            final String includeFileName = getIncludePath(packageName, name);
+            cppType = new NativeUserType(packageName, name, includeFileName, false);
         }
 
         @Override
