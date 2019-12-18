@@ -184,6 +184,12 @@ zserio_java_test.grpc      - Whether the GRPC tests are enabled (default is "no"
         <attribute name="srcPath" default="${@{testName}.base_dir}/java:${@{testName}.zs.out_dir}"/>
         <attribute name="grpc" default="false"/>
         <sequential>
+            <property name="findbugs.gen_classes.jar_file"
+                    location="${@{testName}.build_dir}/jar/gen_classes.jar"/>
+            <jar destfile="${findbugs.gen_classes.jar_file}">
+                <fileset dir="${@{testName}.build_dir}/classes"/>
+            </jar>
+
             <taskdef name="findbugs" classpath="${findbugs.classpath}" classname="${findbugs.classname}"/>
             <findbugs home="${findbugs.home_dir}"
                 output="html"
@@ -193,7 +199,7 @@ zserio_java_test.grpc      - Whether the GRPC tests are enabled (default is "no"
                 errorProperty="@{testName}.is_failed"
                 warningsProperty="@{testName}.is_failed">
                 <sourcePath path="@{srcPath}"/>
-                <fileset dir="${@{testName}.build_dir}/classes"/>
+                <class location="${findbugs.gen_classes.jar_file}"/>
                 <auxClasspath>
                     <pathelement location="${runtime.jar_file}"/>
                     <pathelement location="${3rdparty.junit.jar_file}"/>
