@@ -15,7 +15,7 @@ TEST(StructLongTemplateArgumentClashTest, readWrite)
     field12.setData("StringU");
     ThisIsVeryVeryVeryLongNamedStructure field13;
     field13.setData("StringV");
-    TemplatedStruct_ThisIsVeryVeryVeryLongNamedStructure_ThisIsVeryVeryVery_619A1B35 t1;
+    TemplatedStruct_ThisIsVeryVeryVeryLongNamedStructure_Th_619A1B35 t1;
     t1.setField1(field11);
     t1.setField2(field12);
     t1.setField3(field13);
@@ -26,7 +26,7 @@ TEST(StructLongTemplateArgumentClashTest, readWrite)
     field22.setData("StringU");
     ThisIsVeryVeryVeryLongNamedStructure_ field23;
     field23.setData(42);
-    TemplatedStruct_ThisIsVeryVeryVeryLongNamedStructure_ThisIsVeryVeryVery_1B45EF08 t2;
+    TemplatedStruct_ThisIsVeryVeryVeryLongNamedStructure_Th_1B45EF08 t2;
     t2.setField1(field21);
     t2.setField2(field22);
     t2.setField3(field23);

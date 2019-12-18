@@ -9,7 +9,7 @@ namespace struct_long_template_argument
 
 TEST(StructLongTemplateArgumentTest, readWrite)
 {
-    const TemplatedStruct_ThisIsVeryVeryVeryLongNamedStructure_ThisIsVeryVeryVeryLongName_ templ(
+    const TemplatedStruct_ThisIsVeryVeryVeryLongNamedStructure_ThisIsVery_ templ(
             ThisIsVeryVeryVeryLongNamedStructure("StringT"),
             ThisIsVeryVeryVeryLongNamedStructure("StringU"),
             ThisIsVeryVeryVeryLongNamedStructure("StringV"));

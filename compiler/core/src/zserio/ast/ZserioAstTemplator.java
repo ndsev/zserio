@@ -467,8 +467,9 @@ public class ZserioAstTemplator extends ZserioAstWalker
 
     private static final String TEMPLATE_NAME_SEPARATOR = "_";
     // Common file systems have maximum file name length limited to 255. Besides of that very long names are
-    // real pain for users. We should deal with this somehow.
-    private static final int MAX_TEMPLATE_NAME_LENGTH = 80;
+    // real pain for users. We should deal with this somehow. Btw, older Windows application still insists on
+    // 260 character long paths.
+    private static final int MAX_TEMPLATE_NAME_LENGTH = 64;
 
     private final ZserioAstTypeResolver typeResolver;
     private final ArrayDeque<TypeReference> instantiationReferenceStack = new ArrayDeque<TypeReference>();

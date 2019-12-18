@@ -229,17 +229,17 @@ set(ZSERIO_GENERATED_SOURCES
 
     ${ZSERIO_GEN_DIR}/templates/struct_long_template_argument/StructLongTemplateArgument.cpp
     ${ZSERIO_GEN_DIR}/templates/struct_long_template_argument/StructLongTemplateArgument.h
-    ${ZSERIO_GEN_DIR}/templates/struct_long_template_argument/TemplatedStruct_ThisIsVeryVeryVeryLongNamedStructure_ThisIsVeryVeryVeryLongName_.cpp
-    ${ZSERIO_GEN_DIR}/templates/struct_long_template_argument/TemplatedStruct_ThisIsVeryVeryVeryLongNamedStructure_ThisIsVeryVeryVeryLongName_.h
+    ${ZSERIO_GEN_DIR}/templates/struct_long_template_argument/TemplatedStruct_ThisIsVeryVeryVeryLongNamedStructure_ThisIsVery_.cpp
+    ${ZSERIO_GEN_DIR}/templates/struct_long_template_argument/TemplatedStruct_ThisIsVeryVeryVeryLongNamedStructure_ThisIsVery_.h
     ${ZSERIO_GEN_DIR}/templates/struct_long_template_argument/ThisIsVeryVeryVeryLongNamedStructure.cpp
     ${ZSERIO_GEN_DIR}/templates/struct_long_template_argument/ThisIsVeryVeryVeryLongNamedStructure.h
 
     ${ZSERIO_GEN_DIR}/templates/struct_long_template_argument_clash/StructLongTemplateArgumentClash.cpp
     ${ZSERIO_GEN_DIR}/templates/struct_long_template_argument_clash/StructLongTemplateArgumentClash.h
-    ${ZSERIO_GEN_DIR}/templates/struct_long_template_argument_clash/TemplatedStruct_ThisIsVeryVeryVeryLongNamedStructure_ThisIsVeryVeryVery_1B45EF08.cpp
-    ${ZSERIO_GEN_DIR}/templates/struct_long_template_argument_clash/TemplatedStruct_ThisIsVeryVeryVeryLongNamedStructure_ThisIsVeryVeryVery_1B45EF08.h
-    ${ZSERIO_GEN_DIR}/templates/struct_long_template_argument_clash/TemplatedStruct_ThisIsVeryVeryVeryLongNamedStructure_ThisIsVeryVeryVery_619A1B35.cpp
-    ${ZSERIO_GEN_DIR}/templates/struct_long_template_argument_clash/TemplatedStruct_ThisIsVeryVeryVeryLongNamedStructure_ThisIsVeryVeryVery_619A1B35.h
+    ${ZSERIO_GEN_DIR}/templates/struct_long_template_argument_clash/TemplatedStruct_ThisIsVeryVeryVeryLongNamedStructure_Th_1B45EF08.cpp
+    ${ZSERIO_GEN_DIR}/templates/struct_long_template_argument_clash/TemplatedStruct_ThisIsVeryVeryVeryLongNamedStructure_Th_1B45EF08.h
+    ${ZSERIO_GEN_DIR}/templates/struct_long_template_argument_clash/TemplatedStruct_ThisIsVeryVeryVeryLongNamedStructure_Th_619A1B35.cpp
+    ${ZSERIO_GEN_DIR}/templates/struct_long_template_argument_clash/TemplatedStruct_ThisIsVeryVeryVeryLongNamedStructure_Th_619A1B35.h
     ${ZSERIO_GEN_DIR}/templates/struct_long_template_argument_clash/ThisIsVeryVeryVeryLongNamedStructure.cpp
     ${ZSERIO_GEN_DIR}/templates/struct_long_template_argument_clash/ThisIsVeryVeryVeryLongNamedStructure.h
     ${ZSERIO_GEN_DIR}/templates/struct_long_template_argument_clash/ThisIsVeryVeryVeryLongNamedStructure_.cpp

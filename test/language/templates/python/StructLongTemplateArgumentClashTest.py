@@ -10,12 +10,12 @@ class StructLongTemplateArgumentClashTest(unittest.TestCase):
 
     def testReadWrite(self):
         t1 = self.api.\
-            TemplatedStruct_ThisIsVeryVeryVeryLongNamedStructure_ThisIsVeryVeryVery_619A1B35.fromFields(
+            TemplatedStruct_ThisIsVeryVeryVeryLongNamedStructure_Th_619A1B35.fromFields(
                 self.api.ThisIsVeryVeryVeryLongNamedStructure.fromFields("StringT"),
                 self.api.ThisIsVeryVeryVeryLongNamedStructure.fromFields("StringU"),
                 self.api.ThisIsVeryVeryVeryLongNamedStructure.fromFields("StringV"))
         t2 = self.api.\
-            TemplatedStruct_ThisIsVeryVeryVeryLongNamedStructure_ThisIsVeryVeryVery_1B45EF08.fromFields(
+            TemplatedStruct_ThisIsVeryVeryVeryLongNamedStructure_Th_1B45EF08.fromFields(
                 self.api.ThisIsVeryVeryVeryLongNamedStructure.fromFields("StringT"),
                 self.api.ThisIsVeryVeryVeryLongNamedStructure.fromFields("StringU"),
                 self.api.ThisIsVeryVeryVeryLongNamedStructure_.fromFields(42))
