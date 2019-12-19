@@ -17,7 +17,7 @@ struct A
 
 struct C
 {
-    float32 value;
+    bool value;
 };
 
 struct Template<T1, T2>

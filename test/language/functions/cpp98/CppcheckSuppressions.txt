@@ -1,5 +1,0 @@
-// suppress "Member variable 'X' is not initialized in the constructor."
-uninitMemberVar:*/ItemRef.cpp
-uninitMemberVar:*/ChildStructure.cpp
-uninitMemberVar:*/ValueConsumer.cpp
-uninitMemberVar:*/MetresConverter.cpp

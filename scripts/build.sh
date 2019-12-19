@@ -161,13 +161,6 @@ Package can be the combination of:
     cpp_rt-windows64-mingw   Zserio C++ extension runtime library for windows64 target (MinGW64).
     cpp_rt-windows32-msvc    Zserio C++ extension runtime library for windows32 target (MSVC).
     cpp_rt-windows64-msvc    Zserio C++ extension runtime library for windows64 target (MSVC).
-    cpp98                    Zserio C++98 extension.
-    cpp98_rt-linux32         Zserio C++98 extension runtime library for native linux32 (gcc).
-    cpp98_rt-linux64         Zserio C++98 extension runtime library for native linux64 (gcc).
-    cpp98_rt-windows32-mingw Zserio C++98 extension runtime library for windows32 target (MinGW).
-    cpp98_rt-windows64-mingw Zserio C++98 extension runtime library for windows64 target (MinGW64).
-    cpp98_rt-windows32-msvc  Zserio C++98 extension runtime library for windows32 target (MSVC).
-    cpp98_rt-windows64-msvc  Zserio C++98 extension runtime library for windows64 target (MSVC).
     java                     Zserio Java extension.
     java_rt                  Zserio Java extension runtime library.
     python                   Zserio Python extension.
@@ -200,14 +193,12 @@ EOF
 # 2 - Help switch is present. Arguments after help switch have not been checked.
 parse_arguments()
 {
-    local NUM_OF_ARGS=13
+    local NUM_OF_ARGS=11
     exit_if_argc_lt $# ${NUM_OF_ARGS}
     local PARAM_ANT_TASK_OUT="$1"; shift
     local PARAM_CORE_OUT="$1"; shift
     local PARAM_CPP_OUT="$1"; shift
     local PARAM_CPP_TARGET_ARRAY_OUT="$1"; shift
-    local PARAM_CPP98_OUT="$1"; shift
-    local PARAM_CPP98_TARGET_ARRAY_OUT="$1"; shift
     local PARAM_JAVA_OUT="$1"; shift
     local PARAM_JAVA_RUNTIME_OUT="$1"; shift
     local PARAM_PYTHON_OUT="$1"; shift
@@ -222,7 +213,6 @@ parse_arguments()
     eval ${PARAM_ANT_TASK_OUT}=0
     eval ${PARAM_CORE_OUT}=0
     eval ${PARAM_CPP_OUT}=0
-    eval ${PARAM_CPP98_OUT}=0
     eval ${PARAM_JAVA_OUT}=0
     eval ${PARAM_JAVA_RUNTIME_OUT}=0
     eval ${PARAM_PYTHON_OUT}=0
@@ -273,7 +263,6 @@ parse_arguments()
     done
 
     local NUM_CPP_TARGETS=0
-    local NUM_CPP98_TARGETS=0
     local PARAM
     for PARAM in "${PARAM_ARRAY[@]}" ; do
         case "${PARAM}" in
@@ -292,15 +281,6 @@ parse_arguments()
             "cpp_rt-linux32" | "cpp_rt-linux64" | "cpp_rt-windows32-"* | "cpp_rt-windows64-"*)
                 eval ${PARAM_CPP_TARGET_ARRAY_OUT}[${NUM_CPP_TARGETS}]="${PARAM#cpp_rt-}"
                 NUM_CPP_TARGETS=$((NUM_CPP_TARGETS + 1))
-                ;;
-
-            "cpp98")
-                eval ${PARAM_CPP98_OUT}=1
-                ;;
-
-            "cpp98_rt-linux32" | "cpp98_rt-linux64" | "cpp98_rt-windows32-"* | "cpp98_rt-windows64-"*)
-                eval ${PARAM_CPP98_TARGET_ARRAY_OUT}[${NUM_CPP98_TARGETS}]="${PARAM#cpp98_rt-}"
-                NUM_CPP98_TARGETS=$((NUM_CPP98_TARGETS + 1))
                 ;;
 
             "java")
@@ -338,9 +318,6 @@ parse_arguments()
                 eval ${PARAM_CPP_OUT}=1
                 eval ${PARAM_CPP_TARGET_ARRAY_OUT}[${NUM_CPP_TARGETS}]="${PARAM#all-}"
                 NUM_CPP_TARGETS=$((NUM_CPP_TARGETS + 1))
-                eval ${PARAM_CPP98_OUT}=1
-                eval ${PARAM_CPP98_TARGET_ARRAY_OUT}[${NUM_CPP98_TARGETS}]="${PARAM#all-}"
-                NUM_CPP98_TARGETS=$((NUM_CPP98_TARGETS + 1))
                 eval ${PARAM_JAVA_OUT}=1
                 eval ${PARAM_JAVA_RUNTIME_OUT}=1
                 eval ${PARAM_PYTHON_OUT}=1
@@ -361,8 +338,6 @@ parse_arguments()
           ${!PARAM_CORE_OUT} == 0 &&
           ${!PARAM_CPP_OUT} == 0 &&
           ${NUM_CPP_TARGETS} == 0 &&
-          ${!PARAM_CPP98_OUT} == 0 &&
-          ${NUM_CPP98_TARGETS} == 0 &&
           ${!PARAM_JAVA_OUT} == 0 &&
           ${!PARAM_JAVA_RUNTIME_OUT} == 0 &&
           ${!PARAM_PYTHON_OUT} == 0 &&
@@ -390,8 +365,6 @@ main()
     local PARAM_CORE
     local PARAM_CPP
     local PARAM_CPP_TARGET_ARRAY=()
-    local PARAM_CPP98
-    local PARAM_CPP98_TARGET_ARRAY=()
     local PARAM_JAVA
     local PARAM_JAVA_RUNTIME
     local PARAM_PYTHON
@@ -403,9 +376,8 @@ main()
     local SWITCH_CLEAN
     local SWITCH_PURGE
     parse_arguments PARAM_ANT_TASK PARAM_CORE PARAM_CPP PARAM_CPP_TARGET_ARRAY \
-                    PARAM_CPP98 PARAM_CPP98_TARGET_ARRAY PARAM_JAVA PARAM_JAVA_RUNTIME \
-                    PARAM_PYTHON PARAM_PYTHON_RUNTIME PARAM_XML PARAM_DOC PARAM_ZSERIO \
-                    PARAM_OUT_DIR SWITCH_CLEAN SWITCH_PURGE $@
+                    PARAM_JAVA PARAM_JAVA_RUNTIME PARAM_PYTHON PARAM_PYTHON_RUNTIME \
+                    PARAM_XML PARAM_DOC PARAM_ZSERIO PARAM_OUT_DIR SWITCH_CLEAN SWITCH_PURGE $@
     if [ $? -ne 0 ] ; then
         print_help
         return 1
@@ -420,7 +392,6 @@ main()
     if [[ ${PARAM_ANT_TASK} != 0 ||
           ${PARAM_CORE} != 0 ||
           ${PARAM_CPP} != 0 ||
-          ${PARAM_CPP98} != 0 ||
           ${PARAM_JAVA} != 0 ||
           ${PARAM_JAVA_RUNTIME} != 0 ||
           ${PARAM_PYTHON} != 0 ||
@@ -432,7 +403,7 @@ main()
         fi
     fi
 
-    if [[ ${#PARAM_CPP_TARGET_ARRAY[@]} -ne 0 || ${#PARAM_CPP98_TARGET_ARRAY[@]} -ne 0 ]] ; then
+    if [[ ${#PARAM_CPP_TARGET_ARRAY[@]} -ne 0 ]] ; then
         set_global_cpp_variables
         if [ $? -ne 0 ] ; then
             return 1
@@ -524,33 +495,6 @@ main()
                           -DZSERIO_RUNTIME_INCLUDE_INSPECTOR=ON)
         local CTEST_ARGS=()
         compile_cpp "${ZSERIO_PROJECT_ROOT}" "${CPP_BUILD_DIR}" "${CMAKELISTS_DIR}" PARAM_CPP_TARGET_ARRAY[@] \
-                    CMAKE_ARGS[@] CTEST_ARGS[@] ${CPP_TARGET}
-        if [ $? -ne 0 ] ; then
-            return 1
-        fi
-        echo
-    fi
-
-    # build Zserio C++98 extension
-    if [[ ${PARAM_CPP98} == 1 ]] ; then
-        echo "${ACTION_DESCRIPTION} Zserio C++98 extension."
-        echo
-        compile_java "${ZSERIO_PROJECT_ROOT}/compiler/extensions/cpp98/build.xml" ANT_PROPS[@] ${JAVA_TARGET}
-        if [ $? -ne 0 ] ; then
-            return 1
-        fi
-        echo
-    fi
-
-    # build Zserio C++98 runtime library
-    if [ ${#PARAM_CPP98_TARGET_ARRAY[@]} -ne 0 ] ; then
-        echo "${ACTION_DESCRIPTION} Zserio C++98 runtime library."
-        echo
-        local CMAKELISTS_DIR="${ZSERIO_PROJECT_ROOT}/compiler/extensions/cpp98/runtime"
-        local CPP_BUILD_DIR="${ZSERIO_BUILD_DIR}/runtime_libs/cpp98"
-        local CMAKE_ARGS=(-DCMAKE_INSTALL_PREFIX="${ZSERIO_DISTR_DIR}/runtime_libs")
-        local CTEST_ARGS=()
-        compile_cpp "${ZSERIO_PROJECT_ROOT}" "${CPP_BUILD_DIR}" "${CMAKELISTS_DIR}" PARAM_CPP98_TARGET_ARRAY[@] \
                     CMAKE_ARGS[@] CTEST_ARGS[@] ${CPP_TARGET}
         if [ $? -ne 0 ] ; then
             return 1

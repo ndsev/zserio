@@ -34,24 +34,12 @@ public class CppExtension implements Extension
             option.setRequired(false);
             options.addOption(option);
         }
-
-        if (!options.hasOption(OptionCppStandard))
-        {
-            Option option = new Option(OptionCppStandard, true,
-                    "use C++ standard for generated sources: c++11");
-            option.setArgName("standard");
-            option.setRequired(false);
-            options.addOption(option);
-        }
     }
 
     @Override
     public boolean isEnabled(Parameters parameters)
     {
-        final String cppStandard = parameters.getCommandLineArg(OptionCppStandard);
-        final boolean isCppStandard11 = (cppStandard == null) ? true : cppStandard.equals("c++11");
-
-        return parameters.argumentExists(OptionCpp) && isCppStandard11;
+        return parameters.argumentExists(OptionCpp);
     }
 
     @Override
@@ -74,5 +62,4 @@ public class CppExtension implements Extension
     }
 
     private final static String OptionCpp = "cpp";
-    private final static String OptionCppStandard = "cppStandard";
 }

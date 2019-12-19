@@ -11,23 +11,13 @@ set(ZSERIO_GENERATED_SOURCES
     ${ZSERIO_GEN_DIR}/sql_virtual_columns/simple_virtual_columns/SimpleVirtualColumnsTable.h
 )
 
-if (NOT ${ZSERIO_CPP_STANDARD} STREQUAL c++11)
-    set(ZSERIO_GENERATED_SOURCES
-        ${ZSERIO_GENERATED_SOURCES}
-        ${ZSERIO_GEN_DIR}/sql_virtual_columns/hidden_virtual_columns/HiddenVirtualColumnsTableRow.cpp
-        ${ZSERIO_GEN_DIR}/sql_virtual_columns/hidden_virtual_columns/HiddenVirtualColumnsTableRow.h
-        ${ZSERIO_GEN_DIR}/sql_virtual_columns/simple_virtual_columns/SimpleVirtualColumnsTableRow.cpp
-        ${ZSERIO_GEN_DIR}/sql_virtual_columns/simple_virtual_columns/SimpleVirtualColumnsTableRow.h
-    )
-endif ()
-
 zserio_add_library(TARGET sql_virtual_columns_zs
     SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/zs
     MAIN_SOURCE sql_virtual_columns.zs
     OUT_DIR ${ZSERIO_GEN_DIR}
     OUT_FILES ${ZSERIO_GENERATED_SOURCES}
     ZSERIO_CORE_DIR ${ZSERIO_JAR_DIR}
-    ZSERIO_OPTIONS -withoutSourcesAmalgamation -cppStandard ${ZSERIO_CPP_STANDARD}
+    ZSERIO_OPTIONS -withoutSourcesAmalgamation
 )
 
 target_include_directories(sql_virtual_columns_zs SYSTEM PRIVATE ${SQLITE_INCDIR})

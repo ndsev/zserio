@@ -1,4 +1,4 @@
-if (GRPC_ENABLED AND ${ZSERIO_CPP_STANDARD} STREQUAL c++11)
+if (GRPC_ENABLED)
     set(ZSERIO_GEN_DIR ${CMAKE_CURRENT_BINARY_DIR}/gen)
     set(ZSERIO_GENERATED_SOURCES
         ${ZSERIO_GEN_DIR}/service_types/simple_service/Response.h
@@ -50,7 +50,7 @@ if (GRPC_ENABLED AND ${ZSERIO_CPP_STANDARD} STREQUAL c++11)
         OUT_DIR ${ZSERIO_GEN_DIR}
         OUT_FILES ${ZSERIO_GENERATED_SOURCES}
         ZSERIO_CORE_DIR ${ZSERIO_JAR_DIR}
-        ZSERIO_OPTIONS -withoutSourcesAmalgamation -cppStandard ${ZSERIO_CPP_STANDARD}
+        ZSERIO_OPTIONS -withoutSourcesAmalgamation
     )
 
     target_include_directories(service_types_zs SYSTEM PRIVATE ${GRPC_INCDIR})

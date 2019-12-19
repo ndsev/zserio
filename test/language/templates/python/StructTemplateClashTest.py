@@ -12,7 +12,7 @@ class StructTemplateClashTest(unittest.TestCase):
         testStruct_uint32 = self.api.TestStruct_uint32.fromFields(
             42,
             self.api.Template_A_B_C_7FE93D34.fromFields(self.api.A_B.fromFields(1),
-                                                        self.api.C.fromFields(2.0)),
+                                                        self.api.C.fromFields(True)),
             self.api.Template_A_B_C_5EB4E3FC.fromFields(self.api.A.fromFields(1),
                                                         self.api.B_C.fromFields("string")))
         instantiationNameClash = self.api.InstantiationNameClash.fromFields(testStruct_uint32)

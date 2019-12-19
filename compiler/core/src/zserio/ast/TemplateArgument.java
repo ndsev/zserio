@@ -44,7 +44,6 @@ public class TemplateArgument extends AstNodeBase
         return typeReference;
     }
 
-    // TODO[mikir] This should be sorted out because here it shouldn't be solved typeReference equality.
     @Override
     public boolean equals(Object other)
     {
@@ -102,9 +101,6 @@ public class TemplateArgument extends AstNodeBase
 
         // We need to "remember" the referenced base type because in case the argument is a template
         // instantiation, the type reference will be resolved further during the template instantiation.
-        // TODO[mikir] This is needed only because of getVisibleInstantiateType, should be done somehow better.
-        // One possible solution can be to move this logic to InstantiateType. This type should store original
-        // referecies.
         referencedBaseType = typeReference.getBaseTypeReference().getType();
         isResolved = true;
     }
