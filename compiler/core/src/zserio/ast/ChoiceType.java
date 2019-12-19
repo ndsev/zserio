@@ -169,8 +169,8 @@ public class ChoiceType extends CompoundType
         isChoiceDefaultUnreachable = checkUnreachableDefault();
         checkSelectorType();
         checkCaseTypes();
-        // TODO[Mi-L@]: checkBitmaskCases();
         checkEnumerationCases();
+        checkBitmaskCases();
         checkDuplicatedCases();
     }
 
@@ -244,8 +244,12 @@ public class ChoiceType extends CompoundType
                             ? newExpression.getIntegerValue().equals(caseExpression.getIntegerValue())
                             : newExpression.toString().equals(caseExpression.toString());
                     if (equals)
-                        throw new ParserException(newExpression, "Choice '" + getName() +
-                                "' has duplicated case!");
+                    {
+                        final ParserStackedException stackedException = new ParserStackedException(
+                                newExpression.getLocation(), "Choice '" + getName() + "' has duplicated case!");
+                        stackedException.pushMessage(caseExpression.getLocation(), "    First handled here");
+                        throw stackedException;
+                    }
                 }
                 allExpressions.add(newCaseExpression.getExpression());
             }
@@ -287,6 +291,34 @@ public class ChoiceType extends CompoundType
                     ZserioToolPrinter.printWarning(this, "Enumeration value '" +
                             unhandledEnumItem.getName() + "' is not handled in choice '" + getName() +
                             "'.");
+                }
+            }
+        }
+    }
+
+    private void checkBitmaskCases()
+    {
+        final ZserioType selectorExpressionType = selectorExpression.getExprZserioType();
+        if (selectorExpressionType instanceof BitmaskType)
+        {
+            final BitmaskType resolvedBitmaskType = (BitmaskType)selectorExpressionType;
+
+            final List<BitmaskValue> availableBitmaskValues = resolvedBitmaskType.getValues();
+
+            for (ChoiceCase choiceCase : choiceCases)
+            {
+                final List<ChoiceCaseExpression> caseExpressions = choiceCase.getExpressions();
+                for (ChoiceCaseExpression caseExpression : caseExpressions)
+                {
+                    final Expression expression = caseExpression.getExpression();
+                    final Set<BitmaskValue> referencedBitmaskValues =
+                            expression.getReferencedSymbolObjects(BitmaskValue.class);
+                    for (BitmaskValue referencedBitmaskValue : referencedBitmaskValues)
+                    {
+                        if (!availableBitmaskValues.contains(referencedBitmaskValue))
+                            throw new ParserException(expression, "Choice '" + getName() +
+                                    "' has case with different bitmask type than selector!");
+                    }
                 }
             }
         }
