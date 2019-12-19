@@ -1,3 +1,0 @@
-// suppress "Member variable 'X' is not initialized in the constructor."
-uninitMemberVar:*/EmptyUnionWithParameter.cpp
-uninitMemberVar:*/TestUnion.cpp

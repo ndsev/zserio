@@ -17,13 +17,7 @@ set(CPPCHECK_HOME "" CACHE PATH "Home directory of cppcheck tool. If empty, cppc
 set(ZSERIO_PROJECT_ROOT "${CMAKE_CURRENT_SOURCE_DIR}/..")
 set(ZSERIO_RELEASE_ROOT "${ZSERIO_PROJECT_ROOT}/distr" CACHE PATH "Root directory of Zserio release binaries.")
 set(ZSERIO_TEST_NAME "*" CACHE STRING "Example test name to run. Empty means all example tests.")
-set(ZSERIO_CPP_STANDARD "c++11" CACHE STRING "C++ standard for generated sources to use.")
-set_property(CACHE ZSERIO_CPP_STANDARD PROPERTY STRINGS "c++11" "c++98")
-if ("${ZSERIO_CPP_STANDARD}" STREQUAL "c++98")
-    set(ZSERIO_CPP_DIR "cpp98")
-else ()
-    set(ZSERIO_CPP_DIR "cpp")
-endif ()
+set(ZSERIO_CPP_DIR "cpp")
 
 # add gtest library
 set(CMAKE_MODULE_PATH ${ZSERIO_PROJECT_ROOT}/cmake)
@@ -39,9 +33,7 @@ compiler_set_pthread()
 compiler_set_static_clibs()
 compiler_set_warnings()
 compiler_set_warnings_as_errors()
-if (ZSERIO_CPP_STANDARD STREQUAL "c++11")
-    set(CMAKE_CXX_STANDARD 11)
-endif ()
+set(CMAKE_CXX_STANDARD 11)
 
 # add SQLite3 for testing
 include(sqlite_utils)

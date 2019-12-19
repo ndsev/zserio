@@ -69,43 +69,13 @@ set(ZSERIO_GENERATED_SOURCES
     ${ZSERIO_GEN_DIR}/sql_tables/TestDb.h
 )
 
-if (NOT ${ZSERIO_CPP_STANDARD} STREQUAL c++11)
-    set(ZSERIO_GENERATED_SOURCES
-        ${ZSERIO_GENERATED_SOURCES}
-        ${ZSERIO_GEN_DIR}/sql_tables/blob_field_with_children_initialization_table/BlobFieldWithChildrenInitializationTableRow.cpp
-        ${ZSERIO_GEN_DIR}/sql_tables/blob_field_with_children_initialization_table/BlobFieldWithChildrenInitializationTableRow.h
-        ${ZSERIO_GEN_DIR}/sql_tables/blob_param_table/BlobParamTableRow.cpp
-        ${ZSERIO_GEN_DIR}/sql_tables/blob_param_table/BlobParamTableRow.h
-        ${ZSERIO_GEN_DIR}/sql_tables/blob_offsets_param_table/BlobOffsetsParamTableRow.cpp
-        ${ZSERIO_GEN_DIR}/sql_tables/blob_offsets_param_table/BlobOffsetsParamTableRow.h
-        ${ZSERIO_GEN_DIR}/sql_tables/column_param_table/ColumnParamTableRow.cpp
-        ${ZSERIO_GEN_DIR}/sql_tables/column_param_table/ColumnParamTableRow.h
-        ${ZSERIO_GEN_DIR}/sql_tables/complex_table/ComplexTableRow.cpp
-        ${ZSERIO_GEN_DIR}/sql_tables/complex_table/ComplexTableRow.h
-        ${ZSERIO_GEN_DIR}/sql_tables/const_param_table/ConstParamTableRow.cpp
-        ${ZSERIO_GEN_DIR}/sql_tables/const_param_table/ConstParamTableRow.h
-        ${ZSERIO_GEN_DIR}/sql_tables/dynamic_bit_field_enum_field_table/DynamicBitFieldEnumFieldTableRow.cpp
-        ${ZSERIO_GEN_DIR}/sql_tables/dynamic_bit_field_enum_field_table/DynamicBitFieldEnumFieldTableRow.h
-        ${ZSERIO_GEN_DIR}/sql_tables/multiple_pk_table/MultiplePkTableRow.cpp
-        ${ZSERIO_GEN_DIR}/sql_tables/multiple_pk_table/MultiplePkTableRow.h
-        ${ZSERIO_GEN_DIR}/sql_tables/subtyped_table/TestTableRow.cpp
-        ${ZSERIO_GEN_DIR}/sql_tables/subtyped_table/TestTableRow.h
-        ${ZSERIO_GEN_DIR}/sql_tables/subtyped_bool_field_table/SubtypedBoolFieldTableRow.cpp
-        ${ZSERIO_GEN_DIR}/sql_tables/subtyped_bool_field_table/SubtypedBoolFieldTableRow.h
-        ${ZSERIO_GEN_DIR}/sql_tables/subtyped_enum_field_table/SubtypedEnumFieldTableRow.cpp
-        ${ZSERIO_GEN_DIR}/sql_tables/subtyped_enum_field_table/SubtypedEnumFieldTableRow.h
-        ${ZSERIO_GEN_DIR}/sql_tables/without_pk_table/WithoutPkTableRow.cpp
-        ${ZSERIO_GEN_DIR}/sql_tables/without_pk_table/WithoutPkTableRow.h
-    )
-endif ()
-
 zserio_add_library(TARGET sql_tables_zs
     SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/zs
     MAIN_SOURCE sql_tables.zs
     OUT_DIR ${ZSERIO_GEN_DIR}
     OUT_FILES ${ZSERIO_GENERATED_SOURCES}
     ZSERIO_CORE_DIR ${ZSERIO_JAR_DIR}
-    ZSERIO_OPTIONS -withoutSourcesAmalgamation -cppStandard ${ZSERIO_CPP_STANDARD}
+    ZSERIO_OPTIONS -withoutSourcesAmalgamation
     IGNORE_WARNINGS ON
 )
 

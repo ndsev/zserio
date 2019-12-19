@@ -189,12 +189,6 @@ generate_cpp_files()
     posix_to_host_path "${LOG_PATH}" HOST_LOG_PATH ${DISABLE_SLASHES_CONVERSION}
     posix_to_host_path "${BLOB_PATH}" HOST_BLOB_PATH ${DISABLE_SLASHES_CONVERSION}
 
-    if [[ "${GENERATOR}" == "cpp" ]] ; then
-        local CPP_STANDARD="11"
-    else
-        local CPP_STANDARD="98"
-    fi
-
     cat > "${BUILD_DIR}"/CMakeLists.txt << EOF
 cmake_minimum_required(VERSION 2.8.12.2)
 project(PerformanceTest)
@@ -217,7 +211,7 @@ compiler_set_static_clibs()
 compiler_set_warnings()
 
 # setup C++11
-set(CMAKE_CXX_STANDARD ${CPP_STANDARD})
+set(CMAKE_CXX_STANDARD 11)
 
 # add zserio runtime library
 include(zserio_utils)
@@ -451,7 +445,7 @@ EOF
 # Run zserio performance tests.
 test()
 {
-    exit_if_argc_ne $# 16
+    exit_if_argc_ne $# 15
     local ZSERIO_RELEASE_DIR="$1"; shift
     local ZSERIO_VERSION="$1"; shift
     local ZSERIO_PROJECT_ROOT="$1"; shift
@@ -459,8 +453,6 @@ test()
     local TEST_OUT_DIR="$1"; shift
     local MSYS_WORKAROUND_TEMP=("${!1}"); shift
     local CPP_TARGETS=("${MSYS_WORKAROUND_TEMP[@]}")
-    local MSYS_WORKAROUND_TEMP=("${!1}"); shift
-    local CPP98_TARGETS=("${MSYS_WORKAROUND_TEMP[@]}")
     local PARAM_JAVA="$1"; shift
     local PARAM_PYTHON="$1"; shift
     local SWITCH_DIRECTORY="$1"; shift
@@ -485,18 +477,6 @@ test()
     if [[ ${#CPP_TARGETS[@]} -ne 0 ]] ; then
         rm -rf "${TEST_OUT_DIR}/cpp"
         ZSERIO_ARGS+=("-cpp" "${TEST_OUT_DIR}/cpp/gen")
-    fi
-    if [[ ${#CPP98_TARGETS[@]} -ne 0 ]] ; then
-        if [[ ${#CPP_TARGETS[@]} -ne 0 ]] ; then
-            run_zserio_tool "${UNPACKED_ZSERIO_RELEASE_DIR}" "${TEST_OUT_DIR}" \
-                "${SWITCH_DIRECTORY}" "${SWITCH_SOURCE}" 0 ZSERIO_ARGS[@]
-            if [ $? -ne 0 ] ; then
-                return 1
-            fi
-            ZSERIO_ARGS=()
-        fi
-        rm -rf "${TEST_OUT_DIR}/cpp98"
-        ZSERIO_ARGS+=("-cpp" "${TEST_OUT_DIR}/cpp98/gen" "-cppStandard" "c++98")
     fi
     if [[ ${PARAM_JAVA} == 1 ]] ; then
         rm -rf "${TEST_OUT_DIR}/java"
@@ -538,20 +518,6 @@ test()
         fi
     fi
 
-    # run C++98 performance test
-    if [[ ${#CPP98_TARGETS[@]} != 0 ]] ; then
-        generate_cpp_files "${ZSERIO_PROJECT_ROOT}" "${UNPACKED_ZSERIO_RELEASE_DIR}" "${TEST_OUT_DIR}/cpp98" \
-                           "${SWITCH_BLOB_NAME}" "${SWITCH_BLOB_PATH}" ${SWITCH_NUM_ITERATIONS} \
-                           ${SWITCH_TEST_CONFIG} "cpp98"
-        local CMAKE_ARGS=()
-        local CTEST_ARGS=()
-        compile_cpp "${ZSERIO_PROJECT_ROOT}" "${TEST_OUT_DIR}/cpp98" "${TEST_OUT_DIR}/cpp98" \
-                    CPP98_TARGETS[@] CMAKE_ARGS[@] CTEST_ARGS[@] all
-        if [ $? -ne 0 ] ; then
-            return 1
-        fi
-    fi
-
     # run Python performance test
     if [[ ${PARAM_PYTHON} == 1 ]] ; then
         activate_python_virtualenv "${ZSERIO_PROJECT_ROOT}" "${ZSERIO_BUILD_DIR}"
@@ -582,10 +548,6 @@ test()
     if [[ ${#CPP_TARGETS[@]} != 0 ]] ; then
         RESULTS=($(cat ${TEST_OUT_DIR}/cpp/PerformanceTest.log))
         printf "| %-10s | %15s | %10s | %15s |\n" C++ ${RESULTS[0]} ${RESULTS[1]} ${RESULTS[2]}
-    fi
-    if [[ ${#CPP98_TARGETS[@]} != 0 ]] ; then
-        RESULTS=($(cat ${TEST_OUT_DIR}/cpp98/PerformanceTest.log))
-        printf "| %-10s | %15s | %10s | %15s |\n" C++98 ${RESULTS[0]} ${RESULTS[1]} ${RESULTS[2]}
     fi
     if [[ ${PARAM_PYTHON} == 1 ]] ; then
         RESULTS=($(cat ${TEST_OUT_DIR}/python/perftest.log))
@@ -625,12 +587,6 @@ Generator can be:
     cpp-windows64-mingw     Generate C++ sources and compile them for for windows64 target (MinGW64).
     cpp-windows32-msvc      Generate C++ sources and compile them for for windows32 target (MSVC).
     cpp-windows64-msvc      Generate C++ sources and compile them for for windows64 target (MSVC).
-    cpp98-linux32           Generate C++98 sources and compile them for linux32 target (GCC).
-    cpp98-linux64           Generate C++98 sources and compile them for for linux64 target (GCC).
-    cpp98-windows32-mingw   Generate C++98 sources and compile them for for windows32 target (MinGW).
-    cpp98-windows64-mingw   Generate C++98 sources and compile them for for windows64 target (MinGW64).
-    cpp98-windows32-msvc    Generate C++98 sources and compile them for for windows32 target (MSVC).
-    cpp98-windows64-msvc    Generate C++98 sources and compile them for for windows64 target (MSVC).
     java                    Generate Java sources and compile them.
     python                  Generate python sources.
     all-linux32             Test all generators and compile all possible linux32 sources (GCC).
@@ -659,9 +615,8 @@ EOF
 # 2 - Help switch is present. Arguments after help switch have not been checked.
 parse_arguments()
 {
-    exit_if_argc_lt $# 13
+    exit_if_argc_lt $# 12
     local PARAM_CPP_TARGET_ARRAY_OUT="$1"; shift
-    local PARAM_CPP98_TARGET_ARRAY_OUT="$1"; shift
     local PARAM_JAVA_OUT="$1"; shift
     local PARAM_PYTHON_OUT="$1"; shift
     local PARAM_OUT_DIR_OUT="$1"; shift
@@ -804,18 +759,12 @@ parse_arguments()
     done
 
     local NUM_CPP_TARGETS=0
-    local NUM_CPP98_TARGETS=0
     local PARAM
     for PARAM in "${PARAM_ARRAY[@]}" ; do
         case "${PARAM}" in
             "cpp-linux32" | "cpp-linux64" | "cpp-windows32-"* | "cpp-windows64-"*)
                 eval ${PARAM_CPP_TARGET_ARRAY_OUT}[${NUM_CPP_TARGETS}]="${PARAM#cpp-}"
                 NUM_CPP_TARGETS=$((NUM_CPP_TARGETS + 1))
-                ;;
-
-            "cpp98-linux32" | "cpp98-linux64" | "cpp98-windows32-"* | "cpp98-windows64-"*)
-                eval ${PARAM_CPP98_TARGET_ARRAY_OUT}[${NUM_CPP98_TARGETS}]="${PARAM#cpp98-}"
-                NUM_CPP98_TARGETS=$((NUM_CPP98_TARGETS + 1))
                 ;;
 
             "java")
@@ -829,8 +778,6 @@ parse_arguments()
             "all-linux32" | "all-linux64" | "all-windows32-"* | "all-windows64-"*)
                 eval ${PARAM_CPP_TARGET_ARRAY_OUT}[${NUM_CPP_TARGETS}]="${PARAM#all-}"
                 NUM_CPP_TARGETS=$((NUM_CPP_TARGETS + 1))
-                eval ${PARAM_CPP98_TARGET_ARRAY_OUT}[${NUM_CPP98_TARGETS}]="${PARAM#all-}"
-                NUM_CPP98_TARGETS=$((NUM_CPP98_TARGETS + 1))
                 eval ${PARAM_JAVA_OUT}=1
                 eval ${PARAM_PYTHON_OUT}=1
                 ;;
@@ -854,7 +801,6 @@ parse_arguments()
 
     if [[ ${!SWITCH_PURGE_OUT} == 0 ]] ; then
         if [[ ${NUM_CPP_TARGETS} == 0 &&
-            ${NUM_CPP98_TARGETS} == 0 &&
             ${!PARAM_JAVA_OUT} == 0 &&
             ${!PARAM_PYTHON_OUT} == 0 ]] ; then
             stderr_echo "Generator to test is not specified!"
@@ -902,7 +848,6 @@ main()
 
     # parse command line arguments
     local PARAM_CPP_TARGET_ARRAY=()
-    local PARAM_CPP98_TARGET_ARRAY=()
     local PARAM_JAVA
     local PARAM_PYTHON
     local PARAM_OUT_DIR="${ZSERIO_PROJECT_ROOT}"
@@ -914,9 +859,9 @@ main()
     local SWITCH_NUM_ITERATIONS
     local SWITCH_TEST_CONFIG
     local SWITCH_PURGE
-    parse_arguments PARAM_CPP_TARGET_ARRAY PARAM_CPP98_TARGET_ARRAY PARAM_JAVA PARAM_PYTHON \
-            PARAM_OUT_DIR SWITCH_DIRECTORY SWITCH_SOURCE SWITCH_TEST_NAME \
-            SWITCH_BLOB_NAME SWITCH_BLOB_FILE SWITCH_NUM_ITERATIONS SWITCH_TEST_CONFIG SWITCH_PURGE $@
+    parse_arguments PARAM_CPP_TARGET_ARRAY PARAM_JAVA PARAM_PYTHON PARAM_OUT_DIR \
+            SWITCH_DIRECTORY SWITCH_SOURCE SWITCH_TEST_NAME SWITCH_BLOB_NAME SWITCH_BLOB_FILE \
+            SWITCH_NUM_ITERATIONS SWITCH_TEST_CONFIG SWITCH_PURGE $@
     if [ $? -ne 0 ] ; then
         print_help
         return 1
@@ -933,7 +878,7 @@ main()
         return 1
     fi
 
-    if [[ ${#PARAM_CPP_TARGET_ARRAY[@]} -ne 0 || ${#PARAM_CPP98_TARGET_ARRAY[@]} -ne 0 ]] ; then
+    if [[ ${#PARAM_CPP_TARGET_ARRAY[@]} -ne 0 ]] ; then
         set_global_cpp_variables "${ZSERIO_PROJECT_ROOT}"
         if [ $? -ne 0 ] ; then
             return 1
@@ -963,7 +908,6 @@ main()
         rm -rf "${TEST_OUT_DIR}/"
 
         if [[ ${#PARAM_CPP_TARGET_ARRAY[@]} == 0 &&
-              ${#PARAM_CPP98_TARGET_ARRAY[@]} == 0 &&
               ${PARAM_JAVA} == 0 &&
               ${PARAM_PYTHON} == 0 ]] ; then
             return 0  # purge only
@@ -987,7 +931,7 @@ main()
 
     # run test
     test "${ZSERIO_RELEASE_DIR}" "${ZSERIO_VERSION}" "${ZSERIO_PROJECT_ROOT}" "${ZSERIO_BUILD_DIR}" \
-         "${TEST_OUT_DIR}" PARAM_CPP_TARGET_ARRAY[@] PARAM_CPP98_TARGET_ARRAY[@] ${PARAM_JAVA} ${PARAM_PYTHON} \
+         "${TEST_OUT_DIR}" PARAM_CPP_TARGET_ARRAY[@] ${PARAM_JAVA} ${PARAM_PYTHON} \
          "${SWITCH_DIRECTORY}" "${SWITCH_SOURCE}" "${SWITCH_TEST_NAME}" "${SWITCH_BLOB_NAME}" \
          "${SWITCH_BLOB_FILE}" ${SWITCH_NUM_ITERATIONS} ${SWITCH_TEST_CONFIG}
     if [ $? -ne 0 ] ; then

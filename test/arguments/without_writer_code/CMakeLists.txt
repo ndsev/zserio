@@ -18,21 +18,13 @@ set(ZSERIO_GENERATED_SOURCES
     ${ZSERIO_GEN_DIR}/without_writer_code/WorldDb.h
 )
 
-if (NOT ${ZSERIO_CPP_STANDARD} STREQUAL c++11)
-    set(ZSERIO_GENERATED_SOURCES
-        ${ZSERIO_GENERATED_SOURCES}
-        ${ZSERIO_GEN_DIR}/without_writer_code/GeoMapTableRow.cpp
-        ${ZSERIO_GEN_DIR}/without_writer_code/GeoMapTableRow.h
-    )
-endif ()
-
 zserio_add_library(TARGET without_writer_code_zs
     SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/zs
     MAIN_SOURCE without_writer_code.zs
     OUT_DIR ${ZSERIO_GEN_DIR}
     OUT_FILES ${ZSERIO_GENERATED_SOURCES}
     ZSERIO_CORE_DIR ${ZSERIO_JAR_DIR}
-    ZSERIO_OPTIONS -withoutWriterCode -withoutSourcesAmalgamation -cppStandard ${ZSERIO_CPP_STANDARD}
+    ZSERIO_OPTIONS -withoutWriterCode -withoutSourcesAmalgamation
 )
 
 target_include_directories(without_writer_code_zs SYSTEM PRIVATE ${SQLITE_INCDIR})

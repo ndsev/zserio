@@ -40,7 +40,7 @@ test_python()
 # Run zserio tests.
 test()
 {
-    exit_if_argc_ne $# 12
+    exit_if_argc_ne $# 11
     local ZSERIO_RELEASE_DIR="$1"; shift
     local ZSERIO_VERSION="$1"; shift
     local ZSERIO_PROJECT_ROOT="$1"; shift
@@ -48,8 +48,6 @@ test()
     local TEST_OUT_DIR="$1"; shift
     local MSYS_WORKAROUND_TEMP=("${!1}"); shift
     local CPP_TARGETS=("${MSYS_WORKAROUND_TEMP[@]}")
-    local MSYS_WORKAROUND_TEMP=("${!1}"); shift
-    local CPP98_TARGETS=("${MSYS_WORKAROUND_TEMP[@]}")
     local PARAM_JAVA="$1"; shift
     local PARAM_PYTHON="$1"; shift
     local SWITCH_CLEAN="$1"; shift
@@ -93,42 +91,6 @@ test()
         fi
         compile_cpp "${ZSERIO_PROJECT_ROOT}" "${TEST_OUT_DIR}/cpp" "${TEST_SRC_DIR}" CPP_TARGETS[@] \
                     CMAKE_ARGS[@] CTEST_ARGS[@] ${CPP_TARGET}
-        if [ $? -ne 0 ] ; then
-            stderr_echo "${MESSAGE} failed!"
-            return 1
-        fi
-        echo -e "FINISHED - ${MESSAGE}\n"
-    fi
-
-    # run C++98 zserio tests
-    if [[ ${#CPP98_TARGETS[@]} != 0 ]] ; then
-        local MESSAGE="zserio C++98 tests"
-        echo "STARTING - ${MESSAGE}"
-
-        local HOST_PLATFORM
-        get_host_platform HOST_PLATFORM
-        if [ $? -ne 0 ] ; then
-            return 1
-        fi
-
-        local CPP98_TEST_NAME="${SWITCH_TEST_NAME}"
-        if [[ "${CPP98_TEST_NAME}" == "" ]]; then
-            CPP98_TEST_NAME="*"
-        fi
-        local CMAKE_ARGS=("-DZSERIO_RUNTIME_INCLUDE_INSPECTOR=ON"
-                          "-DZSERIO_RELEASE_ROOT=${UNPACKED_ZSERIO_RELEASE_DIR}"
-                          "-DZSERIO_TEST_NAME=${CPP98_TEST_NAME}"
-                          "-DZSERIO_CPP_STANDARD=c++98"
-                          "-DGRPC_ENABLED=${SWITCH_GRPC}"
-                          "-DGRPC_ROOT=${GRPC_ROOT}")
-        local CTEST_ARGS=()
-        if [[ ${SWITCH_CLEAN} == 1 ]] ; then
-            local CPP98_TARGET="clean"
-        else
-            local CPP98_TARGET="all"
-        fi
-        compile_cpp "${ZSERIO_PROJECT_ROOT}" "${TEST_OUT_DIR}/cpp98" "${TEST_SRC_DIR}" CPP98_TARGETS[@] \
-                    CMAKE_ARGS[@] CTEST_ARGS[@] ${CPP98_TARGET}
         if [ $? -ne 0 ] ; then
             stderr_echo "${MESSAGE} failed!"
             return 1
@@ -222,12 +184,6 @@ Package can be a combination of:
     cpp-windows64-mingw   Zserio C++ tests for windows64 target (MinGW64).
     cpp-windows32-msvc    Zserio C++ tests for windows32 target (MSVC).
     cpp-windows64-msvc    Zserio C++ tests for windows64 target (MSVC).
-    cpp98-linux32         Zserio C++98 tests for linux32 target using gcc compiler.
-    cpp98-linux64         Zserio C++98 tests for linux64 target using gcc compiler.
-    cpp98-windows32-mingw Zserio C++98 tests for windows32 target (MinGW).
-    cpp98-windows64-mingw Zserio C++98 tests for windows64 target (MinGW64).
-    cpp98-windows32-msvc  Zserio C++98 tests for windows32 target (MSVC).
-    cpp98-windows64-msvc  Zserio C++98 tests for windows64 target (MSVC).
     java                  Zserio Java tests.
     python                Zserio Python tests.
     all-linux32           Zserio tests - all available linux32 packages.
@@ -258,9 +214,8 @@ EOF
 # 2 - Help switch is present. Arguments after help switch have not been checked.
 parse_arguments()
 {
-    exit_if_argc_lt $# 8
+    exit_if_argc_lt $# 7
     local PARAM_CPP_TARGET_ARRAY_OUT="$1"; shift
-    local PARAM_CPP98_TARGET_ARRAY_OUT="$1"; shift
     local PARAM_JAVA_OUT="$1"; shift
     local PARAM_PYTHON_OUT="$1"; shift
     local PARAM_OUT_DIR_OUT="$1"; shift
@@ -333,18 +288,12 @@ parse_arguments()
     done
 
     local NUM_CPP_TARGETS=0
-    local NUM_CPP98_TARGETS=0
     local PARAM
     for PARAM in "${PARAM_ARRAY[@]}" ; do
         case "${PARAM}" in
             "cpp-linux32" | "cpp-linux64" | "cpp-windows32-"* | "cpp-windows64-"*)
                 eval ${PARAM_CPP_TARGET_ARRAY_OUT}[${NUM_CPP_TARGETS}]="${PARAM#cpp-}"
                 NUM_CPP_TARGETS=$((NUM_CPP_TARGETS + 1))
-                ;;
-
-            "cpp98-linux32" | "cpp98-linux64" | "cpp98-windows32-"* | "cpp98-windows64-"*)
-                eval ${PARAM_CPP98_TARGET_ARRAY_OUT}[${NUM_CPP98_TARGETS}]="${PARAM#cpp98-}"
-                NUM_CPP98_TARGETS=$((NUM_CPP98_TARGETS + 1))
                 ;;
 
             "java")
@@ -357,11 +306,9 @@ parse_arguments()
 
             "all-linux32" | "all-linux64" | "all-windows32-"* | "all-windows64-"*)
                 eval ${PARAM_CPP_TARGET_ARRAY_OUT}[${NUM_CPP_TARGETS}]="${PARAM#all-}"
-                eval ${PARAM_CPP98_TARGET_ARRAY_OUT}[${NUM_CPP98_TARGETS}]="${PARAM#all-}"
                 eval ${PARAM_JAVA_OUT}=1
                 eval ${PARAM_PYTHON_OUT}=1
                 NUM_CPP_TARGETS=$((NUM_CPP_TARGETS + 1))
-                NUM_CPP98_TARGETS=$((NUM_CPP98_TARGETS + 1))
                 ;;
 
             *)
@@ -372,7 +319,6 @@ parse_arguments()
     done
 
     if [[ ${NUM_CPP_TARGETS} -eq 0 &&
-          ${NUM_CPP98_TARGETS} -eq 0 &&
           ${!PARAM_JAVA_OUT} == 0 &&
           ${!PARAM_PYTHON_OUT} == 0 &&
           ${!SWITCH_PURGE_OUT} == 0 ]] ; then
@@ -395,7 +341,6 @@ main()
 
     # parse command line arguments
     local PARAM_CPP_TARGET_ARRAY=()
-    local PARAM_CPP98_TARGET_ARRAY=()
     local PARAM_JAVA
     local PARAM_PYTHON
     local PARAM_OUT_DIR="${ZSERIO_PROJECT_ROOT}"
@@ -403,7 +348,7 @@ main()
     local SWITCH_PURGE
     local SWITCH_GRPC
     local SWITCH_TEST_NAME
-    parse_arguments PARAM_CPP_TARGET_ARRAY PARAM_CPP98_TARGET_ARRAY PARAM_JAVA PARAM_PYTHON PARAM_OUT_DIR \
+    parse_arguments PARAM_CPP_TARGET_ARRAY PARAM_JAVA PARAM_PYTHON PARAM_OUT_DIR \
                     SWITCH_CLEAN SWITCH_PURGE SWITCH_GRPC SWITCH_TEST_NAME $@
     if [ $? -ne 0 ] ; then
         print_help
@@ -421,7 +366,7 @@ main()
         return 1
     fi
 
-    if [[ ${#PARAM_CPP_TARGET_ARRAY[@]} -ne 0 || ${#PARAM_CPP98_TARGET_ARRAY[@]} -ne 0 ]] ; then
+    if [[ ${#PARAM_CPP_TARGET_ARRAY[@]} -ne 0 ]] ; then
         set_global_cpp_variables
         if [ $? -ne 0 ] ; then
             return 1
@@ -467,7 +412,7 @@ main()
 
     # run test
     test "${ZSERIO_RELEASE_DIR}" "${ZSERIO_VERSION}" "${ZSERIO_PROJECT_ROOT}" "${ZSERIO_BUILD_DIR}" \
-         "${TEST_OUT_DIR}" PARAM_CPP_TARGET_ARRAY[@] PARAM_CPP98_TARGET_ARRAY[@] ${PARAM_JAVA} ${PARAM_PYTHON} \
+         "${TEST_OUT_DIR}" PARAM_CPP_TARGET_ARRAY[@] ${PARAM_JAVA} ${PARAM_PYTHON} \
          ${SWITCH_CLEAN} ${SWITCH_GRPC} "${SWITCH_TEST_NAME}"
     if [ $? -ne 0 ] ; then
         return 1

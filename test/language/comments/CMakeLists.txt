@@ -25,23 +25,13 @@ set(ZSERIO_GENERATED_SOURCES
     ${ZSERIO_GEN_DIR}/comments/documentation/unknown_tag_matching_prefix/VALUE.h
 )
 
-if (NOT ${ZSERIO_CPP_STANDARD} STREQUAL c++11)
-    set(ZSERIO_GENERATED_SOURCES
-        ${ZSERIO_GENERATED_SOURCES}
-        ${ZSERIO_GEN_DIR}/comments/documentation/sql_database_comments/TableRow.cpp
-        ${ZSERIO_GEN_DIR}/comments/documentation/sql_database_comments/TableRow.h
-        ${ZSERIO_GEN_DIR}/comments/documentation/sql_table_comments/VirtualTableRow.cpp
-        ${ZSERIO_GEN_DIR}/comments/documentation/sql_table_comments/VirtualTableRow.h
-    )
-endif ()
-
 zserio_add_library(TARGET comments_zs
     SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/zs
     MAIN_SOURCE comments.zs
     OUT_DIR ${ZSERIO_GEN_DIR}
     OUT_FILES ${ZSERIO_GENERATED_SOURCES}
     ZSERIO_CORE_DIR ${ZSERIO_JAR_DIR}
-    ZSERIO_OPTIONS -withoutSourcesAmalgamation -cppStandard ${ZSERIO_CPP_STANDARD}
+    ZSERIO_OPTIONS -withoutSourcesAmalgamation
 )
 
 target_include_directories(comments_zs SYSTEM PRIVATE ${SQLITE_INCDIR})

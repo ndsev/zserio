@@ -385,29 +385,13 @@ set(ZSERIO_GENERATED_SOURCES
     ${ZSERIO_GEN_DIR}/templates/union_templated_field/Compound_Compound_uint16.h
 )
 
-if (NOT ${ZSERIO_CPP_STANDARD} STREQUAL c++11)
-    set(ZSERIO_GENERATED_SOURCES
-        ${ZSERIO_GENERATED_SOURCES}
-        ${ZSERIO_GEN_DIR}/templates/instantiate_sql_table/U32TableRow.cpp
-        ${ZSERIO_GEN_DIR}/templates/instantiate_sql_table/U32TableRow.h
-        ${ZSERIO_GEN_DIR}/templates/instantiate_type_as_sql_database_field/StringTableRow.cpp
-        ${ZSERIO_GEN_DIR}/templates/instantiate_type_as_sql_database_field/StringTableRow.h
-        ${ZSERIO_GEN_DIR}/templates/instantiate_type_as_sql_table_field/Test32TableRow.cpp
-        ${ZSERIO_GEN_DIR}/templates/instantiate_type_as_sql_table_field/Test32TableRow.h
-        ${ZSERIO_GEN_DIR}/templates/sql_table_templated_field/TemplatedTable_UnionRow.cpp
-        ${ZSERIO_GEN_DIR}/templates/sql_table_templated_field/TemplatedTable_UnionRow.h
-        ${ZSERIO_GEN_DIR}/templates/sql_table_templated_field/TemplatedTable_uint32Row.cpp
-        ${ZSERIO_GEN_DIR}/templates/sql_table_templated_field/TemplatedTable_uint32Row.h
-    )
-endif ()
-
 zserio_add_library(TARGET templates_zs
     SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/zs
     MAIN_SOURCE templates.zs
     OUT_DIR ${ZSERIO_GEN_DIR}
     OUT_FILES ${ZSERIO_GENERATED_SOURCES}
     ZSERIO_CORE_DIR ${ZSERIO_JAR_DIR}
-    ZSERIO_OPTIONS -withoutSourcesAmalgamation -cppStandard ${ZSERIO_CPP_STANDARD}
+    ZSERIO_OPTIONS -withoutSourcesAmalgamation
 )
 
 target_include_directories(templates_zs SYSTEM PRIVATE ${SQLITE_INCDIR})

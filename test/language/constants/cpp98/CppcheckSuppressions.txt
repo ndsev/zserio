@@ -1,2 +1,0 @@
-// suppress "Class 'X' has a constructor with 1 argument that is not explicit."
-noExplicitConstructor:*/Colors.h
