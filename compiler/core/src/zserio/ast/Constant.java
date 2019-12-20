@@ -115,8 +115,13 @@ public class Constant extends DocumentableAstNode implements Comparable<Constant
     {
         // check base type
         final ZserioType baseType = typeInstantiation.getBaseType();
-        if (!(baseType instanceof BuiltInType) && !(baseType instanceof EnumType))
-            throw new ParserException(this, "Constants can be defined only for built-in types and enums!");
+        if (!(baseType instanceof BuiltInType) &&
+                !(baseType instanceof EnumType) &&
+                !(baseType instanceof BitmaskType))
+        {
+            throw new ParserException(this,
+                    "Constants can be defined only for built-in types, enums or bitmasks!");
+        }
 
         // check expression type
         ExpressionUtil.checkExpressionType(valueExpression, typeInstantiation);
