@@ -24,7 +24,9 @@ public class ChoiceEmitterTemplateData extends CompoundTypeTemplateData
 
         final Expression expression = choiceType.getSelectorExpression();
         selectorExpression = cppExpressionFormatter.formatGetter(expression);
-        isSelectorExpressionBoolean = expression.getExprType() == Expression.ExpressionType.BOOLEAN;
+        // TODO[Mi-L@]: Consider using switch on bitmask also (using valueof).
+        canUseNativeSwitch = expression.getExprType() != Expression.ExpressionType.BOOLEAN &&
+                expression.getExprType() != Expression.ExpressionType.BITMASK;
 
         caseMemberList = new ArrayList<CaseMember>();
         final boolean withWriterCode = context.getWithWriterCode();
@@ -59,9 +61,9 @@ public class ChoiceEmitterTemplateData extends CompoundTypeTemplateData
         return selectorExpression;
     }
 
-    public boolean getIsSelectorExpressionBoolean()
+    public boolean getCanUseNativeSwitch()
     {
-        return isSelectorExpressionBoolean;
+        return canUseNativeSwitch;
     }
 
     public Iterable<CaseMember> getCaseMemberList()
@@ -136,7 +138,7 @@ public class ChoiceEmitterTemplateData extends CompoundTypeTemplateData
     }
 
     private final String selectorExpression;
-    private final boolean isSelectorExpressionBoolean;
+    private final boolean canUseNativeSwitch;
     private final List<CaseMember> caseMemberList;
     private final DefaultMember defaultMember;
     private final boolean isDefaultUnreachable;

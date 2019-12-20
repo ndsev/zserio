@@ -171,12 +171,23 @@ public class CppExpressionFormattingPolicy extends DefaultExpressionFormattingPo
     }
 
     @Override
-    public UnaryExpressionFormatting getValueOf(Expression expr)
+    public UnaryExpressionFormatting getValueOf(Expression expr) throws ZserioEmitException
     {
-        if (expr.getExprType() == Expression.ExpressionType.ENUM)
+        if (expr.op1().getExprType() == Expression.ExpressionType.ENUM)
+        {
             return new UnaryExpressionFormatting("::zserio::enumToValue(", ")");
+        }
+        else if (expr.op1().getExprZserioType() instanceof BitmaskType)
+        {
+            final BitmaskType bitmaskType = (BitmaskType)expr.op1().getExprZserioType();
+            CppNativeType bitmaskNativeType = cppNativeMapper.getCppType(bitmaskType);
+            return new UnaryExpressionFormatting(
+                    "static_cast<" + bitmaskNativeType.getFullName() + "::underlying_type>(", ")");
+        }
         else
-            return new UnaryExpressionFormatting("", ".getValue()");
+        {
+            throw new ZserioEmitException("Unexpected expression in valueof operator!");
+        }
     }
 
     @Override
@@ -226,8 +237,8 @@ public class CppExpressionFormattingPolicy extends DefaultExpressionFormattingPo
             throws ZserioEmitException
     {
         final CppNativeType resolvedNativeType = cppNativeMapper.getCppType(resolvedType);
-        result.append(resolvedNativeType.getFullName());
         includeCollector.addCppIncludesForType(resolvedNativeType);
+        result.append(resolvedNativeType.getFullName());
     }
 
     private void formatSymbolIdentifier(StringBuilder result, String symbol, boolean isMostLeftId,

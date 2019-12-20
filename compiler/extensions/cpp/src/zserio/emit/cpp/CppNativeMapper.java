@@ -558,7 +558,7 @@ public class CppNativeMapper
             final PackageName packageName = cppPackageMapper.getPackageName(type);
             final String name = type.getName();
             final String includeFileName = getIncludePath(packageName, name);
-            cppType = new NativeUserType(packageName, name, includeFileName, false);
+            cppType = new NativeUserType(packageName, name, includeFileName, true);
         }
 
         @Override

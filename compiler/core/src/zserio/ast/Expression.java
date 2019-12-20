@@ -1025,6 +1025,7 @@ public class Expression extends AstNodeBase
 
         expressionType = op1.expressionType;
         expressionIntegerValue = op1.expressionIntegerValue.not();
+        zserioType = op1.zserioType;
     }
 
     private void evaluateArithmeticExpression()
@@ -1138,6 +1139,9 @@ public class Expression extends AstNodeBase
             operand1.propagateNeedsBigInteger();
             operand2.propagateNeedsBigInteger();
         }
+
+        // TODO[Mi-L@]: Should we check that the operands' zserio types are equal?!
+        zserioType = operand1.zserioType;
     }
 
     private void evaluateRelationalExpression()

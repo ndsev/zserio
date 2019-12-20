@@ -9,26 +9,15 @@
 <@user_include package.path, "${name}.h"/>
 <@user_includes cppUserIncludes, true/>
 <@namespace_begin package.path/>
-<#if values?has_content>
-
-<#list values as value>
-const ${name} ${name}::Values::${value.name} = ${name}(${value.value});
-</#list>
-</#if>
-
-${name}::${name}() noexcept :
-    m_value(0)
-{
-}
 
 ${name}::${name}(zserio::BitStreamReader& in) :
     m_value(readValue(in))
 {
 }
 
-${name}::${name}(underlying_type value) noexcept :
-    m_value(value)
+${name}::operator underlying_type() const
 {
+    return m_value;
 }
 
 ${name}::underlying_type ${name}::getValue() const
@@ -38,11 +27,7 @@ ${name}::underlying_type ${name}::getValue() const
 
 size_t ${name}::bitSizeOf(size_t) const
 {
-<#if runtimeFunction.arg??>
     return ${runtimeFunction.arg};
-<#else>
-    return ::zserio::bitSizeOf${runtimeFunction.suffix}(::zserio::enumToValue(value));
-</#if>
 }
 <#if withWriterCode>
 
@@ -51,11 +36,6 @@ size_t ${name}::initializeOffsets(size_t bitPosition) const
     return bitPosition + bitSizeOf(bitPosition);
 }
 </#if>
-
-bool ${name}::operator==(const ${name}& other) const
-{
-    return m_value == other.m_value;
-}
 
 int ${name}::hashCode() const
 {
@@ -72,7 +52,7 @@ void ${name}::read(::zserio::BitStreamReader& in)
 
 void ${name}::write(::zserio::BitStreamWriter& out, ::zserio::PreWriteAction) const
 {
-    out.write${runtimeFunction.suffix}(m_value<#if runtimeFunction.arg??>, ${runtimeFunction.arg}</#if>);
+    out.write${runtimeFunction.suffix}(m_value, ${runtimeFunction.arg});
 }
 </#if>
 
@@ -92,6 +72,6 @@ std::string ${name}::toString() const
 
 ${name}::underlying_type ${name}::readValue(::zserio::BitStreamReader& in)
 {
-    return static_cast<underlying_type>(in.read${runtimeFunction.suffix}(${runtimeFunction.arg!}));
+    return static_cast<underlying_type>(in.read${runtimeFunction.suffix}(${runtimeFunction.arg}));
 }
 <@namespace_end package.path/>
