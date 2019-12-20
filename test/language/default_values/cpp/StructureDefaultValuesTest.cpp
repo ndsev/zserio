@@ -6,6 +6,7 @@
 
 #include "default_values/structure_default_values/StructureDefaultValues.h"
 #include "default_values/structure_default_values/BasicColor.h"
+#include "default_values/structure_default_values/Permission.h"
 
 namespace default_values
 {
@@ -67,6 +68,12 @@ TEST(StructureDefaultValuesTest, checkDefaultEnumValue)
 {
     StructureDefaultValues structureDefaultValues;
     ASSERT_EQ(BasicColor::BLACK, structureDefaultValues.getEnumValue());
+}
+
+TEST(StructureDefaultValuesTest, checkDefaultBitmaskValue)
+{
+    StructureDefaultValues structureDefaultValues;
+    ASSERT_EQ(Permission::Values::READ_WRITE, structureDefaultValues.getBitmaskValue());
 }
 
 } // namespace structure_default_values

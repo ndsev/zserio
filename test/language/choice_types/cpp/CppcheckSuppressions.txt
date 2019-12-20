@@ -1,4 +1,6 @@
 // suppress "Member variable 'X' is not initialized in the constructor."
+uninitMemberVar:*/BitmaskParamChoice.cpp
+uninitMemberVar:*/BitmaskParamChoice.h
 uninitMemberVar:*/BoolParamChoice.cpp
 uninitMemberVar:*/BoolParamChoice.h
 uninitMemberVar:*/Data8.cpp
@@ -13,6 +15,7 @@ uninitMemberVar:*/EnumParamChoice.cpp
 uninitMemberVar:*/EnumParamChoice.h
 uninitMemberVar:*/ExpressionSelectorChoice.cpp
 uninitMemberVar:*/ExpressionSelectorChoice.h
+uninitMemberVar:*/FullBitmaskParamChoice.cpp
 uninitMemberVar:*/FullEnumParamChoice.cpp
 uninitMemberVar:*/FullEnumParamChoice.h
 uninitMemberVar:*/Selector.cpp
@@ -22,3 +25,6 @@ uninitMemberVar:*/UInt32ParamChoice.cpp
 uninitMemberVar:*/UInt32ParamChoice.h
 uninitMemberVar:*/UInt64ParamChoice.cpp
 uninitMemberVar:*/UInt64ParamChoice.h
+
+// suppress "Class 'X' has a constructor with 1 argument that is not explicit."
+noExplicitConstructor:*/Selector.h

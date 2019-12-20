@@ -5,6 +5,9 @@ set(ZSERIO_GENERATED_SOURCES
 
     ${ZSERIO_GEN_DIR}/default_values/structure_default_values/BasicColor.cpp
     ${ZSERIO_GEN_DIR}/default_values/structure_default_values/BasicColor.h
+
+    ${ZSERIO_GEN_DIR}/default_values/structure_default_values/Permission.cpp
+    ${ZSERIO_GEN_DIR}/default_values/structure_default_values/Permission.h
 )
 
 zserio_add_library(TARGET default_values_zs

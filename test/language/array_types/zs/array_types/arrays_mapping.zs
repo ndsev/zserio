@@ -13,6 +13,13 @@ enum uint8 TestEnum
     VALUE3
 };
 
+bitmask uint16 TestBitmask
+{
+    MASK1,
+    MASK2 = 0x80,
+    MASK3
+};
+
 struct ArraysMapping
 {
     // unsigned integer arrays
@@ -81,6 +88,9 @@ struct ArraysMapping
 
     // enumeration array
     TestEnum                    enumArray[5];
+
+    // bitmask array
+    TestBitmask                 bitmaskArray[5];
 
     function uint8 getNumBitsForInt()
     {

@@ -1,5 +1,10 @@
 set(ZSERIO_GEN_DIR ${CMAKE_CURRENT_BINARY_DIR}/gen)
 set(ZSERIO_GENERATED_SOURCES
+    ${ZSERIO_GEN_DIR}/choice_types/bitmask_param_choice/BitmaskParamChoice.cpp
+    ${ZSERIO_GEN_DIR}/choice_types/bitmask_param_choice/BitmaskParamChoice.h
+    ${ZSERIO_GEN_DIR}/choice_types/bitmask_param_choice/Selector.cpp
+    ${ZSERIO_GEN_DIR}/choice_types/bitmask_param_choice/Selector.h
+
     ${ZSERIO_GEN_DIR}/choice_types/bool_param_choice/Black.h
     ${ZSERIO_GEN_DIR}/choice_types/bool_param_choice/BoolParamChoice.cpp
     ${ZSERIO_GEN_DIR}/choice_types/bool_param_choice/BoolParamChoice.h
@@ -34,6 +39,11 @@ set(ZSERIO_GENERATED_SOURCES
 
     ${ZSERIO_GEN_DIR}/choice_types/expression_selector_choice/ExpressionSelectorChoice.cpp
     ${ZSERIO_GEN_DIR}/choice_types/expression_selector_choice/ExpressionSelectorChoice.h
+
+    ${ZSERIO_GEN_DIR}/choice_types/full_bitmask_param_choice/FullBitmaskParamChoice.cpp
+    ${ZSERIO_GEN_DIR}/choice_types/full_bitmask_param_choice/FullBitmaskParamChoice.h
+    ${ZSERIO_GEN_DIR}/choice_types/full_bitmask_param_choice/Selector.cpp
+    ${ZSERIO_GEN_DIR}/choice_types/full_bitmask_param_choice/Selector.h
 
     ${ZSERIO_GEN_DIR}/choice_types/full_enum_param_choice/Black.h
     ${ZSERIO_GEN_DIR}/choice_types/full_enum_param_choice/FullEnumParamChoice.cpp
@@ -82,6 +92,7 @@ zserio_add_library(TARGET choice_types_zs
 )
 
 add_test_sources(
+    ${ZSERIO_CPP_DIR}/BitmaskParamChoiceTest.cpp
     ${ZSERIO_CPP_DIR}/BoolParamChoiceTest.cpp
     ${ZSERIO_CPP_DIR}/ChoiceWithArrayTest.cpp
     ${ZSERIO_CPP_DIR}/DefaultEmptyChoiceTest.cpp
@@ -90,6 +101,7 @@ add_test_sources(
     ${ZSERIO_CPP_DIR}/EmptyChoiceWithDefaultTest.cpp
     ${ZSERIO_CPP_DIR}/EnumParamChoiceTest.cpp
     ${ZSERIO_CPP_DIR}/ExpressionSelectorChoiceTest.cpp
+    ${ZSERIO_CPP_DIR}/FullBitmaskParamChoiceTest.cpp
     ${ZSERIO_CPP_DIR}/FullEnumParamChoiceTest.cpp
     ${ZSERIO_CPP_DIR}/FunctionReturningLiteralSelectorChoiceTest.cpp
     ${ZSERIO_CPP_DIR}/FunctionSelectorChoiceTest.cpp

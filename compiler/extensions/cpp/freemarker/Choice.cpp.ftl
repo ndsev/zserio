@@ -47,15 +47,15 @@
 </#if>
 <#macro choice_selector_condition expressionList>
     <#if expressionList?size == 1>
-        selector == ${expressionList?first}<#t>
+        selector == (${expressionList?first})<#t>
     <#else>
         <#list expressionList as expression>
-        (selector == ${expression})<#if expression?has_next> || </#if><#t>
+        (selector == (${expression}))<#if expression?has_next> || </#if><#t>
         </#list>
     </#if>
 </#macro>
 <#macro choice_switch memberActionMacroName needsBreak=true>
-    <#if !isSelectorExpressionBoolean>
+    <#if canUseNativeSwitch>
     switch (${selectorExpression})
     {
         <#list caseMemberList as caseMember>
@@ -80,7 +80,7 @@
         </#if>
     }
     <#else>
-    const bool selector = ${selectorExpression};
+    const auto selector = ${selectorExpression};
 
         <#list caseMemberList as caseMember>
             <#if caseMember?has_next || !isDefaultUnreachable>

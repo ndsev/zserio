@@ -1,6 +1,7 @@
 package expressions;
 
 import expressions.array_type.*;
+import expressions.bitmask_type.*;
 import expressions.cast_uint64_to_uint8.*;
 import expressions.cast_uint8_to_uint64.*;
 import expressions.const_type.*;

@@ -3,6 +3,11 @@ set(ZSERIO_GENERATED_SOURCES
     ${ZSERIO_GEN_DIR}/expressions/array_type/ArrayTypeExpression.cpp
     ${ZSERIO_GEN_DIR}/expressions/array_type/ArrayTypeExpression.h
 
+    ${ZSERIO_GEN_DIR}/expressions/bitmask_type/BitmaskTypeExpression.cpp
+    ${ZSERIO_GEN_DIR}/expressions/bitmask_type/BitmaskTypeExpression.h
+    ${ZSERIO_GEN_DIR}/expressions/bitmask_type/Colors.cpp
+    ${ZSERIO_GEN_DIR}/expressions/bitmask_type/Colors.h
+
     ${ZSERIO_GEN_DIR}/expressions/cast_uint8_to_uint64/CastUInt8ToUInt64Expression.cpp
     ${ZSERIO_GEN_DIR}/expressions/cast_uint8_to_uint64/CastUInt8ToUInt64Expression.h
 
@@ -102,6 +107,7 @@ zserio_add_library(TARGET expressions_zs
 
 add_test_sources(
     ${ZSERIO_CPP_DIR}/ArrayTypeTest.cpp
+    ${ZSERIO_CPP_DIR}/BitmaskTypeTest.cpp
     ${ZSERIO_CPP_DIR}/CastUInt64ToUInt8Test.cpp
     ${ZSERIO_CPP_DIR}/CastUInt8ToUInt64Test.cpp
     ${ZSERIO_CPP_DIR}/ConstTypeTest.cpp

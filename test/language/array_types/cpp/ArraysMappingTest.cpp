@@ -121,5 +121,11 @@ TEST_F(ArraysMappingTest, enumArray)
     arraysMapping.setEnumArray(std::vector<TestEnum>(fixedArrayLength));
 }
 
+TEST_F(ArraysMappingTest, bitmaskArray)
+{
+    ArraysMapping arraysMapping;
+    arraysMapping.setBitmaskArray(std::vector<TestBitmask>(fixedArrayLength));
+}
+
 } // namespace arrays_mapping
 } // namespace array_types

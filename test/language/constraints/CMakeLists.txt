@@ -10,6 +10,11 @@ set(ZSERIO_GENERATED_SOURCES
     ${ZSERIO_GEN_DIR}/constraints/structure_constraints/StructureConstraints.cpp
     ${ZSERIO_GEN_DIR}/constraints/structure_constraints/StructureConstraints.h
 
+    ${ZSERIO_GEN_DIR}/constraints/structure_bitmask_constraints/Availability.cpp
+    ${ZSERIO_GEN_DIR}/constraints/structure_bitmask_constraints/Availability.h
+    ${ZSERIO_GEN_DIR}/constraints/structure_bitmask_constraints/StructureBitmaskConstraints.cpp
+    ${ZSERIO_GEN_DIR}/constraints/structure_bitmask_constraints/StructureBitmaskConstraints.h
+
     ${ZSERIO_GEN_DIR}/constraints/array_lengthof_constraint/ArrayLengthofConstraint.cpp
     ${ZSERIO_GEN_DIR}/constraints/array_lengthof_constraint/ArrayLengthofConstraint.h
 
@@ -30,6 +35,7 @@ add_test_sources(
     ${ZSERIO_CPP_DIR}/ArrayLengthofConstraintTest.cpp
     ${ZSERIO_CPP_DIR}/ChoiceConstraintsTest.cpp
     ${ZSERIO_CPP_DIR}/StructureConstraintsTest.cpp
+    ${ZSERIO_CPP_DIR}/StructureBitmaskConstraintsTest.cpp
     ${ZSERIO_CPP_DIR}/UnionConstraintsTest.cpp
 )
 

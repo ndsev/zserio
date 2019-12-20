@@ -7,6 +7,13 @@ enum uint8 BasicColor
     RED
 };
 
+bitmask bit:12 Permission
+{
+    READ = 111b,
+    WRITE = 111000b,
+    READ_WRITE = 111111b
+};
+
 subtype bit:4 Nibble;
 
 struct StructureDefaultValues
@@ -19,4 +26,5 @@ struct StructureDefaultValues
     float64     float64Value = 1.2345;
     string      stringValue = "string";
     BasicColor  enumValue = BasicColor.BLACK;
+    Permission  bitmaskValue = Permission.READ_WRITE;
 };
