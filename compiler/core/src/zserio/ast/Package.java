@@ -2,6 +2,7 @@ package zserio.ast;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -234,7 +235,6 @@ public class Package extends DocumentableAstNode
                         final ZserioType importedZserioType = importedPackage.getLocalType(importedPackageName,
                                 importedName);
                         if (importedZserioType == null)
-
                             throw new ParserException(importedNode, "Unresolved import of '" +
                                     ZserioTypeUtil.getFullName(importedPackageName, importedName) + "'!");
                     }
@@ -269,59 +269,50 @@ public class Package extends DocumentableAstNode
     InstantiateType getVisibleInstantiateType(TemplatableType template,
             List<TemplateArgument> templateArguments)
     {
-        return getVisibleInstantiateType(template, templateArguments, null);
+        if (visibleInstantiateTypeMap == null)
+        {
+            // lazy initialization to optimize searching
+            visibleInstantiateTypeMap = new HashMap<InstantiateTypeMapKey, InstantiateType>();
+
+            for (ZserioType type : localTypes.values())
+                fillVisibleIntantiateTypeMap(type);
+
+            for (Package importedPackage : importedPackages)
+                for (ZserioType type : importedPackage.localTypes.values())
+                    fillVisibleIntantiateTypeMap(type);
+
+            for (SingleImport singleImport : singleImports)
+            {
+                final Package singleTypePackage = singleImport.getPackage();
+                final ZserioType type = singleTypePackage.localTypes.get(singleImport.getName());
+                fillVisibleIntantiateTypeMap(type);
+            }
+        }
+
+        return visibleInstantiateTypeMap.get(new InstantiateTypeMapKey(template, templateArguments));
     }
 
-    private InstantiateType getVisibleInstantiateType(TemplatableType template,
-            List<TemplateArgument> templateArguments, InstantiateType matchingInstantiateType)
-    {
-        for (ZserioType type : localTypes.values())
-        {
-            matchingInstantiateType = matchInstantiateType(template, templateArguments, type,
-                    matchingInstantiateType);
-        }
-        for (Package pkg : importedPackages)
-        {
-            matchingInstantiateType = pkg.getVisibleInstantiateType(template, templateArguments,
-                    matchingInstantiateType);
-        }
-        for (SingleImport singleType : singleImports)
-        {
-            final Package singleTypePackage = singleType.getPackage();
-            final ZserioType type = singleTypePackage.localTypes.get(singleType.getName());
-            matchingInstantiateType = matchInstantiateType(template, templateArguments, type,
-                    matchingInstantiateType);
-        }
-        return matchingInstantiateType;
-    }
-
-    private InstantiateType matchInstantiateType(TemplatableType template,
-            List<TemplateArgument> templateArguments, ZserioType type, InstantiateType matchingInstantiateType)
+    private void fillVisibleIntantiateTypeMap(ZserioType type)
     {
         if (type instanceof InstantiateType)
         {
             final InstantiateType instantiateType = (InstantiateType)type;
             final TemplatableType instantiateTemplate = instantiateType.getTemplate();
-
-            final String templateFullName = ZserioTypeUtil.getFullName(template);
-            final String instantiateTemplateFullName = ZserioTypeUtil.getFullName(instantiateTemplate);
-
-            if (templateFullName.equals(instantiateTemplateFullName) &&
-                    templateArguments.equals(instantiateType.getTypeReference().getTemplateArguments()))
+            final List<TemplateArgument> instantiateTemplateArguments =
+                    instantiateType.getTypeReference().getTemplateArguments();
+            final InstantiateTypeMapKey key =
+                    new InstantiateTypeMapKey(instantiateTemplate, instantiateTemplateArguments);
+            final InstantiateType previousInstantiateType = visibleInstantiateTypeMap.put(key, instantiateType);
+            if (previousInstantiateType != null)
             {
-                if (matchingInstantiateType != null)
-                {
-                    final ParserStackedException stackedException = new ParserStackedException(
-                            instantiateType.getLocation(), "Ambiguous request to instantiate template '" +
-                            ZserioTypeUtil.getReferencedFullName(instantiateType.getTypeReference()) + "'!");
-                    stackedException.pushMessage(matchingInstantiateType.getLocation(),
-                            "    First requested here");
-                    throw stackedException;
-                }
-                return instantiateType;
+                final ParserStackedException stackedException = new ParserStackedException(
+                        instantiateType.getLocation(), "Ambiguous request to instantiate template '" +
+                        ZserioTypeUtil.getReferencedFullName(instantiateType.getTypeReference()) + "'!");
+                stackedException.pushMessage(previousInstantiateType.getLocation(),
+                        "    First requested here");
+                throw stackedException;
             }
         }
-        return matchingInstantiateType;
     }
 
     private List<ZserioType> getAllVisibleTypes(PackageName packageName, String typeName)
@@ -492,6 +483,47 @@ public class Package extends DocumentableAstNode
         private final String name;
     }
 
+    private static class InstantiateTypeMapKey
+    {
+        public InstantiateTypeMapKey(TemplatableType template, List<TemplateArgument> templateArguments)
+        {
+            this.templateFullName = ZserioTypeUtil.getFullName(template);
+            this.templateArguments = templateArguments;
+        }
+
+        @Override
+        public boolean equals(Object other)
+        {
+            if (!(other instanceof InstantiateTypeMapKey))
+                return false;
+
+            if (this != other)
+            {
+                final InstantiateTypeMapKey otherKey = (InstantiateTypeMapKey)other;
+                if (!templateFullName.equals(otherKey.templateFullName))
+                    return false;
+
+                if (!templateArguments.equals(otherKey.templateArguments))
+                    return false;
+            }
+
+            return true;
+        }
+
+        @Override
+        public int hashCode()
+        {
+            int hash = HashUtil.HASH_SEED;
+            hash = HashUtil.hash(hash, templateFullName);
+            hash = HashUtil.hash(hash, templateArguments);
+
+            return hash;
+        }
+
+        private final String templateFullName;
+        private final List<TemplateArgument> templateArguments;
+    }
+
     private final PackageName packageName;
     private final List<Import> imports;
 
@@ -499,9 +531,11 @@ public class Package extends DocumentableAstNode
     private final LinkedHashMap<String, ZserioType> localTypes = new LinkedHashMap<String, ZserioType>();
 
     // global symbols defined within this package
-    final Map<String, AstNode> localSymbols = new LinkedHashMap<String, AstNode>();
+    private final Map<String, AstNode> localSymbols = new LinkedHashMap<String, AstNode>();
 
     private final Set<Package> importedPackages = new HashSet<Package>();
     // this must be a TreeSet because of 'Ambiguous type reference' error checked in getVisibleType()
     private final Set<SingleImport> singleImports = new TreeSet<SingleImport>();
+
+    private Map<InstantiateTypeMapKey, InstantiateType> visibleInstantiateTypeMap = null;
 }

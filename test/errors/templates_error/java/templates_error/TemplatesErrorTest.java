@@ -94,7 +94,6 @@ public class TemplatesErrorTest
     {
         final String errors[] =
         {
-            "instantiate_duplicated_error.zs:8:13: In instantiation of 'Test' required from here",
             "instantiate_duplicated_error.zs:8:26:     First requested here",
             "instantiate_duplicated_error.zs:9:26: Ambiguous request to instantiate template 'Test'!"
         };
@@ -117,7 +116,6 @@ public class TemplatesErrorTest
     {
         final String errors[] =
         {
-            "instantiate_duplicated_via_import_error.zs:5:13: In instantiation of 'Test' required from here",
             "instantiate_duplicated_via_import_error.zs:5:26:     First requested here",
             "pkg.zs:8:26: Ambiguous request to instantiate template 'Test'!"
         };
