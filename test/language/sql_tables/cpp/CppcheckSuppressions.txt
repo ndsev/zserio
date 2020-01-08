@@ -15,3 +15,6 @@ uninitMemberVar:*/complex_table/TestBlob.h
 uninitMemberVar:*/const_param_table/ParameterizedBlob.cpp
 uninitMemberVar:*/const_param_table/ParameterizedBlob.h
 uninitMemberVar:*/subtyped_table/Student.cpp
+
+// suppress "Class 'X' has a constructor with 1 argument that is not explicit."
+noExplicitConstructor:*/sql_tables/subtyped_bitmask_field_table/TestBitmask.h

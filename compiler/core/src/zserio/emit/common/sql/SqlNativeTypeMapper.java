@@ -1,5 +1,6 @@
 package zserio.emit.common.sql;
 
+import zserio.ast.BitmaskType;
 import zserio.ast.BooleanType;
 import zserio.ast.ChoiceType;
 import zserio.ast.DynamicBitFieldType;
@@ -83,6 +84,12 @@ public class SqlNativeTypeMapper
 
         @Override
         public void visitEnumType(EnumType type)
+        {
+            sqlType = integerType;
+        }
+
+        @Override
+        public void visitBitmaskType(BitmaskType type)
         {
             sqlType = integerType;
         }

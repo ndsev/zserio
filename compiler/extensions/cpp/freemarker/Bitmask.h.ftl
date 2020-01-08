@@ -31,7 +31,7 @@ public:
         m_value(0)
     {
     }
-    
+
     explicit ${name}(::zserio::BitStreamReader& in);
     constexpr ${name}(Values value) noexcept :
         m_value(static_cast<underlying_type>(value))
@@ -51,8 +51,14 @@ public:
     ${name}(${name}&&) = default;
     ${name}& operator=(${name}&&) = default;
 
-    explicit operator underlying_type() const;
-    underlying_type getValue() const;
+    constexpr explicit operator underlying_type() const
+    {
+        return m_value;
+    }
+    constexpr underlying_type getValue() const
+    {
+        return m_value;
+    }
 
     size_t bitSizeOf(size_t bitPosition = 0) const;
 <#if withWriterCode>
@@ -75,19 +81,9 @@ private:
     underlying_type m_value;
 };
 
-inline bool operator==(const ${name}::Values& lhs, const ${name}::Values& rhs)
-{
-    return static_cast<${name}::underlying_type>(lhs) == static_cast<${name}::underlying_type>(rhs);
-}
-
 inline bool operator==(const ${name}& lhs, const ${name}& rhs)
 {
     return lhs.getValue() == rhs.getValue();
-}
-
-inline bool operator!=(const ${name}::Values& lhs, const ${name}::Values& rhs)
-{
-    return static_cast<${name}::underlying_type>(lhs) != static_cast<${name}::underlying_type>(rhs);
 }
 
 inline bool operator!=(const ${name}& lhs, const ${name}& rhs)
@@ -95,7 +91,7 @@ inline bool operator!=(const ${name}& lhs, const ${name}& rhs)
     return lhs.getValue() != rhs.getValue();
 }
 
-inline ${name} operator|(const ${name}::Values& lhs, const ${name}::Values& rhs)
+inline ${name} operator|(${name}::Values lhs, ${name}::Values rhs)
 {
     return ${name}(static_cast<${name}::underlying_type>(lhs) | static_cast<${name}::underlying_type>(rhs));
 }
@@ -105,7 +101,7 @@ inline ${name} operator|(const ${name}& lhs, const ${name}& rhs)
     return ${name}(lhs.getValue() | rhs.getValue());
 }
 
-inline ${name} operator&(const ${name}::Values& lhs, const ${name}::Values& rhs)
+inline ${name} operator&(${name}::Values lhs, ${name}::Values rhs)
 {
     return ${name}(static_cast<${name}::underlying_type>(lhs) & static_cast<${name}::underlying_type>(rhs));
 }
@@ -115,7 +111,7 @@ inline ${name} operator&(const ${name}& lhs, const ${name}& rhs)
     return ${name}(lhs.getValue() & rhs.getValue());
 }
 
-inline ${name} operator^(const ${name}::Values& lhs, const ${name}::Values& rhs)
+inline ${name} operator^(${name}::Values lhs, ${name}::Values rhs)
 {
     return ${name}(static_cast<${name}::underlying_type>(lhs) ^ static_cast<${name}::underlying_type>(rhs));
 }
@@ -125,14 +121,14 @@ inline ${name} operator^(const ${name}& lhs, const ${name}& rhs)
     return ${name}(lhs.getValue() ^ rhs.getValue());
 }
 
-inline ${name} operator~(const ${name}::Values& lhs)
+inline ${name} operator~(${name}::Values lhs)
 {
-    return ${name}(~static_cast<${name}::underlying_type>(lhs) & ((1 << ${runtimeFunction.arg}) - 1));
+    return ${name}(~static_cast<${name}::underlying_type>(lhs)<#if mask??> & ${mask}</#if>);
 }
 
 inline ${name} operator~(const ${name}& lhs)
 {
-    return ${name}(~lhs.getValue() & ((1 << ${runtimeFunction.arg}) - 1));
+    return ${name}(~lhs.getValue()<#if mask??> & ${mask}</#if>);
 }
 
 inline ${name} operator|=(${name}& lhs, const ${name}& rhs)

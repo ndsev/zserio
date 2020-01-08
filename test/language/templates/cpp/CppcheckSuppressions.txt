@@ -18,6 +18,7 @@ uninitMemberVar:*/choice_templated_selector/TemplatedChoice_uint16_Shift16.cpp
 uninitMemberVar:*/choice_templated_selector/TemplatedChoice_uint16_Shift16.h
 uninitMemberVar:*/choice_templated_selector/TemplatedChoice_uint32_Shift32.cpp
 uninitMemberVar:*/choice_templated_selector/TemplatedChoice_uint32_Shift32.h
+uninitMemberVar:*/expression_bitmask_template_argument/BitmaskTemplateArgument_Permission.cpp
 uninitMemberVar:*/expression_enum_template_argument_conflict/EnumTemplateArgumentConflict_Letters.cpp
 uninitMemberVar:*/expression_enum_template_argument/EnumTemplateArgument_Color.cpp
 uninitMemberVar:*/expression_full_template_argument/FullTemplateArgument_Color_6066EE71.cpp
@@ -91,3 +92,8 @@ uninitMemberVar:*/union_templated_field/Compound_uint32.cpp
 uninitMemberVar:*/union_templated_field/TemplatedUnion_Compound_uint16_Compound_uint32.cpp
 uninitMemberVar:*/union_templated_field/TemplatedUnion_float32_float64.cpp
 uninitMemberVar:*/union_templated_field/TemplatedUnion_uint16_uint32.cpp
+
+// suppress "Class 'X' has a constructor with 1 argument that is not explicit."
+noExplicitConstructor:*/expression_bitmask_template_argument/BitmaskTemplateArgument_Permission.cpp
+noExplicitConstructor:*/expression_bitmask_template_argument/Permission.cpp
+noExplicitConstructor:*/expression_bitmask_template_argument/Permission.h

@@ -2,6 +2,8 @@ set(ZSERIO_GEN_DIR ${CMAKE_CURRENT_BINARY_DIR}/gen)
 set(ZSERIO_GENERATED_SOURCES
     ${ZSERIO_GEN_DIR}/array_types/arrays_mapping/ArraysMapping.cpp
     ${ZSERIO_GEN_DIR}/array_types/arrays_mapping/ArraysMapping.h
+    ${ZSERIO_GEN_DIR}/array_types/arrays_mapping/TestBitmask.cpp
+    ${ZSERIO_GEN_DIR}/array_types/arrays_mapping/TestBitmask.h
     ${ZSERIO_GEN_DIR}/array_types/arrays_mapping/TestEnum.cpp
     ${ZSERIO_GEN_DIR}/array_types/arrays_mapping/TestEnum.h
     ${ZSERIO_GEN_DIR}/array_types/arrays_mapping/TestStructure.cpp

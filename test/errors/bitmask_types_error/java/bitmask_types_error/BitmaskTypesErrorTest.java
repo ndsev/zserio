@@ -112,7 +112,8 @@ public class BitmaskTypesErrorTest
     public void stringBitmaskError()
     {
         final String error = "string_bitmask_error.zs:3:16: " +
-                "Bitmask 'StringBitmask' cannot use string type! Only unsigned integer types are allowed!";
+                "Bitmask 'StringBitmask' cannot use string type! " +
+                "Only unsigned integer types are allowed!";
         assertTrue(zserioErrors.isPresent(error));
     }
 

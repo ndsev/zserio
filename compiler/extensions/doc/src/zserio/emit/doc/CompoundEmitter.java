@@ -550,6 +550,7 @@ public class CompoundEmitter extends DefaultHtmlEmitter
                     seeLink = new CaseSeeLink((EnumItem)caseExpressionObject, (EnumType)selectorExpressionType);
                 else
                     seeLink = null;
+                // TODO[Mi-L@]: What about bitmask value?!
             }
 
             public String getExpression()

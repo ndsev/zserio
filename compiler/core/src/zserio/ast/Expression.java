@@ -1140,7 +1140,7 @@ public class Expression extends AstNodeBase
             operand2.propagateNeedsBigInteger();
         }
 
-        // TODO[Mi-L@]: Should we check that the operands' zserio types are equal?!
+        // needed for bitmask expressions
         zserioType = operand1.zserioType;
     }
 

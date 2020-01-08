@@ -21,7 +21,7 @@ public class ConstantsErrorTest
     public void choiceTypeConstant()
     {
         final String error = "choice_type_constant_error.zs:11:17: " +
-                "Constants can be defined only for built-in types and enums!";
+                "Constants can be defined only for built-in types, enums or bitmasks!";
         assertTrue(zserioErrors.isPresent(error));
     }
 
@@ -72,7 +72,7 @@ public class ConstantsErrorTest
     public void structureTypeConstant()
     {
         final String error = "structure_type_constant_error.zs:8:17: Constants can be defined only for " +
-                "built-in types and enums!";
+                "built-in types, enums or bitmasks!";
         assertTrue(zserioErrors.isPresent(error));
     }
 
@@ -80,7 +80,7 @@ public class ConstantsErrorTest
     public void subtypedCompoundTypeConstant()
     {
         final String error = "subtyped_compound_type_constant_error.zs:12:23: Constants can be defined only " +
-                "for built-in types and enums!";
+                "for built-in types, enums or bitmasks!";
         assertTrue(zserioErrors.isPresent(error));
     }
 

@@ -5,3 +5,6 @@ uninitMemberVar:*/struct_template_comments/Compound.cpp
 uninitMemberVar:*/struct_template_comments/Field_uint32.cpp
 uninitMemberVar:*/unknown_tag/Test.cpp
 uninitMemberVar:*/unknown_tag_matching_prefix/Test.cpp
+
+// suppress "Class 'X' has a constructor with 1 argument that is not explicit."
+noExplicitConstructor:*/Permission.h

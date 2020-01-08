@@ -4,6 +4,7 @@
 #include <string>
 
 #include <zserio/HashCodeUtil.h>
+#include <zserio/StringConvertUtil.h>
 <@system_includes cppSystemIncludes/>
 
 <@user_include package.path, "${name}.h"/>
@@ -15,19 +16,13 @@ ${name}::${name}(zserio::BitStreamReader& in) :
 {
 }
 
-${name}::operator underlying_type() const
-{
-    return m_value;
-}
-
-${name}::underlying_type ${name}::getValue() const
-{
-    return m_value;
-}
-
 size_t ${name}::bitSizeOf(size_t) const
 {
+<#if runtimeFunction.arg??>
     return ${runtimeFunction.arg};
+<#else>
+    return ::zserio::bitSizeOf${runtimeFunction.suffix}(m_value);
+</#if>
 }
 <#if withWriterCode>
 
@@ -52,7 +47,7 @@ void ${name}::read(::zserio::BitStreamReader& in)
 
 void ${name}::write(::zserio::BitStreamWriter& out, ::zserio::PreWriteAction) const
 {
-    out.write${runtimeFunction.suffix}(m_value, ${runtimeFunction.arg});
+    out.write${runtimeFunction.suffix}(m_value<#if runtimeFunction.arg??>, ${runtimeFunction.arg}</#if>);
 }
 </#if>
 
@@ -60,18 +55,23 @@ std::string ${name}::toString() const
 {
     std::string result;
 <#list values as value>
+    <#if !value.isZero>
     if ((*this & ${name}::Values::${value.name}) == ${name}::Values::${value.name})
-    <#if value?is_first>
-        result += "${value.name}";
+        result += result.empty() ? "${value.name}" : " | ${value.name}";
     <#else>
-        result += result.empty() ? "${value.name}" : " | ${value.name}"; 
+        <#assign zeroValueName=value.name/><#-- may be there only once -->
     </#if>
 </#list>
-    return result.empty() ? "0" : result;
+    <#if zeroValueName??>
+    if (result.empty() && m_value == 0)
+        result += "${zeroValueName}";
+    </#if>
+
+    return ::zserio::convertToString(m_value) + "[" + result + "]";
 }
 
 ${name}::underlying_type ${name}::readValue(::zserio::BitStreamReader& in)
 {
-    return static_cast<underlying_type>(in.read${runtimeFunction.suffix}(${runtimeFunction.arg}));
+    return static_cast<underlying_type>(in.read${runtimeFunction.suffix}(${runtimeFunction.arg!}));
 }
 <@namespace_end package.path/>

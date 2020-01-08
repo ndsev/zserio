@@ -12,5 +12,5 @@ bitmask bit:2 Permission
     WRITE,
 
     /** Both reading and writing allowed. */
-    READ_WRITE = valueof(Permission.READ | Permission.WRITE)
+    READ_WRITE = 3
 };
