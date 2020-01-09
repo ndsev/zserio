@@ -6,6 +6,12 @@ enum int8 ItemType
     WITH_EXTRA_PARAM,
 };
 
+bitmask bit:3 VersionAvailability
+{
+    VERSION_NUMBER,
+    VERSION_STRING
+};
+
 union ExtraParamUnion
 {
     uint16  value16;
@@ -35,7 +41,10 @@ struct ItemChoiceHolder
 
 struct Tile
 {
-    uint8               version;
+    VersionAvailability versionAvailability;
+    uint8               version if valueof(versionAvailability & VersionAvailability.VERSION_NUMBER) != 0;
+    string              versionString if valueof(versionAvailability & VersionAvailability.VERSION_STRING) != 0;
+
     uint32              numElementsOffset;
 
 numElementsOffset:

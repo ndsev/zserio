@@ -36,19 +36,31 @@ protected:
     void assertMethodNotPresent(const char* typeName, const char* declaration, const char* definition)
     {
         const std::string filePath = std::string(PATH) + typeName;
-        ASSERT_FALSE(isStringInFilePresent(filePath + ".h", declaration))
-                << "Method declaration '" << declaration << "' is present in '" << typeName << "'!";
-        ASSERT_FALSE(isStringInFilePresent(filePath + ".cpp", definition))
-                << "Method definition '" << definition << "' is present'" << typeName << "'!";
+        if (declaration != NULL)
+        {
+            ASSERT_FALSE(isStringInFilePresent(filePath + ".h", declaration))
+                    << "Method declaration '" << declaration << "' is present in '" << typeName << "'!";
+        }
+        if (definition != NULL)
+        {
+            ASSERT_FALSE(isStringInFilePresent(filePath + ".cpp", definition))
+                    << "Method definition '" << definition << "' is present'" << typeName << "'!";
+        }
     }
 
     void assertMethodPresent(const char* typeName, const char* declaration, const char* definition)
     {
         const std::string filePath = std::string(PATH) + typeName;
-        ASSERT_TRUE(isStringInFilePresent(filePath + ".h", declaration))
-                << "Method declaration '" << declaration << "' is not present in '" << typeName << "'!";
-        ASSERT_TRUE(isStringInFilePresent(filePath + ".cpp", definition))
-                << "Method definition '" << definition << "' is not present in '" << typeName << "'!";
+        if (declaration != NULL)
+        {
+            ASSERT_TRUE(isStringInFilePresent(filePath + ".h", declaration))
+                    << "Method declaration '" << declaration << "' is not present in '" << typeName << "'!";
+        }
+        if (definition != NULL)
+        {
+            ASSERT_TRUE(isStringInFilePresent(filePath + ".cpp", definition))
+                    << "Method definition '" << definition << "' is not present in '" << typeName << "'!";
+        }
     }
 
     void createWorldDb(zserio::SqliteConnection& db)
@@ -85,8 +97,10 @@ protected:
     void writeTile(zserio::BitStreamWriter& writer)
     {
         // Tile
+        writer.writeBits(VERSION_AVAILABILITY, 3);
         writer.writeBits(VERSION, 8);
-        writer.writeBits(5, 32); // numElementsOffset
+        writer.writeBits(6, 32); // numElementsOffset
+        writer.alignTo(8);
         writer.writeBits(NUM_ELEMENTS, 32);
 
         // offsets
@@ -150,6 +164,7 @@ protected:
     static const char* PATH;
     static const int32_t TILE_ID_EUROPE;
     static const int32_t TILE_ID_AMERICA;
+    static const uint8_t VERSION_AVAILABILITY;
     static const uint8_t VERSION;
     static const uint32_t NUM_ELEMENTS;
     static const uint16_t PARAMS[2];
@@ -159,6 +174,7 @@ protected:
 const char* WithoutWriterCode::PATH = "arguments/without_writer_code/gen/without_writer_code/";
 const int32_t WithoutWriterCode::TILE_ID_EUROPE = 99;
 const int32_t WithoutWriterCode::TILE_ID_AMERICA = 11;
+const uint8_t WithoutWriterCode::VERSION_AVAILABILITY = 0x01;
 const uint8_t WithoutWriterCode::VERSION = 8;
 const uint32_t WithoutWriterCode::NUM_ELEMENTS = 2;
 const uint16_t WithoutWriterCode::PARAMS[2] = { 13, 21 };
@@ -175,6 +191,30 @@ TEST_F(WithoutWriterCode, checkItemTypeMethods)
     assertMethodPresent(type, "ItemType valueToEnum<", "ItemType valueToEnum(");
     assertMethodPresent(type, "size_t bitSizeOf<" , "size_t bitSizeOf(");
     assertMethodPresent(type, "ItemType read<", "ItemType read(");
+}
+
+TEST_F(WithoutWriterCode, checkVersionAvailabilityMethods)
+{
+    const char* type = "VersionAvailability";
+
+    assertMethodNotPresent(type, "size_t initializeOffsets(", "size_t VersionAvailability::initializeOffsets(");
+    assertMethodNotPresent(type, "void write(", "void VersionAvailability::write(");
+
+    assertMethodPresent(type, "constexpr VersionAvailability() noexcept", NULL);
+    assertMethodPresent(type, "constexpr VersionAvailability(Values value) noexcept :", NULL);
+    assertMethodPresent(type, "VersionAvailability(::zserio::BitStreamReader&",
+            "VersionAvailability::VersionAvailability(::zserio::BitStreamReader&");
+    assertMethodPresent(type, "VersionAvailability(underlying_type value)",
+            "VersionAvailability::VersionAvailability(underlying_type value)");
+    assertMethodPresent(type, "constexpr explicit operator underlying_type() const", NULL);
+    assertMethodPresent(type, "constexpr underlying_type getValue() const", NULL);
+    assertMethodPresent(type, "size_t bitSizeOf(size_t bitPosition = 0) const",
+            "size_t VersionAvailability::bitSizeOf(size_t) const");
+    assertMethodPresent(type, "int hashCode() const", "int VersionAvailability::hashCode() const");
+    assertMethodPresent(type, "void read(::zserio::BitStreamReader& in)",
+            "void VersionAvailability::read(::zserio::BitStreamReader& in)");
+    assertMethodPresent(type, "std::string toString() const",
+            "std::string VersionAvailability::toString() const");
 }
 
 TEST_F(WithoutWriterCode, checkExtraParamUnionMethods)

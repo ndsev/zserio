@@ -5,16 +5,31 @@
 
 #include <zserio/HashCodeUtil.h>
 #include <zserio/StringConvertUtil.h>
+<#if upperBound??>
+#include <zserio/CppRuntimeException.h>
+</#if>
 <@system_includes cppSystemIncludes/>
 
 <@user_include package.path, "${name}.h"/>
 <@user_includes cppUserIncludes, true/>
 <@namespace_begin package.path/>
 
-${name}::${name}(zserio::BitStreamReader& in) :
+${name}::${name}(::zserio::BitStreamReader& in) :
     m_value(readValue(in))
 {
 }
+<#if upperBound??>
+
+${name}::${name}(underlying_type value) :
+    m_value(value)
+{
+    if (m_value > ${upperBound})
+    {
+        throw ::zserio::CppRuntimeException("Value exceeds size of the bitmaks '${name}': " +
+                ::zserio::convertToString(value) + "!");
+    }
+}
+</#if>
 
 size_t ${name}::bitSizeOf(size_t) const
 {

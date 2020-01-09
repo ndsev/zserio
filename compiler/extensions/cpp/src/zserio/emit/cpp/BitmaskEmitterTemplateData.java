@@ -34,7 +34,7 @@ public class BitmaskEmitterTemplateData extends UserTypeTemplateData
                 bitmaskTypeInstantiation, cppExpressionFormatter);
 
         final BigInteger upperBound = getUpperBound(bitmaskTypeInstantiation);
-        mask = upperBound.equals(nativeBaseType.getUpperBound()) ? null :
+        this.upperBound = upperBound.equals(nativeBaseType.getUpperBound()) ? null :
                 nativeBaseType.formatLiteral(upperBound);
 
         final List<BitmaskValue> bitmaskValues = bitmaskType.getValues();
@@ -53,9 +53,9 @@ public class BitmaskEmitterTemplateData extends UserTypeTemplateData
         return runtimeFunction;
     }
 
-    public String getMask()
+    public String getUpperBound()
     {
-        return mask;
+        return upperBound;
     }
 
     public Iterable<BitmaskValueData> getValues()
@@ -106,6 +106,6 @@ public class BitmaskEmitterTemplateData extends UserTypeTemplateData
 
     private final String baseCppTypeName;
     private final RuntimeFunctionTemplateData runtimeFunction;
-    private final String mask;
+    private final String upperBound;
     private final List<BitmaskValueData> values;
 }

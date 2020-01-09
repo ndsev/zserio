@@ -38,10 +38,13 @@ public:
     {
     }
 
+    <#if upperBound??>
+    explicit ${name}(underlying_type value);
+    <#else>
     constexpr explicit ${name}(underlying_type value) noexcept :
         m_value(value)
-    {
-    }
+    {}
+    </#if>
 
     ~${name}() = default;
 
@@ -123,12 +126,12 @@ inline ${name} operator^(const ${name}& lhs, const ${name}& rhs)
 
 inline ${name} operator~(${name}::Values lhs)
 {
-    return ${name}(~static_cast<${name}::underlying_type>(lhs)<#if mask??> & ${mask}</#if>);
+    return ${name}(~static_cast<${name}::underlying_type>(lhs)<#if upperBound??> & ${upperBound}</#if>);
 }
 
 inline ${name} operator~(const ${name}& lhs)
 {
-    return ${name}(~lhs.getValue()<#if mask??> & ${mask}</#if>);
+    return ${name}(~lhs.getValue()<#if upperBound??> & ${upperBound}</#if>);
 }
 
 inline ${name} operator|=(${name}& lhs, const ${name}& rhs)
