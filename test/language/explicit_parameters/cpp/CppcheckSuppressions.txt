@@ -2,3 +2,6 @@
 uninitMemberVar:*/TestBlob.cpp
 uninitMemberVar:*/TestBlob.h
 uninitMemberVar:*/Header.cpp
+
+// suppress "Class 'X' has a constructor with 1 argument that is not explicit."
+noExplicitConstructor:*/TestBitmask.h
