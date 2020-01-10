@@ -2,9 +2,9 @@ package zserio.ast;
 
 import java.math.BigInteger;
 import java.util.Collections;
-import java.util.HashSet;
+import java.util.HashMap;
 import java.util.List;
-import java.util.Set;
+import java.util.Map;
 
 /**
  * AST node for Bitmask types.
@@ -141,7 +141,7 @@ public class BitmaskType extends DocumentableAstNode implements ZserioScopedType
 
     private void checkBitmaskValues()
     {
-        final Set<BigInteger> intValues = new HashSet<BigInteger>();
+        final Map<BigInteger, BitmaskValue> intValues = new HashMap<BigInteger, BitmaskValue>();
         for (BitmaskValue bitmaskValue : values)
         {
             if (bitmaskValue.getValueExpression() != null)
@@ -149,11 +149,15 @@ public class BitmaskType extends DocumentableAstNode implements ZserioScopedType
 
             // check if bitmask value is not duplicated
             final BigInteger intValue = bitmaskValue.getValue();
-            if (!intValues.add(intValue))
+            final BitmaskValue prevValue = intValues.put(intValue, bitmaskValue);
+            if (prevValue != null)
             {
                 // bitmask value is duplicated
-                throw new ParserException(bitmaskValue.getValueExpression(), "Bitmask '" +
-                        bitmaskValue.getName() + "' has duplicated value (" + intValue + ")!");
+                final ParserStackedException stackedException = new ParserStackedException(
+                        getValueLocation(bitmaskValue), "Bitmask '" + bitmaskValue.getName() +
+                        "' has duplicated value (" + intValue + ")!");
+                stackedException.pushMessage(getValueLocation(prevValue), "    First defined here");
+                throw stackedException;
             }
 
             final IntegerType integerBaseType = (IntegerType)typeInstantiation.getBaseType();
@@ -163,12 +167,16 @@ public class BitmaskType extends DocumentableAstNode implements ZserioScopedType
             final BigInteger upperBound = integerBaseType.getUpperBound(typeInstantiation);
             if (intValue.compareTo(lowerBound) < 0 || intValue.compareTo(upperBound) > 0)
             {
-                final AstLocation location = bitmaskValue.getValueExpression() != null ?
-                        bitmaskValue.getValueExpression().getLocation() : bitmaskValue.getLocation();
-                throw new ParserException(location, "Bitmask '" + bitmaskValue.getName() +
+                throw new ParserException(getValueLocation(bitmaskValue), "Bitmask '" + bitmaskValue.getName() +
                         "' has value (" + intValue + ") out of range <" + lowerBound + "," + upperBound + ">!");
             }
         }
+    }
+
+    private AstLocation getValueLocation(BitmaskValue bitmaskValue)
+    {
+        return bitmaskValue.getValueExpression() != null ?
+                bitmaskValue.getValueExpression().getLocation() : bitmaskValue.getLocation();
     }
 
     private final Scope scope = new Scope(this);

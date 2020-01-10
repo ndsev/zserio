@@ -135,7 +135,7 @@ public class Constant extends DocumentableAstNode implements Comparable<Constant
         {
             final ParserStackedException stackedException = new ParserStackedException(getLocation(),
                     "'" + getName() + "' is a defined type in this package!");
-            stackedException.pushMessage(definedType.getLocation(), "    First defined here!");
+            stackedException.pushMessage(definedType.getLocation(), "    First defined here");
             throw stackedException;
         }
     }

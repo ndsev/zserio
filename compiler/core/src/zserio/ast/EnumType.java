@@ -2,9 +2,9 @@ package zserio.ast;
 
 import java.math.BigInteger;
 import java.util.Collections;
-import java.util.HashSet;
+import java.util.HashMap;
 import java.util.List;
-import java.util.Set;
+import java.util.Map;
 
 /**
  * AST node for Enumeration types.
@@ -131,34 +131,42 @@ public class EnumType extends DocumentableAstNode implements ZserioScopedType
 
     private void checkEnumerationItems()
     {
-        final Set<BigInteger> enumItemValues = new HashSet<BigInteger>();
+        final Map<BigInteger, EnumItem> intValues = new HashMap<BigInteger, EnumItem>();
         for (EnumItem enumItem : enumItems)
         {
             if (enumItem.getValueExpression() != null)
                 ExpressionUtil.checkExpressionType(enumItem.getValueExpression(), typeInstantiation);
 
             // check if enumeration item value is not duplicated
-            final BigInteger enumItemValue = enumItem.getValue();
-            if ( !enumItemValues.add(enumItemValue) )
+            final BigInteger intValue = enumItem.getValue();
+            final EnumItem prevItem = intValues.put(intValue, enumItem);
+            if (prevItem != null)
             {
                 // enumeration item value is duplicated
-                throw new ParserException(enumItem.getValueExpression(), "Enumeration item '" +
-                        enumItem.getName() + "' has duplicated value (" + enumItemValue + ")!");
+                final ParserStackedException stackedException = new ParserStackedException(
+                        getValueLocation(enumItem), "Enumeration item '" + enumItem.getName() +
+                        "' has duplicated value (" + intValue + ")!");
+                stackedException.pushMessage(getValueLocation(prevItem), "    First defined here");
+                throw stackedException;
             }
 
             // check enumeration item values boundaries
             final IntegerType integerBaseType = (IntegerType)typeInstantiation.getBaseType();
             final BigInteger lowerBound = integerBaseType.getLowerBound(typeInstantiation);
             final BigInteger upperBound = integerBaseType.getUpperBound(typeInstantiation);
-            if (enumItemValue.compareTo(lowerBound) < 0 || enumItemValue.compareTo(upperBound) > 0)
+            if (intValue.compareTo(lowerBound) < 0 || intValue.compareTo(upperBound) > 0)
             {
-                final AstLocation location = enumItem.getValueExpression() != null ?
-                        enumItem.getValueExpression().getLocation() : enumItem.getLocation();
-                throw new ParserException(location, "Enumeration item '" + enumItem.getName() +
-                        "' has value (" + enumItemValue + ") out of range <" +
-                        lowerBound + "," + upperBound + ">!");
+                throw new ParserException(getValueLocation(enumItem),
+                        "Enumeration item '" + enumItem.getName() + "' has value (" + intValue +
+                        ") out of range <" + lowerBound + "," + upperBound + ">!");
             }
         }
+    }
+
+    private AstLocation getValueLocation(EnumItem enumItem)
+    {
+        return enumItem.getValueExpression() != null ?
+                enumItem.getValueExpression().getLocation() : enumItem.getLocation();
     }
 
     private final Scope scope = new Scope(this);
