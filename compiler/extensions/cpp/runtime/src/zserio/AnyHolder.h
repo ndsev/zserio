@@ -333,18 +333,23 @@ private:
             clearHolder();
         }
 
-        Holder<T>* holder;
-        if (sizeof(Holder<T>) <= sizeof(UntypedHolder::MaxInPlaceType))
-        {
-            holder = new (&m_untypedHolder.inPlace) Holder<T>();
-            m_isInPlace = true;
-        }
-        else
-        {
-            holder = new Holder<T>();
-            m_untypedHolder.heap = holder;
-        }
+        return createHolderImpl<T>(
+                std::integral_constant<bool, sizeof(Holder<T>) <= sizeof(UntypedHolder::MaxInPlaceType)>());
+    }
 
+    template <typename T>
+    Holder<T>* createHolderImpl(std::true_type)
+    {
+        Holder<T>* holder = new (&m_untypedHolder.inPlace) Holder<T>();
+        m_isInPlace = true;
+        return holder;
+    }
+
+    template <typename T>
+    Holder<T>* createHolderImpl(std::false_type)
+    {
+        Holder<T>* holder = new Holder<T>();
+        m_untypedHolder.heap = holder;
         return holder;
     }
 
