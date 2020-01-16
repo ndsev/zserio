@@ -16,10 +16,9 @@ ${name}::${name}(const ::std::string& fileName, const TRelocationMap& tableToDbF
     const int sqliteOpenMode = SQLITE_OPEN_URI | <#rt>
             <#lt><#if withWriterCode>SQLITE_OPEN_CREATE | SQLITE_OPEN_READWRITE<#else>SQLITE_OPEN_READONLY</#if>;
     const int result = sqlite3_open_v2(fileName.c_str(), &internalConnection, sqliteOpenMode, NULL);
+    m_db.reset(internalConnection, ::zserio::SqliteConnection::INTERNAL_CONNECTION);
     if (result != SQLITE_OK)
         throw ::zserio::SqliteException("${name}::open(): can't open DB " + fileName, result);
-
-    m_db.reset(internalConnection, ::zserio::SqliteConnection::INTERNAL_CONNECTION);
 
     TRelocationMap tableToAttachedDbNameRelocationMap;
     ::std::map<::std::string, ::std::string> dbFileNameToAttachedDbNameMap;

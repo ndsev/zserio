@@ -26,7 +26,9 @@ protected:
     {
         ASSERT_EQ(item.getParam(), reader.readBits(16));
         if (version >= HIGHER_VERSION)
+        {
             ASSERT_EQ(item.getExtraParam(), reader.readBits(32));
+        }
     }
 
     static const uint32_t LOWER_VERSION;

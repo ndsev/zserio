@@ -56,8 +56,8 @@ protected:
         sqlite3* connection = NULL;
         const int result = sqlite3_open_v2(":memory:", &connection, SQLITE_OPEN_CREATE | SQLITE_OPEN_READWRITE,
                 NULL);
-        ASSERT_EQ(SQLITE_OK, result);
         db.reset(connection);
+        ASSERT_EQ(SQLITE_OK, result);
 
         db.executeUpdate("CREATE TABLE europe(tileId INTEGER PRIMARY KEY, tile BLOB)");
         db.executeUpdate("CREATE TABLE america(tileId INTEGER PRIMARY KEY, tile BLOB)");
