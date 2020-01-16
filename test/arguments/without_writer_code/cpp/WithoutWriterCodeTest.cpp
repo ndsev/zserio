@@ -139,6 +139,7 @@ protected:
     void checkTile(const Tile& tile)
     {
         ASSERT_EQ(VERSION, tile.getVersion());
+        ASSERT_EQ(VERSION_AVAILABILITY, tile.getVersionAvailability().getValue());
         ASSERT_EQ(NUM_ELEMENTS, tile.getNumElements());
 
         const std::vector<ItemChoiceHolder>& data = tile.getData();

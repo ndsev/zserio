@@ -1,0 +1,36 @@
+<project name="bitmask_types" basedir="." default="run">
+    <testProperties testPath="language/bitmask_types" testName="bitmask_types"/>
+
+    <target name="prepare">
+        <testPrepare testName="bitmask_types"/>
+    </target>
+
+    <target name="gen.check" depends="prepare">
+        <testGenCheck testName="bitmask_types"/>
+    </target>
+
+    <target name="gen" depends="gen.check" unless="bitmask_types.zs.gen_is_uptodate">
+        <testGenClean testName="bitmask_types"/>
+        <testGen testName="bitmask_types" zsFile="bitmask_types.zs"/>
+    </target>
+
+    <target name="gen.checkWarnings" depends="gen">
+        <testGenCheckWarnings testName="bitmask_types"/>
+    </target>
+
+    <target name="compile" depends="gen.checkWarnings">
+        <testCompile testName="bitmask_types"/>
+    </target>
+
+    <target name="findbugs" depends="compile" if="findbugs.home_dir">
+        <testFindbugs testName="bitmask_types"/>
+    </target>
+
+    <target name="run" depends="findbugs">
+        <testRun testname="bitmask_types"/>
+    </target>
+
+    <target name="clean">
+        <testClean testName="bitmask_types"/>
+    </target>
+</project>

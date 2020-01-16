@@ -47,8 +47,12 @@ ${I}${fieldMemberName} = <#if field.runtimeFunction.javaReadTypeName??>(${field.
     <#elseif field.isEnum>
 ${I}${fieldMemberName} = ${field.javaTypeName}.readEnum(__in);
     <#else>
-        <#-- compound -->
-        <#local compoundParamsArguments><@compound_field_compound_ctor_params field.compound/></#local>
+        <#-- compound or bitmask -->
+        <#local compoundParamsArguments>
+            <#if field.compound??><#-- can be a bitmask -->
+                <@compound_field_compound_ctor_params field.compound/>
+            </#if>
+        </#local>
         <#local compoundArguments>__in<#if compoundParamsArguments?has_content>, ${compoundParamsArguments}</#if></#local>
 ${I}${fieldMemberName} = new ${field.javaTypeName}(${compoundArguments});
     </#if>

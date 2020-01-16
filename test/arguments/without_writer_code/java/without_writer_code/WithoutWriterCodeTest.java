@@ -46,6 +46,29 @@ public class WithoutWriterCodeTest
     }
 
     @Test
+    public void checkVersionAvailabilityMethods()
+    {
+        final Set<String> methods = getMethods(VersionAvailability.class);
+
+        assertMethodNotPresent(methods, "initializeOffsets(");
+        assertMethodNotPresent(methods, "write(");
+
+        assertMethodPresent(methods, "VersionAvailability()");
+        assertMethodPresent(methods, "VersionAvailability(byte)");
+        assertMethodPresent(methods, "VersionAvailability(zserio.runtime.io.BitStreamReader");
+        assertMethodPresent(methods, "bitSizeOf()");
+        assertMethodPresent(methods, "bitSizeOf(long)");
+        assertMethodPresent(methods, "equals(java.lang.Object)");
+        assertMethodPresent(methods, "hashCode()");
+        assertMethodPresent(methods, "toString()");
+        assertMethodPresent(methods, "getValue()");
+        assertMethodPresent(methods, "or(without_writer_code.VersionAvailability)");
+        assertMethodPresent(methods, "and(without_writer_code.VersionAvailability)");
+        assertMethodPresent(methods, "xor(without_writer_code.VersionAvailability)");
+        assertMethodPresent(methods, "not()");
+    }
+
+    @Test
     public void checkExtraParamUnionMethods()
     {
         final Set<String> methods = getMethods(ExtraParamUnion.class);
@@ -351,8 +374,10 @@ public class WithoutWriterCodeTest
     private void writeTile(BitStreamWriter writer) throws IOException
     {
         // Tile
+        writer.writeBits(VERSION_AVAILABILITY, 3);
         writer.writeBits((long)VERSION, 8);
-        writer.writeBits(5, 32); // numElementsOffset
+        writer.writeBits(6, 32); // numElementsOffset
+        writer.alignTo(8);
         writer.writeBits(NUM_ELEMENTS, 32);
 
         // offsets
@@ -390,7 +415,8 @@ public class WithoutWriterCodeTest
 
     private void checkTile(Tile tile)
     {
-        assertEquals(VERSION, tile.getVersion());
+        assertEquals(VERSION, tile.getVersion().shortValue());
+        assertEquals(VERSION_AVAILABILITY, tile.getVersionAvailability().getValue());
         assertEquals(NUM_ELEMENTS, tile.getNumElements());
 
         ObjectArray<ItemChoiceHolder> data = tile.getData();
@@ -416,6 +442,7 @@ public class WithoutWriterCodeTest
     private static final int TILE_ID_EUROPE = 99;
     private static final int TILE_ID_AMERICA = 11;
     private static final short VERSION = 8;
+    private static final byte VERSION_AVAILABILITY = 1;
     private static final long NUM_ELEMENTS = 2;
     private static final int PARAMS[] = { 13, 21 };
     private static final long EXTRA_PARAM = 42;

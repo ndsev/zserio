@@ -4,9 +4,9 @@ import static org.junit.Assert.*;
 
 import org.junit.Test;
 
-import default_values.structure_default_values.BasicColor;
 import default_values.structure_default_values.StructureDefaultValues;
-
+import default_values.structure_default_values.BasicColor;
+import default_values.structure_default_values.Permission;
 
 public class StructureDefaultValuesTest
 {
@@ -64,5 +64,12 @@ public class StructureDefaultValuesTest
     {
         final StructureDefaultValues structureDefaultValues = new StructureDefaultValues();
         assertEquals(BasicColor.BLACK, structureDefaultValues.getEnumValue());
+    }
+
+    @Test
+    public void checkDefaultBitmaskValue()
+    {
+        final StructureDefaultValues structureDefaultValues = new StructureDefaultValues();
+        assertEquals(Permission.Values.READ_WRITE, structureDefaultValues.getBitmaskValue());
     }
 }

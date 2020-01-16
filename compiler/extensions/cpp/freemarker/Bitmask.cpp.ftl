@@ -77,10 +77,10 @@ std::string ${name}::toString() const
         <#assign zeroValueName=value.name/><#-- may be there only once -->
     </#if>
 </#list>
-    <#if zeroValueName??>
+<#if zeroValueName??>
     if (result.empty() && m_value == 0)
         result += "${zeroValueName}";
-    </#if>
+</#if>
 
     return ::zserio::convertToString(m_value) + "[" + result + "]";
 }

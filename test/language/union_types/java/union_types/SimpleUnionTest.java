@@ -189,11 +189,11 @@ public class SimpleUnionTest
         SimpleUnion simpleUnion2 = new SimpleUnion();
         assertEquals(simpleUnion1.hashCode(), simpleUnion2.hashCode());
         simpleUnion1.setCase1Field(CASE1_FIELD);
-        assertNotSame(simpleUnion1.hashCode(), simpleUnion2.hashCode());
+        assertFalse(simpleUnion1.hashCode() == simpleUnion2.hashCode());
         simpleUnion2.setCase4Field(CASE4_FIELD);
-        assertNotSame(simpleUnion1.hashCode(), simpleUnion2.hashCode());
+        assertFalse(simpleUnion1.hashCode() == simpleUnion2.hashCode());
         simpleUnion2.setCase4Field(CASE1_FIELD); // same value as simpleUnion1
-        assertNotSame(simpleUnion1.hashCode(), simpleUnion2.hashCode());
+        assertFalse(simpleUnion1.hashCode() == simpleUnion2.hashCode());
         simpleUnion1.setCase4Field(CASE1_FIELD); // same value as simpleUnion2
         assertEquals(simpleUnion1.hashCode(), simpleUnion2.hashCode());
     }

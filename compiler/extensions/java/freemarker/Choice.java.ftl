@@ -50,6 +50,12 @@ public class ${name} implements <#if withWriterCode>InitializeOffsetsWriter, </#
  ||
                  </#if>__selector.compareTo(new java.math.BigInteger("${case.expressionForIf}")) == 0<#rt>
         </#list>
+    <#elseif selectorExpressionBitmaskTypeName??>
+        <#list caseList as case>
+            <#if case_index != 0>
+ ||
+                 </#if>__selector.equals(${case.expressionForIf})<#rt>
+        </#list>
     <#else>
         <#list caseList as case>
 __selector == (${case.expressionForIf})<#if case_has_next> || </#if><#rt>
@@ -57,7 +63,7 @@ __selector == (${case.expressionForIf})<#if case_has_next> || </#if><#rt>
     </#if>
 </#macro>
 <#assign isSwitchAllowed = !isSelectorExpressionBoolean && !isSelectorExpressionBigInteger &&
-        !isSelectorExpressionLong>
+        !isSelectorExpressionLong && !selectorExpressionBitmaskTypeName??>
 <#macro choice_switch memberActionMacroName indent>
     <#local I>${""?left_pad(indent * 4)}</#local>
     <#if isSwitchAllowed>
@@ -85,6 +91,8 @@ ${I}}
 ${I}final boolean __selector = ${selectorExpression};
         <#elseif isSelectorExpressionLong>
 ${I}final long __selector = ${selectorExpression};
+        <#elseif selectorExpressionBitmaskTypeName??>
+${I}final ${selectorExpressionBitmaskTypeName} __selector = ${selectorExpression};
         <#else>
 ${I}final java.math.BigInteger __selector = ${selectorExpression};
         </#if>

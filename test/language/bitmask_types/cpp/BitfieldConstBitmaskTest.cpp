@@ -24,7 +24,7 @@ protected:
     static const Permission::underlying_type WRITE_VALUE;
 };
 
-const size_t BitfieldConstBitmaskTest::PERMISSION_BITSIZEOF = 3;
+const size_t BitfieldConstBitmaskTest::PERMISSION_BITSIZEOF = static_cast<size_t>(NUM_BITS);
 
 const Permission::underlying_type BitfieldConstBitmaskTest::NONE_VALUE = 0;
 const Permission::underlying_type BitfieldConstBitmaskTest::READ_VALUE = 2;

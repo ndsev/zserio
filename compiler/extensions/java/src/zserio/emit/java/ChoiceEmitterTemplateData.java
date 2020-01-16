@@ -4,6 +4,7 @@ import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
 
+import zserio.ast.BitmaskType;
 import zserio.ast.ChoiceCase;
 import zserio.ast.ChoiceCaseExpression;
 import zserio.ast.ChoiceDefault;
@@ -12,6 +13,7 @@ import zserio.ast.Expression;
 import zserio.ast.Field;
 import zserio.emit.common.ExpressionFormatter;
 import zserio.emit.common.ZserioEmitException;
+import zserio.emit.java.types.JavaNativeType;
 
 public final class ChoiceEmitterTemplateData extends CompoundTypeTemplateData
 {
@@ -19,6 +21,8 @@ public final class ChoiceEmitterTemplateData extends CompoundTypeTemplateData
             throws ZserioEmitException
     {
         super(context, choiceType);
+
+        final JavaNativeMapper javaNativeMapper = context.getJavaNativeMapper();
 
         final ExpressionFormatter javaExpressionFormatter = context.getJavaExpressionFormatter();
         final Expression expression = choiceType.getSelectorExpression();
@@ -28,8 +32,8 @@ public final class ChoiceEmitterTemplateData extends CompoundTypeTemplateData
         isSelectorExpressionBigInteger = expression.needsBigInteger();
         isSelectorExpressionLong = (isSelectorExpressionBigInteger == false && selectorUpperBound != null &&
                 selectorUpperBound.compareTo(BigInteger.valueOf(Integer.MAX_VALUE)) > 0);
+        selectorExpressionBitmaskTypeName = createSelectorExpressionBitmaskType(expression, javaNativeMapper);
 
-        final JavaNativeMapper javaNativeMapper = context.getJavaNativeMapper();
         final boolean withWriterCode = context.getWithWriterCode();
         final boolean withRangeCheckCode = context.getWithRangeCheckCode();
         caseMemberList = new ArrayList<CaseMember>();
@@ -73,6 +77,11 @@ public final class ChoiceEmitterTemplateData extends CompoundTypeTemplateData
     public boolean getIsSelectorExpressionLong()
     {
         return isSelectorExpressionLong;
+    }
+
+    public String getSelectorExpressionBitmaskTypeName()
+    {
+        return selectorExpressionBitmaskTypeName;
     }
 
     public Iterable<CaseMember> getCaseMemberList()
@@ -167,11 +176,25 @@ public final class ChoiceEmitterTemplateData extends CompoundTypeTemplateData
         private final CompoundFieldTemplateData compoundField;
     }
 
-    private final String            selectorExpression;
-    private final boolean           isSelectorExpressionBoolean;
-    private final boolean           isSelectorExpressionBigInteger;
-    private final boolean           isSelectorExpressionLong;
-    private final List<CaseMember>  caseMemberList;
-    private final DefaultMember     defaultMember;
-    private final boolean           isDefaultUnreachable;
+    private String createSelectorExpressionBitmaskType(Expression expr, JavaNativeMapper javaNativeMapper)
+            throws ZserioEmitException
+    {
+        if (expr.getExprType() != Expression.ExpressionType.BITMASK)
+            return null;
+
+        if (!(expr.getExprZserioType() instanceof BitmaskType))
+            throw new ZserioEmitException("Missing expression ZseiroType for bitmask!");
+
+        final JavaNativeType nativeType = javaNativeMapper.getJavaType(expr.getExprZserioType());
+        return nativeType.getFullName();
+    }
+
+    private final String selectorExpression;
+    private final boolean isSelectorExpressionBoolean;
+    private final boolean isSelectorExpressionBigInteger;
+    private final boolean isSelectorExpressionLong;
+    private final String selectorExpressionBitmaskTypeName;
+    private final List<CaseMember> caseMemberList;
+    private final DefaultMember defaultMember;
+    private final boolean isDefaultUnreachable;
 }

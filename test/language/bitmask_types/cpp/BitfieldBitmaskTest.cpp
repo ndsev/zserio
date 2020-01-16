@@ -238,7 +238,7 @@ TEST_F(BitfieldBitmaskTest, operatorBitwiseAnd)
     ASSERT_EQ(read, readwrite & Permission::Values::READ);
     ASSERT_EQ(read, Permission::Values::READ & readwrite);
     ASSERT_EQ(write, Permission::Values::WRITE & readwrite);
-    ASSERT_EQ(readwrite & Permission::Values::NONE, Permission::Values::NONE);
+    ASSERT_EQ(Permission::Values::NONE, readwrite & Permission::Values::NONE);
 
     ASSERT_EQ(read, read & read & read & read);
 }

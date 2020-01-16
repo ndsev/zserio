@@ -11,7 +11,6 @@
 #include "sql_constraints/constraints/ImportedConstant.h"
 #include "sql_constraints/constraints/ImportedEnum.h"
 
-
 namespace sql_constraints
 {
 

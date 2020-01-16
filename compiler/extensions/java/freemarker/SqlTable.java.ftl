@@ -379,7 +379,10 @@ ${I}    (${parameter.javaTypeName})(${parameter.expression})<#rt>
         final byte[] ${valueVarName} = resultSet.getBytes(${field_index + 1});
     <#elseif field.enumData??>
         final ${field.enumData.baseJavaTypeName} ${valueVarName} = <#rt>
-            resultSet.get${field.enumData.baseJavaTypeName?cap_first}(${field_index + 1})<#lt>;
+                <#lt>resultSet.get${field.enumData.baseJavaTypeName?cap_first}(${field_index + 1});
+    <#elseif field.bitmaskData??>
+        final ${field.bitmaskData.baseJavaTypeName} ${valueVarName} = <#rt>
+                <#lt>resultSet.get${field.bitmaskData.baseJavaTypeName?cap_first}(${field_index + 1});
     <#elseif field.requiresBigInt>
         final long ${valueVarName} = resultSet.getLong(${field_index + 1});
     <#else>
@@ -393,6 +396,8 @@ ${I}    (${parameter.javaTypeName})(${parameter.expression})<#rt>
             row.set${field.name?cap_first}(blob);
     <#elseif field.enumData??>
             row.set${field.name?cap_first}(${field.javaTypeName}.toEnum(${valueVarName}));
+    <#elseif field.bitmaskData??>
+            row.set${field.name?cap_first}(new ${field.javaTypeName}(${valueVarName}));
     <#elseif field.requiresBigInt>
             row.set${field.name?cap_first}(java.math.BigInteger.valueOf(${valueVarName}));
     <#else>
@@ -421,6 +426,9 @@ ${I}    (${parameter.javaTypeName})(${parameter.expression})<#rt>
         <#elseif field.enumData??>
             final ${field.enumData.baseJavaTypeName} enumValue = row.get${field.name?cap_first}().getValue();
             statement.set${field.enumData.baseJavaTypeName?cap_first}(${field_index + 1}, enumValue);
+        <#elseif field.bitmaskData??>
+            final ${field.bitmaskData.baseJavaTypeName} bitmaskValue = row.get${field.name?cap_first}().getValue();
+            statement.set${field.bitmaskData.baseJavaTypeName?cap_first}(${field_index + 1}, bitmaskValue);
         <#elseif field.requiresBigInt>
             final long bigIntValue = row.get${field.name?cap_first}().longValue();
             statement.setLong(${field_index + 1}, bigIntValue);
