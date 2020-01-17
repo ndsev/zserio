@@ -151,10 +151,10 @@ ${I}    throw new ConstraintError("Constraint violated at ${compoundName}.${fiel
 <#macro compound_compare_field field>
     <#if field.isSimpleType>
         <#if field.isFloat>
-            <#-- float type: compare by floatToIntBits() to get rid of FindBugs -->
+            <#-- float type: compare by floatToIntBits() to get rid of SpotBugs -->
 Float.floatToIntBits(this.${field.name}) == Float.floatToIntBits(__that.${field.name})<#rt>
         <#elseif field.isDouble>
-            <#-- double type: compare by doubleToLongBits() to get rid of FindBugs -->
+            <#-- double type: compare by doubleToLongBits() to get rid of SpotBugs -->
 Double.doubleToLongBits(this.${field.name}) == Double.doubleToLongBits(__that.${field.name})<#rt>
         <#else>
             <#-- simple type: compare by == -->

@@ -1,9 +1,9 @@
 <project name="service_types" basedir="." default="run">
     <testProperties testPath="language/service_types" testName="service_types"/>
 
-    <condition property="service_types.findbugs" value="yes" else="no">
+    <condition property="service_types.spotbugs" value="yes" else="no">
         <and>
-            <isset property="findbugs.home_dir"/>
+            <isset property="spotbugs.home_dir"/>
             <istrue value="${zserio_java_test.grpc}"/>
         </and>
     </condition>
@@ -20,11 +20,11 @@
         <testCompile testName="service_types" grpc="true"/>
     </target>
 
-    <target name="findbugs" depends="compile" if="${service_types.findbugs}">
-        <testFindbugs testName="service_types" grpc="true"/>
+    <target name="spotbugs" depends="compile" if="${service_types.spotbugs}">
+        <testSpotBugs testName="service_types" grpc="true"/>
     </target>
 
-    <target name="run" depends="findbugs" if="${zserio_java_test.grpc}">
+    <target name="run" depends="spotbugs" if="${zserio_java_test.grpc}">
         <testRun testname="service_types" grpc="true"/>
     </target>
 

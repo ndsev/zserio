@@ -7,7 +7,7 @@ The following properties can be set:
 zserio.release_dir         - Directory where to find Zserio release to test. Default is "../distr".
 zserio_java_test.build_dir - Directory where to put generated files. Default is "../build/test/java".
 zserio_java_test.filter    - Test filter (supports glob patterns). Default is "**".
-findbugs.home_dir          - Location of the findbugs tool. If not set, findbugs is not run.
+spotbugs.home_dir          - Location of the spotbugs tool. If not set, spotbugs is not run.
 zserio_java_test.grpc      - Whether the GRPC tests are enabled (default is "no").
 
 -->
@@ -31,11 +31,11 @@ zserio_java_test.grpc      - Whether the GRPC tests are enabled (default is "no"
     <property name="zserio_java_test.filter" value="**"/>
     <property name="zserio_java_test.grpc" value="no"/>
 
-    <condition property="findbugs.classpath" value="${findbugs.home_dir}/lib/findbugs-ant.jar">
-        <isset property="findbugs.home_dir"/>
+    <condition property="spotbugs.classpath" value="${spotbugs.home_dir}/lib/spotbugs-ant.jar">
+        <isset property="spotbugs.home_dir"/>
     </condition>
-    <condition property="findbugs.classname" value="edu.umd.cs.findbugs.anttask.FindBugsTask">
-        <isset property="findbugs.home_dir"/>
+    <condition property="spotbugs.resource" value="edu/umd/cs/findbugs/anttask/tasks.properties">
+        <isset property="spotbugs.home_dir"/>
     </condition>
 
     <!-- check Ant version, minimum is 1.9.1 due to xmlns:if and xmlns:unless -->
@@ -179,27 +179,31 @@ zserio_java_test.grpc      - Whether the GRPC tests are enabled (default is "no"
         </sequential>
     </macrodef>
 
-    <macrodef name="testFindbugs">
+    <macrodef name="testSpotBugs">
         <attribute name="testName"/>
         <attribute name="srcPath" default="${@{testName}.base_dir}/java:${@{testName}.zs.out_dir}"/>
         <attribute name="grpc" default="false"/>
         <sequential>
-            <property name="findbugs.gen_classes.jar_file"
-                    location="${@{testName}.build_dir}/jar/gen_classes.jar"/>
-            <jar destfile="${findbugs.gen_classes.jar_file}">
+            <property name="spotbugs.gen_classes.jar_file"
+                location="${@{testName}.build_dir}/jar/gen_classes.jar"/>
+            <jar destfile="${spotbugs.gen_classes.jar_file}">
                 <fileset dir="${@{testName}.build_dir}/classes"/>
             </jar>
-
-            <taskdef name="findbugs" classpath="${findbugs.classpath}" classname="${findbugs.classname}"/>
-            <findbugs home="${findbugs.home_dir}"
+            <taskdef classpath="${spotbugs.classpath}" resource="${spotbugs.resource}"/>
+            <property name="spotbugs.exclude_filter.file_name" value="spotbugs_filter.xml"/>
+            <condition property="spotbugs.exclude_filter.dir" value="${@{testName}.base_dir}"
+                else="${zserio_java_test.base_dir}">
+                <available file="${@{testName}.base_dir}/${spotbugs.exclude_filter.file_name}"/>
+            </condition>
+            <spotbugs home="${spotbugs.home_dir}"
                 output="html"
-                outputFile="${@{testName}.build_dir}/findbugs.html"
-                excludeFilter="${@{testName}.base_dir}/findbugs_filter.xml"
+                outputFile="${@{testName}.build_dir}/spotbugs.html"
+                excludeFilter="${spotbugs.exclude_filter.dir}/${spotbugs.exclude_filter.file_name}"
                 reportLevel="low"
                 errorProperty="@{testName}.is_failed"
                 warningsProperty="@{testName}.is_failed">
                 <sourcePath path="@{srcPath}"/>
-                <class location="${findbugs.gen_classes.jar_file}"/>
+                <class location="${spotbugs.gen_classes.jar_file}"/>
                 <auxClasspath>
                     <pathelement location="${runtime.jar_file}"/>
                     <pathelement location="${3rdparty.junit.jar_file}"/>
@@ -208,8 +212,8 @@ zserio_java_test.grpc      - Whether the GRPC tests are enabled (default is "no"
                         <include name="*.jar"/>
                     </fileset>
                 </auxClasspath>
-            </findbugs>
-            <fail message="FindBugs found some issues!" if="@{testName}.is_failed"/>
+            </spotbugs>
+            <fail message="SpotBugs found some issues!" if="@{testName}.is_failed"/>
         </sequential>
     </macrodef>
 
@@ -260,7 +264,7 @@ zserio_java_test.grpc      - Whether the GRPC tests are enabled (default is "no"
         </subant>
     </target>
 
-    <target name="run" depends="test_utils.findbugs">
+    <target name="run" depends="test_utils.spotbugs">
         <record name="${zserio_java_test.log_file}" action="start"/>
 
         <subant target="run" inheritall="true">

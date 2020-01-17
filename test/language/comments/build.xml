@@ -22,11 +22,11 @@
         <testCompile testName="comments" srcPath="${comments.zs.out_dir}"/>
     </target>
 
-    <target name="findbugs" depends="compile" if="findbugs.home_dir">
-        <testFindbugs testName="comments" srcPath="${comments.zs.out_dir}"/>
+    <target name="spotbugs" depends="compile" if="spotbugs.home_dir">
+        <testSpotBugs testName="comments" srcPath="${comments.zs.out_dir}"/>
     </target>
 
-    <target name="run" depends="findbugs">
+    <target name="run" depends="spotbugs">
         <!-- nothing to do -->
     </target>
 

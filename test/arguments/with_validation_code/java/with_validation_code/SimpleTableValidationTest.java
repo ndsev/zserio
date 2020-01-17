@@ -344,10 +344,21 @@ public class SimpleTableValidationTest
     @Test
     public void invalidEnumValue() throws SQLException
     {
-        populateDb(database.connection(), new TestParameterProvider(), false);
+    	final Connection connection = database.connection();
+        populateDb(connection, new TestParameterProvider(), false);
 
         // set fieldEnum to an invalid enum value
-        executeUpdate("UPDATE simpleTable SET fieldEnum = 1 WHERE fieldEnum = " + TestEnum.RED.getValue());
+        final String sql = "UPDATE simpleTable SET fieldEnum = 1 WHERE fieldEnum = ?";
+        final PreparedStatement statement = connection.prepareStatement(sql);
+        try
+        {
+            statement.setLong(1, TestEnum.RED.getValue());
+            statement.execute();
+        }
+        finally
+        {
+            statement.close();
+        }
 
         final TestParameterProvider parameterProvider = new TestParameterProvider();
         final ValidationReport report = database.validate(parameterProvider);

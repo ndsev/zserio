@@ -22,11 +22,11 @@
         <testCompile testName="default_values"/>
     </target>
 
-    <target name="findbugs" depends="compile" if="findbugs.home_dir">
-        <testFindbugs testName="default_values"/>
+    <target name="spotbugs" depends="compile" if="spotbugs.home_dir">
+        <testSpotBugs testName="default_values"/>
     </target>
 
-    <target name="run" depends="findbugs">
+    <target name="run" depends="spotbugs">
         <testRun testname="default_values"/>
     </target>
 

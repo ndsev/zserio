@@ -2,7 +2,7 @@
     <Match>
         <!-- Same code in different switch clauses. -->
         <Or>
-            <Class name="~.*SimpleChoice.*"/>
+            <Class name="~.*SimpleChoice"/>
         </Or>
         <Or>
             <Method name="bitSizeOf"/>

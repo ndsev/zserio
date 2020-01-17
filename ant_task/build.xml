@@ -13,7 +13,7 @@ zserio.install_dir          - Zserio install directory. Default is "../distr".
 zserio_ant_task.build_dir   - Directory where to put generated files. Default is "${zserio.build_dir}/ant_task".
 zserio_ant_task.install_dir - Directory where to install library. Default is "${zserio.install_dir}/jar".
 zserio.version              - Zserio version used for Zserio Ant task version. Default is "unknown".
-findbugs.home_dir           - Location of the findbugs tool. If not set, findbugs is not run.
+spotbugs.home_dir           - Location of the spotbugs tool. If not set, spotbugs is not run.
 
 -->
 <project name="zserio_ant_task" basedir="." default="jar">
@@ -31,7 +31,7 @@ findbugs.home_dir           - Location of the findbugs tool. If not set, findbug
 
     <property name="zserio_ant_task.src_dir" value="${zserio_ant_task.base_dir}/src"/>
     <property name="zserio_ant_task.classes_dir" value="${zserio_ant_task.build_dir}/classes"/>
-    <property name="zserio_ant_task.findbugs.out_dir" value="${zserio_ant_task.build_dir}/findbugs"/>
+    <property name="zserio_ant_task.spotbugs.out_dir" value="${zserio_ant_task.build_dir}/spotbugs"/>
     <property name="zserio_ant_task.jar_dir" value="${zserio_ant_task.build_dir}/jar"/>
     <property name="zserio_ant_task.jar_file" value="${zserio_ant_task.jar_dir}/zserio_ant.jar"/>
 
@@ -74,13 +74,13 @@ findbugs.home_dir           - Location of the findbugs tool. If not set, findbug
         <copy file="${zserio_ant_task.jar_file}" todir="${zserio_ant_task.install_dir}" overwrite="true"/>
     </target>
 
-    <target name="findbugs" depends="install" if="findbugs.home_dir">
-        <mkdir dir="${zserio_ant_task.findbugs.out_dir}"/>
-        <taskdef name="findbugs" classpath="${findbugs.home_dir}/lib/findbugs-ant.jar"
-            classname="edu.umd.cs.findbugs.anttask.FindBugsTask"/>
-        <findbugs home="${findbugs.home_dir}"
+    <target name="spotbugs" depends="install" if="spotbugs.home_dir">
+        <mkdir dir="${zserio_ant_task.spotbugs.out_dir}"/>
+        <taskdef classpath="${spotbugs.home_dir}/lib/spotbugs-ant.jar"
+            resource="edu/umd/cs/findbugs/anttask/tasks.properties"/>
+        <spotbugs home="${spotbugs.home_dir}"
             output="html"
-            outputFile="${zserio_ant_task.findbugs.out_dir}/findbugs.html"
+            outputFile="${zserio_ant_task.spotbugs.out_dir}/spotbugs.html"
             reportLevel="low"
             errorProperty="zserio_ant_task.is_failed"
             warningsProperty="zserio_ant_task.is_failed">
@@ -91,10 +91,10 @@ findbugs.home_dir           - Location of the findbugs tool. If not set, findbug
             <auxClasspath>
                 <path refid="zserio_ant_task.classpath"/>
             </auxClasspath>
-        </findbugs>
-        <fail message="FindBugs found some issues!" if="zserio_ant_task.is_failed"/>
+        </spotbugs>
+        <fail message="SpotBugs found some issues!" if="zserio_ant_task.is_failed"/>
     </target>
 
-    <target name="test" depends="findbugs">
+    <target name="test" depends="spotbugs">
     </target>
 </project>

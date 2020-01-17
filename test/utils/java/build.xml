@@ -6,7 +6,7 @@ The following properties can be set:
 
 test_utils.build_dir    - Directory where to put generated files.
                           Default is "../../../build/test/java/utils".
-findbugs.home_dir       - Location of the findbugs tool. If not set, findbugs is not run.
+spotbugs.home_dir       - Location of the spotbugs tool. If not set, spotbugs is not run.
 
 -->
 <project name="test_utils" basedir="." default="jar">
@@ -49,12 +49,12 @@ findbugs.home_dir       - Location of the findbugs tool. If not set, findbugs is
         <delete dir="${test_utils.build_dir}"/>
     </target>
 
-    <target name="findbugs" depends="jar" if="findbugs.home_dir">
-        <taskdef name="findbugs" classpath="${findbugs.home_dir}/lib/findbugs-ant.jar"
-            classname="edu.umd.cs.findbugs.anttask.FindBugsTask"/>
-        <findbugs home="${findbugs.home_dir}"
+    <target name="spotbugs" depends="jar" if="spotbugs.home_dir">
+        <taskdef classpath="${spotbugs.home_dir}/lib/spotbugs-ant.jar"
+            resource="edu/umd/cs/findbugs/anttask/tasks.properties"/>
+        <spotbugs home="${spotbugs.home_dir}"
             output="html"
-            outputFile="${test_utils.build_dir}/findbugs.html"
+            outputFile="${test_utils.build_dir}/spotbugs.html"
             reportLevel="low"
             errorProperty="test_utils.is_failed"
             warningsProperty="test_utils.is_failed">
@@ -62,7 +62,7 @@ findbugs.home_dir       - Location of the findbugs tool. If not set, findbugs is
                 <dirset dir="${test_utils.src_dir}"/>
             </sourcePath>
             <fileset dir="${test_utils.classes_dir}"/>
-        </findbugs>
-        <fail message="FindBugs found some issues!" if="test_utils.is_failed"/>
+        </spotbugs>
+        <fail message="SpotBugs found some issues!" if="test_utils.is_failed"/>
     </target>
 </project>

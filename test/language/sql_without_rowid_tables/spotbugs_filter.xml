@@ -4,11 +4,14 @@
         <Bug code="SQL"/>
         <Or>
             <Method name="createTable"/>
+            <Method name="createOrdinaryRowIdTable"/>
             <Method name="deleteTable"/>
             <Method name="read"/>
             <Method name="update"/>
             <Method name="executeUpdate"/>
             <Method name="attachDatabase"/>
+            <Method name="detachDatabases"/>
+            <Method name="isColumnInTable"/>
         </Or>
     </Match>
 </FindBugsFilter>

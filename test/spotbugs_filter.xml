@@ -1,0 +1,3 @@
+<FindBugsFilter>
+    <!-- This is a default empty exclude filter file for test which does not fire any SpotBugs warning. -->
+</FindBugsFilter>

@@ -17,7 +17,7 @@ zserio_python.install_dir     - Directory where to install Zserio Python Extensi
                                 Default is "${zserio_extensions.install_dir}".
 zserio_core.jar_file          - Zserio core jar file used for classpath.
                                 Default is "${zserio_extensions.build_dir}/../core/jar/zserio_core.jar".
-findbugs.home_dir             - Location of the findbugs tool. If not set, findbugs is not run.
+spotbugs.home_dir             - Location of the spotbugs tool. If not set, spotbugs is not run.
 
 -->
 <project name="zserio_python" basedir="." default="jar">
@@ -33,7 +33,7 @@ findbugs.home_dir             - Location of the findbugs tool. If not set, findb
 
     <property name="zserio_python.src_dir" value="${zserio_python.base_dir}/src"/>
     <property name="zserio_python.classes_dir" value="${zserio_python.build_dir}/classes"/>
-    <property name="zserio_python.findbugs.out_dir" value="${zserio_python.build_dir}/findbugs"/>
+    <property name="zserio_python.spotbugs.out_dir" value="${zserio_python.build_dir}/spotbugs"/>
 
     <property name="zserio_python.jar_dir" value="${zserio_python.build_dir}/jar"/>
     <property name="zserio_python.jar_file" value="${zserio_python.jar_dir}/zserio_python.jar"/>
@@ -99,13 +99,13 @@ findbugs.home_dir             - Location of the findbugs tool. If not set, findb
         <copy file="${zserio_python.jar_file}" todir="${zserio_python.install_dir}" overwrite="true"/>
     </target>
 
-    <target name="findbugs" depends="install" if="findbugs.home_dir">
-        <mkdir dir="${zserio_python.findbugs.out_dir}"/>
-        <taskdef name="findbugs" classpath="${findbugs.home_dir}/lib/findbugs-ant.jar"
-            classname="edu.umd.cs.findbugs.anttask.FindBugsTask"/>
-        <findbugs home="${findbugs.home_dir}"
+    <target name="spotbugs" depends="install" if="spotbugs.home_dir">
+        <mkdir dir="${zserio_python.spotbugs.out_dir}"/>
+        <taskdef classpath="${spotbugs.home_dir}/lib/spotbugs-ant.jar"
+            resource="edu/umd/cs/findbugs/anttask/tasks.properties"/>
+        <spotbugs home="${spotbugs.home_dir}"
             output="html"
-            outputFile="${zserio_python.findbugs.out_dir}/findbugs.html"
+            outputFile="${zserio_python.spotbugs.out_dir}/spotbugs.html"
             reportLevel="low"
             errorProperty="zserio_python.is_failed"
             warningsProperty="zserio_python.is_failed">
@@ -116,10 +116,10 @@ findbugs.home_dir             - Location of the findbugs tool. If not set, findb
             <auxClasspath>
                 <path refid="zserio_python.classpath_zserio_core"/>
             </auxClasspath>
-        </findbugs>
-        <fail message="FindBugs found some issues!" if="zserio_python.is_failed"/>
+        </spotbugs>
+        <fail message="SpotBugs found some issues!" if="zserio_python.is_failed"/>
     </target>
 
-    <target name="test" depends="findbugs">
+    <target name="test" depends="spotbugs">
     </target>
 </project>

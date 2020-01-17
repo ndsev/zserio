@@ -19,9 +19,9 @@ generate_ant_file()
     posix_to_host_path "${ZSERIO_ROOT}" HOST_ZSERIO_ROOT
     posix_to_host_path "${BUILD_DIR}" HOST_BUILD_DIR
 
-    local FINDBUGS_FILTER_SQLITE
+    local SPOTBUGS_FILTER_SQLITE
     if [ ${NEEDS_SQLITE} -ne 0 ] ; then
-        FINDBUGS_FILTER_SQLITE="
+        SPOTBUGS_FILTER_SQLITE="
         <!-- A prepared statement is generated from a nonconstant String. -->
         <Match>
             <Bug code=\"SQL\"/>
@@ -63,11 +63,11 @@ generate_ant_file()
     <property name="test_zs.jar_file" location="\${test_zs.jar_dir}/${TEST_NAME}.jar"/>
     <property name="test_zs.src_dir" location="\${test_zs.build_dir}/gen"/>${GRPC_JAR_DIR}
 
-    <condition property="findbugs.classpath" value="\${findbugs.home_dir}/lib/findbugs-ant.jar">
-        <isset property="findbugs.home_dir"/>
+    <condition property="spotbugs.classpath" value="\${spotbugs.home_dir}/lib/spotbugs-ant.jar">
+        <isset property="spotbugs.home_dir"/>
     </condition>
-    <condition property="findbugs.classname" value="edu.umd.cs.findbugs.anttask.FindBugsTask">
-        <isset property="findbugs.home_dir"/>
+    <condition property="spotbugs.resource" value="edu/umd/cs/spotbugs/anttask/tasks.properties">
+        <isset property="spotbugs.home_dir"/>
     </condition>
 
     <target name="prepare">
@@ -93,37 +93,37 @@ generate_ant_file()
         <jar destfile="\${test_zs.jar_file}" basedir="\${test_zs.classes_dir}"/>
     </target>
 
-    <target name="findbugs" depends="jar" if="findbugs.home_dir">
-        <taskdef name="findbugs" classpath="\${findbugs.classpath}" classname="\${findbugs.classname}"/>
-        <findbugs home="\${findbugs.home_dir}"
+    <target name="spotbugs" depends="jar" if="spotbugs.home_dir">
+        <taskdef classpath="\${spotbugs.classpath}" resource="\${spotbugs.resource}"/>
+        <spotbugs home="\${spotbugs.home_dir}"
             output="html"
-            outputFile="\${test_zs.build_dir}/findbugs.html"
+            outputFile="\${test_zs.build_dir}/spotbugs.html"
             reportLevel="low"
-            excludeFilter="\${test_zs.build_dir}/findbugs_filter.xml"
-            errorProperty="test_zs.findbugs.is_failed"
-            warningsProperty="test_zs.findbugs.is_failed">
+            excludeFilter="\${test_zs.build_dir}/spotbugs_filter.xml"
+            errorProperty="test_zs.spotbugs.is_failed"
+            warningsProperty="test_zs.spotbugs.is_failed">
             <sourcePath path="\${test_zs.src_dir}"/>
             <class location="\${test_zs.jar_file}"/>
             <auxClasspath>
                 <pathelement location="\${runtime.jar_file}"/>${GRPC_CLASSPATH}
             </auxClasspath>
-        </findbugs>
-        <fail message="FindBugs found some issues!" if="test_zs.findbugs.is_failed"/>
+        </spotbugs>
+        <fail message="SpotBugs found some issues!" if="test_zs.spotbugs.is_failed"/>
     </target>
 
-    <target name="run" depends="findbugs">
+    <target name="run" depends="spotbugs">
     </target>
 
     <target name="clean">
         <delete dir="\${test_zs.classes_dir}"/>
         <delete dir="\${test_zs.jar_dir}"/>
         <delete dir="\${test_zs.build_dir}/depend-cache"/>
-        <delete file="\${test_zs.build_dir}/findbugs.html"/>
+        <delete file="\${test_zs.build_dir}/spotbugs.html"/>
     </target>
 </project>
 EOF
 
-    cat > ${BUILD_DIR}/findbugs_filter.xml << EOF
+    cat > ${BUILD_DIR}/spotbugs_filter.xml << EOF
 <FindBugsFilter>
     <Match>
     <Match>
@@ -135,7 +135,7 @@ EOF
             <Method name="read"/>
         </Or>
     </Match>
-    </Match>${FINDBUGS_FILTER_SQLITE}
+    </Match>${SPOTBUGS_FILTER_SQLITE}
 </FindBugsFilter>
 EOF
 }
