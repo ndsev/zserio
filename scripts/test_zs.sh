@@ -34,6 +34,7 @@ generate_ant_file()
                 <Method name=\"validate\"/>
                 <Method name=\"executeUpdate\"/>
                 <Method name=\"attachDatabase\"/>
+                <Method name=\"detachDatabases\"/>
             </Or>
         </Match>"
     fi
@@ -66,7 +67,7 @@ generate_ant_file()
     <condition property="spotbugs.classpath" value="\${spotbugs.home_dir}/lib/spotbugs-ant.jar">
         <isset property="spotbugs.home_dir"/>
     </condition>
-    <condition property="spotbugs.resource" value="edu/umd/cs/spotbugs/anttask/tasks.properties">
+    <condition property="spotbugs.resource" value="edu/umd/cs/findbugs/anttask/tasks.properties">
         <isset property="spotbugs.home_dir"/>
     </condition>
 
