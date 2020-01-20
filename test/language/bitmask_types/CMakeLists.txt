@@ -18,6 +18,9 @@ set(ZSERIO_GENERATED_SOURCES
     ${ZSERIO_GEN_DIR}/bitmask_types/bitmask_used_by_bitmask/ComplexPermission.cpp
     ${ZSERIO_GEN_DIR}/bitmask_types/bitmask_used_by_bitmask/ComplexPermission.h
 
+    ${ZSERIO_GEN_DIR}/bitmask_types/bitmask_without_none/Permission.cpp
+    ${ZSERIO_GEN_DIR}/bitmask_types/bitmask_without_none/Permission.h
+
     ${ZSERIO_GEN_DIR}/bitmask_types/uint8_bitmask/Permission.cpp
     ${ZSERIO_GEN_DIR}/bitmask_types/uint8_bitmask/Permission.h
 
@@ -42,6 +45,7 @@ add_test_sources(
     ${ZSERIO_CPP_DIR}/BitfieldConstBitmaskTest.cpp
     ${ZSERIO_CPP_DIR}/BitmaskDefinedByConstantTest.cpp
     ${ZSERIO_CPP_DIR}/BitmaskUsedByBitmaskTest.cpp
+    ${ZSERIO_CPP_DIR}/BitmaskWithoutNoneTest.cpp
     ${ZSERIO_CPP_DIR}/UInt64BitmaskTest.cpp
     ${ZSERIO_CPP_DIR}/UInt8BitmaskTest.cpp
     ${ZSERIO_CPP_DIR}/VarUIntBitmaskTest.cpp

@@ -25,7 +25,7 @@ ${name}::${name}(underlying_type value) :
 {
     if (m_value > ${upperBound})
     {
-        throw ::zserio::CppRuntimeException("Value exceeds size of the bitmaks '${name}': " +
+        throw ::zserio::CppRuntimeException("Value for bitmask '${name}' out of bounds: " +
                 ::zserio::convertToString(value) + "!");
     }
 }

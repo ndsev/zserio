@@ -69,6 +69,9 @@ class SqlTypesTest(unittest.TestCase):
     def testEnumType(self):
         self.assertEqual("INTEGER", self._sqlColumnTypes["enumType"])
 
+    def testBitmaskType(self):
+        self.assertEqual("INTEGER", self._sqlColumnTypes["bitmaskType"])
+
     def testStructureType(self):
         self.assertEqual("BLOB", self._sqlColumnTypes["structureType"])
 

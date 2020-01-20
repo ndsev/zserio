@@ -42,7 +42,7 @@ TEST(BitmaskTypeTest, bitSizeOfBlue)
 {
     BitmaskTypeExpression bitmaskTypeExpression;
     bitmaskTypeExpression.setColors(Colors::Values::BLUE);
-    bitmaskTypeExpression.setHasColorGreen(true);
+    bitmaskTypeExpression.setHasColorBlue(true);
     bitmaskTypeExpression.setHasNotColorRed(true);
     bitmaskTypeExpression.setHasOtherColorThanRed(true);
 

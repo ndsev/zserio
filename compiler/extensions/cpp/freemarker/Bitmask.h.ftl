@@ -3,8 +3,6 @@
 
 <@include_guard_begin package.path, name/>
 
-#include <array>
-
 #include <zserio/BitStreamReader.h>
 #include <zserio/BitStreamWriter.h>
 #include <zserio/PreWriteAction.h>

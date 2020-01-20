@@ -46,7 +46,7 @@ public class BitmaskTypeTest
     {
         BitmaskTypeExpression bitmaskTypeExpression = new BitmaskTypeExpression();
         bitmaskTypeExpression.setColors(Colors.Values.BLUE);
-        bitmaskTypeExpression.setHasColorGreen(true);
+        bitmaskTypeExpression.setHasColorBlue(true);
         bitmaskTypeExpression.setHasNotColorRed(true);
         bitmaskTypeExpression.setHasOtherColorThanRed(true);
 

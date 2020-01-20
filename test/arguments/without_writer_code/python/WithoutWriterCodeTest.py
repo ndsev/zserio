@@ -18,6 +18,25 @@ class WithoutWriterCodeTest(unittest.TestCase):
         self._assertMethodPresent(userType, "fromReader")
         self._assertMethodPresent(userType, "bitSizeOf")
 
+    def testVersionAvailabilityMethods(self):
+        userType = self.api.VersionAvailability
+
+        self._assertMethodNotPresent(userType, "initializeOffsets")
+        self._assertMethodNotPresent(userType, "write")
+
+        self._assertMethodPresent(userType, "__init__")
+        self._assertMethodPresent(userType, "fromValue")
+        self._assertMethodPresent(userType, "fromReader")
+        self._assertMethodPresent(userType, "__eq__")
+        self._assertMethodPresent(userType, "__hash__")
+        self._assertMethodPresent(userType, "__str__")
+        self._assertMethodPresent(userType, "__or__")
+        self._assertMethodPresent(userType, "__and__")
+        self._assertMethodPresent(userType, "__xor__")
+        self._assertMethodPresent(userType, "__invert__")
+        self._assertMethodPresent(userType, "bitSizeOf")
+        self._assertMethodPresent(userType, "getValue")
+
     def testExtraParamUnionMethods(self):
         userType = self.api.ExtraParamUnion
 
@@ -193,8 +212,10 @@ class WithoutWriterCodeTest(unittest.TestCase):
 
     def _writeTile(self, writer):
         # Tile
+        writer.writeBits(VERSION_AVAILABILITY, 3)
         writer.writeBits(VERSION, 8)
-        writer.writeBits(5, 32) # numElementsOffset
+        writer.writeBits(6, 32) # numElementsOffset
+        writer.alignTo(8)
         writer.writeBits(NUM_ELEMENTS, 32)
 
         # offsets
@@ -255,6 +276,7 @@ class WithoutWriterCodeTest(unittest.TestCase):
 
 TILE_ID_EUROPE = 99
 TILE_ID_AMERICA = 11
+VERSION_AVAILABILITY = 1
 VERSION = 8
 NUM_ELEMENTS = 2
 PARAMS = [13, 21]

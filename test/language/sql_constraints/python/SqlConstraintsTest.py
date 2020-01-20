@@ -72,6 +72,20 @@ class SqlConstraintsTest(unittest.TestCase):
             self._writeRowDict(rowDict)
             self.assertTrue("CHECK constraint failed: constraintsTable" in str(context.exception))
 
+    def testSqlCheckBitmask(self):
+        rowDict = self._createRowDict()
+        rowDict['sqlCheckBitmask'] = self.api.ConstraintsBitmask.Values.MASK2
+        with self.assertRaises(apsw.ConstraintError) as context:
+            self._writeRowDict(rowDict)
+            self.assertTrue("CHECK constraint failed: constraintsTable" in str(context.exception))
+
+    def testSqlCheckImportedBitmask(self):
+        rowDict = self._createRowDict()
+        rowDict['sqlCheckImportedBitmask'] = self.api.constraints.ImportedBitmask.Values.MASK2
+        with self.assertRaises(apsw.ConstraintError) as context:
+            self._writeRowDict(rowDict)
+            self.assertTrue("CHECK constraint failed: constraintsTable" in str(context.exception))
+
     def testSqlCheckUnicodeEscape(self):
         rowDict = self._createRowDict()
         rowDict['sqlCheckUnicodeEscape'] = self.WRONG_UNICODE_ESCAPE_CONST
@@ -104,6 +118,8 @@ class SqlConstraintsTest(unittest.TestCase):
             'sqlCheckImportedConstant' : 1,
             'sqlCheckEnum' : self.api.ConstraintsEnum.VALUE1,
             'sqlCheckImportedEnum' : self.api.constraints.ImportedEnum.ONE,
+            'sqlCheckBitmask' : self.api.ConstraintsBitmask.Values.MASK1,
+            'sqlCheckImportedBitmask' : self.api.constraints.ImportedBitmask.Values.MASK1,
             'sqlCheckUnicodeEscape' : self.UNICODE_ESCAPE_CONST,
             'sqlCheckHexEscape' : self.HEX_ESCAPE_CONST,
             'sqlCheckOctalEscape' : self.OCTAL_ESCAPE_CONST
@@ -120,6 +136,8 @@ class SqlConstraintsTest(unittest.TestCase):
             rowDict['sqlCheckImportedConstant'],
             rowDict['sqlCheckEnum'],
             rowDict['sqlCheckImportedEnum'],
+            rowDict['sqlCheckBitmask'],
+            rowDict['sqlCheckImportedBitmask'],
             rowDict['sqlCheckUnicodeEscape'],
             rowDict['sqlCheckHexEscape'],
             rowDict['sqlCheckOctalEscape']

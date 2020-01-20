@@ -1,5 +1,7 @@
 package zserio.emit.python;
 
+import zserio.ast.BitmaskType;
+import zserio.ast.BitmaskValue;
 import zserio.ast.Constant;
 import zserio.ast.EnumItem;
 import zserio.ast.EnumType;
@@ -159,9 +161,14 @@ public class PythonExpressionFormattingPolicy implements ExpressionFormattingPol
     }
 
     @Override
-    public UnaryExpressionFormatting getValueOf(Expression expr)
+    public UnaryExpressionFormatting getValueOf(Expression expr) throws ZserioEmitException
     {
-        return new UnaryExpressionFormatting("", ".value");
+        if (expr.op1().getExprType() == Expression.ExpressionType.ENUM)
+            return new UnaryExpressionFormatting("", ".value");
+        else if (expr.op1().getExprType() == Expression.ExpressionType.BITMASK)
+            return new UnaryExpressionFormatting("(", ").getValue()");
+        else
+            throw new ZserioEmitException("Unexpected expression in valueof operator!");
     }
 
     @Override
@@ -353,6 +360,22 @@ public class PythonExpressionFormattingPolicy implements ExpressionFormattingPol
         result.append(enumItem.getName());
     }
 
+    private void formatBitmaskValue(StringBuilder result, boolean isMostLeftId, BitmaskValue bitmaskValue,
+            ZserioType exprType) throws ZserioEmitException
+    {
+        // emit whole name if this is the first symbol in dot subtree, otherwise emit only bitmask name
+        if (isMostLeftId && exprType instanceof BitmaskType)
+        {
+            final BitmaskType bitmaskType = (BitmaskType)exprType;
+            final PythonNativeType nativeBitmaskType = pythonNativeMapper.getPythonType(bitmaskType);
+            importCollector.importType(nativeBitmaskType);
+            result.append(nativeBitmaskType.getFullName());
+            result.append(".");
+        }
+        result.append("Values.");
+        result.append(bitmaskValue.getName());
+    }
+
     private void formatTypeIdentifier(StringBuilder result, ZserioType resolvedType) throws ZserioEmitException
     {
         final PythonNativeType resolvedNativeType = pythonNativeMapper.getPythonType(resolvedType);
@@ -380,6 +403,12 @@ public class PythonExpressionFormattingPolicy implements ExpressionFormattingPol
             // EnumType.[ENUM_ITEM]
             final EnumItem enumItem = (EnumItem)resolvedSymbol;
             formatEnumItem(result, isMostLeftId, enumItem, exprType);
+        }
+        else if (resolvedSymbol instanceof BitmaskValue)
+        {
+            // BitmaskType.[BITMASK_VALUE]
+            final BitmaskValue bitmaskValue = (BitmaskValue)resolvedSymbol;
+            formatBitmaskValue(result, isMostLeftId, bitmaskValue, exprType);
         }
         else if (resolvedSymbol instanceof Function)
         {

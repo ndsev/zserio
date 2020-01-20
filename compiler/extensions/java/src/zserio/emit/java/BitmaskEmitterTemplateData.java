@@ -114,7 +114,7 @@ public final class BitmaskEmitterTemplateData extends UserTypeTemplateData
         return (bitSize != null) ? JavaLiteralFormatter.formatDecimalLiteral(bitSize) : null;
     }
 
-    private BigInteger getUpperBound(TypeInstantiation typeInstantiation) throws ZserioEmitException
+    private static BigInteger getUpperBound(TypeInstantiation typeInstantiation) throws ZserioEmitException
     {
         final ZserioType baseType = typeInstantiation.getBaseType();
 
@@ -125,7 +125,7 @@ public final class BitmaskEmitterTemplateData extends UserTypeTemplateData
         throw new ZserioEmitException("Unexpected bitmask type instantiation!");
     }
 
-    private BigInteger getLowerBound(TypeInstantiation typeInstantiation) throws ZserioEmitException
+    private static BigInteger getLowerBound(TypeInstantiation typeInstantiation) throws ZserioEmitException
     {
         final ZserioType baseType = typeInstantiation.getBaseType();
 

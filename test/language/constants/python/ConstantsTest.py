@@ -165,3 +165,13 @@ class BitfieldEnumTest(unittest.TestCase):
     def testSubtypeToEnumConstant(self):
         self.assertEqual(self.api.ColorsSubtype.BLUE, self.api.SUBTYPE_BLUE_COLOR_CONSTANT)
         self.assertEqual(self.api.Colors.BLUE, self.api.SUBTYPE_BLUE_COLOR_CONSTANT)
+
+    def testConstantDefinedByBitmask(self):
+        self.assertEqual(self.api.Permission.Values.READ, self.api.READ_PERMISSION)
+
+    def testConstantDefinedByBitmaskValueof(self):
+        self.assertEqual(self.api.Permission.Values.READ.getValue(), self.api.READ_PERMISSION_VALUE)
+
+    def testSubtypeToBitmaskConstant(self):
+        self.assertEqual(self.api.PermissionSubtype.Values.READ, self.api.SUBTYPE_READ_PERMISSION)
+        self.assertEqual(self.api.Permission.Values.READ, self.api.SUBTYPE_READ_PERMISSION)

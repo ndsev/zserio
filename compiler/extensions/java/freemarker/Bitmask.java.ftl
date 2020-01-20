@@ -110,12 +110,12 @@ public class ${name} implements <#if withWriterCode>InitializeOffsetsWriter, </#
         if (this.and(${name}.Values.${value.name}).equals(${name}.Values.${value.name}))
             builder.append(builder.length() == 0 ? "${value.name}" : " | ${value.name}");
     <#else>
-        <#assign zserioValueName=value.name/><#--  may be there only once -->
+        <#assign zeroValueName=value.name/><#--  may be there only once -->
     </#if>
 </#list>
-<#if zserioValueName??>
+<#if zeroValueName??>
         if (builder.length() == 0 && <#if isSimpleType>value == 0<#else>value.equals(java.math.BigInteger.ZERO)</#if>)
-            builder.append("${zserioValueName}");
+            builder.append("${zeroValueName}");
 </#if>
 
         return String.valueOf(value) + "[" + builder.toString() + "]";
