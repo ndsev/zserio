@@ -17,10 +17,10 @@
 <#macro compound_compare_parameter parameter>
     <#if parameter.isSimpleType>
         <#if parameter.isFloat>
-            <#-- float type: compare by floatToIntBits() to get rid of FindBugs -->
+            <#-- float type: compare by floatToIntBits() to get rid of SpotBugs -->
 Float.floatToIntBits(this.${parameter.name}) == Float.floatToIntBits(__that.${parameter.name})<#rt>
         <#elseif parameter.isDouble>
-            <#-- double type: compare by doubleToLongBits() to get rid of FindBugs -->
+            <#-- double type: compare by doubleToLongBits() to get rid of SpotBugs -->
 Double.doubleToLongBits(this.${parameter.name}) == Double.doubleToLongBits(__that.${parameter.name})<#rt>
         <#else>
             <#-- simple type: compare by == -->

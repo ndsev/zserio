@@ -7,11 +7,9 @@
             <Method name="deleteTable"/>
             <Method name="read"/>
             <Method name="update"/>
-            <Method name="validate"/>
-            <Method name="isRelocatedTableInDb"/>
             <Method name="executeUpdate"/>
             <Method name="attachDatabase"/>
-            <Method name="isTableInDb"/>
+            <Method name="detachDatabases"/>
         </Or>
     </Match>
 </FindBugsFilter>

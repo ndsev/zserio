@@ -18,11 +18,11 @@
         <testCompile testName="sql_tables_warning"/>
     </target>
 
-    <target name="findbugs" depends="compile" if="findbugs.home_dir">
-        <testFindbugs testName="sql_tables_warning"/>
+    <target name="spotbugs" depends="compile" if="spotbugs.home_dir">
+        <testSpotBugs testName="sql_tables_warning"/>
     </target>
 
-    <target name="run" depends="findbugs">
+    <target name="run" depends="spotbugs">
         <testRun testName="sql_tables_warning"/>
     </target>
 

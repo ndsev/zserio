@@ -13,7 +13,7 @@ zserio_core.build_dir   - Directory where to put generated files.
 zserio_core.install_dir - Directory where to install Zserio core jar file.
                           Default is "${zserio.install_dir}/zserio_libs".
 zserio.version          - Zserio version to be used for Zserio core. Default is "unknown".
-findbugs.home_dir       - Location of the findbugs tool. If not set, findbugs is not run.
+spotbugs.home_dir       - Location of the spotbugs tool. If not set, spotbugs is not run.
 
 -->
 <project name="zserio_core" basedir="." default="jar">
@@ -33,14 +33,14 @@ findbugs.home_dir       - Location of the findbugs tool. If not set, findbugs is
     <property name="zserio_core.src_dir" value="${zserio_core.base_dir}/src"/>
 
     <property name="zserio_core.classes_dir" value="${zserio_core.build_dir}/classes"/>
-    <property name="zserio_core.findbugs.out_dir" value="${zserio_core.build_dir}/findbugs"/>
+    <property name="zserio_core.spotbugs.out_dir" value="${zserio_core.build_dir}/spotbugs"/>
     <property name="zserio_core.antlr.gen_dir" value="${zserio_core.build_dir}/gen"/>
     <property name="zserio_core.antlr.out_dir" value="${zserio_core.antlr.gen_dir}/zserio/antlr"/>
 
     <property name="zserio_core.test.src_dir" location="${zserio_core.base_dir}/test"/>
     <property name="zserio_core.test.build_dir" value="${zserio_core.build_dir}/test"/>
     <property name="zserio_core.test.classes_dir" value="${zserio_core.test.build_dir}/classes"/>
-    <property name="zserio_core.test.findbugs.out_dir" value="${zserio_core.test.build_dir}/findbugs"/>
+    <property name="zserio_core.test.spotbugs.out_dir" value="${zserio_core.test.build_dir}/spotbugs"/>
     <property name="zserio_core.test.results_dir" value="${zserio_core.test.build_dir}/results"/>
 
     <property name="zserio_core.jar_dir" value="${zserio_core.build_dir}/jar"/>
@@ -113,20 +113,11 @@ findbugs.home_dir       - Location of the findbugs tool. If not set, findbugs is
         <depend srcDir="${zserio_core.src_dir}:${zserio_core.antlr.gen_dir}"
             destDir="${zserio_core.classes_dir}" cache="${zserio_core.build_dir}/depend-cache"/>
 
-        <!-- precompile generated sources without lint -->
-        <javac srcdir="${zserio_core.antlr.gen_dir}" destdir="${zserio_core.classes_dir}"
-            debug="on" encoding="utf8" includeAntRuntime="false" sourcepath="${zserio_core.src_dir}">
-            <classpath>
-                <fileset refid="3rdparty.jar_files_ref"/>
-            </classpath>
-        </javac>
-        <!-- compile the core sources and reuse preubild classes for generated code from previous steps -->
-        <javac srcdir="${zserio_core.src_dir}" destdir="${zserio_core.classes_dir}"
-            debug="on" encoding="utf8" includeAntRuntime="false">
+        <javac destdir="${zserio_core.classes_dir}" debug="on" encoding="utf8" includeAntRuntime="false">
+        	<src path="${zserio_core.antlr.gen_dir}"/>
+        	<src path="${zserio_core.src_dir}"/>
             <compilerarg value="-Xlint:all"/>
             <compilerarg value="-Werror"/>
-            <!-- recompile the core sources even if classes from previous step exist -->
-            <compilerarg value="-Xprefer:source"/>
             <classpath>
                 <fileset refid="3rdparty.jar_files_ref"/>
             </classpath>
@@ -167,14 +158,14 @@ findbugs.home_dir       - Location of the findbugs tool. If not set, findbugs is
         </copy>
     </target>
 
-    <target name="findbugs" depends="install" if="findbugs.home_dir">
-        <mkdir dir="${zserio_core.findbugs.out_dir}"/>
-        <taskdef name="findbugs" classpath="${findbugs.home_dir}/lib/findbugs-ant.jar"
-            classname="edu.umd.cs.findbugs.anttask.FindBugsTask"/>
-        <findbugs home="${findbugs.home_dir}"
+    <target name="spotbugs" depends="install" if="spotbugs.home_dir">
+        <mkdir dir="${zserio_core.spotbugs.out_dir}"/>
+        <taskdef classpath="${spotbugs.home_dir}/lib/spotbugs-ant.jar"
+            resource="edu/umd/cs/findbugs/anttask/tasks.properties"/>
+        <spotbugs home="${spotbugs.home_dir}"
             output="html"
-            outputFile="${zserio_core.findbugs.out_dir}/findbugs.html"
-            excludeFilter="${zserio_core.base_dir}/findbugs_filter.xml"
+            outputFile="${zserio_core.spotbugs.out_dir}/spotbugs.html"
+            excludeFilter="${zserio_core.base_dir}/spotbugs_filter.xml"
             reportLevel="low"
             errorProperty="zserio_core.is_failed"
             warningsProperty="zserio_core.is_failed">
@@ -185,8 +176,8 @@ findbugs.home_dir       - Location of the findbugs tool. If not set, findbugs is
             <auxClasspath>
                 <fileset refid="3rdparty.jar_files_ref"/>
             </auxClasspath>
-        </findbugs>
-        <fail message="FindBugs found some issues!" if="zserio_core.is_failed"/>
+        </spotbugs>
+        <fail message="SpotBugs found some issues!" if="zserio_core.is_failed"/>
     </target>
 
     <target name="test.clean">
@@ -208,17 +199,17 @@ findbugs.home_dir       - Location of the findbugs tool. If not set, findbugs is
         </javac>
     </target>
 
-    <target name="test.findbugs" depends="findbugs, test.compile" if="findbugs.home_dir">
-        <mkdir dir="${zserio_core.test.findbugs.out_dir}"/>
-        <taskdef name="findbugs" classpath="${findbugs.home_dir}/lib/findbugs-ant.jar"
-            classname="edu.umd.cs.findbugs.anttask.FindBugsTask"/>
-        <findbugs home="${findbugs.home_dir}"
+    <target name="test.spotbugs" depends="spotbugs, test.compile" if="spotbugs.home_dir">
+        <mkdir dir="${zserio_core.test.spotbugs.out_dir}"/>
+        <taskdef classpath="${spotbugs.home_dir}/lib/spotbugs-ant.jar"
+            resource="edu/umd/cs/findbugs/anttask/tasks.properties"/>
+        <spotbugs home="${spotbugs.home_dir}"
             output="html"
-            outputFile="${zserio_core.test.findbugs.out_dir}/findbugs.html"
-            excludeFilter="${zserio_core.base_dir}/findbugs_filter.xml"
+            outputFile="${zserio_core.test.spotbugs.out_dir}/spotbugs.html"
+            excludeFilter="${zserio_core.base_dir}/spotbugs_filter.xml"
             reportLevel="low"
-            errorProperty="zserio_core.findbugs.is_failed"
-            warningsProperty="zserio_core.findbugs.is_failed">
+            errorProperty="zserio_core.spotbugs.is_failed"
+            warningsProperty="zserio_core.spotbugs.is_failed">
             <sourcePath>
                 <dirset dir="${zserio_core.test.src_dir}"/>
             </sourcePath>
@@ -227,11 +218,11 @@ findbugs.home_dir       - Location of the findbugs tool. If not set, findbugs is
                 <fileset file="${3rdparty.junit.jar_file}"/>
                 <fileset file="${zserio_core.jar_file}"/>
             </auxClasspath>
-        </findbugs>
-        <fail message="FindBugs found some issues!" if="zserio_core.findbugs.is_failed"/>
+        </spotbugs>
+        <fail message="SpotBugs found some issues!" if="zserio_core.spotbugs.is_failed"/>
     </target>
 
-    <target name="test.run" depends="test.findbugs">
+    <target name="test.run" depends="test.spotbugs">
         <mkdir dir="${zserio_core.test.results_dir}"/>
         <junit printsummary="no" fork="yes" dir="${zserio_core.test.classes_dir}" haltonfailure="yes">
             <classpath>

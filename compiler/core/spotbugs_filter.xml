@@ -1,0 +1,11 @@
+<FindBugsFilter>
+    <Match>
+        <!-- bugs in ANTLR-generated code -->
+        <Package name="zserio.antlr"/>
+    </Match>
+    <Match>
+        <Bug pattern="SE_TRANSIENT_FIELD_NOT_RESTORED"/>
+        <Class name="zserio.ast.ParserStackedException"/>
+        <Field name="messageStack"/>
+    </Match>
+</FindBugsFilter>

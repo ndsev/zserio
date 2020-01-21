@@ -18,11 +18,11 @@
         <testCompile testName="packages_warning"/>
     </target>
 
-    <target name="findbugs" depends="compile" if="findbugs.home_dir">
-        <testFindbugs testName="packages_warning"/>
+    <target name="spotbugs" depends="compile" if="spotbugs.home_dir">
+        <testSpotBugs testName="packages_warning"/>
     </target>
 
-    <target name="run" depends="findbugs">
+    <target name="run" depends="spotbugs">
         <testRun testName="packages_warning"/>
     </target>
 

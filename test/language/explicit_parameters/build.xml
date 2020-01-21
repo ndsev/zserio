@@ -22,11 +22,11 @@
         <testCompile testName="explicit_parameters"/>
     </target>
 
-    <target name="findbugs" depends="compile" if="findbugs.home_dir">
-        <testFindbugs testName="explicit_parameters"/>
+    <target name="spotbugs" depends="compile" if="spotbugs.home_dir">
+        <testSpotBugs testName="explicit_parameters"/>
     </target>
 
-    <target name="run" depends="findbugs">
+    <target name="run" depends="spotbugs">
         <testRun testname="explicit_parameters"/>
     </target>
 

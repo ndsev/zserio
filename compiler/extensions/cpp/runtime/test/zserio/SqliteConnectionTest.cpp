@@ -291,10 +291,8 @@ TEST(SqliteConnectionTest, executeUpdateOnReadOnlyDatabase)
 {
     sqlite3 *internalConnection = NULL;
     int result = sqlite3_open_v2(SQLITE3_MEM_DB, &internalConnection, SQLITE_OPEN_READONLY, NULL);
-    ASSERT_EQ(SQLITE_OK, result);
-
     SqliteConnection db(internalConnection);
-
+    ASSERT_EQ(SQLITE_OK, result);
     ASSERT_THROW(db.executeUpdate("CREATE TABLE Foo AS SELECT 1"), SqliteException);
 }
 

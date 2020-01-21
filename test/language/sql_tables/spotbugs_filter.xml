@@ -9,6 +9,7 @@
             <Method name="update"/>
             <Method name="executeUpdate"/>
             <Method name="attachDatabase"/>
+            <Method name="detachDatabases"/>
         </Or>
     </Match>
 </FindBugsFilter>

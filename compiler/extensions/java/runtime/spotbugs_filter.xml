@@ -1,0 +1,37 @@
+<FindBugsFilter>
+    <Match>
+        <!-- A prepared statement is generated from a nonconstant String - this is ok, caller is responsible -->
+        <Bug code="SQL"/>
+        <Class name="zserio.runtime.validation.ValidationSqliteUtil"/>
+        <Or>
+            <Method name="getTableSchema"/>
+            <Method name="isHiddenColumnInTable"/>
+        </Or>
+    </Match>
+    <Match>
+        <!-- Could be refactored into a named static inner class - non-static inner classes are ok for tests -->
+        <Bug code="SIC"/>
+        <Or>
+            <Class name="zserio.runtime.io.ByteArrayBitStreamVarNumTest"/>
+            <Class name="zserio.runtime.io.ByteArrayBitStreamWriterTest"/>
+            <Class name="zserio.runtime.io.ByteArrayBitStreamReaderTest"/>
+        </Or>
+    </Match>
+    <Match>
+        <!-- Return value of method without side effect is ignored - this is ok called just to get exception -->
+        <Bug code="RV"/>
+        <Or>
+            <Class name="zserio.runtime.array.BigIntegerArrayTest"/>
+            <Class name="zserio.runtime.array.BoolArrayTest"/>
+            <Class name="zserio.runtime.array.VarUIntArrayTest"/>
+        </Or>
+    </Match>
+    <Match>
+        <!-- Private method is never called - wrong, fired only in case of Java 11 because of new bug (#811) -->
+        <Bug code="UPM"/>
+        <Or>
+            <Class name="zserio.runtime.io.ByteArrayBitStreamVarNumTest"/>
+            <Class name="zserio.runtime.io.ByteArrayBitStreamWriterTest"/>
+        </Or>
+    </Match>
+</FindBugsFilter>

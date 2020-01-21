@@ -51,8 +51,8 @@ set_global_java_variables()
         return 1
     fi
 
-    # findbugs home directory is empty by default
-    FINDBUGS_HOME="${FINDBUGS_HOME:-""}"
+    # spotbugs home directory is empty by default
+    SPOTBUGS_HOME="${SPOTBUGS_HOME:-""}"
 }
 
 # Set and check global variables for C++ projects.
@@ -325,8 +325,8 @@ Uses the following environment variables for building:
     PYTHON                 Python 3.5+ executable. Default is "python".
     PYTHON_VIRTUALENV      Custom python virtualenv to use. Default is empty string.
     FIND                   Bash command find to use. Default is "/usr/bin/find".
-    FINDBUGS_HOME          Home directory of findbugs tool where lib is located
-                           (e.g. /usr/share/findbugs). If set, findbugs will be
+    SPOTBUGS_HOME          Home directory of spotbugs tool where lib is located
+                           (e.g. /usr/share/spotbugs). If set, spotbugs will be
                            called. Default is empty string.
     CPPCHECK_HOME          Home directory of cppcheck tool where cppcheck
                            binary is located. If set, cppcheck will be called.
@@ -481,8 +481,8 @@ compile_java()
     local ANT_PROPS=("${MSYS_WORKAROUND_TEMP[@]}")
     local ANT_TARGET="$1"; shift
 
-    if [ -n "${FINDBUGS_HOME}" ] ; then
-        ANT_PROPS+=("-Dfindbugs.home_dir=${FINDBUGS_HOME}")
+    if [ -n "${SPOTBUGS_HOME}" ] ; then
+        ANT_PROPS+=("-Dspotbugs.home_dir=${SPOTBUGS_HOME}")
     fi
 
     "${ANT}" ${ANT_EXTRA_ARGS} -f "${ANT_BUILD_FILE}" "${ANT_PROPS[@]}" ${ANT_TARGET}

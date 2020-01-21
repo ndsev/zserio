@@ -76,7 +76,12 @@ TEST_F(SimpleDbTest, externalConstructor)
 TEST_F(SimpleDbTest, fileNameConstructor)
 {
     WorldDb database(m_dbFileName);
-    ASSERT_TRUE(NULL != database.connection());
+    ASSERT_TRUE(database.connection() != NULL);
+}
+
+TEST_F(SimpleDbTest, fileNameConstructorException)
+{
+    ASSERT_THROW(WorldDb database("UnknownDirectory/WrongDbName"), zserio::SqliteException);
 }
 
 TEST_F(SimpleDbTest, tableGetters)

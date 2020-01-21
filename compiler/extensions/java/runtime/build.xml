@@ -17,7 +17,7 @@ relational.sqlite.jar_file      - SQLite JDBC jar file.
                                   Default is "../../../../3rdparty/java/sqlite-jdbc-3.23.1.jar".
 relational.validation           - Flag whether the support for low level validation is included.
                                   Default is "yes".
-findbugs.home_dir               - Location of the findbugs tool. If not set, findbugs is not run.
+spotbugs.home_dir               - Location of the spotbugs tool. If not set, spotbugs is not run.
 
 -->
 <project name="zserio_java_runtime" default="jar" basedir=".">
@@ -39,14 +39,14 @@ findbugs.home_dir               - Location of the findbugs tool. If not set, fin
     <property name="zserio_java_runtime.src_dir" location="${zserio_java_runtime.base_dir}/src"/>
     <property name="zserio_java_runtime.classes_dir" value="${zserio_java_runtime.build_dir}/classes"/>
     <property name="zserio_java_runtime.javadocs_dir" value="${zserio_java_runtime.build_dir}/javadocs"/>
-    <property name="zserio_java_runtime.findbugs.out_dir" value="${zserio_java_runtime.build_dir}/findbugs"/>
+    <property name="zserio_java_runtime.spotbugs.out_dir" value="${zserio_java_runtime.build_dir}/spotbugs"/>
 
     <property name="zserio_java_runtime.test.src_dir" location="${zserio_java_runtime.base_dir}/test"/>
     <property name="zserio_java_runtime.test.build_dir" value="${zserio_java_runtime.build_dir}/test"/>
     <property name="zserio_java_runtime.test.classes_dir"
         value="${zserio_java_runtime.test.build_dir}/classes"/>
-    <property name="zserio_java_runtime.test.findbugs.out_dir"
-        value="${zserio_java_runtime.test.build_dir}/findbugs"/>
+    <property name="zserio_java_runtime.test.spotbugs.out_dir"
+        value="${zserio_java_runtime.test.build_dir}/spotbugs"/>
     <property name="zserio_java_runtime.test.results_dir"
         value="${zserio_java_runtime.test.build_dir}/results"/>
 
@@ -174,17 +174,17 @@ findbugs.home_dir               - Location of the findbugs tool. If not set, fin
             overwrite="true"/>
     </target>
 
-    <target name="findbugs" depends="install" if="findbugs.home_dir">
-        <mkdir dir="${zserio_java_runtime.findbugs.out_dir}"/>
-        <taskdef name="findbugs" classpath="${findbugs.home_dir}/lib/findbugs-ant.jar"
-            classname="edu.umd.cs.findbugs.anttask.FindBugsTask"/>
-        <findbugs home="${findbugs.home_dir}"
+    <target name="spotbugs" depends="install" if="spotbugs.home_dir">
+        <mkdir dir="${zserio_java_runtime.spotbugs.out_dir}"/>
+        <taskdef classpath="${spotbugs.home_dir}/lib/spotbugs-ant.jar"
+            resource="edu/umd/cs/findbugs/anttask/tasks.properties"/>
+        <spotbugs home="${spotbugs.home_dir}"
             output="html"
-            outputFile="${zserio_java_runtime.findbugs.out_dir}/findbugs.html"
-            excludeFilter="${zserio_java_runtime.base_dir}/findbugs_filter.xml"
+            outputFile="${zserio_java_runtime.spotbugs.out_dir}/spotbugs.html"
+            excludeFilter="${zserio_java_runtime.base_dir}/spotbugs_filter.xml"
             reportLevel="low"
-            errorProperty="zserio_java_runtime.findbugs.is_failed"
-            warningsProperty="zserio_java_runtime.findbugs.is_failed">
+            errorProperty="zserio_java_runtime.spotbugs.is_failed"
+            warningsProperty="zserio_java_runtime.spotbugs.is_failed">
             <sourcePath>
                 <dirset dir="${zserio_java_runtime.base_dir}">
                     <include name="src"/>
@@ -194,8 +194,8 @@ findbugs.home_dir               - Location of the findbugs tool. If not set, fin
             <auxClasspath>
                 <fileset file="${zserio_java_runtime.3rdparty.junit.jar_file}"/>
             </auxClasspath>
-        </findbugs>
-        <fail message="FindBugs found some issues!" if="zserio_java_runtime.findbugs.is_failed"/>
+        </spotbugs>
+        <fail message="SpotBugs found some issues!" if="zserio_java_runtime.spotbugs.is_failed"/>
     </target>
 
     <target name="test.clean">
@@ -219,17 +219,17 @@ findbugs.home_dir               - Location of the findbugs tool. If not set, fin
         </javac>
     </target>
 
-    <target name="test.findbugs" depends="findbugs, test.compile" if="findbugs.home_dir">
-        <mkdir dir="${zserio_java_runtime.test.findbugs.out_dir}"/>
-        <taskdef name="findbugs" classpath="${findbugs.home_dir}/lib/findbugs-ant.jar"
-            classname="edu.umd.cs.findbugs.anttask.FindBugsTask"/>
-        <findbugs home="${findbugs.home_dir}"
+    <target name="test.spotbugs" depends="spotbugs, test.compile" if="spotbugs.home_dir">
+        <mkdir dir="${zserio_java_runtime.test.spotbugs.out_dir}"/>
+        <taskdef classpath="${spotbugs.home_dir}/lib/spotbugs-ant.jar"
+            resource="edu/umd/cs/findbugs/anttask/tasks.properties"/>
+        <spotbugs home="${spotbugs.home_dir}"
             output="html"
-            outputFile="${zserio_java_runtime.test.findbugs.out_dir}/findbugs.html"
-            excludeFilter="${zserio_java_runtime.base_dir}/findbugs_filter.xml"
+            outputFile="${zserio_java_runtime.test.spotbugs.out_dir}/spotbugs.html"
+            excludeFilter="${zserio_java_runtime.base_dir}/spotbugs_filter.xml"
             reportLevel="low"
-            errorProperty="zserio_java_runtime.findbugs.is_failed"
-            warningsProperty="zserio_java_runtime.findbugs.is_failed">
+            errorProperty="zserio_java_runtime.spotbugs.is_failed"
+            warningsProperty="zserio_java_runtime.spotbugs.is_failed">
             <sourcePath>
                 <dirset dir="${zserio_java_runtime.test.src_dir}"/>
             </sourcePath>
@@ -238,11 +238,11 @@ findbugs.home_dir               - Location of the findbugs tool. If not set, fin
                 <fileset file="${zserio_java_runtime.3rdparty.junit.jar_file}"/>
                 <fileset file="${zserio_java_runtime.jar_file}"/>
             </auxClasspath>
-        </findbugs>
-        <fail message="FindBugs found some issues!" if="zserio_java_runtime.findbugs.is_failed"/>
+        </spotbugs>
+        <fail message="SpotBugs found some issues!" if="zserio_java_runtime.spotbugs.is_failed"/>
     </target>
 
-    <target name="test.run" depends="test.findbugs">
+    <target name="test.run" depends="test.spotbugs">
         <mkdir dir="${zserio_java_runtime.test.results_dir}"/>
         <junit printsummary="no" fork="yes" dir="${zserio_java_runtime.test.classes_dir}" haltonfailure="yes">
             <classpath>

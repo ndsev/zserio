@@ -7,8 +7,10 @@
             <Method name="deleteTable"/>
             <Method name="read"/>
             <Method name="update"/>
-            <Method name="executeUpdate"/>
+            <Method name="validate"/>
             <Method name="attachDatabase"/>
+            <Method name="detachDatabases"/>
+            <Method name="executeUpdate"/>
         </Or>
     </Match>
 </FindBugsFilter>

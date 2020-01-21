@@ -31,7 +31,7 @@ public class ParserStackedException extends ParserException
         if (exception instanceof ParserStackedException)
         {
             // copy the exception's extended message stack
-            ParserStackedException stackedException = (ParserStackedException)exception;
+            final ParserStackedException stackedException = (ParserStackedException)exception;
             messageStack = stackedException.messageStack.clone();
         }
         else
@@ -86,6 +86,7 @@ public class ParserStackedException extends ParserException
         messageStack.push(new Message(location, message));
     }
 
-    private final transient ArrayDeque<Message> messageStack;
     private static final long serialVersionUID = 9091438895972505215L;
+
+    private final transient ArrayDeque<Message> messageStack;
 }
