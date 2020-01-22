@@ -50,9 +50,11 @@ public class NativeBigIntegerType extends NativeIntegralType
         return false;
     }
 
-    // bounds are lower than real BigInteger bounds (-2^Inteer.MAX_VALUE, 2^Integer.MAX_VALUE) for simplicity
-    private static final BigInteger lowerBound = BigInteger.valueOf(2).pow(Integer.MAX_VALUE - 1).negate();
-    private static final BigInteger upperBound = BigInteger.valueOf(2).pow(Integer.MAX_VALUE - 1);
+    // Bounds are lower than real BigInteger bounds (-2^Integer.MAX_VALUE, 2^Integer.MAX_VALUE)
+    // to prevent big memory consumption of huge numbers stored in BigInteger. For our needs it's enough that
+    // the bounds are higher than bounds of all Zserio integral types.
+    private static final BigInteger lowerBound = BigInteger.ONE.shiftLeft(64).negate();
+    private static final BigInteger upperBound = BigInteger.ONE.shiftLeft(64);
     private static final PackageName BIG_INTEGER_PACKAGE =
             new PackageName.Builder().addId("java").addId("math").get();
 }
