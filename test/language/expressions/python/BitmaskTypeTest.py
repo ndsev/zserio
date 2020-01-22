@@ -49,7 +49,7 @@ class BitmaskTypeTest(unittest.TestCase):
 
         self.assertEqual(12, bitmaskTypeExpression.bitSizeOf())
 
-    def testBitSizeOfBlueGreen(self):
+    def testBitSizeOfAllColors(self):
         bitmaskTypeExpression = self.api.BitmaskTypeExpression()
         bitmaskTypeExpression.setColors(self.api.Colors.Values.RED |
                                         self.api.Colors.Values.BLUE |
