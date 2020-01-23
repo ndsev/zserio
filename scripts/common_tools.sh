@@ -232,7 +232,7 @@ activate_python_virtualenv()
         return 1
     fi
 
-    local STANDARD_REQUIREMENTS=("coverage>=4.5.1" "sphinx-automodapi>=0.8" "pylint>=2.1.1" "grpcio==1.17.1")
+    local STANDARD_REQUIREMENTS=("coverage>=4.5.1" "sphinx-automodapi>=0.8" "pylint>=2.4.4" "grpcio==1.17.1")
     local APSW_REQUIREMENTS=("apsw")
 
     if [ ! -z "${PYTHON_VIRTUALENV}" ] ; then  # forced python virtualenv

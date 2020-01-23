@@ -15,7 +15,7 @@ class StructureBitmaskConstraintsTest(unittest.TestCase):
             self.api.Availability.Values.COORD_Y |
             self.api.Availability.Values.COORD_Z
         )
-        __class__._write(writer, availability, 1, 1, 1)
+        self.__class__._write(writer, availability, 1, 1, 1)
         reader = zserio.BitStreamReader(writer.getByteArray())
 
         structureBitmaskConstraints = self.api.StructureBitmaskConstraints()
@@ -27,7 +27,7 @@ class StructureBitmaskConstraintsTest(unittest.TestCase):
     def testReadWrongCoordZConstraint(self):
         writer = zserio.BitStreamWriter()
         availability = self.api.Availability.Values.COORD_X | self.api.Availability.Values.COORD_Y
-        __class__._write(writer, availability, 1, 1, 1)
+        self.__class__._write(writer, availability, 1, 1, 1)
         reader = zserio.BitStreamReader(writer.getByteArray())
 
         structureBitmaskConstraints = self.api.StructureBitmaskConstraints()
@@ -37,7 +37,7 @@ class StructureBitmaskConstraintsTest(unittest.TestCase):
     def testReadWrongCoordYConstraint(self):
         writer = zserio.BitStreamWriter()
         availability = self.api.Availability.Values.COORD_X | self.api.Availability.Values.COORD_Z
-        __class__._write(writer, availability, 1, 1, 1)
+        self.__class__._write(writer, availability, 1, 1, 1)
         reader = zserio.BitStreamReader(writer.getByteArray())
 
         structureBitmaskConstraints = self.api.StructureBitmaskConstraints()
@@ -47,7 +47,7 @@ class StructureBitmaskConstraintsTest(unittest.TestCase):
     def testReadWrongCoordXConstraint(self):
         writer = zserio.BitStreamWriter()
         availability = self.api.Availability.Values.COORD_Y | self.api.Availability.Values.COORD_Z
-        __class__._write(writer, availability, 1, 1, 1)
+        self.__class__._write(writer, availability, 1, 1, 1)
         reader = zserio.BitStreamReader(writer.getByteArray())
 
         structureBitmaskConstraints = self.api.StructureBitmaskConstraints()

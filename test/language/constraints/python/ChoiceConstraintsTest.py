@@ -12,7 +12,7 @@ class ChoiceConstraintsTest(unittest.TestCase):
         selector = True
         value8 = self.VALUE8_CORRECT_CONSTRAINT
         writer = zserio.BitStreamWriter()
-        __class__._write(writer, selector, value8, 0)
+        self.__class__._write(writer, selector, value8, 0)
         reader = zserio.BitStreamReader(writer.getByteArray())
 
         choiceConstraints = self.api.ChoiceConstraints(selector)
@@ -24,7 +24,7 @@ class ChoiceConstraintsTest(unittest.TestCase):
         selector = True
         value8 = self.VALUE8_WRONG_CONSTRAINT
         writer = zserio.BitStreamWriter()
-        __class__._write(writer, selector, value8, 0)
+        self.__class__._write(writer, selector, value8, 0)
         reader = zserio.BitStreamReader(writer.getByteArray())
 
         choiceConstraints = self.api.ChoiceConstraints(selector)
@@ -35,7 +35,7 @@ class ChoiceConstraintsTest(unittest.TestCase):
         selector = False
         value16 = self.VALUE16_WRONG_CONSTRAINT
         writer = zserio.BitStreamWriter()
-        __class__._write(writer, selector, 0, value16)
+        self.__class__._write(writer, selector, 0, value16)
         reader = zserio.BitStreamReader(writer.getByteArray())
 
         choiceConstraints = self.api.ChoiceConstraints(selector)

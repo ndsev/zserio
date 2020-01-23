@@ -10,8 +10,8 @@ class StructureConstraintsTest(unittest.TestCase):
 
     def testReadCorrectColors(self):
         writer = zserio.BitStreamWriter()
-        __class__._write(writer, self.api.BasicColor.BLACK, self.api.BasicColor.WHITE,
-                         self.api.ExtendedColor.PURPLE)
+        self.__class__._write(writer, self.api.BasicColor.BLACK, self.api.BasicColor.WHITE,
+                              self.api.ExtendedColor.PURPLE)
         reader = zserio.BitStreamReader(writer.getByteArray())
 
         structureConstraints = self.api.StructureConstraints()
@@ -22,8 +22,8 @@ class StructureConstraintsTest(unittest.TestCase):
 
     def testReadWrongBlackConstraint(self):
         writer = zserio.BitStreamWriter()
-        __class__._write(writer, self.api.BasicColor.RED, self.api.BasicColor.WHITE,
-                         self.api.ExtendedColor.PURPLE)
+        self.__class__._write(writer, self.api.BasicColor.RED, self.api.BasicColor.WHITE,
+                              self.api.ExtendedColor.PURPLE)
         reader = zserio.BitStreamReader(writer.getByteArray())
 
         structureConstraints = self.api.StructureConstraints()
@@ -32,8 +32,8 @@ class StructureConstraintsTest(unittest.TestCase):
 
     def testReadWrongWhiteConstraint(self):
         writer = zserio.BitStreamWriter()
-        __class__._write(writer, self.api.BasicColor.BLACK, self.api.BasicColor.RED,
-                         self.api.ExtendedColor.PURPLE)
+        self.__class__._write(writer, self.api.BasicColor.BLACK, self.api.BasicColor.RED,
+                              self.api.ExtendedColor.PURPLE)
         reader = zserio.BitStreamReader(writer.getByteArray())
 
         structureConstraints = self.api.StructureConstraints()
@@ -42,8 +42,8 @@ class StructureConstraintsTest(unittest.TestCase):
 
     def testReadWrongPurpleConstraint(self):
         writer = zserio.BitStreamWriter()
-        __class__._write(writer, self.api.BasicColor.BLACK, self.api.BasicColor.WHITE,
-                         self.api.ExtendedColor.LIME)
+        self.__class__._write(writer, self.api.BasicColor.BLACK, self.api.BasicColor.WHITE,
+                              self.api.ExtendedColor.LIME)
         reader = zserio.BitStreamReader(writer.getByteArray())
 
         structureConstraints = self.api.StructureConstraints()
