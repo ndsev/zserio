@@ -47,8 +47,12 @@ ${I}::zserio::read<@array_runtime_function_suffix field, true/>(<@array_traits f
     <#elseif field.isEnum>
         <#local readCommand>::zserio::read<${field.cppTypeName}>(in)</#local>
     <#else>
-        <#-- compound -->
-        <#local compoundParamsArguments><@compound_field_compound_ctor_params field.compound, false/></#local>
+        <#-- compound or bitmask -->
+        <#local compoundParamsArguments>
+            <#if field.compound??><#-- can be a bitmask -->
+                <@compound_field_compound_ctor_params field.compound, false/>
+            </#if>
+        </#local>
         <#local constructorArguments>in<#if compoundParamsArguments?has_content>, ${compoundParamsArguments}</#if></#local>
         <#local readCommand>${field.cppTypeName}(${constructorArguments})</#local>
     </#if>

@@ -11,6 +11,8 @@
 
     <target name="gen" depends="gen.check" unless="expressions_error.zs.gen_is_uptodate">
         <testGenClean testName="expressions_error"/>
+        <testGen testName="expressions_error" zsFile="bitmask_shift_operator_error.zs"
+            ignoreErrors="true"/>
         <testGen testName="expressions_error" zsFile="index_operators/alignment_expression_error.zs"
             ignoreErrors="true"/>
         <testGen testName="expressions_error" zsFile="index_operators/constant_expression_error.zs"

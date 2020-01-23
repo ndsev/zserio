@@ -4,6 +4,6 @@ enum uint8 OutOfRangeValueEnum
 {
     NONE       = 000b,
     DARK_RED   = 001b,
-    DARK_BLUE  = 256,
-    DARK_BLACK = 111b
+    DARK_BLUE  = 255,
+    DARK_BLACK // calculated to 256
 };

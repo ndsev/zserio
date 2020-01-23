@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
+import zserio.ast.BitmaskType;
 import zserio.ast.EnumType;
 import zserio.ast.Expression;
 import zserio.ast.Field;
@@ -166,6 +167,7 @@ public class SqlTableEmitterTemplateData extends UserTypeTemplateData
                 pythonExpressionFormatter.formatGetter(sqlConstraintExpr);
 
             enumData = (fieldBaseType instanceof EnumType) ? new EnumTemplateData(nativeType) : null;
+            bitmaskData = (fieldBaseType instanceof BitmaskType) ? new BitmaskTemplateData(nativeType) : null;
             sqlTypeData = new SqlTypeTemplateData(sqlNativeTypeMapper, field);
         }
 
@@ -199,6 +201,11 @@ public class SqlTableEmitterTemplateData extends UserTypeTemplateData
             return enumData;
         }
 
+        public BitmaskTemplateData getBitmaskData()
+        {
+            return bitmaskData;
+        }
+
         public SqlTypeTemplateData getSqlTypeData()
         {
             return sqlTypeData;
@@ -209,6 +216,21 @@ public class SqlTableEmitterTemplateData extends UserTypeTemplateData
             public EnumTemplateData(PythonNativeType enumNativeType)
             {
                 pythonTypeName = enumNativeType.getFullName();
+            }
+
+            public String getPythonTypeName()
+            {
+                return pythonTypeName;
+            }
+
+            private final String pythonTypeName;
+        }
+
+        public static class BitmaskTemplateData
+        {
+            public BitmaskTemplateData(PythonNativeType bitmaskNativeType)
+            {
+                pythonTypeName = bitmaskNativeType.getFullName();
             }
 
             public String getPythonTypeName()
@@ -276,6 +298,7 @@ public class SqlTableEmitterTemplateData extends UserTypeTemplateData
         private final List<ParameterTemplateData> parameters;
         private final String sqlConstraint;
         private final EnumTemplateData enumData;
+        private final BitmaskTemplateData bitmaskData;
         private final SqlTypeTemplateData sqlTypeData;
     }
 

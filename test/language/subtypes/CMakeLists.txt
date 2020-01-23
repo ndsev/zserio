@@ -1,5 +1,10 @@
 set(ZSERIO_GEN_DIR ${CMAKE_CURRENT_BINARY_DIR}/gen)
 set(ZSERIO_GENERATED_SOURCES
+    ${ZSERIO_GEN_DIR}/subtypes/bitmask_subtype/Permission.cpp
+    ${ZSERIO_GEN_DIR}/subtypes/bitmask_subtype/Permission.h
+    ${ZSERIO_GEN_DIR}/subtypes/bitmask_subtype/PermissionSubtype.h
+    ${ZSERIO_GEN_DIR}/subtypes/bitmask_subtype/CONST_PERMISSION.h
+
     ${ZSERIO_GEN_DIR}/subtypes/enum_subtype/Color.cpp
     ${ZSERIO_GEN_DIR}/subtypes/enum_subtype/Color.h
     ${ZSERIO_GEN_DIR}/subtypes/enum_subtype/ColorSubtype.h
@@ -38,6 +43,7 @@ zserio_add_library(TARGET subtypes_zs
 )
 
 add_test_sources(
+    ${ZSERIO_CPP_DIR}/BitmaskSubtypeTest.cpp
     ${ZSERIO_CPP_DIR}/EnumSubtypeTest.cpp
     ${ZSERIO_CPP_DIR}/ParamStructureSubtypeTest.cpp
     ${ZSERIO_CPP_DIR}/StructureSubtypeTest.cpp

@@ -111,4 +111,10 @@ class ArraysMappingTest(unittest.TestCase):
 
         arraysMapping.setEnumArray(enumArray)
 
+    def testBitmaskArray(self):
+        arraysMapping = self.api.ArraysMapping()
+        bitmaskArray = [self.api.TestBitmask.Values.MASK1 for i in range(self.FIXED_ARRAY_LENGTH)]
+
+        arraysMapping.setBitmaskArray(bitmaskArray)
+
     FIXED_ARRAY_LENGTH = 5

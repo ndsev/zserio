@@ -8,3 +8,9 @@ enum uint8 ImportedEnum
     TWO,
     THREE
 };
+
+bitmask bit:4 ImportedBitmask
+{
+    MASK1,
+    MASK2
+};

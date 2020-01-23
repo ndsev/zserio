@@ -325,5 +325,23 @@ public class ConstantsTest
     {
         assertEquals(Colors.BLUE, SUBTYPE_BLUE_COLOR_CONSTANT.SUBTYPE_BLUE_COLOR_CONSTANT);
     }
+
+    @Test
+    public void constantDefinedByBitmask()
+    {
+        assertEquals(Permission.Values.READ, READ_PERMISSION.READ_PERMISSION);
+    }
+
+    @Test
+    public void constantDefinedByBitmaskValueOf()
+    {
+        assertEquals(Permission.Values.READ.getValue(), READ_PERMISSION_VALUE.READ_PERMISSION_VALUE);
+    }
+
+    @Test
+    public void subtypeToBitmaskConstant()
+    {
+        assertEquals(Permission.Values.READ, SUBTYPE_READ_PERMISSION.SUBTYPE_READ_PERMISSION);
+    }
 }
 

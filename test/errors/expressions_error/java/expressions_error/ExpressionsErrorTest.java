@@ -18,6 +18,13 @@ public class ExpressionsErrorTest
     }
 
     @Test
+    public void bitmaskShiftOperator()
+    {
+        final String error = "bitmask_shift_operator_error.zs:12:17: Integer expressions expected!";
+        assertTrue(zserioErrors.isPresent(error));
+    }
+
+    @Test
     public void wrongFullType()
     {
         final String error = "wrong_full_type_error.zs:7:33: " +

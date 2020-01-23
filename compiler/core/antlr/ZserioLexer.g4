@@ -39,6 +39,7 @@ XOR             : '^' ;
 ALIGN               : 'align' ;
 BIT_FIELD           : 'bit' ;
 BOOL                : 'bool' ;
+BITMASK             : 'bitmask' ;
 CASE                : 'case' ;
 CHOICE              : 'choice' ;
 CONST               : 'const' ;

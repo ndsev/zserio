@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
+import zserio.ast.BitmaskType;
 import zserio.ast.BooleanType;
 import zserio.ast.CompoundType;
 import zserio.ast.EnumType;
@@ -235,6 +236,7 @@ public class SqlTableEmitterTemplateData extends UserTypeTemplateData
             isSimpleType = nativeFieldType.isSimpleType();
             isBoolean = fieldBaseType instanceof BooleanType;
             enumData = createEnumTemplateData(cppNativeMapper, fieldBaseType, includeCollector);
+            bitmaskData = createBitmaskTemplateData(cppNativeMapper, fieldBaseType, includeCollector);
             sqlTypeData = new SqlTypeTemplateData(sqlNativeTypeMapper, field);
             needsChildrenInitialization = (fieldBaseType instanceof CompoundType) &&
                     ((CompoundType)fieldBaseType).needsChildrenInitialization();
@@ -308,6 +310,11 @@ public class SqlTableEmitterTemplateData extends UserTypeTemplateData
         public EnumTemplateData getEnumData()
         {
             return enumData;
+        }
+
+        public BitmaskTemplateData getBitmaskData()
+        {
+            return bitmaskData;
         }
 
         public SqlTypeTemplateData getSqlTypeData()
@@ -405,6 +412,25 @@ public class SqlTableEmitterTemplateData extends UserTypeTemplateData
             private final String baseCppTypeName;
         }
 
+        public static class BitmaskTemplateData
+        {
+            public BitmaskTemplateData(CppNativeMapper cppNativeMapper, BitmaskType bitmaskType,
+                    IncludeCollector includeCollector) throws ZserioEmitException
+            {
+                final CppNativeType nativeBaseType =
+                        cppNativeMapper.getCppType(bitmaskType.getTypeInstantiation());
+                includeCollector.addCppIncludesForType(nativeBaseType);
+                baseCppTypeName = nativeBaseType.getFullName();
+            }
+
+            public String getBaseCppTypeName()
+            {
+                return baseCppTypeName;
+            }
+
+            private final String baseCppTypeName;
+        }
+
         public static class SqlTypeTemplateData
         {
             public SqlTypeTemplateData(SqlNativeTypeMapper sqlNativeTypeMapper, Field field)
@@ -453,6 +479,15 @@ public class SqlTableEmitterTemplateData extends UserTypeTemplateData
             return new EnumTemplateData(cppNativeMapper, (EnumType)fieldBaseType, includeCollector);
         }
 
+        private BitmaskTemplateData createBitmaskTemplateData(CppNativeMapper cppNativeMapper,
+                ZserioType fieldBaseType, IncludeCollector includeCollector) throws ZserioEmitException
+        {
+            if (!(fieldBaseType instanceof BitmaskType))
+                return null;
+
+            return new BitmaskTemplateData(cppNativeMapper, (BitmaskType)fieldBaseType, includeCollector);
+        }
+
         private final String name;
         private final String cppTypeName;
         private final String cppArgumentTypeName;
@@ -466,6 +501,7 @@ public class SqlTableEmitterTemplateData extends UserTypeTemplateData
         private final boolean hasImplicitParameters;
         private final boolean isBoolean;
         private final EnumTemplateData enumData;
+        private final BitmaskTemplateData bitmaskData;
         private final SqlTypeTemplateData sqlTypeData;
         private final boolean isSimpleType;
         private final boolean needsChildrenInitialization;

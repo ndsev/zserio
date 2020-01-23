@@ -6,6 +6,8 @@ import java.util.Collections;
 import java.util.List;
 
 import zserio.ast.AstNode;
+import zserio.ast.BitmaskType;
+import zserio.ast.BitmaskValue;
 import zserio.ast.Constant;
 import zserio.ast.ZserioType;
 import zserio.ast.EnumItem;
@@ -169,9 +171,23 @@ public class CppExpressionFormattingPolicy extends DefaultExpressionFormattingPo
     }
 
     @Override
-    public UnaryExpressionFormatting getValueOf(Expression expr)
+    public UnaryExpressionFormatting getValueOf(Expression expr) throws ZserioEmitException
     {
-        return new UnaryExpressionFormatting("::zserio::enumToValue(", ")");
+        if (expr.op1().getExprType() == Expression.ExpressionType.ENUM)
+        {
+            return new UnaryExpressionFormatting("::zserio::enumToValue(", ")");
+        }
+        else if (expr.op1().getExprZserioType() instanceof BitmaskType)
+        {
+            final BitmaskType bitmaskType = (BitmaskType)expr.op1().getExprZserioType();
+            final CppNativeType bitmaskNativeType = cppNativeMapper.getCppType(bitmaskType);
+            return new UnaryExpressionFormatting(
+                    "static_cast<" + bitmaskNativeType.getFullName() + "::underlying_type>(", ")");
+        }
+        else
+        {
+            throw new ZserioEmitException("Unexpected expression in valueof operator!");
+        }
     }
 
     @Override
@@ -199,6 +215,10 @@ public class CppExpressionFormattingPolicy extends DefaultExpressionFormattingPo
         if (expr.op2().getExprSymbolObject() instanceof EnumItem)
             return new BinaryExpressionFormatting("::");
 
+        // do special handling for bitmask values
+        if (expr.op2().getExprSymbolObject() instanceof BitmaskValue)
+            return new BinaryExpressionFormatting("::");
+
         return new BinaryExpressionFormatting(".");
     }
 
@@ -217,8 +237,8 @@ public class CppExpressionFormattingPolicy extends DefaultExpressionFormattingPo
             throws ZserioEmitException
     {
         final CppNativeType resolvedNativeType = cppNativeMapper.getCppType(resolvedType);
-        result.append(resolvedNativeType.getFullName());
         includeCollector.addCppIncludesForType(resolvedNativeType);
+        result.append(resolvedNativeType.getFullName());
     }
 
     private void formatSymbolIdentifier(StringBuilder result, String symbol, boolean isMostLeftId,
@@ -241,6 +261,12 @@ public class CppExpressionFormattingPolicy extends DefaultExpressionFormattingPo
             // EnumType.[ENUM_ITEM]
             final EnumItem enumItem = (EnumItem)resolvedSymbol;
             formatEnumItem(result, isMostLeftId, enumItem, exprType);
+        }
+        else if (resolvedSymbol instanceof BitmaskValue)
+        {
+            // BitmaskType.[BITMASK_VALUE]
+            final BitmaskValue bitmaskValue = (BitmaskValue)resolvedSymbol;
+            formatBitmaskValue(result, isMostLeftId, bitmaskValue, exprType);
         }
         else if (resolvedSymbol instanceof Function)
         {
@@ -330,6 +356,22 @@ public class CppExpressionFormattingPolicy extends DefaultExpressionFormattingPo
         }
 
         result.append(enumItem.getName());
+    }
+
+    private void formatBitmaskValue(StringBuilder result, boolean isMostLeftId, BitmaskValue bitmaskValue,
+            ZserioType exprType) throws ZserioEmitException
+    {
+        // emit whole name if this is the first symbol in dot subtree, otherwise emit only bitmask name
+        if (isMostLeftId && exprType instanceof BitmaskType)
+        {
+            final BitmaskType bitmaskType = (BitmaskType)exprType;
+            final CppNativeType nativeBitmaskType = cppNativeMapper.getCppType(bitmaskType);
+            result.append(nativeBitmaskType.getFullName());
+            result.append("::");
+        }
+
+        result.append("Values::");
+        result.append(bitmaskValue.getName());
     }
 
     private void formatConstant(StringBuilder result, Constant constant) throws ZserioEmitException

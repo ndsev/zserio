@@ -20,21 +20,21 @@ public class ValueOfOperatorsErrorTest
     @Test
     public void arrayType()
     {
-        final String error = "array_type_error.zs:6:30: 'offsets' is not an enumeration item!";
+        final String error = "array_type_error.zs:6:30: 'offsets' is not an enumeration or bitmask!";
         assertTrue(zserioErrors.isPresent(error));
     }
 
     @Test
     public void enumType()
     {
-        final String error = "enum_type_error.zs:6:30: 'Colour' is not an enumeration item!";
+        final String error = "enum_type_error.zs:6:30: 'Colour' is not an enumeration or bitmask!";
         assertTrue(zserioErrors.isPresent(error));
     }
 
     @Test
     public void integerType()
     {
-        final String error = "integer_type_error.zs:6:30: 'value' is not an enumeration item!";
+        final String error = "integer_type_error.zs:6:30: 'value' is not an enumeration or bitmask!";
         assertTrue(zserioErrors.isPresent(error));
     }
 

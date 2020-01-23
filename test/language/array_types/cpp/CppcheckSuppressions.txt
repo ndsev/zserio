@@ -4,3 +4,6 @@ uninitMemberVar:*/AutoArrayRecursion.cpp
 uninitMemberVar:*/SubtypedStructVariableArray.cpp
 uninitMemberVar:*/TestStructure.cpp
 uninitMemberVar:*/VariableArray.cpp
+
+// suppress "Class 'X' has a constructor with 1 argument that is not explicit."
+noExplicitConstructor:*/TestBitmask.h

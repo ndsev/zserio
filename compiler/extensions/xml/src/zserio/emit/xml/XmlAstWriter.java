@@ -19,6 +19,8 @@ import org.w3c.dom.Element;
 
 import zserio.ast.ArrayType;
 import zserio.ast.AstNode;
+import zserio.ast.BitmaskType;
+import zserio.ast.BitmaskValue;
 import zserio.ast.BooleanType;
 import zserio.ast.ChoiceCase;
 import zserio.ast.ChoiceCaseExpression;
@@ -194,6 +196,12 @@ public class XmlAstWriter implements ZserioAstVisitor
     }
 
     @Override
+    public void visitBitmaskType(BitmaskType bitmaskType)
+    {
+        visitZserioType(bitmaskType, "BITMASK");
+    }
+
+    @Override
     public void visitSqlTableType(SqlTableType sqlTableType)
     {
         visitZserioType(sqlTableType, "SQL_TABLE");
@@ -290,7 +298,19 @@ public class XmlAstWriter implements ZserioAstVisitor
     {
         final Element xmlElement = xmlDoc.createElement("ITEM");
         xmlElement.setAttribute("name", enumItem.getName());
+        if (enumItem.getValue() != null)
+            xmlElement.setAttribute("value", enumItem.getValue().toString());
         visitAstNode(enumItem, xmlElement);
+    }
+
+    @Override
+    public void visitBitmaskValue(BitmaskValue bitmaskValue)
+    {
+        final Element xmlElement = xmlDoc.createElement("VALUE");
+        xmlElement.setAttribute("name", bitmaskValue.getName());
+        if (bitmaskValue.getValue() != null)
+            xmlElement.setAttribute("value", bitmaskValue.getValue().toString());
+        visitAstNode(bitmaskValue, xmlElement);
     }
 
     @Override

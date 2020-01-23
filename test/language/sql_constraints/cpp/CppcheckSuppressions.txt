@@ -1,0 +1,3 @@
+// suppress "Class 'X' has a constructor with 1 argument that is not explicit."
+noExplicitConstructor:*/sql_constraints/ConstraintsBitmask.h
+noExplicitConstructor:*/sql_constraints/constraints/ImportedBitmask.h

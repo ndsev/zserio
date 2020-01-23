@@ -27,6 +27,8 @@
             ignoreErrors="true"/>
         <testGen testName="enumeration_types_error" zsFile="out_of_range_enum_value_error.zs"
             ignoreErrors="true"/>
+        <testGen testName="enumeration_types_error" zsFile="out_of_range_enum_explicit_value_error.zs"
+            ignoreErrors="true"/>
         <testGen testName="enumeration_types_error" zsFile="string_enum_error.zs" ignoreErrors="true"/>
     </target>
 

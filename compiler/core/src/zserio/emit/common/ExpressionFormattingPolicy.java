@@ -183,7 +183,7 @@ public interface ExpressionFormattingPolicy
     public UnaryExpressionFormatting getLeftParenthesis(Expression expr);
     public UnaryExpressionFormatting getFunctionCall(Expression expr);
     public UnaryExpressionFormatting getLengthOf(Expression expr);
-    public UnaryExpressionFormatting getValueOf(Expression expr);
+    public UnaryExpressionFormatting getValueOf(Expression expr) throws ZserioEmitException;
     public UnaryExpressionFormatting getNumBits(Expression expr);
 
     // binary expressions formatting

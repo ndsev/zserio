@@ -1,5 +1,6 @@
 package zserio.emit.doc;
 
+import zserio.ast.BitmaskType;
 import zserio.ast.ChoiceType;
 import zserio.ast.Constant;
 import zserio.ast.EnumType;
@@ -16,6 +17,7 @@ public class ContentEmitter extends DefaultHtmlEmitter
 {
     private final CompoundEmitter compoundEmitter;
     private final EnumerationEmitter enumerationEmitter;
+    private final BitmaskEmitter bitmaskEmitter;
     private final SubtypeEmitter subtypeEmitter;
     private final ConstantEmitter constantEmitter;
     private final ServiceEmitter serviceEmitter;
@@ -26,6 +28,7 @@ public class ContentEmitter extends DefaultHtmlEmitter
 
         compoundEmitter = new CompoundEmitter(outputPath, withSvgDiagrams, usedByCollector);
         enumerationEmitter = new EnumerationEmitter(outputPath, withSvgDiagrams, usedByCollector);
+        bitmaskEmitter = new BitmaskEmitter(outputPath, withSvgDiagrams, usedByCollector);
         subtypeEmitter = new SubtypeEmitter(outputPath, withSvgDiagrams, usedByCollector);
         constantEmitter = new ConstantEmitter(outputPath, withSvgDiagrams, usedByCollector);
         serviceEmitter = new ServiceEmitter(outputPath, withSvgDiagrams);
@@ -71,6 +74,12 @@ public class ContentEmitter extends DefaultHtmlEmitter
     public void beginEnumeration(EnumType enumType) throws ZserioEmitException
     {
         enumerationEmitter.emit(enumType);
+    }
+
+    @Override
+    public void beginBitmask(BitmaskType bitmaskType) throws ZserioEmitException
+    {
+        bitmaskEmitter.emit(bitmaskType);
     }
 
     @Override

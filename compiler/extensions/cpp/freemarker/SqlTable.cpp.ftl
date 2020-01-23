@@ -126,6 +126,9 @@ ${name}::Row ${name}::Reader::next()
         <#if field.enumData??>
         const ${field.cppTypeName} enumValue = ::zserio::valueToEnum<${field.cppTypeName}>(static_cast<${field.enumData.baseCppTypeName}>(intValue));
         row.${field.setterName}(enumValue);
+        <#elseif field.bitmaskData??>
+        const ${field.cppTypeName} bitmaskValue = ${field.cppTypeName}(static_cast<${field.bitmaskData.baseCppTypeName}>(intValue));
+        row.${field.setterName}(bitmaskValue);
         <#elseif field.isBoolean>
         row.${field.setterName}(intValue != 0);
         <#else>
@@ -242,7 +245,7 @@ void ${name}::writeRow(<#if needsParameterProvider>IParameterProvider& parameter
         const uint8_t* blobData = writer.getWriteBuffer(blobDataLength);
         result = sqlite3_bind_blob(&statement, ${field?index + 1}, blobData, static_cast<int>(blobDataLength), SQLITE_TRANSIENT);
         <#elseif field.sqlTypeData.isInteger>
-        const int64_t intValue = static_cast<int64_t>(row.${field.getterName}());
+        const int64_t intValue = static_cast<int64_t>(row.${field.getterName}()<#if field.bitmaskData??>.getValue()</#if>);
         result = sqlite3_bind_int64(&statement, ${field?index + 1}, intValue);
         <#elseif field.sqlTypeData.isReal>
         const ${field.cppTypeName} realValue = row.${field.getterName}();

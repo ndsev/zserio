@@ -5,3 +5,5 @@ uninitMemberVar:*/ItemChoice.cpp
 uninitMemberVar:*/ItemChoiceHolder.cpp
 uninitMemberVar:*/Tile.cpp
 
+// suppress "Class 'X' has a constructor with 1 argument that is not explicit."
+noExplicitConstructor:*/VersionAvailability.h

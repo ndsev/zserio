@@ -66,6 +66,16 @@ enum bit:3 Color
 };
 ```
 
+**Bitmasks**
+```
+bitmask bit:3 Permission
+{
+    READ,
+    WRITE,
+    EXECUTE
+};
+```
+
 **Structures**
 ```
 struct MyStructure

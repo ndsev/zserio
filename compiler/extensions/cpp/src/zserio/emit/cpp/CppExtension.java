@@ -53,6 +53,7 @@ public class CppExtension implements Extension
         rootNode.emit(new ConstEmitter(outputDir, parameters));
         rootNode.emit(new SubtypeEmitter(outputDir, parameters));
         rootNode.emit(new EnumerationEmitter(outputDir, parameters));
+        rootNode.emit(new BitmaskEmitter(outputDir, parameters));
         rootNode.emit(new StructureEmitter(outputDir, parameters, serviceEmitter.getRpcTypes()));
         rootNode.emit(new ChoiceEmitter(outputDir, parameters));
         rootNode.emit(new UnionEmitter(outputDir, parameters, serviceEmitter.getRpcTypes()));

@@ -23,9 +23,12 @@
 #include "constants/INTFIELD8_MAX_CONSTANT.h"
 #include "constants/INTFIELD8_MIN_CONSTANT.h"
 #include "constants/OCTAL_ESC_STRING_CONSTANT.h"
+#include "constants/READ_PERMISSION.h"
+#include "constants/READ_PERMISSION_VALUE.h"
 #include "constants/STRING_CONSTANT.h"
 #include "constants/SUBTYPE_BLUE_COLOR_CONSTANT.h"
 #include "constants/SUBTYPE_INT25_CONSTANT.h"
+#include "constants/SUBTYPE_READ_PERMISSION.h"
 #include "constants/UINT16_MAX_CONSTANT.h"
 #include "constants/UINT16_MIN_CONSTANT.h"
 #include "constants/UINT32_FULL_MASK.h"
@@ -328,6 +331,22 @@ TEST(ConstantsTest, subtypeToEnumConstant)
 {
     ASSERT_EQ(ColorsSubtype::BLUE, SUBTYPE_BLUE_COLOR_CONSTANT);
     ASSERT_EQ(Colors::BLUE, SUBTYPE_BLUE_COLOR_CONSTANT);
+}
+
+TEST(ConstantsTest, constantDefinedByBitmask)
+{
+    ASSERT_TRUE(Permission::Values::READ == READ_PERMISSION);
+}
+
+TEST(ConstantsTest, constantDefinedByBitmaskValueof)
+{
+    ASSERT_EQ(static_cast<Permission::underlying_type>(Permission::Values::READ), READ_PERMISSION_VALUE);
+}
+
+TEST(ConstantsTest, subtypeToBitmaskConstant)
+{
+    ASSERT_TRUE(PermissionSubtype::Values::READ == SUBTYPE_READ_PERMISSION);
+    ASSERT_TRUE(Permission::Values::READ == SUBTYPE_READ_PERMISSION);
 }
 
 } // namespace constants

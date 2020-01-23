@@ -7,6 +7,8 @@ import java.util.List;
 
 import zserio.ast.ArrayInstantiation;
 import zserio.ast.AstNode;
+import zserio.ast.BitmaskType;
+import zserio.ast.BitmaskValue;
 import zserio.ast.ChoiceCase;
 import zserio.ast.ChoiceCaseExpression;
 import zserio.ast.ChoiceDefault;
@@ -547,9 +549,19 @@ public class CompoundEmitter extends DefaultHtmlEmitter
                 final Object caseExpressionObject = caseExpression.getExprSymbolObject();
                 final ZserioType selectorExpressionType = selectorExpression.getExprZserioType();
                 if (caseExpressionObject instanceof EnumItem  && selectorExpressionType instanceof EnumType)
+                {
                     seeLink = new CaseSeeLink((EnumItem)caseExpressionObject, (EnumType)selectorExpressionType);
+                }
+                else if (caseExpressionObject instanceof BitmaskValue &&
+                        selectorExpressionType instanceof BitmaskType)
+                {
+                    seeLink = new CaseSeeLink((BitmaskValue)caseExpressionObject,
+                            (BitmaskType)selectorExpressionType);
+                }
                 else
+                {
                     seeLink = null;
+                }
             }
 
             public String getExpression()
@@ -575,6 +587,12 @@ public class CompoundEmitter extends DefaultHtmlEmitter
         public class CaseSeeLink
         {
             public CaseSeeLink(EnumItem caseType, EnumType caseTypeOwner) throws ZserioEmitException
+            {
+                text = caseTypeOwner.getName() + "." + caseType.getName();
+                link = DocEmitterTools.getUrlNameFromType(caseTypeOwner) + "#casedef_" + caseType.getName();
+            }
+
+            public CaseSeeLink(BitmaskValue caseType, BitmaskType caseTypeOwner) throws ZserioEmitException
             {
                 text = caseTypeOwner.getName() + "." + caseType.getName();
                 link = DocEmitterTools.getUrlNameFromType(caseTypeOwner) + "#casedef_" + caseType.getName();

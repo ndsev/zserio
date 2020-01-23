@@ -5,3 +5,6 @@ uninitMemberVar:*/ParameterizedSubtypeStruct.cpp
 uninitMemberVar:*/ParameterizedSubtypeStruct.h
 uninitMemberVar:*/subtype_imported/Test.cpp
 uninitMemberVar:*/TestStructure.cpp
+
+// suppress "Class 'X' has a constructor with 1 argument that is not explicit."
+noExplicitConstructor:*/Permission.h

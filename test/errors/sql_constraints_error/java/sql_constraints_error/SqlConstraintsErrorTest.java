@@ -53,7 +53,7 @@ public class SqlConstraintsErrorTest
     public void wrongTypeReference()
     {
         final String error = "wrong_type_reference_error.zs:11:38: Reference 'ConstraintsConstant' does " +
-                "refer to neither enumeration type nor constant!";
+                "refer to neither enumeration, bitmask nor constant!";
         assertTrue(zserioErrors.isPresent(error));
     }
 

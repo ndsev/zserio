@@ -221,6 +221,16 @@ public class SqlTypesTest
     }
 
     @Test
+    public void bitmaskType() throws SQLException
+    {
+        final Map<String, String> sqlColumnTypes = getSqlColumnTypes();
+
+        final String bitmaskSqlType = sqlColumnTypes.get("bitmaskType");
+        assertTrue(bitmaskSqlType != null);
+        assertTrue(bitmaskSqlType.equalsIgnoreCase("INTEGER"));
+    }
+
+    @Test
     public void structureType() throws SQLException
     {
         final Map<String, String> sqlColumnTypes = getSqlColumnTypes();

@@ -1527,6 +1527,67 @@ struct EnumArrayTraits
 };
 
 /**
+ * Array traits for Zserio bitmask type.
+ */
+template <typename T>
+struct BitmaskArrayTraits
+{
+    /** Type of the single array element. */
+    typedef T type;
+
+    /**
+     * Calculates bit size of the array element.
+     *
+     * \param value Element's value.
+     *
+     * \return Bit size of the array element.
+     */
+    static size_t bitSizeOf(size_t, type value)
+    {
+        return value.bitSizeOf();
+    }
+
+    /**
+     * Initializes indexed offsets of the single array element.
+     *
+     * \param bitPosition Current bit position.
+     * \param value Element's value.
+     *
+     * \return Updated bit position which points to the first bit after the array element.
+     */
+    static size_t initializeOffsets(size_t bitPosition, type value)
+    {
+        return value.initializeOffsets(bitPosition);
+    }
+
+    /**
+     * Reads the single array element.
+     *
+     * \param array Array to read the element to.
+     * \param in Bit stream reader.
+     */
+    static void read(std::vector<type>& array, BitStreamReader& in, size_t)
+    {
+        array.emplace_back(in);
+    }
+
+    /**
+     * Writes the single array element.
+     *
+     * \param out Bit stream writer.
+     * \param value Element's value to write.
+     */
+    static void write(BitStreamWriter& out, type value)
+    {
+        value.write(out, NO_PRE_WRITE_ACTION);
+    }
+
+    // Be aware that T can be varuint, so bitSizeOf cannot return constant value.
+    /** Determines whether the bit size of the single element is constant. */
+    static const bool IS_BITSIZEOF_CONSTANT = false;
+};
+
+/**
  * Array traits of Zserio structure, choice and union types.
  */
 template <typename T, typename ELEMENT_FACTORY = void>

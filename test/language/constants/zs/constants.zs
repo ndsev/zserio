@@ -77,11 +77,11 @@ enum bit:4 Colors
     BLUE
 };
 
-// enum constant defined by enum value
-const Colors        DEFAULT_PEN_COLOR = Colors.BLACK;
+// enum constant defined by enum item
+const Colors DEFAULT_PEN_COLOR = Colors.BLACK;
 
-// base type constant defined by enum value using valueof
-const int32         DEFAULT_PEN_COLOR_VALUE = valueof(Colors.BLACK);
+// builtin type constant defined by enum item using valueof
+const int32 DEFAULT_PEN_COLOR_VALUE = valueof(Colors.BLACK);
 
 // subtype to intfield
 subtype int:25 Int25Subtype;
@@ -90,3 +90,21 @@ const Int25Subtype SUBTYPE_INT25_CONSTANT = 25;
 // constant defined by subtyped enum value
 subtype Colors ColorsSubtype;
 const ColorsSubtype SUBTYPE_BLUE_COLOR_CONSTANT = Colors.BLUE;
+
+// bitmask type
+bitmask bit:3 Permission
+{
+    READ,
+    WRITE,
+    CREATE
+};
+
+// bitmask constant defined by bitmask value
+const Permission READ_PERMISSION = Permission.READ;
+
+// builtin type constant defined by bitmask value using valueof
+const uint8 READ_PERMISSION_VALUE = valueof(Permission.READ);
+
+// constant defined by subtyped bitmask value
+subtype Permission PermissionSubtype;
+const PermissionSubtype SUBTYPE_READ_PERMISSION = Permission.READ;

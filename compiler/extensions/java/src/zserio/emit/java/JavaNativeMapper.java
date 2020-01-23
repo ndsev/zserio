@@ -2,6 +2,7 @@ package zserio.emit.java;
 
 import zserio.ast.ArrayInstantiation;
 import zserio.ast.AstNode;
+import zserio.ast.BitmaskType;
 import zserio.ast.BooleanType;
 import zserio.ast.ChoiceType;
 import zserio.ast.CompoundType;
@@ -33,6 +34,7 @@ import zserio.emit.java.types.JavaNativeType;
 import zserio.emit.java.types.NativeArrayType;
 import zserio.emit.java.types.NativeBigIntegerArrayType;
 import zserio.emit.java.types.NativeBitBufferType;
+import zserio.emit.java.types.NativeBitmaskType;
 import zserio.emit.java.types.NativeBooleanType;
 import zserio.emit.java.types.NativeByteArrayType;
 import zserio.emit.java.types.NativeByteType;
@@ -53,7 +55,7 @@ import zserio.emit.java.types.NativeStringType;
 import zserio.emit.java.types.NativeUnsignedByteArrayType;
 import zserio.emit.java.types.NativeUnsignedIntArrayType;
 import zserio.emit.java.types.NativeUnsignedLongArrayType;
-import zserio.emit.java.types.NativeUnsignedLongType;
+import zserio.emit.java.types.NativeBigIntegerType;
 import zserio.emit.java.types.NativeUnsignedShortArrayType;
 
 final class JavaNativeMapper
@@ -305,7 +307,7 @@ final class JavaNativeMapper
         else if (numBits < Long.SIZE)
             return longType;
         else
-            return unsignedLongType;
+            return bigIntegerType;
     }
 
     private static JavaNativeType mapUnsignedIntegralNullableType(int numBits)
@@ -319,7 +321,7 @@ final class JavaNativeMapper
         else if (numBits < Long.SIZE)
             return longNullableType;
         else
-            return unsignedLongType;
+            return bigIntegerType;
     }
 
     private static JavaNativeType mapSignedIntegralArray(int numBits)
@@ -413,6 +415,12 @@ final class JavaNativeMapper
 
         @Override
         public void visitEnumType(EnumType type)
+        {
+            mapObjectArray(type);
+        }
+
+        @Override
+        public void visitBitmaskType(BitmaskType type)
         {
             mapObjectArray(type);
         }
@@ -599,6 +607,23 @@ final class JavaNativeMapper
         }
 
         @Override
+        public void visitBitmaskType(BitmaskType type)
+        {
+            try
+            {
+                final NativeIntegralType nativeBaseType = getJavaIntegralType(type.getTypeInstantiation());
+                final PackageName packageName = javaPackageMapper.getPackageName(type);
+                final String name = type.getName();
+                javaType = new NativeBitmaskType(packageName, name, nativeBaseType);
+                javaNullableType = javaType;
+            }
+            catch (ZserioEmitException exception)
+            {
+                thrownException = exception;
+            }
+        }
+
+        @Override
         public void visitFloatType(FloatType type)
         {
             switch (type.getBitSize())
@@ -726,8 +751,8 @@ final class JavaNativeMapper
                 }
                 else
                 {
-                    javaType = unsignedLongType;
-                    javaNullableType = unsignedLongType;
+                    javaType = bigIntegerType;
+                    javaNullableType = bigIntegerType;
                 }
                 break;
 
@@ -772,7 +797,7 @@ final class JavaNativeMapper
     private final static NativeIntType intNullableType = new NativeIntType(true);
     private final static NativeLongType longType = new NativeLongType(false);
     private final static NativeLongType longNullableType = new NativeLongType(true);
-    private final static NativeUnsignedLongType unsignedLongType = new NativeUnsignedLongType();
+    private final static NativeBigIntegerType bigIntegerType = new NativeBigIntegerType();
 
     // zserio.runtime arrays
     private final static NativeArrayType boolArrayType = new NativeArrayType("BoolArray");

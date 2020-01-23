@@ -103,6 +103,10 @@ class ExpressionUtil
         {
             isTypeMismatch = (expression.getExprType() != Expression.ExpressionType.ENUM);
         }
+        else if (type instanceof BitmaskType)
+        {
+            isTypeMismatch = (expression.getExprType() != Expression.ExpressionType.BITMASK);
+        }
         else if (type instanceof CompoundType)
         {
             isTypeMismatch = (expression.getExprType() != Expression.ExpressionType.COMPOUND);

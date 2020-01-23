@@ -38,3 +38,7 @@ class StructureDefaultValuesTest(unittest.TestCase):
     def testDefaultEnumValue(self):
         structureDefaultValues = self.api.StructureDefaultValues()
         self.assertEqual(self.api.BasicColor.BLACK, structureDefaultValues.getEnumValue())
+
+    def testDefaultBitmaskValue(self):
+        structureDefaultValues = self.api.StructureDefaultValues()
+        self.assertEqual(self.api.Permission.Values.READ_WRITE, structureDefaultValues.getBitmaskValue())

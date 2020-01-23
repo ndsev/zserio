@@ -9,6 +9,7 @@ import zserio.ast.Parameter;
 import zserio.ast.ParameterizedTypeInstantiation;
 import zserio.ast.ParameterizedTypeInstantiation.InstantiatedParameter;
 import zserio.ast.ZserioType;
+import zserio.ast.BitmaskType;
 import zserio.ast.EnumType;
 import zserio.ast.Expression;
 import zserio.ast.Field;
@@ -21,6 +22,7 @@ import zserio.emit.common.sql.SqlNativeTypeMapper;
 import zserio.emit.common.sql.types.NativeBlobType;
 import zserio.emit.common.sql.types.SqlNativeType;
 import zserio.emit.java.types.JavaNativeType;
+import zserio.emit.java.types.NativeBitmaskType;
 import zserio.emit.java.types.NativeEnumType;
 import zserio.emit.java.types.NativeIntegralType;
 import zserio.tools.HashUtil;
@@ -200,10 +202,14 @@ public final class SqlTableEmitterTemplateData extends UserTypeTemplateData
             isNotNull = !sqlConstraintType.isNullAllowed();
             isPrimaryKey = parentType.isFieldPrimaryKey(field);
 
-            // enumerations are rangeable for SQL
+            // enumerations and bitmasks are rangeable for SQL
             enumData = createEnumTemplateData(nativeType);
-            final TypeInstantiation rangeCheckInstantiation = (enumData != null) ?
-                    ((EnumType)fieldBaseType).getTypeInstantiation() : fieldTypeInstantiation;
+            bitmaskData = createBitmaskTemplateData(nativeType);
+            TypeInstantiation rangeCheckInstantiation = fieldTypeInstantiation;
+            if (enumData != null)
+                rangeCheckInstantiation = ((EnumType)fieldBaseType).getTypeInstantiation();
+            else if (bitmaskData != null)
+                rangeCheckInstantiation = ((BitmaskType)fieldBaseType).getTypeInstantiation();
             rangeCheckData = new RangeCheckTemplateData(javaNativeMapper, rangeCheckInstantiation,
                     javaExpressionFormatter);
             sqlTypeData = new SqlTypeTemplateData(sqlNativeTypeMapper, field);
@@ -252,6 +258,11 @@ public final class SqlTableEmitterTemplateData extends UserTypeTemplateData
         public EnumTemplateData getEnumData()
         {
             return enumData;
+        }
+
+        public BitmaskTemplateData getBitmaskData()
+        {
+            return bitmaskData;
         }
 
         public RangeCheckTemplateData getRangeCheckData()
@@ -319,6 +330,21 @@ public final class SqlTableEmitterTemplateData extends UserTypeTemplateData
             private final String baseJavaTypeName;
         }
 
+        public static class BitmaskTemplateData
+        {
+            public BitmaskTemplateData(NativeBitmaskType nativeBitmaskType)
+            {
+                baseJavaTypeName = nativeBitmaskType.getBaseType().getFullName();
+            }
+
+            public String getBaseJavaTypeName()
+            {
+                return baseJavaTypeName;
+            }
+
+            private final String baseJavaTypeName;
+        }
+
         public static class SqlTypeTemplateData
         {
             public SqlTypeTemplateData(SqlNativeTypeMapper sqlNativeTypeMapper, Field field)
@@ -359,6 +385,14 @@ public final class SqlTableEmitterTemplateData extends UserTypeTemplateData
             return new EnumTemplateData((NativeEnumType)nativeType);
         }
 
+        private BitmaskTemplateData createBitmaskTemplateData(JavaNativeType nativeType)
+        {
+            if (!(nativeType instanceof NativeBitmaskType))
+                return null;
+
+            return new BitmaskTemplateData((NativeBitmaskType)nativeType);
+        }
+
         private final List<ParameterTemplateData> typeParameters;
 
         private final String name;
@@ -369,6 +403,7 @@ public final class SqlTableEmitterTemplateData extends UserTypeTemplateData
         private final boolean isNotNull;
         private final boolean isPrimaryKey;
         private final EnumTemplateData enumData;
+        private final BitmaskTemplateData bitmaskData;
         private final RangeCheckTemplateData rangeCheckData;
         private final SqlTypeTemplateData sqlTypeData;
     }

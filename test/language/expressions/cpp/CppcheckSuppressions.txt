@@ -28,3 +28,6 @@ uninitMemberVar:*/QuestionMarkExpression.cpp
 uninitMemberVar:*/UInt64TypeExpression.cpp
 uninitMemberVar:*/UsedBeforeTypeExpression.cpp
 uninitMemberVar:*/ValueOfFunctions.cpp
+
+// suppress "Class 'X' has a constructor with 1 argument that is not explicit."
+noExplicitConstructor:*/Colors.h

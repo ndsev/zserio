@@ -8,6 +8,13 @@ enum int8 TestEnum
     BLACK       = 3
 };
 
+bitmask uint8 TestBitmask
+{
+    READ,
+    WRITE,
+    CREATE = 3
+};
+
 struct TestStructure
 {
     uint32  id;
@@ -76,6 +83,9 @@ sql_table SqlTypesTable
 
     // enum type
     TestEnum        enumType;
+
+    // bitmask type
+    TestBitmask     bitmaskType;
 
     // structure type
     TestStructure   structureType;

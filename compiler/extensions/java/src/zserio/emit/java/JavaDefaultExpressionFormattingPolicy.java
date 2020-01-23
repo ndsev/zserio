@@ -3,6 +3,8 @@ package zserio.emit.java;
 import java.math.BigInteger;
 
 import zserio.ast.AstNode;
+import zserio.ast.BitmaskType;
+import zserio.ast.BitmaskValue;
 import zserio.ast.Constant;
 import zserio.ast.Subtype;
 import zserio.ast.ZserioType;
@@ -165,7 +167,8 @@ public abstract class JavaDefaultExpressionFormattingPolicy extends DefaultExpre
         else
         {
             if (!(resolvedSymbol instanceof Package))
-                formatSymbolIdentifier(result, symbol, isMostLeftId, resolvedSymbol, isSetter);
+                formatSymbolIdentifier(result, symbol, isMostLeftId, resolvedSymbol, expr.getExprZserioType(),
+                        isSetter);
         }
 
         // finish casting to BigInteger
@@ -207,7 +210,7 @@ public abstract class JavaDefaultExpressionFormattingPolicy extends DefaultExpre
     @Override
     public UnaryExpressionFormatting getTilde(Expression expr)
     {
-        if (!expr.needsBigInteger())
+        if (!expr.needsBigInteger() && expr.getExprType() != Expression.ExpressionType.BITMASK)
             return super.getTilde(expr);
 
         return new UnaryExpressionFormatting("", ".not()");
@@ -252,7 +255,7 @@ public abstract class JavaDefaultExpressionFormattingPolicy extends DefaultExpre
     @Override
     public BinaryExpressionFormatting getOr(Expression expr)
     {
-        if (!expr.needsBigInteger())
+        if (!expr.needsBigInteger() && expr.getExprType() != Expression.ExpressionType.BITMASK)
             return super.getOr(expr);
 
         return new BinaryExpressionFormatting("", ".or(", ")");
@@ -261,7 +264,7 @@ public abstract class JavaDefaultExpressionFormattingPolicy extends DefaultExpre
     @Override
     public BinaryExpressionFormatting getXor(Expression expr)
     {
-        if (!expr.needsBigInteger())
+        if (!expr.needsBigInteger() && expr.getExprType() != Expression.ExpressionType.BITMASK)
             return super.getXor(expr);
 
         return new BinaryExpressionFormatting("", ".xor(", ")");
@@ -270,7 +273,7 @@ public abstract class JavaDefaultExpressionFormattingPolicy extends DefaultExpre
     @Override
     public BinaryExpressionFormatting getAnd(Expression expr)
     {
-        if (!expr.needsBigInteger())
+        if (!expr.needsBigInteger() && expr.getExprType() != Expression.ExpressionType.BITMASK)
             return super.getAnd(expr);
 
         return new BinaryExpressionFormatting("", ".and(", ")");
@@ -279,6 +282,9 @@ public abstract class JavaDefaultExpressionFormattingPolicy extends DefaultExpre
     @Override
     public BinaryExpressionFormatting getEq(Expression expr)
     {
+        if (expr.op1().getExprType() == Expression.ExpressionType.BITMASK)
+            return new BinaryExpressionFormatting("", ".equals(", ")");
+
         if (!expr.needsBigInteger())
             return super.getEq(expr);
 
@@ -288,6 +294,9 @@ public abstract class JavaDefaultExpressionFormattingPolicy extends DefaultExpre
     @Override
     public BinaryExpressionFormatting getNe(Expression expr)
     {
+        if (expr.op1().getExprType() == Expression.ExpressionType.BITMASK)
+            return new BinaryExpressionFormatting("!", ".equals(", ")");
+
         if (!expr.needsBigInteger())
             return super.getNe(expr);
 
@@ -475,7 +484,7 @@ public abstract class JavaDefaultExpressionFormattingPolicy extends DefaultExpre
     }
 
     private void formatSymbolIdentifier(StringBuilder result, String symbol, boolean isMostLeftId,
-            AstNode resolvedSymbol, boolean isSetter) throws ZserioEmitException
+            AstNode resolvedSymbol, ZserioType exprType, boolean isSetter) throws ZserioEmitException
     {
         if (resolvedSymbol instanceof Parameter)
         {
@@ -490,6 +499,11 @@ public abstract class JavaDefaultExpressionFormattingPolicy extends DefaultExpre
         else if (resolvedSymbol instanceof EnumItem)
         {
             result.append(getIdentifierForEnumItem((EnumItem)resolvedSymbol));
+        }
+        else if (resolvedSymbol instanceof BitmaskValue)
+        {
+            final BitmaskValue bitmaskValue = (BitmaskValue)resolvedSymbol;
+            formatBitmaskValue(result, isMostLeftId, bitmaskValue, exprType);
         }
         else if (resolvedSymbol instanceof Function)
         {
@@ -507,6 +521,22 @@ public abstract class JavaDefaultExpressionFormattingPolicy extends DefaultExpre
             // this could happen for "explicit identifier" expressions
             result.append(symbol);
         }
+    }
+
+    private void formatBitmaskValue(StringBuilder result, boolean isMostLeftId, BitmaskValue bitmaskValue,
+            ZserioType exprType) throws ZserioEmitException
+    {
+        // emit whole name if this is the first symbol in dot subtree, otherwise emit only bitmask name
+        if (isMostLeftId && exprType instanceof BitmaskType)
+        {
+            final BitmaskType bitmaskType = (BitmaskType)exprType;
+            final JavaNativeType nativeBitmaskType = javaNativeMapper.getJavaType(bitmaskType);
+            result.append(nativeBitmaskType.getFullName());
+            result.append(".");
+        }
+
+        result.append("Values.");
+        result.append(bitmaskValue.getName());
     }
 
     private void formatConstant(StringBuilder result, Constant constant) throws ZserioEmitException

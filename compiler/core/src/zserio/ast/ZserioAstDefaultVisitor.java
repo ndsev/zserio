@@ -44,6 +44,10 @@ public class ZserioAstDefaultVisitor implements ZserioAstVisitor
     {}
 
     @Override
+    public void visitBitmaskType(BitmaskType bitmaskType)
+    {}
+
+    @Override
     public void visitSqlTableType(SqlTableType sqlTableType)
     {}
 
@@ -73,6 +77,10 @@ public class ZserioAstDefaultVisitor implements ZserioAstVisitor
 
     @Override
     public void visitEnumItem(EnumItem enumItem)
+    {}
+
+    @Override
+    public void visitBitmaskValue(BitmaskValue bitmaskValue)
     {}
 
     @Override

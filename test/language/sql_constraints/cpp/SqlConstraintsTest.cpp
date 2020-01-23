@@ -41,6 +41,8 @@ protected:
         row.setSqlCheckImportedConstant(1);
         row.setSqlCheckEnum(ConstraintsEnum::VALUE1);
         row.setSqlCheckImportedEnum(constraints::ImportedEnum::ONE);
+        row.setSqlCheckBitmask(ConstraintsBitmask::Values::MASK1);
+        row.setSqlCheckImportedBitmask(constraints::ImportedBitmask::Values::MASK1);
         row.setSqlCheckUnicodeEscape(UNICODE_ESCAPE_CONST);
         row.setSqlCheckHexEscape(HEX_ESCAPE_CONST);
         row.setSqlCheckOctalEscape(OCTAL_ESCAPE_CONST);
@@ -152,6 +154,28 @@ TEST_F(SqlConstraintsTest, sqlCheckImportedEnum)
     ConstraintsTable::Row row;
     fillRow(row);
     row.setSqlCheckImportedEnum(constraints::ImportedEnum::TWO);
+    std::vector<ConstraintsTable::Row> rows;
+    rows.push_back(row);
+    ASSERT_THROW(constraintsTable.write(rows), zserio::SqliteException);
+}
+
+TEST_F(SqlConstraintsTest, sqlCheckBitmask)
+{
+    ConstraintsTable& constraintsTable = m_database->getConstraintsTable();
+    ConstraintsTable::Row row;
+    fillRow(row);
+    row.setSqlCheckBitmask(ConstraintsBitmask::Values::MASK2);
+    std::vector<ConstraintsTable::Row> rows;
+    rows.push_back(row);
+    ASSERT_THROW(constraintsTable.write(rows), zserio::SqliteException);
+}
+
+TEST_F(SqlConstraintsTest, sqlCheckImportedBitmask)
+{
+    ConstraintsTable& constraintsTable = m_database->getConstraintsTable();
+    ConstraintsTable::Row row;
+    fillRow(row);
+    row.setSqlCheckImportedBitmask(constraints::ImportedBitmask::Values::MASK2);
     std::vector<ConstraintsTable::Row> rows;
     rows.push_back(row);
     ASSERT_THROW(constraintsTable.write(rows), zserio::SqliteException);

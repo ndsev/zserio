@@ -9,13 +9,16 @@
     </#if>
 </#list>
 <#assign hasEnumField = false/>
+<#assign hasBitmaskField = false/>
 <#list fields as field>
     <#if field.enumData??>
         <#assign hasEnumField = true/>
-        <#break>
+    </#if>
+    <#if field.bitmaskData??>
+        <#assign hasBitmaskField = true/>
     </#if>
 </#list>
-<#assign needsRowConversion = hasBlobField || hasEnumField/>
+<#assign needsRowConversion = hasBlobField || hasEnumField || hasBitmaskField/>
 <#assign needsParameterProvider = explicitParameters?has_content/>
 <#if withWriterCode>
     <#assign hasNonVirtualField=false/>
@@ -105,6 +108,9 @@ class ${name}():
         <#elseif field.enumData??>
                 if ${field.name}_ is not None:
                     ${field.name}_ = ${field.enumData.pythonTypeName}(${field.name}_)
+        <#elseif field.bitmaskData??>
+                if ${field.name}_ is not None:
+                    ${field.name}_ = ${field.bitmaskData.pythonTypeName}.fromValue(${field.name}_)
         </#if>
     </#list>
 
@@ -208,6 +214,11 @@ class ${name}():
         ${field.name}_ = rowInList[${field?index}]
         if ${field.name}_ is not None:
             rowInList[${field?index}] = ${field.name}_.value
+
+            <#elseif field.bitmaskData??>
+        ${field.name}_ = rowInList[${field?index}]
+        if ${field.name}_ is not None:
+            rowInList[${field?index}] = ${field.name}_.getValue()
 
             </#if>
         </#list>

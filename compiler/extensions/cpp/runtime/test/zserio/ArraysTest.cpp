@@ -74,6 +74,71 @@ inline void write<DummyEnum>(BitStreamWriter& out, DummyEnum value)
     out.writeBits(enumToValue(value), UINT8_C(8));
 }
 
+class DummyBitmask
+{
+public:
+    typedef uint8_t underlying_type;
+
+    struct Values
+    {
+        static const DummyBitmask CREATE;
+        static const DummyBitmask READ;
+        static const DummyBitmask WRITE;
+    };
+
+    DummyBitmask() : m_value(0) {};
+    explicit DummyBitmask(::zserio::BitStreamReader& in) :
+        m_value(readValue(in))
+    {};
+
+    explicit DummyBitmask(underlying_type value) :
+        m_value(value)
+    {}
+
+    underlying_type getValue() const
+    {
+        return m_value;
+    }
+
+    size_t bitSizeOf(size_t = 0) const
+    {
+        return UINT8_C(8);
+    }
+
+    size_t initializeOffsets(size_t bitPosition) const
+    {
+        return bitPosition + bitSizeOf(bitPosition);
+    }
+
+    bool operator==(const DummyBitmask& other) const
+    {
+        return m_value == other.m_value;
+    }
+
+    void read(::zserio::BitStreamReader& in)
+    {
+        m_value = readValue(in);
+    }
+
+    void write(::zserio::BitStreamWriter& out,
+            ::zserio::PreWriteAction = ::zserio::ALL_PRE_WRITE_ACTIONS) const
+    {
+        out.writeBits(m_value, UINT8_C(8));
+    }
+
+private:
+    static underlying_type readValue(::zserio::BitStreamReader& in)
+    {
+        return static_cast<underlying_type>(in.readBits(UINT8_C(8)));
+    }
+
+    underlying_type m_value;
+};
+
+const DummyBitmask DummyBitmask::Values::CREATE = DummyBitmask(UINT8_C(1));
+const DummyBitmask DummyBitmask::Values::READ = DummyBitmask(UINT8_C(2));
+const DummyBitmask DummyBitmask::Values::WRITE = DummyBitmask(UINT8_C(8));
+
 class DummyObject
 {
 public:
@@ -661,6 +726,14 @@ TEST_F(ArraysTest, enumArray)
     std::vector<DummyEnum> array = {DummyEnum::VALUE1, DummyEnum::VALUE2, DummyEnum::VALUE3};
     const size_t elementBitSize = 8;
     testArray(EnumArrayTraits<DummyEnum>(), array, elementBitSize);
+}
+
+TEST_F(ArraysTest, bitmaskArray)
+{
+    std::vector<DummyBitmask> array = {DummyBitmask::Values::READ, DummyBitmask::Values::WRITE,
+            DummyBitmask::Values::CREATE};
+    const size_t elementBitSize = 8;
+    testArray(BitmaskArrayTraits<DummyBitmask>(), array, elementBitSize);
 }
 
 TEST_F(ArraysTest, objectArray)

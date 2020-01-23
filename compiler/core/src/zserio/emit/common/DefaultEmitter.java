@@ -1,5 +1,6 @@
 package zserio.emit.common;
 
+import zserio.ast.BitmaskType;
 import zserio.ast.ChoiceType;
 import zserio.ast.Constant;
 import zserio.ast.EnumType;
@@ -62,6 +63,10 @@ public abstract class DefaultEmitter implements Emitter
 
     @Override
     public void beginEnumeration(EnumType enumType) throws ZserioEmitException
+    {}
+
+    @Override
+    public void beginBitmask(BitmaskType bitmaskType) throws ZserioEmitException
     {}
 
     @Override

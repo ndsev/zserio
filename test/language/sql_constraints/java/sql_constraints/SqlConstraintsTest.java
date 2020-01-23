@@ -17,6 +17,7 @@ import test_utils.JdbcUtil;
 
 import sql_constraints.constraints.ImportedConstant;
 import sql_constraints.constraints.ImportedEnum;
+import sql_constraints.constraints.ImportedBitmask;
 
 public class SqlConstraintsTest
 {
@@ -146,6 +147,32 @@ public class SqlConstraintsTest
     }
 
     @Test
+    public void sqlCheckBitmask() throws IOException, SQLException
+    {
+        expectedException.expect(SQLException.class);
+        expectedException.expectMessage("CHECK constraint failed: constraintsTable");
+
+        final ConstraintsTable constraintsTable = database.getConstraintsTable();
+        final ConstraintsTableRow row = new ConstraintsTableRow();
+        fillRow(row);
+        row.setSqlCheckBitmask(ConstraintsBitmask.Values.MASK2);
+        constraintsTable.write(Arrays.asList(row));
+    }
+
+    @Test
+    public void sqlCheckImportedBitmask() throws IOException, SQLException
+    {
+        expectedException.expect(SQLException.class);
+        expectedException.expectMessage("CHECK constraint failed: constraintsTable");
+
+        final ConstraintsTable constraintsTable = database.getConstraintsTable();
+        final ConstraintsTableRow row = new ConstraintsTableRow();
+        fillRow(row);
+        row.setSqlCheckImportedBitmask(ImportedBitmask.Values.MASK2);
+        constraintsTable.write(Arrays.asList(row));
+    }
+
+    @Test
     public void sqlCheckUnicodeEscape() throws IOException, SQLException
     {
         expectedException.expect(SQLException.class);
@@ -194,6 +221,8 @@ public class SqlConstraintsTest
         row.setSqlCheckImportedConstant(1);
         row.setSqlCheckEnum(ConstraintsEnum.VALUE1);
         row.setSqlCheckImportedEnum(ImportedEnum.ONE);
+        row.setSqlCheckBitmask(ConstraintsBitmask.Values.MASK1);
+        row.setSqlCheckImportedBitmask(ImportedBitmask.Values.MASK1);
         row.setSqlCheckUnicodeEscape(UNICODE_ESCAPE_CONST);
         row.setSqlCheckHexEscape(HEX_ESCAPE_CONST);
         row.setSqlCheckOctalEscape(OCTAL_ESCAPE_CONST);

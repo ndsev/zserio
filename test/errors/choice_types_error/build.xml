@@ -11,6 +11,7 @@
 
     <target name="gen" depends="gen.check" unless="choice_types_error.zs.gen_is_uptodate">
         <testGenClean testName="choice_types_error"/>
+        <testGen testName="choice_types_error" zsFile="bitmask_case_error.zs" ignoreErrors="true"/>
         <testGen testName="choice_types_error" zsFile="bool_case_error.zs" ignoreErrors="true"/>
         <testGen testName="choice_types_error" zsFile="compound_selector_error.zs" ignoreErrors="true"/>
         <testGen testName="choice_types_error" zsFile="enum_case_error.zs" ignoreErrors="true"/>

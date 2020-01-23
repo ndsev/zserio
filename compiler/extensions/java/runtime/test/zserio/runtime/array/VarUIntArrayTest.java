@@ -124,7 +124,7 @@ public class VarUIntArrayTest
         // null elements, different length
         array1 = new VarUIntArray(LENGTH);
         array2 = new VarUIntArray(LENGTH+1);
-        assertNotSame(array1.hashCode(), array2.hashCode());
+        assertFalse(array1.hashCode() == array2.hashCode());
 
         // same arrays
         array1 = new VarUIntArray(DATA, 0, DATA.length);
@@ -135,18 +135,18 @@ public class VarUIntArrayTest
         array1 = new VarUIntArray(DATA, 0, DATA.length);
         array2 = new VarUIntArray(DATA, 0, DATA.length);
         array2.setElementAt(BigInteger.ONE, DATA.length - 1);
-        assertNotSame(array1.hashCode(), array2.hashCode());
+        assertFalse(array1.hashCode() == array2.hashCode());
 
         // different length
         array1 = new VarUIntArray(DATA, 0, DATA.length);
         array2 = new VarUIntArray(DATA, 0, DATA.length - 1);
-        assertNotSame(array1.hashCode(), array2.hashCode());
+        assertFalse(array1.hashCode() == array2.hashCode());
 
         // same length, last element null
         array1 = new VarUIntArray(DATA, 0, DATA.length);
         array2 = new VarUIntArray(DATA, 0, DATA.length);
         array2.setElementAt(null, DATA.length - 1);
-        assertNotSame(array1.hashCode(), array2.hashCode());
+        assertFalse(array1.hashCode() == array2.hashCode());
     }
 
     @Test
@@ -171,7 +171,6 @@ public class VarUIntArrayTest
         array1 = new VarUIntArray(LENGTH);
         array2 = new VarUIntArray(LENGTH+1);
         assertFalse(array1.equals(array2));
-        assertNotSame(array1, array2);
 
         // same arrays
         array1 = new VarUIntArray(DATA, 0, DATA.length);
@@ -184,20 +183,17 @@ public class VarUIntArrayTest
         array2 = new VarUIntArray(DATA, 0, DATA.length);
         array2.setElementAt(BigInteger.ONE, DATA.length - 1);
         assertFalse(array1.equals(array2));
-        assertNotSame(array1, array2);
 
         // different length
         array1 = new VarUIntArray(DATA, 0, DATA.length);
         array2 = new VarUIntArray(DATA, 0, DATA.length - 1);
         assertFalse(array1.equals(array2));
-        assertNotSame(array1, array2);
 
         // same length, last element null
         array1 = new VarUIntArray(DATA, 0, DATA.length);
         array2 = new VarUIntArray(DATA, 0, DATA.length);
         array2.setElementAt(null, DATA.length - 1);
         assertFalse(array1.equals(array2));
-        assertNotSame(array1, array2);
     }
 
     private static final int LENGTH = 10;

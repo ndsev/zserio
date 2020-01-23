@@ -246,6 +246,16 @@ TEST_F(SqlTypesTest, enumType)
     ASSERT_EQ("INTEGER", it->second);
 }
 
+TEST_F(SqlTypesTest, bitmaskType)
+{
+    std::map<std::string, std::string> sqlColumnTypes;
+    ASSERT_TRUE(getSqlColumnTypes(sqlColumnTypes));
+
+    std::map<std::string, std::string>::const_iterator it = sqlColumnTypes.find("bitmaskType");
+    ASSERT_TRUE(it != sqlColumnTypes.end());
+    ASSERT_EQ("INTEGER", it->second);
+}
+
 TEST_F(SqlTypesTest, structureType)
 {
     std::map<std::string, std::string> sqlColumnTypes;

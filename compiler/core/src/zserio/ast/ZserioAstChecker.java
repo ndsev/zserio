@@ -114,6 +114,14 @@ public class ZserioAstChecker extends ZserioAstWalker
     }
 
     @Override
+    public void visitBitmaskType(BitmaskType bitmaskType)
+    {
+        bitmaskType.visitChildren(this);
+        definedTypes.add(bitmaskType);
+        bitmaskType.check();
+    }
+
+    @Override
     public void visitSqlTableType(SqlTableType sqlTableType)
     {
         if (sqlTableType.getTemplateParameters().isEmpty())

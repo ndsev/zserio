@@ -18,6 +18,14 @@ public class ChoiceTypesErrorTest
     }
 
     @Test
+    public void bitmaskCaseError()
+    {
+        final String error = "bitmask_case_error.zs:27:10: " +
+                "Choice 'BitmaskParamChoice' has case with different bitmask type than selector!";
+        assertTrue(zserioErrors.isPresent(error));
+    }
+
+    @Test
     public void boolCaseError()
     {
         final String error = "bool_case_error.zs:8:10: Choice 'BoolCaseChoice' has incompatible case type!";

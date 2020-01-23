@@ -279,10 +279,18 @@ public class SqlConstraint extends AstNodeBase
 
                     stringBuilder.append(((EnumItem)referencedSymbol).getValue().toString());
                 }
+                else if (referencedSymbol instanceof BitmaskValue)
+                {
+                    // referenced type should be the BitmaskType
+                    final ZserioType referencedBitmaskType = symbolReference.getReferencedType();
+                    referencedBitmaskType.accept(evaluator);
+
+                    stringBuilder.append(((BitmaskValue)referencedSymbol).getValue().toString());
+                }
                 else
                 {
                     throw new ParserException(this, "Reference '" + referenceEntry.getValue() +
-                            "' does refer to neither enumeration type nor constant!");
+                            "' does refer to neither enumeration, bitmask nor constant!");
                 }
 
                 numUsedReferences++;

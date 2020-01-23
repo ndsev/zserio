@@ -85,10 +85,18 @@ public class EnumerationTypesErrorTest
     }
 
     @Test
+    public void outOfRangeEnumExplicitValue()
+    {
+        final String error = "out_of_range_enum_explicit_value_error.zs:7:18: " +
+                "Enumeration item 'DARK_BLUE' has value (256) out of range <0,255>!";
+        assertTrue(zserioErrors.isPresent(error));
+    }
+
+    @Test
     public void outOfRangeEnumValue()
     {
-        final String error = "out_of_range_enum_value_error.zs:7:18: Enumeration item 'DARK_BLUE' has value " +
-                "(256) out of range <0,255>!";
+        final String error = "out_of_range_enum_value_error.zs:8:5: " +
+                "Enumeration item 'DARK_BLACK' has value (256) out of range <0,255>!";
         assertTrue(zserioErrors.isPresent(error));
     }
 

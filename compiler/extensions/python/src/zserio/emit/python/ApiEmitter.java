@@ -2,6 +2,7 @@ package zserio.emit.python;
 
 import java.util.TreeMap;
 
+import zserio.ast.BitmaskType;
 import zserio.ast.ChoiceType;
 import zserio.ast.Constant;
 import zserio.ast.EnumType;
@@ -66,6 +67,12 @@ public class ApiEmitter extends PythonDefaultEmitter
     public void beginEnumeration(EnumType enumType) throws ZserioEmitException
     {
         addTypeMapping(enumType);
+    }
+
+    @Override
+    public void beginBitmask(BitmaskType bitmaskType) throws ZserioEmitException
+    {
+        addTypeMapping(bitmaskType);
     }
 
     @Override

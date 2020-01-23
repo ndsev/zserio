@@ -40,6 +40,8 @@
         <li><span class="deprecatedDetail">field</span> ${item.fieldOwner.package.packageName}.<@linkedtype item.fieldCompoundLinkedType/>.<@fieldlinkedtype item.fieldLinkedType/></li>
       <#elseif item.isEnumItem>
         <li><span class="deprecatedDetail">enum-item</span> ${item.enumType.package.packageName}.<@linkedtype item.enumLinkedType/>.${item.enumItem.name}</li>
+      <#elseif item.isBitmaskValue>
+        <li><span class="deprecatedDetail">bitmask-value</span> ${item.bitmaskType.package.packageName}.<@linkedtype item.bitmaskLinkedType/>.${item.bitmaskValue.name}</li>
       <#else>
         <li><span class="deprecatedDetail">type</span> ${item.packageName}.<@linkedtype item.linkedType/></li>
       </#if>

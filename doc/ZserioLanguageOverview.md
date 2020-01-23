@@ -26,6 +26,8 @@ described in zserio, giving the developer overall control of the data schema use
 
 [Enumeration Types](#enumeration-types)
 
+[Bitmask Types](#bitmask-types)
+
 [Compound Types](#compound-types)
 
 [Array Types](#array-types)
@@ -311,6 +313,65 @@ In expressions outside of the defining type, enumeration members must always be 
 and a dot, e.g. `Color.NONE`.
 
 The enumeration value represented by integer type can be referenced as `valueof(enumeration)`,
+see [valueof Operator](#valueof-operator).
+
+[top](#language-guide)
+
+## Bitmask Types
+
+A bitmask type has a base type which is an unsigned integer or unsigned bit field type. The members of a bitmask
+have a name and a value which may be assigned explicitly or implicitly. A member that does not have
+an initializer gets assigned the value calculated from its predecessor by finding the first unused bit.
+If the unspecified member is the first one, it will be assigned to 1.
+
+**Example**
+
+```
+bitmask uint8 Permission
+{
+    EXECUTABLE,
+    READABLE = 0x02,
+    WRITABLE
+};
+```
+
+In the example above, `EXECUTABLE` is auto-assigned to 1, `READABLE` is manually assigned to 2 and the
+`WRITABLE` is assigned by finding the first unsued bit to value 4.
+
+A bitmask type provides its own lexical scope. The member names must be unique within each bitmask type.
+In expressions outside of the defining type, bitmask members must alway be prefixed by the type name and a dot,
+e.g. `Permission.WRITABLE`.
+
+Bitmasks support all basic bit operations:
+* `&` bitwise and,
+* `|` bitwise or,
+* `^` bitwise xor,
+* `~` bitwise complement.
+
+**Example**
+
+```
+bitmask bit:2 Availability
+{
+    VERSION_NUMBER,
+    VERSION_STRING
+};
+
+struct Version(Availability availability)
+{
+    uint32 versionNumber if (availability & Availability.VERSION_NUMBER) == Availability.VERSION_NUMBER;
+    string versionString if (availability & Availability.VERSION_STRING) == Availability.VERSION_STRING;
+};
+```
+
+In the example above, the `availability` parameter defines available version formats. `versionNumber` and
+`versionString` are present only if the `availability` contains the `VERSION_NUMBER` and `VERSION_STRING` masks
+respectively.
+
+>Note that the bitmask can contain a member which is manually assigned to 0 and which represents an empty
+bitmask (e.g. `NONE = 0`). Such `NONE` mask can be useful in expressions.
+
+The bitmask value represented by integer type can be referenced as `valueof(Permission.EXECUTABLE)`,
 see [valueof Operator](#valueof-operator).
 
 [top](#language-guide)
@@ -757,10 +818,16 @@ The following Java operators have no counterpart in zserio: `++`, `--`, `>>>` an
 ### Unary Operators
 
 #### Boolean Negation
+
 The negation operator `!` is defined for boolean expressions.
 
 #### Integer Operators
-For integer expressions, there are `+` (unary plus), `-` (unary minus) and `~` (bitwise complement).
+
+For integer expressions, there are `+` (unary plus) and `-` (unary minus).
+
+#### Bitwise Complement
+
+The bitwise complement `~` is defined for integer and bitmask expressions.
 
 #### lengthof Operator
 
@@ -784,7 +851,7 @@ struct LengthOfOperator
 
 #### valueof Operator
 
-The `valueof` operator may be applied to an enumeration type and returns the actual enumeration value as
+The `valueof` operator may be applied to an enumeration or bitmask type and returns its actual value as
 an integer value.
 
 **Example**
@@ -1384,7 +1451,7 @@ package template_instantiation;
 
 import template_declaration.*;
 
-instantiate TestStructure<uint32> TestStructure32; 
+instantiate TestStructure<uint32> TestStructure32;
 ```
 
 The `instantiate` command from previous example means
@@ -1520,7 +1587,7 @@ The constraints for `sql_table` fields are translated in the following way:
 #### Zserio Values Handling
 
 The preprocessor replaces all strings of the form `@DataScriptIdentifier` with the value of the identifier.
-Only identifiers, which are either zserio constants or zserio enumeration type values, are replaced.
+Only identifiers, which are either zserio constants or zserio enumeration or bitmask type values, are replaced.
 
 **Example**
 
@@ -1699,9 +1766,10 @@ varint16, varint32, varint64, varint     | `INTEGER`
 bool                                     | `INTEGER`
 string                                   | `TEXT`
 enum                                     | `INTEGER`
+bitmask                                  | `INTEGER`
 struct                                   | `BLOB`
 choice                                   | `BLOB`
-enum                                     | `BLOB`
+union                                    | `BLOB`
 
 [top](#language-guide)
 

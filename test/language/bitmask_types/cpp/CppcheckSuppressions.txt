@@ -1,0 +1,11 @@
+// suppress "Class 'X' has a constructor with 1 argument that is not explicit."
+noExplicitConstructor:*/bitfield_bitmask/Permission.h
+noExplicitConstructor:*/bitfield_const_bitmask/Permission.h
+noExplicitConstructor:*/bitmask_defined_by_constant/Permission.h
+noExplicitConstructor:*/bitmask_used_by_bitmask/ComplexPermission.h
+noExplicitConstructor:*/bitmask_used_by_bitmask/Permission.h
+noExplicitConstructor:*/bitmask_used_by_bitmask/SimplePermission.h
+noExplicitConstructor:*/bitmask_without_none/Permission.h
+noExplicitConstructor:*/uint64_bitmask/Permission.h
+noExplicitConstructor:*/uint8_bitmask/Permission.h
+noExplicitConstructor:*/varuint_bitmask/Permission.h

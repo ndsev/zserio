@@ -4,6 +4,9 @@ set(ZSERIO_GENERATED_SOURCES
     ${ZSERIO_GEN_DIR}/comments/documentation/enum_comments/Direction.cpp
     ${ZSERIO_GEN_DIR}/comments/documentation/enum_comments/Direction.h
 
+    ${ZSERIO_GEN_DIR}/comments/documentation/bitmask_comments/Permission.cpp
+    ${ZSERIO_GEN_DIR}/comments/documentation/bitmask_comments/Permission.h
+
     ${ZSERIO_GEN_DIR}/comments/documentation/sql_database_comments/Db.cpp
     ${ZSERIO_GEN_DIR}/comments/documentation/sql_database_comments/Db.h
     ${ZSERIO_GEN_DIR}/comments/documentation/sql_database_comments/Table.cpp

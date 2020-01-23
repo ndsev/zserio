@@ -35,6 +35,7 @@ typeDeclaration
     |   choiceDeclaration
     |   unionDeclaration
     |   enumDeclaration
+    |   bitmaskDeclaration
     |   sqlTableDeclaration
     |   sqlDatabaseDefinition
     |   serviceDefinition
@@ -164,6 +165,21 @@ enumDeclaration
 
 enumItem
     :   id (ASSIGN expression)?
+    ;
+
+
+// BITMASK
+
+bitmaskDeclaration
+    :   BITMASK typeInstantiation id
+        LBRACE
+        bitmaskValue (COMMA bitmaskValue)* COMMA?
+        RBRACE
+        SEMICOLON
+    ;
+
+bitmaskValue
+    :    id (ASSIGN expression)?
     ;
 
 

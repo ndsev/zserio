@@ -77,6 +77,7 @@ public class JavaExtension implements Extension
             Root rootNode) throws ZserioEmitException
     {
         final List<Emitter> emitters = new ArrayList<Emitter>();
+        emitters.add(new BitmaskEmitter(extensionParameters, javaParameters));
         emitters.add(new EnumerationEmitter(extensionParameters, javaParameters));
         emitters.add(new ServiceEmitter(extensionParameters, javaParameters));
         emitters.add(new StructureEmitter(extensionParameters, javaParameters));

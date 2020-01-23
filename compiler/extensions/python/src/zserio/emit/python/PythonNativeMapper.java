@@ -2,6 +2,7 @@ package zserio.emit.python;
 
 import zserio.ast.ArrayInstantiation;
 import zserio.ast.AstNode;
+import zserio.ast.BitmaskType;
 import zserio.ast.BooleanType;
 import zserio.ast.ChoiceType;
 import zserio.ast.Constant;
@@ -188,6 +189,13 @@ public class PythonNativeMapper
         }
 
         @Override
+        public void visitBitmaskType(BitmaskType type)
+        {
+            final PackageName packageName = pythonPackageMapper.getPackageName(type);
+            pythonType = new NativeUserType(packageName, type.getName());
+        }
+
+        @Override
         public void visitFloatType(FloatType type)
         {
             pythonType = floatType;
@@ -313,6 +321,12 @@ public class PythonNativeMapper
 
         @Override
         public void visitEnumType(EnumType type)
+        {
+            pythonArrayType = objectArrayType;
+        }
+
+        @Override
+        public void visitBitmaskType(BitmaskType type)
         {
             pythonArrayType = objectArrayType;
         }

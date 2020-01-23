@@ -29,6 +29,13 @@ set(ZSERIO_GENERATED_SOURCES
     ${ZSERIO_GEN_DIR}/templates/choice_templated_field/ChoiceTemplatedField.cpp
     ${ZSERIO_GEN_DIR}/templates/choice_templated_field/ChoiceTemplatedField.h
 
+    ${ZSERIO_GEN_DIR}/templates/expression_bitmask_template_argument/Permission.cpp
+    ${ZSERIO_GEN_DIR}/templates/expression_bitmask_template_argument/Permission.h
+    ${ZSERIO_GEN_DIR}/templates/expression_bitmask_template_argument/BitmaskTemplateArgument_Permission.cpp
+    ${ZSERIO_GEN_DIR}/templates/expression_bitmask_template_argument/BitmaskTemplateArgument_Permission.h
+    ${ZSERIO_GEN_DIR}/templates/expression_bitmask_template_argument/BitmaskTemplateArgumentHolder.cpp
+    ${ZSERIO_GEN_DIR}/templates/expression_bitmask_template_argument/BitmaskTemplateArgumentHolder.h
+
     ${ZSERIO_GEN_DIR}/templates/expression_enum_template_argument/Color.cpp
     ${ZSERIO_GEN_DIR}/templates/expression_enum_template_argument/Color.h
     ${ZSERIO_GEN_DIR}/templates/expression_enum_template_argument/EnumTemplateArgument_Color.cpp
@@ -400,6 +407,7 @@ add_test_sources(
     ${ZSERIO_CPP_DIR}/ChoiceTemplatedEnumSelectorTest.cpp
     ${ZSERIO_CPP_DIR}/ChoiceTemplatedFieldTest.cpp
     ${ZSERIO_CPP_DIR}/ChoiceTemplatedSelectorTest.cpp
+    ${ZSERIO_CPP_DIR}/ExpressionBitmaskTemplateArgumentTest.cpp
     ${ZSERIO_CPP_DIR}/ExpressionEnumTemplateArgumentTest.cpp
     ${ZSERIO_CPP_DIR}/ExpressionEnumTemplateArgumentConflictTest.cpp
     ${ZSERIO_CPP_DIR}/ExpressionFullTemplateArgumentTest.cpp

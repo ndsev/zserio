@@ -7,6 +7,7 @@ import org.junit.Test;
 import array_types.arrays_mapping.ArraysMapping;
 import array_types.arrays_mapping.TestStructure;
 import array_types.arrays_mapping.TestEnum;
+import array_types.arrays_mapping.TestBitmask;
 
 import zserio.runtime.array.BigIntegerArray;
 import zserio.runtime.array.BitBufferArray;
@@ -198,6 +199,17 @@ public class ArraysMappingTest
         final ObjectArray<TestEnum> objectArray = new ObjectArray<TestEnum>(FIXED_ARRAY_LENGTH);
         arraysMapping.setEnumArray(objectArray);
         assertEquals(objectArray, arraysMapping.getEnumArray());
+    }
+
+    @Test
+    public void bitmaskArray()
+    {
+        ArraysMapping arraysMapping = new ArraysMapping();
+
+        // just do something with arraysMapping not to have FindBugs warning
+        final ObjectArray<TestBitmask> objectArray = new ObjectArray<TestBitmask>(FIXED_ARRAY_LENGTH);
+        arraysMapping.setBitmaskArray(objectArray);
+        assertEquals(objectArray, arraysMapping.getBitmaskArray());
     }
 
     private static final int FIXED_ARRAY_LENGTH = 5;

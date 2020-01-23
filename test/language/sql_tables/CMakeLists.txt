@@ -46,6 +46,12 @@ set(ZSERIO_GENERATED_SOURCES
     ${ZSERIO_GEN_DIR}/sql_tables/multiple_pk_table/MultiplePkTable.cpp
     ${ZSERIO_GEN_DIR}/sql_tables/multiple_pk_table/MultiplePkTable.h
 
+    ${ZSERIO_GEN_DIR}/sql_tables/subtyped_bitmask_field_table/TestBitmask.cpp
+    ${ZSERIO_GEN_DIR}/sql_tables/subtyped_bitmask_field_table/TestBitmask.h
+    ${ZSERIO_GEN_DIR}/sql_tables/subtyped_bitmask_field_table/SubtypedBitmaskFieldTable.cpp
+    ${ZSERIO_GEN_DIR}/sql_tables/subtyped_bitmask_field_table/SubtypedBitmaskFieldTable.h
+    ${ZSERIO_GEN_DIR}/sql_tables/subtyped_bitmask_field_table/SubtypedBitmask.h
+
     ${ZSERIO_GEN_DIR}/sql_tables/subtyped_bool_field_table/SubtypedBoolFieldTable.cpp
     ${ZSERIO_GEN_DIR}/sql_tables/subtyped_bool_field_table/SubtypedBoolFieldTable.h
     ${ZSERIO_GEN_DIR}/sql_tables/subtyped_bool_field_table/SubtypedBool.h
@@ -90,6 +96,7 @@ add_test_sources(
     ${ZSERIO_CPP_DIR}/ConstParamTableTest.cpp
     ${ZSERIO_CPP_DIR}/DynamicBitFieldEnumFieldTableTest.cpp
     ${ZSERIO_CPP_DIR}/MultiplePkTableTest.cpp
+    ${ZSERIO_CPP_DIR}/SubtypedBitmaskFieldTableTest.cpp
     ${ZSERIO_CPP_DIR}/SubtypedBoolFieldTableTest.cpp
     ${ZSERIO_CPP_DIR}/SubtypedEnumFieldTableTest.cpp
     ${ZSERIO_CPP_DIR}/SubtypedTableTest.cpp
