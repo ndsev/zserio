@@ -1,9 +1,1 @@
-// suppress "Member variable 'X' is not initialized in the constructor."
-uninitMemberVar:*/ArraysMapping.cpp
-uninitMemberVar:*/AutoArrayRecursion.cpp
-uninitMemberVar:*/SubtypedStructVariableArray.cpp
-uninitMemberVar:*/TestStructure.cpp
-uninitMemberVar:*/VariableArray.cpp
-
-// suppress "Class 'X' has a constructor with 1 argument that is not explicit."
-noExplicitConstructor:*/TestBitmask.h
+noExplicitConstructor:*/array_types/arrays_mapping/TestBitmask.h

@@ -1,10 +1,6 @@
-// suppress "Member variable 'X' is not initialized in the constructor."
-uninitMemberVar:*/BlackColor.cpp
-uninitMemberVar:*/BlackColor.h
-uninitMemberVar:*/Block.cpp
-uninitMemberVar:*/Block.h
-uninitMemberVar:*/Container.cpp
-uninitMemberVar:*/Container.h
-uninitMemberVar:*/Data8.cpp
-uninitMemberVar:*/Employee.cpp
-uninitMemberVar:*/TestStruct.cpp
+duplicateCondition:*/optional_members/optional_expression/Container.cpp
+
+uninitMemberVar:*/optional_members/optional_expression/BlackColor.cpp
+uninitMemberVar:*/optional_members/optional_expression/BlackColor.h
+uninitMemberVar:*/optional_members/optional_recursion/Block.cpp
+uninitMemberVar:*/optional_members/optional_recursion/Block.h

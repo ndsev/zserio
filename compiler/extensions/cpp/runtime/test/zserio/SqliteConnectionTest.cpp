@@ -76,6 +76,7 @@ TEST(SqliteConnectionTest, internalConstructor)
 {
     sqlite3* internalConnection = NULL;
     int result = sqlite3_open(SQLITE3_MEM_DB, &internalConnection);
+    ASSERT_EQ(SQLITE_OK, result);
 
     SqliteConnection db(internalConnection, SqliteConnection::INTERNAL_CONNECTION);
     ASSERT_EQ(internalConnection, db.getConnection());

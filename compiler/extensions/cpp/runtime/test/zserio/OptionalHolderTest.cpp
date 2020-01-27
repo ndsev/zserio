@@ -95,10 +95,10 @@ protected:
         ASSERT_EQ(intValue, *optionalCopy);
 
         OPTIONAL_HOLDER<std::vector<int>> optionalVector{std::vector<int>{1, 2, 3}};
-        void* origAddress = &(*optionalVector)[0];
+        void* origAddress = &((*optionalVector)[0]);
         OPTIONAL_HOLDER<std::vector<int>> optionalVectorCopy;
         optionalVectorCopy = optionalVector;
-        ASSERT_NE(origAddress, &(*optionalVectorCopy)[0]);
+        ASSERT_NE(origAddress, &((*optionalVectorCopy)[0]));
         ASSERT_EQ(*optionalVector, *optionalVectorCopy);
     }
 
@@ -107,9 +107,9 @@ protected:
     {
         OPTIONAL_HOLDER<std::vector<int>> optionalVector{std::vector<int>{ 1, 2, 3 }};
         std::vector<int> origValues{*optionalVector};
-        void* origAddress = &(*optionalVector)[0];
+        void* origAddress = &((*optionalVector)[0]);
         OPTIONAL_HOLDER<std::vector<int>> optionalVectorMoved{std::move(optionalVector)};
-        ASSERT_EQ(origAddress, &(*optionalVectorMoved)[0]);
+        ASSERT_EQ(origAddress, &((*optionalVectorMoved)[0]));
         ASSERT_EQ(origValues, *optionalVectorMoved);
     }
 
@@ -177,9 +177,9 @@ protected:
         optional3 = 0xBEEF;
         OPTIONAL_HOLDER<int> optional4;
 
-        ASSERT_EQ(true, optional1 == optional2);
-        ASSERT_EQ(false, optional1 == optional3);
-        ASSERT_EQ(false, optional1 == optional4);
+        ASSERT_TRUE(optional1 == optional2);
+        ASSERT_FALSE(optional1 == optional3);
+        ASSERT_FALSE(optional1 == optional4);
     }
 
     template <template <class> class OPTIONAL_HOLDER>
@@ -202,9 +202,7 @@ protected:
         DummyObject objectValue;
         objectValue.setValue(intValue);
         optionalObject = objectValue;
-        const DummyObject& readObjectValueConst = *optionalObject;
-        ASSERT_EQ(intValue, readObjectValueConst.getValue());
-        DummyObject& readObjectValue = *optionalObject;
+        const DummyObject& readObjectValue = *optionalObject;
         ASSERT_EQ(intValue, readObjectValue.getValue());
         ASSERT_EQ(intValue, optionalObject->getValue());
     }

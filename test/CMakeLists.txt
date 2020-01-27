@@ -105,7 +105,8 @@ gtest_add_tests(${PROJECT_NAME} "--gtest_output=xml" ${TEST_SOURCES_LIST})
 
 # add cppcheck custom command
 include(cppcheck_utils)
-set(SUPPRESSION_FILE_NAME "${CMAKE_CURRENT_SOURCE_DIR}/${ZSERIO_CPP_DIR}/CppcheckSuppressions.txt")
+set(SUPPRESSION_FILE_NAME "${CMAKE_CURRENT_SOURCE_DIR}/CppcheckSuppressions.txt")
 cppcheck_add_custom_command(TARGET ${PROJECT_NAME}
                             SOURCE_DIR "${TEST_SOURCES_LIST}"
-                            SUPPRESSION_FILE "${SUPPRESSION_FILE_NAME}")
+                            SUPPRESSION_FILE "${SUPPRESSION_FILE_NAME}"
+                            OPTIONS --library=googletest.cfg)

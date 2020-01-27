@@ -177,11 +177,11 @@ void ${name}::write(<#if needsParameterProvider>IParameterProvider& parameterPro
     // write rows
     const bool wasTransactionStarted = m_db.startTransaction();
     ::std::unique_ptr<sqlite3_stmt, ::zserio::SqliteFinalizer> statement(m_db.prepareStatement(sqlQuery));
-    int result = SQLITE_OK;
+
     for (::std::vector<Row>::iterator it = rows.begin(); it != rows.end(); ++it)
     {
         writeRow(<#if needsParameterProvider>parameterProvider, </#if>*it, *statement);
-        result = sqlite3_step(statement.get());
+        int result = sqlite3_step(statement.get());
         if (result != SQLITE_DONE)
             throw ::zserio::SqliteException("Write: sqlite3_step() failed", result);
 

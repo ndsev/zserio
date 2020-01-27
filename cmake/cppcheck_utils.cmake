@@ -6,10 +6,12 @@
 #    INCLUDE_DIR      Directory where to find headers for cppcheck.
 #    SUPPRESSION_FILE Override default suppression file (optional),
 #                     default is ${CMAKE_CURRENT_SOURCE_DIR}/CppcheckSuppressions.txt.
+#    OPTIONS          Additional options for cppcheck command.
 function(cppcheck_add_custom_command)
     # parse cmdline args
     foreach (ARG ${ARGV})
-        if ((ARG STREQUAL TARGET) OR (ARG STREQUAL "SOURCE_DIR") OR (ARG STREQUAL "INCLUDE_DIR") OR (ARG STREQUAL "SUPPRESSION_FILE"))
+        if ((ARG STREQUAL TARGET) OR (ARG STREQUAL "SOURCE_DIR") OR (ARG STREQUAL "INCLUDE_DIR") OR
+            (ARG STREQUAL "SUPPRESSION_FILE") OR (ARG STREQUAL "OPTIONS"))
             if (DEFINED CPPCHECK_VALUE_${ARG})
                 message(FATAL_ERROR "Option ${ARG} used multiple times!")
             endif ()
@@ -46,9 +48,9 @@ function(cppcheck_add_custom_command)
             endforeach ()
         endif ()
         add_custom_command(TARGET ${CPPCHECK_TARGET} POST_BUILD
-            COMMAND ${CPPCHECK_HOME}/cppcheck ${CPPCHECK_VALUE_SOURCE_DIR}
+            COMMAND ${CPPCHECK_HOME}/cppcheck ${CPPCHECK_VALUE_SOURCE_DIR} --language=c++ --std=c++11
                 --enable=warning,style,performance,portability --error-exitcode=1 --template='gcc' -q
-                 ${CPPCHECK_INCLUDE_OPTIONS} ${CPPCHECK_SUPPRESSION_OPTION}
+                 ${CPPCHECK_INCLUDE_OPTIONS} ${CPPCHECK_SUPPRESSION_OPTION} ${CPPCHECK_VALUE_OPTIONS}
             COMMENT "Running cppcheck tool for static analysis")
     endif ()
 endfunction()

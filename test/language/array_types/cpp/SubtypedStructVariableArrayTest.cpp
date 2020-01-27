@@ -41,7 +41,7 @@ TEST_F(SubtypedStructVariableArrayTest, bitSizeOf)
     subtypedStructVariableArray.setCompoundArray(compoundArray);
 
     const size_t bitPosition = 2;
-    const size_t numOneNumberIndexes = (numElements > 9) ? 10 : numElements;
+    const size_t numOneNumberIndexes = 10; // (numElements > 9) ? 10 : numElements
     const size_t expectedBitSize = (1 + numElements * (4 + 7) - numOneNumberIndexes) * 8;
     ASSERT_EQ(expectedBitSize, subtypedStructVariableArray.bitSizeOf(bitPosition));
 }
@@ -62,7 +62,7 @@ TEST_F(SubtypedStructVariableArrayTest, initializeOffsets)
     subtypedStructVariableArray.setCompoundArray(compoundArray);
 
     const size_t bitPosition = 2;
-    const size_t numOneNumberIndexes = (numElements > 9) ? 10 : numElements;
+    const size_t numOneNumberIndexes = 10; // (numElements > 9) ? 10 : numElements
     const size_t expectedEndBitPosition = bitPosition + (1 + numElements * (4 + 7) - numOneNumberIndexes) * 8;
     ASSERT_EQ(expectedEndBitPosition, subtypedStructVariableArray.initializeOffsets(bitPosition));
 }

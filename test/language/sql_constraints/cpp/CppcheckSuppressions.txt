@@ -1,3 +1,4 @@
-// suppress "Class 'X' has a constructor with 1 argument that is not explicit."
+constParameter:*/sql_constraints/ConstraintsTable.cpp
+
 noExplicitConstructor:*/sql_constraints/ConstraintsBitmask.h
 noExplicitConstructor:*/sql_constraints/constraints/ImportedBitmask.h

@@ -1,17 +1,4 @@
-// suppress "Member variable 'X' is not initialized in the constructor."
-uninitMemberVar:*/AutoArrayHolder.cpp
-uninitMemberVar:*/BitOffset.cpp
-uninitMemberVar:*/NestedOffset.cpp
-uninitMemberVar:*/NestedOffset.h
-uninitMemberVar:*/NestedOffsetArrayStructure.cpp
-uninitMemberVar:*/NestedOffsetChoice.cpp
-uninitMemberVar:*/NestedOffsetChoice.h
-uninitMemberVar:*/NestedOffsetStructure.cpp
-uninitMemberVar:*/NestedOffsetUnion.cpp
-uninitMemberVar:*/OffsetHolder.cpp
-uninitMemberVar:*/OptionalMemberOffset.cpp
-uninitMemberVar:*/Room.cpp
-uninitMemberVar:*/Room.h
-uninitMemberVar:*/School.cpp
-uninitMemberVar:*/School.h
-uninitMemberVar:*/UInt64Offset.cpp
+uninitMemberVar:*/offsets/nested_offset/NestedOffsetChoice.cpp
+uninitMemberVar:*/offsets/nested_offset/NestedOffsetChoice.h
+uninitMemberVar:*/offsets/parameter_offset/Room.cpp
+uninitMemberVar:*/offsets/parameter_offset/Room.h

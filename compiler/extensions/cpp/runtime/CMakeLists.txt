@@ -42,7 +42,8 @@ include(cppcheck_utils)
 cppcheck_add_custom_command(TARGET ZserioCppRuntime
                             SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/src"
                                        "${CMAKE_CURRENT_SOURCE_DIR}/src/*/*.h"
-                                       "${CMAKE_CURRENT_SOURCE_DIR}/src/*/*/*.h")
+                                       "${CMAKE_CURRENT_SOURCE_DIR}/src/*/*/*.h"
+                            OPTIONS -UZSERIO_STANDARD_TYPES_HEADER)
 
 # build and install doxygen documentation
 find_package(Doxygen)

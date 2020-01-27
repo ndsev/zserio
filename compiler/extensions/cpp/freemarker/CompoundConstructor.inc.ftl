@@ -72,6 +72,8 @@ ${compoundConstructorsData.compoundName}::${compoundConstructorsData.compoundNam
             <#lt><@compound_field_constructor_type_list compoundConstructorsData.fieldList, 3/>) :
             <#if needs_compound_initialization(compoundConstructorsData)>
             m_isInitialized(false)<#if compoundConstructorsData.fieldList?has_content>,</#if>
+            <#elseif has_field_with_initialization(compoundConstructorsData.fieldList)>
+            m_areChildrenInitialized(false)<#if compoundConstructorsData.fieldList?has_content>,</#if>
             </#if>
         <#list compoundConstructorsData.fieldList as field>
             <@compound_field_constructor_initializer_field field, field?has_next, 3/>

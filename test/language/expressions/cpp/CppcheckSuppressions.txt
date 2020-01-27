@@ -1,33 +1,10 @@
-// suppress "Member variable 'X' is not initialized in the constructor."
-uninitMemberVar:*/CastUInt64ToUInt8Expression.cpp
-uninitMemberVar:*/CastUInt8ToUInt64Expression.cpp
-uninitMemberVar:*/ConstTypeExpression.cpp
-uninitMemberVar:*/EnumerationTypeExpression.cpp
-uninitMemberVar:*/ContainedType.cpp
-uninitMemberVar:*/FloatTypeExpression.cpp
-uninitMemberVar:*/FullConstTypeExpression.cpp
-uninitMemberVar:*/FullEnumerationTypeExpression.cpp
-uninitMemberVar:*/FunctionTypeExpression.cpp
-uninitMemberVar:*/Element.cpp
-uninitMemberVar:*/Element.h
-uninitMemberVar:*/ElementList.cpp
-uninitMemberVar:*/ElementList.h
-uninitMemberVar:*/LengthOfFunctions.cpp
-uninitMemberVar:*/NegationOperatorExpression.cpp
-uninitMemberVar:*/NumBitsFunctions.cpp
-uninitMemberVar:*/ParameterTypeExpression.cpp
-uninitMemberVar:*/ParameterTypeExpression.h
-uninitMemberVar:*/ParameterizedArrayElement.cpp
-uninitMemberVar:*/ParameterizedArrayElement.h
-uninitMemberVar:*/ParameterizedArrayHolder.cpp
-uninitMemberVar:*/ParameterizedArrayHolder.h
-uninitMemberVar:*/ParameterizedArrayTypeExpression.cpp
-uninitMemberVar:*/ParameterizedArrayTypeExpression.h
-uninitMemberVar:*/ParenthesisExpression.cpp
-uninitMemberVar:*/QuestionMarkExpression.cpp
-uninitMemberVar:*/UInt64TypeExpression.cpp
-uninitMemberVar:*/UsedBeforeTypeExpression.cpp
-uninitMemberVar:*/ValueOfFunctions.cpp
+noExplicitConstructor:*/expressions/bitmask_type/Colors.h
 
-// suppress "Class 'X' has a constructor with 1 argument that is not explicit."
-noExplicitConstructor:*/Colors.h
+uninitMemberVar:*/expressions/index_operator/Element.cpp
+uninitMemberVar:*/expressions/index_operator/Element.h
+uninitMemberVar:*/expressions/parameterized_array_type/ParameterizedArrayElement.cpp
+uninitMemberVar:*/expressions/parameterized_array_type/ParameterizedArrayElement.h
+uninitMemberVar:*/expressions/parameterized_array_type/ParameterizedArrayHolder.cpp
+uninitMemberVar:*/expressions/parameterized_array_type/ParameterizedArrayHolder.h
+uninitMemberVar:*/expressions/parameter_type/ParameterTypeExpression.cpp
+uninitMemberVar:*/expressions/parameter_type/ParameterTypeExpression.h

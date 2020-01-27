@@ -20,7 +20,7 @@ struct NullOptType
      *
      * \see https://en.cppreference.com/w/cpp/utility/optional/nullopt_t
      */
-    explicit constexpr NullOptType(int) {}
+    constexpr explicit NullOptType(int) {}
 };
 
 /**

@@ -1,9 +1,1 @@
-// suppress "Member variable 'X' is not initialized in the constructor."
-uninitMemberVar:*/ExtraParamUnion.cpp
-uninitMemberVar:*/Item.cpp
-uninitMemberVar:*/ItemChoice.cpp
-uninitMemberVar:*/ItemChoiceHolder.cpp
-uninitMemberVar:*/Tile.cpp
-
-// suppress "Class 'X' has a constructor with 1 argument that is not explicit."
-noExplicitConstructor:*/VersionAvailability.h
+noExplicitConstructor:*/without_writer_code/VersionAvailability.h

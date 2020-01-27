@@ -1,10 +1,6 @@
-// suppress "Member variable 'X' is not initialized in the constructor."
-uninitMemberVar:*/struct_comments/DirectionStructure.cpp
-uninitMemberVar:*/struct_comments/DirectionStructure.h
-uninitMemberVar:*/struct_template_comments/Compound.cpp
-uninitMemberVar:*/struct_template_comments/Field_uint32.cpp
-uninitMemberVar:*/unknown_tag/Test.cpp
-uninitMemberVar:*/unknown_tag_matching_prefix/Test.cpp
+noExplicitConstructor:*/comments/documentation/bitmask_comments/Permission.h
 
-// suppress "Class 'X' has a constructor with 1 argument that is not explicit."
-noExplicitConstructor:*/Permission.h
+constParameter:*/comments/documentation/sql_database_comments/Table.cpp
+
+uninitMemberVar:*/comments/documentation/struct_comments/DirectionStructure.cpp
+uninitMemberVar:*/comments/documentation/struct_comments/DirectionStructure.h

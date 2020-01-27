@@ -11,7 +11,7 @@ project(ZserioCppRuntimeTest)
 
 # add gtest library
 include(gtest_utils)
-gtest_add_library("${CMAKE_CURRENT_SOURCE_DIR}/../../../../../3rdparty/cpp/googletest")
+gtest_add_library("${ZSERIO_PROJECT_ROOT}/3rdparty/cpp/googletest")
 
 # add SQLite3 library
 include(sqlite_utils)
@@ -49,4 +49,5 @@ gtest_add_tests(${PROJECT_NAME} "--gtest_output=xml" ${ZSERIO_CPP_RUNTIME_TEST_S
 include(cppcheck_utils)
 cppcheck_add_custom_command(TARGET ${PROJECT_NAME}
                             SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}"
-                            INCLUDE_DIR ../src "${SQLITE_INCDIR}")
+                            INCLUDE_DIR "${ZSERIO_PROJECT_ROOT}/compiler/extensions/cpp/runtime/src"
+                            OPTIONS --library=googletest.cfg -UZSERIO_STANDARD_TYPES_HEADER)

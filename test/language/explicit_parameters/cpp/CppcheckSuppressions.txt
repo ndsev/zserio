@@ -1,7 +1,14 @@
-// suppress "Member variable 'X' is not initialized in the constructor."
-uninitMemberVar:*/TestBlob.cpp
-uninitMemberVar:*/TestBlob.h
-uninitMemberVar:*/Header.cpp
+noExplicitConstructor:*/explicit_parameters/explicit_bitmask_param/TestBitmask.h
 
-// suppress "Class 'X' has a constructor with 1 argument that is not explicit."
-noExplicitConstructor:*/TestBitmask.h
+uninitMemberVar:*/explicit_parameters/explicit_blob_param/TestBlob.cpp
+uninitMemberVar:*/explicit_parameters/explicit_blob_param/TestBlob.h
+uninitMemberVar:*/explicit_parameters/explicit_enum_param/TestBlob.cpp
+uninitMemberVar:*/explicit_parameters/explicit_enum_param/TestBlob.h
+uninitMemberVar:*/explicit_parameters/explicit_same_as_field/TestBlob.cpp
+uninitMemberVar:*/explicit_parameters/explicit_same_as_field/TestBlob.h
+uninitMemberVar:*/explicit_parameters/explicit_simple_param/TestBlob.cpp
+uninitMemberVar:*/explicit_parameters/explicit_simple_param/TestBlob.h
+uninitMemberVar:*/explicit_parameters/multiple_explicit_params/TestBlob.cpp
+uninitMemberVar:*/explicit_parameters/multiple_explicit_params/TestBlob.h
+
+variableScope:*/explicit_parameters/explicit_same_as_field/SameAsFieldTable.cpp

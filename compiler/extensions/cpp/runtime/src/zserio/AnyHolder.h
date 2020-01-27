@@ -240,12 +240,12 @@ private:
             return m_typedHolder.value();
         }
 
-        virtual bool isSet() const
+        virtual bool isSet() const override
         {
             return m_typedHolder.hasValue();
         }
 
-        virtual IHolder* clone(void* storage) const
+        virtual IHolder* clone(void* storage) const override
         {
             Holder<T>* holder = (storage == NULL) ? new Holder<T>() : new (storage) Holder<T>();
             holder->m_typedHolder = m_typedHolder;
@@ -253,13 +253,13 @@ private:
             return holder;
         }
 
-        virtual void move(void* storage)
+        virtual void move(void* storage) override
         {
             Holder<T>* holder = new (storage) Holder<T>();
             holder->m_typedHolder = std::move(m_typedHolder);
         }
 
-        virtual bool isType(TypeIdHolder::type_id typeId) const
+        virtual bool isType(TypeIdHolder::type_id typeId) const override
         {
             return TypeIdHolder::get<T>() == typeId;
         }

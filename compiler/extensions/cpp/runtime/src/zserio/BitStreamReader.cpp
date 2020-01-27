@@ -158,7 +158,7 @@ namespace
     }
 
     /** Checks that reading of numBits don't reach end of stream. */
-    inline void checkEof(ReaderContext& ctx, uint8_t numBits)
+    inline void checkEof(const ReaderContext& ctx, uint8_t numBits)
     {
         if (ctx.bitIndex + numBits > ctx.bufferBitSize)
             throw BitStreamException("BitStreamReader: Reached eof(), reading from stream failed.");
@@ -237,7 +237,7 @@ namespace
     inline BaseType readBitsImpl(ReaderContext& ctx, uint8_t numBits)
     {
         BaseType value = 0;
-        BaseType& cacheBuffer = getCacheBuffer(ctx.cache);
+        const BaseType& cacheBuffer = getCacheBuffer(ctx.cache);
 
         if (ctx.cacheNumBits < numBits)
         {

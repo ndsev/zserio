@@ -1,0 +1,11 @@
+duplicateExpressionTernary:*/src/zserio/AnyHolder.h:250
+
+unusedStructMember:*/src/zserio/BitStreamReader.h:63
+unusedStructMember:*/src/zserio/BitStreamReader.h:64
+
+useStlAlgorithm:*/src/zserio/HashCodeUtil.h:186
+
+noExplicitConstructor:*/src/zserio/OptionalHolder.h:235
+noExplicitConstructor:*/src/zserio/OptionalHolder.h:243
+noExplicitConstructor:*/src/zserio/OptionalHolder.h:254
+unusedStructMember:*/src/zserio/OptionalHolder.h:541

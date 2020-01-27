@@ -1,10 +1,4 @@
-// suppress "Member variable 'X' is not initialized in the constructor."
-uninitMemberVar:*/ParameterizedStruct.cpp
-uninitMemberVar:*/ParameterizedStruct.h
-uninitMemberVar:*/ParameterizedSubtypeStruct.cpp
-uninitMemberVar:*/ParameterizedSubtypeStruct.h
-uninitMemberVar:*/subtype_imported/Test.cpp
-uninitMemberVar:*/TestStructure.cpp
+noExplicitConstructor:*/subtypes/bitmask_subtype/Permission.h
 
-// suppress "Class 'X' has a constructor with 1 argument that is not explicit."
-noExplicitConstructor:*/Permission.h
+uninitMemberVar:*/subtypes/param_structure_subtype/ParameterizedStruct.cpp
+uninitMemberVar:*/subtypes/param_structure_subtype/ParameterizedStruct.h

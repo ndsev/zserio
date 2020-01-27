@@ -1,0 +1,5 @@
+// gtest asserts are converted to normal asserts using cppcheck's config googletest.cfg
+assertWithSideEffect
+
+// suppressions for particular tests
+oppositeExpression:*/test/language/bitmask_types/cpp/*Test.cpp

@@ -42,7 +42,7 @@ TEST_F(VariableArrayTest, bitSizeOf)
     variableArray.setCompoundArray(compoundArray);
 
     const size_t bitPosition = 2;
-    const size_t numOneNumberIndexes = (numElements > 9) ? 10 : numElements;
+    const size_t numOneNumberIndexes = 10; // (numElements > 9) ? 10 : numElements
     const size_t expectedBitSize = (1 + numElements * (4 + 7) - numOneNumberIndexes) * 8;
     ASSERT_EQ(expectedBitSize, variableArray.bitSizeOf(bitPosition));
 }
@@ -64,7 +64,7 @@ TEST_F(VariableArrayTest, initializeOffsets)
     variableArray.setCompoundArray(compoundArray);
 
     const size_t bitPosition = 2;
-    const size_t numOneNumberIndexes = (numElements > 9) ? 10 : numElements;
+    const size_t numOneNumberIndexes = 10; // (numElements > 9) ? 10 : numElements
     const size_t expectedEndBitPosition = bitPosition + (1 + numElements * (4 + 7) - numOneNumberIndexes) * 8;
     ASSERT_EQ(expectedEndBitPosition, variableArray.initializeOffsets(bitPosition));
 }

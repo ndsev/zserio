@@ -1,10 +1,4 @@
-// suppress "Member variable 'X' is not initialized in the constructor."
-uninitMemberVar:*/Availability.cpp
-uninitMemberVar:*/ChoiceConstraints.cpp
-uninitMemberVar:*/ChoiceConstraints.h
-uninitMemberVar:*/StructureBitmaskConstraints.cpp
-uninitMemberVar:*/StructureConstraints.cpp
-uninitMemberVar:*/UnionConstraints.cpp
+noExplicitConstructor:*/constraints/structure_bitmask_constraints/Availability.h
 
-// suppress "Class 'X' has a constructor with 1 argument that is not explicit."
-noExplicitConstructor:*/Availability.h
+uninitMemberVar:*/constraints/choice_constraints/ChoiceConstraints.cpp
+uninitMemberVar:*/constraints/choice_constraints/ChoiceConstraints.h

@@ -1,8 +1,4 @@
-// suppress "Member variable 'X' is not initialized in the constructor."
-uninitMemberVar:*/TestChoice.cpp
-uninitMemberVar:*/TestChoice.h
-uninitMemberVar:*/TestStructure.cpp
-uninitMemberVar:*/TestUnion.cpp
+noExplicitConstructor:*/sql_types/TestBitmask.h
 
-// suppress "Class 'X' has a constructor with 1 argument that is not explicit."
-noExplicitConstructor:*/TestBitmask.h
+uninitMemberVar:*/sql_types/TestChoice.cpp
+uninitMemberVar:*/sql_types/TestChoice.h

@@ -1,4 +1,0 @@
-// suppress "Member variable 'X' is not initialized in the constructor."
-uninitMemberVar:*/AutoOptionalMemberAlignment.cpp
-uninitMemberVar:*/BitAlignment.cpp
-uninitMemberVar:*/OptionalMemberAlignment.cpp

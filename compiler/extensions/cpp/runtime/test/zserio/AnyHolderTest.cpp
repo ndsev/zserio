@@ -234,7 +234,7 @@ TEST(AnyHolderTest, setGet)
     ASSERT_THROW(any.get<float>(), CppRuntimeException);
     const DummyObject& readObjectValueConst = any.get<DummyObject>();
     ASSERT_EQ(objectValue.getValue(), readObjectValueConst.getValue());
-    DummyObject& readObjectValue = any.get<DummyObject>();
+    const DummyObject& readObjectValue = any.get<DummyObject>();
     ASSERT_EQ(objectValue.getValue(), readObjectValue.getValue());
 }
 
