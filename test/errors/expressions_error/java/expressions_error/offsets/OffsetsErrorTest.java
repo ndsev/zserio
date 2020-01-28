@@ -26,6 +26,21 @@ public class OffsetsErrorTest
     }
 
     @Test
+    public void builtinTypeParameter()
+    {
+        final String error = "builtin_type_parameter_error.zs:6:1: " +
+                "Built-in type parameter 'param' cannot be used as an offset!";
+        assertTrue(zserioErrors.isPresent(error));
+    }
+
+    @Test
+    public void constant()
+    {
+        final String error = "constant_error.zs:8:1: Constants cannot be used as an offset!";
+        assertTrue(zserioErrors.isPresent(error));
+    }
+
+    @Test
     public void floatError()
     {
         final String error = "float_error.zs:6:1: " +

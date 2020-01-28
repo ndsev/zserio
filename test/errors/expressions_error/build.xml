@@ -29,6 +29,9 @@
         <testGen testName="expressions_error" zsFile="index_operators/parameter_no_array_error.zs"
             ignoreErrors="true"/>
         <testGen testName="expressions_error" zsFile="offsets/array_no_index_error.zs" ignoreErrors="true"/>
+        <testGen testName="expressions_error" zsFile="offsets/builtin_type_parameter_error.zs"
+            ignoreErrors="true"/>
+        <testGen testName="expressions_error" zsFile="offsets/constant_error.zs" ignoreErrors="true"/>
         <testGen testName="expressions_error" zsFile="offsets/float_error.zs" ignoreErrors="true"/>
         <testGen testName="expressions_error" zsFile="offsets/signed_bitfield_error.zs" ignoreErrors="true"/>
         <testGen testName="expressions_error" zsFile="offsets/signed_integer_error.zs" ignoreErrors="true"/>

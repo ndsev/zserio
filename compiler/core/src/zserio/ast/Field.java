@@ -2,6 +2,7 @@ package zserio.ast;
 
 import java.math.BigInteger;
 import java.util.List;
+import java.util.Set;
 
 /**
  * AST node for compound fields.
@@ -218,8 +219,13 @@ public class Field extends DocumentableAstNode
         {
             final ZserioType exprZserioType = offsetExpr.getExprZserioType();
             if (!(exprZserioType instanceof IntegerType) || ((IntegerType)exprZserioType).isSigned())
+            {
                 throw new ParserException(offsetExpr, "Offset expression for field '" + getName() +
                         "' is not an unsigned integer type!");
+            }
+
+            if (offsetExpr.op2() == null)
+                checkSingleOffsetExpression();
         }
 
         // check alignment expression type
@@ -303,6 +309,25 @@ public class Field extends DocumentableAstNode
                 instantiatedAlignmentExpr, instantiatedOffsetExpr, instantiatedInitializerExpr,
                 instantiatedOptionalClauseExpr, instantiatedConstraintExpr,
                 isVirtual, instantiatedSqlConstraint, getDocComment());
+    }
+
+    private void checkSingleOffsetExpression()
+    {
+        final AstNode symbolObject = offsetExpr.getExprSymbolObject();
+        if (symbolObject instanceof Parameter)
+        {
+            final Parameter parameter = (Parameter)symbolObject;
+            if (parameter.getTypeReference().getBaseTypeReference().getType() instanceof BuiltInType)
+            {
+                throw new ParserException(offsetExpr, "Built-in type parameter '" + parameter.getName() +
+                        "' cannot be used as an offset!");
+            }
+        }
+        else if (symbolObject instanceof Constant)
+        {
+            throw new ParserException(offsetExpr, "Constant '" + ((Constant)symbolObject).getName() +
+                    "' cannot be used as an offset!");
+        }
     }
 
     private Field(AstLocation location, TypeInstantiation typeInstantiation, String name,
