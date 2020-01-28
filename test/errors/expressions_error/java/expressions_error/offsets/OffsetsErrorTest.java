@@ -36,7 +36,7 @@ public class OffsetsErrorTest
     @Test
     public void constant()
     {
-        final String error = "constant_error.zs:8:1: Constants cannot be used as an offset!";
+        final String error = "constant_error.zs:8:1: Constant 'CONST' cannot be used as an offset!";
         assertTrue(zserioErrors.isPresent(error));
     }
 
