@@ -1,0 +1,21 @@
+syntax = "proto3";
+
+package zserio_service_grpc;
+
+option java_outer_classname = "ZserioServiceProto";
+
+message Request
+{
+    string procName = 1;
+    bytes requestData = 2;
+}
+
+message Response
+{
+    bytes responseData = 1;
+}
+
+service ZserioService
+{
+    rpc callProcedure(Request) returns (Response) {}
+}

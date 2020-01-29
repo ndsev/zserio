@@ -5,7 +5,7 @@ import zserio_service_grpc.zserio_service_pb2
 import zserio_service_grpc.zserio_service_pb2_grpc
 sys.path.pop(0)
 
-class GrpcServicer(zserio_service_grpc.zserio_service_pb2_grpc.ZserioServiceServicer):
+class GrpcService(zserio_service_grpc.zserio_service_pb2_grpc.ZserioServiceServicer):
     """ Generic GRPC service helper library for Zserio generated servies. """
 
     def __init__(self, service):
@@ -16,7 +16,7 @@ class GrpcServicer(zserio_service_grpc.zserio_service_pb2_grpc.ZserioServiceServ
         return zserio_service_grpc.zserio_service_pb2.Response(responseData=bytes(responseData))
 
 class GrpcClient:
-    """ Used as a service from Zserio generated client! """
+    """ Used as a service from Zserio generated client - i.e. implements 'ServiceInterface'. """
 
     def __init__(self, channel):
         self._stub = zserio_service_grpc.zserio_service_pb2_grpc.ZserioServiceStub(channel)
@@ -27,5 +27,5 @@ class GrpcClient:
         return response.responseData
 
 def registerService(service, server):
-    grpcServicer = zserio_service_grpc.zserio_service.GrpcServicer(service)
-    zserio_service_grpc.zserio_service_pb2_grpc.add_ZserioServiceServicer_to_server(grpcServicer, server)
+    grpcService = zserio_service_grpc.zserio_service.GrpcService(service)
+    zserio_service_grpc.zserio_service_pb2_grpc.add_ZserioServiceServicer_to_server(grpcService, server)
