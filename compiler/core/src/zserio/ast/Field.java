@@ -2,7 +2,6 @@ package zserio.ast;
 
 import java.math.BigInteger;
 import java.util.List;
-import java.util.Set;
 
 /**
  * AST node for compound fields.
