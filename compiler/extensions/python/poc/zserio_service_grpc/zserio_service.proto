@@ -1,0 +1,17 @@
+syntax = "proto3";
+
+message Request
+{
+    string procName = 1;
+    bytes requestData = 2;
+}
+
+message Response
+{
+    bytes responseData = 2;
+}
+
+service ZserioService
+{
+    rpc callProcedure(Request) returns (Response) {}
+}
