@@ -17,14 +17,14 @@ public final class SimpleService
     {
         public Service()
         {
-            procedureMap = new HashMap<String, MethodReference>();
-            procedureMap.put("SimpleService.powerOfTwo", new MethodReference() {
+            procedureMap = new HashMap<String, Procedure>();
+            procedureMap.put("SimpleService.powerOfTwo", new Procedure() {
                 public byte[] call(byte[] requestData)
                 {
                     return powerOfTwoCall(requestData);
                 }
             });
-            procedureMap.put("SimpleService.powerOfFour", new MethodReference() {
+            procedureMap.put("SimpleService.powerOfFour", new Procedure() {
                 public byte[] call(byte[] requestData)
                 {
                     return powerOfFourCall(requestData);
@@ -36,11 +36,11 @@ public final class SimpleService
         public byte[] callProcedure(String procName, byte[] requestData)
         {
             // TODO: add check that method exists
-            MethodReference method = procedureMap.get(procName);
+            Procedure method = procedureMap.get(procName);
             return method.call(requestData);
         }
 
-        private interface MethodReference
+        private interface Procedure
         {
             byte[] call(byte[] requestData);
         }
@@ -88,7 +88,7 @@ public final class SimpleService
         protected abstract Response powerOfTwoImpl(Request request);
         protected abstract Response powerOfFourImpl(Request request);
 
-        private final Map<String, MethodReference> procedureMap;
+        private final Map<String, Procedure> procedureMap;
     }
 
     public static final class Client

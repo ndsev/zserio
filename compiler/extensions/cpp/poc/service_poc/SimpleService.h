@@ -5,11 +5,12 @@
 #ifndef SIMPLE_SERVICE_H
 #define SIMPLE_SERVICE_H
 
+#include <map>
 #include <string>
 #include <vector>
 #include <functional>
 
-#include <zserio/IServiceClient.h>
+#include <zserio_runtime/IService.h>
 
 #include "service_poc/Request.h"
 #include "service_poc/Response.h"
@@ -24,7 +25,7 @@ namespace SimpleService
     public:
         Service();
         virtual ~Service() = default;
-       
+
         Service(const Service&) = default;
         Service& operator=(const Service&) = default;
 
@@ -32,14 +33,18 @@ namespace SimpleService
         Service& operator=(Service&&) = default;
 
         void callProcedure(const std::string& procName, const std::vector<uint8_t>& requestData,
-                std::vector<uint8_t>& responseData) override;
+                std::vector<uint8_t>& responseData) const override;
 
     private:
-        // Postfix Impl ensures no clash.
-        void powerOfTwoImpl(const Request& request, Response& response) = 0;
-        void powerOfFourImpl(const Request& request, Response& response) = 0;
+        // TODO: Should be const?
+        virtual void powerOfTwoImpl(const Request& request, Response& response) const = 0;
+        virtual void powerOfFourImpl(const Request& request, Response& response) const = 0;
 
-        using Procedure = std::function<void(const Request& request, Response& response)>;
+        void powerOfTwoCall(const std::vector<uint8_t>& requestData, std::vector<uint8_t>& responseData) const;
+        void powerOfFourCall(const std::vector<uint8_t>& requestData, std::vector<uint8_t>& responseData) const;
+
+        using Procedure = std::function<void(const std::vector<uint8_t>& requestData,
+                std::vector<uint8_t>& responseData)>;
 
         std::map<std::string, Procedure> m_procedureMap;
     };
@@ -47,21 +52,20 @@ namespace SimpleService
     class Client
     {
     public:
-        explicit Client(::zserio::IService& service);
+        explicit Client(const ::zserio::IService& service);
         ~Client() = default;
-       
+
         Client(const Client&) = default;
         Client& operator=(const Client&) = default;
-    
+
         Client(Client&&) = default;
         Client& operator=(Client&&) = default;
-    
-        // Prefix call ensures no clash.
-        void callPowerOfTwo(const Request& request, Response& response);
-        void callPowerOfFour(const Request& request, Response& response);
-        
+
+        void callPowerOfTwo(Request& request, Response& response) const;
+        void callPowerOfFour(Request& request, Response& response) const;
+
     private:
-        zserio::IService& m_service;
+        const zserio::IService& m_service;
     };
 } // namespace SimpleService
 

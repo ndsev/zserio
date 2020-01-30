@@ -5,19 +5,12 @@
 #ifndef SERVICE_TYPES_SIMPLE_SERVICE_RESPONSE_H
 #define SERVICE_TYPES_SIMPLE_SERVICE_RESPONSE_H
 
-#include <type_traits>
-#include <vector>
-#include <grpcpp/impl/codegen/serialization_traits.h>
-#include <grpcpp/impl/codegen/status.h>
-#include <grpcpp/impl/codegen/byte_buffer.h>
 #include <zserio/BitStreamReader.h>
 #include <zserio/BitStreamWriter.h>
 #include <zserio/PreWriteAction.h>
 #include <zserio/Types.h>
 
-namespace service_types
-{
-namespace simple_service
+namespace service_poc
 {
 
 class Response
@@ -60,7 +53,6 @@ private:
     uint64_t m_value_;
 };
 
-} // namespace simple_service
-} // namespace service_types
+} // namespace service_poc
 
 #endif // SERVICE_TYPES_SIMPLE_SERVICE_RESPONSE_H

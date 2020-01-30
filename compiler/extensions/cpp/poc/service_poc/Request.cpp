@@ -9,11 +9,9 @@
 #include <zserio/BitSizeOfCalculator.h>
 #include <zserio/BitFieldUtil.h>
 
-#include <service_types/simple_service/Request.h>
+#include <service_poc/Request.h>
 
-namespace service_types
-{
-namespace simple_service
+namespace service_poc
 {
 
 Request::Request() noexcept :
@@ -89,5 +87,4 @@ int32_t Request::readValue(::zserio::BitStreamReader& in)
     return static_cast<int32_t>(in.readSignedBits(UINT8_C(32)));
 }
 
-} // namespace simple_service
-} // namespace service_types
+} // namespace service_poc

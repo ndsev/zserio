@@ -15,6 +15,7 @@ message Response
     bytes responseData = 1;
 }
 
+// TODO: Solve naming clashes between Zserio and GRPC
 service ZserioService
 {
     rpc callProcedure(Request) returns (Response) {}
