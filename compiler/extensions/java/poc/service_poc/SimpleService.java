@@ -35,6 +35,7 @@ public final class SimpleService
         @Override
         public byte[] callProcedure(String procName, byte[] requestData)
         {
+            // TODO: add check that method exists
             MethodReference method = procedureMap.get(procName);
             return method.call(requestData);
         }
