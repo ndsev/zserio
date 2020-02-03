@@ -10,6 +10,7 @@ import service_poc.*;
 import zserio_runtime.ServiceInterface;
 import zserio_service_grpc.ZserioService.GrpcService;
 import zserio_service_grpc.ZserioService.GrpcClient;
+import zserio_service_http.ZserioService.HttpClient;
 
 public class ServiceTest
 {
@@ -20,6 +21,7 @@ public class ServiceTest
 
         directCall(service, 2);
         grpcCall(service, 3);
+        httpCall(service, 4);
     }
 
     private static void directCall(ServiceInterface service, int value) throws IOException
@@ -41,10 +43,21 @@ public class ServiceTest
         final Channel grpcChannel = InProcessChannelBuilder.forName("SimpleService").build();
         final GrpcClient grpcClient = new GrpcClient(grpcChannel);
 
-        // user zserio GrpcClient as ServiceInterface
+        // use zserio GrpcClient as ServiceInterface
         doCall(grpcClient, value);
 
         grpcServer.shutdown();
+    }
+
+    private static void httpCall(ServiceInterface service, int value) throws IOException
+    {
+        System.out.println("calling service via HTTP:");
+
+        // setup http client
+        final HttpClient httpClient = new HttpClient("localhost", 5000);
+
+        // use zserio HttpClient as ServiceInterface
+        doCall(httpClient, value);
     }
 
     private static void doCall(ServiceInterface service, int value) throws IOException
