@@ -39,7 +39,7 @@ namespace SimpleService
         Response response;
         powerOfTwoImpl(request, response);
 
-        responseData.resize(response.bitSizeOf() / 8 + 1);
+        responseData.resize(response.bitSizeOf() / 8 + ((response.bitSizeOf() % 8) ? 1 : 0));
         ::zserio::BitStreamWriter writer(responseData.data(), responseData.size());
         response.write(writer);
     }
@@ -53,7 +53,7 @@ namespace SimpleService
         Response response;
         powerOfFourImpl(request, response);
 
-        responseData.resize(response.bitSizeOf() / 8 + 1);
+        responseData.resize(response.bitSizeOf() / 8 + ((response.bitSizeOf() % 8) ? 1 : 0));
         ::zserio::BitStreamWriter writer(responseData.data(), responseData.size());
         response.write(writer);
     }
@@ -65,7 +65,7 @@ namespace SimpleService
 
     void Client::callPowerOfTwo(Request& request, Response& response) const
     {
-        std::vector<uint8_t> requestData(request.bitSizeOf() / 8 + 1);
+        std::vector<uint8_t> requestData(request.bitSizeOf() / 8 + ((request.bitSizeOf() % 8) ? 1 : 0));
         ::zserio::BitStreamWriter writer(requestData.data(), requestData.size());
         request.write(writer);
 
@@ -78,7 +78,7 @@ namespace SimpleService
 
     void Client::callPowerOfFour(Request& request, Response& response) const
     {
-        std::vector<uint8_t> requestData(request.bitSizeOf() / 8 + 1);
+        std::vector<uint8_t> requestData(request.bitSizeOf() / 8 + ((request.bitSizeOf() % 8) ? 1 : 0));
         ::zserio::BitStreamWriter writer(requestData.data(), requestData.size());
         request.write(writer);
 

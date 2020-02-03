@@ -3,6 +3,7 @@
 
 #include "service_poc/SimpleService.h"
 #include "zserio_service_grpc/ZserioService.h"
+#include "zserio_service_http/ZserioService.h"
 
 /** Implementation of SimpleService. */
 class SimpleServiceImpl : public service_poc::SimpleService::Service
@@ -55,10 +56,21 @@ void grpcCall(const ::zserio::IService& service, int32_t value)
     doCall(grpcClient, value);
 }
 
+void httpCall(const ::zserio::IService& service, int32_t value)
+{
+    std::cout << "calling service via HTTP:" << std::endl;
+
+    // setup http client
+    ::zserio_service_http::HttpClient httpClient("localhost", 5000);
+
+    doCall(httpClient, value);
+}
+
 int main(int argc, char* argv[])
 {
     SimpleServiceImpl service;
 
     directCall(service, 2);
     grpcCall(service, 3);
+    httpCall(service, 4);
 }

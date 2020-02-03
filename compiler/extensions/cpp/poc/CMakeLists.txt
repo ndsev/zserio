@@ -36,6 +36,11 @@ if (GRPC_ENABLED)
     )
 endif ()
 
+set (ZSERIO_SERVICE_HTTP_SOURCES
+    zserio_service_http/ZserioService.cpp
+    zserio_service_http/ZserioService.h
+)
+
 add_executable(${PROJECT_NAME}
     ServiceTest.cpp
     service_poc/Request.cpp
@@ -45,6 +50,7 @@ add_executable(${PROJECT_NAME}
     service_poc/SimpleService.cpp
     service_poc/SimpleService.h
     ${ZSERIO_SERVICE_GRPC_SOURCES}
+    ${ZSERIO_SERVICE_HTTP_SOURCES}
 )
 
 add_subdirectory(../../../../distr/runtime_libs/cpp ${CMAKE_CURRENT_BINARY_DIR}/runtime)
@@ -52,7 +58,7 @@ add_subdirectory(../../../../distr/runtime_libs/cpp ${CMAKE_CURRENT_BINARY_DIR}/
 target_include_directories(${PROJECT_NAME} PRIVATE
         ${CMAKE_CURRENT_SOURCE_DIR}
         ../../../../distr/runtime_libs/cpp)
-target_link_libraries(${PROJECT_NAME} ZserioCppRuntime)
+target_link_libraries(${PROJECT_NAME} ZserioCppRuntime curl)
 
 if (GRPC_ENABLED)
     target_include_directories(${PROJECT_NAME} SYSTEM PRIVATE ${GRPC_INCDIR} ${PROTOBUF_INCDIR})
