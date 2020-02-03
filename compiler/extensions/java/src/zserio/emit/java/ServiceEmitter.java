@@ -14,12 +14,9 @@ class ServiceEmitter extends JavaDefaultEmitter
     @Override
     public void beginService(ServiceType serviceType) throws ZserioEmitException
     {
-        if (getWithGrpcCode())
-        {
-            final ServiceEmitterTemplateData templateData = new ServiceEmitterTemplateData(
-                    getTemplateDataContext(), serviceType);
-            processTemplate(TEMPLATE_NAME, templateData, serviceType, templateData.getClassName());
-        }
+        final ServiceEmitterTemplateData templateData = new ServiceEmitterTemplateData(
+                getTemplateDataContext(), serviceType);
+        processTemplate(TEMPLATE_NAME, templateData, serviceType);
     }
 
     private static final String TEMPLATE_NAME = "Service.java.ftl";

@@ -70,11 +70,6 @@ abstract class CppDefaultEmitter extends DefaultEmitter
         return extensionParameters.getWithSqlCode();
     }
 
-    protected boolean getWithGrpcCode()
-    {
-        return extensionParameters.getWithGrpcCode();
-    }
-
     private void processTemplate(String templateName, Object templateData, PackageName packageName,
             String outFileNameRoot, String outputExtension, boolean requestAmalgamate)
                     throws ZserioEmitException

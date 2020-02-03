@@ -3,7 +3,7 @@ package zserio.emit.java;
 import java.util.ArrayList;
 import java.util.List;
 
-import zserio.ast.Rpc;
+import zserio.ast.ServiceMethod;
 import zserio.ast.ServiceType;
 import zserio.ast.ZserioType;
 import zserio.emit.common.ZserioEmitException;
@@ -17,38 +17,23 @@ public final class ServiceEmitterTemplateData extends UserTypeTemplateData
     {
         super(context, serviceType);
 
-        className = serviceType.getName() + "Grpc";
-
         final JavaNativeMapper javaTypeMapper = context.getJavaNativeMapper();
 
         final JavaNativeType nativeServiceType = javaTypeMapper.getJavaType(serviceType);
-        // keep Zserio default formatting to ensure that all languages have same name of rpc methods
+        // keep Zserio default formatting to ensure that all languages have same name of service methods
         servicePackageName = nativeServiceType.getPackageName().toString();
 
-        final Iterable<Rpc> rpcList = serviceType.getRpcList();
-        for (Rpc rpc : rpcList)
+        final Iterable<ServiceMethod> methodList = serviceType.getMethodList();
+        for (ServiceMethod method : methodList)
         {
-            RpcTemplateData templateData = new RpcTemplateData(javaTypeMapper, rpc);
-            this.rpcList.add(templateData);
-            if (templateData.getNoStreaming())
-                hasNoStreamingRpc = true;
-            else if (templateData.getRequestOnlyStreaming())
-                hasRequestOnlyStreamingRpc = true;
-            else if (templateData.getResponseOnlyStreaming())
-                hasResponseOnlyStreamingRpc = true;
-            else if (templateData.getBidiStreaming())
-                hasBidiStreamingRpc = true;
+            MethodTemplateData templateData = new MethodTemplateData(javaTypeMapper, method);
+            this.methodList.add(templateData);
         }
     }
 
-    public Iterable<RpcTemplateData> getRpcList()
+    public Iterable<MethodTemplateData> getMethodList()
     {
-        return rpcList;
-    }
-
-    public String getClassName()
-    {
-        return className;
+        return methodList;
     }
 
     public String getServicePackageName()
@@ -56,39 +41,18 @@ public final class ServiceEmitterTemplateData extends UserTypeTemplateData
         return servicePackageName;
     }
 
-    public boolean getHasNoStreamingRpc()
+    public static class MethodTemplateData
     {
-        return hasNoStreamingRpc;
-    }
-
-    public boolean getHasRequestOnlyStreamingRpc()
-    {
-        return hasRequestOnlyStreamingRpc;
-    }
-
-    public boolean getHasResponseOnlyStreamingRpc()
-    {
-        return hasResponseOnlyStreamingRpc;
-    }
-
-    public boolean getHasBidiStreamingRpc()
-    {
-        return hasBidiStreamingRpc;
-    }
-
-    public static class RpcTemplateData
-    {
-        public RpcTemplateData(JavaNativeMapper typeMapper, Rpc rpc) throws ZserioEmitException
+        public MethodTemplateData(JavaNativeMapper typeMapper, ServiceMethod serviceMethod)
+                throws ZserioEmitException
         {
-            name = rpc.getName();
+            name = serviceMethod.getName();
 
-            final ZserioType responseType = rpc.getResponseType();
+            final ZserioType responseType = serviceMethod.getResponseType();
             responseTypeFullName = typeMapper.getJavaType(responseType).getFullName();
-            hasResponseStreaming = rpc.hasResponseStreaming();
 
-            final ZserioType requestType = rpc.getRequestType();
+            final ZserioType requestType = serviceMethod.getRequestType();
             requestTypeFullName = typeMapper.getJavaType(requestType).getFullName();
-            hasRequestStreaming = rpc.hasRequestStreaming();
         }
 
         public String getName()
@@ -106,38 +70,11 @@ public final class ServiceEmitterTemplateData extends UserTypeTemplateData
             return requestTypeFullName;
         }
 
-        public boolean getNoStreaming()
-        {
-            return !hasRequestStreaming && !hasResponseStreaming;
-        }
-
-        public boolean getRequestOnlyStreaming()
-        {
-            return hasRequestStreaming && !hasResponseStreaming;
-        }
-
-        public boolean getResponseOnlyStreaming()
-        {
-            return !hasRequestStreaming && hasResponseStreaming;
-        }
-
-        public boolean getBidiStreaming()
-        {
-            return hasRequestStreaming && hasResponseStreaming;
-        }
-
         private final String name;
         private final String responseTypeFullName;
-        private final boolean hasResponseStreaming;
         private final String requestTypeFullName;
-        private final boolean hasRequestStreaming;
     }
 
-    private final String className;
+    private final List<MethodTemplateData> methodList = new ArrayList<MethodTemplateData>();
     private final String servicePackageName;
-    private final List<RpcTemplateData> rpcList = new ArrayList<RpcTemplateData>();
-    private boolean hasNoStreamingRpc;
-    private boolean hasRequestOnlyStreamingRpc;
-    private boolean hasResponseOnlyStreamingRpc;
-    private boolean hasBidiStreamingRpc;
 }

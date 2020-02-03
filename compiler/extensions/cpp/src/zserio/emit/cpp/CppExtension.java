@@ -48,17 +48,16 @@ public class CppExtension implements Extension
         final String outputDir = parameters.getCommandLineArg(OptionCpp);
 
         // emit C++ code
-        final ServiceEmitter serviceEmitter = new ServiceEmitter(outputDir, parameters);
-        rootNode.emit(serviceEmitter);
         rootNode.emit(new ConstEmitter(outputDir, parameters));
         rootNode.emit(new SubtypeEmitter(outputDir, parameters));
         rootNode.emit(new EnumerationEmitter(outputDir, parameters));
         rootNode.emit(new BitmaskEmitter(outputDir, parameters));
-        rootNode.emit(new StructureEmitter(outputDir, parameters, serviceEmitter.getRpcTypes()));
+        rootNode.emit(new StructureEmitter(outputDir, parameters));
         rootNode.emit(new ChoiceEmitter(outputDir, parameters));
-        rootNode.emit(new UnionEmitter(outputDir, parameters, serviceEmitter.getRpcTypes()));
+        rootNode.emit(new UnionEmitter(outputDir, parameters));
         rootNode.emit(new SqlDatabaseEmitter(outputDir, parameters));
         rootNode.emit(new SqlTableEmitter(outputDir, parameters));
+        rootNode.emit(new ServiceEmitter(outputDir, parameters));
     }
 
     private final static String OptionCpp = "cpp";

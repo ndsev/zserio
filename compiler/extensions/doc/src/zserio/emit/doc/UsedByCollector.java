@@ -21,7 +21,7 @@ import zserio.ast.Constant;
 import zserio.ast.EnumItem;
 import zserio.ast.EnumType;
 import zserio.ast.Field;
-import zserio.ast.Rpc;
+import zserio.ast.ServiceMethod;
 import zserio.ast.ServiceType;
 import zserio.ast.SqlDatabaseType;
 import zserio.ast.SqlTableType;
@@ -109,10 +109,10 @@ public class UsedByCollector extends DefaultEmitter
     public void beginService(ServiceType serviceType)
     {
         final List<AstNode> usedTypes = new ArrayList<AstNode>();
-        for (Rpc rpc : serviceType.getRpcList())
+        for (ServiceMethod method : serviceType.getMethodList())
         {
-            addTypeToUsedTypes(rpc.getRequestType(), usedTypes);
-            addTypeToUsedTypes(rpc.getResponseType(), usedTypes);
+            addTypeToUsedTypes(method.getRequestType(), usedTypes);
+            addTypeToUsedTypes(method.getResponseType(), usedTypes);
         }
         storeType(serviceType, usedTypes);
     }

@@ -3,7 +3,7 @@ package zserio.emit.doc;
 import java.util.ArrayList;
 import java.util.List;
 
-import zserio.ast.Rpc;
+import zserio.ast.ServiceMethod;
 import zserio.ast.ServiceType;
 import zserio.emit.common.ZserioEmitException;
 
@@ -15,9 +15,9 @@ public class ServiceTemplateData
         name = serviceType.getName();
         packageName = serviceType.getPackage().getPackageName().toString();
         docComment = new DocCommentTemplateData(serviceType.getDocComment());
-        for (Rpc rpc : serviceType.getRpcList())
+        for (ServiceMethod method : serviceType.getMethodList())
         {
-            rpcList.add(new RpcTemplateData(rpc));
+            methodList.add(new MethodTemplateData(method));
         }
         collaborationDiagramSvgFileName = (withSvgDiagrams)
                 ? DocEmitterTools.getTypeCollaborationSvgUrl(outputPath, serviceType) : null;
@@ -38,9 +38,9 @@ public class ServiceTemplateData
         return docComment;
     }
 
-    public Iterable<RpcTemplateData> getRpcList()
+    public Iterable<MethodTemplateData> getMethodList()
     {
-        return rpcList;
+        return methodList;
     }
 
     public String getCollaborationDiagramSvgFileName()
@@ -48,16 +48,14 @@ public class ServiceTemplateData
         return collaborationDiagramSvgFileName;
     }
 
-    public static class RpcTemplateData
+    public static class MethodTemplateData
     {
-        public RpcTemplateData(Rpc rpc) throws ZserioEmitException
+        public MethodTemplateData(ServiceMethod serviceMethod) throws ZserioEmitException
         {
-            name = rpc.getName();
-            requestType = new LinkedType(rpc.getRequestType());
-            hasRequestStreaming = rpc.hasRequestStreaming();
-            responseType = new LinkedType(rpc.getResponseType());
-            hasResponseStreaming = rpc.hasResponseStreaming();
-            docComment = new DocCommentTemplateData(rpc.getDocComment());
+            name = serviceMethod.getName();
+            requestType = new LinkedType(serviceMethod.getRequestType());
+            responseType = new LinkedType(serviceMethod.getResponseType());
+            docComment = new DocCommentTemplateData(serviceMethod.getDocComment());
         }
 
         public String getName()
@@ -75,16 +73,6 @@ public class ServiceTemplateData
             return responseType;
         }
 
-        public boolean getHasRequestStreaming()
-        {
-            return hasRequestStreaming;
-        }
-
-        public boolean getHasResponseStreaming()
-        {
-            return hasResponseStreaming;
-        }
-
         public DocCommentTemplateData getDocComment()
         {
             return docComment;
@@ -92,15 +80,13 @@ public class ServiceTemplateData
 
         private final String name;
         private final LinkedType requestType;
-        private final boolean hasRequestStreaming;
         private final LinkedType responseType;
-        private final boolean hasResponseStreaming;
         private final DocCommentTemplateData docComment;
     }
 
     private final String name;
     private final String packageName;
     private final DocCommentTemplateData docComment;
-    private final List<RpcTemplateData> rpcList = new ArrayList<RpcTemplateData>();
+    private final List<MethodTemplateData> methodList = new ArrayList<MethodTemplateData>();
     private final String collaborationDiagramSvgFileName;
 }
