@@ -2,14 +2,11 @@ import unittest
 from concurrent import futures
 import grpc
 
-from testutils import getZserioApi, TEST_ARGS
+from testutils import getZserioApi
 
 class SimpleServiceTest(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        if not TEST_ARGS["grpc"]:
-            return
-
         cls.api = getZserioApi(__file__, "service_types.zs").simple_service
 
         class Client:
@@ -49,24 +46,20 @@ class SimpleServiceTest(unittest.TestCase):
         self.server = None
         self.client = None
 
-    @unittest.skipUnless(TEST_ARGS["grpc"], "GRPC is not enabled")
     def testServiceName(self):
         self.assertEqual("service_types.simple_service.SimpleService",
                          self.server._state.generic_handlers[0].service_name())
 
-    @unittest.skipUnless(TEST_ARGS["grpc"], "GRPC is not enabled")
     def testRpcMethodName(self):
         self.assertEqual("/service_types.simple_service.SimpleService/powerOfTwo",
                          list(self.server._state.generic_handlers[0]._method_handlers)[0])
 
-    @unittest.skipUnless(TEST_ARGS["grpc"], "GRPC is not enabled")
     def testPowerOfTwo(self):
         self.assertEqual(169, self.client.powerOfTwo(13))
         self.assertEqual(169, self.client.powerOfTwo(-13))
         self.assertEqual(4, self.client.powerOfTwo(2))
         self.assertEqual(4, self.client.powerOfTwo(-2))
 
-    @unittest.skipUnless(TEST_ARGS["grpc"], "GRPC is not enabled")
     def testPowerOfTwoAsync(self):
         self.assertEqual(169, self.client.powerOfTwoAsync(13))
         self.assertEqual(169, self.client.powerOfTwoAsync(-13))

@@ -1,4 +1,4 @@
-package duplicated_rpc_error;
+package duplicated_method_error;
 
 struct Response
 {
@@ -17,6 +17,6 @@ struct Request16
 
 service Service
 {
-    rpc Response powerOfTwo(Request32);
-    rpc Response powerOfTwo(Request16);
+    Response powerOfTwo(Request32);
+    Response powerOfTwo(Request16);
 };

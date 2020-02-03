@@ -24,8 +24,7 @@ def main():
     argParser.add_argument("--verbosity", type=int)
     argParser.add_argument("--filter")
     argParser.add_argument("--pylint_rcfile")
-    argParser.add_argument("--grpc", type=bool)
-    argParser.set_defaults(filter="**", verbosity=2, grpc=False)
+    argParser.set_defaults(filter="**", verbosity=2)
     args = argParser.parse_args()
     if args.build_dir:
         TEST_ARGS["build_dir"] = args.build_dir
@@ -33,7 +32,6 @@ def main():
         TEST_ARGS["release_dir"] = args.release_dir
     if args.java:
         TEST_ARGS["java"] = args.java
-    TEST_ARGS["grpc"] = args.grpc
 
     # path to zserio runtime release
     runtimePath = os.path.join(TEST_ARGS["release_dir"], "runtime_libs", "python")

@@ -9,5 +9,5 @@ subtype int32 Request;
 
 service Service
 {
-    rpc Response powerOfTwo(Request);
+    Response powerOfTwo(Request);
 };

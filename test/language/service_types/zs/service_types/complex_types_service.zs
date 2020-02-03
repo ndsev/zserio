@@ -63,6 +63,6 @@ struct LengthResponse
 
 service ComplexTypesService
 {
-    rpc Response swapModels(Request);
-    rpc LengthResponse getLength(Request);
+    Response swapModels(Request);
+    LengthResponse getLength(Request);
 };

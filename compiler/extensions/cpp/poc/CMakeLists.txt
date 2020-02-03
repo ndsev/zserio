@@ -8,7 +8,7 @@ set(GRPC_ROOT $ENV{GRPC_ROOT} CACHE PATH "Root directory of gRPC - default taken
 set(GRPC_ENABLED ON CACHE BOOL "Enable gRPC by default.")
 set(GRPC_LIBDIR "${GRPC_ROOT}/libs/opt" CACHE PATH "Path to gRPC libraries withing GRPC_ROOT.")
 
-set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/../../../../cmake")
+set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/zserio_service_grpc")
 include(grpc_utils)
 find_grpc_libraries()
 
@@ -25,16 +25,14 @@ set(PROTOBUF_LIBRARIES ${PROTOBUF_LIBDIR}/libprotobuf.a)
 # use RPATH instead of the new RUNPATH
 SET(CMAKE_EXE_LINKER_FLAGS "-Wl,--disable-new-dtags")
 
-if (GRPC_ENABLED)
-    set(ZSERIO_SERVICE_GRPC_SOURCES
-        zserio_service_grpc/zserio_service.grpc.pb.cc
-        zserio_service_grpc/zserio_service.grpc.pb.h
-        zserio_service_grpc/zserio_service.pb.cc
-        zserio_service_grpc/zserio_service.pb.h
-        zserio_service_grpc/ZserioService.cpp
-        zserio_service_grpc/ZserioService.h
-    )
-endif ()
+set(ZSERIO_SERVICE_GRPC_SOURCES
+    zserio_service_grpc/zserio_service.grpc.pb.cc
+    zserio_service_grpc/zserio_service.grpc.pb.h
+    zserio_service_grpc/zserio_service.pb.cc
+    zserio_service_grpc/zserio_service.pb.h
+    zserio_service_grpc/ZserioService.cpp
+    zserio_service_grpc/ZserioService.h
+)
 
 set (ZSERIO_SERVICE_HTTP_SOURCES
     zserio_service_http/ZserioService.cpp
@@ -57,10 +55,7 @@ add_subdirectory(../../../../distr/runtime_libs/cpp ${CMAKE_CURRENT_BINARY_DIR}/
 
 target_include_directories(${PROJECT_NAME} PRIVATE
         ${CMAKE_CURRENT_SOURCE_DIR}
-        ../../../../distr/runtime_libs/cpp)
-target_link_libraries(${PROJECT_NAME} ZserioCppRuntime curl)
-
-if (GRPC_ENABLED)
-    target_include_directories(${PROJECT_NAME} SYSTEM PRIVATE ${GRPC_INCDIR} ${PROTOBUF_INCDIR})
-    target_link_libraries(${PROJECT_NAME} ${GRPC_LIBRARIES} ${PROTOBUF_LIBRARIES})
-endif ()
+        ../../../../distr/runtime_libs/cpp
+        ${GRPC_INCDIR}
+        ${PROTOBUF_INCDIR})
+target_link_libraries(${PROJECT_NAME} ZserioCppRuntime ${GRPC_LIBRARIES} ${PROTOBUF_LIBRARIES} curl)

@@ -1,0 +1,36 @@
+<project name="service_types" basedir="." default="run">
+    <testProperties testPath="language/service_types" testName="service_types"/>
+
+    <target name="prepare">
+        <testPrepare testName="service_types"/>
+    </target>
+
+    <target name="gen.check" depends="prepare">
+        <testGenCheck testName="service_types"/>
+    </target>
+
+    <target name="gen" depends="gen.check" unless="service_types.zs.gen_is_uptodate">
+        <testGenClean testName="service_types"/>
+        <testGen testName="service_types" zsFile="service_types.zs"/>
+    </target>
+
+    <target name="gen.checkWarnings" depends="gen">
+        <testGenCheckWarnings testName="service_types"/>
+    </target>
+
+    <target name="compile" depends="gen.checkWarnings">
+        <testCompile testName="service_types"/>
+    </target>
+
+    <target name="spotbugs" depends="compile" if="spotbugs.home_dir">
+        <testSpotBugs testName="service_types"/>
+    </target>
+
+    <target name="run" depends="spotbugs">
+        <testRun testname="service_types"/>
+    </target>
+
+    <target name="clean">
+        <testClean testName="service_types"/>
+    </target>
+</project>

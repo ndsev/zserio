@@ -8,7 +8,6 @@ zserio.release_dir         - Directory where to find Zserio release to test. Def
 zserio_java_test.build_dir - Directory where to put generated files. Default is "../build/test/java".
 zserio_java_test.filter    - Test filter (supports glob patterns). Default is "**".
 spotbugs.home_dir          - Location of the spotbugs tool. If not set, spotbugs is not run.
-zserio_java_test.grpc      - Whether the GRPC tests are enabled (default is "no").
 
 -->
 <project name="zserio_java_test" basedir="." default="run" xmlns:if="ant:if" xmlns:unless="ant:unless">
@@ -24,12 +23,10 @@ zserio_java_test.grpc      - Whether the GRPC tests are enabled (default is "no"
     <property name="3rdparty.jar_dir" location="${zserio.root_dir}/3rdparty/java"/>
     <property name="3rdparty.junit.jar_file" location="${3rdparty.jar_dir}/junit-4.10.jar"/>
     <property name="3rdparty.sqlitejdbc.jar_file" location="${3rdparty.jar_dir}/sqlite-jdbc-3.23.1.jar"/>
-    <property name="3rdparty.grpc.jar_dir" location="${3rdparty.jar_dir}/grpc"/>
 
     <property name="zserio_java_test.build_dir" location="${zserio.root_dir}/build/test/java"/>
     <property name="zserio_java_test.log_file" location="${zserio_java_test.build_dir}/test_log.txt"/>
     <property name="zserio_java_test.filter" value="**"/>
-    <property name="zserio_java_test.grpc" value="no"/>
 
     <condition property="spotbugs.classpath" value="${spotbugs.home_dir}/lib/spotbugs-ant.jar">
         <isset property="spotbugs.home_dir"/>
@@ -155,7 +152,6 @@ zserio_java_test.grpc      - Whether the GRPC tests are enabled (default is "no"
     <macrodef name="testCompile">
         <attribute name="testName"/>
         <attribute name="srcPath" default="${@{testName}.base_dir}/java:${@{testName}.zs.out_dir}"/>
-        <attribute name="grpc" default="false"/>
         <attribute name="ignoreZserioWarnings" default="false"/>
         <sequential>
             <depend srcDir="@{srcPath}"
@@ -170,9 +166,6 @@ zserio_java_test.grpc      - Whether the GRPC tests are enabled (default is "no"
                     <pathelement location="${runtime.jar_file}"/>
                     <pathelement location="${3rdparty.junit.jar_file}"/>
                     <pathelement location="${test_utils.jar_file}"/>
-                    <fileset dir="${3rdparty.grpc.jar_dir}" if:true="@{grpc}">
-                        <include name="*.jar"/>
-                    </fileset>
                 </classpath>
                 <src path="@{srcPath}"/>
             </javac>
@@ -182,7 +175,6 @@ zserio_java_test.grpc      - Whether the GRPC tests are enabled (default is "no"
     <macrodef name="testSpotBugs">
         <attribute name="testName"/>
         <attribute name="srcPath" default="${@{testName}.base_dir}/java:${@{testName}.zs.out_dir}"/>
-        <attribute name="grpc" default="false"/>
         <sequential>
             <property name="spotbugs.gen_classes.jar_file"
                 location="${@{testName}.build_dir}/jar/gen_classes.jar"/>
@@ -208,9 +200,6 @@ zserio_java_test.grpc      - Whether the GRPC tests are enabled (default is "no"
                     <pathelement location="${runtime.jar_file}"/>
                     <pathelement location="${3rdparty.junit.jar_file}"/>
                     <pathelement location="${test_utils.jar_file}"/>
-                    <fileset dir="${3rdparty.grpc.jar_dir}" if:true="@{grpc}">
-                        <include name="*.jar"/>
-                    </fileset>
                 </auxClasspath>
             </spotbugs>
             <fail message="SpotBugs found some issues!" if="@{testName}.is_failed"/>
@@ -219,7 +208,6 @@ zserio_java_test.grpc      - Whether the GRPC tests are enabled (default is "no"
 
     <macrodef name="testRun">
         <attribute name="testName"/>
-        <attribute name="grpc" default="false"/>
         <element name="resources" optional="true"/>
         <sequential>
             <delete dir="${@{testName}.run_dir}"/>
@@ -233,9 +221,6 @@ zserio_java_test.grpc      - Whether the GRPC tests are enabled (default is "no"
                     <pathelement location="${3rdparty.junit.jar_file}"/>
                     <pathelement location="${3rdparty.sqlitejdbc.jar_file}"/>
                     <pathelement location="${test_utils.jar_file}"/>
-                    <fileset dir="${3rdparty.grpc.jar_dir}" if:true="@{grpc}">
-                        <include name="*.jar"/>
-                    </fileset>
                 </classpath>
                 <batchtest>
                     <fileset dir="${@{testName}.base_dir}/java" includes="**/*Test.java"/>

@@ -39,14 +39,6 @@ set(CMAKE_CXX_STANDARD 11)
 include(sqlite_utils)
 sqlite_add_library(${ZSERIO_PROJECT_ROOT})
 
-# GRPC prebuild libraries for testing Services
-include(grpc_utils)
-find_grpc_libraries()
-
-if (GRPC_ENABLED)
-    set(CMAKE_CXX_STANDARD 11) # needed due to GRPC
-endif ()
-
 # add zserio runtime library
 include(zserio_utils)
 set(ZSERIO_JAR_DIR "${ZSERIO_RELEASE_ROOT}/zserio_libs")
@@ -93,12 +85,6 @@ target_link_libraries(${PROJECT_NAME} gtest_main ${TEST_DEPENDENCIES_LIST})
 
 target_include_directories(${PROJECT_NAME} SYSTEM PRIVATE ${SQLITE_INCDIR})
 target_link_libraries(${PROJECT_NAME} ${SQLITE_LIBRARY})
-
-# grpc
-if (GRPC_ENABLED)
-    target_include_directories(${PROJECT_NAME} SYSTEM PRIVATE ${GRPC_INCDIR})
-    target_link_libraries(${PROJECT_NAME} ${GRPC_LIBRARIES})
-endif ()
 
 # add tests - test are labeled by file names (i.e. grouped)
 gtest_add_tests(${PROJECT_NAME} "--gtest_output=xml" ${TEST_SOURCES_LIST})

@@ -13,9 +13,6 @@ set_test_global_variables()
         return 1
     fi
 
-    # GRPC setup
-    GRPC_ROOT="${GRPC_ROOT:-""}"
-
     # Zserio extra arguments
     ZSERIO_EXTRA_ARGS="${ZSERIO_EXTRA_ARGS:-""}"
 
@@ -28,7 +25,6 @@ print_test_help_env()
     cat << EOF
 Uses the following environment variables for testing:
     UNZIP               Unzip executable to use. Default is "unzip".
-    GRPC_ROOT           Root path to GRPC repository. GRPC is disabled by default.
     ZSERIO_EXTRA_ARGS   Extra arguments to zserio tool. Default is empty.
 EOF
 }

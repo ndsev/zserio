@@ -12,10 +12,10 @@ struct Response
 
 service Math
 {
-    rpc Response powerOfTwo(Request);
+    Response powerOfTwo(Request);
 };
 
 service Math
 {
-    rpc Response powerOfTwo(Request);
+    Response powerOfTwo(Request);
 };

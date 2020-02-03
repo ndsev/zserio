@@ -16,5 +16,5 @@ choice Request(bit:8 size) on size
 
 service Service
 {
-    rpc Response powerOfTwo(Request);
+    Response powerOfTwo(Request);
 };
