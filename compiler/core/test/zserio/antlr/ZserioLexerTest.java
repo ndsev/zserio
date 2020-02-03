@@ -117,14 +117,12 @@ public class ZserioLexerTest
                 "optional " +
                 "package " +
                 "return " +
-                "rpc " +
                 "service " +
                 "sql " +
                 "sql_database " +
                 "sql_table " +
                 "sql_virtual " +
                 "sql_without_rowid " +
-                "stream " +
                 "string " +
                 "struct " +
                 "subtype " +
@@ -176,14 +174,12 @@ public class ZserioLexerTest
         checkToken(lexer, ZserioLexer.OPTIONAL);
         checkToken(lexer, ZserioLexer.PACKAGE);
         checkToken(lexer, ZserioLexer.RETURN);
-        checkToken(lexer, ZserioLexer.RPC);
         checkToken(lexer, ZserioLexer.SERVICE);
         checkToken(lexer, ZserioLexer.SQL);
         checkToken(lexer, ZserioLexer.SQL_DATABASE);
         checkToken(lexer, ZserioLexer.SQL_TABLE);
         checkToken(lexer, ZserioLexer.SQL_VIRTUAL);
         checkToken(lexer, ZserioLexer.SQL_WITHOUT_ROWID);
-        checkToken(lexer, ZserioLexer.STREAM);
         checkToken(lexer, ZserioLexer.STRING);
         checkToken(lexer, ZserioLexer.STRUCTURE);
         checkToken(lexer, ZserioLexer.SUBTYPE);

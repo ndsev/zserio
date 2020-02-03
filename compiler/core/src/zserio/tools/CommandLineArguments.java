@@ -91,16 +91,6 @@ class CommandLineArguments
     }
 
     /**
-     * Gets whether the GRPC code option is enabled.
-     *
-     * @returns True if command line arguments enable SQL code option.
-     */
-    public boolean getWithGrpcCode()
-    {
-        return withGrpcCodeOption;
-    }
-
-    /**
      * Gets whether the inspector code option is enabled.
      *
      * @returns True if command line arguments enable inspector code option.
@@ -231,14 +221,6 @@ class CommandLineArguments
         option.setRequired(false);
         options.addOption(option);
 
-        final OptionGroup grpcCodeGroup = new OptionGroup();
-        option = new Option(OptionNameWithGrpcCode, false, "enable code for GRPC services (default)");
-        grpcCodeGroup.addOption(option);
-        option = new Option(OptionNameWithoutGrpcCode, false, "disable code for GRPC services");
-        grpcCodeGroup.addOption(option);
-        grpcCodeGroup.setRequired(false);
-        options.addOptionGroup(grpcCodeGroup);
-
         // Blob Inspector interface has been DISABLED
         // final OptionGroup inspectorCodeGroup = new OptionGroup();
         // option = new Option(OptionNameWithInspectorCode, false, "enable code for Blob Inspector");
@@ -318,7 +300,6 @@ class CommandLineArguments
         versionOption = hasOption(OptionNameVersionShort);
         topLevelPackageName = getOptionValue(OptionNameSetTopLevelPackage);
 
-        withGrpcCodeOption = !hasOption(OptionNameWithoutGrpcCode) && !hasOption(OptionNameWithoutWriterCode);
         withInspectorCodeOption = hasOption(OptionNameWithInspectorCode);
         withRangeCheckCodeOption = hasOption(OptionNameWithRangeCheckCode);
         withSourcesAmalgamationOption = !hasOption(OptionNameWithoutSourcesAmalgamation);
@@ -352,12 +333,6 @@ class CommandLineArguments
                         "The specified option 'withValidationCode' conflicts with another option: " +
                         "'withoutWriterCode'");
             }
-            if (hasOption(OptionNameWithGrpcCode))
-            {
-                throw new ParseException(
-                        "The specified option 'withGrpcCode' conflicts with another option: " +
-                        "'withoutWriterCode'");
-            }
         }
     }
 
@@ -385,8 +360,6 @@ class CommandLineArguments
     private static final String OptionNameSource = "src";
     private static final String OptionNameVersionShort = "v";
     private static final String OptionNameSetTopLevelPackage = "setTopLevelPackage";
-    private static final String OptionNameWithGrpcCode = "withGrpcCode";
-    private static final String OptionNameWithoutGrpcCode = "withoutGrpcCode";
     private static final String OptionNameWithInspectorCode = "withInspectorCode";
 //    private static final String OptionNameWithoutInspectorCode = "withoutInspectorCode";
     private static final String OptionNameWithRangeCheckCode = "withRangeCheckCode";
@@ -410,7 +383,6 @@ class CommandLineArguments
     private String  srcPathName;
     private String  topLevelPackageName;
     private boolean versionOption;
-    private boolean withGrpcCodeOption;
     private boolean withInspectorCodeOption;
     private boolean withRangeCheckCodeOption;
     private boolean withSourcesAmalgamationOption;

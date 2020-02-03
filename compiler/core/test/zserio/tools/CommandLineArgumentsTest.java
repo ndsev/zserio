@@ -169,34 +169,6 @@ public class CommandLineArgumentsTest
     }
 
     @Test
-    public void withGrpcCode() throws ParseException
-    {
-        String[] args = { "-withGrpcCode" };
-        assertTrue(parse(args).getWithGrpcCode());
-    }
-
-    @Test
-    public void withoutGrpcCode() throws ParseException
-    {
-        String[] args = { "-withoutGrpcCode" };
-        assertFalse(parse(args).getWithGrpcCode());
-    }
-
-    @Test
-    public void withGrpcCodeDefault() throws ParseException
-    {
-        String[] args = {};
-        assertTrue(parse(args).getWithGrpcCode());
-    }
-
-    @Test(expected=ParseException.class)
-    public void grpcCodeConflict() throws ParseException
-    {
-        String[] args = { "-withGrpcCode", "-withoutGrpcCode" };
-        parse(args);
-    }
-
-    @Test
     public void withWriterCode() throws ParseException
     {
         String[] args = { "-withWriterCode" };
@@ -209,7 +181,6 @@ public class CommandLineArgumentsTest
         String[] args = { "-withoutWriterCode" };
         CommandLineArguments parsedArgs = parse(args);
         assertFalse(parsedArgs.getWithWriterCode());
-        assertFalse(parsedArgs.getWithGrpcCode()); // auto-disabled
     }
 
     @Test
@@ -244,13 +215,6 @@ public class CommandLineArgumentsTest
     public void withoutWriterCodeWithValidationCodeConflict() throws ParseException
     {
         String[] args = { "-withoutWriterCode", "-withValidationCode" };
-        parse(args);
-    }
-
-    @Test(expected=ParseException.class)
-    public void withoutWriterCodeWithGrpcCodeConflict() throws ParseException
-    {
-        String[] args = { "-withoutWriterCode", "-withGrpcCode" };
         parse(args);
     }
 

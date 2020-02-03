@@ -90,9 +90,9 @@ public interface ZserioAstVisitor
     void visitSqlDatabaseType(SqlDatabaseType sqlDatabaseType);
 
     /**
-     * Visits RPC service definition.
+     * Visits service definition.
      *
-     * @param serviceType RPC service AST node.
+     * @param serviceType Service AST node.
      */
     void visitServiceType(ServiceType serviceType);
 
@@ -146,11 +146,11 @@ public interface ZserioAstVisitor
     void visitSqlConstraint(SqlConstraint sqlConstraint);
 
     /**
-     * Visits RPC call definition.
+     * Visits service method definition.
      *
-     * @param rpc RPC call AST node.
+     * @param serviceMethod Service method AST node.
      */
-    void visitRpc(Rpc rpc);
+    void visitServiceMethod(ServiceMethod serviceMethod);
 
     /**
      * Visits function definition.

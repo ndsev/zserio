@@ -18,16 +18,17 @@ public class ServiceType extends DocumentableAstNode implements ZserioScopedType
      * @param location   AST node location.
      * @param pkg        Package to which belongs the service type.
      * @param name       Name of the service type.
-     * @param rpcs       List of all RPCs which belong to the service type.
+     * @param methods    List of all methods which belong to the service type.
      * @param docComment Documentation comment belonging to this node.
      */
-    public ServiceType(AstLocation location, Package pkg, String name, List<Rpc> rpcs, DocComment docComment)
+    public ServiceType(AstLocation location, Package pkg, String name, List<ServiceMethod> methods,
+            DocComment docComment)
     {
         super(location, docComment);
 
         this.pkg = pkg;
         this.name = name;
-        this.rpcs = rpcs;
+        this.methods = methods;
     }
 
     @Override
@@ -41,8 +42,8 @@ public class ServiceType extends DocumentableAstNode implements ZserioScopedType
     {
         super.visitChildren(visitor);
 
-        for (Rpc rpc : rpcs)
-            rpc.accept(visitor);
+        for (ServiceMethod method : methods)
+            method.accept(visitor);
     }
 
     @Override
@@ -96,18 +97,18 @@ public class ServiceType extends DocumentableAstNode implements ZserioScopedType
     }
 
     /**
-     * Gets rpc methods list.
+     * Gets list of service's methods.
      *
-     * @return List of RPC methods.
+     * @return List of methods.
      */
-    public List<Rpc> getRpcList()
+    public List<ServiceMethod> getMethodList()
     {
-        return Collections.unmodifiableList(rpcs);
+        return Collections.unmodifiableList(methods);
     }
 
     private final Scope scope = new Scope(this);
 
     private final Package pkg;
     private final String name;
-    private final List<Rpc> rpcs;
+    private final List<ServiceMethod> methods;
 }
