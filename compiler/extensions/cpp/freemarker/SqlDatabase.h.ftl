@@ -46,7 +46,7 @@ public:
     virtual void deleteSchema();
 </#if>
 
-    <#-- cannot be constexpr since consexpr must be defined inline -->
+    <#-- cannot be constexpr since constexpr must be defined inline -->
     static const char* databaseName() noexcept;
     static const ::std::array<const char*, ${fields?size}>& tableNames() noexcept;
 

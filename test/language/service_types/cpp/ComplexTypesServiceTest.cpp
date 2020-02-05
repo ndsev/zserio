@@ -1,7 +1,6 @@
 #include <algorithm>
 #include <memory>
 #include <cmath>
-#include <grpcpp/grpcpp.h>
 
 #include "gtest/gtest.h"
 
@@ -11,36 +10,6 @@ namespace service_types
 {
 namespace complex_types_service
 {
-
-class Client
-{
-public:
-    explicit Client(const std::shared_ptr<grpc::Channel>& channel)
-    :   m_stub(ComplexTypesService::NewStub(channel))
-    {}
-
-    bool swapModels(const Request& request, Response& response)
-    {
-        grpc::ClientContext context;
-        grpc::Status status = m_stub->swapModels(&context, request, &response);
-
-        return status.ok();
-    }
-
-    uint32_t getLength(const Request& request)
-    {
-        grpc::ClientContext context;
-        LengthResponse response;
-        grpc::Status status = m_stub->getLength(&context, request, &response);
-
-        if (!status.ok())
-            return 0;
-
-        return response.getLength();
-    }
-
-    std::unique_ptr<ComplexTypesService::Stub> m_stub;
-};
 
 namespace
 {
@@ -70,30 +39,28 @@ namespace
     }
 }
 
-class Service final : public ComplexTypesService::Service
+class ComplexTypesServiceImpl : public ComplexTypesService::Service
 {
 public:
-    ::grpc::Status swapModels(grpc::ServerContext*, const Request* request, Response* response)
+    void swapModelsImpl(const Request& request, Response& response) override
     {
-        const RequestData& requestData = request->getData();
+        const RequestData& requestData = request.getData();
         const auto& data = requestData.getData();
 
-        response->setLength(static_cast<uint32_t>(data.size()));
+        response.setLength(static_cast<uint32_t>(data.size()));
 
         if (requestData.getModel() == ColorModel::RGB)
-            rgbToCmyk(data, *response);
+            rgbToCmyk(data, response);
         else
-            cmykToRgb(data, *response);
+            cmykToRgb(data, response);
 
-        response->initializeChildren();
-        return grpc::Status::OK;
+        response.initializeChildren();
     }
 
-    ::grpc::Status getLength(grpc::ServerContext*, const Request* request, LengthResponse* response)
+    void getLengthImpl(const Request& request, LengthResponse& response) override
     {
-        const RequestData& requestData = request->getData();
-        response->setLength(static_cast<uint32_t>(requestData.getData().size()));
-        return grpc::Status::OK;
+        const RequestData& requestData = request.getData();
+        response.setLength(static_cast<uint32_t>(requestData.getData().size()));
     }
 
 private:
@@ -135,8 +102,7 @@ class ComplexTypesServiceTest : public ::testing::Test
 {
 public:
     ComplexTypesServiceTest()
-    :   server(buildServer()),
-        client(server->InProcessChannel(grpc::ChannelArguments()))
+    :   client(service)
     {
         for (size_t i = 0; i < 3; ++i)
         {
@@ -149,19 +115,9 @@ public:
         }
     }
 
-private:
-    std::unique_ptr<grpc::Server> buildServer()
-    {
-        grpc::ServerBuilder serverBuilder;
-        serverBuilder.RegisterService(&service);
-        return serverBuilder.BuildAndStart();
-    }
-
-    Service service;
-    std::unique_ptr<grpc::Server> server;
-
 protected:
-    Client client;
+    ComplexTypesServiceImpl service;
+    ComplexTypesService::Client client;
 
     // note that conversion is slightly inaccurate and therefore this values are carefully choosen
     // to provide consistent results for the test needs
@@ -170,6 +126,18 @@ protected:
 };
 
 constexpr uint8_t ComplexTypesServiceTest::rgbValues[3][3];
+
+TEST_F(ComplexTypesServiceTest, serviceFullName)
+{
+    ASSERT_EQ(std::string("service_types.complex_types_service.ComplexTypesService"),
+            ComplexTypesService::Service::serviceFullName());
+}
+
+TEST_F(ComplexTypesServiceTest, methodNames)
+{
+    ASSERT_EQ(std::string("swapModels"), ComplexTypesService::Service::methodNames()[0]);
+    ASSERT_EQ(std::string("getLength"), ComplexTypesService::Service::methodNames()[1]);
+}
 
 TEST_F(ComplexTypesServiceTest, rgbToCmyk)
 {
@@ -190,10 +158,12 @@ TEST_F(ComplexTypesServiceTest, rgbToCmyk)
     }
     request.initializeChildren();
 
-    ASSERT_EQ(length, client.getLength(request));
+    LengthResponse lengthResponse;
+    client.getLengthMethod(request, lengthResponse);
+    ASSERT_EQ(length, lengthResponse.getLength());
 
     Response response;
-    ASSERT_TRUE(client.swapModels(request, response));
+    client.swapModelsMethod(request, response);
     ASSERT_EQ(length, response.getLength());
 
     const auto& cmykData = response.getData().getCmykData();
@@ -227,10 +197,12 @@ TEST_F(ComplexTypesServiceTest, cmykToRgb)
     }
     request.initializeChildren();
 
-    ASSERT_EQ(length, client.getLength(request));
+    LengthResponse lengthResponse;
+    client.getLengthMethod(request, lengthResponse);
+    ASSERT_EQ(length, lengthResponse.getLength());
 
     Response response;
-    ASSERT_TRUE(client.swapModels(request, response));
+    client.swapModelsMethod(request, response);
     ASSERT_EQ(length, response.getLength());
 
     const auto& rgbData = response.getData().getRgbData();
@@ -241,6 +213,12 @@ TEST_F(ComplexTypesServiceTest, cmykToRgb)
         ASSERT_EQ(rgbValues[i % 3][1], rgb.getGreen());
         ASSERT_EQ(rgbValues[i % 3][2], rgb.getBlue());
     }
+}
+
+TEST_F(ComplexTypesServiceTest, invalidServiceMethod)
+{
+    std::vector<uint8_t> responseData;
+    ASSERT_THROW(service.callMethod("nonexistentMethod", {}, responseData), zserio::ServiceException);
 }
 
 } // namespace complex_types_service

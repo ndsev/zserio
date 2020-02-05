@@ -19,9 +19,6 @@ uninitMemberVar:*/sql_tables/const_param_table/ParameterizedBlob.cpp
 uninitMemberVar:*/sql_tables/const_param_table/ParameterizedBlob.h
 
 variableScope:*/sql_tables/blob_offsets_param_table/BlobOffsetsParamTable.cpp
-variableScope:*/sql_tables/blob_offsets_param_table/BlobOffsetsParamTable.cpp
 variableScope:*/sql_tables/blob_param_table/BlobParamTable.cpp
-variableScope:*/sql_tables/blob_param_table/BlobParamTable.cpp
-variableScope:*/sql_tables/column_param_table/ColumnParamTable.cpp
 variableScope:*/sql_tables/column_param_table/ColumnParamTable.cpp
 variableScope:*/sql_tables/complex_table/ComplexTable.cpp
