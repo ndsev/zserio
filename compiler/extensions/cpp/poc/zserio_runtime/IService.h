@@ -3,17 +3,29 @@
 
 #include <string>
 #include <vector>
+#include "zserio/Types.h"
 
 namespace zserio
 {
 
+/** Generic interface for all Zserio services. */
 class IService
 {
 public:
     virtual ~IService() = default;
 
-    virtual void callProcedure(const std::string& procName, const std::vector<uint8_t>& requestData,
-            std::vector<uint8_t>& responseData) const = 0;
+    /**
+     * Calls method synchronously with the given name.
+     *
+     * \param methodName Name of the service method to call.
+     * \param requestData Request data to be passed to the method.
+     * \param responseData Response data to fill.
+     * \param context Context specific for particular service.
+     *
+     * \throws ServiceException if the call fails.
+     */
+    virtual void callMethod(const std::string& methodName, const std::vector<uint8_t>& requestData,
+            std::vector<uint8_t>& responseData, void* context = nullptr) = 0;
 };
 
 } // namespace zserio

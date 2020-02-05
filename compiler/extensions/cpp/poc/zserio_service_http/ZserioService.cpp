@@ -104,8 +104,8 @@ HttpClient::~HttpClient()
 {
 }
 
-void HttpClient::callProcedure(const std::string& procName, const std::vector<uint8_t>& requestData,
-        std::vector<uint8_t>& responseData) const
+void HttpClient::callMethod(const std::string& procName, const std::vector<uint8_t>& requestData,
+        std::vector<uint8_t>& responseData, void* context)
 {
     std::string path = std::string("/") + procName;
     std::replace(path.begin(), path.end(), '.', '/');

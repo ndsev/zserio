@@ -12,26 +12,26 @@ namespace service_poc
 
 namespace SimpleService
 {
-    Service::Service()
-    :   m_procedureMap({
-                {"SimpleService.powerOfTwo", std::bind(&Service::powerOfTwoCall, this,
+    Service::Service() :
+        m_methodMap({
+                {"powerOfTwo", std::bind(&Service::powerOfTwoMethod, this,
                         std::placeholders::_1, std::placeholders::_2)},
-                {"SimpleService.powerOfFour", std::bind(&Service::powerOfFourCall, this,
+                {"powerOfFour", std::bind(&Service::powerOfFourMethod, this,
                         std::placeholders::_1, std::placeholders::_2)}})
     {
     }
 
-    void Service::callProcedure(const std::string& procName, const std::vector<uint8_t>& requestData,
-                std::vector<uint8_t>& responseData) const
+    void Service::callMethod(const std::string& methodName, const std::vector<uint8_t>& requestData,
+                std::vector<uint8_t>& responseData, void*)
     {
-        // TODO: add check that method exits!
-        auto search = m_procedureMap.find(procName);
-        if (search != m_procedureMap.end())
-            search->second(requestData, responseData);
+        auto search = m_methodMap.find(methodName);
+        if (search == m_methodMap.end())
+            throw ::zserio::ServiceException("service_types.simple_service.SimpleService: Method '" + methodName + "' does not exist!");
+        search->second(requestData, responseData);
     }
 
-    void Service::powerOfTwoCall(const std::vector<uint8_t>& requestData,
-            std::vector<uint8_t>& responseData) const
+    void Service::powerOfTwoMethod(const std::vector<uint8_t>& requestData,
+            std::vector<uint8_t>& responseData)
     {
         ::zserio::BitStreamReader reader(requestData.data(), requestData.size());
         const Request request(reader);
@@ -44,8 +44,8 @@ namespace SimpleService
         response.write(writer);
     }
 
-    void Service::powerOfFourCall(const std::vector<uint8_t>& requestData,
-        std::vector<uint8_t>& responseData) const
+    void Service::powerOfFourMethod(const std::vector<uint8_t>& requestData,
+        std::vector<uint8_t>& responseData)
     {
         ::zserio::BitStreamReader reader(requestData.data(), requestData.size());
         const Request request(reader);
@@ -58,32 +58,47 @@ namespace SimpleService
         response.write(writer);
     }
 
-    Client::Client(const ::zserio::IService& service)
-    :   m_service(service)
+    const char* Service::serviceFullName() noexcept
+    {
+        return "service_poc.SimpleService";
+    }
+
+    const ::std::array<const char*, 2>& Service::methodNames() noexcept
+    {
+        static constexpr ::std::array<const char*, 2> names =
+        {
+            "powerOfTwo",
+            "powerOfFour"
+        };
+
+        return names;
+    }
+
+    Client::Client(::zserio::IService& service) : m_service(service)
     {
     }
 
-    void Client::callPowerOfTwo(Request& request, Response& response) const
+    void Client::powerOfTwoMethod(Request& request, Response& response)
     {
         std::vector<uint8_t> requestData(request.bitSizeOf() / 8 + ((request.bitSizeOf() % 8) ? 1 : 0));
         ::zserio::BitStreamWriter writer(requestData.data(), requestData.size());
         request.write(writer);
 
         std::vector<uint8_t> responseData;
-        m_service.callProcedure("SimpleService.powerOfTwo", requestData, responseData);
+        m_service.callMethod("powerOfTwo", requestData, responseData);
 
         ::zserio::BitStreamReader reader(responseData.data(), responseData.size());
         response.read(reader);
     }
 
-    void Client::callPowerOfFour(Request& request, Response& response) const
+    void Client::powerOfFourMethod(Request& request, Response& response)
     {
         std::vector<uint8_t> requestData(request.bitSizeOf() / 8 + ((request.bitSizeOf() % 8) ? 1 : 0));
         ::zserio::BitStreamWriter writer(requestData.data(), requestData.size());
         request.write(writer);
 
         std::vector<uint8_t> responseData;
-        m_service.callProcedure("SimpleService.powerOfFour", requestData, responseData);
+        m_service.callMethod("powerOfFour", requestData, responseData);
 
         ::zserio::BitStreamReader reader(responseData.data(), responseData.size());
         response.read(reader);

@@ -5,12 +5,14 @@
 #ifndef SIMPLE_SERVICE_H
 #define SIMPLE_SERVICE_H
 
+#include <array>
 #include <map>
 #include <string>
 #include <vector>
 #include <functional>
 
 #include <zserio_runtime/IService.h>
+#include <zserio_runtime/ServiceException.h>
 
 #include "service_poc/Request.h"
 #include "service_poc/Response.h"
@@ -32,27 +34,29 @@ namespace SimpleService
         Service(Service&&) = default;
         Service& operator=(Service&&) = default;
 
-        void callProcedure(const std::string& procName, const std::vector<uint8_t>& requestData,
-                std::vector<uint8_t>& responseData) const override;
+        void callMethod(const std::string& methodName, const std::vector<uint8_t>& requestData,
+                std::vector<uint8_t>& responseData, void* context = nullptr) override;
+
+        static const char* serviceFullName() noexcept;
+        static const ::std::array<const char*, 2>& methodNames() noexcept;
 
     private:
-        // TODO: Should be const?
-        virtual void powerOfTwoImpl(const Request& request, Response& response) const = 0;
-        virtual void powerOfFourImpl(const Request& request, Response& response) const = 0;
+        virtual void powerOfTwoImpl(const Request& request, Response& response) = 0;
+        virtual void powerOfFourImpl(const Request& request, Response& response) = 0;
 
-        void powerOfTwoCall(const std::vector<uint8_t>& requestData, std::vector<uint8_t>& responseData) const;
-        void powerOfFourCall(const std::vector<uint8_t>& requestData, std::vector<uint8_t>& responseData) const;
+        void powerOfTwoMethod(const std::vector<uint8_t>& requestData, std::vector<uint8_t>& responseData);
+        void powerOfFourMethod(const std::vector<uint8_t>& requestData, std::vector<uint8_t>& responseData);
 
-        using Procedure = std::function<void(const std::vector<uint8_t>& requestData,
+        using Method = std::function<void(const std::vector<uint8_t>& requestData,
                 std::vector<uint8_t>& responseData)>;
 
-        std::map<std::string, Procedure> m_procedureMap;
+        std::map<std::string, Method> m_methodMap;
     };
 
     class Client
     {
     public:
-        explicit Client(const ::zserio::IService& service);
+        explicit Client(::zserio::IService& service);
         ~Client() = default;
 
         Client(const Client&) = default;
@@ -61,11 +65,11 @@ namespace SimpleService
         Client(Client&&) = default;
         Client& operator=(Client&&) = default;
 
-        void callPowerOfTwo(Request& request, Response& response) const;
-        void callPowerOfFour(Request& request, Response& response) const;
+        void powerOfTwoMethod(Request& request, Response& response);
+        void powerOfFourMethod(Request& request, Response& response);
 
     private:
-        const zserio::IService& m_service;
+        zserio::IService& m_service;
     };
 } // namespace SimpleService
 

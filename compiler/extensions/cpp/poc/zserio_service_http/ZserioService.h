@@ -13,8 +13,8 @@ namespace zserio_service_http
         explicit HttpClient(const std::string& url, uint16_t port);
         ~HttpClient();
 
-        void callProcedure(const std::string& procName, const std::vector<uint8_t>& requestData,
-                std::vector<uint8_t>& responseData) const override;
+        void callMethod(const std::string& procName, const std::vector<uint8_t>& requestData,
+                std::vector<uint8_t>& responseData, void* context = nullptr) override;
 
     private:
         struct HttpClientImpl;
