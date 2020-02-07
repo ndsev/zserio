@@ -1,8 +1,13 @@
 <img src="doc/Zserio.png" height="100">
 
-***z*** ero ***seri*** alization ***o*** verhead
+***z***ero ***seri***alization ***o***verhead
+
+| Automated Build | Platform |
+| --------------- | -------- |
+| [![build](https://github.com/ndsev/zserio/workflows/build/badge.svg)][build-url] | Ubuntu 18.04 |
 
 --------
+
 No time to read? Go to the [Quick Start](#quick-start) or [download latest release](https://github.com/ndsev/zserio/releases/latest).
 
 In for the numbers? Head over to [benchmarks](benchmarks/README.md).
@@ -143,3 +148,5 @@ Python users can find more information in the
 [Python Tutorial](https://github.com/ndsev/zserio-tutorial-python#zserio-python-quick-start-tutorial).
 
 Check out as well the [Zserio Types Mapping](doc/ZserioTypesMapping.md) for types mapping description.
+
+[build-url]: https://github.com/ndsev/zserio/actions?query=workflow%3Abuild
