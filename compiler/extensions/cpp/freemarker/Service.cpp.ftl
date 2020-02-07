@@ -27,22 +27,6 @@ void Service::callMethod(const std::string& methodName, const std::vector<uint8_
         throw ::zserio::ServiceException("${serviceFullName}: Method '" + methodName + "' does not exist!");
     search->second(requestData, responseData, context);
 }
-<#list methodList as method>
-
-void Service::${method.name}Method(const std::vector<uint8_t>& requestData, std::vector<uint8_t>& responseData,
-        void* context)
-{
-    ::zserio::BitStreamReader reader(requestData.data(), requestData.size());
-    const ${method.requestTypeFullName} request(reader);
-
-    ${method.responseTypeFullName} response;
-    ${method.name}Impl(request, response, context);
-
-    responseData.resize((response.bitSizeOf() + 7) / 8);
-    ::zserio::BitStreamWriter writer(responseData.data(), responseData.size());
-    response.write(writer);
-}
-</#list>
 
 const char* Service::serviceFullName() noexcept
 {
@@ -60,6 +44,22 @@ const ::std::array<const char*, ${methodList?size}>& Service::methodNames() noex
 
     return names;
 }
+<#list methodList as method>
+
+void Service::${method.name}Method(const std::vector<uint8_t>& requestData, std::vector<uint8_t>& responseData,
+        void* context)
+{
+    ::zserio::BitStreamReader reader(requestData.data(), requestData.size());
+    const ${method.requestTypeFullName} request(reader);
+
+    ${method.responseTypeFullName} response;
+    ${method.name}Impl(request, response, context);
+
+    responseData.resize((response.bitSizeOf() + 7) / 8);
+    ::zserio::BitStreamWriter writer(responseData.data(), responseData.size());
+    response.write(writer);
+}
+</#list>
 
 Client::Client(::zserio::IService& service) : m_service(service)
 {

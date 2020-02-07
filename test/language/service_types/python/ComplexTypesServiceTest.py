@@ -1,6 +1,4 @@
 import unittest
-from concurrent import futures
-import grpc
 
 from testutils import getZserioApi
 
@@ -37,20 +35,8 @@ class ComplexTypesServiceTest(unittest.TestCase):
     def setUpClass(cls):
         cls.api = getZserioApi(__file__, "service_types.zs").complex_types_service
 
-        class Client:
-            def __init__(self, channel):
-                self._stub = cls.api.ComplexTypesService.ComplexTypesServiceStub(channel)
-
-            def swapModels(self, request):
-                response = self._stub.swapModels(request)
-                return response
-
-            def getLength(self, request):
-                length = self._stub.getLength(request)
-                return length.getLength()
-
-        class Service(cls.api.ComplexTypesService.ComplexTypesServiceServicer):
-            def swapModels(self, request, _context):
+        class Service(cls.api.ComplexTypesService.Service):
+            def _swapModelsImpl(self, request, _context):
                 requestData = request.getData()
                 data = requestData.getData()
 
@@ -66,7 +52,7 @@ class ComplexTypesServiceTest(unittest.TestCase):
                 return response
 
             @staticmethod
-            def getLength(request, _context):
+            def _getLengthImpl(request, _context):
                 requestData = request.getData()
                 lengthResponse = cls.api.LengthResponse.fromFields(len(requestData.getData()))
                 return lengthResponse
@@ -94,20 +80,19 @@ class ComplexTypesServiceTest(unittest.TestCase):
                     rgbData.append(rgbModel)
                 response.getData().setRgbData(rgbData)
 
-        cls.Client = Client
         cls.Service = Service
 
     def setUp(self):
-        self.server = grpc.server(futures.ThreadPoolExecutor())
-        self.api.ComplexTypesService.add_ComplexTypesServiceServicer_to_server(self.Service(), self.server)
-        port = self.server.add_insecure_port("localhost:0") # 0 to choose port automatically
-        self.server.start()
-        self.client = self.Client(grpc.insecure_channel("localhost:%d" % port))
+        self.service = self.Service()
+        self.client = self.api.ComplexTypesService.Client(self.service)
 
-    def tearDown(self):
-        self.server.stop(0)
-        self.server = None
-        self.client = None
+    def testServiceName(self):
+        self.assertEqual("service_types.complex_types_service.ComplexTypesService",
+                         self.api.ComplexTypesService.Service.SERVICE_FULL_NAME)
+
+    def testMethodNames(self):
+        self.assertEqual("swapModels", self.api.ComplexTypesService.Service.METHOD_NAMES[0])
+        self.assertEqual("getLength", self.api.ComplexTypesService.Service.METHOD_NAMES[1])
 
     def testRgbToCmyk(self):
         length = 10000
@@ -123,9 +108,9 @@ class ComplexTypesServiceTest(unittest.TestCase):
         requestData = self.api.RequestData.fromFields(self.api.ColorModel.RGB, offsets, data)
         request = self.api.Request.fromFields(self.api.ColorModel.RGB, requestData)
 
-        self.assertEqual(length, self.client.getLength(request))
+        self.assertEqual(length, self.client.getLengthMethod(request).getLength())
 
-        response = self.client.swapModels(request)
+        response = self.client.swapModelsMethod(request)
         self.assertEqual(length, response.getLength())
 
         cmykData = response.getData().getCmykData()
@@ -150,9 +135,9 @@ class ComplexTypesServiceTest(unittest.TestCase):
         requestData = self.api.RequestData.fromFields(self.api.ColorModel.CMYK, offsets, data)
         request = self.api.Request.fromFields(self.api.ColorModel.CMYK, requestData)
 
-        self.assertEqual(length, self.client.getLength(request))
+        self.assertEqual(length, self.client.getLengthMethod(request).getLength())
 
-        response = self.client.swapModels(request)
+        response = self.client.swapModelsMethod(request)
         self.assertEqual(length, response.getLength())
 
         rgbData = response.getData().getRgbData()

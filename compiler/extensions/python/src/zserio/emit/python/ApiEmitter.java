@@ -110,7 +110,7 @@ public class ApiEmitter extends PythonDefaultEmitter
     @Override
     public void beginService(ServiceType serviceType) throws ZserioEmitException
     {
-        addModuleMapping(serviceType);
+        addTypeMapping(serviceType);
     }
 
     private void addEmptyPackageMapping() throws ZserioEmitException
