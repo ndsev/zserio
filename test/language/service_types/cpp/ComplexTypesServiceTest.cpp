@@ -42,7 +42,7 @@ namespace
 class ComplexTypesServiceImpl : public ComplexTypesService::Service
 {
 public:
-    void swapModelsImpl(const Request& request, Response& response) override
+    void swapModelsImpl(const Request& request, Response& response, void*) override
     {
         const RequestData& requestData = request.getData();
         const auto& data = requestData.getData();
@@ -57,7 +57,7 @@ public:
         response.initializeChildren();
     }
 
-    void getLengthImpl(const Request& request, LengthResponse& response) override
+    void getLengthImpl(const Request& request, LengthResponse& response, void*) override
     {
         const RequestData& requestData = request.getData();
         response.setLength(static_cast<uint32_t>(requestData.getData().size()));

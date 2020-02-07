@@ -37,15 +37,16 @@ private:
 <#if methodList?has_content>
 <#list methodList as method>
     virtual void ${method.name}Impl(const ${method.requestTypeFullName}& request, <#rt>
-            <#lt>${method.responseTypeFullName}& response) = 0;
+            <#lt>${method.responseTypeFullName}& response, void* context) = 0;
 </#list>
 
 <#list methodList as method>
-    void ${method.name}Method(const std::vector<uint8_t>& requestData, std::vector<uint8_t>& responseData);
+    void ${method.name}Method(const std::vector<uint8_t>& requestData, std::vector<uint8_t>& responseData,
+            void* context);
 </#list>
 
 </#if>
-    using Method = std::function<void(const std::vector<uint8_t>&, std::vector<uint8_t>&)>;
+    using Method = std::function<void(const std::vector<uint8_t>&, std::vector<uint8_t>&, void*)>;
     std::map<std::string, Method> m_methodMap;
 };
 
