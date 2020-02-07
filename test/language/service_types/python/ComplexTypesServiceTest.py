@@ -1,4 +1,5 @@
 import unittest
+import zserio
 
 from testutils import getZserioApi
 
@@ -86,7 +87,7 @@ class ComplexTypesServiceTest(unittest.TestCase):
         self.service = self.Service()
         self.client = self.api.ComplexTypesService.Client(self.service)
 
-    def testServiceName(self):
+    def testServiceFullName(self):
         self.assertEqual("service_types.complex_types_service.ComplexTypesService",
                          self.api.ComplexTypesService.Service.SERVICE_FULL_NAME)
 
@@ -145,3 +146,7 @@ class ComplexTypesServiceTest(unittest.TestCase):
             self.assertEqual(RGB_VALUES[i % 3][0], rgb.getRed())
             self.assertEqual(RGB_VALUES[i % 3][1], rgb.getGreen())
             self.assertEqual(RGB_VALUES[i % 3][2], rgb.getBlue())
+
+    def testInvalidServiceMethod(self):
+        with self.assertRaises(zserio.ServiceException):
+            self.service.callMethod("nonexistentMethod", bytes())

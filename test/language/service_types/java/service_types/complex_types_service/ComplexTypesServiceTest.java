@@ -2,25 +2,19 @@ package service_types.complex_types_service;
 
 import static org.junit.Assert.*;
 
-import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
 import java.io.IOException;
-import io.grpc.ManagedChannel;
-import io.grpc.Server;
-import io.grpc.StatusRuntimeException;
-import io.grpc.inprocess.InProcessChannelBuilder;
-import io.grpc.inprocess.InProcessServerBuilder;
-import io.grpc.stub.StreamObserver;
 
 import zserio.runtime.array.ObjectArray;
 import zserio.runtime.array.UnsignedIntArray;
+import zserio.runtime.service.ServiceException;
 
 public class ComplexTypesServiceTest
 {
     @BeforeClass
-    public static void init() throws IOException
+    public static void init()
     {
         cmykValues = new short[3][4];
 
@@ -33,26 +27,29 @@ public class ComplexTypesServiceTest
             cmykValues[i][2] = cmyk.y;
             cmykValues[i][3] = cmyk.k;
         }
-
-        final String serviceName = "ComplexTypesService";
-        server = new ComplexTypesServiceServer(serviceName);
-        server.start();
-        client = new ComplexTypesServiceClient(serviceName);
-    }
-
-    @AfterClass
-    public static void shutdown()
-    {
-        server.shutdown();
     }
 
     @Test
-    public void rgbToCmyk()
+    public void serviceFullName()
+    {
+        assertEquals("service_types.complex_types_service.ComplexTypesService",
+                ComplexTypesService.Service.SERVICE_FULL_NAME);
+    }
+
+    @Test
+    public void methodNames()
+    {
+        assertEquals("swapModels", ComplexTypesService.Service.METHOD_NAMES[0]);
+        assertEquals("getLength", ComplexTypesService.Service.METHOD_NAMES[1]);
+    }
+
+    @Test
+    public void rgbToCmyk() throws IOException
     {
         final int length = 10000;
 
-        UnsignedIntArray offsets = new UnsignedIntArray(length);
-        ObjectArray<ColorModelChoice> data = new ObjectArray<ColorModelChoice>(length);
+        final UnsignedIntArray offsets = new UnsignedIntArray(length);
+        final ObjectArray<ColorModelChoice> data = new ObjectArray<ColorModelChoice>(length);
 
         for (int i = 0; i < length; ++i)
         {
@@ -61,15 +58,15 @@ public class ComplexTypesServiceTest
             data.setElementAt(choice, i);
         }
 
-        RequestData requestData = new RequestData(ColorModel.RGB, offsets, data);
-        Request request = new Request(ColorModel.RGB, requestData);
+        final RequestData requestData = new RequestData(ColorModel.RGB, offsets, data);
+        final Request request = new Request(ColorModel.RGB, requestData);
 
-        assertEquals(length, client.getLength(request));
+        assertEquals(length, client.getLengthMethod(request).getLength());
 
-        Response response = client.swapModels(request);
+        final Response response = client.swapModelsMethod(request);
         assertEquals(length, response.getLength());
 
-        ObjectArray<CMYKModel> cmykData = response.getData().getCmykData();
+        final ObjectArray<CMYKModel> cmykData = response.getData().getCmykData();
         for (int i = 0; i < length; ++i)
         {
             CMYKModel cmyk = cmykData.elementAt(i);
@@ -81,37 +78,43 @@ public class ComplexTypesServiceTest
     }
 
     @Test
-    public void cmykToRgb()
+    public void cmykToRgb() throws IOException
     {
         final int length = 10000;
 
-        UnsignedIntArray offsets = new UnsignedIntArray(length);
-        ObjectArray<ColorModelChoice> data = new ObjectArray<ColorModelChoice>(length);
+        final UnsignedIntArray offsets = new UnsignedIntArray(length);
+        final ObjectArray<ColorModelChoice> data = new ObjectArray<ColorModelChoice>(length);
 
         for (int i = 0; i < length; ++i)
         {
-            ColorModelChoice choice = new ColorModelChoice(ColorModel.CMYK);
+            final ColorModelChoice choice = new ColorModelChoice(ColorModel.CMYK);
             choice.setCmyk(new CMYKModel(cmykValues[i % 3][0], cmykValues[i % 3][1], cmykValues[i % 3][2],
                     cmykValues[i % 3][3]));
             data.setElementAt(choice, i);
         }
 
-        RequestData requestData = new RequestData(ColorModel.CMYK, offsets, data);
-        Request request = new Request(ColorModel.CMYK, requestData);
+        final RequestData requestData = new RequestData(ColorModel.CMYK, offsets, data);
+        final Request request = new Request(ColorModel.CMYK, requestData);
 
-        assertEquals(length, client.getLength(request));
+        assertEquals(length, client.getLengthMethod(request).getLength());
 
-        Response response = client.swapModels(request);
+        final Response response = client.swapModelsMethod(request);
         assertEquals(length, response.getLength());
 
-        ObjectArray<RGBModel> rgbData = response.getData().getRgbData();
+        final ObjectArray<RGBModel> rgbData = response.getData().getRgbData();
         for (int i = 0; i < length; ++i)
         {
-            RGBModel rgb = rgbData.elementAt(i);
+            final RGBModel rgb = rgbData.elementAt(i);
             assertEquals(rgbValues[i % 3][0], rgb.getRed());
             assertEquals(rgbValues[i % 3][1], rgb.getGreen());
             assertEquals(rgbValues[i % 3][2], rgb.getBlue());
         }
+    }
+
+    @Test(expected=ServiceException.class)
+    public void invalidServiceMethod() throws IOException
+    {
+        service.callMethod("nonexistentMethod", null, null);
     }
 
     private static void convertRgbToCmyk(int r, int g, int b, Cmyk cmyk)
@@ -152,49 +155,10 @@ public class ComplexTypesServiceTest
         public short b;
     }
 
-    private static class ComplexTypesServiceClient
-    {
-        public ComplexTypesServiceClient(String name)
-        {
-            this.channel = InProcessChannelBuilder.forName(name).build();
-            blockingStub = ComplexTypesServiceGrpc.newBlockingStub(channel);
-        }
-
-        public Response swapModels(Request request)
-        {
-            try
-            {
-                return blockingStub.swapModels(request);
-            }
-            catch (StatusRuntimeException e)
-            {
-                System.out.println(e.getStatus());
-                return new Response();
-            }
-        }
-
-        public long getLength(Request request)
-        {
-            try
-            {
-                LengthResponse lengthResponse = blockingStub.getLength(request);
-                return lengthResponse.getLength();
-            }
-            catch (StatusRuntimeException e)
-            {
-                System.out.println(e.getStatus());
-                return 0;
-            }
-        }
-
-        private final ManagedChannel channel;
-        private final ComplexTypesServiceGrpc.ComplexTypesServiceBlockingStub blockingStub;
-    }
-
-    private static class ComplexTypesService extends ComplexTypesServiceGrpc.ComplexTypesServiceImplBase
+    private static class Service extends ComplexTypesService.Service
     {
         @Override
-        public void swapModels(Request request, StreamObserver<Response> responseObserver)
+        public Response swapModelsImpl(Request request, Object context)
         {
             RequestData requestData = request.getData();
             ObjectArray<ColorModelChoice> data = requestData.getData();
@@ -206,18 +170,16 @@ public class ComplexTypesServiceTest
             else
                 cmykToRgb(data, response);
 
-            responseObserver.onNext(response);
-            responseObserver.onCompleted();
+            return response;
         }
 
         @Override
-        public void getLength(Request request, StreamObserver<LengthResponse> responseObserver)
+        public LengthResponse getLengthImpl(Request request, Object context)
         {
             RequestData requestData = request.getData();
             LengthResponse lengthResponse = new LengthResponse(requestData.getData().length());
 
-            responseObserver.onNext(lengthResponse);
-            responseObserver.onCompleted();
+            return lengthResponse;
         }
 
         private static void rgbToCmyk(ObjectArray<ColorModelChoice> data, Response response)
@@ -250,30 +212,10 @@ public class ComplexTypesServiceTest
         }
     }
 
-    private static class ComplexTypesServiceServer
-    {
-        public ComplexTypesServiceServer(String name)
-        {
-            server = InProcessServerBuilder.forName(name).addService(new ComplexTypesService()).build();
-        }
+    private static final Service service = new Service();
+    private static final ComplexTypesService.Client client = new ComplexTypesService.Client(service);
 
-        public void start() throws IOException
-        {
-            server.start();
-        }
-
-        public void shutdown()
-        {
-            server.shutdown();
-        }
-
-        private final Server server;
-    }
-
-    private static ComplexTypesServiceServer server;
-    private static ComplexTypesServiceClient client;
-
-    // note that conversion is slightly inaccurate and therefore this values are carefully choosen
+    // note that conversion is slightly inaccurate and therefore this values are carefully chosen
     // to provide consistent results for the test needs
     private static final short rgbValues[][] = { { 0 ,128, 255 }, { 222, 222, 0 }, { 65, 196, 31 } };
     private static short cmykValues[][];

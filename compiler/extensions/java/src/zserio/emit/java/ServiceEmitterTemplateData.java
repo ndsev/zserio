@@ -36,9 +36,9 @@ public final class ServiceEmitterTemplateData extends UserTypeTemplateData
         return methodList;
     }
 
-    public String getServicePackageName()
+    public String getServiceFullName()
     {
-        return servicePackageName;
+        return servicePackageName.isEmpty() ? getName() : servicePackageName + "." + getName();
     }
 
     public static class MethodTemplateData

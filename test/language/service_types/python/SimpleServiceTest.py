@@ -15,12 +15,11 @@ class SimpleServiceTest(unittest.TestCase):
         class Service(cls.api.SimpleService.Service):
             @staticmethod
             def _powerOfTwoImpl(request, context):
-                value = request.getValue()
-                response = cls.api.Response.fromFields(value**2)
-
                 if context:
                     context.seenByService = True
 
+                value = request.getValue()
+                response = cls.api.Response.fromFields(value**2)
                 return response
 
         cls.Service = Service
@@ -29,11 +28,11 @@ class SimpleServiceTest(unittest.TestCase):
         self.service = self.Service()
         self.client = self.api.SimpleService.Client(self.service)
 
-    def testServiceName(self):
+    def testServiceFullName(self):
         self.assertEqual("service_types.simple_service.SimpleService",
                          self.api.SimpleService.Service.SERVICE_FULL_NAME)
 
-    def testMethodName(self):
+    def testMethodNames(self):
         self.assertEqual("powerOfTwo", self.api.SimpleService.Service.METHOD_NAMES[0])
 
     def testPowerOfTwo(self):
@@ -52,6 +51,7 @@ class SimpleServiceTest(unittest.TestCase):
 
     def testCallWithContext(self):
         fakeContext = FakeContext()
+        self.assertFalse(fakeContext.seenByService)
         request = self.api.Request.fromFields(10)
         response = self.client.powerOfTwoMethod(request, fakeContext)
         self.assertEqual(100, response.getValue())

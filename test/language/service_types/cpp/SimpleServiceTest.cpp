@@ -15,7 +15,7 @@ namespace
 {
     struct FakeContext
     {
-        bool seedByService = false;
+        bool seenByService = false;
     };
 }
 
@@ -24,13 +24,13 @@ class SimpleServiceImpl : public SimpleService::Service
 public:
     void powerOfTwoImpl(const Request& request, Response& response, void* context) override
     {
+        if (context != nullptr)
+            static_cast<FakeContext*>(context)->seenByService = true;
+
         int32_t value = request.getValue();
         if (value < 0)
             value = -value;
         response.setValue(static_cast<uint64_t>(value) * value);
-
-        if (context != nullptr)
-            static_cast<FakeContext*>(context)->seedByService = true;
     }
 };
 
@@ -52,7 +52,7 @@ TEST_F(SimpleServiceTest, serviceFullName)
             SimpleService::Service::serviceFullName());
 }
 
-TEST_F(SimpleServiceTest, methodName)
+TEST_F(SimpleServiceTest, methodNames)
 {
     ASSERT_EQ(std::string("powerOfTwo"), SimpleService::Service::methodNames()[0]);
 }
@@ -85,11 +85,12 @@ TEST_F(SimpleServiceTest, invalidServiceMethod)
 TEST_F(SimpleServiceTest, callWithContext)
 {
     FakeContext fakeContext;
+    ASSERT_FALSE(fakeContext.seenByService);
     Request request{10};
     Response response;
     client.powerOfTwoMethod(request, response, &fakeContext);
     ASSERT_EQ(100, response.getValue());
-    ASSERT_TRUE(fakeContext.seedByService);
+    ASSERT_TRUE(fakeContext.seenByService);
 }
 
 } // namespace simple_service
