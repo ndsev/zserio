@@ -1,10 +1,9 @@
 <#include "FileHeader.inc.ftl">
 <@standard_header generatorDescription, packageName, javaMajorVersion, [
-        "java.io.IOException",
         "java.util.HashMap",
         "java.util.Map",
-        "zserio.runtime.io.ByteArrayBitStreamReader",
-        "zserio.runtime.io.ByteArrayBitStreamWriter"
+        "zserio.runtime.ZserioError",
+        "zserio.runtime.io.ZserioIO",
         "zserio.runtime.service.ServiceInterface",
         "zserio.runtime.service.ServiceException"
 ]/>
@@ -20,7 +19,7 @@ public final class ${name}
             methodMap.put("${method.name}",
                 new Method()
                 {
-                    public byte[] call(byte[] requestData, Object context) throws IOException
+                    public byte[] call(byte[] requestData, Object context) throws ZserioError
                     {
                         return ${method.name}Method(requestData, context);
                     }
@@ -30,7 +29,7 @@ public final class ${name}
         }
 
         @Override
-        public byte[] callMethod(String methodName, byte[] requestData, Object context) throws IOException
+        public byte[] callMethod(String methodName, byte[] requestData, Object context) throws ZserioError
         {
             final Method method = methodMap.get(methodName);
             if (method == null)
@@ -52,22 +51,21 @@ public final class ${name}
 <#list methodList as method>
 
         private byte[] ${method.name}Method(byte[] requestData, Object context)
-                throws IOException, ServiceException
+                throws ZserioError
         {
-            final ByteArrayBitStreamReader reader = new ByteArrayBitStreamReader(requestData);
-            final ${method.requestTypeFullName} request = new Request(reader);
+            final ${method.requestTypeFullName} request =
+                    ZserioIO.read(${method.requestTypeFullName}.class, requestData);
 
             final ${method.responseTypeFullName} response = ${method.name}Impl(request, context);
 
-            final ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter();
-            response.write(writer);
-            return writer.toByteArray();
+            final byte[] responseData = ZserioIO.write(response);
+            return responseData;
         }
 </#list>
 
         private interface Method
         {
-            byte[] call(byte[] requestData, Object context) throws IOException;
+            byte[] call(byte[] requestData, Object context) throws ZserioError;
         }
 
         private final Map<String, Method> methodMap;
@@ -82,21 +80,19 @@ public final class ${name}
 <#list methodList as method>
 
         public ${method.responseTypeFullName} ${method.name}Method(${method.requestTypeFullName} request,
-                Object context) throws IOException, ServiceException
+                Object context) throws ZserioError
         {
-            final ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter();
-            request.write(writer);
-            final byte[] requestData = writer.toByteArray();
+            final byte[] requestData = ZserioIO.write(request);
 
             final byte[] responseData = service.callMethod("${method.name}", requestData, context);
 
-            final ByteArrayBitStreamReader reader = new ByteArrayBitStreamReader(responseData);
-            final ${method.responseTypeFullName} response = new ${method.responseTypeFullName}(reader);
+            final ${method.responseTypeFullName} response =
+                    ZserioIO.read(${method.responseTypeFullName}.class, responseData);
             return response;
         }
 
         public ${method.responseTypeFullName} ${method.name}Method(${method.requestTypeFullName} request)
-                 throws IOException, ServiceException
+                 throws ZserioError
         {
             return ${method.name}Method(request, null);
         }

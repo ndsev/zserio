@@ -4,7 +4,6 @@ import static org.junit.Assert.*;
 
 import org.junit.Test;
 
-import java.io.IOException;
 import java.math.BigInteger;
 
 import zserio.runtime.service.ServiceException;
@@ -24,7 +23,7 @@ public class SimpleServiceTest
     }
 
     @Test
-    public void powerOfTwo() throws IOException
+    public void powerOfTwo()
     {
         final Request request = new Request(13);
         assertEquals(BigInteger.valueOf(169), client.powerOfTwoMethod(request).getValue());
@@ -37,13 +36,13 @@ public class SimpleServiceTest
     }
 
     @Test(expected=ServiceException.class)
-    public void invalidServiceMethod() throws IOException
+    public void invalidServiceMethod()
     {
         service.callMethod("nonexistentMethod", null, null);
     }
 
     @Test
-    public void callWithContext() throws IOException
+    public void callWithContext()
     {
         final FakeContext fakeContext = new FakeContext();
         assertFalse(fakeContext.seenByService);

@@ -5,8 +5,6 @@ import static org.junit.Assert.*;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import java.io.IOException;
-
 import zserio.runtime.array.ObjectArray;
 import zserio.runtime.array.UnsignedIntArray;
 import zserio.runtime.service.ServiceException;
@@ -44,7 +42,7 @@ public class ComplexTypesServiceTest
     }
 
     @Test
-    public void rgbToCmyk() throws IOException
+    public void rgbToCmyk()
     {
         final int length = 10000;
 
@@ -78,7 +76,7 @@ public class ComplexTypesServiceTest
     }
 
     @Test
-    public void cmykToRgb() throws IOException
+    public void cmykToRgb()
     {
         final int length = 10000;
 
@@ -112,7 +110,7 @@ public class ComplexTypesServiceTest
     }
 
     @Test(expected=ServiceException.class)
-    public void invalidServiceMethod() throws IOException
+    public void invalidServiceMethod()
     {
         service.callMethod("nonexistentMethod", null, null);
     }
