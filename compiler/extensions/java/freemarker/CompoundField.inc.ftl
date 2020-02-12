@@ -8,7 +8,7 @@
 
 <#macro compound_read_field_offset_check field compoundName indent>
     <#local I>${""?left_pad(indent * 4)}</#local>
-${I}__in.alignTo(Byte.SIZE);
+${I}__in.alignTo(java.lang.Byte.SIZE);
 ${I}if (__in.getBytePosition() != <@compound_field_get_offset field/>)
 ${I}{
 ${I}    throw new ZserioError("Read: Wrong offset for field ${compoundName}.${field.name}: " +
@@ -83,7 +83,7 @@ ${I}}
 
 <#macro compound_write_field_offset_check field compoundName indent>
     <#local I>${""?left_pad(indent * 4)}</#local>
-${I}__out.alignTo(Byte.SIZE);
+${I}__out.alignTo(java.lang.Byte.SIZE);
 ${I}if (__out.getBytePosition() != <@compound_field_get_offset field/>)
 ${I}    throw new ZserioError("Write: Wrong offset for field ${compoundName}.${field.name}: " +
 ${I}            __out.getBytePosition() + " != " + <@compound_field_get_offset field/> + "!");
@@ -156,10 +156,10 @@ ${I}    throw new ConstraintError("Constraint violated at ${compoundName}.${fiel
     <#if field.isSimpleType>
         <#if field.isFloat>
             <#-- float type: compare by floatToIntBits() to get rid of SpotBugs -->
-Float.floatToIntBits(this.${field.name}) == Float.floatToIntBits(__that.${field.name})<#rt>
+java.lang.Float.floatToIntBits(this.${field.name}) == java.lang.Float.floatToIntBits(__that.${field.name})<#rt>
         <#elseif field.isDouble>
             <#-- double type: compare by doubleToLongBits() to get rid of SpotBugs -->
-Double.doubleToLongBits(this.${field.name}) == Double.doubleToLongBits(__that.${field.name})<#rt>
+java.lang.Double.doubleToLongBits(this.${field.name}) == java.lang.Double.doubleToLongBits(__that.${field.name})<#rt>
         <#else>
             <#-- simple type: compare by == -->
 this.${field.name} == __that.${field.name}<#rt>
@@ -229,11 +229,11 @@ ${I}__endBitPosition += ${field.getterName}().bitSizeOf(__endBitPosition);
 ${I}__result = Util.HASH_PRIME_NUMBER * __result + (int) (${field.name} ^ (${field.name} >>> 32));
         <#elseif field.isFloat>
             <#-- float type: use floatToIntBits() -->
-${I}__result = Util.HASH_PRIME_NUMBER * __result + Float.floatToIntBits(${field.name});
+${I}__result = Util.HASH_PRIME_NUMBER * __result + java.lang.Float.floatToIntBits(${field.name});
         <#elseif field.isDouble>
             <#-- double type: use doubleToLongBits() -->
-${I}__result = Util.HASH_PRIME_NUMBER * __result + (int) (Double.doubleToLongBits(${field.name}) ^
-${I}        (Double.doubleToLongBits(${field.name}) >>> 32));
+${I}__result = Util.HASH_PRIME_NUMBER * __result + (int) (java.lang.Double.doubleToLongBits(${field.name}) ^
+${I}        (java.lang.Double.doubleToLongBits(${field.name}) >>> 32));
         <#elseif field.isBool>
             <#-- bool type: convert it to int -->
 ${I}__result = Util.HASH_PRIME_NUMBER * __result + (${field.name} ? 1 : 0);

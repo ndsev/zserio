@@ -50,7 +50,7 @@ public class ${name}
     public static interface ParameterProvider
     {
     <#list explicitParameters as parameter>
-        ${parameter.javaTypeName} <@sql_parameter_provider_getter_name parameter/>(ResultSet resultSet);
+        ${parameter.javaTypeFullName} <@sql_parameter_provider_getter_name parameter/>(ResultSet resultSet);
     </#list>
     };
 
@@ -349,20 +349,20 @@ ${I}totalParameterProviderTimer.start();
     </#if>
     <#list field.typeParameters as parameter>
         <#if parameter.isExplicit>
-${I}final ${parameter.javaTypeName} param${parameter.definitionName?cap_first} =
+${I}final ${parameter.javaTypeFullName} param${parameter.definitionName?cap_first} =
 ${I}        parameterProvider.<@sql_parameter_provider_getter_name parameter/>(resultSet);
         </#if>
     </#list>
     <#if called_from_validation>
 ${I}totalParameterProviderTimer.stop();
     </#if>
-${I}final ${field.javaTypeName} blob = new ${field.javaTypeName}(reader<#rt>
+${I}final ${field.javaTypeFullName} blob = new ${field.javaTypeFullName}(reader<#rt>
     <#list field.typeParameters as parameter>
 <#lt>,
         <#if parameter.isExplicit>
 ${I}    param${parameter.definitionName?cap_first}<#rt>
         <#else>
-${I}    (${parameter.javaTypeName})(${parameter.expression})<#rt>
+${I}    (${parameter.javaTypeFullName})(${parameter.expression})<#rt>
         </#if>
     </#list>
 <#lt>);
@@ -378,15 +378,15 @@ ${I}    (${parameter.javaTypeName})(${parameter.expression})<#rt>
     <#if field.sqlTypeData.isBlob>
         final byte[] ${valueVarName} = resultSet.getBytes(${field_index + 1});
     <#elseif field.enumData??>
-        final ${field.enumData.baseJavaTypeName} ${valueVarName} = <#rt>
+        final ${field.enumData.baseJavaTypeFullName} ${valueVarName} = <#rt>
                 <#lt>resultSet.get${field.enumData.baseJavaTypeName?cap_first}(${field_index + 1});
     <#elseif field.bitmaskData??>
-        final ${field.bitmaskData.baseJavaTypeName} ${valueVarName} = <#rt>
+        final ${field.bitmaskData.baseJavaTypeFullName} ${valueVarName} = <#rt>
                 <#lt>resultSet.get${field.bitmaskData.baseJavaTypeName?cap_first}(${field_index + 1});
     <#elseif field.requiresBigInt>
         final long ${valueVarName} = resultSet.getLong(${field_index + 1});
     <#else>
-        final ${field.javaTypeName} ${valueVarName} = resultSet.get${field.javaTypeName?cap_first}(${field_index + 1});
+        final ${field.javaTypeFullName} ${valueVarName} = resultSet.get${field.javaTypeName?cap_first}(${field_index + 1});
     </#if>
         if (!resultSet.wasNull())
         {
@@ -395,9 +395,9 @@ ${I}    (${parameter.javaTypeName})(${parameter.expression})<#rt>
             <@read_blob field, false, 3/>
             row.set${field.name?cap_first}(blob);
     <#elseif field.enumData??>
-            row.set${field.name?cap_first}(${field.javaTypeName}.toEnum(${valueVarName}));
+            row.set${field.name?cap_first}(${field.javaTypeFullName}.toEnum(${valueVarName}));
     <#elseif field.bitmaskData??>
-            row.set${field.name?cap_first}(new ${field.javaTypeName}(${valueVarName}));
+            row.set${field.name?cap_first}(new ${field.javaTypeFullName}(${valueVarName}));
     <#elseif field.requiresBigInt>
             row.set${field.name?cap_first}(java.math.BigInteger.valueOf(${valueVarName}));
     <#else>
@@ -424,16 +424,16 @@ ${I}    (${parameter.javaTypeName})(${parameter.expression})<#rt>
             final byte[] blobData = ZserioIO.write(row.get${field.name?cap_first}());
             statement.setBytes(${field_index + 1}, blobData);
         <#elseif field.enumData??>
-            final ${field.enumData.baseJavaTypeName} enumValue = row.get${field.name?cap_first}().getValue();
+            final ${field.enumData.baseJavaTypeFullName} enumValue = row.get${field.name?cap_first}().getValue();
             statement.set${field.enumData.baseJavaTypeName?cap_first}(${field_index + 1}, enumValue);
         <#elseif field.bitmaskData??>
-            final ${field.bitmaskData.baseJavaTypeName} bitmaskValue = row.get${field.name?cap_first}().getValue();
+            final ${field.bitmaskData.baseJavaTypeFullName} bitmaskValue = row.get${field.name?cap_first}().getValue();
             statement.set${field.bitmaskData.baseJavaTypeName?cap_first}(${field_index + 1}, bitmaskValue);
         <#elseif field.requiresBigInt>
             final long bigIntValue = row.get${field.name?cap_first}().longValue();
             statement.setLong(${field_index + 1}, bigIntValue);
         <#else>
-            final ${field.javaTypeName} value = row.get${field.name?cap_first}();
+            final ${field.javaTypeFullName} value = row.get${field.name?cap_first}();
             statement.set${field.javaTypeName?cap_first}(${field_index + 1}, value);
         </#if>
         }
@@ -597,7 +597,7 @@ ${I}    (${parameter.javaTypeName})(${parameter.expression})<#rt>
                 <#if field.enumData?? || field.rangeCheckData.sqlRangeData?? || field.requiresBigInt>
         final long value = resultSet.getLong(${field_index + 1});
                 <#else>
-        final ${field.javaTypeName} value = resultSet.get${field.javaTypeName?cap_first}(${field_index + 1});
+        final ${field.javaTypeFullName} value = resultSet.get${field.javaTypeName?cap_first}(${field_index + 1});
                 </#if>
         if (!resultSet.wasNull())
         {
@@ -608,7 +608,7 @@ ${I}    (${parameter.javaTypeName})(${parameter.expression})<#rt>
                     <#if field.enumData??>
             try
             {
-                ${field.javaTypeName}.toEnum((${field.enumData.baseJavaTypeName})value);
+                ${field.javaTypeFullName}.toEnum((${field.enumData.baseJavaTypeFullName})value);
             }
             catch (IllegalArgumentException exception)
             {
@@ -620,11 +620,11 @@ ${I}    (${parameter.javaTypeName})(${parameter.expression})<#rt>
                     </#if>
                 </#if>
                 <#if field.enumData??>
-            row.set${field.name?cap_first}(${field.javaTypeName}.toEnum((${field.enumData.baseJavaTypeName})value));
+            row.set${field.name?cap_first}(${field.javaTypeFullName}.toEnum((${field.enumData.baseJavaTypeFullName})value));
                 <#elseif field.requiresBigInt>
             row.set${field.name?cap_first}(java.math.BigInteger.valueOf(value));
                 <#elseif field.rangeCheckData.sqlRangeData??>
-            row.set${field.name?cap_first}((${field.javaTypeName})value);
+            row.set${field.name?cap_first}((${field.javaTypeFullName})value);
                 <#else>
             row.set${field.name?cap_first}(value);
                 </#if>

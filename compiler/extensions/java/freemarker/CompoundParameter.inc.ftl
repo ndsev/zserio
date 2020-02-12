@@ -18,10 +18,10 @@
     <#if parameter.isSimpleType>
         <#if parameter.isFloat>
             <#-- float type: compare by floatToIntBits() to get rid of SpotBugs -->
-Float.floatToIntBits(this.${parameter.name}) == Float.floatToIntBits(__that.${parameter.name})<#rt>
+java.lang.Float.floatToIntBits(this.${parameter.name}) == java.lang.Float.floatToIntBits(__that.${parameter.name})<#rt>
         <#elseif parameter.isDouble>
             <#-- double type: compare by doubleToLongBits() to get rid of SpotBugs -->
-Double.doubleToLongBits(this.${parameter.name}) == Double.doubleToLongBits(__that.${parameter.name})<#rt>
+java.lang.Double.doubleToLongBits(this.${parameter.name}) == java.lang.Double.doubleToLongBits(__that.${parameter.name})<#rt>
         <#else>
             <#-- simple type: compare by == -->
 this.${parameter.name} == __that.${parameter.name}<#rt>
@@ -42,11 +42,11 @@ this.${parameter.name} == __that.${parameter.name}<#rt>
         __result = Util.HASH_PRIME_NUMBER * __result + (int) (${parameter.name} ^ (${parameter.name} >>> 32));
         <#elseif parameter.isFloat>
             <#-- float type: use floatToIntBits() -->
-        __result = Util.HASH_PRIME_NUMBER * __result + Float.floatToIntBits(${parameter.name});
+        __result = Util.HASH_PRIME_NUMBER * __result + java.lang.Float.floatToIntBits(${parameter.name});
         <#elseif parameter.isDouble>
             <#-- double type: use doubleToLongBits() -->
-        __result = Util.HASH_PRIME_NUMBER * __result + (int) (Double.doubleToLongBits(${parameter.name}) ^
-                (Double.doubleToLongBits(${parameter.name}) >>> 32));
+        __result = Util.HASH_PRIME_NUMBER * __result + (int) (java.lang.Double.doubleToLongBits(${parameter.name}) ^
+                (java.lang.Double.doubleToLongBits(${parameter.name}) >>> 32));
         <#elseif parameter.isBool>
             <#-- bool type: convert it to int -->
         __result = Util.HASH_PRIME_NUMBER * __result + (${parameter.name} ? 1 : 0);

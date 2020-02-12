@@ -8,7 +8,7 @@ public class NativeLongType extends NativeIntegralType
 {
     public NativeLongType(boolean nullable)
     {
-        super(PackageName.EMPTY, nullable ? "Long" : "long");
+        super(nullable ? JAVA_LANG_PACKAGE : PackageName.EMPTY, nullable ? "Long" : "long");
         this.nullable = nullable;
     }
 

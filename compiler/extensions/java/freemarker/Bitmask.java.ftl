@@ -101,7 +101,7 @@ public class ${name} implements <#if withWriterCode>InitializeOffsetsWriter, </#
     }
 
     @Override
-    public String toString()
+    public java.lang.String toString()
     {
         final StringBuilder builder = new StringBuilder();
 
@@ -118,7 +118,7 @@ public class ${name} implements <#if withWriterCode>InitializeOffsetsWriter, </#
             builder.append("${zeroValueName}");
 </#if>
 
-        return String.valueOf(value) + "[" + builder.toString() + "]";
+        return java.lang.String.valueOf(value) + "[" + builder.toString() + "]";
     }
 <#if withWriterCode>
 

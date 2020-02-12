@@ -8,7 +8,7 @@ public class NativeShortType extends NativeIntegralType
 {
     public NativeShortType(boolean nullable)
     {
-        super(PackageName.EMPTY, nullable ? "Short" : "short");
+        super(nullable ? JAVA_LANG_PACKAGE : PackageName.EMPTY, nullable ? "Short" : "short");
         this.nullable = nullable;
     }
 

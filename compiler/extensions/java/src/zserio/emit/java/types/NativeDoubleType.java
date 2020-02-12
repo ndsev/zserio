@@ -6,7 +6,7 @@ public class NativeDoubleType extends JavaNativeType
 {
     public NativeDoubleType(boolean nullable)
     {
-        super(PackageName.EMPTY, nullable ? "Double" : "double");
+        super(nullable ? JAVA_LANG_PACKAGE : PackageName.EMPTY, nullable ? "Double" : "double");
         this.nullable = nullable;
     }
 

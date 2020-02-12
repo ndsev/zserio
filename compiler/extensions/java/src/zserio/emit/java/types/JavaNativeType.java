@@ -34,6 +34,9 @@ public abstract class JavaNativeType implements NativeType
 
     public abstract boolean isSimple();
 
+    protected static final PackageName JAVA_LANG_PACKAGE =
+            new PackageName.Builder().addId("java").addId("lang").get();
+
     private final PackageName packageName;
     private final String name;
 }

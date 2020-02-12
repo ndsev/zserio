@@ -1,0 +1,36 @@
+<project name="identifiers" basedir="." default="run">
+    <testProperties testPath="language/identifiers" testName="identifiers"/>
+
+    <target name="prepare">
+        <testPrepare testName="identifiers"/>
+    </target>
+
+    <target name="gen.check" depends="prepare">
+        <testGenCheck testName="identifiers"/>
+    </target>
+
+    <target name="gen" depends="gen.check" unless="identifiers.zs.gen_is_uptodate">
+        <testGenClean testName="identifiers"/>
+        <testGen testName="identifiers" zsFile="identifiers.zs"/>
+    </target>
+
+    <target name="gen.checkWarnings" depends="gen">
+        <testGenCheckWarnings testName="identifiers"/>
+    </target>
+
+    <target name="compile" depends="gen.checkWarnings">
+        <testCompile testName="identifiers"/>
+    </target>
+
+    <target name="spotbugs" depends="compile" if="spotbugs.home_dir">
+        <testSpotBugs testName="identifiers"/>
+    </target>
+
+    <target name="run" depends="spotbugs">
+        <testRun testname="identifiers"/>
+    </target>
+
+    <target name="clean">
+        <testClean testName="identifiers"/>
+    </target>
+</project>

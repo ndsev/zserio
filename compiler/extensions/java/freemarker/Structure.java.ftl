@@ -76,9 +76,9 @@ ${I}__endBitPosition = BitPositionUtil.alignTo(${field.alignmentValue}, __endBit
         <#if field.offset.containsIndex>
             <#-- align to bytes only if the array is non-empty to match read/write behavior -->
 ${I}if (${field.name}.length() > 0)
-${I}    __endBitPosition = BitPositionUtil.alignTo(Byte.SIZE, __endBitPosition);
+${I}    __endBitPosition = BitPositionUtil.alignTo(java.lang.Byte.SIZE, __endBitPosition);
         <#else>
-${I}__endBitPosition = BitPositionUtil.alignTo(Byte.SIZE, __endBitPosition);
+${I}__endBitPosition = BitPositionUtil.alignTo(java.lang.Byte.SIZE, __endBitPosition);
         </#if>
     </#if>
 </#macro>

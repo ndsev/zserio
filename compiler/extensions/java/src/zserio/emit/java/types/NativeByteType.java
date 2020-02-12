@@ -8,7 +8,7 @@ public class NativeByteType extends NativeIntegralType
 {
     public NativeByteType(boolean nullable)
     {
-        super(PackageName.EMPTY, nullable ? "Byte" : "byte");
+        super(nullable ? JAVA_LANG_PACKAGE : PackageName.EMPTY, nullable ? "Byte" : "byte");
         this.nullable = nullable;
     }
 
