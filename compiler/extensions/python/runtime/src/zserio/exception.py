@@ -6,8 +6,3 @@ class PythonRuntimeException(Exception):
     """
     Exception thrown in case of an error in Zserio python runtime library.
     """
-
-class ServiceException(PythonRuntimeException):
-    """
-    Exception thrown in case of an error in Zserio Service
-    """

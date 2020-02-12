@@ -2,7 +2,7 @@
 <@file_header generatorDescription/>
 <@all_imports packageImports symbolImports typeImports/>
 
-class Service:
+class Service(zserio.ServiceInterface):
     def __init__(self):
         self._methodMap = {
 <#list methodList as method>

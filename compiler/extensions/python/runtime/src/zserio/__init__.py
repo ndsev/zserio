@@ -8,7 +8,8 @@ Zserio Python runtime library
 
 from zserio.bitreader import BitStreamReader
 from zserio.bitwriter import BitStreamWriter
-from zserio.exception import PythonRuntimeException, ServiceException
+from zserio.exception import PythonRuntimeException
+from zserio.service import ServiceInterface, ServiceException
 
 import zserio.array
 import zserio.bitbuffer
