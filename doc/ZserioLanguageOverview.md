@@ -1779,7 +1779,8 @@ union                                    | `BLOB`
 ### Service types
 
 Binary data streams defined by zserio are also good candidates to be used in RPC systems.
-Zserio introduces RPC services directly in the language. A service type contains definitions of service methods.
+Zserio introduces generic services directly in the language. A service type contains definitions of
+service methods.
 
 **Example**
 ```
