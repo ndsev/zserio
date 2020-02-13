@@ -60,6 +60,11 @@ abstract class CppDefaultEmitter extends DefaultEmitter
         return packageMapper;
     }
 
+    protected boolean getWithServiceCode()
+    {
+        return extensionParameters.getWithServiceCode();
+    }
+
     protected boolean getWithSourcesAmalgamation()
     {
         return extensionParameters.getWithSourcesAmalgamation();
@@ -68,11 +73,6 @@ abstract class CppDefaultEmitter extends DefaultEmitter
     protected boolean getWithSqlCode()
     {
         return extensionParameters.getWithSqlCode();
-    }
-
-    protected boolean getWithGrpcCode()
-    {
-        return extensionParameters.getWithGrpcCode();
     }
 
     private void processTemplate(String templateName, Object templateData, PackageName packageName,

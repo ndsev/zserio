@@ -1,38 +1,33 @@
 package zserio.ast;
 
 /**
- * AST node for RPC calls.
+ * AST node for service methods.
  */
-public class Rpc extends DocumentableAstNode
+public class ServiceMethod extends DocumentableAstNode
 {
     /**
      * Constructor.
      *
      * @param location              AST node location.
-     * @param name                  Name of the RPC call.
+     * @param name                  Name of the service method.
      * @param responseTypeReference Reference to the response type.
-     * @param responseStreaming     True if response streaming is requested.
-     * @param requestTypeReference           Reference to the request type.
-     * @param requestStreaming      True if request streaming is requested.
+     * @param requestTypeReference  Reference to the request type.
      * @param docComment            Documentation comment belonging to this node.
      */
-    public Rpc(AstLocation location, String name, TypeReference responseTypeReference,
-            boolean responseStreaming, TypeReference requestTypeReference, boolean requestStreaming,
-            DocComment docComment)
+    public ServiceMethod(AstLocation location, String name, TypeReference responseTypeReference,
+            TypeReference requestTypeReference, DocComment docComment)
     {
         super(location, docComment);
 
         this.name = name;
         this.responseTypeReference = responseTypeReference;
-        this.responseStreaming = responseStreaming;
         this.requestTypeReference = requestTypeReference;
-        this.requestStreaming = requestStreaming;
     }
 
     @Override
     public void accept(ZserioAstVisitor visitor)
     {
-        visitor.visitRpc(this);
+        visitor.visitServiceMethod(this);
     }
 
     @Override
@@ -45,9 +40,9 @@ public class Rpc extends DocumentableAstNode
     }
 
     /**
-     * Gets name of the RCP method.
+     * Gets name of the service method.
      *
-     * @return RPC method name.
+     * @return Service method name.
      */
     public String getName()
     {
@@ -55,9 +50,9 @@ public class Rpc extends DocumentableAstNode
     }
 
     /**
-     * Gets request type of the RPC method.
+     * Gets request type of the method.
      *
-     * @return Request type of this RPC method.
+     * @return Request type of this method.
      */
     public CompoundType getRequestType()
     {
@@ -65,19 +60,9 @@ public class Rpc extends DocumentableAstNode
     }
 
     /**
-     * Returns whether the request is defined as a stream.
+     * Gets response type of the method.
      *
-     * @return True when request is defined as a stream.
-     */
-    public boolean hasRequestStreaming()
-    {
-        return requestStreaming;
-    }
-
-    /**
-     * Gets response type of the RPC method.
-     *
-     * @return Response type of this RPC method.
+     * @return Response type of this method.
      */
     public CompoundType getResponseType()
     {
@@ -85,17 +70,7 @@ public class Rpc extends DocumentableAstNode
     }
 
     /**
-     * Returns whether the response is defined as a stream.
-     *
-     * @return True when response is defined as a stream.
-     */
-    public boolean hasResponseStreaming()
-    {
-        return responseStreaming;
-    }
-
-    /**
-     * Checks the RPC call.
+     * Checks the method's types.
      */
     void check()
     {
@@ -109,7 +84,7 @@ public class Rpc extends DocumentableAstNode
         if (!(referencedBaseType instanceof CompoundType))
         {
             throw new ParserException(typeReference,
-                    "Only non-parameterized compound types can be used in RPC calls, " +
+                    "Only non-parameterized compound types can be used in service methods, " +
                     "'" + typeReference.getReferencedTypeName() + "' is not a compound type!");
         }
 
@@ -117,17 +92,18 @@ public class Rpc extends DocumentableAstNode
         if (compoundType.getTypeParameters().size() > 0)
         {
             throw new ParserException(typeReference,
-                    "Only non-parameterized compound types can be used in RPC calls, '" +
+                    "Only non-parameterized compound types can be used in service methods, '" +
                     ZserioTypeUtil.getReferencedFullName(typeReference) + "' is a parameterized type!");
         }
         if (compoundType instanceof SqlTableType)
+        {
             throw new ParserException(typeReference, "SQL table '" +
-                    ZserioTypeUtil.getReferencedFullName(typeReference) + "' cannot be used in RPC call");
+                    ZserioTypeUtil.getReferencedFullName(typeReference) +
+                    "' cannot be used in service methods");
+        }
     }
 
     private final String name;
     private final TypeReference responseTypeReference;
-    private final boolean responseStreaming;
     private final TypeReference requestTypeReference;
-    private final boolean requestStreaming;
 }

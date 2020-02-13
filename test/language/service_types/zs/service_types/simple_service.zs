@@ -12,5 +12,5 @@ struct Request
 
 service SimpleService
 {
-    rpc Response powerOfTwo(Request);
+    Response powerOfTwo(Request);
 };

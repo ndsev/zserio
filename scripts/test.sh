@@ -40,7 +40,7 @@ test_python()
 # Run zserio tests.
 test()
 {
-    exit_if_argc_ne $# 11
+    exit_if_argc_ne $# 10
     local ZSERIO_RELEASE_DIR="$1"; shift
     local ZSERIO_VERSION="$1"; shift
     local ZSERIO_PROJECT_ROOT="$1"; shift
@@ -51,7 +51,6 @@ test()
     local PARAM_JAVA="$1"; shift
     local PARAM_PYTHON="$1"; shift
     local SWITCH_CLEAN="$1"; shift
-    local SWITCH_GRPC="$1"; shift
     local SWITCH_TEST_NAME="$1"; shift
 
     local TEST_SRC_DIR="${ZSERIO_PROJECT_ROOT}/test"
@@ -80,9 +79,7 @@ test()
         fi
         local CMAKE_ARGS=("-DZSERIO_RUNTIME_INCLUDE_INSPECTOR=ON"
                           "-DZSERIO_RELEASE_ROOT=${UNPACKED_ZSERIO_RELEASE_DIR}"
-                          "-DZSERIO_TEST_NAME=${CPP_TEST_NAME}"
-                          "-DGRPC_ENABLED=${SWITCH_GRPC}"
-                          "-DGRPC_ROOT=${GRPC_ROOT}")
+                          "-DZSERIO_TEST_NAME=${CPP_TEST_NAME}")
         local CTEST_ARGS=()
         if [[ ${SWITCH_CLEAN} == 1 ]] ; then
             local CPP_TARGET="clean"
@@ -104,9 +101,6 @@ test()
         echo "STARTING - ${MESSAGE}"
         local ANT_ARGS=("-Dzserio.release_dir=${UNPACKED_ZSERIO_RELEASE_DIR}"
                         "-Dzserio_java_test.build_dir=${TEST_OUT_DIR}/java")
-        if [[ ${SWITCH_GRPC} == 1 ]] ; then
-            ANT_ARGS+=("-Dzserio_java_test.grpc=yes")
-        fi
         if [[ ${SWITCH_TEST_NAME} != "" ]] ; then
             ANT_ARGS+=("-Dzserio_java_test.filter=${SWITCH_TEST_NAME}")
         fi
@@ -139,9 +133,6 @@ test()
             local TEST_ARGS=("--release_dir=${UNPACKED_ZSERIO_RELEASE_DIR}"
                              "--build_dir=${TEST_OUT_DIR}/python"
                              "--java=${JAVA_BIN}")
-            if [[ ${SWITCH_GRPC} == 1 ]] ; then
-                TEST_ARGS+=("--grpc=1")
-            fi
             if [[ ${SWITCH_TEST_NAME} != "" ]] ; then
                 TEST_ARGS+=("--filter=${SWITCH_TEST_NAME}")
             fi
@@ -173,7 +164,6 @@ Arguments:
     -p, --purge               Purge test build directory.
     -o <dir>, --output-directory <dir>
                               Output directory where tests will be run.
-    -g, --grpc                Enable gRPC language tests (disabled by default).
     -t, --test-name TEST_NAME Run only TEST_NAME test.
     package                   Specify the package to test.
 
@@ -214,21 +204,19 @@ EOF
 # 2 - Help switch is present. Arguments after help switch have not been checked.
 parse_arguments()
 {
-    exit_if_argc_lt $# 7
+    exit_if_argc_lt $# 6
     local PARAM_CPP_TARGET_ARRAY_OUT="$1"; shift
     local PARAM_JAVA_OUT="$1"; shift
     local PARAM_PYTHON_OUT="$1"; shift
     local PARAM_OUT_DIR_OUT="$1"; shift
     local SWITCH_CLEAN_OUT="$1"; shift
     local SWITCH_PURGE_OUT="$1"; shift
-    local SWITCH_GRPC_OUT="$1"; shift
     local SWITCH_TEST_NAME_OUT="$1"; shift
 
     eval ${PARAM_JAVA_OUT}=0
     eval ${PARAM_PYTHON_OUT}=0
     eval ${SWITCH_CLEAN_OUT}=0
     eval ${SWITCH_PURGE_OUT}=0
-    eval ${SWITCH_GRPC_OUT}=0
     eval ${SWITCH_TEST_NAME_OUT}=""
 
     local NUM_PARAMS=0
@@ -253,11 +241,6 @@ parse_arguments()
             "-o" | "--output-directory")
                 eval ${PARAM_OUT_DIR_OUT}="$2"
                 shift 2
-                ;;
-
-            "-g" | "--grpc")
-                eval ${SWITCH_GRPC_OUT}=1
-                shift
                 ;;
 
             "-t" | "--test-name")
@@ -346,10 +329,9 @@ main()
     local PARAM_OUT_DIR="${ZSERIO_PROJECT_ROOT}"
     local SWITCH_CLEAN
     local SWITCH_PURGE
-    local SWITCH_GRPC
     local SWITCH_TEST_NAME
     parse_arguments PARAM_CPP_TARGET_ARRAY PARAM_JAVA PARAM_PYTHON PARAM_OUT_DIR \
-                    SWITCH_CLEAN SWITCH_PURGE SWITCH_GRPC SWITCH_TEST_NAME $@
+                    SWITCH_CLEAN SWITCH_PURGE SWITCH_TEST_NAME $@
     if [ $? -ne 0 ] ; then
         print_help
         return 1
@@ -413,7 +395,7 @@ main()
     # run test
     test "${ZSERIO_RELEASE_DIR}" "${ZSERIO_VERSION}" "${ZSERIO_PROJECT_ROOT}" "${ZSERIO_BUILD_DIR}" \
          "${TEST_OUT_DIR}" PARAM_CPP_TARGET_ARRAY[@] ${PARAM_JAVA} ${PARAM_PYTHON} \
-         ${SWITCH_CLEAN} ${SWITCH_GRPC} "${SWITCH_TEST_NAME}"
+         ${SWITCH_CLEAN} "${SWITCH_TEST_NAME}"
     if [ $? -ne 0 ] ; then
         return 1
     fi

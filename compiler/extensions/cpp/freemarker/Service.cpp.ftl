@@ -1,70 +1,84 @@
 <#include "FileHeader.inc.ftl">
-<#include "Service.cpp.inc.ftl">
 <@file_header generatorDescription/>
 
-#include <grpcpp/impl/codegen/completion_queue.h>
-#include <grpcpp/impl/codegen/async_stream.h>
-#include <grpcpp/impl/codegen/async_unary_call.h>
-#include <grpcpp/impl/codegen/channel_interface.h>
-#include <grpcpp/impl/codegen/client_unary_call.h>
-#include <grpcpp/impl/codegen/method_handler_impl.h>
-#include <grpcpp/impl/codegen/rpc_service_method.h>
-#include <grpcpp/impl/codegen/service_type.h>
-#include <grpcpp/impl/codegen/sync_stream.h>
-
+#include "zserio/BitStreamReader.h"
+#include "zserio/BitStreamWriter.h"
 <@user_include package.path, "${name}.h"/>
 <@user_includes cppUserIncludes, false/>
 <@namespace_begin package.path/>
+<@namespace_begin [name]/>
 
-static const char* ${name}_method_names[] =
-{
-<#list rpcList as rpc>
-    "/<#if servicePackageName?has_content>${servicePackageName}.</#if>${name}/${rpc.name}"<#if rpc?has_next>,</#if>
+Service::Service() :
+        m_methodMap({
+<#list methodList as method>
+                {"${method.name}", ::std::bind(&Service::${method.name}Method, this,
+                        ::std::placeholders::_1, ::std::placeholders::_2, ::std::placeholders::_3)}<#rt>
+                        <#lt><#if method?has_next>,</#if>
 </#list>
-};
-
-::std::unique_ptr<${name}::Stub> ${name}::NewStub(const ::std::shared_ptr<::grpc::ChannelInterface>& channel,
-        const ::grpc::StubOptions& options)
-{
-    (void) options;
-    ::std::unique_ptr<${name}::Stub> stub(new ${name}::Stub(channel));
-    return stub;
-}
-
-${name}::Stub::Stub(const ::std::shared_ptr<::grpc::ChannelInterface>& channel) :
-        channel_(channel)<#if rpcList?has_content>,</#if>
-<#list rpcList as rpc>
-        rpcmethod_${rpc.name}_(${name}_method_names[${rpc?index}],
-                <@rpc_method_type rpc/>, channel)<#rt>
-        <#if rpc?is_last>
-
-        <#else>
-            <#lt>,
-        </#if>
-</#list>
+        })
 {
 }
 
-<#list rpcList as rpc>
-<@stub_source_public name, rpc/>
-
-</#list>
-${name}::Service::Service()
+void Service::callMethod(const std::string& methodName, const std::vector<uint8_t>& requestData,
+        std::vector<uint8_t>& responseData, void* context)
 {
-<#list rpcList as rpc>
-    AddMethod(new ::grpc::internal::RpcServiceMethod(
-            ${name}_method_names[${rpc?index}], <@rpc_method_type rpc/>,
-            new <@rpc_method_handler rpc/><
-                    ${name}::Service, ${rpc.requestTypeFullName}, ${rpc.responseTypeFullName}>(
-                            ::std::mem_fn(&${name}::Service::${rpc.name}), this)));
-</#list>
+    auto search = m_methodMap.find(methodName);
+    if (search == m_methodMap.end())
+        throw ::zserio::ServiceException("${serviceFullName}: Method '" + methodName + "' does not exist!");
+    search->second(requestData, responseData, context);
 }
 
-${name}::Service::~Service()
+const char* Service::serviceFullName() noexcept
 {
+    return "${serviceFullName}";
 }
 
-<#list rpcList as rpc>
-<@service_unimplemented_method name, rpc/>
+const ::std::array<const char*, ${methodList?size}>& Service::methodNames() noexcept
+{
+    static constexpr ::std::array<const char*, ${methodList?size}> names =
+    {
+<#list methodList as method>
+        "${method.name}"<#if method?has_next>,</#if>
 </#list>
+    };
+
+    return names;
+}
+<#list methodList as method>
+
+void Service::${method.name}Method(const std::vector<uint8_t>& requestData, std::vector<uint8_t>& responseData,
+        void* context)
+{
+    ::zserio::BitStreamReader reader(requestData.data(), requestData.size());
+    const ${method.requestTypeFullName} request(reader);
+
+    ${method.responseTypeFullName} response;
+    ${method.name}Impl(request, response, context);
+
+    responseData.resize((response.bitSizeOf() + 7) / 8);
+    ::zserio::BitStreamWriter writer(responseData.data(), responseData.size());
+    response.write(writer);
+}
+</#list>
+
+Client::Client(::zserio::IService& service) : m_service(service)
+{
+}
+<#list methodList as method>
+
+void Client::${method.name}Method(${method.requestTypeFullName}& request, <#rt>
+        <#lt>${method.responseTypeFullName}& response, void* context)
+{
+    std::vector<uint8_t> requestData((request.bitSizeOf() + 7) / 8);
+    ::zserio::BitStreamWriter writer(requestData.data(), requestData.size());
+    request.write(writer);
+
+    std::vector<uint8_t> responseData;
+    m_service.callMethod("${method.name}", requestData, responseData, context);
+
+    ::zserio::BitStreamReader reader(responseData.data(), responseData.size());
+    response.read(reader);
+}
+</#list>
+<@namespace_end [name]/>
 <@namespace_end package.path/>

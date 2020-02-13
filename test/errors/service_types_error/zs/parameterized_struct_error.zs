@@ -13,6 +13,6 @@ struct Request(bit:8 size)
 
 service Service
 {
-    rpc Response powerOfTwo(Request);
+    Response powerOfTwo(Request);
 };
 

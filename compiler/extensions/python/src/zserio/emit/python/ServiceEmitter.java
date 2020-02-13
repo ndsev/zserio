@@ -14,12 +14,12 @@ class ServiceEmitter extends PythonDefaultEmitter
     @Override
     public void beginService(ServiceType serviceType) throws ZserioEmitException
     {
-        if (getWithGrpcCode())
-        {
-            final ServiceEmitterTemplateData templateData = new ServiceEmitterTemplateData(
-                    getTemplateDataContext(), serviceType);
-            processSourceTemplate(TEMPLATE_NAME, templateData, serviceType);
-        }
+        if (!getWithServiceCode())
+            return;
+
+        final ServiceEmitterTemplateData templateData = new ServiceEmitterTemplateData(
+                getTemplateDataContext(), serviceType);
+        processSourceTemplate(TEMPLATE_NAME, templateData, serviceType);
     }
 
     private static final String TEMPLATE_NAME = "Service.py.ftl";

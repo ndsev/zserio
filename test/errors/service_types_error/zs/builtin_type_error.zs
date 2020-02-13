@@ -7,5 +7,5 @@ struct Response
 
 service Service
 {
-    rpc Response powerOfTwo(int32);
+    Response powerOfTwo(int32);
 };

@@ -194,11 +194,11 @@ public class ZserioAstScopeSetter extends ZserioAstWalker
     }
 
     @Override
-    public void visitRpc(Rpc rpc)
+    public void visitServiceMethod(ServiceMethod serviceMethod)
     {
-        rpc.visitChildren(this);
+        serviceMethod.visitChildren(this);
 
-        currentScope.setSymbol(rpc.getName(), rpc);
+        currentScope.setSymbol(serviceMethod.getName(), serviceMethod);
     }
 
     @Override

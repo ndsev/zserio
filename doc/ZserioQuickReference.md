@@ -283,9 +283,8 @@ sql_database TheWorld
 ```
 
 -------
-## GRPC extension
 
-**Service Type**
+**Service Types**
 ```
 struct Request
 {
@@ -299,7 +298,6 @@ struct Response
 
 service Users
 {
-    rpc Response powerOfTwo(Request);
-    rpc stream Response powerOfTwoStreamed(stream Request);
+    Response powerOfTwo(Request);
 };
 ```

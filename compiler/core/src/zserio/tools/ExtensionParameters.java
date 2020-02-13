@@ -54,6 +54,12 @@ public class ExtensionParameters implements Parameters
     }
 
     @Override
+    public boolean getWithServiceCode()
+    {
+        return commandLineArguments.getWithServiceCode();
+    }
+
+    @Override
     public boolean getWithSourcesAmalgamation()
     {
         return commandLineArguments.getWithSourcesAmalgamation();
@@ -63,12 +69,6 @@ public class ExtensionParameters implements Parameters
     public boolean getWithSqlCode()
     {
         return commandLineArguments.getWithSqlCode();
-    }
-
-    @Override
-    public boolean getWithGrpcCode()
-    {
-        return commandLineArguments.getWithGrpcCode();
     }
 
     @Override

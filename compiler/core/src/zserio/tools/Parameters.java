@@ -59,6 +59,11 @@ public interface Parameters
     public boolean getWithRangeCheckCode();
 
     /**
+     * Gets the service code flag.
+     */
+    public boolean getWithServiceCode();
+
+    /**
      * Gets the sources amalgamation flag.
      *
      * @return True if amalgamated sources should be generated.
@@ -71,11 +76,6 @@ public interface Parameters
      * @returns True if code for SQL commands is enabled.
      */
     public boolean getWithSqlCode();
-
-    /**
-     * Gets the GRPC code flag.
-     */
-    public boolean getWithGrpcCode();
 
     /**
      * Gets the include validation flag.

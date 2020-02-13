@@ -34,8 +34,8 @@ java -jar zserio.jar
     [-setTopLevelPackage <package>]
     [-src <source directory>]
     [-v,--version]
-    [-withGrpcCode|-withoutGrpcCode]
     [-withRangeCheckCode|-withoutRangeCheckCode]
+    [-withServiceCode|-withoutServiceCode]
     [-withSourcesAmalgamation|-withoutSourcesAmalgamation]
     [-withSqlCode|-withoutSqlCode]
     [-withSvgDiagrams|-withoutSvgDiagrams]
@@ -115,16 +115,15 @@ directories as in the Java `CLASSPATH` is not supported.
 
 Shows the version of the Zserio tool.
 
-**`-withGrpcCode|-withoutGrpcCode`**
-
-Enables/disables generation of code for [GPRC](https://grpc.io/) services. By default is enabled.
-Java is based on release [v1.14.0](https://github.com/grpc/grpc-java/releases/tag/v1.14.0).
-C++ is based on release [v1.14.1](https://github.com/grpc/grpc/releases/tag/v1.14.1).
-Python is based on `grpcio` module release [v1.17.1](https://github.com/grpc/grpc/releases/tag/v1.17.1).
-
 **`-withRangeCheckCode|-withoutRangeCheckCode`**
 
 Enables/disables code for range checking for fields and parameters (integer types only). By default is disabled.
+Note that range checking can be enabled only when writer code is enabled (see `-withWriterCode` option).
+
+**`-withServiceCode|-withoutServiceCode`**
+
+Enables/disables generation of code for Service Types. By default is enabled, but note that services can be
+enabled only when writer code is enabled (see `-withWriterCode` option).
 
 **`-withSourcesAmalgamation|-withoutSourcesAmalgamation`**
 
@@ -136,7 +135,7 @@ subdirectory will contain only one C++ source module.
 **`-withSqlCode|-withoutSqlCode`**
 
 Enables/disables generation of code for SQLite extension (SQLite types like `sql_database`, `sql_table`,
-etc...).
+etc...). By default is enabled.
 
 **`-withSvgDiagrams|-withoutSvgDiagrams`**
 
@@ -149,7 +148,8 @@ executable is a part of the Graphviz package which can be downloaded from
 **`-withValidationCode|-withoutValidationCode`**
 
 Enables/disables generation of the API extension, which is used for SQLite database validation. Currently,
-database validation is not supported by C++ API. By default is disabled.
+database validation is not supported by C++ API. By default is disabled. Note that validation code can be
+enabled only when writer code is enabled (see `-withWriterCode` option).
 
 **`-withWriterCode|-withoutWriterCode`**
 

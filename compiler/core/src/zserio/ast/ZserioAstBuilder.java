@@ -506,34 +506,31 @@ public class ZserioAstBuilder extends ZserioParserBaseVisitor<Object>
         final AstLocation location = new AstLocation(ctx.id().getStart());
         final String name = ctx.id().getText();
 
-        List<Rpc> rpcs = new ArrayList<Rpc>();
-        for (ZserioParser.RpcDefinitionContext rpcDefinitionCtx : ctx.rpcDefinition())
-            rpcs.add(visitRpcDefinition(rpcDefinitionCtx));
+        List<ServiceMethod> methods = new ArrayList<ServiceMethod>();
+        for (ZserioParser.ServiceMethodDefinitionContext methodDefinitionCtx : ctx.serviceMethodDefinition())
+            methods.add(visitServiceMethodDefinition(methodDefinitionCtx));
 
         final DocComment docComment = docCommentManager.findDocComment(ctx);
 
-        final ServiceType serviceType = new ServiceType(location, currentPackage, name, rpcs, docComment);
+        final ServiceType serviceType = new ServiceType(location, currentPackage, name, methods, docComment);
 
         return serviceType;
     }
 
     @Override
-    public Rpc visitRpcDefinition(ZserioParser.RpcDefinitionContext ctx)
+    public ServiceMethod visitServiceMethodDefinition(ZserioParser.ServiceMethodDefinitionContext ctx)
     {
         final AstLocation location = new AstLocation(ctx.id().getStart());
 
-        final boolean responseStreaming = ctx.rpcTypeReference(0).STREAM() != null;
-        final TypeReference responseTypeReference = visitTypeReference(ctx.rpcTypeReference(0).typeReference());
+        final TypeReference responseTypeReference = visitTypeReference(ctx.typeReference(0));
 
         final String name = ctx.id().getText();
 
-        final boolean requestStreaming = ctx.rpcTypeReference(1).STREAM() != null;
-        final TypeReference requestTypeReference = visitTypeReference(ctx.rpcTypeReference(1).typeReference());
+        final TypeReference requestTypeReference = visitTypeReference(ctx.typeReference(1));
 
         final DocComment docComment = docCommentManager.findDocComment(ctx);
 
-        return new Rpc(location, name, responseTypeReference, responseStreaming, requestTypeReference,
-                requestStreaming, docComment);
+        return new ServiceMethod(location, name, responseTypeReference, requestTypeReference, docComment);
     }
 
     @Override

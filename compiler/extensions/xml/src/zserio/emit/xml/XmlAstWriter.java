@@ -46,7 +46,7 @@ import zserio.ast.InstantiateType;
 import zserio.ast.Parameter;
 import zserio.ast.Root;
 import zserio.ast.Package;
-import zserio.ast.Rpc;
+import zserio.ast.ServiceMethod;
 import zserio.ast.ServiceType;
 import zserio.ast.SqlConstraint;
 import zserio.ast.SqlDatabaseType;
@@ -320,11 +320,11 @@ public class XmlAstWriter implements ZserioAstVisitor
     }
 
     @Override
-    public void visitRpc(Rpc rpc)
+    public void visitServiceMethod(ServiceMethod serviceMethod)
     {
-        final Element xmlElement = xmlDoc.createElement("RPC");
-        xmlElement.setAttribute("name", rpc.getName());
-        visitAstNode(rpc, xmlElement);
+        final Element xmlElement = xmlDoc.createElement("METHOD");
+        xmlElement.setAttribute("name", serviceMethod.getName());
+        visitAstNode(serviceMethod, xmlElement);
     }
 
     @Override

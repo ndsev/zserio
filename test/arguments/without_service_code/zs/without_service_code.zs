@@ -1,4 +1,4 @@
-package without_grpc_code;
+package without_service_code;
 
 struct Response
 {
@@ -12,5 +12,5 @@ struct Request
 
 service Service
 {
-    rpc Response powerOfTwo(Request);
+    Response powerOfTwo(Request);
 };

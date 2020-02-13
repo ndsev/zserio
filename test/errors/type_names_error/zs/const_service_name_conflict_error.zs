@@ -14,5 +14,5 @@ struct Response
 
 service Math
 {
-    rpc Response powerOfTwo(Request);
+    Response powerOfTwo(Request);
 };

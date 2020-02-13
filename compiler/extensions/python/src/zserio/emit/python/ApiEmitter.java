@@ -110,7 +110,7 @@ public class ApiEmitter extends PythonDefaultEmitter
     @Override
     public void beginService(ServiceType serviceType) throws ZserioEmitException
     {
-        if (getWithGrpcCode())
+        if (getWithServiceCode())
             addModuleMapping(serviceType);
     }
 

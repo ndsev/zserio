@@ -17,5 +17,5 @@ sql_database Request
 
 service Service
 {
-    rpc Response powerOfTwo(Request);
+    Response powerOfTwo(Request);
 };

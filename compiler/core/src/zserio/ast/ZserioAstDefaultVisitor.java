@@ -88,7 +88,7 @@ public class ZserioAstDefaultVisitor implements ZserioAstVisitor
     {}
 
     @Override
-    public void visitRpc(Rpc rpc)
+    public void visitServiceMethod(ServiceMethod serviceMethod)
     {}
 
     @Override

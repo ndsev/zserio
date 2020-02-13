@@ -260,22 +260,11 @@ public class ZserioParserTest
     }
 
     @Test
-    public void rpcDefinition()
+    public void serviceMethodDefinition()
     {
-        checkParseTree("rpcDefinition", "rpc Response method(Request);",
-                "(rpcDefinition rpc (rpcTypeReference (typeReference (qualifiedName (id Response)))) " +
-                        "(id method) ( (rpcTypeReference (typeReference (qualifiedName (id Request)))) ) ;)");
-        checkParseTree("rpcDefinition", "rpc stream Response method(Request);",
-                "(rpcDefinition rpc (rpcTypeReference stream (typeReference (qualifiedName (id Response)))) " +
-                        "(id method) ( (rpcTypeReference (typeReference (qualifiedName (id Request)))) ) ;)");
-        checkParseTree("rpcDefinition", "rpc Response method(stream Request);",
-                "(rpcDefinition rpc (rpcTypeReference (typeReference (qualifiedName (id Response)))) " +
-                        "(id method) " +
-                        "( (rpcTypeReference stream (typeReference (qualifiedName (id Request)))) ) ;)");
-        checkParseTree("rpcDefinition", "rpc stream Response method(stream Request);",
-                "(rpcDefinition rpc (rpcTypeReference stream (typeReference (qualifiedName (id Response)))) " +
-                        "(id method) " +
-                        "( (rpcTypeReference stream (typeReference (qualifiedName (id Request)))) ) ;)");
+        checkParseTree("serviceMethodDefinition", "Response method(Request);",
+                "(serviceMethodDefinition (typeReference (qualifiedName (id Response))) " +
+                        "(id method) ( (typeReference (qualifiedName (id Request))) ) ;)");
     }
 
     @Test

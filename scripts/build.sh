@@ -47,7 +47,7 @@ test_python_runtime()
     echo "Running pylint on python runtime sources."
 
     local PYLINT_RCFILE="${PYTHON_RUNTIME_ROOT}/pylintrc.txt"
-    local PYLINT_ARGS=()
+    local PYLINT_ARGS=("--disable=too-few-public-methods")
     run_pylint "${PYLINT_RCFILE}" PYLINT_ARGS[@] "${SOURCES_DIR}"/*
     if [ $? -ne 0 ]; then
         return 1

@@ -129,9 +129,9 @@ public class ZserioAstWalker implements ZserioAstVisitor
     }
 
     @Override
-    public void visitRpc(Rpc rpc)
+    public void visitServiceMethod(ServiceMethod serviceMethod)
     {
-        rpc.visitChildren(this);
+        serviceMethod.visitChildren(this);
     }
 
     @Override

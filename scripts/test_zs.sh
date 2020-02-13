@@ -6,13 +6,12 @@ source "${SCRIPT_DIR}/common_test_tools.sh"
 # Generate Ant build.xml file
 generate_ant_file()
 {
-    exit_if_argc_ne $# 6
+    exit_if_argc_ne $# 5
     local ZSERIO_RELEASE="$1"; shift
     local ZSERIO_ROOT="$1"; shift
     local BUILD_DIR="$1"; shift
     local TEST_NAME="$1"; shift
     local NEEDS_SQLITE="$1"; shift
-    local NEEDS_GRPC="$1"; shift
 
     # use host paths in generated files
     posix_to_host_path "${ZSERIO_RELEASE}" HOST_ZSERIO_RELEASE
@@ -39,18 +38,6 @@ generate_ant_file()
         </Match>"
     fi
 
-    local GRPC_JAR_DIR
-    local GRPC_CLASSPATH
-    if [ ${NEEDS_GRPC} -ne 0 ] ; then
-        GRPC_JAR_DIR="
-
-    <property name=\"3rdparty.grpc.jar_dir\" location=\"${HOST_ZSERIO_ROOT}/3rdparty/java/grpc\"/>"
-        GRPC_CLASSPATH="
-                <fileset dir=\"\${3rdparty.grpc.jar_dir}\">
-                    <include name=\"*.jar\"/>
-                </fileset>"
-    fi
-
     cat > ${BUILD_DIR}/build.xml << EOF
 <project name="${TEST_NAME}" basedir="." default="run">
     <property name="zserio.release_dir" location="${HOST_ZSERIO_RELEASE}"/>
@@ -62,7 +49,7 @@ generate_ant_file()
     <property name="test_zs.classes_dir" location="\${test_zs.build_dir}/classes"/>
     <property name="test_zs.jar_dir" location="\${test_zs.build_dir}/jar"/>
     <property name="test_zs.jar_file" location="\${test_zs.jar_dir}/${TEST_NAME}.jar"/>
-    <property name="test_zs.src_dir" location="\${test_zs.build_dir}/gen"/>${GRPC_JAR_DIR}
+    <property name="test_zs.src_dir" location="\${test_zs.build_dir}/gen"/>
 
     <condition property="spotbugs.classpath" value="\${spotbugs.home_dir}/lib/spotbugs-ant.jar">
         <isset property="spotbugs.home_dir"/>
@@ -84,7 +71,7 @@ generate_ant_file()
             <compilerarg value="-Xlint:-cast"/>
             <compilerarg value="-Werror"/>
             <classpath>
-                <pathelement location="\${runtime.jar_file}"/>${GRPC_CLASSPATH}
+                <pathelement location="\${runtime.jar_file}"/>
             </classpath>
             <src path="\${test_zs.src_dir}"/>
         </javac>
@@ -106,7 +93,7 @@ generate_ant_file()
             <sourcePath path="\${test_zs.src_dir}"/>
             <class location="\${test_zs.jar_file}"/>
             <auxClasspath>
-                <pathelement location="\${runtime.jar_file}"/>${GRPC_CLASSPATH}
+                <pathelement location="\${runtime.jar_file}"/>
             </auxClasspath>
         </spotbugs>
         <fail message="SpotBugs found some issues!" if="test_zs.spotbugs.is_failed"/>
@@ -144,7 +131,7 @@ EOF
 # Generate CMakeList.txt
 generate_cmake_lists()
 {
-    exit_if_argc_ne $# 8
+    exit_if_argc_ne $# 7
     local ZSERIO_RELEASE="$1"; shift
     local ZSERIO_ROOT="$1"; shift
     local BUILD_DIR="$1"; shift
@@ -152,7 +139,6 @@ generate_cmake_lists()
     local RUNTIME_LIBRARY_SUBDIR="$1"; shift
     local NEEDS_SQLITE="$1"; shift
     local NEEDS_INSPECTOR="$1"; shift
-    local NEEDS_GRPC="$1"; shift
 
     # use host paths in generated files
     local DISABLE_SLASHES_CONVERSION=1
@@ -181,20 +167,6 @@ add_definitions(-DZSERIO_RUNTIME_INCLUDE_INSPECTOR)"
         INSPECTOR_USE="ON"
     fi
 
-    local GRPC_SETUP
-    local GRPC_USE
-    if [ ${NEEDS_GRPC} -ne 0 ] ; then
-        GRPC_SETUP="
-
-# setup GRPC
-include(grpc_utils)
-find_grpc_libraries()
-set(CMAKE_CXX_STANDARD 11) # needed due to GRPC"
-        GRPC_USE="
-target_include_directories(\${PROJECT_NAME} SYSTEM PRIVATE \${GRPC_INCDIR})
-target_link_libraries(\${PROJECT_NAME} \${GRPC_LIBRARIES})"
-    fi
-
     local CPP11_SETUP
     if [ "${RUNTIME_LIBRARY_SUBDIR}" = "cpp" ] ; then
         CPP11_SETUP="
@@ -221,7 +193,7 @@ include(compiler_utils)
 compiler_set_pthread()
 compiler_set_static_clibs()
 compiler_set_warnings()
-compiler_set_warnings_as_errors()${CPP11_SETUP}${SQLITE_SETUP}${GRPC_SETUP}
+compiler_set_warnings_as_errors()${CPP11_SETUP}${SQLITE_SETUP}
 
 # add zserio runtime library
 include(zserio_utils)
@@ -232,7 +204,7 @@ zserio_add_runtime_library(RUNTIME_LIBRARY_DIR "\${ZSERIO_RUNTIME_LIBRARY_DIR}"
 file(GLOB_RECURSE SOURCES RELATIVE "\${CMAKE_CURRENT_SOURCE_DIR}" "gen/*.cpp" "gen/*.h")
 add_library(\${PROJECT_NAME} \${SOURCES})
 target_include_directories(\${PROJECT_NAME} PUBLIC "\${CMAKE_CURRENT_SOURCE_DIR}/gen")
-target_link_libraries(\${PROJECT_NAME} ZserioCppRuntime)${SQLITE_USE}${GRPC_USE}
+target_link_libraries(\${PROJECT_NAME} ZserioCppRuntime)${SQLITE_USE}
 
 # add cppcheck custom command
 include(cppcheck_utils)
@@ -303,12 +275,10 @@ test()
     # compile generated Java sources
     if [[ ${PARAM_JAVA} == 1 ]] ; then
         echo "Compile generated Java sources"
-        ! grep "import static io.grpc" -qr ${TEST_OUT_DIR}/java/gen
-        local JAVA_NEEDS_GRPC=$?
         ! grep "import java.sql.Connection" -qr ${TEST_OUT_DIR}/java/gen
         local JAVA_NEEDS_SQLITE=$?
         generate_ant_file "${UNPACKED_ZSERIO_RELEASE_DIR}" "${ZSERIO_PROJECT_ROOT}" \
-            "${TEST_OUT_DIR}/java" "${SWITCH_TEST_NAME}" ${JAVA_NEEDS_SQLITE} ${JAVA_NEEDS_GRPC}
+            "${TEST_OUT_DIR}/java" "${SWITCH_TEST_NAME}" ${JAVA_NEEDS_SQLITE}
         local ANT_PROPS=()
         compile_java ${TEST_OUT_DIR}/java/build.xml ANT_PROPS[@] run
         if [ $? -ne 0 ] ; then
@@ -319,18 +289,13 @@ test()
     # run generated C++ sources
     if [[ ${#CPP_TARGETS[@]} != 0 ]] ; then
         echo "Compile generated C++ sources"
-        ! grep "#include <grpcpp/impl/codegen" -qr ${TEST_OUT_DIR}/cpp/gen
-        local CPP_NEEDS_GRPC=$?
         ! grep "#include <sqlite3.h>" -qr ${TEST_OUT_DIR}/cpp/gen
         local CPP_NEEDS_SQLITE=$?
         local CPP_NEEDS_INSPECTOR=0
         generate_cmake_lists "${UNPACKED_ZSERIO_RELEASE_DIR}" "${ZSERIO_PROJECT_ROOT}" \
             "${TEST_OUT_DIR}/cpp" "${SWITCH_TEST_NAME}" "cpp" \
-            ${CPP_NEEDS_SQLITE} ${CPP_NEEDS_INSPECTOR} ${CPP_NEEDS_GRPC}
+            ${CPP_NEEDS_SQLITE} ${CPP_NEEDS_INSPECTOR}
         local CTEST_ARGS=()
-        if [ ${CPP_NEEDS_GRPC} -ne 0 ] ; then
-            CMAKE_ARGS+=("-DGRPC_ROOT=${GRPC_ROOT}" "-DGRPC_ENABLED=ON")
-        fi
         compile_cpp "${ZSERIO_PROJECT_ROOT}" "${TEST_OUT_DIR}/cpp" "${TEST_OUT_DIR}/cpp" CPP_TARGETS[@] \
                     CMAKE_ARGS[@] CTEST_ARGS[@] all
         if [ $? -ne 0 ] ; then

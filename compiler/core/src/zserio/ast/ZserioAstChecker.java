@@ -151,10 +151,10 @@ public class ZserioAstChecker extends ZserioAstWalker
     }
 
     @Override
-    public void visitRpc(Rpc rpc)
+    public void visitServiceMethod(ServiceMethod serviceMethod)
     {
-        rpc.visitChildren(this);
-        rpc.check();
+        serviceMethod.visitChildren(this);
+        serviceMethod.check();
     }
 
     @Override

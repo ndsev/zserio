@@ -3,19 +3,12 @@
 <#include "CompoundParameter.inc.ftl">
 <#include "CompoundField.inc.ftl">
 <#include "CompoundFunction.inc.ftl">
-<#include "GrpcSerializationTraits.inc.ftl">
 <@file_header generatorDescription/>
 
 <@include_guard_begin package.path, name/>
 
 <#if withWriterCode && fieldList?size == 1>
 #include <type_traits>
-</#if>
-<#if needsRpcTraits>
-#include <vector>
-#include <grpcpp/impl/codegen/serialization_traits.h>
-#include <grpcpp/impl/codegen/status.h>
-#include <grpcpp/impl/codegen/byte_buffer.h>
 </#if>
 #include <zserio/BitStreamReader.h>
 #include <zserio/BitStreamWriter.h>
@@ -119,8 +112,5 @@ private:
 </#list>
 };
 <@namespace_end package.path/>
-<#if needsRpcTraits>
-    <@grpc_serialization_traits fullName/>
-</#if>
 
 <@include_guard_end package.path, name/>

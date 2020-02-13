@@ -227,22 +227,18 @@ sqlDatabaseFieldDefinition
     ;
 
 
-// RPC SERVICE
+// SERVICE
 
 serviceDefinition
     :   SERVICE id
         LBRACE
-        rpcDefinition*
+        serviceMethodDefinition*
         RBRACE
         SEMICOLON
     ;
 
-rpcDefinition
-    :   RPC rpcTypeReference id LPAREN rpcTypeReference RPAREN SEMICOLON
-    ;
-
-rpcTypeReference
-    :   STREAM? typeReference
+serviceMethodDefinition
+    :   typeReference id LPAREN typeReference RPAREN SEMICOLON
     ;
 
 

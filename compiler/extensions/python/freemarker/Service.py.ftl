@@ -2,71 +2,57 @@
 <@file_header generatorDescription/>
 <@all_imports packageImports symbolImports typeImports/>
 
-<#assign servicePackagePrefix>
-    <#if servicePackageName?has_content>${servicePackageName}.</#if><#t>
-</#assign>
-class ${name}Stub():
-    def __init__(self, channel):
-<#if rpcList?has_content>
-    <#list rpcList as rpc>
-        def ${rpc.name}_request_serializer(request):
-            writer = zserio.BitStreamWriter()
-            request.write(writer)
-            return bytes(writer.getByteArray())
+class Service(zserio.ServiceInterface):
+    def __init__(self):
+        self._methodMap = {
+<#list methodList as method>
+            "${method.name}": self._${method.name}Method<#if method?has_next>,</#if>
+</#list>
+        }
 
-        def ${rpc.name}_response_deserializer(response):
-            reader = zserio.BitStreamReader(response)
-            return ${rpc.responseTypeFullName}.fromReader(reader)
+    def callMethod(self, methodName, requestData, context=None):
+        method = self._methodMap.get(methodName)
+        if not method:
+            raise zserio.ServiceException("${serviceFullName}: Method '%s' does not exist!" % methodName)
+        return method(requestData, context)
+<#list methodList as method>
 
-        self.${rpc.name} = channel.${rpc.requestStreaming}_${rpc.responseStreaming}(
-            '/${servicePackagePrefix}${name}/${rpc.name}',
-            request_serializer=${rpc.name}_request_serializer,
-            response_deserializer=${rpc.name}_response_deserializer
-        )
-        <#if rpc?has_next>
+    def _${method.name}Impl(self, request, context):
+        raise NotImplementedError()
+</#list>
+<#list methodList as method>
 
-        </#if>
-    </#list>
-<#else>
-        pass
-</#if>
+    def _${method.name}Method(self, requestData, context):
+        reader = zserio.BitStreamReader(requestData)
+        request = ${method.requestTypeFullName}.fromReader(reader)
 
-class ${name}Servicer():
-<#if rpcList?has_content>
-    <#list rpcList as rpc>
-    def ${rpc.name}(self, _request, context):
-        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
-        context.set_details("Method not implemented!")
-        raise NotImplementedError('Method not implemented!')
-        <#if rpc?has_next>
+        response = self._${method.name}Impl(request, context)
 
-        </#if>
-    </#list>
-<#else>
-    pass
-</#if>
-
-def add_${name}Servicer_to_server(servicer, server):
-<#list rpcList as rpc>
-    def ${rpc.name}_request_deserializer(request):
-        reader = zserio.BitStreamReader(request)
-        return ${rpc.requestTypeFullName}.fromReader(reader)
-
-    def ${rpc.name}_response_serializer(response):
         writer = zserio.BitStreamWriter()
         response.write(writer)
-        return bytes(writer.getByteArray())
-
+        return writer.getByteArray()
 </#list>
-    rpc_method_handlers = {
-<#list rpcList as rpc>
-        '${rpc.name}': grpc.${rpc.requestStreaming}_${rpc.responseStreaming}_rpc_method_handler(
-            servicer.${rpc.name},
-            request_deserializer=${rpc.name}_request_deserializer,
-            response_serializer=${rpc.name}_response_serializer
-        )<#if rpc?has_next>,</#if>
-</#list>
-    }
 
-    generic_handler = grpc.method_handlers_generic_handler('${servicePackagePrefix}${name}', rpc_method_handlers)
-    server.add_generic_rpc_handlers((generic_handler,))
+    SERVICE_FULL_NAME = "${serviceFullName}"
+    METHOD_NAMES = [
+<#list methodList as method>
+        "${method.name}"<#if method?has_next>,</#if>
+</#list>
+    ]
+
+class Client:
+    def __init__(self, service):
+        self._service = service
+<#list methodList as method>
+
+    def ${method.name}Method(self, request, context=None):
+        writer = zserio.BitStreamWriter()
+        request.write(writer)
+        requestData = writer.getByteArray()
+
+        responseData = self._service.callMethod("${method.name}", requestData, context)
+
+        reader = zserio.BitStreamReader(responseData)
+        response = ${method.responseTypeFullName}.fromReader(reader)
+        return response
+</#list>
