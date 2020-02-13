@@ -28,7 +28,6 @@ java -jar zserio.jar
     [-doc <output directory>]
     [-h,--help]
     [-java <output directory>]
-    [-javaVersion <version>]
     [-python <output directory>]
     [-setDotExecutable <dotExec>]
     [-setDotLinksPrefix <prefix>]
@@ -74,14 +73,6 @@ Shows all supported command line options with their description.
 
 Zserio will generate Java API into a given output directory.
 
-**`-javaVersion`**
-
-Specifies Java version for which Zserio will generate Java API. If omitted, Zserio will generate Java API
-for version which is run during Zserio compilation. Java version 6 is the lowest supported Java version for
-which Zserio is able to generate sources.
-
-> Parameter `-javaVersion 1.6` or `-javaVersion 6` specifies Java version 6.
-
 **`-python`**
 
 Zserio will generate Python API into a given output directory.
@@ -126,7 +117,7 @@ Shows the version of the Zserio tool.
 
 **`-withGrpcCode|-withoutGrpcCode`**
 
-Enables/disables generation of code for [GPRC](https://grpc.io/) services. By default is enabled. 
+Enables/disables generation of code for [GPRC](https://grpc.io/) services. By default is enabled.
 Java is based on release [v1.14.0](https://github.com/grpc/grpc-java/releases/tag/v1.14.0).
 C++ is based on release [v1.14.1](https://github.com/grpc/grpc/releases/tag/v1.14.1).
 Python is based on `grpcio` module release [v1.17.1](https://github.com/grpc/grpc/releases/tag/v1.17.1).
