@@ -53,8 +53,8 @@ public final class SqlTableRowEmitterTemplateData extends JavaTemplateData
             final TypeInstantiation fieldTypeInstantiation = field.getTypeInstantiation();
             name = field.getName();
             final JavaNativeType nativeType = javaNativeMapper.getJavaType(fieldTypeInstantiation);
-            javaTypeName = nativeType.getFullName();
-            javaNullableTypeName = javaNativeMapper.getNullableJavaType(fieldTypeInstantiation).getFullName();
+            javaTypeFullName = nativeType.getFullName();
+            javaNullableTypeFullName = javaNativeMapper.getNullableJavaType(fieldTypeInstantiation).getFullName();
             isBool = nativeType instanceof NativeBooleanType;
         }
 
@@ -63,14 +63,14 @@ public final class SqlTableRowEmitterTemplateData extends JavaTemplateData
             return name;
         }
 
-        public String getJavaTypeName()
+        public String getJavaTypeFullName()
         {
-            return javaTypeName;
+            return javaTypeFullName;
         }
 
-        public String getJavaNullableTypeName()
+        public String getJavaNullableTypeFullName()
         {
-            return javaNullableTypeName;
+            return javaNullableTypeFullName;
         }
 
         public boolean getIsBool()
@@ -79,8 +79,8 @@ public final class SqlTableRowEmitterTemplateData extends JavaTemplateData
         }
 
         private final String    name;
-        private final String    javaTypeName;
-        private final String    javaNullableTypeName;
+        private final String    javaTypeFullName;
+        private final String    javaNullableTypeFullName;
         private final boolean   isBool;
     }
 

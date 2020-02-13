@@ -8,7 +8,7 @@ public class NativeIntType extends NativeIntegralType
 {
     public NativeIntType(boolean nullable)
     {
-        super(PackageName.EMPTY, nullable ? "Integer" : "int");
+        super(nullable ? JAVA_LANG_PACKAGE : PackageName.EMPTY, nullable ? "Integer" : "int");
         this.nullable = nullable;
     }
 

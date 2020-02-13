@@ -1,5 +1,5 @@
 <#include "FileHeader.inc.ftl">
-<@standard_header generatorDescription, packageName, javaMajorVersion, [
+<@standard_header generatorDescription, packageName, [
         "java.util.HashMap",
         "java.util.Map",
         "zserio.runtime.ZserioError",

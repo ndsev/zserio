@@ -1,5 +1,5 @@
 <#include "FileHeader.inc.ftl">
-<@standard_header generatorDescription, packageName, javaMajorVersion, [
+<@standard_header generatorDescription, packageName, [
         "java.io.IOException",
         "zserio.runtime.SizeOf",
         "zserio.runtime.io.BitStreamReader"
@@ -16,7 +16,6 @@
 <@imports ["zserio.runtime.BitSizeOfCalculator"]/>
 </#if>
 
-<@class_header generatorDescription/>
 public class ${name} implements <#if withWriterCode>InitializeOffsetsWriter, </#if>SizeOf
 {
     public ${name}()
@@ -101,7 +100,7 @@ public class ${name} implements <#if withWriterCode>InitializeOffsetsWriter, </#
     }
 
     @Override
-    public String toString()
+    public java.lang.String toString()
     {
         final StringBuilder builder = new StringBuilder();
 
@@ -118,7 +117,7 @@ public class ${name} implements <#if withWriterCode>InitializeOffsetsWriter, </#
             builder.append("${zeroValueName}");
 </#if>
 
-        return String.valueOf(value) + "[" + builder.toString() + "]";
+        return java.lang.String.valueOf(value) + "[" + builder.toString() + "]";
     }
 <#if withWriterCode>
 

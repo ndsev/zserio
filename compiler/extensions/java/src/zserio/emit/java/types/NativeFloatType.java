@@ -6,7 +6,7 @@ public class NativeFloatType extends JavaNativeType
 {
     public NativeFloatType(boolean nullable)
     {
-        super(PackageName.EMPTY, nullable ? "Float" : "float");
+        super(nullable ? JAVA_LANG_PACKAGE : PackageName.EMPTY, nullable ? "Float" : "float");
         this.nullable = nullable;
     }
 

@@ -112,7 +112,7 @@ function(zserio_add_library)
             -DLOG_FILENAME="${VALUE_ZSERIO_LOG_FILENAME}"
             -P ${CMAKE_MODULE_PATH}/zserio_tool.cmake
         ${TOUCH_EMPTY_COMMAND}
-        DEPENDS ${ALL_SOURCES} ${VALUE_ZSERIO_CORE_DIR}/zserio_core.jar
+        DEPENDS ${ALL_SOURCES} ${VALUE_ZSERIO_CORE_DIR}/zserio_core.jar ${VALUE_ZSERIO_CORE_DIR}/zserio_cpp.jar
         COMMENT "Generating sources with Zserio")
 
     # check if the library is header only

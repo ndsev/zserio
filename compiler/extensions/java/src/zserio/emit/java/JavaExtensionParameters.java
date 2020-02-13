@@ -2,10 +2,9 @@ package zserio.emit.java;
 
 public class JavaExtensionParameters
 {
-    public JavaExtensionParameters(String javaOutputDir, String javaMajorVersion)
+    public JavaExtensionParameters(String javaOutputDir)
     {
         this.javaOutputDir = javaOutputDir;
-        this.javaMajorVersion = javaMajorVersion;
     }
 
     public String getJavaOutputDir()
@@ -13,11 +12,5 @@ public class JavaExtensionParameters
         return javaOutputDir;
     }
 
-    public String getJavaMajorVersion()
-    {
-        return javaMajorVersion;
-    }
-
     private final String    javaOutputDir;
-    private final String    javaMajorVersion;
 }

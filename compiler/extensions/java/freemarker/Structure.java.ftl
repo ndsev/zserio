@@ -4,7 +4,7 @@
 <#include "CompoundFunction.inc.ftl">
 <#include "CompoundField.inc.ftl">
 <#include "RangeCheck.inc.ftl">
-<@standard_header generatorDescription, packageName, javaMajorVersion, [
+<@standard_header generatorDescription, packageName, [
         "java.io.IOException",
         "java.io.File",
         "zserio.runtime.SizeOf",
@@ -41,7 +41,6 @@
     </#if>
 </#list>
 
-<@class_header generatorDescription/>
 public class ${name} implements <#if withWriterCode>InitializeOffsetsWriter, </#if>SizeOf
 {
     <@compound_constructors compoundConstructorsData/>
@@ -76,9 +75,9 @@ ${I}__endBitPosition = BitPositionUtil.alignTo(${field.alignmentValue}, __endBit
         <#if field.offset.containsIndex>
             <#-- align to bytes only if the array is non-empty to match read/write behavior -->
 ${I}if (${field.name}.length() > 0)
-${I}    __endBitPosition = BitPositionUtil.alignTo(Byte.SIZE, __endBitPosition);
+${I}    __endBitPosition = BitPositionUtil.alignTo(java.lang.Byte.SIZE, __endBitPosition);
         <#else>
-${I}__endBitPosition = BitPositionUtil.alignTo(Byte.SIZE, __endBitPosition);
+${I}__endBitPosition = BitPositionUtil.alignTo(java.lang.Byte.SIZE, __endBitPosition);
         </#if>
     </#if>
 </#macro>

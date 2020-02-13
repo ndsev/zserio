@@ -59,8 +59,8 @@ public final class SqlTableEmitterTemplateData extends UserTypeTemplateData
                 if (parameterTemplateData.getIsExplicit())
                 {
                     final String expression = parameterTemplateData.getExpression();
-                    final String javaTypeName = parameterTemplateData.getJavaTypeName();
-                    explicitParameters.add(new ExplicitParameterTemplateData(expression, javaTypeName));
+                    final String javaTypeFullName = parameterTemplateData.getJavaTypeFullName();
+                    explicitParameters.add(new ExplicitParameterTemplateData(expression, javaTypeFullName));
                 }
             }
         }
@@ -113,10 +113,10 @@ public final class SqlTableEmitterTemplateData extends UserTypeTemplateData
 
     public static class ExplicitParameterTemplateData implements Comparable<ExplicitParameterTemplateData>
     {
-        public ExplicitParameterTemplateData(String expression, String javaTypeName)
+        public ExplicitParameterTemplateData(String expression, String javaTypeFullName)
         {
             this.expression = expression;
-            this.javaTypeName = javaTypeName;
+            this.javaTypeFullName = javaTypeFullName;
         }
 
         public String getExpression()
@@ -124,9 +124,9 @@ public final class SqlTableEmitterTemplateData extends UserTypeTemplateData
             return expression;
         }
 
-        public String getJavaTypeName()
+        public String getJavaTypeFullName()
         {
-            return javaTypeName;
+            return javaTypeFullName;
         }
 
         @Override
@@ -136,7 +136,7 @@ public final class SqlTableEmitterTemplateData extends UserTypeTemplateData
             if (result != 0)
                 return result;
 
-            return javaTypeName.compareTo(other.javaTypeName);
+            return javaTypeFullName.compareTo(other.javaTypeFullName);
         }
 
         @Override
@@ -158,12 +158,12 @@ public final class SqlTableEmitterTemplateData extends UserTypeTemplateData
         {
             int hash = HashUtil.HASH_SEED;
             hash = HashUtil.hash(hash, expression);
-            hash = HashUtil.hash(hash, javaTypeName);
+            hash = HashUtil.hash(hash, javaTypeFullName);
             return hash;
         }
 
         private final String expression;
-        private final String javaTypeName;
+        private final String javaTypeFullName;
     }
 
     public static class FieldTemplateData
@@ -178,7 +178,8 @@ public final class SqlTableEmitterTemplateData extends UserTypeTemplateData
             final JavaNativeType nativeType = javaNativeMapper.getJavaType(fieldTypeInstantiation);
 
             name = field.getName();
-            javaTypeName = nativeType.getFullName();
+            javaTypeName = nativeType.getName();
+            javaTypeFullName = nativeType.getFullName();
             requiresBigInt = (nativeType instanceof NativeIntegralType) ?
                     ((NativeIntegralType)nativeType).requiresBigInt() : false;
 
@@ -223,6 +224,11 @@ public final class SqlTableEmitterTemplateData extends UserTypeTemplateData
         public String getJavaTypeName()
         {
             return javaTypeName;
+        }
+
+        public String getJavaTypeFullName()
+        {
+            return javaTypeFullName;
         }
 
         public boolean getRequiresBigInt()
@@ -286,7 +292,7 @@ public final class SqlTableEmitterTemplateData extends UserTypeTemplateData
                 expression = javaSqlIndirectExpressionFormatter.formatGetter(argumentExpression);
                 final Parameter parameter = instantiatedParameter.getParameter();
                 definitionName = parameter.getName();
-                javaTypeName = javaNativeMapper.getJavaType(parameter.getTypeReference()).getFullName();
+                javaTypeFullName = javaNativeMapper.getJavaType(parameter.getTypeReference()).getFullName();
             }
 
             public boolean getIsExplicit()
@@ -304,22 +310,23 @@ public final class SqlTableEmitterTemplateData extends UserTypeTemplateData
                 return definitionName;
             }
 
-            public String getJavaTypeName()
+            public String getJavaTypeFullName()
             {
-                return javaTypeName;
+                return javaTypeFullName;
             }
 
             private final boolean isExplicit;
             private final String expression;
             private final String definitionName;
-            private final String javaTypeName;
+            private final String javaTypeFullName;
         }
 
         public static class EnumTemplateData
         {
             public EnumTemplateData(NativeEnumType nativeEnumType)
             {
-                baseJavaTypeName = nativeEnumType.getBaseType().getFullName();
+                baseJavaTypeName = nativeEnumType.getBaseType().getName();
+                baseJavaTypeFullName = nativeEnumType.getBaseType().getFullName();
             }
 
             public String getBaseJavaTypeName()
@@ -327,14 +334,21 @@ public final class SqlTableEmitterTemplateData extends UserTypeTemplateData
                 return baseJavaTypeName;
             }
 
+            public String getBaseJavaTypeFullName()
+            {
+                return baseJavaTypeFullName;
+            }
+
             private final String baseJavaTypeName;
+            private final String baseJavaTypeFullName;
         }
 
         public static class BitmaskTemplateData
         {
             public BitmaskTemplateData(NativeBitmaskType nativeBitmaskType)
             {
-                baseJavaTypeName = nativeBitmaskType.getBaseType().getFullName();
+                baseJavaTypeName = nativeBitmaskType.getBaseType().getName();
+                baseJavaTypeFullName = nativeBitmaskType.getBaseType().getFullName();
             }
 
             public String getBaseJavaTypeName()
@@ -342,7 +356,13 @@ public final class SqlTableEmitterTemplateData extends UserTypeTemplateData
                 return baseJavaTypeName;
             }
 
+            public String getBaseJavaTypeFullName()
+            {
+                return baseJavaTypeFullName;
+            }
+
             private final String baseJavaTypeName;
+            private final String baseJavaTypeFullName;
         }
 
         public static class SqlTypeTemplateData
@@ -397,6 +417,7 @@ public final class SqlTableEmitterTemplateData extends UserTypeTemplateData
 
         private final String name;
         private final String javaTypeName;
+        private final String javaTypeFullName;
         private final boolean requiresBigInt;
         private final boolean isVirtual;
         private final String sqlConstraint;
