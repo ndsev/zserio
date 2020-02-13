@@ -123,6 +123,7 @@ You can find the detailed quick start tutorial in their respective repositories:
 - alignments
 - offsets
 - arrays with indexed offsets
+- generic services
 
 ## Documentation
 
@@ -148,5 +149,10 @@ Python users can find more information in the
 [Python Tutorial](https://github.com/ndsev/zserio-tutorial-python#zserio-python-quick-start-tutorial).
 
 Check out as well the [Zserio Types Mapping](doc/ZserioTypesMapping.md) for types mapping description.
+
+Do not miss sample implementations of various back ends for Zserio generic services:
+   * [C++ Zserio Service gRPC backend](https://github.com/ndsev/zserio-service-grpc-cpp)
+   * [Java Zserio Service RMI backend](https://github.com/ndsev/zserio-service-rmi-java)
+   * [Python Zserio Service HTTP backend](https://github.com/ndsev/zserio-service-http-python)
 
 [build-url]: https://github.com/ndsev/zserio/actions?query=workflow%3Abuild

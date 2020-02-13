@@ -35,6 +35,7 @@ java -jar zserio.jar
     [-src <source directory>]
     [-v,--version]
     [-withRangeCheckCode|-withoutRangeCheckCode]
+    [-withServiceCode|-withoutServiceCode]
     [-withSourcesAmalgamation|-withoutSourcesAmalgamation]
     [-withSqlCode|-withoutSqlCode]
     [-withSvgDiagrams|-withoutSvgDiagrams]
@@ -117,6 +118,12 @@ Shows the version of the Zserio tool.
 **`-withRangeCheckCode|-withoutRangeCheckCode`**
 
 Enables/disables code for range checking for fields and parameters (integer types only). By default is disabled.
+Note that range checking can be enabled only when writer code is enabled (see `-withWriterCode` option).
+
+**`-withServiceCode|-withoutServiceCode`**
+
+Enables/disables generation of code for Service Types. By default is enabled, but note that services can be
+enabled only when writer code is enabled (see `-withWriterCode` option).
 
 **`-withSourcesAmalgamation|-withoutSourcesAmalgamation`**
 
@@ -128,7 +135,7 @@ subdirectory will contain only one C++ source module.
 **`-withSqlCode|-withoutSqlCode`**
 
 Enables/disables generation of code for SQLite extension (SQLite types like `sql_database`, `sql_table`,
-etc...).
+etc...). By default is enabled.
 
 **`-withSvgDiagrams|-withoutSvgDiagrams`**
 
@@ -141,7 +148,8 @@ executable is a part of the Graphviz package which can be downloaded from
 **`-withValidationCode|-withoutValidationCode`**
 
 Enables/disables generation of the API extension, which is used for SQLite database validation. Currently,
-database validation is not supported by C++ API. By default is disabled.
+database validation is not supported by C++ API. By default is disabled. Note that validation code can be
+enabled only when writer code is enabled (see `-withWriterCode` option).
 
 **`-withWriterCode|-withoutWriterCode`**
 
