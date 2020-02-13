@@ -1,6 +1,6 @@
 <#include "FileHeader.inc.ftl">
 <#include "Service.inc.ftl">
-<@standard_header generatorDescription, packageName, javaMajorVersion, [
+<@standard_header generatorDescription, packageName, [
         "java.io.ByteArrayInputStream",
         "java.io.InputStream",
         "java.io.IOException"
@@ -54,7 +54,6 @@
     <#if servicePackageName?has_content>${servicePackageName}.</#if><#t>
 </#assign>
 
-<@class_header generatorDescription/>
 public final class ${className}
 {
     private ${className}()

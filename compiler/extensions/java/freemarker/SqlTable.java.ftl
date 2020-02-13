@@ -2,7 +2,7 @@
 <#include "Sql.inc.ftl">
 <#include "GeneratePkgPrefix.inc.ftl">
 <#include "RangeCheck.inc.ftl">
-<@standard_header generatorDescription, packageName, javaMajorVersion, [
+<@standard_header generatorDescription, packageName, [
         "java.sql.Connection",
         "java.sql.SQLException",
         "java.sql.PreparedStatement",
@@ -43,7 +43,6 @@
     </#if>
 </#if>
 
-<@class_header generatorDescription/>
 public class ${name}
 {
 <#if needsParameterProvider>

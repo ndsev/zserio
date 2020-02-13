@@ -1,8 +1,7 @@
 <#include "FileHeader.inc.ftl">
 <#include "GeneratePkgPrefix.inc.ftl">
-<@standard_header generatorDescription, packageName, javaMajorVersion, []/>
+<@standard_header generatorDescription, packageName, []/>
 
-<@class_header generatorDescription/>
 public class ${name}
 {
     <#list fields as field>

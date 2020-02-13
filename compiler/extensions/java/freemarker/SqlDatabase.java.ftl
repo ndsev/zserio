@@ -1,7 +1,7 @@
 <#include "FileHeader.inc.ftl">
 <#include "Sql.inc.ftl">
 <#include "GeneratePkgPrefix.inc.ftl">
-<@standard_header generatorDescription, packageName, javaMajorVersion, [
+<@standard_header generatorDescription, packageName, [
         "java.io.File",
         "java.sql.Connection",
         "java.sql.DriverManager",
@@ -27,7 +27,6 @@
 <#macro field_member_name field>
     ${field.name}_<#t>
 </#macro>
-<@class_header generatorDescription/>
 public class ${name} implements SqlDatabase<#if !withWriterCode>Reader</#if>
 {
 <#if withValidationCode && needsParameterProvider>

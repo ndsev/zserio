@@ -9,7 +9,6 @@ final class TemplateDataContext
     public TemplateDataContext(Parameters extensionParameters, JavaExtensionParameters javaParameters,
             PackageMapper javaPackageMapper)
     {
-        javaMajorVersion = javaParameters.getJavaMajorVersion();
         javaNativeMapper = new JavaNativeMapper(javaPackageMapper);
         javaRootPackageName = JavaFullNameFormatter.getFullName(javaPackageMapper.getRootPackageName());
 
@@ -27,11 +26,6 @@ final class TemplateDataContext
         withWriterCode = extensionParameters.getWithWriterCode();
         withValidationCode = extensionParameters.getWithValidationCode();
         withRangeCheckCode = extensionParameters.getWithRangeCheckCode();
-    }
-
-    public String getJavaMajorVersion()
-    {
-        return javaMajorVersion;
     }
 
     public JavaNativeMapper getJavaNativeMapper()
@@ -74,7 +68,6 @@ final class TemplateDataContext
         return withRangeCheckCode;
     }
 
-    private final String javaMajorVersion;
     private final JavaNativeMapper javaNativeMapper;
     private final String javaRootPackageName;
 

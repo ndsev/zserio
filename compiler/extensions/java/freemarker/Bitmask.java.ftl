@@ -1,5 +1,5 @@
 <#include "FileHeader.inc.ftl">
-<@standard_header generatorDescription, packageName, javaMajorVersion, [
+<@standard_header generatorDescription, packageName, [
         "java.io.IOException",
         "zserio.runtime.SizeOf",
         "zserio.runtime.io.BitStreamReader"
@@ -16,7 +16,6 @@
 <@imports ["zserio.runtime.BitSizeOfCalculator"]/>
 </#if>
 
-<@class_header generatorDescription/>
 public class ${name} implements <#if withWriterCode>InitializeOffsetsWriter, </#if>SizeOf
 {
     public ${name}()
