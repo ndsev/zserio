@@ -14,6 +14,9 @@ public class ServiceEmitter extends CppDefaultEmitter
     @Override
     public void beginService(ServiceType serviceType) throws ZserioEmitException
     {
+        if (!getWithServiceCode())
+            return;
+
         final TemplateDataContext templateDataContext = getTemplateDataContext();
         final ServiceEmitterTemplateData templateData =
                 new ServiceEmitterTemplateData(templateDataContext, serviceType);

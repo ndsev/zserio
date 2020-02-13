@@ -111,6 +111,16 @@ class CommandLineArguments
     }
 
     /**
+     * Gets whether the Service code option is enabled.
+     *
+     * @returns True if command line arguments enable Service code option.
+     */
+    public boolean getWithServiceCode()
+    {
+        return withServiceCodeOption;
+    }
+
+    /**
      * Gets whether the sources amalgamation option is enabled.
      *
      * @returns True if sources amalgamation is enabled.
@@ -240,6 +250,14 @@ class CommandLineArguments
         rangeCheckCodeGroup.setRequired(false);
         options.addOptionGroup(rangeCheckCodeGroup);
 
+        final OptionGroup serviceCodeGroup = new OptionGroup();
+        option = new Option(OptionNameWithServiceCode, false, "enable code for Zserio services (default)");
+        serviceCodeGroup.addOption(option);
+        option = new Option(OptionNameWithoutServiceCode, false, "disable code for Zseiro services");
+        serviceCodeGroup.addOption(option);
+        serviceCodeGroup.setRequired(false);
+        options.addOptionGroup(serviceCodeGroup);
+
         final OptionGroup soucresAmalgamationGroup = new OptionGroup();
         option = new Option(OptionNameWithSourcesAmalgamation, false,
                             "enable amalgamation of generated C++ sources (default)");
@@ -302,6 +320,8 @@ class CommandLineArguments
 
         withInspectorCodeOption = hasOption(OptionNameWithInspectorCode);
         withRangeCheckCodeOption = hasOption(OptionNameWithRangeCheckCode);
+        withServiceCodeOption =
+                !hasOption(OptionNameWithoutServiceCode) && !hasOption(OptionNameWithoutWriterCode);
         withSourcesAmalgamationOption = !hasOption(OptionNameWithoutSourcesAmalgamation);
         withSqlCodeOption = !hasOption(OptionNameWithoutSqlCode);
         withValidationCodeOption = hasOption(OptionNameWithValidationCode);
@@ -331,6 +351,12 @@ class CommandLineArguments
             {
                 throw new ParseException(
                         "The specified option 'withValidationCode' conflicts with another option: " +
+                        "'withoutWriterCode'");
+            }
+            if (hasOption(OptionNameWithServiceCode))
+            {
+                throw new ParseException(
+                        "The specified option 'withServiceCode' conflicts with another option: " +
                         "'withoutWriterCode'");
             }
         }
@@ -364,6 +390,8 @@ class CommandLineArguments
 //    private static final String OptionNameWithoutInspectorCode = "withoutInspectorCode";
     private static final String OptionNameWithRangeCheckCode = "withRangeCheckCode";
     private static final String OptionNameWithoutRangeCheckCode = "withoutRangeCheckCode";
+    private static final String OptionNameWithServiceCode = "withServiceCode";
+    private static final String OptionNameWithoutServiceCode = "withoutServiceCode";
     private static final String OptionNameWithSourcesAmalgamation = "withSourcesAmalgamation";
     private static final String OptionNameWithoutSourcesAmalgamation = "withoutSourcesAmalgamation";
     private static final String OptionNameWithSqlCode = "withSqlCode";
@@ -385,6 +413,7 @@ class CommandLineArguments
     private boolean versionOption;
     private boolean withInspectorCodeOption;
     private boolean withRangeCheckCodeOption;
+    private boolean withServiceCodeOption;
     private boolean withSourcesAmalgamationOption;
     private boolean withSqlCodeOption;
     private boolean withValidationCodeOption;

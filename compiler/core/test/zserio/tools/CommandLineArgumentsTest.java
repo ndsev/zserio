@@ -84,6 +84,34 @@ public class CommandLineArgumentsTest
     }
 
     @Test
+    public void withServiceCode() throws ParseException
+    {
+        String[] args = { "-withServiceCode" };
+        assertTrue(parse(args).getWithServiceCode());
+    }
+
+    @Test
+    public void withoutServiceCode() throws ParseException
+    {
+        String[] args = { "-withoutServiceCode" };
+        assertFalse(parse(args).getWithServiceCode());
+    }
+
+    @Test
+    public void withServiceCodeDefault() throws ParseException
+    {
+        String[] args = {};
+        assertTrue(parse(args).getWithServiceCode());
+    }
+
+    @Test(expected=ParseException.class)
+    public void serviceCodeConflict() throws ParseException
+    {
+        String[] args = { "-withServiceCode", "-withoutServiceCode" };
+        parse(args);
+    }
+
+    @Test
     public void withSourcesAmalgamation() throws ParseException
     {
         String[] args = { "-withSourcesAmalgamation" };
@@ -181,6 +209,7 @@ public class CommandLineArgumentsTest
         String[] args = { "-withoutWriterCode" };
         CommandLineArguments parsedArgs = parse(args);
         assertFalse(parsedArgs.getWithWriterCode());
+        assertFalse(parsedArgs.getWithServiceCode()); // auto-disabled
     }
 
     @Test
@@ -208,6 +237,13 @@ public class CommandLineArgumentsTest
     public void withoutWriterCodeWithRangeCheckCodeConflict() throws ParseException
     {
         String[] args = { "-withoutWriterCode", "-withRangeCheckCode" };
+        parse(args);
+    }
+
+    @Test(expected=ParseException.class)
+    public void withoutWriterCodeWithServiceCodeConflict() throws ParseException
+    {
+        String[] args = { "-withoutWriterCode", "-withServiceCode" };
         parse(args);
     }
 

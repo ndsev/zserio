@@ -59,6 +59,11 @@ public interface Parameters
     public boolean getWithRangeCheckCode();
 
     /**
+     * Gets the service code flag.
+     */
+    public boolean getWithServiceCode();
+
+    /**
      * Gets the sources amalgamation flag.
      *
      * @return True if amalgamated sources should be generated.

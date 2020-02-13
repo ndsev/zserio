@@ -1,0 +1,38 @@
+<project name="without_service_code" basedir="." default="run">
+    <testProperties testPath="arguments/without_service_code" testName="without_service_code"/>
+
+    <target name="prepare">
+        <testPrepare testName="without_service_code"/>
+    </target>
+
+    <target name="gen.check" depends="prepare">
+        <testGenCheck testName="without_service_code"/>
+    </target>
+
+    <target name="gen" depends="gen.check" unless="without_service_code.zs.gen_is_uptodate">
+        <testGenClean testName="without_service_code"/>
+        <testGen testName="without_service_code" zsFile="without_service_code.zs">
+            <arg name="withoutServiceCode"/>
+        </testGen>
+    </target>
+
+    <target name="gen.checkWarnings" depends="gen">
+        <testGenCheckWarnings testName="without_service_code"/>
+    </target>
+
+    <target name="compile" depends="gen.checkWarnings">
+        <testCompile testName="without_service_code"/>
+    </target>
+
+    <target name="spotbugs" depends="compile" if="spotbugs.home_dir">
+        <testSpotBugs testName="without_service_code"/>
+    </target>
+
+    <target name="run" depends="spotbugs">
+        <testRun testName="without_service_code"/>
+    </target>
+
+    <target name="clean">
+        <testClean testName="without_service_code"/>
+    </target>
+</project>

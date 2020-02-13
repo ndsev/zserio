@@ -60,6 +60,11 @@ abstract class CppDefaultEmitter extends DefaultEmitter
         return packageMapper;
     }
 
+    protected boolean getWithServiceCode()
+    {
+        return extensionParameters.getWithServiceCode();
+    }
+
     protected boolean getWithSourcesAmalgamation()
     {
         return extensionParameters.getWithSourcesAmalgamation();
