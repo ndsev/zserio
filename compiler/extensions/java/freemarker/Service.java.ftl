@@ -37,12 +37,20 @@ public final class ${name}
             return method.call(requestData, context);
         }
 
-        public static final String SERVICE_FULL_NAME = "${serviceFullName}";
-        public static final String[] METHOD_NAMES = {
+        public static String serviceFullName()
+        {
+            return SERVICE_FULL_NAME;
+        }
+
+        public static String[] methodNames()
+        {
+            return new String[]
+            {
 <#list methodList as method>
-            "${method.name}"<#if method?has_next>,</#if>
+                "${method.name}"<#if method?has_next>,</#if>
 </#list>
-        };
+            };
+        }
 <#list methodList as method>
 
         protected abstract ${method.responseTypeFullName} ${method.name}Impl(<#rt>
@@ -67,6 +75,8 @@ public final class ${name}
         {
             byte[] call(byte[] requestData, Object context) throws ZserioError;
         }
+
+        private static final String SERVICE_FULL_NAME = "${serviceFullName}";
 
         private final Map<String, Method> methodMap;
     }

@@ -31,14 +31,14 @@ public class ComplexTypesServiceTest
     public void serviceFullName()
     {
         assertEquals("service_types.complex_types_service.ComplexTypesService",
-                ComplexTypesService.Service.SERVICE_FULL_NAME);
+                ComplexTypesService.Service.serviceFullName());
     }
 
     @Test
     public void methodNames()
     {
-        assertEquals("swapModels", ComplexTypesService.Service.METHOD_NAMES[0]);
-        assertEquals("getLength", ComplexTypesService.Service.METHOD_NAMES[1]);
+        assertEquals("swapModels", ComplexTypesService.Service.methodNames()[0]);
+        assertEquals("getLength", ComplexTypesService.Service.methodNames()[1]);
     }
 
     @Test

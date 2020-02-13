@@ -13,13 +13,13 @@ public class SimpleServiceTest
     @Test
     public void serviceFullName()
     {
-        assertEquals("service_types.simple_service.SimpleService", SimpleService.Service.SERVICE_FULL_NAME);
+        assertEquals("service_types.simple_service.SimpleService", SimpleService.Service.serviceFullName());
     }
 
     @Test
     public void methodNames()
     {
-        assertEquals("powerOfTwo", SimpleService.Service.METHOD_NAMES[0]);
+        assertEquals("powerOfTwo", SimpleService.Service.methodNames()[0]);
     }
 
     @Test
