@@ -1,4 +1,4 @@
-name: build
+name: build-ubuntu_18_04
 
 on:
   push:
