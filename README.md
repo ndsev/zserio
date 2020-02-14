@@ -3,6 +3,10 @@
 ***z***ero ***seri***alization ***o***verhead
 
 [![build-ubuntu_18_04](https://github.com/ndsev/zserio/workflows/build-ubuntu_18_04/badge.svg)](https://github.com/ndsev/zserio/actions?query=workflow%3Abuild-ubuntu_18_04)
+[![](https://img.shields.io/github/release-date/ndsev/zserio)](https://github.com/ndsev/zserio/releases/latest)
+[![](https://img.shields.io/github/commits-since/ndsev/zserio/latest)](https://github.com/ndsev/zserio/commits/master)
+[![](https://img.shields.io/github/commit-activity/m/ndsev/zserio)](https://github.com/ndsev/zserio/commits/master)
+
 --------
 
 No time to read? Go to the [Quick Start](#quick-start) or [download latest release](https://github.com/ndsev/zserio/releases/latest).
