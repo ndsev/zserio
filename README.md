@@ -2,10 +2,7 @@
 
 ***z***ero ***seri***alization ***o***verhead
 
-| Automated Build | Platform |
-| --------------- | -------- |
-| [![build](https://github.com/ndsev/zserio/workflows/build/badge.svg)][build-url] | Ubuntu 18.04 |
-
+[![build-ubuntu_18_04](https://github.com/ndsev/zserio/workflows/build-ubuntu_18_04/badge.svg)](https://github.com/ndsev/zserio/actions?query=workflow%3Abuild-ubuntu_18_04)
 --------
 
 No time to read? Go to the [Quick Start](#quick-start) or [download latest release](https://github.com/ndsev/zserio/releases/latest).
@@ -154,5 +151,3 @@ Do not miss sample implementations of various back ends for Zserio generic servi
    * [C++ Zserio Service gRPC backend](https://github.com/ndsev/zserio-service-grpc-cpp)
    * [Java Zserio Service RMI backend](https://github.com/ndsev/zserio-service-rmi-java)
    * [Python Zserio Service HTTP backend](https://github.com/ndsev/zserio-service-http-python)
-
-[build-url]: https://github.com/ndsev/zserio/actions?query=workflow%3Abuild
