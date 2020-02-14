@@ -869,7 +869,7 @@ main()
         print_test_help_env
         print_help_env
         return 0
-    elif [ $? -ne 0 ] ; then
+    elif [ ${PARSE_RESULT} -ne 0 ] ; then
         return 1
     fi
 
