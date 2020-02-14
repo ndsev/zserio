@@ -27,7 +27,7 @@
     </target>
 
     <target name="run" depends="spotbugs">
-        <testRun testname="explicit_parameters"/>
+        <testRun testName="explicit_parameters"/>
     </target>
 
     <target name="clean">

@@ -30,7 +30,7 @@
     </target>
 
     <target name="run" depends="spotbugs">
-        <testRun testname="packages"/>
+        <testRun testName="packages"/>
     </target>
 
     <target name="clean">

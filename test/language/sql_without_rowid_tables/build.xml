@@ -27,7 +27,7 @@
     </target>
 
     <target name="run" depends="spotbugs">
-        <testRun testname="sql_without_rowid_tables"/>
+        <testRun testName="sql_without_rowid_tables"/>
     </target>
 
     <target name="clean">
