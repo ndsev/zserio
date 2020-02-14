@@ -2,11 +2,10 @@
 #
 # Usage: zserio_add_runtime_library
 #   RUNTIME_LIBRARY_DIR runtime_library_dir
-#   INCLUDE_INSPECTOR  ON/OFF
 function(zserio_add_runtime_library)
     # parse cmdline args
     foreach (ARG ${ARGV})
-        if ((ARG STREQUAL RUNTIME_LIBRARY_DIR) OR (ARG STREQUAL INCLUDE_INSPECTOR))
+        if ((ARG STREQUAL RUNTIME_LIBRARY_DIR))
             if (DEFINED VALUE_${ARG})
                 message(FATAL_ERROR "Option ${ARG} used multiple times!")
             endif ()
@@ -19,13 +18,12 @@ function(zserio_add_runtime_library)
         endif ()
     endforeach ()
 
-    foreach (ARG RUNTIME_LIBRARY_DIR INCLUDE_INSPECTOR)
+    foreach (ARG RUNTIME_LIBRARY_DIR)
         if (NOT DEFINED VALUE_${ARG})
             message(FATAL_ERROR "No value defined for required argument ${ARG}!")
         endif ()
     endforeach ()
 
-    set(ZSERIO_RUNTIME_INCLUDE_INSPECTOR ${VALUE_INCLUDE_INSPECTOR})
     add_subdirectory(${VALUE_RUNTIME_LIBRARY_DIR} ZserioCppRuntime)
 endfunction()
 
@@ -138,11 +136,6 @@ function(zserio_add_library)
     endif ()
 
     # add a static library
-    if (VALUE_ZSERIO_OPTIONS MATCHES "withInspectorCode")
-        set_property(SOURCE ${VALUE_OUT_FILES}
-                     APPEND PROPERTY COMPILE_DEFINITIONS ZSERIO_RUNTIME_INCLUDE_INSPECTOR)
-    endif ()
-
     if (MSVC AND SOURCE_FILE_POSITION EQUAL -1)
         add_library(${VALUE_TARGET} INTERFACE)
         add_dependencies(${VALUE_TARGET} ${VALUE_TARGET}_generate)

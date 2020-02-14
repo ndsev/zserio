@@ -131,14 +131,13 @@ EOF
 # Generate CMakeList.txt
 generate_cmake_lists()
 {
-    exit_if_argc_ne $# 7
+    exit_if_argc_ne $# 6
     local ZSERIO_RELEASE="$1"; shift
     local ZSERIO_ROOT="$1"; shift
     local BUILD_DIR="$1"; shift
     local TEST_NAME="$1"; shift
     local RUNTIME_LIBRARY_SUBDIR="$1"; shift
     local NEEDS_SQLITE="$1"; shift
-    local NEEDS_INSPECTOR="$1"; shift
 
     # use host paths in generated files
     local DISABLE_SLASHES_CONVERSION=1
@@ -157,14 +156,6 @@ sqlite_add_library(\"\${ZSERIO_ROOT}\")"
         SQLITE_USE="
 target_include_directories(\${PROJECT_NAME} SYSTEM PRIVATE \${SQLITE_INCDIR})
 target_link_libraries(\${PROJECT_NAME} \${SQLITE_LIBRARY})"
-    fi
-
-    local INSPECTOR_SETUP
-    local INSPECTOR_USE="OFF"
-    if [ ${NEEDS_INSPECTOR} -ne 0 ]; then
-        INSPECTOR_SETUP="
-add_definitions(-DZSERIO_RUNTIME_INCLUDE_INSPECTOR)"
-        INSPECTOR_USE="ON"
     fi
 
     local CPP11_SETUP
@@ -198,8 +189,7 @@ compiler_set_warnings_as_errors()${CPP11_SETUP}${SQLITE_SETUP}
 # add zserio runtime library
 include(zserio_utils)
 set(ZSERIO_RUNTIME_LIBRARY_DIR "\${ZSERIO_RELEASE}/runtime_libs/${RUNTIME_LIBRARY_SUBDIR}")
-zserio_add_runtime_library(RUNTIME_LIBRARY_DIR "\${ZSERIO_RUNTIME_LIBRARY_DIR}"
-                           INCLUDE_INSPECTOR ${INSPECTOR_USE})${INSPECTOR_SETUP}
+zserio_add_runtime_library(RUNTIME_LIBRARY_DIR "\${ZSERIO_RUNTIME_LIBRARY_DIR}")
 
 file(GLOB_RECURSE SOURCES RELATIVE "\${CMAKE_CURRENT_SOURCE_DIR}" "gen/*.cpp" "gen/*.h")
 add_library(\${PROJECT_NAME} \${SOURCES})
@@ -291,10 +281,9 @@ test()
         echo "Compile generated C++ sources"
         ! grep "#include <sqlite3.h>" -qr ${TEST_OUT_DIR}/cpp/gen
         local CPP_NEEDS_SQLITE=$?
-        local CPP_NEEDS_INSPECTOR=0
         generate_cmake_lists "${UNPACKED_ZSERIO_RELEASE_DIR}" "${ZSERIO_PROJECT_ROOT}" \
             "${TEST_OUT_DIR}/cpp" "${SWITCH_TEST_NAME}" "cpp" \
-            ${CPP_NEEDS_SQLITE} ${CPP_NEEDS_INSPECTOR}
+            ${CPP_NEEDS_SQLITE}
         local CTEST_ARGS=()
         compile_cpp "${ZSERIO_PROJECT_ROOT}" "${TEST_OUT_DIR}/cpp" "${TEST_OUT_DIR}/cpp" CPP_TARGETS[@] \
                     CMAKE_ARGS[@] CTEST_ARGS[@] all

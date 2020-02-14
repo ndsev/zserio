@@ -91,16 +91,6 @@ class CommandLineArguments
     }
 
     /**
-     * Gets whether the inspector code option is enabled.
-     *
-     * @returns True if command line arguments enable inspector code option.
-     */
-    public boolean getWithInspectorCode()
-    {
-        return withInspectorCodeOption;
-    }
-
-    /**
      * Gets whether the range check code option is enabled.
      *
      * @returns True if command line arguments enable range check code option.
@@ -231,15 +221,6 @@ class CommandLineArguments
         option.setRequired(false);
         options.addOption(option);
 
-        // Blob Inspector interface has been DISABLED
-        // final OptionGroup inspectorCodeGroup = new OptionGroup();
-        // option = new Option(OptionNameWithInspectorCode, false, "enable code for Blob Inspector");
-        // inspectorCodeGroup.addOption(option);
-        // option = new Option(OptionNameWithoutInspectorCode, false, "disable code for Blob Inspector (default)");
-        // inspectorCodeGroup.addOption(option);
-        // inspectorCodeGroup.setRequired(false);
-        // options.addOptionGroup(inspectorCodeGroup);
-
         final OptionGroup rangeCheckCodeGroup = new OptionGroup();
         option = new Option(OptionNameWithRangeCheckCode, false,
                 "enable code for integer range checking for field and parameter setters");
@@ -318,16 +299,25 @@ class CommandLineArguments
         versionOption = hasOption(OptionNameVersionShort);
         topLevelPackageName = getOptionValue(OptionNameSetTopLevelPackage);
 
-        withInspectorCodeOption = hasOption(OptionNameWithInspectorCode);
         withRangeCheckCodeOption = hasOption(OptionNameWithRangeCheckCode);
-        withServiceCodeOption =
-                !hasOption(OptionNameWithoutServiceCode) && !hasOption(OptionNameWithoutWriterCode);
+        withServiceCodeOption = !hasOption(OptionNameWithoutServiceCode);
         withSourcesAmalgamationOption = !hasOption(OptionNameWithoutSourcesAmalgamation);
         withSqlCodeOption = !hasOption(OptionNameWithoutSqlCode);
         withValidationCodeOption = hasOption(OptionNameWithValidationCode);
         withWriterCodeOption = !hasOption(OptionNameWithoutWriterCode);
 
         withUnusedWarningsOption = hasOption(OptionNameWithUnusedWarnings);
+
+        if (!withWriterCodeOption)
+        {
+            // automatically disable options which are not compatible with withoutWriterCodeOption
+            if (withServiceCodeOption)
+            {
+                withServiceCodeOption = false;
+                ZserioToolPrinter.printInfo("Applying '-" + OptionNameWithoutServiceCode + "' because of '-" +
+                            OptionNameWithoutWriterCode + "'");
+            }
+        }
     }
 
     private void validateOptions() throws ParseException
@@ -335,12 +325,6 @@ class CommandLineArguments
         // check explicitly specified conflicting options
         if (hasOption(OptionNameWithoutWriterCode))
         {
-            if (hasOption(OptionNameWithInspectorCode))
-            {
-                throw new ParseException(
-                        "The specified option 'withInspectorCode' conflicts with another option: " +
-                        "'withoutWriterCode'");
-            }
             if (hasOption(OptionNameWithRangeCheckCode))
             {
                 throw new ParseException(
@@ -386,8 +370,6 @@ class CommandLineArguments
     private static final String OptionNameSource = "src";
     private static final String OptionNameVersionShort = "v";
     private static final String OptionNameSetTopLevelPackage = "setTopLevelPackage";
-    private static final String OptionNameWithInspectorCode = "withInspectorCode";
-//    private static final String OptionNameWithoutInspectorCode = "withoutInspectorCode";
     private static final String OptionNameWithRangeCheckCode = "withRangeCheckCode";
     private static final String OptionNameWithoutRangeCheckCode = "withoutRangeCheckCode";
     private static final String OptionNameWithServiceCode = "withServiceCode";
@@ -411,7 +393,6 @@ class CommandLineArguments
     private String  srcPathName;
     private String  topLevelPackageName;
     private boolean versionOption;
-    private boolean withInspectorCodeOption;
     private boolean withRangeCheckCodeOption;
     private boolean withServiceCodeOption;
     private boolean withSourcesAmalgamationOption;

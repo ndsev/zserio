@@ -43,7 +43,7 @@ sqlite_add_library(${ZSERIO_PROJECT_ROOT})
 include(zserio_utils)
 set(ZSERIO_JAR_DIR "${ZSERIO_RELEASE_ROOT}/zserio_libs")
 set(ZSERIO_RUNTIME_LIBRARY_DIR "${ZSERIO_RELEASE_ROOT}/runtime_libs/${ZSERIO_CPP_DIR}")
-zserio_add_runtime_library(RUNTIME_LIBRARY_DIR "${ZSERIO_RUNTIME_LIBRARY_DIR}" INCLUDE_INSPECTOR ON)
+zserio_add_runtime_library(RUNTIME_LIBRARY_DIR "${ZSERIO_RUNTIME_LIBRARY_DIR}")
 
 # functions to set globals called by included CMake lists
 set(TEST_SOURCES_LIST "" CACHE INTERNAL "Test sources")

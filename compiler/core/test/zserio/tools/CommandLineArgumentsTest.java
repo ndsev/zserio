@@ -21,39 +21,6 @@ public class CommandLineArgumentsTest
         assertTrue(parse(args).hasHelpOption());
     }
 
-    // Blob Inspector interface has been DISABLED
-    //@Test
-    public void withInspectorCode() throws ParseException
-    {
-        String[] args = { "-withInspectorCode" };
-        CommandLineArguments parsedArgs = parse(args);
-        assertTrue(parsedArgs.getWithInspectorCode());
-    }
-
-    // Blob Inspector interface has been DISABLED
-    //@Test
-    public void withoutInspectorCode() throws ParseException
-    {
-        String[] args = { "-withoutInspectorCode" };
-        assertFalse(parse(args).getWithInspectorCode());
-    }
-
-    // Blob Inspector interface has been DISABLED
-    //@Test
-    public void withInspectorCodeDefault() throws ParseException
-    {
-        String[] args = {};
-        assertFalse(parse(args).getWithInspectorCode());
-    }
-
-    // Blob Inspector interface has been DISABLED
-    //@Test(expected=ParseException.class)
-    public void inspectorCodeConflict() throws ParseException
-    {
-        String[] args = { "-withInspectorCode", "-withoutInspectorCode" };
-        parse(args);
-    }
-
     @Test
     public void withRangeCheckCode() throws ParseException
     {
@@ -223,13 +190,6 @@ public class CommandLineArgumentsTest
     public void writerCodeConflict() throws ParseException
     {
         String[] args = { "-withWriterCode", "-withoutWriterCode" };
-        parse(args);
-    }
-
-    @Test(expected=ParseException.class)
-    public void withoutWriterCodeWithInspectorCodeConflict() throws ParseException
-    {
-        String[] args = { "-withoutWriterCode", "-withInspectorCode" };
         parse(args);
     }
 

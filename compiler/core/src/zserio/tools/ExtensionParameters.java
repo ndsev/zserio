@@ -42,12 +42,6 @@ public class ExtensionParameters implements Parameters
     }
 
     @Override
-    public boolean getWithInspectorCode()
-    {
-        return commandLineArguments.getWithInspectorCode();
-    }
-
-    @Override
     public boolean getWithRangeCheckCode()
     {
         return commandLineArguments.getWithRangeCheckCode();

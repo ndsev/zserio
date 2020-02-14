@@ -77,8 +77,7 @@ test()
         if [[ "${CPP_TEST_NAME}" == "" ]]; then
             CPP_TEST_NAME="*"
         fi
-        local CMAKE_ARGS=("-DZSERIO_RUNTIME_INCLUDE_INSPECTOR=ON"
-                          "-DZSERIO_RELEASE_ROOT=${UNPACKED_ZSERIO_RELEASE_DIR}"
+        local CMAKE_ARGS=("-DZSERIO_RELEASE_ROOT=${UNPACKED_ZSERIO_RELEASE_DIR}"
                           "-DZSERIO_TEST_NAME=${CPP_TEST_NAME}")
         local CTEST_ARGS=()
         if [[ ${SWITCH_CLEAN} == 1 ]] ; then

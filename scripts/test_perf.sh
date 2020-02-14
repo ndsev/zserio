@@ -216,8 +216,7 @@ set(CMAKE_CXX_STANDARD 11)
 # add zserio runtime library
 include(zserio_utils)
 set(ZSERIO_RUNTIME_LIBRARY_DIR "\${ZSERIO_RELEASE}/runtime_libs/${GENERATOR}")
-zserio_add_runtime_library(RUNTIME_LIBRARY_DIR "\${ZSERIO_RUNTIME_LIBRARY_DIR}"
-                           INCLUDE_INSPECTOR OFF)
+zserio_add_runtime_library(RUNTIME_LIBRARY_DIR "\${ZSERIO_RUNTIME_LIBRARY_DIR}")
 
 file(GLOB_RECURSE SOURCES RELATIVE "\${CMAKE_CURRENT_SOURCE_DIR}" "gen/*.cpp" "gen/*.h")
 
