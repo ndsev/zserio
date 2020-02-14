@@ -21,7 +21,7 @@ show_parser_tree()
     fi
     echo
 
-    "${JAVAC_BIN}" "${PARSER_TREE_BUILD_DIR}"/Zserio*.java -cp .:"${ANTLR4_JAR}" 
+    "${JAVAC_BIN}" "${PARSER_TREE_BUILD_DIR}"/Zserio*.java -cp .:"${ANTLR4_JAR}"
     if [ $? -ne 0 ]; then
         return 1
     fi

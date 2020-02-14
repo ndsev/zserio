@@ -160,6 +160,7 @@ Usage:
 
 Arguments:
     -h, --help                Show this help.
+    -e, --help-env            Show help for enviroment variables.
     -c, --clean               Clean package instead of build.
     -p, --purge               Purge test build directory.
     -o <dir>, --output-directory <dir>
@@ -189,10 +190,6 @@ Examples:
     $0 all-linux64
 
 EOF
-
-    print_test_help_env
-    echo
-    print_help_env
 }
 
 # Parse all command line arguments.
@@ -226,6 +223,10 @@ parse_arguments()
         case "${ARG}" in
             "-h" | "--help")
                 return 2
+                ;;
+
+            "-e" | "--help-env")
+                return 3
                 ;;
 
             "-c" | "--clean")
@@ -315,9 +316,6 @@ parse_arguments()
 
 main()
 {
-    echo "Compilation and testing of zserio sources."
-    echo
-
     # get the project root, absolute path is necessary only for CMake
     local ZSERIO_PROJECT_ROOT
     convert_to_absolute_path "${SCRIPT_DIR}/.." ZSERIO_PROJECT_ROOT
@@ -332,10 +330,20 @@ main()
     local SWITCH_TEST_NAME
     parse_arguments PARAM_CPP_TARGET_ARRAY PARAM_JAVA PARAM_PYTHON PARAM_OUT_DIR \
                     SWITCH_CLEAN SWITCH_PURGE SWITCH_TEST_NAME $@
-    if [ $? -ne 0 ] ; then
+    local PARSE_RESULT=$?
+    if [ ${PARSE_RESULT} -eq 2 ] ; then
         print_help
+        return 0
+    elif [ ${PARSE_RESULT} -eq 3 ] ; then
+        print_test_help_env
+        print_help_env
+        return 0
+    elif [ $? -ne 0 ] ; then
         return 1
     fi
+
+    echo "Compilation and testing of zserio sources."
+    echo
 
     # set global variables
     set_global_common_variables

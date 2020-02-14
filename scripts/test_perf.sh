@@ -569,6 +569,7 @@ Usage:
 
 Arguments:
     -h, --help                    Show this help.
+    -e, --help-env                Show help for enviroment variables.
     -p, --purge                   Purge test build directory.
     -o, --output-directory <dir>  Output directory where tests will be run.
     -d, --source-dir DIR          Directory with zserio sources. Default is ".".
@@ -601,9 +602,6 @@ Examples:
     $0 all-linux64 -d /tmp/zs -s test.zs -b test.Blob -f blob.bin
 
 EOF
-    print_test_help_env
-    echo
-    print_help_env
 }
 
 # Parse all command line arguments.
@@ -647,6 +645,10 @@ parse_arguments()
         case "${ARG}" in
             "-h" | "--help")
                 return 2
+                ;;
+
+            "-e" | "--help-env")
+                return 3
                 ;;
 
             "-p" | "--purge")
@@ -839,9 +841,6 @@ parse_arguments()
 
 main()
 {
-    echo "Zserio Performance Tests"
-    echo
-
     # get the project root, absolute path is necessary only for CMake
     local ZSERIO_PROJECT_ROOT
     convert_to_absolute_path "${SCRIPT_DIR}/.." ZSERIO_PROJECT_ROOT
@@ -862,10 +861,20 @@ main()
     parse_arguments PARAM_CPP_TARGET_ARRAY PARAM_JAVA PARAM_PYTHON PARAM_OUT_DIR \
             SWITCH_DIRECTORY SWITCH_SOURCE SWITCH_TEST_NAME SWITCH_BLOB_NAME SWITCH_BLOB_FILE \
             SWITCH_NUM_ITERATIONS SWITCH_TEST_CONFIG SWITCH_PURGE $@
-    if [ $? -ne 0 ] ; then
+    local PARSE_RESULT=$?
+    if [ ${PARSE_RESULT} -eq 2 ] ; then
         print_help
+        return 0
+    elif [ ${PARSE_RESULT} -eq 3 ] ; then
+        print_test_help_env
+        print_help_env
+        return 0
+    elif [ $? -ne 0 ] ; then
         return 1
     fi
+
+    echo "Zserio Performance Tests"
+    echo
 
     # set global variables
     set_global_common_variables

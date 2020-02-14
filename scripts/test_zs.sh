@@ -358,6 +358,7 @@ Usage:
 
 Arguments:
     -h, --help                Show this help.
+    -e, --help-env            Show help for enviroment variables.
     -p, --purge               Purge test build directory.
     -o <dir>, --output-directory <dir>
                               Output directory where tests will be run.
@@ -390,9 +391,6 @@ Examples:
     $0 all-linux64 -d /tmp/zs -s test.zs
 
 EOF
-    print_test_help_env
-    echo
-    print_help_env
 }
 
 # Parse all command line arguments.
@@ -434,6 +432,10 @@ parse_arguments()
         case "${ARG}" in
             "-h" | "--help")
                 return 2
+                ;;
+
+            "-e" | "--help-env")
+                return 3
                 ;;
 
             "-p" | "--purge")
@@ -572,9 +574,6 @@ parse_arguments()
 
 main()
 {
-    echo "Testing generators on given zserio sources."
-    echo
-
     # get the project root, absolute path is necessary only for CMake
     local ZSERIO_PROJECT_ROOT
     convert_to_absolute_path "${SCRIPT_DIR}/.." ZSERIO_PROJECT_ROOT
@@ -593,10 +592,20 @@ main()
     local SWITCH_PURGE
     parse_arguments PARAM_CPP_TARGET_ARRAY PARAM_JAVA PARAM_PYTHON PARAM_XML PARAM_DOC PARAM_OUT_DIR \
             SWITCH_DIRECTORY SWITCH_SOURCE SWITCH_TEST_NAME SWITCH_WERROR SWITCH_PURGE $@
-    if [ $? -ne 0 ] ; then
+    local PARSE_RESULT=$?
+    if [ ${PARSE_RESULT} -eq 2 ] ; then
         print_help
+        return 0
+    elif [ ${PARSE_RESULT} -eq 3 ] ; then
+        print_test_help_env
+        print_help_env
+        return 0
+    elif [ ${PARSE_RESULT} -ne 0 ] ; then
         return 1
     fi
+
+    echo "Testing generators on given zserio sources."
+    echo
 
     # set global variables
     set_global_common_variables

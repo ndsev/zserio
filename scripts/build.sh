@@ -145,6 +145,7 @@ Usage:
 
 Arguments:
     -h, --help               Show this help.
+    -e, --help-env           Show help for enviroment variables.
     -c, --clean              Clean package instead of build.
     -p, --purge              Purge build and distr directories before build.
     -o <dir>, --output-directory <dir>
@@ -180,8 +181,6 @@ Examples:
     $0 zserio
 
 EOF
-
-    print_help_env
 }
 
 # Parse all command line arguments.
@@ -230,6 +229,10 @@ parse_arguments()
         case "${ARG}" in
             "-h" | "--help")
                 return 2
+                ;;
+
+            "-e" | "--help-env")
+                return 3
                 ;;
 
             "-c" | "--clean")
@@ -378,8 +381,14 @@ main()
     parse_arguments PARAM_ANT_TASK PARAM_CORE PARAM_CPP PARAM_CPP_TARGET_ARRAY \
                     PARAM_JAVA PARAM_JAVA_RUNTIME PARAM_PYTHON PARAM_PYTHON_RUNTIME \
                     PARAM_XML PARAM_DOC PARAM_ZSERIO PARAM_OUT_DIR SWITCH_CLEAN SWITCH_PURGE $@
-    if [ $? -ne 0 ] ; then
+    local PARSE_RESULT=$?
+    if [ ${PARSE_RESULT} -eq 2 ] ; then
         print_help
+        return 0
+    elif [ ${PARSE_RESULT} -eq 3 ] ; then
+        print_help_env
+        return 0
+    elif [ ${PARSE_RESULT} -ne 0 ] ; then
         return 1
     fi
 
