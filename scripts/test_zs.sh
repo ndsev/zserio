@@ -265,7 +265,7 @@ test()
     # compile generated Java sources
     if [[ ${PARAM_JAVA} == 1 ]] ; then
         echo "Compile generated Java sources"
-        ! grep "import java.sql.Connection" -qr ${TEST_OUT_DIR}/java/gen
+        ! grep "java.sql.Connection" -qr ${TEST_OUT_DIR}/java/gen
         local JAVA_NEEDS_SQLITE=$?
         generate_ant_file "${UNPACKED_ZSERIO_RELEASE_DIR}" "${ZSERIO_PROJECT_ROOT}" \
             "${TEST_OUT_DIR}/java" "${SWITCH_TEST_NAME}" ${JAVA_NEEDS_SQLITE}
