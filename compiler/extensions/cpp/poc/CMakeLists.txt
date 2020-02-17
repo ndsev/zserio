@@ -5,9 +5,11 @@ project(PubSubPoCTest)
 set(CMAKE_CXX_STANDARD 11)
 
 # use RPATH instead of the new RUNPATH
-SET(CMAKE_EXE_LINKER_FLAGS "-Wl,--disable-new-dtags")
+set(CMAKE_EXE_LINKER_FLAGS "-Wl,--disable-new-dtags")
+set(CMAKE_CXX_FLAGS "-Wall")
 
 add_executable(${PROJECT_NAME}
+    PubSubTest.cpp
     pubsub_poc/BoolValue.cpp
     pubsub_poc/BoolValue.h
     pubsub_poc/Int32Value.cpp

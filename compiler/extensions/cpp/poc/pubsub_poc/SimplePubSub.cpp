@@ -22,24 +22,29 @@ void SimplePubSub::publishUInt64Value(::pubsub_poc::UInt64Value& object, void* c
     publishZserioObject(object, "pubsub/uint64", context);
 }
 
-::zserio::IPubSubClient::SubscriptionId SimplePubSub::subscribeInt32Value(
+void SimplePubSub::publishInt32ValueOut(::pubsub_poc::Int32Value& object, void* context) const
+{
+    publishZserioObject(object, "pubsub/int32", context);
+}
+
+::zserio::IPubSubClient::SubscriptionId SimplePubSub::subscribeInt32ValueIn(
         const std::function<void(const std::string& topic, const ::pubsub_poc::Int32Value& object)>& callback,
         void* context)
 {
-    const ::zserio::IPubSubClient::OnTopic rawCallback = std::bind(&SimplePubSub::onRawInt32Value, this,
+    const ::zserio::IPubSubClient::OnTopic rawCallback = std::bind(&SimplePubSub::onRawInt32ValueIn, this,
             std::placeholders::_1, std::placeholders::_2);
     const std::string topic("pubsub/int32");
     const ::zserio::IPubSubClient::SubscriptionId id =
             m_pubSubClient.subscribe(topic, rawCallback, context);
 
-    const auto result = m_subscribersInt32Value.insert(
-            std::pair<::zserio::IPubSubClient::SubscriptionId,
-            std::function<void(const std::string& topic, const ::pubsub_poc::Int32Value& object)>>(id, callback));
-    if (result.second)
+    const auto result = m_subscribersInt32Value.insert({id, callback});
+    if (!result.second)
         throw ::zserio::PubSubException("pubsub_poc.SimplePubSub: Topic '" + topic + "' already subscribed!");
+
+    return id;
 }
 
-void SimplePubSub::unsubscribeInt32Value(zserio::IPubSubClient::SubscriptionId id)
+void SimplePubSub::unsubscribeInt32ValueIn(zserio::IPubSubClient::SubscriptionId id)
 {
     const auto foundSubscriber = m_subscribersInt32Value.find(id);
     if (foundSubscriber == m_subscribersInt32Value.end())
@@ -60,11 +65,11 @@ void SimplePubSub::unsubscribeInt32Value(zserio::IPubSubClient::SubscriptionId i
     const ::zserio::IPubSubClient::SubscriptionId id =
             m_pubSubClient.subscribe(topic, rawCallback, context);
 
-    const auto result = m_subscribersBoolValue.insert(
-            std::pair<::zserio::IPubSubClient::SubscriptionId,
-            std::function<void(const std::string& topic, const ::pubsub_poc::BoolValue& object)>>(id, callback));
-    if (result.second)
+    const auto result = m_subscribersBoolValue.insert({id, callback});
+    if (!result.second)
         throw ::zserio::PubSubException("pubsub_poc.SimplePubSub: Topic '" + topic + "' already subscribed!");
+
+    return id;
 }
 
 void SimplePubSub::unsubscribeBoolValue(zserio::IPubSubClient::SubscriptionId id)
@@ -78,7 +83,7 @@ void SimplePubSub::unsubscribeBoolValue(zserio::IPubSubClient::SubscriptionId id
     m_subscribersBoolValue.erase(foundSubscriber);
 }
 
-void SimplePubSub::onRawInt32Value(const std::string& topic, const std::vector<uint8_t>& data) const
+void SimplePubSub::onRawInt32ValueIn(const std::string& topic, const std::vector<uint8_t>& data) const
 {
     ::zserio::BitStreamReader reader(data.data(), data.size());
     const Int32Value object(reader);

@@ -19,7 +19,9 @@ pubsub SimplePubSub
 {
     publish("pubsub/uint64", UInt64Value) uint64Value;
 
-    subscribe("pubsub/int32", Int32Value) int32Value;
+    publish("pubsub/int32", Int32Value) int32ValueOut;
+    subscribe("pubsub/int32", Int32Value) int32ValueIn;
+
     subscribe("pubsub/bool", BoolValue)   boolValue;
 };
 

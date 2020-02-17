@@ -24,7 +24,7 @@ class SimplePubSub
 public:
     explicit SimplePubSub(::zserio::IPubSubClient& pubSubClient);
     ~SimplePubSub() = default;
-   
+
     SimplePubSub(const SimplePubSub&) = default;
     SimplePubSub& operator=(const SimplePubSub&) = default;
 
@@ -33,10 +33,12 @@ public:
 
     void publishUInt64Value(::pubsub_poc::UInt64Value& object, void* context = nullptr) const;
 
-    ::zserio::IPubSubClient::SubscriptionId subscribeInt32Value(
+    void publishInt32ValueOut(::pubsub_poc::Int32Value& object, void* context = nullptr) const;
+
+    ::zserio::IPubSubClient::SubscriptionId subscribeInt32ValueIn(
             const std::function<void(const std::string& topic, const ::pubsub_poc::Int32Value& object)>& callback,
             void* context = nullptr);
-    void unsubscribeInt32Value(zserio::IPubSubClient::SubscriptionId id);
+    void unsubscribeInt32ValueIn(zserio::IPubSubClient::SubscriptionId id);
 
     ::zserio::IPubSubClient::SubscriptionId subscribeBoolValue(
             const std::function<void(const std::string& topic, const ::pubsub_poc::BoolValue& object)>& callback,
@@ -44,7 +46,7 @@ public:
     void unsubscribeBoolValue(zserio::IPubSubClient::SubscriptionId id);
 
 private:
-    void onRawInt32Value(const std::string& topic, const std::vector<uint8_t>& data) const;
+    void onRawInt32ValueIn(const std::string& topic, const std::vector<uint8_t>& data) const;
     void onRawBoolValue(const std::string& topic, const std::vector<uint8_t>& data) const;
 
     template<typename ZSERIO_OBJECT>
