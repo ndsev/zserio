@@ -4,51 +4,24 @@
 <#include "CompoundFunction.inc.ftl">
 <#include "CompoundField.inc.ftl">
 <#include "RangeCheck.inc.ftl">
-<@standard_header generatorDescription, packageName, [
-        "java.io.IOException",
-        "java.io.File",
-        "zserio.runtime.SizeOf",
-        "zserio.runtime.io.BitStreamReader",
-        "zserio.runtime.io.FileBitStreamReader",
-        "zserio.runtime.ZserioError",
-        "zserio.runtime.Util"
-]/>
-<#if withWriterCode>
-<@imports [
-        "zserio.runtime.io.BitStreamWriter",
-        "zserio.runtime.io.FileBitStreamWriter",
-        "zserio.runtime.io.InitializeOffsetsWriter"
-]/>
-</#if>
-<#list fieldList as field>
-    <#if field.constraint??>
-<@imports ["zserio.runtime.ConstraintError"]/>
-        <#break>
-    </#if>
-</#list>
-<#if fieldList?has_content>
-<@imports [
-        "zserio.runtime.BitSizeOfCalculator",
-        "zserio.runtime.VarUInt64Util"
-]/>
-</#if>
+<@standard_header generatorDescription, packageName/>
 
-public class ${name} implements <#if withWriterCode>InitializeOffsetsWriter, </#if>SizeOf
+public class ${name} implements <#if withWriterCode>zserio.runtime.io.InitializeOffsetsWriter, </#if>zserio.runtime.SizeOf
 {
     <@compound_constructors compoundConstructorsData/>
     @Override
-    public int bitSizeOf() throws ZserioError
+    public int bitSizeOf() throws zserio.runtime.ZserioError
     {
         return bitSizeOf(0);
     }
 
     @Override
-    public int bitSizeOf(long __bitPosition) throws ZserioError
+    public int bitSizeOf(long __bitPosition) throws zserio.runtime.ZserioError
     {
 <#if fieldList?has_content>
         long __endBitPosition = __bitPosition;
 
-        __endBitPosition += BitSizeOfCalculator.getBitSizeOfVarUInt64(__choiceTag);
+        __endBitPosition += zserio.runtime.BitSizeOfCalculator.getBitSizeOfVarUInt64(__choiceTag);
 
         switch (__choiceTag)
         {
@@ -58,7 +31,7 @@ public class ${name} implements <#if withWriterCode>InitializeOffsetsWriter, </#
             break;
         </#list>
         default:
-            throw new ZserioError("No match in union ${name}!");
+            throw new zserio.runtime.ZserioError("No match in union ${name}!");
         }
 
         return (int)(__endBitPosition - __bitPosition);
@@ -75,7 +48,7 @@ public class ${name} implements <#if withWriterCode>InitializeOffsetsWriter, </#
 <@compound_parameter_accessors compoundParametersData/>
 <#list fieldList as field>
     <#if field.isObjectArray>@java.lang.SuppressWarnings("unchecked")</#if>
-    public ${field.javaTypeName} ${field.getterName}() throws ZserioError
+    public ${field.javaTypeName} ${field.getterName}() throws zserio.runtime.ZserioError
     {
         return (${field.javaNullableTypeName}) this.__objectChoice;
     }
@@ -99,7 +72,7 @@ public class ${name} implements <#if withWriterCode>InitializeOffsetsWriter, </#
 </#list>
 <@compound_functions compoundFunctionsData/>
     @Override
-    public boolean equals(Object obj)
+    public boolean equals(java.lang.Object obj)
     {
         if (obj instanceof ${name})
         {
@@ -122,21 +95,23 @@ public class ${name} implements <#if withWriterCode>InitializeOffsetsWriter, </#
     @Override
     public int hashCode()
     {
-        int __result = Util.HASH_SEED;
+        int __result = zserio.runtime.Util.HASH_SEED;
 
 <#list compoundParametersData.list as parameter>
         <@compound_hashcode_parameter parameter/>
 </#list>
-        __result = Util.HASH_PRIME_NUMBER * __result + __choiceTag;
-        __result = Util.HASH_PRIME_NUMBER * __result + ((__objectChoice == null) ? 0 : __objectChoice.hashCode());
+        __result = zserio.runtime.Util.HASH_PRIME_NUMBER * __result + __choiceTag;
+        __result = zserio.runtime.Util.HASH_PRIME_NUMBER * __result +
+                ((__objectChoice == null) ? 0 : __objectChoice.hashCode());
 
         return __result;
     }
 
-    public void read(final BitStreamReader __in) throws IOException, ZserioError
+    public void read(final zserio.runtime.io.BitStreamReader __in)
+            throws java.io.IOException, zserio.runtime.ZserioError
     {
 <#if fieldList?has_content>
-        __choiceTag = VarUInt64Util.convertVarUInt64ToInt(__in.readVarUInt64());
+        __choiceTag = zserio.runtime.VarUInt64Util.convertVarUInt64ToInt(__in.readVarUInt64());
 
         switch (__choiceTag)
         {
@@ -147,18 +122,18 @@ public class ${name} implements <#if withWriterCode>InitializeOffsetsWriter, </#
             break;
         </#list>
         default:
-            throw new ZserioError("No match in union ${name}!");
+            throw new zserio.runtime.ZserioError("No match in union ${name}!");
         }
 </#if>
     }
 <#if withWriterCode>
 
-    public long initializeOffsets(long __bitPosition) throws ZserioError
+    public long initializeOffsets(long __bitPosition) throws zserio.runtime.ZserioError
     {
     <#if fieldList?has_content>
         long __endBitPosition = __bitPosition;
 
-        __endBitPosition += BitSizeOfCalculator.getBitSizeOfVarUInt64(__choiceTag);
+        __endBitPosition += zserio.runtime.BitSizeOfCalculator.getBitSizeOfVarUInt64(__choiceTag);
 
         switch (__choiceTag)
         {
@@ -168,7 +143,7 @@ public class ${name} implements <#if withWriterCode>InitializeOffsetsWriter, </#
             break;
         </#list>
         default:
-            throw new ZserioError("No match in union ${name}!");
+            throw new zserio.runtime.ZserioError("No match in union ${name}!");
         }
 
         return __endBitPosition;
@@ -177,21 +152,23 @@ public class ${name} implements <#if withWriterCode>InitializeOffsetsWriter, </#
     </#if>
     }
 
-    public void write(File __file) throws IOException, ZserioError
+    public void write(java.io.File __file) throws java.io.IOException, zserio.runtime.ZserioError
     {
-        FileBitStreamWriter __out = new FileBitStreamWriter(__file);
+        zserio.runtime.io.FileBitStreamWriter __out = new zserio.runtime.io.FileBitStreamWriter(__file);
         write(__out);
         __out.close();
     }
 
     @Override
-    public void write(BitStreamWriter __out) throws IOException, ZserioError
+    public void write(zserio.runtime.io.BitStreamWriter __out)
+            throws java.io.IOException, zserio.runtime.ZserioError
     {
         write(__out, true);
     }
 
     @Override
-    public void write(BitStreamWriter __out, boolean __callInitializeOffsets) throws IOException, ZserioError
+    public void write(zserio.runtime.io.BitStreamWriter __out, boolean __callInitializeOffsets)
+            throws java.io.IOException, zserio.runtime.ZserioError
     {
     <#if fieldList?has_content>
         <#if hasFieldWithOffset>
@@ -214,7 +191,7 @@ public class ${name} implements <#if withWriterCode>InitializeOffsetsWriter, </#
             break;
         </#list>
         default:
-            throw new ZserioError("No match in union ${name}!");
+            throw new zserio.runtime.ZserioError("No match in union ${name}!");
         };
     </#if>
     }
@@ -229,6 +206,6 @@ public class ${name} implements <#if withWriterCode>InitializeOffsetsWriter, </#
 </#list>
 
 <@compound_parameter_members compoundParametersData/>
-    private Object __objectChoice;
+    private java.lang.Object __objectChoice;
     private int __choiceTag = CHOICE_UNDEFINED;
 }

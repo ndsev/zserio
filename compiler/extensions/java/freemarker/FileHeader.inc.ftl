@@ -10,16 +10,8 @@ package ${packageName};
     </#if>
 </#macro>
 
-<#macro imports importsList>
-    <#list importsList as importSpec>
-import ${importSpec};
-    </#list>
-</#macro>
-
-<#macro standard_header generatorDescription packageName importsList>
+<#macro standard_header generatorDescription packageName>
 <@file_header generatorDescription/>
 
 <@package packageName/>
-
-<@imports importsList/>
 </#macro>

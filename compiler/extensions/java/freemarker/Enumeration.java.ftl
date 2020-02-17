@@ -1,22 +1,8 @@
 <#include "FileHeader.inc.ftl">
-<@standard_header generatorDescription, packageName, [
-        "java.io.IOException",
-        "zserio.runtime.SizeOf",
-        "zserio.runtime.ZserioEnum",
-        "zserio.runtime.ZserioError",
-        "zserio.runtime.io.BitStreamReader"
-]/>
-<#if withWriterCode>
-<@imports [
-        "zserio.runtime.io.BitStreamWriter",
-        "zserio.runtime.io.InitializeOffsetsWriter"
-]/>
-</#if>
-<#if !bitSize??>
-<@imports ["zserio.runtime.BitSizeOfCalculator"]/>
-</#if>
+<@standard_header generatorDescription, packageName/>
 
-public enum ${name} implements <#if withWriterCode>InitializeOffsetsWriter, </#if>SizeOf, ZserioEnum
+public enum ${name} implements <#if withWriterCode>zserio.runtime.io.InitializeOffsetsWriter,
+        </#if>zserio.runtime.SizeOf, zserio.runtime.ZserioEnum
 {
 <#list items as item>
     ${item.name}(${item.value})<#if item_has_next>,<#else>;</#if>
@@ -33,7 +19,7 @@ public enum ${name} implements <#if withWriterCode>InitializeOffsetsWriter, </#i
     }
 
     @Override
-    public Number getGenericValue()
+    public java.lang.Number getGenericValue()
     {
         return __value;
     }
@@ -50,31 +36,32 @@ public enum ${name} implements <#if withWriterCode>InitializeOffsetsWriter, </#i
 <#if bitSize??>
         return ${bitSize};
 <#else>
-        return BitSizeOfCalculator.getBitSizeOf${runtimeFunction.suffix}(__value);
+        return zserio.runtime.BitSizeOfCalculator.getBitSizeOf${runtimeFunction.suffix}(__value);
 </#if>
     }
 <#if withWriterCode>
 
     @Override
-    public long initializeOffsets(long __bitPosition) throws ZserioError
+    public long initializeOffsets(long __bitPosition) throws zserio.runtime.ZserioError
     {
         return __bitPosition + bitSizeOf(__bitPosition);
     }
 
     @Override
-    public void write(BitStreamWriter __out) throws IOException
+    public void write(zserio.runtime.io.BitStreamWriter __out) throws java.io.IOException
     {
         write(__out, false);
     }
 
     @Override
-    public void write(BitStreamWriter __out, boolean __callInitializeOffsets) throws IOException
+    public void write(zserio.runtime.io.BitStreamWriter __out, boolean __callInitializeOffsets)
+            throws java.io.IOException
     {
         __out.write${runtimeFunction.suffix}(getValue()<#if runtimeFunction.arg??>, ${runtimeFunction.arg}</#if>);
     }
 
 </#if>
-    public static ${name} readEnum(BitStreamReader __in) throws IOException
+    public static ${name} readEnum(zserio.runtime.io.BitStreamReader __in) throws java.io.IOException
     {
         return toEnum(<#if runtimeFunction.javaReadTypeName??>(${runtimeFunction.javaReadTypeName})</#if><#rt>
                 <#lt>__in.read${runtimeFunction.suffix}(${runtimeFunction.arg!}));
@@ -93,7 +80,7 @@ public enum ${name} implements <#if withWriterCode>InitializeOffsetsWriter, </#i
             return ${item.name};
     </#list>
 
-        throw new IllegalArgumentException("Unknown value for enumeration ${name}: " + __value + "!");
+        throw new java.lang.IllegalArgumentException("Unknown value for enumeration ${name}: " + __value + "!");
 <#else>
         switch (__value)
         {
@@ -102,7 +89,8 @@ public enum ${name} implements <#if withWriterCode>InitializeOffsetsWriter, </#i
                 return ${item.name};
     </#list>
             default:
-                throw new IllegalArgumentException("Unknown value for enumeration ${name}: " + __value + "!");
+                throw new java.lang.IllegalArgumentException(
+                        "Unknown value for enumeration ${name}: " + __value + "!");
         }
 </#if>
     }

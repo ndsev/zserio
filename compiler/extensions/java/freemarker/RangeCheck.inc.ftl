@@ -4,8 +4,10 @@
         // check range
         <#if rangeData.bitFieldWithExpression??>
         final int __length = ${rangeData.bitFieldWithExpression.lengthExpression};
-        final long __lowerBound = Util.getBitFieldLowerBound(__length, ${rangeData.bitFieldWithExpression.isSignedBitFieldStr});
-        final long __upperBound = Util.getBitFieldUpperBound(__length, ${rangeData.bitFieldWithExpression.isSignedBitFieldStr});
+        final long __lowerBound = zserio.runtime.Util.getBitFieldLowerBound(
+                __length, ${rangeData.bitFieldWithExpression.isSignedBitFieldStr});
+        final long __upperBound = zserio.runtime.Util.getBitFieldUpperBound(
+                __length, ${rangeData.bitFieldWithExpression.isSignedBitFieldStr});
         <#else>
         final ${rangeData.javaTypeName} __lowerBound = ${rangeData.lowerBound};
         final ${rangeData.javaTypeName} __upperBound = ${rangeData.upperBound};
@@ -13,9 +15,11 @@
         if <#if rangeData.isTypeNullable>(${rangeData.name} != null && </#if><#rt>
             (${rangeData.name} < __lowerBound<#if rangeData.checkUpperBound> || ${rangeData.name} > __upperBound</#if>)<#t>
             <#if rangeData.isTypeNullable>)</#if><#lt>
-            throw new ZserioError("Value " + ${rangeData.name} +
+        {
+            throw new zserio.runtime.ZserioError("Value " + ${rangeData.name} +
                     " of ${compoundName}.${rangeData.name} exceeds the range of <" +
                     __lowerBound + ".." + __upperBound + ">!");
+        }
 
     </#if>
 </#macro>
@@ -33,9 +37,10 @@
         </#if>
             if (value < __lowerBound || value > __upperBound)
             {
-                errors.add(new ValidationError(__tableName, "${fieldName}", getRowKeyValues(resultSet),
-                        ValidationError.Type.VALUE_OUT_OF_RANGE, "Value " + value +
-                        " of ${tableName}.${fieldName} exceeds the range of " +
+                errors.add(new zserio.runtime.validation.ValidationError(__tableName, "${fieldName}",
+                        getRowKeyValues(resultSet),
+                        zserio.runtime.validation.ValidationError.Type.VALUE_OUT_OF_RANGE,
+                        "Value " + value + " of ${tableName}.${fieldName} exceeds the range of " +
                         __lowerBound + ".." + __upperBound));
                 return false;
             }

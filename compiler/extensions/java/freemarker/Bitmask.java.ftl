@@ -1,22 +1,7 @@
 <#include "FileHeader.inc.ftl">
-<@standard_header generatorDescription, packageName, [
-        "java.io.IOException",
-        "zserio.runtime.SizeOf",
-        "zserio.runtime.io.BitStreamReader"
-        "zserio.runtime.ZserioError",
-        "zserio.runtime.Util"
-]/>
-<#if withWriterCode>
-<@imports [
-        "zserio.runtime.io.BitStreamWriter",
-        "zserio.runtime.io.InitializeOffsetsWriter"
-]/>
-</#if>
-<#if !bitSize??>
-<@imports ["zserio.runtime.BitSizeOfCalculator"]/>
-</#if>
+<@standard_header generatorDescription, packageName/>
 
-public class ${name} implements <#if withWriterCode>InitializeOffsetsWriter, </#if>SizeOf
+public class ${name} implements <#if withWriterCode>zserio.runtime.io.InitializeOffsetsWriter, </#if>zserio.runtime.SizeOf
 {
     public ${name}()
     {
@@ -33,12 +18,15 @@ public class ${name} implements <#if withWriterCode>InitializeOffsetsWriter, </#
         if (<#if lowerBound??>value.compareTo(${lowerBound}) < 0</#if><#rt>
                 <#lt><#if checkUpperBound><#if lowerBound??> || </#if>value.compareTo(${upperBound}) > 0</#if>)
     </#if>
-            throw new IllegalArgumentException("Value for bitmask '${name}' out of bounds: " + value + "!");
+        {
+            throw new java.lang.IllegalArgumentException(
+                    "Value for bitmask '${name}' out of bounds: " + value + "!");
+        }
 </#if>
         this.value = value;
     }
 
-    public ${name}(BitStreamReader in) throws IOException
+    public ${name}(zserio.runtime.io.BitStreamReader in) throws java.io.IOException
     {
         value = <#if runtimeFunction.javaReadTypeName??>(${runtimeFunction.javaReadTypeName})</#if><#rt>
                 <#lt>in.read${runtimeFunction.suffix}(${runtimeFunction.arg!});
@@ -56,20 +44,20 @@ public class ${name} implements <#if withWriterCode>InitializeOffsetsWriter, </#
 <#if bitSize??>
         return ${bitSize};
 <#else>
-        return BitSizeOfCalculator.getBitSizeOf${runtimeFunction.suffix}(value);
+        return zserio.runtime.BitSizeOfCalculator.getBitSizeOf${runtimeFunction.suffix}(value);
 </#if>
     }
 <#if withWriterCode>
 
     @Override
-    public long initializeOffsets(long bitPosition) throws ZserioError
+    public long initializeOffsets(long bitPosition) throws zserio.runtime.ZserioError
     {
         return bitPosition + bitSizeOf(bitPosition);
     }
 </#if>
 
     @Override
-    public boolean equals(Object other)
+    public boolean equals(java.lang.Object other)
     {
         if (!(other instanceof ${name}))
             return false;
@@ -81,19 +69,19 @@ public class ${name} implements <#if withWriterCode>InitializeOffsetsWriter, </#
     @Override
     public int hashCode()
     {
-        int result = Util.HASH_SEED;
+        int result = zserio.runtime.Util.HASH_SEED;
 
 <#if isSimpleType>
     <#if isLong>
         <#-- use shifting -->
-        result = Util.HASH_PRIME_NUMBER * result + (int)(value ^ (value >>> 32));
+        result = zserio.runtime.Util.HASH_PRIME_NUMBER * result + (int)(value ^ (value >>> 32));
     <#else>
         <#-- use implicit casting to int -->
-        result = Util.HASH_PRIME_NUMBER * result + value;
+        result = zserio.runtime.Util.HASH_PRIME_NUMBER * result + value;
     </#if>
 <#else>
         <#-- big integer - use hashCode() -->
-        result = Util.HASH_PRIME_NUMBER * result + value.hashCode();
+        result = zserio.runtime.Util.HASH_PRIME_NUMBER * result + value.hashCode();
 </#if>
 
         return result;
@@ -102,7 +90,7 @@ public class ${name} implements <#if withWriterCode>InitializeOffsetsWriter, </#
     @Override
     public java.lang.String toString()
     {
-        final StringBuilder builder = new StringBuilder();
+        final java.lang.StringBuilder builder = new java.lang.StringBuilder();
 
 <#list values as value>
     <#if !value.isZero>
@@ -122,13 +110,14 @@ public class ${name} implements <#if withWriterCode>InitializeOffsetsWriter, </#
 <#if withWriterCode>
 
     @Override
-    public void write(BitStreamWriter out) throws IOException
+    public void write(zserio.runtime.io.BitStreamWriter out) throws java.io.IOException
     {
         write(out, false);
     }
 
     @Override
-    public void write(BitStreamWriter out, boolean callInitializeOffsets) throws IOException
+    public void write(zserio.runtime.io.BitStreamWriter out, boolean callInitializeOffsets)
+            throws java.io.IOException
     {
         out.write${runtimeFunction.suffix}(value<#if runtimeFunction.arg??>, ${runtimeFunction.arg}</#if>);
     }

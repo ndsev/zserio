@@ -1,33 +1,14 @@
 <#include "FileHeader.inc.ftl">
 <#include "Sql.inc.ftl">
-<#include "GeneratePkgPrefix.inc.ftl">
-<@standard_header generatorDescription, packageName, [
-        "java.io.File",
-        "java.sql.Connection",
-        "java.sql.DriverManager",
-        "java.sql.Statement",
-        "java.sql.SQLException",
-        "java.util.ArrayList",
-        "java.util.HashMap",
-        "java.util.List",
-        "java.util.Map",
-        "java.util.Properties",
-        "java.util.Set"
-]/>
-<#if withWriterCode>
-<@imports ["zserio.runtime.SqlDatabase"]/>
-<#else>
-<@imports ["zserio.runtime.SqlDatabaseReader"]/>
-</#if>
+<@standard_header generatorDescription, packageName/>
 <#if withValidationCode>
-<@imports ["zserio.runtime.validation.ValidationReport"]/>
     <#assign needsParameterProvider = sql_db_needs_parameter_provider(fields)/>
 </#if>
-
 <#macro field_member_name field>
     ${field.name}_<#t>
 </#macro>
-public class ${name} implements SqlDatabase<#if !withWriterCode>Reader</#if>
+
+public class ${name} implements zserio.runtime.SqlDatabase<#if !withWriterCode>Reader</#if>
 {
 <#if withValidationCode && needsParameterProvider>
     public static interface ParameterProvider
@@ -40,29 +21,34 @@ public class ${name} implements SqlDatabase<#if !withWriterCode>Reader</#if>
     };
 
 </#if>
-    public ${name}(String fileName) throws SQLException
+    public ${name}(java.lang.String fileName) throws java.sql.SQLException
     {
-        this(fileName, new HashMap<String, String>());
+        this(fileName, new java.util.HashMap<java.lang.String, java.lang.String>());
     }
 
-    public ${name}(String fileName, Map<String, String> tableToDbFileNameRelocationMap) throws SQLException
+    public ${name}(java.lang.String fileName,
+            java.util.Map<java.lang.String, java.lang.String> tableToDbFileNameRelocationMap)
+            throws java.sql.SQLException
     {
-        final Properties connectionProps = new Properties();
+        final java.util.Properties connectionProps = new java.util.Properties();
         connectionProps.setProperty("flags", <#if withWriterCode>"CREATE"<#else>"READONLY"</#if>);
-        final String uriPath = "jdbc:sqlite:" + new File(fileName).toString();
+        final java.lang.String uriPath = "jdbc:sqlite:" + new java.io.File(fileName).toString();
 
-        __connection = DriverManager.getConnection(uriPath, connectionProps);
+        __connection = java.sql.DriverManager.getConnection(uriPath, connectionProps);
         __isExternal = false;
-        __attachedDbList = new ArrayList<String>();
+        __attachedDbList = new java.util.ArrayList<java.lang.String>();
 
-        final Map<String, String> tableToAttachedDbNameRelocationMap = new HashMap<String, String>();
-        final Map<String, String> dbFileNameToAttachedDbNameMap = new HashMap<String, String>();
-        for (Map.Entry<String, String> entry : tableToDbFileNameRelocationMap.entrySet())
+        final java.util.Map<java.lang.String, java.lang.String> tableToAttachedDbNameRelocationMap =
+                new java.util.HashMap<java.lang.String, java.lang.String>();
+        final java.util.Map<java.lang.String, java.lang.String> dbFileNameToAttachedDbNameMap =
+                new java.util.HashMap<java.lang.String, java.lang.String>();
+        for (java.util.Map.Entry<java.lang.String, java.lang.String> entry :
+                tableToDbFileNameRelocationMap.entrySet())
         {
-            final String relocatedTableName = entry.getKey();
-            final String dbFileName = entry.getValue();
+            final java.lang.String relocatedTableName = entry.getKey();
+            final java.lang.String dbFileName = entry.getValue();
 
-            String attachedDbName = dbFileNameToAttachedDbNameMap.get(dbFileName);
+            java.lang.String attachedDbName = dbFileNameToAttachedDbNameMap.get(dbFileName);
             if (attachedDbName == null)
             {
                 attachedDbName = "${name}" + "_" + relocatedTableName;
@@ -76,12 +62,13 @@ public class ${name} implements SqlDatabase<#if !withWriterCode>Reader</#if>
         initTables(tableToAttachedDbNameRelocationMap);
     }
 
-    public ${name}(Connection externalConnection)
+    public ${name}(java.sql.Connection externalConnection)
     {
-        this(externalConnection, new HashMap<String, String>());
+        this(externalConnection, new java.util.HashMap<java.lang.String, java.lang.String>());
     }
 
-    public ${name}(Connection externalConnection, Map<String, String> tableToAttachedDbNameRelocationMap)
+    public ${name}(java.sql.Connection externalConnection,
+            java.util.Map<java.lang.String, java.lang.String> tableToAttachedDbNameRelocationMap)
     {
         __connection = externalConnection;
         __isExternal = true;
@@ -91,7 +78,7 @@ public class ${name} implements SqlDatabase<#if !withWriterCode>Reader</#if>
     }
 
     @Override
-    public void close() throws SQLException
+    public void close() throws java.sql.SQLException
     {
         if (!__isExternal)
         {
@@ -101,7 +88,7 @@ public class ${name} implements SqlDatabase<#if !withWriterCode>Reader</#if>
     }
 
     @Override
-    public Connection connection()
+    public java.sql.Connection connection()
     {
         return __connection;
     }
@@ -116,7 +103,7 @@ public class ${name} implements SqlDatabase<#if !withWriterCode>Reader</#if>
 <#if withWriterCode>
 
     @Override
-    public void createSchema() throws SQLException
+    public void createSchema() throws java.sql.SQLException
     {
         final boolean wasTransactionStarted = startTransaction();
 
@@ -135,7 +122,8 @@ public class ${name} implements SqlDatabase<#if !withWriterCode>Reader</#if>
         </#if>
     </#list>
     @Override
-    public void createSchema(Set<String> withoutRowIdTableNamesBlackList) throws SQLException
+    public void createSchema(java.util.Set<java.lang.String> withoutRowIdTableNamesBlackList)
+            throws java.sql.SQLException
     {
     <#if hasWithoutRowIdTable>
         final boolean wasTransactionStarted = startTransaction();
@@ -158,7 +146,7 @@ public class ${name} implements SqlDatabase<#if !withWriterCode>Reader</#if>
     }
 
     @Override
-    public void deleteSchema() throws SQLException
+    public void deleteSchema() throws java.sql.SQLException
     {
         final boolean wasTransactionStarted = startTransaction();
 
@@ -171,10 +159,11 @@ public class ${name} implements SqlDatabase<#if !withWriterCode>Reader</#if>
 </#if>
 <#if withValidationCode>
 
-    public ValidationReport validate(<#if needsParameterProvider>ParameterProvider parameterProvider</#if>)
-            throws SQLException
+    public zserio.runtime.validation.ValidationReport validate(<#if needsParameterProvider>ParameterProvider parameterProvider</#if>)
+            throws java.sql.SQLException
     {
-        final ValidationReport report = new ValidationReport();
+        final zserio.runtime.validation.ValidationReport report =
+                new zserio.runtime.validation.ValidationReport();
     <#list fields as field>
         report.add(<@field_member_name field/>.validate(<#if field.hasExplicitParameters>parameterProvider.get${field.name?cap_first}ParameterProvider()</#if>));
     </#list>
@@ -183,14 +172,14 @@ public class ${name} implements SqlDatabase<#if !withWriterCode>Reader</#if>
     }
 </#if>
 
-    public static String databaseName()
+    public static java.lang.String databaseName()
     {
         return DATABASE_NAME;
     }
 
-    public static String[] tableNames()
+    public static java.lang.String[] tableNames()
     {
-        return new String[]
+        return new java.lang.String[]
         {
 <#list fields as field>
             ${field.name?upper_case}_TABLE_NAME<#if field_has_next>,</#if>
@@ -198,7 +187,7 @@ public class ${name} implements SqlDatabase<#if !withWriterCode>Reader</#if>
         };
     }
 
-    private void initTables(Map<String, String> tableToAttachedDbNameRelocationMap)
+    private void initTables(java.util.Map<java.lang.String, java.lang.String> tableToAttachedDbNameRelocationMap)
     {
 <#list fields as field>
         <@field_member_name field/> = new ${field.javaTypeName}(__connection,
@@ -207,9 +196,9 @@ public class ${name} implements SqlDatabase<#if !withWriterCode>Reader</#if>
 </#list>
     }
 
-    private void executeUpdate(String sql) throws SQLException
+    private void executeUpdate(java.lang.String sql) throws java.sql.SQLException
     {
-        final Statement statement = __connection.createStatement();
+        final java.sql.Statement statement = __connection.createStatement();
         try
         {
             statement.executeUpdate(sql);
@@ -220,10 +209,11 @@ public class ${name} implements SqlDatabase<#if !withWriterCode>Reader</#if>
         }
     }
 
-    private void attachDatabase(String dbFileName, String attachedDbName) throws SQLException
+    private void attachDatabase(java.lang.String dbFileName, java.lang.String attachedDbName)
+            throws java.sql.SQLException
     {
-        final StringBuilder sqlQuery = new StringBuilder("ATTACH DATABASE '");
-        sqlQuery.append(new File(dbFileName).toString());
+        final java.lang.StringBuilder sqlQuery = new java.lang.StringBuilder("ATTACH DATABASE '");
+        sqlQuery.append(new java.io.File(dbFileName).toString());
         sqlQuery.append("' AS ");
         sqlQuery.append(attachedDbName);
         executeUpdate(sqlQuery.toString());
@@ -231,17 +221,17 @@ public class ${name} implements SqlDatabase<#if !withWriterCode>Reader</#if>
         __attachedDbList.add(attachedDbName);
     }
 
-    private void detachDatabases() throws SQLException
+    private void detachDatabases() throws java.sql.SQLException
     {
-        for (String attachedDbName : __attachedDbList)
+        for (java.lang.String attachedDbName : __attachedDbList)
         {
-            final String sqlQuery = "DETACH DATABASE " + attachedDbName;
+            final java.lang.String sqlQuery = "DETACH DATABASE " + attachedDbName;
             executeUpdate(sqlQuery);
         }
     }
 <#if withWriterCode>
 
-    private boolean startTransaction() throws SQLException
+    private boolean startTransaction() throws java.sql.SQLException
     {
         boolean wasTransactionStarted = false;
         if (__connection.getAutoCommit())
@@ -253,7 +243,7 @@ public class ${name} implements SqlDatabase<#if !withWriterCode>Reader</#if>
         return wasTransactionStarted;
     }
 
-    private void endTransaction(boolean wasTransactionStarted) throws SQLException
+    private void endTransaction(boolean wasTransactionStarted) throws java.sql.SQLException
     {
         if (wasTransactionStarted)
         {
@@ -263,14 +253,14 @@ public class ${name} implements SqlDatabase<#if !withWriterCode>Reader</#if>
     }
 </#if>
 
-    private static final String DATABASE_NAME = "${name}";
+    private static final java.lang.String DATABASE_NAME = "${name}";
 <#list fields as field>
-    private static final String ${field.name?upper_case}_TABLE_NAME = "${field.name}";
+    private static final java.lang.String ${field.name?upper_case}_TABLE_NAME = "${field.name}";
 </#list>
 
-    private final Connection __connection;
+    private final java.sql.Connection __connection;
     private final boolean __isExternal;
-    private final List<String> __attachedDbList;
+    private final java.util.List<java.lang.String> __attachedDbList;
 
 <#list fields as field>
     private ${field.javaTypeName} <@field_member_name field/>;
