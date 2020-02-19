@@ -42,7 +42,7 @@ void SimplePubSub::publishBoolValuePub(::pubsub_poc::BoolValue& object, void* co
     const ::zserio::IPubSubClient::SubscriptionId id =
             m_pubSubClient.subscribe(topic, rawCallback, context);
 
-    const auto result = m_subscribersUInt64ValueSub.insert({id, callback});
+    const auto result = m_subscribersUInt64ValueSub.emplace(id, callback);
     if (!result.second)
         throw ::zserio::PubSubException("pubsub_poc.SimplePubSub: Topic '" + topic + "' already subscribed!");
 
@@ -70,7 +70,7 @@ void SimplePubSub::unsubscribeUInt64ValueSub(zserio::IPubSubClient::Subscription
     const ::zserio::IPubSubClient::SubscriptionId id =
             m_pubSubClient.subscribe(topic, rawCallback, context);
 
-    const auto result = m_subscribersInt32ValueSub.insert({id, callback});
+    const auto result = m_subscribersInt32ValueSub.emplace(id, callback);
     if (!result.second)
         throw ::zserio::PubSubException("pubsub_poc.SimplePubSub: Topic '" + topic + "' already subscribed!");
 
@@ -98,7 +98,7 @@ void SimplePubSub::unsubscribeInt32ValueSub(zserio::IPubSubClient::SubscriptionI
     const ::zserio::IPubSubClient::SubscriptionId id =
             m_pubSubClient.subscribe(topic, rawCallback, context);
 
-    const auto result = m_subscribersBoolValueSub.insert({id, callback});
+    const auto result = m_subscribersBoolValueSub.emplace(id, callback);
     if (!result.second)
         throw ::zserio::PubSubException("pubsub_poc.SimplePubSub: Topic '" + topic + "' already subscribed!");
 

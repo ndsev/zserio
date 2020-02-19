@@ -70,14 +70,15 @@ void MosquittoClient::publish(const std::string& topic, const std::vector<uint8_
                 mosquitto_strerror(rc));
     }
     mosquitto_publish(mosq.get(), nullptr, topic.c_str(), data.size(), data.data(), 0, 0);
+    mosquitto_disconnect(mosq.get());
 }
 
 MosquittoClient::SubscriptionId MosquittoClient::subscribe(const std::string& topic,
         const OnTopic& callback, void*)
 {
     // TODO: use the context
-    auto inserted = m_subscriptions.insert({m_numIds,
-            MosquittoSubscription{m_host, m_port, m_numIds, topic, callback}});
+    auto inserted = m_subscriptions.emplace(m_numIds,
+            MosquittoSubscription{m_host, m_port, m_numIds, topic, callback});
     inserted.first->second.init();
     return m_numIds++;
 }
