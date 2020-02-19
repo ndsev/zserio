@@ -17,36 +17,12 @@ struct BoolValue
 
 pubsub SimplePubSub
 {
-    publish("pubsub/uint64", UInt64Value) uint64Value;
+    publish("pubsub/uint64", UInt64Value) uint64ValuePub;
+    subscribe("pubsub/uint64", UInt64Value) uint64ValueSub;
 
-    publish("pubsub/int32", Int32Value) int32ValueOut;
-    subscribe("pubsub/int32", Int32Value) int32ValueIn;
+    publish("pubsub/int32", Int32Value) int32ValuePub;
+    subscribe("pubsub/int32", Int32Value) int32ValueSub;
 
-    subscribe("pubsub/bool", BoolValue)   boolValue;
+    publish("pubsub/bool", BoolValue) boolValuePub;
+    subscribe("pubsub/bool", BoolValue) boolValueSub;
 };
-
-/*
-pubsub SimplePubSub
-{
-    publish("pubsub/uint64", UInt64Value) uint64Value;
-
-    subscribe("pubsub/int32", Int32Value) int32Value;
-    subscribe("pubsub/bool", BoolValue)   boolValue;
-};
-
-pubsub SimplePubSub
-{
-    publish   uint64Value("pubsub/uint64", UInt64Value);
-
-    subscribe int32Value("pubsub/int32", Int32Value);
-    subscribe boolValue("pubsub/bool", BoolValue);
-};
-
-pubsub SimplePubSub
-{
-    publish UInt64Value  uint64Value("pubsub/uint64");
-
-    subscribe Int32Value int32Value("pubsub/int32");
-    subscribe BoolValue  boolValue("pubsub/bool");
-};
-*/

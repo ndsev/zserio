@@ -17,87 +17,129 @@ SimplePubSub::SimplePubSub(::zserio::IPubSubClient& pubSubClient) : m_pubSubClie
 {
 }
 
-void SimplePubSub::publishUInt64Value(::pubsub_poc::UInt64Value& object, void* context) const
+void SimplePubSub::publishUInt64ValuePub(::pubsub_poc::UInt64Value& object, void* context) const
 {
     publishZserioObject(object, "pubsub/uint64", context);
 }
 
-void SimplePubSub::publishInt32ValueOut(::pubsub_poc::Int32Value& object, void* context) const
+void SimplePubSub::publishInt32ValuePub(::pubsub_poc::Int32Value& object, void* context) const
 {
     publishZserioObject(object, "pubsub/int32", context);
 }
 
-::zserio::IPubSubClient::SubscriptionId SimplePubSub::subscribeInt32ValueIn(
+void SimplePubSub::publishBoolValuePub(::pubsub_poc::BoolValue& object, void* context) const
+{
+    publishZserioObject(object, "pubsub/bool", context);
+}
+
+::zserio::IPubSubClient::SubscriptionId SimplePubSub::subscribeUInt64ValueSub(
+        const std::function<void(const std::string& topic, const ::pubsub_poc::UInt64Value& object)>& callback,
+        void* context)
+{
+    const ::zserio::IPubSubClient::OnTopic rawCallback = std::bind(&SimplePubSub::onRawUInt64ValueSub, this,
+            std::placeholders::_1, std::placeholders::_2);
+    const std::string topic("pubsub/uint64");
+    const ::zserio::IPubSubClient::SubscriptionId id =
+            m_pubSubClient.subscribe(topic, rawCallback, context);
+
+    const auto result = m_subscribersUInt64ValueSub.insert({id, callback});
+    if (!result.second)
+        throw ::zserio::PubSubException("pubsub_poc.SimplePubSub: Topic '" + topic + "' already subscribed!");
+
+    return id;
+}
+
+void SimplePubSub::unsubscribeUInt64ValueSub(zserio::IPubSubClient::SubscriptionId id)
+{
+    const auto foundSubscriber = m_subscribersUInt64ValueSub.find(id);
+    if (foundSubscriber == m_subscribersUInt64ValueSub.end())
+        throw ::zserio::PubSubException("pubsub_poc.SimplePubSub: Unknown subscription id '" +
+                ::zserio::convertToString(id) + "' for 'UInt64Value' !");
+
+    m_pubSubClient.unsubscribe(id);
+    m_subscribersUInt64ValueSub.erase(foundSubscriber);
+}
+
+::zserio::IPubSubClient::SubscriptionId SimplePubSub::subscribeInt32ValueSub(
         const std::function<void(const std::string& topic, const ::pubsub_poc::Int32Value& object)>& callback,
         void* context)
 {
-    const ::zserio::IPubSubClient::OnTopic rawCallback = std::bind(&SimplePubSub::onRawInt32ValueIn, this,
+    const ::zserio::IPubSubClient::OnTopic rawCallback = std::bind(&SimplePubSub::onRawInt32ValueSub, this,
             std::placeholders::_1, std::placeholders::_2);
     const std::string topic("pubsub/int32");
     const ::zserio::IPubSubClient::SubscriptionId id =
             m_pubSubClient.subscribe(topic, rawCallback, context);
 
-    const auto result = m_subscribersInt32Value.insert({id, callback});
+    const auto result = m_subscribersInt32ValueSub.insert({id, callback});
     if (!result.second)
         throw ::zserio::PubSubException("pubsub_poc.SimplePubSub: Topic '" + topic + "' already subscribed!");
 
     return id;
 }
 
-void SimplePubSub::unsubscribeInt32ValueIn(zserio::IPubSubClient::SubscriptionId id)
+void SimplePubSub::unsubscribeInt32ValueSub(zserio::IPubSubClient::SubscriptionId id)
 {
-    const auto foundSubscriber = m_subscribersInt32Value.find(id);
-    if (foundSubscriber == m_subscribersInt32Value.end())
+    const auto foundSubscriber = m_subscribersInt32ValueSub.find(id);
+    if (foundSubscriber == m_subscribersInt32ValueSub.end())
         throw ::zserio::PubSubException("pubsub_poc.SimplePubSub: Unknown subscription id '" +
                 ::zserio::convertToString(id) + "' for 'Int32Value' !");
 
     m_pubSubClient.unsubscribe(id);
-    m_subscribersInt32Value.erase(foundSubscriber);
+    m_subscribersInt32ValueSub.erase(foundSubscriber);
 }
 
-::zserio::IPubSubClient::SubscriptionId SimplePubSub::subscribeBoolValue(
+::zserio::IPubSubClient::SubscriptionId SimplePubSub::subscribeBoolValueSub(
         const std::function<void(const std::string& topic, const ::pubsub_poc::BoolValue& object)>& callback,
         void* context)
 {
-    const ::zserio::IPubSubClient::OnTopic rawCallback = std::bind(&SimplePubSub::onRawBoolValue, this,
+    const ::zserio::IPubSubClient::OnTopic rawCallback = std::bind(&SimplePubSub::onRawBoolValueSub, this,
             std::placeholders::_1, std::placeholders::_2);
     const std::string topic("pubsub/bool");
     const ::zserio::IPubSubClient::SubscriptionId id =
             m_pubSubClient.subscribe(topic, rawCallback, context);
 
-    const auto result = m_subscribersBoolValue.insert({id, callback});
+    const auto result = m_subscribersBoolValueSub.insert({id, callback});
     if (!result.second)
         throw ::zserio::PubSubException("pubsub_poc.SimplePubSub: Topic '" + topic + "' already subscribed!");
 
     return id;
 }
 
-void SimplePubSub::unsubscribeBoolValue(zserio::IPubSubClient::SubscriptionId id)
+void SimplePubSub::unsubscribeBoolValueSub(zserio::IPubSubClient::SubscriptionId id)
 {
-    const auto foundSubscriber = m_subscribersBoolValue.find(id);
-    if (foundSubscriber == m_subscribersBoolValue.end())
+    const auto foundSubscriber = m_subscribersBoolValueSub.find(id);
+    if (foundSubscriber == m_subscribersBoolValueSub.end())
         throw ::zserio::PubSubException("pubsub_poc.SimplePubSub: Unknown subscription id '" +
                 ::zserio::convertToString(id) + "' for 'BoolValue' !");
 
     m_pubSubClient.unsubscribe(id);
-    m_subscribersBoolValue.erase(foundSubscriber);
+    m_subscribersBoolValueSub.erase(foundSubscriber);
 }
 
-void SimplePubSub::onRawInt32ValueIn(const std::string& topic, const std::vector<uint8_t>& data) const
+void SimplePubSub::onRawUInt64ValueSub(const std::string& topic, const std::vector<uint8_t>& data) const
+{
+    ::zserio::BitStreamReader reader(data.data(), data.size());
+    const UInt64Value object(reader);
+
+    for (const auto& subscribers : m_subscribersUInt64ValueSub)
+        subscribers.second(topic, object);
+}
+
+void SimplePubSub::onRawInt32ValueSub(const std::string& topic, const std::vector<uint8_t>& data) const
 {
     ::zserio::BitStreamReader reader(data.data(), data.size());
     const Int32Value object(reader);
 
-    for (const auto& subscribers : m_subscribersInt32Value)
+    for (const auto& subscribers : m_subscribersInt32ValueSub)
         subscribers.second(topic, object);
 }
 
-void SimplePubSub::onRawBoolValue(const std::string& topic, const std::vector<uint8_t>& data) const
+void SimplePubSub::onRawBoolValueSub(const std::string& topic, const std::vector<uint8_t>& data) const
 {
     ::zserio::BitStreamReader reader(data.data(), data.size());
     const BoolValue object(reader);
 
-    for (const auto& subscribers : m_subscribersBoolValue)
+    for (const auto& subscribers : m_subscribersBoolValueSub)
         subscribers.second(topic, object);
 }
 
