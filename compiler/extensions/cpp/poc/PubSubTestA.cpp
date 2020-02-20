@@ -20,7 +20,7 @@ int main(int argc, char* argv[])
     {
         std::cout << "power of two: " << value.getValue() << std::endl;
     };
-    zserio::IPubSubClient::SubscriptionId powerOfTwoId = simplePubSub.subscribeUInt64ValueSub(powerOfTwo);
+    zserio::IPubSubClient::SubscriptionId powerOfTwoId = simplePubSub.subscribeUint64ValueSub(powerOfTwo);
     bool powerOfTwoSubscribed = true;
 
     auto positiveness = [](const std::string& topic, const pubsub_poc::BoolValue& value)
@@ -45,12 +45,12 @@ int main(int argc, char* argv[])
         {
             if (powerOfTwoSubscribed)
             {
-                simplePubSub.unsubscribeUInt64ValueSub(powerOfTwoId);
+                simplePubSub.unsubscribeUint64ValueSub(powerOfTwoId);
                 powerOfTwoSubscribed = false;
             }
             else
             {
-                powerOfTwoId = simplePubSub.subscribeUInt64ValueSub(powerOfTwo);
+                powerOfTwoId = simplePubSub.subscribeUint64ValueSub(powerOfTwo);
                 powerOfTwoSubscribed = true;
             }
             std::cout << "power of two " << (powerOfTwoSubscribed ? "enabled" : "disabled") << std::endl;

@@ -25,7 +25,7 @@ int main(int argc, char* argv[])
                     : static_cast<uint64_t>(-value.getValue());
 
             pubsub_poc::UInt64Value uint64Value{absValue * absValue};
-            simplePubSub.publishUInt64ValuePub(uint64Value);
+            simplePubSub.publishUint64ValuePub(uint64Value);
         }
     );
 
