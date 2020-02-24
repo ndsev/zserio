@@ -15,15 +15,27 @@ struct BoolValue
     bool value;
 };
 
-/*pubsub SimplePubSub
+pubsub Client
 {
-    publish("pubsub/uint64", UInt64Value) uint64ValuePub;
-    subscribe("pubsub/uint64", UInt64Value) uint64ValueSub;
-
-    publish("pubsub/int32", Int32Value) int32ValuePub;
-    subscribe("pubsub/int32", Int32Value) int32ValueSub;
-
-    publish("pubsub/bool", BoolValue) boolValuePub;
-    subscribe("pubsub/bool", BoolValue) boolValueSub;
+    pubsub("pubsub/int32", Int32Value) request;
+    subscribe("pubsub/powerOfTwo", UInt64Value) powerOfTwo;
+    subscribe("pubsub/boolean/#", BoolValue) booleanResponse;
 };
-*/
+
+pubsub PowerOfTwoProvider
+{
+    subscribe("pubsub/request", Int32Value) request;
+    publish("pubsub/powerOfTwo", UInt64Value) powerOfTwo;
+};
+
+pubsub PositivenessProvider
+{
+    subscribe("pubsub/request", Int32Value) request;
+    publish("pubsub/boolean/positiveness", BoolValue) positiveness;
+};
+
+pubsub GreaterThanTenProvider
+{
+    subscribe("pubsub/request", Int32Value) request;
+    publish("pubsub/boolean/greaterThanTen", BoolValue) greaterThanTen;
+};
