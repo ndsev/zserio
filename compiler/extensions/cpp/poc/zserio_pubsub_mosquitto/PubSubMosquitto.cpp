@@ -52,7 +52,7 @@ void MosquittoSubscription::callback(struct mosquitto* mosq, const struct mosqui
     uint8_t* payload = static_cast<uint8_t*>(msg->payload);
     uint32_t payloadlen = msg->payloadlen;
     std::vector<uint8_t> data(payload, payload + payloadlen);
-    m_callback(msg->topic, data);
+    m_callback(m_id, msg->topic, data);
 }
 
 MosquittoClient::MosquittoClient(const std::string& host, uint16_t port)

@@ -22,28 +22,40 @@ add_library(PubSubPoc
     pubsub_poc/BoolValue.h
     pubsub_poc/Int32Value.cpp
     pubsub_poc/Int32Value.h
-    pubsub_poc/SimplePubSub.cpp
-    pubsub_poc/SimplePubSub.h
+    pubsub_poc/Client.cpp
+    pubsub_poc/Client.h
+    pubsub_poc/GreaterThanTenProvider.cpp
+    pubsub_poc/GreaterThanTenProvider.h
+    pubsub_poc/PositivenessProvider.cpp
+    pubsub_poc/PositivenessProvider.h
+    pubsub_poc/PowerOfTwoProvider.cpp
+    pubsub_poc/PowerOfTwoProvider.h
     pubsub_poc/UInt64Value.cpp
     pubsub_poc/UInt64Value.h
 )
 target_link_libraries(PubSubPoc ZserioCppRuntime)
 target_include_directories(PubSubPoc PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
 
-add_executable(PubSubTestA
-    PubSubTestA.cpp
+add_executable(ClientTest
+    ClientTest.cpp
 )
-target_include_directories(PubSubTestA PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
-target_link_libraries(PubSubTestA PubSubPoc PubSubMosquitto)
+target_include_directories(ClientTest PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
+target_link_libraries(ClientTest PubSubPoc PubSubMosquitto)
 
-add_executable(PubSubTestB
-    PubSubTestB.cpp
+add_executable(PowerOfTwoProviderTest
+    PowerOfTwoProviderTest.cpp
 )
-target_include_directories(PubSubTestB PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
-target_link_libraries(PubSubTestB PubSubPoc PubSubMosquitto)
+target_include_directories(PowerOfTwoProviderTest PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
+target_link_libraries(PowerOfTwoProviderTest PubSubPoc PubSubMosquitto)
 
-add_executable(PubSubTestC
-    PubSubTestC.cpp
+add_executable(PositivenessProviderTest
+    PositivenessProviderTest.cpp
 )
-target_include_directories(PubSubTestC PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
-target_link_libraries(PubSubTestC PubSubPoc PubSubMosquitto)
+target_include_directories(PositivenessProviderTest PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
+target_link_libraries(PositivenessProviderTest PubSubPoc PubSubMosquitto)
+
+add_executable(GreaterThanTenProviderTest
+    GreaterThanTenProviderTest.cpp
+)
+target_include_directories(GreaterThanTenProviderTest PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
+target_link_libraries(GreaterThanTenProviderTest PubSubPoc PubSubMosquitto)

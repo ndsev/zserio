@@ -3,7 +3,7 @@
 #include <mutex>
 
 #include "zserio_runtime/IPubSubClient.h"
-#include "pubsub_poc/SimplePubSub.h"
+#include "pubsub_poc/Client.h"
 #include "zserio_pubsub_mosquitto/PubSubMosquitto.h"
 
 int main(int argc, char* argv[])
@@ -14,21 +14,22 @@ int main(int argc, char* argv[])
     zserio_pubsub_mosquitto::MosquittoInitializer mosquittoInitializer;
 
     zserio_pubsub_mosquitto::MosquittoClient mosquittoClient(host, port);
-    pubsub_poc::SimplePubSub simplePubSub(mosquittoClient);
+    pubsub_poc::Client client(mosquittoClient);
 
-    auto powerOfTwo = [](const std::string& topic, const pubsub_poc::UInt64Value& value)
+    auto powerOfTwoCallback = [](const std::string& topic, const pubsub_poc::UInt64Value& value)
     {
         std::cout << "power of two: " << value.getValue() << std::endl;
     };
-    zserio::IPubSubClient::SubscriptionId powerOfTwoId = simplePubSub.subscribeUint64ValueSub(powerOfTwo);
+    zserio::IPubSubClient::SubscriptionId powerOfTwoId = client.subscribePowerOfTwo(powerOfTwoCallback);
     bool powerOfTwoSubscribed = true;
 
-    auto positiveness = [](const std::string& topic, const pubsub_poc::BoolValue& value)
+    auto booleanResponseCallback = [](const std::string& topic, const pubsub_poc::BoolValue& value)
     {
-        std::cout << "is positive: " << (value.getValue() ? "true" : "false") << std::endl;
+        std::cout << topic << ": " << (value.getValue() ? "true" : "false") << std::endl;
     };
-    zserio::IPubSubClient::SubscriptionId positivenessId = simplePubSub.subscribeBoolValueSub(positiveness);
-    bool positivenessSubscribed = true;
+    zserio::IPubSubClient::SubscriptionId booleanResponseId =
+            client.subscribeBooleanResponse(booleanResponseCallback);
+    bool booleanResponseSubscribed = true;
 
     while (true)
     {
@@ -45,12 +46,12 @@ int main(int argc, char* argv[])
         {
             if (powerOfTwoSubscribed)
             {
-                simplePubSub.unsubscribeUint64ValueSub(powerOfTwoId);
+                client.unsubscribePowerOfTwo(powerOfTwoId);
                 powerOfTwoSubscribed = false;
             }
             else
             {
-                powerOfTwoId = simplePubSub.subscribeUint64ValueSub(powerOfTwo);
+                powerOfTwoId = client.subscribePowerOfTwo(powerOfTwoCallback);
                 powerOfTwoSubscribed = true;
             }
             std::cout << "power of two " << (powerOfTwoSubscribed ? "enabled" : "disabled") << std::endl;
@@ -59,23 +60,24 @@ int main(int argc, char* argv[])
 
         if (input.at(0) == 'b')
         {
-            if (positivenessSubscribed)
+            if (booleanResponseSubscribed)
             {
-                simplePubSub.unsubscribeBoolValueSub(positivenessId);
-                positivenessSubscribed = false;
+                client.unsubscribeBooleanResponse(booleanResponseId);
+                booleanResponseSubscribed = false;
             }
             else
             {
-                positivenessId = simplePubSub.subscribeBoolValueSub(positiveness);
-                positivenessSubscribed = true;
+                booleanResponseId = client.subscribeBooleanResponse(booleanResponseCallback);
+                booleanResponseSubscribed = true;
             }
-            std::cout << "positiveness " << (positivenessSubscribed ? "enabled" : "disabled") << std::endl;
+            std::cout << "boolean response "
+                      << (booleanResponseSubscribed ? "enabled" : "disabled") << std::endl;
             continue;
         }
 
         // publish and answers will come
         pubsub_poc::Int32Value int32Value{std::stoi(input)};
-        simplePubSub.publishInt32ValuePub(int32Value);
+        client.publishRequest(int32Value);
     }
 
     return 0;
