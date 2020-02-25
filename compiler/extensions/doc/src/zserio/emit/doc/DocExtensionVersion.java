@@ -8,5 +8,5 @@ package zserio.emit.doc;
 public class DocExtensionVersion
 {
     /** Documentation extension version string. */
-    public static final String VERSION_STRING = "1.4.0-pre2";
+    public static final String VERSION_STRING = "1.4.0";
 }
