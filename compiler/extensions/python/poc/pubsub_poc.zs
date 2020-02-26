@@ -17,25 +17,28 @@ struct BoolValue
 
 pubsub Client
 {
-    pubsub("pubsub/int32", Int32Value) request;
-    subscribe("pubsub/powerOfTwo", UInt64Value) powerOfTwo;
-    subscribe("pubsub/boolean/#", BoolValue) booleanResponse;
+    publish("pubsub/request") Int32Value request;
+    subscribe("pubsub/powerOfTwo") UInt64Value powerOfTwo;
+    subscribe("pubsub/boolean/#") BoolValue booleanResponse;
+
+    // parameterized topic will look like following:
+    // publish("pubsub/{id}/request/", int32 id) Int32Value request;
 };
 
 pubsub PowerOfTwoProvider
 {
-    subscribe("pubsub/request", Int32Value) request;
-    publish("pubsub/powerOfTwo", UInt64Value) powerOfTwo;
+    subscribe("pubsub/request") Int32Value request;
+    publish("pubsub/powerOfTwo") UInt64Value powerOfTwo;
 };
 
 pubsub PositivenessProvider
 {
-    subscribe("pubsub/request", Int32Value) request;
-    publish("pubsub/boolean/positiveness", BoolValue) positiveness;
+    subscribe("pubsub/request") Int32Value request;
+    publish("pubsub/boolean/positiveness") BoolValue positiveness;
 };
 
 pubsub GreaterThanTenProvider
 {
-    subscribe("pubsub/request", Int32Value) request;
-    publish("pubsub/boolean/greaterThanTen", BoolValue) greaterThanTen;
+    subscribe("pubsub/request") Int32Value request;
+    publish("pubsub/boolean/greaterThanTen") BoolValue greaterThanTen;
 };

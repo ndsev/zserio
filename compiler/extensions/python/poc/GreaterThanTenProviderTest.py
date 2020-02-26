@@ -7,7 +7,7 @@ from functools import partial
 
 if __name__ == "__main__":
     host = "localhost"
-    port = 1234
+    port = 1883
     pubSubClient = zserio_pubsub_mqtt.MqttClient(host, port)
 
     greaterThanTenProvider = api.GreaterThanTenProvider(pubSubClient)

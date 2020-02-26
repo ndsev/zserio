@@ -9,7 +9,7 @@
 int main(int argc, char* argv[])
 {
     std::string host = "localhost";
-    uint16_t port = 1234;
+    uint16_t port = 1883;
 
     zserio_pubsub_mosquitto::MosquittoInitializer mosquittoInitializer;
 
