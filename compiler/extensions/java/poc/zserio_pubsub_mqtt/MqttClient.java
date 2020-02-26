@@ -37,6 +37,7 @@ public class MqttClient implements PubSubInterface
             client.publish(topic, message);
 
             client.disconnect();
+            client.close();
         }
         catch (MqttException e)
         {
@@ -61,6 +62,12 @@ public class MqttClient implements PubSubInterface
                     "' doesn't exist!");
         }
         subscription.close();
+    }
+
+    public void close()
+    {
+        for (MqttSubscription subscription: subscriptions.values())
+            subscription.close();
     }
 
     private static class MqttSubscription
@@ -107,6 +114,7 @@ public class MqttClient implements PubSubInterface
             {
                 client.unsubscribe(topic);
                 client.disconnect();
+                client.close();
             }
             catch (MqttException e)
             {

@@ -90,5 +90,7 @@ public class ClientTest
             Int32Value int32Value = new Int32Value(value);
             client.publishRequest(int32Value);
         }
+
+        mqttClient.close();
     }
 }

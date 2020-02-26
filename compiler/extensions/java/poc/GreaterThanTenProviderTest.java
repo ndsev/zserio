@@ -35,5 +35,7 @@ public class GreaterThanTenProviderTest
 
         final Scanner scanner = new Scanner(System.in);
         scanner.hasNextLine();
+
+        mqttClient.close();
     }
 }
