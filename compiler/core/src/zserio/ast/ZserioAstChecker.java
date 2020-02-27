@@ -158,6 +158,13 @@ public class ZserioAstChecker extends ZserioAstWalker
     }
 
     @Override
+    public void visitPubsubMessage(PubsubMessage pubsubMessage)
+    {
+        pubsubMessage.visitChildren(this);
+        pubsubMessage.check();
+    }
+
+    @Override
     public void visitFunction(Function function)
     {
         function.visitChildren(this);

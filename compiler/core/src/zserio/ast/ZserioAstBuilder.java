@@ -534,6 +534,47 @@ public class ZserioAstBuilder extends ZserioParserBaseVisitor<Object>
     }
 
     @Override
+    public PubsubType visitPubsubDefinition(ZserioParser.PubsubDefinitionContext ctx)
+    {
+        final AstLocation location = new AstLocation(ctx.id().getStart());
+
+        final String name = ctx.id().getText();
+
+        List<PubsubMessage> messages = new ArrayList<PubsubMessage>();
+        for (ZserioParser.PubsubMessageDefinitionContext messageDefinitionCtx : ctx.pubsubMessageDefinition())
+            messages.add(visitPubsubMessageDefinition(messageDefinitionCtx));
+
+        final DocComment docComment = docCommentManager.findDocComment(ctx);
+
+        final PubsubType pubsubType = new PubsubType(location, currentPackage, name, messages, docComment);
+
+        return pubsubType;
+    }
+
+    @Override
+    public PubsubMessage visitPubsubMessageDefinition(ZserioParser.PubsubMessageDefinitionContext ctx)
+    {
+        final AstLocation location = new AstLocation(ctx.id().getStart());
+
+        final String topicDefinition = ctx.topicDefinition().STRING_LITERAL().getText();
+
+        final boolean isPublished =
+                ctx.topicDefinition().PUBLISH() != null || ctx.topicDefinition().PUBSUB() != null;
+
+        final boolean isSubscribed =
+                ctx.topicDefinition().SUBSCRIBE() != null || ctx.topicDefinition().PUBSUB() != null;
+
+        final TypeReference typeReference = visitTypeReference(ctx.typeReference());
+
+        final String name = ctx.id().getText();
+
+        final DocComment docComment = docCommentManager.findDocComment(ctx);
+
+        return new PubsubMessage(location, name, typeReference, topicDefinition, isPublished, isSubscribed,
+                docComment);
+    }
+
+    @Override
     public Function visitFunctionDefinition(ZserioParser.FunctionDefinitionContext ctx)
     {
         final AstLocation location = new AstLocation(ctx.functionName().getStart());

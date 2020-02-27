@@ -58,6 +58,12 @@ public class ZserioAstSymbolResolver extends ZserioAstWalker
     }
 
     @Override
+    public void visitPubsubType(PubsubType pubsubType)
+    {
+        visitType(pubsubType);
+    }
+
+    @Override
     public void visitSqlConstraint(SqlConstraint sqlConstraint)
     {
         sqlConstraint.resolve(currentCompoundType);

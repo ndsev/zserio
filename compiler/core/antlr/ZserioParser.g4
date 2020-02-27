@@ -39,6 +39,7 @@ typeDeclaration
     |   sqlTableDeclaration
     |   sqlDatabaseDefinition
     |   serviceDefinition
+    |   pubsubDefinition
     |   instantiateDeclaration
     ;
 
@@ -239,6 +240,28 @@ serviceDefinition
 
 serviceMethodDefinition
     :   typeReference id LPAREN typeReference RPAREN SEMICOLON
+    ;
+
+
+// PUBSUB
+
+pubsubDefinition
+    :   PUBSUB id
+        LBRACE
+        pubsubMessageDefinition*
+        RBRACE
+        SEMICOLON
+    ;
+
+pubsubMessageDefinition
+    :   topicDefinition typeReference id SEMICOLON
+    ;
+
+topicDefinition
+    :   (PUBLISH | SUBSCRIBE | PUBSUB)
+        LPAREN
+        STRING_LITERAL
+        RPAREN
     ;
 
 

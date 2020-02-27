@@ -76,7 +76,7 @@ public class ServiceTypesErrorTest
     public void sqlTableType()
     {
         final String error = "sql_table_type_error.zs:15:25: " +
-                "SQL table 'Request' cannot be used in service methods";
+                "SQL table 'Request' cannot be used in service methods!";
         assertTrue(zserioErrors.isPresent(error));
     }
 

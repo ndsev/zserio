@@ -87,6 +87,12 @@ public class ZserioAstWalker implements ZserioAstVisitor
     }
 
     @Override
+    public void visitPubsubType(PubsubType pubsubType)
+    {
+        pubsubType.visitChildren(this);
+    }
+
+    @Override
     public void visitField(Field field)
     {
         field.visitChildren(this);
@@ -132,6 +138,12 @@ public class ZserioAstWalker implements ZserioAstVisitor
     public void visitServiceMethod(ServiceMethod serviceMethod)
     {
         serviceMethod.visitChildren(this);
+    }
+
+    @Override
+    public void visitPubsubMessage(PubsubMessage pubsubMessage)
+    {
+        pubsubMessage.visitChildren(this);
     }
 
     @Override
