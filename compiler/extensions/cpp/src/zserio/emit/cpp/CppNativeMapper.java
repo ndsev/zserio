@@ -9,6 +9,7 @@ import zserio.ast.DynamicBitFieldType;
 import zserio.ast.FixedBitFieldType;
 import zserio.ast.InstantiateType;
 import zserio.ast.PackageName;
+import zserio.ast.PubsubType;
 import zserio.ast.TypeInstantiation;
 import zserio.ast.UnionType;
 import zserio.ast.BooleanType;
@@ -588,6 +589,15 @@ public class CppNativeMapper
 
         @Override
         public void visitServiceType(ServiceType type)
+        {
+            final PackageName packageName = cppPackageMapper.getPackageName(type);
+            final String name = type.getName();
+            final String includeFileName = getIncludePath(packageName, name);
+            cppType = new NativeUserType(packageName, name, includeFileName, false);
+        }
+
+        @Override
+        public void visitPubsubType(PubsubType type)
         {
             final PackageName packageName = cppPackageMapper.getPackageName(type);
             final String name = type.getName();

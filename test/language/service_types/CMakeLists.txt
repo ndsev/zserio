@@ -39,8 +39,6 @@ zserio_add_library(TARGET service_types_zs
     ZSERIO_OPTIONS -withoutSourcesAmalgamation
 )
 
-target_include_directories(service_types_zs SYSTEM PRIVATE ${GRPC_INCDIR})
-
 add_test_sources(
     ${ZSERIO_CPP_DIR}/SimpleServiceTest.cpp
     ${ZSERIO_CPP_DIR}/ComplexTypesServiceTest.cpp

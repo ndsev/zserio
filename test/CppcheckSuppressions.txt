@@ -3,3 +3,4 @@ assertWithSideEffect
 
 // suppressions for particular tests
 oppositeExpression:*/test/language/bitmask_types/cpp/*Test.cpp
+unusedStructMember:*/pubsub_types/cpp/TestPubsub.h

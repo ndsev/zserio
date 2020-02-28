@@ -10,6 +10,15 @@ import java.util.List;
  */
 public class PubsubType extends DocumentableAstNode implements ZserioScopedType
 {
+    /**
+     * Constructor.
+     *
+     * @param location   AST node location.
+     * @param pkg        Package to which belongs the Pub/Sub type.
+     * @param name       Name of the Pub/Sub type.
+     * @param messages   List of all messages which belong to the Pub/Sub type.
+     * @param docComment Documentation comment belonging to this node.
+     */
     public PubsubType(AstLocation location, Package pkg, String name, List<PubsubMessage> messages,
             DocComment docComment)
     {

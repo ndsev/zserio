@@ -5,6 +5,17 @@ package zserio.ast;
  */
 public class PubsubMessage extends DocumentableAstNode
 {
+    /**
+     * Constructor.
+     *
+     * @param location        AST node location.
+     * @param name            Name of the Pub/Sub message.
+     * @param typeReference   Reference to the message type.
+     * @param topicDefinition Definition of the message's topic.
+     * @param isPublished     Whether the message is published.
+     * @param isSubscribed    Whether the message is subscribed.
+     * @param docComment      Documentation comment belonging to this node.
+     */
     public PubsubMessage(AstLocation location, String name, TypeReference typeReference,
             String topicDefinition, boolean isPublished, boolean isSubscribed, DocComment docComment)
     {
@@ -42,13 +53,13 @@ public class PubsubMessage extends DocumentableAstNode
     }
 
     /**
-     * Gets the message type reference.
+     * Gets the message type.
      *
-     * @return Type reference.
+     * @return Type of the message.
      */
-    public TypeReference getTypeReference()
+    public CompoundType getType()
     {
-        return typeReference;
+        return (CompoundType)typeReference.getBaseTypeReference().getType();
     }
 
     /**

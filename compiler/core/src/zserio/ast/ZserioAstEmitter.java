@@ -204,6 +204,19 @@ public class ZserioAstEmitter extends ZserioAstWalker
     }
 
     @Override
+    public void visitPubsubType(PubsubType pubsubType)
+    {
+        try
+        {
+            emitter.beginPubsub(pubsubType);
+        }
+        catch (ZserioEmitException e)
+        {
+            throw new UncheckedZserioEmitException(e);
+        }
+    }
+
+    @Override
     public void visitInstantiateType(InstantiateType instantiateType)
     {
         final TemplatableType instantiation = (TemplatableType)instantiateType.getTypeReference().getType();

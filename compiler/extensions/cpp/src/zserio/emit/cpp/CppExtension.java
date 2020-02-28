@@ -58,6 +58,7 @@ public class CppExtension implements Extension
         rootNode.emit(new SqlDatabaseEmitter(outputDir, parameters));
         rootNode.emit(new SqlTableEmitter(outputDir, parameters));
         rootNode.emit(new ServiceEmitter(outputDir, parameters));
+        rootNode.emit(new PubsubEmitter(outputDir, parameters));
     }
 
     private final static String OptionCpp = "cpp";

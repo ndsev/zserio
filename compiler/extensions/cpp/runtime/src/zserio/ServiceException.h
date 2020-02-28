@@ -24,4 +24,4 @@ public:
 
 } // namespace zserio
 
-#endif // ifndef ZSERIO_SERVICE_EXCEPTION_H_INC
+#endif // ZSERIO_SERVICE_EXCEPTION_H_INC

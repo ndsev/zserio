@@ -556,7 +556,9 @@ public class ZserioAstBuilder extends ZserioParserBaseVisitor<Object>
     {
         final AstLocation location = new AstLocation(ctx.id().getStart());
 
-        final String topicDefinition = ctx.topicDefinition().STRING_LITERAL().getText();
+        String topicDefinition = ctx.topicDefinition().STRING_LITERAL().getText();
+        // strip quotes around the string literal
+        topicDefinition = topicDefinition.substring(1, topicDefinition.length() - 1);
 
         final boolean isPublished =
                 ctx.topicDefinition().PUBLISH() != null || ctx.topicDefinition().PUBSUB() != null;
