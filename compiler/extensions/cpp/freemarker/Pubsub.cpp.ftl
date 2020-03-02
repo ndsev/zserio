@@ -28,7 +28,7 @@ void ${name}::publish${message.name?cap_first}(${message.typeFullName}& message,
     const auto result = m_subscribers${message.name?cap_first}.emplace(id, callback);
     if (!result.second)
     {
-        throw ::zserio::PubsubException(std::string("${fullName}: ") +
+        throw ::zserio::PubsubException(std::string("Pubsub ${name}: ") +
                 "Subscription ID '" + std::to_string(id) + "' already in use!");
     }
 
@@ -50,11 +50,15 @@ void ${name}::unsubscribe(::zserio::IPubsub::SubscriptionId id)
     const auto found${message.name?cap_first} = m_subscribers${message.name?cap_first}.find(id);
     if (found${message.name?cap_first} != m_subscribers${message.name?cap_first}.end())
     {
+        m_pubsub.unsubscribe(id);
         m_subscribers${message.name?cap_first}.erase(found${message.name?cap_first});
         return;
     }
         </#if>
     </#list>
+
+    throw ::zserio::PubsubException(std::string("Pubsub ${name}: ") +
+            "Subscription ID '" + std::to_string(id) + "' was not subscribed!");
 }
     <#list messageList as message>
         <#if message.isSubscribed>
@@ -68,7 +72,7 @@ void ${name}::onRaw${message.name?cap_first}(::zserio::IPubsub::SubscriptionId i
     const auto found = m_subscribers${message.name?cap_first}.find(id);
     if (found == m_subscribers${message.name?cap_first}.end())
     {
-        throw ::zserio::PubsubException(std::string("${fullName}: ") +
+        throw ::zserio::PubsubException(std::string("Pubsub ${name}: ") +
                 "Unknown subscription ID '" + std::to_string(id) + "' for '${message.name}' message");
     }
 

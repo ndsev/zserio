@@ -3,8 +3,6 @@
 namespace pubsub_types
 {
 
-
-
 void TestPubsub::publish(const std::string& topic, const std::vector<uint8_t>& data, void* context)
 {
     if (context != nullptr)

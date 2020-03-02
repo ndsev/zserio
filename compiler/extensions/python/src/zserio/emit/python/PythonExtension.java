@@ -57,9 +57,10 @@ public class PythonExtension implements Extension
         emitters.add(new StructureEmitter(outputDir, parameters));
         emitters.add(new ChoiceEmitter(outputDir, parameters));
         emitters.add(new UnionEmitter(outputDir, parameters));
-        emitters.add(new ServiceEmitter(outputDir, parameters));
         emitters.add(new SqlTableEmitter(outputDir, parameters));
         emitters.add(new SqlDatabaseEmitter(outputDir, parameters));
+        emitters.add(new ServiceEmitter(outputDir, parameters));
+        emitters.add(new PubsubEmitter(outputDir, parameters));
 
         // emit Python code
         for (Emitter pythonEmitter: emitters)

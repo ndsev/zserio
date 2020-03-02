@@ -39,7 +39,10 @@ public:
 
     /**
      * Reserves subscription ID for a new subscription.
+     *
      * The ID is released back to the Pub/Sub once unsubscribe is called.
+     *
+     * \return Reserved subscription ID.
      */
     virtual SubscriptionId reserveId() = 0;
 
@@ -48,24 +51,24 @@ public:
      *
      * \param id Subscrition ID to use.
      * \param topic Topic definition to subscribe. Note that the definition format depends on the particular
-     *              Pub/Sub backend implementation and therefore e.g. wildcards can be used only if its
+     *              Pub/Sub backend implementation and therefore e.g. wildcards can be used only if they are
      *              supported by Pub/Sub backend.
      * \param callback Callback to be called when a message with the specified topic arrives.
      * \param context Context specific for a particular Pub/Sub implementation.
      *
-     * \throw PubsubException when subscription fails.
+     * \throw PubsubException when subscribing fails.
      */
     virtual void subscribe(SubscriptionId id, const std::string& topic, const OnTopic& callback,
             void* context) = 0;
 
     /**
-     * Unsubscribes the subscription under given ID (if any) and releases the reserved ID.
+     * Unsubscribes the subscription under the given ID (if any) and releases the reserved ID.
      *
      * \note Unsubscribe can be safely called to release the reserved ID even if no subscription was done.
      *
      * \param id ID of the subscription to be unsubscribed.
      *
-     * \throw PubsubException when unsubscription fails.
+     * \throw PubsubException when unsubscribing fails.
      */
     virtual void unsubscribe(SubscriptionId id) = 0;
 };

@@ -10,6 +10,7 @@ from zserio.bitreader import BitStreamReader
 from zserio.bitwriter import BitStreamWriter
 from zserio.exception import PythonRuntimeException
 from zserio.service import ServiceInterface, ServiceException
+from zserio.pubsub import PubsubInterface, PubsubException
 
 import zserio.array
 import zserio.bitbuffer
