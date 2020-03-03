@@ -23,7 +23,6 @@ public abstract class CodeDefaultEmitter extends DefaultEmitter
     public CodeDefaultEmitter(String outPathName, Parameters extensionParameters, String codeTemplateLocation)
     {
         this.outPathName = outPathName;
-        withInspectorCode = extensionParameters.getWithInspectorCode();
         withRangeCheckCode = extensionParameters.getWithRangeCheckCode();
         withServiceCode = extensionParameters.getWithServiceCode();
         withSourcesAmalgamation = extensionParameters.getWithSourcesAmalgamation();
@@ -42,11 +41,6 @@ public abstract class CodeDefaultEmitter extends DefaultEmitter
     {
         if (packageMapper == null)
             packageMapper = new PackageMapper(pkg, topLevelPackageNameList);
-    }
-
-    protected boolean getWithInspectorCode()
-    {
-        return withInspectorCode;
     }
 
     protected boolean getWithRangeCheckCode()
@@ -130,7 +124,6 @@ public abstract class CodeDefaultEmitter extends DefaultEmitter
 
     private final String outPathName;
 
-    private final boolean withInspectorCode;
     private final boolean withRangeCheckCode;
     private final boolean withValidationCode;
     private final boolean withServiceCode;

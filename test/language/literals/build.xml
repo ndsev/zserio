@@ -27,7 +27,7 @@
     </target>
 
     <target name="run" depends="spotbugs">
-        <testRun testname="literals"/>
+        <testRun testName="literals"/>
     </target>
 
     <target name="clean">

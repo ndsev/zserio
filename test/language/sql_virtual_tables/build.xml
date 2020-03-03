@@ -27,7 +27,7 @@
     </target>
 
     <target name="run" depends="spotbugs">
-        <testRun testname="sql_virtual_tables"/>
+        <testRun testName="sql_virtual_tables"/>
     </target>
 
     <target name="clean">

@@ -19,13 +19,14 @@ set_test_global_variables()
     return 0
 }
 
-# Print help on the environment variables used for this release script.
+# Print help on the environment variables used for the tests scripts.
 print_test_help_env()
 {
     cat << EOF
 Uses the following environment variables for testing:
     UNZIP               Unzip executable to use. Default is "unzip".
     ZSERIO_EXTRA_ARGS   Extra arguments to zserio tool. Default is empty.
+
 EOF
 }
 

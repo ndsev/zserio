@@ -27,7 +27,7 @@
     </target>
 
     <target name="run" depends="spotbugs">
-        <testRun testname="gif">
+        <testRun testName="gif">
             <resources>
                 <copy todir="${gif.run_dir}/data">
                     <fileset dir="${gif.base_dir}/data"/>

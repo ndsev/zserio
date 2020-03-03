@@ -1,6 +1,5 @@
 <#include "FileHeader.inc.ftl">
-<#include "GeneratePkgPrefix.inc.ftl">
-<@standard_header generatorDescription, packageName, []/>
+<@standard_header generatorDescription, packageName/>
 
 public class ${name}
 {

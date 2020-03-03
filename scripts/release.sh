@@ -22,6 +22,7 @@ print_release_help_env()
     cat << EOF
 Uses the following environment variables for releasing:
     ZIP Zip executable to use. Default is "zip".
+
 EOF
 }
 

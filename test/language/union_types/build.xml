@@ -27,7 +27,7 @@
     </target>
 
     <target name="run" depends="spotbugs">
-        <testRun testname="union_types"/>
+        <testRun testName="union_types"/>
     </target>
 
     <target name="clean">

@@ -9,6 +9,16 @@ import zserio.ast.AstNode;
 public class ZserioToolPrinter
 {
     /**
+     * Prints information.
+     *
+     * @param text Text of the information to print.
+     */
+    public static void printInfo(String text)
+    {
+        System.out.println("[INFO] " + text);
+    }
+
+    /**
      * Prints warning which is localized in the Zserio source file.
      *
      * @param fileName Zserio source file to which the warning belongs to.

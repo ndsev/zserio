@@ -27,7 +27,7 @@
     </target>
 
     <target name="run" depends="spotbugs">
-        <testRun testname="enumeration_types"/>
+        <testRun testName="enumeration_types"/>
     </target>
 
     <target name="clean">

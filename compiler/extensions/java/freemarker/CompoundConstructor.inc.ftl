@@ -9,15 +9,17 @@
     }
 
     </#if>
-    public ${name}(File __file<#if constructorArgumentTypeList?has_content>,${constructorArgumentTypeList}</#if>) throws IOException, ZserioError
+    public ${name}(java.io.File __file<#if constructorArgumentTypeList?has_content>,${constructorArgumentTypeList}</#if>)
+            throws java.io.IOException, zserio.runtime.ZserioError
     {
         <@compound_constructors_set_parameters compoundConstructorsData true/>
-        final FileBitStreamReader __in = new FileBitStreamReader(__file);
+        final zserio.runtime.io.FileBitStreamReader __in = new zserio.runtime.io.FileBitStreamReader(__file);
         read(__in);
         __in.close();
     }
 
-    public ${name}(BitStreamReader __in<#if constructorArgumentTypeList?has_content>,${constructorArgumentTypeList}</#if>) throws IOException, ZserioError
+    public ${name}(zserio.runtime.io.BitStreamReader __in<#if constructorArgumentTypeList?has_content>,${constructorArgumentTypeList}</#if>)
+            throws java.io.IOException, zserio.runtime.ZserioError
     {
         <@compound_constructors_set_parameters compoundConstructorsData true/>
         read(__in);

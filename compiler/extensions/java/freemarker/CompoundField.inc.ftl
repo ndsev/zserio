@@ -11,7 +11,7 @@
 ${I}__in.alignTo(java.lang.Byte.SIZE);
 ${I}if (__in.getBytePosition() != <@compound_field_get_offset field/>)
 ${I}{
-${I}    throw new ZserioError("Read: Wrong offset for field ${compoundName}.${field.name}: " +
+${I}    throw new zserio.runtime.ZserioError("Read: Wrong offset for field ${compoundName}.${field.name}: " +
 ${I}            __in.getBytePosition() + " != " + <@compound_field_get_offset field/> + "!");
 ${I}}
 </#macro>
@@ -26,16 +26,20 @@ ${I}__in.alignTo(${field.alignmentValue});
     </#if>
     <#local fieldMemberName><#if field.usesObjectChoice>__objectChoice<#else>${field.name}</#if></#local>
     <#if field.array??>
-${I}${fieldMemberName} = new ${field.javaTypeName}(__in, <#rt>
-        <#lt><#if field.array.length??>(int)(${field.array.length})<#rt>
-        <#lt><#elseif field.array.isImplicit>zserio.runtime.array.Array.IMPLICIT_LENGTH<#rt>
-        <#lt><#else>zserio.runtime.array.Array.AUTO_LENGTH</#if><#rt>
+${I}${fieldMemberName} = new ${field.javaTypeName}(__in,
+        <#if field.array.length??>
+${I}        (int)(${field.array.length})<#rt>
+        <#elseif field.array.isImplicit>
+${I}        zserio.runtime.array.Array.IMPLICIT_LENGTH<#rt>
+        <#else>
+${I}        zserio.runtime.array.Array.AUTO_LENGTH<#rt>
+        </#if>
         <#if field.array.requiresElementBitSize>
             , ${field.array.elementBitSize.value}<#t>
         </#if>
         <#if field.array.requiresElementFactory>
             <#lt>,
-${I}    new <@element_factory_name field.name/>()<#t>
+${I}        new <@element_factory_name field.name/>()<#rt>
         </#if>
         <#if field.offset?? && field.offset.containsIndex>
             , new <@offset_checker_name field.name/>()<#t>
@@ -85,8 +89,10 @@ ${I}}
     <#local I>${""?left_pad(indent * 4)}</#local>
 ${I}__out.alignTo(java.lang.Byte.SIZE);
 ${I}if (__out.getBytePosition() != <@compound_field_get_offset field/>)
-${I}    throw new ZserioError("Write: Wrong offset for field ${compoundName}.${field.name}: " +
+${I}{
+${I}    throw new zserio.runtime.ZserioError("Write: Wrong offset for field ${compoundName}.${field.name}: " +
 ${I}            __out.getBytePosition() + " != " + <@compound_field_get_offset field/> + "!");
+${I}}
 </#macro>
 
 <#macro compound_write_field_inner field compoundName indent>
@@ -100,8 +106,10 @@ ${I}__out.alignTo(${field.alignmentValue});
     <#if field.array??>
         <#if field.array.length??>
 ${I}if (${field.getterName}().length() != (int)(${field.array.length}))
-${I}    throw new ZserioError("Write: Wrong array length for field ${compoundName}.${field.name}: " +
+${I}{
+${I}    throw new zserio.runtime.ZserioError("Write: Wrong array length for field ${compoundName}.${field.name}: " +
 ${I}            ${field.getterName}().length() + " != " + (int)(${field.array.length}) + "!");
+${I}}
         </#if>
 ${I}${field.getterName}().write<@array_runtime_function_name_postfix field/>(__out<#rt>
         <#if field.array.requiresElementBitSize>
@@ -148,7 +156,7 @@ ${I}}
     <#local I>${""?left_pad(indent * 4)}</#local>
     <#if field.constraint??>
 ${I}if (<#if field.optional??>(<@field_optional_condition field/>) && </#if>!(${field.constraint}))
-${I}    throw new ConstraintError("Constraint violated at ${compoundName}.${field.name}!");
+${I}    throw new zserio.runtime.ConstraintError("Constraint violated at ${compoundName}.${field.name}!");
     </#if>
 </#macro>
 
@@ -193,7 +201,7 @@ ${I}__endBitPosition += ${field.getterName}().bitSizeOf<@array_runtime_function_
     <#elseif field.bitSize.value??>
 ${I}__endBitPosition += ${field.bitSize.value};
     <#elseif field.bitSize.runtimeFunction??>
-${I}__endBitPosition += BitSizeOfCalculator.getBitSizeOf${field.bitSize.runtimeFunction.suffix}(${field.getterName}());
+${I}__endBitPosition += zserio.runtime.BitSizeOfCalculator.getBitSizeOf${field.bitSize.runtimeFunction.suffix}(${field.getterName}());
     <#else>
 ${I}__endBitPosition += ${field.getterName}().bitSizeOf(__endBitPosition);
     </#if>
@@ -213,7 +221,7 @@ ${I}__endBitPosition = ${field.getterName}().initializeOffsets<@array_runtime_fu
     <#elseif field.bitSize.value??>
 ${I}__endBitPosition += ${field.bitSize.value};
     <#elseif field.bitSize.runtimeFunction??>
-${I}__endBitPosition += BitSizeOfCalculator.getBitSizeOf${field.bitSize.runtimeFunction.suffix}(${field.getterName}());
+${I}__endBitPosition += zserio.runtime.BitSizeOfCalculator.getBitSizeOf${field.bitSize.runtimeFunction.suffix}(${field.getterName}());
     <#elseif field.compound??>
 ${I}__endBitPosition = ${field.getterName}().initializeOffsets(__endBitPosition);
     <#else>
@@ -226,24 +234,26 @@ ${I}__endBitPosition += ${field.getterName}().bitSizeOf(__endBitPosition);
     <#if field.isSimpleType>
         <#if field.isLong>
             <#-- long type: use shifting -->
-${I}__result = Util.HASH_PRIME_NUMBER * __result + (int) (${field.name} ^ (${field.name} >>> 32));
+${I}__result = zserio.runtime.Util.HASH_PRIME_NUMBER * __result + (int)(${field.name} ^ (${field.name} >>> 32));
         <#elseif field.isFloat>
             <#-- float type: use floatToIntBits() -->
-${I}__result = Util.HASH_PRIME_NUMBER * __result + java.lang.Float.floatToIntBits(${field.name});
+${I}__result = zserio.runtime.Util.HASH_PRIME_NUMBER * __result + java.lang.Float.floatToIntBits(${field.name});
         <#elseif field.isDouble>
             <#-- double type: use doubleToLongBits() -->
-${I}__result = Util.HASH_PRIME_NUMBER * __result + (int) (java.lang.Double.doubleToLongBits(${field.name}) ^
-${I}        (java.lang.Double.doubleToLongBits(${field.name}) >>> 32));
+${I}__result = zserio.runtime.Util.HASH_PRIME_NUMBER * __result +
+${I}        (int)(java.lang.Double.doubleToLongBits(${field.name}) ^
+${I}                (java.lang.Double.doubleToLongBits(${field.name}) >>> 32));
         <#elseif field.isBool>
             <#-- bool type: convert it to int -->
-${I}__result = Util.HASH_PRIME_NUMBER * __result + (${field.name} ? 1 : 0);
+${I}__result = zserio.runtime.Util.HASH_PRIME_NUMBER * __result + (${field.name} ? 1 : 0);
         <#else>
             <#-- others: use implicit casting to int -->
-${I}__result = Util.HASH_PRIME_NUMBER * __result + ${field.name};
+${I}__result = zserio.runtime.Util.HASH_PRIME_NUMBER * __result + ${field.name};
         </#if>
     <#else>
         <#-- complex type: use hashCode() but account for possible null -->
-${I}__result = Util.HASH_PRIME_NUMBER * __result + ((${field.name} == null) ? 0 : ${field.name}.hashCode());
+${I}__result = zserio.runtime.Util.HASH_PRIME_NUMBER * __result +
+${I}        ((${field.name} == null) ? 0 : ${field.name}.hashCode());
     </#if>
 </#macro>
 
@@ -255,11 +265,11 @@ ${I}__result = Util.HASH_PRIME_NUMBER * __result + ((${field.name} == null) ? 0 
     private final class <@offset_checker_name field.name/> implements zserio.runtime.array.OffsetChecker
     {
         @Override
-        public void checkOffset(int __index, long __byteOffset) throws ZserioError
+        public void checkOffset(int __index, long __byteOffset) throws zserio.runtime.ZserioError
         {
             if (__byteOffset != <@compound_field_get_offset field/>)
             {
-                throw new ZserioError("Wrong offset for field ${compoundName}.${field.name}: " +
+                throw new zserio.runtime.ZserioError("Wrong offset for field ${compoundName}.${field.name}: " +
                         __byteOffset + " != " + <@compound_field_get_offset field/> + "!");
             }
         }
@@ -301,8 +311,8 @@ ${I}__result = Util.HASH_PRIME_NUMBER * __result + ((${field.name} == null) ? 0 
         <#lt>implements zserio.runtime.array.ElementFactory<${field.array.elementJavaTypeName}>
     {
         @Override
-        public ${field.array.elementJavaTypeName} create(BitStreamReader __in, int __index)
-            throws IOException, ZserioError
+        public ${field.array.elementJavaTypeName} create(zserio.runtime.io.BitStreamReader __in, int __index)
+            throws java.io.IOException, zserio.runtime.ZserioError
         {
     <#if field.array.isElementEnum>
             return ${field.array.elementJavaTypeName}.readEnum(__in);
@@ -333,17 +343,3 @@ ${I}__result = Util.HASH_PRIME_NUMBER * __result + ((${field.name} == null) ? 0 
 <#macro choice_tag_name field>
     CHOICE_${field.name}<#t>
 </#macro>
-
-<#function need_field_runtime_function field>
-    <#if field.bitSize.runtimeFunction??>
-        <#return true>
-    </#if>
-    <#if field.array??>
-        <#if (field.offset?? && field.offset.containsIndex) || field.array.elementCompound??>
-            <#if field.array.elementBitSize.runtimeFunction??>
-                <#return true>
-            </#if>
-        </#if>
-    </#if>
-    <#return false>
-</#function>

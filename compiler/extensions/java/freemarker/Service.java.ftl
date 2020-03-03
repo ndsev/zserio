@@ -1,25 +1,19 @@
 <#include "FileHeader.inc.ftl">
-<@standard_header generatorDescription, packageName, [
-        "java.util.HashMap",
-        "java.util.Map",
-        "zserio.runtime.ZserioError",
-        "zserio.runtime.io.ZserioIO",
-        "zserio.runtime.service.ServiceInterface",
-        "zserio.runtime.service.ServiceException"
-]/>
+<@standard_header generatorDescription, packageName/>
 
 public final class ${name}
 {
-    public static abstract class Service implements ServiceInterface
+    public static abstract class Service implements zserio.runtime.service.ServiceInterface
     {
         public Service()
         {
-            methodMap = new HashMap<String, Method>();
+            methodMap = new java.util.HashMap<java.lang.String, Method>();
 <#list methodList as method>
             methodMap.put("${method.name}",
                 new Method()
                 {
-                    public byte[] call(byte[] requestData, Object context) throws ZserioError
+                    public byte[] call(byte[] requestData, java.lang.Object context)
+                            throws zserio.runtime.ZserioError
                     {
                         return ${method.name}Method(requestData, context);
                     }
@@ -29,22 +23,26 @@ public final class ${name}
         }
 
         @Override
-        public byte[] callMethod(String methodName, byte[] requestData, Object context) throws ZserioError
+        public byte[] callMethod(java.lang.String methodName, byte[] requestData, java.lang.Object context)
+                throws zserio.runtime.ZserioError
         {
             final Method method = methodMap.get(methodName);
             if (method == null)
-                throw new ServiceException("${serviceFullName}: Method '" + methodName + "' does not exist!");
+            {
+                throw new zserio.runtime.service.ServiceException(
+                        "${serviceFullName}: Method '" + methodName + "' does not exist!");
+            }
             return method.call(requestData, context);
         }
 
-        public static String serviceFullName()
+        public static java.lang.String serviceFullName()
         {
             return SERVICE_FULL_NAME;
         }
 
-        public static String[] methodNames()
+        public static java.lang.String[] methodNames()
         {
-            return new String[]
+            return new java.lang.String[]
             {
 <#list methodList as method>
                 "${method.name}"<#if method?has_next>,</#if>
@@ -53,61 +51,61 @@ public final class ${name}
         }
 <#list methodList as method>
 
-        protected abstract ${method.responseTypeFullName} ${method.name}Impl(<#rt>
-                <#lt>${method.requestTypeFullName} request, Object context);
+        protected abstract ${method.responseTypeFullName} ${method.name}Impl(
+                ${method.requestTypeFullName} request, java.lang.Object context);
 </#list>
 <#list methodList as method>
 
-        private byte[] ${method.name}Method(byte[] requestData, Object context)
-                throws ZserioError
+        private byte[] ${method.name}Method(byte[] requestData, java.lang.Object context)
+                throws zserio.runtime.ZserioError
         {
             final ${method.requestTypeFullName} request =
-                    ZserioIO.read(${method.requestTypeFullName}.class, requestData);
+                    zserio.runtime.io.ZserioIO.read(${method.requestTypeFullName}.class, requestData);
 
             final ${method.responseTypeFullName} response = ${method.name}Impl(request, context);
 
-            final byte[] responseData = ZserioIO.write(response);
+            final byte[] responseData = zserio.runtime.io.ZserioIO.write(response);
             return responseData;
         }
 </#list>
 
         private interface Method
         {
-            byte[] call(byte[] requestData, Object context) throws ZserioError;
+            byte[] call(byte[] requestData, java.lang.Object context) throws zserio.runtime.ZserioError;
         }
 
-        private static final String SERVICE_FULL_NAME = "${serviceFullName}";
+        private static final java.lang.String SERVICE_FULL_NAME = "${serviceFullName}";
 
-        private final Map<String, Method> methodMap;
+        private final java.util.Map<java.lang.String, Method> methodMap;
     }
 
     public static final class Client
     {
-        public Client(ServiceInterface service)
+        public Client(zserio.runtime.service.ServiceInterface service)
         {
             this.service = service;
         }
 <#list methodList as method>
 
         public ${method.responseTypeFullName} ${method.name}Method(${method.requestTypeFullName} request,
-                Object context) throws ZserioError
+                java.lang.Object context) throws zserio.runtime.ZserioError
         {
-            final byte[] requestData = ZserioIO.write(request);
+            final byte[] requestData = zserio.runtime.io.ZserioIO.write(request);
 
             final byte[] responseData = service.callMethod("${method.name}", requestData, context);
 
             final ${method.responseTypeFullName} response =
-                    ZserioIO.read(${method.responseTypeFullName}.class, responseData);
+                    zserio.runtime.io.ZserioIO.read(${method.responseTypeFullName}.class, responseData);
             return response;
         }
 
         public ${method.responseTypeFullName} ${method.name}Method(${method.requestTypeFullName} request)
-                 throws ZserioError
+                 throws zserio.runtime.ZserioError
         {
             return ${method.name}Method(request, null);
         }
 </#list>
 
-        private final ServiceInterface service;
+        private final zserio.runtime.service.ServiceInterface service;
     }
 }

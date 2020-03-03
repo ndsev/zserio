@@ -45,13 +45,6 @@ public interface Parameters
     public Iterable<String> getTopLevelPackageNameList();
 
     /**
-     * Gets the inspector code flag.
-     *
-     * @returns True if code for Blob inspector is enabled.
-     */
-    public boolean getWithInspectorCode();
-
-    /**
      * Gets the range check code flag.
      *
      * @returns True if range checking is enabled.

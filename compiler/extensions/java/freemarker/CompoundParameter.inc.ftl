@@ -39,23 +39,27 @@ this.${parameter.name} == __that.${parameter.name}<#rt>
     <#if parameter.isSimpleType>
         <#if parameter.isLong>
             <#-- long type: use shifting -->
-        __result = Util.HASH_PRIME_NUMBER * __result + (int) (${parameter.name} ^ (${parameter.name} >>> 32));
+        __result = zserio.runtime.Util.HASH_PRIME_NUMBER * __result +
+                (int)(${parameter.name} ^ (${parameter.name} >>> 32));
         <#elseif parameter.isFloat>
             <#-- float type: use floatToIntBits() -->
-        __result = Util.HASH_PRIME_NUMBER * __result + java.lang.Float.floatToIntBits(${parameter.name});
+        __result = zserio.runtime.Util.HASH_PRIME_NUMBER * __result +
+                java.lang.Float.floatToIntBits(${parameter.name});
         <#elseif parameter.isDouble>
             <#-- double type: use doubleToLongBits() -->
-        __result = Util.HASH_PRIME_NUMBER * __result + (int) (java.lang.Double.doubleToLongBits(${parameter.name}) ^
-                (java.lang.Double.doubleToLongBits(${parameter.name}) >>> 32));
+        __result = zserio.runtime.Util.HASH_PRIME_NUMBER * __result +
+                (int)(java.lang.Double.doubleToLongBits(${parameter.name}) ^
+                        (java.lang.Double.doubleToLongBits(${parameter.name}) >>> 32));
         <#elseif parameter.isBool>
             <#-- bool type: convert it to int -->
-        __result = Util.HASH_PRIME_NUMBER * __result + (${parameter.name} ? 1 : 0);
+        __result = zserio.runtime.Util.HASH_PRIME_NUMBER * __result + (${parameter.name} ? 1 : 0);
         <#else>
             <#-- others: use implicit casting to int -->
-        __result = Util.HASH_PRIME_NUMBER * __result + ${parameter.name};
+        __result = zserio.runtime.Util.HASH_PRIME_NUMBER * __result + ${parameter.name};
         </#if>
     <#else>
         <#-- complex type: use hashCode() but account for possible null -->
-        __result = Util.HASH_PRIME_NUMBER * __result + ((${parameter.name} == null) ? 0 : ${parameter.name}.hashCode());
+        __result = zserio.runtime.Util.HASH_PRIME_NUMBER * __result +
+                ((${parameter.name} == null) ? 0 : ${parameter.name}.hashCode());
     </#if>
 </#macro>

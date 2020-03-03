@@ -27,7 +27,7 @@
     </target>
 
     <target name="run" depends="spotbugs">
-        <testRun testname="indexed_offsets"/>
+        <testRun testName="indexed_offsets"/>
     </target>
 
     <target name="clean">

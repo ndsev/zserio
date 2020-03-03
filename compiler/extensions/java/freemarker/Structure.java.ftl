@@ -4,44 +4,16 @@
 <#include "CompoundFunction.inc.ftl">
 <#include "CompoundField.inc.ftl">
 <#include "RangeCheck.inc.ftl">
-<@standard_header generatorDescription, packageName, [
-        "java.io.IOException",
-        "java.io.File",
-        "zserio.runtime.SizeOf",
-        "zserio.runtime.io.BitStreamReader",
-        "zserio.runtime.io.FileBitStreamReader",
-        "zserio.runtime.ZserioError",
-        "zserio.runtime.Util"
-]/>
-<#if withWriterCode>
-<@imports [
-        "zserio.runtime.io.BitStreamWriter",
-        "zserio.runtime.io.FileBitStreamWriter",
-        "zserio.runtime.io.InitializeOffsetsWriter"
-]/>
-</#if>
+<@standard_header generatorDescription, packageName/>
 <#assign hasFieldWithConstraint=false/>
 <#list fieldList as field>
     <#if field.constraint??>
         <#assign hasFieldWithConstraint=true/>
-<@imports ["zserio.runtime.ConstraintError"]/>
-        <#break>
-    </#if>
-</#list>
-<#list fieldList as field>
-    <#if field.alignmentValue?? || field.offset??>
-<@imports ["zserio.runtime.BitPositionUtil"]/>
-        <#break>
-    </#if>
-</#list>
-<#list fieldList as field>
-    <#if need_field_runtime_function(field)>
-<@imports ["zserio.runtime.BitSizeOfCalculator"]/>
         <#break>
     </#if>
 </#list>
 
-public class ${name} implements <#if withWriterCode>InitializeOffsetsWriter, </#if>SizeOf
+public class ${name} implements <#if withWriterCode>zserio.runtime.io.InitializeOffsetsWriter, </#if>zserio.runtime.SizeOf
 {
     <@compound_constructors compoundConstructorsData/>
 <#if withWriterCode && fieldList?has_content>
@@ -69,15 +41,15 @@ public class ${name} implements <#if withWriterCode>InitializeOffsetsWriter, </#
 <#macro structure_align_field field indent>
     <#local I>${""?left_pad(indent * 4)}</#local>
     <#if field.alignmentValue??>
-${I}__endBitPosition = BitPositionUtil.alignTo(${field.alignmentValue}, __endBitPosition);
+${I}__endBitPosition = zserio.runtime.BitPositionUtil.alignTo(${field.alignmentValue}, __endBitPosition);
     </#if>
     <#if field.offset??>
         <#if field.offset.containsIndex>
             <#-- align to bytes only if the array is non-empty to match read/write behavior -->
 ${I}if (${field.name}.length() > 0)
-${I}    __endBitPosition = BitPositionUtil.alignTo(java.lang.Byte.SIZE, __endBitPosition);
+${I}    __endBitPosition = zserio.runtime.BitPositionUtil.alignTo(java.lang.Byte.SIZE, __endBitPosition);
         <#else>
-${I}__endBitPosition = BitPositionUtil.alignTo(java.lang.Byte.SIZE, __endBitPosition);
+${I}__endBitPosition = zserio.runtime.BitPositionUtil.alignTo(java.lang.Byte.SIZE, __endBitPosition);
         </#if>
     </#if>
 </#macro>
@@ -144,7 +116,7 @@ ${I}__endBitPosition = BitPositionUtil.alignTo(java.lang.Byte.SIZE, __endBitPosi
 </#list>
 <@compound_functions compoundFunctionsData/>
     @Override
-    public boolean equals(Object obj)
+    public boolean equals(java.lang.Object obj)
     {
 <#if compoundParametersData.list?has_content || fieldList?has_content>
         if (obj instanceof ${name})
@@ -174,7 +146,7 @@ ${I}__endBitPosition = BitPositionUtil.alignTo(java.lang.Byte.SIZE, __endBitPosi
     @Override
     public int hashCode()
     {
-        int __result = Util.HASH_SEED;
+        int __result = zserio.runtime.Util.HASH_SEED;
 
 <#list compoundParametersData.list as parameter>
         <@compound_hashcode_parameter parameter/>
@@ -191,7 +163,8 @@ ${I}__endBitPosition = BitPositionUtil.alignTo(java.lang.Byte.SIZE, __endBitPosi
         return __result;
     }
 
-    public void read(final BitStreamReader __in) throws IOException, ZserioError
+    public void read(final zserio.runtime.io.BitStreamReader __in)
+            throws java.io.IOException, zserio.runtime.ZserioError
     {
 <#if fieldList?has_content>
     <#list fieldList as field>
@@ -215,9 +188,9 @@ ${I}__endBitPosition = BitPositionUtil.alignTo(java.lang.Byte.SIZE, __endBitPosi
 ${I}{
 ${I}    final ${field.offset.typeName} __value = <#rt>
             <#if field.offset.requiresBigInt>
-                <#lt>java.math.BigInteger.valueOf(BitPositionUtil.bitsToBytes(__endBitPosition));
+                <#lt>java.math.BigInteger.valueOf(zserio.runtime.BitPositionUtil.bitsToBytes(__endBitPosition));
             <#else>
-                <#lt>(${field.offset.typeName})BitPositionUtil.bitsToBytes(__endBitPosition);
+                <#lt>(${field.offset.typeName})zserio.runtime.BitPositionUtil.bitsToBytes(__endBitPosition);
             </#if>
 ${I}    ${field.offset.setter};
 ${I}}
@@ -250,21 +223,23 @@ ${I}}
     </#if>
     }
 
-    public void write(File __file) throws IOException, ZserioError
+    public void write(java.io.File __file) throws java.io.IOException, zserio.runtime.ZserioError
     {
-        FileBitStreamWriter __out = new FileBitStreamWriter(__file);
+        zserio.runtime.io.FileBitStreamWriter __out = new zserio.runtime.io.FileBitStreamWriter(__file);
         write(__out);
         __out.close();
     }
 
     @Override
-    public void write(BitStreamWriter __out) throws IOException, ZserioError
+    public void write(zserio.runtime.io.BitStreamWriter __out)
+            throws java.io.IOException, zserio.runtime.ZserioError
     {
         write(__out, true);
     }
 
     @Override
-    public void write(BitStreamWriter __out, boolean __callInitializeOffsets) throws IOException, ZserioError
+    public void write(zserio.runtime.io.BitStreamWriter __out, boolean __callInitializeOffsets)
+            throws java.io.IOException, zserio.runtime.ZserioError
     {
     <#if fieldList?has_content>
         <#if hasFieldWithOffset>
@@ -290,7 +265,7 @@ ${I}}
 </#if>
 <#if hasFieldWithConstraint>
 
-    private void __checkConstraints() throws ZserioError
+    private void __checkConstraints() throws zserio.runtime.ZserioError
     {
     <#list fieldList as field>
         <@compound_check_constraint_field field, name, 2/>

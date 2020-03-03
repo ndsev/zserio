@@ -4,40 +4,13 @@
 <#include "CompoundFunction.inc.ftl">
 <#include "CompoundField.inc.ftl">
 <#include "RangeCheck.inc.ftl">
-<@standard_header generatorDescription, packageName, [
-        "java.io.IOException",
-        "java.io.File",
-        "zserio.runtime.SizeOf",
-        "zserio.runtime.io.BitStreamReader",
-        "zserio.runtime.io.FileBitStreamReader",
-        "zserio.runtime.ZserioError",
-        "zserio.runtime.Util"
-]/>
-<#if withWriterCode>
-<@imports [
-        "zserio.runtime.io.BitStreamWriter",
-        "zserio.runtime.io.FileBitStreamWriter",
-        "zserio.runtime.io.InitializeOffsetsWriter"
-]/>
-</#if>
-<#list fieldList as field>
-    <#if field.constraint??>
-<@imports ["zserio.runtime.ConstraintError"]/>
-        <#break>
-    </#if>
-</#list>
-<#list fieldList as field>
-    <#if need_field_runtime_function(field)>
-<@imports ["zserio.runtime.BitSizeOfCalculator"]/>
-        <#break>
-    </#if>
-</#list>
+<@standard_header generatorDescription, packageName/>
 
-public class ${name} implements <#if withWriterCode>InitializeOffsetsWriter, </#if>SizeOf
+public class ${name} implements <#if withWriterCode>zserio.runtime.io.InitializeOffsetsWriter, </#if>zserio.runtime.SizeOf
 {
     <@compound_constructors compoundConstructorsData/>
     @Override
-    public int bitSizeOf() throws ZserioError
+    public int bitSizeOf() throws zserio.runtime.ZserioError
     {
         return bitSizeOf(0);
     }
@@ -81,7 +54,7 @@ ${I}default:
         <@.vars[memberActionMacroName] defaultMember, indent + 1/>
 ${I}    break;
             <#else>
-${I}    throw new ZserioError("No match in choice ${name}: " + ${selectorExpression} + "!");
+${I}    throw new zserio.runtime.ZserioError("No match in choice ${name}: " + ${selectorExpression} + "!");
             </#if>
         </#if>
 ${I}}
@@ -112,7 +85,7 @@ ${I}{
             <#if defaultMember??>
         <@.vars[memberActionMacroName] defaultMember, indent + 1/>
             <#else>
-${I}    throw new ZserioError("No match in choice ${name}: " + ${selectorExpression} + "!");
+${I}    throw new zserio.runtime.ZserioError("No match in choice ${name}: " + ${selectorExpression} + "!");
             </#if>
 ${I}}
         </#if>
@@ -127,7 +100,7 @@ ${I}}
     </#if>
 </#macro>
     @Override
-    public int bitSizeOf(long __bitPosition) throws ZserioError
+    public int bitSizeOf(long __bitPosition) throws zserio.runtime.ZserioError
     {
 <#if fieldList?has_content>
         long __endBitPosition = __bitPosition;
@@ -166,7 +139,7 @@ ${I}}
 </#list>
 <@compound_functions compoundFunctionsData/>
     @Override
-    public boolean equals(Object obj)
+    public boolean equals(java.lang.Object obj)
     {
         if (obj instanceof ${name})
         {
@@ -188,12 +161,13 @@ ${I}}
     @Override
     public int hashCode()
     {
-        int __result = Util.HASH_SEED;
+        int __result = zserio.runtime.Util.HASH_SEED;
 
 <#list compoundParametersData.list as parameter>
         <@compound_hashcode_parameter parameter/>
 </#list>
-        __result = Util.HASH_PRIME_NUMBER * __result + ((__objectChoice == null) ? 0 : __objectChoice.hashCode());
+        __result = zserio.runtime.Util.HASH_PRIME_NUMBER * __result +
+                ((__objectChoice == null) ? 0 : __objectChoice.hashCode());
 
         return __result;
     }
@@ -207,7 +181,8 @@ ${I}}
         <#lt>${I}// empty
     </#if>
 </#macro>
-    public void read(final BitStreamReader __in) throws IOException, ZserioError
+    public void read(final zserio.runtime.io.BitStreamReader __in)
+            throws java.io.IOException, zserio.runtime.ZserioError
     {
 <#if fieldList?has_content>
         <@choice_switch "choice_read_member", 2/>
@@ -229,7 +204,7 @@ ${I}}
 ${I}// empty
     </#if>
 </#macro>
-    public long initializeOffsets(long __bitPosition) throws ZserioError
+    public long initializeOffsets(long __bitPosition) throws zserio.runtime.ZserioError
     {
     <#if fieldList?has_content>
         long __endBitPosition = __bitPosition;
@@ -242,15 +217,16 @@ ${I}// empty
     </#if>
     }
 
-    public void write(File __file) throws IOException, ZserioError
+    public void write(java.io.File __file) throws java.io.IOException, zserio.runtime.ZserioError
     {
-        FileBitStreamWriter __out = new FileBitStreamWriter(__file);
+        zserio.runtime.io.FileBitStreamWriter __out = new zserio.runtime.io.FileBitStreamWriter(__file);
         write(__out);
         __out.close();
     }
 
     @Override
-    public void write(BitStreamWriter __out) throws IOException, ZserioError
+    public void write(zserio.runtime.io.BitStreamWriter __out)
+            throws java.io.IOException, zserio.runtime.ZserioError
     {
         write(__out, true);
     }
@@ -265,7 +241,8 @@ ${I}// empty
     </#if>
 </#macro>
     @Override
-    public void write(BitStreamWriter __out, boolean __callInitializeOffsets) throws IOException, ZserioError
+    public void write(zserio.runtime.io.BitStreamWriter __out, boolean __callInitializeOffsets)
+            throws java.io.IOException, zserio.runtime.ZserioError
     {
     <#if fieldList?has_content>
         <#if hasFieldWithOffset>
@@ -286,5 +263,5 @@ ${I}// empty
 </#list>
 
     <@compound_parameter_members compoundParametersData/>
-    private Object __objectChoice;
+    private java.lang.Object __objectChoice;
 }
