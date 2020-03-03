@@ -8,15 +8,10 @@ class PubsubTest(unittest.TestCase):
         with self.assertRaises(NotImplementedError):
             pubsub.publish("topic", bytes(), None)
 
-    def testReserveId(self):
-        pubsub = PubsubInterface()
-        with self.assertRaises(NotImplementedError):
-            pubsub.reserveId()
-
     def testSubscribe(self):
         pubsub = PubsubInterface()
         with self.assertRaises(NotImplementedError):
-            pubsub.subscribe(0, "topic", None, None)
+            pubsub.subscribe("topic", None, None)
 
     def testUnsubscribe(self):
         pubsub = PubsubInterface()

@@ -419,7 +419,7 @@ class BitStreamReader:
         """
         Reads single bit as a bool value.
 
-        :return: Read bool values.
+        :returns: Read bool values.
         :raises PythonRuntimeException: If the reading goes behind the stream.
         """
 
@@ -429,7 +429,7 @@ class BitStreamReader:
         """
         Reads a bit buffer from the stream.
 
-        :return: Read bit buffer.
+        :returns: Read bit buffer.
         :raises PythonRuntimeException: If the reading goes behind the stream.
         """
 

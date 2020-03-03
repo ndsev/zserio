@@ -5,14 +5,6 @@
 class ${name}:
     def __init__(self, pubsub):
         self._pubsub = pubsub
-<#if hasSubscriptions>
-
-    <#list messageList as message>
-        <#if message.isSubscribed>
-        self._subscribers${message.name?cap_first} = {}
-        </#if>
-    </#list>
-</#if>
 <#list messageList as message>
     <#if message.isPublished>
 
@@ -22,41 +14,22 @@ class ${name}:
     <#if message.isSubscribed>
 
     def subscribe${message.name?cap_first}(self, callback, context=None):
-        subscriptionId = self._pubsub.reserveId()
-        if subscriptionId in self._subscribers${message.name?cap_first}:
-            raise zserio.PubsubException("Pubsub ${name}: Subscription ID '%d' already in use!" %
-                                         subscriptionId)
-        self._subscribers${message.name?cap_first}[subscriptionId] = callback
-        self._pubsub.subscribe(subscriptionId, "${message.topicDefinition}",
-                               self._onRaw${message.name?cap_first}, context)
-        return subscriptionId
+        def onRaw(topic, data):
+            self._onRaw${message.name?cap_first}(callback, topic, data)
+        return self._pubsub.subscribe("${message.topicDefinition}", onRaw, context)
     </#if>
 </#list>
 <#if hasSubscriptions>
 
     def unsubscribe(self, subscriptionId):
-    <#list messageList as message>
-        <#if message.isSubscribed>
-        if subscriptionId in self._subscribers${message.name?cap_first}:
-            self._pubsub.unsubscribe(subscriptionId)
-            self._subscribers${message.name?cap_first}.pop(subscriptionId)
-            return
-        </#if>
-    </#list>
-
-        raise zserio.PubsubException("Pubsub ${name}: Subscription ID '%d' was not subscribed!" %
-                                     subscriptionId)
+        self._pubsub.unsubscribe(subscriptionId)
     <#list messageList as message>
         <#if message.isSubscribed>
 
-    def _onRaw${message.name?cap_first}(self, subscriptionId, topic, data):
+    def _onRaw${message.name?cap_first}(self, callback, topic, data):
         reader = zserio.BitStreamReader(data)
         message = ${message.typeFullName}.fromReader(reader)
-
-        if not subscriptionId in self._subscribers${message.name?cap_first}:
-            raise zserio.PubsubException(("Pubsub ${name}: Unknown subscription ID '%d' for '${message.name}'" +
-                                          "message!") % subscriptionId)
-        self._subscribers${message.name?cap_first}[subscriptionId](topic, message)
+        callback(topic, message)
         </#if>
     </#list>
 </#if>

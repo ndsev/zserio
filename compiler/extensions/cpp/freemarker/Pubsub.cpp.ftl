@@ -24,20 +24,9 @@ void ${name}::publish${message.name?cap_first}(${message.typeFullName}& message,
         const ::std::function<void(const ::std::string&, const ${message.typeFullName}&)>& callback,
         void* context)
 {
-    const ::zserio::IPubsub::SubscriptionId id = m_pubsub.reserveId();
-    const auto result = m_subscribers${message.name?cap_first}.emplace(id, callback);
-    if (!result.second)
-    {
-        throw ::zserio::PubsubException(std::string("Pubsub ${name}: ") +
-                "Subscription ID '" + std::to_string(id) + "' already in use!");
-    }
-
-    const ::std::string topic = "${message.topicDefinition}";
-    const ::zserio::IPubsub::OnTopic rawCallback = ::std::bind(&${name}::onRaw${message.name?cap_first}, this,
-            ::std::placeholders::_1, ::std::placeholders::_2, ::std::placeholders::_3);
-    m_pubsub.subscribe(id, topic, rawCallback, context);
-
-    return id;
+    const ::zserio::IPubsub::OnTopic onRaw = ::std::bind(&${name}::onRaw${message.name?cap_first}, this,
+            callback, ::std::placeholders::_1, ::std::placeholders::_2);
+    return m_pubsub.subscribe("${message.topicDefinition}", onRaw, context);
 }
     </#if>
 </#list>
@@ -45,38 +34,19 @@ void ${name}::publish${message.name?cap_first}(${message.typeFullName}& message,
 
 void ${name}::unsubscribe(::zserio::IPubsub::SubscriptionId id)
 {
-    <#list messageList as message>
-        <#if message.isSubscribed>
-    const auto found${message.name?cap_first} = m_subscribers${message.name?cap_first}.find(id);
-    if (found${message.name?cap_first} != m_subscribers${message.name?cap_first}.end())
-    {
-        m_pubsub.unsubscribe(id);
-        m_subscribers${message.name?cap_first}.erase(found${message.name?cap_first});
-        return;
-    }
-        </#if>
-    </#list>
-
-    throw ::zserio::PubsubException(std::string("Pubsub ${name}: ") +
-            "Subscription ID '" + std::to_string(id) + "' was not subscribed!");
+    m_pubsub.unsubscribe(id);
 }
     <#list messageList as message>
         <#if message.isSubscribed>
 
-void ${name}::onRaw${message.name?cap_first}(::zserio::IPubsub::SubscriptionId id, const ::std::string& topic,
-        const ::std::vector<uint8_t>& data)
+void ${name}::onRaw${message.name?cap_first}(
+        const ::std::function<void(const ::std::string&, const ${message.typeFullName}&)>& callback,
+        const ::std::string& topic, const ::std::vector<uint8_t>& data)
 {
     ::zserio::BitStreamReader reader(data.data(), data.size());
     const ${message.typeFullName} message(reader);
 
-    const auto found = m_subscribers${message.name?cap_first}.find(id);
-    if (found == m_subscribers${message.name?cap_first}.end())
-    {
-        throw ::zserio::PubsubException(std::string("Pubsub ${name}: ") +
-                "Unknown subscription ID '" + std::to_string(id) + "' for '${message.name}' message");
-    }
-
-    found->second(topic, message);
+    callback(topic, message);
 }
         </#if>
      </#list>

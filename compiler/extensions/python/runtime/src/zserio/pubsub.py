@@ -18,35 +18,23 @@ class PubsubInterface:
         """
         raise NotImplementedError()
 
-    def reserveId(self):
-        """
-        Reserves subscription ID for a new subscription.
-
-        The ID is released back to the Pub/Sub once unsubscribe is called.
-
-        :returns: Reserved subscription ID.
-        """
-        raise NotImplementedError()
-
-    def subscribe(self, subscriptionId, topic, callback, context):
+    def subscribe(self, topic, callback, context):
         """
         Subscribes a topic.
 
-        :param id: Subscription ID to use.
         :param topic: Topic definition to subscribe. Note that the definition format depends on the particular
                      Pub/Sub backend implementation and therefore e.g. wildcards can be used only if they are
                      supported by Pub/Sub backend.
         :param callback: Callback to be called when a message with the specified topic arrives.
         :param context: Context specific for a particular Pub/Sub implementation.
+        :returns: Subscription ID.
         :raises PubsubException: If subscribing fails.
         """
         raise NotImplementedError()
 
     def unsubscribe(self, subscriptionId):
         """
-        Unsubscribes the subscription under the given ID (if any) and releases the reserved ID.
-
-        :note: Unsubscribe can be safely called to release the reserved ID even if no subscription was done.
+        Unsubscribes the subscription with the given ID.
 
         :param id: ID of the subscription to be unsubscribed.
         :raise PubsubException: If unsubscribing fails.

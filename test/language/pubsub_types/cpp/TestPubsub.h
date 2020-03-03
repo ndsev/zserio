@@ -11,9 +11,7 @@ class TestPubsub : public zserio::IPubsub
 {
 public:
     void publish(const std::string& topic, const std::vector<uint8_t>& data, void* context) override;
-    SubscriptionId reserveId() override;
-    void subscribe(SubscriptionId id, const std::string& topic, const OnTopic& callback,
-            void *context) override;
+    SubscriptionId subscribe(const std::string& topic, const OnTopic& callback, void *context) override;
     void unsubscribe(SubscriptionId id) override;
 
     struct Context

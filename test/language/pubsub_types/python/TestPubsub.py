@@ -9,24 +9,24 @@ class TestPubsub(zserio.PubsubInterface):
         if context:
             context.seenByPubsub = True
 
-        for subscriptionId, subscription in self._subscriptions.items():
+        for subscription in self._subscriptions.values():
             if subscription["topic"] == topic:
-                subscription["callback"](subscriptionId, topic, data)
+                subscription["callback"](topic, data)
 
-    def reserveId(self):
-        subscriptionId = self._numIds
-        self._numIds += 1
-        return subscriptionId
-
-    def subscribe(self, subscriptionId, topic, callback, context):
+    def subscribe(self, topic, callback, context):
         if context:
             context.seenByPubsub = True
 
+        subscriptionId = self._numIds
+        self._numIds += 1
         self._subscriptions[subscriptionId] = {"topic": topic, "callback": callback}
+        return subscriptionId
 
     def unsubscribe(self, subscriptionId):
-        if subscriptionId in self._subscriptions:
-            self._subscriptions.pop(subscriptionId)
+        if not subscriptionId in self._subscriptions:
+            raise zserio.PubsubException("TestPubsub: Invalid subscription ID '%d'!" % subscriptionId)
+
+        self._subscriptions.pop(subscriptionId)
 
 class TestPubsubContext:
     def __init__(self):

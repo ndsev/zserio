@@ -45,8 +45,9 @@ private:
 <#if hasSubscriptions>
     <#list messageList as message>
         <#if message.isSubscribed>
-    void onRaw${message.name?cap_first}(::zserio::IPubsub::SubscriptionId id, const ::std::string& topic,
-            const ::std::vector<uint8_t>& data);
+    void onRaw${message.name?cap_first}(
+            const ::std::function<void(const ::std::string&, const ${message.typeFullName}&)>& callback,
+            const ::std::string& topic, const ::std::vector<uint8_t>& data);
         </#if>
     </#list>
 
@@ -57,15 +58,6 @@ private:
 
 </#if>
     ::zserio::IPubsub& m_pubsub;
-<#if hasSubscriptions>
-
-    <#list messageList as message>
-        <#if message.isSubscribed>
-    ::std::map<::zserio::IPubsub::SubscriptionId, ::std::function<void(const ::std::string& topic,
-            const ${message.typeFullName}& message)>> m_subscribers${message.name?cap_first};
-        </#if>
-    </#list>
-</#if>
 };
 <@namespace_end package.path/>
 
