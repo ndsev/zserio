@@ -24,34 +24,33 @@ void ${name}::publish${message.name?cap_first}(${message.typeFullName}& message,
         const ::std::function<void(const ::std::string&, const ${message.typeFullName}&)>& callback,
         void* context)
 {
-    const ::zserio::IPubsub::OnTopic onRaw = ::std::bind(&${name}::onRaw${message.name?cap_first}, this,
-            callback, ::std::placeholders::_1, ::std::placeholders::_2);
-    return m_pubsub.subscribe("${message.topicDefinition}", onRaw, context);
+    const ::zserio::IPubsub::OnTopic onRawCallback = ::std::bind(
+            &${name}::onRaw<${message.typeFullName}>,
+            this, callback, ::std::placeholders::_1, ::std::placeholders::_2);
+    return m_pubsub.subscribe("${message.topicDefinition}", onRawCallback, context);
 }
     </#if>
 </#list>
-<#if hasSubscriptions>
+<#if hasSubscribing>
 
 void ${name}::unsubscribe(::zserio::IPubsub::SubscriptionId id)
 {
     m_pubsub.unsubscribe(id);
 }
-    <#list messageList as message>
-        <#if message.isSubscribed>
 
-void ${name}::onRaw${message.name?cap_first}(
-        const ::std::function<void(const ::std::string&, const ${message.typeFullName}&)>& callback,
+template <typename ZSERIO_MESSAGE>
+void ${name}::onRaw(
+        const ::std::function<void(const ::std::string&, const ZSERIO_MESSAGE&)>& callback,
         const ::std::string& topic, const ::std::vector<uint8_t>& data)
 {
     ::zserio::BitStreamReader reader(data.data(), data.size());
-    const ${message.typeFullName} message(reader);
+    const ZSERIO_MESSAGE message(reader);
 
     callback(topic, message);
 }
-        </#if>
-     </#list>
 </#if>
-<#if hasPublifications>
+<#if hasPublishing>
+
 template <typename ZSERIO_MESSAGE>
 void ${name}::publish(ZSERIO_MESSAGE& message, const ::std::string& topic, void* context)
 {

@@ -17,8 +17,8 @@ public class ClientTest
         final MqttClient mqttClient = new MqttClient(host, port);
         final Client client = new Client(mqttClient);
 
-        final Client.CallbackBoolValue booleanResponseCallback =
-            new Client.CallbackBoolValue()
+        final zserio_runtime.PubSubCallback<BoolValue> booleanResponseCallback =
+            new zserio_runtime.PubSubCallback<BoolValue>()
             {
                 public void invoke(String topic, BoolValue value)
                 {
@@ -28,8 +28,8 @@ public class ClientTest
         int booleanResponseId = client.subscribeBooleanResponse(booleanResponseCallback);
         boolean booleanResponseSubscribed = true;
 
-        final Client.CallbackUInt64Value powerOfTwoCallback =
-            new Client.CallbackUInt64Value()
+        final zserio_runtime.PubSubCallback<UInt64Value> powerOfTwoCallback =
+            new zserio_runtime.PubSubCallback<UInt64Value>()
             {
                 public void invoke(String topic, UInt64Value value)
                 {

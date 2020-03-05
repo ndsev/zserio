@@ -97,7 +97,7 @@ public class MqttClient implements PubSubInterface
                     {
                         public void messageArrived(String topic, MqttMessage message)
                         {
-                            callback.invoke(subscriptionId, topic, message.getPayload());
+                            callback.invoke(topic, message.getPayload());
                         }
                     }
                 );

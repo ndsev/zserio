@@ -17,18 +17,18 @@ public class PubsubEmitterTemplateData extends UserTypeTemplateData
         final CppNativeMapper cppTypeMapper = context.getCppNativeMapper();
 
         Iterable<PubsubMessage> messageList = pubsubType.getMessageList();
-        boolean hasPublifications = false;
-        boolean hasSubscriptions = false;
+        boolean hasPublishing = false;
+        boolean hasSubscribing = false;
         for (PubsubMessage message : messageList)
         {
             addHeaderIncludesForType(cppTypeMapper.getCppType(message.getType()));
             final MessageTemplateData templateData = new MessageTemplateData(cppTypeMapper, message);
-            hasPublifications |= templateData.getIsPublished();
-            hasSubscriptions |= templateData.getIsSubscribed();
+            hasPublishing |= templateData.getIsPublished();
+            hasSubscribing |= templateData.getIsSubscribed();
             this.messageList.add(templateData);
         }
-        this.hasPublifications = hasPublifications;
-        this.hasSubscriptions = hasSubscriptions;
+        this.hasPublishing = hasPublishing;
+        this.hasSubscribing = hasSubscribing;
     }
 
     public Iterable<MessageTemplateData> getMessageList()
@@ -36,14 +36,14 @@ public class PubsubEmitterTemplateData extends UserTypeTemplateData
         return messageList;
     }
 
-    public boolean getHasPublifications()
+    public boolean getHasPublishing()
     {
-        return hasPublifications;
+        return hasPublishing;
     }
 
-    public boolean getHasSubscriptions()
+    public boolean getHasSubscribing()
     {
-        return hasSubscriptions;
+        return hasSubscribing;
     }
 
     public static class MessageTemplateData
@@ -90,6 +90,6 @@ public class PubsubEmitterTemplateData extends UserTypeTemplateData
     }
 
     private final List<MessageTemplateData> messageList = new ArrayList<MessageTemplateData>();
-    private final boolean hasPublifications;
-    private final boolean hasSubscriptions;
+    private final boolean hasPublishing;
+    private final boolean hasSubscribing;
 }

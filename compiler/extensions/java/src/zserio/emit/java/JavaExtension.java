@@ -57,13 +57,14 @@ public class JavaExtension implements Extension
         final List<Emitter> emitters = new ArrayList<Emitter>();
         emitters.add(new BitmaskEmitter(extensionParameters, javaParameters));
         emitters.add(new EnumerationEmitter(extensionParameters, javaParameters));
-        emitters.add(new ServiceEmitter(extensionParameters, javaParameters));
         emitters.add(new StructureEmitter(extensionParameters, javaParameters));
         emitters.add(new ChoiceEmitter(extensionParameters, javaParameters));
         emitters.add(new UnionEmitter(extensionParameters, javaParameters));
         emitters.add(new SqlDatabaseEmitter(extensionParameters, javaParameters));
         emitters.add(new SqlTableEmitter(extensionParameters, javaParameters));
         emitters.add(new ConstEmitter(extensionParameters, javaParameters));
+        emitters.add(new ServiceEmitter(extensionParameters, javaParameters));
+        emitters.add(new PubsubEmitter(extensionParameters, javaParameters));
 
         // emit Java code
         for (Emitter javaEmitter: emitters)

@@ -12,7 +12,8 @@ public final class ${name}
             methodMap.put("${method.name}",
                 new Method()
                 {
-                    public byte[] call(byte[] requestData, java.lang.Object context)
+                    @Override
+                    public byte[] invoke(byte[] requestData, java.lang.Object context)
                             throws zserio.runtime.ZserioError
                     {
                         return ${method.name}Method(requestData, context);
@@ -32,7 +33,7 @@ public final class ${name}
                 throw new zserio.runtime.service.ServiceException(
                         "${serviceFullName}: Method '" + methodName + "' does not exist!");
             }
-            return method.call(requestData, context);
+            return method.invoke(requestData, context);
         }
 
         public static java.lang.String serviceFullName()
@@ -71,7 +72,7 @@ public final class ${name}
 
         private interface Method
         {
-            byte[] call(byte[] requestData, java.lang.Object context) throws zserio.runtime.ZserioError;
+            byte[] invoke(byte[] requestData, java.lang.Object context) throws zserio.runtime.ZserioError;
         }
 
         private static final java.lang.String SERVICE_FULL_NAME = "${serviceFullName}";

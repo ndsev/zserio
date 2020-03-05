@@ -1,4 +1,4 @@
-package zserio.emit.python;
+package zserio.emit.java;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -6,7 +6,7 @@ import java.util.List;
 import zserio.ast.PubsubMessage;
 import zserio.ast.PubsubType;
 import zserio.emit.common.ZserioEmitException;
-import zserio.emit.python.types.PythonNativeType;
+import zserio.emit.java.types.JavaNativeType;
 
 public class PubsubEmitterTemplateData extends UserTypeTemplateData
 {
@@ -15,22 +15,20 @@ public class PubsubEmitterTemplateData extends UserTypeTemplateData
     {
         super(context, pubsubType);
 
-        final PythonNativeMapper pythonTypeMapper = context.getPythonNativeMapper();
+        final JavaNativeMapper pythonTypeMapper = context.getJavaNativeMapper();
 
         Iterable<PubsubMessage> messageList = pubsubType.getMessageList();
         boolean hasPublishing = false;
         boolean hasSubscribing = false;
         for (PubsubMessage message : messageList)
         {
-            final MessageTemplateData templateData = new MessageTemplateData(pythonTypeMapper, message, this);
+            final MessageTemplateData templateData = new MessageTemplateData(pythonTypeMapper, message);
             hasPublishing |= templateData.getIsPublished();
             hasSubscribing |= templateData.getIsSubscribed();
             this.messageList.add(templateData);
         }
         this.hasPublishing = hasPublishing;
         this.hasSubscribing = hasSubscribing;
-
-        importPackage("zserio");
     }
 
     public Iterable<MessageTemplateData> getMessageList()
@@ -50,13 +48,12 @@ public class PubsubEmitterTemplateData extends UserTypeTemplateData
 
     public static class MessageTemplateData
     {
-        public MessageTemplateData(PythonNativeMapper typeMapper, PubsubMessage message,
-                ImportCollector importCollector) throws ZserioEmitException
+        public MessageTemplateData(JavaNativeMapper typeMapper, PubsubMessage message)
+                throws ZserioEmitException
         {
             name = message.getName();
             topicDefinition = message.getTopicDefinition();
-            final PythonNativeType pythonType = typeMapper.getPythonType(message.getType());
-            importCollector.importType(pythonType);
+            final JavaNativeType pythonType = typeMapper.getJavaType(message.getType());
             typeFullName = pythonType.getFullName();
             isPublished = message.isPublished();
             isSubscribed = message.isSubscribed();

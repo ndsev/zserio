@@ -10,6 +10,6 @@ public interface PubSubInterface
 
     public interface Callback
     {
-        void invoke(int subscriptionId, String topic, byte[] data);
+        void invoke(String topic, byte[] data);
     };
 };

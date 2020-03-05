@@ -19,7 +19,7 @@ class ${name}:
         return self._pubsub.subscribe("${message.topicDefinition}", onRaw, context)
     </#if>
 </#list>
-<#if hasSubscriptions>
+<#if hasSubscribing>
 
     def unsubscribe(self, subscriptionId):
         self._pubsub.unsubscribe(subscriptionId)
@@ -33,7 +33,7 @@ class ${name}:
         </#if>
     </#list>
 </#if>
-<#if hasPublifications>
+<#if hasPublishing>
 
     def _publish(self, topic, message, context):
         writer = zserio.BitStreamWriter()

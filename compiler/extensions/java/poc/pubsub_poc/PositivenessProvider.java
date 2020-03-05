@@ -28,15 +28,13 @@ public class PositivenessProvider
         final zserio_runtime.PubSubInterface.Callback int32ValueCallback =
                 new zserio_runtime.PubSubInterface.Callback()
                 {
-                    public void invoke(int subscriptionId, String topic, byte[] data)
+                    public void invoke(String topic, byte[] data)
                     {
-                        onRawInt32Value(subscriptionId, topic, data);
+                        onRawInt32Value(callback, topic, data);
                     }
                 };
 
-        final int subscriptionId = client.subscribe(topic, int32ValueCallback, context);
-        subscribersInt32Value.put(subscriptionId, callback);
-        return subscriptionId;
+        return client.subscribe(topic, int32ValueCallback, context);
     }
 
     public void unsubscribeRequest(int subscriptionId)
@@ -45,15 +43,8 @@ public class PositivenessProvider
         subscribersInt32Value.remove(subscriptionId);
     }
 
-    private void onRawInt32Value(int subscriptionId, String topic, byte[] data)
+    private void onRawInt32Value(CallbackInt32Value callback, String topic, byte[] data)
     {
-        final CallbackInt32Value callback = subscribersInt32Value.get(subscriptionId);
-        if (callback == null)
-        {
-            throw new zserio_runtime.PubSubException("pubsub_poc.PositivenessProvider: Unknown subscription '" +
-                    subscriptionId + "' for 'Int32Value'");
-        }
-
         final pubsub_poc.Int32Value object = zserio.runtime.io.ZserioIO.read(pubsub_poc.Int32Value.class, data);
         callback.invoke(topic, object);
     }

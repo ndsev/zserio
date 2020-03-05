@@ -36,23 +36,20 @@ public:
             void* context = nullptr);
     </#if>
 </#list>
-<#if hasSubscriptions>
+<#if hasSubscribing>
 
     void unsubscribe(::zserio::IPubsub::SubscriptionId id);
 </#if>
 
 private:
-<#if hasSubscriptions>
-    <#list messageList as message>
-        <#if message.isSubscribed>
-    void onRaw${message.name?cap_first}(
-            const ::std::function<void(const ::std::string&, const ${message.typeFullName}&)>& callback,
+<#if hasSubscribing>
+    template <typename ZSERIO_MESSAGE>
+    void onRaw(
+            const ::std::function<void(const ::std::string&, const ZSERIO_MESSAGE&)>& callback,
             const ::std::string& topic, const ::std::vector<uint8_t>& data);
-        </#if>
-    </#list>
 
 </#if>
-<#if hasPublifications>
+<#if hasPublishing>
     template <typename ZSERIO_MESSAGE>
     void publish(ZSERIO_MESSAGE& message, const ::std::string& topic, void* context);
 
