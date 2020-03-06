@@ -16,6 +16,7 @@ import zserio.ast.ChoiceType;
 import zserio.ast.Constant;
 import zserio.ast.EnumType;
 import zserio.ast.Package;
+import zserio.ast.PubsubType;
 import zserio.ast.Root;
 import zserio.ast.ServiceType;
 import zserio.ast.SqlDatabaseType;
@@ -155,9 +156,15 @@ public class OverviewEmitter extends DefaultHtmlEmitter
     }
 
     @Override
-    public void beginService(ServiceType service) throws ZserioEmitException
+    public void beginService(ServiceType serviceType) throws ZserioEmitException
     {
-        localTypes.add(service);
+        localTypes.add(serviceType);
+    }
+
+    @Override
+    public void beginPubsub(PubsubType pubsubType) throws ZserioEmitException
+    {
+        localTypes.add(pubsubType);
     }
 
     public Collection<LinkedType> getTypes()

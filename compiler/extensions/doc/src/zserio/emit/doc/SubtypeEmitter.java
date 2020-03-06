@@ -40,10 +40,10 @@ public class SubtypeEmitter extends DefaultHtmlEmitter
             CompoundEmitter ce = new CompoundEmitter(compound);
             containers.add(ce);
         }
-        services.clear();
+        protocols.clear();
         for (ServiceType service : usedByCollector.getUsedByTypes(subtype, ServiceType.class))
         {
-            services.add(new LinkedType(service));
+            protocols.add(new LinkedType(service));
         }
 
         try

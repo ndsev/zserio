@@ -4,6 +4,7 @@ import zserio.ast.BitmaskType;
 import zserio.ast.ChoiceType;
 import zserio.ast.Constant;
 import zserio.ast.EnumType;
+import zserio.ast.PubsubType;
 import zserio.ast.Root;
 import zserio.ast.ServiceType;
 import zserio.ast.SqlDatabaseType;
@@ -21,6 +22,7 @@ public class ContentEmitter extends DefaultHtmlEmitter
     private final SubtypeEmitter subtypeEmitter;
     private final ConstantEmitter constantEmitter;
     private final ServiceEmitter serviceEmitter;
+    private final PubsubEmitter pubsubEmitter;
 
     public ContentEmitter(String outputPath, boolean withSvgDiagrams, UsedByCollector usedByCollector)
     {
@@ -32,6 +34,7 @@ public class ContentEmitter extends DefaultHtmlEmitter
         subtypeEmitter = new SubtypeEmitter(outputPath, withSvgDiagrams, usedByCollector);
         constantEmitter = new ConstantEmitter(outputPath, withSvgDiagrams, usedByCollector);
         serviceEmitter = new ServiceEmitter(outputPath, withSvgDiagrams);
+        pubsubEmitter = new PubsubEmitter(outputPath, withSvgDiagrams);
     }
 
     @Override
@@ -95,8 +98,14 @@ public class ContentEmitter extends DefaultHtmlEmitter
     }
 
     @Override
-    public void beginService(ServiceType service) throws ZserioEmitException
+    public void beginService(ServiceType serviceType) throws ZserioEmitException
     {
-        serviceEmitter.emit(service);
+        serviceEmitter.emit(serviceType);
+    }
+
+    @Override
+    public void beginPubsub(PubsubType pubsubType) throws ZserioEmitException
+    {
+        pubsubEmitter.emit(pubsubType);
     }
 }

@@ -7,6 +7,7 @@ import zserio.ast.BuiltInType;
 import zserio.ast.ChoiceType;
 import zserio.ast.Constant;
 import zserio.ast.ParameterizedTypeInstantiation;
+import zserio.ast.PubsubType;
 import zserio.ast.ServiceType;
 import zserio.ast.EnumType;
 import zserio.ast.StructureType;
@@ -117,6 +118,11 @@ public class LinkedType
             {
                 style = "serviceLink";
                 category += createTitle("Service");
+            }
+            else if (node instanceof PubsubType)
+            {
+                style = "pubsubLink";
+                category += createTitle("Pubsub");
             }
             else if (node instanceof TypeInstantiation) // only when it's a parameterized type
             {
