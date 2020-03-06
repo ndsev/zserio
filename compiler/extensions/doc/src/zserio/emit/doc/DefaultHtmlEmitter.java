@@ -77,7 +77,7 @@ abstract public class DefaultHtmlEmitter extends DefaultDocEmitter
 
     public List<LinkedType> getServices()
     {
-        return services;
+        return protocols;
     }
 
     @Override
@@ -142,7 +142,7 @@ abstract public class DefaultHtmlEmitter extends DefaultDocEmitter
     static volatile Configuration cfg;
 
     protected List<CompoundEmitter> containers = new ArrayList<CompoundEmitter>();
-    protected List<LinkedType> services = new ArrayList<LinkedType>();
+    protected List<LinkedType> protocols = new ArrayList<LinkedType>();
 
     protected File directory;
 

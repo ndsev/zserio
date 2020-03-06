@@ -27,8 +27,8 @@ public:
     Service(Service&&) = default;
     Service& operator=(Service&&) = default;
 
-    virtual void callMethod(const std::string& methodName, const std::vector<uint8_t>& requestData,
-            std::vector<uint8_t>& responseData, void* context = nullptr) override;
+    virtual void callMethod(const ::std::string& methodName, const ::std::vector<uint8_t>& requestData,
+            ::std::vector<uint8_t>& responseData, void* context = nullptr) override;
 
     static const char* serviceFullName() noexcept;
     static const ::std::array<const char*, ${methodList?size}>& methodNames() noexcept;
@@ -41,13 +41,13 @@ private:
 </#list>
 
 <#list methodList as method>
-    void ${method.name}Method(const std::vector<uint8_t>& requestData, std::vector<uint8_t>& responseData,
+    void ${method.name}Method(const ::std::vector<uint8_t>& requestData, ::std::vector<uint8_t>& responseData,
             void* context);
 </#list>
 
 </#if>
-    using Method = std::function<void(const std::vector<uint8_t>&, std::vector<uint8_t>&, void*)>;
-    std::map<std::string, Method> m_methodMap;
+    using Method = ::std::function<void(const ::std::vector<uint8_t>&, ::std::vector<uint8_t>&, void*)>;
+    ::std::map<::std::string, Method> m_methodMap;
 };
 
 class Client

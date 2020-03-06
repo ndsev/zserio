@@ -101,6 +101,16 @@ class CommandLineArguments
     }
 
     /**
+     * Gets whether the Pub/Sub code option is enabled.
+     *
+     * @returns True if command line arguments enable Pub/Sub code option.
+     */
+    public boolean getWithPubsubCode()
+    {
+        return withPubsubCodeOption;
+    }
+
+    /**
      * Gets whether the Service code option is enabled.
      *
      * @returns True if command line arguments enable Service code option.
@@ -231,6 +241,14 @@ class CommandLineArguments
         rangeCheckCodeGroup.setRequired(false);
         options.addOptionGroup(rangeCheckCodeGroup);
 
+        final OptionGroup pubsubCodeGroup = new OptionGroup();
+        option = new Option(OptionNameWithPubsubCode, false, "enable code for Zserio Pub/Sub (default)");
+        pubsubCodeGroup.addOption(option);
+        option = new Option(OptionNameWithoutPubsubCode, false, "disable code for Zseiro Pub/Sub");
+        pubsubCodeGroup.addOption(option);
+        pubsubCodeGroup.setRequired(false);
+        options.addOptionGroup(pubsubCodeGroup);
+
         final OptionGroup serviceCodeGroup = new OptionGroup();
         option = new Option(OptionNameWithServiceCode, false, "enable code for Zserio services (default)");
         serviceCodeGroup.addOption(option);
@@ -300,6 +318,7 @@ class CommandLineArguments
         topLevelPackageName = getOptionValue(OptionNameSetTopLevelPackage);
 
         withRangeCheckCodeOption = hasOption(OptionNameWithRangeCheckCode);
+        withPubsubCodeOption = !hasOption(OptionNameWithoutPubsubCode);
         withServiceCodeOption = !hasOption(OptionNameWithoutServiceCode);
         withSourcesAmalgamationOption = !hasOption(OptionNameWithoutSourcesAmalgamation);
         withSqlCodeOption = !hasOption(OptionNameWithoutSqlCode);
@@ -311,11 +330,17 @@ class CommandLineArguments
         if (!withWriterCodeOption)
         {
             // automatically disable options which are not compatible with withoutWriterCodeOption
+            if (withPubsubCodeOption)
+            {
+                withPubsubCodeOption = false;
+                ZserioToolPrinter.printInfo("Applying '" + OptionNameWithoutPubsubCode + "' because of '" +
+                        OptionNameWithoutWriterCode + "'");
+            }
             if (withServiceCodeOption)
             {
                 withServiceCodeOption = false;
-                ZserioToolPrinter.printInfo("Applying '-" + OptionNameWithoutServiceCode + "' because of '-" +
-                            OptionNameWithoutWriterCode + "'");
+                ZserioToolPrinter.printInfo("Applying '" + OptionNameWithoutServiceCode + "' because of '" +
+                        OptionNameWithoutWriterCode + "'");
             }
         }
     }
@@ -335,6 +360,12 @@ class CommandLineArguments
             {
                 throw new ParseException(
                         "The specified option 'withValidationCode' conflicts with another option: " +
+                        "'withoutWriterCode'");
+            }
+            if (hasOption(OptionNameWithPubsubCode))
+            {
+                throw new ParseException(
+                        "The specified option 'withPubsubCode' conflicts with another option: " +
                         "'withoutWriterCode'");
             }
             if (hasOption(OptionNameWithServiceCode))
@@ -372,6 +403,8 @@ class CommandLineArguments
     private static final String OptionNameSetTopLevelPackage = "setTopLevelPackage";
     private static final String OptionNameWithRangeCheckCode = "withRangeCheckCode";
     private static final String OptionNameWithoutRangeCheckCode = "withoutRangeCheckCode";
+    private static final String OptionNameWithPubsubCode = "withPubsubCode";
+    private static final String OptionNameWithoutPubsubCode = "withoutPubsubCode";
     private static final String OptionNameWithServiceCode = "withServiceCode";
     private static final String OptionNameWithoutServiceCode = "withoutServiceCode";
     private static final String OptionNameWithSourcesAmalgamation = "withSourcesAmalgamation";
@@ -394,6 +427,7 @@ class CommandLineArguments
     private String  topLevelPackageName;
     private boolean versionOption;
     private boolean withRangeCheckCodeOption;
+    private boolean withPubsubCodeOption;
     private boolean withServiceCodeOption;
     private boolean withSourcesAmalgamationOption;
     private boolean withSqlCodeOption;

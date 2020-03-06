@@ -6,6 +6,7 @@ import zserio.ast.Constant;
 import zserio.ast.EnumType;
 import zserio.ast.Import;
 import zserio.ast.Package;
+import zserio.ast.PubsubType;
 import zserio.ast.Root;
 import zserio.ast.ServiceType;
 import zserio.ast.SqlDatabaseType;
@@ -160,4 +161,13 @@ public interface Emitter
      * @throws In case of any internal error of the extension.
      */
     public void beginService(ServiceType service) throws ZserioEmitException;
+
+    /**
+     * Called when PubsubType AST node begins.
+     *
+     * @param pubsub Current PubsubType AST node.
+     *
+     * @throws In case of any internal error of the extension.
+     */
+    public void beginPubsub(PubsubType pubsub) throws ZserioEmitException;
 }

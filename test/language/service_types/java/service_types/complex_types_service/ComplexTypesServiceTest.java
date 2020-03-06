@@ -31,14 +31,14 @@ public class ComplexTypesServiceTest
     public void serviceFullName()
     {
         assertEquals("service_types.complex_types_service.ComplexTypesService",
-                ComplexTypesService.Service.serviceFullName());
+                ComplexTypesService.ComplexTypesServiceService.serviceFullName());
     }
 
     @Test
     public void methodNames()
     {
-        assertEquals("swapModels", ComplexTypesService.Service.methodNames()[0]);
-        assertEquals("getLength", ComplexTypesService.Service.methodNames()[1]);
+        assertEquals("swapModels", ComplexTypesService.ComplexTypesServiceService.methodNames()[0]);
+        assertEquals("getLength", ComplexTypesService.ComplexTypesServiceService.methodNames()[1]);
     }
 
     @Test
@@ -153,7 +153,7 @@ public class ComplexTypesServiceTest
         public short b;
     }
 
-    private static class Service extends ComplexTypesService.Service
+    private static class Service extends ComplexTypesService.ComplexTypesServiceService
     {
         @Override
         public Response swapModelsImpl(Request request, Object context)
@@ -211,7 +211,8 @@ public class ComplexTypesServiceTest
     }
 
     private static final Service service = new Service();
-    private static final ComplexTypesService.Client client = new ComplexTypesService.Client(service);
+    private static final ComplexTypesService.ComplexTypesServiceClient client =
+            new ComplexTypesService.ComplexTypesServiceClient(service);
 
     // note that conversion is slightly inaccurate and therefore this values are carefully chosen
     // to provide consistent results for the test needs

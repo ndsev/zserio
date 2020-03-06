@@ -52,7 +52,7 @@ public class BitmaskEmitter extends DefaultHtmlEmitter
             CompoundEmitter ce = new CompoundEmitter(compound);
             containers.add(ce);
         }
-        services.clear();
+        protocols.clear();
 
         try
         {

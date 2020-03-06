@@ -60,6 +60,10 @@ public class ZserioAstDefaultVisitor implements ZserioAstVisitor
     {}
 
     @Override
+    public void visitPubsubType(PubsubType pubsubType)
+    {}
+
+    @Override
     public void visitField(Field field)
     {}
 
@@ -89,6 +93,10 @@ public class ZserioAstDefaultVisitor implements ZserioAstVisitor
 
     @Override
     public void visitServiceMethod(ServiceMethod serviceMethod)
+    {}
+
+    @Override
+    public void visitPubsubMessage(PubsubMessage pubsubMessage)
     {}
 
     @Override

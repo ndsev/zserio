@@ -6,6 +6,7 @@ import zserio.ast.Constant;
 import zserio.ast.EnumType;
 import zserio.ast.Import;
 import zserio.ast.Package;
+import zserio.ast.PubsubType;
 import zserio.ast.Root;
 import zserio.ast.ServiceType;
 import zserio.ast.SqlDatabaseType;
@@ -79,5 +80,9 @@ public abstract class DefaultEmitter implements Emitter
 
     @Override
     public void beginService(ServiceType service) throws ZserioEmitException
+    {}
+
+    @Override
+    public void beginPubsub(PubsubType pubsub) throws ZserioEmitException
     {}
 }

@@ -13,6 +13,7 @@ import zserio.ast.FixedBitFieldType;
 import zserio.ast.FloatType;
 import zserio.ast.InstantiateType;
 import zserio.ast.PackageName;
+import zserio.ast.PubsubType;
 import zserio.ast.ServiceType;
 import zserio.ast.SqlDatabaseType;
 import zserio.ast.SqlTableType;
@@ -209,6 +210,12 @@ public class PythonNativeMapper
 
         @Override
         public void visitServiceType(ServiceType type)
+        {
+            pythonType = mapUserType(type);
+        }
+
+        @Override
+        public void visitPubsubType(PubsubType type)
         {
             pythonType = mapUserType(type);
         }

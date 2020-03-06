@@ -3,16 +3,17 @@
 
 public final class ${name}
 {
-    public static abstract class Service implements zserio.runtime.service.ServiceInterface
+    public static abstract class ${name}Service implements zserio.runtime.service.ServiceInterface
     {
-        public Service()
+        public ${name}Service()
         {
             methodMap = new java.util.HashMap<java.lang.String, Method>();
 <#list methodList as method>
             methodMap.put("${method.name}",
                 new Method()
                 {
-                    public byte[] call(byte[] requestData, java.lang.Object context)
+                    @Override
+                    public byte[] invoke(byte[] requestData, java.lang.Object context)
                             throws zserio.runtime.ZserioError
                     {
                         return ${method.name}Method(requestData, context);
@@ -32,7 +33,7 @@ public final class ${name}
                 throw new zserio.runtime.service.ServiceException(
                         "${serviceFullName}: Method '" + methodName + "' does not exist!");
             }
-            return method.call(requestData, context);
+            return method.invoke(requestData, context);
         }
 
         public static java.lang.String serviceFullName()
@@ -71,7 +72,7 @@ public final class ${name}
 
         private interface Method
         {
-            byte[] call(byte[] requestData, java.lang.Object context) throws zserio.runtime.ZserioError;
+            byte[] invoke(byte[] requestData, java.lang.Object context) throws zserio.runtime.ZserioError;
         }
 
         private static final java.lang.String SERVICE_FULL_NAME = "${serviceFullName}";
@@ -79,9 +80,9 @@ public final class ${name}
         private final java.util.Map<java.lang.String, Method> methodMap;
     }
 
-    public static final class Client
+    public static final class ${name}Client
     {
-        public Client(zserio.runtime.service.ServiceInterface service)
+        public ${name}Client(zserio.runtime.service.ServiceInterface service)
         {
             this.service = service;
         }

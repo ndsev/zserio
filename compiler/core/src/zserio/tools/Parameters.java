@@ -52,6 +52,11 @@ public interface Parameters
     public boolean getWithRangeCheckCode();
 
     /**
+     * Gets the Pub/Sub code flag.
+     */
+    public boolean getWithPubsubCode();
+
+    /**
      * Gets the service code flag.
      */
     public boolean getWithServiceCode();

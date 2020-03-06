@@ -12,6 +12,7 @@ import zserio.ast.DynamicBitFieldType;
 import zserio.ast.ExternType;
 import zserio.ast.FixedBitFieldType;
 import zserio.ast.PackageName;
+import zserio.ast.PubsubType;
 import zserio.ast.ServiceType;
 import zserio.ast.TypeInstantiation;
 import zserio.ast.ZserioAstDefaultVisitor;
@@ -48,6 +49,7 @@ import zserio.emit.java.types.NativeIntegralType;
 import zserio.emit.java.types.NativeLongArrayType;
 import zserio.emit.java.types.NativeLongType;
 import zserio.emit.java.types.NativeObjectArrayType;
+import zserio.emit.java.types.NativePubsubType;
 import zserio.emit.java.types.NativeServiceType;
 import zserio.emit.java.types.NativeShortArrayType;
 import zserio.emit.java.types.NativeShortType;
@@ -657,6 +659,15 @@ final class JavaNativeMapper
             final PackageName packageName = javaPackageMapper.getPackageName(type);
             final String name = type.getName();
             javaType = new NativeServiceType(packageName, name);
+            javaNullableType = javaType;
+        }
+
+        @Override
+        public void visitPubsubType(PubsubType type)
+        {
+            final PackageName packageName = javaPackageMapper.getPackageName(type);
+            final String name = type.getName();
+            javaType = new NativePubsubType(packageName, name);
             javaNullableType = javaType;
         }
 

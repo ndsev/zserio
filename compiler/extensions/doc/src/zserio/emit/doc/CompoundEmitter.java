@@ -17,6 +17,7 @@ import zserio.ast.CompoundType;
 import zserio.ast.DocComment;
 import zserio.ast.ParameterizedTypeInstantiation;
 import zserio.ast.ParameterizedTypeInstantiation.InstantiatedParameter;
+import zserio.ast.PubsubType;
 import zserio.ast.ServiceType;
 import zserio.ast.ZserioType;
 import zserio.ast.EnumItem;
@@ -278,10 +279,14 @@ public class CompoundEmitter extends DefaultHtmlEmitter
             CompoundEmitter ce = new CompoundEmitter(compound);
             containers.add(ce);
         }
-        services.clear();
+        protocols.clear();
         for (ServiceType service : usedByCollector.getUsedByTypes(compnd, ServiceType.class))
         {
-            services.add(new LinkedType(service));
+            protocols.add(new LinkedType(service));
+        }
+        for (PubsubType pubsub : usedByCollector.getUsedByTypes(compnd, PubsubType.class))
+        {
+            protocols.add(new LinkedType(pubsub));
         }
 
         if (compnd instanceof ChoiceType)

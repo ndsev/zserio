@@ -79,7 +79,8 @@ a.referenceLink
     text-decoration:underline;
 }
 
-a.serviceLink
+a.serviceLink,
+a.pubsubLink
 {
     text-decoration:underline;
     color:brown;

@@ -1,5 +1,7 @@
 set(ZSERIO_GEN_DIR ${CMAKE_CURRENT_BINARY_DIR}/gen)
 set(ZSERIO_GENERATED_SOURCES
+    ${ZSERIO_GEN_DIR}/without_service_code/Pubsub.cpp
+    ${ZSERIO_GEN_DIR}/without_service_code/Pubsub.h
     ${ZSERIO_GEN_DIR}/without_service_code/Response.cpp
     ${ZSERIO_GEN_DIR}/without_service_code/Response.h
     ${ZSERIO_GEN_DIR}/without_service_code/Request.cpp

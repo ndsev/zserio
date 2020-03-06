@@ -48,6 +48,12 @@ public class ExtensionParameters implements Parameters
     }
 
     @Override
+    public boolean getWithPubsubCode()
+    {
+        return commandLineArguments.getWithPubsubCode();
+    }
+
+    @Override
     public boolean getWithServiceCode()
     {
         return commandLineArguments.getWithServiceCode();

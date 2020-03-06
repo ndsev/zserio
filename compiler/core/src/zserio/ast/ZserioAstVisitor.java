@@ -97,6 +97,13 @@ public interface ZserioAstVisitor
     void visitServiceType(ServiceType serviceType);
 
     /**
+     * Visits Pub/Sub definition.
+     *
+     * @param pubsubType Pub/Sub AST node.
+     */
+    void visitPubsubType(PubsubType pubsubType);
+
+    /**
      * Visits field definition.
      *
      * @param field Field AST node.
@@ -151,6 +158,13 @@ public interface ZserioAstVisitor
      * @param serviceMethod Service method AST node.
      */
     void visitServiceMethod(ServiceMethod serviceMethod);
+
+    /**
+     * Visits Pub/Sub message definition.
+     *
+     * @param pubsubMessage Pub/Sub message AST node.
+     */
+    void visitPubsubMessage(PubsubMessage pubsubMessage);
 
     /**
      * Visits function definition.

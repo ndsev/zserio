@@ -26,6 +26,12 @@ public class WithoutServiceCodeTest
         assertTrue(isFilePresent("../gen/without_service_code/Response.java"));
     }
 
+    @Test
+    public void checkPubsub()
+    {
+        assertTrue(isFilePresent("../gen/without_service_code/Pubsub.java"));
+    }
+
     private boolean isFilePresent(String fileName)
     {
         File file = new File(fileName);

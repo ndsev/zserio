@@ -99,7 +99,7 @@ public class ServiceMethod extends DocumentableAstNode
         {
             throw new ParserException(typeReference, "SQL table '" +
                     ZserioTypeUtil.getReferencedFullName(typeReference) +
-                    "' cannot be used in service methods");
+                    "' cannot be used in service methods!");
         }
     }
 

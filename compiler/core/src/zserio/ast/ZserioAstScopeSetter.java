@@ -202,6 +202,24 @@ public class ZserioAstScopeSetter extends ZserioAstWalker
     }
 
     @Override
+    public void visitPubsubType(PubsubType pubsubType)
+    {
+        currentScope = pubsubType.getScope();
+
+        pubsubType.visitChildren(this);
+
+        currentScope = defaultScope;
+    }
+
+    @Override
+    public void visitPubsubMessage(PubsubMessage pubsubMessage)
+    {
+        pubsubMessage.visitChildren(this);
+
+        currentScope.setSymbol(pubsubMessage.getName(), pubsubMessage);
+    }
+
+    @Override
     public void visitFunction(Function function)
     {
         for (Scope expressionScope : expressionScopes)

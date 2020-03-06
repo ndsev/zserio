@@ -13,13 +13,14 @@ public class SimpleServiceTest
     @Test
     public void serviceFullName()
     {
-        assertEquals("service_types.simple_service.SimpleService", SimpleService.Service.serviceFullName());
+        assertEquals("service_types.simple_service.SimpleService",
+                SimpleService.SimpleServiceService.serviceFullName());
     }
 
     @Test
     public void methodNames()
     {
-        assertEquals("powerOfTwo", SimpleService.Service.methodNames()[0]);
+        assertEquals("powerOfTwo", SimpleService.SimpleServiceService.methodNames()[0]);
     }
 
     @Test
@@ -52,7 +53,7 @@ public class SimpleServiceTest
         assertTrue(fakeContext.seenByService);
     }
 
-    private static class Service extends SimpleService.Service
+    private static class Service extends SimpleService.SimpleServiceService
     {
         @Override
         public Response powerOfTwoImpl(Request request, Object context)
@@ -71,5 +72,6 @@ public class SimpleServiceTest
     }
 
     private static final Service service = new Service();
-    private static final SimpleService.Client client = new SimpleService.Client(service);
+    private static final SimpleService.SimpleServiceClient client =
+            new SimpleService.SimpleServiceClient(service);
 }

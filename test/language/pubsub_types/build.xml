@@ -1,0 +1,36 @@
+<project name="pubsub_types" basedir="." default="run">
+    <testProperties testPath="language/pubsub_types" testName="pubsub_types"/>
+
+    <target name="prepare">
+        <testPrepare testName="pubsub_types"/>
+    </target>
+
+    <target name="gen.check" depends="prepare">
+        <testGenCheck testName="pubsub_types"/>
+    </target>
+
+    <target name="gen" depends="gen.check" unless="pubsub_types.zs.gen_is_uptodate">
+        <testGenClean testName="pubsub_types"/>
+        <testGen testName="pubsub_types" zsFile="pubsub_types.zs"/>
+    </target>
+
+    <target name="gen.checkWarnings" depends="gen">
+        <testGenCheckWarnings testName="pubsub_types"/>
+    </target>
+
+    <target name="compile" depends="gen.checkWarnings">
+        <testCompile testName="pubsub_types"/>
+    </target>
+
+    <target name="spotbugs" depends="compile" if="spotbugs.home_dir">
+        <testSpotBugs testName="pubsub_types"/>
+    </target>
+
+    <target name="run" depends="spotbugs">
+        <testRun testName="pubsub_types"/>
+    </target>
+
+    <target name="clean">
+        <testClean testName="pubsub_types"/>
+    </target>
+</project>

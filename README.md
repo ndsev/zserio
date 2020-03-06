@@ -124,7 +124,8 @@ You can find the detailed quick start tutorial in their respective repositories:
 - alignments
 - offsets
 - arrays with indexed offsets
-- generic services
+- [generic services](#services)
+- [Pub/Sub](#pubsub)
 
 ## Documentation
 
@@ -151,7 +152,24 @@ Python users can find more information in the
 
 Check out as well the [Zserio Types Mapping](doc/ZserioTypesMapping.md) for types mapping description.
 
-Do not miss sample implementations of various backends for Zserio generic services:
+### Services
+
+[Service types](doc/ZserioLanguageOverview.md#service-types) allows to define generic service interfaces.
+But note that no underlying communication library is provided by Zserio. Zserio only defines the generic
+interface and users are responsible for its implementation. However Zserio provides sample implementations
+of several services backends:
+
    * [C++ Zserio Service gRPC backend](https://github.com/ndsev/zserio-service-grpc-cpp)
    * [Java Zserio Service RMI backend](https://github.com/ndsev/zserio-service-rmi-java)
    * [Python Zserio Service HTTP backend](https://github.com/ndsev/zserio-service-http-python)
+
+### Pub/Sub
+
+[Pubsub types](doc/ZserioLanguageOverview.md#pubsub-types) allows to define generic
+[Pub/Sub](https://en.wikipedia.org/wiki/Publish%E2%80%93subscribe_pattern) clients.
+Users are responsible for implementation of the generic Pub/Sub client interface provided
+by Zserio.
+
+Note that Zserio doesn't provide any Pub/Sub server. There are various implementations of serves
+(e.g. [mosquitto](https://github.com/eclipse/mosquitto)) and it's the responsibility of the user's Pub/Sub
+client implementation to communicate with the appropriate server.

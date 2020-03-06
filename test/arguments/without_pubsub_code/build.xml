@@ -1,0 +1,38 @@
+<project name="without_pubsub_code" basedir="." default="run">
+    <testProperties testPath="arguments/without_pubsub_code" testName="without_pubsub_code"/>
+
+    <target name="prepare">
+        <testPrepare testName="without_pubsub_code"/>
+    </target>
+
+    <target name="gen.check" depends="prepare">
+        <testGenCheck testName="without_pubsub_code"/>
+    </target>
+
+    <target name="gen" depends="gen.check" unless="without_pubsub_code.zs.gen_is_uptodate">
+        <testGenClean testName="without_pubsub_code"/>
+        <testGen testName="without_pubsub_code" zsFile="without_pubsub_code.zs">
+            <arg name="withoutPubsubCode"/>
+        </testGen>
+    </target>
+
+    <target name="gen.checkWarnings" depends="gen">
+        <testGenCheckWarnings testName="without_pubsub_code"/>
+    </target>
+
+    <target name="compile" depends="gen.checkWarnings">
+        <testCompile testName="without_pubsub_code"/>
+    </target>
+
+    <target name="spotbugs" depends="compile" if="spotbugs.home_dir">
+        <testSpotBugs testName="without_pubsub_code"/>
+    </target>
+
+    <target name="run" depends="spotbugs">
+        <testRun testName="without_pubsub_code"/>
+    </target>
+
+    <target name="clean">
+        <testClean testName="without_pubsub_code"/>
+    </target>
+</project>

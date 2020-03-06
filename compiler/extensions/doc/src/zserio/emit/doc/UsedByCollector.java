@@ -21,6 +21,8 @@ import zserio.ast.Constant;
 import zserio.ast.EnumItem;
 import zserio.ast.EnumType;
 import zserio.ast.Field;
+import zserio.ast.PubsubMessage;
+import zserio.ast.PubsubType;
 import zserio.ast.ServiceMethod;
 import zserio.ast.ServiceType;
 import zserio.ast.SqlDatabaseType;
@@ -115,6 +117,17 @@ public class UsedByCollector extends DefaultEmitter
             addTypeToUsedTypes(method.getResponseType(), usedTypes);
         }
         storeType(serviceType, usedTypes);
+    }
+
+    @Override
+    public void beginPubsub(PubsubType pubsubType)
+    {
+        final List<AstNode> usedTypes = new ArrayList<AstNode>();
+        for (PubsubMessage message : pubsubType.getMessageList())
+        {
+            addTypeToUsedTypes(message.getType(), usedTypes);
+        }
+        storeType(pubsubType, usedTypes);
     }
 
     /**

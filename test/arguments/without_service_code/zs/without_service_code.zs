@@ -14,3 +14,9 @@ service Service
 {
     Response powerOfTwo(Request);
 };
+
+pubsub Pubsub
+{
+    pubsub("test") Request request;
+    pubsub("test") Request response;
+};

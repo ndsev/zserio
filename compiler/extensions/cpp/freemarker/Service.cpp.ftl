@@ -19,8 +19,8 @@ Service::Service() :
 {
 }
 
-void Service::callMethod(const std::string& methodName, const std::vector<uint8_t>& requestData,
-        std::vector<uint8_t>& responseData, void* context)
+void Service::callMethod(const ::std::string& methodName, const ::std::vector<uint8_t>& requestData,
+        ::std::vector<uint8_t>& responseData, void* context)
 {
     auto search = m_methodMap.find(methodName);
     if (search == m_methodMap.end())
@@ -46,8 +46,8 @@ const ::std::array<const char*, ${methodList?size}>& Service::methodNames() noex
 }
 <#list methodList as method>
 
-void Service::${method.name}Method(const std::vector<uint8_t>& requestData, std::vector<uint8_t>& responseData,
-        void* context)
+void Service::${method.name}Method(const ::std::vector<uint8_t>& requestData,
+        ::std::vector<uint8_t>& responseData, void* context)
 {
     ::zserio::BitStreamReader reader(requestData.data(), requestData.size());
     const ${method.requestTypeFullName} request(reader);
@@ -69,11 +69,11 @@ Client::Client(::zserio::IService& service) : m_service(service)
 void Client::${method.name}Method(${method.requestTypeFullName}& request, <#rt>
         <#lt>${method.responseTypeFullName}& response, void* context)
 {
-    std::vector<uint8_t> requestData((request.bitSizeOf() + 7) / 8);
+    ::std::vector<uint8_t> requestData((request.bitSizeOf() + 7) / 8);
     ::zserio::BitStreamWriter writer(requestData.data(), requestData.size());
     request.write(writer);
 
-    std::vector<uint8_t> responseData;
+    ::std::vector<uint8_t> responseData;
     m_service.callMethod("${method.name}", requestData, responseData, context);
 
     ::zserio::BitStreamReader reader(responseData.data(), responseData.size());

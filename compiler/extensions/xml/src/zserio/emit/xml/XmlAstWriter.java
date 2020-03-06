@@ -44,6 +44,8 @@ import zserio.ast.Function;
 import zserio.ast.Import;
 import zserio.ast.InstantiateType;
 import zserio.ast.Parameter;
+import zserio.ast.PubsubMessage;
+import zserio.ast.PubsubType;
 import zserio.ast.Root;
 import zserio.ast.Package;
 import zserio.ast.ServiceMethod;
@@ -220,6 +222,12 @@ public class XmlAstWriter implements ZserioAstVisitor
     }
 
     @Override
+    public void visitPubsubType(PubsubType pubsubType)
+    {
+        visitZserioType(pubsubType, "PUBSUB");
+    }
+
+    @Override
     public void visitField(Field field)
     {
         final Element fieldXmlElement = xmlDoc.createElement("FIELD");
@@ -325,6 +333,19 @@ public class XmlAstWriter implements ZserioAstVisitor
         final Element xmlElement = xmlDoc.createElement("METHOD");
         xmlElement.setAttribute("name", serviceMethod.getName());
         visitAstNode(serviceMethod, xmlElement);
+    }
+
+    @Override
+    public void visitPubsubMessage(PubsubMessage pubsubMessage)
+    {
+        final Element xmlElement = xmlDoc.createElement("MESSAGE");
+        xmlElement.setAttribute("name", pubsubMessage.getName());
+        xmlElement.setAttribute("topic", pubsubMessage.getTopicDefinition());
+        if (pubsubMessage.isPublished())
+            xmlElement.setAttribute("publish", "true");
+        if (pubsubMessage.isSubscribed())
+            xmlElement.setAttribute("subscribe", "true");
+        visitAstNode(pubsubMessage, xmlElement);
     }
 
     @Override

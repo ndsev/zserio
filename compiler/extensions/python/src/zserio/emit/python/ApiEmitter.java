@@ -8,6 +8,7 @@ import zserio.ast.Constant;
 import zserio.ast.EnumType;
 import zserio.ast.Package;
 import zserio.ast.PackageName;
+import zserio.ast.PubsubType;
 import zserio.ast.Root;
 import zserio.ast.ServiceType;
 import zserio.ast.SqlDatabaseType;
@@ -112,6 +113,13 @@ public class ApiEmitter extends PythonDefaultEmitter
     {
         if (getWithServiceCode())
             addModuleMapping(serviceType);
+    }
+
+    @Override
+    public void beginPubsub(PubsubType pubsubType) throws ZserioEmitException
+    {
+        if (getWithPubsubCode())
+            addTypeMapping(pubsubType);
     }
 
     private void addEmptyPackageMapping() throws ZserioEmitException

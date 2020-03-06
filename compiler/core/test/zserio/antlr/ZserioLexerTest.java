@@ -116,6 +116,8 @@ public class ZserioLexerTest
                 "on " +
                 "optional " +
                 "package " +
+                "publish " +
+                "pubsub " +
                 "return " +
                 "service " +
                 "sql " +
@@ -125,6 +127,7 @@ public class ZserioLexerTest
                 "sql_without_rowid " +
                 "string " +
                 "struct " +
+                "subscribe " +
                 "subtype " +
                 "uint16 " +
                 "uint32 " +
@@ -173,6 +176,8 @@ public class ZserioLexerTest
         checkToken(lexer, ZserioLexer.ON);
         checkToken(lexer, ZserioLexer.OPTIONAL);
         checkToken(lexer, ZserioLexer.PACKAGE);
+        checkToken(lexer, ZserioLexer.PUBLISH);
+        checkToken(lexer, ZserioLexer.PUBSUB);
         checkToken(lexer, ZserioLexer.RETURN);
         checkToken(lexer, ZserioLexer.SERVICE);
         checkToken(lexer, ZserioLexer.SQL);
@@ -182,6 +187,7 @@ public class ZserioLexerTest
         checkToken(lexer, ZserioLexer.SQL_WITHOUT_ROWID);
         checkToken(lexer, ZserioLexer.STRING);
         checkToken(lexer, ZserioLexer.STRUCTURE);
+        checkToken(lexer, ZserioLexer.SUBSCRIBE);
         checkToken(lexer, ZserioLexer.SUBTYPE);
         checkToken(lexer, ZserioLexer.UINT16);
         checkToken(lexer, ZserioLexer.UINT32);

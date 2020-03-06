@@ -22,6 +22,10 @@ class WithoutServiceCodeTest(unittest.TestCase):
         self.assertTrue(hasattr(self.api, "Request"))
         self.assertTrue(self._isFilePresent("Request.py"))
 
+    def testCheckPubsub(self):
+        self.assertTrue(hasattr(self.api, "Pubsub"))
+        self.assertTrue(self._isFilePresent("Pubsub.py"))
+
     def _isFilePresent(self, filename):
         fileFullPath = os.path.join(os.path.abspath(os.path.join(self.api.__file__, "..")), filename)
         file = pathlib.Path(fileFullPath)

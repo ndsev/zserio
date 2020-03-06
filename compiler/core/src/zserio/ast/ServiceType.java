@@ -3,14 +3,12 @@ package zserio.ast;
 import java.util.Collections;
 import java.util.List;
 
-import zserio.tools.HashUtil;
-
 /**
  * AST node for service types.
  *
  * Service types are Zserio types as well.
  */
-public class ServiceType extends DocumentableAstNode implements ZserioScopedType, Comparable<ServiceType>
+public class ServiceType extends DocumentableAstNode implements ZserioScopedType
 {
     /**
      * Constructor.
@@ -44,38 +42,6 @@ public class ServiceType extends DocumentableAstNode implements ZserioScopedType
 
         for (ServiceMethod method : methods)
             method.accept(visitor);
-    }
-
-    @Override
-    public int compareTo(ServiceType other)
-    {
-        final int result = getName().compareTo(other.getName());
-        if (result != 0)
-            return result;
-
-        return getPackage().getPackageName().compareTo(other.getPackage().getPackageName());
-    }
-
-    @Override
-    public boolean equals(Object other)
-    {
-        if (this == other)
-            return true;
-
-        if (other instanceof ServiceType)
-            return compareTo((ServiceType)other) == 0;
-
-        return false;
-    }
-
-    @Override
-    public int hashCode()
-    {
-        int hash = HashUtil.HASH_SEED;
-        hash = HashUtil.hash(hash, getName());
-        hash = HashUtil.hash(hash, getPackage().getPackageName());
-
-        return hash;
     }
 
     @Override
