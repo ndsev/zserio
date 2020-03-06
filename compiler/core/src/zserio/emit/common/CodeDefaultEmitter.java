@@ -24,6 +24,7 @@ public abstract class CodeDefaultEmitter extends DefaultEmitter
     {
         this.outPathName = outPathName;
         withRangeCheckCode = extensionParameters.getWithRangeCheckCode();
+        withPubsubCode = extensionParameters.getWithPubsubCode();
         withServiceCode = extensionParameters.getWithServiceCode();
         withSourcesAmalgamation = extensionParameters.getWithSourcesAmalgamation();
         withSqlCode = extensionParameters.getWithSqlCode();
@@ -46,6 +47,11 @@ public abstract class CodeDefaultEmitter extends DefaultEmitter
     protected boolean getWithRangeCheckCode()
     {
         return withRangeCheckCode;
+    }
+
+    protected boolean getWithPubsubCode()
+    {
+        return withPubsubCode;
     }
 
     protected boolean getWithServiceCode()
@@ -126,6 +132,7 @@ public abstract class CodeDefaultEmitter extends DefaultEmitter
 
     private final boolean withRangeCheckCode;
     private final boolean withValidationCode;
+    private final boolean withPubsubCode;
     private final boolean withServiceCode;
     private final boolean withSourcesAmalgamation;
     private final boolean withSqlCode;

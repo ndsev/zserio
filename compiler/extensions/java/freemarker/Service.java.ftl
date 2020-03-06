@@ -3,9 +3,9 @@
 
 public final class ${name}
 {
-    public static abstract class Service implements zserio.runtime.service.ServiceInterface
+    public static abstract class ${name}Service implements zserio.runtime.service.ServiceInterface
     {
-        public Service()
+        public ${name}Service()
         {
             methodMap = new java.util.HashMap<java.lang.String, Method>();
 <#list methodList as method>
@@ -80,9 +80,9 @@ public final class ${name}
         private final java.util.Map<java.lang.String, Method> methodMap;
     }
 
-    public static final class Client
+    public static final class ${name}Client
     {
-        public Client(zserio.runtime.service.ServiceInterface service)
+        public ${name}Client(zserio.runtime.service.ServiceInterface service)
         {
             this.service = service;
         }

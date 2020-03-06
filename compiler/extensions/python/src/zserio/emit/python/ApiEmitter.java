@@ -118,7 +118,7 @@ public class ApiEmitter extends PythonDefaultEmitter
     @Override
     public void beginPubsub(PubsubType pubsubType) throws ZserioEmitException
     {
-        if (getWithServiceCode())
+        if (getWithPubsubCode())
             addTypeMapping(pubsubType);
     }
 

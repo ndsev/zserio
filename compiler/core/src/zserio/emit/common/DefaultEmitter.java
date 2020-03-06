@@ -82,6 +82,7 @@ public abstract class DefaultEmitter implements Emitter
     public void beginService(ServiceType service) throws ZserioEmitException
     {}
 
+    @Override
     public void beginPubsub(PubsubType pubsub) throws ZserioEmitException
     {}
 }

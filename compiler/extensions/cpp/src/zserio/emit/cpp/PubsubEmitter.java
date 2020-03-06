@@ -14,7 +14,7 @@ public class PubsubEmitter extends CppDefaultEmitter
     @Override
     public void beginPubsub(PubsubType pubsubType) throws ZserioEmitException
     {
-        if (!getWithServiceCode())
+        if (!getWithPubsubCode())
             return;
 
         final TemplateDataContext templateDataContext = getTemplateDataContext();

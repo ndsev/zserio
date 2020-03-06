@@ -14,7 +14,7 @@ class PubsubEmitter extends JavaDefaultEmitter
     @Override
     public void beginPubsub(PubsubType pubsubType) throws ZserioEmitException
     {
-        if (!getWithServiceCode())
+        if (!getWithPubsubCode())
             return;
 
         final PubsubEmitterTemplateData templateData = new PubsubEmitterTemplateData(

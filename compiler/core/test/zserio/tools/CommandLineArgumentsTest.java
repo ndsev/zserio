@@ -51,6 +51,34 @@ public class CommandLineArgumentsTest
     }
 
     @Test
+    public void withPubsubCode() throws ParseException
+    {
+        String[] args = { "-withPubsubCode" };
+        assertTrue(parse(args).getWithPubsubCode());
+    }
+
+    @Test
+    public void withoutPubsubCode() throws ParseException
+    {
+        String[] args = { "-withoutPubsubCode" };
+        assertFalse(parse(args).getWithPubsubCode());
+    }
+
+    @Test
+    public void withPubsubCodeDefault() throws ParseException
+    {
+        String[] args = {};
+        assertTrue(parse(args).getWithPubsubCode());
+    }
+
+    @Test(expected=ParseException.class)
+    public void pubsubCodeConflict() throws ParseException
+    {
+        String[] args = { "-withPubsubCode", "-withoutPubsubCode" };
+        parse(args);
+    }
+
+    @Test
     public void withServiceCode() throws ParseException
     {
         String[] args = { "-withServiceCode" };
@@ -176,6 +204,7 @@ public class CommandLineArgumentsTest
         String[] args = { "-withoutWriterCode" };
         CommandLineArguments parsedArgs = parse(args);
         assertFalse(parsedArgs.getWithWriterCode());
+        assertFalse(parsedArgs.getWithPubsubCode()); // auto-disabled
         assertFalse(parsedArgs.getWithServiceCode()); // auto-disabled
     }
 
@@ -197,6 +226,13 @@ public class CommandLineArgumentsTest
     public void withoutWriterCodeWithRangeCheckCodeConflict() throws ParseException
     {
         String[] args = { "-withoutWriterCode", "-withRangeCheckCode" };
+        parse(args);
+    }
+
+    @Test(expected=ParseException.class)
+    public void withoutWriterCodeWithPubsubCodeConflict() throws ParseException
+    {
+        String[] args = { "-withoutWriterCode", "-withPubsubCode" };
         parse(args);
     }
 

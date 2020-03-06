@@ -1,4 +1,4 @@
-package without_service_code;
+package without_pubsub_code;
 
 struct Response
 {

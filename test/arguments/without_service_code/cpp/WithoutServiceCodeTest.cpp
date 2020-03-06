@@ -40,4 +40,12 @@ TEST_F(WithoutServiceCode, checkRequest)
             "arguments/without_service_code/gen/without_service_code/Request.h"));
 }
 
+TEST_F(WithoutServiceCode, checkPubsub)
+{
+    ASSERT_TRUE(isFilePresent(
+            "arguments/without_service_code/gen/without_service_code/Pubsub.cpp"));
+    ASSERT_TRUE(isFilePresent(
+            "arguments/without_service_code/gen/without_service_code/Pubsub.h"));
+}
+
 } // namespace without_service_code
