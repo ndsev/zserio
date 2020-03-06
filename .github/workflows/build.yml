@@ -18,7 +18,7 @@ jobs:
       with:
         java-version: 1.8
     - name: Install dependencies
-      run: sudo apt install doxygen virtualenv
+      run: sudo apt install doxygen virtualenv graphviz
     - name: Build Zserio
       run: scripts/build.sh all-linux64
     - name: Pack Zserio release
