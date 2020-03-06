@@ -253,6 +253,44 @@ struct StructTemplatedTemplateArgument
 ```
 
 -------
+
+**Service Types**
+```
+struct Request
+{
+    int16 value;
+};
+
+struct Response
+{
+    uint32 value;
+};
+
+service Users
+{
+    Response powerOfTwo(Request);
+};
+```
+
+**Pubsub Types**
+```
+struct MessageType
+{
+    string text;
+};
+
+pubsub Provider
+{
+    publish("topic/definition") MessageType message;
+};
+
+pubsub Client
+{
+    subscribe("topic/definition") MessageType message;
+};
+```
+
+-------
 ## SQLite extension
 
 **SQLite Table**
@@ -279,25 +317,5 @@ sql_database TheWorld
     GeoMap africa;
     GeoMap asia;
     GeoMap australia;
-};
-```
-
--------
-
-**Service Types**
-```
-struct Request
-{
-    int16 value;
-};
-
-struct Response
-{
-    uint32 value;
-};
-
-service Users
-{
-    Response powerOfTwo(Request);
 };
 ```

@@ -48,9 +48,11 @@ described in zserio, giving the developer overall control of the data schema use
 
 [Templates](#templates)
 
-[SQLite Extension](#sqlite-extension)
-
 [Service Types](#service-types)
+
+[Pubsub Types](#pubsub-types)
+
+[SQLite Extension](#sqlite-extension)
 
 [Background & History](#background--history)
 
@@ -1473,6 +1475,94 @@ command should be considered very carefully and used only if it's really necessa
 
 [top](#language-guide)
 
+## Service Types
+
+Binary data streams defined by zserio are also good candidates to be used in RPC systems.
+Zserio introduces generic services directly in the language. A service type contains definitions of
+service methods.
+
+**Example**
+```
+struct UserId
+{
+    uint32 id;
+};
+
+struct User
+{
+    uint32 id;
+    string name;
+    string surname;
+    string phoneNumber;
+};
+
+service Users
+{
+    User getUser(UserId);
+};
+```
+
+A service method must have a single response and single request type. When no response or
+request type is needed, an empty structure can be used. Currently only simple unary calls are supported
+by zserio.
+
+### Request and Response Types
+
+The types must be non-parameterized compound types. Parameterized types are not allowed since the parameters
+are not stored in the bit stream. However parameterized types can be still used in the response or request
+types' subtree.
+
+[[top]](#language-guide)
+
+## Pubsub Types
+
+Aside of services, zserio also supports publish-subscribe messaging pattern. The pubsub type defines a Pub/Sub
+client.
+
+**Example**
+```
+pubsub WeatherProvider
+{
+    publish("weather/warnings") WeatherWarning warnings;
+};
+
+pubsub WeatherClient
+{
+    subscribe("weather/warnings") WeatherWarning weatherWarnings;
+};
+
+struct WeatherWarning
+{
+    string warningMessage;
+};
+```
+
+The pubsub defines messages which can be either published or subscribed (or both). The example above defines a
+`WeatherProvider` pubsub type which defines a single message `warnings`, which is published under the topic
+named "weather/warnings" and the type of the message is `WeatherWarnings` structure. Then it defines
+a `WeatherClient` pubsub type which has a single subscription `weatherWarnings` for messages published under
+topic "weather/warnings". The client expects that the type of messages arriving to `weatherWarnings`
+subscription (i.e. published under the defined topic) are of the type `WeatherWarning`.
+
+Pubsub type can define a message in three ways:
+   * `publish("topic/definition") Type message` to publish a message,
+   * `subscribe("topic/definition") Type message` to subscribe a message,
+   * `pubsub("topic/definition") Type message` to both publish and subscribe a message.
+
+### Topic Definition
+
+In the Pub/Sub pattern, it is common to use wildcards for topic definitions in subscriptions. The wildcards
+format depends and a particular implementation. Zserio only provides a generic definition of Pub/Sub clients
+and doesn't manipulate with the topic definition string. It therefore depends on the particular Pub/Sub backend
+whether the wildcards are supported and how. See the
+[MQTT standard](https://docs.oasis-open.org/mqtt/mqtt/v5.0/os/mqtt-v5.0-os.html#_Topic_Names_and)
+as an example of a concrete Pub/Sub pattern specification.
+
+### Message Types
+
+Message type must be a non-parameterized compound type. Parameterized types are not allowed since the parameters
+are not stored in the bit stream. However parameterized types can be still used in the type's subtree.
+
 ## SQLite Extension
 
 ### Motivation
@@ -1772,44 +1862,6 @@ choice                                   | `BLOB`
 union                                    | `BLOB`
 
 [top](#language-guide)
-
-## GRPC Extension
-
-
-### Service types
-
-Binary data streams defined by zserio are also good candidates to be used in RPC systems.
-Zserio introduces generic services directly in the language. A service type contains definitions of
-service methods.
-
-**Example**
-```
-struct UserId
-{
-    uint32 id;
-};
-
-struct User
-{
-    uint32 id;
-    string name;
-    string surname;
-    string phoneNumber;
-};
-
-service Users
-{
-    User getUser(UserId);
-};
-```
-
-A service method must have a single response and single request type while the types must be non-parameterized
-compound types. Parameterized types are not allowed since the parameters are not stored in the bit stream.
-However parameterized types can be still used in the response or request type subtree. When no response or
-request type is needed, an empty structure can be used. Currently only simple unary calls are supported
-by zserio.
-
-[[top]](#language-guide)
 
 ## Background & History
 

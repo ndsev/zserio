@@ -24,7 +24,6 @@ The following shows Zserio compiler command line syntax:
 ```
 java -jar zserio.jar
     [-cpp <output directory>]
-    [-cppStandard <standard>]
     [-doc <output directory>]
     [-h,--help]
     [-java <output directory>]
@@ -35,6 +34,7 @@ java -jar zserio.jar
     [-src <source directory>]
     [-v,--version]
     [-withRangeCheckCode|-withoutRangeCheckCode]
+    [-withPubsubCode|-withoutPubsubCode]
     [-withServiceCode|-withoutServiceCode]
     [-withSourcesAmalgamation|-withoutSourcesAmalgamation]
     [-withSqlCode|-withoutSqlCode]
@@ -55,11 +55,6 @@ and try to read the imported package from `foo\bar.zs`.
 **`-cpp`**
 
 Zserio will generate C++ API into a given output directory.
-
-**`-cppStandard`**
-
-Specifies C++ standard for which Zserio will generate C++ API. If omitted, Zserio will generate API for C++11
-standard. Only C++ standards "c++11" or "c++98" are supported.
 
 **`-doc`**
 
@@ -119,6 +114,11 @@ Shows the version of the Zserio tool.
 
 Enables/disables code for range checking for fields and parameters (integer types only). By default is disabled.
 Note that range checking can be enabled only when writer code is enabled (see `-withWriterCode` option).
+
+**`-withPubsubCode|-withoutPubsubCode`**
+
+Enables/disables generation of code for Pubsub Types. By default is enabled, but note that pubsub types can be
+enabled only when writer code is enabled (see `-withWriterCode` option).
 
 **`-withServiceCode|-withoutServiceCode`**
 
