@@ -5,14 +5,13 @@ import java.util.List;
 
 import zserio.ast.Package;
 import zserio.ast.Scope;
-import zserio.tools.HashUtil;
 
 /**
  * AST abstract node for all Compound types.
  *
  * This is an abstract class for all Compound Zserio types (structure types, choice types, ...).
  */
-public abstract class CompoundType extends TemplatableType implements Comparable<CompoundType>
+public abstract class CompoundType extends TemplatableType
 {
     /**
      * Constructor.
@@ -52,38 +51,6 @@ public abstract class CompoundType extends TemplatableType implements Comparable
 
         for (Function function : functions)
             function.accept(visitor);
-    }
-
-    @Override
-    public int compareTo(CompoundType other)
-    {
-        final int result = getName().compareTo(other.getName());
-        if (result != 0)
-            return result;
-
-        return getPackage().getPackageName().compareTo(other.getPackage().getPackageName());
-    }
-
-    @Override
-    public boolean equals(Object other)
-    {
-        if (this == other)
-            return true;
-
-        if (other instanceof CompoundType)
-            return compareTo((CompoundType)other) == 0;
-
-        return false;
-    }
-
-    @Override
-    public int hashCode()
-    {
-        int hash = HashUtil.HASH_SEED;
-        hash = HashUtil.hash(hash, getName());
-        hash = HashUtil.hash(hash, getPackage().getPackageName());
-
-        return hash;
     }
 
     @Override
