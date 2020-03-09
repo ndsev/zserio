@@ -154,7 +154,7 @@ Check out as well the [Zserio Types Mapping](doc/ZserioTypesMapping.md) for type
 
 ### Services
 
-[Service types](doc/ZserioLanguageOverview.md#service-types) allows to define generic service interfaces.
+[Service types](doc/ZserioLanguageOverview.md#service-types) allow to define generic service interfaces.
 But note that no underlying communication library is provided by Zserio. Zserio only defines the generic
 interface and users are responsible for its implementation. However Zserio provides sample implementations
 of several services backends:
@@ -165,7 +165,7 @@ of several services backends:
 
 ### Pub/Sub
 
-[Pubsub types](doc/ZserioLanguageOverview.md#pubsub-types) allows to define generic
+[Pubsub types](doc/ZserioLanguageOverview.md#pubsub-types) allow to define generic
 [Pub/Sub](https://en.wikipedia.org/wiki/Publish%E2%80%93subscribe_pattern) clients.
 Users are responsible for implementation of the generic Pub/Sub client interface provided
 by Zserio.

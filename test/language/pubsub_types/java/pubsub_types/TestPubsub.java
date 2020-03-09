@@ -9,7 +9,7 @@ public class TestPubsub implements PubsubInterface
 {
     public static class TestPubsubContext
     {
-        public boolean seenByPubsub;
+        public boolean seenByPubsub = false;
     }
 
     @Override

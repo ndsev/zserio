@@ -16,7 +16,7 @@ public:
 
     struct Context
     {
-        bool seenByPubsub;
+        bool seenByPubsub = false;
     };
 
 private:
