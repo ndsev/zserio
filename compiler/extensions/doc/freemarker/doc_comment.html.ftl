@@ -20,7 +20,11 @@
 
                 <#if element.seeTag??>
     <div class="docuTag">
+                    <#if element.seeTag.url??>
         <span>See:</span> <a href="${element.seeTag.url}">${element.seeTag.alias}</a>
+                    <#else>
+        <span>See:</span> ${element.seeTag.alias}
+                    </#if>
     </div>
                 </#if>
 
@@ -47,7 +51,11 @@
         ${docLineElement.docString}
         </#if>
         <#if docLineElement.seeTag??>
+            <#if docLineElement.seeTag.url??>
         <a href="${docLineElement.seeTag.url}">${docLineElement.seeTag.alias}</a>
+            <#else>
+        ${docLineElement.seeTag.alias}
+            </#if>
         </#if>
     </#list>
 </#macro>

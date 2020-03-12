@@ -3,6 +3,7 @@ package zserio.emit.doc;
 import java.util.ArrayList;
 import java.util.List;
 
+import zserio.ast.AstNode;
 import zserio.ast.DocComment;
 import zserio.ast.DocElement;
 import zserio.ast.DocLine;
@@ -204,7 +205,11 @@ public class DocCommentTemplateData
 
             if (linkSymbolReference.getReferencedType() == null)
             {
-                url = DocEmitterTools.getUrlNameFromType(linkSymbolReference.getReferencedSymbol());
+            	final AstNode referencedSymbol = linkSymbolReference.getReferencedSymbol();
+            	if (referencedSymbol != null)
+            		url = DocEmitterTools.getUrlNameFromType(referencedSymbol);
+            	else
+            		url = null; // this can happen if see tag is wrong and could not be resolved
             }
             else
             {
