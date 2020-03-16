@@ -75,6 +75,13 @@ set_global_cpp_variables()
         return 1
     fi
 
+    # Doxygen to use, defaults to "doxygen" if not set
+    DOXYGEN="${DOXYGEN:-doxygen}"
+    if [ ! -f "`which "${DOXYGEN}"`" ] ; then
+        stderr_echo "Cannot find Doxygen! Set DOXYGEN environment variable."
+        return 1
+    fi
+
     GCC_CMAKE_GENERATOR="${GCC_CMAKE_GENERATOR:-Eclipse CDT4 - Unix Makefiles}"
     MSVC_CMAKE_GENERATOR="${MSVC_CMAKE_GENERATOR:-Visual Studio 14 2015}"
 
@@ -111,6 +118,13 @@ set_global_python_variables()
         if [ $? -ne 0 ] ; then
             return 1
         fi
+    fi
+
+    # Dot executable to use, defaults to "dot" if not set
+    DOT="${DOT:-dot}"
+    if [ ! -f "`which "${DOT}"`" ] ; then
+        stderr_echo "Cannot find Dot! Set DOT environment variable."
+        return 1
     fi
 
     # prevent __pycache__ and *.pyc being created in sources directory
@@ -320,10 +334,12 @@ Uses the following environment variables for building:
     CMAKE_EXTRA_ARGS       Extra arguments to CMake. Default is empty string.
     CMAKE_BUILD_OPTIONS    Arguments to be passed by CMake to a native build tool.
     CTEST                  Ctest executable to use. Default is "ctest".
+    DOXYGEN                Doxygen executable to use. Default is 'doxygen".
     JAVAC_BIN              Java compiler executable to use. Default is "javac".
     JAVA_BIN               Java executable to use. Default is "java".
     PYTHON                 Python 3.5+ executable. Default is "python".
     PYTHON_VIRTUALENV      Custom python virtualenv to use. Default is empty string.
+    DOT                    Dot executable to use. Default is "dot".
     FIND                   Bash command find to use. Default is "/usr/bin/find".
     SPOTBUGS_HOME          Home directory of spotbugs tool where lib is located
                            (e.g. /usr/share/spotbugs). If set, spotbugs will be

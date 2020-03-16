@@ -92,7 +92,7 @@ install_python_runtime()
     fi
 
     PYTHONPATH="${PYTHON_RUNTIME_SOURCES}" \
-    sphinx-build -Wa -b html -d . -Dhtml_logo="${ZSERIO_LOGO}" . zserio_apidoc
+    sphinx-build -Wa -b html -d . -Dhtml_logo="${ZSERIO_LOGO}" -Dgraphviz_dot="${DOT}" . zserio_apidoc
     if [ $? -ne 0 ] ; then
         popd > /dev/null
         return 1

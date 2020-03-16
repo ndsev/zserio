@@ -46,7 +46,7 @@ cppcheck_add_custom_command(TARGET ZserioCppRuntime
                             OPTIONS -UZSERIO_STANDARD_TYPES_HEADER)
 
 # build and install doxygen documentation
-find_package(Doxygen)
+find_package(Doxygen REQUIRED)
 add_custom_target(ZserioCppRuntime-doxygen ALL
     ${CMAKE_COMMAND} -E env ZSERIO_CPP_RUNTIME_SOURCES="${CMAKE_CURRENT_SOURCE_DIR}/src"
     ${DOXYGEN_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/doc/doxyfile
