@@ -35,6 +35,10 @@ generate_ant_file()
                 <Method name=\"attachDatabase\"/>
                 <Method name=\"detachDatabases\"/>
             </Or>
+        </Match>
+        <!-- Confusing method names. -->
+        <Match>
+            <Bug code=\"Nm\"/>
         </Match>"
     fi
 
