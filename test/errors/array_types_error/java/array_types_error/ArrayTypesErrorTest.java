@@ -26,10 +26,58 @@ public class ArrayTypesErrorTest
     }
 
     @Test
+    public void implicitArrayBitfieldWithWrongLength()
+    {
+        final String error = "implicit_array_bitfield_with_wrong_length_error.zs:5:14: " +
+                "Implicit arrays are allowed only for types which have fixed size rounded to bytes!";
+        assertTrue(zserioErrors.isPresent(error));
+    }
+
+    @Test
+    public void implicitArrayBool()
+    {
+        final String error = "implicit_array_bool_error.zs:5:14: " +
+                "Implicit arrays are allowed only for types which have fixed size rounded to bytes!";
+        assertTrue(zserioErrors.isPresent(error));
+    }
+
+    @Test
+    public void implicitArrayCompound()
+    {
+        final String error = "implicit_array_compound_error.zs:10:14: " +
+                "Implicit arrays are allowed only for types which have fixed size rounded to bytes!";
+        assertTrue(zserioErrors.isPresent(error));
+    }
+
+    @Test
+    public void implicitArrayDynamicBitfield()
+    {
+        final String error = "implicit_array_dynamic_bitfield_error.zs:6:14: " +
+                "Implicit arrays are allowed only for types which have fixed size rounded to bytes!";
+        assertTrue(zserioErrors.isPresent(error));
+    }
+
+    @Test
     public void implicitArrayNotLast()
     {
         final String error = "implicit_array_not_last_error.zs:5:21: Implicit array must be defined at the " +
                 "end of structure!";
+        assertTrue(zserioErrors.isPresent(error));
+    }
+
+    @Test
+    public void implicitArrayString()
+    {
+        final String error = "implicit_array_string_error.zs:5:14: " +
+                "Implicit arrays are allowed only for types which have fixed size rounded to bytes!";
+        assertTrue(zserioErrors.isPresent(error));
+    }
+
+    @Test
+    public void implicitArrayVarint()
+    {
+        final String error = "implicit_array_varint_error.zs:5:14: " +
+                "Implicit arrays are allowed only for types which have fixed size rounded to bytes!";
         assertTrue(zserioErrors.isPresent(error));
     }
 

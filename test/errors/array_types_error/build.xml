@@ -13,7 +13,15 @@
         <testGenClean testName="array_types_error"/>
         <testGen testName="array_types_error" zsFile="array_length_field_not_available_error.zs"
             ignoreErrors="true"/>
+        <testGen testName="array_types_error" zsFile="implicit_array_bitfield_with_wrong_length_error.zs"
+            ignoreErrors="true"/>
+        <testGen testName="array_types_error" zsFile="implicit_array_bool_error.zs" ignoreErrors="true"/>
+        <testGen testName="array_types_error" zsFile="implicit_array_compound_error.zs" ignoreErrors="true"/>
+        <testGen testName="array_types_error" zsFile="implicit_array_dynamic_bitfield_error.zs"
+            ignoreErrors="true"/>
         <testGen testName="array_types_error" zsFile="implicit_array_not_last_error.zs" ignoreErrors="true"/>
+        <testGen testName="array_types_error" zsFile="implicit_array_string_error.zs" ignoreErrors="true"/>
+        <testGen testName="array_types_error" zsFile="implicit_array_varint_error.zs" ignoreErrors="true"/>
         <testGen testName="array_types_error" zsFile="implicit_array_with_length_error.zs" ignoreErrors="true"/>
         <testGen testName="array_types_error" zsFile="implicit_array_with_indexed_offsets_error.zs"
                 ignoreErrors="true"/>

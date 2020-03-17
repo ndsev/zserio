@@ -101,6 +101,12 @@ public class ArrayInstantiation extends TypeInstantiation
     @Override
     void check()
     {
+        if (!checkImplicitArrayElementType())
+        {
+            throw new ParserException(elementTypeInstantiation,
+                    "Implicit arrays are allowed only for types which have fixed size rounded to bytes!");
+        }
+
         // check length expression
         if (lengthExpression != null)
         {
@@ -110,6 +116,22 @@ public class ArrayInstantiation extends TypeInstantiation
                         "Invalid length expression for array. Length must be integer!");
             }
         }
+    }
+
+    private boolean checkImplicitArrayElementType()
+    {
+        if (!isImplicit)
+            return true;
+
+        final ZserioType elementBaseType = getElementTypeInstantiation().getBaseType();
+        if (elementBaseType instanceof FixedSizeType)
+        {
+            final int bitSize = ((FixedSizeType)elementBaseType).getBitSize();
+            if ((bitSize % 8) == 0)
+                return true;
+        }
+
+        return false;
     }
 
     private final TypeInstantiation elementTypeInstantiation;
