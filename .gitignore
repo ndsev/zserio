@@ -10,17 +10,6 @@
 # local environment setup
 /scripts/build-env.sh
 
-# Eclipse project files
-.project
-
 # Python bytecode
 __pycache__
 
-# Eclipse Python project files
-.pydevproject
-
-# Eclipse classpath files
-.classpath
-
-# temp
-/temp/
