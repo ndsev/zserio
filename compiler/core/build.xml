@@ -172,7 +172,7 @@ spotbugs.home_dir       - Location of the spotbugs tool. If not set, spotbugs is
             <sourcePath>
                 <dirset dir="${zserio_core.src_dir}"/>
             </sourcePath>
-            <fileset dir="${zserio_core.classes_dir}"/>
+            <class location="${zserio_core.jar_file}"/>
             <auxClasspath>
                 <fileset refid="3rdparty.jar_files_ref"/>
             </auxClasspath>
@@ -214,6 +214,7 @@ spotbugs.home_dir       - Location of the spotbugs tool. If not set, spotbugs is
                 <dirset dir="${zserio_core.test.src_dir}"/>
             </sourcePath>
             <fileset dir="${zserio_core.test.classes_dir}"/>
+            <class location="${zserio_core.jar_file}"/>
             <auxClasspath>
                 <fileset file="${3rdparty.junit.jar_file}"/>
                 <fileset file="${zserio_core.jar_file}"/>
