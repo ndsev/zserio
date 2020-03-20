@@ -222,7 +222,7 @@ protected:
         const size_t arraySize = array.size();
         const size_t unalignedBitSize = elementBitSize * arraySize;
         const size_t alignedBitSize = (arraySize > 0) ? elementBitSize +
-                alignTo(NUM_BITS_PER_BYTE, elementBitSize) * (arraySize - 1) : 0;
+                alignTo(8, elementBitSize) * (arraySize - 1) : 0;
         testArray(arrayTraits, array, unalignedBitSize, alignedBitSize);
     }
 
@@ -390,18 +390,29 @@ private:
         EXPECT_EQ(array, alignedAutoReadArray);
     }
 
-    template <typename ARRAY_TRAITS, typename ARRAY_READ_TRAITS>
+    template <typename ARRAY_TRAITS, typename ARRAY_READ_TRAITS,
+            typename std::enable_if<ARRAY_TRAITS::IS_BITSIZEOF_CONSTANT, int>::type = 0>
     void testReadImplicit(const ARRAY_TRAITS& arrayTraits, const ARRAY_READ_TRAITS& arrayReadTraits,
             std::vector<typename ARRAY_TRAITS::type>& array)
     {
+        if (arrayTraits.bitSizeOf() % 8 != 0)
+            return; // implicit array allowed for types with constant bitsize rounded to bytes
+
         BitStreamWriter writer(m_byteBuffer, BUFFER_SIZE);
         zserio::write(arrayTraits, array, writer);
         const size_t implicitByteSize = writer.getBitPosition() / 8;
         BitStreamReader reader(m_byteBuffer, implicitByteSize);
         std::vector<typename ARRAY_TRAITS::type> implicitReadArray;
         zserio::readImplicit(arrayReadTraits, implicitReadArray, reader);
-        for (size_t i = 0; i < implicitReadArray.size(); ++i)
-            EXPECT_EQ(array[i], implicitReadArray[i]);
+        EXPECT_EQ(array, implicitReadArray);
+    }
+
+    template <typename ARRAY_TRAITS, typename ARRAY_READ_TRAITS,
+            typename std::enable_if<!ARRAY_TRAITS::IS_BITSIZEOF_CONSTANT, int>::type = 0>
+    void testReadImplicit(const ARRAY_TRAITS&, const ARRAY_READ_TRAITS&,
+            std::vector<typename ARRAY_TRAITS::type>&)
+    {
+        // implicit array not allowed for types with non-constant bitsize, so skip the test
     }
 
     template <typename ARRAY_TRAITS>
@@ -745,7 +756,7 @@ TEST_F(ArraysTest, objectArray)
     {
         const size_t bitSize = array[i].bitSizeOf();
         unalignedBitSize += bitSize;
-        alignedBitSize += (i == 0) ? bitSize : alignTo(NUM_BITS_PER_BYTE, bitSize);
+        alignedBitSize += (i == 0) ? bitSize : alignTo(8, bitSize);
     }
     testArrayInitializeElements(ObjectArrayTraits<DummyObject>(), array);
     testArray(ObjectArrayTraits<DummyObject>(),

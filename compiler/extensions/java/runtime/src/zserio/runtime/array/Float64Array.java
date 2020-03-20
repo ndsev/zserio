@@ -47,7 +47,7 @@ public class Float64Array extends NumericArrayBase<Double>
     public Float64Array(BitStreamReader reader, int length, OffsetChecker checker)
             throws IOException, ZserioError
     {
-        readImpl(reader, length, 0, checker);
+        readImpl(reader, length, 64, checker);
     }
 
     /**

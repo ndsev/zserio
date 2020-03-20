@@ -46,7 +46,7 @@ public class BoolArray extends NumericArrayBase<Boolean>
     public BoolArray(BitStreamReader reader, int length, OffsetChecker checker)
             throws IOException, ZserioError
     {
-        readImpl(reader, length, 0, checker);
+        readImpl(reader, length, 1, checker);
     }
 
     /**

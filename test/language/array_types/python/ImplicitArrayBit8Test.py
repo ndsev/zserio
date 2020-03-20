@@ -3,23 +3,23 @@ import zserio
 
 from testutils import getZserioApi
 
-class ImplicitArrayTest(unittest.TestCase):
+class ImplicitArrayBit8Test(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        cls.api = getZserioApi(__file__, "array_types.zs").implicit_array
+        cls.api = getZserioApi(__file__, "array_types.zs").implicit_array_bit8
 
     def testBitSizeOf(self):
         numElements = 44
-        uint8Array = list(range(numElements))
-        implicitArray = self.api.ImplicitArray.fromFields(uint8Array)
+        array = list(range(numElements))
+        implicitArray = self.api.ImplicitArray.fromFields(array)
         bitPosition = 2
         implicitArrayBitSize = numElements * 8
         self.assertEqual(implicitArrayBitSize, implicitArray.bitSizeOf(bitPosition))
 
     def testInitializeOffsets(self):
         numElements = 66
-        uint8Array = list(range(numElements))
-        implicitArray = self.api.ImplicitArray.fromFields(uint8Array)
+        array = list(range(numElements))
+        implicitArray = self.api.ImplicitArray.fromFields(array)
         bitPosition = 2
         expectedEndBitPosition = bitPosition + numElements * 8
         self.assertEqual(expectedEndBitPosition, implicitArray.initializeOffsets(bitPosition))
@@ -27,28 +27,28 @@ class ImplicitArrayTest(unittest.TestCase):
     def testRead(self):
         numElements = 99
         writer = zserio.BitStreamWriter()
-        ImplicitArrayTest._writeImplicitArrayToStream(writer, numElements)
+        ImplicitArrayBit8Test._writeImplicitArrayToStream(writer, numElements)
         reader = zserio.BitStreamReader(writer.getByteArray())
         implicitArray = self.api.ImplicitArray.fromReader(reader)
 
-        uint8Array = implicitArray.getUint8Array()
-        self.assertEqual(numElements, len(uint8Array))
+        array = implicitArray.getArray()
+        self.assertEqual(numElements, len(array))
         for i in range(numElements):
-            self.assertEqual(i, uint8Array[i])
+            self.assertEqual(i, array[i])
 
     def testWrite(self):
         numElements = 55
-        uint8Array = list(range(numElements))
-        implicitArray = self.api.ImplicitArray.fromFields(uint8Array)
+        array = list(range(numElements))
+        implicitArray = self.api.ImplicitArray.fromFields(array)
         writer = zserio.BitStreamWriter()
         implicitArray.write(writer)
 
         reader = zserio.BitStreamReader(writer.getByteArray())
         readImplicitArray = self.api.ImplicitArray.fromReader(reader)
-        readUint8Array = readImplicitArray.getUint8Array()
-        self.assertEqual(numElements, len(readUint8Array))
+        readArray = readImplicitArray.getArray()
+        self.assertEqual(numElements, len(readArray))
         for i in range(numElements):
-            self.assertEqual(i, readUint8Array[i])
+            self.assertEqual(i, readArray[i])
 
     @staticmethod
     def _writeImplicitArrayToStream(writer, numElements):

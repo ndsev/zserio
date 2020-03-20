@@ -491,6 +491,15 @@ class BitStreamReader:
         if offset != 0:
             self.setBitPosition(self._bitPosition + alignment - offset)
 
+    def getBufferBitSize(self):
+        """
+        Gets size of the underlying buffer in bits.
+
+        :returns: Buffer bit size.
+        """
+
+        return self._bitSize
+
 VARINT_SIGN_1 = 0x80
 VARINT_BYTE_1 = 0x3f
 VARINT_BYTE_N = 0x7f

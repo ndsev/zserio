@@ -250,6 +250,13 @@ public:
      */
     void alignTo(size_t alignment);
 
+    /**
+     * Gets size of the underlying buffer in bits.
+     *
+     * \return Buffer bit size.
+     */
+    size_t getBufferBitSize() const { return m_context.bufferBitSize; }
+
 private:
     ReaderContext m_context;
 };

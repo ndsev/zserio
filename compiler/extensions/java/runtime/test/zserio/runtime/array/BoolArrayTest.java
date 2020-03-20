@@ -201,10 +201,7 @@ public class BoolArrayTest
         final ByteArrayBitStreamReader in = new ByteArrayBitStreamReader(baos.toByteArray());
         boolArray = new BoolArray(in, 1);
         assertEquals(1, boolArray.length());
-        /*
-         * Compare with 1.875 because of the float writing instead of float16.
-         */
-        assertFalse(false);
+        assertFalse(boolArray.elementAt(0));
     }
 
     @Test

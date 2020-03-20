@@ -9,6 +9,7 @@ from zserio.bitbuffer import BitBuffer
 from zserio.bitreader import BitStreamReader
 from zserio.bitsizeof import getBitSizeOfVarUInt64
 from zserio.bitwriter import BitStreamWriter
+from zserio import PythonRuntimeException
 
 class ArrayTest(unittest.TestCase):
 
@@ -280,38 +281,37 @@ class ArrayTest(unittest.TestCase):
         writer = BitStreamWriter()
         array.write(writer)
         reader = BitStreamReader(writer.getByteArray())
-        emptyArray = Array(arrayTraits)
-        emptyArray.read(reader, len(array.getRawArray()))
-        self.assertEqual(array, emptyArray)
+        readArray = Array(arrayTraits)
+        readArray.read(reader, len(array.getRawArray()))
+        self.assertEqual(array, readArray)
 
         autoArray = Array(arrayTraits, arrayValues, isAuto=True)
         writer = BitStreamWriter()
         autoArray.write(writer)
         reader = BitStreamReader(writer.getByteArray())
-        emptyAutoArray = Array(arrayTraits, isAuto=True)
-        emptyAutoArray.read(reader, len(autoArray.getRawArray()))
-        self.assertEqual(autoArray, emptyAutoArray)
+        readAutoArray = Array(arrayTraits, isAuto=True)
+        readAutoArray.read(reader, len(autoArray.getRawArray()))
+        self.assertEqual(autoArray, readAutoArray)
 
         alignedArray = Array(arrayTraits, arrayValues, checkOffsetMethod=_checkOffsetMethod)
         writer = BitStreamWriter()
         alignedArray.write(writer)
         reader = BitStreamReader(writer.getByteArray())
-        emptyAlignedArray = Array(arrayTraits, checkOffsetMethod=_checkOffsetMethod)
-        emptyAlignedArray.read(reader, len(alignedArray.getRawArray()))
-        self.assertEqual(alignedArray, emptyAlignedArray)
+        readAlignedArray = Array(arrayTraits, checkOffsetMethod=_checkOffsetMethod)
+        readAlignedArray.read(reader, len(alignedArray.getRawArray()))
+        self.assertEqual(alignedArray, readAlignedArray)
 
-        implicitArray = Array(arrayTraits, arrayValues, isImplicit=True)
-        writer = BitStreamWriter()
-        implicitArray.write(writer)
-        reader = BitStreamReader(writer.getByteArray())
-        emptyImplicitArray = Array(arrayTraits, isImplicit=True)
-        emptyImplicitArray.read(reader)
-
-        # read implicit array can be bigger (for example, BoolArray)
-        implicitRawArray = implicitArray.getRawArray()
-        emptyImplicitRawArray = emptyImplicitArray.getRawArray()
-        for index, implicitRawArrayElement in enumerate(implicitRawArray):
-            self.assertEqual(implicitRawArrayElement, emptyImplicitRawArray[index])
+        if arrayTraits.HAS_BITSIZEOF_CONSTANT and arrayTraits.bitSizeOf() % 8 == 0:
+            implicitArray = Array(arrayTraits, arrayValues, isImplicit=True)
+            writer = BitStreamWriter()
+            implicitArray.write(writer)
+            reader = BitStreamReader(writer.getByteArray())
+            readImplicitArray = Array(arrayTraits, isImplicit=True)
+            readImplicitArray.read(reader)
+            self.assertEqual(implicitArray, readImplicitArray)
+        elif not arrayTraits.HAS_BITSIZEOF_CONSTANT:
+            with self.assertRaises(PythonRuntimeException):
+                Array(arrayTraits, isImplicit=True).read(reader)
 
     def _testWrite(self, arrayTraits, arrayValues, expectedBitSize, expectedAlignedBitSize):
         def _checkOffsetMethod(_index, _bitOffset):

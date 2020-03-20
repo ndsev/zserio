@@ -18,8 +18,20 @@ set(ZSERIO_GENERATED_SOURCES
     ${ZSERIO_GEN_DIR}/array_types/fixed_array/FixedArray.cpp
     ${ZSERIO_GEN_DIR}/array_types/fixed_array/FixedArray.h
 
-    ${ZSERIO_GEN_DIR}/array_types/implicit_array/ImplicitArray.cpp
-    ${ZSERIO_GEN_DIR}/array_types/implicit_array/ImplicitArray.h
+    ${ZSERIO_GEN_DIR}/array_types/implicit_array_bit8/ImplicitArray.cpp
+    ${ZSERIO_GEN_DIR}/array_types/implicit_array_bit8/ImplicitArray.h
+
+    ${ZSERIO_GEN_DIR}/array_types/implicit_array_int24/ImplicitArray.cpp
+    ${ZSERIO_GEN_DIR}/array_types/implicit_array_int24/ImplicitArray.h
+
+    ${ZSERIO_GEN_DIR}/array_types/implicit_array_float16/ImplicitArray.cpp
+    ${ZSERIO_GEN_DIR}/array_types/implicit_array_float16/ImplicitArray.h
+
+    ${ZSERIO_GEN_DIR}/array_types/implicit_array_uint8/ImplicitArray.cpp
+    ${ZSERIO_GEN_DIR}/array_types/implicit_array_uint8/ImplicitArray.h
+
+    ${ZSERIO_GEN_DIR}/array_types/implicit_array_uint64/ImplicitArray.cpp
+    ${ZSERIO_GEN_DIR}/array_types/implicit_array_uint64/ImplicitArray.h
 
     ${ZSERIO_GEN_DIR}/array_types/subtyped_builtin_auto_array/ArrayElement.h
     ${ZSERIO_GEN_DIR}/array_types/subtyped_builtin_auto_array/SubtypedBuiltinAutoArray.cpp
@@ -51,7 +63,11 @@ add_test_sources(
     ${ZSERIO_CPP_DIR}/AutoArrayRecursionTest.cpp
     ${ZSERIO_CPP_DIR}/AutoArrayTest.cpp
     ${ZSERIO_CPP_DIR}/FixedArrayTest.cpp
-    ${ZSERIO_CPP_DIR}/ImplicitArrayTest.cpp
+    ${ZSERIO_CPP_DIR}/ImplicitArrayBit8Test.cpp
+    ${ZSERIO_CPP_DIR}/ImplicitArrayInt24Test.cpp
+    ${ZSERIO_CPP_DIR}/ImplicitArrayFloat16Test.cpp
+    ${ZSERIO_CPP_DIR}/ImplicitArrayUInt8Test.cpp
+    ${ZSERIO_CPP_DIR}/ImplicitArrayUInt64Test.cpp
     ${ZSERIO_CPP_DIR}/SubtypedBuiltinAutoArrayTest.cpp
     ${ZSERIO_CPP_DIR}/SubtypedStructVariableArrayTest.cpp
     ${ZSERIO_CPP_DIR}/VariableArrayTest.cpp

@@ -276,4 +276,11 @@ public interface BitStreamReader extends BitStreamCloseable
      * @throws IOException If the alignment failed.
      */
     void alignTo(final int alignVal) throws IOException;
+
+    /**
+     * Gets size of the underlying buffer in bits.
+     *
+     * @return Buffer bit size.
+     */
+    long getBufferBitSize();
 }

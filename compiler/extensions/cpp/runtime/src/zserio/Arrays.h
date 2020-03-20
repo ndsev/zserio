@@ -74,14 +74,14 @@ size_t bitSizeOfAligned(const ARRAY_TRAITS& arrayTraits, const std::vector<typen
     if (ARRAY_TRAITS::IS_BITSIZEOF_CONSTANT && arraySize > 0)
     {
         const size_t elementBitSize = arrayTraits.bitSizeOf(bitPosition, array.at(0));
-        endBitPosition = alignTo(NUM_BITS_PER_BYTE, endBitPosition);
-        endBitPosition += (arraySize - 1) * alignTo(NUM_BITS_PER_BYTE, elementBitSize) + elementBitSize;
+        endBitPosition = alignTo(8, endBitPosition);
+        endBitPosition += (arraySize - 1) * alignTo(8, elementBitSize) + elementBitSize;
     }
     else
     {
         for (const typename ARRAY_TRAITS::type& element : array)
         {
-            endBitPosition = alignTo(NUM_BITS_PER_BYTE, endBitPosition);
+            endBitPosition = alignTo(8, endBitPosition);
             endBitPosition += arrayTraits.bitSizeOf(endBitPosition, element);
         }
     }
@@ -172,7 +172,7 @@ size_t initializeOffsetsAligned(const ARRAY_TRAITS& arrayTraits,
     // can't use 'typename ARRAY_TRAITS::type&' because std::vector<bool> returns rvalue
     for (auto&& element : array)
     {
-        endBitPosition = alignTo(NUM_BITS_PER_BYTE, endBitPosition);
+        endBitPosition = alignTo(8, endBitPosition);
         offsetInitializer.initializeOffset(index, bitsToBytes(endBitPosition));
         endBitPosition = arrayTraits.initializeOffsets(endBitPosition, element);
         index++;
@@ -251,7 +251,7 @@ void readAligned(const ARRAY_TRAITS& arrayTraits, std::vector<typename ARRAY_TRA
     array.reserve(size);
     for (size_t index = 0; index < size; ++index)
     {
-        in.alignTo(NUM_BITS_PER_BYTE);
+        in.alignTo(8);
         offsetChecker.checkOffset(index, bitsToBytes(in.getBitPosition()));
         arrayTraits.read(array, in, index);
     }
@@ -269,7 +269,7 @@ void readAuto(const ARRAY_TRAITS& arrayTraits, std::vector<typename ARRAY_TRAITS
         BitStreamReader& in)
 {
     const uint64_t arraySize = in.readVarUInt64();
-    read<ARRAY_TRAITS>(arrayTraits, array, in, convertVarUInt64ToArraySize(arraySize));
+    read(arrayTraits, array, in, convertVarUInt64ToArraySize(arraySize));
 }
 
 /**
@@ -299,24 +299,10 @@ template <typename ARRAY_TRAITS>
 void readImplicit(const ARRAY_TRAITS& arrayTraits, std::vector<typename ARRAY_TRAITS::type>& array,
         BitStreamReader& in)
 {
-    array.clear();
-    BitStreamReader::BitPosType bitPosition;
-    // we must read until end of the stream because we don't know element sizes
-    while (true)
-    {
-        bitPosition = in.getBitPosition();
-        const size_t index = array.size();
-        try
-        {
-            arrayTraits.read(array, in, index);
-        }
-        catch (BitStreamException&)
-        {
-            // set correct end bit position in the stream avoiding padding at the end
-            in.setBitPosition(bitPosition);
-            break;
-        }
-    }
+    static_assert(arrayTraits.IS_BITSIZEOF_CONSTANT, "Implicit array elements must have constant bit size!");
+    const size_t remainingBits = in.getBufferBitSize() - in.getBitPosition();
+    const size_t arraySize = remainingBits / arrayTraits.bitSizeOf();
+    read(arrayTraits, array, in, arraySize);
 }
 
 /**
@@ -351,7 +337,7 @@ void writeAligned(const ARRAY_TRAITS& arrayTraits, std::vector<typename ARRAY_TR
     // can't use 'typename ARRAY_TRAITS::type&' because std::vector<bool> returns rvalue
     for (auto&& element : array)
     {
-        out.alignTo(NUM_BITS_PER_BYTE);
+        out.alignTo(8);
         offsetChecker.checkOffset(index, bitsToBytes(out.getBitPosition()));
         arrayTraits.write(out, element);
         index++;
@@ -522,6 +508,16 @@ public:
      */
     size_t bitSizeOf(size_t, type) const
     {
+        return bitSizeOf();
+    }
+
+    /**
+     * Calculates bit size of the array element.
+     *
+     * \return Bit size of the array element.
+     */
+    size_t bitSizeOf() const
+    {
         return m_numBits;
     }
 
@@ -581,6 +577,16 @@ struct StdIntArrayTraits
      * \return Bit size of the array element.
      */
     static size_t bitSizeOf(size_t, type)
+    {
+        return bitSizeOf();
+    }
+
+    /**
+     * Calculates bit size of the array element.
+     *
+     * \return Bit size of the array element.
+     */
+    static size_t bitSizeOf()
     {
         return NUM_BITS;
     }
@@ -1134,6 +1140,16 @@ struct Float16ArrayTraits
      */
     static size_t bitSizeOf(size_t, type)
     {
+        return bitSizeOf();
+    }
+
+    /**
+     * Calculates bit size of the array element.
+     *
+     * \return Bit size of the array element.
+     */
+    static size_t bitSizeOf()
+    {
         return 16;
     }
 
@@ -1190,6 +1206,16 @@ struct Float32ArrayTraits
      * \return Bit size of the array element.
      */
     static size_t bitSizeOf(size_t, type)
+    {
+        return bitSizeOf();
+    }
+
+    /**
+     * Calculates bit size of the array element.
+     *
+     * \return Bit size of the array element.
+     */
+    static size_t bitSizeOf()
     {
         return 32;
     }
@@ -1248,6 +1274,16 @@ struct Float64ArrayTraits
      */
     static size_t bitSizeOf(size_t, type)
     {
+        return bitSizeOf();
+    }
+
+    /**
+     * Calculates bit size of the array element.
+     *
+     * \return Bit size of the array element.
+     */
+    static size_t bitSizeOf()
+    {
         return 64;
     }
 
@@ -1304,6 +1340,16 @@ struct BoolArrayTraits
      * \return Bit size of the array element.
      */
     static size_t bitSizeOf(size_t, type)
+    {
+        return bitSizeOf();
+    }
+
+    /**
+     * Calculates bit size of the array element.
+     *
+     * \return Bit size of the array element.
+     */
+    static size_t bitSizeOf()
     {
         return 1;
     }

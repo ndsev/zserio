@@ -14,11 +14,10 @@ size_t alignTo(size_t alignmentValue, size_t bitPosition)
 
 size_t bitsToBytes(size_t numBits)
 {
-    const size_t numBytes = numBits / NUM_BITS_PER_BYTE;
-    if (numBytes * NUM_BITS_PER_BYTE != numBits)
+    const size_t numBytes = numBits / 8;
+    if (numBytes * 8 != numBits)
     {
-        throw CppRuntimeException("bitsToBytes: " + convertToString(numBits) + " is not a multiple of " +
-                convertToString(NUM_BITS_PER_BYTE));
+        throw CppRuntimeException("bitsToBytes: " + convertToString(numBits) + " is not a multiple of 8");
     }
 
     return numBytes;
@@ -26,7 +25,7 @@ size_t bitsToBytes(size_t numBits)
 
 size_t bytesToBits(size_t numBytes)
 {
-    return numBytes * NUM_BITS_PER_BYTE;
+    return numBytes * 8;
 }
 
 } // namespace zserio

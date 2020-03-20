@@ -7,28 +7,28 @@ import java.io.File;
 
 import org.junit.Test;
 
-import array_types.implicit_array.ImplicitArray;
+import array_types.implicit_array_float16.ImplicitArray;
 
 import zserio.runtime.ZserioError;
-import zserio.runtime.array.UnsignedByteArray;
+import zserio.runtime.array.Float16Array;
 import zserio.runtime.io.BitStreamReader;
 import zserio.runtime.io.BitStreamWriter;
 import zserio.runtime.io.FileBitStreamReader;
 import zserio.runtime.io.FileBitStreamWriter;
 
-public class ImplicitArrayTest
+public class ImplicitArrayFloat16Test
 {
     @Test
     public void bitSizeOf() throws IOException, ZserioError
     {
         final int numElements = 44;
-        UnsignedByteArray uint8Array = new UnsignedByteArray(numElements);
+        Float16Array array = new Float16Array(numElements);
         for (short i = 0; i < numElements; ++i)
-            uint8Array.setElementAt(i, i);
+            array.setElementAt((float)i, i);
 
-        final ImplicitArray implicitArray = new ImplicitArray(uint8Array);
+        final ImplicitArray implicitArray = new ImplicitArray(array);
         final int bitPosition = 2;
-        final int implicitArrayBitSize = numElements * 8;
+        final int implicitArrayBitSize = numElements * 16;
         assertEquals(implicitArrayBitSize, implicitArray.bitSizeOf(bitPosition));
     }
 
@@ -36,13 +36,13 @@ public class ImplicitArrayTest
     public void initializeOffsets() throws IOException, ZserioError
     {
         final int numElements = 66;
-        UnsignedByteArray uint8Array = new UnsignedByteArray(numElements);
+        Float16Array array = new Float16Array(numElements);
         for (short i = 0; i < numElements; ++i)
-            uint8Array.setElementAt(i, i);
+            array.setElementAt((float)i, i);
 
-        final ImplicitArray implicitArray = new ImplicitArray(uint8Array);
+        final ImplicitArray implicitArray = new ImplicitArray(array);
         final int bitPosition = 2;
-        final int expectedEndBitPosition = bitPosition + numElements * 8;
+        final int expectedEndBitPosition = bitPosition + numElements * 16;
         assertEquals(expectedEndBitPosition, implicitArray.initializeOffsets(bitPosition));
     }
 
@@ -56,31 +56,31 @@ public class ImplicitArrayTest
         final ImplicitArray implicitArray = new ImplicitArray(stream);
         stream.close();
 
-        final UnsignedByteArray uint8Array = implicitArray.getUint8Array();
-        assertEquals(numElements, uint8Array.length());
+        final Float16Array array = implicitArray.getArray();
+        assertEquals(numElements, array.length());
         for (short i = 0; i < numElements; ++i)
-            assertEquals(i, uint8Array.elementAt(i));
+            assertEquals((float)i, array.elementAt(i), 0.001f);
     }
 
     @Test
     public void write() throws IOException, ZserioError
     {
         final int numElements = 55;
-        UnsignedByteArray uint8Array = new UnsignedByteArray(numElements);
+        Float16Array array = new Float16Array(numElements);
         for (short i = 0; i < numElements; ++i)
-            uint8Array.setElementAt(i, i);
+            array.setElementAt(i, i);
 
-        ImplicitArray implicitArray = new ImplicitArray(uint8Array);
+        ImplicitArray implicitArray = new ImplicitArray(array);
         final File file = new File("test.bin");
         final BitStreamWriter writer = new FileBitStreamWriter(file);
         implicitArray.write(writer);
         writer.close();
 
         final ImplicitArray readImplicitArray = new ImplicitArray(file);
-        final UnsignedByteArray readUint8Array = readImplicitArray.getUint8Array();
-        assertEquals(numElements, readUint8Array.length());
+        final Float16Array readArray = readImplicitArray.getArray();
+        assertEquals(numElements, readArray.length());
         for (short i = 0; i < numElements; ++i)
-            assertEquals(i, readUint8Array.elementAt(i));
+            assertEquals((float)i, readArray.elementAt(i), 0.001f);
     }
 
     private void writeImplicitArrayToFile(File file, int numElements) throws IOException
@@ -88,7 +88,7 @@ public class ImplicitArrayTest
         final FileBitStreamWriter writer = new FileBitStreamWriter(file);
 
         for (short i = 0; i < numElements; ++i)
-            writer.writeUnsignedByte(i);
+            writer.writeFloat16((float)i);
 
         writer.close();
     }

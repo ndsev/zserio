@@ -9,7 +9,7 @@ abstract class ByteArrayBitStreamBase
 {
     public long getBitPosition()
     {
-        return BITS_PER_BYTE * bytePosition + bitOffset;
+        return 8 * bytePosition + bitOffset;
     }
 
     public int getBytePosition()
@@ -20,7 +20,7 @@ abstract class ByteArrayBitStreamBase
     public void setBitPosition(final long bitPosition) throws IOException
     {
         bitOffset = (int)(bitPosition % 8);
-        bytePosition = (int)(bitPosition / BITS_PER_BYTE);
+        bytePosition = (int)(bitPosition / 8);
     }
 
     public int getBitOffset()
@@ -37,9 +37,9 @@ abstract class ByteArrayBitStreamBase
      */
     protected static void checkRange(final int numBits) throws IllegalArgumentException
     {
-        if (numBits <= 0 || numBits > BITS_PER_LONG)
+        if (numBits <= 0 || numBits > 64)
             throw new IllegalArgumentException("ByteArrayBitStreamBase: Number of bits " + numBits +
-                    " is out of range [1, " + BITS_PER_LONG + "].");
+                    " is out of range [1, 64].");
     }
 
     /**
@@ -61,24 +61,4 @@ abstract class ByteArrayBitStreamBase
      * Byte value used for modulus calculations.
      */
     protected static final byte BYTE_MOD_MASK = 0x7;
-
-    /**
-     * The number of bits per byte.
-     */
-    protected static final int BITS_PER_BYTE = 0x8;
-
-    /**
-     * The number of bits per short.
-     */
-    protected static final int BITS_PER_SHORT = 0x10;
-
-    /**
-     * The number of bits per integer.
-     */
-
-    protected static final int BITS_PER_INT = 0x20;
-    /**
-     * The number of bits per long integer.
-     */
-    protected static final int BITS_PER_LONG = 0x40;
 }

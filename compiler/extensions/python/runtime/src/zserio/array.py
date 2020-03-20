@@ -149,21 +149,21 @@ class Array():
 
         :param reader: Bit stream from which to read.
         :param size: Number of elements to read or None in case of implicit or auto arrays.
+
+        :raises PythonRuntimeException: If the array does not have elements with constant bit size.
         """
 
         self._rawArray.clear()
 
         if self._isImplicit:
-            index = 0
-            while True:
-                try:
-                    bitPosition = reader.getBitPosition()
-                    self._rawArray.append(self._arrayTraits.read(reader, index))
-                except PythonRuntimeException:
-                    # set exact end bit position in the stream avoiding padding at the end
-                    reader.setBitPosition(bitPosition)
-                    break
-                index += 1
+            if not self._arrayTraits.HAS_BITSIZEOF_CONSTANT:
+                raise PythonRuntimeException("Array: Implicit array elements must have constant bit size!")
+
+            elementSize = self._arrayTraits.bitSizeOf()
+            remainingBits = reader.getBufferBitSize() - reader.getBitPosition()
+            size = remainingBits // elementSize
+            for index in range(size):
+                self._rawArray.append(self._arrayTraits.read(reader, index))
         else:
             if self._isAuto:
                 size = reader.readVarUInt64()

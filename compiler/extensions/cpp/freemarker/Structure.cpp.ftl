@@ -131,9 +131,9 @@ ${I}endBitPosition = ::zserio::alignTo(${field.alignmentValue}, endBitPosition);
     <#if field.offset??>
         <#if field.offset.containsIndex>
 ${I}if (<@compound_get_field field/>.size() > 0)
-${I}    endBitPosition = ::zserio::alignTo(::zserio::NUM_BITS_PER_BYTE, endBitPosition);
+${I}    endBitPosition = ::zserio::alignTo(8, endBitPosition);
         <#else>
-${I}endBitPosition = ::zserio::alignTo(::zserio::NUM_BITS_PER_BYTE, endBitPosition);
+${I}endBitPosition = ::zserio::alignTo(8, endBitPosition);
         </#if>
     </#if>
 </#macro>

@@ -40,7 +40,7 @@ public class ByteArrayBitStreamWriter extends ByteArrayBitStreamBase implements 
     {
         checkRange(numBits);
 
-        if (numBits != BITS_PER_LONG)
+        if (numBits != 64)
         {
             final long lowerBound = Util.getBitFieldLowerBound(numBits, true);
             final long upperBound = Util.getBitFieldUpperBound(numBits, true);
@@ -58,9 +58,9 @@ public class ByteArrayBitStreamWriter extends ByteArrayBitStreamBase implements 
     public void writeBits(final long value, final int numBits) throws IOException
     {
         // the MSB must be zero
-        if (numBits <= 0 || numBits >= BITS_PER_LONG)
+        if (numBits <= 0 || numBits >= 64)
             throw new IllegalArgumentException("ByteArrayBitStreamWriter: Number of written bits " + numBits +
-                    " is out of range [1, " + BITS_PER_LONG + "].");
+                    " is out of range [1, 64].");
 
         final long lowerBound = 0;
         final long upperBound = Util.getBitFieldUpperBound(numBits, false);
@@ -81,7 +81,7 @@ public class ByteArrayBitStreamWriter extends ByteArrayBitStreamBase implements 
         }
         else
         {
-            writeSignedBits(v, BITS_PER_BYTE);
+            writeSignedBits(v, 8);
         }
     }
 
@@ -94,7 +94,7 @@ public class ByteArrayBitStreamWriter extends ByteArrayBitStreamBase implements 
             throw new IllegalArgumentException("ByteArrayBitStreamWriter: Can't write unsigned byte. Value " +
                     value + " is negative.");
 
-        writeBits(value, BITS_PER_BYTE);
+        writeBits(value, 8);
     }
 
     @Override
@@ -105,14 +105,14 @@ public class ByteArrayBitStreamWriter extends ByteArrayBitStreamBase implements 
             final byte b0 = (byte)v;
             final byte b1 = (byte)(v >> 8);
 
-            ensureCapacity(BITS_PER_SHORT);
+            ensureCapacity(16);
 
             buffer[bytePosition++] = b1;
             buffer[bytePosition++] = b0;
         }
         else
         {
-            writeSignedBits(v, BITS_PER_SHORT);
+            writeSignedBits(v, 16);
         }
     }
 
@@ -123,7 +123,7 @@ public class ByteArrayBitStreamWriter extends ByteArrayBitStreamBase implements 
             throw new IllegalArgumentException("ByteArrayBitStreamWriter: Can't write unsigned short. Value " +
                     value + " is negative.");
 
-        writeBits(value, BITS_PER_SHORT);
+        writeBits(value, 16);
     }
 
     @Override
@@ -136,7 +136,7 @@ public class ByteArrayBitStreamWriter extends ByteArrayBitStreamBase implements 
             final byte b2 = (byte)(v >> 16);
             final byte b3 = (byte)(v >> 24);
 
-            ensureCapacity(BITS_PER_INT);
+            ensureCapacity(32);
 
             buffer[bytePosition++] = b3;
             buffer[bytePosition++] = b2;
@@ -145,7 +145,7 @@ public class ByteArrayBitStreamWriter extends ByteArrayBitStreamBase implements 
         }
         else
         {
-            writeSignedBits(v, BITS_PER_INT);
+            writeSignedBits(v, 32);
         }
     }
 
@@ -156,7 +156,7 @@ public class ByteArrayBitStreamWriter extends ByteArrayBitStreamBase implements 
             throw new IllegalArgumentException("ByteArrayBitStreamWriter: Can't write unsigned integer. " +
                     "Value " + value + " is negative.");
 
-        writeBits(value, BITS_PER_INT);
+        writeBits(value, 32);
     }
 
     @Override
@@ -173,7 +173,7 @@ public class ByteArrayBitStreamWriter extends ByteArrayBitStreamBase implements 
             final byte b6 = (byte)(v >> 48);
             final byte b7 = (byte)(v >> 56);
 
-            ensureCapacity(BITS_PER_LONG);
+            ensureCapacity(64);
 
             buffer[bytePosition++] = b7;
             buffer[bytePosition++] = b6;
@@ -186,7 +186,7 @@ public class ByteArrayBitStreamWriter extends ByteArrayBitStreamBase implements 
         }
         else
         {
-            writeSignedBits(v, BITS_PER_LONG);
+            writeSignedBits(v, 64);
         }
     }
 
@@ -213,14 +213,14 @@ public class ByteArrayBitStreamWriter extends ByteArrayBitStreamBase implements 
 
         // only write the significant bits
         // (BigInteger.toByteArray() is happy to return a leading padding byte)
-        int bitsToWrite = BITS_PER_BYTE - (BITS_PER_BYTE * bytes.length - valueBits);
+        int bitsToWrite = 8 - (8 * bytes.length - valueBits);
 
         for (byte b : bytes)
         {
             if (bitsToWrite != 0)
                 writeBitsImpl(((long)b) & 0xffL, bitsToWrite);
 
-            bitsToWrite = BITS_PER_BYTE;
+            bitsToWrite = 8;
         }
     }
 
@@ -322,7 +322,7 @@ public class ByteArrayBitStreamWriter extends ByteArrayBitStreamBase implements 
         try
         {
             // contains validity check
-            numBytes = BitSizeOfCalculator.getBitSizeOfVarUInt(value) / BITS_PER_BYTE;
+            numBytes = BitSizeOfCalculator.getBitSizeOfVarUInt(value) / 8;
         }
         catch (ZserioError e)
         {
@@ -427,7 +427,7 @@ public class ByteArrayBitStreamWriter extends ByteArrayBitStreamBase implements 
     private void write(final int b) throws IOException
     {
         flushBits();
-        ensureCapacity(BITS_PER_BYTE);
+        ensureCapacity(8);
         buffer[bytePosition++] = (byte)b;
     }
 
@@ -439,7 +439,7 @@ public class ByteArrayBitStreamWriter extends ByteArrayBitStreamBase implements 
     private void write(final byte[] src, final int offset, final int length) throws IOException
     {
         flushBits();
-        ensureCapacity(BITS_PER_BYTE * length);
+        ensureCapacity(8 * length);
         System.arraycopy(src, offset, buffer, bytePosition, length);
         this.bytePosition += length;
     }
@@ -455,8 +455,8 @@ public class ByteArrayBitStreamWriter extends ByteArrayBitStreamBase implements 
     {
         while (count > 0)
         {
-            // write in BITS_PER_LONG - 1 chunks (maximum allowed by writeBits())
-            final int bitsToWrite = Math.min(BITS_PER_LONG - 1, count);
+            // write in 64 - 1 chunks (maximum allowed by writeBits())
+            final int bitsToWrite = Math.min(64 - 1, count);
             writeBits(0, bitsToWrite);
             count -= bitsToWrite;
         }
@@ -473,8 +473,8 @@ public class ByteArrayBitStreamWriter extends ByteArrayBitStreamBase implements 
     {
         while (count > 0)
         {
-            // write in BITS_PER_LONG - 2 chunks to avoid overflow ( 1L << bitsToWrite must stay positive)
-            final int bitsToWrite = Math.min(BITS_PER_LONG - 2, count);
+            // write in 64 - 2 chunks to avoid overflow ( 1L << bitsToWrite must stay positive)
+            final int bitsToWrite = Math.min(64 - 2, count);
             final long valueToWrite = (1L << bitsToWrite) - 1L;
             writeBits(valueToWrite, bitsToWrite);
             count -= bitsToWrite;
@@ -501,7 +501,7 @@ public class ByteArrayBitStreamWriter extends ByteArrayBitStreamBase implements 
             else
             {
                 bytePosition--;
-                partialByte &= -1 << (BITS_PER_BYTE - offset);
+                partialByte &= -1 << (8 - offset);
             }
             write(partialByte);
         }
@@ -533,7 +533,7 @@ public class ByteArrayBitStreamWriter extends ByteArrayBitStreamBase implements 
             {
                 final int hasSign = i == 0 && signed ? 1 : 0;
                 final int hasNextByte = i == maxVarBytes - 1 ? 0 : 1;
-                valBits += BITS_PER_BYTE - (hasSign + hasNextByte);
+                valBits += 8 - (hasSign + hasNextByte);
                 numVarBytes++;
             }
 
@@ -545,7 +545,7 @@ public class ByteArrayBitStreamWriter extends ByteArrayBitStreamBase implements 
                 final int shift = (numVarBytes - (i + 1)) * 7 + extra;
 
                 long b = 0;
-                int numBits = BITS_PER_BYTE;
+                int numBits = 8;
                 if (signed && i == 0)
                 {
                     b |= (value < 0 ? 1 : 0) << --numBits;
@@ -558,8 +558,8 @@ public class ByteArrayBitStreamWriter extends ByteArrayBitStreamBase implements 
                 {
                     numBits--;
                 }
-                b |= (absValue >> shift) & (-1L >>> (BITS_PER_LONG - numBits));
-                writeBits(b, BITS_PER_BYTE);
+                b |= (absValue >> shift) & (-1L >>> (64 - numBits));
+                writeBits(b, 8);
             }
         }
         else
@@ -590,10 +590,10 @@ public class ByteArrayBitStreamWriter extends ByteArrayBitStreamBase implements 
             int partialByte = read();
             bytePosition--;
 
-            if (nBits + initialOffset < BITS_PER_BYTE)
+            if (nBits + initialOffset < 8)
             {
-                final int shift = BITS_PER_BYTE - (initialOffset + nBits);
-                final int mask = -1 >>> (BITS_PER_INT - nBits);
+                final int shift = 8 - (initialOffset + nBits);
+                final int mask = -1 >>> (32 - nBits);
                 partialByte &= ~(mask << shift);
                 partialByte |= ((value & mask) << shift);
                 buffer[bytePosition] = (byte)partialByte;
@@ -602,8 +602,8 @@ public class ByteArrayBitStreamWriter extends ByteArrayBitStreamBase implements 
             }
             else
             {
-                final int sliceBits = BITS_PER_BYTE - initialOffset;
-                final int mask = -1 >>> (BITS_PER_INT - sliceBits);
+                final int sliceBits = 8 - initialOffset;
+                final int mask = -1 >>> (32 - sliceBits);
                 partialByte &= ~mask;
                 partialByte |= ((value >> (nBits - sliceBits)) & mask);
                 buffer[bytePosition++] = (byte)partialByte;
@@ -614,12 +614,12 @@ public class ByteArrayBitStreamWriter extends ByteArrayBitStreamBase implements 
         /*
          * Write full bytes.
          */
-        if (nBits >= BITS_PER_BYTE)
+        if (nBits >= 8)
         {
             final int remaining = nBits & BYTE_MOD_MASK;
-            for (int numBytes = nBits / BITS_PER_BYTE; numBytes > 0; numBytes--)
+            for (int numBytes = nBits / 8; numBytes > 0; numBytes--)
             {
-                final int shift = (numBytes - 1) * BITS_PER_BYTE + remaining;
+                final int shift = (numBytes - 1) * 8 + remaining;
                 final byte byteVal = (byte)((shift == 0 ? value : value >> shift) & 0xff);
                 buffer[bytePosition++] = byteVal;
             }
@@ -632,8 +632,8 @@ public class ByteArrayBitStreamWriter extends ByteArrayBitStreamBase implements 
         if (nBits != 0)
         {
             int partialByte = read();
-            final int shift = BITS_PER_BYTE - nBits;
-            final int mask = -1 >>> (BITS_PER_INT - nBits);
+            final int shift = 8 - nBits;
+            final int mask = -1 >>> (32 - nBits);
             partialByte &= ~(mask << shift);
             partialByte |= (value & mask) << shift;
             buffer[--bytePosition] = (byte)partialByte;
@@ -722,7 +722,7 @@ public class ByteArrayBitStreamWriter extends ByteArrayBitStreamBase implements 
     private void ensureCapacity(final int numBits)
     {
         final int extraBits = numBits & BYTE_MOD_MASK;
-        final int numBytes = (numBits / BITS_PER_BYTE);
+        final int numBytes = (numBits / 8);
         final int newPosition = bytePosition + numBytes + (extraBits > 0 ? 1 : 0);
         if (newPosition >= buffer.length - 1)
         {

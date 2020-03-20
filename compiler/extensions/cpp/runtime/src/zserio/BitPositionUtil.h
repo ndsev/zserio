@@ -7,11 +7,6 @@ namespace zserio
 {
 
 /**
- * Constant defining num bits per a single byte (8).
- */
-static const size_t NUM_BITS_PER_BYTE = 8;
-
-/**
  * Aligns the bit size to the given alignment value.
  *
  * \param alignmentValue Value to align.

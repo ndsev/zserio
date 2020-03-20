@@ -47,7 +47,7 @@ public class Float16Array extends NumericArrayBase<Float>
     public Float16Array(BitStreamReader reader, int length, OffsetChecker checker)
             throws IOException, ZserioError
     {
-        readImpl(reader, length, 0, checker);
+        readImpl(reader, length, 16, checker);
     }
 
     /**

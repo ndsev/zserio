@@ -32,8 +32,9 @@ public class ByteArrayBitStreamReader extends ByteArrayBitStreamBase implements 
      */
     public ByteArrayBitStreamReader(final BitBuffer bitBuffer)
     {
-        this.buffer = bitBuffer.getBuffer();
-        this.lastByteBits = (byte)(8 * (long)bitBuffer.getByteSize() - bitBuffer.getBitSize());
+        buffer = bitBuffer.getBuffer();
+        final byte lastBits = (byte)(bitBuffer.getBitSize() % 8);
+        lastByteBits = lastBits == 0 ? 8 : lastBits;
     }
 
     @Override
@@ -62,7 +63,7 @@ public class ByteArrayBitStreamReader extends ByteArrayBitStreamBase implements 
         final int nextBitOffset = bitsToRead & BYTE_MOD_MASK;
 
         long accum = nextUnsignedByte() & BIT_MASKS[bitOffset];
-        bitsToRead -= BITS_PER_BYTE;
+        bitsToRead -= 8;
 
         if (bitsToRead < 0)
         {
@@ -73,25 +74,25 @@ public class ByteArrayBitStreamReader extends ByteArrayBitStreamBase implements 
         else
         {
             // full bytes
-            while (bitsToRead >= BITS_PER_BYTE)
+            while (bitsToRead >= 8)
             {
-                accum = (accum << BITS_PER_BYTE) | nextUnsignedByte();
-                bitsToRead -= BITS_PER_BYTE;
+                accum = (accum << 8) | nextUnsignedByte();
+                bitsToRead -= 8;
             }
 
             // last few bits
             if (bitsToRead > 0)
             {
-                accum = (accum << bitsToRead) | (nextUnsignedByte() >>> (BITS_PER_BYTE - bitsToRead));
+                accum = (accum << bitsToRead) | (nextUnsignedByte() >>> (8 - bitsToRead));
                 bytePosition--; // consumed only few bits
             }
         }
 
         bitOffset = nextBitOffset;
 
-        if (bytePosition + 1 == buffer.length && bitOffset > lastByteBits)
+        if (bytePosition + 1 == buffer.length && bitOffset >= lastByteBits)
             throw new IOException("ByteArrayBitStreamReader: Unable to read bit on offset position " +
-                    (bitOffset - 1) + ". It's beyond end of the stream with length " + lastByteBits + " bits.");
+                    bitOffset + " in the last byte.");
 
         return accum;
     }
@@ -106,7 +107,7 @@ public class ByteArrayBitStreamReader extends ByteArrayBitStreamBase implements 
         }
         else
         {
-            result = (byte)readBits(BITS_PER_BYTE);
+            result = (byte)readBits(8);
         }
         return result;
     }
@@ -129,7 +130,7 @@ public class ByteArrayBitStreamReader extends ByteArrayBitStreamBase implements 
         }
         else
         {
-            result = (short) readBits(BITS_PER_SHORT);
+            result = (short) readBits(16);
         }
         return result;
     }
@@ -154,7 +155,7 @@ public class ByteArrayBitStreamReader extends ByteArrayBitStreamBase implements 
         }
         else
         {
-            result = (int)readBits(BITS_PER_INT);
+            result = (int)readBits(32);
         }
         return result;
     }
@@ -183,7 +184,7 @@ public class ByteArrayBitStreamReader extends ByteArrayBitStreamBase implements 
         }
         else
         {
-            result = readBits(BITS_PER_LONG);
+            result = readBits(64);
         }
         return result;
     }
@@ -193,21 +194,21 @@ public class ByteArrayBitStreamReader extends ByteArrayBitStreamBase implements 
     {
         BigInteger result = BigInteger.ZERO;
         int bitsToRead = numBits;
-        if (bitsToRead > BITS_PER_BYTE)
+        if (bitsToRead > 8)
         {
             if (bitOffset != 0)
             {
-                final int prefixLength = BITS_PER_BYTE - bitOffset;
+                final int prefixLength = 8 - bitOffset;
                 final long mostSignificantBits = readBits(prefixLength);
                 result = BigInteger.valueOf(mostSignificantBits);
                 bitsToRead -= prefixLength;
             }
 
-            final int numBytes = bitsToRead / BITS_PER_BYTE;
+            final int numBytes = bitsToRead / 8;
             final byte[] b = new byte[numBytes];
             readFully(b);
             final BigInteger i = new BigInteger(1, b);
-            result = result.shiftLeft(BITS_PER_BYTE * numBytes);
+            result = result.shiftLeft(8 * numBytes);
             result = result.or(i);
             bitsToRead &= BYTE_MOD_MASK;
         }
@@ -445,6 +446,12 @@ public class ByteArrayBitStreamReader extends ByteArrayBitStreamBase implements 
     }
 
     @Override
+    public long getBufferBitSize()
+    {
+        return ((long)buffer.length) * 8 - 8 + lastByteBits;
+    }
+
+    @Override
     public void close() throws IOException
     {
         // nothing to do
@@ -577,7 +584,7 @@ public class ByteArrayBitStreamReader extends ByteArrayBitStreamBase implements 
         for (int i = 0; i < maxVarBytes && hasNextByte; i++)
         {
             final byte b = readByte();
-            int numBits = BITS_PER_BYTE;
+            int numBits = 8;
             if (signed && i == 0)
             {
                 sign = ((b >>> --numBits) & 1) == 1;
@@ -590,7 +597,7 @@ public class ByteArrayBitStreamReader extends ByteArrayBitStreamBase implements 
             {
                 hasNextByte = false;
             }
-            result = (result << numBits) | (b & (-1L >>> (BITS_PER_LONG - numBits)));
+            result = (result << numBits) | (b & (-1L >>> (64 - numBits)));
         }
         return sign ? -result : result;
     }

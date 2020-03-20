@@ -54,7 +54,7 @@ public class ValidationBitStreamReader extends ByteArrayBitStreamReader
             // endBitOffset |  1   |  2   |  3   |  4   |  5   |  6   |  7   |
             // -------------|------|------|------|------|------|------|------|
             // mask         | 0x7F | 0x3F | 0x1F | 0x0F | 0x07 | 0x03 | 0x01 |
-            final int mask = (1 << (BITS_PER_BYTE - endBitOffset)) - 1;
+            final int mask = (1 << (8 - endBitOffset)) - 1;
             final int invalidMask = invalidMaskBuffer[endBytePosition] | mask;
             maskedByteArray[endBytePosition] = (byte)(getBuffer()[endBytePosition] & ~invalidMask |
                     nanMaskBuffer[endBytePosition]);
@@ -122,7 +122,7 @@ public class ValidationBitStreamReader extends ByteArrayBitStreamReader
         }
         else
         {
-            action.modifyBits(startBytePosition, startBitOffset, BITS_PER_BYTE - startBitOffset);
+            action.modifyBits(startBytePosition, startBitOffset, 8 - startBitOffset);
 
             for (int bytePosition = startBytePosition + 1; bytePosition < endBytePosition; ++bytePosition)
                 action.modifyByte(bytePosition);
@@ -138,7 +138,7 @@ public class ValidationBitStreamReader extends ByteArrayBitStreamReader
         final byte nanHighByte = (byte)0x7E;
         nanMaskBuffer[startBytePosition] |= (nanHighByte >> startBitOffset);
         if (startBitOffset != 0)
-            nanMaskBuffer[startBytePosition + 1] |= (nanHighByte << (BITS_PER_BYTE - startBitOffset));
+            nanMaskBuffer[startBytePosition + 1] |= (nanHighByte << (8 - startBitOffset));
     }
 
     private interface MaskBufferAction
@@ -160,7 +160,7 @@ public class ValidationBitStreamReader extends ByteArrayBitStreamReader
             // --------|------|------|------|------|------|------|------|------|------|
             // mask    | 0x00 | 0x01 | 0x03 | 0x07 | 0x0F | 0x1F | 0x3F | 0x7F | 0xFF |
             final int mask = (1 << numBits) - 1;
-            maskBuffer[bytePosition] |= mask << (BITS_PER_BYTE - bitOffset - numBits);
+            maskBuffer[bytePosition] |= mask << (8 - bitOffset - numBits);
          }
 
          public void modifyByte(int bytePosition)
@@ -184,7 +184,7 @@ public class ValidationBitStreamReader extends ByteArrayBitStreamReader
             // --------|------|------|------|------|------|------|------|------|------|
             // mask    | 0xFF | 0xFE | 0xFC | 0xF8 | 0xF0 | 0xE0 | 0xC0 | 0x80 | 0x00 |
             final int mask = ~((1 << numBits) - 1);
-            maskBuffer[bytePosition] &= mask << (BITS_PER_BYTE - bitOffset - numBits);
+            maskBuffer[bytePosition] &= mask << (8 - bitOffset - numBits);
         }
 
         public void modifyByte(int bytePosition)

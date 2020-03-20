@@ -76,18 +76,19 @@ abstract class ArrayBase<E> implements Array<E>
      * @param checker Specifies offset checker for indexed offsets.
      *
      * @throws IOException Failure during bit stream manipulation.
-     * @throws ZserioError Failure during offset checking.
+     * @throws ZserioError Failure during offset checking or when using forbidden implicit array.
      */
     protected void readImpl(BitStreamReader reader, int length, int numBits, OffsetChecker checker)
             throws IOException, ZserioError
     {
         if (length == IMPLICIT_LENGTH)
         {
-            // indexed offsets don't make sense for implicit-length arrays
-            if (checker != null)
-                throw new ZserioError("ArrayBase: Implicit arrays can't have indexed offsets.");
+            if (numBits == 0)
+                throw new ZserioError("ArrayBase: Implicit array elements must have constant bit size!");
 
-            readAll(reader, numBits);
+            final long remainingBits = reader.getBufferBitSize() - reader.getBitPosition();
+            final int realLength = (int)(remainingBits / numBits);
+            readN(reader, realLength, numBits, null);
         }
         else
         {
@@ -166,26 +167,5 @@ abstract class ArrayBase<E> implements Array<E>
         }
 
         private int index;
-    }
-
-    private void readAll(BitStreamReader reader, int numBits) throws IOException
-    {
-        long bitPosition = 0;
-        final List<E> list = new ArrayList<E>();
-
-        try
-        {
-            while (true)
-            {
-                bitPosition = reader.getBitPosition();
-                list.add(readBoxedElement(reader, numBits));
-            }
-        }
-        catch (IOException e)
-        {
-            reader.setBitPosition(bitPosition);
-        }
-
-        setFromList(list);
     }
 }

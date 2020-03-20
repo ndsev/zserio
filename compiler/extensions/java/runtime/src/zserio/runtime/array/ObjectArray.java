@@ -407,11 +407,7 @@ public class ObjectArray<E extends SizeOf> implements Array<E>
     {
         if (length == IMPLICIT_LENGTH)
         {
-            // indexed offsets don't make sense for implicit-length arrays
-            if (checker != null)
-                throw new ZserioError("ObjectArray: Implicit arrays can't have indexed offsets.");
-
-            readAll(reader, factory);
+            throw new ZserioError("ObjectArray: Object arrays cannot be implicit!");
         }
         else
         {
@@ -419,25 +415,6 @@ public class ObjectArray<E extends SizeOf> implements Array<E>
                 VarUInt64Util.convertVarUInt64ToArraySize(reader.readVarUInt64());
             // check offsets if checker != null
             readN(reader, realLength, factory, checker);
-        }
-    }
-
-    private void readAll(BitStreamReader reader, ElementFactory<E> factory) throws IOException, ZserioError
-    {
-        long bitPosition = 0;
-        int index = 0;
-
-        try
-        {
-            while (true)
-            {
-                bitPosition = reader.getBitPosition();
-                data.add(factory.create(reader, index++));
-            }
-        }
-        catch (IOException e)
-        {
-            reader.setBitPosition(bitPosition);
         }
     }
 
