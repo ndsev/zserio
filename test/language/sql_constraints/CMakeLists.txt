@@ -1,19 +1,24 @@
 set(ZSERIO_GEN_DIR ${CMAKE_CURRENT_BINARY_DIR}/gen)
 set(ZSERIO_GENERATED_SOURCES
-    ${ZSERIO_GEN_DIR}/sql_constraints/ConstraintsBitmask.cpp
-    ${ZSERIO_GEN_DIR}/sql_constraints/ConstraintsBitmask.h
-    ${ZSERIO_GEN_DIR}/sql_constraints/ConstraintsConstant.h
-    ${ZSERIO_GEN_DIR}/sql_constraints/ConstraintsEnum.cpp
-    ${ZSERIO_GEN_DIR}/sql_constraints/ConstraintsEnum.h
-    ${ZSERIO_GEN_DIR}/sql_constraints/ConstraintsTable.cpp
-    ${ZSERIO_GEN_DIR}/sql_constraints/ConstraintsTable.h
+    ${ZSERIO_GEN_DIR}/sql_constraints/constraint_imports/ImportedBitmask.cpp
+    ${ZSERIO_GEN_DIR}/sql_constraints/constraint_imports/ImportedBitmask.h
+    ${ZSERIO_GEN_DIR}/sql_constraints/constraint_imports/ImportedConstant.h
+    ${ZSERIO_GEN_DIR}/sql_constraints/constraint_imports/ImportedEnum.cpp
+    ${ZSERIO_GEN_DIR}/sql_constraints/constraint_imports/ImportedEnum.h
+
+    ${ZSERIO_GEN_DIR}/sql_constraints/field_constraints/ConstraintsBitmask.cpp
+    ${ZSERIO_GEN_DIR}/sql_constraints/field_constraints/ConstraintsBitmask.h
+    ${ZSERIO_GEN_DIR}/sql_constraints/field_constraints/ConstraintsConstant.h
+    ${ZSERIO_GEN_DIR}/sql_constraints/field_constraints/ConstraintsEnum.cpp
+    ${ZSERIO_GEN_DIR}/sql_constraints/field_constraints/ConstraintsEnum.h
+    ${ZSERIO_GEN_DIR}/sql_constraints/field_constraints/FieldConstraintsTable.cpp
+    ${ZSERIO_GEN_DIR}/sql_constraints/field_constraints/FieldConstraintsTable.h
+
+    ${ZSERIO_GEN_DIR}/sql_constraints/table_constraints/TableConstraintsTable.cpp
+    ${ZSERIO_GEN_DIR}/sql_constraints/table_constraints/TableConstraintsTable.h
+
     ${ZSERIO_GEN_DIR}/sql_constraints/TestDb.cpp
     ${ZSERIO_GEN_DIR}/sql_constraints/TestDb.h
-    ${ZSERIO_GEN_DIR}/sql_constraints/constraints/ImportedBitmask.cpp
-    ${ZSERIO_GEN_DIR}/sql_constraints/constraints/ImportedBitmask.h
-    ${ZSERIO_GEN_DIR}/sql_constraints/constraints/ImportedConstant.h
-    ${ZSERIO_GEN_DIR}/sql_constraints/constraints/ImportedEnum.cpp
-    ${ZSERIO_GEN_DIR}/sql_constraints/constraints/ImportedEnum.h
 )
 
 zserio_add_library(TARGET sql_constraints_zs
@@ -28,7 +33,8 @@ zserio_add_library(TARGET sql_constraints_zs
 target_include_directories(sql_constraints_zs SYSTEM PRIVATE ${SQLITE_INCDIR})
 
 add_test_sources(
-    ${ZSERIO_CPP_DIR}/SqlConstraintsTest.cpp
+    ${ZSERIO_CPP_DIR}/FieldConstraintsTest.cpp
+    ${ZSERIO_CPP_DIR}/TableConstraintsTest.cpp
 )
 
 add_test_dependencies(sql_constraints_zs)

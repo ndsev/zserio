@@ -99,7 +99,7 @@ public class SqlTableType extends CompoundType
     /**
      * Gets SQL constraint defined in this SQL table.
      *
-     * @return SQL constraint defined in this SQL table.
+     * @return SQL constraint defined in this SQL table or null if it's not defined.
      */
     public SqlConstraint getSqlConstraint()
     {
@@ -328,7 +328,7 @@ public class SqlTableType extends CompoundType
     private void checkPrimaryKeyColumn(Field tableField)
     {
         sqlPrimaryKeyFields.add(tableField);
-        if (tableField.getSqlConstraint().isNullAllowed())
+        if (SqlConstraint.isNullAllowed(tableField.getSqlConstraint()))
             ZserioToolPrinter.printWarning(tableField, "Primary key column '" + tableField.getName() +
                     "' can contain NULL in sql table '" + getName() + "'.");
     }

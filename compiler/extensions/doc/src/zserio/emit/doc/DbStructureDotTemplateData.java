@@ -6,6 +6,7 @@ import java.util.Map;
 import java.util.TreeMap;
 
 import zserio.ast.Field;
+import zserio.ast.SqlConstraint;
 import zserio.ast.SqlDatabaseType;
 import zserio.ast.SqlTableType;
 import zserio.emit.common.ZserioEmitException;
@@ -180,7 +181,7 @@ public class DbStructureDotTemplateData
             name = StringHtmlUtil.escapeForHtml(fieldType.getName());
             typeName = StringHtmlUtil.escapeForHtml(fieldType.getTypeInstantiation().getType().getName());
             this.isPrimaryKey = isPrimaryKey;
-            isNullAllowed = fieldType.getSqlConstraint().isNullAllowed();
+            isNullAllowed = SqlConstraint.isNullAllowed(fieldType.getSqlConstraint());
         }
 
         public String getName()

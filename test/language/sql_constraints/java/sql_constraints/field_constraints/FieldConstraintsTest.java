@@ -1,4 +1,4 @@
-package sql_constraints;
+package sql_constraints.field_constraints;
 
 import java.io.File;
 import java.io.IOException;
@@ -15,11 +15,13 @@ import org.junit.rules.ExpectedException;
 import test_utils.FileUtil;
 import test_utils.JdbcUtil;
 
-import sql_constraints.constraints.ImportedConstant;
-import sql_constraints.constraints.ImportedEnum;
-import sql_constraints.constraints.ImportedBitmask;
+import sql_constraints.TestDb;
 
-public class SqlConstraintsTest
+import sql_constraints.constraint_imports.ImportedConstant;
+import sql_constraints.constraint_imports.ImportedEnum;
+import sql_constraints.constraint_imports.ImportedBitmask;
+
+public class FieldConstraintsTest
 {
     @BeforeClass
     public static void init()
@@ -51,172 +53,158 @@ public class SqlConstraintsTest
     @Test
     public void withoutSql() throws IOException, SQLException
     {
-        expectedException.expect(SQLException.class);
-        expectedException.expectMessage("NOT NULL constraint failed: constraintsTable.withoutSql");
-
-        final ConstraintsTable constraintsTable = database.getConstraintsTable();
-        final ConstraintsTableRow row = new ConstraintsTableRow();
+        final FieldConstraintsTable fieldConstraintsTable = database.getFieldConstraintsTable();
+        final FieldConstraintsTableRow row = new FieldConstraintsTableRow();
         fillRow(row);
         row.setNullWithoutSql();
-        constraintsTable.write(Arrays.asList(row));
+        fieldConstraintsTable.write(Arrays.asList(row));
     }
 
     @Test
     public void sqlNotNull() throws IOException, SQLException
     {
         expectedException.expect(SQLException.class);
-        expectedException.expectMessage("NOT NULL constraint failed: constraintsTable.sqlNotNull");
+        expectedException.expectMessage("NOT NULL constraint failed: fieldConstraintsTable.sqlNotNull");
 
-        final ConstraintsTable constraintsTable = database.getConstraintsTable();
-        final ConstraintsTableRow row = new ConstraintsTableRow();
+        final FieldConstraintsTable fieldConstraintsTable = database.getFieldConstraintsTable();
+        final FieldConstraintsTableRow row = new FieldConstraintsTableRow();
         fillRow(row);
         row.setNullSqlNotNull();
-        constraintsTable.write(Arrays.asList(row));
+        fieldConstraintsTable.write(Arrays.asList(row));
     }
 
     @Test
     public void sqlDefaultNull() throws IOException, SQLException
     {
-        final ConstraintsTable constraintsTable = database.getConstraintsTable();
-        final ConstraintsTableRow row = new ConstraintsTableRow();
+        final FieldConstraintsTable fieldConstraintsTable = database.getFieldConstraintsTable();
+        final FieldConstraintsTableRow row = new FieldConstraintsTableRow();
         fillRow(row);
         row.setNullSqlDefaultNull();
-        constraintsTable.write(Arrays.asList(row));
-    }
-
-    @Test
-    public void sqlNull() throws IOException, SQLException
-    {
-        final ConstraintsTable constraintsTable = database.getConstraintsTable();
-        final ConstraintsTableRow row = new ConstraintsTableRow();
-        fillRow(row);
-        row.setNullSqlNull();
-        constraintsTable.write(Arrays.asList(row));
+        fieldConstraintsTable.write(Arrays.asList(row));
     }
 
     @Test
     public void sqlCheckConstant() throws IOException, SQLException
     {
         expectedException.expect(SQLException.class);
-        expectedException.expectMessage("CHECK constraint failed: constraintsTable");
+        expectedException.expectMessage("CHECK constraint failed: fieldConstraintsTable");
 
-        final ConstraintsTable constraintsTable = database.getConstraintsTable();
-        final ConstraintsTableRow row = new ConstraintsTableRow();
+        final FieldConstraintsTable fieldConstraintsTable = database.getFieldConstraintsTable();
+        final FieldConstraintsTableRow row = new FieldConstraintsTableRow();
         fillRow(row);
         row.setSqlCheckConstant(ConstraintsConstant.ConstraintsConstant);
-        constraintsTable.write(Arrays.asList(row));
+        fieldConstraintsTable.write(Arrays.asList(row));
     }
 
     @Test
     public void sqlCheckImportedConstant() throws IOException, SQLException
     {
         expectedException.expect(SQLException.class);
-        expectedException.expectMessage("CHECK constraint failed: constraintsTable");
+        expectedException.expectMessage("CHECK constraint failed: fieldConstraintsTable");
 
-        final ConstraintsTable constraintsTable = database.getConstraintsTable();
-        final ConstraintsTableRow row = new ConstraintsTableRow();
+        final FieldConstraintsTable fieldConstraintsTable = database.getFieldConstraintsTable();
+        final FieldConstraintsTableRow row = new FieldConstraintsTableRow();
         fillRow(row);
         row.setSqlCheckImportedConstant(ImportedConstant.ImportedConstant);
-        constraintsTable.write(Arrays.asList(row));
+        fieldConstraintsTable.write(Arrays.asList(row));
     }
 
     @Test
     public void sqlCheckEnum() throws IOException, SQLException
     {
         expectedException.expect(SQLException.class);
-        expectedException.expectMessage("CHECK constraint failed: constraintsTable");
+        expectedException.expectMessage("CHECK constraint failed: fieldConstraintsTable");
 
-        final ConstraintsTable constraintsTable = database.getConstraintsTable();
-        final ConstraintsTableRow row = new ConstraintsTableRow();
+        final FieldConstraintsTable fieldConstraintsTable = database.getFieldConstraintsTable();
+        final FieldConstraintsTableRow row = new FieldConstraintsTableRow();
         fillRow(row);
         row.setSqlCheckEnum(ConstraintsEnum.VALUE2);
-        constraintsTable.write(Arrays.asList(row));
+        fieldConstraintsTable.write(Arrays.asList(row));
     }
 
     @Test
     public void sqlCheckImportedEnum() throws IOException, SQLException
     {
         expectedException.expect(SQLException.class);
-        expectedException.expectMessage("CHECK constraint failed: constraintsTable");
+        expectedException.expectMessage("CHECK constraint failed: fieldConstraintsTable");
 
-        final ConstraintsTable constraintsTable = database.getConstraintsTable();
-        final ConstraintsTableRow row = new ConstraintsTableRow();
+        final FieldConstraintsTable fieldConstraintsTable = database.getFieldConstraintsTable();
+        final FieldConstraintsTableRow row = new FieldConstraintsTableRow();
         fillRow(row);
         row.setSqlCheckImportedEnum(ImportedEnum.TWO);
-        constraintsTable.write(Arrays.asList(row));
+        fieldConstraintsTable.write(Arrays.asList(row));
     }
 
     @Test
     public void sqlCheckBitmask() throws IOException, SQLException
     {
         expectedException.expect(SQLException.class);
-        expectedException.expectMessage("CHECK constraint failed: constraintsTable");
+        expectedException.expectMessage("CHECK constraint failed: fieldConstraintsTable");
 
-        final ConstraintsTable constraintsTable = database.getConstraintsTable();
-        final ConstraintsTableRow row = new ConstraintsTableRow();
+        final FieldConstraintsTable fieldConstraintsTable = database.getFieldConstraintsTable();
+        final FieldConstraintsTableRow row = new FieldConstraintsTableRow();
         fillRow(row);
         row.setSqlCheckBitmask(ConstraintsBitmask.Values.MASK2);
-        constraintsTable.write(Arrays.asList(row));
+        fieldConstraintsTable.write(Arrays.asList(row));
     }
 
     @Test
     public void sqlCheckImportedBitmask() throws IOException, SQLException
     {
         expectedException.expect(SQLException.class);
-        expectedException.expectMessage("CHECK constraint failed: constraintsTable");
+        expectedException.expectMessage("CHECK constraint failed: fieldConstraintsTable");
 
-        final ConstraintsTable constraintsTable = database.getConstraintsTable();
-        final ConstraintsTableRow row = new ConstraintsTableRow();
+        final FieldConstraintsTable fieldConstraintsTable = database.getFieldConstraintsTable();
+        final FieldConstraintsTableRow row = new FieldConstraintsTableRow();
         fillRow(row);
         row.setSqlCheckImportedBitmask(ImportedBitmask.Values.MASK2);
-        constraintsTable.write(Arrays.asList(row));
+        fieldConstraintsTable.write(Arrays.asList(row));
     }
 
     @Test
     public void sqlCheckUnicodeEscape() throws IOException, SQLException
     {
         expectedException.expect(SQLException.class);
-        expectedException.expectMessage("CHECK constraint failed: constraintsTable");
+        expectedException.expectMessage("CHECK constraint failed: fieldConstraintsTable");
 
-        final ConstraintsTable constraintsTable = database.getConstraintsTable();
-        final ConstraintsTableRow row = new ConstraintsTableRow();
+        final FieldConstraintsTable fieldConstraintsTable = database.getFieldConstraintsTable();
+        final FieldConstraintsTableRow row = new FieldConstraintsTableRow();
         fillRow(row);
         row.setSqlCheckUnicodeEscape(WRONG_UNICODE_ESCAPE_CONST);
-        constraintsTable.write(Arrays.asList(row));
+        fieldConstraintsTable.write(Arrays.asList(row));
     }
 
     @Test
     public void sqlCheckHexEscape() throws IOException, SQLException
     {
         expectedException.expect(SQLException.class);
-        expectedException.expectMessage("CHECK constraint failed: constraintsTable");
+        expectedException.expectMessage("CHECK constraint failed: fieldConstraintsTable");
 
-        final ConstraintsTable constraintsTable = database.getConstraintsTable();
-        final ConstraintsTableRow row = new ConstraintsTableRow();
+        final FieldConstraintsTable fieldConstraintsTable = database.getFieldConstraintsTable();
+        final FieldConstraintsTableRow row = new FieldConstraintsTableRow();
         fillRow(row);
         row.setSqlCheckHexEscape(WRONG_HEX_ESCAPE_CONST);
-        constraintsTable.write(Arrays.asList(row));
+        fieldConstraintsTable.write(Arrays.asList(row));
     }
 
     @Test
     public void sqlCheckOctalEscape() throws IOException, SQLException
     {
         expectedException.expect(SQLException.class);
-        expectedException.expectMessage("CHECK constraint failed: constraintsTable");
+        expectedException.expectMessage("CHECK constraint failed: fieldConstraintsTable");
 
-        final ConstraintsTable constraintsTable = database.getConstraintsTable();
-        final ConstraintsTableRow row = new ConstraintsTableRow();
+        final FieldConstraintsTable fieldConstraintsTable = database.getFieldConstraintsTable();
+        final FieldConstraintsTableRow row = new FieldConstraintsTableRow();
         fillRow(row);
         row.setSqlCheckOctalEscape(WRONG_OCTAL_ESCAPE_CONST);
-        constraintsTable.write(Arrays.asList(row));
+        fieldConstraintsTable.write(Arrays.asList(row));
     }
 
-    private void fillRow(ConstraintsTableRow row)
+    private void fillRow(FieldConstraintsTableRow row)
     {
         row.setWithoutSql(1);
         row.setSqlNotNull(1);
         row.setSqlDefaultNull(1);
-        row.setSqlNull(1);
         row.setSqlCheckConstant(1);
         row.setSqlCheckImportedConstant(1);
         row.setSqlCheckEnum(ConstraintsEnum.VALUE1);
@@ -228,7 +216,7 @@ public class SqlConstraintsTest
         row.setSqlCheckOctalEscape(OCTAL_ESCAPE_CONST);
     }
 
-    private static final String FILE_NAME = "sql_constraints_test.sqlite";
+    private static final String FILE_NAME = "field_constraints_test.sqlite";
 
     private static final short UNICODE_ESCAPE_CONST = 1;
     private static final short HEX_ESCAPE_CONST = 2;

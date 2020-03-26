@@ -444,8 +444,7 @@ public class ZserioAstBuilder extends ZserioParserBaseVisitor<Object>
 
         final DocComment docComment = docCommentManager.findDocComment(ctx);
 
-        return new Field(location, typeInstantiation, name, isVirtual, (sqlConstraint == null) ?
-                SqlConstraint.createDefaultFieldConstraint(currentPackage) : sqlConstraint, docComment);
+        return new Field(location, typeInstantiation, name, isVirtual, sqlConstraint, docComment);
     }
 
     @Override

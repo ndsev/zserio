@@ -7,7 +7,7 @@ struct /** Unused struct comment. */ Test
 
 sql_table Table
 {
-    int32 id sql "PRIMARY KEY";
+    int32 id sql "PRIMARY KEY NOT NULL";
     Test test;
 };
 

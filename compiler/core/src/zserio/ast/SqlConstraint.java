@@ -3,10 +3,12 @@ package zserio.ast;
 import java.math.BigInteger;
 import java.util.AbstractMap;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import zserio.antlr.ZserioParser;
 
@@ -51,34 +53,13 @@ public class SqlConstraint extends AstNodeBase
     }
 
     /**
-     * Gets translated SQL constraint expression.
+     * Gets evaluated SQL constraint expression.
      *
-     * @return SQL constraint expression with translated Zserio values.
+     * @return SQL constraint expression with evaluated Zserio values.
      */
-    public Expression getTranslatedConstraintExpr()
+    public Expression getEvaluatedConstraintExpr()
     {
-        return translatedConstraintExpr;
-    }
-
-    /**
-     * Gets translated SQL constraint expression for table field.
-     *
-     * @return SQL constraint expression with translated NOT NULL constraint or null
-     *         if there is no translated SQL constraint for field.
-     */
-    public Expression getTranslatedFieldConstraintExpr()
-    {
-        return translatedFieldConstraintExpr;
-    }
-
-    /**
-     * Indicates if the SQL constraint allows 'NULL' value.
-     *
-     * @return True if the SQL constraint allows 'NULL' value.
-     */
-    public boolean isNullAllowed()
-    {
-        return isNullAllowed;
+        return evaluatedConstraintExpr;
     }
 
     /**
@@ -112,20 +93,17 @@ public class SqlConstraint extends AstNodeBase
     }
 
     /**
-     * Creates default SQL constraint for table fields.
+     * Indicates if the SQL constraint allows 'NULL' value.
      *
-     * This is used for table fields which have no SQL constraint specified in Zserio. If table field has
-     * no SQL constraint, it should be translated to 'NOT NULL' constraint for SQLite (Zserio default behavior).
+     * By default, no SQL constraint means that 'NULL' value is allowed.
      *
-     * @param pkg Package to use for created SQL constraint.
-     *
-     * @return Created default SQL constraint.
+     * @return True if the SQL constraint allows 'NULL' value.
      */
-    static SqlConstraint createDefaultFieldConstraint(Package pkg)
+    public static boolean isNullAllowed(SqlConstraint sqlConstraint)
     {
-        return new SqlConstraint(null, createStringLiteralExpression(pkg, ""));
+    	return (sqlConstraint != null) ? sqlConstraint.isNullAllowed : true;
     }
-
+    
     /**
      * Resolves the SQL constraint.
      *
@@ -147,16 +125,15 @@ public class SqlConstraint extends AstNodeBase
     void evaluate()
     {
         final String sqlConstraintString = constraintExpr.getText();
-        primaryKeyColumnNames = extractColumnNames(sqlConstraintString, PRIMARY_KEY_CONSTRAINT);
-        uniqueColumnNames = extractColumnNames(sqlConstraintString, UNIQUE_CONSTRAINT);
-        isPrimaryKey = containsPrimaryKey(sqlConstraintString);
+        primaryKeyColumnNames = extractColumnsFromConstraint(sqlConstraintString,
+        		PRIMARY_KEY_TABLE_CONSTRAINT_REGEX);
+        uniqueColumnNames = extractColumnsFromConstraint(sqlConstraintString, UNIQUE_TABLE_CONSTRAINT_REGEX);
+        isPrimaryKey = hasConstraint(sqlConstraintString, PRIMARY_KEY_FIELD_CONSTRAINT_REGEX);
+        isNullAllowed = !hasConstraint(sqlConstraintString, NOT_NULL_FIELD_CONSTRAINT_REGEX);
 
-        // set translated constraint expression for table
-        final String translatedConstraint = createTranslatedConstraint();
-        translatedConstraintExpr = createStringLiteralExpression(pkg, translatedConstraint);
-
-        // set translated constraint expression for table field
-        translatedFieldConstraintExpr = createTranslatedFieldConstraintExpr(translatedConstraint);
+        // set evaluated constraint expression
+        final String evaluatedConstraint = evaluateConstraint();
+        evaluatedConstraintExpr = createStringLiteralExpression(pkg, evaluatedConstraint);
     }
 
     /**
@@ -182,7 +159,7 @@ public class SqlConstraint extends AstNodeBase
         int referenceIndex = sqlConstraintString.indexOf(CONSTRAINT_REFERENCE_ESCAPE);
         while (referenceIndex >= 0)
         {
-            translatedConstraintStrings.add(sqlConstraintString.substring(startIndex, referenceIndex));
+            evaluatedConstraintStrings.add(sqlConstraintString.substring(startIndex, referenceIndex));
 
             final int endIndex = findEndOfConstraintReference(sqlConstraintString, referenceIndex + 1);
             final String referencedText = sqlConstraintString.substring(referenceIndex + 1, endIndex);
@@ -196,7 +173,7 @@ public class SqlConstraint extends AstNodeBase
         }
 
         if (startIndex < sqlConstraintString.length())
-            translatedConstraintStrings.add(sqlConstraintString.substring(startIndex));
+            evaluatedConstraintStrings.add(sqlConstraintString.substring(startIndex));
     }
 
     private static int findEndOfConstraintReference(String sqlConstrainString, int startIndex)
@@ -214,41 +191,33 @@ public class SqlConstraint extends AstNodeBase
         return endIndex;
     }
 
-    private static List<String> extractColumnNames(String sqlConstraintString, String constraintName)
+    private static List<String> extractColumnsFromConstraint(String sqlConstraintString, String constraintRegex)
     {
-        final ArrayList<String> columnNames = new ArrayList<String>();
-        final int constraintIndex = sqlConstraintString.toUpperCase(Locale.ENGLISH).indexOf(constraintName);
-        if (constraintIndex > -1)
-        {
-            final int leftBracketIndex = sqlConstraintString.indexOf('(', constraintIndex);
-            if (leftBracketIndex > -1)
-            {
-                final int rightBracketIndex = sqlConstraintString.indexOf(')', leftBracketIndex);
-                if (rightBracketIndex > -1)
-                {
-                    final String[] cols = sqlConstraintString.substring(leftBracketIndex + 1,
-                            rightBracketIndex).split(",");
-                    for (int i = 0; i < cols.length; i++ )
-                        columnNames.add(cols[i].trim());
-                }
-            }
-        }
+        final Pattern regexPattern = Pattern.compile(constraintRegex, Pattern.CASE_INSENSITIVE);
+        final Matcher regexMatcher = regexPattern.matcher(sqlConstraintString);
+        if (!regexMatcher.find())
+        	return new ArrayList<String>();
 
-        return columnNames;
+        final String columnNamesGroup = regexMatcher.group(1).trim();
+        final String[] columnNames = columnNamesGroup.split("\\s*,\\s*");
+
+        return new ArrayList<String>(Arrays.asList(columnNames));
     }
 
-    private static boolean containsPrimaryKey(String sqlConstraintString)
+    private static boolean hasConstraint(String sqlConstraintString, String constraintRegex)
     {
-        return (sqlConstraintString.toUpperCase(Locale.ENGLISH).indexOf(PRIMARY_KEY_CONSTRAINT) > -1);
+        final Pattern regexPattern = Pattern.compile(constraintRegex, Pattern.CASE_INSENSITIVE);
+
+        return regexPattern.matcher(sqlConstraintString).find();
     }
 
-    private String createTranslatedConstraint()
+    private String evaluateConstraint()
     {
         final StringBuilder stringBuilder = new StringBuilder();
         int numUsedReferences = 0;
-        for (String translatedConstraintString : translatedConstraintStrings)
+        for (String evaluatedConstraintString : evaluatedConstraintStrings)
         {
-            stringBuilder.append(translatedConstraintString);
+            stringBuilder.append(evaluatedConstraintString);
             if (numUsedReferences < constraintReferences.size())
             {
                 final Map.Entry<SymbolReference, String> referenceEntry =
@@ -257,6 +226,7 @@ public class SqlConstraint extends AstNodeBase
                 final AstNode referencedSymbol = symbolReference.getReferencedSymbol();
 
                 // used to call evaluation explicitly because the symbol does not have to be evaluated yet
+                // TODO[mikir] this might be implemented directly in expressions or in symbol reference
                 final ZserioAstEvaluator evaluator = new ZserioAstEvaluator();
 
                 if (referencedSymbol instanceof Constant)
@@ -300,80 +270,27 @@ public class SqlConstraint extends AstNodeBase
         return stringBuilder.toString();
     }
 
-    private Expression createTranslatedFieldConstraintExpr(String translatedConstraint)
-    {
-        // unlike SQLite, the default column constraint in Zserio is 'NOT NULL' and NULL-constraints have to be
-        // explicitly set
-        String fieldConstraint = translatedConstraint;
-
-        // skip quotes
-        if (fieldConstraint.length() > 1)
-            fieldConstraint = fieldConstraint.substring(1, fieldConstraint.length() - 1);
-
-        // remove duplicated white spaces to be able detect NOT_NULL_CONSTRAINT/DEFAULT_NULL_CONSTRAINT properly
-        fieldConstraint = fieldConstraint.replaceAll("\\s+", " ");
-
-        // trim leading and trailing whitespace
-        fieldConstraint = fieldConstraint.trim();
-
-        if (!fieldConstraint.contains(NOT_NULL_CONSTRAINT))
-        {
-            // there is no NOT_NULL_CONSTRAINT
-            if (fieldConstraint.contains(DEFAULT_NULL_CONSTRAINT))
-            {
-                // there is DEFAULT_NULL_CONSTRAINT => null is allowed
-                isNullAllowed = true;
-            }
-            else
-            {
-                // there is no NOT_NULL_CONSTRAINT and no DEFAULT_NULL_CONSTRAINT
-                if (!fieldConstraint.contains(NULL_CONSTRAINT))
-                {
-                    // and there is no NULL_CONSTRAINT => add NOT_NULL_CONSTRAINT constraint (default in Zserio)
-                    if (!fieldConstraint.isEmpty())
-                        fieldConstraint = fieldConstraint.concat(" ");
-                    fieldConstraint = fieldConstraint.concat(NOT_NULL_CONSTRAINT);
-                }
-                else
-                {
-                    // and there is NULL_CONSTRAINT => remove NULL_CONSTRAINT constraint (unknown for SQLite)
-                    fieldConstraint = fieldConstraint.replace(NULL_CONSTRAINT, "");
-
-                    // trim leading and trailing whitespace
-                    fieldConstraint = fieldConstraint.trim();
-
-                    // null is allowed
-                    isNullAllowed = true;
-                }
-            }
-        }
-
-        return (fieldConstraint.isEmpty()) ? null :
-            createStringLiteralExpression(pkg, "\"" + fieldConstraint + "\"");
-    }
-
     private static Expression createStringLiteralExpression(Package pkg, String stringLiteral)
     {
         return new Expression(null, pkg, ZserioParser.STRING_LITERAL, stringLiteral,
                 Expression.ExpressionFlag.NONE);
     }
 
-    private static final String PRIMARY_KEY_CONSTRAINT = "PRIMARY KEY";
-    private static final String UNIQUE_CONSTRAINT = "UNIQUE";
-    private static final String NOT_NULL_CONSTRAINT = "NOT NULL";
-    private static final String NULL_CONSTRAINT = "NULL";
-    private static final String DEFAULT_NULL_CONSTRAINT = "DEFAULT NULL";
     private static final String CONSTRAINT_REFERENCE_ESCAPE = "@";
 
+    private static final String PRIMARY_KEY_TABLE_CONSTRAINT_REGEX = "PRIMARY\\s+KEY\\s*\\(([^\\)]+)\\)";
+    private static final String UNIQUE_TABLE_CONSTRAINT_REGEX = "UNIQUE\\s*\\(([^\\)]+)\\)";
+    private static final String PRIMARY_KEY_FIELD_CONSTRAINT_REGEX = "PRIMARY\\s+KEY";
+    private static final String NOT_NULL_FIELD_CONSTRAINT_REGEX = "NOT\\s+NULL";
+    
     private final Expression constraintExpr;
 
-    private final List<String> translatedConstraintStrings = new ArrayList<String>();
+    private final List<String> evaluatedConstraintStrings = new ArrayList<String>();
     private final List<Map.Entry<SymbolReference, String>> constraintReferences =
             new ArrayList<Map.Entry<SymbolReference, String>>();
     private Package pkg;
 
-    private Expression translatedConstraintExpr = null;
-    private Expression translatedFieldConstraintExpr = null;
+    private Expression evaluatedConstraintExpr = null;
 
     private List<String> primaryKeyColumnNames = new ArrayList<String>();
     private List<String> uniqueColumnNames = new ArrayList<String>();

@@ -13,6 +13,6 @@ struct BlobWithChildrenInitialization
 
 sql_table BlobFieldWithChildrenInitializationTable
 {
-    uint32                          id      sql "PRIMARY KEY";
+    uint32                          id      sql "PRIMARY KEY NOT NULL";
     BlobWithChildrenInitialization  blob;
 };

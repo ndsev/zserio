@@ -2,7 +2,7 @@ package sql_without_rowid_tables_warning.integer_primary_key_warning;
 
 sql_table WithoutRowIdTable
 {
-    int32       value sql "PRIMARY KEY";
+    int32       value sql "PRIMARY KEY NOT NULL";
     uint32      count;
 
     sql_without_rowid;

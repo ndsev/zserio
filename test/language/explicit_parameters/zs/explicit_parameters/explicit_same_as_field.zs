@@ -9,7 +9,7 @@ struct TestBlob(uint32 count)
 // parameter provider is generated when explicit keyword is used
 sql_table SameAsFieldTable
 {
-    uint32                     id          sql "PRIMARY KEY";
+    uint32                     id          sql "PRIMARY KEY NOT NULL";
     string                     name;
     uint32                     count;
     TestBlob(count)            blob;

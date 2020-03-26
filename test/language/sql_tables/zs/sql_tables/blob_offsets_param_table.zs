@@ -13,7 +13,7 @@ offsetsHolder.offsets[@index]:
 
 sql_table BlobOffsetsParamTable
 {
-    uint32                           blobId sql "PRIMARY KEY";
+    uint32                           blobId sql "PRIMARY KEY NOT NULL";
     string                           name;
     OffsetsHolder                    offsetsHolder;
     ParameterizedBlob(offsetsHolder) blob;

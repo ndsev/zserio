@@ -39,7 +39,7 @@ union TestUnion
 sql_table SqlTypesTable
 {
     // unsigned integer types
-    uint8           uint8Type   sql "PRIMARY KEY";
+    uint8           uint8Type   sql "PRIMARY KEY NOT NULL";
     uint16          uint16Type;
     uint32          uint32Type;
     uint64          uint64Type;

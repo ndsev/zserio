@@ -24,7 +24,7 @@ choice EnumParamChoice(Selector selector) on selector
 // The following is just to kill not_used warning.
 sql_table NotUsedTable
 {
-    int32                       id  sql "PRIMARY KEY";
+    int32                       id  sql "PRIMARY KEY NOT NULL";
     Selector                    selector;
     EnumParamChoice(selector)   enumParamChoice;
 };

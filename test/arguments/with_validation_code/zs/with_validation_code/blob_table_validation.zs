@@ -14,8 +14,8 @@ align(8):                       // this skips 7 bits which do not have to be zer
 
 sql_table BlobTable
 {
-    uint32      id  sql "PRIMARY KEY";
-    Blob        blob;
+    uint32      id sql "PRIMARY KEY NOT NULL";
+    Blob        blob sql "NOT NULL";
 };
 
 sql_database BlobTableValidationDb

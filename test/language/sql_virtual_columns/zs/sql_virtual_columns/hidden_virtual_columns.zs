@@ -5,8 +5,8 @@ sql_table HiddenVirtualColumnsTable using fts4
     sql_virtual int64       docId;
     sql_virtual varuint16   languageCode;
 
-    string                  searchTags sql "NULL";
-    uint32                  frequency sql "NULL";
+    string                  searchTags;
+    uint32                  frequency;
 
     sql "languageid='languageCode', notindexed='frequency'";
 };

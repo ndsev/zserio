@@ -11,6 +11,6 @@ subtype TestBitmask SubtypedBitmask;
 
 sql_table SubtypedBitmaskFieldTable
 {
-    int32           id          sql "PRIMARY KEY";
+    int32           id          sql "PRIMARY KEY NOT NULL";
     SubtypedBitmask    bitmaskField;
 };

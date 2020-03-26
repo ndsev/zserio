@@ -31,7 +31,7 @@ struct Container
 // The following just disable "unused type" warning for Container type.
 sql_table ContainerTable
 {
-    int32       id sql "PRIMARY KEY";
+    int32       id sql "PRIMARY KEY NOT NULL";
     Container   container;
 };
 

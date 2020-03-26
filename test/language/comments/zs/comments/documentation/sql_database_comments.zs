@@ -4,7 +4,7 @@ package comments.documentation.sql_database_comments;
 sql_table Table
 {
     /** Id comment. */
-    int32 id sql "PRIMARY KEY";
+    int32 id sql "PRIMARY KEY NOT NULL";
 };
 
 /** DB comment. */

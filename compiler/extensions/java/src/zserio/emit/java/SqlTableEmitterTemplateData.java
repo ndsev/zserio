@@ -38,10 +38,10 @@ public final class SqlTableEmitterTemplateData extends UserTypeTemplateData
         this.withValidationCode = context.getWithValidationCode();
 
         rowName = tableRowName;
-        final SqlConstraint sqlConstraintType = tableType.getSqlConstraint();
+        final SqlConstraint tableSqlConstraint = tableType.getSqlConstraint();
         final ExpressionFormatter javaExpressionFormatter = context.getJavaExpressionFormatter();
-        sqlConstraint = (sqlConstraintType == null) ? null :
-            javaExpressionFormatter.formatGetter(sqlConstraintType.getTranslatedConstraintExpr());
+        sqlConstraint = (tableSqlConstraint == null) ? null :
+            javaExpressionFormatter.formatGetter(tableSqlConstraint.getEvaluatedConstraintExpr());
         virtualTableUsing = tableType.getVirtualTableUsingString();
         needsTypesInSchema = tableType.needsTypesInSchema();
         isWithoutRowId = tableType.isWithoutRowId();
@@ -196,11 +196,10 @@ public final class SqlTableEmitterTemplateData extends UserTypeTemplateData
             }
 
             isVirtual = field.getIsVirtual();
-            final SqlConstraint sqlConstraintType = field.getSqlConstraint();
-            final Expression sqlConstraintExpr = sqlConstraintType.getTranslatedFieldConstraintExpr();
-            sqlConstraint = (sqlConstraintExpr == null) ? null :
-                javaExpressionFormatter.formatGetter(sqlConstraintExpr);
-            isNotNull = !sqlConstraintType.isNullAllowed();
+            final SqlConstraint fieldSqlConstraint = field.getSqlConstraint();
+            sqlConstraint = (fieldSqlConstraint == null) ? null :
+                javaExpressionFormatter.formatGetter(fieldSqlConstraint.getEvaluatedConstraintExpr());
+            isNotNull = !SqlConstraint.isNullAllowed(fieldSqlConstraint);
             isPrimaryKey = parentType.isFieldPrimaryKey(field);
 
             // enumerations and bitmasks are rangeable for SQL

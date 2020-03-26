@@ -4,6 +4,6 @@ subtype bool SubtypedBool;
 
 sql_table SubtypedBoolFieldTable
 {
-    int32           id    sql "PRIMARY KEY";
+    int32           id    sql "PRIMARY KEY NOT NULL";
     SubtypedBool    boolField;
 };

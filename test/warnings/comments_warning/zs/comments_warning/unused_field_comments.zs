@@ -95,7 +95,7 @@ struct MultipleFieldComments
 
 sql_table Table
 {
-    int32 id sql "PRIMARY KEY";
+    int32 id sql "PRIMARY KEY NOT NULL";
     BasicComment basicComment;
     UnusedCommentById commentById;
     MaskedByOptional maskedByOptional;

@@ -22,7 +22,7 @@ struct OtherBlob(OtherHeader header)
 
 sql_table Table
 {
-    uint32                     id sql "PRIMARY KEY";
+    uint32                     id sql "PRIMARY KEY NOT NULL";
     Blob(explicit header)      blob1;
     Blob(explicit header)      blob2;
     OtherBlob(explicit header) otherBlob;

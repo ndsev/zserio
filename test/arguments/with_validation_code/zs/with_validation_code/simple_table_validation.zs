@@ -20,11 +20,11 @@ enum int64 TestEnum
 
 sql_table SimpleTable
 {
-    uint64   rowid           sql "PRIMARY KEY"; // this is aliased by SQLite to rowid (NOT NULL is added by Zserio)
-    bool     fieldBool;
-    bit:5    fieldNonBlob    sql "NULL";
-    RootStruct(explicit localCount1) fieldBlob;
-    TestEnum fieldEnum;
+    uint64   rowid sql "PRIMARY KEY NOT NULL"; // this is aliased by SQLite to rowid
+    bool     fieldBool sql "NOT NULL";
+    bit:5    fieldNonBlob;
+    RootStruct(explicit localCount1) fieldBlob sql "NOT NULL";
+    TestEnum fieldEnum sql "NOT NULL";
 };
 
 sql_database SimpleTableValidationDb

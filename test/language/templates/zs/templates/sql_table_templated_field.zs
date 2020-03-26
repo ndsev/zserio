@@ -2,7 +2,7 @@ package templates.sql_table_templated_field;
 
 sql_table TemplatedTable<T>
 {
-    uint32  id      sql "PRIMARY KEY";
+    uint32  id      sql "PRIMARY KEY NOT NULL";
     Data<T> data;
 };
 

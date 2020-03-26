@@ -8,7 +8,7 @@ struct Tile
 
 sql_table CountryMapTable
 {
-    int32   tileId sql "PRIMARY KEY";
+    int32   tileId sql "PRIMARY KEY NOT NULL";
     Tile    tile;
 };
 

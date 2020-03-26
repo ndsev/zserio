@@ -9,6 +9,6 @@ enum bit<3> TestEnum
 
 sql_table DynamicBitFieldEnumFieldTable
 {
-    uint32      id          sql "PRIMARY KEY";
+    uint32      id          sql "PRIMARY KEY NOT NULL";
     TestEnum    enumField;
 };

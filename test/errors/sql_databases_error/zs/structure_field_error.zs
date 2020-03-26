@@ -2,7 +2,7 @@ package structure_field_error;
 
 sql_table TestTable
 {
-    int32       data sql "PRIMARY KEY";
+    int32       data sql "PRIMARY KEY NOT NULL";
 };
 
 struct TestStructure

@@ -1,4 +1,4 @@
-package sql_constraints.constraints;
+package sql_constraints.constraint_imports;
 
 const uint32 ImportedConstant = 321;
 

@@ -12,7 +12,7 @@ struct TestBlob(Header blob) // blob name used to check clashing with an interna
 
 sql_table BlobParamTable
 {
-    uint32                     id          sql "PRIMARY KEY";
+    uint32                     id          sql "PRIMARY KEY NOT NULL";
     string                     name;
     TestBlob(explicit header)  blob1;
     TestBlob(explicit blob)    blob2;

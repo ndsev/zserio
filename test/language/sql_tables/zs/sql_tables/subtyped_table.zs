@@ -8,7 +8,7 @@ struct Student
 
 sql_table TestTable
 {
-    int32       id sql "PRIMARY KEY";
+    int32       id sql "PRIMARY KEY NOT NULL";
     Student     student;
 };
 

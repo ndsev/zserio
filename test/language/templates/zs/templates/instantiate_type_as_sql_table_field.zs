@@ -7,7 +7,7 @@ struct Test<T>
 
 sql_table Test32Table
 {
-    uint32 id sql "PRIMARY KEY";
+    uint32 id sql "PRIMARY KEY NOT NULL";
     Test32 test;
 };
 

@@ -2,8 +2,8 @@ package sql_virtual_tables.fts5_virtual_table;
 
 sql_table Fts5VirtualTable using fts5
 {
-    string      title   sql "NULL";
-    string      body    sql "NULL";
+    string      title;
+    string      body;
 
     sql "tokenize=\"unicode61 remove_diacritics 0 tokenchars '\u001a\u0019'\"";
  };

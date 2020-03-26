@@ -1662,17 +1662,8 @@ For the mapping of zserio types to SQL types, refer to [SQL Types Mapping](#sqli
 
 SQL constraint strings are preprocessed before they are passed to SQLite. This allows
 
-- to implement zserio default NOT NULL handling,
 - to support zserio values inside constraint strings and
 - to convert unicode, hexadecimal and octal string escape sequences.
-
-#### Zserio NOT NULL Handling
-
-The constraints for `sql_table` fields are translated in the following way:
-
-- If there is either `NOT NULL` or `DEFAULT NULL` in the constraint, no further preprocessing is performed.
-- Otherwise if there is `NULL` in the constraint, it is removed.
-- Otherwise `NOT NULL` is added.
 
 #### Zserio Values Handling
 

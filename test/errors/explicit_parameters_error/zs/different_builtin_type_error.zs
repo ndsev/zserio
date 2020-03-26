@@ -14,7 +14,7 @@ struct OtherBlob(Count count)
 
 sql_table Table
 {
-    uint32                    id sql "PRIMARY KEY";
+    uint32                    id sql "PRIMARY KEY NOT NULL";
     Blob(explicit count)      blob1;
     Blob(explicit count)      blob2;
     OtherBlob(explicit count) otherBlob;

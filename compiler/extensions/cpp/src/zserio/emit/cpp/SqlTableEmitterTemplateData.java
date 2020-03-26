@@ -37,9 +37,9 @@ public class SqlTableEmitterTemplateData extends UserTypeTemplateData
 
         final CppNativeMapper cppNativeMapper = context.getCppNativeMapper();
         final ExpressionFormatter cppExpressionFormatter = context.getExpressionFormatter(this);
-        final SqlConstraint sqlConstraintType = tableType.getSqlConstraint();
-        sqlConstraint = (sqlConstraintType == null) ? null :
-            cppExpressionFormatter.formatGetter(sqlConstraintType.getTranslatedConstraintExpr());
+        final SqlConstraint tableSqlConstraint = tableType.getSqlConstraint();
+        sqlConstraint = (tableSqlConstraint == null) ? null :
+            cppExpressionFormatter.formatGetter(tableSqlConstraint.getEvaluatedConstraintExpr());
         virtualTableUsing = tableType.getVirtualTableUsingString();
         needsTypesInSchema = tableType.needsTypesInSchema();
         isWithoutRowId = tableType.isWithoutRowId();
@@ -205,9 +205,9 @@ public class SqlTableEmitterTemplateData extends UserTypeTemplateData
             name = field.getName();
             cppTypeName = nativeFieldType.getFullName();
             cppArgumentTypeName = nativeFieldType.getArgumentTypeName();
-            final Expression sqlConstraintExpr = field.getSqlConstraint().getTranslatedFieldConstraintExpr();
-            sqlConstraint = (sqlConstraintExpr == null) ? null :
-                cppExpressionFormatter.formatGetter(sqlConstraintExpr);
+            final SqlConstraint fieldSqlConstraint = field.getSqlConstraint();
+            sqlConstraint = (fieldSqlConstraint == null) ? null :
+                cppExpressionFormatter.formatGetter(fieldSqlConstraint.getEvaluatedConstraintExpr());
             isVirtual = field.getIsVirtual();
 
             getterName = AccessorNameFormatter.getGetterName(field);

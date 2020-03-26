@@ -2,7 +2,7 @@ package database_subtype_error;
 
 sql_table TestTable
 {
-    int32 field sql "PRIMARY KEY"; 
+    int32 field sql "PRIMARY KEY NOT NULL"; 
 };
 
 sql_database TestDatabase

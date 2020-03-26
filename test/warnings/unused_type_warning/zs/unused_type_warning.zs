@@ -75,14 +75,14 @@ struct BoolStructure(bool isByte)
 // Unused table.
 sql_table UnusedTable
 {
-    int32                   id  sql "PRIMARY KEY";
+    int32                   id  sql "PRIMARY KEY NOT NULL";
     bool                    isByte;
 };
 
 // Used table.
 sql_table BoolStructureTable
 {
-    int32                   id  sql "PRIMARY KEY";
+    int32                   id  sql "PRIMARY KEY NOT NULL";
     bool                    isByte;
     BoolStructure(isByte)   boolStructure;
 };

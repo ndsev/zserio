@@ -13,7 +13,7 @@ struct TestBlob(TestBitmask count)
 
 sql_table BitmaskParamTable
 {
-    uint32                     id          sql "PRIMARY KEY";
+    uint32                     id          sql "PRIMARY KEY NOT NULL";
     string                     name;
     TestBlob(explicit count1)  blob1;
     TestBlob(explicit count2)  blob2;

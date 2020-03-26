@@ -8,7 +8,7 @@ struct TestBlob(uint32 count8, uint32 count16)
 
 sql_table MultipleParamsTable
 {
-    uint32                                      id          sql "PRIMARY KEY";
+    uint32                                      id          sql "PRIMARY KEY NOT NULL";
     string                                      name;
     TestBlob(explicit count1, explicit count2)  blob1;
     TestBlob(explicit count, explicit count)    blob2;

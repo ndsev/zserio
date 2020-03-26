@@ -52,7 +52,7 @@ public class SqlTablesWarningTest
     @Test
     public void notFirstPrimaryKey()
     {
-        final String warning = "not_first_primary_key_warning.zs:6:33: " +
+        final String warning = "not_first_primary_key_warning.zs:6:29: " +
                 "Primary key column 'classId' is not the first one in sql table 'NotFirstPrimaryKeyTable'.";
         assertTrue(zserioWarnings.isPresent(warning));
     }

@@ -6,7 +6,7 @@ package sql_without_rowid_tables.rowid_and_without_rowid_tables;
 
 sql_table WithoutRowIdTable
 {
-    string      word sql "PRIMARY KEY";
+    string      word sql "PRIMARY KEY NOT NULL";
     uint32      count;
 
     sql_without_rowid;
@@ -14,7 +14,7 @@ sql_table WithoutRowIdTable
 
 sql_table OrdinaryRowIdTable
 {
-    string      word sql "PRIMARY KEY";
+    string      word sql "PRIMARY KEY NOT NULL";
     uint32      count;
 };
 

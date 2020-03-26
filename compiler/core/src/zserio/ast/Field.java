@@ -188,10 +188,7 @@ public class Field extends DocumentableAstNode
     /**
      * Gets SQL constraint associated with the field.
      *
-     * Even if SQL constraint is not specified in Zserio, this method returns valid SQL constraint which
-     * corresponds to Zserio SQL constraint default behavior (valid only for SQL tables).
-     *
-     * @return SQL constraint or null if the owner is not SQL table.
+     * @return SQL constraint or null if no SQL constraint has been specified.
      */
     public SqlConstraint getSqlConstraint()
     {

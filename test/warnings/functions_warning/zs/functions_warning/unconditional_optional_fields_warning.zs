@@ -14,7 +14,7 @@ struct SingleOptionalFieldFunction
 // The following just disable "unused type" warning for SingleOptionalFieldFunction type.
 sql_table SingleOptionalFieldFunctionTable
 {
-    int32                               id sql "PRIMARY KEY";
+    int32                               id sql "PRIMARY KEY NOT NULL";
     SingleOptionalFieldFunction         singleOptionalFieldFunction;
 };
 
