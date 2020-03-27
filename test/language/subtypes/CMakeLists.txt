@@ -1,9 +1,9 @@
 set(ZSERIO_GEN_DIR ${CMAKE_CURRENT_BINARY_DIR}/gen)
 set(ZSERIO_GENERATED_SOURCES
+    ${ZSERIO_GEN_DIR}/subtypes/bitmask_subtype/CONST_READ.h
     ${ZSERIO_GEN_DIR}/subtypes/bitmask_subtype/Permission.cpp
     ${ZSERIO_GEN_DIR}/subtypes/bitmask_subtype/Permission.h
     ${ZSERIO_GEN_DIR}/subtypes/bitmask_subtype/PermissionSubtype.h
-    ${ZSERIO_GEN_DIR}/subtypes/bitmask_subtype/CONST_PERMISSION.h
 
     ${ZSERIO_GEN_DIR}/subtypes/enum_subtype/Color.cpp
     ${ZSERIO_GEN_DIR}/subtypes/enum_subtype/Color.h
