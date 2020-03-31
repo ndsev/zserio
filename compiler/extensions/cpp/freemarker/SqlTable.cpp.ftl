@@ -269,22 +269,22 @@ void ${name}::appendCreateTableToQuery(::std::string& sqlQuery)
     appendTableNameToQuery(sqlQuery);
     sqlQuery +=
     <#if virtualTableUsing??>
-            " USING ${virtualTableUsing}"<#if !hasNonVirtualField && !sqlConstraint??>;</#if>
+            ::std::string(" USING ${virtualTableUsing}")<#if !hasNonVirtualField && !sqlConstraint??>;<#else> +</#if>
     </#if>
     <#if hasNonVirtualField || sqlConstraint??>
-            "("
+            "(" +
         <#list fields as field>
             <#if !field.isVirtual>
-            "${field.name}<#if needsTypesInSchema> ${field.sqlTypeData.name}</#if><#rt>
-                    <#lt><#if field.sqlConstraint??> ${sql_strip_quotes(field.sqlConstraint)}</#if><#rt>
-                    <#lt><#if field?has_next>, </#if>"
+            ::std::string("${field.name}<#if needsTypesInSchema> ${field.sqlTypeData.name}</#if>") +<#rt>
+                    <#lt><#if field.sqlConstraint??> " " + ${field.sqlConstraint} +</#if><#rt>
+                    <#lt><#if field?has_next> ", " +</#if>
             </#if>
         </#list>
         <#if hasNonVirtualField && sqlConstraint??>
-            ", "
+            ", " +
         </#if>
         <#if sqlConstraint??>
-            ${sqlConstraint}
+            ${sqlConstraint} +
         </#if>
             ")";
     </#if>

@@ -37,10 +37,6 @@
     ${field.name}_<#t>
 </#macro>
 
-<#function sql_strip_quotes string>
-    <#return string[1..string?length - 2]>
-</#function>
-
 <#macro sql_parameter_provider_getter_name parameter>
     get${parameter.expression?cap_first}<#t>
 </#macro>

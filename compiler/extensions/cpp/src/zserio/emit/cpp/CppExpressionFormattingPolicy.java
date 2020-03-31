@@ -125,7 +125,9 @@ public class CppExpressionFormattingPolicy extends DefaultExpressionFormattingPo
     public String getStringLiteral(Expression expr)
     {
         // string literals in C++ does not support unicode escapes from interval <'\u0000', '\u0031'>
-        return StringEscapeConverter.convertUnicodeToHexEscapes(expr.getText());
+    	final String escapedStringLiteral = StringEscapeConverter.convertUnicodeToHexEscapes(expr.getText());
+
+        return "::std::string(" + escapedStringLiteral + ")";
     }
 
     @Override
