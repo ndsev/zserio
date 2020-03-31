@@ -27,4 +27,4 @@ const float16 FLOAT16 = 15.2f;
 const float32 FLOAT32 = 1.523e1f;
 const float64 FLOAT64 = 15234e-3;
 
-const string STRING = "String";
+const string STRING = "String with escaped values \u0031 \x32 \063 \n \t \f \r \\ \"";

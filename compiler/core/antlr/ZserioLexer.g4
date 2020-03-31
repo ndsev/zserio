@@ -96,21 +96,29 @@ VARUINT32           : 'varuint32' ;
 VARUINT64           : 'varuint64' ;
 
 // whitespaces
-WS : [ \r\n\t\f] -> skip ; // TODO: what is the '\f'
+WS : [\r\n\f\t ] -> skip ;
 
 // comments
 DOC_COMMENT : '/**' .*? '*/' -> channel(DOC) ;
 BLOCK_COMMENT : '/*' .*? '*/' -> channel(HIDDEN) ;
-LINE_COMMENT : '//' ~[\r\n]* -> channel(HIDDEN) ;
+LINE_COMMENT : '//' ~[\r\n\f]* -> channel(HIDDEN) ;
 
 // literals
 BOOL_LITERAL : 'true' | 'false' ;
 
-STRING_LITERAL : '"' ( '\\\\' | '\\"' | .)*? '"' ;
+fragment STRING_CHARACTER
+    :   ~["\\\r\n\f]
+    |   '\\' ["\\rnft]
+    |   '\\u' HEX_DIGIT HEX_DIGIT HEX_DIGIT HEX_DIGIT
+    |   '\\x' HEX_DIGIT HEX_DIGIT
+    |   '\\0' [0-3]? OCTAL_DIGIT OCTAL_DIGIT? 
+    ;
+STRING_LITERAL : '"' STRING_CHARACTER* '"' ;
 
 BINARY_LITERAL : [01]+ [bB] ;
 
-OCTAL_LITERAL : '0' [0-7]+ ;
+fragment OCTAL_DIGIT : [0-7] ;
+OCTAL_LITERAL : '0' OCTAL_DIGIT+ ;
 
 fragment HEX_PREFIX : '0' [xX] ;
 fragment HEX_DIGIT : [0-9a-fA-F] ;
@@ -133,5 +141,8 @@ DECIMAL_LITERAL
 // id
 ID : [a-zA-Z_][a-zA-Z_0-9]* ;
 
-// invalid input
+// invalid string literal
+INVALID_STRING_LITERAL : '"' (~["])* '"'?;
+
+// invalid token
 INVALID_TOKEN : [a-zA-Z_0-9]+ ;

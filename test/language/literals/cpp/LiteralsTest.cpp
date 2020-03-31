@@ -93,7 +93,7 @@ TEST(LiteralsTest, float64Literal)
 
 TEST(LiteralsTest, String)
 {
-    ASSERT_EQ("String", STRING);
+    ASSERT_EQ("String with escaped values \x31 \x32 \063 \n \t \f \r \\ \"", STRING);
 }
 
 } // namespace literals

@@ -45,4 +45,4 @@ class BitfieldEnumTest(unittest.TestCase):
         self.assertEqual(15.234, self.api.FLOAT64)
 
     def testString(self):
-        self.assertEqual("String", self.api.STRING)
+        self.assertEqual("String with escaped values \u0031 \x32 \063 \n \t \f \r \\ \"", self.api.STRING)

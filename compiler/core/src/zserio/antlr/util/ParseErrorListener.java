@@ -24,30 +24,45 @@ public class ParseErrorListener extends BaseErrorListener
     {
         final AstLocation location = new AstLocation(recognizer.getInputStream().getSourceName(), line,
                 charPositionInLine);
-        if (e instanceof InputMismatchException && isKeyword(e.getOffendingToken()))
+        if (e instanceof InputMismatchException)
         {
-            final ParserStackedException stackedException = new ParserStackedException(location,
-                    "'" + e.getOffendingToken().getText() + "' is a reserved keyword!");
-            stackedException.pushMessage(location,  msg);
-            throw stackedException;
+            final Token offendingToken = e.getOffendingToken();
+            if (offendingToken != null)
+            {
+	            if (isKeyword(offendingToken))
+	            {
+	                final ParserStackedException stackedException = new ParserStackedException(location,
+	                        "'" + offendingToken.getText() + "' is a reserved keyword!");
+	                stackedException.pushMessage(location,  msg);
+	                throw stackedException;
+	            }
+	
+	            if (isInvalidStringLiteral(offendingToken))
+	        		throw new ParserException(location, "'" + offendingToken.getText() +
+	        				"' is an invalid string literal!");
+	
+	        	if (isInvalidToken(offendingToken))
+	        		throw new ParserException(location, "'" + offendingToken.getText() +
+	        				"' is an invalid token!");
+            }
         }
-        else
-        {
-            throw new ParserException(new AstLocation(recognizer.getInputStream().getSourceName(), line,
-                    charPositionInLine), msg);
-        }
+
+        throw new ParserException(location, msg);
     }
 
     private boolean isKeyword(Token token)
     {
-        if (token == null)
-            return false;
-
         // according to keywords defined in ZserioLexer.g4
-        if (token.getType() >= ZserioParser.ALIGN && token.getType() <= ZserioParser.VARUINT64)
-            return true;
+        return (token.getType() >= ZserioParser.ALIGN && token.getType() <= ZserioParser.VARUINT64);
+    }
+    
+    private boolean isInvalidStringLiteral(Token token)
+    {
+    	return token.getType() == ZserioParser.INVALID_STRING_LITERAL;
+    }
 
-        return false;
+    private boolean isInvalidToken(Token token)
+    {
+    	return token.getType() == ZserioParser.INVALID_TOKEN;
     }
 }
-

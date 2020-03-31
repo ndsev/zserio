@@ -70,6 +70,6 @@ public class LiteralsTest
     @Test
     public void string()
     {
-        assertTrue(STRING.STRING.equals("String"));
+        assertTrue(STRING.STRING.equals("String with escaped values \u0031 \u0032 \063 \n \t \f \r \\ \""));
     }
 }

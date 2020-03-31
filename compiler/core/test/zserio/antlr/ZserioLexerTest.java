@@ -84,6 +84,8 @@ public class ZserioLexerTest
         checkEOF(lexer);
     }
 
+    
+    // TODO[mikir] obsolete
     @Test
     public void keywords()
     {
@@ -91,12 +93,14 @@ public class ZserioLexerTest
                 "align " +
                 "bit " +
                 "bool " +
+                "bitmask " +
                 "case " +
                 "choice " +
                 "const " +
                 "default " +
                 "enum " +
                 "explicit " +
+                "extern " +
                 "float16 " +
                 "float32 " +
                 "float64 " +
@@ -151,12 +155,14 @@ public class ZserioLexerTest
         checkToken(lexer, ZserioLexer.ALIGN);
         checkToken(lexer, ZserioLexer.BIT_FIELD);
         checkToken(lexer, ZserioLexer.BOOL);
+        checkToken(lexer, ZserioLexer.BITMASK);
         checkToken(lexer, ZserioLexer.CASE);
         checkToken(lexer, ZserioLexer.CHOICE);
         checkToken(lexer, ZserioLexer.CONST);
         checkToken(lexer, ZserioLexer.DEFAULT);
         checkToken(lexer, ZserioLexer.ENUM);
         checkToken(lexer, ZserioLexer.EXPLICIT);
+        checkToken(lexer, ZserioLexer.EXTERN);
         checkToken(lexer, ZserioLexer.FLOAT16);
         checkToken(lexer, ZserioLexer.FLOAT32);
         checkToken(lexer, ZserioLexer.FLOAT64);
@@ -281,8 +287,15 @@ public class ZserioLexerTest
     public void stringLiteral()
     {
         final CharStream input = CharStreams.fromString(
-                "\"true\" \"0\" \"text\" \"with \\\"escaped\\\" string\" " +
-                "\"multiple escapes \\\\\" \"more \\\\\\\"escapes\\\""
+                " \"true\" " +
+                " \"0\" " +
+                " \"text\" " +
+                " \"with \\\"escaped\\\" string\" " +
+                " \"multiple escapes \\\\\" " +
+                " \"more \\\\\\\"escapes\\\"\" " +
+                " \"with escaped unicode value \\u0031\" " +
+                " \"with escaped hexadecimal value \\x32\" " +
+                " \"with escaped octal value \\063\" "
         );
 
         ZserioLexer lexer = new ZserioLexer(input);
@@ -292,11 +305,68 @@ public class ZserioLexerTest
         checkToken(lexer, ZserioLexer.STRING_LITERAL, "\"text\"");
         checkToken(lexer, ZserioLexer.STRING_LITERAL, "\"with \\\"escaped\\\" string\"");
         checkToken(lexer, ZserioLexer.STRING_LITERAL, "\"multiple escapes \\\\\"");
-        checkToken(lexer, ZserioLexer.STRING_LITERAL, "\"more \\\\\\\"escapes\\\"");
+        checkToken(lexer, ZserioLexer.STRING_LITERAL, "\"more \\\\\\\"escapes\\\"\"");
+        checkToken(lexer, ZserioLexer.STRING_LITERAL, "\"with escaped unicode value \\u0031\"");
+        checkToken(lexer, ZserioLexer.STRING_LITERAL, "\"with escaped hexadecimal value \\x32\"");
+        checkToken(lexer, ZserioLexer.STRING_LITERAL, "\"with escaped octal value \\063\"");
 
         checkEOF(lexer);
     }
 
+    @Test
+    public void invalidStringLiteral()
+    {
+        final CharStream input = CharStreams.fromString(
+                " \"invalid unicode escape character \\uBAD\" " +
+                " \"invalid octal escape character \\09\" " +
+                " \"invalid hexadecimal escape character \\xA\" "
+        );
+
+        ZserioLexer lexer = new ZserioLexer(input);
+
+        checkToken(lexer, ZserioLexer.INVALID_STRING_LITERAL, "\"invalid unicode escape character \\uBAD\"");
+        checkToken(lexer, ZserioLexer.INVALID_STRING_LITERAL, "\"invalid octal escape character \\09\"");
+        checkToken(lexer, ZserioLexer.INVALID_STRING_LITERAL, "\"invalid hexadecimal escape character \\xA\"");
+
+        checkEOF(lexer);
+    }
+
+    @Test
+    public void notTerminatedStringLiteral()
+    {
+        final CharStream input = CharStreams.fromString(
+                "\"Not terminated string"
+        );
+
+        ZserioLexer lexer = new ZserioLexer(input);
+        checkToken(lexer, ZserioLexer.INVALID_STRING_LITERAL, "\"Not terminated string");
+        checkEOF(lexer);
+    }
+
+    @Test
+    public void notTerminatedMultilineStringLiteral()
+    {
+        final CharStream input = CharStreams.fromString(
+                "\"Not terminated\nmultiline string\""
+        );
+
+        ZserioLexer lexer = new ZserioLexer(input);
+        checkToken(lexer, ZserioLexer.INVALID_STRING_LITERAL, "\"Not terminated\nmultiline string\"");
+        checkEOF(lexer);
+    }
+
+    @Test
+    public void notTerminatedStringWithQuoteLiteral()
+    {
+        final CharStream input = CharStreams.fromString(
+                "\"Not terminated string with quote\\\""
+        );
+
+        ZserioLexer lexer = new ZserioLexer(input);
+        checkToken(lexer, ZserioLexer.INVALID_STRING_LITERAL, "\"Not terminated string with quote\\\"");
+        checkEOF(lexer);
+    }
+    
     @Test
     public void binaryLiteral()
     {
@@ -335,10 +405,22 @@ public class ZserioLexerTest
     }
 
     @Test
+    public void invalidOctalLiteral()
+    {
+        final CharStream input = CharStreams.fromString(
+                "0109"
+        );
+
+        ZserioLexer lexer = new ZserioLexer(input);
+        checkToken(lexer, ZserioLexer.INVALID_TOKEN, "0109");
+        checkEOF(lexer);
+    }
+
+    @Test
     public void hexadecimalLiteral()
     {
         final CharStream input = CharStreams.fromString(
-                "0x12 0x0 0xFEDCBA98 0xFF 0x1 0xabcdef00 0x1f"
+                "0x12 0x0 0xFEDCBA98 0XFF 0x1 0xabcdef00 0x1f"
         );
 
         ZserioLexer lexer = new ZserioLexer(input);
@@ -346,11 +428,23 @@ public class ZserioLexerTest
         checkToken(lexer, ZserioLexer.HEXADECIMAL_LITERAL, "0x12");
         checkToken(lexer, ZserioLexer.HEXADECIMAL_LITERAL, "0x0");
         checkToken(lexer, ZserioLexer.HEXADECIMAL_LITERAL, "0xFEDCBA98");
-        checkToken(lexer, ZserioLexer.HEXADECIMAL_LITERAL, "0xFF");
+        checkToken(lexer, ZserioLexer.HEXADECIMAL_LITERAL, "0XFF");
         checkToken(lexer, ZserioLexer.HEXADECIMAL_LITERAL, "0x1");
         checkToken(lexer, ZserioLexer.HEXADECIMAL_LITERAL, "0xabcdef00");
         checkToken(lexer, ZserioLexer.HEXADECIMAL_LITERAL, "0x1f");
 
+        checkEOF(lexer);
+    }
+
+    @Test
+    public void invalidHexadecimalLiteral()
+    {
+        final CharStream input = CharStreams.fromString(
+                "0xFEEDWOLF"
+        );
+
+        ZserioLexer lexer = new ZserioLexer(input);
+        checkToken(lexer, ZserioLexer.INVALID_TOKEN, "0xFEEDWOLF");
         checkEOF(lexer);
     }
 

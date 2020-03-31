@@ -11,6 +11,11 @@
 
     <target name="gen" depends="gen.check" unless="literals_error.zs.gen_is_uptodate">
         <testGenClean testName="literals_error"/>
+        <testGen testName="literals_error" zsFile="hexadecimal_string_literal_error.zs" ignoreErrors="true"/>
+        <testGen testName="literals_error" zsFile="multiline_string_literal_error.zs" ignoreErrors="true"/>
+        <testGen testName="literals_error" zsFile="octal_string_literal_error.zs" ignoreErrors="true"/>
+        <testGen testName="literals_error" zsFile="unicode_string_literal_error.zs" ignoreErrors="true"/>
+        <testGen testName="literals_error" zsFile="wrong_hexadecimal_literal_error.zs" ignoreErrors="true"/>
         <testGen testName="literals_error" zsFile="wrong_octal_literal_error.zs" ignoreErrors="true"/>
     </target>
 
