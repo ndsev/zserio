@@ -97,18 +97,24 @@ abstract class CppDefaultEmitter extends DefaultEmitter
         // strip possible directory
         final int lastSlashIndex = packageSourceFileName.lastIndexOf(File.separatorChar);
         final String sourceFileName = (lastSlashIndex == -1) ? packageSourceFileName :
-            packageSourceFileName.substring(lastSlashIndex + 1);
+            	packageSourceFileName.substring(lastSlashIndex + 1);
 
         // strip extensions from source file name
         final int firstDotIndex = sourceFileName.indexOf('.');
         final String sourceFileNameRoot = (firstDotIndex == -1) ? sourceFileName :
-            sourceFileName.substring(0, firstDotIndex);
+            	sourceFileName.substring(0, firstDotIndex);
 
         // convert main part of source file name to camel case
         final String[] words = sourceFileNameRoot.split("_");
         final StringBuilder builder = new StringBuilder();
         for (String word : words)
-            builder.append(Character.toString(word.charAt(0)).toUpperCase(Locale.ENGLISH) + word.substring(1));
+        {
+			if (!word.isEmpty())
+			{
+				builder.append(Character.toString(word.charAt(0)).toUpperCase(Locale.ENGLISH) +
+						word.substring(1));
+			}
+        }
 
         return builder.toString();
     }
