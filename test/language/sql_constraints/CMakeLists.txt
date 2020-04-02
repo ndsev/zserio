@@ -1,16 +1,5 @@
 set(ZSERIO_GEN_DIR ${CMAKE_CURRENT_BINARY_DIR}/gen)
 set(ZSERIO_GENERATED_SOURCES
-    ${ZSERIO_GEN_DIR}/sql_constraints/constraint_imports/ImportedBitmask.cpp
-    ${ZSERIO_GEN_DIR}/sql_constraints/constraint_imports/ImportedBitmask.h
-    ${ZSERIO_GEN_DIR}/sql_constraints/constraint_imports/ImportedConstant.h
-    ${ZSERIO_GEN_DIR}/sql_constraints/constraint_imports/ImportedEnum.cpp
-    ${ZSERIO_GEN_DIR}/sql_constraints/constraint_imports/ImportedEnum.h
-
-    ${ZSERIO_GEN_DIR}/sql_constraints/field_constraints/ConstraintsBitmask.cpp
-    ${ZSERIO_GEN_DIR}/sql_constraints/field_constraints/ConstraintsBitmask.h
-    ${ZSERIO_GEN_DIR}/sql_constraints/field_constraints/ConstraintsConstant.h
-    ${ZSERIO_GEN_DIR}/sql_constraints/field_constraints/ConstraintsEnum.cpp
-    ${ZSERIO_GEN_DIR}/sql_constraints/field_constraints/ConstraintsEnum.h
     ${ZSERIO_GEN_DIR}/sql_constraints/field_constraints/FieldConstraintsTable.cpp
     ${ZSERIO_GEN_DIR}/sql_constraints/field_constraints/FieldConstraintsTable.h
 

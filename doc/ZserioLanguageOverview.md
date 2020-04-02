@@ -54,9 +54,9 @@ described in zserio, giving the developer overall control of the data schema use
 
 [SQLite Extension](#sqlite-extension)
 
-[Background & History](#background--history)
+[Background & History](#background-history)
 
-[License & Copyright](#license--copyright)
+[License & Copyright](#license-copyright)
 
 [*Quick Reference*](ZserioQuickReference.md)
 
@@ -1611,8 +1611,8 @@ In zserio it is possible to express the above example as follows:
 ```
 sql_table GeoMap
 {
-    int32   tileId sql "PRIMARY KEY";
-    Tile    tile;
+    int32   tileId sql "PRIMARY KEY NOT NULL";
+    Tile    tile sql "NOT NULL";
 };
 
 GeoMap europe;
@@ -1624,17 +1624,13 @@ It is important to note that the `GeoMap` is a table type and not a table. A tab
 with identical structure and column names. Each instance of an `sql_table` type in zserio translates to an
 SQLite SQL table where the table name in the SQL schema is equal to the instance name in zserio. A member
 definition may include an SQL constraint introduced by the keyword `sql`, followed by a literal string which is
-preprocessed and then passed to the SQLite engine.
+then passed to the SQLite engine.
 
 Thus, the zserio instance `america` results in the following SQL table:
 
 ```
-CREATE TABLE america (tileNum INT NOT NULL PRIMARY KEY, tile BLOB NOT NULL);
+CREATE TABLE america (tileNum INT PRIMARY KEY NOT NULL, tile BLOB NOT NULL);
 ```
-
-Per default a column constraint of `NOT NULL` is used for each column, meaning there must always be a value in
-the column. To loosen this constraint `sql` can be used to inject pure SQL to allow `NULL` in a column or
-tighten the constraint to make the column `UNIQUE`.
 
 It is also possible to use the zserio keyword `sql` directly inside the table definition. The main use for this
 syntax is to define a primary key spanning multiple fields.
@@ -1644,10 +1640,10 @@ syntax is to define a primary key spanning multiple fields.
 ```
 sql_table BusinessLocationTable
 {
-    BusinessId  businessId;
-    CategoryId  catId;
+    BusinessId  businessId sql "NOT NULL";
+    CategoryId  catId sql "NOT NULL";
     Position    position sql "UNIQUE";
-    int8        hasIcon sql "NULL";
+    int8        hasIcon;
 
     sql "PRIMARY KEY(businessId, catId)";
 };
@@ -1657,42 +1653,6 @@ SQL table types can be templated using the same syntax as other zserio compound 
 [templates](#templates).
 
 For the mapping of zserio types to SQL types, refer to [SQL Types Mapping](#sqlite-types-mapping).
-
-### SQLite Constraints Preprocessing
-
-SQL constraint strings are preprocessed before they are passed to SQLite. This allows
-
-- to support zserio values inside constraint strings and
-- to convert unicode, hexadecimal and octal string escape sequences.
-
-#### Zserio Values Handling
-
-The preprocessor replaces all strings of the form `@DataScriptIdentifier` with the value of the identifier.
-Only identifiers, which are either zserio constants or zserio enumeration or bitmask type values, are replaced.
-
-**Example**
-
-```
-enum uint8 Enum
-{
-    VALUE1,
-    VALUE2
-};
-
-const int8 Constant = 123;
-
-sql_table Foo
-{
-    uint32  colA sql "PRIMARY KEY";
-    uint16  colB sql "CHECK(colB < @Constant)";
-    Enum    type;
-
-    sql "CHECK(type = @Enum.VALUE1 or colA = 0)";
-};
-```
-
-A syntax error is reported if a `@`-reference is used in a SQL constraint that does not match a zserio
-constant or enumeration value.
 
 ### SQLite Virtual Tables
 
@@ -1795,7 +1755,7 @@ A `sql_without_rowid` keyword is always a part of the `sql_table` type:
 ```
 sql_table WithoutRowIdTable
 {
-    string  word sql "PRIMARY KEY";
+    string  word sql "PRIMARY KEY NOT NULL";
     uint32  count;
 
     sql_without_rowid;

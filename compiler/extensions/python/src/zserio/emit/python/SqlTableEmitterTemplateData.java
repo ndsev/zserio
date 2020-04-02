@@ -33,7 +33,7 @@ public class SqlTableEmitterTemplateData extends UserTypeTemplateData
         final SqlConstraint tableSqlConstraint = sqlTableType.getSqlConstraint();
         final ExpressionFormatter pythonExpressionFormatter = context.getPythonExpressionFormatter(this);
         sqlConstraint = (tableSqlConstraint == null) ? null :
-            pythonExpressionFormatter.formatGetter(tableSqlConstraint.getEvaluatedConstraintExpr());
+            pythonExpressionFormatter.formatGetter(tableSqlConstraint.getConstraintExpr());
         virtualTableUsing = sqlTableType.getVirtualTableUsingString();
         needsTypesInSchema = sqlTableType.needsTypesInSchema();
         isWithoutRowId = sqlTableType.isWithoutRowId();
@@ -163,7 +163,7 @@ public class SqlTableEmitterTemplateData extends UserTypeTemplateData
 
             final SqlConstraint fieldSqlConstraint = field.getSqlConstraint();
             sqlConstraint = (fieldSqlConstraint == null) ? null :
-                pythonExpressionFormatter.formatGetter(fieldSqlConstraint.getEvaluatedConstraintExpr());
+                pythonExpressionFormatter.formatGetter(fieldSqlConstraint.getConstraintExpr());
 
             enumData = (fieldBaseType instanceof EnumType) ? new EnumTemplateData(nativeType) : null;
             bitmaskData = (fieldBaseType instanceof BitmaskType) ? new BitmaskTemplateData(nativeType) : null;

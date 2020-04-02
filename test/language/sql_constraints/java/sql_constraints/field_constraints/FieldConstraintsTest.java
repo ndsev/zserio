@@ -17,10 +17,6 @@ import test_utils.JdbcUtil;
 
 import sql_constraints.TestDb;
 
-import sql_constraints.constraint_imports.ImportedConstant;
-import sql_constraints.constraint_imports.ImportedEnum;
-import sql_constraints.constraint_imports.ImportedBitmask;
-
 public class FieldConstraintsTest
 {
     @BeforeClass
@@ -84,84 +80,6 @@ public class FieldConstraintsTest
     }
 
     @Test
-    public void sqlCheckConstant() throws IOException, SQLException
-    {
-        expectedException.expect(SQLException.class);
-        expectedException.expectMessage("CHECK constraint failed: fieldConstraintsTable");
-
-        final FieldConstraintsTable fieldConstraintsTable = database.getFieldConstraintsTable();
-        final FieldConstraintsTableRow row = new FieldConstraintsTableRow();
-        fillRow(row);
-        row.setSqlCheckConstant(ConstraintsConstant.ConstraintsConstant);
-        fieldConstraintsTable.write(Arrays.asList(row));
-    }
-
-    @Test
-    public void sqlCheckImportedConstant() throws IOException, SQLException
-    {
-        expectedException.expect(SQLException.class);
-        expectedException.expectMessage("CHECK constraint failed: fieldConstraintsTable");
-
-        final FieldConstraintsTable fieldConstraintsTable = database.getFieldConstraintsTable();
-        final FieldConstraintsTableRow row = new FieldConstraintsTableRow();
-        fillRow(row);
-        row.setSqlCheckImportedConstant(ImportedConstant.ImportedConstant);
-        fieldConstraintsTable.write(Arrays.asList(row));
-    }
-
-    @Test
-    public void sqlCheckEnum() throws IOException, SQLException
-    {
-        expectedException.expect(SQLException.class);
-        expectedException.expectMessage("CHECK constraint failed: fieldConstraintsTable");
-
-        final FieldConstraintsTable fieldConstraintsTable = database.getFieldConstraintsTable();
-        final FieldConstraintsTableRow row = new FieldConstraintsTableRow();
-        fillRow(row);
-        row.setSqlCheckEnum(ConstraintsEnum.VALUE2);
-        fieldConstraintsTable.write(Arrays.asList(row));
-    }
-
-    @Test
-    public void sqlCheckImportedEnum() throws IOException, SQLException
-    {
-        expectedException.expect(SQLException.class);
-        expectedException.expectMessage("CHECK constraint failed: fieldConstraintsTable");
-
-        final FieldConstraintsTable fieldConstraintsTable = database.getFieldConstraintsTable();
-        final FieldConstraintsTableRow row = new FieldConstraintsTableRow();
-        fillRow(row);
-        row.setSqlCheckImportedEnum(ImportedEnum.TWO);
-        fieldConstraintsTable.write(Arrays.asList(row));
-    }
-
-    @Test
-    public void sqlCheckBitmask() throws IOException, SQLException
-    {
-        expectedException.expect(SQLException.class);
-        expectedException.expectMessage("CHECK constraint failed: fieldConstraintsTable");
-
-        final FieldConstraintsTable fieldConstraintsTable = database.getFieldConstraintsTable();
-        final FieldConstraintsTableRow row = new FieldConstraintsTableRow();
-        fillRow(row);
-        row.setSqlCheckBitmask(ConstraintsBitmask.Values.MASK2);
-        fieldConstraintsTable.write(Arrays.asList(row));
-    }
-
-    @Test
-    public void sqlCheckImportedBitmask() throws IOException, SQLException
-    {
-        expectedException.expect(SQLException.class);
-        expectedException.expectMessage("CHECK constraint failed: fieldConstraintsTable");
-
-        final FieldConstraintsTable fieldConstraintsTable = database.getFieldConstraintsTable();
-        final FieldConstraintsTableRow row = new FieldConstraintsTableRow();
-        fillRow(row);
-        row.setSqlCheckImportedBitmask(ImportedBitmask.Values.MASK2);
-        fieldConstraintsTable.write(Arrays.asList(row));
-    }
-
-    @Test
     public void sqlCheckUnicodeEscape() throws IOException, SQLException
     {
         expectedException.expect(SQLException.class);
@@ -205,12 +123,6 @@ public class FieldConstraintsTest
         row.setWithoutSql(1);
         row.setSqlNotNull(1);
         row.setSqlDefaultNull(1);
-        row.setSqlCheckConstant(1);
-        row.setSqlCheckImportedConstant(1);
-        row.setSqlCheckEnum(ConstraintsEnum.VALUE1);
-        row.setSqlCheckImportedEnum(ImportedEnum.ONE);
-        row.setSqlCheckBitmask(ConstraintsBitmask.Values.MASK1);
-        row.setSqlCheckImportedBitmask(ImportedBitmask.Values.MASK1);
         row.setSqlCheckUnicodeEscape(UNICODE_ESCAPE_CONST);
         row.setSqlCheckHexEscape(HEX_ESCAPE_CONST);
         row.setSqlCheckOctalEscape(OCTAL_ESCAPE_CONST);

@@ -1,5 +1,2 @@
 constParameter:*/sql_constraints/field_constraints/FieldConstraintsTable.cpp
 constParameter:*/sql_constraints/table_constraints/TableConstraintsTable.cpp
-
-noExplicitConstructor:*/sql_constraints/field_constraints/ConstraintsBitmask.h
-noExplicitConstructor:*/sql_constraints/constraint_imports/ImportedBitmask.h

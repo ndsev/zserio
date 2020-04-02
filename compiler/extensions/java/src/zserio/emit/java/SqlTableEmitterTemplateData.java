@@ -41,7 +41,7 @@ public final class SqlTableEmitterTemplateData extends UserTypeTemplateData
         final SqlConstraint tableSqlConstraint = tableType.getSqlConstraint();
         final ExpressionFormatter javaExpressionFormatter = context.getJavaExpressionFormatter();
         sqlConstraint = (tableSqlConstraint == null) ? null :
-            javaExpressionFormatter.formatGetter(tableSqlConstraint.getEvaluatedConstraintExpr());
+            javaExpressionFormatter.formatGetter(tableSqlConstraint.getConstraintExpr());
         virtualTableUsing = tableType.getVirtualTableUsingString();
         needsTypesInSchema = tableType.needsTypesInSchema();
         isWithoutRowId = tableType.isWithoutRowId();
@@ -198,7 +198,7 @@ public final class SqlTableEmitterTemplateData extends UserTypeTemplateData
             isVirtual = field.getIsVirtual();
             final SqlConstraint fieldSqlConstraint = field.getSqlConstraint();
             sqlConstraint = (fieldSqlConstraint == null) ? null :
-                javaExpressionFormatter.formatGetter(fieldSqlConstraint.getEvaluatedConstraintExpr());
+                javaExpressionFormatter.formatGetter(fieldSqlConstraint.getConstraintExpr());
             isNotNull = !SqlConstraint.isNullAllowed(fieldSqlConstraint);
             isPrimaryKey = parentType.isFieldPrimaryKey(field);
 

@@ -64,13 +64,6 @@ public class ZserioAstSymbolResolver extends ZserioAstWalker
     }
 
     @Override
-    public void visitSqlConstraint(SqlConstraint sqlConstraint)
-    {
-        sqlConstraint.resolve(currentCompoundType);
-        sqlConstraint.visitChildren(this);
-    }
-
-    @Override
     public void visitDocTagSee(DocTagSee docTagSee)
     {
         docTagSee.resolve(currentPackage, currentScopedType);
@@ -82,12 +75,8 @@ public class ZserioAstSymbolResolver extends ZserioAstWalker
         if (compoundType.getTemplateParameters().isEmpty())
         {
             currentScopedType = compoundType;
-            currentCompoundType = compoundType;
-
             compoundType.visitChildren(this);
-
             currentScopedType = null;
-            currentCompoundType = null;
         }
         else
         {
@@ -120,6 +109,5 @@ public class ZserioAstSymbolResolver extends ZserioAstWalker
     }
 
     private Package currentPackage = null;
-    private CompoundType currentCompoundType = null;
     private ZserioScopedType currentScopedType = null;
 };

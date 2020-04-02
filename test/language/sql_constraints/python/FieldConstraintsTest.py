@@ -38,48 +38,6 @@ class FieldConstraintsTest(unittest.TestCase):
         rowDict['sqlDefaultNull'] = None
         self._writeRowDict(rowDict)
 
-    def testSqlCheckConstant(self):
-        rowDict = self._createRowDict()
-        rowDict['sqlCheckConstant'] = self.api.field_constraints.ConstraintsConstant
-        with self.assertRaises(apsw.ConstraintError) as context:
-            self._writeRowDict(rowDict)
-            self.assertTrue("CHECK constraint failed: fieldConstraintsTable" in str(context.exception))
-
-    def testSqlCheckImportedConstant(self):
-        rowDict = self._createRowDict()
-        rowDict['sqlCheckImportedConstant'] = self.api.constraint_imports.ImportedConstant
-        with self.assertRaises(apsw.ConstraintError) as context:
-            self._writeRowDict(rowDict)
-            self.assertTrue("CHECK constraint failed: fieldConstraintsTable" in str(context.exception))
-
-    def testSqlCheckEnum(self):
-        rowDict = self._createRowDict()
-        rowDict['sqlCheckEnum'] = self.api.field_constraints.ConstraintsEnum.VALUE2
-        with self.assertRaises(apsw.ConstraintError) as context:
-            self._writeRowDict(rowDict)
-            self.assertTrue("CHECK constraint failed: fieldConstraintsTable" in str(context.exception))
-
-    def testSqlCheckImportedEnum(self):
-        rowDict = self._createRowDict()
-        rowDict['sqlCheckImportedEnum'] = self.api.constraint_imports.ImportedEnum.TWO
-        with self.assertRaises(apsw.ConstraintError) as context:
-            self._writeRowDict(rowDict)
-            self.assertTrue("CHECK constraint failed: fieldConstraintsTable" in str(context.exception))
-
-    def testSqlCheckBitmask(self):
-        rowDict = self._createRowDict()
-        rowDict['sqlCheckBitmask'] = self.api.field_constraints.ConstraintsBitmask.Values.MASK2
-        with self.assertRaises(apsw.ConstraintError) as context:
-            self._writeRowDict(rowDict)
-            self.assertTrue("CHECK constraint failed: fieldConstraintsTable" in str(context.exception))
-
-    def testSqlCheckImportedBitmask(self):
-        rowDict = self._createRowDict()
-        rowDict['sqlCheckImportedBitmask'] = self.api.constraint_imports.ImportedBitmask.Values.MASK2
-        with self.assertRaises(apsw.ConstraintError) as context:
-            self._writeRowDict(rowDict)
-            self.assertTrue("CHECK constraint failed: fieldConstraintsTable" in str(context.exception))
-
     def testSqlCheckUnicodeEscape(self):
         rowDict = self._createRowDict()
         rowDict['sqlCheckUnicodeEscape'] = self.WRONG_UNICODE_ESCAPE_CONST
@@ -107,12 +65,6 @@ class FieldConstraintsTest(unittest.TestCase):
             'withoutSql' : 1,
             'sqlNotNull' : 1,
             'sqlDefaultNull' : 1,
-            'sqlCheckConstant' : 1,
-            'sqlCheckImportedConstant' : 1,
-            'sqlCheckEnum' : self.api.field_constraints.ConstraintsEnum.VALUE1,
-            'sqlCheckImportedEnum' : self.api.constraint_imports.ImportedEnum.ONE,
-            'sqlCheckBitmask' : self.api.field_constraints.ConstraintsBitmask.Values.MASK1,
-            'sqlCheckImportedBitmask' : self.api.constraint_imports.ImportedBitmask.Values.MASK1,
             'sqlCheckUnicodeEscape' : self.UNICODE_ESCAPE_CONST,
             'sqlCheckHexEscape' : self.HEX_ESCAPE_CONST,
             'sqlCheckOctalEscape' : self.OCTAL_ESCAPE_CONST
@@ -124,12 +76,6 @@ class FieldConstraintsTest(unittest.TestCase):
             rowDict['withoutSql'],
             rowDict['sqlNotNull'],
             rowDict['sqlDefaultNull'],
-            rowDict['sqlCheckConstant'],
-            rowDict['sqlCheckImportedConstant'],
-            rowDict['sqlCheckEnum'],
-            rowDict['sqlCheckImportedEnum'],
-            rowDict['sqlCheckBitmask'],
-            rowDict['sqlCheckImportedBitmask'],
             rowDict['sqlCheckUnicodeEscape'],
             rowDict['sqlCheckHexEscape'],
             rowDict['sqlCheckOctalEscape']
