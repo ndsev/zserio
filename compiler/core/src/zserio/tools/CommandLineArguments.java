@@ -257,15 +257,15 @@ class CommandLineArguments
         serviceCodeGroup.setRequired(false);
         options.addOptionGroup(serviceCodeGroup);
 
-        final OptionGroup soucresAmalgamationGroup = new OptionGroup();
+        final OptionGroup sourcesAmalgamationGroup = new OptionGroup();
         option = new Option(OptionNameWithSourcesAmalgamation, false,
                             "enable amalgamation of generated C++ sources (default)");
-        soucresAmalgamationGroup.addOption(option);
+        sourcesAmalgamationGroup.addOption(option);
         option = new Option(OptionNameWithoutSourcesAmalgamation, false,
                             "disable amalgamation of generated C++ sources");
-        soucresAmalgamationGroup.addOption(option);
-        soucresAmalgamationGroup.setRequired(false);
-        options.addOptionGroup(soucresAmalgamationGroup);
+        sourcesAmalgamationGroup.addOption(option);
+        sourcesAmalgamationGroup.setRequired(false);
+        options.addOptionGroup(sourcesAmalgamationGroup);
 
         final OptionGroup sqlCodeGroup = new OptionGroup();
         option = new Option(OptionNameWithSqlCode, false, "enable code for relational (SQLite) parts (default)");

@@ -1,16 +1,13 @@
-package without_sources_amalgamation;
+package with_sources_amalgamation;
 
-struct Tile
-{
-    uint8   version;
-    uint32  numElements;
-    uint8   data[numElements];
-};
+import _imported_tile_.Tile;
+import ___.Empty;
 
 sql_table GeoMapTable
 {
     int32   tileId sql "PRIMARY KEY NOT NULL";
     Tile    tile;
+    Empty   empty;
 };
 
 sql_database WorldDb

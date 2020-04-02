@@ -116,16 +116,20 @@ abstract class CppDefaultEmitter extends DefaultEmitter
 			}
         }
 
-        return builder.toString();
+        final String amalgamFileNameRoot = builder.toString(); 
+        
+        return (amalgamFileNameRoot.isEmpty()) ? CPP_DEFAULT_AMALGAM_FILE_NAME_ROOT : amalgamFileNameRoot; 
     }
 
     private static final String CPP_SOURCE_EXTENSION = ".cpp";
     private static final String CPP_HEADER_EXTENSION = ".h";
     private static final String CPP_TEMPLATE_LOCATION = "cpp/";
 
+    private static final String CPP_DEFAULT_AMALGAM_FILE_NAME_ROOT = "Amalgamation";
+    
     private final String outPathName;
     private final Parameters extensionParameters;
 
     private PackageMapper packageMapper = null;
-    private String packageSourceFileName = "DefaultAmalgam"; // default value should have never been used
+    private String packageSourceFileName = "";
 }

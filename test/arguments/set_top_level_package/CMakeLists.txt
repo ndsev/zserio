@@ -16,7 +16,7 @@ zserio_add_library(TARGET set_top_level_package_zs
     OUT_DIR ${ZSERIO_GEN_DIR}
     OUT_FILES ${ZSERIO_GENERATED_SOURCES}
     ZSERIO_CORE_DIR ${ZSERIO_JAR_DIR}
-    ZSERIO_OPTIONS -setTopLevelPackage company.appl -withoutSourcesAmalgamation -withWriterCode
+    ZSERIO_OPTIONS -setTopLevelPackage company.appl -withoutSourcesAmalgamation
 )
 
 add_test_sources(
