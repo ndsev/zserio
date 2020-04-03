@@ -15,7 +15,7 @@ ${name}::${name}(::zserio::IPubsub& pubsub) : m_pubsub(pubsub)
 
 void ${name}::publish${message.name?cap_first}(${message.typeFullName}& message, void* context)
 {
-    publish(message, "${message.topicDefinition}", context);
+    publish(message, ${message.topicDefinition}, context);
 }
     </#if>
     <#if message.isSubscribed>
@@ -27,7 +27,7 @@ void ${name}::publish${message.name?cap_first}(${message.typeFullName}& message,
     const ::zserio::IPubsub::OnTopic onRawCallback = ::std::bind(
             &${name}::onRaw<${message.typeFullName}>,
             this, callback, ::std::placeholders::_1, ::std::placeholders::_2);
-    return m_pubsub.subscribe("${message.topicDefinition}", onRawCallback, context);
+    return m_pubsub.subscribe(${message.topicDefinition}, onRawCallback, context);
 }
     </#if>
 </#list>

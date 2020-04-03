@@ -553,23 +553,18 @@ public class ZserioAstBuilder extends ZserioParserBaseVisitor<Object>
     {
         final AstLocation location = new AstLocation(ctx.id().getStart());
 
-        String topicDefinition = ctx.topicDefinition().STRING_LITERAL().getText();
-        // strip quotes around the string literal
-        topicDefinition = topicDefinition.substring(1, topicDefinition.length() - 1);
+        final Expression topicDefinitionExpr = (Expression)visit(ctx.topicDefinition().expression());
 
         final boolean isPublished =
                 ctx.topicDefinition().PUBLISH() != null || ctx.topicDefinition().PUBSUB() != null;
-
         final boolean isSubscribed =
                 ctx.topicDefinition().SUBSCRIBE() != null || ctx.topicDefinition().PUBSUB() != null;
 
         final TypeReference typeReference = visitTypeReference(ctx.typeReference());
-
         final String name = ctx.id().getText();
-
         final DocComment docComment = docCommentManager.findDocComment(ctx);
 
-        return new PubsubMessage(location, name, typeReference, topicDefinition, isPublished, isSubscribed,
+        return new PubsubMessage(location, name, typeReference, topicDefinitionExpr, isPublished, isSubscribed,
                 docComment);
     }
 

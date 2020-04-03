@@ -260,7 +260,7 @@ pubsubMessageDefinition
 topicDefinition
     :   (PUBLISH | SUBSCRIBE | PUBSUB)
         LPAREN
-        STRING_LITERAL
+        expression
         RPAREN
     ;
 

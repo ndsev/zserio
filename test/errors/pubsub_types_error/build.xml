@@ -14,6 +14,7 @@
         <testGen testName="pubsub_types_error" zsFile="builtin_type_error.zs" ignoreErrors="true"/>
         <testGen testName="pubsub_types_error" zsFile="choice_type_error.zs" ignoreErrors="true"/>
         <testGen testName="pubsub_types_error" zsFile="duplicated_method_error.zs" ignoreErrors="true"/>
+        <testGen testName="pubsub_types_error" zsFile="invalid_integer_topic_error.zs" ignoreErrors="true"/>
         <testGen testName="pubsub_types_error" zsFile="non_compound_subtype_error.zs" ignoreErrors="true"/>
         <testGen testName="pubsub_types_error" zsFile="parameterized_struct_error.zs" ignoreErrors="true"/>
         <testGen testName="pubsub_types_error" zsFile="sql_database_type_error.zs" ignoreErrors="true"/>

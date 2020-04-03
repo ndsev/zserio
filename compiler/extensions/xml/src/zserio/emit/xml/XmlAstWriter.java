@@ -340,7 +340,6 @@ public class XmlAstWriter implements ZserioAstVisitor
     {
         final Element xmlElement = xmlDoc.createElement("MESSAGE");
         xmlElement.setAttribute("name", pubsubMessage.getName());
-        xmlElement.setAttribute("topic", pubsubMessage.getTopicDefinition());
         if (pubsubMessage.isPublished())
             xmlElement.setAttribute("publish", "true");
         if (pubsubMessage.isSubscribed())

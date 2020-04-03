@@ -5,19 +5,20 @@ import java.util.List;
 
 import zserio.ast.PubsubMessage;
 import zserio.ast.PubsubType;
+import zserio.emit.common.ExpressionFormatter;
 import zserio.emit.common.ZserioEmitException;
 
 public class PubsubTemplateData
 {
-    public PubsubTemplateData(PubsubType pubsubType, String outputPath, boolean withSvgDiagrams)
-            throws ZserioEmitException
+    public PubsubTemplateData(ExpressionFormatter docExpressionFormatter, PubsubType pubsubType,
+    		String outputPath, boolean withSvgDiagrams) throws ZserioEmitException
     {
         name = pubsubType.getName();
         packageName = pubsubType.getPackage().getPackageName().toString();
         docComment = new DocCommentTemplateData(pubsubType.getDocComment());
         for (PubsubMessage message : pubsubType.getMessageList())
         {
-            messageList.add(new MessageTemplateData(message));
+            messageList.add(new MessageTemplateData(docExpressionFormatter, message));
         }
         collaborationDiagramSvgFileName = (withSvgDiagrams)
                 ? DocEmitterTools.getTypeCollaborationSvgUrl(outputPath, pubsubType) : null;
@@ -50,12 +51,13 @@ public class PubsubTemplateData
 
     public static class MessageTemplateData
     {
-        public MessageTemplateData(PubsubMessage pubsubMessage) throws ZserioEmitException
+        public MessageTemplateData(ExpressionFormatter docExpressionFormatter,
+        		PubsubMessage pubsubMessage) throws ZserioEmitException
         {
             keyword = pubsubMessage.isPublished() && pubsubMessage.isSubscribed() ?
                     "pubsub" : pubsubMessage.isPublished() ? "publish" : "subscribe";
             name = pubsubMessage.getName();
-            topicDefinition = pubsubMessage.getTopicDefinition();
+            topicDefinition = docExpressionFormatter.formatGetter(pubsubMessage.getTopicDefinitionExpr());
             type = new LinkedType(pubsubMessage.getType());
             docComment = new DocCommentTemplateData(pubsubMessage.getDocComment());
         }

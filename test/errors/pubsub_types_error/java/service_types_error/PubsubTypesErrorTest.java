@@ -47,6 +47,14 @@ public class PubsubTypesErrorTest
     }
 
     @Test
+    public void invalidIntegerTopic()
+    {
+        final String error =
+        		"invalid_integer_topic_error.zs:10:13: Topic definition must be a constant string!";
+        assertTrue(zserioErrors.isPresent(error));
+    }
+
+    @Test
     public void nonCompoundSubtype()
     {
         final String error = "non_compound_subtype_error.zs:7:32: " +

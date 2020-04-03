@@ -30,7 +30,7 @@
                 <tr><td>{</td></tr>
 <#list messageList as message>
                 <tr><td id="tabIndent">
-                    ${message.keyword}("${message.topicDefinition}") <#rt>
+                    ${message.keyword}(${message.topicDefinition}) <#rt>
                     <@linkedtype message.type/> <#rt>
                     <#lt><a href="#${message.name}" class="fieldLink">${message.name}</a>;
                 </td></tr>

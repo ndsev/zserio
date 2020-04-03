@@ -8,22 +8,22 @@ public class PubsubMessage extends DocumentableAstNode
     /**
      * Constructor.
      *
-     * @param location        AST node location.
-     * @param name            Name of the Pub/Sub message.
-     * @param typeReference   Reference to the message type.
-     * @param topicDefinition Definition of the message's topic.
-     * @param isPublished     Whether the message is published.
-     * @param isSubscribed    Whether the message is subscribed.
-     * @param docComment      Documentation comment belonging to this node.
+     * @param location        	  AST node location.
+     * @param name            	  Name of the Pub/Sub message.
+     * @param typeReference   	  Reference to the message type.
+     * @param topicDefinitionExpr Expression which defines the message's topic.
+     * @param isPublished     	  Whether the message is published.
+     * @param isSubscribed    	  Whether the message is subscribed.
+     * @param docComment      	  Documentation comment belonging to this node.
      */
     public PubsubMessage(AstLocation location, String name, TypeReference typeReference,
-            String topicDefinition, boolean isPublished, boolean isSubscribed, DocComment docComment)
+            Expression topicDefinitionExpr, boolean isPublished, boolean isSubscribed, DocComment docComment)
     {
         super(location, docComment);
 
         this.name = name;
         this.typeReference = typeReference;
-        this.topicDefinition = topicDefinition;
+        this.topicDefinitionExpr = topicDefinitionExpr;
         this.isPublished = isPublished;
         this.isSubscribed = isSubscribed;
     }
@@ -39,6 +39,7 @@ public class PubsubMessage extends DocumentableAstNode
     {
         super.visitChildren(visitor);
 
+        topicDefinitionExpr.accept(visitor);
         typeReference.accept(visitor);
     }
 
@@ -63,11 +64,13 @@ public class PubsubMessage extends DocumentableAstNode
     }
 
     /**
-     * Gets definition of the topic.
+     * Gets topic expression.
+     *
+     * @return Expression which defines the topic.
      */
-    public String getTopicDefinition()
+    public Expression getTopicDefinitionExpr()
     {
-        return topicDefinition;
+        return topicDefinitionExpr;
     }
 
     /**
@@ -90,7 +93,6 @@ public class PubsubMessage extends DocumentableAstNode
         return isSubscribed;
     }
 
-
     /**
      * Checks the message type.
      */
@@ -111,17 +113,21 @@ public class PubsubMessage extends DocumentableAstNode
                     "Only non-parameterized compound types can be used in pubsub messages, '" +
                     ZserioTypeUtil.getReferencedFullName(typeReference) + "' is a parameterized type!");
         }
+
         if (compoundType instanceof SqlTableType)
         {
             throw new ParserException(typeReference, "SQL table '" +
                     ZserioTypeUtil.getReferencedFullName(typeReference) +
                     "' cannot be used in pubsub messages!");
         }
+
+        if (topicDefinitionExpr.getStringValue() == null)
+            throw new ParserException(topicDefinitionExpr, "Topic definition must be a constant string!");
     }
 
     private final String name;
     private final TypeReference typeReference;
-    private final String topicDefinition;
+    private final Expression topicDefinitionExpr;
     private final boolean isPublished;
     private final boolean isSubscribed;
 }

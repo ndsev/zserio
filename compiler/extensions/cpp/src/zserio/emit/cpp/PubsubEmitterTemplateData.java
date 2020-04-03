@@ -5,6 +5,7 @@ import java.util.List;
 
 import zserio.ast.PubsubMessage;
 import zserio.ast.PubsubType;
+import zserio.emit.common.ExpressionFormatter;
 import zserio.emit.common.ZserioEmitException;
 
 public class PubsubEmitterTemplateData extends UserTypeTemplateData
@@ -14,15 +15,17 @@ public class PubsubEmitterTemplateData extends UserTypeTemplateData
     {
         super(context, pubsubType);
 
-        final CppNativeMapper cppTypeMapper = context.getCppNativeMapper();
+        final CppNativeMapper cppNativeMapper = context.getCppNativeMapper();
+        final ExpressionFormatter cppExpressionFormatter = context.getExpressionFormatter(this);
 
         Iterable<PubsubMessage> messageList = pubsubType.getMessageList();
         boolean hasPublishing = false;
         boolean hasSubscribing = false;
         for (PubsubMessage message : messageList)
         {
-            addHeaderIncludesForType(cppTypeMapper.getCppType(message.getType()));
-            final MessageTemplateData templateData = new MessageTemplateData(cppTypeMapper, message);
+            addHeaderIncludesForType(cppNativeMapper.getCppType(message.getType()));
+            final MessageTemplateData templateData = new MessageTemplateData(cppNativeMapper,
+            		cppExpressionFormatter, message);
             hasPublishing |= templateData.getIsPublished();
             hasSubscribing |= templateData.getIsSubscribed();
             this.messageList.add(templateData);
@@ -48,11 +51,12 @@ public class PubsubEmitterTemplateData extends UserTypeTemplateData
 
     public static class MessageTemplateData
     {
-        public MessageTemplateData(CppNativeMapper typeMapper, PubsubMessage message) throws ZserioEmitException
+        public MessageTemplateData(CppNativeMapper cppNativeMapper, ExpressionFormatter cppExpressionFormatter,
+        		PubsubMessage message) throws ZserioEmitException
         {
             name = message.getName();
-            topicDefinition = message.getTopicDefinition();
-            typeFullName = typeMapper.getCppType(message.getType()).getFullName();
+            topicDefinition = cppExpressionFormatter.formatGetter(message.getTopicDefinitionExpr());
+            typeFullName = cppNativeMapper.getCppType(message.getType()).getFullName();
             isPublished = message.isPublished();
             isSubscribed = message.isSubscribed();
         }

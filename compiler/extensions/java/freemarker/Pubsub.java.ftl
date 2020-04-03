@@ -18,7 +18,7 @@ public class ${name}
     public void publish${message.name?cap_first}(${message.typeFullName} message,
             java.lang.Object context)
     {
-        publish("${message.topicDefinition}", message, context);
+        publish(${message.topicDefinition}, message, context);
     }
     </#if>
     <#if message.isSubscribed>
@@ -42,7 +42,7 @@ public class ${name}
                     onRaw${message.name?cap_first}(callback, topic, data);
                 }
             };
-        return pubsub.subscribe("${message.topicDefinition}", onRaw, context);
+        return pubsub.subscribe(${message.topicDefinition}, onRaw, context);
     }
     </#if>
 </#list>

@@ -23,7 +23,8 @@ public class PubsubEmitter extends DefaultHtmlEmitter
             Template tpl = cfg.getTemplate("doc/pubsub.html.ftl");
             setCurrentFolder(CONTENT_FOLDER);
             openOutputFileFromType(pubsubType);
-            tpl.process(new PubsubTemplateData(pubsubType, outputPath, withSvgDiagrams), writer);
+            tpl.process(new PubsubTemplateData(getExpressionFormatter(), pubsubType, outputPath,
+            		withSvgDiagrams), writer);
         }
         catch (Throwable exception)
         {

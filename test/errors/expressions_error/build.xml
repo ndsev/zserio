@@ -11,8 +11,6 @@
 
     <target name="gen" depends="gen.check" unless="expressions_error.zs.gen_is_uptodate">
         <testGenClean testName="expressions_error"/>
-        <testGen testName="expressions_error" zsFile="bitmask_shift_operator_error.zs"
-            ignoreErrors="true"/>
         <testGen testName="expressions_error" zsFile="index_operators/alignment_expression_error.zs"
             ignoreErrors="true"/>
         <testGen testName="expressions_error" zsFile="index_operators/constant_expression_error.zs"
@@ -42,6 +40,10 @@
         <testGen testName="expressions_error" zsFile="valueof_operators/enum_type_error.zs"
             ignoreErrors="true"/>
         <testGen testName="expressions_error" zsFile="valueof_operators/integer_type_error.zs"
+            ignoreErrors="true"/>
+        <testGen testName="expressions_error" zsFile="bitmask_shift_operator_error.zs"
+            ignoreErrors="true"/>
+        <testGen testName="expressions_error" zsFile="string_integer_concatenation_error.zs"
             ignoreErrors="true"/>
         <testGen testName="expressions_error" zsFile="wrong_full_type_error.zs" ignoreErrors="true"/>
         <testGen testName="expressions_error" zsFile="wrong_lengthof_syntax_error.zs" ignoreErrors="true"/>

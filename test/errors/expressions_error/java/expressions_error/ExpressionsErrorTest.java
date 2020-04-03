@@ -25,6 +25,14 @@ public class ExpressionsErrorTest
     }
 
     @Test
+    public void stringIntegerConcatenation()
+    {
+        final String error =
+        		"string_integer_concatenation_error.zs:9:16: Integer or float expressions expected!";
+        assertTrue(zserioErrors.isPresent(error));
+    }
+
+    @Test
     public void wrongFullType()
     {
         final String error = "wrong_full_type_error.zs:7:33: " +

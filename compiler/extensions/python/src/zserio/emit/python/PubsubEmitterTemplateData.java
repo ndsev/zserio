@@ -5,6 +5,7 @@ import java.util.List;
 
 import zserio.ast.PubsubMessage;
 import zserio.ast.PubsubType;
+import zserio.emit.common.ExpressionFormatter;
 import zserio.emit.common.ZserioEmitException;
 import zserio.emit.python.types.PythonNativeType;
 
@@ -15,14 +16,16 @@ public class PubsubEmitterTemplateData extends UserTypeTemplateData
     {
         super(context, pubsubType);
 
-        final PythonNativeMapper pythonTypeMapper = context.getPythonNativeMapper();
+        final PythonNativeMapper pythonNativeMapper = context.getPythonNativeMapper();
+        final ExpressionFormatter pythonExpressionFormatter = context.getPythonExpressionFormatter(this);
 
         Iterable<PubsubMessage> messageList = pubsubType.getMessageList();
         boolean hasPublishing = false;
         boolean hasSubscribing = false;
         for (PubsubMessage message : messageList)
         {
-            final MessageTemplateData templateData = new MessageTemplateData(pythonTypeMapper, message, this);
+            final MessageTemplateData templateData = new MessageTemplateData(pythonNativeMapper,
+            		pythonExpressionFormatter, message, this);
             hasPublishing |= templateData.getIsPublished();
             hasSubscribing |= templateData.getIsSubscribed();
             this.messageList.add(templateData);
@@ -50,12 +53,13 @@ public class PubsubEmitterTemplateData extends UserTypeTemplateData
 
     public static class MessageTemplateData
     {
-        public MessageTemplateData(PythonNativeMapper typeMapper, PubsubMessage message,
-                ImportCollector importCollector) throws ZserioEmitException
+        public MessageTemplateData(PythonNativeMapper pythonNativeMapper,
+        		ExpressionFormatter pythonExpressionFormatter, PubsubMessage message,
+        		ImportCollector importCollector) throws ZserioEmitException
         {
             name = message.getName();
-            topicDefinition = message.getTopicDefinition();
-            final PythonNativeType pythonType = typeMapper.getPythonType(message.getType());
+            topicDefinition = pythonExpressionFormatter.formatGetter(message.getTopicDefinitionExpr());
+            final PythonNativeType pythonType = pythonNativeMapper.getPythonType(message.getType());
             importCollector.importType(pythonType);
             typeFullName = pythonType.getFullName();
             isPublished = message.isPublished();

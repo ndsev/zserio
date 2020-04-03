@@ -271,15 +271,18 @@ public class ZserioParserTest
     public void pubsubMessageDefinition()
     {
         checkParseTree("pubsubMessageDefinition", "publish(\"pubsub/test\") MessageType messageId;",
-                "(pubsubMessageDefinition (topicDefinition publish ( \"pubsub/test\" )) " +
+                "(pubsubMessageDefinition (topicDefinition publish ( (expression " +
+                		"(literal \"pubsub/test\")) )) " +
                         "(typeReference (qualifiedName (id MessageType))) (id messageId) ;)");
 
         checkParseTree("pubsubMessageDefinition", "subscribe(\"pubsub/test\") MessageType messageId;",
-                "(pubsubMessageDefinition (topicDefinition subscribe ( \"pubsub/test\" )) " +
+                "(pubsubMessageDefinition (topicDefinition subscribe ( (expression " +
+                		"(literal \"pubsub/test\")) )) " +
                         "(typeReference (qualifiedName (id MessageType))) (id messageId) ;)");
 
         checkParseTree("pubsubMessageDefinition", "pubsub (\"pubsub/test\") MessageType messageId;",
-                "(pubsubMessageDefinition (topicDefinition pubsub ( \"pubsub/test\" )) " +
+                "(pubsubMessageDefinition (topicDefinition pubsub ( (expression " +
+                		"(literal \"pubsub/test\")) )) " +
                         "(typeReference (qualifiedName (id MessageType))) (id messageId) ;)");
     }
 

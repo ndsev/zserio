@@ -9,14 +9,14 @@ class ${name}:
     <#if message.isPublished>
 
     def publish${message.name?cap_first}(self, message, context=None):
-        self._publish("${message.topicDefinition}", message, context)
+        self._publish(${message.topicDefinition}, message, context)
     </#if>
     <#if message.isSubscribed>
 
     def subscribe${message.name?cap_first}(self, callback, context=None):
         def onRaw(topic, data):
             self._onRaw${message.name?cap_first}(callback, topic, data)
-        return self._pubsub.subscribe("${message.topicDefinition}", onRaw, context)
+        return self._pubsub.subscribe(${message.topicDefinition}, onRaw, context)
     </#if>
 </#list>
 <#if hasSubscribing>
