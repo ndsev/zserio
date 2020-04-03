@@ -94,7 +94,11 @@ public class SqlConstraint extends AstNodeBase
      */
     void evaluate()
     {
-        final String sqlConstraintString = constraintExpr.getText();
+    	// check SQL constraint expression (must be a constant string)
+        final String sqlConstraintString = constraintExpr.getStringValue();
+        if (sqlConstraintString == null)
+            throw new ParserException(constraintExpr, "SQL constraint expression must be a constant string!");
+
         primaryKeyColumnNames = extractColumnsFromConstraint(sqlConstraintString,
         		PRIMARY_KEY_TABLE_CONSTRAINT_REGEX);
         uniqueColumnNames = extractColumnsFromConstraint(sqlConstraintString, UNIQUE_TABLE_CONSTRAINT_REGEX);

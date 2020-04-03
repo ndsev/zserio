@@ -230,7 +230,7 @@ public class ZserioParserTest
 
         checkParseTree("sqlTableFieldDefinition", "uint32 field sql \"PRIMARY KEY\";",
                 "(sqlTableFieldDefinition (typeInstantiation (typeReference (builtinType (intType uint32)))) " +
-                        "(id field) (sqlConstraint sql \"PRIMARY KEY\") ;)");
+                        "(id field) (sqlConstraint sql (expression (literal \"PRIMARY KEY\"))) ;)");
     };
 
     @Test
@@ -238,7 +238,7 @@ public class ZserioParserTest
     {
         checkParseTree("sqlConstraintDefinition", "sql \"languageid='languageCode', notindexed='frequency'\";",
                 "(sqlConstraintDefinition (sqlConstraint sql " +
-                        "\"languageid='languageCode', notindexed='frequency'\") ;)");
+                        "(expression (literal \"languageid='languageCode', notindexed='frequency'\"))) ;)");
     }
 
     @Test

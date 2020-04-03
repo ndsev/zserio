@@ -298,8 +298,8 @@ public class ${name}
                 "(" +
         <#list fields as field>
             <#if !field.isVirtual>
-                "${field.name}<#if needsTypesInSchema> ${field.sqlTypeData.name}</#if><#rt>
-                    <#lt><#if field.sqlConstraint??> ${sql_strip_quotes(field.sqlConstraint)}</#if><#if field_has_next>, </#if>" +
+                "${field.name}<#if needsTypesInSchema> ${field.sqlTypeData.name}</#if>"<#rt>
+                    <#lt><#if field.sqlConstraint??> + " " + ${field.sqlConstraint}</#if><#if field_has_next> + ","</#if> +
             </#if>
         </#list>
         <#if hasNonVirtualField && sqlConstraint??>

@@ -169,9 +169,6 @@ class ${name}():
         return (self._attachedDbName + "." + self._tableName) if self._attachedDbName else self._tableName
 <#if withWriterCode>
 
-    <#function strip_quotes string>
-        <#return string[1..string?length - 2]>
-    </#function>
     def _getCreateTableQuery(self):
         sqlQuery = "CREATE <#if virtualTableUsing??>VIRTUAL </#if>TABLE "
         sqlQuery += self._getTableNameInQuery()
@@ -179,18 +176,18 @@ class ${name}():
         sqlQuery += " USING ${virtualTableUsing}"
     </#if>
     <#if hasNonVirtualField || sqlConstraint??>
-        sqlQuery += ("("
+        sqlQuery += ("(" +
         <#list fields as field>
             <#if !field.isVirtual>
-                     "${field.name}<#if needsTypesInSchema> ${field.sqlTypeData.name}</#if><#rt>
-                     <#lt><#if field.sqlConstraint??> ${strip_quotes(field.sqlConstraint)}</#if><#if field_has_next>, </#if>"
+                     "${field.name}<#if needsTypesInSchema> ${field.sqlTypeData.name}</#if>"<#rt>
+                     <#lt><#if field.sqlConstraint??> + " " + ${field.sqlConstraint}</#if><#if field_has_next> + ","</#if> +
             </#if>
         </#list>
         <#if hasNonVirtualField && sqlConstraint??>
-                     ", "
+                     ", " +
         </#if>
         <#if sqlConstraint??>
-                     ${sqlConstraint}
+                     ${sqlConstraint} +
         </#if>
                      ")")
     </#if>

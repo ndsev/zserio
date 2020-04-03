@@ -297,6 +297,17 @@ public class Expression extends AstNodeBase
     }
 
     /**
+     * Gets value for string expression.
+     *
+     * @return Returns value for string expression or null if expression is not string or if value of string
+     *         expression is not possible to evaluate during compile time.
+     */
+    public String getStringValue()
+    {
+        return expressionStringValue;
+    }
+
+    /**
      * Gets upper bound for integer expression.
      *
      * @return Returns upper bound for integer expression or null if expression is not integer or if upper bound
@@ -565,6 +576,7 @@ public class Expression extends AstNodeBase
 
                 case ZserioParser.STRING_LITERAL:      // literalExpression
                     expressionType = ExpressionType.STRING;
+                    expressionStringValue = stripStringLiteral(getText());
                     break;
 
                 case ZserioParser.FLOAT_LITERAL:       // literalExpression
@@ -758,6 +770,7 @@ public class Expression extends AstNodeBase
     {
         expressionType = operand1.expressionType;
         expressionIntegerValue = operand1.expressionIntegerValue;
+        expressionStringValue = operand1.expressionStringValue;
         zserioType = operand1.zserioType;
         symbolObject = operand1.symbolObject;
         symbolInstantiation = operand1.symbolInstantiation;
@@ -795,6 +808,7 @@ public class Expression extends AstNodeBase
 
         evaluateExpressionType(function.getReturnTypeReference());
         expressionIntegerValue = functionResultExpression.expressionIntegerValue;
+        expressionStringValue = functionResultExpression.expressionStringValue;
     }
 
     private void evaluateArrayElement()
@@ -1034,6 +1048,8 @@ public class Expression extends AstNodeBase
                 operand2.expressionType == ExpressionType.STRING)
         {
             expressionType = ExpressionType.STRING;
+            if (operand1.expressionStringValue != null && operand2.expressionStringValue != null)
+            	expressionStringValue = operand1.expressionStringValue + operand2.expressionStringValue; 
         }
         else
         {
@@ -1353,6 +1369,7 @@ public class Expression extends AstNodeBase
 
         final Expression constValueExpression = constant.getValueExpression();
         expressionIntegerValue = constValueExpression.expressionIntegerValue;
+        expressionStringValue = constValueExpression.expressionStringValue;
     }
 
     private void evaluateExpressionType(TypeInstantiation typeInstantiation)
@@ -1463,6 +1480,7 @@ public class Expression extends AstNodeBase
         evaluationState = EvaluationState.NOT_EVALUATED;
         expressionType = ExpressionType.UNKNOWN;
         expressionIntegerValue = new ExpressionIntegerValue();
+        expressionStringValue = null;
         zserioType = null;
         symbolObject = null;
         symbolInstantiation = null;
@@ -1532,6 +1550,17 @@ public class Expression extends AstNodeBase
         return (postfixPos == -1) ? floatLiteral : floatLiteral.substring(0, postfixPos);
     }
 
+    private static String stripStringLiteral(String stringLiteral)
+    {
+    	final int prefixPos = stringLiteral.indexOf('"');
+    	final String strippedStringLiteral = (prefixPos == -1) ? stringLiteral :
+    			stringLiteral.substring(prefixPos + 1);
+    	
+    	final int postfixPos = strippedStringLiteral.lastIndexOf('"');
+    	
+    	return (postfixPos == -1) ? strippedStringLiteral : strippedStringLiteral.substring(0, postfixPos);
+    }
+    
     private static int findChars(String text, char firstChar, char secondChar)
     {
         int pos = text.indexOf(firstChar);
@@ -1558,6 +1587,7 @@ public class Expression extends AstNodeBase
 
     private ExpressionType expressionType;
     private ExpressionIntegerValue expressionIntegerValue;
+    private String expressionStringValue;
     private ZserioType zserioType;
     private AstNode symbolObject;
     private TypeInstantiation symbolInstantiation;

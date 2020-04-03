@@ -205,7 +205,7 @@ sqlConstraintDefinition
     ;
 
 sqlConstraint
-    :   SQL STRING_LITERAL
+    :   SQL expression
     ;
 
 sqlWithoutRowId

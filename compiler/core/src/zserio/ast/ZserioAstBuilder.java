@@ -462,12 +462,10 @@ public class ZserioAstBuilder extends ZserioParserBaseVisitor<Object>
         if (ctx == null)
             return null;
 
-        final Token constraintExprToken = ctx.STRING_LITERAL().getSymbol();
-        final AstLocation constraintExprLocation = new AstLocation(constraintExprToken);
-        final Expression constraintExpr = new Expression(constraintExprLocation, currentPackage,
-                constraintExprToken.getType(), constraintExprToken.getText(), Expression.ExpressionFlag.NONE);
+        final AstLocation location = new AstLocation(ctx.expression().getStart());
+        final Expression constraintExpr = (Expression)visit(ctx.expression());
 
-        return new SqlConstraint(constraintExprLocation, constraintExpr);
+        return new SqlConstraint(location, constraintExpr);
     }
 
     @Override

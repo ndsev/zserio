@@ -80,6 +80,32 @@ public class FieldConstraintsTest
     }
 
     @Test
+    public void sqlCheckConstant() throws IOException, SQLException
+    {
+        expectedException.expect(SQLException.class);
+        expectedException.expectMessage("CHECK constraint failed: fieldConstraintsTable");
+
+        final FieldConstraintsTable fieldConstraintsTable = database.getFieldConstraintsTable();
+        final FieldConstraintsTableRow row = new FieldConstraintsTableRow();
+        fillRow(row);
+        row.setSqlCheckConstant(WRONG_CONSTRAINTS_CONSTANT);
+        fieldConstraintsTable.write(Arrays.asList(row));
+    }
+
+    @Test
+    public void sqlCheckImportedConstant() throws IOException, SQLException
+    {
+        expectedException.expect(SQLException.class);
+        expectedException.expectMessage("CHECK constraint failed: fieldConstraintsTable");
+
+        final FieldConstraintsTable fieldConstraintsTable = database.getFieldConstraintsTable();
+        final FieldConstraintsTableRow row = new FieldConstraintsTableRow();
+        fillRow(row);
+        row.setSqlCheckImportedConstant(WRONG_IMPORTED_CONSTRAINTS_CONSTANT);
+        fieldConstraintsTable.write(Arrays.asList(row));
+    }
+
+    @Test
     public void sqlCheckUnicodeEscape() throws IOException, SQLException
     {
         expectedException.expect(SQLException.class);
@@ -123,6 +149,8 @@ public class FieldConstraintsTest
         row.setWithoutSql(1);
         row.setSqlNotNull(1);
         row.setSqlDefaultNull(1);
+        row.setSqlCheckConstant(1);
+        row.setSqlCheckImportedConstant(1);
         row.setSqlCheckUnicodeEscape(UNICODE_ESCAPE_CONST);
         row.setSqlCheckHexEscape(HEX_ESCAPE_CONST);
         row.setSqlCheckOctalEscape(OCTAL_ESCAPE_CONST);
@@ -133,6 +161,9 @@ public class FieldConstraintsTest
     private static final short UNICODE_ESCAPE_CONST = 1;
     private static final short HEX_ESCAPE_CONST = 2;
     private static final short OCTAL_ESCAPE_CONST = 3;
+
+    private static final int WRONG_CONSTRAINTS_CONSTANT = 124;
+    private static final long WRONG_IMPORTED_CONSTRAINTS_CONSTANT = 322;
 
     private static final short WRONG_UNICODE_ESCAPE_CONST = 0;
     private static final short WRONG_HEX_ESCAPE_CONST = 0;

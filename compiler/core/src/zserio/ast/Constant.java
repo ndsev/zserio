@@ -3,9 +3,7 @@ package zserio.ast;
 import zserio.tools.HashUtil;
 
 /**
- * AST node for Constant types.
- *
- * Constant types are Zserio types as well.
+ * AST node for Constants.
  */
 public class Constant extends DocumentableAstNode implements Comparable<Constant>
 {
@@ -109,7 +107,7 @@ public class Constant extends DocumentableAstNode implements Comparable<Constant
     }
 
     /**
-     * Checks the constant type.
+     * Checks the constant.
      */
     void check()
     {

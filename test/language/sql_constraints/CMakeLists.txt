@@ -1,7 +1,11 @@
 set(ZSERIO_GEN_DIR ${CMAKE_CURRENT_BINARY_DIR}/gen)
 set(ZSERIO_GENERATED_SOURCES
+    ${ZSERIO_GEN_DIR}/sql_constraints/constraint_imports/IMPORTED_CONSTRAINTS_CONSTANT.h
+
+    ${ZSERIO_GEN_DIR}/sql_constraints/field_constraints/CONSTRAINTS_CONSTANT.h
     ${ZSERIO_GEN_DIR}/sql_constraints/field_constraints/FieldConstraintsTable.cpp
     ${ZSERIO_GEN_DIR}/sql_constraints/field_constraints/FieldConstraintsTable.h
+    ${ZSERIO_GEN_DIR}/sql_constraints/field_constraints/NOT_NULL_CONSTRAINT.h
 
     ${ZSERIO_GEN_DIR}/sql_constraints/table_constraints/TableConstraintsTable.cpp
     ${ZSERIO_GEN_DIR}/sql_constraints/table_constraints/TableConstraintsTable.h
