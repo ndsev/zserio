@@ -1,4 +1,4 @@
-package index_operators.parameter_no_array_error;
+package parameter_no_array_error;
 
 struct Parameterized(int32 id)
 {

@@ -1,4 +1,4 @@
-package offsets.signed_bitfield_error;
+package signed_bitfield_error;
 
 struct SignedBitfieldError
 {

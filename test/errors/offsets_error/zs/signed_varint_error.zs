@@ -1,4 +1,4 @@
-package offsets.signed_varint_error;
+package signed_varint_error;
 
 struct SignedVarintError
 {

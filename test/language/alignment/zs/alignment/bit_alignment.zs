@@ -1,5 +1,7 @@
 package alignment.bit_alignment;
 
+const bit:4 ALIGNMENT_2 = 2;
+
 struct BitAlignment
 {
     // See precalculated alignments and positions in comments for start positions 0 || 78
@@ -7,16 +9,19 @@ struct BitAlignment
 align(1):
     // a:0 pos:1 || a:0 pos:78
     bit:1   aligned1Field;
-
-align(2):
+    
+    // indented to check the constant in the alignment
+align(ALIGNMENT_2):
     // a:1 pos:2 || a:1 pos:80
     bit:2   aligned2Field;
 
-align(3):
+    // intended to check the expression in the alignment
+align(ALIGNMENT_2 + 1):
     // a:2 pos:6 || a:2 pos:84
     bit:3   aligned3Field;
 
-align(4):
+    // intended to check the expression in the alignment
+align(1 + 1 + 1 + 1):
     // a:3 pos:12 || a:1 pos:88
     bit:4   aligned4Field;
 

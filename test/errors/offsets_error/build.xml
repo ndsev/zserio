@@ -1,0 +1,39 @@
+<project name="offsets_error" basedir="." default="run">
+    <testProperties testPath="errors/offsets_error" testName="offsets_error"/>
+
+    <target name="prepare">
+        <testPrepare testName="offsets_error"/>
+    </target>
+
+    <target name="gen.check" depends="prepare">
+        <testGenCheck testName="offsets_error"/>
+    </target>
+
+    <target name="gen" depends="gen.check" unless="offsets_error.zs.gen_is_uptodate">
+        <testGenClean testName="offsets_error"/>
+        <testGen testName="offsets_error" zsFile="array_no_index_error.zs" ignoreErrors="true"/>
+        <testGen testName="offsets_error" zsFile="builtin_type_parameter_error.zs" ignoreErrors="true"/>
+        <testGen testName="offsets_error" zsFile="constant_error.zs" ignoreErrors="true"/>
+        <testGen testName="offsets_error" zsFile="float_error.zs" ignoreErrors="true"/>
+        <testGen testName="offsets_error" zsFile="signed_bitfield_error.zs" ignoreErrors="true"/>
+        <testGen testName="offsets_error" zsFile="signed_integer_error.zs" ignoreErrors="true"/>
+        <testGen testName="offsets_error" zsFile="signed_varint_error.zs" ignoreErrors="true"/>
+        <testGen testName="offsets_error" zsFile="string_error.zs" ignoreErrors="true"/>
+    </target>
+
+    <target name="compile" depends="gen">
+        <testCompile testName="offsets_error" srcPath="${offsets_error.base_dir}/java"/>
+    </target>
+
+    <target name="spotbugs" depends="compile" if="spotbugs.home_dir">
+        <testSpotBugs testName="offsets_error" srcPath="${offsets_error.base_dir}/java"/>
+    </target>
+
+    <target name="run" depends="spotbugs">
+        <testRun testName="offsets_error"/>
+    </target>
+
+    <target name="clean">
+        <testClean testName="offsets_error"/>
+    </target>
+</project>

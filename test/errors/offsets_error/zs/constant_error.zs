@@ -1,4 +1,4 @@
-package offsets.constant_error;
+package constant_error;
 
 const uint32 CONST = 1;
 

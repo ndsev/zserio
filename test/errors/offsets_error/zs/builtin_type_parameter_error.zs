@@ -1,4 +1,4 @@
-package offsets.builtin_type_parameter_error;
+package builtin_type_parameter_error;
 
 struct BuiltinTypeParameterError(uint32 param)
 {

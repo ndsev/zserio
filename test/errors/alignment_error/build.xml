@@ -1,0 +1,34 @@
+<project name="alignment_error" basedir="." default="run">
+    <testProperties testPath="errors/alignment_error" testName="alignment_error"/>
+
+    <target name="prepare">
+        <testPrepare testName="alignment_error"/>
+    </target>
+
+    <target name="gen.check" depends="prepare">
+        <testGenCheck testName="alignment_error"/>
+    </target>
+
+    <target name="gen" depends="gen.check" unless="alignment_error.zs.gen_is_uptodate">
+        <testGenClean testName="alignment_error"/>
+        <testGen testName="alignment_error" zsFile="field_alignment_error.zs" ignoreErrors="true"/>
+        <testGen testName="alignment_error" zsFile="negative_integer_alignment_error.zs" ignoreErrors="true"/>
+        <testGen testName="alignment_error" zsFile="no_integer_alignment_error.zs" ignoreErrors="true"/>
+    </target>
+
+    <target name="compile" depends="gen">
+        <testCompile testName="alignment_error" srcPath="${alignment_error.base_dir}/java"/>
+    </target>
+
+    <target name="spotbugs" depends="compile" if="spotbugs.home_dir">
+        <testSpotBugs testName="alignment_error" srcPath="${alignment_error.base_dir}/java"/>
+    </target>
+
+    <target name="run" depends="spotbugs">
+        <testRun testName="alignment_error"/>
+    </target>
+
+    <target name="clean">
+        <testClean testName="alignment_error"/>
+    </target>
+</project>

@@ -1,4 +1,4 @@
-package offsets.signed_integer_error;
+package signed_integer_error;
 
 struct SignedIntegerError
 {

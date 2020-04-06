@@ -198,11 +198,7 @@ public class ZserioAstBuilder extends ZserioParserBaseVisitor<Object>
         if (ctx == null)
             return null;
 
-        final Token token = ctx.DECIMAL_LITERAL().getSymbol();
-        final AstLocation location = new AstLocation(token);
-
-        return new Expression(location, currentPackage, token.getType(), token.getText(),
-                Expression.ExpressionFlag.NONE);
+        return (Expression)visit(ctx.expression());
     }
 
     @Override

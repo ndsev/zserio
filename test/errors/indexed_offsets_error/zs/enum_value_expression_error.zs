@@ -1,4 +1,4 @@
-package index_operators.enum_value_expression_error;
+package enum_value_expression_error;
 
 enum uint8 Enumeration
 {

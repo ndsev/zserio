@@ -81,7 +81,7 @@ structureFieldDefinition
     ;
 
 fieldAlignment
-    :   ALIGN LPAREN DECIMAL_LITERAL RPAREN COLON
+    :   ALIGN LPAREN expression RPAREN COLON // integer expression
     ;
 
 fieldOffset
@@ -205,7 +205,7 @@ sqlConstraintDefinition
     ;
 
 sqlConstraint
-    :   SQL expression
+    :   SQL expression // string expression
     ;
 
 sqlWithoutRowId
@@ -260,7 +260,7 @@ pubsubMessageDefinition
 topicDefinition
     :   (PUBLISH | SUBSCRIBE | PUBSUB)
         LPAREN
-        expression
+        expression // string expression
         RPAREN
     ;
 

@@ -1,4 +1,4 @@
-package index_operators.default_value_expression_error;
+package default_value_expression_error;
 
 struct DefaultValueExpressionError
 {

@@ -1,4 +1,4 @@
-package index_operators.constraint_expression_error;
+package constraint_expression_error;
 
 struct ContraintExpressionError
 {

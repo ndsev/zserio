@@ -79,11 +79,8 @@ public class ZserioParserTest
     @Test
     public void fieldAlignment()
     {
-        checkParseTree("fieldAlignment", "align(15):", "(fieldAlignment align ( 15 ) :)");
-
-        assertParseError("fieldAlignment", "align(\"15\"):",
-                "mismatched input '\"15\"' expecting DECIMAL_LITERAL");
-        assertParseError("fieldAlignment", "align(15.4):", "mismatched input '15.4' expecting DECIMAL_LITERAL");
+        checkParseTree("fieldAlignment", "align(15):",
+        		"(fieldAlignment align ( (expression (literal 15)) ) :)");
     }
 
     @Test
@@ -154,7 +151,7 @@ public class ZserioParserTest
                 "offset:" +
                 "    uint32 value = 10 if hasValue : value > 0;",
                 "(structureFieldDefinition " +
-                        "(fieldAlignment align ( 10 ) :) " +
+                        "(fieldAlignment align ( (expression (literal 10)) ) :) " +
                         "(fieldOffset (expression (id offset)) :) " +
                         "(fieldTypeId (typeInstantiation (typeReference (builtinType (intType uint32)))) " +
                                 "(id value)) " +

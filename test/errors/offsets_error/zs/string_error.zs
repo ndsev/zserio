@@ -1,4 +1,4 @@
-package offsets.string_error;
+package string_error;
 
 struct StringError
 {

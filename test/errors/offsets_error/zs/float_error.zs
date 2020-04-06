@@ -1,4 +1,4 @@
-package offsets.float_error;
+package float_error;
 
 struct FloatError
 {

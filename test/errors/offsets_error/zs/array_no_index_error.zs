@@ -1,4 +1,4 @@
-package offsets.array_no_index_error;
+package array_no_index_error;
 
 struct ArrayNoIndexError
 {

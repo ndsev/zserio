@@ -1,4 +1,4 @@
-package index_operators.no_array_error;
+package no_array_error;
 
 struct NoArrayError
 {

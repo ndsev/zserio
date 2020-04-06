@@ -1,4 +1,4 @@
-package expressions_error.offsets;
+package offsets_error;
 
 import static org.junit.Assert.*;
 

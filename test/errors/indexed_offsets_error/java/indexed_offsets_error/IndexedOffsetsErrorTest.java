@@ -1,4 +1,4 @@
-package expressions_error.index_operators;
+package indexed_offsets_error;
 
 import static org.junit.Assert.*;
 
@@ -9,7 +9,7 @@ import org.junit.Test;
 
 import test_utils.ZserioErrors;
 
-public class IndexOperatorsErrorTest
+public class IndexedOffsetsErrorTest
 {
     @BeforeClass
     public static void readZserioErrors() throws IOException
@@ -20,12 +20,9 @@ public class IndexOperatorsErrorTest
     @Test
     public void alignmentExpression()
     {
-        final String errors[] =
-        {
-            "alignment_expression_error.zs:5:7: mismatched input '@index' expecting DECIMAL_LITERAL",
-            "alignment_expression_error.zs:5:7: '@index' is a reserved keyword!"
-        };
-        assertTrue(zserioErrors.isPresent(errors));
+        final String error =
+        		"alignment_expression_error.zs:5:7: Index operator is not allowed in this context!";
+        assertTrue(zserioErrors.isPresent(error));
     }
 
     @Test
