@@ -47,11 +47,10 @@ TEST_F(WithSourcesAmalgamation, check___Package)
             "arguments/with_sources_amalgamation/gen/__/Empty.cpp"));
 }
 
-TEST_F(WithSourcesAmalgamation, checkWithSourcesAmalgamationDefaultPackage)
+TEST_F(WithSourcesAmalgamation, checkDefaultPackageAmalgamation)
 {
     ASSERT_TRUE(isFilePresent(
-            "arguments/with_sources_amalgamation/gen_default_package/"
-                "WithSourcesAmalgamationDefaultPackage.cpp"));
+            "arguments/with_sources_amalgamation/gen_default_package/DefaultPackageAmalgamation.cpp"));
     ASSERT_FALSE(isFilePresent(
             "arguments/with_sources_amalgamation/gen_default_package/WithSourcesAmalgamationStructure.cpp"));
 }
