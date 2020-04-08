@@ -8,5 +8,5 @@ package zserio.emit.python;
 public class PythonExtensionVersion
 {
     /** Python extension version string. */
-    public static final String VERSION_STRING = "2.0.0-pre2";
+    public static final String VERSION_STRING = "2.0.0-pre3";
 }
