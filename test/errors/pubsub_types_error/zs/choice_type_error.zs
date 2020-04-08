@@ -11,5 +11,5 @@ choice Data(bit:8 size) on size
 
 pubsub Provider
 {
-    publish("provider/data") Data data;
+    publish topic("provider/data") Data data;
 };

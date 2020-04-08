@@ -1,4 +1,4 @@
-# Zserio 1.0 Language Overview
+# Zserio Language Overview
 
 This document contains a detailed specification of the zserio schema language. The Zserio Language Overview
 document is targeted for developers who write zserio schema definitions.
@@ -1523,12 +1523,12 @@ client.
 ```
 pubsub WeatherProvider
 {
-    publish("weather/warnings") WeatherWarning warnings;
+    publish topic("weather/warnings") WeatherWarning warnings;
 };
 
 pubsub WeatherClient
 {
-    subscribe("weather/warnings") WeatherWarning weatherWarnings;
+    subscribe topic("weather/warnings") WeatherWarning weatherWarnings;
 };
 
 struct WeatherWarning
@@ -1545,14 +1545,14 @@ topic "weather/warnings". The client expects that the type of messages arriving 
 subscription (i.e. published under the defined topic) are of the type `WeatherWarning`.
 
 Pubsub type can define a message in three ways:
-   * `publish("topic/definition") Type message` to publish a message,
-   * `subscribe("topic/definition") Type message` to subscribe a message,
-   * `pubsub("topic/definition") Type message` to both publish and subscribe a message.
+   * `topic("topic/definition") Type message` to both publish and subscribe a message,
+   * `publish topic("topic/definition") Type message` to publish a message,
+   * `subscribe topic("topic/definition") Type message` to subscribe a message.
 
 ### Topic Definition
 
 In the Pub/Sub pattern, it is common to use wildcards for topic definitions in subscriptions. The wildcards
-format depends and a particular implementation. Zserio only provides a generic definition of Pub/Sub clients
+format depends on a particular implementation. Zserio only provides a generic definition of Pub/Sub clients
 and doesn't manipulate with the topic definition string. It therefore depends on the particular Pub/Sub backend
 whether the wildcards are supported and how. See the
 [MQTT standard](https://docs.oasis-open.org/mqtt/mqtt/v5.0/os/mqtt-v5.0-os.html#_Topic_Names_and)

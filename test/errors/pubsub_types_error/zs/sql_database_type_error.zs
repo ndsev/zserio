@@ -12,5 +12,5 @@ sql_database Data
 
 pubsub Provider
 {
-    publish("provider/data") Data data;
+    publish topic("provider/data") Data data;
 };

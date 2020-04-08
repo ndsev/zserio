@@ -4,5 +4,5 @@ subtype int32 Data;
 
 pubsub User
 {
-    subscribe("provider/data") Data data;
+    subscribe topic("provider/data") Data data;
 };

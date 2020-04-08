@@ -15,21 +15,21 @@ struct UInt64Value
 // separated provider and client
 pubsub SimplePubsubProvider
 {
-    publish(PUBSUB_TOPIC_NAME + "/power_of_two") UInt64Value powerOfTwo;
-    subscribe(PUBSUB_TOPIC_NAME + "/request") Int32Value request;
+    publish topic(PUBSUB_TOPIC_NAME + "/power_of_two") UInt64Value powerOfTwo;
+    subscribe topic(PUBSUB_TOPIC_NAME + "/request") Int32Value request;
 };
 
 pubsub SimplePubsubClient
 {
     // intended to check string concatenation
-    publish("simple_pubsub" + "/request") Int32Value request;
+    publish topic("simple_pubsub" + "/request") Int32Value request;
     // intended to check string concatenation
-    subscribe("simple_pubsub/power_of_two") UInt64Value powerOfTwo;
+    subscribe topic("simple_pubsub/power_of_two") UInt64Value powerOfTwo;
 };
 
 // or just a single Pub/Sub
 pubsub SimplePubsub
 {
-    pubsub(PUBSUB_TOPIC_NAME + "/request") Int32Value request;
-    pubsub(PUBSUB_TOPIC_NAME + "/power_of_two") UInt64Value powerOfTwo;
+    topic(PUBSUB_TOPIC_NAME + "/request") Int32Value request;
+    topic(PUBSUB_TOPIC_NAME + "/power_of_two") UInt64Value powerOfTwo;
 };

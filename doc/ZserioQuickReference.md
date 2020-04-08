@@ -279,14 +279,9 @@ struct MessageType
     string text;
 };
 
-pubsub Provider
+pubsub PublishSubscribe
 {
-    publish("topic/definition") MessageType message;
-};
-
-pubsub Client
-{
-    subscribe("topic/definition") MessageType message;
+    topic("topic/definition") MessageType message;
 };
 ```
 

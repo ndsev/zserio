@@ -12,6 +12,6 @@ struct Response64
 
 pubsub Provider
 {
-    publish("powerOfTwo") Response32 powerOfTwo;
-    publish("powerOfTwo") Response64 powerOfTwo;
+    publish topic("powerOfTwo") Response32 powerOfTwo;
+    publish topic("powerOfTwo") Response64 powerOfTwo;
 };

@@ -8,5 +8,5 @@ struct Data(bit:8 size)
 
 pubsub User
 {
-    subscribe("provider/data") Data data;
+    subscribe topic("provider/data") Data data;
 };

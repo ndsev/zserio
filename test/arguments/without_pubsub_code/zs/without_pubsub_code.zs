@@ -17,6 +17,6 @@ service Service
 
 pubsub Pubsub
 {
-    pubsub("test") Request request;
-    pubsub("test") Request response;
+    topic("test") Request request;
+    topic("test") Request response;
 };

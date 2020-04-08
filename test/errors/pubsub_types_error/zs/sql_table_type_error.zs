@@ -7,5 +7,5 @@ sql_table Data
 
 pubsub User
 {
-    pubsub("provider/data") Data data;
+    topic("provider/data") Data data;
 };

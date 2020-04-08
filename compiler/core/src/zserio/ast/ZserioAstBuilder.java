@@ -551,11 +551,8 @@ public class ZserioAstBuilder extends ZserioParserBaseVisitor<Object>
 
         final Expression topicDefinitionExpr = (Expression)visit(ctx.topicDefinition().expression());
 
-        final boolean isPublished =
-                ctx.topicDefinition().PUBLISH() != null || ctx.topicDefinition().PUBSUB() != null;
-        final boolean isSubscribed =
-                ctx.topicDefinition().SUBSCRIBE() != null || ctx.topicDefinition().PUBSUB() != null;
-
+        final boolean isPublished = ctx.topicDefinition().SUBSCRIBE() == null;
+        final boolean isSubscribed = ctx.topicDefinition().PUBLISH() == null;
         final TypeReference typeReference = visitTypeReference(ctx.typeReference());
         final String name = ctx.id().getText();
         final DocComment docComment = docCommentManager.findDocComment(ctx);

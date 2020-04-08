@@ -83,9 +83,7 @@ public class ZserioLexerTest
 
         checkEOF(lexer);
     }
-
     
-    // TODO[mikir] obsolete
     @Test
     public void keywords()
     {
@@ -133,6 +131,7 @@ public class ZserioLexerTest
                 "struct " +
                 "subscribe " +
                 "subtype " +
+                "topic " +
                 "uint16 " +
                 "uint32 " +
                 "uint64 " +
@@ -195,6 +194,7 @@ public class ZserioLexerTest
         checkToken(lexer, ZserioLexer.STRUCTURE);
         checkToken(lexer, ZserioLexer.SUBSCRIBE);
         checkToken(lexer, ZserioLexer.SUBTYPE);
+        checkToken(lexer, ZserioLexer.TOPIC);
         checkToken(lexer, ZserioLexer.UINT16);
         checkToken(lexer, ZserioLexer.UINT32);
         checkToken(lexer, ZserioLexer.UINT64);

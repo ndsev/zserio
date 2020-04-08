@@ -79,6 +79,7 @@ STRING              : 'string' ;
 STRUCTURE           : 'struct' ;
 SUBSCRIBE           : 'subscribe' ;
 SUBTYPE             : 'subtype' ;
+TOPIC               : 'topic' ;
 UINT16              : 'uint16' ;
 UINT32              : 'uint32' ;
 UINT64              : 'uint64' ;

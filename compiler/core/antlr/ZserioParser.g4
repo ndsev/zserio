@@ -258,7 +258,7 @@ pubsubMessageDefinition
     ;
 
 topicDefinition
-    :   (PUBLISH | SUBSCRIBE | PUBSUB)
+    :   (PUBLISH | SUBSCRIBE)? TOPIC
         LPAREN
         expression // string expression
         RPAREN

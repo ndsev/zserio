@@ -7,5 +7,5 @@ struct Response32
 
 pubsub Provider
 {
-    publish(10 + 10) Response32 powerOfTwo;
+    publish topic(10 + 10) Response32 powerOfTwo;
 };
