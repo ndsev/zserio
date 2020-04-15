@@ -14,7 +14,7 @@
 # add_executable(ZserioTestApp HelloWorld.cpp)
 # target_link_libraries(ZserioTestApp ZserioCppRuntime)
 
-cmake_minimum_required(VERSION 2.8.12.2)
+cmake_minimum_required(VERSION 3.8)
 
 project(ZserioCppRuntime)
 
@@ -70,3 +70,5 @@ endif ()
 add_library(ZserioCppRuntime STATIC ${ZSERIO_CPP_RUNTIME_LIB_SRCS})
 
 target_include_directories(ZserioCppRuntime PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
+
+target_compile_features(ZserioCppRuntime PUBLIC cxx_std_11)
