@@ -175,6 +175,32 @@ TEST_F(BitStreamWriterTest, writeVarUInt)
     ASSERT_NO_THROW(m_writer.writeVarUInt(UINT64_MAX));
 }
 
+TEST_F(BitStreamWriterTest, writeBitBuffer)
+{
+    static const size_t bitBufferBitSize = 24;
+    BitBuffer bitBuffer(std::vector<uint8_t>{0xAB, 0xAB, 0xAB}, bitBufferBitSize);
+
+    {
+        ASSERT_NO_THROW(m_writer.writeBitBuffer(bitBuffer));
+        size_t bufferSize = 0;
+        const uint8_t* buffer = m_writer.getWriteBuffer(bufferSize);
+        ASSERT_EQ(bitBufferBitSize / 8, bufferSize - 1); // first byte is bit buffer size
+        BitBuffer readBitBuffer{buffer + 1, bitBufferBitSize};
+        ASSERT_EQ(bitBuffer, readBitBuffer);
+    }
+
+    {
+        ASSERT_NO_THROW(m_externalBufferWriter.writeBitBuffer(bitBuffer));
+        size_t bufferSize = 0;
+        const uint8_t* buffer = m_externalBufferWriter.getWriteBuffer(bufferSize);
+        BitBuffer readBitBuffer{buffer + 1, bitBufferBitSize}; // first byte is bit buffer size
+        ASSERT_EQ(bitBuffer, readBitBuffer);
+    }
+
+    ASSERT_NO_THROW(m_dummyBufferWriter.writeBitBuffer(bitBuffer));
+    ASSERT_EQ(bitBufferBitSize + 8, m_dummyBufferWriter.getBitPosition()); // first byte is bit buffer size
+}
+
 TEST_F(BitStreamWriterTest, hasWriteBuffer)
 {
     ASSERT_TRUE(m_writer.hasWriteBuffer());

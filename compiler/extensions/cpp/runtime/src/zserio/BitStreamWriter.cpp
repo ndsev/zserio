@@ -293,7 +293,8 @@ void BitStreamWriter::writeBitBuffer(const BitBuffer& bitBuffer)
     {
         // we are aligned to byte
         setBitPosition(beginBitPosition + numBytesToWrite * 8);
-        memcpy(m_buffer + beginBitPosition / 8, buffer, numBytesToWrite);
+        if (hasWriteBuffer())
+            memcpy(m_buffer + beginBitPosition / 8, buffer, numBytesToWrite);
         buffer += numBytesToWrite;
     }
 
@@ -303,9 +304,10 @@ void BitStreamWriter::writeBitBuffer(const BitBuffer& bitBuffer)
 
 void BitStreamWriter::setBitPosition(BitPosType position)
 {
-    if (position > m_bufferBitSize)
+    if (hasWriteBuffer())
     {
-        throw BitStreamException("BitStreamWriter: Reached eof(), setting of bit position failed.");
+        if (!ensureCapacity(position))
+            throw BitStreamException("BitStreamWriter: Reached eof(), setting of bit position failed.");
     }
 
     m_bitIndex = position;
@@ -347,18 +349,8 @@ inline void BitStreamWriter::writeUnsignedBits(uint32_t data, uint8_t numBits)
         return;
     }
 
-    const size_t freeBitSize = m_bufferBitSize - m_bitIndex;
-    if (numBits > freeBitSize)
-    {
-        if (!m_hasInternalBuffer)
-            throw BitStreamException("BitStreamWriter: Reached eof(), writing to stream failed.");
-
-        // we have internal buffer which can be resized
-        const size_t missingBytes = (numBits - freeBitSize + 7) / 8;
-        m_internalBuffer.resize(m_internalBuffer.size() + missingBytes);
-        m_buffer = &m_internalBuffer[0];
-        m_bufferBitSize = m_internalBuffer.size() * 8;
-    }
+    if (!ensureCapacity(m_bitIndex + numBits))
+        throw BitStreamException("BitStreamWriter: Reached eof(), writing to stream failed.");
 
     const uint8_t org_numBits = numBits;
     uint8_t bits_free = 8 - (m_bitIndex & 0x07);
@@ -429,6 +421,23 @@ inline void BitStreamWriter::writeVarAbsNum(uint64_t value, bool sign, const uin
         const size_t shiftBits = (i - 1) * 7 + ((numVarBytes == valBitsSize && i > 1) ? 1 : 0);
         writeBits(static_cast<uint8_t>((value >> shiftBits) & bitMasks[numBits - 1]), numBits);
     }
+}
+
+inline bool BitStreamWriter::ensureCapacity(size_t bitSize)
+{
+    if (bitSize > m_bufferBitSize)
+    {
+        if (!m_hasInternalBuffer)
+            return false;
+
+        // we have internal buffer which can be resized
+        const size_t missingBytes = (bitSize - m_bufferBitSize + 7) / 8;
+        m_internalBuffer.resize(m_internalBuffer.size() + missingBytes);
+        m_buffer = &m_internalBuffer[0];
+        m_bufferBitSize = m_internalBuffer.size() * 8;
+    }
+
+    return true;
 }
 
 } // namespace zserio

@@ -231,6 +231,8 @@ private:
     void writeVarAbsNum(uint64_t value, bool sign, const uint8_t* valBits, size_t valBitsSize,
             size_t numVarBits);
 
+    bool ensureCapacity(size_t bitSize);
+
     uint8_t* m_buffer;
     size_t m_bitIndex;
     size_t m_bufferBitSize;
