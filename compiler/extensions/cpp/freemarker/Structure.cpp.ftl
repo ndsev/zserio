@@ -110,11 +110,13 @@ void ${name}::${field.setterName}(${field.cppTypeName}&& <@field_argument_name f
 
     </#if>
     <#if field.optional??>
+        <#if withWriterCode>
 void ${name}::${field.optional.resetterName}()
 {
     <@field_member_name field/>.reset();
 }
 
+        </#if>
 bool ${name}::${field.optional.indicatorName}() const
 {
     return (<@field_optional_condition field/>);

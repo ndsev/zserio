@@ -77,7 +77,9 @@ public:
 <#list fieldList as field>
     <@compound_field_accessors_declaration field/>
     <#if field.optional??>
+        <#if withWriterCode>
     void ${field.optional.resetterName}();
+        </#if>
     bool ${field.optional.indicatorName}() const;
     </#if>
 

@@ -241,6 +241,7 @@ TEST_F(WithoutWriterCode, checkItemMethods)
     const char* type = "Item";
 
     assertMethodNotPresent(type, " Item()", "Item::Item()");
+    assertMethodNotPresent(type, "void resetExtraParam(", "void Item::resetExtraParam(");
     assertMethodNotPresent(type, "size_t initializeOffsets(", "size_t Item::initializeOffsets(");
     assertMethodNotPresent(type, "void write(", "void Item::write(");
 
@@ -318,12 +319,18 @@ TEST_F(WithoutWriterCode, checkTileMethods)
     const char* type = "Tile";
 
     assertMethodNotPresent(type, " Tile()", "Tile::Tile()");
+    assertMethodNotPresent(type, "void resetVersion(", "void Tile::resetVersion(");
+    assertMethodNotPresent(type, "void resetVersionString(", "void Tile::resetVersionString(");
     assertMethodNotPresent(type, "size_t initializeOffsets(", "size_t Tile::initializeOffsets(");
     assertMethodNotPresent(type, "void write(", "void Tile::write(");
 
     assertMethodPresent(type, "Tile(::zserio::BitStreamReader&", "Tile::Tile(::zserio::BitStreamReader&");
     assertMethodPresent(type, "void initializeChildren(", "void Tile::initializeChildren(");
     assertMethodPresent(type, "uint8_t getVersion(", "uint8_t Tile::getVersion(");
+    assertMethodPresent(type, "bool hasVersion(", "bool Tile::hasVersion(");
+    assertMethodPresent(type, "const ::std::string& getVersionString(",
+            "const ::std::string& Tile::getVersionString(");
+    assertMethodPresent(type, "bool hasVersionString(", "bool Tile::hasVersionString(");
     assertMethodPresent(type, "uint32_t getNumElementsOffset(", "uint32_t Tile::getNumElementsOffset(");
     assertMethodPresent(type, "uint32_t getNumElements(", "uint32_t Tile::getNumElements(");
     assertMethodPresent(type, "& getData(", "& Tile::getData(");
