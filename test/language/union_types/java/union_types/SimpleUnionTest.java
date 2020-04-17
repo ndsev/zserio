@@ -22,7 +22,7 @@ public class SimpleUnionTest
     public void emptyConstructor()
     {
         SimpleUnion simpleUnion = new SimpleUnion();
-        assertEquals(SimpleUnion.CHOICE_UNDEFINED, simpleUnion.choiceTag());
+        assertEquals(SimpleUnion.UNDEFINED_CHOICE, simpleUnion.choiceTag());
     }
 
     @Test(expected=ZserioError.class)
@@ -64,7 +64,7 @@ public class SimpleUnionTest
     public void choiceTag()
     {
         SimpleUnion simpleUnion = new SimpleUnion();
-        assertEquals(SimpleUnion.CHOICE_UNDEFINED, simpleUnion.choiceTag());
+        assertEquals(SimpleUnion.UNDEFINED_CHOICE, simpleUnion.choiceTag());
         simpleUnion.setCase1Field(CASE1_FIELD);
         assertEquals(SimpleUnion.CHOICE_case1Field, simpleUnion.choiceTag());
         simpleUnion.setCase2Field(CASE2_FIELD);
