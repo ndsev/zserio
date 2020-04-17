@@ -141,7 +141,7 @@ Description:
     Builds Zserio into the distr directory.
 
 Usage:
-    $0 [-h] [-c] [-p] [-o <dir>] package...
+    $0 [-h] [-e] ][-c] [-p] [-o <dir>] package...
 
 Arguments:
     -h, --help               Show this help.

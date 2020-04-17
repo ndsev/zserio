@@ -155,17 +155,18 @@ Description:
     Runs zserio tests on zserio release compiled in release-ver directory.
 
 Usage:
-    $0 [-h] [-t TEST_NAME] package...
+    $0 [-h] [-e] ][-c] [-p] [-o <dir>] [-t <name>] package...
 
 Arguments:
-    -h, --help                Show this help.
-    -e, --help-env            Show help for enviroment variables.
-    -c, --clean               Clean package instead of build.
-    -p, --purge               Purge test build directory.
+    -h, --help            Show this help.
+    -e, --help-env        Show help for enviroment variables.
+    -c, --clean           Clean package instead of build.
+    -p, --purge           Purge test build directory.
     -o <dir>, --output-directory <dir>
-                              Output directory where tests will be run.
-    -t, --test-name TEST_NAME Run only TEST_NAME test.
-    package                   Specify the package to test.
+                          Output directory where tests will be run.
+    -t <name>, --test-name <name>
+                          Run only specified test.
+    package               Specify the package to test.
 
 Package can be a combination of:
     cpp-linux32           Zserio C++ tests for linux32 target using gcc compiler.

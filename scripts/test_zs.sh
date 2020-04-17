@@ -347,19 +347,22 @@ Description:
     Tests given zserio sources with zserio release compiled in release-ver directory.
 
 Usage:
-    $0 [-h] generator... -s test.zs
+    $0 [-h] [-e] [-p] [-o <dir>] [-d <dir>] [-t <name>] [-w] ]generator... -s test.zs
 
 Arguments:
-    -h, --help                Show this help.
-    -e, --help-env            Show help for enviroment variables.
-    -p, --purge               Purge test build directory.
+    -h, --help            Show this help.
+    -e, --help-env        Show help for enviroment variables.
+    -p, --purge           Purge test build directory.
     -o <dir>, --output-directory <dir>
-                              Output directory where tests will be run.
-    -d, --source-dir DIR      Directory with zserio sources. Default is ".".
-    -s, --source SOURCE       Main zserio source.
-    -t, --test-name NAME      Test name. Optional.
-    -w, --werror              Treat zserio warnings as errors.
-    generator                 Specify the generator to test.
+                          Output directory where tests will be run.
+    -d <dir>, --source-dir <dir>
+                          Directory with zserio sources. Default is ".".
+    -t <name>, --test-name <name>
+                          Test name. Optional.
+    -w, --werror          Treat zserio warnings as errors.
+    -s <source>, --source <source>
+                          Main zserio source.
+    generator             Specify the generator to test.
 
 Generator can be:
     cpp-linux32           Generate C++ sources and compile them for linux32 target (GCC).

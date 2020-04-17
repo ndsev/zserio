@@ -564,21 +564,30 @@ Description:
     Runds performance tests on given zserio sources with zserio release compiled in release-ver directory.
 
 Usage:
-    $0 [-h] generator... -s test.zs -b test.Blob -f blob.bin
+    $0 [-h] [-e] [-p] [-o <dir>] [-d <dir>] [-t <name>] -[n <num>] [-t <config>]
+       generator... -s test.zs -b test.Blob -f blob.bin
 
 Arguments:
-    -h, --help                    Show this help.
-    -e, --help-env                Show help for enviroment variables.
-    -p, --purge                   Purge test build directory.
-    -o, --output-directory <dir>  Output directory where tests will be run.
-    -d, --source-dir DIR          Directory with zserio sources. Default is ".".
-    -s, --source SOURCE           Main zserio source.
-    -t, --test-name NAME          Test name. Optional.
-    -b, --blob-name BLOB          Full name of BLOB to run performance tests on.
-    -f, --blob-file FILENAME      Path to the BLOB file.
-    -n, --num-iterations N        Number of iterations. Optional, default is 100.
-    --test-config CONFIGURATION   Test configuration: READ (default), WRITE, READ_WRITE.
-    generator                     Specify the generator to test.
+    -h, --help              Show this help.
+    -e, --help-env          Show help for enviroment variables.
+    -p, --purge             Purge test build directory.
+    -o <dir>, --output-directory <dir>  
+                            Output directory where tests will be run.
+    -d <dir>, --source-dir <dir>
+                            Directory with zserio sources. Default is ".".
+    -t <name>, --test-name <name>
+                            Test name. Optional.
+    -n <num>, --num-iterations <num>
+                            Number of iterations. Optional, default is 100.
+    -t <config>, --test-config <config>
+                            Test configuration: READ (default), WRITE, READ_WRITE.
+    -s <source>, --source <source>
+                            Main zserio source.
+    -b <blob>, --blob-name <blob>
+                            Full name of blob to run performance tests on.
+    -f <filename>, --blob-file <filename>
+                            Path to the blobfile.
+    generator               Specify the generator to test.
 
 Generator can be:
     cpp-linux32             Generate C++ sources and compile them for linux32 target (GCC).
@@ -732,7 +741,7 @@ parse_arguments()
                 shift
                 ;;
 
-            "--test-config")
+            "-t" | "--test-config")
                 shift
                 local ARG="$1"
                 if [ -z "${ARG}" ] ; then
