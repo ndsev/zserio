@@ -765,7 +765,7 @@ public class ZserioAstBuilder extends ZserioParserBaseVisitor<Object>
             // check that there is not space between the two '>'
             if (ctx.GT(0).getSymbol().getCharPositionInLine() + 1 !=
                     ctx.GT(1).getSymbol().getCharPositionInLine())
-                throw new ParserException(ctx.GT().get(0).getSymbol(), "Operator >> cannot contain spaces!");
+                throw new ParserException(ctx.GT().get(0).getSymbol(), "Operator '>>' cannot contain spaces!");
         }
         final String tokenText = tokenType == ZserioParser.RSHIFT ? RSHIFT_OPERATOR : ctx.operator.getText();
 

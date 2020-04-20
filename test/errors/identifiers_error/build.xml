@@ -14,21 +14,38 @@
         <testGen testName="identifiers_error" zsFile="zserio.zs" ignoreErrors="true"/>
         <testGen testName="identifiers_error" zsFile="zserio_prefix_package_name_error.zs" ignoreErrors="true"/>
 
-        <testGen testName="identifiers_error" zsFile="prefix_zserio/array_field_name_error.zs" ignoreErrors="true"/>
+        <testGen testName="identifiers_error" zsFile="clashing_identifiers/clashing_choice_param_names_error.zs"
+                ignoreErrors="true"/>
+        <testGen testName="identifiers_error"
+                zsFile="clashing_identifiers/clashing_structure_field_and_param_names_error.zs"
+                ignoreErrors="true"/>
+        <testGen testName="identifiers_error"
+                zsFile="clashing_identifiers/clashing_structure_field_names_error.zs"
+                ignoreErrors="true"/>
+        <testGen testName="identifiers_error"
+                zsFile="clashing_identifiers/clashing_structure_function_names_error.zs"
+                ignoreErrors="true"/>
+        <testGen testName="identifiers_error" zsFile="clashing_identifiers/clashing_union_field_names_error.zs"
+                ignoreErrors="true"/>
+
         <testGen testName="identifiers_error" zsFile="invalid_name/const_name_error.zs" ignoreErrors="true"/>
 
+        <testGen testName="identifiers_error" zsFile="defined_name/defined_type_field_name_error.zs"
+                ignoreErrors="true"/>
+
+        <testGen testName="identifiers_error" zsFile="prefix_zserio/array_field_name_error.zs"
+                ignoreErrors="true"/>
         <testGen testName="identifiers_error" zsFile="prefix_zserio/choice_name_error.zs" ignoreErrors="true"/>
         <testGen testName="identifiers_error" zsFile="prefix_zserio/const_name_error.zs" ignoreErrors="true"/>
         <testGen testName="identifiers_error" zsFile="prefix_zserio/field_name_error.zs" ignoreErrors="true"/>
-        <testGen testName="identifiers_error" zsFile="prefix_zserio/function_name_error.zs" ignoreErrors="true"/>
-        <testGen testName="identifiers_error" zsFile="prefix_zserio/parameter_name_error.zs" ignoreErrors="true"/>
+        <testGen testName="identifiers_error" zsFile="prefix_zserio/function_name_error.zs"
+                ignoreErrors="true"/>
+        <testGen testName="identifiers_error" zsFile="prefix_zserio/parameter_name_error.zs"
+                ignoreErrors="true"/>
         <testGen testName="identifiers_error" zsFile="prefix_zserio/struct_name_error.zs" ignoreErrors="true"/>
         <testGen testName="identifiers_error" zsFile="prefix_zserio/subtype_name_error.zs" ignoreErrors="true"/>
         <testGen testName="identifiers_error" zsFile="prefix_zserio/union_name_error.zs" ignoreErrors="true"/>
         <testGen testName="identifiers_error" zsFile="prefix_zserio/zserio_subpackage_name_error.zs"
-                ignoreErrors="true"/>
-
-        <testGen testName="identifiers_error" zsFile="defined_name/defined_type_field_name_error.zs"
                 ignoreErrors="true"/>
 
         <testGen testName="identifiers_error" zsFile="reserved_keywords/cpp_keyword_field_name_error.zs"

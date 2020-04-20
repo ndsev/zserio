@@ -20,7 +20,7 @@ public class SyntaxErrorTest
     @Test
     public void rshiftWithSpace()
     {
-        final String error = "rshift_with_space_error.zs:3:31: Operator >> cannot contain spaces!";
+        final String error = "rshift_with_space_error.zs:3:31: Operator '>>' cannot contain spaces!";
         assertTrue(zserioErrors.isPresent(error));
     }
 

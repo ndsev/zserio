@@ -16,7 +16,7 @@ class ExpressionUtil
      *
      * @throws ParserException Throws if expression type does not correspond to the type instantiation.
      */
-    public static void checkExpressionType(Expression expression, TypeInstantiation typeInstantiation)
+    static void checkExpressionType(Expression expression, TypeInstantiation typeInstantiation)
     {
         checkExpressionType(expression, typeInstantiation.getBaseType(), typeInstantiation);
     }
@@ -30,7 +30,7 @@ class ExpressionUtil
      *
      * @throws ParserException Throws if expression type does not correspond to the type reference.
      */
-    public static void checkExpressionType(Expression expression, TypeReference typeReference)
+    static void checkExpressionType(Expression expression, TypeReference typeReference)
     {
         checkExpressionType(expression, typeReference.getBaseTypeReference().getType(), null);
     }
@@ -44,7 +44,7 @@ class ExpressionUtil
      *
      * @throws ParserException Throws if integer expression exceeds the bounds of its type.
      */
-    public static void checkIntegerExpressionRange(Expression expression, TypeInstantiation instantiation,
+    static void checkIntegerExpressionRange(Expression expression, TypeInstantiation instantiation,
             String ownerName)
     {
         final ZserioType type = instantiation.getBaseType();
