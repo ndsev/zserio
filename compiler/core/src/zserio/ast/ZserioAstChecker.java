@@ -42,6 +42,7 @@ public class ZserioAstChecker extends ZserioAstWalker
     {
         currentPackage = pkg;
         pkg.visitChildren(this);
+        pkg.check();
         currentPackage = null;
     }
 

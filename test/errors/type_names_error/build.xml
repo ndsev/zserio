@@ -15,6 +15,10 @@
         <testGen testName="type_names_error" zsFile="choice_structure_name_conflict_error.zs"
             ignoreErrors="true"/>
         <testGen testName="type_names_error" zsFile="choice_union_name_conflict_error.zs" ignoreErrors="true"/>
+        <testGen testName="type_names_error" zsFile="clashing_identifiers_within_package_error.zs"
+            ignoreErrors="true"/>
+        <testGen testName="type_names_error" zsFile="clashing_type_names_within_package_error.zs"
+            ignoreErrors="true"/>
         <testGen testName="type_names_error" zsFile="const_const_name_conflict_error.zs" ignoreErrors="true"/>
         <testGen testName="type_names_error" zsFile="const_service_name_conflict_error.zs" ignoreErrors="true"/>
         <testGen testName="type_names_error" zsFile="const_structure_name_conflict_error.zs"

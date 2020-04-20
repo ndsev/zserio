@@ -245,6 +245,16 @@ public class Package extends DocumentableAstNode
         }
     }
 
+    /** Checks the package. */
+    void check()
+    {
+        PackageIdentifierValidator validator = new PackageIdentifierValidator();
+        for (ZserioType localType : localTypes.values())
+            validator.validateTypeName(localType);
+        for (Map.Entry<String, AstNode> localSymbolEntry : localSymbols.entrySet())
+            validator.validateSymbol(localSymbolEntry.getKey(), localSymbolEntry.getValue());
+    }
+
     /**
      * Gets local type matching the given name.
      *

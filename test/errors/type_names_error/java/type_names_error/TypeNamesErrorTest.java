@@ -51,6 +51,30 @@ public class TypeNamesErrorTest
     }
 
     @Test
+    public void clashingIdentifiersWithinPackage()
+    {
+        final String errors[] =
+        {
+            "clashing_identifiers_within_package_error.zs:3:8:     Conflicting symbol defined here.",
+            "clashing_identifiers_within_package_error.zs:8:13: " +
+                    "Symbol 'teST' is not unique (case insensitive) within this package!"
+        };
+        assertTrue(zserioErrors.isPresent(errors));
+    }
+
+    @Test
+    public void clashingTypeNamesWithinPackage()
+    {
+        final String errors[] =
+        {
+            "clashing_type_names_within_package_error.zs:3:8:     Conflicting symbol defined here.",
+            "clashing_type_names_within_package_error.zs:8:7: " +
+                    "Symbol 'TEst' is not unique (case insensitive) within this package!"
+        };
+        assertTrue(zserioErrors.isPresent(errors));
+    }
+
+    @Test
     public void constConstNameConflict()
     {
         final String errors[] =
