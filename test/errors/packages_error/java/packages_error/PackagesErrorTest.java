@@ -71,6 +71,14 @@ public class PackagesErrorTest
     }
 
     @Test
+    public void upperCaseLetterInPackageName()
+    {
+        final String error = "upper_case_letter_in_Package_name_error.zs:1:9: " +
+                "Package name cannot contain upper case letters!";
+        assertTrue(zserioErrors.isPresent(error));
+    }
+
+    @Test
     public void wrongImportName()
     {
         final String error = "wrong_import_name.zs: No such file!";
