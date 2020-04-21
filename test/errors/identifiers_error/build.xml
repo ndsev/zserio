@@ -17,14 +17,16 @@
         <testGen testName="identifiers_error" zsFile="clashing_identifiers/clashing_choice_param_names_error.zs"
                 ignoreErrors="true"/>
         <testGen testName="identifiers_error"
+                zsFile="clashing_identifiers/clashing_pubsub_message_names_error.zs" ignoreErrors="true"/>
+        <testGen testName="identifiers_error"
+                zsFile="clashing_identifiers/clashing_service_method_names_error.zs" ignoreErrors="true"/>
+        <testGen testName="identifiers_error"
                 zsFile="clashing_identifiers/clashing_structure_field_and_param_names_error.zs"
                 ignoreErrors="true"/>
         <testGen testName="identifiers_error"
-                zsFile="clashing_identifiers/clashing_structure_field_names_error.zs"
-                ignoreErrors="true"/>
+                zsFile="clashing_identifiers/clashing_structure_field_names_error.zs" ignoreErrors="true"/>
         <testGen testName="identifiers_error"
-                zsFile="clashing_identifiers/clashing_structure_function_names_error.zs"
-                ignoreErrors="true"/>
+                zsFile="clashing_identifiers/clashing_structure_function_names_error.zs" ignoreErrors="true"/>
         <testGen testName="identifiers_error" zsFile="clashing_identifiers/clashing_union_field_names_error.zs"
                 ignoreErrors="true"/>
 

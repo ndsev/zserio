@@ -72,6 +72,16 @@ public class ServiceType extends DocumentableAstNode implements ZserioScopedType
         return Collections.unmodifiableList(methods);
     }
 
+    /**
+     * Checks the service type.
+     */
+    void check()
+    {
+        final IdentifierValidator validator = new IdentifierValidator();
+        for (ServiceMethod method : methods)
+            validator.validateSymbol(method.getName(), method);
+    }
+
     private final Scope scope = new Scope(this);
 
     private final Package pkg;

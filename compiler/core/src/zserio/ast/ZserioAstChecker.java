@@ -152,10 +152,24 @@ public class ZserioAstChecker extends ZserioAstWalker
     }
 
     @Override
+    public void visitServiceType(ServiceType serviceType)
+    {
+        serviceType.visitChildren(this);
+        serviceType.check();
+    }
+
+    @Override
     public void visitServiceMethod(ServiceMethod serviceMethod)
     {
         serviceMethod.visitChildren(this);
         serviceMethod.check();
+    }
+
+    @Override
+    public void visitPubsubType(PubsubType pubsubType)
+    {
+        pubsubType.visitChildren(this);
+        pubsubType.check();
     }
 
     @Override

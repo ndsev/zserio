@@ -30,6 +30,30 @@ public class ClashingIdentifiersErrorTest
     }
 
     @Test
+    public void clashingPubsubMessageNames()
+    {
+        final String errors[] =
+        {
+            "clashing_pubsub_message_names_error.zs:10:29:    Conflicting symbol defined here!",
+            "clashing_pubsub_message_names_error.zs:11:29: " +
+                    "Symbol 'X_message' differs only in a case of its first letter!",
+        };
+        assertTrue(zserioErrors.isPresent(errors));
+    }
+
+    @Test
+    public void clashingServiceMethodNames()
+    {
+        final String errors[] =
+        {
+            "clashing_service_method_names_error.zs:10:10:    Conflicting symbol defined here!",
+            "clashing_service_method_names_error.zs:11:10: " +
+                    "Symbol 'X_method' differs only in a case of its first letter!"
+        };
+        assertTrue(zserioErrors.isPresent(errors));
+    }
+
+    @Test
     public void clashingStructureFieldAndParamNames()
     {
         final String errors[] =

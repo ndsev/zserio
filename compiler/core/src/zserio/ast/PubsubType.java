@@ -72,6 +72,16 @@ public class PubsubType extends DocumentableAstNode implements ZserioScopedType
         return Collections.unmodifiableList(messages);
     }
 
+    /**
+     * Checks the pubsub type.
+     */
+    void check()
+    {
+        final IdentifierValidator validator = new IdentifierValidator();
+        for (PubsubMessage message : messages)
+            validator.validateSymbol(message.getName(), message);
+    }
+
     private final Scope scope = new Scope(this);
 
     private final Package pkg;
