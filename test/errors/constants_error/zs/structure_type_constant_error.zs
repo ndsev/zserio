@@ -5,4 +5,4 @@ struct Structure
     int32 field;
 };
 
-const Structure structConst = 2; // invalid compound type for constant
+const Structure StructConst = 2; // invalid compound type for constant

@@ -8,16 +8,6 @@ import java.util.Map;
 class PackageIdentifierValidator
 {
     /**
-     * Validates that type name satisfies requirements for safe generation.
-     *
-     * @param type Zserio type to validate.
-     */
-    public void validateTypeName(ZserioType type)
-    {
-        validateSymbol(type.getName(), type);
-    }
-
-    /**
      * Validates that the symbol name satisfies requirements for safe generation.
      *
      * @param name Symbol name to validate.
@@ -25,6 +15,12 @@ class PackageIdentifierValidator
      */
     public void validateSymbol(String name, AstNode symbol)
     {
+        if (!Character.isUpperCase(name.charAt(0)))
+        {
+            throw new ParserException(symbol,
+                    "Symbols defined in a package must start with an upper case letter!");
+        }
+
         final String lowerCaseName = name.toLowerCase(Locale.ENGLISH);
         final AstNode addedName = symbolsMap.put(lowerCaseName, symbol);
         if (addedName != null)

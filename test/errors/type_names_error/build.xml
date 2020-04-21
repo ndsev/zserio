@@ -28,6 +28,8 @@
             ignoreErrors="true"/>
         <testGen testName="type_names_error" zsFile="structure_enum_name_conflict_error.zs"
             ignoreErrors="true"/>
+        <testGen testName="type_names_error" zsFile="structure_name_first_lower_case_error.zs"
+            ignoreErrors="true"/>
         <testGen testName="type_names_error" zsFile="structure_param_structure_name_conflict_error.zs"
             ignoreErrors="true"/>
         <testGen testName="type_names_error" zsFile="structure_service_name_conflict_error.zs"

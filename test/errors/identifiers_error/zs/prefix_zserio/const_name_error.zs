@@ -1,5 +1,5 @@
 package prefix_zserio.const_name_error;
 
-const uint32 constZserio = 10;
+const uint32 ConstZserio = 10;
 
-const string zserioString = "hello";
+const string ZserioString = "hello";

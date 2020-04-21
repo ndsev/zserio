@@ -8,5 +8,5 @@ struct Compound
 subtype int32 Int32Subtype;
 subtype Compound CompoundSubtype;
 
-const Int32Subtype int32SubtypeConst = 0; // valid
-const CompoundSubtype compoundSubtypeConst = 0;
+const Int32Subtype Int32SubtypeConst = 0; // valid
+const CompoundSubtype CompoundSubtypeConst = 0;

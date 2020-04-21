@@ -250,7 +250,7 @@ public class Package extends DocumentableAstNode
     {
         PackageIdentifierValidator validator = new PackageIdentifierValidator();
         for (ZserioType localType : localTypes.values())
-            validator.validateTypeName(localType);
+            validator.validateSymbol(localType.getName(), localType);
         for (Map.Entry<String, AstNode> localSymbolEntry : localSymbols.entrySet())
             validator.validateSymbol(localSymbolEntry.getKey(), localSymbolEntry.getValue());
     }

@@ -57,7 +57,7 @@ public class TypeNamesErrorTest
         {
             "clashing_identifiers_within_package_error.zs:3:8:     Conflicting symbol defined here.",
             "clashing_identifiers_within_package_error.zs:8:13: " +
-                    "Symbol 'teST' is not unique (case insensitive) within this package!"
+                    "Symbol 'TEST' is not unique (case insensitive) within this package!"
         };
         assertTrue(zserioErrors.isPresent(errors));
     }
@@ -138,6 +138,14 @@ public class TypeNamesErrorTest
             "structure_enum_name_conflict_error.zs:8:12: 'Test' is already defined in this package!"
         };
         assertTrue(zserioErrors.isPresent(errors));
+    }
+
+    @Test
+    public void structureNameFirstLowerCase()
+    {
+        final String error = "structure_name_first_lower_case_error.zs:3:8: " +
+                "Symbols defined in a package must start with an upper case letter!";
+        assertTrue(zserioErrors.isPresent(error));
     }
 
     @Test

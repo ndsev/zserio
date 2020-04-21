@@ -5,4 +5,4 @@ struct Test
     uint8 field;
 };
 
-const uint8 teST = 10;
+const uint8 TEST = 10;
