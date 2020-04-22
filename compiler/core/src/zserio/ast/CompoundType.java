@@ -215,7 +215,10 @@ public abstract class CompoundType extends TemplatableType
         }
     }
 
-    private void checkSymbolNames()
+    /**
+     * Checks validity of symbol names for most compound types. Can be overridden by descendants.
+     */
+    void checkSymbolNames()
     {
         // parameters and fields cannot clash (difference only in case of the first letter is still clash!)
         IdentifierValidator validator = new IdentifierValidator();

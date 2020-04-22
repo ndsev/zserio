@@ -147,6 +147,14 @@ public class SqlTableType extends CompoundType
         }
     }
 
+    @Override
+    void checkSymbolNames()
+    {
+        SqlIdentifierValidator validator = new SqlIdentifierValidator();
+        for (Field tableField : getFields())
+            validator.validateSymbol(tableField.getName(), tableField);
+    }
+
     private boolean isVirtual()
     {
         return sqlUsingId != null;

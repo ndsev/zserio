@@ -26,8 +26,12 @@
             zsFile="clashing_identifiers/clashing_identifiers_within_package_error.zs" ignoreErrors="true"/>
         <testGen testName="identifiers_error"
             zsFile="clashing_identifiers/clashing_pubsub_message_names_error.zs" ignoreErrors="true"/>
-        <testGen testName="identifiers_error" 
+        <testGen testName="identifiers_error"
             zsFile="clashing_identifiers/clashing_service_method_names_error.zs" ignoreErrors="true"/>
+        <testGen testName="identifiers_error"
+            zsFile="clashing_identifiers/clashing_sql_database_table_names_error.zs" ignoreErrors="true"/>
+        <testGen testName="identifiers_error"
+            zsFile="clashing_identifiers/clashing_sql_table_column_names_error.zs" ignoreErrors="true"/>
         <testGen testName="identifiers_error"
             zsFile="clashing_identifiers/clashing_structure_field_and_param_names_error.zs"
             ignoreErrors="true"/>
@@ -67,7 +71,7 @@
             zsFile="clashing_identifiers/subtype_subtype_name_conflict_error.zs" ignoreErrors="true"/>
         <testGen testName="identifiers_error" zsFile="clashing_identifiers/union_union_name_conflict_error.zs"
             ignoreErrors="true"/>
-        
+
         <testGen testName="identifiers_error" zsFile="invalid_name/const_name_error.zs" ignoreErrors="true"/>
 
         <testGen testName="identifiers_error" zsFile="prefix_zserio/array_field_name_error.zs"

@@ -51,6 +51,14 @@ public class SqlDatabaseType extends CompoundType
     }
 
     @Override
+    void checkSymbolNames()
+    {
+        SqlIdentifierValidator validator = new SqlIdentifierValidator();
+        for (Field databaseField : getFields())
+            validator.validateSymbol(databaseField.getName(), databaseField);
+    }
+
+    @Override
     SqlDatabaseType instantiateImpl(List<TemplateArgument> templateArguments, Package instantiationPackage)
     {
         throw new InternalError("SqlDatabaseType is not templatable!");

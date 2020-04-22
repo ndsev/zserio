@@ -99,6 +99,30 @@ public class ClashingIdentifiersErrorTest
     }
 
     @Test
+    public void clashingSqlDatabaseTableNames()
+    {
+        final String errors[] =
+        {
+            "clashing_sql_database_table_names_error.zs:10:5:     Conflicting symbol defined here.",
+            "clashing_sql_database_table_names_error.zs:11:5: " +
+                    "Symbol 'tBl_x' is not unique (case insensitive) within the SQL type!"
+        };
+        assertTrue(zserioErrors.isPresent(errors));
+    }
+
+    @Test
+    public void clashingSqlTableColumnNames()
+    {
+        final String errors[] =
+        {
+            "clashing_sql_table_column_names_error.zs:5:11:     Conflicting symbol defined here.",
+            "clashing_sql_table_column_names_error.zs:6:11: " +
+                    "Symbol 'fieldabc' is not unique (case insensitive) within the SQL type!"
+        };
+        assertTrue(zserioErrors.isPresent(errors));
+    }
+
+    @Test
     public void clashingStructureFieldAndParamNames()
     {
         final String errors[] =
