@@ -1,4 +1,4 @@
-package choice_union_name_conflict_error;
+package clashing_identifiers.choice_union_name_conflict_error;
 
 choice Test(bool variant) on variant
 {

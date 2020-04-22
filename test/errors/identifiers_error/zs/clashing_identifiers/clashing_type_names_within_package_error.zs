@@ -1,4 +1,4 @@
-package clashing_type_names_within_package_error;
+package clashing_identifiers.clashing_type_names_within_package_error;
 
 struct Test
 {

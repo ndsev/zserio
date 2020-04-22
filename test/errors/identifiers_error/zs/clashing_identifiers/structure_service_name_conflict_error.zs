@@ -1,6 +1,10 @@
-package const_service_name_conflict_error;
+package clashing_identifiers.structure_service_name_conflict_error;
 
-const uint32 Math = 13;
+struct Math
+{
+    float64 pi;
+    float64 pi_2;
+};
 
 struct Request
 {

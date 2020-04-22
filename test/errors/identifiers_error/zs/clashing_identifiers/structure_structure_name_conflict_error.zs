@@ -1,4 +1,4 @@
-package structure_structure_name_conflict_error;
+package clashing_identifiers.structure_structure_name_conflict_error;
 
 struct Test
 {

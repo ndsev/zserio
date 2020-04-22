@@ -126,16 +126,6 @@ public class Constant extends DocumentableAstNode implements Comparable<Constant
 
         // check integer constant range
         ExpressionUtil.checkIntegerExpressionRange(valueExpression, typeInstantiation, name);
-
-        // check constant name
-        final ZserioType definedType = pkg.getVisibleType(this, PackageName.EMPTY, getName());
-        if (definedType != null)
-        {
-            final ParserStackedException stackedException = new ParserStackedException(getLocation(),
-                    "'" + getName() + "' is a defined type in this package!");
-            stackedException.pushMessage(definedType.getLocation(), "    First defined here");
-            throw stackedException;
-        }
     }
 
     private final Package pkg;

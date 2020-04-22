@@ -1,4 +1,4 @@
-package service_service_name_conflict_error;
+package clashing_identifiers.service_service_name_conflict_error;
 
 struct Request
 {

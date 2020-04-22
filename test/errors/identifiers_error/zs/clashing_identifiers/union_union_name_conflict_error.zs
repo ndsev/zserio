@@ -1,4 +1,4 @@
-package union_union_name_conflict_error;
+package clashing_identifiers.union_union_name_conflict_error;
 
 union Test
 {

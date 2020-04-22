@@ -1,4 +1,4 @@
-package subtype_structure_name_conflict_error;
+package clashing_identifiers.subtype_structure_name_conflict_error;
 
 subtype int32 Test;
 
