@@ -247,17 +247,6 @@ public class TemplatesErrorTest
     }
 
     @Test
-    public void symbolWithTypeNameClash()
-    {
-        final String errors[] =
-        {
-            "symbol_with_type_name_clash_error.zs:15:5: In instantiation of 'TestStruct' required from here",
-            "symbol_with_type_name_clash_error.zs:5:7: 'Field' is a defined type in this package!"
-        };
-        assertTrue(zserioErrors.isPresent(errors));
-    }
-
-    @Test
     public void templatableNotATemplate()
     {
         final String error = "templatable_not_a_template_error.zs:10:5: 'Templatable' is not a template!";

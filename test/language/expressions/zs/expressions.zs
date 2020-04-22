@@ -7,6 +7,7 @@ import expressions.cast_uint8_to_uint64.*;
 import expressions.const_type.*;
 import expressions.enumeration_type.*;
 import expressions.field_type.*;
+import expressions.field_type_with_clash.*;
 import expressions.float_type.*;
 import expressions.full_const_type.*;
 import expressions.full_enumeration_type.*;

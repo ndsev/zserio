@@ -262,16 +262,6 @@ public class Field extends DocumentableAstNode
                 throw new ParserException(constraintExpr, "Constraint expression for field '" +
                         getName() + "' is not boolean!");
         }
-
-        // check field name
-        final ZserioType definedType = pkg.getVisibleType(this, PackageName.EMPTY, getName());
-        if (definedType != null)
-        {
-            final ParserStackedException stackedException = new ParserStackedException(getLocation(),
-                    "'" + getName() + "' is a defined type in this package!");
-            stackedException.pushMessage(definedType.getLocation(), "    First defined here");
-            throw stackedException;
-        }
     }
 
     /**

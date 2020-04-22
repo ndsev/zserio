@@ -28,6 +28,11 @@ set(ZSERIO_GENERATED_SOURCES
     ${ZSERIO_GEN_DIR}/expressions/field_type/FieldTypeExpression.cpp
     ${ZSERIO_GEN_DIR}/expressions/field_type/FieldTypeExpression.h
 
+    ${ZSERIO_GEN_DIR}/expressions/field_type_with_clash/ContainedType.cpp
+    ${ZSERIO_GEN_DIR}/expressions/field_type_with_clash/ContainedType.h
+    ${ZSERIO_GEN_DIR}/expressions/field_type_with_clash/FieldTypeExpression.cpp
+    ${ZSERIO_GEN_DIR}/expressions/field_type_with_clash/FieldTypeExpression.h
+
     ${ZSERIO_GEN_DIR}/expressions/float_type/FloatTypeExpression.cpp
     ${ZSERIO_GEN_DIR}/expressions/float_type/FloatTypeExpression.h
 
@@ -113,6 +118,7 @@ add_test_sources(
     ${ZSERIO_CPP_DIR}/ConstTypeTest.cpp
     ${ZSERIO_CPP_DIR}/EnumerationTypeTest.cpp
     ${ZSERIO_CPP_DIR}/FieldTypeTest.cpp
+    ${ZSERIO_CPP_DIR}/FieldTypeWithClashTest.cpp
     ${ZSERIO_CPP_DIR}/FloatTypeTest.cpp
     ${ZSERIO_CPP_DIR}/FullConstTypeTest.cpp
     ${ZSERIO_CPP_DIR}/FullEnumerationTypeTest.cpp

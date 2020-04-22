@@ -1,0 +1,35 @@
+package expressions;
+
+import static org.junit.Assert.*;
+
+import org.junit.Test;
+
+import expressions.field_type_with_clash.ContainedType;
+import expressions.field_type_with_clash.FieldTypeExpression;
+
+public class FieldTypeWithClashTest
+{
+    @Test
+    public void bitSizeOfWithOptional()
+    {
+        final ContainedType containedType = new ContainedType(true);
+        final FieldTypeExpression fieldTypeExpression = new FieldTypeExpression(containedType, EXTRA_VALUE);
+
+        assertEquals(COMPOUND_TYPE_EXPRESSION_BIT_SIZE_WITH_OPTIONAL, fieldTypeExpression.bitSizeOf());
+    }
+
+    @Test
+    public void bitSizeOfWithoutOptional()
+    {
+        final ContainedType containedType = new ContainedType(false);
+        final FieldTypeExpression fieldTypeExpression = new FieldTypeExpression();
+        fieldTypeExpression.setContainedType(containedType);
+
+        assertEquals(COMPOUND_TYPE_EXPRESSION_BIT_SIZE_WITHOUT_OPTIONAL, fieldTypeExpression.bitSizeOf());
+    }
+
+    private static final int COMPOUND_TYPE_EXPRESSION_BIT_SIZE_WITH_OPTIONAL = 4;
+    private static final int COMPOUND_TYPE_EXPRESSION_BIT_SIZE_WITHOUT_OPTIONAL = 1;
+
+    private static final byte EXTRA_VALUE = 0x02;
+}
