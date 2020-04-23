@@ -11,4 +11,12 @@
         </Or>
         <Bug code="DB"/>
     </Match>
+    <Match>
+        <!-- This field is never written. -->
+        <Bug code="UwF"/>
+        <And>
+            <Class name="~.*\.EmptyUnion.*"/>
+            <Field name="objectChoice"/>
+        </And>
+    </Match>
 </FindBugsFilter>

@@ -140,7 +140,7 @@ public abstract class JavaDefaultExpressionFormattingPolicy extends DefaultExpre
     @Override
     public String getIndex(Expression expr)
     {
-        return "__index";
+        return "index";
     }
 
     @Override
@@ -405,7 +405,7 @@ public abstract class JavaDefaultExpressionFormattingPolicy extends DefaultExpre
     @Override
     public BinaryExpressionFormatting getArrayElement(Expression expr, boolean isSetter)
     {
-        return new BinaryExpressionFormatting("", (isSetter) ? ".setElementAt(__value, " : ".elementAt(", ")");
+        return new BinaryExpressionFormatting("", (isSetter) ? ".setElementAt(value, " : ".elementAt(", ")");
     }
 
     @Override
@@ -568,7 +568,7 @@ public abstract class JavaDefaultExpressionFormattingPolicy extends DefaultExpre
     }
 
     private final static String JAVA_GETTER_FUNCTION_CALL = "()";
-    private final static String JAVA_SETTER_FUNCTION_CALL = "(__value)";
+    private final static String JAVA_SETTER_FUNCTION_CALL = "(value)";
 
     private final static String JAVA_LONG_LITERAL_SUFFIX = "L";
     private final static String JAVA_HEXADECIMAL_LITERAL_PREFIX = "0x";

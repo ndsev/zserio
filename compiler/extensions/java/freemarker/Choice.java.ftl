@@ -20,17 +20,17 @@ public class ${name} implements <#if withWriterCode>zserio.runtime.io.Initialize
         <#list caseList as case>
             <#if case_index != 0>
  ||
-                 </#if>__selector.compareTo(new java.math.BigInteger("${case.expressionForIf}")) == 0<#rt>
+                 </#if>selector.compareTo(new java.math.BigInteger("${case.expressionForIf}")) == 0<#rt>
         </#list>
     <#elseif selectorExpressionBitmaskTypeName??>
         <#list caseList as case>
             <#if case_index != 0>
  ||
-                 </#if>__selector.equals(${case.expressionForIf})<#rt>
+                 </#if>selector.equals(${case.expressionForIf})<#rt>
         </#list>
     <#else>
         <#list caseList as case>
-__selector == (${case.expressionForIf})<#if case_has_next> || </#if><#rt>
+selector == (${case.expressionForIf})<#if case_has_next> || </#if><#rt>
         </#list>
     </#if>
 </#macro>
@@ -60,13 +60,13 @@ ${I}    throw new zserio.runtime.ZserioError("No match in choice ${name}: " + ${
 ${I}}
     <#else>
         <#if isSelectorExpressionBoolean>
-${I}final boolean __selector = ${selectorExpression};
+${I}final boolean selector = ${selectorExpression};
         <#elseif isSelectorExpressionLong>
-${I}final long __selector = ${selectorExpression};
+${I}final long selector = ${selectorExpression};
         <#elseif selectorExpressionBitmaskTypeName??>
-${I}final ${selectorExpressionBitmaskTypeName} __selector = ${selectorExpression};
+${I}final ${selectorExpressionBitmaskTypeName} selector = ${selectorExpression};
         <#else>
-${I}final java.math.BigInteger __selector = ${selectorExpression};
+${I}final java.math.BigInteger selector = ${selectorExpression};
         </#if>
 
         <#list caseMemberList as caseMember>
@@ -100,14 +100,14 @@ ${I}}
     </#if>
 </#macro>
     @Override
-    public int bitSizeOf(long __bitPosition) throws zserio.runtime.ZserioError
+    public int bitSizeOf(long bitPosition) throws zserio.runtime.ZserioError
     {
 <#if fieldList?has_content>
-        long __endBitPosition = __bitPosition;
+        long endBitPosition = bitPosition;
 
         <@choice_switch "choice_bitsizeof_member", 2/>
 
-        return (int)(__endBitPosition - __bitPosition);
+        return (int)(endBitPosition - bitPosition);
 <#else>
         return 0;
 </#if>
@@ -118,20 +118,20 @@ ${I}}
     <#if field.isObjectArray>@java.lang.SuppressWarnings("unchecked")</#if>
     public ${field.javaTypeName} ${field.getterName}()
     {
-        return (${field.javaNullableTypeName}) this.__objectChoice;
+        return (${field.javaNullableTypeName}) this.objectChoice;
     }
 
     <#if withWriterCode>
-    public void ${field.setterName}(${field.javaTypeName} ${field.name})
+    public void ${field.setterName}(${field.javaTypeName} <@field_argument_name field/>)
     {
         <@range_check field.rangeCheckData, name/>
-        this.__objectChoice = ${field.name};
+        this.objectChoice = <@field_argument_name field/>;
     }
 
         <#if field.array?? && field.array.generateListSetter>
-    public void ${field.setterName}(java.util.List<${field.array.elementJavaTypeName}> ${field.name})
+    public void ${field.setterName}(java.util.List<${field.array.elementJavaTypeName}> <@field_argument_name field/>)
     {
-        ${field.setterName}(new ${field.javaTypeName}(${field.name}));
+        ${field.setterName}(new ${field.javaTypeName}(<@field_argument_name field/>));
     }
 
         </#if>
@@ -143,15 +143,15 @@ ${I}}
     {
         if (obj instanceof ${name})
         {
-            final ${name} __that = (${name})obj;
+            final ${name} that = (${name})obj;
 
             return
 <#list compoundParametersData.list as parameter>
                     <@compound_compare_parameter parameter/> &&
 </#list>
                     (
-                        (this.__objectChoice == null && __that.__objectChoice == null) ||
-                        (this.__objectChoice != null && this.__objectChoice.equals(__that.__objectChoice))
+                        (this.objectChoice == null && that.objectChoice == null) ||
+                        (this.objectChoice != null && this.objectChoice.equals(that.objectChoice))
                     );
         }
 
@@ -161,15 +161,15 @@ ${I}}
     @Override
     public int hashCode()
     {
-        int __result = zserio.runtime.Util.HASH_SEED;
+        int result = zserio.runtime.Util.HASH_SEED;
 
 <#list compoundParametersData.list as parameter>
         <@compound_hashcode_parameter parameter/>
 </#list>
-        __result = zserio.runtime.Util.HASH_PRIME_NUMBER * __result +
-                ((__objectChoice == null) ? 0 : __objectChoice.hashCode());
+        result = zserio.runtime.Util.HASH_PRIME_NUMBER * result +
+                ((this.objectChoice == null) ? 0 : this.objectChoice.hashCode());
 
-        return __result;
+        return result;
     }
 
 <#macro choice_read_member member indent>
@@ -181,7 +181,7 @@ ${I}}
         <#lt>${I}// empty
     </#if>
 </#macro>
-    public void read(final zserio.runtime.io.BitStreamReader __in)
+    public void read(final zserio.runtime.io.BitStreamReader in)
             throws java.io.IOException, zserio.runtime.ZserioError
     {
 <#if fieldList?has_content>
@@ -204,31 +204,31 @@ ${I}}
 ${I}// empty
     </#if>
 </#macro>
-    public long initializeOffsets(long __bitPosition) throws zserio.runtime.ZserioError
+    public long initializeOffsets(long bitPosition) throws zserio.runtime.ZserioError
     {
     <#if fieldList?has_content>
-        long __endBitPosition = __bitPosition;
+        long endBitPosition = bitPosition;
 
         <@choice_switch "choice_initialize_offsets_member", 2/>
 
-        return __endBitPosition;
+        return endBitPosition;
     <#else>
-        return __bitPosition;
+        return bitPosition;
     </#if>
     }
 
-    public void write(java.io.File __file) throws java.io.IOException, zserio.runtime.ZserioError
+    public void write(java.io.File file) throws java.io.IOException, zserio.runtime.ZserioError
     {
-        zserio.runtime.io.FileBitStreamWriter __out = new zserio.runtime.io.FileBitStreamWriter(__file);
-        write(__out);
-        __out.close();
+        zserio.runtime.io.FileBitStreamWriter out = new zserio.runtime.io.FileBitStreamWriter(file);
+        write(out);
+        out.close();
     }
 
     @Override
-    public void write(zserio.runtime.io.BitStreamWriter __out)
+    public void write(zserio.runtime.io.BitStreamWriter out)
             throws java.io.IOException, zserio.runtime.ZserioError
     {
-        write(__out, true);
+        write(out, true);
     }
 
 <#macro choice_write_member member indent>
@@ -241,16 +241,16 @@ ${I}// empty
     </#if>
 </#macro>
     @Override
-    public void write(zserio.runtime.io.BitStreamWriter __out, boolean __callInitializeOffsets)
+    public void write(zserio.runtime.io.BitStreamWriter out, boolean callInitializeOffsets)
             throws java.io.IOException, zserio.runtime.ZserioError
     {
     <#if fieldList?has_content>
         <#if hasFieldWithOffset>
-        final long __startBitPosition = __out.getBitPosition();
+        final long startBitPosition = out.getBitPosition();
 
-        if (__callInitializeOffsets)
+        if (callInitializeOffsets)
         {
-            initializeOffsets(__startBitPosition);
+            initializeOffsets(startBitPosition);
         }
 
         </#if>
@@ -263,5 +263,5 @@ ${I}// empty
 </#list>
 
     <@compound_parameter_members compoundParametersData/>
-    private java.lang.Object __objectChoice;
+    private java.lang.Object objectChoice;
 }

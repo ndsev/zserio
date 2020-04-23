@@ -1,0 +1,10 @@
+<FindBugsFilter>
+    <Match>
+        <!-- This field is never written. -->
+        <Bug code="UwF"/>
+        <And>
+            <Class name="~.*\.EmptyChoice.*"/>
+            <Field name="objectChoice"/>
+        </And>
+    </Match>
+</FindBugsFilter>

@@ -8,20 +8,20 @@ public enum ${name} implements <#if withWriterCode>zserio.runtime.io.InitializeO
     ${item.name}(${item.value})<#if item_has_next>,<#else>;</#if>
 </#list>
 
-    private ${name}(${baseJavaTypeName} __value)
+    private ${name}(${baseJavaTypeName} value)
     {
-        this.__value = __value;
+        this.value = value;
     }
 
     public ${baseJavaTypeName} getValue()
     {
-        return __value;
+        return value;
     }
 
     @Override
     public java.lang.Number getGenericValue()
     {
-        return __value;
+        return value;
     }
 
     @Override
@@ -31,58 +31,58 @@ public enum ${name} implements <#if withWriterCode>zserio.runtime.io.InitializeO
     }
 
     @Override
-    public int bitSizeOf(long __bitPosition)
+    public int bitSizeOf(long bitPosition)
     {
 <#if bitSize??>
         return ${bitSize};
 <#else>
-        return zserio.runtime.BitSizeOfCalculator.getBitSizeOf${runtimeFunction.suffix}(__value);
+        return zserio.runtime.BitSizeOfCalculator.getBitSizeOf${runtimeFunction.suffix}(value);
 </#if>
     }
 <#if withWriterCode>
 
     @Override
-    public long initializeOffsets(long __bitPosition) throws zserio.runtime.ZserioError
+    public long initializeOffsets(long bitPosition) throws zserio.runtime.ZserioError
     {
-        return __bitPosition + bitSizeOf(__bitPosition);
+        return bitPosition + bitSizeOf(bitPosition);
     }
 
     @Override
-    public void write(zserio.runtime.io.BitStreamWriter __out) throws java.io.IOException
+    public void write(zserio.runtime.io.BitStreamWriter out) throws java.io.IOException
     {
-        write(__out, false);
+        write(out, false);
     }
 
     @Override
-    public void write(zserio.runtime.io.BitStreamWriter __out, boolean __callInitializeOffsets)
+    public void write(zserio.runtime.io.BitStreamWriter out, boolean callInitializeOffsets)
             throws java.io.IOException
     {
-        __out.write${runtimeFunction.suffix}(getValue()<#if runtimeFunction.arg??>, ${runtimeFunction.arg}</#if>);
+        out.write${runtimeFunction.suffix}(getValue()<#if runtimeFunction.arg??>, ${runtimeFunction.arg}</#if>);
     }
 
 </#if>
-    public static ${name} readEnum(zserio.runtime.io.BitStreamReader __in) throws java.io.IOException
+    public static ${name} readEnum(zserio.runtime.io.BitStreamReader in) throws java.io.IOException
     {
         return toEnum(<#if runtimeFunction.javaReadTypeName??>(${runtimeFunction.javaReadTypeName})</#if><#rt>
-                <#lt>__in.read${runtimeFunction.suffix}(${runtimeFunction.arg!}));
+                <#lt>in.read${runtimeFunction.suffix}(${runtimeFunction.arg!}));
     }
 
-    public static ${name} toEnum(${baseJavaTypeName} __value)
+    public static ${name} toEnum(${baseJavaTypeName} value)
     {
 <#if baseJavaTypeName == "long" || baseJavaTypeName == "java.math.BigInteger">
     <#-- can't use switch for long and for BigInteger -->
     <#list items as item>
         <#if baseJavaTypeName == "java.math.BigInteger">
-        if (__value.compareTo(${item.value}) == 0)
+        if (value.compareTo(${item.value}) == 0)
         <#else>
-        if (__value == ${item.value})
+        if (value == ${item.value})
         </#if>
             return ${item.name};
     </#list>
 
-        throw new java.lang.IllegalArgumentException("Unknown value for enumeration ${name}: " + __value + "!");
+        throw new java.lang.IllegalArgumentException("Unknown value for enumeration ${name}: " + value + "!");
 <#else>
-        switch (__value)
+        switch (value)
         {
     <#list items as item>
             case ${item.value}:
@@ -90,10 +90,10 @@ public enum ${name} implements <#if withWriterCode>zserio.runtime.io.InitializeO
     </#list>
             default:
                 throw new java.lang.IllegalArgumentException(
-                        "Unknown value for enumeration ${name}: " + __value + "!");
+                        "Unknown value for enumeration ${name}: " + value + "!");
         }
 </#if>
     }
 
-    private ${baseJavaTypeName} __value;
+    private ${baseJavaTypeName} value;
 }

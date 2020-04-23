@@ -1,24 +1,26 @@
+<#include "CompoundField.inc.ftl">
+
 <#macro range_check rangeCheckData compoundName>
     <#if rangeCheckData.setterRangeData??>
         <#local rangeData=rangeCheckData.setterRangeData>
         // check range
         <#if rangeData.bitFieldWithExpression??>
-        final int __length = ${rangeData.bitFieldWithExpression.lengthExpression};
-        final long __lowerBound = zserio.runtime.Util.getBitFieldLowerBound(
-                __length, ${rangeData.bitFieldWithExpression.isSignedBitFieldStr});
-        final long __upperBound = zserio.runtime.Util.getBitFieldUpperBound(
-                __length, ${rangeData.bitFieldWithExpression.isSignedBitFieldStr});
+        final int length = ${rangeData.bitFieldWithExpression.lengthExpression};
+        final long lowerBound = zserio.runtime.Util.getBitFieldLowerBound(
+                length, ${rangeData.bitFieldWithExpression.isSignedBitFieldStr});
+        final long upperBound = zserio.runtime.Util.getBitFieldUpperBound(
+                length, ${rangeData.bitFieldWithExpression.isSignedBitFieldStr});
         <#else>
-        final ${rangeData.javaTypeName} __lowerBound = ${rangeData.lowerBound};
-        final ${rangeData.javaTypeName} __upperBound = ${rangeData.upperBound};
+        final ${rangeData.javaTypeName} lowerBound = ${rangeData.lowerBound};
+        final ${rangeData.javaTypeName} upperBound = ${rangeData.upperBound};
         </#if>
-        if <#if rangeData.isTypeNullable>(${rangeData.name} != null && </#if><#rt>
-            (${rangeData.name} < __lowerBound<#if rangeData.checkUpperBound> || ${rangeData.name} > __upperBound</#if>)<#t>
+        if <#if rangeData.isTypeNullable>(<@field_member_name rangeData.field/> != null && </#if><#rt>
+            (<@field_member_name rangeData.field/> < lowerBound<#if rangeData.checkUpperBound> || <@field_member_name rangeData.field/> > upperBound</#if>)<#t>
             <#if rangeData.isTypeNullable>)</#if><#lt>
         {
-            throw new zserio.runtime.ZserioError("Value " + ${rangeData.name} +
-                    " of ${compoundName}.${rangeData.name} exceeds the range of <" +
-                    __lowerBound + ".." + __upperBound + ">!");
+            throw new zserio.runtime.ZserioError("Value " + <@field_member_name rangeData.field/> +
+                    " of ${compoundName}.${rangeData.field.name} exceeds the range of <" +
+                    lowerBound + ".." + upperBound + ">!");
         }
 
     </#if>
@@ -27,21 +29,21 @@
 <#macro sql_field_range_check rangeCheckData tableName fieldName>
     <#if rangeCheckData.sqlRangeData??>
         <#local rangeData=rangeCheckData.sqlRangeData>
-    <#-- bitfields with expression are not supported in a sql_table -->
+        <#-- bitfields with expression are not supported in a sql_table -->
         <#if rangeData.isBoolType>
-            final long __lowerBound = 0;
-            final long __upperBound = 1;
+            final long lowerBound = 0;
+            final long upperBound = 1;
         <#else>
-            final long __lowerBound = ${rangeData.lowerBound};
-            final long __upperBound = ${rangeData.upperBound};
+            final long lowerBound = ${rangeData.lowerBound};
+            final long upperBound = ${rangeData.upperBound};
         </#if>
-            if (value < __lowerBound || value > __upperBound)
+            if (value < lowerBound || value > upperBound)
             {
-                errors.add(new zserio.runtime.validation.ValidationError(__tableName, "${fieldName}",
+                errors.add(new zserio.runtime.validation.ValidationError(tableName, "${fieldName}",
                         getRowKeyValues(resultSet),
                         zserio.runtime.validation.ValidationError.Type.VALUE_OUT_OF_RANGE,
                         "Value " + value + " of ${tableName}.${fieldName} exceeds the range of " +
-                        __lowerBound + ".." + __upperBound));
+                        lowerBound + ".." + upperBound));
                 return false;
             }
     </#if>

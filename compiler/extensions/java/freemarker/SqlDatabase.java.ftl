@@ -1,12 +1,10 @@
 <#include "FileHeader.inc.ftl">
 <#include "Sql.inc.ftl">
+<#include "CompoundField.inc.ftl">
 <@standard_header generatorDescription, packageName/>
 <#if withValidationCode>
     <#assign needsParameterProvider = sql_db_needs_parameter_provider(fields)/>
 </#if>
-<#macro field_member_name field>
-    ${field.name}_<#t>
-</#macro>
 
 public class ${name} implements zserio.runtime.SqlDatabase<#if !withWriterCode>Reader</#if>
 {
@@ -34,9 +32,9 @@ public class ${name} implements zserio.runtime.SqlDatabase<#if !withWriterCode>R
         connectionProps.setProperty("flags", <#if withWriterCode>"CREATE"<#else>"READONLY"</#if>);
         final java.lang.String uriPath = "jdbc:sqlite:" + new java.io.File(fileName).toString();
 
-        __connection = java.sql.DriverManager.getConnection(uriPath, connectionProps);
-        __isExternal = false;
-        __attachedDbList = new java.util.ArrayList<java.lang.String>();
+        connection = java.sql.DriverManager.getConnection(uriPath, connectionProps);
+        isExternal = false;
+        attachedDbList = new java.util.ArrayList<java.lang.String>();
 
         final java.util.Map<java.lang.String, java.lang.String> tableToAttachedDbNameRelocationMap =
                 new java.util.HashMap<java.lang.String, java.lang.String>();
@@ -70,9 +68,9 @@ public class ${name} implements zserio.runtime.SqlDatabase<#if !withWriterCode>R
     public ${name}(java.sql.Connection externalConnection,
             java.util.Map<java.lang.String, java.lang.String> tableToAttachedDbNameRelocationMap)
     {
-        __connection = externalConnection;
-        __isExternal = true;
-        __attachedDbList = null;
+        connection = externalConnection;
+        isExternal = true;
+        attachedDbList = null;
 
         initTables(tableToAttachedDbNameRelocationMap);
     }
@@ -80,24 +78,24 @@ public class ${name} implements zserio.runtime.SqlDatabase<#if !withWriterCode>R
     @Override
     public void close() throws java.sql.SQLException
     {
-        if (!__isExternal)
+        if (!isExternal)
         {
             detachDatabases();
-            __connection.close();
+            connection.close();
         }
     }
 
     @Override
     public java.sql.Connection connection()
     {
-        return __connection;
+        return connection;
     }
 
 <#list fields as field>
 
     public ${field.javaTypeName} ${field.getterName}()
     {
-        return <@field_member_name field/>;
+        return this.<@field_member_name field/>;
     }
 </#list>
 <#if withWriterCode>
@@ -108,7 +106,7 @@ public class ${name} implements zserio.runtime.SqlDatabase<#if !withWriterCode>R
         final boolean wasTransactionStarted = startTransaction();
 
         <#list fields as field>
-        <@field_member_name field/>.createTable();
+        this.<@field_member_name field/>.createTable();
         </#list>
 
         endTransaction(wasTransactionStarted);
@@ -130,12 +128,12 @@ public class ${name} implements zserio.runtime.SqlDatabase<#if !withWriterCode>R
 
         <#list fields as field>
             <#if field.isWithoutRowIdTable>
-        if (withoutRowIdTableNamesBlackList.contains(${field.name?upper_case}_TABLE_NAME))
-            <@field_member_name field/>.createOrdinaryRowIdTable();
+        if (withoutRowIdTableNamesBlackList.contains(${field.name}_TABLE_NAME))
+            this.<@field_member_name field/>.createOrdinaryRowIdTable();
         else
-            <@field_member_name field/>.createTable();
+            this.<@field_member_name field/>.createTable();
             <#else>
-        <@field_member_name field/>.createTable();
+        this.<@field_member_name field/>.createTable();
             </#if>
         </#list>
 
@@ -151,7 +149,7 @@ public class ${name} implements zserio.runtime.SqlDatabase<#if !withWriterCode>R
         final boolean wasTransactionStarted = startTransaction();
 
     <#list fields as field>
-        <@field_member_name field/>.deleteTable();
+        this.<@field_member_name field/>.deleteTable();
     </#list>
 
         endTransaction(wasTransactionStarted);
@@ -165,7 +163,7 @@ public class ${name} implements zserio.runtime.SqlDatabase<#if !withWriterCode>R
         final zserio.runtime.validation.ValidationReport report =
                 new zserio.runtime.validation.ValidationReport();
     <#list fields as field>
-        report.add(<@field_member_name field/>.validate(<#if field.hasExplicitParameters>parameterProvider.get${field.name?cap_first}ParameterProvider()</#if>));
+        report.add(this.<@field_member_name field/>.validate(<#if field.hasExplicitParameters>parameterProvider.get${field.name?cap_first}ParameterProvider()</#if>));
     </#list>
 
         return report;
@@ -182,7 +180,7 @@ public class ${name} implements zserio.runtime.SqlDatabase<#if !withWriterCode>R
         return new java.lang.String[]
         {
 <#list fields as field>
-            ${field.name?upper_case}_TABLE_NAME<#if field_has_next>,</#if>
+            ${field.name}_TABLE_NAME<#if field_has_next>,</#if>
 </#list>
         };
     }
@@ -190,15 +188,15 @@ public class ${name} implements zserio.runtime.SqlDatabase<#if !withWriterCode>R
     private void initTables(java.util.Map<java.lang.String, java.lang.String> tableToAttachedDbNameRelocationMap)
     {
 <#list fields as field>
-        <@field_member_name field/> = new ${field.javaTypeName}(__connection,
-                tableToAttachedDbNameRelocationMap.get(${field.name?upper_case}_TABLE_NAME),
-                ${field.name?upper_case}_TABLE_NAME);
+        this.<@field_member_name field/> = new ${field.javaTypeName}(connection,
+                tableToAttachedDbNameRelocationMap.get(${field.name}_TABLE_NAME),
+                ${field.name}_TABLE_NAME);
 </#list>
     }
 
     private void executeUpdate(java.lang.String sql) throws java.sql.SQLException
     {
-        final java.sql.Statement statement = __connection.createStatement();
+        final java.sql.Statement statement = connection.createStatement();
         try
         {
             statement.executeUpdate(sql);
@@ -218,12 +216,12 @@ public class ${name} implements zserio.runtime.SqlDatabase<#if !withWriterCode>R
         sqlQuery.append(attachedDbName);
         executeUpdate(sqlQuery.toString());
 
-        __attachedDbList.add(attachedDbName);
+        attachedDbList.add(attachedDbName);
     }
 
     private void detachDatabases() throws java.sql.SQLException
     {
-        for (java.lang.String attachedDbName : __attachedDbList)
+        for (java.lang.String attachedDbName : attachedDbList)
         {
             final java.lang.String sqlQuery = "DETACH DATABASE " + attachedDbName;
             executeUpdate(sqlQuery);
@@ -234,9 +232,9 @@ public class ${name} implements zserio.runtime.SqlDatabase<#if !withWriterCode>R
     private boolean startTransaction() throws java.sql.SQLException
     {
         boolean wasTransactionStarted = false;
-        if (__connection.getAutoCommit())
+        if (connection.getAutoCommit())
         {
-            __connection.setAutoCommit(false);
+            connection.setAutoCommit(false);
             wasTransactionStarted = true;
         }
 
@@ -247,20 +245,20 @@ public class ${name} implements zserio.runtime.SqlDatabase<#if !withWriterCode>R
     {
         if (wasTransactionStarted)
         {
-            __connection.commit();
-            __connection.setAutoCommit(true);
+            connection.commit();
+            connection.setAutoCommit(true);
         }
     }
 </#if>
 
     private static final java.lang.String DATABASE_NAME = "${name}";
 <#list fields as field>
-    private static final java.lang.String ${field.name?upper_case}_TABLE_NAME = "${field.name}";
+    private static final java.lang.String ${field.name}_TABLE_NAME = "${field.name}";
 </#list>
 
-    private final java.sql.Connection __connection;
-    private final boolean __isExternal;
-    private final java.util.List<java.lang.String> __attachedDbList;
+    private final java.sql.Connection connection;
+    private final boolean isExternal;
+    private final java.util.List<java.lang.String> attachedDbList;
 
 <#list fields as field>
     private ${field.javaTypeName} <@field_member_name field/>;

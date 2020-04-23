@@ -14,8 +14,9 @@ import zserio.emit.java.types.NativeIntegralType;
 
 public final class RangeCheckTemplateData
 {
-    public RangeCheckTemplateData(JavaNativeMapper javaNativeMapper, boolean withRangeCheckCode,
-            String valueNameToCheck, TypeInstantiation typeInstantiation, boolean isTypeNullable,
+    public RangeCheckTemplateData(CompoundFieldTemplateData field,
+            JavaNativeMapper javaNativeMapper, boolean withRangeCheckCode,
+            TypeInstantiation typeInstantiation, boolean isTypeNullable,
             ExpressionFormatter javaExpressionFormatter) throws ZserioEmitException
     {
         if (withRangeCheckCode)
@@ -25,7 +26,7 @@ public final class RangeCheckTemplateData
             // in setters, don't do range check if Zserio type has the same bounds as their native type
             if (commonRangeData != null && (commonRangeData.checkLowerBound || commonRangeData.checkUpperBound))
             {
-                setterRangeData = new SetterRangeData(valueNameToCheck, commonRangeData.javaTypeName,
+                setterRangeData = new SetterRangeData(field, commonRangeData.javaTypeName,
                         isTypeNullable, commonRangeData.bitFieldWithExpression, commonRangeData.lowerBound,
                         commonRangeData.checkUpperBound, commonRangeData.upperBound);
             }
@@ -101,11 +102,11 @@ public final class RangeCheckTemplateData
 
     public static class SetterRangeData
     {
-        public SetterRangeData(String name, String javaTypeName, boolean isTypeNullable,
+        public SetterRangeData(CompoundFieldTemplateData field, String javaTypeName, boolean isTypeNullable,
                 BitFieldWithExpression bitFieldWithExpression, String lowerBound, boolean checkUpperBound,
                 String upperBound)
         {
-            this.name = name;
+            this.field = field;
             this.javaTypeName = javaTypeName;
             this.isTypeNullable = isTypeNullable;
             this.bitFieldWithExpression = bitFieldWithExpression;
@@ -114,9 +115,9 @@ public final class RangeCheckTemplateData
             this.upperBound = upperBound;
         }
 
-        public String getName()
+        public CompoundFieldTemplateData getField()
         {
-            return name;
+            return field;
         }
 
         public String getJavaTypeName()
@@ -149,7 +150,7 @@ public final class RangeCheckTemplateData
             return upperBound;
         }
 
-        private final String                    name;
+        private final CompoundFieldTemplateData field;
         private final String                    javaTypeName;
         private final boolean                   isTypeNullable;
         private final BitFieldWithExpression    bitFieldWithExpression;

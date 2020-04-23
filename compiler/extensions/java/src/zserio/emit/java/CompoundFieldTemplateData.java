@@ -53,7 +53,7 @@ public final class CompoundFieldTemplateData
         getterName = AccessorNameFormatter.getGetterName(field);
         setterName = AccessorNameFormatter.getSetterName(field);
 
-        rangeCheckData = new RangeCheckTemplateData(javaNativeMapper, withRangeCheckCode, name,
+        rangeCheckData = new RangeCheckTemplateData(this, javaNativeMapper, withRangeCheckCode,
                 fieldTypeInstantiation, isTypeNullable, javaExpressionFormatter);
 
         alignmentValue = createAlignmentValue(field, javaExpressionFormatter);

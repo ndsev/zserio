@@ -1,8 +1,16 @@
+<#macro parameter_member_name param>
+    ${param.name}_<#t>
+</#macro>
+
+<#macro parameter_argument_name param>
+    ${param.name}_<#t>
+</#macro>
+
 <#macro compound_parameter_accessors compoundParametersData>
     <#list compoundParametersData.list as compoundParameter>
     public ${compoundParameter.javaTypeName} ${compoundParameter.getterName}()
     {
-        return this.${compoundParameter.name};
+        return this.<@parameter_member_name compoundParameter/>;
     }
 
     </#list>
@@ -10,7 +18,7 @@
 
 <#macro compound_parameter_members compoundParametersData>
     <#list compoundParametersData.list as compoundParameter>
-    private final ${compoundParameter.javaTypeName} ${compoundParameter.name};
+    private final ${compoundParameter.javaTypeName} <@parameter_member_name compoundParameter/>;
     </#list>
 </#macro>
 
@@ -18,20 +26,20 @@
     <#if parameter.isSimpleType>
         <#if parameter.isFloat>
             <#-- float type: compare by floatToIntBits() to get rid of SpotBugs -->
-java.lang.Float.floatToIntBits(this.${parameter.name}) == java.lang.Float.floatToIntBits(__that.${parameter.name})<#rt>
+java.lang.Float.floatToIntBits(this.<@parameter_member_name parameter/>) == java.lang.Float.floatToIntBits(that.<@parameter_member_name parameter/>)<#rt>
         <#elseif parameter.isDouble>
             <#-- double type: compare by doubleToLongBits() to get rid of SpotBugs -->
-java.lang.Double.doubleToLongBits(this.${parameter.name}) == java.lang.Double.doubleToLongBits(__that.${parameter.name})<#rt>
+java.lang.Double.doubleToLongBits(this.<@parameter_member_name parameter/>) == java.lang.Double.doubleToLongBits(that.<@parameter_member_name parameter/>)<#rt>
         <#else>
             <#-- simple type: compare by == -->
-this.${parameter.name} == __that.${parameter.name}<#rt>
+this.<@parameter_member_name parameter/> == that.<@parameter_member_name parameter/><#rt>
         </#if>
     <#elseif parameter.isEnum>
         <#-- enum type: compare by getValue() and == -->
-((this.${parameter.name} == null) ? __that.${parameter.name} == null : this.${parameter.name}.getValue() == __that.${parameter.name}.getValue())<#rt>
+((this.<@parameter_member_name parameter/> == null) ? that.<@parameter_member_name parameter/> == null : this.<@parameter_member_name parameter/>.getValue() == that.<@parameter_member_name parameter/>.getValue())<#rt>
     <#else>
         <#-- compare with equals() but account for possible null -->
-((this.${parameter.name} == null) ? __that.${parameter.name} == null : this.${parameter.name}.equals(__that.${parameter.name}))<#rt>
+((this.<@parameter_member_name parameter/> == null) ? that.<@parameter_member_name parameter/> == null : this.<@parameter_member_name parameter/>.equals(that.<@parameter_member_name parameter/>))<#rt>
     </#if>
 </#macro>
 
@@ -39,27 +47,27 @@ this.${parameter.name} == __that.${parameter.name}<#rt>
     <#if parameter.isSimpleType>
         <#if parameter.isLong>
             <#-- long type: use shifting -->
-        __result = zserio.runtime.Util.HASH_PRIME_NUMBER * __result +
-                (int)(${parameter.name} ^ (${parameter.name} >>> 32));
+        result = zserio.runtime.Util.HASH_PRIME_NUMBER * result +
+                (int)(this.<@parameter_member_name parameter/> ^ (this.<@parameter_member_name parameter/> >>> 32));
         <#elseif parameter.isFloat>
             <#-- float type: use floatToIntBits() -->
-        __result = zserio.runtime.Util.HASH_PRIME_NUMBER * __result +
-                java.lang.Float.floatToIntBits(${parameter.name});
+        result = zserio.runtime.Util.HASH_PRIME_NUMBER * result +
+                java.lang.Float.floatToIntBits(this.<@parameter_member_name parameter/>);
         <#elseif parameter.isDouble>
             <#-- double type: use doubleToLongBits() -->
-        __result = zserio.runtime.Util.HASH_PRIME_NUMBER * __result +
-                (int)(java.lang.Double.doubleToLongBits(${parameter.name}) ^
-                        (java.lang.Double.doubleToLongBits(${parameter.name}) >>> 32));
+        result = zserio.runtime.Util.HASH_PRIME_NUMBER * result +
+                (int)(java.lang.Double.doubleToLongBits(this.<@parameter_member_name parameter/>) ^
+                        (java.lang.Double.doubleToLongBits(this.<@parameter_member_name parameter/>) >>> 32));
         <#elseif parameter.isBool>
             <#-- bool type: convert it to int -->
-        __result = zserio.runtime.Util.HASH_PRIME_NUMBER * __result + (${parameter.name} ? 1 : 0);
+        result = zserio.runtime.Util.HASH_PRIME_NUMBER * result + (this.<@parameter_member_name parameter/> ? 1 : 0);
         <#else>
             <#-- others: use implicit casting to int -->
-        __result = zserio.runtime.Util.HASH_PRIME_NUMBER * __result + ${parameter.name};
+        result = zserio.runtime.Util.HASH_PRIME_NUMBER * result + this.<@parameter_member_name parameter/>;
         </#if>
     <#else>
         <#-- complex type: use hashCode() but account for possible null -->
-        __result = zserio.runtime.Util.HASH_PRIME_NUMBER * __result +
-                ((${parameter.name} == null) ? 0 : ${parameter.name}.hashCode());
+        result = zserio.runtime.Util.HASH_PRIME_NUMBER * result +
+                ((this.<@parameter_member_name parameter/> == null) ? 0 : this.<@parameter_member_name parameter/>.hashCode());
     </#if>
 </#macro>

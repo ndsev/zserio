@@ -20,14 +20,14 @@ public class ${name} implements <#if withWriterCode>zserio.runtime.io.Initialize
     <#assign constructorArgumentTypeList><@compound_constructor_argument_type_list compoundConstructorsData/></#assign>
     public ${name}(<#if constructorArgumentTypeList?has_content>${constructorArgumentTypeList},</#if>
     <#list fieldList as field>
-        ${field.javaTypeName} ${field.name}<#if field_has_next>,<#else>)</#if>
+        ${field.javaTypeName} <@field_argument_name field/><#if field_has_next>,<#else>)</#if>
     </#list>
     {
     <#if constructorArgumentTypeList?has_content>
         this(<@compound_constructor_argument_list compoundConstructorsData/>);
     </#if>
     <#list fieldList as field>
-        ${field.setterName}(${field.name});
+        ${field.setterName}(<@field_argument_name field/>);
     </#list>
     }
 
@@ -41,15 +41,15 @@ public class ${name} implements <#if withWriterCode>zserio.runtime.io.Initialize
 <#macro structure_align_field field indent>
     <#local I>${""?left_pad(indent * 4)}</#local>
     <#if field.alignmentValue??>
-${I}__endBitPosition = zserio.runtime.BitPositionUtil.alignTo(${field.alignmentValue}, __endBitPosition);
+${I}endBitPosition = zserio.runtime.BitPositionUtil.alignTo(${field.alignmentValue}, endBitPosition);
     </#if>
     <#if field.offset??>
         <#if field.offset.containsIndex>
             <#-- align to bytes only if the array is non-empty to match read/write behavior -->
-${I}if (${field.name}.length() > 0)
-${I}    __endBitPosition = zserio.runtime.BitPositionUtil.alignTo(java.lang.Byte.SIZE, __endBitPosition);
+${I}if (this.<@field_member_name field/>.length() > 0)
+${I}    endBitPosition = zserio.runtime.BitPositionUtil.alignTo(java.lang.Byte.SIZE, endBitPosition);
         <#else>
-${I}__endBitPosition = zserio.runtime.BitPositionUtil.alignTo(java.lang.Byte.SIZE, __endBitPosition);
+${I}endBitPosition = zserio.runtime.BitPositionUtil.alignTo(java.lang.Byte.SIZE, endBitPosition);
         </#if>
     </#if>
 </#macro>
@@ -58,16 +58,16 @@ ${I}__endBitPosition = zserio.runtime.BitPositionUtil.alignTo(java.lang.Byte.SIZ
     <@compound_bitsizeof_field field, indent/>
 </#macro>
     @Override
-    public int bitSizeOf(long __bitPosition)
+    public int bitSizeOf(long bitPosition)
     {
 <#if fieldList?has_content>
-        long __endBitPosition = __bitPosition;
+        long endBitPosition = bitPosition;
 
     <#list fieldList as field>
         <#if field.optional??>
             <#if !field.optional.clause??>
                 <#-- auto optional field -->
-        __endBitPosition += 1;
+        endBitPosition += 1;
             </#if>
         if (<@field_optional_condition field/>)
         {
@@ -78,7 +78,7 @@ ${I}__endBitPosition = zserio.runtime.BitPositionUtil.alignTo(java.lang.Byte.SIZ
         </#if>
     </#list>
 
-        return (int)(__endBitPosition - __bitPosition);
+        return (int)(endBitPosition - bitPosition);
 <#else>
         return 0;
 </#if>
@@ -88,20 +88,20 @@ ${I}__endBitPosition = zserio.runtime.BitPositionUtil.alignTo(java.lang.Byte.SIZ
 <#list fieldList as field>
     public ${field.javaTypeName} ${field.getterName}()
     {
-        return this.${field.name};
+        return this.<@field_member_name field/>;
     }
 
     <#if withWriterCode>
-    public void ${field.setterName}(${field.javaTypeName} ${field.name})
+    public void ${field.setterName}(${field.javaTypeName} <@field_argument_name field/>)
     {
         <@range_check field.rangeCheckData, name/>
-        this.${field.name} = ${field.name};
+        this.<@field_member_name field/> = <@field_argument_name field/>;
     }
 
         <#if field.array?? && field.array.generateListSetter>
-    public void ${field.setterName}(java.util.List<${field.array.elementJavaTypeName}> ${field.name})
+    public void ${field.setterName}(java.util.List<${field.array.elementJavaTypeName}> <@field_argument_name field/>)
     {
-        this.${field.name} = new ${field.javaTypeName}(${field.name});
+        this.<@field_member_name field/> = new ${field.javaTypeName}(<@field_argument_name field/>);
     }
 
         </#if>
@@ -121,7 +121,7 @@ ${I}__endBitPosition = zserio.runtime.BitPositionUtil.alignTo(java.lang.Byte.SIZ
 <#if compoundParametersData.list?has_content || fieldList?has_content>
         if (obj instanceof ${name})
         {
-            final ${name} __that = (${name})obj;
+            final ${name} that = (${name})obj;
 
             return
     <#list compoundParametersData.list as parameter>
@@ -146,7 +146,7 @@ ${I}__endBitPosition = zserio.runtime.BitPositionUtil.alignTo(java.lang.Byte.SIZ
     @Override
     public int hashCode()
     {
-        int __result = zserio.runtime.Util.HASH_SEED;
+        int result = zserio.runtime.Util.HASH_SEED;
 
 <#list compoundParametersData.list as parameter>
         <@compound_hashcode_parameter parameter/>
@@ -160,10 +160,10 @@ ${I}__endBitPosition = zserio.runtime.BitPositionUtil.alignTo(java.lang.Byte.SIZ
     </#if>
 </#list>
 
-        return __result;
+        return result;
     }
 
-    public void read(final zserio.runtime.io.BitStreamReader __in)
+    public void read(final zserio.runtime.io.BitStreamReader in)
             throws java.io.IOException, zserio.runtime.ZserioError
     {
 <#if fieldList?has_content>
@@ -175,7 +175,7 @@ ${I}__endBitPosition = zserio.runtime.BitPositionUtil.alignTo(java.lang.Byte.SIZ
     </#list>
     <#if hasFieldWithConstraint>
 
-        __checkConstraints();
+        checkConstraints();
     </#if>
 </#if>
     }
@@ -186,27 +186,27 @@ ${I}__endBitPosition = zserio.runtime.BitPositionUtil.alignTo(java.lang.Byte.SIZ
         <#if field.offset?? && !field.offset.containsIndex>
             <#local I>${""?left_pad(indent * 4)}</#local>
 ${I}{
-${I}    final ${field.offset.typeName} __value = <#rt>
+${I}    final ${field.offset.typeName} value = <#rt>
             <#if field.offset.requiresBigInt>
-                <#lt>java.math.BigInteger.valueOf(zserio.runtime.BitPositionUtil.bitsToBytes(__endBitPosition));
+                <#lt>java.math.BigInteger.valueOf(zserio.runtime.BitPositionUtil.bitsToBytes(endBitPosition));
             <#else>
-                <#lt>(${field.offset.typeName})zserio.runtime.BitPositionUtil.bitsToBytes(__endBitPosition);
+                <#lt>(${field.offset.typeName})zserio.runtime.BitPositionUtil.bitsToBytes(endBitPosition);
             </#if>
 ${I}    ${field.offset.setter};
 ${I}}
         </#if>
         <@compound_field_initialize_offsets field, indent/>
     </#macro>
-    public long initializeOffsets(long __bitPosition)
+    public long initializeOffsets(long bitPosition)
     {
     <#if fieldList?has_content>
-        long __endBitPosition = __bitPosition;
+        long endBitPosition = bitPosition;
 
         <#list fieldList as field>
             <#if field.optional??>
                 <#if !field.optional.clause??>
                     <#-- auto optional field -->
-        __endBitPosition += 1;
+        endBitPosition += 1;
                 </#if>
         if (<@field_optional_condition field/>)
         {
@@ -217,42 +217,42 @@ ${I}}
             </#if>
         </#list>
 
-        return __endBitPosition;
+        return endBitPosition;
     <#else>
-        return __bitPosition;
+        return bitPosition;
     </#if>
     }
 
-    public void write(java.io.File __file) throws java.io.IOException, zserio.runtime.ZserioError
+    public void write(java.io.File file) throws java.io.IOException, zserio.runtime.ZserioError
     {
-        zserio.runtime.io.FileBitStreamWriter __out = new zserio.runtime.io.FileBitStreamWriter(__file);
-        write(__out);
-        __out.close();
+        zserio.runtime.io.FileBitStreamWriter out = new zserio.runtime.io.FileBitStreamWriter(file);
+        write(out);
+        out.close();
     }
 
     @Override
-    public void write(zserio.runtime.io.BitStreamWriter __out)
+    public void write(zserio.runtime.io.BitStreamWriter out)
             throws java.io.IOException, zserio.runtime.ZserioError
     {
-        write(__out, true);
+        write(out, true);
     }
 
     @Override
-    public void write(zserio.runtime.io.BitStreamWriter __out, boolean __callInitializeOffsets)
+    public void write(zserio.runtime.io.BitStreamWriter out, boolean callInitializeOffsets)
             throws java.io.IOException, zserio.runtime.ZserioError
     {
     <#if fieldList?has_content>
         <#if hasFieldWithOffset>
-        final long __startBitPosition = __out.getBitPosition();
+        final long startBitPosition = out.getBitPosition();
 
-        if (__callInitializeOffsets)
+        if (callInitializeOffsets)
         {
-            initializeOffsets(__startBitPosition);
+            initializeOffsets(startBitPosition);
         }
 
         </#if>
         <#if hasFieldWithConstraint>
-        __checkConstraints();
+        checkConstraints();
         </#if>
         <#list fieldList as field>
         <@compound_write_field field, name, 2/>
@@ -265,7 +265,7 @@ ${I}}
 </#if>
 <#if hasFieldWithConstraint>
 
-    private void __checkConstraints() throws zserio.runtime.ZserioError
+    private void checkConstraints() throws zserio.runtime.ZserioError
     {
     <#list fieldList as field>
         <@compound_check_constraint_field field, name, 2/>
@@ -280,6 +280,6 @@ ${I}}
 </#if>
 <@compound_parameter_members compoundParametersData/>
 <#list fieldList as field>
-    private ${field.javaTypeName} ${field.name}<#if field.initializer??> = ${field.initializer}</#if>;
+    private ${field.javaTypeName} <@field_member_name field/><#if field.initializer??> = ${field.initializer}</#if>;
 </#list>
 }

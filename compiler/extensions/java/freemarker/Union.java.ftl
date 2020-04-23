@@ -16,14 +16,14 @@ public class ${name} implements <#if withWriterCode>zserio.runtime.io.Initialize
     }
 
     @Override
-    public int bitSizeOf(long __bitPosition) throws zserio.runtime.ZserioError
+    public int bitSizeOf(long bitPosition) throws zserio.runtime.ZserioError
     {
 <#if fieldList?has_content>
-        long __endBitPosition = __bitPosition;
+        long endBitPosition = bitPosition;
 
-        __endBitPosition += zserio.runtime.BitSizeOfCalculator.getBitSizeOfVarUInt64(__choiceTag);
+        endBitPosition += zserio.runtime.BitSizeOfCalculator.getBitSizeOfVarUInt64(choiceTag);
 
-        switch (__choiceTag)
+        switch (choiceTag)
         {
         <#list fieldList as field>
         case <@choice_tag_name field/>:
@@ -34,7 +34,7 @@ public class ${name} implements <#if withWriterCode>zserio.runtime.io.Initialize
             throw new zserio.runtime.ZserioError("No match in union ${name}!");
         }
 
-        return (int)(__endBitPosition - __bitPosition);
+        return (int)(endBitPosition - bitPosition);
 <#else>
         return 0;
 </#if>
@@ -42,7 +42,7 @@ public class ${name} implements <#if withWriterCode>zserio.runtime.io.Initialize
 
     public int choiceTag()
     {
-        return __choiceTag;
+        return choiceTag;
     }
 
 <@compound_parameter_accessors compoundParametersData/>
@@ -50,21 +50,21 @@ public class ${name} implements <#if withWriterCode>zserio.runtime.io.Initialize
     <#if field.isObjectArray>@java.lang.SuppressWarnings("unchecked")</#if>
     public ${field.javaTypeName} ${field.getterName}() throws zserio.runtime.ZserioError
     {
-        return (${field.javaNullableTypeName}) this.__objectChoice;
+        return (${field.javaNullableTypeName}) this.objectChoice;
     }
 
     <#if withWriterCode>
-    public void ${field.setterName}(${field.javaTypeName} ${field.name})
+    public void ${field.setterName}(${field.javaTypeName} <@field_argument_name field/>)
     {
         <@range_check field.rangeCheckData, name/>
-        this.__choiceTag = <@choice_tag_name field/>;
-        this.__objectChoice = ${field.name};
+        this.choiceTag = <@choice_tag_name field/>;
+        this.objectChoice = <@field_argument_name field/>;
     }
 
         <#if field.array?? && field.array.generateListSetter>
-    public void ${field.setterName}(java.util.List<${field.array.elementJavaTypeName}> ${field.name})
+    public void ${field.setterName}(java.util.List<${field.array.elementJavaTypeName}> <@field_argument_name field/>)
     {
-        ${field.setterName}(new ${field.javaTypeName}(${field.name}));
+        ${field.setterName}(new ${field.javaTypeName}(<@field_argument_name field/>));
     }
 
         </#if>
@@ -76,16 +76,16 @@ public class ${name} implements <#if withWriterCode>zserio.runtime.io.Initialize
     {
         if (obj instanceof ${name})
         {
-            final ${name} __that = (${name})obj;
+            final ${name} that = (${name})obj;
 
             return
 <#list compoundParametersData.list as parameter>
                     <@compound_compare_parameter parameter/> &&
 </#list>
-                    this.__choiceTag == __that.__choiceTag &&
+                    this.choiceTag == that.choiceTag &&
                     (
-                        (this.__objectChoice == null && __that.__objectChoice == null) ||
-                        (this.__objectChoice != null && this.__objectChoice.equals(__that.__objectChoice))
+                        (this.objectChoice == null && that.objectChoice == null) ||
+                        (this.objectChoice != null && this.objectChoice.equals(that.objectChoice))
                     );
         }
 
@@ -95,25 +95,25 @@ public class ${name} implements <#if withWriterCode>zserio.runtime.io.Initialize
     @Override
     public int hashCode()
     {
-        int __result = zserio.runtime.Util.HASH_SEED;
+        int result = zserio.runtime.Util.HASH_SEED;
 
 <#list compoundParametersData.list as parameter>
         <@compound_hashcode_parameter parameter/>
 </#list>
-        __result = zserio.runtime.Util.HASH_PRIME_NUMBER * __result + __choiceTag;
-        __result = zserio.runtime.Util.HASH_PRIME_NUMBER * __result +
-                ((__objectChoice == null) ? 0 : __objectChoice.hashCode());
+        result = zserio.runtime.Util.HASH_PRIME_NUMBER * result + choiceTag;
+        result = zserio.runtime.Util.HASH_PRIME_NUMBER * result +
+                ((this.objectChoice == null) ? 0 : this.objectChoice.hashCode());
 
-        return __result;
+        return result;
     }
 
-    public void read(final zserio.runtime.io.BitStreamReader __in)
+    public void read(final zserio.runtime.io.BitStreamReader in)
             throws java.io.IOException, zserio.runtime.ZserioError
     {
 <#if fieldList?has_content>
-        __choiceTag = zserio.runtime.VarUInt64Util.convertVarUInt64ToInt(__in.readVarUInt64());
+        choiceTag = zserio.runtime.VarUInt64Util.convertVarUInt64ToInt(in.readVarUInt64());
 
-        switch (__choiceTag)
+        switch (choiceTag)
         {
         <#list fieldList as field>
         case <@choice_tag_name field/>:
@@ -128,14 +128,14 @@ public class ${name} implements <#if withWriterCode>zserio.runtime.io.Initialize
     }
 <#if withWriterCode>
 
-    public long initializeOffsets(long __bitPosition) throws zserio.runtime.ZserioError
+    public long initializeOffsets(long bitPosition) throws zserio.runtime.ZserioError
     {
     <#if fieldList?has_content>
-        long __endBitPosition = __bitPosition;
+        long endBitPosition = bitPosition;
 
-        __endBitPosition += zserio.runtime.BitSizeOfCalculator.getBitSizeOfVarUInt64(__choiceTag);
+        endBitPosition += zserio.runtime.BitSizeOfCalculator.getBitSizeOfVarUInt64(choiceTag);
 
-        switch (__choiceTag)
+        switch (choiceTag)
         {
         <#list fieldList as field>
         case <@choice_tag_name field/>:
@@ -146,43 +146,43 @@ public class ${name} implements <#if withWriterCode>zserio.runtime.io.Initialize
             throw new zserio.runtime.ZserioError("No match in union ${name}!");
         }
 
-        return __endBitPosition;
+        return endBitPosition;
     <#else>
-        return __bitPosition;
+        return bitPosition;
     </#if>
     }
 
-    public void write(java.io.File __file) throws java.io.IOException, zserio.runtime.ZserioError
+    public void write(java.io.File file) throws java.io.IOException, zserio.runtime.ZserioError
     {
-        zserio.runtime.io.FileBitStreamWriter __out = new zserio.runtime.io.FileBitStreamWriter(__file);
-        write(__out);
-        __out.close();
+        zserio.runtime.io.FileBitStreamWriter out = new zserio.runtime.io.FileBitStreamWriter(file);
+        write(out);
+        out.close();
     }
 
     @Override
-    public void write(zserio.runtime.io.BitStreamWriter __out)
+    public void write(zserio.runtime.io.BitStreamWriter out)
             throws java.io.IOException, zserio.runtime.ZserioError
     {
-        write(__out, true);
+        write(out, true);
     }
 
     @Override
-    public void write(zserio.runtime.io.BitStreamWriter __out, boolean __callInitializeOffsets)
+    public void write(zserio.runtime.io.BitStreamWriter out, boolean callInitializeOffsets)
             throws java.io.IOException, zserio.runtime.ZserioError
     {
     <#if fieldList?has_content>
         <#if hasFieldWithOffset>
-        final long __startBitPosition = __out.getBitPosition();
+        final long startBitPosition = out.getBitPosition();
 
-        if (__callInitializeOffsets)
+        if (callInitializeOffsets)
         {
-            initializeOffsets(__startBitPosition);
+            initializeOffsets(startBitPosition);
         }
 
         </#if>
-        __out.writeVarUInt64(__choiceTag);
+        out.writeVarUInt64(choiceTag);
 
-        switch (__choiceTag)
+        switch (choiceTag)
         {
         <#list fieldList as field>
         case <@choice_tag_name field/>:
@@ -206,6 +206,6 @@ public class ${name} implements <#if withWriterCode>zserio.runtime.io.Initialize
 </#list>
 
 <@compound_parameter_members compoundParametersData/>
-    private java.lang.Object __objectChoice;
-    private int __choiceTag = UNDEFINED_CHOICE;
+    private java.lang.Object objectChoice;
+    private int choiceTag = UNDEFINED_CHOICE;
 }

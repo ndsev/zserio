@@ -24,17 +24,17 @@ public class ${name}
 </#if>
     public ${name}(java.sql.Connection connection, java.lang.String tableName)
     {
-        __connection = connection;
-        __attachedDbName = null;
-        __tableName = tableName;
+        this.connection = connection;
+        this.attachedDbName = null;
+        this.tableName = tableName;
     }
 
     public ${name}(java.sql.Connection connection, java.lang.String attachedDbName,
             java.lang.String tableName)
     {
-        __connection = connection;
-        __attachedDbName = attachedDbName;
-        __tableName = tableName;
+        this.connection = connection;
+        this.attachedDbName = attachedDbName;
+        this.tableName = tableName;
     }
 <#if withWriterCode>
 
@@ -89,7 +89,7 @@ public class ${name}
 
         // read rows
         final java.util.List<${rowName}> rows = new java.util.ArrayList<${rowName}>();
-        final java.sql.PreparedStatement statement = __connection.prepareStatement(sqlQuery.toString());
+        final java.sql.PreparedStatement statement = connection.prepareStatement(sqlQuery.toString());
         try
         {
             final java.sql.ResultSet resultSet = statement.executeQuery();
@@ -131,7 +131,7 @@ public class ${name}
 
         // write rows
         final boolean wasTransactionStarted = startTransaction();
-        final java.sql.PreparedStatement statement = __connection.prepareStatement(sqlQuery.toString());
+        final java.sql.PreparedStatement statement = connection.prepareStatement(sqlQuery.toString());
         try
         {
             for (${rowName} row : rows)
@@ -164,7 +164,7 @@ public class ${name}
         sqlQuery.append(whereCondition);
 
         // update row
-        final java.sql.PreparedStatement statement = __connection.prepareStatement(sqlQuery.toString());
+        final java.sql.PreparedStatement statement = connection.prepareStatement(sqlQuery.toString());
         try
         {
             writeRow(row, statement);
@@ -201,7 +201,7 @@ public class ${name}
         </#list>
                     " FROM ");
             appendTableNameToQuery(sqlQuery);
-            final java.sql.PreparedStatement statement = __connection.prepareStatement(sqlQuery.toString());
+            final java.sql.PreparedStatement statement = connection.prepareStatement(sqlQuery.toString());
 
             try
             {
@@ -242,18 +242,18 @@ public class ${name}
 
     private void appendTableNameToQuery(java.lang.StringBuilder sqlQuery)
     {
-        if (__attachedDbName != null)
+        if (attachedDbName != null)
         {
-            sqlQuery.append(__attachedDbName);
+            sqlQuery.append(attachedDbName);
             sqlQuery.append('.');
         }
-        sqlQuery.append(__tableName);
+        sqlQuery.append(tableName);
     }
 <#if withWriterCode>
 
     private void executeUpdate(java.lang.String sql) throws java.sql.SQLException
     {
-        final java.sql.Statement statement = __connection.createStatement();
+        final java.sql.Statement statement = connection.createStatement();
         try
         {
             statement.executeUpdate(sql);
@@ -267,9 +267,9 @@ public class ${name}
     private boolean startTransaction() throws java.sql.SQLException
     {
         boolean wasTransactionStarted = false;
-        if (__connection.getAutoCommit())
+        if (connection.getAutoCommit())
         {
-            __connection.setAutoCommit(false);
+            connection.setAutoCommit(false);
             wasTransactionStarted = true;
         }
 
@@ -280,8 +280,8 @@ public class ${name}
     {
         if (wasTransactionStarted)
         {
-            __connection.commit();
-            __connection.setAutoCommit(true);
+            connection.commit();
+            connection.setAutoCommit(true);
         }
     }
 
@@ -427,8 +427,8 @@ ${I}                (${parameter.javaTypeFullName})(${parameter.expression})<#rt
             throws java.sql.SQLException
     {
         final java.util.Map<java.lang.String, zserio.runtime.validation.ValidationSqliteUtil.ColumnDescription>
-                schema = zserio.runtime.validation.ValidationSqliteUtil.getTableSchema(__connection,
-                        __attachedDbName, __tableName);
+                schema = zserio.runtime.validation.ValidationSqliteUtil.getTableSchema(connection,
+                        attachedDbName, tableName);
         boolean result = true;
 
     <#list fields as field>
@@ -444,9 +444,9 @@ ${I}                (${parameter.javaTypeFullName})(${parameter.expression})<#rt
             {
                 final java.lang.String columnName = entry.getKey();
                 final java.lang.String columnType = entry.getValue().getType();
-                errors.add(new zserio.runtime.validation.ValidationError(__tableName, columnName,
+                errors.add(new zserio.runtime.validation.ValidationError(tableName, columnName,
                         zserio.runtime.validation.ValidationError.Type.COLUMN_SUPERFLUOUS,
-                        "superfluous column " + __tableName + "." + columnName + " of type " + columnType +
+                        "superfluous column " + tableName + "." + columnName + " of type " + columnType +
                         " encountered"));
                 result = false;
             }
@@ -466,9 +466,9 @@ ${I}                (${parameter.javaTypeFullName})(${parameter.expression})<#rt
         <#-- if column is virtual, it can be hidden -->
         if (column == null<#if field.isVirtual> &&
                 !zserio.runtime.validation.ValidationSqliteUtil.isHiddenColumnInTable(
-                        __connection, __attachedDbName, __tableName, "${field.name}")</#if>)
+                        connection, attachedDbName, tableName, "${field.name}")</#if>)
         {
-            errors.add(new zserio.runtime.validation.ValidationError(__tableName, "${field.name}",
+            errors.add(new zserio.runtime.validation.ValidationError(tableName, "${field.name}",
                     zserio.runtime.validation.ValidationError.Type.COLUMN_MISSING,
                     "column ${name}.${field.name} is missing"));
             return false;
@@ -478,7 +478,7 @@ ${I}                (${parameter.javaTypeFullName})(${parameter.expression})<#rt
 
         if (!column.getType().equals("${field.sqlTypeData.name}"))
         {
-            errors.add(new zserio.runtime.validation.ValidationError(__tableName, "${field.name}",
+            errors.add(new zserio.runtime.validation.ValidationError(tableName, "${field.name}",
                     zserio.runtime.validation.ValidationError.Type.INVALID_COLUMN_TYPE,
                     "column ${name}.${field.name} has type '" + column.getType() +
                     "' but '${field.sqlTypeData.name}' is expected"));
@@ -487,7 +487,7 @@ ${I}                (${parameter.javaTypeFullName})(${parameter.expression})<#rt
 
         if (<#if field.isNotNull>!</#if>column.isNotNull())
         {
-            errors.add(new zserio.runtime.validation.ValidationError(__tableName, "${field.name}",
+            errors.add(new zserio.runtime.validation.ValidationError(tableName, "${field.name}",
                     zserio.runtime.validation.ValidationError.Type.INVALID_COLUMN_CONSTRAINT,
                     "column ${name}.${field.name} is <#if !field.isNotNull>NOT </#if>NULL-able, " +
                     "but the column is expected to be <#if field.isNotNull>NOT </#if>NULL-able"));
@@ -496,7 +496,7 @@ ${I}                (${parameter.javaTypeFullName})(${parameter.expression})<#rt
 
         if (<#if field.isPrimaryKey>!</#if>column.isPrimaryKey())
         {
-            errors.add(new zserio.runtime.validation.ValidationError(__tableName, "${field.name}",
+            errors.add(new zserio.runtime.validation.ValidationError(tableName, "${field.name}",
                     zserio.runtime.validation.ValidationError.Type.INVALID_COLUMN_CONSTRAINT,
                     "column ${name}.${field.name} is <#if field.isPrimaryKey>not </#if>primary key, " +
                     "but the column is expected <#if !field.isPrimaryKey>not </#if>to be primary key"));
@@ -536,7 +536,7 @@ ${I}                (${parameter.javaTypeFullName})(${parameter.expression})<#rt
                 final byte[] writtenBlob = writer.toByteArray();
                 if (maskedOriginalBlob.length != writtenBlob.length)
                 {
-                    errors.add(new zserio.runtime.validation.ValidationError(__tableName, "${field.name}",
+                    errors.add(new zserio.runtime.validation.ValidationError(tableName, "${field.name}",
                             getRowKeyValues(resultSet),
                             zserio.runtime.validation.ValidationError.Type.BLOB_COMPARE_FAILED,
                             "Blob binary compare failed because of " + "length (" + maskedOriginalBlob.length +
@@ -550,7 +550,7 @@ ${I}                (${parameter.javaTypeFullName})(${parameter.expression})<#rt
                     {
                         if (maskedOriginalBlob[i] != writtenBlob[i])
                         {
-                            errors.add(new zserio.runtime.validation.ValidationError(__tableName,
+                            errors.add(new zserio.runtime.validation.ValidationError(tableName,
                                     "${field.name}", getRowKeyValues(resultSet),
                                     zserio.runtime.validation.ValidationError.Type.BLOB_COMPARE_FAILED,
                                     "Blob binary compare failed at byte position " + i));
@@ -563,14 +563,14 @@ ${I}                (${parameter.javaTypeFullName})(${parameter.expression})<#rt
             }
             catch (java.io.IOException exception)
             {
-                errors.add(new zserio.runtime.validation.ValidationError(__tableName, "${field.name}",
+                errors.add(new zserio.runtime.validation.ValidationError(tableName, "${field.name}",
                         getRowKeyValues(resultSet),
                         zserio.runtime.validation.ValidationError.Type.BLOB_PARSE_FAILED, exception));
                 return false;
             }
             catch (java.lang.RuntimeException exception)
             {
-                errors.add(new zserio.runtime.validation.ValidationError(__tableName, "${field.name}",
+                errors.add(new zserio.runtime.validation.ValidationError(tableName, "${field.name}",
                         getRowKeyValues(resultSet),
                         zserio.runtime.validation.ValidationError.Type.BLOB_PARSE_FAILED, exception));
                 return false;
@@ -608,7 +608,7 @@ ${I}                (${parameter.javaTypeFullName})(${parameter.expression})<#rt
             }
             catch (java.lang.IllegalArgumentException exception)
             {
-                errors.add(new zserio.runtime.validation.ValidationError(__tableName, "${field.name}",
+                errors.add(new zserio.runtime.validation.ValidationError(tableName, "${field.name}",
                         getRowKeyValues(resultSet),
                         zserio.runtime.validation.ValidationError.Type.INVALID_ENUM_VALUE,
                         "Enumeration value " + value + " of ${name}.${field.name} is not valid!"));
@@ -674,7 +674,7 @@ ${I}                (${parameter.javaTypeFullName})(${parameter.expression})<#rt
     </#if>
 </#if>
 
-    private final java.sql.Connection __connection;
-    private final java.lang.String __attachedDbName;
-    private final java.lang.String __tableName;
+    private final java.sql.Connection connection;
+    private final java.lang.String attachedDbName;
+    private final java.lang.String tableName;
 }

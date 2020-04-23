@@ -53,7 +53,7 @@ class ${name}():
         _${field.name}_<#t>
     </#macro>
     <#macro field_table_name field>
-        ${field.name?upper_case}_TABLE_NAME<#t>
+        ${field.name}_TABLE_NAME<#t>
     </#macro>
     def ${field.getterName}(self):
         return self.<@field_member_name field/>

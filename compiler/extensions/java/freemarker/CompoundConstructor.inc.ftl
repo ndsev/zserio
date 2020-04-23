@@ -1,3 +1,4 @@
+<#include "CompoundParameter.inc.ftl">
 <#macro compound_constructors compoundConstructorsData>
     <#local name=compoundConstructorsData.compoundName>
     <#local constructorArgumentTypeList><@compound_constructor_argument_type_list compoundConstructorsData/></#local>
@@ -9,20 +10,20 @@
     }
 
     </#if>
-    public ${name}(java.io.File __file<#if constructorArgumentTypeList?has_content>,${constructorArgumentTypeList}</#if>)
+    public ${name}(java.io.File file<#if constructorArgumentTypeList?has_content>,${constructorArgumentTypeList}</#if>)
             throws java.io.IOException, zserio.runtime.ZserioError
     {
         <@compound_constructors_set_parameters compoundConstructorsData true/>
-        final zserio.runtime.io.FileBitStreamReader __in = new zserio.runtime.io.FileBitStreamReader(__file);
-        read(__in);
-        __in.close();
+        final zserio.runtime.io.FileBitStreamReader in = new zserio.runtime.io.FileBitStreamReader(file);
+        read(in);
+        in.close();
     }
 
-    public ${name}(zserio.runtime.io.BitStreamReader __in<#if constructorArgumentTypeList?has_content>,${constructorArgumentTypeList}</#if>)
+    public ${name}(zserio.runtime.io.BitStreamReader in<#if constructorArgumentTypeList?has_content>,${constructorArgumentTypeList}</#if>)
             throws java.io.IOException, zserio.runtime.ZserioError
     {
         <@compound_constructors_set_parameters compoundConstructorsData true/>
-        read(__in);
+        read(in);
     }
 
 </#macro>
@@ -31,7 +32,7 @@
     <#local constructorArgumentTypeList><@compound_constructor_argument_type_list compoundConstructorsData/></#local>
     <#if constructorArgumentTypeList?has_content>
         <#list compoundConstructorsData.compoundParametersData.list as compoundParameter>
-        this.${compoundParameter.name} = ${compoundParameter.name};
+        this.<@parameter_member_name compoundParameter/> = <@parameter_argument_name compoundParameter/>;
         </#list>
         <#if extraNewLine>
 
@@ -42,12 +43,12 @@
 <#macro compound_constructor_argument_type_list compoundConstructorsData>
     <#list compoundConstructorsData.compoundParametersData.list as compoundParameter>
 
-            ${compoundParameter.javaTypeName} ${compoundParameter.name}<#if compoundParameter_has_next>,</#if><#rt>
+            ${compoundParameter.javaTypeName} <@parameter_argument_name compoundParameter/><#if compoundParameter_has_next>,</#if><#rt>
     </#list>
 </#macro>
 
 <#macro compound_constructor_argument_list compoundConstructorsData>
     <#list compoundConstructorsData.compoundParametersData.list as compoundParameter>
-${compoundParameter.name}<#if compoundParameter_has_next>, </#if><#rt>
+<@parameter_argument_name compoundParameter/><#if compoundParameter_has_next>, </#if><#rt>
     </#list>
 </#macro>

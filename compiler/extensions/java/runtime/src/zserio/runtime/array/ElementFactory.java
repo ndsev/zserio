@@ -16,12 +16,12 @@ public interface ElementFactory<E>
      * Creates array elements from bit stream.
      *
      * @param reader  Bit stream to read from.
-     * @param __index Index of element to create.
+     * @param index Index of element to create.
      *
      * @return Created element.
      *
      * @throws IOException Failure during bit stream manipulation.
      * @throws ZserioError Failure during element creation.
      */
-    E create(BitStreamReader reader, int __index) throws IOException, ZserioError;
+    E create(BitStreamReader reader, int index) throws IOException, ZserioError;
 }
