@@ -150,6 +150,8 @@ function(zserio_add_library)
             set_target_properties(${VALUE_TARGET} PROPERTIES LINKER_LANGUAGE CXX)
         endif ()
     endif ()
+    set_target_properties(${VALUE_TARGET} PROPERTIES CXX_STANDARD 11 CXX_STANDARD_REQUIRED YES
+            CXX_EXTENSIONS NO)
 
     # add cppcheck custom command (cppcheck fails if no sources to check are available)
     if (NOT(SOURCE_FILE_POSITION EQUAL -1))
