@@ -162,14 +162,6 @@ target_include_directories(\${PROJECT_NAME} SYSTEM PRIVATE \${SQLITE_INCDIR})
 target_link_libraries(\${PROJECT_NAME} \${SQLITE_LIBRARY})"
     fi
 
-    local CPP11_SETUP
-    if [ "${RUNTIME_LIBRARY_SUBDIR}" = "cpp" ] ; then
-        CPP11_SETUP="
-
-# setup C++11
-set(CMAKE_CXX_STANDARD 11)"
-    fi
-
     cat > ${BUILD_DIR}/CMakeLists.txt << EOF
 cmake_minimum_required(VERSION 2.8.12.2)
 project(test_zs_${TEST_NAME})
@@ -188,7 +180,7 @@ include(compiler_utils)
 compiler_set_pthread()
 compiler_set_static_clibs()
 compiler_set_warnings()
-compiler_set_warnings_as_errors()${CPP11_SETUP}${SQLITE_SETUP}
+compiler_set_warnings_as_errors()${SQLITE_SETUP}
 
 # add zserio runtime library
 include(zserio_utils)
@@ -197,6 +189,7 @@ zserio_add_runtime_library(RUNTIME_LIBRARY_DIR "\${ZSERIO_RUNTIME_LIBRARY_DIR}")
 
 file(GLOB_RECURSE SOURCES RELATIVE "\${CMAKE_CURRENT_SOURCE_DIR}" "gen/*.cpp" "gen/*.h")
 add_library(\${PROJECT_NAME} \${SOURCES})
+set_target_properties(\${PROJECT_NAME} PROPERTIES CXX_STANDARD 11 CXX_STANDARD_REQUIRED YES CXX_EXTENSIONS NO)
 target_include_directories(\${PROJECT_NAME} PUBLIC "\${CMAKE_CURRENT_SOURCE_DIR}/gen")
 target_link_libraries(\${PROJECT_NAME} ZserioCppRuntime)${SQLITE_USE}
 

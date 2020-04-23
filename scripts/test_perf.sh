@@ -210,9 +210,6 @@ compiler_set_pthread()
 compiler_set_static_clibs()
 compiler_set_warnings()
 
-# setup C++11
-set(CMAKE_CXX_STANDARD 11)
-
 # add zserio runtime library
 include(zserio_utils)
 set(ZSERIO_RUNTIME_LIBRARY_DIR "\${ZSERIO_RELEASE}/runtime_libs/${GENERATOR}")
@@ -221,6 +218,8 @@ zserio_add_runtime_library(RUNTIME_LIBRARY_DIR "\${ZSERIO_RUNTIME_LIBRARY_DIR}")
 file(GLOB_RECURSE SOURCES RELATIVE "\${CMAKE_CURRENT_SOURCE_DIR}" "gen/*.cpp" "gen/*.h")
 
 add_executable(\${PROJECT_NAME} src/PerformanceTest.cpp \${SOURCES})
+set_target_properties(\${PROJECT_NAME} PROPERTIES CXX_STANDARD 11 CXX_STANDARD_REQUIRED YES CXX_EXTENSIONS NO)
+
 target_include_directories(\${PROJECT_NAME} PUBLIC "\${CMAKE_CURRENT_SOURCE_DIR}/gen")
 target_link_libraries(\${PROJECT_NAME} ZserioCppRuntime)
 

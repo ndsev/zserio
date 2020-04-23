@@ -33,7 +33,6 @@ compiler_set_pthread()
 compiler_set_static_clibs()
 compiler_set_warnings()
 compiler_set_warnings_as_errors()
-set(CMAKE_CXX_STANDARD 11)
 
 # add SQLite3 for testing
 include(sqlite_utils)
@@ -80,6 +79,7 @@ if (NOT TEST_SOURCES_LIST)
 endif ()
 
 add_executable(${PROJECT_NAME} ${TEST_SOURCES_LIST})
+set_target_properties(${PROJECT_NAME} PROPERTIES CXX_STANDARD 11 CXX_STANDARD_REQUIRED YES CXX_EXTENSIONS NO)
 
 target_link_libraries(${PROJECT_NAME} gtest_main ${TEST_DEPENDENCIES_LIST})
 

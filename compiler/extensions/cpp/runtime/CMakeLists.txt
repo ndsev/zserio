@@ -22,7 +22,6 @@ include(compiler_utils)
 compiler_set_static_clibs()
 compiler_set_warnings()
 compiler_set_warnings_as_errors()
-set(CMAKE_CXX_STANDARD 11)
 
 # cmake helpers
 include(cmake_utils)
