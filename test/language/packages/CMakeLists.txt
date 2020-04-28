@@ -85,6 +85,7 @@ zserio_add_library(TARGET packages_zs
     OUT_DIR ${ZSERIO_GEN_DIR_PACKAGES}
     OUT_FILES ${ZSERIO_GENERATED_SOURCES_PACKAGES}
     ZSERIO_CORE_DIR ${ZSERIO_JAR_DIR}
+    ZSERIO_CPP_DIR ${ZSERIO_CPP_DISTR_DIR}
     ZSERIO_OPTIONS -withoutSourcesAmalgamation
 )
 
@@ -94,6 +95,7 @@ zserio_add_library(TARGET empty_file_zs
     OUT_DIR ${ZSERIO_GEN_DIR_EMPTY_FILE}
     OUT_FILES EMPTY
     ZSERIO_CORE_DIR ${ZSERIO_JAR_DIR}
+    ZSERIO_CPP_DIR ${ZSERIO_CPP_DISTR_DIR}
 )
 
 zserio_add_library(TARGET default_package_zs
@@ -102,6 +104,7 @@ zserio_add_library(TARGET default_package_zs
     OUT_DIR ${ZSERIO_GEN_DIR_DEFAULT_PACKAGE}
     OUT_FILES ${ZSERIO_GENERATED_SOURCES_DEFAULT_PACKAGE}
     ZSERIO_CORE_DIR ${ZSERIO_JAR_DIR}
+    ZSERIO_CPP_DIR ${ZSERIO_CPP_DISTR_DIR}
     ZSERIO_OPTIONS -withoutSourcesAmalgamation
 )
 
@@ -111,12 +114,13 @@ zserio_add_library(TARGET package_name_conflict_zs
     OUT_DIR ${ZSERIO_GEN_DIR_PACKAGE_NAME_CONFLICT}
     OUT_FILES ${ZSERIO_GENERATED_SOURCES_PACKAGE_NAME_CONFLICT}
     ZSERIO_CORE_DIR ${ZSERIO_JAR_DIR}
+    ZSERIO_CPP_DIR ${ZSERIO_CPP_DISTR_DIR}
     ZSERIO_OPTIONS -withoutSourcesAmalgamation
 )
 
 add_test_sources(
-    ${ZSERIO_CPP_DIR}/DefaultPackageTest.cpp
-    ${ZSERIO_CPP_DIR}/PackageNameConflictTest.cpp
+    cpp/DefaultPackageTest.cpp
+    cpp/PackageNameConflictTest.cpp
 )
 
 add_test_dependencies(packages_zs)

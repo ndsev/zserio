@@ -44,19 +44,20 @@ zserio_add_library(TARGET indexed_offsets_zs
     OUT_DIR ${ZSERIO_GEN_DIR}
     OUT_FILES ${ZSERIO_GENERATED_SOURCES}
     ZSERIO_CORE_DIR ${ZSERIO_JAR_DIR}
+    ZSERIO_CPP_DIR ${ZSERIO_CPP_DISTR_DIR}
     ZSERIO_OPTIONS -withoutSourcesAmalgamation
 )
 
 add_test_sources(
-    ${ZSERIO_CPP_DIR}/AutoIndexedOffsetArrayTest.cpp
-    ${ZSERIO_CPP_DIR}/Bit5IndexedOffsetArrayTest.cpp
-    ${ZSERIO_CPP_DIR}/BoolIndexedOffsetArrayTest.cpp
-    ${ZSERIO_CPP_DIR}/CompoundIndexedOffsetArrayTest.cpp
-    ${ZSERIO_CPP_DIR}/EmptyIndexedOffsetArrayTest.cpp
-    ${ZSERIO_CPP_DIR}/Int14IndexedOffsetArrayTest.cpp
-    ${ZSERIO_CPP_DIR}/OptionalIndexedOffsetArrayTest.cpp
-    ${ZSERIO_CPP_DIR}/OptionalNestedIndexedOffsetArrayTest.cpp
-    ${ZSERIO_CPP_DIR}/VarInt32IndexedOffsetArrayTest.cpp
+    cpp/AutoIndexedOffsetArrayTest.cpp
+    cpp/Bit5IndexedOffsetArrayTest.cpp
+    cpp/BoolIndexedOffsetArrayTest.cpp
+    cpp/CompoundIndexedOffsetArrayTest.cpp
+    cpp/EmptyIndexedOffsetArrayTest.cpp
+    cpp/Int14IndexedOffsetArrayTest.cpp
+    cpp/OptionalIndexedOffsetArrayTest.cpp
+    cpp/OptionalNestedIndexedOffsetArrayTest.cpp
+    cpp/VarInt32IndexedOffsetArrayTest.cpp
 )
 
 add_test_dependencies(indexed_offsets_zs)

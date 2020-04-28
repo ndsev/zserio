@@ -15,11 +15,12 @@ zserio_add_library(TARGET without_service_code_zs
     OUT_DIR ${ZSERIO_GEN_DIR}
     OUT_FILES ${ZSERIO_GENERATED_SOURCES}
     ZSERIO_CORE_DIR ${ZSERIO_JAR_DIR}
+    ZSERIO_CPP_DIR ${ZSERIO_CPP_DISTR_DIR}
     ZSERIO_OPTIONS -withoutServiceCode -withoutSourcesAmalgamation
 )
 
 add_test_sources(
-    ${ZSERIO_CPP_DIR}/WithoutServiceCodeTest.cpp
+    cpp/WithoutServiceCodeTest.cpp
 )
 
 add_test_dependencies(without_service_code_zs)

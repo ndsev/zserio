@@ -55,22 +55,23 @@ zserio_add_library(TARGET array_types_zs
     OUT_DIR ${ZSERIO_GEN_DIR}
     OUT_FILES ${ZSERIO_GENERATED_SOURCES}
     ZSERIO_CORE_DIR ${ZSERIO_JAR_DIR}
+    ZSERIO_CPP_DIR ${ZSERIO_CPP_DISTR_DIR}
     ZSERIO_OPTIONS -withoutSourcesAmalgamation
 )
 
 add_test_sources(
-    ${ZSERIO_CPP_DIR}/ArraysMappingTest.cpp
-    ${ZSERIO_CPP_DIR}/AutoArrayRecursionTest.cpp
-    ${ZSERIO_CPP_DIR}/AutoArrayTest.cpp
-    ${ZSERIO_CPP_DIR}/FixedArrayTest.cpp
-    ${ZSERIO_CPP_DIR}/ImplicitArrayBit8Test.cpp
-    ${ZSERIO_CPP_DIR}/ImplicitArrayInt24Test.cpp
-    ${ZSERIO_CPP_DIR}/ImplicitArrayFloat16Test.cpp
-    ${ZSERIO_CPP_DIR}/ImplicitArrayUInt8Test.cpp
-    ${ZSERIO_CPP_DIR}/ImplicitArrayUInt64Test.cpp
-    ${ZSERIO_CPP_DIR}/SubtypedBuiltinAutoArrayTest.cpp
-    ${ZSERIO_CPP_DIR}/SubtypedStructVariableArrayTest.cpp
-    ${ZSERIO_CPP_DIR}/VariableArrayTest.cpp
+    cpp/ArraysMappingTest.cpp
+    cpp/AutoArrayRecursionTest.cpp
+    cpp/AutoArrayTest.cpp
+    cpp/FixedArrayTest.cpp
+    cpp/ImplicitArrayBit8Test.cpp
+    cpp/ImplicitArrayInt24Test.cpp
+    cpp/ImplicitArrayFloat16Test.cpp
+    cpp/ImplicitArrayUInt8Test.cpp
+    cpp/ImplicitArrayUInt64Test.cpp
+    cpp/SubtypedBuiltinAutoArrayTest.cpp
+    cpp/SubtypedStructVariableArrayTest.cpp
+    cpp/VariableArrayTest.cpp
 )
 
 add_test_dependencies(array_types_zs)

@@ -37,18 +37,19 @@ zserio_add_library(TARGET bitmask_types_zs
     OUT_DIR ${ZSERIO_GEN_DIR}
     OUT_FILES ${ZSERIO_GENERATED_SOURCES}
     ZSERIO_CORE_DIR ${ZSERIO_JAR_DIR}
+    ZSERIO_CPP_DIR ${ZSERIO_CPP_DISTR_DIR}
     ZSERIO_OPTIONS -withoutSourcesAmalgamation
 )
 
 add_test_sources(
-    ${ZSERIO_CPP_DIR}/BitfieldBitmaskTest.cpp
-    ${ZSERIO_CPP_DIR}/BitfieldConstBitmaskTest.cpp
-    ${ZSERIO_CPP_DIR}/BitmaskDefinedByConstantTest.cpp
-    ${ZSERIO_CPP_DIR}/BitmaskUsedByBitmaskTest.cpp
-    ${ZSERIO_CPP_DIR}/BitmaskWithoutNoneTest.cpp
-    ${ZSERIO_CPP_DIR}/UInt64BitmaskTest.cpp
-    ${ZSERIO_CPP_DIR}/UInt8BitmaskTest.cpp
-    ${ZSERIO_CPP_DIR}/VarUIntBitmaskTest.cpp
+    cpp/BitfieldBitmaskTest.cpp
+    cpp/BitfieldConstBitmaskTest.cpp
+    cpp/BitmaskDefinedByConstantTest.cpp
+    cpp/BitmaskUsedByBitmaskTest.cpp
+    cpp/BitmaskWithoutNoneTest.cpp
+    cpp/UInt64BitmaskTest.cpp
+    cpp/UInt8BitmaskTest.cpp
+    cpp/VarUIntBitmaskTest.cpp
 )
 
 add_test_dependencies(bitmask_types_zs)

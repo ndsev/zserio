@@ -25,6 +25,7 @@ zserio_add_library(TARGET with_sources_amalgamation_zs
     OUT_DIR ${ZSERIO_GEN_DIR}
     OUT_FILES ${ZSERIO_GENERATED_SOURCES}
     ZSERIO_CORE_DIR ${ZSERIO_JAR_DIR}
+    ZSERIO_CPP_DIR ${ZSERIO_CPP_DISTR_DIR}
     ZSERIO_OPTIONS -withSourcesAmalgamation
 )
 
@@ -34,13 +35,14 @@ zserio_add_library(TARGET default_package_amalgamation_zs
     OUT_DIR ${ZSERIO_GEN_DEFAULT_PACKAGE_DIR}
     OUT_FILES ${ZSERIO_GENERATED_SOURCES_DEFAULT_PACKAGE}
     ZSERIO_CORE_DIR ${ZSERIO_JAR_DIR}
+    ZSERIO_CPP_DIR ${ZSERIO_CPP_DISTR_DIR}
     ZSERIO_OPTIONS -withSourcesAmalgamation
 )
 
 target_include_directories(with_sources_amalgamation_zs SYSTEM PRIVATE ${SQLITE_INCDIR})
 
 add_test_sources(
-    ${ZSERIO_CPP_DIR}/WithSourcesAmalgamationTest.cpp
+    cpp/WithSourcesAmalgamationTest.cpp
 )
 
 add_test_dependencies(with_sources_amalgamation_zs)

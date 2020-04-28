@@ -81,6 +81,7 @@ zserio_add_library(TARGET sql_tables_zs
     OUT_DIR ${ZSERIO_GEN_DIR}
     OUT_FILES ${ZSERIO_GENERATED_SOURCES}
     ZSERIO_CORE_DIR ${ZSERIO_JAR_DIR}
+    ZSERIO_CPP_DIR ${ZSERIO_CPP_DISTR_DIR}
     ZSERIO_OPTIONS -withoutSourcesAmalgamation
     IGNORE_WARNINGS ON
 )
@@ -88,19 +89,19 @@ zserio_add_library(TARGET sql_tables_zs
 target_include_directories(sql_tables_zs SYSTEM PRIVATE ${SQLITE_INCDIR})
 
 add_test_sources(
-    ${ZSERIO_CPP_DIR}/BlobFieldWithChildrenInitializationTableTest.cpp
-    ${ZSERIO_CPP_DIR}/BlobOffsetsParamTableTest.cpp
-    ${ZSERIO_CPP_DIR}/BlobParamTableTest.cpp
-    ${ZSERIO_CPP_DIR}/ColumnParamTableTest.cpp
-    ${ZSERIO_CPP_DIR}/ComplexTableTest.cpp
-    ${ZSERIO_CPP_DIR}/ConstParamTableTest.cpp
-    ${ZSERIO_CPP_DIR}/DynamicBitFieldEnumFieldTableTest.cpp
-    ${ZSERIO_CPP_DIR}/MultiplePkTableTest.cpp
-    ${ZSERIO_CPP_DIR}/SubtypedBitmaskFieldTableTest.cpp
-    ${ZSERIO_CPP_DIR}/SubtypedBoolFieldTableTest.cpp
-    ${ZSERIO_CPP_DIR}/SubtypedEnumFieldTableTest.cpp
-    ${ZSERIO_CPP_DIR}/SubtypedTableTest.cpp
-    ${ZSERIO_CPP_DIR}/WithoutPkTableTest.cpp
+    cpp/BlobFieldWithChildrenInitializationTableTest.cpp
+    cpp/BlobOffsetsParamTableTest.cpp
+    cpp/BlobParamTableTest.cpp
+    cpp/ColumnParamTableTest.cpp
+    cpp/ComplexTableTest.cpp
+    cpp/ConstParamTableTest.cpp
+    cpp/DynamicBitFieldEnumFieldTableTest.cpp
+    cpp/MultiplePkTableTest.cpp
+    cpp/SubtypedBitmaskFieldTableTest.cpp
+    cpp/SubtypedBoolFieldTableTest.cpp
+    cpp/SubtypedEnumFieldTableTest.cpp
+    cpp/SubtypedTableTest.cpp
+    cpp/WithoutPkTableTest.cpp
 )
 
 add_test_dependencies(sql_tables_zs)

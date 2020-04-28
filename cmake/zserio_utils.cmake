@@ -37,6 +37,7 @@ endfunction()
 #   OUT_DIR out_dir
 #   OUT_FILES out_files...
 #   ZSERIO_CORE_DIR zserio_core_dir
+#   ZSERIO_CPP_DIR zserio_cpp_dir
 #   ZSERIO_OPTIONS ... (optional)
 #   IGNORE_WARNINGS ON|OFF (optional, default OFF)
 #   ZSERIO_LOG_FILENAME (optional)
@@ -57,6 +58,7 @@ function(zserio_add_library)
             (ARG STREQUAL OUT_DIR) OR
             (ARG STREQUAL OUT_FILES) OR
             (ARG STREQUAL ZSERIO_CORE_DIR) OR
+            (ARG STREQUAL ZSERIO_CPP_DIR) OR
             (ARG STREQUAL ZSERIO_OPTIONS) OR
             (ARG STREQUAL IGNORE_WARNINGS) OR
             (ARG STREQUAL ZSERIO_LOG_FILENAME))
@@ -69,13 +71,13 @@ function(zserio_add_library)
         endif ()
     endforeach ()
 
-    foreach (ARG TARGET SOURCE_DIR MAIN_SOURCE OUT_DIR OUT_FILES ZSERIO_CORE_DIR)
+    foreach (ARG TARGET SOURCE_DIR MAIN_SOURCE OUT_DIR OUT_FILES ZSERIO_CORE_DIR ZSERIO_CPP_DIR)
         if (NOT DEFINED VALUE_${ARG})
             message(FATAL_ERROR "No value defined for required argument ${ARG}!")
         endif ()
     endforeach ()
 
-    foreach (ARG TARGET SOURCE_DIR MAIN_SOURCE OUT_DIR ZSERIO_CORE_DIR)
+    foreach (ARG TARGET SOURCE_DIR MAIN_SOURCE OUT_DIR ZSERIO_CORE_DIR ZSERIO_CPP_DIR)
         list(LENGTH VALUE_${ARG} LEN)
         if (NOT(LEN EQUAL 1))
             message(FATAL_ERROR "Argument ${ARG} requires exactly one value!")
@@ -104,13 +106,14 @@ function(zserio_add_library)
     add_custom_command(OUTPUT ${VALUE_OUT_FILES}
         COMMAND ${CMAKE_COMMAND} -E remove_directory ${VALUE_OUT_DIR}
         COMMAND ${CMAKE_COMMAND} -DJAVA_BIN=${JAVA_BIN}
-            -DCORE_DIR=${VALUE_ZSERIO_CORE_DIR} -DOUT_DIR=${VALUE_OUT_DIR}
+            -DCORE_DIR=${VALUE_ZSERIO_CORE_DIR} -DCPP_DIR=${VALUE_ZSERIO_CPP_DIR} -DOUT_DIR=${VALUE_OUT_DIR}
             -DSOURCE_DIR=${VALUE_SOURCE_DIR} -DMAIN_SOURCE=${VALUE_MAIN_SOURCE}
             -DOPTIONS="${VALUE_ZSERIO_OPTIONS}" -DIGNORE_WARNINGS=${VALUE_IGNORE_WARNINGS}
             -DLOG_FILENAME="${VALUE_ZSERIO_LOG_FILENAME}"
             -P ${CMAKE_MODULE_PATH}/zserio_tool.cmake
         ${TOUCH_EMPTY_COMMAND}
-        DEPENDS ${ALL_SOURCES} ${VALUE_ZSERIO_CORE_DIR}/zserio_core.jar ${VALUE_ZSERIO_CORE_DIR}/zserio_cpp.jar
+        DEPENDS ${ALL_SOURCES} ${VALUE_ZSERIO_CORE_DIR}/zserio_core.jar
+            ${VALUE_ZSERIO_CPP_DIR}/zserio_cpp.jar
         COMMENT "Generating sources with Zserio")
 
     # check if the library is header only

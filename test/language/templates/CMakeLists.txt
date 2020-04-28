@@ -398,58 +398,59 @@ zserio_add_library(TARGET templates_zs
     OUT_DIR ${ZSERIO_GEN_DIR}
     OUT_FILES ${ZSERIO_GENERATED_SOURCES}
     ZSERIO_CORE_DIR ${ZSERIO_JAR_DIR}
+    ZSERIO_CPP_DIR ${ZSERIO_CPP_DISTR_DIR}
     ZSERIO_OPTIONS -withoutSourcesAmalgamation
 )
 
 target_include_directories(templates_zs SYSTEM PRIVATE ${SQLITE_INCDIR})
 
 add_test_sources(
-    ${ZSERIO_CPP_DIR}/ChoiceTemplatedEnumSelectorTest.cpp
-    ${ZSERIO_CPP_DIR}/ChoiceTemplatedFieldTest.cpp
-    ${ZSERIO_CPP_DIR}/ChoiceTemplatedSelectorTest.cpp
-    ${ZSERIO_CPP_DIR}/ExpressionBitmaskTemplateArgumentTest.cpp
-    ${ZSERIO_CPP_DIR}/ExpressionEnumTemplateArgumentTest.cpp
-    ${ZSERIO_CPP_DIR}/ExpressionEnumTemplateArgumentConflictTest.cpp
-    ${ZSERIO_CPP_DIR}/ExpressionFullTemplateArgumentTest.cpp
-    ${ZSERIO_CPP_DIR}/InstantiateClashOtherTemplateTest.cpp
-    ${ZSERIO_CPP_DIR}/InstantiateImportedTest.cpp
-    ${ZSERIO_CPP_DIR}/InstantiateNestedTemplateTest.cpp
-    ${ZSERIO_CPP_DIR}/InstantiateNotImportedTest.cpp
-    ${ZSERIO_CPP_DIR}/InstantiateOnlyNestedTest.cpp
-    ${ZSERIO_CPP_DIR}/InstantiateSimpleTest.cpp
-    ${ZSERIO_CPP_DIR}/InstantiateSqlTableTest.cpp
-    ${ZSERIO_CPP_DIR}/InstantiateTemplateArgumentTest.cpp
-    ${ZSERIO_CPP_DIR}/InstantiateTypeAsChoiceFieldTest.cpp
-    ${ZSERIO_CPP_DIR}/InstantiateTypeAsParameterTest.cpp
-    ${ZSERIO_CPP_DIR}/InstantiateTypeAsSqlDatabaseFieldTest.cpp
-    ${ZSERIO_CPP_DIR}/InstantiateTypeAsSqlTableFieldTest.cpp
-    ${ZSERIO_CPP_DIR}/InstantiateTypeAsStructFieldTest.cpp
-    ${ZSERIO_CPP_DIR}/InstantiateTypeAsTemplateArgumentTest.cpp
-    ${ZSERIO_CPP_DIR}/InstantiateTypeImportedAsStructFieldTest.cpp
-    ${ZSERIO_CPP_DIR}/InstantiateTypeOnParameterizedTemplateTest.cpp
-    ${ZSERIO_CPP_DIR}/InstantiateUnusedTest.cpp
-    ${ZSERIO_CPP_DIR}/InstantiateViaImportTest.cpp
-    ${ZSERIO_CPP_DIR}/InstantiateViaSingleImportTest.cpp
-    ${ZSERIO_CPP_DIR}/InstantiateVsDefaultTest.cpp
-    ${ZSERIO_CPP_DIR}/FunctionTemplatedReturnTypeTest.cpp
-    ${ZSERIO_CPP_DIR}/SqlTableTemplatedFieldTest.cpp
-    ${ZSERIO_CPP_DIR}/StructFullAndShortTemplateArgumentTest.cpp
-    ${ZSERIO_CPP_DIR}/StructFullNameTemplateArgumentTest.cpp
-    ${ZSERIO_CPP_DIR}/StructLongTemplateArgumentTest.cpp
-    ${ZSERIO_CPP_DIR}/StructLongTemplateArgumentClashTest.cpp
-    ${ZSERIO_CPP_DIR}/StructRecursiveTemplateTest.cpp
-    ${ZSERIO_CPP_DIR}/StructTemplateClashTest.cpp
-    ${ZSERIO_CPP_DIR}/StructTemplateClashAcrossPackagesTest.cpp
-    ${ZSERIO_CPP_DIR}/StructTemplateClashOtherTemplateTest.cpp
-    ${ZSERIO_CPP_DIR}/StructTemplateClashOtherTypeTest.cpp
-    ${ZSERIO_CPP_DIR}/StructTemplatedFieldTest.cpp
-    ${ZSERIO_CPP_DIR}/StructTemplatedTemplateArgumentTest.cpp
-    ${ZSERIO_CPP_DIR}/StructTemplatedTypeArgumentTest.cpp
-    ${ZSERIO_CPP_DIR}/StructTemplateInTemplateTest.cpp
-    ${ZSERIO_CPP_DIR}/SubtypeTemplateArgumentTest.cpp
-    ${ZSERIO_CPP_DIR}/SubtypeTemplateWithBuiltinTest.cpp
-    ${ZSERIO_CPP_DIR}/SubtypeTemplateWithCompoundTest.cpp
-    ${ZSERIO_CPP_DIR}/UnionTemplatedFieldTest.cpp
+    cpp/ChoiceTemplatedEnumSelectorTest.cpp
+    cpp/ChoiceTemplatedFieldTest.cpp
+    cpp/ChoiceTemplatedSelectorTest.cpp
+    cpp/ExpressionBitmaskTemplateArgumentTest.cpp
+    cpp/ExpressionEnumTemplateArgumentTest.cpp
+    cpp/ExpressionEnumTemplateArgumentConflictTest.cpp
+    cpp/ExpressionFullTemplateArgumentTest.cpp
+    cpp/InstantiateClashOtherTemplateTest.cpp
+    cpp/InstantiateImportedTest.cpp
+    cpp/InstantiateNestedTemplateTest.cpp
+    cpp/InstantiateNotImportedTest.cpp
+    cpp/InstantiateOnlyNestedTest.cpp
+    cpp/InstantiateSimpleTest.cpp
+    cpp/InstantiateSqlTableTest.cpp
+    cpp/InstantiateTemplateArgumentTest.cpp
+    cpp/InstantiateTypeAsChoiceFieldTest.cpp
+    cpp/InstantiateTypeAsParameterTest.cpp
+    cpp/InstantiateTypeAsSqlDatabaseFieldTest.cpp
+    cpp/InstantiateTypeAsSqlTableFieldTest.cpp
+    cpp/InstantiateTypeAsStructFieldTest.cpp
+    cpp/InstantiateTypeAsTemplateArgumentTest.cpp
+    cpp/InstantiateTypeImportedAsStructFieldTest.cpp
+    cpp/InstantiateTypeOnParameterizedTemplateTest.cpp
+    cpp/InstantiateUnusedTest.cpp
+    cpp/InstantiateViaImportTest.cpp
+    cpp/InstantiateViaSingleImportTest.cpp
+    cpp/InstantiateVsDefaultTest.cpp
+    cpp/FunctionTemplatedReturnTypeTest.cpp
+    cpp/SqlTableTemplatedFieldTest.cpp
+    cpp/StructFullAndShortTemplateArgumentTest.cpp
+    cpp/StructFullNameTemplateArgumentTest.cpp
+    cpp/StructLongTemplateArgumentTest.cpp
+    cpp/StructLongTemplateArgumentClashTest.cpp
+    cpp/StructRecursiveTemplateTest.cpp
+    cpp/StructTemplateClashTest.cpp
+    cpp/StructTemplateClashAcrossPackagesTest.cpp
+    cpp/StructTemplateClashOtherTemplateTest.cpp
+    cpp/StructTemplateClashOtherTypeTest.cpp
+    cpp/StructTemplatedFieldTest.cpp
+    cpp/StructTemplatedTemplateArgumentTest.cpp
+    cpp/StructTemplatedTypeArgumentTest.cpp
+    cpp/StructTemplateInTemplateTest.cpp
+    cpp/SubtypeTemplateArgumentTest.cpp
+    cpp/SubtypeTemplateWithBuiltinTest.cpp
+    cpp/SubtypeTemplateWithCompoundTest.cpp
+    cpp/UnionTemplatedFieldTest.cpp
 )
 
 add_test_dependencies(templates_zs)

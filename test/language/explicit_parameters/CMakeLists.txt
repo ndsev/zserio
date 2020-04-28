@@ -46,18 +46,19 @@ zserio_add_library(TARGET explicit_parameters_zs
     OUT_DIR ${ZSERIO_GEN_DIR}
     OUT_FILES ${ZSERIO_GENERATED_SOURCES}
     ZSERIO_CORE_DIR ${ZSERIO_JAR_DIR}
+    ZSERIO_CPP_DIR ${ZSERIO_CPP_DISTR_DIR}
     ZSERIO_OPTIONS -withoutSourcesAmalgamation
 )
 
 target_include_directories(explicit_parameters_zs SYSTEM PRIVATE ${SQLITE_INCDIR})
 
 add_test_sources(
-    ${ZSERIO_CPP_DIR}/ExplicitBitmaskParamTest.cpp
-    ${ZSERIO_CPP_DIR}/ExplicitBlobParamTest.cpp
-    ${ZSERIO_CPP_DIR}/ExplicitEnumParamTest.cpp
-    ${ZSERIO_CPP_DIR}/ExplicitSameAsFieldTest.cpp
-    ${ZSERIO_CPP_DIR}/ExplicitSimpleParamTest.cpp
-    ${ZSERIO_CPP_DIR}/MultipleExplicitParamsTest.cpp
+    cpp/ExplicitBitmaskParamTest.cpp
+    cpp/ExplicitBlobParamTest.cpp
+    cpp/ExplicitEnumParamTest.cpp
+    cpp/ExplicitSameAsFieldTest.cpp
+    cpp/ExplicitSimpleParamTest.cpp
+    cpp/MultipleExplicitParamsTest.cpp
 )
 
 add_test_dependencies(explicit_parameters_zs)

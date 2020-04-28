@@ -88,25 +88,26 @@ zserio_add_library(TARGET choice_types_zs
     OUT_DIR ${ZSERIO_GEN_DIR}
     OUT_FILES ${ZSERIO_GENERATED_SOURCES}
     ZSERIO_CORE_DIR ${ZSERIO_JAR_DIR}
+    ZSERIO_CPP_DIR ${ZSERIO_CPP_DISTR_DIR}
     ZSERIO_OPTIONS -withoutSourcesAmalgamation
 )
 
 add_test_sources(
-    ${ZSERIO_CPP_DIR}/BitmaskParamChoiceTest.cpp
-    ${ZSERIO_CPP_DIR}/BoolParamChoiceTest.cpp
-    ${ZSERIO_CPP_DIR}/ChoiceWithArrayTest.cpp
-    ${ZSERIO_CPP_DIR}/DefaultEmptyChoiceTest.cpp
-    ${ZSERIO_CPP_DIR}/EmptyChoiceTest.cpp
-    ${ZSERIO_CPP_DIR}/EmptyChoiceWithCaseTest.cpp
-    ${ZSERIO_CPP_DIR}/EmptyChoiceWithDefaultTest.cpp
-    ${ZSERIO_CPP_DIR}/EnumParamChoiceTest.cpp
-    ${ZSERIO_CPP_DIR}/ExpressionSelectorChoiceTest.cpp
-    ${ZSERIO_CPP_DIR}/FullBitmaskParamChoiceTest.cpp
-    ${ZSERIO_CPP_DIR}/FullEnumParamChoiceTest.cpp
-    ${ZSERIO_CPP_DIR}/FunctionReturningLiteralSelectorChoiceTest.cpp
-    ${ZSERIO_CPP_DIR}/FunctionSelectorChoiceTest.cpp
-    ${ZSERIO_CPP_DIR}/UInt16ParamChoiceTest.cpp
-    ${ZSERIO_CPP_DIR}/UInt64ParamChoiceTest.cpp
+    cpp/BitmaskParamChoiceTest.cpp
+    cpp/BoolParamChoiceTest.cpp
+    cpp/ChoiceWithArrayTest.cpp
+    cpp/DefaultEmptyChoiceTest.cpp
+    cpp/EmptyChoiceTest.cpp
+    cpp/EmptyChoiceWithCaseTest.cpp
+    cpp/EmptyChoiceWithDefaultTest.cpp
+    cpp/EnumParamChoiceTest.cpp
+    cpp/ExpressionSelectorChoiceTest.cpp
+    cpp/FullBitmaskParamChoiceTest.cpp
+    cpp/FullEnumParamChoiceTest.cpp
+    cpp/FunctionReturningLiteralSelectorChoiceTest.cpp
+    cpp/FunctionSelectorChoiceTest.cpp
+    cpp/UInt16ParamChoiceTest.cpp
+    cpp/UInt64ParamChoiceTest.cpp
 )
 
 add_test_dependencies(choice_types_zs)

@@ -59,10 +59,11 @@ zserio_add_library(TARGET gif_zs
     OUT_DIR ${ZSERIO_GEN_DIR}
     OUT_FILES ${ZSERIO_GENERATED_SOURCES}
     ZSERIO_CORE_DIR ${ZSERIO_JAR_DIR}
+    ZSERIO_CPP_DIR ${ZSERIO_CPP_DISTR_DIR}
     ZSERIO_OPTIONS -withoutSourcesAmalgamation
 )
 
-add_test_sources(${ZSERIO_CPP_DIR}/GifTest.cpp)
+add_test_sources(cpp/GifTest.cpp)
 add_test_dependencies(gif_zs)
 
 add_custom_command(TARGET gif_zs POST_BUILD

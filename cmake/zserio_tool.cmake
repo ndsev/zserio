@@ -3,6 +3,7 @@
 # Expected defines:
 #     JAVA_BIN Java binary.
 #     CORE_DIR Zserio core directory.
+#     CPP_DIR Zserio C++ extension directory.
 #     OUT_DIR Zserio output directory.
 #     SOURCE_DIR Zserio source directory.
 #     MAIN_SOURCE Zserio main source file.
@@ -13,9 +14,15 @@ cmake_minimum_required(VERSION 2.8.12.2)
 
 separate_arguments(OPTIONS)
 
+if (WIN32)
+    set(JAVA_CLASSPATH_SEPARATOR ";")
+else ()
+    set(JAVA_CLASSPATH_SEPARATOR ":")
+endif ()
+
 execute_process(
-    COMMAND ${JAVA_BIN} -Djava.ext.dirs=${CORE_DIR}
-        -jar ${CORE_DIR}/zserio_core.jar ${OPTIONS} -cpp ${OUT_DIR} -src ${SOURCE_DIR} ${MAIN_SOURCE}
+    COMMAND ${JAVA_BIN} -cp ${CORE_DIR}/zserio_core.jar${JAVA_CLASSPATH_SEPARATOR}${CPP_DIR}/zserio_cpp.jar
+        zserio.tools.ZserioTool ${OPTIONS} -cpp ${OUT_DIR} -src ${SOURCE_DIR} ${MAIN_SOURCE}
     ERROR_VARIABLE ZSERIO_LOG
     RESULT_VARIABLE ZSERIO_RESULT
 )

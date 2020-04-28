@@ -34,17 +34,18 @@ zserio_add_library(TARGET enumeration_types_zs
     OUT_DIR ${ZSERIO_GEN_DIR}
     OUT_FILES ${ZSERIO_GENERATED_SOURCES}
     ZSERIO_CORE_DIR ${ZSERIO_JAR_DIR}
+    ZSERIO_CPP_DIR ${ZSERIO_CPP_DISTR_DIR}
     ZSERIO_OPTIONS -withoutSourcesAmalgamation
 )
 
 add_test_sources(
-    ${ZSERIO_CPP_DIR}/BitfieldConstEnumTest.cpp
-    ${ZSERIO_CPP_DIR}/BitfieldEnumTest.cpp
-    ${ZSERIO_CPP_DIR}/EnumDefinedByConstantTest.cpp
-    ${ZSERIO_CPP_DIR}/EnumUsedByEnumTest.cpp
-    ${ZSERIO_CPP_DIR}/UInt64EnumTest.cpp
-    ${ZSERIO_CPP_DIR}/UInt8EnumTest.cpp
-    ${ZSERIO_CPP_DIR}/VarUIntEnumTest.cpp
+    cpp/BitfieldConstEnumTest.cpp
+    cpp/BitfieldEnumTest.cpp
+    cpp/EnumDefinedByConstantTest.cpp
+    cpp/EnumUsedByEnumTest.cpp
+    cpp/UInt64EnumTest.cpp
+    cpp/UInt8EnumTest.cpp
+    cpp/VarUIntEnumTest.cpp
 )
 
 add_test_dependencies(enumeration_types_zs)

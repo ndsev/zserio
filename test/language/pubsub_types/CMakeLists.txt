@@ -18,13 +18,14 @@ zserio_add_library(TARGET pubsub_types_zs
     OUT_DIR ${ZSERIO_GEN_DIR}
     OUT_FILES ${ZSERIO_GENERATED_SOURCES}
     ZSERIO_CORE_DIR ${ZSERIO_JAR_DIR}
+    ZSERIO_CPP_DIR ${ZSERIO_CPP_DISTR_DIR}
     ZSERIO_OPTIONS -withoutSourcesAmalgamation
 )
 
 add_test_sources(
-    ${ZSERIO_CPP_DIR}/TestPubsub.cpp
-    ${ZSERIO_CPP_DIR}/TestPubsub.h
-    ${ZSERIO_CPP_DIR}/SimplePubsubTest.cpp
+    cpp/TestPubsub.cpp
+    cpp/TestPubsub.h
+    cpp/SimplePubsubTest.cpp
 )
 
 add_test_dependencies(pubsub_types_zs)
