@@ -1,10 +1,11 @@
 #include "gtest/gtest.h"
 
-#include "array_types/subtyped_struct_variable_array/SubtypedStructVariableArray.h"
-
 #include "zserio/BitStreamWriter.h"
 #include "zserio/BitStreamReader.h"
 #include "zserio/StringConvertUtil.h"
+#include "zserio/CppRuntimeException.h"
+
+#include "array_types/subtyped_struct_variable_array/SubtypedStructVariableArray.h"
 
 namespace array_types
 {

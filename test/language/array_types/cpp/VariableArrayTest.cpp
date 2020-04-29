@@ -5,6 +5,7 @@
 #include "zserio/BitStreamWriter.h"
 #include "zserio/BitStreamReader.h"
 #include "zserio/StringConvertUtil.h"
+#include "zserio/CppRuntimeException.h"
 
 namespace array_types
 {

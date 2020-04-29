@@ -2,6 +2,7 @@
 
 #include "zserio/BitStreamWriter.h"
 #include "zserio/BitStreamReader.h"
+#include "zserio/CppRuntimeException.h"
 
 #include "indexed_offsets/bit5_indexed_offset_array/Bit5IndexedOffsetArray.h"
 

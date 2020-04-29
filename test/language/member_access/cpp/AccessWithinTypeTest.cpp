@@ -5,6 +5,7 @@
 #include "zserio/BitStreamWriter.h"
 #include "zserio/BitStreamReader.h"
 #include "zserio/StringConvertUtil.h"
+#include "zserio/CppRuntimeException.h"
 
 #include "member_access/access_within_type/Message.h"
 

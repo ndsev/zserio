@@ -4,6 +4,7 @@
 #include "zserio/BitStreamReader.h"
 #include "zserio/BitPositionUtil.h"
 #include "zserio/BitSizeOfCalculator.h"
+#include "zserio/CppRuntimeException.h"
 
 #include "offsets/uint64_array_offset/UInt64ArrayOffset.h"
 

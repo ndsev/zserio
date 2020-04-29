@@ -2,6 +2,7 @@
 
 #include "zserio/BitStreamWriter.h"
 #include "zserio/BitStreamReader.h"
+#include "zserio/CppRuntimeException.h"
 
 #include "indexed_offsets/bool_indexed_offset_array/BoolIndexedOffsetArray.h"
 
