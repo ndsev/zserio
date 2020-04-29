@@ -29,7 +29,6 @@ set(ZSERIO_CPP_RUNTIME_LIB_SRCS
     zserio/BitPositionUtil.h
     zserio/BitSizeOfCalculator.cpp
     zserio/BitSizeOfCalculator.h
-    zserio/BitStreamException.h
     zserio/BitStreamReader.cpp
     zserio/BitStreamReader.h
     zserio/BitStreamWriter.cpp

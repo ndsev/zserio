@@ -1,7 +1,6 @@
 #include <cstring>
 #include <fstream>
 
-#include "zserio/BitStreamException.h"
 #include "zserio/CppRuntimeException.h"
 #include "zserio/StringConvertUtil.h"
 #include "zserio/BitPositionUtil.h"
@@ -307,7 +306,7 @@ void BitStreamWriter::setBitPosition(BitPosType position)
     if (hasWriteBuffer())
     {
         if (!ensureCapacity(position))
-            throw BitStreamException("BitStreamWriter: Reached eof(), setting of bit position failed.");
+            throw CppRuntimeException("BitStreamWriter: Reached eof(), setting of bit position failed.");
     }
 
     m_bitIndex = position;
@@ -350,7 +349,7 @@ inline void BitStreamWriter::writeUnsignedBits(uint32_t data, uint8_t numBits)
     }
 
     if (!ensureCapacity(m_bitIndex + numBits))
-        throw BitStreamException("BitStreamWriter: Reached eof(), writing to stream failed.");
+        throw CppRuntimeException("BitStreamWriter: Reached eof(), writing to stream failed.");
 
     const uint8_t org_numBits = numBits;
     uint8_t bits_free = 8 - (m_bitIndex & 0x07);

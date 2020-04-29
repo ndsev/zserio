@@ -2,7 +2,6 @@
 #include <cstring>
 #include <fstream>
 
-#include "zserio/BitStreamException.h"
 #include "zserio/CppRuntimeException.h"
 #include "zserio/StringConvertUtil.h"
 #include "zserio/FloatUtil.h"
@@ -161,7 +160,7 @@ namespace
     inline void checkEof(const ReaderContext& ctx, uint8_t numBits)
     {
         if (ctx.bitIndex + numBits > ctx.bufferBitSize)
-            throw BitStreamException("BitStreamReader: Reached eof(), reading from stream failed.");
+            throw CppRuntimeException("BitStreamReader: Reached eof(), reading from stream failed.");
     }
 
     /** Checks numBits validity for 32-bit reads. */
@@ -736,7 +735,7 @@ BitBuffer BitStreamReader::readBitBuffer()
 void BitStreamReader::setBitPosition(BitPosType position)
 {
     if (position > m_context.bufferBitSize)
-        throw BitStreamException("BitStreamReader: Reached eof(), setting of bit position failed.");
+        throw CppRuntimeException("BitStreamReader: Reached eof(), setting of bit position failed.");
 
     m_context.bitIndex = (position / 8) * 8; // set to byte aligned position
     m_context.cacheNumBits = 0; // invalidate cache

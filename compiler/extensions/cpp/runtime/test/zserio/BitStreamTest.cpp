@@ -4,7 +4,7 @@
 #include "zserio/BitStreamWriter.h"
 #include "zserio/BitStreamReader.h"
 #include "zserio/Types.h"
-#include "zserio/BitStreamException.h"
+#include "zserio/CppRuntimeException.h"
 
 #include "gtest/gtest.h"
 
@@ -156,7 +156,7 @@ protected:
         {
             if (writer.hasWriteBuffer())
             {
-                ASSERT_THROW(writer.setBitPosition(BUFFER_SIZE * 8 + 1), BitStreamException);
+                ASSERT_THROW(writer.setBitPosition(BUFFER_SIZE * 8 + 1), CppRuntimeException);
             }
             else
             {
@@ -183,7 +183,7 @@ protected:
         ASSERT_EQ(4, reader.getBitPosition());
         ASSERT_EQ(3, reader.readBits(3));
         ASSERT_EQ(7, reader.getBitPosition());
-        ASSERT_THROW(reader.setBitPosition(writeBufferSize * 8 + 1), BitStreamException);
+        ASSERT_THROW(reader.setBitPosition(writeBufferSize * 8 + 1), CppRuntimeException);
 
         reader.setBitPosition(4);
         ASSERT_EQ(4, reader.getBitPosition());

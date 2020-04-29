@@ -8,7 +8,6 @@
 #include "zserio/BitStreamReader.h"
 #include "zserio/BitPositionUtil.h"
 #include "zserio/VarUInt64Util.h"
-#include "zserio/BitStreamException.h"
 #include "zserio/PreWriteAction.h"
 #include "zserio/BitSizeOfCalculator.h"
 #include "zserio/Enums.h"
