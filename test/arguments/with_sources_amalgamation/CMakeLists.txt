@@ -14,7 +14,7 @@ set(ZSERIO_GENERATED_SOURCES
 )
 
 set(ZSERIO_GENERATED_SOURCES_DEFAULT_PACKAGE
-    ${ZSERIO_GEN_DEFAULT_PACKAGE_DIR}/DefaultPackageAmalgamation.cpp
+    ${ZSERIO_GEN_DEFAULT_PACKAGE_DIR}/DefaultPackage.cpp
 
     ${ZSERIO_GEN_DEFAULT_PACKAGE_DIR}/AmalgamationStructure.h
 )
@@ -29,9 +29,9 @@ zserio_add_library(TARGET with_sources_amalgamation_zs
     ZSERIO_OPTIONS -withSourcesAmalgamation
 )
 
-zserio_add_library(TARGET default_package_amalgamation_zs
+zserio_add_library(TARGET default_package_amalgam_zs
     SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/zs
-    MAIN_SOURCE default_package_amalgamation.zs
+    MAIN_SOURCE default_package.zs
     OUT_DIR ${ZSERIO_GEN_DEFAULT_PACKAGE_DIR}
     OUT_FILES ${ZSERIO_GENERATED_SOURCES_DEFAULT_PACKAGE}
     ZSERIO_CORE_DIR ${ZSERIO_JAR_DIR}
@@ -46,4 +46,4 @@ add_test_sources(
 )
 
 add_test_dependencies(with_sources_amalgamation_zs)
-add_test_dependencies(default_package_amalgamation_zs)
+add_test_dependencies(default_package_amalgam_zs)
