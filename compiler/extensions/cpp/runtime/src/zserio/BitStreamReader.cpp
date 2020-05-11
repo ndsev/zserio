@@ -201,11 +201,17 @@ namespace
         {
             checkEof(ctx, numBits);
 
-            ctx.cacheNumBits = static_cast<uint8_t>(ctx.bufferBitSize - ctx.bitIndex);
+            auto alignedBitSize = ctx.bufferBitSize - ctx.bitIndex + 7u;
+            alignedBitSize -= alignedBitSize % 8u;
+
+            ctx.cacheNumBits = static_cast<uint8_t>(alignedBitSize);
             // always aligned to full bytes and less than cacheBitSize
             switch (ctx.cacheNumBits)
             {
 #ifdef ZSERIO_RUNTIME_64BIT
+            case 64:
+                cacheBuffer = parse64(ctx.buffer + byteIndex);
+                break;
             case 56:
                 cacheBuffer = parse56(ctx.buffer + byteIndex);
                 break;
