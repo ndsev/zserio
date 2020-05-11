@@ -26,6 +26,32 @@ private:
 
 const size_t BitStreamReaderTest::BUFFER_SIZE;
 
+TEST_F(BitStreamReaderTest, bitBufferCtor)
+{
+    uint8_t data[] = {1, 2, 3};
+
+    zserio::BitBuffer buffer(data, 17u);
+    zserio::BitStreamReader reader(buffer);
+
+    ASSERT_EQ(17u, reader.getBufferBitSize());
+}
+
+TEST_F(BitStreamReaderTest, readUnalignedData)
+{
+    /* 1bit = 0, 8bit = 8, 8bit = 1 */
+    uint8_t data[] = {0x04, 0x00, 0x80};
+
+    zserio::BitBuffer buffer(data, 17u);
+    zserio::BitStreamReader reader(buffer);
+
+    auto readBool = reader.readBool();
+    ASSERT_EQ(false, readBool);
+
+    zserio::BitBuffer readBuffer = reader.readBitBuffer();
+    ASSERT_EQ(8u, readBuffer.getBitSize());
+    ASSERT_EQ(1u, readBuffer.getBuffer()[0]);
+}
+
 TEST_F(BitStreamReaderTest, readBits)
 {
     // check invalid bitlength acceptance
