@@ -26,30 +26,30 @@ private:
 
 const size_t BitStreamReaderTest::BUFFER_SIZE;
 
-TEST_F(BitStreamReaderTest, bitBufferCtor)
-{
-    uint8_t data[] = {1, 2, 3};
-
-    zserio::BitBuffer buffer(data, 17u);
-    zserio::BitStreamReader reader(buffer);
-
-    ASSERT_EQ(17u, reader.getBufferBitSize());
-}
-
 TEST_F(BitStreamReaderTest, readUnalignedData)
 {
-    /* 1bit = 0, 8bit = 8, 8bit = 1 */
-    uint8_t data[] = {0x04, 0x00, 0x80};
+    // number expected to read at offset
+    const uint8_t TestValue = 123u;
 
-    zserio::BitBuffer buffer(data, 17u);
-    zserio::BitStreamReader reader(buffer);
+    for (int offset = 0; offset <= 8; ++offset) {
+        uint8_t data[] = {0x00, 0x00, 0x00};
 
-    auto readBool = reader.readBool();
-    ASSERT_EQ(false, readBool);
+        // write test value at offset to data buffer
+        data[offset / 8    ] |= TestValue >> (offset % 8);
+        data[offset / 8 + 1] |= TestValue << (8u - offset % 8);
 
-    zserio::BitBuffer readBuffer = reader.readBitBuffer();
-    ASSERT_EQ(8u, readBuffer.getBitSize());
-    ASSERT_EQ(1u, readBuffer.getBuffer()[0]);
+        zserio::BitBuffer buffer(data, 8u + offset);
+        zserio::BitStreamReader reader(buffer);
+
+        // read offset bits
+        ASSERT_EQ(0u, reader.readBits(offset));
+
+        // read magic number
+        ASSERT_EQ(TestValue, reader.readBits(8u)) << "Offset: " << offset;
+
+        // check eof
+        ASSERT_THROW(reader.readBits(1), CppRuntimeException);
+    }
 }
 
 TEST_F(BitStreamReaderTest, readBits)
