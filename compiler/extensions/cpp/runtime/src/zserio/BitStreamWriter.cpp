@@ -133,7 +133,7 @@ BitStreamWriter::BitStreamWriter(uint8_t* buffer, size_t bufferByteSize) :
 }
 
 BitStreamWriter::BitStreamWriter(BitBuffer& bitBuffer) :
-        BitStreamWriter(bitBuffer.getBuffer(), bitBuffer.getBitSize())
+        BitStreamWriter(bitBuffer.getBuffer(), bitBuffer.getByteSize())
 {
 }
 
