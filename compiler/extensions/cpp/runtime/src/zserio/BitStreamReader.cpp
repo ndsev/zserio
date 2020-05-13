@@ -204,7 +204,7 @@ namespace
             ctx.cacheNumBits = static_cast<uint8_t>(ctx.bufferBitSize - ctx.bitIndex);
 
             // buffer must be always available in full bytes, even if some last bits are not used
-            const size_t alignedNumBits = (ctx.cacheNumBits + 7) & ~0x7;
+            const uint8_t alignedNumBits = (ctx.cacheNumBits + 7) & ~0x7;
 
             switch (alignedNumBits)
             {
@@ -221,10 +221,10 @@ namespace
             case 40:
                 cacheBuffer = parse40(ctx.buffer + byteIndex);
                 break;
+#endif
             case 32:
                 cacheBuffer = parse32(ctx.buffer + byteIndex);
                 break;
-#endif
             case 24:
                 cacheBuffer = parse24(ctx.buffer + byteIndex);
                 break;
