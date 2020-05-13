@@ -20,9 +20,9 @@ public:
     }
 
 protected:
-    zserio::BitStreamWriter m_writer;
-    zserio::BitStreamWriter m_externalBufferWriter;
-    zserio::BitStreamWriter m_dummyBufferWriter;
+    BitStreamWriter m_writer;
+    BitStreamWriter m_externalBufferWriter;
+    BitStreamWriter m_dummyBufferWriter;
 
     static const size_t externalBufferSize = 512;
 
@@ -31,8 +31,8 @@ protected:
 
 TEST_F(BitStreamWriterTest, bitBufferConstructor)
 {
-    zserio::BitBuffer bitBuffer(11);
-    zserio::BitStreamWriter writer(bitBuffer);
+    BitBuffer bitBuffer(11);
+    BitStreamWriter writer(bitBuffer);
     size_t writeBufferByteSize = 0;
     const uint8_t* writeBuffer = writer.getWriteBuffer(writeBufferByteSize);
     ASSERT_EQ(bitBuffer.getBuffer(), writeBuffer);

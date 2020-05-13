@@ -17,7 +17,7 @@ public:
     }
 
 protected:
-    zserio::BitStreamReader m_reader;
+    BitStreamReader m_reader;
     static const size_t BUFFER_SIZE = 16;
 
 private:
@@ -26,6 +26,22 @@ private:
 
 const size_t BitStreamReaderTest::BUFFER_SIZE;
 
+TEST_F(BitStreamReaderTest, bitBufferConstructor)
+{
+    BitBuffer bitBuffer(17);
+    bitBuffer.getBuffer()[0] = 0xAE;
+    bitBuffer.getBuffer()[1] = 0xEA;
+    bitBuffer.getBuffer()[2] = 0x80;
+    BitStreamReader reader(bitBuffer);
+
+    ASSERT_EQ(bitBuffer.getBitSize(), reader.getBufferBitSize());
+    ASSERT_EQ(0xAE, reader.readBits(8));
+    ASSERT_EQ(0xEA, reader.readBits(8));
+    ASSERT_EQ(1, reader.readBits(1));
+
+    ASSERT_THROW(reader.readBits(1), CppRuntimeException);
+}
+
 TEST_F(BitStreamReaderTest, readUnalignedData)
 {
     // number expected to read at offset
@@ -33,13 +49,13 @@ TEST_F(BitStreamReaderTest, readUnalignedData)
 
     for (int offset = 0; offset <= 64; ++offset)
     {
-        zserio::BitBuffer buffer(8 + offset);
+        BitBuffer buffer(8 + offset);
 
         // write test value at offset to data buffer
         buffer.getBuffer()[offset / 8] |= testValue >> (offset % 8);
         buffer.getBuffer()[offset / 8 + 1] |= testValue << (8 - offset % 8);
 
-        zserio::BitStreamReader reader(buffer);
+        BitStreamReader reader(buffer);
 
         // read offset bits
         ASSERT_EQ(0u, reader.readBits64(offset));
