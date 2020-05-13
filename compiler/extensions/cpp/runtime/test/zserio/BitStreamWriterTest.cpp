@@ -29,6 +29,23 @@ protected:
     uint8_t m_externalBuffer[externalBufferSize];
 };
 
+TEST_F(BitStreamWriterTest, bitBufferConstructor)
+{
+    zserio::BitBuffer bitBuffer(11);
+    zserio::BitStreamWriter writer(bitBuffer);
+    size_t writeBufferByteSize = 0;
+    const uint8_t* writeBuffer = writer.getWriteBuffer(writeBufferByteSize);
+    ASSERT_EQ(bitBuffer.getBuffer(), writeBuffer);
+    ASSERT_EQ(bitBuffer.getByteSize(), writeBufferByteSize);
+
+    writer.writeBits(0x1F, 5);
+    writer.writeBits(0x07, 3);
+    ASSERT_EQ(0xFF, writeBuffer[0]);
+    ASSERT_THROW(writer.writeBits(0x0F, 4), CppRuntimeException);
+    writer.writeBits(0x07, 3);
+    ASSERT_EQ(0xE0, writeBuffer[1]);
+}
+
 TEST_F(BitStreamWriterTest, writeBits)
 {
     // check invalid bitlength acceptance

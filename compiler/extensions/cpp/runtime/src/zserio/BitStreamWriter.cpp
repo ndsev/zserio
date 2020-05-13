@@ -133,8 +133,14 @@ BitStreamWriter::BitStreamWriter(uint8_t* buffer, size_t bufferByteSize) :
 }
 
 BitStreamWriter::BitStreamWriter(BitBuffer& bitBuffer) :
-        BitStreamWriter(bitBuffer.getBuffer(), bitBuffer.getByteSize())
+        m_buffer(bitBuffer.getBuffer()),
+        m_bitIndex(0),
+        m_bufferBitSize(bitBuffer.getBitSize()),
+        m_hasInternalBuffer(false),
+        m_internalBuffer()
 {
+    // TODO[Mi-L@]: We are touching also bits which are not ours! See #211.
+    std::memset(m_buffer, 0, bitBuffer.getByteSize());
 }
 
 BitStreamWriter::~BitStreamWriter()
@@ -324,7 +330,7 @@ void BitStreamWriter::alignTo(size_t alignment)
 
 const uint8_t* BitStreamWriter::getWriteBuffer(size_t& writeBufferByteSize) const
 {
-    writeBufferByteSize = m_bufferBitSize / 8;
+    writeBufferByteSize = (m_bufferBitSize + 7) / 8;
 
     return m_buffer;
 }
@@ -335,7 +341,7 @@ void BitStreamWriter::writeBufferToFile(const std::string& filename) const
     if (!os)
         throw CppRuntimeException("WriteBitStreamToFile: Failed to open '" + filename +"' for writing!");
 
-    os.write(reinterpret_cast<const char*>(m_buffer), m_bufferBitSize / 8);
+    os.write(reinterpret_cast<const char*>(m_buffer), (m_bufferBitSize + 7) / 8);
     if (!os)
         throw CppRuntimeException("WriteBitStreamToFile: Failed to write '" + filename +"'!");
 }
