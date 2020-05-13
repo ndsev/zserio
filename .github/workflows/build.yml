@@ -19,10 +19,10 @@ jobs:
       with:
         java-version: 1.8
     - name: Install dependencies
-      run: sudo apt install doxygen virtualenv graphviz
+      run: sudo apt install doxygen virtualenv graphviz g++-multilib
     - name: Build Zserio
-      run: scripts/build.sh all-linux64
+      run: scripts/build.sh all-linux64 cpp_rt-linux32
     - name: Pack Zserio release
       run: scripts/release.sh
     - name: Run Zserio tests
-      run: scripts/test.sh all-linux64
+      run: scripts/test.sh all-linux64 cpp-linux32
