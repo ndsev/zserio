@@ -203,11 +203,10 @@ namespace
 
             ctx.cacheNumBits = static_cast<uint8_t>(ctx.bufferBitSize - ctx.bitIndex);
 
-            auto alignedBitSize = ctx.cacheNumBits + 7u;
-            alignedBitSize -= alignedBitSize % 8u;
+            // buffer must be always available in full bytes, even if some last bits are not used
+            const size_t alignedNumBits = (ctx.cacheNumBits + 7) & ~0x7;
 
-            // always aligned to full bytes and less than cacheBitSize
-            switch (alignedBitSize)
+            switch (alignedNumBits)
             {
 #ifdef ZSERIO_RUNTIME_64BIT
             case 64:
@@ -237,7 +236,7 @@ namespace
                 break;
             }
 
-            cacheBuffer >>= alignedBitSize - ctx.cacheNumBits;
+            cacheBuffer >>= alignedNumBits - ctx.cacheNumBits;
         }
     }
 
