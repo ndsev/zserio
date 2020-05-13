@@ -2,8 +2,9 @@ name: build-ubuntu_18_04
 
 on:
   push:
-    branches:
-      - master
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
 
 jobs:
   build:
