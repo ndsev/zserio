@@ -26,6 +26,32 @@ private:
 
 const size_t BitStreamReaderTest::BUFFER_SIZE;
 
+TEST_F(BitStreamReaderTest, readUnalignedData)
+{
+    // number expected to read at offset
+    const uint8_t testValue = 123;
+
+    for (int offset = 0; offset <= 64; ++offset)
+    {
+        zserio::BitBuffer buffer(8 + offset);
+
+        // write test value at offset to data buffer
+        buffer.getBuffer()[offset / 8] |= testValue >> (offset % 8);
+        buffer.getBuffer()[offset / 8 + 1] |= testValue << (8 - offset % 8);
+
+        zserio::BitStreamReader reader(buffer);
+
+        // read offset bits
+        ASSERT_EQ(0u, reader.readBits64(offset));
+
+        // read magic number
+        ASSERT_EQ(testValue, reader.readBits(8)) << "Offset: " << offset;
+
+        // check eof
+        ASSERT_THROW(reader.readBits(1), CppRuntimeException);
+    }
+}
+
 TEST_F(BitStreamReaderTest, readBits)
 {
     // check invalid bitlength acceptance

@@ -202,10 +202,16 @@ namespace
             checkEof(ctx, numBits);
 
             ctx.cacheNumBits = static_cast<uint8_t>(ctx.bufferBitSize - ctx.bitIndex);
-            // always aligned to full bytes and less than cacheBitSize
-            switch (ctx.cacheNumBits)
+
+            // buffer must be always available in full bytes, even if some last bits are not used
+            const size_t alignedNumBits = (ctx.cacheNumBits + 7) & ~0x7;
+
+            switch (alignedNumBits)
             {
 #ifdef ZSERIO_RUNTIME_64BIT
+            case 64:
+                cacheBuffer = parse64(ctx.buffer + byteIndex);
+                break;
             case 56:
                 cacheBuffer = parse56(ctx.buffer + byteIndex);
                 break;
@@ -229,6 +235,8 @@ namespace
                 cacheBuffer = parse8(ctx.buffer + byteIndex);
                 break;
             }
+
+            cacheBuffer >>= alignedNumBits - ctx.cacheNumBits;
         }
     }
 
