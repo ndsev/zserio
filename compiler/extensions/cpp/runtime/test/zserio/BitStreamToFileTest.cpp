@@ -26,15 +26,14 @@ TEST(BitStreamToFileTest, writeAndRead)
 TEST(BitStreamToFileTest, writeAndReadInBitBuffer)
 {
     BitBuffer bitBuffer(12);
-    // TODO[Mi-L@]: This should be fixed in #211!
-    //bitBuffer.getBuffer()[1] = 0x0A; // last four bits should be written to the file untouched by the writer
+    bitBuffer.getBuffer()[1] = 0x0A; // last four bits should be written to the file untouched by the writer
     BitStreamWriter writer(bitBuffer);
     writer.writeBits(0x3F, 12);
     writer.writeBufferToFile(TEST_FILE_NAME);
 
     BitStreamReader reader(TEST_FILE_NAME);
     ASSERT_EQ(0x3F, reader.readBits(12));
-    //ASSERT_EQ(0x0A, reader.readBits(4));
+    ASSERT_EQ(0x0A, reader.readBits(4));
 }
 
 TEST(BitStreamToFileTest, readNonExisting)

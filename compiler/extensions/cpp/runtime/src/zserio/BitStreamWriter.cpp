@@ -129,7 +129,6 @@ BitStreamWriter::BitStreamWriter(uint8_t* buffer, size_t bufferByteSize) :
         m_hasInternalBuffer(false),
         m_internalBuffer()
 {
-    std::memset(m_buffer, 0, bufferByteSize);
 }
 
 BitStreamWriter::BitStreamWriter(BitBuffer& bitBuffer) :
@@ -139,8 +138,6 @@ BitStreamWriter::BitStreamWriter(BitBuffer& bitBuffer) :
         m_hasInternalBuffer(false),
         m_internalBuffer()
 {
-    // TODO[Mi-L@]: We are touching also bits which are not ours! See #211.
-    std::memset(m_buffer, 0, bitBuffer.getByteSize());
 }
 
 BitStreamWriter::~BitStreamWriter()
@@ -357,34 +354,40 @@ inline void BitStreamWriter::writeUnsignedBits(uint32_t data, uint8_t numBits)
     if (!ensureCapacity(m_bitIndex + numBits))
         throw CppRuntimeException("BitStreamWriter: Reached eof(), writing to stream failed.");
 
-    const uint8_t org_numBits = numBits;
-    uint8_t bits_free = 8 - (m_bitIndex & 0x07);
-    size_t byte_index = m_bitIndex / 8;
+    uint8_t restNumBits = numBits;
+    uint8_t bitsFree = 8 - (m_bitIndex & 0x07);
+    size_t byteIndex = m_bitIndex / 8;
 
-    if (numBits > bits_free)
+    if (restNumBits > bitsFree)
     {
         // first part
-        m_buffer[byte_index++] |= static_cast<uint8_t>(data >> (numBits - bits_free));
-        numBits -= bits_free;
+        const uint8_t shiftNum = restNumBits - bitsFree;
+        const uint32_t mask = 0xFFFFFFFFU >> (32 - restNumBits);
+        const uint8_t maskedByte = m_buffer[byteIndex] & ~static_cast<uint8_t>(mask >> shiftNum);
+        m_buffer[byteIndex++] = maskedByte | static_cast<uint8_t>(data >> shiftNum);
+        restNumBits -= bitsFree;
 
         // middle parts
-        while (numBits >= 8)
+        while (restNumBits >= 8)
         {
-            numBits -= 8;
-            m_buffer[byte_index++] = static_cast<uint8_t>((data >> numBits) & MAX_U32_VALUES[8]);
+            restNumBits -= 8;
+            m_buffer[byteIndex++] = static_cast<uint8_t>((data >> restNumBits) & MAX_U32_VALUES[8]);
         }
 
         // reset bits free
-        bits_free = 8;
+        bitsFree = 8;
     }
 
     // last part
-    if (numBits > 0)
+    if (restNumBits > 0)
     {
-        m_buffer[byte_index] |= static_cast<uint8_t>((data & MAX_U32_VALUES[numBits]) << (bits_free - numBits));
+        const uint8_t shiftNum = bitsFree - restNumBits;
+        const uint32_t mask = MAX_U32_VALUES[restNumBits];
+        const uint8_t maskedByte = m_buffer[byteIndex] & ~static_cast<uint8_t>(mask << shiftNum);
+        m_buffer[byteIndex] = maskedByte | static_cast<uint8_t>((data & mask) << shiftNum);
     }
 
-    m_bitIndex += org_numBits;
+    m_bitIndex += numBits;
 }
 
 inline void BitStreamWriter::writeUnsignedBits64(uint64_t data, uint8_t numBits)
