@@ -1,6 +1,3 @@
-/**
- *
- */
 package zserio.runtime.io;
 
 import static org.junit.Assert.assertEquals;
@@ -832,6 +829,60 @@ public class ByteArrayBitStreamWriterTest
                 // 4 bytes
                 assertEquals(0x80ffffffL, reader.readBits(32));
                 assertEquals(0xffffffffL, reader.readBits(32));
+            }
+        });
+    }
+
+    @Test
+    public void writeVarSize() throws IOException
+    {
+        writeReadTest(new WriteReadTestable(){
+            @Override
+            public void write(ByteArrayBitStreamWriter writer) throws IOException
+            {
+                // 1 byte
+                writer.writeVarSize(0);
+                writer.writeVarSize(0x7f);
+
+                // 2 bytes
+                writer.writeVarSize(0xff);
+                writer.writeVarSize(0x3fff);
+
+                // 3 bytes
+                writer.writeVarSize(0x7fff);
+                writer.writeVarSize(0x1fffff);
+
+                // 4 bytes
+                writer.writeVarSize(0x3fffff);
+                writer.writeVarSize(0xfffffff);
+
+                // 5 bytes
+                writer.writeVarSize(0x1fffffff);
+                writer.writeVarSize(0x7fffffff);
+            }
+
+            @Override
+            public void read(ImageInputStream reader) throws IOException
+            {
+                // 1 byte
+                assertEquals(0x00, reader.readBits(8));    // 0
+                assertEquals(0x7f, reader.readBits(8));    // 1111111b = 0x7f
+
+                // 2 bytes
+                assertEquals(0x817f, reader.readBits(16));
+                assertEquals(0xff7f, reader.readBits(16));
+
+                // 3 bytes
+                assertEquals(0x81ff7f, reader.readBits(24));
+                assertEquals(0xffff7f, reader.readBits(24));
+
+                // 4 bytes
+                assertEquals(0x81ffff7fL, reader.readBits(32));
+                assertEquals(0xffffff7fL, reader.readBits(32));
+
+                // 5 bytes
+                assertEquals(0x80ffffffffL, reader.readBits(40));
+                assertEquals(0x83ffffffffL, reader.readBits(40));
             }
         });
     }

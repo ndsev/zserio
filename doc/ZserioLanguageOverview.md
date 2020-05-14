@@ -149,9 +149,9 @@ Floating point types are modeled after the IEEE 754 specification. The following
 ### Variable Integer Types
 
 Variable integer types store integer values but the number of bytes used is dependent on the actual value stored
-in the data type. The supported types are `varint16`, `varint32`, `varint64` and `varint` for the signed values
-and `varuint16`, `varuint32`, `varuint64` and `varuint` for the unsigned signed values. This is a special type
-of integer that uses only the bytes needed to store the value.
+in the data type. The supported types are `varint16`, `varint32`, `varint64` and `varint` for
+the signed values and `varuint16`, `varuint32`, `varuint64`, `varuint` and `varsize` for the unsigned
+signed values. This is a special type of integer that uses only the bytes needed to store the value.
 
 The value ranges of the variable integer types are:
 
@@ -165,6 +165,7 @@ varuint16    | `0 to 32767`                                  | `2`
 varuint32    | `0 to 536870911`                              | `4`
 varuint64    | `0 to 144115188075855871`                     | `8`
 varuint      | `0 to 18446744073709551615`                   | `9`
+varsize      | `0 to 2147483647`                             | `5`
 
 >Note that `varint` and `varuint` can handle all `int64` and `uint64` values respectively.
 
@@ -218,6 +219,11 @@ varuint      | `[byte 1]: 1 bit has next byte, 7 bits value`
  <sup></sup> | `[byte 7]: 1 bit has next byte, 7 bits value`
  <sup></sup> | `[byte 8]: 1 bit has next byte, 7 bits value`
  <sup></sup> | `[byte 9]: 8 bits value`
+varsize      | `[byte 1]: 1 bit has next byte, 7 bits value`
+ <sup></sup> | `[byte 2]: 1 bit has next byte, 7 bits value`
+ <sup></sup> | `[byte 3]: 1 bit has next byte, 7 bits value`
+ <sup></sup> | `[byte 4]: 1 bit has next byte, 7 bits value`
+ <sup></sup> | `[byte 5]: 8 bits value`
 
 ### Boolean Type
 

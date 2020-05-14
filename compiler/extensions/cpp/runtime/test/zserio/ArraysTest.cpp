@@ -685,6 +685,18 @@ TEST_F(ArraysTest, varUIntArray)
     testArray(VarIntArrayTraits<uint64_t>(), array, bitSize, bitSize);
 }
 
+TEST_F(ArraysTest, varSizeArray)
+{
+    std::vector<uint32_t> array = {
+            UINT32_C(1) << 6,
+            UINT32_C(1) << (6 + 7),
+            UINT32_C(1) << (6 + 7 + 7),
+            UINT32_C(1) << (6 + 7 + 7 + 7),
+            UINT32_C(1) << (1 + 7 + 7 + 7 + 8)};
+    const size_t bitSize = 8 * (1 + 2 + 3 + 4 + 5);
+    testArray(VarSizeArrayTraits(), array, bitSize, bitSize);
+}
+
 TEST_F(ArraysTest, float16Array)
 {
     const size_t elementBitSize = 16;

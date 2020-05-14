@@ -521,6 +521,10 @@ final class JavaNativeMapper
                     javaNullableType = varUInt32ArrayType;
                     break;
 
+                case 40:
+                	javaNullableType = varSizeArrayType;
+                	break;
+
                 case 64:
                     javaNullableType = varUInt64ArrayType;
                     break;
@@ -745,6 +749,7 @@ final class JavaNativeMapper
                 break;
 
             case 32:
+            case 40:
                 javaType = intType;
                 javaNullableType = intNullableType;
                 break;
@@ -847,6 +852,8 @@ final class JavaNativeMapper
 
     private final static NativeArrayType varIntArrayType = new NativeArrayType("VarIntArray");
     private final static NativeArrayType varUIntArrayType = new NativeArrayType("VarUIntArray");
+
+    private final static NativeArrayType varSizeArrayType = new NativeArrayType("VarSizeArray");
 
     private final PackageMapper javaPackageMapper;
 }

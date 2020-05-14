@@ -37,3 +37,5 @@ VARUINT64_MIN = 0
 VARUINT64_MAX = (1 << (7 + 7 + 7 + 7 + 7 + 7 + 7 + 8)) - 1
 VARUINT_MIN = 0
 VARUINT_MAX = UINT64_MAX
+VARSIZE_MIN = 0
+VARSIZE_MAX = (1 << (2 + 7 + 7 + 7 + 8)) - 1

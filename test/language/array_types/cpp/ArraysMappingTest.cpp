@@ -79,6 +79,7 @@ TEST_F(ArraysMappingTest, variableUnsignedIntegerArrays)
     arraysMapping.setVaruint32Array(std::vector<uint32_t>(fixedArrayLength));
     arraysMapping.setVaruint64Array(std::vector<uint64_t>(fixedArrayLength));
     arraysMapping.setVaruintArray(std::vector<uint64_t>(fixedArrayLength));
+    arraysMapping.setVarsizeArray(std::vector<uint32_t>(fixedArrayLength));
 }
 
 TEST_F(ArraysMappingTest, variableSignedIntegerArrays)

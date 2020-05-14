@@ -289,37 +289,162 @@ public class ByteArrayBitStreamReader extends ByteArrayBitStreamBase implements 
     @Override
     public short readVarInt16() throws IOException
     {
-        return (short)readVarNum(true, 2);
+        short b = (short)readBits(8); // byte 1
+        final boolean sign = (b & VARINT_SIGN_1) != 0;
+        short result = (short)(b & VARINT_BYTE_1);
+        if ((b & VARINT_HAS_NEXT_1) == 0)
+            return sign == true ? (short)-result : result;
+
+        // byte 2
+        result = (short)(result << 8 | readBits(8));
+        return sign == true ? (short)-result : result;
     }
 
     @Override
     public int readVarInt32() throws IOException
     {
-        return (int)readVarNum(true, 4);
+        int b = (int)readBits(8); // byte 1
+        final boolean sign = (b & VARINT_SIGN_1) != 0;
+        int result = b & VARINT_BYTE_1;
+        if ((b & VARINT_HAS_NEXT_1) == 0)
+            return sign == true ? -result : result;
+
+        b = (int)readBits(8); // byte 2
+        result = result << 7 | (b & VARINT_BYTE_N);
+        if ((b & VARINT_HAS_NEXT_N) == 0)
+            return sign == true ? -result : result;
+
+        b = (int)readBits(8); // byte 3
+        result = result << 7 | (b & VARINT_BYTE_N);
+        if ((b & VARINT_HAS_NEXT_N) == 0)
+            return sign == true ? -result : result;
+
+        // byte 4
+        result = result << 8 | (int)readBits(8);
+        return sign == true ? -result : result;
     }
 
     @Override
     public long readVarInt64() throws IOException
     {
-        return readVarNum(true, 8);
+        long b = readBits(8); // byte 1
+        final boolean sign = (b & VARINT_SIGN_1) != 0;
+        long result = b & VARINT_BYTE_1;
+        if ((b & VARINT_HAS_NEXT_1) == 0)
+            return sign == true ? -result : result;
+
+        b = readBits(8); // byte 2
+        result = result << 7 | (b & VARINT_BYTE_N);
+        if ((b & VARINT_HAS_NEXT_N) == 0)
+            return sign == true ? -result : result;
+
+        b = readBits(8); // byte 3
+        result = result << 7 | (b & VARINT_BYTE_N);
+        if ((b & VARINT_HAS_NEXT_N) == 0)
+            return sign == true ? -result : result;
+
+        b = readBits(8); // byte 4
+        result = result << 7 | (b & VARINT_BYTE_N);
+        if ((b & VARINT_HAS_NEXT_N) == 0)
+            return sign == true ? -result : result;
+
+        b = readBits(8); // byte 5
+        result = result << 7 | (b & VARINT_BYTE_N);
+        if ((b & VARINT_HAS_NEXT_N) == 0)
+            return sign == true ? -result : result;
+
+        b = readBits(8); // byte 6
+        result = result << 7 | (b & VARINT_BYTE_N);
+        if ((b & VARINT_HAS_NEXT_N) == 0)
+            return sign == true ? -result : result;
+
+        b = readBits(8); // byte 7
+        result = result << 7 | (b & VARINT_BYTE_N);
+        if ((b & VARINT_HAS_NEXT_N) == 0)
+            return sign == true ? -result : result;
+
+        // byte 8
+        result = result << 8 | readBits(8);
+        return sign == true ? -result : result;
     }
 
     @Override
     public short readVarUInt16() throws IOException
     {
-        return (short)readVarNum(false, 2);
+        short b = (short)readBits(8); // byte 1
+        short result = (short)(b & VARUINT_BYTE);
+        if ((b & VARUINT_HAS_NEXT) == 0)
+            return result;
+
+        // byte 2
+        result = (short)(result << 8 | readBits(8));
+        return result;
     }
 
     @Override
     public int readVarUInt32() throws IOException
     {
-        return (int)readVarNum(false, 4);
+        int b = (int)readBits(8); // byte 1
+        int result = b & VARUINT_BYTE;
+        if ((b & VARUINT_HAS_NEXT) == 0)
+            return result;
+
+        b = (int)readBits(8); // byte 2
+        result = result << 7 | (b & VARINT_BYTE_N);
+        if ((b & VARINT_HAS_NEXT_N) == 0)
+            return result;
+
+        b = (int)readBits(8); // byte 3
+        result = result << 7 | (b & VARINT_BYTE_N);
+        if ((b & VARINT_HAS_NEXT_N) == 0)
+            return result;
+
+        // byte 4
+        result = result << 8 | (int)readBits(8);
+        return result;
     }
 
     @Override
     public long readVarUInt64() throws IOException
     {
-        return readVarNum(false, 8);
+        long b = readBits(8); // byte 1
+        long result = b & VARUINT_BYTE;
+        if ((b & VARUINT_HAS_NEXT) == 0)
+            return result;
+
+        b = readBits(8); // byte 2
+        result = result << 7 | (b & VARINT_BYTE_N);
+        if ((b & VARINT_HAS_NEXT_N) == 0)
+            return result;
+
+        b = readBits(8); // byte 3
+        result = result << 7 | (b & VARINT_BYTE_N);
+        if ((b & VARINT_HAS_NEXT_N) == 0)
+            return result;
+
+        b = readBits(8); // byte 4
+        result = result << 7 | (b & VARINT_BYTE_N);
+        if ((b & VARINT_HAS_NEXT_N) == 0)
+            return result;
+
+        b = readBits(8); // byte 5
+        result = result << 7 | (b & VARINT_BYTE_N);
+        if ((b & VARINT_HAS_NEXT_N) == 0)
+            return result;
+
+        b = readBits(8); // byte 6
+        result = result << 7 | (b & VARINT_BYTE_N);
+        if ((b & VARINT_HAS_NEXT_N) == 0)
+            return result;
+
+        b = readBits(8); // byte 7
+        result = result << 7 | (b & VARINT_BYTE_N);
+        if ((b & VARINT_HAS_NEXT_N) == 0)
+            return result;
+
+        // byte 8
+        result = result << 8 | readBits(8);
+        return result;
     }
 
     @Override
@@ -417,6 +542,38 @@ public class ByteArrayBitStreamReader extends ByteArrayBitStreamBase implements 
         // byte 9
         result = result.shiftLeft(8).or(BigInteger.valueOf(readBits(8) & 0xFF));
         return result;
+    }
+
+    @Override
+    public int readVarSize() throws IOException
+    {
+        long b = readBits(8); // byte 1
+        long result = b & VARUINT_BYTE;
+        if ((b & VARUINT_HAS_NEXT) == 0)
+            return (int)result;
+
+        b = readBits(8); // byte 2
+        result = result << 7 | (b & VARINT_BYTE_N);
+        if ((b & VARINT_HAS_NEXT_N) == 0)
+            return (int)result;
+
+        b = readBits(8); // byte 3
+        result = result << 7 | (b & VARINT_BYTE_N);
+        if ((b & VARINT_HAS_NEXT_N) == 0)
+            return (int)result;
+
+        b = readBits(8); // byte 4
+        result = result << 7 | (b & VARINT_BYTE_N);
+        if ((b & VARINT_HAS_NEXT_N) == 0)
+            return (int)result;
+
+        // byte 5
+        result = result << 8 | (int)readBits(8);
+        if (result > VARSIZE_MAX_VALUE)
+            throw new IOException("ByteArrayBitStreamReader: Read value '" + result +
+                    "' is out of range for varsize type!");
+
+        return (int)result;
     }
 
     @Override
@@ -577,62 +734,27 @@ public class ByteArrayBitStreamReader extends ByteArrayBitStreamBase implements 
     }
 
     /**
-     * Reads the next variable number depending on the given signed flag and the maximum variable byte size.
-     *
-     * @param signed      A flag indicating if the number is signed or unsigned.
-     * @param maxVarBytes The maximum variable byte size.
-     *
-     * @return Read variable number as long value.
-     *
-     * @throws IOException If the byte reading failed.
-     */
-    private long readVarNum(final boolean signed, final int maxVarBytes) throws IOException
-    {
-        long result = 0;
-        boolean sign = false;
-        boolean hasNextByte = true;
-
-        for (int i = 0; i < maxVarBytes && hasNextByte; i++)
-        {
-            final byte b = readByte();
-            int numBits = 8;
-            if (signed && i == 0)
-            {
-                sign = ((b >>> --numBits) & 1) == 1;
-            }
-            if (i < maxVarBytes - 1)
-            {
-                hasNextByte = ((b >>> --numBits) & 1) == 1;
-            }
-            else
-            {
-                hasNextByte = false;
-            }
-            result = (result << numBits) | (b & (-1L >>> (64 - numBits)));
-        }
-        return sign ? -result : result;
-    }
-
-    /**
      * Bit masks to mask appropriate bits during unaligned reading.
      */
     private static final int BIT_MASKS[] = { 0xff, 0x7f, 0x3f, 0x1f, 0x0f, 0x07, 0x03, 0x01 };
 
     /** Variable length integer sing bit mask for first byte. */
-    private static final int VARINT_SIGN_1 = 0x80;
+    private static final short VARINT_SIGN_1 = 0x80;
     /** Variable length integer value bit mask for first byte. */
-    private static final int VARINT_BYTE_1 = 0x3f;
+    private static final short VARINT_BYTE_1 = 0x3f;
     /** Variable length integer value bit mask for intermediate bytes. */
-    private static final int VARINT_BYTE_N = 0x7f;
+    private static final short VARINT_BYTE_N = 0x7f;
     /** Variable length integer 'has next' bit mask for first byte. */
-    private static final int VARINT_HAS_NEXT_1 = 0x40;
+    private static final short VARINT_HAS_NEXT_1 = 0x40;
     /** Variable length integer 'has next' bit mask for intermediate bytes. */
-    private static final int VARINT_HAS_NEXT_N = 0x80;
+    private static final short VARINT_HAS_NEXT_N = 0x80;
 
     /** Variable length integer value bit mask. */
-    private static final int VARUINT_BYTE = 0x7f;
+    private static final short VARUINT_BYTE = 0x7f;
     /** Variable length integer 'has next' bit mask. */
-    private static final int VARUINT_HAS_NEXT = 0x80;
+    private static final short VARUINT_HAS_NEXT = 0x80;
+
+    private static final long VARSIZE_MAX_VALUE = (1 << 31) - 1;
 
     /**
      * The underlying byte array.

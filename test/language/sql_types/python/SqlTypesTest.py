@@ -53,6 +53,7 @@ class SqlTypesTest(unittest.TestCase):
         self.assertEqual("INTEGER", self._sqlColumnTypes["varuint32Type"])
         self.assertEqual("INTEGER", self._sqlColumnTypes["varuint64Type"])
         self.assertEqual("INTEGER", self._sqlColumnTypes["varuintType"])
+        self.assertEqual("INTEGER", self._sqlColumnTypes["varsizeType"])
 
     def testVariableSignedIntegerTypes(self):
         self.assertEqual("INTEGER", self._sqlColumnTypes["varint16Type"])

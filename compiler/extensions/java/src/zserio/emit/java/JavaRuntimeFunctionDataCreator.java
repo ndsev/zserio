@@ -108,13 +108,20 @@ public class JavaRuntimeFunctionDataCreator
         public void visitVarIntegerType(VarIntegerType type)
         {
             final StringBuilder suffix = new StringBuilder();
-            suffix.append("Var");
-            if (!type.isSigned())
-                suffix.append("U");
-            suffix.append("Int");
             final int maxBitSize = type.getMaxBitSize();
-            if (maxBitSize < 72) // Var(U)Int takes up to 9 bytes
-                suffix.append(maxBitSize);
+            suffix.append("Var");
+            if (maxBitSize == 40) // VarSize
+            {
+            	suffix.append("Size");
+            }
+            else
+            {
+	            if (!type.isSigned())
+	                suffix.append("U");
+	            suffix.append("Int");
+	            if (maxBitSize != 72) // Var(U)Int takes up to 9 bytes
+	                suffix.append(maxBitSize);
+            }
 
             templateData = new RuntimeFunctionTemplateData(suffix.toString());
         }

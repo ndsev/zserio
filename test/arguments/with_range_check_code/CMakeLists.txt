@@ -39,6 +39,9 @@ set(ZSERIO_GENERATED_SOURCES
     ${ZSERIO_GEN_DIR}/with_range_check_code/varint64_range_check/VarInt64RangeCheckCompound.cpp
     ${ZSERIO_GEN_DIR}/with_range_check_code/varint64_range_check/VarInt64RangeCheckCompound.h
 
+    ${ZSERIO_GEN_DIR}/with_range_check_code/varsize_range_check/VarSizeRangeCheckCompound.cpp
+    ${ZSERIO_GEN_DIR}/with_range_check_code/varsize_range_check/VarSizeRangeCheckCompound.h
+
     ${ZSERIO_GEN_DIR}/with_range_check_code/varuint16_range_check/VarUInt16RangeCheckCompound.cpp
     ${ZSERIO_GEN_DIR}/with_range_check_code/varuint16_range_check/VarUInt16RangeCheckCompound.h
 
@@ -73,6 +76,7 @@ add_test_sources(
     cpp/VarInt16RangeCheckTest.cpp
     cpp/VarInt32RangeCheckTest.cpp
     cpp/VarInt64RangeCheckTest.cpp
+    cpp/VarSizeRangeCheckTest.cpp
     cpp/VarUInt16RangeCheckTest.cpp
     cpp/VarUInt32RangeCheckTest.cpp
     cpp/VarUInt64RangeCheckTest.cpp

@@ -5,9 +5,10 @@ The module implements abstraction for arrays used by Zserio python extension.
 from zserio.bitposition import alignTo
 from zserio.bitsizeof import (getBitSizeOfVarUInt16, getBitSizeOfVarUInt32,
                               getBitSizeOfVarUInt64, getBitSizeOfVarUInt,
-                              getBitSizeOfVarInt16, getBitSizeOfVarInt32,
-                              getBitSizeOfVarInt64, getBitSizeOfVarInt,
-                              getBitSizeOfString, getBitSizeOfBitBuffer)
+                              getBitSizeOfVarSize, getBitSizeOfVarInt16,
+                              getBitSizeOfVarInt32, getBitSizeOfVarInt64,
+                              getBitSizeOfVarInt, getBitSizeOfString,
+                              getBitSizeOfBitBuffer)
 from zserio.hashcode import calcHashCode, HASH_SEED
 from zserio.exception import PythonRuntimeException
 
@@ -514,6 +515,59 @@ class VarUIntArrayTraits():
         """
 
         writer.writeVarUInt(value)
+
+class VarSizeArrayTraits():
+    """
+    Array traits for Zserio varsize type.
+    """
+
+    HAS_BITSIZEOF_CONSTANT = False
+
+    @staticmethod
+    def bitSizeOf(_bitPosition, value):
+        """
+        Returns length of Zserio varsize type stored in the bit stream in bits.
+
+        :param _bitPosition: Not used.
+        :param value: Zserio varsize type value.
+        :returns: Length of given Zserio varsize type in bits.
+        """
+
+        return getBitSizeOfVarSize(value)
+
+    @staticmethod
+    def initializeOffsets(bitPosition, value):
+        """
+        Initializes indexed offsets for Zserio varsize type.
+
+        :param bitPosition: Current bit stream position.
+        :param value: Zserio varsize type value.
+        :returns: Updated bit stream position which points to the first bit after Zserio varsize type.
+        """
+
+        return bitPosition + VarSizeArrayTraits.bitSizeOf(bitPosition, value)
+
+    @staticmethod
+    def read(reader, _index):
+        """
+        Reads Zserio varsize type from the bit stream.
+
+        :param reader: Bit stream from which to read.
+        :param _index: Not used.
+        """
+
+        return reader.readVarSize()
+
+    @staticmethod
+    def write(writer, value):
+        """
+        Writes Zserio varsize type to the bit stream.
+
+        :param writer: Bit stream where to write.
+        :param value: Zserio varsize type to write.
+        """
+
+        writer.writeVarSize(value)
 
 class VarInt16ArrayTraits():
     """

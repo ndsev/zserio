@@ -87,6 +87,8 @@ namespace
     static const uint8_t VARUINT_BYTE = UINT8_C(0x7f);
     static const uint8_t VARUINT_HAS_NEXT = UINT8_C(0x80);
 
+    static const uint32_t VARSIZE_MAX_VALUE = (UINT32_C(1) << 31) - 1;
+
 #ifdef ZSERIO_RUNTIME_64BIT
     inline BaseType parse64(const uint8_t* buffer)
     {
@@ -663,6 +665,36 @@ uint64_t BitStreamReader::readVarUInt()
         return result;
 
     result = result << 8 | static_cast<uint8_t>(readBitsImpl(m_context, 8)); // byte 9
+    return result;
+}
+
+uint32_t BitStreamReader::readVarSize()
+{
+    uint8_t byte = static_cast<uint8_t>(readBitsImpl(m_context, 8)); // byte 1
+    uint32_t result = byte & VARUINT_BYTE;
+    if (!(byte & VARUINT_HAS_NEXT))
+        return result;
+
+    byte = static_cast<uint8_t>(readBitsImpl(m_context, 8)); // byte 2
+    result = result << 7 | (byte & VARUINT_BYTE);
+    if (!(byte & VARUINT_HAS_NEXT))
+        return result;
+
+    byte = static_cast<uint8_t>(readBitsImpl(m_context, 8)); // byte 3
+    result = result << 7 | (byte & VARUINT_BYTE);
+    if (!(byte & VARUINT_HAS_NEXT))
+        return result;
+
+    byte = static_cast<uint8_t>(readBitsImpl(m_context, 8)); // byte 4
+    result = result << 7 | (byte & VARUINT_BYTE);
+    if (!(byte & VARUINT_HAS_NEXT))
+        return result;
+
+    result = result << 8 | static_cast<uint8_t>(readBitsImpl(m_context, 8)); // byte 5
+    if (result > VARSIZE_MAX_VALUE)
+        throw CppRuntimeException("BitStreamReader: Read value '" + convertToString(result) +
+                "' is out of range for varsize type!");
+
     return result;
 }
 

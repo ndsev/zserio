@@ -67,6 +67,7 @@ struct ArraysMapping
     varuint32                   varuint32Array[5];
     varuint64                   varuint64Array[5];
     varuint                     varuintArray[5];
+    varsize                     varsizeArray[5];
 
     // variable signed integer arrays
     varint16                    varint16Array[5];

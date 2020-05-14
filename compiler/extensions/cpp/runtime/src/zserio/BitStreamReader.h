@@ -112,6 +112,7 @@ public:
      * \return Read bits.
      */
     uint32_t readBits(uint8_t numBits = 32);
+
     /**
      * Reads unsigned bits up to 64-bits.
      *
@@ -129,6 +130,7 @@ public:
      * \return Read bits.
      */
     int32_t readSignedBits(uint8_t numBits = 32);
+
     /**
      * Reads signed bits up to 64-bits.
      *
@@ -144,12 +146,14 @@ public:
      * \return Read varint64.
      */
     int64_t readVarInt64();
+
     /**
      * Reads signed variable integer up to 32 bits.
      *
      * \return Read varint32.
      */
     int32_t readVarInt32();
+
     /**
      * Reads signed variable integer up to 16 bits.
      *
@@ -163,12 +167,14 @@ public:
      * \return Read varuint64.
      */
     uint64_t readVarUInt64();
+
     /**
      * Read unsigned variable integer up to 32 bits.
      *
      * \return Read varuint32.
      */
     uint32_t readVarUInt32();
+
     /**
      * Read unsigned variable integer up to 16 bits.
      *
@@ -182,6 +188,7 @@ public:
      * \return Read varint.
      */
     int64_t readVarInt();
+
     /**
      * Read unsigned variable integer up to 72 bits.
      *
@@ -190,17 +197,26 @@ public:
     uint64_t readVarUInt();
 
     /**
+     * Read variable size integer up to 40 bits.
+     *
+     * \return Read varsize.
+     */
+    uint32_t readVarSize();
+
+    /**
      * Reads 16-bit float.
      *
      * \return Read float16.
      */
     float readFloat16();
+
     /**
      * Reads 32-bit float.
      *
      * \return Read float32.
      */
     float readFloat32();
+
     /**
      * Reads 64-bit float double).
      *

@@ -33,6 +33,7 @@ import zserio.runtime.array.VarUInt32Array;
 import zserio.runtime.array.VarUInt64Array;
 import zserio.runtime.array.VarIntArray;
 import zserio.runtime.array.VarUIntArray;
+import zserio.runtime.array.VarSizeArray;
 
 public class ArraysMappingTest
 {
@@ -128,11 +129,12 @@ public class ArraysMappingTest
         arraysMapping.setVaruint16Array(new VarUInt16Array(FIXED_ARRAY_LENGTH));
         arraysMapping.setVaruint32Array(new VarUInt32Array(FIXED_ARRAY_LENGTH));
         arraysMapping.setVaruint64Array(new VarUInt64Array(FIXED_ARRAY_LENGTH));
+        arraysMapping.setVaruintArray(new VarUIntArray(FIXED_ARRAY_LENGTH));
 
         // just do something with arraysMapping not to have SpotBugs warning
-        final VarUIntArray varUIntArray = new VarUIntArray(FIXED_ARRAY_LENGTH);
-        arraysMapping.setVaruintArray(varUIntArray);
-        assertEquals(varUIntArray, arraysMapping.getVaruintArray());
+        final VarSizeArray varSizeArray = new VarSizeArray(FIXED_ARRAY_LENGTH);
+        arraysMapping.setVarsizeArray(varSizeArray);
+        assertEquals(varSizeArray, arraysMapping.getVarsizeArray());
     }
 
     @Test

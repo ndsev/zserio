@@ -210,6 +210,18 @@ public class ConstantsTest
     }
 
     @Test
+    public void varsizeMinConstant()
+    {
+        assertEquals(0x00000000, VARSIZE_MIN_CONSTANT.VARSIZE_MIN_CONSTANT);
+    }
+
+    @Test
+    public void varsizeMaxConstant()
+    {
+        assertEquals(0x7FFFFFFF, VARSIZE_MAX_CONSTANT.VARSIZE_MAX_CONSTANT);
+    }
+
+    @Test
     public void varint16MinConstant()
     {
         assertEquals((short)-16383, VARINT16_MIN_CONSTANT.VARINT16_MIN_CONSTANT);

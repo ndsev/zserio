@@ -63,6 +63,7 @@ struct AllBuiltInTypes
     varuint32       varuint32Type;
     varuint64       varuint64Type;
     varuint         varuintType;
+    varsize         varsizeType;
 
     // variable signed integer types
     varint16        varint16Type;

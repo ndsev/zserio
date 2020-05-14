@@ -192,6 +192,11 @@ TEST_F(SqlTypesTest, variableUnsignedIntegerTypes)
     it = sqlColumnTypes.find("varuintType");
     ASSERT_TRUE(it != sqlColumnTypes.end());
     ASSERT_EQ("INTEGER", it->second);
+
+    it = sqlColumnTypes.find("varsizeType");
+    ASSERT_TRUE(it != sqlColumnTypes.end());
+    ASSERT_EQ("INTEGER", it->second);
+
 }
 
 TEST_F(SqlTypesTest, variableSignedIntegerTypes)

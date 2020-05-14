@@ -5,7 +5,8 @@ from zserio.bitsizeof import (getBitSizeOfVarInt16, getBitSizeOfVarInt32,
                               getBitSizeOfVarInt64, getBitSizeOfVarInt,
                               getBitSizeOfVarUInt16, getBitSizeOfVarUInt32,
                               getBitSizeOfVarUInt64, getBitSizeOfVarUInt,
-                              getBitSizeOfString, getBitSizeOfBitBuffer)
+                              getBitSizeOfVarSize, getBitSizeOfString,
+                              getBitSizeOfBitBuffer)
 from zserio.exception import PythonRuntimeException
 from zserio.limits import INT64_MIN
 
@@ -248,6 +249,30 @@ class BitSizeOfTest(unittest.TestCase):
 
         with self.assertRaises(PythonRuntimeException):
             getBitSizeOfVarUInt(1 << 64) # above the upper bound
+
+    def testGetBitSizeOfVarSize(self):
+        self.assertEqual(1 * 8, getBitSizeOfVarSize(0))
+
+        self.assertEqual(1 * 8, getBitSizeOfVarSize(1 << (0)))
+        self.assertEqual(1 * 8, getBitSizeOfVarSize((1 << (7)) - 1))
+
+        self.assertEqual(2 * 8, getBitSizeOfVarSize(1 << (7)))
+        self.assertEqual(2 * 8, getBitSizeOfVarSize((1 << (7 + 7)) - 1))
+
+        self.assertEqual(3 * 8, getBitSizeOfVarSize(1 << (7 + 7)))
+        self.assertEqual(3 * 8, getBitSizeOfVarSize((1 << (7 + 7 + 7)) - 1))
+
+        self.assertEqual(4 * 8, getBitSizeOfVarSize(1 << (7 + 7 + 7)))
+        self.assertEqual(4 * 8, getBitSizeOfVarSize((1 << (7 + 7 + 7 + 7)) - 1))
+
+        self.assertEqual(5 * 8, getBitSizeOfVarSize(1 << (7 + 7 + 7 + 7)))
+        self.assertEqual(5 * 8, getBitSizeOfVarSize((1 << (2 + 7 + 7 + 7 + 8)) - 1))
+
+        with self.assertRaises(PythonRuntimeException):
+            getBitSizeOfVarSize(-1) # below the lower bound
+
+        with self.assertRaises(PythonRuntimeException):
+            getBitSizeOfVarSize(1 << (2 + 7 + 7 + 7 + 8)) # above the upper bound
 
     def testGetBitSizeOfString(self):
         self.assertEqual((1 + 1) * 8, getBitSizeOfString("T"))

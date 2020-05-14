@@ -2,8 +2,8 @@ import unittest
 
 from zserio.array import (Array, BitFieldArrayTraits, SignedBitFieldArrayTraits,
                           VarUInt16ArrayTraits, VarUInt32ArrayTraits, VarUInt64ArrayTraits, VarUIntArrayTraits,
-                          VarInt16ArrayTraits, VarInt32ArrayTraits, VarInt64ArrayTraits, VarIntArrayTraits,
-                          Float16ArrayTraits, Float32ArrayTraits, Float64ArrayTraits,
+                          VarSizeArrayTraits, VarInt16ArrayTraits, VarInt32ArrayTraits, VarInt64ArrayTraits,
+                          VarIntArrayTraits, Float16ArrayTraits, Float32ArrayTraits, Float64ArrayTraits,
                           StringArrayTraits, BoolArrayTraits, BitBufferArrayTraits, ObjectArrayTraits)
 from zserio.bitbuffer import BitBuffer
 from zserio.bitreader import BitStreamReader
@@ -59,6 +59,14 @@ class ArrayTest(unittest.TestCase):
         array1BitSizeOf = 8 + 16
         array1AlignedBitSizeOf = array1BitSizeOf
         array2Values = [1, 8192]
+        self._testArray(arrayTraits, array1Values, array1BitSizeOf, array1AlignedBitSizeOf, array2Values)
+
+    def testVarSizeArray(self):
+        arrayTraits = VarSizeArrayTraits()
+        array1Values = [1, 16384]
+        array1BitSizeOf = 8 + 24
+        array1AlignedBitSizeOf = array1BitSizeOf
+        array2Values = [1, 32768]
         self._testArray(arrayTraits, array1Values, array1BitSizeOf, array1AlignedBitSizeOf, array2Values)
 
     def testVarInt16Array(self):

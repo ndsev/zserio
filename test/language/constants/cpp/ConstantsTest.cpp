@@ -57,6 +57,8 @@
 #include "constants/VARUINT64_MIN_CONSTANT.h"
 #include "constants/VARUINT_MAX_CONSTANT.h"
 #include "constants/VARUINT_MIN_CONSTANT.h"
+#include "constants/VARSIZE_MAX_CONSTANT.h"
+#include "constants/VARSIZE_MIN_CONSTANT.h"
 
 namespace constants
 {
@@ -233,6 +235,16 @@ TEST(ConstantsTest, varuintMinConstant)
 TEST(ConstantsTest, varuintMaxConstant)
 {
     ASSERT_EQ(std::numeric_limits<uint64_t>::max(), VARUINT_MAX_CONSTANT);
+}
+
+TEST(ConstantsTest, varsizeMinConstant)
+{
+    ASSERT_EQ(static_cast<uint32_t>(0x00000000), VARSIZE_MIN_CONSTANT);
+}
+
+TEST(ConstantsTest, varsizeMaxConstant)
+{
+    ASSERT_EQ(static_cast<uint32_t>(0x7FFFFFFF), VARSIZE_MAX_CONSTANT);
 }
 
 TEST(ConstantsTest, varint16MinConstant)

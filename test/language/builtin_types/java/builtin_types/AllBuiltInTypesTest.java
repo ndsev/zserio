@@ -284,6 +284,15 @@ public class AllBuiltInTypesTest
     }
 
     @Test
+    public void varsizeType()
+    {
+        final int maxVarsizeType = ((int)1 << 31) - 1;
+        allBuiltInTypes.setVarsizeType(maxVarsizeType);
+        final int varsizeType = allBuiltInTypes.getVarsizeType();
+        assertEquals(maxVarsizeType, varsizeType);
+    }
+
+    @Test
     public void varint16Type()
     {
         final short maxVarint16Type = ((short)1 << 14) - 1;
@@ -384,13 +393,14 @@ public class AllBuiltInTypesTest
         allBuiltInTypes.setVaruint32Type(((int)1 << 29) - 1);
         allBuiltInTypes.setVaruint64Type(((long)1 << 57) - 1);
         allBuiltInTypes.setVaruintType(BigInteger.ONE.shiftLeft(64).subtract(BigInteger.ONE));
+        allBuiltInTypes.setVarsizeType(((int)1 << 31) - 1);
         allBuiltInTypes.setVarint16Type((short)(((short)1 << 14) - 1));
         allBuiltInTypes.setVarint32Type(((int)1 << 28) - 1);
         allBuiltInTypes.setVarint64Type(((long)1 << 56) - 1);
         allBuiltInTypes.setVarintType(Long.MAX_VALUE);
         allBuiltInTypes.setStringType("TEST");
         allBuiltInTypes.setExternType(getExternalBitBuffer());
-        final int expectedBitSizeOf = 1102;
+        final int expectedBitSizeOf = 1142;
         assertEquals(expectedBitSizeOf, allBuiltInTypes.bitSizeOf());
     }
 

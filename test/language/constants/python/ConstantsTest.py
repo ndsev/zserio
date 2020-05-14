@@ -107,6 +107,12 @@ class BitfieldEnumTest(unittest.TestCase):
     def testVaruintMaxConstant(self):
         self.assertEqual(zserio.limits.VARUINT_MAX, self.api.VARUINT_MAX_CONSTANT)
 
+    def testVarsizeMinConstant(self):
+        self.assertEqual(zserio.limits.VARSIZE_MIN, self.api.VARSIZE_MIN_CONSTANT)
+
+    def testVarsizeMaxConstant(self):
+        self.assertEqual(zserio.limits.VARSIZE_MAX, self.api.VARSIZE_MAX_CONSTANT)
+
     def testVarint16MinConstant(self):
         self.assertEqual(zserio.limits.VARINT16_MIN, self.api.VARINT16_MIN_CONSTANT)
 

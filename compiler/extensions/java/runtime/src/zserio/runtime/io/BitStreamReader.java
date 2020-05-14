@@ -190,7 +190,7 @@ public interface BitStreamReader extends BitStreamCloseable
     /**
      * Reads an unsigned variable 16 bit integer from the bit stream.
      *
-     * @return Read unsigned VarInt16 value.
+     * @return Read unsigned VarUInt16 value.
      *
      * @throws IOException If reading failed.
      */
@@ -199,7 +199,7 @@ public interface BitStreamReader extends BitStreamCloseable
     /**
      * Reads an unsigned variable 32 bit integer from the bit stream.
      *
-     * @return Read unsigned VarInt32 value.
+     * @return Read unsigned VarUInt32 value.
      *
      * @throws IOException If reading failed.
      */
@@ -208,7 +208,7 @@ public interface BitStreamReader extends BitStreamCloseable
     /**
      * Reads an unsigned variable 64 bit integer from the bit stream.
      *
-     * @return Read unsigned VarInt64 value.
+     * @return Read unsigned VarUInt64 value.
      *
      * @throws IOException If reading failed.
      */
@@ -219,7 +219,7 @@ public interface BitStreamReader extends BitStreamCloseable
      *
      * The integer takes up to 9 bytes to cover range &lt;-2^63, 2^63-1&gt;.
      *
-     * @return Read unsigned VarUInt value.
+     * @return Read signed VarInt value.
      *
      * @throws IOException If reading failed.
      */
@@ -235,6 +235,15 @@ public interface BitStreamReader extends BitStreamCloseable
      * @throws IOException If reading failed.
      */
     BigInteger readVarUInt() throws IOException;
+
+    /**
+     * Reads a variable size integer from the bit stream.
+     *
+     * @return Read VarSize value.
+     *
+     * @throws IOException If reading failed.
+     */
+    int readVarSize() throws IOException;
 
     /**
      * Reads a bit buffer from the bit stream.

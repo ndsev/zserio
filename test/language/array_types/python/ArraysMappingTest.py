@@ -71,6 +71,7 @@ class ArraysMappingTest(unittest.TestCase):
         arraysMapping.setVaruint32Array(intArray)
         arraysMapping.setVaruint64Array(intArray)
         arraysMapping.setVaruintArray(intArray)
+        arraysMapping.setVarsizeArray(intArray)
 
     def testVariableSignedIntegerArrays(self):
         arraysMapping = self.api.ArraysMapping()

@@ -67,6 +67,7 @@ public:
      * \param numBits Number of bits to write.
      */
     void writeBits(uint32_t data, uint8_t numBits = 32);
+
     /**
      * Writes unsigned bits up to 64 bits.
      *
@@ -82,6 +83,7 @@ public:
      * \param numBits Number of bits to write.
      */
     void writeSignedBits(int32_t data, uint8_t numBits = 32);
+
     /**
      * Writes signed bits up to 64 bits.
      *
@@ -96,12 +98,14 @@ public:
      * \param data Varint64 to write.
      */
     void writeVarInt64(int64_t data);
+
     /**
      * Writes signed variable integer up to 32 bits.
      *
      * \param data Varint32 to write.
      */
     void writeVarInt32(int32_t data);
+
     /**
      * Writes signed variable integer up to 16 bits.
      *
@@ -115,12 +119,14 @@ public:
      * \param data Varuint64 to write.
      */
     void writeVarUInt64(uint64_t data);
+
     /**
      * Writes unsigned variable integer up to 32 bits.
      *
      * \param data Varuint32 to write.
      */
     void writeVarUInt32(uint32_t data);
+
     /**
      * Writes unsigned variable integer up to 16 bits.
      *
@@ -134,6 +140,7 @@ public:
      * \param data Varuint64 to write.
      */
     void writeVarInt(int64_t data);
+
     /**
      * Writes signed variable integer up to 72 bits.
      *
@@ -142,17 +149,26 @@ public:
     void writeVarUInt(uint64_t data);
 
     /**
+     * Writes variable size integer up to 40 bits.
+     *
+     * \param data Varsize to write.
+     */
+    void writeVarSize(uint32_t data);
+
+    /**
      * Writes 16-bit float.
      *
      * \param data Float16 to write.
      */
     void writeFloat16(float data);
+
     /**
      * Writes 32-bit float.
      *
      * \param data Float32 to write.
      */
     void writeFloat32(float data);
+
     /**
      * Writes 64-bit float.
      *
@@ -208,6 +224,7 @@ public:
      * \return True when a buffer is assigned. False otherwise.
      */
     bool hasWriteBuffer() const { return m_hasInternalBuffer || m_buffer != NULL; }
+
     /**
      * Gets the write buffer.
      *
@@ -227,9 +244,9 @@ public:
 private:
     void writeUnsignedBits(uint32_t data, uint8_t numBits);
     void writeUnsignedBits64(uint64_t data, uint8_t numBits);
-    void writeVarNum(int64_t value, const uint8_t* valBits, size_t valBitsSize, size_t numVarBits);
-    void writeVarAbsNum(uint64_t value, bool sign, const uint8_t* valBits, size_t valBitsSize,
-            size_t numVarBits);
+    void writeSignedVarNum(int64_t value, size_t maxVarBytes, size_t numVarBytes);
+    void writeUnsignedVarNum(uint64_t value, size_t maxVarBytes, size_t numVarBytes);
+    void writeVarNum(uint64_t value, bool hasSign, bool isNegative, size_t maxVarBytes, size_t numVarBytes);
 
     bool ensureCapacity(size_t bitSize);
 

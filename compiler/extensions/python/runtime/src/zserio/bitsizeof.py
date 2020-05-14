@@ -14,7 +14,7 @@ def getBitSizeOfVarInt16(value):
     :raises PythonRuntimeException: Throws if given value is out of range for varint16 type.
     """
 
-    return _getBitSizeOfVarIntImpl(value, VARINT16_MAX_VALUES, signed=True)
+    return _getBitSizeOfVarIntImpl(abs(value), VARINT16_MAX_VALUES, "varint16")
 
 def getBitSizeOfVarInt32(value):
     """
@@ -25,7 +25,7 @@ def getBitSizeOfVarInt32(value):
     :raises PythonRuntimeException: Throws if given value is out of range for varint32 type.
     """
 
-    return _getBitSizeOfVarIntImpl(value, VARINT32_MAX_VALUES, signed=True)
+    return _getBitSizeOfVarIntImpl(abs(value), VARINT32_MAX_VALUES, "varint32")
 
 def getBitSizeOfVarInt64(value):
     """
@@ -36,7 +36,7 @@ def getBitSizeOfVarInt64(value):
     :raises PythonRuntimeException: Throws if given value is out of range for varint64 type.
     """
 
-    return _getBitSizeOfVarIntImpl(value, VARINT64_MAX_VALUES, signed=True)
+    return _getBitSizeOfVarIntImpl(abs(value), VARINT64_MAX_VALUES, "varint64")
 
 def getBitSizeOfVarInt(value):
     """
@@ -49,7 +49,7 @@ def getBitSizeOfVarInt(value):
 
     if value == INT64_MIN:
         return 8 # INT64_MIN is stored as -0
-    return _getBitSizeOfVarIntImpl(value, VARINT_MAX_VALUES, signed=True)
+    return _getBitSizeOfVarIntImpl(abs(value), VARINT_MAX_VALUES, "varint")
 
 def getBitSizeOfVarUInt16(value):
     """
@@ -60,7 +60,7 @@ def getBitSizeOfVarUInt16(value):
     :raises PythonRuntimeException: Throws if given value is out of range for varuint16 type.
     """
 
-    return _getBitSizeOfVarIntImpl(value, VARUINT16_MAX_VALUES, signed=False)
+    return _getBitSizeOfVarIntImpl(value, VARUINT16_MAX_VALUES, "varuint16")
 
 def getBitSizeOfVarUInt32(value):
     """
@@ -71,7 +71,7 @@ def getBitSizeOfVarUInt32(value):
     :raises PythonRuntimeException: Throws if given value is out of range for varuint32 type.
     """
 
-    return _getBitSizeOfVarIntImpl(value, VARUINT32_MAX_VALUES, signed=False)
+    return _getBitSizeOfVarIntImpl(value, VARUINT32_MAX_VALUES, "varuint32")
 
 def getBitSizeOfVarUInt64(value):
     """
@@ -82,7 +82,7 @@ def getBitSizeOfVarUInt64(value):
     :raises PythonRuntimeException: Throws if given value is out of range for varuint64 type.
     """
 
-    return _getBitSizeOfVarIntImpl(value, VARUINT64_MAX_VALUES, signed=False)
+    return _getBitSizeOfVarIntImpl(value, VARUINT64_MAX_VALUES, "varuint64")
 
 def getBitSizeOfVarUInt(value):
     """
@@ -93,7 +93,18 @@ def getBitSizeOfVarUInt(value):
     :raises PythonRuntimeException: Throws if given value is out of range for varuint type.
     """
 
-    return _getBitSizeOfVarIntImpl(value, VARUINT_MAX_VALUES, signed=False)
+    return _getBitSizeOfVarIntImpl(value, VARUINT_MAX_VALUES, "varuint")
+
+def getBitSizeOfVarSize(value):
+    """
+    Gets bit size of variable size integer value.
+
+    :param value: Value to use for bit size calculation.
+    :returns: Bit size of the value.
+    :raises PythonRuntimeException: Throws if given value is out of range for varsize type.
+    """
+
+    return _getBitSizeOfVarIntImpl(value, VARSIZE_MAX_VALUES, "varsize")
 
 def getBitSizeOfString(string):
     """
@@ -119,17 +130,14 @@ def getBitSizeOfBitBuffer(bitBuffer):
     # bit buffer consists of varuint64 for bit size followed by the bits
     return getBitSizeOfVarUInt64(bitBufferSize) + bitBufferSize
 
-def _getBitSizeOfVarIntImpl(value, maxValues, *, signed):
-    if signed or value >= 0:
+def _getBitSizeOfVarIntImpl(value, maxValues, varIntName):
+    if value >= 0:
         absValue = abs(value)
         for i, maxValue in enumerate(maxValues):
             if absValue <= maxValue:
                 return (i + 1) * 8
 
-    raise PythonRuntimeException("Var%sInt%s value %d is out of range!" %
-                                 ("" if signed else "U",
-                                  str(len(maxValues) * 8) if len(maxValues) != 9 else "",
-                                  value))
+    raise PythonRuntimeException("bitsizeof: Value '%d' is out of range for %s!" % (value, varIntName))
 
 VARINT16_MAX_VALUES = [
     (1 << (6)) - 1,
@@ -199,4 +207,12 @@ VARUINT_MAX_VALUES = [
     (1 << (7 + 7 + 7 + 7 + 7 + 7 + 7)) - 1,
     (1 << (7 + 7 + 7 + 7 + 7 + 7 + 7 + 7)) - 1,
     (1 << (7 + 7 + 7 + 7 + 7 + 7 + 7 + 7 + 8)) - 1,
+]
+
+VARSIZE_MAX_VALUES = [
+    (1 << (7)) - 1,
+    (1 << (7 + 7)) - 1,
+    (1 << (7 + 7 + 7)) - 1,
+    (1 << (7 + 7 + 7 + 7)) - 1,
+    (1 << (2 + 7 + 7 + 7 + 8)) - 1,
 ]

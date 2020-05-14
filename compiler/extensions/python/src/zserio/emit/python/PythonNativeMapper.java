@@ -422,6 +422,11 @@ public class PythonNativeMapper
                 pythonArrayType = (type.isSigned()) ? varInt32ArrayType : varUInt32ArrayType;
                 break;
 
+            case 40:
+                if (!type.isSigned())
+                    pythonArrayType = varSizeArrayType;
+                break;
+
             case 64:
                 pythonArrayType = (type.isSigned()) ? varInt64ArrayType : varUInt64ArrayType;
                 break;
@@ -466,4 +471,5 @@ public class PythonNativeMapper
     private final static NativeArrayType varUInt32ArrayType = new NativeArrayType("VarUInt32ArrayTraits");
     private final static NativeArrayType varUInt64ArrayType = new NativeArrayType("VarUInt64ArrayTraits");
     private final static NativeArrayType varUIntArrayType = new NativeArrayType("VarUIntArrayTraits");
+    private final static NativeArrayType varSizeArrayType = new NativeArrayType("VarSizeArrayTraits");
 }

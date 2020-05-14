@@ -85,8 +85,6 @@ public class ByteArrayBitStreamWriter extends ByteArrayBitStreamBase implements 
         }
     }
 
-
-
     @Override
     public void writeUnsignedByte(final short value) throws IOException
     {
@@ -269,37 +267,79 @@ public class ByteArrayBitStreamWriter extends ByteArrayBitStreamBase implements 
     @Override
     public void writeVarInt16(final short value) throws IOException
     {
-        writeVarNum(value, true, 2);
+        try
+        {
+            writeVarNum(value, true, 2, BitSizeOfCalculator.getBitSizeOfVarInt16(value) / 8);
+        }
+        catch (ZserioError e)
+        {
+            throw new IOException(e.getMessage());
+        }
     }
 
     @Override
     public void writeVarUInt16(final short value) throws IOException
     {
-        writeVarNum(value, false, 2);
+        try
+        {
+            writeVarNum(value, false, 2, BitSizeOfCalculator.getBitSizeOfVarUInt16(value) / 8);
+        }
+        catch (ZserioError e)
+        {
+            throw new IOException(e.getMessage());
+        }
     }
 
     @Override
     public void writeVarInt32(final int value) throws IOException
     {
-        writeVarNum(value, true, 4);
+        try
+        {
+            writeVarNum(value, true, 4, BitSizeOfCalculator.getBitSizeOfVarInt32(value) / 8);
+        }
+        catch (ZserioError e)
+        {
+            throw new IOException(e.getMessage());
+        }
     }
 
     @Override
     public void writeVarUInt32(final int value) throws IOException
     {
-        writeVarNum(value, false, 4);
+        try
+        {
+            writeVarNum(value, false, 4, BitSizeOfCalculator.getBitSizeOfVarUInt32(value) / 8);
+        }
+        catch (ZserioError e)
+        {
+            throw new IOException(e.getMessage());
+        }
     }
 
     @Override
     public void writeVarInt64(final long value) throws IOException
     {
-        writeVarNum(value, true, 8);
+        try
+        {
+            writeVarNum(value, true, 8, BitSizeOfCalculator.getBitSizeOfVarInt64(value) / 8);
+        }
+        catch (ZserioError e)
+        {
+            throw new IOException(e.getMessage());
+        }
     }
 
     @Override
     public void writeVarUInt64(final long value) throws IOException
     {
-        writeVarNum(value, false, 8);
+        try
+        {
+            writeVarNum(value, false, 8, BitSizeOfCalculator.getBitSizeOfVarUInt64(value) / 8);
+        }
+        catch (ZserioError e)
+        {
+            throw new IOException(e.getMessage());
+        }
     }
 
     @Override
@@ -311,7 +351,14 @@ public class ByteArrayBitStreamWriter extends ByteArrayBitStreamBase implements 
         }
         else
         {
-            writeVarNum(value, true, 9);
+            try
+            {
+                writeVarNum(value, true, 9, BitSizeOfCalculator.getBitSizeOfVarInt(value) / 8);
+            }
+            catch (ZserioError e)
+            {
+                throw new IOException(e.getMessage());
+            }
         }
     }
 
@@ -357,6 +404,19 @@ public class ByteArrayBitStreamWriter extends ByteArrayBitStreamBase implements 
                 writeBool(false); // has next byte
                 writeBits(value.and(VARUINT_BITMASK).longValue(), 7);
             }
+        }
+    }
+
+    @Override
+    public void writeVarSize(final int value) throws IOException
+    {
+        try
+        {
+            writeVarNum(value, false, 5, BitSizeOfCalculator.getBitSizeOfVarSize(value) / 8);
+        }
+        catch (ZserioError e)
+        {
+            throw new IOException(e.getMessage());
         }
     }
 
@@ -511,60 +571,39 @@ public class ByteArrayBitStreamWriter extends ByteArrayBitStreamBase implements 
      * Writes a variable value with a given sign and the maximum number of variable bytes.
      *
      * @param value       Variable value to write.
-     * @param signed      A flag indicating if the value is signed.
+     * @param isSigned    A flag indicating if the value is signed.
      * @param maxVarBytes The maximum number of variable bytes.
+     * @param numVarBytes The number of variable bytes.
      *
      * @throws IOException If the bytes cannot be written.
      */
-    private void writeVarNum(final long value, final boolean signed, final int maxVarBytes) throws IOException
+    private void writeVarNum(final long value, final boolean isSigned, final int maxVarBytes,
+            final int numVarBytes) throws IOException
     {
-        if (value != 0)
+        final long absValue = (value < 0 ? -value : value);
+        final boolean max = numVarBytes == maxVarBytes;
+        for (int i = 0; i < numVarBytes; i++)
         {
-            final long absValue = (value < 0 ? -value : value);
+            final boolean hasNextByte = i < numVarBytes - 1;
+            final int extra = max && hasNextByte ? 1 : 0;
+            final int shift = (numVarBytes - (i + 1)) * 7 + extra;
 
-            // checks if value is within varInt-type's range
-            if (absValue > ((1L << (7 * maxVarBytes + (signed ? 0 : 1))) - 1))
-                throw new IOException("ByteArrayBitStreamWriter: Can't write Var" + (signed ? "" : "U") +
-                        "Int" + (8 * maxVarBytes) + ". Value " + value + " is out of range.");
-
-            int numVarBytes = 0;
-            int valBits = 0;
-            for (int i = 0; i < maxVarBytes && (absValue > (1L << valBits) - 1); i++)
+            long b = 0;
+            int numBits = 8;
+            if (isSigned && i == 0)
             {
-                final int hasSign = i == 0 && signed ? 1 : 0;
-                final int hasNextByte = i == maxVarBytes - 1 ? 0 : 1;
-                valBits += 8 - (hasSign + hasNextByte);
-                numVarBytes++;
+                b |= (value < 0 ? 1 : 0) << --numBits;
             }
-
-            final boolean max = numVarBytes == maxVarBytes;
-            for (int i = 0; i < numVarBytes; i++)
+            if (hasNextByte)
             {
-                final boolean hasNextByte = i < numVarBytes - 1;
-                final int extra = max && hasNextByte ? 1 : 0;
-                final int shift = (numVarBytes - (i + 1)) * 7 + extra;
-
-                long b = 0;
-                int numBits = 8;
-                if (signed && i == 0)
-                {
-                    b |= (value < 0 ? 1 : 0) << --numBits;
-                }
-                if (hasNextByte)
-                {
-                    b |= 1L << --numBits;
-                }
-                else if (!max)
-                {
-                    numBits--;
-                }
-                b |= (absValue >> shift) & (-1L >>> (64 - numBits));
-                writeBits(b, 8);
+                b |= 1L << --numBits;
             }
-        }
-        else
-        {
-            writeByte((byte) 0);
+            else if (!max)
+            {
+                numBits--;
+            }
+            b |= (absValue >> shift) & (-1L >>> (64 - numBits));
+            writeBits(b, 8);
         }
     }
 

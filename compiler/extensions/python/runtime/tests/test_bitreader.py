@@ -138,6 +138,17 @@ class BitStreamReaderTest(unittest.TestCase):
         with self.assertRaises(PythonRuntimeException):
             reader.readVarUInt()
 
+    def testReadVarSize(self):
+        # overflow, 2^32 - 1 is too much (b'\x83\xFF\xFF\xFF\xFF') is the maximum)
+        reader = BitStreamReader(b'\x87\xFF\xFF\xFF\xFF')
+        with self.assertRaises(PythonRuntimeException):
+            reader.readVarSize()
+
+        # overflow, 2^36 - 1 is too much (b'\x83\xFF\xFF\xFF\xFF') is the maximum)
+        reader = BitStreamReader(b'\xFF\xFF\xFF\xFF\xFF')
+        with self.assertRaises(PythonRuntimeException):
+            reader.readVarSize()
+
     def testReadFloat16(self):
         reader = BitStreamReader(bytes(2))
         self.assertEqual(0.0, reader.readFloat16())

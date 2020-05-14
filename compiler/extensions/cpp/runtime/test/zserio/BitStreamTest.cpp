@@ -573,6 +573,38 @@ TEST_F(BitStreamTest, readVarUInt)
             &BitStreamWriter::writeVarUInt, &BitStreamReader::readVarUInt);
 }
 
+TEST_F(BitStreamTest, readVarSize)
+{
+    const uint32_t values[] =
+    {
+        0,
+        65536,
+        131072,
+
+        ( UINT32_C(1) << ( 0 ) ),
+        ( UINT32_C(1) << ( 7 ) ) - 1,
+
+        ( UINT32_C(1) << ( 7 ) ),
+        ( UINT32_C(1) << ( 7+7 ) ) - 1,
+
+        ( UINT32_C(1) << ( 7+7 ) ),
+        ( UINT32_C(1) << ( 7+7+7 ) ) - 1,
+
+        ( UINT32_C(1) << ( 7+7+7 ) ),
+        ( UINT32_C(1) << ( 7+7+7+7 ) ) - 1,
+
+        ( UINT32_C(1) << ( 7+7+7+7 ) ),
+        ( UINT32_C(1) << ( 7+7+7+7+3 ) ) - 1,
+    };
+
+    testBitStreamValues(values, m_externalWriter,
+            &BitStreamWriter::writeVarSize, &BitStreamReader::readVarSize);
+    testBitStreamValues(values, m_internalWriter,
+            &BitStreamWriter::writeVarSize, &BitStreamReader::readVarSize);
+    testBitStreamValues(values, m_dummyWriter,
+            &BitStreamWriter::writeVarSize, &BitStreamReader::readVarSize);
+}
+
 TEST_F(BitStreamTest, readFloat16)
 {
     const float values[] = { 2.0, -2.0, 0.6171875, 0.875, 9.875, 42.5 };

@@ -166,6 +166,10 @@ public class SqlTypesTest
         final String varuintSqlType = sqlColumnTypes.get("varuintType");
         assertTrue(varuintSqlType != null);
         assertTrue(varuintSqlType.equalsIgnoreCase("INTEGER"));
+
+        final String varsizeSqlType = sqlColumnTypes.get("varsizeType");
+        assertTrue(varsizeSqlType != null);
+        assertTrue(varsizeSqlType.equalsIgnoreCase("INTEGER"));
     }
 
     @Test

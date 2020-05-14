@@ -1,6 +1,3 @@
-/**
- *
- */
 package zserio.runtime.io;
 
 import static org.junit.Assert.assertEquals;
@@ -30,8 +27,8 @@ public class ByteArrayBitStreamVarNumTest
                 }
                 catch (IOException e)
                 {
-                    assertTrue(e.getMessage().startsWith("ByteArrayBitStreamWriter: Can't write VarUInt16. "
-                                + "Value ") && e.getMessage().endsWith(" is out of range."));
+                    assertTrue(e.getMessage().startsWith("BitSizeOfCalculator: Value '") &&
+                            e.getMessage().endsWith("' is out of range for varuint16!"));
                 }
 
                 try
@@ -41,8 +38,8 @@ public class ByteArrayBitStreamVarNumTest
                 }
                 catch (IOException e)
                 {
-                    assertTrue(e.getMessage().startsWith("ByteArrayBitStreamWriter: Can't write VarUInt32. "
-                            + "Value ") && e.getMessage().endsWith(" is out of range."));
+                    assertTrue(e.getMessage().startsWith("BitSizeOfCalculator: Value '") &&
+                            e.getMessage().endsWith("' is out of range for varuint32!"));
                 }
 
                 try
@@ -52,8 +49,8 @@ public class ByteArrayBitStreamVarNumTest
                 }
                 catch (IOException e)
                 {
-                    assertTrue(e.getMessage().startsWith("ByteArrayBitStreamWriter: Can't write VarUInt64. "
-                            + "Value ") && e.getMessage().endsWith(" is out of range."));
+                    assertTrue(e.getMessage().startsWith("BitSizeOfCalculator: Value '") &&
+                            e.getMessage().endsWith("' is out of range for varuint64!"));
                 }
 
                 try
@@ -63,8 +60,8 @@ public class ByteArrayBitStreamVarNumTest
                 }
                 catch (IOException e)
                 {
-                    assertTrue(e.getMessage().startsWith("ByteArrayBitStreamWriter: Can't write VarInt16. "
-                            + "Value ") && e.getMessage().endsWith(" is out of range."));
+                    assertTrue(e.getMessage().startsWith("BitSizeOfCalculator: Value '") &&
+                            e.getMessage().endsWith("' is out of range for varint16!"));
                 }
 
                 try
@@ -74,8 +71,8 @@ public class ByteArrayBitStreamVarNumTest
                 }
                 catch (IOException e)
                 {
-                    assertTrue(e.getMessage().startsWith("ByteArrayBitStreamWriter: Can't write VarInt32. "
-                            + "Value ") && e.getMessage().endsWith(" is out of range."));
+                    assertTrue(e.getMessage().startsWith("BitSizeOfCalculator: Value '") &&
+                            e.getMessage().endsWith("' is out of range for varint32!"));
                 }
 
                 try
@@ -85,8 +82,49 @@ public class ByteArrayBitStreamVarNumTest
                 }
                 catch (IOException e)
                 {
-                    assertTrue(e.getMessage().startsWith("ByteArrayBitStreamWriter: Can't write VarInt64. "
-                            + "Value ") && e.getMessage().endsWith(" is out of range."));
+                    assertTrue(e.getMessage().startsWith("BitSizeOfCalculator: Value '") &&
+                            e.getMessage().endsWith("' is out of range for varint64!"));
+                }
+
+                try
+                {
+                    writer.writeVarSize(1 << (2 + 7 + 7 + 7 + 8));
+                    fail();
+                }
+                catch (IOException e)
+                {
+                    assertTrue(e.getMessage().startsWith("BitSizeOfCalculator: Value '") &&
+                            e.getMessage().endsWith("' is out of range for varsize!"));
+                }
+
+                try
+                {
+                    // overflow, 2^32 - 1 is too much ({ 0x83, 0xFF, 0xFF, 0xFF, 0xFF } is the maximum)
+                    final byte[] buffer = new byte[] { (byte) 0x8F, (byte)0xFF, (byte)0xFF, (byte)0xFF,
+                            (byte)0xFF };
+                    final ByteArrayBitStreamReader reader = new ByteArrayBitStreamReader(buffer);
+                    reader.readVarSize();
+                    fail();
+                }
+                catch (IOException e)
+                {
+                    assertTrue(e.getMessage().startsWith("ByteArrayBitStreamReader: Read value '") &&
+                            e.getMessage().endsWith("' is out of range for varsize type!"));
+                }
+
+                try
+                {
+                    // overflow, 2^36 - 1 is too much ({ 0x83, 0xFF, 0xFF, 0xFF, 0xFF } is the maximum)
+                    final byte[] buffer = new byte[] { (byte) 0xFF, (byte)0xFF, (byte)0xFF, (byte)0xFF,
+                            (byte)0xFF };
+                    final ByteArrayBitStreamReader reader = new ByteArrayBitStreamReader(buffer);
+                    reader.readVarSize();
+                    fail();
+                }
+                catch (IOException e)
+                {
+                    assertTrue(e.getMessage().startsWith("ByteArrayBitStreamReader: Read value '") &&
+                            e.getMessage().endsWith("' is out of range for varsize type!"));
                 }
             }
 
@@ -406,6 +444,57 @@ public class ByteArrayBitStreamVarNumTest
                 {
                     readSentinel(reader);
                     assertEquals(varUInt16Limits[i], reader.readVarUInt16());
+                }
+
+                readSentinel(reader);
+            }
+        });
+    }
+
+    @Test
+    public void varSize() throws IOException
+    {
+        final int varSizeLimits[] =
+        {
+            (1 << 0), (1 << 7) - 1,
+            (1 << 7), (1 << (7 + 7)) - 1,
+            (1 << (7 + 7)), (1 << (7 + 7 + 7)) - 1,
+            (1 << (7 + 7 + 7)), (1 << (7 + 7 + 7 + 7)) - 1,
+            (1 << (7 + 7 + 7 + 7)), (1 << (2 + 7 + 7 + 7 + 8)) - 1,
+        };
+
+        writeReadTest(new WriteReadTestable(){
+            @Override
+            public void write(BitStreamWriter writer) throws IOException
+            {
+                for (int i = 0; i < sanityVarNums.length; i++)
+                {
+                    writeSentinel(writer);
+                    writer.writeVarSize(sanityVarNums[i]);
+                }
+
+                for (int i = 0; i < varSizeLimits.length; i++)
+                {
+                    writeSentinel(writer);
+                    writer.writeVarSize(varSizeLimits[i]);
+                }
+
+                writeSentinel(writer);
+            }
+
+            @Override
+            public void read(BitStreamReader reader) throws IOException
+            {
+                for (int i = 0; i < sanityVarNums.length; i++)
+                {
+                    readSentinel(reader);
+                    assertEquals(sanityVarNums[i], reader.readVarSize());
+                }
+
+                for (int i = 0; i < varSizeLimits.length; i++)
+                {
+                    readSentinel(reader);
+                    assertEquals(varSizeLimits[i], reader.readVarSize());
                 }
 
                 readSentinel(reader);

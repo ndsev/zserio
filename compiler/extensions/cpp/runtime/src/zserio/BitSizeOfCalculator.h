@@ -83,6 +83,15 @@ size_t bitSizeOfVarInt(int64_t value);
 size_t bitSizeOfVarUInt(uint64_t value);
 
 /**
+ * Calculates bit size of Zserio varsize type.
+ *
+ * \param value Varsize value.
+ *
+ * \return Bit size of the current varsize value.
+ */
+size_t bitSizeOfVarSize(uint32_t value);
+
+/**
  * Calculates bit size of the string.
  *
  * \param stringValue String for which to calculate bit size.

@@ -721,6 +721,34 @@ public class ByteArrayBitStreamTest
     }
 
     @Test
+    public void varSize() throws Exception
+    {
+        Integer values[] =
+        {
+            // 1 byte
+            ((0)),
+            ((1)),
+            ((1 << (7)) - 1),
+            // 2 bytes
+            ((1 << (7))),
+            ((1 << (7 + 7)) - 1),
+            // 3 bytes
+            ((1 << (7 + 7))),
+            ((1 << (7 + 7 + 7)) - 1),
+            // 4 bytes
+            ((1 << (7 + 7 + 7))),
+            ((1 << (7 + 7 + 7 + 7)) - 1),
+            // 5 bytes
+            ((1 << (7 + 7 + 7 + 7))),
+            ((1 << (2 + 7 + 7 + 7 + 8)) - 1)
+        };
+
+        Method writeMethod = ByteArrayBitStreamWriter.class.getMethod("writeVarSize", int.class);
+        Method readMethod = ByteArrayBitStreamReader.class.getMethod("readVarSize");
+        testImpl(writeMethod, readMethod, values, 31);
+    }
+
+    @Test
     public void bitPosition() throws IOException
     {
         ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter();

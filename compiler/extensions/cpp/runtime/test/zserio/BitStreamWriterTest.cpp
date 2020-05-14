@@ -192,6 +192,13 @@ TEST_F(BitStreamWriterTest, writeVarUInt)
     ASSERT_NO_THROW(m_writer.writeVarUInt(UINT64_MAX));
 }
 
+TEST_F(BitStreamWriterTest, writeVarSize)
+{
+    // check value out of range
+    const uint32_t outOfRangeValue = ((uint32_t) 1) << (2 + 7 + 7 + 7 + 8);
+    ASSERT_THROW(m_writer.writeVarSize(outOfRangeValue), CppRuntimeException);
+}
+
 TEST_F(BitStreamWriterTest, writeBitBuffer)
 {
     static const size_t bitBufferBitSize = 24;

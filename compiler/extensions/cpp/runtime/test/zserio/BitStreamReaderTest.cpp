@@ -133,6 +133,23 @@ TEST_F(BitStreamReaderTest, readSignedBits64)
     ASSERT_EQ(0, m_reader.readSignedBits64(0));
 }
 
+TEST_F(BitStreamReaderTest, readVarSize)
+{
+    {
+        // overflow, 2^32 - 1 is too much ({ 0x83, 0xFF, 0xFF, 0xFF, 0xFF } is the maximum)
+        uint8_t buffer[] = { 0x87, 0xFF, 0xFF, 0xFF, 0xFF };
+        zserio::BitStreamReader reader(buffer, sizeof(buffer) / sizeof(buffer[0]));
+        ASSERT_THROW(reader.readVarSize(), CppRuntimeException);
+    }
+
+    {
+        // overflow, 2^36 - 1 is too much ({ 0x83, 0xFF, 0xFF, 0xFF, 0xFF } is the maximum)
+        uint8_t buffer[] = { 0xFF, 0xFF, 0xFF, 0xFF, 0xFF };
+        zserio::BitStreamReader reader(buffer, sizeof(buffer) / sizeof(buffer[0]));
+        ASSERT_THROW(reader.readVarSize(), CppRuntimeException);
+    }
+}
+
 TEST_F(BitStreamReaderTest, getBitPosition)
 {
     ASSERT_EQ(0, m_reader.getBitPosition());

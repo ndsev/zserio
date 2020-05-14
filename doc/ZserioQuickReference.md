@@ -24,6 +24,7 @@ varuint16
 varuint32
 varuint64
 varuint
+varsize
 bit:n
 bit<expr>
 ```

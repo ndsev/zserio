@@ -80,6 +80,13 @@ public class VarIntegerType extends IntegerType
             lowerBound = BigInteger.valueOf(Long.MIN_VALUE);
             break;
 
+        case ZserioParser.VARSIZE:
+            isSigned = false;
+            maxBitSize = 40;
+            upperBound = BigInteger.ONE.shiftLeft(31).subtract(BigInteger.ONE);
+            lowerBound = BigInteger.ZERO;
+            break;
+
         default:
             throw new InternalError("Unexpected AST node type in VarIntegerType!");
         }

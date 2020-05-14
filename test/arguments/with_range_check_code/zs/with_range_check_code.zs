@@ -14,6 +14,7 @@ import with_range_check_code.varint_range_check.*;
 import with_range_check_code.varint16_range_check.*;
 import with_range_check_code.varint32_range_check.*;
 import with_range_check_code.varint64_range_check.*;
+import with_range_check_code.varsize_range_check.*;
 import with_range_check_code.varuint_range_check.*;
 import with_range_check_code.varuint16_range_check.*;
 import with_range_check_code.varuint32_range_check.*;

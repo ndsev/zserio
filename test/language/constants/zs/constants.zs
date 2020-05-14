@@ -44,6 +44,8 @@ const varuint64     VARUINT64_MIN_CONSTANT = 0x0000000000000000;
 const varuint64     VARUINT64_MAX_CONSTANT = 0x01FFFFFFFFFFFFFF;
 const varuint       VARUINT_MIN_CONSTANT   = 0x0000000000000000;
 const varuint       VARUINT_MAX_CONSTANT   = 0xFFFFFFFFFFFFFFFF;
+const varsize       VARSIZE_MIN_CONSTANT   = 0x00000000;
+const varsize       VARSIZE_MAX_CONSTANT   = 0x7FFFFFFF;
 
 // variable signed integer types
 const varint16      VARINT16_MIN_CONSTANT = -16383;

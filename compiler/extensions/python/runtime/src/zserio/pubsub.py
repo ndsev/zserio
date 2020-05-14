@@ -37,7 +37,7 @@ class PubsubInterface:
         Unsubscribes the subscription with the given ID.
 
         :param id: ID of the subscription to be unsubscribed.
-        :raise PubsubException: If unsubscribing fails.
+        :raises PubsubException: If unsubscribing fails.
         """
         raise NotImplementedError()
 

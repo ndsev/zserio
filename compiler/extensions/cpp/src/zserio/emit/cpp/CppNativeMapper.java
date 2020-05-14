@@ -463,6 +463,10 @@ public class CppNativeMapper
                     cppType = varUInt32ArrayType;
                     break;
 
+                case 40:
+                    cppType = varSizeArrayType;
+                    break;
+
                 case 64:
                     cppType = varUInt64ArrayType;
                     break;
@@ -718,6 +722,7 @@ public class CppNativeMapper
                     break;
 
                 case 32:
+                case 40:
                     cppType = uint32Type;
                     break;
 
@@ -822,4 +827,7 @@ public class CppNativeMapper
             new NativeArrayType(uint64Type, "VarIntNNArrayTraits", true);
     private final static NativeArrayType varUIntArrayType =
             new NativeArrayType(uint64Type, "VarIntArrayTraits", true);
+
+    private final static NativeArrayType varSizeArrayType =
+            new NativeArrayType(uint32Type, "VarSizeArrayTraits", false);
 }

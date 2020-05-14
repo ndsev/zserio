@@ -83,7 +83,7 @@ public class ZserioLexerTest
 
         checkEOF(lexer);
     }
-    
+
     @Test
     public void keywords()
     {
@@ -143,6 +143,7 @@ public class ZserioLexerTest
                 "varint16 " +
                 "varint32 " +
                 "varint64 " +
+                "varsize " +
                 "varuint " +
                 "varuint16 " +
                 "varuint32 " +
@@ -206,6 +207,7 @@ public class ZserioLexerTest
         checkToken(lexer, ZserioLexer.VARINT16);
         checkToken(lexer, ZserioLexer.VARINT32);
         checkToken(lexer, ZserioLexer.VARINT64);
+        checkToken(lexer, ZserioLexer.VARSIZE);
         checkToken(lexer, ZserioLexer.VARUINT);
         checkToken(lexer, ZserioLexer.VARUINT16);
         checkToken(lexer, ZserioLexer.VARUINT32);
@@ -366,7 +368,7 @@ public class ZserioLexerTest
         checkToken(lexer, ZserioLexer.INVALID_STRING_LITERAL, "\"Not terminated string with quote\\\"");
         checkEOF(lexer);
     }
-    
+
     @Test
     public void binaryLiteral()
     {

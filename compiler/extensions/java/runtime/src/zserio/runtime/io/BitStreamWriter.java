@@ -201,22 +201,31 @@ public interface BitStreamWriter extends BitStreamCloseable
     void writeVarUInt64(final long value) throws IOException;
 
     /**
-     * Writes a signed variable integer value to the underlying storage.
+     * Writes a variable signed integer value to the underlying storage.
      *
-     * @param value BigInteger value to write.
+     * @param value Variable signed integer value to write.
      *
      * @throws IOException If the writing failed.
      */
     void writeVarInt(final long value) throws IOException;
 
     /**
-     * Writes an unsigned variable integer value to the underlying storage.
+     * Writes a variable unsigned integer value to the underlying storage.
      *
-     * @param value BigInteger value to write.
+     * @param value Variable unsigned integer value to write.
      *
      * @throws IOException If the writing failed.
      */
     void writeVarUInt(final BigInteger value) throws IOException;
+
+    /**
+     * Writes a variable size integer value to the underlying storage.
+     *
+     * @param value Variable size integer value to write.
+     *
+     * @throws IOException If the writing failed.
+     */
+    void writeVarSize(final int value) throws IOException;
 
     /**
      * Writes a bit buffer to the underlying storage.

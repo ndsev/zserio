@@ -416,6 +416,7 @@ varintType
     |   VARINT16
     |   VARINT32
     |   VARINT64
+    |   VARSIZE
     |   VARUINT
     |   VARUINT16
     |   VARUINT32

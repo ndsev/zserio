@@ -91,6 +91,7 @@ VARINT              : 'varint' ;
 VARINT16            : 'varint16' ;
 VARINT32            : 'varint32' ;
 VARINT64            : 'varint64' ;
+VARSIZE             : 'varsize' ;
 VARUINT             : 'varuint' ;
 VARUINT16           : 'varuint16' ;
 VARUINT32           : 'varuint32' ;

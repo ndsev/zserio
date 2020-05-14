@@ -172,6 +172,14 @@ class AllBuiltInTypesTest(unittest.TestCase):
         allBuiltInTypes.setVaruintType(zserio.limits.VARUINT_MAX)
         self.assertEqual(zserio.limits.VARUINT_MAX, allBuiltInTypes.getVaruintType())
 
+    def testVarsizeType(self):
+        allBuiltInTypes = self.api.AllBuiltInTypes()
+        allBuiltInTypes.setVarsizeType(zserio.limits.VARSIZE_MIN)
+        self.assertEqual(zserio.limits.VARSIZE_MIN, allBuiltInTypes.getVarsizeType())
+
+        allBuiltInTypes.setVarsizeType(zserio.limits.VARSIZE_MAX)
+        self.assertEqual(zserio.limits.VARSIZE_MAX, allBuiltInTypes.getVarsizeType())
+
     def testVarint16Type(self):
         allBuiltInTypes = self.api.AllBuiltInTypes()
         allBuiltInTypes.setVarint16Type(zserio.limits.VARINT16_MAX)
@@ -247,13 +255,14 @@ class AllBuiltInTypesTest(unittest.TestCase):
         allBuiltInTypes.setVaruint32Type(zserio.limits.VARUINT32_MAX)
         allBuiltInTypes.setVaruint64Type(zserio.limits.VARUINT64_MAX)
         allBuiltInTypes.setVaruintType(zserio.limits.VARUINT_MAX)
+        allBuiltInTypes.setVarsizeType(zserio.limits.VARSIZE_MAX)
         allBuiltInTypes.setVarint16Type(zserio.limits.VARINT16_MAX)
         allBuiltInTypes.setVarint32Type(zserio.limits.VARINT32_MAX)
         allBuiltInTypes.setVarint64Type(zserio.limits.VARINT64_MAX)
         allBuiltInTypes.setVarintType(zserio.limits.VARINT_MAX)
         allBuiltInTypes.setStringType("TEST")
         allBuiltInTypes.setExternType(self._getExternalBitBuffer())
-        expectedBitSizeOf = 1102
+        expectedBitSizeOf = 1142
         self.assertEqual(expectedBitSizeOf, allBuiltInTypes.bitSizeOf())
 
     def testReadWrite(self):
@@ -289,6 +298,7 @@ class AllBuiltInTypesTest(unittest.TestCase):
         allBuiltInTypes.setVaruint32Type(zserio.limits.VARUINT32_MAX)
         allBuiltInTypes.setVaruint64Type(zserio.limits.VARUINT64_MAX)
         allBuiltInTypes.setVaruintType(zserio.limits.VARUINT_MAX)
+        allBuiltInTypes.setVarsizeType(zserio.limits.VARSIZE_MAX)
         allBuiltInTypes.setVarint16Type(zserio.limits.VARINT16_MAX)
         allBuiltInTypes.setVarint32Type(zserio.limits.VARINT32_MAX)
         allBuiltInTypes.setVarint64Type(zserio.limits.VARINT64_MAX)
