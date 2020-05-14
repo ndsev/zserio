@@ -139,6 +139,7 @@ public class NestedOffsetTest
             writer.writeBits(i, 31);
         }
 
+        writer.alignTo(8);
         writer.writeBits(TERMINATOR_VALUE, 7);
 
         writer.close();
@@ -168,6 +169,8 @@ public class NestedOffsetTest
             assertEquals(FIRST_DATA_OFFSET + i * 8L, nestedOffsetStructure.getDataOffset());
             assertEquals(i, nestedOffsetStructure.getData());
         }
+
+        assertEquals(TERMINATOR_VALUE, nestedOffset.getTerminator());
     }
 
     private NestedOffset createNestedOffset(boolean createWrongOffsets)

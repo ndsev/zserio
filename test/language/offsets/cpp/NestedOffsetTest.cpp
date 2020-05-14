@@ -16,9 +16,7 @@ class NestedOffsetTest : public ::testing::Test
 protected:
     void writeNestedOffsetToByteArray(zserio::BitStreamWriter& writer, bool writeWrongOffsets)
     {
-        const uint32_t wrongTerminatorOffset = WRONG_TERMINATOR_OFFSET;
-        const uint32_t correctTerminatorOffset = TERMINATOR_OFFSET;
-        writer.writeBits((writeWrongOffsets) ? wrongTerminatorOffset : correctTerminatorOffset, 32);
+        writer.writeBits((writeWrongOffsets) ? WRONG_TERMINATOR_OFFSET : TERMINATOR_OFFSET, 32);
         writer.writeBool(BOOL_VALUE);
         writer.writeVarUInt64(NestedOffsetUnion::CHOICE_nestedOffsetArrayStructure); // union's choice tag
         writer.writeBits(NUM_ELEMENTS, 8);
@@ -29,44 +27,41 @@ protected:
             writer.writeBits(i, 31);
         }
 
+        writer.alignTo(8);
         writer.writeBits(TERMINATOR_VALUE, 7);
     }
 
     void checkNestedOffset(const NestedOffset& nestedOffset)
     {
-        const uint32_t expectedTerminatorOffset = TERMINATOR_OFFSET;
-        ASSERT_EQ(expectedTerminatorOffset, nestedOffset.getTerminatorOffset());
-        const bool expectedBoolValue = BOOL_VALUE;
-        ASSERT_EQ(expectedBoolValue, nestedOffset.getBoolValue());
+        ASSERT_EQ(TERMINATOR_OFFSET, nestedOffset.getTerminatorOffset());
+        ASSERT_EQ(BOOL_VALUE, nestedOffset.getBoolValue());
 
         const NestedOffsetChoice& nestedOffsetChoice = nestedOffset.getNestedOffsetChoice();
-        ASSERT_EQ(expectedBoolValue, nestedOffsetChoice.getType());
+        ASSERT_EQ(BOOL_VALUE, nestedOffsetChoice.getType());
 
         const NestedOffsetUnion& nestedOffsetUnion = nestedOffsetChoice.getNestedOffsetUnion();
         ASSERT_EQ(NestedOffsetUnion::CHOICE_nestedOffsetArrayStructure, nestedOffsetUnion.choiceTag());
 
         const NestedOffsetArrayStructure& nestedOffsetArrayStructure =
                 nestedOffsetUnion.getNestedOffsetArrayStructure();
-        const uint8_t expectedNumElements = NUM_ELEMENTS;
-        ASSERT_EQ(expectedNumElements, nestedOffsetArrayStructure.getNumElements());
+        ASSERT_EQ(NUM_ELEMENTS, nestedOffsetArrayStructure.getNumElements());
 
         const std::vector<NestedOffsetStructure>& nestedOffsetStructureList =
                 nestedOffsetArrayStructure.getNestedOffsetStructureList();
-        ASSERT_EQ(expectedNumElements, nestedOffsetStructureList.size());
+        ASSERT_EQ(NUM_ELEMENTS, nestedOffsetStructureList.size());
         for (short i = 0; i < NUM_ELEMENTS; ++i)
         {
             const NestedOffsetStructure& nestedOffsetStructure = nestedOffsetStructureList[i];
             ASSERT_EQ(FIRST_DATA_OFFSET + i * 8L, nestedOffsetStructure.getDataOffset());
             ASSERT_EQ(i, nestedOffsetStructure.getData());
         }
+
+        ASSERT_EQ(TERMINATOR_VALUE, nestedOffset.getTerminator());
     }
 
     void fillNestedOffset(NestedOffset& nestedOffset, bool createWrongOffsets)
     {
-        const uint32_t wrongTerminatorOffset = WRONG_TERMINATOR_OFFSET;
-        const uint32_t correctTerminatorOffset = TERMINATOR_OFFSET;
-        const uint32_t terminatorOffset = (createWrongOffsets)
-                ? wrongTerminatorOffset : correctTerminatorOffset;
+        const uint32_t terminatorOffset = (createWrongOffsets) ? WRONG_TERMINATOR_OFFSET : TERMINATOR_OFFSET;
         nestedOffset.setTerminatorOffset(terminatorOffset);
         nestedOffset.setBoolValue(BOOL_VALUE);
         NestedOffsetChoice& nestedOffsetChoice = nestedOffset.getNestedOffsetChoice();
@@ -95,19 +90,32 @@ protected:
         nestedOffsetChoice.setNestedOffsetUnion(nestedOffsetUnion);
     }
 
-    static const bool     BOOL_VALUE = true;
-    static const uint8_t  NUM_ELEMENTS = 2;
+    static const bool     BOOL_VALUE;
+    static const uint8_t  NUM_ELEMENTS;
 
-    static const uint32_t WRONG_TERMINATOR_OFFSET = 0;
-    static const uint32_t TERMINATOR_OFFSET = 7 + NUM_ELEMENTS * 8;
+    static const uint32_t WRONG_TERMINATOR_OFFSET;
+    static const uint32_t TERMINATOR_OFFSET;
 
-    static const uint32_t WRONG_DATA_OFFSET = 0;
-    static const uint32_t FIRST_DATA_OFFSET = 7 + 4;
+    static const uint32_t WRONG_DATA_OFFSET;
+    static const uint32_t FIRST_DATA_OFFSET;
 
-    static const uint8_t  TERMINATOR_VALUE = 0x45;
+    static const uint8_t  TERMINATOR_VALUE;
 
-    static const size_t   NEST_OFFSET_BIT_SIZE = TERMINATOR_OFFSET * 8 + 7;
+    static const size_t   NESTED_OFFSET_BIT_SIZE;
 };
+
+const bool     NestedOffsetTest::BOOL_VALUE = true;
+const uint8_t  NestedOffsetTest::NUM_ELEMENTS = 2;
+
+const uint32_t NestedOffsetTest::WRONG_TERMINATOR_OFFSET = 0;
+const uint32_t NestedOffsetTest::TERMINATOR_OFFSET = 7 + NUM_ELEMENTS * 8;
+
+const uint32_t NestedOffsetTest::WRONG_DATA_OFFSET = 0;
+const uint32_t NestedOffsetTest::FIRST_DATA_OFFSET = 7 + 4;
+
+const uint8_t  NestedOffsetTest::TERMINATOR_VALUE = 0x45;
+
+const size_t   NestedOffsetTest::NESTED_OFFSET_BIT_SIZE = TERMINATOR_OFFSET * 8 + 7;
 
 TEST_F(NestedOffsetTest, read)
 {
@@ -140,8 +148,7 @@ TEST_F(NestedOffsetTest, bitSizeOf)
     NestedOffset nestedOffset;
     fillNestedOffset(nestedOffset, createWrongOffsets);
 
-    const size_t expectedBitSize = NEST_OFFSET_BIT_SIZE;
-    ASSERT_EQ(expectedBitSize, nestedOffset.bitSizeOf());
+    ASSERT_EQ(NESTED_OFFSET_BIT_SIZE, nestedOffset.bitSizeOf());
 }
 
 TEST_F(NestedOffsetTest, bitSizeOfWithPosition)
@@ -151,7 +158,7 @@ TEST_F(NestedOffsetTest, bitSizeOfWithPosition)
     fillNestedOffset(nestedOffset, createWrongOffsets);
 
     const size_t bitPosition = 2;
-    const size_t expectedBitSize = NEST_OFFSET_BIT_SIZE - bitPosition;
+    const size_t expectedBitSize = NESTED_OFFSET_BIT_SIZE - bitPosition;
     ASSERT_EQ(expectedBitSize, nestedOffset.bitSizeOf(bitPosition));
 }
 
@@ -162,8 +169,8 @@ TEST_F(NestedOffsetTest, initializeOffsets)
     fillNestedOffset(nestedOffset, createWrongOffsets);
 
     const size_t bitPosition = 0;
-    const size_t expectedBitSize = NEST_OFFSET_BIT_SIZE;
-    ASSERT_EQ(expectedBitSize, nestedOffset.initializeOffsets(bitPosition));
+    const size_t expectedBitPosition = NESTED_OFFSET_BIT_SIZE;
+    ASSERT_EQ(expectedBitPosition, nestedOffset.initializeOffsets(bitPosition));
     checkNestedOffset(nestedOffset);
 }
 
@@ -174,8 +181,8 @@ TEST_F(NestedOffsetTest, initializeOffsetsWithPosition)
     fillNestedOffset(nestedOffset, createWrongOffsets);
 
     const size_t bitPosition = 2;
-    const size_t expectedBitSize = NEST_OFFSET_BIT_SIZE;
-    ASSERT_EQ(expectedBitSize, nestedOffset.initializeOffsets(bitPosition));
+    const size_t expectedBitPosition = NESTED_OFFSET_BIT_SIZE;
+    ASSERT_EQ(expectedBitPosition, nestedOffset.initializeOffsets(bitPosition));
     checkNestedOffset(nestedOffset);
 }
 
@@ -187,6 +194,7 @@ TEST_F(NestedOffsetTest, write)
 
     zserio::BitStreamWriter writer;
     nestedOffset.write(writer);
+    ASSERT_EQ(NESTED_OFFSET_BIT_SIZE, writer.getBitPosition());
     checkNestedOffset(nestedOffset);
 
     size_t writeBufferByteSize;

@@ -88,6 +88,7 @@ class NestedOffsetTest(unittest.TestCase):
             writer.writeBits(0, 7 if (i == 0) else 1)
             writer.writeBits(i, 31)
 
+        writer.alignTo(8)
         writer.writeBits(self.TERMINATOR_VALUE, 7)
 
     def _checkNestedOffset(self, nestedOffset):
@@ -110,6 +111,8 @@ class NestedOffsetTest(unittest.TestCase):
             nestedOffsetStructure = nestedOffsetStructureList[i]
             self.assertEqual(self.FIRST_DATA_OFFSET + i * 8, nestedOffsetStructure.getDataOffset())
             self.assertEqual(i, nestedOffsetStructure.getData())
+
+        self.assertEqual(self.TERMINATOR_VALUE, nestedOffset.getTerminator())
 
     def _createNestedOffset(self, createWrongOffsets):
         nestedOffsetStructureList = []
