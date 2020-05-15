@@ -210,7 +210,7 @@ class AllBuiltInTypesTest(unittest.TestCase):
 
     def testExternType(self):
         allBuiltInTypes = self.api.AllBuiltInTypes()
-        testExtern = zserio.BitBuffer(bytes([0xCD, 0x03]), 10)
+        testExtern = self._getExternalBitBuffer()
         allBuiltInTypes.setExternType(testExtern)
         self.assertEqual(testExtern, allBuiltInTypes.getExternType())
 
@@ -252,7 +252,7 @@ class AllBuiltInTypesTest(unittest.TestCase):
         allBuiltInTypes.setVarint64Type(zserio.limits.VARINT64_MAX)
         allBuiltInTypes.setVarintType(zserio.limits.VARINT_MAX)
         allBuiltInTypes.setStringType("TEST")
-        allBuiltInTypes.setExternType(zserio.BitBuffer(bytes([0xCD, 0x03]), 10))
+        allBuiltInTypes.setExternType(self._getExternalBitBuffer())
         expectedBitSizeOf = 1102
         self.assertEqual(expectedBitSizeOf, allBuiltInTypes.bitSizeOf())
 
@@ -294,7 +294,7 @@ class AllBuiltInTypesTest(unittest.TestCase):
         allBuiltInTypes.setVarint64Type(zserio.limits.VARINT64_MAX)
         allBuiltInTypes.setVarintType(zserio.limits.VARINT_MAX)
         allBuiltInTypes.setStringType("TEST")
-        allBuiltInTypes.setExternType(zserio.BitBuffer(bytes([0xCD, 0x03]), 10))
+        allBuiltInTypes.setExternType(self._getExternalBitBuffer())
 
         writer = zserio.BitStreamWriter()
         allBuiltInTypes.write(writer)
@@ -302,3 +302,10 @@ class AllBuiltInTypesTest(unittest.TestCase):
         readAllBuiltInTypes = self.api.AllBuiltInTypes()
         readAllBuiltInTypes.read(reader)
         self.assertEqual(allBuiltInTypes, readAllBuiltInTypes)
+
+    def _getExternalBitBuffer(self):
+        externalStructure = self.api.ExternalStructure.fromFields(0xCD, 0x03)
+        writer = zserio.BitStreamWriter()
+        externalStructure.write(writer)
+
+        return zserio.BitBuffer(writer.getByteArray(), writer.getBitPosition())

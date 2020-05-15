@@ -28,7 +28,7 @@ def bitsToBytes(numBits):
     """
 
     if numBits % 8 != 0:
-        raise PythonRuntimeException("bitsToBytes: %d is not a multiple of 8!" % numBits)
+        raise PythonRuntimeException("bitPosition: %d is not a multiple of 8!" % numBits)
 
     return numBits // 8
 

@@ -89,8 +89,7 @@ public class ByteArrayBitStreamReader extends ByteArrayBitStreamBase implements 
         }
 
         bitOffset = nextBitOffset;
-
-        if (bytePosition + 1 == buffer.length && bitOffset >= lastByteBits)
+        if (bytePosition + 1 == buffer.length && nextBitOffset > lastByteBits)
             throw new IOException("ByteArrayBitStreamReader: Unable to read bit on offset position " +
                     bitOffset + " in the last byte.");
 
@@ -429,7 +428,7 @@ public class ByteArrayBitStreamReader extends ByteArrayBitStreamBase implements 
         }
 
         if (numRestBits != 0)
-            readBuffer[numBytesToRead] = (byte)(readBits(numRestBits));
+            readBuffer[numBytesToRead] = (byte)(readBits(numRestBits) << (8 - numRestBits));
 
         return new BitBuffer(readBuffer, bitSize);
     }

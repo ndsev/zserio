@@ -16,7 +16,7 @@ class BitStreamReaderTest(unittest.TestCase):
 
     def testBufferBitSizeConstructor(self):
         bitSize = 11
-        bitBuffer = BitBuffer(bytes([1, 2]), bitSize)
+        bitBuffer = BitBuffer(bytes([0x01, 0xE0]), bitSize)
         self.assertEqual(bitSize, bitBuffer.getBitSize())
 
         emptyBitSize = 0
@@ -29,17 +29,17 @@ class BitStreamReaderTest(unittest.TestCase):
 
     def testEq(self):
         bitSize = 11
-        bitBuffer1 = BitBuffer(bytes([0xAB, 0x07]), bitSize)
-        bitBuffer2 = BitBuffer(bytes([0xAB, 0x0F]), bitSize)
+        bitBuffer1 = BitBuffer(bytes([0xAB, 0xE0]), bitSize)
+        bitBuffer2 = BitBuffer(bytes([0xAB, 0xF0]), bitSize)
         self.assertEqual(bitBuffer1, bitBuffer2)
 
         bitBuffer3 = BitBuffer(bytes([0xAB, 0xFF]), bitSize)
         self.assertEqual(bitBuffer1, bitBuffer3)
 
-        bitBuffer4 = BitBuffer(bytes([0xAB, 0x03]), bitSize)
+        bitBuffer4 = BitBuffer(bytes([0xAB, 0xC0]), bitSize)
         self.assertNotEqual(bitBuffer1, bitBuffer4)
 
-        bitBuffer5 = BitBuffer(bytes([0xBA, 0x07]), bitSize)
+        bitBuffer5 = BitBuffer(bytes([0xBA, 0xE0]), bitSize)
         self.assertNotEqual(bitBuffer1, bitBuffer5)
 
         bitBuffer6 = BitBuffer(bytes([0xAB]))
@@ -52,17 +52,17 @@ class BitStreamReaderTest(unittest.TestCase):
 
     def testHashCode(self):
         bitSize = 11
-        bitBuffer1 = BitBuffer(bytes([0xAB, 0x07]), bitSize)
-        bitBuffer2 = BitBuffer(bytes([0xAB, 0x0F]), bitSize)
+        bitBuffer1 = BitBuffer(bytes([0xAB, 0xE0]), bitSize)
+        bitBuffer2 = BitBuffer(bytes([0xAB, 0xF0]), bitSize)
         self.assertEqual(hash(bitBuffer1), hash(bitBuffer2))
 
         bitBuffer3 = BitBuffer(bytes([0xAB, 0xFF]), bitSize)
         self.assertEqual(hash(bitBuffer1), hash(bitBuffer3))
 
-        bitBuffer4 = BitBuffer(bytes([0xAB, 0x03]), bitSize)
+        bitBuffer4 = BitBuffer(bytes([0xAB, 0xC0]), bitSize)
         self.assertNotEqual(hash(bitBuffer1), hash(bitBuffer4))
 
-        bitBuffer5 = BitBuffer(bytes([0xBA, 0x07]), bitSize)
+        bitBuffer5 = BitBuffer(bytes([0xBA, 0xE0]), bitSize)
         self.assertNotEqual(hash(bitBuffer1), hash(bitBuffer5))
 
         bitBuffer6 = BitBuffer(bytes([0xAB]))
@@ -73,18 +73,18 @@ class BitStreamReaderTest(unittest.TestCase):
 
     def testGetBuffer(self):
         bitSize = 11
-        buffer = bytes([0xAB, 0x07])
+        buffer = bytes([0xAB, 0xE0])
         bitBuffer = BitBuffer(buffer, bitSize)
         self.assertEqual(buffer, bitBuffer.getBuffer())
 
     def testGetBitSize(self):
         bitSize = 11
-        bitBuffer = BitBuffer(bytes([0xAB, 0x07]), bitSize)
+        bitBuffer = BitBuffer(bytes([0xAB, 0xE0]), bitSize)
         self.assertEqual(bitSize, bitBuffer.getBitSize())
 
     def testGetByteSize(self):
         bitSize = 11
-        buffer = bytes([0xAB, 0x07])
+        buffer = bytes([0xAB, 0xE0])
         byteSize = len(buffer)
         bitBuffer = BitBuffer(buffer, bitSize)
         self.assertEqual(byteSize, bitBuffer.getByteSize())

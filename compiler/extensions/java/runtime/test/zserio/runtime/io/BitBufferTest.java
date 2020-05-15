@@ -45,17 +45,17 @@ public class BitBufferTest
     public void equalsMethod()
     {
         final long bitSize = 11;
-        final BitBuffer bitBuffer1 = new BitBuffer(new byte[]{(byte)0xAB, (byte)0x07}, bitSize);
-        final BitBuffer bitBuffer2 = new BitBuffer(new byte[]{(byte)0xAB, (byte)0x0F}, bitSize);
+        final BitBuffer bitBuffer1 = new BitBuffer(new byte[]{(byte)0xAB, (byte)0xE0}, bitSize);
+        final BitBuffer bitBuffer2 = new BitBuffer(new byte[]{(byte)0xAB, (byte)0xF0}, bitSize);
         assertTrue(bitBuffer1.equals(bitBuffer2));
 
         final BitBuffer bitBuffer3 = new BitBuffer(new byte[]{(byte)0xAB, (byte)0xFF}, bitSize);
         assertTrue(bitBuffer1.equals(bitBuffer3));
 
-        final BitBuffer bitBuffer4 = new BitBuffer(new byte[]{(byte)0xAB, (byte)0x03}, bitSize);
+        final BitBuffer bitBuffer4 = new BitBuffer(new byte[]{(byte)0xAB, (byte)0xC0}, bitSize);
         assertFalse(bitBuffer1.equals(bitBuffer4));
 
-        final BitBuffer bitBuffer5 = new BitBuffer(new byte[]{(byte)0xBA, (byte)0x07}, bitSize);
+        final BitBuffer bitBuffer5 = new BitBuffer(new byte[]{(byte)0xBA, (byte)0xE0}, bitSize);
         assertFalse(bitBuffer1.equals(bitBuffer5));
 
         final BitBuffer bitBuffer6 = new BitBuffer(new byte[]{(byte)0xAB});
@@ -69,17 +69,17 @@ public class BitBufferTest
     public void hashCodeMethod()
     {
         final long bitSize = 11;
-        final BitBuffer bitBuffer1 = new BitBuffer(new byte[]{(byte)0xAB, (byte)0x07}, bitSize);
-        final BitBuffer bitBuffer2 = new BitBuffer(new byte[]{(byte)0xAB, (byte)0x0F}, bitSize);
+        final BitBuffer bitBuffer1 = new BitBuffer(new byte[]{(byte)0xAB, (byte)0xE0}, bitSize);
+        final BitBuffer bitBuffer2 = new BitBuffer(new byte[]{(byte)0xAB, (byte)0xF0}, bitSize);
         assertTrue(bitBuffer1.hashCode() == bitBuffer2.hashCode());
 
         final BitBuffer bitBuffer3 = new BitBuffer(new byte[]{(byte)0xAB, (byte)0xFF}, bitSize);
         assertTrue(bitBuffer1.hashCode() == bitBuffer3.hashCode());
 
-        final BitBuffer bitBuffer4 = new BitBuffer(new byte[]{(byte)0xAB, (byte)0x03}, bitSize);
+        final BitBuffer bitBuffer4 = new BitBuffer(new byte[]{(byte)0xAB, (byte)0xC0}, bitSize);
         assertFalse(bitBuffer1.hashCode() == bitBuffer4.hashCode());
 
-        final BitBuffer bitBuffer5 = new BitBuffer(new byte[]{(byte)0xBA, (byte)0x07}, bitSize);
+        final BitBuffer bitBuffer5 = new BitBuffer(new byte[]{(byte)0xBA, (byte)0xE0}, bitSize);
         assertFalse(bitBuffer1.hashCode() == bitBuffer5.hashCode());
 
         final BitBuffer bitBuffer6 = new BitBuffer(new byte[]{(byte)0xAB});
@@ -93,7 +93,7 @@ public class BitBufferTest
     public void getBuffer()
     {
         final long bitSize = 11;
-        final byte[] buffer = new byte[]{(byte)0xAB, (byte)0x07};
+        final byte[] buffer = new byte[]{(byte)0xAB, (byte)0xE0};
         final BitBuffer bitBuffer = new BitBuffer(buffer, bitSize);
         assertTrue(java.util.Arrays.equals(buffer, bitBuffer.getBuffer()));
     }
@@ -102,7 +102,7 @@ public class BitBufferTest
     public void getBitSize()
     {
         final long bitSize = 11;
-        final byte[] buffer = new byte[]{(byte)0xAB, (byte)0x07};
+        final byte[] buffer = new byte[]{(byte)0xAB, (byte)0xE0};
         final BitBuffer bitBuffer = new BitBuffer(buffer, bitSize);
         assertEquals(bitSize, bitBuffer.getBitSize());
     }
@@ -111,7 +111,7 @@ public class BitBufferTest
     public void getByteSize()
     {
         final long bitSize = 11;
-        final byte[] buffer = new byte[]{(byte)0xAB, (byte)0x07};
+        final byte[] buffer = new byte[]{(byte)0xAB, (byte)0xE0};
         final int byteSize = buffer.length;
         final BitBuffer bitBuffer = new BitBuffer(buffer, bitSize);
         assertEquals(byteSize, bitBuffer.getByteSize());

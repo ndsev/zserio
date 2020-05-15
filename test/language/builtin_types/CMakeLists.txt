@@ -3,6 +3,11 @@ set(ZSERIO_GENERATED_SOURCES
     ${ZSERIO_GEN_DIR}/builtin_types/all_builtin_types/AllBuiltInTypes.cpp
     ${ZSERIO_GEN_DIR}/builtin_types/all_builtin_types/AllBuiltInTypes.h
 
+    ${ZSERIO_GEN_DIR}/builtin_types/all_builtin_types/ExternalStructure.cpp
+    ${ZSERIO_GEN_DIR}/builtin_types/all_builtin_types/ExternalStructure.h
+
+    ${ZSERIO_GEN_DIR}/builtin_types/all_builtin_types/NUM_BITS.h
+
     ${ZSERIO_GEN_DIR}/builtin_types/bitfield_uint64_length/Container.cpp
     ${ZSERIO_GEN_DIR}/builtin_types/bitfield_uint64_length/Container.h
 )

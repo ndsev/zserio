@@ -55,7 +55,7 @@ def getSignedBitFieldUpperBound(length):
 
 def _checkBitFieldLength(length, maxBitFieldLength):
     if length <= 0 or length > maxBitFieldLength:
-        raise PythonRuntimeException("Asking for bound of bitfield with invalid length %d!" % length)
+        raise PythonRuntimeException("bitfield: Asking for bound of bitfield with invalid length %d!" % length)
 
 MAX_SIGNED_BITFIELD_BITS = 64
 MAX_UNSIGNED_BITFIELD_BITS = 63

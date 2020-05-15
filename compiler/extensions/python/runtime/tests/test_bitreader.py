@@ -8,9 +8,21 @@ from zserio.exception import PythonRuntimeException
 class BitStreamReaderTest(unittest.TestCase):
 
     def testFromBitBuffer(self):
-        bitBuffer = BitBuffer(bytes([0x0B, 0xAB, 0xE0]), 19)
+        bitBuffer = BitBuffer(bytes([0xAE, 0xEA, 0x80]), 17)
         reader = BitStreamReader.fromBitBuffer(bitBuffer)
-        self.assertEqual(BitBuffer(bytes([0xAB, 0x07]), 11), reader.readBitBuffer())
+        self.assertEqual(bitBuffer.getBitSize(), reader.getBufferBitSize())
+        self.assertEqual(0xAEE, reader.readBits(12))
+        self.assertEqual(0x0A, reader.readBits(4))
+        self.assertEqual(0x01, reader.readBits(1))
+        with self.assertRaises(PythonRuntimeException):
+            reader.readBits(1)
+
+    def testFromBitBufferOverflow(self):
+        bitBuffer = BitBuffer(bytes([0xFF, 0xFF, 0xF0]), 19)
+        reader = BitStreamReader.fromBitBuffer(bitBuffer)
+        self.assertEqual(bitBuffer.getBitSize(), reader.getBufferBitSize())
+        with self.assertRaises(PythonRuntimeException):
+            reader.readBits(20)
 
     def testReadBits(self):
         data = [0, 1, 255, 128, 127]
@@ -144,8 +156,8 @@ class BitStreamReaderTest(unittest.TestCase):
 
     def testReadBitBuffer(self):
         reader = BitStreamReader(bytes(b'\x0B\xAB\xE1\xE0\x1F\xC0'))
-        self.assertEqual(BitBuffer(bytes([0xAB, 0x07]), 11), reader.readBitBuffer())
-        self.assertEqual(BitBuffer(bytes([0x00, 0x7F]), 15), reader.readBitBuffer())
+        self.assertEqual(BitBuffer(bytes([0xAB, 0xE0]), 11), reader.readBitBuffer())
+        self.assertEqual(BitBuffer(bytes([0x00, 0xFE]), 15), reader.readBitBuffer())
         with self.assertRaises(PythonRuntimeException):
             reader.readBitBuffer()
 

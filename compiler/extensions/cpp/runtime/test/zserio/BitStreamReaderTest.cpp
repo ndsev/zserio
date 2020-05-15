@@ -35,11 +35,23 @@ TEST_F(BitStreamReaderTest, bitBufferConstructor)
     BitStreamReader reader(bitBuffer);
 
     ASSERT_EQ(bitBuffer.getBitSize(), reader.getBufferBitSize());
-    ASSERT_EQ(0xAE, reader.readBits(8));
-    ASSERT_EQ(0xEA, reader.readBits(8));
-    ASSERT_EQ(1, reader.readBits(1));
+    ASSERT_EQ(0xAEE, reader.readBits(12));
+    ASSERT_EQ(0x0A, reader.readBits(4));
+    ASSERT_EQ(0x01, reader.readBits(1));
 
     ASSERT_THROW(reader.readBits(1), CppRuntimeException);
+}
+
+TEST_F(BitStreamReaderTest, bitBufferConstructorOverflow)
+{
+    BitBuffer bitBuffer(19);
+    bitBuffer.getBuffer()[0] = 0xFF;
+    bitBuffer.getBuffer()[1] = 0xFF;
+    bitBuffer.getBuffer()[2] = 0xF0;
+    BitStreamReader reader(bitBuffer);
+
+    ASSERT_EQ(bitBuffer.getBitSize(), reader.getBufferBitSize());
+    ASSERT_THROW(reader.readBits(20), CppRuntimeException);
 }
 
 TEST_F(BitStreamReaderTest, readUnalignedData)

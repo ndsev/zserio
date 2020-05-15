@@ -57,12 +57,12 @@ class BitStreamReader:
         """
 
         if numBits < 0:
-            raise PythonRuntimeException("BitStreamReader.readBits reading negative number of bits!")
+            raise PythonRuntimeException("BitStreamReader: Reading negative number of bits!")
 
         endBitPosition = self._bitPosition + numBits
 
         if endBitPosition > self._bitSize:
-            raise PythonRuntimeException("BitStreamReader.readBits reading behind the stream!")
+            raise PythonRuntimeException("BitStreamReader: Reading behind the stream!")
 
         startByte = self._bitPosition // 8
         endByte = (endBitPosition - 1) // 8
@@ -450,7 +450,7 @@ class BitStreamReader:
             readBuffer[0:numBytesToRead] = self._buffer[beginBytePosition:beginBytePosition + numBytesToRead]
 
         if numRestBits != 0:
-            readBuffer[numBytesToRead] = self.readBits(numRestBits)
+            readBuffer[numBytesToRead] = self.readBits(numRestBits) << (8 - numRestBits)
 
         return BitBuffer(readBuffer, bitSize)
 
@@ -472,10 +472,9 @@ class BitStreamReader:
         """
 
         if bitPosition < 0:
-            raise PythonRuntimeException("BitStreamReader.setBitPosition: Cannot set negative bit position!")
+            raise PythonRuntimeException("BitStreamReader: Cannot set negative bit position!")
         if bitPosition > len(self._buffer) * 8:
-            raise PythonRuntimeException("BitStreamReader.setBitPosition: "
-                                         "Setting bit position behind the stream!")
+            raise PythonRuntimeException("BitStreamReader: Setting bit position behind the stream!")
 
         self._bitPosition = bitPosition
 

@@ -301,7 +301,7 @@ void BitStreamWriter::writeBitBuffer(const BitBuffer& bitBuffer)
     }
 
     if (numRestBits > 0)
-        writeUnsignedBits(*buffer, numRestBits);
+        writeUnsignedBits(*buffer >> (8 - numRestBits), numRestBits);
 }
 
 void BitStreamWriter::setBitPosition(BitPosType position)

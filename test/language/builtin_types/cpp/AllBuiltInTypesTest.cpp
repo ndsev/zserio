@@ -3,6 +3,7 @@
 #include "gtest/gtest.h"
 
 #include "builtin_types/all_builtin_types/AllBuiltInTypes.h"
+#include "builtin_types/all_builtin_types/ExternalStructure.h"
 
 namespace builtin_types
 {
@@ -12,7 +13,19 @@ namespace all_builtin_types
 class AllBuiltInTypesTest : public ::testing::Test
 {
 protected:
-    AllBuiltInTypes   m_AllBuiltInTypes;
+    zserio::BitBuffer getExternalBitBuffer()
+    {
+        ExternalStructure externalStructure(0xCD, 0x03);
+        zserio::BitStreamWriter writer;
+        externalStructure.write(writer);
+        size_t bufferSize;
+        const uint8_t* buffer = writer.getWriteBuffer(bufferSize);
+
+        return zserio::BitBuffer(buffer, writer.getBitPosition());
+    }
+
+protected:
+    AllBuiltInTypes  m_AllBuiltInTypes;
 };
 
 TEST_F(AllBuiltInTypesTest, uint8Type)
@@ -314,7 +327,7 @@ TEST_F(AllBuiltInTypesTest, stringType)
 
 TEST_F(AllBuiltInTypesTest, externType)
 {
-    const zserio::BitBuffer testExtern(std::vector<uint8_t>({0xCD, 0x03}), 10);
+    const zserio::BitBuffer testExtern = getExternalBitBuffer();
     m_AllBuiltInTypes.setExternType(testExtern);
     const zserio::BitBuffer& externType = m_AllBuiltInTypes.getExternType();
     ASSERT_EQ(testExtern, externType);
@@ -358,7 +371,7 @@ TEST_F(AllBuiltInTypesTest, bitSizeOf)
     m_AllBuiltInTypes.setVarint64Type((INT64_C(1) << 56) - 1);
     m_AllBuiltInTypes.setVarintType(INT64_MAX);
     m_AllBuiltInTypes.setStringType("TEST");
-    m_AllBuiltInTypes.setExternType(zserio::BitBuffer(std::vector<uint8_t>({0xCD, 0x03}), 10));
+    m_AllBuiltInTypes.setExternType(getExternalBitBuffer());
     const size_t expectedBitSizeOf = 1102;
     ASSERT_EQ(expectedBitSizeOf, m_AllBuiltInTypes.bitSizeOf());
 }
@@ -401,7 +414,7 @@ TEST_F(AllBuiltInTypesTest, readWrite)
     m_AllBuiltInTypes.setVarint64Type((INT64_C(1) << 56) - 1);
     m_AllBuiltInTypes.setVarintType(INT64_MAX);
     m_AllBuiltInTypes.setStringType("TEST");
-    m_AllBuiltInTypes.setExternType(zserio::BitBuffer(std::vector<uint8_t>({0xCD, 0x03}), 10));
+    m_AllBuiltInTypes.setExternType(getExternalBitBuffer());
 
     zserio::BitStreamWriter writer;
     m_AllBuiltInTypes.write(writer);

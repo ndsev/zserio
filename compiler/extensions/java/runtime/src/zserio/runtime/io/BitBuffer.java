@@ -8,7 +8,7 @@ import java.nio.ByteBuffer;
  * Class which holds any bit sequence.
  *
  * Because bit buffer size does not have to be byte aligned (divisible by 8), it's possible that not all bits
- * of the last byte are used. In this case, only less significant bits of the corresponded size are used.
+ * of the last byte are used. In this case, only most significant bits of the corresponded size are used.
  */
 public class BitBuffer
 {
@@ -133,7 +133,7 @@ public class BitBuffer
         final byte lastByteBits = (byte)(bitSize - (long)8 * roundedByteSize);
 
         return (lastByteBits == 0) ? buffer[roundedByteSize - 1] :
-                (byte)(buffer[roundedByteSize] & (0xFF >> (8 - lastByteBits)));
+                (byte)(buffer[roundedByteSize] & (0xFF << (8 - lastByteBits)));
     }
 
     private final byte[] buffer;

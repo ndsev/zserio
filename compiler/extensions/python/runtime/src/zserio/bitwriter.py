@@ -231,7 +231,7 @@ class BitStreamWriter:
             self._bitPosition += numBytesToWrite * 8
 
         if numRestBits > 0:
-            self.writeBits(writeBuffer[numBytesToWrite], numRestBits)
+            self.writeBits(writeBuffer[numBytesToWrite] >> (8 - numRestBits), numRestBits)
 
     def getByteArray(self):
         """

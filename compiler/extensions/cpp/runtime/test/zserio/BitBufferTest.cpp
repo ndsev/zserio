@@ -91,7 +91,7 @@ TEST(BitBufferTest, rawPointerConstructor)
 TEST(BitBufferTest, copyConstructor)
 {
     const size_t bitSize = 11;
-    const std::vector<uint8_t> buffer = {0xAB, 0x07};
+    const std::vector<uint8_t> buffer = {0xAB, 0xE0};
     const BitBuffer bitBuffer(buffer, bitSize);
 
     const BitBuffer copiedBitBuffer(bitBuffer);
@@ -108,7 +108,7 @@ TEST(BitBufferTest, copyConstructor)
 TEST(BitBufferTest, assignmentOperator)
 {
     const size_t bitSize = 11;
-    const std::vector<uint8_t> buffer = {0xAB, 0x07};
+    const std::vector<uint8_t> buffer = {0xAB, 0xE0};
     const BitBuffer bitBuffer(buffer, bitSize);
 
     const BitBuffer copiedBitBuffer = bitBuffer;
@@ -125,7 +125,7 @@ TEST(BitBufferTest, assignmentOperator)
 TEST(BitBufferTest, moveConstructor)
 {
     const size_t bitSize = 11;
-    const std::vector<uint8_t> buffer = {0xAB, 0x07};
+    const std::vector<uint8_t> buffer = {0xAB, 0xE0};
     const size_t byteSize = buffer.size();
     BitBuffer bitBuffer(buffer, bitSize);
     const uint8_t* bufferStart = bitBuffer.getBuffer();
@@ -139,7 +139,7 @@ TEST(BitBufferTest, moveConstructor)
 TEST(BitBufferTest, moveAssignmentOperator)
 {
     const size_t bitSize = 11;
-    const std::vector<uint8_t> buffer = {0xAB, 0x07};
+    const std::vector<uint8_t> buffer = {0xAB, 0xE0};
     const size_t byteSize = buffer.size();
     BitBuffer bitBuffer(buffer, bitSize);
     const uint8_t* bufferStart = bitBuffer.getBuffer();
@@ -153,17 +153,17 @@ TEST(BitBufferTest, moveAssignmentOperator)
 TEST(BitBufferTest, equalOperator)
 {
     const size_t bitSize = 11;
-    const BitBuffer bitBuffer1(std::vector<uint8_t>({0xAB, 0x07}), bitSize);
-    const BitBuffer bitBuffer2(std::vector<uint8_t>({0xAB, 0x0F}), bitSize);
+    const BitBuffer bitBuffer1(std::vector<uint8_t>({0xAB, 0xE0}), bitSize);
+    const BitBuffer bitBuffer2(std::vector<uint8_t>({0xAB, 0xF0}), bitSize);
     ASSERT_TRUE(bitBuffer1 == bitBuffer2);
 
     const BitBuffer bitBuffer3(std::vector<uint8_t>({0xAB, 0xFF}), bitSize);
     ASSERT_TRUE(bitBuffer1 == bitBuffer3);
 
-    const BitBuffer bitBuffer4(std::vector<uint8_t>({0xAB, 0x03}), bitSize);
+    const BitBuffer bitBuffer4(std::vector<uint8_t>({0xAB, 0xC0}), bitSize);
     ASSERT_FALSE(bitBuffer1 == bitBuffer4);
 
-    const BitBuffer bitBuffer5(std::vector<uint8_t>({0xBA, 0x07}), bitSize);
+    const BitBuffer bitBuffer5(std::vector<uint8_t>({0xBA, 0xE0}), bitSize);
     ASSERT_FALSE(bitBuffer1 == bitBuffer5);
 
     const BitBuffer bitBuffer6(std::vector<uint8_t>({0xAB}));
@@ -176,17 +176,17 @@ TEST(BitBufferTest, equalOperator)
 TEST(BitBufferTest, hashCode)
 {
     const size_t bitSize = 11;
-    const BitBuffer bitBuffer1(std::vector<uint8_t>({0xAB, 0x07}), bitSize);
-    const BitBuffer bitBuffer2(std::vector<uint8_t>({0xAB, 0x0F}), bitSize);
+    const BitBuffer bitBuffer1(std::vector<uint8_t>({0xAB, 0xE0}), bitSize);
+    const BitBuffer bitBuffer2(std::vector<uint8_t>({0xAB, 0xF0}), bitSize);
     ASSERT_EQ(bitBuffer1.hashCode(), bitBuffer2.hashCode());
 
     const BitBuffer bitBuffer3(std::vector<uint8_t>({0xAB, 0xFF}), bitSize);
     ASSERT_EQ(bitBuffer1.hashCode(), bitBuffer3.hashCode());
 
-    const BitBuffer bitBuffer4(std::vector<uint8_t>({0xAB, 0x03}), bitSize);
+    const BitBuffer bitBuffer4(std::vector<uint8_t>({0xAB, 0xC0}), bitSize);
     ASSERT_NE(bitBuffer1.hashCode(), bitBuffer4.hashCode());
 
-    const BitBuffer bitBuffer5(std::vector<uint8_t>({0xBA, 0x07}), bitSize);
+    const BitBuffer bitBuffer5(std::vector<uint8_t>({0xBA, 0xE0}), bitSize);
     ASSERT_NE(bitBuffer1.hashCode(), bitBuffer5.hashCode());
 
     const BitBuffer bitBuffer6(std::vector<uint8_t>({0xAB}));
@@ -199,7 +199,7 @@ TEST(BitBufferTest, hashCode)
 TEST(BitBufferTest, constGetBuffer)
 {
     const size_t bitSize = 11;
-    const std::vector<uint8_t> buffer = {0xAB, 0x03};
+    const std::vector<uint8_t> buffer = {0xAB, 0xC0};
     const BitBuffer bitBuffer(buffer, bitSize);
 
     const uint8_t* readBuffer = bitBuffer.getBuffer();
@@ -213,7 +213,7 @@ TEST(BitBufferTest, constGetBuffer)
 TEST(BitBufferTest, getBuffer)
 {
     const size_t bitSize = 11;
-    const std::vector<uint8_t> buffer = {0xAB, 0x03};
+    const std::vector<uint8_t> buffer = {0xAB, 0xC0};
     BitBuffer bitBuffer(buffer, bitSize);
 
     uint8_t* readBuffer = bitBuffer.getBuffer();
@@ -227,7 +227,7 @@ TEST(BitBufferTest, getBuffer)
 TEST(BitBufferTest, getBitSize)
 {
     const size_t bitSize = 11;
-    const std::vector<uint8_t> buffer = {0xAB, 0x03};
+    const std::vector<uint8_t> buffer = {0xAB, 0xC0};
     const BitBuffer bitBuffer(buffer, bitSize);
     ASSERT_EQ(bitSize, bitBuffer.getBitSize());
 }
@@ -235,7 +235,7 @@ TEST(BitBufferTest, getBitSize)
 TEST(BitBufferTest, getByteSize)
 {
     const size_t bitSize = 11;
-    const std::vector<uint8_t> buffer = {0xAB, 0x03};
+    const std::vector<uint8_t> buffer = {0xAB, 0xC0};
     const size_t byteSize = buffer.size();
     const BitBuffer bitBuffer(buffer, bitSize);
     ASSERT_EQ(byteSize, bitBuffer.getByteSize());

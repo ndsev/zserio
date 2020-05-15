@@ -11,7 +11,7 @@ class BitBuffer:
     Bit buffer.
 
     Because bit buffer size does not have to be byte aligned (divisible by 8), it's possible that not all bits
-    of the last byte are used. In this case, only less significant bits of the corresponded size are used.
+    of the last byte are used. In this case, only most significant bits of the corresponded size are used.
     """
 
     def __init__(self, buffer, bitSize=None):
@@ -26,7 +26,7 @@ class BitBuffer:
         if bitSize is None:
             bitSize = len(buffer) * 8
         elif len(buffer) * 8 < bitSize:
-            raise PythonRuntimeException("BitBuffer.__init__: Bit size %d out of range for given buffer byte "
+            raise PythonRuntimeException("BitBuffer: Bit size %d out of range for given buffer byte "
                                          "size %d!" % (bitSize, len(buffer)))
         self._buffer = buffer
         self._bitSize = bitSize
@@ -92,4 +92,4 @@ class BitBuffer:
         lastByteBits = self._bitSize - 8 * roundedByteSize
 
         return (self._buffer[roundedByteSize - 1] if lastByteBits == 0 else
-                self._buffer[roundedByteSize] & (0xFF >> (8 - lastByteBits)))
+                self._buffer[roundedByteSize] & (0xFF << (8 - lastByteBits)))

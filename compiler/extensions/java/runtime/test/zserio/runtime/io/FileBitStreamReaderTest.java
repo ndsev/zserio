@@ -1,6 +1,3 @@
-/**
- *
- */
 package zserio.runtime.io;
 
 import static org.junit.Assert.assertEquals;

@@ -735,7 +735,7 @@ BitBuffer BitStreamReader::readBitBuffer()
     }
 
     if (numRestBits > 0)
-        *buffer = static_cast<uint8_t>(readBits(numRestBits));
+        *buffer = static_cast<uint8_t>(readBits(numRestBits) << (8 - numRestBits));
 
     return bitBuffer;
 }

@@ -382,7 +382,7 @@ public class ByteArrayBitStreamWriter extends ByteArrayBitStreamBase implements 
         }
 
         if (numRestBits > 0)
-            writeBits(writeBuffer[numBytesToWrite], numRestBits);
+            writeBitsImpl(writeBuffer[numBytesToWrite] >> (8 - numRestBits), numRestBits);
     }
 
     @Override

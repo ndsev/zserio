@@ -1,10 +1,8 @@
-/**
- *
- */
 package zserio.runtime.io;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -16,6 +14,39 @@ import org.junit.Test;
 
 public class ByteArrayBitStreamReaderTest
 {
+    @Test
+    public void bitBufferConstructor() throws IOException
+    {
+        final BitBuffer bitBuffer = new BitBuffer(new byte[]{(byte)0xAE, (byte)0xEA, (byte)0x80}, 17);
+        final BitStreamReader reader = new ByteArrayBitStreamReader(bitBuffer);
+
+        assertEquals(bitBuffer.getBitSize(), reader.getBufferBitSize());
+        assertEquals(0xAEE, reader.readBits(12));
+        assertEquals(0x0A, reader.readBits(4));
+        assertEquals(0x01, reader.readBits(1));
+
+        try
+        {
+            reader.readBits(1); // must throw!
+            fail("Expected exception!");
+        }
+        catch (IOException e)
+        {
+        }
+        reader.close();
+    }
+
+    @Test(expected = IOException.class)
+    public void bitBufferConstructorOverflow() throws IOException
+    {
+        final BitBuffer bitBuffer = new BitBuffer(new byte[]{(byte)0xFF, (byte)0xFF, (byte)0xF0}, 19);
+        final BitStreamReader reader = new ByteArrayBitStreamReader(bitBuffer);
+
+        assertEquals(bitBuffer.getBitSize(), reader.getBufferBitSize());
+        assertEquals(0xFFFFF, reader.readBits(20)); // must throw!
+        reader.close();
+    }
+
     /**
      * Test the exception in the protected readRange method.
      *

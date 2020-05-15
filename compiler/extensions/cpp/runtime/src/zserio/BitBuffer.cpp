@@ -120,7 +120,7 @@ uint8_t BitBuffer::getMaskedLastByte() const
     const uint8_t lastByteBits = static_cast<uint8_t>(m_bitSize - 8 * roundedByteSize);
 
     return (lastByteBits == 0) ? m_buffer[roundedByteSize - 1] :
-            (m_buffer[roundedByteSize] & (0xFF >> (8 - lastByteBits)));
+            (m_buffer[roundedByteSize] & (0xFF << (8 - lastByteBits)));
 }
 
 } // namespace zserio

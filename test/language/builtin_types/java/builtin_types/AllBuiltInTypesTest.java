@@ -14,8 +14,10 @@ import zserio.runtime.io.BitStreamReader;
 import zserio.runtime.io.BitStreamWriter;
 import zserio.runtime.io.FileBitStreamReader;
 import zserio.runtime.io.FileBitStreamWriter;
+import zserio.runtime.io.ByteArrayBitStreamWriter;
 
 import builtin_types.all_builtin_types.AllBuiltInTypes;
+import builtin_types.all_builtin_types.ExternalStructure;
 
 public class AllBuiltInTypesTest
 {
@@ -340,16 +342,16 @@ public class AllBuiltInTypesTest
     }
 
     @Test
-    public void externType()
+    public void externType() throws IOException
     {
-        final BitBuffer testExtern = new BitBuffer(new byte[]{(byte)0xCD, (byte)0x03}, 10);
+        final BitBuffer testExtern = getExternalBitBuffer();
         allBuiltInTypes.setExternType(testExtern);
         final BitBuffer externType = allBuiltInTypes.getExternType();
         assertEquals(testExtern, externType);
     }
 
     @Test
-    public void bitSizeOf()
+    public void bitSizeOf() throws IOException
     {
         allBuiltInTypes.setBoolType(true);
         allBuiltInTypes.setUint8Type((short)1);
@@ -387,7 +389,7 @@ public class AllBuiltInTypesTest
         allBuiltInTypes.setVarint64Type(((long)1 << 56) - 1);
         allBuiltInTypes.setVarintType(Long.MAX_VALUE);
         allBuiltInTypes.setStringType("TEST");
-        allBuiltInTypes.setExternType(new BitBuffer(new byte[]{(byte)0xCD, (byte)0x03}, 10));
+        allBuiltInTypes.setExternType(getExternalBitBuffer());
         final int expectedBitSizeOf = 1102;
         assertEquals(expectedBitSizeOf, allBuiltInTypes.bitSizeOf());
     }
@@ -431,7 +433,7 @@ public class AllBuiltInTypesTest
         allBuiltInTypes.setVarint64Type(((long)1 << 56) - 1);
         allBuiltInTypes.setVarintType(Long.MAX_VALUE);
         allBuiltInTypes.setStringType("TEST");
-        allBuiltInTypes.setExternType(new BitBuffer(new byte[]{(byte)0xCD, (byte)0x03}, 10));
+        allBuiltInTypes.setExternType(getExternalBitBuffer());
 
         final BitStreamWriter writer = new FileBitStreamWriter(TEST_FILE);
         allBuiltInTypes.write(writer);
@@ -441,6 +443,17 @@ public class AllBuiltInTypesTest
         final AllBuiltInTypes readAllBuiltInTypes = new AllBuiltInTypes(reader);
         reader.close();
         assertEquals(allBuiltInTypes, readAllBuiltInTypes);
+    }
+
+    private static BitBuffer getExternalBitBuffer() throws IOException
+    {
+        final ExternalStructure externalStructure = new ExternalStructure((short)0xCD, (byte)0x03);
+        final ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter();
+        externalStructure.write(writer);
+        final BitBuffer externalBitBuffer = new BitBuffer(writer.toByteArray(), writer.getBitPosition());
+        writer.close();
+
+        return externalBitBuffer;
     }
 
     private final AllBuiltInTypes allBuiltInTypes = new AllBuiltInTypes();

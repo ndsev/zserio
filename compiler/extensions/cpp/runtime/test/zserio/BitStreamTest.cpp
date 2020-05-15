@@ -638,8 +638,8 @@ TEST_F(BitStreamTest, readBitBuffer)
 {
     const BitBuffer values[] =
     {
-        BitBuffer(std::vector<uint8_t>({0xAB, 0x07}), 3),
-        BitBuffer(std::vector<uint8_t>({0xAB, 0xCD, 0x7F}), 7)
+        BitBuffer(std::vector<uint8_t>({0xAB, 0xE0}), 11),
+        BitBuffer(std::vector<uint8_t>({0xAB, 0xCD, 0xFE}), 23)
     };
 
     testBitStreamValues(values, m_externalWriter,

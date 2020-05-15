@@ -186,8 +186,8 @@ class BitStreamWriterTest(unittest.TestCase):
 
     def testWriteBitBuffer(self):
         writer = BitStreamWriter()
-        writer.writeBitBuffer(BitBuffer(bytes([0xAB, 0x07]), 11))
-        writer.writeBitBuffer(BitBuffer(bytes([0x00, 0x7F]), 15))
+        writer.writeBitBuffer(BitBuffer(bytes([0xAB, 0xE0]), 11))
+        writer.writeBitBuffer(BitBuffer(bytes([0x00, 0xFE]), 15))
         self.assertEqual(8 + 11 + 8 + 15, writer.getBitPosition())
         self.assertEqual(b'\x0B\xAB\xE1\xE0\x1F\xC0', writer.getByteArray())
 

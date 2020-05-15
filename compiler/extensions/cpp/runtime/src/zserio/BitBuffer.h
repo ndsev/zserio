@@ -13,7 +13,7 @@ namespace zserio
  * Class which holds any bit sequence.
  *
  * Because bit buffer size does not have to be byte aligned (divisible by 8), it's possible that not all bits
- * of the last byte are used. In this case, only less significant bits of the corresponded size are used.
+ * of the last byte are used. In this case, only most significant bits of the corresponded size are used.
  */
 class BitBuffer
 {
