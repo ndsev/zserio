@@ -272,7 +272,7 @@ namespace
         static const uint8_t typeSize = sizeof(BaseSignedType) * 8;
         BaseType value = readBitsImpl(ctx, numBits);
 
-        // Skip the signed overflow correction if numBits == 32.
+        // Skip the signed overflow correction if numBits == typeSize.
         // In that case, the value that comes out the readBits function
         // is already correct.
         if (numBits != 0 && numBits < typeSize && (value >= (static_cast<BaseType>(1) << (numBits - 1))))

@@ -47,6 +47,42 @@ public class ByteArrayBitStreamReaderTest
         reader.close();
     }
 
+    @Test
+    public void readUnalignedData() throws IOException
+    {
+        // number expected to read at offset
+        final int testValue = 123;
+
+        for (int offset = 0; offset <= 64; ++offset)
+        {
+            // write test value at offset to data buffer
+            final byte[] buffer = new byte[(8 + offset + 7) / 8];
+            buffer[offset / 8] = (byte)(testValue >> (offset % 8));
+            if (offset % 8 != 0) // don't write behind the buffer
+                buffer[offset / 8 + 1] = (byte)(testValue << (8 - offset % 8));
+
+            final BitBuffer bitBuffer = new BitBuffer(buffer, 8 + offset);
+            final BitStreamReader reader = new ByteArrayBitStreamReader(bitBuffer);
+
+            // read offset bits
+            if (offset != 0) // java reader cannot read 0 bits
+                assertEquals(0, reader.readBits(offset));
+
+            // read magic number
+            assertEquals("offset: " + offset, testValue, reader.readBits(8));
+
+            // check eof
+            try
+            {
+                reader.readBits(1); // must throw!
+                fail("Expected exception, offset: " + offset + "!");
+            }
+            catch (IOException e)
+            {
+            }
+        }
+    }
+
     /**
      * Test the exception in the protected readRange method.
      *

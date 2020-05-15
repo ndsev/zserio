@@ -24,6 +24,31 @@ class BitStreamReaderTest(unittest.TestCase):
         with self.assertRaises(PythonRuntimeException):
             reader.readBits(20)
 
+    def testReadUnalignedData(self):
+        # number expected to read at offset
+        testValue = 123
+
+        for offset in range(65):
+            buffer = bytearray((8 + offset + 7) // 8)
+
+            # write test value at offset to data buffer
+            buffer[offset // 8] = testValue >> (offset % 8)
+            if offset % 8 != 0: # don't write behind the buffer
+                buffer[offset // 8 + 1] = 0xff & testValue << (8 - offset % 8)
+
+            bitBuffer = BitBuffer(buffer, 8 + offset)
+            reader = BitStreamReader.fromBitBuffer(bitBuffer)
+
+            # read offset bits
+            self.assertEqual(0, reader.readBits(offset))
+
+            # read magic number
+            self.assertEqual(testValue, reader.readBits(8), msg=("Offset: " + str(offset)))
+
+            # check eof
+            with self.assertRaises(PythonRuntimeException):
+                reader.readBits(1)
+
     def testReadBits(self):
         data = [0, 1, 255, 128, 127]
         reader = BitStreamReader(bytes(data))
