@@ -1,10 +1,11 @@
 import unittest
 
 from zserio.bitbuffer import BitBuffer
-from zserio.bitwriter import (BitStreamWriter,
-                              VARINT16_NUM_BITS, VARINT32_NUM_BITS, VARINT64_NUM_BITS, VARINT_NUM_BITS,
-                              VARUINT16_NUM_BITS, VARUINT32_NUM_BITS, VARUINT64_NUM_BITS, VARUINT_NUM_BITS)
+from zserio.bitwriter import BitStreamWriter
 from zserio.exception import PythonRuntimeException
+from zserio.limits import (VARINT16_MIN, VARINT16_MAX, VARINT32_MIN, VARINT32_MAX, VARINT64_MIN, VARINT64_MAX,
+                           VARINT_MIN, VARINT_MAX, VARUINT16_MIN, VARUINT16_MAX, VARUINT32_MIN, VARUINT32_MAX,
+                           VARUINT64_MIN, VARUINT64_MAX, VARUINT_MIN, VARUINT_MAX, VARSIZE_MIN, VARSIZE_MAX)
 
 class BitStreamWriterTest(unittest.TestCase):
 
@@ -90,9 +91,9 @@ class BitStreamWriterTest(unittest.TestCase):
         self.assertEqual(8, writer.getBitPosition())
         self.assertEqual(b'\x00', writer.getByteArray())
         with self.assertRaises(PythonRuntimeException):
-            writer.writeVarInt16(-1 << sum(VARINT16_NUM_BITS))
+            writer.writeVarInt16(VARINT16_MIN - 1)
         with self.assertRaises(PythonRuntimeException):
-            writer.writeVarInt16(1 << sum(VARINT16_NUM_BITS))
+            writer.writeVarInt16(VARINT16_MAX + 1)
 
     def testWriteVarInt32(self):
         writer = BitStreamWriter()
@@ -100,9 +101,9 @@ class BitStreamWriterTest(unittest.TestCase):
         self.assertEqual(8, writer.getBitPosition())
         self.assertEqual(b'\x00', writer.getByteArray())
         with self.assertRaises(PythonRuntimeException):
-            writer.writeVarInt32(-1 << sum(VARINT32_NUM_BITS))
+            writer.writeVarInt32(VARINT32_MIN - 1)
         with self.assertRaises(PythonRuntimeException):
-            writer.writeVarInt32(1 << sum(VARINT32_NUM_BITS))
+            writer.writeVarInt32(VARINT32_MAX + 1)
 
     def testWriteVarInt64(self):
         writer = BitStreamWriter()
@@ -110,22 +111,22 @@ class BitStreamWriterTest(unittest.TestCase):
         self.assertEqual(8, writer.getBitPosition())
         self.assertEqual(b'\x00', writer.getByteArray())
         with self.assertRaises(PythonRuntimeException):
-            writer.writeVarInt64(-1 << sum(VARINT64_NUM_BITS))
+            writer.writeVarInt64(VARINT64_MIN - 1)
         with self.assertRaises(PythonRuntimeException):
-            writer.writeVarInt64(1 << sum(VARINT64_NUM_BITS))
+            writer.writeVarInt64(VARINT64_MAX + 1)
 
     def testWriteVarInt(self):
         writer = BitStreamWriter()
         writer.writeVarInt(0)
         self.assertEqual(b'\x00', writer.getByteArray())
         self.assertEqual(8, writer.getBitPosition())
-        writer.writeVarInt(-1 << sum(VARINT_NUM_BITS))
+        writer.writeVarInt(VARINT_MIN)
         self.assertEqual(16, writer.getBitPosition())
         self.assertEqual(b'\x00\x80', writer.getByteArray()) # INT64_MIN is encoded as -0
         with self.assertRaises(PythonRuntimeException):
-            writer.writeVarInt((-1 << sum(VARINT_NUM_BITS)) - 1)
+            writer.writeVarInt(VARINT_MIN - 1)
         with self.assertRaises(PythonRuntimeException):
-            writer.writeVarInt(1 << sum(VARINT_NUM_BITS))
+            writer.writeVarInt(VARINT_MAX + 1)
 
     def testWriteVarUInt16(self):
         writer = BitStreamWriter()
@@ -133,9 +134,9 @@ class BitStreamWriterTest(unittest.TestCase):
         self.assertEqual(8, writer.getBitPosition())
         self.assertEqual(b'\x00', writer.getByteArray())
         with self.assertRaises(PythonRuntimeException):
-            writer.writeVarUInt16(-1)
+            writer.writeVarUInt16(VARUINT16_MIN - 1)
         with self.assertRaises(PythonRuntimeException):
-            writer.writeVarUInt16(1 << sum(VARUINT16_NUM_BITS))
+            writer.writeVarUInt16(VARUINT16_MAX + 1)
 
     def testWriteVarUInt32(self):
         writer = BitStreamWriter()
@@ -143,9 +144,9 @@ class BitStreamWriterTest(unittest.TestCase):
         self.assertEqual(8, writer.getBitPosition())
         self.assertEqual(b'\x00', writer.getByteArray())
         with self.assertRaises(PythonRuntimeException):
-            writer.writeVarUInt32(-1)
+            writer.writeVarUInt32(VARUINT32_MIN - 1)
         with self.assertRaises(PythonRuntimeException):
-            writer.writeVarUInt32(1 << sum(VARUINT32_NUM_BITS))
+            writer.writeVarUInt32(VARUINT32_MAX + 1)
 
     def testWriteVarUInt64(self):
         writer = BitStreamWriter()
@@ -153,9 +154,9 @@ class BitStreamWriterTest(unittest.TestCase):
         self.assertEqual(8, writer.getBitPosition())
         self.assertEqual(b'\x00', writer.getByteArray())
         with self.assertRaises(PythonRuntimeException):
-            writer.writeVarUInt64(-1)
+            writer.writeVarUInt64(VARUINT64_MIN - 1)
         with self.assertRaises(PythonRuntimeException):
-            writer.writeVarUInt64(1 << sum(VARUINT64_NUM_BITS))
+            writer.writeVarUInt64(VARUINT64_MAX + 1)
 
     def testWriteVarUInt(self):
         writer = BitStreamWriter()
@@ -163,9 +164,19 @@ class BitStreamWriterTest(unittest.TestCase):
         self.assertEqual(8, writer.getBitPosition())
         self.assertEqual(b'\x00', writer.getByteArray())
         with self.assertRaises(PythonRuntimeException):
-            writer.writeVarUInt(-1)
+            writer.writeVarUInt(VARUINT_MIN - 1)
         with self.assertRaises(PythonRuntimeException):
-            writer.writeVarUInt(1 << sum(VARUINT_NUM_BITS))
+            writer.writeVarUInt(VARUINT_MAX + 1)
+
+    def testWriteVarSize(self):
+        writer = BitStreamWriter()
+        writer.writeVarSize(0)
+        self.assertEqual(8, writer.getBitPosition())
+        self.assertEqual(b'\x00', writer.getByteArray())
+        with self.assertRaises(PythonRuntimeException):
+            writer.writeVarSize(VARSIZE_MIN - 1)
+        with self.assertRaises(PythonRuntimeException):
+            writer.writeVarSize(VARSIZE_MAX + 1)
 
     def testWriteFloat16(self):
         writer = BitStreamWriter()
