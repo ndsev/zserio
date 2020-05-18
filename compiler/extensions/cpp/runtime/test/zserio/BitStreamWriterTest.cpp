@@ -46,6 +46,33 @@ TEST_F(BitStreamWriterTest, bitBufferConstructor)
     ASSERT_EQ(0xE0, writeBuffer[1]);
 }
 
+TEST_F(BitStreamWriterTest, writeUnalignedData)
+{
+    // number expected to be written at offset
+    const uint8_t testValue = 123;
+
+    for (int offset = 0; offset <= 64; ++offset)
+    {
+        BitBuffer bitBuffer(8 + offset);
+        // fill the buffer with 1s to check proper masking
+        std::memset(bitBuffer.getBuffer(), 0xFF, bitBuffer.getByteSize());
+
+        BitStreamWriter writer(bitBuffer);
+
+        writer.writeBits64(0, offset);
+        writer.writeBits(testValue, 8);
+
+        // check eof
+        ASSERT_THROW(writer.writeBits64(0, 1), CppRuntimeException);
+
+        // check written value
+        uint8_t writtenTestValue = bitBuffer.getBuffer()[offset / 8] << (offset % 8);
+        if (offset % 8 != 0)
+            writtenTestValue |= bitBuffer.getBuffer()[offset / 8 + 1] >> (8 - (offset % 8));
+        ASSERT_EQ(testValue, writtenTestValue) << "Offset: " << offset;
+    }
+}
+
 TEST_F(BitStreamWriterTest, writeBits)
 {
     // check invalid bitlength acceptance

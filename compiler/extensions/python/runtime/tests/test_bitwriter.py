@@ -8,6 +8,24 @@ from zserio.exception import PythonRuntimeException
 
 class BitStreamWriterTest(unittest.TestCase):
 
+    def testWriteUnalignedData(self):
+        # number expected to be written at offset
+        testValue = 123
+
+        for offset in range(65):
+            writer = BitStreamWriter()
+
+            if offset != 0:
+                writer.writeBits(0, offset)
+            writer.writeBits(testValue, 8)
+
+            # check written value
+            buffer = writer.getByteArray()
+            writtenTestValue = buffer[offset // 8] << (offset % 8)
+            if offset % 8 != 0:
+                writtenTestValue |= buffer[offset // 8 + 1] >> (8 - (offset % 8))
+            self.assertEqual(testValue, writtenTestValue, msg=("Offset: " + str(offset)))
+
     def testWriteBits(self):
         writer = BitStreamWriter()
         writer.writeBits(0, 8)

@@ -343,15 +343,15 @@ inline void BitStreamWriter::writeUnsignedBits(uint32_t data, uint8_t numBits)
         throw CppRuntimeException("BitStreamWriter: Reached eof(), writing to stream failed.");
 
     uint8_t restNumBits = numBits;
-    uint8_t bitsFree = 8 - (m_bitIndex & 0x07);
+    const uint8_t bitsUsed = m_bitIndex & 0x07;
+    uint8_t bitsFree = 8 - bitsUsed;
     size_t byteIndex = m_bitIndex / 8;
 
     if (restNumBits > bitsFree)
     {
         // first part
         const uint8_t shiftNum = restNumBits - bitsFree;
-        const uint32_t mask = 0xFFFFFFFFU >> (32 - restNumBits);
-        const uint8_t maskedByte = m_buffer[byteIndex] & ~static_cast<uint8_t>(mask >> shiftNum);
+        const uint8_t maskedByte = m_buffer[byteIndex] & ~(0xFF >> bitsUsed);
         m_buffer[byteIndex++] = maskedByte | static_cast<uint8_t>(data >> shiftNum);
         restNumBits -= bitsFree;
 

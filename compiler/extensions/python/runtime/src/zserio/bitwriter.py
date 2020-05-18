@@ -316,13 +316,3 @@ class BitStreamWriter:
             self.writeBits(byte, 8)
 
 VAR_NUM_BIT_MASKS = [0x01, 0x03, 0x07, 0x0f, 0x1f, 0x3f, 0x7f, 0xff]
-
-# TBR!!! TODO
-VARINT16_NUM_BITS = [6, 8]
-VARINT32_NUM_BITS = [6, 7, 7, 8]
-VARINT64_NUM_BITS = [6, 7, 7, 7, 7, 7, 7, 8]
-VARINT_NUM_BITS = [6, 7, 7, 7, 7, 7, 7, 7, 8]
-VARUINT16_NUM_BITS = [7, 8]
-VARUINT32_NUM_BITS = [7, 7, 7, 8]
-VARUINT64_NUM_BITS = [7, 7, 7, 7, 7, 7, 7, 8]
-VARUINT_NUM_BITS = [7, 7, 7, 7, 7, 7, 7, 7, 8]

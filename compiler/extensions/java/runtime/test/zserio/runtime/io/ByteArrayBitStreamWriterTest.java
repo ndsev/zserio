@@ -138,6 +138,35 @@ public class ByteArrayBitStreamWriterTest
     }
 
     @Test
+    public void writeUnalignedData() throws IOException
+    {
+        // number expected to be written at offset
+        final int testValue = 123;
+
+        for (int offset = 0; offset <= 63; ++offset)
+        {
+            final int bufferByteSize = (8 + offset + 7) / 8;
+            final ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter(bufferByteSize);
+            // fill the buffer with 1s to check proper masking
+            for (int i = 0; i < bufferByteSize; ++i)
+                writer.writeBits(0xFF, 8);
+
+            writer.setBitPosition(0);
+
+            if (offset != 0)
+                writer.writeBits(0, offset);
+            writer.writeBits(testValue, 8);
+
+            // check written value
+            byte[] writtenData = writer.toByteArray();
+            int writtenTestValue = ((int)writtenData[offset / 8]) << (offset % 8);
+            if (offset % 8 != 0)
+                writtenTestValue |= (0xFF & writtenData[offset / 8 + 1]) >>> (8 - (offset % 8));
+            assertEquals("offset: " + offset, testValue, writtenTestValue);
+        }
+    }
+
+    @Test
     public void writeByte() throws IOException
     {
         writeReadTest(new WriteReadTestable(){
