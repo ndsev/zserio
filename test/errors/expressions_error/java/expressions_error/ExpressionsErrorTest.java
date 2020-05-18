@@ -28,7 +28,7 @@ public class ExpressionsErrorTest
     public void stringIntegerConcatenation()
     {
         final String error =
-        		"string_integer_concatenation_error.zs:9:16: Integer or float expressions expected!";
+                "string_integer_concatenation_error.zs:9:16: Integer or float expressions expected!";
         assertTrue(zserioErrors.isPresent(error));
     }
 

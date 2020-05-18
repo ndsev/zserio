@@ -21,7 +21,7 @@ public class IndexedOffsetsErrorTest
     public void alignmentExpression()
     {
         final String error =
-        		"alignment_expression_error.zs:5:7: Index operator is not allowed in this context!";
+                "alignment_expression_error.zs:5:7: Index operator is not allowed in this context!";
         assertTrue(zserioErrors.isPresent(error));
     }
 

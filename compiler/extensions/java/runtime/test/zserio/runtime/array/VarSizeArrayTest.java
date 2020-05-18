@@ -115,6 +115,6 @@ public class VarSizeArrayTest
         0x200000,   // 4 byte-encoded value
         0x10000000, // 5 byte-encoded value
         0x7FFFFFFF, // max
-        0x00   		// min
+        0x00        // min
     };
 }

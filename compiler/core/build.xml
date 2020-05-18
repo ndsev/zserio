@@ -114,8 +114,8 @@ spotbugs.home_dir       - Location of the spotbugs tool. If not set, spotbugs is
             destDir="${zserio_core.classes_dir}" cache="${zserio_core.build_dir}/depend-cache"/>
 
         <javac destdir="${zserio_core.classes_dir}" debug="on" encoding="utf8" includeAntRuntime="false">
-        	<src path="${zserio_core.antlr.gen_dir}"/>
-        	<src path="${zserio_core.src_dir}"/>
+            <src path="${zserio_core.antlr.gen_dir}"/>
+            <src path="${zserio_core.src_dir}"/>
             <compilerarg value="-Xlint:all"/>
             <compilerarg value="-Werror"/>
             <classpath>

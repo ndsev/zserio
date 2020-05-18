@@ -205,11 +205,11 @@ public class DocCommentTemplateData
 
             if (linkSymbolReference.getReferencedType() == null)
             {
-            	final AstNode referencedSymbol = linkSymbolReference.getReferencedSymbol();
-            	if (referencedSymbol != null)
-            		url = DocEmitterTools.getUrlNameFromType(referencedSymbol);
-            	else
-            		url = null; // this can happen if see tag is wrong and could not be resolved
+                final AstNode referencedSymbol = linkSymbolReference.getReferencedSymbol();
+                if (referencedSymbol != null)
+                    url = DocEmitterTools.getUrlNameFromType(referencedSymbol);
+                else
+                    url = null; // this can happen if see tag is wrong and could not be resolved
             }
             else
             {

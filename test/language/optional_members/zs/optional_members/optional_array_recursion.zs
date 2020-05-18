@@ -5,7 +5,7 @@ struct Employee
     string      name;
     uint16      salary;
     Title       title;
- 
+
     // if employee is a team lead, list the team members
     Employee    teamMembers[] if title == Title.TEAM_LEAD;
 };

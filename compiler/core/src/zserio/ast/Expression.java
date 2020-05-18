@@ -1049,7 +1049,7 @@ public class Expression extends AstNodeBase
         {
             expressionType = ExpressionType.STRING;
             if (operand1.expressionStringValue != null && operand2.expressionStringValue != null)
-            	expressionStringValue = operand1.expressionStringValue + operand2.expressionStringValue; 
+                expressionStringValue = operand1.expressionStringValue + operand2.expressionStringValue; 
         }
         else
         {
@@ -1552,15 +1552,15 @@ public class Expression extends AstNodeBase
 
     private static String stripStringLiteral(String stringLiteral)
     {
-    	final int prefixPos = stringLiteral.indexOf('"');
-    	final String strippedStringLiteral = (prefixPos == -1) ? stringLiteral :
-    			stringLiteral.substring(prefixPos + 1);
-    	
-    	final int postfixPos = strippedStringLiteral.lastIndexOf('"');
-    	
-    	return (postfixPos == -1) ? strippedStringLiteral : strippedStringLiteral.substring(0, postfixPos);
+        final int prefixPos = stringLiteral.indexOf('"');
+        final String strippedStringLiteral = (prefixPos == -1) ? stringLiteral :
+            stringLiteral.substring(prefixPos + 1);
+
+        final int postfixPos = strippedStringLiteral.lastIndexOf('"');
+
+        return (postfixPos == -1) ? strippedStringLiteral : strippedStringLiteral.substring(0, postfixPos);
     }
-    
+
     private static int findChars(String text, char firstChar, char secondChar)
     {
         int pos = text.indexOf(firstChar);

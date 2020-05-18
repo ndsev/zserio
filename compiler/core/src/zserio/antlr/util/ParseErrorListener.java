@@ -29,21 +29,21 @@ public class ParseErrorListener extends BaseErrorListener
             final Token offendingToken = e.getOffendingToken();
             if (offendingToken != null)
             {
-	            if (isKeyword(offendingToken))
-	            {
-	                final ParserStackedException stackedException = new ParserStackedException(location,
-	                        "'" + offendingToken.getText() + "' is a reserved keyword!");
-	                stackedException.pushMessage(location,  msg);
-	                throw stackedException;
-	            }
-	
-	            if (isInvalidStringLiteral(offendingToken))
-	        		throw new ParserException(location, "'" + offendingToken.getText() +
-	        				"' is an invalid string literal!");
-	
-	        	if (isInvalidToken(offendingToken))
-	        		throw new ParserException(location, "'" + offendingToken.getText() +
-	        				"' is an invalid token!");
+                if (isKeyword(offendingToken))
+                {
+                    final ParserStackedException stackedException = new ParserStackedException(location,
+                            "'" + offendingToken.getText() + "' is a reserved keyword!");
+                    stackedException.pushMessage(location,  msg);
+                    throw stackedException;
+                }
+
+                if (isInvalidStringLiteral(offendingToken))
+                    throw new ParserException(location, "'" + offendingToken.getText() +
+                            "' is an invalid string literal!");
+
+                if (isInvalidToken(offendingToken))
+                    throw new ParserException(location, "'" + offendingToken.getText() +
+                            "' is an invalid token!");
             }
         }
 
@@ -55,14 +55,14 @@ public class ParseErrorListener extends BaseErrorListener
         // according to keywords defined in ZserioLexer.g4
         return (token.getType() >= ZserioParser.ALIGN && token.getType() <= ZserioParser.VARUINT64);
     }
-    
+
     private boolean isInvalidStringLiteral(Token token)
     {
-    	return token.getType() == ZserioParser.INVALID_STRING_LITERAL;
+        return token.getType() == ZserioParser.INVALID_STRING_LITERAL;
     }
 
     private boolean isInvalidToken(Token token)
     {
-    	return token.getType() == ZserioParser.INVALID_TOKEN;
+        return token.getType() == ZserioParser.INVALID_TOKEN;
     }
 }

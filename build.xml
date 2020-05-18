@@ -81,10 +81,10 @@ zserio_extensions.build_dir - Zserio extensions build directory.
             </restrict>
             <zipfileset src="${zserio.jars_dir}/${commons_cli_jar_name}" excludes="META-INF/*"/>
             <zipfileset src="${zserio.jars_dir}/${commons_cli_jar_name}" includes="META-INF/LICENSE.txt"
-				fullpath="META-INF/LICENSE_COMMONS_CLI.txt"/>
+                fullpath="META-INF/LICENSE_COMMONS_CLI.txt"/>
             <zipfileset src="${zserio.jars_dir}/${freemarker_jar_name}" excludes="META-INF/*"/>
             <zipfileset src="${zserio.jars_dir}/${freemarker_jar_name}" includes="META-INF/LICENSE"
-				fullpath="META-INF/LICENSE_FREEMARKER.txt"/>
+                fullpath="META-INF/LICENSE_FREEMARKER.txt"/>
             <zipfileset src="${zserio.jars_dir}/${antlr_jar_name}" excludes="META-INF/*"/>
             <manifest>
                 <attribute name="Main-Class" value="zserio.tools.ZserioTool"/>

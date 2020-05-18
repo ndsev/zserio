@@ -86,21 +86,21 @@ public class SqlConstraint extends AstNodeBase
      */
     public static boolean isNullAllowed(SqlConstraint sqlConstraint)
     {
-    	return (sqlConstraint != null) ? sqlConstraint.isNullAllowed : true;
+        return (sqlConstraint != null) ? sqlConstraint.isNullAllowed : true;
     }
-    
+
     /**
      * Evaluates the SQL constraint.
      */
     void evaluate()
     {
-    	// check SQL constraint expression (must be a constant string)
+        // check SQL constraint expression (must be a constant string)
         final String sqlConstraintString = constraintExpr.getStringValue();
         if (sqlConstraintString == null)
             throw new ParserException(constraintExpr, "SQL constraint expression must be a constant string!");
 
         primaryKeyColumnNames = extractColumnsFromConstraint(sqlConstraintString,
-        		PRIMARY_KEY_TABLE_CONSTRAINT_REGEX);
+                PRIMARY_KEY_TABLE_CONSTRAINT_REGEX);
         uniqueColumnNames = extractColumnsFromConstraint(sqlConstraintString, UNIQUE_TABLE_CONSTRAINT_REGEX);
         isPrimaryKey = hasConstraint(sqlConstraintString, PRIMARY_KEY_FIELD_CONSTRAINT_REGEX);
         isNullAllowed = !hasConstraint(sqlConstraintString, NOT_NULL_FIELD_CONSTRAINT_REGEX);
@@ -128,7 +128,7 @@ public class SqlConstraint extends AstNodeBase
         final Pattern regexPattern = Pattern.compile(constraintRegex, Pattern.CASE_INSENSITIVE);
         final Matcher regexMatcher = regexPattern.matcher(sqlConstraintString);
         if (!regexMatcher.find())
-        	return new ArrayList<String>();
+            return new ArrayList<String>();
 
         final String columnNamesGroup = regexMatcher.group(1).trim();
         final String[] columnNames = columnNamesGroup.split("\\s*,\\s*");
@@ -147,7 +147,7 @@ public class SqlConstraint extends AstNodeBase
     private static final String UNIQUE_TABLE_CONSTRAINT_REGEX = "UNIQUE\\s*\\(([^\\)]+)\\)";
     private static final String PRIMARY_KEY_FIELD_CONSTRAINT_REGEX = "PRIMARY\\s+KEY";
     private static final String NOT_NULL_FIELD_CONSTRAINT_REGEX = "NOT\\s+NULL";
-    
+
     private final Expression constraintExpr;
 
     private List<String> primaryKeyColumnNames = new ArrayList<String>();

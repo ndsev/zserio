@@ -25,7 +25,7 @@ public class PubsubEmitterTemplateData extends UserTypeTemplateData
         {
             addHeaderIncludesForType(cppNativeMapper.getCppType(message.getType()));
             final MessageTemplateData templateData = new MessageTemplateData(cppNativeMapper,
-            		cppExpressionFormatter, message);
+                    cppExpressionFormatter, message);
             hasPublishing |= templateData.getIsPublished();
             hasSubscribing |= templateData.getIsSubscribed();
             this.messageList.add(templateData);
@@ -52,7 +52,7 @@ public class PubsubEmitterTemplateData extends UserTypeTemplateData
     public static class MessageTemplateData
     {
         public MessageTemplateData(CppNativeMapper cppNativeMapper, ExpressionFormatter cppExpressionFormatter,
-        		PubsubMessage message) throws ZserioEmitException
+                PubsubMessage message) throws ZserioEmitException
         {
             name = message.getName();
             topicDefinition = cppExpressionFormatter.formatGetter(message.getTopicDefinitionExpr());

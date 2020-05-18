@@ -50,7 +50,7 @@ public class PubsubTypesErrorTest
     public void invalidIntegerTopic()
     {
         final String error =
-        		"invalid_integer_topic_error.zs:10:19: Topic definition must be a constant string!";
+                "invalid_integer_topic_error.zs:10:19: Topic definition must be a constant string!";
         assertTrue(zserioErrors.isPresent(error));
     }
 

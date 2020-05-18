@@ -119,15 +119,15 @@ public class CppRuntimeFunctionDataCreator
             suffix.append("Var");
             if (maxBitSize == 40) // VarSize
             {
-            	suffix.append("Size");
+                suffix.append("Size");
             }
             else
             {
-	            if (!type.isSigned())
-	                suffix.append("U");
-	            suffix.append("Int");
-	            if (maxBitSize != 72) // Var(U)Int takes up to 9 bytes
-	                suffix.append(maxBitSize);
+                if (!type.isSigned())
+                    suffix.append("U");
+                suffix.append("Int");
+                if (maxBitSize != 72) // Var(U)Int takes up to 9 bytes
+                    suffix.append(maxBitSize);
             }
 
             templateData = new RuntimeFunctionTemplateData(suffix.toString());

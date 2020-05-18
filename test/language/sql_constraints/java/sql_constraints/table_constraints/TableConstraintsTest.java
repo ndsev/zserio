@@ -64,7 +64,7 @@ public class TableConstraintsTest
     {
         expectedException.expect(SQLException.class);
         expectedException.expectMessage("UNIQUE constraint failed: tableConstraintsTable.primaryKey1, " +
-        		"tableConstraintsTable.primaryKey2");
+                "tableConstraintsTable.primaryKey2");
 
         final TableConstraintsTable tableConstraintsTable = database.getTableConstraintsTable();
         final TableConstraintsTableRow row1 = new TableConstraintsTableRow();
@@ -100,7 +100,7 @@ public class TableConstraintsTest
     {
         expectedException.expect(SQLException.class);
         expectedException.expectMessage("UNIQUE constraint failed: tableConstraintsTable.uniqueValue1, " +
-        		"tableConstraintsTable.uniqueValue2");
+                "tableConstraintsTable.uniqueValue2");
 
         final TableConstraintsTable tableConstraintsTable = database.getTableConstraintsTable();
         final TableConstraintsTableRow row1 = new TableConstraintsTableRow();

@@ -80,7 +80,7 @@ public class ZserioParserTest
     public void fieldAlignment()
     {
         checkParseTree("fieldAlignment", "align(15):",
-        		"(fieldAlignment align ( (expression (literal 15)) ) :)");
+                "(fieldAlignment align ( (expression (literal 15)) ) :)");
     }
 
     @Test
@@ -269,17 +269,17 @@ public class ZserioParserTest
     {
         checkParseTree("pubsubMessageDefinition", "publish topic(\"pubsub/test\") MessageType messageId;",
                 "(pubsubMessageDefinition (topicDefinition publish topic ( (expression " +
-                		"(literal \"pubsub/test\")) )) " +
+                        "(literal \"pubsub/test\")) )) " +
                         "(typeReference (qualifiedName (id MessageType))) (id messageId) ;)");
 
         checkParseTree("pubsubMessageDefinition", "subscribe topic(\"pubsub/test\") MessageType messageId;",
                 "(pubsubMessageDefinition (topicDefinition subscribe topic ( (expression " +
-                		"(literal \"pubsub/test\")) )) " +
+                        "(literal \"pubsub/test\")) )) " +
                         "(typeReference (qualifiedName (id MessageType))) (id messageId) ;)");
 
         checkParseTree("pubsubMessageDefinition", "topic(\"pubsub/test\") MessageType messageId;",
                 "(pubsubMessageDefinition (topicDefinition topic ( (expression " +
-                		"(literal \"pubsub/test\")) )) " +
+                        "(literal \"pubsub/test\")) )) " +
                         "(typeReference (qualifiedName (id MessageType))) (id messageId) ;)");
     }
 

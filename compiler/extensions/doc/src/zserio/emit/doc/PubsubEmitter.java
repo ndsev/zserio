@@ -24,7 +24,7 @@ public class PubsubEmitter extends DefaultHtmlEmitter
             setCurrentFolder(CONTENT_FOLDER);
             openOutputFileFromType(pubsubType);
             tpl.process(new PubsubTemplateData(getExpressionFormatter(), pubsubType, outputPath,
-            		withSvgDiagrams), writer);
+                    withSvgDiagrams), writer);
         }
         catch (Throwable exception)
         {

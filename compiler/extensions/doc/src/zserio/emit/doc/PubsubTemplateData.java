@@ -11,7 +11,7 @@ import zserio.emit.common.ZserioEmitException;
 public class PubsubTemplateData
 {
     public PubsubTemplateData(ExpressionFormatter docExpressionFormatter, PubsubType pubsubType,
-    		String outputPath, boolean withSvgDiagrams) throws ZserioEmitException
+            String outputPath, boolean withSvgDiagrams) throws ZserioEmitException
     {
         name = pubsubType.getName();
         packageName = pubsubType.getPackage().getPackageName().toString();
@@ -52,7 +52,7 @@ public class PubsubTemplateData
     public static class MessageTemplateData
     {
         public MessageTemplateData(ExpressionFormatter docExpressionFormatter,
-        		PubsubMessage pubsubMessage) throws ZserioEmitException
+                PubsubMessage pubsubMessage) throws ZserioEmitException
         {
             keyword = pubsubMessage.isPublished() && pubsubMessage.isSubscribed() ?
                     "pubsub" : pubsubMessage.isPublished() ? "publish" : "subscribe";

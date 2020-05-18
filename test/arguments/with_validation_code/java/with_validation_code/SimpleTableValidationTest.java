@@ -344,7 +344,7 @@ public class SimpleTableValidationTest
     @Test
     public void invalidEnumValue() throws SQLException
     {
-    	final Connection connection = database.connection();
+        final Connection connection = database.connection();
         populateDb(connection, new TestParameterProvider(), false);
 
         // set fieldEnum to an invalid enum value

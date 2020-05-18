@@ -21,7 +21,7 @@ public class AlignmentErrorTest
     public void fieldAlignment()
     {
         final String error =
-        		"field_alignment_error.zs:6:7: Alignment expression for field 'field' is not positive integer!";
+                "field_alignment_error.zs:6:7: Alignment expression for field 'field' is not positive integer!";
         assertTrue(zserioErrors.isPresent(error));
     }
 
@@ -29,7 +29,7 @@ public class AlignmentErrorTest
     public void negativeIntegerAlignment()
     {
         final String error = "negative_integer_alignment_error.zs:5:7: Alignment expression for field " +
-        		"'field' is not positive integer!";
+                "'field' is not positive integer!";
         assertTrue(zserioErrors.isPresent(error));
     }
 
@@ -37,7 +37,7 @@ public class AlignmentErrorTest
     public void noIntegerAlignment()
     {
         final String error = "no_integer_alignment_error.zs:5:7: Alignment expression for field 'field' " +
-        		"is not positive integer!";
+                "is not positive integer!";
         assertTrue(zserioErrors.isPresent(error));
     }
 

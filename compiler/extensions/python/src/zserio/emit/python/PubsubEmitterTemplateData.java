@@ -25,7 +25,7 @@ public class PubsubEmitterTemplateData extends UserTypeTemplateData
         for (PubsubMessage message : messageList)
         {
             final MessageTemplateData templateData = new MessageTemplateData(pythonNativeMapper,
-            		pythonExpressionFormatter, message, this);
+                    pythonExpressionFormatter, message, this);
             hasPublishing |= templateData.getIsPublished();
             hasSubscribing |= templateData.getIsSubscribed();
             this.messageList.add(templateData);
@@ -54,8 +54,8 @@ public class PubsubEmitterTemplateData extends UserTypeTemplateData
     public static class MessageTemplateData
     {
         public MessageTemplateData(PythonNativeMapper pythonNativeMapper,
-        		ExpressionFormatter pythonExpressionFormatter, PubsubMessage message,
-        		ImportCollector importCollector) throws ZserioEmitException
+                ExpressionFormatter pythonExpressionFormatter, PubsubMessage message,
+                ImportCollector importCollector) throws ZserioEmitException
         {
             name = message.getName();
             topicDefinition = pythonExpressionFormatter.formatGetter(message.getTopicDefinitionExpr());

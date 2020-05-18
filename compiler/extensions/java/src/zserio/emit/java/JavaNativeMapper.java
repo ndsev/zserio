@@ -522,8 +522,8 @@ final class JavaNativeMapper
                     break;
 
                 case 40:
-                	javaNullableType = varSizeArrayType;
-                	break;
+                    javaNullableType = varSizeArrayType;
+                    break;
 
                 case 64:
                     javaNullableType = varUInt64ArrayType;

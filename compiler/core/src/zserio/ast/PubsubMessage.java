@@ -8,13 +8,13 @@ public class PubsubMessage extends DocumentableAstNode
     /**
      * Constructor.
      *
-     * @param location        	  AST node location.
-     * @param name            	  Name of the Pub/Sub message.
-     * @param typeReference   	  Reference to the message type.
+     * @param location            AST node location.
+     * @param name                Name of the Pub/Sub message.
+     * @param typeReference       Reference to the message type.
      * @param topicDefinitionExpr Expression which defines the message's topic.
-     * @param isPublished     	  Whether the message is published.
-     * @param isSubscribed    	  Whether the message is subscribed.
-     * @param docComment      	  Documentation comment belonging to this node.
+     * @param isPublished         Whether the message is published.
+     * @param isSubscribed        Whether the message is subscribed.
+     * @param docComment          Documentation comment belonging to this node.
      */
     public PubsubMessage(AstLocation location, String name, TypeReference typeReference,
             Expression topicDefinitionExpr, boolean isPublished, boolean isSubscribed, DocComment docComment)

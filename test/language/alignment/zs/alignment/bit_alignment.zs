@@ -9,7 +9,7 @@ struct BitAlignment
 align(1):
     // a:0 pos:1 || a:0 pos:78
     bit:1   aligned1Field;
-    
+
     // indented to check the constant in the alignment
 align(ALIGNMENT_2):
     // a:1 pos:2 || a:1 pos:80
