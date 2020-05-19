@@ -36,7 +36,6 @@ set(ZSERIO_CPP_RUNTIME_TEST_SRCS
     zserio/SqliteConnectionTest.cpp
     zserio/StringConvertUtilTest.cpp
     zserio/VarSizeUtilTest.cpp
-    zserio/VarUInt64UtilTest.cpp
 )
 
 add_executable(${PROJECT_NAME} ${ZSERIO_CPP_RUNTIME_TEST_SRCS})

@@ -354,7 +354,7 @@ template <typename ARRAY_TRAITS>
 void writeAuto(const ARRAY_TRAITS& arrayTraits, std::vector<typename ARRAY_TRAITS::type>& array,
         BitStreamWriter& out)
 {
-    out.writeVarSize(convertArraySizeToUInt32(array.size()));
+    out.writeVarSize(convertSizeToUInt32(array.size()));
     write(arrayTraits, array, out);
 }
 
@@ -370,7 +370,7 @@ template <typename ARRAY_TRAITS, typename OFFSET_CHECKER>
 void writeAlignedAuto(const ARRAY_TRAITS& arrayTraits, std::vector<typename ARRAY_TRAITS::type>& array,
         BitStreamWriter& out, const OFFSET_CHECKER& offsetChecker)
 {
-    out.writeVarSize(convertArraySizeToUInt32(array.size()));
+    out.writeVarSize(convertSizeToUInt32(array.size()));
     writeAligned(arrayTraits, array, out, offsetChecker);
 }
 

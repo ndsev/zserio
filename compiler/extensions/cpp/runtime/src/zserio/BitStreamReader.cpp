@@ -6,7 +6,6 @@
 #include "zserio/StringConvertUtil.h"
 #include "zserio/FloatUtil.h"
 #include "zserio/BitStreamReader.h"
-#include "zserio/VarUInt64Util.h"
 
 namespace zserio
 {
@@ -726,7 +725,7 @@ double BitStreamReader::readFloat64()
 std::string BitStreamReader::readString()
 {
     std::string value;
-    const size_t len = static_cast<uint32_t>(readVarSize());
+    const size_t len = static_cast<size_t>(readVarSize());
     value.reserve(len);
     for (size_t i = 0; i < len; ++i)
     {
@@ -742,7 +741,7 @@ bool BitStreamReader::readBool()
 
 BitBuffer BitStreamReader::readBitBuffer()
 {
-    const size_t bitSize = convertVarUInt64ToArraySize(readVarUInt64());
+    const size_t bitSize = static_cast<size_t>(readVarSize());
     size_t numBytesToRead = bitSize / 8;
     const uint8_t numRestBits = static_cast<uint8_t>(bitSize - numBytesToRead * 8);
     BitBuffer bitBuffer(bitSize);

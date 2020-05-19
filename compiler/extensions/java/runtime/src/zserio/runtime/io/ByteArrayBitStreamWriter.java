@@ -7,6 +7,7 @@ import zserio.runtime.BitSizeOfCalculator;
 import zserio.runtime.FloatUtil;
 import zserio.runtime.Util;
 import zserio.runtime.ZserioError;
+import zserio.runtime.VarSizeUtil;
 
 /**
  * A bit stream writer using byte array.
@@ -424,7 +425,7 @@ public class ByteArrayBitStreamWriter extends ByteArrayBitStreamBase implements 
     public void writeBitBuffer(final BitBuffer bitBuffer) throws IOException
     {
         final long bitSize = bitBuffer.getBitSize();
-        writeVarUInt64(bitSize);
+        writeVarSize(VarSizeUtil.convertBitBufferSizeToInt(bitSize));
 
         final byte[] writeBuffer = bitBuffer.getBuffer();
         final int numBytesToWrite = (int)(bitSize / 8);

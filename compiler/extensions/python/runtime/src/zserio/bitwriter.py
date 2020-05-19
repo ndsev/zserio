@@ -215,7 +215,7 @@ class BitStreamWriter:
         """
 
         bitSize = bitBuffer.getBitSize()
-        self.writeVarUInt64(bitSize)
+        self.writeVarSize(bitSize)
 
         writeBuffer = bitBuffer.getBuffer()
         numBytesToWrite = bitSize // 8

@@ -127,8 +127,8 @@ def getBitSizeOfBitBuffer(bitBuffer):
     """
     bitBufferSize = bitBuffer.getBitSize()
 
-    # bit buffer consists of varuint64 for bit size followed by the bits
-    return getBitSizeOfVarUInt64(bitBufferSize) + bitBufferSize
+    # bit buffer consists of varsize for bit size followed by the bits
+    return getBitSizeOfVarSize(bitBufferSize) + bitBufferSize
 
 def _getBitSizeOfVarIntImpl(value, maxValues, varIntName):
     if value >= 0:

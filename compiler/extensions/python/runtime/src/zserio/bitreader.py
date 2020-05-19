@@ -468,7 +468,7 @@ class BitStreamReader:
         :raises PythonRuntimeException: If the reading goes behind the stream.
         """
 
-        bitSize = self.readVarUInt64()
+        bitSize = self.readVarSize()
         numBytesToRead = bitSize // 8
         numRestBits = bitSize - numBytesToRead * 8
         byteSize = (bitSize + 7) // 8

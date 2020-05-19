@@ -58,8 +58,6 @@ set(ZSERIO_CPP_RUNTIME_LIB_SRCS
     zserio/Types.h
     zserio/VarSizeUtil.cpp
     zserio/VarSizeUtil.h
-    zserio/VarUInt64Util.cpp
-    zserio/VarUInt64Util.h
 )
 
 if (CMAKE_SIZEOF_VOID_P EQUAL 8)

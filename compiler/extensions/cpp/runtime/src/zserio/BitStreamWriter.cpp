@@ -249,22 +249,22 @@ void BitStreamWriter::writeFloat64(double data)
 void BitStreamWriter::writeString(const std::string& data)
 {
     const size_t len = data.size();
-    BitStreamWriter::writeVarSize(convertStringSizeToUInt32(len));
+    writeVarSize(convertSizeToUInt32(len));
     for (size_t i = 0; i < len; ++i)
     {
-        BitStreamWriter::writeBits(static_cast<uint8_t>(data[i]), 8);
+        writeBits(static_cast<uint8_t>(data[i]), 8);
     }
 }
 
 void BitStreamWriter::writeBool(bool data)
 {
-    BitStreamWriter::writeBits((data ? 1 : 0), 1);
+    writeBits((data ? 1 : 0), 1);
 }
 
 void BitStreamWriter::writeBitBuffer(const BitBuffer& bitBuffer)
 {
     const size_t bitSize = bitBuffer.getBitSize();
-    writeVarUInt64(bitSize);
+    writeVarSize(convertSizeToUInt32(bitSize));
 
     const uint8_t* buffer = bitBuffer.getBuffer();
     size_t numBytesToWrite = bitSize / 8;

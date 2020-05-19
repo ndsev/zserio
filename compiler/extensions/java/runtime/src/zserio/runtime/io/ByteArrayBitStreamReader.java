@@ -6,7 +6,6 @@ import java.io.IOException;
 import java.math.BigInteger;
 
 import zserio.runtime.FloatUtil;
-import zserio.runtime.VarUInt64Util;
 
 /**
  * A bit stream reader using byte array.
@@ -579,7 +578,7 @@ public class ByteArrayBitStreamReader extends ByteArrayBitStreamBase implements 
     @Override
     public BitBuffer readBitBuffer() throws IOException
     {
-        final int bitSize = VarUInt64Util.convertVarUInt64ToInt(readVarUInt64());
+        final int bitSize = readVarSize();
         final int numBytesToRead = bitSize / 8;
         final byte numRestBits = (byte)(bitSize - numBytesToRead * 8);
         final int byteSize = (bitSize + 7) / 8;

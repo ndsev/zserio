@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.math.BigInteger;
 
 import zserio.runtime.io.BitBuffer;
+import zserio.runtime.VarSizeUtil;
 
 /**
  * The class provides common methods to calculate bit size of an variable stored in the bit stream.
@@ -400,8 +401,8 @@ public class BitSizeOfCalculator
     {
         final long bitBufferSize = bitBuffer.getBitSize();
 
-        // bit buffer consists of varuint64 for bit size followed by the bits
-        return getBitSizeOfVarUInt64(bitBufferSize) + (int)bitBufferSize;
+        // bit buffer consists of varsize for bit size followed by the bits
+        return getBitSizeOfVarSize(VarSizeUtil.convertBitBufferSizeToInt(bitBufferSize)) + (int)bitBufferSize;
     }
 
     private static int sizeOfString(final String str)
