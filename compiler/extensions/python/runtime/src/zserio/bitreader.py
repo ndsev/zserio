@@ -443,7 +443,7 @@ class BitStreamReader:
         :raises PythonRuntimeException: If the reading goes behind the stream.
         """
 
-        length = self.readVarUInt64()
+        length = self.readVarSize()
         value = bytearray()
         for _ in range(length):
             value.append(self.readBits(8))

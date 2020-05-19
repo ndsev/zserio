@@ -726,7 +726,7 @@ double BitStreamReader::readFloat64()
 std::string BitStreamReader::readString()
 {
     std::string value;
-    const size_t len = convertVarUInt64ToArraySize(readVarUInt64());
+    const size_t len = static_cast<uint32_t>(readVarSize());
     value.reserve(len);
     for (size_t i = 0; i < len; ++i)
     {

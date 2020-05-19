@@ -271,8 +271,8 @@ public class ByteArrayBitStreamReader extends ByteArrayBitStreamBase implements 
     public String readString() throws IOException
     {
         final ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        final long numBytes = readVarUInt64();
-        for (long i = 0; i < numBytes; i++)
+        final int numBytes = readVarSize();
+        for (int i = 0; i < numBytes; i++)
         {
             baos.write(readByte());
         }

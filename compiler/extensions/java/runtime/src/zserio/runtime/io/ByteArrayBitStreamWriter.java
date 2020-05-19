@@ -244,7 +244,7 @@ public class ByteArrayBitStreamWriter extends ByteArrayBitStreamBase implements 
     public void writeString(final String value) throws IOException
     {
         final byte[] bytes = value.getBytes(DEFAULT_CHARSET_NAME);
-        writeVarUInt64((long)bytes.length);
+        writeVarSize(bytes.length);
         if (bitOffset == 0)
         {
             write(bytes);

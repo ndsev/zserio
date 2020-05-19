@@ -6,6 +6,7 @@
 #include "zserio/BitSizeOfCalculator.h"
 #include "zserio/FloatUtil.h"
 #include "zserio/BitStreamWriter.h"
+#include "zserio/VarSizeUtil.h"
 
 namespace zserio
 {
@@ -248,7 +249,7 @@ void BitStreamWriter::writeFloat64(double data)
 void BitStreamWriter::writeString(const std::string& data)
 {
     const size_t len = data.size();
-    BitStreamWriter::writeVarUInt64(len);
+    BitStreamWriter::writeVarSize(convertStringSizeToUInt32(len));
     for (size_t i = 0; i < len; ++i)
     {
         BitStreamWriter::writeBits(static_cast<uint8_t>(data[i]), 8);

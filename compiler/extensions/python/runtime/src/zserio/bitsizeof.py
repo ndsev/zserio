@@ -115,7 +115,7 @@ def getBitSizeOfString(string):
     """
 
     stringBytes = string.encode("utf-8")
-    return getBitSizeOfVarUInt64(len(stringBytes)) + len(stringBytes) * 8
+    return getBitSizeOfVarSize(len(stringBytes)) + len(stringBytes) * 8
 
 def getBitSizeOfBitBuffer(bitBuffer):
     """

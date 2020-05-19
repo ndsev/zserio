@@ -381,10 +381,10 @@ public class BitSizeOfCalculator
      */
     public static int getBitSizeOfString(String value) throws ZserioError
     {
-        final long stringBytes = sizeOfString(value);
+        final int stringBytes = sizeOfString(value);
 
-        // the string consists of varuint64 for size followed by the UTF-8 encoded string
-        return getBitSizeOfVarUInt64(stringBytes) + (int)BitPositionUtil.bytesToBits(stringBytes);
+        // the string consists of varsize for size followed by the UTF-8 encoded string
+        return getBitSizeOfVarSize(stringBytes) + (int)BitPositionUtil.bytesToBits(stringBytes);
     }
 
     /**
@@ -404,9 +404,9 @@ public class BitSizeOfCalculator
         return getBitSizeOfVarUInt64(bitBufferSize) + (int)bitBufferSize;
     }
 
-    private static long sizeOfString(final String str)
+    private static int sizeOfString(final String str)
     {
-        long size = 0;
+        int size = 0;
         try
         {
             size = str.getBytes("UTF-8").length;

@@ -193,7 +193,7 @@ class BitStreamWriter:
         """
 
         stringBytes = string.encode("utf-8")
-        self.writeVarUInt64(len(stringBytes))
+        self.writeVarSize(len(stringBytes))
         for stringByte in stringBytes:
             self.writeBits(stringByte, 8)
 
