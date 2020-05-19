@@ -126,7 +126,7 @@ protected:
                 // Item
                 writer.writeBits(PARAMS[i], 16);
                 // ExtraParamUnion - choiceTag CHOICE_value32
-                writer.writeVarUInt64(ExtraParamUnion::CHOICE_value32);
+                writer.writeVarSize(static_cast<uint32_t>(ExtraParamUnion::CHOICE_value32));
                 writer.writeBits(EXTRA_PARAM, 32);
             }
             else

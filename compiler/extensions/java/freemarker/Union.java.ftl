@@ -21,7 +21,7 @@ public class ${name} implements <#if withWriterCode>zserio.runtime.io.Initialize
 <#if fieldList?has_content>
         long endBitPosition = bitPosition;
 
-        endBitPosition += zserio.runtime.BitSizeOfCalculator.getBitSizeOfVarUInt64(choiceTag);
+        endBitPosition += zserio.runtime.BitSizeOfCalculator.getBitSizeOfVarSize(choiceTag);
 
         switch (choiceTag)
         {
@@ -111,7 +111,7 @@ public class ${name} implements <#if withWriterCode>zserio.runtime.io.Initialize
             throws java.io.IOException, zserio.runtime.ZserioError
     {
 <#if fieldList?has_content>
-        choiceTag = zserio.runtime.VarUInt64Util.convertVarUInt64ToInt(in.readVarUInt64());
+        choiceTag = in.readVarSize();
 
         switch (choiceTag)
         {
@@ -133,7 +133,7 @@ public class ${name} implements <#if withWriterCode>zserio.runtime.io.Initialize
     <#if fieldList?has_content>
         long endBitPosition = bitPosition;
 
-        endBitPosition += zserio.runtime.BitSizeOfCalculator.getBitSizeOfVarUInt64(choiceTag);
+        endBitPosition += zserio.runtime.BitSizeOfCalculator.getBitSizeOfVarSize(choiceTag);
 
         switch (choiceTag)
         {
@@ -180,7 +180,7 @@ public class ${name} implements <#if withWriterCode>zserio.runtime.io.Initialize
         }
 
         </#if>
-        out.writeVarUInt64(choiceTag);
+        out.writeVarSize(choiceTag);
 
         switch (choiceTag)
         {

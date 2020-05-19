@@ -17,25 +17,25 @@ class SimpleUnionTest : public ::testing::Test
 protected:
     static void writeSimpleUnionCase1ToByteArray(zserio::BitStreamWriter& writer)
     {
-        writer.writeVarUInt64(SimpleUnion::CHOICE_case1Field); // choice tag
+        writer.writeVarSize(static_cast<uint32_t>(SimpleUnion::CHOICE_case1Field)); // choice tag
         writer.writeSignedBits(CASE1_FIELD, 8);
     }
 
     static void writeSimpleUnionCase2ToByteArray(zserio::BitStreamWriter& writer)
     {
-        writer.writeVarUInt64(SimpleUnion::CHOICE_case2Field); // choice tag
+        writer.writeVarSize(static_cast<uint32_t>(SimpleUnion::CHOICE_case2Field)); // choice tag
         writer.writeBits(CASE2_FIELD, 16);
     }
 
     static void writeSimpleUnionCase3ToByteArray(zserio::BitStreamWriter& writer)
     {
-        writer.writeVarUInt64(SimpleUnion::CHOICE_case3Field); // choice tag
+        writer.writeVarSize(static_cast<uint32_t>(SimpleUnion::CHOICE_case3Field)); // choice tag
         writer.writeString(CASE3_FIELD);
     }
 
     static void writeSimpleUnionCase4ToByteArray(zserio::BitStreamWriter& writer)
     {
-        writer.writeVarUInt64(SimpleUnion::CHOICE_case4Field); // choice tag
+        writer.writeVarSize(SimpleUnion::CHOICE_case4Field); // choice tag
         writer.writeSignedBits(CASE4_FIELD, 8);
     }
 

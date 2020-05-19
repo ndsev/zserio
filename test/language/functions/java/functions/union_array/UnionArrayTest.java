@@ -51,7 +51,7 @@ public class UnionArrayTest
         }
 
         final short isExplicit = (pos >= NUM_ITEM_ELEMENTS) ? (short)1 : (short)0;
-        writer.writeVarUInt64(isExplicit != 0 ? 0 : 1);
+        writer.writeVarSize(isExplicit != 0 ? 0 : 1);
         if (isExplicit != 0)
         {
             writer.writeBits(EXPLICIT_ITEM.getA(), 8);

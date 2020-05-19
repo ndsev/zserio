@@ -11,7 +11,6 @@
 #include <zserio/BitPositionUtil.h>
 #include <zserio/BitSizeOfCalculator.h>
 #include <zserio/BitFieldUtil.h>
-#include <zserio/VarUInt64Util.h>
 <#if has_field_with_constraint(fieldList)>
 #include <zserio/ConstraintException.h>
 </#if>
@@ -169,7 +168,7 @@ size_t ${name}::bitSizeOf(size_t<#if fieldList?has_content> bitPosition</#if>) c
 <#if fieldList?has_content>
     size_t endBitPosition = bitPosition;
 
-    endBitPosition += ::zserio::bitSizeOfVarUInt64(static_cast<uint64_t>(m_choiceTag));
+    endBitPosition += ::zserio::bitSizeOfVarSize(static_cast<uint32_t>(m_choiceTag));
 
     switch (m_choiceTag)
     {
@@ -194,7 +193,7 @@ size_t ${name}::initializeOffsets(size_t bitPosition)
     <#if fieldList?has_content>
     size_t endBitPosition = bitPosition;
 
-    endBitPosition += ::zserio::bitSizeOfVarUInt64(static_cast<uint64_t>(m_choiceTag));
+    endBitPosition += ::zserio::bitSizeOfVarSize(static_cast<uint32_t>(m_choiceTag));
 
     switch (m_choiceTag)
     {
@@ -288,7 +287,7 @@ void ${name}::write(::zserio::BitStreamWriter&<#if fieldList?has_content> out</#
     <@compound_pre_write_actions needsChildrenInitialization, hasFieldWithOffset/>
 
         </#if>
-    out.writeVarUInt64(static_cast<uint64_t>(m_choiceTag));
+    out.writeVarSize(static_cast<uint32_t>(m_choiceTag));
 
     switch (m_choiceTag)
     {
@@ -307,7 +306,7 @@ void ${name}::write(::zserio::BitStreamWriter&<#if fieldList?has_content> out</#
 
 ${name}::ChoiceTag ${name}::readChoiceTag(::zserio::BitStreamReader& in)
 {
-    return static_cast<${name}::ChoiceTag>(::zserio::convertVarUInt64ToInt32(in.readVarUInt64()));
+    return static_cast<${name}::ChoiceTag>(static_cast<int32_t>(in.readVarSize()));
 }
 
 ::zserio::AnyHolder ${name}::readObject(::zserio::BitStreamReader& in)

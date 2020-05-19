@@ -71,11 +71,11 @@ class UnionConstraintsTest(unittest.TestCase):
             unionConstraints.write(writer)
 
     def _writeValue8(self, writer, value8):
-        writer.writeVarUInt64(self.api.UnionConstraints.CHOICE_value8)
+        writer.writeVarSize(self.api.UnionConstraints.CHOICE_value8)
         writer.writeBits(value8, 8)
 
     def _writeValue16(self, writer, value16):
-        writer.writeVarUInt64(self.api.UnionConstraints.CHOICE_value16)
+        writer.writeVarSize(self.api.UnionConstraints.CHOICE_value16)
         writer.writeBits(value16, 8)
 
     VALUE8_CORRECT_CONSTRAINT = 1

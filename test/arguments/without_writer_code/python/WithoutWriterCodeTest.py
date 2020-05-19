@@ -238,7 +238,7 @@ class WithoutWriterCodeTest(unittest.TestCase):
                 # Item
                 writer.writeBits(PARAMS[i], 16)
                 # ExtraParamUnion - choiceTag CHOICE_value32
-                writer.writeVarUInt64(self.api.ExtraParamUnion.CHOICE_value32)
+                writer.writeVarSize(self.api.ExtraParamUnion.CHOICE_value32)
                 writer.writeBits(EXTRA_PARAM, 32)
             else:
                 writer.writeBits(PARAMS[i], 16)

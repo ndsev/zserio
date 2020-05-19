@@ -74,7 +74,7 @@ class ${name}:
 <#if fieldList?has_content>
         endBitPosition = bitPosition
 
-        endBitPosition += zserio.bitsizeof.getBitSizeOfVarUInt64(self._choiceTag)
+        endBitPosition += zserio.bitsizeof.getBitSizeOfVarSize(self._choiceTag)
 
         <@union_if "compound_bitsizeof_field"/>
 
@@ -90,7 +90,7 @@ class ${name}:
     <#if fieldList?has_content>
         endBitPosition = bitPosition
 
-        endBitPosition += zserio.bitsizeof.getBitSizeOfVarUInt64(self._choiceTag)
+        endBitPosition += zserio.bitsizeof.getBitSizeOfVarSize(self._choiceTag)
 
         <@union_if "compound_initialize_offsets_field"/>
 
@@ -105,7 +105,7 @@ class ${name}:
 </#macro>
     def read(self, reader):
 <#if fieldList?has_content>
-        self._choiceTag = reader.readVarUInt64()
+        self._choiceTag = reader.readVarSize()
 
         <@union_if "union_read_field"/>
 <#else>
@@ -125,7 +125,7 @@ class ${name}:
         del callInitializeOffsets
         </#if>
 
-        writer.writeVarUInt64(self._choiceTag)
+        writer.writeVarSize(self._choiceTag)
 
         <@union_if "union_write_field"/>
     <#else>

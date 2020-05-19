@@ -16,13 +16,13 @@ class UnionConstraintsTest : public ::testing::Test
 protected:
     void writeUnionConstraintsToByteArray(zserio::BitStreamWriter& writer, uint8_t value8)
     {
-        writer.writeVarUInt64(UnionConstraints::CHOICE_value8);
+        writer.writeVarSize(static_cast<uint32_t>(UnionConstraints::CHOICE_value8));
         writer.writeBits(value8, 8);
     }
 
     void writeUnionConstraintsToByteArray(zserio::BitStreamWriter& writer, uint16_t value16)
     {
-        writer.writeVarUInt64(UnionConstraints::CHOICE_value8);
+        writer.writeVarSize(static_cast<uint32_t>(UnionConstraints::CHOICE_value8));
         writer.writeBits(value16, 16);
     }
 

@@ -18,7 +18,8 @@ protected:
     {
         writer.writeBits((writeWrongOffsets) ? WRONG_TERMINATOR_OFFSET : TERMINATOR_OFFSET, 32);
         writer.writeBool(BOOL_VALUE);
-        writer.writeVarUInt64(NestedOffsetUnion::CHOICE_nestedOffsetArrayStructure); // union's choice tag
+        // union's choice tag
+        writer.writeVarSize(static_cast<uint32_t>(NestedOffsetUnion::CHOICE_nestedOffsetArrayStructure));
         writer.writeBits(NUM_ELEMENTS, 8);
         for (short i = 0; i < NUM_ELEMENTS; ++i)
         {

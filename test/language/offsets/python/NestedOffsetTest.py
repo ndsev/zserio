@@ -79,7 +79,7 @@ class NestedOffsetTest(unittest.TestCase):
     def _writeNestedOffsetToStream(self, writer, writeWrongOffsets):
         writer.writeBits(self.WRONG_TERMINATOR_OFFSET if writeWrongOffsets else self.TERMINATOR_OFFSET, 32)
         writer.writeBool(self.BOOL_VALUE)
-        writer.writeVarUInt64(self.api.NestedOffsetUnion.CHOICE_nestedOffsetArrayStructure)
+        writer.writeVarSize(self.api.NestedOffsetUnion.CHOICE_nestedOffsetArrayStructure)
 
         writer.writeBits(self.NUM_ELEMENTS, 8)
         for i in range(self.NUM_ELEMENTS):

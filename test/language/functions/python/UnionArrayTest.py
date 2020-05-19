@@ -34,7 +34,7 @@ class UnionArrayTest(unittest.TestCase):
             writer.writeBits(item.getB(), 8)
 
         isExplicit = 1 if pos >= self.NUM_ITEM_ELEMENTS else 0
-        writer.writeVarUInt64(0 if isExplicit != 0 else 1)
+        writer.writeVarSize(0 if isExplicit != 0 else 1)
         if isExplicit != 0:
             writer.writeBits(self.EXPLICIT_ITEM.getA(), 8)
             writer.writeBits(self.EXPLICIT_ITEM.getB(), 8)

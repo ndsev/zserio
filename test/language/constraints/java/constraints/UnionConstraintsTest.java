@@ -5,8 +5,6 @@ import static org.junit.Assert.*;
 import java.io.File;
 import java.io.IOException;
 
-import javax.imageio.stream.FileImageOutputStream;
-
 import org.junit.Test;
 
 import constraints.union_constraints.UnionConstraints;
@@ -96,9 +94,9 @@ public class UnionConstraintsTest
 
     private void writeUnionConstraintsToFile(File file, short value8) throws IOException
     {
-        final FileImageOutputStream stream = new FileImageOutputStream(file);
+        final FileBitStreamWriter stream = new FileBitStreamWriter(file);
 
-        stream.writeBits(UnionConstraints.CHOICE_value8, 8);
+        stream.writeVarSize(UnionConstraints.CHOICE_value8);
         stream.writeBits(value8, 8);
 
         stream.close();
@@ -106,9 +104,9 @@ public class UnionConstraintsTest
 
     private void writeUnionConstraintsToFile(File file, int value16) throws IOException
     {
-        final FileImageOutputStream stream = new FileImageOutputStream(file);
+        final FileBitStreamWriter stream = new FileBitStreamWriter(file);
 
-        stream.writeBits(UnionConstraints.CHOICE_value16, 8);
+        stream.writeVarSize(UnionConstraints.CHOICE_value16);
         stream.writeBits(value16, 16);
 
         stream.close();

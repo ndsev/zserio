@@ -45,7 +45,7 @@ protected:
         }
 
         const uint8_t isExplicit = (pos >= NUM_ITEM_ELEMENTS) ? 1 : 0;
-        writer.writeVarUInt64(isExplicit != 0 ? 0 : 1); // choice tag
+        writer.writeVarSize(isExplicit != 0 ? 0 : 1); // choice tag
         if (isExplicit != 0)
         {
             writer.writeBits(m_explicitItem.getA(), 8);

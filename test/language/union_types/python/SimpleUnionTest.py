@@ -205,7 +205,7 @@ class SimpleUnionTest(unittest.TestCase):
         self.assertTrue(simpleUnion == readSimpleUnion)
 
     def _writeSimpleUnionToStream(self, writer, choiceTag):
-        writer.writeVarUInt64(choiceTag)
+        writer.writeVarSize(choiceTag)
         if choiceTag == self.api.SimpleUnion.CHOICE_case1Field:
             writer.writeSignedBits(self.CASE1_FIELD, 8)
         elif choiceTag == self.api.SimpleUnion.CHOICE_case2Field:

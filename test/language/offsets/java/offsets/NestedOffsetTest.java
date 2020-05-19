@@ -130,7 +130,7 @@ public class NestedOffsetTest
 
         writer.writeUnsignedInt((writeWrongOffsets) ? WRONG_TERMINATOR_OFFSET : TERMINATOR_OFFSET);
         writer.writeBool(BOOL_VALUE);
-        writer.writeVarUInt64(NestedOffsetUnion.CHOICE_nestedOffsetArrayStructure); // union's choice tag
+        writer.writeVarSize(NestedOffsetUnion.CHOICE_nestedOffsetArrayStructure); // union's choice tag
         writer.writeUnsignedByte(NUM_ELEMENTS);
         for (short i = 0; i < NUM_ELEMENTS; ++i)
         {

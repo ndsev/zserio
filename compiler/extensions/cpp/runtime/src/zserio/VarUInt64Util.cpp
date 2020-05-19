@@ -19,11 +19,6 @@ namespace
     }
 }
 
-int32_t convertVarUInt64ToInt32(uint64_t value)
-{
-    return convertVarUInt64<int32_t>(value);
-}
-
 size_t convertVarUInt64ToArraySize(uint64_t value)
 {
     return convertVarUInt64<size_t>(value);

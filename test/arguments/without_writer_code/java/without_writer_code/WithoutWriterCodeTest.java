@@ -403,7 +403,7 @@ public class WithoutWriterCodeTest
                 // Item
                 writer.writeBits((long)PARAMS[i], 16);
                 //ExtraParamUnion - choiceTag CHOICE_value32
-                writer.writeVarUInt64(ExtraParamUnion.CHOICE_value32);
+                writer.writeVarSize(ExtraParamUnion.CHOICE_value32);
                 writer.writeBits(EXTRA_PARAM, 32);
             }
             else
