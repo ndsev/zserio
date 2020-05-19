@@ -21,20 +21,20 @@ protected:
     void prepare(BitStreamWriter& writer, bool wrongOffset)
     {
         // offset
-        writer.writeVarUInt64(VALUES_SIZE);
+        writer.writeVarSize(static_cast<uint32_t>(VALUES_SIZE));
         for (size_t i = 0; i < VALUES_SIZE; ++i)
         {
             const uint64_t offset = FIRST_OFFSET + i * 4 + (wrongOffset && i == VALUES_SIZE - 1 ? 1 : 0);
             writer.writeBits64(offset, 64);
         }
         // array
-        writer.writeVarUInt64(ARRAY_SIZE);
+        writer.writeVarSize(static_cast<uint32_t>(ARRAY_SIZE));
         for (size_t i = 0; i < ARRAY_SIZE; ++i)
         {
             writer.writeBits(0, 8);
         }
         // values
-        writer.writeVarUInt64(VALUES_SIZE);
+        writer.writeVarSize(static_cast<uint32_t>(VALUES_SIZE));
         for (size_t i = 0; i < VALUES_SIZE; ++i)
         {
             writer.writeBits(0, 32);

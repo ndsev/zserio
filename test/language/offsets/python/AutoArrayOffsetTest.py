@@ -80,7 +80,7 @@ class AutoArrayOffsetTest(unittest.TestCase):
     def _writeAutoArrayHolderToStream(self, writer, writeWrongOffset):
         writer.writeBits(self.WRONG_AUTO_ARRAY_OFFSET if writeWrongOffset else self.AUTO_ARRAY_OFFSET, 32)
         writer.writeBits(self.FORCED_ALIGNMENT_VALUE, 8)
-        writer.writeVarUInt64(self.AUTO_ARRAY_LENGTH)
+        writer.writeVarSize(self.AUTO_ARRAY_LENGTH)
         for i in range(self.AUTO_ARRAY_LENGTH):
             writer.writeBits(i, 7)
 

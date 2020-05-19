@@ -7,7 +7,7 @@
 #include "zserio/BitStreamWriter.h"
 #include "zserio/BitStreamReader.h"
 #include "zserio/BitPositionUtil.h"
-#include "zserio/VarUInt64Util.h"
+#include "zserio/VarSizeUtil.h"
 #include "zserio/PreWriteAction.h"
 #include "zserio/BitSizeOfCalculator.h"
 #include "zserio/Enums.h"
@@ -101,7 +101,7 @@ template <typename ARRAY_TRAITS>
 size_t bitSizeOfAuto(const ARRAY_TRAITS& arrayTraits, const std::vector<typename ARRAY_TRAITS::type>& array,
         size_t bitPosition)
 {
-    const size_t lengthBitSizeOf = zserio::bitSizeOfVarUInt64(array.size());
+    const size_t lengthBitSizeOf = zserio::bitSizeOfVarSize(array.size());
 
     return lengthBitSizeOf + bitSizeOf(arrayTraits, array, bitPosition + lengthBitSizeOf);
 }
@@ -119,7 +119,7 @@ template <typename ARRAY_TRAITS>
 size_t bitSizeOfAlignedAuto(const ARRAY_TRAITS& arrayTraits,
         const std::vector<typename ARRAY_TRAITS::type>& array, size_t bitPosition)
 {
-    const size_t lengthBitSizeOf = zserio::bitSizeOfVarUInt64(array.size());
+    const size_t lengthBitSizeOf = zserio::bitSizeOfVarSize(array.size());
 
     return lengthBitSizeOf + bitSizeOfAligned(arrayTraits, array, bitPosition + lengthBitSizeOf);
 }
@@ -193,7 +193,7 @@ template <typename ARRAY_TRAITS>
 size_t initializeOffsetsAuto(const ARRAY_TRAITS& arrayTraits, std::vector<typename ARRAY_TRAITS::type>& array,
         size_t bitPosition)
 {
-    return initializeOffsets(arrayTraits, array, bitPosition + zserio::bitSizeOfVarUInt64(array.size()));
+    return initializeOffsets(arrayTraits, array, bitPosition + zserio::bitSizeOfVarSize(array.size()));
 }
 
 /**
@@ -211,7 +211,7 @@ size_t initializeOffsetsAlignedAuto(const ARRAY_TRAITS& arrayTraits,
         std::vector<typename ARRAY_TRAITS::type>& array, size_t bitPosition,
         const OFFSET_INITIALIZER& offsetInitializer)
 {
-    return initializeOffsetsAligned(arrayTraits, array, bitPosition + zserio::bitSizeOfVarUInt64(array.size()),
+    return initializeOffsetsAligned(arrayTraits, array, bitPosition + zserio::bitSizeOfVarSize(array.size()),
             offsetInitializer);
 }
 
@@ -267,8 +267,8 @@ template <typename ARRAY_TRAITS>
 void readAuto(const ARRAY_TRAITS& arrayTraits, std::vector<typename ARRAY_TRAITS::type>& array,
         BitStreamReader& in)
 {
-    const uint64_t arraySize = in.readVarUInt64();
-    read(arrayTraits, array, in, convertVarUInt64ToArraySize(arraySize));
+    const uint32_t arraySize = in.readVarSize();
+    read(arrayTraits, array, in, static_cast<size_t>(arraySize));
 }
 
 /**
@@ -283,8 +283,8 @@ template <typename ARRAY_TRAITS, typename OFFSET_CHECKER>
 void readAlignedAuto(const ARRAY_TRAITS& arrayTraits, std::vector<typename ARRAY_TRAITS::type>& array,
         BitStreamReader& in, const OFFSET_CHECKER& offsetChecker)
 {
-    const uint64_t arraySize = in.readVarUInt64();
-    readAligned(arrayTraits, array, in, convertVarUInt64ToArraySize(arraySize), offsetChecker);
+    const uint32_t arraySize = in.readVarSize();
+    readAligned(arrayTraits, array, in, static_cast<size_t>(arraySize), offsetChecker);
 }
 
 /**
@@ -309,7 +309,7 @@ void readImplicit(const ARRAY_TRAITS& arrayTraits, std::vector<typename ARRAY_TR
  *
  * \param arrayTraits Array traits which know how to write a single element.
  * \param array Array to write.
- * \param out Bit stream writer
+ * \param out Bit stream writer to use.
  */
 template <typename ARRAY_TRAITS>
 void write(const ARRAY_TRAITS& arrayTraits, std::vector<typename ARRAY_TRAITS::type>& array,
@@ -325,7 +325,7 @@ void write(const ARRAY_TRAITS& arrayTraits, std::vector<typename ARRAY_TRAITS::t
  *
  * \param arrayTraits Array traits which know how to write a single element.
  * \param array Array to write.
- * \param out Bit stream writer
+ * \param out Bit stream writer to use.
  * \param offsetChecker Offset checker used to check offsets before writing.
  */
 template <typename ARRAY_TRAITS, typename OFFSET_CHECKER>
@@ -348,13 +348,13 @@ void writeAligned(const ARRAY_TRAITS& arrayTraits, std::vector<typename ARRAY_TR
  *
  * \param arrayTraits Array traits which know how to write a single element.
  * \param array Array to write.
- * \param out Bit stream writer
+ * \param out Bit stream writer to use.
  */
 template <typename ARRAY_TRAITS>
 void writeAuto(const ARRAY_TRAITS& arrayTraits, std::vector<typename ARRAY_TRAITS::type>& array,
         BitStreamWriter& out)
 {
-    out.writeVarUInt64(static_cast<uint64_t>(array.size()));
+    out.writeVarSize(convertArraySizeToUInt32(array.size()));
     write(arrayTraits, array, out);
 }
 
@@ -363,14 +363,14 @@ void writeAuto(const ARRAY_TRAITS& arrayTraits, std::vector<typename ARRAY_TRAIT
  *
  * \param arrayTraits Array traits which know how to write a single element.
  * \param array Array to write.
- * \param out Bit stream writer
+ * \param out Bit stream writer to use.
  * \param offsetChecker Offset checker used to check offsets before writing.
  */
 template <typename ARRAY_TRAITS, typename OFFSET_CHECKER>
 void writeAlignedAuto(const ARRAY_TRAITS& arrayTraits, std::vector<typename ARRAY_TRAITS::type>& array,
         BitStreamWriter& out, const OFFSET_CHECKER& offsetChecker)
 {
-    out.writeVarUInt64(static_cast<uint64_t>(array.size()));
+    out.writeVarSize(convertArraySizeToUInt32(array.size()));
     writeAligned(arrayTraits, array, out, offsetChecker);
 }
 
@@ -546,7 +546,7 @@ public:
     /**
      * Writes the single array element.
      *
-     * \param out Bit stream writer.
+     * \param out Bit stream writer to use.
      * \param value Element's value to write.
      */
     void write(BitStreamWriter& out, type value) const
@@ -616,7 +616,7 @@ struct StdIntArrayTraits
     /**
      * Writes the single array element.
      *
-     * \param out Bit stream writer.
+     * \param out Bit stream writer to use.
      * \param value Element's value to write.
      */
     static void write(BitStreamWriter& out, type value)
@@ -685,7 +685,7 @@ struct VarIntNNArrayTraits<int16_t>
     /**
      * Writes the single array element.
      *
-     * \param out Bit stream writer.
+     * \param out Bit stream writer to use.
      * \param value Element's value to write.
      */
     static void write(BitStreamWriter& out, type value)
@@ -746,7 +746,7 @@ struct VarIntNNArrayTraits<int32_t>
     /**
      * Writes the single array element.
      *
-     * \param out Bit stream writer.
+     * \param out Bit stream writer to use.
      * \param value Element's value to write.
      */
     static void write(BitStreamWriter& out, type value)
@@ -806,7 +806,7 @@ struct VarIntNNArrayTraits<int64_t>
     /**
      * Writes the single array element.
      *
-     * \param out Bit stream writer.
+     * \param out Bit stream writer to use.
      * \param value Element's value to write.
      */
     static void write(BitStreamWriter& out, type value)
@@ -866,7 +866,7 @@ struct VarIntNNArrayTraits<uint16_t>
     /**
      * Writes the single array element.
      *
-     * \param out Bit stream writer.
+     * \param out Bit stream writer to use.
      * \param value Element's value to write.
      */
     static void write(BitStreamWriter& out, type value)
@@ -926,7 +926,7 @@ struct VarIntNNArrayTraits<uint32_t>
     /**
      * Writes the single array element.
      *
-     * \param out Bit stream writer.
+     * \param out Bit stream writer to use.
      * \param value Element's value to write.
      */
     static void write(BitStreamWriter& out, type value)
@@ -986,7 +986,7 @@ struct VarIntNNArrayTraits<uint64_t>
     /**
      * Writes the single array element.
      *
-     * \param out Bit stream writer.
+     * \param out Bit stream writer to use.
      * \param value Element's value to write.
      */
     static void write(BitStreamWriter& out, type value)
@@ -1052,7 +1052,7 @@ struct VarIntArrayTraits<int64_t>
     /**
      * Writes the single array element.
      *
-     * \param out Bit stream writer.
+     * \param out Bit stream writer to use.
      * \param value Element's value to write.
      */
     static void write(BitStreamWriter& out, type value)
@@ -1112,7 +1112,7 @@ struct VarIntArrayTraits<uint64_t>
     /**
      * Writes the single array element.
      *
-     * \param out Bit stream writer.
+     * \param out Bit stream writer to use.
      * \param value Element's value to write.
      */
     static void write(BitStreamWriter& out, type value)
@@ -1171,7 +1171,7 @@ struct VarSizeArrayTraits
     /**
      * Writes the single array element.
      *
-     * \param out Bit stream writer.
+     * \param out Bit stream writer to use.
      * \param value Element's value to write.
      */
     static void write(BitStreamWriter& out, type value)
@@ -1238,7 +1238,7 @@ struct Float16ArrayTraits
     /**
      * Writes the single array element.
      *
-     * \param out Bit stream writer.
+     * \param out Bit stream writer to use.
      * \param value Element's value to write.
      */
     static void write(BitStreamWriter& out, type value)
@@ -1305,7 +1305,7 @@ struct Float32ArrayTraits
     /**
      * Writes the single array element.
      *
-     * \param out Bit stream writer.
+     * \param out Bit stream writer to use.
      * \param value Element's value to write.
      */
     static void write(BitStreamWriter& out, type value)
@@ -1372,7 +1372,7 @@ struct Float64ArrayTraits
     /**
      * Writes the single array element.
      *
-     * \param out Bit stream writer.
+     * \param out Bit stream writer to use.
      * \param value Element's value to write.
      */
     static void write(BitStreamWriter& out, type value)
@@ -1439,7 +1439,7 @@ struct BoolArrayTraits
     /**
      * Writes the single array element.
      *
-     * \param out Bit stream writer.
+     * \param out Bit stream writer to use.
      * \param value Element's value to write.
      */
     static void write(BitStreamWriter& out, type value)
@@ -1498,7 +1498,7 @@ struct StringArrayTraits
     /**
      * Writes the single array element.
      *
-     * \param out Bit stream writer.
+     * \param out Bit stream writer to use.
      * \param value Element's value to write.
      */
     static void write(BitStreamWriter& out, type value)
@@ -1557,7 +1557,7 @@ struct BitBufferArrayTraits
     /**
      * Writes the single array element.
      *
-     * \param out Bit stream writer.
+     * \param out Bit stream writer to use.
      * \param value Element's value to write.
      */
     static void write(BitStreamWriter& out, type value)
@@ -1617,7 +1617,7 @@ struct EnumArrayTraits
     /**
      * Writes the single array element.
      *
-     * \param out Bit stream writer.
+     * \param out Bit stream writer to use.
      * \param value Element's value to write.
      */
     static void write(BitStreamWriter& out, type value)
@@ -1678,7 +1678,7 @@ struct BitmaskArrayTraits
     /**
      * Writes the single array element.
      *
-     * \param out Bit stream writer.
+     * \param out Bit stream writer to use.
      * \param value Element's value to write.
      */
     static void write(BitStreamWriter& out, type value)
@@ -1765,7 +1765,7 @@ public:
     /**
      * Writes the single array element.
      *
-     * \param out Bit stream writer.
+     * \param out Bit stream writer to use.
      * \param value Element's value to write.
      */
     static void write(BitStreamWriter& out, type& value)

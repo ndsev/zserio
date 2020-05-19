@@ -123,7 +123,7 @@ public class AutoArrayOffsetTest
         final FileBitStreamWriter writer = new FileBitStreamWriter(file);
         writer.writeUnsignedInt((writeWrongOffset) ? WRONG_AUTO_ARRAY_OFFSET : AUTO_ARRAY_OFFSET);
         writer.writeBits(FORCED_ALIGNMENT_VALUE, 8);
-        writer.writeVarUInt64(AUTO_ARRAY_LENGTH);
+        writer.writeVarSize(AUTO_ARRAY_LENGTH);
         for (int i = 0; i < AUTO_ARRAY_LENGTH; ++i)
             writer.writeBits(i, 7);
         writer.close();

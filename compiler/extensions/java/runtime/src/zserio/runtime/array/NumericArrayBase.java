@@ -40,7 +40,7 @@ abstract class NumericArrayBase<E> extends ArrayBase<E>
      */
     protected int bitSizeOfAutoImpl(long bitPosition, int numBits)
     {
-        return BitSizeOfCalculator.getBitSizeOfVarUInt64(length()) + bitSizeOfImpl(bitPosition, numBits);
+        return BitSizeOfCalculator.getBitSizeOfVarSize(length()) + bitSizeOfImpl(bitPosition, numBits);
     }
 
     /**
@@ -55,7 +55,7 @@ abstract class NumericArrayBase<E> extends ArrayBase<E>
      */
     protected int bitSizeOfAlignedAutoImpl(long bitPosition, int numBits)
     {
-        return BitSizeOfCalculator.getBitSizeOfVarUInt64(length()) + bitSizeOfAlignedImpl(bitPosition, numBits);
+        return BitSizeOfCalculator.getBitSizeOfVarSize(length()) + bitSizeOfAlignedImpl(bitPosition, numBits);
     }
 
     /**
@@ -119,7 +119,7 @@ abstract class NumericArrayBase<E> extends ArrayBase<E>
      */
     protected long initializeOffsetsAlignedAutoImpl(long bitPosition, int numBits, OffsetSetter setter)
     {
-        long currentBitPosition = bitPosition + BitSizeOfCalculator.getBitSizeOfVarUInt64(length());
+        long currentBitPosition = bitPosition + BitSizeOfCalculator.getBitSizeOfVarSize(length());
 
         return initializeOffsetsAlignedImpl(currentBitPosition, numBits, setter);
     }

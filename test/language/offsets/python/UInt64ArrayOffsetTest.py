@@ -81,18 +81,18 @@ class UIn64ArrayOffsetTest(unittest.TestCase):
         writer = zserio.BitStreamWriter()
 
         # offset
-        writer.writeVarUInt64(self.VALUES_SIZE)
+        writer.writeVarSize(self.VALUES_SIZE)
         for i in range(self.VALUES_SIZE):
             offset = self.FIRST_OFFSET + i * 4 + (wrongOffset and 1 if (i == self.VALUES_SIZE - 1) else 0)
             writer.writeBits(offset, 64)
 
         # array
-        writer.writeVarUInt64(self.ARRAY_SIZE)
+        writer.writeVarSize(self.ARRAY_SIZE)
         for i in range(self.ARRAY_SIZE):
             writer.writeSignedBits(0, 8)
 
         # values
-        writer.writeVarUInt64(self.VALUES_SIZE)
+        writer.writeVarSize(self.VALUES_SIZE)
         for i in range(self.VALUES_SIZE):
             writer.writeSignedBits(0, 32)
 

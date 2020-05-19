@@ -193,7 +193,7 @@ public class Float16Array extends NumericArrayBase<Float>
     public void writeAlignedAuto(BitStreamWriter writer, OffsetChecker checker)
             throws IOException, ZserioError
     {
-        writer.writeVarUInt64(data.length);
+        writer.writeVarSize(data.length);
         writeAligned(writer, checker);
     }
 

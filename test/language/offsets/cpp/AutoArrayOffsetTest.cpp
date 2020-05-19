@@ -23,7 +23,7 @@ protected:
 
         writer.writeBits(FORCED_ALIGNMENT_VALUE, 8);
 
-        writer.writeVarUInt64(static_cast<uint64_t>(AUTO_ARRAY_LENGTH));
+        writer.writeVarSize(static_cast<uint32_t>(AUTO_ARRAY_LENGTH));
         for (size_t i = 0; i < AUTO_ARRAY_LENGTH; ++i)
             writer.writeBits(static_cast<uint32_t>(i), 7);
     }

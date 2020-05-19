@@ -108,7 +108,7 @@ public class UInt64OffsetTest
 
         // offset
         writer.writeBigInteger(BigInteger.valueOf(wrongOffset ? WRONG_OFFSET : OFFSET), 64);
-        writer.writeVarUInt64(ARRAY_SIZE);
+        writer.writeVarSize(ARRAY_SIZE);
         for (int i = 0; i < ARRAY_SIZE; ++i)
         {
             writer.writeByte((byte)0);

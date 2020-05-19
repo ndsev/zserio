@@ -198,7 +198,7 @@ public class BoolArray extends NumericArrayBase<Boolean>
     public void writeAlignedAuto(BitStreamWriter writer, OffsetChecker checker)
             throws IOException, ZserioError
     {
-        writer.writeVarUInt64(data.length);
+        writer.writeVarSize(data.length);
         writeAligned(writer, checker);
     }
 

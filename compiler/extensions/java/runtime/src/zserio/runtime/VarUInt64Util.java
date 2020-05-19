@@ -23,18 +23,4 @@ public final class VarUInt64Util
 
         return (int) value;
     }
-
-    /**
-     * Converts long value read from varuint64 to native type corresponding to array size.
-     *
-     * @param value Value read from varuint64.
-     *
-     * @return Checked array size as a signed integer.
-     *
-     * @throws ZserioError Throws if long value cannot be convert to array size (signed integer).
-     */
-    public static int convertVarUInt64ToArraySize(long value) throws ZserioError
-    {
-        return convertVarUInt64ToInt(value);
-    }
 }

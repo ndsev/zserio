@@ -127,7 +127,7 @@ public class AutoArrayTest
     {
         final FileBitStreamWriter writer = new FileBitStreamWriter(file);
 
-        writer.writeVarUInt64(numElements);
+        writer.writeVarSize(numElements);
         for (short i = 0; i < numElements; ++i)
             writer.writeUnsignedByte(i);
 

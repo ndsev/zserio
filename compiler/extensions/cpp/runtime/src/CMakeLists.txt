@@ -56,6 +56,8 @@ set(ZSERIO_CPP_RUNTIME_LIB_SRCS
     zserio/StringConvertUtil.cpp
     zserio/StringConvertUtil.h
     zserio/Types.h
+    zserio/VarSizeUtil.cpp
+    zserio/VarSizeUtil.h
     zserio/VarUInt64Util.cpp
     zserio/VarUInt64Util.h
 )

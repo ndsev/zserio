@@ -138,7 +138,7 @@ public class UnsignedShortArray extends IntArrayBase
     public void writeAlignedAuto(BitStreamWriter writer, int numBits, OffsetChecker checker)
             throws IOException, ZserioError
     {
-        writer.writeVarUInt64(data.length);
+        writer.writeVarSize(data.length);
         writeAligned(writer, numBits, checker);
     }
 

@@ -196,7 +196,7 @@ public class Float64Array extends NumericArrayBase<Double>
     public void writeAlignedAuto(BitStreamWriter writer, OffsetChecker checker)
             throws IOException, ZserioError
     {
-        writer.writeVarUInt64(data.length);
+        writer.writeVarSize(data.length);
         writeAligned(writer, checker);
     }
 

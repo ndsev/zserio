@@ -34,11 +34,11 @@ protected:
     void writeAutoArrayRecursionToByteArray(zserio::BitStreamWriter& writer, size_t numElements)
     {
         writer.writeBits(0, 8);
-        writer.writeVarUInt64(static_cast<uint64_t>(numElements));
+        writer.writeVarSize(static_cast<uint32_t>(numElements));
         for (size_t i = 1; i <= numElements; ++i)
         {
             writer.writeBits(static_cast<uint32_t>(i), 8);
-            writer.writeVarUInt64(0);
+            writer.writeVarSize(0);
         }
     }
 

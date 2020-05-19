@@ -15,7 +15,7 @@ class AutoArrayTest : public ::testing::Test
 protected:
     void writeAutoArrayToByteArray(zserio::BitStreamWriter& writer, size_t length)
     {
-        writer.writeVarUInt64(static_cast<uint64_t>(length));
+        writer.writeVarSize(static_cast<uint32_t>(length));
         for (size_t i = 0; i < length; ++i)
             writer.writeBits(static_cast<uint32_t>(i), 8);
     }

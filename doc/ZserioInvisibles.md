@@ -39,7 +39,7 @@ it does not necessarily have to be placed right in front.
 ## Auto Arrays
 
 Auto Arrays do not expose the size of the list in the schema. Where in classic zserio the size of an array must
-be explicitly stated in the schema, the Auto Arrays set an invisible varuint64 length descriptor right in front
+be explicitly stated in the schema, the Auto Arrays set an invisible varsize length descriptor right in front
 of the array.
 
 **invisible zserio**
@@ -56,7 +56,7 @@ struct Company
 ```
 struct Company
 {
-    varuint64 numEntries;
+    varsize   numEntries;
     string    employees[numEntries];
 };
 ```

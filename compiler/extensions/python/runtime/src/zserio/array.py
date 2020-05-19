@@ -107,7 +107,7 @@ class Array():
         endBitPosition = bitPosition
         size = len(self._rawArray)
         if self._isAuto:
-            endBitPosition += getBitSizeOfVarUInt64(size)
+            endBitPosition += getBitSizeOfVarSize(size)
 
         if self._arrayTraits.HAS_BITSIZEOF_CONSTANT and size > 0:
             elementSize = self._arrayTraits.bitSizeOf()
@@ -134,7 +134,7 @@ class Array():
         endBitPosition = bitPosition
         size = len(self._rawArray)
         if self._isAuto:
-            endBitPosition += getBitSizeOfVarUInt64(size)
+            endBitPosition += getBitSizeOfVarSize(size)
 
         for index in range(size):
             if self._setOffsetMethod is not None:
@@ -167,7 +167,7 @@ class Array():
                 self._rawArray.append(self._arrayTraits.read(reader, index))
         else:
             if self._isAuto:
-                size = reader.readVarUInt64()
+                size = reader.readVarSize()
 
             for index in range(size):
                 if self._checkOffsetMethod is not None:
@@ -184,7 +184,7 @@ class Array():
 
         size = len(self._rawArray)
         if self._isAuto:
-            writer.writeVarUInt64(size)
+            writer.writeVarSize(size)
 
         for index in range(size):
             if self._checkOffsetMethod is not None:

@@ -72,7 +72,7 @@ class AutoArrayTest(unittest.TestCase):
 
     @staticmethod
     def _writeAutoArrayToStream(writer, numElements):
-        writer.writeVarUInt64(numElements)
+        writer.writeVarSize(numElements)
         for i in range(numElements):
             writer.writeBits(i, 8)
 

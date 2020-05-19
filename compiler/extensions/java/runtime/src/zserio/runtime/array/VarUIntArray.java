@@ -181,7 +181,7 @@ public class VarUIntArray extends NumericArrayBase<BigInteger>
     public void writeAlignedAuto(BitStreamWriter writer, OffsetChecker checker)
             throws IOException, ZserioError
     {
-        writer.writeVarUInt64(data.length);
+        writer.writeVarSize(data.length);
         writeAligned(writer, checker);
     }
 
@@ -228,7 +228,7 @@ public class VarUIntArray extends NumericArrayBase<BigInteger>
      */
     public int bitSizeOfAuto(long bitPosition)
     {
-        return BitSizeOfCalculator.getBitSizeOfVarUInt64(data.length) + bitSizeOf(bitPosition);
+        return BitSizeOfCalculator.getBitSizeOfVarSize(data.length) + bitSizeOf(bitPosition);
     }
 
     /**
@@ -276,7 +276,7 @@ public class VarUIntArray extends NumericArrayBase<BigInteger>
      */
     public long initializeOffsetsAuto(long bitPosition)
     {
-        final long currentBitPosition = bitPosition + BitSizeOfCalculator.getBitSizeOfVarUInt64(data.length);
+        final long currentBitPosition = bitPosition + BitSizeOfCalculator.getBitSizeOfVarSize(data.length);
 
         return initializeOffsets(currentBitPosition);
     }
@@ -291,7 +291,7 @@ public class VarUIntArray extends NumericArrayBase<BigInteger>
      */
     public long initializeOffsetsAlignedAuto(long bitPosition, OffsetSetter setter)
     {
-        final long currentBitPosition = bitPosition + BitSizeOfCalculator.getBitSizeOfVarUInt64(data.length);
+        final long currentBitPosition = bitPosition + BitSizeOfCalculator.getBitSizeOfVarSize(data.length);
 
         return initializeOffsetsAligned(currentBitPosition, setter);
     }

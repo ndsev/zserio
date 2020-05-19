@@ -67,7 +67,7 @@ class UInt64OffsetTest(unittest.TestCase):
 
         # offset
         writer.writeBits(self.WRONG_OFFSET if wrongOffset else self.OFFSET, 64)
-        writer.writeVarUInt64(self.ARRAY_SIZE)
+        writer.writeVarSize(self.ARRAY_SIZE)
         for i in range(self.ARRAY_SIZE):
             writer.writeSignedBits(i, 8)
         writer.writeSignedBits(0, 32)

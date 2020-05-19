@@ -7,7 +7,6 @@ import java.util.List;
 import java.util.NoSuchElementException;
 
 import zserio.runtime.ZserioError;
-import zserio.runtime.VarUInt64Util;
 import zserio.runtime.io.BitStreamReader;
 import zserio.runtime.io.BitStreamWriter;
 
@@ -92,8 +91,7 @@ abstract class ArrayBase<E> implements Array<E>
         }
         else
         {
-            final int realLength = (length != AUTO_LENGTH) ? length :
-                    VarUInt64Util.convertVarUInt64ToArraySize(reader.readVarUInt64());
+            final int realLength = (length != AUTO_LENGTH) ? length : reader.readVarSize();
             readN(reader, realLength, numBits, checker);
         }
     }

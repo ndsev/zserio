@@ -81,10 +81,10 @@ class AutoArrayRecursionTest(unittest.TestCase):
     @staticmethod
     def _writeAutoArrayRecursionToStream(writer, numElements):
         writer.writeBits(0, 8)
-        writer.writeVarUInt64(numElements)
+        writer.writeVarSize(numElements)
         for i in range(1, numElements + 1):
             writer.writeBits(i, 8)
-            writer.writeVarUInt64(0)
+            writer.writeVarSize(0)
 
     AUTO_ARRAY_LENGTH1 = 5
     AUTO_ARRAY_LENGTH2 = 10

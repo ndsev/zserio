@@ -35,6 +35,7 @@ set(ZSERIO_CPP_RUNTIME_TEST_SRCS
     zserio/OptionalHolderTest.cpp
     zserio/SqliteConnectionTest.cpp
     zserio/StringConvertUtilTest.cpp
+    zserio/VarSizeUtilTest.cpp
     zserio/VarUInt64UtilTest.cpp
 )
 

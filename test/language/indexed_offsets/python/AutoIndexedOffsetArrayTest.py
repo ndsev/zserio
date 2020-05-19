@@ -87,7 +87,7 @@ class AutoIndexedOffsetArrayTest(unittest.TestCase):
 
     @staticmethod
     def _writeAutoIndexedOffsetArrayToStream(writer, writeWrongOffsets):
-        writer.writeVarUInt64(NUM_ELEMENTS)
+        writer.writeVarSize(NUM_ELEMENTS)
         currentOffset = ELEMENT0_OFFSET
         for i in range(NUM_ELEMENTS):
             if writeWrongOffsets and i == NUM_ELEMENTS - 1:
@@ -98,7 +98,7 @@ class AutoIndexedOffsetArrayTest(unittest.TestCase):
 
         writer.writeBits(SPACER_VALUE, 1)
 
-        writer.writeVarUInt64(NUM_ELEMENTS)
+        writer.writeVarSize(NUM_ELEMENTS)
         writer.writeBits(0, 7)
         for i in range(NUM_ELEMENTS):
             writer.writeBits(i % 64, ELEMENT_SIZE)

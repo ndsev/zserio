@@ -125,20 +125,20 @@ public class UInt64ArrayOffsetTest
         final ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter();
 
         // offset
-        writer.writeVarUInt64(VALUES_SIZE);
+        writer.writeVarSize(VALUES_SIZE);
         for (int i = 0; i < VALUES_SIZE; ++i)
         {
             final long offset = FIRST_OFFSET + i * 4 + (wrongOffset && i == VALUES_SIZE - 1 ? 1 : 0);
             writer.writeBigInteger(BigInteger.valueOf(offset), 64);
         }
         // array
-        writer.writeVarUInt64(ARRAY_SIZE);
+        writer.writeVarSize(ARRAY_SIZE);
         for (int i = 0; i < ARRAY_SIZE; ++i)
         {
             writer.writeByte((byte)0);
         }
         // values
-        writer.writeVarUInt64(VALUES_SIZE);
+        writer.writeVarSize(VALUES_SIZE);
         for (int i = 0; i < VALUES_SIZE; ++i)
         {
             writer.writeInt(0);

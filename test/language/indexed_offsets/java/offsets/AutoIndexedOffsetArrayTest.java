@@ -130,7 +130,7 @@ public class AutoIndexedOffsetArrayTest
     {
         final FileBitStreamWriter writer = new FileBitStreamWriter(file);
 
-        writer.writeVarUInt64(NUM_ELEMENTS);
+        writer.writeVarSize(NUM_ELEMENTS);
         long currentOffset = ELEMENT0_OFFSET;
         for (short i = 0; i < NUM_ELEMENTS; ++i)
         {
@@ -143,7 +143,7 @@ public class AutoIndexedOffsetArrayTest
 
         writer.writeBits(SPACER_VALUE, 1);
 
-        writer.writeVarUInt64(NUM_ELEMENTS);
+        writer.writeVarSize(NUM_ELEMENTS);
         writer.writeBits(0, 7);
         for (short i = 0; i < NUM_ELEMENTS; ++i)
         {

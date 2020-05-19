@@ -8,7 +8,6 @@ import java.util.List;
 
 import zserio.runtime.BitPositionUtil;
 import zserio.runtime.BitSizeOfCalculator;
-import zserio.runtime.VarUInt64Util;
 import zserio.runtime.ZserioError;
 import zserio.runtime.Mapping;
 import zserio.runtime.SizeOf;
@@ -203,7 +202,7 @@ public class ObjectArray<E extends SizeOf> implements Array<E>
     public void writeAlignedAuto(BitStreamWriter writer, OffsetChecker checker)
             throws IOException, ZserioError
     {
-        writer.writeVarUInt64(data.size());
+        writer.writeVarSize(data.size());
         writeAligned(writer, checker);
     }
 
@@ -262,7 +261,7 @@ public class ObjectArray<E extends SizeOf> implements Array<E>
      */
     public int bitSizeOfAuto(long bitPosition)
     {
-        return BitSizeOfCalculator.getBitSizeOfVarUInt64(length()) + bitSizeOf(bitPosition);
+        return BitSizeOfCalculator.getBitSizeOfVarSize(length()) + bitSizeOf(bitPosition);
     }
 
     /**
@@ -274,7 +273,7 @@ public class ObjectArray<E extends SizeOf> implements Array<E>
      */
     public int bitSizeOfAlignedAuto(long bitPosition)
     {
-        return BitSizeOfCalculator.getBitSizeOfVarUInt64(length()) + bitSizeOfAligned(bitPosition);
+        return BitSizeOfCalculator.getBitSizeOfVarSize(length()) + bitSizeOfAligned(bitPosition);
     }
 
     /**
@@ -328,7 +327,7 @@ public class ObjectArray<E extends SizeOf> implements Array<E>
      */
     public long initializeOffsetsAuto(long bitPosition)
     {
-        final long currentBitPosition = bitPosition + BitSizeOfCalculator.getBitSizeOfVarUInt64(data.size());
+        final long currentBitPosition = bitPosition + BitSizeOfCalculator.getBitSizeOfVarSize(data.size());
 
         return initializeOffsets(currentBitPosition);
     }
@@ -343,7 +342,7 @@ public class ObjectArray<E extends SizeOf> implements Array<E>
      */
     public long initializeOffsetsAlignedAuto(long bitPosition, OffsetSetter setter)
     {
-        final long currentBitPosition = bitPosition + BitSizeOfCalculator.getBitSizeOfVarUInt64(data.size());
+        final long currentBitPosition = bitPosition + BitSizeOfCalculator.getBitSizeOfVarSize(data.size());
 
         return initializeOffsetsAligned(currentBitPosition, setter);
     }
@@ -411,8 +410,7 @@ public class ObjectArray<E extends SizeOf> implements Array<E>
         }
         else
         {
-            final int realLength = (length != AUTO_LENGTH) ? length :
-                VarUInt64Util.convertVarUInt64ToArraySize(reader.readVarUInt64());
+            final int realLength = (length != AUTO_LENGTH) ? length : reader.readVarSize();
             // check offsets if checker != null
             readN(reader, realLength, factory, checker);
         }

@@ -137,11 +137,11 @@ public class AutoArrayRecursionTest
         final FileBitStreamWriter writer = new FileBitStreamWriter(file);
 
         writer.writeUnsignedByte((short) 0);
-        writer.writeVarUInt64(numElements);
+        writer.writeVarSize(numElements);
         for (short i = 1; i <= numElements; ++i)
         {
             writer.writeUnsignedByte(i);
-            writer.writeVarUInt64(0);
+            writer.writeVarSize(0);
         }
 
         writer.close();
