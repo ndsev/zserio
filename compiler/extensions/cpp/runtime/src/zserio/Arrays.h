@@ -101,7 +101,7 @@ template <typename ARRAY_TRAITS>
 size_t bitSizeOfAuto(const ARRAY_TRAITS& arrayTraits, const std::vector<typename ARRAY_TRAITS::type>& array,
         size_t bitPosition)
 {
-    const size_t lengthBitSizeOf = zserio::bitSizeOfVarSize(array.size());
+    const size_t lengthBitSizeOf = zserio::bitSizeOfVarSize(convertSizeToUInt32(array.size()));
 
     return lengthBitSizeOf + bitSizeOf(arrayTraits, array, bitPosition + lengthBitSizeOf);
 }
@@ -119,7 +119,7 @@ template <typename ARRAY_TRAITS>
 size_t bitSizeOfAlignedAuto(const ARRAY_TRAITS& arrayTraits,
         const std::vector<typename ARRAY_TRAITS::type>& array, size_t bitPosition)
 {
-    const size_t lengthBitSizeOf = zserio::bitSizeOfVarSize(array.size());
+    const size_t lengthBitSizeOf = zserio::bitSizeOfVarSize(convertSizeToUInt32(array.size()));
 
     return lengthBitSizeOf + bitSizeOfAligned(arrayTraits, array, bitPosition + lengthBitSizeOf);
 }
@@ -193,7 +193,8 @@ template <typename ARRAY_TRAITS>
 size_t initializeOffsetsAuto(const ARRAY_TRAITS& arrayTraits, std::vector<typename ARRAY_TRAITS::type>& array,
         size_t bitPosition)
 {
-    return initializeOffsets(arrayTraits, array, bitPosition + zserio::bitSizeOfVarSize(array.size()));
+    return initializeOffsets(arrayTraits, array, bitPosition +
+            zserio::bitSizeOfVarSize(convertSizeToUInt32(array.size())));
 }
 
 /**
@@ -211,8 +212,8 @@ size_t initializeOffsetsAlignedAuto(const ARRAY_TRAITS& arrayTraits,
         std::vector<typename ARRAY_TRAITS::type>& array, size_t bitPosition,
         const OFFSET_INITIALIZER& offsetInitializer)
 {
-    return initializeOffsetsAligned(arrayTraits, array, bitPosition + zserio::bitSizeOfVarSize(array.size()),
-            offsetInitializer);
+    return initializeOffsetsAligned(arrayTraits, array, bitPosition +
+            zserio::bitSizeOfVarSize(convertSizeToUInt32(array.size())), offsetInitializer);
 }
 
 /**
