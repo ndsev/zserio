@@ -8,5 +8,5 @@ package zserio.emit.xml;
 public class XmlExtensionVersion
 {
     /** XML extension version string. */
-    public static final String VERSION_STRING = "2.0.0-pre4";
+    public static final String VERSION_STRING = "2.0.0-pre5";
 }
