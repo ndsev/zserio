@@ -18,7 +18,7 @@ namespace
         if (value == 1)
             return 1;
 
-        return (uint8_t)(floor(log(value - 1) / log(2)) + 1);
+        return (uint8_t)(floor(log10(value - 1) / log10(2)) + 1);
     }
 }
 
