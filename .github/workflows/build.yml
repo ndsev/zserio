@@ -18,7 +18,7 @@ jobs:
       uses: actions/setup-java@v1
       with:
         java-version: 1.8
-    - name: Workaround for 'Not Found [IP: 91.189.95.83 80]' failure during installation
+    - name: Workaround for 'Unable to connect to ppa.launchpad.net' failure during installation
       run: sudo apt-get update --option Acquire::Retries=100 --option Acquire::http::Timeout="300"
     - name: Install dependencies
       run: sudo apt-get install doxygen virtualenv graphviz g++-multilib
