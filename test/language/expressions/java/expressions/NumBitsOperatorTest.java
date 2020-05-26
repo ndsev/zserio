@@ -64,6 +64,6 @@ public class NumBitsOperatorTest
         if (value == 1)
             return (short)1;
 
-        return (short)(Math.floor(Math.log10((double)(value - 1)) / Math.log10(2.0)) + 1);
+        return (short)(Math.floor(Math.log((double)(value - 1)) / Math.log(2.0)) + 1);
     }
 }
