@@ -18,8 +18,10 @@ jobs:
       uses: actions/setup-java@v1
       with:
         java-version: 1.8
+    - name: Workaround for 'Not Found [IP: 91.189.95.83 80]' failure during installation
+      run: sudo apt-get update --option Acquire::Retries=100 --option Acquire::http::Timeout="300"
     - name: Install dependencies
-      run: sudo apt install doxygen virtualenv graphviz g++-multilib
+      run: sudo apt-get install doxygen virtualenv graphviz g++-multilib
     - name: Build Zserio
       run: scripts/build.sh all-linux64 cpp_rt-linux32
     - name: Pack Zserio release
