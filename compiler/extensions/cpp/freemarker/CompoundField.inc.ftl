@@ -61,7 +61,7 @@ ${I}::zserio::read<@array_runtime_function_suffix field, true/>(<@array_traits f
 ${I}const ${field.cppTypeName} readField = ${readCommand};
         </#if>
     <@compound_check_constraint_field field, name, "Read", indent/>
-${I}
+
 ${I}return <#if field.usesAnyHolder>::zserio::AnyHolder(</#if>readField<#if field.usesAnyHolder>)</#if>;
     <#else>
 ${I}return <#if field.usesAnyHolder>::zserio::AnyHolder(</#if>${readCommand}<#if field.usesAnyHolder>)</#if>;
@@ -171,7 +171,7 @@ ${I}out.alignTo(UINT32_C(8));
         <#local constraintExpresssion><#if actionName=="Read">${field.constraint.readConstraint}<#else><#rt>
                 <#lt>${field.constraint.writeConstraint}</#if></#local>
 ${I}// check constraint
-${I}if (<#if field.optional??>(<@field_optional_condition field/>) && </#if>!(${constraintExpresssion}))
+${I}if (!(${constraintExpresssion}))
 ${I}    throw ::zserio::ConstraintException("${actionName}: Constraint violated at ${compoundName}.${field.name}!");
     </#if>
 </#macro>

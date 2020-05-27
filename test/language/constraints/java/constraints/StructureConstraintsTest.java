@@ -5,8 +5,6 @@ import static org.junit.Assert.*;
 import java.io.File;
 import java.io.IOException;
 
-import javax.imageio.stream.FileImageOutputStream;
-
 import org.junit.Test;
 
 import constraints.structure_constraints.BasicColor;
@@ -68,7 +66,7 @@ public class StructureConstraintsTest
     public void writeCorrectStructureConstraints() throws IOException, ZserioError
     {
         final StructureConstraints structureConstraints =
-                new StructureConstraints(BasicColor.BLACK, BasicColor.WHITE, ExtendedColor.PURPLE);
+                new StructureConstraints(BasicColor.BLACK, BasicColor.WHITE, true, ExtendedColor.PURPLE);
         final File file = new File("test.bin");
         final BitStreamWriter writer = new FileBitStreamWriter(file);
         structureConstraints.write(writer);
@@ -84,7 +82,7 @@ public class StructureConstraintsTest
     public void writeWrongBlackConstraint() throws IOException, ZserioError
     {
         final StructureConstraints structureConstraints =
-                new StructureConstraints(BasicColor.RED, BasicColor.WHITE, ExtendedColor.PURPLE);
+                new StructureConstraints(BasicColor.RED, BasicColor.WHITE, true, ExtendedColor.PURPLE);
         final File file = new File("test.bin");
         final BitStreamWriter writer = new FileBitStreamWriter(file);
         structureConstraints.write(writer);
@@ -95,7 +93,7 @@ public class StructureConstraintsTest
     public void writeWrongPurpleConstraint() throws IOException, ZserioError
     {
         final StructureConstraints structureConstraints =
-                new StructureConstraints(BasicColor.BLACK, BasicColor.WHITE, ExtendedColor.LIME);
+                new StructureConstraints(BasicColor.BLACK, BasicColor.WHITE, true, ExtendedColor.LIME);
         final File file = new File("test.bin");
         final BitStreamWriter writer = new FileBitStreamWriter(file);
         structureConstraints.write(writer);
@@ -106,7 +104,7 @@ public class StructureConstraintsTest
     public void writeWrongWhiteConstraint() throws IOException, ZserioError
     {
         final StructureConstraints structureConstraints =
-                new StructureConstraints(BasicColor.BLACK, BasicColor.RED, ExtendedColor.PURPLE);
+                new StructureConstraints(BasicColor.BLACK, BasicColor.RED, true, ExtendedColor.PURPLE);
         final File file = new File("test.bin");
         final BitStreamWriter writer = new FileBitStreamWriter(file);
         structureConstraints.write(writer);
@@ -116,10 +114,12 @@ public class StructureConstraintsTest
     private void writeStructureConstraintsToFile(File file, BasicColor blackColor, BasicColor whiteColor,
             ExtendedColor purpleColor) throws IOException
     {
-        final FileImageOutputStream stream = new FileImageOutputStream(file);
+        final BitStreamWriter stream = new FileBitStreamWriter(file);
 
         stream.writeBits(blackColor.getValue(), 8);
+        stream.writeBool(true);
         stream.writeBits(whiteColor.getValue(), 8);
+        stream.writeBool(true);
         stream.writeBits(purpleColor.getValue(), 16);
 
         stream.close();

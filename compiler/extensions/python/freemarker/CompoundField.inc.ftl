@@ -232,7 +232,7 @@ ${I}                                        (${bitPositionName}, zserio.bitposit
     <#local I>${""?left_pad(indent * 4)}</#local>
     <#if field.constraint??>
 ${I}# check constraint
-${I}if <#if field.optional??>self.${field.optional.indicatorName}() and </#if>not (${field.constraint}):
+${I}if not (${field.constraint}):
 ${I}    raise zserio.PythonRuntimeException("Constraint violated for field ${compoundName}.${field.name}!")
     </#if>
 </#macro>

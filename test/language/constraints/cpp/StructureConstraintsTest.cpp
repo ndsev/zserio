@@ -20,7 +20,9 @@ protected:
             BasicColor whiteColor, ExtendedColor purpleColor)
     {
         writer.writeBits(zserio::enumToValue(blackColor), 8);
+        writer.writeBool(true);
         writer.writeBits(zserio::enumToValue(whiteColor), 8);
+        writer.writeBool(true);
         writer.writeBits(zserio::enumToValue(purpleColor), 16);
     }
 };
@@ -81,6 +83,7 @@ TEST_F(StructureConstraintsTest, writeCorrectConstraints)
     StructureConstraints structureConstraints;
     structureConstraints.setBlackColor(BasicColor::BLACK);
     structureConstraints.setWhiteColor(BasicColor::WHITE);
+    structureConstraints.setHasPurple(true);
     structureConstraints.setPurpleColor(ExtendedColor::PURPLE);
 
     zserio::BitStreamWriter writer;
@@ -101,6 +104,7 @@ TEST_F(StructureConstraintsTest, writeWrongBlackConstraint)
     StructureConstraints structureConstraints;
     structureConstraints.setBlackColor(BasicColor::RED);
     structureConstraints.setWhiteColor(BasicColor::WHITE);
+    structureConstraints.setHasPurple(true);
     structureConstraints.setPurpleColor(ExtendedColor::PURPLE);
 
     zserio::BitStreamWriter writer;
@@ -112,6 +116,7 @@ TEST_F(StructureConstraintsTest, writeWrongWhiteConstraint)
     StructureConstraints structureConstraints;
     structureConstraints.setBlackColor(BasicColor::BLACK);
     structureConstraints.setWhiteColor(BasicColor::RED);
+    structureConstraints.setHasPurple(true);
     structureConstraints.setPurpleColor(ExtendedColor::PURPLE);
 
     zserio::BitStreamWriter writer;
@@ -123,6 +128,7 @@ TEST_F(StructureConstraintsTest, writeWrongPurpleConstraint)
     StructureConstraints structureConstraints;
     structureConstraints.setBlackColor(BasicColor::BLACK);
     structureConstraints.setWhiteColor(BasicColor::WHITE);
+    structureConstraints.setHasPurple(true);
     structureConstraints.setPurpleColor(ExtendedColor::LIME);
 
     zserio::BitStreamWriter writer;

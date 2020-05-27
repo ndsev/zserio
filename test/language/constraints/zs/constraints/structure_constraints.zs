@@ -9,9 +9,10 @@ enum uint8 BasicColor
 
 struct StructureConstraints
 {
-    BasicColor      blackColor : blackColor == BasicColor.BLACK;
-    BasicColor      whiteColor : whiteColor == BasicColor.WHITE;
-    ExtendedColor   purpleColor : purpleColor == ExtendedColor.PURPLE; // enum defined later
+    BasicColor          blackColor : blackColor == BasicColor.BLACK;
+    optional BasicColor whiteColor : whiteColor == BasicColor.WHITE; // auto optional constraint
+    bool                hasPurple;
+    ExtendedColor       purpleColor if hasPurple : purpleColor == ExtendedColor.PURPLE; // enum defined later
 };
 
 enum uint16 ExtendedColor
