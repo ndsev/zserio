@@ -4,5 +4,5 @@ sql_table ConstraintsTable
 {
     int32  primaryKey;
     string valueInString;
-    uint16 sqlCheckConstant sql "CHECK(sqlCheckConstant < " + valueInString + ")";
+    uint16 sqlCheckConstant sql valueInString;
 };
