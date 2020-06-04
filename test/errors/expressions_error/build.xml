@@ -19,6 +19,8 @@
             ignoreErrors="true"/>
         <testGen testName="expressions_error" zsFile="bitmask_shift_operator_error.zs"
             ignoreErrors="true"/>
+        <testGen testName="expressions_error" zsFile="non_constant_string_concatenation_error.zs"
+            ignoreErrors="true"/>
         <testGen testName="expressions_error" zsFile="string_integer_concatenation_error.zs"
             ignoreErrors="true"/>
         <testGen testName="expressions_error" zsFile="wrong_full_type_error.zs" ignoreErrors="true"/>

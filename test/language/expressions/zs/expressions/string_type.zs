@@ -1,9 +1,15 @@
 package expressions.string_type;
 
+const string STRING_CONSTANT = "CONSTANT";
+
 struct StringTypeExpression
 {
-    string firstValue;
-    string secondValue;
+    string value;
+
+    function string returnValue()
+    {
+        return value;
+    }
 
     function string appendix()
     {
@@ -11,8 +17,8 @@ struct StringTypeExpression
         return "append" + "ix";
     }
 
-    function string append()
+    function string appendToConst()
     {
-        return firstValue + secondValue + "_" + appendix();
+        return STRING_CONSTANT + "_" + appendix();
     }
 };

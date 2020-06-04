@@ -1048,16 +1048,21 @@ public class Expression extends AstNodeBase
                 operand2.expressionType == ExpressionType.STRING)
         {
             expressionType = ExpressionType.STRING;
-            if (operand1.expressionStringValue != null && operand2.expressionStringValue != null)
-                expressionStringValue = operand1.expressionStringValue + operand2.expressionStringValue; 
+
+            if (operand1.expressionStringValue == null || operand2.expressionStringValue == null)
+                throw new ParserException(this, "Constant string expressions expected!");
+
+            expressionStringValue = operand1.expressionStringValue + operand2.expressionStringValue;
         }
         else
         {
-            if ( (operand1.expressionType != ExpressionType.INTEGER &&
+            if ((operand1.expressionType != ExpressionType.INTEGER &&
                     operand1.expressionType != ExpressionType.FLOAT) ||
-                 (operand2.expressionType != ExpressionType.INTEGER &&
-                    operand2.expressionType != ExpressionType.FLOAT) )
+                (operand2.expressionType != ExpressionType.INTEGER &&
+                    operand2.expressionType != ExpressionType.FLOAT))
+            {
                 throw new ParserException(this, "Integer or float expressions expected!");
+            }
 
             if (operand1.expressionType == ExpressionType.FLOAT ||
                     operand2.expressionType == ExpressionType.FLOAT)

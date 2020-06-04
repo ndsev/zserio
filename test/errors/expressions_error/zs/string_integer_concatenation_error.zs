@@ -4,7 +4,7 @@ struct StringIntegerConcatenationError
 {
     int32  data;
 
-    function string Wrong()
+    function string wrong()
     {
         return "Some string " + data;
     }

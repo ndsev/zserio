@@ -25,6 +25,14 @@ public class ExpressionsErrorTest
     }
 
     @Test
+    public void nonConstantStringConcatenation()
+    {
+        final String error =
+                "non_constant_string_concatenation_error.zs:9:16: Constant string expressions expected!";
+        assertTrue(zserioErrors.isPresent(error));
+    }
+
+    @Test
     public void stringIntegerConcatenation()
     {
         final String error =
