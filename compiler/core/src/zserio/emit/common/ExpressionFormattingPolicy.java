@@ -162,53 +162,54 @@ public interface ExpressionFormattingPolicy
     }
 
     // atom expressions formatting
-    public String getDecimalLiteral(Expression expr, boolean isNegative);
-    public String getBinaryLiteral(Expression expr, boolean isNegative);
-    public String getHexadecimalLiteral(Expression expr, boolean isNegative);
-    public String getOctalLiteral(Expression expr, boolean isNegative);
-    public String getFloatLiteral(Expression expr, boolean isNegative);
-    public String getDoubleLiteral(Expression expr, boolean isNegative);
-    public String getBoolLiteral(Expression expr);
-    public String getStringLiteral(Expression expr);
-    public String getIndex(Expression expr);
+    public String getDecimalLiteral(Expression expr, boolean isNegative) throws ZserioEmitException;
+    public String getBinaryLiteral(Expression expr, boolean isNegative) throws ZserioEmitException;
+    public String getHexadecimalLiteral(Expression expr, boolean isNegative) throws ZserioEmitException;
+    public String getOctalLiteral(Expression expr, boolean isNegative) throws ZserioEmitException;
+    public String getFloatLiteral(Expression expr, boolean isNegative) throws ZserioEmitException;
+    public String getDoubleLiteral(Expression expr, boolean isNegative) throws ZserioEmitException;
+    public String getBoolLiteral(Expression expr) throws ZserioEmitException;
+    public String getStringLiteral(Expression expr) throws ZserioEmitException;
+    public String getIndex(Expression expr) throws ZserioEmitException;
     public String getIdentifier(Expression expr, boolean isLastInDot, boolean isSetter)
             throws ZserioEmitException;
 
     // unary expressions formatting
-    public UnaryExpressionFormatting getBigIntegerCastingToNative(Expression expr);
-    public UnaryExpressionFormatting getUnaryPlus(Expression expr);
-    public UnaryExpressionFormatting getUnaryMinus(Expression expr);
-    public UnaryExpressionFormatting getTilde(Expression expr);
-    public UnaryExpressionFormatting getBang(Expression expr);
-    public UnaryExpressionFormatting getLeftParenthesis(Expression expr);
-    public UnaryExpressionFormatting getFunctionCall(Expression expr);
-    public UnaryExpressionFormatting getLengthOf(Expression expr);
+    public UnaryExpressionFormatting getBigIntegerCastingToNative(Expression expr) throws ZserioEmitException;
+    public UnaryExpressionFormatting getUnaryPlus(Expression expr) throws ZserioEmitException;
+    public UnaryExpressionFormatting getUnaryMinus(Expression expr) throws ZserioEmitException;
+    public UnaryExpressionFormatting getTilde(Expression expr) throws ZserioEmitException;
+    public UnaryExpressionFormatting getBang(Expression expr) throws ZserioEmitException;
+    public UnaryExpressionFormatting getLeftParenthesis(Expression expr) throws ZserioEmitException;
+    public UnaryExpressionFormatting getFunctionCall(Expression expr) throws ZserioEmitException;
+    public UnaryExpressionFormatting getLengthOf(Expression expr) throws ZserioEmitException;
     public UnaryExpressionFormatting getValueOf(Expression expr) throws ZserioEmitException;
-    public UnaryExpressionFormatting getNumBits(Expression expr);
+    public UnaryExpressionFormatting getNumBits(Expression expr) throws ZserioEmitException;
 
     // binary expressions formatting
-    public BinaryExpressionFormatting getComma(Expression expr);
-    public BinaryExpressionFormatting getLogicalOr(Expression expr);
-    public BinaryExpressionFormatting getLogicalAnd(Expression expr);
-    public BinaryExpressionFormatting getOr(Expression expr);
-    public BinaryExpressionFormatting getXor(Expression expr);
-    public BinaryExpressionFormatting getAnd(Expression expr);
-    public BinaryExpressionFormatting getEq(Expression expr);
-    public BinaryExpressionFormatting getNe(Expression expr);
-    public BinaryExpressionFormatting getLt(Expression expr);
-    public BinaryExpressionFormatting getLe(Expression expr);
-    public BinaryExpressionFormatting getGe(Expression expr);
-    public BinaryExpressionFormatting getGt(Expression expr);
-    public BinaryExpressionFormatting getLeftShift(Expression expr);
-    public BinaryExpressionFormatting getRightShift(Expression expr);
-    public BinaryExpressionFormatting getPlus(Expression expr);
-    public BinaryExpressionFormatting getMinus(Expression expr);
-    public BinaryExpressionFormatting getMultiply(Expression expr);
-    public BinaryExpressionFormatting getDivide(Expression expr);
-    public BinaryExpressionFormatting getModulo(Expression expr);
-    public BinaryExpressionFormatting getArrayElement(Expression expr, boolean isSetter);
-    public BinaryExpressionFormatting getDot(Expression expr);
+    public BinaryExpressionFormatting getComma(Expression expr) throws ZserioEmitException;
+    public BinaryExpressionFormatting getLogicalOr(Expression expr) throws ZserioEmitException;
+    public BinaryExpressionFormatting getLogicalAnd(Expression expr) throws ZserioEmitException;
+    public BinaryExpressionFormatting getOr(Expression expr) throws ZserioEmitException;
+    public BinaryExpressionFormatting getXor(Expression expr) throws ZserioEmitException;
+    public BinaryExpressionFormatting getAnd(Expression expr) throws ZserioEmitException;
+    public BinaryExpressionFormatting getEq(Expression expr) throws ZserioEmitException;
+    public BinaryExpressionFormatting getNe(Expression expr) throws ZserioEmitException;
+    public BinaryExpressionFormatting getLt(Expression expr) throws ZserioEmitException;
+    public BinaryExpressionFormatting getLe(Expression expr) throws ZserioEmitException;
+    public BinaryExpressionFormatting getGe(Expression expr) throws ZserioEmitException;
+    public BinaryExpressionFormatting getGt(Expression expr) throws ZserioEmitException;
+    public BinaryExpressionFormatting getLeftShift(Expression expr) throws ZserioEmitException;
+    public BinaryExpressionFormatting getRightShift(Expression expr) throws ZserioEmitException;
+    public BinaryExpressionFormatting getPlus(Expression expr) throws ZserioEmitException;
+    public BinaryExpressionFormatting getMinus(Expression expr) throws ZserioEmitException;
+    public BinaryExpressionFormatting getMultiply(Expression expr) throws ZserioEmitException;
+    public BinaryExpressionFormatting getDivide(Expression expr) throws ZserioEmitException;
+    public BinaryExpressionFormatting getModulo(Expression expr) throws ZserioEmitException;
+    public BinaryExpressionFormatting getArrayElement(Expression expr, boolean isSetter)
+            throws ZserioEmitException;
+    public BinaryExpressionFormatting getDot(Expression expr) throws ZserioEmitException;
 
     // ternary expressions formatting
-    public TernaryExpressionFormatting getQuestionMark(Expression expr);
+    public TernaryExpressionFormatting getQuestionMark(Expression expr) throws ZserioEmitException;
 }

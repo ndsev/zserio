@@ -38,7 +38,7 @@ public abstract class CodeDefaultEmitter extends DefaultEmitter
     }
 
     @Override
-    public void beginPackage(Package pkg) throws ZserioEmitException
+    public void beginPackage(Package pkg)
     {
         if (packageMapper == null)
             packageMapper = new PackageMapper(pkg, topLevelPackageNameList);
