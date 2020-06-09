@@ -14,6 +14,11 @@ set(ZSERIO_GENERATED_SOURCES
     ${ZSERIO_GEN_DIR}/union_types/union_with_array/TestUnion.cpp
     ${ZSERIO_GEN_DIR}/union_types/union_with_array/TestUnion.h
 
+    ${ZSERIO_GEN_DIR}/union_types/union_with_parameterized_field/ArrayHolder.cpp
+    ${ZSERIO_GEN_DIR}/union_types/union_with_parameterized_field/ArrayHolder.h
+    ${ZSERIO_GEN_DIR}/union_types/union_with_parameterized_field/TestUnion.cpp
+    ${ZSERIO_GEN_DIR}/union_types/union_with_parameterized_field/TestUnion.h
+
     ${ZSERIO_GEN_DIR}/union_types/union_with_parameter/TestUnion.cpp
     ${ZSERIO_GEN_DIR}/union_types/union_with_parameter/TestUnion.h
 )
@@ -33,6 +38,7 @@ add_test_sources(
     cpp/EmptyUnionWithParameterTest.cpp
     cpp/SimpleUnionTest.cpp
     cpp/UnionWithArrayTest.cpp
+    cpp/UnionWithParameterizedFieldTest.cpp
     cpp/UnionWithParameterTest.cpp
 )
 

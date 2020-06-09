@@ -37,10 +37,12 @@ public:
 
     <@compound_field_constructor_template_arg_list name, fieldList/>
     explicit ${name}(<#rt>
-        <#lt><@compound_field_constructor_type_list compoundConstructorsData.fieldList, 0/><#rt>
+        <#lt><@compound_field_constructor_type_list fieldList, 0/><#rt>
         <#lt><#if fieldList?has_content>, ChoiceTag tagHint = UNDEFINED_CHOICE</#if>) :
         <#if needs_compound_initialization(compoundConstructorsData)>
             m_isInitialized(false),
+        <#elseif has_field_with_initialization(fieldList)>
+            m_areChildrenInitialized(false),
         </#if>
         <#if fieldList?has_content>
             <#list fieldList as field>
