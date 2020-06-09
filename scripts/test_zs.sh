@@ -118,7 +118,6 @@ EOF
     cat > ${BUILD_DIR}/spotbugs_filter.xml << EOF
 <FindBugsFilter>
     <Match>
-    <Match>
         <!-- Same code in different switch clauses. -->
         <Bug code="DB"/>
         <Or>
@@ -127,6 +126,14 @@ EOF
             <Method name="read"/>
         </Or>
     </Match>
+    <Match>
+        <!-- This field is never written. -->
+        <Bug code="UwF"/>
+        <Field name="objectChoice"/>
+    </Match>
+    <Match>
+        <!-- Method names should start with a lower case letter. -->
+        <Bug code="Nm"/>
     </Match>${SPOTBUGS_FILTER_SQLITE}
 </FindBugsFilter>
 EOF
@@ -309,7 +316,7 @@ test()
         GEN_DISABLE_OPTION+="too-many-public-methods,too-many-locals,too-many-branches,too-many-statements,"
         GEN_DISABLE_OPTION+="too-many-lines,unneeded-not,superfluous-parens,len-as-condition,"
         GEN_DISABLE_OPTION+="import-self,too-few-public-methods,too-many-function-args,c-extension-no-member,"
-        GEN_DISABLE_OPTION+="simplifiable-if-expression"
+        GEN_DISABLE_OPTION+="simplifiable-if-expression,unused-import"
         local PYLINT_ARGS=("--disable=${GEN_DISABLE_OPTION}" "--ignore=api.py")
         PYTHONPATH="${GEN_PYTHON_DIR}:${PYTHON_RUNTIME_ROOT}" \
         run_pylint "${PYLINT_RCFILE}" PYLINT_ARGS[@] "${GEN_PYTHON_DIR}"/*
