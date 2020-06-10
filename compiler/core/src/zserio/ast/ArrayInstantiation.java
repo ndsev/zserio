@@ -99,6 +99,19 @@ public class ArrayInstantiation extends TypeInstantiation
     }
 
     @Override
+    void evaluate()
+    {
+        if (!isEvaluated)
+        {
+            // expression needs BigInteger but Zserio type must be integer => cast expression to long
+            if (lengthExpression != null && lengthExpression.needsBigInteger())
+                lengthExpression.setNeedsBigIntegerCastingNative();
+
+            isEvaluated = true;
+        }
+    }
+
+    @Override
     void check()
     {
         if (!checkImplicitArrayElementType())
@@ -137,4 +150,6 @@ public class ArrayInstantiation extends TypeInstantiation
     private final TypeInstantiation elementTypeInstantiation;
     private final boolean isImplicit;
     private final Expression lengthExpression;
+
+    private boolean isEvaluated = false;
 }

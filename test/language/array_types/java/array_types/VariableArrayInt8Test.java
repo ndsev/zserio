@@ -17,7 +17,7 @@ import zserio.runtime.io.BitStreamWriter;
 import zserio.runtime.io.FileBitStreamReader;
 import zserio.runtime.io.FileBitStreamWriter;
 
-public class VariableArrayTest
+public class VariableArrayInt8Test
 {
     @Test
     public void bitSizeOf() throws IOException, ZserioError

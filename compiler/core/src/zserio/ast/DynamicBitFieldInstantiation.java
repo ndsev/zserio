@@ -90,7 +90,7 @@ public class DynamicBitFieldInstantiation extends TypeInstantiation
                 instantiatedLengthExpression);
     }
 
-    /** Resolves the instantiation type. */
+    @Override
     void resolve()
     {
         if (!(super.getBaseType() instanceof DynamicBitFieldType))
@@ -101,12 +101,7 @@ public class DynamicBitFieldInstantiation extends TypeInstantiation
         }
     }
 
-    /**
-     * Evaluates bit sizes of this dynamic bit field type.
-     *
-     * This method can be called from Expression.evaluate() method if some expression refers to dynamic bit
-     * field type before definition of this type. Therefore 'isEvaluated' check is necessary.
-     */
+    @Override
     void evaluate()
     {
         if (!isEvaluated)

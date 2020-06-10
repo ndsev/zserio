@@ -1,6 +1,6 @@
 #include "gtest/gtest.h"
 
-#include "array_types/variable_array/VariableArray.h"
+#include "array_types/variable_array_int8/VariableArray.h"
 
 #include "zserio/BitStreamWriter.h"
 #include "zserio/BitStreamReader.h"
@@ -9,10 +9,10 @@
 
 namespace array_types
 {
-namespace variable_array
+namespace variable_array_int8
 {
 
-class VariableArrayTest : public ::testing::Test
+class VariableArrayInt8Test : public ::testing::Test
 {
 protected:
     void writeVariableArrayToByteArray(zserio::BitStreamWriter& writer, size_t numElements)
@@ -26,7 +26,7 @@ protected:
     }
 };
 
-TEST_F(VariableArrayTest, bitSizeOf)
+TEST_F(VariableArrayInt8Test, bitSizeOf)
 {
     const size_t numElements = 33;
     std::vector<TestStructure> compoundArray;
@@ -48,7 +48,7 @@ TEST_F(VariableArrayTest, bitSizeOf)
     ASSERT_EQ(expectedBitSize, variableArray.bitSizeOf(bitPosition));
 }
 
-TEST_F(VariableArrayTest, initializeOffsets)
+TEST_F(VariableArrayInt8Test, initializeOffsets)
 {
     const size_t numElements = 33;
     std::vector<TestStructure> compoundArray;
@@ -70,7 +70,7 @@ TEST_F(VariableArrayTest, initializeOffsets)
     ASSERT_EQ(expectedEndBitPosition, variableArray.initializeOffsets(bitPosition));
 }
 
-TEST_F(VariableArrayTest, read)
+TEST_F(VariableArrayInt8Test, read)
 {
     const size_t numElements = 59;
     zserio::BitStreamWriter writer;
@@ -90,7 +90,7 @@ TEST_F(VariableArrayTest, read)
     }
 }
 
-TEST_F(VariableArrayTest, write)
+TEST_F(VariableArrayInt8Test, write)
 {
     const size_t numElements = 33;
     std::vector<TestStructure> compoundArray;
@@ -122,7 +122,7 @@ TEST_F(VariableArrayTest, write)
     }
 }
 
-TEST_F(VariableArrayTest, writeWrongArray)
+TEST_F(VariableArrayInt8Test, writeWrongArray)
 {
     const size_t numElements = 33;
     std::vector<TestStructure> compoundArray;
@@ -142,5 +142,5 @@ TEST_F(VariableArrayTest, writeWrongArray)
     ASSERT_THROW(variableArray.write(writer), zserio::CppRuntimeException);
 }
 
-} // namespace variable_array
+} // namespace variable_array_int8
 } // namespace array_types

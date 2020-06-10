@@ -43,10 +43,15 @@ set(ZSERIO_GENERATED_SOURCES
     ${ZSERIO_GEN_DIR}/array_types/subtyped_struct_variable_array/TestStructure.cpp
     ${ZSERIO_GEN_DIR}/array_types/subtyped_struct_variable_array/TestStructure.h
 
-    ${ZSERIO_GEN_DIR}/array_types/variable_array/VariableArray.cpp
-    ${ZSERIO_GEN_DIR}/array_types/variable_array/VariableArray.h
-    ${ZSERIO_GEN_DIR}/array_types/variable_array/TestStructure.cpp
-    ${ZSERIO_GEN_DIR}/array_types/variable_array/TestStructure.h
+    ${ZSERIO_GEN_DIR}/array_types/variable_array_int8/VariableArray.cpp
+    ${ZSERIO_GEN_DIR}/array_types/variable_array_int8/VariableArray.h
+    ${ZSERIO_GEN_DIR}/array_types/variable_array_int8/TestStructure.cpp
+    ${ZSERIO_GEN_DIR}/array_types/variable_array_int8/TestStructure.h
+
+    ${ZSERIO_GEN_DIR}/array_types/variable_array_varuint/VariableArray.cpp
+    ${ZSERIO_GEN_DIR}/array_types/variable_array_varuint/VariableArray.h
+    ${ZSERIO_GEN_DIR}/array_types/variable_array_varuint/TestStructure.cpp
+    ${ZSERIO_GEN_DIR}/array_types/variable_array_varuint/TestStructure.h
 )
 
 zserio_add_library(TARGET array_types_zs
@@ -71,7 +76,8 @@ add_test_sources(
     cpp/ImplicitArrayUInt64Test.cpp
     cpp/SubtypedBuiltinAutoArrayTest.cpp
     cpp/SubtypedStructVariableArrayTest.cpp
-    cpp/VariableArrayTest.cpp
+    cpp/VariableArrayInt8Test.cpp
+    cpp/VariableArrayVarUIntTest.cpp
 )
 
 add_test_dependencies(array_types_zs)

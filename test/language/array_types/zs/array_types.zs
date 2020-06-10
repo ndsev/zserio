@@ -11,4 +11,5 @@ import array_types.implicit_array_uint8.*;
 import array_types.implicit_array_uint64.*;
 import array_types.subtyped_builtin_auto_array.*;
 import array_types.subtyped_struct_variable_array.*;
-import array_types.variable_array.*;
+import array_types.variable_array_int8.*;
+import array_types.variable_array_varuint.*;
