@@ -49,6 +49,13 @@ public class OffsetsErrorTest
     }
 
     @Test
+    public void functionError()
+    {
+        final String error = "function_error.zs:12:1: Function call cannot be used in offset expression!";
+        assertTrue(zserioErrors.isPresent(error));
+    }
+
+    @Test
     public void signed_bitfield()
     {
         final String error = "signed_bitfield_error.zs:6:1: " +

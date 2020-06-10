@@ -220,6 +220,9 @@ public class Field extends DocumentableAstNode
                         "' is not an unsigned integer type!");
             }
 
+            if (offsetExpr.containsFunctionCall())
+                throw new ParserException(offsetExpr, "Function call cannot be used in offset expression!");
+
             if (offsetExpr.op2() == null)
                 checkSingleOffsetExpression();
         }
