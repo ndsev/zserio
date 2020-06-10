@@ -7,8 +7,8 @@ import java.io.File;
 
 import org.junit.Test;
 
-import array_types.variable_array.TestStructure;
-import array_types.variable_array.VariableArray;
+import array_types.variable_array_int8.TestStructure;
+import array_types.variable_array_int8.VariableArray;
 
 import zserio.runtime.ZserioError;
 import zserio.runtime.array.ObjectArray;
@@ -24,7 +24,7 @@ public class VariableArrayInt8Test
     {
         final byte numElements = 33;
         final ObjectArray<TestStructure> compoundArray = new ObjectArray<TestStructure>(numElements);
-        for (short i = 0; i < numElements; ++i)
+        for (byte i = 0; i < numElements; ++i)
         {
             final TestStructure testStructure = new TestStructure(i, "Name" + i);
             compoundArray.setElementAt(testStructure, i);
@@ -41,7 +41,7 @@ public class VariableArrayInt8Test
     {
         final byte numElements = 33;
         final ObjectArray<TestStructure> compoundArray = new ObjectArray<TestStructure>(numElements);
-        for (short i = 0; i < numElements; ++i)
+        for (byte i = 0; i < numElements; ++i)
         {
             final TestStructure testStructure = new TestStructure(i, "Name" + i);
             compoundArray.setElementAt(testStructure, i);
