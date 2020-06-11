@@ -17,7 +17,7 @@ class VariableArrayVarUIntTest : public ::testing::Test
 protected:
     void writeVariableArrayToByteArray(zserio::BitStreamWriter& writer, size_t numElements)
     {
-        writer.writeSignedBits(static_cast<uint64_t>(numElements), 8);
+        writer.writeBits64(static_cast<uint64_t>(numElements), 8);
         for (size_t i = 0; i < numElements; ++i)
         {
             writer.writeBits(static_cast<uint32_t>(i), 32);
