@@ -17,7 +17,7 @@ class VariableArrayVarUIntTest : public ::testing::Test
 protected:
     void writeVariableArrayToByteArray(zserio::BitStreamWriter& writer, size_t numElements)
     {
-        writer.writeSignedBits(static_cast<int8_t>(numElements), 8);
+        writer.writeSignedBits(static_cast<uint64_t>(numElements), 8);
         for (size_t i = 0; i < numElements; ++i)
         {
             writer.writeBits(static_cast<uint32_t>(i), 32);
@@ -39,7 +39,7 @@ TEST_F(VariableArrayVarUIntTest, bitSizeOf)
         compoundArray.push_back(testStructure);
     }
     VariableArray variableArray;
-    variableArray.setNumElements(static_cast<int8_t>(numElements));
+    variableArray.setNumElements(static_cast<uint64_t>(numElements));
     variableArray.setCompoundArray(compoundArray);
 
     const size_t bitPosition = 2;
@@ -61,7 +61,7 @@ TEST_F(VariableArrayVarUIntTest, initializeOffsets)
         compoundArray.push_back(testStructure);
     }
     VariableArray variableArray;
-    variableArray.setNumElements(static_cast<int8_t>(numElements));
+    variableArray.setNumElements(static_cast<uint64_t>(numElements));
     variableArray.setCompoundArray(compoundArray);
 
     const size_t bitPosition = 2;
@@ -103,7 +103,7 @@ TEST_F(VariableArrayVarUIntTest, write)
         compoundArray.push_back(testStructure);
     }
     VariableArray variableArray;
-    variableArray.setNumElements(static_cast<int8_t>(numElements));
+    variableArray.setNumElements(static_cast<uint64_t>(numElements));
     variableArray.setCompoundArray(compoundArray);
 
     zserio::BitStreamWriter writer;
@@ -135,7 +135,7 @@ TEST_F(VariableArrayVarUIntTest, writeWrongArray)
         compoundArray.push_back(testStructure);
     }
     VariableArray variableArray;
-    variableArray.setNumElements(static_cast<int8_t>(numElements + 1));
+    variableArray.setNumElements(static_cast<uint64_t>(numElements + 1));
     variableArray.setCompoundArray(compoundArray);
 
     zserio::BitStreamWriter writer;
