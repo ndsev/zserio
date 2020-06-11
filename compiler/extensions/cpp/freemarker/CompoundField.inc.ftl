@@ -38,7 +38,7 @@ ${I}return ::zserio::NullOpt;
     <#if field.array??>
 ${I}${field.cppTypeName} readField;
 ${I}::zserio::read<@array_runtime_function_suffix field, true/>(<@array_traits field, true/>, readField, in<#rt>
-        <#lt><#if field.array.length??>, ${field.array.length}</#if><#rt>
+        <#lt><#if field.array.length??>, static_cast<size_t>(${field.array.length})</#if><#rt>
         <#lt><#if field.offset?? && field.offset.containsIndex>, <@offset_checker_name field.name/>(*this)</#if><#rt>
         <#lt>);
         <#local readCommand="readField"/>
