@@ -29,7 +29,8 @@ class ExtensionManager
         while (it.hasNext())
         {
             Extension extension = it.next();
-            if (ZserioVersion.VERSION_STRING.equals(extension.getVersion()))
+            if (ExtensionVersionMatcher.matchExtensionVersion(
+                    ZserioVersion.VERSION_STRING, extension.getVersion()))
             {
                 extensions.add(extension);
                 extension.registerOptions(commandLineArguments.getOptions());
@@ -37,8 +38,9 @@ class ExtensionManager
             else
             {
                 ZserioToolPrinter.printMessage("Ignoring '" + extension.getName() + "' extension " +
-                        "because its version '" + extension.getVersion() + "' does not match " +
-                        "ZserioTool version '" + ZserioVersion.VERSION_STRING + "'!");
+                        "because it expects ZserioTool version '" + extension.getVersion() + "' " +
+                        "which is not compatible with current ZserioTool version '" +
+                        ZserioVersion.VERSION_STRING + "'!");
             }
         }
     }

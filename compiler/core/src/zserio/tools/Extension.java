@@ -18,9 +18,11 @@ public interface Extension
     public String getName();
 
     /**
-     * Returns the version of the extension. The version must match the ZserioTool version.
+     * Returns the version of ZserioTool which is expected by the extension.
+     * ZserioTool then checks if the current version can satisfy the extension
+     * (i.e. if the AST and common interfaces are compatible).
      *
-     * @return Version string which must match the ZserioTool version.
+     * @return Version string of ZserioTool which is expected by the extension.
      */
     public String getVersion();
 
