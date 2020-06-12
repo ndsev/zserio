@@ -12,10 +12,10 @@ namespace dynamic_int_range_check
 class DynamicIntRangeCheckTest : public ::testing::Test
 {
 protected:
-    void checkDynamicIntValue(int64_t value)
+    void checkDynamicIntValue(uint8_t numBits, int64_t value)
     {
         DynamicIntRangeCheckCompound dynamicIntRangeCheckCompound;
-        dynamicIntRangeCheckCompound.setNumBits(NUM_BITS);
+        dynamicIntRangeCheckCompound.setNumBits(numBits);
         dynamicIntRangeCheckCompound.setValue(value);
         zserio::BitStreamWriter writer;
         dynamicIntRangeCheckCompound.write(writer);
@@ -37,19 +37,19 @@ const int64_t DynamicIntRangeCheckTest::DYNAMIC_INT_UPPER_BOUND = (INT64_C(1) <<
 
 TEST_F(DynamicIntRangeCheckTest, dynamicIntLowerBound)
 {
-    checkDynamicIntValue(DYNAMIC_INT_LOWER_BOUND);
+    checkDynamicIntValue(NUM_BITS, DYNAMIC_INT_LOWER_BOUND);
 }
 
 TEST_F(DynamicIntRangeCheckTest, dynamicIntUpperBound)
 {
-    checkDynamicIntValue(DYNAMIC_INT_UPPER_BOUND);
+    checkDynamicIntValue(NUM_BITS, DYNAMIC_INT_UPPER_BOUND);
 }
 
 TEST_F(DynamicIntRangeCheckTest, dynamicIntBelowLowerBound)
 {
     try
     {
-        checkDynamicIntValue(DYNAMIC_INT_LOWER_BOUND - 1);
+        checkDynamicIntValue(NUM_BITS, DYNAMIC_INT_LOWER_BOUND - 1);
         FAIL() << "Actual: no exception, Expected: zserio::CppRuntimeException";
     }
     catch (const zserio::CppRuntimeException& excpt)
@@ -63,13 +63,31 @@ TEST_F(DynamicIntRangeCheckTest, dynamicIntAboveUpperBound)
 {
     try
     {
-        checkDynamicIntValue(DYNAMIC_INT_UPPER_BOUND + 1);
+        checkDynamicIntValue(NUM_BITS, DYNAMIC_INT_UPPER_BOUND + 1);
         FAIL() << "Actual: no exception, Expected: zserio::CppRuntimeException";
     }
     catch (const zserio::CppRuntimeException& excpt)
     {
         ASSERT_STREQ("Value 512 of DynamicIntRangeCheckCompound.value exceeds the range of <-512..511>!",
                 excpt.what());
+    }
+}
+
+TEST_F(DynamicIntRangeCheckTest, numBitsMax)
+{
+    checkDynamicIntValue(64, INT64_MIN);
+}
+
+TEST_F(DynamicIntRangeCheckTest, numBitsAboveMax)
+{
+    try
+    {
+        checkDynamicIntValue(65, INT64_MIN);
+        FAIL() << "Actual: no exception, Expected: zserio::CppRuntimeException";
+    }
+    catch (const zserio::CppRuntimeException& excpt)
+    {
+        ASSERT_STREQ("Asking for bound of bitfield with invalid length 65", excpt.what());
     }
 }
 

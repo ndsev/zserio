@@ -18,31 +18,43 @@ public class DynamicIntRangeCheckTest
     @Test
     public void dynamicIntLowerBound() throws IOException, ZserioError
     {
-        checkDynamicIntValue(DYNAMIC_INT_LOWER_BOUND);
+        checkDynamicIntValue(NUM_BITS, DYNAMIC_INT_LOWER_BOUND);
     }
 
     @Test
     public void dynamicIntUpperBound() throws IOException, ZserioError
     {
-        checkDynamicIntValue(DYNAMIC_INT_UPPER_BOUND);
+        checkDynamicIntValue(NUM_BITS, DYNAMIC_INT_UPPER_BOUND);
     }
 
     @Test(expected=ZserioError.class)
     public void dynamicIntBelowLowerBound() throws IOException, ZserioError
     {
-        checkDynamicIntValue(DYNAMIC_INT_LOWER_BOUND - 1);
+        checkDynamicIntValue(NUM_BITS, DYNAMIC_INT_LOWER_BOUND - 1);
     }
 
     @Test(expected=ZserioError.class)
     public void dynamicIntAboveUpperBound() throws IOException, ZserioError
     {
-        checkDynamicIntValue(DYNAMIC_INT_UPPER_BOUND + 1);
+        checkDynamicIntValue(NUM_BITS, DYNAMIC_INT_UPPER_BOUND + 1);
     }
 
-    private void checkDynamicIntValue(long value) throws IOException, ZserioError
+    @Test
+    public void numBitsMax() throws IOException, ZserioError
+    {
+        checkDynamicIntValue((short)64, Long.MAX_VALUE);
+    }
+
+    @Test(expected=ZserioError.class)
+    public void numBitsAboveMax() throws IOException, ZserioError
+    {
+        checkDynamicIntValue((short)65, Long.MAX_VALUE);
+    }
+
+    private void checkDynamicIntValue(short numBits, long value) throws IOException, ZserioError
     {
         DynamicIntRangeCheckCompound dynamicIntRangeCheckCompound = new DynamicIntRangeCheckCompound();
-        dynamicIntRangeCheckCompound.setNumBits(NUM_BITS);
+        dynamicIntRangeCheckCompound.setNumBits(numBits);
         dynamicIntRangeCheckCompound.setValue(value);
         final ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter();
         dynamicIntRangeCheckCompound.write(writer);

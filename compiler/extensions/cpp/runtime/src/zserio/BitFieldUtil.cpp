@@ -5,13 +5,9 @@
 namespace zserio
 {
 
-static void checkBitFieldLength(size_t length, bool isSigned)
+static void checkBitFieldLength(size_t length)
 {
-    const size_t maxSignedBitFieldLength = 64;
-    const size_t maxUnsignedBitFieldLength = 63;
-    const size_t maxBitFieldLength = isSigned ? maxSignedBitFieldLength : maxUnsignedBitFieldLength;
-
-    if (length == 0 || length > maxBitFieldLength)
+    if (length == 0 || length > 64)
     {
         throw CppRuntimeException("Asking for bound of bitfield with invalid length " +
                 convertToString(length));
@@ -20,22 +16,22 @@ static void checkBitFieldLength(size_t length, bool isSigned)
 
 int64_t getBitFieldLowerBound(size_t length, bool isSigned)
 {
-    checkBitFieldLength(length, isSigned);
+    checkBitFieldLength(length);
 
     if (isSigned)
-        return -(INT64_C(1) << (length - 1));
+        return -static_cast<int64_t>((UINT64_C(1) << (length - 1)) - 1) - 1;
     else
         return 0;
 }
 
 uint64_t getBitFieldUpperBound(size_t length, bool isSigned)
 {
-    checkBitFieldLength(length, isSigned);
+    checkBitFieldLength(length);
 
     if (isSigned)
         return (UINT64_C(1) << (length - 1)) - 1;
     else
-        return (UINT64_C(1) << length) - 1;
+        return length == 64 ? UINT64_MAX : ((UINT64_C(1) << length) - 1);
 }
 
 } // namespace zserio

@@ -20,34 +20,47 @@ public class DynamicBitRangeCheckTest
     @Test
     public void dynamicBitLowerBound() throws IOException, ZserioError
     {
-        checkDynamicBitValue(DYNAMIC_BIT_LOWER_BOUND);
+        checkDynamicBitValue(NUM_BITS, BigInteger.valueOf(DYNAMIC_BIT_LOWER_BOUND));
     }
 
     @Test
     public void dynamicBitUpperBound() throws IOException, ZserioError
     {
-        checkDynamicBitValue(DYNAMIC_BIT_UPPER_BOUND);
+        checkDynamicBitValue(NUM_BITS, BigInteger.valueOf(DYNAMIC_BIT_UPPER_BOUND));
     }
 
     @Ignore("Range check for Big Integers are not implemented yet")
     @Test(expected=ZserioError.class)
     public void dynamicBitBelowLowerBound() throws IOException, ZserioError
     {
-        checkDynamicBitValue(DYNAMIC_BIT_LOWER_BOUND - 1);
+        checkDynamicBitValue(NUM_BITS, BigInteger.valueOf(DYNAMIC_BIT_LOWER_BOUND - 1));
     }
 
     @Ignore("Range check for Big Integers are not implemented yet")
     @Test(expected=ZserioError.class)
     public void dynamicBitAboveUpperBound() throws IOException, ZserioError
     {
-        checkDynamicBitValue(DYNAMIC_BIT_UPPER_BOUND + 1);
+        checkDynamicBitValue(NUM_BITS, BigInteger.valueOf(DYNAMIC_BIT_UPPER_BOUND + 1));
     }
 
-    private void checkDynamicBitValue(long value) throws IOException, ZserioError
+    @Test
+    public void numBitsMax() throws IOException, ZserioError
+    {
+        checkDynamicBitValue((short)64, BigInteger.ONE.shiftLeft(64).subtract(BigInteger.ONE));
+    }
+
+    @Ignore("Numbits check not yet implemented for types mapped to BigInteger")
+    @Test(expected=ZserioError.class)
+    public void numBitsAboveMax() throws IOException, ZserioError
+    {
+        checkDynamicBitValue((short)65, BigInteger.ONE.shiftLeft(64).subtract(BigInteger.ONE));
+    }
+
+    private void checkDynamicBitValue(short numBits, BigInteger value) throws IOException, ZserioError
     {
         DynamicBitRangeCheckCompound dynamicBitRangeCheckCompound = new DynamicBitRangeCheckCompound();
-        dynamicBitRangeCheckCompound.setNumBits(NUM_BITS);
-        dynamicBitRangeCheckCompound.setValue(BigInteger.valueOf(value));
+        dynamicBitRangeCheckCompound.setNumBits(numBits);
+        dynamicBitRangeCheckCompound.setValue(value);
         final ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter();
         dynamicBitRangeCheckCompound.write(writer);
         final byte[] writtenByteArray = writer.toByteArray();

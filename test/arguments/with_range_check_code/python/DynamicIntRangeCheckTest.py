@@ -10,21 +10,28 @@ class DynamicIntRangeCheckTest(unittest.TestCase):
                                extraArgs=["-withRangeCheckCode"]).dynamic_int_range_check
 
     def testDynamicIntLowerBound(self):
-        self._checkDynamicIntValue(DYNAMIC_INT_LOWER_BOUND)
+        self._checkDynamicIntValue(NUM_BITS, DYNAMIC_INT_LOWER_BOUND)
 
     def testDynamicIntUpperBound(self):
-        self._checkDynamicIntValue(DYNAMIC_INT_UPPER_BOUND)
+        self._checkDynamicIntValue(NUM_BITS, DYNAMIC_INT_UPPER_BOUND)
 
     def testDynamicIntBelowLowerBound(self):
         with self.assertRaises(zserio.PythonRuntimeException):
-            self._checkDynamicIntValue(DYNAMIC_INT_LOWER_BOUND - 1)
+            self._checkDynamicIntValue(NUM_BITS, DYNAMIC_INT_LOWER_BOUND - 1)
 
     def testDynamicIntAboveUpperBound(self):
         with self.assertRaises(zserio.PythonRuntimeException):
-            self._checkDynamicIntValue(DYNAMIC_INT_UPPER_BOUND + 1)
+            self._checkDynamicIntValue(NUM_BITS, DYNAMIC_INT_UPPER_BOUND + 1)
 
-    def _checkDynamicIntValue(self, value):
-        dynamicIntRangeCheckCompound = self.api.DynamicIntRangeCheckCompound.fromFields(NUM_BITS, value)
+    def testNumBitsMax(self):
+        self._checkDynamicIntValue(64, zserio.limits.INT64_MAX)
+
+    def testNumBitsAboveMax(self):
+        with self.assertRaises(zserio.PythonRuntimeException):
+            self._checkDynamicIntValue(65, zserio.limits.INT64_MAX)
+
+    def _checkDynamicIntValue(self, numBits, value):
+        dynamicIntRangeCheckCompound = self.api.DynamicIntRangeCheckCompound.fromFields(numBits, value)
         writer = zserio.BitStreamWriter()
         dynamicIntRangeCheckCompound.write(writer)
         reader = zserio.BitStreamReader(writer.getByteArray())

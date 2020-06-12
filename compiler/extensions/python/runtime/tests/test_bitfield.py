@@ -10,27 +10,27 @@ class BitFieldTest(unittest.TestCase):
         with self.assertRaises(PythonRuntimeException):
             getBitFieldLowerBound(0)
         with self.assertRaises(PythonRuntimeException):
-            getBitFieldLowerBound(64)
+            getBitFieldLowerBound(65)
 
         self.assertEqual(0, getBitFieldLowerBound(1))
         self.assertEqual(0, getBitFieldLowerBound(2))
         self.assertEqual(0, getBitFieldLowerBound(8))
         self.assertEqual(0, getBitFieldLowerBound(16))
         self.assertEqual(0, getBitFieldLowerBound(32))
-        self.assertEqual(0, getBitFieldLowerBound(63))
+        self.assertEqual(0, getBitFieldLowerBound(64))
 
     def testGetBitFieldUpperBound(self):
         with self.assertRaises(PythonRuntimeException):
             getBitFieldUpperBound(0)
         with self.assertRaises(PythonRuntimeException):
-            getBitFieldUpperBound(64)
+            getBitFieldUpperBound(65)
 
         self.assertEqual(1, getBitFieldUpperBound(1))
         self.assertEqual(3, getBitFieldUpperBound(2))
         self.assertEqual(255, getBitFieldUpperBound(8))
         self.assertEqual(65535, getBitFieldUpperBound(16))
         self.assertEqual(4294967295, getBitFieldUpperBound(32))
-        self.assertEqual(9223372036854775807, getBitFieldUpperBound(63))
+        self.assertEqual(0xFFFFFFFFFFFFFFFF, getBitFieldUpperBound(64))
 
     def testGetSignedBitFieldLowerBound(self):
         with self.assertRaises(PythonRuntimeException):

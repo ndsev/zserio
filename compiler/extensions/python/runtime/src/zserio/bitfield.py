@@ -13,7 +13,7 @@ def getBitFieldLowerBound(length):
     :raises PythonRuntimeException: If unsigned bitfield with wrong length has been specified.
     """
 
-    _checkBitFieldLength(length, MAX_UNSIGNED_BITFIELD_BITS)
+    _checkBitFieldLength(length)
     return 0
 
 def getBitFieldUpperBound(length):
@@ -26,7 +26,7 @@ def getBitFieldUpperBound(length):
     :raises PythonRuntimeException: If unsigned bitfield with wrong length has been specified.
     """
 
-    _checkBitFieldLength(length, MAX_UNSIGNED_BITFIELD_BITS)
+    _checkBitFieldLength(length)
     return (1 << length) - 1
 
 def getSignedBitFieldLowerBound(length):
@@ -38,7 +38,7 @@ def getSignedBitFieldLowerBound(length):
     :raises PythonRuntimeException: If signed bitfield with wrong length has been specified.
     """
 
-    _checkBitFieldLength(length, MAX_SIGNED_BITFIELD_BITS)
+    _checkBitFieldLength(length)
     return -(1 << (length - 1))
 
 def getSignedBitFieldUpperBound(length):
@@ -50,12 +50,11 @@ def getSignedBitFieldUpperBound(length):
     :raises PythonRuntimeException: If signed bitfield with wrong length has been specified.
     """
 
-    _checkBitFieldLength(length, MAX_SIGNED_BITFIELD_BITS)
+    _checkBitFieldLength(length)
     return (1 << (length - 1)) - 1
 
-def _checkBitFieldLength(length, maxBitFieldLength):
-    if length <= 0 or length > maxBitFieldLength:
+def _checkBitFieldLength(length):
+    if length <= 0 or length > MAX_BITFIELD_BITS:
         raise PythonRuntimeException("bitfield: Asking for bound of bitfield with invalid length %d!" % length)
 
-MAX_SIGNED_BITFIELD_BITS = 64
-MAX_UNSIGNED_BITFIELD_BITS = 63
+MAX_BITFIELD_BITS = 64
