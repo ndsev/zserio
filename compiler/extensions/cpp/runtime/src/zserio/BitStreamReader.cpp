@@ -258,7 +258,9 @@ namespace
             loadCacheNext(ctx, numBits);
 
             // add the remaining bits to the result
-            value <<= numBits;
+            // if numBits is sizeof(BaseType) * 8 here, value is already 0 (see MASK_TABLE[0])
+            if (numBits < sizeof(BaseType) * 8)
+                value <<= numBits;
         }
         value |= ((cacheBuffer >> (ctx.cacheNumBits - numBits)) & MASK_TABLE[numBits]);
         ctx.cacheNumBits -= numBits;
