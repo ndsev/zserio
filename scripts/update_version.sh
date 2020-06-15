@@ -32,7 +32,7 @@ update_version()
     # find all files with version
     local PYTHON_RUNTIME_VERSION_FILE="${ZSERIO_SOURCE_DIR}/extensions/python/runtime/src/zserio/__init__.py"
     local CPP_RUNTIME_DOXYFILE="${ZSERIO_SOURCE_DIR}/extensions/cpp/runtime/doc/doxyfile"
-    local FOUND_VERSION_FILES=`${FIND} ${ZSERIO_SOURCE_DIR} -iname "*Version*"`
+    local FOUND_VERSION_FILES=`${FIND} ${ZSERIO_SOURCE_DIR} -iname "*Version.*"`
     local VERSION_FILES="${FOUND_VERSION_FILES[@]}
                          ${PYTHON_RUNTIME_VERSION_FILE}
                          ${CPP_RUNTIME_DOXYFILE}"
