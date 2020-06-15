@@ -1502,7 +1502,7 @@ struct StringArrayTraits
      * \param out Bit stream writer to use.
      * \param value Element's value to write.
      */
-    static void write(BitStreamWriter& out, type value)
+    static void write(BitStreamWriter& out, const type& value)
     {
         out.writeString(value);
     }
@@ -1561,7 +1561,7 @@ struct BitBufferArrayTraits
      * \param out Bit stream writer to use.
      * \param value Element's value to write.
      */
-    static void write(BitStreamWriter& out, type value)
+    static void write(BitStreamWriter& out, const type& value)
     {
         out.writeBitBuffer(value);
     }
@@ -1682,7 +1682,7 @@ struct BitmaskArrayTraits
      * \param out Bit stream writer to use.
      * \param value Element's value to write.
      */
-    static void write(BitStreamWriter& out, type value)
+    static void write(BitStreamWriter& out, const type& value)
     {
         value.write(out, NO_PRE_WRITE_ACTION);
     }
