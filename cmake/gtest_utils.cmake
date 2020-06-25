@@ -18,8 +18,6 @@ function(gtest_add_library GTEST_ROOT)
     # include google test framework
     add_subdirectory(${GTEST_ROOT} googletest)
 
-    # add include directory
-    target_include_directories(gtest_main SYSTEM PUBLIC ${GTEST_ROOT}/include)
 endfunction()
 
 # A function to add new test to gtest. It is copied from FindGTest.cmake module because include(FindGTest)
