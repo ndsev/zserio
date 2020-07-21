@@ -1,7 +1,13 @@
 set(ZSERIO_GEN_DIR ${CMAKE_CURRENT_BINARY_DIR}/gen)
 set(ZSERIO_GENERATED_SOURCES
+    ${ZSERIO_GEN_DIR}/constraints/array_lengthof_constraint/ArrayLengthofConstraint.cpp
+    ${ZSERIO_GEN_DIR}/constraints/array_lengthof_constraint/ArrayLengthofConstraint.h
+
     ${ZSERIO_GEN_DIR}/constraints/choice_constraints/ChoiceConstraints.cpp
     ${ZSERIO_GEN_DIR}/constraints/choice_constraints/ChoiceConstraints.h
+
+    ${ZSERIO_GEN_DIR}/constraints/literal_constraint/LiteralConstraint.cpp
+    ${ZSERIO_GEN_DIR}/constraints/literal_constraint/LiteralConstraint.h
 
     ${ZSERIO_GEN_DIR}/constraints/structure_constraints/BasicColor.cpp
     ${ZSERIO_GEN_DIR}/constraints/structure_constraints/BasicColor.h
@@ -14,9 +20,6 @@ set(ZSERIO_GENERATED_SOURCES
     ${ZSERIO_GEN_DIR}/constraints/structure_bitmask_constraints/Availability.h
     ${ZSERIO_GEN_DIR}/constraints/structure_bitmask_constraints/StructureBitmaskConstraints.cpp
     ${ZSERIO_GEN_DIR}/constraints/structure_bitmask_constraints/StructureBitmaskConstraints.h
-
-    ${ZSERIO_GEN_DIR}/constraints/array_lengthof_constraint/ArrayLengthofConstraint.cpp
-    ${ZSERIO_GEN_DIR}/constraints/array_lengthof_constraint/ArrayLengthofConstraint.h
 
     ${ZSERIO_GEN_DIR}/constraints/union_constraints/UnionConstraints.cpp
     ${ZSERIO_GEN_DIR}/constraints/union_constraints/UnionConstraints.h
@@ -35,6 +38,7 @@ zserio_add_library(TARGET constraints_zs
 add_test_sources(
     cpp/ArrayLengthofConstraintTest.cpp
     cpp/ChoiceConstraintsTest.cpp
+    cpp/LiteralConstraintTest.cpp
     cpp/StructureConstraintsTest.cpp
     cpp/StructureBitmaskConstraintsTest.cpp
     cpp/UnionConstraintsTest.cpp

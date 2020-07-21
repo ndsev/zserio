@@ -299,16 +299,6 @@ public class CppExpressionFormattingPolicy extends DefaultExpressionFormattingPo
             literalSuffix = (isNegative) ? CPP_SIGNED_LONG_LONG_LITERAL_SUFFIX :
                 CPP_UNSIGNED_LONG_LONG_LITERAL_SUFFIX;
         }
-        else
-        {
-            final long maxAbsShortValue = (isNegative) ? -(long)Short.MIN_VALUE : 0xFFFFL;
-            if (literalValue.compareTo(BigInteger.valueOf(maxAbsShortValue)) > 0)
-            {
-                // long value
-                literalSuffix = (isNegative) ? CPP_SIGNED_LONG_LITERAL_SUFFIX :
-                    CPP_UNSIGNED_LONG_LITERAL_SUFFIX;
-            }
-        }
 
         return literalSuffix;
     }
@@ -405,8 +395,6 @@ public class CppExpressionFormattingPolicy extends DefaultExpressionFormattingPo
 
     private final static List<String> BUILD_IN_OPERATORS_INCLUDE = Arrays.asList("zserio/BuildInOperators.h");
 
-    private final static String CPP_SIGNED_LONG_LITERAL_SUFFIX = "L";
-    private final static String CPP_UNSIGNED_LONG_LITERAL_SUFFIX = "UL";
     private final static String CPP_SIGNED_LONG_LONG_LITERAL_SUFFIX = "LL";
     private final static String CPP_UNSIGNED_LONG_LONG_LITERAL_SUFFIX = "ULL";
     private final static String CPP_HEXADECIMAL_LITERAL_PREFIX = "0x";
