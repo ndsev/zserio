@@ -6,7 +6,7 @@ public class NativeBitBufferType extends PythonNativeType
 {
     public NativeBitBufferType()
     {
-        super(BIT_BUFFER_PACKAGE_NAME, "BitBuffer");
+        super(BIT_BUFFER_PACKAGE_NAME, "bitbuffer", "BitBuffer");
     }
 
     private static final PackageName BIT_BUFFER_PACKAGE_NAME = new PackageName.Builder().addId("zserio").get();

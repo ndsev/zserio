@@ -21,6 +21,7 @@ public class BitmaskEmitterTemplateData extends UserTypeTemplateData
     {
         super(context, bitmaskType);
 
+        importPackage("typing");
         importPackage("zserio"); // needed at least for hash code calculation
 
         final TypeInstantiation bitmaskTypeInstantiation = bitmaskType.getTypeInstantiation();

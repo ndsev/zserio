@@ -18,12 +18,13 @@ public final  class SqlDatabaseEmitterTemplateData extends UserTypeTemplateData
     {
         super(context, databaseType);
 
+        importPackage("typing");
+        importPackage("apsw");
+
         final PythonNativeMapper pythonNativeMapper = context.getPythonNativeMapper();
         fields = new ArrayList<DatabaseFieldData>();
         for (Field field: databaseType.getFields())
             fields.add(new DatabaseFieldData(pythonNativeMapper, field, this));
-
-        importPackage("apsw");
     }
 
     public Iterable<DatabaseFieldData> getFields()

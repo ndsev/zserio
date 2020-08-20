@@ -15,21 +15,23 @@ public class CompoundTypeTemplateData extends UserTypeTemplateData
     {
         super(context, compoundType);
 
+        importPackage("typing");
+        importPackage("zserio");
+
         withRangeCheckCode = context.getWithRangeCheckCode();
-        final PythonNativeMapper javaNativeTypeMapper = context.getPythonNativeMapper();
+        final PythonNativeMapper pythonNativeMapper = context.getPythonNativeMapper();
         final ExpressionFormatter pythonExpressionFormatter = context.getPythonExpressionFormatter(this);
-        compoundParametersData = new CompoundParameterTemplateData(compoundType);
-        compoundFunctionsData = new CompoundFunctionTemplateData(compoundType, pythonExpressionFormatter);
+        compoundParametersData = new CompoundParameterTemplateData(compoundType, pythonNativeMapper, this);
+        compoundFunctionsData = new CompoundFunctionTemplateData(compoundType, pythonNativeMapper,
+                pythonExpressionFormatter, this);
 
         hasFieldWithOffset = compoundType.hasFieldWithOffset();
 
         final List<Field> fieldTypeList = compoundType.getFields();
         fieldList = new ArrayList<CompoundFieldTemplateData>(fieldTypeList.size());
         for (Field fieldType : fieldTypeList)
-            fieldList.add(new CompoundFieldTemplateData(javaNativeTypeMapper, withRangeCheckCode, compoundType,
-                    fieldType, pythonExpressionFormatter, this));
-
-        importPackage("zserio");
+            fieldList.add(new CompoundFieldTemplateData(pythonNativeMapper, withRangeCheckCode,
+                    compoundType, fieldType, pythonExpressionFormatter, this));
     }
 
     public boolean getWithRangeCheckCode()

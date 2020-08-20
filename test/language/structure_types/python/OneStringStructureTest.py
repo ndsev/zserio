@@ -10,7 +10,7 @@ class OneStringStructureTest(unittest.TestCase):
 
     def testEmptyConstructor(self):
         oneStringStructure = self.api.OneStringStructure()
-        self.assertEqual(None, oneStringStructure.getOneString())
+        self.assertEqual("", oneStringStructure.getOneString())
 
     def testFromReader(self):
         writer = zserio.BitStreamWriter()

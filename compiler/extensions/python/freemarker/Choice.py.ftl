@@ -25,32 +25,38 @@ selector in (<#list expressionList as expression>${expression}<#if expression?ha
         <#if defaultMember??>
             <@.vars[memberActionMacroName] defaultMember, 3/>
         <#else>
-            raise zserio.PythonRuntimeException("No match in choice ${name}: %d!" % selector)
+            raise zserio.PythonRuntimeException("No match in choice ${name}!")
         </#if>
     </#if>
 </#macro>
 
-<#assign constructorParamList><@compound_constructor_parameters compoundParametersData/></#assign>
 class ${name}:
-    def __init__(self, ${constructorParamList}):
+<#assign constructorAnnotatedParamList><@compound_constructor_annotated_parameters compoundParametersData, 3/></#assign>
+    def __init__(
+            self<#if constructorAnnotatedParamList?has_content>,
+            <#lt>${constructorAnnotatedParamList}</#if>) -> None:
         <@compound_constructor_parameter_assignments compoundParametersData/>
-        self._choice = None
+        self._choice = None # type: typing.Any
 
+<#assign constructorParamList><@compound_constructor_parameters compoundParametersData/></#assign>
     @classmethod
-    def fromReader(cls, reader, ${constructorParamList}):
+    def fromReader(
+            cls: typing.Type['${name}'],
+            reader: zserio.BitStreamReader<#if constructorAnnotatedParamList?has_content>,
+            <#lt>${constructorAnnotatedParamList}</#if>) -> '${name}':
         instance = cls(${constructorParamList})
         instance.read(reader)
 
         return instance
 
-    def __eq__(self, other):
+    def __eq__(self, other: object) -> bool:
         if isinstance(other, ${name}):
             return (<@compound_compare_parameters compoundParametersData, 5/> and
                     self._choice == other._choice)
 
         return False
 
-    def __hash__(self):
+    def __hash__(self) -> int:
         result = zserio.hashcode.HASH_SEED
         <@compound_hashcode_parameters compoundParametersData/>
         result = zserio.hashcode.calcHashCode(result, hash(self._choice))
@@ -58,22 +64,22 @@ class ${name}:
         return result
 <#list compoundParametersData.list as parameter>
 
-    def ${parameter.getterName}(self):
+    def ${parameter.getterName}(self) -> ${parameter.pythonTypeName}:
         <@compound_parameter_accessor parameter/>
 </#list>
 <#list fieldList as field>
 
-    def ${field.getterName}(self):
+    def ${field.getterName}(self) -> <@field_annotation_argument_type_name field, name/>:
         <@compound_getter_field field/>
     <#if withWriterCode>
 
-    def ${field.setterName}(self, <@field_argument_name field/>):
+    def ${field.setterName}(self, <@field_argument_name field/>: <@field_annotation_argument_type_name field, name/>) -> None:
         <@compound_setter_field field/>
     </#if>
 </#list>
 <#list compoundFunctionsData.list as function>
 
-    def ${function.name}(self):
+    def ${function.name}(self) -> ${function.returnPythonTypeName}:
         return ${function.resultExpression}
 </#list>
 
@@ -85,7 +91,7 @@ class ${name}:
         <#lt>${I}pass
     </#if>
 </#macro>
-    def bitSizeOf(self, bitPosition=0):
+    def bitSizeOf(self, bitPosition: int = 0) -> int:
 <#if fieldList?has_content>
         endBitPosition = bitPosition
 
@@ -107,7 +113,7 @@ class ${name}:
             <#lt>${I}pass
         </#if>
     </#macro>
-    def initializeOffsets(self, bitPosition):
+    def initializeOffsets(self, bitPosition: int) -> int:
     <#if fieldList?has_content>
         endBitPosition = bitPosition
 
@@ -127,7 +133,7 @@ class ${name}:
         <#lt>${I}pass
     </#if>
 </#macro>
-    def read(self, reader):
+    def read(self, reader: zserio.BitStreamReader) -> None:
 <#if fieldList?has_content>
         <@choice_if "choice_read_member"/>
 <#else>
@@ -143,7 +149,7 @@ class ${name}:
             <#lt>${I}pass
         </#if>
     </#macro>
-    def write(self, writer, *, callInitializeOffsets=True):
+    def write(self, writer: zserio.BitStreamWriter, *, callInitializeOffsets: bool = True) -> None:
     <#if fieldList?has_content>
         <#if hasFieldWithOffset>
         if callInitializeOffsets:
@@ -159,5 +165,5 @@ class ${name}:
     </#if>
 </#if>
 <#list fieldList as field>
-    <@define_element_creator field/>
+    <@define_element_creator field, name/>
 </#list>

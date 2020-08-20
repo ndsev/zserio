@@ -10,9 +10,9 @@ class SimpleStructureTest(unittest.TestCase):
 
     def testEmptyConstructor(self):
         simpleStructure = self.api.SimpleStructure()
-        self.assertEqual(None, simpleStructure.getNumberA())
-        self.assertEqual(None, simpleStructure.getNumberB())
-        self.assertEqual(None, simpleStructure.getNumberC())
+        self.assertEqual(0, simpleStructure.getNumberA())
+        self.assertEqual(0, simpleStructure.getNumberB())
+        self.assertEqual(0, simpleStructure.getNumberC())
 
     def testFromReader(self):
         numberA = 0x07

@@ -1,3 +1,13 @@
+<#macro compound_constructor_annotated_parameters compoundParametersData indent>
+    <#local I>${""?left_pad(indent * 4)}</#local>
+    <#list compoundParametersData.list as parameter>
+${I}<@parameter_argument_name parameter/>: ${parameter.pythonTypeName}<#rt>
+        <#if parameter_has_next>
+            <#lt>,
+        </#if>
+    </#list>
+</#macro>
+
 <#macro compound_constructor_parameters compoundParametersData>
     <#list compoundParametersData.list as parameter>
 <@parameter_argument_name parameter/><#if parameter_has_next>, </#if><#rt>
@@ -6,7 +16,7 @@
 
 <#macro compound_constructor_parameter_assignments compoundParametersData>
     <#list compoundParametersData.list as parameter>
-        self.<@parameter_member_name parameter/> = <@parameter_argument_name parameter/>
+        self.<@parameter_member_name parameter/> = <@parameter_argument_name parameter/> # type: ${parameter.pythonTypeName}
     </#list>
 </#macro>
 

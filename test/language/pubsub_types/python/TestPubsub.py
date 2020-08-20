@@ -5,7 +5,7 @@ class TestPubsub(zserio.PubsubInterface):
         self._subscriptions = {}
         self._numIds = 0
 
-    def publish(self, topic, data, context):
+    def publish(self, topic, data, context=None):
         if context:
             context.seenByPubsub = True
 
@@ -13,7 +13,7 @@ class TestPubsub(zserio.PubsubInterface):
             if subscription["topic"] == topic:
                 subscription["callback"](topic, data)
 
-    def subscribe(self, topic, callback, context):
+    def subscribe(self, topic, callback, context=None):
         if context:
             context.seenByPubsub = True
 

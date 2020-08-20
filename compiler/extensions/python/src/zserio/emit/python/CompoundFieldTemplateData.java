@@ -20,6 +20,7 @@ import zserio.ast.TypeInstantiation;
 import zserio.emit.common.ExpressionFormatter;
 import zserio.emit.common.ZserioEmitException;
 import zserio.emit.python.types.NativeArrayType;
+import zserio.emit.python.types.NativeBuiltinType;
 import zserio.emit.python.types.PythonNativeType;
 
 public final class CompoundFieldTemplateData
@@ -39,18 +40,20 @@ public final class CompoundFieldTemplateData
         setterName = AccessorNameFormatter.getSetterName(field);
 
         rangeCheck = createRangeCheck(fieldTypeInstantiation, withRangeCheckCode, pythonExpressionFormatter);
-        optional = createOptional(field, pythonExpressionFormatter);
+        final ZserioType fieldBaseType = fieldTypeInstantiation.getBaseType();
+        optional = createOptional(field, fieldBaseType, parentType, pythonExpressionFormatter);
 
         alignmentValue = createAlignmentValue(field, pythonExpressionFormatter);
         initializer = createInitializer(field, pythonExpressionFormatter);
         constraint = createConstraint(field, pythonExpressionFormatter);
 
         usesChoiceMember = (parentType instanceof ChoiceType) || (parentType instanceof UnionType);
+        isBuiltinType = (nativeType instanceof NativeBuiltinType);
 
         bitSize = new BitSize(fieldTypeInstantiation, pythonExpressionFormatter);
         offset = createOffset(field, pythonExpressionFormatter);
-        array = createArray(nativeType, fieldTypeInstantiation, pythonNativeMapper, pythonExpressionFormatter,
-                importCollector);
+        array = createArray(nativeType, fieldTypeInstantiation, parentType, pythonNativeMapper,
+                pythonExpressionFormatter, importCollector);
         runtimeFunction = PythonRuntimeFunctionDataCreator.createData(
                 fieldTypeInstantiation, pythonExpressionFormatter);
         compound = createCompound(pythonExpressionFormatter, fieldTypeInstantiation);
@@ -104,6 +107,11 @@ public final class CompoundFieldTemplateData
     public boolean getUsesChoiceMember()
     {
         return usesChoiceMember;
+    }
+
+    public boolean getIsBuiltinType()
+    {
+        return isBuiltinType;
     }
 
     public BitSize getBitSize()
@@ -187,11 +195,12 @@ public final class CompoundFieldTemplateData
     public static class Optional
     {
         public Optional(Expression optionalClauseExpression, String indicatorName,
-                ExpressionFormatter pythonExpressionFormatter) throws ZserioEmitException
+                ExpressionFormatter pythonExpressionFormatter, boolean isRecursive) throws ZserioEmitException
         {
             clause = (optionalClauseExpression == null) ? null :
                 pythonExpressionFormatter.formatGetter(optionalClauseExpression);
             this.indicatorName = indicatorName;
+            this.isRecursive = isRecursive;
         }
 
         public String getClause()
@@ -204,8 +213,14 @@ public final class CompoundFieldTemplateData
             return indicatorName;
         }
 
+        public boolean getIsRecursive()
+        {
+            return isRecursive;
+        }
+
         private final String clause;
         private final String indicatorName;
+        private final boolean isRecursive;
     }
 
     public static class BitSize
@@ -284,7 +299,7 @@ public final class CompoundFieldTemplateData
 
     public static class Array
     {
-        public Array(NativeArrayType nativeType, ArrayInstantiation arrayInstantiation,
+        public Array(NativeArrayType nativeType, ArrayInstantiation arrayInstantiation, ZserioType parentType,
                 PythonNativeMapper pythonNativeMapper, ExpressionFormatter pythonExpressionFormatter,
                 ImportCollector importCollector) throws ZserioEmitException
         {
@@ -300,6 +315,7 @@ public final class CompoundFieldTemplateData
                     pythonNativeMapper.getPythonType(elementTypeInstantiation);
             importCollector.importType(elementNativeType);
             elementPythonTypeName = elementNativeType.getFullName();
+            elementIsRecursive = (elementTypeInstantiation.getBaseType() == parentType);
             elementBitSize = new BitSize(elementTypeInstantiation, pythonExpressionFormatter);
             elementCompound = createCompound(pythonExpressionFormatter, elementTypeInstantiation);
         }
@@ -334,6 +350,11 @@ public final class CompoundFieldTemplateData
             return elementPythonTypeName;
         }
 
+        public boolean getElementIsRecursive()
+        {
+            return elementIsRecursive;
+        }
+
         public BitSize getElementBitSize()
         {
             return elementBitSize;
@@ -360,6 +381,7 @@ public final class CompoundFieldTemplateData
         private final boolean isImplicit;
         private final String length;
         private final String elementPythonTypeName;
+        private final boolean elementIsRecursive;
         private final BitSize elementBitSize;
         private final Compound elementCompound;
     }
@@ -446,16 +468,17 @@ public final class CompoundFieldTemplateData
                 (DynamicBitFieldInstantiation)typeInstantiation, pythonExpressionFormatter);
     }
 
-    private static Optional createOptional(Field field, ExpressionFormatter pythonExpressionFormatter)
-            throws ZserioEmitException
+    private static Optional createOptional(Field field, ZserioType baseFieldType, CompoundType parentType,
+            ExpressionFormatter pythonExpressionFormatter) throws ZserioEmitException
     {
         if (!field.isOptional())
             return null;
 
+        final boolean isRecursive = (baseFieldType == parentType);
         final Expression optionalClauseExpression = field.getOptionalClauseExpr();
         final String indicatorName = AccessorNameFormatter.getIndicatorName(field);
 
-        return new Optional(optionalClauseExpression, indicatorName, pythonExpressionFormatter);
+        return new Optional(optionalClauseExpression, indicatorName, pythonExpressionFormatter, isRecursive);
     }
 
     private static String createAlignmentValue(Field field, ExpressionFormatter pythonExpressionFormatter)
@@ -499,8 +522,9 @@ public final class CompoundFieldTemplateData
     }
 
     private static Array createArray(PythonNativeType nativeType, TypeInstantiation typeInstantiation,
-            PythonNativeMapper pythonNativeMapper, ExpressionFormatter pythonExpressionFormatter,
-            ImportCollector importCollector) throws ZserioEmitException
+            ZserioType parentType, PythonNativeMapper pythonNativeMapper,
+            ExpressionFormatter pythonExpressionFormatter, ImportCollector importCollector)
+                    throws ZserioEmitException
     {
         if (!(typeInstantiation instanceof ArrayInstantiation))
             return null;
@@ -511,8 +535,8 @@ public final class CompoundFieldTemplateData
                     "' and native type '" + nativeType.getClass().getName() + "'!");
         }
 
-        return new Array((NativeArrayType)nativeType, (ArrayInstantiation)typeInstantiation, pythonNativeMapper,
-                pythonExpressionFormatter, importCollector);
+        return new Array((NativeArrayType)nativeType, (ArrayInstantiation)typeInstantiation, parentType,
+                pythonNativeMapper, pythonExpressionFormatter, importCollector);
     }
 
     private static Compound createCompound(ExpressionFormatter pythonExpressionFormatter,
@@ -539,6 +563,7 @@ public final class CompoundFieldTemplateData
     private final String constraint;
 
     private final boolean usesChoiceMember;
+    private final boolean isBuiltinType;
 
     private final BitSize bitSize;
     private final Offset offset;

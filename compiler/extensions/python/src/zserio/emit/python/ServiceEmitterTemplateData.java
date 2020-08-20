@@ -16,6 +16,9 @@ public final class ServiceEmitterTemplateData extends UserTypeTemplateData
     {
         super(context, serviceType);
 
+        importPackage("typing");
+        importPackage("zserio");
+
         final PythonNativeMapper pythonTypeMapper = context.getPythonNativeMapper();
 
         final PythonNativeType nativeServiceType = pythonTypeMapper.getPythonType(serviceType);
@@ -28,8 +31,6 @@ public final class ServiceEmitterTemplateData extends UserTypeTemplateData
             final MethodTemplateData templateData = new MethodTemplateData(pythonTypeMapper, method, this);
             this.methodList.add(templateData);
         }
-
-        importPackage("zserio");
     }
 
     public String getServiceFullName()

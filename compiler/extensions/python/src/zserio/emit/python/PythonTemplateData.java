@@ -1,10 +1,10 @@
 package zserio.emit.python;
 
+import java.util.LinkedHashSet;
 import java.util.TreeSet;
 
 import zserio.ast.PackageName;
 import zserio.emit.python.symbols.PythonNativeSymbol;
-import zserio.emit.python.types.NativeSubtype;
 import zserio.emit.python.types.PythonNativeType;
 import zserio.emit.python.types.NativeUserType;
 import zserio.tools.HashUtil;
@@ -56,13 +56,7 @@ public class PythonTemplateData implements ImportCollector
     @Override
     public void importType(PythonNativeType nativeType)
     {
-        // when a subtype is pointing to a built-in type, it is normally not used in the generated code
-        // (when it is known in template data  that it is used, use importUsedType instead)
-        PythonNativeType typeToCheck = nativeType;
-        if (typeToCheck instanceof NativeSubtype)
-            typeToCheck = ((NativeSubtype)typeToCheck).getNativeTargetBaseType();
-
-        if (typeToCheck instanceof NativeUserType)
+        if (nativeType instanceof NativeUserType)
             typeImports.add(new ImportTemplateData(nativeType));
     }
 
@@ -141,7 +135,9 @@ public class PythonTemplateData implements ImportCollector
 
     private final boolean withWriterCode;
 
-    private final TreeSet<String> packageImports = new TreeSet<String>();
+    // keep ordering to have system imports before application imports
+    private final LinkedHashSet<String> packageImports = new LinkedHashSet<String>();
+
     private final TreeSet<ImportTemplateData> typeImports = new TreeSet<ImportTemplateData>();
     private final TreeSet<ImportTemplateData> symbolImports = new TreeSet<ImportTemplateData>();
 }

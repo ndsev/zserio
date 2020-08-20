@@ -9,6 +9,7 @@ import zserio.ast.BitmaskType;
 import zserio.ast.EnumType;
 import zserio.ast.Expression;
 import zserio.ast.Field;
+import zserio.ast.Parameter;
 import zserio.ast.ParameterizedTypeInstantiation;
 import zserio.ast.ParameterizedTypeInstantiation.InstantiatedParameter;
 import zserio.ast.SqlConstraint;
@@ -29,6 +30,9 @@ public class SqlTableEmitterTemplateData extends UserTypeTemplateData
             throws ZserioEmitException
     {
         super(context, sqlTableType);
+
+        importPackage("typing");
+        importPackage("apsw");
 
         final SqlConstraint tableSqlConstraint = sqlTableType.getSqlConstraint();
         final ExpressionFormatter pythonExpressionFormatter = context.getPythonExpressionFormatter(this);
@@ -51,7 +55,7 @@ public class SqlTableEmitterTemplateData extends UserTypeTemplateData
                 if (parameterTemplateData.getIsExplicit())
                 {
                     explicitParameters.add(new ExplicitParameterTemplateData(
-                            parameterTemplateData.getExpression()));
+                            parameterTemplateData.getExpression(), parameterTemplateData.getPythonTypeName()));
                 }
             }
         }
@@ -89,9 +93,10 @@ public class SqlTableEmitterTemplateData extends UserTypeTemplateData
 
     public static class ExplicitParameterTemplateData implements Comparable<ExplicitParameterTemplateData>
     {
-        public ExplicitParameterTemplateData(String expression)
+        public ExplicitParameterTemplateData(String expression, String pythonTypeName)
         {
             this.expression = expression;
+            this.pythonTypeName = pythonTypeName;
         }
 
         public String getExpression()
@@ -99,10 +104,19 @@ public class SqlTableEmitterTemplateData extends UserTypeTemplateData
             return expression;
         }
 
+        public String getPythonTypeName()
+        {
+            return pythonTypeName;
+        }
+
         @Override
         public int compareTo(ExplicitParameterTemplateData other)
         {
-            return expression.compareTo(other.expression);
+            int result = expression.compareTo(other.expression);
+            if (result != 0)
+                return result;
+
+            return pythonTypeName.compareTo(other.pythonTypeName);
         }
 
         @Override
@@ -124,10 +138,13 @@ public class SqlTableEmitterTemplateData extends UserTypeTemplateData
         {
             int hash = HashUtil.HASH_SEED;
             hash = HashUtil.hash(hash, expression);
+            hash = HashUtil.hash(hash, pythonTypeName);
+
             return hash;
         }
 
         private final String expression;
+        private final String pythonTypeName;
     }
 
     public static class FieldTemplateData
@@ -156,8 +173,9 @@ public class SqlTableEmitterTemplateData extends UserTypeTemplateData
                 for (InstantiatedParameter instantiatedParameter :
                         parameterizedInstantiation.getInstantiatedParameters())
                 {
-                    parameters.add(new ParameterTemplateData(pythonSqlIndirectExpressionFormatter, parentType,
-                            instantiatedParameter));
+                    parameters.add(new ParameterTemplateData(pythonNativeMapper,
+                            pythonSqlIndirectExpressionFormatter, parentType, instantiatedParameter,
+                            importCollector));
                 }
             }
 
@@ -267,13 +285,26 @@ public class SqlTableEmitterTemplateData extends UserTypeTemplateData
 
         public static class ParameterTemplateData
         {
-            public ParameterTemplateData(ExpressionFormatter pythonSqlIndirectExpressionFormatter,
-                    SqlTableType tableType, InstantiatedParameter instantiatedParameter)
+            public ParameterTemplateData(PythonNativeMapper pythonNativeMapper,
+                    ExpressionFormatter pythonSqlIndirectExpressionFormatter, SqlTableType tableType,
+                    InstantiatedParameter instantiatedParameter, ImportCollector importCollector)
                             throws ZserioEmitException
             {
+                final Parameter parameter = instantiatedParameter.getParameter();
+                final PythonNativeType parameterNativeType =
+                        pythonNativeMapper.getPythonType(parameter.getTypeReference());
+                importCollector.importType(parameterNativeType);
+
+                pythonTypeName = parameterNativeType.getFullName();
+
                 final Expression argumentExpression = instantiatedParameter.getArgumentExpression();
                 isExplicit = argumentExpression.isExplicitVariable();
                 expression = pythonSqlIndirectExpressionFormatter.formatGetter(argumentExpression);
+            }
+
+            public String getPythonTypeName()
+            {
+                return pythonTypeName;
             }
 
             public boolean getIsExplicit()
@@ -286,6 +317,7 @@ public class SqlTableEmitterTemplateData extends UserTypeTemplateData
                 return expression;
             }
 
+            private final String pythonTypeName;
             private final boolean isExplicit;
             private final String expression;
         }

@@ -16,6 +16,9 @@ public class PubsubEmitterTemplateData extends UserTypeTemplateData
     {
         super(context, pubsubType);
 
+        importPackage("typing");
+        importPackage("zserio");
+
         final PythonNativeMapper pythonNativeMapper = context.getPythonNativeMapper();
         final ExpressionFormatter pythonExpressionFormatter = context.getPythonExpressionFormatter(this);
 
@@ -32,8 +35,6 @@ public class PubsubEmitterTemplateData extends UserTypeTemplateData
         }
         this.hasPublishing = hasPublishing;
         this.hasSubscribing = hasSubscribing;
-
-        importPackage("zserio");
     }
 
     public Iterable<MessageTemplateData> getMessageList()

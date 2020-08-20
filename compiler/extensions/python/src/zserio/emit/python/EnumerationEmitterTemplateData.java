@@ -18,10 +18,12 @@ public class EnumerationEmitterTemplateData extends UserTypeTemplateData
     {
         super(context, enumType);
 
+        importPackage("enum");
+        importPackage("typing");
+        importPackage("zserio");
+
         final TypeInstantiation enumTypeInstantiation = enumType.getTypeInstantiation();
         bitSize = createBitSize(enumTypeInstantiation);
-        if (bitSize == null)
-            importPackage("zserio");
 
         final ExpressionFormatter pythonExpressionFormatter = context.getPythonExpressionFormatter(this);
         runtimeFunction = PythonRuntimeFunctionDataCreator.createData(
