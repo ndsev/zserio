@@ -49,7 +49,7 @@ class BitStreamReader:
         with open(filename, 'rb') as file:
             return cls(file.read())
 
-    def readBits(self, numBits:  int) -> int:
+    def readBits(self, numBits: int) -> int:
         """
         Reads given number of bits from the bit stream as an unsigned integer.
 

@@ -24,10 +24,10 @@ class Array():
 
     def __init__(self,
                  arrayTraits: typing.Any,
-                 rawArray : typing.Optional[typing.List] = None,
+                 rawArray: typing.Optional[typing.List] = None,
                  *,
-                 isAuto : bool = False,
-                 isImplicit : bool = False,
+                 isAuto: bool = False,
+                 isImplicit: bool = False,
                  setOffsetMethod: typing.Optional[typing.Callable[[int, int], None]] = None,
                  checkOffsetMethod: typing.Optional[typing.Callable[[int, int], None]] = None) -> None:
         """
@@ -49,10 +49,10 @@ class Array():
         self._checkOffsetMethod = checkOffsetMethod # typing.Optional[typing.Callable[[int, int], None]]
 
     @classmethod
-    def fromReader(cls : typing.Type['Array'],
+    def fromReader(cls: typing.Type['Array'],
                    arrayTraits: typing.Any,
                    reader: BitStreamReader,
-                   size : int = 0,
+                   size: int = 0,
                    *,
                    isAuto: bool = False,
                    isImplicit: bool = False,

@@ -243,7 +243,7 @@ class BitStreamWriter:
 
         return self._byteArray
 
-    def toFile(self, filename:str) -> None:
+    def toFile(self, filename: str) -> None:
         """
         Writes underlying bytearray to binary file.
 
