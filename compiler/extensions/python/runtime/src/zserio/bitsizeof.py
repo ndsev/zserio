@@ -2,10 +2,13 @@
 The module provides help methods to calculate size of nontrivial types.
 """
 
+import typing
+
+from zserio.bitbuffer import BitBuffer
 from zserio.exception import PythonRuntimeException
 from zserio.limits import INT64_MIN
 
-def getBitSizeOfVarInt16(value):
+def getBitSizeOfVarInt16(value: int) -> int:
     """
     Gets bit size of variable 16-bit signed integer value.
 
@@ -16,7 +19,7 @@ def getBitSizeOfVarInt16(value):
 
     return _getBitSizeOfVarIntImpl(abs(value), VARINT16_MAX_VALUES, "varint16")
 
-def getBitSizeOfVarInt32(value):
+def getBitSizeOfVarInt32(value: int) -> int:
     """
     Gets bit size of variable 32-bit signed integer value.
 
@@ -27,7 +30,7 @@ def getBitSizeOfVarInt32(value):
 
     return _getBitSizeOfVarIntImpl(abs(value), VARINT32_MAX_VALUES, "varint32")
 
-def getBitSizeOfVarInt64(value):
+def getBitSizeOfVarInt64(value: int) -> int:
     """
     Gets bit size of variable 64-bit signed integer value.
 
@@ -38,7 +41,7 @@ def getBitSizeOfVarInt64(value):
 
     return _getBitSizeOfVarIntImpl(abs(value), VARINT64_MAX_VALUES, "varint64")
 
-def getBitSizeOfVarInt(value):
+def getBitSizeOfVarInt(value: int) -> int:
     """
     Gets bit size of variable signed integer value (up to 9 bytes).
 
@@ -51,7 +54,7 @@ def getBitSizeOfVarInt(value):
         return 8 # INT64_MIN is stored as -0
     return _getBitSizeOfVarIntImpl(abs(value), VARINT_MAX_VALUES, "varint")
 
-def getBitSizeOfVarUInt16(value):
+def getBitSizeOfVarUInt16(value: int) -> int:
     """
     Gets bit size of variable 16-bit unsigned integer value.
 
@@ -62,7 +65,7 @@ def getBitSizeOfVarUInt16(value):
 
     return _getBitSizeOfVarIntImpl(value, VARUINT16_MAX_VALUES, "varuint16")
 
-def getBitSizeOfVarUInt32(value):
+def getBitSizeOfVarUInt32(value: int) -> int:
     """
     Gets bit size of variable 32-bit unsigned integer value.
 
@@ -73,7 +76,7 @@ def getBitSizeOfVarUInt32(value):
 
     return _getBitSizeOfVarIntImpl(value, VARUINT32_MAX_VALUES, "varuint32")
 
-def getBitSizeOfVarUInt64(value):
+def getBitSizeOfVarUInt64(value: int) -> int:
     """
     Gets bit size of variable 64-bit unsigned integer value.
 
@@ -84,7 +87,7 @@ def getBitSizeOfVarUInt64(value):
 
     return _getBitSizeOfVarIntImpl(value, VARUINT64_MAX_VALUES, "varuint64")
 
-def getBitSizeOfVarUInt(value):
+def getBitSizeOfVarUInt(value: int) -> int:
     """
     Gets bit size of variable unsigned integer value (up to 9 bytes).
 
@@ -95,7 +98,7 @@ def getBitSizeOfVarUInt(value):
 
     return _getBitSizeOfVarIntImpl(value, VARUINT_MAX_VALUES, "varuint")
 
-def getBitSizeOfVarSize(value):
+def getBitSizeOfVarSize(value: int) -> int:
     """
     Gets bit size of variable size integer value.
 
@@ -106,7 +109,7 @@ def getBitSizeOfVarSize(value):
 
     return _getBitSizeOfVarIntImpl(value, VARSIZE_MAX_VALUES, "varsize")
 
-def getBitSizeOfString(string):
+def getBitSizeOfString(string: str) -> int:
     """
     Gets bit size of string.
 
@@ -117,7 +120,7 @@ def getBitSizeOfString(string):
     stringBytes = string.encode("utf-8")
     return getBitSizeOfVarSize(len(stringBytes)) + len(stringBytes) * 8
 
-def getBitSizeOfBitBuffer(bitBuffer):
+def getBitSizeOfBitBuffer(bitBuffer: BitBuffer) -> int:
     """
     Gets the bit size of bit buffer which is stored in bit stream.
 
@@ -130,7 +133,7 @@ def getBitSizeOfBitBuffer(bitBuffer):
     # bit buffer consists of varsize for bit size followed by the bits
     return getBitSizeOfVarSize(bitBufferSize) + bitBufferSize
 
-def _getBitSizeOfVarIntImpl(value, maxValues, varIntName):
+def _getBitSizeOfVarIntImpl(value: int, maxValues: typing.Sequence[int], varIntName: str) -> int:
     if value >= 0:
         absValue = abs(value)
         for i, maxValue in enumerate(maxValues):

@@ -2,6 +2,8 @@
 The module implements abstraction for reading data to the bit stream.
 """
 
+import typing
+
 from zserio.bitbuffer import BitBuffer
 from zserio.bitsizeof import INT64_MIN
 from zserio.exception import PythonRuntimeException
@@ -12,19 +14,19 @@ class BitStreamReader:
     Bit stream reader.
     """
 
-    def __init__(self, buffer):
+    def __init__(self, buffer: bytes) -> None:
         """
         Constructs bit stream reader from bytes buffer.
 
         :param buffer: Bytes-like buffer to read as a bit stream.
         """
 
-        self._buffer = buffer
-        self._bitPosition = 0
-        self._bitSize = len(buffer) * 8
+        self._buffer = buffer # type: bytes
+        self._bitPosition = 0 # type: int
+        self._bitSize = len(buffer) * 8 # type: int
 
     @classmethod
-    def fromBitBuffer(cls, bitBuffer):
+    def fromBitBuffer(cls: typing.Type['BitStreamReader'], bitBuffer: BitBuffer) -> 'BitStreamReader':
         """
         Constructs bit stream reader from bit buffer.
 
@@ -37,7 +39,7 @@ class BitStreamReader:
         return instance
 
     @classmethod
-    def fromFile(cls, filename):
+    def fromFile(cls: typing.Type['BitStreamReader'], filename: str) -> 'BitStreamReader':
         """
         Constructs bit stream reader from file.
 
@@ -47,7 +49,7 @@ class BitStreamReader:
         with open(filename, 'rb') as file:
             return cls(file.read())
 
-    def readBits(self, numBits):
+    def readBits(self, numBits:  int) -> int:
         """
         Reads given number of bits from the bit stream as an unsigned integer.
 
@@ -78,7 +80,7 @@ class BitStreamReader:
 
         return value
 
-    def readSignedBits(self, numBits):
+    def readSignedBits(self, numBits: int) -> int:
         """
         Reads given number of bits from the bit stream as a signed integer.
 
@@ -96,7 +98,7 @@ class BitStreamReader:
             # unsigned
             return value
 
-    def readVarInt16(self):
+    def readVarInt16(self) -> int:
         """
         Reads variable 16-bit signed integer value from the bit stream.
 
@@ -112,7 +114,7 @@ class BitStreamReader:
         result = (result << 8) | self.readBits(8) # byte 2
         return -result if sign else result
 
-    def readVarInt32(self):
+    def readVarInt32(self) -> int:
         """
         Reads variable 32-bit signed integer value from the bit stream.
 
@@ -138,7 +140,7 @@ class BitStreamReader:
         result = result << 8 | self.readBits(8) # byte 4
         return -result if sign else result
 
-    def readVarInt64(self):
+    def readVarInt64(self) -> int:
         """
         Reads variable 64-bit signed integer value from the bit stream.
 
@@ -184,7 +186,7 @@ class BitStreamReader:
         result = result << 8 | self.readBits(8) # byte 8
         return -result if sign else result
 
-    def readVarInt(self):
+    def readVarInt(self) -> int:
         """
         Reads variable signed integer value (up to 9 bytes) from the bit stream.
 
@@ -235,7 +237,7 @@ class BitStreamReader:
         result = result << 8 | self.readBits(8) # byte 9
         return -result if sign else result
 
-    def readVarUInt16(self):
+    def readVarUInt16(self) -> int:
         """
         Reads variable 16-bit unsigned integer value from the bit stream.
 
@@ -250,7 +252,7 @@ class BitStreamReader:
         result = result << 8 | self.readBits(8) # byte 2
         return result
 
-    def readVarUInt32(self):
+    def readVarUInt32(self) -> int:
         """
         Reads variable 32-bit unsigned integer value from the bit stream.
 
@@ -275,7 +277,7 @@ class BitStreamReader:
         result = result << 8 | self.readBits(8) # byte 4
         return result
 
-    def readVarUInt64(self):
+    def readVarUInt64(self) -> int:
         """
         Reads variable 64-bit unsigned integer value from the bit stream.
 
@@ -320,7 +322,7 @@ class BitStreamReader:
         result = result << 8 | self.readBits(8) # byte 8
         return result
 
-    def readVarUInt(self):
+    def readVarUInt(self) -> int:
         """
         Reads variable unsigned integer value (up to 9 bytes) from the bit stream.
 
@@ -370,7 +372,7 @@ class BitStreamReader:
         result = result << 8 | self.readBits(8) # byte 9
         return result
 
-    def readVarSize(self):
+    def readVarSize(self) -> int:
         """
         Reads variable size integer value from the bit stream.
 
@@ -405,7 +407,7 @@ class BitStreamReader:
 
         return result
 
-    def readFloat16(self):
+    def readFloat16(self) -> float:
         """
         Read 16-bits from the stream as a float value encoded according to IEEE 754 binary16.
 
@@ -415,7 +417,7 @@ class BitStreamReader:
 
         return convertUInt16ToFloat(self.readBits(16))
 
-    def readFloat32(self):
+    def readFloat32(self) -> float:
         """
         Read 32-bits from the stream as a float value encoded according to IEEE 754 binary32.
 
@@ -425,7 +427,7 @@ class BitStreamReader:
 
         return convertUInt32ToFloat(self.readBits(32))
 
-    def readFloat64(self):
+    def readFloat64(self) -> float:
         """
         Read 64-bits from the stream as a float value encoded according to IEEE 754 binary64.
 
@@ -435,7 +437,7 @@ class BitStreamReader:
 
         return convertUInt64ToFloat(self.readBits(64))
 
-    def readString(self):
+    def readString(self) -> str:
         """
         Reads string from the stream.
 
@@ -450,7 +452,7 @@ class BitStreamReader:
 
         return value.decode("utf-8")
 
-    def readBool(self):
+    def readBool(self) -> bool:
         """
         Reads single bit as a bool value.
 
@@ -460,7 +462,7 @@ class BitStreamReader:
 
         return self.readBits(1) != 0
 
-    def readBitBuffer(self):
+    def readBitBuffer(self) -> BitBuffer:
         """
         Reads a bit buffer from the stream.
 
@@ -489,7 +491,7 @@ class BitStreamReader:
 
         return BitBuffer(readBuffer, bitSize)
 
-    def getBitPosition(self):
+    def getBitPosition(self) -> int:
         """
         Gets current bit position.
 
@@ -498,7 +500,7 @@ class BitStreamReader:
 
         return self._bitPosition
 
-    def setBitPosition(self, bitPosition):
+    def setBitPosition(self, bitPosition: int) -> None:
         """
         Sets bit position.
 
@@ -513,7 +515,7 @@ class BitStreamReader:
 
         self._bitPosition = bitPosition
 
-    def alignTo(self, alignment):
+    def alignTo(self, alignment: int) -> None:
         """
         Aligns the bit position according to the aligning value.
 
@@ -525,7 +527,7 @@ class BitStreamReader:
         if offset != 0:
             self.setBitPosition(self._bitPosition + alignment - offset)
 
-    def getBufferBitSize(self):
+    def getBufferBitSize(self) -> int:
         """
         Gets size of the underlying buffer in bits.
 

@@ -4,7 +4,7 @@ The module provides utility methods for hash code calculation.
 
 HASH_SEED = 23
 
-def calcHashCode(seedValue, value):
+def calcHashCode(seedValue: int, value: int) -> int:
     """
     Calculates hash code of the value using seed value.
 

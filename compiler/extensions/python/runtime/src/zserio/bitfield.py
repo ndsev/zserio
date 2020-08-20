@@ -4,7 +4,7 @@ The module provides help methods for bit fields calculation.
 
 from zserio.exception import PythonRuntimeException
 
-def getBitFieldLowerBound(length):
+def getBitFieldLowerBound(length: int) -> int:
     """
     Gets the lower bound of a unsigned bitfield type with given length.
 
@@ -16,7 +16,7 @@ def getBitFieldLowerBound(length):
     _checkBitFieldLength(length)
     return 0
 
-def getBitFieldUpperBound(length):
+def getBitFieldUpperBound(length: int) -> int:
 
     """
     Gets the upper bound of a unsigned bitfield type with given length.
@@ -29,7 +29,7 @@ def getBitFieldUpperBound(length):
     _checkBitFieldLength(length)
     return (1 << length) - 1
 
-def getSignedBitFieldLowerBound(length):
+def getSignedBitFieldLowerBound(length: int) -> int:
     """
     Gets the lower bound of a signed bitfield type with given length.
 
@@ -41,7 +41,7 @@ def getSignedBitFieldLowerBound(length):
     _checkBitFieldLength(length)
     return -(1 << (length - 1))
 
-def getSignedBitFieldUpperBound(length):
+def getSignedBitFieldUpperBound(length: int) -> int:
     """
     Gets the upper bound of a signed bitfield type with given length.
 
@@ -53,7 +53,7 @@ def getSignedBitFieldUpperBound(length):
     _checkBitFieldLength(length)
     return (1 << (length - 1)) - 1
 
-def _checkBitFieldLength(length):
+def _checkBitFieldLength(length: int) -> None:
     if length <= 0 or length > MAX_BITFIELD_BITS:
         raise PythonRuntimeException("bitfield: Asking for bound of bitfield with invalid length %d!" % length)
 

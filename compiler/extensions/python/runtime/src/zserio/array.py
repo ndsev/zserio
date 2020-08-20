@@ -2,6 +2,8 @@
 The module implements abstraction for arrays used by Zserio python extension.
 """
 
+import typing
+
 from zserio.bitposition import alignTo
 from zserio.bitsizeof import (getBitSizeOfVarUInt16, getBitSizeOfVarUInt32,
                               getBitSizeOfVarUInt64, getBitSizeOfVarUInt,
@@ -9,6 +11,9 @@ from zserio.bitsizeof import (getBitSizeOfVarUInt16, getBitSizeOfVarUInt32,
                               getBitSizeOfVarInt32, getBitSizeOfVarInt64,
                               getBitSizeOfVarInt, getBitSizeOfString,
                               getBitSizeOfBitBuffer)
+from zserio.bitreader import BitStreamReader
+from zserio.bitwriter import BitStreamWriter
+from zserio.bitbuffer import BitBuffer
 from zserio.hashcode import calcHashCode, HASH_SEED
 from zserio.exception import PythonRuntimeException
 
@@ -17,8 +22,14 @@ class Array():
     Abstraction for arrays to which Zserio arrays are mapped in python.
     """
 
-    def __init__(self, arrayTraits, rawArray=None, *, isAuto=None, isImplicit=None, setOffsetMethod=None,
-                 checkOffsetMethod=None):
+    def __init__(self,
+                 arrayTraits: typing.Any,
+                 rawArray : typing.Optional[typing.List] = None,
+                 *,
+                 isAuto : bool = False,
+                 isImplicit : bool = False,
+                 setOffsetMethod: typing.Optional[typing.Callable[[int, int], None]] = None,
+                 checkOffsetMethod: typing.Optional[typing.Callable[[int, int], None]] = None) -> None:
         """
         Constructor.
 
@@ -30,19 +41,23 @@ class Array():
         :param checkOffsetMethod: Check offset method if mapped Zserio array is indexed offset array.
         """
 
-        if rawArray is None:
-            self._rawArray = []
-        else:
-            self._rawArray = rawArray
-        self._arrayTraits = arrayTraits
-        self._isAuto = isAuto
-        self._isImplicit = isImplicit
-        self._setOffsetMethod = setOffsetMethod
-        self._checkOffsetMethod = checkOffsetMethod
+        self._rawArray = [] if rawArray is None else rawArray # type: typing.List
+        self._arrayTraits = arrayTraits # type: typing.Any
+        self._isAuto = isAuto # type: bool
+        self._isImplicit = isImplicit # type: bool
+        self._setOffsetMethod = setOffsetMethod # typing.Optional[typing.Callable[[int, int], None]]
+        self._checkOffsetMethod = checkOffsetMethod # typing.Optional[typing.Callable[[int, int], None]]
 
     @classmethod
-    def fromReader(cls, arrayTraits, reader, size=None, *, isAuto=None, isImplicit=None, setOffsetMethod=None,
-                   checkOffsetMethod=None):
+    def fromReader(cls : typing.Type['Array'],
+                   arrayTraits: typing.Any,
+                   reader: BitStreamReader,
+                   size : int = 0,
+                   *,
+                   isAuto: bool = False,
+                   isImplicit: bool = False,
+                   setOffsetMethod: typing.Optional[typing.Callable[[int, int], None]] = None,
+                   checkOffsetMethod: typing.Optional[typing.Callable[[int, int], None]] = None) -> 'Array':
         """
         Constructs array and reads elements from the given bit stream reader.
 
@@ -63,30 +78,30 @@ class Array():
 
         return instance
 
-    def __eq__(self, other):
+    def __eq__(self, other: object) -> bool:
         # it's enough to check only rawArray because compound types which call this are always the same type
         if isinstance(other, Array):
             return self._rawArray == other._rawArray
 
         return False
 
-    def __hash__(self):
+    def __hash__(self) -> int:
         hashCode = HASH_SEED
         for element in self._rawArray:
             hashCode = calcHashCode(hashCode, hash(element))
 
         return hashCode
 
-    def __len__(self):
+    def __len__(self) -> int:
         return len(self._rawArray)
 
-    def __getitem__(self, key):
+    def __getitem__(self, key: int) -> typing.Any:
         return self._rawArray[key]
 
-    def __setitem__(self, key, value):
+    def __setitem__(self, key: int, value: typing.Any) -> None:
         self._rawArray[key] = value
 
-    def getRawArray(self):
+    def getRawArray(self) -> typing.List:
         """
         Gets raw array.
 
@@ -96,7 +111,7 @@ class Array():
         return self._rawArray
 
 
-    def bitSizeOf(self, bitPosition):
+    def bitSizeOf(self, bitPosition: int) -> int:
         """
         Returns length of array stored in the bit stream in bits.
 
@@ -123,7 +138,7 @@ class Array():
 
         return endBitPosition - bitPosition
 
-    def initializeOffsets(self, bitPosition):
+    def initializeOffsets(self, bitPosition: int) -> int:
         """
         Initializes indexed offsets for the array.
 
@@ -144,7 +159,7 @@ class Array():
 
         return endBitPosition
 
-    def read(self, reader, size=None):
+    def read(self, reader: BitStreamReader, size: int = 0) -> None:
         """
         Reads array from the bit stream.
 
@@ -162,20 +177,22 @@ class Array():
 
             elementSize = self._arrayTraits.bitSizeOf()
             remainingBits = reader.getBufferBitSize() - reader.getBitPosition()
-            size = remainingBits // elementSize
-            for index in range(size):
+            readSize = remainingBits // elementSize
+            for index in range(readSize):
                 self._rawArray.append(self._arrayTraits.read(reader, index))
         else:
             if self._isAuto:
-                size = reader.readVarSize()
+                readSize = reader.readVarSize()
+            else:
+                readSize = size
 
-            for index in range(size):
+            for index in range(readSize):
                 if self._checkOffsetMethod is not None:
                     reader.alignTo(8)
                     self._checkOffsetMethod(index, reader.getBitPosition())
                 self._rawArray.append(self._arrayTraits.read(reader, index))
 
-    def write(self, writer):
+    def write(self, writer: BitStreamWriter) -> None:
         """
         Writes array to the bit stream.
 
@@ -199,16 +216,16 @@ class BitFieldArrayTraits():
 
     HAS_BITSIZEOF_CONSTANT = True
 
-    def __init__(self, numBits):
+    def __init__(self, numBits: int) -> None:
         """
         Constructor.
 
         :param numBits: Number of bits for unsigned fixed integer Zserio type.
         """
 
-        self._numBits = numBits
+        self._numBits = numBits # type: int
 
-    def bitSizeOf(self):
+    def bitSizeOf(self) -> int:
         """
         Returns length of unsigned fixed integer Zserio type stored in the bit stream in bits.
 
@@ -217,7 +234,7 @@ class BitFieldArrayTraits():
 
         return self._numBits
 
-    def initializeOffsets(self, bitPosition, _value):
+    def initializeOffsets(self, bitPosition: int, _value: int) -> int:
         """
         Initializes indexed offsets for unsigned fixed integer Zserio type.
 
@@ -228,7 +245,7 @@ class BitFieldArrayTraits():
 
         return bitPosition + self.bitSizeOf()
 
-    def read(self, reader, _index):
+    def read(self, reader: BitStreamReader, _index: int) -> int:
         """
         Reads unsigned fixed integer Zserio type from the bit stream.
 
@@ -238,7 +255,7 @@ class BitFieldArrayTraits():
 
         return reader.readBits(self._numBits)
 
-    def write(self, writer, value):
+    def write(self, writer: BitStreamWriter, value: int) -> None:
         """
         Writes unsigned fixed integer Zserio type to the bit stream.
 
@@ -255,7 +272,7 @@ class SignedBitFieldArrayTraits():
 
     HAS_BITSIZEOF_CONSTANT = True
 
-    def __init__(self, numBits):
+    def __init__(self, numBits: int) -> None:
         """
         Constructor.
 
@@ -264,7 +281,7 @@ class SignedBitFieldArrayTraits():
 
         self._numBits = numBits
 
-    def bitSizeOf(self):
+    def bitSizeOf(self) -> int:
         """
         Returns length of signed fixed integer Zserio type stored in the bit stream in bits.
 
@@ -273,7 +290,7 @@ class SignedBitFieldArrayTraits():
 
         return self._numBits
 
-    def initializeOffsets(self, bitPosition, _value):
+    def initializeOffsets(self, bitPosition: int, _value: int) -> int:
         """
         Initializes indexed offsets for signed fixed integer Zserio type.
 
@@ -284,7 +301,7 @@ class SignedBitFieldArrayTraits():
 
         return bitPosition + self.bitSizeOf()
 
-    def read(self, reader, _index):
+    def read(self, reader: BitStreamReader, _index: int) -> int:
         """
         Reads signed fixed integer Zserio type from the bit stream.
 
@@ -294,7 +311,7 @@ class SignedBitFieldArrayTraits():
 
         return reader.readSignedBits(self._numBits)
 
-    def write(self, writer, value):
+    def write(self, writer: BitStreamWriter, value: int) -> None:
         """
         Writes signed fixed integer Zserio type to the bit stream.
 
@@ -312,7 +329,7 @@ class VarUInt16ArrayTraits():
     HAS_BITSIZEOF_CONSTANT = False
 
     @staticmethod
-    def bitSizeOf(_bitPosition, value):
+    def bitSizeOf(_bitPosition: int, value: int) -> int:
         """
         Returns length of Zserio varuint16 type stored in the bit stream in bits.
 
@@ -324,7 +341,7 @@ class VarUInt16ArrayTraits():
         return getBitSizeOfVarUInt16(value)
 
     @staticmethod
-    def initializeOffsets(bitPosition, value):
+    def initializeOffsets(bitPosition: int, value: int) -> int:
         """
         Initializes indexed offsets for Zserio varuint16 type.
 
@@ -336,7 +353,7 @@ class VarUInt16ArrayTraits():
         return bitPosition + VarUInt16ArrayTraits.bitSizeOf(bitPosition, value)
 
     @staticmethod
-    def read(reader, _index):
+    def read(reader: BitStreamReader, _index: int) -> int:
         """
         Reads Zserio varuint16 type from the bit stream.
 
@@ -347,7 +364,7 @@ class VarUInt16ArrayTraits():
         return reader.readVarUInt16()
 
     @staticmethod
-    def write(writer, value):
+    def write(writer: BitStreamWriter, value: int) -> None:
         """
         Writes Zserio varuint16 type to the bit stream.
 
@@ -365,7 +382,7 @@ class VarUInt32ArrayTraits():
     HAS_BITSIZEOF_CONSTANT = False
 
     @staticmethod
-    def bitSizeOf(_bitPosition, value):
+    def bitSizeOf(_bitPosition: int, value: int) -> int:
         """
         Returns length of Zserio varuint32 type stored in the bit stream in bits.
 
@@ -377,7 +394,7 @@ class VarUInt32ArrayTraits():
         return getBitSizeOfVarUInt32(value)
 
     @staticmethod
-    def initializeOffsets(bitPosition, value):
+    def initializeOffsets(bitPosition: int, value: int) -> int:
         """
         Initializes indexed offsets for Zserio varuint32 type.
 
@@ -389,7 +406,7 @@ class VarUInt32ArrayTraits():
         return bitPosition + VarUInt32ArrayTraits.bitSizeOf(bitPosition, value)
 
     @staticmethod
-    def read(reader, _index):
+    def read(reader: BitStreamReader, _index: int) -> int:
         """
         Reads Zserio varuint32 type from the bit stream.
 
@@ -400,7 +417,7 @@ class VarUInt32ArrayTraits():
         return reader.readVarUInt32()
 
     @staticmethod
-    def write(writer, value):
+    def write(writer: BitStreamWriter, value: int) -> None:
         """
         Writes Zserio varuint32 type to the bit stream.
 
@@ -418,7 +435,7 @@ class VarUInt64ArrayTraits():
     HAS_BITSIZEOF_CONSTANT = False
 
     @staticmethod
-    def bitSizeOf(_bitPosition, value):
+    def bitSizeOf(_bitPosition: int, value: int) -> int:
         """
         Returns length of Zserio varuint64 type stored in the bit stream in bits.
 
@@ -430,7 +447,7 @@ class VarUInt64ArrayTraits():
         return getBitSizeOfVarUInt64(value)
 
     @staticmethod
-    def initializeOffsets(bitPosition, value):
+    def initializeOffsets(bitPosition: int, value: int) -> int:
         """
         Initializes indexed offsets for Zserio varuint64 type.
 
@@ -442,7 +459,7 @@ class VarUInt64ArrayTraits():
         return bitPosition + VarUInt64ArrayTraits.bitSizeOf(bitPosition, value)
 
     @staticmethod
-    def read(reader, _index):
+    def read(reader: BitStreamReader, _index: int) -> int:
         """
         Reads Zserio varuint64 type from the bit stream.
 
@@ -453,7 +470,7 @@ class VarUInt64ArrayTraits():
         return reader.readVarUInt64()
 
     @staticmethod
-    def write(writer, value):
+    def write(writer: BitStreamWriter, value: int) -> None:
         """
         Writes Zserio varuint64 type to the bit stream.
 
@@ -471,7 +488,7 @@ class VarUIntArrayTraits():
     HAS_BITSIZEOF_CONSTANT = False
 
     @staticmethod
-    def bitSizeOf(_bitPosition, value):
+    def bitSizeOf(_bitPosition: int, value: int) -> int:
         """
         Returns length of Zserio varuint type stored in the bit stream in bits.
 
@@ -483,7 +500,7 @@ class VarUIntArrayTraits():
         return getBitSizeOfVarUInt(value)
 
     @staticmethod
-    def initializeOffsets(bitPosition, value):
+    def initializeOffsets(bitPosition: int, value: int) -> int:
         """
         Initializes indexed offsets for Zserio varuint type.
 
@@ -495,7 +512,7 @@ class VarUIntArrayTraits():
         return bitPosition + VarUIntArrayTraits.bitSizeOf(bitPosition, value)
 
     @staticmethod
-    def read(reader, _index):
+    def read(reader: BitStreamReader, _index: int) -> int:
         """
         Reads Zserio varuint type from the bit stream.
 
@@ -506,7 +523,7 @@ class VarUIntArrayTraits():
         return reader.readVarUInt()
 
     @staticmethod
-    def write(writer, value):
+    def write(writer: BitStreamWriter, value: int) -> None:
         """
         Writes Zserio varuint type to the bit stream.
 
@@ -524,7 +541,7 @@ class VarSizeArrayTraits():
     HAS_BITSIZEOF_CONSTANT = False
 
     @staticmethod
-    def bitSizeOf(_bitPosition, value):
+    def bitSizeOf(_bitPosition: int, value: int) -> int:
         """
         Returns length of Zserio varsize type stored in the bit stream in bits.
 
@@ -536,7 +553,7 @@ class VarSizeArrayTraits():
         return getBitSizeOfVarSize(value)
 
     @staticmethod
-    def initializeOffsets(bitPosition, value):
+    def initializeOffsets(bitPosition: int, value: int) -> int:
         """
         Initializes indexed offsets for Zserio varsize type.
 
@@ -548,7 +565,7 @@ class VarSizeArrayTraits():
         return bitPosition + VarSizeArrayTraits.bitSizeOf(bitPosition, value)
 
     @staticmethod
-    def read(reader, _index):
+    def read(reader: BitStreamReader, _index: int) -> int:
         """
         Reads Zserio varsize type from the bit stream.
 
@@ -559,7 +576,7 @@ class VarSizeArrayTraits():
         return reader.readVarSize()
 
     @staticmethod
-    def write(writer, value):
+    def write(writer: BitStreamWriter, value: int) -> None:
         """
         Writes Zserio varsize type to the bit stream.
 
@@ -577,7 +594,7 @@ class VarInt16ArrayTraits():
     HAS_BITSIZEOF_CONSTANT = False
 
     @staticmethod
-    def bitSizeOf(_bitPosition, value):
+    def bitSizeOf(_bitPosition: int, value: int) -> int:
         """
         Returns length of Zserio varint16 type stored in the bit stream in bits.
 
@@ -589,7 +606,7 @@ class VarInt16ArrayTraits():
         return getBitSizeOfVarInt16(value)
 
     @staticmethod
-    def initializeOffsets(bitPosition, value):
+    def initializeOffsets(bitPosition: int, value: int) -> int:
         """
         Initializes indexed offsets for Zserio varint16 type.
 
@@ -601,7 +618,7 @@ class VarInt16ArrayTraits():
         return bitPosition + VarInt16ArrayTraits.bitSizeOf(bitPosition, value)
 
     @staticmethod
-    def read(reader, _index):
+    def read(reader: BitStreamReader, _index: int) -> int:
         """
         Reads Zserio varint16 type from the bit stream.
 
@@ -612,7 +629,7 @@ class VarInt16ArrayTraits():
         return reader.readVarInt16()
 
     @staticmethod
-    def write(writer, value):
+    def write(writer: BitStreamWriter, value: int) -> None:
         """
         Writes Zserio varint16 type to the bit stream.
 
@@ -630,7 +647,7 @@ class VarInt32ArrayTraits():
     HAS_BITSIZEOF_CONSTANT = False
 
     @staticmethod
-    def bitSizeOf(_bitPosition, value):
+    def bitSizeOf(_bitPosition: int, value: int) -> int:
         """
         Returns length of Zserio varint32 type stored in the bit stream in bits.
 
@@ -642,7 +659,7 @@ class VarInt32ArrayTraits():
         return getBitSizeOfVarInt32(value)
 
     @staticmethod
-    def initializeOffsets(bitPosition, value):
+    def initializeOffsets(bitPosition: int, value: int) -> int:
         """
         Initializes indexed offsets for Zserio varint32 type.
 
@@ -654,7 +671,7 @@ class VarInt32ArrayTraits():
         return bitPosition + VarInt32ArrayTraits.bitSizeOf(bitPosition, value)
 
     @staticmethod
-    def read(reader, _index):
+    def read(reader: BitStreamReader, _index: int) -> int:
         """
         Reads Zserio varint32 type from the bit stream.
 
@@ -665,7 +682,7 @@ class VarInt32ArrayTraits():
         return reader.readVarInt32()
 
     @staticmethod
-    def write(writer, value):
+    def write(writer: BitStreamWriter, value: int) -> None:
         """
         Writes Zserio varint32 type to the bit stream.
 
@@ -683,7 +700,7 @@ class VarInt64ArrayTraits():
     HAS_BITSIZEOF_CONSTANT = False
 
     @staticmethod
-    def bitSizeOf(_bitPosition, value):
+    def bitSizeOf(_bitPosition: int, value: int) -> int:
         """
         Returns length of Zserio varint64 type stored in the bit stream in bits.
 
@@ -695,7 +712,7 @@ class VarInt64ArrayTraits():
         return getBitSizeOfVarInt64(value)
 
     @staticmethod
-    def initializeOffsets(bitPosition, value):
+    def initializeOffsets(bitPosition: int, value: int) -> int:
         """
         Initializes indexed offsets for Zserio varint64 type.
 
@@ -707,7 +724,7 @@ class VarInt64ArrayTraits():
         return bitPosition + VarInt64ArrayTraits.bitSizeOf(bitPosition, value)
 
     @staticmethod
-    def read(reader, _index):
+    def read(reader: BitStreamReader, _index: int) -> int:
         """
         Reads Zserio varint64 type from the bit stream.
 
@@ -718,7 +735,7 @@ class VarInt64ArrayTraits():
         return reader.readVarInt64()
 
     @staticmethod
-    def write(writer, value):
+    def write(writer: BitStreamWriter, value: int) -> None:
         """
         Writes Zserio varint64 type to the bit stream.
 
@@ -736,7 +753,7 @@ class VarIntArrayTraits():
     HAS_BITSIZEOF_CONSTANT = False
 
     @staticmethod
-    def bitSizeOf(_bitPosition, value):
+    def bitSizeOf(_bitPosition: int, value: int) -> int:
         """
         Returns length of Zserio varint type stored in the bit stream in bits.
 
@@ -748,7 +765,7 @@ class VarIntArrayTraits():
         return getBitSizeOfVarInt(value)
 
     @staticmethod
-    def initializeOffsets(bitPosition, value):
+    def initializeOffsets(bitPosition: int, value: int) -> int:
         """
         Initializes indexed offsets for Zserio varint type.
 
@@ -760,7 +777,7 @@ class VarIntArrayTraits():
         return bitPosition + VarIntArrayTraits.bitSizeOf(bitPosition, value)
 
     @staticmethod
-    def read(reader, _index):
+    def read(reader: BitStreamReader, _index: int) -> int:
         """
         Reads Zserio varint type from the bit stream.
 
@@ -771,7 +788,7 @@ class VarIntArrayTraits():
         return reader.readVarInt()
 
     @staticmethod
-    def write(writer, value):
+    def write(writer: BitStreamWriter, value: int) -> None:
         """
         Writes Zserio varint type to the bit stream.
 
@@ -789,7 +806,7 @@ class Float16ArrayTraits():
     HAS_BITSIZEOF_CONSTANT = True
 
     @staticmethod
-    def bitSizeOf():
+    def bitSizeOf() -> int:
         """
         Returns length of Zserio float16 type stored in the bit stream in bits.
 
@@ -799,7 +816,7 @@ class Float16ArrayTraits():
         return 16
 
     @staticmethod
-    def initializeOffsets(bitPosition, _value):
+    def initializeOffsets(bitPosition: int, _value: float) -> int:
         """
         Initializes indexed offsets for Zserio float16 type.
 
@@ -811,7 +828,7 @@ class Float16ArrayTraits():
         return bitPosition + Float16ArrayTraits.bitSizeOf()
 
     @staticmethod
-    def read(reader, _index):
+    def read(reader: BitStreamReader, _index: int) -> float:
         """
         Reads Zserio float16 type from the bit stream.
 
@@ -822,7 +839,7 @@ class Float16ArrayTraits():
         return reader.readFloat16()
 
     @staticmethod
-    def write(writer, value):
+    def write(writer: BitStreamWriter, value: float) -> None:
         """
         Writes Zserio float16 type to the bit stream.
 
@@ -840,7 +857,7 @@ class Float32ArrayTraits():
     HAS_BITSIZEOF_CONSTANT = True
 
     @staticmethod
-    def bitSizeOf():
+    def bitSizeOf() -> int:
         """
         Returns length of Zserio float32 type stored in the bit stream in bits.
 
@@ -850,7 +867,7 @@ class Float32ArrayTraits():
         return 32
 
     @staticmethod
-    def initializeOffsets(bitPosition, _value):
+    def initializeOffsets(bitPosition: int, _value: float) -> int:
         """
         Initializes indexed offsets for Zserio float32 type.
 
@@ -862,7 +879,7 @@ class Float32ArrayTraits():
         return bitPosition + Float32ArrayTraits.bitSizeOf()
 
     @staticmethod
-    def read(reader, _index):
+    def read(reader: BitStreamReader, _index: int) -> float:
         """
         Reads Zserio float32 type from the bit stream.
 
@@ -873,7 +890,7 @@ class Float32ArrayTraits():
         return reader.readFloat32()
 
     @staticmethod
-    def write(writer, value):
+    def write(writer: BitStreamWriter, value: float) -> None:
         """
         Writes Zserio float32 type to the bit stream.
 
@@ -891,7 +908,7 @@ class Float64ArrayTraits():
     HAS_BITSIZEOF_CONSTANT = True
 
     @staticmethod
-    def bitSizeOf():
+    def bitSizeOf() -> int:
         """
         Returns length of Zserio float64 type stored in the bit stream in bits.
 
@@ -901,7 +918,7 @@ class Float64ArrayTraits():
         return 64
 
     @staticmethod
-    def initializeOffsets(bitPosition, _value):
+    def initializeOffsets(bitPosition: int, _value: float) -> int:
         """
         Initializes indexed offsets for Zserio float64 type.
 
@@ -913,7 +930,7 @@ class Float64ArrayTraits():
         return bitPosition + Float64ArrayTraits.bitSizeOf()
 
     @staticmethod
-    def read(reader, _index):
+    def read(reader: BitStreamReader, _index: int) -> float:
         """
         Reads Zserio float64 type from the bit stream.
 
@@ -924,7 +941,7 @@ class Float64ArrayTraits():
         return reader.readFloat64()
 
     @staticmethod
-    def write(writer, value):
+    def write(writer: BitStreamWriter, value: float) -> None:
         """
         Writes Zserio float64 type to the bit stream.
 
@@ -942,7 +959,7 @@ class StringArrayTraits():
     HAS_BITSIZEOF_CONSTANT = False
 
     @staticmethod
-    def bitSizeOf(_bitPosition, value):
+    def bitSizeOf(_bitPosition, value: str) -> int:
         """
         Returns length of Zserio string type stored in the bit stream in bits.
 
@@ -954,7 +971,7 @@ class StringArrayTraits():
         return getBitSizeOfString(value)
 
     @staticmethod
-    def initializeOffsets(bitPosition, value):
+    def initializeOffsets(bitPosition: int, value: str) -> int:
         """
         Initializes indexed offsets for Zserio string type.
 
@@ -966,7 +983,7 @@ class StringArrayTraits():
         return bitPosition + StringArrayTraits.bitSizeOf(bitPosition, value)
 
     @staticmethod
-    def read(reader, _index):
+    def read(reader: BitStreamReader, _index: int) -> str:
         """
         Reads Zserio string type from the bit stream.
 
@@ -977,7 +994,7 @@ class StringArrayTraits():
         return reader.readString()
 
     @staticmethod
-    def write(writer, value):
+    def write(writer: BitStreamWriter, value: str) -> None:
         """
         Writes Zserio string type to the bit stream.
 
@@ -995,7 +1012,7 @@ class BoolArrayTraits():
     HAS_BITSIZEOF_CONSTANT = True
 
     @staticmethod
-    def bitSizeOf():
+    def bitSizeOf() -> int:
         """
         Returns length of Zserio bool type stored in the bit stream in bits.
 
@@ -1005,7 +1022,7 @@ class BoolArrayTraits():
         return 1
 
     @staticmethod
-    def initializeOffsets(bitPosition, _value):
+    def initializeOffsets(bitPosition: int, _value: bool) -> int:
         """
         Initializes indexed offsets for Zserio bool type.
 
@@ -1017,7 +1034,7 @@ class BoolArrayTraits():
         return bitPosition + BoolArrayTraits.bitSizeOf()
 
     @staticmethod
-    def read(reader, _index):
+    def read(reader: BitStreamReader, _index: int) -> bool:
         """
         Reads Zserio bool type from the bit stream.
 
@@ -1028,7 +1045,7 @@ class BoolArrayTraits():
         return reader.readBool()
 
     @staticmethod
-    def write(writer, value):
+    def write(writer: BitStreamWriter, value: bool) -> None:
         """
         Writes Zserio bool type to the bit stream.
 
@@ -1046,7 +1063,7 @@ class BitBufferArrayTraits():
     HAS_BITSIZEOF_CONSTANT = False
 
     @staticmethod
-    def bitSizeOf(_bitPosition, value):
+    def bitSizeOf(_bitPosition: int, value: BitBuffer) -> int:
         """
         Returns length of Zserio extern bit buffer type stored in the bit stream in bits.
 
@@ -1058,7 +1075,7 @@ class BitBufferArrayTraits():
         return getBitSizeOfBitBuffer(value)
 
     @staticmethod
-    def initializeOffsets(bitPosition, value):
+    def initializeOffsets(bitPosition: int, value: BitBuffer) -> int:
         """
         Initializes indexed offsets for Zserio extern bit buffer type.
 
@@ -1070,7 +1087,7 @@ class BitBufferArrayTraits():
         return bitPosition + BitBufferArrayTraits.bitSizeOf(bitPosition, value)
 
     @staticmethod
-    def read(reader, _index):
+    def read(reader: BitStreamReader, _index: int) -> BitBuffer:
         """
         Reads Zserio extern bit buffer type from the bit stream.
 
@@ -1081,7 +1098,7 @@ class BitBufferArrayTraits():
         return reader.readBitBuffer()
 
     @staticmethod
-    def write(writer, value):
+    def write(writer: BitStreamWriter, value: BitBuffer) -> None:
         """
         Writes Zserio extern bit buffer type to the bit stream.
 
@@ -1098,17 +1115,17 @@ class ObjectArrayTraits():
 
     HAS_BITSIZEOF_CONSTANT = False
 
-    def __init__(self, objectCreator):
+    def __init__(self, objectCreator: typing.Callable[[BitStreamReader, int], typing.Any]) -> None:
         """
         Constructor.
 
         :param objectCreator: Creator which creates object from the element index.
         """
 
-        self._objectCreator = objectCreator
+        self._objectCreator = objectCreator # type: typing.Callable[[BitStreamReader, int], typing.Any]
 
     @staticmethod
-    def bitSizeOf(bitPosition, value):
+    def bitSizeOf(bitPosition: int, value: typing.Any) -> int:
         """
         Returns length of Zserio object type stored in the bit stream in bits.
 
@@ -1120,7 +1137,7 @@ class ObjectArrayTraits():
         return value.bitSizeOf(bitPosition)
 
     @staticmethod
-    def initializeOffsets(bitPosition, value):
+    def initializeOffsets(bitPosition: int, value: typing.Any) -> int:
         """
         Initializes indexed offsets for the Zserio object type.
 
@@ -1131,7 +1148,7 @@ class ObjectArrayTraits():
 
         return value.initializeOffsets(bitPosition)
 
-    def read(self, reader, index):
+    def read(self, reader: BitStreamReader, index: int) -> typing.Any:
         """
         Reads Zserio object type from the bit stream.
 
@@ -1142,7 +1159,7 @@ class ObjectArrayTraits():
         return self._objectCreator(reader, index)
 
     @staticmethod
-    def write(writer, value):
+    def write(writer: BitStreamWriter, value: typing.Any) -> None:
         """
         Writes Zserio object type to the bit stream.
 

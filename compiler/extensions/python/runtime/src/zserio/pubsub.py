@@ -2,12 +2,14 @@
 The module provides classes for Zserio Pub/Sub.
 """
 
+import typing
+
 from zserio.exception import PythonRuntimeException
 
 class PubsubInterface:
     """ Interface for Pub/Sub client backends. """
 
-    def publish(self, topic, data, context):
+    def publish(self, topic: str, data: bytes, context: typing.Any = None) -> None:
         """
         Publishes given data as a specified topic.
 
@@ -18,7 +20,8 @@ class PubsubInterface:
         """
         raise NotImplementedError()
 
-    def subscribe(self, topic, callback, context):
+    def subscribe(self, topic: str, callback: typing.Callable[[str, bytes], None],
+                  context: typing.Any = None) -> None:
         """
         Subscribes a topic.
 
@@ -32,7 +35,7 @@ class PubsubInterface:
         """
         raise NotImplementedError()
 
-    def unsubscribe(self, subscriptionId):
+    def unsubscribe(self, subscriptionId: int) -> None:
         """
         Unsubscribes the subscription with the given ID.
 

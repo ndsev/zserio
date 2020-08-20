@@ -2,6 +2,8 @@
 The module provides classes for Zserio services.
 """
 
+import typing
+
 from zserio.exception import PythonRuntimeException
 
 class ServiceInterface:
@@ -9,7 +11,7 @@ class ServiceInterface:
     Generic interface for all Zserio services.
     """
 
-    def callMethod(self, methodName, requestData, context=None):
+    def callMethod(self, methodName: str, requestData: bytes, context: typing.Any = None) -> bytes:
         """
         Calls method with the given name synchronously.
 

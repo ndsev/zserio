@@ -5,6 +5,9 @@ Zserio Python runtime library documentation
 .. automodapi:: zserio.array
    :no-inheritance-diagram:
    :skip: PythonRuntimeException
+   :skip: BitBuffer
+   :skip: BitStreamReader
+   :skip: BitStreamWriter
 .. automodapi:: zserio.bitposition
 .. automodapi:: zserio.bitsizeof
 .. automodapi:: zserio.builtin

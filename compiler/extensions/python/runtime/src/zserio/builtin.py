@@ -2,7 +2,7 @@
 The module provides implementation of zserio built-in operators.
 """
 
-def getNumBits(numValues):
+def getNumBits(numValues: int) -> int:
     """
     Gets the minimum number of bits required to encode given number of different values.
 

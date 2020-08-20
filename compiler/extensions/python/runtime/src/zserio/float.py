@@ -10,7 +10,7 @@ The following float formats defined by IEEE 754 standard are supported:
 
 import struct
 
-def convertUInt16ToFloat(float16Value):
+def convertUInt16ToFloat(float16Value: int) -> float:
     """
     Converts 16-bit float stored as an integer value to python native float.
 
@@ -57,7 +57,7 @@ def convertUInt16ToFloat(float16Value):
     # convert it to float
     return convertUInt32ToFloat(float32Value)
 
-def convertFloatToUInt16(float64):
+def convertFloatToUInt16(float64: float) -> int:
     """
     Converts python native float to 16-bit float stored as integer value.
 
@@ -125,7 +125,7 @@ def convertFloatToUInt16(float64):
 
     return float16Value
 
-def convertUInt32ToFloat(float32Value):
+def convertUInt32ToFloat(float32Value: int) -> float:
     """
     Converts 32-bit float stored as an integer value to python native float.
 
@@ -137,7 +137,7 @@ def convertUInt32ToFloat(float32Value):
 
     return struct.unpack('>f', float32ValueInBytes)[0]
 
-def convertFloatToUInt32(float64):
+def convertFloatToUInt32(float64: float) -> int:
     """
     Converts python native float to 32-bit float stored as integer value.
 
@@ -149,7 +149,7 @@ def convertFloatToUInt32(float64):
 
     return int.from_bytes(float32ValueInBytes, byteorder="big")
 
-def convertUInt64ToFloat(float64Value):
+def convertUInt64ToFloat(float64Value: int) -> float:
     """
     Converts 64-bit float stored as an integer value to python native float.
 
@@ -161,7 +161,7 @@ def convertUInt64ToFloat(float64Value):
 
     return struct.unpack('>d', float64ValueInBytes)[0]
 
-def convertFloatToUInt64(float64):
+def convertFloatToUInt64(float64: float) -> int:
     """
     Converts python native float to 64-bit float stored as integer value.
 

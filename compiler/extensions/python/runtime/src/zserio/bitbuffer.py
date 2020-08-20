@@ -2,6 +2,8 @@
 The module implements abstraction for holding bit sequence.
 """
 
+import typing
+
 from zserio.exception import PythonRuntimeException
 from zserio.hashcode import HASH_SEED
 from zserio.hashcode import calcHashCode
@@ -14,7 +16,7 @@ class BitBuffer:
     of the last byte are used. In this case, only most significant bits of the corresponded size are used.
     """
 
-    def __init__(self, buffer, bitSize=None):
+    def __init__(self, buffer: bytes, bitSize: typing.Optional[int] = None) -> None:
         """
         Constructs bit buffer from bytes buffer and bit size.
 
@@ -28,10 +30,10 @@ class BitBuffer:
         elif len(buffer) * 8 < bitSize:
             raise PythonRuntimeException("BitBuffer: Bit size %d out of range for given buffer byte "
                                          "size %d!" % (bitSize, len(buffer)))
-        self._buffer = buffer
-        self._bitSize = bitSize
+        self._buffer = buffer # type: bytes
+        self._bitSize = bitSize # type: int
 
-    def __eq__(self, other):
+    def __eq__(self, other: object) -> bool:
         if not isinstance(other, BitBuffer):
             return False
 
@@ -49,7 +51,7 @@ class BitBuffer:
 
         return True
 
-    def __hash__(self):
+    def __hash__(self) -> int:
         result = HASH_SEED
         byteSize = self.getByteSize()
         if byteSize > 0:
@@ -61,7 +63,7 @@ class BitBuffer:
 
         return result
 
-    def getBuffer(self):
+    def getBuffer(self) -> bytes:
         """
         Gets the underlying byte buffer.
 
@@ -71,7 +73,7 @@ class BitBuffer:
         """
         return self._buffer
 
-    def getBitSize(self):
+    def getBitSize(self) -> int:
         """
         Gets the number of bits stored in the bit buffer.
 
@@ -79,7 +81,7 @@ class BitBuffer:
         """
         return self._bitSize
 
-    def getByteSize(self):
+    def getByteSize(self) -> int:
         """
         Gets the number of bytes stored in the bit buffer.
 
@@ -87,7 +89,7 @@ class BitBuffer:
         """
         return (self._bitSize + 7) // 8
 
-    def _getMaskedLastByte(self):
+    def _getMaskedLastByte(self) -> int:
         roundedByteSize = self._bitSize // 8
         lastByteBits = self._bitSize - 8 * roundedByteSize
 
