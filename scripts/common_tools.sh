@@ -136,6 +136,12 @@ set_global_python_variables()
     # Pylint extra arguments are empty by default
     PYLINT_EXTRA_ARGS="${PYLINT_EXTRA_ARGS:-""}"
 
+    # Mypy configuration - mypy disabled by default
+    MYPY_ENABLED="${MYPY_ENABLED:-0}"
+
+    # Mypy extra arguments are empty by default
+    MYPY_EXTRA_ARGS="${MYPY_EXTRA_ARGS:-""}"
+
     return 0
 }
 
@@ -246,7 +252,7 @@ activate_python_virtualenv()
         return 1
     fi
 
-    local STANDARD_REQUIREMENTS=("coverage>=4.5.1" "sphinx-automodapi>=0.8" "pylint>=2.4.4")
+    local STANDARD_REQUIREMENTS=("coverage>=4.5.1" "sphinx-automodapi>=0.8" "pylint>=2.4.4" "mypy>=0.782")
     local APSW_REQUIREMENTS=("apsw")
 
     if [ ! -z "${PYTHON_VIRTUALENV}" ] ; then  # forced python virtualenv
@@ -349,6 +355,8 @@ Uses the following environment variables for building:
                            Default is empty string.
     PYLINT_ENABLED         Defines whether to run pylint. Default is 0 (disabled).
     PYLINT_EXTRA_ARGS      Extra arguments to pylint. Default is empty string.
+    MYPY_ENABLED           Defines whether to run mypy. Default is 0 (disabled).
+    MYPY_EXTRA_ARGS        Extra arguments to mypy. Default is empty string.
 
     Either set these directly, or create 'scripts/build-env.sh' that sets
     these. It's sourced automatically if it exists.
@@ -671,6 +679,33 @@ run_pylint()
     fi
 
     echo "Pylint done."
+    echo
+
+    return 0
+}
+
+# Run mypy on given python sources.
+run_mypy()
+{
+    if [[ ${MYPY_ENABLED} != 1 ]] ; then
+        echo "Mypy is disabled."
+        echo
+        return 0
+    fi
+
+    exit_if_argc_lt $# 2
+    local MSYS_WORKAROUND_TEMP=("${!1}"); shift
+    local MYPY_ARGS=("${MSYS_WORKAROUND_TEMP[@]}")
+    local SOURCES=("$@")
+
+    python -m mypy ${MYPY_EXTRA_ARGS} "${MYPY_ARGS[@]}" "${SOURCES[@]}"
+    local MYPY_RESULT=$?
+    if [ ${MYPY_RESULT} -ne 0 ] ; then
+        stderr_echo "Running mypy failed with return code ${MYPY_RESULT}!"
+        return 1
+    fi
+
+    echo "Mypy done."
     echo
 
     return 0

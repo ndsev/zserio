@@ -21,7 +21,7 @@ class PubsubInterface:
         raise NotImplementedError()
 
     def subscribe(self, topic: str, callback: typing.Callable[[str, bytes], None],
-                  context: typing.Any = None) -> None:
+                  context: typing.Any = None) -> int:
         """
         Subscribes a topic.
 
