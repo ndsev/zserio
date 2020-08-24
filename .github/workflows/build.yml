@@ -27,4 +27,6 @@ jobs:
     - name: Pack Zserio release
       run: scripts/release.sh
     - name: Run Zserio tests
-      run: scripts/test.sh all-linux64 cpp-linux32
+      run: |
+          unset JAVA_TOOL_OPTIONS # workaround https://github.com/actions/virtual-environments/issues/1437
+          scripts/test.sh all-linux64 cpp-linux32
