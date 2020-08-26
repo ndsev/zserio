@@ -693,12 +693,13 @@ run_mypy()
         return 0
     fi
 
-    exit_if_argc_lt $# 2
+    exit_if_argc_lt $# 3
+    local BUILD_DIR="$1"; shift
     local MSYS_WORKAROUND_TEMP=("${!1}"); shift
     local MYPY_ARGS=("${MSYS_WORKAROUND_TEMP[@]}")
     local SOURCES=("$@")
 
-    python -m mypy ${MYPY_EXTRA_ARGS} "${MYPY_ARGS[@]}" "${SOURCES[@]}"
+    python -m mypy ${MYPY_EXTRA_ARGS} "${MYPY_ARGS[@]}" "${SOURCES[@]}" --cache-dir="${BUILD_DIR}/.mypy_cache"
     local MYPY_RESULT=$?
     if [ ${MYPY_RESULT} -ne 0 ] ; then
         stderr_echo "Running mypy failed with return code ${MYPY_RESULT}!"

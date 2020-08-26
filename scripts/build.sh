@@ -63,8 +63,8 @@ test_python_runtime()
 
     echo "Running mypy on python runtime sources."
 
-    local MYPY_ARGS=()
-    run_mypy MYPY_ARGS[@] "${SOURCES_DIR}"/*
+    local MYPY_ARGS=("--show-error-context" "--show-error-codes")
+    run_mypy "${BUILD_DIR}" MYPY_ARGS[@] "${SOURCES_DIR}"/*
     if [ $? -ne 0 ]; then
         return 1
     fi

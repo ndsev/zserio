@@ -66,7 +66,11 @@ def main():
     sys.path = sysPathBeforeTests
 
     # run pylint
-    return _runPylintOnAllSources(args, testDirs)
+    pylintResult = _runPylintOnAllSources(args, testDirs)
+    if pylintResult != 0:
+        return pylintResult
+
+    return _runMypyOnAllSources(testDirs, runtimePath, testutilsPath)
 
 def _runPylintOnAllSources(args, testDirs):
     print("\nRunning pylint on python tests")
@@ -126,6 +130,53 @@ def _runPylintOnAllSources(args, testDirs):
             sys.path.remove(apiDir)
 
     print("Pylint done.\n")
+
+    return 0
+
+def _runMypyOnAllSources(testDirs, runtimePath, testutilsPath):
+    print("\nRunning mypy on python tests")
+
+    if not "MYPY_ENABLED" in os.environ or os.environ["MYPY_ENABLED"] != '1':
+        print("Mypy is disabled.\n")
+        return 0
+
+    from testutils import TEST_ARGS, getApiDir
+    from mypy import api
+
+    # get directories containing all generated code for active tests
+    apiDirs = list()
+    for testDir in testDirs:
+        apiDir = getApiDir(testDir)
+        apiDirs.append(apiDir)
+
+    mypyCacheDir = os.path.join(TEST_ARGS["build_dir"], ".mypy_cache")
+
+    mypyArgs = list()
+    mypyArgs.append("--cache-dir=" + mypyCacheDir)
+    mypyArgs.append("--show-error-context")
+    mypyArgs.append("--show-error-codes")
+    mypyArgs.append("--no-strict-optional") # Item "None" of "Optional[Blob]" has no attribute "..."
+    # TODO[Mi-L@]: Needed for apsw, but shadows problems with missing imports in language/packages
+    mypyArgs.append("--ignore-missing-imports")
+    mypyArgs.append(runtimePath)
+    mypyArgs.append(testutilsPath)
+    mypyArgs.extend(testDirs)
+    mypyArgs.extend(apiDirs)
+
+    mypyResult = api.run(mypyArgs)
+
+    if mypyResult[0]:
+        print("Type checking report:")
+        print(mypyResult[0])
+
+    if mypyResult[1]:
+        print("Error report:")
+        print(mypyResult[1])
+
+    if mypyResult[2] != 0:
+        return mypyResult[2]
+
+    print("Mypy done.\n")
 
     return 0
 
