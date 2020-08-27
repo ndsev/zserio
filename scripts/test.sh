@@ -14,12 +14,14 @@ test_python()
 
     local TEST_FILE="${TEST_SRC_DIR}/tests.py"
     local PYLINT_RCFILE="${PYTHON_RUNTIME_ROOT}/pylintrc.txt"
+    local MYPY_CONFIG_FILE="${PYTHON_RUNTIME_ROOT}/mypy.ini"
 
     echo
     echo "Running python tests."
     echo
 
-    python "${TEST_FILE}" "${TEST_ARGS[@]}" --pylint_rcfile="${PYLINT_RCFILE}"
+    python "${TEST_FILE}" "${TEST_ARGS[@]}" --pylint_rcfile="${PYLINT_RCFILE}" \
+            --mypy_config_file="${MYPY_CONFIG_FILE}"
     local PYTHON_RESULT=$?
     if [ ${PYTHON_RESULT} -ne 0 ] ; then
         stderr_echo "Running python failed with return code ${PYTHON_RESULT}!"

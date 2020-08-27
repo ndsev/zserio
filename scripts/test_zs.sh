@@ -296,7 +296,7 @@ test()
         fi
     fi
 
-    # pylint generated Python sources
+    # run pylint and mypy on generated Python sources
     if [[ ${PARAM_PYTHON} == 1 ]] ; then
         activate_python_virtualenv "${ZSERIO_PROJECT_ROOT}" "${ZSERIO_BUILD_DIR}"
         if [ $? -ne 0 ] ; then
@@ -304,6 +304,7 @@ test()
         fi
 
         local PYLINT_RCFILE="${ZSERIO_PROJECT_ROOT}/compiler/extensions/python/runtime/pylintrc.txt"
+        local MYPY_CONFIG_FILE="${ZSERIO_PROJECT_ROOT}/compiler/extensions/python/runtime/mypy.ini"
         local GEN_PYTHON_DIR="${TEST_OUT_DIR}/python/gen"
         local PYTHON_RUNTIME_ROOT="${UNPACKED_ZSERIO_RELEASE_DIR}/runtime_libs/python"
 
@@ -331,6 +332,14 @@ test()
         local PYLINT_ARGS=("--disable=${API_DISABLE_OPTION}" "--ignore-patterns=^.*\.py(?<!^api\.py)$")
         PYTHONPATH="${GEN_PYTHON_DIR}" \
         run_pylint "${PYLINT_RCFILE}" PYLINT_ARGS[@] "${GEN_PYTHON_DIR}"/*
+        if [ $? -ne 0 ]; then
+            return 1
+        fi
+
+        echo "Running mypy on Python generated sources."
+        local MYPY_ARGS=("--no-strict-optional")
+        MYPYPATH="${PYTHON_RUNTIME_ROOT}" \
+        run_mypy "${ZSERIO_BUILD_DIR}" "${MYPY_CONFIG_FILE}" MYPY_ARGS[@] "${GEN_PYTHON_DIR}"
         if [ $? -ne 0 ]; then
             return 1
         fi

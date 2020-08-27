@@ -24,6 +24,7 @@ def main():
     argParser.add_argument("--verbosity", type=int)
     argParser.add_argument("--filter")
     argParser.add_argument("--pylint_rcfile")
+    argParser.add_argument("--mypy_config_file")
     argParser.set_defaults(filter="**", verbosity=2)
     args = argParser.parse_args()
     if args.build_dir:
@@ -70,7 +71,7 @@ def main():
     if pylintResult != 0:
         return pylintResult
 
-    return _runMypyOnAllSources(testDirs, runtimePath, testutilsPath)
+    return _runMypyOnAllSources(args, testDirs, runtimePath, testutilsPath)
 
 def _runPylintOnAllSources(args, testDirs):
     print("\nRunning pylint on python tests")
@@ -133,53 +134,6 @@ def _runPylintOnAllSources(args, testDirs):
 
     return 0
 
-def _runMypyOnAllSources(testDirs, runtimePath, testutilsPath):
-    print("\nRunning mypy on python tests")
-
-    if not "MYPY_ENABLED" in os.environ or os.environ["MYPY_ENABLED"] != '1':
-        print("Mypy is disabled.\n")
-        return 0
-
-    from testutils import TEST_ARGS, getApiDir
-    from mypy import api
-
-    # get directories containing all generated code for active tests
-    apiDirs = list()
-    for testDir in testDirs:
-        apiDir = getApiDir(testDir)
-        apiDirs.append(apiDir)
-
-    mypyCacheDir = os.path.join(TEST_ARGS["build_dir"], ".mypy_cache")
-
-    mypyArgs = list()
-    mypyArgs.append("--cache-dir=" + mypyCacheDir)
-    mypyArgs.append("--show-error-context")
-    mypyArgs.append("--show-error-codes")
-    mypyArgs.append("--no-strict-optional") # Item "None" of "Optional[Blob]" has no attribute "..."
-    # TODO[Mi-L@]: Needed for apsw, but shadows problems with missing imports in language/packages
-    mypyArgs.append("--ignore-missing-imports")
-    mypyArgs.append(runtimePath)
-    mypyArgs.append(testutilsPath)
-    mypyArgs.extend(testDirs)
-    mypyArgs.extend(apiDirs)
-
-    mypyResult = api.run(mypyArgs)
-
-    if mypyResult[0]:
-        print("Type checking report:")
-        print(mypyResult[0])
-
-    if mypyResult[1]:
-        print("Error report:")
-        print(mypyResult[1])
-
-    if mypyResult[2] != 0:
-        return mypyResult[2]
-
-    print("Mypy done.\n")
-
-    return 0
-
 def _runPylint(sources, options, disableOption=None):
     if not sources:
         return 0
@@ -194,6 +148,64 @@ def _runPylint(sources, options, disableOption=None):
         return pylintRunner.linter.msg_status
 
     return 0
+
+def _runMypyOnAllSources(args, testDirs, runtimePath, testutilsPath):
+    print("\nRunning mypy on python tests")
+
+    if not "MYPY_ENABLED" in os.environ or os.environ["MYPY_ENABLED"] != '1':
+        print("Mypy is disabled.\n")
+        return 0
+
+    from testutils import TEST_ARGS, getApiDir, getTestSuiteName
+    from mypy import api
+
+    os.environ["MYPYPATH"] = runtimePath + ":" + testutilsPath
+
+    mypyCacheDir = os.path.join(TEST_ARGS["build_dir"], ".mypy_cache")
+    mypyArgs = list()
+    mypyArgs.append("--cache-dir=" + mypyCacheDir)
+    if args.mypy_config_file:
+        mypyArgs.append("--config-file=%s" % (args.mypy_config_file))
+    mypyArgs.append("--no-strict-optional") # Item "None" of "Optional[Blob]" has no attribute "..."
+
+    for testDir in testDirs:
+        apiDir = getApiDir(testDir)
+        testSuiteName = getTestSuiteName(testDir)
+        print(testSuiteName + " ... ", end='', flush=True)
+
+        mypyArgsForTest = list(mypyArgs)
+        _loadMypyExtraArgsFile(testDir, mypyArgsForTest)
+        mypyArgsForTest.append(apiDir)
+        mypyArgsForTest.append(testDir)
+
+        mypyResult = api.run(mypyArgsForTest)
+
+        if mypyResult[2] != 0:
+            print("FAILED!")
+            if mypyResult[0]:
+                print("Type checking report:")
+                print(mypyResult[0])
+            if mypyResult[1]:
+                print("Error report:")
+                print(mypyResult[1])
+
+            return mypyResult[2]
+
+        else:
+            print(mypyResult[0], end='')
+
+    print("Mypy done.\n")
+
+    return 0
+
+def _loadMypyExtraArgsFile(testDir, mypyArgsForTest):
+    argsFilename = os.path.join(testDir, "mypy_extra_args.txt")
+    if os.path.isfile(argsFilename):
+        with open(argsFilename, 'r') as argsFile:
+            for argLine in argsFile:
+                arg = argLine.rstrip('\n')
+                if arg and not arg.startswith('#'):
+                    mypyArgsForTest.append(arg)
 
 if __name__ == "__main__":
     sys.exit(main())
