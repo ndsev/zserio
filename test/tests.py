@@ -159,7 +159,7 @@ def _runMypyOnAllSources(args, testDirs, runtimePath, testutilsPath):
     from testutils import TEST_ARGS, getApiDir, getTestSuiteName
     from mypy import api
 
-    os.environ["MYPYPATH"] = runtimePath + ":" + testutilsPath
+    os.environ["MYPYPATH"] = runtimePath + os.pathsep + testutilsPath
 
     mypyCacheDir = os.path.join(TEST_ARGS["build_dir"], ".mypy_cache")
     mypyArgs = list()
