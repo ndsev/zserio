@@ -9,6 +9,9 @@ on:
 jobs:
   build:
     runs-on: ubuntu-18.04
+    env:
+      PYLINT_ENABLED: 1
+      MYPY_ENABLED: 1
     steps:
     - name: Checkout
       uses: actions/checkout@v2
@@ -27,9 +30,6 @@ jobs:
     - name: Pack Zserio release
       run: scripts/release.sh
     - name: Run Zserio tests
-      env:
-        PYLINT_ENABLED: 1
-        MYPY_ENABLED: 1
       run: |
           unset JAVA_TOOL_OPTIONS # workaround https://github.com/actions/virtual-environments/issues/1437
           scripts/test.sh all-linux64 cpp-linux32
