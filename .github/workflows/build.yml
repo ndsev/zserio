@@ -10,7 +10,6 @@ jobs:
   build:
     runs-on: ubuntu-18.04
     env:
-      PYLINT_ENABLED: 1
       MYPY_ENABLED: 1
     steps:
     - name: Checkout
