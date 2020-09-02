@@ -2,7 +2,7 @@
 <@file_header generatorDescription/>
 <@all_imports packageImports symbolImports typeImports/>
 
-class ${name}():
+class ${name}:
     def __init__(self) -> None:
         self._value = 0
 
@@ -83,7 +83,7 @@ class ${name}():
     def getValue(self) -> int:
         return self._value
 
-    class Values():
+    class Values:
 <#list values as value>
         ${value.name} = None # type: '${name}'
 </#list>

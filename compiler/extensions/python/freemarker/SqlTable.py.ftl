@@ -33,7 +33,7 @@
     <@package_imports ["zserio"]/>
 </#if>
 
-class ${name}():
+class ${name}:
 <#assign rowAnnotationName = "RowAnnotation"/>
     ${rowAnnotationName} = typing.Tuple[
     <#list fields as field>
@@ -41,7 +41,7 @@ class ${name}():
     </#list>
 
 <#assign rowsClassName = "Rows"/>
-    class ${rowsClassName}():
+    class ${rowsClassName}:
         def __init__(self, <#rt>
                 <#lt>rows: typing.Iterator[<#if needsRowConversion>typing.Tuple<#else>'${name}.${rowAnnotationName}'</#if>]<#rt>
                 <#lt><#if needsParameterProvider>, parameterProvider: '${name}.IParameterProvider'</#if>) -> None:
@@ -89,7 +89,7 @@ class ${name}():
     <#macro parameter_provider_method_name parameter>
         get${parameter.expression?cap_first}<#t>
     </#macro>
-    class IParameterProvider():
+    class IParameterProvider:
     <#list explicitParameters as parameter>
         def <@parameter_provider_method_name parameter/>(self, row: typing.Tuple) -> ${parameter.pythonTypeName}:
             raise NotImplementedError()

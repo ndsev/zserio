@@ -4,7 +4,7 @@
 <@file_header generatorDescription/>
 <@all_imports packageImports symbolImports typeImports/>
 
-class ${name}():
+class ${name}:
 <#assign constructorAnnotatedParamList><@compound_constructor_annotated_parameters compoundParametersData, 3/></#assign>
 <#if constructorAnnotatedParamList?has_content || fieldList?has_content>
     def __init__(

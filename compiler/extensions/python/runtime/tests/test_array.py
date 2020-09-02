@@ -150,7 +150,7 @@ class ArrayTest(unittest.TestCase):
         self._testArray(arrayTraits, array1Values, array1BitSizeOf, array1AlignedBitSizeOf, array2Values)
 
     def testObjectArray(self):
-        class DummyObject():
+        class DummyObject:
             def __init__(self, value):
                 self._value = value
 

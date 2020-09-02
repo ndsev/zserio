@@ -17,7 +17,7 @@ from zserio.bitbuffer import BitBuffer
 from zserio.hashcode import calcHashCode, HASH_SEED
 from zserio.exception import PythonRuntimeException
 
-class Array():
+class Array:
     """
     Abstraction for arrays to which Zserio arrays are mapped in python.
     """
@@ -209,7 +209,7 @@ class Array():
                 self._checkOffsetMethod(index, writer.getBitPosition())
             self._arrayTraits.write(writer, self._rawArray[index])
 
-class BitFieldArrayTraits():
+class BitFieldArrayTraits:
     """
     Array traits for unsigned fixed integer Zserio types (uint16, uint32, uint64, bit:5, etc...).
     """
@@ -265,7 +265,7 @@ class BitFieldArrayTraits():
 
         writer.writeBits(value, self._numBits)
 
-class SignedBitFieldArrayTraits():
+class SignedBitFieldArrayTraits:
     """
     Array traits for signed fixed integer Zserio types (int16, int32, int64, int:5, etc...).
     """
@@ -321,7 +321,7 @@ class SignedBitFieldArrayTraits():
 
         writer.writeSignedBits(value, self._numBits)
 
-class VarUInt16ArrayTraits():
+class VarUInt16ArrayTraits:
     """
     Array traits for Zserio varuint16 type.
     """
@@ -374,7 +374,7 @@ class VarUInt16ArrayTraits():
 
         writer.writeVarUInt16(value)
 
-class VarUInt32ArrayTraits():
+class VarUInt32ArrayTraits:
     """
     Array traits for Zserio varuint32 type.
     """
@@ -427,7 +427,7 @@ class VarUInt32ArrayTraits():
 
         writer.writeVarUInt32(value)
 
-class VarUInt64ArrayTraits():
+class VarUInt64ArrayTraits:
     """
     Array traits for Zserio varuint64 type.
     """
@@ -480,7 +480,7 @@ class VarUInt64ArrayTraits():
 
         writer.writeVarUInt64(value)
 
-class VarUIntArrayTraits():
+class VarUIntArrayTraits:
     """
     Array traits for Zserio varuint type.
     """
@@ -533,7 +533,7 @@ class VarUIntArrayTraits():
 
         writer.writeVarUInt(value)
 
-class VarSizeArrayTraits():
+class VarSizeArrayTraits:
     """
     Array traits for Zserio varsize type.
     """
@@ -586,7 +586,7 @@ class VarSizeArrayTraits():
 
         writer.writeVarSize(value)
 
-class VarInt16ArrayTraits():
+class VarInt16ArrayTraits:
     """
     Array traits for Zserio varint16 type.
     """
@@ -639,7 +639,7 @@ class VarInt16ArrayTraits():
 
         writer.writeVarInt16(value)
 
-class VarInt32ArrayTraits():
+class VarInt32ArrayTraits:
     """
     Array traits for Zserio varint32 type.
     """
@@ -692,7 +692,7 @@ class VarInt32ArrayTraits():
 
         writer.writeVarInt32(value)
 
-class VarInt64ArrayTraits():
+class VarInt64ArrayTraits:
     """
     Array traits for Zserio varint64 type.
     """
@@ -745,7 +745,7 @@ class VarInt64ArrayTraits():
 
         writer.writeVarInt64(value)
 
-class VarIntArrayTraits():
+class VarIntArrayTraits:
     """
     Array traits for Zserio varint type.
     """
@@ -798,7 +798,7 @@ class VarIntArrayTraits():
 
         writer.writeVarInt(value)
 
-class Float16ArrayTraits():
+class Float16ArrayTraits:
     """
     Array traits for Zserio float16 type.
     """
@@ -849,7 +849,7 @@ class Float16ArrayTraits():
 
         writer.writeFloat16(value)
 
-class Float32ArrayTraits():
+class Float32ArrayTraits:
     """
     Array traits for Zserio float32 type.
     """
@@ -900,7 +900,7 @@ class Float32ArrayTraits():
 
         writer.writeFloat32(value)
 
-class Float64ArrayTraits():
+class Float64ArrayTraits:
     """
     Array traits for Zserio float64 type.
     """
@@ -951,7 +951,7 @@ class Float64ArrayTraits():
 
         writer.writeFloat64(value)
 
-class StringArrayTraits():
+class StringArrayTraits:
     """
     Array traits for Zserio string type.
     """
@@ -1004,7 +1004,7 @@ class StringArrayTraits():
 
         writer.writeString(value)
 
-class BoolArrayTraits():
+class BoolArrayTraits:
     """
     Array traits for Zserio bool type.
     """
@@ -1055,7 +1055,7 @@ class BoolArrayTraits():
 
         writer.writeBool(value)
 
-class BitBufferArrayTraits():
+class BitBufferArrayTraits:
     """
     Array traits for Zserio extern bit buffer type.
     """
@@ -1108,7 +1108,7 @@ class BitBufferArrayTraits():
 
         writer.writeBitBuffer(value)
 
-class ObjectArrayTraits():
+class ObjectArrayTraits:
     """
     Array traits for Zserio structure, choice, union and enum types.
     """

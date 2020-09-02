@@ -11,7 +11,7 @@
     </#list>
 </#if>
 
-class ${name}():
+class ${name}:
     def __init__(self, connection: apsw.Connection, tableToAttachedDbNameRelocationMap: typing.Dict[str, str] = None) -> None:
         self._connection = connection # type: apsw.Connection
         self._attachedDbNameList = [] # type: typing.Union[typing.List[str], typing.ValuesView[str]]
