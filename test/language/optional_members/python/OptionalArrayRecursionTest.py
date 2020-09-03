@@ -8,6 +8,13 @@ class OptionalArrayRecursionTest(unittest.TestCase):
     def setUpClass(cls):
         cls.api = getZserioApi(__file__, "optional_members.zs").optional_array_recursion
 
+    def testEmptyConstructor(self):
+        emptyEmployee1 = self.api.Employee()
+        self.assertEqual("", emptyEmployee1.getName())
+        self.assertEqual(0, emptyEmployee1.getSalary())
+        self.assertEqual(None, emptyEmployee1.getTitle())
+        self.assertEqual(None, emptyEmployee1.getTeamMembers())
+
     def testEq(self):
         emptyEmployee1 = self.api.Employee()
         emptyEmployee2 = self.api.Employee()

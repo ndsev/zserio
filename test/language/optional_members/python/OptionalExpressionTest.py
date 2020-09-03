@@ -8,6 +8,12 @@ class OptionalExpressionTest(unittest.TestCase):
     def setUpClass(cls):
         cls.api = getZserioApi(__file__, "optional_members.zs").optional_expression
 
+    def testEmptyConstructor(self):
+        container1 = self.api.Container()
+        self.assertEqual(None, container1.getBasicColor())
+        self.assertEqual(None, container1.getNumBlackTones())
+        self.assertEqual(None, container1.getBlackColor())
+
     def testEq(self):
         container1 = self.api.Container()
         container2 = self.api.Container()

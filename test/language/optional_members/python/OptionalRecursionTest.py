@@ -8,6 +8,13 @@ class OptionalRecursionTest(unittest.TestCase):
     def setUpClass(cls):
         cls.api = getZserioApi(__file__, "optional_members.zs").optional_recursion
 
+    def testParamConstructor(self):
+        emptyBlock1 = self.api.Block(0)
+        self.assertEqual(0, emptyBlock1.getByteCount())
+        self.assertEqual(0, len(emptyBlock1.getDataBytes()))
+        self.assertEqual(0, emptyBlock1.getBlockTerminator())
+        self.assertEqual(None, emptyBlock1.getNextData())
+
     def testEq(self):
         emptyBlock1 = self._createEmptyBlock()
         emptyBlock2 = self._createEmptyBlock()

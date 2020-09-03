@@ -19,7 +19,7 @@ ${I}result = zserio.hashcode.calcHashCode(result, hash(self.<@field_member_name 
 
 <#macro compound_getter_field field>
     <#if field.array??>
-        return self.<@field_member_name field/>.getRawArray()
+        return None if self.<@field_member_name field/> is None else self.<@field_member_name field/>.getRawArray()
     <#else>
         return self.<@field_member_name field/>
     </#if>
