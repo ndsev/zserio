@@ -16,10 +16,23 @@ function(gtest_add_library GTEST_ROOT)
     compiler_reset_warnings_as_errors()
 
     # include google test framework
+    option(BUILD_GMOCK "" OFF)
+    option(INSTALL_GTEST "" OFF)
     add_subdirectory(${GTEST_ROOT} googletest)
 
-    # add include directory
-    target_include_directories(gtest_main SYSTEM PUBLIC ${GTEST_ROOT}/include)
+    # override googletest hardcoded output bin and lib settings
+    set_target_properties(gtest
+            PROPERTIES
+            RUNTIME_OUTPUT_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/googletest/bin"
+            LIBRARY_OUTPUT_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/googletest/lib"
+            ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/googletest/lib"
+            PDB_OUTPUT_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/googletest/bin")
+    set_target_properties(gtest_main
+            PROPERTIES
+            RUNTIME_OUTPUT_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/googletest/bin"
+            LIBRARY_OUTPUT_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/googletest/lib"
+            ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/googletest/lib"
+            PDB_OUTPUT_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/googletest/bin")
 endfunction()
 
 # A function to add new test to gtest. It is copied from FindGTest.cmake module because include(FindGTest)
