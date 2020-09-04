@@ -15,6 +15,15 @@ class OptionalArrayRecursionTest(unittest.TestCase):
         self.assertEqual(None, emptyEmployee1.getTitle())
         self.assertEqual(None, emptyEmployee1.getTeamMembers())
 
+    def testFromFields(self):
+        teamMember1 = self.api.Employee.fromFields(self.EMPLOYEE_DEVELOPER1_NAME,
+                                                   self.EMPLOYEE_DEVELOPER1_SALARY,
+                                                   self.api.Title.DEVELOPER, None)
+        self.assertEqual(self.EMPLOYEE_DEVELOPER1_NAME, teamMember1.getName())
+        self.assertEqual(self.EMPLOYEE_DEVELOPER1_SALARY, teamMember1.getSalary())
+        self.assertEqual(self.api.Title.DEVELOPER, teamMember1.getTitle())
+        self.assertEqual(None, teamMember1.getTeamMembers())
+
     def testEq(self):
         emptyEmployee1 = self.api.Employee()
         emptyEmployee2 = self.api.Employee()

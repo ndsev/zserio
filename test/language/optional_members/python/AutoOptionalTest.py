@@ -13,6 +13,11 @@ class AutoOptionalTest(unittest.TestCase):
         self.assertEqual(0, container1.getNonOptionalInt())
         self.assertEqual(None, container1.getAutoOptionalInt())
 
+    def testFromFields(self):
+        container1 = self.api.Container.fromFields(self.NON_OPTIONAL_INT_VALUE, None)
+        self.assertEqual(self.NON_OPTIONAL_INT_VALUE, container1.getNonOptionalInt())
+        self.assertEqual(None, container1.getAutoOptionalInt())
+
     def testEq(self):
         container1 = self.api.Container()
         container2 = self.api.Container()

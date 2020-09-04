@@ -14,6 +14,12 @@ class OptionalExpressionTest(unittest.TestCase):
         self.assertEqual(None, container1.getNumBlackTones())
         self.assertEqual(None, container1.getBlackColor())
 
+    def testFromFields(self):
+        container1 = self.api.Container.fromFields(self.api.BasicColor.BLACK, self.NUM_BLACK_TONES, None)
+        self.assertEqual(self.api.BasicColor.BLACK, container1.getBasicColor())
+        self.assertEqual(self.NUM_BLACK_TONES, container1.getNumBlackTones())
+        self.assertEqual(None, container1.getBlackColor())
+
     def testEq(self):
         container1 = self.api.Container()
         container2 = self.api.Container()

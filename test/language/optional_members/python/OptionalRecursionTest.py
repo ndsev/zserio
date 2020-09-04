@@ -15,6 +15,13 @@ class OptionalRecursionTest(unittest.TestCase):
         self.assertEqual(0, emptyBlock1.getBlockTerminator())
         self.assertEqual(None, emptyBlock1.getNextData())
 
+    def testFromFields(self):
+        emptyBlock1 = self.api.Block.fromFields(0, [], 0, None)
+        self.assertEqual(0, emptyBlock1.getByteCount())
+        self.assertEqual(0, len(emptyBlock1.getDataBytes()))
+        self.assertEqual(0, emptyBlock1.getBlockTerminator())
+        self.assertEqual(None, emptyBlock1.getNextData())
+
     def testEq(self):
         emptyBlock1 = self._createEmptyBlock()
         emptyBlock2 = self._createEmptyBlock()
