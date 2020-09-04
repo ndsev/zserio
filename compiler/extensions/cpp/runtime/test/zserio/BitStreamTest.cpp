@@ -1,5 +1,6 @@
 #include <cstring>
 #include <string>
+#include <functional>
 
 #include "zserio/BitStreamWriter.h"
 #include "zserio/BitStreamReader.h"
@@ -22,11 +23,12 @@ public:
 protected:
     template <typename T, size_t N, typename U>
     void testBitStreamValues(const T (&values)[N], BitStreamWriter& writer,
-            void (BitStreamWriter::*writerMethod)(U value), T (BitStreamReader::*readerMethod)())
+            std::function<void (BitStreamWriter&, U)> writerFunc,
+            std::function<T(BitStreamReader&)> readerFunc)
     {
         for (size_t i = 0; i < N; ++i)
         {
-            (writer.*writerMethod)(values[i]);
+            writerFunc(writer, values[i]);
         }
 
         if (!writer.hasWriteBuffer())
@@ -37,7 +39,7 @@ protected:
         BitStreamReader reader(writeBuffer, writeBufferSize);
         for (size_t i = 0; i < N; ++i)
         {
-            ASSERT_EQ((reader.*readerMethod)(), values[i]);
+            ASSERT_EQ(readerFunc(reader), values[i]);
         }
     }
 
@@ -315,12 +317,12 @@ TEST_F(BitStreamTest, readVarInt64)
         ( INT64_C(1) << (6+7+7+7 +7+7+7+8 ) ) - 1
     };
 
-    testBitStreamValues(values, m_externalWriter,
-            &BitStreamWriter::writeVarInt64, &BitStreamReader::readVarInt64);
-    testBitStreamValues(values, m_internalWriter,
-            &BitStreamWriter::writeVarInt64, &BitStreamReader::readVarInt64);
-    testBitStreamValues(values, m_dummyWriter,
-            &BitStreamWriter::writeVarInt64, &BitStreamReader::readVarInt64);
+    std::function<void (BitStreamWriter&, int64_t)> writerFunc = &BitStreamWriter::writeVarInt64;
+    std::function<int64_t(BitStreamReader&)> readerFunc = &BitStreamReader::readVarInt64;
+
+    testBitStreamValues(values, m_externalWriter, writerFunc, readerFunc);
+    testBitStreamValues(values, m_internalWriter, writerFunc, readerFunc);
+    testBitStreamValues(values, m_dummyWriter, writerFunc, readerFunc);
 }
 
 TEST_F(BitStreamTest, readVarInt32)
@@ -344,12 +346,12 @@ TEST_F(BitStreamTest, readVarInt32)
         ( INT32_C(1) << ( 6+7+7+8 ) ) - 1,
     };
 
-    testBitStreamValues(values, m_externalWriter,
-            &BitStreamWriter::writeVarInt32, &BitStreamReader::readVarInt32);
-    testBitStreamValues(values, m_internalWriter,
-            &BitStreamWriter::writeVarInt32, &BitStreamReader::readVarInt32);
-    testBitStreamValues(values, m_dummyWriter,
-            &BitStreamWriter::writeVarInt32, &BitStreamReader::readVarInt32);
+    std::function<void (BitStreamWriter&, int32_t)> writerFunc = &BitStreamWriter::writeVarInt32;
+    std::function<int32_t(BitStreamReader&)> readerFunc = &BitStreamReader::readVarInt32;
+
+    testBitStreamValues(values, m_externalWriter, writerFunc, readerFunc);
+    testBitStreamValues(values, m_internalWriter, writerFunc, readerFunc);
+    testBitStreamValues(values, m_dummyWriter, writerFunc, readerFunc);
 }
 
 TEST_F(BitStreamTest, readVarInt16)
@@ -367,12 +369,12 @@ TEST_F(BitStreamTest, readVarInt16)
         ( INT16_C(1) << ( 6+8 ) ) - 1,
     };
 
-    testBitStreamValues(values, m_externalWriter,
-            &BitStreamWriter::writeVarInt16, &BitStreamReader::readVarInt16);
-    testBitStreamValues(values, m_internalWriter,
-            &BitStreamWriter::writeVarInt16, &BitStreamReader::readVarInt16);
-    testBitStreamValues(values, m_dummyWriter,
-            &BitStreamWriter::writeVarInt16, &BitStreamReader::readVarInt16);
+    std::function<void (BitStreamWriter&, int16_t)> writerFunc = &BitStreamWriter::writeVarInt16;
+    std::function<int16_t(BitStreamReader&)> readerFunc = &BitStreamReader::readVarInt16;
+
+    testBitStreamValues(values, m_externalWriter, writerFunc, readerFunc);
+    testBitStreamValues(values, m_internalWriter, writerFunc, readerFunc);
+    testBitStreamValues(values, m_dummyWriter, writerFunc, readerFunc);
 }
 
 TEST_F(BitStreamTest, readVarUInt64)
@@ -408,12 +410,12 @@ TEST_F(BitStreamTest, readVarUInt64)
         ( UINT64_C(1) << ( 7+7+7+7 +7+7+7+8 ) ) - 1,
     };
 
-    testBitStreamValues(values, m_externalWriter,
-            &BitStreamWriter::writeVarUInt64, &BitStreamReader::readVarUInt64);
-    testBitStreamValues(values, m_internalWriter,
-            &BitStreamWriter::writeVarUInt64, &BitStreamReader::readVarUInt64);
-    testBitStreamValues(values, m_dummyWriter,
-            &BitStreamWriter::writeVarUInt64, &BitStreamReader::readVarUInt64);
+    std::function<void (BitStreamWriter&, uint64_t)> writerFunc = &BitStreamWriter::writeVarUInt64;
+    std::function<uint64_t(BitStreamReader&)> readerFunc = &BitStreamReader::readVarUInt64;
+
+    testBitStreamValues(values, m_externalWriter, writerFunc, readerFunc);
+    testBitStreamValues(values, m_internalWriter, writerFunc, readerFunc);
+    testBitStreamValues(values, m_dummyWriter, writerFunc, readerFunc);
 }
 
 TEST_F(BitStreamTest, readVarUInt32)
@@ -437,12 +439,12 @@ TEST_F(BitStreamTest, readVarUInt32)
         ( UINT32_C(1) << ( 7+7+7+8 ) ) - 1,
     };
 
-    testBitStreamValues(values, m_externalWriter,
-            &BitStreamWriter::writeVarUInt32, &BitStreamReader::readVarUInt32);
-    testBitStreamValues(values, m_internalWriter,
-            &BitStreamWriter::writeVarUInt32, &BitStreamReader::readVarUInt32);
-    testBitStreamValues(values, m_dummyWriter,
-            &BitStreamWriter::writeVarUInt32, &BitStreamReader::readVarUInt32);
+    std::function<void (BitStreamWriter&, uint32_t)> writerFunc = &BitStreamWriter::writeVarUInt32;
+    std::function<uint32_t(BitStreamReader&)> readerFunc = &BitStreamReader::readVarUInt32;
+
+    testBitStreamValues(values, m_externalWriter, writerFunc, readerFunc);
+    testBitStreamValues(values, m_internalWriter, writerFunc, readerFunc);
+    testBitStreamValues(values, m_dummyWriter, writerFunc, readerFunc);
 }
 
 TEST_F(BitStreamTest, readVarUInt16)
@@ -460,12 +462,12 @@ TEST_F(BitStreamTest, readVarUInt16)
         ( UINT16_C(1) << ( 6+8 ) ) - 1,
     };
 
-    testBitStreamValues(values, m_externalWriter,
-            &BitStreamWriter::writeVarUInt16, &BitStreamReader::readVarUInt16);
-    testBitStreamValues(values, m_internalWriter,
-            &BitStreamWriter::writeVarUInt16, &BitStreamReader::readVarUInt16);
-    testBitStreamValues(values, m_dummyWriter,
-            &BitStreamWriter::writeVarUInt16, &BitStreamReader::readVarUInt16);
+    std::function<void (BitStreamWriter&, uint16_t)> writerFunc = &BitStreamWriter::writeVarUInt16;
+    std::function<uint16_t(BitStreamReader&)> readerFunc = &BitStreamReader::readVarUInt16;
+
+    testBitStreamValues(values, m_externalWriter, writerFunc, readerFunc);
+    testBitStreamValues(values, m_internalWriter, writerFunc, readerFunc);
+    testBitStreamValues(values, m_dummyWriter, writerFunc, readerFunc);
 }
 
 TEST_F(BitStreamTest, readVarInt)
@@ -523,12 +525,12 @@ TEST_F(BitStreamTest, readVarInt)
         INT64_MIN,
     };
 
-    testBitStreamValues(values, m_externalWriter,
-            &BitStreamWriter::writeVarInt, &BitStreamReader::readVarInt);
-    testBitStreamValues(values, m_internalWriter,
-            &BitStreamWriter::writeVarInt, &BitStreamReader::readVarInt);
-    testBitStreamValues(values, m_dummyWriter,
-            &BitStreamWriter::writeVarInt, &BitStreamReader::readVarInt);
+    std::function<void (BitStreamWriter&, int64_t)> writerFunc = &BitStreamWriter::writeVarInt;
+    std::function<int64_t(BitStreamReader&)> readerFunc = &BitStreamReader::readVarInt;
+
+    testBitStreamValues(values, m_externalWriter, writerFunc, readerFunc);
+    testBitStreamValues(values, m_internalWriter, writerFunc, readerFunc);
+    testBitStreamValues(values, m_dummyWriter, writerFunc, readerFunc);
 }
 
 TEST_F(BitStreamTest, readVarUInt)
@@ -565,12 +567,12 @@ TEST_F(BitStreamTest, readVarUInt)
         UINT64_MAX
     };
 
-    testBitStreamValues(values, m_externalWriter,
-            &BitStreamWriter::writeVarUInt, &BitStreamReader::readVarUInt);
-    testBitStreamValues(values, m_internalWriter,
-            &BitStreamWriter::writeVarUInt, &BitStreamReader::readVarUInt);
-    testBitStreamValues(values, m_dummyWriter,
-            &BitStreamWriter::writeVarUInt, &BitStreamReader::readVarUInt);
+    std::function<void (BitStreamWriter&, uint64_t)> writerFunc = &BitStreamWriter::writeVarUInt;
+    std::function<uint64_t(BitStreamReader&)> readerFunc = &BitStreamReader::readVarUInt;
+
+    testBitStreamValues(values, m_externalWriter, writerFunc, readerFunc);
+    testBitStreamValues(values, m_internalWriter, writerFunc, readerFunc);
+    testBitStreamValues(values, m_dummyWriter, writerFunc, readerFunc);
 }
 
 TEST_F(BitStreamTest, readVarSize)
@@ -597,45 +599,48 @@ TEST_F(BitStreamTest, readVarSize)
         ( UINT32_C(1) << ( 7+7+7+7+3 ) ) - 1,
     };
 
-    testBitStreamValues(values, m_externalWriter,
-            &BitStreamWriter::writeVarSize, &BitStreamReader::readVarSize);
-    testBitStreamValues(values, m_internalWriter,
-            &BitStreamWriter::writeVarSize, &BitStreamReader::readVarSize);
-    testBitStreamValues(values, m_dummyWriter,
-            &BitStreamWriter::writeVarSize, &BitStreamReader::readVarSize);
+    std::function<void (BitStreamWriter&, uint32_t)> writerFunc = &BitStreamWriter::writeVarSize;
+    std::function<uint32_t(BitStreamReader&)> readerFunc = &BitStreamReader::readVarSize;
+
+    testBitStreamValues(values, m_externalWriter, writerFunc, readerFunc);
+    testBitStreamValues(values, m_internalWriter, writerFunc, readerFunc);
+    testBitStreamValues(values, m_dummyWriter, writerFunc, readerFunc);
 }
 
 TEST_F(BitStreamTest, readFloat16)
 {
     const float values[] = { 2.0, -2.0, 0.6171875, 0.875, 9.875, 42.5 };
-    testBitStreamValues(values, m_externalWriter,
-            &BitStreamWriter::writeFloat16, &BitStreamReader::readFloat16);
-    testBitStreamValues(values, m_internalWriter,
-            &BitStreamWriter::writeFloat16, &BitStreamReader::readFloat16);
-    testBitStreamValues(values, m_dummyWriter,
-            &BitStreamWriter::writeFloat16, &BitStreamReader::readFloat16);
+
+    std::function<void (BitStreamWriter&, float)> writerFunc = &BitStreamWriter::writeFloat16;
+    std::function<float(BitStreamReader&)> readerFunc = &BitStreamReader::readFloat16;
+
+    testBitStreamValues(values, m_externalWriter, writerFunc, readerFunc);
+    testBitStreamValues(values, m_internalWriter, writerFunc, readerFunc);
+    testBitStreamValues(values, m_dummyWriter, writerFunc, readerFunc);
 }
 
 TEST_F(BitStreamTest, readFloat32)
 {
     const float values[] = { 2.0, -2.0, 0.6171875, 0.875, 9.875, 42.5 };
-    testBitStreamValues(values, m_externalWriter,
-            &BitStreamWriter::writeFloat32, &BitStreamReader::readFloat32);
-    testBitStreamValues(values, m_internalWriter,
-            &BitStreamWriter::writeFloat32, &BitStreamReader::readFloat32);
-    testBitStreamValues(values, m_dummyWriter,
-            &BitStreamWriter::writeFloat32, &BitStreamReader::readFloat32);
+
+    std::function<void (BitStreamWriter&, float)> writerFunc = &BitStreamWriter::writeFloat32;
+    std::function<float(BitStreamReader&)> readerFunc = &BitStreamReader::readFloat32;
+
+    testBitStreamValues(values, m_externalWriter, writerFunc, readerFunc);
+    testBitStreamValues(values, m_internalWriter, writerFunc, readerFunc);
+    testBitStreamValues(values, m_dummyWriter, writerFunc, readerFunc);
 }
 
 TEST_F(BitStreamTest, readFloat64)
 {
     const double values[] = { 2.0, -2.0, 0.6171875, 0.875, 9.875, 42.5 };
-    testBitStreamValues(values, m_externalWriter,
-            &BitStreamWriter::writeFloat64, &BitStreamReader::readFloat64);
-    testBitStreamValues(values, m_internalWriter,
-            &BitStreamWriter::writeFloat64, &BitStreamReader::readFloat64);
-    testBitStreamValues(values, m_dummyWriter,
-            &BitStreamWriter::writeFloat64, &BitStreamReader::readFloat64);
+
+    std::function<void (BitStreamWriter&, double)> writerFunc = &BitStreamWriter::writeFloat64;
+    std::function<double(BitStreamReader&)> readerFunc = &BitStreamReader::readFloat64;
+
+    testBitStreamValues(values, m_externalWriter, writerFunc, readerFunc);
+    testBitStreamValues(values, m_internalWriter, writerFunc, readerFunc);
+    testBitStreamValues(values, m_dummyWriter, writerFunc, readerFunc);
 }
 
 TEST_F(BitStreamTest, readString)
@@ -647,23 +652,24 @@ TEST_F(BitStreamTest, readString)
         "Price: \xE2\x82\xAC 3 what's this? -> \xC2\xA2" /* '€' '¢' */
     };
 
-    testBitStreamValues(values, m_externalWriter,
-            &BitStreamWriter::writeString, &BitStreamReader::readString);
-    testBitStreamValues(values, m_internalWriter,
-            &BitStreamWriter::writeString, &BitStreamReader::readString);
-    testBitStreamValues(values, m_dummyWriter,
-            &BitStreamWriter::writeString, &BitStreamReader::readString);
+    std::function<void (BitStreamWriter&, const std::string&)> writerFunc = &BitStreamWriter::writeString;
+    std::function<std::string (BitStreamReader&)> readerFunc = &BitStreamReader::readString;
+
+    testBitStreamValues(values, m_externalWriter, writerFunc, readerFunc);
+    testBitStreamValues(values, m_internalWriter, writerFunc, readerFunc);
+    testBitStreamValues(values, m_dummyWriter, writerFunc, readerFunc);
 }
 
 TEST_F(BitStreamTest, readBool)
 {
     const bool values[] = {true, false};
-    testBitStreamValues(values, m_externalWriter,
-            &BitStreamWriter::writeBool, &BitStreamReader::readBool);
-    testBitStreamValues(values, m_internalWriter,
-            &BitStreamWriter::writeBool, &BitStreamReader::readBool);
-    testBitStreamValues(values, m_dummyWriter,
-            &BitStreamWriter::writeBool, &BitStreamReader::readBool);
+
+    std::function<void (BitStreamWriter&, bool)> writerFunc = &BitStreamWriter::writeBool;
+    std::function<bool(BitStreamReader&)> readerFunc = &BitStreamReader::readBool;
+
+    testBitStreamValues(values, m_externalWriter, writerFunc, readerFunc);
+    testBitStreamValues(values, m_internalWriter, writerFunc, readerFunc);
+    testBitStreamValues(values, m_dummyWriter, writerFunc, readerFunc);
 }
 
 TEST_F(BitStreamTest, readBitBuffer)
@@ -674,12 +680,12 @@ TEST_F(BitStreamTest, readBitBuffer)
         BitBuffer(std::vector<uint8_t>({0xAB, 0xCD, 0xFE}), 23)
     };
 
-    testBitStreamValues(values, m_externalWriter,
-            &BitStreamWriter::writeBitBuffer, &BitStreamReader::readBitBuffer);
-    testBitStreamValues(values, m_internalWriter,
-            &BitStreamWriter::writeBitBuffer, &BitStreamReader::readBitBuffer);
-    testBitStreamValues(values, m_dummyWriter,
-            &BitStreamWriter::writeBitBuffer, &BitStreamReader::readBitBuffer);
+    std::function<void (BitStreamWriter&, const BitBuffer&)> writerFunc = &BitStreamWriter::writeBitBuffer;
+    std::function<BitBuffer (BitStreamReader&)> readerFunc = &BitStreamReader::readBitBuffer;
+
+    testBitStreamValues(values, m_externalWriter, writerFunc, readerFunc);
+    testBitStreamValues(values, m_internalWriter, writerFunc, readerFunc);
+    testBitStreamValues(values, m_dummyWriter, writerFunc, readerFunc);
 }
 
 TEST_F(BitStreamTest, setBitPosition)
