@@ -39,6 +39,20 @@ spotbugs.home_dir             - Location of the spotbugs tool. If not set, spotb
     <property name="zserio_doc.jar_dir" value="${zserio_doc.build_dir}/jar"/>
     <property name="zserio_doc.jar_file" value="${zserio_doc.jar_dir}/zserio_doc.jar"/>
 
+    <property name="3rdparty.root_dir" value="${zserio_doc.zserio_root}/3rdparty"/>
+    <property name="3rdparty.jar_dir" value="${3rdparty.root_dir}/java"/>
+    <property name="3rdparty.commonmark.jar_file_name" value="commonmark-0.15.2.jar"/>
+    <property name="3rdparty.commonmark_ext_autolink.jar_file_name" value="commonmark-ext-autolink-0.15.2.jar"/>
+    <property name="3rdparty.commonmark_ext_heading_anchor.jar_file_name" value="commonmark-ext-heading-anchor-0.15.2.jar"/>
+    <property name="3rdparty.autolink.jar_file_name" value="autolink-0.10.0.jar"/>
+
+    <fileset dir="${3rdparty.jar_dir}" id="3rdparty.jar_files_ref">
+        <include name="${3rdparty.commonmark.jar_file_name}"/>
+        <include name="${3rdparty.commonmark_ext_autolink.jar_file_name}"/>
+        <include name="${3rdparty.commonmark_ext_heading_anchor.jar_file_name}"/>
+        <include name="${3rdparty.autolink.jar_file_name}"/>
+    </fileset>
+
     <!-- Zserio Documentation extension version. -->
     <loadfile
         encoding="UTF-8"
@@ -73,6 +87,7 @@ spotbugs.home_dir             - Location of the spotbugs tool. If not set, spotb
             <compilerarg value="-Werror"/>
             <classpath>
                 <path refid="zserio_doc.classpath_zserio_core"/>
+                <fileset refid="3rdparty.jar_files_ref"/>
             </classpath>
         </javac>
     </target>
@@ -82,6 +97,11 @@ spotbugs.home_dir             - Location of the spotbugs tool. If not set, spotb
         <copy todir="${zserio_doc.build_dir}/metainf" overwrite="true">
             <fileset dir="${zserio_doc.base_dir}/metainf"/>
         </copy>
+
+        <pathconvert pathsep=" " property="3rdparty.jar_files" refid="3rdparty.jar_files_ref">
+            <mapper type="flatten"/>
+        </pathconvert>
+
         <jar destfile="${zserio_doc.jar_file}">
             <fileset dir="${zserio_doc.classes_dir}">
                 <include name="zserio/**"/>
@@ -89,15 +109,26 @@ spotbugs.home_dir             - Location of the spotbugs tool. If not set, spotb
             <zipfileset dir="${zserio_doc.base_dir}/freemarker" includes="*.ftl"
                 prefix="freemarker/doc"/>
             <manifest>
+                <attribute name="Class-Path" value="${3rdparty.jar_files}"/>
                 <attribute name="Implementation-Version" value="${zserio_doc.version}"/>
             </manifest>
             <metainf dir="${zserio_doc.build_dir}/metainf" includes="**/*"/>
         </jar>
+
+        <!-- Copying of 3rd party jar files are necessary because of extensions. Extension projects use
+        Zserio core build directory directly. -->
+        <copy todir="${zserio_doc.jar_dir}">
+            <fileset refid="3rdparty.jar_files_ref"/>
+        </copy>
     </target>
 
     <target name="install" depends="jar">
         <mkdir dir="${zserio_doc.install_dir}"/>
-        <copy file="${zserio_doc.jar_file}" todir="${zserio_doc.install_dir}" overwrite="true"/>
+        <copy todir="${zserio_doc.install_dir}" overwrite="true">
+            <fileset dir="${zserio_doc.jar_dir}">
+                <include name="*.jar"/>
+            </fileset>
+        </copy>
     </target>
 
     <target name="spotbugs" depends="install" if="spotbugs.home_dir">

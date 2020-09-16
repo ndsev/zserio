@@ -46,6 +46,11 @@ public class DocExtension implements Extension
 
         final String docPath = parameters.getCommandLineArg(OptionDoc);
 
+        ResourceManager.getInstance().setCurrentSourceDir(parameters.getPathName());
+        ResourceManager.getInstance().setOutputRoot(docPath);
+        ResourceManager.getInstance().setSourceRoot(parameters.getPathName());
+        ResourceManager.getInstance().setSourceExtension(getFileNameExtension(parameters.getFileName()));
+
         // collect used by information
         final UsedByCollector usedByCollector = new UsedByCollector();
         rootNode.emit(usedByCollector);
@@ -116,6 +121,14 @@ public class DocExtension implements Extension
         option.setArgName("dotExec");
         option.setRequired(false);
         options.addOption(option);
+    }
+
+    private String getFileNameExtension(String fileName)
+    {
+        int lastDotIndex = fileName.lastIndexOf('.');
+        if (lastDotIndex > 0)
+            return fileName.substring(lastDotIndex);
+        return "";
     }
 
     private final static String OptionDoc = "doc";

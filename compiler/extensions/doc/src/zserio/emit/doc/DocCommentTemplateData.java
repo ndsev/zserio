@@ -1,10 +1,14 @@
 package zserio.emit.doc;
 
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
 import zserio.ast.AstNode;
 import zserio.ast.DocComment;
+import zserio.ast.DocCommentClassic;
+import zserio.ast.DocCommentMarkdown;
 import zserio.ast.DocElement;
 import zserio.ast.DocLine;
 import zserio.ast.DocLineElement;
@@ -31,11 +35,23 @@ public class DocCommentTemplateData
      */
     public DocCommentTemplateData(DocComment docComment) throws ZserioEmitException
     {
-        if (docComment != null)
+        if (docComment instanceof DocCommentMarkdown)
         {
+            isDeprecated = false;
+            final DocCommentMarkdown docCommentMarkdown = (DocCommentMarkdown)docComment;
+
+            final Path origCwd = ResourceManager.getInstance().getCurrentSourceDir();
+            ResourceManager.getInstance().setCurrentSourceDir(
+                    Paths.get(docComment.getLocation().getFileName()).getParent());
+            markdownHtml = MarkdownToHtmlConverter.markdownToHtml(docCommentMarkdown.getMarkdown());
+            ResourceManager.getInstance().setCurrentSourceDir(origCwd);
+        }
+        else if (docComment instanceof DocCommentClassic)
+        {
+            final DocCommentClassic docCommentClassic = (DocCommentClassic)docComment;
             boolean isDeprecated = false;
 
-            for (DocParagraph docParagraph : docComment.getParagraphs())
+            for (DocParagraph docParagraph : docCommentClassic.getParagraphs())
             {
                 docParagraphs.add(new DocParagraphData(docParagraph));
 
@@ -53,11 +69,21 @@ public class DocCommentTemplateData
             }
 
             this.isDeprecated = isDeprecated;
+            this.markdownHtml = null;
         }
         else
         {
             isDeprecated = false;
+            markdownHtml = null;
         }
+    }
+
+    /**
+     * Returns the documentation HTML rendered from markdown.
+     */
+    public String getMarkdownHtml()
+    {
+        return markdownHtml;
     }
 
     /**
@@ -259,5 +285,6 @@ public class DocCommentTemplateData
     }
 
     private final List<DocParagraphData> docParagraphs = new ArrayList<DocParagraphData>();
+    private final String markdownHtml;
     private final boolean isDeprecated;
 }

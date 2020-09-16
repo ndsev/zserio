@@ -147,6 +147,22 @@ class DocCommentManager
 
     private DocComment parseDocComment(Token docCommentToken)
     {
+        if (docCommentToken.getType() == ZserioLexer.MARKDOWN_COMMENT)
+            return parseDocCommentMarkdown(docCommentToken);
+        else
+            return parseDocCommentClassic(docCommentToken);
+    }
+
+    private DocCommentMarkdown parseDocCommentMarkdown(Token docCommentToken)
+    {
+        final String markdown = docCommentToken.getText()
+                .replaceAll("^/\\*!\\s*", "") // strip from beginning
+                .replaceAll("\\s*!?\\*/$", ""); // strip from the end
+        return new DocCommentMarkdown(new AstLocation(docCommentToken), markdown);
+    }
+
+    private DocCommentClassic parseDocCommentClassic(Token docCommentToken)
+    {
         try
         {
             final CharStream inputStream = CharStreams.fromString(docCommentToken.getText());
@@ -173,7 +189,7 @@ class DocCommentManager
             }
 
             final DocCommentAstBuilder docCommentAstBuilder = new DocCommentAstBuilder(docCommentToken);
-            final DocComment docComment = (DocComment)docCommentAstBuilder.visit(tree);
+            final DocCommentClassic docComment = (DocCommentClassic)docCommentAstBuilder.visit(tree);
 
             return docComment;
         }

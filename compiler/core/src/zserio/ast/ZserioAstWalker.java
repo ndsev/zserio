@@ -249,7 +249,13 @@ public class ZserioAstWalker implements ZserioAstVisitor
     }
 
     @Override
-    public void visitDocComment(DocComment docComment)
+    public void visitDocCommentClassic(DocCommentClassic docComment)
+    {
+        docComment.visitChildren(this);
+    }
+
+    @Override
+    public void visitDocCommentMarkdown(DocCommentMarkdown docComment)
     {
         docComment.visitChildren(this);
     }

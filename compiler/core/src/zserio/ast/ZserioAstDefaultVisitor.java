@@ -170,7 +170,11 @@ public class ZserioAstDefaultVisitor implements ZserioAstVisitor
     }
 
     @Override
-    public void visitDocComment(DocComment docComment)
+    public void visitDocCommentClassic(DocCommentClassic docComment)
+    {}
+
+    @Override
+    public void visitDocCommentMarkdown(DocCommentMarkdown docComment)
     {}
 
     @Override

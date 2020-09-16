@@ -31,6 +31,8 @@ public class ConstantEmitter extends DefaultHtmlEmitter
     public void emit(Constant constant) throws ZserioEmitException
     {
         this.constant = constant;
+        ResourceManager.getInstance().setCurrentOutputDir(
+                DocEmitterTools.getDirectoryNameFromType(constant));
         docCommentTemplateData = new DocCommentTemplateData(constant.getDocComment());
         containers.clear();
         for (CompoundType compound : usedByCollector.getUsedByTypes(constant, CompoundType.class))

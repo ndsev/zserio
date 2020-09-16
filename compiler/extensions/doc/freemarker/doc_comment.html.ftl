@@ -1,7 +1,11 @@
 <#-- This macro generates HTML source for the documentation comment. -->
 <#macro doc_comment doc>
     <#if doc.paragraphs?size == 0>
+        <#if doc.markdownHtml??>
+    ${doc.markdownHtml}
+        <#else>
     <div class="docuTag">&lt;<i>no documentation found</i>&gt;</div>
+        </#if>
     <#else>
         <#list doc.paragraphs as paragraph>
             <#list paragraph.elements as element>

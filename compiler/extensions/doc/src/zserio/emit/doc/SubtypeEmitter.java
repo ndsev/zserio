@@ -33,6 +33,8 @@ public class SubtypeEmitter extends DefaultHtmlEmitter
     public void emit(Subtype s) throws ZserioEmitException
     {
         this.subtype = s;
+        ResourceManager.getInstance().setCurrentOutputDir(
+                DocEmitterTools.getDirectoryNameFromType(s));
         docCommentTemplateData = new DocCommentTemplateData(subtype.getDocComment());
         containers.clear();
         for (CompoundType compound : usedByCollector.getUsedByTypes(subtype, CompoundType.class))

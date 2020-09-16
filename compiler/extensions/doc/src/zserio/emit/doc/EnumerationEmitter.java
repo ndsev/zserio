@@ -40,6 +40,8 @@ public class EnumerationEmitter extends DefaultHtmlEmitter
     public void emit(EnumType e) throws ZserioEmitException
     {
         this.enumeration = e;
+        ResourceManager.getInstance().setCurrentOutputDir(
+                DocEmitterTools.getDirectoryNameFromType(e));
         docCommentData = new DocCommentTemplateData(e.getDocComment());
         items.clear();
         for (EnumItem item : e.getItems())

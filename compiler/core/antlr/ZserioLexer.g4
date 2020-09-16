@@ -102,6 +102,7 @@ WS : [\r\n\f\t ] -> skip ;
 
 // comments
 DOC_COMMENT : '/**' .*? '*/' -> channel(DOC) ;
+MARKDOWN_COMMENT : '/*!' .*? '!'?'*/' -> channel(DOC) ;
 BLOCK_COMMENT : '/*' .*? '*/' -> channel(HIDDEN) ;
 LINE_COMMENT : '//' ~[\r\n\f]* -> channel(HIDDEN) ;
 
@@ -113,7 +114,7 @@ fragment STRING_CHARACTER
     |   '\\' ["\\rnft]
     |   '\\u' HEX_DIGIT HEX_DIGIT HEX_DIGIT HEX_DIGIT
     |   '\\x' HEX_DIGIT HEX_DIGIT
-    |   '\\0' [0-3]? OCTAL_DIGIT OCTAL_DIGIT? 
+    |   '\\0' [0-3]? OCTAL_DIGIT OCTAL_DIGIT?
     ;
 STRING_LITERAL : '"' STRING_CHARACTER* '"' ;
 

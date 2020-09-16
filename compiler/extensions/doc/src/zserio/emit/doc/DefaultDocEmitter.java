@@ -20,7 +20,7 @@ abstract public class DefaultDocEmitter extends DefaultEmitter
         {
             if (!parentDir.mkdirs())
             {
-                throw new ZserioEmitException( "Can't create directory: " + parentDir.toString() );
+                throw new ZserioEmitException( "Can't create directory: " + parentDir.toString());
             }
         }
 

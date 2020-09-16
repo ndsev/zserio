@@ -40,6 +40,8 @@ public class BitmaskEmitter extends DefaultHtmlEmitter
     public void emit(BitmaskType bitmaskType) throws ZserioEmitException
     {
         this.bitmaskType = bitmaskType;
+        ResourceManager.getInstance().setCurrentOutputDir(
+                DocEmitterTools.getDirectoryNameFromType(bitmaskType));
         docCommentData = new DocCommentTemplateData(bitmaskType.getDocComment());
         values.clear();
         for (BitmaskValue value : bitmaskType.getValues())

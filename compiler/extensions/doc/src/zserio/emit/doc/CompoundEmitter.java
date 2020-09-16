@@ -266,6 +266,8 @@ public class CompoundEmitter extends DefaultHtmlEmitter
     public void emit(CompoundType compnd) throws ZserioEmitException
     {
         this.compound = compnd;
+        ResourceManager.getInstance().setCurrentOutputDir(
+                DocEmitterTools.getDirectoryNameFromType(compound));
         docCommentTemplateData = new DocCommentTemplateData(compnd.getDocComment());
         functions.clear();
         for (Function fctn : compnd.getFunctions())
