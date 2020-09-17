@@ -17,6 +17,8 @@ import org.commonmark.renderer.html.HtmlNodeRendererContext;
 import org.commonmark.renderer.html.HtmlNodeRendererFactory;
 import org.commonmark.ext.autolink.AutolinkExtension;
 import org.commonmark.ext.heading.anchor.HeadingAnchorExtension;
+import org.commonmark.ext.gfm.tables.TablesExtension;
+
 
 class MarkdownToHtmlConverter
 {
@@ -24,7 +26,9 @@ class MarkdownToHtmlConverter
     {
         List<Extension> extensions = Arrays.asList(
                 AutolinkExtension.create(),
-                HeadingAnchorExtension.create());
+                HeadingAnchorExtension.create(),
+                TablesExtension.create());
+
 
         Parser parser = Parser.builder()
                 .extensions(extensions)

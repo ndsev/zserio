@@ -44,12 +44,14 @@ spotbugs.home_dir             - Location of the spotbugs tool. If not set, spotb
     <property name="3rdparty.commonmark.jar_file_name" value="commonmark-0.15.2.jar"/>
     <property name="3rdparty.commonmark_ext_autolink.jar_file_name" value="commonmark-ext-autolink-0.15.2.jar"/>
     <property name="3rdparty.commonmark_ext_heading_anchor.jar_file_name" value="commonmark-ext-heading-anchor-0.15.2.jar"/>
+    <property name="3rdparty.commonmark_ext_gfm_tables.jar_file_name" value="commonmark-ext-gfm-tables-0.15.2.jar"/>
     <property name="3rdparty.autolink.jar_file_name" value="autolink-0.10.0.jar"/>
 
     <fileset dir="${3rdparty.jar_dir}" id="3rdparty.jar_files_ref">
         <include name="${3rdparty.commonmark.jar_file_name}"/>
         <include name="${3rdparty.commonmark_ext_autolink.jar_file_name}"/>
         <include name="${3rdparty.commonmark_ext_heading_anchor.jar_file_name}"/>
+        <include name="${3rdparty.commonmark_ext_gfm_tables.jar_file_name}"/>
         <include name="${3rdparty.autolink.jar_file_name}"/>
     </fileset>
 
