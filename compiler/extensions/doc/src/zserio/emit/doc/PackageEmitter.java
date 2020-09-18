@@ -37,14 +37,14 @@ public class PackageEmitter extends DefaultHtmlEmitter
         ResourceManager.getInstance().setCurrentOutputDir(directory.toString());
         openOutputFile(directory, pkg.getPackageName().toString() + HTML_EXT);
 
-        final PackageTemplateData templateData = new PackageTemplateData(pkg);
-        processTemplate("doc/package_begin.html.ftl", templateData);
+        final BeginPackageTemplateData templateData = new BeginPackageTemplateData(pkg);
+        processTemplate("doc/begin_package.html.ftl", templateData);
     }
 
     @Override
     public void endPackage(Package pkg) throws ZserioEmitException
     {
-        processTemplate("doc/package_end.html.ftl", null);
+        processTemplate("doc/end_package.html.ftl", null);
 
         if (writer != null)
             writer.close();
@@ -152,28 +152,6 @@ public class PackageEmitter extends DefaultHtmlEmitter
         {
             throw new ZserioEmitException(exception.getMessage());
         }
-    }
-
-    public static class PackageTemplateData
-    {
-        public PackageTemplateData(Package pkg) throws ZserioEmitException
-        {
-            name = pkg.getPackageName().toString();
-            docComment = new DocCommentTemplateData(pkg.getDocComment());
-        }
-
-        public String getName()
-        {
-            return name;
-        }
-
-        public DocCommentTemplateData getDocComment()
-        {
-            return docComment;
-        }
-
-        private final String name;
-        private final DocCommentTemplateData docComment;
     }
 
     private final boolean withSvgDiagrams;
