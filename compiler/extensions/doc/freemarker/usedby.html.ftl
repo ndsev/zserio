@@ -20,3 +20,20 @@
     </table>
     </#if>
 </#macro>
+
+<#macro usedby_new linkedTypes>
+    <#if linkedTypes??>
+    <h4>Used By</h4>
+    <table>
+      <tr><td class="docuCode">
+        <table>
+          <tbody id="tabIndent">
+        <#list linkedTypes as linkedType>
+            <tr><td><@linkedtype linkedType/></td></tr>
+        </#list>
+          </tbody>
+        </table>
+      </td></tr>
+    </table>
+    </#if>
+</#macro>

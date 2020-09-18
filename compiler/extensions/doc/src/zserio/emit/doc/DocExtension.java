@@ -55,6 +55,9 @@ public class DocExtension implements Extension
         final UsedByCollector usedByCollector = new UsedByCollector();
         rootNode.emit(usedByCollector);
 
+        final TemplateDataContext templateDataContext = new TemplateDataContext(docPath, withSvgDiagrams,
+                usedByCollector);
+
         // emit DB overview dot file
         DbOverviewDotEmitter dbOverviewDotEmitter = new DbOverviewDotEmitter(docPath, dotLinksPrefix,
                                                         withSvgDiagrams, dotExecutable);
@@ -70,16 +73,13 @@ public class DocExtension implements Extension
                 dotLinksPrefix, withSvgDiagrams, dotExecutable, usedByCollector);
         rootNode.emit(typeCollaborationDotEmitter);
 
-        // emit frameset
+        // emit frameset and stylesheet
         ContentEmitter contentEmitter = new ContentEmitter(docPath, withSvgDiagrams, usedByCollector);
         contentEmitter.emitFrameset();
-
-        // emit stylesheets
         contentEmitter.emitStylesheet();
 
-        // emit HTML documentation
-        // rootNode.emit(docEmitter);
-        PackageEmitter packageEmitter = new PackageEmitter(docPath, withSvgDiagrams, usedByCollector);
+        // emit documentation, one HTML page per package
+        PackageEmitter packageEmitter = new PackageEmitter(templateDataContext);
         rootNode.emit(packageEmitter);
 
         // emit list of packages

@@ -3,7 +3,7 @@
 <#include "usedby.html.ftl">
 <#include "collaboration_diagram.html.ftl">
 
-    <div class="msgdetail" id="${linkedType.hyperlinkName}">
+    <div class="msgdetail" id="${anchorName}">
 <#if docComment.isDeprecated>
       <span class="deprecated">(deprecated) </span>
       <del>
@@ -20,8 +20,8 @@
     <tr><td class="docuCode">
       <table>
 
-      <tr><td colspan=3>bitmask ${bitmaskType} ${type.name}</td></tr>
-      <tr><td>{</td><td rowspan="${type.values?size+1}">&nbsp;</td><td></td></tr>
+      <tr><td colspan=3>bitmask <@linkedtype type/> ${name}</td></tr>
+      <tr><td>{</td><td rowspan="${values?size+1}">&nbsp;</td><td></td></tr>
 <#list values as value>
           <tr>
             <td id="tabIndent"><a href="#${value.name}" class="fieldLink">${value.name}</a></td>
@@ -39,7 +39,7 @@
 <#list values as value>
       <dt class="memberItem"><a name="${value.name}">${value.name}:</a></dt>
       <dd class="memberDetail">
-      <@doc_comment value.docCommentData/>
+      <@doc_comment value.docComment/>
   <#list value.usageInfoList as usageInfo>
     <#if usageInfo.isFromChoiceCase >
         <div class="docuTag"><span>see: </span><a href="${usageInfo.choiceCaseLink}">${usageInfo.choiceCaseLinkText}</a></div>
@@ -49,8 +49,8 @@
 </#list>
     </dl>
 
-<@usedby containers services/>
-<#if collaborationDiagramSvgFileName??>
+<@usedby_new usedByTypes/>
+<#if collaborationDiagramSvgUrl??>
 
-    <@collaboration_diagram collaborationDiagramSvgFileName/>
+    <@collaboration_diagram collaborationDiagramSvgUrl/>
 </#if>

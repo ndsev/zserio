@@ -9,8 +9,7 @@ import zserio.emit.common.ZserioEmitException;
 
 public class ServiceTemplateData
 {
-    public ServiceTemplateData(ServiceType serviceType, String outputPath, boolean withSvgDiagrams)
-            throws ZserioEmitException
+    public ServiceTemplateData(ServiceType serviceType, TemplateDataContext context) throws ZserioEmitException
     {
         name = serviceType.getName();
         packageName = serviceType.getPackage().getPackageName().toString();
@@ -22,8 +21,8 @@ public class ServiceTemplateData
         {
             methodList.add(new MethodTemplateData(method));
         }
-        collaborationDiagramSvgFileName = (withSvgDiagrams)
-                ? DocEmitterTools.getTypeCollaborationSvgUrl(outputPath, serviceType) : null;
+        collaborationDiagramSvgFileName = context.getWithSvgDiagrams()
+                ? DocEmitterTools.getTypeCollaborationSvgUrl(context.getOutputPath(), serviceType) : null;
     }
 
     public String getName()

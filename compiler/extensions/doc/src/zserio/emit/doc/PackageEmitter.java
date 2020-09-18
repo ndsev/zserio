@@ -22,13 +22,11 @@ import zserio.emit.common.ZserioEmitException;
 
 public class PackageEmitter extends DefaultHtmlEmitter
 {
-    public PackageEmitter(String outputPath, boolean withSvgDiagrams, UsedByCollector usedByCollector)
+    public PackageEmitter(TemplateDataContext context)
     {
-        super(outputPath);
+        super(context.getOutputPath());
         directory = new File(directory, CONTENT_FOLDER);
-        this.withSvgDiagrams = withSvgDiagrams;
-        this.usedByCollector = usedByCollector;
-        this.outputPath = outputPath;
+        this.context = context;
     }
 
     @Override
@@ -53,32 +51,31 @@ public class PackageEmitter extends DefaultHtmlEmitter
     @Override
     public void beginConst(Constant constant) throws ZserioEmitException
     {
-        final ConstantEmitter templateData =
-                new ConstantEmitter(constant, outputPath, withSvgDiagrams, usedByCollector);
+        final ConstantEmitter templateData = new ConstantEmitter(constant,
+                context.getOutputPath(), context.getWithSvgDiagrams(), context.getUsedByCollector());
         processTemplate("doc/const.html.ftl", templateData);
     }
 
     @Override
     public void beginSubtype(Subtype subtype) throws ZserioEmitException
     {
-        final SubtypeEmitter templateData =
-                new SubtypeEmitter(subtype, outputPath, withSvgDiagrams, usedByCollector);
+        final SubtypeEmitter templateData = new SubtypeEmitter(subtype,
+                context.getOutputPath(), context.getWithSvgDiagrams(), context.getUsedByCollector());
         processTemplate("doc/subtype.html.ftl", templateData);
     }
 
     @Override
     public void beginEnumeration(EnumType enumType) throws ZserioEmitException
     {
-        final EnumerationEmitter templateData =
-                new EnumerationEmitter(enumType, outputPath, withSvgDiagrams, usedByCollector);
+        final EnumerationEmitter templateData = new EnumerationEmitter(enumType,
+                context.getOutputPath(), context.getWithSvgDiagrams(), context.getUsedByCollector());
         processTemplate("doc/enumeration.html.ftl", templateData);
     }
 
     @Override
     public void beginBitmask(BitmaskType bitmaskType) throws ZserioEmitException
     {
-        final BitmaskEmitter templateData =
-                new BitmaskEmitter(bitmaskType, outputPath, withSvgDiagrams, usedByCollector);
+        final BitmaskTemplateData templateData = new BitmaskTemplateData(context, bitmaskType);
         processTemplate("doc/bitmask.html.ftl", templateData);
     }
 
@@ -97,8 +94,8 @@ public class PackageEmitter extends DefaultHtmlEmitter
     @Override
     public void beginChoice(ChoiceType choiceType) throws ZserioEmitException
     {
-        final CompoundEmitter templateData =
-                new CompoundEmitter(choiceType, outputPath, withSvgDiagrams, usedByCollector);
+        final CompoundEmitter templateData = new CompoundEmitter(choiceType,
+                context.getOutputPath(), context.getWithSvgDiagrams(), context.getUsedByCollector());
         processTemplate("doc/choice.html.ftl", templateData);
     }
 
@@ -118,22 +115,22 @@ public class PackageEmitter extends DefaultHtmlEmitter
     public void beginService(ServiceType serviceType) throws ZserioEmitException
     {
         final ServiceTemplateData templateData =
-                new ServiceTemplateData(serviceType, outputPath, withSvgDiagrams);
+                new ServiceTemplateData(serviceType, context);
         processTemplate("doc/service.html.ftl", templateData);
     }
 
     @Override
     public void beginPubsub(PubsubType pubsubType) throws ZserioEmitException
     {
-        final PubsubTemplateData templateData = new PubsubTemplateData(getExpressionFormatter(), pubsubType,
-                outputPath, withSvgDiagrams);
+        final PubsubTemplateData templateData =
+                new PubsubTemplateData(getExpressionFormatter(), pubsubType, context);
         processTemplate("doc/pubsub.html.ftl", templateData);
     }
 
     private void processCompound(CompoundType compoundType) throws ZserioEmitException
     {
-        final CompoundEmitter templateData =
-                new CompoundEmitter(compoundType, outputPath, withSvgDiagrams, usedByCollector);
+        final CompoundEmitter templateData = new CompoundEmitter(compoundType,
+                context.getOutputPath(), context.getWithSvgDiagrams(), context.getUsedByCollector());
         processTemplate("doc/compound.html.ftl", templateData);
     }
 
@@ -154,7 +151,5 @@ public class PackageEmitter extends DefaultHtmlEmitter
         }
     }
 
-    private final boolean withSvgDiagrams;
-    private final UsedByCollector usedByCollector;
-    private final String outputPath;
+    private final TemplateDataContext context;
 }
