@@ -20,6 +20,8 @@ public class ServiceEmitter extends DefaultHtmlEmitter
     {
         try
         {
+            ResourceManager.getInstance().setCurrentOutputDir(
+                    DocEmitterTools.getDirectoryNameFromType(serviceType));
             Template tpl = cfg.getTemplate("doc/service.html.ftl");
             setCurrentFolder(CONTENT_FOLDER);
             openOutputFileFromType(serviceType);

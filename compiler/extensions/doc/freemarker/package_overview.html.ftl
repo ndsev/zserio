@@ -23,29 +23,36 @@
 
         function showPackage(clickedElement)
         {
-            hiliteElement(clickedElement);
+            hiliteElement(clickedElement.parentElement.parentElement);
 
             var clickedStyleItemId = "style_" +
-                clickedElement.firstChild.firstChild.data.replace(/\./g, '_');
+                clickedElement.text.replace(/\./g, '_');
             parent.postMessage(clickedStyleItemId, "*");
         }
 
+        function showDeprecated(clickedElement)
+        {
+            hiliteElement(clickedElement.parentElement.parentElement);
+            parent.postMessage(".deprecated", "*");
+        }
 
         function showAllPackages(clickedElement)
         {
             hiliteElement(clickedElement);
 
-            parent.postMessage("all", "*");
+            parent.postMessage(".all", "*");
         }
     </script>
   </head>
 
   <body>
-    <h2>Zserio Package: ${rootPackageName}</h2>
+    <h2>Packages</h2>
     <ul id="all_packages" class="packagelist" onclick="showAllPackages(this);"><li>all packages</li></ul>
-    <ul class="packagelist"><li><a href="deprecated.html" title="Deprecated elements" target="detailedDocu">deprecated</a></li></ul>
+    <ul class="packagelist"><li><a href="deprecated.html" title="Deprecated elements" target="detailedDocu" onclick="showDeprecated(this);">deprecated</a></li></ul>
 <#list packages as pkg>
-    <ul class="packagelist" onclick="showPackage(this);"><li>${pkg}</li></ul>
+    <ul class="packagelist"><li><#rt>
+    <#t><a href="content/${pkg}.html" title="Package: ${pkg}" target="detailedDocu" onclick="showPackage(this);">${pkg}</a>
+    <#lt></li></ul>
 </#list>
 
   <script language="JavaScript">

@@ -71,21 +71,23 @@ public class DocExtension implements Extension
         rootNode.emit(typeCollaborationDotEmitter);
 
         // emit frameset
-        ContentEmitter docEmitter = new ContentEmitter(docPath, withSvgDiagrams, usedByCollector);
-        docEmitter.emitFrameset();
+        ContentEmitter contentEmitter = new ContentEmitter(docPath, withSvgDiagrams, usedByCollector);
+        contentEmitter.emitFrameset();
 
         // emit stylesheets
-        docEmitter.emitStylesheet();
+        contentEmitter.emitStylesheet();
 
         // emit HTML documentation
-        rootNode.emit(docEmitter);
-
-        // emit list of packages
-        PackageEmitter packageEmitter = new PackageEmitter(docPath);
+        // rootNode.emit(docEmitter);
+        PackageEmitter packageEmitter = new PackageEmitter(docPath, withSvgDiagrams, usedByCollector);
         rootNode.emit(packageEmitter);
 
+        // emit list of packages
+        PackageOverviewEmitter packageOverviewEmitter = new PackageOverviewEmitter(docPath);
+        rootNode.emit(packageOverviewEmitter);
+
         // emit list of classes
-        OverviewEmitter overviewEmitter = new OverviewEmitter(docPath);
+        TypeOverviewEmitter overviewEmitter = new TypeOverviewEmitter(docPath);
         rootNode.emit(overviewEmitter);
 
         // emit list of deprecated elements

@@ -37,24 +37,20 @@ public class EnumerationEmitter extends DefaultHtmlEmitter
         this.usedByCollector = usedByCollector;
     }
 
+    public EnumerationEmitter(EnumType enumType, String outputPath, boolean withSvgDiagrams,
+            UsedByCollector usedByCollector) throws ZserioEmitException
+    {
+        this(outputPath, withSvgDiagrams, usedByCollector);
+        this.enumeration = enumType;
+        prepareForEmit();
+    }
+
     public void emit(EnumType e) throws ZserioEmitException
     {
         this.enumeration = e;
         ResourceManager.getInstance().setCurrentOutputDir(
                 DocEmitterTools.getDirectoryNameFromType(e));
-        docCommentData = new DocCommentTemplateData(e.getDocComment());
-        items.clear();
-        for (EnumItem item : e.getItems())
-        {
-            items.add(new EnumItemTemplateData(item, usedByCollector));
-        }
-        containers.clear();
-        for (CompoundType compound : usedByCollector.getUsedByTypes(enumeration, CompoundType.class))
-        {
-            CompoundEmitter ce = new CompoundEmitter(compound);
-            containers.add(ce);
-        }
-        protocols.clear();
+        prepareForEmit();
 
         try
         {
@@ -85,6 +81,13 @@ public class EnumerationEmitter extends DefaultHtmlEmitter
             throw new RuntimeException("getPackageName() called before emit()!");
 
         return enumeration.getPackage().getPackageName().toString();
+    }
+
+    public LinkedType getLinkedType() throws ZserioEmitException
+    {
+        if (enumeration == null)
+            return null;
+        return new LinkedType(enumeration);
     }
 
     public EnumType getType()
@@ -172,6 +175,23 @@ public class EnumerationEmitter extends DefaultHtmlEmitter
     {
         return (withSvgDiagrams) ? DocEmitterTools.getTypeCollaborationSvgUrl(docPath, enumeration)
                                       : null;
+    }
+
+    private void prepareForEmit() throws ZserioEmitException
+    {
+        docCommentData = new DocCommentTemplateData(enumeration.getDocComment());
+        items.clear();
+        for (EnumItem item : enumeration.getItems())
+        {
+            items.add(new EnumItemTemplateData(item, usedByCollector));
+        }
+        containers.clear();
+        for (CompoundType compound : usedByCollector.getUsedByTypes(enumeration, CompoundType.class))
+        {
+            CompoundEmitter ce = new CompoundEmitter(compound);
+            containers.add(ce);
+        }
+        protocols.clear();
     }
 
     public static class EnumItemTemplateData

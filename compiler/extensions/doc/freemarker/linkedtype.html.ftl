@@ -1,7 +1,7 @@
 <#macro linkedtype type>
   <#if !type.isBuiltIn>
     <#lt><a class  = "${type.style}"
-       href   = "../${type.packageName}/${type.hyperlinkName}.html"
+       href   = "${type.packageName}.html#${type.hyperlinkName}"
        title  = "Type: ${type.category}"
        target = "detailedDocu">${type.name}</a><#rt>
   <#else>
@@ -14,7 +14,7 @@
   <#assign field      = flt.field>
   <#if !linkedType.isBuiltIn>
     <#lt><a  class   = "fieldLink"
-        href    = "../${linkedType.packageName}/${linkedType.hyperlinkName}.html"
+        href    = "${linkedType.packageName}.html#{linkedType.hyperlinkName}"
         title   = "Type: ${linkedType.category}"
         target  = "detailedDocu">${field.name}</a><#rt>
   <#else>

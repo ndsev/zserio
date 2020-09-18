@@ -2,16 +2,8 @@
 <#include "linkedtype.html.ftl">
 <#include "usedby.html.ftl">
 <#include "collaboration_diagram.html.ftl">
-<html>
-  <head>
-    <title>Subtype ${packageName}.${type.name}</title>
-    <link rel="stylesheet" type="text/css" href="../../webStyles.css">
-    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
-  </head>
-  <body>
 
-    <h2>${packageName}</h2>
-    <div class="msgdetail">
+    <div class="msgdetail" id="${linkedType.hyperlinkName}">
 <#if isDeprecated>
       <span class="deprecated">(deprecated) </span>
       <del>
@@ -57,6 +49,3 @@
       </table>
     </td></tr>
     </table>
-
-  </body>
-</html>

@@ -37,24 +37,20 @@ public class BitmaskEmitter extends DefaultHtmlEmitter
         this.usedByCollector = usedByCollector;
     }
 
+    public BitmaskEmitter(BitmaskType bitmaskType, String outputPath, boolean withSvgDiagrams,
+            UsedByCollector usedByCollector) throws ZserioEmitException
+    {
+        this(outputPath, withSvgDiagrams, usedByCollector);
+        this.bitmaskType = bitmaskType;
+        prepareForEmit();
+    }
+
     public void emit(BitmaskType bitmaskType) throws ZserioEmitException
     {
         this.bitmaskType = bitmaskType;
         ResourceManager.getInstance().setCurrentOutputDir(
                 DocEmitterTools.getDirectoryNameFromType(bitmaskType));
-        docCommentData = new DocCommentTemplateData(bitmaskType.getDocComment());
-        values.clear();
-        for (BitmaskValue value : bitmaskType.getValues())
-        {
-            values.add(new BitmaskValueTemplateData(value, usedByCollector));
-        }
-        containers.clear();
-        for (CompoundType compound : usedByCollector.getUsedByTypes(bitmaskType, CompoundType.class))
-        {
-            CompoundEmitter ce = new CompoundEmitter(compound);
-            containers.add(ce);
-        }
-        protocols.clear();
+        prepareForEmit();
 
         try
         {
@@ -87,6 +83,13 @@ public class BitmaskEmitter extends DefaultHtmlEmitter
         return bitmaskType.getPackage().getPackageName().toString();
     }
 
+    public LinkedType getLinkedType() throws ZserioEmitException
+    {
+        if (bitmaskType == null)
+            return null;
+        return new LinkedType(bitmaskType);
+    }
+
     public BitmaskType getType()
     {
         return bitmaskType;
@@ -105,6 +108,23 @@ public class BitmaskEmitter extends DefaultHtmlEmitter
     public DocCommentTemplateData getDocComment()
     {
         return docCommentData;
+    }
+
+    private void prepareForEmit() throws ZserioEmitException
+    {
+        docCommentData = new DocCommentTemplateData(bitmaskType.getDocComment());
+        values.clear();
+        for (BitmaskValue value : bitmaskType.getValues())
+        {
+            values.add(new BitmaskValueTemplateData(value, usedByCollector));
+        }
+        containers.clear();
+        for (CompoundType compound : usedByCollector.getUsedByTypes(bitmaskType, CompoundType.class))
+        {
+            CompoundEmitter ce = new CompoundEmitter(compound);
+            containers.add(ce);
+        }
+        protocols.clear();
     }
 
     public static class UsageInfoEmitter implements Comparable<UsageInfoEmitter>

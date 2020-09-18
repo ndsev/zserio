@@ -20,6 +20,8 @@ public class PubsubEmitter extends DefaultHtmlEmitter
     {
         try
         {
+            ResourceManager.getInstance().setCurrentOutputDir(
+                    DocEmitterTools.getDirectoryNameFromType(pubsubType));
             Template tpl = cfg.getTemplate("doc/pubsub.html.ftl");
             setCurrentFolder(CONTENT_FOLDER);
             openOutputFileFromType(pubsubType);

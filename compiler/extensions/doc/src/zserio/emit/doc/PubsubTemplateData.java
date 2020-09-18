@@ -15,6 +15,7 @@ public class PubsubTemplateData
     {
         name = pubsubType.getName();
         packageName = pubsubType.getPackage().getPackageName().toString();
+        linkedType = new LinkedType(pubsubType);
         ResourceManager.getInstance().setCurrentOutputDir(
                 DocEmitterTools.getDirectoryNameFromType(pubsubType));
         docComment = new DocCommentTemplateData(pubsubType.getDocComment());
@@ -29,6 +30,11 @@ public class PubsubTemplateData
     public String getName()
     {
         return name;
+    }
+
+    public LinkedType getLinkedType() throws ZserioEmitException
+    {
+        return linkedType;
     }
 
     public String getPackageName()
@@ -98,6 +104,7 @@ public class PubsubTemplateData
 
     private final String name;
     private final String packageName;
+    private final LinkedType linkedType;
     private final DocCommentTemplateData docComment;
     private final List<MessageTemplateData> messageList = new ArrayList<MessageTemplateData>();
     private final String collaborationDiagramSvgFileName;

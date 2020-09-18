@@ -28,19 +28,19 @@ public class ConstantEmitter extends DefaultHtmlEmitter
         this.usedByCollector = usedByCollector;
     }
 
+    public ConstantEmitter(Constant constant, String outputPath, boolean withSvgDiagrams,
+            UsedByCollector usedByCollector) throws ZserioEmitException
+    {
+        this(outputPath, withSvgDiagrams, usedByCollector);
+        this.constant = constant;
+        prepareForEmit();
+    }
+
     public void emit(Constant constant) throws ZserioEmitException
     {
         this.constant = constant;
-        ResourceManager.getInstance().setCurrentOutputDir(
-                DocEmitterTools.getDirectoryNameFromType(constant));
-        docCommentTemplateData = new DocCommentTemplateData(constant.getDocComment());
-        containers.clear();
-        for (CompoundType compound : usedByCollector.getUsedByTypes(constant, CompoundType.class))
-        {
-            CompoundEmitter ce = new CompoundEmitter(compound);
-            containers.add(ce);
-        }
-        protocols.clear();
+        ResourceManager.getInstance().setCurrentOutputDir(DocEmitterTools.getDirectoryNameFromType(constant));
+        prepareForEmit();
 
         try
         {
@@ -74,6 +74,13 @@ public class ConstantEmitter extends DefaultHtmlEmitter
         }
 
         return "";
+    }
+
+    public LinkedType getLinkedType() throws ZserioEmitException
+    {
+        if (constant == null)
+            return null;
+        return new LinkedType(constant);
     }
 
     public String getTypeName()
@@ -125,5 +132,17 @@ public class ConstantEmitter extends DefaultHtmlEmitter
     public String getCollaborationDiagramSvgFileName() throws ZserioEmitException
     {
         return (withSvgDiagrams) ? DocEmitterTools.getTypeCollaborationSvgUrl(docPath, constant) : null;
+    }
+
+    private void prepareForEmit() throws ZserioEmitException
+    {
+        docCommentTemplateData = new DocCommentTemplateData(constant.getDocComment());
+        containers.clear();
+        for (CompoundType compound : usedByCollector.getUsedByTypes(constant, CompoundType.class))
+        {
+            CompoundEmitter ce = new CompoundEmitter(compound);
+            containers.add(ce);
+        }
+        protocols.clear();
     }
 }

@@ -1,16 +1,8 @@
 <#include "doc_comment.html.ftl">
 <#include "linkedtype.html.ftl">
 <#include "collaboration_diagram.html.ftl">
-<html>
-    <head>
-        <title>pubsub ${packageName}.${name}</title>
-        <link rel="stylesheet" type="text/css" href="../../webStyles.css">
-        <meta http-equiv="content-type" content="text/html; charset=UTF-8">
-    </head>
 
-    <body>
-        <h2>${packageName}</h2>
-        <div class="msgdetail">
+        <div class="msgdetail" id="${linkedType.hyperlinkName}">
 <#if docComment.isDeprecated>
             <span class="deprecated">(deprecated) </span>
             <del>
@@ -54,5 +46,3 @@
 
     <@collaboration_diagram collaborationDiagramSvgFileName/>
 </#if>
-    </body>
-</html>

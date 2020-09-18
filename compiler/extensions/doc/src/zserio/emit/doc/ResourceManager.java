@@ -1,5 +1,6 @@
 package zserio.emit.doc;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -10,6 +11,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 
 import zserio.tools.HashUtil;
+import zserio.tools.StringJoinUtil;
 import zserio.tools.ZserioToolPrinter;
 
 class ResourceManager
@@ -36,18 +38,17 @@ class ResourceManager
 
     public void setOutputRoot(String outputRoot)
     {
-        this.outputRoot = Paths.get(outputRoot != null ? outputRoot : ".");
+        this.outputRoot = Paths.get(outputRoot != null ? outputRoot : ".").toAbsolutePath();
     }
 
     public void setCurrentOutputDir(String currentOutputDir)
     {
-        this.currentOutputDir = outputRoot.resolve(CONTENT_DIR).resolve(
-                Paths.get(currentOutputDir != null ? currentOutputDir : "."));
+        this.currentOutputDir = Paths.get(currentOutputDir != null ? currentOutputDir : ".").toAbsolutePath();
     }
 
     public void setSourceRoot(String sourceRoot)
     {
-        this.sourceRoot = Paths.get(sourceRoot != null ? sourceRoot : ".");
+        this.sourceRoot = Paths.get(sourceRoot != null ? sourceRoot : ".").toAbsolutePath();
     }
 
     public void setSourceExtension(String sourceExtension)
@@ -62,7 +63,7 @@ class ResourceManager
             final LocalResource localResource = new LocalResource(currentSourceDir, destination);
             final LocalResource mappedResource = mapLocalResource(localResource);
 
-            return currentOutputDir.toAbsolutePath().relativize(mappedResource.getFullPath()).toString() +
+            return currentOutputDir.relativize(mappedResource.getFullPath()).toString() +
                     localResource.getAnchor();
         }
         else
@@ -81,8 +82,12 @@ class ResourceManager
 
         if (isZserioPackage)
         {
-            return new LocalResource(outputRoot.resolve(CONTENT_DIR),
-                    resource.getBaseName(), HTML_EXTENSION, resource.getAnchor());
+            final Path relativeSourcePath = sourceRoot.relativize(resource.getPath());
+            final String packageName = relativeSourcePath.toString().replace(File.separator, ".");
+            final String packageHtmlBaseName = StringJoinUtil.joinStrings(
+                    packageName, resource.getBaseName(), ".");
+            return new LocalResource(outputRoot.resolve(CONTENT_DIR), packageHtmlBaseName, HTML_EXTENSION,
+                    resource.getAnchor());
         }
         else
         {

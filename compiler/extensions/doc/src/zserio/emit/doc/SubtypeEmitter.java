@@ -30,23 +30,19 @@ public class SubtypeEmitter extends DefaultHtmlEmitter
         this.usedByCollector = usedByCollector;
     }
 
+    public SubtypeEmitter(Subtype subtype, String outputPath, boolean withSvgDiagrams,
+            UsedByCollector usedByCollector) throws ZserioEmitException
+    {
+        this(outputPath, withSvgDiagrams, usedByCollector);
+        this.subtype = subtype;
+        prepareForEmit();
+    }
+
     public void emit(Subtype s) throws ZserioEmitException
     {
         this.subtype = s;
-        ResourceManager.getInstance().setCurrentOutputDir(
-                DocEmitterTools.getDirectoryNameFromType(s));
-        docCommentTemplateData = new DocCommentTemplateData(subtype.getDocComment());
-        containers.clear();
-        for (CompoundType compound : usedByCollector.getUsedByTypes(subtype, CompoundType.class))
-        {
-            CompoundEmitter ce = new CompoundEmitter(compound);
-            containers.add(ce);
-        }
-        protocols.clear();
-        for (ServiceType service : usedByCollector.getUsedByTypes(subtype, ServiceType.class))
-        {
-            protocols.add(new LinkedType(service));
-        }
+        ResourceManager.getInstance().setCurrentOutputDir(DocEmitterTools.getDirectoryNameFromType(s));
+        prepareForEmit();
 
         try
         {
@@ -78,6 +74,13 @@ public class SubtypeEmitter extends DefaultHtmlEmitter
             throw new RuntimeException("getPackageName() called before emit()!");
 
         return subtype.getPackage().getPackageName().toString();
+    }
+
+    public LinkedType getLinkedType() throws ZserioEmitException
+    {
+        if (subtype == null)
+            return null;
+        return new LinkedType(subtype);
     }
 
     public LinkedType getTargetType() throws ZserioEmitException
@@ -123,5 +126,21 @@ public class SubtypeEmitter extends DefaultHtmlEmitter
     public String getCollaborationDiagramSvgFileName() throws ZserioEmitException
     {
         return (withSvgDiagrams) ? DocEmitterTools.getTypeCollaborationSvgUrl(docPath, subtype) : null;
+    }
+
+    private void prepareForEmit() throws ZserioEmitException
+    {
+        docCommentTemplateData = new DocCommentTemplateData(subtype.getDocComment());
+        containers.clear();
+        for (CompoundType compound : usedByCollector.getUsedByTypes(subtype, CompoundType.class))
+        {
+            CompoundEmitter ce = new CompoundEmitter(compound);
+            containers.add(ce);
+        }
+        protocols.clear();
+        for (ServiceType service : usedByCollector.getUsedByTypes(subtype, ServiceType.class))
+        {
+            protocols.add(new LinkedType(service));
+        }
     }
 }

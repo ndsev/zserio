@@ -9,7 +9,7 @@
     <ul class="classlist">
 <#list types as type>
       <li id="${type.packageNameAsID}"><#rt>
-      <#t><a class="${type.style}" href="content/${type.packageName}/${type.hyperlinkName}.html" title="Type: ${type.category}" target="detailedDocu" >${type.name}</a>
+      <#t><a class="${type.style}" href="content/${type.packageName}.html#${type.hyperlinkName}" title="Type: ${type.category}" target="detailedDocu" >${type.name}</a>
       <#lt></li>
 </#list>
     </ul>
@@ -74,7 +74,7 @@
         for (var styleItemId in allPackageNameListStyles)
         {
             var styleElementStyle = allPackageNameListStyles[styleItemId];
-            styleElementStyle.display = (event.data === "all" || styleItemId === event.data)? "list-item" : "none";
+            styleElementStyle.display = (event.data === ".all" || styleItemId === event.data) ? "list-item" : "none";
         }
     }
 

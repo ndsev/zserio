@@ -112,8 +112,9 @@ public class DocEmitterTools
             return null;
 
         return StringJoinUtil.joinStrings(docRootPath, docDirectory,
-                                          DocEmitterTools.getDirectoryNameFromType(type),
-                                          DocEmitterTools.getHtmlFileNameFromType(type), URLDirSeparator);
+                DocEmitterTools.getZserioPackageName(type) + ".html#" +
+                        (new LinkedType(type).getHyperlinkName()),
+                URLDirSeparator);
     }
 
     /**
@@ -225,7 +226,7 @@ public class DocEmitterTools
         final String svgFileName = StringJoinUtil.joinStrings(docRootPath, svgFileNameBase, URLDirSeparator);
         final File svgFile = new File(svgFileName);
 
-        return (svgFile.exists()) ? StringJoinUtil.joinStrings("..", "..", svgFileNameBase, URLDirSeparator)
+        return (svgFile.exists()) ? StringJoinUtil.joinStrings("..", svgFileNameBase, URLDirSeparator)
                                   : null;
     }
 

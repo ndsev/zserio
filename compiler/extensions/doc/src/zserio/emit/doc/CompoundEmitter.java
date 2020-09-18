@@ -62,6 +62,14 @@ public class CompoundEmitter extends DefaultHtmlEmitter
         this.compound = cc;
     }
 
+    public CompoundEmitter(CompoundType cc, String outputPath, boolean withSvgDiagrams,
+            UsedByCollector usedByCollector) throws ZserioEmitException
+    {
+        this(outputPath, withSvgDiagrams, usedByCollector);
+        this.compound = cc;
+        prepareForEmit();
+    }
+
     public String getName()
     {
         return compound == null ? "" : compound.getName();
@@ -266,91 +274,13 @@ public class CompoundEmitter extends DefaultHtmlEmitter
     public void emit(CompoundType compnd) throws ZserioEmitException
     {
         this.compound = compnd;
-        ResourceManager.getInstance().setCurrentOutputDir(
-                DocEmitterTools.getDirectoryNameFromType(compound));
-        docCommentTemplateData = new DocCommentTemplateData(compnd.getDocComment());
-        functions.clear();
-        for (Function fctn : compnd.getFunctions())
-        {
-            FunctionEmitter fe = new FunctionEmitter(fctn, getExpressionFormatter());
-            functions.add(fe);
-        }
-        containers.clear();
-        for (CompoundType compound : usedByCollector.getUsedByTypes(compnd, CompoundType.class))
-        {
-            CompoundEmitter ce = new CompoundEmitter(compound);
-            containers.add(ce);
-        }
-        protocols.clear();
-        for (ServiceType service : usedByCollector.getUsedByTypes(compnd, ServiceType.class))
-        {
-            protocols.add(new LinkedType(service));
-        }
-        for (PubsubType pubsub : usedByCollector.getUsedByTypes(compnd, PubsubType.class))
-        {
-            protocols.add(new LinkedType(pubsub));
-        }
+        ResourceManager.getInstance().setCurrentOutputDir(DocEmitterTools.getDirectoryNameFromType(compnd));
 
+        prepareForEmit();
         if (compnd instanceof ChoiceType)
             emitChoiceType();
         else
             emitCompoundType();
-    }
-
-    private void emitChoiceType() throws ZserioEmitException
-    {
-        try
-        {
-            Template tpl = cfg.getTemplate("doc/choice.html.ftl");
-            setCurrentFolder(CONTENT_FOLDER);
-            openOutputFileFromType(compound);
-            tpl.process(this, writer);
-        }
-        catch (IOException exception)
-        {
-            throw new ZserioEmitException(exception.getMessage());
-        }
-        catch (TemplateException exception)
-        {
-            throw new ZserioEmitException(exception.getMessage());
-        }
-        finally
-        {
-            if (writer != null)
-                writer.close();
-        }
-    }
-
-    private void emitCompoundType() throws ZserioEmitException
-    {
-        fields.clear();
-        for (Field field : compound.getFields())
-        {
-            FieldEmitter fe = new FieldEmitter(field, getExpressionFormatter());
-            fields.add(fe);
-        }
-
-        try
-        {
-            Template tpl = cfg.getTemplate("doc/compound.html.ftl");
-            setCurrentFolder(CONTENT_FOLDER);
-            openOutputFileFromType(compound);
-            tpl.process(this, writer);
-            writer.close();
-        }
-        catch (IOException exception)
-        {
-            throw new ZserioEmitException(exception.getMessage());
-        }
-        catch (TemplateException exception)
-        {
-            throw new ZserioEmitException(exception.getMessage());
-        }
-        finally
-        {
-            if (writer != null)
-                writer.close();
-        }
     }
 
     public String getVirtualTableUsing()
@@ -485,6 +415,91 @@ public class CompoundEmitter extends DefaultHtmlEmitter
     public String getCollaborationDiagramSvgFileName() throws ZserioEmitException
     {
         return (withSvgDiagrams) ? DocEmitterTools.getTypeCollaborationSvgUrl(docPath, compound) : null;
+    }
+
+    private void prepareForEmit() throws ZserioEmitException
+    {
+        docCommentTemplateData = new DocCommentTemplateData(compound.getDocComment());
+        functions.clear();
+        for (Function fctn : compound.getFunctions())
+        {
+            FunctionEmitter fe = new FunctionEmitter(fctn, getExpressionFormatter());
+            functions.add(fe);
+        }
+        containers.clear();
+        for (CompoundType compound : usedByCollector.getUsedByTypes(compound, CompoundType.class))
+        {
+            CompoundEmitter ce = new CompoundEmitter(compound);
+            containers.add(ce);
+        }
+        protocols.clear();
+        for (ServiceType service : usedByCollector.getUsedByTypes(compound, ServiceType.class))
+        {
+            protocols.add(new LinkedType(service));
+        }
+        for (PubsubType pubsub : usedByCollector.getUsedByTypes(compound, PubsubType.class))
+        {
+            protocols.add(new LinkedType(pubsub));
+        }
+
+        if (!(compound instanceof ChoiceType))
+        {
+            fields.clear();
+            for (Field field : compound.getFields())
+            {
+                FieldEmitter fe = new FieldEmitter(field, getExpressionFormatter());
+                fields.add(fe);
+            }
+        }
+    }
+
+    private void emitChoiceType() throws ZserioEmitException
+    {
+        try
+        {
+            Template tpl = cfg.getTemplate("doc/choice.html.ftl");
+            setCurrentFolder(CONTENT_FOLDER);
+            openOutputFileFromType(compound);
+            tpl.process(this, writer);
+        }
+        catch (IOException exception)
+        {
+            throw new ZserioEmitException(exception.getMessage());
+        }
+        catch (TemplateException exception)
+        {
+            throw new ZserioEmitException(exception.getMessage());
+        }
+        finally
+        {
+            if (writer != null)
+                writer.close();
+        }
+    }
+
+    private void emitCompoundType() throws ZserioEmitException
+    {
+        try
+        {
+            Template tpl = cfg.getTemplate("doc/compound.html.ftl");
+            setCurrentFolder(CONTENT_FOLDER);
+            openOutputFileFromType(compound);
+            tpl.process(this, writer);
+            writer.close();
+        }
+        catch (IOException exception)
+        {
+            throw new ZserioEmitException(exception.getMessage());
+        }
+        catch (TemplateException exception)
+        {
+            throw new ZserioEmitException(exception.getMessage());
+        }
+        finally
+        {
+            if (writer != null)
+                writer.close();
+        }
     }
 
     public class ChoiceData

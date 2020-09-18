@@ -29,9 +29,9 @@ import zserio.tools.StringJoinUtil;
 import freemarker.template.Template;
 import freemarker.template.TemplateException;
 
-public class OverviewEmitter extends DefaultHtmlEmitter
+public class TypeOverviewEmitter extends DefaultHtmlEmitter
 {
-    public OverviewEmitter(String outputPath)
+    public TypeOverviewEmitter(String outputPath)
     {
         super(outputPath);
     }
@@ -57,7 +57,7 @@ public class OverviewEmitter extends DefaultHtmlEmitter
                 }
             }
 
-            Template tpl = cfg.getTemplate("doc/overview.html.ftl");
+            Template tpl = cfg.getTemplate("doc/type_overview.html.ftl");
             openOutputFile(directory, "overview" + HTML_EXT);
 
             tpl.process(this, writer);

@@ -2,7 +2,7 @@
 <#macro linkedtype type>
   <#if !type.isBuiltIn>
 <a  class  = "referenceLink"
-    href   = "content/${type.packageName}/${type.hyperlinkName}.html"
+    href   = "content/${type.packageName}.html#${type.hyperlinkName}"
     title  = "Type: ${type.category}"
     target = "detailedDocu" >${type.name}</a>
   <#else>
@@ -15,7 +15,7 @@
   <#assign field      = flt.field>
   <#if !linkedType.isBuiltIn>
 <a  class   = "referenceLink"
-    href    = "content/${linkedType.packageName}/${linkedType.hyperlinkName}.html"
+    href    = "content/${linkedType.packageName}.html#${linkedType.hyperlinkName}"
     title   = "Type: ${linkedType.category}"
     target  = "detailedDocu" >${field.name}</a>
   <#else>
