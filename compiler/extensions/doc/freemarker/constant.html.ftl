@@ -1,7 +1,7 @@
-<#include "doc_comment.html.ftl">
-<#include "linkedtype.html.ftl">
-<#include "usedby.html.ftl">
-<#include "collaboration_diagram.html.ftl">
+<#include "doc_comment.inc.ftl">
+<#include "linkedtype.inc.ftl">
+<#include "usedby.inc.ftl">
+<#include "collaboration_diagram.inc.ftl">
 
     <div class="msgdetail" id="${anchorName}">
 <#if docComment.isDeprecated>
@@ -28,7 +28,7 @@
     </td></tr>
     </table>
 
-<@usedby_new usedByList/>
+<@used_by usedByList/>
 <#if collaborationDiagramSvgFileName??>
 
     <@collaboration_diagram collaborationDiagramSvgFileName/>

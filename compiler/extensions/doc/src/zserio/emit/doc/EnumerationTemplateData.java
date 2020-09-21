@@ -18,10 +18,17 @@ public class EnumerationTemplateData extends DocTemplateData
     public EnumerationTemplateData(TemplateDataContext context, EnumType enumType)
             throws ZserioEmitException
     {
-        super(context, enumType, enumType.getName(), new LinkedType(enumType.getTypeInstantiation()));
+        super(context, enumType, enumType.getName());
+
+        linkedType = new LinkedType(enumType.getTypeInstantiation());
 
         for (EnumItem item: enumType.getItems())
             items.add(new EnumItemTemplateData(item, context.getUsedByCollector()));
+    }
+
+    public LinkedType getLinkedType()
+    {
+        return linkedType;
     }
 
     public Iterable<EnumItemTemplateData> getItems()
@@ -131,5 +138,6 @@ public class EnumerationTemplateData extends DocTemplateData
         private final SortedSet<UsageInfoTemplateData> usageInfoList;
     }
 
+    private final LinkedType linkedType;
     private final List<EnumItemTemplateData> items = new ArrayList<EnumItemTemplateData>();
 }

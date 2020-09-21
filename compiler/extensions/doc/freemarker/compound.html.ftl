@@ -1,8 +1,8 @@
-<#include "doc_comment.html.ftl">
-<#include "linkedtype.html.ftl">
-<#include "param.html.ftl">
-<#include "usedby.html.ftl">
-<#include "collaboration_diagram.html.ftl">
+<#include "doc_comment.inc.ftl">
+<#include "linkedtype.inc.ftl">
+<#include "param.inc.ftl">
+<#include "usedby.inc.ftl">
+<#include "collaboration_diagram.inc.ftl">
 
     <div class="msgdetail" id="${linkedType.hyperlinkName}">
 <#if isDeprecated>

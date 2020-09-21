@@ -1,7 +1,6 @@
 package zserio.emit.doc;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -33,8 +32,6 @@ import zserio.ast.TypeInstantiation;
 import zserio.ast.UnionType;
 import zserio.emit.common.ExpressionFormatter;
 import zserio.emit.common.ZserioEmitException;
-import freemarker.template.Template;
-import freemarker.template.TemplateException;
 
 public class CompoundEmitter extends DefaultHtmlEmitter
 {
@@ -271,18 +268,6 @@ public class CompoundEmitter extends DefaultHtmlEmitter
 
     }; // class FieldLinkedType
 
-    public void emit(CompoundType compnd) throws ZserioEmitException
-    {
-        this.compound = compnd;
-        ResourceManager.getInstance().setCurrentOutputDir(DocEmitterTools.getDirectoryNameFromType(compnd));
-
-        prepareForEmit();
-        if (compnd instanceof ChoiceType)
-            emitChoiceType();
-        else
-            emitCompoundType();
-    }
-
     public String getVirtualTableUsing()
     {
         return ( compound instanceof SqlTableType) ? ((SqlTableType) compound).getVirtualTableUsingString() : null;
@@ -450,55 +435,6 @@ public class CompoundEmitter extends DefaultHtmlEmitter
                 FieldEmitter fe = new FieldEmitter(field, getExpressionFormatter());
                 fields.add(fe);
             }
-        }
-    }
-
-    private void emitChoiceType() throws ZserioEmitException
-    {
-        try
-        {
-            Template tpl = cfg.getTemplate("doc/choice.html.ftl");
-            setCurrentFolder(CONTENT_FOLDER);
-            openOutputFileFromType(compound);
-            tpl.process(this, writer);
-        }
-        catch (IOException exception)
-        {
-            throw new ZserioEmitException(exception.getMessage());
-        }
-        catch (TemplateException exception)
-        {
-            throw new ZserioEmitException(exception.getMessage());
-        }
-        finally
-        {
-            if (writer != null)
-                writer.close();
-        }
-    }
-
-    private void emitCompoundType() throws ZserioEmitException
-    {
-        try
-        {
-            Template tpl = cfg.getTemplate("doc/compound.html.ftl");
-            setCurrentFolder(CONTENT_FOLDER);
-            openOutputFileFromType(compound);
-            tpl.process(this, writer);
-            writer.close();
-        }
-        catch (IOException exception)
-        {
-            throw new ZserioEmitException(exception.getMessage());
-        }
-        catch (TemplateException exception)
-        {
-            throw new ZserioEmitException(exception.getMessage());
-        }
-        finally
-        {
-            if (writer != null)
-                writer.close();
         }
     }
 

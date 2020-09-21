@@ -1,4 +1,4 @@
-<#include "doc_comment.html.ftl">
+<#include "doc_comment.inc.ftl">
 
 <html>
   <head>

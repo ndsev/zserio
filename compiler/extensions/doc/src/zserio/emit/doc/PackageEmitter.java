@@ -79,13 +79,15 @@ public class PackageEmitter extends DefaultHtmlEmitter
     @Override
     public void beginStructure(StructureType structureType) throws ZserioEmitException
     {
-        processCompound(structureType);
+        final CompoundTypeTemplateData templateData = new CompoundTypeTemplateData(context, structureType);
+        processTemplate("doc/structure.html.ftl", templateData);
     }
 
     @Override
     public void beginUnion(UnionType unionType) throws ZserioEmitException
     {
-        processCompound(unionType);
+        final CompoundTypeTemplateData templateData = new CompoundTypeTemplateData(context, unionType);
+        processTemplate("doc/union.html.ftl", templateData);
     }
 
     @Override

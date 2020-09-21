@@ -11,7 +11,9 @@ public class SubtypeTemplateData extends DocTemplateData
 {
     public SubtypeTemplateData(TemplateDataContext context, Subtype subtype) throws ZserioEmitException
     {
-        super(context, subtype, subtype.getName(), new LinkedType(subtype.getTypeReference()));
+        super(context, subtype, subtype.getName());
+
+        linkedType = new LinkedType(subtype.getTypeReference());
 
         for (Constant constant : context.getUsedByCollector().getUsedByTypes(subtype, Constant.class))
         {
@@ -19,10 +21,16 @@ public class SubtypeTemplateData extends DocTemplateData
         }
     }
 
+    public LinkedType getLinkedType()
+    {
+        return linkedType;
+    }
+
     public Iterable<LinkedType> getConstInstances()
     {
         return constInstances;
     }
 
+    private final LinkedType linkedType;
     private final List<LinkedType> constInstances = new ArrayList<LinkedType>();
 };

@@ -9,8 +9,7 @@ import zserio.emit.common.ZserioEmitException;
 
 public class DocTemplateData
 {
-    public DocTemplateData(TemplateDataContext context, DocumentableAstNode astNode, String name,
-            LinkedType linkedType)
+    public DocTemplateData(TemplateDataContext context, DocumentableAstNode astNode, String name)
             throws ZserioEmitException
     {
         this.context = context;
@@ -20,8 +19,6 @@ public class DocTemplateData
         this.name = name;
 
         this.anchorName = new LinkedType(astNode).getHyperlinkName();
-
-        this.linkedType = linkedType;
 
         this.collaborationDiagramSvgUrl = context.getWithSvgDiagrams()
                 ? DocEmitterTools.getTypeCollaborationSvgUrl(context.getOutputPath(), astNode)
@@ -52,11 +49,6 @@ public class DocTemplateData
         return anchorName;
     }
 
-    public LinkedType getLinkedType()
-    {
-        return linkedType;
-    }
-
     public String getCollaborationDiagramSvgUrl()
     {
         return collaborationDiagramSvgUrl;
@@ -72,7 +64,6 @@ public class DocTemplateData
     private final DocCommentTemplateData docComment;
     private final String name;
     private final String anchorName;
-    private final LinkedType linkedType;
 
     private final String collaborationDiagramSvgUrl;
     private final List<LinkedType> usedByList= new ArrayList<LinkedType>();

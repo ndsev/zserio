@@ -8,9 +8,16 @@ public class ConstantTemplateData extends DocTemplateData
     public ConstantTemplateData(TemplateDataContext context, Constant constant)
             throws ZserioEmitException
     {
-        super(context, constant, constant.getName(), new LinkedType(constant.getTypeInstantiation()));
+        super(context, constant, constant.getName());
 
-        value = context.getExpressionFormatter().formatGetter(constant.getValueExpression());
+        linkedType = new LinkedType(constant.getTypeInstantiation());
+
+        value = context.getDocExpressionFormatter().formatExpression(constant.getValueExpression());
+    }
+
+    public LinkedType getLinkedType()
+    {
+        return linkedType;
     }
 
     public String getValue()
@@ -18,5 +25,6 @@ public class ConstantTemplateData extends DocTemplateData
         return value;
     }
 
+    private final LinkedType linkedType;
     private final String value;
 }

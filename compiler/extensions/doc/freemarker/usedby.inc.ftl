@@ -21,8 +21,8 @@
     </#if>
 </#macro>
 
-<#macro usedby_new linkedTypes>
-    <#if linkedTypes??>
+<#macro used_by linkedTypes>
+    <#if linkedTypes?has_content>
     <h4>Used By</h4>
     <table>
       <tr><td class="docuCode">
