@@ -51,9 +51,8 @@ public class PackageEmitter extends DefaultHtmlEmitter
     @Override
     public void beginConst(Constant constant) throws ZserioEmitException
     {
-        final ConstantEmitter templateData = new ConstantEmitter(constant,
-                context.getOutputPath(), context.getWithSvgDiagrams(), context.getUsedByCollector());
-        processTemplate("doc/const.html.ftl", templateData);
+        final ConstantTemplateData templateData = new ConstantTemplateData(context, constant);
+        processTemplate("doc/constant.html.ftl", templateData);
     }
 
     @Override

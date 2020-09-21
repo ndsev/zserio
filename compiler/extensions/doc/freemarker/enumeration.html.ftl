@@ -8,7 +8,7 @@
       <span class="deprecated">(deprecated) </span>
       <del>
 </#if>
-        <i>enum</i> ${type.name}
+        <i>enum</i> ${name}
 <#if docComment.isDeprecated>
       </del>
 </#if>
@@ -20,7 +20,7 @@
     <tr><td class="docuCode">
       <table>
 
-      <tr><td colspan=3>enum <@linkedtype type/> ${name}</td></tr>
+      <tr><td colspan=3>enum <@linkedtype linkedType/> ${name}</td></tr>
       <tr><td>{</td><td rowspan="${items?size+1}">&nbsp;</td><td></td></tr>
 <#list items as item>
           <tr>

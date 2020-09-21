@@ -18,38 +18,10 @@ public class BitmaskTemplateData extends DocTemplateData
     public BitmaskTemplateData(TemplateDataContext context, BitmaskType bitmaskType)
             throws ZserioEmitException
     {
-        super(context, bitmaskType);
-
-        docComment = new DocCommentTemplateData(bitmaskType.getDocComment());
-
-        name = bitmaskType.getName();
-
-        type = new LinkedType(bitmaskType.getTypeInstantiation());
-
-        anchorName = new LinkedType(bitmaskType).getHyperlinkName();
+        super(context, bitmaskType, bitmaskType.getName(), new LinkedType(bitmaskType.getTypeInstantiation()));
 
         for (BitmaskValue value : bitmaskType.getValues())
             values.add(new BitmaskValueTemplateData(value, context.getUsedByCollector()));
-    }
-
-    public DocCommentTemplateData getDocComment()
-    {
-        return docComment;
-    }
-
-    public String getName()
-    {
-        return name;
-    }
-
-    public LinkedType getType()
-    {
-        return type;
-    }
-
-    public String getAnchorName()
-    {
-        return anchorName;
     }
 
     public Iterable<BitmaskValueTemplateData> getValues()
@@ -160,9 +132,5 @@ public class BitmaskTemplateData extends DocTemplateData
         private final SortedSet<UsageInfoTemplateData> usageInfoList;
     }
 
-    private final DocCommentTemplateData docComment;
-    private final String name;
-    private final LinkedType type;
-    private final String anchorName;
     private final List<BitmaskValueTemplateData> values = new ArrayList<BitmaskValueTemplateData>();
 }

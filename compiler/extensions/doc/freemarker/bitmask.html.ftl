@@ -8,7 +8,7 @@
       <span class="deprecated">(deprecated) </span>
       <del>
 </#if>
-        <i>bitmask</i> ${type.name}
+        <i>bitmask</i> ${name}
 <#if docComment.isDeprecated>
       </del>
 </#if>
@@ -20,7 +20,7 @@
     <tr><td class="docuCode">
       <table>
 
-      <tr><td colspan=3>bitmask <@linkedtype type/> ${name}</td></tr>
+      <tr><td colspan=3>bitmask <@linkedtype linkedType/> ${name}</td></tr>
       <tr><td>{</td><td rowspan="${values?size+1}">&nbsp;</td><td></td></tr>
 <#list values as value>
           <tr>

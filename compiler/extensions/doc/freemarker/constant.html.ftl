@@ -3,13 +3,13 @@
 <#include "usedby.html.ftl">
 <#include "collaboration_diagram.html.ftl">
 
-    <div class="msgdetail" id="${linkedType.hyperlinkName}">
-<#if isDeprecated>
+    <div class="msgdetail" id="${anchorName}">
+<#if docComment.isDeprecated>
       <span class="deprecated">(deprecated) </span>
       <del>
 </#if>
-      <i>const</i> ${typeName}
-<#if isDeprecated>
+      <i>const</i> ${name}
+<#if docComment.isDeprecated>
       </del>
 </#if>
     </div>
@@ -21,14 +21,14 @@
       <table>
         <tr>
           <td colspan=3>
-            const <@linkedtype constType/> ${typeName} = ${typeValue};
+            const <@linkedtype linkedType/> ${name} = ${value};
           </td>
         </tr>
       </table>
     </td></tr>
     </table>
 
-<@usedby containers services/>
+<@usedby_new usedByTypes/>
 <#if collaborationDiagramSvgFileName??>
 
     <@collaboration_diagram collaborationDiagramSvgFileName/>

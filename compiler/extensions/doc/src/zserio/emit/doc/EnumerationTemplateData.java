@@ -18,38 +18,10 @@ public class EnumerationTemplateData extends DocTemplateData
     public EnumerationTemplateData(TemplateDataContext context, EnumType enumType)
             throws ZserioEmitException
     {
-        super(context, enumType);
-
-        docComment = new DocCommentTemplateData(enumType.getDocComment());
-
-        name = enumType.getName();
-
-        type = new LinkedType(enumType.getTypeInstantiation());
-
-        anchorName = new LinkedType(enumType).getHyperlinkName();
+        super(context, enumType, enumType.getName(), new LinkedType(enumType.getTypeInstantiation()));
 
         for (EnumItem item: enumType.getItems())
             items.add(new EnumItemTemplateData(item, context.getUsedByCollector()));
-    }
-
-    public DocCommentTemplateData getDocComment()
-    {
-        return docComment;
-    }
-
-    public String getName()
-    {
-        return name;
-    }
-
-    public LinkedType getType()
-    {
-        return type;
-    }
-
-    public String getAnchorName()
-    {
-        return anchorName;
     }
 
     public Iterable<EnumItemTemplateData> getItems()
@@ -159,9 +131,5 @@ public class EnumerationTemplateData extends DocTemplateData
         private final SortedSet<UsageInfoTemplateData> usageInfoList;
     }
 
-    private final DocCommentTemplateData docComment;
-    private final String name;
-    private final LinkedType type;
-    private final String anchorName;
     private final List<EnumItemTemplateData> items = new ArrayList<EnumItemTemplateData>();
 }
