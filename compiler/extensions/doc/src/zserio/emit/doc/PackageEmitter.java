@@ -67,8 +67,7 @@ public class PackageEmitter extends DefaultHtmlEmitter
     @Override
     public void beginEnumeration(EnumType enumType) throws ZserioEmitException
     {
-        final EnumerationEmitter templateData = new EnumerationEmitter(enumType,
-                context.getOutputPath(), context.getWithSvgDiagrams(), context.getUsedByCollector());
+        final EnumerationTemplateData templateData = new EnumerationTemplateData(context, enumType);
         processTemplate("doc/enumeration.html.ftl", templateData);
     }
 
