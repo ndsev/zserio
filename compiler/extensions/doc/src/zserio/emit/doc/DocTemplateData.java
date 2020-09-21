@@ -3,7 +3,7 @@ package zserio.emit.doc;
 import java.util.ArrayList;
 import java.util.List;
 
-import zserio.ast.CompoundType;
+import zserio.ast.AstNode;
 import zserio.ast.DocumentableAstNode;
 import zserio.emit.common.ZserioEmitException;
 
@@ -28,8 +28,8 @@ public class DocTemplateData
                 : null;
 
         final UsedByCollector usedByCollector = context.getUsedByCollector();
-        for (CompoundType compoundType : usedByCollector.getUsedByTypes(astNode, CompoundType.class))
-            usedByTypes.add(new LinkedType(compoundType));
+        for (AstNode usedByNode : usedByCollector.getUsedByTypes(astNode, AstNode.class))
+            usedByList.add(new LinkedType(usedByNode));
     }
 
     public TemplateDataContext getContext()
@@ -62,9 +62,9 @@ public class DocTemplateData
         return collaborationDiagramSvgUrl;
     }
 
-    public Iterable<LinkedType> getUsedByTypes()
+    public Iterable<LinkedType> getUsedByList()
     {
-        return usedByTypes;
+        return usedByList;
     }
 
     private final TemplateDataContext context;
@@ -75,5 +75,5 @@ public class DocTemplateData
     private final LinkedType linkedType;
 
     private final String collaborationDiagramSvgUrl;
-    private final List<LinkedType> usedByTypes = new ArrayList<LinkedType>();
+    private final List<LinkedType> usedByList= new ArrayList<LinkedType>();
 }

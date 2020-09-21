@@ -28,7 +28,7 @@
     </td></tr>
     </table>
 
-<@usedby_new usedByTypes/>
+<@usedby_new usedByList/>
 <#if collaborationDiagramSvgFileName??>
 
     <@collaboration_diagram collaborationDiagramSvgFileName/>

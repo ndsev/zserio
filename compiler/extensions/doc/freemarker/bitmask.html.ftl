@@ -49,7 +49,7 @@
 </#list>
     </dl>
 
-<@usedby_new usedByTypes/>
+<@usedby_new usedByList/>
 <#if collaborationDiagramSvgUrl??>
 
     <@collaboration_diagram collaborationDiagramSvgUrl/>

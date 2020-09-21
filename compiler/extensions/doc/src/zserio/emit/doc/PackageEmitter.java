@@ -58,8 +58,7 @@ public class PackageEmitter extends DefaultHtmlEmitter
     @Override
     public void beginSubtype(Subtype subtype) throws ZserioEmitException
     {
-        final SubtypeEmitter templateData = new SubtypeEmitter(subtype,
-                context.getOutputPath(), context.getWithSvgDiagrams(), context.getUsedByCollector());
+        final SubtypeTemplateData templateData = new SubtypeTemplateData(context, subtype);
         processTemplate("doc/subtype.html.ftl", templateData);
     }
 
