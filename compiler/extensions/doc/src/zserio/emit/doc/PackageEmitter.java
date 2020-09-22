@@ -7,7 +7,6 @@ import freemarker.template.Template;
 import freemarker.template.TemplateException;
 import zserio.ast.BitmaskType;
 import zserio.ast.ChoiceType;
-import zserio.ast.CompoundType;
 import zserio.ast.Constant;
 import zserio.ast.EnumType;
 import zserio.ast.Package;
@@ -100,13 +99,15 @@ public class PackageEmitter extends DefaultHtmlEmitter
     @Override
     public void beginSqlDatabase(SqlDatabaseType sqlDatabaseType) throws ZserioEmitException
     {
-        processCompound(sqlDatabaseType);
+        final CompoundTypeTemplateData templateData = new CompoundTypeTemplateData(context, sqlDatabaseType);
+        processTemplate("doc/compound.html.ftl", templateData);
     }
 
     @Override
     public void beginSqlTable(SqlTableType sqlTableType) throws ZserioEmitException
     {
-        processCompound(sqlTableType);
+        final SqlTableTemplateData templateData = new SqlTableTemplateData(context, sqlTableType);
+        processTemplate("doc/sql_table.html.ftl", templateData);
     }
 
     @Override
@@ -123,13 +124,6 @@ public class PackageEmitter extends DefaultHtmlEmitter
         final PubsubTemplateData templateData =
                 new PubsubTemplateData(getExpressionFormatter(), pubsubType, context);
         processTemplate("doc/pubsub.html.ftl", templateData);
-    }
-
-    private void processCompound(CompoundType compoundType) throws ZserioEmitException
-    {
-        final CompoundEmitter templateData = new CompoundEmitter(compoundType,
-                context.getOutputPath(), context.getWithSvgDiagrams(), context.getUsedByCollector());
-        processTemplate("doc/compound.html.ftl", templateData);
     }
 
     private void processTemplate(String templateFile, Object templateData) throws ZserioEmitException
