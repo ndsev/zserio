@@ -93,8 +93,7 @@ public class PackageEmitter extends DefaultHtmlEmitter
     @Override
     public void beginChoice(ChoiceType choiceType) throws ZserioEmitException
     {
-        final CompoundEmitter templateData = new CompoundEmitter(choiceType,
-                context.getOutputPath(), context.getWithSvgDiagrams(), context.getUsedByCollector());
+        final ChoiceTemplateData templateData = new ChoiceTemplateData(context, choiceType);
         processTemplate("doc/choice.html.ftl", templateData);
     }
 

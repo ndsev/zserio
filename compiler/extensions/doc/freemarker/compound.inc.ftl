@@ -15,6 +15,13 @@
         </#if>
         <tr class="codeMember">
           <td></td>
+          <@compound_field field/>
+          <td></td>
+        </tr>
+    </#list>
+</#macro>
+
+<#macro compound_field field>
           <td valign="top" id="tabIndent"><@linkedtype field.linkedType/><#rt>
             <#lt><@compound_field_arguments field.arguments/></td>
           <td valign="bottom">
@@ -41,24 +48,22 @@
             <#elseif field.isArrayImplicit>
           <td valign="bottom"><i>(implicit)</i></td>
             </#if>
-          <td></td>
-        </tr>
-    </#list>
 </#macro>
 
-<#macro compound_functions functions>
+<#macro compound_functions functions numCols=3>
     <#list functions as function>
         <tr>
-          <td colspan=3 valign="top" id="tabIndent">function ${function.returnTypeName} ${function.name}()</td>
+          <td colspan=${numCols} valign="top" id="tabIndent">function ${function.returnTypeName} ${function.name}()</td>
         </tr>
         <tr>
-          <td colspan=3 id="tabIndent">{</td>
+          <td colspan=${numCols} id="tabIndent">{</td>
         </tr>
         <tr>
-          <td></td>
+          <#if numCols != 4><td></td></#if><#-- TODO[Mi-L@]: Hack for choices! -->
           <td valign="top" id="tabIndent2">return</td>
-          <td>${function.resultExpression};</td></tr>
-        <tr><td colspan=3 id="tabIndent">}</td></tr>
+          <td>${function.resultExpression};</td>
+        </tr>
+        <tr><td colspan=${numCols} id="tabIndent">}</td></tr>
     </#list>
 </#macro>
 

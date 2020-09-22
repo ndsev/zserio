@@ -1,64 +1,59 @@
 <#include "doc_comment.inc.ftl">
+<#include "compound.inc.ftl">
 <#include "linkedtype.inc.ftl">
-<#include "param.inc.ftl">
 <#include "usedby.inc.ftl">
 <#include "collaboration_diagram.inc.ftl">
 
-    <div class="msgdetail" id="${linkedType.hyperlinkName}">
-<#if isDeprecated>
+    <div class="msgdetail" id="${anchorName}">
+<#if docComment.isDeprecated>
       <span class="deprecated">(deprecated) </span>
       <del>
 </#if>
-        <i>${categoryPlainText}</i> ${type.name}
-<#if isDeprecated>
+        <i>Choice</i> ${name}
+<#if docComment.isDeprecated>
       </del>
 </#if>
     </div>
-    <p/>
+
     <@doc_comment docComment/>
 
-    <#if choiceData.defaultMember??>
-        <#assign rowspanNumber=((choiceData.caseMemberList?size+1)*2)+1/>
+    <#if defaultMember??>
+        <#assign rowspanNumber=((caseMemberList?size+1)*2)+1/>
     <#else>
-        <#assign rowspanNumber=(choiceData.caseMemberList?size*2)+1/>
+        <#assign rowspanNumber=(caseMemberList?size*2)+1/>
     </#if>
     <table>
     <tr><td class="docuCode">
-      <table style="empty-cells:show">
+      <table style="empty-cells:show;">
       <tbody id="tabIndent">
-        <tr><td colspan=4>${categoryKeyword} ${type.name}<@parameterlist type/> on ${choiceData.selector}</td></tr>
-        <tr><td colspan=2>{</td>
-            <td rowspan="${rowspanNumber}">&nbsp;</td>
-            <td></td></tr>
-<#list choiceData.caseMemberList as caseMember>
+        <tr>
+          <td colspan=4>choice ${name}<@compound_parameters parameters/> on ${selectorExpression}</td>
+        </tr>
+        <tr>
+          <td colspan=2>{</td>
+          <td rowspan="${rowspanNumber}">&nbsp;</td>
+          <td></td>
+        </tr>
+<#list caseMemberList as caseMember>
         <tr>
           <td valign="top" id="tabIndent">
-        <#list caseMember.caseList as case>
+    <#list caseMember.caseList as case>
             <a name="casedef_${case.expression}"></a>
             <a href="#case_${case.expression}" class="fieldLink">case ${case.expression}</a>:<br/>
-        </#list>
+    </#list>
           </td>
           <td colspan=3></td>
         </tr>
         <tr>
           <td></td>
-    <#if caseMember.compoundField?has_content>
-          <td valign="bottom">
-      <#assign fname = caseMember.compoundField.name>
-      <#assign array = getFieldEmitter(caseMember.compoundField).arrayRange!"">
-      <#assign opt = caseMember.compoundField.optionalClause!"">
-      <#assign c = caseMember.compoundField.constraint!"">
-            <@linkedtype toLinkedType(caseMember.compoundField.typeInstantiation)/><@arglist caseMember.compoundField/>
-          </td>
-          <td valign="bottom">
-            <a href="#${fname}" class="fieldLink">${fname}</a>${array}${opt}${c};
-          </td>
+    <#if caseMember.field??>
+          <@compound_field caseMember.field/>
     <#else>
           <td colspan=2>;</td>
     </#if>
         </tr>
 </#list>
-<#if choiceData.defaultMember??>
+<#if defaultMember??>
         <tr>
           <td valign="top" id="tabIndent">
             <a href="#case_default" class="fieldLink">default</a>:<br/>
@@ -67,38 +62,16 @@
         </tr>
         <tr>
           <td></td>
-    <#if choiceData.defaultMember.compoundField?has_content>
-          <td valign="bottom">
-      <#assign fname = choiceData.defaultMember.compoundField.name>
-      <#assign array = getFieldEmitter(choiceData.defaultMember.compoundField).arrayRange!"">
-      <#assign opt = choiceData.defaultMember.compoundField.optionalClause!"">
-      <#assign c = choiceData.defaultMember.compoundField.constraint!"">
-            <@linkedtype toLinkedType(choiceData.defaultMember.compoundField.typeInstantiation)/><@arglist choiceData.defaultMember.compoundField/>
-          </td>
-          <td valign="bottom">
-            <a href="#${fname}" class="fieldLink">${fname}</a>${array}${opt}${c};
-          </td>
+    <#if defaultMember.field??>
+          <@compound_field defaultMember.field/>
     <#else>
           <td colspan=2>;</td>
     </#if>
         </tr>
 </#if>
 <#if functions?has_content>
-      </tbody>
-      </table>
-      <table>
-      <tbody id="tabIndent">
-  <#list functions as function>
         <tr><td colspan=4 id="tabIndent">&nbsp;</td></tr>
-        <tr>
-          <td colspan=4 valign="top" id="tabIndent">function ${function.returnTypeName} ${function.funtionType.name}()</td>
-        </tr>
-        <tr><td colspan=4 id="tabIndent">{</td></tr>
-        <tr>
-          <td valign="top" id="tabIndent2">return</td>
-          <td colspan=3>${function.result};</td></tr>
-        <tr><td colspan=4 id="tabIndent">}</td></tr>
-  </#list>
+        <@compound_functions functions 4/>
 </#if>
         <tr><td colspan=4>};</td></tr>
       </tbody>
@@ -109,8 +82,7 @@
     <h2 class="msgdetail">Case and Member Details</h2>
 
     <dl>
-<#list choiceData.caseMemberList as caseMember>
-
+<#list caseMemberList as caseMember>
         <dt class="memberItem">
             Case(s):
         </dt>
@@ -134,12 +106,12 @@
       </dt>
       <dd>
           <dl>
-  <#if caseMember.compoundField?has_content>
+  <#if caseMember.field??>
               <dt class="memberItem">
-                  <a name="${caseMember.compoundField.name}">${caseMember.compoundField.name}:</a>
+                  <a name="${caseMember.field.name}">${caseMember.field.name}:</a>
               </dt>
               <dd class="memberDetail">
-                  <@doc_comment getFieldDocComment(caseMember.compoundField)/>
+                  <@doc_comment caseMember.field.docComment/>
               </dd>
   <#else>
               <dt class="memberItem">
@@ -155,7 +127,7 @@
         <br />
       </dd>
 </#list>
-<#if choiceData.defaultMember??>
+<#if defaultMember??>
         <dt class="memberItem">
             Case:
         </dt>
@@ -165,7 +137,7 @@
                     <a name="case_default">default</a>
                 </dt>
                 <dd class="memberDetail">
-                    <@doc_comment choiceData.defaultMember.docComment/>
+                    <@doc_comment defaultMember.docComment/>
                 </dd>
             </dl>
         </dd>
@@ -174,12 +146,12 @@
       </dt>
       <dd>
           <dl>
-  <#if choiceData.defaultMember.compoundField?has_content>
+  <#if defaultMember.field??>
               <dt class="memberItem">
-                  <a name="${choiceData.defaultMember.compoundField.name}">${choiceData.defaultMember.compoundField.name}:</a>
+                  <a name="${defaultMember.field.name}">${defaultMember.field.name}:</a>
               </dt>
               <dd class="memberDetail">
-                  <@doc_comment getFieldDocComment(choiceData.defaultMember.compoundField)/>
+                  <@doc_comment defaultMember.field.docComment/>
               </dd>
   <#else>
               <dt class="memberItem">
@@ -197,7 +169,7 @@
 </#if>
     </dl>
 
-<@usedby containers services/>
+<@used_by usedByList/>
 <#if collaborationDiagramSvgFileName??>
 
     <@collaboration_diagram collaborationDiagramSvgFileName/>

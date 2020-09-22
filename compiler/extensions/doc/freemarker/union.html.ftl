@@ -39,5 +39,6 @@
 
     <@used_by usedByList/>
 <#if collaborationDiagramSvgFileName??>
+
     <@collaboration_diagram collaborationDiagramSvgFileName/>
 </#if>
