@@ -100,7 +100,7 @@ public class PackageEmitter extends DefaultHtmlEmitter
     public void beginSqlDatabase(SqlDatabaseType sqlDatabaseType) throws ZserioEmitException
     {
         final CompoundTypeTemplateData templateData = new CompoundTypeTemplateData(context, sqlDatabaseType);
-        processTemplate("doc/compound.html.ftl", templateData);
+        processTemplate("doc/sql_database.html.ftl", templateData);
     }
 
     @Override

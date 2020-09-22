@@ -9,7 +9,7 @@
       <span class="deprecated">(deprecated) </span>
       <del>
 </#if>
-        <i>Sql Table<#if virtualTableUsing?has_content> VIRTUAL</#if></i> ${name}<#rt>
+        <i>SQL Table<#if virtualTableUsing?has_content> VIRTUAL</#if></i> ${name}<#rt>
           <#lt><#if virtualTableUsing?has_content> <i>USING</i> ${virtualTableUsing}</#if>
 <#if docComment.isDeprecated>
       </del>
@@ -25,15 +25,11 @@
         <tr><td colspan=4>table ${name}<@compound_parameters parameters/></td></tr>
         <tr><td colspan=4>{</td></tr>
         <@compound_fields fields/>
-<#if functions?has_content>
-        <tr><td colspan=3 id="tabIndent">&nbsp;</td></tr>
-        <@compound_functions functions/>
-</#if>
-        <tr><td colspan=3>};</td></tr>
+        <tr><td colspan=4>};</td></tr>
 <#if sqlConstraint?has_content>
-        <tr></tr>
-        <tr><td colspan=3>${sqlConstraint};</td></tr>
-        <tr></tr>
+        <tr><td></td></tr>
+        <tr><td colspan=4>${sqlConstraint};</td></tr>
+        <tr><td></td></tr>
 </#if>
       </tbody>
       </table>

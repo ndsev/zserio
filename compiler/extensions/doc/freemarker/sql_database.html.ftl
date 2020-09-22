@@ -9,7 +9,7 @@
       <span class="deprecated">(deprecated) </span>
       <del>
 </#if>
-        <i>Structure</i> ${name}
+        <i>SQL Database</i> ${name}
 <#if docComment.isDeprecated>
       </del>
 </#if>
@@ -21,13 +21,9 @@
     <tr><td class="docuCode">
       <table>
       <tbody id="tabIndent">
-        <tr><td colspan=4>struct ${name}<@compound_parameters parameters/></td></tr>
+        <tr><td colspan=4>sql_database ${name}</td></tr>
         <tr><td colspan=4>{</td></tr>
         <@compound_fields fields/>
-<#if functions?has_content>
-        <tr><td colspan=4 id="tabIndent">&nbsp;</td></tr>
-        <@compound_functions functions/>
-</#if>
         <tr><td colspan=4>};</td></tr>
       </tbody>
       </table>
