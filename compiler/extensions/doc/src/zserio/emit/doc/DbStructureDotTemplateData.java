@@ -11,25 +11,13 @@ import zserio.ast.SqlDatabaseType;
 import zserio.ast.SqlTableType;
 import zserio.emit.common.ZserioEmitException;
 
-/**
- * The database structure data used for FreeMarker template during DOT generation.
- */
 public class DbStructureDotTemplateData
 {
-    /**
-     * Constructor.
-     *
-     * @param databaseType           The type of the database for which to generated structure diagram.
-     * @param databaseIndex          The index of the database in list of all SQL database zserio types.
-     * @param docRootPath            The root path of the generated documentation for links or null if links
-     *                               are not required.
-     *
-     * @throws ZserioEmitException Throws in case of any internal error.
-     */
-    public DbStructureDotTemplateData(SqlDatabaseType databaseType, String databaseColor, String docRootPath)
+    public DbStructureDotTemplateData(SqlDatabaseType databaseType, int databaseIndex, String docRootPath)
             throws ZserioEmitException
     {
         // create database with proper color
+        final String databaseColor = DocEmitterTools.getDatabaseColor(databaseIndex);
         database = new Database(databaseType, docRootPath, databaseColor);
 
         final Iterable<Field> databaseFieldList = databaseType.getFields();
@@ -37,25 +25,16 @@ public class DbStructureDotTemplateData
             database.addTable(databaseField.getName());
     }
 
-    /**
-     * Returns the name of the database for which the structure diagram is generated.
-     */
     public String getDatabaseName()
     {
         return database.getName();
     }
 
-    /**
-     * Returns the databases.
-     */
     public Database getDatabase()
     {
         return database;
     }
 
-    /**
-     * Helper class to model the database used for FreeMarker template.
-     */
     public static class Database
     {
         public Database(SqlDatabaseType databaseType, String docRootPath, String colorName)
@@ -112,17 +91,14 @@ public class DbStructureDotTemplateData
             return nameToTableMap.values();
         }
 
-        private final String                    name;
-        private final String                    docUrl;
-        private final String                    colorName;
+        private final String name;
+        private final String docUrl;
+        private final String colorName;
         private final Map<String, SqlTableType> nameToSqlTableTypeMap;
-        private final Map<String, Table>        nameToTableMap;
-        private final String                    docRootPath;
+        private final Map<String, Table> nameToTableMap;
+        private final String docRootPath;
     }
 
-    /**
-     * Helper class to model the table stored in database used for FreeMarker template.
-     */
     public static class Table
     {
         public Table(SqlTableType tableType, String name, String docUrl)
@@ -163,17 +139,14 @@ public class DbStructureDotTemplateData
             return fieldList;
         }
 
-        private final String    name;
-        private final String    typeName;
-        private final String    packageName;
-        private final String    docUrl;
+        private final String name;
+        private final String typeName;
+        private final String packageName;
+        private final String docUrl;
 
-        private final List<TableFieldTemplateData>      fieldList;
+        private final List<TableFieldTemplateData> fieldList;
     }
 
-    /**
-     * Helper class to model the table field used for FreeMarker template.
-     */
     public static class TableFieldTemplateData
     {
         public TableFieldTemplateData(Field fieldType, boolean isPrimaryKey)
@@ -204,11 +177,11 @@ public class DbStructureDotTemplateData
             return isNullAllowed;
         }
 
-        private final String    name;
-        private final String    typeName;
-        private final boolean   isPrimaryKey;
-        private final boolean   isNullAllowed;
+        private final String name;
+        private final String typeName;
+        private final boolean isPrimaryKey;
+        private final boolean isNullAllowed;
     }
 
-    private final Database            database;
+    private final Database database;
 }

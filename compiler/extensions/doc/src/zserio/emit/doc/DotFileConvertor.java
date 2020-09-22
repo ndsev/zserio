@@ -25,9 +25,9 @@ public class DotFileConvertor
     /**
      * Converts the given dot file into svg file.
      *
-     * @param dotExecutable     Dot executable to use.
-     * @param inputDotFile      Name of the dot file to convert.
-     * @param outputSvgFile     Name of the svg file to generate.
+     * @param dotExecutable Dot executable to use.
+     * @param inputDotFile Name of the dot file to convert.
+     * @param outputSvgFile Name of the svg file to generate.
      *
      * @return True in case of success, otherwise false.
      */

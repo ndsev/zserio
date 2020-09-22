@@ -49,7 +49,7 @@
     <h2>Packages</h2>
     <ul id="all_packages" class="packagelist" onclick="showAllPackages(this);"><li>all packages</li></ul>
     <ul class="packagelist"><li><a href="deprecated.html" title="Deprecated elements" target="detailedDocu" onclick="showDeprecated(this);">deprecated</a></li></ul>
-<#list packages as pkg>
+<#list packageList as pkg>
     <ul class="packagelist"><li><#rt>
     <#t><a href="content/${pkg}.html" title="Package: ${pkg}" target="detailedDocu" onclick="showPackage(this);">${pkg}</a>
     <#lt></li></ul>

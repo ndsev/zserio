@@ -1,39 +1,29 @@
 package zserio.emit.doc;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.Map;
 import java.util.Set;
 
 import zserio.ast.AstNode;
 import zserio.ast.Root;
 import zserio.emit.common.ZserioEmitException;
-import freemarker.template.Configuration;
-import freemarker.template.Template;
-import freemarker.template.TemplateException;
+import zserio.tools.Parameters;
+import zserio.tools.StringJoinUtil;
 
 /**
  * Emits type collaboration diagrams in DOT format per each Zserio type.
  */
-public class TypeCollaborationDotEmitter extends DefaultDocEmitter
+public class TypeCollaborationDotEmitter extends DotDefaultEmitter
 {
-    /**
-     * Constructor.
-     *
-     * @param docPath         Path to the root of generated documentation.
-     * @param dotLinksPrefix  Prefix for doc links or null to use links to locally generated doc.
-     * @param withSvgDiagrams True to enable dot files conversion to svg format.
-     * @param dotExecutable   Dot executable to use for conversion or null to use dot exe on path.
-     * @param usedByCollector Used by collector to use.
-     */
-    public TypeCollaborationDotEmitter(String docPath, String dotLinksPrefix, boolean withSvgDiagrams,
-                                       String dotExecutable, UsedByCollector usedByCollector)
+    public TypeCollaborationDotEmitter(String outputPathName, Parameters extensionParameters,
+            String dotLinksPrefix, boolean withSvgDiagrams, String dotExecutable,
+            UsedByCollector usedByCollector)
     {
-        this.docPath = docPath;
-        this.dotLinksPrefix = (dotLinksPrefix == null) ? "../.." : dotLinksPrefix;
-        this.withSvgDiagrams = withSvgDiagrams;
-        this.dotExecutable = dotExecutable;
-        this.usedByCollector = usedByCollector;
+        // TODO[mikir] to re-think dotLinksPrefix, it won't work
+        super(extensionParameters, (dotLinksPrefix == null) ? "../.." : dotLinksPrefix, withSvgDiagrams,
+                dotExecutable, usedByCollector);
+
+        this.outputPathName = outputPathName;
     }
 
     @Override
@@ -42,51 +32,41 @@ public class TypeCollaborationDotEmitter extends DefaultDocEmitter
         emitDotDiagrams();
     }
 
+    public static String getSvgUrl(String docRootPath, AstNode type) throws ZserioEmitException
+    {
+        final String svgFileNameBase = StringJoinUtil.joinStrings(
+                TYPE_COLLABORATION_DOT_DIRECTORY, DocEmitterTools.getDirectoryNameFromType(type),
+                DocEmitterTools.getFileNameFromType(type, SVG_FILE_EXTENSION), URL_DIR_SEPARATOR);
+        final String svgFileName = StringJoinUtil.joinStrings(docRootPath, svgFileNameBase, URL_DIR_SEPARATOR);
+        final File svgFile = new File(svgFileName);
+
+        return (svgFile.exists()) ? StringJoinUtil.joinStrings("..", svgFileNameBase, URL_DIR_SEPARATOR) : null;
+    }
+
     private void emitDotDiagrams() throws ZserioEmitException
     {
-        for (Map.Entry<AstNode, Set<AstNode> > entry : usedByCollector.getUsedByTypeMap().entrySet())
+        final UsedByCollector usedByCollector = getUsedByCollector();
+        for (Map.Entry< AstNode, Set<AstNode> > entry : usedByCollector.getUsedByTypeMap().entrySet())
         {
             final AstNode type = entry.getKey();
-            final File outputFile = DocEmitterTools.getTypeCollaborationDotFile(docPath, type);
-
-            TypeCollaborationDotTemplateData templateData = new TypeCollaborationDotTemplateData(type,
-                    usedByCollector.getUsedTypes(type), entry.getValue(), dotLinksPrefix);
-            emit(outputFile, "doc/type_collaboration.dot.ftl", templateData);
-            if (withSvgDiagrams)
-                if (!DotFileConvertor.convertToSvg(dotExecutable, outputFile,
-                                      DocEmitterTools.getTypeCollaborationSvgFile(docPath, type)))
-                    throw new ZserioEmitException("Failure to convert '" + outputFile +
-                            "' to SVG format!");
+            final TypeCollaborationDotTemplateData templateData = new TypeCollaborationDotTemplateData(type,
+                    usedByCollector.getUsedTypes(type), entry.getValue(), getDotLinksPrefix());
+            final File outputDotFile = new File(
+                    StringJoinUtil.joinStrings(outputPathName, TYPE_COLLABORATION_DOT_DIRECTORY,
+                    DocEmitterTools.getDirectoryNameFromType(type),
+                    DocEmitterTools.getFileNameFromType(type, DOT_FILE_EXTENSION), File.separator));
+            final File outputSvgFile = new File(
+                    StringJoinUtil.joinStrings(outputPathName, TYPE_COLLABORATION_DOT_DIRECTORY,
+                    DocEmitterTools.getDirectoryNameFromType(type),
+                    DocEmitterTools.getFileNameFromType(type, SVG_FILE_EXTENSION), File.separator));
+            processDotTemplate(TEMPLATE_SOURCE_NAME, templateData, outputDotFile, outputSvgFile);
         }
     }
 
-    private void emit(File outputFile, String templateFileName, Object templateData)
-                 throws ZserioEmitException
-    {
-        try
-        {
-            Configuration fmConfig = new Configuration(Configuration.VERSION_2_3_28);
-            fmConfig.setClassForTemplateLoading(TypeCollaborationDotEmitter.class, "/freemarker/");
+    private static final String TYPE_COLLABORATION_DOT_DIRECTORY = "type_collaboration";
 
-            Template fmTemplate = fmConfig.getTemplate(templateFileName);
+    private static final String TEMPLATE_SOURCE_NAME = "type_collaboration.dot.ftl";
+    private static final String URL_DIR_SEPARATOR = "/";
 
-            openOutputFile(outputFile);
-            fmTemplate.process(templateData, writer);
-            writer.close();
-        }
-        catch (IOException exception)
-        {
-            throw new ZserioEmitException(exception.getMessage());
-        }
-        catch (TemplateException exception)
-        {
-            throw new ZserioEmitException(exception.getMessage());
-        }
-    }
-
-    private final String docPath;
-    private final String dotLinksPrefix;
-    private final boolean withSvgDiagrams;
-    private final String dotExecutable;
-    private final UsedByCollector usedByCollector;
+    private final String outputPathName;
 }
