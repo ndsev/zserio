@@ -1,69 +1,68 @@
 <#include "linkedtype.inc.ftl">
 
-<#macro compound_fields fields>
+<#macro compound_fields fields numCols=3>
     <#list fields as field>
-        <#if field.alignmentExpression?has_content>
-        <tr class="codeMember">
-          <td></td>
-          <td colspan=2>align(${field.alignmentExpression}):</td>
-        </tr>
-        </#if>
-        <#if field.offsetExpression?has_content>
-        <tr class="codeMember">
-          <td></td><td colspan=2>${field.offsetExpression}</td>
-        </tr>
-        </#if>
-        <tr class="codeMember">
-          <td></td>
-          <@compound_field field/>
-          <td></td>
-        </tr>
+        <@compound_field field numCols/>
     </#list>
 </#macro>
 
-<#macro compound_field field>
-          <td valign="top" id="tabIndent"><@linkedtype field.linkedType/><#rt>
-            <#lt><@compound_field_arguments field.arguments/></td>
-          <td valign="bottom">
-            <a href="#${field.name}" class="fieldLink">${field.name}</a><#rt>
-                    ${field.arrayRange}<#t>
-            <#if field.initializerExpression?has_content>
-                    <#lt> = ${field.initializerExpression}<#rt>
-            </#if>
-            <#if field.optionalExpression?has_content>
-                   <#lt> if ${field.optionalClauseExpression}<#rt>
-            </#if>
-            <#if field.constraintExpression?has_content>
-                   <#lt> : ${field.constraintExpression}<#rt>
-            </#if>
-            ;<#t>
+<#macro compound_field field numCols=3>
+    <#if field.alignmentExpression?has_content>
+        <tr class="codeMember">
+          <td colspan=${numCols}>align(${field.alignmentExpression}):</td>
+        </tr>
+    </#if>
+    <#if field.offsetExpression?has_content>
+        <tr class="codeMember">
+          <td colspan=${numCols}>${field.offsetExpression}:</td>
+        </tr>
+    </#if>
+        <tr class="codeMember">
+          <td colspan=${numCols-2} id="tabIndent"></td>
+          <td>
+            <#if field.isVirtual>virtual </#if><#t>
+            <#if field.isAutoOptional>optional </#if><#t>
+            <#if field.isArrayImplicit>implicit </#if><#t>
+            <#lt><@linkedtype field.linkedType/><@compound_field_arguments field.arguments/>
           </td>
-            <#if field.sqlConstraintExpression?has_content>
-          <td valign="bottom"><i>${field.sqlConstraintExpression}</i></td>
-            </#if>
-            <#if field.isVirtual>
-          <td valign="bottom"><i>(virtual)</i></td>
-            <#elseif field.isAutoOptional>
-          <td valign="bottom"><i>(optional)</i></td>
-            <#elseif field.isArrayImplicit>
-          <td valign="bottom"><i>(implicit)</i></td>
-            </#if>
+          <td>
+            <a href="#${field.name}" class="fieldLink">${field.name}</a><#rt>
+              ${field.arrayRange}<#t>
+    <#if field.initializerExpression?has_content>
+              <#lt> = ${field.initializerExpression}<#rt>
+    </#if>
+    <#if field.optionalExpression?has_content>
+              <#lt> if ${field.optionalClauseExpression}<#rt>
+    </#if>
+    <#if field.constraintExpression?has_content>
+              <#lt> : ${field.constraintExpression}<#rt>
+    </#if>
+    <#if field.sqlConstraintExpression?has_content>
+              <#lt> ${field.sqlConstraintExpression}<#rt>
+    </#if>
+              ;<#t>
+          </td>
+        </tr>
 </#macro>
 
 <#macro compound_functions functions numCols=3>
     <#list functions as function>
         <tr>
-          <td colspan=${numCols} valign="top" id="tabIndent">function ${function.returnTypeName} ${function.name}()</td>
+          <td id="tabIndent"></td>
+          <td colspan=${numCols-1}>function <@linkedtype function.returnType/> ${function.name}()</td>
         </tr>
         <tr>
-          <td colspan=${numCols} id="tabIndent">{</td>
+          <td id="tabIndent"></td>
+          <td colspan=${numCols-1}>{</td>
         </tr>
         <tr>
-          <#if numCols != 4><td></td></#if><#-- TODO[Mi-L@]: Hack for choices! -->
-          <td valign="top" id="tabIndent2">return</td>
-          <td>${function.resultExpression};</td>
+          <td id="tabIndent"></td>
+          <td colspan=${numCols-1} id="tabIndent">return ${function.resultExpression};</td>
         </tr>
-        <tr><td colspan=${numCols} id="tabIndent">}</td></tr>
+        <tr>
+          <td id="tabIndent"></td>
+          <td colspan=${numCols-1}>}</td>
+        </tr>
     </#list>
 </#macro>
 

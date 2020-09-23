@@ -24,50 +24,51 @@
     </#if>
     <table>
     <tr><td class="docuCode">
-      <table style="empty-cells:show;">
+      <table>
       <tbody id="tabIndent">
         <tr>
           <td colspan=4>choice ${name}<@compound_parameters parameters/> on ${selectorExpression}</td>
         </tr>
         <tr>
-          <td colspan=2>{</td>
-          <td rowspan="${rowspanNumber}">&nbsp;</td>
-          <td></td>
+          <td colspan=4>{</td>
         </tr>
 <#list caseMemberList as caseMember>
         <tr>
-          <td valign="top" id="tabIndent">
+          <td id="tabIndent"></td>
+          <td>
     <#list caseMember.caseList as case>
             <a name="casedef_${case.expression}"></a>
-            <a href="#case_${case.expression}" class="fieldLink">case ${case.expression}</a>:<br/>
+            <a href="#case_${case.expression}" class="fieldLink">case ${case.expression}</a>:<#rt>
+              <#lt><#if case?has_next><br/></#if>
     </#list>
           </td>
-          <td colspan=3></td>
+          <td colspan=2></td>
         </tr>
-        <tr>
-          <td></td>
     <#if caseMember.field??>
-          <@compound_field caseMember.field/>
+          <@compound_field caseMember.field 4/>
     <#else>
+        <tr>
+          <td colspan=2 id="tabIndent"></td>
           <td colspan=2>;</td>
-    </#if>
         </tr>
+    </#if>
 </#list>
 <#if defaultMember??>
         <tr>
-          <td valign="top" id="tabIndent">
-            <a href="#case_default" class="fieldLink">default</a>:<br/>
+          <td id="tabIndent"></td>
+          <td>
+            <a href="#case_default" class="fieldLink">default</a>:
           </td>
-          <td colspan=3></td>
+          <td colspan=2></td>
         </tr>
-        <tr>
-          <td></td>
     <#if defaultMember.field??>
-          <@compound_field defaultMember.field/>
+        <@compound_field defaultMember.field 4/>
     <#else>
+        <tr>
+          <td colspan=2 id="tabIndent"></td>
           <td colspan=2>;</td>
-    </#if>
         </tr>
+    </#if>
 </#if>
 <#if functions?has_content>
         <tr><td colspan=4 id="tabIndent">&nbsp;</td></tr>

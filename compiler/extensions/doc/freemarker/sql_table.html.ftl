@@ -22,14 +22,13 @@
     <tr><td class="docuCode">
       <table>
       <tbody id="tabIndent">
-        <tr><td colspan=4>table ${name}<@compound_parameters parameters/></td></tr>
-        <tr><td colspan=4>{</td></tr>
+        <tr><td colspan=3>table ${name}<@compound_parameters parameters/></td></tr>
+        <tr><td colspan=3>{</td></tr>
         <@compound_fields fields/>
-        <tr><td colspan=4>};</td></tr>
+        <tr><td colspan=3>};</td></tr>
 <#if sqlConstraint?has_content>
-        <tr><td></td></tr>
-        <tr><td colspan=4>${sqlConstraint};</td></tr>
-        <tr><td></td></tr>
+        <tr><td colspan=3>&nbsp;</td></tr>
+        <tr><td colspan=3>${sqlConstraint};</td></tr>
 </#if>
       </tbody>
       </table>

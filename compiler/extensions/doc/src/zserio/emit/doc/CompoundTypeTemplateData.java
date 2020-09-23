@@ -213,7 +213,7 @@ public class CompoundTypeTemplateData extends DocTemplateData
                 throws ZserioEmitException
         {
             name = function.getName();
-            returnTypeName = function.getReturnTypeReference().getType().getName();
+            returnType = new LinkedType(function.getReturnTypeReference().getType());
             resultExpression = docExpressionFormatter.formatExpression(function.getResultExpression());
         }
 
@@ -222,9 +222,9 @@ public class CompoundTypeTemplateData extends DocTemplateData
             return name;
         }
 
-        public String getReturnTypeName() throws ZserioEmitException
+        public LinkedType getReturnType() throws ZserioEmitException
         {
-            return returnTypeName;
+            return returnType;
         }
 
         public String getResultExpression() throws ZserioEmitException
@@ -233,7 +233,7 @@ public class CompoundTypeTemplateData extends DocTemplateData
         }
 
         private final String name;
-        private final String returnTypeName;
+        private final LinkedType returnType;
         private final String resultExpression;
     }
 

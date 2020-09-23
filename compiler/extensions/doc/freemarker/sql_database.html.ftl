@@ -21,10 +21,10 @@
     <tr><td class="docuCode">
       <table>
       <tbody id="tabIndent">
-        <tr><td colspan=4>sql_database ${name}</td></tr>
-        <tr><td colspan=4>{</td></tr>
+        <tr><td colspan=3>sql_database ${name}</td></tr>
+        <tr><td colspan=3>{</td></tr>
         <@compound_fields fields/>
-        <tr><td colspan=4>};</td></tr>
+        <tr><td colspan=3>};</td></tr>
       </tbody>
       </table>
     </td></tr>
