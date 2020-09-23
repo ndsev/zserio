@@ -24,12 +24,6 @@ public class DbOverviewDotEmitter extends DotDefaultEmitter
     }
 
     @Override
-    public void beginSqlDatabase(SqlDatabaseType sqlDatabaseType)
-    {
-        databases.add(sqlDatabaseType);
-    }
-
-    @Override
     public void endRoot(Root root) throws ZserioEmitException
     {
         final Object templateData = new DbOverviewDotTemplateData(databases, getDotLinksPrefix());
@@ -38,6 +32,12 @@ public class DbOverviewDotEmitter extends DotDefaultEmitter
         final File outputSvgFile = new File(outputPathName,
                 DB_OVERVIEW_DOT_DIRECTORY + File.separator + DB_OVERVIEW_SVG_FILE_NAME);
         processDotTemplate(TEMPLATE_SOURCE_NAME, templateData, outputDotFile, outputSvgFile);
+    }
+
+    @Override
+    public void beginSqlDatabase(SqlDatabaseType sqlDatabaseType)
+    {
+        databases.add(sqlDatabaseType);
     }
 
     private static final String DB_OVERVIEW_DOT_DIRECTORY = "db_overview";

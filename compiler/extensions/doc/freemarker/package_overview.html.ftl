@@ -29,12 +29,6 @@
             parent.postMessage(clickedStyleItemId, "*");
         }
 
-        function showDeprecated(clickedElement)
-        {
-            hiliteElement(clickedElement.parentElement.parentElement);
-            parent.postMessage(".deprecated", "*");
-        }
-
         function showAllPackages(clickedElement)
         {
             hiliteElement(clickedElement);
@@ -47,11 +41,18 @@
   <body>
     <h2>Packages</h2>
 
-    <ul id="all_packages" class="packagelist" onclick="showAllPackages(this);"><li>all packages</li></ul>
-<#list packageList as pkg>
-    <ul class="packagelist"><li><#rt>
-    <a href="content/${pkg}.html" title="Package: ${pkg}" target="detailedDocu" onclick="showPackage(this);">${pkg}</a><#t>
-    <#lt></li></ul>
+    <ul class="packagelist" id="all_packages" title="All packages in one" onclick="showAllPackages(this);"><#rt>
+      <li><#t>
+        all packages<#t>
+      </li><#t>
+    <#lt></ul>
+<#list packageNames as packageName>
+    <ul class="packagelist"><#rt>
+      <li><#t>
+        <a href="content/${packageName}.html" title="Package: ${packageName}" target="detailedDocu" <#t>
+          onclick="showPackage(this);">${packageName}</a><#t>
+      </li><#t>
+    <#lt></ul>
 </#list>
 
     <script language="JavaScript">

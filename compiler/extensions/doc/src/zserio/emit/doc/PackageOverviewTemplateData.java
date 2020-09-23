@@ -4,15 +4,15 @@ import java.util.Set;
 
 public class PackageOverviewTemplateData
 {
-    public PackageOverviewTemplateData(Set<String> packageList)
+    public PackageOverviewTemplateData(Set<String> packageNames)
     {
-        this.packageList = packageList;
+        this.packageNames = packageNames;
     }
 
-    public Set<String> getPackageList()
+    public Set<String> getPackageNames()
     {
-        return packageList;
+        return packageNames;
     }
 
-    private final Set<String> packageList;
+    private final Set<String> packageNames;
 }

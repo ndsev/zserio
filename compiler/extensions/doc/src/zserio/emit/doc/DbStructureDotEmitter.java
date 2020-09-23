@@ -24,12 +24,6 @@ public class DbStructureDotEmitter extends DotDefaultEmitter
     }
 
     @Override
-    public void beginSqlDatabase(SqlDatabaseType sqlDatabaseType)
-    {
-        databaseList.add(sqlDatabaseType);
-    }
-
-    @Override
     public void endRoot(Root root) throws ZserioEmitException
     {
         int databaseIndex = 0;
@@ -45,6 +39,12 @@ public class DbStructureDotEmitter extends DotDefaultEmitter
 
             databaseIndex++;
         }
+    }
+
+    @Override
+    public void beginSqlDatabase(SqlDatabaseType sqlDatabaseType)
+    {
+        databaseList.add(sqlDatabaseType);
     }
 
     private static final String DB_STRUCTURE_DOT_DIRECTORY = "db_structure";
