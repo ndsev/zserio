@@ -5,8 +5,8 @@
     <script language="JavaScript">
       function receiveMessage(event)
       {
-        // forward to overview iframe
-        var f = document.getElementsByName("overview")[0]
+        // forward to symbol overview iframe
+        var f = document.getElementsByName("symbol_overview")[0]
         f.contentWindow.postMessage(event.data, "*")
       }
 
@@ -17,7 +17,7 @@
   <frameset cols="20%,*">
     <frameset rows="30%,70%">
       <frame name="package_overview" src="package_overview.html" scrolling="auto" frameborder="0" />
-      <frame name="overview" src="overview.html" scrolling="auto" frameborder="1" />
+      <frame name="symbol_overview" src="symbol_overview.html" scrolling="auto" frameborder="1" />
     </frameset>
     <frame name="detailedDocu" src="" class="detailedDocu" scrolling="auto" frameborder="0" />
 

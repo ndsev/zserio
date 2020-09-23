@@ -20,29 +20,61 @@ import zserio.ast.TypeReference;
 import zserio.ast.UnionType;
 import zserio.emit.common.ZserioEmitException;
 
-public class LinkedType
+public class LinkedType implements Comparable<LinkedType>
 {
     private AstNode astNode;
-    private final boolean isDoubleDefinedType;
     private String style;
     private String category = "";
 
     public LinkedType(AstNode node) throws ZserioEmitException
     {
-        this.isDoubleDefinedType = false;
         init(node);
     }
 
-    public LinkedType(AstNode node, boolean isDoubleDefinedType) throws ZserioEmitException
+    @Override
+    public int compareTo(LinkedType other)
     {
-        this.isDoubleDefinedType = isDoubleDefinedType;
-        init(node);
+        try
+        {
+            int result = getName().compareTo(other.getName());
+            if (result == 0)
+                result = getPackageName().compareTo(other.getPackageName());
+
+            return result;
+        }
+        catch (ZserioEmitException e)
+        {
+            return 0;
+        }
+    }
+
+    @Override
+    public boolean equals(Object other)
+    {
+        if ( !(other instanceof LinkedType) )
+            return false;
+
+        return (this == other) || compareTo((LinkedType)other) == 0;
+    }
+
+    @Override
+    public int hashCode()
+    {
+        try
+        {
+            final String fullName = getPackageName() + getName();
+            return fullName.hashCode();
+        }
+        catch (ZserioEmitException e)
+        {
+            return 0;
+        }
     }
 
     private void init(AstNode node) throws ZserioEmitException
     {
         if (node instanceof ZserioType)
-            this.astNode = (ZserioType)node;
+            this.astNode = node;
         else if (node instanceof TypeReference)
             this.astNode = ((TypeReference)node).getType();
         else
@@ -143,12 +175,9 @@ public class LinkedType
 
     private String createTitle(String cat) throws ZserioEmitException
     {
-        String packageName = "";
-        if (isDoubleDefinedType)
-        {
-            packageName = ", defined in: " + getPackageName();
-        }
-        return cat + packageName;
+        final String packageName = getPackageName();
+
+        return (packageName.isEmpty()) ? cat : cat + ", Defined in: " + getPackageName();
     }
 
     public String getName() throws ZserioEmitException

@@ -110,7 +110,8 @@ public class DocExtension implements Extension
         rootNode.emit(packageOverviewEmitter);
 
         // emit type overview
-        final TypeOverviewEmitter typeOverviewEmitter = new TypeOverviewEmitter(outputDir);
+        final SymbolOverviewEmitter typeOverviewEmitter = new SymbolOverviewEmitter(outputDir, parameters,
+                withSvgDiagrams, usedByCollector);
         rootNode.emit(typeOverviewEmitter);
 
         // emit documentation, one HTML page per package

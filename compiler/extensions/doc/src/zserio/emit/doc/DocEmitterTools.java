@@ -2,6 +2,7 @@ package zserio.emit.doc;
 
 import zserio.ast.ArrayInstantiation;
 import zserio.ast.AstNode;
+import zserio.ast.BuiltInType;
 import zserio.ast.Constant;
 import zserio.ast.PackageName;
 import zserio.ast.TypeInstantiation;
@@ -129,6 +130,10 @@ public class DocEmitterTools
 
         if (node instanceof ZserioType)
         {
+            if (((ZserioType)node) instanceof BuiltInType)
+            {
+                return (new PackageName.Builder()).get();
+            }
             return ((ZserioType)node).getPackage().getPackageName();
         }
         if (node instanceof Constant)
