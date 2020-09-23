@@ -104,25 +104,21 @@ public class DocExtension implements Extension
         // emit CSS styles file
         WebStylesEmitter.emit(outputDir);
 
-        ResourceManager.getInstance().setCurrentSourceDir(parameters.getPathName());
-        ResourceManager.getInstance().setOutputRoot(outputDir);
-        ResourceManager.getInstance().setSourceRoot(parameters.getPathName());
-        ResourceManager.getInstance().setSourceExtension(getFileNameExtension(parameters.getFileName()));
-
         // emit package overview
         final PackageOverviewEmitter packageOverviewEmitter = new PackageOverviewEmitter(outputDir, parameters,
                 withSvgDiagrams, usedByCollector);
         rootNode.emit(packageOverviewEmitter);
 
-        // emit type overview !@#
-        final TypeOverviewEmitter typeOverviewEmitter = new TypeOverviewEmitter(outputDir);
+        // emit type overview
+        final TypeOverviewEmitter typeOverviewEmitter = new TypeOverviewEmitter(outputDir, parameters,
+                withSvgDiagrams, usedByCollector);
         rootNode.emit(typeOverviewEmitter);
 
-        // emit list of deprecated elements
-        DeprecatedEmitter deprecatedEmitter = new DeprecatedEmitter(outputDir); // TODO[mikir] TBR
-        rootNode.emit(deprecatedEmitter);
-
         // emit documentation, one HTML page per package
+        ResourceManager.getInstance().setCurrentSourceDir(parameters.getPathName());
+        ResourceManager.getInstance().setOutputRoot(outputDir);
+        ResourceManager.getInstance().setSourceRoot(parameters.getPathName());
+        ResourceManager.getInstance().setSourceExtension(getFileNameExtension(parameters.getFileName()));
         final TemplateDataContext templateDataContext = new TemplateDataContext(outputDir, withSvgDiagrams,
                 usedByCollector);
         PackageEmitter packageEmitter = new PackageEmitter(templateDataContext);
