@@ -36,7 +36,7 @@ public class PackageOverviewEmitter extends HtmlDefaultEmitter
         processHtmlTemplate(TEMPLATE_SOURCE_NAME, templateData, outputFile);
     }
 
-    private static final String PACKAGE_OVERVIEW_FILE_NAME = "packages.html"; // TODO[mikir] rename
+    private static final String PACKAGE_OVERVIEW_FILE_NAME = "package_overview.html";
     private static final String TEMPLATE_SOURCE_NAME = "package_overview.html.ftl";
 
     private final String outputPathName;

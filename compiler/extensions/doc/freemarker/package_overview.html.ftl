@@ -1,11 +1,11 @@
 <html>
   <head>
-    <title>Zserio Package-List</title>
+    <title>Zserio Package Overview</title>
+
     <link rel="stylesheet" type="text/css" href="webStyles.css">
     <meta http-equiv="content-type" content="text/html; charset=UTF-8">
     <script language="JavaScript">
         var oldClickedElement = null;
-
 
         function hiliteElement(clickedElement)
         {
@@ -19,7 +19,6 @@
             }
             oldClickedElement = clickedElement;
         }
-
 
         function showPackage(clickedElement)
         {
@@ -47,16 +46,16 @@
 
   <body>
     <h2>Packages</h2>
+
     <ul id="all_packages" class="packagelist" onclick="showAllPackages(this);"><li>all packages</li></ul>
 <#list packageList as pkg>
     <ul class="packagelist"><li><#rt>
-    <#t><a href="content/${pkg}.html" title="Package: ${pkg}" target="detailedDocu" onclick="showPackage(this);">${pkg}</a>
+    <a href="content/${pkg}.html" title="Package: ${pkg}" target="detailedDocu" onclick="showPackage(this);">${pkg}</a><#t>
     <#lt></li></ul>
 </#list>
 
-  <script language="JavaScript">
-    showAllPackages(document.getElementById("all_packages"));
-  </script>
+    <script language="JavaScript">
+      showAllPackages(document.getElementById("all_packages"));
+    </script>
   </body>
 </html>
-
