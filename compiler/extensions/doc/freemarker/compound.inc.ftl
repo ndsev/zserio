@@ -71,7 +71,7 @@
     <#if parameters?has_content>
   (<#t>
     <#list parameters as parameter>
-      <@linkedtype parameter/> ${parameter.name}<#t>
+      <@linkedtype parameter.linkedType/> ${parameter.name}<#t>
       <#if parameter?has_next>, </#if><#t>
     </#list>
   )<#t>

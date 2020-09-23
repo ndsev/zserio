@@ -21,7 +21,7 @@ public class CompoundTypeTemplateData extends DocTemplateData
         super(context, compoundType, compoundType.getName());
 
         for (Parameter parameter : compoundType.getTypeParameters())
-            parameters.add(new LinkedType(parameter.getTypeReference().getType()));
+            parameters.add(new ParameterTemplateData(parameter));
 
         for (Field field : compoundType.getFields())
             fields.add(new FieldTemplateData(field, context.getDocExpressionFormatter()));
@@ -30,7 +30,7 @@ public class CompoundTypeTemplateData extends DocTemplateData
             functions.add(new FunctionTemplateData(function, context.getDocExpressionFormatter()));
     }
 
-    public Iterable<LinkedType> getParameters()
+    public Iterable<ParameterTemplateData> getParameters()
     {
         return parameters;
     }
@@ -43,6 +43,28 @@ public class CompoundTypeTemplateData extends DocTemplateData
     public Iterable<FunctionTemplateData> getFunctions()
     {
         return functions;
+    }
+
+    public static class ParameterTemplateData
+    {
+        public ParameterTemplateData(Parameter parameter) throws ZserioEmitException
+        {
+            linkedType = new LinkedType(parameter.getTypeReference().getType());
+            name = parameter.getName();
+        }
+
+        public LinkedType getLinkedType()
+        {
+            return linkedType;
+        }
+
+        public String getName()
+        {
+            return name;
+        }
+
+        private LinkedType linkedType;
+        private String name;
     }
 
     public static class FieldTemplateData
@@ -215,7 +237,7 @@ public class CompoundTypeTemplateData extends DocTemplateData
         private final String resultExpression;
     }
 
-    private final List<LinkedType> parameters = new ArrayList<LinkedType>();
+    private final List<ParameterTemplateData> parameters = new ArrayList<ParameterTemplateData>();
     private final List<FieldTemplateData> fields = new ArrayList<FieldTemplateData>();
     private final List<FunctionTemplateData> functions = new ArrayList<FunctionTemplateData>();
 };
