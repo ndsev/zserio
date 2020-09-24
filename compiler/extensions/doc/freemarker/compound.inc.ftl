@@ -31,7 +31,7 @@
     <#if field.initializerExpression?has_content>
                   <#lt> = ${field.initializerExpression}<#rt>
     </#if>
-    <#if field.optionalExpression?has_content>
+    <#if field.optionalClauseExpression?has_content>
                   <#lt> if ${field.optionalClauseExpression}<#rt>
     </#if>
     <#if field.constraintExpression?has_content>
