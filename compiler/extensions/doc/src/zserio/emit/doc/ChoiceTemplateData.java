@@ -23,10 +23,9 @@ public class ChoiceTemplateData extends CompoundTypeTemplateData
     {
         super(context, choiceType);
 
-        selectorExpression = context.getDocExpressionFormatter().formatGetter(
-                choiceType.getSelectorExpression());
+        final ExpressionFormatter docExpressionFormatter = context.getExpressionFormatter();
+        selectorExpression = docExpressionFormatter.formatGetter(choiceType.getSelectorExpression());
 
-        final ExpressionFormatter docExpressionFormatter = context.getDocExpressionFormatter();
         for (ChoiceCase choiceCase : choiceType.getChoiceCases())
         {
             caseMembers.add(new CaseMemberTemplateData(

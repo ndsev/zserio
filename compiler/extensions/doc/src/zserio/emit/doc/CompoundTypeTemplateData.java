@@ -27,10 +27,10 @@ public class CompoundTypeTemplateData extends DocTemplateData
             parameters.add(new ParameterTemplateData(parameter));
 
         for (Field field : compoundType.getFields())
-            fields.add(new FieldTemplateData(field, context.getDocExpressionFormatter()));
+            fields.add(new FieldTemplateData(field, context.getExpressionFormatter()));
 
         for (Function function : compoundType.getFunctions())
-            functions.add(new FunctionTemplateData(function, context.getDocExpressionFormatter()));
+            functions.add(new FunctionTemplateData(function, context.getExpressionFormatter()));
     }
 
     public Iterable<ParameterTemplateData> getParameters()

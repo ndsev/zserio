@@ -214,7 +214,7 @@ public class TypeNameEmitter
         final DocExpressionFormattingPolicy policy = new DocExpressionFormattingPolicy();
         final ExpressionFormatter expressionFormatter = new ExpressionFormatter(policy);
         Expression expression = t.getLengthExpression();
-        parameterizedName = expressionFormatter.formatGetter(expression);
+        parameterizedName = (expression == null) ? "" : expressionFormatter.formatGetter(expression);
         parameterizedName = "<" + parameterizedName + ">";
 
         return rawName + parameterizedName;

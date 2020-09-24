@@ -20,7 +20,7 @@ public class PubsubTemplateData
         docComment = new DocCommentTemplateData(pubsubType.getDocComment());
         for (PubsubMessage message : pubsubType.getMessageList())
         {
-            messageList.add(new MessageTemplateData(context.getDocExpressionFormatter(), message));
+            messageList.add(new MessageTemplateData(context.getExpressionFormatter(), message));
         }
         collaborationDiagramSvgFileName = (context.getWithSvgDiagrams())
                 ? DocEmitterTools.getTypeCollaborationSvgUrl(context.getOutputPath(), pubsubType) : null;

@@ -23,7 +23,10 @@ public class BitmaskTemplateData extends DocTemplateData
         linkedType = new LinkedType(bitmaskType.getTypeInstantiation());
 
         for (BitmaskValue value : bitmaskType.getValues())
-            values.add(new BitmaskValueTemplateData(value, context.getUsedByCollector()));
+        {
+            values.add(new BitmaskValueTemplateData(value, context.getUsedByCollector(),
+                    context.getExpressionFormatter()));
+        }
     }
 
     public LinkedType getLinkedType()
@@ -38,16 +41,14 @@ public class BitmaskTemplateData extends DocTemplateData
 
     public static class BitmaskValueTemplateData
     {
-        public BitmaskValueTemplateData(BitmaskValue bitmaskValue, UsedByCollector usedByCollector)
-                throws ZserioEmitException
+        public BitmaskValueTemplateData(BitmaskValue bitmaskValue, UsedByCollector usedByCollector,
+                ExpressionFormatter docExpressionFormatter) throws ZserioEmitException
         {
             name = bitmaskValue.getName();
 
-            final DocExpressionFormattingPolicy policy = new DocExpressionFormattingPolicy();
-            final ExpressionFormatter expressionFormatter = new ExpressionFormatter(policy);
             final Expression valueExpression = bitmaskValue.getValueExpression();
             value = (valueExpression == null) ? bitmaskValue.getValue().toString() :
-                expressionFormatter.formatGetter(bitmaskValue.getValueExpression());
+                docExpressionFormatter.formatGetter(bitmaskValue.getValueExpression());
 
             docComment = new DocCommentTemplateData(bitmaskValue.getDocComment());
 

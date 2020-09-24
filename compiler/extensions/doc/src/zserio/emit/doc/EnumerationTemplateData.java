@@ -23,7 +23,10 @@ public class EnumerationTemplateData extends DocTemplateData
         linkedType = new LinkedType(enumType.getTypeInstantiation());
 
         for (EnumItem item: enumType.getItems())
-            items.add(new EnumItemTemplateData(item, context.getUsedByCollector()));
+        {
+            items.add(new EnumItemTemplateData(item, context.getUsedByCollector(),
+                    context.getExpressionFormatter()));
+        }
     }
 
     public LinkedType getLinkedType()
@@ -38,16 +41,14 @@ public class EnumerationTemplateData extends DocTemplateData
 
     public static class EnumItemTemplateData
     {
-        public EnumItemTemplateData(EnumItem enumItem, UsedByCollector usedByCollector)
-                throws ZserioEmitException
+        public EnumItemTemplateData(EnumItem enumItem, UsedByCollector usedByCollector,
+                ExpressionFormatter docExpressionFormatter) throws ZserioEmitException
         {
             name = enumItem.getName();
 
-            final DocExpressionFormattingPolicy policy = new DocExpressionFormattingPolicy();
-            final ExpressionFormatter expressionFormatter = new ExpressionFormatter(policy);
             final Expression valueExpression = enumItem.getValueExpression();
             value = (valueExpression == null) ? enumItem.getValue().toString() :
-                expressionFormatter.formatGetter(valueExpression);
+                docExpressionFormatter.formatGetter(valueExpression);
 
             docComment = new DocCommentTemplateData(enumItem.getDocComment());
 

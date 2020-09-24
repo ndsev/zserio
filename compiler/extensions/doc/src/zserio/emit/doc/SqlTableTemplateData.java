@@ -1,5 +1,7 @@
 package zserio.emit.doc;
 
+import zserio.ast.Expression;
+import zserio.ast.SqlConstraint;
 import zserio.ast.SqlTableType;
 import zserio.emit.common.ZserioEmitException;
 
@@ -10,10 +12,11 @@ public class SqlTableTemplateData extends CompoundTypeTemplateData
     {
         super(context, sqlTableType);
 
-        sqlConstraint = context.getDocExpressionFormatter().formatGetter(
-                sqlTableType.getSqlConstraint() != null ?
-                        sqlTableType.getSqlConstraint().getConstraintExpr() : null);
-
+        final SqlConstraint sqlConstraintType = sqlTableType.getSqlConstraint();
+        final Expression sqlConstraintExpr = (sqlConstraintType == null) ? null :
+            sqlConstraintType.getConstraintExpr();
+        sqlConstraint = (sqlConstraintExpr == null) ? "" :
+            context.getExpressionFormatter().formatGetter(sqlConstraintExpr);
         virtualTableUsing = sqlTableType.getVirtualTableUsingString();
     }
 

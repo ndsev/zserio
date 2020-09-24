@@ -27,7 +27,7 @@ public class TemplateDataContext
         return usedByCollector;
     }
 
-    public ExpressionFormatter getDocExpressionFormatter()
+    public ExpressionFormatter getExpressionFormatter()
     {
         return docExpressionFormatter;
     }
