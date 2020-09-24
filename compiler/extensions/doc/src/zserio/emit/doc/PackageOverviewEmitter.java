@@ -9,7 +9,7 @@ import zserio.ast.Root;
 import zserio.emit.common.ZserioEmitException;
 import zserio.tools.Parameters;
 
-public class PackageOverviewEmitter extends HtmlDefaultEmitter
+class PackageOverviewEmitter extends HtmlDefaultEmitter
 {
     public PackageOverviewEmitter(String outputPathName, Parameters extensionParameters,
             boolean withSvgDiagrams, UsedByCollector usedByCollector)

@@ -8,7 +8,7 @@ import zserio.emit.common.ZserioEmitException;
 /**
  * Emits index HTML file.
  */
-public class HtmlIndexEmitter
+class HtmlIndexEmitter
 {
     static void emit(String outputPathName) throws ZserioEmitException
     {

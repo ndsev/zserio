@@ -13,7 +13,7 @@ import zserio.tools.StringJoinUtil;
 /**
  * Common public static methods used for documentation emitter.
  */
-public class DocEmitterTools
+class DocEmitterTools
 {
     /**
      * Returns the directory name where to store the HTML file.

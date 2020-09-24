@@ -20,7 +20,7 @@ import zserio.ast.UnionType;
 import zserio.emit.common.ZserioEmitException;
 import zserio.tools.Parameters;
 
-public class SymbolOverviewEmitter extends HtmlDefaultEmitter
+class SymbolOverviewEmitter extends HtmlDefaultEmitter
 {
     public SymbolOverviewEmitter(String outputPathName, Parameters extensionParameters,
             boolean withSvgDiagrams, UsedByCollector usedByCollector)

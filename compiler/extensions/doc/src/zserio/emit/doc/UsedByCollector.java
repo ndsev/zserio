@@ -37,7 +37,7 @@ import zserio.emit.common.DefaultEmitter;
 /**
  * Abstraction which handles used by list for all available zserio types.
  */
-public class UsedByCollector extends DefaultEmitter
+class UsedByCollector extends DefaultEmitter
 {
     @Override
     public void beginConst(Constant constant)

@@ -6,7 +6,7 @@ import java.io.IOException;
 /**
  * The class converts the generated dot files into svg format.
  */
-public class DotFileConvertor
+class DotFileConvertor
 {
     /**
      * Checks if the dot executable is available in the system.

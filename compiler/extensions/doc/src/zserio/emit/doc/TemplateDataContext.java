@@ -2,7 +2,7 @@ package zserio.emit.doc;
 
 import zserio.emit.common.ExpressionFormatter;
 
-public class TemplateDataContext
+class TemplateDataContext
 {
     public TemplateDataContext(String outputPath, boolean withSvgDiagrams, UsedByCollector usedByCollector)
     {

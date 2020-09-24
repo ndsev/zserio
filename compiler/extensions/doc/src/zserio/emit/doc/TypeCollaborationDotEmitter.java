@@ -13,7 +13,7 @@ import zserio.tools.StringJoinUtil;
 /**
  * Emits type collaboration diagrams in DOT format per each Zserio type.
  */
-public class TypeCollaborationDotEmitter extends DotDefaultEmitter
+class TypeCollaborationDotEmitter extends DotDefaultEmitter
 {
     public TypeCollaborationDotEmitter(String outputPathName, Parameters extensionParameters,
             String dotLinksPrefix, boolean withSvgDiagrams, String dotExecutable,

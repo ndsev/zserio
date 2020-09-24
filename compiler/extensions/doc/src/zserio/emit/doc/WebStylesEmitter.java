@@ -8,7 +8,7 @@ import zserio.emit.common.ZserioEmitException;
 /**
  * Emits CSS styles file.
  */
-public class WebStylesEmitter
+class WebStylesEmitter
 {
     static void emit(String outputPathName) throws ZserioEmitException
     {

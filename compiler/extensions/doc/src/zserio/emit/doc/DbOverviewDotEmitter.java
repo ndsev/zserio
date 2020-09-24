@@ -12,7 +12,7 @@ import zserio.tools.Parameters;
 /**
  * Emits the DOT file with overview of all databases and tables with connections.
  */
-public class DbOverviewDotEmitter extends DotDefaultEmitter
+class DbOverviewDotEmitter extends DotDefaultEmitter
 {
     public DbOverviewDotEmitter(String outputPathName, Parameters extensionParameters, String dotLinksPrefix,
             boolean withSvgDiagrams, String dotExecutable, UsedByCollector usedByCollector)
