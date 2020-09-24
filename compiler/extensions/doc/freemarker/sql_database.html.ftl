@@ -18,16 +18,16 @@
     <@doc_comment docComment/>
 
     <table>
-    <tr><td class="docuCode">
-      <table>
-      <tbody id="tabIndent">
-        <tr><td colspan=3>sql_database ${name}</td></tr>
-        <tr><td colspan=3>{</td></tr>
-        <@compound_fields fields/>
-        <tr><td colspan=3>};</td></tr>
-      </tbody>
-      </table>
-    </td></tr>
+      <tr><td class="docuCode">
+        <table>
+          <tbody id="tabIndent">
+            <tr><td colspan=3>sql_database ${name}</td></tr>
+            <tr><td colspan=3>{</td></tr>
+            <@compound_fields fields/>
+            <tr><td colspan=3>};</td></tr>
+          </tbody>
+        </table>
+      </td></tr>
     </table>
 
     <h2 class="msgdetail">Member Details</h2>

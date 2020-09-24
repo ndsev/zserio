@@ -1,68 +1,68 @@
 <#include "linkedtype.inc.ftl">
 
-<#macro compound_fields fields numCols=3>
+<#macro compound_fields fields>
     <#list fields as field>
-        <@compound_field field numCols/>
+        <@compound_field field/>
     </#list>
 </#macro>
 
-<#macro compound_field field numCols=3>
+<#macro compound_field field>
     <#if field.alignmentExpression?has_content>
-        <tr class="codeMember">
-          <td colspan=${numCols}>align(${field.alignmentExpression}):</td>
-        </tr>
+            <tr class="codeMember">
+              <td colspan=3>align(${field.alignmentExpression}):</td>
+            </tr>
     </#if>
     <#if field.offsetExpression?has_content>
-        <tr class="codeMember">
-          <td colspan=${numCols}>${field.offsetExpression}:</td>
-        </tr>
+            <tr class="codeMember">
+              <td colspan=3>${field.offsetExpression}:</td>
+            </tr>
     </#if>
-        <tr class="codeMember">
-          <td colspan=${numCols-2} id="tabIndent"></td>
-          <td>
-            <#if field.isVirtual>virtual </#if><#t>
-            <#if field.isAutoOptional>optional </#if><#t>
-            <#if field.isArrayImplicit>implicit </#if><#t>
-            <#lt><@linkedtype field.linkedType/><@compound_field_arguments field.arguments/>
-          </td>
-          <td>
-            <a href="#${field.name}" class="fieldLink">${field.name}</a><#rt>
-              ${field.arrayRange}<#t>
+            <tr class="codeMember">
+              <td id="tabIndent"></td>
+              <td>
+                <#if field.isVirtual>sql_virtual </#if><#t>
+                <#if field.isAutoOptional>optional </#if><#t>
+                <#if field.isArrayImplicit>implicit </#if><#t>
+                  <#lt><@linkedtype field.linkedType/><@compound_field_arguments field.arguments/>
+              </td>
+              <td>
+                <a href="#${field.name}" class="fieldLink">${field.name}</a><#rt>
+                  ${field.arrayRange}<#t>
     <#if field.initializerExpression?has_content>
-              <#lt> = ${field.initializerExpression}<#rt>
+                  <#lt> = ${field.initializerExpression}<#rt>
     </#if>
     <#if field.optionalExpression?has_content>
-              <#lt> if ${field.optionalClauseExpression}<#rt>
+                  <#lt> if ${field.optionalClauseExpression}<#rt>
     </#if>
     <#if field.constraintExpression?has_content>
-              <#lt> : ${field.constraintExpression}<#rt>
+                  <#lt> : ${field.constraintExpression}<#rt>
     </#if>
     <#if field.sqlConstraintExpression?has_content>
-              <#lt> ${field.sqlConstraintExpression}<#rt>
+                  <#lt> sql ${field.sqlConstraintExpression}<#rt>
     </#if>
-              ;<#t>
-          </td>
-        </tr>
+                  <#lt>;
+              </td>
+            </tr>
 </#macro>
 
-<#macro compound_functions functions numCols=3>
+<#macro compound_functions functions>
     <#list functions as function>
-        <tr>
-          <td id="tabIndent"></td>
-          <td colspan=${numCols-1}>function <@linkedtype function.returnType/> ${function.name}()</td>
-        </tr>
-        <tr>
-          <td id="tabIndent"></td>
-          <td colspan=${numCols-1}>{</td>
-        </tr>
-        <tr>
-          <td id="tabIndent"></td>
-          <td colspan=${numCols-1} id="tabIndent">return ${function.resultExpression};</td>
-        </tr>
-        <tr>
-          <td id="tabIndent"></td>
-          <td colspan=${numCols-1}>}</td>
-        </tr>
+            <tr>
+              <td id="tabIndent"></td>
+              <td colspan=2>function <@linkedtype function.returnType/> ${function.name}()</td>
+            </tr>
+            <tr>
+              <td id="tabIndent"></td>
+              <td colspan=2>{</td>
+            </tr>
+            <tr>
+              <td id="tabIndent"></td>
+              <td colspan=2 id="tabIndent">return ${function.resultExpression};</td>
+            </tr>
+            <tr>
+              <td id="tabIndent"></td>
+              <td colspan=2>}</td>
+            </tr>
     </#list>
 </#macro>
 

@@ -170,7 +170,7 @@ public class CompoundTypeTemplateData extends DocTemplateData
             return offsetExpression;
         }
 
-        public String getSqlConstraintException()
+        public String getSqlConstraintExpression()
         {
             return sqlConstraintExpression;
         }

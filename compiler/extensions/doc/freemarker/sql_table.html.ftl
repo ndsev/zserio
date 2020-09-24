@@ -19,20 +19,23 @@
     <@doc_comment docComment/>
 
     <table>
-    <tr><td class="docuCode">
-      <table>
-      <tbody id="tabIndent">
-        <tr><td colspan=3>table ${name}<@compound_parameters parameters/></td></tr>
-        <tr><td colspan=3>{</td></tr>
-        <@compound_fields fields/>
-        <tr><td colspan=3>};</td></tr>
+      <tr><td class="docuCode">
+        <table>
+          <tbody id="tabIndent">
+            <tr><td colspan=3>table ${name}<@compound_parameters parameters/></td></tr>
+            <tr><td colspan=3>{</td></tr>
+            <@compound_fields fields/>
 <#if sqlConstraint?has_content>
-        <tr><td colspan=3>&nbsp;</td></tr>
-        <tr><td colspan=3>${sqlConstraint};</td></tr>
+            <tr><td colspan=3>&nbsp;</td></tr>
+            <tr>
+              <td id="tabIndent"></td>
+              <td colspan=2>sql ${sqlConstraint};</td>
+            </tr>
 </#if>
-      </tbody>
-      </table>
-    </td></tr>
+            <tr><td colspan=3>};</td></tr>
+          </tbody>
+        </table>
+      </td></tr>
     </table>
 
     <h2 class="msgdetail">Member Details</h2>

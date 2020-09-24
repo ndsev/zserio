@@ -185,7 +185,7 @@ th
     border-width:0px;
     border-style:none;
     border-collapse:collapse;
-    padding:0px;
+    padding: 0px 1ex 0px 0px; /* right padding */
 }
 
 .docuCode table tbody#tabIndent tr.codeMember td

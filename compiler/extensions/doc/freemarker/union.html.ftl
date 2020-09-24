@@ -18,20 +18,20 @@
     <@doc_comment docComment/>
 
     <table>
-    <tr><td class="docuCode">
-      <table>
-      <tbody id="tabIndent">
-        <tr><td colspan=3>union ${name}<@compound_parameters parameters/></td></tr>
-        <tr><td colspan=3>{</td></tr>
-        <@compound_fields fields/>
+      <tr><td class="docuCode">
+        <table>
+          <tbody id="tabIndent">
+            <tr><td colspan=3>union ${name}<@compound_parameters parameters/></td></tr>
+            <tr><td colspan=3>{</td></tr>
+            <@compound_fields fields/>
 <#if functions?has_content>
-        <tr><td colspan=3>&nbsp;</td></tr>
-        <@compound_functions functions/>
+            <tr><td colspan=3>&nbsp;</td></tr>
+            <@compound_functions functions/>
 </#if>
-        <tr><td colspan=3>};</td></tr>
-      </tbody>
-      </table>
-    </td></tr>
+            <tr><td colspan=3>};</td></tr>
+          </tbody>
+        </table>
+      </td></tr>
     </table>
 
     <h2 class="msgdetail">Member Details</h2>
