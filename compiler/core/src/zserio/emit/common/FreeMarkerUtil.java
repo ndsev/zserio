@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
+import java.io.Writer;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -22,13 +23,12 @@ public class FreeMarkerUtil
      *
      * @param templateName      The template name with the path relatively to "/freemarker" directory.
      * @param templateDataModel The template data model to apply.
-     * @param outputFile        The output to be generated.
-     * @param amalgamate        True if the generated output will be amalgamated to the output file.
+     * @param outputWriter      The writer to use for generated output.
      *
      * @throws ZserioEmitException In case of any template error.
      */
-    public static void processTemplate(String templateName, Object templateDataModel, File outputFile,
-            boolean amalgamate) throws ZserioEmitException
+    public static void processTemplate(String templateName, Object templateDataModel, Writer outputWriter)
+            throws ZserioEmitException
     {
         if (freeMarkerConfig == null)
         {
@@ -38,6 +38,34 @@ public class FreeMarkerUtil
             amalgamatedDirectories = new HashSet<String>();
         }
 
+        try
+        {
+            final Template freeMarkerTemplate = freeMarkerConfig.getTemplate(templateName);
+            freeMarkerTemplate.process(templateDataModel, outputWriter);
+        }
+        catch (IOException exception)
+        {
+            throw new ZserioEmitException(exception.getMessage());
+        }
+        catch (TemplateException exception)
+        {
+            throw new ZserioEmitException(exception.getMessage());
+        }
+    }
+
+    /**
+     * Processes FreeMarker template with the provided data model and generates output.
+     *
+     * @param templateName      The template name with the path relatively to "/freemarker" directory.
+     * @param templateDataModel The template data model to apply.
+     * @param outputFile        The output to be generated.
+     * @param amalgamate        True if the generated output will be amalgamated to the output file.
+     *
+     * @throws ZserioEmitException In case of any template error.
+     */
+    public static void processTemplate(String templateName, Object templateDataModel, File outputFile,
+            boolean amalgamate) throws ZserioEmitException
+    {
         FileUtil.createOutputDirectory(outputFile);
 
         boolean append = false;
@@ -60,14 +88,9 @@ public class FreeMarkerUtil
             bufferedWriter = new BufferedWriter(outputStreamWriter);
             if (append)
                 bufferedWriter.newLine();
-            final Template freeMarkerTemplate = freeMarkerConfig.getTemplate(templateName);
-            freeMarkerTemplate.process(templateDataModel, bufferedWriter);
+            processTemplate(templateName, templateDataModel, bufferedWriter);
         }
         catch (IOException exception)
-        {
-            throw new ZserioEmitException(exception.getMessage());
-        }
-        catch (TemplateException exception)
         {
             throw new ZserioEmitException(exception.getMessage());
         }
