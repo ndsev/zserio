@@ -12,14 +12,9 @@ public class DocTemplateData
     public DocTemplateData(TemplateDataContext context, DocumentableAstNode astNode, String name)
             throws ZserioEmitException
     {
-        this.context = context;
-
         this.docComment = new DocCommentTemplateData(astNode.getDocComment());
-
         this.name = name;
-
         this.anchorName = new LinkedType(astNode).getHyperlinkName();
-
         this.collaborationDiagramSvgUrl = context.getWithSvgDiagrams()
                 ? DocEmitterTools.getTypeCollaborationSvgUrl(context.getOutputPath(), astNode)
                 : null;
@@ -27,11 +22,6 @@ public class DocTemplateData
         final UsedByCollector usedByCollector = context.getUsedByCollector();
         for (AstNode usedByNode : usedByCollector.getUsedByTypes(astNode, AstNode.class))
             usedByList.add(new LinkedType(usedByNode));
-    }
-
-    public TemplateDataContext getContext()
-    {
-        return context;
     }
 
     public DocCommentTemplateData getDocComment()
@@ -58,8 +48,6 @@ public class DocTemplateData
     {
         return usedByList;
     }
-
-    private final TemplateDataContext context;
 
     private final DocCommentTemplateData docComment;
     private final String name;

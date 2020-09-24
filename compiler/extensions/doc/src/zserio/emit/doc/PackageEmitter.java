@@ -28,6 +28,12 @@ public class PackageEmitter extends HtmlDefaultEmitter
 
         this.outputPathName = outputPathName;
         this.context = new TemplateDataContext(outputPathName, withSvgDiagrams, usedByCollector);
+
+        ResourceManager.getInstance().setCurrentSourceDir(extensionParameters.getPathName());
+        ResourceManager.getInstance().setOutputRoot(outputPathName);
+        ResourceManager.getInstance().setSourceRoot(extensionParameters.getPathName());
+        ResourceManager.getInstance().setSourceExtension(getFileNameExtension(
+                extensionParameters.getFileName()));
     }
 
     @Override
@@ -127,6 +133,15 @@ public class PackageEmitter extends HtmlDefaultEmitter
     {
         final PubsubTemplateData templateData = new PubsubTemplateData(context, pubsubType);
         processHtmlTemplate("pubsub.html.ftl", templateData, writer);
+    }
+
+    private String getFileNameExtension(String fileName)
+    {
+        int lastDotIndex = fileName.lastIndexOf('.');
+        if (lastDotIndex > 0)
+            return fileName.substring(lastDotIndex);
+
+        return "";
     }
 
     private static final String PACKAGE_HTML_DIRECTORY = "content";
