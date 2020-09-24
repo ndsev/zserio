@@ -14,6 +14,7 @@ import zserio.ast.EnumItem;
 import zserio.ast.EnumType;
 import zserio.ast.Expression;
 import zserio.ast.ZserioType;
+import zserio.emit.common.ExpressionFormatter;
 import zserio.emit.common.ZserioEmitException;
 
 public class ChoiceTemplateData extends CompoundTypeTemplateData
@@ -22,10 +23,10 @@ public class ChoiceTemplateData extends CompoundTypeTemplateData
     {
         super(context, choiceType);
 
-        selectorExpression = context.getDocExpressionFormatter().formatExpression(
+        selectorExpression = context.getDocExpressionFormatter().formatGetter(
                 choiceType.getSelectorExpression());
 
-        final DocExpressionFormatter docExpressionFormatter = context.getDocExpressionFormatter();
+        final ExpressionFormatter docExpressionFormatter = context.getDocExpressionFormatter();
         for (ChoiceCase choiceCase : choiceType.getChoiceCases())
         {
             caseMembers.add(new CaseMemberTemplateData(
@@ -55,7 +56,7 @@ public class ChoiceTemplateData extends CompoundTypeTemplateData
     public class CaseMemberTemplateData
     {
         public CaseMemberTemplateData(ChoiceCase choiceCase, Expression selectorExpression,
-                DocExpressionFormatter docExpressionFormatter) throws ZserioEmitException
+                ExpressionFormatter docExpressionFormatter) throws ZserioEmitException
         {
             caseList = new ArrayList<CaseTemplateData>();
             final Iterable<ChoiceCaseExpression> caseExpressions = choiceCase.getExpressions();
@@ -87,16 +88,17 @@ public class ChoiceTemplateData extends CompoundTypeTemplateData
     public class CaseTemplateData
     {
         public CaseTemplateData(Expression caseExpression, DocComment docComment, Expression selectorExpression,
-                DocExpressionFormatter docExpressionFormatter) throws ZserioEmitException
+                ExpressionFormatter docExpressionFormatter) throws ZserioEmitException
         {
-            expression = docExpressionFormatter.formatExpression(caseExpression);
+            expression = docExpressionFormatter.formatGetter(caseExpression);
             this.docComment = new DocCommentTemplateData(docComment);
 
             final Object caseExpressionObject = caseExpression.getExprSymbolObject();
             final ZserioType selectorExpressionType = selectorExpression.getExprZserioType();
             if (caseExpressionObject instanceof EnumItem  && selectorExpressionType instanceof EnumType)
             {
-                seeLink = new CaseSeeLinkTemplateData((EnumItem)caseExpressionObject, (EnumType)selectorExpressionType);
+                seeLink = new CaseSeeLinkTemplateData((EnumItem)caseExpressionObject,
+                        (EnumType)selectorExpressionType);
             }
             else if (caseExpressionObject instanceof BitmaskValue &&
                     selectorExpressionType instanceof BitmaskType)
@@ -161,7 +163,7 @@ public class ChoiceTemplateData extends CompoundTypeTemplateData
     public class DefaultMemberTemplateData
     {
         public DefaultMemberTemplateData(ChoiceDefault choiceDefault,
-                DocExpressionFormatter docExpressionFormatter) throws ZserioEmitException
+                ExpressionFormatter docExpressionFormatter) throws ZserioEmitException
         {
             field = choiceDefault.getField() != null
                     ? new FieldTemplateData(choiceDefault.getField(), docExpressionFormatter)

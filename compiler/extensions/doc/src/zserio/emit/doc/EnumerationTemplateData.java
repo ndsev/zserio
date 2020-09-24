@@ -47,7 +47,7 @@ public class EnumerationTemplateData extends DocTemplateData
             final ExpressionFormatter expressionFormatter = new ExpressionFormatter(policy);
             final Expression valueExpression = enumItem.getValueExpression();
             value = (valueExpression == null) ? enumItem.getValue().toString() :
-                expressionFormatter.formatGetter(enumItem.getValueExpression());
+                expressionFormatter.formatGetter(valueExpression);
 
             docComment = new DocCommentTemplateData(enumItem.getDocComment());
 

@@ -9,7 +9,7 @@ import zserio.emit.common.ZserioEmitException;
 
 public class ServiceTemplateData
 {
-    public ServiceTemplateData(ServiceType serviceType, TemplateDataContext context) throws ZserioEmitException
+    public ServiceTemplateData(TemplateDataContext context, ServiceType serviceType) throws ZserioEmitException
     {
         name = serviceType.getName();
         packageName = serviceType.getPackage().getPackageName().toString();

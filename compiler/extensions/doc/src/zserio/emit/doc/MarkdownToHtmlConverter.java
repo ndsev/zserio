@@ -19,7 +19,6 @@ import org.commonmark.ext.autolink.AutolinkExtension;
 import org.commonmark.ext.heading.anchor.HeadingAnchorExtension;
 import org.commonmark.ext.gfm.tables.TablesExtension;
 
-
 class MarkdownToHtmlConverter
 {
     public static String markdownToHtml(String markdown)

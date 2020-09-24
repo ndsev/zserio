@@ -10,7 +10,7 @@ public class SqlTableTemplateData extends CompoundTypeTemplateData
     {
         super(context, sqlTableType);
 
-        sqlConstraint = context.getDocExpressionFormatter().formatExpression(
+        sqlConstraint = context.getDocExpressionFormatter().formatGetter(
                 sqlTableType.getSqlConstraint() != null ?
                         sqlTableType.getSqlConstraint().getConstraintExpr() : null);
 

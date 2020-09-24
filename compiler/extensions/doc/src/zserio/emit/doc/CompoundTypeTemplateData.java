@@ -5,12 +5,15 @@ import java.util.List;
 
 import zserio.ast.ArrayInstantiation;
 import zserio.ast.CompoundType;
+import zserio.ast.Expression;
 import zserio.ast.Field;
 import zserio.ast.Function;
 import zserio.ast.Parameter;
 import zserio.ast.ParameterizedTypeInstantiation;
 import zserio.ast.TypeInstantiation;
 import zserio.ast.ParameterizedTypeInstantiation.InstantiatedParameter;
+import zserio.ast.SqlConstraint;
+import zserio.emit.common.ExpressionFormatter;
 import zserio.emit.common.ZserioEmitException;
 
 public class CompoundTypeTemplateData extends DocTemplateData
@@ -69,7 +72,7 @@ public class CompoundTypeTemplateData extends DocTemplateData
 
     public static class FieldTemplateData
     {
-        public FieldTemplateData(Field field, DocExpressionFormatter docExpressionFormatter)
+        public FieldTemplateData(Field field, ExpressionFormatter docExpressionFormatter)
                 throws ZserioEmitException
         {
             name = field.getName();
@@ -79,27 +82,27 @@ public class CompoundTypeTemplateData extends DocTemplateData
             docComment = new DocCommentTemplateData(field.getDocComment());
             isVirtual = field.getIsVirtual();
             isAutoOptional = field.isOptional() && field.getOptionalClauseExpr() == null;
-            alignmentExpression = docExpressionFormatter.formatExpression(field.getAlignmentExpr());
-            constraintExpression = docExpressionFormatter.formatExpression(field.getConstraintExpr());
+            alignmentExpression = formatExpression(field.getAlignmentExpr(), docExpressionFormatter);
+            constraintExpression = formatExpression(field.getConstraintExpr(), docExpressionFormatter);
             if (fieldTypeInstantiation instanceof ArrayInstantiation)
             {
                 final ArrayInstantiation arrayInstantiation = (ArrayInstantiation)fieldTypeInstantiation;
                 isArrayImplicit = arrayInstantiation.isImplicit();
-
                 arrayRange = "[" +
-                            docExpressionFormatter.formatExpression(arrayInstantiation.getLengthExpression()) +
-                            "]";
+                        formatExpression(arrayInstantiation.getLengthExpression(), docExpressionFormatter) +
+                        "]";
             }
             else
             {
                 isArrayImplicit = false;
                 arrayRange = "";
             }
-            initializerExpression = docExpressionFormatter.formatExpression(field.getInitializerExpr());
-            optionalClauseExpression = docExpressionFormatter.formatExpression(field.getOptionalClauseExpr());
-            offsetExpression = docExpressionFormatter.formatExpression(field.getOffsetExpr());
-            sqlConstraintExpression = docExpressionFormatter.formatExpression(
-                    field.getSqlConstraint() != null ? field.getSqlConstraint().getConstraintExpr() : null);
+            initializerExpression = formatExpression(field.getInitializerExpr(), docExpressionFormatter);
+            optionalClauseExpression = formatExpression(field.getOptionalClauseExpr(), docExpressionFormatter);
+            offsetExpression = formatExpression(field.getOffsetExpr(), docExpressionFormatter);
+            final SqlConstraint sqlConstraint = field.getSqlConstraint();
+            sqlConstraintExpression = (sqlConstraint == null) ? "" :
+                formatExpression(sqlConstraint.getConstraintExpr(), docExpressionFormatter);
         }
 
         public String getName()
@@ -173,7 +176,7 @@ public class CompoundTypeTemplateData extends DocTemplateData
         }
 
         private void initArguments(TypeInstantiation fieldTypeInstantiation,
-                DocExpressionFormatter docExpressionFormatter) throws ZserioEmitException
+                ExpressionFormatter docExpressionFormatter) throws ZserioEmitException
         {
             final TypeInstantiation typeInstantiation = (fieldTypeInstantiation instanceof ArrayInstantiation)
                     ? ((ArrayInstantiation)fieldTypeInstantiation).getElementTypeInstantiation()
@@ -185,10 +188,16 @@ public class CompoundTypeTemplateData extends DocTemplateData
                 for (InstantiatedParameter instantiatedParameter :
                     parameterizedTypeInstantiation.getInstantiatedParameters())
                 {
-                    arguments.add(docExpressionFormatter.formatExpression(
+                    arguments.add(docExpressionFormatter.formatGetter(
                             instantiatedParameter.getArgumentExpression()));
                 }
             }
+        }
+
+        private String formatExpression(Expression expression, ExpressionFormatter docExpressionFormatter)
+                throws ZserioEmitException
+        {
+            return (expression == null) ? "" : docExpressionFormatter.formatGetter(expression);
         }
 
         private final String name;
@@ -209,12 +218,12 @@ public class CompoundTypeTemplateData extends DocTemplateData
 
     public static class FunctionTemplateData
     {
-        public FunctionTemplateData(Function function, DocExpressionFormatter docExpressionFormatter)
+        public FunctionTemplateData(Function function, ExpressionFormatter docExpressionFormatter)
                 throws ZserioEmitException
         {
             name = function.getName();
             returnType = new LinkedType(function.getReturnTypeReference().getType());
-            resultExpression = docExpressionFormatter.formatExpression(function.getResultExpression());
+            resultExpression = docExpressionFormatter.formatGetter(function.getResultExpression());
         }
 
         public String getName()

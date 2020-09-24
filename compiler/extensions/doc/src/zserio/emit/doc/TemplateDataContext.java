@@ -9,8 +9,7 @@ public class TemplateDataContext
         this.outputPath = outputPath;
         this.withSvgDiagrams = withSvgDiagrams;
         this.usedByCollector = usedByCollector;
-        final DocExpressionFormattingPolicy policy = new DocExpressionFormattingPolicy();
-        this.docExpressionFormatter = new DocExpressionFormatter(new ExpressionFormatter(policy));
+        this.docExpressionFormatter = new ExpressionFormatter(new DocExpressionFormattingPolicy());
     }
 
     public String getOutputPath()
@@ -28,7 +27,7 @@ public class TemplateDataContext
         return usedByCollector;
     }
 
-    public DocExpressionFormatter getDocExpressionFormatter()
+    public ExpressionFormatter getDocExpressionFormatter()
     {
         return docExpressionFormatter;
     }
@@ -36,5 +35,5 @@ public class TemplateDataContext
     private final String outputPath;
     private final boolean withSvgDiagrams;
     private final UsedByCollector usedByCollector;
-    private final DocExpressionFormatter docExpressionFormatter;
+    private final ExpressionFormatter docExpressionFormatter;
 }

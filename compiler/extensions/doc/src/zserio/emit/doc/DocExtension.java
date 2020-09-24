@@ -119,9 +119,8 @@ public class DocExtension implements Extension
         ResourceManager.getInstance().setOutputRoot(outputDir);
         ResourceManager.getInstance().setSourceRoot(parameters.getPathName());
         ResourceManager.getInstance().setSourceExtension(getFileNameExtension(parameters.getFileName()));
-        final TemplateDataContext templateDataContext = new TemplateDataContext(outputDir, withSvgDiagrams,
+        PackageEmitter packageEmitter = new PackageEmitter(outputDir, parameters, withSvgDiagrams,
                 usedByCollector);
-        PackageEmitter packageEmitter = new PackageEmitter(templateDataContext);
         rootNode.emit(packageEmitter);
     }
 

@@ -12,7 +12,7 @@ public class ConstantTemplateData extends DocTemplateData
 
         linkedType = new LinkedType(constant.getTypeInstantiation());
 
-        value = context.getDocExpressionFormatter().formatExpression(constant.getValueExpression());
+        value = context.getDocExpressionFormatter().formatGetter(constant.getValueExpression());
     }
 
     public LinkedType getLinkedType()

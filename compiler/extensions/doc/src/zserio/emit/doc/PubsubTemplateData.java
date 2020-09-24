@@ -10,8 +10,7 @@ import zserio.emit.common.ZserioEmitException;
 
 public class PubsubTemplateData
 {
-    public PubsubTemplateData(ExpressionFormatter docExpressionFormatter, PubsubType pubsubType,
-            TemplateDataContext context) throws ZserioEmitException
+    public PubsubTemplateData(TemplateDataContext context, PubsubType pubsubType) throws ZserioEmitException
     {
         name = pubsubType.getName();
         packageName = pubsubType.getPackage().getPackageName().toString();
@@ -21,7 +20,7 @@ public class PubsubTemplateData
         docComment = new DocCommentTemplateData(pubsubType.getDocComment());
         for (PubsubMessage message : pubsubType.getMessageList())
         {
-            messageList.add(new MessageTemplateData(docExpressionFormatter, message));
+            messageList.add(new MessageTemplateData(context.getDocExpressionFormatter(), message));
         }
         collaborationDiagramSvgFileName = (context.getWithSvgDiagrams())
                 ? DocEmitterTools.getTypeCollaborationSvgUrl(context.getOutputPath(), pubsubType) : null;
