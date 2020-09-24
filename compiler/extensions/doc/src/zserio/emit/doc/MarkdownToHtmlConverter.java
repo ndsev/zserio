@@ -23,24 +23,20 @@ class MarkdownToHtmlConverter
 {
     public static String markdownToHtml(String markdown)
     {
-        List<Extension> extensions = Arrays.asList(
-                AutolinkExtension.create(),
-                HeadingAnchorExtension.create(),
-                TablesExtension.create());
+        final List<Extension> extensions = Arrays.asList(AutolinkExtension.create(),
+                HeadingAnchorExtension.create(), TablesExtension.create());
 
+        final Parser parser = Parser.builder().extensions(extensions).build();
+        final Node document = parser.parse(markdown);
 
-        Parser parser = Parser.builder()
-                .extensions(extensions)
-                .build();
-        Node document = parser.parse(markdown);
+        final Set<String> linkedFiles = new HashSet<String>();
 
-        Set<String> linkedFiles = new HashSet<String>();
-
-        HtmlRenderer renderer = HtmlRenderer.builder()
+        final HtmlRenderer renderer = HtmlRenderer.builder()
                 .extensions(extensions)
                 .nodeRendererFactory(
                         new HtmlNodeRendererFactory()
                         {
+                            @Override
                             public NodeRenderer create(HtmlNodeRendererContext context)
                             {
                                 return new ResourcesRenderer(context, linkedFiles);
@@ -48,7 +44,9 @@ class MarkdownToHtmlConverter
                         }
                 )
                 .build();
+
         final String html = renderer.render(document);
+
         return html;
     }
 
@@ -60,14 +58,14 @@ class MarkdownToHtmlConverter
         }
 
         @Override
-        public Set<Class<? extends Node>> getNodeTypes() {
-            return new HashSet<Class<? extends Node>>(Arrays.asList(
-                    Link.class,
-                    Image.class));
+        public Set<Class<? extends Node>> getNodeTypes()
+        {
+            return new HashSet<Class<? extends Node>>(Arrays.asList(Link.class, Image.class));
         }
 
         @Override
-        public void visit(Link link) {
+        public void visit(Link link)
+        {
             final String mappedResource = ResourceManager.getInstance().addResource(link.getDestination());
             link.setDestination(mappedResource);
 
@@ -75,7 +73,8 @@ class MarkdownToHtmlConverter
         }
 
         @Override
-        public void visit(Image image) {
+        public void visit(Image image)
+        {
             final String mappedResource = ResourceManager.getInstance().addResource(image.getDestination());
             image.setDestination(mappedResource);
 
