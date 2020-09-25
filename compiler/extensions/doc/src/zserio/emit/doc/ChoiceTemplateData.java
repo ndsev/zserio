@@ -52,7 +52,7 @@ public class ChoiceTemplateData extends CompoundTypeTemplateData
         return defaultMember;
     }
 
-    public class CaseMemberTemplateData
+    public static class CaseMemberTemplateData
     {
         public CaseMemberTemplateData(ChoiceCase choiceCase, Expression selectorExpression,
                 ExpressionFormatter docExpressionFormatter) throws ZserioEmitException
@@ -84,7 +84,7 @@ public class ChoiceTemplateData extends CompoundTypeTemplateData
         private final FieldTemplateData field;
     }
 
-    public class CaseTemplateData
+    public static class CaseTemplateData
     {
         public CaseTemplateData(Expression caseExpression, DocComment docComment, Expression selectorExpression,
                 ExpressionFormatter docExpressionFormatter) throws ZserioEmitException
@@ -131,7 +131,7 @@ public class ChoiceTemplateData extends CompoundTypeTemplateData
         private final CaseSeeLinkTemplateData seeLink;
     }
 
-    public class CaseSeeLinkTemplateData
+    public static class CaseSeeLinkTemplateData
     {
         public CaseSeeLinkTemplateData(EnumItem caseType, EnumType caseTypeOwner) throws ZserioEmitException
         {
@@ -159,7 +159,7 @@ public class ChoiceTemplateData extends CompoundTypeTemplateData
         private final String link;
     }
 
-    public class DefaultMemberTemplateData
+    public static class DefaultMemberTemplateData
     {
         public DefaultMemberTemplateData(ChoiceDefault choiceDefault,
                 ExpressionFormatter docExpressionFormatter) throws ZserioEmitException

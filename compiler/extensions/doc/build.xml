@@ -42,9 +42,12 @@ spotbugs.home_dir             - Location of the spotbugs tool. If not set, spotb
     <property name="3rdparty.root_dir" value="${zserio_doc.zserio_root}/3rdparty"/>
     <property name="3rdparty.jar_dir" value="${3rdparty.root_dir}/java"/>
     <property name="3rdparty.commonmark.jar_file_name" value="commonmark-0.15.2.jar"/>
-    <property name="3rdparty.commonmark_ext_autolink.jar_file_name" value="commonmark-ext-autolink-0.15.2.jar"/>
-    <property name="3rdparty.commonmark_ext_heading_anchor.jar_file_name" value="commonmark-ext-heading-anchor-0.15.2.jar"/>
-    <property name="3rdparty.commonmark_ext_gfm_tables.jar_file_name" value="commonmark-ext-gfm-tables-0.15.2.jar"/>
+    <property name="3rdparty.commonmark_ext_autolink.jar_file_name"
+        value="commonmark-ext-autolink-0.15.2.jar"/>
+    <property name="3rdparty.commonmark_ext_heading_anchor.jar_file_name"
+        value="commonmark-ext-heading-anchor-0.15.2.jar"/>
+    <property name="3rdparty.commonmark_ext_gfm_tables.jar_file_name"
+        value="commonmark-ext-gfm-tables-0.15.2.jar"/>
     <property name="3rdparty.autolink.jar_file_name" value="autolink-0.10.0.jar"/>
 
     <fileset dir="${3rdparty.jar_dir}" id="3rdparty.jar_files_ref">
@@ -54,6 +57,10 @@ spotbugs.home_dir             - Location of the spotbugs tool. If not set, spotb
         <include name="${3rdparty.commonmark_ext_gfm_tables.jar_file_name}"/>
         <include name="${3rdparty.autolink.jar_file_name}"/>
     </fileset>
+
+    <path id="zserio_doc.classpath_zserio_core">
+        <pathelement location="${zserio_core.jar_file}"/>
+    </path>
 
     <!-- Zserio Documentation extension version. -->
     <loadfile
@@ -78,10 +85,6 @@ spotbugs.home_dir             - Location of the spotbugs tool. If not set, spotb
         <mkdir dir="${zserio_doc.classes_dir}"/>
         <depend srcDir="${zserio_doc.src_dir}" destDir="${zserio_doc.classes_dir}"
             cache="${zserio_doc.build_dir}/depend-cache"/>
-
-        <path id="zserio_doc.classpath_zserio_core">
-            <pathelement location="${zserio_core.jar_file}"/>
-        </path>
 
         <javac srcdir="${zserio_doc.src_dir}" destdir="${zserio_doc.classes_dir}" debug="on"
             encoding="utf8" includeAntRuntime="false">
@@ -149,6 +152,7 @@ spotbugs.home_dir             - Location of the spotbugs tool. If not set, spotb
             <fileset dir="${zserio_doc.classes_dir}"/>
             <auxClasspath>
                 <path refid="zserio_doc.classpath_zserio_core"/>
+                <fileset refid="3rdparty.jar_files_ref"/>
             </auxClasspath>
         </spotbugs>
         <fail message="SpotBugs found some issues!" if="zserio_doc.is_failed"/>
