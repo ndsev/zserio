@@ -1,5 +1,6 @@
 <#include "doc_comment.inc.ftl">
 <#include "compound.inc.ftl">
+<#include "linkedtype.inc.ftl">
 <#include "usedby.inc.ftl">
 <#include "collaboration_diagram.inc.ftl">
 <#macro choice_field field>
@@ -40,7 +41,7 @@
 </#if>
     </div>
 
-    <@doc_comment docComment/>
+    <@doc_comment docComment false/>
 
     <#if defaultMember??>
         <#assign rowspanNumber=((caseMemberList?size+1)*2)+1/>

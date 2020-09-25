@@ -1,10 +1,10 @@
 <#-- This macro generates HTML source for the documentation comment. -->
-<#macro doc_comment doc>
+<#macro doc_comment doc useNoDocPlaceholder=true>
     <#if doc.paragraphs?size == 0>
         <#if doc.markdownHtml??>
     ${doc.markdownHtml}
         <#else>
-    <div class="docuTag">&lt;<i>no documentation found</i>&gt;</div>
+    <div class="docuTag"><#if useNoDocPlaceholder>&lt;<i>no documentation found</i>&gt;</#if></div>
         </#if>
     <#else>
         <#list doc.paragraphs as paragraph>

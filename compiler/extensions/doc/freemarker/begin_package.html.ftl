@@ -8,4 +8,4 @@
   </head>
   <body>
     <h2>${name}</h2>
-    <@doc_comment docComment/>
+    <@doc_comment docComment false/>
