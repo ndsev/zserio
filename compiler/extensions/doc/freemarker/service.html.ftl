@@ -32,7 +32,7 @@
         </td></tr>
         </table>
 
-        <h2>Service methods</h2>
+        <h3>Service methods</h3>
 
         <dl>
 <#list methodList as method>

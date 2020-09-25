@@ -1,6 +1,6 @@
 <#macro used_by linkedTypes>
     <#if linkedTypes?has_content>
-    <h4>Used By</h4>
+    <h3>Used By</h3>
     <table>
       <tr><td class="docuCode">
         <table>

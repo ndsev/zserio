@@ -7,5 +7,5 @@
     <meta http-equiv="content-type" content="text/html; charset=UTF-8">
   </head>
   <body>
-    <h2>${name}</h2>
+    <h1>${name}</h1>
     <@doc_comment docComment false/>

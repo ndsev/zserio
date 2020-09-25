@@ -132,13 +132,9 @@ div.msgdetail
     width:98%;
     padding:1ex;
     font-weight:bold;
-    font-size:1.8em;
+    font-size:1.6em;
     color:blue;
     background-color:#f2f2ff;
-}
-
-h2.msgdetail
-{
 }
 
 .memberItem

@@ -30,7 +30,7 @@
       </td></tr>
     </table>
 
-    <h2 class="msgdetail">Member Details</h2>
+    <h3>Member Details</h3>
     <@compound_member_details fields/>
 
     <@used_by usedByList/>

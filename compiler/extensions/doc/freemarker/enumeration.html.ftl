@@ -33,7 +33,7 @@
     </td></tr>
     </table>
 
-    <h2>Item Details</h2>
+    <h3>Item Details</h3>
 
     <dl>
 <#list items as item>

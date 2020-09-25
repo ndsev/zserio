@@ -104,7 +104,7 @@
       </td></tr>
     </table>
 
-    <h2 class="msgdetail">Case and Member Details</h2>
+    <h3>Case and Member Details</h3>
 
     <dl>
 <#list caseMemberList as caseMember>

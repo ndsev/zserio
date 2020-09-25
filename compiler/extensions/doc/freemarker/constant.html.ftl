@@ -8,7 +8,7 @@
       <span class="deprecated">(deprecated) </span>
       <del>
 </#if>
-      <i>const</i> ${name}
+        <i>const</i> ${name}
 <#if docComment.isDeprecated>
       </del>
 </#if>

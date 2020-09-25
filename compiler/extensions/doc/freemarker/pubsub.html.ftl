@@ -32,7 +32,7 @@
         </td></tr>
         </table>
 
-        <h2>Pubsub messages</h2>
+        <h3>Pubsub messages</h3>
 
         <dl>
 <#list messageList as message>
