@@ -76,13 +76,13 @@ class DocExpressionFormattingPolicy extends DefaultExpressionFormattingPolicy
     @Override
     public UnaryExpressionFormatting getLengthOf(Expression expr)
     {
-        return new UnaryExpressionFormatting("lengthof(" + ")");
+        return new UnaryExpressionFormatting("lengthof(" , ")");
     }
 
     @Override
     public UnaryExpressionFormatting getValueOf(Expression expr)
     {
-        return new UnaryExpressionFormatting("valueof(" + ")");
+        return new UnaryExpressionFormatting("valueof(" , ")");
     }
 
     @Override
