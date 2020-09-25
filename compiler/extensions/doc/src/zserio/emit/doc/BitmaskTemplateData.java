@@ -130,7 +130,7 @@ public class BitmaskTemplateData extends DocTemplateData
             public String getChoiceCaseLink() throws ZserioEmitException
             {
                 return DocEmitterTools.getUrlNameFromType(choiceType) +
-                        "#casedef_" + getBitmaskValue().getName();
+                        "_casedef_" + getBitmaskValue().getName();
             }
         };
 

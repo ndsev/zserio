@@ -15,8 +15,6 @@ public class PubsubTemplateData
         name = pubsubType.getName();
         packageName = pubsubType.getPackage().getPackageName().toString();
         linkedType = new LinkedType(pubsubType);
-        ResourceManager.getInstance().setCurrentOutputDir(
-                DocEmitterTools.getDirectoryNameFromType(pubsubType));
         docComment = new DocCommentTemplateData(pubsubType.getDocComment());
         for (PubsubMessage message : pubsubType.getMessageList())
         {

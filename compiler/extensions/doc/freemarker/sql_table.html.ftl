@@ -25,7 +25,7 @@
           <tbody id="tabIndent">
             <tr><td colspan=3>table ${name}<@compound_parameters parameters/></td></tr>
             <tr><td colspan=3>{</td></tr>
-            <@compound_fields fields/>
+            <@compound_fields anchorName fields/>
 <#if sqlConstraint?has_content>
             <tr><td colspan=3>&nbsp;</td></tr>
             <tr>
@@ -40,7 +40,7 @@
     </table>
 
     <h3>Member Details</h3>
-    <@compound_member_details fields/>
+    <@compound_member_details anchorName fields/>
 
     <@used_by usedByList/>
 <#if collaborationDiagramSvgFileName??>

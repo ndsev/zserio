@@ -129,7 +129,7 @@ public class EnumerationTemplateData extends DocTemplateData
 
             public String getChoiceCaseLink() throws ZserioEmitException
             {
-                return DocEmitterTools.getUrlNameFromType(choiceType) + "#casedef_" + getEnumItem().getName();
+                return DocEmitterTools.getUrlNameFromType(choiceType) + "_casedef_" + getEnumItem().getName();
             }
         }
 

@@ -1,13 +1,13 @@
 <#ftl output_format="HTML">
 <#include "linkedtype.inc.ftl">
 
-<#macro compound_fields fields>
+<#macro compound_fields anchorName fields>
     <#list fields as field>
-        <@compound_field field/>
+        <@compound_field anchorName field/>
     </#list>
 </#macro>
 
-<#macro compound_field field>
+<#macro compound_field anchorName field>
     <#if field.alignmentExpression?has_content>
             <tr class="codeMember">
               <td colspan=3>align(${field.alignmentExpression}):</td>
@@ -27,7 +27,7 @@
                   <#lt><@linkedtype field.linkedType/><@compound_field_arguments field.arguments/>
               </td>
               <td>
-                <a href="#${field.name}" class="fieldLink">${field.name}</a><#rt>
+                <a href="#${anchorName}_${field.name}" class="fieldLink">${field.name}</a><#rt>
                   ${field.arrayRange}<#t>
     <#if field.initializerExpression?has_content>
                   <#lt> = ${field.initializerExpression}<#rt>
@@ -78,12 +78,12 @@
     </#if>
 </#macro>
 
-<#macro compound_member_details fields>
+<#macro compound_member_details anchorName fields>
     <#if fields?has_content>
     <dl>
         <#list fields as field>
       <dt class="memberItem">
-        <a name="${field.name}">
+        <a name="${anchorName}_${field.name}">
             <#if field.docComment.isDeprecated>
           <span class="deprecated">(deprecated) </span>
           <del>

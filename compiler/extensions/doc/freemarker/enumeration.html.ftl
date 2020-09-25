@@ -25,7 +25,7 @@
       <tr><td>{</td><td rowspan="${items?size+1}">&nbsp;</td><td></td></tr>
 <#list items as item>
           <tr>
-            <td id="tabIndent"><a href="#${item.name}" class="fieldLink">${item.name}</a></td>
+            <td id="tabIndent"><a href="#${anchorName}_${item.name}" class="fieldLink">${item.name}</a></td>
             <td>= ${item.value}<#if item_has_next>,</#if></td>
       </tr>
 </#list>
@@ -38,7 +38,7 @@
 
     <dl>
 <#list items as item>
-      <dt class="memberItem"><a name="${item.name}">${item.name}:</a></dt>
+      <dt class="memberItem"><a name="${anchorName}_${item.name}">${item.name}:</a></dt>
       <dd class="memberDetail">
       <@doc_comment item.docComment/>
   <#list item.usageInfoList as usageInfo>

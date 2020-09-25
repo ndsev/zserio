@@ -14,8 +14,6 @@ public class ServiceTemplateData
         name = serviceType.getName();
         packageName = serviceType.getPackage().getPackageName().toString();
         linkedType = new LinkedType(serviceType);
-        ResourceManager.getInstance().setCurrentOutputDir(
-                DocEmitterTools.getDirectoryNameFromType(serviceType));
         docComment = new DocCommentTemplateData(serviceType.getDocComment());
         for (ServiceMethod method : serviceType.getMethodList())
         {

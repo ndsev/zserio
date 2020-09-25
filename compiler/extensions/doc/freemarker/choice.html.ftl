@@ -4,7 +4,7 @@
 <#include "linkedtype.inc.ftl">
 <#include "usedby.inc.ftl">
 <#include "collaboration_diagram.inc.ftl">
-<#macro choice_field field>
+<#macro choice_field anchorName field>
             <tr class="codeMember">
               <td id="tabIndent"></td>
               <td id="tabIndent">
@@ -12,7 +12,7 @@
                   <#lt><@linkedtype field.linkedType/><@compound_field_arguments field.arguments/>
               </td>
               <td>
-                <a href="#${field.name}" class="fieldLink">${field.name}</a><#rt>
+                <a href="#${anchorName}_${field.name}" class="fieldLink">${field.name}</a><#rt>
                   ${field.arrayRange}<#t>
     <#if field.initializerExpression?has_content>
                   <#lt> = ${field.initializerExpression}<#rt>
@@ -64,14 +64,13 @@
               <td id="tabIndent"></td>
               <td colspan=2>
     <#list caseMember.caseList as case>
-                <a name="casedef_${case.expression}"></a>
-                <a href="#case_${case.expression}" class="fieldLink">case ${case.expression}</a>:<#rt>
+                <a name="${anchorName}_casedef_${case.expression}" href="#${anchorName}_case_${case.expression}" class="fieldLink">case ${case.expression}</a>:<#rt>
                   <#lt><#if case?has_next><br/></#if>
     </#list>
               </td>
             </tr>
     <#if caseMember.field??>
-            <@choice_field caseMember.field/>
+            <@choice_field anchorName caseMember.field/>
     <#else>
             <tr>
               <td colspan=2 id="tabIndent"></td>
@@ -83,11 +82,11 @@
             <tr>
               <td id="tabIndent"></td>
               <td colspan=2>
-                <a href="#case_default" class="fieldLink">default</a>:
+                <a href="#${anchorName}_case_default" class="fieldLink">default</a>:
               </td>
             </tr>
     <#if defaultMember.field??>
-            <@choice_field defaultMember.field/>
+            <@choice_field anchorName defaultMember.field/>
     <#else>
             <tr>
               <td colspan=2 id="tabIndent"></td>
@@ -116,7 +115,7 @@
             <dl>
     <#list caseMember.caseList as case>
                 <dt class="memberItem">
-                    <a name="case_${case.expression}">${case.expression}</a>
+                    <a name="${anchorName}_case_${case.expression}">${case.expression}</a>
                 </dt>
                 <dd class="memberDetail">
                     <@doc_comment case.docComment/>
@@ -134,14 +133,14 @@
           <dl>
   <#if caseMember.field??>
               <dt class="memberItem">
-                  <a name="${caseMember.field.name}">${caseMember.field.name}:</a>
+                  <a name="${anchorName}_${caseMember.field.name}">${caseMember.field.name}:</a>
               </dt>
               <dd class="memberDetail">
                   <@doc_comment caseMember.field.docComment/>
               </dd>
   <#else>
               <dt class="memberItem">
-                  <a name="no_field">no member data</a>
+                  <a name="${anchorName}_no_field">no member data</a>
               </dt>
               <dd class="memberDetail">
                   <br />
@@ -160,7 +159,7 @@
         <dd>
             <dl>
                 <dt class="memberItem">
-                    <a name="case_default">default</a>
+                    <a name="${anchorName}_case_default">default</a>
                 </dt>
                 <dd class="memberDetail">
                     <@doc_comment defaultMember.docComment/>
@@ -174,14 +173,14 @@
           <dl>
   <#if defaultMember.field??>
               <dt class="memberItem">
-                  <a name="${defaultMember.field.name}">${defaultMember.field.name}:</a>
+                  <a name="${anchorName}_${defaultMember.field.name}">${defaultMember.field.name}:</a>
               </dt>
               <dd class="memberDetail">
                   <@doc_comment defaultMember.field.docComment/>
               </dd>
   <#else>
               <dt class="memberItem">
-                  <a name="no_field">no member data</a>
+                  <a name="${anchorName}_no_field">no member data</a>
               </dt>
               <dd class="memberDetail">
                   <br />

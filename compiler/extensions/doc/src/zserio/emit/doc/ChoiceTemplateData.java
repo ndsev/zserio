@@ -136,13 +136,13 @@ public class ChoiceTemplateData extends CompoundTypeTemplateData
         public CaseSeeLinkTemplateData(EnumItem caseType, EnumType caseTypeOwner) throws ZserioEmitException
         {
             text = caseTypeOwner.getName() + "." + caseType.getName();
-            link = DocEmitterTools.getUrlNameFromType(caseTypeOwner) + "#casedef_" + caseType.getName();
+            link = DocEmitterTools.getUrlNameFromType(caseTypeOwner) + "_" + caseType.getName();
         }
 
         public CaseSeeLinkTemplateData(BitmaskValue caseType, BitmaskType caseTypeOwner) throws ZserioEmitException
         {
             text = caseTypeOwner.getName() + "." + caseType.getName();
-            link = DocEmitterTools.getUrlNameFromType(caseTypeOwner) + "#casedef_" + caseType.getName();
+            link = DocEmitterTools.getUrlNameFromType(caseTypeOwner) + "_" + caseType.getName();
         }
 
         public String getText()

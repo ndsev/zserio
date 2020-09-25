@@ -28,18 +28,6 @@ class DocEmitterTools
     }
 
     /**
-     * Returns the HTML file name.
-     *
-     * @param type The ZserioType from which to generate the HTML file name.
-     *
-     * @throws ZserioEmitException Throws in case of any internal error.
-     */
-    public static String getHtmlFileNameFromType(AstNode type) throws ZserioEmitException
-    {
-        return getFileNameFromType(type, ".html");
-    }
-
-    /**
      * Returns the URL name of HTML file.
      *
      * @param type The ZserioType from which to generate the URL name.
@@ -48,8 +36,8 @@ class DocEmitterTools
      */
     public static String getUrlNameFromType(AstNode type) throws ZserioEmitException
     {
-        return ".." + URLDirSeparator + getDirectoryNameFromType(type) +
-                URLDirSeparator + getHtmlFileNameFromType(type);
+        return DocEmitterTools.getZserioPackageName(type) + ".html#" +
+                (new LinkedType(type).getHyperlinkName());
     }
 
     /**
@@ -65,7 +53,7 @@ class DocEmitterTools
     {
         String urlName = getUrlNameFromType(type);
         if (fieldName != null)
-            urlName += "#" + fieldName;
+            urlName += "_" + fieldName;
 
         return urlName;
     }
