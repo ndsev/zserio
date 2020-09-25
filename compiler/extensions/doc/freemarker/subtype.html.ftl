@@ -27,24 +27,6 @@
     </table>
 
 <@used_by usedByList/>
-
-    <h4>Const instances</h4>
-    <table>
-    <tr><td class="docuCode">
-      <table>
-      <tbody id="tabIndent">
-<#assign numOfConstInstances = constInstances?size>
-<#if (numOfConstInstances > 0)>
-    <#list constInstances as constInstance>
-        <tr><td><@linkedtype constInstance/></td></tr>
-    </#list>
-<#else>
-        <tr><td><div class="docuTag">&lt;<i>no const values for this subtype exists.</i>&gt;</div></td></tr>
-</#if>
-      </tbody>
-      </table>
-    </td></tr>
-    </table>
 <#if collaborationDiagramSvgFileName??>
 
     <@collaboration_diagram collaborationDiagramSvgFileName/>
