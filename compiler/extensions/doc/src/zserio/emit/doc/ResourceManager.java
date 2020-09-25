@@ -10,53 +10,53 @@ import java.nio.file.StandardCopyOption;
 import java.util.HashMap;
 import java.util.HashSet;
 
+import zserio.ast.AstLocation;
 import zserio.tools.HashUtil;
 import zserio.tools.StringJoinUtil;
-import zserio.tools.ZserioToolPrinter;
 
 class ResourceManager
 {
-    public static ResourceManager getInstance()
+    static ResourceManager getInstance()
     {
         return instance;
     }
 
-    public void setCurrentSourceDir(String currentSourceDir)
+    void setCurrentSourceDir(String currentSourceDir)
     {
         this.currentSourceDir = Paths.get(currentSourceDir != null ? currentSourceDir : ".");
     }
 
-    public void setCurrentSourceDir(Path currentSourceDir)
+    void setCurrentSourceDir(Path currentSourceDir)
     {
         this.currentSourceDir = currentSourceDir;
     }
 
-    public Path getCurrentSourceDir()
+    Path getCurrentSourceDir()
     {
         return currentSourceDir;
     }
 
-    public void setOutputRoot(String outputRoot)
+    void setOutputRoot(String outputRoot)
     {
         this.outputRoot = Paths.get(outputRoot != null ? outputRoot : ".").toAbsolutePath();
     }
 
-    public void setCurrentOutputDir(String currentOutputDir)
+    void setCurrentOutputDir(String currentOutputDir)
     {
         this.currentOutputDir = Paths.get(currentOutputDir != null ? currentOutputDir : ".").toAbsolutePath();
     }
 
-    public void setSourceRoot(String sourceRoot)
+    void setSourceRoot(String sourceRoot)
     {
         this.sourceRoot = Paths.get(sourceRoot != null ? sourceRoot : ".").toAbsolutePath();
     }
 
-    public void setSourceExtension(String sourceExtension)
+    void setSourceExtension(String sourceExtension)
     {
         this.sourceExtension = sourceExtension;
     }
 
-    public String addResource(String destination)
+    String addResource(String destination) throws ResourceException
     {
         if (isLocalResource(destination))
         {
@@ -72,10 +72,20 @@ class ResourceManager
         }
     }
 
+    static class ResourceException extends Exception
+    {
+        public ResourceException(String message)
+        {
+            super(message);
+        }
+
+        private static final long serialVersionUID = 1L;
+    }
+
     private ResourceManager()
     {}
 
-    private LocalResource mapLocalResource(LocalResource resource)
+    private LocalResource mapLocalResource(LocalResource resource) throws ResourceException
     {
         final boolean isZserioPackage = resource.getExtension().equals(sourceExtension) &&
                 resource.getPath().startsWith(sourceRoot);
@@ -91,6 +101,9 @@ class ResourceManager
         }
         else
         {
+            if (!resource.getFullPath().toFile().exists())
+                throw new ResourceException("Missing resource: '" + resource.getFullPath().toString() + "'!");
+
             LocalResource mappedResource = resources.get(resource);
             if (mappedResource != null)
                 return mappedResource;
@@ -112,7 +125,7 @@ class ResourceManager
         }
     }
 
-    public static boolean isLocalResource(String destination)
+    private static boolean isLocalResource(String destination)
     {
         if (destination.startsWith("#"))
             return false; // local anchor
@@ -121,7 +134,7 @@ class ResourceManager
         return path.toUri().getScheme().equals(LOCAL_FILE_SCHEME);
     }
 
-    private void copyResource(LocalResource srcResource, LocalResource dstResource)
+    private void copyResource(LocalResource srcResource, LocalResource dstResource) throws ResourceException
     {
         try
         {
@@ -138,7 +151,8 @@ class ResourceManager
                     currentOutputDir = dstResource.getPath();
                     final String markdown = new String(Files.readAllBytes(srcResource.getFullPath()),
                             StandardCharsets.UTF_8);
-                    final String html = MarkdownToHtmlConverter.markdownToHtml(markdown);
+                    final String html = MarkdownToHtmlConverter.markdownToHtml(
+                            new AstLocation(srcResource.getFullPath().toString(), 0, 0), markdown);
                     Files.write(dstResource.getFullPath(), html.getBytes(StandardCharsets.UTF_8));
                 }
                 finally
@@ -155,7 +169,7 @@ class ResourceManager
         }
         catch (IOException e)
         {
-            ZserioToolPrinter.printWarning("Failed to copy resource: '" + srcResource.getFullPath() + "' to '" +
+            throw new ResourceException("Failed to copy resource: '" + srcResource.getFullPath() + "' to '" +
                     dstResource.getFullPath() + "'!");
         }
     }

@@ -12,6 +12,11 @@ import org.commonmark.Extension;
 import org.commonmark.parser.Parser;
 import org.commonmark.renderer.NodeRenderer;
 import org.commonmark.renderer.html.HtmlRenderer;
+
+import zserio.ast.AstLocation;
+import zserio.emit.doc.ResourceManager.ResourceException;
+import zserio.tools.ZserioToolPrinter;
+
 import org.commonmark.renderer.html.CoreHtmlNodeRenderer;
 import org.commonmark.renderer.html.HtmlNodeRendererContext;
 import org.commonmark.renderer.html.HtmlNodeRendererFactory;
@@ -21,15 +26,13 @@ import org.commonmark.ext.gfm.tables.TablesExtension;
 
 class MarkdownToHtmlConverter
 {
-    public static String markdownToHtml(String markdown)
+    static String markdownToHtml(AstLocation location, String markdown)
     {
         final List<Extension> extensions = Arrays.asList(AutolinkExtension.create(),
                 HeadingAnchorExtension.create(), TablesExtension.create());
 
         final Parser parser = Parser.builder().extensions(extensions).build();
         final Node document = parser.parse(markdown);
-
-        final Set<String> linkedFiles = new HashSet<String>();
 
         final HtmlRenderer renderer = HtmlRenderer.builder()
                 .extensions(extensions)
@@ -39,7 +42,7 @@ class MarkdownToHtmlConverter
                             @Override
                             public NodeRenderer create(HtmlNodeRendererContext context)
                             {
-                                return new ResourcesRenderer(context, linkedFiles);
+                                return new ResourcesRenderer(context, location);
                             }
                         }
                 )
@@ -52,9 +55,10 @@ class MarkdownToHtmlConverter
 
     private static class ResourcesRenderer extends CoreHtmlNodeRenderer
     {
-        ResourcesRenderer(HtmlNodeRendererContext context, Set<String> linkedFiles)
+        ResourcesRenderer(HtmlNodeRendererContext context, AstLocation location)
         {
             super(context);
+            this.location = location;
         }
 
         @Override
@@ -66,8 +70,15 @@ class MarkdownToHtmlConverter
         @Override
         public void visit(Link link)
         {
-            final String mappedResource = ResourceManager.getInstance().addResource(link.getDestination());
-            link.setDestination(mappedResource);
+            try
+            {
+                final String mappedResource = ResourceManager.getInstance().addResource(link.getDestination());
+                link.setDestination(mappedResource);
+            }
+            catch (ResourceException e)
+            {
+                ZserioToolPrinter.printWarning(location, e.getMessage());
+            }
 
             super.visit(link);
         }
@@ -75,10 +86,19 @@ class MarkdownToHtmlConverter
         @Override
         public void visit(Image image)
         {
-            final String mappedResource = ResourceManager.getInstance().addResource(image.getDestination());
-            image.setDestination(mappedResource);
+            try
+            {
+                final String mappedResource = ResourceManager.getInstance().addResource(image.getDestination());
+                image.setDestination(mappedResource);
+            }
+            catch (ResourceException e)
+            {
+                ZserioToolPrinter.printWarning(location, e.getMessage());
+            }
 
             super.visit(image);
         }
+
+        private final AstLocation location;
     }
 }

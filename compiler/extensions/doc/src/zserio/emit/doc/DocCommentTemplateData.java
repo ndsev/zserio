@@ -43,7 +43,8 @@ public class DocCommentTemplateData
             final Path origCwd = ResourceManager.getInstance().getCurrentSourceDir();
             ResourceManager.getInstance().setCurrentSourceDir(
                     Paths.get(docComment.getLocation().getFileName()).getParent());
-            markdownHtml = MarkdownToHtmlConverter.markdownToHtml(docCommentMarkdown.getMarkdown());
+            markdownHtml = MarkdownToHtmlConverter.markdownToHtml(
+                    docCommentMarkdown.getLocation(), docCommentMarkdown.getMarkdown());
             ResourceManager.getInstance().setCurrentSourceDir(origCwd);
         }
         else if (docComment instanceof DocCommentClassic)
