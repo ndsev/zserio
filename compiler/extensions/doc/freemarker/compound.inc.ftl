@@ -1,3 +1,4 @@
+<#ftl output_format="HTML">
 <#include "linkedtype.inc.ftl">
 
 <#macro compound_fields fields>

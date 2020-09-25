@@ -1,5 +1,5 @@
+<#ftl output_format="HTML">
 <#include "doc_comment.inc.ftl">
-
 <html>
   <head>
     <title>${name}</title>

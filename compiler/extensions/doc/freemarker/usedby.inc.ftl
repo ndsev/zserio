@@ -1,3 +1,4 @@
+<#ftl output_format="HTML">
 <#macro used_by linkedTypes>
     <#if linkedTypes?has_content>
     <h3>Used By</h3>

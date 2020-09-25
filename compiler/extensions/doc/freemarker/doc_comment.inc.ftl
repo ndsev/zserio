@@ -1,8 +1,9 @@
+<#ftl output_format="HTML">
 <#-- This macro generates HTML source for the documentation comment. -->
 <#macro doc_comment doc useNoDocPlaceholder=true>
     <#if doc.paragraphs?size == 0>
         <#if doc.markdownHtml??>
-    ${doc.markdownHtml}
+    ${doc.markdownHtml?no_esc}
         <#else>
     <div class="docuTag"><#if useNoDocPlaceholder>&lt;<i>no documentation found</i>&gt;</#if></div>
         </#if>

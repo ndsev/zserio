@@ -1,3 +1,4 @@
+<#ftl output_format="HTML">
 <#include "doc_comment.inc.ftl">
 <#include "linkedtype.inc.ftl">
 <#include "usedby.inc.ftl">

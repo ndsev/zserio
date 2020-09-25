@@ -1,3 +1,4 @@
+<#ftl output_format="HTML">
 <#include "doc_comment.inc.ftl">
 <#include "compound.inc.ftl">
 <#include "linkedtype.inc.ftl">
@@ -32,8 +33,6 @@
 
     <h3>Member Details</h3>
     <@compound_member_details fields/>
-
-    <@used_by usedByList/>
 <#if collaborationDiagramSvgFileName??>
 
     <@collaboration_diagram collaborationDiagramSvgFileName/>

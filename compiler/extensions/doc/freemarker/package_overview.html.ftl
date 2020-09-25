@@ -1,3 +1,4 @@
+<#ftl output_format="HTML">
 <html>
   <head>
     <title>Zserio Package Overview</title>

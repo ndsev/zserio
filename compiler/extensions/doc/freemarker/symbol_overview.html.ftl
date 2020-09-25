@@ -1,3 +1,4 @@
+<#ftl output_format="HTML">
 <html>
   <head>
     <title>Package Symbols Overview</title>

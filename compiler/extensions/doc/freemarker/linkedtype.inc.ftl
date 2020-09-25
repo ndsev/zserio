@@ -1,3 +1,4 @@
+<#ftl output_format="HTML">
 <#macro linkedtype type>
   <#if !type.isBuiltIn>
     <#lt><a class  = "${type.style}"
