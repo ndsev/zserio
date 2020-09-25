@@ -87,30 +87,25 @@ public class DocExtension implements Extension
         final UsedByCollector usedByCollector = new UsedByCollector();
         rootNode.emit(usedByCollector);
 
-        // emit DOT files (must be before HTML files)
-        final List<Emitter> dotEmitters = new ArrayList<Emitter>();
-        dotEmitters.add(new DbOverviewDotEmitter(outputDir, parameters, dotLinksPrefix, withSvgDiagrams,
-                dotExecutable, usedByCollector));
-        dotEmitters.add(new DbStructureDotEmitter(outputDir, parameters, dotLinksPrefix, withSvgDiagrams,
-                dotExecutable, usedByCollector));
-        dotEmitters.add(new TypeCollaborationDotEmitter(outputDir, parameters, dotLinksPrefix, withSvgDiagrams,
-                dotExecutable, usedByCollector));
-        for (Emitter dotEmitter : dotEmitters)
-            rootNode.emit(dotEmitter);
-
         // emit HTML index file
         HtmlIndexEmitter.emit(outputDir);
 
         // emit CSS styles file
         WebStylesEmitter.emit(outputDir);
 
-        // emit HTML files
-        final List<Emitter> htmlEmitters = new ArrayList<Emitter>();
-        htmlEmitters.add(new PackageOverviewEmitter(outputDir, parameters, withSvgDiagrams, usedByCollector));
-        htmlEmitters.add(new SymbolOverviewEmitter(outputDir, parameters, withSvgDiagrams, usedByCollector));
-        htmlEmitters.add(new PackageEmitter(outputDir, parameters, withSvgDiagrams, usedByCollector));
-        for (Emitter htmlEmitter : htmlEmitters)
-            rootNode.emit(htmlEmitter);
+        // emit DOT and HTML files (DOT files must be before HTML files)
+        final List<Emitter> emitters = new ArrayList<Emitter>();
+        emitters.add(new DbOverviewDotEmitter(outputDir, parameters, dotLinksPrefix, withSvgDiagrams,
+                dotExecutable, usedByCollector));
+        emitters.add(new DbStructureDotEmitter(outputDir, parameters, dotLinksPrefix, withSvgDiagrams,
+                dotExecutable, usedByCollector));
+        emitters.add(new TypeCollaborationDotEmitter(outputDir, parameters, dotLinksPrefix, withSvgDiagrams,
+                dotExecutable, usedByCollector));
+        emitters.add(new PackageOverviewEmitter(outputDir, parameters, withSvgDiagrams, usedByCollector));
+        emitters.add(new SymbolOverviewEmitter(outputDir, parameters, withSvgDiagrams, usedByCollector));
+        emitters.add(new PackageEmitter(outputDir, parameters, withSvgDiagrams, usedByCollector));
+        for (Emitter emitter : emitters)
+            rootNode.emit(emitter);
     }
 
     private final static String OptionDoc = "doc";
