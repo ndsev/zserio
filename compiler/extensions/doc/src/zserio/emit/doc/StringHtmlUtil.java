@@ -7,7 +7,7 @@ import java.util.Set;
 /**
  * The common string manipulation functions which handle special HTML characters.
  */
-public class StringHtmlUtil
+class StringHtmlUtil
 {
     /**
      * Converts invalid HTML characters into escape sequences.

@@ -1,13 +1,20 @@
 package zserio.emit.doc;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.OptionGroup;
 
 import zserio.ast.Root;
+import zserio.emit.common.Emitter;
 import zserio.emit.common.ZserioEmitException;
 import zserio.tools.Extension;
 import zserio.tools.Parameters;
 
+/**
+ * The extension which generates HTML documentation.
+ */
 public class DocExtension implements Extension
 {
     @Override
@@ -20,72 +27,6 @@ public class DocExtension implements Extension
     public String getVersion()
     {
         return DocExtensionVersion.VERSION_STRING;
-    }
-
-    @Override
-    public boolean isEnabled(Parameters parameters)
-    {
-        return parameters.argumentExists(OptionDoc);
-    }
-
-    @Override
-    public void generate(Parameters parameters, Root rootNode) throws ZserioEmitException
-    {
-        String dotLinksPrefix = null;
-        if (parameters.argumentExists(OptionSetDotLinksPrefix))
-            dotLinksPrefix = parameters.getCommandLineArg(OptionSetDotLinksPrefix);
-
-        final boolean withSvgDiagrams = parameters.argumentExists(OptionWithSvgDiagrams);
-
-        String dotExecutable = DefaultDotExecutable;
-        if (parameters.argumentExists(OptionSetDotExecutable))
-            dotExecutable = parameters.getCommandLineArg(OptionSetDotExecutable);
-
-        if (withSvgDiagrams && !DotFileConvertor.isDotExecAvailable(dotExecutable))
-            throw new ZserioEmitException("The dot executable '" + dotExecutable + "' not found!");
-
-        final String docPath = parameters.getCommandLineArg(OptionDoc);
-
-        // collect used by information
-        final UsedByCollector usedByCollector = new UsedByCollector();
-        rootNode.emit(usedByCollector);
-
-        // emit DB overview dot file
-        DbOverviewDotEmitter dbOverviewDotEmitter = new DbOverviewDotEmitter(docPath, dotLinksPrefix,
-                                                        withSvgDiagrams, dotExecutable);
-        rootNode.emit(dbOverviewDotEmitter);
-
-        // emit DB structure dot files
-        DbStructureDotEmitter dbStructureDotEmitter = new DbStructureDotEmitter(docPath, dotLinksPrefix,
-                                                          withSvgDiagrams, dotExecutable);
-        rootNode.emit(dbStructureDotEmitter);
-
-        // emit type collaboration diagram files (must be before HTML documentation)
-        TypeCollaborationDotEmitter typeCollaborationDotEmitter = new TypeCollaborationDotEmitter(docPath,
-                dotLinksPrefix, withSvgDiagrams, dotExecutable, usedByCollector);
-        rootNode.emit(typeCollaborationDotEmitter);
-
-        // emit frameset
-        ContentEmitter docEmitter = new ContentEmitter(docPath, withSvgDiagrams, usedByCollector);
-        docEmitter.emitFrameset();
-
-        // emit stylesheets
-        docEmitter.emitStylesheet();
-
-        // emit HTML documentation
-        rootNode.emit(docEmitter);
-
-        // emit list of packages
-        PackageEmitter packageEmitter = new PackageEmitter(docPath);
-        rootNode.emit(packageEmitter);
-
-        // emit list of classes
-        OverviewEmitter overviewEmitter = new OverviewEmitter(docPath);
-        rootNode.emit(overviewEmitter);
-
-        // emit list of deprecated elements
-        DeprecatedEmitter deprecatedEmitter = new DeprecatedEmitter(docPath);
-        rootNode.emit(deprecatedEmitter);
     }
 
     @Override
@@ -116,6 +57,55 @@ public class DocExtension implements Extension
         option.setArgName("dotExec");
         option.setRequired(false);
         options.addOption(option);
+    }
+
+    @Override
+    public boolean isEnabled(Parameters parameters)
+    {
+        return parameters.argumentExists(OptionDoc);
+    }
+
+    @Override
+    public void generate(Parameters parameters, Root rootNode) throws ZserioEmitException
+    {
+        final String outputDir = parameters.getCommandLineArg(OptionDoc);
+
+        String dotLinksPrefix = null;
+        if (parameters.argumentExists(OptionSetDotLinksPrefix))
+            dotLinksPrefix = parameters.getCommandLineArg(OptionSetDotLinksPrefix);
+
+        final boolean withSvgDiagrams = parameters.argumentExists(OptionWithSvgDiagrams);
+
+        String dotExecutable = DefaultDotExecutable;
+        if (parameters.argumentExists(OptionSetDotExecutable))
+            dotExecutable = parameters.getCommandLineArg(OptionSetDotExecutable);
+
+        if (withSvgDiagrams && !DotFileConverter.isDotExecAvailable(dotExecutable))
+            throw new ZserioEmitException("The dot executable '" + dotExecutable + "' not found!");
+
+        // collect used by information
+        final UsedByCollector usedByCollector = new UsedByCollector();
+        rootNode.emit(usedByCollector);
+
+        // emit HTML index file
+        HtmlIndexEmitter.emit(outputDir);
+
+        // emit CSS styles file
+        WebStylesEmitter.emit(outputDir);
+
+        // emit DOT and HTML files (DOT files must be before HTML files)
+        final List<Emitter> emitters = new ArrayList<Emitter>();
+        emitters.add(new DbOverviewDotEmitter(outputDir, parameters, dotLinksPrefix, withSvgDiagrams,
+                dotExecutable, usedByCollector));
+        emitters.add(new DbStructureDotEmitter(outputDir, parameters, dotLinksPrefix, withSvgDiagrams,
+                dotExecutable, usedByCollector));
+        emitters.add(new TypeCollaborationDotEmitter(outputDir, parameters, dotLinksPrefix, withSvgDiagrams,
+                dotExecutable, usedByCollector));
+        emitters.add(new PackageOverviewEmitter(outputDir, parameters, withSvgDiagrams, usedByCollector));
+        emitters.add(new SymbolOverviewEmitter(outputDir, parameters, withSvgDiagrams, usedByCollector));
+        emitters.add(new PackageEmitter(outputDir, parameters, withSvgDiagrams, usedByCollector));
+        for (Emitter emitter : emitters)
+            rootNode.emit(emitter);
     }
 
     private final static String OptionDoc = "doc";

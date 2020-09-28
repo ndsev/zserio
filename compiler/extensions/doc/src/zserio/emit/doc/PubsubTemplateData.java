@@ -10,23 +10,28 @@ import zserio.emit.common.ZserioEmitException;
 
 public class PubsubTemplateData
 {
-    public PubsubTemplateData(ExpressionFormatter docExpressionFormatter, PubsubType pubsubType,
-            String outputPath, boolean withSvgDiagrams) throws ZserioEmitException
+    public PubsubTemplateData(TemplateDataContext context, PubsubType pubsubType) throws ZserioEmitException
     {
         name = pubsubType.getName();
         packageName = pubsubType.getPackage().getPackageName().toString();
+        linkedType = new LinkedType(pubsubType);
         docComment = new DocCommentTemplateData(pubsubType.getDocComment());
         for (PubsubMessage message : pubsubType.getMessageList())
         {
-            messageList.add(new MessageTemplateData(docExpressionFormatter, message));
+            messageList.add(new MessageTemplateData(context.getExpressionFormatter(), message));
         }
-        collaborationDiagramSvgFileName = (withSvgDiagrams)
-                ? DocEmitterTools.getTypeCollaborationSvgUrl(outputPath, pubsubType) : null;
+        collaborationDiagramSvgFileName = (context.getWithSvgDiagrams())
+                ? DocEmitterTools.getTypeCollaborationSvgUrl(context.getOutputPath(), pubsubType) : null;
     }
 
     public String getName()
     {
         return name;
+    }
+
+    public LinkedType getLinkedType() throws ZserioEmitException
+    {
+        return linkedType;
     }
 
     public String getPackageName()
@@ -96,6 +101,7 @@ public class PubsubTemplateData
 
     private final String name;
     private final String packageName;
+    private final LinkedType linkedType;
     private final DocCommentTemplateData docComment;
     private final List<MessageTemplateData> messageList = new ArrayList<MessageTemplateData>();
     private final String collaborationDiagramSvgFileName;

@@ -23,7 +23,7 @@ class DocCommentAstBuilder extends DocCommentBaseVisitor<Object>
     {
         visitChildren(ctx);
 
-        return new DocComment(new AstLocation(docCommentToken), paragraphs);
+        return new DocCommentClassic(new AstLocation(docCommentToken), paragraphs);
     }
 
     @Override

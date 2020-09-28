@@ -1,16 +1,9 @@
-<#include "doc_comment.html.ftl">
-<#include "linkedtype.html.ftl">
-<#include "collaboration_diagram.html.ftl">
-<html>
-    <head>
-        <title>service ${packageName}.${name}</title>
-        <link rel="stylesheet" type="text/css" href="../../webStyles.css">
-        <meta http-equiv="content-type" content="text/html; charset=UTF-8">
-    </head>
+<#ftl output_format="HTML">
+<#include "doc_comment.inc.ftl">
+<#include "linkedtype.inc.ftl">
+<#include "collaboration_diagram.inc.ftl">
 
-    <body>
-        <h2>${packageName}</h2>
-        <div class="msgdetail">
+        <div class="msgdetail" id="${linkedType.hyperlinkName}">
 <#if docComment.isDeprecated>
             <span class="deprecated">(deprecated) </span>
             <del>
@@ -21,7 +14,7 @@
 </#if>
         </div>
         <p/>
-        <@doc_comment docComment/>
+        <@doc_comment docComment false/>
 
         <table>
         <tr><td class="docuCode">
@@ -31,7 +24,7 @@
 <#list methodList as method>
                 <tr><td id="tabIndent">
                     <@linkedtype method.responseType/> <#rt>
-                    <a href="#${method.name}" class="fieldLink">${method.name}</a><#t>
+                    <a href="#${linkedType.hyperlinkName}_${method.name}" class="fieldLink">${method.name}</a><#t>
                     <#lt>(<@linkedtype method.requestType/>);
                 </td></tr>
 </#list>
@@ -40,11 +33,11 @@
         </td></tr>
         </table>
 
-        <h2>Service methods</h2>
+        <h3>Service methods</h3>
 
         <dl>
 <#list methodList as method>
-            <dt class="memberItem"><a name="${method.name}">${method.name}:</a></dt>
+            <dt class="memberItem"><a name="${linkedType.hyperlinkName}_${method.name}">${method.name}:</a></dt>
             <dd class="memberDetail">
             <@doc_comment method.docComment/>
             </dd>
@@ -54,5 +47,3 @@
 
     <@collaboration_diagram collaborationDiagramSvgFileName/>
 </#if>
-    </body>
-</html>

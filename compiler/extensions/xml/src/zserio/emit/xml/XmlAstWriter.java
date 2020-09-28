@@ -65,7 +65,8 @@ import zserio.ast.TypeReference;
 import zserio.ast.UnionType;
 import zserio.ast.VarIntegerType;
 import zserio.ast.ZserioAstVisitor;
-import zserio.ast.DocComment;
+import zserio.ast.DocCommentClassic;
+import zserio.ast.DocCommentMarkdown;
 import zserio.ast.DocParagraph;
 import zserio.ast.DocTagParam;
 import zserio.ast.DocTagSee;
@@ -465,9 +466,17 @@ public class XmlAstWriter implements ZserioAstVisitor
     }
 
     @Override
-    public void visitDocComment(DocComment docComment)
+    public void visitDocCommentClassic(DocCommentClassic docComment)
     {
-        visitAstNode(docComment, "DOC_COMMENT");
+        visitAstNode(docComment, "DOC_COMMENT_CLASSIC");
+    }
+
+    @Override
+    public void visitDocCommentMarkdown(DocCommentMarkdown docComment)
+    {
+        final Element xmlElement = xmlDoc.createElement("DOC_COMMENT_MARKDOWN");
+        xmlElement.setAttribute("markdown", docComment.getMarkdown());
+        visitAstNode(docComment, xmlElement);
     }
 
     @Override

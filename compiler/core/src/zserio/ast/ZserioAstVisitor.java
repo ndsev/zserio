@@ -286,11 +286,18 @@ public interface ZserioAstVisitor
     void visitInstantiateType(InstantiateType templateInstantiation);
 
     /**
-     * Visits a documentation comment.
+     * Visits a classic-style documentation comment.
      *
-     * @param docComment Documentation comment AST node.
+     * @param docComment Classic-style documentation comment AST node.
      */
-    void visitDocComment(DocComment docComment);
+    void visitDocCommentClassic(DocCommentClassic docComment);
+
+    /**
+     * Visits a markdown-style documentation comment.
+     *
+     * @param docComment Markdown-style documentation comment AST node.
+     */
+    void visitDocCommentMarkdown(DocCommentMarkdown docComment);
 
     /**
      * Visits documentation paragraph.

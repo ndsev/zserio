@@ -1,38 +1,31 @@
-<#include "doc_comment.html.ftl">
-<#include "linkedtype.html.ftl">
-<#include "usedby.html.ftl">
-<#include "collaboration_diagram.html.ftl">
-<html>
-  <head>
-    <title>enum ${packageName}.${type.name}</title>
-    <link rel="stylesheet" type="text/css" href="../../webStyles.css">
-    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
-  </head>
-  <body>
+<#ftl output_format="HTML">
+<#include "doc_comment.inc.ftl">
+<#include "linkedtype.inc.ftl">
+<#include "usedby.inc.ftl">
+<#include "collaboration_diagram.inc.ftl">
 
-    <h2>${packageName}</h2>
-    <div class="msgdetail">
+    <div class="msgdetail" id="${anchorName}">
 <#if docComment.isDeprecated>
       <span class="deprecated">(deprecated) </span>
       <del>
 </#if>
-        <i>enum</i> ${type.name}
+        <i>enum</i> ${name}
 <#if docComment.isDeprecated>
       </del>
 </#if>
     </div>
     <p/>
-    <@doc_comment docComment/>
+    <@doc_comment docComment false/>
 
     <table>
     <tr><td class="docuCode">
       <table>
 
-      <tr><td colspan=3>enum ${enumType} ${type.name}</td></tr>
-      <tr><td>{</td><td rowspan="${type.items?size+1}">&nbsp;</td><td></td></tr>
+      <tr><td colspan=3>enum <@linkedtype linkedType/> ${name}</td></tr>
+      <tr><td>{</td><td rowspan="${items?size+1}">&nbsp;</td><td></td></tr>
 <#list items as item>
           <tr>
-            <td id="tabIndent"><a href="#${item.name}" class="fieldLink">${item.name}</a></td>
+            <td id="tabIndent"><a href="#${anchorName}_${item.name}" class="fieldLink">${item.name}</a></td>
             <td>= ${item.value}<#if item_has_next>,</#if></td>
       </tr>
 </#list>
@@ -41,13 +34,13 @@
     </td></tr>
     </table>
 
-    <h2>Item Details</h2>
+    <h3>Item Details</h3>
 
     <dl>
 <#list items as item>
-      <dt class="memberItem"><a name="${item.name}">${item.name}:</a></dt>
+      <dt class="memberItem"><a name="${anchorName}_${item.name}">${item.name}:</a></dt>
       <dd class="memberDetail">
-      <@doc_comment item.docCommentData/>
+      <@doc_comment item.docComment/>
   <#list item.usageInfoList as usageInfo>
     <#if usageInfo.isFromChoiceCase >
         <div class="docuTag"><span>see: </span><a href="${usageInfo.choiceCaseLink}">${usageInfo.choiceCaseLinkText}</a></div>
@@ -57,11 +50,8 @@
 </#list>
     </dl>
 
-<@usedby containers services/>
+<@used_by usedByList/>
 <#if collaborationDiagramSvgFileName??>
 
     <@collaboration_diagram collaborationDiagramSvgFileName/>
 </#if>
-
-  </body>
-</html>

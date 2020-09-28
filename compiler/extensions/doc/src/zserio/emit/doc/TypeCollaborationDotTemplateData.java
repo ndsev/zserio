@@ -8,22 +8,8 @@ import java.util.Map;
 import zserio.ast.AstNode;
 import zserio.emit.common.ZserioEmitException;
 
-/**
- * The type collaboration diagram data used for FreeMarker template during DOT generation.
- */
 public class TypeCollaborationDotTemplateData
 {
-    /**
-     * The constructor.
-     *
-     * @param zserioType        The zserio type for which to generate 'used' diagram.
-     * @param usedZserioTypes   The list of zserio types which are used by zserioType.
-     * @param usedByZserioTypes The list of zserio types which uses the zserioType.
-     * @param docRootPath       The root path of the generated documentation for links or null
-     *                          if links are not required.
-     *
-     * @throws ZserioEmitException Throws in case of any internal error.
-     */
     public TypeCollaborationDotTemplateData(AstNode zserioType, Iterable<AstNode> usedZserioTypes,
             Iterable<AstNode> usedByZserioTypes, String docRootPath) throws ZserioEmitException
     {
@@ -46,33 +32,21 @@ public class TypeCollaborationDotTemplateData
         }
     }
 
-    /**
-     * Returns the name of the zserio type for which the collaboration diagram is generated.
-     */
     public String getTypeName()
     {
         return typeName;
     }
 
-    /**
-     * Returns the list of the used packages.
-     */
     public Iterable<Package> getPackageList()
     {
         return packageList.getList();
     }
 
-    /**
-     * Returns the list of the zserio type relations.
-     */
     public Iterable<Relation> getRelationList()
     {
         return relationList;
     }
 
-    /**
-     * Helper class to hold list of packages.
-     */
     public static class PackageList
     {
         public PackageList()
@@ -100,9 +74,6 @@ public class TypeCollaborationDotTemplateData
         private final Map<String, Package> nameToPackageMap;
     }
 
-    /**
-     * Helper class to model the package for FreeMarker template.
-     */
     public static class Package
     {
         public Package(String name)
@@ -126,13 +97,10 @@ public class TypeCollaborationDotTemplateData
             return typeList;
         }
 
-        private final String        name;
-        private final List<Type>    typeList;
+        private final String name;
+        private final List<Type> typeList;
     }
 
-    /**
-     * Helper class to model the type for FreeMarker template.
-     */
     public static class Type
     {
         public Type(String name, String docUrl)
@@ -151,13 +119,10 @@ public class TypeCollaborationDotTemplateData
             return docUrl;
         }
 
-        private final String    name;
-        private final String    docUrl;
+        private final String name;
+        private final String docUrl;
     }
 
-    /**
-     * Helper class to model the relation for FreeMarker template.
-     */
     public static class Relation
     {
         public Relation(String typeNameFrom, String typeNameTo)
@@ -176,8 +141,8 @@ public class TypeCollaborationDotTemplateData
             return typeNameTo;
         }
 
-        private final String    typeNameFrom;
-        private final String    typeNameTo;
+        private final String typeNameFrom;
+        private final String typeNameTo;
     }
 
     private void addType(AstNode zserioType, PackageList packageList, String docRootPath)
@@ -191,7 +156,7 @@ public class TypeCollaborationDotTemplateData
         packageInst.addType(new Type(name, docUrl));
     }
 
-    private final String            typeName;
-    private final PackageList       packageList;
-    private final List<Relation>    relationList;
+    private final String typeName;
+    private final PackageList packageList;
+    private final List<Relation> relationList;
 }

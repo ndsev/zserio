@@ -1,11 +1,9 @@
 package zserio.ast;
 
-import zserio.tools.HashUtil;
-
 /**
  * AST node for Constants.
  */
-public class Constant extends DocumentableAstNode implements Comparable<Constant>
+public class Constant extends DocumentableAstNode
 {
     /**
      * Constructor.
@@ -41,29 +39,6 @@ public class Constant extends DocumentableAstNode implements Comparable<Constant
 
         typeInstantiation.accept(visitor);
         valueExpression.accept(visitor);
-    }
-
-    @Override
-    public int compareTo(Constant other)
-    {
-        return getName().compareTo(other.getName());
-    }
-
-    @Override
-    public boolean equals(Object other)
-    {
-        if ( !(other instanceof Constant) )
-            return false;
-
-        return (this == other) || compareTo((Constant)other) == 0;
-    }
-
-    @Override
-    public int hashCode()
-    {
-        int hash = HashUtil.HASH_SEED;
-        hash = HashUtil.hash(hash, getName());
-        return hash;
     }
 
     /**

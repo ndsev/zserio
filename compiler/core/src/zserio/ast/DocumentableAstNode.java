@@ -22,7 +22,7 @@ public abstract class DocumentableAstNode extends AstNodeBase
     public void visitChildren(ZserioAstVisitor visitor)
     {
         if (docComment != null)
-            visitor.visitDocComment(docComment);
+            docComment.accept(visitor);
     }
 
     /**

@@ -6,10 +6,13 @@ import zserio.ast.BitmaskType;
 import zserio.ast.BuiltInType;
 import zserio.ast.ChoiceType;
 import zserio.ast.Constant;
+import zserio.ast.DynamicBitFieldInstantiation;
 import zserio.ast.ParameterizedTypeInstantiation;
 import zserio.ast.PubsubType;
 import zserio.ast.ServiceType;
 import zserio.ast.EnumType;
+import zserio.ast.Expression;
+import zserio.ast.FixedBitFieldType;
 import zserio.ast.StructureType;
 import zserio.ast.SqlDatabaseType;
 import zserio.ast.SqlTableType;
@@ -18,31 +21,109 @@ import zserio.ast.TypeInstantiation;
 import zserio.ast.ZserioType;
 import zserio.ast.TypeReference;
 import zserio.ast.UnionType;
+import zserio.emit.common.ExpressionFormatter;
 import zserio.emit.common.ZserioEmitException;
 
-public class LinkedType
+public class LinkedType implements Comparable<LinkedType>
 {
-    private AstNode astNode;
-    private final boolean isDoubleDefinedType;
-    private String style;
-    private String category = "";
-
     public LinkedType(AstNode node) throws ZserioEmitException
     {
-        this.isDoubleDefinedType = false;
         init(node);
     }
 
-    public LinkedType(AstNode node, boolean isDoubleDefinedType) throws ZserioEmitException
+    @Override
+    public int compareTo(LinkedType other)
     {
-        this.isDoubleDefinedType = isDoubleDefinedType;
-        init(node);
+        try
+        {
+            int result = getName().compareTo(other.getName());
+            if (result == 0)
+                result = getPackageName().compareTo(other.getPackageName());
+
+            return result;
+        }
+        catch (ZserioEmitException e)
+        {
+            return 0;
+        }
+    }
+
+    @Override
+    public boolean equals(Object other)
+    {
+        if ( !(other instanceof LinkedType) )
+            return false;
+
+        return (this == other) || compareTo((LinkedType)other) == 0;
+    }
+
+    @Override
+    public int hashCode()
+    {
+        try
+        {
+            final String fullName = getPackageName() + getName();
+            return fullName.hashCode();
+        }
+        catch (ZserioEmitException e)
+        {
+            return 0;
+        }
+    }
+
+    public String getName() throws ZserioEmitException
+    {
+        String typeName = getTypeName(astNode);
+        return typeName;
+    }
+
+    public String getHyperlinkName() throws ZserioEmitException
+    {
+        String hyperlinkName = getTypeName(astNode) + "_";
+
+        HtmlModuleNameSuffixVisitor suffixVisitor = new HtmlModuleNameSuffixVisitor();
+        astNode.accept(suffixVisitor);
+        hyperlinkName += suffixVisitor.getSuffix();
+
+        return hyperlinkName;
+    }
+
+    public String getStyle()
+    {
+        return style;
+    }
+
+    public String getCategory()
+    {
+        return category;
+    }
+
+    public boolean getIsBuiltIn()
+    {
+        AstNode node = astNode;
+        if (node instanceof TypeInstantiation)
+        {
+            if (node instanceof ArrayInstantiation)
+                node = ((ArrayInstantiation) node).getElementTypeInstantiation();
+            node = ((TypeInstantiation)node).getType();
+        }
+        return (node instanceof BuiltInType);
+    }
+
+    public String getPackageName() throws ZserioEmitException
+    {
+        return DocEmitterTools.getZserioPackageName(astNode).toString();
+    }
+
+    public String getPackageNameAsID() throws ZserioEmitException
+    {
+        return getPackageName().replace('.', '_');
     }
 
     private void init(AstNode node) throws ZserioEmitException
     {
         if (node instanceof ZserioType)
-            this.astNode = (ZserioType)node;
+            this.astNode = node;
         else if (node instanceof TypeReference)
             this.astNode = ((TypeReference)node).getType();
         else
@@ -143,60 +224,73 @@ public class LinkedType
 
     private String createTitle(String cat) throws ZserioEmitException
     {
-        String packageName = "";
-        if (isDoubleDefinedType)
+        final String packageName = getPackageName();
+
+        return (packageName.isEmpty()) ? cat : cat + ", Defined in: " + getPackageName();
+    }
+
+    private static String getTypeName(AstNode t) throws ZserioEmitException
+    {
+        String result = null;
+
+        if (t instanceof ArrayInstantiation)
         {
-            packageName = ", defined in: " + getPackageName();
+            // don't HTML-escape the result - it gets escaped in the call
+            final TypeInstantiation elementTypeInstantiation =
+                    ((ArrayInstantiation)t).getElementTypeInstantiation();
+            return getTypeName(elementTypeInstantiation);
         }
-        return cat + packageName;
-    }
-
-    public String getName() throws ZserioEmitException
-    {
-        String typeName = TypeNameEmitter.getTypeName(astNode);
-        return typeName;
-    }
-
-    public String getHyperlinkName() throws ZserioEmitException
-    {
-        String hyperlinkName = TypeNameEmitter.getTypeName(astNode) + "_";
-
-        HtmlModuleNameSuffixVisitor suffixVisitor = new HtmlModuleNameSuffixVisitor();
-        astNode.accept(suffixVisitor);
-        hyperlinkName += suffixVisitor.getSuffix();
-
-        return hyperlinkName;
-    }
-
-    public String getStyle()
-    {
-        return style;
-    }
-
-    public String getCategory()
-    {
-        return category;
-    }
-
-    public boolean getIsBuiltIn()
-    {
-        AstNode node = astNode;
-        if (node instanceof TypeInstantiation)
+        else if (t instanceof DynamicBitFieldInstantiation)
         {
-            if (node instanceof ArrayInstantiation)
-                node = ((ArrayInstantiation) node).getElementTypeInstantiation();
-            node = ((TypeInstantiation)node).getType();
+            return StringHtmlUtil.escapeForHtml(getTypeName((DynamicBitFieldInstantiation)t));
         }
-        return (node instanceof BuiltInType);
+        else if (t instanceof TypeInstantiation)
+        {
+            // use the underlying type bellow
+            t = ((TypeInstantiation)t).getType();
+        }
+
+        if (t instanceof FixedBitFieldType)
+        {
+            result = getTypeName((FixedBitFieldType) t);
+        }
+        else if (t instanceof Constant)
+        {
+            Constant consttype = (Constant) t;
+            result = consttype.getName();
+        }
+        else if (t instanceof ZserioType)
+        {
+            result = ((ZserioType)t).getName();
+        }
+        else
+        {
+            throw new ZserioEmitException("Unexpected zserio type or symbol '" + t.getClass().getName() + "'!");
+        }
+
+        return StringHtmlUtil.escapeForHtml(result);
     }
 
-    public String getPackageName() throws ZserioEmitException
+    private static String getTypeName(FixedBitFieldType t) throws ZserioEmitException
     {
-        return DocEmitterTools.getZserioPackageName(astNode).toString();
+        return t.getName() + ":" + t.getBitSize();
     }
 
-    public String getPackageNameAsID() throws ZserioEmitException
+    private static String getTypeName(DynamicBitFieldInstantiation t) throws ZserioEmitException
     {
-        return getPackageName().replace('.', '_');
+        final String baseTypeName = getTypeName(t.getBaseType());
+
+        final DocExpressionFormattingPolicy policy = new DocExpressionFormattingPolicy();
+        final ExpressionFormatter expressionFormatter = new ExpressionFormatter(policy);
+        final Expression expression = t.getLengthExpression();
+
+        final String parameterizedName = (expression == null) ? "<>" :
+            "<" + expressionFormatter.formatGetter(expression) + ">";
+
+        return baseTypeName + parameterizedName;
     }
+
+    private AstNode astNode;
+    private String style;
+    private String category = "";
 }

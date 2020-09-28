@@ -9,20 +9,8 @@ import zserio.ast.SqlDatabaseType;
 import zserio.ast.SqlTableType;
 import zserio.emit.common.ZserioEmitException;
 
-/**
- * The database structure overview data used for FreeMarker template during DOT generation.
- */
 public class DbOverviewDotTemplateData
 {
-    /**
-     * The constructor.
-     *
-     * @param databaseTypeList The list of all SQL database zserio types.
-     * @param docRootPath      The root path of the generated documentation for links or null if links are
-     *                         not required.
-     *
-     * @throws ZserioEmitException Throws in case of any internal error.
-     */
     public DbOverviewDotTemplateData(List<SqlDatabaseType> databaseTypeList, String docRootPath)
             throws ZserioEmitException
     {
@@ -36,17 +24,11 @@ public class DbOverviewDotTemplateData
         }
     }
 
-    /**
-     * Returns the list of the databases.
-     */
     public List<Database> getDatabaseList()
     {
         return databaseList;
     }
 
-    /**
-     * Helper class to model the database used for FreeMarker template.
-     */
     public static class Database
     {
         public Database(SqlDatabaseType databaseType, String colorName, String docRootPath)
@@ -86,15 +68,12 @@ public class DbOverviewDotTemplateData
             return tableList;
         }
 
-        private final String        name;
-        private final String        colorName;
-        private final String        docUrl;
-        private final List<Table>   tableList;
+        private final String name;
+        private final String colorName;
+        private final String docUrl;
+        private final List<Table> tableList;
     }
 
-    /**
-     * Helper class to model the table stored in database used for FreeMarker template.
-     */
     public static class Table
     {
         public Table(SqlTableType tableType, String databaseName, String tableName, String docRootPath)
@@ -120,10 +99,10 @@ public class DbOverviewDotTemplateData
             return docUrl;
         }
 
-        private final String                            fullName;
-        private final String                            name;
-        private final String                            docUrl;
+        private final String fullName;
+        private final String name;
+        private final String docUrl;
     }
 
-    private final List<Database>        databaseList;
+    private final List<Database> databaseList;
 }

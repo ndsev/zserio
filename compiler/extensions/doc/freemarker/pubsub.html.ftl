@@ -1,16 +1,9 @@
-<#include "doc_comment.html.ftl">
-<#include "linkedtype.html.ftl">
-<#include "collaboration_diagram.html.ftl">
-<html>
-    <head>
-        <title>pubsub ${packageName}.${name}</title>
-        <link rel="stylesheet" type="text/css" href="../../webStyles.css">
-        <meta http-equiv="content-type" content="text/html; charset=UTF-8">
-    </head>
+<#ftl output_format="HTML">
+<#include "doc_comment.inc.ftl">
+<#include "linkedtype.inc.ftl">
+<#include "collaboration_diagram.inc.ftl">
 
-    <body>
-        <h2>${packageName}</h2>
-        <div class="msgdetail">
+        <div class="msgdetail" id="${linkedType.hyperlinkName}">
 <#if docComment.isDeprecated>
             <span class="deprecated">(deprecated) </span>
             <del>
@@ -21,7 +14,7 @@
 </#if>
         </div>
         <p/>
-        <@doc_comment docComment/>
+        <@doc_comment docComment false/>
 
         <table>
         <tr><td class="docuCode">
@@ -32,7 +25,7 @@
                 <tr><td id="tabIndent">
                     ${message.keyword}(${message.topicDefinition}) <#rt>
                     <@linkedtype message.type/> <#rt>
-                    <#lt><a href="#${message.name}" class="fieldLink">${message.name}</a>;
+                    <#lt><a href="#${linkedType.hyperlinkName}_${message.name}" class="fieldLink">${message.name}</a>;
                 </td></tr>
 </#list>
                 <tr><td>};</td></tr>
@@ -40,11 +33,11 @@
         </td></tr>
         </table>
 
-        <h2>Pubsub messages</h2>
+        <h3>Pubsub messages</h3>
 
         <dl>
 <#list messageList as message>
-            <dt class="memberItem"><a name="${message.name}">${message.name}:</a></dt>
+            <dt class="memberItem"><a name="${linkedType.hyperlinkName}_${message.name}">${message.name}:</a></dt>
             <dd class="memberDetail">
             <@doc_comment message.docComment/>
             </dd>
@@ -54,5 +47,3 @@
 
     <@collaboration_diagram collaborationDiagramSvgFileName/>
 </#if>
-    </body>
-</html>

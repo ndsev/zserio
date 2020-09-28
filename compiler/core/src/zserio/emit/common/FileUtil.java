@@ -1,6 +1,8 @@
 package zserio.emit.common;
 
 import java.io.File;
+import java.io.IOException;
+import java.io.PrintWriter;
 
 /**
  * File utilities for Zserio emitters.
@@ -27,6 +29,27 @@ public class FileUtil
         {
             if (!parentDir.mkdirs())
                 throw new ZserioEmitException("Can't create output directory: " + parentDir.toString());
+        }
+    }
+
+    /**
+     * Creates writer for given file.
+     *
+     * @param outputFile Output file for which to create writer.
+     *
+     * @return Created writer.
+     *
+     * @throws ZserioEmitException Throws if writer cannot be created.
+     */
+    public static PrintWriter createWriter(File outputFile) throws ZserioEmitException
+    {
+        try
+        {
+            return new PrintWriter(outputFile, "UTF-8");
+        }
+        catch (IOException exception)
+        {
+            throw new ZserioEmitException(exception.getMessage());
         }
     }
 }

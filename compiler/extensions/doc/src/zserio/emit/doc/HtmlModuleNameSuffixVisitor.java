@@ -28,7 +28,7 @@ import zserio.emit.common.ZserioEmitException;
 /**
  * The ZserioType visitor which resolves the suffix for HTML module name from ZserioType.
  */
-public class HtmlModuleNameSuffixVisitor extends ZserioAstDefaultVisitor
+class HtmlModuleNameSuffixVisitor extends ZserioAstDefaultVisitor
 {
     @Override
     public void visitBooleanType(BooleanType type)

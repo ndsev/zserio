@@ -1,21 +1,19 @@
 package zserio.emit.doc;
 
-import java.io.File;
-
 import zserio.ast.ArrayInstantiation;
 import zserio.ast.AstNode;
+import zserio.ast.BuiltInType;
 import zserio.ast.Constant;
 import zserio.ast.PackageName;
 import zserio.ast.TypeInstantiation;
 import zserio.ast.ZserioType;
-import zserio.ast.SqlDatabaseType;
 import zserio.emit.common.ZserioEmitException;
 import zserio.tools.StringJoinUtil;
 
 /**
  * Common public static methods used for documentation emitter.
  */
-public class DocEmitterTools
+class DocEmitterTools
 {
     /**
      * Returns the directory name where to store the HTML file.
@@ -30,42 +28,6 @@ public class DocEmitterTools
     }
 
     /**
-     * Returns the HTML file name.
-     *
-     * @param type The ZserioType from which to generate the HTML file name.
-     *
-     * @throws ZserioEmitException Throws in case of any internal error.
-     */
-    public static String getHtmlFileNameFromType(AstNode type) throws ZserioEmitException
-    {
-        return getFileNameFromType(type, "html");
-    }
-
-    /**
-     * Returns the DOT file name.
-     *
-     * @param type The ZserioType for which to generate the DOT file name.
-     *
-     * @throws ZserioEmitException Throws in case of any internal error.
-     */
-    public static String getDotFileNameFromType(AstNode type) throws ZserioEmitException
-    {
-        return getFileNameFromType(type, "dot");
-    }
-
-    /**
-     * Returns the SVG file name.
-     *
-     * @param type The ZserioType for which to generate the SVG file name.
-     *
-     * @throws ZserioEmitException Throws in case of any internal error.
-     */
-    public static String getSvgFileNameFromType(AstNode type) throws ZserioEmitException
-    {
-        return getFileNameFromType(type, "svg");
-    }
-
-    /**
      * Returns the URL name of HTML file.
      *
      * @param type The ZserioType from which to generate the URL name.
@@ -74,8 +36,8 @@ public class DocEmitterTools
      */
     public static String getUrlNameFromType(AstNode type) throws ZserioEmitException
     {
-        return ".." + URLDirSeparator + getDirectoryNameFromType(type) +
-                URLDirSeparator + getHtmlFileNameFromType(type);
+        return DocEmitterTools.getZserioPackageName(type) + ".html#" +
+                (new LinkedType(type).getHyperlinkName());
     }
 
     /**
@@ -91,7 +53,7 @@ public class DocEmitterTools
     {
         String urlName = getUrlNameFromType(type);
         if (fieldName != null)
-            urlName += "#" + fieldName;
+            urlName += "_" + fieldName;
 
         return urlName;
     }
@@ -112,121 +74,16 @@ public class DocEmitterTools
             return null;
 
         return StringJoinUtil.joinStrings(docRootPath, docDirectory,
-                                          DocEmitterTools.getDirectoryNameFromType(type),
-                                          DocEmitterTools.getHtmlFileNameFromType(type), URLDirSeparator);
+                DocEmitterTools.getZserioPackageName(type) + ".html#" +
+                        (new LinkedType(type).getHyperlinkName()),
+                URLDirSeparator);
     }
 
-    /**
-     * Gets the name for database overview dot file.
-     *
-     * @param docRootPath The path to the root of the generated HTML documentation.
-     *
-     * @return The file which represents the dot file name for database overview.
-     */
-    public static File getDbOverviewDotFile(String docRootPath)
-    {
-        return new File(StringJoinUtil.joinStrings(docRootPath, dbOverviewDirectory,
-                "overview.dot", File.separator));
-    }
-
-    /**
-     * Gets the name for database overview svg file.
-     *
-     * @param docRootPath The path to the root of the generated HTML documentation.
-     *
-     * @return The file which represents the svg file name for database overview.
-     */
-    public static File getDbOverviewSvgFile(String docRootPath)
-    {
-        return new File(StringJoinUtil.joinStrings(docRootPath, dbOverviewDirectory,
-                "overview.svg", File.separator));
-    }
-
-    /**
-     * Gets the name for database structure dot file.
-     *
-     * @param docRootPath The path to the root of the generated HTML documentation.
-     * @param type        Database type for which to get the database structure dot file name.
-     *
-     * @return The file which represents the dot file name for database structure.
-     */
-    public static File getDbStructureDotFile(String docRootPath, SqlDatabaseType type)
-    {
-        return new File(StringJoinUtil.joinStrings(docRootPath, dbStructureDirectory,
-                type.getName() + ".dot", File.separator));
-    }
-
-    /**
-     * Gets the name for database structure svg file.
-     *
-     * @param docRootPath The path to the root of the generated HTML documentation.
-     * @param type        Database type for which to get the database structure svg file name.
-     *
-     * @return The file which represents the svg file name for database structure.
-     */
-    public static File getDbStructureSvgFile(String docRootPath, SqlDatabaseType type)
-    {
-        return new File(StringJoinUtil.joinStrings(docRootPath, dbStructureDirectory,
-                type.getName() + ".svg", File.separator));
-    }
-
-    /**
-     * Gets the name for type collaboration dot file.
-     *
-     * @param docRootPath The path to the root of the generated HTML documentation.
-     * @param type        Zserio type for which to get the type collaboration dot file name.
-     *
-     * @return The file which represents the dot file name for type collaboration.
-     *
-     * @throws ZserioEmitException Throws in case of any internal error.
-     */
-    public static File getTypeCollaborationDotFile(String docRootPath, AstNode type)
-            throws ZserioEmitException
-    {
-        return new File(StringJoinUtil.joinStrings(docRootPath, typeCollaborationDirectory,
-                                          DocEmitterTools.getDirectoryNameFromType(type),
-                                          DocEmitterTools.getDotFileNameFromType(type), File.separator));
-    }
-
-    /**
-     * Gets the name for type collaboration svg file.
-     *
-     * @param docRootPath The path to the root of the generated HTML documentation.
-     * @param type        Zserio type for which to get the type collaboration svg file name.
-     *
-     * @return The file which represents the svg file name for type collaboration.
-     *
-     * @throws ZserioEmitException Throws in case of any internal error.
-     */
-    public static File getTypeCollaborationSvgFile(String docRootPath, AstNode type)
-            throws ZserioEmitException
-    {
-        return new File(StringJoinUtil.joinStrings(docRootPath, typeCollaborationDirectory,
-                                          DocEmitterTools.getDirectoryNameFromType(type),
-                                          DocEmitterTools.getSvgFileNameFromType(type), File.separator));
-    }
-
-    /**
-     * Gets the URL for type collaboration svg file if exists.
-     *
-     * @param docRootPath The path to the root of the generated HTML documentation.
-     * @param type        Zserio type for which to get the URL.
-     *
-     * @return The string which represents the URL for type collaboration svg file or null if not exists.
-     *
-     * @throws ZserioEmitException Throws in case of any internal error.
-     */
+    // TODO[mikir] Should be removed and replaced by getSvgUrl call.
     public static String getTypeCollaborationSvgUrl(String docRootPath, AstNode type)
             throws ZserioEmitException
     {
-        final String svgFileNameBase = StringJoinUtil.joinStrings(typeCollaborationDirectory,
-                                          DocEmitterTools.getDirectoryNameFromType(type),
-                                          DocEmitterTools.getSvgFileNameFromType(type), URLDirSeparator);
-        final String svgFileName = StringJoinUtil.joinStrings(docRootPath, svgFileNameBase, URLDirSeparator);
-        final File svgFile = new File(svgFileName);
-
-        return (svgFile.exists()) ? StringJoinUtil.joinStrings("..", "..", svgFileNameBase, URLDirSeparator)
-                                  : null;
+        return TypeCollaborationDotEmitter.getSvgUrl(docRootPath, type);
     }
 
     /**
@@ -261,6 +118,10 @@ public class DocEmitterTools
 
         if (node instanceof ZserioType)
         {
+            if (((ZserioType)node) instanceof BuiltInType)
+            {
+                return (new PackageName.Builder()).get();
+            }
             return ((ZserioType)node).getPackage().getPackageName();
         }
         if (node instanceof Constant)
@@ -290,18 +151,15 @@ public class DocEmitterTools
         throw new ZserioEmitException("Unhanled Zserio type or symbol '" + node.getClass().getName() + "'!");
     }
 
-    private static String getFileNameFromType(AstNode type, String extensionName) throws ZserioEmitException
+    public static String getFileNameFromType(AstNode type, String extensionName) throws ZserioEmitException
     {
         HtmlModuleNameSuffixVisitor suffixVisitor = new HtmlModuleNameSuffixVisitor();
         type.accept(suffixVisitor);
 
-        return getZserioName(type) + "_" + suffixVisitor.getSuffix() + "." + extensionName;
+        return getZserioName(type) + "_" + suffixVisitor.getSuffix() + extensionName;
     }
 
     private static final String docDirectory = "content";
-    private static final String dbOverviewDirectory = "db_overview";
-    private static final String dbStructureDirectory = "db_structure";
-    private static final String typeCollaborationDirectory = "type_collaboration";
     private static final String URLDirSeparator = "/";
 
     private static final String[] databaseColorList = new String[]

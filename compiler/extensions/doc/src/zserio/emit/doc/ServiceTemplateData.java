@@ -9,18 +9,18 @@ import zserio.emit.common.ZserioEmitException;
 
 public class ServiceTemplateData
 {
-    public ServiceTemplateData(ServiceType serviceType, String outputPath, boolean withSvgDiagrams)
-            throws ZserioEmitException
+    public ServiceTemplateData(TemplateDataContext context, ServiceType serviceType) throws ZserioEmitException
     {
         name = serviceType.getName();
         packageName = serviceType.getPackage().getPackageName().toString();
+        linkedType = new LinkedType(serviceType);
         docComment = new DocCommentTemplateData(serviceType.getDocComment());
         for (ServiceMethod method : serviceType.getMethodList())
         {
             methodList.add(new MethodTemplateData(method));
         }
-        collaborationDiagramSvgFileName = (withSvgDiagrams)
-                ? DocEmitterTools.getTypeCollaborationSvgUrl(outputPath, serviceType) : null;
+        collaborationDiagramSvgFileName = context.getWithSvgDiagrams()
+                ? DocEmitterTools.getTypeCollaborationSvgUrl(context.getOutputPath(), serviceType) : null;
     }
 
     public String getName()
@@ -31,6 +31,11 @@ public class ServiceTemplateData
     public String getPackageName()
     {
         return packageName;
+    }
+
+    public LinkedType getLinkedType()
+    {
+        return linkedType;
     }
 
     public DocCommentTemplateData getDocComment()
@@ -86,6 +91,7 @@ public class ServiceTemplateData
 
     private final String name;
     private final String packageName;
+    private final LinkedType linkedType;
     private final DocCommentTemplateData docComment;
     private final List<MethodTemplateData> methodList = new ArrayList<MethodTemplateData>();
     private final String collaborationDiagramSvgFileName;
