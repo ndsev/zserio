@@ -50,7 +50,10 @@
     <#list functions as function>
             <tr>
               <td id="tabIndent"></td>
-              <td colspan=2>function <@linkedtype function.returnType/> ${function.name}()</td>
+              <td colspan=2>
+                function <@linkedtype function.returnType/> <#rt>
+                  <#lt><a href="#${function.anchorName}" class="fieldLink">${function.name}</a>()
+              </td>
             </tr>
             <tr>
               <td id="tabIndent"></td>
@@ -78,7 +81,7 @@
     </#if>
 </#macro>
 
-<#macro compound_member_details fields>
+<#macro compound_member_details fields functions>
     <#if fields?has_content>
     <dl>
         <#list fields as field>
@@ -99,8 +102,31 @@
         <@doc_comment field.docComment/>
       </dd>
         </#list>
+        <#list functions as function>
+      <@compound_function_detail function/>
+        </#list>
     </dl>
     </#if>
+</#macro>
+
+<#macro compound_function_detail function>
+      <dt class="memberItem">
+        function
+        <a name="${function.anchorName}">
+            <#if function.docComment.isDeprecated>
+          <span class="deprecated">(deprecated) </span>
+          <del>
+            </#if>
+            ${function.name}
+            <#if function.docComment.isDeprecated>
+          </del>
+            </#if>
+          :
+        </a>
+      </dt>
+      <dd class="memberDetail">
+        <@doc_comment function.docComment/>
+      </dd>
 </#macro>
 
 <#macro compound_field_arguments arguments>

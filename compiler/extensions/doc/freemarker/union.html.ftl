@@ -36,7 +36,7 @@
     </table>
 
     <h3>Member Details</h3>
-    <@compound_member_details fields/>
+    <@compound_member_details fields functions/>
 
     <@used_by usedByList/>
 <#if collaborationDiagramSvgFileName??>

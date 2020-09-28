@@ -148,9 +148,6 @@
   </#if>
           </dl>
       </dd>
-      <dd>
-        <br />
-      </dd>
 </#list>
 <#if defaultMember??>
         <dt class="memberItem">
@@ -188,10 +185,10 @@
   </#if>
           </dl>
       </dd>
-      <dd>
-        <br />
-      </dd>
 </#if>
+<#list functions as function>
+      <@compound_function_detail function/>
+</#list>
     </dl>
 
 <@used_by usedByList/>

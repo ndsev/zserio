@@ -232,6 +232,7 @@ public class CompoundTypeTemplateData extends DocTemplateData
             anchorName = DocEmitterTools.getAnchorName(compoundType, function.getName());
             returnType = new LinkedType(function.getReturnTypeReference().getType());
             resultExpression = docExpressionFormatter.formatGetter(function.getResultExpression());
+            docComment = new DocCommentTemplateData(function.getDocComment());
         }
 
         public String getName()
@@ -244,20 +245,26 @@ public class CompoundTypeTemplateData extends DocTemplateData
             return anchorName;
         }
 
-        public LinkedType getReturnType() throws ZserioEmitException
+        public LinkedType getReturnType()
         {
             return returnType;
         }
 
-        public String getResultExpression() throws ZserioEmitException
+        public String getResultExpression()
         {
             return resultExpression;
+        }
+
+        public DocCommentTemplateData getDocComment()
+        {
+            return docComment;
         }
 
         private final String name;
         private final String anchorName;
         private final LinkedType returnType;
         private final String resultExpression;
+        private final DocCommentTemplateData docComment;
     }
 
     private final List<ParameterTemplateData> parameters = new ArrayList<ParameterTemplateData>();
