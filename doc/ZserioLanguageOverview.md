@@ -1082,6 +1082,23 @@ struct Block
 
 ## Comments
 
+There are two types of comments in zserio language:
+
+- Standard Comments
+- Documentation Comments
+
+Standard comments are intended only as the comments of zserio schema and are filtered out during compilation.
+Thus, generators have no access to these comments.
+
+Documentation comments are not filtered out during compilation and they can be used for generation of zserio
+schema documentation or for documentation of generated code. These comments might be associated
+to the subsequent ype or field definition. 
+
+Documentation comments are further divided to two types:
+
+- Classic Comments
+- Markdown Comments
+
 ### Standard Comments
 
 Zserio supports the standard comment syntax of Java or C++. Single line comments start with `//` and extend
@@ -1097,11 +1114,11 @@ or may not be on the same line.
     spanning three lines. */
 ```
 
-### Documentation Comments
+### Classic Documentation Comments
 
-To support inline documentation within a zserio module, multi-line comments starting with `/**` are treated as
-special documentation comments. The idea and syntax is borrowed from Java(doc). A documentation comment is
-associated to the following type or field definition. The documentation comment and the corresponding
+To support generation of documentation, multi-line comments starting with `/**` are treated as special
+classic documentation comments. The idea and syntax is borrowed from Java(doc). A classic documentation comment
+is associated to the following type or field definition. The classic documentation comment and the corresponding
 definition may only be separated by whitespace.
 
 **Example**
@@ -1126,7 +1143,7 @@ enum bit:2 Direction
 };
 ```
 
-The documentation comments can contain special tags which is shown by the following example:
+The classic documentation comments can contain special tags which is shown by the following example:
 
 ```
 /**
@@ -1148,14 +1165,15 @@ The documentation comments can contain special tags which is shown by the follow
 * @deprecated
 */
 ```
-The content of a documentation comment, excluding its delimiters, is parsed line by line. Each line is stripped
-of leading whitespace, a sequence of asterisks (`*`), and more whitespace, if present. After stripping,
+The content of a classic documentation comment, excluding its delimiters, is parsed line by line. Each line is
+stripped of leading whitespace, a sequence of asterisks (`*`), and more whitespace, if present. After stripping,
 a comment is composed of one or more paragraphs, followed by zero or more tag blocks. Paragraphs are separated
-by blank lines. The text in paragraphs can contain HTML formatting tags like `<ul>`, `<li>` or `</br>` directly.
+by blank lines. The text in paragraphs can contain HTML formatting tags like `<ul>`, `<li>` or `</br>`
+directly.
 
 A line starting with whitespace and a keyword preceded by an at-sign (`@`) is the beginning of a tag.
 
-The following sections describe all supported tags in the documentation comments in detail.
+The following sections describe all supported tags in the classic documentation comments in detail.
 
 #### See Tag
 
@@ -1238,6 +1256,31 @@ future versions of the schema. It has the following format:
 
 ```
 @deprecated
+```
+
+### Markdown Documentation Comments
+
+To support generation of documentation, multi-line comments starting with `/*!` are treated as special
+markdown documentation comments.
+
+**Example**
+
+```
+/*!
+
+# Title for this section
+
+The tile contains a number of different elements grouped by feature classes, e.g. intersections,
+roads and so on...
+
+This module defined the following structure:
+
+Name        | Description
+------------| ----------------------------------------------
+Structure1  | This describes Structure1 in detail.
+Structure2  | This describes Structure2 in detail.
+
+*/
 ```
 
 [top](#language-guide)
