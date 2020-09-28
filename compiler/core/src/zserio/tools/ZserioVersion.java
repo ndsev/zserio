@@ -6,5 +6,5 @@ package zserio.tools;
 public final class ZserioVersion
 {
     /** ZserioTool version string. */
-    public static final String VERSION_STRING = "2.1.0-pre1";
+    public static final String VERSION_STRING = "2.1.0-pre2";
 }
