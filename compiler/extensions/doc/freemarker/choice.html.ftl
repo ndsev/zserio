@@ -4,7 +4,7 @@
 <#include "linkedtype.inc.ftl">
 <#include "usedby.inc.ftl">
 <#include "collaboration_diagram.inc.ftl">
-<#macro choice_field anchorName field>
+<#macro choice_field field>
             <tr class="codeMember">
               <td id="tabIndent"></td>
               <td id="tabIndent">
@@ -12,7 +12,7 @@
                   <#lt><@linkedtype field.linkedType/><@compound_field_arguments field.arguments/>
               </td>
               <td>
-                <a href="#${anchorName}_${field.name}" class="fieldLink">${field.name}</a><#rt>
+                <a href="#${field.anchorName}" class="fieldLink">${field.name}</a><#rt>
                   ${field.arrayRange}<#t>
     <#if field.initializerExpression?has_content>
                   <#lt> = ${field.initializerExpression}<#rt>
@@ -64,13 +64,13 @@
               <td id="tabIndent"></td>
               <td colspan=2>
     <#list caseMember.caseList as case>
-                <a name="${anchorName}_casedef_${case.expression}" href="#${anchorName}_case_${case.expression}" class="fieldLink">case ${case.expression}</a>:<#rt>
+                <a name="${case.definitionAnchorName}" href="#${case.detailAnchorName}" class="fieldLink">case ${case.expression}</a>:<#rt>
                   <#lt><#if case?has_next><br/></#if>
     </#list>
               </td>
             </tr>
     <#if caseMember.field??>
-            <@choice_field anchorName caseMember.field/>
+            <@choice_field caseMember.field/>
     <#else>
             <tr>
               <td colspan=2 id="tabIndent"></td>
@@ -86,7 +86,7 @@
               </td>
             </tr>
     <#if defaultMember.field??>
-            <@choice_field anchorName defaultMember.field/>
+            <@choice_field defaultMember.field/>
     <#else>
             <tr>
               <td colspan=2 id="tabIndent"></td>
@@ -115,7 +115,7 @@
             <dl>
     <#list caseMember.caseList as case>
                 <dt class="memberItem">
-                    <a name="${anchorName}_case_${case.expression}">${case.expression}</a>
+                    <a name="${case.detailAnchorName}">${case.expression}</a>
                 </dt>
                 <dd class="memberDetail">
                     <@doc_comment case.docComment/>
@@ -133,7 +133,7 @@
           <dl>
   <#if caseMember.field??>
               <dt class="memberItem">
-                  <a name="${anchorName}_${caseMember.field.name}">${caseMember.field.name}:</a>
+                  <a name="${caseMember.field.anchorName}">${caseMember.field.name}:</a>
               </dt>
               <dd class="memberDetail">
                   <@doc_comment caseMember.field.docComment/>
@@ -173,7 +173,7 @@
           <dl>
   <#if defaultMember.field??>
               <dt class="memberItem">
-                  <a name="${anchorName}_${defaultMember.field.name}">${defaultMember.field.name}:</a>
+                  <a name="${defaultMember.field.anchorName}">${defaultMember.field.name}:</a>
               </dt>
               <dd class="memberDetail">
                   <@doc_comment defaultMember.field.docComment/>

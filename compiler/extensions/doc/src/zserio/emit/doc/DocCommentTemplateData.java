@@ -20,6 +20,7 @@ import zserio.ast.DocTagTodo;
 import zserio.ast.DocText;
 import zserio.ast.SymbolReference;
 import zserio.emit.common.ZserioEmitException;
+import zserio.tools.StringJoinUtil;
 
 /**
  * The documentation comment data used for FreeMarker template during documentation generation.
@@ -234,14 +235,20 @@ public class DocCommentTemplateData
             {
                 final AstNode referencedSymbol = linkSymbolReference.getReferencedSymbol();
                 if (referencedSymbol != null)
-                    url = DocEmitterTools.getUrlNameFromType(referencedSymbol);
+                {
+                    url = StringJoinUtil.joinStrings(DocEmitterTools.getUrlNameFromType(referencedSymbol),
+                            DocEmitterTools.getAnchorName(referencedSymbol), "#");
+                }
                 else
                     url = null; // this can happen if see tag is wrong and could not be resolved
             }
             else
             {
-                url = DocEmitterTools.getUrlNameFromTypeAndFieldName(linkSymbolReference.getReferencedType(),
-                        linkSymbolReference.getReferencedSymbolName());
+                final String urlName = DocEmitterTools.getUrlNameFromType(
+                        linkSymbolReference.getReferencedType());
+                final String anchorName = DocEmitterTools.getAnchorName(
+                        linkSymbolReference.getReferencedType(), linkSymbolReference.getReferencedSymbolName());
+                url =  StringJoinUtil.joinStrings(urlName, anchorName, "#");
             }
         }
 

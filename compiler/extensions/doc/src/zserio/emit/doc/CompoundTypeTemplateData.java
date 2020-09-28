@@ -27,10 +27,10 @@ public class CompoundTypeTemplateData extends DocTemplateData
             parameters.add(new ParameterTemplateData(parameter));
 
         for (Field field : compoundType.getFields())
-            fields.add(new FieldTemplateData(field, context.getExpressionFormatter()));
+            fields.add(new FieldTemplateData(compoundType, field, context.getExpressionFormatter()));
 
         for (Function function : compoundType.getFunctions())
-            functions.add(new FunctionTemplateData(function, context.getExpressionFormatter()));
+            functions.add(new FunctionTemplateData(compoundType, function, context.getExpressionFormatter()));
     }
 
     public Iterable<ParameterTemplateData> getParameters()
@@ -72,10 +72,11 @@ public class CompoundTypeTemplateData extends DocTemplateData
 
     public static class FieldTemplateData
     {
-        public FieldTemplateData(Field field, ExpressionFormatter docExpressionFormatter)
+        public FieldTemplateData(CompoundType compoundType, Field field, ExpressionFormatter docExpressionFormatter)
                 throws ZserioEmitException
         {
             name = field.getName();
+            anchorName = DocEmitterTools.getAnchorName(compoundType, field.getName());
             final TypeInstantiation fieldTypeInstantiation = field.getTypeInstantiation();
             linkedType = new LinkedType(fieldTypeInstantiation);
             initArguments(fieldTypeInstantiation, docExpressionFormatter);
@@ -108,6 +109,11 @@ public class CompoundTypeTemplateData extends DocTemplateData
         public String getName()
         {
             return name;
+        }
+
+        public String getAnchorName()
+        {
+            return anchorName;
         }
 
         public LinkedType getLinkedType()
@@ -201,6 +207,7 @@ public class CompoundTypeTemplateData extends DocTemplateData
         }
 
         private final String name;
+        private final String anchorName;
         private final LinkedType linkedType;
         private final List<String> arguments = new ArrayList<String>();
         private final DocCommentTemplateData docComment;
@@ -218,10 +225,11 @@ public class CompoundTypeTemplateData extends DocTemplateData
 
     public static class FunctionTemplateData
     {
-        public FunctionTemplateData(Function function, ExpressionFormatter docExpressionFormatter)
-                throws ZserioEmitException
+        public FunctionTemplateData(CompoundType compoundType, Function function,
+                ExpressionFormatter docExpressionFormatter) throws ZserioEmitException
         {
             name = function.getName();
+            anchorName = DocEmitterTools.getAnchorName(compoundType, function.getName());
             returnType = new LinkedType(function.getReturnTypeReference().getType());
             resultExpression = docExpressionFormatter.formatGetter(function.getResultExpression());
         }
@@ -229,6 +237,11 @@ public class CompoundTypeTemplateData extends DocTemplateData
         public String getName()
         {
             return name;
+        }
+
+        public String getAnchorName()
+        {
+            return anchorName;
         }
 
         public LinkedType getReturnType() throws ZserioEmitException
@@ -242,6 +255,7 @@ public class CompoundTypeTemplateData extends DocTemplateData
         }
 
         private final String name;
+        private final String anchorName;
         private final LinkedType returnType;
         private final String resultExpression;
     }

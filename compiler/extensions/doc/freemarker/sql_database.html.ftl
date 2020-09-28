@@ -24,7 +24,7 @@
           <tbody id="tabIndent">
             <tr><td colspan=3>sql_database ${name}</td></tr>
             <tr><td colspan=3>{</td></tr>
-            <@compound_fields anchorName fields/>
+            <@compound_fields fields/>
             <tr><td colspan=3>};</td></tr>
           </tbody>
         </table>
@@ -32,7 +32,7 @@
     </table>
 
     <h3>Member Details</h3>
-    <@compound_member_details anchorName fields/>
+    <@compound_member_details fields/>
 <#if collaborationDiagramSvgFileName??>
 
     <@collaboration_diagram collaborationDiagramSvgFileName/>

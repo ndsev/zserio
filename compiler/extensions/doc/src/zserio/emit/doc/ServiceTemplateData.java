@@ -13,11 +13,11 @@ public class ServiceTemplateData
     {
         name = serviceType.getName();
         packageName = serviceType.getPackage().getPackageName().toString();
-        linkedType = new LinkedType(serviceType);
+        anchorName = DocEmitterTools.getAnchorName(serviceType);
         docComment = new DocCommentTemplateData(serviceType.getDocComment());
         for (ServiceMethod method : serviceType.getMethodList())
         {
-            methodList.add(new MethodTemplateData(method));
+            methodList.add(new MethodTemplateData(serviceType, method));
         }
         collaborationDiagramSvgFileName = context.getWithSvgDiagrams()
                 ? DocEmitterTools.getTypeCollaborationSvgUrl(context.getOutputPath(), serviceType) : null;
@@ -33,9 +33,9 @@ public class ServiceTemplateData
         return packageName;
     }
 
-    public LinkedType getLinkedType()
+    public String getAnchorName()
     {
-        return linkedType;
+        return anchorName;
     }
 
     public DocCommentTemplateData getDocComment()
@@ -55,9 +55,11 @@ public class ServiceTemplateData
 
     public static class MethodTemplateData
     {
-        public MethodTemplateData(ServiceMethod serviceMethod) throws ZserioEmitException
+        public MethodTemplateData(ServiceType serviceType, ServiceMethod serviceMethod)
+                throws ZserioEmitException
         {
             name = serviceMethod.getName();
+            anchorName = DocEmitterTools.getAnchorName(serviceType, name);
             requestType = new LinkedType(serviceMethod.getRequestType());
             responseType = new LinkedType(serviceMethod.getResponseType());
             docComment = new DocCommentTemplateData(serviceMethod.getDocComment());
@@ -66,6 +68,11 @@ public class ServiceTemplateData
         public String getName()
         {
             return name;
+        }
+
+        public String getAnchorName()
+        {
+            return anchorName;
         }
 
         public LinkedType getRequestType()
@@ -84,6 +91,7 @@ public class ServiceTemplateData
         }
 
         private final String name;
+        private final String anchorName;
         private final LinkedType requestType;
         private final LinkedType responseType;
         private final DocCommentTemplateData docComment;
@@ -91,7 +99,7 @@ public class ServiceTemplateData
 
     private final String name;
     private final String packageName;
-    private final LinkedType linkedType;
+    private final String anchorName;
     private final DocCommentTemplateData docComment;
     private final List<MethodTemplateData> methodList = new ArrayList<MethodTemplateData>();
     private final String collaborationDiagramSvgFileName;

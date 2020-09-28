@@ -14,7 +14,8 @@ public class DocTemplateData
     {
         this.docComment = new DocCommentTemplateData(astNode.getDocComment());
         this.name = name;
-        this.anchorName = new LinkedType(astNode).getHyperlinkName();
+        this.url = DocEmitterTools.getUrlNameFromType(astNode);
+        this.anchorName = DocEmitterTools.getAnchorName(astNode);
         this.collaborationDiagramSvgUrl = context.getWithSvgDiagrams()
                 ? DocEmitterTools.getTypeCollaborationSvgUrl(context.getOutputPath(), astNode)
                 : null;
@@ -39,6 +40,11 @@ public class DocTemplateData
         return anchorName;
     }
 
+    public String getUrl()
+    {
+        return url;
+    }
+
     public String getCollaborationDiagramSvgUrl()
     {
         return collaborationDiagramSvgUrl;
@@ -51,6 +57,7 @@ public class DocTemplateData
 
     private final DocCommentTemplateData docComment;
     private final String name;
+    private final String url;
     private final String anchorName;
 
     private final String collaborationDiagramSvgUrl;

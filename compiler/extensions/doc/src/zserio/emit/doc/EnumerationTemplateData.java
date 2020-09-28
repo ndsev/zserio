@@ -12,6 +12,7 @@ import zserio.ast.Expression;
 import zserio.emit.common.ExpressionFormatter;
 import zserio.emit.common.ZserioEmitException;
 import zserio.tools.HashUtil;
+import zserio.tools.StringJoinUtil;
 
 public class EnumerationTemplateData extends DocTemplateData
 {
@@ -24,7 +25,7 @@ public class EnumerationTemplateData extends DocTemplateData
 
         for (EnumItem item: enumType.getItems())
         {
-            items.add(new EnumItemTemplateData(item, context.getUsedByCollector(),
+            items.add(new EnumItemTemplateData(enumType, item, context.getUsedByCollector(),
                     context.getExpressionFormatter()));
         }
     }
@@ -41,10 +42,11 @@ public class EnumerationTemplateData extends DocTemplateData
 
     public static class EnumItemTemplateData
     {
-        public EnumItemTemplateData(EnumItem enumItem, UsedByCollector usedByCollector,
+        public EnumItemTemplateData(EnumType enumType, EnumItem enumItem, UsedByCollector usedByCollector,
                 ExpressionFormatter docExpressionFormatter) throws ZserioEmitException
         {
             name = enumItem.getName();
+            anchorName = DocEmitterTools.getAnchorName(enumType, name);
 
             final Expression valueExpression = enumItem.getValueExpression();
             value = (valueExpression == null) ? enumItem.getValue().toString() :
@@ -60,6 +62,11 @@ public class EnumerationTemplateData extends DocTemplateData
         public String getName()
         {
             return name;
+        }
+
+        public String getAnchorName()
+        {
+            return anchorName;
         }
 
         public String getValue()
@@ -79,13 +86,14 @@ public class EnumerationTemplateData extends DocTemplateData
 
         public static class UsageInfoTemplateData implements Comparable<UsageInfoTemplateData>
         {
-            private final EnumItem enumItem;
-            private final ChoiceType choiceType;
-
             public UsageInfoTemplateData(EnumItem enumItem, ChoiceType choiceType)
+                    throws ZserioEmitException
             {
-                this.enumItem = enumItem;
-                this.choiceType = choiceType;
+                this.choiceCaseLinkText = choiceType.getName() + "( " + enumItem.getName() + " )";
+                final String urlName = DocEmitterTools.getUrlNameFromType(choiceType);
+                final String anchorName = DocEmitterTools.getAnchorName(
+                        choiceType, "casedef", enumItem.getName());
+                this.choiceCaseLink = StringJoinUtil.joinStrings(urlName, anchorName, "#");
             }
 
             /* Don't change this ordering to have always the same generated HTML sources. */
@@ -112,28 +120,22 @@ public class EnumerationTemplateData extends DocTemplateData
                 return hash;
             }
 
-            public EnumItem getEnumItem()
-            {
-                return enumItem;
-            }
-
-            public boolean getIsFromChoiceCase()
-            {
-                return choiceType != null;
-            }
-
             public String getChoiceCaseLinkText()
             {
-                return (choiceType.getName() + "( " + getEnumItem().getName() + " )");
+                return choiceCaseLinkText;
             }
 
-            public String getChoiceCaseLink() throws ZserioEmitException
+            public String getChoiceCaseLink()
             {
-                return DocEmitterTools.getUrlNameFromType(choiceType) + "_casedef_" + getEnumItem().getName();
+                return choiceCaseLink;
             }
+
+            private final String choiceCaseLinkText;
+            private final String choiceCaseLink;
         }
 
         private final String name;
+        private final String anchorName;
         private final String value;
         private final DocCommentTemplateData docComment;
         private final SortedSet<UsageInfoTemplateData> usageInfoList;

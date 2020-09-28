@@ -12,6 +12,7 @@ import zserio.ast.Expression;
 import zserio.emit.common.ExpressionFormatter;
 import zserio.emit.common.ZserioEmitException;
 import zserio.tools.HashUtil;
+import zserio.tools.StringJoinUtil;
 
 public class BitmaskTemplateData extends DocTemplateData
 {
@@ -24,7 +25,7 @@ public class BitmaskTemplateData extends DocTemplateData
 
         for (BitmaskValue value : bitmaskType.getValues())
         {
-            values.add(new BitmaskValueTemplateData(value, context.getUsedByCollector(),
+            values.add(new BitmaskValueTemplateData(bitmaskType, value, context.getUsedByCollector(),
                     context.getExpressionFormatter()));
         }
     }
@@ -41,10 +42,12 @@ public class BitmaskTemplateData extends DocTemplateData
 
     public static class BitmaskValueTemplateData
     {
-        public BitmaskValueTemplateData(BitmaskValue bitmaskValue, UsedByCollector usedByCollector,
+        public BitmaskValueTemplateData(BitmaskType bitmaskType, BitmaskValue bitmaskValue,
+                UsedByCollector usedByCollector,
                 ExpressionFormatter docExpressionFormatter) throws ZserioEmitException
         {
             name = bitmaskValue.getName();
+            anchorName = DocEmitterTools.getAnchorName(bitmaskType, name);
 
             final Expression valueExpression = bitmaskValue.getValueExpression();
             value = (valueExpression == null) ? bitmaskValue.getValue().toString() :
@@ -60,6 +63,11 @@ public class BitmaskTemplateData extends DocTemplateData
         public String getName()
         {
             return name;
+        }
+
+        public String getAnchorName()
+        {
+            return anchorName;
         }
 
         public String getValue()
@@ -79,13 +87,14 @@ public class BitmaskTemplateData extends DocTemplateData
 
         public static class UsageInfoTemplateData implements Comparable<UsageInfoTemplateData>
         {
-            private final BitmaskValue bitmaskValue;
-            private final ChoiceType choiceType;
-
             public UsageInfoTemplateData(BitmaskValue bitmaskValue, ChoiceType choiceType)
+                    throws ZserioEmitException
             {
-                this.bitmaskValue = bitmaskValue;
-                this.choiceType = choiceType;
+                this.choiceCaseLinkText = choiceType.getName() + "( " + bitmaskValue.getName() + " )";
+                final String urlName = DocEmitterTools.getUrlNameFromType(choiceType);
+                final String anchorName = DocEmitterTools.getAnchorName(
+                        choiceType, "casedef", bitmaskValue.getName());
+                this.choiceCaseLink = StringJoinUtil.joinStrings(urlName, anchorName, "#");
             }
 
             /* Don't change this ordering to have always the same generated HTML sources. */
@@ -112,29 +121,22 @@ public class BitmaskTemplateData extends DocTemplateData
                 return hash;
             }
 
-            public BitmaskValue getBitmaskValue()
-            {
-                return bitmaskValue;
-            }
-
-            public boolean getIsFromChoiceCase()
-            {
-                return choiceType != null;
-            }
-
             public String getChoiceCaseLinkText()
             {
-                return (choiceType.getName() + "( " + getBitmaskValue().getName() + " )");
+                return choiceCaseLinkText;
             }
 
-            public String getChoiceCaseLink() throws ZserioEmitException
+            public String getChoiceCaseLink()
             {
-                return DocEmitterTools.getUrlNameFromType(choiceType) +
-                        "_casedef_" + getBitmaskValue().getName();
+                return choiceCaseLink;
             }
+
+            private final String choiceCaseLinkText;
+            private final String choiceCaseLink;
         };
 
         private final String name;
+        private final String anchorName;
         private final String value;
         private final DocCommentTemplateData docComment;
         private final SortedSet<UsageInfoTemplateData> usageInfoList;

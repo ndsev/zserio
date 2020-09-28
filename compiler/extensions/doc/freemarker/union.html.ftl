@@ -24,7 +24,7 @@
           <tbody id="tabIndent">
             <tr><td colspan=3>union ${name}<@compound_parameters parameters/></td></tr>
             <tr><td colspan=3>{</td></tr>
-            <@compound_fields anchorName fields/>
+            <@compound_fields fields/>
 <#if functions?has_content>
             <tr><td colspan=3>&nbsp;</td></tr>
             <@compound_functions functions/>
@@ -36,7 +36,7 @@
     </table>
 
     <h3>Member Details</h3>
-    <@compound_member_details anchorName fields/>
+    <@compound_member_details fields/>
 
     <@used_by usedByList/>
 <#if collaborationDiagramSvgFileName??>

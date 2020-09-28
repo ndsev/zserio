@@ -36,26 +36,52 @@ class DocEmitterTools
      */
     public static String getUrlNameFromType(AstNode type) throws ZserioEmitException
     {
-        return DocEmitterTools.getZserioPackageName(type) + ".html#" +
-                (new LinkedType(type).getHyperlinkName());
+        return DocEmitterTools.getZserioPackageName(type) + ".html";
     }
 
     /**
-     * Returns the URL name of HTML file.
+     * Get anchor name for the given Zserio type.
      *
-     * @param type      The ZserioType from which to generate the URL name.
-     * @param fieldName The field name from which to generate the URL name or null if no field name is present.
+     * @param type Zserio type.
+     * @return Anchor name.
      *
      * @throws ZserioEmitException Throws in case of any internal error.
      */
-    public static String getUrlNameFromTypeAndFieldName(AstNode type, String fieldName)
+    public static String getAnchorName(AstNode type) throws ZserioEmitException
+    {
+        return new LinkedType(type).getHyperlinkName();
+    }
+
+    /**
+     * Gets anchor name for the given Zserio type and it's member name.
+     *
+     * @param type Zserio type.
+     * @param name Member name - e.g. fieldName, bitmaskValue, etc.
+     *
+     * @return Anchor name.
+     *
+     * @throws ZserioEmitException Throws in case of any internal error.
+     */
+    public static String getAnchorName(AstNode type, String memberName) throws ZserioEmitException
+    {
+        return StringJoinUtil.joinStrings(getAnchorName(type), memberName, "_");
+    }
+
+    /**
+     * Gets anchor name for the given Zserio type and it's member name with custom prefix.
+     *
+     * @param type Zserio type.
+     * @param prefix Prefix to use in anchor name.
+     * @param name Member name - e.g. fieldName, bitmaskValue, etc.
+     *
+     * @return Anchor name.
+     *
+     * @throws ZserioEmitException Throws in case of any internal error.
+     */
+    public static String getAnchorName(AstNode type, String prefix, String memberName)
             throws ZserioEmitException
     {
-        String urlName = getUrlNameFromType(type);
-        if (fieldName != null)
-            urlName += "_" + fieldName;
-
-        return urlName;
+        return StringJoinUtil.joinStrings(getAnchorName(type), prefix, memberName, "_");
     }
 
     /**

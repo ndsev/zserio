@@ -14,11 +14,11 @@ public class PubsubTemplateData
     {
         name = pubsubType.getName();
         packageName = pubsubType.getPackage().getPackageName().toString();
-        linkedType = new LinkedType(pubsubType);
+        anchorName = DocEmitterTools.getAnchorName(pubsubType);
         docComment = new DocCommentTemplateData(pubsubType.getDocComment());
         for (PubsubMessage message : pubsubType.getMessageList())
         {
-            messageList.add(new MessageTemplateData(context.getExpressionFormatter(), message));
+            messageList.add(new MessageTemplateData(pubsubType, context.getExpressionFormatter(), message));
         }
         collaborationDiagramSvgFileName = (context.getWithSvgDiagrams())
                 ? DocEmitterTools.getTypeCollaborationSvgUrl(context.getOutputPath(), pubsubType) : null;
@@ -29,14 +29,14 @@ public class PubsubTemplateData
         return name;
     }
 
-    public LinkedType getLinkedType() throws ZserioEmitException
-    {
-        return linkedType;
-    }
-
     public String getPackageName()
     {
         return packageName;
+    }
+
+    public String getAnchorName()
+    {
+        return anchorName;
     }
 
     public DocCommentTemplateData getDocComment()
@@ -56,12 +56,13 @@ public class PubsubTemplateData
 
     public static class MessageTemplateData
     {
-        public MessageTemplateData(ExpressionFormatter docExpressionFormatter,
+        public MessageTemplateData(PubsubType pubsubType, ExpressionFormatter docExpressionFormatter,
                 PubsubMessage pubsubMessage) throws ZserioEmitException
         {
             keyword = pubsubMessage.isPublished() && pubsubMessage.isSubscribed() ?
                     "pubsub" : pubsubMessage.isPublished() ? "publish" : "subscribe";
             name = pubsubMessage.getName();
+            anchorName = DocEmitterTools.getAnchorName(pubsubType, name);
             topicDefinition = docExpressionFormatter.formatGetter(pubsubMessage.getTopicDefinitionExpr());
             type = new LinkedType(pubsubMessage.getType());
             docComment = new DocCommentTemplateData(pubsubMessage.getDocComment());
@@ -75,6 +76,11 @@ public class PubsubTemplateData
         public String getName()
         {
             return name;
+        }
+
+        public String getAnchorName()
+        {
+            return anchorName;
         }
 
         public String getTopicDefinition()
@@ -94,6 +100,7 @@ public class PubsubTemplateData
 
         private final String keyword;
         private final String name;
+        private final String anchorName;
         private final String topicDefinition;
         private final LinkedType type;
         private final DocCommentTemplateData docComment;
@@ -101,7 +108,7 @@ public class PubsubTemplateData
 
     private final String name;
     private final String packageName;
-    private final LinkedType linkedType;
+    private final String anchorName;
     private final DocCommentTemplateData docComment;
     private final List<MessageTemplateData> messageList = new ArrayList<MessageTemplateData>();
     private final String collaborationDiagramSvgFileName;

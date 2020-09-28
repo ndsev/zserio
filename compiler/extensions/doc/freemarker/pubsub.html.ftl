@@ -3,7 +3,7 @@
 <#include "linkedtype.inc.ftl">
 <#include "collaboration_diagram.inc.ftl">
 
-        <div class="msgdetail" id="${linkedType.hyperlinkName}">
+        <div class="msgdetail" id="${anchorName}">
 <#if docComment.isDeprecated>
             <span class="deprecated">(deprecated) </span>
             <del>
@@ -25,7 +25,7 @@
                 <tr><td id="tabIndent">
                     ${message.keyword}(${message.topicDefinition}) <#rt>
                     <@linkedtype message.type/> <#rt>
-                    <#lt><a href="#${linkedType.hyperlinkName}_${message.name}" class="fieldLink">${message.name}</a>;
+                    <#lt><a href="#${message.anchorName}" class="fieldLink">${message.name}</a>;
                 </td></tr>
 </#list>
                 <tr><td>};</td></tr>
@@ -37,7 +37,7 @@
 
         <dl>
 <#list messageList as message>
-            <dt class="memberItem"><a name="${linkedType.hyperlinkName}_${message.name}">${message.name}:</a></dt>
+            <dt class="memberItem"><a name="${message.anchorName}">${message.name}:</a></dt>
             <dd class="memberDetail">
             <@doc_comment message.docComment/>
             </dd>
