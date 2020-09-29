@@ -12,7 +12,7 @@ public class DocTemplateData
     public DocTemplateData(TemplateDataContext context, DocumentableAstNode astNode, String name)
             throws ZserioEmitException
     {
-        this.docComment = new DocCommentTemplateData(astNode.getDocComment());
+        this.docComments = new DocCommentsTemplateData(astNode.getDocComments());
         this.name = name;
         this.url = DocEmitterTools.getUrlNameFromType(astNode);
         this.anchorName = DocEmitterTools.getAnchorName(astNode);
@@ -25,9 +25,9 @@ public class DocTemplateData
             usedByList.add(new LinkedType(usedByNode));
     }
 
-    public DocCommentTemplateData getDocComment()
+    public DocCommentsTemplateData getDocComments()
     {
-        return docComment;
+        return docComments;
     }
 
     public String getName()
@@ -55,7 +55,7 @@ public class DocTemplateData
         return usedByList;
     }
 
-    private final DocCommentTemplateData docComment;
+    private final DocCommentsTemplateData docComments;
     private final String name;
     private final String url;
     private final String anchorName;

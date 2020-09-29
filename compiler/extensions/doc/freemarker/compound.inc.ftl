@@ -90,19 +90,19 @@
         <#list fields as field>
       <dt class="memberItem">
         <a name="${field.anchorName}">
-            <#if field.docComment.isDeprecated>
+            <#if field.docComments.isDeprecated>
           <span class="deprecated">(deprecated) </span>
           <del>
             </#if>
             ${field.name}
-            <#if field.docComment.isDeprecated>
+            <#if field.docComments.isDeprecated>
           </del>
             </#if>
           :
         </a>
       </dt>
       <dd class="memberDetail">
-        <@doc_comment field.docComment/>
+        <@doc_comments field.docComments/>
       </dd>
         </#list>
     </dl>
@@ -125,19 +125,19 @@
 <#macro compound_function_detail function>
       <dt class="memberItem">
         <a name="${function.anchorName}">
-            <#if function.docComment.isDeprecated>
+            <#if function.docComments.isDeprecated>
           <span class="deprecated">(deprecated) </span>
           <del>
             </#if>
             ${function.name}()
-            <#if function.docComment.isDeprecated>
+            <#if function.docComments.isDeprecated>
           </del>
             </#if>
           :
         </a>
       </dt>
       <dd class="memberDetail">
-        <@doc_comment function.docComment/>
+        <@doc_comments function.docComments/>
       </dd>
 </#macro>
 

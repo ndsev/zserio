@@ -14,7 +14,7 @@ public class ServiceTemplateData
         name = serviceType.getName();
         packageName = serviceType.getPackage().getPackageName().toString();
         anchorName = DocEmitterTools.getAnchorName(serviceType);
-        docComment = new DocCommentTemplateData(serviceType.getDocComment());
+        docComments = new DocCommentsTemplateData(serviceType.getDocComments());
         for (ServiceMethod method : serviceType.getMethodList())
         {
             methodList.add(new MethodTemplateData(serviceType, method));
@@ -38,9 +38,9 @@ public class ServiceTemplateData
         return anchorName;
     }
 
-    public DocCommentTemplateData getDocComment()
+    public DocCommentsTemplateData getDocComments()
     {
-        return docComment;
+        return docComments;
     }
 
     public Iterable<MethodTemplateData> getMethodList()
@@ -62,7 +62,7 @@ public class ServiceTemplateData
             anchorName = DocEmitterTools.getAnchorName(serviceType, name);
             requestType = new LinkedType(serviceMethod.getRequestType());
             responseType = new LinkedType(serviceMethod.getResponseType());
-            docComment = new DocCommentTemplateData(serviceMethod.getDocComment());
+            docComments = new DocCommentsTemplateData(serviceMethod.getDocComments());
         }
 
         public String getName()
@@ -85,22 +85,22 @@ public class ServiceTemplateData
             return responseType;
         }
 
-        public DocCommentTemplateData getDocComment()
+        public DocCommentsTemplateData getDocComments()
         {
-            return docComment;
+            return docComments;
         }
 
         private final String name;
         private final String anchorName;
         private final LinkedType requestType;
         private final LinkedType responseType;
-        private final DocCommentTemplateData docComment;
+        private final DocCommentsTemplateData docComments;
     }
 
     private final String name;
     private final String packageName;
     private final String anchorName;
-    private final DocCommentTemplateData docComment;
+    private final DocCommentsTemplateData docComments;
     private final List<MethodTemplateData> methodList = new ArrayList<MethodTemplateData>();
     private final String collaborationDiagramSvgFileName;
 }

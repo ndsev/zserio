@@ -8,7 +8,7 @@ public class BeginPackageTemplateData
     public BeginPackageTemplateData(Package pkg) throws ZserioEmitException
     {
         name = pkg.getPackageName().toString();
-        docComment = new DocCommentTemplateData(pkg.getDocComment());
+        docComments = new DocCommentsTemplateData(pkg.getDocComments());
     }
 
     public String getName()
@@ -16,11 +16,11 @@ public class BeginPackageTemplateData
         return name;
     }
 
-    public DocCommentTemplateData getDocComment()
+    public DocCommentsTemplateData getDocComments()
     {
-        return docComment;
+        return docComments;
     }
 
     private final String name;
-    private final DocCommentTemplateData docComment;
+    private final DocCommentsTemplateData docComments;
 }

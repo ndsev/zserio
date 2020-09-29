@@ -52,7 +52,7 @@ public class EnumerationTemplateData extends DocTemplateData
             value = (valueExpression == null) ? enumItem.getValue().toString() :
                 docExpressionFormatter.formatGetter(valueExpression);
 
-            docComment = new DocCommentTemplateData(enumItem.getDocComment());
+            docComments = new DocCommentsTemplateData(enumItem.getDocComments());
 
             usageInfoList = new TreeSet<UsageInfoTemplateData>();
             for (ChoiceType choiceType : usedByCollector.getUsedByChoices(enumItem))
@@ -74,9 +74,9 @@ public class EnumerationTemplateData extends DocTemplateData
             return value;
         }
 
-        public DocCommentTemplateData getDocComment()
+        public DocCommentsTemplateData getDocComments()
         {
-            return docComment;
+            return docComments;
         }
 
         public Iterable<UsageInfoTemplateData> getUsageInfoList()
@@ -137,7 +137,7 @@ public class EnumerationTemplateData extends DocTemplateData
         private final String name;
         private final String anchorName;
         private final String value;
-        private final DocCommentTemplateData docComment;
+        private final DocCommentsTemplateData docComments;
         private final SortedSet<UsageInfoTemplateData> usageInfoList;
     }
 

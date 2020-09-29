@@ -5,17 +5,17 @@
 <#include "collaboration_diagram.inc.ftl">
 
     <div class="msgdetail" id="${anchorName}">
-<#if docComment.isDeprecated>
+<#if docComments.isDeprecated>
       <span class="deprecated">(deprecated) </span>
       <del>
 </#if>
         <i>enum</i> ${name}
-<#if docComment.isDeprecated>
+<#if docComments.isDeprecated>
       </del>
 </#if>
     </div>
     <p/>
-    <@doc_comment docComment false/>
+    <@doc_comments docComments false/>
 
     <table>
     <tr><td class="docuCode">
@@ -40,7 +40,7 @@
 <#list items as item>
       <dt class="memberItem"><a name="${item.anchorName}">${item.name}:</a></dt>
       <dd class="memberDetail">
-      <@doc_comment item.docComment/>
+      <@doc_comments item.docComments/>
   <#list item.usageInfoList as usageInfo>
         <div class="docuTag"><span>see: </span><a href="${usageInfo.choiceCaseLink}">${usageInfo.choiceCaseLinkText}</a></div>
   </#list>

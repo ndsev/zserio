@@ -32,17 +32,17 @@
 </#macro>
 
     <div class="msgdetail" id="${anchorName}">
-<#if docComment.isDeprecated>
+<#if docComments.isDeprecated>
       <span class="deprecated">(deprecated) </span>
       <del>
 </#if>
         <i>Choice</i> ${name}
-<#if docComment.isDeprecated>
+<#if docComments.isDeprecated>
       </del>
 </#if>
     </div>
 
-    <@doc_comment docComment false/>
+    <@doc_comments docComments false/>
 
     <#if defaultMember??>
         <#assign rowspanNumber=((caseMemberList?size+1)*2)+1/>
@@ -118,7 +118,7 @@
                     <a name="${case.detailAnchorName}">${case.expression}</a>
                 </dt>
                 <dd class="memberDetail">
-                    <@doc_comment case.docComment/>
+                    <@doc_comments case.docComments/>
                     <#if case.seeLink??>
                       <div class="docuTag"><span>see: </span><a href="${case.seeLink.link}">${case.seeLink.text}</a></div>
                     </#if>
@@ -136,7 +136,7 @@
                   <a name="${caseMember.field.anchorName}">${caseMember.field.name}:</a>
               </dt>
               <dd class="memberDetail">
-                  <@doc_comment caseMember.field.docComment/>
+                  <@doc_comments caseMember.field.docComments/>
               </dd>
   <#else>
               <dt class="memberItem">
@@ -159,7 +159,7 @@
                     <a name="${anchorName}_case_default">default</a>
                 </dt>
                 <dd class="memberDetail">
-                    <@doc_comment defaultMember.docComment/>
+                    <@doc_comments defaultMember.docComments/>
                 </dd>
             </dl>
         </dd>
@@ -173,7 +173,7 @@
                   <a name="${defaultMember.field.anchorName}">${defaultMember.field.name}:</a>
               </dt>
               <dd class="memberDetail">
-                  <@doc_comment defaultMember.field.docComment/>
+                  <@doc_comments defaultMember.field.docComments/>
               </dd>
   <#else>
               <dt class="memberItem">

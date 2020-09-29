@@ -63,7 +63,7 @@ public class ChoiceTemplateData extends CompoundTypeTemplateData
             for (ChoiceCaseExpression caseExpression : caseExpressions)
             {
                 caseList.add(new CaseTemplateData(choiceType, caseExpression.getExpression(),
-                        caseExpression.getDocComment(), docExpressionFormatter));
+                        caseExpression.getDocComments(), docExpressionFormatter));
             }
 
             field = choiceCase.getField() != null
@@ -87,14 +87,14 @@ public class ChoiceTemplateData extends CompoundTypeTemplateData
 
     public static class CaseTemplateData
     {
-        public CaseTemplateData(ChoiceType choiceType, Expression caseExpression, DocComment docComment,
+        public CaseTemplateData(ChoiceType choiceType, Expression caseExpression, List<DocComment> docComments,
                 ExpressionFormatter docExpressionFormatter) throws ZserioEmitException
         {
             expression = docExpressionFormatter.formatGetter(caseExpression);
             definitionAnchorName = DocEmitterTools.getAnchorName(choiceType, "casedef", expression);
             detailAnchorName = DocEmitterTools.getAnchorName(choiceType, "case", expression);
 
-            this.docComment = new DocCommentTemplateData(docComment);
+            this.docComments = new DocCommentsTemplateData(docComments);
 
             final Object caseExpressionObject = caseExpression.getExprSymbolObject();
             final ZserioType selectorExpressionType = choiceType.getSelectorExpression().getExprZserioType();
@@ -130,9 +130,9 @@ public class ChoiceTemplateData extends CompoundTypeTemplateData
             return detailAnchorName;
         }
 
-        public DocCommentTemplateData getDocComment()
+        public DocCommentsTemplateData getDocComments()
         {
-            return docComment;
+            return docComments;
         }
 
         public CaseSeeLinkTemplateData getSeeLink()
@@ -143,7 +143,7 @@ public class ChoiceTemplateData extends CompoundTypeTemplateData
         private final String expression;
         private final String definitionAnchorName;
         private final String detailAnchorName;
-        private final DocCommentTemplateData docComment;
+        private final DocCommentsTemplateData docComments;
         private final CaseSeeLinkTemplateData seeLink;
     }
 
@@ -188,7 +188,7 @@ public class ChoiceTemplateData extends CompoundTypeTemplateData
             field = choiceDefault.getField() != null
                     ? new FieldTemplateData(choiceType, choiceDefault.getField(), docExpressionFormatter)
                     : null;
-            docComment = new DocCommentTemplateData(choiceDefault.getDocComment());
+            docComments = new DocCommentsTemplateData(choiceDefault.getDocComments());
         }
 
         public FieldTemplateData getField()
@@ -196,13 +196,13 @@ public class ChoiceTemplateData extends CompoundTypeTemplateData
             return field;
         }
 
-        public DocCommentTemplateData getDocComment()
+        public DocCommentsTemplateData getDocComments()
         {
-            return docComment;
+            return docComments;
         }
 
         private final FieldTemplateData field;
-        private final DocCommentTemplateData docComment;
+        private final DocCommentsTemplateData docComments;
     }
 
     private final String selectorExpression;

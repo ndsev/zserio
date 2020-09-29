@@ -5,17 +5,17 @@
 <#include "collaboration_diagram.inc.ftl">
 
     <div class="msgdetail" id="${anchorName}">
-<#if docComment.isDeprecated>
+<#if docComments.isDeprecated>
       <span class="deprecated">(deprecated) </span>
       <del>
 </#if>
         <i>Subtype</i> ${name}
-<#if docComment.isDeprecated>
+<#if docComments.isDeprecated>
       </del>
 </#if>
     </div>
     <p/>
-    <@doc_comment docComment false/>
+    <@doc_comments docComments false/>
 
     <table>
     <tr><td class="docuCode">

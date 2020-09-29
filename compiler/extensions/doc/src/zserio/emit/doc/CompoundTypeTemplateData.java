@@ -80,7 +80,7 @@ public class CompoundTypeTemplateData extends DocTemplateData
             final TypeInstantiation fieldTypeInstantiation = field.getTypeInstantiation();
             linkedType = new LinkedType(fieldTypeInstantiation);
             initArguments(fieldTypeInstantiation, docExpressionFormatter);
-            docComment = new DocCommentTemplateData(field.getDocComment());
+            docComments = new DocCommentsTemplateData(field.getDocComments());
             isVirtual = field.getIsVirtual();
             isAutoOptional = field.isOptional() && field.getOptionalClauseExpr() == null;
             alignmentExpression = formatExpression(field.getAlignmentExpr(), docExpressionFormatter);
@@ -126,9 +126,9 @@ public class CompoundTypeTemplateData extends DocTemplateData
             return arguments;
         }
 
-        public DocCommentTemplateData getDocComment()
+        public DocCommentsTemplateData getDocComments()
         {
-            return docComment;
+            return docComments;
         }
 
         public boolean getIsVirtual()
@@ -210,7 +210,7 @@ public class CompoundTypeTemplateData extends DocTemplateData
         private final String anchorName;
         private final LinkedType linkedType;
         private final List<String> arguments = new ArrayList<String>();
-        private final DocCommentTemplateData docComment;
+        private final DocCommentsTemplateData docComments;
         private final boolean isVirtual;
         private final boolean isAutoOptional;
         private final String alignmentExpression;
@@ -232,7 +232,7 @@ public class CompoundTypeTemplateData extends DocTemplateData
             anchorName = DocEmitterTools.getAnchorName(compoundType, function.getName());
             returnType = new LinkedType(function.getReturnTypeReference().getType());
             resultExpression = docExpressionFormatter.formatGetter(function.getResultExpression());
-            docComment = new DocCommentTemplateData(function.getDocComment());
+            docComments = new DocCommentsTemplateData(function.getDocComments());
         }
 
         public String getName()
@@ -255,16 +255,16 @@ public class CompoundTypeTemplateData extends DocTemplateData
             return resultExpression;
         }
 
-        public DocCommentTemplateData getDocComment()
+        public DocCommentsTemplateData getDocComments()
         {
-            return docComment;
+            return docComments;
         }
 
         private final String name;
         private final String anchorName;
         private final LinkedType returnType;
         private final String resultExpression;
-        private final DocCommentTemplateData docComment;
+        private final DocCommentsTemplateData docComments;
     }
 
     private final List<ParameterTemplateData> parameters = new ArrayList<ParameterTemplateData>();

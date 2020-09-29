@@ -15,7 +15,7 @@ public class PubsubTemplateData
         name = pubsubType.getName();
         packageName = pubsubType.getPackage().getPackageName().toString();
         anchorName = DocEmitterTools.getAnchorName(pubsubType);
-        docComment = new DocCommentTemplateData(pubsubType.getDocComment());
+        docComments = new DocCommentsTemplateData(pubsubType.getDocComments());
         for (PubsubMessage message : pubsubType.getMessageList())
         {
             messageList.add(new MessageTemplateData(pubsubType, context.getExpressionFormatter(), message));
@@ -39,9 +39,9 @@ public class PubsubTemplateData
         return anchorName;
     }
 
-    public DocCommentTemplateData getDocComment()
+    public DocCommentsTemplateData getDocComments()
     {
-        return docComment;
+        return docComments;
     }
 
     public Iterable<MessageTemplateData> getMessageList()
@@ -65,7 +65,7 @@ public class PubsubTemplateData
             anchorName = DocEmitterTools.getAnchorName(pubsubType, name);
             topicDefinition = docExpressionFormatter.formatGetter(pubsubMessage.getTopicDefinitionExpr());
             type = new LinkedType(pubsubMessage.getType());
-            docComment = new DocCommentTemplateData(pubsubMessage.getDocComment());
+            docComments = new DocCommentsTemplateData(pubsubMessage.getDocComments());
         }
 
         public String getKeyword()
@@ -93,9 +93,9 @@ public class PubsubTemplateData
             return type;
         }
 
-        public DocCommentTemplateData getDocComment()
+        public DocCommentsTemplateData getDocComments()
         {
-            return docComment;
+            return docComments;
         }
 
         private final String keyword;
@@ -103,13 +103,13 @@ public class PubsubTemplateData
         private final String anchorName;
         private final String topicDefinition;
         private final LinkedType type;
-        private final DocCommentTemplateData docComment;
+        private final DocCommentsTemplateData docComments;
     }
 
     private final String name;
     private final String packageName;
     private final String anchorName;
-    private final DocCommentTemplateData docComment;
+    private final DocCommentsTemplateData docComments;
     private final List<MessageTemplateData> messageList = new ArrayList<MessageTemplateData>();
     private final String collaborationDiagramSvgFileName;
 }

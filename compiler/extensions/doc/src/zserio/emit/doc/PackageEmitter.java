@@ -54,7 +54,8 @@ class PackageEmitter extends HtmlDefaultEmitter
     @Override
     public void endPackage(Package pkg) throws ZserioEmitException
     {
-        processHtmlTemplate("end_package.html.ftl", null, writer);
+        final EndPackageTemplateData templateData = new EndPackageTemplateData(pkg);
+        processHtmlTemplate("end_package.html.ftl", templateData, writer);
         writer.close();
     }
 
