@@ -24,18 +24,21 @@ public class Package extends DocumentableAstNode
     /**
      * Constructor.
      *
-     * @param location    AST node location.
+     * @param location AST node location.
      * @param packageName Name of the package.
-     * @param imports     List of all imports defined in the package.
-     * @param localTypes  Map of all available local types defined in the package.
-     * @param docComment  Documentation comment belonging to this node.
+     * @param imports List of all imports defined in the package.
+     * @param localTypes Map of all available local types defined in the package.
+     * @param docComments List of documentation comments belonging to this node.
+     * @param trailingDocComments List of documentation comments which are trailing at the end of this package.
      */
-    public Package(AstLocation location, PackageName packageName, List<Import> imports, DocComment docComment)
+    public Package(AstLocation location, PackageName packageName, List<Import> imports,
+            List<DocComment> docComments, List<DocComment> trailingDocComments)
     {
-        super(location, docComment);
+        super(location, docComments);
 
         this.packageName = packageName;
         this.imports = imports;
+        this.trailingDocComments = trailingDocComments;
     }
 
     @Override
@@ -57,6 +60,9 @@ public class Package extends DocumentableAstNode
 
         for (ZserioType type : localTypes.values())
             type.accept(visitor);
+
+        for (DocComment docComment : trailingDocComments)
+            docComment.accept(visitor);
     }
 
     /**
@@ -77,6 +83,16 @@ public class Package extends DocumentableAstNode
     public List<Import> getImports()
     {
         return Collections.unmodifiableList(imports);
+    }
+
+    /**
+     * Gets list of documentation comments which are trailing at the end of this package.
+     *
+     * @return List of documentation comments.
+     */
+    public List<DocComment> getTrailingDocComments()
+    {
+        return Collections.unmodifiableList(trailingDocComments);
     }
 
     /**
@@ -540,6 +556,7 @@ public class Package extends DocumentableAstNode
 
     private final PackageName packageName;
     private final List<Import> imports;
+    private final List<DocComment> trailingDocComments;
 
     // this must be a LinkedHashMap because of 'Cyclic dependency' error checked in ZserioAstTypeResolver
     private final LinkedHashMap<String, ZserioType> localTypes = new LinkedHashMap<String, ZserioType>();

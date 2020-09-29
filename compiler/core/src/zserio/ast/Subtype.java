@@ -1,6 +1,6 @@
 package zserio.ast;
 
-import zserio.ast.ZserioType;
+import java.util.List;
 
 /**
  * AST node for Subtypes.
@@ -14,12 +14,12 @@ public class Subtype extends DocumentableAstNode implements ZserioType
      * @param pkg                 Package to which belongs the subtype.
      * @param targetTypeReference Type reference to the target type.
      * @param name                Name of the subtype.
-     * @param docComment          Documentation comment belonging to this node.
+     * @param docComments         List of documentation comments belonging to this node.
      */
     public Subtype(AstLocation location, Package pkg, TypeReference targetTypeReference,
-            String name, DocComment docComment)
+            String name, List<DocComment> docComments)
     {
-        super(location, docComment);
+        super(location, docComments);
 
         this.pkg = pkg;
         this.typeReference = targetTypeReference;

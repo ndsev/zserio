@@ -13,17 +13,17 @@ public class SqlDatabaseType extends CompoundType
     /**
      * Constructor.
      *
-     * @param location   AST node location.
-     * @param pkg        Package to which belongs the SQL database type.
-     * @param name       Name of the SQL database type.
-     * @param fields     List of all fields of the SQL database type.
-     * @param docComment Documentation comment belonging to this node.
+     * @param location    AST node location.
+     * @param pkg         Package to which belongs the SQL database type.
+     * @param name        Name of the SQL database type.
+     * @param fields      List of all fields of the SQL database type.
+     * @param docComments List of documentation comments belonging to this node.
      */
     public SqlDatabaseType(AstLocation location, Package pkg, String name, List<Field> fields,
-            DocComment docComment)
+            List<DocComment> docComments)
     {
         super(location, pkg, name, new ArrayList<TemplateParameter>(), new ArrayList<Parameter>(), fields,
-                new ArrayList<Function>(), docComment);
+                new ArrayList<Function>(), docComments);
     }
 
     @Override

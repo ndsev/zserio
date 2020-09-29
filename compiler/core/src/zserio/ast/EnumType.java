@@ -21,12 +21,12 @@ public class EnumType extends DocumentableAstNode implements ZserioScopedType
      * @param typeInstantiation Type instantiation of the enumeration type.
      * @param name              Name of the enumeration type.
      * @param enumItems         List of all items which belong to the enumeration type.
-     * @param docComment        Documentation comment belonging to this node.
+     * @param docComments       List of documentation comments belonging to this node.
      */
     public EnumType(AstLocation location, Package pkg, TypeInstantiation typeInstantiation, String name,
-            List<EnumItem> enumItems, DocComment docComment)
+            List<EnumItem> enumItems, List<DocComment> docComments)
     {
-        super(location, docComment);
+        super(location, docComments);
 
         this.pkg = pkg;
         this.typeInstantiation = typeInstantiation;

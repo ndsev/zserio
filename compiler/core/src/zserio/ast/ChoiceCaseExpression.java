@@ -10,13 +10,13 @@ public class ChoiceCaseExpression extends DocumentableAstNode
     /**
      * Constructor.
      *
-     * @param location   AST node location.
-     * @param expression Case expression.
-     * @param docComment Documentation comment belonging to the case expression.
+     * @param location    AST node location.
+     * @param expression  Case expression.
+     * @param docComments List of documentation comments belonging to the case expression.
      */
-    public ChoiceCaseExpression(AstLocation location, Expression expression, DocComment docComment)
+    public ChoiceCaseExpression(AstLocation location, Expression expression, List<DocComment> docComments)
     {
-        super(location, docComment);
+        super(location, docComments);
 
         this.expression = expression;
     }
@@ -59,7 +59,7 @@ public class ChoiceCaseExpression extends DocumentableAstNode
         final Expression instantiatedExpression =
                 getExpression().instantiate(templateParameters, templateArguments);
 
-        return new ChoiceCaseExpression(getLocation(), instantiatedExpression, getDocComment());
+        return new ChoiceCaseExpression(getLocation(), instantiatedExpression, getDocComments());
     }
 
     private final Expression expression;

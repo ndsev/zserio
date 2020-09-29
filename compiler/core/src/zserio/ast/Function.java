@@ -19,12 +19,12 @@ public class Function extends DocumentableAstNode
      * @param returnTypeRefernce Type reference to the function return type.
      * @param name               Name of the function type.
      * @param resultExpression   Result expression of the function type.
-     * @param docComment         Documentation comment belonging to this node.
+     * @param docComments        List of documentation comments belonging to this node.
      */
     public Function(AstLocation location, TypeReference returnTypeReference, String name,
-            Expression resultExpression, DocComment docComment)
+            Expression resultExpression, List<DocComment> docComments)
     {
-        super(location, docComment);
+        super(location, docComments);
 
         this.returnTypeReference = returnTypeReference;
         this.name = name;
@@ -114,7 +114,7 @@ public class Function extends DocumentableAstNode
                 resultExpression.instantiate(templateParameters, templateArguments);
 
         return new Function(getLocation(), instantiatedReturnTypeReference, name,
-                instantiatedResultExpression, getDocComment());
+                instantiatedResultExpression, getDocComments());
     }
 
     private final TypeReference returnTypeReference;

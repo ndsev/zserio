@@ -1,5 +1,7 @@
 package zserio.ast;
 
+import java.util.List;
+
 /**
  * AST node for Pub/Sub messages.
  */
@@ -14,12 +16,13 @@ public class PubsubMessage extends DocumentableAstNode
      * @param topicDefinitionExpr Expression which defines the message's topic.
      * @param isPublished         Whether the message is published.
      * @param isSubscribed        Whether the message is subscribed.
-     * @param docComment          Documentation comment belonging to this node.
+     * @param docComments         List of documentation comments belonging to this node.
      */
     public PubsubMessage(AstLocation location, String name, TypeReference typeReference,
-            Expression topicDefinitionExpr, boolean isPublished, boolean isSubscribed, DocComment docComment)
+            Expression topicDefinitionExpr, boolean isPublished, boolean isSubscribed,
+            List<DocComment> docComments)
     {
-        super(location, docComment);
+        super(location, docComments);
 
         this.name = name;
         this.typeReference = typeReference;

@@ -50,8 +50,7 @@ public class ZserioAstBuilder extends ZserioParserBaseVisitor<Object>
     {
         // package
         final PackageName packageName = visitPackageNameDefinition(ctx.packageNameDefinition());
-        final DocComment docComment = ctx.packageNameDefinition() != null ?
-                docCommentManager.findDocComment(ctx.packageNameDefinition()) : null;
+        final List<DocComment> docComments = docCommentManager.findDocComments(ctx.packageNameDefinition());
 
         // imports
         final List<Import> imports = new ArrayList<Import>();
@@ -62,7 +61,8 @@ public class ZserioAstBuilder extends ZserioParserBaseVisitor<Object>
         final ParserRuleContext packageLocationCtx = ctx.packageNameDefinition() != null
                 ? ctx.packageNameDefinition().id(0) : ctx;
         final AstLocation packageLocation = new AstLocation(packageLocationCtx.getStart());
-        currentPackage = new Package(packageLocation, packageName, imports, docComment);
+        final List<DocComment> trailingDocComments = docCommentManager.findDocComments(ctx.EOF());
+        currentPackage = new Package(packageLocation, packageName, imports, docComments, trailingDocComments);
         if (packageNameMap.put(currentPackage.getPackageName(), currentPackage) != null)
         {
             // translation unit package already exists, this could happen only for default packages
@@ -123,10 +123,10 @@ public class ZserioAstBuilder extends ZserioParserBaseVisitor<Object>
         final String name = ctx.id().getText();
         final Expression valueExpression = (Expression)visit(ctx.expression());
 
-        final DocComment docComment = docCommentManager.findDocComment(ctx);
+        final List<DocComment> docComments = docCommentManager.findDocComments(ctx);
 
         final Constant constant = new Constant(location, currentPackage, typeInstantiation, name,
-                valueExpression, docComment);
+                valueExpression, docComments);
 
         currentPackage.addSymbol(name, constant);
 
@@ -140,9 +140,9 @@ public class ZserioAstBuilder extends ZserioParserBaseVisitor<Object>
         final TypeReference targetTypeReference = visitTypeReference(ctx.typeReference());
         final String name = ctx.id().getText();
 
-        final DocComment docComment = docCommentManager.findDocComment(ctx);
+        final List<DocComment> docComments = docCommentManager.findDocComments(ctx);
 
-        final Subtype subtype = new Subtype(location, currentPackage, targetTypeReference, name, docComment);
+        final Subtype subtype = new Subtype(location, currentPackage, targetTypeReference, name, docComments);
 
         return subtype;
     }
@@ -165,10 +165,10 @@ public class ZserioAstBuilder extends ZserioParserBaseVisitor<Object>
         for (ZserioParser.FunctionDefinitionContext functionDefinitionCtx : ctx.functionDefinition())
             functions.add(visitFunctionDefinition(functionDefinitionCtx));
 
-        final DocComment docComment = docCommentManager.findDocComment(ctx);
+        final List<DocComment> docComments = docCommentManager.findDocComments(ctx);
 
         final StructureType structureType = new StructureType(location, currentPackage, name,
-                templateParameters, typeParameters, fields, functions, docComment);
+                templateParameters, typeParameters, fields, functions, docComments);
 
         return structureType;
     }
@@ -185,11 +185,11 @@ public class ZserioAstBuilder extends ZserioParserBaseVisitor<Object>
         final Expression optionalClauseExpr = visitFieldOptionalClause(ctx.fieldOptionalClause());
         final Expression constraintExpr = visitFieldConstraint(ctx.fieldConstraint());
 
-        final DocComment docComment = docCommentManager.findDocComment(ctx);
+        final List<DocComment> docComments = docCommentManager.findDocComments(ctx);
 
         return new Field(fieldTypeId.getLocation(), fieldTypeId.getTypeInstantation(), fieldTypeId.getName(),
                 isAutoOptional, alignmentExpr, offsetExpr, initializerExpr, optionalClauseExpr, constraintExpr,
-                docComment);
+                docComments);
     }
 
     @Override
@@ -259,11 +259,11 @@ public class ZserioAstBuilder extends ZserioParserBaseVisitor<Object>
         for (ZserioParser.FunctionDefinitionContext functionDefinitionCtx : ctx.functionDefinition())
             functions.add(visitFunctionDefinition(functionDefinitionCtx));
 
-        final DocComment docComment = docCommentManager.findDocComment(ctx);
+        final List<DocComment> docComments = docCommentManager.findDocComments(ctx);
 
         final ChoiceType choiceType = new ChoiceType(location, currentPackage, name,
                 templateParameters, typeParameters, selectorExpression, choiceCases, choiceDefault, functions,
-                docComment);
+                docComments);
 
         return choiceType;
     }
@@ -285,8 +285,8 @@ public class ZserioAstBuilder extends ZserioParserBaseVisitor<Object>
     public ChoiceCaseExpression visitChoiceCase(ZserioParser.ChoiceCaseContext ctx)
     {
         final AstLocation location = new AstLocation(ctx.getStart());
-        final DocComment docComment = docCommentManager.findDocComment(ctx);
-        return new ChoiceCaseExpression(location, (Expression)visit(ctx.expression()), docComment);
+        final List<DocComment> docComments = docCommentManager.findDocComments(ctx);
+        return new ChoiceCaseExpression(location, (Expression)visit(ctx.expression()), docComments);
     }
 
     @Override
@@ -296,10 +296,10 @@ public class ZserioAstBuilder extends ZserioParserBaseVisitor<Object>
             return null;
 
         final AstLocation location = new AstLocation(ctx.getStart());
-        final DocComment docComment = docCommentManager.findDocComment(ctx);
+        final List<DocComment> docComments = docCommentManager.findDocComments(ctx);
 
         final Field defaultField = visitChoiceFieldDefinition(ctx.choiceFieldDefinition());
-        return new ChoiceDefault(location, defaultField, docComment);
+        return new ChoiceDefault(location, defaultField, docComments);
     }
 
     @Override
@@ -311,10 +311,10 @@ public class ZserioAstBuilder extends ZserioParserBaseVisitor<Object>
         final FieldTypeId fieldTypeId = visitFieldTypeId(ctx.fieldTypeId());
         final Expression constraintExpr = visitFieldConstraint(ctx.fieldConstraint());
 
-        final DocComment docComment = docCommentManager.findDocComment(ctx);
+        final List<DocComment> docComments = docCommentManager.findDocComments(ctx);
 
         return new Field(fieldTypeId.getLocation(), fieldTypeId.getTypeInstantation(), fieldTypeId.getName(),
-                constraintExpr, docComment);
+                constraintExpr, docComments);
     }
 
     @Override
@@ -335,10 +335,10 @@ public class ZserioAstBuilder extends ZserioParserBaseVisitor<Object>
         for (ZserioParser.FunctionDefinitionContext functionDefinitionCtx : ctx.functionDefinition())
             functions.add(visitFunctionDefinition(functionDefinitionCtx));
 
-        final DocComment docComment = docCommentManager.findDocComment(ctx);
+        final List<DocComment> docComments = docCommentManager.findDocComments(ctx);
 
         final UnionType unionType = new UnionType(location, currentPackage, name,
-                templateParameters, typeParameters, fields, functions, docComment);
+                templateParameters, typeParameters, fields, functions, docComments);
 
         return unionType;
     }
@@ -353,10 +353,10 @@ public class ZserioAstBuilder extends ZserioParserBaseVisitor<Object>
         for (ZserioParser.EnumItemContext enumItemCtx : ctx.enumItem())
             enumItems.add(visitEnumItem(enumItemCtx));
 
-        final DocComment docComment = docCommentManager.findDocComment(ctx);
+        final List<DocComment> docComments = docCommentManager.findDocComments(ctx);
 
         final EnumType enumType = new EnumType(location, currentPackage, enumTypeInstantiation, name, enumItems,
-                docComment);
+                docComments);
 
         return enumType;
     }
@@ -369,9 +369,9 @@ public class ZserioAstBuilder extends ZserioParserBaseVisitor<Object>
         final ZserioParser.ExpressionContext exprCtx = ctx.expression();
         final Expression valueExpression = (exprCtx != null) ? (Expression)visit(exprCtx) : null;
 
-        final DocComment docComment = docCommentManager.findDocComment(ctx);
+        final List<DocComment> docComments = docCommentManager.findDocComments(ctx);
 
-        return new EnumItem(location, name, valueExpression, docComment);
+        return new EnumItem(location, name, valueExpression, docComments);
     }
 
     @Override
@@ -384,10 +384,10 @@ public class ZserioAstBuilder extends ZserioParserBaseVisitor<Object>
         for (ZserioParser.BitmaskValueContext bitmaskValueCtx : ctx.bitmaskValue())
             bitmaskValues.add(visitBitmaskValue(bitmaskValueCtx));
 
-        final DocComment docComment = docCommentManager.findDocComment(ctx);
+        final List<DocComment> docComments = docCommentManager.findDocComments(ctx);
 
         final BitmaskType enumType = new BitmaskType(location, currentPackage, typeInstantiation, name,
-                bitmaskValues, docComment);
+                bitmaskValues, docComments);
 
         return enumType;
     }
@@ -400,9 +400,9 @@ public class ZserioAstBuilder extends ZserioParserBaseVisitor<Object>
         final ZserioParser.ExpressionContext exprCtx = ctx.expression();
         final Expression valueExpression = (exprCtx != null) ? (Expression)visit(exprCtx) : null;
 
-        final DocComment docComment = docCommentManager.findDocComment(ctx);
+        final List<DocComment> docComments = docCommentManager.findDocComments(ctx);
 
-        return new BitmaskValue(location, name, valueExpression, docComment);
+        return new BitmaskValue(location, name, valueExpression, docComments);
     }
 
     @Override
@@ -421,10 +421,10 @@ public class ZserioAstBuilder extends ZserioParserBaseVisitor<Object>
         final SqlConstraint sqlConstraint = visitSqlConstraintDefinition(ctx.sqlConstraintDefinition());
         final boolean sqlWithoutRowId = ctx.sqlWithoutRowId() != null;
 
-        final DocComment docComment = docCommentManager.findDocComment(ctx);
+        final List<DocComment> docComments = docCommentManager.findDocComments(ctx);
 
         final SqlTableType sqlTableType = new SqlTableType(location, currentPackage, name,
-                templateParameters, sqlUsingId, fields, sqlConstraint, sqlWithoutRowId, docComment);
+                templateParameters, sqlUsingId, fields, sqlConstraint, sqlWithoutRowId, docComments);
 
         return sqlTableType;
     }
@@ -438,9 +438,9 @@ public class ZserioAstBuilder extends ZserioParserBaseVisitor<Object>
         final String name = ctx.id().getText();
         final SqlConstraint sqlConstraint = visitSqlConstraint(ctx.sqlConstraint());
 
-        final DocComment docComment = docCommentManager.findDocComment(ctx);
+        final List<DocComment> docComments = docCommentManager.findDocComments(ctx);
 
-        return new Field(location, typeInstantiation, name, isVirtual, sqlConstraint, docComment);
+        return new Field(location, typeInstantiation, name, isVirtual, sqlConstraint, docComments);
     }
 
     @Override
@@ -473,10 +473,10 @@ public class ZserioAstBuilder extends ZserioParserBaseVisitor<Object>
         for (ZserioParser.SqlDatabaseFieldDefinitionContext fieldCtx : ctx.sqlDatabaseFieldDefinition())
             fields.add(visitSqlDatabaseFieldDefinition(fieldCtx));
 
-        final DocComment docComment = docCommentManager.findDocComment(ctx);
+        final List<DocComment> docComments = docCommentManager.findDocComments(ctx);
 
         final SqlDatabaseType sqlDatabaseType = new SqlDatabaseType(location, currentPackage, name, fields,
-                docComment);
+                docComments);
 
         return sqlDatabaseType;
     }
@@ -488,9 +488,9 @@ public class ZserioAstBuilder extends ZserioParserBaseVisitor<Object>
         final TypeInstantiation fieldTypeInstantiation = visitTypeInstantiation(ctx.typeInstantiation());
         final String name = ctx.id().getText();
 
-        final DocComment docComment = docCommentManager.findDocComment(ctx);
+        final List<DocComment> docComments = docCommentManager.findDocComments(ctx);
 
-        return new Field(location, fieldTypeInstantiation, name, docComment);
+        return new Field(location, fieldTypeInstantiation, name, docComments);
     }
 
     @Override
@@ -503,9 +503,9 @@ public class ZserioAstBuilder extends ZserioParserBaseVisitor<Object>
         for (ZserioParser.ServiceMethodDefinitionContext methodDefinitionCtx : ctx.serviceMethodDefinition())
             methods.add(visitServiceMethodDefinition(methodDefinitionCtx));
 
-        final DocComment docComment = docCommentManager.findDocComment(ctx);
+        final List<DocComment> docComments = docCommentManager.findDocComments(ctx);
 
-        final ServiceType serviceType = new ServiceType(location, currentPackage, name, methods, docComment);
+        final ServiceType serviceType = new ServiceType(location, currentPackage, name, methods, docComments);
 
         return serviceType;
     }
@@ -521,9 +521,9 @@ public class ZserioAstBuilder extends ZserioParserBaseVisitor<Object>
 
         final TypeReference requestTypeReference = visitTypeReference(ctx.typeReference(1));
 
-        final DocComment docComment = docCommentManager.findDocComment(ctx);
+        final List<DocComment> docComments = docCommentManager.findDocComments(ctx);
 
-        return new ServiceMethod(location, name, responseTypeReference, requestTypeReference, docComment);
+        return new ServiceMethod(location, name, responseTypeReference, requestTypeReference, docComments);
     }
 
     @Override
@@ -537,9 +537,9 @@ public class ZserioAstBuilder extends ZserioParserBaseVisitor<Object>
         for (ZserioParser.PubsubMessageDefinitionContext messageDefinitionCtx : ctx.pubsubMessageDefinition())
             messages.add(visitPubsubMessageDefinition(messageDefinitionCtx));
 
-        final DocComment docComment = docCommentManager.findDocComment(ctx);
+        final List<DocComment> docComments = docCommentManager.findDocComments(ctx);
 
-        final PubsubType pubsubType = new PubsubType(location, currentPackage, name, messages, docComment);
+        final PubsubType pubsubType = new PubsubType(location, currentPackage, name, messages, docComments);
 
         return pubsubType;
     }
@@ -555,10 +555,10 @@ public class ZserioAstBuilder extends ZserioParserBaseVisitor<Object>
         final boolean isSubscribed = ctx.topicDefinition().PUBLISH() == null;
         final TypeReference typeReference = visitTypeReference(ctx.typeReference());
         final String name = ctx.id().getText();
-        final DocComment docComment = docCommentManager.findDocComment(ctx);
+        final List<DocComment> docComments = docCommentManager.findDocComments(ctx);
 
         return new PubsubMessage(location, name, typeReference, topicDefinitionExpr, isPublished, isSubscribed,
-                docComment);
+                docComments);
     }
 
     @Override
@@ -569,9 +569,9 @@ public class ZserioAstBuilder extends ZserioParserBaseVisitor<Object>
         final String name = ctx.functionName().getText();
         final Expression resultExpression = (Expression)visit(ctx.functionBody().expression());
 
-        final DocComment docComment = docCommentManager.findDocComment(ctx);
+        final List<DocComment> docComments = docCommentManager.findDocComments(ctx);
 
-        return new Function(location, returnTypeReference, name, resultExpression, docComment);
+        return new Function(location, returnTypeReference, name, resultExpression, docComments);
     }
 
     @Override

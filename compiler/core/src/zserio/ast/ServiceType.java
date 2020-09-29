@@ -13,16 +13,16 @@ public class ServiceType extends DocumentableAstNode implements ZserioScopedType
     /**
      * Constructor.
      *
-     * @param location   AST node location.
-     * @param pkg        Package to which belongs the service type.
-     * @param name       Name of the service type.
-     * @param methods    List of all methods which belong to the service type.
-     * @param docComment Documentation comment belonging to this node.
+     * @param location    AST node location.
+     * @param pkg         Package to which belongs the service type.
+     * @param name        Name of the service type.
+     * @param methods     List of all methods which belong to the service type.
+     * @param docComments List of documentation comments belonging to this node.
      */
     public ServiceType(AstLocation location, Package pkg, String name, List<ServiceMethod> methods,
-            DocComment docComment)
+            List<DocComment> docComments)
     {
-        super(location, docComment);
+        super(location, docComments);
 
         this.pkg = pkg;
         this.name = name;

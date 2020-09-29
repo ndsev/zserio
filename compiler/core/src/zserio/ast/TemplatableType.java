@@ -15,12 +15,12 @@ abstract class TemplatableType extends DocumentableAstNode implements ZserioTemp
      *
      * @param location AST node location.
      * @param templateParameters List of template parameters.
-     * @param docComment Documentation comment belonging to this node.
+     * @param docComments List of documentation comments belonging to this node.
      */
     public TemplatableType(AstLocation location, List<TemplateParameter> templateParameters,
-            DocComment docComment)
+            List<DocComment> docComments)
     {
-        super(location, docComment);
+        super(location, docComments);
 
         this.templateParameters = templateParameters;
     }

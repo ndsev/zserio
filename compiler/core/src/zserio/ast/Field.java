@@ -22,14 +22,14 @@ public class Field extends DocumentableAstNode
      * @param initializerExpr    Initializer expression or null if it's not defined.
      * @param optionalClauseExpr Optional clause expression or null if it's not defined.
      * @param constraintExpr     Constraint expression or null if it's not defined.
-     * @param docComment         Documentation comment belonging to this node.
+     * @param docComments        List of documentation comments belonging to this node.
      */
     public Field(AstLocation location, TypeInstantiation typeInstantiation, String name, boolean isAutoOptional,
             Expression alignmentExpr, Expression offsetExpr,Expression initializerExpr,
-            Expression optionalClauseExpr, Expression constraintExpr, DocComment docComment)
+            Expression optionalClauseExpr, Expression constraintExpr, List<DocComment> docComments)
     {
         this(location, typeInstantiation, name, isAutoOptional, alignmentExpr, offsetExpr, initializerExpr,
-                optionalClauseExpr, constraintExpr, false, null, docComment);
+                optionalClauseExpr, constraintExpr, false, null, docComments);
     }
 
     /**
@@ -39,13 +39,13 @@ public class Field extends DocumentableAstNode
      * @param fieldTypeInstantiation Field type instantiation.
      * @param name                   Field name.
      * @param constraintExpr         Constraint expression or null if it's not defined.
-     * @param docComment             Documentation comment belonging to this node.
+     * @param docComments            List of documentation comments belonging to this node.
      */
     public Field(AstLocation location, TypeInstantiation fieldTypeInstantiation, String name,
-            Expression constraintExpr, DocComment docComment)
+            Expression constraintExpr, List<DocComment> docComments)
     {
         this(location, fieldTypeInstantiation, name, false, null, null, null, null, constraintExpr, false, null,
-                docComment);
+                docComments);
     }
 
     /**
@@ -56,12 +56,13 @@ public class Field extends DocumentableAstNode
      * @param name                   Field name.
      * @param isVirtual              True if field is virtual.
      * @param sqlConstraint          SQL constraint or null if it's not defined.
+     * @param docComments            List of documentation comments belonging to this node.
      */
     public Field(AstLocation location, TypeInstantiation fieldTypeInstantiation, String name, boolean isVirtual,
-            SqlConstraint sqlConstraint, DocComment docComment)
+            SqlConstraint sqlConstraint, List<DocComment> docComments)
     {
         this(location, fieldTypeInstantiation, name, false, null, null, null, null, null, isVirtual,
-                sqlConstraint, docComment);
+                sqlConstraint, docComments);
     }
 
     /**
@@ -70,12 +71,13 @@ public class Field extends DocumentableAstNode
      * @param location               AST node location.
      * @param fieldTypeInstantiation Field type instantiation.
      * @param name                   Field name.
+     * @param docComments            List of documentation comments belonging to this node.
      */
     public Field(AstLocation location, TypeInstantiation fieldTypeInstantiation, String name,
-            DocComment docComment)
+            List<DocComment> docComments)
     {
         this(location, fieldTypeInstantiation, name, false, null, null, null, null, null, false, null,
-                docComment);
+                docComments);
     }
 
     @Override
@@ -297,7 +299,7 @@ public class Field extends DocumentableAstNode
         return new Field(getLocation(), instantiatedTypeInstantiation, name, isAutoOptional,
                 instantiatedAlignmentExpr, instantiatedOffsetExpr, instantiatedInitializerExpr,
                 instantiatedOptionalClauseExpr, instantiatedConstraintExpr,
-                isVirtual, instantiatedSqlConstraint, getDocComment());
+                isVirtual, instantiatedSqlConstraint, getDocComments());
     }
 
     private void checkSingleOffsetExpression()
@@ -322,9 +324,9 @@ public class Field extends DocumentableAstNode
     private Field(AstLocation location, TypeInstantiation typeInstantiation, String name,
             boolean isAutoOptional, Expression alignmentExpr, Expression offsetExpr, Expression initializerExpr,
             Expression optionalClauseExpr, Expression constraintExpr, boolean isVirtual,
-            SqlConstraint sqlConstraint, DocComment docComment)
+            SqlConstraint sqlConstraint, List<DocComment> docComments)
     {
-        super(location, docComment);
+        super(location, docComments);
 
         this.typeInstantiation = typeInstantiation;
         this.name = name;

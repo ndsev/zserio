@@ -3,9 +3,6 @@ package zserio.ast;
 import java.util.Collections;
 import java.util.List;
 
-import zserio.ast.Package;
-import zserio.ast.Scope;
-
 /**
  * AST abstract node for all Compound types.
  *
@@ -23,13 +20,13 @@ public abstract class CompoundType extends TemplatableType
      * @param typeParameters List of parameters for the compound type.
      * @param fields List of all fields of the compound type.
      * @param functions List of all functions of the compound type.
-     * @param docComment Documentation comment belonging to this node.
+     * @param docComments List of documentation comments belonging to this node.
      */
     CompoundType(AstLocation location, Package pkg, String name, List<TemplateParameter> templateParameters,
             List<Parameter> typeParameters, List<Field> fields, List<Function> functions,
-            DocComment docComment)
+            List<DocComment> docComments)
     {
-        super(location, templateParameters, docComment);
+        super(location, templateParameters, docComments);
 
         this.pkg = pkg;
         this.name = name;

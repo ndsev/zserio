@@ -1,5 +1,7 @@
 package zserio.ast;
 
+import java.util.List;
+
 /**
  * AST node for service methods.
  */
@@ -12,12 +14,12 @@ public class ServiceMethod extends DocumentableAstNode
      * @param name                  Name of the service method.
      * @param responseTypeReference Reference to the response type.
      * @param requestTypeReference  Reference to the request type.
-     * @param docComment            Documentation comment belonging to this node.
+     * @param docComments           List of documentation comments belonging to this node.
      */
     public ServiceMethod(AstLocation location, String name, TypeReference responseTypeReference,
-            TypeReference requestTypeReference, DocComment docComment)
+            TypeReference requestTypeReference, List<DocComment> docComments)
     {
-        super(location, docComment);
+        super(location, docComments);
 
         this.name = name;
         this.responseTypeReference = responseTypeReference;

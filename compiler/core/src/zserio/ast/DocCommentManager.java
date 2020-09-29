@@ -1,5 +1,6 @@
 package zserio.ast;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -70,79 +71,89 @@ class DocCommentManager
     }
 
     /**
-     * Finds appropriate documentation comment which belongs to the given context.
+     * Finds appropriate documentation comments which belongs to the given terminal node.
      *
-     * @param ctx Parser context.
+     * @param ctx Terminal node.
      *
-     * @return Parsed documentation comment or null.
+     * @return List of parsed documentation comment or null.
      */
-    public DocComment findDocComment(ParserRuleContext ctx)
+    public List<DocComment> findDocComments(TerminalNode node)
     {
-        final Token docToken = findDocTokenBefore(ctx);
-        if (docToken != null)
-            return parseDocComment(docToken);
-
-        return null;
+        final List<Token> docTokens = findDocTokensBefore(node);
+        return parseDocComments(docTokens);
     }
 
     /**
-     * Finds appropriate documentation comment which belongs to the given context.
-     * Overloaded version for structure field.
+     * Finds appropriate documentation comments which belongs to the given context.
      *
      * @param ctx Parser context.
      *
-     * @return Parsed documentation comment or null.
+     * @return List of parsed documentation comment or null.
      */
-    public DocComment findDocComment(ZserioParser.StructureFieldDefinitionContext ctx)
+    public List<DocComment> findDocComments(ParserRuleContext ctx)
     {
+        final List<Token> docTokens = findDocTokensBefore(ctx);
+        return parseDocComments(docTokens);
+    }
+
+    /**
+     * Finds appropriate documentation comments which belongs to the given context.
+     * Overloaded version for structure field.
+     *
+     * @param ctx Parser context for structure field definition.
+     *
+     * @return List of parsed documentation comments.
+     */
+    public List<DocComment> findDocComments(ZserioParser.StructureFieldDefinitionContext ctx)
+    {
+        List<Token> docTokens = new ArrayList<Token>();
+
         // before field alignment
-        Token docToken = findDocTokenBefore(ctx.fieldAlignment());
-        if (docToken != null)
-            return parseDocComment(docToken);
-
+        docTokens.addAll(findDocTokensBefore(ctx.fieldAlignment()));
         // before field offset
-        docToken = findDocTokenBefore(ctx.fieldOffset());
-        if (docToken != null)
-            return parseDocComment(docToken);
-
+        docTokens.addAll(findDocTokensBefore(ctx.fieldOffset()));
         // before optional keyword
-        docToken = findDocTokenBefore(ctx.OPTIONAL());
-        if (docToken != null)
-            return parseDocComment(docToken);
-
+        docTokens.addAll(findDocTokensBefore(ctx.OPTIONAL()));
         // before field type
-        docToken = findDocTokenBefore(ctx.fieldTypeId());
-        if (docToken != null)
-            return parseDocComment(docToken);
+        docTokens.addAll(findDocTokensBefore(ctx.fieldTypeId()));
 
-        return null;
+        return parseDocComments(docTokens);
     }
 
-    private Token findDocTokenBefore(ParserRuleContext ctx)
+    private List<Token> findDocTokensBefore(ParserRuleContext ctx)
     {
-        return (ctx == null) ? null : findDocTokenBefore(ctx.getStart());
+        return (ctx == null) ? new ArrayList<Token>() : findDocTokensBefore(ctx.getStart());
     }
 
-    private Token findDocTokenBefore(TerminalNode terminalNode)
+    private List<Token> findDocTokensBefore(TerminalNode terminalNode)
     {
-        return (terminalNode == null) ? null : findDocTokenBefore(terminalNode.getSymbol());
+        return (terminalNode == null) ? new ArrayList<Token>() : findDocTokensBefore(terminalNode.getSymbol());
     }
 
-    private Token findDocTokenBefore(Token token)
+    private List<Token> findDocTokensBefore(Token token)
     {
         if (currentTokenStream == null)
             return null;
 
         final int tokenIndex = token.getTokenIndex();
-        final List<Token> docList = currentTokenStream.getHiddenTokensToLeft(tokenIndex, ZserioLexer.DOC);
-        if (docList != null && !docList.isEmpty())
-        {
-            final Token docToken = docList.get(docList.size() - 1);
+        final List<Token> docTokens = currentTokenStream.getHiddenTokensToLeft(tokenIndex, ZserioLexer.DOC);
+        if (docTokens == null)
+            return new ArrayList<Token>();
+        for (Token docToken : docTokens)
             currentUsedComments.add(docToken);
-            return docToken;
-        }
+        return docTokens;
+    }
 
-        return null;
+    private List<DocComment> parseDocComments(List<Token> docTokens)
+    {
+        List<DocComment> docComments = new ArrayList<DocComment>();
+        for (Token docToken : docTokens)
+        {
+            final DocComment docComment = parseDocComment(docToken);
+            if (docComment != null) // if parsed properly
+                docComments.add(docComment);
+        }
+        return docComments;
     }
 
     private DocComment parseDocComment(Token docCommentToken)

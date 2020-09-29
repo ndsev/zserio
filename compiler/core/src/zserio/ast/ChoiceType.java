@@ -26,15 +26,15 @@ public class ChoiceType extends CompoundType
      * @param choiceCases           List of all choice cases.
      * @param choiceDefault         Choice default case or null if default case is not defined.
      * @param functions             List of all functions of the choice type.
-     * @param docComment            Documentation comment belonging to this node.
+     * @param docComments           List of documentation comments belonging to this node.
      */
     public ChoiceType(AstLocation location, Package pkg, String name,
             List<TemplateParameter> templateParameters, List<Parameter> typeParameters,
             Expression selectorExpression, List<ChoiceCase> choiceCases, ChoiceDefault choiceDefault,
-            List<Function> functions, DocComment docComment)
+            List<Function> functions, List<DocComment> docComments)
     {
         super(location, pkg, name, templateParameters, typeParameters,
-                getChoiceFields(choiceCases, choiceDefault), functions, docComment);
+                getChoiceFields(choiceCases, choiceDefault), functions, docComments);
 
         this.selectorExpression = selectorExpression;
         this.choiceCases = choiceCases;
@@ -50,8 +50,8 @@ public class ChoiceType extends CompoundType
     @Override
     public void visitChildren(ZserioAstVisitor visitor)
     {
-        if (getDocComment() != null)
-            getDocComment().accept(visitor);
+        for (DocComment docComment : getDocComments())
+            docComment.accept(visitor);
 
         for (TemplateParameter templateParameter : getTemplateParameters())
             templateParameter.accept(visitor);
@@ -157,7 +157,7 @@ public class ChoiceType extends CompoundType
 
         return new ChoiceType(getLocation(), instantiationPackage, getName(),
                 new ArrayList<TemplateParameter>(), instantiatedTypeParameters, instantiatedSelectorExpression,
-                instantiatedChoiceCases, instantiatedChoiceDefault, instantiatedFunctions, getDocComment());
+                instantiatedChoiceCases, instantiatedChoiceDefault, instantiatedFunctions, getDocComments());
     }
 
     @Override

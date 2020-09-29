@@ -28,14 +28,14 @@ public class SqlTableType extends CompoundType
      * @param fields                List of all fields of to the SQL table type.
      * @param sqlConstraint         SQL constraint of the SQL table type.
      * @param sqlWithoutRowId       SQL without row id associated to the SQL table type.
-     * @param docComment            Documentation comment belonging to this node.
+     * @param docComments           List of documentation comments belonging to this node.
      */
     public SqlTableType(AstLocation location, Package pkg, String name,
             List<TemplateParameter> templateParameters, String sqlUsingId, List<Field> fields,
-            SqlConstraint sqlConstraint, boolean sqlWithoutRowId, DocComment docComment)
+            SqlConstraint sqlConstraint, boolean sqlWithoutRowId, List<DocComment> docComments)
     {
         super(location, pkg, name, templateParameters, new ArrayList<Parameter>(), fields,
-                new ArrayList<Function>(), docComment);
+                new ArrayList<Function>(), docComments);
 
         this.sqlUsingId = sqlUsingId;
         this.sqlConstraint = sqlConstraint;
@@ -66,7 +66,7 @@ public class SqlTableType extends CompoundType
 
         return new SqlTableType(getLocation(), instantiationPackage, getName(),
                 new ArrayList<TemplateParameter>(), sqlUsingId, instantiatedFields, getSqlConstraint(),
-                isWithoutRowId(), getDocComment());
+                isWithoutRowId(), getDocComments());
     }
 
     /**

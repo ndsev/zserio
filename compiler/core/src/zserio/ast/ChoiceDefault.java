@@ -12,11 +12,11 @@ public class ChoiceDefault extends DocumentableAstNode
      *
      * @param location     AST node location.
      * @param defaultField Default field associated to this default case or null if it's not defined.
-     * @param docComment   Documentation comment belonging to this node.
+     * @param docComments  List of documentation comments belonging to this node.
      */
-    public ChoiceDefault(AstLocation location, Field defaultField, DocComment docComment)
+    public ChoiceDefault(AstLocation location, Field defaultField, List<DocComment> docComments)
     {
-        super(location, docComment);
+        super(location, docComments);
 
         this.defaultField = defaultField;
     }
@@ -60,7 +60,7 @@ public class ChoiceDefault extends DocumentableAstNode
         final Field instantiatedDefaultField = defaultField == null ? null :
                 defaultField.instantiate(templateParameters, templateArguments);
 
-        return new ChoiceDefault(getLocation(), instantiatedDefaultField, getDocComment());
+        return new ChoiceDefault(getLocation(), instantiatedDefaultField, getDocComments());
     }
 
     private final Field defaultField;

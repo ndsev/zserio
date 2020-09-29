@@ -25,13 +25,13 @@ public class StructureType extends CompoundType
      * @param typeParameters List of parameters for the structure type.
      * @param fields List of all fields of the structure type.
      * @param functions List of all functions of the structure type.
-     * @param docComment Documentation comment belonging to this node.
+     * @param docComments List of documentation comments belonging to this node.
      */
     public StructureType(AstLocation location, Package pkg, String name,
             List<TemplateParameter> templateParameters, List<Parameter> typeParameters, List<Field> fields,
-            List<Function> functions, DocComment docComment)
+            List<Function> functions, List<DocComment> docComments)
     {
-        super(location, pkg, name, templateParameters, typeParameters, fields, functions, docComment);
+        super(location, pkg, name, templateParameters, typeParameters, fields, functions, docComments);
     }
 
     @Override
@@ -60,7 +60,7 @@ public class StructureType extends CompoundType
 
         return new StructureType(getLocation(), instantiationPackage, getName(),
                 new ArrayList<TemplateParameter>(), instantiatedTypeParameters, instantiatedFields,
-                instantiatedFunctions, getDocComment());
+                instantiatedFunctions, getDocComments());
     }
 
     @Override

@@ -1,5 +1,7 @@
 package zserio.ast;
 
+import java.util.List;
+
 /**
  * AST node for Constants.
  */
@@ -13,12 +15,12 @@ public class Constant extends DocumentableAstNode
      * @param typeInstantiation Type instantiation of the constant.
      * @param name              Name of the constant type.
      * @param valueExpression   Value expression associated to the constant type.
-     * @param docComment        Documentation comment belonging to this node.
+     * @param docComments       List of documentation comments belonging to this node.
      */
     public Constant(AstLocation location, Package pkg, TypeInstantiation typeInstantiation, String name,
-            Expression valueExpression, DocComment docComment)
+            Expression valueExpression, List<DocComment> docComments)
     {
-        super(location, docComment);
+        super(location, docComments);
 
         this.pkg = pkg;
         this.typeInstantiation = typeInstantiation;

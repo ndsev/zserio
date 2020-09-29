@@ -1,6 +1,7 @@
 package zserio.ast;
 
 import java.math.BigInteger;
+import java.util.List;
 
 /**
  * AST node for items defined by enumeration types.
@@ -13,11 +14,11 @@ public class EnumItem extends DocumentableAstNode
      * @param location        AST node location.
      * @param name            Name of the enumeration item.
      * @param valueExpression Expression value of the enumeration item.
-     * @param docComment      Documentation comment belonging to this node.
+     * @param docComments     List of documentation comments belonging to this node.
      */
-    public EnumItem(AstLocation location, String name, Expression valueExpression, DocComment docComment)
+    public EnumItem(AstLocation location, String name, Expression valueExpression, List<DocComment> docComments)
     {
-        super(location, docComment);
+        super(location, docComments);
 
         this.name = name;
         this.valueExpression = valueExpression;

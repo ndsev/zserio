@@ -1,5 +1,8 @@
 package zserio.ast;
 
+import java.util.Collections;
+import java.util.List;
+
 /**
  * AST node which can have documentation comment.
  */
@@ -8,32 +11,32 @@ public abstract class DocumentableAstNode extends AstNodeBase
     /**
      * Constructor.
      *
-     * @param location   AST node location.
-     * @param docComment Documentation comment belonging to this node.
+     * @param location    AST node location.
+     * @param docComments List of documentation comments belonging to this node.
      */
-    public DocumentableAstNode(AstLocation location, DocComment docComment)
+    public DocumentableAstNode(AstLocation location, List<DocComment> docComments)
     {
         super(location);
 
-        this.docComment = docComment;
+        this.docComments = docComments;
     }
 
     @Override
     public void visitChildren(ZserioAstVisitor visitor)
     {
-        if (docComment != null)
+        for (DocComment docComment : docComments)
             docComment.accept(visitor);
     }
 
     /**
-     * Gets documentation comment belonging to this node.
+     * Gets documentation comments belonging to this node.
      *
-     * @return Documentation comment.
+     * @return List of documentation comments.
      */
-    public DocComment getDocComment()
+    public List<DocComment> getDocComments()
     {
-        return docComment;
+        return Collections.unmodifiableList(docComments);
     }
 
-    private final DocComment docComment;
+    private final List<DocComment> docComments;
 }
