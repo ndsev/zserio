@@ -27,6 +27,7 @@ import zserio.ast.ChoiceCaseExpression;
 import zserio.ast.ChoiceDefault;
 import zserio.ast.ChoiceType;
 import zserio.ast.Constant;
+import zserio.ast.DocComment;
 import zserio.ast.DocElement;
 import zserio.ast.DocLine;
 import zserio.ast.DocLineElement;
@@ -239,6 +240,9 @@ public class XmlAstWriter implements ZserioAstVisitor
         currentXmlElement.appendChild(fieldXmlElement);
         final Element oldCurrentXmlElement = currentXmlElement;
         currentXmlElement = fieldXmlElement;
+
+        for (DocComment docComment : field.getDocComments())
+            docComment.accept(this);
 
         field.getTypeInstantiation().accept(this);
 
