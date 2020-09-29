@@ -47,8 +47,7 @@
       </dd>
 </#list>
     </dl>
-
-<@used_by usedByList/>
+    <@used_by usedByList/>
 <#if collaborationDiagramSvgUrl??>
 
     <@collaboration_diagram collaborationDiagramSvgUrl/>

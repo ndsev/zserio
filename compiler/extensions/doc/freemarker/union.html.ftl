@@ -34,10 +34,8 @@
         </table>
       </td></tr>
     </table>
-
-    <h3>Member Details</h3>
-    <@compound_member_details fields functions/>
-
+    <@compound_member_details fields/>
+    <@compound_function_details functions/>
     <@used_by usedByList/>
 <#if collaborationDiagramSvgFileName??>
 

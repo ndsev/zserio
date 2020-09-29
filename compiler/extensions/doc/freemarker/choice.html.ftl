@@ -186,12 +186,9 @@
           </dl>
       </dd>
 </#if>
-<#list functions as function>
-      <@compound_function_detail function/>
-</#list>
     </dl>
-
-<@used_by usedByList/>
+    <@compound_function_details functions/>
+    <@used_by usedByList/>
 <#if collaborationDiagramSvgFileName??>
 
     <@collaboration_diagram collaborationDiagramSvgFileName/>

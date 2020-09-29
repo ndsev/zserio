@@ -28,8 +28,7 @@
       </table>
     </td></tr>
     </table>
-
-<@used_by usedByList/>
+    <@used_by usedByList/>
 <#if collaborationDiagramSvgFileName??>
 
     <@collaboration_diagram collaborationDiagramSvgFileName/>

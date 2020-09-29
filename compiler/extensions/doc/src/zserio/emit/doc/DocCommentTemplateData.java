@@ -246,9 +246,18 @@ public class DocCommentTemplateData
             {
                 final String urlName = DocEmitterTools.getUrlNameFromType(
                         linkSymbolReference.getReferencedType());
-                final String anchorName = DocEmitterTools.getAnchorName(
-                        linkSymbolReference.getReferencedType(), linkSymbolReference.getReferencedSymbolName());
-                url =  StringJoinUtil.joinStrings(urlName, anchorName, "#");
+                if (linkSymbolReference.getReferencedSymbolName() != null)
+                {
+                    final String anchorName = DocEmitterTools.getAnchorName(
+                            linkSymbolReference.getReferencedType(),
+                            linkSymbolReference.getReferencedSymbolName());
+                    url =  StringJoinUtil.joinStrings(urlName, anchorName, "#");
+                }
+                else
+                {
+                    // type reference
+                    url = urlName;
+                }
             }
         }
 
