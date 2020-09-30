@@ -135,7 +135,7 @@ class ResourceManager
         try
         {
             final URL url = new URL(destination);
-            return url.getProtocol() == LOCAL_FILE_SCHEME;
+            return url.getProtocol().equals(LOCAL_FILE_SCHEME);
         }
         catch (MalformedURLException e)
         {}
