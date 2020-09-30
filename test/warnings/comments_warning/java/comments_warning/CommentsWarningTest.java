@@ -32,46 +32,10 @@ public class CommentsWarningTest
             "unused_field_comments.zs:11:11: Documentation comment is not used!"));
 
         assertTrue(zserioWarnings.isPresent(
-                "unused_field_comments.zs:18:5: Documentation comment is not used!"));
+                "unused_field_comments.zs:55:45: Documentation comment is not used!"));
 
         assertTrue(zserioWarnings.isPresent(
-                "unused_field_comments.zs:26:5: Documentation comment is not used!"));
-
-        assertTrue(zserioWarnings.isPresent(
-                "unused_field_comments.zs:35:9: Documentation comment is not used!"));
-
-        assertTrue(zserioWarnings.isPresent(
-                "unused_field_comments.zs:43:5: Documentation comment is not used!"));
-
-        assertTrue(zserioWarnings.isPresent(
-                "unused_field_comments.zs:52:9: Documentation comment is not used!"));
-
-        assertTrue(zserioWarnings.isPresent(
-                "unused_field_comments.zs:54:9: Documentation comment is not used!"));
-
-        assertTrue(zserioWarnings.isPresent(
-                "unused_field_comments.zs:55:18: Documentation comment is not used!"));
-
-        assertTrue(zserioWarnings.isPresent(
-            "unused_field_comments.zs:60:9: Documentation comment is not used!"));
-
-        assertTrue(zserioWarnings.isPresent(
-            "unused_field_comments.zs:61:18: Documentation comment is not used!"));
-
-        assertTrue(zserioWarnings.isPresent(
-            "unused_field_comments.zs:64:14: Documentation comment is not used!"));
-
-        assertTrue(zserioWarnings.isPresent(
-            "unused_field_comments.zs:74:9: Documentation comment is not used!"));
-
-        assertTrue(zserioWarnings.isPresent(
-            "unused_field_comments.zs:75:18: Documentation comment is not used!"));
-
-        assertTrue(zserioWarnings.isPresent(
-            "unused_field_comments.zs:81:18: Documentation comment is not used!"));
-
-        assertTrue(zserioWarnings.isPresent(
-            "unused_field_comments.zs:91:5: Documentation comment is not used!"));
+            "unused_field_comments.zs:61:45: Documentation comment is not used!"));
     }
 
     @Test
@@ -83,7 +47,7 @@ public class CommentsWarningTest
 
     public void unusedStructCommentMultipleComments()
     {
-        final String warning = "unused_struct_comment_multiple_comments.zs:3:1: "
+        final String warning = "unused_struct_comment_multiple_comments.zs:5:9: "
                 + "Documentation comment is not used!";
         assertTrue(zserioWarnings.isPresent(warning));
     }
@@ -91,7 +55,7 @@ public class CommentsWarningTest
     @Test
     public void checkNumberOfWarnings()
     {
-        final int expectedNumberOfWarnings = 18;
+        final int expectedNumberOfWarnings = 6;
         assertEquals(expectedNumberOfWarnings, zserioWarnings.getCount());
     }
 

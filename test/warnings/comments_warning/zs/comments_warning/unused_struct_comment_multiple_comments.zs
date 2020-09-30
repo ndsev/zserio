@@ -1,8 +1,8 @@
 package comments_warning.unused_struct_comment_multiple_comments;
 
-/** Unused struct comment. */
 /** Used struct comment. */
-struct Test
+/** Used struct comment. */
+struct  /** Unused struct comment. */  Test
 {
     int32 field;
 };

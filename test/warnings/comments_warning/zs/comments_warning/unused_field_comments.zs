@@ -11,57 +11,57 @@ struct UnusedCommentById
     int32 /** Unused comment. */ field;
 };
 
-struct MaskedByOptional
+struct ByOptionalAndType
 {
     /** Used comment. */
     optional
-    /** Unused comment. */ int32 field;
+    /** Used comment. */ int32 field;
 };
 
-struct MaskedByOffset
+struct ByOffsetAndType
 {
     uint32 offset;
     /** Used comment. */
     offset:
-    /** Unused comment. */ int32 field;
+    /** Used comment. */ int32 field;
 };
 
 // check that indexed offsets comments work
-struct MaskedByIndexedOffset
+struct ByIndexedOffsetAndType
 {
     uint32 offsetArray[];
     /** Used comment. */
     offsetArray[@index]:
-        /** Unused comment. */
+        /** Used comment. */
         int32 array[];
 };
 
-struct MaskedByAlignment
+struct ByAlignmentAndType
 {
     /** Used comment. */
     align(5):
-    /** Unused comment. */ int32 field;
+    /** Used comment. */ int32 field;
 };
 
 // comments masked by higher priority positions
-struct MultipleMaskedComments
+struct MultipleComments
 {
     uint32 offset1;
     /** Used comment. */
     align(5):
-        /** Unused comment. */
+        /** Used comment. */
     offset1:
-        /** Unused comment. */
-        optional /** Unused comment. */ int32 field1;
+        /** Used comment. */
+        optional /** Used comment. */ int32 /** Unused */ field1;
 
     uint32 offset2;
     /** Used comment. */
     offset2:
-        /** Unused comment. */
-        optional /** Unused comment. */ int32 field2;
+        /** Used comment. */
+        optional /** Used comment. */ int32 /*! # Unused markdown comment */ field2;
 
     /** Used comment. */
-    optional /** Unused comment. */ int32 field3;
+    optional /** Used comment. */ int32 field3;
 };
 
 // check that comments are not masked by missing comments on higher priority positions
@@ -71,14 +71,14 @@ struct MultipleUnmaskedComments
     align(5):
         /** Used comment. */
     offset1:
-        /** Unused comment. */
-        optional /** Unused comment. */ int32 field1;
+        /** Used comment. */
+        optional /** Used comment. */ int32 field1;
 
     uint32 offset2;
     align(5):
     offset2:
         /** Used comment. */
-        optional /** Unused comment. */ int32 field2;
+        optional /** Used comment. */ int32 field2;
 
     uint32 offset3;
     align(5):
@@ -88,7 +88,8 @@ struct MultipleUnmaskedComments
 
 struct MultipleFieldComments
 {
-    /** Unused comment. */
+    /*! Used markdown comment. */
+    /** Used comment. */
     /** Used comment. */
     int32 field;
 };
@@ -98,11 +99,11 @@ sql_table Table
     int32 id sql "PRIMARY KEY NOT NULL";
     BasicComment basicComment;
     UnusedCommentById commentById;
-    MaskedByOptional maskedByOptional;
-    MaskedByOffset maskedByOffset;
-    MaskedByIndexedOffset maskedByIndexedOffset;
-    MaskedByAlignment maskedByAlignment;
-    MultipleMaskedComments multipleMaskedComments;
+    ByOptionalAndType maskedByOptional;
+    ByOffsetAndType maskedByOffset;
+    ByIndexedOffsetAndType maskedByIndexedOffset;
+    ByAlignmentAndType maskedByAlignment;
+    MultipleComments multipleMaskedComments;
     MultipleUnmaskedComments multipleUnmaskedComments;
     MultipleFieldComments multipleFieldsComments;
 };
