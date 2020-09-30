@@ -2,6 +2,8 @@ package zserio.emit.doc;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -130,8 +132,16 @@ class ResourceManager
         if (destination.startsWith("#"))
             return false; // local anchor
 
-        final Path path = Paths.get(destination);
-        return path.toUri().getScheme().equals(LOCAL_FILE_SCHEME);
+        try
+        {
+            final URL url = new URL(destination);
+            return url.getProtocol() == LOCAL_FILE_SCHEME;
+        }
+        catch (MalformedURLException e)
+        {}
+
+        // not an URL, supposing that it's local resource
+        return true;
     }
 
     private void copyResource(LocalResource srcResource, LocalResource dstResource) throws ResourceException
