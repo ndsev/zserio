@@ -14,7 +14,6 @@ import org.commonmark.renderer.NodeRenderer;
 import org.commonmark.renderer.html.HtmlRenderer;
 
 import zserio.ast.AstLocation;
-import zserio.emit.doc.ResourceManager.ResourceException;
 import zserio.tools.ZserioToolPrinter;
 
 import org.commonmark.renderer.html.CoreHtmlNodeRenderer;
@@ -75,7 +74,7 @@ class MarkdownToHtmlConverter
                 final String mappedResource = ResourceManager.getInstance().addResource(link.getDestination());
                 link.setDestination(mappedResource);
             }
-            catch (ResourceException e)
+            catch (Exception e)
             {
                 ZserioToolPrinter.printWarning(location, e.getMessage());
             }
@@ -91,7 +90,7 @@ class MarkdownToHtmlConverter
                 final String mappedResource = ResourceManager.getInstance().addResource(image.getDestination());
                 image.setDestination(mappedResource);
             }
-            catch (ResourceException e)
+            catch (Exception e)
             {
                 ZserioToolPrinter.printWarning(location, e.getMessage());
             }
