@@ -3,20 +3,20 @@
 <#include "compound.inc.ftl">
 <#include "usedby.inc.ftl">
 <#include "collaboration_diagram.inc.ftl">
+<#assign sqlTableHeading>
+    <i>SQL Table<#if virtualTableUsing?has_content> VIRTUAL</#if></i> ${name}<#t>
+      <#if virtualTableUsing?has_content> <i>USING</i> ${virtualTableUsing}</#if><#t>
+</#assign>
 
     <div class="msgdetail" id="${anchorName}">
 <#if docComments.isDeprecated>
       <span class="deprecated">(deprecated) </span>
-      <del>
-</#if>
-        <i>SQL Table<#if virtualTableUsing?has_content> VIRTUAL</#if></i> ${name}<#rt>
-          <#lt><#if virtualTableUsing?has_content> <i>USING</i> ${virtualTableUsing}</#if>
-<#if docComments.isDeprecated>
-      </del>
+      <del>${sqlTableHeading}</del>
+<#else>
+      ${sqlTableHeading}
 </#if>
     </div>
-
-    <@doc_comments docComments false/>
+    <@doc_comments docComments 2 false/>
 
     <table>
       <tr><td class="docuCode">

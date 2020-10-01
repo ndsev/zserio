@@ -1,74 +1,85 @@
 <#ftl output_format="HTML">
-
-<#macro doc_comments docComments useNoDocPlaceholder=true>
+<#macro doc_comments docComments indent useNoDocPlaceholder=true>
+    <#local I>${""?left_pad(indent * 2)}</#local>
     <#if docComments.commentsList?has_content>
         <#list docComments.commentsList as docComment>
-    <@doc_comment docComment/>
+    <@doc_comment docComment indent/>
         </#list>
     <#else>
-    <div class="docuTag"><#if useNoDocPlaceholder>&lt;<i>no documentation found</i>&gt;</#if></div>
+${I}<div class="docuTag"><#if useNoDocPlaceholder>&lt;<i>no documentation found</i>&gt;</#if></div>
     </#if>
 </#macro>
 
-<#macro doc_comment doc>
+<#macro doc_comment doc indent>
+    <#local I>${""?left_pad(indent * 2)}</#local>
     <#if doc.paragraphs?size == 0>
         <#if doc.markdownHtml??>
-    ${doc.markdownHtml?no_esc}
+    <@doc_markdown doc.markdownHtml indent/>
         </#if>
     <#else>
         <#list doc.paragraphs as paragraph>
             <#list paragraph.elements as element>
                 <#if element.multiline??>
-    <div class="docuTag">
-        <@doc_multiline_node element.multiline/>
-    </div>
+${I}<div class="docuTag">
+      <@doc_multiline_node element.multiline indent+1/>
+${I}</div>
                 </#if>
-
                 <#if element.todoTag??>
-    <div class="docuTag">
-        <span>Todo:</span>
-        <@doc_multiline_node element.todoTag/>
-    </div>
-                </#if>
 
+${I}<div class="docuTag">
+${I}  <span>Todo:</span>
+${I}  <@doc_multiline_node element.todoTag/>
+${I}</div>
+                </#if>
                 <#if element.seeTag??>
-    <div class="docuTag">
-                    <#if element.seeTag.url??>
-        <span>See:</span> <a href="${element.seeTag.url}">${element.seeTag.alias}</a>
-                    <#else>
-        <span>See:</span> ${element.seeTag.alias}
-                    </#if>
-    </div>
-                </#if>
 
+${I}<div class="docuTag">
+                    <#if element.seeTag.url??>
+${I}  <span>See:</span> <a href="${element.seeTag.url}">${element.seeTag.alias}</a>
+                    <#else>
+${I}  <span>See:</span> ${element.seeTag.alias}
+                    </#if>
+${I}</div>
+                </#if>
                 <#if element.paramTag??>
-    <div class="docuTag">
-        <span>Param:</span> <code>${element.paramTag.name}</code>
-        <@doc_multiline_node element.paramTag.description/>
-    </div>
+
+${I}<div class="docuTag">
+${I}  <span>Param: </span><code>${element.paramTag.name}</code>
+      <@doc_multiline_node element.paramTag.description indent+1/>
+${I}</div>
                 </#if>
             </#list>
         </#list>
-
         <#if doc.isDeprecated>
-    <div class="docuTag">
-        <span>Note:</span> This element is deprecated and is going to be invalid in the future versions.
-    </div>
+
+${I}<div class="docuTag">
+${I}  <span>Note:</span> This element is deprecated and is going to be invalid in the future versions.
+${I}</div>
         </#if>
     </#if>
 </#macro>
 
-<#macro doc_multiline_node multilineNode>
+<#macro doc_multiline_node multilineNode indent>
+    <#local I>${""?left_pad(indent * 2)}</#local>
     <#list multilineNode.docLineElements as docLineElement>
         <#if docLineElement.docString??>
-        ${docLineElement.docString}
+${I}${docLineElement.docString}
         </#if>
         <#if docLineElement.seeTag??>
             <#if docLineElement.seeTag.url??>
-        <a href="${docLineElement.seeTag.url}">${docLineElement.seeTag.alias}</a>
+${I}<a href="${docLineElement.seeTag.url}">${docLineElement.seeTag.alias}</a>
             <#else>
-        ${docLineElement.seeTag.alias}
+${I}${docLineElement.seeTag.alias}
             </#if>
         </#if>
     </#list>
+</#macro>
+
+<#macro doc_markdown markdownHtml indent>
+    <#local I>${""?left_pad(indent * 2)}</#local>
+${I}<div class="docuTag">
+    <#list markdownHtml?split("\r?\n", "rm") as htmlLine>
+${I}  ${htmlLine?no_esc}
+    </#list>
+${I}</div>
 </#macro>

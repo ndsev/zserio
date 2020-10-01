@@ -7,31 +7,27 @@
     <div class="msgdetail" id="${anchorName}">
 <#if docComments.isDeprecated>
       <span class="deprecated">(deprecated) </span>
-      <del>
-</#if>
-        <i>bitmask</i> ${name}
-<#if docComments.isDeprecated>
-      </del>
+      <del><i>bitmask</i> ${name}</del>
+<#else>
+      <i>bitmask</i> ${name}
 </#if>
     </div>
-    <p/>
-    <@doc_comments docComments false/>
+    <@doc_comments docComments 2 false/>
 
     <table>
-    <tr><td class="docuCode">
-      <table>
-
-      <tr><td colspan=3>bitmask <@symbol_reference symbol/> ${name}</td></tr>
-      <tr><td>{</td><td rowspan="${values?size+1}">&nbsp;</td><td></td></tr>
+      <tr><td class="docuCode">
+        <table>
+          <tr><td colspan=3>bitmask <@symbol_reference symbol/> ${name}</td></tr>
+          <tr><td>{</td><td rowspan="${values?size+1}">&nbsp;</td><td></td></tr>
 <#list values as value>
           <tr>
             <td id="tabIndent"><a href="#${value.anchorName}" class="fieldLink">${value.name}</a></td>
             <td>= ${value.value}<#if value_has_next>,</#if></td>
-      </tr>
+          </tr>
 </#list>
-      <tr><td colspan=3>};</td></tr>
-      </table>
-    </td></tr>
+          <tr><td colspan=3>};</td></tr>
+        </table>
+      </td></tr>
     </table>
 
     <h3>Value Details</h3>
@@ -40,7 +36,7 @@
 <#list values as value>
       <dt class="memberItem"><a name="${value.anchorName}">${value.name}:</a></dt>
       <dd class="memberDetail">
-      <@doc_comments value.docComments/>
+        <@doc_comments value.docComments 4/>
   <#list value.usageInfoList as usageInfo>
         <div class="docuTag"><span>see: </span><a href="${usageInfo.choiceCaseLink}">${usageInfo.choiceCaseLinkText}</a></div>
   </#list>

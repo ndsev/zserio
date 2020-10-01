@@ -49,7 +49,7 @@ class MarkdownToHtmlConverter
 
         final String html = renderer.render(document);
 
-        return html;
+        return html.trim(); // strip white-spaces around generated HTML added by renderer
     }
 
     private static class ResourcesRenderer extends CoreHtmlNodeRenderer

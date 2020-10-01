@@ -14,24 +14,22 @@
       </del>
 </#if>
     </div>
-    <p/>
-    <@doc_comments docComments false/>
+    <@doc_comments docComments 2 false/>
 
     <table>
-    <tr><td class="docuCode">
-      <table>
-
-      <tr><td colspan=3>enum <@symbol_reference symbol/> ${name}</td></tr>
-      <tr><td>{</td><td rowspan="${items?size+1}">&nbsp;</td><td></td></tr>
+      <tr><td class="docuCode">
+        <table>
+          <tr><td colspan=3>enum <@symbol_reference symbol/> ${name}</td></tr>
+          <tr><td>{</td><td rowspan="${items?size+1}">&nbsp;</td><td></td></tr>
 <#list items as item>
           <tr>
             <td id="tabIndent"><a href="#${item.anchorName}" class="fieldLink">${item.name}</a></td>
             <td>= ${item.value}<#if item_has_next>,</#if></td>
-      </tr>
+          </tr>
 </#list>
-      <tr><td colspan=3>};</td></tr>
-      </table>
-    </td></tr>
+          <tr><td colspan=3>};</td></tr>
+        </table>
+      </td></tr>
     </table>
 
     <h3>Item Details</h3>
@@ -40,7 +38,7 @@
 <#list items as item>
       <dt class="memberItem"><a name="${item.anchorName}">${item.name}:</a></dt>
       <dd class="memberDetail">
-      <@doc_comments item.docComments/>
+        <@doc_comments item.docComments 4/>
   <#list item.usageInfoList as usageInfo>
         <div class="docuTag"><span>see: </span><a href="${usageInfo.choiceCaseLink}">${usageInfo.choiceCaseLinkText}</a></div>
   </#list>

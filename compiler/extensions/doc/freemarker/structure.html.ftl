@@ -7,15 +7,12 @@
     <div class="msgdetail" id="${anchorName}">
 <#if docComments.isDeprecated>
       <span class="deprecated">(deprecated) </span>
-      <del>
-</#if>
-        <i>Structure</i> ${name}
-<#if docComments.isDeprecated>
-      </del>
+      <del><i>Structure</i> ${name}</del>
+<#else>
+      <i>Structure</i> ${name}
 </#if>
     </div>
-
-    <@doc_comments docComments false/>
+    <@doc_comments docComments 2 false/>
 
     <table>
       <tr><td class="docuCode">

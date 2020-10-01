@@ -5,11 +5,13 @@
 <#include "usedby.inc.ftl">
 <#include "collaboration_diagram.inc.ftl">
 <#macro choice_field field>
+    <#local typePrefix>
+      <#if field.isArrayImplicit>implicit </#if><#t>
+    </#local>
             <tr class="codeMember">
               <td id="tabIndent"></td>
               <td id="tabIndent">
-                <#if field.isArrayImplicit>implicit </#if><#t>
-                  <#lt><@symbol_reference field.symbol/><@compound_field_arguments field.arguments/>
+                 ${typePrefix}<@symbol_reference field.symbol/><@compound_field_arguments field.arguments/>
               </td>
               <td>
                 <a href="#${field.anchorName}" class="fieldLink">${field.name}</a><#rt>
@@ -34,21 +36,13 @@
     <div class="msgdetail" id="${anchorName}">
 <#if docComments.isDeprecated>
       <span class="deprecated">(deprecated) </span>
-      <del>
-</#if>
-        <i>Choice</i> ${name}
-<#if docComments.isDeprecated>
-      </del>
+      <del><i>Choice</i> ${name}</del>
+<#else>
+      <i>Choice</i> ${name}
 </#if>
     </div>
+    <@doc_comments docComments 2 false/>
 
-    <@doc_comments docComments false/>
-
-    <#if defaultMember??>
-        <#assign rowspanNumber=((caseMemberList?size+1)*2)+1/>
-    <#else>
-        <#assign rowspanNumber=(caseMemberList?size*2)+1/>
-    </#if>
     <table>
       <tr><td class="docuCode">
         <table>
@@ -108,82 +102,82 @@
 
     <dl>
 <#list caseMemberList as caseMember>
-        <dt class="memberItem">
-            Case(s):
-        </dt>
-        <dd>
-            <dl>
-    <#list caseMember.caseList as case>
-                <dt class="memberItem">
-                    <a name="${case.detailAnchorName}">${case.expression}</a>
-                </dt>
-                <dd class="memberDetail">
-                    <@doc_comments case.docComments/>
-                    <#if case.seeLink??>
-                      <div class="docuTag"><span>see: </span><a href="${case.seeLink.link}">${case.seeLink.text}</a></div>
-                    </#if>
-                </dd>
-    </#list>
-            </dl>
-        </dd>
       <dt class="memberItem">
-          Member:
+        Case(s):
       </dt>
       <dd>
-          <dl>
+        <dl>
+    <#list caseMember.caseList as case>
+          <dt class="memberItem">
+            <a name="${case.detailAnchorName}">${case.expression}</a>
+          </dt>
+          <dd class="memberDetail">
+            <@doc_comments case.docComments 6/>
+        <#if case.seeLink??>
+            <div class="docuTag"><span>see: </span><a href="${case.seeLink.link}">${case.seeLink.text}</a></div>
+        </#if>
+          </dd>
+    </#list>
+        </dl>
+      </dd>
+      <dt class="memberItem">
+        Member:
+      </dt>
+      <dd>
+        <dl>
   <#if caseMember.field??>
-              <dt class="memberItem">
-                  <a name="${caseMember.field.anchorName}">${caseMember.field.name}:</a>
-              </dt>
-              <dd class="memberDetail">
-                  <@doc_comments caseMember.field.docComments/>
-              </dd>
+          <dt class="memberItem">
+            <a name="${caseMember.field.anchorName}">${caseMember.field.name}:</a>
+          </dt>
+          <dd class="memberDetail">
+            <@doc_comments caseMember.field.docComments 6/>
+          </dd>
   <#else>
-              <dt class="memberItem">
-                  <a name="${anchorName}_no_field">no member data</a>
-              </dt>
-              <dd class="memberDetail">
-                  <br />
-              </dd>
+          <dt class="memberItem">
+            <a name="${anchorName}_no_field">no member data</a>
+          </dt>
+          <dd class="memberDetail">
+            <br/>
+          </dd>
   </#if>
-          </dl>
+        </dl>
       </dd>
 </#list>
 <#if defaultMember??>
-        <dt class="memberItem">
-            Case:
-        </dt>
-        <dd>
-            <dl>
-                <dt class="memberItem">
-                    <a name="${anchorName}_case_default">default</a>
-                </dt>
-                <dd class="memberDetail">
-                    <@doc_comments defaultMember.docComments/>
-                </dd>
-            </dl>
-        </dd>
       <dt class="memberItem">
-          Member:
+        Case:
       </dt>
       <dd>
-          <dl>
+        <dl>
+          <dt class="memberItem">
+            <a name="${anchorName}_case_default">default</a>
+          </dt>
+          <dd class="memberDetail">
+            <@doc_comments defaultMember.docComments 6/>
+          </dd>
+        </dl>
+      </dd>
+      <dt class="memberItem">
+        Member:
+      </dt>
+      <dd>
+        <dl>
   <#if defaultMember.field??>
-              <dt class="memberItem">
-                  <a name="${defaultMember.field.anchorName}">${defaultMember.field.name}:</a>
-              </dt>
-              <dd class="memberDetail">
-                  <@doc_comments defaultMember.field.docComments/>
-              </dd>
+          <dt class="memberItem">
+            <a name="${defaultMember.field.anchorName}">${defaultMember.field.name}:</a>
+          </dt>
+          <dd class="memberDetail">
+            <@doc_comments defaultMember.field.docComments 6/>
+          </dd>
   <#else>
-              <dt class="memberItem">
-                  <a name="${anchorName}_no_field">no member data</a>
-              </dt>
-              <dd class="memberDetail">
-                  <br />
-              </dd>
+          <dt class="memberItem">
+            <a name="${anchorName}_no_field">no member data</a>
+          </dt>
+          <dd class="memberDetail">
+            <br/>
+          </dd>
   </#if>
-          </dl>
+        </dl>
       </dd>
 </#if>
     </dl>

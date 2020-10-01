@@ -7,26 +7,23 @@
     <div class="msgdetail" id="${anchorName}">
 <#if docComments.isDeprecated>
       <span class="deprecated">(deprecated) </span>
-      <del>
-</#if>
-        <i>const</i> ${name}
-<#if docComments.isDeprecated>
-      </del>
+      <del><i>const</i> ${name}</del>
+<#else>
+      <i>const</i> ${name}
 </#if>
     </div>
-    <p/>
-    <@doc_comments docComments false/>
+    <@doc_comments docComments 2 false/>
 
     <table>
-    <tr><td class="docuCode">
-      <table>
-        <tr>
-          <td colspan=3>
-            const <@symbol_reference symbol/> ${name} = ${value};
-          </td>
-        </tr>
-      </table>
-    </td></tr>
+      <tr><td class="docuCode">
+        <table>
+          <tr>
+            <td colspan=3>
+              const <@symbol_reference symbol/> ${name} = ${value};
+            </td>
+          </tr>
+        </table>
+      </td></tr>
     </table>
     <@used_by usedByList/>
 <#if collaborationDiagramSvgFileName??>

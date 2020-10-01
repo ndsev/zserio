@@ -1,6 +1,5 @@
 <#ftl output_format="HTML">
 <#include "symbol.inc.ftl">
-
 <#macro compound_fields fields>
     <#list fields as field>
         <@compound_field field/>
@@ -8,6 +7,11 @@
 </#macro>
 
 <#macro compound_field field>
+    <#local typePrefix>
+        <#if field.isVirtual>sql_virtual </#if><#t>
+        <#if field.isAutoOptional>optional </#if><#t>
+        <#if field.isArrayImplicit>implicit </#if><#t>
+    </#local>
     <#if field.alignmentExpression?has_content>
             <tr class="codeMember">
               <td colspan=3>align(${field.alignmentExpression}):</td>
@@ -21,10 +25,7 @@
             <tr class="codeMember">
               <td id="tabIndent"></td>
               <td>
-                <#if field.isVirtual>sql_virtual </#if><#t>
-                <#if field.isAutoOptional>optional </#if><#t>
-                <#if field.isArrayImplicit>implicit </#if><#t>
-                  <#lt><@symbol_reference field.symbol/><@compound_field_arguments field.arguments/>
+                ${typePrefix}<@symbol_reference field.symbol/><@compound_field_arguments field.arguments/>
               </td>
               <td>
                 <a href="#${field.anchorName}" class="fieldLink">${field.name}</a><#rt>
@@ -92,17 +93,14 @@
         <a name="${field.anchorName}">
             <#if field.docComments.isDeprecated>
           <span class="deprecated">(deprecated) </span>
-          <del>
+          <del>${field.name}</del>:
+            <#else>
+          ${field.name}:
             </#if>
-            ${field.name}
-            <#if field.docComments.isDeprecated>
-          </del>
-            </#if>
-          :
         </a>
       </dt>
       <dd class="memberDetail">
-        <@doc_comments field.docComments/>
+        <@doc_comments field.docComments 4/>
       </dd>
         </#list>
     </dl>
@@ -125,19 +123,16 @@
 <#macro compound_function_detail function>
       <dt class="memberItem">
         <a name="${function.anchorName}">
-            <#if function.docComments.isDeprecated>
+    <#if function.docComments.isDeprecated>
           <span class="deprecated">(deprecated) </span>
-          <del>
-            </#if>
-            ${function.name}()
-            <#if function.docComments.isDeprecated>
-          </del>
-            </#if>
-          :
+          <del>${function.name}()</del>:
+    <#else>
+          ${function.name}():
+    </#if>
         </a>
       </dt>
       <dd class="memberDetail">
-        <@doc_comments function.docComments/>
+        <@doc_comments function.docComments 4/>
       </dd>
 </#macro>
 
@@ -145,7 +140,7 @@
     <#if arguments?has_content>
         (<#t>
         <#list arguments as argument>
-            ${argument}<#if argument?has_next>, </#if><#t>
+          ${argument}<#if argument?has_next>, </#if><#t>
         </#list>
         )<#t>
     </#if>

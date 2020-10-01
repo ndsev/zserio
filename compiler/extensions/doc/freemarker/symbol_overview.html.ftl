@@ -13,7 +13,7 @@
 
     <ul class="classlist">
 <#list packageSymbols as packageSymbol>
-      <li id="${packageSymbol.packageName?replace(".", "_")}"><@symbol_reference packageSymbol.symbol, 5/></li>
+      <li id="${packageSymbol.packageName?replace(".", "_")}"><@symbol_reference packageSymbol.symbol/></li>
 </#list>
     </ul>
   </body>
