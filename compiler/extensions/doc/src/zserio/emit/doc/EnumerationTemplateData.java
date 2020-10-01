@@ -21,7 +21,7 @@ public class EnumerationTemplateData extends DocTemplateData
     {
         super(context, enumType, enumType.getName());
 
-        linkedType = new LinkedType(enumType.getTypeInstantiation());
+        symbol = context.getSymbolTemplateDataMapper().getSymbol(enumType.getTypeInstantiation());
 
         for (EnumItem item: enumType.getItems())
         {
@@ -30,9 +30,9 @@ public class EnumerationTemplateData extends DocTemplateData
         }
     }
 
-    public LinkedType getLinkedType()
+    public SymbolTemplateData getSymbol()
     {
-        return linkedType;
+        return symbol;
     }
 
     public Iterable<EnumItemTemplateData> getItems()
@@ -141,6 +141,6 @@ public class EnumerationTemplateData extends DocTemplateData
         private final SortedSet<UsageInfoTemplateData> usageInfoList;
     }
 
-    private final LinkedType linkedType;
+    private final SymbolTemplateData symbol;
     private final List<EnumItemTemplateData> items = new ArrayList<EnumItemTemplateData>();
 }

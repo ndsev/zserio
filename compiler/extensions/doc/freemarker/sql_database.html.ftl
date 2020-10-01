@@ -1,7 +1,6 @@
 <#ftl output_format="HTML">
 <#include "doc_comment.inc.ftl">
 <#include "compound.inc.ftl">
-<#include "linkedtype.inc.ftl">
 <#include "usedby.inc.ftl">
 <#include "collaboration_diagram.inc.ftl">
 

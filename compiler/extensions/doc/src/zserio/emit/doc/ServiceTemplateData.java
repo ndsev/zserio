@@ -17,7 +17,7 @@ public class ServiceTemplateData
         docComments = new DocCommentsTemplateData(serviceType.getDocComments());
         for (ServiceMethod method : serviceType.getMethodList())
         {
-            methodList.add(new MethodTemplateData(serviceType, method));
+            methodList.add(new MethodTemplateData(serviceType, method, context.getSymbolTemplateDataMapper()));
         }
         collaborationDiagramSvgFileName = context.getWithSvgDiagrams()
                 ? DocEmitterTools.getTypeCollaborationSvgUrl(context.getOutputPath(), serviceType) : null;
@@ -55,13 +55,13 @@ public class ServiceTemplateData
 
     public static class MethodTemplateData
     {
-        public MethodTemplateData(ServiceType serviceType, ServiceMethod serviceMethod)
-                throws ZserioEmitException
+        public MethodTemplateData(ServiceType serviceType, ServiceMethod serviceMethod,
+                SymbolTemplateDataMapper symbolTemplateDataMapper) throws ZserioEmitException
         {
             name = serviceMethod.getName();
             anchorName = DocEmitterTools.getAnchorName(serviceType, name);
-            requestType = new LinkedType(serviceMethod.getRequestType());
-            responseType = new LinkedType(serviceMethod.getResponseType());
+            requestSymbol = symbolTemplateDataMapper.getSymbol(serviceMethod.getRequestType());
+            responseSymbol = symbolTemplateDataMapper.getSymbol(serviceMethod.getResponseType());
             docComments = new DocCommentsTemplateData(serviceMethod.getDocComments());
         }
 
@@ -75,14 +75,14 @@ public class ServiceTemplateData
             return anchorName;
         }
 
-        public LinkedType getRequestType()
+        public SymbolTemplateData getRequestSymbol()
         {
-            return requestType;
+            return requestSymbol;
         }
 
-        public LinkedType getResponseType()
+        public SymbolTemplateData getResponseSymbol()
         {
-            return responseType;
+            return responseSymbol;
         }
 
         public DocCommentsTemplateData getDocComments()
@@ -92,8 +92,8 @@ public class ServiceTemplateData
 
         private final String name;
         private final String anchorName;
-        private final LinkedType requestType;
-        private final LinkedType responseType;
+        private final SymbolTemplateData requestSymbol;
+        private final SymbolTemplateData responseSymbol;
         private final DocCommentsTemplateData docComments;
     }
 

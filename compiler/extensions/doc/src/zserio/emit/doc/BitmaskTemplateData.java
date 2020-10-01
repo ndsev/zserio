@@ -21,7 +21,7 @@ public class BitmaskTemplateData extends DocTemplateData
     {
         super(context, bitmaskType, bitmaskType.getName());
 
-        linkedType = new LinkedType(bitmaskType.getTypeInstantiation());
+        symbol = context.getSymbolTemplateDataMapper().getSymbol(bitmaskType.getTypeInstantiation());
 
         for (BitmaskValue value : bitmaskType.getValues())
         {
@@ -30,9 +30,9 @@ public class BitmaskTemplateData extends DocTemplateData
         }
     }
 
-    public LinkedType getLinkedType()
+    public SymbolTemplateData getSymbol()
     {
-        return linkedType;
+        return symbol;
     }
 
     public Iterable<BitmaskValueTemplateData> getValues()
@@ -142,6 +142,6 @@ public class BitmaskTemplateData extends DocTemplateData
         private final SortedSet<UsageInfoTemplateData> usageInfoList;
     }
 
-    private final LinkedType linkedType;
+    private final SymbolTemplateData symbol;
     private final List<BitmaskValueTemplateData> values = new ArrayList<BitmaskValueTemplateData>();
 }

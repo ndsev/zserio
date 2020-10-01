@@ -1,6 +1,6 @@
 <#ftl output_format="HTML">
 <#include "doc_comment.inc.ftl">
-<#include "linkedtype.inc.ftl">
+<#include "symbol.inc.ftl">
 <#include "usedby.inc.ftl">
 <#include "collaboration_diagram.inc.ftl">
 
@@ -22,7 +22,7 @@
       <table>
         <tr>
           <td colspan=3>
-            const <@linkedtype linkedType/> ${name} = ${value};
+            const <@symbol_reference symbol/> ${name} = ${value};
           </td>
         </tr>
       </table>

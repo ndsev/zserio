@@ -27,15 +27,16 @@ public class ChoiceTemplateData extends CompoundTypeTemplateData
         final ExpressionFormatter docExpressionFormatter = context.getExpressionFormatter();
         selectorExpression = docExpressionFormatter.formatGetter(choiceType.getSelectorExpression());
 
+        final SymbolTemplateDataMapper symbolTemplateDataMapper = context.getSymbolTemplateDataMapper();
+        caseMembers = new ArrayList<CaseMemberTemplateData>();
         for (ChoiceCase choiceCase : choiceType.getChoiceCases())
         {
-            caseMembers.add(new CaseMemberTemplateData(
-                    choiceType, choiceCase, docExpressionFormatter));
+            caseMembers.add(new CaseMemberTemplateData(choiceType, choiceCase, docExpressionFormatter,
+                    symbolTemplateDataMapper));
         }
 
-        defaultMember = choiceType.getChoiceDefault() != null
-                ? new DefaultMemberTemplateData(choiceType, docExpressionFormatter)
-                : null;
+        defaultMember = (choiceType.getChoiceDefault() != null) ? new DefaultMemberTemplateData(choiceType,
+                docExpressionFormatter, symbolTemplateDataMapper) : null;
     }
 
     public String getSelectorExpression()
@@ -56,7 +57,8 @@ public class ChoiceTemplateData extends CompoundTypeTemplateData
     public static class CaseMemberTemplateData
     {
         public CaseMemberTemplateData(ChoiceType choiceType, ChoiceCase choiceCase,
-                ExpressionFormatter docExpressionFormatter) throws ZserioEmitException
+                ExpressionFormatter docExpressionFormatter, SymbolTemplateDataMapper symbolTemplateDataMapper)
+                        throws ZserioEmitException
         {
             caseList = new ArrayList<CaseTemplateData>();
             final Iterable<ChoiceCaseExpression> caseExpressions = choiceCase.getExpressions();
@@ -66,9 +68,8 @@ public class ChoiceTemplateData extends CompoundTypeTemplateData
                         caseExpression.getDocComments(), docExpressionFormatter));
             }
 
-            field = choiceCase.getField() != null
-                    ? new FieldTemplateData(choiceType, choiceCase.getField(), docExpressionFormatter)
-                    : null;
+            field = (choiceCase.getField() != null) ? new FieldTemplateData(choiceType,
+                    choiceCase.getField(), docExpressionFormatter, symbolTemplateDataMapper) : null;
         }
 
         public Iterable<CaseTemplateData> getCaseList()
@@ -157,7 +158,8 @@ public class ChoiceTemplateData extends CompoundTypeTemplateData
             link = StringJoinUtil.joinStrings(urlName, anchorName, "#");
         }
 
-        public CaseSeeLinkTemplateData(BitmaskValue caseType, BitmaskType caseTypeOwner) throws ZserioEmitException
+        public CaseSeeLinkTemplateData(BitmaskValue caseType, BitmaskType caseTypeOwner)
+                throws ZserioEmitException
         {
             text = caseTypeOwner.getName() + "." + caseType.getName();
             final String urlName = DocEmitterTools.getUrlNameFromType(caseTypeOwner);
@@ -181,13 +183,12 @@ public class ChoiceTemplateData extends CompoundTypeTemplateData
 
     public static class DefaultMemberTemplateData
     {
-        public DefaultMemberTemplateData(ChoiceType choiceType,
-                ExpressionFormatter docExpressionFormatter) throws ZserioEmitException
+        public DefaultMemberTemplateData(ChoiceType choiceType, ExpressionFormatter docExpressionFormatter,
+                SymbolTemplateDataMapper symbolTemplateDataMapper) throws ZserioEmitException
         {
             final ChoiceDefault choiceDefault = choiceType.getChoiceDefault();
-            field = choiceDefault.getField() != null
-                    ? new FieldTemplateData(choiceType, choiceDefault.getField(), docExpressionFormatter)
-                    : null;
+            field = (choiceDefault.getField() != null) ? new FieldTemplateData(choiceType,
+                    choiceDefault.getField(), docExpressionFormatter, symbolTemplateDataMapper) : null;
             docComments = new DocCommentsTemplateData(choiceDefault.getDocComments());
         }
 
@@ -206,6 +207,6 @@ public class ChoiceTemplateData extends CompoundTypeTemplateData
     }
 
     private final String selectorExpression;
-    private final List<CaseMemberTemplateData> caseMembers = new ArrayList<CaseMemberTemplateData>();
+    private final List<CaseMemberTemplateData> caseMembers;
     private final DefaultMemberTemplateData defaultMember;
 }

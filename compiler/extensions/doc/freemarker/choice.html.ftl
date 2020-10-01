@@ -1,7 +1,7 @@
 <#ftl output_format="HTML">
 <#include "doc_comment.inc.ftl">
 <#include "compound.inc.ftl">
-<#include "linkedtype.inc.ftl">
+<#include "symbol.inc.ftl">
 <#include "usedby.inc.ftl">
 <#include "collaboration_diagram.inc.ftl">
 <#macro choice_field field>
@@ -9,7 +9,7 @@
               <td id="tabIndent"></td>
               <td id="tabIndent">
                 <#if field.isArrayImplicit>implicit </#if><#t>
-                  <#lt><@linkedtype field.linkedType/><@compound_field_arguments field.arguments/>
+                  <#lt><@symbol_reference field.symbol/><@compound_field_arguments field.arguments/>
               </td>
               <td>
                 <a href="#${field.anchorName}" class="fieldLink">${field.name}</a><#rt>

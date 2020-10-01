@@ -1,6 +1,6 @@
 <#ftl output_format="HTML">
 <#include "doc_comment.inc.ftl">
-<#include "linkedtype.inc.ftl">
+<#include "symbol.inc.ftl">
 <#include "usedby.inc.ftl">
 <#include "collaboration_diagram.inc.ftl">
 
@@ -21,7 +21,7 @@
     <tr><td class="docuCode">
       <table>
 
-      <tr><td colspan=3>enum <@linkedtype linkedType/> ${name}</td></tr>
+      <tr><td colspan=3>enum <@symbol_reference symbol/> ${name}</td></tr>
       <tr><td>{</td><td rowspan="${items?size+1}">&nbsp;</td><td></td></tr>
 <#list items as item>
           <tr>

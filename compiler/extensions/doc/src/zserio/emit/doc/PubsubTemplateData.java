@@ -18,7 +18,8 @@ public class PubsubTemplateData
         docComments = new DocCommentsTemplateData(pubsubType.getDocComments());
         for (PubsubMessage message : pubsubType.getMessageList())
         {
-            messageList.add(new MessageTemplateData(pubsubType, context.getExpressionFormatter(), message));
+            messageList.add(new MessageTemplateData(pubsubType, context.getExpressionFormatter(), message,
+                    context.getSymbolTemplateDataMapper()));
         }
         collaborationDiagramSvgFileName = (context.getWithSvgDiagrams())
                 ? DocEmitterTools.getTypeCollaborationSvgUrl(context.getOutputPath(), pubsubType) : null;
@@ -57,14 +58,15 @@ public class PubsubTemplateData
     public static class MessageTemplateData
     {
         public MessageTemplateData(PubsubType pubsubType, ExpressionFormatter docExpressionFormatter,
-                PubsubMessage pubsubMessage) throws ZserioEmitException
+                PubsubMessage pubsubMessage, SymbolTemplateDataMapper symbolTemplateDataMapper)
+                        throws ZserioEmitException
         {
             keyword = pubsubMessage.isPublished() && pubsubMessage.isSubscribed() ?
                     "pubsub" : pubsubMessage.isPublished() ? "publish" : "subscribe";
             name = pubsubMessage.getName();
             anchorName = DocEmitterTools.getAnchorName(pubsubType, name);
             topicDefinition = docExpressionFormatter.formatGetter(pubsubMessage.getTopicDefinitionExpr());
-            type = new LinkedType(pubsubMessage.getType());
+            symbol = symbolTemplateDataMapper.getSymbol(pubsubMessage.getType());
             docComments = new DocCommentsTemplateData(pubsubMessage.getDocComments());
         }
 
@@ -88,9 +90,9 @@ public class PubsubTemplateData
             return topicDefinition;
         }
 
-        public LinkedType getType()
+        public SymbolTemplateData getSymbol()
         {
-            return type;
+            return symbol;
         }
 
         public DocCommentsTemplateData getDocComments()
@@ -102,7 +104,7 @@ public class PubsubTemplateData
         private final String name;
         private final String anchorName;
         private final String topicDefinition;
-        private final LinkedType type;
+        private final SymbolTemplateData symbol;
         private final DocCommentsTemplateData docComments;
     }
 

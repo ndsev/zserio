@@ -1,6 +1,6 @@
 <#ftl output_format="HTML">
 <#include "doc_comment.inc.ftl">
-<#include "linkedtype.inc.ftl">
+<#include "symbol.inc.ftl">
 <#include "collaboration_diagram.inc.ftl">
 
         <div class="msgdetail" id="${anchorName}">
@@ -23,9 +23,9 @@
                 <tr><td>{</td></tr>
 <#list methodList as method>
                 <tr><td id="tabIndent">
-                    <@linkedtype method.responseType/> <#rt>
+                    <@symbol_reference method.responseSymbol/> <#rt>
                     <a href="#${method.anchorName}" class="fieldLink">${method.name}</a><#t>
-                    <#lt>(<@linkedtype method.requestType/>);
+                    <#lt>(<@symbol_reference method.requestSymbol/>);
                 </td></tr>
 </#list>
                 <tr><td>};</td></tr>

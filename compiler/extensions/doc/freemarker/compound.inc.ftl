@@ -1,5 +1,5 @@
 <#ftl output_format="HTML">
-<#include "linkedtype.inc.ftl">
+<#include "symbol.inc.ftl">
 
 <#macro compound_fields fields>
     <#list fields as field>
@@ -24,7 +24,7 @@
                 <#if field.isVirtual>sql_virtual </#if><#t>
                 <#if field.isAutoOptional>optional </#if><#t>
                 <#if field.isArrayImplicit>implicit </#if><#t>
-                  <#lt><@linkedtype field.linkedType/><@compound_field_arguments field.arguments/>
+                  <#lt><@symbol_reference field.symbol/><@compound_field_arguments field.arguments/>
               </td>
               <td>
                 <a href="#${field.anchorName}" class="fieldLink">${field.name}</a><#rt>
@@ -51,7 +51,7 @@
             <tr>
               <td id="tabIndent"></td>
               <td colspan=2>
-                function <@linkedtype function.returnType/> <#rt>
+                function <@symbol_reference function.returnSymbol/> <#rt>
                   <#lt><a href="#${function.anchorName}" class="fieldLink">${function.name}()</a>
               </td>
             </tr>
@@ -74,7 +74,7 @@
     <#if parameters?has_content>
   (<#t>
     <#list parameters as parameter>
-      <@linkedtype parameter.linkedType/> ${parameter.name}<#t>
+      <@symbol_reference parameter.symbol/> ${parameter.name}<#t>
       <#if parameter?has_next>, </#if><#t>
     </#list>
   )<#t>

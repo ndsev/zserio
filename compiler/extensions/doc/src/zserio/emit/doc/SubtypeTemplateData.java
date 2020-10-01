@@ -9,13 +9,13 @@ public class SubtypeTemplateData extends DocTemplateData
     {
         super(context, subtype, subtype.getName());
 
-        linkedType = new LinkedType(subtype.getTypeReference());
+        symbol = context.getSymbolTemplateDataMapper().getSymbol(subtype.getTypeReference());
     }
 
-    public LinkedType getLinkedType()
+    public SymbolTemplateData getSymbol()
     {
-        return linkedType;
+        return symbol;
     }
 
-    private final LinkedType linkedType;
+    private final SymbolTemplateData symbol;
 };

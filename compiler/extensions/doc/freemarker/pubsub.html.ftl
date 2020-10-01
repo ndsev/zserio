@@ -1,6 +1,6 @@
 <#ftl output_format="HTML">
 <#include "doc_comment.inc.ftl">
-<#include "linkedtype.inc.ftl">
+<#include "symbol.inc.ftl">
 <#include "collaboration_diagram.inc.ftl">
 
         <div class="msgdetail" id="${anchorName}">
@@ -24,7 +24,7 @@
 <#list messageList as message>
                 <tr><td id="tabIndent">
                     ${message.keyword}(${message.topicDefinition}) <#rt>
-                    <@linkedtype message.type/> <#rt>
+                    <@symbol_reference message.symbol/> <#rt>
                     <#lt><a href="#${message.anchorName}" class="fieldLink">${message.name}</a>;
                 </td></tr>
 </#list>

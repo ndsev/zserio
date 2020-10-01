@@ -21,8 +21,10 @@ public class DocTemplateData
                 : null;
 
         final UsedByCollector usedByCollector = context.getUsedByCollector();
+        final SymbolTemplateDataMapper symbolTemplateDataMapper = context.getSymbolTemplateDataMapper();
+        usedByList = new ArrayList<SymbolTemplateData>();
         for (AstNode usedByNode : usedByCollector.getUsedByTypes(astNode, AstNode.class))
-            usedByList.add(new LinkedType(usedByNode));
+            usedByList.add(symbolTemplateDataMapper.getSymbol(usedByNode));
     }
 
     public DocCommentsTemplateData getDocComments()
@@ -50,7 +52,7 @@ public class DocTemplateData
         return collaborationDiagramSvgUrl;
     }
 
-    public Iterable<LinkedType> getUsedByList()
+    public Iterable<SymbolTemplateData> getUsedByList()
     {
         return usedByList;
     }
@@ -61,5 +63,5 @@ public class DocTemplateData
     private final String anchorName;
 
     private final String collaborationDiagramSvgUrl;
-    private final List<LinkedType> usedByList= new ArrayList<LinkedType>();
+    private final List<SymbolTemplateData> usedByList;
 }

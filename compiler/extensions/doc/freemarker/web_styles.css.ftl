@@ -24,14 +24,21 @@ a
     color:#333333;
 }
 
-a.fieldLink
+a.constantLink
 {
-    text-decoration:none;
-    color:#333333;
+    text-decoration:underline;
+    color:gray;
 }
 
-a.fieldLink:hover,
-a.fieldLink:focus
+a.subtypeLink
+{
+    text-decoration:underline;
+    font-style:italic;
+}
+
+a.structureLink,
+a.choiceLink,
+a.unionLink
 {
     text-decoration:underline;
 }
@@ -43,40 +50,11 @@ a.bitmaskLink
     color:green;
 }
 
-a.subtypeLink
-{
-    text-decoration:underline;
-    font-style:italic;
-}
-
-a.noStyle
-{
-    text-decoration:underline blink;
-    color:red;
-}
-
-a.constantLink
-{
-    text-decoration:underline;
-    color:gray;
-}
-
-a.sqlInteger,
 a.sqlTableLink,
-a.sqlDBLink
+a.sqlDatabaseLink
 {
     text-decoration:underline;
     color:blue;
-}
-
-a.choiceLink,
-a.unionLink,
-a.structureLink,
-a.instantLink,
-a.arrayLink,
-a.referenceLink
-{
-    text-decoration:underline;
 }
 
 a.serviceLink,
@@ -84,6 +62,28 @@ a.pubsubLink
 {
     text-decoration:underline;
     color:brown;
+}
+
+a.arrayLink
+{
+    text-decoration:underline;
+}
+
+span.builtInType
+{
+    color:darkslategray;
+}
+
+a.fieldLink
+{
+    text-decoration:none;
+    color:#333333;
+}
+
+a.fieldLink:hover,
+a.fieldLink:focus
+{
+    text-decoration:underline;
 }
 
 .detailedDocu

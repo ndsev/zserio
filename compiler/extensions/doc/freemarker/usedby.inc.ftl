@@ -1,14 +1,15 @@
 <#ftl output_format="HTML">
-<#macro used_by linkedTypes>
-    <#if linkedTypes?has_content>
+<#include "symbol.inc.ftl">
+<#macro used_by symbols>
+    <#if symbols?has_content>
 
     <h3>Used By</h3>
     <table>
       <tr><td class="docuCode">
         <table>
           <tbody id="tabIndent">
-        <#list linkedTypes as linkedType>
-            <tr><td><@linkedtype linkedType/></td></tr>
+        <#list symbols as symbol>
+            <tr><td><@symbol_reference symbol/></td></tr>
         </#list>
           </tbody>
         </table>

@@ -1,4 +1,5 @@
 <#ftl output_format="HTML">
+<#include "symbol.inc.ftl">
 <html>
   <head>
     <title>Package Symbols Overview</title>
@@ -11,25 +12,23 @@
     <h2>Symbols</h2>
 
     <ul class="classlist">
-<#list linkedTypes as linkedType>
-      <li id="${linkedType.packageNameAsID}"><#rt>
-        <a class="${linkedType.style}" href="content/${linkedType.packageName}.html#${linkedType.hyperlinkName}" <#t>
-          title="Symbol: ${linkedType.category}" target="detailedDocu" >${linkedType.name}</a><#t>
-      <#lt></li>
+<#list packageSymbols as packageSymbol>
+      <li id="${packageSymbol.packageName?replace(".", "_")}"><@symbol_reference packageSymbol.symbol, 5/></li>
 </#list>
     </ul>
   </body>
 
 <#list packageNames as packageName>
-  <style id="style_${packageName}" type="text/css">
-    li#${packageName} { display: list-item }
+  <style id="style_${packageName?replace(".", "_")}" type="text/css">
+    li#${packageName?replace(".", "_")} { display: list-item }
   </style>
 </#list>
 
   <script language="JavaScript">
     var allPackageNameListStyles = new Object();
 <#list packageNames as packageName>
-    allPackageNameListStyles.style_${packageName} = getElementStyleFromID("style_${packageName}");
+    allPackageNameListStyles.style_${packageName?replace(".", "_")} = <#rt>
+            <#lt>getElementStyleFromID("style_${packageName?replace(".", "_")}");
 </#list>
 
     function getElementStyleFromID(styleItemId)

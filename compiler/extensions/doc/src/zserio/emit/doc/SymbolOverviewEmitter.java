@@ -1,9 +1,12 @@
 package zserio.emit.doc;
 
 import java.io.File;
-import java.util.Set;
-import java.util.TreeSet;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
+import zserio.ast.AstNode;
 import zserio.ast.BitmaskType;
 import zserio.ast.ChoiceType;
 import zserio.ast.Constant;
@@ -28,14 +31,14 @@ class SymbolOverviewEmitter extends HtmlDefaultEmitter
         super(extensionParameters, withSvgDiagrams, usedByCollector);
 
         this.outputPathName = outputPathName;
-        packageNames = new TreeSet<String>();
-        linkedTypes = new TreeSet<LinkedType>();
+        nodesMap = new HashMap<Package, List<AstNode>>();
     }
 
     @Override
     public void endRoot(Root root) throws ZserioEmitException
     {
-        final Object templateData = new SymbolOverviewTemplateData(packageNames, linkedTypes);
+        final Object templateData = new SymbolOverviewTemplateData(getPackageMapper(), HTML_CONTENT_DIRECTORY,
+                nodesMap);
         final File outputFile = new File(outputPathName, SYMBOL_OVERVIEW_FILE_NAME);
         processHtmlTemplate(TEMPLATE_SOURCE_NAME, templateData, outputFile);
     }
@@ -45,81 +48,87 @@ class SymbolOverviewEmitter extends HtmlDefaultEmitter
     {
         super.beginPackage(pkg);
 
-        // TODO consider to use '.' to '_' but....
-        packageNames.add(pkg.getPackageName().toString("_")); // TODO[mikir] replace it when top level package is ready
-//      packageNames.add(getPackageMapper().getPackageName(pkg).toString("_"));
+        currentNodes = new ArrayList<AstNode>();
+    }
+
+    @Override
+    public void endPackage(Package pkg) throws ZserioEmitException
+    {
+        nodesMap.put(pkg, currentNodes);
+        currentNodes = null;
     }
 
     @Override
     public void beginConst(Constant constant) throws ZserioEmitException
     {
-        linkedTypes.add(new LinkedType(constant));
+        currentNodes.add(constant);
     }
 
     @Override
     public void beginSubtype(Subtype subType) throws ZserioEmitException
     {
-        linkedTypes.add(new LinkedType(subType));
+        currentNodes.add(subType);
     }
 
     @Override
     public void beginStructure(StructureType structureType) throws ZserioEmitException
     {
-        linkedTypes.add(new LinkedType(structureType));
+        currentNodes.add(structureType);
     }
 
     @Override
     public void beginChoice(ChoiceType choiceType) throws ZserioEmitException
     {
-        linkedTypes.add(new LinkedType(choiceType));
+        currentNodes.add(choiceType);
     }
 
     @Override
     public void beginUnion(UnionType unionType) throws ZserioEmitException
     {
-        linkedTypes.add(new LinkedType(unionType));
+        currentNodes.add(unionType);
     }
 
     @Override
     public void beginEnumeration(EnumType enumType) throws ZserioEmitException
     {
-        linkedTypes.add(new LinkedType(enumType));
+        currentNodes.add(enumType);
     }
 
     @Override
     public void beginBitmask(BitmaskType bitmaskType) throws ZserioEmitException
     {
-        linkedTypes.add(new LinkedType(bitmaskType));
+        currentNodes.add(bitmaskType);
     }
 
     @Override
     public void beginSqlTable(SqlTableType sqlTableType) throws ZserioEmitException
     {
-        linkedTypes.add(new LinkedType(sqlTableType));
+        currentNodes.add(sqlTableType);
     }
 
     @Override
     public void beginSqlDatabase(SqlDatabaseType sqlDatabaseType) throws ZserioEmitException
     {
-        linkedTypes.add(new LinkedType(sqlDatabaseType));
+        currentNodes.add(sqlDatabaseType);
     }
 
     @Override
     public void beginService(ServiceType serviceType) throws ZserioEmitException
     {
-        linkedTypes.add(new LinkedType(serviceType));
+        currentNodes.add(serviceType);
     }
 
     @Override
     public void beginPubsub(PubsubType pubsubType) throws ZserioEmitException
     {
-        linkedTypes.add(new LinkedType(pubsubType));
+        currentNodes.add(pubsubType);
     }
 
     private static final String SYMBOL_OVERVIEW_FILE_NAME = "symbol_overview.html";
     private static final String TEMPLATE_SOURCE_NAME = "symbol_overview.html.ftl";
 
     private final String outputPathName;
-    private final Set<String> packageNames;
-    private final Set<LinkedType> linkedTypes;
+    private final Map<Package, List<AstNode>> nodesMap;
+
+    private List<AstNode> currentNodes;
 }

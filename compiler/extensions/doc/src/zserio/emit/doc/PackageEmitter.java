@@ -27,7 +27,8 @@ class PackageEmitter extends HtmlDefaultEmitter
         super(extensionParameters, withSvgDiagrams, usedByCollector);
 
         this.outputPathName = outputPathName;
-        this.context = new TemplateDataContext(outputPathName, withSvgDiagrams, usedByCollector);
+        this.withSvgDiagrams = withSvgDiagrams;
+        this.usedByCollector = usedByCollector;
 
         ResourceManager.getInstance().setCurrentSourceDir(extensionParameters.getPathName());
         ResourceManager.getInstance().setOutputRoot(outputPathName);
@@ -39,13 +40,18 @@ class PackageEmitter extends HtmlDefaultEmitter
     @Override
     public void beginPackage(Package pkg) throws ZserioEmitException
     {
-        final File outputDirectory = new File(outputPathName, PACKAGE_HTML_DIRECTORY);
+        super.beginPackage(pkg);
+
+        final File outputDirectory = new File(outputPathName, HTML_CONTENT_DIRECTORY);
         ResourceManager.getInstance().setCurrentOutputDir(outputDirectory.toString());
 
         final File outputFile = new File(outputDirectory,
                 pkg.getPackageName().toString() + HTML_FILE_EXTENSION);
         FileUtil.createOutputDirectory(outputFile);
         writer = FileUtil.createWriter(outputFile);
+
+        // TODO[mikir] PackageMapper uses root package mapping which is useless for doc emitter!
+        context = new TemplateDataContext(outputPathName, withSvgDiagrams, usedByCollector, getPackageMapper());
 
         final BeginPackageTemplateData templateData = new BeginPackageTemplateData(pkg);
         processHtmlTemplate("begin_package.html.ftl", templateData, writer);
@@ -145,10 +151,10 @@ class PackageEmitter extends HtmlDefaultEmitter
         return "";
     }
 
-    private static final String PACKAGE_HTML_DIRECTORY = "content";
-
     private final String outputPathName;
-    private final TemplateDataContext context;
+    private final boolean withSvgDiagrams;
+    private final UsedByCollector usedByCollector;
 
-    private PrintWriter writer = null;
+    private PrintWriter writer;
+    private TemplateDataContext context;
 }

@@ -10,14 +10,13 @@ public class ConstantTemplateData extends DocTemplateData
     {
         super(context, constant, constant.getName());
 
-        linkedType = new LinkedType(constant.getTypeInstantiation());
-
+        symbol = context.getSymbolTemplateDataMapper().getSymbol(constant.getTypeInstantiation());
         value = context.getExpressionFormatter().formatGetter(constant.getValueExpression());
     }
 
-    public LinkedType getLinkedType()
+    public SymbolTemplateData getSymbol()
     {
-        return linkedType;
+        return symbol;
     }
 
     public String getValue()
@@ -25,6 +24,6 @@ public class ConstantTemplateData extends DocTemplateData
         return value;
     }
 
-    private final LinkedType linkedType;
+    private final SymbolTemplateData symbol;
     private final String value;
 }
