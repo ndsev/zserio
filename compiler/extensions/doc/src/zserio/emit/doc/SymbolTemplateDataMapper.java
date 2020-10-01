@@ -1,5 +1,7 @@
 package zserio.emit.doc;
 
+import java.util.Locale;
+
 import zserio.ast.ArrayInstantiation;
 import zserio.ast.ArrayType;
 import zserio.ast.AstNode;
@@ -50,7 +52,7 @@ class SymbolTemplateDataMapper
 {
     public SymbolTemplateDataMapper(PackageMapper packageMapper, String htmlContentDirectory)
     {
-        this.packageMapper = packageMapper;
+        // TODO[mikir] this.packageMapper = packageMapper;
         this.htmlContentDirectory = htmlContentDirectory;
     }
 
@@ -288,7 +290,8 @@ class SymbolTemplateDataMapper
 
         private SymbolTemplateData createSymbolTemplateData(String name, Package pkg, String typeName)
         {
-            final String htmlClassPrefix = typeName.substring(0, 1).toLowerCase() + typeName.substring(1);
+            final String htmlClassPrefix = typeName.substring(0, 1).toLowerCase(Locale.ENGLISH) +
+                    typeName.substring(1);
             final String htmlClass = htmlClassPrefix + "Link";
             // TODO[mikir] final String packageName = packageMapper.getPackageName(pkg).toString();
             final String packageName = pkg.getPackageName().toString();
@@ -316,6 +319,6 @@ class SymbolTemplateDataMapper
         private SymbolTemplateData symbolTemplateData;
     }
 
-    private final PackageMapper packageMapper;
+ // TODO[mikir]     private final PackageMapper packageMapper;
     private final String htmlContentDirectory;
 }
