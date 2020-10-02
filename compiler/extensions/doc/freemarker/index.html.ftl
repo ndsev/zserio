@@ -6,9 +6,16 @@
     <script language="JavaScript">
       function receiveMessage(event)
       {
-        // forward to symbol overview iframe
-        var f = document.getElementsByName("symbol_overview")[0]
-        f.contentWindow.postMessage(event.data, "*")
+        var message = event.data;
+        if ("messageType" in message) {
+          if (message.messageType == "package-loaded") {
+            var packageOverview = document.getElementById("package_overview").contentWindow
+            packageOverview.postMessage(message.packageName, "*")
+          } else if (message.messageType == "package-changed") {
+            var symbolOverview = document.getElementById("symbol_overview").contentWindow
+            symbolOverview.postMessage(message.styleId, "*")
+          }
+        } // otherwise it's not our message
       }
 
       window.addEventListener("message", receiveMessage, false);
@@ -17,10 +24,10 @@
 
   <frameset cols="20%,*">
     <frameset rows="30%,70%">
-      <frame name="package_overview" src="package_overview.html" scrolling="auto" frameborder="0" />
-      <frame name="symbol_overview" src="symbol_overview.html" scrolling="auto" frameborder="1" />
+      <frame id="package_overview" src="package_overview.html" scrolling="auto" frameborder="0" />
+      <frame id="symbol_overview" src="symbol_overview.html" scrolling="auto" frameborder="1" />
     </frameset>
-    <frame name="detailedDocu" src="" class="detailedDocu" scrolling="auto" frameborder="0" />
+    <frame id="main_window" name="main_window" src="" class="detailedDocu" scrolling="auto" frameborder="0" />
 
     <noframes>
       <body>

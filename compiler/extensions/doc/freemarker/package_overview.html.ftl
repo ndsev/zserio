@@ -6,36 +6,43 @@
     <link rel="stylesheet" type="text/css" href="webStyles.css">
     <meta http-equiv="content-type" content="text/html; charset=UTF-8">
     <script language="JavaScript">
-        var oldClickedElement = null;
+        var oldSelectedElement = null;
 
-        function hiliteElement(clickedElement)
-        {
-            clickedElement.className =
-                (clickedElement.className == "packagelist")? "selectedpackagelist" : "packagelist";
-
-            if (oldClickedElement)
-            {
-                oldClickedElement.className =
-                    (oldClickedElement.className == "packagelist")? "selectedpackagelist" : "packagelist";
-            }
-            oldClickedElement = clickedElement;
+        function highlightElement(selectedElement, scroll) {
+          if (oldSelectedElement) {
+            oldSelectedElement.className = "packagelist";
+          }
+          oldSelectedElement = selectedElement;
+          selectedElement.className = "selectedpackagelist";
+          if (scroll)
+            selectedElement.scrollIntoView();
         }
 
-        function showPackage(clickedElement)
-        {
-            hiliteElement(clickedElement.parentElement.parentElement);
+        function showPackage(element, scroll) {
+          var selectedElement = element.parentElement.parentElement;
+          if (oldSelectedElement == selectedElement)
+            return;
 
-            var clickedStyleItemId = "style_" +
-                clickedElement.text.replace(/\./g, '_');
-            parent.postMessage(clickedStyleItemId, "*");
+          highlightElement(selectedElement, scroll);
+          var clickedStyleItemId = "style_" + element.text.replace(/\./g, '_');
+          parent.postMessage({ messageType: "package-changed", styleId: clickedStyleItemId }, "*");
         }
 
-        function showAllPackages(clickedElement)
-        {
-            hiliteElement(clickedElement);
-
-            parent.postMessage(".all", "*");
+        function showAllPackages(element) {
+          highlightElement(element, false);
+          parent.postMessage({ messageType: "package-changed", styleId: ".all" }, "*");
         }
+
+        function receiveMessage(event) {
+          if (oldSelectedElement && oldSelectedElement.id == "all_packages")
+            return;
+
+          var packageName = event.data;
+          var packageLinkElement = document.getElementById(packageName);
+          showPackage(packageLinkElement, true);
+        }
+
+        window.addEventListener("message", receiveMessage, false);
     </script>
   </head>
 
@@ -50,8 +57,8 @@
 <#list packageNames as packageName>
     <ul class="packagelist"><#rt>
       <li><#t>
-        <a href="content/${packageName}.html" title="Package: ${packageName}" target="detailedDocu" <#t>
-          onclick="showPackage(this);">${packageName}</a><#t>
+        <a href="content/${packageName}.html" id="${packageName}" title="Package: ${packageName}" <#t>
+          target="main_window" onclick="showPackage(this, false);">${packageName}</a><#t>
       </li><#t>
     <#lt></ul>
 </#list>
