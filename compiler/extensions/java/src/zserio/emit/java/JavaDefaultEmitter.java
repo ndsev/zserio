@@ -1,5 +1,6 @@
 package zserio.emit.java;
 
+import zserio.ast.Package;
 import zserio.ast.PackageName;
 import zserio.ast.ZserioType;
 import zserio.emit.common.CodeDefaultEmitter;
@@ -14,6 +15,18 @@ abstract class JavaDefaultEmitter extends CodeDefaultEmitter
 
         this.extensionParameters = extensionParameters;
         this.javaParameters = javaParameters;
+    }
+
+    @Override
+    public void beginPackage(Package pkg) throws ZserioEmitException
+    {
+        super.beginPackage(pkg);
+
+        if (context == null)
+        {
+            context = new TemplateDataContext(extensionParameters, javaParameters,
+                    getPackageMapper().getPackageName(pkg), getPackageMapper());
+        }
     }
 
     protected void processTemplate(String templateName, Object templateData, ZserioType zserioType)
@@ -36,15 +49,9 @@ abstract class JavaDefaultEmitter extends CodeDefaultEmitter
                 outFileName, JAVA_SOURCE_EXTENSION, false);
     }
 
-    protected void processTemplateToRootDir(String templateName, Object templateData, String outFileName)
-            throws ZserioEmitException
-    {
-        super.processTemplateToRootDir(templateName, templateData, outFileName, JAVA_SOURCE_EXTENSION, false);
-    }
-
     protected TemplateDataContext getTemplateDataContext()
     {
-        return new TemplateDataContext(extensionParameters, javaParameters, getPackageMapper());
+        return context;
     }
 
     private static final String JAVA_SOURCE_EXTENSION = ".java";
@@ -52,4 +59,6 @@ abstract class JavaDefaultEmitter extends CodeDefaultEmitter
 
     private final Parameters extensionParameters;
     private final JavaExtensionParameters javaParameters;
+
+    private TemplateDataContext context = null;
 }

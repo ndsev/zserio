@@ -17,20 +17,9 @@ public final class PackageMapper
      *
      * @param topLevelPackageNameList The list of top level package names defined in the command line.
      */
-    public PackageMapper(Package rootPackage, Iterable<String> topLevelPackageNameList)
+    public PackageMapper(Iterable<String> topLevelPackageNameList)
     {
         topLevelPackageName = new PackageName.Builder().addIds(topLevelPackageNameList).get();
-        mappedRootPackageName = getPackageName(rootPackage);
-    }
-
-    /**
-     * Gets the mapped root package name.
-     *
-     * @return Mapped root package name.
-     */
-    public PackageName getRootPackageName()
-    {
-        return mappedRootPackageName;
     }
 
     /**
@@ -80,5 +69,4 @@ public final class PackageMapper
     }
 
     private final PackageName topLevelPackageName;
-    private final PackageName mappedRootPackageName;
 }

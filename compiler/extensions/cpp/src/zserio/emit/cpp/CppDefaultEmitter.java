@@ -18,15 +18,13 @@ abstract class CppDefaultEmitter extends DefaultEmitter
     {
         this.outPathName = outPathName;
         this.extensionParameters = extensionParameters;
+        packageMapper = new PackageMapper(extensionParameters.getTopLevelPackageNameList());
     }
 
     @Override
     public void beginPackage(Package pkg) throws ZserioEmitException
     {
         packageSourceFileName = pkg.getLocation().getFileName();
-
-        if (packageMapper == null)
-            packageMapper = new PackageMapper(pkg, extensionParameters.getTopLevelPackageNameList());
     }
 
     protected void processSourceTemplate(String templateName, Object templateData, ZserioType zserioType)
@@ -116,9 +114,9 @@ abstract class CppDefaultEmitter extends DefaultEmitter
             }
         }
 
-        final String amalgamFileNameRoot = builder.toString(); 
+        final String amalgamFileNameRoot = builder.toString();
 
-        return (amalgamFileNameRoot.isEmpty()) ? CPP_DEFAULT_AMALGAM_FILE_NAME_ROOT : amalgamFileNameRoot; 
+        return (amalgamFileNameRoot.isEmpty()) ? CPP_DEFAULT_AMALGAM_FILE_NAME_ROOT : amalgamFileNameRoot;
     }
 
     private static final String CPP_SOURCE_EXTENSION = ".cpp";
@@ -129,7 +127,7 @@ abstract class CppDefaultEmitter extends DefaultEmitter
 
     private final String outPathName;
     private final Parameters extensionParameters;
+    private final PackageMapper packageMapper;
 
-    private PackageMapper packageMapper = null;
     private String packageSourceFileName = "";
 }

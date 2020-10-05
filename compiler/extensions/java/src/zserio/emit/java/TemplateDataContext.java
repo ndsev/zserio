@@ -1,5 +1,6 @@
 package zserio.emit.java;
 
+import zserio.ast.PackageName;
 import zserio.emit.common.ExpressionFormatter;
 import zserio.emit.common.PackageMapper;
 import zserio.tools.Parameters;
@@ -7,10 +8,10 @@ import zserio.tools.Parameters;
 final class TemplateDataContext
 {
     public TemplateDataContext(Parameters extensionParameters, JavaExtensionParameters javaParameters,
-            PackageMapper javaPackageMapper)
+            PackageName rootPackageName, PackageMapper javaPackageMapper)
     {
         javaNativeMapper = new JavaNativeMapper(javaPackageMapper);
-        javaRootPackageName = JavaFullNameFormatter.getFullName(javaPackageMapper.getRootPackageName());
+        javaRootPackageName = JavaFullNameFormatter.getFullName(rootPackageName);
 
         final JavaExpressionFormattingPolicy policy = new JavaExpressionFormattingPolicy(javaNativeMapper);
         javaExpressionFormatter = new ExpressionFormatter(policy);

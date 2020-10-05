@@ -3,7 +3,6 @@ package zserio.emit.common;
 import java.io.File;
 import java.util.Locale;
 
-import zserio.ast.Package;
 import zserio.ast.PackageName;
 import zserio.ast.ZserioType;
 import zserio.tools.Parameters;
@@ -33,15 +32,8 @@ public abstract class CodeDefaultEmitter extends DefaultEmitter
 
         this.codeTemplateLocation = codeTemplateLocation;
 
-        topLevelPackageNameList = extensionParameters.getTopLevelPackageNameList();
-        packageMapper = null;
-    }
-
-    @Override
-    public void beginPackage(Package pkg) throws ZserioEmitException
-    {
-        if (packageMapper == null)
-            packageMapper = new PackageMapper(pkg, topLevelPackageNameList);
+        final Iterable<String> topLevelPackageNameList = extensionParameters.getTopLevelPackageNameList();
+        packageMapper = new PackageMapper(topLevelPackageNameList);
     }
 
     protected boolean getWithRangeCheckCode()
@@ -96,14 +88,6 @@ public abstract class CodeDefaultEmitter extends DefaultEmitter
                 requestAmalgamate);
     }
 
-    protected void processTemplateToRootDir(String templateName, Object templateData, String outFileNameRoot,
-            String outputExtension, boolean requestAmalgamate) throws ZserioEmitException
-    {
-        final PackageName rootPackageName = packageMapper.getRootPackageName();
-        processTemplate(templateName, templateData, rootPackageName, outFileNameRoot, outputExtension,
-                requestAmalgamate);
-    }
-
     protected void processTemplate(String templateName, Object templateData, PackageName packageName,
             String outFileNameRoot, String outputExtension, boolean requestAmalgamate)
                     throws ZserioEmitException
@@ -139,6 +123,5 @@ public abstract class CodeDefaultEmitter extends DefaultEmitter
     private final boolean withWriterCode;
 
     private final String codeTemplateLocation;
-    private final Iterable<String> topLevelPackageNameList;
     private PackageMapper packageMapper;
 }

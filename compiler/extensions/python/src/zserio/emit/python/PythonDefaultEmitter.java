@@ -12,7 +12,7 @@ abstract class PythonDefaultEmitter extends CodeDefaultEmitter
     {
         super(outputPathName, extensionParameters, PYTHON_TEMPLATE_LOCATION);
 
-        this.extensionParameters = extensionParameters;
+        this.context = new TemplateDataContext(extensionParameters, getPackageMapper());
     }
 
     protected void processSourceTemplate(String templateName, Object templateData, ZserioType zserioType)
@@ -37,11 +37,11 @@ abstract class PythonDefaultEmitter extends CodeDefaultEmitter
 
     protected TemplateDataContext getTemplateDataContext()
     {
-        return new TemplateDataContext(extensionParameters, getPackageMapper());
+        return context;
     }
 
     private static final String PYTHON_SOURCE_EXTENSION = ".py";
     private static final String PYTHON_TEMPLATE_LOCATION = "python/";
 
-    private final Parameters extensionParameters;
+    private final TemplateDataContext context;
 }
