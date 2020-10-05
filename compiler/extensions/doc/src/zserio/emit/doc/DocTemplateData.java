@@ -12,7 +12,7 @@ public class DocTemplateData
     public DocTemplateData(TemplateDataContext context, DocumentableAstNode astNode, String name)
             throws ZserioEmitException
     {
-        this.docComments = new DocCommentsTemplateData(astNode.getDocComments());
+        this.docComments = new DocCommentsTemplateData(context, astNode.getDocComments());
         this.name = name;
 
         final SymbolTemplateData symbol = SymbolTemplateDataCreator.createData(context, astNode);

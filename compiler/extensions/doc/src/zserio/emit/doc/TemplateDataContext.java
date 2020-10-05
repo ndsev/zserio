@@ -6,12 +6,14 @@ import zserio.emit.common.PackageMapper;
 class TemplateDataContext
 {
     public TemplateDataContext(boolean withSvgDiagrams, UsedByCollector usedByCollector,
-            PackageMapper packageMapper, String htmlContentDirectory, String typeCollaborationDirectory)
+            PackageMapper packageMapper, ResourceManager resourceManager, String htmlContentDirectory,
+            String typeCollaborationDirectory)
     {
         this.withSvgDiagrams = withSvgDiagrams;
         this.usedByCollector = usedByCollector;
         this.docExpressionFormatter = new ExpressionFormatter(new DocExpressionFormattingPolicy());
         this.packageMapper = packageMapper;
+        this.resourceManager = resourceManager;
         this.htmlContentDirectory = htmlContentDirectory;
         this.typeCollaborationDirectory = typeCollaborationDirectory;
     }
@@ -36,6 +38,11 @@ class TemplateDataContext
         return packageMapper;
     }
 
+    public ResourceManager getResourceManager()
+    {
+        return resourceManager;
+    }
+
     public String getHtmlContentDirectory()
     {
         return htmlContentDirectory;
@@ -50,6 +57,7 @@ class TemplateDataContext
     private final UsedByCollector usedByCollector;
     private final ExpressionFormatter docExpressionFormatter;
     private final PackageMapper packageMapper;
+    private final ResourceManager resourceManager;
     private final String htmlContentDirectory;
     private final String typeCollaborationDirectory;
 }

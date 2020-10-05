@@ -8,10 +8,10 @@ import zserio.tools.Parameters;
 
 class DotDefaultEmitter extends DocDefaultEmitter
 {
-    public DotDefaultEmitter(Parameters extensionParameters, String dotLinksPrefix, boolean withSvgDiagrams,
-            String dotExecutable, UsedByCollector usedByCollector)
+    public DotDefaultEmitter(String outputPathName, Parameters extensionParameters, String dotLinksPrefix,
+            boolean withSvgDiagrams, String dotExecutable, UsedByCollector usedByCollector)
     {
-        super(extensionParameters, withSvgDiagrams, usedByCollector);
+        super(outputPathName, extensionParameters, withSvgDiagrams, usedByCollector);
 
         this.dotLinksPrefix = (dotLinksPrefix == null) ? ".." : dotLinksPrefix;
         this.dotExecutable = dotExecutable;

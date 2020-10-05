@@ -14,9 +14,8 @@ class PackageOverviewEmitter extends HtmlDefaultEmitter
     public PackageOverviewEmitter(String outputPathName, Parameters extensionParameters,
             boolean withSvgDiagrams, UsedByCollector usedByCollector)
     {
-        super(extensionParameters, withSvgDiagrams, usedByCollector);
+        super(outputPathName, extensionParameters, withSvgDiagrams, usedByCollector);
 
-        this.outputPathName = outputPathName;
         packageNames = new TreeSet<String>();
     }
 
@@ -24,7 +23,7 @@ class PackageOverviewEmitter extends HtmlDefaultEmitter
     public void endRoot(Root root) throws ZserioEmitException
     {
         final Object templateData = new PackageOverviewTemplateData(packageNames);
-        final File outputFile = new File(outputPathName, PACKAGE_OVERVIEW_FILE_NAME);
+        final File outputFile = new File(getOutputPathName(), PACKAGE_OVERVIEW_FILE_NAME);
         processHtmlTemplate(TEMPLATE_SOURCE_NAME, templateData, outputFile);
     }
 
@@ -38,6 +37,5 @@ class PackageOverviewEmitter extends HtmlDefaultEmitter
     private static final String PACKAGE_OVERVIEW_FILE_NAME = "package_overview.html";
     private static final String TEMPLATE_SOURCE_NAME = "package_overview.html.ftl";
 
-    private final String outputPathName;
     private final Set<String> packageNames;
 }

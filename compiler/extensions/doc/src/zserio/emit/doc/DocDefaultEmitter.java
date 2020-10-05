@@ -6,14 +6,23 @@ import zserio.tools.Parameters;
 
 class DocDefaultEmitter extends DefaultEmitter
 {
-    public DocDefaultEmitter(Parameters extensionParameters, boolean withSvgDiagrams,
+    public DocDefaultEmitter(String outputPathName, Parameters extensionParameters, boolean withSvgDiagrams,
             UsedByCollector usedByCollector)
     {
+        this.outputPathName = outputPathName;
         this.withSvgDiagrams = withSvgDiagrams;
         this.usedByCollector = usedByCollector;
 
         final Iterable<String> topLevelPackageNameList = extensionParameters.getTopLevelPackageNameList();
         packageMapper = new PackageMapper(topLevelPackageNameList);
+
+        resourceManager = new ResourceManager(extensionParameters.getPathName(),
+                getFileNameExtension(extensionParameters.getFileName()), outputPathName);
+    }
+
+    protected String getOutputPathName()
+    {
+        return outputPathName;
     }
 
     protected boolean getWithSvgDiagrams()
@@ -31,11 +40,28 @@ class DocDefaultEmitter extends DefaultEmitter
         return packageMapper;
     }
 
+    protected ResourceManager getResourceManager()
+    {
+        return resourceManager;
+    }
+
+    // TODO[Mi-L@]: Provide by core?!
+    private String getFileNameExtension(String fileName)
+    {
+        int lastDotIndex = fileName.lastIndexOf('.');
+        if (lastDotIndex > 0)
+            return fileName.substring(lastDotIndex);
+
+        return "";
+    }
+
     protected static final String DOC_TEMPLATE_LOCATION = "doc/";
     protected static final String SYMBOL_COLLABORATION_DIRECTORY = "symbol_collaboration";
     protected static final String HTML_CONTENT_DIRECTORY = "content";
 
+    private final String outputPathName;
     private final boolean withSvgDiagrams;
     private final UsedByCollector usedByCollector;
     private final PackageMapper packageMapper;
+    private final ResourceManager resourceManager;
 }

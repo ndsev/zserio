@@ -5,9 +5,9 @@ import zserio.emit.common.ZserioEmitException;
 
 public class EndPackageTemplateData
 {
-    public EndPackageTemplateData(Package pkg) throws ZserioEmitException
+    public EndPackageTemplateData(TemplateDataContext context, Package pkg) throws ZserioEmitException
     {
-        docComments = new DocCommentsTemplateData(pkg.getTrailingDocComments());
+        docComments = new DocCommentsTemplateData(context, pkg.getTrailingDocComments());
     }
 
     public DocCommentsTemplateData getDocComments()

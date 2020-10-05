@@ -22,13 +22,11 @@ class SymbolCollaborationDotEmitter extends DotDefaultEmitter
             UsedByCollector usedByCollector)
     {
         // TODO[mikir] to re-think dotLinksPrefix, it won't work
-        super(extensionParameters, (dotLinksPrefix == null) ? "../.." : dotLinksPrefix, withSvgDiagrams,
-                dotExecutable, usedByCollector);
-
-        this.outputPathName = outputPathName;
+        super(outputPathName, extensionParameters, (dotLinksPrefix == null) ? "../.." : dotLinksPrefix,
+                withSvgDiagrams, dotExecutable, usedByCollector);
 
         context = new TemplateDataContext(getWithSvgDiagrams(), getUsedByCollector(), getPackageMapper(),
-                getDotLinksPrefix() + "/" + HTML_CONTENT_DIRECTORY, ".");
+                getResourceManager(), getDotLinksPrefix() + "/" + HTML_CONTENT_DIRECTORY, ".");
     }
 
     @Override
@@ -73,17 +71,16 @@ class SymbolCollaborationDotEmitter extends DotDefaultEmitter
             final String dotCollaborationHtmlLink = getDotCollaborationHtmlLink(node, getPackageMapper(),
                     SYMBOL_COLLABORATION_DIRECTORY);
             final File outputDotFile = new File(
-                    StringJoinUtil.joinStrings(outputPathName, dotCollaborationHtmlLink, File.separator));
+                    StringJoinUtil.joinStrings(getOutputPathName(), dotCollaborationHtmlLink, File.separator));
             final String svgCollaborationHtmlLink = getSvgCollaborationHtmlLink(node, getPackageMapper(),
                     SYMBOL_COLLABORATION_DIRECTORY);
             final File outputSvgFile = new File(
-                    StringJoinUtil.joinStrings(outputPathName, svgCollaborationHtmlLink, File.separator));
+                    StringJoinUtil.joinStrings(getOutputPathName(), svgCollaborationHtmlLink, File.separator));
             processDotTemplate(TEMPLATE_SOURCE_NAME, templateData, outputDotFile, outputSvgFile);
         }
     }
 
     private static final String TEMPLATE_SOURCE_NAME = "symbol_collaboration.dot.ftl";
 
-    private final String outputPathName;
     private final TemplateDataContext context;
 }

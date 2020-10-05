@@ -53,7 +53,7 @@ public class BitmaskTemplateData extends DocTemplateData
             value = (valueExpression == null) ? bitmaskValue.getValue().toString() :
                 docExpressionFormatter.formatGetter(bitmaskValue.getValueExpression());
 
-            docComments = new DocCommentsTemplateData(bitmaskValue.getDocComments());
+            docComments = new DocCommentsTemplateData(context, bitmaskValue.getDocComments());
 
             final UsedByCollector usedByCollector = context.getUsedByCollector();
             usageInfoList = new TreeSet<UsageInfoTemplateData>();

@@ -9,10 +9,10 @@ import zserio.tools.Parameters;
 
 class HtmlDefaultEmitter extends DocDefaultEmitter
 {
-    public HtmlDefaultEmitter(Parameters extensionParameters, boolean withSvgDiagrams,
+    public HtmlDefaultEmitter(String outputPathName, Parameters extensionParameters, boolean withSvgDiagrams,
             UsedByCollector usedByCollector)
     {
-        super(extensionParameters, withSvgDiagrams, usedByCollector);
+        super(outputPathName, extensionParameters, withSvgDiagrams, usedByCollector);
     }
 
     protected void processHtmlTemplate(String templateName, Object templateData, File outputFile)

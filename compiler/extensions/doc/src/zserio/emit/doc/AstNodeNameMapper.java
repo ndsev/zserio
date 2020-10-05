@@ -1,7 +1,6 @@
 package zserio.emit.doc;
 
 import zserio.ast.ArrayInstantiation;
-import zserio.ast.ArrayType;
 import zserio.ast.AstNode;
 import zserio.ast.BitmaskType;
 import zserio.ast.BitmaskValue;

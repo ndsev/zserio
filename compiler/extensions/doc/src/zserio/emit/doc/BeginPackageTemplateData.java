@@ -5,10 +5,10 @@ import zserio.emit.common.ZserioEmitException;
 
 public class BeginPackageTemplateData
 {
-    public BeginPackageTemplateData(Package pkg) throws ZserioEmitException
+    public BeginPackageTemplateData(TemplateDataContext context, Package pkg) throws ZserioEmitException
     {
         name = pkg.getPackageName().toString();
-        docComments = new DocCommentsTemplateData(pkg.getDocComments());
+        docComments = new DocCommentsTemplateData(context, pkg.getDocComments());
     }
 
     public String getName()

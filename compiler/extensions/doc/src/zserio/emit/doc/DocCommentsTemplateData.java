@@ -27,12 +27,13 @@ import zserio.tools.StringJoinUtil;
  */
 public class DocCommentsTemplateData
 {
-    public DocCommentsTemplateData(List<DocComment> docComments) throws ZserioEmitException
+    public DocCommentsTemplateData(TemplateDataContext context, List<DocComment> docComments)
+            throws ZserioEmitException
     {
         boolean isDeprecated = false;
         for (DocComment docComment : docComments)
         {
-            final DocCommentTemplateData docCommentData = new DocCommentTemplateData(docComment);
+            final DocCommentTemplateData docCommentData = new DocCommentTemplateData(context, docComment);
             isDeprecated |= docCommentData.getIsDeprecated();
             commentsList.add(docCommentData);
         }
@@ -62,23 +63,26 @@ public class DocCommentsTemplateData
         /**
          * Constructor.
          *
+         * @param context    Template data context.
          * @param docComment Documentation comment to construct from or null in case of no comment.
          *
          * @throws ZserioEmitException Throws in case of any internal error.
          */
-        public DocCommentTemplateData(DocComment docComment) throws ZserioEmitException
+        public DocCommentTemplateData(TemplateDataContext context, DocComment docComment)
+                throws ZserioEmitException
         {
             if (docComment instanceof DocCommentMarkdown)
             {
                 isDeprecated = false;
                 final DocCommentMarkdown docCommentMarkdown = (DocCommentMarkdown)docComment;
 
-                final Path origCwd = ResourceManager.getInstance().getCurrentSourceDir();
-                ResourceManager.getInstance().setCurrentSourceDir(
+                final ResourceManager resourceManager = context.getResourceManager();
+                final Path origCwd = resourceManager.getCurrentSourceDir();
+                resourceManager.setCurrentSourceDir(
                         Paths.get(docComment.getLocation().getFileName()).getParent());
-                markdownHtml = MarkdownToHtmlConverter.markdownToHtml(
+                markdownHtml = MarkdownToHtmlConverter.markdownToHtml(resourceManager,
                         docCommentMarkdown.getLocation(), docCommentMarkdown.getMarkdown());
-                ResourceManager.getInstance().setCurrentSourceDir(origCwd);
+                resourceManager.setCurrentSourceDir(origCwd);
             }
             else if (docComment instanceof DocCommentClassic)
             {

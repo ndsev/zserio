@@ -89,7 +89,7 @@ public class ChoiceTemplateData extends CompoundTypeTemplateData
             definitionAnchorName = DocEmitterTools.getAnchorName(choiceType, "casedef", expression);
             detailAnchorName = DocEmitterTools.getAnchorName(choiceType, "case", expression);
 
-            this.docComments = new DocCommentsTemplateData(docComments);
+            this.docComments = new DocCommentsTemplateData(context, docComments);
 
             final Object caseExpressionObject = caseExpression.getExprSymbolObject();
             final ZserioType selectorExpressionType = choiceType.getSelectorExpression().getExprZserioType();
@@ -183,7 +183,7 @@ public class ChoiceTemplateData extends CompoundTypeTemplateData
             final ChoiceDefault choiceDefault = choiceType.getChoiceDefault();
             field = (choiceDefault.getField() == null) ? null : new FieldTemplateData(context, choiceType,
                     choiceDefault.getField());
-            docComments = new DocCommentsTemplateData(choiceDefault.getDocComments());
+            docComments = new DocCommentsTemplateData(context, choiceDefault.getDocComments());
         }
 
         public FieldTemplateData getField()

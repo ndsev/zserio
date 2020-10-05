@@ -37,7 +37,7 @@ public class ServiceTemplateData extends DocTemplateData
             anchorName = DocEmitterTools.getAnchorName(serviceType, name);
             requestSymbol = SymbolTemplateDataCreator.createData(context, serviceMethod.getRequestType());
             responseSymbol = SymbolTemplateDataCreator.createData(context, serviceMethod.getResponseType());
-            docComments = new DocCommentsTemplateData(serviceMethod.getDocComments());
+            docComments = new DocCommentsTemplateData(context, serviceMethod.getDocComments());
         }
 
         public String getName()

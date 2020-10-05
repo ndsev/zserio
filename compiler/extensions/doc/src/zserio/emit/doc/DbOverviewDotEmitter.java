@@ -18,13 +18,13 @@ class DbOverviewDotEmitter extends DotDefaultEmitter
             boolean withSvgDiagrams, String dotExecutable, UsedByCollector usedByCollector)
     {
         // TODO[mikir] to re-think dotLinksPrefix, it won't work
-        super(extensionParameters, (dotLinksPrefix == null) ? ".." : dotLinksPrefix, withSvgDiagrams,
-                dotExecutable, usedByCollector);
+        super(outputPathName, extensionParameters, (dotLinksPrefix == null) ? ".." : dotLinksPrefix,
+                withSvgDiagrams, dotExecutable, usedByCollector);
 
-        this.outputPathName = outputPathName;
         final String directoryPrefix = getDotLinksPrefix() + "/";
         context = new TemplateDataContext(getWithSvgDiagrams(), getUsedByCollector(), getPackageMapper(),
-                directoryPrefix + HTML_CONTENT_DIRECTORY, directoryPrefix + SYMBOL_COLLABORATION_DIRECTORY);
+                getResourceManager(), directoryPrefix + HTML_CONTENT_DIRECTORY,
+                directoryPrefix + SYMBOL_COLLABORATION_DIRECTORY);
 
         databases = new ArrayList<SqlDatabaseType>();
     }
@@ -33,9 +33,9 @@ class DbOverviewDotEmitter extends DotDefaultEmitter
     public void endRoot(Root root) throws ZserioEmitException
     {
         final Object templateData = new DbOverviewDotTemplateData(context, databases);
-        final File outputDotFile = new File(outputPathName,
+        final File outputDotFile = new File(getOutputPathName(),
                 DB_OVERVIEW_DOT_DIRECTORY + File.separator + DB_OVERVIEW_DOT_FILE_NAME);
-        final File outputSvgFile = new File(outputPathName,
+        final File outputSvgFile = new File(getOutputPathName(),
                 DB_OVERVIEW_DOT_DIRECTORY + File.separator + DB_OVERVIEW_SVG_FILE_NAME);
         processDotTemplate(TEMPLATE_SOURCE_NAME, templateData, outputDotFile, outputSvgFile);
     }
@@ -52,7 +52,6 @@ class DbOverviewDotEmitter extends DotDefaultEmitter
 
     private static final String TEMPLATE_SOURCE_NAME = "db_overview.dot.ftl";
 
-    private final String outputPathName;
     private final TemplateDataContext context;
     private final List<SqlDatabaseType> databases;
 }

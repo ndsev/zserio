@@ -18,19 +18,19 @@ import zserio.tools.StringJoinUtil;
 
 class ResourceManager
 {
-    static ResourceManager getInstance()
+    public ResourceManager(String sourceRoot, String sourceExtension, String outputRoot)
     {
-        return instance;
-    }
+        this.sourceRoot = Paths.get(sourceRoot).toAbsolutePath();
+        this.sourceExtension = sourceExtension;
+        this.outputRoot = Paths.get(outputRoot).toAbsolutePath();
 
-    void setCurrentSourceDir(String currentSourceDir)
-    {
-        this.currentSourceDir = Paths.get(currentSourceDir != null ? currentSourceDir : ".");
+        this.currentSourceDir = this.sourceRoot;
+        this.currentOutputDir = this.outputRoot;
     }
 
     void setCurrentSourceDir(Path currentSourceDir)
     {
-        this.currentSourceDir = currentSourceDir;
+        this.currentSourceDir = currentSourceDir != null ? currentSourceDir.toAbsolutePath() : sourceRoot;
     }
 
     Path getCurrentSourceDir()
@@ -38,24 +38,9 @@ class ResourceManager
         return currentSourceDir;
     }
 
-    void setOutputRoot(String outputRoot)
+    void setCurrentOutputDir(Path currentOutputDir)
     {
-        this.outputRoot = Paths.get(outputRoot != null ? outputRoot : ".").toAbsolutePath();
-    }
-
-    void setCurrentOutputDir(String currentOutputDir)
-    {
-        this.currentOutputDir = Paths.get(currentOutputDir != null ? currentOutputDir : ".").toAbsolutePath();
-    }
-
-    void setSourceRoot(String sourceRoot)
-    {
-        this.sourceRoot = Paths.get(sourceRoot != null ? sourceRoot : ".").toAbsolutePath();
-    }
-
-    void setSourceExtension(String sourceExtension)
-    {
-        this.sourceExtension = sourceExtension;
+        this.currentOutputDir = currentOutputDir != null ? currentOutputDir.toAbsolutePath() : outputRoot;
     }
 
     String addResource(String destination) throws ResourceException
@@ -83,9 +68,6 @@ class ResourceManager
 
         private static final long serialVersionUID = 1L;
     }
-
-    private ResourceManager()
-    {}
 
     private LocalResource mapLocalResource(LocalResource resource) throws ResourceException
     {
@@ -161,7 +143,7 @@ class ResourceManager
                     currentOutputDir = dstResource.getPath();
                     final String markdown = new String(Files.readAllBytes(srcResource.getFullPath()),
                             StandardCharsets.UTF_8);
-                    final String html = MarkdownToHtmlConverter.markdownToHtml(
+                    final String html = MarkdownToHtmlConverter.markdownToHtml(this,
                             new AstLocation(srcResource.getFullPath().toString(), 0, 0), markdown);
                     Files.write(dstResource.getFullPath(), html.getBytes(StandardCharsets.UTF_8));
                 }
@@ -286,16 +268,16 @@ class ResourceManager
     private final HashMap<LocalResource, LocalResource> resources = new HashMap<LocalResource, LocalResource>();
     private final HashSet<LocalResource> mappedResources = new HashSet<LocalResource>();
 
-    private final static ResourceManager instance = new ResourceManager();
-    private final static String CONTENT_DIR = "content";
+    private final static String CONTENT_DIR = "content"; // TODO[Mi-L@]: Should not be needed!
     private final static String RESOURCES_DIR = "resources";
     private final static String LOCAL_FILE_SCHEME = "file";
     private final static String MARKDOWN_EXTENSION = ".md";
     private final static String HTML_EXTENSION = ".html";
 
-    private Path outputRoot = Paths.get(".");
-    private Path sourceRoot = Paths.get(".");
-    private Path currentSourceDir = Paths.get(".");
-    private Path currentOutputDir = outputRoot.resolve(CONTENT_DIR);
-    private String sourceExtension = "";
+    private final Path sourceRoot;
+    private final String sourceExtension;
+    private final Path outputRoot;
+
+    private Path currentSourceDir;
+    private Path currentOutputDir;
 }

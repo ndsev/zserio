@@ -25,7 +25,7 @@ import org.commonmark.ext.gfm.tables.TablesExtension;
 
 class MarkdownToHtmlConverter
 {
-    static String markdownToHtml(AstLocation location, String markdown)
+    static String markdownToHtml(ResourceManager resourceManager, AstLocation location, String markdown)
     {
         final List<Extension> extensions = Arrays.asList(AutolinkExtension.create(),
                 HeadingAnchorExtension.create(), TablesExtension.create());
@@ -41,7 +41,7 @@ class MarkdownToHtmlConverter
                             @Override
                             public NodeRenderer create(HtmlNodeRendererContext context)
                             {
-                                return new ResourcesRenderer(context, location);
+                                return new ResourcesRenderer(context, resourceManager, location);
                             }
                         }
                 )
@@ -54,9 +54,11 @@ class MarkdownToHtmlConverter
 
     private static class ResourcesRenderer extends CoreHtmlNodeRenderer
     {
-        ResourcesRenderer(HtmlNodeRendererContext context, AstLocation location)
+        ResourcesRenderer(HtmlNodeRendererContext context,
+                ResourceManager resourceManager, AstLocation location)
         {
             super(context);
+            this.resourceManager = resourceManager;
             this.location = location;
         }
 
@@ -71,7 +73,7 @@ class MarkdownToHtmlConverter
         {
             try
             {
-                final String mappedResource = ResourceManager.getInstance().addResource(link.getDestination());
+                final String mappedResource = resourceManager.addResource(link.getDestination());
                 link.setDestination(mappedResource);
             }
             catch (Exception e)
@@ -87,7 +89,7 @@ class MarkdownToHtmlConverter
         {
             try
             {
-                final String mappedResource = ResourceManager.getInstance().addResource(image.getDestination());
+                final String mappedResource = resourceManager.addResource(image.getDestination());
                 image.setDestination(mappedResource);
             }
             catch (Exception e)
@@ -98,6 +100,7 @@ class MarkdownToHtmlConverter
             super.visit(image);
         }
 
+        private final ResourceManager resourceManager;
         private final AstLocation location;
     }
 }

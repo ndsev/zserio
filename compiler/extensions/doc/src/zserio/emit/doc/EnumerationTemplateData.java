@@ -50,7 +50,7 @@ public class EnumerationTemplateData extends DocTemplateData
             value = (valueExpression == null) ? enumItem.getValue().toString() :
                 docExpressionFormatter.formatGetter(valueExpression);
 
-            docComments = new DocCommentsTemplateData(enumItem.getDocComments());
+            docComments = new DocCommentsTemplateData(context, enumItem.getDocComments());
 
             usageInfoList = new TreeSet<UsageInfoTemplateData>();
             final UsedByCollector usedByCollector = context.getUsedByCollector();

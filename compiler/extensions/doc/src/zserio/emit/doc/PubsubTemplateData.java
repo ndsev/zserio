@@ -41,7 +41,7 @@ public class PubsubTemplateData extends DocTemplateData
             final ExpressionFormatter docExpressionFormatter = context.getExpressionFormatter();
             topicDefinition = docExpressionFormatter.formatGetter(pubsubMessage.getTopicDefinitionExpr());
             symbol = SymbolTemplateDataCreator.createData(context, pubsubMessage.getType());
-            docComments = new DocCommentsTemplateData(pubsubMessage.getDocComments());
+            docComments = new DocCommentsTemplateData(context, pubsubMessage.getDocComments());
         }
 
         public String getKeyword()

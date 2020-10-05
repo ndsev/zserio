@@ -81,7 +81,7 @@ public class CompoundTypeTemplateData extends DocTemplateData
             symbol = SymbolTemplateDataCreator.createData(context, fieldTypeInstantiation);
             final ExpressionFormatter docExpressionFormatter = context.getExpressionFormatter();
             initArguments(fieldTypeInstantiation, docExpressionFormatter);
-            docComments = new DocCommentsTemplateData(field.getDocComments());
+            docComments = new DocCommentsTemplateData(context, field.getDocComments());
             isVirtual = field.getIsVirtual();
             isAutoOptional = field.isOptional() && field.getOptionalClauseExpr() == null;
             alignmentExpression = formatExpression(field.getAlignmentExpr(), docExpressionFormatter);
@@ -235,7 +235,7 @@ public class CompoundTypeTemplateData extends DocTemplateData
                     function.getReturnTypeReference().getType());
             final ExpressionFormatter docExpressionFormatter = context.getExpressionFormatter();
             resultExpression = docExpressionFormatter.formatGetter(function.getResultExpression());
-            docComments = new DocCommentsTemplateData(function.getDocComments());
+            docComments = new DocCommentsTemplateData(context, function.getDocComments());
         }
 
         public String getName()
