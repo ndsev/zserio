@@ -6,21 +6,21 @@ digraph Zserio
     node [shape=none];
     rankdir=LR;
     ranksep="5.5 equally";
+<#list databases as database>
 
-<#list databaseList as database>
-    // database ${database.name}
-    subgraph cluster_${database.name}
+    // database ${database.symbol.name}
+    subgraph cluster_${database.symbol.name}
     {
         fontsize="32";
         bgcolor="${database.colorName}";
-        label="${database.name}";
-    <#if database.docUrl?has_content>
-        URL="${database.docUrl}";
+        label="${database.symbol.name}";
+    <#if database.symbol.htmlLink??>
+        URL="${database.symbol.htmlLink.htmlPage}#${database.symbol.htmlLink.htmlAnchor}";
     </#if>
-        tooltip="${database.name}";
+        tooltip="${database.symbol.htmlTitle}";
 
         // database tables
-        ${database.name}_tables [
+        ${database.symbol.name}_tables [
             label=<
                 <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" CELLPADDING="4">
                     <TR>
@@ -29,16 +29,16 @@ digraph Zserio
                     <TR>
                         <TD ALIGN="LEFT" BGCOLOR="white" WIDTH="840" >
                             <TABLE BORDER="0">
-    <#if database.tableList?has_content>
-        <#list database.tableList as table>
-            <#if table.docUrl?has_content>
-                <#assign hRefCommand = "HREF=\"${table.docUrl}\"">
+    <#if database.tables?has_content>
+        <#list database.tables as table>
+            <#if table.symbol.htmlLink??>
+                <#assign hRefCommand = "HREF=\"${table.symbol.htmlLink.htmlPage}#${table.symbol.htmlLink.htmlAnchor}\"">
             <#else>
                 <#assign hRefCommand = "">
             </#if>
                                 <TR>
-                                    <TD ${hRefCommand} ALIGN="LEFT"><FONT FACE="monospace">${table.fullTypeName}</FONT></TD>
-                                    <TD ALIGN="LEFT"><FONT FACE="monospace" COLOR="blue">${table.name}</FONT></TD>
+                                    <TD ${hRefCommand} TITLE="${table.symbol.htmlTitle}" ALIGN="LEFT"><FONT FACE="monospace">${table.fullTypeName}</FONT></TD>
+                                    <TD ALIGN="LEFT"><FONT FACE="monospace" COLOR="blue">${table.symbol.name}</FONT></TD>
                                 </TR>
         </#list>
     <#else>
@@ -50,7 +50,6 @@ digraph Zserio
                 </TABLE>
             >
         ];
-    }; // end of database ${database.name}
-
+    }; // end of database ${database.symbol.name}
 </#list>
 }

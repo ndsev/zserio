@@ -46,7 +46,7 @@
 </#list>
     </dl>
     <@used_by usedByList/>
-<#if collaborationDiagramSvgFileName??>
+<#if collaborationDiagramSvg??>
 
-    <@collaboration_diagram collaborationDiagramSvgFileName/>
+    <@collaboration_diagram collaborationDiagramSvg/>
 </#if>

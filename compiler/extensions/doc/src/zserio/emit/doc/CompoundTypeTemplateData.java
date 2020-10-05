@@ -23,18 +23,14 @@ public class CompoundTypeTemplateData extends DocTemplateData
     {
         super(context, compoundType, compoundType.getName());
 
-        final SymbolTemplateDataMapper symbolTemplateDataMapper = context.getSymbolTemplateDataMapper();
         for (Parameter parameter : compoundType.getTypeParameters())
-            parameters.add(new ParameterTemplateData(parameter, symbolTemplateDataMapper));
+            parameters.add(new ParameterTemplateData(context, parameter));
 
-        final ExpressionFormatter docExpressionFormatter = context.getExpressionFormatter();
         for (Field field : compoundType.getFields())
-            fields.add(new FieldTemplateData(compoundType, field, docExpressionFormatter,
-                    symbolTemplateDataMapper));
+            fields.add(new FieldTemplateData(context, compoundType, field));
 
         for (Function function : compoundType.getFunctions())
-            functions.add(new FunctionTemplateData(compoundType, function, docExpressionFormatter,
-                    symbolTemplateDataMapper));
+            functions.add(new FunctionTemplateData(context, compoundType, function));
     }
 
     public Iterable<ParameterTemplateData> getParameters()
@@ -54,10 +50,9 @@ public class CompoundTypeTemplateData extends DocTemplateData
 
     public static class ParameterTemplateData
     {
-        public ParameterTemplateData(Parameter parameter, SymbolTemplateDataMapper symbolTemplateDataMapper)
-                throws ZserioEmitException
+        public ParameterTemplateData(TemplateDataContext context, Parameter parameter)
         {
-            symbol = symbolTemplateDataMapper.getSymbol(parameter.getTypeReference().getType());
+            symbol = SymbolTemplateDataCreator.createData(context, parameter.getTypeReference().getType());
             name = parameter.getName();
         }
 
@@ -77,14 +72,14 @@ public class CompoundTypeTemplateData extends DocTemplateData
 
     public static class FieldTemplateData
     {
-        public FieldTemplateData(CompoundType compoundType, Field field,
-                ExpressionFormatter docExpressionFormatter, SymbolTemplateDataMapper symbolTemplateDataMapper)
+        public FieldTemplateData(TemplateDataContext context, CompoundType compoundType, Field field)
                 throws ZserioEmitException
         {
             name = field.getName();
             anchorName = DocEmitterTools.getAnchorName(compoundType, field.getName());
             final TypeInstantiation fieldTypeInstantiation = field.getTypeInstantiation();
-            symbol = symbolTemplateDataMapper.getSymbol(fieldTypeInstantiation);
+            symbol = SymbolTemplateDataCreator.createData(context, fieldTypeInstantiation);
+            final ExpressionFormatter docExpressionFormatter = context.getExpressionFormatter();
             initArguments(fieldTypeInstantiation, docExpressionFormatter);
             docComments = new DocCommentsTemplateData(field.getDocComments());
             isVirtual = field.getIsVirtual();
@@ -231,13 +226,14 @@ public class CompoundTypeTemplateData extends DocTemplateData
 
     public static class FunctionTemplateData
     {
-        public FunctionTemplateData(CompoundType compoundType, Function function,
-                ExpressionFormatter docExpressionFormatter, SymbolTemplateDataMapper symbolTemplateDataMapper)
-                        throws ZserioEmitException
+        public FunctionTemplateData(TemplateDataContext context, CompoundType compoundType, Function function)
+                throws ZserioEmitException
         {
             name = function.getName();
             anchorName = DocEmitterTools.getAnchorName(compoundType, function.getName());
-            returnSymbol = symbolTemplateDataMapper.getSymbol(function.getReturnTypeReference().getType());
+            returnSymbol = SymbolTemplateDataCreator.createData(context,
+                    function.getReturnTypeReference().getType());
+            final ExpressionFormatter docExpressionFormatter = context.getExpressionFormatter();
             resultExpression = docExpressionFormatter.formatGetter(function.getResultExpression());
             docComments = new DocCommentsTemplateData(function.getDocComments());
         }

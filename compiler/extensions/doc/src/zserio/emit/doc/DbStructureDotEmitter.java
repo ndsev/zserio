@@ -17,9 +17,16 @@ class DbStructureDotEmitter extends DotDefaultEmitter
     public DbStructureDotEmitter(String outputPathName, Parameters extensionParameters, String dotLinksPrefix,
             boolean withSvgDiagrams, String dotExecutable, UsedByCollector usedByCollector)
     {
-        super(extensionParameters, dotLinksPrefix, withSvgDiagrams, dotExecutable, usedByCollector);
+        // TODO[mikir] to re-think dotLinksPrefix, it won't work
+        super(extensionParameters, (dotLinksPrefix == null) ? ".." : dotLinksPrefix, withSvgDiagrams,
+                dotExecutable, usedByCollector);
 
         this.outputPathName = outputPathName;
+
+        final String directoryPrefix = getDotLinksPrefix() + "/";
+        context = new TemplateDataContext(getWithSvgDiagrams(), getUsedByCollector(), getPackageMapper(),
+                directoryPrefix + HTML_CONTENT_DIRECTORY, directoryPrefix + SYMBOL_COLLABORATION_DIRECTORY);
+
         databaseList = new ArrayList<SqlDatabaseType>();
     }
 
@@ -29,8 +36,7 @@ class DbStructureDotEmitter extends DotDefaultEmitter
         int databaseIndex = 0;
         for (SqlDatabaseType database : databaseList)
         {
-            final Object templateData = new DbStructureDotTemplateData(database, databaseIndex,
-                    getDotLinksPrefix());
+            final Object templateData = new DbStructureDotTemplateData(context, database, databaseIndex);
             final File outputDotFile = new File(outputPathName, DB_STRUCTURE_DOT_DIRECTORY +
                     File.separator + database.getName() + DOT_FILE_EXTENSION);
             final File outputSvgFile = new File(outputPathName, DB_STRUCTURE_DOT_DIRECTORY +
@@ -52,5 +58,6 @@ class DbStructureDotEmitter extends DotDefaultEmitter
     private static final String TEMPLATE_SOURCE_NAME = "db_structure.dot.ftl";
 
     private final String outputPathName;
+    private final TemplateDataContext context;
     private final List<SqlDatabaseType> databaseList;
 }

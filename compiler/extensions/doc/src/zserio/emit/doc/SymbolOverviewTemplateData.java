@@ -7,19 +7,14 @@ import java.util.TreeSet;
 
 import zserio.ast.AstNode;
 import zserio.ast.Package;
-import zserio.emit.common.PackageMapper;
-import zserio.emit.common.ZserioEmitException;
 
 public class SymbolOverviewTemplateData
 {
-    public SymbolOverviewTemplateData(PackageMapper packageMapper, String htmlPackageDirectory,
-            Map<Package, List<AstNode>> nodesMap) throws ZserioEmitException
+    public SymbolOverviewTemplateData(TemplateDataContext context,  Map<Package, List<AstNode>> nodesMap)
     {
         packageNames = new TreeSet<String>();
         packageSymbols = new TreeSet<PackageSymbol>();
 
-        final SymbolTemplateDataMapper symbolMapper = new SymbolTemplateDataMapper(packageMapper,
-                htmlPackageDirectory);
         for (Map.Entry<Package, List<AstNode>> nodesEntry : nodesMap.entrySet())
         {
             final Package pkg = nodesEntry.getKey();
@@ -28,7 +23,7 @@ public class SymbolOverviewTemplateData
             packageNames.add(packageName);
             for (AstNode node : nodesEntry.getValue())
             {
-                final SymbolTemplateData symbol = symbolMapper.getSymbol(node);
+                final SymbolTemplateData symbol = SymbolTemplateDataCreator.createData(context, node);
                 packageSymbols.add(new PackageSymbol(packageName, symbol));
             }
         }

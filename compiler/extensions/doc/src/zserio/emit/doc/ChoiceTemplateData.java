@@ -27,16 +27,12 @@ public class ChoiceTemplateData extends CompoundTypeTemplateData
         final ExpressionFormatter docExpressionFormatter = context.getExpressionFormatter();
         selectorExpression = docExpressionFormatter.formatGetter(choiceType.getSelectorExpression());
 
-        final SymbolTemplateDataMapper symbolTemplateDataMapper = context.getSymbolTemplateDataMapper();
         caseMembers = new ArrayList<CaseMemberTemplateData>();
         for (ChoiceCase choiceCase : choiceType.getChoiceCases())
-        {
-            caseMembers.add(new CaseMemberTemplateData(choiceType, choiceCase, docExpressionFormatter,
-                    symbolTemplateDataMapper));
-        }
+            caseMembers.add(new CaseMemberTemplateData(context, choiceType, choiceCase));
 
-        defaultMember = (choiceType.getChoiceDefault() != null) ? new DefaultMemberTemplateData(choiceType,
-                docExpressionFormatter, symbolTemplateDataMapper) : null;
+        defaultMember = (choiceType.getChoiceDefault() != null) ? new DefaultMemberTemplateData(context,
+                choiceType) : null;
     }
 
     public String getSelectorExpression()
@@ -56,20 +52,17 @@ public class ChoiceTemplateData extends CompoundTypeTemplateData
 
     public static class CaseMemberTemplateData
     {
-        public CaseMemberTemplateData(ChoiceType choiceType, ChoiceCase choiceCase,
-                ExpressionFormatter docExpressionFormatter, SymbolTemplateDataMapper symbolTemplateDataMapper)
-                        throws ZserioEmitException
+        public CaseMemberTemplateData(TemplateDataContext context, ChoiceType choiceType, ChoiceCase choiceCase)
+                throws ZserioEmitException
         {
             caseList = new ArrayList<CaseTemplateData>();
             final Iterable<ChoiceCaseExpression> caseExpressions = choiceCase.getExpressions();
             for (ChoiceCaseExpression caseExpression : caseExpressions)
-            {
-                caseList.add(new CaseTemplateData(choiceType, caseExpression.getExpression(),
-                        caseExpression.getDocComments(), docExpressionFormatter));
-            }
+                caseList.add(new CaseTemplateData(context, choiceType, caseExpression.getExpression(),
+                        caseExpression.getDocComments()));
 
-            field = (choiceCase.getField() != null) ? new FieldTemplateData(choiceType,
-                    choiceCase.getField(), docExpressionFormatter, symbolTemplateDataMapper) : null;
+            field = (choiceCase.getField() != null) ? new FieldTemplateData(context, choiceType,
+                    choiceCase.getField()) : null;
         }
 
         public Iterable<CaseTemplateData> getCaseList()
@@ -88,9 +81,10 @@ public class ChoiceTemplateData extends CompoundTypeTemplateData
 
     public static class CaseTemplateData
     {
-        public CaseTemplateData(ChoiceType choiceType, Expression caseExpression, List<DocComment> docComments,
-                ExpressionFormatter docExpressionFormatter) throws ZserioEmitException
+        public CaseTemplateData(TemplateDataContext context, ChoiceType choiceType, Expression caseExpression,
+                List<DocComment> docComments) throws ZserioEmitException
         {
+            final ExpressionFormatter docExpressionFormatter = context.getExpressionFormatter();
             expression = docExpressionFormatter.formatGetter(caseExpression);
             definitionAnchorName = DocEmitterTools.getAnchorName(choiceType, "casedef", expression);
             detailAnchorName = DocEmitterTools.getAnchorName(choiceType, "case", expression);
@@ -183,12 +177,12 @@ public class ChoiceTemplateData extends CompoundTypeTemplateData
 
     public static class DefaultMemberTemplateData
     {
-        public DefaultMemberTemplateData(ChoiceType choiceType, ExpressionFormatter docExpressionFormatter,
-                SymbolTemplateDataMapper symbolTemplateDataMapper) throws ZserioEmitException
+        public DefaultMemberTemplateData(TemplateDataContext context, ChoiceType choiceType)
+                throws ZserioEmitException
         {
             final ChoiceDefault choiceDefault = choiceType.getChoiceDefault();
-            field = (choiceDefault.getField() != null) ? new FieldTemplateData(choiceType,
-                    choiceDefault.getField(), docExpressionFormatter, symbolTemplateDataMapper) : null;
+            field = (choiceDefault.getField() == null) ? null : new FieldTemplateData(context, choiceType,
+                    choiceDefault.getField());
             docComments = new DocCommentsTemplateData(choiceDefault.getDocComments());
         }
 

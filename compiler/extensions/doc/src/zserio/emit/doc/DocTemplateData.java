@@ -14,17 +14,19 @@ public class DocTemplateData
     {
         this.docComments = new DocCommentsTemplateData(astNode.getDocComments());
         this.name = name;
-        this.url = DocEmitterTools.getUrlNameFromType(astNode);
-        this.anchorName = DocEmitterTools.getAnchorName(astNode);
-        this.collaborationDiagramSvgUrl = context.getWithSvgDiagrams()
-                ? DocEmitterTools.getTypeCollaborationSvgUrl(context.getOutputPath(), astNode)
-                : null;
+
+        final SymbolTemplateData symbol = SymbolTemplateDataCreator.createData(context, astNode);
+        this.anchorName = symbol.getHtmlLink().getHtmlAnchor();
+        this.collaborationDiagramSvg = (context.getWithSvgDiagrams()) ?
+                SymbolCollaborationDotEmitter.getSvgCollaborationHtmlLink(astNode, context.getPackageMapper(),
+                        context.getTypeCollaborationDirectory()) : null;
 
         final UsedByCollector usedByCollector = context.getUsedByCollector();
-        final SymbolTemplateDataMapper symbolTemplateDataMapper = context.getSymbolTemplateDataMapper();
         usedByList = new ArrayList<SymbolTemplateData>();
         for (AstNode usedByNode : usedByCollector.getUsedByTypes(astNode, AstNode.class))
-            usedByList.add(symbolTemplateDataMapper.getSymbol(usedByNode));
+        {
+            usedByList.add(SymbolTemplateDataCreator.createData(context, usedByNode));
+        }
     }
 
     public DocCommentsTemplateData getDocComments()
@@ -42,14 +44,9 @@ public class DocTemplateData
         return anchorName;
     }
 
-    public String getUrl()
+    public String getCollaborationDiagramSvg()
     {
-        return url;
-    }
-
-    public String getCollaborationDiagramSvgUrl()
-    {
-        return collaborationDiagramSvgUrl;
+        return collaborationDiagramSvg;
     }
 
     public Iterable<SymbolTemplateData> getUsedByList()
@@ -59,9 +56,8 @@ public class DocTemplateData
 
     private final DocCommentsTemplateData docComments;
     private final String name;
-    private final String url;
     private final String anchorName;
 
-    private final String collaborationDiagramSvgUrl;
+    private final String collaborationDiagramSvg;
     private final List<SymbolTemplateData> usedByList;
 }

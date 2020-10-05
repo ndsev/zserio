@@ -12,7 +12,7 @@
       <i>const</i> ${name}
 </#if>
     </div>
-    <@doc_comments docComments 2 false/>
+    <@doc_comments docComments, 2, false/>
 
     <table>
       <tr><td class="docuCode">
@@ -26,7 +26,7 @@
       </td></tr>
     </table>
     <@used_by usedByList/>
-<#if collaborationDiagramSvgFileName??>
+<#if collaborationDiagramSvg??>
 
-    <@collaboration_diagram collaborationDiagramSvgFileName/>
+    <@collaboration_diagram collaborationDiagramSvg/>
 </#if>

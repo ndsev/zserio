@@ -9,25 +9,19 @@ import zserio.ast.Field;
 import zserio.ast.SqlConstraint;
 import zserio.ast.SqlDatabaseType;
 import zserio.ast.SqlTableType;
-import zserio.emit.common.ZserioEmitException;
 
 public class DbStructureDotTemplateData
 {
-    public DbStructureDotTemplateData(SqlDatabaseType databaseType, int databaseIndex, String docRootPath)
-            throws ZserioEmitException
+    public DbStructureDotTemplateData(TemplateDataContext context, SqlDatabaseType databaseType,
+            int databaseIndex)
     {
         // create database with proper color
         final String databaseColor = DocEmitterTools.getDatabaseColor(databaseIndex);
-        database = new Database(databaseType, docRootPath, databaseColor);
+        database = new Database(context, databaseType, databaseColor);
 
-        final Iterable<Field> databaseFieldList = databaseType.getFields();
-        for (Field databaseField : databaseFieldList)
-            database.addTable(databaseField.getName());
-    }
-
-    public String getDatabaseName()
-    {
-        return database.getName();
+        final Iterable<Field> databaseFields = databaseType.getFields();
+        for (Field databaseField : databaseFields)
+            database.addTable(context, databaseField.getName());
     }
 
     public Database getDatabase()
@@ -37,16 +31,14 @@ public class DbStructureDotTemplateData
 
     public static class Database
     {
-        public Database(SqlDatabaseType databaseType, String docRootPath, String colorName)
-                throws ZserioEmitException
+        public Database(TemplateDataContext context, SqlDatabaseType databaseType, String colorName)
         {
-            name = databaseType.getName();
-            docUrl = DocEmitterTools.getDocUrlFromType(docRootPath, databaseType);
+            symbol = SymbolTemplateDataCreator.createData(context, databaseType);
             this.colorName = colorName;
 
             nameToSqlTableTypeMap = new TreeMap<String, SqlTableType>();
-            final Iterable<Field> databaseFieldList = databaseType.getFields();
-            for (Field databaseField : databaseFieldList)
+            final Iterable<Field> databaseFields = databaseType.getFields();
+            for (Field databaseField : databaseFields)
             {
                 final SqlTableType tableType = (SqlTableType)databaseField.getTypeInstantiation().getType();
                 final String tableName = databaseField.getName();
@@ -54,31 +46,24 @@ public class DbStructureDotTemplateData
             }
 
             nameToTableMap = new TreeMap<String, Table>();
-            this.docRootPath = docRootPath;
         }
 
-        public Table addTable(String tableName) throws ZserioEmitException
+        public Table addTable(TemplateDataContext context, String tableName)
         {
             Table table = nameToTableMap.get(tableName);
             if (table == null)
             {
                 final SqlTableType tableType = nameToSqlTableTypeMap.get(tableName);
-                final String docUrl = DocEmitterTools.getDocUrlFromType(docRootPath, tableType);
-                table = new Table(tableType, tableName, docUrl);
+                table = new Table(context, tableType, tableName);
                 nameToTableMap.put(tableName, table);
             }
 
             return table;
         }
 
-        public String getName()
+        public SymbolTemplateData getSymbol()
         {
-            return name;
-        }
-
-        public String getDocUrl()
-        {
-            return docUrl;
+            return symbol;
         }
 
         public String getColorName()
@@ -86,32 +71,30 @@ public class DbStructureDotTemplateData
             return colorName;
         }
 
-        public Iterable<Table> getTableList()
+        public Iterable<Table> getTables()
         {
             return nameToTableMap.values();
         }
 
-        private final String name;
-        private final String docUrl;
+        private final SymbolTemplateData symbol;
         private final String colorName;
         private final Map<String, SqlTableType> nameToSqlTableTypeMap;
         private final Map<String, Table> nameToTableMap;
-        private final String docRootPath;
     }
 
     public static class Table
     {
-        public Table(SqlTableType tableType, String name, String docUrl)
+        public Table(TemplateDataContext context, SqlTableType tableType, String name)
         {
             this.name = name;
-            typeName = tableType.getName();
-            packageName = tableType.getPackage().getPackageName().toString();
-            this.docUrl = docUrl;
 
-            fieldList = new ArrayList<TableFieldTemplateData>();
+            packageName = tableType.getPackage().getPackageName().toString();
+            typeSymbol = SymbolTemplateDataCreator.createData(context, tableType);
+
+            fields = new ArrayList<TableFieldTemplateData>();
             final List<Field> tableFieldList = tableType.getFields();
             for (Field tableField : tableFieldList)
-                fieldList.add(new TableFieldTemplateData(tableField, tableType.isFieldPrimaryKey(tableField)));
+                fields.add(new TableFieldTemplateData(tableField, tableType.isFieldPrimaryKey(tableField)));
         }
 
         public String getName()
@@ -119,32 +102,25 @@ public class DbStructureDotTemplateData
             return name;
         }
 
-        public String getTypeName()
-        {
-            return typeName;
-        }
-
         public String getPackageName()
         {
             return packageName;
         }
 
-        public String getDocUrl()
+        public SymbolTemplateData getTypeSymbol()
         {
-            return docUrl;
+            return typeSymbol;
         }
 
-        public Iterable<TableFieldTemplateData> getFieldList()
+        public Iterable<TableFieldTemplateData> getFields()
         {
-            return fieldList;
+            return fields;
         }
 
         private final String name;
-        private final String typeName;
         private final String packageName;
-        private final String docUrl;
-
-        private final List<TableFieldTemplateData> fieldList;
+        private final SymbolTemplateData typeSymbol;
+        private final List<TableFieldTemplateData> fields;
     }
 
     public static class TableFieldTemplateData

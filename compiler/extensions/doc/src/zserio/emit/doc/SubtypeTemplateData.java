@@ -9,7 +9,7 @@ public class SubtypeTemplateData extends DocTemplateData
     {
         super(context, subtype, subtype.getName());
 
-        symbol = context.getSymbolTemplateDataMapper().getSymbol(subtype.getTypeReference());
+        symbol = SymbolTemplateDataCreator.createData(context, subtype.getTypeReference());
     }
 
     public SymbolTemplateData getSymbol()

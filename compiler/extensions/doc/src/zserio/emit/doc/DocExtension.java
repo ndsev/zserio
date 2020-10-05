@@ -99,7 +99,7 @@ public class DocExtension implements Extension
                 dotExecutable, usedByCollector));
         emitters.add(new DbStructureDotEmitter(outputDir, parameters, dotLinksPrefix, withSvgDiagrams,
                 dotExecutable, usedByCollector));
-        emitters.add(new TypeCollaborationDotEmitter(outputDir, parameters, dotLinksPrefix, withSvgDiagrams,
+        emitters.add(new SymbolCollaborationDotEmitter(outputDir, parameters, dotLinksPrefix, withSvgDiagrams,
                 dotExecutable, usedByCollector));
         emitters.add(new PackageOverviewEmitter(outputDir, parameters, withSvgDiagrams, usedByCollector));
         emitters.add(new SymbolOverviewEmitter(outputDir, parameters, withSvgDiagrams, usedByCollector));

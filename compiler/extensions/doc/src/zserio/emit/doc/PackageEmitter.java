@@ -27,8 +27,9 @@ class PackageEmitter extends HtmlDefaultEmitter
         super(extensionParameters, withSvgDiagrams, usedByCollector);
 
         this.outputPathName = outputPathName;
-        this.withSvgDiagrams = withSvgDiagrams;
-        this.usedByCollector = usedByCollector;
+
+        context = new TemplateDataContext(getWithSvgDiagrams(), getUsedByCollector(), getPackageMapper(),
+                ".", "../" + SYMBOL_COLLABORATION_DIRECTORY);
 
         ResourceManager.getInstance().setCurrentSourceDir(extensionParameters.getPathName());
         ResourceManager.getInstance().setOutputRoot(outputPathName);
@@ -40,8 +41,6 @@ class PackageEmitter extends HtmlDefaultEmitter
     @Override
     public void beginPackage(Package pkg) throws ZserioEmitException
     {
-        super.beginPackage(pkg);
-
         final File outputDirectory = new File(outputPathName, HTML_CONTENT_DIRECTORY);
         ResourceManager.getInstance().setCurrentOutputDir(outputDirectory.toString());
 
@@ -49,9 +48,6 @@ class PackageEmitter extends HtmlDefaultEmitter
                 pkg.getPackageName().toString() + HTML_FILE_EXTENSION);
         FileUtil.createOutputDirectory(outputFile);
         writer = FileUtil.createWriter(outputFile);
-
-        // TODO[mikir] PackageMapper uses root package mapping which is useless for doc emitter!
-        context = new TemplateDataContext(outputPathName, withSvgDiagrams, usedByCollector, getPackageMapper());
 
         final BeginPackageTemplateData templateData = new BeginPackageTemplateData(pkg);
         processHtmlTemplate("begin_package.html.ftl", templateData, writer);
@@ -152,9 +148,7 @@ class PackageEmitter extends HtmlDefaultEmitter
     }
 
     private final String outputPathName;
-    private final boolean withSvgDiagrams;
-    private final UsedByCollector usedByCollector;
+    private final TemplateDataContext context;
 
     private PrintWriter writer;
-    private TemplateDataContext context;
 }

@@ -44,7 +44,7 @@ public class DocCommentsTemplateData
      *
      * @return List of documentation comments template data.
      */
-    public List<DocCommentTemplateData> getCommentsList()
+    public Iterable<DocCommentTemplateData> getCommentsList()
     {
         return commentsList;
     }
@@ -146,7 +146,7 @@ public class DocCommentsTemplateData
                     docElements.add(new DocElementData(docElement));
             }
 
-            public List<DocElementData> getElements()
+            public Iterable<DocElementData> getElements()
             {
                 return docElements;
             }

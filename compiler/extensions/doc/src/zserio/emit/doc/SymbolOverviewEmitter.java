@@ -31,14 +31,17 @@ class SymbolOverviewEmitter extends HtmlDefaultEmitter
         super(extensionParameters, withSvgDiagrams, usedByCollector);
 
         this.outputPathName = outputPathName;
+
+        context = new TemplateDataContext(getWithSvgDiagrams(), getUsedByCollector(), getPackageMapper(),
+                HTML_CONTENT_DIRECTORY, SYMBOL_COLLABORATION_DIRECTORY);
+
         nodesMap = new HashMap<Package, List<AstNode>>();
     }
 
     @Override
     public void endRoot(Root root) throws ZserioEmitException
     {
-        final Object templateData = new SymbolOverviewTemplateData(getPackageMapper(), HTML_CONTENT_DIRECTORY,
-                nodesMap);
+        final Object templateData = new SymbolOverviewTemplateData(context, nodesMap);
         final File outputFile = new File(outputPathName, SYMBOL_OVERVIEW_FILE_NAME);
         processHtmlTemplate(TEMPLATE_SOURCE_NAME, templateData, outputFile);
     }
@@ -46,8 +49,6 @@ class SymbolOverviewEmitter extends HtmlDefaultEmitter
     @Override
     public void beginPackage(Package pkg) throws ZserioEmitException
     {
-        super.beginPackage(pkg);
-
         currentNodes = new ArrayList<AstNode>();
     }
 
@@ -128,6 +129,7 @@ class SymbolOverviewEmitter extends HtmlDefaultEmitter
     private static final String TEMPLATE_SOURCE_NAME = "symbol_overview.html.ftl";
 
     private final String outputPathName;
+    private final TemplateDataContext context;
     private final Map<Package, List<AstNode>> nodesMap;
 
     private List<AstNode> currentNodes;

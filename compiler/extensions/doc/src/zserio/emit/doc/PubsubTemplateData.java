@@ -8,26 +8,15 @@ import zserio.ast.PubsubType;
 import zserio.emit.common.ExpressionFormatter;
 import zserio.emit.common.ZserioEmitException;
 
-public class PubsubTemplateData
+public class PubsubTemplateData extends DocTemplateData
 {
     public PubsubTemplateData(TemplateDataContext context, PubsubType pubsubType) throws ZserioEmitException
     {
-        name = pubsubType.getName();
-        packageName = pubsubType.getPackage().getPackageName().toString();
-        anchorName = DocEmitterTools.getAnchorName(pubsubType);
-        docComments = new DocCommentsTemplateData(pubsubType.getDocComments());
-        for (PubsubMessage message : pubsubType.getMessageList())
-        {
-            messageList.add(new MessageTemplateData(pubsubType, context.getExpressionFormatter(), message,
-                    context.getSymbolTemplateDataMapper()));
-        }
-        collaborationDiagramSvgFileName = (context.getWithSvgDiagrams())
-                ? DocEmitterTools.getTypeCollaborationSvgUrl(context.getOutputPath(), pubsubType) : null;
-    }
+        super(context, pubsubType, pubsubType.getName());
 
-    public String getName()
-    {
-        return name;
+        packageName = pubsubType.getPackage().getPackageName().toString();
+        for (PubsubMessage message : pubsubType.getMessageList())
+            messageList.add(new MessageTemplateData(context, pubsubType, message));
     }
 
     public String getPackageName()
@@ -35,38 +24,23 @@ public class PubsubTemplateData
         return packageName;
     }
 
-    public String getAnchorName()
-    {
-        return anchorName;
-    }
-
-    public DocCommentsTemplateData getDocComments()
-    {
-        return docComments;
-    }
-
     public Iterable<MessageTemplateData> getMessageList()
     {
         return messageList;
     }
 
-    public String getCollaborationDiagramSvgFileName()
-    {
-        return collaborationDiagramSvgFileName;
-    }
-
     public static class MessageTemplateData
     {
-        public MessageTemplateData(PubsubType pubsubType, ExpressionFormatter docExpressionFormatter,
-                PubsubMessage pubsubMessage, SymbolTemplateDataMapper symbolTemplateDataMapper)
-                        throws ZserioEmitException
+        public MessageTemplateData(TemplateDataContext context, PubsubType pubsubType,
+                PubsubMessage pubsubMessage) throws ZserioEmitException
         {
             keyword = pubsubMessage.isPublished() && pubsubMessage.isSubscribed() ?
                     "pubsub" : pubsubMessage.isPublished() ? "publish" : "subscribe";
             name = pubsubMessage.getName();
             anchorName = DocEmitterTools.getAnchorName(pubsubType, name);
+            final ExpressionFormatter docExpressionFormatter = context.getExpressionFormatter();
             topicDefinition = docExpressionFormatter.formatGetter(pubsubMessage.getTopicDefinitionExpr());
-            symbol = symbolTemplateDataMapper.getSymbol(pubsubMessage.getType());
+            symbol = SymbolTemplateDataCreator.createData(context, pubsubMessage.getType());
             docComments = new DocCommentsTemplateData(pubsubMessage.getDocComments());
         }
 
@@ -108,10 +82,6 @@ public class PubsubTemplateData
         private final DocCommentsTemplateData docComments;
     }
 
-    private final String name;
     private final String packageName;
-    private final String anchorName;
-    private final DocCommentsTemplateData docComments;
     private final List<MessageTemplateData> messageList = new ArrayList<MessageTemplateData>();
-    private final String collaborationDiagramSvgFileName;
 }

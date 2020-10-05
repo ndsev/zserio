@@ -7,50 +7,45 @@ import zserio.ast.ZserioType;
 import zserio.ast.ZserioTypeUtil;
 import zserio.ast.SqlDatabaseType;
 import zserio.ast.SqlTableType;
-import zserio.emit.common.ZserioEmitException;
 
 public class DbOverviewDotTemplateData
 {
-    public DbOverviewDotTemplateData(List<SqlDatabaseType> databaseTypeList, String docRootPath)
-            throws ZserioEmitException
+    public DbOverviewDotTemplateData(TemplateDataContext context, List<SqlDatabaseType> databaseTypes)
     {
-        databaseList = new ArrayList<Database>();
+        databases = new ArrayList<Database>();
         int databaseIndex = 0;
-        for (SqlDatabaseType databaseType : databaseTypeList)
+        for (SqlDatabaseType databaseType : databaseTypes)
         {
-            databaseList.add(new Database(databaseType, DocEmitterTools.getDatabaseColor(databaseIndex),
-                                          docRootPath));
+            databases.add(new Database(context, databaseType,
+                    DocEmitterTools.getDatabaseColor(databaseIndex)));
             databaseIndex++;
         }
     }
 
-    public List<Database> getDatabaseList()
+    public Iterable<Database> getDatabases()
     {
-        return databaseList;
+        return databases;
     }
 
     public static class Database
     {
-        public Database(SqlDatabaseType databaseType, String colorName, String docRootPath)
-                throws ZserioEmitException
+        public Database(TemplateDataContext context, SqlDatabaseType databaseType, String colorName)
         {
-            this.name = databaseType.getName();
+            symbol = SymbolTemplateDataCreator.createData(context, databaseType);
             this.colorName = colorName;
-            docUrl = DocEmitterTools.getDocUrlFromType(docRootPath, databaseType);
 
             final List<zserio.ast.Field> databaseFieldTypeList = databaseType.getFields();
-            tableList = new ArrayList<Table>();
+            tables = new ArrayList<Table>();
             for (zserio.ast.Field field : databaseFieldTypeList)
             {
                 final ZserioType fieldType = field.getTypeInstantiation().getType();
-                tableList.add(new Table((SqlTableType) fieldType, databaseType.getName(),
-                              field.getName(), docRootPath));
+                tables.add(new Table(context, (SqlTableType) fieldType));
             }
         }
 
-        public String getName()
+        public SymbolTemplateData getSymbol()
         {
-            return name;
+            return symbol;
         }
 
         public String getColorName()
@@ -58,30 +53,22 @@ public class DbOverviewDotTemplateData
             return colorName;
         }
 
-        public String getDocUrl()
+        public Iterable<Table> getTables()
         {
-            return docUrl;
+            return tables;
         }
 
-        public List<Table> getTableList()
-        {
-            return tableList;
-        }
-
-        private final String name;
+        private final SymbolTemplateData symbol;
         private final String colorName;
-        private final String docUrl;
-        private final List<Table> tableList;
+        private final List<Table> tables;
     }
 
     public static class Table
     {
-        public Table(SqlTableType tableType, String databaseName, String tableName, String docRootPath)
-                throws ZserioEmitException
+        public Table(TemplateDataContext context, SqlTableType tableType)
         {
             fullName = ZserioTypeUtil.getFullName(tableType);
-            name = tableName;
-            docUrl = DocEmitterTools.getDocUrlFromType(docRootPath, tableType);
+            symbol = SymbolTemplateDataCreator.createData(context, tableType);
         }
 
         public String getFullTypeName()
@@ -89,20 +76,14 @@ public class DbOverviewDotTemplateData
             return fullName;
         }
 
-        public String getName()
+        public SymbolTemplateData getSymbol()
         {
-            return name;
-        }
-
-        public String getDocUrl()
-        {
-            return docUrl;
+            return symbol;
         }
 
         private final String fullName;
-        private final String name;
-        private final String docUrl;
+        private final SymbolTemplateData symbol;
     }
 
-    private final List<Database> databaseList;
+    private final List<Database> databases;
 }

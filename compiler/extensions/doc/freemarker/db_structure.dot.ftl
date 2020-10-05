@@ -1,5 +1,5 @@
 /**
- * This dot file creates structure diagram for database ${databaseName}.
+ * This dot file creates structure diagram for database ${database.symbol.name}.
  */
 digraph Zserio
 {
@@ -7,24 +7,24 @@ digraph Zserio
     rankdir=LR;
     ranksep="1.5 equally";
 
-    // database ${database.name}
-    subgraph cluster_${database.name}
+    // database ${database.symbol.name}
+    subgraph cluster_${database.symbol.name}
     {
         fontsize="32";
         bgcolor="${database.colorName}";
-        label="${database.name}";
-<#if database.docUrl?has_content>
-        URL="${database.docUrl}";
+        label="${database.symbol.name}";
+<#if database.symbol.htmlLink??>
+        URL="${database.symbol.htmlLink.htmlPage}#${database.symbol.htmlLink.htmlAnchor}";
 </#if>
-        tooltip="${database.name}";
+        tooltip="${database.symbol.htmlTitle}";
 
-<#list database.tableList as table>
+<#list database.tables as table>
         // table ${table.name}
-        table_${database.name}_${table.name} [
-    <#if table.docUrl?has_content>
-            URL="${table.docUrl}",
+        table_${database.symbol.name}_${table.name} [
+    <#if table.typeSymbol.htmlLink??>
+            URL="${table.typeSymbol.htmlLink.htmlPage}#${table.typeSymbol.htmlLink.htmlAnchor}",
     </#if>
-            tooltip="${table.typeName}",
+            tooltip="${table.typeSymbol.htmlTitle}",
             label=<
                 <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" CELLPADDING="4">
                     <TR>
@@ -36,7 +36,7 @@ digraph Zserio
                                 </TR>
     </#if>
                                 <TR>
-                                    <TD><FONT FACE="monospace" COLOR="blue">${table.typeName} ${table.name}</FONT></TD>
+                                    <TD><FONT FACE="monospace" COLOR="blue">${table.typeSymbol.name} ${table.name}</FONT></TD>
                                 </TR>
                             </TABLE>
                         </TD>
@@ -46,8 +46,8 @@ digraph Zserio
                     <TR>
                         <TD BGCOLOR="white">
                             <TABLE BORDER="0">
-    <#if table.fieldList?has_content>
-        <#list table.fieldList as field>
+    <#if table.fields?has_content>
+        <#list table.fields as field>
                                 <TR>
                                     <TD ALIGN="LEFT"><FONT FACE="monospace">${field.typeName}</FONT></TD>
                                     <TD ALIGN="LEFT"><FONT FACE="monospace">${field.name}</FONT></TD>
@@ -60,8 +60,8 @@ digraph Zserio
                         </TD>
                         <TD BGCOLOR="white">
                             <TABLE BORDER="0">
-    <#if table.fieldList?has_content>
-        <#list table.fieldList as field>
+    <#if table.fields?has_content>
+        <#list table.fields as field>
                                 <TR>
                                     <TD><#if field.isPrimaryKey>&#215;<#else> &nbsp;</#if></TD>
                                 </TR>
@@ -73,8 +73,8 @@ digraph Zserio
                         </TD>
                         <TD BGCOLOR="white">
                             <TABLE BORDER="0">
-    <#if table.fieldList?has_content>
-        <#list table.fieldList as field>
+    <#if table.fields?has_content>
+        <#list table.fields as field>
                                 <TR>
                                     <TD><#if field.isNullAllowed>&#215;<#else> &nbsp;</#if></TD>
                                 </TR>
@@ -90,6 +90,5 @@ digraph Zserio
         ];
 
 </#list>
-    }; // end of database ${database.name}
-
+    }; // end of database ${database.symbol.name}
 }

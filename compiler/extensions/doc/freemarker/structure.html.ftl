@@ -33,7 +33,7 @@
     <@compound_member_details fields/>
     <@compound_function_details functions/>
     <@used_by usedByList/>
-<#if collaborationDiagramSvgFileName??>
+<#if collaborationDiagramSvg??>
 
-    <@collaboration_diagram collaborationDiagramSvgFileName/>
+    <@collaboration_diagram collaborationDiagramSvg/>
 </#if>

@@ -17,16 +17,22 @@ class DbOverviewDotEmitter extends DotDefaultEmitter
     public DbOverviewDotEmitter(String outputPathName, Parameters extensionParameters, String dotLinksPrefix,
             boolean withSvgDiagrams, String dotExecutable, UsedByCollector usedByCollector)
     {
-        super(extensionParameters, dotLinksPrefix, withSvgDiagrams, dotExecutable, usedByCollector);
+        // TODO[mikir] to re-think dotLinksPrefix, it won't work
+        super(extensionParameters, (dotLinksPrefix == null) ? ".." : dotLinksPrefix, withSvgDiagrams,
+                dotExecutable, usedByCollector);
 
         this.outputPathName = outputPathName;
+        final String directoryPrefix = getDotLinksPrefix() + "/";
+        context = new TemplateDataContext(getWithSvgDiagrams(), getUsedByCollector(), getPackageMapper(),
+                directoryPrefix + HTML_CONTENT_DIRECTORY, directoryPrefix + SYMBOL_COLLABORATION_DIRECTORY);
+
         databases = new ArrayList<SqlDatabaseType>();
     }
 
     @Override
     public void endRoot(Root root) throws ZserioEmitException
     {
-        final Object templateData = new DbOverviewDotTemplateData(databases, getDotLinksPrefix());
+        final Object templateData = new DbOverviewDotTemplateData(context, databases);
         final File outputDotFile = new File(outputPathName,
                 DB_OVERVIEW_DOT_DIRECTORY + File.separator + DB_OVERVIEW_DOT_FILE_NAME);
         final File outputSvgFile = new File(outputPathName,
@@ -47,5 +53,6 @@ class DbOverviewDotEmitter extends DotDefaultEmitter
     private static final String TEMPLATE_SOURCE_NAME = "db_overview.dot.ftl";
 
     private final String outputPathName;
+    private final TemplateDataContext context;
     private final List<SqlDatabaseType> databases;
 }

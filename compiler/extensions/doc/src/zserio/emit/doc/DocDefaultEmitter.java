@@ -1,9 +1,7 @@
 package zserio.emit.doc;
 
-import zserio.ast.Package;
 import zserio.emit.common.DefaultEmitter;
 import zserio.emit.common.PackageMapper;
-import zserio.emit.common.ZserioEmitException;
 import zserio.tools.Parameters;
 
 class DocDefaultEmitter extends DefaultEmitter
@@ -14,15 +12,8 @@ class DocDefaultEmitter extends DefaultEmitter
         this.withSvgDiagrams = withSvgDiagrams;
         this.usedByCollector = usedByCollector;
 
-        topLevelPackageNameList = extensionParameters.getTopLevelPackageNameList();
-        packageMapper = null;
-    }
-
-    @Override
-    public void beginPackage(Package pkg) throws ZserioEmitException
-    {
-        if (packageMapper == null)
-            packageMapper = new PackageMapper(pkg, topLevelPackageNameList);
+        final Iterable<String> topLevelPackageNameList = extensionParameters.getTopLevelPackageNameList();
+        packageMapper = new PackageMapper(topLevelPackageNameList);
     }
 
     protected boolean getWithSvgDiagrams()
@@ -40,11 +31,11 @@ class DocDefaultEmitter extends DefaultEmitter
         return packageMapper;
     }
 
-    public static final String DOC_TEMPLATE_LOCATION = "doc/";
+    protected static final String DOC_TEMPLATE_LOCATION = "doc/";
+    protected static final String SYMBOL_COLLABORATION_DIRECTORY = "symbol_collaboration";
+    protected static final String HTML_CONTENT_DIRECTORY = "content";
 
     private final boolean withSvgDiagrams;
     private final UsedByCollector usedByCollector;
-
-    private final Iterable<String> topLevelPackageNameList;
-    private PackageMapper packageMapper;
+    private final PackageMapper packageMapper;
 }

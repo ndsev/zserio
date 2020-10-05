@@ -21,12 +21,11 @@ public class BitmaskTemplateData extends DocTemplateData
     {
         super(context, bitmaskType, bitmaskType.getName());
 
-        symbol = context.getSymbolTemplateDataMapper().getSymbol(bitmaskType.getTypeInstantiation());
+        symbol = SymbolTemplateDataCreator.createData(context, bitmaskType);
 
         for (BitmaskValue value : bitmaskType.getValues())
         {
-            values.add(new BitmaskValueTemplateData(bitmaskType, value, context.getUsedByCollector(),
-                    context.getExpressionFormatter()));
+            values.add(new BitmaskValueTemplateData(context, bitmaskType, value));
         }
     }
 
@@ -42,19 +41,21 @@ public class BitmaskTemplateData extends DocTemplateData
 
     public static class BitmaskValueTemplateData
     {
-        public BitmaskValueTemplateData(BitmaskType bitmaskType, BitmaskValue bitmaskValue,
-                UsedByCollector usedByCollector,
-                ExpressionFormatter docExpressionFormatter) throws ZserioEmitException
+        public BitmaskValueTemplateData(TemplateDataContext context, BitmaskType bitmaskType,
+                BitmaskValue bitmaskValue) throws ZserioEmitException
         {
             name = bitmaskValue.getName();
+
             anchorName = DocEmitterTools.getAnchorName(bitmaskType, name);
 
+            final ExpressionFormatter docExpressionFormatter = context.getExpressionFormatter();
             final Expression valueExpression = bitmaskValue.getValueExpression();
             value = (valueExpression == null) ? bitmaskValue.getValue().toString() :
                 docExpressionFormatter.formatGetter(bitmaskValue.getValueExpression());
 
             docComments = new DocCommentsTemplateData(bitmaskValue.getDocComments());
 
+            final UsedByCollector usedByCollector = context.getUsedByCollector();
             usageInfoList = new TreeSet<UsageInfoTemplateData>();
             for (ChoiceType choiceType : usedByCollector.getUsedByChoices(bitmaskValue))
                 usageInfoList.add(new UsageInfoTemplateData(bitmaskValue, choiceType));

@@ -5,19 +5,15 @@ import zserio.emit.common.PackageMapper;
 
 class TemplateDataContext
 {
-    public TemplateDataContext(String outputPath, boolean withSvgDiagrams, UsedByCollector usedByCollector,
-            PackageMapper packageMapper)
+    public TemplateDataContext(boolean withSvgDiagrams, UsedByCollector usedByCollector,
+            PackageMapper packageMapper, String htmlContentDirectory, String typeCollaborationDirectory)
     {
-        this.outputPath = outputPath;
         this.withSvgDiagrams = withSvgDiagrams;
         this.usedByCollector = usedByCollector;
         this.docExpressionFormatter = new ExpressionFormatter(new DocExpressionFormattingPolicy());
-        this.symbolTemplateDataMapper = new SymbolTemplateDataMapper(packageMapper, ".");
-    }
-
-    public String getOutputPath()
-    {
-        return outputPath;
+        this.packageMapper = packageMapper;
+        this.htmlContentDirectory = htmlContentDirectory;
+        this.typeCollaborationDirectory = typeCollaborationDirectory;
     }
 
     public boolean getWithSvgDiagrams()
@@ -35,14 +31,25 @@ class TemplateDataContext
         return docExpressionFormatter;
     }
 
-    public SymbolTemplateDataMapper getSymbolTemplateDataMapper()
+    public PackageMapper getPackageMapper()
     {
-        return symbolTemplateDataMapper;
+        return packageMapper;
     }
 
-    private final String outputPath;
+    public String getHtmlContentDirectory()
+    {
+        return htmlContentDirectory;
+    }
+
+    public String getTypeCollaborationDirectory()
+    {
+        return typeCollaborationDirectory;
+    }
+
     private final boolean withSvgDiagrams;
     private final UsedByCollector usedByCollector;
     private final ExpressionFormatter docExpressionFormatter;
-    private final SymbolTemplateDataMapper symbolTemplateDataMapper;
+    private final PackageMapper packageMapper;
+    private final String htmlContentDirectory;
+    private final String typeCollaborationDirectory;
 }

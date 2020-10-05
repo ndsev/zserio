@@ -16,18 +16,6 @@ import zserio.tools.StringJoinUtil;
 class DocEmitterTools
 {
     /**
-     * Returns the directory name where to store the HTML file.
-     *
-     * @param type The ZserioType from which to generate the directory name.
-     *
-     * @throws ZserioEmitException Throws in case of any internal error.
-     */
-    public static String getDirectoryNameFromType(AstNode type) throws ZserioEmitException
-    {
-        return getZserioPackageName(type).toString();
-    }
-
-    /**
      * Returns the URL name of HTML file.
      *
      * @param type The ZserioType from which to generate the URL name.
@@ -85,34 +73,6 @@ class DocEmitterTools
     }
 
     /**
-     * Gets the URL to the documentation of the Zserio type.
-     *
-     * @param docRootPath The path to the root of the generated HTML documentation or null.
-     * @param type        Zserio type for which to get the documentation URL.
-     *
-     * @return The string which represents the URL to the documentation or null if docRootPath was null.
-     *
-     * @throws ZserioEmitException Throws in case of any internal error.
-     */
-    public static String getDocUrlFromType(String docRootPath, AstNode type) throws ZserioEmitException
-    {
-        if (docRootPath == null)
-            return null;
-
-        return StringJoinUtil.joinStrings(docRootPath, docDirectory,
-                DocEmitterTools.getZserioPackageName(type) + ".html#" +
-                        (new LinkedType(type).getHyperlinkName()),
-                URLDirSeparator);
-    }
-
-    // TODO[mikir] Should be removed and replaced by getSvgUrl call.
-    public static String getTypeCollaborationSvgUrl(String docRootPath, AstNode type)
-            throws ZserioEmitException
-    {
-        return TypeCollaborationDotEmitter.getSvgUrl(docRootPath, type);
-    }
-
-    /**
      * Gets the database color.
      *
      * This is tricky and hard-coded. Should be done properly by external configuration.
@@ -156,37 +116,6 @@ class DocEmitterTools
         }
         throw new ZserioEmitException("Unhanled Zserio type or symbol '" + node.getClass().getName() + "'!");
     }
-
-    /**
-     * Common name getter for Zserio types and symbols.
-     *
-     * @param node AST node which represents either Zserio type or global symbol.
-     *
-     * @return Zserio name.
-     */
-    public static String getZserioName(AstNode node) throws ZserioEmitException
-    {
-        if (node instanceof ZserioType)
-        {
-            return ((ZserioType)node).getName();
-        }
-        if (node instanceof Constant)
-        {
-            return ((Constant)node).getName();
-        }
-        throw new ZserioEmitException("Unhanled Zserio type or symbol '" + node.getClass().getName() + "'!");
-    }
-
-    public static String getFileNameFromType(AstNode type, String extensionName) throws ZserioEmitException
-    {
-        HtmlModuleNameSuffixVisitor suffixVisitor = new HtmlModuleNameSuffixVisitor();
-        type.accept(suffixVisitor);
-
-        return getZserioName(type) + "_" + suffixVisitor.getSuffix() + extensionName;
-    }
-
-    private static final String docDirectory = "content";
-    private static final String URLDirSeparator = "/";
 
     private static final String[] databaseColorList = new String[]
     {

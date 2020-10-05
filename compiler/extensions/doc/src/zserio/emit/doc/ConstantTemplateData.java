@@ -10,7 +10,7 @@ public class ConstantTemplateData extends DocTemplateData
     {
         super(context, constant, constant.getName());
 
-        symbol = context.getSymbolTemplateDataMapper().getSymbol(constant.getTypeInstantiation());
+        symbol = SymbolTemplateDataCreator.createData(context, constant.getTypeInstantiation());
         value = context.getExpressionFormatter().formatGetter(constant.getValueExpression());
     }
 

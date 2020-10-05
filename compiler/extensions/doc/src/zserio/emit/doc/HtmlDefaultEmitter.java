@@ -28,5 +28,4 @@ class HtmlDefaultEmitter extends DocDefaultEmitter
     }
 
     protected static final String HTML_FILE_EXTENSION = ".html";
-    protected static final String HTML_CONTENT_DIRECTORY = "content";
 }

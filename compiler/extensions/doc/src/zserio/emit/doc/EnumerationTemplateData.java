@@ -21,13 +21,10 @@ public class EnumerationTemplateData extends DocTemplateData
     {
         super(context, enumType, enumType.getName());
 
-        symbol = context.getSymbolTemplateDataMapper().getSymbol(enumType.getTypeInstantiation());
+        symbol = SymbolTemplateDataCreator.createData(context, enumType.getTypeInstantiation());
 
         for (EnumItem item: enumType.getItems())
-        {
-            items.add(new EnumItemTemplateData(enumType, item, context.getUsedByCollector(),
-                    context.getExpressionFormatter()));
-        }
+            items.add(new EnumItemTemplateData(context, enumType, item));
     }
 
     public SymbolTemplateData getSymbol()
@@ -42,19 +39,21 @@ public class EnumerationTemplateData extends DocTemplateData
 
     public static class EnumItemTemplateData
     {
-        public EnumItemTemplateData(EnumType enumType, EnumItem enumItem, UsedByCollector usedByCollector,
-                ExpressionFormatter docExpressionFormatter) throws ZserioEmitException
+        public EnumItemTemplateData(TemplateDataContext context, EnumType enumType, EnumItem enumItem)
+                throws ZserioEmitException
         {
             name = enumItem.getName();
             anchorName = DocEmitterTools.getAnchorName(enumType, name);
 
             final Expression valueExpression = enumItem.getValueExpression();
+            final ExpressionFormatter docExpressionFormatter = context.getExpressionFormatter();
             value = (valueExpression == null) ? enumItem.getValue().toString() :
                 docExpressionFormatter.formatGetter(valueExpression);
 
             docComments = new DocCommentsTemplateData(enumItem.getDocComments());
 
             usageInfoList = new TreeSet<UsageInfoTemplateData>();
+            final UsedByCollector usedByCollector = context.getUsedByCollector();
             for (ChoiceType choiceType : usedByCollector.getUsedByChoices(enumItem))
                 usageInfoList.add(new UsageInfoTemplateData(enumItem, choiceType));
         }
