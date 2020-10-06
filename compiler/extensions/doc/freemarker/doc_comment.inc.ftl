@@ -1,4 +1,5 @@
 <#ftl output_format="HTML">
+<#include "symbol.inc.ftl">
 <#macro doc_comments docComments indent useNoDocPlaceholder=true>
     <#local I>${""?left_pad(indent * 2)}</#local>
     <#if docComments.commentsList?has_content>
@@ -34,11 +35,7 @@ ${I}</div>
                 <#if element.seeTag??>
 
 ${I}<div class="docuTag">
-                    <#if element.seeTag.url??>
-${I}  <span>See:</span> <a href="${element.seeTag.url}">${element.seeTag.alias}</a>
-                    <#else>
-${I}  <span>See:</span> ${element.seeTag.alias}
-                    </#if>
+${I}  <span>See:</span> <@symbol_reference element.seeTag.seeSymbol/>
 ${I}</div>
                 </#if>
                 <#if element.paramTag??>
@@ -66,11 +63,7 @@ ${I}</div>
 ${I}${docLineElement.docString}
         </#if>
         <#if docLineElement.seeTag??>
-            <#if docLineElement.seeTag.url??>
-${I}<a href="${docLineElement.seeTag.url}">${docLineElement.seeTag.alias}</a>
-            <#else>
-${I}${docLineElement.seeTag.alias}
-            </#if>
+${I}<@symbol_reference docLineElement.seeTag.seeSymbol/>
         </#if>
     </#list>
 </#macro>

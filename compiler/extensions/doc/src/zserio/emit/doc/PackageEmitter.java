@@ -37,8 +37,8 @@ class PackageEmitter extends HtmlDefaultEmitter
         final File outputDirectory = new File(getOutputPathName(), HTML_CONTENT_DIRECTORY);
         getResourceManager().setCurrentOutputDir(Paths.get(outputDirectory.toString()));
 
-        final File outputFile = new File(outputDirectory,
-                pkg.getPackageName().toString() + HTML_FILE_EXTENSION);
+        final String packageName = getPackageMapper().getPackageName(pkg).toString();
+        final File outputFile = new File(outputDirectory, packageName + HTML_FILE_EXTENSION);
         FileUtil.createOutputDirectory(outputFile);
         writer = FileUtil.createWriter(outputFile);
 

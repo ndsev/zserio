@@ -25,10 +25,10 @@
             <tr class="codeMember">
               <td id="tabIndent"></td>
               <td>
-                ${typePrefix}<@symbol_reference field.symbol/><@compound_field_arguments field.arguments/>
+                ${typePrefix}<@symbol_reference field.typeSymbol/><@compound_field_arguments field.arguments/>
               </td>
               <td>
-                <a href="#${field.anchorName}" class="fieldLink">${field.name}</a><#rt>
+                <@symbol_reference field.symbol/><#rt>
                   ${field.arrayRange}<#t>
     <#if field.initializerExpression?has_content>
                   <#lt> = ${field.initializerExpression}<#rt>
@@ -53,7 +53,7 @@
               <td id="tabIndent"></td>
               <td colspan=2>
                 function <@symbol_reference function.returnSymbol/> <#rt>
-                  <#lt><a href="#${function.anchorName}" class="fieldLink">${function.name}()</a>
+                  <#lt><@symbol_reference function.symbol/>()</a>
               </td>
             </tr>
             <tr>
@@ -90,12 +90,12 @@
     <dl>
         <#list fields as field>
       <dt class="memberItem">
-        <a name="${field.anchorName}">
+        <a name="${field.symbol.htmlLink.htmlAnchor}">
             <#if field.docComments.isDeprecated>
           <span class="deprecated">(deprecated) </span>
-          <del>${field.name}</del>:
+          <del>${field.symbol.name}</del>:
             <#else>
-          ${field.name}:
+          ${field.symbol.name}:
             </#if>
         </a>
       </dt>
@@ -122,12 +122,12 @@
 
 <#macro compound_function_detail function>
       <dt class="memberItem">
-        <a name="${function.anchorName}">
+        <a name="${function.symbol.htmlLink.htmlAnchor}">
     <#if function.docComments.isDeprecated>
           <span class="deprecated">(deprecated) </span>
-          <del>${function.name}()</del>:
+          <del>${function.symbol.name}()</del>:
     <#else>
-          ${function.name}():
+          ${function.symbol.name}():
     </#if>
         </a>
       </dt>

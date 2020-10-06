@@ -21,8 +21,7 @@
 <#list messageList as message>
           <tr><td id="tabIndent">
             ${message.keyword}(${message.topicDefinition}) <#rt>
-              <@symbol_reference message.symbol/> <#t>
-              <#lt><a href="#${message.anchorName}" class="fieldLink">${message.name}</a>;
+              <@symbol_reference message.typeSymbol/> <@symbol_reference message.symbol/>;
           </td></tr>
 </#list>
           <tr><td>};</td></tr>
@@ -35,7 +34,7 @@
 
     <dl>
     <#list messageList as message>
-      <dt class="memberItem"><a name="${message.anchorName}">${message.name}:</a></dt>
+      <dt class="memberItem"><a name="${message.symbol.htmlLink.htmlAnchor}">${message.symbol.name}:</a></dt>
       <dd class="memberDetail">
         <@doc_comments message.docComments 4/>
       </dd>

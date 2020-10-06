@@ -2,17 +2,12 @@ package zserio.emit.doc;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.SortedSet;
-import java.util.TreeSet;
 
 import zserio.ast.BitmaskType;
 import zserio.ast.BitmaskValue;
-import zserio.ast.ChoiceType;
 import zserio.ast.Expression;
 import zserio.emit.common.ExpressionFormatter;
 import zserio.emit.common.ZserioEmitException;
-import zserio.tools.HashUtil;
-import zserio.tools.StringJoinUtil;
 
 public class BitmaskTemplateData extends DocTemplateData
 {
@@ -21,17 +16,18 @@ public class BitmaskTemplateData extends DocTemplateData
     {
         super(context, bitmaskType, bitmaskType.getName());
 
-        symbol = SymbolTemplateDataCreator.createData(context, bitmaskType);
+        typeSymbol = SymbolTemplateDataCreator.createData(context, bitmaskType.getTypeInstantiation());
 
+        values = new ArrayList<BitmaskValueTemplateData>();
         for (BitmaskValue value : bitmaskType.getValues())
         {
             values.add(new BitmaskValueTemplateData(context, bitmaskType, value));
         }
     }
 
-    public SymbolTemplateData getSymbol()
+    public SymbolTemplateData getTypeSymbol()
     {
-        return symbol;
+        return typeSymbol;
     }
 
     public Iterable<BitmaskValueTemplateData> getValues()
@@ -44,9 +40,7 @@ public class BitmaskTemplateData extends DocTemplateData
         public BitmaskValueTemplateData(TemplateDataContext context, BitmaskType bitmaskType,
                 BitmaskValue bitmaskValue) throws ZserioEmitException
         {
-            name = bitmaskValue.getName();
-
-            anchorName = DocEmitterTools.getAnchorName(bitmaskType, name);
+            symbol = SymbolTemplateDataCreator.createData(context, bitmaskType, bitmaskValue);
 
             final ExpressionFormatter docExpressionFormatter = context.getExpressionFormatter();
             final Expression valueExpression = bitmaskValue.getValueExpression();
@@ -56,19 +50,19 @@ public class BitmaskTemplateData extends DocTemplateData
             docComments = new DocCommentsTemplateData(context, bitmaskValue.getDocComments());
 
             final UsedByCollector usedByCollector = context.getUsedByCollector();
-            usageInfoList = new TreeSet<UsageInfoTemplateData>();
-            for (ChoiceType choiceType : usedByCollector.getUsedByChoices(bitmaskValue))
-                usageInfoList.add(new UsageInfoTemplateData(bitmaskValue, choiceType));
+            seeSymbols = new ArrayList<SymbolTemplateData>();
+            for (UsedByCollector.ChoiceCaseReference choiceCaseRef :
+                usedByCollector.getUsedByChoices(bitmaskValue))
+            {
+                seeSymbols.add(SymbolTemplateDataCreator.createDataWithTypeName(context,
+                        choiceCaseRef.getChoiceType(), choiceCaseRef.getChoiceCase(), bitmaskValue.getName()));
+            }
+
         }
 
-        public String getName()
+        public SymbolTemplateData getSymbol()
         {
-            return name;
-        }
-
-        public String getAnchorName()
-        {
-            return anchorName;
+            return symbol;
         }
 
         public String getValue()
@@ -81,68 +75,17 @@ public class BitmaskTemplateData extends DocTemplateData
             return docComments;
         }
 
-        public Iterable<UsageInfoTemplateData> getUsageInfoList()
+        public Iterable<SymbolTemplateData> getSeeSymbols()
         {
-            return usageInfoList;
+            return seeSymbols;
         }
 
-        public static class UsageInfoTemplateData implements Comparable<UsageInfoTemplateData>
-        {
-            public UsageInfoTemplateData(BitmaskValue bitmaskValue, ChoiceType choiceType)
-                    throws ZserioEmitException
-            {
-                this.choiceCaseLinkText = choiceType.getName() + "( " + bitmaskValue.getName() + " )";
-                final String urlName = DocEmitterTools.getUrlNameFromType(choiceType);
-                final String anchorName = DocEmitterTools.getAnchorName(
-                        choiceType, "casedef", bitmaskValue.getName());
-                this.choiceCaseLink = StringJoinUtil.joinStrings(urlName, anchorName, "#");
-            }
-
-            /* Don't change this ordering to have always the same generated HTML sources. */
-            @Override
-            public int compareTo(UsageInfoTemplateData other)
-            {
-                return getChoiceCaseLinkText().compareTo(other.getChoiceCaseLinkText());
-            }
-
-            @Override
-            public boolean equals(Object other)
-            {
-                if ( !(other instanceof UsageInfoTemplateData) )
-                    return false;
-
-                return (this == other) || compareTo((UsageInfoTemplateData)other) == 0;
-            }
-
-            @Override
-            public int hashCode()
-            {
-                int hash = HashUtil.HASH_SEED;
-                hash = HashUtil.hash(hash, getChoiceCaseLinkText());
-                return hash;
-            }
-
-            public String getChoiceCaseLinkText()
-            {
-                return choiceCaseLinkText;
-            }
-
-            public String getChoiceCaseLink()
-            {
-                return choiceCaseLink;
-            }
-
-            private final String choiceCaseLinkText;
-            private final String choiceCaseLink;
-        };
-
-        private final String name;
-        private final String anchorName;
+        private final SymbolTemplateData symbol;
         private final String value;
         private final DocCommentsTemplateData docComments;
-        private final SortedSet<UsageInfoTemplateData> usageInfoList;
+        private final List<SymbolTemplateData> seeSymbols;
     }
 
-    private final SymbolTemplateData symbol;
-    private final List<BitmaskValueTemplateData> values = new ArrayList<BitmaskValueTemplateData>();
+    private final SymbolTemplateData typeSymbol;
+    private final List<BitmaskValueTemplateData> values;
 }

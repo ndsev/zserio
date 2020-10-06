@@ -19,8 +19,8 @@ import zserio.ast.DocTagSee;
 import zserio.ast.DocTagTodo;
 import zserio.ast.DocText;
 import zserio.ast.SymbolReference;
+import zserio.ast.ZserioType;
 import zserio.emit.common.ZserioEmitException;
-import zserio.tools.StringJoinUtil;
 
 /**
  * The documentation comments data used for FreeMarker template during documentation generation.
@@ -91,7 +91,7 @@ public class DocCommentsTemplateData
 
                 for (DocParagraph docParagraph : docCommentClassic.getParagraphs())
                 {
-                    docParagraphs.add(new DocParagraphData(docParagraph));
+                    docParagraphs.add(new DocParagraphData(context, docParagraph));
 
                     if (!isDeprecated)
                     {
@@ -144,10 +144,10 @@ public class DocCommentsTemplateData
          */
         public static class DocParagraphData
         {
-            public DocParagraphData(DocParagraph docParagraph) throws ZserioEmitException
+            public DocParagraphData(TemplateDataContext context, DocParagraph docParagraph)
             {
                 for (DocElement docElement : docParagraph.getDocElements())
-                    docElements.add(new DocElementData(docElement));
+                    docElements.add(new DocElementData(context, docElement));
             }
 
             public Iterable<DocElementData> getElements()
@@ -157,19 +157,19 @@ public class DocCommentsTemplateData
 
             public static class DocElementData
             {
-                public DocElementData(DocElement docElement) throws ZserioEmitException
+                public DocElementData(TemplateDataContext context, DocElement docElement)
                 {
                     final DocMultiline multiline = docElement.getDocMultiline();
-                    this.multiline = multiline != null ? new DocMultilineData(multiline) : null;
+                    this.multiline = multiline != null ? new DocMultilineData(context, multiline) : null;
 
                     final DocTagSee seeTag = docElement.getSeeTag();
-                    this.seeTag = seeTag != null ? new DocTagSeeData(seeTag) : null;
+                    this.seeTag = seeTag != null ? new DocTagSeeData(context, seeTag) : null;
 
                     final DocTagTodo todoTag = docElement.getTodoTag();
-                    this.todoTag = todoTag != null ? new DocMultilineData(todoTag) : null;
+                    this.todoTag = todoTag != null ? new DocMultilineData(context, todoTag) : null;
 
                     final DocTagParam paramTag = docElement.getParamTag();
-                    this.paramTag = paramTag != null ? new DocTagParamData(paramTag) : null;
+                    this.paramTag = paramTag != null ? new DocTagParamData(context, paramTag) : null;
 
                     // deprecated tag is ignored here, solved in DocCommentTempateData
                 }
@@ -208,13 +208,13 @@ public class DocCommentsTemplateData
          */
         public static class DocMultilineData
         {
-            public DocMultilineData(DocMultiline docMultiline) throws ZserioEmitException
+            public DocMultilineData(TemplateDataContext context, DocMultiline docMultiline)
             {
                 for (DocLine docLine : docMultiline.getLines())
                 {
                     for (DocLineElement docLineElement : docLine.getLineElements())
                     {
-                        docLineElements.add(new DocLineElementData(docLineElement));
+                        docLineElements.add(new DocLineElementData(context, docLineElement));
                     }
                 }
             }
@@ -229,14 +229,14 @@ public class DocCommentsTemplateData
              */
             public static class DocLineElementData
             {
-                DocLineElementData(DocLineElement docLineElement) throws ZserioEmitException
+                DocLineElementData(TemplateDataContext context, DocLineElement docLineElement)
                 {
                     final DocText docText = docLineElement.getDocText();
                     docString = docText != null ?
                             StringHtmlUtil.escapeCommentsForHtml(docText.getText()) : null;
 
                     final DocTagSee docTagSee = docLineElement.getSeeTag();
-                    seeTag = docTagSee != null ? new DocTagSeeData(docTagSee) : null;
+                    seeTag = docTagSee != null ? new DocTagSeeData(context, docTagSee) : null;
                 }
 
                 public String getDocString()
@@ -261,53 +261,42 @@ public class DocCommentsTemplateData
          */
         public static class DocTagSeeData
         {
-            public DocTagSeeData(DocTagSee docTagSee) throws ZserioEmitException
+            public DocTagSeeData(TemplateDataContext context, DocTagSee docTagSee)
             {
-                alias = docTagSee.getLinkAlias();
                 final SymbolReference linkSymbolReference = docTagSee.getLinkSymbolReference();
+                final ZserioType referencedType = linkSymbolReference.getReferencedType();
+                final AstNode referencedSymbol = linkSymbolReference.getReferencedSymbol();
 
-                if (linkSymbolReference.getReferencedType() == null)
+                SymbolTemplateData symbolData = new SymbolTemplateData("", "unknownLink", "Unknown link", null);
+                if (referencedType == null)
                 {
-                    final AstNode referencedSymbol = linkSymbolReference.getReferencedSymbol();
                     if (referencedSymbol != null)
-                    {
-                        url = StringJoinUtil.joinStrings(DocEmitterTools.getUrlNameFromType(referencedSymbol),
-                                DocEmitterTools.getAnchorName(referencedSymbol), "#");
-                    }
-                    else
-                        url = null; // this can happen if see tag is wrong and could not be resolved
+                        symbolData = SymbolTemplateDataCreator.createData(context, referencedSymbol);
                 }
                 else
                 {
-                    final String urlName = DocEmitterTools.getUrlNameFromType(
-                            linkSymbolReference.getReferencedType());
-                    if (linkSymbolReference.getReferencedSymbolName() != null)
+                    if (referencedSymbol != null)
                     {
-                        final String anchorName = DocEmitterTools.getAnchorName(
-                                linkSymbolReference.getReferencedType(),
-                                linkSymbolReference.getReferencedSymbolName());
-                        url =  StringJoinUtil.joinStrings(urlName, anchorName, "#");
+                        symbolData = SymbolTemplateDataCreator.createData(context, referencedType,
+                                referencedSymbol);
                     }
-                    else
+                    else if (linkSymbolReference.getReferencedSymbolName() == null)
                     {
-                        // type reference
-                        url = urlName;
+                        symbolData = SymbolTemplateDataCreator.createData(context, referencedType);
                     }
                 }
+
+                final String alias = docTagSee.getLinkAlias();
+                seeSymbol = new SymbolTemplateData(alias, symbolData.getHtmlClass(), symbolData.getHtmlTitle(),
+                        symbolData.getHtmlLink());
             }
 
-            public String getUrl()
+            public SymbolTemplateData getSeeSymbol()
             {
-                return url;
+                return seeSymbol;
             }
 
-            public String getAlias()
-            {
-                return alias;
-            }
-
-            private final String alias;
-            private final String url;
+            private final SymbolTemplateData seeSymbol;
         }
 
         /**
@@ -315,11 +304,11 @@ public class DocCommentsTemplateData
          */
         public static class DocTagParamData
         {
-            public DocTagParamData(DocTagParam docTagParam) throws ZserioEmitException
+            public DocTagParamData(TemplateDataContext context, DocTagParam docTagParam)
             {
                 name = docTagParam.getParamName();
 
-                description = new DocMultilineData(docTagParam);
+                description = new DocMultilineData(context, docTagParam);
             }
 
             public String getName()

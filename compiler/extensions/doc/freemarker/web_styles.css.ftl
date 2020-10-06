@@ -24,6 +24,12 @@ a
     color:#333333;
 }
 
+a.unknownLink
+{
+    text-decoration:none;
+    color:#333333;
+}
+
 a.constantLink
 {
     text-decoration:underline;
@@ -38,13 +44,18 @@ a.subtypeLink
 
 a.structureLink,
 a.choiceLink,
-a.unionLink
+a.choiceCaseLink,
+a.unionLink,
+a.fieldLink
+a.functionLink
 {
     text-decoration:underline;
 }
 
 a.enumLink,
-a.bitmaskLink
+a.enumItem,
+a.bitmaskLink,
+a.bitmaskValue
 {
     text-decoration:underline;
     color:green;
@@ -58,7 +69,9 @@ a.sqlDatabaseLink
 }
 
 a.serviceLink,
-a.pubsubLink
+a.serviceMethod,
+a.pubsubLink,
+a.pubsubMessage
 {
     text-decoration:underline;
     color:brown;
@@ -72,18 +85,6 @@ a.arrayLink
 span.builtInType
 {
     color:darkslategray;
-}
-
-a.fieldLink
-{
-    text-decoration:none;
-    color:#333333;
-}
-
-a.fieldLink:hover,
-a.fieldLink:focus
-{
-    text-decoration:underline;
 }
 
 .detailedDocu

@@ -75,10 +75,9 @@ public class CompoundTypeTemplateData extends DocTemplateData
         public FieldTemplateData(TemplateDataContext context, CompoundType compoundType, Field field)
                 throws ZserioEmitException
         {
-            name = field.getName();
-            anchorName = DocEmitterTools.getAnchorName(compoundType, field.getName());
+            symbol = SymbolTemplateDataCreator.createData(context, compoundType, field);
             final TypeInstantiation fieldTypeInstantiation = field.getTypeInstantiation();
-            symbol = SymbolTemplateDataCreator.createData(context, fieldTypeInstantiation);
+            typeSymbol = SymbolTemplateDataCreator.createData(context, fieldTypeInstantiation);
             final ExpressionFormatter docExpressionFormatter = context.getExpressionFormatter();
             initArguments(fieldTypeInstantiation, docExpressionFormatter);
             docComments = new DocCommentsTemplateData(context, field.getDocComments());
@@ -107,19 +106,14 @@ public class CompoundTypeTemplateData extends DocTemplateData
                 formatExpression(sqlConstraint.getConstraintExpr(), docExpressionFormatter);
         }
 
-        public String getName()
-        {
-            return name;
-        }
-
-        public String getAnchorName()
-        {
-            return anchorName;
-        }
-
         public SymbolTemplateData getSymbol()
         {
             return symbol;
+        }
+
+        public SymbolTemplateData getTypeSymbol()
+        {
+            return typeSymbol;
         }
 
         public Iterable<String> getArguments()
@@ -207,9 +201,8 @@ public class CompoundTypeTemplateData extends DocTemplateData
             return (expression == null) ? "" : docExpressionFormatter.formatGetter(expression);
         }
 
-        private final String name;
-        private final String anchorName;
         private final SymbolTemplateData symbol;
+        private final SymbolTemplateData typeSymbol;
         private final List<String> arguments = new ArrayList<String>();
         private final DocCommentsTemplateData docComments;
         private final boolean isVirtual;
@@ -229,8 +222,7 @@ public class CompoundTypeTemplateData extends DocTemplateData
         public FunctionTemplateData(TemplateDataContext context, CompoundType compoundType, Function function)
                 throws ZserioEmitException
         {
-            name = function.getName();
-            anchorName = DocEmitterTools.getAnchorName(compoundType, function.getName());
+            symbol = SymbolTemplateDataCreator.createData(context, compoundType, function);
             returnSymbol = SymbolTemplateDataCreator.createData(context,
                     function.getReturnTypeReference().getType());
             final ExpressionFormatter docExpressionFormatter = context.getExpressionFormatter();
@@ -238,14 +230,9 @@ public class CompoundTypeTemplateData extends DocTemplateData
             docComments = new DocCommentsTemplateData(context, function.getDocComments());
         }
 
-        public String getName()
+        public SymbolTemplateData getSymbol()
         {
-            return name;
-        }
-
-        public String getAnchorName()
-        {
-            return anchorName;
+            return symbol;
         }
 
         public SymbolTemplateData getReturnSymbol()
@@ -263,8 +250,7 @@ public class CompoundTypeTemplateData extends DocTemplateData
             return docComments;
         }
 
-        private final String name;
-        private final String anchorName;
+        private final SymbolTemplateData symbol;
         private final SymbolTemplateData returnSymbol;
         private final String resultExpression;
         private final DocCommentsTemplateData docComments;

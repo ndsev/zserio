@@ -19,11 +19,11 @@
     <table>
       <tr><td class="docuCode">
         <table>
-          <tr><td colspan=3>enum <@symbol_reference symbol/> ${name}</td></tr>
+          <tr><td colspan=3>enum <@symbol_reference typeSymbol/> ${name}</td></tr>
           <tr><td>{</td><td rowspan="${items?size+1}">&nbsp;</td><td></td></tr>
 <#list items as item>
           <tr>
-            <td id="tabIndent"><a href="#${item.anchorName}" class="fieldLink">${item.name}</a></td>
+            <td id="tabIndent"><@symbol_reference item.symbol/></td>
             <td>= ${item.value}<#if item_has_next>,</#if></td>
           </tr>
 </#list>
@@ -36,11 +36,11 @@
 
     <dl>
 <#list items as item>
-      <dt class="memberItem"><a name="${item.anchorName}">${item.name}:</a></dt>
+      <dt class="memberItem"><a name="${item.symbol.htmlLink.htmlAnchor}">${item.symbol.name}:</a></dt>
       <dd class="memberDetail">
         <@doc_comments item.docComments 4/>
-  <#list item.usageInfoList as usageInfo>
-        <div class="docuTag"><span>see: </span><a href="${usageInfo.choiceCaseLink}">${usageInfo.choiceCaseLinkText}</a></div>
+  <#list item.seeSymbols as seeSymbol>
+        <div class="docuTag"><span>see: </span><@symbol_reference seeSymbol/></div>
   </#list>
       </dd>
 </#list>

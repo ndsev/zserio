@@ -33,21 +33,15 @@ public class ServiceTemplateData extends DocTemplateData
         public MethodTemplateData(TemplateDataContext context, ServiceType serviceType,
                 ServiceMethod serviceMethod) throws ZserioEmitException
         {
-            name = serviceMethod.getName();
-            anchorName = DocEmitterTools.getAnchorName(serviceType, name);
+            symbol = SymbolTemplateDataCreator.createData(context, serviceType, serviceMethod);
             requestSymbol = SymbolTemplateDataCreator.createData(context, serviceMethod.getRequestType());
             responseSymbol = SymbolTemplateDataCreator.createData(context, serviceMethod.getResponseType());
             docComments = new DocCommentsTemplateData(context, serviceMethod.getDocComments());
         }
 
-        public String getName()
+        public SymbolTemplateData getSymbol()
         {
-            return name;
-        }
-
-        public String getAnchorName()
-        {
-            return anchorName;
+            return symbol;
         }
 
         public SymbolTemplateData getRequestSymbol()
@@ -65,8 +59,7 @@ public class ServiceTemplateData extends DocTemplateData
             return docComments;
         }
 
-        private final String name;
-        private final String anchorName;
+        private final SymbolTemplateData symbol;
         private final SymbolTemplateData requestSymbol;
         private final SymbolTemplateData responseSymbol;
         private final DocCommentsTemplateData docComments;

@@ -7,6 +7,7 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeSet;
 
 import zserio.ast.ArrayInstantiation;
 import zserio.ast.AstNode;
@@ -33,6 +34,7 @@ import zserio.ast.TypeInstantiation;
 import zserio.ast.UnionType;
 import zserio.ast.ZserioType;
 import zserio.emit.common.DefaultEmitter;
+import zserio.tools.HashUtil;
 
 /**
  * Abstraction which handles used by list for all available zserio types.
@@ -70,9 +72,9 @@ class UsedByCollector extends DefaultEmitter
             {
                 final Object symbolObject = choiceCaseExpression.getExpression().getExprSymbolObject();
                 if (symbolObject instanceof EnumItem)
-                    addEnumItemToUsedByMap((EnumItem)symbolObject, choiceType);
+                    addEnumItemToUsedByMap((EnumItem)symbolObject, choiceType, choiceCase);
                 else if (symbolObject instanceof BitmaskValue)
-                    addBitmaskValueToUsedByMap((BitmaskValue)symbolObject, choiceType);
+                    addBitmaskValueToUsedByMap((BitmaskValue)symbolObject, choiceType, choiceCase);
             }
         }
     }
@@ -180,31 +182,79 @@ class UsedByCollector extends DefaultEmitter
     }
 
     /**
-     * Gets choice types which use given enumeration item.
+     * Gets choice cases which use given enumeration item.
      *
      * @param enumItem Enumeration item for which to return a list.
      *
-     * @return List of choice types which use given enumeration item.
+     * @return Set of choice cases which use given enumeration item.
      */
-    public List<ChoiceType> getUsedByChoices(EnumItem enumItem)
+    public Set<ChoiceCaseReference> getUsedByChoices(EnumItem enumItem)
     {
-        final List<ChoiceType> usedByChoices = enumItemUsedByChoiceMap.get(enumItem);
+        final Set<ChoiceCaseReference> usedByChoices = enumItemUsedByChoiceMap.get(enumItem);
 
-        return (usedByChoices != null) ? Collections.unmodifiableList(usedByChoices) : EMPTY_CHOICE_TYPE_LIST;
+        return (usedByChoices != null) ? Collections.unmodifiableSet(usedByChoices) : EMPTY_CHOICE_TYPE_SET;
     }
 
     /**
-     * Gets choice types which use given bitmask value.
+     * Gets choice cases which use given bitmask value.
      *
      * @param bitmaskValue Bitmask value for which to return a list.
      *
-     * @return List of choice types which use given enumeration item.
+     * @return Set of choice cases which use given bitmask item.
      */
-    public List<ChoiceType> getUsedByChoices(BitmaskValue bitmaskValue)
+    public Set<ChoiceCaseReference> getUsedByChoices(BitmaskValue bitmaskValue)
     {
-        final List<ChoiceType> usedByChoices = bitmaskValueUsedByChoiceMap.get(bitmaskValue);
+        final Set<ChoiceCaseReference> usedByChoices = bitmaskValueUsedByChoiceMap.get(bitmaskValue);
 
-        return (usedByChoices != null) ? Collections.unmodifiableList(usedByChoices) : EMPTY_CHOICE_TYPE_LIST;
+        return (usedByChoices != null) ? Collections.unmodifiableSet(usedByChoices) : EMPTY_CHOICE_TYPE_SET;
+    }
+
+    /**
+     * Unique reference to the choice case.
+     */
+    public static class ChoiceCaseReference implements Comparable<ChoiceCaseReference>
+    {
+        public ChoiceCaseReference(ChoiceType choiceType, ChoiceCase choiceCase)
+        {
+            this.choiceType = choiceType;
+            this.choiceCase = choiceCase;
+        }
+
+        @Override
+        public int compareTo(ChoiceCaseReference other)
+        {
+            return choiceType.getName().compareTo(other.choiceType.getName());
+        }
+
+        @Override
+        public boolean equals(Object other)
+        {
+            if ( !(other instanceof ChoiceCaseReference) )
+                return false;
+
+            return (this == other) || compareTo((ChoiceCaseReference)other) == 0;
+        }
+
+        @Override
+        public int hashCode()
+        {
+            int hash = HashUtil.HASH_SEED;
+            hash = HashUtil.hash(hash, choiceType.getName());
+            return hash;
+        }
+
+        public ChoiceType getChoiceType()
+        {
+            return choiceType;
+        }
+
+        public ChoiceCase getChoiceCase()
+        {
+            return choiceCase;
+        }
+
+        private final ChoiceType choiceType;
+        private final ChoiceCase choiceCase;
     }
 
     private static void addTypeToUsedTypes(AstNode usedType, List<AstNode> usedTypes)
@@ -261,39 +311,40 @@ class UsedByCollector extends DefaultEmitter
         return usedByTypeSet;
     }
 
-    private void addEnumItemToUsedByMap(EnumItem enumItem, ChoiceType choiceType)
+    private void addEnumItemToUsedByMap(EnumItem enumItem, ChoiceType choiceType, ChoiceCase choiceCase)
     {
-        List<ChoiceType> usedByChoices = enumItemUsedByChoiceMap.get(enumItem);
+        Set<ChoiceCaseReference> usedByChoices = enumItemUsedByChoiceMap.get(enumItem);
         if (usedByChoices == null)
         {
-            usedByChoices = new ArrayList<ChoiceType>();
+            usedByChoices = new TreeSet<ChoiceCaseReference>();
             enumItemUsedByChoiceMap.put(enumItem, usedByChoices);
         }
 
-        usedByChoices.add(choiceType);
+        usedByChoices.add(new ChoiceCaseReference(choiceType, choiceCase));
     }
 
-    private void addBitmaskValueToUsedByMap(BitmaskValue bitmaskValue, ChoiceType choiceType)
+    private void addBitmaskValueToUsedByMap(BitmaskValue bitmaskValue, ChoiceType choiceType,
+            ChoiceCase choiceCase)
     {
-        List<ChoiceType> usedByChoices = bitmaskValueUsedByChoiceMap.get(bitmaskValue);
+        Set<ChoiceCaseReference> usedByChoices = bitmaskValueUsedByChoiceMap.get(bitmaskValue);
         if (usedByChoices == null)
         {
-            usedByChoices = new ArrayList<ChoiceType>();
+            usedByChoices = new TreeSet<ChoiceCaseReference>();
             bitmaskValueUsedByChoiceMap.put(bitmaskValue, usedByChoices);
         }
 
-        usedByChoices.add(choiceType);
+        usedByChoices.add(new ChoiceCaseReference(choiceType, choiceCase));
     }
 
     private static final List<AstNode> EMPTY_ZSERIO_TYPE_LIST =
             Collections.unmodifiableList(new ArrayList<AstNode>());
-    private static final List<ChoiceType> EMPTY_CHOICE_TYPE_LIST =
-            Collections.unmodifiableList(new ArrayList<ChoiceType>());
+    private static final Set<ChoiceCaseReference> EMPTY_CHOICE_TYPE_SET =
+            Collections.unmodifiableSet(new TreeSet<ChoiceCaseReference>());
 
     private final Map<AstNode, Set<AstNode>> usedByTypeMap = new HashMap<AstNode, Set<AstNode>>();
     private final Map<AstNode, List<AstNode>> usedTypeMap = new HashMap<AstNode, List<AstNode>>();
-    private final Map<EnumItem, List<ChoiceType>> enumItemUsedByChoiceMap =
-            new HashMap<EnumItem, List<ChoiceType>>();
-    private final Map<BitmaskValue, List<ChoiceType>> bitmaskValueUsedByChoiceMap =
-            new HashMap<BitmaskValue, List<ChoiceType>>();
+    private final Map<EnumItem, Set<ChoiceCaseReference>> enumItemUsedByChoiceMap =
+            new HashMap<EnumItem, Set<ChoiceCaseReference>>();
+    private final Map<BitmaskValue, Set<ChoiceCaseReference>> bitmaskValueUsedByChoiceMap =
+            new HashMap<BitmaskValue, Set<ChoiceCaseReference>>();
 }

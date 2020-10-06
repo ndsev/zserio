@@ -36,11 +36,10 @@ public class PubsubTemplateData extends DocTemplateData
         {
             keyword = pubsubMessage.isPublished() && pubsubMessage.isSubscribed() ?
                     "pubsub" : pubsubMessage.isPublished() ? "publish" : "subscribe";
-            name = pubsubMessage.getName();
-            anchorName = DocEmitterTools.getAnchorName(pubsubType, name);
+            symbol = SymbolTemplateDataCreator.createData(context, pubsubType, pubsubMessage);
             final ExpressionFormatter docExpressionFormatter = context.getExpressionFormatter();
             topicDefinition = docExpressionFormatter.formatGetter(pubsubMessage.getTopicDefinitionExpr());
-            symbol = SymbolTemplateDataCreator.createData(context, pubsubMessage.getType());
+            typeSymbol = SymbolTemplateDataCreator.createData(context, pubsubMessage.getType());
             docComments = new DocCommentsTemplateData(context, pubsubMessage.getDocComments());
         }
 
@@ -49,14 +48,9 @@ public class PubsubTemplateData extends DocTemplateData
             return keyword;
         }
 
-        public String getName()
+        public SymbolTemplateData getSymbol()
         {
-            return name;
-        }
-
-        public String getAnchorName()
-        {
-            return anchorName;
+            return symbol;
         }
 
         public String getTopicDefinition()
@@ -64,9 +58,9 @@ public class PubsubTemplateData extends DocTemplateData
             return topicDefinition;
         }
 
-        public SymbolTemplateData getSymbol()
+        public SymbolTemplateData getTypeSymbol()
         {
-            return symbol;
+            return typeSymbol;
         }
 
         public DocCommentsTemplateData getDocComments()
@@ -75,10 +69,9 @@ public class PubsubTemplateData extends DocTemplateData
         }
 
         private final String keyword;
-        private final String name;
-        private final String anchorName;
-        private final String topicDefinition;
         private final SymbolTemplateData symbol;
+        private final String topicDefinition;
+        private final SymbolTemplateData typeSymbol;
         private final DocCommentsTemplateData docComments;
     }
 

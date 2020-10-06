@@ -20,8 +20,7 @@
           <tr><td>{</td></tr>
 <#list methodList as method>
           <tr><td id="tabIndent">
-            <@symbol_reference method.responseSymbol/> <#rt>
-              <a href="#${method.anchorName}" class="fieldLink">${method.name}</a><#t>
+            <@symbol_reference method.responseSymbol/> <@symbol_reference method.symbol/><#rt>
               <#lt>(<@symbol_reference method.requestSymbol/>);
           </td></tr>
 </#list>
@@ -35,7 +34,7 @@
 
     <dl>
     <#list methodList as method>
-      <dt class="memberItem"><a name="${method.anchorName}">${method.name}:</a></dt>
+      <dt class="memberItem"><a name="${method.symbol.htmlLink.htmlAnchor}">${method.symbol.name}:</a></dt>
       <dd class="memberDetail">
         <@doc_comments method.docComments 4/>
       </dd>

@@ -30,8 +30,7 @@ class PackageOverviewEmitter extends HtmlDefaultEmitter
     @Override
     public void beginPackage(Package pkg) throws ZserioEmitException
     {
-        packageNames.add(pkg.getPackageName().toString()); // TODO[mikir] replace it when top level package is ready
-//        packageNames.add(getPackageMapper().getPackageName(pkg).toString());
+        packageNames.add(getPackageMapper().getPackageName(pkg).toString());
     }
 
     private static final String PACKAGE_OVERVIEW_FILE_NAME = "package_overview.html";

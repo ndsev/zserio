@@ -17,11 +17,11 @@
     <table>
       <tr><td class="docuCode">
         <table>
-          <tr><td colspan=3>bitmask <@symbol_reference symbol/> ${name}</td></tr>
+          <tr><td colspan=3>bitmask <@symbol_reference typeSymbol/> ${name}</td></tr>
           <tr><td>{</td><td rowspan="${values?size+1}">&nbsp;</td><td></td></tr>
 <#list values as value>
           <tr>
-            <td id="tabIndent"><a href="#${value.anchorName}" class="fieldLink">${value.name}</a></td>
+            <td id="tabIndent"><@symbol_reference value.symbol/></td>
             <td>= ${value.value}<#if value_has_next>,</#if></td>
           </tr>
 </#list>
@@ -34,11 +34,11 @@
 
     <dl>
 <#list values as value>
-      <dt class="memberItem"><a name="${value.anchorName}">${value.name}:</a></dt>
+      <dt class="memberItem"><a name="${value.symbol.htmlLink.htmlAnchor}">${value.symbol.name}:</a></dt>
       <dd class="memberDetail">
         <@doc_comments value.docComments 4/>
-  <#list value.usageInfoList as usageInfo>
-        <div class="docuTag"><span>see: </span><a href="${usageInfo.choiceCaseLink}">${usageInfo.choiceCaseLinkText}</a></div>
+  <#list value.seeSymbols as seeSymbol>
+        <div class="docuTag"><span>see: </span><@symbol_reference seeSymbol/></div>
   </#list>
       </dd>
 </#list>

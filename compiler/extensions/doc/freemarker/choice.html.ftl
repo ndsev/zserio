@@ -11,10 +11,10 @@
             <tr class="codeMember">
               <td id="tabIndent"></td>
               <td id="tabIndent">
-                 ${typePrefix}<@symbol_reference field.symbol/><@compound_field_arguments field.arguments/>
+                 ${typePrefix}<@symbol_reference field.typeSymbol/><@compound_field_arguments field.arguments/>
               </td>
               <td>
-                <a href="#${field.anchorName}" class="fieldLink">${field.name}</a><#rt>
+                <@symbol_reference field.symbol/><#rt>
                   ${field.arrayRange}<#t>
     <#if field.initializerExpression?has_content>
                   <#lt> = ${field.initializerExpression}<#rt>
@@ -58,7 +58,7 @@
               <td id="tabIndent"></td>
               <td colspan=2>
     <#list caseMember.caseList as case>
-                <a name="${case.definitionAnchorName}" href="#${case.detailAnchorName}" class="fieldLink">case ${case.expression}</a>:<#rt>
+                case <@symbol_reference case.detailSymbol/>:<#rt>
                   <#lt><#if case?has_next><br/></#if>
     </#list>
               </td>
@@ -109,12 +109,12 @@
         <dl>
     <#list caseMember.caseList as case>
           <dt class="memberItem">
-            <a name="${case.detailAnchorName}">${case.expression}</a>
+            <a name="${case.detailSymbol.htmlLink.htmlAnchor}">${case.expression}</a>
           </dt>
           <dd class="memberDetail">
             <@doc_comments case.docComments 6/>
-        <#if case.seeLink??>
-            <div class="docuTag"><span>see: </span><a href="${case.seeLink.link}">${case.seeLink.text}</a></div>
+        <#if case.seeSymbol??>
+            <div class="docuTag"><span>see: </span><@symbol_reference case.seeSymbol/></div>
         </#if>
           </dd>
     </#list>
@@ -127,7 +127,7 @@
         <dl>
   <#if caseMember.field??>
           <dt class="memberItem">
-            <a name="${caseMember.field.anchorName}">${caseMember.field.name}:</a>
+            <a name="${caseMember.field.symbol.htmlLink.htmlAnchor}">${caseMember.field.symbol.name}:</a>
           </dt>
           <dd class="memberDetail">
             <@doc_comments caseMember.field.docComments 6/>
@@ -164,7 +164,7 @@
         <dl>
   <#if defaultMember.field??>
           <dt class="memberItem">
-            <a name="${defaultMember.field.anchorName}">${defaultMember.field.name}:</a>
+            <a name="${defaultMember.field.symbol.htmlLink.htmlAnchor}">${defaultMember.field.symbol.name}:</a>
           </dt>
           <dd class="memberDetail">
             <@doc_comments defaultMember.field.docComments 6/>
