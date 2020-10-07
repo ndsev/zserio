@@ -82,7 +82,7 @@ a.arrayLink
     text-decoration:underline;
 }
 
-span.builtInType
+span.withoutLink
 {
     color:darkslategray;
 }

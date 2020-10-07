@@ -14,9 +14,11 @@ class SymbolTemplateDataCreator
     public static SymbolTemplateData createData(TemplateDataContext context, AstNode node)
     {
         final String name = AstNodeNameMapper.getName(node);
-        if (node instanceof BuiltInType)
+        final PackageMapper packageMapper = context.getPackageMapper();
+        final PackageName packageName = AstNodePackageNameMapper.getPackageName(node, packageMapper);
+        if (packageName.isEmpty())
         {
-            final String htmlClass = "builtInType";
+            final String htmlClass = "withoutLink";
             final String htmlTitle = "Built-in type";
 
             return new SymbolTemplateData(name, htmlClass, htmlTitle);
@@ -24,8 +26,6 @@ class SymbolTemplateDataCreator
         else
         {
             final String typeName = AstNodeTypeNameMapper.getTypeName(node);
-            final PackageMapper packageMapper = context.getPackageMapper();
-            final PackageName packageName = AstNodePackageNameMapper.getPackageName(node, packageMapper);
             final String packageNameString = packageName.toString();
             final String htmlClass = createHtmlClass(typeName);
             final String htmlTitle = createHtmlTitle(typeName, packageNameString);
