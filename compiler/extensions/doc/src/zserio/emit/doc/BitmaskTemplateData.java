@@ -5,6 +5,8 @@ import java.util.List;
 
 import zserio.ast.BitmaskType;
 import zserio.ast.BitmaskValue;
+import zserio.ast.ChoiceCase;
+import zserio.ast.ChoiceType;
 import zserio.ast.Expression;
 import zserio.emit.common.ExpressionFormatter;
 import zserio.emit.common.ZserioEmitException;
@@ -50,14 +52,18 @@ public class BitmaskTemplateData extends DocTemplateData
             docComments = new DocCommentsTemplateData(context, bitmaskValue.getDocComments());
 
             final UsedByCollector usedByCollector = context.getUsedByCollector();
-            seeSymbols = new ArrayList<SymbolTemplateData>();
+            seeSymbols = new ArrayList<SeeSymbolTemplateData>();
             for (UsedByCollector.ChoiceCaseReference choiceCaseRef :
                 usedByCollector.getUsedByChoices(bitmaskValue))
             {
-                seeSymbols.add(SymbolTemplateDataCreator.createDataWithTypeName(context,
-                        choiceCaseRef.getChoiceType(), choiceCaseRef.getChoiceCase(), bitmaskValue.getName()));
+                final ChoiceType choiceType = choiceCaseRef.getChoiceType();
+                final ChoiceCase choiceCase = choiceCaseRef.getChoiceCase();
+                final SymbolTemplateData choiceCaseSymbol = SymbolTemplateDataCreator.createData(context,
+                        choiceType, choiceCase, bitmaskValue.getName());
+                final SymbolTemplateData choiceTypeSymbol = SymbolTemplateDataCreator.createData(context,
+                        choiceType);
+                seeSymbols.add(new SeeSymbolTemplateData(choiceCaseSymbol, choiceTypeSymbol));
             }
-
         }
 
         public SymbolTemplateData getSymbol()
@@ -75,7 +81,7 @@ public class BitmaskTemplateData extends DocTemplateData
             return docComments;
         }
 
-        public Iterable<SymbolTemplateData> getSeeSymbols()
+        public Iterable<SeeSymbolTemplateData> getSeeSymbols()
         {
             return seeSymbols;
         }
@@ -83,7 +89,7 @@ public class BitmaskTemplateData extends DocTemplateData
         private final SymbolTemplateData symbol;
         private final String value;
         private final DocCommentsTemplateData docComments;
-        private final List<SymbolTemplateData> seeSymbols;
+        private final List<SeeSymbolTemplateData> seeSymbols;
     }
 
     private final SymbolTemplateData typeSymbol;

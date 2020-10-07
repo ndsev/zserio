@@ -95,8 +95,11 @@ public class ChoiceTemplateData extends CompoundTypeTemplateData
             if (caseExpressionObject instanceof EnumItem  && selectorExpressionType instanceof EnumType ||
                 caseExpressionObject instanceof BitmaskValue && selectorExpressionType instanceof BitmaskType)
             {
-                seeSymbol = SymbolTemplateDataCreator.createDataWithTypeName(context, selectorExpressionType,
-                        caseExpressionObject);
+                final SymbolTemplateData memberSymbol = SymbolTemplateDataCreator.createData(context,
+                        selectorExpressionType, caseExpressionObject);
+                final SymbolTemplateData typeSymbol = SymbolTemplateDataCreator.createData(context,
+                        selectorExpressionType);
+                seeSymbol = new SeeSymbolTemplateData(memberSymbol, typeSymbol);
             }
             else
             {
@@ -119,7 +122,7 @@ public class ChoiceTemplateData extends CompoundTypeTemplateData
             return docComments;
         }
 
-        public SymbolTemplateData getSeeSymbol()
+        public SeeSymbolTemplateData getSeeSymbol()
         {
             return seeSymbol;
         }
@@ -127,7 +130,7 @@ public class ChoiceTemplateData extends CompoundTypeTemplateData
         private final String expression;
         private final SymbolTemplateData detailSymbol;
         private final DocCommentsTemplateData docComments;
-        private final SymbolTemplateData seeSymbol;
+        private final SeeSymbolTemplateData seeSymbol;
     }
 
     public static class DefaultMemberTemplateData

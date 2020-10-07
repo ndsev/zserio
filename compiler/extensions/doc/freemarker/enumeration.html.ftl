@@ -40,7 +40,8 @@
       <dd class="memberDetail">
         <@doc_comments item.docComments 4/>
   <#list item.seeSymbols as seeSymbol>
-        <div class="docuTag"><span>see: </span><@symbol_reference seeSymbol/></div>
+        <div class="docuTag"><span>see: </span>case <@symbol_reference seeSymbol.memberSymbol/> <#rt>
+          <#lt>in choice <@symbol_reference seeSymbol.typeSymbol/></div>
   </#list>
       </dd>
 </#list>

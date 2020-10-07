@@ -114,7 +114,8 @@
           <dd class="memberDetail">
             <@doc_comments case.docComments 6/>
         <#if case.seeSymbol??>
-            <div class="docuTag"><span>see: </span><@symbol_reference case.seeSymbol/></div>
+            <div class="docuTag"><span>see: </span>item <@symbol_reference case.seeSymbol.memberSymbol/> <#rt>
+              <#lt>in enum <@symbol_reference case.seeSymbol.typeSymbol/></div>
         </#if>
           </dd>
     </#list>
