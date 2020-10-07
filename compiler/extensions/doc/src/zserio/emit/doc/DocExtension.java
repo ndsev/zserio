@@ -80,7 +80,7 @@ public class DocExtension implements Extension
         if (parameters.argumentExists(OptionSetDotExecutable))
             dotExecutable = parameters.getCommandLineArg(OptionSetDotExecutable);
 
-        if (withSvgDiagrams && !DotFileConverter.isDotExecAvailable(dotExecutable))
+        if (withSvgDiagrams && !DotToSvgConverter.isDotExecAvailable(dotExecutable))
             throw new ZserioEmitException("The dot executable '" + dotExecutable + "' not found!");
 
         // collect used by information

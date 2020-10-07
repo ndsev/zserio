@@ -25,7 +25,7 @@ import org.commonmark.ext.gfm.tables.TablesExtension;
 
 class MarkdownToHtmlConverter
 {
-    static String markdownToHtml(ResourceManager resourceManager, AstLocation location, String markdown)
+    static String convert(ResourceManager resourceManager, AstLocation location, String markdown)
     {
         final List<Extension> extensions = Arrays.asList(AutolinkExtension.create(),
                 HeadingAnchorExtension.create(), TablesExtension.create());

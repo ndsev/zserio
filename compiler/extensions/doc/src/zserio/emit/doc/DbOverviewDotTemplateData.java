@@ -17,7 +17,7 @@ public class DbOverviewDotTemplateData
         for (SqlDatabaseType databaseType : databaseTypes)
         {
             databases.add(new Database(context, databaseType,
-                    DocEmitterTools.getDatabaseColor(databaseIndex)));
+                    DbIndexToColorConverter.convert(databaseIndex)));
             databaseIndex++;
         }
     }

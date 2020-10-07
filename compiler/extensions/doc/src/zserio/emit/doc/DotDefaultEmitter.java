@@ -34,7 +34,7 @@ class DotDefaultEmitter extends DocDefaultEmitter
                 false);
         if (getWithSvgDiagrams())
         {
-            if (!DotFileConverter.convertToSvg(dotExecutable, outputDotFile, outputSvgFile))
+            if (!DotToSvgConverter.convert(dotExecutable, outputDotFile, outputSvgFile))
                 throw new ZserioEmitException("Failure to convert '" + outputDotFile + "' to SVG format!");
         }
 

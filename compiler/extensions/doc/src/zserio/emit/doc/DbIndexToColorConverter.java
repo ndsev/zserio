@@ -1,14 +1,12 @@
 package zserio.emit.doc;
 
 /**
- * Common public static methods used for documentation emitter.
- *
- * TODO[mikir] Do it better in special module not Tools!
+ * The class converts database index to HTML color.
  */
-class DocEmitterTools
+class DbIndexToColorConverter
 {
     /**
-     * Gets the database color.
+     * Converts database index to HTML color.
      *
      * This is tricky and hard-coded. Should be done properly by external configuration.
      *
@@ -16,7 +14,7 @@ class DocEmitterTools
      *
      * @return The string which represents the database color.
      */
-    public static String getDatabaseColor(int databaseIndex)
+    public static String convert(int databaseIndex)
     {
         return databaseColorList[databaseIndex % databaseColorList.length];
     }

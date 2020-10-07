@@ -143,7 +143,7 @@ class ResourceManager
                     currentOutputDir = dstResource.getPath();
                     final String markdown = new String(Files.readAllBytes(srcResource.getFullPath()),
                             StandardCharsets.UTF_8);
-                    final String html = MarkdownToHtmlConverter.markdownToHtml(this,
+                    final String html = MarkdownToHtmlConverter.convert(this,
                             new AstLocation(srcResource.getFullPath().toString(), 0, 0), markdown);
                     Files.write(dstResource.getFullPath(), html.getBytes(StandardCharsets.UTF_8));
                 }

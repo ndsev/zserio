@@ -6,7 +6,7 @@ import java.io.IOException;
 /**
  * The class converts the generated dot files into svg format.
  */
-class DotFileConverter
+class DotToSvgConverter
 {
     /**
      * Checks if the dot executable is available in the system.
@@ -31,7 +31,7 @@ class DotFileConverter
      *
      * @return True in case of success, otherwise false.
      */
-    public static boolean convertToSvg(String dotExecutable, File inputDotFile, File outputSvgFile)
+    public static boolean convert(String dotExecutable, File inputDotFile, File outputSvgFile)
     {
         final String commandWithArguments[] = { dotExecutable, inputDotFile.toString(), "-T", "svg", "-o",
                                                 outputSvgFile.toString() };

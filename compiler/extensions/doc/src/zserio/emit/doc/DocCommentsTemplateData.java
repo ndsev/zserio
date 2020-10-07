@@ -80,7 +80,7 @@ public class DocCommentsTemplateData
                 final Path origCwd = resourceManager.getCurrentSourceDir();
                 resourceManager.setCurrentSourceDir(
                         Paths.get(docComment.getLocation().getFileName()).getParent());
-                markdownHtml = MarkdownToHtmlConverter.markdownToHtml(resourceManager,
+                markdownHtml = MarkdownToHtmlConverter.convert(resourceManager,
                         docCommentMarkdown.getLocation(), docCommentMarkdown.getMarkdown());
                 resourceManager.setCurrentSourceDir(origCwd);
             }

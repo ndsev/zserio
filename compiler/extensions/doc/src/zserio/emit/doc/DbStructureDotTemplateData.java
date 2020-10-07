@@ -16,7 +16,7 @@ public class DbStructureDotTemplateData
             int databaseIndex)
     {
         // create database with proper color
-        final String databaseColor = DocEmitterTools.getDatabaseColor(databaseIndex);
+        final String databaseColor = DbIndexToColorConverter.convert(databaseIndex);
         database = new Database(context, databaseType, databaseColor);
 
         final Iterable<Field> databaseFields = databaseType.getFields();
