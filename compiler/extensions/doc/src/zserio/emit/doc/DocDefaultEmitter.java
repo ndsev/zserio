@@ -17,7 +17,7 @@ class DocDefaultEmitter extends DefaultEmitter
         packageMapper = new PackageMapper(topLevelPackageNameList);
 
         resourceManager = new ResourceManager(extensionParameters.getPathName(),
-                getFileNameExtension(extensionParameters.getFileName()), outputPathName);
+                getFileNameExtension(extensionParameters.getFileName()), outputPathName, HTML_CONTENT_DIRECTORY);
     }
 
     protected String getOutputPathName()

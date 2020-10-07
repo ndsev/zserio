@@ -18,11 +18,13 @@ import zserio.tools.StringJoinUtil;
 
 class ResourceManager
 {
-    public ResourceManager(String sourceRoot, String sourceExtension, String outputRoot)
+    public ResourceManager(String sourceRoot, String sourceExtension, String outputRoot,
+            String htmlContentDirectory)
     {
-        this.sourceRoot = Paths.get(sourceRoot).toAbsolutePath();
+        this.sourceRoot = Paths.get(sourceRoot != null ? sourceRoot : ".").toAbsolutePath();
         this.sourceExtension = sourceExtension;
-        this.outputRoot = Paths.get(outputRoot).toAbsolutePath();
+        this.outputRoot = Paths.get(outputRoot != null ? outputRoot : ".").toAbsolutePath();
+        this.htmlContentDirectory = htmlContentDirectory;
 
         this.currentSourceDir = this.sourceRoot;
         this.currentOutputDir = this.outputRoot;
@@ -80,8 +82,8 @@ class ResourceManager
             final String packageName = relativeSourcePath.toString().replace(File.separator, ".");
             final String packageHtmlBaseName = StringJoinUtil.joinStrings(
                     packageName, resource.getBaseName(), ".");
-            return new LocalResource(outputRoot.resolve(CONTENT_DIR), packageHtmlBaseName, HTML_EXTENSION,
-                    resource.getAnchor());
+            return new LocalResource(outputRoot.resolve(htmlContentDirectory), packageHtmlBaseName,
+                    HTML_EXTENSION, resource.getAnchor());
         }
         else
         {
@@ -268,7 +270,6 @@ class ResourceManager
     private final HashMap<LocalResource, LocalResource> resources = new HashMap<LocalResource, LocalResource>();
     private final HashSet<LocalResource> mappedResources = new HashSet<LocalResource>();
 
-    private final static String CONTENT_DIR = "content"; // TODO[Mi-L@]: Should not be needed!
     private final static String RESOURCES_DIR = "resources";
     private final static String LOCAL_FILE_SCHEME = "file";
     private final static String MARKDOWN_EXTENSION = ".md";
@@ -277,6 +278,7 @@ class ResourceManager
     private final Path sourceRoot;
     private final String sourceExtension;
     private final Path outputRoot;
+    private final String htmlContentDirectory;
 
     private Path currentSourceDir;
     private Path currentOutputDir;
