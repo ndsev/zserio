@@ -12,7 +12,7 @@ public class PubsubTemplateData extends DocTemplateData
 {
     public PubsubTemplateData(TemplateDataContext context, PubsubType pubsubType) throws ZserioEmitException
     {
-        super(context, pubsubType, pubsubType.getName());
+        super(context, pubsubType);
 
         packageName = pubsubType.getPackage().getPackageName().toString();
         for (PubsubMessage message : pubsubType.getMessageList())

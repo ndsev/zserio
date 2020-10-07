@@ -4,12 +4,12 @@
 <#include "usedby.inc.ftl">
 <#include "collaboration_diagram.inc.ftl">
 
-    <div class="msgdetail" id="${anchorName}">
+    <div class="msgdetail" id="${symbol.htmlLink.htmlAnchor}">
 <#if docComments.isDeprecated>
       <span class="deprecated">(deprecated) </span>
       <del>
 </#if>
-        <i>enum</i> ${name}
+        <i>enum</i> ${symbol.name}
 <#if docComments.isDeprecated>
       </del>
 </#if>
@@ -19,7 +19,7 @@
     <table>
       <tr><td class="docuCode">
         <table>
-          <tr><td colspan=3>enum <@symbol_reference typeSymbol/> ${name}</td></tr>
+          <tr><td colspan=3>enum <@symbol_reference typeSymbol/> ${symbol.name}</td></tr>
           <tr><td>{</td><td rowspan="${items?size+1}">&nbsp;</td><td></td></tr>
 <#list items as item>
           <tr>

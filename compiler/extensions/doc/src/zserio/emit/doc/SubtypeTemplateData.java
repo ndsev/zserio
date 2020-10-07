@@ -7,15 +7,15 @@ public class SubtypeTemplateData extends DocTemplateData
 {
     public SubtypeTemplateData(TemplateDataContext context, Subtype subtype) throws ZserioEmitException
     {
-        super(context, subtype, subtype.getName());
+        super(context, subtype);
 
-        symbol = SymbolTemplateDataCreator.createData(context, subtype.getTypeReference());
+        typeSymbol = SymbolTemplateDataCreator.createData(context, subtype.getTypeReference());
     }
 
-    public SymbolTemplateData getSymbol()
+    public SymbolTemplateData getTypeSymbol()
     {
-        return symbol;
+        return typeSymbol;
     }
 
-    private final SymbolTemplateData symbol;
+    private final SymbolTemplateData typeSymbol;
 };

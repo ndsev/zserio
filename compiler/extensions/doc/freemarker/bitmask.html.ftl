@@ -4,12 +4,12 @@
 <#include "usedby.inc.ftl">
 <#include "collaboration_diagram.inc.ftl">
 
-    <div class="msgdetail" id="${anchorName}">
+    <div class="msgdetail" id="${symbol.htmlLink.htmlAnchor}">
 <#if docComments.isDeprecated>
       <span class="deprecated">(deprecated) </span>
-      <del><i>bitmask</i> ${name}</del>
+      <del><i>bitmask</i> ${symbol.name}</del>
 <#else>
-      <i>bitmask</i> ${name}
+      <i>bitmask</i> ${symbol.name}
 </#if>
     </div>
     <@doc_comments docComments 2 false/>
@@ -17,7 +17,7 @@
     <table>
       <tr><td class="docuCode">
         <table>
-          <tr><td colspan=3>bitmask <@symbol_reference typeSymbol/> ${name}</td></tr>
+          <tr><td colspan=3>bitmask <@symbol_reference typeSymbol/> ${symbol.name}</td></tr>
           <tr><td>{</td><td rowspan="${values?size+1}">&nbsp;</td><td></td></tr>
 <#list values as value>
           <tr>

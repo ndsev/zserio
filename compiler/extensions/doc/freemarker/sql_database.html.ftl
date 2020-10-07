@@ -4,12 +4,12 @@
 <#include "usedby.inc.ftl">
 <#include "collaboration_diagram.inc.ftl">
 
-    <div class="msgdetail" id="${anchorName}">
+    <div class="msgdetail" id="${symbol.htmlLink.htmlAnchor}">
 <#if docComments.isDeprecated>
       <span class="deprecated">(deprecated) </span>
-      <del><i>SQL Database</i> ${name}</del>
+      <del><i>SQL Database</i> ${symbol.name}</del>
 <#else>
-        <i>SQL Database</i> ${name}
+        <i>SQL Database</i> ${symbol.name}
 </#if>
     </div>
     <@doc_comments docComments 2 false/>
@@ -18,7 +18,7 @@
       <tr><td class="docuCode">
         <table>
           <tbody id="tabIndent">
-            <tr><td colspan=3>sql_database ${name}</td></tr>
+            <tr><td colspan=3>sql_database ${symbol.name}</td></tr>
             <tr><td colspan=3>{</td></tr>
             <@compound_fields fields/>
             <tr><td colspan=3>};</td></tr>

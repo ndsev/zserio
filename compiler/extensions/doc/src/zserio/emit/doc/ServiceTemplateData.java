@@ -11,7 +11,7 @@ public class ServiceTemplateData extends DocTemplateData
 {
     public ServiceTemplateData(TemplateDataContext context, ServiceType serviceType) throws ZserioEmitException
     {
-        super(context, serviceType, serviceType.getName());
+        super(context, serviceType);
 
         packageName = serviceType.getPackage().getPackageName().toString();
         for (ServiceMethod method : serviceType.getMethodList())

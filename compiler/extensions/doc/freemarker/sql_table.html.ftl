@@ -4,11 +4,11 @@
 <#include "usedby.inc.ftl">
 <#include "collaboration_diagram.inc.ftl">
 <#assign sqlTableHeading>
-    <i>SQL Table<#if virtualTableUsing?has_content> VIRTUAL</#if></i> ${name}<#t>
+    <i>SQL Table<#if virtualTableUsing?has_content> VIRTUAL</#if></i> ${symbol.name}<#t>
       <#if virtualTableUsing?has_content> <i>USING</i> ${virtualTableUsing}</#if><#t>
 </#assign>
 
-    <div class="msgdetail" id="${anchorName}">
+    <div class="msgdetail" id="${symbol.htmlLink.htmlAnchor}">
 <#if docComments.isDeprecated>
       <span class="deprecated">(deprecated) </span>
       <del>${sqlTableHeading}</del>
@@ -22,7 +22,7 @@
       <tr><td class="docuCode">
         <table>
           <tbody id="tabIndent">
-            <tr><td colspan=3>table ${name}<@compound_parameters parameters/></td></tr>
+            <tr><td colspan=3>table ${symbol.name}<@compound_parameters parameters/></td></tr>
             <tr><td colspan=3>{</td></tr>
             <@compound_fields fields/>
 <#if sqlConstraint?has_content>

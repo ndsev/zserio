@@ -21,7 +21,7 @@ public class CompoundTypeTemplateData extends DocTemplateData
     public CompoundTypeTemplateData(TemplateDataContext context, CompoundType compoundType)
             throws ZserioEmitException
     {
-        super(context, compoundType, compoundType.getName());
+        super(context, compoundType);
 
         for (Parameter parameter : compoundType.getTypeParameters())
             parameters.add(new ParameterTemplateData(context, parameter));

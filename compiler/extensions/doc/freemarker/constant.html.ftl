@@ -4,12 +4,12 @@
 <#include "usedby.inc.ftl">
 <#include "collaboration_diagram.inc.ftl">
 
-    <div class="msgdetail" id="${anchorName}">
+    <div class="msgdetail" id="${symbol.htmlLink.htmlAnchor}">
 <#if docComments.isDeprecated>
       <span class="deprecated">(deprecated) </span>
-      <del><i>const</i> ${name}</del>
+      <del><i>const</i> ${symbol.name}</del>
 <#else>
-      <i>const</i> ${name}
+      <i>const</i> ${symbol.name}
 </#if>
     </div>
     <@doc_comments docComments, 2, false/>
@@ -19,7 +19,7 @@
         <table>
           <tr>
             <td colspan=3>
-              const <@symbol_reference symbol/> ${name} = ${value};
+              const <@symbol_reference typeSymbol/> ${symbol.name} = ${value};
             </td>
           </tr>
         </table>

@@ -86,7 +86,7 @@ public class ChoiceTemplateData extends CompoundTypeTemplateData
         {
             final ExpressionFormatter docExpressionFormatter = context.getExpressionFormatter();
             expression = docExpressionFormatter.formatGetter(caseExpression);
-            detailSymbol = SymbolTemplateDataCreator.createData(context, choiceType, choiceCase, expression);
+            symbol = SymbolTemplateDataCreator.createData(context, choiceType, choiceCase, expression);
 
             this.docComments = new DocCommentsTemplateData(context, docComments);
 
@@ -112,9 +112,9 @@ public class ChoiceTemplateData extends CompoundTypeTemplateData
             return expression;
         }
 
-        public SymbolTemplateData getDetailSymbol()
+        public SymbolTemplateData getSymbol()
         {
-            return detailSymbol;
+            return symbol;
         }
 
         public DocCommentsTemplateData getDocComments()
@@ -128,7 +128,7 @@ public class ChoiceTemplateData extends CompoundTypeTemplateData
         }
 
         private final String expression;
-        private final SymbolTemplateData detailSymbol;
+        private final SymbolTemplateData symbol;
         private final DocCommentsTemplateData docComments;
         private final SeeSymbolTemplateData seeSymbol;
     }
@@ -141,6 +141,7 @@ public class ChoiceTemplateData extends CompoundTypeTemplateData
             final ChoiceDefault choiceDefault = choiceType.getChoiceDefault();
             field = (choiceDefault.getField() == null) ? null : new FieldTemplateData(context, choiceType,
                     choiceDefault.getField());
+            symbol = SymbolTemplateDataCreator.createData(context, choiceType, choiceDefault, "default");
             docComments = new DocCommentsTemplateData(context, choiceDefault.getDocComments());
         }
 
@@ -149,12 +150,18 @@ public class ChoiceTemplateData extends CompoundTypeTemplateData
             return field;
         }
 
+        public SymbolTemplateData getSymbol()
+        {
+            return symbol;
+        }
+
         public DocCommentsTemplateData getDocComments()
         {
             return docComments;
         }
 
         private final FieldTemplateData field;
+        private final SymbolTemplateData symbol;
         private final DocCommentsTemplateData docComments;
     }
 

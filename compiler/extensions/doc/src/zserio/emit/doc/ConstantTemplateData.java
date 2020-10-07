@@ -5,18 +5,17 @@ import zserio.emit.common.ZserioEmitException;
 
 public class ConstantTemplateData extends DocTemplateData
 {
-    public ConstantTemplateData(TemplateDataContext context, Constant constant)
-            throws ZserioEmitException
+    public ConstantTemplateData(TemplateDataContext context, Constant constant) throws ZserioEmitException
     {
-        super(context, constant, constant.getName());
+        super(context, constant);
 
-        symbol = SymbolTemplateDataCreator.createData(context, constant.getTypeInstantiation());
+        typeSymbol = SymbolTemplateDataCreator.createData(context, constant.getTypeInstantiation());
         value = context.getExpressionFormatter().formatGetter(constant.getValueExpression());
     }
 
-    public SymbolTemplateData getSymbol()
+    public SymbolTemplateData getTypeSymbol()
     {
-        return symbol;
+        return typeSymbol;
     }
 
     public String getValue()
@@ -24,6 +23,6 @@ public class ConstantTemplateData extends DocTemplateData
         return value;
     }
 
-    private final SymbolTemplateData symbol;
+    private final SymbolTemplateData typeSymbol;
     private final String value;
 }

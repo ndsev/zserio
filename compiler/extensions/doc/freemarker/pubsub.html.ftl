@@ -3,12 +3,12 @@
 <#include "symbol.inc.ftl">
 <#include "collaboration_diagram.inc.ftl">
 
-    <div class="msgdetail" id="${anchorName}">
+    <div class="msgdetail" id="${symbol.htmlLink.htmlAnchor}">
 <#if docComments.isDeprecated>
       <span class="deprecated">(deprecated) </span>
-      <del><i>Pubsub</i> ${name}</del>
+      <del><i>Pubsub</i> ${symbol.name}</del>
 <#else>
-      <i>Pubsub</i> ${name}
+      <i>Pubsub</i> ${symbol.name}
 </#if>
     </div>
     <@doc_comments docComments 2 false/>
@@ -16,7 +16,7 @@
     <table>
       <tr><td class="docuCode">
         <table>
-          <tr><td>pubsub ${name}</td></tr>
+          <tr><td>pubsub ${symbol.name}</td></tr>
           <tr><td>{</td></tr>
 <#list messageList as message>
           <tr><td id="tabIndent">

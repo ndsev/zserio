@@ -13,10 +13,9 @@ import zserio.emit.common.ZserioEmitException;
 
 public class EnumerationTemplateData extends DocTemplateData
 {
-    public EnumerationTemplateData(TemplateDataContext context, EnumType enumType)
-            throws ZserioEmitException
+    public EnumerationTemplateData(TemplateDataContext context, EnumType enumType) throws ZserioEmitException
     {
-        super(context, enumType, enumType.getName());
+        super(context, enumType);
 
         typeSymbol = SymbolTemplateDataCreator.createData(context, enumType.getTypeInstantiation());
 

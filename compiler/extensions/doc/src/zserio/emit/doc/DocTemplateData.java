@@ -9,14 +9,11 @@ import zserio.emit.common.ZserioEmitException;
 
 public class DocTemplateData
 {
-    public DocTemplateData(TemplateDataContext context, DocumentableAstNode astNode, String name)
-            throws ZserioEmitException
+    public DocTemplateData(TemplateDataContext context, DocumentableAstNode astNode) throws ZserioEmitException
     {
         this.docComments = new DocCommentsTemplateData(context, astNode.getDocComments());
-        this.name = name;
+        symbol = SymbolTemplateDataCreator.createData(context, astNode);
 
-        final SymbolTemplateData symbol = SymbolTemplateDataCreator.createData(context, astNode);
-        this.anchorName = symbol.getHtmlLink().getHtmlAnchor();
         this.collaborationDiagramSvg = (context.getWithSvgDiagrams()) ?
                 SymbolCollaborationDotEmitter.getSvgCollaborationHtmlLink(astNode, context.getPackageMapper(),
                         context.getTypeCollaborationDirectory()) : null;
@@ -34,14 +31,9 @@ public class DocTemplateData
         return docComments;
     }
 
-    public String getName()
+    public SymbolTemplateData getSymbol()
     {
-        return name;
-    }
-
-    public String getAnchorName()
-    {
-        return anchorName;
+        return symbol;
     }
 
     public String getCollaborationDiagramSvg()
@@ -55,9 +47,7 @@ public class DocTemplateData
     }
 
     private final DocCommentsTemplateData docComments;
-    private final String name;
-    private final String anchorName;
-
+    private final SymbolTemplateData symbol;
     private final String collaborationDiagramSvg;
     private final List<SymbolTemplateData> usedByList;
 }

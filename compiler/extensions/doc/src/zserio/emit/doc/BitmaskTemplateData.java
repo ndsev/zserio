@@ -13,10 +13,9 @@ import zserio.emit.common.ZserioEmitException;
 
 public class BitmaskTemplateData extends DocTemplateData
 {
-    public BitmaskTemplateData(TemplateDataContext context, BitmaskType bitmaskType)
-            throws ZserioEmitException
+    public BitmaskTemplateData(TemplateDataContext context, BitmaskType bitmaskType) throws ZserioEmitException
     {
-        super(context, bitmaskType, bitmaskType.getName());
+        super(context, bitmaskType);
 
         typeSymbol = SymbolTemplateDataCreator.createData(context, bitmaskType.getTypeInstantiation());
 

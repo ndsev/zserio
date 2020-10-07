@@ -33,12 +33,12 @@
             </tr>
 </#macro>
 
-    <div class="msgdetail" id="${anchorName}">
+    <div class="msgdetail" id="${symbol.htmlLink.htmlAnchor}">
 <#if docComments.isDeprecated>
       <span class="deprecated">(deprecated) </span>
-      <del><i>Choice</i> ${name}</del>
+      <del><i>Choice</i> ${symbol.name}</del>
 <#else>
-      <i>Choice</i> ${name}
+      <i>Choice</i> ${symbol.name}
 </#if>
     </div>
     <@doc_comments docComments 2 false/>
@@ -48,7 +48,7 @@
         <table>
           <tbody id="tabIndent">
             <tr>
-              <td colspan=3>choice ${name}<@compound_parameters parameters/> on ${selectorExpression}</td>
+              <td colspan=3>choice ${symbol.name}<@compound_parameters parameters/> on ${selectorExpression}</td>
             </tr>
             <tr>
               <td colspan=3>{</td>
@@ -58,7 +58,7 @@
               <td id="tabIndent"></td>
               <td colspan=2>
     <#list caseMember.caseList as case>
-                case <@symbol_reference case.detailSymbol/>:<#rt>
+                case <@symbol_reference case.symbol/>:<#rt>
                   <#lt><#if case?has_next><br/></#if>
     </#list>
               </td>
@@ -76,7 +76,7 @@
             <tr>
               <td id="tabIndent"></td>
               <td colspan=2>
-                <a href="#${anchorName}_case_default" class="fieldLink">default</a>:
+                <@symbol_reference defaultMember.symbol/>:
               </td>
             </tr>
     <#if defaultMember.field??>
@@ -109,7 +109,7 @@
         <dl>
     <#list caseMember.caseList as case>
           <dt class="memberItem">
-            <a name="${case.detailSymbol.htmlLink.htmlAnchor}">${case.expression}</a>
+            <a name="${case.symbol.htmlLink.htmlAnchor}">${case.expression}</a>
           </dt>
           <dd class="memberDetail">
             <@doc_comments case.docComments 6/>
@@ -135,7 +135,7 @@
           </dd>
   <#else>
           <dt class="memberItem">
-            <a name="${anchorName}_no_field">no member data</a>
+            <span>no member data</span>
           </dt>
           <dd class="memberDetail">
             <br/>
@@ -151,7 +151,7 @@
       <dd>
         <dl>
           <dt class="memberItem">
-            <a name="${anchorName}_case_default">default</a>
+            <a name="${defaultMember.symbol.htmlLink.htmlAnchor}">${defaultMember.symbol.name}</a>
           </dt>
           <dd class="memberDetail">
             <@doc_comments defaultMember.docComments 6/>
@@ -172,7 +172,7 @@
           </dd>
   <#else>
           <dt class="memberItem">
-            <a name="${anchorName}_no_field">no member data</a>
+            <span>no member data</span>
           </dt>
           <dd class="memberDetail">
             <br/>
