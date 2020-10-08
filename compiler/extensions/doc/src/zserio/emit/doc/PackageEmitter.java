@@ -9,6 +9,7 @@ import zserio.ast.ChoiceType;
 import zserio.ast.Constant;
 import zserio.ast.EnumType;
 import zserio.ast.Package;
+import zserio.ast.PackageName;
 import zserio.ast.PubsubType;
 import zserio.ast.ServiceType;
 import zserio.ast.SqlDatabaseType;
@@ -19,6 +20,7 @@ import zserio.ast.UnionType;
 import zserio.emit.common.FileUtil;
 import zserio.emit.common.ZserioEmitException;
 import zserio.tools.Parameters;
+import zserio.tools.StringJoinUtil;
 
 class PackageEmitter extends HtmlDefaultEmitter
 {
@@ -34,13 +36,14 @@ class PackageEmitter extends HtmlDefaultEmitter
     @Override
     public void beginPackage(Package pkg) throws ZserioEmitException
     {
-        final File outputDirectory = new File(getOutputPathName(), HTML_CONTENT_DIRECTORY);
-        getResourceManager().setCurrentOutputDir(Paths.get(outputDirectory.toString()));
-
-        final String packageName = getPackageMapper().getPackageName(pkg).toString();
-        final File outputFile = new File(outputDirectory, packageName + HTML_FILE_EXTENSION);
+        final PackageName packageName = getPackageMapper().getPackageName(pkg);
+        final String packageHtmlLink = getPackageHtmlLink(packageName, HTML_CONTENT_DIRECTORY);
+        final File outputFile = new File(getOutputPathName(), packageHtmlLink);
         FileUtil.createOutputDirectory(outputFile);
         writer = FileUtil.createWriter(outputFile);
+
+        final String outputDirectory = outputFile.getParent();
+        getResourceManager().setCurrentOutputDir(Paths.get(outputDirectory));
 
         final BeginPackageTemplateData templateData = new BeginPackageTemplateData(context, pkg);
         processHtmlTemplate("begin_package.html.ftl", templateData, writer);
@@ -129,6 +132,15 @@ class PackageEmitter extends HtmlDefaultEmitter
     {
         final PubsubTemplateData templateData = new PubsubTemplateData(context, pubsubType);
         processHtmlTemplate("pubsub.html.ftl", templateData, writer);
+    }
+
+    public static String getPackageHtmlLink(PackageName packageName, String htmlContentDirectory)
+    {
+        final String packageNameString = (packageName.isEmpty()) ? DEFAULT_PACKAGE_FILE_NAME :
+            packageName.toString();
+
+        return StringJoinUtil.joinStrings(htmlContentDirectory, packageNameString + HTML_FILE_EXTENSION,
+                File.separator);
     }
 
     private final TemplateDataContext context;

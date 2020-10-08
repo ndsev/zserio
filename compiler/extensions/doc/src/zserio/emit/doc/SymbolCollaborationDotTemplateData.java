@@ -104,11 +104,11 @@ public class SymbolCollaborationDotTemplateData
     {
         final PackageName packageName =
                 AstNodePackageNameMapper.getPackageName(symbol, context.getPackageMapper());
-
+        final String packageNameString = (packageName == null) ? "" : packageName.toString();
         Package packageInst = nameToPackageMap.get(packageName);
         if (packageInst == null)
         {
-            packageInst = new Package(packageName.toString());
+            packageInst = new Package(packageNameString);
             nameToPackageMap.put(packageName, packageInst);
         }
 

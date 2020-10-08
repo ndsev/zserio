@@ -21,7 +21,7 @@ class DbOverviewDotEmitter extends DotDefaultEmitter
         super(outputPathName, extensionParameters, (dotLinksPrefix == null) ? ".." : dotLinksPrefix,
                 withSvgDiagrams, dotExecutable, usedByCollector);
 
-        final String directoryPrefix = getDotLinksPrefix() + "/";
+        final String directoryPrefix = getDotLinksPrefix() + File.separator;
         context = new TemplateDataContext(getWithSvgDiagrams(), getUsedByCollector(), getPackageMapper(),
                 getResourceManager(), directoryPrefix + HTML_CONTENT_DIRECTORY,
                 directoryPrefix + SYMBOL_COLLABORATION_DIRECTORY);

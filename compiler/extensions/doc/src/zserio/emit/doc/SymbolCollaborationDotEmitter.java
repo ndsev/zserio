@@ -26,7 +26,7 @@ class SymbolCollaborationDotEmitter extends DotDefaultEmitter
                 withSvgDiagrams, dotExecutable, usedByCollector);
 
         context = new TemplateDataContext(getWithSvgDiagrams(), getUsedByCollector(), getPackageMapper(),
-                getResourceManager(), getDotLinksPrefix() + "/" + HTML_CONTENT_DIRECTORY, ".");
+                getResourceManager(), getDotLinksPrefix() + File.separator + HTML_CONTENT_DIRECTORY, ".");
     }
 
     @Override
@@ -56,7 +56,11 @@ class SymbolCollaborationDotEmitter extends DotDefaultEmitter
         final String typeName = AstNodeTypeNameMapper.getTypeName(node);
         final String name = AstNodeNameMapper.getName(node);
 
-        return symbolCollaborationDirectory + "/" + packageName.toString() + "/" + typeName + "_" + name;
+        final String packageNameString = (packageName == null) ? "" :
+            ((packageName.isEmpty()) ? DEFAULT_PACKAGE_FILE_NAME : packageName.toString());
+
+        return StringJoinUtil.joinStrings(symbolCollaborationDirectory, packageNameString,
+                typeName + "_" + name, File.separator);
     }
 
     private void emitDotDiagrams() throws ZserioEmitException
@@ -70,12 +74,10 @@ class SymbolCollaborationDotEmitter extends DotDefaultEmitter
                     context, node, usedByCollector.getUsedTypes(node), entry.getValue());
             final String dotCollaborationHtmlLink = getDotCollaborationHtmlLink(node, getPackageMapper(),
                     SYMBOL_COLLABORATION_DIRECTORY);
-            final File outputDotFile = new File(
-                    StringJoinUtil.joinStrings(getOutputPathName(), dotCollaborationHtmlLink, File.separator));
+            final File outputDotFile = new File(getOutputPathName(), dotCollaborationHtmlLink);
             final String svgCollaborationHtmlLink = getSvgCollaborationHtmlLink(node, getPackageMapper(),
                     SYMBOL_COLLABORATION_DIRECTORY);
-            final File outputSvgFile = new File(
-                    StringJoinUtil.joinStrings(getOutputPathName(), svgCollaborationHtmlLink, File.separator));
+            final File outputSvgFile = new File(getOutputPathName(), svgCollaborationHtmlLink);
             processDotTemplate(TEMPLATE_SOURCE_NAME, templateData, outputDotFile, outputSvgFile);
         }
     }

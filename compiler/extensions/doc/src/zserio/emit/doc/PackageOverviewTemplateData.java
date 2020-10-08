@@ -9,7 +9,7 @@ public class PackageOverviewTemplateData
         this.packageNames = packageNames;
     }
 
-    public Set<String> getPackageNames()
+    public Iterable<String> getPackageNames()
     {
         return packageNames;
     }

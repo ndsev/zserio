@@ -5,6 +5,7 @@ import java.util.Set;
 import java.util.TreeSet;
 
 import zserio.ast.Package;
+import zserio.ast.PackageName;
 import zserio.ast.Root;
 import zserio.emit.common.ZserioEmitException;
 import zserio.tools.Parameters;
@@ -30,7 +31,11 @@ class PackageOverviewEmitter extends HtmlDefaultEmitter
     @Override
     public void beginPackage(Package pkg) throws ZserioEmitException
     {
-        packageNames.add(getPackageMapper().getPackageName(pkg).toString());
+        final PackageName packageName = getPackageMapper().getPackageName(pkg);
+        if (packageName.isEmpty())
+            packageNames.add(DEFAULT_PACKAGE_FILE_NAME);
+        else
+            packageNames.add(packageName.toString());
     }
 
     private static final String PACKAGE_OVERVIEW_FILE_NAME = "package_overview.html";

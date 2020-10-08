@@ -31,7 +31,7 @@ class AstNodePackageNameMapper
 
         final Package pkg = visitor.getPackage();
 
-        return (pkg != null) ? packageMapper.getPackageName(pkg) : PackageName.EMPTY;
+        return (pkg != null) ? packageMapper.getPackageName(pkg) : null;
     }
 
     private static class PackageVisitor extends ZserioAstDefaultVisitor
