@@ -32,12 +32,15 @@ class DbOverviewDotEmitter extends DotDefaultEmitter
     @Override
     public void endRoot(Root root) throws ZserioEmitException
     {
-        final Object templateData = new DbOverviewDotTemplateData(context, databases);
-        final File outputDotFile = new File(getOutputPathName(),
-                DB_OVERVIEW_DOT_DIRECTORY + File.separator + DB_OVERVIEW_DOT_FILE_NAME);
-        final File outputSvgFile = new File(getOutputPathName(),
-                DB_OVERVIEW_DOT_DIRECTORY + File.separator + DB_OVERVIEW_SVG_FILE_NAME);
-        processDotTemplate(TEMPLATE_SOURCE_NAME, templateData, outputDotFile, outputSvgFile);
+        if (!databases.isEmpty())
+        {
+            final Object templateData = new DbOverviewDotTemplateData(context, databases);
+            final File outputDotFile = new File(getOutputPathName(),
+                    DB_OVERVIEW_DOT_DIRECTORY + File.separator + DB_OVERVIEW_DOT_FILE_NAME);
+            final File outputSvgFile = new File(getOutputPathName(),
+                    DB_OVERVIEW_DOT_DIRECTORY + File.separator + DB_OVERVIEW_SVG_FILE_NAME);
+            processDotTemplate(TEMPLATE_SOURCE_NAME, templateData, outputDotFile, outputSvgFile);
+        }
     }
 
     @Override

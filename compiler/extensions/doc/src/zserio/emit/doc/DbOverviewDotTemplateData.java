@@ -39,7 +39,7 @@ public class DbOverviewDotTemplateData
             for (zserio.ast.Field field : databaseFieldTypeList)
             {
                 final ZserioType fieldType = field.getTypeInstantiation().getType();
-                tables.add(new Table(context, (SqlTableType) fieldType));
+                tables.add(new Table(context, (SqlTableType)fieldType, field.getName()));
             }
         }
 
@@ -65,24 +65,31 @@ public class DbOverviewDotTemplateData
 
     public static class Table
     {
-        public Table(TemplateDataContext context, SqlTableType tableType)
+        public Table(TemplateDataContext context, SqlTableType tableType, String name)
         {
-            fullName = ZserioTypeUtil.getFullName(tableType);
-            symbol = SymbolTemplateDataCreator.createData(context, tableType);
+            this.name = name;
+            fullTypeName = ZserioTypeUtil.getFullName(tableType);
+            typeSymbol = SymbolTemplateDataCreator.createData(context, tableType);
+        }
+
+        public String getName()
+        {
+            return name;
         }
 
         public String getFullTypeName()
         {
-            return fullName;
+            return fullTypeName;
         }
 
-        public SymbolTemplateData getSymbol()
+        public SymbolTemplateData getTypeSymbol()
         {
-            return symbol;
+            return typeSymbol;
         }
 
-        private final String fullName;
-        private final SymbolTemplateData symbol;
+        private final String name;
+        private final String fullTypeName;
+        private final SymbolTemplateData typeSymbol;
     }
 
     private final List<Database> databases;

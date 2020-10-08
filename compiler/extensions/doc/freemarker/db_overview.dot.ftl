@@ -31,14 +31,14 @@ digraph Zserio
                             <TABLE BORDER="0">
     <#if database.tables?has_content>
         <#list database.tables as table>
-            <#if table.symbol.htmlLink??>
-                <#assign hRefCommand = "HREF=\"${table.symbol.htmlLink.htmlPage}#${table.symbol.htmlLink.htmlAnchor}\"">
+            <#if table.typeSymbol.htmlLink??>
+                <#assign hRefCommand = "HREF=\"${table.typeSymbol.htmlLink.htmlPage}#${table.typeSymbol.htmlLink.htmlAnchor}\"">
             <#else>
                 <#assign hRefCommand = "">
             </#if>
                                 <TR>
-                                    <TD ${hRefCommand} TITLE="${table.symbol.htmlTitle}" ALIGN="LEFT"><FONT FACE="monospace">${table.fullTypeName}</FONT></TD>
-                                    <TD ALIGN="LEFT"><FONT FACE="monospace" COLOR="blue">${table.symbol.name}</FONT></TD>
+                                    <TD ${hRefCommand} TITLE="${table.typeSymbol.htmlTitle}" ALIGN="LEFT"><FONT FACE="monospace">${table.fullTypeName}</FONT></TD>
+                                    <TD ALIGN="LEFT"><FONT FACE="monospace" COLOR="blue">${table.name}</FONT></TD>
                                 </TR>
         </#list>
     <#else>
