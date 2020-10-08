@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.antlr.v4.runtime.BufferedTokenStream;
 import org.antlr.v4.runtime.CharStream;
@@ -166,10 +168,36 @@ class DocCommentManager
 
     private DocCommentMarkdown parseDocCommentMarkdown(Token docCommentToken)
     {
-        final String markdown = docCommentToken.getText()
-                .replaceAll("^/\\*!\\s*", "") // strip from beginning
-                .replaceAll("\\s*!?\\*/$", ""); // strip from the end
+        String markdown = docCommentToken.getText()
+                .replaceFirst("^\\/\\*!", "") // strip comment marker from beginning
+                .replaceFirst("!?\\*\\/$", "") // strip comment marker from the end
+                .replaceFirst("^[ \\t]*\\n?", "") // strip spaces at the beginning including the first newline
+                .replaceFirst("[ \\t]*(\\r?\\n?)$", "$1"); // strip spaces at the end of the comment
+
+        // check if the first line is indented
+        final Matcher indentMatcher = Pattern.compile("^[ \\t]+").matcher(markdown);
+        if (indentMatcher.find())
+        {
+            final String indent = indentMatcher.group();
+            if (isEachLineIndented(markdown, indent))
+            {
+                // strip the indent from each line, (?m) is multiline regex marker
+                markdown = markdown.replaceAll("(?m)^" + indent, "");
+            }
+        }
+
         return new DocCommentMarkdown(new AstLocation(docCommentToken), markdown);
+    }
+
+    private boolean isEachLineIndented(String text, String indent)
+    {
+        final String[] lines = text.split("\\n");
+        for (String line : lines)
+        {
+            if (!line.isEmpty() && !line.startsWith(indent))
+                return false;
+        }
+        return true;
     }
 
     private DocCommentClassic parseDocCommentClassic(Token docCommentToken)
