@@ -11,7 +11,7 @@ import zserio.ast.Expression;
 import zserio.emit.common.ExpressionFormatter;
 import zserio.emit.common.ZserioEmitException;
 
-public class EnumerationTemplateData extends DocTemplateData
+public class EnumerationTemplateData extends HtmlTemplateData
 {
     public EnumerationTemplateData(TemplateDataContext context, EnumType enumType) throws ZserioEmitException
     {

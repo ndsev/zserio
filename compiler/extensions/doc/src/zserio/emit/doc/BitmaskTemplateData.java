@@ -11,7 +11,7 @@ import zserio.ast.Expression;
 import zserio.emit.common.ExpressionFormatter;
 import zserio.emit.common.ZserioEmitException;
 
-public class BitmaskTemplateData extends DocTemplateData
+public class BitmaskTemplateData extends HtmlTemplateData
 {
     public BitmaskTemplateData(TemplateDataContext context, BitmaskType bitmaskType) throws ZserioEmitException
     {

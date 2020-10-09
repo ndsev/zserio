@@ -3,7 +3,7 @@ package zserio.emit.doc;
 import zserio.ast.Subtype;
 import zserio.emit.common.ZserioEmitException;
 
-public class SubtypeTemplateData extends DocTemplateData
+public class SubtypeTemplateData extends HtmlTemplateData
 {
     public SubtypeTemplateData(TemplateDataContext context, Subtype subtype) throws ZserioEmitException
     {

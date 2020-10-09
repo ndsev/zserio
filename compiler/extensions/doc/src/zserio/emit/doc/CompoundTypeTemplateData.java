@@ -16,7 +16,7 @@ import zserio.ast.SqlConstraint;
 import zserio.emit.common.ExpressionFormatter;
 import zserio.emit.common.ZserioEmitException;
 
-public class CompoundTypeTemplateData extends DocTemplateData
+public class CompoundTypeTemplateData extends HtmlTemplateData
 {
     public CompoundTypeTemplateData(TemplateDataContext context, CompoundType compoundType)
             throws ZserioEmitException

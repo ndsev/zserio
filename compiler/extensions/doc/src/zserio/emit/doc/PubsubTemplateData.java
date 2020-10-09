@@ -8,7 +8,7 @@ import zserio.ast.PubsubType;
 import zserio.emit.common.ExpressionFormatter;
 import zserio.emit.common.ZserioEmitException;
 
-public class PubsubTemplateData extends DocTemplateData
+public class PubsubTemplateData extends HtmlTemplateData
 {
     public PubsubTemplateData(TemplateDataContext context, PubsubType pubsubType) throws ZserioEmitException
     {

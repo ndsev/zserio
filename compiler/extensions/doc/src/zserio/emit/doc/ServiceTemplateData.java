@@ -7,7 +7,7 @@ import zserio.ast.ServiceMethod;
 import zserio.ast.ServiceType;
 import zserio.emit.common.ZserioEmitException;
 
-public class ServiceTemplateData extends DocTemplateData
+public class ServiceTemplateData extends HtmlTemplateData
 {
     public ServiceTemplateData(TemplateDataContext context, ServiceType serviceType) throws ZserioEmitException
     {

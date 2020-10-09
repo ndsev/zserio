@@ -25,14 +25,25 @@ class SymbolCollaborationDotEmitter extends DotDefaultEmitter
         super(outputPathName, extensionParameters, (dotLinksPrefix == null) ? "../.." : dotLinksPrefix,
                 withSvgDiagrams, dotExecutable, usedByCollector);
 
-        context = new TemplateDataContext(getWithSvgDiagrams(), getUsedByCollector(), getPackageMapper(),
-                getResourceManager(), getDotLinksPrefix() + File.separator + HTML_CONTENT_DIRECTORY, ".");
+        context = new TemplateDataContext(outputPathName, getWithSvgDiagrams(), getUsedByCollector(),
+                getPackageMapper(), getResourceManager(), getDotLinksPrefix() +
+                File.separator + HTML_CONTENT_DIRECTORY, ".");
     }
 
     @Override
     public void endRoot(Root root) throws ZserioEmitException
     {
         emitDotDiagrams();
+    }
+
+    public static boolean svgCollaborationFileExists(AstNode node, PackageMapper packageMapper,
+            String outputPathName)
+    {
+        final String svgCollaborationHtmlLink = getSvgCollaborationHtmlLink(node, packageMapper,
+                SYMBOL_COLLABORATION_DIRECTORY);
+        final File svgFile = new File(outputPathName, svgCollaborationHtmlLink);
+
+        return svgFile.exists();
     }
 
     public static String getSvgCollaborationHtmlLink(AstNode node, PackageMapper packageMapper,
