@@ -5,42 +5,26 @@ import java.util.HashSet;
 import java.util.Set;
 
 /**
- * The common string manipulation functions which handle special HTML characters.
+ * The class converts the classic documentation comment text into HTML format.
  */
-class StringHtmlUtil
+class DocClassicToHtmlConverter
 {
     /**
-     * Converts invalid HTML characters into escape sequences.
+     * Converts invalid HTML characters in documentation comment text into escape sequences.
      *
-     * @param string String to convert.
+     * Documentation comment text can contain HTML tags. These tags must be identified and passed through
+     * without escaping.
      *
-     * @return Converted string for HTML.
-     */
-    public static String escapeForHtml(String string)
-    {
-        final StringBuilder output = new StringBuilder();
-        for (int i = 0; i < string.length(); i++)
-            output.append(escapeForHtml(string.charAt(i)));
-
-        return output.toString();
-    }
-
-    /**
-     * Converts invalid HTML characters in documentation comments into escape sequences.
-     *
-     * Documentation comments can contain HTML tags. These tags must be identified and passed through without
-     * escaping.
-     *
-     * @param string Documentation comments to convert.
+     * @param text Documentation comment text to convert.
      *
      * @return Converted string for HTML.
      */
-    public static String escapeCommentsForHtml(String string)
+    public static String convert(String text)
     {
         final StringBuilder output = new StringBuilder();
-        for (int i = 0; i < string.length(); i++)
+        for (int i = 0; i < text.length(); i++)
         {
-            final String htmlTag = findHtmlTag(string, i);
+            final String htmlTag = findHtmlTag(text, i);
             if (htmlTag != null)
             {
                 // this is HTML tag, skip escaping
@@ -50,7 +34,7 @@ class StringHtmlUtil
             else
             {
                 // this is normal character to escape
-                output.append(escapeForHtml(string.charAt(i)));
+                output.append(escapeForHtml(text.charAt(i)));
             }
         }
 
@@ -78,17 +62,17 @@ class StringHtmlUtil
         }
     }
 
-    private static String findHtmlTag(String string, int startIndex)
+    private static String findHtmlTag(String text, int startIndex)
     {
-        if (string.charAt(startIndex) != '<')
+        if (text.charAt(startIndex) != '<')
             return null;
 
         StringBuilder foundTagBuilder = new StringBuilder("<");
         String foundTag = null;
         boolean foundStartWithParams = false;
-        for (int i = startIndex + 1; i < string.length(); ++i)
+        for (int i = startIndex + 1; i < text.length(); ++i)
         {
-            final char character = string.charAt(i);
+            final char character = text.charAt(i);
             if (!foundStartWithParams && character == ' ')
             {
                 // start tag with parameters

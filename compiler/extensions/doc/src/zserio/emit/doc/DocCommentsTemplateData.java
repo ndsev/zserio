@@ -80,7 +80,7 @@ public class DocCommentsTemplateData
                 final Path origCwd = resourceManager.getCurrentSourceDir();
                 resourceManager.setCurrentSourceDir(
                         Paths.get(docComment.getLocation().getFileName()).getParent());
-                markdownHtml = MarkdownToHtmlConverter.convert(resourceManager,
+                markdownHtml = DocMarkdownToHtmlConverter.convert(resourceManager,
                         docCommentMarkdown.getLocation(), docCommentMarkdown.getMarkdown());
                 resourceManager.setCurrentSourceDir(origCwd);
             }
@@ -111,6 +111,7 @@ public class DocCommentsTemplateData
             }
             else
             {
+                // TODO[mikir] Is this really necessary?!?
                 throw new ZserioEmitException("Unknown documentation format!");
             }
         }
@@ -233,7 +234,7 @@ public class DocCommentsTemplateData
                 {
                     final DocText docText = docLineElement.getDocText();
                     docString = docText != null ?
-                            StringHtmlUtil.escapeCommentsForHtml(docText.getText()) : null;
+                            DocClassicToHtmlConverter.convert(docText.getText()) : null;
 
                     final DocTagSee docTagSee = docLineElement.getSeeTag();
                     seeTag = docTagSee != null ? new DocTagSeeData(context, docTagSee) : null;

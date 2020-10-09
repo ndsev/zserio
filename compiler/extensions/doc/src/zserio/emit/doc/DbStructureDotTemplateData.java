@@ -127,8 +127,8 @@ public class DbStructureDotTemplateData
     {
         public TableFieldTemplateData(Field fieldType, boolean isPrimaryKey)
         {
-            name = StringHtmlUtil.escapeForHtml(fieldType.getName());
-            typeName = StringHtmlUtil.escapeForHtml(fieldType.getTypeInstantiation().getType().getName());
+            name = fieldType.getName();
+            typeName = fieldType.getTypeInstantiation().getType().getName();
             this.isPrimaryKey = isPrimaryKey;
             isNullAllowed = SqlConstraint.isNullAllowed(fieldType.getSqlConstraint());
         }

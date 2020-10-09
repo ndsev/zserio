@@ -60,7 +60,7 @@ ${I}</div>
     <#local I>${""?left_pad(indent * 2)}</#local>
     <#list multilineNode.docLineElements as docLineElement>
         <#if docLineElement.docString??>
-${I}${docLineElement.docString}
+${I}${docLineElement.docString?no_esc}
         </#if>
         <#if docLineElement.seeTag??>
 ${I}<@symbol_reference docLineElement.seeTag.seeSymbol/>
