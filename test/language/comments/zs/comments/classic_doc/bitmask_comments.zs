@@ -1,4 +1,4 @@
-package comments.documentation.bitmask_comments;
+package comments.classic_doc.bitmask_comments;
 
 /**
  * Permissions on file.

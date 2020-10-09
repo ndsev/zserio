@@ -1,4 +1,4 @@
-package comments.documentation.enum_comments;
+package comments.classic_doc.enum_comments;
 
 /**
  * Traffic flow on links.

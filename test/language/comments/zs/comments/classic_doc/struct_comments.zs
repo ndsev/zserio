@@ -1,4 +1,4 @@
-package comments.documentation.struct_comments;
+package comments.classic_doc.struct_comments;
 
 /**
  * Traffic flow on links.

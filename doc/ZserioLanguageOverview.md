@@ -105,8 +105,8 @@ Within each byte, the most significant bit comes first.
 
 **Example**
 
-The byte stream `02 01` (hex) interpreted as `int16` has the decimal value 513. As a bit stream, this looks like
-`0000 0010 0000 0001`. Bit 0 is `0`, bit 15 is `1`.
+The byte stream `02 01` (hex) interpreted as `int16` has the decimal value 513. As a bit stream, this looks
+like `0000 0010 0000 0001`. Bit 0 is `0`, bit 15 is `1`.
 
 ### Bit Field Types
 
@@ -1092,7 +1092,7 @@ Thus, generators have no access to these comments.
 
 Documentation comments are not filtered out during compilation and they can be used for generation of zserio
 schema documentation or for documentation of generated code. These comments might be associated
-to the subsequent ype or field definition. 
+to the subsequent type or field definition. 
 
 Documentation comments are further divided to two types:
 
@@ -1281,6 +1281,29 @@ Structure1  | This describes Structure1 in detail.
 Structure2  | This describes Structure2 in detail.
 
 */
+```
+
+If whole markdown documentation comment is indented according to the starting `/*!`, it is rendered without
+indentation.
+
+**Example**
+
+```
+    /*!
+
+    # Title for this section
+
+    The tile contains a number of different elements grouped by feature classes, e.g. intersections,
+    roads and so on...
+
+    This module defined the following structure:
+
+    Name        | Description
+    ------------| ----------------------------------------------
+    Structure1  | This describes Structure1 in detail.
+    Structure2  | This describes Structure2 in detail.
+
+    */
 ```
 
 [top](#language-guide)

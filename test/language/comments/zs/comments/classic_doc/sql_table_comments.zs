@@ -1,4 +1,4 @@
-package comments.documentation.sql_table_comments;
+package comments.classic_doc.sql_table_comments;
 
 /** Virtual table comment. */
 sql_table VirtualTable using fts4aux

@@ -1,4 +1,4 @@
-package comments.documentation.unknown_tag;
+package comments.classic_doc.unknown_tag;
 
 // '@unknown' caused an error with older Zserio versions, currently it shall be treated as a text
 

@@ -1,4 +1,4 @@
-package comments.documentation.struct_template_comments;
+package comments.classic_doc.struct_template_comments;
 
 /**
  * This defines template which accepts one template parameter.

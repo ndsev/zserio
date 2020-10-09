@@ -1,4 +1,4 @@
-package comments.documentation.sql_database_comments;
+package comments.classic_doc.sql_database_comments;
 
 /** Sql table comment. */
 sql_table Table
