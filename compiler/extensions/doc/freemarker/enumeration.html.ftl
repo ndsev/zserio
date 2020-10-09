@@ -14,7 +14,7 @@
       </del>
 </#if>
     </div>
-    <@doc_comments docComments 2 false/>
+    <@doc_comments docComments 2, false/>
 
     <table>
       <tr><td class="docuCode">
@@ -38,7 +38,7 @@
 <#list items as item>
       <dt class="memberItem"><a name="${item.symbol.htmlLink.htmlAnchor}">${item.symbol.name}:</a></dt>
       <dd class="memberDetail">
-        <@doc_comments item.docComments 4/>
+        <@doc_comments item.docComments, 4/>
   <#list item.seeSymbols as seeSymbol>
         <div class="docuTag"><span>see: </span>case <@symbol_reference seeSymbol.memberSymbol/> <#rt>
           <#lt>in choice <@symbol_reference seeSymbol.typeSymbol/></div>

@@ -15,4 +15,4 @@
   </head>
   <body>
     <h1>${name}</h1>
-    <@doc_comments docComments 2 false/>
+    <@doc_comments docComments 2, false/>

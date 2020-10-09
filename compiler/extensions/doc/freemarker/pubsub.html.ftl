@@ -11,7 +11,7 @@
       <i>Pubsub</i> ${symbol.name}
 </#if>
     </div>
-    <@doc_comments docComments 2 false/>
+    <@doc_comments docComments 2, false/>
 
     <table>
       <tr><td class="docuCode">
@@ -36,7 +36,7 @@
     <#list messageList as message>
       <dt class="memberItem"><a name="${message.symbol.htmlLink.htmlAnchor}">${message.symbol.name}:</a></dt>
       <dd class="memberDetail">
-        <@doc_comments message.docComments 4/>
+        <@doc_comments message.docComments, 4/>
       </dd>
     </#list>
     </dl>

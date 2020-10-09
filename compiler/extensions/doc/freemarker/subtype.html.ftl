@@ -13,7 +13,7 @@
 </#if>
     </div>
     <p/>
-    <@doc_comments docComments 2 false/>
+    <@doc_comments docComments 2, false/>
 
     <table>
     <tr><td class="docuCode">

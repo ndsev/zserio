@@ -12,7 +12,7 @@
       <i>bitmask</i> ${symbol.name}
 </#if>
     </div>
-    <@doc_comments docComments 2 false/>
+    <@doc_comments docComments 2, false/>
 
     <table>
       <tr><td class="docuCode">
@@ -36,7 +36,7 @@
 <#list values as value>
       <dt class="memberItem"><a name="${value.symbol.htmlLink.htmlAnchor}">${value.symbol.name}:</a></dt>
       <dd class="memberDetail">
-        <@doc_comments value.docComments 4/>
+        <@doc_comments value.docComments, 4/>
   <#list value.seeSymbols as seeSymbol>
         <div class="docuTag"><span>see: </span>case <@symbol_reference seeSymbol.memberSymbol/> <#rt>
           <#lt>(<@symbol_reference seeSymbol.typeSymbol/>)</div>

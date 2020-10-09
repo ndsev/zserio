@@ -3,7 +3,7 @@
     <#if svgFileName??>
     <h3>Collaboration Diagram</h3>
     <object type="image/svg+xml" data="${svgFileName}">
-        Svg files not supported!
+        Collaboration diagram does not exist or SVG images are not supported by browser!
     </object>
     </#if>
 </#macro>

@@ -41,7 +41,7 @@
       <i>Choice</i> ${symbol.name}
 </#if>
     </div>
-    <@doc_comments docComments 2 false/>
+    <@doc_comments docComments 2, false/>
 
     <table>
       <tr><td class="docuCode">
@@ -112,7 +112,7 @@
             <a name="${case.symbol.htmlLink.htmlAnchor}">${case.expression}</a>
           </dt>
           <dd class="memberDetail">
-            <@doc_comments case.docComments 6/>
+            <@doc_comments case.docComments, 6/>
         <#if case.seeSymbol??>
             <div class="docuTag"><span>see: </span>item <@symbol_reference case.seeSymbol.memberSymbol/> <#rt>
               <#lt>in enum <@symbol_reference case.seeSymbol.typeSymbol/></div>
@@ -131,7 +131,7 @@
             <a name="${caseMember.field.symbol.htmlLink.htmlAnchor}">${caseMember.field.symbol.name}:</a>
           </dt>
           <dd class="memberDetail">
-            <@doc_comments caseMember.field.docComments 6/>
+            <@doc_comments caseMember.field.docComments, 6/>
           </dd>
   <#else>
           <dt class="memberItem">
@@ -154,7 +154,7 @@
             <a name="${defaultMember.symbol.htmlLink.htmlAnchor}">${defaultMember.symbol.name}</a>
           </dt>
           <dd class="memberDetail">
-            <@doc_comments defaultMember.docComments 6/>
+            <@doc_comments defaultMember.docComments, 6/>
           </dd>
         </dl>
       </dd>
@@ -168,7 +168,7 @@
             <a name="${defaultMember.field.symbol.htmlLink.htmlAnchor}">${defaultMember.field.symbol.name}:</a>
           </dt>
           <dd class="memberDetail">
-            <@doc_comments defaultMember.field.docComments 6/>
+            <@doc_comments defaultMember.field.docComments, 6/>
           </dd>
   <#else>
           <dt class="memberItem">

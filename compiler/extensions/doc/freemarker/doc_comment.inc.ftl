@@ -4,7 +4,7 @@
     <#local I>${""?left_pad(indent * 2)}</#local>
     <#if docComments.commentsList?has_content>
         <#list docComments.commentsList as docComment>
-    <@doc_comment docComment indent/>
+    <@doc_comment docComment, indent/>
         </#list>
     <#else>
 ${I}<div class="docuTag"><#if useNoDocPlaceholder>&lt;<i>no documentation found</i>&gt;</#if></div>
@@ -15,21 +15,21 @@ ${I}<div class="docuTag"><#if useNoDocPlaceholder>&lt;<i>no documentation found<
     <#local I>${""?left_pad(indent * 2)}</#local>
     <#if doc.paragraphs?size == 0>
         <#if doc.markdownHtml??>
-    <@doc_markdown doc.markdownHtml indent/>
+    <@doc_markdown doc.markdownHtml, indent/>
         </#if>
     <#else>
         <#list doc.paragraphs as paragraph>
             <#list paragraph.elements as element>
                 <#if element.multiline??>
 ${I}<div class="docuTag">
-      <@doc_multiline_node element.multiline indent+1/>
+      <@doc_multiline_node element.multiline, indent+1/>
 ${I}</div>
                 </#if>
                 <#if element.todoTag??>
 
 ${I}<div class="docuTag">
 ${I}  <span>Todo:</span>
-${I}  <@doc_multiline_node element.todoTag/>
+${I}  <@doc_multiline_node element.todoTag, indent+1/>
 ${I}</div>
                 </#if>
                 <#if element.seeTag??>
@@ -42,7 +42,7 @@ ${I}</div>
 
 ${I}<div class="docuTag">
 ${I}  <span>Param: </span><code>${element.paramTag.name}</code>
-      <@doc_multiline_node element.paramTag.description indent+1/>
+      <@doc_multiline_node element.paramTag.description, indent+1/>
 ${I}</div>
                 </#if>
             </#list>

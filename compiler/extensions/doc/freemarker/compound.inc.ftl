@@ -100,7 +100,7 @@
         </a>
       </dt>
       <dd class="memberDetail">
-        <@doc_comments field.docComments 4/>
+        <@doc_comments field.docComments, 4/>
       </dd>
         </#list>
     </dl>
@@ -132,7 +132,7 @@
         </a>
       </dt>
       <dd class="memberDetail">
-        <@doc_comments function.docComments 4/>
+        <@doc_comments function.docComments, 4/>
       </dd>
 </#macro>
 

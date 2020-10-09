@@ -11,7 +11,7 @@
       <i>Service</i> ${symbol.name}
 </#if>
     </div>
-    <@doc_comments docComments 2 false/>
+    <@doc_comments docComments 2, false/>
 
     <table>
       <tr><td class="docuCode">
@@ -36,7 +36,7 @@
     <#list methodList as method>
       <dt class="memberItem"><a name="${method.symbol.htmlLink.htmlAnchor}">${method.symbol.name}:</a></dt>
       <dd class="memberDetail">
-        <@doc_comments method.docComments 4/>
+        <@doc_comments method.docComments, 4/>
       </dd>
     </#list>
     </dl>
