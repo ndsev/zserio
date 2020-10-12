@@ -25,9 +25,8 @@ class SymbolCollaborationDotEmitter extends DotDefaultEmitter
         super(outputPathName, extensionParameters, (dotLinksPrefix == null) ? "../.." : dotLinksPrefix,
                 withSvgDiagrams, dotExecutable, usedByCollector);
 
-        context = new TemplateDataContext(outputPathName, getWithSvgDiagrams(), getUsedByCollector(),
-                getPackageMapper(), getResourceManager(), getDotLinksPrefix() +
-                File.separator + HTML_CONTENT_DIRECTORY, ".");
+        context = new TemplateDataContext(getWithSvgDiagrams(), getUsedByCollector(), getPackageMapper(),
+                getResourceManager(), getDotLinksPrefix() + File.separator + HTML_CONTENT_DIRECTORY, ".");
     }
 
     @Override
@@ -36,14 +35,10 @@ class SymbolCollaborationDotEmitter extends DotDefaultEmitter
         emitDotDiagrams();
     }
 
-    public static boolean svgCollaborationFileExists(AstNode node, PackageMapper packageMapper,
-            String outputPathName)
+    public static boolean svgCollaborationFileExists(AstNode node, UsedByCollector usedByCollector,
+            boolean withSvgDiagrams)
     {
-        final String svgCollaborationHtmlLink = getSvgCollaborationHtmlLink(node, packageMapper,
-                SYMBOL_COLLABORATION_DIRECTORY);
-        final File svgFile = new File(outputPathName, svgCollaborationHtmlLink);
-
-        return svgFile.exists();
+        return withSvgDiagrams && usedByCollector.getUsedByTypeMap().containsKey(node);
     }
 
     public static String getSvgCollaborationHtmlLink(AstNode node, PackageMapper packageMapper,
@@ -77,7 +72,7 @@ class SymbolCollaborationDotEmitter extends DotDefaultEmitter
     private void emitDotDiagrams() throws ZserioEmitException
     {
         final UsedByCollector usedByCollector = getUsedByCollector();
-        for (Map.Entry< AstNode, Set<AstNode> > entry : usedByCollector.getUsedByTypeMap().entrySet())
+        for (Map.Entry<AstNode, Set<AstNode>> entry : usedByCollector.getUsedByTypeMap().entrySet())
         {
             final AstNode node = entry.getKey();
 

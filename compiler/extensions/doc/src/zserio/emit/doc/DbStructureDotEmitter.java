@@ -22,8 +22,8 @@ class DbStructureDotEmitter extends DotDefaultEmitter
                 withSvgDiagrams, dotExecutable, usedByCollector);
 
         final String directoryPrefix = getDotLinksPrefix() + File.separator;
-        context = new TemplateDataContext(outputPathName, getWithSvgDiagrams(), getUsedByCollector(),
-                getPackageMapper(), getResourceManager(), directoryPrefix + HTML_CONTENT_DIRECTORY,
+        context = new TemplateDataContext(getWithSvgDiagrams(), getUsedByCollector(), getPackageMapper(),
+                getResourceManager(), directoryPrefix + HTML_CONTENT_DIRECTORY,
                 directoryPrefix + SYMBOL_COLLABORATION_DIRECTORY);
 
         databaseList = new ArrayList<SqlDatabaseType>();

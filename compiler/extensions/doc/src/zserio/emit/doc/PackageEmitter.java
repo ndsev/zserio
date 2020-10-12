@@ -29,8 +29,8 @@ class PackageEmitter extends HtmlDefaultEmitter
     {
         super(outputPathName, extensionParameters, withSvgDiagrams, usedByCollector);
 
-        context = new TemplateDataContext(outputPathName, getWithSvgDiagrams(), getUsedByCollector(),
-                getPackageMapper(), getResourceManager(), ".", "../" + SYMBOL_COLLABORATION_DIRECTORY);
+        context = new TemplateDataContext(getWithSvgDiagrams(), getUsedByCollector(), getPackageMapper(),
+                getResourceManager(), ".", "../" + SYMBOL_COLLABORATION_DIRECTORY);
     }
 
     @Override
