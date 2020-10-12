@@ -94,7 +94,8 @@ public class DbStructureDotTemplateData
             fields = new ArrayList<TableFieldTemplateData>();
             final List<Field> tableFieldList = tableType.getFields();
             for (Field tableField : tableFieldList)
-                fields.add(new TableFieldTemplateData(tableField, tableType.isFieldPrimaryKey(tableField)));
+                fields.add(new TableFieldTemplateData(context, tableField,
+                        tableType.isFieldPrimaryKey(tableField)));
         }
 
         public String getName()
@@ -125,10 +126,11 @@ public class DbStructureDotTemplateData
 
     public static class TableFieldTemplateData
     {
-        public TableFieldTemplateData(Field fieldType, boolean isPrimaryKey)
+        public TableFieldTemplateData(TemplateDataContext context, Field fieldType, boolean isPrimaryKey)
         {
             name = fieldType.getName();
-            typeName = fieldType.getTypeInstantiation().getType().getName();
+            typeSymbol = SymbolTemplateDataCreator.createData(context,
+                    fieldType.getTypeInstantiation().getType());
             this.isPrimaryKey = isPrimaryKey;
             isNullAllowed = SqlConstraint.isNullAllowed(fieldType.getSqlConstraint());
         }
@@ -138,9 +140,9 @@ public class DbStructureDotTemplateData
             return name;
         }
 
-        public String getTypeName()
+        public SymbolTemplateData getTypeSymbol()
         {
-            return typeName;
+            return typeSymbol;
         }
 
         public boolean getIsPrimaryKey()
@@ -154,7 +156,7 @@ public class DbStructureDotTemplateData
         }
 
         private final String name;
-        private final String typeName;
+        private final SymbolTemplateData typeSymbol;
         private final boolean isPrimaryKey;
         private final boolean isNullAllowed;
     }

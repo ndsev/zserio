@@ -1,3 +1,4 @@
+<#include "symbol.inc.ftl">
 /**
  * This dot file creates overview diagram for all databases.
  */
@@ -14,41 +15,37 @@ digraph Zserio
         fontsize="32";
         bgcolor="${database.colorName}";
         label="${database.symbol.name}";
-    <#if database.symbol.htmlLink??>
-        URL="${database.symbol.htmlLink.htmlPage}#${database.symbol.htmlLink.htmlAnchor}";
-    </#if>
-        tooltip="${database.symbol.htmlTitle}";
+        <@symbol_reference_url database.symbol/>;
+        <@symbol_reference_tooltip database.symbol/>;
 
         // database tables
         ${database.symbol.name}_tables [
+    <#outputformat "HTML"> 
             label=<
-                <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" CELLPADDING="4">
-                    <TR>
-                        <TD VALIGN="BOTTOM" BGCOLOR="gray">Database Tables</TD>
-                    </TR>
-                    <TR>
-                        <TD ALIGN="LEFT" BGCOLOR="white" WIDTH="840" >
-                            <TABLE BORDER="0">
-    <#if database.tables?has_content>
-        <#list database.tables as table>
-            <#if table.typeSymbol.htmlLink??>
-                <#assign hRefCommand = "HREF=\"${table.typeSymbol.htmlLink.htmlPage}#${table.typeSymbol.htmlLink.htmlAnchor}\"">
-            <#else>
-                <#assign hRefCommand = "">
-            </#if>
-                                <TR>
-                                    <TD ${hRefCommand} TITLE="${table.typeSymbol.htmlTitle}" ALIGN="LEFT"><FONT FACE="monospace">${table.fullTypeName}</FONT></TD>
-                                    <TD ALIGN="LEFT"><FONT FACE="monospace" COLOR="blue">${table.name}</FONT></TD>
-                                </TR>
-        </#list>
-    <#else>
-                                <TR><TD></TD></TR>
-    </#if>
-                            </TABLE>
-                        </TD>
-                    </TR>
-                </TABLE>
+                <table border="0" cellborder="1" cellspacing="0" cellpadding="4">
+                    <tr>
+                        <td valign="bottom" bgcolor="gray">Database Tables</td>
+                    </tr>
+                    <tr>
+                        <td align="left" bgcolor="white" width="840">
+                            <table border="0">
+        <#if database.tables?has_content>
+            <#list database.tables as table>
+                                <tr>
+                                    <td align="left"><font face="monospace" <@symbol_reference_href_title table.typeSymbol/>><#rt>
+                                      <#lt>${table.fullTypeName}</font></td>
+                                    <td align="left"><font face="monospace" COLOR="blue">${table.name}</font></td>
+                                </tr>
+            </#list>
+        <#else>
+                                <tr><td></td></tr>
+        </#if>
+                            </table>
+                        </td>
+                    </tr>
+                </table>
             >
+    </#outputformat>
         ];
     }; // end of database ${database.symbol.name}
 </#list>

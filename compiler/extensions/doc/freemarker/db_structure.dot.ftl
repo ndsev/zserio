@@ -1,3 +1,4 @@
+<#include "symbol.inc.ftl">
 /**
  * This dot file creates structure diagram for database ${database.symbol.name}.
  */
@@ -13,80 +14,80 @@ digraph Zserio
         fontsize="32";
         bgcolor="${database.colorName}";
         label="${database.symbol.name}";
-<#if database.symbol.htmlLink??>
-        URL="${database.symbol.htmlLink.htmlPage}#${database.symbol.htmlLink.htmlAnchor}";
-</#if>
-        tooltip="${database.symbol.htmlTitle}";
+        <@symbol_reference_url database.symbol/>;
+        <@symbol_reference_tooltip database.symbol/>;
 
 <#list database.tables as table>
         // table ${table.name}
         table_${database.symbol.name}_${table.name} [
-    <#if table.typeSymbol.htmlLink??>
-            URL="${table.typeSymbol.htmlLink.htmlPage}#${table.typeSymbol.htmlLink.htmlAnchor}",
-    </#if>
-            tooltip="${table.typeSymbol.htmlTitle}",
+            <@symbol_reference_url table.typeSymbol/>;
+            <@symbol_reference_tooltip table.typeSymbol/>;
+    <#outputformat "HTML"> 
             label=<
-                <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" CELLPADDING="4">
-                    <TR>
-                        <TD WIDTH="565" BGCOLOR="gray" ALIGN="LEFT">
-                            <TABLE BORDER="0">
-    <#if table.packageName?has_content>
-                                <TR>
-                                    <TD><FONT FACE="monospace">${table.packageName}</FONT></TD>
-                                </TR>
-    </#if>
-                                <TR>
-                                    <TD><FONT FACE="monospace" COLOR="blue">${table.typeSymbol.name} ${table.name}</FONT></TD>
-                                </TR>
-                            </TABLE>
-                        </TD>
-                        <TD WIDTH="32" BGCOLOR="gray" ALIGN="LEFT">PK</TD>
-                        <TD WIDTH="55" BGCOLOR="gray" ALIGN="LEFT">NULL</TD>
-                    </TR>
-                    <TR>
-                        <TD BGCOLOR="white">
-                            <TABLE BORDER="0">
-    <#if table.fields?has_content>
-        <#list table.fields as field>
-                                <TR>
-                                    <TD ALIGN="LEFT"><FONT FACE="monospace">${field.typeName}</FONT></TD>
-                                    <TD ALIGN="LEFT"><FONT FACE="monospace">${field.name}</FONT></TD>
-                                </TR>
-        </#list>
-    <#else>
-                                <TR><TD></TD></TR>
-    </#if>
-                            </TABLE>
-                        </TD>
-                        <TD BGCOLOR="white">
-                            <TABLE BORDER="0">
-    <#if table.fields?has_content>
-        <#list table.fields as field>
-                                <TR>
-                                    <TD><#if field.isPrimaryKey>&#215;<#else> &nbsp;</#if></TD>
-                                </TR>
-        </#list>
-    <#else>
-                                <TR><TD></TD></TR>
-    </#if>
-                            </TABLE>
-                        </TD>
-                        <TD BGCOLOR="white">
-                            <TABLE BORDER="0">
-    <#if table.fields?has_content>
-        <#list table.fields as field>
-                                <TR>
-                                    <TD><#if field.isNullAllowed>&#215;<#else> &nbsp;</#if></TD>
-                                </TR>
-        </#list>
-    <#else>
-                                <TR><TD></TD></TR>
-    </#if>
-                            </TABLE>
-                        </TD>
-                    </TR>
-                </TABLE>
+                <table border="0" cellborder="1" cellspacing="0" cellpadding="4">
+                    <tr>
+                        <td width="565" bgcolor="gray" align="left">
+                            <table border="0">
+        <#if table.packageName?has_content>
+                                <tr>
+                                    <td><font face="monospace">${table.packageName}</font></td>
+                                </tr>
+        </#if>
+                                <tr>
+                                    <td><font face="monospace" color="blue" <@symbol_reference_href_title table.typeSymbol/>><#rt>
+                                      <#lt>${table.typeSymbol.name} ${table.name}</font></td>
+                                </tr>
+                            </table>
+                        </td>
+                        <td width="32" bgcolor="gray" align="left">PK</td>
+                        <td width="55" bgcolor="gray" align="left">NULL</td>
+                    </tr>
+                    <tr>
+                        <td bgcolor="white">
+                            <table border="0">
+        <#if table.fields?has_content>
+            <#list table.fields as field>
+                                <tr>
+                                    <td align="left"><font face="monospace" <@symbol_reference_href_title field.typeSymbol/>><#rt>
+                                      <#lt>${field.typeSymbol.name}</font></td>
+                                    <td align="left"><font face="monospace">${field.name}</font></td>
+                                </tr>
+            </#list>
+        <#else>
+                                <tr><td></td></tr>
+        </#if>
+                            </table>
+                        </td>
+                        <td bgcolor="white">
+                            <table border="0">
+        <#if table.fields?has_content>
+            <#list table.fields as field>
+                                <tr>
+                                    <td><#if field.isPrimaryKey>&#215;<#else> &nbsp;</#if></td>
+                                </tr>
+            </#list>
+        <#else>
+                                <tr><td></td></tr>
+        </#if>
+                            </table>
+                        </td>
+                        <td bgcolor="white">
+                            <table border="0">
+        <#if table.fields?has_content>
+            <#list table.fields as field>
+                                <tr>
+                                    <td><#if field.isNullAllowed>&#215;<#else> &nbsp;</#if></td>
+                                </tr>
+            </#list>
+        <#else>
+                                <tr><td></td></tr>
+        </#if>
+                            </table>
+                        </td>
+                    </tr>
+                </table>
             >
+    </#outputformat>
         ];
 
 </#list>
