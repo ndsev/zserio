@@ -1,6 +1,12 @@
-noExplicitConstructor:*/comments/documentation/bitmask_comments/Permission.h
+noExplicitConstructor:*/comments/classic_doc/bitmask_comments/Permission.h
+noExplicitConstructor:*/comments/markdown_doc/bitmask_comments/Permission.h
 
-constParameter:*/comments/documentation/sql_database_comments/Table.cpp
+constParameter:*/comments/classic_doc/sql_database_comments/Table.cpp
+constParameter:*/comments/markdown_doc/sql_database_comments/Table.cpp
 
-uninitMemberVar:*/comments/documentation/struct_comments/DirectionStructure.cpp
-uninitMemberVar:*/comments/documentation/struct_comments/DirectionStructure.h
+uninitMemberVar:*/comments/classic_doc/struct_comments/DirectionStructure.cpp
+uninitMemberVar:*/comments/classic_doc/struct_comments/DirectionStructure.h
+uninitMemberVar:*/comments/markdown_doc/struct_comments/DirectionStructure.cpp
+uninitMemberVar:*/comments/markdown_doc/struct_comments/DirectionStructure.h
+uninitMemberVar:*/comments/mixed_doc/struct_comments/DirectionStructure.cpp
+uninitMemberVar:*/comments/mixed_doc/struct_comments/DirectionStructure.h
