@@ -34,8 +34,8 @@ digraph Zserio
                                 </tr>
         </#if>
                                 <tr>
-                                    <td><font face="monospace" color="blue" <@symbol_reference_href_title table.typeSymbol/>><#rt>
-                                      <#lt>${table.typeSymbol.name} ${table.name}</font></td>
+                                    <td <@symbol_reference_href_title table.typeSymbol/>><#rt>
+                                      <#lt><font face="monospace" color="blue">${table.typeSymbol.name} ${table.name}</font></td>
                                 </tr>
                             </table>
                         </td>
@@ -48,8 +48,8 @@ digraph Zserio
         <#if table.fields?has_content>
             <#list table.fields as field>
                                 <tr>
-                                    <td align="left"><font face="monospace" <@symbol_reference_href_title field.typeSymbol/>><#rt>
-                                      <#lt>${field.typeSymbol.name}</font></td>
+                                    <td align="left" <@symbol_reference_href_title field.typeSymbol/>><#rt>
+                                      <#lt><font face="monospace">${field.typeSymbol.name}</font></td>
                                     <td align="left"><font face="monospace">${field.name}</font></td>
                                 </tr>
             </#list>

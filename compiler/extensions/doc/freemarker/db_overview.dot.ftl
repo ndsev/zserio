@@ -32,8 +32,8 @@ digraph Zserio
         <#if database.tables?has_content>
             <#list database.tables as table>
                                 <tr>
-                                    <td align="left"><font face="monospace" <@symbol_reference_href_title table.typeSymbol/>><#rt>
-                                      <#lt>${table.fullTypeName}</font></td>
+                                    <td align="left" <@symbol_reference_href_title table.typeSymbol/>><#rt>
+                                      <#lt><font face="monospace">${table.fullTypeName}</font></td>
                                     <td align="left"><font face="monospace" COLOR="blue">${table.name}</font></td>
                                 </tr>
             </#list>
