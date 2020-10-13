@@ -40,7 +40,7 @@ public class DbStructureDotTemplateData
             final Iterable<Field> databaseFields = databaseType.getFields();
             for (Field databaseField : databaseFields)
             {
-                final SqlTableType tableType = (SqlTableType)databaseField.getTypeInstantiation().getType();
+                final SqlTableType tableType = (SqlTableType)databaseField.getTypeInstantiation().getBaseType();
                 final String tableName = databaseField.getName();
                 nameToSqlTableTypeMap.put(tableName, tableType);
             }

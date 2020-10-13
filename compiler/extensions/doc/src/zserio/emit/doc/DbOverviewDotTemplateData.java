@@ -38,8 +38,8 @@ public class DbOverviewDotTemplateData
             tables = new ArrayList<Table>();
             for (zserio.ast.Field field : databaseFieldTypeList)
             {
-                final ZserioType fieldType = field.getTypeInstantiation().getType();
-                tables.add(new Table(context, (SqlTableType)fieldType, field.getName()));
+                final SqlTableType tableType = (SqlTableType)field.getTypeInstantiation().getBaseType();
+                tables.add(new Table(context, tableType, field.getName()));
             }
         }
 

@@ -63,7 +63,9 @@ class UsedByCollector extends DefaultEmitter
     public void beginChoice(ChoiceType choiceType)
     {
         final List<AstNode> usedTypes = getUsedTypesForCompoundType(choiceType);
-        addTypeToUsedTypes(choiceType.getSelectorExpression().getExprZserioType(), usedTypes);
+        final ZserioType selectorZserioType = choiceType.getSelectorExpression().getExprZserioType();
+        if (selectorZserioType != null)
+            addTypeToUsedTypes(selectorZserioType, usedTypes);
         storeType(choiceType, usedTypes);
 
         for (ChoiceCase choiceCase : choiceType.getChoiceCases())
