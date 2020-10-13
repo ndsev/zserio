@@ -7,6 +7,7 @@ digraph Zserio
     node [shape=none, fontsize=11];
     rankdir=LR;
     ranksep="1.5 equally";
+    tooltip="${symbol.name} structure diagram";
 
     // database ${symbol.name}
     subgraph cluster_${symbol.name}
@@ -24,20 +25,22 @@ digraph Zserio
             <@symbol_reference_url table.typeSymbol/>;
             <@symbol_reference_tooltip table.typeSymbol/>;
             target="_parent";
-    <#outputformat "HTML"> 
+    <#outputformat "HTML">
             label=<
                 <table border="0" cellborder="1" cellspacing="0" cellpadding="4">
                     <tr>
-                        <td width="505" bgcolor="#F2F2FF" align="left">
+                        <td width="505" bgcolor="#F2F2FF">
                             <table border="0">
         <#if table.packageName?has_content>
                                 <tr>
-                                    <td><font face="monospace">${table.packageName}</font></td>
+                                    <td>
+                                        <font face="monospace">${table.packageName}</font>
+                                    </td>
                                 </tr>
         </#if>
                                 <tr>
-                                    <td <@symbol_reference_href_title table.typeSymbol/> target="_parent"><#rt>
-                                      <#lt><font face="monospace">${table.typeSymbol.name} ${table.name}</font></td>
+                                    <td><font face="monospace"><#rt>
+                                        <#lt><@symbol_reference_label table.typeSymbol "center"/></font></td>
                                 </tr>
                             </table>
                         </td>
@@ -50,9 +53,8 @@ digraph Zserio
         <#if table.fields?has_content>
             <#list table.fields as field>
                                 <tr>
-                                    <td align="left" <@symbol_reference_href_title field.typeSymbol/> target="_parent"><#rt>
-                                      <#lt><font face="monospace">${field.typeSymbol.name}</font></td>
-                                    <td align="left"><font face="monospace">${field.name}</font></td>
+                                    <td align="left"><font face="monospace"><@symbol_reference_label field.typeSymbol "left"/></font></td>
+                                    <td align="left"><font face="monospace"><@symbol_reference_label field.symbol "left"/></font></td>
                                 </tr>
             </#list>
         <#else>

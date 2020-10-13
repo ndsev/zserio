@@ -5,6 +5,7 @@ import java.util.List;
 
 import zserio.ast.ArrayInstantiation;
 import zserio.ast.CompoundType;
+import zserio.ast.DynamicBitFieldInstantiation;
 import zserio.ast.Expression;
 import zserio.ast.Field;
 import zserio.ast.Function;
@@ -13,6 +14,7 @@ import zserio.ast.ParameterizedTypeInstantiation;
 import zserio.ast.TypeInstantiation;
 import zserio.ast.ParameterizedTypeInstantiation.InstantiatedParameter;
 import zserio.ast.SqlConstraint;
+import zserio.ast.TemplateParameter;
 import zserio.emit.common.ExpressionFormatter;
 import zserio.emit.common.ZserioEmitException;
 
@@ -23,6 +25,9 @@ public class CompoundTypeTemplateData extends HtmlTemplateData
     {
         super(context, compoundType);
 
+        for (TemplateParameter templateParameter : compoundType.getTemplateParameters())
+            templateParameters.add(new TemplateParameterTemplateData(context, templateParameter));
+
         for (Parameter parameter : compoundType.getTypeParameters())
             parameters.add(new ParameterTemplateData(context, parameter));
 
@@ -31,6 +36,11 @@ public class CompoundTypeTemplateData extends HtmlTemplateData
 
         for (Function function : compoundType.getFunctions())
             functions.add(new FunctionTemplateData(context, compoundType, function));
+    }
+
+    public Iterable<TemplateParameterTemplateData> getTemplateParameters()
+    {
+        return templateParameters;
     }
 
     public Iterable<ParameterTemplateData> getParameters()
@@ -48,11 +58,26 @@ public class CompoundTypeTemplateData extends HtmlTemplateData
         return functions;
     }
 
+    public static class TemplateParameterTemplateData
+    {
+        public TemplateParameterTemplateData(TemplateDataContext context, TemplateParameter templateParameter)
+        {
+            name = templateParameter.getName();
+        }
+
+        public String getName()
+        {
+            return name;
+        }
+
+        private final String name;
+    }
+
     public static class ParameterTemplateData
     {
         public ParameterTemplateData(TemplateDataContext context, Parameter parameter)
         {
-            symbol = SymbolTemplateDataCreator.createData(context, parameter.getTypeReference().getType());
+            symbol = SymbolTemplateDataCreator.createData(context, parameter.getTypeReference());
             name = parameter.getName();
         }
 
@@ -76,28 +101,51 @@ public class CompoundTypeTemplateData extends HtmlTemplateData
                 throws ZserioEmitException
         {
             symbol = SymbolTemplateDataCreator.createData(context, compoundType, field);
-            final TypeInstantiation fieldTypeInstantiation = field.getTypeInstantiation();
-            typeSymbol = SymbolTemplateDataCreator.createData(context, fieldTypeInstantiation);
+            TypeInstantiation typeInstantiation = field.getTypeInstantiation();
+            typeSymbol = SymbolTemplateDataCreator.createData(context, typeInstantiation);
             final ExpressionFormatter docExpressionFormatter = context.getExpressionFormatter();
-            initArguments(fieldTypeInstantiation, docExpressionFormatter);
-            docComments = new DocCommentsTemplateData(context, field.getDocComments());
-            isVirtual = field.getIsVirtual();
-            isAutoOptional = field.isOptional() && field.getOptionalClauseExpr() == null;
-            alignmentExpression = formatExpression(field.getAlignmentExpr(), docExpressionFormatter);
-            constraintExpression = formatExpression(field.getConstraintExpr(), docExpressionFormatter);
-            if (fieldTypeInstantiation instanceof ArrayInstantiation)
+
+            if (typeInstantiation instanceof ArrayInstantiation)
             {
-                final ArrayInstantiation arrayInstantiation = (ArrayInstantiation)fieldTypeInstantiation;
+                final ArrayInstantiation arrayInstantiation = (ArrayInstantiation)typeInstantiation;
                 isArrayImplicit = arrayInstantiation.isImplicit();
                 arrayRange = "[" +
-                        formatExpression(arrayInstantiation.getLengthExpression(), docExpressionFormatter) +
-                        "]";
+                            formatExpression(arrayInstantiation.getLengthExpression(), docExpressionFormatter) +
+                            "]";
+                typeInstantiation = arrayInstantiation.getElementTypeInstantiation();
             }
             else
             {
                 isArrayImplicit = false;
                 arrayRange = "";
             }
+
+            if (typeInstantiation instanceof ParameterizedTypeInstantiation)
+            {
+                final ParameterizedTypeInstantiation parameterizedTypeInstantiation =
+                        (ParameterizedTypeInstantiation)typeInstantiation;
+                for (Expression typeArgument : parameterizedTypeInstantiation.getTypeArguments())
+                {
+                    typeArguments.add(docExpressionFormatter.formatGetter(typeArgument));
+                }
+            }
+            if (typeInstantiation instanceof DynamicBitFieldInstantiation)
+            {
+                final DynamicBitFieldInstantiation dynamicBitFieldInstantiation =
+                        (DynamicBitFieldInstantiation)typeInstantiation;
+                dynamicBitFieldLengthExpression = formatExpression(
+                        dynamicBitFieldInstantiation.getLengthExpression(), docExpressionFormatter);
+            }
+            else
+            {
+                dynamicBitFieldLengthExpression = "";
+            }
+
+            docComments = new DocCommentsTemplateData(context, field.getDocComments());
+            isVirtual = field.getIsVirtual();
+            isAutoOptional = field.isOptional() && field.getOptionalClauseExpr() == null;
+            alignmentExpression = formatExpression(field.getAlignmentExpr(), docExpressionFormatter);
+            constraintExpression = formatExpression(field.getConstraintExpr(), docExpressionFormatter);
             initializerExpression = formatExpression(field.getInitializerExpr(), docExpressionFormatter);
             optionalClauseExpression = formatExpression(field.getOptionalClauseExpr(), docExpressionFormatter);
             offsetExpression = formatExpression(field.getOffsetExpr(), docExpressionFormatter);
@@ -116,9 +164,14 @@ public class CompoundTypeTemplateData extends HtmlTemplateData
             return typeSymbol;
         }
 
-        public Iterable<String> getArguments()
+        public Iterable<String> getTypeArguments()
         {
-            return arguments;
+            return typeArguments;
+        }
+
+        public String getDynamicBitFieldLengthExpression()
+        {
+            return dynamicBitFieldLengthExpression;
         }
 
         public DocCommentsTemplateData getDocComments()
@@ -176,25 +229,6 @@ public class CompoundTypeTemplateData extends HtmlTemplateData
             return sqlConstraintExpression;
         }
 
-        private void initArguments(TypeInstantiation fieldTypeInstantiation,
-                ExpressionFormatter docExpressionFormatter) throws ZserioEmitException
-        {
-            final TypeInstantiation typeInstantiation = (fieldTypeInstantiation instanceof ArrayInstantiation)
-                    ? ((ArrayInstantiation)fieldTypeInstantiation).getElementTypeInstantiation()
-                    : fieldTypeInstantiation;
-            if (typeInstantiation instanceof ParameterizedTypeInstantiation)
-            {
-                final ParameterizedTypeInstantiation parameterizedTypeInstantiation =
-                        (ParameterizedTypeInstantiation)typeInstantiation;
-                for (InstantiatedParameter instantiatedParameter :
-                    parameterizedTypeInstantiation.getInstantiatedParameters())
-                {
-                    arguments.add(docExpressionFormatter.formatGetter(
-                            instantiatedParameter.getArgumentExpression()));
-                }
-            }
-        }
-
         private String formatExpression(Expression expression, ExpressionFormatter docExpressionFormatter)
                 throws ZserioEmitException
         {
@@ -203,7 +237,8 @@ public class CompoundTypeTemplateData extends HtmlTemplateData
 
         private final SymbolTemplateData symbol;
         private final SymbolTemplateData typeSymbol;
-        private final List<String> arguments = new ArrayList<String>();
+        private final List<String> typeArguments = new ArrayList<String>();
+        private final String dynamicBitFieldLengthExpression;
         private final DocCommentsTemplateData docComments;
         private final boolean isVirtual;
         private final boolean isAutoOptional;
@@ -223,8 +258,7 @@ public class CompoundTypeTemplateData extends HtmlTemplateData
                 throws ZserioEmitException
         {
             symbol = SymbolTemplateDataCreator.createData(context, compoundType, function);
-            returnSymbol = SymbolTemplateDataCreator.createData(context,
-                    function.getReturnTypeReference().getType());
+            returnSymbol = SymbolTemplateDataCreator.createData(context, function.getReturnTypeReference());
             final ExpressionFormatter docExpressionFormatter = context.getExpressionFormatter();
             resultExpression = docExpressionFormatter.formatGetter(function.getResultExpression());
             docComments = new DocCommentsTemplateData(context, function.getDocComments());
@@ -256,6 +290,8 @@ public class CompoundTypeTemplateData extends HtmlTemplateData
         private final DocCommentsTemplateData docComments;
     }
 
+    private final List<TemplateParameterTemplateData> templateParameters =
+            new ArrayList<TemplateParameterTemplateData>();
     private final List<ParameterTemplateData> parameters = new ArrayList<ParameterTemplateData>();
     private final List<FieldTemplateData> fields = new ArrayList<FieldTemplateData>();
     private final List<FunctionTemplateData> functions = new ArrayList<FunctionTemplateData>();

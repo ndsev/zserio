@@ -23,9 +23,9 @@
             </tr>
     </#if>
             <tr class="codeMember">
-              <td id="tabIndent"></td>
+              <td id="tabIndent" class="emptyCell"></td>
               <td>
-                ${typePrefix}<@symbol_reference field.typeSymbol/><@compound_field_arguments field.arguments/>
+                ${typePrefix}<@compound_field_type_name field/>
               </td>
               <td>
                 <@symbol_reference field.symbol/><#rt>
@@ -50,34 +50,45 @@
 <#macro compound_functions functions>
     <#list functions as function>
             <tr>
-              <td id="tabIndent"></td>
+              <td id="tabIndent" class="emptyCell"></td>
               <td colspan=2>
                 function <@symbol_reference function.returnSymbol/> <#rt>
                   <#lt><@symbol_reference function.symbol/>()</a>
               </td>
             </tr>
             <tr>
-              <td id="tabIndent"></td>
+              <td id="tabIndent" class="emptyCell"></td>
               <td colspan=2>{</td>
             </tr>
             <tr>
-              <td id="tabIndent"></td>
+              <td id="tabIndent" class="emptyCell"></td>
               <td colspan=2 id="tabIndent">return ${function.resultExpression};</td>
             </tr>
             <tr>
-              <td id="tabIndent"></td>
+              <td id="tabIndent" class="emptyCell"></td>
               <td colspan=2>}</td>
             </tr>
     </#list>
 </#macro>
 
+<#macro compound_template_parameters templateParameters>
+    <#if templateParameters?has_content>
+  &lt;<#t>
+        <#list templateParameters as templateParameter>
+    ${templateParameter.name}<#t>
+      <#if templateParameter?has_next>, </#if><#t>
+        </#list>
+  &gt;<#t>
+    </#if>
+</#macro>
+
 <#macro compound_parameters parameters>
     <#if parameters?has_content>
   (<#t>
-    <#list parameters as parameter>
-      <@symbol_reference parameter.symbol/> ${parameter.name}<#t>
+        <#list parameters as parameter>
+    <@symbol_reference parameter.symbol/> ${parameter.name}<#t>
       <#if parameter?has_next>, </#if><#t>
-    </#list>
+        </#list>
   )<#t>
     </#if>
 </#macro>
@@ -136,11 +147,19 @@
       </dd>
 </#macro>
 
-<#macro compound_field_arguments arguments>
-    <#if arguments?has_content>
+<#macro compound_field_type_name field>
+  <@symbol_reference field.typeSymbol/><#t>
+  <@compound_field_type_arguments field.typeArguments/><#t>
+    <#if field.dynamicBitFieldLengthExpression?has_content>
+  &lt;${field.dynamicBitFieldLengthExpression}&gt;<#t>
+    </#if>
+</#macro>
+
+<#macro compound_field_type_arguments typeArguments>
+    <#if typeArguments?has_content>
         (<#t>
-        <#list arguments as argument>
-          ${argument}<#if argument?has_next>, </#if><#t>
+        <#list typeArguments as typeArgument>
+          ${typeArgument}<#if typeArgument?has_next>, </#if><#t>
         </#list>
         )<#t>
     </#if>

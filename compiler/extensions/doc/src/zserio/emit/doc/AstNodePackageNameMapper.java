@@ -15,6 +15,7 @@ import zserio.ast.SqlDatabaseType;
 import zserio.ast.SqlTableType;
 import zserio.ast.StructureType;
 import zserio.ast.Subtype;
+import zserio.ast.TemplateArgument;
 import zserio.ast.TypeInstantiation;
 import zserio.ast.TypeReference;
 import zserio.ast.UnionType;
@@ -111,7 +112,8 @@ class AstNodePackageNameMapper
         public void visitTypeReference(TypeReference typeReference)
         {
             final ZserioType type = typeReference.getType();
-            type.accept(this);
+            if (type != null) // only if it isn't a template parameter
+                type.accept(this);
         }
 
         @Override
@@ -119,14 +121,12 @@ class AstNodePackageNameMapper
         {
             if (typeInstantiation instanceof ArrayInstantiation)
             {
-                final ArrayInstantiation arrayInstantiation = (ArrayInstantiation)typeInstantiation;
-                final ZserioType elementType = arrayInstantiation.getElementTypeInstantiation().getType();
-                elementType.accept(this);
+                ((ArrayInstantiation)typeInstantiation).getElementTypeInstantiation()
+                        .getTypeReference().accept(this);
             }
             else
             {
-                final ZserioType type = typeInstantiation.getType();
-                type.accept(this);
+                typeInstantiation.getTypeReference().accept(this);
             }
         }
 
@@ -134,6 +134,12 @@ class AstNodePackageNameMapper
         public void visitInstantiateType(InstantiateType templateInstantiation)
         {
             pkg = templateInstantiation.getPackage();
+        }
+
+        @Override
+        public void visitTemplateArgument(TemplateArgument templateArgument)
+        {
+            templateArgument.getTypeReference().accept(this);
         }
 
         private Package pkg = null;

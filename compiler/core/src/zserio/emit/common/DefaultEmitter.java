@@ -5,6 +5,7 @@ import zserio.ast.ChoiceType;
 import zserio.ast.Constant;
 import zserio.ast.EnumType;
 import zserio.ast.Import;
+import zserio.ast.InstantiateType;
 import zserio.ast.Package;
 import zserio.ast.PubsubType;
 import zserio.ast.Root;
@@ -84,5 +85,9 @@ public abstract class DefaultEmitter implements Emitter
 
     @Override
     public void beginPubsub(PubsubType pubsub) throws ZserioEmitException
+    {}
+
+    @Override
+    public void beginInstantiateType(InstantiateType pubsub) throws ZserioEmitException
     {}
 }

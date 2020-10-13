@@ -39,7 +39,7 @@ public class Root extends AstNodeBase
     }
 
     /**
-     * Walks through AST tree applying given emitter interface.
+     * Walks through AST tree applying given emitter interface, automatically resolves templates.
      *
      * @param emitter Emitter interface to use for walking.
      *
@@ -47,7 +47,20 @@ public class Root extends AstNodeBase
      */
     public void emit(Emitter emitter) throws ZserioEmitException
     {
-        final ZserioAstEmitter astEmitter = new ZserioAstEmitter(emitter);
+        emit(emitter, true);
+    }
+
+    /**
+     * Walks through AST tree applying given emitter interface.
+     *
+     * @param emitter Emitter interface to use for walking.
+     * @param resolveTemplates Whether to automatically resolve templates.
+     *
+     * @throws ZserioEmitException Throws in case of any error.
+     */
+    public void emit(Emitter emitter, boolean resolveTemplates) throws ZserioEmitException
+    {
+        final ZserioAstEmitter astEmitter = new ZserioAstEmitter(emitter, resolveTemplates);
         try
         {
             this.accept(astEmitter);

@@ -1,6 +1,6 @@
 package zserio.emit.doc;
 
-import zserio.ast.ArrayType;
+import zserio.ast.ArrayInstantiation;
 import zserio.ast.AstNode;
 import zserio.ast.BitmaskType;
 import zserio.ast.BitmaskValue;
@@ -210,20 +210,24 @@ class AstNodeTypeNameMapper
         public void visitTypeReference(TypeReference typeReference)
         {
             final ZserioType type = typeReference.getType();
-            type.accept(this);
+            if (type != null)
+                type.accept(this);
+            else
+                typeName = "TemplateParameter";
         }
 
         @Override
         public void visitTypeInstantiation(TypeInstantiation typeInstantiation)
         {
-            final ZserioType type = typeInstantiation.getType();
-            type.accept(this);
-        }
-
-        @Override
-        public void visitArrayType(ArrayType arrayType)
-        {
-            typeName = "Array";
+            if (typeInstantiation instanceof ArrayInstantiation)
+            {
+                ((ArrayInstantiation)typeInstantiation).getElementTypeInstantiation()
+                        .getTypeReference().accept(this);
+            }
+            else
+            {
+                typeInstantiation.getTypeReference().accept(this);
+            }
         }
 
         @Override
@@ -283,7 +287,7 @@ class AstNodeTypeNameMapper
         @Override
         public void visitTemplateArgument(TemplateArgument templateArgument)
         {
-            typeName = "TemplateArgument";
+            templateArgument.getTypeReference().accept(this);
         }
 
         @Override

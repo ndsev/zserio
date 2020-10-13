@@ -12,10 +12,12 @@ public class ZserioAstEmitter extends ZserioAstWalker
      * Constructor.
      *
      * @param emitter Emitter to call during AST walking.
+     * @param resolveTempaltes Whether to resolve templates and emit only its instances.
      */
-    public ZserioAstEmitter(Emitter emitter)
+    public ZserioAstEmitter(Emitter emitter, boolean resolveTemplates)
     {
         this.emitter = emitter;
+        this.resolveTemplates = resolveTemplates;
     }
 
     @Override
@@ -92,10 +94,10 @@ public class ZserioAstEmitter extends ZserioAstWalker
     {
         try
         {
-            if (structureType.getTemplateParameters().isEmpty())
-                emitter.beginStructure(structureType);
-            else
+            if (needsVisitInstantiations(structureType))
                 visitInstantiations(structureType);
+            else
+                emitter.beginStructure(structureType);
         }
         catch (ZserioEmitException e)
         {
@@ -108,10 +110,10 @@ public class ZserioAstEmitter extends ZserioAstWalker
     {
         try
         {
-            if (choiceType.getTemplateParameters().isEmpty())
-                emitter.beginChoice(choiceType);
-            else
+            if (needsVisitInstantiations(choiceType))
                 visitInstantiations(choiceType);
+            else
+                emitter.beginChoice(choiceType);
         }
         catch (ZserioEmitException e)
         {
@@ -124,10 +126,10 @@ public class ZserioAstEmitter extends ZserioAstWalker
     {
         try
         {
-            if (unionType.getTemplateParameters().isEmpty())
-                emitter.beginUnion(unionType);
-            else
+            if (needsVisitInstantiations(unionType))
                 visitInstantiations(unionType);
+            else
+                emitter.beginUnion(unionType);
         }
         catch (ZserioEmitException e)
         {
@@ -166,10 +168,10 @@ public class ZserioAstEmitter extends ZserioAstWalker
     {
         try
         {
-            if (sqlTableType.getTemplateParameters().isEmpty())
-                emitter.beginSqlTable(sqlTableType);
-            else
+            if (needsVisitInstantiations(sqlTableType))
                 visitInstantiations(sqlTableType);
+            else
+                emitter.beginSqlTable(sqlTableType);
         }
         catch (ZserioEmitException e)
         {
@@ -219,13 +221,27 @@ public class ZserioAstEmitter extends ZserioAstWalker
     @Override
     public void visitInstantiateType(InstantiateType instantiateType)
     {
+        try
+        {
+            emitter.beginInstantiateType(instantiateType);
+        }
+        catch (ZserioEmitException e)
+        {
+            throw new UncheckedZserioEmitException(e);
+        }
+
         final TemplatableType instantiation = (TemplatableType)instantiateType.getTypeReference().getType();
         // emit only explicit instantiations moved to a different package
         if (instantiateType.getPackage() != instantiation.getTemplate().getPackage())
             instantiation.accept(this);
     }
 
-    private void visitInstantiations(ZserioTemplatableType template)
+    private boolean needsVisitInstantiations(ZserioTemplatableType template)
+    {
+        return resolveTemplates && !template.getTemplateParameters().isEmpty();
+    }
+
+    private void visitInstantiations(ZserioTemplatableType template) throws ZserioEmitException
     {
         for (ZserioTemplatableType instantiation : template.getInstantiations())
         {
@@ -253,4 +269,5 @@ public class ZserioAstEmitter extends ZserioAstWalker
     }
 
     private final Emitter emitter;
+    private final boolean resolveTemplates;
 }

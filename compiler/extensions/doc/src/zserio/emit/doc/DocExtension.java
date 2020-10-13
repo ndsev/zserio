@@ -105,7 +105,7 @@ public class DocExtension implements Extension
         emitters.add(new SymbolOverviewEmitter(outputDir, parameters, withSvgDiagrams, usedByCollector));
         emitters.add(new PackageEmitter(outputDir, parameters, withSvgDiagrams, usedByCollector));
         for (Emitter emitter : emitters)
-            rootNode.emit(emitter);
+            rootNode.emit(emitter, false);
     }
 
     private final static String OptionDoc = "doc";

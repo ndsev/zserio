@@ -268,7 +268,8 @@ public class DocCommentsTemplateData
                 final ZserioType referencedType = linkSymbolReference.getReferencedType();
                 final AstNode referencedSymbol = linkSymbolReference.getReferencedSymbol();
 
-                SymbolTemplateData symbolData = new SymbolTemplateData("", "unknownLink", "Unknown link", null);
+                SymbolTemplateData symbolData = new SymbolTemplateData("", "unknownLink", "Unknown link", null,
+                        new ArrayList<SymbolTemplateData>());
                 if (referencedType == null)
                 {
                     if (referencedSymbol != null)
@@ -288,8 +289,7 @@ public class DocCommentsTemplateData
                 }
 
                 final String alias = docTagSee.getLinkAlias();
-                seeSymbol = new SymbolTemplateData(alias, symbolData.getHtmlClass(), symbolData.getHtmlTitle(),
-                        symbolData.getHtmlLink());
+                seeSymbol = new SymbolTemplateData(alias, symbolData);
             }
 
             public SymbolTemplateData getSeeSymbol()

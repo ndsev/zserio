@@ -1,5 +1,6 @@
 package zserio.emit.doc;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -7,6 +8,8 @@ import java.util.TreeSet;
 
 import zserio.ast.AstNode;
 import zserio.ast.Package;
+import zserio.ast.TemplateParameter;
+import zserio.ast.ZserioTemplatableType;
 
 public class SymbolOverviewTemplateData
 {
@@ -23,7 +26,19 @@ public class SymbolOverviewTemplateData
             for (AstNode node : nodesEntry.getValue())
             {
                 final SymbolTemplateData symbol = SymbolTemplateDataCreator.createData(context, node);
-                packageSymbols.add(new PackageSymbol(packageName, symbol));
+
+                // TODO[Mi-L@]: Should the template parameters be a part of symbol? Or at lest included within
+                //              the rendered <a> tag?
+                final ArrayList<String> templateParameters = new ArrayList<String>();
+                if (node instanceof ZserioTemplatableType)
+                {
+                    for (TemplateParameter templateParameter :
+                            ((ZserioTemplatableType)node).getTemplateParameters())
+                    {
+                        templateParameters.add(templateParameter.getName());
+                    }
+                }
+                packageSymbols.add(new PackageSymbol(packageName, symbol, templateParameters));
             }
         }
     }
@@ -40,10 +55,11 @@ public class SymbolOverviewTemplateData
 
     public static class PackageSymbol implements Comparable<PackageSymbol>
     {
-        public PackageSymbol(String packageName, SymbolTemplateData symbol)
+        public PackageSymbol(String packageName, SymbolTemplateData symbol, List<String> templateParameters)
         {
             this.packageName = packageName;
             this.symbol = symbol;
+            this.templateParameters = templateParameters;
         }
 
         @Override
@@ -83,8 +99,14 @@ public class SymbolOverviewTemplateData
             return symbol;
         }
 
+        public List<String> getTemplateParameters()
+        {
+            return templateParameters;
+        }
+
         private final String packageName;
         private final SymbolTemplateData symbol;
+        private final List<String> templateParameters;
     }
 
     private final Set<String> packageNames;

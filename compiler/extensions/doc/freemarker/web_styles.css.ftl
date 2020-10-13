@@ -196,6 +196,12 @@ th
     padding-left:5.5ex;
 }
 
+#tabIndent.emptyCell
+{
+    width: 0px;
+    max-width: 0px;
+}
+
 #tabIndent2
 {
     padding-left:11ex;

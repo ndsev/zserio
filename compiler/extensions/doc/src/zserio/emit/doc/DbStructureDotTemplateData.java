@@ -7,6 +7,7 @@ import zserio.ast.Field;
 import zserio.ast.SqlConstraint;
 import zserio.ast.SqlDatabaseType;
 import zserio.ast.SqlTableType;
+import zserio.ast.TypeInstantiation;
 
 public class DbStructureDotTemplateData
 {
@@ -18,9 +19,8 @@ public class DbStructureDotTemplateData
         tables = new ArrayList<Table>();
         for (Field databaseField : databaseFields)
         {
-            final SqlTableType tableType = (SqlTableType)databaseField.getTypeInstantiation().getBaseType();
-            final String tableName = databaseField.getName();
-            tables.add(new Table(context, tableType, tableName));
+            final TypeInstantiation tableTypeInstantiation = databaseField.getTypeInstantiation();
+            tables.add(new Table(context, tableTypeInstantiation, databaseField.getName()));
         }
     }
 
@@ -36,17 +36,20 @@ public class DbStructureDotTemplateData
 
     public static class Table
     {
-        public Table(TemplateDataContext context, SqlTableType tableType, String name)
+        public Table(TemplateDataContext context, TypeInstantiation tableTypeInstantiation, String name)
         {
             this.name = name;
 
-            packageName = tableType.getPackage().getPackageName().toString();
-            typeSymbol = SymbolTemplateDataCreator.createData(context, tableType);
+            packageName = AstNodePackageNameMapper.getPackageName(
+                    tableTypeInstantiation, context.getPackageMapper()).toString();
+            typeSymbol = SymbolTemplateDataCreator.createData(context, tableTypeInstantiation);
+
+            SqlTableType tableType = (SqlTableType)tableTypeInstantiation.getBaseType();
 
             fields = new ArrayList<TableFieldTemplateData>();
             final List<Field> tableFieldList = tableType.getFields();
             for (Field tableField : tableFieldList)
-                fields.add(new TableFieldTemplateData(context, tableField,
+                fields.add(new TableFieldTemplateData(context, tableType, tableField,
                         tableType.isFieldPrimaryKey(tableField)));
         }
 
@@ -78,18 +81,21 @@ public class DbStructureDotTemplateData
 
     public static class TableFieldTemplateData
     {
-        public TableFieldTemplateData(TemplateDataContext context, Field fieldType, boolean isPrimaryKey)
+        public TableFieldTemplateData(TemplateDataContext context, SqlTableType tableType, Field fieldType, boolean isPrimaryKey)
         {
-            name = fieldType.getName();
-            typeSymbol = SymbolTemplateDataCreator.createData(context,
-                    fieldType.getTypeInstantiation().getType());
+            // TODO[Mi-L@]: We wan't to make link to the template's field, but we use field from the template's
+            //              instantiation to get the field's name. Is it correct?
+            if (tableType.getTemplate() != null)
+                tableType = (SqlTableType)tableType.getTemplate();
+            symbol = SymbolTemplateDataCreator.createData(context, tableType, fieldType);
+            typeSymbol = SymbolTemplateDataCreator.createData(context, fieldType.getTypeInstantiation());
             this.isPrimaryKey = isPrimaryKey;
             isNullAllowed = SqlConstraint.isNullAllowed(fieldType.getSqlConstraint());
         }
 
-        public String getName()
+        public SymbolTemplateData getSymbol()
         {
-            return name;
+            return symbol;
         }
 
         public SymbolTemplateData getTypeSymbol()
@@ -107,7 +113,7 @@ public class DbStructureDotTemplateData
             return isNullAllowed;
         }
 
-        private final String name;
+        private final SymbolTemplateData symbol;
         private final SymbolTemplateData typeSymbol;
         private final boolean isPrimaryKey;
         private final boolean isNullAllowed;

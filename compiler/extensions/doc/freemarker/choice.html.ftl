@@ -9,9 +9,9 @@
       <#if field.isArrayImplicit>implicit </#if><#t>
     </#local>
             <tr class="codeMember">
-              <td id="tabIndent"></td>
+              <td id="tabIndent"  class="emptyCell"></td>
               <td id="tabIndent">
-                 ${typePrefix}<@symbol_reference field.typeSymbol/><@compound_field_arguments field.arguments/>
+                 ${typePrefix}<@compound_field_type_name field/>
               </td>
               <td>
                 <@symbol_reference field.symbol/><#rt>
@@ -32,13 +32,16 @@
               </td>
             </tr>
 </#macro>
+<#assign choiceHeading>
+    <i>Choice</i><#if templateParameters?has_content> template</#if> ${symbol.name} ${symbol.name}
+</#assign>
 
     <div class="msgdetail" id="${symbol.htmlLink.htmlAnchor}">
 <#if docComments.isDeprecated>
       <span class="deprecated">(deprecated) </span>
-      <del><i>Choice</i> ${symbol.name}</del>
+      <del>${choiceHeading}</del>
 <#else>
-      <i>Choice</i> ${symbol.name}
+      ${choiceHeading}
 </#if>
     </div>
     <@doc_comments docComments 2, false/>
@@ -48,7 +51,8 @@
         <table>
           <tbody id="tabIndent">
             <tr>
-              <td colspan=3>choice ${symbol.name}<@compound_parameters parameters/> on ${selectorExpression}</td>
+              <td colspan=3>choice ${symbol.name}<@compound_template_parameters templateParameters/><#rt>
+                <#lt><@compound_parameters parameters/> on ${selectorExpression}</td>
             </tr>
             <tr>
               <td colspan=3>{</td>

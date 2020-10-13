@@ -1,5 +1,7 @@
 package zserio.emit.doc;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 
 import zserio.ast.AstNode;
@@ -15,12 +17,15 @@ class SymbolTemplateDataCreator
         final String typeName = AstNodeTypeNameMapper.getTypeName(node);
         final PackageMapper packageMapper = context.getPackageMapper();
         final PackageName packageName = AstNodePackageNameMapper.getPackageName(node, packageMapper);
+        final List<SymbolTemplateData> templateArguments =
+                AstNodeTemplateArgumentsMapper.getTemplateArguments(node, context);
+
         if (packageName == null)
         {
             final String htmlClass = "withoutLink";
             final String htmlTitle = typeName;
 
-            return new SymbolTemplateData(name, htmlClass, htmlTitle);
+            return new SymbolTemplateData(name, htmlClass, htmlTitle, templateArguments);
         }
         else
         {
@@ -29,7 +34,8 @@ class SymbolTemplateDataCreator
             final String htmlLinkPage = createHtmlLinkPage(context, packageName);
             final String htmlLinkAnchor = createHtmlAnchor(typeName, name);
 
-            return new SymbolTemplateData(name, htmlClass, htmlTitle, htmlLinkPage, htmlLinkAnchor);
+            return new SymbolTemplateData(name, htmlClass, htmlTitle, htmlLinkPage, htmlLinkAnchor,
+                    templateArguments);
         }
     }
 
@@ -56,7 +62,8 @@ class SymbolTemplateDataCreator
         final String htmlLinkAnchor = createHtmlAnchor(zserioTypeName, zserioName) + "_" +
                 createHtmlAnchor(memberTypeName, memberName);
 
-        return new SymbolTemplateData(memberName, htmlClass, htmlTitle, htmlLinkPage, htmlLinkAnchor);
+        return new SymbolTemplateData(memberName, htmlClass, htmlTitle, htmlLinkPage, htmlLinkAnchor,
+                new ArrayList<SymbolTemplateData>());
     }
 
     private static String createHtmlClass(String typeName)

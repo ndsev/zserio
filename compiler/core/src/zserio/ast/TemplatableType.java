@@ -105,7 +105,7 @@ abstract class TemplatableType extends DocumentableAstNode implements ZserioTemp
      * Concrete implementation of template instantiation.
      *
      * @param templateArguments    Actual template parameters.
-     * @parma instantiationPackage Package where to instantiate the template.
+     * @param instantiationPackage Package where to instantiate the template.
      */
     abstract TemplatableType instantiateImpl(List<TemplateArgument> templateArguments,
             Package instantiationPackage);

@@ -5,6 +5,7 @@ import zserio.ast.ChoiceType;
 import zserio.ast.Constant;
 import zserio.ast.EnumType;
 import zserio.ast.Import;
+import zserio.ast.InstantiateType;
 import zserio.ast.Package;
 import zserio.ast.PubsubType;
 import zserio.ast.Root;
@@ -170,4 +171,13 @@ public interface Emitter
      * @throws In case of any internal error of the extension.
      */
     public void beginPubsub(PubsubType pubsub) throws ZserioEmitException;
+
+    /**
+     * Called when InstantiateType AST node begins.
+     *
+     * @param instantiateType Current InstantiateType node.
+     *
+     * @throws In case of any internal error of the extension.
+     */
+    public void beginInstantiateType(InstantiateType instantiateType) throws ZserioEmitException;
 }

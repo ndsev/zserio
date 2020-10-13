@@ -13,7 +13,15 @@
 
     <ul class="classlist">
 <#list packageSymbols as packageSymbol>
-      <li id="${packageSymbol.packageName?replace(".", "_")}"><@symbol_reference packageSymbol.symbol/></li>
+      <li id="${packageSymbol.packageName?replace(".", "_")}"><@symbol_reference packageSymbol.symbol/><#rt>
+    <#if packageSymbol.templateParameters?has_content>
+      <span class="withoutLink">&lt;<#t>
+        <#list packageSymbol.templateParameters as templateParameter>
+      ${templateParameter}<#if templateParameter?has_next>, </#if><#t>
+        </#list>
+      &gt;</span><#t>
+    </#if>
+        <#lt></li>
 </#list>
     </ul>
   </body>

@@ -3,13 +3,16 @@
 <#include "compound.inc.ftl">
 <#include "usedby.inc.ftl">
 <#include "svg_diagram.inc.ftl">
+<#assign unionHeading>
+    <i>Union</i><#if templateParameters?has_content> template</#if> ${symbol.name}
+</#assign>
 
     <div class="msgdetail" id="${symbol.htmlLink.htmlAnchor}">
 <#if docComments.isDeprecated>
       <span class="deprecated">(deprecated) </span>
-      <del><i>Union</i> ${symbol.name}</del>
+      <del>${unionHeading}</del>
 <#else>
-      <i>Union</i> ${symbol.name}
+      ${unionHeading}
 </#if>
     </div>
     <@doc_comments docComments 2, false/>
@@ -18,7 +21,8 @@
       <tr><td class="docuCode">
         <table>
           <tbody id="tabIndent">
-            <tr><td colspan=3>union ${symbol.name}<@compound_parameters parameters/></td></tr>
+            <tr><td colspan=3>union ${symbol.name}<@compound_template_parameters templateParameters/><#rt>
+              <#lt><@compound_parameters parameters/></td></tr>
             <tr><td colspan=3>{</td></tr>
             <@compound_fields fields/>
 <#if functions?has_content>

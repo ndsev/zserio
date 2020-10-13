@@ -1,24 +1,38 @@
 package zserio.emit.doc;
 
+import java.util.List;
+
 public class SymbolTemplateData implements Comparable<SymbolTemplateData>
 {
     public SymbolTemplateData(String name, String htmlClass, String htmlTitle, String htmlLinkPage,
-            String htmlLinkAnchor)
+            String htmlLinkAnchor, List<SymbolTemplateData> templateArguments)
     {
-        this(name, htmlClass, htmlTitle, new HtmlLink(htmlLinkPage, htmlLinkAnchor));
+        this(name, htmlClass, htmlTitle, new HtmlLink(htmlLinkPage, htmlLinkAnchor), templateArguments);
     }
 
-    public SymbolTemplateData(String name, String htmlClass, String htmlTitle)
+    public SymbolTemplateData(String name, String htmlClass, String htmlTitle,
+            List<SymbolTemplateData> templateArguments)
     {
-        this(name, htmlClass, htmlTitle, null);
+        this(name, htmlClass, htmlTitle, null, templateArguments);
     }
 
-    public SymbolTemplateData(String name, String htmlClass, String htmlTitle, HtmlLink htmlLink)
+    public SymbolTemplateData(String name, String htmlClass, String htmlTitle, HtmlLink htmlLink,
+            List<SymbolTemplateData> templateArguments)
     {
         this.name = name;
         this.htmlClass = htmlClass;
         this.htmlTitle = htmlTitle;
         this.htmlLink = htmlLink;
+        this.templateArguments = templateArguments;
+    }
+
+    public SymbolTemplateData(String alias, SymbolTemplateData other)
+    {
+        this.name = alias;
+        this.htmlClass = other.htmlClass;
+        this.htmlTitle = other.htmlTitle;
+        this.htmlLink = other.htmlLink;
+        this.templateArguments = other.templateArguments;
     }
 
     @Override
@@ -70,6 +84,11 @@ public class SymbolTemplateData implements Comparable<SymbolTemplateData>
         return htmlLink;
     }
 
+    public Iterable<SymbolTemplateData> getTemplateArguments()
+    {
+        return templateArguments;
+    }
+
     public static class HtmlLink
     {
         public HtmlLink(String htmlPage, String htmlAnchor)
@@ -96,4 +115,5 @@ public class SymbolTemplateData implements Comparable<SymbolTemplateData>
     private final String htmlClass;
     private final String htmlTitle;
     private final HtmlLink htmlLink;
+    private final List<SymbolTemplateData> templateArguments;
 }

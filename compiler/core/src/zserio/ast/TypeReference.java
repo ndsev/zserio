@@ -120,8 +120,11 @@ public class TypeReference extends AstNodeBase
 
     /**
      * Resolves this reference to the corresponding referenced type.
+     *
+     * @param templateParameters When the type reference is inside a template,
+     *                           this contains the template parameters. Can be null!
      */
-    void resolve()
+    void resolve(List<TemplateParameter> templateParameters)
     {
         if (isResolved)
             return;
@@ -130,14 +133,21 @@ public class TypeReference extends AstNodeBase
         type = ownerPackage.getVisibleType(this, referencedPackageName, referencedTypeName);
         if (type == null)
         {
-            throw new ParserException(this, "Unresolved referenced type '" +
-                    ZserioTypeUtil.getReferencedFullName(this) + "'!");
+            if (!referencedPackageName.isEmpty() || templateParameters == null ||
+                    TemplateParameter.indexOf(templateParameters, referencedTypeName) == -1)
+            {
+                throw new ParserException(this, "Unresolved referenced type '" +
+                        ZserioTypeUtil.getReferencedFullName(this) + "'!");
+            }
+            // else: is in the template, and the type name matches a template parameter
         }
 
         // check referenced type
         if (type instanceof SqlDatabaseType)
+        {
             throw new ParserException(this, "Invalid usage of SQL database '" + type.getName() +
                     "' as a type!");
+        }
         if (type instanceof TemplatableType)
         {
             final TemplatableType template = (TemplatableType)type;

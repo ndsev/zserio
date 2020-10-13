@@ -57,7 +57,7 @@ public class TypeInstantiation extends AstNodeBase
      *
      * @return Type reference.
      */
-    TypeReference getTypeReference()
+    public TypeReference getTypeReference()
     {
         return typeReference;
     }

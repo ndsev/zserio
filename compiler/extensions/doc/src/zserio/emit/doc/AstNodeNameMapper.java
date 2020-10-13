@@ -27,13 +27,13 @@ import zserio.ast.StdIntegerType;
 import zserio.ast.StringType;
 import zserio.ast.StructureType;
 import zserio.ast.Subtype;
+import zserio.ast.TemplateArgument;
 import zserio.ast.TemplateParameter;
 import zserio.ast.TypeInstantiation;
 import zserio.ast.TypeReference;
 import zserio.ast.UnionType;
 import zserio.ast.VarIntegerType;
 import zserio.ast.ZserioAstDefaultVisitor;
-import zserio.ast.ZserioType;
 import zserio.tools.ZserioToolPrinter;
 
 class AstNodeNameMapper
@@ -173,8 +173,7 @@ class AstNodeNameMapper
         @Override
         public void visitTypeReference(TypeReference typeReference)
         {
-            final ZserioType type = typeReference.getType();
-            type.accept(this);
+            name = typeReference.getReferencedTypeName();
         }
 
         @Override
@@ -182,14 +181,12 @@ class AstNodeNameMapper
         {
             if (typeInstantiation instanceof ArrayInstantiation)
             {
-                final ArrayInstantiation arrayInstantiation = (ArrayInstantiation)typeInstantiation;
-                final ZserioType elementType = arrayInstantiation.getElementTypeInstantiation().getType();
-                elementType.accept(this);
+                ((ArrayInstantiation)typeInstantiation).getElementTypeInstantiation()
+                        .getTypeReference().accept(this);
             }
             else
             {
-                final ZserioType type = typeInstantiation.getType();
-                type.accept(this);
+                typeInstantiation.getTypeReference().accept(this);
             }
         }
 
@@ -245,6 +242,12 @@ class AstNodeNameMapper
         public void visitTemplateParameter(TemplateParameter templateParameter)
         {
             name = templateParameter.getName();
+        }
+
+        @Override
+        public void visitTemplateArgument(TemplateArgument templateArgument)
+        {
+            templateArgument.getTypeReference().accept(this);
         }
 
         @Override

@@ -8,6 +8,7 @@ import zserio.ast.BitmaskType;
 import zserio.ast.ChoiceType;
 import zserio.ast.Constant;
 import zserio.ast.EnumType;
+import zserio.ast.InstantiateType;
 import zserio.ast.Package;
 import zserio.ast.PackageName;
 import zserio.ast.PubsubType;
@@ -134,6 +135,12 @@ class PackageEmitter extends HtmlDefaultEmitter
     {
         final PubsubTemplateData templateData = new PubsubTemplateData(context, pubsubType);
         processHtmlTemplate("pubsub.html.ftl", templateData, writer);
+    }
+
+    @Override
+    public void beginInstantiateType(InstantiateType instantiateType) throws ZserioEmitException
+    {
+        // TODO[Mi-L@]:
     }
 
     public static String getPackageHtmlLink(PackageName packageName, String htmlContentDirectory)
