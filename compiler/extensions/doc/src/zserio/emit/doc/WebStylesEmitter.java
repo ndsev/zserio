@@ -21,6 +21,6 @@ class WebStylesEmitter
                 false);
     }
 
-    private static final String WEB_STYLES_FILE_NAME = "webStyles.css"; // TODO[mikir] to rename
+    private static final String WEB_STYLES_FILE_NAME = "web_styles.css";
     private static final String WEB_STYLES_TEMPLATE_SOURCE_NAME = "web_styles.css.ftl";
 }

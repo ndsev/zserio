@@ -3,7 +3,7 @@
   <head>
     <title>Zserio Package Overview</title>
 
-    <link rel="stylesheet" type="text/css" href="webStyles.css">
+    <link rel="stylesheet" type="text/css" href="web_styles.css">
     <meta http-equiv="content-type" content="text/html; charset=UTF-8">
     <script language="JavaScript">
         var oldSelectedElement = null;

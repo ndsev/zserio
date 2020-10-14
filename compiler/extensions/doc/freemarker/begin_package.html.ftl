@@ -3,7 +3,7 @@
 <html>
   <head>
     <title>${name}</title>
-    <link rel="stylesheet" type="text/css" href="../webStyles.css">
+    <link rel="stylesheet" type="text/css" href="../web_styles.css">
     <meta http-equiv="content-type" content="text/html; charset=UTF-8">
     <script language="JavaScript">
       window.onload = () => {
