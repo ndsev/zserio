@@ -120,13 +120,6 @@ set_global_python_variables()
         fi
     fi
 
-    # Dot executable to use, defaults to "dot" if not set
-    DOT="${DOT:-dot}"
-    if [ ! -f "`which "${DOT}"`" ] ; then
-        stderr_echo "Cannot find Dot! Set DOT environment variable."
-        return 1
-    fi
-
     # prevent __pycache__ and *.pyc being created in sources directory
     export PYTHONDONTWRITEBYTECODE=1
 
@@ -141,6 +134,20 @@ set_global_python_variables()
 
     # Mypy extra arguments are empty by default
     MYPY_EXTRA_ARGS="${MYPY_EXTRA_ARGS:-""}"
+
+    # documentation variables for sphinx
+    set_global_doc_variables
+}
+
+# Set and check global variables for documentation projets.
+set_global_doc_variables()
+{
+    # Dot executable to use, defaults to "dot" if not set
+    DOT="${DOT:-dot}"
+    if [ ! -f "`which "${DOT}"`" ] ; then
+        stderr_echo "Cannot find Dot! Set DOT environment variable."
+        return 1
+    fi
 
     return 0
 }

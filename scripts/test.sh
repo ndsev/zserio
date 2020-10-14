@@ -167,7 +167,8 @@ test_doc()
                 if [[ "${SWITCH_TEST_NAME}" == "" || "${TEST_ZS_SUBDIR}" == "${SWITCH_TEST_NAME}"* ]] ; then
                     "${JAVA_BIN}" -jar "${ZSERIO_UNPACKED_RELEASE_DIR}/zserio.jar" \
                         -src "${TEST_ZS_DIR}" "${MAIN_ZS_FILE_NAME}" \
-                        -doc "${TEST_DOC_OUT_DIR}/${TEST_ZS_SUBDIR}/${MAIN_ZS_FILE_NAME%.zs}" -withSvgDiagrams
+                        -doc "${TEST_DOC_OUT_DIR}/${TEST_ZS_SUBDIR}/${MAIN_ZS_FILE_NAME%.zs}" \
+                        -withSvgDiagrams -setDotExecutable "${DOT}"
                     if [ $? -ne 0 ] ; then
                         stderr_echo "${MESSAGE} failed!"
                         return 1
@@ -214,24 +215,36 @@ test()
     if [[ ${#CPP_TARGETS[@]} != 0 ]] ; then
         test_cpp "${ZSERIO_UNPACKED_RELEASE_DIR}" "${ZSERIO_PROJECT_ROOT}" "${TEST_SRC_DIR}" "${TEST_OUT_DIR}" \
             CPP_TARGETS[@] ${SWITCH_CLEAN} "${SWITCH_TEST_NAME}"
+        if [ $? -ne 0 ] ; then
+            return 1
+        fi
     fi
 
     # run Zserio Java tests
     if [[ ${PARAM_JAVA} != 0 ]] ; then
         test_java "${ZSERIO_UNPACKED_RELEASE_DIR}" "${TEST_SRC_DIR}" "${TEST_OUT_DIR}" ${SWITCH_CLEAN} \
             "${SWITCH_TEST_NAME}"
+        if [ $? -ne 0 ] ; then
+            return 1
+        fi
     fi
 
     # run Zserio Python tests
     if [[ ${PARAM_PYTHON} != 0 ]]; then
         test_python "${ZSERIO_UNPACKED_RELEASE_DIR}" "${ZSERIO_PROJECT_ROOT}" "${ZSERIO_BUILD_DIR}" \
             "${TEST_SRC_DIR}" "${TEST_OUT_DIR}" ${SWITCH_CLEAN} "${SWITCH_TEST_NAME}"
+        if [ $? -ne 0 ] ; then
+            return 1
+        fi
     fi
 
     # run Zserio documentation tests
     if [[ ${PARAM_DOC} != 0 ]]; then
         test_doc "${ZSERIO_UNPACKED_RELEASE_DIR}" "${TEST_SRC_DIR}" "${TEST_OUT_DIR}" ${SWITCH_CLEAN} \
             "${SWITCH_TEST_NAME}"
+        if [ $? -ne 0 ] ; then
+            return 1
+        fi
     fi
 
     return 0
@@ -463,7 +476,7 @@ main()
         fi
     fi
 
-    if [[ ${PARAM_JAVA} == 1 ]] ; then
+    if [[ ${PARAM_JAVA} != 0 ]] ; then
         set_global_java_variables
         if [ $? -ne 0 ] ; then
             return 1
@@ -472,6 +485,13 @@ main()
 
     if [[ ${PARAM_PYTHON} != 0 ]] ; then
         set_global_python_variables "${ZSERIO_PROJECT_ROOT}"
+        if [ $? -ne 0 ] ; then
+            return 1
+        fi
+    fi
+
+    if [[ ${PARAM_DOC} != 0 ]] ; then
+        set_global_doc_variables
         if [ $? -ne 0 ] ; then
             return 1
         fi
