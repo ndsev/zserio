@@ -11,9 +11,9 @@ import zserio.runtime.ZserioError;
 import zserio.runtime.array.ObjectArray;
 import zserio.runtime.array.UnsignedByteArray;
 
-import gif_data.*;
-import rgb_color.RgbColor;
-import screen_descriptor.ScreenDescriptor;
+import gif.gif_data.*;
+import gif.rgb_color.RgbColor;
+import gif.screen_descriptor.ScreenDescriptor;
 
 public class GifTest
 {
