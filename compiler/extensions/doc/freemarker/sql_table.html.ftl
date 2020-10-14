@@ -2,7 +2,7 @@
 <#include "doc_comment.inc.ftl">
 <#include "compound.inc.ftl">
 <#include "usedby.inc.ftl">
-<#include "collaboration_diagram.inc.ftl">
+<#include "svg_diagram.inc.ftl">
 <#assign sqlTableHeading>
     <i>SQL Table<#if virtualTableUsing?has_content> VIRTUAL</#if></i> ${symbol.name}<#t>
       <#if virtualTableUsing?has_content> <i>USING</i> ${virtualTableUsing}</#if><#t>

@@ -3,7 +3,7 @@
 <#include "compound.inc.ftl">
 <#include "symbol.inc.ftl">
 <#include "usedby.inc.ftl">
-<#include "collaboration_diagram.inc.ftl">
+<#include "svg_diagram.inc.ftl">
 <#macro choice_field field>
     <#local typePrefix>
       <#if field.isArrayImplicit>implicit </#if><#t>

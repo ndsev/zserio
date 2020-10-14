@@ -7,7 +7,7 @@ class TemplateDataContext
 {
     public TemplateDataContext(boolean withSvgDiagrams, UsedByCollector usedByCollector,
             PackageMapper packageMapper, ResourceManager resourceManager, String htmlContentDirectory,
-            String typeCollaborationDirectory)
+            String symbolCollaborationDirectory, String dbStructureDirectory)
     {
         this.withSvgDiagrams = withSvgDiagrams;
         this.usedByCollector = usedByCollector;
@@ -15,7 +15,8 @@ class TemplateDataContext
         this.packageMapper = packageMapper;
         this.resourceManager = resourceManager;
         this.htmlContentDirectory = htmlContentDirectory;
-        this.typeCollaborationDirectory = typeCollaborationDirectory;
+        this.symbolCollaborationDirectory = symbolCollaborationDirectory;
+        this.dbStructureDirectory = dbStructureDirectory;
     }
 
     public boolean getWithSvgDiagrams()
@@ -48,9 +49,14 @@ class TemplateDataContext
         return htmlContentDirectory;
     }
 
-    public String getTypeCollaborationDirectory()
+    public String getSymbolCollaborationDirectory()
     {
-        return typeCollaborationDirectory;
+        return symbolCollaborationDirectory;
+    }
+
+    public String getDbStructureDirectory()
+    {
+        return dbStructureDirectory;
     }
 
     private final boolean withSvgDiagrams;
@@ -59,5 +65,6 @@ class TemplateDataContext
     private final PackageMapper packageMapper;
     private final ResourceManager resourceManager;
     private final String htmlContentDirectory;
-    private final String typeCollaborationDirectory;
+    private final String symbolCollaborationDirectory;
+    private final String dbStructureDirectory;
 }

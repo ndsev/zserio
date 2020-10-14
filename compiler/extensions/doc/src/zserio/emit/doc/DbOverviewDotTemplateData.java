@@ -3,7 +3,6 @@ package zserio.emit.doc;
 import java.util.ArrayList;
 import java.util.List;
 
-import zserio.ast.ZserioType;
 import zserio.ast.ZserioTypeUtil;
 import zserio.ast.SqlDatabaseType;
 import zserio.ast.SqlTableType;

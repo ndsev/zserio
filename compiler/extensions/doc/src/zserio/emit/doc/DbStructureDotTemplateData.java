@@ -2,8 +2,6 @@ package zserio.emit.doc;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
 
 import zserio.ast.Field;
 import zserio.ast.SqlConstraint;
@@ -12,74 +10,28 @@ import zserio.ast.SqlTableType;
 
 public class DbStructureDotTemplateData
 {
-    public DbStructureDotTemplateData(TemplateDataContext context, SqlDatabaseType databaseType,
-            int databaseIndex)
+    public DbStructureDotTemplateData(TemplateDataContext context, SqlDatabaseType databaseType)
     {
-        // create database with proper color
-        final String databaseColor = DbIndexToColorConverter.convert(databaseIndex);
-        database = new Database(context, databaseType, databaseColor);
+        symbol = SymbolTemplateDataCreator.createData(context, databaseType);
 
         final Iterable<Field> databaseFields = databaseType.getFields();
+        tables = new ArrayList<Table>();
         for (Field databaseField : databaseFields)
-            database.addTable(context, databaseField.getName());
+        {
+            final SqlTableType tableType = (SqlTableType)databaseField.getTypeInstantiation().getBaseType();
+            final String tableName = databaseField.getName();
+            tables.add(new Table(context, tableType, tableName));
+        }
     }
 
-    public Database getDatabase()
+    public SymbolTemplateData getSymbol()
     {
-        return database;
+        return symbol;
     }
 
-    public static class Database
+    public Iterable<Table> getTables()
     {
-        public Database(TemplateDataContext context, SqlDatabaseType databaseType, String colorName)
-        {
-            symbol = SymbolTemplateDataCreator.createData(context, databaseType);
-            this.colorName = colorName;
-
-            nameToSqlTableTypeMap = new TreeMap<String, SqlTableType>();
-            final Iterable<Field> databaseFields = databaseType.getFields();
-            for (Field databaseField : databaseFields)
-            {
-                final SqlTableType tableType = (SqlTableType)databaseField.getTypeInstantiation().getBaseType();
-                final String tableName = databaseField.getName();
-                nameToSqlTableTypeMap.put(tableName, tableType);
-            }
-
-            nameToTableMap = new TreeMap<String, Table>();
-        }
-
-        public Table addTable(TemplateDataContext context, String tableName)
-        {
-            Table table = nameToTableMap.get(tableName);
-            if (table == null)
-            {
-                final SqlTableType tableType = nameToSqlTableTypeMap.get(tableName);
-                table = new Table(context, tableType, tableName);
-                nameToTableMap.put(tableName, table);
-            }
-
-            return table;
-        }
-
-        public SymbolTemplateData getSymbol()
-        {
-            return symbol;
-        }
-
-        public String getColorName()
-        {
-            return colorName;
-        }
-
-        public Iterable<Table> getTables()
-        {
-            return nameToTableMap.values();
-        }
-
-        private final SymbolTemplateData symbol;
-        private final String colorName;
-        private final Map<String, SqlTableType> nameToSqlTableTypeMap;
-        private final Map<String, Table> nameToTableMap;
+        return tables;
     }
 
     public static class Table
@@ -161,5 +113,6 @@ public class DbStructureDotTemplateData
         private final boolean isNullAllowed;
     }
 
-    private final Database database;
+    private final SymbolTemplateData symbol;
+    private final List<Table> tables;
 }

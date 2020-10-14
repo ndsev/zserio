@@ -29,8 +29,10 @@ class PackageEmitter extends HtmlDefaultEmitter
     {
         super(outputPathName, extensionParameters, withSvgDiagrams, usedByCollector);
 
+        final String directoryPrefix = ".." + File.separator;
         context = new TemplateDataContext(getWithSvgDiagrams(), getUsedByCollector(), getPackageMapper(),
-                getResourceManager(), ".", "../" + SYMBOL_COLLABORATION_DIRECTORY);
+                getResourceManager(), ".", directoryPrefix + SYMBOL_COLLABORATION_DIRECTORY,
+                directoryPrefix + DB_STRUCTURE_DIRECTORY);
     }
 
     @Override
@@ -109,7 +111,7 @@ class PackageEmitter extends HtmlDefaultEmitter
     @Override
     public void beginSqlDatabase(SqlDatabaseType sqlDatabaseType) throws ZserioEmitException
     {
-        final CompoundTypeTemplateData templateData = new CompoundTypeTemplateData(context, sqlDatabaseType);
+        final CompoundTypeTemplateData templateData = new SqlDatabaseTemplateData(context, sqlDatabaseType);
         processHtmlTemplate("sql_database.html.ftl", templateData, writer);
     }
 

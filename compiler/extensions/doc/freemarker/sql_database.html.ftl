@@ -2,7 +2,7 @@
 <#include "doc_comment.inc.ftl">
 <#include "compound.inc.ftl">
 <#include "usedby.inc.ftl">
-<#include "collaboration_diagram.inc.ftl">
+<#include "svg_diagram.inc.ftl">
 
     <div class="msgdetail" id="${symbol.htmlLink.htmlAnchor}">
 <#if docComments.isDeprecated>
@@ -30,4 +30,8 @@
 <#if collaborationDiagramSvg??>
 
     <@collaboration_diagram collaborationDiagramSvg/>
+</#if>
+<#if structureDiagramSvg??>
+
+    <@structure_diagram structureDiagramSvg/>
 </#if>

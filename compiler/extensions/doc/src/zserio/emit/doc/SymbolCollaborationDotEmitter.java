@@ -25,8 +25,10 @@ class SymbolCollaborationDotEmitter extends DotDefaultEmitter
         super(outputPathName, extensionParameters, (dotLinksPrefix == null) ? "../.." : dotLinksPrefix,
                 withSvgDiagrams, dotExecutable, usedByCollector);
 
+        final String directoryPrefix = getDotLinksPrefix() + File.separator;
         context = new TemplateDataContext(getWithSvgDiagrams(), getUsedByCollector(), getPackageMapper(),
-                getResourceManager(), getDotLinksPrefix() + File.separator + HTML_CONTENT_DIRECTORY, ".");
+                getResourceManager(), directoryPrefix + HTML_CONTENT_DIRECTORY, ".",
+                directoryPrefix + DB_STRUCTURE_DIRECTORY);
     }
 
     @Override
@@ -35,27 +37,27 @@ class SymbolCollaborationDotEmitter extends DotDefaultEmitter
         emitDotDiagrams();
     }
 
-    public static boolean svgCollaborationFileExists(AstNode node, UsedByCollector usedByCollector,
+    public static boolean svgSymbolCollaborationFileExists(AstNode node, UsedByCollector usedByCollector,
             boolean withSvgDiagrams)
     {
         return withSvgDiagrams && usedByCollector.getUsedByTypeMap().containsKey(node);
     }
 
-    public static String getSvgCollaborationHtmlLink(AstNode node, PackageMapper packageMapper,
+    public static String getSvgSymbolCollaborationHtmlLink(AstNode node, PackageMapper packageMapper,
             String symbolCollaborationDirectory)
     {
-        return getCollaborationHtmlLinkBase(node, packageMapper, symbolCollaborationDirectory) +
+        return getSymbolCollaborationHtmlLinkBase(node, packageMapper, symbolCollaborationDirectory) +
                 SVG_FILE_EXTENSION;
     }
 
-    private static String getDotCollaborationHtmlLink(AstNode node, PackageMapper packageMapper,
+    private static String getDotSymbolCollaborationHtmlLink(AstNode node, PackageMapper packageMapper,
             String symbolCollaborationDirectory)
     {
-        return getCollaborationHtmlLinkBase(node, packageMapper, symbolCollaborationDirectory) +
+        return getSymbolCollaborationHtmlLinkBase(node, packageMapper, symbolCollaborationDirectory) +
                 DOT_FILE_EXTENSION;
     }
 
-    private static String getCollaborationHtmlLinkBase(AstNode node, PackageMapper packageMapper,
+    private static String getSymbolCollaborationHtmlLinkBase(AstNode node, PackageMapper packageMapper,
             String symbolCollaborationDirectory)
     {
         final PackageName packageName = AstNodePackageNameMapper.getPackageName(node, packageMapper);
@@ -78,12 +80,12 @@ class SymbolCollaborationDotEmitter extends DotDefaultEmitter
 
             final SymbolCollaborationDotTemplateData templateData = new SymbolCollaborationDotTemplateData(
                     context, node, usedByCollector.getUsedTypes(node), entry.getValue());
-            final String dotCollaborationHtmlLink = getDotCollaborationHtmlLink(node, getPackageMapper(),
+            final String dotHtmlLink = getDotSymbolCollaborationHtmlLink(node, getPackageMapper(),
                     SYMBOL_COLLABORATION_DIRECTORY);
-            final File outputDotFile = new File(getOutputPathName(), dotCollaborationHtmlLink);
-            final String svgCollaborationHtmlLink = getSvgCollaborationHtmlLink(node, getPackageMapper(),
+            final File outputDotFile = new File(getOutputPathName(), dotHtmlLink);
+            final String svgHtmlLink = getSvgSymbolCollaborationHtmlLink(node, getPackageMapper(),
                     SYMBOL_COLLABORATION_DIRECTORY);
-            final File outputSvgFile = new File(getOutputPathName(), svgCollaborationHtmlLink);
+            final File outputSvgFile = new File(getOutputPathName(), svgHtmlLink);
             processDotTemplate(TEMPLATE_SOURCE_NAME, templateData, outputDotFile, outputSvgFile);
         }
     }

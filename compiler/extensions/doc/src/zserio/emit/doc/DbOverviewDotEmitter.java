@@ -24,7 +24,7 @@ class DbOverviewDotEmitter extends DotDefaultEmitter
         final String directoryPrefix = getDotLinksPrefix() + File.separator;
         context = new TemplateDataContext(getWithSvgDiagrams(), getUsedByCollector(), getPackageMapper(),
                 getResourceManager(), directoryPrefix + HTML_CONTENT_DIRECTORY,
-                directoryPrefix + SYMBOL_COLLABORATION_DIRECTORY);
+                directoryPrefix + SYMBOL_COLLABORATION_DIRECTORY, directoryPrefix + DB_STRUCTURE_DIRECTORY);
 
         databases = new ArrayList<SqlDatabaseType>();
     }
