@@ -12,13 +12,8 @@ public class DbOverviewDotTemplateData
     public DbOverviewDotTemplateData(TemplateDataContext context, List<SqlDatabaseType> databaseTypes)
     {
         databases = new ArrayList<Database>();
-        int databaseIndex = 0;
         for (SqlDatabaseType databaseType : databaseTypes)
-        {
-            databases.add(new Database(context, databaseType,
-                    DbIndexToColorConverter.convert(databaseIndex)));
-            databaseIndex++;
-        }
+            databases.add(new Database(context, databaseType));
     }
 
     public Iterable<Database> getDatabases()
@@ -28,10 +23,9 @@ public class DbOverviewDotTemplateData
 
     public static class Database
     {
-        public Database(TemplateDataContext context, SqlDatabaseType databaseType, String colorName)
+        public Database(TemplateDataContext context, SqlDatabaseType databaseType)
         {
             symbol = SymbolTemplateDataCreator.createData(context, databaseType);
-            this.colorName = colorName;
 
             final List<zserio.ast.Field> databaseFieldTypeList = databaseType.getFields();
             tables = new ArrayList<Table>();
@@ -47,18 +41,12 @@ public class DbOverviewDotTemplateData
             return symbol;
         }
 
-        public String getColorName()
-        {
-            return colorName;
-        }
-
         public Iterable<Table> getTables()
         {
             return tables;
         }
 
         private final SymbolTemplateData symbol;
-        private final String colorName;
         private final List<Table> tables;
     }
 

@@ -4,7 +4,7 @@
  */
 digraph Zserio
 {
-    node [shape=none];
+    node [shape=none, fontsize=11];
     rankdir=LR;
     ranksep="5.5 equally";
 <#list databases as database>
@@ -12,8 +12,8 @@ digraph Zserio
     // database ${database.symbol.name}
     subgraph cluster_${database.symbol.name}
     {
-        fontsize="11";
-        bgcolor="${database.colorName}";
+        fontsize="16";
+        style="dashed, rounded";
         label="${database.symbol.name}";
         <@symbol_reference_url database.symbol/>;
         <@symbol_reference_tooltip database.symbol/>;
@@ -25,7 +25,7 @@ digraph Zserio
             label=<
                 <table border="0" cellborder="1" cellspacing="0" cellpadding="4">
                     <tr>
-                        <td valign="bottom" bgcolor="gray">Database Tables</td>
+                        <td valign="bottom" bgcolor="#F2F2FF"><font point-size="13">Database Tables</font></td>
                     </tr>
                     <tr>
                         <td align="left" bgcolor="white" width="840">
@@ -35,7 +35,7 @@ digraph Zserio
                                 <tr>
                                     <td align="left" <@symbol_reference_href_title table.typeSymbol/> target="_parent"><#rt>
                                       <#lt><font face="monospace">${table.fullTypeName}</font></td>
-                                    <td align="left"><font face="monospace" COLOR="blue">${table.name}</font></td>
+                                    <td align="left"><font face="monospace">${table.name}</font></td>
                                 </tr>
             </#list>
         <#else>
