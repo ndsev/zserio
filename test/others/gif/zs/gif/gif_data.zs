@@ -1,7 +1,7 @@
-package gif_data;
+package gif.gif_data;
 
-import gif_version.GifVersion;
-import rgb_color.RgbColor;
+import gif.gif_version.GifVersion;
+import gif.rgb_color.RgbColor;
 
 struct GifData(GifVersion version)
 {

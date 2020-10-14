@@ -1,9 +1,9 @@
 package gif;
 
-import signature.Signature;
-import gif_version.GifVersion;
-import screen_descriptor.ScreenDescriptor;
-import gif_data.GifData;
+import gif.signature.Signature;
+import gif.gif_version.GifVersion;
+import gif.screen_descriptor.ScreenDescriptor;
+import gif.gif_data.GifData;
 
 /**
  * This defines the GDF 87a file format. Exceptions for the GDF 89a file format are given locally.

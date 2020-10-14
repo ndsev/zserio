@@ -1,4 +1,4 @@
-package gif_version;
+package gif.gif_version;
 
 enum bit:2 GifVersion
 {

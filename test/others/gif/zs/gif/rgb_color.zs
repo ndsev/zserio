@@ -1,4 +1,4 @@
-package rgb_color;
+package gif.rgb_color;
 
 struct RgbColor
 {

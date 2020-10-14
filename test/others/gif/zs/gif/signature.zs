@@ -1,4 +1,4 @@
-package signature;
+package gif.signature;
 
 struct Signature
 {
