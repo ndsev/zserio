@@ -264,13 +264,9 @@ public class TemplatesErrorTest
     @Test
     public void unresolvedReferenceInTemplate()
     {
-        final String errors[] =
-        {
-            "unresolved_reference_in_template_error.zs:10:5: " +
-                    "In instantiation of 'TestStruct' required from here",
-            "unresolved_reference_in_template_error.zs:5:5: Unresolved referenced type 'Unresolved'!",
-        };
-        assertTrue(zserioErrors.isPresent(errors));
+        final String error = "unresolved_reference_in_template_error.zs:5:5: " +
+                "Unresolved referenced type 'Unresolved'!";
+        assertTrue(zserioErrors.isPresent(error));
     }
 
     @Test
@@ -284,16 +280,9 @@ public class TemplatesErrorTest
     @Test
     public void unresolvedTemplateInstantiationInTemplate()
     {
-        final String errors[] =
-        {
-            "unresolved_template_instantiation_in_template_error.zs:15:5: " +
-                    "In instantiation of 'TestStruct' required from here",
-            "unresolved_template_instantiation_in_template_error.zs:10:5: " +
-                    "In instantiation of 'InnerStruct' required from here",
-            "unresolved_template_instantiation_in_template_error.zs:5:5: " +
-                    "Unresolved referenced type 'Unresolved'!"
-        };
-        assertTrue(zserioErrors.isPresent(errors));
+        final String error = "unresolved_template_instantiation_in_template_error.zs:5:5: " +
+                "Unresolved referenced type 'Unresolved'!";
+        assertTrue(zserioErrors.isPresent(error));
     }
 
     @Test
