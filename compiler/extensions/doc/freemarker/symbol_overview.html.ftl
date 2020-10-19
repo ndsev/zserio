@@ -13,15 +13,17 @@
 
     <ul class="classlist">
 <#list packageSymbols as packageSymbol>
-      <li id="${packageSymbol.packageName?replace(".", "_")}"><@symbol_reference packageSymbol.symbol/><#rt>
-    <#if packageSymbol.templateParameters?has_content>
-      <span class="withoutLink">&lt;<#t>
-        <#list packageSymbol.templateParameters as templateParameter>
-      ${templateParameter}<#if templateParameter?has_next>, </#if><#t>
-        </#list>
-      &gt;</span><#t>
-    </#if>
-        <#lt></li>
+    <#assign symbolSuffix>
+        <#if packageSymbol.templateParameters?has_content>
+            &lt;<#t>
+            <#list packageSymbol.templateParameters as templateParameter>
+                ${templateParameter}<#if templateParameter?has_next>, </#if><#t>
+            </#list>
+            &gt;<#t>
+        </#if>
+    </#assign>
+      <li id="${packageSymbol.packageName?replace(".", "_")}"><#rt>
+        <#lt><@symbol_reference packageSymbol.symbol symbolSuffix/></li>
 </#list>
     </ul>
   </body>
