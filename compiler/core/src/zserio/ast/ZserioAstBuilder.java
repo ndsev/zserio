@@ -634,7 +634,13 @@ public class ZserioAstBuilder extends ZserioParserBaseVisitor<Object>
         final AstLocation location = new AstLocation(ctx.id().getStart());
         final TypeReference typeReference = visitTypeReference(ctx.typeReference());
         final String name = ctx.id().getText();
-        return new InstantiateType(location, currentPackage, typeReference, name);
+
+        final List<DocComment> docComments = docCommentManager.findDocComments(ctx);
+
+        final InstantiateType instantiateType =
+                new InstantiateType(location, currentPackage, typeReference, name, docComments);
+
+        return instantiateType;
     }
 
     @Override

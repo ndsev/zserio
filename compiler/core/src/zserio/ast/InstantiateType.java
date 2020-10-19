@@ -1,9 +1,11 @@
 package zserio.ast;
 
+import java.util.List;
+
 /**
  * AST node for explicit template instantiation.
  */
-public class InstantiateType extends AstNodeBase implements ZserioType
+public class InstantiateType extends DocumentableAstNode implements ZserioType
 {
     /**
      * Constructor.
@@ -12,11 +14,12 @@ public class InstantiateType extends AstNodeBase implements ZserioType
      * @param pkg           Package to which belongs the instantiation.
      * @param typeReference Reference to a template instantiation.
      * @param name          Name to be assigned to the instantiated template.
+     * @param docComments   List of documentation comments belonging to this node.
      */
     public InstantiateType(AstLocation location, Package pkg, TypeReference typeReference,
-            String name)
+            String name, List<DocComment> docComments)
     {
-        super(location);
+        super(location, docComments);
 
         this.pkg = pkg;
         this.typeReference = typeReference;

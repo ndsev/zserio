@@ -140,7 +140,9 @@ class PackageEmitter extends HtmlDefaultEmitter
     @Override
     public void beginInstantiateType(InstantiateType instantiateType) throws ZserioEmitException
     {
-        // TODO[Mi-L@]:
+        final InstantiateTypeTemplateData templateData =
+                new InstantiateTypeTemplateData(context, instantiateType);
+        processHtmlTemplate("instantiate_type.html.ftl", templateData, writer);
     }
 
     public static String getPackageHtmlLink(PackageName packageName, String htmlContentDirectory)

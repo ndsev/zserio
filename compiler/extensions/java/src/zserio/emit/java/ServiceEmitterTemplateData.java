@@ -7,7 +7,6 @@ import zserio.ast.ServiceMethod;
 import zserio.ast.ServiceType;
 import zserio.ast.ZserioType;
 import zserio.emit.common.ZserioEmitException;
-import zserio.emit.java.JavaNativeMapper;
 import zserio.emit.java.types.JavaNativeType;
 
 public final class ServiceEmitterTemplateData extends UserTypeTemplateData

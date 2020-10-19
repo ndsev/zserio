@@ -12,7 +12,6 @@ import zserio.ast.Function;
 import zserio.ast.Parameter;
 import zserio.ast.ParameterizedTypeInstantiation;
 import zserio.ast.TypeInstantiation;
-import zserio.ast.ParameterizedTypeInstantiation.InstantiatedParameter;
 import zserio.ast.SqlConstraint;
 import zserio.ast.TemplateParameter;
 import zserio.emit.common.ExpressionFormatter;

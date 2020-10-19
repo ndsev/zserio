@@ -11,6 +11,7 @@ import zserio.ast.BitmaskType;
 import zserio.ast.ChoiceType;
 import zserio.ast.Constant;
 import zserio.ast.EnumType;
+import zserio.ast.InstantiateType;
 import zserio.ast.Package;
 import zserio.ast.PubsubType;
 import zserio.ast.Root;
@@ -122,6 +123,12 @@ class SymbolOverviewEmitter extends HtmlDefaultEmitter
     public void beginPubsub(PubsubType pubsubType) throws ZserioEmitException
     {
         currentNodes.add(pubsubType);
+    }
+
+    @Override
+    public void beginInstantiateType(InstantiateType instantiateType) throws ZserioEmitException
+    {
+        currentNodes.add(instantiateType);
     }
 
     private static final String SYMBOL_OVERVIEW_FILE_NAME = "symbol_overview.html";

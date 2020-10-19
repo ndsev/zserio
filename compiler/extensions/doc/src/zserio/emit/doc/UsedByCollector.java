@@ -22,6 +22,7 @@ import zserio.ast.Constant;
 import zserio.ast.EnumItem;
 import zserio.ast.EnumType;
 import zserio.ast.Field;
+import zserio.ast.InstantiateType;
 import zserio.ast.PubsubMessage;
 import zserio.ast.PubsubType;
 import zserio.ast.ServiceMethod;
@@ -132,6 +133,12 @@ class UsedByCollector extends DefaultEmitter
             addTypeToUsedTypes(message.getType(), usedTypes);
         }
         storeType(pubsubType, usedTypes);
+    }
+
+    @Override
+    public void beginInstantiateType(InstantiateType instantiateType)
+    {
+        storeType(instantiateType, instantiateType.getTypeReference().getType());
     }
 
     /**
