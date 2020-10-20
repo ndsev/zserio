@@ -31,7 +31,3 @@
 
     <@collaboration_diagram collaborationDiagramSvg/>
 </#if>
-<#if structureDiagramSvg??>
-
-    <@structure_diagram structureDiagramSvg/>
-</#if>

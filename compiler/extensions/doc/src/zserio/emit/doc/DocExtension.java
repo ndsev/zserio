@@ -95,10 +95,6 @@ public class DocExtension implements Extension
 
         // emit DOT and HTML files (DOT files must be before HTML files)
         final List<Emitter> emitters = new ArrayList<Emitter>();
-        emitters.add(new DbOverviewDotEmitter(outputDir, parameters, dotLinksPrefix, withSvgDiagrams,
-                dotExecutable, usedByCollector));
-        emitters.add(new DbStructureDotEmitter(outputDir, parameters, dotLinksPrefix, withSvgDiagrams,
-                dotExecutable, usedByCollector));
         emitters.add(new SymbolCollaborationDotEmitter(outputDir, parameters, dotLinksPrefix, withSvgDiagrams,
                 dotExecutable, usedByCollector));
         emitters.add(new PackageOverviewEmitter(outputDir, parameters, withSvgDiagrams, usedByCollector));
