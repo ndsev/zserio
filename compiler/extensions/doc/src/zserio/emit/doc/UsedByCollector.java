@@ -184,7 +184,7 @@ class UsedByCollector extends DefaultEmitter
         }
 
         final Set<AstNode> usedTypes = usedTypeMap.get(type);
-        return (usedTypes != null) ? Collections.unmodifiableSet(usedTypes) : EMPTY_USED_LIST;
+        return (usedTypes != null) ? Collections.unmodifiableSet(usedTypes) : EMPTY_USED_SET;
     }
 
     /**
@@ -207,7 +207,7 @@ class UsedByCollector extends DefaultEmitter
         }
 
         final Set<AstNode> usedByTypes = usedByTypeMap.get(type);
-        return Collections.unmodifiableSet(usedByTypes);
+        return (usedByTypes != null) ? Collections.unmodifiableSet(usedByTypes) : EMPTY_USED_SET;
     }
 
     /**
@@ -383,7 +383,7 @@ class UsedByCollector extends DefaultEmitter
         usedByChoices.add(new ChoiceCaseReference(choiceType, choiceCase));
     }
 
-    private static final Set<AstNode> EMPTY_USED_LIST =
+    private static final Set<AstNode> EMPTY_USED_SET =
             Collections.unmodifiableSet(new LinkedHashSet<AstNode>());
     private static final Set<ChoiceCaseReference> EMPTY_CHOICE_TYPE_SET =
             Collections.unmodifiableSet(new TreeSet<ChoiceCaseReference>());
