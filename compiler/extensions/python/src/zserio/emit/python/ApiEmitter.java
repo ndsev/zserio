@@ -17,7 +17,6 @@ import zserio.ast.StructureType;
 import zserio.ast.Subtype;
 import zserio.ast.UnionType;
 import zserio.ast.ZserioType;
-import zserio.emit.common.PackageMapper;
 import zserio.emit.common.ZserioEmitException;
 import zserio.tools.Parameters;
 
@@ -43,13 +42,11 @@ public class ApiEmitter extends PythonDefaultEmitter
     {
         super.beginPackage(zserioPackage);
 
-        final PackageMapper packageMapper = getTemplateDataContext().getPythonPackageMapper();
-        final PackageName mappedPackageName = packageMapper.getPackageName(zserioPackage);
-
-        if (mappedPackageName.isEmpty())
+        final PackageName packageName = zserioPackage.getPackageName();
+        if (packageName.isEmpty())
             addEmptyPackageMapping();
         else
-            addPackageMapping(mappedPackageName);
+            addPackageMapping(packageName);
     }
 
     @Override
@@ -153,8 +150,7 @@ public class ApiEmitter extends PythonDefaultEmitter
 
     private void addModuleMapping(ZserioType zserioType) throws ZserioEmitException
     {
-        final PackageMapper packageMapper = getTemplateDataContext().getPythonPackageMapper();
-        final PackageName packageName = packageMapper.getPackageName(zserioType);
+        final PackageName packageName = zserioType.getPackage().getPackageName();
         final ApiEmitterTemplateData packageTemplateData = packageMapping.get(packageName);
         if (packageTemplateData == null)
             throw new ZserioEmitException("ApiEmitter: Package not yet mapped!");
@@ -163,19 +159,15 @@ public class ApiEmitter extends PythonDefaultEmitter
 
     private void addTypeMapping(ZserioType zserioType) throws ZserioEmitException
     {
-        final PackageMapper packageMapper = getTemplateDataContext().getPythonPackageMapper();
-        final PackageName packageName = packageMapper.getPackageName(zserioType);
+        final PackageName packageName = zserioType.getPackage().getPackageName();
         final ApiEmitterTemplateData packageTemplateData = packageMapping.get(packageName);
         if (packageTemplateData == null)
             throw new ZserioEmitException("ApiEmitter: Package not yet mapped!");
         packageTemplateData.addType(zserioType);
     }
 
-    private void addSymbolMapping(String zserioSymbolName, PackageName zserioPackageName)
-            throws ZserioEmitException
+    private void addSymbolMapping(String zserioSymbolName, PackageName packageName) throws ZserioEmitException
     {
-        final PackageMapper packageMapper = getTemplateDataContext().getPythonPackageMapper();
-        final PackageName packageName = packageMapper.getPackageName(zserioPackageName);
         final ApiEmitterTemplateData packageTemplateData = packageMapping.get(packageName);
         if (packageTemplateData == null)
             throw new ZserioEmitException("ApiEmitter: Package not yet mapped!");

@@ -6,9 +6,9 @@ import zserio.tools.Parameters;
 
 class BitmaskEmitter extends JavaDefaultEmitter
 {
-    public BitmaskEmitter(Parameters extensionParameters, JavaExtensionParameters javaParameters)
+    public BitmaskEmitter(JavaExtensionParameters javaParameters, Parameters extensionParameters)
     {
-        super(extensionParameters, javaParameters);
+        super(javaParameters, extensionParameters);
     }
 
     @Override

@@ -21,7 +21,7 @@ public class SymbolOverviewTemplateData
         for (Map.Entry<Package, List<AstNode>> nodesEntry : nodesMap.entrySet())
         {
             final Package pkg = nodesEntry.getKey();
-            final String packageName = context.getPackageMapper().getPackageName(pkg).toString();
+            final String packageName = pkg.getPackageName().toString();
             packageNames.add(packageName);
             for (AstNode node : nodesEntry.getValue())
             {

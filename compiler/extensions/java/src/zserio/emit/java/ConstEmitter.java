@@ -6,9 +6,9 @@ import zserio.tools.Parameters;
 
 class ConstEmitter extends JavaDefaultEmitter
 {
-    public ConstEmitter(Parameters extensionParameters, JavaExtensionParameters javaParameters)
+    public ConstEmitter(JavaExtensionParameters javaParameters, Parameters extensionParameters)
     {
-        super(extensionParameters, javaParameters);
+        super(javaParameters, extensionParameters);
     }
 
     @Override
@@ -16,8 +16,7 @@ class ConstEmitter extends JavaDefaultEmitter
     {
         final ConstEmitterTemplateData templateData =
                 new ConstEmitterTemplateData(getTemplateDataContext(), constant);
-        processTemplate(TEMPLATE_NAME, templateData, constant.getPackage().getPackageName(),
-                constant.getName());
+        processTemplate(TEMPLATE_NAME, templateData, constant.getPackage(), constant.getName());
     }
 
     private static final String TEMPLATE_NAME = "Constant.java.ftl";

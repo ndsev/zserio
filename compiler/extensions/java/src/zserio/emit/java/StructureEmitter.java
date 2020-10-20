@@ -6,9 +6,9 @@ import zserio.tools.Parameters;
 
 class StructureEmitter extends JavaDefaultEmitter
 {
-    public StructureEmitter(Parameters extensionParameters, JavaExtensionParameters javaParameters)
+    public StructureEmitter(JavaExtensionParameters javaParameters, Parameters extensionParameters)
     {
-        super(extensionParameters, javaParameters);
+        super(javaParameters, extensionParameters);
     }
 
     @Override

@@ -1,6 +1,9 @@
 package zserio.tools;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
@@ -9,6 +12,9 @@ import org.apache.commons.cli.OptionGroup;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.ParseException;
+
+import zserio.ast.IdentifierValidator;
+
 import org.apache.commons.cli.DefaultParser;
 
 /**
@@ -171,13 +177,13 @@ class CommandLineArguments
     }
 
     /**
-     * Gets the top level package name.
+     * Gets the top level package name identifier list.
      *
-     * @returns Top level package name or null if not specified.
+     * @returns List of top level package name identifier or empty list if not specified.
      */
-    public String getTopLevelPackageName()
+    public List<String> getTopLevelPackageNameIds()
     {
-        return topLevelPackageName;
+        return Collections.unmodifiableList(topLevelPackageNameIds);
     }
 
     /**
@@ -310,13 +316,12 @@ class CommandLineArguments
 
     private void readOptions() throws ParseException
     {
-        validateOptions();
-
         srcPathName = getOptionValue(OptionNameSource);
         helpOption = hasOption(OptionNameHelpShort);
         versionOption = hasOption(OptionNameVersionShort);
-        topLevelPackageName = getOptionValue(OptionNameSetTopLevelPackage);
-
+        final String topLevelPackageName = getOptionValue(OptionNameSetTopLevelPackage);
+        topLevelPackageNameIds = (topLevelPackageName == null) ? new ArrayList<String>() :
+            java.util.Arrays.asList(topLevelPackageName.split("\\" + TOP_LEVEL_PACKAGE_NAME_SEPARATOR));
         withRangeCheckCodeOption = hasOption(OptionNameWithRangeCheckCode);
         withPubsubCodeOption = !hasOption(OptionNameWithoutPubsubCode);
         withServiceCodeOption = !hasOption(OptionNameWithoutServiceCode);
@@ -324,8 +329,9 @@ class CommandLineArguments
         withSqlCodeOption = !hasOption(OptionNameWithoutSqlCode);
         withValidationCodeOption = hasOption(OptionNameWithValidationCode);
         withWriterCodeOption = !hasOption(OptionNameWithoutWriterCode);
-
         withUnusedWarningsOption = hasOption(OptionNameWithUnusedWarnings);
+
+        validateOptions();
 
         if (!withWriterCodeOption)
         {
@@ -347,6 +353,8 @@ class CommandLineArguments
 
     private void validateOptions() throws ParseException
     {
+        validateTopLevelPackageNameIds();
+
         // check explicitly specified conflicting options
         if (hasOption(OptionNameWithoutWriterCode))
         {
@@ -373,6 +381,23 @@ class CommandLineArguments
                 throw new ParseException(
                         "The specified option 'withServiceCode' conflicts with another option: " +
                         "'withoutWriterCode'");
+            }
+        }
+    }
+
+    private void validateTopLevelPackageNameIds() throws ParseException
+    {
+        // check set top level package identifiers
+        for (String topLevelId : topLevelPackageNameIds)
+        {
+            try
+            {
+                IdentifierValidator.validateTopLevelPackageId(topLevelId);
+            }
+            catch (RuntimeException exception)
+            {
+                throw new ParseException("The specified option 'setTopLevelPackage' has bad format: " +
+                        exception.getMessage());
             }
         }
     }
@@ -418,13 +443,15 @@ class CommandLineArguments
     private static final String OptionNameWithUnusedWarnings = "withUnusedWarnings";
     private static final String OptionNameWithoutUnusedWarnings = "withoutUnusedWarnings";
 
+    private static final String TOP_LEVEL_PACKAGE_NAME_SEPARATOR = ".";
+
     private final Options options;
     private CommandLine parsedCommandLine;
 
     private String  inputFileName;
     private boolean helpOption;
     private String  srcPathName;
-    private String  topLevelPackageName;
+    private List<String> topLevelPackageNameIds;
     private boolean versionOption;
     private boolean withRangeCheckCodeOption;
     private boolean withPubsubCodeOption;

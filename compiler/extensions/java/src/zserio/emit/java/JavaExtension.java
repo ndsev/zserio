@@ -48,23 +48,23 @@ public class JavaExtension implements Extension
     {
         final String outputDir = extensionParameters.getCommandLineArg(OptionJava);
         final JavaExtensionParameters javaParameters = new JavaExtensionParameters(outputDir);
-        generateJavaSources(extensionParameters, javaParameters, rootNode);
+        generateJavaSources(javaParameters, extensionParameters, rootNode);
     }
 
-    private void generateJavaSources(Parameters extensionParameters, JavaExtensionParameters javaParameters,
+    private void generateJavaSources(JavaExtensionParameters javaParameters, Parameters extensionParameters,
             Root rootNode) throws ZserioEmitException
     {
         final List<Emitter> emitters = new ArrayList<Emitter>();
-        emitters.add(new BitmaskEmitter(extensionParameters, javaParameters));
-        emitters.add(new EnumerationEmitter(extensionParameters, javaParameters));
-        emitters.add(new StructureEmitter(extensionParameters, javaParameters));
-        emitters.add(new ChoiceEmitter(extensionParameters, javaParameters));
-        emitters.add(new UnionEmitter(extensionParameters, javaParameters));
-        emitters.add(new SqlDatabaseEmitter(extensionParameters, javaParameters));
-        emitters.add(new SqlTableEmitter(extensionParameters, javaParameters));
-        emitters.add(new ConstEmitter(extensionParameters, javaParameters));
-        emitters.add(new ServiceEmitter(extensionParameters, javaParameters));
-        emitters.add(new PubsubEmitter(extensionParameters, javaParameters));
+        emitters.add(new BitmaskEmitter(javaParameters, extensionParameters));
+        emitters.add(new EnumerationEmitter(javaParameters, extensionParameters));
+        emitters.add(new StructureEmitter(javaParameters, extensionParameters));
+        emitters.add(new ChoiceEmitter(javaParameters, extensionParameters));
+        emitters.add(new UnionEmitter(javaParameters, extensionParameters));
+        emitters.add(new SqlDatabaseEmitter(javaParameters, extensionParameters));
+        emitters.add(new SqlTableEmitter(javaParameters, extensionParameters));
+        emitters.add(new ConstEmitter(javaParameters, extensionParameters));
+        emitters.add(new ServiceEmitter(javaParameters, extensionParameters));
+        emitters.add(new PubsubEmitter(javaParameters, extensionParameters));
 
         // emit Java code
         for (Emitter javaEmitter: emitters)

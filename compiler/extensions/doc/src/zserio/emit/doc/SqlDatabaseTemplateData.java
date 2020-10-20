@@ -11,7 +11,7 @@ public class SqlDatabaseTemplateData extends CompoundTypeTemplateData
         super(context, sqlDatabaseType);
 
         structureDiagramSvg = (context.getWithSvgDiagrams()) ? DbStructureDotEmitter.getSvgDbStructureHtmlLink(
-                sqlDatabaseType, context.getPackageMapper(), context.getDbStructureDirectory()) : null;
+                sqlDatabaseType, context.getDbStructureDirectory()) : null;
     }
 
     public String getStructureDiagramSvg()

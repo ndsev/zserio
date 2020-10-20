@@ -143,7 +143,8 @@ public class ZserioTool
 
     private Root parse() throws Exception
     {
-        final ZserioAstBuilder astBuilderVisitor = new ZserioAstBuilder();
+        final ZserioAstBuilder astBuilderVisitor = new ZserioAstBuilder(
+                commandLineArguments.getTopLevelPackageNameIds());
 
         final String inputFileName = commandLineArguments.getInputFileName();
         final String inputFileFullName = inputFileManager.getFileFullName(inputFileName);

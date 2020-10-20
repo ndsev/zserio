@@ -77,9 +77,9 @@ public class PubsubType extends DocumentableAstNode implements ZserioScopedType
      */
     void check()
     {
-        final IdentifierValidator validator = new IdentifierValidator();
+        final ScopeSymbolValidator validator = new ScopeSymbolValidator();
         for (PubsubMessage message : messages)
-            validator.validateSymbol(message.getName(), message);
+            validator.validate(message.getName(), message);
     }
 
     private final Scope scope = new Scope(this);

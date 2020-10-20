@@ -6,9 +6,9 @@ import zserio.tools.Parameters;
 
 class ChoiceEmitter extends JavaDefaultEmitter
 {
-    public ChoiceEmitter(Parameters extensionParameters, JavaExtensionParameters javaParameters)
+    public ChoiceEmitter(JavaExtensionParameters javaParameters, Parameters extensionParameters)
     {
-        super(extensionParameters, javaParameters);
+        super(javaParameters, extensionParameters);
     }
 
     @Override

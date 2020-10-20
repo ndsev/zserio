@@ -31,15 +31,14 @@ class PackageEmitter extends HtmlDefaultEmitter
         super(outputPathName, extensionParameters, withSvgDiagrams, usedByCollector);
 
         final String directoryPrefix = ".." + File.separator;
-        context = new TemplateDataContext(getWithSvgDiagrams(), getUsedByCollector(), getPackageMapper(),
-                getResourceManager(), ".", directoryPrefix + SYMBOL_COLLABORATION_DIRECTORY,
-                directoryPrefix + DB_STRUCTURE_DIRECTORY);
+        context = new TemplateDataContext(getWithSvgDiagrams(), getUsedByCollector(), getResourceManager(), ".",
+                directoryPrefix + SYMBOL_COLLABORATION_DIRECTORY, directoryPrefix + DB_STRUCTURE_DIRECTORY);
     }
 
     @Override
     public void beginPackage(Package pkg) throws ZserioEmitException
     {
-        final PackageName packageName = getPackageMapper().getPackageName(pkg);
+        final PackageName packageName = pkg.getPackageName();
         final String packageHtmlLink = getPackageHtmlLink(packageName, HTML_CONTENT_DIRECTORY);
         final File outputFile = new File(getOutputPathName(), packageHtmlLink);
         FileUtil.createOutputDirectory(outputFile);

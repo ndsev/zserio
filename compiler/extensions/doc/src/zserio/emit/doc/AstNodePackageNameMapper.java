@@ -21,18 +21,17 @@ import zserio.ast.TypeReference;
 import zserio.ast.UnionType;
 import zserio.ast.ZserioAstDefaultVisitor;
 import zserio.ast.ZserioType;
-import zserio.emit.common.PackageMapper;
 
 class AstNodePackageNameMapper
 {
-    public static PackageName getPackageName(AstNode node, PackageMapper packageMapper)
+    public static PackageName getPackageName(AstNode node)
     {
         final PackageVisitor visitor = new PackageVisitor();
         node.accept(visitor);
 
         final Package pkg = visitor.getPackage();
 
-        return (pkg != null) ? packageMapper.getPackageName(pkg) : null;
+        return (pkg != null) ? pkg.getPackageName() : null;
     }
 
     private static class PackageVisitor extends ZserioAstDefaultVisitor

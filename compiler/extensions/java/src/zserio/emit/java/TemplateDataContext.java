@@ -2,15 +2,13 @@ package zserio.emit.java;
 
 import zserio.ast.PackageName;
 import zserio.emit.common.ExpressionFormatter;
-import zserio.emit.common.PackageMapper;
 import zserio.tools.Parameters;
 
 final class TemplateDataContext
 {
-    public TemplateDataContext(Parameters extensionParameters, JavaExtensionParameters javaParameters,
-            PackageName rootPackageName, PackageMapper javaPackageMapper)
+    public TemplateDataContext(Parameters extensionParameters, PackageName rootPackageName)
     {
-        javaNativeMapper = new JavaNativeMapper(javaPackageMapper);
+        javaNativeMapper = new JavaNativeMapper();
         javaRootPackageName = JavaFullNameFormatter.getFullName(rootPackageName);
 
         final JavaExpressionFormattingPolicy policy = new JavaExpressionFormattingPolicy(javaNativeMapper);

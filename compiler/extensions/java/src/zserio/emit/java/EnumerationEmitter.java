@@ -6,9 +6,9 @@ import zserio.tools.Parameters;
 
 class EnumerationEmitter extends JavaDefaultEmitter
 {
-    public EnumerationEmitter(Parameters extensionParameters, JavaExtensionParameters javaParameters)
+    public EnumerationEmitter(JavaExtensionParameters javaParameters, Parameters extensionParameters)
     {
-        super(extensionParameters, javaParameters);
+        super(javaParameters, extensionParameters);
     }
 
     @Override

@@ -1,7 +1,7 @@
 package zserio.ast;
 
 /**
- * Implementation of ZserioAstVisitor which resolves symbols for SQL constraints and see documentation tags.
+ * Implementation of ZserioAstVisitor which resolves symbols for see documentation tags.
  */
 public class ZserioAstSymbolResolver extends ZserioAstWalker
 {

@@ -1,20 +1,21 @@
 package zserio.emit.java;
 
+import java.io.File;
+
 import zserio.ast.Package;
 import zserio.ast.PackageName;
 import zserio.ast.ZserioType;
-import zserio.emit.common.CodeDefaultEmitter;
+import zserio.emit.common.DefaultEmitter;
+import zserio.emit.common.FreeMarkerUtil;
 import zserio.emit.common.ZserioEmitException;
 import zserio.tools.Parameters;
 
-abstract class JavaDefaultEmitter extends CodeDefaultEmitter
+abstract class JavaDefaultEmitter extends DefaultEmitter
 {
-    public JavaDefaultEmitter(Parameters extensionParameters, JavaExtensionParameters javaParameters)
+    public JavaDefaultEmitter(JavaExtensionParameters javaParameters, Parameters extensionParameters)
     {
-        super(javaParameters.getJavaOutputDir(), extensionParameters, JAVA_TEMPLATE_LOCATION);
-
-        this.extensionParameters = extensionParameters;
         this.javaParameters = javaParameters;
+        this.extensionParameters = extensionParameters;
     }
 
     @Override
@@ -24,29 +25,23 @@ abstract class JavaDefaultEmitter extends CodeDefaultEmitter
 
         if (context == null)
         {
-            context = new TemplateDataContext(extensionParameters, javaParameters,
-                    getPackageMapper().getPackageName(pkg), getPackageMapper());
+            context = new TemplateDataContext(extensionParameters, pkg.getPackageName());
         }
     }
 
-    protected void processTemplate(String templateName, Object templateData, ZserioType zserioType)
-            throws ZserioEmitException
+    protected boolean getWithPubsubCode()
     {
-        super.processTemplate(templateName, templateData, zserioType, JAVA_SOURCE_EXTENSION, false);
+        return extensionParameters.getWithPubsubCode();
     }
 
-    protected void processTemplate(String templateName, Object templateData, ZserioType zserioType,
-            String outFileName) throws ZserioEmitException
+    protected boolean getWithServiceCode()
     {
-        super.processTemplate(templateName, templateData, zserioType, outFileName, JAVA_SOURCE_EXTENSION,
-                false);
+        return extensionParameters.getWithServiceCode();
     }
 
-    protected void processTemplate(String templateName, Object templateData, PackageName zserioPackageName,
-            String outFileName) throws ZserioEmitException
+    protected boolean getWithSqlCode()
     {
-        super.processTemplate(templateName,  templateData, getPackageMapper().getPackageName(zserioPackageName),
-                outFileName, JAVA_SOURCE_EXTENSION, false);
+        return extensionParameters.getWithSqlCode();
     }
 
     protected TemplateDataContext getTemplateDataContext()
@@ -54,11 +49,37 @@ abstract class JavaDefaultEmitter extends CodeDefaultEmitter
         return context;
     }
 
+    protected void processTemplate(String templateName, Object templateData, ZserioType zserioType)
+            throws ZserioEmitException
+    {
+        processTemplate(templateName, templateData, zserioType, zserioType.getName());
+    }
+
+    protected void processTemplate(String templateName, Object templateData, ZserioType zserioType,
+            String outFileName) throws ZserioEmitException
+    {
+        processTemplate(templateName, templateData, zserioType.getPackage(), outFileName);
+    }
+
+    protected void processTemplate(String templateName, Object templateData, Package zserioPackage,
+            String outFileName) throws ZserioEmitException
+    {
+        processTemplate(templateName, templateData, zserioPackage.getPackageName(), outFileName);
+    }
+
+    private void processTemplate(String templateName, Object templateData, PackageName packageName,
+            String outFileNameRoot) throws ZserioEmitException
+    {
+        final File outDir = new File(javaParameters.getJavaOutputDir(), packageName.toFilesystemPath());
+        final File outputFile = new File(outDir, outFileNameRoot + JAVA_SOURCE_EXTENSION);
+        FreeMarkerUtil.processTemplate(JAVA_TEMPLATE_LOCATION + templateName, templateData, outputFile, false);
+    }
+
     private static final String JAVA_SOURCE_EXTENSION = ".java";
     private static final String JAVA_TEMPLATE_LOCATION = "java/";
 
-    private final Parameters extensionParameters;
     private final JavaExtensionParameters javaParameters;
+    private final Parameters extensionParameters;
 
     private TemplateDataContext context = null;
 }

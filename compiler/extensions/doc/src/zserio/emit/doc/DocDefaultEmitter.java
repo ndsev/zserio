@@ -1,7 +1,6 @@
 package zserio.emit.doc;
 
 import zserio.emit.common.DefaultEmitter;
-import zserio.emit.common.PackageMapper;
 import zserio.tools.Parameters;
 
 class DocDefaultEmitter extends DefaultEmitter
@@ -13,11 +12,9 @@ class DocDefaultEmitter extends DefaultEmitter
         this.withSvgDiagrams = withSvgDiagrams;
         this.usedByCollector = usedByCollector;
 
-        final Iterable<String> topLevelPackageNameList = extensionParameters.getTopLevelPackageNameList();
-        packageMapper = new PackageMapper(topLevelPackageNameList);
-
         resourceManager = new ResourceManager(extensionParameters.getPathName(),
-                getFileNameExtension(extensionParameters.getFileName()), outputPathName, HTML_CONTENT_DIRECTORY);
+                getFileNameExtension(extensionParameters.getFileName()), outputPathName,
+                HTML_CONTENT_DIRECTORY);
     }
 
     protected String getOutputPathName()
@@ -33,11 +30,6 @@ class DocDefaultEmitter extends DefaultEmitter
     protected UsedByCollector getUsedByCollector()
     {
         return usedByCollector;
-    }
-
-    protected PackageMapper getPackageMapper()
-    {
-        return packageMapper;
     }
 
     protected ResourceManager getResourceManager()
@@ -64,6 +56,5 @@ class DocDefaultEmitter extends DefaultEmitter
     private final String outputPathName;
     private final boolean withSvgDiagrams;
     private final UsedByCollector usedByCollector;
-    private final PackageMapper packageMapper;
     private final ResourceManager resourceManager;
 }

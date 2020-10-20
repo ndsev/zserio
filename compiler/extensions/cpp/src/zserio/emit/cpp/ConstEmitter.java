@@ -16,8 +16,7 @@ public class ConstEmitter extends CppDefaultEmitter
     {
         final ConstEmitterTemplateData templateData = new ConstEmitterTemplateData(
                 getTemplateDataContext(), constant);
-        processHeaderTemplate(TEMPLATE_HEADER_NAME, templateData, constant.getPackage().getPackageName(),
-                constant.getName());
+        processHeaderTemplate(TEMPLATE_HEADER_NAME, templateData, constant.getPackage(), constant.getName());
     }
 
     private static final String TEMPLATE_HEADER_NAME = "Constant.h.ftl";

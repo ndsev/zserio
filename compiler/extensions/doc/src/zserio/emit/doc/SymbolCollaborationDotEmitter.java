@@ -5,7 +5,6 @@ import java.io.File;
 import zserio.ast.AstNode;
 import zserio.ast.PackageName;
 import zserio.ast.Root;
-import zserio.emit.common.PackageMapper;
 import zserio.emit.common.ZserioEmitException;
 import zserio.tools.Parameters;
 import zserio.tools.StringJoinUtil;
@@ -24,9 +23,8 @@ class SymbolCollaborationDotEmitter extends DotDefaultEmitter
                 withSvgDiagrams, dotExecutable, usedByCollector);
 
         final String directoryPrefix = getDotLinksPrefix() + File.separator;
-        context = new TemplateDataContext(getWithSvgDiagrams(), getUsedByCollector(), getPackageMapper(),
-                getResourceManager(), directoryPrefix + HTML_CONTENT_DIRECTORY, ".",
-                directoryPrefix + DB_STRUCTURE_DIRECTORY);
+        context = new TemplateDataContext(getWithSvgDiagrams(), getUsedByCollector(), getResourceManager(),
+                directoryPrefix + HTML_CONTENT_DIRECTORY, ".", directoryPrefix + DB_STRUCTURE_DIRECTORY);
     }
 
     @Override
@@ -41,24 +39,19 @@ class SymbolCollaborationDotEmitter extends DotDefaultEmitter
         return withSvgDiagrams && usedByCollector.getCollaboratingNodes().contains(node);
     }
 
-    public static String getSvgSymbolCollaborationHtmlLink(AstNode node, PackageMapper packageMapper,
-            String symbolCollaborationDirectory)
+    public static String getSvgSymbolCollaborationHtmlLink(AstNode node, String symbolCollaborationDirectory)
     {
-        return getSymbolCollaborationHtmlLinkBase(node, packageMapper, symbolCollaborationDirectory) +
-                SVG_FILE_EXTENSION;
+        return getSymbolCollaborationHtmlLinkBase(node, symbolCollaborationDirectory) + SVG_FILE_EXTENSION;
     }
 
-    private static String getDotSymbolCollaborationHtmlLink(AstNode node, PackageMapper packageMapper,
-            String symbolCollaborationDirectory)
+    private static String getDotSymbolCollaborationHtmlLink(AstNode node, String symbolCollaborationDirectory)
     {
-        return getSymbolCollaborationHtmlLinkBase(node, packageMapper, symbolCollaborationDirectory) +
-                DOT_FILE_EXTENSION;
+        return getSymbolCollaborationHtmlLinkBase(node, symbolCollaborationDirectory) + DOT_FILE_EXTENSION;
     }
 
-    private static String getSymbolCollaborationHtmlLinkBase(AstNode node, PackageMapper packageMapper,
-            String symbolCollaborationDirectory)
+    private static String getSymbolCollaborationHtmlLinkBase(AstNode node, String symbolCollaborationDirectory)
     {
-        final PackageName packageName = AstNodePackageNameMapper.getPackageName(node, packageMapper);
+        final PackageName packageName = AstNodePackageNameMapper.getPackageName(node);
         final String typeName = AstNodeTypeNameMapper.getTypeName(node);
         final String name = AstNodeNameMapper.getName(node);
 
@@ -77,14 +70,11 @@ class SymbolCollaborationDotEmitter extends DotDefaultEmitter
 
     private void emitDotDiagram(AstNode node) throws ZserioEmitException
     {
-        final SymbolCollaborationDotTemplateData templateData = new SymbolCollaborationDotTemplateData(
-                context, node, getUsedByCollector().getUsedTypes(node),
-                getUsedByCollector().getUsedByTypes(node));
-        final String dotHtmlLink = getDotSymbolCollaborationHtmlLink(node, getPackageMapper(),
-                SYMBOL_COLLABORATION_DIRECTORY);
+        final SymbolCollaborationDotTemplateData templateData = new SymbolCollaborationDotTemplateData(context,
+                node, getUsedByCollector().getUsedTypes(node), getUsedByCollector().getUsedByTypes(node));
+        final String dotHtmlLink = getDotSymbolCollaborationHtmlLink(node, SYMBOL_COLLABORATION_DIRECTORY);
         final File outputDotFile = new File(getOutputPathName(), dotHtmlLink);
-        final String svgHtmlLink = getSvgSymbolCollaborationHtmlLink(node, getPackageMapper(),
-                SYMBOL_COLLABORATION_DIRECTORY);
+        final String svgHtmlLink = getSvgSymbolCollaborationHtmlLink(node, SYMBOL_COLLABORATION_DIRECTORY);
         final File outputSvgFile = new File(getOutputPathName(), svgHtmlLink);
         processDotTemplate(TEMPLATE_SOURCE_NAME, templateData, outputDotFile, outputSvgFile);
     }

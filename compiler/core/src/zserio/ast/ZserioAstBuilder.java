@@ -18,6 +18,16 @@ import zserio.antlr.ZserioParserBaseVisitor;
 public class ZserioAstBuilder extends ZserioParserBaseVisitor<Object>
 {
     /**
+     * Constructor from top level package name.
+     *
+     * @param topLevelPackageNameIds List of top level package name identifiers given by command line option.
+     */
+    public ZserioAstBuilder(Iterable<String> topLevelPackageNameIds)
+    {
+        this.topLevelPackageNameIds = topLevelPackageNameIds;
+    }
+
+    /**
      * Gets built AST.
      *
      * @return Root AST node.
@@ -50,6 +60,7 @@ public class ZserioAstBuilder extends ZserioParserBaseVisitor<Object>
     {
         // package
         final PackageName packageName = visitPackageNameDefinition(ctx.packageNameDefinition());
+        final PackageName topLevelPackageName = createTopLevelPackageName();
         final List<DocComment> docComments = docCommentManager.findDocComments(ctx.packageNameDefinition());
 
         // imports
@@ -62,7 +73,9 @@ public class ZserioAstBuilder extends ZserioParserBaseVisitor<Object>
                 ? ctx.packageNameDefinition().id(0) : ctx;
         final AstLocation packageLocation = new AstLocation(packageLocationCtx.getStart());
         final List<DocComment> trailingDocComments = docCommentManager.findDocComments(ctx.EOF());
-        currentPackage = new Package(packageLocation, packageName, imports, docComments, trailingDocComments);
+
+        currentPackage = new Package(packageLocation, packageName, topLevelPackageName, imports, docComments,
+                trailingDocComments);
         if (packageNameMap.put(currentPackage.getPackageName(), currentPackage) != null)
         {
             // translation unit package already exists, this could happen only for default packages
@@ -81,10 +94,10 @@ public class ZserioAstBuilder extends ZserioParserBaseVisitor<Object>
     @Override
     public PackageName visitPackageNameDefinition(ZserioParser.PackageNameDefinitionContext ctx)
     {
-        if (ctx != null)
-            return createPackageName(ctx.id());
-        else
-            return PackageName.EMPTY; // default package
+        if (ctx == null)
+            return PackageName.EMPTY;
+
+        return createPackageName(ctx.id());
     }
 
     @Override
@@ -901,9 +914,10 @@ public class ZserioAstBuilder extends ZserioParserBaseVisitor<Object>
     @Override
     public QualifiedName visitQualifiedName(ZserioParser.QualifiedNameContext ctx)
     {
-        final PackageName referencedPackageName =
-                createPackageName(getPackageNameIds(ctx.id()));
+        final List<ZserioParser.IdContext> ids = getPackageNameIds(ctx.id());
+        final PackageName referencedPackageName = (ids.isEmpty()) ? PackageName.EMPTY : createPackageName(ids);
         final String referencedTypeName = getSymbolNameId(ctx.id()).getText();
+
         return new QualifiedName(referencedPackageName, referencedTypeName);
     }
 
@@ -940,6 +954,7 @@ public class ZserioAstBuilder extends ZserioParserBaseVisitor<Object>
             final Expression lengthExpression = (Expression)visit(ctx.dynamicLengthArgument().expression());
             return new DynamicBitFieldInstantiation(location, typeReference, lengthExpression);
         }
+
         return new TypeInstantiation(location, typeReference);
     }
 
@@ -1046,8 +1061,18 @@ public class ZserioAstBuilder extends ZserioParserBaseVisitor<Object>
     private PackageName createPackageName(List<ZserioParser.IdContext> ids)
     {
         final PackageName.Builder packageNameBuilder = new PackageName.Builder();
+        packageNameBuilder.addIds(topLevelPackageNameIds);
         for (ZserioParser.IdContext id : ids)
             packageNameBuilder.addId(id.getText());
+
+        return packageNameBuilder.get();
+    }
+
+    private PackageName createTopLevelPackageName()
+    {
+        final PackageName.Builder packageNameBuilder = new PackageName.Builder();
+        packageNameBuilder.addIds(topLevelPackageNameIds);
+
         return packageNameBuilder.get();
     }
 
@@ -1135,6 +1160,8 @@ public class ZserioAstBuilder extends ZserioParserBaseVisitor<Object>
         private final PackageName referencedPackageName;
         private final String referencedTypeName;
     }
+
+    private final Iterable<String> topLevelPackageNameIds;
 
     private final DocCommentManager docCommentManager = new DocCommentManager();
     private final LinkedHashMap<PackageName, Package> packageNameMap =

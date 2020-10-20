@@ -6,9 +6,9 @@ import zserio.tools.Parameters;
 
 class PubsubEmitter extends JavaDefaultEmitter
 {
-    public PubsubEmitter(Parameters extensionParameters, JavaExtensionParameters javaParameters)
+    public PubsubEmitter(JavaExtensionParameters javaParameters, Parameters extensionParameters)
     {
-        super(extensionParameters, javaParameters);
+        super(javaParameters, extensionParameters);
     }
 
     @Override

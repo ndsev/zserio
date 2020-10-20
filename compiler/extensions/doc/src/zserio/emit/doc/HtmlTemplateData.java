@@ -8,7 +8,6 @@ import zserio.ast.AstNode;
 import zserio.ast.DocumentableAstNode;
 import zserio.ast.TypeReference;
 import zserio.ast.ZserioTemplatableType;
-import zserio.emit.common.PackageMapper;
 import zserio.emit.common.ZserioEmitException;
 
 public class HtmlTemplateData
@@ -18,13 +17,12 @@ public class HtmlTemplateData
         this.docComments = new DocCommentsTemplateData(context, astNode.getDocComments());
         symbol = SymbolTemplateDataCreator.createData(context, astNode);
 
-        final PackageMapper packageMapper = context.getPackageMapper();
         final UsedByCollector usedByCollector = context.getUsedByCollector();
         final boolean svgCollaborationExists =
                 SymbolCollaborationDotEmitter.svgSymbolCollaborationDiagramExists(
                         astNode, usedByCollector, context.getWithSvgDiagrams());
         this.collaborationDiagramSvg = (svgCollaborationExists) ?
-                SymbolCollaborationDotEmitter.getSvgSymbolCollaborationHtmlLink(astNode, packageMapper,
+                SymbolCollaborationDotEmitter.getSvgSymbolCollaborationHtmlLink(astNode,
                         context.getSymbolCollaborationDirectory()) : null;
 
         usedByList = new ArrayList<SymbolTemplateData>();

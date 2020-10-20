@@ -26,17 +26,19 @@ public class Package extends DocumentableAstNode
      *
      * @param location AST node location.
      * @param packageName Name of the package.
+     * @param topLevelPackageName Name of the top level package given by command line.
      * @param imports List of all imports defined in the package.
      * @param localTypes Map of all available local types defined in the package.
      * @param docComments List of documentation comments belonging to this node.
      * @param trailingDocComments List of documentation comments which are trailing at the end of this package.
      */
-    public Package(AstLocation location, PackageName packageName, List<Import> imports,
-            List<DocComment> docComments, List<DocComment> trailingDocComments)
+    public Package(AstLocation location, PackageName packageName, PackageName topLevelPackageName,
+            List<Import> imports, List<DocComment> docComments, List<DocComment> trailingDocComments)
     {
         super(location, docComments);
 
         this.packageName = packageName;
+        this.topLevelPackageName = topLevelPackageName;
         this.imports = imports;
         this.trailingDocComments = trailingDocComments;
     }
@@ -128,6 +130,16 @@ public class Package extends DocumentableAstNode
             stackedException.pushMessage(addedSymbol.getLocation(), "    First defined here");
             throw stackedException;
         }
+    }
+
+    /**
+     * Gets the top level package name given by the command line.
+     *
+     * @return Top level package name or empty package name if top level package was not specified.
+     */
+    PackageName getTopLevelPackageName()
+    {
+        return topLevelPackageName;
     }
 
     /**
@@ -268,11 +280,11 @@ public class Package extends DocumentableAstNode
         if (!packageName.toString().equals(packageName.toString().toLowerCase(Locale.ENGLISH)))
             throw new ParserException(this, "Package name cannot contain upper case letters!");
 
-        PackageIdentifierValidator validator = new PackageIdentifierValidator();
+        final PackageSymbolValidator validator = new PackageSymbolValidator();
         for (ZserioType localType : localTypes.values())
-            validator.validateSymbol(localType.getName(), localType);
+            validator.validate(localType.getName(), localType);
         for (Map.Entry<String, AstNode> localSymbolEntry : localSymbols.entrySet())
-            validator.validateSymbol(localSymbolEntry.getKey(), localSymbolEntry.getValue());
+            validator.validate(localSymbolEntry.getKey(), localSymbolEntry.getValue());
     }
 
     /**
@@ -555,6 +567,7 @@ public class Package extends DocumentableAstNode
     }
 
     private final PackageName packageName;
+    private final PackageName topLevelPackageName;
     private final List<Import> imports;
     private final List<DocComment> trailingDocComments;
 

@@ -77,9 +77,9 @@ public class ServiceType extends DocumentableAstNode implements ZserioScopedType
      */
     void check()
     {
-        final IdentifierValidator validator = new IdentifierValidator();
+        final ScopeSymbolValidator validator = new ScopeSymbolValidator();
         for (ServiceMethod method : methods)
-            validator.validateSymbol(method.getName(), method);
+            validator.validate(method.getName(), method);
     }
 
     private final Scope scope = new Scope(this);

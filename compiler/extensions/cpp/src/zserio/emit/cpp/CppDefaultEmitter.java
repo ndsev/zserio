@@ -8,7 +8,6 @@ import zserio.ast.PackageName;
 import zserio.ast.ZserioType;
 import zserio.emit.common.DefaultEmitter;
 import zserio.emit.common.FreeMarkerUtil;
-import zserio.emit.common.PackageMapper;
 import zserio.emit.common.ZserioEmitException;
 import zserio.tools.Parameters;
 
@@ -18,7 +17,7 @@ abstract class CppDefaultEmitter extends DefaultEmitter
     {
         this.outPathName = outPathName;
         this.extensionParameters = extensionParameters;
-        packageMapper = new PackageMapper(extensionParameters.getTopLevelPackageNameList());
+        this.context = new TemplateDataContext(extensionParameters);
     }
 
     @Override
@@ -30,32 +29,26 @@ abstract class CppDefaultEmitter extends DefaultEmitter
     protected void processSourceTemplate(String templateName, Object templateData, ZserioType zserioType)
             throws ZserioEmitException
     {
-        processTemplate(templateName, templateData, packageMapper.getPackageName(zserioType),
+        processTemplate(templateName, templateData, zserioType.getPackage().getPackageName(),
                 zserioType.getName(), CPP_SOURCE_EXTENSION, true);
     }
 
     protected void processHeaderTemplate(String templateName, Object templateData, ZserioType zserioType)
             throws ZserioEmitException
     {
-        processHeaderTemplate(templateName, templateData, zserioType.getPackage().getPackageName(),
-                zserioType.getName());
+        processHeaderTemplate(templateName, templateData, zserioType.getPackage(), zserioType.getName());
     }
 
-    protected void processHeaderTemplate(String templateName, Object templateData,
-            PackageName zserioPackageName, String outFileName) throws ZserioEmitException
+    protected void processHeaderTemplate(String templateName, Object templateData, Package zserioPackage,
+            String outFileName) throws ZserioEmitException
     {
-        processTemplate(templateName, templateData, packageMapper.getPackageName(zserioPackageName),
-                outFileName, CPP_HEADER_EXTENSION, false);
+        processTemplate(templateName, templateData, zserioPackage.getPackageName(), outFileName,
+                CPP_HEADER_EXTENSION, false);
     }
 
     protected TemplateDataContext getTemplateDataContext()
     {
-        return new TemplateDataContext(extensionParameters, getPackageMapper());
-    }
-
-    protected PackageMapper getPackageMapper()
-    {
-        return packageMapper;
+        return context;
     }
 
     protected boolean getWithPubsubCode()
@@ -127,7 +120,7 @@ abstract class CppDefaultEmitter extends DefaultEmitter
 
     private final String outPathName;
     private final Parameters extensionParameters;
-    private final PackageMapper packageMapper;
+    private final TemplateDataContext context;
 
     private String packageSourceFileName = "";
 }

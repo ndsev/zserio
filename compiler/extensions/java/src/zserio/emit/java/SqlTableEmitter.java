@@ -6,9 +6,9 @@ import zserio.tools.Parameters;
 
 class SqlTableEmitter extends JavaDefaultEmitter
 {
-    public SqlTableEmitter(Parameters extensionParameters, JavaExtensionParameters javaParameters)
+    public SqlTableEmitter(JavaExtensionParameters javaParameters, Parameters extensionParameters)
     {
-        super(extensionParameters, javaParameters);
+        super(javaParameters, extensionParameters);
     }
 
     @Override

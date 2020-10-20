@@ -28,7 +28,6 @@ import zserio.ast.TypeReference;
 import zserio.ast.UnionType;
 import zserio.ast.VarIntegerType;
 import zserio.emit.common.NativeType;
-import zserio.emit.common.PackageMapper;
 import zserio.emit.common.ZserioEmitException;
 import zserio.emit.java.symbols.JavaNativeSymbol;
 import zserio.emit.java.types.JavaNativeType;
@@ -63,16 +62,6 @@ import zserio.emit.java.types.NativeUnsignedShortArrayType;
 final class JavaNativeMapper
 {
     /**
-     * Constructor.
-     *
-     * @param javaPackageMapper The Java package mapper to construct from.
-     */
-    public JavaNativeMapper(PackageMapper javaPackageMapper)
-    {
-        this.javaPackageMapper = javaPackageMapper;
-    }
-
-    /**
      * Returns a Java symbol that can hold an instance of Zserio symbol.
      *
      * @param symbol Zserio symbol.
@@ -86,7 +75,7 @@ final class JavaNativeMapper
         if (symbol instanceof Constant)
         {
             final Constant constant = (Constant)symbol;
-            final PackageName packageName = javaPackageMapper.getPackageName(constant.getPackage());
+            final PackageName packageName = constant.getPackage().getPackageName();
             final String name = constant.getName();
             return new JavaNativeSymbol(packageName, name);
         }
@@ -135,8 +124,7 @@ final class JavaNativeMapper
      *
      * This can be a primitive type (e.g. byte) if it suffices.
      *
-     * @param javaPackageMapper Package mapper to use for Java package mapping.
-     * @param type              Zserio type.
+     * @param type Zserio type.
      *
      * @return JavaNativeType that can hold values of the given Zserio type.
      *
@@ -144,7 +132,7 @@ final class JavaNativeMapper
      */
     public JavaNativeType getJavaType(ZserioType type) throws ZserioEmitException
     {
-        final ZserioTypeMapperVisitor visitor = visitType(javaPackageMapper, type);
+        final ZserioTypeMapperVisitor visitor = visitType(type);
 
         final JavaNativeType nativeType = visitor.getJavaType();
         if (nativeType == null)
@@ -162,7 +150,6 @@ final class JavaNativeMapper
      * In other words it never returns a primitive data type (e.g. byte), but
      * the wrapper class (e.g. Byte).
      *
-     * @param javaPackageMapper Package mapper to use for Java package mapping.
      * @param typeInstantiation Instantiation of Zserio type.
      *
      * @return JavaNativeType that is derived from Object and can hold values of the Zserio type.
@@ -177,7 +164,7 @@ final class JavaNativeMapper
             return mapDynamicBitFieldToNullableType((DynamicBitFieldInstantiation)typeInstantiation);
 
         final ZserioType type = typeInstantiation.getBaseType();
-        final ZserioTypeMapperVisitor visitor = visitType(javaPackageMapper, type);
+        final ZserioTypeMapperVisitor visitor = visitType(type);
 
         final JavaNativeType nativeNullableType = visitor.getJavaNullableType();
         if (nativeNullableType == null)
@@ -194,7 +181,6 @@ final class JavaNativeMapper
      * is mapped to NativeIntegralType, not only to the base JavaNativeType. Use this when the native
      * integral interface is required.
      *
-     * @param javaPackageMapper Package mapper to use for Java package mapping.
      * @param typeInstantiation Instantiation of Zserio Integer Type to map.
      *
      * @return NativeIntegralType that can hold values of the given Zserio type.
@@ -215,10 +201,9 @@ final class JavaNativeMapper
         return (NativeIntegralType)javaType;
     }
 
-    private ZserioTypeMapperVisitor visitType(PackageMapper javaPackageMapper, ZserioType type)
-            throws ZserioEmitException
+    private ZserioTypeMapperVisitor visitType(ZserioType type) throws ZserioEmitException
     {
-        final ZserioTypeMapperVisitor visitor = new ZserioTypeMapperVisitor(javaPackageMapper);
+        final ZserioTypeMapperVisitor visitor = new ZserioTypeMapperVisitor();
         type.accept(visitor);
 
         final ZserioEmitException thrownException = visitor.getThrownException();
@@ -562,11 +547,6 @@ final class JavaNativeMapper
 
     private class ZserioTypeMapperVisitor extends TypeMapperVisitor
     {
-        public ZserioTypeMapperVisitor(PackageMapper javaPackageMapper)
-        {
-            this.javaPackageMapper = javaPackageMapper;
-        }
-
         public JavaNativeType getJavaType()
         {
             return javaType;
@@ -601,7 +581,7 @@ final class JavaNativeMapper
             try
             {
                 final NativeIntegralType nativeBaseType = getJavaIntegralType(type.getTypeInstantiation());
-                final PackageName packageName = javaPackageMapper.getPackageName(type);
+                final PackageName packageName = type.getPackage().getPackageName();
                 final String name = type.getName();
                 javaType = new NativeEnumType(packageName, name, nativeBaseType);
                 javaNullableType = javaType;
@@ -618,7 +598,7 @@ final class JavaNativeMapper
             try
             {
                 final NativeIntegralType nativeBaseType = getJavaIntegralType(type.getTypeInstantiation());
-                final PackageName packageName = javaPackageMapper.getPackageName(type);
+                final PackageName packageName = type.getPackage().getPackageName();
                 final String name = type.getName();
                 javaType = new NativeBitmaskType(packageName, name, nativeBaseType);
                 javaNullableType = javaType;
@@ -660,7 +640,7 @@ final class JavaNativeMapper
         @Override
         public void visitServiceType(ServiceType type)
         {
-            final PackageName packageName = javaPackageMapper.getPackageName(type);
+            final PackageName packageName = type.getPackage().getPackageName();
             final String name = type.getName();
             javaType = new NativeServiceType(packageName, name);
             javaNullableType = javaType;
@@ -669,7 +649,7 @@ final class JavaNativeMapper
         @Override
         public void visitPubsubType(PubsubType type)
         {
-            final PackageName packageName = javaPackageMapper.getPackageName(type);
+            final PackageName packageName = type.getPackage().getPackageName();
             final String name = type.getName();
             javaType = new NativePubsubType(packageName, name);
             javaNullableType = javaType;
@@ -779,13 +759,11 @@ final class JavaNativeMapper
 
         private void mapCompoundType(CompoundType compoundType)
         {
-            final PackageName packageName = javaPackageMapper.getPackageName(compoundType);
+            final PackageName packageName = compoundType.getPackage().getPackageName();
             final String name = compoundType.getName();
             javaType = new NativeCompoundType(packageName, name);
             javaNullableType = javaType;
         }
-
-        private final PackageMapper javaPackageMapper;
 
         private JavaNativeType javaType = null;
         private JavaNativeType javaNullableType = null;
@@ -854,6 +832,4 @@ final class JavaNativeMapper
     private final static NativeArrayType varUIntArrayType = new NativeArrayType("VarUIntArray");
 
     private final static NativeArrayType varSizeArrayType = new NativeArrayType("VarSizeArray");
-
-    private final PackageMapper javaPackageMapper;
 }

@@ -12,5 +12,5 @@ public class JavaExtensionParameters
         return javaOutputDir;
     }
 
-    private final String    javaOutputDir;
+    private final String javaOutputDir;
 }

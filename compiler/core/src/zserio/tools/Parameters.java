@@ -38,13 +38,6 @@ public interface Parameters
     public String getPathName();
 
     /**
-     * Gets the list of top level package names.
-     *
-     * @return The list of top level package names or empty list if no top level package name is specified.
-     */
-    public Iterable<String> getTopLevelPackageNameList();
-
-    /**
      * Gets the range check code flag.
      *
      * @returns True if range checking is enabled.

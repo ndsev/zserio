@@ -27,7 +27,6 @@ import zserio.ast.UnionType;
 import zserio.ast.VarIntegerType;
 import zserio.ast.ZserioAstDefaultVisitor;
 import zserio.ast.ZserioType;
-import zserio.emit.common.PackageMapper;
 import zserio.emit.common.ZserioEmitException;
 import zserio.emit.python.symbols.PythonNativeSymbol;
 import zserio.emit.python.types.NativeArrayType;
@@ -42,16 +41,6 @@ import zserio.emit.python.types.PythonNativeType;
 public class PythonNativeMapper
 {
     /**
-     * Constructor from package mapper.
-     *
-     * @param PythonPackageMapper Package mapper to construct from.
-     */
-    public PythonNativeMapper(PackageMapper pythonPackageMapper)
-    {
-        this.pythonPackageMapper = pythonPackageMapper;
-    }
-
-    /**
      * Returns a Python symbol that can hold an instance of Zserio symbol.
      *
      * @param symbol Zserio symbol.
@@ -65,7 +54,7 @@ public class PythonNativeMapper
         if (symbol instanceof Constant)
         {
             final Constant constant = (Constant)symbol;
-            final PackageName packageName = pythonPackageMapper.getPackageName(constant.getPackage());
+            final PackageName packageName = constant.getPackage().getPackageName();
             final String name = constant.getName();
             return new PythonNativeSymbol(packageName, name);
         }
@@ -120,7 +109,7 @@ public class PythonNativeMapper
      */
     public PythonNativeType getPythonType(ZserioType type) throws ZserioEmitException
     {
-        final TypeMapperVisitor visitor = new TypeMapperVisitor(pythonPackageMapper);
+        final TypeMapperVisitor visitor = new TypeMapperVisitor();
         type.accept(visitor);
 
         final ZserioEmitException thrownException = visitor.getThrownException();
@@ -155,11 +144,6 @@ public class PythonNativeMapper
 
     private class TypeMapperVisitor extends ZserioAstDefaultVisitor
     {
-        public TypeMapperVisitor(PackageMapper pythonPackageMapper)
-        {
-            this.pythonPackageMapper = pythonPackageMapper;
-        }
-
         public PythonNativeType getPythonType()
         {
             return pythonType;
@@ -185,14 +169,14 @@ public class PythonNativeMapper
         @Override
         public void visitEnumType(EnumType type)
         {
-            final PackageName packageName = pythonPackageMapper.getPackageName(type);
+            final PackageName packageName = type.getPackage().getPackageName();
             pythonType = new NativeUserType(packageName, type.getName());
         }
 
         @Override
         public void visitBitmaskType(BitmaskType type)
         {
-            final PackageName packageName = pythonPackageMapper.getPackageName(type);
+            final PackageName packageName = type.getPackage().getPackageName();
             pythonType = new NativeUserType(packageName, type.getName());
         }
 
@@ -267,7 +251,7 @@ public class PythonNativeMapper
         {
             try
             {
-                final PackageName packageName = pythonPackageMapper.getPackageName(type);
+                final PackageName packageName = type.getPackage().getPackageName();
                 final PythonNativeType nativeTargetBaseType =
                         PythonNativeMapper.this.getPythonType(type.getBaseTypeReference());
                 pythonType = new NativeSubtype(packageName, type.getName(), nativeTargetBaseType);
@@ -298,13 +282,12 @@ public class PythonNativeMapper
 
         private PythonNativeType mapUserType(ZserioType type)
         {
-            final PackageName packageName = pythonPackageMapper.getPackageName(type);
+            final PackageName packageName = type.getPackage().getPackageName();
             return new NativeUserType(packageName, type.getName());
         }
 
         private PythonNativeType pythonType;
         private ZserioEmitException thrownException = null;
-        private final PackageMapper pythonPackageMapper;
     }
 
     private static class ArrayTypeMapperVisitor extends ZserioAstDefaultVisitor
@@ -443,8 +426,6 @@ public class PythonNativeMapper
 
         private NativeArrayType pythonArrayType = null;
     }
-
-    private final PackageMapper pythonPackageMapper;
 
     private final static PythonNativeType boolType = new NativeBuiltinType("bool");
     private final static PythonNativeType intType = new NativeBuiltinType("int");

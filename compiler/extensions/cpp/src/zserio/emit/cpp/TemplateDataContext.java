@@ -2,15 +2,13 @@ package zserio.emit.cpp;
 
 import zserio.emit.common.ExpressionFormatter;
 import zserio.emit.common.ExpressionFormattingPolicy;
-import zserio.emit.common.PackageMapper;
 import zserio.tools.Parameters;
 
 final class TemplateDataContext
 {
-    public TemplateDataContext(Parameters extensionParameters, PackageMapper cppPackageMapper)
+    public TemplateDataContext(Parameters extensionParameters)
     {
-        cppNativeMapper = new CppNativeMapper(cppPackageMapper);
-        this.cppPackageMapper = cppPackageMapper;
+        cppNativeMapper = new CppNativeMapper();
         withWriterCode = extensionParameters.getWithWriterCode();
         withRangeCheckCode = extensionParameters.getWithRangeCheckCode();
     }
@@ -18,11 +16,6 @@ final class TemplateDataContext
     public CppNativeMapper getCppNativeMapper()
     {
         return cppNativeMapper;
-    }
-
-    public PackageMapper getCppPackageMapper()
-    {
-        return cppPackageMapper;
     }
 
     public ExpressionFormatter getExpressionFormatter(IncludeCollector includeCollector)
@@ -60,7 +53,6 @@ final class TemplateDataContext
     }
 
     private final CppNativeMapper cppNativeMapper;
-    private final PackageMapper cppPackageMapper;
 
     private final boolean withWriterCode;
     private final boolean withRangeCheckCode;

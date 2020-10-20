@@ -135,8 +135,7 @@ public class SymbolCollaborationDotTemplateData
     private void addSymbol(TemplateDataContext context, AstNode symbol, SymbolTemplateData symbolTemplateData,
             Map<PackageName, Package> nameToPackageMap)
     {
-        final PackageName packageName =
-                AstNodePackageNameMapper.getPackageName(symbol, context.getPackageMapper());
+        final PackageName packageName = AstNodePackageNameMapper.getPackageName(symbol);
         final String packageNameString = (packageName == null) ? "" : packageName.toString();
         Package packageInst = nameToPackageMap.get(packageName);
         if (packageInst == null)

@@ -1,7 +1,5 @@
 package zserio.tools;
 
-import java.util.ArrayList;
-
 /**
  * The class which handles all parameters for extensions.
  */
@@ -83,17 +81,5 @@ public class ExtensionParameters implements Parameters
         return commandLineArguments.getWithWriterCode();
     }
 
-    @Override
-    public Iterable<String> getTopLevelPackageNameList()
-    {
-        final String topLevelPackageName = commandLineArguments.getTopLevelPackageName();
-        if (topLevelPackageName == null)
-            return new ArrayList<String>();
-
-        return java.util.Arrays.asList(topLevelPackageName.split("\\" + TOP_LEVEL_PACKAGE_NAME_SEPARATOR));
-    }
-
-    private static final String TOP_LEVEL_PACKAGE_NAME_SEPARATOR = ".";
-
-    private final CommandLineArguments  commandLineArguments;
+    private final CommandLineArguments commandLineArguments;
 }

@@ -8,11 +8,7 @@ import java.nio.ByteBuffer;
 import java.nio.charset.CharacterCodingException;
 import java.nio.charset.Charset;
 import java.nio.charset.CharsetDecoder;
-import java.util.Arrays;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Locale;
-import java.util.Set;
 
 import zserio.antlr.ZserioParser;
 import zserio.antlr.ZserioParserBaseVisitor;
@@ -163,14 +159,14 @@ public class ZserioParseTreeChecker extends ZserioParserBaseVisitor<Void>
     @Override
     public Void visitId(ZserioParser.IdContext ctx)
     {
-        final String id = ctx.getText();
-        if (reservedKeywordsList.contains(id))
-            throw new ParserException(ctx.getStart(), "'" + id +
-                    "' is a reserved keyword and may not be used here!");
-
-        if (id.toLowerCase(Locale.ENGLISH).startsWith("zserio"))
-            throw new ParserException(ctx.getStart(),
-                    "ZSERIO (case insensitive) is a reserved prefix and cannot be used in identifiers!");
+        try
+        {
+            IdentifierValidator.validate(ctx.getText());
+        }
+        catch (RuntimeException exception)
+        {
+            throw new ParserException(ctx.getStart(), exception.getMessage());
+        }
 
         return null;
     }
@@ -269,47 +265,6 @@ public class ZserioParseTreeChecker extends ZserioParserBaseVisitor<Void>
 
         return fileContent;
     }
-
-    /**
-     * The array of all reserved keywords.
-     */
-    private static final String[] reservedKeywords = new String[]
-    {
-        // C++ reserved keywords
-        "alignas",   "alignof",          "and",          "and_eq",   "asm",       "auto",
-        "bitand",    "bitor",            "bool",         "break",    "case",      "catch",
-        "char",      "char16_t",         "char32_t",     "class",    "compl",     "const",
-        "constexpr", "const_cast",       "continue",     "decltype", "default",   "delete",
-        "do",        "double",           "dynamic_cast", "else",     "enum",      "explicit",
-        "export",    "extern",           "false",        "float",    "for",       "friend",
-        "goto",      "if",               "inline",       "int",      "long",      "mutable",
-        "namespace", "new",              "noexcept",     "not",      "not_eq",    "nullptr",
-        "operator",  "or",               "or_eq",        "private",  "protected", "public",
-        "register",  "reinterpret_cast", "return",       "short",    "signed",    "sizeof",
-        "static",    "static_assert",    "static_cast",  "struct",   "switch",    "template",
-        "this",      "thread_local",     "throw",        "true",     "try",       "typedef",
-        "typeid",    "typename",         "union",        "unsigned", "using",     "virtual",
-        "void",      "volatile",         "wchar_t",      "while",    "xor",       "xor_eq",
-
-        // Java reserved keywords
-        "abstract",   "assert",       "boolean",    "break",    "byte",      "case",
-        "catch",      "char",         "class",      "const",    "continue",  "default",
-        "double",     "do",           "else",       "enum",     "extends",   "false",
-        "final",      "finally",      "float",      "for",      "goto",      "if",
-        "implements", "import",       "instanceof", "int",      "interface", "long",
-        "native",     "new",          "null",       "package",  "private",   "protected",
-        "public",     "return",       "short",      "static",   "strictfp",  "super",
-        "switch",     "synchronized", "this",       "throw",    "throws",    "transient",
-
-        // Python reserved keywords
-        "and",    "as",      "assert",   "break", "class", "continue", "def",   "del",    "elif", "else",
-        "except", "finally", "False",    "for",   "from",  "global",   "if",    "import", "in",   "is",
-        "lambda", "None",    "nonlocal", "not",   "or",    "pass",     "raise", "return", "True", "try",
-        "while",  "with",    "yield"
-    };
-
-    private static final Set<String> reservedKeywordsList =
-            new HashSet<String>(Arrays.asList(reservedKeywords));
 
     private final InputFileManager inputFileManager;
 

@@ -6,9 +6,9 @@ import zserio.tools.Parameters;
 
 class UnionEmitter extends JavaDefaultEmitter
 {
-    public UnionEmitter(Parameters extensionParameters, JavaExtensionParameters javaParameters)
+    public UnionEmitter(JavaExtensionParameters javaParameters, Parameters extensionParameters)
     {
-        super(extensionParameters, javaParameters);
+        super(javaParameters, extensionParameters);
     }
 
     @Override

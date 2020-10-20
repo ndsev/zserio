@@ -15,7 +15,7 @@
 </#macro>
 
 <#macro symbol_reference_label symbol align>
-    <table align="${align}" fixedsize="true" border="0" cellspacing="0" cellpadding="0"><tr><#t>
+    <table align="${align}" border="0" cellspacing="0" cellpadding="0"><tr><#t>
         <td href="<#if symbol.htmlLink??><@symbol_html_link symbol.htmlLink/><#else>javascript:;</#if>" <#t>
             title="${symbol.htmlTitle}">${symbol.name}</td><#t>
     <#if symbol.templateArguments?has_content>

@@ -9,10 +9,9 @@ package zserio.ast;
  * - reference to enumeration item ('packageName.FooEnumeration.BAR_ENUM_ITEM')
  * - reference to compound field ('packageName.FooCompoundType.field')
  *
- * Symbol reference is not AST node because it is used by unparsed texts in the following two situations:
+ * Symbol reference is not AST node because it is used by unparsed texts in the following situation:
  *
  * - documentation comment tag see token (@see)
- * - SQLite constraints (@expression)
  */
 public class SymbolReference
 {
@@ -75,8 +74,8 @@ public class SymbolReference
     void resolve(Package ownerPackage, ZserioScopedType ownerType)
     {
         // try if the last link component was a symbol name
-        referencedSymbol = ownerPackage.getVisibleSymbol(ownerNode,  referencedPackageNameBuilder.get(),
-                referencedName);
+        PackageName referencedPackageName = getReferencedPackageName(ownerPackage);
+        referencedSymbol = ownerPackage.getVisibleSymbol(ownerNode, referencedPackageName, referencedName);
         if (referencedSymbol != null)
         {
             referencedSymbolName = referencedName;
@@ -84,12 +83,10 @@ public class SymbolReference
         }
 
         // try if the last link component was a type name
-        referencedType = ownerPackage.getVisibleType(ownerNode, referencedPackageNameBuilder.get(),
-                referencedName);
+        referencedType = ownerPackage.getVisibleType(ownerNode, referencedPackageName, referencedName);
         if (referencedType == null)
         {
-            final String fullName = ZserioTypeUtil.getFullName(referencedPackageNameBuilder.get(),
-                    referencedName);
+            final String fullName = ZserioTypeUtil.getFullName(referencedPackageName, referencedName);
 
             // try if the last link component was not type name (can be a field name or enumeration item)
             referencedSymbolName = referencedName;
@@ -101,8 +98,8 @@ public class SymbolReference
             }
             else
             {
-                referencedType = ownerPackage.getVisibleType(ownerNode, referencedPackageNameBuilder.get(),
-                        referencedName);
+                referencedPackageName = getReferencedPackageName(ownerPackage);
+                referencedType = ownerPackage.getVisibleType(ownerNode, referencedPackageName, referencedName);
             }
 
             // this was our last attempt to resolve symbol type
@@ -111,6 +108,19 @@ public class SymbolReference
 
             resolveLocalSymbol();
         }
+    }
+
+    private PackageName getReferencedPackageName(Package ownerPackage)
+    {
+        final PackageName referencedPackageName = referencedPackageNameBuilder.get();
+        if (referencedPackageName.isEmpty())
+            return referencedPackageName;
+
+        final PackageName.Builder packageNameBuilder = new PackageName.Builder();
+        packageNameBuilder.append(ownerPackage.getTopLevelPackageName());
+        packageNameBuilder.append(referencedPackageName);
+
+        return packageNameBuilder.get();
     }
 
     private void resolveLocalSymbol()

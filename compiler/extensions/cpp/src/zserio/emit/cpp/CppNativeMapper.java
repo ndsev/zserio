@@ -29,7 +29,6 @@ import zserio.ast.StringType;
 import zserio.ast.Subtype;
 import zserio.ast.TypeReference;
 import zserio.ast.VarIntegerType;
-import zserio.emit.common.PackageMapper;
 import zserio.emit.common.ZserioEmitException;
 import zserio.emit.cpp.symbols.CppNativeSymbol;
 import zserio.emit.cpp.types.CppNativeType;
@@ -48,16 +47,6 @@ import zserio.emit.cpp.types.NativeCompoundType;
 public class CppNativeMapper
 {
     /**
-     * Constructor from package mapper.
-     *
-     * @param cppPackageMapper Package mapper to construct from.
-     */
-    public CppNativeMapper(PackageMapper cppPackageMapper)
-    {
-        this.cppPackageMapper = cppPackageMapper;
-    }
-
-    /**
      * Returns a C++ symbol that can hold an instance of Zserio symbol.
      *
      * @param symbol Zserio symbol.
@@ -71,7 +60,7 @@ public class CppNativeMapper
         if (symbol instanceof Constant)
         {
             final Constant constant = (Constant)symbol;
-            final PackageName packageName = cppPackageMapper.getPackageName(constant.getPackage());
+            final PackageName packageName = constant.getPackage().getPackageName();
             final String name = constant.getName();
             final String includeFileName = getIncludePath(packageName, name);
             return new CppNativeSymbol(packageName, name, includeFileName);
@@ -551,7 +540,7 @@ public class CppNativeMapper
         @Override
         public void visitEnumType(EnumType type)
         {
-            final PackageName packageName = cppPackageMapper.getPackageName(type);
+            final PackageName packageName = type.getPackage().getPackageName();
             final String name = type.getName();
             final String includeFileName = getIncludePath(packageName, name);
             cppType = new NativeUserType(packageName, name, includeFileName, true);
@@ -560,7 +549,7 @@ public class CppNativeMapper
         @Override
         public void visitBitmaskType(BitmaskType type)
         {
-            final PackageName packageName = cppPackageMapper.getPackageName(type);
+            final PackageName packageName = type.getPackage().getPackageName();
             final String name = type.getName();
             final String includeFileName = getIncludePath(packageName, name);
             cppType = new NativeUserType(packageName, name, includeFileName, true);
@@ -594,7 +583,7 @@ public class CppNativeMapper
         @Override
         public void visitServiceType(ServiceType type)
         {
-            final PackageName packageName = cppPackageMapper.getPackageName(type);
+            final PackageName packageName = type.getPackage().getPackageName();
             final String name = type.getName();
             final String includeFileName = getIncludePath(packageName, name);
             cppType = new NativeUserType(packageName, name, includeFileName, false);
@@ -603,7 +592,7 @@ public class CppNativeMapper
         @Override
         public void visitPubsubType(PubsubType type)
         {
-            final PackageName packageName = cppPackageMapper.getPackageName(type);
+            final PackageName packageName = type.getPackage().getPackageName();
             final String name = type.getName();
             final String includeFileName = getIncludePath(packageName, name);
             cppType = new NativeUserType(packageName, name, includeFileName, false);
@@ -640,7 +629,7 @@ public class CppNativeMapper
             {
                 final CppNativeType nativeTargetType =
                         CppNativeMapper.this.getCppType(type.getTypeReference());
-                final PackageName packageName = cppPackageMapper.getPackageName(type);
+                final PackageName packageName = type.getPackage().getPackageName();
                 final String name = type.getName();
                 final String includeFileName = getIncludePath(packageName, name);
                 cppType = new NativeUserType(packageName, name, includeFileName,
@@ -661,7 +650,7 @@ public class CppNativeMapper
         @Override
         public void visitInstantiateType(InstantiateType type)
         {
-            final PackageName packageName = cppPackageMapper.getPackageName(type);
+            final PackageName packageName = type.getPackage().getPackageName();
             final String name = type.getName(); // note that name is same as the referenced type name
             final String includeFileName = getIncludePath(packageName, name);
             cppType = new NativeUserType(packageName, name, includeFileName, false);
@@ -744,7 +733,7 @@ public class CppNativeMapper
 
         private void mapCompoundType(CompoundType type)
         {
-            final PackageName packageName = cppPackageMapper.getPackageName(type);
+            final PackageName packageName = type.getPackage().getPackageName();
             final String name = type.getName();
             final String includeFileName = getIncludePath(packageName, name);
             cppType = new NativeCompoundType(packageName, name, includeFileName);
@@ -753,8 +742,6 @@ public class CppNativeMapper
         private CppNativeType cppType = null;
         private ZserioEmitException thrownException = null;
     }
-
-    private final PackageMapper cppPackageMapper;
 
     private final static String INCLUDE_DIR_SEPARATOR = "/";
     private final static String HEADER_SUFFIX = ".h";

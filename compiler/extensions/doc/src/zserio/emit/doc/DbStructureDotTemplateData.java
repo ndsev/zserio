@@ -40,11 +40,9 @@ public class DbStructureDotTemplateData
         {
             this.name = name;
 
-            packageName = AstNodePackageNameMapper.getPackageName(
-                    tableTypeInstantiation, context.getPackageMapper()).toString();
+            packageName = AstNodePackageNameMapper.getPackageName(tableTypeInstantiation).toString();
             typeSymbol = SymbolTemplateDataCreator.createData(context, tableTypeInstantiation);
-
-            SqlTableType tableType = (SqlTableType)tableTypeInstantiation.getBaseType();
+            final SqlTableType tableType = (SqlTableType)tableTypeInstantiation.getBaseType();
 
             fields = new ArrayList<TableFieldTemplateData>();
             final List<Field> tableFieldList = tableType.getFields();
@@ -81,7 +79,8 @@ public class DbStructureDotTemplateData
 
     public static class TableFieldTemplateData
     {
-        public TableFieldTemplateData(TemplateDataContext context, SqlTableType tableType, Field fieldType, boolean isPrimaryKey)
+        public TableFieldTemplateData(TemplateDataContext context, SqlTableType tableType, Field fieldType,
+                boolean isPrimaryKey)
         {
             // TODO[Mi-L@]: We wan't to make link to the template's field, but we use field from the template's
             //              instantiation to get the field's name. Is it correct?

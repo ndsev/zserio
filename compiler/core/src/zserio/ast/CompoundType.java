@@ -215,16 +215,16 @@ public abstract class CompoundType extends TemplatableType
     void checkSymbolNames()
     {
         // parameters and fields cannot clash (difference only in case of the first letter is still clash!)
-        IdentifierValidator validator = new IdentifierValidator();
+        ScopeSymbolValidator validator = new ScopeSymbolValidator();
         for (Parameter param : typeParameters)
-            validator.validateSymbol(param.getName(), param);
+            validator.validate(param.getName(), param);
         for (Field field : fields)
-            validator.validateSymbol(field.getName(), field);
+            validator.validate(field.getName(), field);
 
         // function names cannot clash (difference only in case of the first letter is still clash!)
-        validator = new IdentifierValidator();
+        validator = new ScopeSymbolValidator();
         for (Function function : functions)
-            validator.validateSymbol(function.getName(), function);
+            validator.validate(function.getName(), function);
     }
 
     private void checkDirectRecursion()

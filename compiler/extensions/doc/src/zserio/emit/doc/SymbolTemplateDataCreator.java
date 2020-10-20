@@ -7,7 +7,6 @@ import java.util.Locale;
 import zserio.ast.AstNode;
 import zserio.ast.PackageName;
 import zserio.ast.ZserioType;
-import zserio.emit.common.PackageMapper;
 
 class SymbolTemplateDataCreator
 {
@@ -15,8 +14,7 @@ class SymbolTemplateDataCreator
     {
         final String name = AstNodeNameMapper.getName(node);
         final String typeName = AstNodeTypeNameMapper.getTypeName(node);
-        final PackageMapper packageMapper = context.getPackageMapper();
-        final PackageName packageName = AstNodePackageNameMapper.getPackageName(node, packageMapper);
+        final PackageName packageName = AstNodePackageNameMapper.getPackageName(node);
         final List<SymbolTemplateData> templateArguments =
                 AstNodeTemplateArgumentsMapper.getTemplateArguments(node, context);
 
@@ -51,8 +49,7 @@ class SymbolTemplateDataCreator
         final String memberTypeName = AstNodeTypeNameMapper.getTypeName(member);
         final String htmlClass = createHtmlClass(memberTypeName);
 
-        final PackageMapper packageMapper = context.getPackageMapper();
-        final PackageName zserioPackageName = packageMapper.getPackageName(zserioType.getPackage());
+        final PackageName zserioPackageName = zserioType.getPackage().getPackageName();
         final String htmlTitle = createHtmlTitle(memberTypeName, zserioPackageName);
 
         final String htmlLinkPage = createHtmlLinkPage(context, zserioPackageName);

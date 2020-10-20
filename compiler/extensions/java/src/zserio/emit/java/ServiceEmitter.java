@@ -6,9 +6,9 @@ import zserio.tools.Parameters;
 
 class ServiceEmitter extends JavaDefaultEmitter
 {
-    public ServiceEmitter(Parameters extensionParameters, JavaExtensionParameters javaParameters)
+    public ServiceEmitter(JavaExtensionParameters javaParameters, Parameters extensionParameters)
     {
-        super(extensionParameters, javaParameters);
+        super(javaParameters, extensionParameters);
     }
 
     @Override

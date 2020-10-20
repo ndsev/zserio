@@ -6,7 +6,6 @@ import java.util.Set;
 
 import zserio.ast.Package;
 import zserio.ast.PackageName;
-import zserio.emit.common.PackageMapper;
 import zserio.emit.common.ZserioEmitException;
 import zserio.tools.Parameters;
 
@@ -22,24 +21,22 @@ public class InitPyEmitter extends PythonDefaultEmitter
     {
         super.beginPackage(zserioPackage);
 
-        final PackageMapper packageMapper = getTemplateDataContext().getPythonPackageMapper();
-        final PackageName mappedPackageName = packageMapper.getPackageName(zserioPackage);
-
-        if (mappedPackageName.isEmpty())
+        final PackageName packageName = zserioPackage.getPackageName();
+        if (packageName.isEmpty())
         {
-            processPackage(mappedPackageName);
+            processPackage(packageName);
         }
         else
         {
             final PackageName.Builder packageNameBuilder = new PackageName.Builder();
-            final Iterator<String> mappedIdsIterator = mappedPackageName.getIdList().iterator();
-            while (mappedIdsIterator.hasNext())
+            final Iterator<String> idsIterator = packageName.getIdList().iterator();
+            while (idsIterator.hasNext())
             {
-                packageNameBuilder.addId(mappedIdsIterator.next());
+                packageNameBuilder.addId(idsIterator.next());
 
-                final PackageName packageName = packageNameBuilder.get();
-                if (processedPackages.add(packageName))
-                    processPackage(packageName);
+                final PackageName builtPackageName = packageNameBuilder.get();
+                if (processedPackages.add(builtPackageName))
+                    processPackage(builtPackageName);
             }
         }
     }

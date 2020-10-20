@@ -31,9 +31,8 @@ class SymbolOverviewEmitter extends HtmlDefaultEmitter
     {
         super(outputPathName, extensionParameters, withSvgDiagrams, usedByCollector);
 
-        context = new TemplateDataContext(getWithSvgDiagrams(), getUsedByCollector(), getPackageMapper(),
-                getResourceManager(), HTML_CONTENT_DIRECTORY, SYMBOL_COLLABORATION_DIRECTORY,
-                DB_STRUCTURE_DIRECTORY);
+        context = new TemplateDataContext(getWithSvgDiagrams(), getUsedByCollector(),  getResourceManager(),
+                HTML_CONTENT_DIRECTORY, SYMBOL_COLLABORATION_DIRECTORY, DB_STRUCTURE_DIRECTORY);
 
         nodesMap = new HashMap<Package, List<AstNode>>();
     }

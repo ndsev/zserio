@@ -7,7 +7,6 @@ import java.util.List;
 import zserio.ast.PackageName;
 import zserio.ast.Root;
 import zserio.ast.SqlDatabaseType;
-import zserio.emit.common.PackageMapper;
 import zserio.emit.common.ZserioEmitException;
 import zserio.tools.Parameters;
 import zserio.tools.StringJoinUtil;
@@ -25,8 +24,8 @@ class DbStructureDotEmitter extends DotDefaultEmitter
                 withSvgDiagrams, dotExecutable, usedByCollector);
 
         final String directoryPrefix = getDotLinksPrefix() + File.separator;
-        context = new TemplateDataContext(getWithSvgDiagrams(), getUsedByCollector(), getPackageMapper(),
-                getResourceManager(), directoryPrefix + HTML_CONTENT_DIRECTORY,
+        context = new TemplateDataContext(getWithSvgDiagrams(), getUsedByCollector(), getResourceManager(),
+                directoryPrefix + HTML_CONTENT_DIRECTORY,
                 directoryPrefix + SYMBOL_COLLABORATION_DIRECTORY, ".");
 
         databaseList = new ArrayList<SqlDatabaseType>();
@@ -38,11 +37,9 @@ class DbStructureDotEmitter extends DotDefaultEmitter
         for (SqlDatabaseType database : databaseList)
         {
             final Object templateData = new DbStructureDotTemplateData(context, database);
-            final String dotHtmlLink = getDotDbStructureHtmlLink(database, getPackageMapper(),
-                    DB_STRUCTURE_DIRECTORY);
+            final String dotHtmlLink = getDotDbStructureHtmlLink(database, DB_STRUCTURE_DIRECTORY);
             final File outputDotFile = new File(getOutputPathName(), dotHtmlLink);
-            final String svgHtmlLink = getSvgDbStructureHtmlLink(database, getPackageMapper(),
-                    DB_STRUCTURE_DIRECTORY);
+            final String svgHtmlLink = getSvgDbStructureHtmlLink(database, DB_STRUCTURE_DIRECTORY);
             final File outputSvgFile = new File(getOutputPathName(), svgHtmlLink);
             processDotTemplate(TEMPLATE_SOURCE_NAME, templateData, outputDotFile, outputSvgFile);
         }
@@ -54,22 +51,19 @@ class DbStructureDotEmitter extends DotDefaultEmitter
         databaseList.add(sqlDatabaseType);
     }
 
-    public static String getSvgDbStructureHtmlLink(SqlDatabaseType database, PackageMapper packageMapper,
-            String dbStructureDirectory)
+    public static String getSvgDbStructureHtmlLink(SqlDatabaseType database, String dbStructureDirectory)
     {
-        return getDbStructureHtmlLinkBase(database, packageMapper, dbStructureDirectory) + SVG_FILE_EXTENSION;
+        return getDbStructureHtmlLinkBase(database, dbStructureDirectory) + SVG_FILE_EXTENSION;
     }
 
-    private static String getDotDbStructureHtmlLink(SqlDatabaseType database, PackageMapper packageMapper,
-            String dbStructureDirectory)
+    private static String getDotDbStructureHtmlLink(SqlDatabaseType database, String dbStructureDirectory)
     {
-        return getDbStructureHtmlLinkBase(database, packageMapper, dbStructureDirectory) + DOT_FILE_EXTENSION;
+        return getDbStructureHtmlLinkBase(database, dbStructureDirectory) + DOT_FILE_EXTENSION;
     }
 
-    private static String getDbStructureHtmlLinkBase(SqlDatabaseType database, PackageMapper packageMapper,
-            String dbStructureDirectory)
+    private static String getDbStructureHtmlLinkBase(SqlDatabaseType database, String dbStructureDirectory)
     {
-        final PackageName packageName = packageMapper.getPackageName(database);
+        final PackageName packageName = database.getPackage().getPackageName();
         final String name = database.getName();
         final String packageNameString = ((packageName.isEmpty()) ? DEFAULT_PACKAGE_FILE_NAME :
             packageName.toString());

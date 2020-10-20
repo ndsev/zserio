@@ -855,6 +855,7 @@ public class Expression extends AstNodeBase
     {
         // try to resolve operand1 as package name and operand2 as type
         final PackageName.Builder op1UnresolvedPackageNameBuilder = new PackageName.Builder();
+        op1UnresolvedPackageNameBuilder.append(pkg.getTopLevelPackageName());
         for (Expression unresolvedIdentifier : operand1.unresolvedIdentifiers)
             op1UnresolvedPackageNameBuilder.addId(unresolvedIdentifier.text);
 
