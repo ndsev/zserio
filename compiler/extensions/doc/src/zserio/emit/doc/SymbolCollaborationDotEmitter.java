@@ -1,8 +1,6 @@
 package zserio.emit.doc;
 
 import java.io.File;
-import java.util.Map;
-import java.util.Set;
 
 import zserio.ast.AstNode;
 import zserio.ast.PackageName;
@@ -37,10 +35,10 @@ class SymbolCollaborationDotEmitter extends DotDefaultEmitter
         emitDotDiagrams();
     }
 
-    public static boolean svgSymbolCollaborationFileExists(AstNode node, UsedByCollector usedByCollector,
+    public static boolean svgSymbolCollaborationDiagramExists(AstNode node, UsedByCollector usedByCollector,
             boolean withSvgDiagrams)
     {
-        return withSvgDiagrams && usedByCollector.getUsedByTypeMap().containsKey(node);
+        return withSvgDiagrams && usedByCollector.getCollaboratingNodes().contains(node);
     }
 
     public static String getSvgSymbolCollaborationHtmlLink(AstNode node, PackageMapper packageMapper,
@@ -73,21 +71,22 @@ class SymbolCollaborationDotEmitter extends DotDefaultEmitter
 
     private void emitDotDiagrams() throws ZserioEmitException
     {
-        final UsedByCollector usedByCollector = getUsedByCollector();
-        for (Map.Entry<AstNode, Set<AstNode>> entry : usedByCollector.getUsedByTypeMap().entrySet())
-        {
-            final AstNode node = entry.getKey();
+        for (AstNode node : getUsedByCollector().getCollaboratingNodes())
+            emitDotDiagram(node);
+    }
 
-            final SymbolCollaborationDotTemplateData templateData = new SymbolCollaborationDotTemplateData(
-                    context, node, usedByCollector.getUsedTypes(node), entry.getValue());
-            final String dotHtmlLink = getDotSymbolCollaborationHtmlLink(node, getPackageMapper(),
-                    SYMBOL_COLLABORATION_DIRECTORY);
-            final File outputDotFile = new File(getOutputPathName(), dotHtmlLink);
-            final String svgHtmlLink = getSvgSymbolCollaborationHtmlLink(node, getPackageMapper(),
-                    SYMBOL_COLLABORATION_DIRECTORY);
-            final File outputSvgFile = new File(getOutputPathName(), svgHtmlLink);
-            processDotTemplate(TEMPLATE_SOURCE_NAME, templateData, outputDotFile, outputSvgFile);
-        }
+    private void emitDotDiagram(AstNode node) throws ZserioEmitException
+    {
+        final SymbolCollaborationDotTemplateData templateData = new SymbolCollaborationDotTemplateData(
+                context, node, getUsedByCollector().getUsedTypes(node),
+                getUsedByCollector().getUsedByTypes(node));
+        final String dotHtmlLink = getDotSymbolCollaborationHtmlLink(node, getPackageMapper(),
+                SYMBOL_COLLABORATION_DIRECTORY);
+        final File outputDotFile = new File(getOutputPathName(), dotHtmlLink);
+        final String svgHtmlLink = getSvgSymbolCollaborationHtmlLink(node, getPackageMapper(),
+                SYMBOL_COLLABORATION_DIRECTORY);
+        final File outputSvgFile = new File(getOutputPathName(), svgHtmlLink);
+        processDotTemplate(TEMPLATE_SOURCE_NAME, templateData, outputDotFile, outputSvgFile);
     }
 
     private static final String TEMPLATE_SOURCE_NAME = "symbol_collaboration.dot.ftl";

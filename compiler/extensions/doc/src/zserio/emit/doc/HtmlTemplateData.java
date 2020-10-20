@@ -20,14 +20,15 @@ public class HtmlTemplateData
 
         final PackageMapper packageMapper = context.getPackageMapper();
         final UsedByCollector usedByCollector = context.getUsedByCollector();
-        final boolean svgCollaborationExists = SymbolCollaborationDotEmitter.svgSymbolCollaborationFileExists(astNode,
-                usedByCollector, context.getWithSvgDiagrams());
+        final boolean svgCollaborationExists =
+                SymbolCollaborationDotEmitter.svgSymbolCollaborationDiagramExists(
+                        astNode, usedByCollector, context.getWithSvgDiagrams());
         this.collaborationDiagramSvg = (svgCollaborationExists) ?
                 SymbolCollaborationDotEmitter.getSvgSymbolCollaborationHtmlLink(astNode, packageMapper,
                         context.getSymbolCollaborationDirectory()) : null;
 
         usedByList = new ArrayList<SymbolTemplateData>();
-        for (AstNode usedByNode : usedByCollector.getUsedByTypes(astNode, AstNode.class))
+        for (AstNode usedByNode : usedByCollector.getUsedByTypes(astNode))
         {
             usedByList.add(createSymbol(context, usedByNode));
         }

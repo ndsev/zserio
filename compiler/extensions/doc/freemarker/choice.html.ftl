@@ -33,7 +33,7 @@
             </tr>
 </#macro>
 <#assign choiceHeading>
-    <i>Choice</i><#if templateParameters?has_content> template</#if> ${symbol.name} ${symbol.name}
+    <i>Choice</i><#if templateParameters?has_content> template</#if> ${symbol.name}
 </#assign>
 
     <div class="msgdetail" id="${symbol.htmlLink.htmlAnchor}">
