@@ -32,7 +32,7 @@ class PackageEmitter extends HtmlDefaultEmitter
 
         final String directoryPrefix = ".." + File.separator;
         context = new TemplateDataContext(getWithSvgDiagrams(), getUsedByCollector(), getResourceManager(), ".",
-                directoryPrefix + SYMBOL_COLLABORATION_DIRECTORY, directoryPrefix + DB_STRUCTURE_DIRECTORY);
+                directoryPrefix + SYMBOL_COLLABORATION_DIRECTORY);
     }
 
     @Override

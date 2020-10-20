@@ -24,7 +24,7 @@ class SymbolCollaborationDotEmitter extends DotDefaultEmitter
 
         final String directoryPrefix = getDotLinksPrefix() + File.separator;
         context = new TemplateDataContext(getWithSvgDiagrams(), getUsedByCollector(), getResourceManager(),
-                directoryPrefix + HTML_CONTENT_DIRECTORY, ".", directoryPrefix + DB_STRUCTURE_DIRECTORY);
+                directoryPrefix + HTML_CONTENT_DIRECTORY, ".");
     }
 
     @Override

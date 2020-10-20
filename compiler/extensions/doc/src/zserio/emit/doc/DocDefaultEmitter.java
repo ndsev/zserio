@@ -50,7 +50,6 @@ class DocDefaultEmitter extends DefaultEmitter
     protected static final String DOC_TEMPLATE_LOCATION = "doc/";
     protected static final String HTML_CONTENT_DIRECTORY = "content";
     protected static final String SYMBOL_COLLABORATION_DIRECTORY = "symbol_collaboration";
-    protected static final String DB_STRUCTURE_DIRECTORY = "db_structure";
     protected static final String DEFAULT_PACKAGE_FILE_NAME = "[default package]";
 
     private final String outputPathName;
