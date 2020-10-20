@@ -15,14 +15,11 @@ import zserio.tools.StringJoinUtil;
 class SymbolCollaborationDotEmitter extends DotDefaultEmitter
 {
     public SymbolCollaborationDotEmitter(String outputPathName, Parameters extensionParameters,
-            String dotLinksPrefix, boolean withSvgDiagrams, String dotExecutable,
-            UsedByCollector usedByCollector)
+            boolean withSvgDiagrams, String dotExecutable, UsedByCollector usedByCollector)
     {
-        // TODO[mikir] to re-think dotLinksPrefix, it won't work
-        super(outputPathName, extensionParameters, (dotLinksPrefix == null) ? "../.." : dotLinksPrefix,
-                withSvgDiagrams, dotExecutable, usedByCollector);
+        super(outputPathName, extensionParameters, withSvgDiagrams, dotExecutable, usedByCollector);
 
-        final String directoryPrefix = getDotLinksPrefix() + File.separator;
+        final String directoryPrefix = ".." + File.separator + ".." + File.separator;
         context = new TemplateDataContext(getWithSvgDiagrams(), getUsedByCollector(), getResourceManager(),
                 directoryPrefix + HTML_CONTENT_DIRECTORY, ".");
     }
