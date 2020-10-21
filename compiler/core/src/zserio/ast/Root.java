@@ -3,13 +3,13 @@ package zserio.ast;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import zserio.emit.common.Emitter;
+import zserio.emit.common.TreeWalker;
 import zserio.emit.common.ZserioEmitException;
 
 /**
  * The representation of AST ROOT node.
  *
- * This class represents an AST node which has all translation units compiled by zserio.
+ * This class represents an AST node which has all translation units compiled by Zserio.
  */
 public class Root extends AstNodeBase
 {
@@ -39,33 +39,20 @@ public class Root extends AstNodeBase
     }
 
     /**
-     * Walks through AST tree applying given emitter interface, automatically resolves templates.
+     * Walks through AST tree applying given TreeWalker interface.
      *
-     * @param emitter Emitter interface to use for walking.
-     *
-     * @throws ZserioEmitException Throws in case of any error.
-     */
-    public void emit(Emitter emitter) throws ZserioEmitException
-    {
-        emit(emitter, true);
-    }
-
-    /**
-     * Walks through AST tree applying given emitter interface.
-     *
-     * @param emitter Emitter interface to use for walking.
-     * @param resolveTemplates Whether to automatically resolve templates.
+     * @param walker TreeWalker interface to use for walking.
      *
      * @throws ZserioEmitException Throws in case of any error.
      */
-    public void emit(Emitter emitter, boolean resolveTemplates) throws ZserioEmitException
+    public void walk(TreeWalker walker) throws ZserioEmitException
     {
-        final ZserioAstEmitter astEmitter = new ZserioAstEmitter(emitter, resolveTemplates);
+        final ZserioAstTreeWalker walkingVisitor = new ZserioAstTreeWalker(walker);
         try
         {
-            this.accept(astEmitter);
+            this.accept(walkingVisitor);
         }
-        catch (ZserioAstEmitter.UncheckedZserioEmitException e)
+        catch (ZserioAstTreeWalker.UncheckedZserioEmitException e)
         {
             throw e.getOriginalException();
         }

@@ -5,17 +5,23 @@ import java.io.File;
 import zserio.ast.Package;
 import zserio.ast.PackageName;
 import zserio.ast.ZserioType;
-import zserio.emit.common.DefaultEmitter;
+import zserio.emit.common.DefaultTreeWalker;
 import zserio.emit.common.FreeMarkerUtil;
 import zserio.emit.common.ZserioEmitException;
 import zserio.tools.Parameters;
 
-abstract class JavaDefaultEmitter extends DefaultEmitter
+abstract class JavaDefaultEmitter extends DefaultTreeWalker
 {
     public JavaDefaultEmitter(JavaExtensionParameters javaParameters, Parameters extensionParameters)
     {
         this.javaParameters = javaParameters;
         this.extensionParameters = extensionParameters;
+    }
+
+    @Override
+    public boolean traverseTemplateInstantiations()
+    {
+        return true;
     }
 
     @Override

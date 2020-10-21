@@ -7,7 +7,7 @@ import zserio.emit.common.FreeMarkerUtil;
 import zserio.emit.common.ZserioEmitException;
 import zserio.tools.Parameters;
 
-class HtmlDefaultEmitter extends DocDefaultEmitter
+abstract class HtmlDefaultEmitter extends DocDefaultEmitter
 {
     public HtmlDefaultEmitter(String outputPathName, Parameters extensionParameters, boolean withSvgDiagrams,
             UsedByCollector usedByCollector)

@@ -6,7 +6,7 @@ import zserio.emit.common.FreeMarkerUtil;
 import zserio.emit.common.ZserioEmitException;
 import zserio.tools.Parameters;
 
-class DotDefaultEmitter extends DocDefaultEmitter
+abstract class DotDefaultEmitter extends DocDefaultEmitter
 {
     public DotDefaultEmitter(String outputPathName, Parameters extensionParameters, boolean withSvgDiagrams,
             String dotExecutable, UsedByCollector usedByCollector)

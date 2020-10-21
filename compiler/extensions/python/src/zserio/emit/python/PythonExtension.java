@@ -7,7 +7,6 @@ import org.apache.commons.cli.Option;
 
 import zserio.ast.Root;
 import zserio.emit.common.ZserioEmitException;
-import zserio.emit.common.Emitter;
 import zserio.tools.Extension;
 import zserio.tools.Parameters;
 
@@ -47,7 +46,8 @@ public class PythonExtension implements Extension
     public void generate(Parameters parameters, Root rootNode) throws ZserioEmitException
     {
         final String outputDir = parameters.getCommandLineArg(OptionPython);
-        final List<Emitter> emitters = new ArrayList<Emitter>();
+
+        final List<PythonDefaultEmitter> emitters = new ArrayList<PythonDefaultEmitter>();
         emitters.add(new ConstEmitter(outputDir, parameters));
         emitters.add(new EnumerationEmitter(outputDir, parameters));
         emitters.add(new BitmaskEmitter(outputDir, parameters));
@@ -63,8 +63,8 @@ public class PythonExtension implements Extension
         emitters.add(new PubsubEmitter(outputDir, parameters));
 
         // emit Python code
-        for (Emitter pythonEmitter: emitters)
-            rootNode.emit(pythonEmitter);
+        for (PythonDefaultEmitter pythonEmitter: emitters)
+            rootNode.walk(pythonEmitter);
     }
 
     private final static String OptionPython = "python";

@@ -34,14 +34,20 @@ import zserio.ast.TypeInstantiation;
 import zserio.ast.UnionType;
 import zserio.ast.ZserioTemplatableType;
 import zserio.ast.ZserioType;
-import zserio.emit.common.DefaultEmitter;
+import zserio.emit.common.DefaultTreeWalker;
 import zserio.tools.HashUtil;
 
 /**
  * Abstraction which handles used by list for all available zserio types.
  */
-class UsedByCollector extends DefaultEmitter
+class UsedByCollector extends DefaultTreeWalker
 {
+    @Override
+    public boolean traverseTemplateInstantiations()
+    {
+        return true;
+    }
+
     @Override
     public void endRoot(Root root)
     {

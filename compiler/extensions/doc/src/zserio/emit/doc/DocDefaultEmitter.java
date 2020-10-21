@@ -1,9 +1,9 @@
 package zserio.emit.doc;
 
-import zserio.emit.common.DefaultEmitter;
+import zserio.emit.common.DefaultTreeWalker;
 import zserio.tools.Parameters;
 
-class DocDefaultEmitter extends DefaultEmitter
+abstract class DocDefaultEmitter extends DefaultTreeWalker
 {
     public DocDefaultEmitter(String outputPathName, Parameters extensionParameters, boolean withSvgDiagrams,
             UsedByCollector usedByCollector)
@@ -15,6 +15,12 @@ class DocDefaultEmitter extends DefaultEmitter
         resourceManager = new ResourceManager(extensionParameters.getPathName(),
                 getFileNameExtension(extensionParameters.getFileName()), outputPathName,
                 HTML_CONTENT_DIRECTORY);
+    }
+
+    @Override
+    public boolean traverseTemplateInstantiations()
+    {
+        return false;
     }
 
     protected String getOutputPathName()

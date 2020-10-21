@@ -5,18 +5,24 @@ import java.io.File;
 import zserio.ast.Package;
 import zserio.ast.PackageName;
 import zserio.ast.ZserioType;
-import zserio.emit.common.DefaultEmitter;
+import zserio.emit.common.DefaultTreeWalker;
 import zserio.emit.common.FreeMarkerUtil;
 import zserio.emit.common.ZserioEmitException;
 import zserio.tools.Parameters;
 
-abstract class PythonDefaultEmitter extends DefaultEmitter
+abstract class PythonDefaultEmitter extends DefaultTreeWalker
 {
     public PythonDefaultEmitter(String outputPathName, Parameters extensionParameters)
     {
         this.outputPathName = outputPathName;
         this.extensionParameters = extensionParameters;
         this.context = new TemplateDataContext(extensionParameters);
+    }
+
+    @Override
+    public boolean traverseTemplateInstantiations()
+    {
+        return true;
     }
 
     protected boolean getWithPubsubCode()

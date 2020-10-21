@@ -7,7 +7,6 @@ import org.apache.commons.cli.Option;
 
 import zserio.ast.Root;
 import zserio.emit.common.ZserioEmitException;
-import zserio.emit.common.Emitter;
 import zserio.tools.Extension;
 import zserio.tools.Parameters;
 
@@ -54,7 +53,7 @@ public class JavaExtension implements Extension
     private void generateJavaSources(JavaExtensionParameters javaParameters, Parameters extensionParameters,
             Root rootNode) throws ZserioEmitException
     {
-        final List<Emitter> emitters = new ArrayList<Emitter>();
+        final List<JavaDefaultEmitter> emitters = new ArrayList<JavaDefaultEmitter>();
         emitters.add(new BitmaskEmitter(javaParameters, extensionParameters));
         emitters.add(new EnumerationEmitter(javaParameters, extensionParameters));
         emitters.add(new StructureEmitter(javaParameters, extensionParameters));
@@ -67,8 +66,8 @@ public class JavaExtension implements Extension
         emitters.add(new PubsubEmitter(javaParameters, extensionParameters));
 
         // emit Java code
-        for (Emitter javaEmitter: emitters)
-            rootNode.emit(javaEmitter);
+        for (JavaDefaultEmitter emitter: emitters)
+            rootNode.walk(emitter);
     }
 
     private static final String OptionJava = "java";

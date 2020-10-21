@@ -7,7 +7,6 @@ import org.apache.commons.cli.Option;
 import org.apache.commons.cli.OptionGroup;
 
 import zserio.ast.Root;
-import zserio.emit.common.Emitter;
 import zserio.emit.common.ZserioEmitException;
 import zserio.tools.Extension;
 import zserio.tools.Parameters;
@@ -75,7 +74,7 @@ public class DocExtension implements Extension
 
         // collect used by information
         final UsedByCollector usedByCollector = new UsedByCollector();
-        rootNode.emit(usedByCollector);
+        rootNode.walk(usedByCollector);
 
         // emit HTML index file
         HtmlIndexEmitter.emit(outputDir);
@@ -84,14 +83,14 @@ public class DocExtension implements Extension
         WebStylesEmitter.emit(outputDir);
 
         // emit DOT and HTML files (DOT files must be before HTML files)
-        final List<Emitter> emitters = new ArrayList<Emitter>();
+        final List<DocDefaultEmitter> emitters = new ArrayList<DocDefaultEmitter>();
         emitters.add(new SymbolCollaborationDotEmitter(outputDir, parameters, withSvgDiagrams, dotExecutable,
                 usedByCollector));
         emitters.add(new PackageOverviewEmitter(outputDir, parameters, withSvgDiagrams, usedByCollector));
         emitters.add(new SymbolOverviewEmitter(outputDir, parameters, withSvgDiagrams, usedByCollector));
         emitters.add(new PackageEmitter(outputDir, parameters, withSvgDiagrams, usedByCollector));
-        for (Emitter emitter : emitters)
-            rootNode.emit(emitter, false);
+        for (DocDefaultEmitter emitter : emitters)
+            rootNode.walk(emitter);
     }
 
     private final static String OptionDoc = "doc";

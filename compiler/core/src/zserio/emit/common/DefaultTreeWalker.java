@@ -17,11 +17,11 @@ import zserio.ast.Subtype;
 import zserio.ast.UnionType;
 
 /**
- * Implements the Emitter interface and does nothing.
+ * Implements the TreeWalker interface and does nothing.
  *
- * It saves some typing for derived classes that only need to implement a few of the emitter actions.
+ * It saves some typing for derived classes that only need to implement a few of the TreeWalker actions.
  */
-public abstract class DefaultEmitter implements Emitter
+public abstract class DefaultTreeWalker implements TreeWalker
 {
     @Override
     public void beginRoot(Root root) throws ZserioEmitException

@@ -1,23 +1,21 @@
 package zserio.ast;
 
-import zserio.emit.common.Emitter;
+import zserio.emit.common.TreeWalker;
 import zserio.emit.common.ZserioEmitException;
 
 /**
- * Implementation of ZserioAstVisitor which adapts the visitor interface to emitter interface for extensions.
+ * Implementation of ZserioAstVisitor which calls appropriate TreeWalker interface for extensions.
  */
-public class ZserioAstEmitter extends ZserioAstWalker
+public class ZserioAstTreeWalker extends ZserioAstWalker
 {
     /**
      * Constructor.
      *
-     * @param emitter Emitter to call during AST walking.
-     * @param resolveTempaltes Whether to resolve templates and emit only its instances.
+     * @param walker Walker to call during AST walking.
      */
-    public ZserioAstEmitter(Emitter emitter, boolean resolveTemplates)
+    public ZserioAstTreeWalker(TreeWalker walker)
     {
-        this.emitter = emitter;
-        this.resolveTemplates = resolveTemplates;
+        this.walker = walker;
     }
 
     @Override
@@ -25,9 +23,9 @@ public class ZserioAstEmitter extends ZserioAstWalker
     {
         try
         {
-            emitter.beginRoot(root);
+            walker.beginRoot(root);
             root.visitChildren(this);
-            emitter.endRoot(root);
+            walker.endRoot(root);
         }
         catch (ZserioEmitException e)
         {
@@ -40,9 +38,9 @@ public class ZserioAstEmitter extends ZserioAstWalker
     {
         try
         {
-            emitter.beginPackage(pkg);
+            walker.beginPackage(pkg);
             pkg.visitChildren(this);
-            emitter.endPackage(pkg);
+            walker.endPackage(pkg);
         }
         catch (ZserioEmitException e)
         {
@@ -55,7 +53,7 @@ public class ZserioAstEmitter extends ZserioAstWalker
     {
         try
         {
-            emitter.beginImport(importNode);
+            walker.beginImport(importNode);
         }
         catch (ZserioEmitException e)
         {
@@ -68,7 +66,7 @@ public class ZserioAstEmitter extends ZserioAstWalker
     {
         try
         {
-            emitter.beginConst(constant);
+            walker.beginConst(constant);
         }
         catch (ZserioEmitException e)
         {
@@ -81,7 +79,7 @@ public class ZserioAstEmitter extends ZserioAstWalker
     {
         try
         {
-            emitter.beginSubtype(subtype);
+            walker.beginSubtype(subtype);
         }
         catch (ZserioEmitException e)
         {
@@ -97,7 +95,7 @@ public class ZserioAstEmitter extends ZserioAstWalker
             if (needsVisitInstantiations(structureType))
                 visitInstantiations(structureType);
             else
-                emitter.beginStructure(structureType);
+                walker.beginStructure(structureType);
         }
         catch (ZserioEmitException e)
         {
@@ -113,7 +111,7 @@ public class ZserioAstEmitter extends ZserioAstWalker
             if (needsVisitInstantiations(choiceType))
                 visitInstantiations(choiceType);
             else
-                emitter.beginChoice(choiceType);
+                walker.beginChoice(choiceType);
         }
         catch (ZserioEmitException e)
         {
@@ -129,7 +127,7 @@ public class ZserioAstEmitter extends ZserioAstWalker
             if (needsVisitInstantiations(unionType))
                 visitInstantiations(unionType);
             else
-                emitter.beginUnion(unionType);
+                walker.beginUnion(unionType);
         }
         catch (ZserioEmitException e)
         {
@@ -142,7 +140,7 @@ public class ZserioAstEmitter extends ZserioAstWalker
     {
         try
         {
-            emitter.beginEnumeration(enumType);
+            walker.beginEnumeration(enumType);
         }
         catch (ZserioEmitException e)
         {
@@ -155,7 +153,7 @@ public class ZserioAstEmitter extends ZserioAstWalker
     {
         try
         {
-            emitter.beginBitmask(bitmaskType);
+            walker.beginBitmask(bitmaskType);
         }
         catch (ZserioEmitException e)
         {
@@ -171,7 +169,7 @@ public class ZserioAstEmitter extends ZserioAstWalker
             if (needsVisitInstantiations(sqlTableType))
                 visitInstantiations(sqlTableType);
             else
-                emitter.beginSqlTable(sqlTableType);
+                walker.beginSqlTable(sqlTableType);
         }
         catch (ZserioEmitException e)
         {
@@ -184,7 +182,7 @@ public class ZserioAstEmitter extends ZserioAstWalker
     {
         try
         {
-            emitter.beginSqlDatabase(sqlDatabaseType);
+            walker.beginSqlDatabase(sqlDatabaseType);
         }
         catch (ZserioEmitException e)
         {
@@ -197,7 +195,7 @@ public class ZserioAstEmitter extends ZserioAstWalker
     {
         try
         {
-            emitter.beginService(serviceType);
+            walker.beginService(serviceType);
         }
         catch (ZserioEmitException e)
         {
@@ -210,7 +208,7 @@ public class ZserioAstEmitter extends ZserioAstWalker
     {
         try
         {
-            emitter.beginPubsub(pubsubType);
+            walker.beginPubsub(pubsubType);
         }
         catch (ZserioEmitException e)
         {
@@ -223,7 +221,7 @@ public class ZserioAstEmitter extends ZserioAstWalker
     {
         try
         {
-            emitter.beginInstantiateType(instantiateType);
+            walker.beginInstantiateType(instantiateType);
         }
         catch (ZserioEmitException e)
         {
@@ -238,7 +236,7 @@ public class ZserioAstEmitter extends ZserioAstWalker
 
     private boolean needsVisitInstantiations(ZserioTemplatableType template)
     {
-        return resolveTemplates && !template.getTemplateParameters().isEmpty();
+        return walker.traverseTemplateInstantiations() && !template.getTemplateParameters().isEmpty();
     }
 
     private void visitInstantiations(ZserioTemplatableType template) throws ZserioEmitException
@@ -268,6 +266,5 @@ public class ZserioAstEmitter extends ZserioAstWalker
         private final ZserioEmitException originalException;
     }
 
-    private final Emitter emitter;
-    private final boolean resolveTemplates;
+    private final TreeWalker walker;
 }
