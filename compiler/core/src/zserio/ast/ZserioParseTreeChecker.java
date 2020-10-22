@@ -8,11 +8,9 @@ import java.nio.ByteBuffer;
 import java.nio.charset.CharacterCodingException;
 import java.nio.charset.Charset;
 import java.nio.charset.CharsetDecoder;
-import java.util.List;
 
 import zserio.antlr.ZserioParser;
 import zserio.antlr.ZserioParserBaseVisitor;
-import zserio.tools.InputFileManager;
 import zserio.tools.ZserioToolPrinter;
 
 /**
@@ -20,39 +18,12 @@ import zserio.tools.ZserioToolPrinter;
  */
 public class ZserioParseTreeChecker extends ZserioParserBaseVisitor<Void>
 {
-    /**
-     * Constructor.
-     *
-     * @param inputFileManager Input file manager.
-     */
-    public ZserioParseTreeChecker(InputFileManager inputFileManager)
-    {
-        this.inputFileManager = inputFileManager;
-    }
-
     @Override
     public Void visitPackageDeclaration(ZserioParser.PackageDeclarationContext ctx)
     {
         AstLocation location = new AstLocation(ctx.getStart());
         checkUtf8Encoding(location);
         checkNonPrintableCharacters(location);
-
-        return visitChildren(ctx);
-    }
-
-    @Override
-    public Void visitPackageNameDefinition(ZserioParser.PackageNameDefinitionContext ctx)
-    {
-        if (ctx == null)
-            return null;
-
-        // this must be checked now to avoid obscure errors if package is not stored in the same file name
-        final PackageName packageName = createPackageName(ctx.id());
-        final String expectedFileFullName = inputFileManager.getFileFullName(packageName);
-        final String fileFullName = ctx.getStart().getInputStream().getSourceName();
-        if (!expectedFileFullName.equals(fileFullName))
-            throw new ParserException(ctx.id(0).getStart(), "Package '" + packageName.toString() +
-                    "' does not match to the source file name!");
 
         return visitChildren(ctx);
     }
@@ -188,14 +159,6 @@ public class ZserioParseTreeChecker extends ZserioParserBaseVisitor<Void>
         return null;
     }
 
-    private PackageName createPackageName(List<ZserioParser.IdContext> ids)
-    {
-        final PackageName.Builder packageNameBuilder = new PackageName.Builder();
-        for (ZserioParser.IdContext id : ids)
-            packageNameBuilder.addId(id.getText());
-        return packageNameBuilder.get();
-    }
-
     private void checkUtf8Encoding(AstLocation location)
     {
         final byte[] fileContent = readFile(location);
@@ -265,8 +228,6 @@ public class ZserioParseTreeChecker extends ZserioParserBaseVisitor<Void>
 
         return fileContent;
     }
-
-    private final InputFileManager inputFileManager;
 
     /** Flags used to allow index operator only in offsets or arguments in array fields. */
     private boolean isInArrayField = false;

@@ -4,8 +4,8 @@ import static org.junit.Assert.*;
 
 import org.junit.Test;
 
-import company.appl.set_top_level_package.SimpleStructure;
-import company.appl.set_top_level_package.SimpleChoice;
+import company.appl.SimpleStructure;
+import company.appl.SimpleChoice;
 
 public class SetTopLevelPackageTest
 {

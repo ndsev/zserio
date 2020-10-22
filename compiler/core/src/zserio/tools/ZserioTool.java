@@ -144,7 +144,7 @@ public class ZserioTool
     private Root parse() throws Exception
     {
         final ZserioAstBuilder astBuilderVisitor = new ZserioAstBuilder(
-                commandLineArguments.getTopLevelPackageNameIds());
+                commandLineArguments.getTopLevelPackageNameIds(), inputFileManager);
 
         final String inputFileName = commandLineArguments.getInputFileName();
         final String inputFileFullName = inputFileManager.getFileFullName(inputFileName);
@@ -196,7 +196,7 @@ public class ZserioTool
 
         final ParseTree tree = parser.packageDeclaration();
 
-        final ZserioParseTreeChecker parseTreeChecker = new ZserioParseTreeChecker(inputFileManager);
+        final ZserioParseTreeChecker parseTreeChecker = new ZserioParseTreeChecker();
         parseTreeChecker.visit(tree);
 
         final Package parsedPackage = (Package)astBuilder.visit(tree, tokenStream);

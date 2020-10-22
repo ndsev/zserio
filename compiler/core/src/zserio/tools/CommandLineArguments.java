@@ -308,7 +308,7 @@ class CommandLineArguments
         options.addOptionGroup(unusedWarningsGroup);
 
         option = new Option(OptionNameSetTopLevelPackage, true,
-                            "set top level package/namespace to use for generated Java/C++ code");
+                "force top level package prefix to all zserio packages");
         option.setArgName("packageName");
         option.setRequired(false);
         options.addOption(option);

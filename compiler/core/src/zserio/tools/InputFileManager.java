@@ -48,7 +48,13 @@ public class InputFileManager
      */
     public String getFileFullName(PackageName importedPackageName)
     {
-        final String fileName = importedPackageName.toString(File.separator) + inputFileExtension;
+        // imported package name might contain top level package name specified at command line
+        final PackageName.Builder packageNameBuilder = new PackageName.Builder();
+        packageNameBuilder.append(importedPackageName);
+        final int numTopLevelIds = commandLineArguments.getTopLevelPackageNameIds().size();
+        for (int i = 0; i < numTopLevelIds; i++)
+            packageNameBuilder.removeFirstId();
+        final String fileName = packageNameBuilder.get().toFilesystemPath() + inputFileExtension;
         final String fileFullName = getInputFileFullName(fileName);
 
         return fileFullName;

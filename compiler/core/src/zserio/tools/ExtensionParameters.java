@@ -1,5 +1,7 @@
 package zserio.tools;
 
+import java.util.List;
+
 /**
  * The class which handles all parameters for extensions.
  */
@@ -79,6 +81,12 @@ public class ExtensionParameters implements Parameters
     public boolean getWithWriterCode()
     {
         return commandLineArguments.getWithWriterCode();
+    }
+
+    @Override
+    public List<String> getTopLevelPackageNameIds()
+    {
+        return commandLineArguments.getTopLevelPackageNameIds();
     }
 
     private final CommandLineArguments commandLineArguments;

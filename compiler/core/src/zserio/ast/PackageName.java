@@ -48,6 +48,7 @@ public class PackageName implements Comparable<PackageName>
         {
             cachedPackageName = null;
             idList.add(id);
+
             return this;
         }
 
@@ -63,6 +64,7 @@ public class PackageName implements Comparable<PackageName>
             cachedPackageName = null;
             for (String id : ids)
                 idList.add(id);
+
             return this;
         }
 
@@ -78,13 +80,14 @@ public class PackageName implements Comparable<PackageName>
             cachedPackageName = null;
             for (String id : packageName.getIdList())
                 idList.add(id);
+
             return this;
         }
 
         /**
          * Removes ID from the end of the package name.
          *
-         * @return Last ID in the package name or null if package name is empty.
+         * @return Last ID in the package name or null if the package name is empty.
          */
         public String removeLastId()
         {
@@ -92,7 +95,23 @@ public class PackageName implements Comparable<PackageName>
                 return null;
 
             cachedPackageName = null;
+
             return idList.remove(idList.size() - 1);
+        }
+
+        /**
+         * Removes ID from the beginning of the package name.
+         *
+         * @return The first ID in the package name of null if the package name is empty.
+         */
+        public String removeFirstId()
+        {
+            if (idList.isEmpty())
+                return null;
+
+            cachedPackageName = null;
+
+            return idList.remove(0);
         }
 
         private final List<String> idList = new ArrayList<String>();

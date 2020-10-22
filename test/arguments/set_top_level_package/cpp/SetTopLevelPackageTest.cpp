@@ -1,12 +1,10 @@
 #include "gtest/gtest.h"
 
-#include "company/appl/set_top_level_package/SimpleStructure.h"
+#include "company/appl/SimpleStructure.h"
 
 namespace company
 {
 namespace appl
-{
-namespace set_top_level_package
 {
 namespace simple_structure
 {
@@ -28,6 +26,5 @@ TEST_F(SetTopLevelPackageTest, emptyConstructor)
 }
 
 } // namespace simple_structure
-} // namespace set_top_level_package
 } // namespace appl
 } // namespace company

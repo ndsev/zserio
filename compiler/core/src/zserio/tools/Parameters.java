@@ -1,5 +1,7 @@
 package zserio.tools;
 
+import java.util.List;
+
 /**
  * The basic interface for all parameters which are passed into the Zserio extensions.
  */
@@ -81,4 +83,11 @@ public interface Parameters
      * @returns True if writer code is enabled.
      */
     public boolean getWithWriterCode();
+
+    /**
+     * Gets the list of top level package names ids.
+     *
+     * @return The list of top level package names ids or empty list if no top level package name is specified.
+     */
+    public List<String> getTopLevelPackageNameIds();
 }

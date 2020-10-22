@@ -11,6 +11,7 @@ import org.antlr.v4.runtime.tree.ParseTree;
 
 import zserio.antlr.ZserioParser;
 import zserio.antlr.ZserioParserBaseVisitor;
+import zserio.tools.InputFileManager;
 
 /**
  * Implementation of ZserioParserBaseVisitor which builds Zserio AST.
@@ -18,13 +19,15 @@ import zserio.antlr.ZserioParserBaseVisitor;
 public class ZserioAstBuilder extends ZserioParserBaseVisitor<Object>
 {
     /**
-     * Constructor from top level package name.
+     * Constructor.
      *
      * @param topLevelPackageNameIds List of top level package name identifiers given by command line option.
+     * @param inputFileManager Input file manager.
      */
-    public ZserioAstBuilder(Iterable<String> topLevelPackageNameIds)
+    public ZserioAstBuilder(Iterable<String> topLevelPackageNameIds, InputFileManager inputFileManager)
     {
         this.topLevelPackageNameIds = topLevelPackageNameIds;
+        this.inputFileManager = inputFileManager;
     }
 
     /**
@@ -40,10 +43,10 @@ public class ZserioAstBuilder extends ZserioParserBaseVisitor<Object>
     /**
      * Custom visit overload which should be called on the parse tree of a single package (translation unit).
      *
-     * @param tree          Parse tree for a single package.
-     * @param tokenStream   Token stream for a single translation unit.
-     * @return Object       Result of the main rule of ZserioParser grammar.
-     *                      Should be a package if the method was called on a correct parse tree.
+     * @param tree         Parse tree for a single package.
+     * @param tokenStream  Token stream for a single translation unit.
+     * @return Object      Result of the main rule of ZserioParser grammar.
+     *                     Should be a package if the method was called on a correct parse tree.
      */
     public Object visit(ParseTree tree, BufferedTokenStream tokenStream)
     {
@@ -95,9 +98,17 @@ public class ZserioAstBuilder extends ZserioParserBaseVisitor<Object>
     public PackageName visitPackageNameDefinition(ZserioParser.PackageNameDefinitionContext ctx)
     {
         if (ctx == null)
-            return PackageName.EMPTY;
+            return createPackageName(new ArrayList<ZserioParser.IdContext>()); // default package
 
-        return createPackageName(ctx.id());
+        // this must be checked now to avoid obscure errors if package is not stored in the same file name
+        final PackageName packageName = createPackageName(ctx.id());
+        final String expectedFileFullName = inputFileManager.getFileFullName(packageName);
+        final String fileFullName = ctx.getStart().getInputStream().getSourceName();
+        if (!expectedFileFullName.equals(fileFullName))
+            throw new ParserException(ctx.id(0).getStart(), "Package '" + packageName.toString() +
+                    "' does not match to the source file name!");
+
+        return packageName;
     }
 
     @Override
@@ -1162,6 +1173,7 @@ public class ZserioAstBuilder extends ZserioParserBaseVisitor<Object>
     }
 
     private final Iterable<String> topLevelPackageNameIds;
+    private final InputFileManager inputFileManager;
 
     private final DocCommentManager docCommentManager = new DocCommentManager();
     private final LinkedHashMap<PackageName, Package> packageNameMap =
