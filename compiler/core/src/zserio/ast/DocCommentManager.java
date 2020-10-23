@@ -168,35 +168,53 @@ class DocCommentManager
 
     private DocCommentMarkdown parseDocCommentMarkdown(Token docCommentToken)
     {
-        String markdown = docCommentToken.getText()
-                .replaceFirst("^\\/\\*!", "") // strip comment marker from beginning
-                .replaceFirst("!?\\*\\/$", "") // strip comment marker from the end
-                .replaceFirst("^[ \\t]*\\n?", "") // strip spaces at the beginning including the first newline
-                .replaceFirst("[ \\t]*(\\r?\\n?)$", "$1"); // strip spaces at the end of the comment
-
-        // check if the first line is indented
-        final Matcher indentMatcher = Pattern.compile("^[ \\t]+").matcher(markdown);
-        if (indentMatcher.find())
+        String markdown = docCommentToken.getText();
+        final String[] lines = markdown.split("\\n");
+        if (lines.length > 1 && lines[0].trim().equals("/*!"))
         {
-            final String indent = indentMatcher.group();
-            if (isEachLineIndented(markdown, indent))
+            // there are at least two lines and the first line contains only comment syntax "/*!"
+            final int commentIndentInSpaces = new AstLocation(docCommentToken).getColumn() - 1;
+            final String indent = getFirstLineIndent(lines, commentIndentInSpaces);
+            if (!indent.isEmpty() && areLinesIndented(lines, indent))
             {
                 // strip the indent from each line, (?m) is multiline regex marker
                 markdown = markdown.replaceAll("(?m)^" + indent, "");
             }
         }
 
+        markdown = markdown
+                .replaceFirst("^\\/\\*!", "") // strip comment marker from beginning
+                .replaceFirst("!?\\*\\/$", ""); // strip comment marker from the end
+
         return new DocCommentMarkdown(new AstLocation(docCommentToken), markdown);
     }
 
-    private boolean isEachLineIndented(String text, String indent)
+    private String getFirstLineIndent(String[] lines, int numWhitespaces)
     {
-        final String[] lines = text.split("\\n");
-        for (String line : lines)
+        String indent = "";
+        for (int i = 1; i < lines.length; i++)
         {
-            if (!line.isEmpty() && !line.startsWith(indent))
-                return false;
+            if (!lines[i].isEmpty())
+            {
+                final Matcher indentMatcher =
+                        Pattern.compile("^[ \\t]{" + numWhitespaces + "}").matcher(lines[i]);
+                if (indentMatcher.find())
+                    indent = indentMatcher.group();
+                break;
+            }
         }
+
+        return indent;
+    }
+
+    private boolean areLinesIndented(String[] lines, String indent)
+    {
+        for (int i = 1; i < lines.length; i++)
+        {
+            if (!lines[i].isEmpty() && !lines[i].startsWith(indent))
+                    return false;
+        }
+
         return true;
     }
 

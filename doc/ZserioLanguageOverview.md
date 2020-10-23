@@ -1283,8 +1283,8 @@ Structure2  | This describes Structure2 in detail.
 */
 ```
 
-If whole markdown documentation comment is indented according to the starting `/*!`, it is rendered without
-indentation.
+If whole markdown documentation comment is indented according to the starting `/*!` which is single at separate
+line, it is rendered without indentation.
 
 **Example**
 
