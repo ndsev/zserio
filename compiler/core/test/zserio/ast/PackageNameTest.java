@@ -54,20 +54,36 @@ public class PackageNameTest
         builder.addId("top");
         builder.addId("level");
         builder.addId("package");
-        builder.addId("nested");
-        assertEquals("nested", builder.removeLastId());
-        assertEquals("top.level.package", builder.get().toString());
+
+        assertEquals("package", builder.removeLastId());
+        assertEquals("top.level", builder.get().toString());
+
+        assertEquals("level", builder.removeLastId());
+        assertEquals("top", builder.get().toString());
+
+        assertEquals("top", builder.removeLastId());
+        assertEquals("", builder.get().toString());
+
+        assertEquals(null, builder.removeLastId());
     }
 
     @Test
     public void builderRemoveFirstId()
     {
         final PackageName.Builder builder = new PackageName.Builder();
-        builder.addId("company");
         builder.addId("top");
         builder.addId("level");
         builder.addId("package");
-        assertEquals("company", builder.removeFirstId());
-        assertEquals("top.level.package", builder.get().toString());
+
+        assertEquals("top", builder.removeFirstId());
+        assertEquals("level.package", builder.get().toString());
+
+        assertEquals("level", builder.removeFirstId());
+        assertEquals("package", builder.get().toString());
+
+        assertEquals("package", builder.removeFirstId());
+        assertEquals("", builder.get().toString());
+
+        assertEquals(null, builder.removeFirstId());
     }
 }
