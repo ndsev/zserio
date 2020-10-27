@@ -49,7 +49,7 @@ class SymbolTemplateDataCreator
         final String memberTypeName = AstNodeTypeNameMapper.getTypeName(member);
         final String htmlClass = createHtmlClass(memberTypeName);
 
-        final PackageName zserioPackageName = zserioType.getPackage().getPackageName();
+        final PackageName zserioPackageName = AstNodePackageNameMapper.getPackageName(zserioType);
         final String htmlTitle = createHtmlTitle(memberTypeName, zserioPackageName);
 
         final String htmlLinkPage = createHtmlLinkPage(context, zserioPackageName);

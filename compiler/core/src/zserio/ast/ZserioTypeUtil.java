@@ -25,6 +25,19 @@ public class ZserioTypeUtil
     }
 
     /**
+     * Returns the full zserio name.
+     *
+     * @param packageName Package name.
+     * @param name        Type or symbol name.
+     *
+     * @return Full zserio name.
+     */
+    public static String getFullName(PackageName packageName, String name)
+    {
+        return StringJoinUtil.joinStrings(packageName.toString(), name, FULL_NAME_SEPARATOR);
+    }
+
+    /**
      * Returns the full zserio name as is referenced in the type reference.
      *
      * @param typeReference Type reference.
@@ -34,19 +47,6 @@ public class ZserioTypeUtil
     static String getReferencedFullName(TypeReference typeReference)
     {
         return getFullName(typeReference.getReferencedPackageName(), typeReference.getReferencedTypeName());
-    }
-
-    /**
-     * Returns the full zserio name.
-     *
-     * @param packageName Package name.
-     * @param name        Type or symbol name.
-     *
-     * @return Full zserio name.
-     */
-    static String getFullName(PackageName packageName, String name)
-    {
-        return StringJoinUtil.joinStrings(packageName.toString(), name, FULL_NAME_SEPARATOR);
     }
 
     private static final String FULL_NAME_SEPARATOR = ".";

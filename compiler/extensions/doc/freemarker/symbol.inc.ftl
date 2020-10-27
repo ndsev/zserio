@@ -1,7 +1,7 @@
 <#ftl output_format="HTML">
-<#macro symbol_reference symbol suffix="">
+<#macro symbol_reference symbol suffix="" attrs="">
     <#if symbol.htmlLink??>
-<a class="${symbol.htmlClass}" <@symbol_reference_href_title symbol/> target="main_window">${symbol.name}${suffix}</a><#t>
+<a class="${symbol.htmlClass}" <@symbol_reference_href_title symbol/> target="main_window" ${attrs?no_esc}>${symbol.name}${suffix}</a><#t>
     <#else>
 <span class="${symbol.htmlClass}" <@symbol_reference_href_title symbol/>>${symbol.name}</span><#t>
     </#if>

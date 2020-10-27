@@ -19,7 +19,9 @@ import zserio.ast.Field;
 import zserio.ast.FixedBitFieldType;
 import zserio.ast.FloatType;
 import zserio.ast.Function;
+import zserio.ast.Import;
 import zserio.ast.InstantiateType;
+import zserio.ast.Package;
 import zserio.ast.Parameter;
 import zserio.ast.PubsubMessage;
 import zserio.ast.PubsubType;
@@ -66,6 +68,18 @@ class AstNodeTypeNameMapper
         public String getTypeName()
         {
             return typeName;
+        }
+
+        @Override
+        public void visitPackage(Package unitPackage)
+        {
+            typeName = "Package";
+        }
+
+        @Override
+        public void visitImport(Import unitImport)
+        {
+            typeName = "Import";
         }
 
         @Override

@@ -1,4 +1,5 @@
 <#ftl output_format="HTML">
+<#include "symbol.inc.ftl">
 <html>
   <head>
     <title>Zserio Package Overview</title>
@@ -24,7 +25,7 @@
             return;
 
           highlightElement(selectedElement, scroll);
-          var clickedStyleItemId = "style_" + element.text.replace(/\./g, '_');
+          var clickedStyleItemId = "style_" + element.id.replace(/\./g, '_');
           parent.postMessage({ messageType: "package-changed", styleId: clickedStyleItemId }, "*");
         }
 
@@ -54,12 +55,9 @@
         all packages<#t>
       </li><#t>
     <#lt></ul>
-<#list packageNames as packageName>
+<#list packageSymbols as packageSymbol>
     <ul class="packagelist"><#rt>
-      <li><#t>
-        <a href="content/${packageName}.html" id="${packageName}" title="Package: ${packageName}" <#t>
-          target="main_window" onclick="showPackage(this, false);">${packageName}</a><#t>
-      </li><#t>
+      <li><@symbol_reference packageSymbol.symbol, "", "id=\"${packageSymbol.packageName}\" onclick=\"showPackage(this, false);\""/></li><#t>
     <#lt></ul>
 </#list>
 

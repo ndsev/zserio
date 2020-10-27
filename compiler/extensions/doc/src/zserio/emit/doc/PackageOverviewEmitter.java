@@ -1,11 +1,10 @@
 package zserio.emit.doc;
 
 import java.io.File;
-import java.util.Set;
-import java.util.TreeSet;
+import java.util.ArrayList;
+import java.util.List;
 
 import zserio.ast.Package;
-import zserio.ast.PackageName;
 import zserio.ast.Root;
 import zserio.emit.common.ZserioEmitException;
 import zserio.tools.Parameters;
@@ -17,13 +16,16 @@ class PackageOverviewEmitter extends HtmlDefaultEmitter
     {
         super(outputPathName, extensionParameters, withSvgDiagrams, usedByCollector);
 
-        packageNames = new TreeSet<String>();
+        context = new TemplateDataContext(getWithSvgDiagrams(), getUsedByCollector(), getResourceManager(),
+                HTML_CONTENT_DIRECTORY, SYMBOL_COLLABORATION_DIRECTORY);
+
+        packages = new ArrayList<Package>();
     }
 
     @Override
     public void endRoot(Root root) throws ZserioEmitException
     {
-        final Object templateData = new PackageOverviewTemplateData(packageNames);
+        final Object templateData = new PackageOverviewTemplateData(context, packages);
         final File outputFile = new File(getOutputPathName(), PACKAGE_OVERVIEW_FILE_NAME);
         processHtmlTemplate(TEMPLATE_SOURCE_NAME, templateData, outputFile);
     }
@@ -31,15 +33,12 @@ class PackageOverviewEmitter extends HtmlDefaultEmitter
     @Override
     public void beginPackage(Package pkg) throws ZserioEmitException
     {
-        final PackageName packageName = pkg.getPackageName();
-        if (packageName.isEmpty())
-            packageNames.add(DEFAULT_PACKAGE_FILE_NAME);
-        else
-            packageNames.add(packageName.toString());
+        packages.add(pkg);
     }
 
     private static final String PACKAGE_OVERVIEW_FILE_NAME = "package_overview.html";
     private static final String TEMPLATE_SOURCE_NAME = "package_overview.html.ftl";
 
-    private final Set<String> packageNames;
+    private final TemplateDataContext context;
+    private final List<Package> packages;
 }

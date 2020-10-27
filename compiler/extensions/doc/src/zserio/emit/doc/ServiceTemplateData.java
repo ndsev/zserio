@@ -13,7 +13,7 @@ public class ServiceTemplateData extends HtmlTemplateData
     {
         super(context, serviceType);
 
-        packageName = serviceType.getPackage().getPackageName().toString();
+        packageName = AstNodePackageNameMapper.getPackageName(serviceType).toString();
         for (ServiceMethod method : serviceType.getMethodList())
             methodList.add(new MethodTemplateData(context, serviceType, method));
     }

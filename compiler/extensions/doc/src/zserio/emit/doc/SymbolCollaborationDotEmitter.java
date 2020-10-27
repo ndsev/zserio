@@ -52,8 +52,7 @@ class SymbolCollaborationDotEmitter extends DotDefaultEmitter
         final String typeName = AstNodeTypeNameMapper.getTypeName(node);
         final String name = AstNodeNameMapper.getName(node);
 
-        final String packageNameString = (packageName == null) ? "" :
-            ((packageName.isEmpty()) ? DEFAULT_PACKAGE_FILE_NAME : packageName.toString());
+        final String packageNameString = (packageName == null) ? "" : packageName.toString();
 
         return StringJoinUtil.joinStrings(symbolCollaborationDirectory, packageNameString,
                 typeName + "_" + name, File.separator);

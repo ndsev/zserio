@@ -38,7 +38,7 @@ class PackageEmitter extends HtmlDefaultEmitter
     @Override
     public void beginPackage(Package pkg) throws ZserioEmitException
     {
-        final PackageName packageName = pkg.getPackageName();
+        final PackageName packageName = AstNodePackageNameMapper.getPackageName(pkg);
         final String packageHtmlLink = getPackageHtmlLink(packageName, HTML_CONTENT_DIRECTORY);
         final File outputFile = new File(getOutputPathName(), packageHtmlLink);
         FileUtil.createOutputDirectory(outputFile);
@@ -146,10 +146,7 @@ class PackageEmitter extends HtmlDefaultEmitter
 
     public static String getPackageHtmlLink(PackageName packageName, String htmlContentDirectory)
     {
-        final String packageNameString = (packageName.isEmpty()) ? DEFAULT_PACKAGE_FILE_NAME :
-            packageName.toString();
-
-        return StringJoinUtil.joinStrings(htmlContentDirectory, packageNameString + HTML_FILE_EXTENSION,
+        return StringJoinUtil.joinStrings(htmlContentDirectory, packageName.toString() + HTML_FILE_EXTENSION,
                 File.separator);
     }
 

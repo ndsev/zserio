@@ -6,6 +6,7 @@ import zserio.ast.BitmaskType;
 import zserio.ast.ChoiceType;
 import zserio.ast.Constant;
 import zserio.ast.EnumType;
+import zserio.ast.Import;
 import zserio.ast.InstantiateType;
 import zserio.ast.Package;
 import zserio.ast.PackageName;
@@ -26,85 +27,99 @@ class AstNodePackageNameMapper
 {
     public static PackageName getPackageName(AstNode node)
     {
-        final PackageVisitor visitor = new PackageVisitor();
+        final PackageNameVisitor visitor = new PackageNameVisitor();
         node.accept(visitor);
 
-        final Package pkg = visitor.getPackage();
+        final PackageName packageName = visitor.getPackageName();
+        if (packageName != null && packageName.isEmpty())
+            return DEFAULT_PACKAGE_NAME;
 
-        return (pkg != null) ? pkg.getPackageName() : null;
+        return packageName;
     }
 
-    private static class PackageVisitor extends ZserioAstDefaultVisitor
+    private static class PackageNameVisitor extends ZserioAstDefaultVisitor
     {
-        public Package getPackage()
+        public PackageName getPackageName()
         {
-            return pkg;
+            return packageName;
+        }
+
+        @Override
+        public void visitPackage(Package unitPackage)
+        {
+            packageName = unitPackage.getPackageName();
+        }
+
+        @Override
+        public void visitImport(Import unitImport)
+        {
+            packageName = unitImport.getImportedPackageName();
         }
 
         @Override
         public void visitConstant(Constant constant)
         {
-            pkg = constant.getPackage();
+            packageName = constant.getPackage().getPackageName();
         }
 
         @Override
         public void visitSubtype(Subtype subtype)
         {
-            pkg = subtype.getPackage();
+            packageName = subtype.getPackage().getPackageName();
         }
 
         @Override
         public void visitStructureType(StructureType structureType)
         {
-            pkg = structureType.getPackage();
+            packageName = structureType.getPackage().getPackageName();
         }
 
         @Override
         public void visitChoiceType(ChoiceType choiceType)
         {
-            pkg = choiceType.getPackage();
+            packageName = choiceType.getPackage().getPackageName();
         }
 
         @Override
         public void visitUnionType(UnionType unionType)
         {
-            pkg = unionType.getPackage();
+            packageName = unionType.getPackage().getPackageName();
         }
 
         @Override
         public void visitEnumType(EnumType enumType)
         {
-            pkg = enumType.getPackage();
+            packageName = enumType.getPackage().getPackageName();
         }
 
         @Override
         public void visitBitmaskType(BitmaskType bitmaskType)
         {
-            pkg = bitmaskType.getPackage();
+            packageName = bitmaskType.getPackage().getPackageName();
         }
 
         @Override
         public void visitSqlTableType(SqlTableType sqlTableType)
         {
-            pkg = sqlTableType.getPackage();
+            packageName = sqlTableType.getPackage().getPackageName();
         }
 
         @Override
         public void visitSqlDatabaseType(SqlDatabaseType sqlDatabaseType)
         {
-            pkg = sqlDatabaseType.getPackage();
+            packageName = sqlDatabaseType.getPackage().getPackageName();
         }
 
         @Override
         public void visitServiceType(ServiceType serviceType)
         {
-            pkg = serviceType.getPackage();
+            packageName = serviceType.getPackage().getPackageName();
         }
 
         @Override
         public void visitPubsubType(PubsubType pubsubType)
         {
-            pkg = pubsubType.getPackage();
+            packageName = pubsubType.getPackage().getPackageName();
         }
 
         @Override
@@ -132,7 +147,7 @@ class AstNodePackageNameMapper
         @Override
         public void visitInstantiateType(InstantiateType templateInstantiation)
         {
-            pkg = templateInstantiation.getPackage();
+            packageName = templateInstantiation.getPackage().getPackageName();
         }
 
         @Override
@@ -141,6 +156,9 @@ class AstNodePackageNameMapper
             templateArgument.getTypeReference().accept(this);
         }
 
-        private Package pkg = null;
+        private PackageName packageName = null;
     }
+
+    private static PackageName DEFAULT_PACKAGE_NAME =
+            new PackageName.Builder().addId("zserio_default_package").get();
 }

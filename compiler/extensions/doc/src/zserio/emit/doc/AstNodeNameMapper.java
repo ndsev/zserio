@@ -15,7 +15,10 @@ import zserio.ast.Field;
 import zserio.ast.FixedBitFieldType;
 import zserio.ast.FloatType;
 import zserio.ast.Function;
+import zserio.ast.Import;
 import zserio.ast.InstantiateType;
+import zserio.ast.Package;
+import zserio.ast.PackageName;
 import zserio.ast.Parameter;
 import zserio.ast.PubsubMessage;
 import zserio.ast.PubsubType;
@@ -34,6 +37,7 @@ import zserio.ast.TypeReference;
 import zserio.ast.UnionType;
 import zserio.ast.VarIntegerType;
 import zserio.ast.ZserioAstDefaultVisitor;
+import zserio.ast.ZserioTypeUtil;
 import zserio.tools.ZserioToolPrinter;
 
 class AstNodeNameMapper
@@ -60,6 +64,23 @@ class AstNodeNameMapper
         public String getName()
         {
             return name;
+        }
+
+        @Override
+        public void visitPackage(Package unitPackage)
+        {
+            final PackageName packageName = unitPackage.getPackageName();
+            name = (packageName.isEmpty()) ? DEFAULT_PACKAGE_NAME : packageName.toString();
+        }
+
+        @Override
+        public void visitImport(Import unitImport)
+        {
+            final PackageName importedPackageName = unitImport.getImportedPackageName();
+            final String importedName = unitImport.getImportedName();
+
+            name = (importedName == null) ? importedPackageName.toString() :
+                ZserioTypeUtil.getFullName(importedPackageName, importedName);
         }
 
         @Override
@@ -255,6 +276,8 @@ class AstNodeNameMapper
         {
             name = templateInstantiation.getName();
         }
+
+        private static final String DEFAULT_PACKAGE_NAME = "[default package]";
 
         private String name = null;
     }

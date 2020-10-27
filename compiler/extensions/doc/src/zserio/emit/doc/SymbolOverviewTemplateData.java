@@ -13,7 +13,7 @@ import zserio.ast.ZserioTemplatableType;
 
 public class SymbolOverviewTemplateData
 {
-    public SymbolOverviewTemplateData(TemplateDataContext context,  Map<Package, List<AstNode>> nodesMap)
+    public SymbolOverviewTemplateData(TemplateDataContext context, Map<Package, List<AstNode>> nodesMap)
     {
         packageNames = new TreeSet<String>();
         packageSymbols = new TreeSet<PackageSymbol>();
@@ -21,7 +21,7 @@ public class SymbolOverviewTemplateData
         for (Map.Entry<Package, List<AstNode>> nodesEntry : nodesMap.entrySet())
         {
             final Package pkg = nodesEntry.getKey();
-            final String packageName = pkg.getPackageName().toString();
+            final String packageName = AstNodePackageNameMapper.getPackageName(pkg).toString();
             packageNames.add(packageName);
             for (AstNode node : nodesEntry.getValue())
             {

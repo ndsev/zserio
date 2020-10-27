@@ -42,6 +42,8 @@ a.subtypeLink
     font-style:italic;
 }
 
+a.packageLink,
+a.importLink,
 a.structureLink,
 a.choiceLink,
 a.choiceCaseLink,

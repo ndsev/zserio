@@ -8,7 +8,7 @@
     <script language="JavaScript">
       window.onload = () => {
         if (parent) {
-          parent.postMessage({ messageType: "package-loaded", packageName: "${name}" }, "*");
+          parent.postMessage({ messageType: "package-loaded", packageName: "${packageName}" }, "*");
         }
       }
     </script>
