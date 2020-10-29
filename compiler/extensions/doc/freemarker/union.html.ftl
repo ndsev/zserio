@@ -7,20 +7,20 @@
     <i>Union</i><#if templateParameters?has_content> template</#if> ${symbol.name}
 </#assign>
 
-    <div class="msgdetail" id="${symbol.htmlLink.htmlAnchor}">
+    <h2 class="anchor" id="${symbol.htmlLink.htmlAnchor}">
 <#if docComments.isDeprecated>
       <span class="deprecated">(deprecated) </span>
       <del>${unionHeading}</del>
 <#else>
       ${unionHeading}
 </#if>
-    </div>
+    </h2>
     <@doc_comments docComments 2, false/>
 
     <table>
       <tr><td class="docuCode">
         <table>
-          <tbody id="tabIndent">
+          <tbody>
             <tr><td colspan=3>union ${symbol.name}<@compound_template_parameters templateParameters/><#rt>
               <#lt><@compound_parameters parameters/></td></tr>
             <tr><td colspan=3>{</td></tr>

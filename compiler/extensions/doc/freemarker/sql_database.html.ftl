@@ -4,20 +4,20 @@
 <#include "usedby.inc.ftl">
 <#include "svg_diagram.inc.ftl">
 
-    <div class="msgdetail" id="${symbol.htmlLink.htmlAnchor}">
+    <h2 class="anchor" id="${symbol.htmlLink.htmlAnchor}">
 <#if docComments.isDeprecated>
       <span class="deprecated">(deprecated) </span>
       <del><i>SQL Database</i> ${symbol.name}</del>
 <#else>
-        <i>SQL Database</i> ${symbol.name}
+      <i>SQL Database</i> ${symbol.name}
 </#if>
-    </div>
+    </h2>
     <@doc_comments docComments 2, false/>
 
     <table>
       <tr><td class="docuCode">
         <table>
-          <tbody id="tabIndent">
+          <tbody>
             <tr><td colspan=3>sql_database ${symbol.name}</td></tr>
             <tr><td colspan=3>{</td></tr>
             <@compound_fields fields/>

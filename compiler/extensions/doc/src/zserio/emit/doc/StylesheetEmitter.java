@@ -6,13 +6,13 @@ import zserio.emit.common.FreeMarkerUtil;
 import zserio.emit.common.ZserioEmitException;
 
 /**
- * Emits index HTML file.
+ * Emits CSS styles file.
  */
-class HtmlIndexEmitter
+class StylesheetEmitter
 {
     static void emit(String outputPathName) throws ZserioEmitException
     {
-        processTemplate(HTML_INDEX_TEMPLATE_SOURCE_NAME, new File(outputPathName, HTML_INDEX_FILE_NAME));
+        processTemplate(STYLESHEET_TEMPLATE_SOURCE_NAME, new File(outputPathName, STYLESHEET_FILE_NAME));
     }
 
     static void processTemplate(String templateName, File outputFile) throws ZserioEmitException
@@ -21,6 +21,6 @@ class HtmlIndexEmitter
                 false);
     }
 
-    private static final String HTML_INDEX_FILE_NAME = "index.html";
-    private static final String HTML_INDEX_TEMPLATE_SOURCE_NAME = "index.html.ftl";
+    static final String STYLESHEET_FILE_NAME = "stylesheet.css";
+    private static final String STYLESHEET_TEMPLATE_SOURCE_NAME = "stylesheet.css.ftl";
 }

@@ -4,14 +4,14 @@
 <#include "usedby.inc.ftl">
 <#include "svg_diagram.inc.ftl">
 
-    <div class="msgdetail" id="${symbol.htmlLink.htmlAnchor}">
+    <h2 class="anchor" id="${symbol.htmlLink.htmlAnchor}">
 <#if docComments.isDeprecated>
       <span class="deprecated">(deprecated) </span>
       <del><i>Instantiate Type</i> ${symbol.name}</del>
 <#else>
       <i>Instantiate Type</i> ${symbol.name}
 </#if>
-    </div>
+    </h2>
     <p/>
     <@doc_comments docComments 2, false/>
 

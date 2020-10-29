@@ -76,19 +76,20 @@ public class DocExtension implements Extension
         final UsedByCollector usedByCollector = new UsedByCollector();
         rootNode.walk(usedByCollector);
 
-        // emit HTML index file
-        HtmlIndexEmitter.emit(outputDir);
+        // collect package symbols
+        final SymbolCollector symbolCollector = new SymbolCollector();
+        rootNode.walk(symbolCollector);
 
         // emit CSS styles file
-        WebStylesEmitter.emit(outputDir);
+        StylesheetEmitter.emit(outputDir);
 
         // emit DOT and HTML files (DOT files must be before HTML files)
         final List<DocDefaultEmitter> emitters = new ArrayList<DocDefaultEmitter>();
         emitters.add(new SymbolCollaborationDotEmitter(outputDir, parameters, withSvgDiagrams, dotExecutable,
                 usedByCollector));
-        emitters.add(new PackageOverviewEmitter(outputDir, parameters, withSvgDiagrams, usedByCollector));
-        emitters.add(new SymbolOverviewEmitter(outputDir, parameters, withSvgDiagrams, usedByCollector));
-        emitters.add(new PackageEmitter(outputDir, parameters, withSvgDiagrams, usedByCollector));
+        emitters.add(new PackageEmitter(outputDir, parameters, withSvgDiagrams, usedByCollector,
+                symbolCollector));
+        emitters.add(new IndexEmitter(outputDir, parameters, withSvgDiagrams, usedByCollector));
         for (DocDefaultEmitter emitter : emitters)
             rootNode.walk(emitter);
     }

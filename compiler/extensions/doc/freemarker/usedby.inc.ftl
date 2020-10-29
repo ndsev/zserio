@@ -7,7 +7,7 @@
     <table>
       <tr><td class="docuCode">
         <table>
-          <tbody id="tabIndent">
+          <tbody>
         <#list usedByList as usedBySymbol>
             <tr><td><@symbol_reference usedBySymbol/></td></tr>
         </#list>

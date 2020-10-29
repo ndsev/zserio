@@ -23,7 +23,7 @@
             </tr>
     </#if>
             <tr class="codeMember">
-              <td id="tabIndent" class="emptyCell"></td>
+              <td class="tabIndent"></td>
               <td>
                 ${typePrefix}<@compound_field_type_name field/>
               </td>
@@ -50,22 +50,22 @@
 <#macro compound_functions functions>
     <#list functions as function>
             <tr>
-              <td id="tabIndent" class="emptyCell"></td>
+              <td class="tabIndent"></td>
               <td colspan=2>
                 function <@symbol_reference function.returnSymbol/> <#rt>
                   <#lt><@symbol_reference function.symbol/>()</a>
               </td>
             </tr>
             <tr>
-              <td id="tabIndent" class="emptyCell"></td>
+              <td class="tabIndent"></td>
               <td colspan=2>{</td>
             </tr>
             <tr>
-              <td id="tabIndent" class="emptyCell"></td>
-              <td colspan=2 id="tabIndent">return ${function.resultExpression};</td>
+              <td class="tabIndent"></td>
+              <td colspan=2 class="tabIndent">return ${function.resultExpression};</td>
             </tr>
             <tr>
-              <td id="tabIndent" class="emptyCell"></td>
+              <td class="tabIndent"></td>
               <td colspan=2>}</td>
             </tr>
     </#list>
@@ -101,7 +101,7 @@
     <dl>
         <#list fields as field>
       <dt class="memberItem">
-        <a name="${field.symbol.htmlLink.htmlAnchor}">
+        <a class="anchor" id="${field.symbol.htmlLink.htmlAnchor}">
             <#if field.docComments.isDeprecated>
           <span class="deprecated">(deprecated) </span>
           <del>${field.symbol.name}</del>:
@@ -133,7 +133,7 @@
 
 <#macro compound_function_detail function>
       <dt class="memberItem">
-        <a name="${function.symbol.htmlLink.htmlAnchor}">
+        <a class="anchor" id="${function.symbol.htmlLink.htmlAnchor}">
     <#if function.docComments.isDeprecated>
           <span class="deprecated">(deprecated) </span>
           <del>${function.symbol.name}()</del>:

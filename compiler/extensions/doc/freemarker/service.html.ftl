@@ -3,14 +3,14 @@
 <#include "symbol.inc.ftl">
 <#include "svg_diagram.inc.ftl">
 
-    <div class="msgdetail" id="${symbol.htmlLink.htmlAnchor}">
+    <h2 class="anchor" id="${symbol.htmlLink.htmlAnchor}">
 <#if docComments.isDeprecated>
       <span class="deprecated">(deprecated) </span>
       <del><i>Service</i> ${symbol.name}</del>
 <#else>
       <i>Service</i> ${symbol.name}
 </#if>
-    </div>
+    </h2>
     <@doc_comments docComments 2, false/>
 
     <table>
@@ -19,7 +19,7 @@
           <tr><td>service ${symbol.name}</td></tr>
           <tr><td>{</td></tr>
 <#list methodList as method>
-          <tr><td id="tabIndent">
+          <tr><td class="tabIndent">
             <@symbol_reference method.responseSymbol/> <@symbol_reference method.symbol/><#rt>
               <#lt>(<@symbol_reference method.requestSymbol/>);
           </td></tr>
@@ -34,7 +34,7 @@
 
     <dl>
     <#list methodList as method>
-      <dt class="memberItem"><a name="${method.symbol.htmlLink.htmlAnchor}">${method.symbol.name}:</a></dt>
+      <dt class="memberItem"><a class="anchor" id="${method.symbol.htmlLink.htmlAnchor}">${method.symbol.name}:</a></dt>
       <dd class="memberDetail">
         <@doc_comments method.docComments, 4/>
       </dd>

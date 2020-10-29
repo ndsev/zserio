@@ -4,24 +4,24 @@
 <#include "usedby.inc.ftl">
 <#include "svg_diagram.inc.ftl">
 <#assign sqlTableHeading>
-    <i><#if virtualTableUsing?has_content>virtual </#if>SQL Table<#t>
+    <i><#if virtualTableUsing?has_content>virtual </#if>SQL Table</i><#t>
       <#if templateParameters?has_content> template</#if> ${symbol.name}<#t>
 </#assign>
 
-    <div class="msgdetail" id="${symbol.htmlLink.htmlAnchor}">
+    <h2 class="anchor" id="${symbol.htmlLink.htmlAnchor}">
 <#if docComments.isDeprecated>
       <span class="deprecated">(deprecated) </span>
       <del>${sqlTableHeading}</del>
 <#else>
       ${sqlTableHeading}
 </#if>
-    </div>
+    </h2>
     <@doc_comments docComments 2, false/>
 
     <table>
       <tr><td class="docuCode">
         <table>
-          <tbody id="tabIndent">
+          <tbody>
             <tr><td colspan=3>sql_table ${symbol.name}<@compound_template_parameters templateParameters/><#rt>
               <#lt><@compound_parameters parameters/><#rt>
               <#lt><#if virtualTableUsing?has_content> using ${virtualTableUsing}</#if></td></tr>
@@ -30,7 +30,7 @@
 <#if sqlConstraint?has_content>
             <tr><td colspan=3>&nbsp;</td></tr>
             <tr>
-              <td id="tabIndent"></td>
+              <td class="tabIndent"></td>
               <td colspan=2>sql ${sqlConstraint};</td>
             </tr>
 </#if>

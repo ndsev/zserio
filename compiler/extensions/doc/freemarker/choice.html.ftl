@@ -9,8 +9,8 @@
       <#if field.isArrayImplicit>implicit </#if><#t>
     </#local>
             <tr class="codeMember">
-              <td id="tabIndent"  class="emptyCell"></td>
-              <td id="tabIndent">
+              <td class="tabIndent"></td>
+              <td class="tabIndent">
                  ${typePrefix}<@compound_field_type_name field/>
               </td>
               <td>
@@ -36,20 +36,20 @@
     <i>Choice</i><#if templateParameters?has_content> template</#if> ${symbol.name}
 </#assign>
 
-    <div class="msgdetail" id="${symbol.htmlLink.htmlAnchor}">
+    <h2 class="anchor" id="${symbol.htmlLink.htmlAnchor}">
 <#if docComments.isDeprecated>
       <span class="deprecated">(deprecated) </span>
       <del>${choiceHeading}</del>
 <#else>
       ${choiceHeading}
 </#if>
-    </div>
+    </h2>
     <@doc_comments docComments 2, false/>
 
     <table>
       <tr><td class="docuCode">
         <table>
-          <tbody id="tabIndent">
+          <tbody>
             <tr>
               <td colspan=3>choice ${symbol.name}<@compound_template_parameters templateParameters/><#rt>
                 <#lt><@compound_parameters parameters/> on ${selectorExpression}</td>
@@ -59,7 +59,7 @@
             </tr>
 <#list caseMemberList as caseMember>
             <tr>
-              <td id="tabIndent"></td>
+              <td class="tabIndent"></td>
               <td colspan=2>
     <#list caseMember.caseList as case>
                 case <@symbol_reference case.symbol/>:<#rt>
@@ -71,14 +71,14 @@
             <@choice_field caseMember.field/>
     <#else>
             <tr>
-              <td colspan=2 id="tabIndent"></td>
+              <td colspan=2 class="tabIndent"></td>
               <td>;</td>
             </tr>
     </#if>
 </#list>
 <#if defaultMember??>
             <tr>
-              <td id="tabIndent"></td>
+              <td class="tabIndent"></td>
               <td colspan=2>
                 <@symbol_reference defaultMember.symbol/>:
               </td>
@@ -87,13 +87,13 @@
             <@choice_field defaultMember.field/>
     <#else>
             <tr>
-              <td colspan=2 id="tabIndent"></td>
+              <td colspan=2 class="tabIndent"></td>
               <td>;</td>
             </tr>
     </#if>
 </#if>
 <#if functions?has_content>
-            <tr><td colspan=3 id="tabIndent">&nbsp;</td></tr>
+            <tr><td colspan=3>&nbsp;</td></tr>
             <@compound_functions functions/>
 </#if>
             <tr><td colspan=3>};</td></tr>
@@ -113,7 +113,7 @@
         <dl>
     <#list caseMember.caseList as case>
           <dt class="memberItem">
-            <a name="${case.symbol.htmlLink.htmlAnchor}">${case.expression}</a>
+            <a class="anchor" id="${case.symbol.htmlLink.htmlAnchor}">${case.expression}</a>
           </dt>
           <dd class="memberDetail">
             <@doc_comments case.docComments, 6/>
@@ -132,7 +132,7 @@
         <dl>
   <#if caseMember.field??>
           <dt class="memberItem">
-            <a name="${caseMember.field.symbol.htmlLink.htmlAnchor}">${caseMember.field.symbol.name}:</a>
+            <a class="anchor" id="${caseMember.field.symbol.htmlLink.htmlAnchor}">${caseMember.field.symbol.name}:</a>
           </dt>
           <dd class="memberDetail">
             <@doc_comments caseMember.field.docComments, 6/>
@@ -155,7 +155,7 @@
       <dd>
         <dl>
           <dt class="memberItem">
-            <a name="${defaultMember.symbol.htmlLink.htmlAnchor}">${defaultMember.symbol.name}</a>
+            <a class="anchor" id="${defaultMember.symbol.htmlLink.htmlAnchor}">${defaultMember.symbol.name}</a>
           </dt>
           <dd class="memberDetail">
             <@doc_comments defaultMember.docComments, 6/>
@@ -169,7 +169,7 @@
         <dl>
   <#if defaultMember.field??>
           <dt class="memberItem">
-            <a name="${defaultMember.field.symbol.htmlLink.htmlAnchor}">${defaultMember.field.symbol.name}:</a>
+            <a class="anchor" id="${defaultMember.field.symbol.htmlLink.htmlAnchor}">${defaultMember.field.symbol.name}:</a>
           </dt>
           <dd class="memberDetail">
             <@doc_comments defaultMember.field.docComments, 6/>

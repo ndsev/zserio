@@ -38,7 +38,7 @@ import zserio.emit.common.DefaultTreeWalker;
 import zserio.tools.HashUtil;
 
 /**
- * Abstraction which handles used by list for all available zserio types.
+ * Abstraction which handles used by list for all available Zserio types.
  */
 class UsedByCollector extends DefaultTreeWalker
 {

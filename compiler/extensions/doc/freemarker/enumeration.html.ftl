@@ -4,7 +4,7 @@
 <#include "usedby.inc.ftl">
 <#include "svg_diagram.inc.ftl">
 
-    <div class="msgdetail" id="${symbol.htmlLink.htmlAnchor}">
+    <h2 class="anchor" id="${symbol.htmlLink.htmlAnchor}">
 <#if docComments.isDeprecated>
       <span class="deprecated">(deprecated) </span>
       <del>
@@ -13,7 +13,7 @@
 <#if docComments.isDeprecated>
       </del>
 </#if>
-    </div>
+    </h2>
     <@doc_comments docComments 2, false/>
 
     <table>
@@ -23,7 +23,7 @@
           <tr><td>{</td><td rowspan="${items?size+1}">&nbsp;</td><td></td></tr>
 <#list items as item>
           <tr>
-            <td id="tabIndent"><@symbol_reference item.symbol/></td>
+            <td class="tabIndent"><@symbol_reference item.symbol/></td>
             <td>= ${item.value}<#if item_has_next>,</#if></td>
           </tr>
 </#list>
@@ -36,7 +36,7 @@
 
     <dl>
 <#list items as item>
-      <dt class="memberItem"><a name="${item.symbol.htmlLink.htmlAnchor}">${item.symbol.name}:</a></dt>
+      <dt class="memberItem"><a class="anchor" id="${item.symbol.htmlLink.htmlAnchor}">${item.symbol.name}:</a></dt>
       <dd class="memberDetail">
         <@doc_comments item.docComments, 4/>
   <#list item.seeSymbols as seeSymbol>

@@ -1,16 +1,41 @@
 <#ftl output_format="HTML">
 <#macro symbol_reference symbol suffix="" attrs="">
     <#if symbol.htmlLink??>
-<a class="${symbol.htmlClass}" <@symbol_reference_href_title symbol/> target="main_window" ${attrs?no_esc}>${symbol.name}${suffix}</a><#t>
+        <a class="${symbol.htmlClass}" <@symbol_reference_href_title symbol/> ${attrs?no_esc}>${symbol.name}${suffix}</a><#t>
     <#else>
-<span class="${symbol.htmlClass}" <@symbol_reference_href_title symbol/>>${symbol.name}</span><#t>
+        <span class="${symbol.htmlClass}" <@symbol_reference_href_title symbol/>>${symbol.name}</span><#t>
     </#if>
     <#if symbol.templateArguments?has_content>
-&lt;<#t>
+        &lt;<#t>
        <#list symbol.templateArguments as templateArgument>
-<@symbol_reference templateArgument/><#if templateArgument?has_next>,</#if><#t>
+            <@symbol_reference templateArgument/><#if templateArgument?has_next>,</#if><#t>
        </#list>
-&gt;<#t>
+        &gt;<#t>
+    </#if>
+</#macro>
+
+<#macro symbol_overview_package_link symbol currentSymbol>
+    <a class="nav-link p-0<#if symbol.name == currentSymbol.name> active</#if>" <#t>
+      <@symbol_reference_href_title symbol/>>${symbol.name}<#t>
+</#macro>
+
+<#macro symbol_overview_link symbol templateParameters>
+    <a class="nav-link p-0" <@symbol_reference_href_title symbol/>>${symbol.name}<#t>
+      <@symbol_template_parameters templateParameters/></a><#t>
+</#macro>
+
+<#macro symbol_toc_link symbol templateParameters>
+    <a class="nav-link p-0 pl-1" href="#${symbol.htmlLink.htmlAnchor}">${symbol.name}<#t>
+      <@symbol_template_parameters templateParameters/></a><#t>
+</#macro>
+
+<#macro symbol_template_parameters templateParametes>
+    <#if templateParameters?has_content>
+        &lt;<#t>
+        <#list templateParameters as templateParameter>
+            ${templateParameter}<#if templateParameter?has_next>, </#if><#t>
+        </#list>
+        &gt;<#t>
     </#if>
 </#macro>
 

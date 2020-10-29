@@ -1,6 +1,5 @@
 package zserio.emit.doc;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -14,35 +13,31 @@ import zserio.ast.EnumType;
 import zserio.ast.InstantiateType;
 import zserio.ast.Package;
 import zserio.ast.PubsubType;
-import zserio.ast.Root;
 import zserio.ast.ServiceType;
 import zserio.ast.SqlDatabaseType;
 import zserio.ast.SqlTableType;
 import zserio.ast.StructureType;
 import zserio.ast.Subtype;
 import zserio.ast.UnionType;
+import zserio.emit.common.DefaultTreeWalker;
 import zserio.emit.common.ZserioEmitException;
-import zserio.tools.Parameters;
 
-class SymbolOverviewEmitter extends HtmlDefaultEmitter
+class SymbolCollector extends DefaultTreeWalker
 {
-    public SymbolOverviewEmitter(String outputPathName, Parameters extensionParameters,
-            boolean withSvgDiagrams, UsedByCollector usedByCollector)
+    public SymbolCollector()
     {
-        super(outputPathName, extensionParameters, withSvgDiagrams, usedByCollector);
-
-        context = new TemplateDataContext(getWithSvgDiagrams(), getUsedByCollector(), getResourceManager(),
-                HTML_CONTENT_DIRECTORY, SYMBOL_COLLABORATION_DIRECTORY);
-
         nodesMap = new HashMap<Package, List<AstNode>>();
     }
 
-    @Override
-    public void endRoot(Root root) throws ZserioEmitException
+    public Map<Package, List<AstNode>> getNodesMap()
     {
-        final Object templateData = new SymbolOverviewTemplateData(context, nodesMap);
-        final File outputFile = new File(getOutputPathName(), SYMBOL_OVERVIEW_FILE_NAME);
-        processHtmlTemplate(TEMPLATE_SOURCE_NAME, templateData, outputFile);
+        return nodesMap;
+    }
+
+    @Override
+    public boolean traverseTemplateInstantiations()
+    {
+        return false;
     }
 
     @Override
@@ -130,10 +125,6 @@ class SymbolOverviewEmitter extends HtmlDefaultEmitter
         currentNodes.add(instantiateType);
     }
 
-    private static final String SYMBOL_OVERVIEW_FILE_NAME = "symbol_overview.html";
-    private static final String TEMPLATE_SOURCE_NAME = "symbol_overview.html.ftl";
-
-    private final TemplateDataContext context;
     private final Map<Package, List<AstNode>> nodesMap;
 
     private List<AstNode> currentNodes;
