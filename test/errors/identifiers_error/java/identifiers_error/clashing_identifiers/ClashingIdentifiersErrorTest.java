@@ -198,9 +198,8 @@ public class ClashingIdentifiersErrorTest
     {
         final String errors[] =
         {
-            "const_service_name_conflict_error.zs:15:9:     Conflicting symbol defined here.",
-            "const_service_name_conflict_error.zs:3:14: " +
-                    "Symbol 'Math' is not unique (case insensitive) within this package!"
+            "const_service_name_conflict_error.zs:3:14:     First defined here",
+            "const_service_name_conflict_error.zs:15:9: 'Math' is already defined in this package!"
         };
         assertTrue(zserioErrors.isPresent(errors));
     }
@@ -210,9 +209,8 @@ public class ClashingIdentifiersErrorTest
     {
         final String errors[] =
         {
-            "const_structure_name_conflict_error.zs:5:8:     Conflicting symbol defined here.",
-            "const_structure_name_conflict_error.zs:3:13: " +
-                    "Symbol 'Test' is not unique (case insensitive) within this package!"
+            "const_structure_name_conflict_error.zs:3:13:     First defined here",
+            "const_structure_name_conflict_error.zs:5:8: 'Test' is already defined in this package!"
         };
         assertTrue(zserioErrors.isPresent(errors));
     }
@@ -222,9 +220,8 @@ public class ClashingIdentifiersErrorTest
     {
         final String errors[] =
         {
-            "const_subtype_name_conflict_error.zs:5:16:     Conflicting symbol defined here.",
-            "const_subtype_name_conflict_error.zs:3:13: " +
-                    "Symbol 'Test' is not unique (case insensitive) within this package!"
+            "const_subtype_name_conflict_error.zs:3:13:     First defined here",
+            "const_subtype_name_conflict_error.zs:5:16: 'Test' is already defined in this package!"
         };
         assertTrue(zserioErrors.isPresent(errors));
     }

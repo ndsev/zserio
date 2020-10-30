@@ -48,7 +48,9 @@ import zserio.ast.Parameter;
 import zserio.ast.PubsubMessage;
 import zserio.ast.PubsubType;
 import zserio.ast.Root;
+import zserio.ast.ScopeSymbol;
 import zserio.ast.Package;
+import zserio.ast.PackageSymbol;
 import zserio.ast.ServiceMethod;
 import zserio.ast.ServiceType;
 import zserio.ast.SqlConstraint;
@@ -153,11 +155,12 @@ public class XmlAstWriter implements ZserioAstVisitor
     public void visitImport(Import unitImport)
     {
         final Element xmlElement = xmlDoc.createElement("IMPORT");
-        xmlElement.setAttribute("importedPackageName", unitImport.getImportedPackageName().toString());
+        xmlElement.setAttribute("importedPackageName",
+                unitImport.getImportedPackage().getPackageName().toString());
 
-        final String importedName = unitImport.getImportedName();
-        if (importedName != null)
-            xmlElement.setAttribute("importedName", importedName);
+        final PackageSymbol importedSymbol = unitImport.getImportedSymbol();
+        if (importedSymbol != null)
+            xmlElement.setAttribute("importedName", importedSymbol.getName());
         visitAstNode(unitImport, xmlElement);
     }
 
@@ -510,13 +513,13 @@ public class XmlAstWriter implements ZserioAstVisitor
             xmlElement.setAttribute("link_alias", linkAlias);
 
         final SymbolReference linkReference = docTagSee.getLinkSymbolReference();
-        final ZserioType linkReferencedType = linkReference.getReferencedType();
-        if (linkReferencedType != null)
-            xmlElement.setAttribute("link_referenced_type", linkReferencedType.getName());
+        final PackageSymbol referencedPackageSymbol = linkReference.getReferencedPackageSymbol();
+        if (referencedPackageSymbol != null)
+            xmlElement.setAttribute("referenced_package_symbol", referencedPackageSymbol.getName());
 
-        final String linkReferencedSymbolName = linkReference.getReferencedSymbolName();
-        if (linkReferencedSymbolName != null)
-            xmlElement.setAttribute("link_referenced_symbol", linkReferencedSymbolName);
+        final ScopeSymbol referencedScopeSymbol = linkReference.getReferencedScopeSymbol();
+        if (referencedScopeSymbol != null)
+            xmlElement.setAttribute("referenced_scope_symbol", referencedScopeSymbol.getName());
 
         visitAstNode(docTagSee, xmlElement);
     }

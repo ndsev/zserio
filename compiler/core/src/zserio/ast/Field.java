@@ -8,7 +8,7 @@ import java.util.List;
  *
  * This field is used by all Compound types (structure types, choice types, ...).
  */
-public class Field extends DocumentableAstNode
+public class Field extends DocumentableAstNode implements ScopeSymbol
 {
     /**
      * Constructor from Structure types.
@@ -106,6 +106,12 @@ public class Field extends DocumentableAstNode
             sqlConstraint.accept(visitor);
     }
 
+    @Override
+    public String getName()
+    {
+        return name;
+    }
+
     /**
      * Gets the field's type instantiation.
      *
@@ -114,16 +120,6 @@ public class Field extends DocumentableAstNode
     public TypeInstantiation getTypeInstantiation()
     {
         return typeInstantiation;
-    }
-
-    /**
-     * Gets the name of the field.
-     *
-     * @return Returns name of the field.
-     */
-    public String getName()
-    {
-        return name;
     }
 
     /**

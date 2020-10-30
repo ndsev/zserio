@@ -859,57 +859,32 @@ public class Expression extends AstNodeBase
         for (Expression unresolvedIdentifier : operand1.unresolvedIdentifiers)
             op1UnresolvedPackageNameBuilder.addId(unresolvedIdentifier.text);
 
-        Package identifierPackage = null;
-        final AstNode identifierSymbol = pkg.getVisibleSymbol(this, op1UnresolvedPackageNameBuilder.get(),
+        final PackageSymbol identifierSymbol = pkg.getVisibleSymbol(this, op1UnresolvedPackageNameBuilder.get(),
                 operand2.text);
         if (identifierSymbol != null)
         {
-            symbolObject = identifierSymbol;
+            // identifier found
             operand2.symbolObject = identifierSymbol;
-            if (identifierSymbol instanceof Constant)
-            {
-                Constant constant = (Constant)identifierSymbol;
-                evaluateConstant(constant);
-                identifierPackage = constant.getPackage();
-            }
-            else
-            {
-                throw new ParserException(this, "Symbol '" + operand2.text + "' (" +
-                        identifierSymbol.getClass() + ") is not allowed here!");
-            }
+            evaluateIdentifierPackageSymbol(identifierSymbol);
+
+            // set symbolObject to all unresolved identifier expressions (needed for formatters)
+            final Package identifierPackage = identifierSymbol.getPackage();
+            for (Expression unresolvedIdentifier : operand1.unresolvedIdentifiers)
+                unresolvedIdentifier.symbolObject = identifierPackage;
         }
         else
         {
-            final ZserioType identifierType = pkg.getVisibleType(this, op1UnresolvedPackageNameBuilder.get(),
-                    operand2.text);
-            if (identifierType == null)
+            // identifier still not found
+            if (expressionFlag == ExpressionFlag.IS_TOP_LEVEL_DOT)
             {
-                // identifier still not found
-                if (expressionFlag == ExpressionFlag.IS_TOP_LEVEL_DOT)
-                {
-                    // and we are top level dot
-                    throw new ParserException(this, "Unresolved symbol '" +
-                            op1UnresolvedPackageNameBuilder.get().toString() + "' within expression scope!");
-                }
-
-                // this can happened for long package name, we must wait for dot
-                unresolvedIdentifiers.addAll(operand1.unresolvedIdentifiers);
-                unresolvedIdentifiers.add(operand2);
+                // and we are top level dot
+                throw new ParserException(this, "Unresolved symbol '" +
+                        op1UnresolvedPackageNameBuilder.get().toString() + "' within expression scope!");
             }
-            else
-            {
-                // this is used by formatters (operand2 was not evaluated)
-                operand2.symbolObject = identifierType;
-                evaluateIdentifierType(identifierType);
-                identifierPackage = identifierType.getPackage();
-            }
-        }
 
-        if (identifierPackage != null)
-        {
-            // set symbolObject to all unresolved identifier expressions (needed for formatters)
-            for (Expression unresolvedIdentifier : operand1.unresolvedIdentifiers)
-                unresolvedIdentifier.symbolObject = identifierPackage;
+            // this can happened for long package name, we must wait for dot
+            unresolvedIdentifiers.addAll(operand1.unresolvedIdentifiers);
+            unresolvedIdentifiers.add(operand2);
         }
     }
 
@@ -1246,14 +1221,22 @@ public class Expression extends AstNodeBase
             // explicit identifier does not have to be evaluated
             if (expressionFlag != ExpressionFlag.IS_EXPLICIT)
             {
-                AstNode identifierSymbol = forcedEvaluationScope.getSymbol(text);
-                if (identifierSymbol == null) // try package "global" scope
-                    identifierSymbol = pkg.getVisibleSymbol(this, PackageName.EMPTY, text);
-                if (identifierSymbol == null)
+                final ScopeSymbol identifierScopeSymbol = forcedEvaluationScope.getSymbol(text);
+                if (identifierScopeSymbol != null)
                 {
-                    // it still can be a type
-                    final ZserioType identifierType = pkg.getVisibleType(this, PackageName.EMPTY, text);
-                    if (identifierType == null)
+                    // scope symbol
+                    evaluateIdentifierScopeSymbol(identifierScopeSymbol, forcedEvaluationScope);
+                }
+                else
+                {
+                    final PackageSymbol identifierPackageSymbol = pkg.getVisibleSymbol(this, PackageName.EMPTY,
+                            text);
+                    if (identifierPackageSymbol != null)
+                    {
+                        // package symbol
+                        evaluateIdentifierPackageSymbol(identifierPackageSymbol);
+                    }
+                    else
                     {
                         // identifier not found
                         if (expressionFlag != ExpressionFlag.IS_DOT_LEFT_OPERAND_ID)
@@ -1266,38 +1249,12 @@ public class Expression extends AstNodeBase
                         // this can happened for a long package name, we must wait for dot
                         unresolvedIdentifiers.add(this);
                     }
-                    else
-                    {
-                        evaluateIdentifierType(identifierType);
-                    }
-                }
-                else
-                {
-                    evaluateIdentifierSymbol(identifierSymbol, forcedEvaluationScope, text);
                 }
             }
         }
     }
 
-    private void evaluateIdentifierType(ZserioType identifierType)
-    {
-        symbolObject = identifierType;
-
-        final ZserioType baseType = getBaseType(identifierType);
-        if (baseType instanceof EnumType || baseType instanceof BitmaskType)
-        {
-            // enumeration or bitmask type, we must wait for enumeration item or bitmask value and dot
-            zserioType = baseType;
-        }
-        else
-        {
-            throw new ParserException(this, "Type '" + baseType.getName() + "' (" +
-                    baseType.getClass() + ") is not allowed here!");
-        }
-    }
-
-    private void evaluateIdentifierSymbol(AstNode identifierSymbol, Scope forcedEvaluationScope,
-            String identifier)
+    private void evaluateIdentifierScopeSymbol(ScopeSymbol identifierSymbol, Scope forcedEvaluationScope)
     {
         symbolObject = identifierSymbol;
         if (identifierSymbol instanceof Field)
@@ -1353,13 +1310,37 @@ public class Expression extends AstNodeBase
             // if this bitmask vlaue is in own bitmask, leave it unresolved (we have problem with it because
             // such bitmask values cannot be evaluated yet)
         }
-        else if (identifierSymbol instanceof Constant)
+        else
+        {
+            throw new ParserException(this, "Symbol '" + identifierSymbol.getName() + "' (" +
+                    identifierSymbol.getClass() + ") is not allowed here!");
+        }
+    }
+
+    private void evaluateIdentifierPackageSymbol(PackageSymbol identifierSymbol)
+    {
+        symbolObject = identifierSymbol;
+        if (identifierSymbol instanceof Constant)
         {
             evaluateConstant((Constant)identifierSymbol);
         }
+        else if (identifierSymbol instanceof ZserioType)
+        {
+            final ZserioType baseType = getBaseType((ZserioType)identifierSymbol);
+            if (baseType instanceof EnumType || baseType instanceof BitmaskType)
+            {
+                // enumeration or bitmask type, we must wait for enumeration item or bitmask value and dot
+                zserioType = baseType;
+            }
+            else
+            {
+                throw new ParserException(this, "Type '" + baseType.getName() + "' (" +
+                        baseType.getClass() + ") is not allowed here!");
+            }
+        }
         else
         {
-            throw new ParserException(this, "Symbol '" + identifier + "' (" +
+            throw new ParserException(this, "Symbol '" + identifierSymbol.getName() + "' (" +
                     identifierSymbol.getClass() + ") is not allowed here!");
         }
     }

@@ -15,5 +15,5 @@ public interface SqlNativeType extends NativeType
      *
      * @return Traditional SQL type name.
      */
-    String getTraditionalName();
+    public String getTraditionalName();
 }

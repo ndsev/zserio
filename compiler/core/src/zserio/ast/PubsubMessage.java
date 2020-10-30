@@ -5,7 +5,7 @@ import java.util.List;
 /**
  * AST node for Pub/Sub messages.
  */
-public class PubsubMessage extends DocumentableAstNode
+public class PubsubMessage extends DocumentableAstNode implements ScopeSymbol
 {
     /**
      * Constructor.
@@ -46,11 +46,7 @@ public class PubsubMessage extends DocumentableAstNode
         typeReference.accept(visitor);
     }
 
-    /**
-     * Gets name of the Pub/Sub message.
-     *
-     * @return Pub/Sub message name.
-     */
+    @Override
     public String getName()
     {
         return name;

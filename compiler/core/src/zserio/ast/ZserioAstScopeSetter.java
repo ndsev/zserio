@@ -40,7 +40,7 @@ public class ZserioAstScopeSetter extends ZserioAstWalker
         if (field.getOptionalClauseExpr() != null)
             field.getOptionalClauseExpr().accept(this);
 
-        currentScope.setSymbol(field.getName(), field);
+        currentScope.addSymbol(field);
 
         if (field.getConstraintExpr() != null)
             field.getConstraintExpr().accept(this);
@@ -141,7 +141,7 @@ public class ZserioAstScopeSetter extends ZserioAstWalker
     public void visitEnumItem(EnumItem enumItem)
     {
         enumItem.visitChildren(this);
-        currentScope.setSymbol(enumItem.getName(), enumItem);
+        currentScope.addSymbol(enumItem);
     }
 
     @Override
@@ -158,7 +158,7 @@ public class ZserioAstScopeSetter extends ZserioAstWalker
     public void visitBitmaskValue(BitmaskValue bitmaskValue)
     {
         bitmaskValue.visitChildren(this);
-        currentScope.setSymbol(bitmaskValue.getName(), bitmaskValue);
+        currentScope.addSymbol(bitmaskValue);
     }
 
     @Override
@@ -198,7 +198,7 @@ public class ZserioAstScopeSetter extends ZserioAstWalker
     {
         serviceMethod.visitChildren(this);
 
-        currentScope.setSymbol(serviceMethod.getName(), serviceMethod);
+        currentScope.addSymbol(serviceMethod);
     }
 
     @Override
@@ -216,18 +216,18 @@ public class ZserioAstScopeSetter extends ZserioAstWalker
     {
         pubsubMessage.visitChildren(this);
 
-        currentScope.setSymbol(pubsubMessage.getName(), pubsubMessage);
+        currentScope.addSymbol(pubsubMessage);
     }
 
     @Override
     public void visitFunction(Function function)
     {
         for (Scope expressionScope : expressionScopes)
-            expressionScope.setSymbol(function.getName(), function);
+            expressionScope.addSymbol(function);
 
         function.visitChildren(this);
 
-        currentScope.setSymbol(function.getName(), function);
+        currentScope.addSymbol(function);
     }
 
     @Override
@@ -235,7 +235,7 @@ public class ZserioAstScopeSetter extends ZserioAstWalker
     {
         parameter.visitChildren(this);
 
-        currentScope.setSymbol(parameter.getName(), parameter);
+        currentScope.addSymbol(parameter);
     }
 
     @Override
@@ -259,20 +259,20 @@ public class ZserioAstScopeSetter extends ZserioAstWalker
     public void visitTemplateParameter(TemplateParameter templateParameter)
     {
         templateParameter.visitChildren(this);
-        currentScope.setSymbol(templateParameter.getName(), templateParameter);
+        currentScope.addSymbol(templateParameter);
     }
 
     private void visitChoiceField(Field field)
     {
         field.getTypeInstantiation().accept(this);
 
-        currentScope.setSymbol(field.getName(), field);
-        currentChoiceOrUnionScope.setSymbol(field.getName(), field);
+        currentScope.addSymbol(field);
+        currentChoiceOrUnionScope.addSymbol(field);
 
         if (field.getConstraintExpr() != null)
             field.getConstraintExpr().accept(this);
 
-        currentScope.removeSymbol(field.getName());
+        currentScope.removeSymbol(field);
     }
 
     private void visitInstantiations(ZserioTemplatableType templatable)

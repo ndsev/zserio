@@ -4,8 +4,6 @@ import zserio.tools.StringJoinUtil;
 
 /**
  * This class implements various utilities on ZserioType common for multiple emitters.
- *
- * TODO[mikir] do it package private and rename it
  */
 public class ZserioTypeUtil
 {

@@ -6,7 +6,6 @@ import zserio.ast.BitmaskType;
 import zserio.ast.ChoiceType;
 import zserio.ast.Constant;
 import zserio.ast.EnumType;
-import zserio.ast.Import;
 import zserio.ast.InstantiateType;
 import zserio.ast.Package;
 import zserio.ast.PackageName;
@@ -48,12 +47,6 @@ class AstNodePackageNameMapper
         public void visitPackage(Package unitPackage)
         {
             packageName = unitPackage.getPackageName();
-        }
-
-        @Override
-        public void visitImport(Import unitImport)
-        {
-            packageName = unitImport.getImportedPackageName();
         }
 
         @Override

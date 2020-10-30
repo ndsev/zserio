@@ -35,34 +35,23 @@ public class SymbolReference
     }
 
     /**
-     * Gets referenced type.
+     * Gets referenced package symbol.
      *
-     * @return Referenced type or null if it's a global symbol.
+     * @return Referenced package symbol.
      */
-    public ZserioType getReferencedType()
+    public PackageSymbol getReferencedPackageSymbol()
     {
-        return referencedType;
+        return referencedPackageSymbol;
     }
 
     /**
-     * Gets referenced symbol.
+     * Gets referenced scope symbol.
      *
-     * @return Referenced enumeration item or compound field or null if this is a type reference.
+     * @return Referenced scope symbol or null if the reference is a package symbol.
      */
-    public AstNode getReferencedSymbol()
+    public ScopeSymbol getReferencedScopeSymbol()
     {
-        return referencedSymbol;
-    }
-
-    /**
-     * Gets referenced symbol name.
-     *
-     * @return Referenced enumeration item or compound field in string format or null if this is a type
-     *         reference.
-     */
-    public String getReferencedSymbolName()
-    {
-        return referencedSymbolName;
+        return referencedScopeSymbol;
     }
 
     /**
@@ -73,40 +62,41 @@ public class SymbolReference
      */
     void resolve(Package ownerPackage, ZserioScopedType ownerType)
     {
-        // try if the last link component was a symbol name
+        // try if the last link component was a package symbol
         PackageName referencedPackageName = getReferencedPackageName(ownerPackage);
-        referencedSymbol = ownerPackage.getVisibleSymbol(ownerNode, referencedPackageName, referencedName);
-        if (referencedSymbol != null)
+        referencedPackageSymbol = ownerPackage.getVisibleSymbol(ownerNode, referencedPackageName,
+                referencedName);
+        if (referencedPackageSymbol == null)
         {
-            referencedSymbolName = referencedName;
-            return;
-        }
-
-        // try if the last link component was a type name
-        referencedType = ownerPackage.getVisibleType(ownerNode, referencedPackageName, referencedName);
-        if (referencedType == null)
-        {
-            final String fullName = ZserioTypeUtil.getFullName(referencedPackageName, referencedName);
-
-            // try if the last link component was not type name (can be a field name or enumeration item)
-            referencedSymbolName = referencedName;
+            // try if the last link component was not a package symbol (can be a field name or enumeration item)
+            final String referencedScopeSymbolName = referencedName;
             referencedName = referencedPackageNameBuilder.removeLastId();
             if (referencedName == null)
             {
                 // there is only symbol name, try to resolve it in owner scope
-                referencedType = ownerType;
+                referencedPackageSymbol = ownerType;
             }
             else
             {
                 referencedPackageName = getReferencedPackageName(ownerPackage);
-                referencedType = ownerPackage.getVisibleType(ownerNode, referencedPackageName, referencedName);
+                referencedPackageSymbol = ownerPackage.getVisibleSymbol(ownerNode, referencedPackageName,
+                        referencedName);
+
+                // this was our last attempt to resolve symbol type
+                if (!(referencedPackageSymbol instanceof ZserioScopedType))
+                {
+                    throw new ParserException(ownerNode, "Unresolved referenced symbol '" +
+                            ZserioTypeUtil.getFullName(referencedPackageName, referencedName) + "'!");
+                }
             }
 
-            // this was our last attempt to resolve symbol type
-            if (referencedType == null)
-                throw new ParserException(ownerNode, "Unresolved referenced symbol '" + fullName + "'!");
-
-            resolveLocalSymbol();
+            final Scope referencedScope = ((ZserioScopedType)referencedPackageSymbol).getScope();
+            referencedScopeSymbol = referencedScope.getSymbol(referencedScopeSymbolName);
+            if (referencedScopeSymbol == null)
+            {
+                throw new ParserException(ownerNode, "Unresolved referenced symbol '" +
+                        referencedScopeSymbolName + "' for type '" + referencedPackageSymbol.getName() + "'!");
+            }
         }
     }
 
@@ -123,25 +113,12 @@ public class SymbolReference
         return packageNameBuilder.get();
     }
 
-    private void resolveLocalSymbol()
-    {
-        if (!(referencedType instanceof ZserioScopedType))
-            throw new ParserException(ownerNode, "Referenced type '" + referencedType.getName() +
-                    "' can't refer to '" + referencedSymbolName + "'!");
-
-        final Scope referencedScope = ((ZserioScopedType)referencedType).getScope();
-        referencedSymbol = referencedScope.getSymbol(referencedSymbolName);
-        if (referencedSymbol == null)
-            throw new ParserException(ownerNode, "Unresolved referenced symbol '" + referencedSymbolName +
-                    "' for type '" + referencedType.getName() + "'!");
-    }
-
     private static final String SYMBOL_REFERENCE_SEPARATOR = ".";
 
     private final AstNode ownerNode;
     private final PackageName.Builder referencedPackageNameBuilder = new PackageName.Builder();
+
     private String referencedName = null;
-    private String referencedSymbolName = null;
-    private ZserioType referencedType = null;
-    private AstNode referencedSymbol = null;
+    private PackageSymbol referencedPackageSymbol = null;
+    private ScopeSymbol referencedScopeSymbol = null;
 }

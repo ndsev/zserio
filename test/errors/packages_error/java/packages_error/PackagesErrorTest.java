@@ -36,7 +36,7 @@ public class PackagesErrorTest
         {
             "imported.zs:3:8:     Found here",
             "ambiguous_single_type_import_error.zs:5:8:     Found here",
-            "ambiguous_single_type_import_error.zs:12:5: Ambiguous type reference 'Structure'"
+            "ambiguous_single_type_import_error.zs:12:5: Ambiguous symbol 'Structure'"
         };
         assertTrue(zserioErrors.isPresent(errors));
     }

@@ -5,7 +5,7 @@ import java.util.List;
 /**
  * AST node for a parameter defined in the parameterized compound types.
  */
-public class Parameter extends AstNodeBase
+public class Parameter extends AstNodeBase implements ScopeSymbol
 {
     /**
      * Constructor.
@@ -34,6 +34,12 @@ public class Parameter extends AstNodeBase
         typeReference.accept(visitor);
     }
 
+    @Override
+    public String getName()
+    {
+        return name;
+    }
+
     /**
      * Gets reference to the parameter's type.
      *
@@ -42,16 +48,6 @@ public class Parameter extends AstNodeBase
     public TypeReference getTypeReference()
     {
         return typeReference;
-    }
-
-    /**
-     * Gets parameter name.
-     *
-     * @return Parameter name.
-     */
-    public String getName()
-    {
-        return name;
     }
 
     /**

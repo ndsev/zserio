@@ -18,9 +18,16 @@ public class ZserioAstImporter extends ZserioAstWalker
     }
 
     @Override
-    public void visitPackage(Package pkg)
+    public void visitPackage(Package unitPackage)
     {
-        pkg.processImports(packageNameMap);
+        unitPackage.visitChildren(this);
+        unitPackage.resolveImports();
+    }
+
+    @Override
+    public void visitImport(Import unitImport)
+    {
+        unitImport.resolveImport(packageNameMap);
     }
 
     private Map<PackageName, Package> packageNameMap = null;

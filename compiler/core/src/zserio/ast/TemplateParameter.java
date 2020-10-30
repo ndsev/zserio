@@ -7,7 +7,7 @@ import java.util.List;
  *
  * Template parameters are just wrapped strings.
  */
-public class TemplateParameter extends AstNodeBase
+public class TemplateParameter extends AstNodeBase implements ScopeSymbol
 {
     /**
      * Constructor.
@@ -28,11 +28,7 @@ public class TemplateParameter extends AstNodeBase
         visitor.visitTemplateParameter(this);
     }
 
-    /**
-     * Gets name of the template parameter.
-     *
-     * @return Name of the template parameter.
-     */
+    @Override
     public String getName()
     {
         return name;
@@ -53,6 +49,7 @@ public class TemplateParameter extends AstNodeBase
             if (templateParameters.get(i).getName().equals(name))
                 return i;
         }
+
         return -1;
     }
 

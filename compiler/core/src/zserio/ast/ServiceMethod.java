@@ -5,7 +5,7 @@ import java.util.List;
 /**
  * AST node for service methods.
  */
-public class ServiceMethod extends DocumentableAstNode
+public class ServiceMethod extends DocumentableAstNode implements ScopeSymbol
 {
     /**
      * Constructor.
@@ -41,11 +41,7 @@ public class ServiceMethod extends DocumentableAstNode
         requestTypeReference.accept(visitor);
     }
 
-    /**
-     * Gets name of the service method.
-     *
-     * @return Service method name.
-     */
+    @Override
     public String getName()
     {
         return name;

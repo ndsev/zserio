@@ -6,7 +6,7 @@ import java.util.List;
 /**
  * AST node for items defined by enumeration types.
  */
-public class EnumItem extends DocumentableAstNode
+public class EnumItem extends DocumentableAstNode implements ScopeSymbol
 {
     /**
      * Constructor.
@@ -39,11 +39,7 @@ public class EnumItem extends DocumentableAstNode
             valueExpression.accept(visitor);
     }
 
-    /**
-     * Gets the name of enumeration item.
-     *
-     * @return Returns name of enumeration item.
-     */
+    @Override
     public String getName()
     {
         return name;

@@ -5,7 +5,7 @@ import java.util.List;
 /**
  * AST node for values defined by bitmask types.
  */
-public class BitmaskValue extends DocumentableAstNode
+public class BitmaskValue extends DocumentableAstNode implements ScopeSymbol
 {
     /**
      * Constructor.
@@ -39,11 +39,7 @@ public class BitmaskValue extends DocumentableAstNode
             valueExpression.accept(visitor);
     }
 
-    /**
-     * Gets the name of the bitmask value.
-     *
-     * @return Returns name of the value.
-     */
+    @Override
     public String getName()
     {
         return name;

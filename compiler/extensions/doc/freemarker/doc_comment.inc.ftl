@@ -6,8 +6,8 @@
         <#list docComments.commentsList as docComment>
     <@doc_comment docComment, indent/>
         </#list>
-    <#else>
-${I}<div class="docuTag"><#if useNoDocPlaceholder>&lt;<i>no documentation found</i>&gt;</#if></div>
+    <#elseif useNoDocPlaceholder>
+${I}<div class="docuTag">&lt;<i>no documentation found</i>&gt;</div>
     </#if>
 </#macro>
 

@@ -10,7 +10,7 @@ import zserio.tools.ZserioToolPrinter;
  *
  * Function types are Zserio types as well.
  */
-public class Function extends DocumentableAstNode
+public class Function extends DocumentableAstNode implements ScopeSymbol
 {
     /**
      * Constructor.
@@ -46,11 +46,7 @@ public class Function extends DocumentableAstNode
         resultExpression.accept(visitor);
     }
 
-    /**
-     * Gets function name.
-     *
-     * @return Function name.
-     */
+    @Override
     public String getName()
     {
         return name;

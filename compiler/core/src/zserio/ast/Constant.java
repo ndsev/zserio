@@ -5,7 +5,7 @@ import java.util.List;
 /**
  * AST node for Constants.
  */
-public class Constant extends DocumentableAstNode
+public class Constant extends DocumentableAstNode implements PackageSymbol
 {
     /**
      * Constructor.
@@ -43,21 +43,13 @@ public class Constant extends DocumentableAstNode
         valueExpression.accept(visitor);
     }
 
-    /**
-     * Gets the package in which this constant is defined.
-     *
-     * @return The package in which this constant is defined.
-     */
+    @Override
     public Package getPackage()
     {
         return pkg;
     }
 
-    /**
-     * Gets the name of the constant.
-     *
-     * @return Constant name.
-     */
+    @Override
     public String getName()
     {
         return name;
@@ -71,7 +63,7 @@ public class Constant extends DocumentableAstNode
     public TypeInstantiation getTypeInstantiation()
     {
         return typeInstantiation;
-   }
+    }
 
     /**
      * Gets expression which represents constant value.

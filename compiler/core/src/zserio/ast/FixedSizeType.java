@@ -10,5 +10,5 @@ public interface FixedSizeType
      *
      * @return Returns bit size of the type.
      */
-    int getBitSize();
+    public int getBitSize();
 }

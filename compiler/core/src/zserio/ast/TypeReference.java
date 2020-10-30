@@ -129,31 +129,38 @@ public class TypeReference extends AstNodeBase
         if (isResolved)
             return;
 
-        // resolve referenced type
-        type = ownerPackage.getVisibleType(this, referencedPackageName, referencedTypeName);
-        if (type == null)
+        // skip resolving of template parameters in templates
+        if (!referencedPackageName.isEmpty() || templateParameters == null ||
+                TemplateParameter.indexOf(templateParameters, referencedTypeName) == -1)
         {
-            if (!referencedPackageName.isEmpty() || templateParameters == null ||
-                    TemplateParameter.indexOf(templateParameters, referencedTypeName) == -1)
+            // resolve referenced type
+            final PackageSymbol symbol = ownerPackage.getVisibleSymbol(this, referencedPackageName,
+                    referencedTypeName);
+            if (symbol == null)
             {
                 throw new ParserException(this, "Unresolved referenced type '" +
                         ZserioTypeUtil.getReferencedFullName(this) + "'!");
             }
-            // else: is in the template, and the type name matches a template parameter
-        }
 
-        // check referenced type
-        if (type instanceof SqlDatabaseType)
-        {
-            throw new ParserException(this, "Invalid usage of SQL database '" + type.getName() +
-                    "' as a type!");
-        }
-        if (type instanceof TemplatableType)
-        {
-            final TemplatableType template = (TemplatableType)type;
-            if (!template.getTemplateParameters().isEmpty() && templateArguments.isEmpty())
-                throw new ParserException(this,
-                        "Missing template arguments for template '" + getReferencedTypeName() + "'!");
+            // check referenced type
+            if (!(symbol instanceof ZserioType))
+            {
+                throw new ParserException(this, "Invalid usage of '" + symbol.getName() +
+                        "' as a type!");
+            }
+            if (symbol instanceof SqlDatabaseType)
+            {
+                throw new ParserException(this, "Invalid usage of SQL database '" + symbol.getName() +
+                        "' as a type!");
+            }
+            if (symbol instanceof TemplatableType)
+            {
+                final TemplatableType template = (TemplatableType)symbol;
+                if (!template.getTemplateParameters().isEmpty() && templateArguments.isEmpty())
+                    throw new ParserException(this,
+                            "Missing template arguments for template '" + getReferencedTypeName() + "'!");
+            }
+            type = (ZserioType)symbol;
         }
 
         isResolved = true;

@@ -22,7 +22,7 @@ public class TemplatesErrorTest
     {
         final String errors[] =
         {
-            "constant_used_as_type_error.zs:12:16: Unresolved referenced type 'CONST'!"
+            "constant_used_as_type_error.zs:12:16: Invalid usage of 'CONST' as a type!"
         };
         assertTrue(zserioErrors.isPresent(errors));
     }

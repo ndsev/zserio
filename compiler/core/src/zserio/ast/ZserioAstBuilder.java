@@ -115,6 +115,7 @@ public class ZserioAstBuilder extends ZserioParserBaseVisitor<Object>
     public Import visitImportDeclaration(ZserioParser.ImportDeclarationContext ctx)
     {
         final AstLocation location = new AstLocation(ctx.id(0).getStart());
+        final List<DocComment> docComments = docCommentManager.findDocComments(ctx.id(0));
         String importedSymbolName = null;
         PackageName importedPackageName = null;
 
@@ -128,14 +129,14 @@ public class ZserioAstBuilder extends ZserioParserBaseVisitor<Object>
             importedPackageName = createPackageName(ctx.id());
         }
 
-        return new Import(location, importedPackageName, importedSymbolName);
+        return new Import(location, importedPackageName, importedSymbolName, docComments);
     }
 
     @Override
     public ZserioType visitTypeDeclaration(ZserioParser.TypeDeclarationContext ctx)
     {
         final ZserioType type = (ZserioType)super.visitTypeDeclaration(ctx);
-        currentPackage.addType(type);
+        currentPackage.addSymbol(type);
         return type;
     }
 
@@ -152,7 +153,7 @@ public class ZserioAstBuilder extends ZserioParserBaseVisitor<Object>
         final Constant constant = new Constant(location, currentPackage, typeInstantiation, name,
                 valueExpression, docComments);
 
-        currentPackage.addSymbol(name, constant);
+        currentPackage.addSymbol(constant);
 
         return constant;
     }

@@ -318,7 +318,7 @@ public class ZserioAstTemplator extends ZserioAstWalker
             {
                 // check short name clash with another template instantiation or local type
                 if (instantiationClashMap.get(shortNameKey) ||
-                        templatableType.getPackage().getLocalType(instantiationName) != null)
+                        templatableType.getPackage().getLocalSymbol(instantiationName) != null)
                 {
                     // add hash code
                     final int maxInstantiationNameLength = MAX_TEMPLATE_NAME_LENGTH - 1 - hashCode.length();
@@ -336,13 +336,13 @@ public class ZserioAstTemplator extends ZserioAstWalker
 
     private void checkInstantiationName(TemplatableType template, String instantiationName)
     {
-        final ZserioType localType = template.getPackage().getLocalType(instantiationName);
-        if (localType != null)
+        final PackageSymbol localSymbol = template.getPackage().getLocalSymbol(instantiationName);
+        if (localSymbol != null)
         {
             final ParserStackedException stackedException = new ParserStackedException(
                     template.getLocation(), "'" + instantiationName + "' is already defined in package '" +
                     template.getPackage().getPackageName() + "'!");
-            stackedException.pushMessage(localType.getLocation(), "    First defined here");
+            stackedException.pushMessage(localSymbol.getLocation(), "    First defined here");
 
             throw new InstantiationException(stackedException, template.getInstantiationReferenceStack());
         }

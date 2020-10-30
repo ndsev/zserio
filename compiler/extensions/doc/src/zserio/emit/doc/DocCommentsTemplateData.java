@@ -5,7 +5,6 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
-import zserio.ast.AstNode;
 import zserio.ast.DocComment;
 import zserio.ast.DocCommentClassic;
 import zserio.ast.DocCommentMarkdown;
@@ -18,6 +17,8 @@ import zserio.ast.DocTagParam;
 import zserio.ast.DocTagSee;
 import zserio.ast.DocTagTodo;
 import zserio.ast.DocText;
+import zserio.ast.PackageSymbol;
+import zserio.ast.ScopeSymbol;
 import zserio.ast.SymbolReference;
 import zserio.ast.ZserioType;
 import zserio.emit.common.ZserioEmitException;
@@ -265,26 +266,27 @@ public class DocCommentsTemplateData
             public DocTagSeeData(TemplateDataContext context, DocTagSee docTagSee)
             {
                 final SymbolReference linkSymbolReference = docTagSee.getLinkSymbolReference();
-                final ZserioType referencedType = linkSymbolReference.getReferencedType();
-                final AstNode referencedSymbol = linkSymbolReference.getReferencedSymbol();
-
-                SymbolTemplateData symbolData = new SymbolTemplateData("", "unknownLink", "Unknown link", null,
-                        new ArrayList<SymbolTemplateData>());
-                if (referencedType == null)
+                SymbolTemplateData symbolData;
+                if (linkSymbolReference == null)
                 {
-                    if (referencedSymbol != null)
-                        symbolData = SymbolTemplateDataCreator.createData(context, referencedSymbol);
+                    // this can happen if see tag link is invalid
+                    symbolData = new SymbolTemplateData("", "unknownLink", "Unknown link", null,
+                            new ArrayList<SymbolTemplateData>());
                 }
                 else
                 {
-                    if (referencedSymbol != null)
+                    final PackageSymbol referencedPackageSymbol =
+                            linkSymbolReference.getReferencedPackageSymbol();
+                    final ScopeSymbol referencedScopeSymbol = linkSymbolReference.getReferencedScopeSymbol();
+
+                    if (referencedPackageSymbol instanceof ZserioType && referencedScopeSymbol != null)
                     {
-                        symbolData = SymbolTemplateDataCreator.createData(context, referencedType,
-                                referencedSymbol);
+                        symbolData = SymbolTemplateDataCreator.createData(context,
+                                (ZserioType)referencedPackageSymbol, referencedScopeSymbol);
                     }
-                    else if (linkSymbolReference.getReferencedSymbolName() == null)
+                    else
                     {
-                        symbolData = SymbolTemplateDataCreator.createData(context, referencedType);
+                        symbolData = SymbolTemplateDataCreator.createData(context, referencedPackageSymbol);
                     }
                 }
 

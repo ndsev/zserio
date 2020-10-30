@@ -21,7 +21,7 @@ public class StructureTypesErrorTest
     public void constantUsedAsType()
     {
         final String error =
-                "constant_used_as_type_error.zs:8:5: Unresolved referenced type 'ConstantUsedAsType'!";
+                "constant_used_as_type_error.zs:8:5: Invalid usage of 'ConstantUsedAsType' as a type!";
         assertTrue(zserioErrors.isPresent(error));
     }
 

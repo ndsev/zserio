@@ -43,7 +43,6 @@ a.subtypeLink
 }
 
 a.packageLink,
-a.importLink,
 a.structureLink,
 a.choiceLink,
 a.choiceCaseLink,

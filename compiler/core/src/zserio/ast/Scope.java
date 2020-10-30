@@ -36,33 +36,33 @@ class Scope
     }
 
     /**
-     * Adds a name with its corresponding object to the current scope.
+     * Adds a symbol to the current scope.
      *
-     * @param name Symbol name in current scope.
-     * @param symbol AST node which represent an object of that name.
+     * @param symbol Symbol to add.
      */
-    public void setSymbol(String name, AstNode node)
+    public void addSymbol(ScopeSymbol symbol)
     {
-        final AstNode prevSymbol = symbolTable.put(name, node);
+        final AstNode prevSymbol = symbols.put(symbol.getName(), symbol);
         if (prevSymbol != null)
         {
-            final ParserStackedException stackedException = new ParserStackedException(node.getLocation(),
-                    "'" + name + "' is already defined in this scope!");
+            final ParserStackedException stackedException = new ParserStackedException(symbol.getLocation(),
+                    "'" + symbol.getName() + "' is already defined in this scope!");
             stackedException.pushMessage(prevSymbol.getLocation(), "    First defined here");
+
             throw stackedException;
         }
     }
 
     /**
-     * Removes the symbol object for the given name.
+     * Removes a symbol from the current scope.
      *
-     * @param name Name in the current scope to remove.
+     * @param symbol Symbol to remove.
      *
-     * @return Removed symbol object or null if no such symbol is available.
+     * @return Removed symbol or null if no such symbol is available.
      */
-    public AstNode removeSymbol(String name)
+    public AstNode removeSymbol(ScopeSymbol symbol)
     {
-        return symbolTable.remove(name);
+        return symbols.remove(symbol.getName());
     }
 
     /**
@@ -72,7 +72,7 @@ class Scope
      */
     public void add(Scope addedScope)
     {
-        symbolTable.putAll(addedScope.symbolTable);
+        symbols.putAll(addedScope.symbols);
     }
 
     /**
@@ -93,18 +93,17 @@ class Scope
      *
      * @param name Name of the symbol to be looked up.
      *
-     * @return Corresponding symbol object or null if no such symbol is visible.
+     * @return Corresponding symbol or null if no such symbol is visible.
      */
-    public AstNode getSymbol(String name)
+    public ScopeSymbol getSymbol(String name)
     {
-        return symbolTable.get(name);
+        return symbols.get(name);
     }
 
     private final ZserioType owner;
 
     /**
-     * Symbol table containing local symbols defined within the current scope. Each symbol is mapped to
-     * an Object.
+     * Symbol table containing local symbols defined within the current scope. The key is the symbol name.
      */
-    private final Map<String, AstNode> symbolTable = new HashMap<String, AstNode>();
+    private final Map<String, ScopeSymbol> symbols = new HashMap<String, ScopeSymbol>();
 }

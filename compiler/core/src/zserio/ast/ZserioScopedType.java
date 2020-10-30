@@ -12,5 +12,5 @@ public interface ZserioScopedType extends ZserioType
      *
      * @return The scope defined by this type.
      */
-    Scope getScope();
+    public Scope getScope();
 }
