@@ -1,5 +1,6 @@
 <#ftl output_format="HTML">
 <#include "doc_comment.inc.ftl">
+<#include "import.inc.ftl">
 <#include "symbol.inc.ftl">
 <!doctype html>
 <html lang="en">
@@ -16,7 +17,7 @@
 
     <title>${symbol.name} documentation</title>
   </head>
-  <body data-spy="scroll" data-target="#toc">
+  <body>
     <header id="header" class="navbar navbar-dark bg-dark sticky-top">
       <div class="navbar-brand">Zserio documentation for package ${symbol.name}</div>
     </header>
@@ -38,6 +39,7 @@
 </#list>
           </nav>
         </div>
-        <main class="col" role="main">
+        <main class="col pl-md-3" role="main">
           <h1 id="${symbol.htmlLink.htmlAnchor}" class="anchor">${symbol.name}</h1>
           <@doc_comments docComments 2, false/>
+          <@imports importNodes/>

@@ -16,21 +16,19 @@
     </h2>
     <@doc_comments docComments 2, false/>
 
-    <table>
-      <tr><td class="docuCode">
-        <table>
-          <tr><td colspan=3>enum <@symbol_reference typeSymbol/> ${symbol.name}</td></tr>
-          <tr><td>{</td><td rowspan="${items?size+1}">&nbsp;</td><td></td></tr>
+    <div class="code">
+      <table>
+        <tr><td colspan=3>enum <@symbol_reference typeSymbol/> ${symbol.name}</td></tr>
+        <tr><td>{</td><td rowspan="${items?size+1}">&nbsp;</td><td></td></tr>
 <#list items as item>
-          <tr>
-            <td class="tabIndent"><@symbol_reference item.symbol/></td>
-            <td>= ${item.value}<#if item_has_next>,</#if></td>
-          </tr>
+        <tr>
+          <td class="indent"><@symbol_reference item.symbol/></td>
+          <td>= ${item.value}<#if item_has_next>,</#if></td>
+        </tr>
 </#list>
-          <tr><td colspan=3>};</td></tr>
-        </table>
-      </td></tr>
-    </table>
+        <tr><td colspan=3>};</td></tr>
+      </table>
+    </div>
 
     <h3>Item Details</h3>
 

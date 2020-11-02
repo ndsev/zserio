@@ -4,16 +4,14 @@
     <#if usedByList?has_content>
 
     <h3>Used By</h3>
-    <table>
-      <tr><td class="docuCode">
-        <table>
-          <tbody>
+    <div class="code">
+      <table>
+        <tbody>
         <#list usedByList as usedBySymbol>
-            <tr><td><@symbol_reference usedBySymbol/></td></tr>
+          <tr><td><@symbol_reference usedBySymbol/></td></tr>
         </#list>
-          </tbody>
-        </table>
-      </td></tr>
-    </table>
+        </tbody>
+      </table>
+    </div>
     </#if>
 </#macro>

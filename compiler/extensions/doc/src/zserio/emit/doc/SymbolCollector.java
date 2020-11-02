@@ -24,11 +24,6 @@ import zserio.emit.common.ZserioEmitException;
 
 class SymbolCollector extends DefaultTreeWalker
 {
-    public SymbolCollector()
-    {
-        nodesMap = new HashMap<Package, List<AstNode>>();
-    }
-
     public Map<Package, List<AstNode>> getNodesMap()
     {
         return nodesMap;
@@ -125,7 +120,7 @@ class SymbolCollector extends DefaultTreeWalker
         currentNodes.add(instantiateType);
     }
 
-    private final Map<Package, List<AstNode>> nodesMap;
+    private final Map<Package, List<AstNode>> nodesMap = new HashMap<Package, List<AstNode>>();
 
     private List<AstNode> currentNodes;
 }

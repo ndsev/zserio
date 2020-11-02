@@ -14,18 +14,16 @@
     </h2>
     <@doc_comments docComments 2, false/>
 
-    <table>
-      <tr><td class="docuCode">
-        <table>
-          <tbody>
-            <tr><td colspan=3>sql_database ${symbol.name}</td></tr>
-            <tr><td colspan=3>{</td></tr>
-            <@compound_fields fields/>
-            <tr><td colspan=3>};</td></tr>
-          </tbody>
-        </table>
-      </td></tr>
-    </table>
+    <div class="code">
+      <table>
+        <tbody>
+          <tr><td colspan=3>sql_database ${symbol.name}</td></tr>
+          <tr><td colspan=3>{</td></tr>
+          <@compound_fields fields/>
+          <tr><td colspan=3>};</td></tr>
+        </tbody>
+      </table>
+    </div>
     <@compound_member_details fields/>
 <#if collaborationDiagramSvg??>
 

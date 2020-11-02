@@ -18,27 +18,25 @@
     </h2>
     <@doc_comments docComments 2, false/>
 
-    <table>
-      <tr><td class="docuCode">
-        <table>
-          <tbody>
-            <tr><td colspan=3>sql_table ${symbol.name}<@compound_template_parameters templateParameters/><#rt>
-              <#lt><@compound_parameters parameters/><#rt>
-              <#lt><#if virtualTableUsing?has_content> using ${virtualTableUsing}</#if></td></tr>
-            <tr><td colspan=3>{</td></tr>
-            <@compound_fields fields/>
+    <div class="code">
+      <table>
+        <tbody>
+          <tr><td colspan=3>sql_table ${symbol.name}<@compound_template_parameters templateParameters/><#rt>
+            <#lt><@compound_parameters parameters/><#rt>
+            <#lt><#if virtualTableUsing?has_content> using ${virtualTableUsing}</#if></td></tr>
+          <tr><td colspan=3>{</td></tr>
+          <@compound_fields fields/>
 <#if sqlConstraint?has_content>
-            <tr><td colspan=3>&nbsp;</td></tr>
-            <tr>
-              <td class="tabIndent"></td>
-              <td colspan=2>sql ${sqlConstraint};</td>
-            </tr>
+          <tr><td colspan=3>&nbsp;</td></tr>
+          <tr>
+            <td class="indent"></td>
+            <td colspan=2>sql ${sqlConstraint};</td>
+          </tr>
 </#if>
-            <tr><td colspan=3>};</td></tr>
-          </tbody>
-        </table>
-      </td></tr>
-    </table>
+          <tr><td colspan=3>};</td></tr>
+        </tbody>
+      </table>
+    </div>
     <@compound_member_details fields/>
     <@used_by usedByList/>
 <#if collaborationDiagramSvg??>

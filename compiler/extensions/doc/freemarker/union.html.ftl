@@ -17,23 +17,21 @@
     </h2>
     <@doc_comments docComments 2, false/>
 
-    <table>
-      <tr><td class="docuCode">
-        <table>
-          <tbody>
-            <tr><td colspan=3>union ${symbol.name}<@compound_template_parameters templateParameters/><#rt>
-              <#lt><@compound_parameters parameters/></td></tr>
-            <tr><td colspan=3>{</td></tr>
-            <@compound_fields fields/>
+    <div class="code">
+      <table>
+        <tbody>
+          <tr><td colspan=3>union ${symbol.name}<@compound_template_parameters templateParameters/><#rt>
+            <#lt><@compound_parameters parameters/></td></tr>
+          <tr><td colspan=3>{</td></tr>
+          <@compound_fields fields/>
 <#if functions?has_content>
-            <tr><td colspan=3>&nbsp;</td></tr>
-            <@compound_functions functions/>
+          <tr><td colspan=3>&nbsp;</td></tr>
+          <@compound_functions functions/>
 </#if>
-            <tr><td colspan=3>};</td></tr>
-          </tbody>
-        </table>
-      </td></tr>
-    </table>
+          <tr><td colspan=3>};</td></tr>
+        </tbody>
+      </table>
+    </div>
     <@compound_member_details fields/>
     <@compound_function_details functions/>
     <@used_by usedByList/>

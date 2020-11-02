@@ -7,7 +7,9 @@ import java.util.Set;
 import java.util.TreeSet;
 
 import zserio.ast.AstNode;
+import zserio.ast.Import;
 import zserio.ast.Package;
+import zserio.ast.PackageSymbol;
 import zserio.emit.common.ZserioEmitException;
 
 public class BeginPackageTemplateData
@@ -18,6 +20,9 @@ public class BeginPackageTemplateData
         packageAnchor = AstNodeTypeNameMapper.getTypeName(pkg);
         symbol = SymbolTemplateDataCreator.createData(context, pkg);
         docComments = new DocCommentsTemplateData(context, pkg.getDocComments());
+
+        for (Import importNode : pkg.getImports())
+            importNodes.add(new ImportTemplateData(context, importNode));
 
         for (Map.Entry<Package, List<AstNode>> entry : nodesMap.entrySet())
             packages.add(new PackageSymbolOverviewTemplateData(context, entry.getKey(), entry.getValue()));
@@ -43,12 +48,18 @@ public class BeginPackageTemplateData
         return docComments;
     }
 
+    public Iterable<ImportTemplateData> getImportNodes()
+    {
+        return importNodes;
+    }
+
     public Iterable<PackageSymbolOverviewTemplateData> getPackages()
     {
         return packages;
     }
 
-    public static class PackageSymbolOverviewTemplateData
+    public static class PackageSymbolOverviewTemplateData implements
+            Comparable<PackageSymbolOverviewTemplateData>
     {
         PackageSymbolOverviewTemplateData(TemplateDataContext context, Package pkg,
                 List<AstNode> packageSymbols)
@@ -56,6 +67,27 @@ public class BeginPackageTemplateData
             symbol = SymbolTemplateDataCreator.createData(context, pkg);
             for (AstNode packageSymbol : packageSymbols)
                 this.packageSymbols.add(new PackageSymbolTemplateData(context, packageSymbol));
+        }
+
+        @Override
+        public int compareTo(PackageSymbolOverviewTemplateData other)
+        {
+            return symbol.getName().compareTo(other.symbol.getName());
+        }
+
+        @Override
+        public boolean equals(Object other)
+        {
+            if (!(other instanceof PackageSymbol))
+                return false;
+
+            return (this == other) || compareTo((PackageSymbolOverviewTemplateData)other) == 0;
+        }
+
+        @Override
+        public int hashCode()
+        {
+            return symbol.getName().hashCode();
         }
 
         public SymbolTemplateData getSymbol()
@@ -73,9 +105,41 @@ public class BeginPackageTemplateData
         private final Set<PackageSymbolTemplateData> packageSymbols = new TreeSet<PackageSymbolTemplateData>();
     }
 
+    public static class ImportTemplateData
+    {
+        public ImportTemplateData(TemplateDataContext context, Import importNode) throws ZserioEmitException
+        {
+            docComments = new DocCommentsTemplateData(context, importNode.getDocComments());
+            importedPackageSymbol = SymbolTemplateDataCreator.createData(context, importNode.getImportedPackage());
+            final PackageSymbol importedPackageSymbol = importNode.getImportedSymbol();
+            importedSymbol = (importedPackageSymbol == null) ? null :
+                SymbolTemplateDataCreator.createData(context, importedPackageSymbol);
+        }
+
+        public DocCommentsTemplateData getDocComments()
+        {
+            return docComments;
+        }
+
+        public SymbolTemplateData getImportedPackageSymbol()
+        {
+            return importedPackageSymbol;
+        }
+
+        public SymbolTemplateData getImportedSymbol()
+        {
+            return importedSymbol;
+        }
+
+        private final DocCommentsTemplateData docComments;
+        private final SymbolTemplateData importedPackageSymbol;
+        private final SymbolTemplateData importedSymbol;
+    };
+
     private final String packageAnchor;
     private final SymbolTemplateData symbol;
     private final DocCommentsTemplateData docComments;
-    private final List<PackageSymbolOverviewTemplateData> packages =
-            new ArrayList<PackageSymbolOverviewTemplateData>();
+    private final List<ImportTemplateData> importNodes = new ArrayList<ImportTemplateData>();
+    private final Set<PackageSymbolOverviewTemplateData> packages =
+            new TreeSet<PackageSymbolOverviewTemplateData>();
 }

@@ -14,21 +14,19 @@
     </h2>
     <@doc_comments docComments 2, false/>
 
-    <table>
-      <tr><td class="docuCode">
-        <table>
-          <tr><td colspan=3>bitmask <@symbol_reference typeSymbol/> ${symbol.name}</td></tr>
-          <tr><td>{</td><td rowspan="${values?size+1}">&nbsp;</td><td></td></tr>
+    <div class="code">
+      <table>
+        <tr><td colspan=3>bitmask <@symbol_reference typeSymbol/> ${symbol.name}</td></tr>
+        <tr><td>{</td><td rowspan="${values?size+1}">&nbsp;</td><td></td></tr>
 <#list values as value>
-          <tr>
-            <td class="tabIndent"><@symbol_reference value.symbol/></td>
-            <td>= ${value.value}<#if value_has_next>,</#if></td>
-          </tr>
+        <tr>
+          <td class="indent"><@symbol_reference value.symbol/></td>
+          <td>= ${value.value}<#if value_has_next>,</#if></td>
+        </tr>
 </#list>
-          <tr><td colspan=3>};</td></tr>
-        </table>
-      </td></tr>
-    </table>
+        <tr><td colspan=3>};</td></tr>
+      </table>
+    </div>
 
     <h3>Value Details</h3>
 

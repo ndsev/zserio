@@ -15,15 +15,9 @@
     <p/>
     <@doc_comments docComments 2, false/>
 
-    <table>
-    <tr><td class="docuCode">
-      <table>
-        <tr>
-          <td colspan=3>instantiate <@symbol_reference typeSymbol/> ${symbol.name};</td>
-        </tr>
-      </table>
-    </td></tr>
-    </table>
+    <div class="code">
+      instantiate <@symbol_reference typeSymbol/> ${symbol.name};
+    </div>
     <@used_by usedByList/>
 <#if collaborationDiagramSvg??>
 

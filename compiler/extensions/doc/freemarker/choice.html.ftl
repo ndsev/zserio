@@ -8,29 +8,29 @@
     <#local typePrefix>
       <#if field.isArrayImplicit>implicit </#if><#t>
     </#local>
-            <tr class="codeMember">
-              <td class="tabIndent"></td>
-              <td class="tabIndent">
-                 ${typePrefix}<@compound_field_type_name field/>
-              </td>
-              <td>
-                <@symbol_reference field.symbol/><#rt>
-                  ${field.arrayRange}<#t>
+          <tr>
+            <td class="indent empty"></td>
+            <td class="indent">
+               ${typePrefix}<@compound_field_type_name field/>
+            </td>
+            <td>
+              <@symbol_reference field.symbol/><#rt>
+                ${field.arrayRange}<#t>
     <#if field.initializerExpression?has_content>
-                  <#lt> = ${field.initializerExpression}<#rt>
+                <#lt> = ${field.initializerExpression}<#rt>
     </#if>
     <#if field.optionalExpression?has_content>
-                  <#lt> if ${field.optionalClauseExpression}<#rt>
+                <#lt> if ${field.optionalClauseExpression}<#rt>
     </#if>
     <#if field.constraintExpression?has_content>
-                  <#lt> : ${field.constraintExpression}<#rt>
+                <#lt> : ${field.constraintExpression}<#rt>
     </#if>
     <#if field.sqlConstraintExpression?has_content>
-                  <#lt> sql ${field.sqlConstraintExpression}<#rt>
+                <#lt> sql ${field.sqlConstraintExpression}<#rt>
     </#if>
-                  <#lt>;
-              </td>
-            </tr>
+                <#lt>;
+            </td>
+          </tr>
 </#macro>
 <#assign choiceHeading>
     <i>Choice</i><#if templateParameters?has_content> template</#if> ${symbol.name}
@@ -46,61 +46,59 @@
     </h2>
     <@doc_comments docComments 2, false/>
 
-    <table>
-      <tr><td class="docuCode">
-        <table>
-          <tbody>
-            <tr>
-              <td colspan=3>choice ${symbol.name}<@compound_template_parameters templateParameters/><#rt>
-                <#lt><@compound_parameters parameters/> on ${selectorExpression}</td>
-            </tr>
-            <tr>
-              <td colspan=3>{</td>
-            </tr>
+    <div class="code">
+      <table>
+        <tbody>
+          <tr>
+            <td colspan=3>choice ${symbol.name}<@compound_template_parameters templateParameters/><#rt>
+              <#lt><@compound_parameters parameters/> on ${selectorExpression}</td>
+          </tr>
+          <tr>
+            <td colspan=3>{</td>
+          </tr>
 <#list caseMemberList as caseMember>
-            <tr>
-              <td class="tabIndent"></td>
-              <td colspan=2>
+          <tr>
+            <td class="indent empty"></td>
+            <td colspan=2>
     <#list caseMember.caseList as case>
-                case <@symbol_reference case.symbol/>:<#rt>
-                  <#lt><#if case?has_next><br/></#if>
+              case <@symbol_reference case.symbol/>:<#rt>
+                <#lt><#if case?has_next><br/></#if>
     </#list>
-              </td>
-            </tr>
+            </td>
+          </tr>
     <#if caseMember.field??>
-            <@choice_field caseMember.field/>
+          <@choice_field caseMember.field/>
     <#else>
-            <tr>
-              <td colspan=2 class="tabIndent"></td>
-              <td>;</td>
-            </tr>
+          <tr>
+            <td colspan=2></td>
+            <td>;</td>
+          </tr>
     </#if>
 </#list>
 <#if defaultMember??>
-            <tr>
-              <td class="tabIndent"></td>
-              <td colspan=2>
-                <@symbol_reference defaultMember.symbol/>:
-              </td>
-            </tr>
+          <tr>
+            <td class="indent empty"></td>
+            <td colspan=2>
+              <@symbol_reference defaultMember.symbol/>:
+            </td>
+          </tr>
     <#if defaultMember.field??>
-            <@choice_field defaultMember.field/>
+          <@choice_field defaultMember.field/>
     <#else>
-            <tr>
-              <td colspan=2 class="tabIndent"></td>
-              <td>;</td>
-            </tr>
+          <tr>
+            <td colspan=2></td>
+            <td>;</td>
+          </tr>
     </#if>
 </#if>
 <#if functions?has_content>
-            <tr><td colspan=3>&nbsp;</td></tr>
-            <@compound_functions functions/>
+          <tr><td colspan=3>&nbsp;</td></tr>
+          <@compound_functions functions/>
 </#if>
-            <tr><td colspan=3>};</td></tr>
-          </tbody>
-        </table>
-      </td></tr>
-    </table>
+          <tr><td colspan=3>};</td></tr>
+        </tbody>
+      </table>
+    </div>
 
     <h3>Case and Member Details</h3>
 

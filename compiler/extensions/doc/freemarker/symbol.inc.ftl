@@ -15,17 +15,17 @@
 </#macro>
 
 <#macro symbol_overview_package_link symbol currentSymbol>
-    <a class="nav-link p-0<#if symbol.name == currentSymbol.name> active</#if>" <#t>
+    <a class="nav-link<#if symbol.name == currentSymbol.name> active</#if>" <#t>
       <@symbol_reference_href_title symbol/>>${symbol.name}<#t>
 </#macro>
 
 <#macro symbol_overview_link symbol templateParameters>
-    <a class="nav-link p-0" <@symbol_reference_href_title symbol/>>${symbol.name}<#t>
+    <a class="nav-link" <@symbol_reference_href_title symbol/>>${symbol.name}<#t>
       <@symbol_template_parameters templateParameters/></a><#t>
 </#macro>
 
 <#macro symbol_toc_link symbol templateParameters>
-    <a class="nav-link p-0 pl-1" href="#${symbol.htmlLink.htmlAnchor}">${symbol.name}<#t>
+    <a class="nav-link" href="#${symbol.htmlLink.htmlAnchor}">${symbol.name}<#t>
       <@symbol_template_parameters templateParameters/></a><#t>
 </#macro>
 

@@ -11,7 +11,6 @@ import zserio.ast.BitmaskType;
 import zserio.ast.ChoiceType;
 import zserio.ast.Constant;
 import zserio.ast.EnumType;
-import zserio.ast.Import;
 import zserio.ast.InstantiateType;
 import zserio.ast.Package;
 import zserio.ast.PackageName;
@@ -65,13 +64,6 @@ class PackageEmitter extends HtmlDefaultEmitter
                 new EndPackageTemplateData(context, pkg, nodesMap.get(pkg));
         processHtmlTemplate("end_package.html.ftl", templateData, writer);
         writer.close();
-    }
-
-    @Override
-    public void beginImport(Import importNode) throws ZserioEmitException
-    {
-        final ImportTemplateData templateData = new ImportTemplateData(context, importNode);
-        processHtmlTemplate("import.html.ftl", templateData, writer);
     }
 
     @Override

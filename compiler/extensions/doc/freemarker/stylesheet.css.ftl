@@ -1,16 +1,11 @@
 /* Hack due to the sticky header. */
-main .anchor::before {
-  display: block;
-  height: 3rem;
-  margin-top: -3rem;
-  content: "";
+.anchor {
+  scroll-margin-top: 3.75rem;
 }
-
-main h1.anchor::before, main h2.anchor::before, main h3.anchor::before {
-  display: block;
-  height: 3.5rem;
-  margin-top: -3.5rem;
-  content: "";
+h2.anchor, h3.anchor {
+  padding-top: 0.75rem;
+  border-top: 3px solid rgb(0,0,0,0.1);
+  scroll-margin-top: 3rem;
 }
 
 #header {
@@ -27,17 +22,41 @@ main h1.anchor::before, main h2.anchor::before, main h3.anchor::before {
   border-right: 1px solid rgba(0,0,0,.1);
 }
 
+#symbol_overview .nav-link {
+  padding-top: 0.125rem;
+  padding-right: 1.5rem;
+  padding-bottom: 0.125rem;
+  padding-left: 0.5rem;
+}
+
 #toc {
   top: 4rem;
   height: 100%;
   position: sticky;
-  font-size: 0.6em;
+  font-size: 0.875rem;
   overflow-x: hidden;
   overflow-y: auto;
 }
 
+#toc .nav-link {
+  padding-top: 0.125rem;
+  padding-right: 1.5rem;
+  padding-bottom: 0.125rem;
+  padding-left: 0.5rem;
+}
+
 #toc .nav .nav-link.active {
   border-left: 1px solid rgba(0,0,0,.2);
+}
+
+h1 {
+  margin-top: 0;
+  margin-bottom: 1rem;
+}
+
+h2, h3 {
+  margin-top: 1rem;
+  margin-bottom: 1rem;
 }
 
 .nav .nav {
@@ -54,35 +73,39 @@ main h1.anchor::before, main h2.anchor::before, main h3.anchor::before {
 
 .nav-link:hover, a:hover {
   color: rgba(0,0,0,.85);
+  text-decoration: none;
 }
 
-.docuCode {
-  background-color: #FFFFFF;
-  empty-cells: show;
-  border-width: 1px;
-  border-style: dotted;
-  border-spacing: 0px;
-  border-collapse: collapse;
-  padding: 0.5em;
+.code {
   font-family: monospace;
+  border-radius: 0.5rem;
+  background-color: rgb(0,0,0,0.05);
+  padding: 0.5rem;
+  width: max-content;
+  margin-top: 1rem;
 }
 
-.docuCode tr td {
-  border-width: 0px;
-  border-style: none;
-  border-collapse: collapse;
+.code td {
   padding-right: 1ex;
 }
 
-.docuCode table tr.codeMember td {
-  padding-top: .25em;
-  padding-bottom: .25em;
+td.indent {
+  padding-left: 5.5ex;
 }
 
-.tabIndent {
-  padding-left: 5.5ex;
+td.indent.empty {
+  padding-left: 0;
+  width: 5.5ex;
 }
 
 .deprecated {
   color: gray;
+}
+
+del {
+  color: gray;
+}
+
+.svg {
+  max-width: 100%;
 }

@@ -14,17 +14,9 @@
     </h2>
     <@doc_comments docComments, 2, false/>
 
-    <table>
-      <tr><td class="docuCode">
-        <table>
-          <tr>
-            <td colspan=3>
-              const <@symbol_reference typeSymbol/> ${symbol.name} = ${value};
-            </td>
-          </tr>
-        </table>
-      </td></tr>
-    </table>
+    <div class="code">
+      const <@symbol_reference typeSymbol/> ${symbol.name} = ${value};
+    </div>
     <@used_by usedByList/>
 <#if collaborationDiagramSvg??>
 

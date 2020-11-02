@@ -13,21 +13,19 @@
     </h2>
     <@doc_comments docComments 2, false/>
 
-    <table>
-      <tr><td class="docuCode">
-        <table>
-          <tr><td>pubsub ${symbol.name}</td></tr>
-          <tr><td>{</td></tr>
+    <div class="code">
+      <table>
+        <tr><td>pubsub ${symbol.name}</td></tr>
+        <tr><td>{</td></tr>
 <#list messageList as message>
-          <tr><td class="tabIndent">
-            ${message.keyword}(${message.topicDefinition}) <#rt>
-              <@symbol_reference message.typeSymbol/> <@symbol_reference message.symbol/>;
-          </td></tr>
+        <tr><td class="indent">
+          ${message.keyword}(${message.topicDefinition}) <#rt>
+            <@symbol_reference message.typeSymbol/> <@symbol_reference message.symbol/>;
+        </td></tr>
 </#list>
-          <tr><td>};</td></tr>
-        </table>
-      </td></tr>
-    </table>
+        <tr><td>};</td></tr>
+      </table>
+    </div>
 <#if messageList?has_content>
 
     <h3>Pubsub messages</h3>

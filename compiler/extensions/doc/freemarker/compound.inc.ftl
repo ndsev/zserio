@@ -2,72 +2,72 @@
 <#include "symbol.inc.ftl">
 <#macro compound_fields fields>
     <#list fields as field>
-        <@compound_field field/>
+          <@compound_field field/>
     </#list>
 </#macro>
 
 <#macro compound_field field>
     <#local typePrefix>
-        <#if field.isVirtual>sql_virtual </#if><#t>
-        <#if field.isAutoOptional>optional </#if><#t>
-        <#if field.isArrayImplicit>implicit </#if><#t>
+          <#if field.isVirtual>sql_virtual </#if><#t>
+          <#if field.isAutoOptional>optional </#if><#t>
+          <#if field.isArrayImplicit>implicit </#if><#t>
     </#local>
     <#if field.alignmentExpression?has_content>
-            <tr class="codeMember">
-              <td colspan=3>align(${field.alignmentExpression}):</td>
-            </tr>
+          <tr>
+            <td colspan=3>align(${field.alignmentExpression}):</td>
+          </tr>
     </#if>
     <#if field.offsetExpression?has_content>
-            <tr class="codeMember">
-              <td colspan=3>${field.offsetExpression}:</td>
-            </tr>
+          <tr>
+            <td colspan=3>${field.offsetExpression}:</td>
+          </tr>
     </#if>
-            <tr class="codeMember">
-              <td class="tabIndent"></td>
-              <td>
-                ${typePrefix}<@compound_field_type_name field/>
-              </td>
-              <td>
-                <@symbol_reference field.symbol/><#rt>
-                  ${field.arrayRange}<#t>
+          <tr>
+            <td class="indent empty"></td>
+            <td>
+              ${typePrefix}<@compound_field_type_name field/>
+            </td>
+            <td>
+              <@symbol_reference field.symbol/><#rt>
+                ${field.arrayRange}<#t>
     <#if field.initializerExpression?has_content>
-                  <#lt> = ${field.initializerExpression}<#rt>
+                <#lt> = ${field.initializerExpression}<#rt>
     </#if>
     <#if field.optionalClauseExpression?has_content>
-                  <#lt> if ${field.optionalClauseExpression}<#rt>
+                <#lt> if ${field.optionalClauseExpression}<#rt>
     </#if>
     <#if field.constraintExpression?has_content>
-                  <#lt> : ${field.constraintExpression}<#rt>
+                <#lt> : ${field.constraintExpression}<#rt>
     </#if>
     <#if field.sqlConstraintExpression?has_content>
-                  <#lt> sql ${field.sqlConstraintExpression}<#rt>
+                <#lt> sql ${field.sqlConstraintExpression}<#rt>
     </#if>
-                  <#lt>;
-              </td>
-            </tr>
+                <#lt>;
+            </td>
+          </tr>
 </#macro>
 
 <#macro compound_functions functions>
     <#list functions as function>
-            <tr>
-              <td class="tabIndent"></td>
-              <td colspan=2>
-                function <@symbol_reference function.returnSymbol/> <#rt>
-                  <#lt><@symbol_reference function.symbol/>()</a>
-              </td>
-            </tr>
-            <tr>
-              <td class="tabIndent"></td>
-              <td colspan=2>{</td>
-            </tr>
-            <tr>
-              <td class="tabIndent"></td>
-              <td colspan=2 class="tabIndent">return ${function.resultExpression};</td>
-            </tr>
-            <tr>
-              <td class="tabIndent"></td>
-              <td colspan=2>}</td>
-            </tr>
+          <tr>
+            <td class="indent empty"></td>
+            <td colspan=2>
+              function <@symbol_reference function.returnSymbol/> <#rt>
+                <#lt><@symbol_reference function.symbol/>()</a>
+            </td>
+          </tr>
+          <tr>
+            <td class="indent empty"></td>
+            <td colspan=2>{</td>
+          </tr>
+          <tr>
+            <td class="indent empty"></td>
+            <td colspan=2 class="indent">return ${function.resultExpression};</td>
+          </tr>
+          <tr>
+            <td class="indent empty"></td>
+            <td colspan=2>}</td>
+          </tr>
     </#list>
 </#macro>
 

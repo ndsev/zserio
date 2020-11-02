@@ -13,21 +13,19 @@
     </h2>
     <@doc_comments docComments 2, false/>
 
-    <table>
-      <tr><td class="docuCode">
-        <table>
-          <tr><td>service ${symbol.name}</td></tr>
-          <tr><td>{</td></tr>
+    <div class="code">
+      <table>
+        <tr><td>service ${symbol.name}</td></tr>
+        <tr><td>{</td></tr>
 <#list methodList as method>
-          <tr><td class="tabIndent">
-            <@symbol_reference method.responseSymbol/> <@symbol_reference method.symbol/><#rt>
-              <#lt>(<@symbol_reference method.requestSymbol/>);
-          </td></tr>
+        <tr><td class="indent">
+          <@symbol_reference method.responseSymbol/> <@symbol_reference method.symbol/><#rt>
+            <#lt>(<@symbol_reference method.requestSymbol/>);
+        </td></tr>
 </#list>
-          <tr><td>};</td></tr>
-        </table>
-      </td></tr>
-    </table>
+        <tr><td>};</td></tr>
+      </table>
+    </div>
 <#if methodList?has_content>
 
     <h3>Service methods</h3>
