@@ -20,9 +20,11 @@ public class CommentsWarningTest
     @Test
     public void unresolvedSeeTagReference()
     {
-        final String warning = "unresolved_see_tag_reference.zs:6:4: " +
-                "Documentation: Unresolved referenced symbol 'Unexisting' for type 'Test'!";
-        assertTrue(zserioWarnings.isPresent(warning));
+        assertTrue(zserioWarnings.isPresent("unresolved_see_tag_reference.zs:8:4: " +
+                "Documentation: Unresolved referenced symbol 'Unexisting'!"));
+
+        assertTrue(zserioWarnings.isPresent("unresolved_see_tag_reference.zs:15:4: " +
+                "Documentation: Unresolved referenced symbol 'Unexisting' for type 'Table'!"));
     }
 
     @Test
@@ -32,7 +34,7 @@ public class CommentsWarningTest
             "unused_field_comments.zs:11:11: Documentation comment is not used!"));
 
         assertTrue(zserioWarnings.isPresent(
-                "unused_field_comments.zs:55:45: Documentation comment is not used!"));
+            "unused_field_comments.zs:55:45: Documentation comment is not used!"));
 
         assertTrue(zserioWarnings.isPresent(
             "unused_field_comments.zs:61:45: Documentation comment is not used!"));
@@ -55,7 +57,7 @@ public class CommentsWarningTest
     @Test
     public void checkNumberOfWarnings()
     {
-        final int expectedNumberOfWarnings = 6;
+        final int expectedNumberOfWarnings = 7;
         assertEquals(expectedNumberOfWarnings, zserioWarnings.getCount());
     }
 

@@ -58,7 +58,7 @@ public class SymbolReference
      * Resolves the symbol reference.
      *
      * @param ownerPackage Zserio package in which the symbol reference is defined.
-     * @param ownerType ZserioType which is owner of the symbol reference.
+     * @param ownerType ZserioType which is owner of the symbol reference or null.
      */
     void resolve(Package ownerPackage, ZserioScopedType ownerType)
     {
@@ -69,6 +69,7 @@ public class SymbolReference
         if (referencedPackageSymbol == null)
         {
             // try if the last link component was not a package symbol (can be a field name or enumeration item)
+            final String symbolName = ZserioTypeUtil.getFullName(referencedPackageName, referencedName);
             final String referencedScopeSymbolName = referencedName;
             referencedName = referencedPackageNameBuilder.removeLastId();
             if (referencedName == null)
@@ -78,17 +79,14 @@ public class SymbolReference
             }
             else
             {
+                // try to resolve it again
                 referencedPackageName = getReferencedPackageName(ownerPackage);
                 referencedPackageSymbol = ownerPackage.getVisibleSymbol(ownerNode, referencedPackageName,
                         referencedName);
-
-                // this was our last attempt to resolve symbol type
-                if (!(referencedPackageSymbol instanceof ZserioScopedType))
-                {
-                    throw new ParserException(ownerNode, "Unresolved referenced symbol '" +
-                            ZserioTypeUtil.getFullName(referencedPackageName, referencedName) + "'!");
-                }
             }
+
+            if (!(referencedPackageSymbol instanceof ZserioScopedType))
+                throw new ParserException(ownerNode, "Unresolved referenced symbol '" + symbolName + "'!");
 
             final Scope referencedScope = ((ZserioScopedType)referencedPackageSymbol).getScope();
             referencedScopeSymbol = referencedScope.getSymbol(referencedScopeSymbolName);

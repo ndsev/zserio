@@ -53,7 +53,7 @@ public class DocTagSee extends AstNodeBase
      * Resolves the link symbol reference.
      *
      * @param ownerPackage Zserio package in which the symbol reference is defined.
-     * @param ownerType ZserioType which is owner of the symbol reference.
+     * @param ownerType ZserioType which is owner of the symbol reference or null.
      */
     void resolve(Package ownerPackage, ZserioScopedType ownerType)
     {

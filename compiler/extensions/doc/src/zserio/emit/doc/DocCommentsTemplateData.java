@@ -266,28 +266,23 @@ public class DocCommentsTemplateData
             public DocTagSeeData(TemplateDataContext context, DocTagSee docTagSee)
             {
                 final SymbolReference linkSymbolReference = docTagSee.getLinkSymbolReference();
+                final PackageSymbol referencedPackageSymbol = linkSymbolReference.getReferencedPackageSymbol();
+                final ScopeSymbol referencedScopeSymbol = linkSymbolReference.getReferencedScopeSymbol();
                 SymbolTemplateData symbolData;
-                if (linkSymbolReference == null)
+                if (referencedPackageSymbol == null)
                 {
                     // this can happen if see tag link is invalid
                     symbolData = new SymbolTemplateData("", "unknownLink", "Unknown link", null,
                             new ArrayList<SymbolTemplateData>());
                 }
+                else if (referencedScopeSymbol == null)
+                {
+                    symbolData = SymbolTemplateDataCreator.createData(context, referencedPackageSymbol);
+                }
                 else
                 {
-                    final PackageSymbol referencedPackageSymbol =
-                            linkSymbolReference.getReferencedPackageSymbol();
-                    final ScopeSymbol referencedScopeSymbol = linkSymbolReference.getReferencedScopeSymbol();
-
-                    if (referencedPackageSymbol instanceof ZserioType && referencedScopeSymbol != null)
-                    {
-                        symbolData = SymbolTemplateDataCreator.createData(context,
-                                (ZserioType)referencedPackageSymbol, referencedScopeSymbol);
-                    }
-                    else
-                    {
-                        symbolData = SymbolTemplateDataCreator.createData(context, referencedPackageSymbol);
-                    }
+                    symbolData = SymbolTemplateDataCreator.createData(context,
+                            (ZserioType)referencedPackageSymbol, referencedScopeSymbol);
                 }
 
                 final String alias = docTagSee.getLinkAlias();
