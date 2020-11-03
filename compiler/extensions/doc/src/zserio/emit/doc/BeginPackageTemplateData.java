@@ -78,7 +78,7 @@ public class BeginPackageTemplateData
         @Override
         public boolean equals(Object other)
         {
-            if (!(other instanceof PackageSymbol))
+            if (!(other instanceof PackageSymbolOverviewTemplateData))
                 return false;
 
             return (this == other) || compareTo((PackageSymbolOverviewTemplateData)other) == 0;
