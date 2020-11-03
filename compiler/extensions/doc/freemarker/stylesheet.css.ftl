@@ -4,8 +4,8 @@
 }
 h2.anchor, h3.anchor {
   padding-top: 0.75rem;
-  border-top: 3px solid rgb(0,0,0,0.1);
   scroll-margin-top: 3rem;
+  border-top: 3px solid rgba(0,0,0,0.1);
 }
 
 #header {
@@ -19,7 +19,7 @@ h2.anchor, h3.anchor {
   height: calc(100vh - 4rem);
   overflow-y: auto;
   position: sticky;
-  border-right: 1px solid rgba(0,0,0,.1);
+  border-right: 1px solid rgba(0,0,0,0.1);
 }
 
 #symbol_overview .nav-link {
@@ -27,6 +27,23 @@ h2.anchor, h3.anchor {
   padding-right: 1.5rem;
   padding-bottom: 0.125rem;
   padding-left: 0.5rem;
+}
+
+#overview_nav {
+  padding-top: 1rem;
+}
+
+#search_form {
+  padding: 1rem 15px;
+  margin-left: -15px;
+  margin-right: -15px;
+  /* bottom border across the whole column thanks to the padding-left/rigth and margin-left/right */
+  border-bottom: 1px solid rgba(0,0,0,0.1);
+}
+
+#search:focus {
+  border-color: rgba(0, 0, 0, 0.2);
+  box-shadow: 0 0 0 3px rgba(0,0,0,0.1);
 }
 
 #toc {
@@ -46,7 +63,7 @@ h2.anchor, h3.anchor {
 }
 
 #toc .nav .nav-link.active {
-  border-left: 1px solid rgba(0,0,0,.2);
+  border-left: 1px solid rgba(0,0,0,0.2);
 }
 
 h1 {
@@ -79,7 +96,7 @@ h2, h3 {
 .code {
   font-family: monospace;
   border-radius: 0.5rem;
-  background-color: rgb(0,0,0,0.05);
+  background-color: rgba(0,0,0,0.05);
   padding: 0.5rem;
   width: max-content;
   margin-top: 1rem;

@@ -19,12 +19,16 @@
   </head>
   <body>
     <header id="header" class="navbar navbar-dark bg-dark sticky-top">
-      <div class="navbar-brand">Zserio documentation for package ${symbol.name}</div>
+      <div class="navbar-brand">Documentation for package ${symbol.name}</div>
     </header>
     <div class="container-fluid">
       <div class="row">
         <div id="symbol_overview" class="col-2">
-          <nav class="nav flex-column">
+          <form id="search_form" role="search">
+            <input id="search" class="form-control" type="text" autocomplete="off" spellcheck="false"
+              placeholder="Search...">
+          </form>
+          <nav id="overview_nav" class="nav flex-column">
 <#list packages as pkg>
             <div>
               <@symbol_overview_package_link pkg.symbol symbol/>
@@ -39,7 +43,7 @@
 </#list>
           </nav>
         </div>
-        <main class="col pl-md-3" role="main">
+        <main class="col-8 pl-md-3" role="main">
           <h1 id="${symbol.htmlLink.htmlAnchor}" class="anchor">${symbol.name}</h1>
           <@doc_comments docComments 2, false/>
           <@imports importNodes/>
