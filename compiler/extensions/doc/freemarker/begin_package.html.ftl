@@ -23,23 +23,23 @@
     </header>
     <div class="container-fluid">
       <div class="row">
-        <div id="symbol_overview" class="col-2">
+        <div id="left_panel" class="col-2">
           <form id="search_form" role="search">
             <input id="search" class="form-control" type="text" autocomplete="off" spellcheck="false"
               placeholder="Search...">
           </form>
-          <nav id="overview_nav" class="nav flex-column">
+          <nav id="symbol_overview" class="nav flex-column">
 <#list packages as pkg>
-            <div>
-              <@symbol_overview_package_link pkg.symbol symbol/>
+            <nav class="nav-package">
+              <@symbol_overview_package_link pkg.symbol symbol/><#nt>
     <#if pkg.packageSymbols?has_content>
-              <nav class="nav flex-column collapse<#if symbol.name == pkg.symbol.name>.active</#if>">
+              <nav class="nav nav-symbols flex-column<#if symbol.name == pkg.symbol.name> active</#if>">
         <#list pkg.packageSymbols as packageSymbol>
-                <@symbol_overview_link packageSymbol/>
+                <@symbol_overview_link packageSymbol/><#nt>
         </#list>
               </nav>
     </#if>
-            </div>
+            </nav>
 </#list>
           </nav>
         </div>

@@ -15,12 +15,12 @@
 </#macro>
 
 <#macro symbol_overview_package_link symbol currentSymbol>
-    <a class="nav-link<#if symbol.name == currentSymbol.name> active</#if>" <#t>
+    <a class="nav-link nav-link-package<#if symbol.name == currentSymbol.name> active</#if>" <#t>
       <@symbol_reference_href_title symbol/>>${symbol.name}</a><#t>
 </#macro>
 
 <#macro symbol_overview_link symbol>
-    <a class="nav-link" <@symbol_reference_href_title symbol/>>${symbol.name}</a><#t>
+    <a class="nav-link nav-link-symbol" <@symbol_reference_href_title symbol/>>${symbol.name}</a><#t>
 </#macro>
 
 <#macro symbol_toc_link symbol>
