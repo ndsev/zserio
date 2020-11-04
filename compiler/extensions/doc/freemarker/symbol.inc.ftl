@@ -19,21 +19,15 @@
       <@symbol_reference_href_title symbol/>>${symbol.name}</a><#t>
 </#macro>
 
-<#macro symbol_overview_link symbol templateParameters>
-    <a class="nav-link" <@symbol_reference_href_title symbol/>>${symbol.name}<#t>
-      <@symbol_template_parameters templateParameters/></a><#t>
+<#macro symbol_overview_link symbol>
+    <a class="nav-link" <@symbol_reference_href_title symbol/>>${symbol.name}</a><#t>
 </#macro>
 
-<#macro symbol_toc_package_link symbol>
+<#macro symbol_toc_link symbol>
     <a class="nav-link" href="#${symbol.htmlLink.htmlAnchor}" title="${symbol.htmlTitle}">${symbol.name}</a><#t>
 </#macro>
 
-<#macro symbol_toc_link symbol templateParameters>
-    <a class="nav-link" href="#${symbol.htmlLink.htmlAnchor}" title="${symbol.htmlTitle}">${symbol.name}<#t>
-      <@symbol_template_parameters templateParameters/></a><#t>
-</#macro>
-
-<#macro symbol_template_parameters templateParametes>
+<#macro symbol_template_parameters templateParameters>
     <#if templateParameters?has_content>
         &lt;<#t>
         <#list templateParameters as templateParameter>

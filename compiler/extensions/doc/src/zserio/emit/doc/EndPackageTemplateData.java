@@ -15,7 +15,7 @@ public class EndPackageTemplateData
         symbol = SymbolTemplateDataCreator.createData(context, pkg);
         docComments = new DocCommentsTemplateData(context, pkg.getTrailingDocComments());
         for (AstNode packageSymbol : packageSymbols)
-            this.packageSymbols.add(new PackageSymbolTemplateData(context, packageSymbol));
+            this.packageSymbols.add(SymbolTemplateDataCreator.createData(context, packageSymbol));
     }
 
     public SymbolTemplateData getSymbol()
@@ -28,7 +28,7 @@ public class EndPackageTemplateData
         return docComments;
     }
 
-    public Iterable<PackageSymbolTemplateData> getPackageSymbols()
+    public Iterable<SymbolTemplateData> getPackageSymbols()
     {
         return packageSymbols;
     }
@@ -36,5 +36,5 @@ public class EndPackageTemplateData
     private final SymbolTemplateData symbol;
     private final DocCommentsTemplateData docComments;
     // we want to have symbols in the order of definition in ToC
-    private final List<PackageSymbolTemplateData> packageSymbols = new ArrayList<PackageSymbolTemplateData>();
+    private final List<SymbolTemplateData> packageSymbols = new ArrayList<SymbolTemplateData>();
 }

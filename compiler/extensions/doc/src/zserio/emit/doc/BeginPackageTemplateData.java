@@ -66,13 +66,13 @@ public class BeginPackageTemplateData
         {
             symbol = SymbolTemplateDataCreator.createData(context, pkg);
             for (AstNode packageSymbol : packageSymbols)
-                this.packageSymbols.add(new PackageSymbolTemplateData(context, packageSymbol));
+                this.packageSymbols.add(SymbolTemplateDataCreator.createData(context, packageSymbol));
         }
 
         @Override
         public int compareTo(PackageSymbolOverviewTemplateData other)
         {
-            return symbol.getName().compareTo(other.symbol.getName());
+            return symbol.compareTo(other.symbol);
         }
 
         @Override
@@ -87,7 +87,7 @@ public class BeginPackageTemplateData
         @Override
         public int hashCode()
         {
-            return symbol.getName().hashCode();
+            return symbol.hashCode();
         }
 
         public SymbolTemplateData getSymbol()
@@ -95,14 +95,14 @@ public class BeginPackageTemplateData
             return symbol;
         }
 
-        public Iterable<PackageSymbolTemplateData> getPackageSymbols()
+        public Iterable<SymbolTemplateData> getPackageSymbols()
         {
             return packageSymbols;
         }
 
         private final SymbolTemplateData symbol;
         // we want to have sorted symbols in the symbol overview
-        private final Set<PackageSymbolTemplateData> packageSymbols = new TreeSet<PackageSymbolTemplateData>();
+        private final Set<SymbolTemplateData> packageSymbols = new TreeSet<SymbolTemplateData>();
     }
 
     public static class ImportTemplateData

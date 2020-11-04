@@ -5,9 +5,9 @@
         </main>
         <div id="toc" class="col-2 order-3">
           <nav class="nav flex-column">
-            <@symbol_toc_package_link symbol/>
+            <@symbol_toc_link symbol/>
 <#list packageSymbols as packageSymbol>
-            <@symbol_toc_link packageSymbol.symbol packageSymbol.templateParameters/>
+            <@symbol_toc_link packageSymbol/>
 </#list>
           </nav>
         </div>

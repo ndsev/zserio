@@ -35,7 +35,7 @@
     <#if pkg.packageSymbols?has_content>
               <nav class="nav flex-column collapse<#if symbol.name == pkg.symbol.name>.active</#if>">
         <#list pkg.packageSymbols as packageSymbol>
-                <@symbol_overview_link packageSymbol.symbol packageSymbol.templateParameters/>
+                <@symbol_overview_link packageSymbol/>
         </#list>
               </nav>
     </#if>
