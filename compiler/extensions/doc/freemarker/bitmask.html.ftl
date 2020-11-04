@@ -7,9 +7,9 @@
     <h2 class="anchor" id="${symbol.htmlLink.htmlAnchor}">
 <#if docComments.isDeprecated>
       <span class="deprecated">(deprecated) </span>
-      <del><i>bitmask</i> ${symbol.name}</del>
+      <del><i>Bitmask</i> ${symbol.name}</del>
 <#else>
-      <i>bitmask</i> ${symbol.name}
+      <i>Bitmask</i> ${symbol.name}
 </#if>
     </h2>
     <@doc_comments docComments 2, false/>

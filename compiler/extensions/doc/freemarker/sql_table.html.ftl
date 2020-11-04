@@ -4,7 +4,7 @@
 <#include "usedby.inc.ftl">
 <#include "svg_diagram.inc.ftl">
 <#assign sqlTableHeading>
-    <i><#if virtualTableUsing?has_content>virtual </#if>SQL Table</i><#t>
+    <#if virtualTableUsing?has_content>virtual </#if><i>SQL Table</i><#t>
       <#if templateParameters?has_content> template</#if> ${symbol.name}<#t>
 </#assign>
 

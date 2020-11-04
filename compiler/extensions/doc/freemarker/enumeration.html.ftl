@@ -9,7 +9,7 @@
       <span class="deprecated">(deprecated) </span>
       <del>
 </#if>
-        <i>enum</i> ${symbol.name}
+        <i>Enumeration</i> ${symbol.name}
 <#if docComments.isDeprecated>
       </del>
 </#if>
