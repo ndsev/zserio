@@ -1,9 +1,9 @@
 <#ftl output_format="HTML">
 <#macro symbol_reference symbol suffix="" attrs="">
     <#if symbol.htmlLink??>
-        <a class="${symbol.htmlClass}" <@symbol_reference_href_title symbol/> ${attrs?no_esc}>${symbol.name}${suffix}</a><#t>
+        <a <@symbol_reference_href_title symbol/> ${attrs?no_esc}>${symbol.name}${suffix}</a><#t>
     <#else>
-        <span class="${symbol.htmlClass}" <@symbol_reference_href_title symbol/>>${symbol.name}</span><#t>
+        <span <@symbol_reference_href_title symbol/>>${symbol.name}</span><#t>
     </#if>
     <#if symbol.templateArguments?has_content>
         &lt;<#t>
@@ -24,8 +24,12 @@
       <@symbol_template_parameters templateParameters/></a><#t>
 </#macro>
 
+<#macro symbol_toc_package_link symbol>
+    <a class="nav-link" href="#${symbol.htmlLink.htmlAnchor}" title="${symbol.htmlTitle}">${symbol.name}</a><#t>
+</#macro>
+
 <#macro symbol_toc_link symbol templateParameters>
-    <a class="nav-link" href="#${symbol.htmlLink.htmlAnchor}">${symbol.name}<#t>
+    <a class="nav-link" href="#${symbol.htmlLink.htmlAnchor}" title="${symbol.htmlTitle}">${symbol.name}<#t>
       <@symbol_template_parameters templateParameters/></a><#t>
 </#macro>
 

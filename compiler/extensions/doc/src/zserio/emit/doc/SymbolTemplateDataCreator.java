@@ -2,11 +2,11 @@ package zserio.emit.doc;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
 
 import zserio.ast.AstNode;
 import zserio.ast.PackageName;
 import zserio.ast.ZserioType;
+import zserio.ast.Package;
 
 class SymbolTemplateDataCreator
 {
@@ -20,21 +20,30 @@ class SymbolTemplateDataCreator
 
         if (packageName == null)
         {
-            final String htmlClass = "withoutLink";
             final String htmlTitle = typeName;
-
-            return new SymbolTemplateData(name, htmlClass, htmlTitle, templateArguments);
+            return new SymbolTemplateData(name, htmlTitle, templateArguments);
         }
         else
         {
-            final String htmlClass = createHtmlClass(typeName);
             final String htmlTitle = createHtmlTitle(typeName, packageName);
             final String htmlLinkPage = createHtmlLinkPage(context, packageName);
             final String htmlLinkAnchor = createHtmlAnchor(typeName, name);
 
-            return new SymbolTemplateData(name, htmlClass, htmlTitle, htmlLinkPage, htmlLinkAnchor,
-                    templateArguments);
+            return new SymbolTemplateData(name, htmlTitle, htmlLinkPage, htmlLinkAnchor, templateArguments);
         }
+    }
+
+    public static SymbolTemplateData createData(TemplateDataContext context, Package pkg)
+    {
+        final String name = AstNodeNameMapper.getName(pkg);
+        final String typeName = AstNodeTypeNameMapper.getTypeName(pkg);
+        final String htmlTitle = typeName + " " + name;
+        final PackageName packageName = AstNodePackageNameMapper.getPackageName(pkg);
+        final String htmlLinkPage = createHtmlLinkPage(context, packageName);
+        final String htmlLinkAnchor = createHtmlAnchor(typeName, name);
+
+        return new SymbolTemplateData(name, htmlTitle, htmlLinkPage, htmlLinkAnchor,
+                new ArrayList<SymbolTemplateData>());
     }
 
     public static SymbolTemplateData createData(TemplateDataContext context, ZserioType zserioType,
@@ -47,7 +56,6 @@ class SymbolTemplateDataCreator
             AstNode member, String memberName)
     {
         final String memberTypeName = AstNodeTypeNameMapper.getTypeName(member);
-        final String htmlClass = createHtmlClass(memberTypeName);
 
         final PackageName zserioPackageName = AstNodePackageNameMapper.getPackageName(zserioType);
         final String htmlTitle = createHtmlTitle(memberTypeName, zserioPackageName);
@@ -59,16 +67,8 @@ class SymbolTemplateDataCreator
         final String htmlLinkAnchor = createHtmlAnchor(zserioTypeName, zserioName) + "_" +
                 createHtmlAnchor(memberTypeName, memberName);
 
-        return new SymbolTemplateData(memberName, htmlClass, htmlTitle, htmlLinkPage, htmlLinkAnchor,
+        return new SymbolTemplateData(memberName, htmlTitle, htmlLinkPage, htmlLinkAnchor,
                 new ArrayList<SymbolTemplateData>());
-    }
-
-    private static String createHtmlClass(String typeName)
-    {
-        final String htmlClassPrefix = typeName.substring(0, 1).toLowerCase(Locale.ENGLISH) +
-                typeName.substring(1);
-
-        return htmlClassPrefix + "Link";
     }
 
     private static String createHtmlTitle(String typeName, PackageName packageName)
@@ -85,6 +85,7 @@ class SymbolTemplateDataCreator
 
     private static String createHtmlAnchor(String typeName, String name)
     {
-        return typeName + "_" + name;
+        // replace needed due to multi-level packages
+        return typeName + "_" + name.replace('.', '_');
     }
 }

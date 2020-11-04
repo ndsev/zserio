@@ -5,7 +5,7 @@
         </main>
         <div id="toc" class="col-2 order-3">
           <nav class="nav flex-column">
-            <a class="nav-link" href="#${symbol.htmlLink.htmlAnchor}">${symbol.name}</a>
+            <@symbol_toc_package_link symbol/>
 <#list packageSymbols as packageSymbol>
             <@symbol_toc_link packageSymbol.symbol packageSymbol.templateParameters/>
 </#list>

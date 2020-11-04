@@ -4,23 +4,21 @@ import java.util.List;
 
 public class SymbolTemplateData implements Comparable<SymbolTemplateData>
 {
-    public SymbolTemplateData(String name, String htmlClass, String htmlTitle, String htmlLinkPage,
+    public SymbolTemplateData(String name, String htmlTitle, String htmlLinkPage,
             String htmlLinkAnchor, List<SymbolTemplateData> templateArguments)
     {
-        this(name, htmlClass, htmlTitle, new HtmlLink(htmlLinkPage, htmlLinkAnchor), templateArguments);
+        this(name, htmlTitle, new HtmlLink(htmlLinkPage, htmlLinkAnchor), templateArguments);
     }
 
-    public SymbolTemplateData(String name, String htmlClass, String htmlTitle,
-            List<SymbolTemplateData> templateArguments)
+    public SymbolTemplateData(String name, String htmlTitle, List<SymbolTemplateData> templateArguments)
     {
-        this(name, htmlClass, htmlTitle, null, templateArguments);
+        this(name, htmlTitle, null, templateArguments);
     }
 
-    public SymbolTemplateData(String name, String htmlClass, String htmlTitle, HtmlLink htmlLink,
+    public SymbolTemplateData(String name, String htmlTitle, HtmlLink htmlLink,
             List<SymbolTemplateData> templateArguments)
     {
         this.name = name;
-        this.htmlClass = htmlClass;
         this.htmlTitle = htmlTitle;
         this.htmlLink = htmlLink;
         this.templateArguments = templateArguments;
@@ -29,7 +27,6 @@ public class SymbolTemplateData implements Comparable<SymbolTemplateData>
     public SymbolTemplateData(String alias, SymbolTemplateData other)
     {
         this.name = alias;
-        this.htmlClass = other.htmlClass;
         this.htmlTitle = other.htmlTitle;
         this.htmlLink = other.htmlLink;
         this.templateArguments = other.templateArguments;
@@ -67,11 +64,6 @@ public class SymbolTemplateData implements Comparable<SymbolTemplateData>
     public String getName()
     {
         return name;
-    }
-
-    public String getHtmlClass()
-    {
-        return htmlClass;
     }
 
     public String getHtmlTitle()
@@ -112,7 +104,6 @@ public class SymbolTemplateData implements Comparable<SymbolTemplateData>
     }
 
     private final String name;
-    private final String htmlClass;
     private final String htmlTitle;
     private final HtmlLink htmlLink;
     private final List<SymbolTemplateData> templateArguments;
