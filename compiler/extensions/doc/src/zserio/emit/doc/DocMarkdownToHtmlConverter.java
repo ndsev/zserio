@@ -25,7 +25,7 @@ import org.commonmark.ext.gfm.tables.TablesExtension;
 
 class DocMarkdownToHtmlConverter
 {
-    static String convert(ResourceManager resourceManager, AstLocation location, String markdown)
+    static String convert(DocResourceManager docResourceManager, AstLocation location, String markdown)
     {
         final List<Extension> extensions = Arrays.asList(AutolinkExtension.create(),
                 HeadingAnchorExtension.create(), TablesExtension.create());
@@ -41,7 +41,7 @@ class DocMarkdownToHtmlConverter
                             @Override
                             public NodeRenderer create(HtmlNodeRendererContext context)
                             {
-                                return new ResourcesRenderer(context, resourceManager, location);
+                                return new ResourcesRenderer(context, docResourceManager, location);
                             }
                         }
                 )
@@ -55,10 +55,10 @@ class DocMarkdownToHtmlConverter
     private static class ResourcesRenderer extends CoreHtmlNodeRenderer
     {
         ResourcesRenderer(HtmlNodeRendererContext context,
-                ResourceManager resourceManager, AstLocation location)
+                DocResourceManager docResourceManager, AstLocation location)
         {
             super(context);
-            this.resourceManager = resourceManager;
+            this.docResourceManager = docResourceManager;
             this.location = location;
         }
 
@@ -73,7 +73,7 @@ class DocMarkdownToHtmlConverter
         {
             try
             {
-                final String mappedResource = resourceManager.addResource(link.getDestination());
+                final String mappedResource = docResourceManager.addResource(link.getDestination());
                 link.setDestination(mappedResource);
             }
             catch (Exception e)
@@ -89,7 +89,7 @@ class DocMarkdownToHtmlConverter
         {
             try
             {
-                final String mappedResource = resourceManager.addResource(image.getDestination());
+                final String mappedResource = docResourceManager.addResource(image.getDestination());
                 image.setDestination(mappedResource);
             }
             catch (Exception e)
@@ -100,7 +100,7 @@ class DocMarkdownToHtmlConverter
             super.visit(image);
         }
 
-        private final ResourceManager resourceManager;
+        private final DocResourceManager docResourceManager;
         private final AstLocation location;
     }
 }

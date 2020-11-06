@@ -21,6 +21,7 @@ class StylesheetEmitter
                 false);
     }
 
-    static final String STYLESHEET_FILE_NAME = "stylesheet.css";
+    static final String STYLESHEET_FILE_NAME = "css/stylesheet.css";
+
     private static final String STYLESHEET_TEMPLATE_SOURCE_NAME = "stylesheet.css.ftl";
 }

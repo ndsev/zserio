@@ -14,6 +14,10 @@ h2.anchor, h3.anchor {
   padding-bottom: 0.5rem;
 }
 
+#header .logo {
+  height: 1rem;
+}
+
 #left_panel {
   top: 4rem;
   height: calc(100vh - 4rem);

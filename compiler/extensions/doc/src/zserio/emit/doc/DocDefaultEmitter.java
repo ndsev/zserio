@@ -12,7 +12,7 @@ abstract class DocDefaultEmitter extends DefaultTreeWalker
         this.withSvgDiagrams = withSvgDiagrams;
         this.usedByCollector = usedByCollector;
 
-        resourceManager = new ResourceManager(extensionParameters.getPathName(),
+        docResourceManager = new DocResourceManager(extensionParameters.getPathName(),
                 getFileNameExtension(extensionParameters.getFileName()), outputPathName,
                 HTML_CONTENT_DIRECTORY);
     }
@@ -38,9 +38,9 @@ abstract class DocDefaultEmitter extends DefaultTreeWalker
         return usedByCollector;
     }
 
-    protected ResourceManager getResourceManager()
+    protected DocResourceManager getResourceManager()
     {
-        return resourceManager;
+        return docResourceManager;
     }
 
     // TODO[Mi-L@]: Provide by core?!
@@ -61,5 +61,5 @@ abstract class DocDefaultEmitter extends DefaultTreeWalker
     private final String outputPathName;
     private final boolean withSvgDiagrams;
     private final UsedByCollector usedByCollector;
-    private final ResourceManager resourceManager;
+    private final DocResourceManager docResourceManager;
 }

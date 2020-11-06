@@ -33,6 +33,7 @@ spotbugs.home_dir             - Location of the spotbugs tool. If not set, spotb
     <property name="zserio_core.jar_file" value="${zserio_extensions.build_dir}/../core/jar/zserio_core.jar"/>
 
     <property name="zserio_doc.src_dir" value="${zserio_doc.base_dir}/src"/>
+    <property name="zserio_doc.runtime_dir" value="${zserio_doc.base_dir}/runtime"/>
     <property name="zserio_doc.classes_dir" value="${zserio_doc.build_dir}/classes"/>
     <property name="zserio_doc.spotbugs.out_dir" value="${zserio_doc.build_dir}/spotbugs"/>
 
@@ -111,8 +112,8 @@ spotbugs.home_dir             - Location of the spotbugs tool. If not set, spotb
             <fileset dir="${zserio_doc.classes_dir}">
                 <include name="zserio/**"/>
             </fileset>
-            <zipfileset dir="${zserio_doc.base_dir}/freemarker" includes="*.ftl"
-                prefix="freemarker/doc"/>
+            <zipfileset dir="${zserio_doc.base_dir}/freemarker" includes="*.ftl" prefix="freemarker/doc"/>
+            <zipfileset dir="${zserio_doc.runtime_dir}" prefix="zserio/emit/doc/runtime"/>
             <manifest>
                 <attribute name="Class-Path" value="${3rdparty.jar_files}"/>
                 <attribute name="Implementation-Version" value="${zserio_doc.version}"/>

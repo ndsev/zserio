@@ -77,13 +77,13 @@ public class DocCommentsTemplateData
                 isDeprecated = false;
                 final DocCommentMarkdown docCommentMarkdown = (DocCommentMarkdown)docComment;
 
-                final ResourceManager resourceManager = context.getResourceManager();
-                final Path origCwd = resourceManager.getCurrentSourceDir();
-                resourceManager.setCurrentSourceDir(
+                final DocResourceManager docResourceManager = context.getDocResourceManager();
+                final Path origCwd = docResourceManager.getCurrentSourceDir();
+                docResourceManager.setCurrentSourceDir(
                         Paths.get(docComment.getLocation().getFileName()).getParent());
-                markdownHtml = DocMarkdownToHtmlConverter.convert(resourceManager,
+                markdownHtml = DocMarkdownToHtmlConverter.convert(docResourceManager,
                         docCommentMarkdown.getLocation(), docCommentMarkdown.getMarkdown());
-                resourceManager.setCurrentSourceDir(origCwd);
+                docResourceManager.setCurrentSourceDir(origCwd);
             }
             else if (docComment instanceof DocCommentClassic)
             {

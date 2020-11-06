@@ -80,6 +80,9 @@ public class DocExtension implements Extension
         final SymbolCollector symbolCollector = new SymbolCollector();
         rootNode.walk(symbolCollector);
 
+        // emit external files needed by HTML during runtime
+        HtmlRuntimeEmitter.emit(outputDir);
+
         // emit CSS styles file
         StylesheetEmitter.emit(outputDir);
 

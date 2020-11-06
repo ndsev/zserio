@@ -16,9 +16,9 @@ import zserio.ast.AstLocation;
 import zserio.tools.HashUtil;
 import zserio.tools.StringJoinUtil;
 
-class ResourceManager
+class DocResourceManager
 {
-    public ResourceManager(String sourceRoot, String sourceExtension, String outputRoot,
+    public DocResourceManager(String sourceRoot, String sourceExtension, String outputRoot,
             String htmlContentDirectory)
     {
         this.sourceRoot = Paths.get(sourceRoot != null ? sourceRoot : ".").toAbsolutePath();
@@ -270,7 +270,7 @@ class ResourceManager
     private final HashMap<LocalResource, LocalResource> resources = new HashMap<LocalResource, LocalResource>();
     private final HashSet<LocalResource> mappedResources = new HashSet<LocalResource>();
 
-    private final static String RESOURCES_DIR = "resources";
+    private final static String RESOURCES_DIR = "resources/doc";
     private final static String LOCAL_FILE_SCHEME = "file";
     private final static String MARKDOWN_EXTENSION = ".md";
     private final static String HTML_EXTENSION = ".html";

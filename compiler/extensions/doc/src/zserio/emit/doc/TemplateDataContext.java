@@ -5,12 +5,13 @@ import zserio.emit.common.ExpressionFormatter;
 class TemplateDataContext
 {
     public TemplateDataContext(boolean withSvgDiagrams, UsedByCollector usedByCollector,
-            ResourceManager resourceManager, String htmlContentDirectory, String symbolCollaborationDirectory)
+            DocResourceManager docResourceManager, String htmlContentDirectory,
+            String symbolCollaborationDirectory)
     {
         this.withSvgDiagrams = withSvgDiagrams;
         this.usedByCollector = usedByCollector;
         this.docExpressionFormatter = new ExpressionFormatter(new DocExpressionFormattingPolicy());
-        this.resourceManager = resourceManager;
+        this.docResourceManager = docResourceManager;
         this.htmlContentDirectory = htmlContentDirectory;
         this.symbolCollaborationDirectory = symbolCollaborationDirectory;
     }
@@ -30,9 +31,9 @@ class TemplateDataContext
         return docExpressionFormatter;
     }
 
-    public ResourceManager getResourceManager()
+    public DocResourceManager getDocResourceManager()
     {
-        return resourceManager;
+        return docResourceManager;
     }
 
     public String getHtmlContentDirectory()
@@ -48,7 +49,7 @@ class TemplateDataContext
     private final boolean withSvgDiagrams;
     private final UsedByCollector usedByCollector;
     private final ExpressionFormatter docExpressionFormatter;
-    private final ResourceManager resourceManager;
+    private final DocResourceManager docResourceManager;
     private final String htmlContentDirectory;
     private final String symbolCollaborationDirectory;
 }
