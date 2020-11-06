@@ -14,9 +14,9 @@
       </div><!-- row -->
     </div><!-- container -->
 
-    <script src="../js/jquery-3.5.1.slim.min.js"></script>
-    <script src="../js/bootstrap.bundle.min.js"></script>
-    <script src="../js/anchor.min.js"></script>
+    <script src="${jsDirectory}/jquery-3.5.1.slim.min.js"></script>
+    <script src="${jsDirectory}/bootstrap.bundle.min.js"></script>
+    <script src="${jsDirectory}/anchor.min.js"></script>
     <script>
       // anchorjs setup
       anchors.add(".anchor");

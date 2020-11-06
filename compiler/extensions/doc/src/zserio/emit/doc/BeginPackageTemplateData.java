@@ -17,6 +17,8 @@ public class BeginPackageTemplateData
     public BeginPackageTemplateData(TemplateDataContext context, Package pkg,
             Map<Package, List<AstNode>> nodesMap) throws ZserioEmitException
     {
+        cssDirectory = context.getCssDirectory();
+        resourcesDirectory = context.getResourcesDirectory();
         packageAnchor = AstNodeTypeNameMapper.getTypeName(pkg);
         symbol = SymbolTemplateDataCreator.createData(context, pkg);
         docComments = new DocCommentsTemplateData(context, pkg.getDocComments());
@@ -26,6 +28,16 @@ public class BeginPackageTemplateData
 
         for (Map.Entry<Package, List<AstNode>> entry : nodesMap.entrySet())
             packages.add(new PackageSymbolOverviewTemplateData(context, entry.getKey(), entry.getValue()));
+    }
+
+    public String getCssDirectory()
+    {
+        return cssDirectory;
+    }
+
+    public String getResourcesDirectory()
+    {
+        return resourcesDirectory;
     }
 
     public String getStylesheetName()
@@ -136,6 +148,8 @@ public class BeginPackageTemplateData
         private final SymbolTemplateData importedSymbol;
     };
 
+    private final String cssDirectory;
+    private final String resourcesDirectory;
     private final String packageAnchor;
     private final SymbolTemplateData symbol;
     private final DocCommentsTemplateData docComments;

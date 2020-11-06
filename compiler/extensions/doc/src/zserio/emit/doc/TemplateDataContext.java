@@ -1,19 +1,37 @@
 package zserio.emit.doc;
 
+import java.io.File;
+
 import zserio.emit.common.ExpressionFormatter;
+import zserio.tools.StringJoinUtil;
 
 class TemplateDataContext
 {
     public TemplateDataContext(boolean withSvgDiagrams, UsedByCollector usedByCollector,
-            DocResourceManager docResourceManager, String htmlContentDirectory,
-            String symbolCollaborationDirectory)
+            DocResourceManager docResourceManager, String htmlRootDirectory)
+    {
+        this(withSvgDiagrams, usedByCollector, docResourceManager, htmlRootDirectory, "");
+    }
+
+    public TemplateDataContext(boolean withSvgDiagrams, UsedByCollector usedByCollector,
+            DocResourceManager docResourceManager, String htmlRootDirectory,
+            String htmlCurrentDirectory)
     {
         this.withSvgDiagrams = withSvgDiagrams;
         this.usedByCollector = usedByCollector;
         this.docExpressionFormatter = new ExpressionFormatter(new DocExpressionFormattingPolicy());
         this.docResourceManager = docResourceManager;
-        this.htmlContentDirectory = htmlContentDirectory;
-        this.symbolCollaborationDirectory = symbolCollaborationDirectory;
+
+        contentDirectory = getHtmlDirectory(htmlRootDirectory, htmlCurrentDirectory,
+                DocDefaultEmitter.CONTENT_DIRECTORY);
+        cssDirectory = getHtmlDirectory(htmlRootDirectory, htmlCurrentDirectory,
+                DocDefaultEmitter.CSS_DIRECTORY);
+        jsDirectory = getHtmlDirectory(htmlRootDirectory, htmlCurrentDirectory,
+                DocDefaultEmitter.JS_DIRECTORY);
+        resourcesDirectory = getHtmlDirectory(htmlRootDirectory, htmlCurrentDirectory,
+                DocDefaultEmitter.RESOURCES_DIRECTORY);
+        symbolCollaborationDirectory = getHtmlDirectory(htmlRootDirectory, htmlCurrentDirectory,
+                DocDefaultEmitter.SYMBOL_COLLABORATION_DIRECTORY);
     }
 
     public boolean getWithSvgDiagrams()
@@ -36,9 +54,24 @@ class TemplateDataContext
         return docResourceManager;
     }
 
-    public String getHtmlContentDirectory()
+    public String getContentDirectory()
     {
-        return htmlContentDirectory;
+        return contentDirectory;
+    }
+
+    public String getCssDirectory()
+    {
+        return cssDirectory;
+    }
+
+    public String getJsDirectory()
+    {
+        return jsDirectory;
+    }
+
+    public String getResourcesDirectory()
+    {
+        return resourcesDirectory;
     }
 
     public String getSymbolCollaborationDirectory()
@@ -46,10 +79,22 @@ class TemplateDataContext
         return symbolCollaborationDirectory;
     }
 
+    private static String getHtmlDirectory(String htmlRootDirectory, String htmlCurrentDirectory,
+            String htmlSubdirectory)
+    {
+        if (htmlSubdirectory.equals(htmlCurrentDirectory))
+            return ".";
+
+        return StringJoinUtil.joinStrings(htmlRootDirectory, htmlSubdirectory, File.separator);
+    }
+
     private final boolean withSvgDiagrams;
     private final UsedByCollector usedByCollector;
     private final ExpressionFormatter docExpressionFormatter;
     private final DocResourceManager docResourceManager;
-    private final String htmlContentDirectory;
+    private final String contentDirectory;
+    private final String cssDirectory;
+    private final String jsDirectory;
+    private final String resourcesDirectory;
     private final String symbolCollaborationDirectory;
 }

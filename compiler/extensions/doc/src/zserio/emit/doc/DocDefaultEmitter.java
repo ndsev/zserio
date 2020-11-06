@@ -13,8 +13,7 @@ abstract class DocDefaultEmitter extends DefaultTreeWalker
         this.usedByCollector = usedByCollector;
 
         docResourceManager = new DocResourceManager(extensionParameters.getPathName(),
-                getFileNameExtension(extensionParameters.getFileName()), outputPathName,
-                HTML_CONTENT_DIRECTORY);
+                getFileNameExtension(extensionParameters.getFileName()), outputPathName, CONTENT_DIRECTORY);
     }
 
     @Override
@@ -53,9 +52,13 @@ abstract class DocDefaultEmitter extends DefaultTreeWalker
         return "";
     }
 
+    static final String CONTENT_DIRECTORY = "content";
+    static final String CSS_DIRECTORY = "css";
+    static final String JS_DIRECTORY = "js";
+    static final String RESOURCES_DIRECTORY = "resources";
+    static final String SYMBOL_COLLABORATION_DIRECTORY = "diagrams";
+
     protected static final String DOC_TEMPLATE_LOCATION = "doc/";
-    protected static final String HTML_CONTENT_DIRECTORY = "content";
-    protected static final String SYMBOL_COLLABORATION_DIRECTORY = "symbol_collaboration";
     protected static final String DEFAULT_PACKAGE_FILE_NAME = "[default package]";
 
     private final String outputPathName;

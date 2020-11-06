@@ -35,16 +35,16 @@ class PackageEmitter extends HtmlDefaultEmitter
 
         this.nodesMap = symbolCollector.getNodesMap();
 
-        final String directoryPrefix = ".." + File.separator;
-        context = new TemplateDataContext(getWithSvgDiagrams(), getUsedByCollector(), getResourceManager(), ".",
-                directoryPrefix + SYMBOL_COLLABORATION_DIRECTORY);
+        final String htmlRootDirectory = "..";
+        context = new TemplateDataContext(getWithSvgDiagrams(), getUsedByCollector(), getResourceManager(),
+                htmlRootDirectory, CONTENT_DIRECTORY);
     }
 
     @Override
     public void beginPackage(Package pkg) throws ZserioEmitException
     {
         final PackageName packageName = pkg.getPackageName();
-        final String packageHtmlLink = getPackageHtmlLink(packageName, HTML_CONTENT_DIRECTORY);
+        final String packageHtmlLink = getPackageHtmlLink(packageName, CONTENT_DIRECTORY);
         final File outputFile = new File(getOutputPathName(), packageHtmlLink);
         FileUtil.createOutputDirectory(outputFile);
         writer = FileUtil.createWriter(outputFile);

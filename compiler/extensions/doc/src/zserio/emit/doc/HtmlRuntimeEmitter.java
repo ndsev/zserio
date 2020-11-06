@@ -23,7 +23,10 @@ class HtmlRuntimeEmitter
     {
         try
         {
-            final String[] jarRuntimeSubdirs = {CSS_SUBDIR, JS_SUBDIR, RESOURCES_SUBDIR};
+            final String[] jarRuntimeSubdirs = {
+                    DocDefaultEmitter.CSS_DIRECTORY,
+                    DocDefaultEmitter.JS_DIRECTORY,
+                    DocDefaultEmitter.RESOURCES_DIRECTORY};
             for (String jarRuntimeSubdir : jarRuntimeSubdirs)
             {
                 final List<String> jarResources = getJarRuntimeResources(jarRuntimeSubdir);
@@ -110,7 +113,4 @@ class HtmlRuntimeEmitter
     }
 
     private static String JAR_RUNTIME_DIR = "zserio/emit/doc/runtime";
-    private static String CSS_SUBDIR = "css";
-    private static String JS_SUBDIR = "js";
-    private static String RESOURCES_SUBDIR = "resources";
 }

@@ -16,8 +16,10 @@ class IndexEmitter extends HtmlDefaultEmitter
             UsedByCollector usedByCollector)
     {
         super(outputPathName, extensionParameters, withSvgDiagrams, usedByCollector);
+
+        final String htmlRootDirectory = ".";
         context = new TemplateDataContext(getWithSvgDiagrams(), getUsedByCollector(), getResourceManager(),
-                "content", SYMBOL_COLLABORATION_DIRECTORY);
+                htmlRootDirectory);
     }
 
     @Override
@@ -35,8 +37,9 @@ class IndexEmitter extends HtmlDefaultEmitter
             rootPackage = pkg;
     }
 
-    private final TemplateDataContext context;
-    private Package rootPackage = null;
     private static final String INDEX_FILE_NAME = "index.html";
     private static final String INDEX_TEMPLATE_SOURCE_NAME = "index.html.ftl";
+
+    private final TemplateDataContext context;
+    private Package rootPackage = null;
 }

@@ -78,9 +78,9 @@ class SymbolTemplateDataCreator
 
     private static String createHtmlLinkPage(TemplateDataContext context, PackageName packageName)
     {
-        final String htmlContentDirectory = context.getHtmlContentDirectory();
+        final String contentDirectory = context.getContentDirectory();
 
-        return PackageEmitter.getPackageHtmlLink(packageName, htmlContentDirectory);
+        return PackageEmitter.getPackageHtmlLink(packageName, contentDirectory);
     }
 
     private static String createHtmlAnchor(String typeName, String name)

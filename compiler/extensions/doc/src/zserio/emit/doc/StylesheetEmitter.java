@@ -12,7 +12,8 @@ class StylesheetEmitter
 {
     static void emit(String outputPathName) throws ZserioEmitException
     {
-        processTemplate(STYLESHEET_TEMPLATE_SOURCE_NAME, new File(outputPathName, STYLESHEET_FILE_NAME));
+        final File outputDirectory = new File(outputPathName, DocDefaultEmitter.CSS_DIRECTORY);
+        processTemplate(STYLESHEET_TEMPLATE_SOURCE_NAME, new File(outputDirectory, STYLESHEET_FILE_NAME));
     }
 
     static void processTemplate(String templateName, File outputFile) throws ZserioEmitException
@@ -21,7 +22,7 @@ class StylesheetEmitter
                 false);
     }
 
-    static final String STYLESHEET_FILE_NAME = "css/stylesheet.css";
+    static final String STYLESHEET_FILE_NAME = "stylesheet.css";
 
     private static final String STYLESHEET_TEMPLATE_SOURCE_NAME = "stylesheet.css.ftl";
 }
