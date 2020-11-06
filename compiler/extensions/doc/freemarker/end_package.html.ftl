@@ -26,16 +26,24 @@
         return string.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
       }
 
-      function buildSearchPattern(value) {
-        let terms = value.split(/\s/);
+      function buildRegEx(terms) {
         try {
           return new RegExp(terms.join(".*"), "i");
         } catch (e) {
+          return undefined;
+        }
+      }
+
+      function buildSearchPattern(value) {
+        let terms = value.split(/\s/);
+        let pattern = buildRegEx(terms);
+        if (!pattern) {
           let escapedTerms = terms.map(function(term) {
             return escapeRegex(term);
           });
-          return searchPattern = new RegExp(escapedTerms.join(".*"), "i");
+          pattern = buildRegEx(escapedTerms);
         }
+        return pattern;
       }
 
       function searchFilter(value) {
@@ -95,10 +103,10 @@
       }
 
       // custom hooks
-      $(document).ready(function(){
+      $(document).ready(function() {
         // re-apply current search value
         let searchValue = sessionStorage.getItem("searchValue");
-        if (searchValue != "") {
+        if (searchValue) {
           $("#search").val(searchValue);
           searchFilter(searchValue);
         }
