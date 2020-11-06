@@ -115,7 +115,7 @@ public class ZserioAstBuilder extends ZserioParserBaseVisitor<Object>
     public Import visitImportDeclaration(ZserioParser.ImportDeclarationContext ctx)
     {
         final AstLocation location = new AstLocation(ctx.id(0).getStart());
-        final List<DocComment> docComments = docCommentManager.findDocComments(ctx.id(0));
+        final List<DocComment> docComments = docCommentManager.findDocComments(ctx);
         String importedSymbolName = null;
         PackageName importedPackageName = null;
 
