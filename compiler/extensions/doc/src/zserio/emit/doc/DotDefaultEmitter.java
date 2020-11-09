@@ -4,21 +4,15 @@ import java.io.File;
 
 import zserio.emit.common.FreeMarkerUtil;
 import zserio.emit.common.ZserioEmitException;
-import zserio.tools.Parameters;
 
 abstract class DotDefaultEmitter extends DocDefaultEmitter
 {
-    public DotDefaultEmitter(String outputPathName, Parameters extensionParameters, boolean withSvgDiagrams,
-            String dotExecutable, UsedByCollector usedByCollector)
+    public DotDefaultEmitter(boolean withSvgDiagrams, String dotExecutable)
     {
-        super(outputPathName, extensionParameters, withSvgDiagrams, usedByCollector);
+        super();
 
+        this.withSvgDiagrams = withSvgDiagrams;
         this.dotExecutable = dotExecutable;
-    }
-
-    protected String getDotExecutable()
-    {
-        return dotExecutable;
     }
 
     protected void processDotTemplate(String templateName, Object templateData, File outputDotFile,
@@ -26,7 +20,7 @@ abstract class DotDefaultEmitter extends DocDefaultEmitter
     {
         FreeMarkerUtil.processTemplate(DOC_TEMPLATE_LOCATION + templateName, templateData, outputDotFile,
                 false);
-        if (getWithSvgDiagrams())
+        if (withSvgDiagrams)
         {
             if (!DotToSvgConverter.convert(dotExecutable, outputDotFile, outputSvgFile))
                 throw new ZserioEmitException("Failure to convert '" + outputDotFile + "' to SVG format!");
@@ -37,5 +31,6 @@ abstract class DotDefaultEmitter extends DocDefaultEmitter
     protected static final String DOT_FILE_EXTENSION = ".dot";
     protected static final String SVG_FILE_EXTENSION = ".svg";
 
+    private final boolean withSvgDiagrams;
     private final String dotExecutable;
 }

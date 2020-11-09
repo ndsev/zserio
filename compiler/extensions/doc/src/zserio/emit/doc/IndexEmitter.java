@@ -13,33 +13,31 @@ import zserio.tools.Parameters;
 class IndexEmitter extends HtmlDefaultEmitter
 {
     public IndexEmitter(String outputPathName, Parameters extensionParameters, boolean withSvgDiagrams,
-            UsedByCollector usedByCollector)
+            UsedByCollector usedByCollector, Package rootPackage)
     {
-        super(outputPathName, extensionParameters, withSvgDiagrams, usedByCollector);
+        super();
+
+        this.outputPathName = outputPathName;
+        this.rootPackage = rootPackage;
 
         final String htmlRootDirectory = ".";
-        context = new TemplateDataContext(getWithSvgDiagrams(), getUsedByCollector(), getResourceManager(),
-                htmlRootDirectory);
+        context = new TemplateDataContext(outputPathName, extensionParameters, withSvgDiagrams, usedByCollector,
+                rootPackage, htmlRootDirectory);
+
     }
 
     @Override
     public void endRoot(Root root) throws ZserioEmitException
     {
         final SymbolTemplateData templateData = SymbolTemplateDataCreator.createData(context, rootPackage);
-        final File outputFile = new File(getOutputPathName(), INDEX_FILE_NAME);
+        final File outputFile = new File(outputPathName, INDEX_FILE_NAME);
         processHtmlTemplate(INDEX_TEMPLATE_SOURCE_NAME, templateData, outputFile);
-    }
-
-    @Override
-    public void beginPackage(Package pkg)
-    {
-        if (rootPackage == null)
-            rootPackage = pkg;
     }
 
     private static final String INDEX_FILE_NAME = "index.html";
     private static final String INDEX_TEMPLATE_SOURCE_NAME = "index.html.ftl";
 
+    private final String outputPathName;
+    private final Package rootPackage;
     private final TemplateDataContext context;
-    private Package rootPackage = null;
 }

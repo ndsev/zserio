@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.Map;
 
 import zserio.ast.AstNode;
-import zserio.ast.PackageName;
+import zserio.ast.Package;
 import zserio.ast.TypeReference;
 import zserio.ast.ZserioTemplatableType;
 
@@ -19,19 +19,20 @@ public class SymbolCollaborationDotTemplateData
         final AstNode symbolNode = getInstantiationReference(symbol);
         final SymbolTemplateData symbolTemplateData = SymbolTemplateDataCreator.createData(context, symbolNode);
         symbolName = getUniqueName(symbolTemplateData);
-        relations = new ArrayList<Relation>();
+        relations = new ArrayList<RelationTemplateData>();
 
-        final Map<PackageName, Package> nameToPackageMap = new HashMap<PackageName, Package>();
+        final Map<Package, PackageTemplateData> packageToTemplateDataMap =
+                new HashMap<Package, PackageTemplateData>();
 
-        addSymbol(context, symbol, symbolTemplateData, nameToPackageMap);
+        addSymbol(context, symbol, symbolTemplateData, packageToTemplateDataMap);
 
         for (AstNode usedSymbol : usedSymbols)
         {
             final AstNode usedSymbolNode = getInstantiationReference(usedSymbol);
             final SymbolTemplateData usedSymbolTemplateData =
                     SymbolTemplateDataCreator.createData(context, usedSymbolNode);
-            addSymbol(context, usedSymbol, usedSymbolTemplateData, nameToPackageMap);
-            relations.add(new Relation(symbolName, getUniqueName(usedSymbolTemplateData)));
+            addSymbol(context, usedSymbol, usedSymbolTemplateData, packageToTemplateDataMap);
+            relations.add(new RelationTemplateData(symbolName, getUniqueName(usedSymbolTemplateData)));
         }
 
         for (AstNode usedBySymbol : usedBySymbols)
@@ -39,11 +40,11 @@ public class SymbolCollaborationDotTemplateData
             final AstNode usedBySymbolNode = getInstantiationReference(usedBySymbol);
             final SymbolTemplateData usedBySymbolTemplateData =
                     SymbolTemplateDataCreator.createData(context, usedBySymbolNode);
-            addSymbol(context, usedBySymbol, usedBySymbolTemplateData, nameToPackageMap);
-            relations.add(new Relation(getUniqueName(usedBySymbolTemplateData), symbolName));
+            addSymbol(context, usedBySymbol, usedBySymbolTemplateData, packageToTemplateDataMap);
+            relations.add(new RelationTemplateData(getUniqueName(usedBySymbolTemplateData), symbolName));
         }
 
-        packages = nameToPackageMap.values();
+        packages = packageToTemplateDataMap.values();
     }
 
     public String getSymbolName()
@@ -51,27 +52,22 @@ public class SymbolCollaborationDotTemplateData
         return symbolName;
     }
 
-    public Iterable<Package> getPackages()
+    public Iterable<PackageTemplateData> getPackages()
     {
         return packages;
     }
 
-    public Iterable<Relation> getRelations()
+    public Iterable<RelationTemplateData> getRelations()
     {
         return relations;
     }
 
-    public static class Package
+    public static class PackageTemplateData
     {
-        public Package(String name)
+        public PackageTemplateData(String name)
         {
             this.name = name;
             namedSymbols = new ArrayList<NamedSymbolTemplateData>();
-        }
-
-        public void addSymbol(String name, SymbolTemplateData symbol)
-        {
-            namedSymbols.add(new NamedSymbolTemplateData(name, symbol));
         }
 
         public String getName()
@@ -106,13 +102,18 @@ public class SymbolCollaborationDotTemplateData
             private final SymbolTemplateData symbol;
         }
 
+        void addSymbol(String name, SymbolTemplateData symbol)
+        {
+            namedSymbols.add(new NamedSymbolTemplateData(name, symbol));
+        }
+
         private final String name;
         private final List<NamedSymbolTemplateData> namedSymbols;
     }
 
-    public static class Relation
+    public static class RelationTemplateData
     {
-        public Relation(String symbolNameFrom, String symbolNameTo)
+        public RelationTemplateData(String symbolNameFrom, String symbolNameTo)
         {
             this.symbolNameFrom = symbolNameFrom;
             this.symbolNameTo = symbolNameTo;
@@ -133,17 +134,16 @@ public class SymbolCollaborationDotTemplateData
     }
 
     private void addSymbol(TemplateDataContext context, AstNode symbol, SymbolTemplateData symbolTemplateData,
-            Map<PackageName, Package> nameToPackageMap)
+            Map<Package, PackageTemplateData> packageToTemplateDataMap)
     {
-        final PackageName packageName = AstNodePackageNameMapper.getPackageName(symbol);
-        final String packageNameString = (packageName == null) ? "" : packageName.toString();
-        Package packageInst = nameToPackageMap.get(packageName);
+        final Package pkg = AstNodePackageMapper.getPackage(symbol);
+        PackageTemplateData packageInst = packageToTemplateDataMap.get(pkg);
         if (packageInst == null)
         {
-            packageInst = new Package(packageNameString);
-            nameToPackageMap.put(packageName, packageInst);
+            final String packageFileName = (pkg == null) ? "" : PackageFileNameMapper.getFileName(pkg);
+            packageInst = new PackageTemplateData(packageFileName);
+            packageToTemplateDataMap.put(pkg, packageInst);
         }
-
 
         packageInst.addSymbol(getUniqueName(symbolTemplateData), symbolTemplateData);
     }
@@ -186,6 +186,6 @@ public class SymbolCollaborationDotTemplateData
     }
 
     private final String symbolName;
-    private final Iterable<Package> packages;
-    private final List<Relation> relations;
+    private final Iterable<PackageTemplateData> packages;
+    private final List<RelationTemplateData> relations;
 }

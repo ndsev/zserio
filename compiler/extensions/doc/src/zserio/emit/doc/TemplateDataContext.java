@@ -2,25 +2,30 @@ package zserio.emit.doc;
 
 import java.io.File;
 
+import zserio.ast.Package;
 import zserio.emit.common.ExpressionFormatter;
+import zserio.tools.Parameters;
 import zserio.tools.StringJoinUtil;
 
 class TemplateDataContext
 {
-    public TemplateDataContext(boolean withSvgDiagrams, UsedByCollector usedByCollector,
-            DocResourceManager docResourceManager, String htmlRootDirectory)
+    // TODO[mikir] To split out DocResourceManager and put it only to PackageEmitter?!?
+    public TemplateDataContext(String outputPathName, Parameters extensionParameters, boolean withSvgDiagrams,
+            UsedByCollector usedByCollector, Package rootPackage, String htmlRootDirectory)
     {
-        this(withSvgDiagrams, usedByCollector, docResourceManager, htmlRootDirectory, "");
+        this(outputPathName, extensionParameters, withSvgDiagrams, usedByCollector, rootPackage,
+                htmlRootDirectory, "");
     }
 
-    public TemplateDataContext(boolean withSvgDiagrams, UsedByCollector usedByCollector,
-            DocResourceManager docResourceManager, String htmlRootDirectory,
+    public TemplateDataContext(String outputPathName, Parameters extensionParameters, boolean withSvgDiagrams,
+            UsedByCollector usedByCollector, Package rootPackage, String htmlRootDirectory,
             String htmlCurrentDirectory)
     {
         this.withSvgDiagrams = withSvgDiagrams;
         this.usedByCollector = usedByCollector;
         this.docExpressionFormatter = new ExpressionFormatter(new DocExpressionFormattingPolicy());
-        this.docResourceManager = docResourceManager;
+        this.docResourceManager = new DocResourceManager(outputPathName, extensionParameters,
+                DocDefaultEmitter.CONTENT_DIRECTORY, rootPackage);
 
         contentDirectory = getHtmlDirectory(htmlRootDirectory, htmlCurrentDirectory,
                 DocDefaultEmitter.CONTENT_DIRECTORY);
@@ -92,6 +97,7 @@ class TemplateDataContext
     private final UsedByCollector usedByCollector;
     private final ExpressionFormatter docExpressionFormatter;
     private final DocResourceManager docResourceManager;
+
     private final String contentDirectory;
     private final String cssDirectory;
     private final String jsDirectory;

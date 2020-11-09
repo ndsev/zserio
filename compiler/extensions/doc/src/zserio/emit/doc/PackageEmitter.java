@@ -13,7 +13,6 @@ import zserio.ast.Constant;
 import zserio.ast.EnumType;
 import zserio.ast.InstantiateType;
 import zserio.ast.Package;
-import zserio.ast.PackageName;
 import zserio.ast.PubsubType;
 import zserio.ast.ServiceType;
 import zserio.ast.SqlDatabaseType;
@@ -29,39 +28,37 @@ import zserio.tools.StringJoinUtil;
 class PackageEmitter extends HtmlDefaultEmitter
 {
     public PackageEmitter(String outputPathName, Parameters extensionParameters, boolean withSvgDiagrams,
-            UsedByCollector usedByCollector, SymbolCollector symbolCollector)
+            UsedByCollector usedByCollector, SymbolCollector symbolCollector, Package rootPackage)
     {
-        super(outputPathName, extensionParameters, withSvgDiagrams, usedByCollector);
+        super();
 
+        this.outputPathName = outputPathName;
         this.nodesMap = symbolCollector.getNodesMap();
 
         final String htmlRootDirectory = "..";
-        context = new TemplateDataContext(getWithSvgDiagrams(), getUsedByCollector(), getResourceManager(),
-                htmlRootDirectory, CONTENT_DIRECTORY);
+        context = new TemplateDataContext(outputPathName, extensionParameters, withSvgDiagrams, usedByCollector,
+                rootPackage, htmlRootDirectory, CONTENT_DIRECTORY);
     }
 
     @Override
     public void beginPackage(Package pkg) throws ZserioEmitException
     {
-        final PackageName packageName = pkg.getPackageName();
-        final String packageHtmlLink = getPackageHtmlLink(packageName, CONTENT_DIRECTORY);
-        final File outputFile = new File(getOutputPathName(), packageHtmlLink);
+        final String packageHtmlLink = getPackageHtmlLink(pkg, CONTENT_DIRECTORY);
+        final File outputFile = new File(outputPathName, packageHtmlLink);
         FileUtil.createOutputDirectory(outputFile);
         writer = FileUtil.createWriter(outputFile);
 
         final String outputDirectory = outputFile.getParent();
-        getResourceManager().setCurrentOutputDir(Paths.get(outputDirectory));
+        context.getDocResourceManager().setCurrentOutputDir(Paths.get(outputDirectory));
 
-        final BeginPackageTemplateData templateData =
-                new BeginPackageTemplateData(context, pkg, nodesMap);
+        final BeginPackageTemplateData templateData = new BeginPackageTemplateData(context, pkg, nodesMap);
         processHtmlTemplate("begin_package.html.ftl", templateData, writer);
     }
 
     @Override
     public void endPackage(Package pkg) throws ZserioEmitException
     {
-        final EndPackageTemplateData templateData =
-                new EndPackageTemplateData(context, pkg, nodesMap.get(pkg));
+        final EndPackageTemplateData templateData = new EndPackageTemplateData(context, pkg, nodesMap.get(pkg));
         processHtmlTemplate("end_package.html.ftl", templateData, writer);
         writer.close();
     }
@@ -151,17 +148,22 @@ class PackageEmitter extends HtmlDefaultEmitter
         processHtmlTemplate("instantiate_type.html.ftl", templateData, writer);
     }
 
-    public static String getPackageHtmlLink(PackageName packageName, String htmlContentDirectory)
+    public static String getPackageHtmlLink(Package pkg, String htmlContentDirectory)
     {
-        final String packageNameString = (packageName.isEmpty()) ? DEFAULT_PACKAGE_FILE_NAME :
-            packageName.toString();
+        final String packageFileName = PackageFileNameMapper.getFileName(pkg);
 
-        return StringJoinUtil.joinStrings(htmlContentDirectory, packageNameString + HTML_FILE_EXTENSION,
+        return getPackageHtmlLink(packageFileName, htmlContentDirectory);
+    }
+
+    public static String getPackageHtmlLink(String packageFileName, String htmlContentDirectory)
+    {
+        return StringJoinUtil.joinStrings(htmlContentDirectory, packageFileName + HTML_FILE_EXTENSION,
                 File.separator);
     }
 
+    private final String outputPathName;
     private final Map<Package, List<AstNode>> nodesMap;
     private final TemplateDataContext context;
 
-    private PrintWriter writer;
+    private PrintWriter writer = null;
 }

@@ -14,7 +14,7 @@ public class PubsubTemplateData extends HtmlTemplateData
     {
         super(context, pubsubType);
 
-        packageName = AstNodePackageNameMapper.getPackageName(pubsubType).toString();
+        packageName = AstNodeNameMapper.getName(pubsubType.getPackage());
         for (PubsubMessage message : pubsubType.getMessageList())
             messageList.add(new MessageTemplateData(context, pubsubType, message));
     }

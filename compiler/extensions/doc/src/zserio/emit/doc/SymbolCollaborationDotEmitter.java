@@ -1,9 +1,10 @@
 package zserio.emit.doc;
 
 import java.io.File;
+import java.util.Set;
 
 import zserio.ast.AstNode;
-import zserio.ast.PackageName;
+import zserio.ast.Package;
 import zserio.ast.Root;
 import zserio.emit.common.ZserioEmitException;
 import zserio.tools.Parameters;
@@ -15,13 +16,16 @@ import zserio.tools.StringJoinUtil;
 class SymbolCollaborationDotEmitter extends DotDefaultEmitter
 {
     public SymbolCollaborationDotEmitter(String outputPathName, Parameters extensionParameters,
-            boolean withSvgDiagrams, String dotExecutable, UsedByCollector usedByCollector)
+            boolean withSvgDiagrams, String dotExecutable, UsedByCollector usedByCollector,
+            Package rootPackage)
     {
-        super(outputPathName, extensionParameters, withSvgDiagrams, dotExecutable, usedByCollector);
+        super(withSvgDiagrams, dotExecutable);
+
+        this.outputPathName = outputPathName;
 
         final String htmlRootDirectory = ".." + File.separator + "..";
-        context = new TemplateDataContext(getWithSvgDiagrams(), getUsedByCollector(), getResourceManager(),
-                htmlRootDirectory);
+        context = new TemplateDataContext(outputPathName, extensionParameters, withSvgDiagrams, usedByCollector,
+                rootPackage, htmlRootDirectory);
     }
 
     @Override
@@ -48,34 +52,36 @@ class SymbolCollaborationDotEmitter extends DotDefaultEmitter
 
     private static String getSymbolCollaborationHtmlLinkBase(AstNode node, String symbolCollaborationDirectory)
     {
-        final PackageName packageName = AstNodePackageNameMapper.getPackageName(node);
+        final Package pkg = AstNodePackageMapper.getPackage(node);
         final String typeName = AstNodeTypeNameMapper.getTypeName(node);
         final String name = AstNodeNameMapper.getName(node);
+        final String packageFileName = PackageFileNameMapper.getFileName(pkg);
 
-        final String packageNameString = (packageName == null) ? "" : packageName.toString();
-
-        return StringJoinUtil.joinStrings(symbolCollaborationDirectory, packageNameString,
+        return StringJoinUtil.joinStrings(symbolCollaborationDirectory, packageFileName,
                 typeName + "_" + name, File.separator);
     }
 
     private void emitDotDiagrams() throws ZserioEmitException
     {
-        for (AstNode node : getUsedByCollector().getCollaboratingNodes())
+        final Set<AstNode> collaboratingNodes = context.getUsedByCollector().getCollaboratingNodes();
+        for (AstNode node : collaboratingNodes)
             emitDotDiagram(node);
     }
 
     private void emitDotDiagram(AstNode node) throws ZserioEmitException
     {
+        final UsedByCollector usedByCollector = context.getUsedByCollector();
         final SymbolCollaborationDotTemplateData templateData = new SymbolCollaborationDotTemplateData(context,
-                node, getUsedByCollector().getUsedTypes(node), getUsedByCollector().getUsedByTypes(node));
+                node, usedByCollector.getUsedTypes(node), usedByCollector.getUsedByTypes(node));
         final String dotHtmlLink = getDotSymbolCollaborationHtmlLink(node, SYMBOL_COLLABORATION_DIRECTORY);
-        final File outputDotFile = new File(getOutputPathName(), dotHtmlLink);
+        final File outputDotFile = new File(outputPathName, dotHtmlLink);
         final String svgHtmlLink = getSvgSymbolCollaborationHtmlLink(node, SYMBOL_COLLABORATION_DIRECTORY);
-        final File outputSvgFile = new File(getOutputPathName(), svgHtmlLink);
+        final File outputSvgFile = new File(outputPathName, svgHtmlLink);
         processDotTemplate(TEMPLATE_SOURCE_NAME, templateData, outputDotFile, outputSvgFile);
     }
 
     private static final String TEMPLATE_SOURCE_NAME = "symbol_collaboration.dot.ftl";
 
+    private final String outputPathName;
     private final TemplateDataContext context;
 }

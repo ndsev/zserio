@@ -265,7 +265,7 @@ class AstNodeNameMapper
             name = templateInstantiation.getName();
         }
 
-        private static final String DEFAULT_PACKAGE_NAME = "[default package]";
+        private static final String DEFAULT_PACKAGE_NAME = "[default]";
 
         private String name = null;
     }

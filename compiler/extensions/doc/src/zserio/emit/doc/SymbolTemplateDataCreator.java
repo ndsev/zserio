@@ -4,9 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import zserio.ast.AstNode;
-import zserio.ast.PackageName;
-import zserio.ast.ZserioType;
 import zserio.ast.Package;
+import zserio.ast.ZserioType;
 
 class SymbolTemplateDataCreator
 {
@@ -14,19 +13,19 @@ class SymbolTemplateDataCreator
     {
         final String name = AstNodeNameMapper.getName(node);
         final String typeName = AstNodeTypeNameMapper.getTypeName(node);
-        final PackageName packageName = AstNodePackageNameMapper.getPackageName(node);
+        final Package pkg = AstNodePackageMapper.getPackage(node);
         final List<SymbolTemplateData> templateArguments =
                 AstNodeTemplateArgumentsMapper.getTemplateArguments(node, context);
 
-        if (packageName == null)
+        if (pkg == null)
         {
             final String htmlTitle = typeName;
             return new SymbolTemplateData(name, htmlTitle, templateArguments);
         }
         else
         {
-            final String htmlTitle = createHtmlTitle(typeName, packageName);
-            final String htmlLinkPage = createHtmlLinkPage(context, packageName);
+            final String htmlTitle = createHtmlTitle(typeName, pkg);
+            final String htmlLinkPage = createHtmlLinkPage(context, pkg);
             final String htmlLinkAnchor = createHtmlAnchor(typeName, name);
 
             return new SymbolTemplateData(name, htmlTitle, htmlLinkPage, htmlLinkAnchor, templateArguments);
@@ -38,9 +37,8 @@ class SymbolTemplateDataCreator
         final String name = AstNodeNameMapper.getName(pkg);
         final String typeName = AstNodeTypeNameMapper.getTypeName(pkg);
         final String htmlTitle = typeName + " " + name;
-        final PackageName packageName = AstNodePackageNameMapper.getPackageName(pkg);
-        final String htmlLinkPage = createHtmlLinkPage(context, packageName);
-        final String htmlLinkAnchor = createHtmlAnchor(typeName, name);
+        final String htmlLinkPage = createHtmlLinkPage(context, pkg);
+        final String htmlLinkAnchor = typeName;
 
         return new SymbolTemplateData(name, htmlTitle, htmlLinkPage, htmlLinkAnchor,
                 new ArrayList<SymbolTemplateData>());
@@ -57,10 +55,10 @@ class SymbolTemplateDataCreator
     {
         final String memberTypeName = AstNodeTypeNameMapper.getTypeName(member);
 
-        final PackageName zserioPackageName = AstNodePackageNameMapper.getPackageName(zserioType);
-        final String htmlTitle = createHtmlTitle(memberTypeName, zserioPackageName);
+        final Package zserioPackage = AstNodePackageMapper.getPackage(zserioType);
+        final String htmlTitle = createHtmlTitle(memberTypeName, zserioPackage);
 
-        final String htmlLinkPage = createHtmlLinkPage(context, zserioPackageName);
+        final String htmlLinkPage = createHtmlLinkPage(context, zserioPackage);
 
         final String zserioTypeName = AstNodeTypeNameMapper.getTypeName(zserioType);
         final String zserioName = zserioType.getName();
@@ -71,21 +69,22 @@ class SymbolTemplateDataCreator
                 new ArrayList<SymbolTemplateData>());
     }
 
-    private static String createHtmlTitle(String typeName, PackageName packageName)
+    private static String createHtmlTitle(String typeName, Package pkg)
     {
-        return (packageName.isEmpty()) ? typeName : typeName + " defined in " + packageName.toString();
+        final String packageNameString = AstNodeNameMapper.getName(pkg);
+
+        return typeName + " defined in " + packageNameString;
     }
 
-    private static String createHtmlLinkPage(TemplateDataContext context, PackageName packageName)
+    private static String createHtmlLinkPage(TemplateDataContext context, Package pkg)
     {
         final String contentDirectory = context.getContentDirectory();
 
-        return PackageEmitter.getPackageHtmlLink(packageName, contentDirectory);
+        return PackageEmitter.getPackageHtmlLink(pkg, contentDirectory);
     }
 
     private static String createHtmlAnchor(String typeName, String name)
     {
-        // replace needed due to multi-level packages
-        return typeName + "_" + name.replace('.', '_');
+        return typeName + "_" + name;
     }
 }

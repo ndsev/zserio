@@ -39,6 +39,18 @@ public class Root extends AstNodeBase
     }
 
     /**
+     * Gets the root package.
+     *
+     * Root package is the package which is specified in the source file on the command line. It always exists.
+     *
+     * @return Root package.
+     */
+    public Package getRootPackage()
+    {
+        return packageNameMap.values().iterator().next();
+    }
+
+    /**
      * Walks through AST tree applying given TreeWalker interface.
      *
      * @param walker TreeWalker interface to use for walking.
