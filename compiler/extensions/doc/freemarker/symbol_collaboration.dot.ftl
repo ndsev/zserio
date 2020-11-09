@@ -20,7 +20,7 @@ digraph ZSERIO
         <#if namedSymbol.symbol.htmlLink??>
             <#assign isMainSymbol = (namedSymbol.name == symbolName)>
         "${namedSymbol.name}" [<#if isMainSymbol>style="filled", fillcolor="#F2F2FF", </#if>target="_parent", <#rt>
-            <#lt>label=<<font face="monospace"><@symbol_reference_label namedSymbol.symbol "center"/></font>>];
+            <#lt>label=<<font face="monospace"><@symbol_reference_label namedSymbol.symbol, "center"/></font>>];
         </#if>
     </#list>
     }

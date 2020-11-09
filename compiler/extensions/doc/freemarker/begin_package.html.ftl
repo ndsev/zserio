@@ -18,14 +18,17 @@
     <title>${symbol.name} documentation</title>
   </head>
   <body>
+
     <header id="header" class="navbar navbar-dark bg-dark sticky-top">
       <div class="navbar-brand">Documentation for package ${symbol.name}</div>
       <a href="https://zserio.org/" target="_blank">
         <img class="logo" src="${resourcesDirectory}/zserio.png"/>
       </a>
     </header>
+
     <div class="container-fluid">
       <div class="row">
+
         <div id="left_panel" class="col-2">
           <form id="search_form" role="search">
             <input id="search" class="form-control" type="text" autocomplete="off" spellcheck="false"
@@ -34,7 +37,7 @@
           <nav id="symbol_overview" class="nav flex-column">
 <#list packages as pkg>
             <nav class="nav-package">
-              <@symbol_overview_package_link pkg.symbol symbol/><#nt>
+              <@symbol_overview_package_link pkg.symbol, symbol/><#nt>
     <#if pkg.packageSymbols?has_content>
               <nav class="nav nav-symbols flex-column<#if symbol.name == pkg.symbol.name> active</#if>">
         <#list pkg.packageSymbols as packageSymbol>
@@ -46,7 +49,8 @@
 </#list>
           </nav>
         </div>
+
         <main class="col-8 pl-md-3" role="main">
           <h1 id="${symbol.htmlLink.htmlAnchor}" class="anchor">${symbol.name}</h1>
-          <@doc_comments docComments 2, false/>
-          <@imports importNodes/>
+          <@doc_comments docComments, 5, false/>
+          <@imports importNodes, 5/>

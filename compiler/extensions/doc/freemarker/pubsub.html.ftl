@@ -1,45 +1,46 @@
 <#ftl output_format="HTML">
 <#include "doc_comment.inc.ftl">
+<#include "code.inc.ftl">
 <#include "symbol.inc.ftl">
 <#include "svg_diagram.inc.ftl">
+<#assign indent = 5>
+<#assign I>${""?left_pad(indent * 2)}</#assign>
 
-    <h2 class="anchor" id="${symbol.htmlLink.htmlAnchor}">
+${I}<h2 class="anchor" id="${symbol.htmlLink.htmlAnchor}">
 <#if docComments.isDeprecated>
-      <span class="deprecated">(deprecated) </span>
-      <del><i>Pubsub</i> ${symbol.name}</del>
+${I}  <span class="deprecated">(deprecated) </span>
+${I}  <del><i>Pubsub</i> ${symbol.name}</del>
 <#else>
-      <i>Pubsub</i> ${symbol.name}
+${I}  <i>Pubsub</i> ${symbol.name}
 </#if>
-    </h2>
-    <@doc_comments docComments 2, false/>
+${I}</h2>
+    <@doc_comments docComments, indent, false/>
 
-    <div class="code">
-      <table>
-        <tr><td>pubsub ${symbol.name}</td></tr>
-        <tr><td>{</td></tr>
+    <@code_table_begin indent/>
+${I}  <tr><td>pubsub ${symbol.name}</td></tr>
+${I}  <tr><td>{</td></tr>
 <#list messageList as message>
-        <tr><td class="indent">
-          ${message.keyword}(${message.topicDefinition}) <#rt>
-            <@symbol_reference message.typeSymbol/> <@symbol_reference message.symbol/>;
-        </td></tr>
+${I}  <tr><td class="indent">
+${I}    ${message.keyword}(${message.topicDefinition}) <#rt>
+          <#lt><@symbol_reference message.typeSymbol/> <@symbol_reference message.symbol/>;
+${I}  </td></tr>
 </#list>
-        <tr><td>};</td></tr>
-      </table>
-    </div>
+${I}  <tr><td>};</td></tr>
+    <@code_table_end indent/>
 <#if messageList?has_content>
 
-    <h3>Pubsub messages</h3>
+${I}<h3>Pubsub messages</h3>
 
-    <dl>
+${I}<dl>
     <#list messageList as message>
-      <dt class="memberItem"><a class="anchor" id="${message.symbol.htmlLink.htmlAnchor}">${message.symbol.name}:</a></dt>
-      <dd class="memberDetail">
-        <@doc_comments message.docComments, 4/>
-      </dd>
+${I}  <dt class="memberItem"><a class="anchor" id="${message.symbol.htmlLink.htmlAnchor}">${message.symbol.name}:</a></dt>
+${I}  <dd class="memberDetail">
+        <@doc_comments message.docComments, indent+2/>
+${I}  </dd>
     </#list>
-    </dl>
+${I}</dl>
 </#if>
 <#if collaborationDiagramSvg??>
 
-    <@collaboration_diagram collaborationDiagramSvg/>
+    <@collaboration_diagram collaborationDiagramSvg, indent/>
 </#if>

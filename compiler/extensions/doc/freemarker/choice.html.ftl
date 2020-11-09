@@ -1,192 +1,189 @@
 <#ftl output_format="HTML">
 <#include "doc_comment.inc.ftl">
 <#include "compound.inc.ftl">
+<#include "code.inc.ftl">
 <#include "symbol.inc.ftl">
 <#include "usedby.inc.ftl">
 <#include "svg_diagram.inc.ftl">
-<#macro choice_field field>
-    <#local typePrefix>
-      <#if field.isArrayImplicit>implicit </#if><#t>
-    </#local>
-          <tr>
-            <td class="indent empty"></td>
-            <td class="indent">
-               ${typePrefix}<@compound_field_type_name field/>
-            </td>
-            <td>
-              <@symbol_reference field.symbol/><#rt>
-                ${field.arrayRange}<#t>
+<#assign indent = 5>
+<#assign I>${""?left_pad(indent * 2)}</#assign>
+<#assign choiceHeading>
+    <i>Choice</i><#if templateParameters?has_content> template</#if> ${symbol.name}<#t>
+</#assign>
+<#macro choice_field field indent>
+    <#local I>${""?left_pad(indent * 2)}</#local>
+${I}<tr>
+${I}  <td class="indent empty"></td>
+${I}  <td class="indent">
+${I}    <#if field.isArrayImplicit>implicit </#if><@compound_field_type_name field/>
+${I}  </td>
+${I}  <td>
+${I}    <@symbol_reference field.symbol/><#rt>
+          ${field.arrayRange}<#t>
     <#if field.initializerExpression?has_content>
-                <#lt> = ${field.initializerExpression}<#rt>
+          <#lt> = ${field.initializerExpression}<#rt>
     </#if>
     <#if field.optionalExpression?has_content>
-                <#lt> if ${field.optionalClauseExpression}<#rt>
+          <#lt> if ${field.optionalClauseExpression}<#rt>
     </#if>
     <#if field.constraintExpression?has_content>
-                <#lt> : ${field.constraintExpression}<#rt>
+          <#lt> : ${field.constraintExpression}<#rt>
     </#if>
     <#if field.sqlConstraintExpression?has_content>
-                <#lt> sql ${field.sqlConstraintExpression}<#rt>
+          <#lt> sql ${field.sqlConstraintExpression}<#rt>
     </#if>
-                <#lt>;
-            </td>
-          </tr>
+          <#lt>;
+${I}  </td>
+${I}</tr>
 </#macro>
-<#assign choiceHeading>
-    <i>Choice</i><#if templateParameters?has_content> template</#if> ${symbol.name}
-</#assign>
 
-    <h2 class="anchor" id="${symbol.htmlLink.htmlAnchor}">
+${I}<h2 class="anchor" id="${symbol.htmlLink.htmlAnchor}">
 <#if docComments.isDeprecated>
-      <span class="deprecated">(deprecated) </span>
-      <del>${choiceHeading}</del>
+${I}  <span class="deprecated">(deprecated) </span>
+${I}  <del>${choiceHeading}</del>
 <#else>
-      ${choiceHeading}
+${I}  ${choiceHeading}
 </#if>
-    </h2>
-    <@doc_comments docComments 2, false/>
+${I}</h2>
+    <@doc_comments docComments, indent, false/>
 
-    <div class="code">
-      <table>
-        <tbody>
-          <tr>
-            <td colspan=3>choice ${symbol.name}<@compound_template_parameters templateParameters/><#rt>
-              <#lt><@compound_parameters parameters/> on ${selectorExpression}</td>
-          </tr>
-          <tr>
-            <td colspan=3>{</td>
-          </tr>
+    <@code_table_begin indent/>
+${I}  <tr>
+${I}    <td colspan=3>choice ${symbol.name}<@compound_template_parameters templateParameters/><#rt>
+          <#lt><@compound_parameters parameters/> on ${selectorExpression}</td>
+${I}  </tr>
+${I}  <tr>
+${I}    <td colspan=3>{</td>
+${I}  </tr>
 <#list caseMemberList as caseMember>
-          <tr>
-            <td class="indent empty"></td>
-            <td colspan=2>
+${I}  <tr>
+${I}    <td class="indent empty"></td>
+${I}    <td colspan=2>
     <#list caseMember.caseList as case>
-              case <@symbol_reference case.symbol/>:<#rt>
-                <#lt><#if case?has_next><br/></#if>
+${I}      case <@symbol_reference case.symbol/>:<#rt>
+            <#lt><#if case?has_next><br/></#if>
     </#list>
-            </td>
-          </tr>
+${I}    </td>
+${I}  </tr>
     <#if caseMember.field??>
-          <@choice_field caseMember.field/>
+      <@choice_field caseMember.field, indent+1/>
     <#else>
-          <tr>
-            <td colspan=2></td>
-            <td>;</td>
-          </tr>
+${I}  <tr>
+${I}    <td colspan=2></td>
+${I}    <td>;</td>
+${I}  </tr>
     </#if>
 </#list>
 <#if defaultMember??>
-          <tr>
-            <td class="indent empty"></td>
-            <td colspan=2>
-              <@symbol_reference defaultMember.symbol/>:
-            </td>
-          </tr>
+${I}  <tr>
+${I}    <td class="indent empty"></td>
+${I}    <td colspan=2>
+${I}      <@symbol_reference defaultMember.symbol/>:
+${I}    </td>
+${I}  </tr>
     <#if defaultMember.field??>
-          <@choice_field defaultMember.field/>
+${I}  <@choice_field defaultMember.field, indent+1/>
     <#else>
-          <tr>
-            <td colspan=2></td>
-            <td>;</td>
-          </tr>
+${I}  <tr>
+${I}    <td colspan=2></td>
+${I}    <td>;</td>
+${I}  </tr>
     </#if>
 </#if>
 <#if functions?has_content>
-          <tr><td colspan=3>&nbsp;</td></tr>
-          <@compound_functions functions/>
+${I}  <tr><td colspan=3>&nbsp;</td></tr>
+${I}  <@compound_functions functions, indent+1/>
 </#if>
-          <tr><td colspan=3>};</td></tr>
-        </tbody>
-      </table>
-    </div>
+${I}  <tr><td colspan=3>};</td></tr>
+    <@code_table_end indent/>
 
-    <h3>Case and Member Details</h3>
+${I}<h3>Case and Member Details</h3>
 
-    <dl>
+${I}<dl>
 <#list caseMemberList as caseMember>
-      <dt class="memberItem">
-        Case(s):
-      </dt>
-      <dd>
-        <dl>
+${I}  <dt class="memberItem">
+${I}    Case(s):
+${I}  </dt>
+${I}  <dd>
+${I}    <dl>
     <#list caseMember.caseList as case>
-          <dt class="memberItem">
-            <a class="anchor" id="${case.symbol.htmlLink.htmlAnchor}">${case.expression}</a>
-          </dt>
-          <dd class="memberDetail">
-            <@doc_comments case.docComments, 6/>
+${I}      <dt class="memberItem">
+${I}        <a class="anchor" id="${case.symbol.htmlLink.htmlAnchor}">${case.expression}</a>
+${I}      </dt>
+${I}      <dd class="memberDetail">
+            <@doc_comments case.docComments, indent+4/>
         <#if case.seeSymbol??>
-            <div class="docuTag"><span>see: </span>item <@symbol_reference case.seeSymbol.memberSymbol/> <#rt>
+${I}        <div class="doc"><span>see: </span>item <@symbol_reference case.seeSymbol.memberSymbol/> <#rt>
               <#lt>in enum <@symbol_reference case.seeSymbol.typeSymbol/></div>
         </#if>
-          </dd>
+${I}      </dd>
     </#list>
-        </dl>
-      </dd>
-      <dt class="memberItem">
-        Member:
-      </dt>
-      <dd>
-        <dl>
+${I}    </dl>
+${I}  </dd>
+${I}  <dt class="memberItem">
+${I}    Member:
+${I}  </dt>
+${I}  <dd>
+${I}    <dl>
   <#if caseMember.field??>
-          <dt class="memberItem">
-            <a class="anchor" id="${caseMember.field.symbol.htmlLink.htmlAnchor}">${caseMember.field.symbol.name}:</a>
-          </dt>
-          <dd class="memberDetail">
-            <@doc_comments caseMember.field.docComments, 6/>
-          </dd>
+${I}      <dt class="memberItem">
+${I}        <a class="anchor" id="${caseMember.field.symbol.htmlLink.htmlAnchor}">${caseMember.field.symbol.name}:</a>
+${I}      </dt>
+${I}      <dd class="memberDetail">
+            <@doc_comments caseMember.field.docComments, indent+4/>
+${I}      </dd>
   <#else>
-          <dt class="memberItem">
-            <span>no member data</span>
-          </dt>
-          <dd class="memberDetail">
-            <br/>
-          </dd>
+${I}      <dt class="memberItem">
+${I}        <span>no member data</span>
+${I}      </dt>
+${I}      <dd class="memberDetail">
+${I}        <br/>
+${I}      </dd>
   </#if>
-        </dl>
-      </dd>
+${I}    </dl>
+${I}  </dd>
 </#list>
 <#if defaultMember??>
-      <dt class="memberItem">
-        Case:
-      </dt>
-      <dd>
-        <dl>
-          <dt class="memberItem">
-            <a class="anchor" id="${defaultMember.symbol.htmlLink.htmlAnchor}">${defaultMember.symbol.name}</a>
-          </dt>
-          <dd class="memberDetail">
-            <@doc_comments defaultMember.docComments, 6/>
-          </dd>
-        </dl>
-      </dd>
-      <dt class="memberItem">
-        Member:
-      </dt>
-      <dd>
-        <dl>
+${I}  <dt class="memberItem">
+${I}    Case:
+${I}  </dt>
+${I}  <dd>
+${I}    <dl>
+${I}      <dt class="memberItem">
+${I}        <a class="anchor" id="${defaultMember.symbol.htmlLink.htmlAnchor}">${defaultMember.symbol.name}</a>
+${I}      </dt>
+${I}      <dd class="memberDetail">
+            <@doc_comments defaultMember.docComments, indent+4/>
+${I}      </dd>
+${I}    </dl>
+${I}  </dd>
+${I}  <dt class="memberItem">
+${I}    Member:
+${I}  </dt>
+${I}  <dd>
+${I}    <dl>
   <#if defaultMember.field??>
-          <dt class="memberItem">
-            <a class="anchor" id="${defaultMember.field.symbol.htmlLink.htmlAnchor}">${defaultMember.field.symbol.name}:</a>
-          </dt>
-          <dd class="memberDetail">
-            <@doc_comments defaultMember.field.docComments, 6/>
-          </dd>
+${I}      <dt class="memberItem">
+${I}        <a class="anchor" id="${defaultMember.field.symbol.htmlLink.htmlAnchor}">${defaultMember.field.symbol.name}:</a>
+${I}      </dt>
+${I}      <dd class="memberDetail">
+            <@doc_comments defaultMember.field.docComments, indent+4/>
+${I}      </dd>
   <#else>
-          <dt class="memberItem">
-            <span>no member data</span>
-          </dt>
-          <dd class="memberDetail">
-            <br/>
-          </dd>
+${I}      <dt class="memberItem">
+${I}        <span>no member data</span>
+${I}      </dt>
+${I}      <dd class="memberDetail">
+${I}        <br/>
+${I}      </dd>
   </#if>
-        </dl>
-      </dd>
+${I}    </dl>
+${I}  </dd>
 </#if>
-    </dl>
-    <@compound_function_details functions/>
-    <@used_by usedByList/>
+${I}</dl>
+    <@compound_function_details functions, indent/>
+    <@used_by usedByList, indent/>
 <#if collaborationDiagramSvg??>
 
-    <@collaboration_diagram collaborationDiagramSvg/>
+    <@collaboration_diagram collaborationDiagramSvg, indent/>
 </#if>

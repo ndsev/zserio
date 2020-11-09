@@ -1,25 +1,29 @@
 <#ftl output_format="HTML">
 <#include "doc_comment.inc.ftl">
+<#include "code.inc.ftl">
 <#include "symbol.inc.ftl">
 <#include "usedby.inc.ftl">
 <#include "svg_diagram.inc.ftl">
+<#assign indent = 5>
+<#assign I>${""?left_pad(indent * 2)}</#assign>
 
-    <h2 class="anchor" id="${symbol.htmlLink.htmlAnchor}">
+${I}<h2 class="anchor" id="${symbol.htmlLink.htmlAnchor}">
 <#if docComments.isDeprecated>
-      <span class="deprecated">(deprecated) </span>
-      <del><i>Instantiate Type</i> ${symbol.name}</del>
+${I}  <span class="deprecated">(deprecated) </span>
+${I}  <del><i>Instantiate Type</i> ${symbol.name}</del>
 <#else>
-      <i>Instantiate Type</i> ${symbol.name}
+${I}  <i>Instantiate Type</i> ${symbol.name}
 </#if>
-    </h2>
-    <p/>
-    <@doc_comments docComments 2, false/>
+${I}</h2>
+    <@doc_comments docComments, indent, false/>
 
-    <div class="code">
-      instantiate <@symbol_reference typeSymbol/> ${symbol.name};
-    </div>
-    <@used_by usedByList/>
+    <@code_table_begin indent/>
+${I}  <tr><td>
+${I}    instantiate <@symbol_reference typeSymbol/> ${symbol.name};
+${I}  </td></tr>
+    <@code_table_end indent/>
+    <@used_by usedByList, indent/>
 <#if collaborationDiagramSvg??>
 
-    <@collaboration_diagram collaborationDiagramSvg/>
+    <@collaboration_diagram collaborationDiagramSvg, indent/>
 </#if>

@@ -1,31 +1,30 @@
 <#ftl output_format="HTML">
 <#include "doc_comment.inc.ftl">
 <#include "compound.inc.ftl">
+<#include "code.inc.ftl">
 <#include "usedby.inc.ftl">
 <#include "svg_diagram.inc.ftl">
+<#assign indent = 5>
+<#assign I>${""?left_pad(indent * 2)}</#assign>
 
-    <h2 class="anchor" id="${symbol.htmlLink.htmlAnchor}">
+${I}<h2 class="anchor" id="${symbol.htmlLink.htmlAnchor}">
 <#if docComments.isDeprecated>
-      <span class="deprecated">(deprecated) </span>
-      <del><i>SQL Database</i> ${symbol.name}</del>
+${I}  <span class="deprecated">(deprecated) </span>
+${I}  <del><i>SQL Database</i> ${symbol.name}</del>
 <#else>
-      <i>SQL Database</i> ${symbol.name}
+${I}  <i>SQL Database</i> ${symbol.name}
 </#if>
-    </h2>
-    <@doc_comments docComments 2, false/>
+${I}</h2>
+    <@doc_comments docComments, indent, false/>
 
-    <div class="code">
-      <table>
-        <tbody>
-          <tr><td colspan=3>sql_database ${symbol.name}</td></tr>
-          <tr><td colspan=3>{</td></tr>
-          <@compound_fields fields/>
-          <tr><td colspan=3>};</td></tr>
-        </tbody>
-      </table>
-    </div>
-    <@compound_member_details fields/>
+    <@code_table_begin indent/>
+${I}  <tr><td colspan=3>sql_database ${symbol.name}</td></tr>
+${I}  <tr><td colspan=3>{</td></tr>
+      <@compound_fields fields, indent+1/>
+${I}  <tr><td colspan=3>};</td></tr>
+    <@code_table_end indent/>
+    <@compound_member_details fields, indent/>
 <#if collaborationDiagramSvg??>
 
-    <@collaboration_diagram collaborationDiagramSvg/>
+    <@collaboration_diagram collaborationDiagramSvg, indent/>
 </#if>

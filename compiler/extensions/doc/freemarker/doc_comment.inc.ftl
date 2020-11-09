@@ -7,7 +7,7 @@
     <@doc_comment docComment, indent/>
         </#list>
     <#elseif useNoDocPlaceholder>
-${I}<div class="docuTag">&lt;<i>no documentation found</i>&gt;</div>
+${I}<div class="doc">&lt;<i>no documentation found</i>&gt;</div>
     </#if>
 </#macro>
 
@@ -21,26 +21,26 @@ ${I}<div class="docuTag">&lt;<i>no documentation found</i>&gt;</div>
         <#list doc.paragraphs as paragraph>
             <#list paragraph.elements as element>
                 <#if element.multiline??>
-${I}<div class="docuTag">
+${I}<div class="doc">
       <@doc_multiline_node element.multiline, indent+1/>
 ${I}</div>
                 </#if>
                 <#if element.todoTag??>
 
-${I}<div class="docuTag">
+${I}<div class="doc">
 ${I}  <span>Todo:</span>
 ${I}  <@doc_multiline_node element.todoTag, indent+1/>
 ${I}</div>
                 </#if>
                 <#if element.seeTag??>
 
-${I}<div class="docuTag">
+${I}<div class="doc">
 ${I}  <span>See:</span> <@symbol_reference element.seeTag.seeSymbol/>
 ${I}</div>
                 </#if>
                 <#if element.paramTag??>
 
-${I}<div class="docuTag">
+${I}<div class="doc">
 ${I}  <span>Param: </span><code>${element.paramTag.name}</code>
       <@doc_multiline_node element.paramTag.description, indent+1/>
 ${I}</div>
@@ -49,7 +49,7 @@ ${I}</div>
         </#list>
         <#if doc.isDeprecated>
 
-${I}<div class="docuTag">
+${I}<div class="doc">
 ${I}  <span>Note:</span> This element is deprecated and is going to be invalid in the future versions.
 ${I}</div>
         </#if>
@@ -70,7 +70,7 @@ ${I}<@symbol_reference docLineElement.seeTag.seeSymbol/>
 
 <#macro doc_markdown markdownHtml indent>
     <#local I>${""?left_pad(indent * 2)}</#local>
-${I}<div class="docuTag">
+${I}<div class="doc">
     <#list markdownHtml?split("\r?\n", "rm") as htmlLine>
 ${I}  ${htmlLine?no_esc}
     </#list>

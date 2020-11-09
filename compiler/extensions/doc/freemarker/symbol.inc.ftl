@@ -8,7 +8,7 @@
     <#if symbol.templateArguments?has_content>
         &lt;<#t>
        <#list symbol.templateArguments as templateArgument>
-            <@symbol_reference templateArgument/><#if templateArgument?has_next>,</#if><#t>
+            <@symbol_reference templateArgument/><#if templateArgument?has_next>, </#if><#t>
        </#list>
         &gt;<#t>
     </#if>
@@ -44,7 +44,7 @@
     <#if symbol.templateArguments?has_content>
         <td>&lt;</td><#t>
         <#list symbol.templateArguments as templateArgument>
-        <td><@symbol_reference_label templateArgument align/></td><#t>
+        <td><@symbol_reference_label templateArgument, align/></td><#t>
             <#if templateArgument?has_next>
         <td>,</td><#t>
             </#if>

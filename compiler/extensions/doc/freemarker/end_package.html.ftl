@@ -1,16 +1,18 @@
 <#ftl output_format="HTML">
 <#include "doc_comment.inc.ftl">
+          <@doc_comments docComments, 5, false/>
 
-          <@doc_comments docComments 2, false/>
         </main>
+
         <div id="toc" class="col-2 order-3">
           <nav class="nav flex-column">
-            <@symbol_toc_link symbol/>
+            <@symbol_toc_link symbol/><#nt>
 <#list packageSymbols as packageSymbol>
-            <@symbol_toc_link packageSymbol/>
+            <@symbol_toc_link packageSymbol/><#nt>
 </#list>
           </nav>
         </div>
+
       </div><!-- row -->
     </div><!-- container -->
 

@@ -1,17 +1,15 @@
 <#ftl output_format="HTML">
+<#include "code.inc.ftl">
 <#include "symbol.inc.ftl">
-<#macro used_by usedByList>
+<#macro used_by usedByList indent>
+    <#local I>${""?left_pad(indent * 2)}</#local>
     <#if usedByList?has_content>
 
-    <h3>Used By</h3>
-    <div class="code">
-      <table>
-        <tbody>
+${I}<h3>Used By</h3>
+      <@code_table_begin indent+1/>
         <#list usedByList as usedBySymbol>
-          <tr><td><@symbol_reference usedBySymbol/></td></tr>
+${I}    <tr><td><@symbol_reference usedBySymbol/></td></tr>
         </#list>
-        </tbody>
-      </table>
-    </div>
+      <@code_table_end indent+1/>
     </#if>
 </#macro>

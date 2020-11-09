@@ -119,11 +119,15 @@ h2, h3 {
 
 .code {
   font-family: monospace;
-  border-radius: 0.5rem;
-  background-color: rgba(0,0,0,0.05);
   padding: 0.5rem;
-  width: max-content;
   margin-top: 1rem;
+}
+
+.code-background {
+  background-color: rgba(0,0,0,0.05);
+  border-radius: 0.5rem;
+  padding: 1rem;
+  width: max-content;
 }
 
 .code td {
@@ -148,5 +152,6 @@ del {
 }
 
 .svg {
-  max-width: 100%;
+  width: 100%;
+  overflow-x: auto;
 }

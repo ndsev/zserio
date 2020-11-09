@@ -1,41 +1,40 @@
 <#ftl output_format="HTML">
 <#include "doc_comment.inc.ftl">
 <#include "compound.inc.ftl">
+<#include "code.inc.ftl">
 <#include "usedby.inc.ftl">
 <#include "svg_diagram.inc.ftl">
+<#assign indent = 5>
+<#assign I>${""?left_pad(indent * 2)}</#assign>
 <#assign structureHeading>
-    <i>Structure</i><#if templateParameters?has_content> template</#if> ${symbol.name}
+    <i>Structure</i><#if templateParameters?has_content> template</#if> ${symbol.name}<#t>
 </#assign>
 
-    <h2 class="anchor" id="${symbol.htmlLink.htmlAnchor}">
+${I}<h2 class="anchor" id="${symbol.htmlLink.htmlAnchor}">
 <#if docComments.isDeprecated>
-      <span class="deprecated">(deprecated) </span>
-      <del>${structureHeading}</del>
+${I}  <span class="deprecated">(deprecated) </span>
+${I}  <del>${structureHeading}</del>
 <#else>
-      ${structureHeading}
+${I}  ${structureHeading}
 </#if>
-    </h2>
-    <@doc_comments docComments 2, false/>
+${I}</h2>
+    <@doc_comments docComments, indent, false/>
 
-    <div class="code">
-      <table>
-        <tbody>
-          <tr><td colspan=3>struct ${symbol.name}<@compound_template_parameters templateParameters/><#rt>
-            <#lt><@compound_parameters parameters/></td></tr>
-          <tr><td colspan=3>{</td></tr>
-          <@compound_fields fields/>
+    <@code_table_begin indent/>
+${I}  <tr><td colspan=3>struct ${symbol.name}<@compound_template_parameters templateParameters/><#rt>
+        <#lt><@compound_parameters parameters/></td></tr>
+${I}  <tr><td colspan=3>{</td></tr>
+      <@compound_fields fields, indent+1/>
 <#if functions?has_content>
-          <tr><td colspan=3>&nbsp;</td></tr>
-          <@compound_functions functions/>
+${I}  <tr><td colspan=3>&nbsp;</td></tr>
+      <@compound_functions functions, indent+1/>
 </#if>
-          <tr><td colspan=3>};</td></tr>
-        </tbody>
-      </table>
-    </div>
-    <@compound_member_details fields/>
-    <@compound_function_details functions/>
-    <@used_by usedByList/>
+${I}  <tr><td colspan=3>};</td></tr>
+    <@code_table_end indent/>
+    <@compound_member_details fields, indent/>
+    <@compound_function_details functions, indent/>
+    <@used_by usedByList, indent/>
 <#if collaborationDiagramSvg??>
 
-    <@collaboration_diagram collaborationDiagramSvg/>
+    <@collaboration_diagram collaborationDiagramSvg, indent/>
 </#if>

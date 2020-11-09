@@ -1,34 +1,25 @@
 <#ftl output_format="HTML">
 <#include "doc_comment.inc.ftl">
+<#include "code.inc.ftl">
 <#include "symbol.inc.ftl">
-<#macro imports importNodes>
+<#macro imports importNodes indent>
+    <#local I>${""?left_pad(indent * 2)}</#local>
     <#if importNodes?has_content>
         <#list importNodes as importNode>
             <#if importNode.docComments.commentsList?has_content>
                 <#if !importNode?is_first>
-          <@import_end_table/>
+    <@code_table_end indent/>
                 </#if>
-          <@doc_comments importNode.docComments, 5, false/>
+    <@doc_comments importNode.docComments, indent, false/>
             </#if>
             <#if importNode.docComments.commentsList?has_content || importNode?is_first>
-          <@import_begin_table/>
+    <@code_table_begin indent/>
             </#if>
-              <tr><td>
-                import <@symbol_reference importNode.importedPackageSymbol/>.<#rt>
-                  <#lt><#if importNode.importedSymbol??><@symbol_reference importNode.importedSymbol/><#else>*</#if>;
-              </td></tr>
+${I}  <tr><td>
+${I}    import <@symbol_reference importNode.importedPackageSymbol/>.<#rt>
+          <#lt><#if importNode.importedSymbol??><@symbol_reference importNode.importedSymbol/><#else>*</#if>;
+${I}  </td></tr>
         </#list>
-          <@import_end_table/>
+    <@code_table_end indent/>
     </#if>
-</#macro>
-
-<#macro import_begin_table>
-          <div class="code">
-          <table>
-            <tbody>
-</#macro>
-
-<#macro import_end_table>
-            </tbody>
-          </table></div>
 </#macro>
