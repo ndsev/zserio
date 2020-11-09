@@ -3,19 +3,32 @@
 <#include "symbol.inc.ftl">
 <#macro imports importNodes>
     <#if importNodes?has_content>
-          <div class="code">
-          <table>
-            <tbody>
         <#list importNodes as importNode>
-              <tr><td>
-                <@doc_comments importNode.docComments, 8, false/>
-              </td></tr>
+            <#if importNode.docComments.commentsList?has_content>
+                <#if !importNode?is_first>
+          <@import_end_table/>
+                </#if>
+          <@doc_comments importNode.docComments, 5, false/>
+            </#if>
+            <#if importNode.docComments.commentsList?has_content || importNode?is_first>
+          <@import_begin_table/>
+            </#if>
               <tr><td>
                 import <@symbol_reference importNode.importedPackageSymbol/>.<#rt>
                   <#lt><#if importNode.importedSymbol??><@symbol_reference importNode.importedSymbol/><#else>*</#if>;
               </td></tr>
         </#list>
+          <@import_end_table/>
+    </#if>
+</#macro>
+
+<#macro import_begin_table>
+          <div class="code">
+          <table>
+            <tbody>
+</#macro>
+
+<#macro import_end_table>
             </tbody>
           </table></div>
-    </#if>
 </#macro>
