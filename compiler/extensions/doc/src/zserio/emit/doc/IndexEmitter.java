@@ -23,7 +23,6 @@ class IndexEmitter extends HtmlDefaultEmitter
         final String htmlRootDirectory = ".";
         context = new TemplateDataContext(outputPathName, extensionParameters, withSvgDiagrams, usedByCollector,
                 rootPackage, htmlRootDirectory);
-
     }
 
     @Override

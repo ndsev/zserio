@@ -39,10 +39,11 @@ h2.anchor, h3.anchor {
   padding: 0.375rem 0.75rem;
   font-size: 1rem;
   line-height: 1.5rem;
+  border-color: rgba(0,0,0,0.1);
 }
 
 #search:focus {
-  border-color: rgba(0, 0, 0, 0.2);
+  border-color: rgba(0,0,0, 0.2);
   box-shadow: 0 0 0 3px rgba(0,0,0,0.1);
 }
 
