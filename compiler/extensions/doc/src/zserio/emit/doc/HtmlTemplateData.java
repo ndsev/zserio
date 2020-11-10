@@ -1,8 +1,8 @@
 package zserio.emit.doc;
 
-import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.List;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 import zserio.ast.AstNode;
 import zserio.ast.DocumentableAstNode;
@@ -25,10 +25,10 @@ public class HtmlTemplateData
                 SymbolCollaborationDotEmitter.getSvgSymbolCollaborationHtmlLink(astNode,
                         context.getSymbolCollaborationDirectory()) : null;
 
-        usedByList = new ArrayList<SymbolTemplateData>();
+        usedBySymbols = new TreeSet<SymbolTemplateData>();
         for (AstNode usedByNode : usedByCollector.getUsedByTypes(astNode))
         {
-            usedByList.add(createSymbol(context, usedByNode));
+            usedBySymbols.add(createSymbol(context, usedByNode));
         }
     }
 
@@ -47,9 +47,9 @@ public class HtmlTemplateData
         return collaborationDiagramSvg;
     }
 
-    public Iterable<SymbolTemplateData> getUsedByList()
+    public Iterable<SymbolTemplateData> getUsedBySymbols()
     {
-        return usedByList;
+        return usedBySymbols;
     }
 
     // TODO[Mi-L@]: This same logic is used on several places. Improve!
@@ -60,8 +60,8 @@ public class HtmlTemplateData
         // use instantitiation reference instead of instantiation to get template with it's argument
         if (symbolNode instanceof ZserioTemplatableType)
         {
-            ZserioTemplatableType instance = (ZserioTemplatableType)symbolNode;
-            ZserioTemplatableType template = instance.getTemplate();
+            final ZserioTemplatableType instance = (ZserioTemplatableType)symbolNode;
+            final ZserioTemplatableType template = instance.getTemplate();
             if (template != null)
             {
                 final Iterator<TypeReference> instantiationReferenceIterator =
@@ -77,5 +77,5 @@ public class HtmlTemplateData
     private final DocCommentsTemplateData docComments;
     private final SymbolTemplateData symbol;
     private final String collaborationDiagramSvg;
-    private final List<SymbolTemplateData> usedByList;
+    private final SortedSet<SymbolTemplateData> usedBySymbols;
 }

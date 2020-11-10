@@ -174,7 +174,7 @@ class UsedByCollector extends DefaultTreeWalker
     /**
      * Gets zserio types which are used by given type.
      *
-     * @param type Zserio type for which to return used zserio types.
+     * @param type Zserio type for which to return a set.
      *
      * @return Set of all zserio types used by a given type.
      */
@@ -196,10 +196,10 @@ class UsedByCollector extends DefaultTreeWalker
     /**
      * Gets types which use given zserio type.
      *
-     * @param type            Zserio type for which to return a list.
+     * @param type            Zserio type for which to return a set.
      * @param usedByTypeClass Zserio type which will be returned.
      *
-     * @return List of zserio types which use given zserio type.
+     * @return Set of zserio types which use given zserio type.
      */
     public Set<AstNode> getUsedByTypes(AstNode type)
     {
@@ -219,7 +219,7 @@ class UsedByCollector extends DefaultTreeWalker
     /**
      * Gets choice cases which use given enumeration item.
      *
-     * @param enumItem Enumeration item for which to return a list.
+     * @param enumItem Enumeration item for which to return a set.
      *
      * @return Set of choice cases which use given enumeration item.
      */
@@ -233,7 +233,7 @@ class UsedByCollector extends DefaultTreeWalker
     /**
      * Gets choice cases which use given bitmask value.
      *
-     * @param bitmaskValue Bitmask value for which to return a list.
+     * @param bitmaskValue Bitmask value for which to return a set.
      *
      * @return Set of choice cases which use given bitmask item.
      */

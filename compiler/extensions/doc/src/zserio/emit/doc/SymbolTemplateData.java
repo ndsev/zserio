@@ -36,6 +36,8 @@ public class SymbolTemplateData implements Comparable<SymbolTemplateData>
     public int compareTo(SymbolTemplateData other)
     {
         int result = name.compareTo(other.name);
+        if (result == 0)
+            result = compareTemplateArguments(other);
         if (result == 0 && htmlLink != null && other.htmlLink != null)
             result = htmlLink.getHtmlPage().compareTo(other.htmlLink.getHtmlPage());
 
@@ -101,6 +103,17 @@ public class SymbolTemplateData implements Comparable<SymbolTemplateData>
 
         private final String htmlPage;
         private final String htmlAnchor;
+    }
+
+    private int compareTemplateArguments(SymbolTemplateData other)
+    {
+        int result = 0;
+        int minSize = Math.min(templateArguments.size(), other.templateArguments.size());
+        for (int i = 0; i < minSize && result == 0; ++i)
+            result = templateArguments.get(i).compareTo(other.templateArguments.get(i));
+        if (result == 0)
+            result = templateArguments.size() - other.templateArguments.size();
+        return result;
     }
 
     private final String name;

@@ -43,7 +43,7 @@ ${I}    <div class="doc"><span>see: </span>case <@symbol_reference seeSymbol.mem
 ${I}  </dd>
 </#list>
 ${I}</dl>
-    <@used_by usedByList, indent/>
+    <@used_by usedBySymbols, indent/>
 <#if collaborationDiagramSvg??>
 
     <@collaboration_diagram collaborationDiagramSvg, indent/>

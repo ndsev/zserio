@@ -22,7 +22,7 @@ ${I}  <tr><td>
 ${I}    subtype <@symbol_reference typeSymbol/> ${symbol.name};
 ${I}  </td></tr>
     <@code_table_end indent/>
-    <@used_by usedByList, indent/>
+    <@used_by usedBySymbols, indent/>
 <#if collaborationDiagramSvg??>
 
     <@collaboration_diagram collaborationDiagramSvg, indent/>

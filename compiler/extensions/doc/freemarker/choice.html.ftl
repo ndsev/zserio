@@ -182,7 +182,7 @@ ${I}  </dd>
 </#if>
 ${I}</dl>
     <@compound_function_details functions, indent/>
-    <@used_by usedByList, indent/>
+    <@used_by usedBySymbols, indent/>
 <#if collaborationDiagramSvg??>
 
     <@collaboration_diagram collaborationDiagramSvg, indent/>

@@ -33,7 +33,7 @@ ${I}  <tr><td colspan=3>};</td></tr>
     <@code_table_end indent/>
     <@compound_member_details fields, indent/>
     <@compound_function_details functions, indent/>
-    <@used_by usedByList, indent/>
+    <@used_by usedBySymbols, indent/>
 <#if collaborationDiagramSvg??>
 
     <@collaboration_diagram collaborationDiagramSvg, indent/>
