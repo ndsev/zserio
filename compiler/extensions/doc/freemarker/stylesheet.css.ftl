@@ -147,6 +147,11 @@ h2, h3 {
 .code td.indent.empty {
   padding-left: 0;
   width: 5.5ex;
+  min-width: 5.5ex;
+}
+
+dd {
+  padding-left: 1em;
 }
 
 .deprecated {
