@@ -22,8 +22,8 @@ ${I}  <tr><td>
 ${I}    const <@symbol_reference typeSymbol/> ${symbol.name} = ${value};
 ${I}  </td></tr>
     <@code_table_end indent/>
-    <@used_by usedBySymbols, indent/>
+    <@used_by symbol, usedBySymbols, indent/>
 <#if collaborationDiagramSvg??>
 
-    <@collaboration_diagram collaborationDiagramSvg, indent/>
+    <@collaboration_diagram symbol, collaborationDiagramSvg, indent/>
 </#if>

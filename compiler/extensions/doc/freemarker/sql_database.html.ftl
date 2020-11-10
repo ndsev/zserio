@@ -23,8 +23,8 @@ ${I}  <tr><td colspan=3>{</td></tr>
       <@compound_fields fields, indent+1/>
 ${I}  <tr><td colspan=3>};</td></tr>
     <@code_table_end indent/>
-    <@compound_member_details fields, indent/>
+    <@compound_member_details symbol, fields, indent/>
 <#if collaborationDiagramSvg??>
 
-    <@collaboration_diagram collaborationDiagramSvg, indent/>
+    <@collaboration_diagram symbol, collaborationDiagramSvg, indent/>
 </#if>

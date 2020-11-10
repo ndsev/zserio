@@ -93,25 +93,25 @@ ${I}</tr>
     </#if>
 </#macro>
 
-<#macro compound_member_details fields indent>
+<#macro compound_member_details symbol fields indent>
     <#local I>${""?left_pad(indent * 2)}</#local>
     <#if fields?has_content>
 
-${I}<h3>Member Details</h3>
+${I}<h3 class="anchor" id="${symbol.htmlLink.htmlAnchor}_member_details">Member Details</h3>
 
 ${I}<dl>
         <#list fields as field>
-${I}  <dt class="memberItem">
-${I}    <a class="anchor" id="${field.symbol.htmlLink.htmlAnchor}">
+${I}  <dt>
+${I}    <span class="anchor" id="${field.symbol.htmlLink.htmlAnchor}">
             <#if field.docComments.isDeprecated>
 ${I}      <span class="deprecated">(deprecated) </span>
 ${I}      <del>${field.symbol.name}</del>:
             <#else>
 ${I}      ${field.symbol.name}:
             </#if>
-${I}    </a>
+${I}    </span>
 ${I}  </dt>
-${I}  <dd class="memberDetail">
+${I}  <dd>
         <@doc_comments field.docComments, indent+2/>
 ${I}  </dd>
         </#list>
@@ -119,11 +119,11 @@ ${I}</dl>
     </#if>
 </#macro>
 
-<#macro compound_function_details functions indent>
+<#macro compound_function_details symbol functions indent>
     <#local I>${""?left_pad(indent * 2)}</#local>
     <#if functions?has_content>
 
-${I}<h3>Function Details</h3>
+${I}<h3 class="anchor" id="${symbol.htmlLink.htmlAnchor}_function_details">Function Details</h3>
 
 ${I}<dl>
         <#list functions as function>
@@ -134,17 +134,17 @@ ${I}</dl>
 </#macro>
 
 <#macro compound_function_detail function indent>
-${I}<dt class="memberItem">
-${I}  <a class="anchor" id="${function.symbol.htmlLink.htmlAnchor}">
+${I}<dt>
+${I}  <span class="anchor" id="${function.symbol.htmlLink.htmlAnchor}">
     <#if function.docComments.isDeprecated>
 ${I}    <span class="deprecated">(deprecated) </span>
 ${I}    <del>${function.symbol.name}()</del>:
     <#else>
 ${I}    ${function.symbol.name}():
     </#if>
-${I}  </a>
+${I}  </span>
 ${I}</dt>
-${I}<dd class="memberDetail">
+${I}<dd>
       <@doc_comments function.docComments, indent+1/>
 ${I}</dd>
 </#macro>

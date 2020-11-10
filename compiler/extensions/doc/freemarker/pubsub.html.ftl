@@ -29,12 +29,12 @@ ${I}  <tr><td>};</td></tr>
     <@code_table_end indent/>
 <#if messageList?has_content>
 
-${I}<h3>Pubsub messages</h3>
+${I}<h3 class="anchor" id="${symbol.htmlLink.htmlAnchor}_messages">Pubsub messages</h3>
 
 ${I}<dl>
     <#list messageList as message>
-${I}  <dt class="memberItem"><a class="anchor" id="${message.symbol.htmlLink.htmlAnchor}">${message.symbol.name}:</a></dt>
-${I}  <dd class="memberDetail">
+${I}  <dt><span class="anchor" id="${message.symbol.htmlLink.htmlAnchor}">${message.symbol.name}:</span></dt>
+${I}  <dd>
         <@doc_comments message.docComments, indent+2/>
 ${I}  </dd>
     </#list>
@@ -42,5 +42,5 @@ ${I}</dl>
 </#if>
 <#if collaborationDiagramSvg??>
 
-    <@collaboration_diagram collaborationDiagramSvg, indent/>
+    <@collaboration_diagram symbol, collaborationDiagramSvg, indent/>
 </#if>

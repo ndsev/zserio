@@ -31,10 +31,10 @@ ${I}  <tr><td colspan=3>&nbsp;</td></tr>
 </#if>
 ${I}  <tr><td colspan=3>};</td></tr>
     <@code_table_end indent/>
-    <@compound_member_details fields, indent/>
-    <@compound_function_details functions, indent/>
-    <@used_by usedBySymbols, indent/>
+    <@compound_member_details symbol, fields, indent/>
+    <@compound_function_details symbol, functions, indent/>
+    <@used_by symbol, usedBySymbols, indent/>
 <#if collaborationDiagramSvg??>
 
-    <@collaboration_diagram collaborationDiagramSvg, indent/>
+    <@collaboration_diagram symbol, collaborationDiagramSvg, indent/>
 </#if>

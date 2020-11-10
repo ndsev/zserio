@@ -29,12 +29,12 @@ ${I}  <tr><td>};</td></tr>
     <@code_table_end indent/>
 <#if methodList?has_content>
 
-${I}<h3>Service methods</h3>
+${I}<h3 class="anchor" id="${symbol.htmlLink.htmlAnchor}_methods">Service methods</h3>
 
 ${I}<dl>
     <#list methodList as method>
-${I}  <dt class="memberItem"><a class="anchor" id="${method.symbol.htmlLink.htmlAnchor}">${method.symbol.name}:</a></dt>
-${I}  <dd class="memberDetail">
+${I}  <dt><span class="anchor" id="${method.symbol.htmlLink.htmlAnchor}">${method.symbol.name}:</span></dt>
+${I}  <dd>
         <@doc_comments method.docComments, indent+2/>
 ${I}  </dd>
     </#list>
@@ -42,5 +42,5 @@ ${I}</dl>
 </#if>
 <#if collaborationDiagramSvg??>
 
-    <@collaboration_diagram collaborationDiagramSvg, indent/>
+    <@collaboration_diagram symbol, collaborationDiagramSvg, indent/>
 </#if>

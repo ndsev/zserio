@@ -97,20 +97,20 @@ ${I}  <@compound_functions functions, indent+1/>
 ${I}  <tr><td colspan=3>};</td></tr>
     <@code_table_end indent/>
 
-${I}<h3>Case and Member Details</h3>
+${I}<h3 class="anchor" id="${symbol.htmlLink.htmlAnchor}_case_member_details">Case and Member Details</h3>
 
 ${I}<dl>
 <#list caseMemberList as caseMember>
-${I}  <dt class="memberItem">
+${I}  <dt>
 ${I}    Case(s):
 ${I}  </dt>
 ${I}  <dd>
 ${I}    <dl>
     <#list caseMember.caseList as case>
-${I}      <dt class="memberItem">
-${I}        <a class="anchor" id="${case.symbol.htmlLink.htmlAnchor}">${case.expression}</a>
+${I}      <dt>
+${I}        <span class="anchor" id="${case.symbol.htmlLink.htmlAnchor}">${case.expression}</span>
 ${I}      </dt>
-${I}      <dd class="memberDetail">
+${I}      <dd>
             <@doc_comments case.docComments, indent+4/>
         <#if case.seeSymbol??>
 ${I}        <div class="doc"><span>see: </span>item <@symbol_reference case.seeSymbol.memberSymbol/> <#rt>
@@ -120,23 +120,23 @@ ${I}      </dd>
     </#list>
 ${I}    </dl>
 ${I}  </dd>
-${I}  <dt class="memberItem">
+${I}  <dt>
 ${I}    Member:
 ${I}  </dt>
 ${I}  <dd>
 ${I}    <dl>
   <#if caseMember.field??>
-${I}      <dt class="memberItem">
-${I}        <a class="anchor" id="${caseMember.field.symbol.htmlLink.htmlAnchor}">${caseMember.field.symbol.name}:</a>
+${I}      <dt>
+${I}        <span class="anchor" id="${caseMember.field.symbol.htmlLink.htmlAnchor}">${caseMember.field.symbol.name}:</span>
 ${I}      </dt>
-${I}      <dd class="memberDetail">
+${I}      <dd>
             <@doc_comments caseMember.field.docComments, indent+4/>
 ${I}      </dd>
   <#else>
-${I}      <dt class="memberItem">
+${I}      <dt>
 ${I}        <span>no member data</span>
 ${I}      </dt>
-${I}      <dd class="memberDetail">
+${I}      <dd>
 ${I}        <br/>
 ${I}      </dd>
   </#if>
@@ -144,36 +144,36 @@ ${I}    </dl>
 ${I}  </dd>
 </#list>
 <#if defaultMember??>
-${I}  <dt class="memberItem">
+${I}  <dt>
 ${I}    Case:
 ${I}  </dt>
 ${I}  <dd>
 ${I}    <dl>
-${I}      <dt class="memberItem">
-${I}        <a class="anchor" id="${defaultMember.symbol.htmlLink.htmlAnchor}">${defaultMember.symbol.name}</a>
+${I}      <dt>
+${I}        <span class="anchor" id="${defaultMember.symbol.htmlLink.htmlAnchor}">${defaultMember.symbol.name}</span>
 ${I}      </dt>
-${I}      <dd class="memberDetail">
+${I}      <dd>
             <@doc_comments defaultMember.docComments, indent+4/>
 ${I}      </dd>
 ${I}    </dl>
 ${I}  </dd>
-${I}  <dt class="memberItem">
+${I}  <dt>
 ${I}    Member:
 ${I}  </dt>
 ${I}  <dd>
 ${I}    <dl>
   <#if defaultMember.field??>
-${I}      <dt class="memberItem">
-${I}        <a class="anchor" id="${defaultMember.field.symbol.htmlLink.htmlAnchor}">${defaultMember.field.symbol.name}:</a>
+${I}      <dt>
+${I}        <span class="anchor" id="${defaultMember.field.symbol.htmlLink.htmlAnchor}">${defaultMember.field.symbol.name}:</span>
 ${I}      </dt>
-${I}      <dd class="memberDetail">
+${I}      <dd>
             <@doc_comments defaultMember.field.docComments, indent+4/>
 ${I}      </dd>
   <#else>
-${I}      <dt class="memberItem">
+${I}      <dt>
 ${I}        <span>no member data</span>
 ${I}      </dt>
-${I}      <dd class="memberDetail">
+${I}      <dd>
 ${I}        <br/>
 ${I}      </dd>
   </#if>
@@ -181,9 +181,9 @@ ${I}    </dl>
 ${I}  </dd>
 </#if>
 ${I}</dl>
-    <@compound_function_details functions, indent/>
-    <@used_by usedBySymbols, indent/>
+    <@compound_function_details symbol, functions, indent/>
+    <@used_by symbol, usedBySymbols, indent/>
 <#if collaborationDiagramSvg??>
 
-    <@collaboration_diagram collaborationDiagramSvg, indent/>
+    <@collaboration_diagram symbol, collaborationDiagramSvg, indent/>
 </#if>

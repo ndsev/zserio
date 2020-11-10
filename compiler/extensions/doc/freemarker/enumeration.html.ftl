@@ -29,12 +29,12 @@ ${I}  </tr>
 ${I}  <tr><td colspan=3>};</td></tr>
     <@code_table_end indent/>
 
-${I}<h3>Item Details</h3>
+${I}<h3 class="anchor" id="${symbol.htmlLink.htmlAnchor}_item_details">Item Details</h3>
 
 ${I}<dl>
 <#list items as item>
-${I}  <dt class="memberItem"><a class="anchor" id="${item.symbol.htmlLink.htmlAnchor}">${item.symbol.name}:</a></dt>
-${I}  <dd class="memberDetail">
+${I}  <dt><span class="anchor" id="${item.symbol.htmlLink.htmlAnchor}">${item.symbol.name}:</span></dt>
+${I}  <dd>
         <@doc_comments item.docComments, indent+2/>
   <#list item.seeSymbols as seeSymbol>
 ${I}    <div class="doc"><span>see: </span>case <@symbol_reference seeSymbol.memberSymbol/> <#rt>
@@ -43,8 +43,8 @@ ${I}    <div class="doc"><span>see: </span>case <@symbol_reference seeSymbol.mem
 ${I}  </dd>
 </#list>
 ${I}</dl>
-    <@used_by usedBySymbols, indent/>
+    <@used_by symbol, usedBySymbols, indent/>
 <#if collaborationDiagramSvg??>
 
-    <@collaboration_diagram collaborationDiagramSvg, indent/>
+    <@collaboration_diagram symbol, collaborationDiagramSvg, indent/>
 </#if>
