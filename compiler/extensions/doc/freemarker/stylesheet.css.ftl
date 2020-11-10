@@ -133,13 +133,18 @@ h2, h3 {
 
 .code td {
   padding-right: 1ex;
+  white-space: nowrap;
 }
 
-td.indent {
+.code td:last-child {
+  width: 100%; /* make last column the only one which is epanding to preserve whole table compact */
+}
+
+.code td.indent {
   padding-left: 5.5ex;
 }
 
-td.indent.empty {
+.code td.indent.empty {
   padding-left: 0;
   width: 5.5ex;
 }
