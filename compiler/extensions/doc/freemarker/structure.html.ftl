@@ -26,7 +26,9 @@ ${I}  <tr><td colspan=3>struct ${symbol.name}<@compound_template_parameters temp
 ${I}  <tr><td colspan=3>{</td></tr>
       <@compound_fields fields, indent+1/>
 <#if functions?has_content>
+    <#if fields?has_content>
 ${I}  <tr><td colspan=3>&nbsp;</td></tr>
+    </#if>
       <@compound_functions functions, indent+1/>
 </#if>
 ${I}  <tr><td colspan=3>};</td></tr>

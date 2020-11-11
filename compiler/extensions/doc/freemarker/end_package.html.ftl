@@ -22,6 +22,7 @@
     <script>
       // anchorjs setup
       anchors.add(".anchor");
+      anchors.add(".anchor-md");
 
       // search logic
       function escapeRegex(string) {

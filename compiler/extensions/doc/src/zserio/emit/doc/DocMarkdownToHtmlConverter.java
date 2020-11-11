@@ -3,6 +3,7 @@ package zserio.emit.doc;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.commonmark.node.Node;
@@ -16,6 +17,9 @@ import org.commonmark.renderer.html.HtmlRenderer;
 import zserio.ast.AstLocation;
 import zserio.tools.ZserioToolPrinter;
 
+import org.commonmark.renderer.html.AttributeProvider;
+import org.commonmark.renderer.html.AttributeProviderContext;
+import org.commonmark.renderer.html.AttributeProviderFactory;
 import org.commonmark.renderer.html.CoreHtmlNodeRenderer;
 import org.commonmark.renderer.html.HtmlNodeRendererContext;
 import org.commonmark.renderer.html.HtmlNodeRendererFactory;
@@ -42,6 +46,16 @@ class DocMarkdownToHtmlConverter
                             public NodeRenderer create(HtmlNodeRendererContext context)
                             {
                                 return new ResourcesRenderer(context, docResourceManager, location);
+                            }
+                        }
+                )
+                .attributeProviderFactory(
+                        new AttributeProviderFactory()
+                        {
+                            @Override
+                            public AttributeProvider create(AttributeProviderContext arg0)
+                            {
+                                return new AnchorAttributeProvider();
                             }
                         }
                 )
@@ -102,5 +116,15 @@ class DocMarkdownToHtmlConverter
 
         private final DocResourceManager docResourceManager;
         private final AstLocation location;
+    }
+
+    private static class AnchorAttributeProvider implements AttributeProvider
+    {
+        @Override
+        public void setAttributes(Node node, String tagName, Map<String, String> attributes)
+        {
+            if (attributes.containsKey("id"))
+                attributes.put("class", "anchor-md");
+        }
     }
 }

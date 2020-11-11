@@ -1,8 +1,10 @@
 /* Hack due to the sticky header. */
-.anchor {
+.anchor,
+.anchor-md {
   scroll-margin-top: 3.75rem;
 }
-h2.anchor, h3.anchor {
+h2.anchor,
+h3.anchor {
   padding-top: 0.75rem;
   scroll-margin-top: 3rem;
   border-top: 3px solid rgba(0,0,0,0.1);
@@ -87,7 +89,9 @@ h1 {
   margin-bottom: 1rem;
 }
 
-h2, h3 {
+.doc h1,
+h2,
+h3 {
   margin-top: 1rem;
   margin-bottom: 1rem;
 }
@@ -137,7 +141,7 @@ h2, h3 {
 }
 
 .code td:last-child {
-  width: 100%; /* make last column the only one which is epanding to preserve whole table compact */
+  width: 100%; /* make last columns theonly ones which are epanding to preserve whole table compact */
 }
 
 .code td.indent {
