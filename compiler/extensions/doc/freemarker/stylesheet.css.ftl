@@ -3,8 +3,7 @@
 .anchor-md {
   scroll-margin-top: 3.75rem;
 }
-h2.anchor,
-h3.anchor {
+h2.anchor { /* symbols in package */
   padding-top: 0.75rem;
   scroll-margin-top: 3rem;
   border-top: 3px solid rgba(0,0,0,0.1);
