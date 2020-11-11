@@ -14,7 +14,7 @@ class TemplateDataContext
             UsedByCollector usedByCollector, Package rootPackage, String htmlRootDirectory)
     {
         this(outputPathName, extensionParameters, withSvgDiagrams, usedByCollector, rootPackage,
-                htmlRootDirectory, "");
+                htmlRootDirectory, ".");
     }
 
     public TemplateDataContext(String outputPathName, Parameters extensionParameters, boolean withSvgDiagrams,
@@ -25,18 +25,18 @@ class TemplateDataContext
         this.usedByCollector = usedByCollector;
         this.docExpressionFormatter = new ExpressionFormatter(new DocExpressionFormattingPolicy());
         this.docResourceManager = new DocResourceManager(outputPathName, extensionParameters,
-                DocDefaultEmitter.CONTENT_DIRECTORY, rootPackage);
+                DocDirectories.CONTENT_DIRECTORY, rootPackage);
 
         contentDirectory = getHtmlDirectory(htmlRootDirectory, htmlCurrentDirectory,
-                DocDefaultEmitter.CONTENT_DIRECTORY);
+                DocDirectories.CONTENT_DIRECTORY);
         cssDirectory = getHtmlDirectory(htmlRootDirectory, htmlCurrentDirectory,
-                DocDefaultEmitter.CSS_DIRECTORY);
+                DocDirectories.CSS_DIRECTORY);
         jsDirectory = getHtmlDirectory(htmlRootDirectory, htmlCurrentDirectory,
-                DocDefaultEmitter.JS_DIRECTORY);
+                DocDirectories.JS_DIRECTORY);
         resourcesDirectory = getHtmlDirectory(htmlRootDirectory, htmlCurrentDirectory,
-                DocDefaultEmitter.RESOURCES_DIRECTORY);
+                DocDirectories.RESOURCES_DIRECTORY);
         symbolCollaborationDirectory = getHtmlDirectory(htmlRootDirectory, htmlCurrentDirectory,
-                DocDefaultEmitter.SYMBOL_COLLABORATION_DIRECTORY);
+                DocDirectories.SYMBOL_COLLABORATION_DIRECTORY);
     }
 
     public boolean getWithSvgDiagrams()

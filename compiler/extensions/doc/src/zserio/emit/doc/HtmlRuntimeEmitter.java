@@ -24,9 +24,9 @@ class HtmlRuntimeEmitter
         try
         {
             final String[] jarRuntimeSubdirs = {
-                    DocDefaultEmitter.CSS_DIRECTORY,
-                    DocDefaultEmitter.JS_DIRECTORY,
-                    DocDefaultEmitter.RESOURCES_DIRECTORY};
+                    DocDirectories.CSS_DIRECTORY,
+                    DocDirectories.JS_DIRECTORY,
+                    DocDirectories.RESOURCES_DIRECTORY};
             for (String jarRuntimeSubdir : jarRuntimeSubdirs)
             {
                 final List<String> jarResources = getJarRuntimeResources(jarRuntimeSubdir);

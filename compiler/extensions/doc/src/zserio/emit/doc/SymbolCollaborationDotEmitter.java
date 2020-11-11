@@ -23,7 +23,7 @@ class SymbolCollaborationDotEmitter extends DotDefaultEmitter
 
         this.outputPathName = outputPathName;
 
-        final String htmlRootDirectory = ".." + File.separator + "..";
+        final String htmlRootDirectory = ".." + File.separator + ".." + File.separator + "..";
         context = new TemplateDataContext(outputPathName, extensionParameters, withSvgDiagrams, usedByCollector,
                 rootPackage, htmlRootDirectory);
     }
@@ -73,9 +73,11 @@ class SymbolCollaborationDotEmitter extends DotDefaultEmitter
         final UsedByCollector usedByCollector = context.getUsedByCollector();
         final SymbolCollaborationDotTemplateData templateData = new SymbolCollaborationDotTemplateData(context,
                 node, usedByCollector.getUsedTypes(node), usedByCollector.getUsedByTypes(node));
-        final String dotHtmlLink = getDotSymbolCollaborationHtmlLink(node, SYMBOL_COLLABORATION_DIRECTORY);
+        final String dotHtmlLink = getDotSymbolCollaborationHtmlLink(node,
+                DocDirectories.SYMBOL_COLLABORATION_DIRECTORY);
         final File outputDotFile = new File(outputPathName, dotHtmlLink);
-        final String svgHtmlLink = getSvgSymbolCollaborationHtmlLink(node, SYMBOL_COLLABORATION_DIRECTORY);
+        final String svgHtmlLink = getSvgSymbolCollaborationHtmlLink(node,
+                DocDirectories.SYMBOL_COLLABORATION_DIRECTORY);
         final File outputSvgFile = new File(outputPathName, svgHtmlLink);
         processDotTemplate(TEMPLATE_SOURCE_NAME, templateData, outputDotFile, outputSvgFile);
     }

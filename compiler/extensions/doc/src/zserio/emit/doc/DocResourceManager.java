@@ -109,7 +109,7 @@ class DocResourceManager
         LocalResource mappedResource = resources.get(resource);
         if (mappedResource == null)
         {
-            final Path resourcesDir = outputRoot.resolve(RESOURCES_DIR);
+            final Path resourcesDir = outputRoot.resolve(DocDirectories.DOC_RESOURCES_DIRECTORY);
             if (resource.getExtension().equals(MARKDOWN_EXTENSION))
             {
                 mappedResource = addMappedResource(resourcesDir, resource.getBaseName(), HTML_EXTENSION);
@@ -322,7 +322,6 @@ class DocResourceManager
     private final HashMap<LocalResource, LocalResource> resources = new HashMap<LocalResource, LocalResource>();
     private final HashSet<LocalResource> mappedResources = new HashSet<LocalResource>();
 
-    private final static String RESOURCES_DIR = "resources";
     private final static String LOCAL_FILE_SCHEME = "file";
     private final static String MARKDOWN_EXTENSION = ".md";
     private final static String HTML_EXTENSION = ".html";

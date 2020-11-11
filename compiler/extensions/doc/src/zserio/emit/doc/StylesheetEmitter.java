@@ -12,7 +12,7 @@ class StylesheetEmitter
 {
     static void emit(String outputPathName) throws ZserioEmitException
     {
-        final File outputDirectory = new File(outputPathName, DocDefaultEmitter.CSS_DIRECTORY);
+        final File outputDirectory = new File(outputPathName, DocDirectories.CSS_DIRECTORY);
         processTemplate(STYLESHEET_TEMPLATE_SOURCE_NAME, new File(outputDirectory, STYLESHEET_FILE_NAME));
     }
 
