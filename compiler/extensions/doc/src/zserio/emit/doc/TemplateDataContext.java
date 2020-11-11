@@ -2,7 +2,6 @@ package zserio.emit.doc;
 
 import java.io.File;
 
-import zserio.ast.Package;
 import zserio.emit.common.ExpressionFormatter;
 import zserio.tools.Parameters;
 import zserio.tools.StringJoinUtil;
@@ -11,21 +10,21 @@ class TemplateDataContext
 {
     // TODO[mikir] To split out DocResourceManager and put it only to PackageEmitter?!?
     public TemplateDataContext(String outputPathName, Parameters extensionParameters, boolean withSvgDiagrams,
-            UsedByCollector usedByCollector, Package rootPackage, String htmlRootDirectory)
+            UsedByCollector usedByCollector, PackageCollector packageCollector, String htmlRootDirectory)
     {
-        this(outputPathName, extensionParameters, withSvgDiagrams, usedByCollector, rootPackage,
+        this(outputPathName, extensionParameters, withSvgDiagrams, usedByCollector, packageCollector,
                 htmlRootDirectory, ".");
     }
 
     public TemplateDataContext(String outputPathName, Parameters extensionParameters, boolean withSvgDiagrams,
-            UsedByCollector usedByCollector, Package rootPackage, String htmlRootDirectory,
+            UsedByCollector usedByCollector, PackageCollector packageCollector, String htmlRootDirectory,
             String htmlCurrentDirectory)
     {
         this.withSvgDiagrams = withSvgDiagrams;
         this.usedByCollector = usedByCollector;
         this.docExpressionFormatter = new ExpressionFormatter(new DocExpressionFormattingPolicy());
         this.docResourceManager = new DocResourceManager(outputPathName, extensionParameters,
-                DocDirectories.CONTENT_DIRECTORY, rootPackage);
+                DocDirectories.CONTENT_DIRECTORY, packageCollector);
 
         contentDirectory = getHtmlDirectory(htmlRootDirectory, htmlCurrentDirectory,
                 DocDirectories.CONTENT_DIRECTORY);

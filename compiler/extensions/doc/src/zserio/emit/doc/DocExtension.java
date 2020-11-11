@@ -6,7 +6,6 @@ import java.util.List;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.OptionGroup;
 
-import zserio.ast.Package;
 import zserio.ast.Root;
 import zserio.emit.common.ZserioEmitException;
 import zserio.tools.Extension;
@@ -77,6 +76,10 @@ public class DocExtension implements Extension
         final UsedByCollector usedByCollector = new UsedByCollector();
         rootNode.walk(usedByCollector);
 
+        // collect packages
+        final PackageCollector packageCollector = new PackageCollector(parameters);
+        rootNode.accept(packageCollector);
+
         // collect package symbols
         final SymbolCollector symbolCollector = new SymbolCollector();
         rootNode.walk(symbolCollector);
@@ -88,13 +91,13 @@ public class DocExtension implements Extension
         StylesheetEmitter.emit(outputDir);
 
         // emit DOT and HTML files (DOT files must be before HTML files)
-        final Package rootPackage = rootNode.getRootPackage();
         final List<DocDefaultEmitter> emitters = new ArrayList<DocDefaultEmitter>();
         emitters.add(new SymbolCollaborationDotEmitter(outputDir, parameters, withSvgDiagrams, dotExecutable,
-                usedByCollector, rootPackage));
+                usedByCollector, packageCollector));
         emitters.add(new PackageEmitter(outputDir, parameters, withSvgDiagrams, usedByCollector,
-                symbolCollector, rootPackage));
-        emitters.add(new IndexEmitter(outputDir, parameters, withSvgDiagrams, usedByCollector, rootPackage));
+                symbolCollector, packageCollector));
+        emitters.add(new IndexEmitter(outputDir, parameters, withSvgDiagrams, usedByCollector,
+                packageCollector));
         for (DocDefaultEmitter emitter : emitters)
             rootNode.walk(emitter);
     }

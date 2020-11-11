@@ -28,7 +28,7 @@ import zserio.tools.StringJoinUtil;
 class PackageEmitter extends HtmlDefaultEmitter
 {
     public PackageEmitter(String outputPathName, Parameters extensionParameters, boolean withSvgDiagrams,
-            UsedByCollector usedByCollector, SymbolCollector symbolCollector, Package rootPackage)
+            UsedByCollector usedByCollector, SymbolCollector symbolCollector, PackageCollector packageCollector)
     {
         super();
 
@@ -38,7 +38,7 @@ class PackageEmitter extends HtmlDefaultEmitter
         final String htmlRootDirectory = "..";
         final String htmlCurrentDirectory = DocDirectories.CONTENT_DIRECTORY;
         context = new TemplateDataContext(outputPathName, extensionParameters, withSvgDiagrams, usedByCollector,
-                rootPackage, htmlRootDirectory, htmlCurrentDirectory);
+                packageCollector, htmlRootDirectory, htmlCurrentDirectory);
     }
 
     @Override
@@ -153,11 +153,6 @@ class PackageEmitter extends HtmlDefaultEmitter
     {
         final String packageFileName = PackageFileNameMapper.getFileName(pkg);
 
-        return getPackageHtmlLink(packageFileName, htmlContentDirectory);
-    }
-
-    public static String getPackageHtmlLink(String packageFileName, String htmlContentDirectory)
-    {
         return StringJoinUtil.joinStrings(htmlContentDirectory, packageFileName + HTML_FILE_EXTENSION,
                 File.separator);
     }

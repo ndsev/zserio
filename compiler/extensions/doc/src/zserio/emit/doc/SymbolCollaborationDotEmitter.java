@@ -17,7 +17,7 @@ class SymbolCollaborationDotEmitter extends DotDefaultEmitter
 {
     public SymbolCollaborationDotEmitter(String outputPathName, Parameters extensionParameters,
             boolean withSvgDiagrams, String dotExecutable, UsedByCollector usedByCollector,
-            Package rootPackage)
+            PackageCollector packageCollector)
     {
         super(withSvgDiagrams, dotExecutable);
 
@@ -25,7 +25,7 @@ class SymbolCollaborationDotEmitter extends DotDefaultEmitter
 
         final String htmlRootDirectory = ".." + File.separator + ".." + File.separator + "..";
         context = new TemplateDataContext(outputPathName, extensionParameters, withSvgDiagrams, usedByCollector,
-                rootPackage, htmlRootDirectory);
+                packageCollector, htmlRootDirectory);
     }
 
     @Override

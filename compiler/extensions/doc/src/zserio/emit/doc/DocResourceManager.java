@@ -1,6 +1,5 @@
 package zserio.emit.doc;
 
-import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -11,29 +10,22 @@ import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
 
 import zserio.ast.AstLocation;
 import zserio.ast.Package;
-import zserio.ast.PackageName;
 import zserio.tools.HashUtil;
 import zserio.tools.Parameters;
 
 class DocResourceManager
 {
     public DocResourceManager(String outputRoot, Parameters extensionParameters, String htmlContentDirectory,
-            Package rootPackage)
+            PackageCollector packageCollector)
     {
         final String pathName = extensionParameters.getPathName();
         this.sourceRoot = Paths.get(pathName != null ? pathName : "").toAbsolutePath();
-        // strip out directories which can be in source file name
-        final String sourceMainFileName = new File(extensionParameters.getFileName()).getName();
-        this.sourceMainBase = getFileNameBase(sourceMainFileName);
-        this.sourceMainExtension = getFileNameExtension(sourceMainFileName);
         this.outputRoot = Paths.get(outputRoot != null ? outputRoot : "").toAbsolutePath();
-        this.topLevelPackageNameIds = extensionParameters.getTopLevelPackageNameIds();
         this.htmlContentDirectory = htmlContentDirectory;
-        this.rootPackage = rootPackage;
+        this.packageCollector = packageCollector;
 
         this.currentSourceDir = this.sourceRoot;
         this.currentOutputDir = this.outputRoot;
@@ -72,34 +64,11 @@ class DocResourceManager
 
     private LocalResource mapLocalResource(LocalResource resource) throws ResourceException
     {
-        // TODO[mikir] Make map source file to package
-        final boolean isZserioPackage = resource.getExtension().equals(sourceMainExtension) &&
-                resource.getPath().startsWith(sourceRoot);
-
-        if (isZserioPackage)
+        final Package zserioPackage = packageCollector.getPathToPackageMap().get(resource.getFullPath());
+        if (zserioPackage != null)
         {
-            final Path relativeSourcePath = sourceRoot.relativize(resource.getPath());
-            final String resourceBaseName = resource.getBaseName();
-            String packageHtmlLink;
-            if (resourceBaseName.equals(sourceMainBase))
-            {
-                // this resource is a root package => root package is available
-                // TODO[mikir] Be aware of possible directory in sourceMainBase, this does not check dirs!
-                packageHtmlLink = PackageEmitter.getPackageHtmlLink(rootPackage, htmlContentDirectory);
-            }
-            else
-            {
-                // this resource is not a root package => we must reconstruct package name
-                final PackageName.Builder packageNameBuilder = new PackageName.Builder();
-                packageNameBuilder.addIds(topLevelPackageNameIds);
-                for (Path relativeSourcePathPart : relativeSourcePath)
-                    packageNameBuilder.addId(relativeSourcePathPart.toString());
-                packageNameBuilder.addId(resourceBaseName);
-                final PackageName packageName = packageNameBuilder.get();
-                packageHtmlLink = PackageEmitter.getPackageHtmlLink(packageName.toString(),
-                        htmlContentDirectory);
-            }
-
+            final String packageHtmlLink = PackageEmitter.getPackageHtmlLink(
+                    zserioPackage, htmlContentDirectory);
             return new LocalResource(outputRoot, packageHtmlLink, resource.getAnchor());
         }
 
@@ -196,20 +165,6 @@ class DocResourceManager
         return true;
     }
 
-    private static String getFileNameBase(String fileName)
-    {
-        final int lastDotIndex = fileName.lastIndexOf('.');
-
-        return (lastDotIndex != -1) ? fileName.substring(0, lastDotIndex) : fileName;
-    }
-
-    private static String getFileNameExtension(String fileName)
-    {
-        final int lastDotIndex = fileName.lastIndexOf('.');
-
-        return (lastDotIndex != -1) ? fileName.substring(lastDotIndex) : "" ;
-    }
-
     private static class ResourceException extends Exception
     {
         public ResourceException(String message)
@@ -234,8 +189,21 @@ class DocResourceManager
 
             final String fileName = anchorIndex != -1
                     ? fileNameWithAnchor.substring(0, anchorIndex) : fileNameWithAnchor;
-            baseName = DocResourceManager.getFileNameBase(fileName);
-            extension  = DocResourceManager.getFileNameExtension(fileName);
+            baseName = getFileNameBase(fileName);
+            extension  = getFileNameExtension(fileName);
+        }
+
+        public LocalResource(Path resourcePath, String destination, String anchor)
+        {
+            final Path fullPath = resourcePath.resolve(destination);
+
+            this.path = fullPath.getParent();
+            final String fileName = fullPath.getName(fullPath.getNameCount() - 1).toString();
+
+            baseName = getFileNameBase(fileName);
+            extension  = getFileNameExtension(fileName);
+
+            this.anchor = anchor;
         }
 
         public LocalResource(Path path, String baseName, String extension, String anchor)
@@ -243,19 +211,6 @@ class DocResourceManager
             this.path = path;
             this.baseName = baseName;
             this.extension = extension;
-            this.anchor = anchor;
-        }
-
-        public LocalResource(Path resourcePath, String fullFileName, String anchor)
-        {
-            final Path fullPath = resourcePath.resolve(fullFileName);
-
-            this.path = fullPath.getParent();
-            final String fileName = fullPath.getName(fullPath.getNameCount() - 1).toString();
-
-            baseName = DocResourceManager.getFileNameBase(fileName);
-            extension  = DocResourceManager.getFileNameExtension(fileName);
-
             this.anchor = anchor;
         }
 
@@ -313,6 +268,20 @@ class DocResourceManager
             return anchor;
         }
 
+        private static String getFileNameBase(String fileName)
+        {
+            final int lastDotIndex = fileName.lastIndexOf('.');
+
+            return (lastDotIndex != -1) ? fileName.substring(0, lastDotIndex) : fileName;
+        }
+
+        private static String getFileNameExtension(String fileName)
+        {
+            final int lastDotIndex = fileName.lastIndexOf('.');
+
+            return (lastDotIndex != -1) ? fileName.substring(lastDotIndex) : "" ;
+        }
+
         private final Path path;
         private final String baseName;
         private final String extension;
@@ -327,12 +296,9 @@ class DocResourceManager
     private final static String HTML_EXTENSION = ".html";
 
     private final Path sourceRoot;
-    private final String sourceMainBase;
-    private final String sourceMainExtension;
     private final Path outputRoot;
-    private final List<String> topLevelPackageNameIds;
     private final String htmlContentDirectory;
-    private final Package rootPackage;
+    private final PackageCollector packageCollector;
 
     private Path currentSourceDir;
     private Path currentOutputDir;
