@@ -75,7 +75,7 @@ public class DocExtension implements Extension
         rootNode.walk(usedByCollector);
 
         // collect packages
-        final PackageCollector packageCollector = new PackageCollector(parameters);
+        final PackageCollector packageCollector = new PackageCollector();
         rootNode.accept(packageCollector);
 
         // collect package symbols
