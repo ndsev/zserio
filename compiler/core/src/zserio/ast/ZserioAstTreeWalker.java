@@ -228,10 +228,13 @@ public class ZserioAstTreeWalker extends ZserioAstWalker
             throw new UncheckedZserioEmitException(e);
         }
 
-        final TemplatableType instantiation = (TemplatableType)instantiateType.getTypeReference().getType();
-        // emit only explicit instantiations moved to a different package
-        if (instantiateType.getPackage() != instantiation.getTemplate().getPackage())
-            instantiation.accept(this);
+        if (walker.traverseTemplateInstantiations())
+        {
+            final TemplatableType instantiation = (TemplatableType)instantiateType.getTypeReference().getType();
+            // emit only explicit instantiations moved to a different package
+            if (instantiateType.getPackage() != instantiation.getTemplate().getPackage())
+                instantiation.accept(this);
+        }
     }
 
     private boolean needsVisitInstantiations(ZserioTemplatableType template)

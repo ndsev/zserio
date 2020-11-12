@@ -182,7 +182,7 @@ class AstNodeNameMapper
         @Override
         public void visitTypeReference(TypeReference typeReference)
         {
-            name = typeReference.getReferencedTypeName();
+            name = typeReference.getReferencedTypeName(); // covers also template instantiations
         }
 
         @Override

@@ -109,8 +109,8 @@ public class CompoundTypeTemplateData extends HtmlTemplateData
                 final ArrayInstantiation arrayInstantiation = (ArrayInstantiation)typeInstantiation;
                 isArrayImplicit = arrayInstantiation.isImplicit();
                 arrayRange = "[" +
-                            formatExpression(arrayInstantiation.getLengthExpression(), docExpressionFormatter) +
-                            "]";
+                        formatExpression(arrayInstantiation.getLengthExpression(), docExpressionFormatter) +
+                        "]";
                 typeInstantiation = arrayInstantiation.getElementTypeInstantiation();
             }
             else

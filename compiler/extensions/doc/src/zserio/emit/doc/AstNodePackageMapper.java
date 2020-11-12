@@ -19,6 +19,7 @@ import zserio.ast.TypeInstantiation;
 import zserio.ast.TypeReference;
 import zserio.ast.UnionType;
 import zserio.ast.ZserioAstDefaultVisitor;
+import zserio.ast.ZserioTemplatableType;
 import zserio.ast.ZserioType;
 
 class AstNodePackageMapper
@@ -114,8 +115,19 @@ class AstNodePackageMapper
         public void visitTypeReference(TypeReference typeReference)
         {
             final ZserioType type = typeReference.getType();
-            if (type != null) // only if it isn't a template parameter
+            if (!typeReference.getTemplateArguments().isEmpty()) // we never show instantiations directly
+            {
+                final ZserioTemplatableType instantiationOrTemplate =
+                        (ZserioTemplatableType)typeReference.getType();
+                if (instantiationOrTemplate.getTemplate() != null) // is an instantiation
+                    instantiationOrTemplate.getTemplate().accept(this);
+                else // is a template instantiated within another template
+                    instantiationOrTemplate.accept(this);
+            }
+            else if (type != null) // only if it isn't a template parameter
+            {
                 type.accept(this);
+            }
         }
 
         @Override
