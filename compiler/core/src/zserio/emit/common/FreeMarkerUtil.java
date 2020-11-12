@@ -59,6 +59,21 @@ public class FreeMarkerUtil
      * @param templateName      The template name with the path relatively to "/freemarker" directory.
      * @param templateDataModel The template data model to apply.
      * @param outputFile        The output to be generated.
+     *
+     * @throws ZserioEmitException In case of any template error.
+     */
+    public static void processTemplate(String templateName, Object templateDataModel, File outputFile)
+            throws ZserioEmitException
+    {
+        processTemplate(templateName, templateDataModel, outputFile, false);
+    }
+
+    /**
+     * Processes FreeMarker template with the provided data model and generates output.
+     *
+     * @param templateName      The template name with the path relatively to "/freemarker" directory.
+     * @param templateDataModel The template data model to apply.
+     * @param outputFile        The output to be generated.
      * @param amalgamate        True if the generated output will be amalgamated to the output file.
      *
      * @throws ZserioEmitException In case of any template error.

@@ -1,11 +1,9 @@
 package zserio.emit.doc;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.OptionGroup;
 
+import zserio.ast.Package;
 import zserio.ast.Root;
 import zserio.emit.common.ZserioEmitException;
 import zserio.tools.Extension;
@@ -90,16 +88,19 @@ public class DocExtension implements Extension
         // emit CSS styles file
         StylesheetEmitter.emit(outputDir);
 
-        // emit DOT and HTML files (DOT files must be before HTML files)
-        final List<DocDefaultEmitter> emitters = new ArrayList<DocDefaultEmitter>();
-        emitters.add(new SymbolCollaborationDotEmitter(outputDir, parameters, withSvgDiagrams, dotExecutable,
-                usedByCollector, packageCollector));
-        emitters.add(new PackageEmitter(outputDir, parameters, withSvgDiagrams, usedByCollector,
-                symbolCollector, packageCollector));
-        emitters.add(new IndexEmitter(outputDir, parameters, withSvgDiagrams, usedByCollector,
-                packageCollector));
-        for (DocDefaultEmitter emitter : emitters)
-            rootNode.walk(emitter);
+        // emit DOT files
+        SymbolCollaborationDotEmitter.emit(outputDir, parameters, withSvgDiagrams, dotExecutable,
+                usedByCollector, packageCollector);
+
+        // emit HTML index file
+        final Package rootPackage = rootNode.getRootPackage();
+        IndexEmitter.emit(outputDir, parameters, withSvgDiagrams, usedByCollector, packageCollector,
+                rootPackage);
+
+        // emit HTML files
+        final PackageEmitter packageEmitter = new PackageEmitter(outputDir, parameters, withSvgDiagrams,
+                usedByCollector, symbolCollector, packageCollector);
+        rootNode.walk(packageEmitter);
     }
 
     private final static String OptionDoc = "doc";

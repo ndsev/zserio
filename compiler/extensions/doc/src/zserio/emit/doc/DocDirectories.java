@@ -2,13 +2,14 @@ package zserio.emit.doc;
 
 import java.io.File;
 
-public class DocDirectories
+class DocDirectories
 {
-    static final String CONTENT_DIRECTORY = "content";
-    static final String CSS_DIRECTORY = "css";
-    static final String JS_DIRECTORY = "js";
-    static final String RESOURCES_DIRECTORY = "resources";
+    public static final String CONTENT_DIRECTORY = "content";
+    public static final String CSS_DIRECTORY = "css";
+    public static final String JS_DIRECTORY = "js";
+    public static final String RESOURCES_DIRECTORY = "resources";
 
-    static final String DOC_RESOURCES_DIRECTORY = RESOURCES_DIRECTORY + File.separator + "doc";
-    static final String SYMBOL_COLLABORATION_DIRECTORY = RESOURCES_DIRECTORY + File.separator + "diagrams";
+    public static final String DOC_RESOURCES_DIRECTORY = RESOURCES_DIRECTORY + File.separator + "doc";
+    public static final String SYMBOL_COLLABORATION_DIRECTORY = RESOURCES_DIRECTORY + File.separator +
+            "diagrams";
 }

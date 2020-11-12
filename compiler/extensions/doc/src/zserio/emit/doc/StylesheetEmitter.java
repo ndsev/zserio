@@ -2,7 +2,6 @@ package zserio.emit.doc;
 
 import java.io.File;
 
-import zserio.emit.common.FreeMarkerUtil;
 import zserio.emit.common.ZserioEmitException;
 
 /**
@@ -13,13 +12,8 @@ class StylesheetEmitter
     static void emit(String outputPathName) throws ZserioEmitException
     {
         final File outputDirectory = new File(outputPathName, DocDirectories.CSS_DIRECTORY);
-        processTemplate(STYLESHEET_TEMPLATE_SOURCE_NAME, new File(outputDirectory, STYLESHEET_FILE_NAME));
-    }
-
-    static void processTemplate(String templateName, File outputFile) throws ZserioEmitException
-    {
-        FreeMarkerUtil.processTemplate(DotDefaultEmitter.DOC_TEMPLATE_LOCATION + templateName, null, outputFile,
-                false);
+        final File outputFile = new File(outputDirectory, STYLESHEET_FILE_NAME);
+        DocFreeMarkerUtil.processTemplate(STYLESHEET_TEMPLATE_SOURCE_NAME, null, outputFile);
     }
 
     static final String STYLESHEET_FILE_NAME = "stylesheet.css";

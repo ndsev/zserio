@@ -3,6 +3,8 @@ package zserio.emit.doc;
 import java.io.File;
 import java.io.IOException;
 
+import zserio.emit.common.ZserioEmitException;
+
 /**
  * The class converts the generated dot files into svg format.
  */
@@ -19,7 +21,14 @@ class DotToSvgConverter
     {
         final String commandWithArguments[] = { dotExecutable, "-V" };
 
-        return runDotExecutable(commandWithArguments);
+        try
+        {
+            return runDotExecutable(commandWithArguments);
+        }
+        catch (ZserioEmitException exception)
+        {
+            return false;
+        }
     }
 
     /**
@@ -29,33 +38,34 @@ class DotToSvgConverter
      * @param inputDotFile Name of the dot file to convert.
      * @param outputSvgFile Name of the svg file to generate.
      *
-     * @return True in case of success, otherwise false.
+     * @throw ZserioEmitException In case of fatal error.
      */
-    public static boolean convert(String dotExecutable, File inputDotFile, File outputSvgFile)
+    public static void convert(String dotExecutable, File inputDotFile, File outputSvgFile)
+            throws ZserioEmitException
     {
         final String commandWithArguments[] = { dotExecutable, inputDotFile.toString(), "-T", "svg", "-o",
                                                 outputSvgFile.toString() };
-
-        return runDotExecutable(commandWithArguments);
+        if (!runDotExecutable(commandWithArguments))
+            throw new ZserioEmitException("Failure to convert '" + inputDotFile + "' to SVG format!");
     }
 
-    private static boolean runDotExecutable(String[] commandWithArguments)
+    private static boolean runDotExecutable(String[] commandWithArguments) throws ZserioEmitException
     {
-        boolean success = false;
         try
         {
             final Runtime runtime = Runtime.getRuntime();
             final Process process = runtime.exec(commandWithArguments);
-            if (process.waitFor() == 0)
-                success = true;
+
+            // wait for the result code
+            return (process.waitFor() == 0);
         }
         catch (IOException exception)
         {
+            throw new ZserioEmitException("Dot executable: " + exception.getMessage());
         }
         catch (InterruptedException exception)
         {
+            throw new ZserioEmitException("Dot executable: " + exception.getMessage());
         }
-
-        return success;
     }
 }
