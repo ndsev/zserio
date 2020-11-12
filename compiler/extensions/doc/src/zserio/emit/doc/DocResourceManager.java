@@ -31,34 +31,34 @@ class DocResourceManager
         this.currentOutputDir = this.outputRoot;
     }
 
-    void setCurrentSourceDir(Path currentSourceDir)
+    public void setCurrentSourceDir(Path currentSourceDir)
     {
         this.currentSourceDir = currentSourceDir != null ? currentSourceDir.toAbsolutePath() : sourceRoot;
     }
 
-    Path getCurrentSourceDir()
+    public Path getCurrentSourceDir()
     {
         return currentSourceDir;
     }
 
-    void setCurrentOutputDir(Path currentOutputDir)
+    public void setCurrentOutputDir(Path currentOutputDir)
     {
         this.currentOutputDir = currentOutputDir != null ? currentOutputDir.toAbsolutePath() : outputRoot;
     }
 
-    String addResource(String destination) throws ResourceException
+    public String addResource(String resourceLink) throws ResourceException
     {
-        if (isLocalResource(destination))
+        if (isLocalResource(resourceLink))
         {
-            final LocalResource localResource = new LocalResource(currentSourceDir, destination);
+            final ResourceLink link = new ResourceLink(resourceLink);
+            final LocalResource localResource = new LocalResource(currentSourceDir, link.getPath());
             final LocalResource mappedResource = mapLocalResource(localResource);
 
-            return currentOutputDir.relativize(mappedResource.getFullPath()).toString() +
-                    localResource.getAnchor();
+            return currentOutputDir.relativize(mappedResource.getFullPath()).toString() + link.getAnchor();
         }
         else
         {
-            return destination;
+            return resourceLink;
         }
     }
 
@@ -69,7 +69,7 @@ class DocResourceManager
         {
             final String packageHtmlLink = PackageEmitter.getPackageHtmlLink(
                     zserioPackage, htmlContentDirectory);
-            return new LocalResource(outputRoot, packageHtmlLink, resource.getAnchor());
+            return new LocalResource(outputRoot, packageHtmlLink);
         }
 
         if (!resource.getFullPath().toFile().exists())
@@ -138,12 +138,12 @@ class DocResourceManager
 
     private LocalResource addMappedResource(Path path, String baseName, String extension)
     {
-        LocalResource mappedResource = new LocalResource(path, baseName, extension, "");
+        LocalResource mappedResource = new LocalResource(path, baseName, extension);
         int duplicityMarkerIndex = 0;
         while (!mappedResources.add(mappedResource))
         {
             mappedResource = new LocalResource(
-                    path, baseName + "(" + (++duplicityMarkerIndex) + ")", extension, "");
+                    path, baseName + "(" + (++duplicityMarkerIndex) + ")", extension);
         }
         return mappedResource;
     }
@@ -175,54 +175,54 @@ class DocResourceManager
         private static final long serialVersionUID = 1L;
     }
 
+    private static class ResourceLink
+    {
+        public ResourceLink(String resourceLink)
+        {
+            final int anchorIndex = resourceLink.lastIndexOf('#');
+
+            path = anchorIndex != -1 ? resourceLink.substring(0, anchorIndex) : resourceLink;
+            anchor = anchorIndex != -1 ? resourceLink.substring(anchorIndex) : "";
+        }
+
+        public String getPath()
+        {
+            return path;
+        }
+
+        public String getAnchor()
+        {
+            return anchor;
+        }
+
+        private final String path;
+        private final String anchor;
+    }
+
     private static class LocalResource
     {
-        public LocalResource(Path currentDir, String destination)
+        public LocalResource(Path currentDir, String resourcePath)
         {
-            final Path resourcePath = currentDir.resolve(destination).toAbsolutePath().normalize();
-
-            path = resourcePath.getParent();
-            final String fileNameWithAnchor = resourcePath.getName(resourcePath.getNameCount() - 1).toString();
-
-            final int anchorIndex = fileNameWithAnchor.lastIndexOf('#');
-            anchor = anchorIndex != -1 ? fileNameWithAnchor.substring(anchorIndex) : "";
-
-            final String fileName = anchorIndex != -1
-                    ? fileNameWithAnchor.substring(0, anchorIndex) : fileNameWithAnchor;
-            baseName = getFileNameBase(fileName);
-            extension  = getFileNameExtension(fileName);
-        }
-
-        public LocalResource(Path resourcePath, String destination, String anchor)
-        {
-            final Path fullPath = resourcePath.resolve(destination);
-
+            final Path fullPath = currentDir.resolve(resourcePath).toAbsolutePath().normalize();
             this.path = fullPath.getParent();
+
             final String fileName = fullPath.getName(fullPath.getNameCount() - 1).toString();
 
-            baseName = getFileNameBase(fileName);
-            extension  = getFileNameExtension(fileName);
-
-            this.anchor = anchor;
+            final int lastDotIndex = fileName.lastIndexOf('.');
+            baseName = (lastDotIndex != -1) ? fileName.substring(0, lastDotIndex) : fileName;
+            extension  = (lastDotIndex != -1) ? fileName.substring(lastDotIndex) : "";
         }
 
-        public LocalResource(Path path, String baseName, String extension, String anchor)
+        public LocalResource(Path path, String baseName, String extension)
         {
             this.path = path;
             this.baseName = baseName;
             this.extension = extension;
-            this.anchor = anchor;
         }
 
         public Path getFullPath()
         {
             return path.resolve(baseName + extension);
-        }
-
-        @Override
-        public String toString()
-        {
-            return getFullPath().toString() + anchor;
         }
 
         @Override
@@ -263,29 +263,9 @@ class DocResourceManager
             return extension;
         }
 
-        public String getAnchor()
-        {
-            return anchor;
-        }
-
-        private static String getFileNameBase(String fileName)
-        {
-            final int lastDotIndex = fileName.lastIndexOf('.');
-
-            return (lastDotIndex != -1) ? fileName.substring(0, lastDotIndex) : fileName;
-        }
-
-        private static String getFileNameExtension(String fileName)
-        {
-            final int lastDotIndex = fileName.lastIndexOf('.');
-
-            return (lastDotIndex != -1) ? fileName.substring(lastDotIndex) : "" ;
-        }
-
         private final Path path;
         private final String baseName;
         private final String extension;
-        private final String anchor;
     }
 
     private final HashMap<LocalResource, LocalResource> resources = new HashMap<LocalResource, LocalResource>();
