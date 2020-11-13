@@ -40,7 +40,10 @@ public class UnionType extends CompoundType
     {
         final List<Parameter> instantiatedTypeParameters = new ArrayList<Parameter>();
         for (Parameter typeParameter : getTypeParameters())
-            instantiatedTypeParameters.add(typeParameter.instantiate(getTemplateParameters(), templateArguments));
+        {
+            instantiatedTypeParameters.add(
+                    typeParameter.instantiate(getTemplateParameters(), templateArguments));
+        }
 
         final List<Field> instantiatedFields = new ArrayList<Field>();
         for (Field field : getFields())

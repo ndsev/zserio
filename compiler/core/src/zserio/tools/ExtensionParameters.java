@@ -3,9 +3,9 @@ package zserio.tools;
 import java.util.List;
 
 /**
- * The class which handles all parameters for extensions.
+ * The class which handles all parameters for Zserio extensions.
  */
-public class ExtensionParameters implements Parameters
+public class ExtensionParameters
 {
     /**
      * Constructor from command line arguments and Zserio parser.
@@ -17,73 +17,121 @@ public class ExtensionParameters implements Parameters
         this.commandLineArguments = commandLineArguments;
     }
 
-    @Override
+    /**
+     * Checks if given command line argument exists.
+     *
+     * @param argumentName Name of the argument to check.
+     *
+     * @return true if command line argument is present, false if not.
+     */
     public boolean argumentExists(String argumentName)
     {
         return commandLineArguments.hasOption(argumentName);
     }
 
-    @Override
+    /**
+     * This method returns the value of a specific command line argument.
+     *
+     * @param argumentName Name of the argument to get the value from.
+     *
+     * @return Returns the value of the argument to a given command line argument.
+     */
     public String getCommandLineArg(String argumentName)
     {
         return commandLineArguments.getOptionValue(argumentName);
     }
 
-    @Override
+    /**
+     * Gets the file name of the initial Zserio file.
+     *
+     * @returns The file name of the initial Zserio file.
+     */
     public String getFileName()
     {
         return commandLineArguments.getInputFileName();
     }
 
-    @Override
+    /**
+     * Gets the pathname to Zserio source files.
+     *
+     * @returns The pathname to Zserio source files.
+     */
     public String getPathName()
     {
         return commandLineArguments.getSrcPathName();
     }
 
-    @Override
+    /**
+     * Gets the range check code flag.
+     *
+     * @returns True if range checking is enabled.
+     */
     public boolean getWithRangeCheckCode()
     {
         return commandLineArguments.getWithRangeCheckCode();
     }
 
-    @Override
+    /**
+     * Gets the Pub/Sub code flag.
+     */
     public boolean getWithPubsubCode()
     {
         return commandLineArguments.getWithPubsubCode();
     }
 
-    @Override
+    /**
+     * Gets the service code flag.
+     */
     public boolean getWithServiceCode()
     {
         return commandLineArguments.getWithServiceCode();
     }
 
-    @Override
+    /**
+     * Gets the sources amalgamation flag.
+     *
+     * @return True if amalgamated sources should be generated.
+     */
     public boolean getWithSourcesAmalgamation()
     {
         return commandLineArguments.getWithSourcesAmalgamation();
     }
 
-    @Override
+    /**
+     * Gets the SQL commands code flag.
+     *
+     * @returns True if code for SQL commands is enabled.
+     */
     public boolean getWithSqlCode()
     {
         return commandLineArguments.getWithSqlCode();
     }
 
-    @Override
+    /**
+     * Gets the include validation flag.
+     *
+     * @returns True if validation is enabled.
+     */
     public boolean getWithValidationCode()
     {
         return commandLineArguments.getWithValidationCode();
     }
 
-    @Override
+    /**
+     * Gets the writer code flag.
+     *
+     * @returns True if writer code is enabled.
+     */
     public boolean getWithWriterCode()
     {
         return commandLineArguments.getWithWriterCode();
     }
 
-    @Override
+    /**
+     * Gets the list of top level package names ids.
+     *
+     * @return The list of top level package names ids or empty list if no top level package name is specified.
+     */
     public List<String> getTopLevelPackageNameIds()
     {
         return commandLineArguments.getTopLevelPackageNameIds();

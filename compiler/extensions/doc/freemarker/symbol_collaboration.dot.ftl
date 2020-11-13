@@ -6,7 +6,7 @@ digraph ZSERIO
 {
     node [shape=box, fontsize=10];
     rankdir="LR";
-    fontsize="10";
+    fontsize=10;
     tooltip="${symbolName} collaboration diagram";
 <#list packages as package>
 
@@ -27,6 +27,6 @@ digraph ZSERIO
 </#list>
 
 <#list relations as relation>
-    "${relation.symbolNameFrom}" -> "${relation.symbolNameTo}" [label="uses", fontsize="10"];
+    "${relation.symbolNameFrom}" -> "${relation.symbolNameTo}" [label="uses", fontsize=10];
 </#list>
 }

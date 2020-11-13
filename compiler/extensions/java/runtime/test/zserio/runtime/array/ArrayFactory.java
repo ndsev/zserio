@@ -2,7 +2,6 @@ package zserio.runtime.array;
 
 import java.io.IOException;
 
-import zserio.runtime.array.ArrayWrapper;
 import zserio.runtime.io.BitStreamReader;
 
 /**

@@ -1,7 +1,7 @@
 package zserio.ast;
 
-import zserio.emit.common.TreeWalker;
-import zserio.emit.common.ZserioEmitException;
+import zserio.extension.common.TreeWalker;
+import zserio.extension.common.ZserioExtensionException;
 
 /**
  * Implementation of ZserioAstVisitor which calls appropriate TreeWalker interface for extensions.
@@ -27,9 +27,9 @@ public class ZserioAstTreeWalker extends ZserioAstWalker
             root.visitChildren(this);
             walker.endRoot(root);
         }
-        catch (ZserioEmitException e)
+        catch (ZserioExtensionException e)
         {
-            throw new UncheckedZserioEmitException(e);
+            throw new UncheckedZserioExtensionException(e);
         }
     }
 
@@ -42,9 +42,9 @@ public class ZserioAstTreeWalker extends ZserioAstWalker
             pkg.visitChildren(this);
             walker.endPackage(pkg);
         }
-        catch (ZserioEmitException e)
+        catch (ZserioExtensionException e)
         {
-            throw new UncheckedZserioEmitException(e);
+            throw new UncheckedZserioExtensionException(e);
         }
     }
 
@@ -55,9 +55,9 @@ public class ZserioAstTreeWalker extends ZserioAstWalker
         {
             walker.beginImport(importNode);
         }
-        catch (ZserioEmitException e)
+        catch (ZserioExtensionException e)
         {
-            throw new UncheckedZserioEmitException(e);
+            throw new UncheckedZserioExtensionException(e);
         }
     }
 
@@ -68,9 +68,9 @@ public class ZserioAstTreeWalker extends ZserioAstWalker
         {
             walker.beginConst(constant);
         }
-        catch (ZserioEmitException e)
+        catch (ZserioExtensionException e)
         {
-            throw new UncheckedZserioEmitException(e);
+            throw new UncheckedZserioExtensionException(e);
         }
     }
 
@@ -81,9 +81,9 @@ public class ZserioAstTreeWalker extends ZserioAstWalker
         {
             walker.beginSubtype(subtype);
         }
-        catch (ZserioEmitException e)
+        catch (ZserioExtensionException e)
         {
-            throw new UncheckedZserioEmitException(e);
+            throw new UncheckedZserioExtensionException(e);
         }
     }
 
@@ -97,9 +97,9 @@ public class ZserioAstTreeWalker extends ZserioAstWalker
             else
                 walker.beginStructure(structureType);
         }
-        catch (ZserioEmitException e)
+        catch (ZserioExtensionException e)
         {
-            throw new UncheckedZserioEmitException(e);
+            throw new UncheckedZserioExtensionException(e);
         }
     }
 
@@ -113,9 +113,9 @@ public class ZserioAstTreeWalker extends ZserioAstWalker
             else
                 walker.beginChoice(choiceType);
         }
-        catch (ZserioEmitException e)
+        catch (ZserioExtensionException e)
         {
-            throw new UncheckedZserioEmitException(e);
+            throw new UncheckedZserioExtensionException(e);
         }
     }
 
@@ -129,9 +129,9 @@ public class ZserioAstTreeWalker extends ZserioAstWalker
             else
                 walker.beginUnion(unionType);
         }
-        catch (ZserioEmitException e)
+        catch (ZserioExtensionException e)
         {
-            throw new UncheckedZserioEmitException(e);
+            throw new UncheckedZserioExtensionException(e);
         }
     }
 
@@ -142,9 +142,9 @@ public class ZserioAstTreeWalker extends ZserioAstWalker
         {
             walker.beginEnumeration(enumType);
         }
-        catch (ZserioEmitException e)
+        catch (ZserioExtensionException e)
         {
-            throw new UncheckedZserioEmitException(e);
+            throw new UncheckedZserioExtensionException(e);
         }
     }
 
@@ -155,9 +155,9 @@ public class ZserioAstTreeWalker extends ZserioAstWalker
         {
             walker.beginBitmask(bitmaskType);
         }
-        catch (ZserioEmitException e)
+        catch (ZserioExtensionException e)
         {
-            throw new UncheckedZserioEmitException(e);
+            throw new UncheckedZserioExtensionException(e);
         }
     }
 
@@ -171,9 +171,9 @@ public class ZserioAstTreeWalker extends ZserioAstWalker
             else
                 walker.beginSqlTable(sqlTableType);
         }
-        catch (ZserioEmitException e)
+        catch (ZserioExtensionException e)
         {
-            throw new UncheckedZserioEmitException(e);
+            throw new UncheckedZserioExtensionException(e);
         }
     }
 
@@ -184,9 +184,9 @@ public class ZserioAstTreeWalker extends ZserioAstWalker
         {
             walker.beginSqlDatabase(sqlDatabaseType);
         }
-        catch (ZserioEmitException e)
+        catch (ZserioExtensionException e)
         {
-            throw new UncheckedZserioEmitException(e);
+            throw new UncheckedZserioExtensionException(e);
         }
     }
 
@@ -197,9 +197,9 @@ public class ZserioAstTreeWalker extends ZserioAstWalker
         {
             walker.beginService(serviceType);
         }
-        catch (ZserioEmitException e)
+        catch (ZserioExtensionException e)
         {
-            throw new UncheckedZserioEmitException(e);
+            throw new UncheckedZserioExtensionException(e);
         }
     }
 
@@ -210,9 +210,9 @@ public class ZserioAstTreeWalker extends ZserioAstWalker
         {
             walker.beginPubsub(pubsubType);
         }
-        catch (ZserioEmitException e)
+        catch (ZserioExtensionException e)
         {
-            throw new UncheckedZserioEmitException(e);
+            throw new UncheckedZserioExtensionException(e);
         }
     }
 
@@ -223,15 +223,15 @@ public class ZserioAstTreeWalker extends ZserioAstWalker
         {
             walker.beginInstantiateType(instantiateType);
         }
-        catch (ZserioEmitException e)
+        catch (ZserioExtensionException e)
         {
-            throw new UncheckedZserioEmitException(e);
+            throw new UncheckedZserioExtensionException(e);
         }
 
         if (walker.traverseTemplateInstantiations())
         {
             final TemplatableType instantiation = (TemplatableType)instantiateType.getTypeReference().getType();
-            // emit only explicit instantiations moved to a different package
+            // walk only through explicit instantiations moved to a different package
             if (instantiateType.getPackage() != instantiation.getTemplate().getPackage())
                 instantiation.accept(this);
         }
@@ -242,31 +242,31 @@ public class ZserioAstTreeWalker extends ZserioAstWalker
         return walker.traverseTemplateInstantiations() && !template.getTemplateParameters().isEmpty();
     }
 
-    private void visitInstantiations(ZserioTemplatableType template) throws ZserioEmitException
+    private void visitInstantiations(ZserioTemplatableType template) throws ZserioExtensionException
     {
         for (ZserioTemplatableType instantiation : template.getInstantiations())
         {
-            // emit only instantiations in the current package
+            // walk only through instantiations in the current package
             if (template.getPackage() == instantiation.getPackage())
                 instantiation.accept(this);
         }
     }
 
-    static class UncheckedZserioEmitException extends RuntimeException
+    static class UncheckedZserioExtensionException extends RuntimeException
     {
-        public UncheckedZserioEmitException(ZserioEmitException originalException)
+        public UncheckedZserioExtensionException(ZserioExtensionException originalException)
         {
             this.originalException = originalException;
         }
 
-        public ZserioEmitException getOriginalException()
+        public ZserioExtensionException getOriginalException()
         {
             return originalException;
         }
 
         private static final long serialVersionUID = -7096395966484125254L;
 
-        private final ZserioEmitException originalException;
+        private final ZserioExtensionException originalException;
     }
 
     private final TreeWalker walker;

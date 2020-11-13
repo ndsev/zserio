@@ -3,8 +3,9 @@ package zserio.ast;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import zserio.emit.common.TreeWalker;
-import zserio.emit.common.ZserioEmitException;
+
+import zserio.extension.common.TreeWalker;
+import zserio.extension.common.ZserioExtensionException;
 
 /**
  * The representation of AST ROOT node.
@@ -55,16 +56,16 @@ public class Root extends AstNodeBase
      *
      * @param walker TreeWalker interface to use for walking.
      *
-     * @throws ZserioEmitException Throws in case of any error.
+     * @throws ZserioExtensionException Throws in case of any error.
      */
-    public void walk(TreeWalker walker) throws ZserioEmitException
+    public void walk(TreeWalker walker) throws ZserioExtensionException
     {
         final ZserioAstTreeWalker walkingVisitor = new ZserioAstTreeWalker(walker);
         try
         {
             this.accept(walkingVisitor);
         }
-        catch (ZserioAstTreeWalker.UncheckedZserioEmitException e)
+        catch (ZserioAstTreeWalker.UncheckedZserioExtensionException e)
         {
             throw e.getOriginalException();
         }

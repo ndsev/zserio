@@ -67,7 +67,7 @@ spotbugs.home_dir             - Location of the spotbugs tool. If not set, spotb
     <loadfile
         encoding="UTF-8"
         property="zserio_doc.version"
-        srcFile="${basedir}/src/zserio/emit/doc/DocExtensionVersion.java">
+        srcFile="${basedir}/src/zserio/extension/doc/DocExtensionVersion.java">
         <filterchain>
             <striplinebreaks/>
             <tokenfilter>
@@ -113,7 +113,7 @@ spotbugs.home_dir             - Location of the spotbugs tool. If not set, spotb
                 <include name="zserio/**"/>
             </fileset>
             <zipfileset dir="${zserio_doc.base_dir}/freemarker" includes="*.ftl" prefix="freemarker/doc"/>
-            <zipfileset dir="${zserio_doc.runtime_dir}" prefix="zserio/emit/doc/runtime"/>
+            <zipfileset dir="${zserio_doc.runtime_dir}" prefix="zserio/extension/doc/runtime"/>
             <manifest>
                 <attribute name="Class-Path" value="${3rdparty.jar_files}"/>
                 <attribute name="Implementation-Version" value="${zserio_doc.version}"/>

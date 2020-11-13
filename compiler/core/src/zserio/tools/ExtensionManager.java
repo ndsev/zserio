@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.ServiceLoader;
 
 import zserio.ast.Root;
-import zserio.emit.common.ZserioEmitException;
+import zserio.extension.common.ZserioExtensionException;
 
 /**
  * The manager to handle all Zserio extensions.
@@ -68,15 +68,15 @@ class ExtensionManager
      * Calls all available Zserio extensions to generate their output.
      *
      * @param parameters Parameters to pass to extensions.
-     * @param rootNode   The root node of Zserio types tree to use for emitting.
+     * @param rootNode   The root node of Zserio tree to process.
      *
-     * @throws ZserioEmitException Throws in case of any error in any extension.
+     * @throws ZserioExtensionException Throws in case of any error in any extension.
      */
-    public void callExtensions(ExtensionParameters parameters, Root rootNode) throws ZserioEmitException
+    public void callExtensions(ExtensionParameters parameters, Root rootNode) throws ZserioExtensionException
     {
         if (extensions.isEmpty())
         {
-            ZserioToolPrinter.printMessage("No extensions found, nothing emitted!");
+            ZserioToolPrinter.printMessage("No extensions found!");
         }
         else
         {
@@ -86,22 +86,22 @@ class ExtensionManager
                 {
                     try
                     {
-                        ZserioToolPrinter.printMessage("Emitting " + extension.getName() + " code");
+                        ZserioToolPrinter.printMessage("Calling " + extension.getName() + " extension");
                         extension.generate(parameters, rootNode);
                     }
-                    catch (ZserioEmitException exception)
+                    catch (ZserioExtensionException exception)
                     {
-                        throw new ZserioEmitException(extension.getName() + ": " + exception.getMessage());
+                        throw new ZserioExtensionException(extension.getName() + ": " + exception.getMessage());
                     }
                     catch (Throwable exception)
                     {
-                        throw new ZserioEmitException(extension.getName() + ": " +
+                        throw new ZserioExtensionException(extension.getName() + ": " +
                                 getThrowableExceptionMessage(exception));
                     }
                 }
                 else
                 {
-                    ZserioToolPrinter.printMessage("Emitting " + extension.getName() + " code is disabled");
+                    ZserioToolPrinter.printMessage("Extension " + extension.getName() + " is disabled");
                 }
             }
         }

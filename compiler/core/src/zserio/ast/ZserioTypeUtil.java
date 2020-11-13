@@ -3,7 +3,7 @@ package zserio.ast;
 import zserio.tools.StringJoinUtil;
 
 /**
- * This class implements various utilities on ZserioType common for multiple emitters.
+ * This class implements various utilities on ZserioType.
  */
 public class ZserioTypeUtil
 {

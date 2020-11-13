@@ -274,7 +274,8 @@ class CommandLineArguments
         options.addOptionGroup(sourcesAmalgamationGroup);
 
         final OptionGroup sqlCodeGroup = new OptionGroup();
-        option = new Option(OptionNameWithSqlCode, false, "enable code for relational (SQLite) parts (default)");
+        option = new Option(OptionNameWithSqlCode, false,
+                "enable code for relational (SQLite) parts (default)");
         sqlCodeGroup.addOption(option);
         option = new Option(OptionNameWithoutSqlCode, false, "disable code for relational (SQLite) parts");
         sqlCodeGroup.addOption(option);

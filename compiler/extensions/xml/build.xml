@@ -43,7 +43,7 @@ spotbugs.home_dir             - Location of the spotbugs tool. If not set, spotb
     <loadfile
         encoding="UTF-8"
         property="zserio_xml.version"
-        srcFile="${basedir}/src/zserio/emit/xml/XmlExtensionVersion.java">
+        srcFile="${basedir}/src/zserio/extension/xml/XmlExtensionVersion.java">
         <filterchain>
             <striplinebreaks/>
             <tokenfilter>

@@ -42,7 +42,7 @@ spotbugs.home_dir             - Location of the spotbugs tool. If not set, spotb
     <loadfile
         encoding="UTF-8"
         property="zserio_python.version"
-        srcFile="${basedir}/src/zserio/emit/python/PythonExtensionVersion.java">
+        srcFile="${basedir}/src/zserio/extension/python/PythonExtensionVersion.java">
         <filterchain>
             <striplinebreaks/>
             <tokenfilter>

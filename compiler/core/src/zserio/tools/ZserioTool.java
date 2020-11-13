@@ -28,7 +28,7 @@ import zserio.ast.ZserioAstTemplator;
 import zserio.ast.ZserioAstImporter;
 import zserio.ast.ZserioAstTypeResolver;
 import zserio.ast.ZserioParseTreeChecker;
-import zserio.emit.common.ZserioEmitException;
+import zserio.extension.common.ZserioExtensionException;
 
 /**
  * The main class for Zserio tool.
@@ -68,7 +68,7 @@ public class ZserioTool
             ZserioToolPrinter.printError(exception.getMessage());
             return false;
         }
-        catch (ZserioEmitException exception)
+        catch (ZserioExtensionException exception)
         {
             ZserioToolPrinter.printError(exception.getMessage());
             return false;
@@ -137,7 +137,7 @@ public class ZserioTool
     private void process() throws Exception
     {
         final Root rootNode = parse();
-        emit(rootNode);
+        callExtensions(rootNode);
         ZserioToolPrinter.printMessage("Done");
     }
 
@@ -220,7 +220,7 @@ public class ZserioTool
         }
     }
 
-    private void emit(Root rootNode) throws Exception
+    private void callExtensions(Root rootNode) throws Exception
     {
         final ExtensionParameters parameters = new ExtensionParameters(commandLineArguments);
         extensionManager.callExtensions(parameters, rootNode);

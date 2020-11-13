@@ -112,8 +112,8 @@ public abstract class CompoundType extends TemplatableType
     /**
      * Checks if this compound type needs children initialization method.
      *
-     * This is called from C++ emitter to check if the compound type has some descendant with parameters (if
-     * (some descendant has initialize method).
+     * This is called from C++ extension to check if the compound type has some descendant with parameters
+     * (if some descendant has initialize method).
      *
      * @return true if this compound type has some descendant with parameters.
      */

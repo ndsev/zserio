@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.math.BigInteger;
 
 import zserio.runtime.io.BitBuffer;
-import zserio.runtime.VarSizeUtil;
 
 /**
  * The class provides common methods to calculate bit size of an variable stored in the bit stream.

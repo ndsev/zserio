@@ -1,7 +1,7 @@
 package zserio.ast;
 
 /**
- * The base interface for all Zserio types used during emitting.
+ * The base interface for all Zserio types.
  */
 public interface ZserioType extends PackageSymbol
 {

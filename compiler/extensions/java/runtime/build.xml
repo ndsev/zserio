@@ -67,7 +67,7 @@ spotbugs.home_dir               - Location of the spotbugs tool. If not set, spo
     <loadfile
         encoding="UTF-8"
         property="zserio_java_runtime.version"
-        srcFile="${basedir}/../src/zserio/emit/java/JavaExtensionVersion.java">
+        srcFile="${basedir}/../src/zserio/extension/java/JavaExtensionVersion.java">
         <filterchain>
             <striplinebreaks/>
             <tokenfilter>
