@@ -46,7 +46,7 @@ public class CppExtension implements Extension
     }
 
     @Override
-    public void generate(ExtensionParameters parameters, Root rootNode) throws ZserioExtensionException
+    public void process(Root rootNode, ExtensionParameters parameters) throws ZserioExtensionException
     {
         final String outputDir = parameters.getCommandLineArg(OptionCpp);
 

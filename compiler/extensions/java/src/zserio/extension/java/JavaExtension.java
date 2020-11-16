@@ -43,15 +43,15 @@ public class JavaExtension implements Extension
     }
 
     @Override
-    public void generate(ExtensionParameters extensionParameters, Root rootNode) throws ZserioExtensionException
+    public void process(Root rootNode, ExtensionParameters parameters) throws ZserioExtensionException
     {
-        final String outputDir = extensionParameters.getCommandLineArg(OptionJava);
+        final String outputDir = parameters.getCommandLineArg(OptionJava);
         final JavaExtensionParameters javaParameters = new JavaExtensionParameters(outputDir);
-        generateJavaSources(javaParameters, extensionParameters, rootNode);
+        generateJavaSources(javaParameters, parameters, rootNode);
     }
 
-    private void generateJavaSources(JavaExtensionParameters javaParameters, ExtensionParameters extensionParameters,
-            Root rootNode) throws ZserioExtensionException
+    private void generateJavaSources(JavaExtensionParameters javaParameters,
+            ExtensionParameters extensionParameters, Root rootNode) throws ZserioExtensionException
     {
         final List<JavaDefaultEmitter> emitters = new ArrayList<JavaDefaultEmitter>();
         emitters.add(new BitmaskEmitter(javaParameters, extensionParameters));

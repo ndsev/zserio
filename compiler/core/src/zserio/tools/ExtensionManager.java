@@ -65,14 +65,14 @@ class ExtensionManager
     }
 
     /**
-     * Calls all available Zserio extensions to generate their output.
+     * Calls all available Zserio extensions.
      *
-     * @param parameters Parameters to pass to extensions.
      * @param rootNode   The root node of Zserio tree to process.
+     * @param parameters Parameters to pass to extensions.
      *
      * @throws ZserioExtensionException Throws in case of any error in any extension.
      */
-    public void callExtensions(ExtensionParameters parameters, Root rootNode) throws ZserioExtensionException
+    public void callExtensions(Root rootNode, ExtensionParameters parameters) throws ZserioExtensionException
     {
         if (extensions.isEmpty())
         {
@@ -87,7 +87,7 @@ class ExtensionManager
                     try
                     {
                         ZserioToolPrinter.printMessage("Calling " + extension.getName() + " extension");
-                        extension.generate(parameters, rootNode);
+                        extension.process(rootNode, parameters);
                     }
                     catch (ZserioExtensionException exception)
                     {

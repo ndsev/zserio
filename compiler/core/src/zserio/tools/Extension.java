@@ -43,12 +43,12 @@ public interface Extension
     public boolean isEnabled(ExtensionParameters parameters);
 
     /**
-     * Calls the extension to generate their output.
+     * Calls the extension to process the root node.
      *
-     * @param parameters The parameters to pass to extension.
      * @param rootNode   The root node of Zserio tree to process.
+     * @param parameters The parameters to pass to extension.
      *
      * @throws ZserioExtensionException In case of any error in extension.
      */
-    public void generate(ExtensionParameters parameters, Root rootNode) throws ZserioExtensionException;
+    public void process(Root rootNode, ExtensionParameters parameters) throws ZserioExtensionException;
 }

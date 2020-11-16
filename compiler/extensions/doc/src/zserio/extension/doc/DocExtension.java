@@ -35,7 +35,7 @@ public class DocExtension implements Extension
     }
 
     @Override
-    public void generate(ExtensionParameters parameters, Root rootNode) throws ZserioExtensionException
+    public void process(Root rootNode, ExtensionParameters parameters) throws ZserioExtensionException
     {
         final DocExtensionParameters docParameters = new DocExtensionParameters(parameters);
 

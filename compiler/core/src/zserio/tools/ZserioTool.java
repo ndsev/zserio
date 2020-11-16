@@ -137,7 +137,8 @@ public class ZserioTool
     private void process() throws Exception
     {
         final Root rootNode = parse();
-        callExtensions(rootNode);
+        final ExtensionParameters parameters = new ExtensionParameters(commandLineArguments);
+        extensionManager.callExtensions(rootNode, parameters);
         ZserioToolPrinter.printMessage("Done");
     }
 
@@ -218,12 +219,6 @@ public class ZserioTool
                 parseImportedPackages(astBuilderVisitor, parsedPackage);
             }
         }
-    }
-
-    private void callExtensions(Root rootNode) throws Exception
-    {
-        final ExtensionParameters parameters = new ExtensionParameters(commandLineArguments);
-        extensionManager.callExtensions(parameters, rootNode);
     }
 
     private final InputFileManager inputFileManager;
