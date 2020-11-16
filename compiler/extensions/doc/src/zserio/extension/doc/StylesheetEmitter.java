@@ -9,9 +9,9 @@ import zserio.extension.common.ZserioExtensionException;
  */
 class StylesheetEmitter
 {
-    static void emit(String outputPathName) throws ZserioExtensionException
+    static void emit(DocExtensionParameters docParameters) throws ZserioExtensionException
     {
-        final File outputDirectory = new File(outputPathName, DocDirectories.CSS_DIRECTORY);
+        final File outputDirectory = new File(docParameters.getOutputDir(), DocDirectories.CSS_DIRECTORY);
         final File outputFile = new File(outputDirectory, STYLESHEET_FILE_NAME);
         DocFreeMarkerUtil.processTemplate(STYLESHEET_TEMPLATE_SOURCE_NAME, null, outputFile);
     }

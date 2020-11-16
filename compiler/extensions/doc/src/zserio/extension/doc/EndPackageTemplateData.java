@@ -9,7 +9,7 @@ import zserio.extension.common.ZserioExtensionException;
 
 public class EndPackageTemplateData
 {
-    public EndPackageTemplateData(TemplateDataContext context, Package pkg,
+    public EndPackageTemplateData(PackageTemplateDataContext context, Package pkg,
             List<AstNode> packageSymbols) throws ZserioExtensionException
     {
         jsDirectory = context.getJsDirectory();

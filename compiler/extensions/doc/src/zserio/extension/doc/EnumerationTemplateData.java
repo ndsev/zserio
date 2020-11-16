@@ -13,7 +13,7 @@ import zserio.extension.common.ZserioExtensionException;
 
 public class EnumerationTemplateData extends HtmlTemplateData
 {
-    public EnumerationTemplateData(TemplateDataContext context, EnumType enumType) throws ZserioExtensionException
+    public EnumerationTemplateData(PackageTemplateDataContext context, EnumType enumType) throws ZserioExtensionException
     {
         super(context, enumType);
 
@@ -36,7 +36,7 @@ public class EnumerationTemplateData extends HtmlTemplateData
 
     public static class EnumItemTemplateData
     {
-        public EnumItemTemplateData(TemplateDataContext context, EnumType enumType, EnumItem enumItem)
+        public EnumItemTemplateData(PackageTemplateDataContext context, EnumType enumType, EnumItem enumItem)
                 throws ZserioExtensionException
         {
             symbol = SymbolTemplateDataCreator.createData(context, enumType, enumItem);

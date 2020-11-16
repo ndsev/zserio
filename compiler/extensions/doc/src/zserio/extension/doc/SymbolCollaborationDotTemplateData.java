@@ -1,8 +1,8 @@
 package zserio.extension.doc;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -21,8 +21,9 @@ public class SymbolCollaborationDotTemplateData
         symbolName = getUniqueName(symbolTemplateData);
         relations = new ArrayList<RelationTemplateData>();
 
+        // use LinkedHashMap to generate always the same ordering
         final Map<Package, PackageTemplateData> packageToTemplateDataMap =
-                new HashMap<Package, PackageTemplateData>();
+                new LinkedHashMap<Package, PackageTemplateData>();
 
         addSymbol(context, symbol, symbolTemplateData, packageToTemplateDataMap);
 

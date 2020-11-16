@@ -3,39 +3,22 @@ package zserio.extension.doc;
 import java.io.File;
 
 import zserio.extension.common.ExpressionFormatter;
-import zserio.tools.ExtensionParameters;
 import zserio.tools.StringJoinUtil;
 
 class TemplateDataContext
 {
-    // TODO[mikir] To split out DocResourceManager and put it only to PackageEmitter?!?
-    public TemplateDataContext(String outputPathName, ExtensionParameters extensionParameters,
-            boolean withSvgDiagrams, UsedByCollector usedByCollector, PackageCollector packageCollector,
+    public TemplateDataContext(boolean withSvgDiagrams, UsedByCollector usedByCollector,
             String htmlRootDirectory)
-    {
-        this(outputPathName, extensionParameters, withSvgDiagrams, usedByCollector, packageCollector,
-                htmlRootDirectory, ".");
-    }
-
-    public TemplateDataContext(String outputPathName, ExtensionParameters extensionParameters,
-            boolean withSvgDiagrams, UsedByCollector usedByCollector, PackageCollector packageCollector,
-            String htmlRootDirectory, String htmlCurrentDirectory)
     {
         this.withSvgDiagrams = withSvgDiagrams;
         this.usedByCollector = usedByCollector;
         this.docExpressionFormatter = new ExpressionFormatter(new DocExpressionFormattingPolicy());
-        this.docResourceManager = new DocResourceManager(outputPathName, extensionParameters,
-                DocDirectories.CONTENT_DIRECTORY, packageCollector);
 
-        contentDirectory = getHtmlDirectory(htmlRootDirectory, htmlCurrentDirectory,
-                DocDirectories.CONTENT_DIRECTORY);
-        cssDirectory = getHtmlDirectory(htmlRootDirectory, htmlCurrentDirectory,
-                DocDirectories.CSS_DIRECTORY);
-        jsDirectory = getHtmlDirectory(htmlRootDirectory, htmlCurrentDirectory,
-                DocDirectories.JS_DIRECTORY);
-        resourcesDirectory = getHtmlDirectory(htmlRootDirectory, htmlCurrentDirectory,
-                DocDirectories.RESOURCES_DIRECTORY);
-        symbolCollaborationDirectory = getHtmlDirectory(htmlRootDirectory, htmlCurrentDirectory,
+        contentDirectory = getHtmlDirectory(htmlRootDirectory, DocDirectories.CONTENT_DIRECTORY);
+        cssDirectory = getHtmlDirectory(htmlRootDirectory, DocDirectories.CSS_DIRECTORY);
+        jsDirectory = getHtmlDirectory(htmlRootDirectory, DocDirectories.JS_DIRECTORY);
+        resourcesDirectory = getHtmlDirectory(htmlRootDirectory, DocDirectories.RESOURCES_DIRECTORY);
+        symbolCollaborationDirectory = getHtmlDirectory(htmlRootDirectory,
                 DocDirectories.SYMBOL_COLLABORATION_DIRECTORY);
     }
 
@@ -52,11 +35,6 @@ class TemplateDataContext
     public ExpressionFormatter getExpressionFormatter()
     {
         return docExpressionFormatter;
-    }
-
-    public DocResourceManager getDocResourceManager()
-    {
-        return docResourceManager;
     }
 
     public String getContentDirectory()
@@ -84,19 +62,14 @@ class TemplateDataContext
         return symbolCollaborationDirectory;
     }
 
-    private static String getHtmlDirectory(String htmlRootDirectory, String htmlCurrentDirectory,
-            String htmlSubdirectory)
+    private static String getHtmlDirectory(String htmlRootDirectory, String htmlSubdirectory)
     {
-        if (htmlSubdirectory.equals(htmlCurrentDirectory))
-            return ".";
-
         return StringJoinUtil.joinStrings(htmlRootDirectory, htmlSubdirectory, File.separator);
     }
 
     private final boolean withSvgDiagrams;
     private final UsedByCollector usedByCollector;
     private final ExpressionFormatter docExpressionFormatter;
-    private final DocResourceManager docResourceManager;
 
     private final String contentDirectory;
     private final String cssDirectory;

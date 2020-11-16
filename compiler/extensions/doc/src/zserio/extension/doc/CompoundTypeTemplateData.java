@@ -19,7 +19,7 @@ import zserio.extension.common.ZserioExtensionException;
 
 public class CompoundTypeTemplateData extends HtmlTemplateData
 {
-    public CompoundTypeTemplateData(TemplateDataContext context, CompoundType compoundType)
+    public CompoundTypeTemplateData(PackageTemplateDataContext context, CompoundType compoundType)
             throws ZserioExtensionException
     {
         super(context, compoundType);
@@ -59,7 +59,7 @@ public class CompoundTypeTemplateData extends HtmlTemplateData
 
     public static class TemplateParameterTemplateData
     {
-        public TemplateParameterTemplateData(TemplateDataContext context, TemplateParameter templateParameter)
+        public TemplateParameterTemplateData(PackageTemplateDataContext context, TemplateParameter templateParameter)
         {
             name = templateParameter.getName();
         }
@@ -74,7 +74,7 @@ public class CompoundTypeTemplateData extends HtmlTemplateData
 
     public static class ParameterTemplateData
     {
-        public ParameterTemplateData(TemplateDataContext context, Parameter parameter)
+        public ParameterTemplateData(PackageTemplateDataContext context, Parameter parameter)
         {
             symbol = SymbolTemplateDataCreator.createData(context, parameter.getTypeReference());
             name = parameter.getName();
@@ -96,7 +96,7 @@ public class CompoundTypeTemplateData extends HtmlTemplateData
 
     public static class FieldTemplateData
     {
-        public FieldTemplateData(TemplateDataContext context, CompoundType compoundType, Field field)
+        public FieldTemplateData(PackageTemplateDataContext context, CompoundType compoundType, Field field)
                 throws ZserioExtensionException
         {
             symbol = SymbolTemplateDataCreator.createData(context, compoundType, field);
@@ -253,7 +253,7 @@ public class CompoundTypeTemplateData extends HtmlTemplateData
 
     public static class FunctionTemplateData
     {
-        public FunctionTemplateData(TemplateDataContext context, CompoundType compoundType, Function function)
+        public FunctionTemplateData(PackageTemplateDataContext context, CompoundType compoundType, Function function)
                 throws ZserioExtensionException
         {
             symbol = SymbolTemplateDataCreator.createData(context, compoundType, function);

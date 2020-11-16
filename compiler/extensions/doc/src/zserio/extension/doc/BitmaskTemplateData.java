@@ -13,7 +13,7 @@ import zserio.extension.common.ZserioExtensionException;
 
 public class BitmaskTemplateData extends HtmlTemplateData
 {
-    public BitmaskTemplateData(TemplateDataContext context, BitmaskType bitmaskType) throws ZserioExtensionException
+    public BitmaskTemplateData(PackageTemplateDataContext context, BitmaskType bitmaskType) throws ZserioExtensionException
     {
         super(context, bitmaskType);
 
@@ -38,7 +38,7 @@ public class BitmaskTemplateData extends HtmlTemplateData
 
     public static class BitmaskValueTemplateData
     {
-        public BitmaskValueTemplateData(TemplateDataContext context, BitmaskType bitmaskType,
+        public BitmaskValueTemplateData(PackageTemplateDataContext context, BitmaskType bitmaskType,
                 BitmaskValue bitmaskValue) throws ZserioExtensionException
         {
             symbol = SymbolTemplateDataCreator.createData(context, bitmaskType, bitmaskValue);

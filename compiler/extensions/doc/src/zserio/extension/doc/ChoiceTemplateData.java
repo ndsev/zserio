@@ -20,7 +20,7 @@ import zserio.extension.common.ZserioExtensionException;
 
 public class ChoiceTemplateData extends CompoundTypeTemplateData
 {
-    public ChoiceTemplateData(TemplateDataContext context, ChoiceType choiceType) throws ZserioExtensionException
+    public ChoiceTemplateData(PackageTemplateDataContext context, ChoiceType choiceType) throws ZserioExtensionException
     {
         super(context, choiceType);
 
@@ -52,7 +52,7 @@ public class ChoiceTemplateData extends CompoundTypeTemplateData
 
     public static class CaseMemberTemplateData
     {
-        public CaseMemberTemplateData(TemplateDataContext context, ChoiceType choiceType, ChoiceCase choiceCase)
+        public CaseMemberTemplateData(PackageTemplateDataContext context, ChoiceType choiceType, ChoiceCase choiceCase)
                 throws ZserioExtensionException
         {
             caseList = new ArrayList<CaseTemplateData>();
@@ -81,7 +81,7 @@ public class ChoiceTemplateData extends CompoundTypeTemplateData
 
     public static class CaseTemplateData
     {
-        public CaseTemplateData(TemplateDataContext context, ChoiceType choiceType, ChoiceCase choiceCase,
+        public CaseTemplateData(PackageTemplateDataContext context, ChoiceType choiceType, ChoiceCase choiceCase,
                 Expression caseExpression, List<DocComment> docComments) throws ZserioExtensionException
         {
             final ExpressionFormatter docExpressionFormatter = context.getExpressionFormatter();
@@ -135,7 +135,7 @@ public class ChoiceTemplateData extends CompoundTypeTemplateData
 
     public static class DefaultMemberTemplateData
     {
-        public DefaultMemberTemplateData(TemplateDataContext context, ChoiceType choiceType)
+        public DefaultMemberTemplateData(PackageTemplateDataContext context, ChoiceType choiceType)
                 throws ZserioExtensionException
         {
             final ChoiceDefault choiceDefault = choiceType.getChoiceDefault();

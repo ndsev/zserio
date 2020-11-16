@@ -23,24 +23,23 @@ import zserio.ast.UnionType;
 import zserio.extension.common.DefaultTreeWalker;
 import zserio.extension.common.FileUtil;
 import zserio.extension.common.ZserioExtensionException;
-import zserio.tools.ExtensionParameters;
 import zserio.tools.StringJoinUtil;
 
 class PackageEmitter extends DefaultTreeWalker
 {
-    public PackageEmitter(String outputPathName, ExtensionParameters extensionParameters,
-            boolean withSvgDiagrams, UsedByCollector usedByCollector, SymbolCollector symbolCollector,
-            PackageCollector packageCollector)
+    public PackageEmitter(DocExtensionParameters docParameters, UsedByCollector usedByCollector,
+            SymbolCollector symbolCollector, PackageCollector packageCollector)
     {
         super();
 
-        this.outputPathName = outputPathName;
+        this.outputPathName = docParameters.getOutputDir();
         this.nodesMap = symbolCollector.getNodesMap();
 
         final String htmlRootDirectory = "..";
-        final String htmlCurrentDirectory = DocDirectories.CONTENT_DIRECTORY;
-        context = new TemplateDataContext(outputPathName, extensionParameters, withSvgDiagrams, usedByCollector,
-                packageCollector, htmlRootDirectory, htmlCurrentDirectory);
+        final DocResourceManager docResourceManager = new DocResourceManager(docParameters,
+                DocDirectories.CONTENT_DIRECTORY, packageCollector);
+        context = new PackageTemplateDataContext(docParameters, usedByCollector, htmlRootDirectory,
+                docResourceManager);
     }
 
     @Override
@@ -169,7 +168,7 @@ class PackageEmitter extends DefaultTreeWalker
 
     private final String outputPathName;
     private final Map<Package, List<AstNode>> nodesMap;
-    private final TemplateDataContext context;
+    private final PackageTemplateDataContext context;
 
     private PrintWriter writer = null;
 }

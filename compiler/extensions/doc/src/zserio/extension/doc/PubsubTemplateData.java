@@ -10,7 +10,7 @@ import zserio.extension.common.ZserioExtensionException;
 
 public class PubsubTemplateData extends HtmlTemplateData
 {
-    public PubsubTemplateData(TemplateDataContext context, PubsubType pubsubType) throws ZserioExtensionException
+    public PubsubTemplateData(PackageTemplateDataContext context, PubsubType pubsubType) throws ZserioExtensionException
     {
         super(context, pubsubType);
 
@@ -31,7 +31,7 @@ public class PubsubTemplateData extends HtmlTemplateData
 
     public static class MessageTemplateData
     {
-        public MessageTemplateData(TemplateDataContext context, PubsubType pubsubType,
+        public MessageTemplateData(PackageTemplateDataContext context, PubsubType pubsubType,
                 PubsubMessage pubsubMessage) throws ZserioExtensionException
         {
             keyword = pubsubMessage.isPublished() && pubsubMessage.isSubscribed() ?

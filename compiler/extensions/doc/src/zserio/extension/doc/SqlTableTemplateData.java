@@ -7,7 +7,7 @@ import zserio.extension.common.ZserioExtensionException;
 
 public class SqlTableTemplateData extends CompoundTypeTemplateData
 {
-    public SqlTableTemplateData(TemplateDataContext context, SqlTableType sqlTableType)
+    public SqlTableTemplateData(PackageTemplateDataContext context, SqlTableType sqlTableType)
             throws ZserioExtensionException
     {
         super(context, sqlTableType);

@@ -9,7 +9,7 @@ import zserio.extension.common.ZserioExtensionException;
 
 public class ServiceTemplateData extends HtmlTemplateData
 {
-    public ServiceTemplateData(TemplateDataContext context, ServiceType serviceType) throws ZserioExtensionException
+    public ServiceTemplateData(PackageTemplateDataContext context, ServiceType serviceType) throws ZserioExtensionException
     {
         super(context, serviceType);
 
@@ -30,7 +30,7 @@ public class ServiceTemplateData extends HtmlTemplateData
 
     public static class MethodTemplateData
     {
-        public MethodTemplateData(TemplateDataContext context, ServiceType serviceType,
+        public MethodTemplateData(PackageTemplateDataContext context, ServiceType serviceType,
                 ServiceMethod serviceMethod) throws ZserioExtensionException
         {
             symbol = SymbolTemplateDataCreator.createData(context, serviceType, serviceMethod);

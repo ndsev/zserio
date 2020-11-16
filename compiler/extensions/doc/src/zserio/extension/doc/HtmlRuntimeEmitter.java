@@ -19,7 +19,7 @@ import zserio.extension.common.ZserioExtensionException;
  */
 class HtmlRuntimeEmitter
 {
-    static void emit(String outputPathName) throws ZserioExtensionException
+    static void emit(DocExtensionParameters docParameters) throws ZserioExtensionException
     {
         try
         {
@@ -31,7 +31,7 @@ class HtmlRuntimeEmitter
             {
                 final List<String> jarResources = getJarRuntimeResources(jarRuntimeSubdir);
                 for (String jarResource : jarResources)
-                    extractJarResource(jarResource, outputPathName, jarRuntimeSubdir);
+                    extractJarResource(jarResource, docParameters.getOutputDir(), jarRuntimeSubdir);
             }
         }
         catch (IOException exception)
@@ -69,8 +69,8 @@ class HtmlRuntimeEmitter
         return availableResources;
     }
 
-    private static void extractJarResource(String jarResource, String outputPathName,
-            String outputSubDir) throws IOException
+    private static void extractJarResource(String jarResource, String outputDir, String outputSubDir)
+            throws IOException
     {
         FileOutputStream writer = null;
         final InputStream reader = HtmlRuntimeEmitter.class.getResourceAsStream("/" + jarResource);
@@ -78,11 +78,11 @@ class HtmlRuntimeEmitter
         {
             if (reader != null)
             {
-                final File outputDir = new File(outputPathName, outputSubDir);
-                if (!outputDir.exists() && !outputDir.mkdirs())
-                    throw new IOException("Directory " + outputDir.toString() + " cannot be created!");
+                final File outputFullDir = new File(outputDir, outputSubDir);
+                if (!outputFullDir.exists() && !outputFullDir.mkdirs())
+                    throw new IOException("Directory " + outputFullDir.toString() + " cannot be created!");
 
-                final File outputFile = new File(outputDir, getResourceFileName(jarResource));
+                final File outputFile = new File(outputFullDir, getResourceFileName(jarResource));
                 writer = new FileOutputStream(outputFile);
                 final byte[] buffer = new byte[16384];
                 int bytesRead = 0;

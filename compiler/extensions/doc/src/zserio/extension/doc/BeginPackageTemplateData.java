@@ -14,7 +14,7 @@ import zserio.extension.common.ZserioExtensionException;
 
 public class BeginPackageTemplateData
 {
-    public BeginPackageTemplateData(TemplateDataContext context, Package pkg,
+    public BeginPackageTemplateData(PackageTemplateDataContext context, Package pkg,
             Map<Package, List<AstNode>> nodesMap) throws ZserioExtensionException
     {
         cssDirectory = context.getCssDirectory();
@@ -73,7 +73,7 @@ public class BeginPackageTemplateData
     public static class PackageSymbolOverviewTemplateData implements
             Comparable<PackageSymbolOverviewTemplateData>
     {
-        PackageSymbolOverviewTemplateData(TemplateDataContext context, Package pkg,
+        public PackageSymbolOverviewTemplateData(PackageTemplateDataContext context, Package pkg,
                 List<AstNode> packageSymbols)
         {
             symbol = SymbolTemplateDataCreator.createData(context, pkg);
@@ -119,7 +119,7 @@ public class BeginPackageTemplateData
 
     public static class ImportTemplateData
     {
-        public ImportTemplateData(TemplateDataContext context, Import importNode) throws ZserioExtensionException
+        public ImportTemplateData(PackageTemplateDataContext context, Import importNode) throws ZserioExtensionException
         {
             docComments = new DocCommentsTemplateData(context, importNode.getDocComments());
             importedPackageSymbol = SymbolTemplateDataCreator.createData(context, importNode.getImportedPackage());

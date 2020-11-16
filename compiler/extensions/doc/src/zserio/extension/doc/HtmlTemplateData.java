@@ -12,7 +12,7 @@ import zserio.extension.common.ZserioExtensionException;
 
 public class HtmlTemplateData
 {
-    public HtmlTemplateData(TemplateDataContext context, DocumentableAstNode astNode) throws ZserioExtensionException
+    public HtmlTemplateData(PackageTemplateDataContext context, DocumentableAstNode astNode) throws ZserioExtensionException
     {
         this.docComments = new DocCommentsTemplateData(context, astNode.getDocComments());
         symbol = SymbolTemplateDataCreator.createData(context, astNode);
@@ -54,7 +54,7 @@ public class HtmlTemplateData
 
     // TODO[Mi-L@]: This same logic is used on several places. Improve!
     //              See e.g. SymbolCollaborationDotTemplateData.
-    private SymbolTemplateData createSymbol(TemplateDataContext context, AstNode node)
+    private SymbolTemplateData createSymbol(PackageTemplateDataContext context, AstNode node)
     {
         AstNode symbolNode = node;
         // use instantitiation reference instead of instantiation to get template with it's argument

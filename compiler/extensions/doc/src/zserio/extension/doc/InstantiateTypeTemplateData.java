@@ -5,7 +5,7 @@ import zserio.extension.common.ZserioExtensionException;
 
 public class InstantiateTypeTemplateData extends HtmlTemplateData
 {
-    public InstantiateTypeTemplateData(TemplateDataContext context, InstantiateType instantiateType)
+    public InstantiateTypeTemplateData(PackageTemplateDataContext context, InstantiateType instantiateType)
             throws ZserioExtensionException
     {
         super(context, instantiateType);

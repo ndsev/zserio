@@ -4,22 +4,20 @@ import java.io.File;
 
 import zserio.ast.Package;
 import zserio.extension.common.ZserioExtensionException;
-import zserio.tools.ExtensionParameters;
 
 /**
  * Emits index HTML file.
  */
 class IndexEmitter
 {
-    public static void emit(String outputPathName, ExtensionParameters extensionParameters,
-            boolean withSvgDiagrams, UsedByCollector usedByCollector, PackageCollector packageCollector,
+    public static void emit(DocExtensionParameters docParameters, UsedByCollector usedByCollector,
             Package rootPackage) throws ZserioExtensionException
     {
         final String htmlRootDirectory = ".";
-        final TemplateDataContext context = new TemplateDataContext(outputPathName, extensionParameters,
-                withSvgDiagrams, usedByCollector, packageCollector, htmlRootDirectory);
+        final TemplateDataContext context = new TemplateDataContext(docParameters.getWithSvgDiagrams(),
+                usedByCollector, htmlRootDirectory);
         final SymbolTemplateData templateData = SymbolTemplateDataCreator.createData(context, rootPackage);
-        final File outputFile = new File(outputPathName, INDEX_FILE_NAME);
+        final File outputFile = new File(docParameters.getOutputDir(), INDEX_FILE_NAME);
         DocFreeMarkerUtil.processTemplate(INDEX_TEMPLATE_SOURCE_NAME, templateData, outputFile);
     }
 

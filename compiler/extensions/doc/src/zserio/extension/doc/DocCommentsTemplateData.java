@@ -28,7 +28,7 @@ import zserio.extension.common.ZserioExtensionException;
  */
 public class DocCommentsTemplateData
 {
-    public DocCommentsTemplateData(TemplateDataContext context, List<DocComment> docComments)
+    public DocCommentsTemplateData(PackageTemplateDataContext context, List<DocComment> docComments)
             throws ZserioExtensionException
     {
         boolean isDeprecated = false;
@@ -69,7 +69,7 @@ public class DocCommentsTemplateData
          *
          * @throws ZserioExtensionException Throws in case of any internal error.
          */
-        public DocCommentTemplateData(TemplateDataContext context, DocComment docComment)
+        public DocCommentTemplateData(PackageTemplateDataContext context, DocComment docComment)
                 throws ZserioExtensionException
         {
             if (docComment instanceof DocCommentMarkdown)
@@ -146,7 +146,7 @@ public class DocCommentsTemplateData
          */
         public static class DocParagraphData
         {
-            public DocParagraphData(TemplateDataContext context, DocParagraph docParagraph)
+            public DocParagraphData(PackageTemplateDataContext context, DocParagraph docParagraph)
             {
                 for (DocElement docElement : docParagraph.getDocElements())
                     docElements.add(new DocElementData(context, docElement));
@@ -159,7 +159,7 @@ public class DocCommentsTemplateData
 
             public static class DocElementData
             {
-                public DocElementData(TemplateDataContext context, DocElement docElement)
+                public DocElementData(PackageTemplateDataContext context, DocElement docElement)
                 {
                     final DocMultiline multiline = docElement.getDocMultiline();
                     this.multiline = multiline != null ? new DocMultilineData(context, multiline) : null;
@@ -210,7 +210,7 @@ public class DocCommentsTemplateData
          */
         public static class DocMultilineData
         {
-            public DocMultilineData(TemplateDataContext context, DocMultiline docMultiline)
+            public DocMultilineData(PackageTemplateDataContext context, DocMultiline docMultiline)
             {
                 for (DocLine docLine : docMultiline.getLines())
                 {
@@ -231,7 +231,7 @@ public class DocCommentsTemplateData
              */
             public static class DocLineElementData
             {
-                DocLineElementData(TemplateDataContext context, DocLineElement docLineElement)
+                DocLineElementData(PackageTemplateDataContext context, DocLineElement docLineElement)
                 {
                     final DocText docText = docLineElement.getDocText();
                     docString = docText != null ?
@@ -263,7 +263,7 @@ public class DocCommentsTemplateData
          */
         public static class DocTagSeeData
         {
-            public DocTagSeeData(TemplateDataContext context, DocTagSee docTagSee)
+            public DocTagSeeData(PackageTemplateDataContext context, DocTagSee docTagSee)
             {
                 final SymbolReference linkSymbolReference = docTagSee.getLinkSymbolReference();
                 final PackageSymbol referencedPackageSymbol = linkSymbolReference.getReferencedPackageSymbol();
@@ -302,7 +302,7 @@ public class DocCommentsTemplateData
          */
         public static class DocTagParamData
         {
-            public DocTagParamData(TemplateDataContext context, DocTagParam docTagParam)
+            public DocTagParamData(PackageTemplateDataContext context, DocTagParam docTagParam)
             {
                 name = docTagParam.getParamName();
 

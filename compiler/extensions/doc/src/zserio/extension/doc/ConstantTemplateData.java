@@ -5,7 +5,7 @@ import zserio.extension.common.ZserioExtensionException;
 
 public class ConstantTemplateData extends HtmlTemplateData
 {
-    public ConstantTemplateData(TemplateDataContext context, Constant constant) throws ZserioExtensionException
+    public ConstantTemplateData(PackageTemplateDataContext context, Constant constant) throws ZserioExtensionException
     {
         super(context, constant);
 

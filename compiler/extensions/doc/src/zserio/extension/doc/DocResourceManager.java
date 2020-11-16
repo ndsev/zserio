@@ -14,16 +14,16 @@ import java.util.HashSet;
 import zserio.ast.AstLocation;
 import zserio.ast.Package;
 import zserio.tools.HashUtil;
-import zserio.tools.ExtensionParameters;
 
 class DocResourceManager
 {
-    public DocResourceManager(String outputRoot, ExtensionParameters extensionParameters, String htmlContentDirectory,
+    public DocResourceManager(DocExtensionParameters docParameters, String htmlContentDirectory,
             PackageCollector packageCollector)
     {
-        final String pathName = extensionParameters.getPathName();
+        final String pathName = docParameters.getPathName();
         this.sourceRoot = Paths.get(pathName != null ? pathName : "").toAbsolutePath();
-        this.outputRoot = Paths.get(outputRoot != null ? outputRoot : "").toAbsolutePath();
+        final String outputDir = docParameters.getOutputDir();
+        this.outputRoot = Paths.get(outputDir != null ? outputDir : "").toAbsolutePath();
         this.htmlContentDirectory = htmlContentDirectory;
         this.packageCollector = packageCollector;
 
@@ -31,6 +31,7 @@ class DocResourceManager
         this.currentOutputDir = this.outputRoot;
     }
 
+    // TODO[mikir] Can we get rid of this and put it all to addResource prototype?
     public void setCurrentSourceDir(Path currentSourceDir)
     {
         this.currentSourceDir = currentSourceDir != null ? currentSourceDir.toAbsolutePath() : sourceRoot;
@@ -41,6 +42,7 @@ class DocResourceManager
         return currentSourceDir;
     }
 
+    // TODO[mikir] Can we get rid of this and put it all to addResource prototype?
     public void setCurrentOutputDir(Path currentOutputDir)
     {
         this.currentOutputDir = currentOutputDir != null ? currentOutputDir.toAbsolutePath() : outputRoot;
