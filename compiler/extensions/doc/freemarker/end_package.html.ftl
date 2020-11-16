@@ -121,7 +121,7 @@
         }
 
         // bootstrap's scrollspy setup
-        var scrollMarginTop = parseInt($('.anchor').css("scroll-margin-top"));
+        var scrollMarginTop = parseInt($('h1.anchor').css("scroll-margin-top"));
         $('body').scrollspy({
           target: '#toc',
           offset: scrollMarginTop
