@@ -55,7 +55,7 @@ ${I}<tr>
 ${I}  <td class="indent empty"></td>
 ${I}  <td colspan=2>
 ${I}    function <@symbol_reference function.returnSymbol/> <#rt>
-          <#lt><@symbol_reference function.symbol/>()</a>
+          <#lt><@symbol_reference function.symbol/>()
 ${I}  </td>
 ${I}</tr>
 ${I}<tr>

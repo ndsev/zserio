@@ -22,7 +22,7 @@
     <header id="header" class="navbar navbar-dark bg-dark sticky-top">
       <div class="navbar-brand">Documentation for package ${symbol.name}</div>
       <a href="https://zserio.org/" target="_blank">
-        <img class="logo" src="${resourcesDirectory}/zserio.png"/>
+        <img class="logo" alt="zserio.org" src="${resourcesDirectory}/zserio.png"/>
       </a>
     </header>
 
@@ -50,7 +50,7 @@
           </nav>
         </div>
 
-        <main class="col-8 pl-md-3" role="main">
+        <main class="col-8 pl-md-3">
           <h1 id="${symbol.htmlLink.htmlAnchor}" class="anchor">${symbol.name}</h1>
           <@doc_comments docComments, 5, false/>
           <@imports importNodes, 5/>

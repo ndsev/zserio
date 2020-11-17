@@ -29,6 +29,7 @@
 <#assign linkColor="rgb(0,0,0,0.65)"/>
 <#assign linkHoverColor="rgb(0,0,0,0.85)"/>
 <#assign deprecatedColor="gray"/>
+<#assign logoAltColor="white"/>
 <#-- stylesheet -->
 /* Hack due to the sticky header. */
 .anchor,
@@ -61,6 +62,7 @@ h3 {
 
 #header .logo {
   height: ${headerLogoHeight}rem;
+  color: ${logoAltColor};
 }
 
 #left_panel {
