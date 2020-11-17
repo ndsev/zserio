@@ -1,10 +1,13 @@
 package zserio.extension.doc;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import zserio.ast.AstNode;
 import zserio.ast.Package;
+import zserio.ast.TypeReference;
+import zserio.ast.ZserioTemplatableType;
 import zserio.ast.ZserioType;
 
 class SymbolTemplateDataCreator
@@ -30,6 +33,26 @@ class SymbolTemplateDataCreator
 
             return new SymbolTemplateData(name, htmlTitle, htmlLinkPage, htmlLinkAnchor, templateArguments);
         }
+    }
+
+    // in case of a template instantiation, use instantiation reference instead
+    public static SymbolTemplateData createTemplateInstantiationReferenceData(
+            TemplateDataContext context, AstNode node)
+    {
+        if (node instanceof ZserioTemplatableType)
+        {
+            final ZserioTemplatableType instance = (ZserioTemplatableType)node;
+            final ZserioTemplatableType template = instance.getTemplate();
+            if (template != null)
+            {
+                final Iterator<TypeReference> instantiationReferenceIterator =
+                        instance.getInstantiationReferenceStack().iterator();
+                if (instantiationReferenceIterator.hasNext())
+                    return createData(context, instantiationReferenceIterator.next());
+            }
+        }
+
+        return createData(context, node);
     }
 
     public static SymbolTemplateData createData(TemplateDataContext context, Package pkg)

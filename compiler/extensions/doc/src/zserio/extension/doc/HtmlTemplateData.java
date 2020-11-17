@@ -1,18 +1,16 @@
 package zserio.extension.doc;
 
-import java.util.Iterator;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
 import zserio.ast.AstNode;
 import zserio.ast.DocumentableAstNode;
-import zserio.ast.TypeReference;
-import zserio.ast.ZserioTemplatableType;
 import zserio.extension.common.ZserioExtensionException;
 
 public class HtmlTemplateData
 {
-    public HtmlTemplateData(PackageTemplateDataContext context, DocumentableAstNode astNode) throws ZserioExtensionException
+    public HtmlTemplateData(PackageTemplateDataContext context, DocumentableAstNode astNode)
+            throws ZserioExtensionException
     {
         this.docComments = new DocCommentsTemplateData(context, astNode.getDocComments());
         symbol = SymbolTemplateDataCreator.createData(context, astNode);
@@ -28,7 +26,8 @@ public class HtmlTemplateData
         usedBySymbols = new TreeSet<SymbolTemplateData>();
         for (AstNode usedByNode : usedByCollector.getUsedByTypes(astNode))
         {
-            usedBySymbols.add(createSymbol(context, usedByNode));
+            usedBySymbols.add(
+                    SymbolTemplateDataCreator.createTemplateInstantiationReferenceData(context, usedByNode));
         }
     }
 
@@ -50,28 +49,6 @@ public class HtmlTemplateData
     public Iterable<SymbolTemplateData> getUsedBySymbols()
     {
         return usedBySymbols;
-    }
-
-    // TODO[Mi-L@]: This same logic is used on several places. Improve!
-    //              See e.g. SymbolCollaborationDotTemplateData.
-    private SymbolTemplateData createSymbol(PackageTemplateDataContext context, AstNode node)
-    {
-        AstNode symbolNode = node;
-        // use instantitiation reference instead of instantiation to get template with it's argument
-        if (symbolNode instanceof ZserioTemplatableType)
-        {
-            final ZserioTemplatableType instance = (ZserioTemplatableType)symbolNode;
-            final ZserioTemplatableType template = instance.getTemplate();
-            if (template != null)
-            {
-                final Iterator<TypeReference> instantiationReferenceIterator =
-                        instance.getInstantiationReferenceStack().iterator();
-                if (instantiationReferenceIterator.hasNext())
-                    symbolNode = instantiationReferenceIterator.next();
-            }
-        }
-
-        return SymbolTemplateDataCreator.createData(context, symbolNode);
     }
 
     private final DocCommentsTemplateData docComments;

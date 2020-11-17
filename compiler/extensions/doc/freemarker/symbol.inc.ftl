@@ -7,9 +7,9 @@
     </#if>
     <#if symbol.templateArguments?has_content>
         &lt;<#t>
-       <#list symbol.templateArguments as templateArgument>
+        <#list symbol.templateArguments as templateArgument>
             <@symbol_reference templateArgument/><#if templateArgument?has_next>, </#if><#t>
-       </#list>
+        </#list>
         &gt;<#t>
     </#if>
 </#macro>
@@ -32,6 +32,17 @@
         &lt;<#t>
         <#list templateParameters as templateParameter>
             ${templateParameter}<#if templateParameter?has_next>, </#if><#t>
+        </#list>
+        &gt;<#t>
+    </#if>
+</#macro>
+
+<#macro symbol_node_name symbol>
+    ${symbol.name}<#t>
+    <#if symbol.templateArguments?has_content>
+        &lt;<#t>
+        <#list symbol.templateArguments as templateArgument>
+            <@symbol_node_name templateArgument/><#if templateArgument?has_next>,</#if><#t>
         </#list>
         &gt;<#t>
     </#if>

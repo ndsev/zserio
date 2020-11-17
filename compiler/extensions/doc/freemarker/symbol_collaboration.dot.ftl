@@ -1,13 +1,13 @@
 <#include "symbol.inc.ftl">
 /**
- * This dot file creates symbol collaboration diagram for ${symbolName}.
+ * This dot file creates symbol collaboration diagram for ${symbol.name}.
  */
 digraph ZSERIO
 {
     node [shape=box, fontsize=10];
     rankdir="LR";
     fontsize=10;
-    tooltip="${symbolName} collaboration diagram";
+    tooltip="${symbol.name} collaboration diagram";
 <#list packages as package>
 
     subgraph cluster_${package.name?replace(".", "_")}
@@ -16,17 +16,18 @@ digraph ZSERIO
         label="${package.name}";
         tooltip="${package.name}";
 
-    <#list package.namedSymbols as namedSymbol>
-        <#if namedSymbol.symbol.htmlLink??>
-            <#assign isMainSymbol = (namedSymbol.name == symbolName)>
-        "${namedSymbol.name}" [<#if isMainSymbol>style="filled", fillcolor="#0000000D", </#if>target="_parent", <#rt>
-            <#lt>label=<<font face="monospace"><@symbol_reference_label namedSymbol.symbol, "center"/></font>>];
+    <#list package.symbols as packageSymbol>
+        <#if packageSymbol.htmlLink??>
+            <#assign isMainSymbol = (packageSymbol.name == symbol.name)>
+        "<@symbol_node_name packageSymbol/>" [<#if isMainSymbol>style="filled", fillcolor="#0000000D", </#if><#rt>
+            <#lt>target="_parent", label=<<font face="monospace"><#rt>
+            <#lt><@symbol_reference_label packageSymbol, "center"/></font>>];
         </#if>
     </#list>
     }
 </#list>
 
 <#list relations as relation>
-    "${relation.symbolNameFrom}" -> "${relation.symbolNameTo}" [label="uses", fontsize=10];
+    "<@symbol_node_name relation.symbolFrom/>" -> "<@symbol_node_name relation.symbolTo/>" [label="uses", fontsize=10];
 </#list>
 }
