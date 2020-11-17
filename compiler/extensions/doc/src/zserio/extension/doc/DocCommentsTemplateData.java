@@ -1,7 +1,5 @@
 package zserio.extension.doc;
 
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -104,12 +102,8 @@ public class DocCommentsTemplateData
             isDeprecated = false;
 
             final DocResourceManager docResourceManager = context.getDocResourceManager();
-            final Path origCwd = docResourceManager.getCurrentSourceDir();
-            docResourceManager.setCurrentSourceDir(
-                    Paths.get(docCommentMarkdown.getLocation().getFileName()).getParent());
             markdownHtml = DocMarkdownToHtmlConverter.convert(docResourceManager,
                     docCommentMarkdown.getLocation(), docCommentMarkdown.getMarkdown());
-            docResourceManager.setCurrentSourceDir(origCwd);
         }
 
         /**

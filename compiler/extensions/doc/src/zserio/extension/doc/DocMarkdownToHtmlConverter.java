@@ -87,7 +87,7 @@ class DocMarkdownToHtmlConverter
         {
             try
             {
-                final String mappedResource = docResourceManager.addResource(link.getDestination());
+                final String mappedResource = docResourceManager.addResource(location, link.getDestination());
                 link.setDestination(mappedResource);
             }
             catch (Exception e)
@@ -103,7 +103,7 @@ class DocMarkdownToHtmlConverter
         {
             try
             {
-                final String mappedResource = docResourceManager.addResource(image.getDestination());
+                final String mappedResource = docResourceManager.addResource(location, image.getDestination());
                 image.setDestination(mappedResource);
             }
             catch (Exception e)

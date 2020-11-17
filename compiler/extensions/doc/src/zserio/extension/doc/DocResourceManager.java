@@ -20,38 +20,24 @@ class DocResourceManager
     public DocResourceManager(DocExtensionParameters docParameters, String htmlContentDirectory,
             PackageCollector packageCollector)
     {
-        final String pathName = docParameters.getPathName();
-        this.sourceRoot = Paths.get(pathName != null ? pathName : "").toAbsolutePath();
         final String outputDir = docParameters.getOutputDir();
         this.outputRoot = Paths.get(outputDir != null ? outputDir : "").toAbsolutePath();
         this.htmlContentDirectory = htmlContentDirectory;
         this.packageCollector = packageCollector;
 
-        this.currentSourceDir = this.sourceRoot;
         this.currentOutputDir = this.outputRoot;
     }
 
-    // TODO[mikir] Can we get rid of this and put it all to addResource prototype?
-    public void setCurrentSourceDir(Path currentSourceDir)
-    {
-        this.currentSourceDir = currentSourceDir != null ? currentSourceDir.toAbsolutePath() : sourceRoot;
-    }
-
-    public Path getCurrentSourceDir()
-    {
-        return currentSourceDir;
-    }
-
-    // TODO[mikir] Can we get rid of this and put it all to addResource prototype?
     public void setCurrentOutputDir(Path currentOutputDir)
     {
         this.currentOutputDir = currentOutputDir != null ? currentOutputDir.toAbsolutePath() : outputRoot;
     }
 
-    public String addResource(String resourceLink) throws ResourceException
+    public String addResource(AstLocation location, String resourceLink) throws ResourceException
     {
         if (isLocalResource(resourceLink))
         {
+            final Path currentSourceDir = Paths.get(location.getFileName()).toAbsolutePath().getParent();
             final ResourceLink link = new ResourceLink(resourceLink);
             final LocalResource localResource = new LocalResource(currentSourceDir, link.getPath());
             final LocalResource mappedResource = mapLocalResource(localResource);
@@ -107,11 +93,9 @@ class DocResourceManager
             if (srcResource.getExtension().equals(MARKDOWN_EXTENSION) &&
                     dstResource.getExtension().equals(HTML_EXTENSION))
             {
-                final Path origCwd = currentSourceDir;
                 final Path origCurrentOutputDir = currentOutputDir;
                 try
                 {
-                    currentSourceDir = srcResource.getPath();
                     currentOutputDir = dstResource.getPath();
                     final String markdown = new String(Files.readAllBytes(srcResource.getFullPath()),
                             StandardCharsets.UTF_8);
@@ -121,7 +105,6 @@ class DocResourceManager
                 }
                 finally
                 {
-                    currentSourceDir = origCwd;
                     currentOutputDir = origCurrentOutputDir;
                 }
             }
@@ -277,11 +260,9 @@ class DocResourceManager
     private final static String MARKDOWN_EXTENSION = ".md";
     private final static String HTML_EXTENSION = ".html";
 
-    private final Path sourceRoot;
     private final Path outputRoot;
     private final String htmlContentDirectory;
     private final PackageCollector packageCollector;
 
-    private Path currentSourceDir;
     private Path currentOutputDir;
 }
