@@ -21,7 +21,7 @@ import zserio.ast.PackageSymbol;
 import zserio.ast.ScopeSymbol;
 import zserio.ast.SymbolReference;
 import zserio.ast.ZserioType;
-import zserio.extension.common.ZserioExtensionException;
+import zserio.tools.ZserioToolPrinter;
 
 /**
  * The documentation comments data used for FreeMarker template during documentation generation.
@@ -29,14 +29,16 @@ import zserio.extension.common.ZserioExtensionException;
 public class DocCommentsTemplateData
 {
     public DocCommentsTemplateData(PackageTemplateDataContext context, List<DocComment> docComments)
-            throws ZserioExtensionException
     {
         boolean isDeprecated = false;
         for (DocComment docComment : docComments)
         {
-            final DocCommentTemplateData docCommentData = new DocCommentTemplateData(context, docComment);
-            isDeprecated |= docCommentData.getIsDeprecated();
-            commentsList.add(docCommentData);
+            final DocCommentTemplateData docCommentData = createDocCommentTemplateData(context, docComment);
+            if (docCommentData != null)
+            {
+                isDeprecated |= docCommentData.getIsDeprecated();
+                commentsList.add(docCommentData);
+            }
         }
         this.isDeprecated = isDeprecated;
     }
@@ -62,59 +64,52 @@ public class DocCommentsTemplateData
     public static class DocCommentTemplateData
     {
         /**
-         * Constructor.
+         * Constructor from classic documentation comment.
          *
-         * @param context    Template data context.
-         * @param docComment Documentation comment to construct from or null in case of no comment.
-         *
-         * @throws ZserioExtensionException Throws in case of any internal error.
+         * @param context Template data context.
+         * @param docCommentClassic Classic documentation comment.
          */
-        public DocCommentTemplateData(PackageTemplateDataContext context, DocComment docComment)
-                throws ZserioExtensionException
+        public DocCommentTemplateData(PackageTemplateDataContext context, DocCommentClassic docCommentClassic)
         {
-            if (docComment instanceof DocCommentMarkdown)
+            boolean isDeprecated = false;
+            for (DocParagraph docParagraph : docCommentClassic.getParagraphs())
             {
-                isDeprecated = false;
-                final DocCommentMarkdown docCommentMarkdown = (DocCommentMarkdown)docComment;
+                docParagraphs.add(new DocParagraphData(context, docParagraph));
 
-                final DocResourceManager docResourceManager = context.getDocResourceManager();
-                final Path origCwd = docResourceManager.getCurrentSourceDir();
-                docResourceManager.setCurrentSourceDir(
-                        Paths.get(docComment.getLocation().getFileName()).getParent());
-                markdownHtml = DocMarkdownToHtmlConverter.convert(docResourceManager,
-                        docCommentMarkdown.getLocation(), docCommentMarkdown.getMarkdown());
-                docResourceManager.setCurrentSourceDir(origCwd);
-            }
-            else if (docComment instanceof DocCommentClassic)
-            {
-                final DocCommentClassic docCommentClassic = (DocCommentClassic)docComment;
-                boolean isDeprecated = false;
-
-                for (DocParagraph docParagraph : docCommentClassic.getParagraphs())
+                if (!isDeprecated)
                 {
-                    docParagraphs.add(new DocParagraphData(context, docParagraph));
-
-                    if (!isDeprecated)
+                    for (DocElement element : docParagraph.getDocElements())
                     {
-                        for (DocElement element : docParagraph.getDocElements())
+                        if (element.getDeprecatedTag() != null)
                         {
-                            if (element.getDeprecatedTag() != null)
-                            {
-                                isDeprecated = true;
-                                break;
-                            }
+                            isDeprecated = true;
+                            break;
                         }
                     }
                 }
+            }
 
-                this.isDeprecated = isDeprecated;
-                this.markdownHtml = null;
-            }
-            else
-            {
-                // TODO[mikir] Is this really necessary?!?
-                throw new ZserioExtensionException("Unknown documentation format!");
-            }
+            this.isDeprecated = isDeprecated;
+            this.markdownHtml = null;
+        }
+
+        /**
+         * Constructor from markdown documentation comment.
+         *
+         * @param context TemplateDataContext.
+         * @param docCommentMarkdown Markdown documentation comment.
+         */
+        public DocCommentTemplateData(PackageTemplateDataContext context, DocCommentMarkdown docCommentMarkdown)
+        {
+            isDeprecated = false;
+
+            final DocResourceManager docResourceManager = context.getDocResourceManager();
+            final Path origCwd = docResourceManager.getCurrentSourceDir();
+            docResourceManager.setCurrentSourceDir(
+                    Paths.get(docCommentMarkdown.getLocation().getFileName()).getParent());
+            markdownHtml = DocMarkdownToHtmlConverter.convert(docResourceManager,
+                    docCommentMarkdown.getLocation(), docCommentMarkdown.getMarkdown());
+            docResourceManager.setCurrentSourceDir(origCwd);
         }
 
         /**
@@ -326,6 +321,24 @@ public class DocCommentsTemplateData
         private final List<DocParagraphData> docParagraphs = new ArrayList<DocParagraphData>();
         private final String markdownHtml;
         private final boolean isDeprecated;
+    }
+
+    private DocCommentTemplateData createDocCommentTemplateData(PackageTemplateDataContext context,
+            DocComment docComment)
+    {
+        if (docComment instanceof DocCommentMarkdown)
+        {
+            return new DocCommentTemplateData(context, (DocCommentMarkdown)docComment);
+        }
+        else if (docComment instanceof DocCommentClassic)
+        {
+            return new DocCommentTemplateData(context, (DocCommentClassic)docComment);
+        }
+        else
+        {
+            ZserioToolPrinter.printWarning(docComment, "Unkown documentation format!");
+            return null;
+        }
     }
 
     private final List<DocCommentTemplateData> commentsList = new ArrayList<DocCommentTemplateData>();
