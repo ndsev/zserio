@@ -29,7 +29,8 @@
 <#assign linkColor="rgb(0,0,0,0.65)"/>
 <#assign linkHoverColor="rgb(0,0,0,0.85)"/>
 <#assign deprecatedColor="gray"/>
-<#assign logoAltColor="white"/>
+<#assign headerNavColor="white"/>
+<#assign headerNavHoverColor="rgb(255,255,255,0.65)"/>
 <#-- stylesheet -->
 /* Hack due to the sticky header. */
 .anchor,
@@ -62,7 +63,29 @@ h3 {
 
 #header .logo {
   height: ${headerLogoHeight}rem;
-  color: ${logoAltColor};
+}
+
+#header .logo:hover {
+  color: ${headerNavHoverColor};
+}
+
+#header .navbar-nav {
+  color: ${headerNavColor};
+}
+
+.navbar-nav.navbar-center { /* custom bootstrap extension */
+  position: absolute;
+  left: 50%;
+  transform: translatex(-50%);
+}
+
+#toc_button {
+  padding: 0;
+  margin: 0;
+}
+
+#toc_button:hover {
+  color: ${headerNavHoverColor};
 }
 
 #left_panel {

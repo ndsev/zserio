@@ -20,10 +20,20 @@
   <body>
 
     <header id="header" class="navbar navbar-dark bg-dark sticky-top">
-      <div class="navbar-brand">Documentation for package ${symbol.name}</div>
-      <a href="https://zserio.org/" target="_blank">
-        <img class="logo" alt="zserio.org" src="${resourcesDirectory}/zserio.png"/>
-      </a>
+      <div class="navbar-nav navbar-left navbar-brand">
+        <a href="https://zserio.org/" target="_blank">
+          <img class="logo" alt="zserio.org" src="${resourcesDirectory}/zserio.png"/>
+        </a>
+      </div>
+      <div class="navbar-nav navbar-center navbar-brand">Documentation for package ${symbol.name}</div>
+      <button id="toc_button" type="button" class="btn navbar-nav navbar-right navbar-brand shadow-none">
+        <svg id="toc_collapsed_icon" style="display: none" width="1rem" height="1rem" viewBox="0 0 16 16" class="bi bi-chevron-left" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+          <path fill-rule="evenodd" d="M11.354 1.646a.5.5 0 0 1 0 .708L5.707 8l5.647 5.646a.5.5 0 0 1-.708.708l-6-6a.5.5 0 0 1 0-.708l6-6a.5.5 0 0 1 .708 0z"/>
+        </svg>
+        <svg id="toc_active_icon" width="1rem" height="1rem" viewBox="0 0 16 16" class="bi bi-chevron-right" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+          <path fill-rule="evenodd" d="M4.646 1.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1 0 .708l-6 6a.5.5 0 0 1-.708-.708L10.293 8 4.646 2.354a.5.5 0 0 1 0-.708z"/>
+        </svg>
+      </button>
     </header>
 
     <div class="container-fluid">

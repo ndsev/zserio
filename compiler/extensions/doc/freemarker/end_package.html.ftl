@@ -146,6 +146,15 @@
           $(this).siblings(".nav-symbols").toggleClass("collapsed");
         })
 
+        // toggleable toc
+        $("#toc_button").click(function() {
+            $("#toc").toggle();
+            $("#toc_collapsed_icon").toggle();
+            $("#toc_active_icon").toggle();
+            $("main").toggleClass("col-8");
+            $("main").toggleClass("col-10");
+        })
+
         // catch scrollspy's event that the active item has changed
         $(window).on("activate.bs.scrollspy", function() {
           scrollParentToChild($('#toc')[0], $('#toc .active')[0]);
