@@ -37,7 +37,7 @@ class DocResourceManager
     {
         if (isLocalResource(resourceLink))
         {
-            final Path currentSourceDir = Paths.get(location.getFileName()).toAbsolutePath().getParent();
+            final Path currentSourceDir = getCurrentSourceDir(location);
             final ResourceLink link = new ResourceLink(resourceLink);
             final LocalResource localResource = new LocalResource(currentSourceDir, link.getPath());
             final LocalResource mappedResource = mapLocalResource(localResource);
@@ -148,6 +148,12 @@ class DocResourceManager
 
         // not an URL, supposing that it's local resource
         return true;
+    }
+
+    private Path getCurrentSourceDir(AstLocation location)
+    {
+        final Path currentSourceDir = Paths.get(location.getFileName()).toAbsolutePath().getParent();
+        return currentSourceDir != null ? currentSourceDir : Paths.get("");
     }
 
     private static class ResourceException extends Exception
