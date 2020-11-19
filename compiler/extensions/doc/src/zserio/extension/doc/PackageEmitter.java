@@ -2,7 +2,6 @@ package zserio.extension.doc;
 
 import java.io.File;
 import java.io.PrintWriter;
-import java.nio.file.Paths;
 import java.util.List;
 import java.util.Map;
 
@@ -32,12 +31,17 @@ class PackageEmitter extends DefaultTreeWalker
     {
         super();
 
-        this.outputPathName = docParameters.getOutputDir();
-        this.nodesMap = symbolCollector.getNodesMap();
+        final String outputDir = docParameters.getOutputDir();
+        htmlContentDirectory = StringJoinUtil.joinStrings(outputDir, DocDirectories.CONTENT_DIRECTORY,
+                File.separator);
+        final String docResourceDirectory = StringJoinUtil.joinStrings(outputDir,
+                DocDirectories.DOC_RESOURCES_DIRECTORY, File.separator);
+        final DocResourceManager docResourceManager = new DocResourceManager(packageCollector,
+                htmlContentDirectory, docResourceDirectory);
+
+        nodesMap = symbolCollector.getNodesMap();
 
         final String htmlRootDirectory = "..";
-        final DocResourceManager docResourceManager = new DocResourceManager(docParameters,
-                DocDirectories.CONTENT_DIRECTORY, packageCollector);
         context = new PackageTemplateDataContext(docParameters, usedByCollector, htmlRootDirectory,
                 docResourceManager);
     }
@@ -51,13 +55,10 @@ class PackageEmitter extends DefaultTreeWalker
     @Override
     public void beginPackage(Package pkg) throws ZserioExtensionException
     {
-        final String packageHtmlLink = getPackageHtmlLink(pkg, DocDirectories.CONTENT_DIRECTORY);
-        final File outputFile = new File(outputPathName, packageHtmlLink);
+        final String packageHtmlLink = getPackageHtmlLink(pkg, htmlContentDirectory);
+        final File outputFile = new File(packageHtmlLink);
         FileUtil.createOutputDirectory(outputFile);
         writer = FileUtil.createWriter(outputFile);
-
-        final String outputDirectory = outputFile.getParent();
-        context.getDocResourceManager().setCurrentOutputDir(Paths.get(outputDirectory));
 
         final BeginPackageTemplateData templateData = new BeginPackageTemplateData(context, pkg, nodesMap);
         DocFreeMarkerUtil.processTemplate("begin_package.html.ftl", templateData, writer);
@@ -166,7 +167,7 @@ class PackageEmitter extends DefaultTreeWalker
 
     private static final String HTML_FILE_EXTENSION = ".html";
 
-    private final String outputPathName;
+    private final String htmlContentDirectory;
     private final Map<Package, List<AstNode>> nodesMap;
     private final PackageTemplateDataContext context;
 

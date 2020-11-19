@@ -17,20 +17,15 @@ import zserio.tools.HashUtil;
 
 class DocResourceManager
 {
-    public DocResourceManager(DocExtensionParameters docParameters, String htmlContentDirectory,
-            PackageCollector packageCollector)
+    public DocResourceManager(PackageCollector packageCollector, String htmlContentDirectory,
+            String docResourceDirectory)
     {
-        final String outputDir = docParameters.getOutputDir();
-        this.outputRoot = Paths.get(outputDir != null ? outputDir : "").toAbsolutePath();
-        this.htmlContentDirectory = htmlContentDirectory;
         this.packageCollector = packageCollector;
 
-        this.currentOutputDir = this.outputRoot;
-    }
+        contentDir = Paths.get(htmlContentDirectory).toAbsolutePath();
+        resourcesDir = Paths.get(docResourceDirectory).toAbsolutePath();
 
-    public void setCurrentOutputDir(Path currentOutputDir)
-    {
-        this.currentOutputDir = currentOutputDir != null ? currentOutputDir.toAbsolutePath() : outputRoot;
+        currentOutputDir = contentDir;
     }
 
     public String addResource(AstLocation location, String resourceLink) throws ResourceException
@@ -55,9 +50,8 @@ class DocResourceManager
         final Package zserioPackage = packageCollector.getPathToPackageMap().get(resource.getFullPath());
         if (zserioPackage != null)
         {
-            final String packageHtmlLink = PackageEmitter.getPackageHtmlLink(
-                    zserioPackage, htmlContentDirectory);
-            return new LocalResource(outputRoot, packageHtmlLink);
+            final String packageHtmlLink = PackageEmitter.getPackageHtmlLink(zserioPackage, ".");
+            return new LocalResource(contentDir, packageHtmlLink);
         }
 
         if (!resource.getFullPath().toFile().exists())
@@ -66,7 +60,6 @@ class DocResourceManager
         LocalResource mappedResource = resources.get(resource);
         if (mappedResource == null)
         {
-            final Path resourcesDir = outputRoot.resolve(DocDirectories.DOC_RESOURCES_DIRECTORY);
             if (resource.getExtension().equals(MARKDOWN_EXTENSION))
             {
                 mappedResource = addMappedResource(resourcesDir, resource.getBaseName(), HTML_EXTENSION);
@@ -266,9 +259,9 @@ class DocResourceManager
     private final static String MARKDOWN_EXTENSION = ".md";
     private final static String HTML_EXTENSION = ".html";
 
-    private final Path outputRoot;
-    private final String htmlContentDirectory;
     private final PackageCollector packageCollector;
+    private final Path contentDir;
+    private final Path resourcesDir;
 
     private Path currentOutputDir;
 }
