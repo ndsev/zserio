@@ -13,6 +13,7 @@ import java.util.HashSet;
 
 import zserio.ast.AstLocation;
 import zserio.ast.Package;
+import zserio.extension.common.ZserioExtensionException;
 import zserio.tools.HashUtil;
 
 class DocResourceManager
@@ -28,7 +29,7 @@ class DocResourceManager
         currentOutputDir = contentDir;
     }
 
-    public String addResource(AstLocation location, String resourceLink) throws ResourceException
+    public String addResource(AstLocation location, String resourceLink) throws ZserioExtensionException
     {
         if (isLocalResource(resourceLink))
         {
@@ -45,7 +46,7 @@ class DocResourceManager
         }
     }
 
-    private LocalResource mapLocalResource(LocalResource resource) throws ResourceException
+    private LocalResource mapLocalResource(LocalResource resource) throws ZserioExtensionException
     {
         final Package zserioPackage = packageCollector.getPathToPackageMap().get(resource.getFullPath());
         if (zserioPackage != null)
@@ -55,7 +56,10 @@ class DocResourceManager
         }
 
         if (!resource.getFullPath().toFile().exists())
-            throw new ResourceException("Missing resource: '" + resource.getFullPath().toString() + "'!");
+        {
+            throw new ZserioExtensionException(
+                    "Missing resource: '" + resource.getFullPath().toString() + "'!");
+        }
 
         LocalResource mappedResource = resources.get(resource);
         if (mappedResource == null)
@@ -77,7 +81,8 @@ class DocResourceManager
         return mappedResource;
     }
 
-    private void copyResource(LocalResource srcResource, LocalResource dstResource) throws ResourceException
+    private void copyResource(LocalResource srcResource, LocalResource dstResource)
+            throws ZserioExtensionException
     {
         try
         {
@@ -92,9 +97,15 @@ class DocResourceManager
                     currentOutputDir = dstResource.getPath();
                     final String markdown = new String(Files.readAllBytes(srcResource.getFullPath()),
                             StandardCharsets.UTF_8);
-                    final String html = DocMarkdownToHtmlConverter.convert(this,
+                    final String bodyContent = DocMarkdownToHtmlConverter.convert(this,
                             new AstLocation(srcResource.getFullPath().toString(), 0, 0), markdown);
-                    Files.write(dstResource.getFullPath(), html.getBytes(StandardCharsets.UTF_8));
+                    HtmlResourceEmitter.emit(dstResource.getPath().toString(), dstResource.getFileName(),
+                            srcResource.getFileName(), bodyContent);
+                }
+                catch (ZserioExtensionException e)
+                {
+                    throw new ZserioExtensionException(
+                            "Failed to write html resource: " + e.getMessage() + "!");
                 }
                 finally
                 {
@@ -109,8 +120,8 @@ class DocResourceManager
         }
         catch (IOException e)
         {
-            throw new ResourceException("Failed to copy resource: '" + srcResource.getFullPath() + "' to '" +
-                    dstResource.getFullPath() + "'!");
+            throw new ZserioExtensionException("Failed to copy resource: '" + srcResource.getFullPath() +
+                    "' to '" + dstResource.getFullPath() + "'!");
         }
     }
 
@@ -147,16 +158,6 @@ class DocResourceManager
     {
         final Path currentSourceDir = Paths.get(location.getFileName()).toAbsolutePath().getParent();
         return currentSourceDir != null ? currentSourceDir : Paths.get("");
-    }
-
-    private static class ResourceException extends Exception
-    {
-        public ResourceException(String message)
-        {
-            super(message);
-        }
-
-        private static final long serialVersionUID = 1L;
     }
 
     private static class ResourceLink
@@ -245,6 +246,11 @@ class DocResourceManager
         public String getExtension()
         {
             return extension;
+        }
+
+        public String getFileName()
+        {
+            return baseName + extension;
         }
 
         private final Path path;
