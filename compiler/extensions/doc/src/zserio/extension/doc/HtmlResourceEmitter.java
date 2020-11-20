@@ -18,27 +18,5 @@ class HtmlResourceEmitter
         DocFreeMarkerUtil.processTemplate(TEMPLATE_SOURCE_NAME, templateData, outputFile);
     }
 
-    public static class HtmlResourceTemplateData
-    {
-        public HtmlResourceTemplateData(String title, String bodyContent)
-        {
-            this.title = title;
-            this.bodyContent = bodyContent;
-        }
-
-        public String getTitle()
-        {
-            return title;
-        }
-
-        public String getBodyContent()
-        {
-            return bodyContent;
-        }
-
-        private final String title;
-        private final String bodyContent;
-    }
-
     private static final String TEMPLATE_SOURCE_NAME = "html_resource.html.ftl";
 }

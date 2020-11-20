@@ -6,6 +6,8 @@
     <title>${title}</title>
   </head>
   <body>
-    ${bodyContent?no_esc}
+<#list bodyContent?split("\r?\n", "rm") as htmlLine>
+    ${htmlLine?no_esc}
+</#list>
   </body>
 </html>

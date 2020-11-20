@@ -59,7 +59,6 @@ class DocMarkdownToHtmlConverter
                             }
                         }
                 )
-                .escapeHtml(true)
                 .build();
 
         final String html = renderer.render(document);
